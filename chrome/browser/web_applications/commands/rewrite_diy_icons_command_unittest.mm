@@ -7,10 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/base_paths.h"
-#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -22,6 +19,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -41,21 +39,6 @@
 #include "ui/gfx/test/sk_gmock_support.h"
 
 namespace web_app {
-
-namespace {
-
-gfx::Image LoadTestIcon(const char* filename) {
-  base::FilePath data_root =
-      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT);
-  base::FilePath image_path =
-      data_root.Append(FILE_PATH_LITERAL("chrome/test/data/web_apps/"))
-          .Append(filename);
-  std::string png_data;
-  base::ReadFileToString(image_path, &png_data);
-  return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(png_data));
-}
-
-}  // namespace
 
 class RewriteDiyIconsCommandTest : public WebAppTest {
  public:
@@ -195,7 +178,9 @@ TEST_F(RewriteDiyIconsCommandTest, ScheduleAndExecuteCommand) {
               ::testing::Not(gfx::test::EqualsBitmap(expected_bitmap)));
 
   // Load and compare with the expected icon.
-  gfx::Image expected_icon = LoadTestIcon("diy_app_updated_128x128_icon.png");
+  gfx::Image expected_icon =
+      web_app::test::LoadTestImageFromDisk(base::FilePath(
+          "chrome/test/data/web_apps/diy_app_updated_128x128_icon.png"));
 
   EXPECT_THAT(current_icon.value(),
               gfx::test::EqualsBitmap(expected_icon.AsBitmap()));

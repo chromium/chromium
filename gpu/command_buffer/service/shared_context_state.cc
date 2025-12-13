@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/service/shared_context_state.h"
 
+#include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/immediate_crash.h"
 #include "base/metrics/histogram_functions.h"
@@ -181,7 +177,7 @@ GLsizeiptr GL_APIENTRY GLBlobCacheGetCallback(const void* key,
   }
 
   if (value_size > 0 && static_cast<size_t>(value_size) >= sk_data->size()) {
-    memcpy(value, sk_data->data(), sk_data->size());
+    UNSAFE_TODO(memcpy(value, sk_data->data(), sk_data->size()));
   }
 
   // We didn't copy the original key data. Make sure it wasn't stored in the
@@ -301,14 +297,21 @@ SharedContextState::SharedContextState(
       context_(context),
       real_context_(std::move(context)),
       sk_surface_cache_(MaxNumSkSurface()) {
-  if (gr_context_type_ == GrContextType::kVulkan) {
+  if (gr_context_type_ == GrContextType::kVulkan
+#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
+      || gr_context_type_ == GrContextType::kGL
+#endif
+  ) {
     if (vk_context_provider_) {
 #if BUILDFLAG(ENABLE_VULKAN) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN))
       external_semaphore_pool_ = std::make_unique<ExternalSemaphorePool>(this);
 #endif
-      use_virtualized_gl_contexts_ = false;
     }
+  }
+
+  if (gr_context_type_ == GrContextType::kVulkan && vk_context_provider_) {
+    use_virtualized_gl_contexts_ = false;
   }
 
   DCHECK(context_ && surface && context_->default_surface());
@@ -338,6 +341,7 @@ SharedContextState::~SharedContextState() {
 
   if (IsCurrent(nullptr, true) && feature_info_) {
     UnbindGLContextFromShaderCache(feature_info_);
+    UnbindCacheFromCurrentOpenGLContext();
   }
 
 #if BUILDFLAG(ENABLE_VULKAN) && \
@@ -454,10 +458,10 @@ bool SharedContextState::IsGraphiteDawnVulkanSwiftShader() const {
 bool SharedContextState::InitializeSkia(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
-    gpu::raster::GrShaderCache* cache,
+    gpu::raster::GrShaderCache* gr_cache,
+    scoped_refptr<GpuPersistentCache> persistent_cache,
     GpuProcessShmCount* use_shader_cache_shm_count,
     gl::ProgressReporter* progress_reporter) {
-
   if (gr_context_type_ == GrContextType::kNone) {
     // SharedContextState only exists to hold a GL context for WebGL fallback
     // if context type is set to none. We don't need to initialization Skia
@@ -471,18 +475,21 @@ bool SharedContextState::InitializeSkia(
                               use_shader_cache_shm_count);
   }
 
-  return InitializeGanesh(gpu_preferences, workarounds, cache,
+  return InitializeGanesh(gpu_preferences, workarounds, gr_cache,
+                          std::move(persistent_cache),
                           use_shader_cache_shm_count, progress_reporter);
 }
 
 bool SharedContextState::InitializeGanesh(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
-    gpu::raster::GrShaderCache* cache,
+    gpu::raster::GrShaderCache* gr_cache,
+    scoped_refptr<GpuPersistentCache> persistent_cache,
     GpuProcessShmCount* use_shader_cache_shm_count,
     gl::ProgressReporter* progress_reporter) {
   progress_reporter_ = progress_reporter;
-  gr_shader_cache_ = cache;
+  gr_shader_cache_ = gr_cache;
+  persistent_cache_ = std::move(persistent_cache);
   use_shader_cache_shm_count_ = use_shader_cache_shm_count;
 
   size_t max_resource_cache_bytes;
@@ -497,8 +504,15 @@ bool SharedContextState::InitializeGanesh(
   GrContextOptions options = GetDefaultGrContextOptions();
 
   options.fAllowMSAAOnNewIntel = !gles2::MSAAIsSlow(workarounds);
+  // Limit MSAA sample counts to 4 on Intel Android devices for performance.
+  if(workarounds.msaa_is_slow && !workarounds.msaa_is_slow_2)
+    options.fInternalMultisampleCount = 4;
   options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kNo;
-  options.fPersistentCache = cache;
+  if (persistent_cache_) {
+    options.fPersistentCache = persistent_cache_.get();
+  } else {
+    options.fPersistentCache = gr_cache;
+  }
   options.fShaderErrorHandler = this;
   if (gpu_preferences.force_max_texture_size)
     options.fMaxTextureSizeOverride = gpu_preferences.force_max_texture_size;
@@ -517,7 +531,7 @@ bool SharedContextState::InitializeGanesh(
       return false;
     }
 
-    if (use_shader_cache_shm_count && cache) {
+    if (use_shader_cache_shm_count && (gr_cache || persistent_cache_)) {
       // |use_shader_cache_shm_count| is safe to capture here since it must
       // outlive the this context state.
       gr_gl_interface->fFunctions.fProgramBinary =
@@ -529,7 +543,8 @@ bool SharedContextState::InitializeGanesh(
           };
     }
 
-    BindGLContextToShaderCache(feature_info_, cache);
+    BindGLContextToShaderCache(feature_info_, gr_cache);
+    BindCacheToCurrentOpenGLContext(persistent_cache_.get());
 
     options.fDriverBugWorkarounds =
         GrDriverBugWorkarounds(workarounds.ToIntSet());
@@ -1005,10 +1020,10 @@ void SharedContextState::MarkContextLost(error::ContextLostReason reason) {
     // the passed in GrContext will be reused.
     // TODO(crbug.com/40672147): always abandon GrContext to release all
     // resources when chrome goes into background with low end device.
+    gr_context_ = nullptr;
     if (owned_gr_context_) {
       owned_gr_context_->abandonContext();
       owned_gr_context_.reset();
-      gr_context_ = nullptr;
     }
     UpdateSkiaOwnedMemorySize();
   }
@@ -1066,15 +1081,15 @@ void SharedContextState::RemoveContextLostObserver(ContextLostObserver* obs) {
 }
 
 void SharedContextState::PurgeMemory(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   // Ensure the context is current before doing any GPU cleanup.
   if (!MakeCurrent(nullptr))
     return;
 
   switch (memory_pressure_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
       return;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
       // With moderate pressure, clear any unlocked resources.
       sk_surface_cache_.Clear();
       if (gr_context_) {
@@ -1088,7 +1103,7 @@ void SharedContextState::PurgeMemory(
           kInitialScratchDeserializationBufferSize);
       scratch_deserialization_buffer_.shrink_to_fit();
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       // With critical pressure, purge as much as possible.
       sk_surface_cache_.Clear();
       {

@@ -23,10 +23,11 @@
              android:title="Check for WebView updates"
              android:showAsAction="never"/>
               <!--suppress HardcodedText -->
+        <!-- Menu item disabled; crbug.com/438310407
         <item
              android:id="@+id/options_menu_components"
              android:title="Components"
-             android:showAsAction="never"/>
+             android:showAsAction="never"/> -->
         <!--suppress HardcodedText -->
         <item
             android:id="@+id/options_menu_safe_mode"

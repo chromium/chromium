@@ -79,9 +79,8 @@ void OAuth2TokenFetcher::RetryOnError(const GoogleServiceAuthError& error,
         FROM_HERE, std::move(task), base::Milliseconds(kRequestRestartDelay));
     return;
   }
-  LOG(ERROR) << "Unrecoverable error or retry count max reached. State: "
-             << error.state() << ", network error: " << error.network_error()
-             << ", message: " << error.error_message();
+  LOG(ERROR) << "Unrecoverable error or retry count max reached. Error: "
+             << error.ToString();
   std::move(error_handler).Run();
 }
 

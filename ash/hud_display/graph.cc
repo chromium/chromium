@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -101,11 +102,12 @@ void Graph::Draw(gfx::Canvas* canvas) const {
   if (top_path_.empty())
     return;
 
-  SkPath path;
+  SkPathBuilder path;
   path.moveTo(top_path_.front());
 
   const auto draw_top_line = [](const std::vector<SkPoint>& top_path,
-                                const auto& draw_point, SkPath& out_path) {
+                                const auto& draw_point,
+                                SkPathBuilder& out_path) {
     SkPoint previous_point = top_path.front();
     for (std::vector<SkPoint>::const_iterator it = top_path.begin();
          it != top_path.end(); ++it) {
@@ -117,7 +119,8 @@ void Graph::Draw(gfx::Canvas* canvas) const {
     }
   };
   const auto draw_bottom_line = [](const std::vector<SkPoint>& bottom_path,
-                                   const auto& draw_point, SkPath& result) {
+                                   const auto& draw_point,
+                                   SkPathBuilder& result) {
     SkPoint previous_point = bottom_path.back();
     for (std::vector<SkPoint>::const_reverse_iterator it =
              bottom_path.crbegin();
@@ -131,20 +134,22 @@ void Graph::Draw(gfx::Canvas* canvas) const {
   // This is used to draw both top and bottom Style::kLines paths.
   const auto draw_lines_point =
       [](const SkPoint& point, const SkPoint& /*previous_point*/,
-         SkPath& out_path) { out_path.lineTo(point); };
+         SkPathBuilder& out_path) { out_path.lineTo(point); };
   // Top and bottom Style::kSkyline drawing functions are symmetric.
-  const auto draw_skyline_point =
-      [](const SkPoint& point, SkPoint& previous_point, SkPath& out_path) {
-        out_path.lineTo(SkPoint::Make(point.x(), previous_point.y()));
-        out_path.lineTo(point);
-        previous_point = point;
-      };
-  const auto draw_bottom_skyline_point =
-      [](const SkPoint& point, SkPoint& previous_point, SkPath& out_path) {
-        out_path.lineTo(SkPoint::Make(previous_point.x(), point.y()));
-        out_path.lineTo(point);
-        previous_point = point;
-      };
+  const auto draw_skyline_point = [](const SkPoint& point,
+                                     SkPoint& previous_point,
+                                     SkPathBuilder& out_path) {
+    out_path.lineTo(SkPoint::Make(point.x(), previous_point.y()));
+    out_path.lineTo(point);
+    previous_point = point;
+  };
+  const auto draw_bottom_skyline_point = [](const SkPoint& point,
+                                            SkPoint& previous_point,
+                                            SkPathBuilder& out_path) {
+    out_path.lineTo(SkPoint::Make(previous_point.x(), point.y()));
+    out_path.lineTo(point);
+    previous_point = point;
+  };
   switch (style_) {
     case Style::kLines:
       draw_top_line(top_path_, draw_lines_point, path);
@@ -172,7 +177,7 @@ void Graph::Draw(gfx::Canvas* canvas) const {
   flags.setStyle(style);
   flags.setStrokeWidth(1);
   flags.setColor(color_);
-  canvas->DrawPath(path, flags);
+  canvas->DrawPath(path.detach(), flags);
 }
 
 void Graph::UpdateLastValue(float value, float unscaled_value) {

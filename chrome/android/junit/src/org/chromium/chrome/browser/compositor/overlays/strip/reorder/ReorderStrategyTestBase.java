@@ -14,6 +14,8 @@ import android.graphics.PointF;
 import android.view.View;
 
 import org.junit.Rule;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -22,7 +24,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
@@ -40,6 +42,7 @@ import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class ReorderStrategyTestBase {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -88,10 +91,14 @@ public abstract class ReorderStrategyTestBase {
     protected StripLayoutTab mInteractingTab;
     protected StripLayoutGroupTitle mInteractingGroupTitle;
 
+    // Captors
+    @Captor ArgumentCaptor<List<Tab>> mTabListCaptor;
+    @Captor ArgumentCaptor<Tab> mTabCaptor;
+
     protected void setup() {
         mActivity = Robolectric.setupActivity(Activity.class);
         // StripLayoutViews need styles during initializations.
-        mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mModel = spy(new MockTabModel(mProfile, /* delegate= */ null));
         for (int id : TAB_IDS) mModel.addTab(id);
         mModel.setIndex(0, TabSelectionType.FROM_USER);
@@ -105,7 +112,7 @@ public abstract class ReorderStrategyTestBase {
 
     protected abstract void setupStripViews();
 
-    protected StripLayoutGroupTitle buildGroupTitle(Integer rootId, Token groupId, int x) {
+    protected StripLayoutGroupTitle buildGroupTitle(Token groupId, int x) {
         StripLayoutGroupTitle title =
                 new StripLayoutGroupTitle(mActivity, null, null, false, groupId);
         setDrawProperties(title, x);
@@ -113,7 +120,8 @@ public abstract class ReorderStrategyTestBase {
     }
 
     protected StripLayoutTab buildStripTab(int id, int x) {
-        StripLayoutTab tab = new StripLayoutTab(mActivity, id, null, null, null, null, false);
+        StripLayoutTab tab =
+                new StripLayoutTab(mActivity, id, null, null, null, null, false, false);
         setDrawProperties(tab, x);
         return tab;
     }
@@ -176,6 +184,11 @@ public abstract class ReorderStrategyTestBase {
             mRunningAnimations.start();
             // Immediately end to be able to verify end state.
             finishAnimations();
+        }
+
+        @Override
+        public void queueAnimations(List<Animator> animationList, AnimatorListener listener) {
+            startAnimations(animationList, listener);
         }
     }
 }

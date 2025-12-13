@@ -40,6 +40,7 @@ void RecordSavedTabGroupMetrics(SavedTabGroupModel* model) {
 
   int pinned_group_count = 0;
   int active_group_count = 0;
+  int open_group_count = 0;
 
   for (const SavedTabGroup& group : model->saved_tab_groups()) {
     base::UmaHistogramCounts10000("TabGroups.SavedTabGroupTabCount",
@@ -77,6 +78,10 @@ void RecordSavedTabGroupMetrics(SavedTabGroupModel* model) {
     if (group.is_pinned()) {
       ++pinned_group_count;
     }
+
+    if (group.local_group_id().has_value()) {
+      ++open_group_count;
+    }
   }
 
   base::UmaHistogramCounts10000("TabGroups.SavedTabGroupPinnedCount",
@@ -85,6 +90,8 @@ void RecordSavedTabGroupMetrics(SavedTabGroupModel* model) {
                                 model->Count() - pinned_group_count);
   base::UmaHistogramCounts10000("TabGroups.SavedTabGroupActiveCount",
                                 active_group_count);
+  base::UmaHistogramCounts10000("TabGroups.SavedTabGroupOpenCount",
+                                open_group_count);
 }
 
 void RecordTabCountMismatchOnConnect(size_t tabs_in_saved_group,

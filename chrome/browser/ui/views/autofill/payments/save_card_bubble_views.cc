@@ -50,7 +50,7 @@ int GetObfuscationLength() {
              : 4;
 }
 
-SaveCardBubbleViews::SaveCardBubbleViews(views::View* anchor_view,
+SaveCardBubbleViews::SaveCardBubbleViews(views::BubbleAnchor anchor_view,
                                          content::WebContents* web_contents,
                                          SaveCardBubbleController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),
@@ -172,8 +172,10 @@ std::unique_ptr<views::View> SaveCardBubbleViews::CreateMainContentView() {
 
   // Flex |card_identifier_view| to fill up space before the expiry date or CVC
   // icon.
-  if (controller()->GetBubbleType() == BubbleType::LOCAL_CVC_SAVE ||
-      controller()->GetBubbleType() == BubbleType::UPLOAD_CVC_SAVE) {
+  if (controller()->GetPaymentsBubbleType() ==
+          PaymentsBubbleType::kLocalCvcSave ||
+      controller()->GetPaymentsBubbleType() ==
+          PaymentsBubbleType::kUploadCvcSave) {
     description_view->SetFlexForView(card_identifier_view, 1);
   }
 
@@ -187,9 +189,10 @@ void SaveCardBubbleViews::InitFootnoteView(views::View* footnote_view) {
 }
 
 std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
-  bool is_cvc_only_save =
-      controller()->GetBubbleType() == BubbleType::LOCAL_CVC_SAVE ||
-      controller()->GetBubbleType() == BubbleType::UPLOAD_CVC_SAVE;
+  bool is_cvc_only_save = controller()->GetPaymentsBubbleType() ==
+                              PaymentsBubbleType::kLocalCvcSave ||
+                          controller()->GetPaymentsBubbleType() ==
+                              PaymentsBubbleType::kUploadCvcSave;
 
   // Display the card expiration date in a separate line for credit card saves.
   // For CVC only save, the card name, last 4 digit and CVC icon will be shown

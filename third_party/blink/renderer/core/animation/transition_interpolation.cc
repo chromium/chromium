@@ -11,7 +11,12 @@
 
 namespace blink {
 
-void TransitionInterpolation::Interpolate(int iteration, double fraction) {
+// Note: iteration_composite is unused since transitions don't iterate.
+// This parameter exists to conform with the interface in Interpolation.
+void TransitionInterpolation::Interpolate(
+    int iteration,
+    double fraction,
+    EffectModel::IterationCompositeOperation iteration_composite) {
   if (!cached_fraction_ || *cached_fraction_ != fraction ||
       cached_iteration_ != iteration) {
     if (merge_) {

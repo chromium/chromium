@@ -21,12 +21,12 @@ source_set("on_device_translation_service") {
   deps = [ ":translate_kit_api_proto" ]
   public_deps = [
     "//base",
-    "//components/services/on_device_translation/public/cpp",
-    "//components/services/on_device_translation/public/mojom",
+    "//components/on_device_translation",
+    "//components/on_device_translation/public/mojom/",
     "//mojo/public/cpp/bindings",
   ]
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [
       "sandbox_hook.cc",
       "sandbox_hook.h",
@@ -46,9 +46,9 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//base/test:test_support",
+    "//components/on_device_translation",
+    "//components/on_device_translation/public/mojom",
     "//components/services/on_device_translation:on_device_translation_service",
-    "//components/services/on_device_translation/public/cpp",
-    "//components/services/on_device_translation/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -64,17 +64,29 @@ source_set("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//components/services/on_device_translation/public/mojom",
+    "//components/on_device_translation/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
   data_deps = [
     ":mock_failing_translate_kit_lib",
     ":mock_invalid_function_pointer_lib",
     ":mock_translate_kit_lib",
+    ":mock_translate_kit_without_split_sentences_lib",
   ]
 }
 
 shared_library("mock_translate_kit_lib") {
+  testonly = true
+  sources = [
+    "test/mock_translate_kit_lib.cc",
+    "translate_kit_structs.h",
+  ]
+  deps = [ ":translate_kit_api_proto" ]
+  public_deps = [ "//base" ]
+  defines = [ "TRANSLATE_KIT_SPLIT_SENTENCES" ]
+}
+
+shared_library("mock_translate_kit_without_split_sentences_lib") {
   testonly = true
   sources = [
     "test/mock_translate_kit_lib.cc",

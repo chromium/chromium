@@ -36,9 +36,6 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -57,9 +54,9 @@ namespace {
 using PermissionStatus = blink::mojom::PermissionStatus;
 
 void StorePermissionStatus(PermissionStatus* out_permission_status,
-                           PermissionStatus permission_status) {
+                           content::PermissionResult permission_result) {
   DCHECK(out_permission_status);
-  *out_permission_status = permission_status;
+  *out_permission_status = permission_result.status;
 }
 
 class TestNotificationPermissionContext : public NotificationPermissionContext {
@@ -227,16 +224,13 @@ TEST_F(NotificationPermissionContextTest, CrossOriginPermissionChecks) {
   // Now block permission for |requesting_origin|.
 
 #if BUILDFLAG(IS_ANDROID)
-  // On Android O+, permission must be reset before it can be blocked. This is
-  // because granting a permission on O+ creates a system-managed notification
-  // channel which determines the value of the content setting, so it is not
-  // allowed to then toggle the value from ALLOW->BLOCK directly. However,
-  // Chrome may reset the permission (which deletes the channel), and *then*
-  // grant/block it (creating a new channel).
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_OREO) {
-    context.ResetPermission(requesting_origin, requesting_origin);
-  }
+  // Permission must be reset before it can be blocked. This is because granting
+  // a permission on Android O+ creates a system-managed notification channel
+  // which determines the value of the content setting, so it is not allowed to
+  // then toggle the value from ALLOW->BLOCK directly. However, Chrome may reset
+  // the permission (which deletes the channel), and *then* grant/block it
+  // (creating a new channel).
+  context.ResetPermission(requesting_origin, requesting_origin);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   UpdateContentSetting(&context, requesting_origin, requesting_origin,

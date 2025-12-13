@@ -27,7 +27,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "mojo/public/c/system/quota.h"
-#include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/lib/may_auto_lock.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 #include "mojo/public/cpp/bindings/sync_handle_watcher.h"
@@ -50,16 +49,6 @@ Connector::OutgoingSerializationMode g_default_outgoing_serialization_mode =
 // The default incoming serialization mode for new Connectors.
 Connector::IncomingSerializationMode g_default_incoming_serialization_mode =
     Connector::IncomingSerializationMode::kDispatchAsIs;
-
-bool EnableTaskPerMessage() {
-  // Const since this may be called from any thread. Initialization is
-  // thread-safe. This is a workaround since some consumers of Mojo (e.g. many
-  // browser tests) use base::FeatureList incorrectly and thus cause data races
-  // when features are queried from arbitrary threads.
-  static const bool enable =
-      base::FeatureList::IsEnabled(features::kTaskPerMessage);
-  return enable;
-}
 
 }  // namespace
 
@@ -154,7 +143,6 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
                      const char* interface_name)
     : message_pipe_(std::move(message_pipe)),
       error_(false),
-      force_immediate_dispatch_(!EnableTaskPerMessage()),
       outgoing_serialization_mode_(g_default_outgoing_serialization_mode),
       incoming_serialization_mode_(g_default_incoming_serialization_mode),
       interface_name_(interface_name),
@@ -238,7 +226,7 @@ void Connector::RaiseError() {
   HandleError(true, true);
 }
 
-void Connector::SetConnectionGroup(ConnectionGroup::Ref ref) {
+void Connector::SetConnectionGroup(ConnectionGroupRef ref) {
   // If this Connector already belonged to a group, parent the new group to that
   // one so that the reference is not lost.
   if (connection_group_)

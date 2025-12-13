@@ -30,7 +30,7 @@ std::optional<base::Value> ExtensionApiUnittest::RunFunctionAndReturnValue(
     const std::string& args) {
   function->set_extension(extension());
   return utils::RunFunctionAndReturnSingleResult(std::move(function), args,
-                                                 browser()->profile());
+                                                 profile());
 }
 
 std::optional<base::Value::Dict>
@@ -70,8 +70,7 @@ std::string ExtensionApiUnittest::RunFunctionAndReturnError(
     scoped_refptr<ExtensionFunction> function,
     const std::string& args) {
   function->set_extension(extension());
-  return utils::RunFunctionAndReturnError(std::move(function), args,
-                                          browser()->profile());
+  return utils::RunFunctionAndReturnError(std::move(function), args, profile());
 }
 
 void ExtensionApiUnittest::RunFunction(

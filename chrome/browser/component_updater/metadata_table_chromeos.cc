@@ -60,8 +60,8 @@ const user_manager::User* GetActiveUser() {
 // The result is converted to lowercase to stay compatible with
 // CryptoLib::HexEncodeToBuffer().
 std::string HashUsername(std::string_view username) {
-  return base::ToLowerASCII(base::HexEncode(
-      base::SHA1Hash(base::as_byte_span(base::ToLowerASCII(username)))));
+  return base::HexEncodeLower(
+      base::SHA1Hash(base::as_byte_span(base::ToLowerASCII(username))));
 }
 
 const std::string& GetRequiredStringFromDict(const base::Value& dict,

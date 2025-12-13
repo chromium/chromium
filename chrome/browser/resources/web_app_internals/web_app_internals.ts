@@ -225,6 +225,27 @@ async function iwaDevFetchUpdateManifest() {
       'iwa-update-manifest-version-select');
   select.replaceChildren();
 
+  function compareStringVersions(v1: string, v2: string): number {
+    const parts1 = v1.split('.').map(Number);
+    const parts2 = v2.split('.').map(Number);
+
+    for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+      const part1 = parts1[i] || 0;
+      const part2 = parts2[i] || 0;
+
+      if (part1 < part2) {
+        return -1;
+      } else if (part1 > part2) {
+        return 1;
+      }
+    }
+
+    return 0;
+  }
+
+  // Sort versions in descending order
+  versions.sort((a, b) => -compareStringVersions(a.version, b.version));
+
   for (const versionEntry of versions) {
     const option = document.createElement('option');
     option.value = versionEntry.version;
@@ -502,8 +523,8 @@ async function refreshDevModeAppList() {
     devModeUpdatesMessage.innerText = 'None';
   } else {
     devModeUpdatesMessage.innerText = '';
-    for (const {appId, name, location, installedVersion, updateInfo} of
-             devModeApps) {
+    for (const {appId, webBundleId, name, location,
+      installedVersion, updateInfo} of devModeApps) {
       const li = document.createElement('li');
       li.innerText =
           describeIsolatedWebApp(name, installedVersion, location, updateInfo);
@@ -511,7 +532,7 @@ async function refreshDevModeAppList() {
 
 
       const {updateMsg, buttonsSection} =
-          prepareAppButtons(appId, name, location, updateInfo);
+          prepareAppButtons(appId, webBundleId, name, location, updateInfo);
 
       li.appendChild(buttonsSection);
       li.appendChild(updateMsg);
@@ -523,6 +544,7 @@ async function refreshDevModeAppList() {
 
 function prepareAppButtons(
     appId: string,
+    webBundleId: string,
     name: string,
     location: IwaDevModeLocation,
     updateInfo: UpdateInfo|null,
@@ -563,6 +585,40 @@ function prepareAppButtons(
     }
   };
   buttonsSection.appendChild(updateBtn);
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.innerText = 'Delete IWA';
+  deleteBtn.onclick = async () => {
+
+    const oldText = deleteBtn.innerText;
+    try {
+      deleteBtn.disabled = true;
+      deleteBtn.innerText = 'Deleting IWA...';
+      const {success} =
+          await webAppInternalsHandler.deleteIsolatedWebApp(appId);
+
+      if (success) {
+        await refreshDevModeAppList();
+        setDevInstallMessageText(`Successfully uninstalled ${name} \
+          (${webBundleId})`);
+      } else {
+        updateMsg.innerText =
+            `Could not uninstall Isolated Web App "${name}" (${webBundleId})`;
+        deleteBtn.disabled = false;
+      }
+    } catch (e) {
+      updateMsg.innerText =
+          `An error occurred during deletion of isolated Web App "${name}" \
+          (${webBundleId})`;
+      deleteBtn.disabled = false;
+      console.error(e);
+    } finally {
+      if (!deleteBtn.disabled) {
+          deleteBtn.innerText = oldText;
+      }
+    }
+  };
+  buttonsSection.appendChild(deleteBtn);
 
   if (updateInfo) {
     const switchChannelBtn = document.createElement('button');

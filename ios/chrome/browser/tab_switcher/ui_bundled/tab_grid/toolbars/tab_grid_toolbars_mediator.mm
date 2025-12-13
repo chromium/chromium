@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_observing.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
@@ -83,7 +84,14 @@
   [self.topToolbarConsumer
       configureSelectionButtonTitleSelectAll:_configuration.selectAllButton];
 
-  [self configureEditOrUndoButton];
+  if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
+    [self.topToolbarConsumer setEditButtonEnabled:NO];
+    [self.bottomToolbarConsumer setEditButtonEnabled:NO];
+    [self.topToolbarConsumer
+        setOverflowMenuEnabled:_configuration.overflowMenuButton];
+  } else {
+    [self configureEditOrUndoButton];
+  }
 
   [self.bottomToolbarConsumer
       setNewTabButtonEnabled:_configuration.newTabButton];
@@ -92,6 +100,17 @@
   [self.bottomToolbarConsumer setDoneButtonEnabled:_configuration.doneButton];
 
   [self.topToolbarConsumer setSearchButtonEnabled:_configuration.searchButton];
+
+  BOOL pageActionMenuButtonVisible = _configuration.pageActionMenuButtonVisible;
+  [self.topToolbarConsumer
+      setPageActionMenuButtonVisible:pageActionMenuButtonVisible];
+  BOOL pageActionMenuButtonEnabled =
+      pageActionMenuButtonVisible && _configuration.pageActionMenuButtonEnabled;
+  [self.topToolbarConsumer
+      setPageActionMenuButtonEnabled:pageActionMenuButtonEnabled];
+
+  [self.topToolbarConsumer
+      setSelectTabsActionEnabled:_configuration.selectTabsButton];
 }
 
 - (void)setToolbarsButtonsDelegate:(id<TabGridToolbarsGridDelegate>)delegate {
@@ -228,6 +247,7 @@
 // TODO(crbug.com/40273478): Send buttons configuration directly to the correct
 // consumer instead of send information to object when it is not necessary.
 - (void)configureEditOrUndoButton {
+  CHECK(!base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu));
   [self.topToolbarConsumer useUndo:_configuration.undoButton];
   [self.bottomToolbarConsumer useUndoCloseAll:_configuration.undoButton];
 

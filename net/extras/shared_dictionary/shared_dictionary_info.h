@@ -64,6 +64,9 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
     primary_key_in_database_ = primary_key_in_database;
   }
 
+  void set_response_time(base::Time response_time) {
+    response_time_ = response_time;
+  }
   void set_last_fetch_time(base::Time last_fetch_time) {
     last_fetch_time_ = last_fetch_time;
   }
@@ -80,7 +83,8 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
   // The time of when the dictionary was received from the network layer.
   base::Time last_fetch_time_;
   // The time of when the dictionary was received from the server. For cached
-  // responses, this time could be "far" in the past.
+  // responses, this time could be "far" in the past. If a dictionary is using
+  // an explicit "ttl" this will be the same as last_fetch_time_.
   base::Time response_time_;
   // The expiration time for the dictionary which was declared in
   // 'use-as-dictionary' response header's `expires` option in seconds.

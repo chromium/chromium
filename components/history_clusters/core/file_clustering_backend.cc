@@ -59,7 +59,8 @@ std::vector<history::Cluster> GetClustersFromFile() {
     return {};
   }
 
-  std::optional<base::Value> json_value = base::JSONReader::Read(file_contents);
+  std::optional<base::Value> json_value = base::JSONReader::Read(
+      file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json_value) {
     LOG(ERROR) << "Clusters override file is not valid JSON";
     return {};

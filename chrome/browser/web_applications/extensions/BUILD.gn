@@ -10,13 +10,20 @@ assert(enable_extensions)
 source_set("extensions") {
   sources = [
     "extension_status_utils.cc",
-    "extensions_manager.cc",
+    "extensions_manager_impl.cc",
+    "extensions_manager_impl.h",
     "web_app_extension_shortcut.cc",
     "web_app_extension_shortcut.h",
     "web_app_uninstall_and_replace_job.cc",
   ]
   if (is_mac) {
     sources += [ "web_app_extension_shortcut_mac.mm" ]
+  }
+  if (!is_chromeos) {
+    sources += [
+      "launch.cc",
+      "launch.h",
+    ]
   }
 
   # Enable the "exit_time_destructors" warning here to avoid accidentally
@@ -36,12 +43,19 @@ source_set("extensions") {
     "//components/pref_registry",
     "//components/services/app_service",
     "//components/sync/model",
-    "//components/webapps/browser:browser",
+    "//components/webapps/browser",
     "//components/webapps/common",
     "//content/public/browser",
     "//extensions/browser",
     "//skia",
   ]
+
+  if (!is_chromeos) {
+    deps += [
+      "//chrome/browser/apps/app_service:constants",
+      "//chrome/browser/ui/extensions",
+    ]
+  }
 }
 
 source_set("unit_tests") {

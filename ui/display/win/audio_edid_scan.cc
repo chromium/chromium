@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/win/audio_edid_scan.h"
 
 #include <objbase.h>
@@ -14,6 +9,7 @@
 #include <oleauto.h>
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
@@ -85,7 +81,8 @@ bool AppendBlock(Microsoft::WRL::ComPtr<IWbemServices>& wmi_services,
 
   uint8_t* block = nullptr;
   SafeArrayAccessData(array, reinterpret_cast<void**>(&block));
-  edid_blob.insert(edid_blob.end(), block, block + upper_bound + 1);
+  edid_blob.insert(edid_blob.end(), block,
+                   UNSAFE_TODO(block + upper_bound + 1));
   SafeArrayUnaccessData(array);
 
   return true;

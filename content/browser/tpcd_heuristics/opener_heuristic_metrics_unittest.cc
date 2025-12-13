@@ -5,7 +5,6 @@
 #include "content/browser/tpcd_heuristics/opener_heuristic_metrics.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

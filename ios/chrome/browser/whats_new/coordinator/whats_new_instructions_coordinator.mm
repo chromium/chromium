@@ -27,7 +27,10 @@
 @property(nonatomic, weak) id<WhatsNewCommands> whatsNewHandler;
 @end
 
-@implementation WhatsNewInstructionsCoordinator
+@implementation WhatsNewInstructionsCoordinator {
+  // Navigation controller containing the view controller.
+  UINavigationController* _navigationController;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
@@ -52,19 +55,26 @@
       initWithWhatsNewItem:self.item];
 
   self.viewController.actionHandler = self;
-  self.baseViewController.presentationController.delegate = self;
-  [self.baseViewController presentViewController:self.viewController
+  self.viewController.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                               target:self
+                               action:@selector(closeInstructions)];
+
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.viewController];
+  _navigationController.presentationController.delegate = self;
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
-
-  [super start];
 }
 
 - (void)stop {
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
   self.viewController = nil;
-
-  [super stop];
+  _navigationController = nil;
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -81,15 +91,18 @@
   [self.whatsNewHandler dismissWhatsNew];
 }
 
-- (void)confirmationAlertDismissAction {
-  [self.delegate dismissWhatsNewInstructionsCoordinator:self];
-}
-
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.whatsNewHandler dismissWhatsNew];
+  [self closeInstructions];
+}
+
+#pragma mark - Private
+
+// Called when tapping on "close".
+- (void)closeInstructions {
+  [self.delegate dismissWhatsNewInstructionsCoordinator:self];
 }
 
 @end

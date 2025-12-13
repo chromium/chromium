@@ -60,6 +60,18 @@ bool StructTraits<autofill::mojom::FieldRendererIdDataView,
 }
 
 // static
+bool StructTraits<autofill::mojom::FillIdDataView, autofill::FillId>::Read(
+    autofill::mojom::FillIdDataView data,
+    autofill::FillId* out) {
+  base::UnguessableToken id;
+  if (!data.ReadId(&id)) {
+    return false;
+  }
+  *out = autofill::FillId(id);
+  return true;
+}
+
+// static
 bool StructTraits<
     autofill::mojom::SelectOptionDataView,
     autofill::SelectOption>::Read(autofill::mojom::SelectOptionDataView data,
@@ -196,6 +208,14 @@ bool StructTraits<
       return false;
     }
     out->set_aria_description(std::move(aria_description));
+  }
+
+  {
+    std::u16string nonce;
+    if (!data.ReadNonce(&nonce)) {
+      return false;
+    }
+    out->set_nonce(std::move(nonce));
   }
 
   out->set_properties_mask(data.properties_mask());
@@ -426,6 +446,9 @@ bool StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
   if (!data.ReadHeuristicType(&out->heuristic_type)) {
     return false;
   }
+  if (!data.ReadPwmMlType(&out->pwm_ml_type)) {
+    return false;
+  }
   if (!data.ReadServerType(&out->server_type)) {
     return false;
   }
@@ -433,9 +456,6 @@ bool StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return false;
   }
   if (!data.ReadOverallType(&out->overall_type)) {
-    return false;
-  }
-  if (!data.ReadAutofillAiType(&out->autofill_ai_type)) {
     return false;
   }
   if (!data.ReadAttributeTypes(&out->attribute_types)) {
@@ -472,6 +492,9 @@ bool StructTraits<autofill::mojom::FormDataPredictionsDataView,
   if (!data.ReadSignature(&out->signature))
     return false;
   if (!data.ReadAlternativeSignature(&out->alternative_signature)) {
+    return false;
+  }
+  if (!data.ReadStructuralFormSignature(&out->structural_form_signature)) {
     return false;
   }
   if (!data.ReadFields(&out->fields))

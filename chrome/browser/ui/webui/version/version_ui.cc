@@ -43,7 +43,8 @@
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
+#include "base/android/apk_info.h"
 #include "chrome/browser/ui/android/android_about_app_info.h"
 #else
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -252,20 +253,18 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
 
 #if BUILDFLAG(IS_ANDROID)
   std::string os_info = AndroidAboutAppInfo::GetOsInfo();
-  os_info += "; " + base::NumberToString(
-                        base::android::BuildInfo::GetInstance()->sdk_int());
-  std::string code_name(base::android::BuildInfo::GetInstance()->codename());
+  os_info +=
+      "; " + base::NumberToString(base::android::android_info::sdk_int());
+  std::string code_name(base::android::android_info::codename());
   os_info += "; " + code_name;
   html_source->AddString(version_ui::kOSVersion, os_info);
   html_source->AddString(
       version_ui::kTargetSdkVersion,
-      base::NumberToString(
-          base::android::BuildInfo::GetInstance()->target_sdk_version()));
+      base::NumberToString(base::android::apk_info::target_sdk_version()));
   html_source->AddString(version_ui::kGmsVersion,
                          AndroidAboutAppInfo::GetGmsInfo());
-  html_source->AddString(
-      version_ui::kVersionCode,
-      base::android::BuildInfo::GetInstance()->package_version_code());
+  html_source->AddString(version_ui::kVersionCode,
+                         base::android::apk_info::package_version_code());
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

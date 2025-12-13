@@ -5,6 +5,6 @@
   [
     MeasureAs=SharedStorageAPI_SharedStorage_DOMReference,
     SecureContext,
-    RaisesException
+    RaisesException, DeprecateAs=SharedStorageAPIAll
   ] readonly attribute SharedStorage sharedStorage;
 };

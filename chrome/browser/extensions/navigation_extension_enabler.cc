@@ -8,10 +8,14 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

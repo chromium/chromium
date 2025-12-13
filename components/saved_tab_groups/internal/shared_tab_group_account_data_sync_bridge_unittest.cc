@@ -11,7 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/saved_tab_groups/test_support/extended_shared_tab_group_account_data_specifics.pb.h"
+#include "components/data_sharing/test_support/extended_shared_tab_group_account_data_specifics.pb.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/base/features.h"
@@ -28,10 +28,10 @@ namespace tab_groups {
 namespace {
 
 using base::test::EqualsProto;
+using syncer::CollaborationId;
 using testing::_;
 using testing::DefaultValue;
 using testing::Eq;
-using testing::Invoke;
 using testing::Matcher;
 using testing::Not;
 using testing::Return;
@@ -212,9 +212,9 @@ class SharedTabGroupAccountDataSyncBridgeTest : public testing::Test {
 
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-    EXPECT_CALL(processor_, ModelReadyToSync).WillOnce(Invoke([&]() {
+    EXPECT_CALL(processor_, ModelReadyToSync).WillOnce([&]() {
       quit_closure.Run();
-    }));
+    });
 
     if (!model_) {
       model_ = std::make_unique<SavedTabGroupModel>();

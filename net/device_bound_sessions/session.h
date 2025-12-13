@@ -14,6 +14,7 @@
 #include "net/base/backoff_entry.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/cookie_craving.h"
+#include "net/device_bound_sessions/dbsc_request.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_inclusion_rules.h"
 #include "net/device_bound_sessions/session_key.h"
@@ -21,9 +22,8 @@
 #include "url/gurl.h"
 
 namespace net {
-class URLRequest;
 class FirstPartySetMetadata;
-}
+}  // namespace net
 
 namespace net::device_bound_sessions {
 
@@ -61,9 +61,16 @@ class NET_EXPORT Session {
 
   const KeyIdOrError& unexportable_key_id() const { return key_id_or_error_; }
 
-  bool ShouldDeferRequest(
-      URLRequest* request,
-      const FirstPartySetMetadata& first_party_set_metadata) const;
+  // Return whether `request` is in-scope for this session.
+  bool IsInScope(DbscRequest& request);
+
+  // Returns the minimum remaining lifetime over all the bound cookies
+  // on `request`. If any cookie is missing, the lifetime will be
+  // zero. If no cookies would be included on the request, the lifetime
+  // will be `base::TimeDelta::Max()`
+  base::TimeDelta MinimumBoundCookieLifetime(
+      DbscRequest& request,
+      const FirstPartySetMetadata& first_party_set_metadata);
 
   const Id& id() const { return id_; }
 
@@ -80,6 +87,10 @@ class NET_EXPORT Session {
   bool should_defer_when_expired() const { return should_defer_when_expired_; }
 
   const std::vector<CookieCraving>& cookies() const { return cookie_cravings_; }
+
+  bool attempted_proactive_refresh_since_last_success() const {
+    return attempted_proactive_refresh_since_last_success_;
+  }
 
   bool IsEqualForTesting(const Session& other) const;
 
@@ -107,8 +118,16 @@ class NET_EXPORT Session {
   bool ShouldBackoff() const;
 
   // Inform the session about a refresh so it can decide whether to
-  // enter backoff mode.
-  void InformOfRefreshResult(SessionError::ErrorType error_type);
+  // ignore future opportunities to refresh.
+  void InformOfRefreshResult(bool was_proactive,
+                             SessionError::ErrorType error_type);
+
+  // Returns whether `request` would be allowed to set any bound
+  // cookies. This is a prerequisite for certain kinds of changes to
+  // session config.
+  bool CanSetBoundCookie(
+      DbscRequest& request,
+      const FirstPartySetMetadata& first_party_set_metadata) const;
 
   const url::Origin& origin() const { return inclusion_rules_.origin(); }
 
@@ -120,6 +139,11 @@ class NET_EXPORT Session {
       std::vector<std::string> allowed_refresh_initiators) {
     allowed_refresh_initiators_ = std::move(allowed_refresh_initiators);
   }
+
+  std::optional<base::Time> TakeLastProactiveRefreshOpportunity();
+
+  std::optional<base::TimeDelta>
+  TakeLastProactiveRefreshOpportunityMinimumCookieLifetime();
 
  private:
   Session(Id id, SessionInclusionRules inclusion_rules, GURL refresh);
@@ -173,6 +197,14 @@ class NET_EXPORT Session {
   net::BackoffEntry backoff_;
   // Host patterns for initiators allowed to trigger a refresh.
   std::vector<std::string> allowed_refresh_initiators_;
+
+  // Used for histogram logging related to the value of proactive
+  // refresh.
+  std::optional<base::Time> last_proactive_refresh_opportunity_;
+  std::optional<base::TimeDelta>
+      last_proactive_refresh_opportunity_minimum_cookie_lifetime_;
+
+  bool attempted_proactive_refresh_since_last_success_ = false;
 };
 
 }  // namespace net::device_bound_sessions

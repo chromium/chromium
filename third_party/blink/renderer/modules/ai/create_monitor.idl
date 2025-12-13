@@ -8,8 +8,7 @@
 
 [
   Exposed=(Window,Worker),
-  SecureContext,
-  RuntimeEnabled=BuiltInAIAPI
+  SecureContext
 ]
 interface CreateMonitor : EventTarget {
   attribute EventHandler ondownloadprogress;

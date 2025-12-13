@@ -80,10 +80,9 @@ class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
   // https://w3c.github.io/media-source/#sourcebuffer-coded-frame-eviction
   bool EvictCodedFrames(base::TimeDelta media_time, size_t newDataSize);
 
-  void OnMemoryPressure(
-      base::TimeDelta media_time,
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level,
-      bool force_instant_gc);
+  void OnMemoryPressure(base::TimeDelta media_time,
+                        base::MemoryPressureLevel memory_pressure_level,
+                        bool force_instant_gc);
 
   // Signal to the stream that duration has changed to |duration|.
   void OnSetDuration(base::TimeDelta duration);
@@ -401,11 +400,6 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   [[nodiscard]] bool EvictCodedFrames(const std::string& id,
                                       base::TimeDelta currentMediaTime,
                                       size_t newDataSize);
-
-  void OnMemoryPressure(
-      base::TimeDelta currentMediaTime,
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level,
-      bool force_instant_gc);
 
   // Returns the current presentation duration.
   double GetDuration();

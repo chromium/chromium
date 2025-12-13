@@ -197,6 +197,10 @@ bool RenderMediaClient::IsSupportedBitstreamAudioCodec(
   return GetContentClient()->renderer()->IsSupportedBitstreamAudioCodec(codec);
 }
 
+bool RenderMediaClient::ShouldSuppressAudioTracks() {
+  return GetContentClient()->renderer()->ShouldSuppressAudioTracks();
+}
+
 std::optional<::media::AudioRendererAlgorithmParameters>
 RenderMediaClient::GetAudioRendererAlgorithmParameters(
     media::AudioParameters audio_parameters) {

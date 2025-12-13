@@ -4,15 +4,16 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.mergeTabsToDest;
+
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetMediator.TabGroupListBottomSheetRowMergeOperation;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -30,7 +31,7 @@ import java.util.Objects;
  * TabGroupSyncService} as its primary source of truth.
  */
 @NullMarked
-class TabGroupListBottomSheetRowMediator implements TabGroupListBottomSheetRowMergeOperation {
+class TabGroupListBottomSheetRowMediator {
     private final SavedTabGroup mSavedTabGroup;
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;

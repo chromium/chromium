@@ -67,13 +67,13 @@ class InstanceIDAndroid : public InstanceID {
   // Methods called from Java via JNI:
   void DidGetID(JNIEnv* env,
                 jint request_id,
-                const base::android::JavaParamRef<jstring>& jid);
+                const base::android::JavaRef<jstring>& jid);
   void DidGetCreationTime(JNIEnv* env,
                           jint request_id,
                           jlong creation_time_unix_ms);
   void DidGetToken(JNIEnv* env,
                    jint request_id,
-                   const base::android::JavaParamRef<jstring>& jtoken);
+                   const base::android::JavaRef<jstring>& jtoken);
   void DidDeleteToken(JNIEnv* env,
                       jint request_id,
                       jboolean success);

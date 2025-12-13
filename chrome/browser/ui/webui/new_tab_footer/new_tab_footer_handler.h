@@ -21,6 +21,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
+class NewTabPageFeaturePromoHelper;
+namespace ui {
+class ThemeProvider;
+}  // namespace ui
 
 class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
                             public extensions::ExtensionRegistryObserver,
@@ -50,6 +54,7 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
   void OpenManagementPage() override;
   void OpenUrlInCurrentTab(const GURL& url) override;
   void ShowContextMenu(const gfx::Point& point) override;
+  void NotifyCustomizationButtonVisible() override;
 
   // Returns the bitmap representation of the management logo.
   // Exposed for testing only.
@@ -83,6 +88,7 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
   const raw_ptr<content::WebContents> web_contents_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<const ui::ThemeProvider> theme_provider_;
+  std::unique_ptr<NewTabPageFeaturePromoHelper> feature_promo_helper_;
   PrefChangeRegistrar profile_pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   GURL last_source_url_;

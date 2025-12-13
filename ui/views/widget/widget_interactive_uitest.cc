@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -36,7 +37,7 @@
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -1691,6 +1692,16 @@ TEST_F(DesktopWidgetTestInteractive,
 }
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // BUILDFLAG(ENABLE_DESKTOP_AURA)
+
+// Asserts the Widget's NativeView remains valid after the Widget has been
+// closed but before the Widget is destroyed.
+TEST_F(WidgetTestInteractive, NativeViewRemainsValidPostClose) {
+  WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
+  EXPECT_TRUE(toplevel->GetNativeView());
+  toplevel->Close();
+  EXPECT_TRUE(toplevel->IsClosed());
+  EXPECT_TRUE(toplevel->GetNativeView());
+}
 
 namespace {
 

@@ -21,8 +21,10 @@ const WrapperTypeInfo frozen_array_wrapper_type_info_{
     nullptr,  // install_context_dependent_props_func
     "FrozenArray",
     nullptr,  // parent_class
-    kDOMWrappersTag,
-    kDOMWrappersTag,
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kFrozenArrayTag),
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kFrozenArrayTag),
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kNoInternalFieldClassId,
     WrapperTypeInfo::kIdlOtherType,
@@ -34,20 +36,6 @@ const WrapperTypeInfo frozen_array_wrapper_type_info_{
 // FrozenArrayBase::wrapper_type_info_ manually here.
 const WrapperTypeInfo& FrozenArrayBase::wrapper_type_info_ =
     frozen_array_wrapper_type_info_;
-
-v8::Local<v8::Value> FrozenArrayBase::ToV8(ScriptState* script_state) const {
-  return const_cast<FrozenArrayBase*>(this)->ToV8(script_state);
-}
-
-v8::Local<v8::Value> FrozenArrayBase::ToV8(ScriptState* script_state) {
-  v8::Local<v8::Object> wrapper;
-  if (DOMDataStore::GetWrapper(script_state, this).ToLocal(&wrapper))
-      [[likely]] {
-    return wrapper;
-  }
-
-  return Wrap(script_state);
-}
 
 v8::Local<v8::Value> FrozenArrayBase::Wrap(ScriptState* script_state) {
   DCHECK(!DOMDataStore::ContainsWrapper(script_state->GetIsolate(), this));

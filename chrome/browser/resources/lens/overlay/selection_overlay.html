@@ -54,8 +54,6 @@
     pointer-events: none;
   }
 
-  :host([simplified-selection-enabled]) #selectTextContextMenuItem,
-  :host(:not([simplified-selection-enabled])) #copyDetectedTextContextMenuItem,
   :host([suppress-copy-and-save-as-image]) .copy-as-image-context-menu-item,
   :host([suppress-copy-and-save-as-image]) .save-as-image-context-menu-item,
   :host(:not([enable-copy-as-image])) .copy-as-image-context-menu-item,
@@ -75,10 +73,6 @@
 
   :host([translate-mode-enabled]) #objectSelectionLayer {
     visibility: hidden;
-  }
-
-  #textSelectionLayer {
-    z-index: 0;
   }
 
   :host([translate-mode-enabled]) #regionSelectionLayer {
@@ -104,6 +98,10 @@
 
   :host([translate-mode-enabled]) #selectionElements {
     background-color: transparent;
+  }
+
+  :host([hide-background-image-canvas]) #backgroundImageCanvas {
+    visibility: hidden;
   }
 
   #selectionOverlay :not(#backgroundImageCanvas) {
@@ -161,7 +159,6 @@
     z-index: 6;
   }
 
-  :host(:not([is-back-to-page-enabled])) #closeButton,
   :host(:not([side-panel-opened])) #closeButton {
     display: none;
   }
@@ -240,6 +237,10 @@
     animation: scale-in 250ms cubic-bezier(0.2, 0, 0, 1);
     opacity: 1;
     visibility: visible;
+  }
+
+  :host(:not([enable-region-context-menu])) #selectedRegionContextMenu {
+    display: none;
   }
 
   .context-menu-item {
@@ -426,43 +427,13 @@
       selection-overlay-rect="[[selectionOverlayRect]]"
       border-glow-enabled="[[enableBorderGlow]]"
     ></region-selection>
-    <template is="dom-if" if="[[!simplifiedSelectionEnabled]]">
-      <lens-text-layer
-        id="textSelectionLayer"
-        selection-overlay-rect="[[selectionOverlayRect]]"
-      ></lens-text-layer>
-    </template>
-    <template is="dom-if" if="[[simplifiedSelectionEnabled]]">
-      <lens-simplified-text-layer selection-overlay-rect="[[selectionOverlayRect]]">
-      </lens-simplified-text-layer>
-    </template>
+    <lens-simplified-text-layer
+      id="textLayer"
+      selection-overlay-rect="[[selectionOverlayRect]]">
+    </lens-simplified-text-layer>
   </div>
   <div id="initialFlashScrim"></div>
   <div id="contextMenuOverlay">
-    <div
-      id="selectedTextContextMenu"
-      class="context-menu"
-      role="menu"
-      style$="[[getContextMenuStyle(selectedTextContextMenuX,
-                                      selectedTextContextMenuY)]]"
-      on-pointerenter="handlePointerEnterButton"
-      on-pointerleave="handlePointerLeaveButton"
-    >
-      <div
-        class="context-menu-item" role="menuitem" tabindex="0"
-        on-pointerup="handleCopy" on-keyup="handleCopy">
-        <span class="menu-item-icon copy"></span>
-        <span class="menu-item-label">$i18n{copy}</span>
-      </div>
-      <div
-        class="context-menu-item translate-context-menu-item"
-        role="menuitem" tabindex="0" on-pointerup="handleTranslate"
-        on-keyup="handleTranslate"
-      >
-        <span class="menu-item-icon translate"></span>
-        <span class="menu-item-label">$i18n{translate}</span>
-      </div>
-    </div>
     <div
       id="selectedRegionContextMenu"
       class="context-menu"
@@ -480,15 +451,6 @@
       >
         <span class="menu-item-icon copy"></span>
         <span class="menu-item-label">$i18n{copyText}</span>
-      </div>
-      <div
-        id="selectTextContextMenuItem"
-        class="context-menu-item detected-text-context-menu-option"
-        role="menuitem" tabindex="0" on-pointerup="handleSelectText"
-        on-keyup="handleSelectText"
-      >
-        <span class="menu-item-icon text"></span>
-        <span class="menu-item-label">$i18n{selectText}</span>
       </div>
       <div
         class="context-menu-item translate-context-menu-item detected-text-context-menu-option"

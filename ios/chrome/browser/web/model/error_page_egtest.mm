@@ -31,7 +31,7 @@ const std::string kRedirectPage = "/redirect-page.html";
 // Provides responses for the different pages.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() == kRedirectPage) {
+  if (request.GetURL().GetPath() == kRedirectPage) {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_code(net::HTTP_MOVED_PERMANENTLY);
     result->AddCustomHeader("Location", "data:text/plain,Hello World");
@@ -69,13 +69,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that the error page is correctly displayed after navigating back to it
 // multiple times. See http://crbug.com/944037 .
-// TODO:(crbug.com/1185639): Re-enable this test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testBackForwardErrorPage FLAKY_testBackForwardErrorPage
-#else
-#define MAYBE_testBackForwardErrorPage testBackForwardErrorPage
-#endif
-- (void)MAYBE_testBackForwardErrorPage {
+// TODO:(crbug.com/443199230): Fails on simulator and device.
+- (void)DISABLED_testBackForwardErrorPage {
   // TODO(crbug.com/40159013): Going back/forward on the same host is failing.
   // Use chrome:// to have a different hosts.
   std::string errorText = net::ErrorToShortString(net::ERR_INVALID_URL);

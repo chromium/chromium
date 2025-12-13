@@ -5,7 +5,6 @@
 #ifndef NET_BASE_NETWORK_CHANGE_NOTIFIER_PASSIVE_H_
 #define NET_BASE_NETWORK_CHANGE_NOTIFIER_PASSIVE_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
@@ -39,7 +38,7 @@ class NET_EXPORT NetworkChangeNotifierPassive : public NetworkChangeNotifier {
   // These methods are used to notify this object that a network property has
   // changed. These must be called from the thread that owns this object.
   void OnDNSChanged();
-  void OnIPAddressChanged();
+  void OnIPAddressChanged(IPAddressChangeType change_type);
   void OnConnectionChanged(
       NetworkChangeNotifier::ConnectionType connection_type);
   void OnConnectionSubtypeChanged(

@@ -459,11 +459,10 @@ TEST_F(NigoriDataTypeProcessorTest, ShouldInvokeSyncStartCallback) {
   base::MockCallback<DataTypeControllerDelegate::StartCallback> start_callback;
   std::unique_ptr<DataTypeActivationResponse> captured_response;
   EXPECT_CALL(start_callback, Run)
-      .WillOnce(testing::Invoke(
-          [&captured_response](
-              std::unique_ptr<DataTypeActivationResponse> response) {
-            captured_response = std::move(response);
-          }));
+      .WillOnce([&captured_response](
+                    std::unique_ptr<DataTypeActivationResponse> response) {
+        captured_response = std::move(response);
+      });
   processor()->OnSyncStarting(request, start_callback.Get());
   ASSERT_THAT(captured_response, NotNull());
   EXPECT_EQ(kCacheGuid, captured_response->data_type_state.cache_guid());

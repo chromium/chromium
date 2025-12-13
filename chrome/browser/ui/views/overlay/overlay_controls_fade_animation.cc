@@ -14,7 +14,7 @@ constexpr base::TimeDelta kDuration = base::Milliseconds(250);
 }  // namespace
 
 OverlayControlsFadeAnimation::OverlayControlsFadeAnimation(
-    views::View& controls,
+    const std::vector<raw_ptr<views::View>>& controls,
     Type type)
     : gfx::LinearAnimation(kDuration, kDefaultFrameRate, nullptr),
       controls_(controls),
@@ -24,5 +24,8 @@ OverlayControlsFadeAnimation::~OverlayControlsFadeAnimation() = default;
 
 void OverlayControlsFadeAnimation::AnimateToState(double state) {
   const double opacity = (type_ == Type::kToShown) ? state : (1.0 - state);
-  controls_->layer()->SetOpacity(opacity);
+  for (auto& control : controls_) {
+    control->SetVisible(opacity != 0);
+    control->layer()->SetOpacity(opacity);
+  }
 }

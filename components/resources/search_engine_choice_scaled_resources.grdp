@@ -2,6 +2,5 @@
 <grit-part>
   <if expr="_google_chrome">
     <structure type="chrome_scaled_image" name="IDR_GOOGLE_COM_PNG" file="google_chrome/google_search_logo.png" />
-    <structure type="chrome_scaled_image" name="IDR_SEARCH_ENGINE_GOOGLE_IMAGE" file="google_chrome/google_search_logo.png" />
   </if>
 </grit-part>

@@ -16,38 +16,32 @@ namespace {
 std::atomic<bool> s_is_eligible_for_throttle_main_frame_to_60hz = false;
 }  // namespace
 
-// When enabled, this forces composited textures for SurfaceLayerImpls to be
-// aligned to the pixel grid. Lack of alignment can lead to blur, noticeably so
-// in text. https://crbug.com/359279545
-BASE_FEATURE(kAlignSurfaceLayerImplToPixelGrid,
-             "AlignSurfaceLayerImplToPixelGrid",
+// When enabled, this forces raster translation to be computed using screen
+// space and draw transforms scaled by external page scale factor.
+// Whithout this, text in OOPIFs that isn't aligned to the pixel grid may appear
+// blurry. https://crbug.com/399478935
+BASE_FEATURE(kComputeRasterTranslateForExternalScale,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether the compositor should attempt to sync with the scroll handlers before
 // submitting a frame.
 BASE_FEATURE(kSynchronizedScrolling,
-             "SynchronizedScrolling",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
 #else
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kMainRepaintScrollPrefersNewContent,
-             "MainRepaintScrollPrefersNewContent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDeferImplInvalidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDeferImplInvalidation,
-             "DeferImplInvalidation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
+// TODO(crbug.com/446920991): Reduce back to 1 frame delay once we have a
+// separate delay for handling latency sensitive input.
 const base::FeatureParam<int> kDeferImplInvalidationFrames{
-    &kDeferImplInvalidation, "frames", 1};
+    &kDeferImplInvalidation, "frames", 4};
 
 // Note that kUseDMSAAForTiles only controls vulkan launch on android. We will
 // be using a separate flag to control the launch on GL.
 BASE_FEATURE(kUseDMSAAForTiles,
-             "UseDMSAAForTiles",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -55,9 +49,7 @@ BASE_FEATURE(kUseDMSAAForTiles,
 #endif
 );
 
-BASE_FEATURE(kReclaimPrepaintTilesWhenIdle,
-             "ReclaimPrepaintTilesWhenIdle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReclaimPrepaintTilesWhenIdle, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This saves memory on all platforms, but while on Android savings are
 // significant (~10MiB or more of foreground memory), on desktop they were
@@ -65,45 +57,30 @@ BASE_FEATURE(kReclaimPrepaintTilesWhenIdle,
 //
 // Disabled 04/2024 as it regresses checkerboarding metrics. Feature kept around
 // to find a better balance between checkerboarding and memory.
-BASE_FEATURE(kSmallerInterestArea,
-             "SmallerInterestArea",
-             base::FEATURE_DISABLED_BY_DEFAULT
-);
+BASE_FEATURE(kSmallerInterestArea, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kInterestAreaSizeInPixels{
     &kSmallerInterestArea, "size_in_pixels", kDefaultInterestAreaSizeInPixels};
 
-BASE_FEATURE(kReclaimOldPrepaintTiles,
-             "ReclaimOldPrepaintTiles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReclaimOldPrepaintTiles, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kReclaimDelayInSeconds{&kSmallerInterestArea,
                                                      "reclaim_delay_s", 30};
 
-BASE_FEATURE(kEvictionThrottlesDraw,
-             "EvictionThrottlesDraw",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTileOOMFreezeMitigation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClearCanvasResourcesInBackground,
-             "ClearCanvasResourcesInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWaitForLateScrollEvents,
-             "WaitForLateScrollEvents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWaitForLateScrollEvents, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<double> kWaitForLateScrollEventsDeadlineRatio{
     &kWaitForLateScrollEvents, "deadline_ratio", 0.333};
 
-BASE_FEATURE(kDontAlwaysPushPictureLayerImpls,
-             "DontAlwaysPushPictureLayerImpls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPreserveDiscardableImageMapQuality,
-             "PreserveDiscardableImageMapQuality",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCCSlimming, "CCSlimming", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCCSlimming, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsCCSlimmingEnabled() {
   static const bool enabled = base::FeatureList::IsEnabled(kCCSlimming);
@@ -124,50 +101,47 @@ const base::FeatureParam<std::string> kScrollEventDispatchMode(
     "mode",
     kScrollEventDispatchModeDispatchScrollEventsUntilDeadline);
 
-BASE_FEATURE(kTreesInViz, "TreesInViz", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTreesInViz, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTreeAnimationsInViz,
              "kTreeAnimationsInViz",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendExplicitDecodeRequestsImmediately,
-             "SendExplicitDecodeRequestsImmediately",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewContentForCheckerboardedScrolls,
-             "NewContentForCheckerboardedScrolls",
              base::FEATURE_ENABLED_BY_DEFAULT);
+constexpr const char kNewContentForCheckerboardedScrollsPerScroll[] =
+    "per_scroll";
+constexpr const char kNewContentForCheckerboardedScrollsPerFrame[] =
+    "per_frame";
+const base::FeatureParam<std::string> kNewContentForCheckerboardedScrollsParam(
+    &kNewContentForCheckerboardedScrolls,
+    "mode",
+    kNewContentForCheckerboardedScrollsPerScroll);
 
-BASE_FEATURE(kAllowLCDTextWithFilter,
-             "AllowLCDTextWithFilter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowLCDTextWithFilter, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMultipleImplOnlyScrollAnimations,
-             "MultipleImplOnlyScrollAnimations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool MultiImplOnlyScrollAnimationsSupported() {
-  return base::FeatureList::IsEnabled(
-      features::kMultipleImplOnlyScrollAnimations);
-}
+BASE_FEATURE(kPreventDuplicateImageDecodes, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRenderSurfacePixelAlignment,
-             "RenderSurfacePixelAlignment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kInitImageDecodeLastUseTime, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPreventDuplicateImageDecodes,
-             "PreventDuplicateImageDecodes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kInitImageDecodeLastUseTime,
-             "InitImageDecodeLastUseTime",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC,
-             "DynamicSafeAreaInsetsSupportedByCC",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
+// Enabled on Android, after a field trial showed improvements.
 BASE_FEATURE(kThrottleMainFrameTo60Hz,
-             "ThrottleMainFrameTo60Hz",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kThrottleMainFrameTo60HzWebView,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kBoostFrameRateForUrgentMainFrame,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 void SetIsEligibleForThrottleMainFrameTo60Hz(bool is_eligible) {
@@ -181,34 +155,22 @@ bool IsEligibleForThrottleMainFrameTo60Hz() {
 }
 
 BASE_FEATURE(kViewTransitionCaptureAndDisplay,
-             "ViewTransitionCaptureAndDisplay",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kViewTransitionFloorTransform,
-             "ViewTransitionFloorTransform",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kViewTransitionFloorTransform, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The feature is the enabled for the cc infrastructure to set the frame rate
 // throttles from the main thread.
 // The experiment will be controlled by the feature flag
 // RenderBlockingFullFrameRate. Enabling the feature will not introduce any
 // behavioral change by itself.
-BASE_FEATURE(kRenderThrottleFrameRate,
-             "RenderThrottleFrameRate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRenderThrottleFrameRate, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kRenderThrottledFrameIntervalHz{
     &kRenderThrottleFrameRate, "render-throttled-frame-interval-hz", 30};
 
-BASE_FEATURE(kFastPathNoRaster,
-             "FastPathNoRaster",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kExportFrameTimingAfterFrameDone,
-             "ExportFrameTimingAfterFrameDone",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFastPathNoRaster, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInternalBeginFrameSourceOnManyDidNotProduceFrame,
-             "InternalBeginFrameSourceOnManyDidNotProduceFrame",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // By default, internal begin frame source will be used when 4 consecutive
@@ -219,47 +181,91 @@ const base::FeatureParam<int>
         &kInternalBeginFrameSourceOnManyDidNotProduceFrame,
         "num_did_not_produce_frame_before_internal_begin_frame_source", 4};
 
-BASE_FEATURE(kUseLayerListsByDefault,
-             "UseLayerListsByDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseLayerListsByDefault, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProgrammaticScrollAnimationOverride,
-             "ProgrammaticScrollAnimationOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Default to `gfx::CubicBezierTimingFunction::EaseType::EASE_IN_OUT`.
-BASE_FEATURE_PARAM(double,
-                   kCubicBezierX1,
-                   &kProgrammaticScrollAnimationOverride,
-                   "cubic_bezier_x1",
-                   0.42);
-BASE_FEATURE_PARAM(double,
-                   kCubicBezierY1,
-                   &kProgrammaticScrollAnimationOverride,
-                   "cubic_bezier_y1",
-                   0.0);
-BASE_FEATURE_PARAM(double,
-                   kCubicBezierX2,
-                   &kProgrammaticScrollAnimationOverride,
-                   "cubic_bezier_x2",
-                   0.58);
-BASE_FEATURE_PARAM(double,
-                   kCubicBezierY2,
-                   &kProgrammaticScrollAnimationOverride,
-                   "cubic_bezier_y2",
-                   1.0);
+#define PROGRAMMATIC_SCROLL_ANIMATION_CURVE(x1, y1, x2, y2, duration_ms)       \
+  BASE_FEATURE_PARAM(double, kCubicBezierX1,                                   \
+                     &kProgrammaticScrollAnimationOverride, "cubic_bezier_x1", \
+                     x1);                                                      \
+  BASE_FEATURE_PARAM(double, kCubicBezierY1,                                   \
+                     &kProgrammaticScrollAnimationOverride, "cubic_bezier_y1", \
+                     y1);                                                      \
+  BASE_FEATURE_PARAM(double, kCubicBezierX2,                                   \
+                     &kProgrammaticScrollAnimationOverride, "cubic_bezier_x2", \
+                     x2);                                                      \
+  BASE_FEATURE_PARAM(double, kCubicBezierY2,                                   \
+                     &kProgrammaticScrollAnimationOverride, "cubic_bezier_y2", \
+                     y2);                                                      \
+  BASE_FEATURE_PARAM(base::TimeDelta, kMaxAnimationDuration,                   \
+                     &kProgrammaticScrollAnimationOverride,                    \
+                     "max_animation_duration",                                 \
+                     base::Milliseconds(duration_ms))
+// Default to `gfx::CubicBezierTimingFunction::EaseType::EASE_IN_OUT` on
+// Android. On other platforms, use the tweaked cubic bezier curve.
+#if BUILDFLAG(IS_ANDROID)
+PROGRAMMATIC_SCROLL_ANIMATION_CURVE(0.42, 0.0, 0.58, 1.0, 700);
+#else
+PROGRAMMATIC_SCROLL_ANIMATION_CURVE(0.4, 0.0, 0.0, 1.0, 1500);
+#endif
+#undef PROGRAMMATIC_SCROLL_ANIMATION_CURVE
 
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kMaxAnimtionDuration,
-                   &kProgrammaticScrollAnimationOverride,
-                   "max_animation_duration",
-                   base::Milliseconds(700));
-
-BASE_FEATURE(kSlimDirectReceiverIpc,
-             "SlimDirectReceiverIpc",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSlimDirectReceiverIpc, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOverscrollBehaviorRespectedOnAllScrollContainers,
-             "OverscrollBehaviorRespectedOnAllScrollContainers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOverscrollEffectOnNonRootScrollers,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSkipFinishDuringReleaseLayerTreeFrameSink,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kScrollJankV4Metric, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(double,
+                   kScrollJankV4MetricStabilityCorrection,
+                   &kScrollJankV4Metric,
+                   "stability_correction",
+                   0.05);
+
+BASE_FEATURE_PARAM(double,
+                   kScrollJankV4MetricDiscountFactor,
+                   &kScrollJankV4Metric,
+                   "discount_factor",
+                   0.01);
+
+BASE_FEATURE_PARAM(double,
+                   kScrollJankV4MetricFastScrollContinuityThreshold,
+                   &kScrollJankV4Metric,
+                   "fast_scroll_continuity_threshold_pixels",
+                   3.0);
+
+BASE_FEATURE_PARAM(double,
+                   kScrollJankV4MetricFlingContinuityThreshold,
+                   &kScrollJankV4Metric,
+                   "fling_continuity_threshold_pixels",
+                   0.2);
+
+BASE_FEATURE(kHandleNonDamagingInputsInScrollJankV4Metric,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool,
+                   kCountNonDamagingFramesTowardsHistogramFrameCount,
+                   &kHandleNonDamagingInputsInScrollJankV4Metric,
+                   "count_non_damaging_frames_towards_histogram_frame_count",
+                   false);
+
+BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUnlockDuringGpuImageOperations,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMainIdleBypassScheduler, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

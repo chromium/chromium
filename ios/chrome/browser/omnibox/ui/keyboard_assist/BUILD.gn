@@ -43,6 +43,7 @@ source_set("keyboard_assist") {
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/voice/model",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",

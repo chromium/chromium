@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button_factory.h"
+
 @class PrimaryToolbarViewController;
 
 // Protocol implemented by the delegate of the PrimaryToolbarViewController.
@@ -30,6 +32,9 @@
 
 - (void)viewController:(PrimaryToolbarViewController*)viewController
     tabGroupIndicatorVisibilityUpdated:(BOOL)visible;
+
+// The style to use for the cancel button.
+- (ToolbarCancelButtonStyle)styleForCancelButtonInToolbar;
 
 @end
 

@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 
 #import <UIKit/UIKit.h>
 
+#import <array>
+
 #import "base/metrics/histogram_macros.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -30,21 +26,11 @@
 #import "ui/base/page_transition_types.h"
 
 TabUsageRecorderBrowserAgent::TabUsageRecorderBrowserAgent(Browser* browser)
-    : BrowserUserData(browser),
-      restore_start_time_(base::TimeTicks::Now()),
-      web_state_list_(browser->GetWebStateList()),
-      prerender_service_(
-          PrerenderServiceFactory::GetForProfile(browser->GetProfile())) {
-  browser->AddObserver(this);
+    : BrowserUserData(browser), restore_start_time_(base::TimeTicks::Now()) {
+  DCHECK(browser_->GetWebStateList()->empty());
+  web_state_list_observation_.Observe(browser_->GetWebStateList());
 
-  DCHECK(web_state_list_);
-  web_state_list_->AddObserver(this);
-  for (int index = 0; index < web_state_list_->count(); ++index) {
-    web::WebState* web_state = web_state_list_->GetWebStateAt(index);
-    web_state->AddObserver(this);
-  }
-
-  ProfileIOS* profile = browser->GetProfile();
+  ProfileIOS* profile = browser_->GetProfile();
   session_restoration_service_observation_.Observe(
       SessionRestorationServiceFactory::GetForProfile(profile));
 
@@ -69,54 +55,18 @@ TabUsageRecorderBrowserAgent::TabUsageRecorderBrowserAgent(Browser* browser)
 }
 
 TabUsageRecorderBrowserAgent::~TabUsageRecorderBrowserAgent() {
-  DCHECK(!application_foregrounding_observer_);
-  DCHECK(!application_backgrounding_observer_);
-}
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:application_backgrounding_observer_];
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:application_foregrounding_observer_];
 
-void TabUsageRecorderBrowserAgent::BrowserDestroyed(Browser* browser) {
-  DCHECK_EQ(browser->GetWebStateList(), web_state_list_);
-  for (int index = 0; index < web_state_list_->count(); ++index) {
-    web::WebState* web_state = web_state_list_->GetWebStateAt(index);
-    web_state->RemoveObserver(this);
-  }
-
-  web_state_list_->RemoveObserver(this);
-  browser->RemoveObserver(this);
-  session_restoration_service_observation_.Reset();
-  if (application_backgrounding_observer_) {
-    [[NSNotificationCenter defaultCenter]
-        removeObserver:application_backgrounding_observer_];
-    application_backgrounding_observer_ = nil;
-  }
-
-  if (application_foregrounding_observer_) {
-    [[NSNotificationCenter defaultCenter]
-        removeObserver:application_foregrounding_observer_];
-    application_foregrounding_observer_ = nil;
-  }
-  web_state_list_ = nullptr;
+  application_foregrounding_observer_ = nil;
+  application_backgrounding_observer_ = nil;
 }
 
 void TabUsageRecorderBrowserAgent::InitialRestoredTabs(
     web::WebState* active_web_state,
     const std::vector<web::WebState*>& web_states) {
-#if !defined(NDEBUG)
-  // Debugging check to ensure this is called at most once per run.
-  // Specifically, this function is called in either of two cases:
-  // 1. For a normal (not post-crash launch), during the tab model's creation.
-  // It assumes that the tab model will not be deleted and recreated during the
-  // application's lifecycle even if the app is backgrounded/foregrounded.
-  // 2. For a post-crash launch, when the session is restored.  In that case,
-  // the tab model will not have been created with existing tabs, so this
-  // function will not have been called during its creation.
-  static bool kColdStartTabsRecorded = false;
-  static dispatch_once_t once = 0;
-  dispatch_once(&once, ^{
-    DCHECK(kColdStartTabsRecorded == false);
-    kColdStartTabsRecorded = true;
-  });
-#endif
-
   // Do not set eviction reason on active tab since it will be reloaded without
   // being processed as a switch to the foreground tab.
   for (web::WebState* web_state : web_states) {
@@ -160,8 +110,7 @@ void TabUsageRecorderBrowserAgent::RecordTabSwitched(
 
   // Should never happen.  Keeping the check to ensure that the prerender logic
   // is never overlooked, should behavior at the tab_model level change.
-  DCHECK(!prerender_service_ ||
-         !prerender_service_->IsWebStatePrerendered(new_web_state));
+  DCHECK(!PrerenderTabHelper::FromWebState(new_web_state));
 
   tab_usage_recorder::TabStateWhenSelected web_state_state =
       ExtractWebStateState(new_web_state);
@@ -182,7 +131,7 @@ void TabUsageRecorderBrowserAgent::RecordTabSwitched(
 void TabUsageRecorderBrowserAgent::RecordPrimaryBrowserChange(
     bool primary_browser) {
   web::WebState* active_web_state =
-      web_state_list_ ? web_state_list_->GetActiveWebState() : nullptr;
+      browser_->GetWebStateList()->GetActiveWebState();
   if (primary_browser) {
     // User just came back to this tab model, so record a tab selection even
     // though the current tab was reselected.
@@ -280,7 +229,7 @@ void TabUsageRecorderBrowserAgent::RendererTerminated(
 
   UMA_HISTOGRAM_COUNTS_100(
       tab_usage_recorder::kRendererTerminationTotalTabCount,
-      web_state_list_->count());
+      browser_->GetWebStateList()->count());
 
   // Clear `termination_timestamps_` of timestamps older than
   // `kSecondsBeforeRendererTermination` ago.
@@ -385,8 +334,9 @@ void TabUsageRecorderBrowserAgent::RecordRestoreStartTime() {
 
 int TabUsageRecorderBrowserAgent::GetLiveWebStatesCount() const {
   int count = 0;
-  for (int index = 0; index < web_state_list_->count(); ++index) {
-    if (!web_state_list_->GetWebStateAt(index)->IsEvicted()) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  for (int index = 0; index < web_state_list->count(); ++index) {
+    if (!web_state_list->GetWebStateAt(index)->IsEvicted()) {
       ++count;
     }
   }
@@ -412,7 +362,7 @@ void TabUsageRecorderBrowserAgent::OnWebStateDestroyed(
     evicted_web_states_.erase(evicted_web_states_iter);
   }
 
-  web_state->RemoveObserver(this);
+  web_state_observations_.RemoveObservation(web_state);
 }
 
 bool TabUsageRecorderBrowserAgent::IsTransitionBetweenDesktopAndMobileUserAgent(
@@ -463,18 +413,18 @@ bool TabUsageRecorderBrowserAgent::ShouldRecordPageLoadStartForNavigation(
     return false;
   }
 
-  static const ui::PageTransition kRecordedPageTransitionTypes[] = {
-      ui::PAGE_TRANSITION_TYPED,
-      ui::PAGE_TRANSITION_LINK,
-      ui::PAGE_TRANSITION_GENERATED,
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-      ui::PAGE_TRANSITION_FORM_SUBMIT,
-      ui::PAGE_TRANSITION_KEYWORD,
-      ui::PAGE_TRANSITION_KEYWORD_GENERATED,
-  };
+  static constexpr auto kRecordedPageTransitionTypes =
+      std::to_array<ui::PageTransition>({
+          ui::PAGE_TRANSITION_TYPED,
+          ui::PAGE_TRANSITION_LINK,
+          ui::PAGE_TRANSITION_GENERATED,
+          ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+          ui::PAGE_TRANSITION_FORM_SUBMIT,
+          ui::PAGE_TRANSITION_KEYWORD,
+          ui::PAGE_TRANSITION_KEYWORD_GENERATED,
+      });
 
-  for (size_t i = 0; i < std::size(kRecordedPageTransitionTypes); ++i) {
-    const ui::PageTransition recorded_type = kRecordedPageTransitionTypes[i];
+  for (const ui::PageTransition recorded_type : kRecordedPageTransitionTypes) {
     if (ui::PageTransitionCoreTypeIs(transition, recorded_type)) {
       return true;
     }
@@ -549,18 +499,19 @@ void TabUsageRecorderBrowserAgent::WebStateListDidChange(
       const WebStateListChangeReplace& replace_change =
           change.As<WebStateListChangeReplace>();
       OnWebStateDestroyed(replace_change.replaced_web_state());
-      replace_change.inserted_web_state()->AddObserver(this);
+      web_state_observations_.AddObservation(
+          replace_change.inserted_web_state());
       break;
     }
     case WebStateListChange::Type::kInsert: {
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
       web::WebState* inserted_web_state = insert_change.inserted_web_state();
+      web_state_observations_.AddObservation(inserted_web_state);
       if (status.active_web_state_change()) {
         web_state_created_selected_ = inserted_web_state;
       }
 
-      inserted_web_state->AddObserver(this);
       break;
     }
     case WebStateListChange::Type::kGroupCreate:
@@ -596,10 +547,10 @@ void TabUsageRecorderBrowserAgent::SessionRestorationFinished(
   // Ignore the event if it does not correspond to the browser this
   // object is bound to (which can happen with the optimised session
   // storage code).
-  if (browser->GetWebStateList() != web_state_list_) {
+  if (browser != browser_) {
     return;
   }
 
-  InitialRestoredTabs(web_state_list_->GetActiveWebState(),
+  InitialRestoredTabs(browser_->GetWebStateList()->GetActiveWebState(),
                       restored_web_states);
 }

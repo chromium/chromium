@@ -48,7 +48,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
@@ -110,13 +109,12 @@ class PopupMenuMediatorTest : public PlatformTest {
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
-                            web::BrowserState,
-                            password_manager::MockPasswordStoreInterface>));
+        base::BindOnce(
+            &password_manager::BuildPasswordStoreInterface<
+                ProfileIOS, password_manager::MockPasswordStoreInterface>));
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::vector<scoped_refptr<ReadingListEntry>>()));
+        ReadingListModelTestingFactoryWithFakeStorage({}));
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
@@ -171,15 +169,17 @@ class PopupMenuMediatorTest : public PlatformTest {
     }
 
     // Set up the OverlayPresenter.
-    OverlayPresenter::FromBrowser(browser_.get(),
-                                  OverlayModality::kWebContentArea)
-        ->SetPresentationContext(&presentation_context_);
+    overlay_presenter_ = OverlayPresenter::FromBrowser(
+        browser_.get(), OverlayModality::kWebContentArea);
+    overlay_presenter_->SetPresentationContext(&presentation_context_);
   }
 
   void TearDown() override {
     // Explicitly disconnect the mediator so there won't be any WebStateList
     // observers when browser_ gets destroyed.
     [mediator_ disconnect];
+    overlay_presenter_->SetPresentationContext(nullptr);
+    overlay_presenter_ = nullptr;
     browser_.reset();
     EXPECT_OCMOCK_VERIFY((id)popup_menu_);
     EXPECT_OCMOCK_VERIFY((id)popup_menu_strict_);
@@ -307,13 +307,14 @@ class PopupMenuMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_env_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
+  raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
 
   FakeOverlayPresentationContext presentation_context_;
   PopupMenuMediator* mediator_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<ReadingListModel> reading_list_model_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
-  raw_ptr<web::FakeWebState> web_state_;
+  raw_ptr<web::FakeWebState, DanglingUntriaged> web_state_;
   std::unique_ptr<web::NavigationItem> navigation_item_;
   id popup_menu_;
   // Mock refusing all calls except -setPopupMenuItems:.

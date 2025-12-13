@@ -6,23 +6,16 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
-namespace {
-#if BUILDFLAG(IS_MAC)
-// Enables system audio loopback capture using the macOS Screen Capture Kit
-// framework, regardless of the system version.
-BASE_FEATURE(kMacSckSystemAudioLoopbackOverride,
-             "MacSckSystemAudioLoopbackOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-}  // namespace
-
 namespace features {
+
+#if BUILDFLAG(IS_WIN)
+// Enables application audio capture for getDisplayMedia (gDM) window capture in
+// Windows.
+BASE_FEATURE(kApplicationAudioCaptureWin, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables loading and using AAudio instead of OpenSLES on compatible devices,
@@ -30,24 +23,33 @@ namespace features {
 // as OpenSLES provides more accurate output latency on those devices.
 //
 // TODO(crbug.com/401365323): Remove this feature in the future.
-BASE_FEATURE(kUseAAudioDriver,
-             "UseAAudioDriver",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseAAudioDriver, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables loading and using AAudio instead of OpenSLES on compatible devices,
 // for audio input streams.
-BASE_FEATURE(kUseAAudioInput,
-             "UseAAudioInput",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseAAudioInput, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables selection of audio devices for each individual AAudio stream instead
 // of using communication streams and managing the system-wide communication
 // route. This is not fully reliable on all Android devices.
 //
-// Requires `UseAAudioDriver`, `UseAAudioInput`, and an Android API level >=
-// `AAUDIO_MIN_API`, otherwise it will have no effect.
+// Requires `UseAAudioDriver` and `UseAAudioInput`, otherwise it will have no
+// effect.
 BASE_FEATURE(kAAudioPerStreamDeviceSelection,
-             "AAudioPerStreamDeviceSelection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use buffer size from AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER for
+// optimal output frame size.
+BASE_FEATURE(kAlwaysUseAudioManagerOutputFramesPerBuffer,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the AudioDeviceListener, which listens for changes to the list of
+// audio devices exposed by the OS.
+BASE_FEATURE(kAndroidAudioDeviceListener, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use stereo channel layout for input stream parameters.
+// TODO(crbug.com/440210010): Remove when the experiment is done.
+BASE_FEATURE(kAudioStereoInputStreamParameters,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -57,42 +59,49 @@ BASE_FEATURE(kAAudioPerStreamDeviceSelection,
 // the WebAudio destination node is skipped. This allows the AudioService to
 // handle any necessary resampling, potentially reducing latency and overhead.
 BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
-             "WebAudioRemoveAudioDestinationResampler",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
 #else
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+// Enabling this feature will allow AudioManagerMac to generate AVFoundation
+// AudioOutputStreams instead of AUHALStreams in cases of multichannel audio.
+// MacOS will then "Spatialize" the audio for users on compatible Airpods. The
+// end result will give users the option to change modes on their Airpods (Off,
+// Fixed, Head Tracking).
+BASE_FEATURE(kMacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If this feature is enabled, and CATap is capturing the default output device,
+// the CATap implementation will handle default output device changes by
+// restarting the system audio capture. The changes we listen for are if
+// default output device is changed to another device, or if the sample rate of
+// the default output device is changed. If the feature is disabled, CATap will
+// keep capturing the same device when default output device is changed, and
+// will report an error if the sample rate is changed.
+BASE_FEATURE(kMacCatapRestartOnDeviceChange, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables application audio capture for getDisplayMedia (gDM) window capture in
+// macOS.
+BASE_FEATURE(kApplicationAudioCaptureMac, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace features
 
 namespace media {
-#if BUILDFLAG(IS_MAC)
-bool IsMacCatapSystemLoopbackCaptureSupported() {
-  return (base::mac::MacOSVersion() >= 14'02'00);
-}
 
-bool IsMacSckSystemLoopbackCaptureSupported() {
-  // Only supported on macOS 13.0+.
-  // Disabled on macOS 15.0 due to problems with permission prompt.
-  // The override feature is useful for testing on unsupported versions.
-  return (base::mac::MacOSVersion() >= 13'00'00 &&
-          base::mac::MacOSVersion() < 15'00'00) ||
-         base::FeatureList::IsEnabled(kMacSckSystemAudioLoopbackOverride);
-}
-#endif
-
-bool IsSystemLoopbackCaptureSupported() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_CRAS)
-  return true;
+bool IsApplicationAudioCaptureSupported() {
+#if BUILDFLAG(IS_WIN)
+  return base::FeatureList::IsEnabled(features::kApplicationAudioCaptureWin);
 #elif BUILDFLAG(IS_MAC)
-  return (IsMacSckSystemLoopbackCaptureSupported() ||
-          IsMacCatapSystemLoopbackCaptureSupported());
-#elif BUILDFLAG(IS_LINUX) && defined(USE_PULSEAUDIO)
-  return true;
+  return base::FeatureList::IsEnabled(features::kApplicationAudioCaptureMac) &&
+         media::IsMacCatapSystemLoopbackCaptureSupported() &&
+         base::FeatureList::IsEnabled(
+             media::kMacCatapLoopbackAudioForScreenShare);
 #else
   return false;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(USE_CRAS)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace media

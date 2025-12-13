@@ -11,7 +11,6 @@
 #include "ash/boca/spotlight/spotlight_notification_bubble_controller.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -33,7 +32,6 @@
 
 using base::test::TestFuture;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
 using ::testing::StrictMock;
@@ -97,11 +95,13 @@ class SpotlightCrdManagerImplTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
                        InitiateSpotlightSessionShouldStartCrdHost) {
   EXPECT_CALL(*crd_session_, StartCrdHost)
-      .WillOnce(WithArg<1>(
-          Invoke([&](auto callback) { std::move(callback).Run("123"); })));
+      .WillOnce(
+          WithArg<1>([&](auto callback) { std::move(callback).Run("123"); }));
   TestFuture<const std::string&> success_future;
 
-  manager_->InitiateSpotlightSession(success_future.GetCallback(), kUserEmail);
+  manager_->InitiateSpotlightSession(success_future.GetCallback(),
+                                     /*is_student_to_receiver=*/false,
+                                     kUserEmail);
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
 
   EXPECT_EQ(kSpotlightConnectionCode, success_future.Get());
@@ -114,18 +114,18 @@ IN_PROC_BROWSER_TEST_F(
 
   TestFuture<void> error_callback_future;
   EXPECT_CALL(*crd_session_, StartCrdHost)
-      .WillOnce(WithArg<2>(Invoke([&](auto callback) {
+      .WillOnce(WithArg<2>([&](auto callback) {
         base::UmaHistogramEnumeration(
             kCrdResultUma,
             policy::ExtendedStartCrdSessionResultCode::kFailureCrdHostError);
         error_callback_future.SetValue();
-      })));
+      }));
 
   manager_->InitiateSpotlightSession(
       base::BindOnce([](const std::string& result) {
         GTEST_FAIL() << "Unexpected call to success callback";
       }),
-      kUserEmail);
+      /*is_student_to_receiver=*/false, kUserEmail);
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
 
   EXPECT_TRUE(error_callback_future.Wait());
@@ -142,7 +142,9 @@ IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
   EXPECT_CALL(*crd_session_, TerminateSession()).Times(1);
   TestFuture<const std::string&> success_future;
 
-  manager_->InitiateSpotlightSession(success_future.GetCallback(), kUserEmail);
+  manager_->InitiateSpotlightSession(success_future.GetCallback(),
+                                     /*is_student_to_receiver=*/false,
+                                     kUserEmail);
 
   manager_->OnSessionEnded();
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
@@ -180,7 +182,9 @@ IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
           [&]() { std::move(session_finished_future.GetCallback()).Run(); }));
 
   TestFuture<const std::string&> success_future;
-  manager_->InitiateSpotlightSession(success_future.GetCallback(), kUserEmail);
+  manager_->InitiateSpotlightSession(success_future.GetCallback(),
+                                     /*is_student_to_receiver=*/false,
+                                     kUserEmail);
 
   manager_->OnSessionEnded();
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);

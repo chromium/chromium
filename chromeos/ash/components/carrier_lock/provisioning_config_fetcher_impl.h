@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK_PROVISIONING_CONFIG_FETCHER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK_PROVISIONING_CONFIG_FETCHER_IMPL_H_
 
+#include <optional>
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/carrier_lock/carrier_lock.pb.h"
@@ -45,7 +48,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK)
   RestrictedNetworks GetNumberOfNetworks() override;
 
  private:
-  void OnDownloadToStringComplete(std::unique_ptr<std::string> response_body);
+  void OnDownloadToStringComplete(std::optional<std::string> response_body);
   void ReturnError(Result);
 
   ::carrier_lock::DeviceProvisioningConfig provision_config_;

@@ -34,6 +34,7 @@ class CSVPasswordParserImplTest : public testing::Test {
 
  private:
   std::unique_ptr<CSVPasswordParserImpl> parser_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(CSVPasswordParserImplTest, ParseEmptyFile) {

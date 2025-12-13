@@ -39,6 +39,14 @@ class MockDeviceBoundSessionManager : public mojom::DeviceBoundSessionManager {
       (const GURL& url,
        mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver> observer),
       (override));
+  MOCK_METHOD(void,
+              CreateBoundSessions,
+              (std::vector<net::device_bound_sessions::SessionParams> params,
+               const std::vector<uint8_t>& wrapped_key,
+               const std::vector<net::CanonicalCookie>& cookies_to_set,
+               const net::CookieOptions& cookie_options,
+               CreateBoundSessionsCallback callback),
+              (override));
 };
 
 }  // namespace network

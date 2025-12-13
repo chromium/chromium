@@ -31,7 +31,7 @@ function getPropertiesDialog() {
 function assertField(field: string, expectedValue: string) {
   const actualValue =
       getPropertiesDialog().shadowRoot.querySelector<HTMLElement>(
-                                          `#${field}`)!.textContent!.trim();
+                                          `#${field}`)!.textContent.trim();
   chrome.test.assertEq(expectedValue, actualValue);
 }
 

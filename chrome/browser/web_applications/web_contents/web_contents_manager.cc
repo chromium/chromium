@@ -29,6 +29,11 @@ WebContentsManager::CreateIconDownloader() {
   return std::make_unique<WebAppIconDownloader>();
 }
 
+FakeWebContentsManager*
+WebContentsManager::AsFakeWebContentsManagerForTesting() {
+  return nullptr;
+}
+
 base::WeakPtr<WebContentsManager> WebContentsManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

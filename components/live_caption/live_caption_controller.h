@@ -76,9 +76,13 @@ class LiveCaptionController : public KeyedService,
     return caption_bubble_controller();
   }
 
+  void turn_off_live_caption_for_testing() { StopLiveCaption(); }
+
  private:
   // CaptionControllerBase:
   CaptionBubbleSettings* caption_bubble_settings() override;
+  void OnFirstListenerAdded() override;
+  void OnLastListenerRemoved() override;
 
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;

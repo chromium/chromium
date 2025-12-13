@@ -15,7 +15,9 @@
 #include "base/logging.h"
 #include "base/numerics/angle_conversions.h"
 #include "cc/trees/layer_tree_host.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -106,6 +108,11 @@ void PrintLayerHierarchyImp(const Layer* layer,
     *out << "\n" << property_indent_str;
     *out << "rounded-corners-radii: "
          << layer->rounded_corner_radii().ToString();
+  }
+
+  if (layer->type() == LAYER_SOLID_COLOR) {
+    *out << "\n" << property_indent_str;
+    *out << "background-color=" << ui::SkColorName(layer->background_color());
   }
 
   const ui::Layer* mask = const_cast<ui::Layer*>(layer)->layer_mask_layer();

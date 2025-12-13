@@ -39,6 +39,8 @@ class AutofillFieldPromoViewImpl : public AutofillFieldPromoView,
 
   void Close() override;
 
+  void MakeInvisible() override;
+
   base::WeakPtr<AutofillFieldPromoView> GetWeakPtr() override;
 
  private:

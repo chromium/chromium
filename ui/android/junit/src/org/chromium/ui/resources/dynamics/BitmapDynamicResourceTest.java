@@ -50,7 +50,7 @@ public class BitmapDynamicResourceTest {
         // Bitmap was already returned, next onResourceRequested should no-op.
         mResource.addOnResourceReadyCallback(
                 (resource) -> {
-                    assert false;
+                    throw new AssertionError();
                 });
         mResource.onResourceRequested();
     }
@@ -90,7 +90,7 @@ public class BitmapDynamicResourceTest {
         // No bitmap, onResourceRequested should no-op.
         Callback<Resource> callback =
                 (resource) -> {
-                    assert false;
+                    throw new AssertionError();
                 };
         mResource.addOnResourceReadyCallback(callback);
         mResource.onResourceRequested();

@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OSCILLATOR_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OSCILLATOR_NODE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_oscillator_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_scheduled_source_node.h"
@@ -40,7 +39,6 @@ class BaseAudioContext;
 class ExceptionState;
 class OscillatorOptions;
 class PeriodicWave;
-class PeriodicWaveImpl;
 class V8OscillatorType;
 
 // OscillatorNode is an audio generator of periodic waveforms.

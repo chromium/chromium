@@ -44,7 +44,7 @@ class ClearingTask : public BrowsingDataRemover::Observer {
 
     for (const auto& site : sites_) {
       // For clearing eTLD+1 scoped data.
-      cookie_filter_builder->AddRegisterableDomain(site.GetURL().host());
+      cookie_filter_builder->AddRegisterableDomain(site.GetURL().GetHost());
       // For clearing origin-scoped data.
       origin_filter_builder->AddOrigin(url::Origin::Create(site.GetURL()));
     }

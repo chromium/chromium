@@ -21,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/widget/widget.h"
 
 ExtensionViewViews::ExtensionViewViews(Profile* profile,
@@ -85,13 +86,13 @@ void ExtensionViewViews::SetMinimumSize(const gfx::Size& minimum_size) {
   }
   minimum_size_ = minimum_size;
   OnPropertyChanged(&minimum_size_,
-                    views::kPropertyEffectsPreferredSizeChanged);
+                    views::PropertyEffects::kPreferredSizeChanged);
 }
 
 void ExtensionViewViews::SetContainer(
     ExtensionViewViews::Container* container) {
   container_ = container;
-  OnPropertyChanged(&container_, views::kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&container_, views::PropertyEffects::kPreferredSizeChanged);
 }
 
 ExtensionViewViews::Container* ExtensionViewViews::GetContainer() const {

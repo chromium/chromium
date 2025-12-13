@@ -5,7 +5,6 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_reader.h"
 
 #include "ash/constants/ash_switches.h"
-#include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"

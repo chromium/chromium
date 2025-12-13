@@ -7,7 +7,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -18,10 +17,12 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/themes/ntp_background_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/test/test_extension_dir.h"
 
 namespace {
@@ -122,7 +123,7 @@ class CustomizeChromeInteractiveTest
     return std::make_unique<content::URLLoaderInterceptor>(
         base::BindLambdaForTesting(
             [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-              if (params->url_request.url.path() ==
+              if (params->url_request.url.GetPath() ==
                   "/cast/chromecast/home/wallpaper/collections") {
                 std::string headers =
                     "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";
@@ -139,7 +140,7 @@ class CustomizeChromeInteractiveTest
                     headers, response_string, params->client.get(),
                     std::optional<net::SSLInfo>());
                 return true;
-              } else if (params->url_request.url.path() ==
+              } else if (params->url_request.url.GetPath() ==
                          "/cast/chromecast/home/wallpaper/collection-images") {
                 std::string headers =
                     "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";
@@ -213,16 +214,16 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
       // Open NTP with footer showing.
       Steps(AddInstrumentedTab(kNewTabElementId,
                                GURL(chrome::kChromeUINewTabURL)),
-            WaitForShow(kNtpFooterId)),
+            WaitForShow(kNtpFooterViewElementId)),
       // Click the footer toggle.
       Steps(OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
             ClickElement(kLocalCustomizeChromeElementId, kFooterToggle)),
       // Ensure footer hides.
-      WaitForHide(kNtpFooterId),
+      WaitForHide(kNtpFooterViewElementId),
       // Click the footer toggle.
       ClickElement(kLocalCustomizeChromeElementId, kFooterToggle),
       // Ensure footer shows.
-      WaitForShow(kNtpFooterId));
+      WaitForShow(kNtpFooterViewElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,

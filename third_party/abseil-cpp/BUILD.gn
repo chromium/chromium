@@ -7,6 +7,7 @@
 # without these options will be part of the same program.
 
 import("//build/config/c++/c++.gni")
+import("//build/config/compiler/compiler.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
@@ -22,32 +23,30 @@ component("absl") {
     public_configs = [ ":absl_component_build" ]
 
     if (is_win && is_clang) {
-      if (current_cpu == "x64") {
-        if (is_debug) {
-          sources = [ "symbols_x64_dbg.def" ]
-        } else {
-          if (is_asan) {
-            sources = [ "symbols_x64_rel_asan.def" ]
-          } else {
-            sources = [ "symbols_x64_rel.def" ]
-          }
-        }
+      file = "symbols_${current_cpu}"
+      if (is_debug) {
+        file = "${file}_dbg"
+      } else {
+        file = "${file}_rel"
       }
-      if (current_cpu == "x86") {
-        if (is_debug) {
-          sources = [ "symbols_x86_dbg.def" ]
-        } else {
-          sources = [ "symbols_x86_rel.def" ]
-        }
+      if (!is_debug && current_cpu == "x64" && is_asan) {
+        file = "${file}_asan"
       }
-      if (current_cpu == "arm64") {
-        if (is_debug) {
-          sources = [ "symbols_arm64_dbg.def" ]
-        } else {
-          sources = [ "symbols_arm64_rel.def" ]
-        }
+      if (use_cxx23) {
+        file = "${file}_cxx23"
       }
+      file = "${file}.def"
+      sources = [ file ]
     }
+  }
+  if (is_win) {
+    all_dependent_configs = [ "//tools/win/DebugVisualizers:absl" ]
+    inputs = [
+      # absl.natvis listed as an input here instead of in
+      # //tools/win/DebugVisualizers:absl to prevent unnecessary size increase
+      # in generated build files.
+      "//tools/win/DebugVisualizers/absl.natvis",
+    ]
   }
 }
 
@@ -68,10 +67,12 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/container:fixed_array",
     "//third_party/abseil-cpp/absl/container:flat_hash_map",
     "//third_party/abseil-cpp/absl/container:flat_hash_set",
+    "//third_party/abseil-cpp/absl/container:hash_container_defaults",
     "//third_party/abseil-cpp/absl/container:inlined_vector",
     "//third_party/abseil-cpp/absl/container:node_hash_map",
     "//third_party/abseil-cpp/absl/container:node_hash_set",
     "//third_party/abseil-cpp/absl/debugging:failure_signal_handler",
+    "//third_party/abseil-cpp/absl/debugging:leak_check",
     "//third_party/abseil-cpp/absl/debugging:stacktrace",
     "//third_party/abseil-cpp/absl/debugging:symbolize",
     "//third_party/abseil-cpp/absl/functional:any_invocable",
@@ -129,6 +130,13 @@ group("absl_component_deps") {
   }
 
   visibility = [ ":absl" ]
+}
+
+# Abseil testing utilities should only be included in test binaries.
+source_set("test_support") {
+  testonly = true
+  public_deps = [ "//third_party/abseil-cpp/absl/hash:hash_testing" ]
+  deps = [ ":absl" ]
 }
 
 # Some third-party libraries use additional parts of absl that are banned in
@@ -248,13 +256,18 @@ if (absl_build_tests) {
         "absl/algorithm:algorithm_test",
         "absl/algorithm:container_test",
         "absl/base:attributes_test",
+        "absl/base:casts_test",
         "absl/base:config_test",
         "absl/base:iterator_traits_test",
         "absl/base:no_destructor_test",
         "absl/base:nullability_default_nonnull_test",
         "absl/base:nullability_test",
+        "absl/base:nullability_traits_test",
         "absl/base:poison_test",
         "absl/base:prefetch_test",
+        "absl/base:raw_logging_test",
+        "absl/base:sysinfo_test",
+        "absl/base:thread_identity_test",
         "absl/base:tracing_internal_strong_test",
         "absl/base:tracing_internal_weak_test",
         "absl/cleanup:cleanup_test",
@@ -314,6 +327,7 @@ if (absl_build_tests) {
         "absl/status:status_matchers_test",
         "absl/status:status_test",
         "absl/status:statusor_test",
+        "absl/strings:append_and_overwrite_test",
         "absl/strings:ascii_test",
         "absl/strings:char_formatting_test",
         "absl/strings:charset_test",
@@ -336,6 +350,7 @@ if (absl_build_tests) {
         "absl/strings:has_absl_stringify_test",
         "absl/strings:has_ostream_operator_test",
         "absl/strings:match_test",
+        "absl/strings:resize_and_overwrite_test",
         "absl/strings:str_cat_test",
         "absl/strings:str_format_arg_test",
         "absl/strings:str_format_bind_test",

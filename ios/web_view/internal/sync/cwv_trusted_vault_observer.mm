@@ -20,7 +20,7 @@
 
 - (void)trustedVaultProviderDidChangeKeys:
     (id<CWVTrustedVaultProvider>)provider {
-  _observer->OnTrustedVaultKeysChanged();
+  _observer->OnTrustedVaultKeysChanged(std::nullopt);
 }
 
 - (void)trustedVaultProviderDidChangeRecoverability:

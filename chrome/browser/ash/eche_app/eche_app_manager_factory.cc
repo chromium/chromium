@@ -308,7 +308,7 @@ EcheAppManagerFactory::BuildServiceInstanceForBrowserContext(
                             ->GetStatusAreaWidget()
                             ->eche_tray();
 
-  if (features::IsEcheNetworkConnectionStateEnabled() && eche_tray) {
+  if (eche_tray) {
     eche_tray->SetEcheConnectionStatusHandler(
         eche_app_manager->GetEcheConnectionStatusHandler());
   }

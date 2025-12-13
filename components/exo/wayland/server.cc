@@ -5,7 +5,6 @@
 #include "components/exo/wayland/server.h"
 
 #include <alpha-compositing-unstable-v1-server-protocol.h>
-#include <chrome-color-management-server-protocol.h>
 #include <content-type-v1-server-protocol.h>
 #include <cursor-shapes-unstable-v1-server-protocol.h>
 #include <extended-drag-unstable-v1-server-protocol.h>
@@ -69,7 +68,6 @@
 #include "components/exo/wayland/xdg_shell.h"
 #include "components/exo/wayland/zaura_shell.h"
 #include "components/exo/wayland/zcr_alpha_compositing.h"
-#include "components/exo/wayland/zcr_color_manager.h"
 #include "components/exo/wayland/zcr_cursor_shapes.h"
 #include "components/exo/wayland/zcr_extended_drag.h"
 #include "components/exo/wayland/zcr_gaming_input.h"
@@ -317,8 +315,6 @@ void Server::Initialize() {
   wl_global_create(wl_display_.get(),
                    &zwp_relative_pointer_manager_v1_interface, /*version=*/1,
                    display_, bind_relative_pointer_manager);
-  wl_global_create(wl_display_.get(), &zcr_color_manager_v1_interface,
-                   kZcrColorManagerVersion, this, bind_zcr_color_manager);
   wl_global_create(wl_display_.get(), &zxdg_decoration_manager_v1_interface,
                    /*version=*/1, display_, bind_zxdg_decoration_manager);
   wl_global_create(wl_display_.get(), &zcr_extended_drag_v1_interface,

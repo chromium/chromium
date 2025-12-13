@@ -324,6 +324,15 @@ class Generator(generator.Generator):
     return any(map(mojom.ContainsNativeTypes,
                    m.enums + m.structs + m.interfaces))
 
+  def _UsesMessageSizeEstimator(self):
+    """Returns whether this module has any interfaces that use estimate size
+    methods.
+
+    When false, the generated headers do not need to include
+    message_size_estimator.h
+    """
+    return any(map(self._HasEstimateSizeMethods, self.module.interfaces))
+
   def _GetDirectlyUsedKinds(self):
     for struct in self.module.structs + self.module.unions:
       for field in struct.fields:
@@ -426,6 +435,7 @@ class Generator(generator.Generator):
         "structs": self.module.structs,
         "unions": self.module.unions,
         "uses_interfaces": self._ReferencesAnyHandleOrInterfaceType(),
+        "uses_message_size_estimator": self._UsesMessageSizeEstimator(),
         "uses_native_types": self._ReferencesAnyNativeType(),
         "variant": self.variant,
         "send_validation_modules": self._GetSendValidationModules(),
@@ -903,10 +913,15 @@ class Generator(generator.Generator):
     for kind in self.module.structs + self.module.unions:
       for field in kind.fields:
 
-        # Peel array kinds.
+        # Peel array and map kinds.
         kind = field.kind
-        while mojom.IsArrayKind(kind):
-          kind = kind.kind
+        while True:
+          if mojom.IsArrayKind(kind):
+            kind = kind.kind
+          elif mojom.IsMapKind(kind):
+            kind = kind.value_kind
+          else:
+            break
 
         if kind.module == imported_module:
           # Need full def for struct/union fields, even when not inlined.

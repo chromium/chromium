@@ -508,25 +508,29 @@ public abstract class CronetEngine {
         }
 
         /**
-         * Configures proxying behavior for connection establishment. This affects all connections
-         * established by a {@link CronetEngine} as a consequence of {@link UrlRequest} being
-         * started. For more details, see the documentation of {@link ProxyOptions}.
+         * Configures proxying behavior. This affects, in different ways: connections establishment,
+         * {@link UrlRequest} and {@link BidirectionalStream}. For more details, refer to the
+         * documentation of {@link Proxy}.
          *
-         * <p>Warning: DO NOT USE without reaching out to Cronet maintainers first. This is
-         * experimental and subject to change.
+         * <p>This is not to be confused with proxy configuration that have been set up by: the
+         * user; or some enterprise profile configuration, or (most likely) some network
+         * autoconfiguration (e.g., Web Proxy Auto-Discovery Protocol). This is usually referred to
+         * as "system" proxy configuration. If present, respecting the system proxy configuration is
+         * often a requirement to obtain local and/or internet connectivity. Cronet already handles
+         * the system proxy configuration internally.
          *
-         * <p>Note: The Android OS can already define a "system" proxy configurations. This config
-         * might have been obtained by the user, from some enterprise profile configuration, or
-         * (most likely) from some network autoconfiguration (e.g., Web Proxy Auto-Discovery
-         * Protocol). Proxy configurations configured via this API and system ones are mutually
-         * exclusive. When specifying {@link ProxyOptions} you are overriding the system
-         * configuration, this can cause connectivity problems (e.g., the internet might no longer
-         * be reachable). TODO(https://crbug.com/421341930): Have better support for system proxies.
-         * This could be done: either, by chaining them to the ones provided by the app; or, by
-         * using them in place of a DIRECT fallback, if that has been specified by the app.
+         * <p>A proxy configuration defined via this API are refererred to as "app" proxy
+         * configuration. App and system proxy configuration are separate and, most importantly,
+         * differ. Currently, app and system proxy configurations are mutually exclusive: specifying
+         * {@link ProxyOptions} overrides the system proxy configuration, if present. This might
+         * cause connectivity problems in some scenarios where a system proxy configuration is
+         * present. In such scenarios, users might end up with no internet access, unless {@link
+         * ProxyOptions} has been configured with a final, {@code null}, fallback. Refer to {@link
+         * ProxyOptions} documentation.
          *
-         * @param proxyOptions ProxyOptions to be used for connections established by the {@link
-         *     CronetEngine} created by this builder.
+         * @param proxyOptions ProxyOptions to be used for {@link UrlRequest}, {@link
+         *     BiridirectionalStream} and connections established by the {@link CronetEngine}
+         *     created by this builder.
          * @return the builder to facilitate chaining.
          */
         @ProxyOptions.Experimental

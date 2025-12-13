@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "third_party/blink/public/common/tracing_support.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
@@ -131,11 +132,13 @@ FrameSchedulerImpl::PauseSubresourceLoadingHandleImpl::
 
 FrameSchedulerImpl::FrameSchedulerImpl(PageSchedulerImpl* parent_page_scheduler,
                                        FrameScheduler::Delegate* delegate,
+                                       const LocalFrameToken& frame_token,
                                        bool is_in_embedded_frame_tree,
                                        FrameScheduler::FrameType frame_type)
     : FrameSchedulerImpl(parent_page_scheduler->GetMainThreadScheduler(),
                          parent_page_scheduler,
                          delegate,
+                         frame_token,
                          is_in_embedded_frame_tree,
                          frame_type) {}
 
@@ -143,10 +146,14 @@ FrameSchedulerImpl::FrameSchedulerImpl(
     MainThreadSchedulerImpl* main_thread_scheduler,
     PageSchedulerImpl* parent_page_scheduler,
     FrameScheduler::Delegate* delegate,
+    const LocalFrameToken& frame_token,
     bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type)
     : frame_type_(frame_type),
       is_in_embedded_frame_tree_(is_in_embedded_frame_tree),
+      tracing_track_(
+          GetLocalFrameTracingTrack(frame_token,
+                                    frame_type == FrameType::kMainFrame)),
       main_thread_scheduler_(main_thread_scheduler),
       parent_page_scheduler_(parent_page_scheduler),
       delegate_(delegate),
@@ -154,70 +161,99 @@ FrameSchedulerImpl::FrameSchedulerImpl(
           parent_page_scheduler_ && parent_page_scheduler_->IsPageVisible()
               ? PageVisibilityState::kVisible
               : PageVisibilityState::kHidden,
-          MakeNamedTrack("FrameScheduler.PageVisibility", this),
+          perfetto::NamedTrack::FromPointer("FrameScheduler.PageVisibility",
+                                            this,
+                                            *tracing_track_),
           &tracing_controller_,
           PageVisibilityStateToString),
-      frame_visible_(true,
-                     MakeNamedTrack("FrameScheduler.FrameVisible", this),
-                     &tracing_controller_,
-                     VisibilityStateToString),
+      frame_visible_(
+          true,
+          perfetto::NamedTrack::FromPointer("FrameScheduler.FrameVisible",
+                                            this,
+                                            *tracing_track_),
+          &tracing_controller_,
+          VisibilityStateToString),
       is_visible_area_large_(
           true,
-          MakeNamedTrack("FrameScheduler.IsVisibleAreaLarge", this),
+          perfetto::NamedTrack::FromPointer("FrameScheduler.IsVisibleAreaLarge",
+                                            this,
+                                            *tracing_track_),
           &tracing_controller_,
           IsVisibleAreaLargeStateToString),
       had_user_activation_(
           false,
-          MakeNamedTrack("FrameScheduler.HadUserActivation", this),
+          perfetto::NamedTrack::FromPointer("FrameScheduler.HadUserActivation",
+                                            this,
+                                            *tracing_track_),
           &tracing_controller_,
           UserActivationStateToString),
-      frame_paused_(false,
-                    MakeNamedTrack("FrameScheduler.FramePaused", this),
-                    &tracing_controller_,
-                    PausedStateToString),
-      frame_origin_type_(frame_type == FrameType::kMainFrame
-                             ? FrameOriginType::kMainFrame
-                             : FrameOriginType::kSameOriginToMainFrame,
-                         MakeNamedTrack("FrameScheduler.Origin", this),
-                         &tracing_controller_,
-                         FrameOriginTypeToString),
-      subresource_loading_paused_(
+      frame_paused_(
           false,
-          MakeNamedTrack("FrameScheduler.SubResourceLoadingPaused", this),
+          perfetto::NamedTrack::FromPointer("FrameScheduler.FramePaused",
+                                            this,
+                                            *tracing_track_),
           &tracing_controller_,
           PausedStateToString),
-      url_track_("FrameScheduler.URL"),
-      throttling_type_(ThrottlingType::kNone,
-                       MakeNamedTrack("FrameScheduler.ThrottlingType", this),
-                       &tracing_controller_,
-                       ThrottlingTypeToString),
+      frame_origin_type_(
+          frame_type == FrameType::kMainFrame
+              ? FrameOriginType::kMainFrame
+              : FrameOriginType::kSameOriginToMainFrame,
+          perfetto::NamedTrack::FromPointer("FrameScheduler.Origin",
+                                            this,
+                                            *tracing_track_),
+          &tracing_controller_,
+          FrameOriginTypeToString),
+      subresource_loading_paused_(false,
+                                  perfetto::NamedTrack::FromPointer(
+                                      "FrameScheduler.SubResourceLoadingPaused",
+                                      this,
+                                      *tracing_track_),
+                                  &tracing_controller_,
+                                  PausedStateToString),
+      url_track_(perfetto::NamedTrack::FromPointer("FrameScheduler.URL",
+                                                   this,
+                                                   *tracing_track_)),
+      throttling_type_(
+          ThrottlingType::kNone,
+          perfetto::NamedTrack::FromPointer("FrameScheduler.ThrottlingType",
+                                            this,
+                                            *tracing_track_),
+          &tracing_controller_,
+          ThrottlingTypeToString),
       aggressive_throttling_opt_out_count_(0),
       opted_out_from_aggressive_throttling_(
           false,
-          MakeNamedTrack("FrameScheduler.AggressiveThrottlingDisabled", this),
+          perfetto::NamedTrack::FromPointer(
+              "FrameScheduler.AggressiveThrottlingDisabled",
+              this,
+              *tracing_track_),
           &tracing_controller_,
           YesNoStateToString),
       subresource_loading_pause_count_(0u),
       back_forward_cache_disabling_feature_tracker_(&tracing_controller_,
+                                                    *tracing_track_,
                                                     main_thread_scheduler_),
       page_frozen_for_tracing_(
           parent_page_scheduler_ ? parent_page_scheduler_->IsFrozen() : true,
-          MakeNamedTrack("FrameScheduler.PageFrozen", this),
+          perfetto::NamedTrack::FromPointer("FrameScheduler.PageFrozen",
+                                            this,
+                                            *tracing_track_),
           &tracing_controller_,
           FrozenStateToString),
       waiting_for_contentful_paint_(
           true,
-          MakeNamedTrack("FrameScheduler.WaitingForContentfulPaint", this),
+          perfetto::NamedTrack::FromPointer(
+              "FrameScheduler.WaitingForContentfulPaint",
+              this,
+              *tracing_track_),
           &tracing_controller_,
           YesNoStateToString),
       waiting_for_meaningful_paint_(
           true,
-          MakeNamedTrack("FrameScheduler.WaitingForMeaningfulPaint", this),
-          &tracing_controller_,
-          YesNoStateToString),
-      is_load_event_dispatched_(
-          false,
-          MakeNamedTrack("FrameScheduler.IsLoadEventDispatched", this),
+          perfetto::NamedTrack::FromPointer(
+              "FrameScheduler.WaitingForMeaningfulPaint",
+              this,
+              *tracing_track_),
           &tracing_controller_,
           YesNoStateToString) {
   frame_task_queue_controller_ = base::WrapUnique(
@@ -231,6 +267,7 @@ FrameSchedulerImpl::FrameSchedulerImpl()
     : FrameSchedulerImpl(/*main_thread_scheduler=*/nullptr,
                          /*parent_page_scheduler=*/nullptr,
                          /*delegate=*/nullptr,
+                         LocalFrameToken(),
                          /*is_in_embedded_frame_tree=*/false,
                          FrameType::kSubframe) {}
 
@@ -697,7 +734,6 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
   if (!is_same_document) {
     waiting_for_contentful_paint_ = true;
     waiting_for_meaningful_paint_ = true;
-    is_load_event_dispatched_ = false;
   }
 
   if (is_outermost_main_frame && !is_same_document) {
@@ -714,7 +750,7 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
 }
 
 WebScopedVirtualTimePauser FrameSchedulerImpl::CreateWebScopedVirtualTimePauser(
-    const WTF::String& name,
+    const String& name,
     WebScopedVirtualTimePauser::VirtualTaskDuration duration) {
   return WebScopedVirtualTimePauser(main_thread_scheduler_, duration, name);
 }
@@ -1018,9 +1054,8 @@ void FrameSchedulerImpl::OnMainFrameInteractive() {
   }
 }
 
-void FrameSchedulerImpl::OnFirstMeaningfulPaint(base::TimeTicks timestamp) {
+void FrameSchedulerImpl::OnFirstMeaningfulPaint() {
   waiting_for_meaningful_paint_ = false;
-  first_meaningful_paint_timestamp_ = timestamp;
 
   if (GetFrameType() != FrameScheduler::FrameType::kMainFrame ||
       is_in_embedded_frame_tree_) {
@@ -1031,10 +1066,6 @@ void FrameSchedulerImpl::OnFirstMeaningfulPaint(base::TimeTicks timestamp) {
   if (delegate_) {
     return delegate_->MainFrameFirstMeaningfulPaint();
   }
-}
-
-void FrameSchedulerImpl::OnDispatchLoadEvent() {
-  is_load_event_dispatched_ = true;
 }
 
 void FrameSchedulerImpl::OnDidInstallNewDocument() {
@@ -1049,22 +1080,10 @@ bool FrameSchedulerImpl::IsWaitingForMeaningfulPaint() const {
   return waiting_for_meaningful_paint_;
 }
 
-bool FrameSchedulerImpl::IsLoading() const {
-  if (waiting_for_meaningful_paint_) {
-    return true;
-  }
-
-  if (is_load_event_dispatched_) {
-    return false;
-  }
-
-  return base::TimeTicks::Now() - first_meaningful_paint_timestamp_ <=
-         GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint();
-}
-
 bool FrameSchedulerImpl::IsOrdinary() const {
-  if (!parent_page_scheduler_)
+  if (!parent_page_scheduler_) {
     return true;
+  }
   return parent_page_scheduler_->IsOrdinary();
 }
 
@@ -1329,7 +1348,7 @@ void FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache(
       duration, base::TimeDelta(), base::Minutes(5), 100);
 }
 
-WTF::HashSet<SchedulingPolicy::Feature>
+HashSet<SchedulingPolicy::Feature>
 FrameSchedulerImpl::GetActiveFeaturesTrackedForBackForwardCacheMetrics() {
   return back_forward_cache_disabling_feature_tracker_
       .GetActiveFeaturesTrackedForBackForwardCacheMetrics();

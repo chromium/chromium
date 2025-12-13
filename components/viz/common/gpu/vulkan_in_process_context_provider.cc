@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
 
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "gpu/vulkan/buildflags.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
@@ -80,10 +76,11 @@ VulkanInProcessContextProvider::VulkanInProcessContextProvider(
       sync_cpu_memory_limit_(sync_cpu_memory_limit),
       cooldown_duration_at_memory_pressure_critical_(
           cooldown_duration_at_memory_pressure_critical) {
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
-      base::BindRepeating(&VulkanInProcessContextProvider::OnMemoryPressure,
-                          base::Unretained(this)));
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kVulkanInProcessContextProvider,
+          this);
 }
 
 VulkanInProcessContextProvider::~VulkanInProcessContextProvider() {
@@ -146,16 +143,18 @@ bool VulkanInProcessContextProvider::InitializeGrContext(
       // vkQueue*Hook routes all skia side access to the same
       // VulkanFunctionPointers vkQueue* api which chrome uses and is under the
       // lock.
-      if (std::strcmp("vkCreateGraphicsPipelines", proc_name) == 0) {
+      if (UNSAFE_TODO(std::strcmp("vkCreateGraphicsPipelines", proc_name)) ==
+          0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::CreateGraphicsPipelinesHook);
-      } else if (std::strcmp("vkQueueSubmit", proc_name) == 0) {
+      } else if (UNSAFE_TODO(std::strcmp("vkQueueSubmit", proc_name)) == 0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::VulkanQueueSubmitHook);
-      } else if (std::strcmp("vkQueueWaitIdle", proc_name) == 0) {
+      } else if (UNSAFE_TODO(std::strcmp("vkQueueWaitIdle", proc_name)) == 0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::VulkanQueueWaitIdleHook);
-      } else if (std::strcmp("vkQueuePresentKHR", proc_name) == 0) {
+      } else if (UNSAFE_TODO(std::strcmp("vkQueuePresentKHR", proc_name)) ==
+                 0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::VulkanQueuePresentKHRHook);
       }
@@ -251,9 +250,10 @@ std::optional<uint32_t> VulkanInProcessContextProvider::GetSyncCpuMemoryLimit()
 }
 
 void VulkanInProcessContextProvider::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
-  if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL)
+    base::MemoryPressureLevel level) {
+  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
+  }
 
   critical_memory_pressure_expiration_time_ =
       base::TimeTicks::Now() + cooldown_duration_at_memory_pressure_critical_;

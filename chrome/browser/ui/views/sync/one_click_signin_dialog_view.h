@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"

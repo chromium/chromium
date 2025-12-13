@@ -151,7 +151,7 @@ TestWebUIController::TestWebUIController(WebUI* web_ui,
   }
 
   WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(), base_url.host());
+      web_ui->GetWebContents()->GetBrowserContext(), base_url.GetHost());
   data_source->SetRequestFilter(
       base::BindRepeating([](const std::string& path) { return true; }),
       base::BindRepeating(&GetResource));
@@ -272,7 +272,7 @@ WebUI::TypeID TestWebUIControllerFactory::GetWebUIType(
     return WebUI::kNoWebUI;
   }
 
-  return reinterpret_cast<WebUI::TypeID>(base::FastHash(url.host()));
+  return reinterpret_cast<WebUI::TypeID>(base::FastHash(url.GetHost()));
 }
 
 bool TestWebUIControllerFactory::UseWebUIForURL(BrowserContext* browser_context,

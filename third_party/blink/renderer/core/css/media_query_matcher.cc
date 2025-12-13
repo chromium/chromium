@@ -23,6 +23,7 @@
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/media_query_list.h"
 #include "third_party/blink/renderer/core/css/media_query_list_event.h"
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"

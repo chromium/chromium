@@ -26,9 +26,10 @@ enum class AudioDecoderType : int {
   kAudioToolbox = 7,     // AudioToolbox (macOS)
   kMediaFoundation = 8,  // MediaFoundationAudioDecoder
   kPassthroughDTS = 9,   // Passthrough DTS audio
+  kSymphonia = 10,       // Symphonia Rust-backed SymphoniaAudioDecoder.
 
   // Keep this at the end and equal to the last entry.
-  kMaxValue = kPassthroughDTS,
+  kMaxValue = kSymphonia,
 };
 
 // List of known VideoDecoder implementations; recorded to UKM, always add new

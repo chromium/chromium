@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -23,6 +24,9 @@
 #include "sql/transaction.h"
 
 namespace segmentation_platform {
+
+BASE_FEATURE(kInhibitTransactionFromSegmentationDB,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -116,6 +120,8 @@ UkmDatabaseBackend::UkmDatabaseBackend(
       url_table_(&db_),
       uma_metrics_table_(&db_) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  inhibit_transaction_ =
+      base::FeatureList::IsEnabled(kInhibitTransactionFromSegmentationDB);
   db_.set_error_callback(base::BindRepeating(&ErrorCallback));
 }
 
@@ -329,16 +335,18 @@ void UkmDatabaseBackend::RunReadOnlyQueries(QueryList&& queries,
       base::BindOnce(std::move(callback), success, std::move(result)));
 }
 
-void UkmDatabaseBackend::DeleteEntriesOlderThan(base::Time time) {
+void UkmDatabaseBackend::CleanupOldEntries(base::Time ukm_time_limit,
+                                           base::Time uma_time_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status_ != Status::INIT_SUCCESS) {
     return;
   }
 
   std::vector<UrlId> deleted_urls =
-      metrics_table_.DeleteEventsBeforeTimestamp(time);
+      metrics_table_.DeleteEventsBeforeTimestamp(ukm_time_limit);
   url_table_.RemoveUrls(deleted_urls);
-  url_table_.DeleteUrlsBeforeTimestamp(time);
+  url_table_.DeleteUrlsBeforeTimestamp(ukm_time_limit);
+  uma_metrics_table_.DeleteEventsBeforeTimestamp(uma_time_limit);
 
   // Force commit so that we don't store URLs longer than needed.
   RestartTransaction();
@@ -388,6 +396,9 @@ void UkmDatabaseBackend::DeleteAllUrls() {
 
 void UkmDatabaseBackend::TrackChangesInTransaction(int change_count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (inhibit_transaction_) {
+    return;
+  }
 
   // No transaction has begun, begin one.
   if (!current_transaction_) {
@@ -406,6 +417,10 @@ void UkmDatabaseBackend::TrackChangesInTransaction(int change_count) {
 
 void UkmDatabaseBackend::RestartTransaction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (inhibit_transaction_) {
+    return;
+  }
 
   if (current_transaction_) {
     current_transaction_->Commit();

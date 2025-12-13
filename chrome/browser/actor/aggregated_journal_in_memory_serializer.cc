@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/actor/aggregated_journal_in_memory_serializer.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 
 namespace actor {
@@ -58,13 +54,13 @@ std::vector<uint8_t> AggregatedJournalInMemorySerializer::Snapshot() {
     perfetto::TracePacket packet;
     packet.AddSlice(buffer.data(), buffer.size());
     auto [preamble, preamble_size] = packet.GetProtoPreamble();
-    auto preamble_span =
-        base::span(reinterpret_cast<const uint8_t*>(preamble), preamble_size);
+    auto preamble_span = UNSAFE_TODO(
+        base::span(reinterpret_cast<const uint8_t*>(preamble), preamble_size));
     result_buffer.insert(result_buffer.end(), preamble_span.begin(),
                          preamble_span.end());
     for (const perfetto::Slice& slice : packet.slices()) {
-      auto data_span =
-          base::span(static_cast<const uint8_t*>(slice.start), slice.size);
+      auto data_span = UNSAFE_TODO(
+          base::span(static_cast<const uint8_t*>(slice.start), slice.size));
       result_buffer.insert(result_buffer.end(), data_span.begin(),
                            data_span.end());
     }

@@ -127,10 +127,10 @@ PreloadingURLMatchCallback PreloadingData::GetSameURLMatcher(
 // static
 PreloadingURLMatchCallback PreloadingDataImpl::GetPrefetchServiceMatcher(
     PrefetchService& prefetch_service,
-    const PrefetchContainer::Key& predicted) {
+    const PrefetchKey& predicted) {
   return base::BindRepeating(
       [](base::WeakPtr<PrefetchService> prefetch_service,
-         const PrefetchContainer::Key& predicted, const GURL& navigated_url) {
+         const PrefetchKey& predicted, const GURL& navigated_url) {
         if (!prefetch_service) {
           return predicted.url() == navigated_url;
         }
@@ -399,6 +399,7 @@ void PreloadingDataImpl::ResetRecallStats() {
 
 void PreloadingDataImpl::RecordRecallStatsToUMA(
     NavigationHandle* navigation_handle) {
+  // TODO(https://crbug.com/428500219): Report recall for kPrerenderUntilScript.
   constexpr PreloadingType kPreloadingTypes[] = {PreloadingType::kPreconnect,
                                                  PreloadingType::kPrefetch,
                                                  PreloadingType::kPrerender};

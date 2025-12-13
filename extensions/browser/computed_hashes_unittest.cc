@@ -9,9 +9,10 @@
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,9 +72,11 @@ TEST(ComputedHashesTest, ComputedHashes) {
   base::FilePath path1(FILE_PATH_LITERAL("foo.txt"));
   base::FilePath path2 =
       base::FilePath(FILE_PATH_LITERAL("foo")).AppendASCII("bar.txt");
-  std::vector<std::string> hashes1 = {crypto::SHA256HashString("first")};
-  std::vector<std::string> hashes2 = {crypto::SHA256HashString("second"),
-                                      crypto::SHA256HashString("third")};
+  std::vector<std::string> hashes1 = {
+      std::string(base::as_string_view(crypto::hash::Sha256("first")))};
+  std::vector<std::string> hashes2 = {
+      std::string(base::as_string_view(crypto::hash::Sha256("second"))),
+      std::string(base::as_string_view(crypto::hash::Sha256("third")))};
   const int kBlockSize1 = 4096;
   const int kBlockSize2 = 2048;
 

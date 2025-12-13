@@ -4,9 +4,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -42,7 +42,7 @@ class GlicUserStatusInteractiveUiTest : public test::InteractiveGlicTest {
   }
 
   void SetUpOnMainThread() override {
-    InteractiveGlicTestT::SetUpOnMainThread();
+    InteractiveGlicTestMixin::SetUpOnMainThread();
     glic_service()->enabling().SetUserStatusFetchOverrideForTest(
         base::BindRepeating(&GlicUserStatusInteractiveUiTest::UserStatusFetch,
                             base::Unretained(this)));
@@ -138,7 +138,10 @@ void UpdatePrimaryAccountToBeManaged(Profile* profile) {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   AccountInfo account_info =
       identity_manager->FindExtendedAccountInfo(core_account_info);
-  account_info.hosted_domain = gaia::ExtractDomainName(account_info.email);
+  account_info =
+      AccountInfo::Builder(account_info)
+          .SetHostedDomain(gaia::ExtractDomainName(account_info.email))
+          .Build();
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 }
 

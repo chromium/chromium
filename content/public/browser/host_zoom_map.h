@@ -5,12 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_HOST_ZOOM_MAP_H_
 #define CONTENT_PUBLIC_BROWSER_HOST_ZOOM_MAP_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -18,6 +16,7 @@
 #include "url/gurl.h"
 
 namespace base {
+class CallbackListSubscription;
 class Clock;
 }
 

@@ -22,7 +22,7 @@ class SupervisedUserLoginDelegate : public CustomGaiaLoginDelegate {
   SupervisedUserLoginDelegate(const SupervisedUserLoginDelegate&) = delete;
   SupervisedUserLoginDelegate& operator=(const SupervisedUserLoginDelegate&) =
       delete;
-  ~SupervisedUserLoginDelegate() = default;
+  ~SupervisedUserLoginDelegate() override = default;
 
   // CustomGaiaLoginDelegate:
   void DoCustomGaiaLogin(std::string& username) override;

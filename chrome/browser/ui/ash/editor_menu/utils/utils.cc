@@ -210,7 +210,7 @@ gfx::Rect GetEditorMenuBounds(const gfx::Rect& anchor_view_bounds,
                               const views::View* target,
                               const std::string& application_locale,
                               const CardType card_type) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const gfx::Rect screen_work_area =
       screen->GetDisplayMatching(anchor_view_bounds).work_area();
   const gfx::Point cursor_point = screen->GetCursorScreenPoint();

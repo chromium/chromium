@@ -64,7 +64,7 @@ class PasswordSharingRecipientsDownloader {
  private:
   void AccessTokenFetched(GoogleServiceAuthError error,
                           signin::AccessTokenInfo access_token_info);
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
   void SendRequest(const signin::AccessTokenInfo& access_token_info);
   void StartFetchingAccessToken();
 

@@ -19,8 +19,6 @@
 
 namespace content_settings {
 
-namespace {
-
 // Converts a |Value| to a |ContentSetting|. Returns a result if |value| encodes
 // a valid content setting, nullopt otherwise. Note that
 // |CONTENT_SETTING_DEFAULT| is encoded as a NULL value, so it is not allowed as
@@ -37,8 +35,6 @@ std::optional<ContentSetting> ParseContentSettingValue(
   return setting == CONTENT_SETTING_DEFAULT ? std::nullopt
                                             : std::make_optional(setting);
 }
-
-}  // namespace
 
 ContentSetting ValueToContentSetting(const base::Value& value) {
   auto setting = ParseContentSettingValue(value);
@@ -82,6 +78,30 @@ bool PatternAppliesToSingleOrigin(
     return false;
   }
   return true;
+}
+
+ContentSetting ToContentSetting(PermissionOption option) {
+  switch (option) {
+    case PermissionOption::kAllowed:
+      return CONTENT_SETTING_ALLOW;
+    case PermissionOption::kDenied:
+      return CONTENT_SETTING_BLOCK;
+    case PermissionOption::kAsk:
+      return CONTENT_SETTING_ASK;
+  }
+}
+
+PermissionOption ToPermissionOption(ContentSetting setting) {
+  switch (setting) {
+    case CONTENT_SETTING_ALLOW:
+      return PermissionOption::kAllowed;
+    case CONTENT_SETTING_BLOCK:
+      return PermissionOption::kDenied;
+    case CONTENT_SETTING_ASK:
+      return PermissionOption::kAsk;
+    default:
+      NOTREACHED() << setting;
+  }
 }
 
 }  // namespace content_settings

@@ -41,9 +41,8 @@ class WebTestPermissionManager
   void RequestPermissions(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
-      override;
+      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
+          callback) override;
 
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
@@ -51,9 +50,8 @@ class WebTestPermissionManager
   void RequestPermissionsFromCurrentDocument(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
-      override;
+      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
+          callback) override;
   blink::mojom::PermissionStatus GetPermissionStatus(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const GURL& requesting_origin,
@@ -62,22 +60,22 @@ class WebTestPermissionManager
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+  PermissionResult GetPermissionResultForCurrentDocument(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderFrameHost* render_frame_host,
       bool should_include_device_status) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForWorker(
+  PermissionResult GetPermissionResultForWorker(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForEmbeddedRequester(
+  PermissionResult GetPermissionResultForEmbeddedRequester(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& overridden_origin) override;
   void OnPermissionStatusChangeSubscriptionAdded(
       content::PermissionController::SubscriptionId subscription_id) override;
 
-  void UnsubscribeFromPermissionStatusChange(
+  void UnsubscribeFromPermissionResultChange(
       content::PermissionController::SubscriptionId subscription_id) override;
   void SetPermission(
       blink::PermissionType permission,
@@ -114,7 +112,7 @@ class WebTestPermissionManager
     // site, embedding site), it will apply a same-site check instead.
     bool operator==(const PermissionDescription& other) const;
 
-    bool operator==(PermissionStatusSubscription* other) const;
+    bool operator==(PermissionResultSubscription* other) const;
 
     // Hash operator for hash maps.
     struct Hash {
@@ -142,7 +140,7 @@ class WebTestPermissionManager
 
   void OnPermissionChanged(
       const PermissionDescription& permission,
-      blink::mojom::PermissionStatus status,
+      PermissionResult permission_result,
       blink::test::mojom::PermissionAutomation::SetPermissionCallback callback);
 
   raw_ref<BrowserContext> browser_context_;

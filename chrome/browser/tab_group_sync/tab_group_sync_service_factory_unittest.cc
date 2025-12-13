@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -23,41 +21,21 @@ class TabGroupSyncServiceFactoryTest : public testing::Test {
 
   ~TabGroupSyncServiceFactoryTest() override = default;
 
-  void InitService(bool enable_feature) {
-    profile_ = TestingProfile::Builder().Build();
-
-    base::flat_map<base::test::FeatureRef, bool> feature_states;
-#if !BUILDFLAG(IS_ANDROID)
-    feature_states.try_emplace(tab_groups::kTabGroupSyncServiceDesktopMigration,
-                               enable_feature);
-#endif
-
-    scoped_feature_list_.InitWithFeatureStates(feature_states);
-  }
+  void InitService() { profile_ = TestingProfile::Builder().Build(); }
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(TabGroupSyncServiceFactoryTest, FeatureDisabledReturnsNullService) {
-  InitService(/*enable_feature=*/false);
-  TabGroupSyncService* service =
-      TabGroupSyncServiceFactory::GetForProfile(profile_.get());
-  EXPECT_FALSE(service);
-}
-#endif
-
 TEST_F(TabGroupSyncServiceFactoryTest, ServiceCreatedInRegularProfile) {
-  InitService(/*enable_feature=*/true);
+  InitService();
   TabGroupSyncService* service =
       TabGroupSyncServiceFactory::GetForProfile(profile_.get());
   EXPECT_TRUE(service);
 }
 
 TEST_F(TabGroupSyncServiceFactoryTest, ServiceNotCreatedInIncognito) {
-  InitService(/*enable_feature=*/true);
+  InitService();
   Profile* otr_profile = profile_.get()->GetOffTheRecordProfile(
       Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
   EXPECT_FALSE(TabGroupSyncServiceFactory::GetForProfile(otr_profile));

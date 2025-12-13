@@ -4,6 +4,7 @@
 
 #include "ash/webui/projector_app/projector_xhr_sender.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -97,7 +98,7 @@ constexpr char kAuthorizationHeaderPrefix[] = "Bearer ";
 constexpr char kApiKeyParam[] = "key";
 
 // List of URL prefix supported by `ProjectorXhrSender`.
-const char* kUrlAllowlist[] = {
+constexpr const char* kUrlAllowlist[] = {
     "https://www.googleapis.com/drive/v3/files/",
     "https://www.googleapis.com/upload/drive/v3/files/",
     // TODO(b/229792620): Remove this URL prefix once web component is updated
@@ -179,7 +180,7 @@ projector::mojom::XhrResponsePtr CreateXhrResposne(
     std::string response_body,
     projector::mojom::XhrResponseCode resposne_code) {
   auto response = projector::mojom::XhrResponse::New();
-  response->response = response_body;
+  response->response = std::move(response_body);
   response->response_code = resposne_code;
   return response;
 }
@@ -325,7 +326,7 @@ void ProjectorXhrSender::OnSimpleURLLoaderComplete(
     int request_id,
     SendRequestCallback callback,
     const std::string& token,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   auto& loader = loader_map_[request_id];
 
   auto hasHeaders = loader->ResponseInfo() && loader->ResponseInfo()->headers;
@@ -338,7 +339,8 @@ void ProjectorXhrSender::OnSimpleURLLoaderComplete(
   // 2XX.
   bool is_success =
       response_body && response_code >= 200 && response_code < 300;
-  auto response_body_or_empty = response_body ? *response_body : std::string();
+  auto response_body_or_empty =
+      std::move(response_body).value_or(std::string());
   auto xhr_response_code =
       is_success ? projector::mojom::XhrResponseCode::kSuccess
                  : projector::mojom::XhrResponseCode::kXhrFetchFailure;

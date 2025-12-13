@@ -33,7 +33,7 @@ class BookmarkBarItemsProvider extends BookmarkModelObserver
     /** Enumeration of IDs for top-level bookmark bar item observations. */
     @IntDef({ObservationId.ACCOUNT, ObservationId.LOCAL})
     @Retention(RetentionPolicy.SOURCE)
-    public static @interface ObservationId {
+    public @interface ObservationId {
         int ACCOUNT = 0;
         int LOCAL = 1;
     }
@@ -42,7 +42,7 @@ class BookmarkBarItemsProvider extends BookmarkModelObserver
      * An observer to which events are propagated if and only if they involve top-level bookmark bar
      * items from the supplied bookmark model.
      */
-    public static interface Observer extends ScopedBookmarkModelObservation.Observer {
+    public interface Observer extends ScopedBookmarkModelObservation.Observer {
         /**
          * Invoked when top-level bookmark bar items are added to the supplied bookmark model.
          *
@@ -50,7 +50,7 @@ class BookmarkBarItemsProvider extends BookmarkModelObserver
          * @param items the top-level bookmark bar items that were added.
          * @param index the index at which the top-level bookmark bar items were added.
          */
-        public void onBookmarkItemsAdded(
+        void onBookmarkItemsAdded(
                 @ObservationId int observationId, List<BookmarkItem> items, int index);
 
         /**
@@ -60,7 +60,7 @@ class BookmarkBarItemsProvider extends BookmarkModelObserver
          * @param index the index at which the top-level bookmark bar items were removed.
          * @param count the count of top-level bookmark bar items that were removed.
          */
-        public void onBookmarkItemsRemoved(@ObservationId int observationId, int index, int count);
+        void onBookmarkItemsRemoved(@ObservationId int observationId, int index, int count);
 
         /**
          * NOTE: {@link #onBookmarkItemsChanged()} events are never propagated and so this method
@@ -69,7 +69,7 @@ class BookmarkBarItemsProvider extends BookmarkModelObserver
          * changed events.
          */
         @Override
-        public default void onBookmarkItemsChanged(
+        default void onBookmarkItemsChanged(
                 @ObservationId int observationId, List<BookmarkItem> items) {}
     }
 

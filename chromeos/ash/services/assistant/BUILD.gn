@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chromeos/ash/components/assistant/assistant.gni")
-
 assert(is_chromeos)
 
 static_library("test_support") {
@@ -13,14 +11,11 @@ static_library("test_support") {
     "test_support/scoped_assistant_browser_delegate.h",
   ]
   deps = [
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
     "//base",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/services/assistant/public/cpp",
-    "//chromeos/ash/services/assistant/public/mojom",
-    "//chromeos/ash/services/assistant/public/proto",
-    "//chromeos/ash/services/libassistant/public/mojom",
     "//chromeos/services/assistant/public/shared",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",

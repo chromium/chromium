@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
-import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertInstanceof, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 
 import {queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {DialogType} from '../../../state/state.js';
@@ -129,8 +129,11 @@ export class ListContainer {
         return this.table;
       case ListType.THUMBNAIL:
         return this.grid;
+      case ListType.UNINITIALIZED:
+        assertNotReached();
+      default:
+        assertNotReachedCase(this.currentListType);
     }
-    assertNotReached();
   }
 
   get currentList(): List {
@@ -139,8 +142,11 @@ export class ListContainer {
         return this.table.list;
       case ListType.THUMBNAIL:
         return this.grid;
+      case ListType.UNINITIALIZED:
+        assertNotReached();
+      default:
+        assertNotReachedCase(this.currentListType);
     }
-    assertNotReached();
   }
 
   /**
@@ -212,8 +218,11 @@ export class ListContainer {
         this.table.dataModel = this.emptyDataModel;
         break;
 
-      default:
+      case ListType.UNINITIALIZED:
         assertNotReached();
+
+      default:
+        assertNotReachedCase(listType);
     }
     this.endBatchUpdates();
   }
@@ -237,8 +246,10 @@ export class ListContainer {
       case ListType.THUMBNAIL:
         this.grid.focus();
         break;
-      default:
+      case ListType.UNINITIALIZED:
         assertNotReached();
+      default:
+        assertNotReachedCase(this.currentListType);
     }
   }
 

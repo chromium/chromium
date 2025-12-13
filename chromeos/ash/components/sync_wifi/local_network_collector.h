@@ -11,7 +11,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/sync_wifi/network_identifier.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace sync_pb {
 class WifiConfigurationSpecifics;

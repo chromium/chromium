@@ -76,13 +76,14 @@ TestChromeWebUIControllerFactory::WebUIProvider*
     TestChromeWebUIControllerFactory::GetWebUIProvider(
         Profile* profile, const GURL& url) const {
   const GURL& webui_url = TestURLToWebUIURL(url);
-  auto found = factory_overrides_.find(webui_url.host());
+  auto found = factory_overrides_.find(webui_url.GetHost());
   return found != factory_overrides_.end() ? found->second : nullptr;
 }
 
 GURL TestChromeWebUIControllerFactory::TestURLToWebUIURL(
     const GURL& url) const {
-  if ((url.host() != "test" && url.host() != chrome::kChromeUIWebUITestHost) ||
+  if ((url.GetHost() != "test" &&
+       url.GetHost() != chrome::kChromeUIWebUITestHost) ||
       webui_host_.empty()) {
     return url;
   }

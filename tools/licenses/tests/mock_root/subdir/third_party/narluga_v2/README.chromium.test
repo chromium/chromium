@@ -1,0 +1,7 @@
+Name: narluga
+URL: https://example.com
+Shipped: Yes
+License: MIT
+License File: LICENSE
+
+ # Tests SPDX id dedup (same name, different license file).

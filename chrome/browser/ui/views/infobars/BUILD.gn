@@ -12,6 +12,7 @@ source_set("infobars") {
 
   public_deps = [
     "//components/infobars/core",
+    "//ui/base/interaction",
     "//ui/views",
   ]
 }
@@ -28,11 +29,38 @@ source_set("impl") {
     ":infobars",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/omnibox",
     "//components/infobars/core",
     "//components/strings:components_strings_grit",
     "//ui/accessibility:ax_base",
     "//ui/native_theme",
     "//ui/views",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "infobar_container_view_browsertest.cc",
+    "infobar_view_browsertest.cc",
+  ]
+
+  deps = [
+    ":impl",
+    ":infobars",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//content/test:test_support",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views:test_support",
   ]
 }

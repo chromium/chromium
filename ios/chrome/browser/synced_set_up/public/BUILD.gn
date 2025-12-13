@@ -1,0 +1,17 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  sources = [
+    "synced_set_up_metrics.h",
+    "synced_set_up_metrics.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/commerce/core:pref_names",
+    "//components/ntp_tiles:pref_names",
+    "//components/omnibox/browser:pref_names",
+    "//components/safety_check:pref_names",
+  ]
+}

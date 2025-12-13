@@ -24,7 +24,6 @@
 #include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -53,11 +52,6 @@ namespace content {
 
 namespace {
 
-// Kill switch.
-BASE_FEATURE(kAttributionReportingRateLimitCheckSourceTime,
-             "AttributionReportingRateLimitCheckSourceTime",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsAttribution(RateLimitTable::Scope scope) {
   switch (scope) {
     case RateLimitTable::Scope::kSource:
@@ -73,9 +67,7 @@ bool IsAttribution(RateLimitTable::Scope scope) {
 }  // namespace
 
 RateLimitTable::RateLimitTable(const AttributionResolverDelegate* delegate)
-    : rate_limit_check_source_time_enabled_(base::FeatureList::IsEnabled(
-          kAttributionReportingRateLimitCheckSourceTime)),
-      delegate_(
+    : delegate_(
           raw_ref<const AttributionResolverDelegate>::from_ptr(delegate)) {}
 
 RateLimitTable::~RateLimitTable() {
@@ -312,10 +304,7 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
 
   // Note that we intentionally use source time to bound the limit for any
   // source, which is consistent with the time stored in `AddRateLimit()`.
-  base::Time min_timestamp =
-      (rate_limit_check_source_time_enabled_ ? source.source_time()
-                                             : attribution_info.time) -
-      rate_limits.time_window;
+  base::Time min_timestamp = source.source_time() - rate_limits.time_window;
 
   sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kRateLimitAttributionAllowedSql));
@@ -691,9 +680,7 @@ RateLimitResult RateLimitTable::AttributionAllowedForReportingOriginLimit(
   // Note that we intentionally use source time to bound the limit for any
   // source, which is consistent with the time stored in `AddRateLimit()`.
   return AllowedForReportingOriginLimit(
-      db, /*is_source=*/false, source.common_info(),
-      rate_limit_check_source_time_enabled_ ? source.source_time()
-                                            : attribution_info.time,
+      db, /*is_source=*/false, source.common_info(), source.source_time(),
       base::span_from_ref(net::SchemefulSite(attribution_info.context_origin)));
 }
 
@@ -759,30 +746,6 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
   }
 
   return RateLimitResult::kAllowed;
-}
-
-int64_t RateLimitTable::CountUniqueReportingOriginsPerSiteForAttribution(
-    sql::Database* db,
-    const AttributionTrigger& trigger,
-    base::Time trigger_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  sql::Statement statement(db->GetCachedStatement(
-      SQL_FROM_HERE,
-      attribution_queries::
-          kRateLimitCountUniqueReportingOriginsPerSiteForAttributionSql));
-  statement.BindString(
-      0, net::SchemefulSite(trigger.destination_origin()).Serialize());
-  statement.BindString(
-      1, net::SchemefulSite(trigger.reporting_origin()).Serialize());
-  statement.BindTime(
-      2, trigger_time - delegate_->GetRateLimits().origins_per_site_window);
-
-  if (!statement.Step()) {
-    return -1;
-  }
-
-  return statement.ColumnInt64(0);
 }
 
 int64_t

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 
 #include <memory>
@@ -30,6 +29,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -74,10 +74,10 @@ class TestDragDropRequestHandler
     ASSERT_EQ(request->reason(),
               enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP);
 
-    safe_browsing::BinaryUploadService::Request::Data data;
+    enterprise_connectors::BinaryUploadRequest::Data data;
     request->GetRequestData(base::BindLambdaForTesting(
-        [&data](safe_browsing::BinaryUploadService::Result,
-                safe_browsing::BinaryUploadService::Request::Data data_arg) {
+        [&data](enterprise_connectors::ScanRequestUploadResult,
+                enterprise_connectors::BinaryUploadRequest::Data data_arg) {
           data = std::move(data_arg);
         }));
 
@@ -85,7 +85,7 @@ class TestDragDropRequestHandler
         FROM_HERE,
         base::BindOnce(&TestDragDropRequestHandler::OnContentAnalysisResponse,
                        base::Unretained(this),
-                       safe_browsing::BinaryUploadService::Result::SUCCESS,
+                       enterprise_connectors::ScanRequestUploadResult::kSuccess,
                        delegate_->GetStatus(data.contents, base::FilePath())));
   }
 };
@@ -129,9 +129,9 @@ class DragDropTestContentAnalysisDelegate
 
  private:
   void FakeUploadFileForDeepScanning(
-      safe_browsing::BinaryUploadService::Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request,
       enterprise_connectors::test::FakeFilesRequestHandler::
           FakeFileRequestCallback callback) override {
     ASSERT_EQ(request->reason(),
@@ -261,7 +261,13 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
                   EXPECT_TRUE(successful_file_paths.count(filename.path));
                 }
                 if (successful_text_scan) {
-                  EXPECT_EQ(result_data->url_title, data.url_title);
+                  if (data.url_infos.empty()) {
+                    EXPECT_TRUE(result_data->url_infos.empty());
+                  } else {
+                    ASSERT_FALSE(result_data->url_infos.empty());
+                    EXPECT_EQ(result_data->url_infos.front().title,
+                              data.url_infos.front().title);
+                  }
                   EXPECT_EQ(result_data->text, data.text);
                   EXPECT_EQ(result_data->html, data.html);
                 }
@@ -351,7 +357,8 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop,
 TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, UrlTitle) {
   content::DropData data;
   data.document_is_handling_drag = true;
-  data.url_title = base::UTF8ToUTF16(large_text());
+  data.url_infos = {ui::ClipboardUrlInfo(GURL("https://example.com"),
+                                         base::UTF8ToUTF16(large_text()))};
 
   SetExpectedRequestsCount(0);
   RunTest(data, /*enable=*/false, /*successful_text_scan=*/true,
@@ -363,7 +370,7 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, UrlTitle) {
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/true,
           /*successful_file_paths*/ {});
 
-  data.url_title = base::UTF8ToUTF16(small_text());
+  data.url_infos.front().title = base::UTF8ToUTF16(small_text());
   SetExpectedRequestsCount(0);
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/true,
           /*successful_file_paths*/ {});

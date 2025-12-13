@@ -8,11 +8,10 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/secure_channel/authenticated_channel.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 
 namespace ash::secure_channel {
-
-class AuthenticatedChannel;
 
 // Performs an operation which creates a connection to a remote device. A
 // ConnectToDeviceOperation can only be used for a single connection attempt; if

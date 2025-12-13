@@ -15,7 +15,7 @@ CSSProgressValue::CSSProgressValue(const CSSValue& progress,
       progress_(&progress),
       easing_function_(easing_function) {}
 
-WTF::String CSSProgressValue::CustomCSSText() const {
+String CSSProgressValue::CustomCSSText() const {
   StringBuilder result;
   result.Append(progress_->CssText());
   if (easing_function_) {

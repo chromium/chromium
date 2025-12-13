@@ -67,7 +67,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::StrictMock;
 using ::testing::Truly;
@@ -80,15 +79,18 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
         const KURL& url,
         Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
             fingerprints,
+        Vector<String> application_protocols,
         mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
             handshake_client)
         : url(url),
           fingerprints(std::move(fingerprints)),
+          application_protocols(std::move(application_protocols)),
           handshake_client(std::move(handshake_client)) {}
 
     KURL url;
     Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
         fingerprints;
+    Vector<String> application_protocols;
     mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
         handshake_client;
   };
@@ -97,10 +99,12 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
       const KURL& url,
       Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
           fingerprints,
+      const Vector<String>& application_protocols,
       mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
           handshake_client) override {
-    connect_args_.push_back(
-        ConnectArgs(url, std::move(fingerprints), std::move(handshake_client)));
+    connect_args_.push_back(ConnectArgs(url, std::move(fingerprints),
+                                        application_protocols,
+                                        std::move(handshake_client)));
   }
 
   Vector<ConnectArgs> TakeConnectArgs() { return std::move(connect_args_); }
@@ -177,8 +181,8 @@ class WebTransportTest : public ::testing::Test {
         &scope.GetExecutionContext()->GetBrowserInterfaceBroker();
     interface_broker_->SetBinderForTesting(
         mojom::blink::WebTransportConnector::Name_,
-        WTF::BindRepeating(&WebTransportTest::BindConnector,
-                  weak_ptr_factory_.GetWeakPtr()));
+        blink::BindRepeating(&WebTransportTest::BindConnector,
+                             weak_ptr_factory_.GetWeakPtr()));
   }
 
   static WebTransportOptions* EmptyOptions() {
@@ -252,6 +256,7 @@ class WebTransportTest : public ::testing::Test {
         std::move(web_transport_to_pass),
         client_remote.InitWithNewPipeAndPassReceiver(),
         network::mojom::blink::HttpResponseHeaders::New(),
+        /*selected_application_protocol=*/String(),
         network::mojom::blink::WebTransportStats::New());
     client_remote_.Bind(std::move(client_remote));
   }
@@ -782,10 +787,10 @@ TEST_F(WebTransportTest, SendDatagram) {
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   EXPECT_CALL(*mock_web_transport_, SendDatagram(ElementsAre('A'), _))
-      .WillOnce(Invoke([](base::span<const uint8_t>,
-                          MockWebTransport::SendDatagramCallback callback) {
+      .WillOnce([](base::span<const uint8_t>,
+                   MockWebTransport::SendDatagramCallback callback) {
         std::move(callback).Run(true);
-      }));
+      });
 
   auto* writable = web_transport->datagrams()->writable();
   auto* script_state = scope.GetScriptState();
@@ -809,11 +814,10 @@ TEST_F(WebTransportTest, BackpressureForOutgoingDatagrams) {
 
   EXPECT_CALL(*mock_web_transport_, SendDatagram(_, _))
       .Times(4)
-      .WillRepeatedly(
-          Invoke([](base::span<const uint8_t>,
-                    MockWebTransport::SendDatagramCallback callback) {
-            std::move(callback).Run(true);
-          }));
+      .WillRepeatedly([](base::span<const uint8_t>,
+                         MockWebTransport::SendDatagramCallback callback) {
+        std::move(callback).Run(true);
+      });
 
   web_transport->datagrams()->setOutgoingHighWaterMark(3);
   auto* writable = web_transport->datagrams()->writable();
@@ -885,15 +889,15 @@ TEST_F(WebTransportTest, SendDatagramBeforeConnect) {
 
   testing::Sequence s;
   EXPECT_CALL(*mock_web_transport_, SendDatagram(ElementsAre('A'), _))
-      .WillOnce(Invoke([](base::span<const uint8_t>,
-                          MockWebTransport::SendDatagramCallback callback) {
+      .WillOnce([](base::span<const uint8_t>,
+                   MockWebTransport::SendDatagramCallback callback) {
         std::move(callback).Run(true);
-      }));
+      });
   EXPECT_CALL(*mock_web_transport_, SendDatagram(ElementsAre('N'), _))
-      .WillOnce(Invoke([](base::span<const uint8_t>,
-                          MockWebTransport::SendDatagramCallback callback) {
+      .WillOnce([](base::span<const uint8_t>,
+                   MockWebTransport::SendDatagramCallback callback) {
         std::move(callback).Run(true);
-      }));
+      });
 
   test::RunPendingTasks();
   *chunk->Data() = 'N';
@@ -1853,7 +1857,7 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenClose) {
       scope.GetIsolate(), read_tester.Value().V8Value());
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "WebTransportError");
-  EXPECT_EQ(exception->source(), "session");
+  EXPECT_EQ(exception->source(), V8WebTransportErrorSource::Enum::kSession);
   EXPECT_EQ(exception->streamErrorCode(), std::nullopt);
 }
 
@@ -1881,7 +1885,7 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenRemoteClose) {
       scope.GetIsolate(), read_tester.Value().V8Value());
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "WebTransportError");
-  EXPECT_EQ(exception->source(), "session");
+  EXPECT_EQ(exception->source(), V8WebTransportErrorSource::Enum::kSession);
   EXPECT_EQ(exception->streamErrorCode(), std::nullopt);
 }
 
@@ -2086,7 +2090,7 @@ TEST_F(WebTransportTest, ReceivedResetStream) {
   ASSERT_TRUE(error);
 
   EXPECT_EQ(error->streamErrorCode(), kCode);
-  EXPECT_EQ(error->source(), "stream");
+  EXPECT_EQ(error->source(), V8WebTransportErrorSource::Enum::kStream);
 
   EXPECT_TRUE(bidirectional_stream->writable()->IsWritable());
 }
@@ -2134,7 +2138,7 @@ TEST_F(WebTransportTest, ReceivedStopSending) {
   ASSERT_TRUE(error);
 
   EXPECT_EQ(error->streamErrorCode(), kCode);
-  EXPECT_EQ(error->source(), "stream");
+  EXPECT_EQ(error->source(), V8WebTransportErrorSource::Enum::kStream);
 
   EXPECT_TRUE(bidirectional_stream->readable()->IsReadable());
 }

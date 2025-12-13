@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
-
 #include "ui/ozone/platform/flatland/client_native_pixmap_factory_flatland.h"
 
 #include <lib/zx/vmar.h>
@@ -14,27 +11,34 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
 namespace {
 
+// See https://crbug.com/447414768 for the details of the thread-affinity.
+// The instance is created and destroyed on different threads; map and unmap are
+// always called in scope and on the same thread, but the pair of map and unmap
+// can be called multiple times from different threads; it's guaranteed that the
+// destructor is called un-racely after the last unmap.
 class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
  public:
   ~ClientNativePixmapFuchsia() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (mapping_) {
       // Flush the cache if Unmap is not called before the pixmap is destroyed.
       if (logically_mapped_) {
-        Unmap();
+        UnmapImpl();
       }
 
       zx_status_t status = zx::vmar::root_self()->unmap(
@@ -63,12 +67,12 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
     // 1. all the planes are pointing to the same underlying VM objects.
     // 2. the end of last plane should cover all the memory blocks.
     // 3. vmo.get_size() should return a size to cover all the planes.
-    // 4. vmo.get_size() should return a size well aligned with ZX_PAGE_SIZE.
+    // 4. vmo.get_size() should return a size well aligned with system page size.
     // See checks being performed in the CreateFromHandle.
 
     CHECK(handle_.planes[0].vmo);
     CHECK_EQ(handle_.planes[0].vmo.get_size(&mapping_size_), ZX_OK);
-    CHECK_EQ(mapping_size_ % ZX_PAGE_SIZE, 0UL);
+    CHECK_EQ(mapping_size_ % zx_system_get_page_size(), 0UL);
 
     // Pre-commit the pages of the pixmap, since it is likely that every page
     // will be touched. This is also necessary to successfully pre-fill the page
@@ -95,19 +99,8 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
 
   void Unmap() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(mapping_);
-    DCHECK(logically_mapped_);
-
-    // Flush the CPu cache in case the GPU reads the data directly from RAM.
-    // Keep the mapping to avoid unnecessary overhead when later reusing the
-    // pixmap. The actual unmap happens when the pixmap is destroyed.
-    if (handle_.ram_coherency) {
-      zx_status_t status =
-          zx_cache_flush(mapping_, mapping_size_,
-                         ZX_CACHE_FLUSH_DATA | ZX_CACHE_FLUSH_INVALIDATE);
-      ZX_DCHECK(status == ZX_OK, status) << "zx_cache_flush";
-    }
-    logically_mapped_ = false;
+    UnmapImpl();
+    DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
   size_t GetNumberOfPlanes() const override { return handle_.planes.size(); }
@@ -115,7 +108,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
   void* GetMemoryAddress(size_t plane) const override {
     DCHECK_LT(plane, handle_.planes.size());
     DCHECK(mapping_);
-    return mapping_ + handle_.planes[plane].offset;
+    return UNSAFE_TODO(mapping_ + handle_.planes[plane].offset);
   }
 
   int GetStride(size_t plane) const override {
@@ -130,7 +123,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
   static std::unique_ptr<gfx::ClientNativePixmap> CreateFromHandle(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format) {
+      viz::SharedImageFormat format) {
     // |planes| may be empty for non-mappable pixmaps. No need to validate the
     // handle in that case.
     if (handle.planes.empty()) {
@@ -173,7 +166,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
     // zx_vmo_get_size() should return a page-aligned size. This is important
     // because we request a page-aligned size in
     // ClientNativePixmapFuchsia::Map().
-    DCHECK_EQ(vmo_size % ZX_PAGE_SIZE, 0u);
+    DCHECK_EQ(vmo_size % zx_system_get_page_size(), 0u);
 
     // The CanFitImageForSizeAndFormat() call above should guarantee that the
     // (offset + size) for each plane is <= |last_plane_end|, and since we now
@@ -201,9 +194,26 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
         new ClientNativePixmapFuchsia(std::move(handle)));
   }
 
-  gfx::NativePixmapHandle handle_;
+  void UnmapImpl() {
+    DCHECK(mapping_);
+    DCHECK(logically_mapped_);
+
+    // Flush the CPu cache in case the GPU reads the data directly from RAM.
+    // Keep the mapping to avoid unnecessary overhead when later reusing the
+    // pixmap. The actual unmap happens when the pixmap is destroyed.
+    if (handle_.ram_coherency) {
+      zx_status_t status =
+          zx_cache_flush(mapping_, mapping_size_,
+                         ZX_CACHE_FLUSH_DATA | ZX_CACHE_FLUSH_INVALIDATE);
+      ZX_DCHECK(status == ZX_OK, status) << "zx_cache_flush";
+    }
+    logically_mapped_ = false;
+  }
+
+  const gfx::NativePixmapHandle handle_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
   bool logically_mapped_ = false;
   raw_ptr<uint8_t, AllowPtrArithmetic> mapping_ = nullptr;
   size_t mapping_size_ = 0;
@@ -226,7 +236,7 @@ class FlatlandClientNativePixmapFactory final
   std::unique_ptr<gfx::ClientNativePixmap> ImportFromHandle(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage) override {
     return ClientNativePixmapFuchsia::CreateFromHandle(std::move(handle), size,
                                                        format);

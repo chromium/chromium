@@ -134,7 +134,7 @@ ScriptPromise<IDLUndefined> BluetoothDevice::watchAdvertisements(
     // 1.2.1. Abort watchAdvertisements with this.
     // 1.2.2. Reject promise with AbortError.
     if (!abort_handle_map_.Contains(options->signal())) {
-      auto* handle = options->signal()->AddAlgorithm(WTF::BindOnce(
+      auto* handle = options->signal()->AddAlgorithm(BindOnce(
           &BluetoothDevice::AbortWatchAdvertisements, WrapWeakPersistent(this),
           WrapWeakPersistent(options->signal())));
       abort_handle_map_.insert(options->signal(), handle);
@@ -172,8 +172,8 @@ ScriptPromise<IDLUndefined> BluetoothDevice::watchAdvertisements(
   // the same device.
   bluetooth_->Service()->WatchAdvertisementsForDevice(
       device_->id, std::move(client),
-      WTF::BindOnce(&BluetoothDevice::WatchAdvertisementsCallback,
-                    WrapPersistent(this)));
+      BindOnce(&BluetoothDevice::WatchAdvertisementsCallback,
+               WrapPersistent(this)));
   return watch_advertisements_resolver_->Promise();
 }
 
@@ -214,7 +214,7 @@ ScriptPromise<IDLUndefined> BluetoothDevice::forget(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   bluetooth_->Service()->ForgetDevice(
-      device_->id, WTF::BindOnce(
+      device_->id, BindOnce(
                        [](ScriptPromiseResolver<IDLUndefined>* resolver) {
                          resolver->Resolve();
                        },

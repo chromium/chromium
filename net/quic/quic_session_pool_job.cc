@@ -63,8 +63,9 @@ QuicSessionPool::Job::~Job() {
 void QuicSessionPool::Job::AddRequest(QuicSessionRequest* request) {
   // We suspect that requests are being added to jobs that are being deleted
   // which would leave the requests orphaned.
-  // TODO(crbug.com/404586727): Remove once crash reason is confirmed.
-  if (is_deleting) {
+  // TODO(crbug.com/404586727): Remove once we confirm the crash no longer
+  // happens.
+  if (is_deleting_) {
     base::debug::DumpWithoutCrashing();
   }
   request->AddedToJob();

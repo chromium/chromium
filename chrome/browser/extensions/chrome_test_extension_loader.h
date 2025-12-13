@@ -33,8 +33,6 @@ class ExtensionSystem;
 // be used by both browser tests and unit tests. Note that this should be used
 // for a single extension, and is designed to be used on the stack (rather than
 // as a test suite member).
-// TODO(crbug.com/409252373): Continue sharing more code between android and
-// non-android versions of this class.
 class ChromeTestExtensionLoader {
  public:
   explicit ChromeTestExtensionLoader(content::BrowserContext* browser_context);

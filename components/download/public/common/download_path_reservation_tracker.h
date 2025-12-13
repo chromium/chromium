@@ -6,7 +6,7 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_PATH_RESERVATION_TRACKER_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/download/public/common/download_export.h"
 
 namespace base {

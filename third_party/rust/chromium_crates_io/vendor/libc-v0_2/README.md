@@ -71,7 +71,7 @@ but this is not guaranteed.
 You can see the platform(target)-specific docs on [docs.rs], select a platform
 you want to see.
 
-See [`ci/verify-build.sh`](https://github.com/rust-lang/libc/blob/HEAD/ci/verify-build.sh) for
+See [`ci/verify-build.py`](https://github.com/rust-lang/libc/blob/HEAD/ci/verify-build.py) for
 the platforms on which `libc` is guaranteed to build for each Rust toolchain.
 The test-matrix at [GitHub Actions] and [Cirrus CI] show the platforms in which
 `libc` tests are run.

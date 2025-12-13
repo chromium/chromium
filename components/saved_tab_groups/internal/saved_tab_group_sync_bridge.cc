@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -48,6 +47,8 @@
 
 namespace tab_groups {
 namespace {
+
+BASE_FEATURE(kUpdatePostionsOnTabClose, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Time period for orphaned tabs/groups to live till. once this threshold is
 // passed, on the next merge, they will be deleted.
@@ -437,6 +438,7 @@ SavedTabGroupSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     tab_group->clear_title();
     tab_group->clear_color();
     tab_group->clear_pinned_position();
+    tab_group->clear_bookmark_node_id();
 
     if (tab_group->ByteSizeLong() == 0) {
       trimmed_specifics.clear_group();
@@ -576,12 +578,19 @@ void SavedTabGroupSyncBridge::SavedTabGroupUpdatedLocally(
   if (tab_guid.has_value()) {
     if (!group->ContainsTab(tab_guid.value())) {
       RemoveEntitySpecific(tab_guid.value(), ongoing_write_batch_.get());
+      if (base::FeatureList::IsEnabled(kUpdatePostionsOnTabClose)) {
+        // Remaining tabs in the group have their positions updated.
+        SavedTabGroupTabsReorderedLocally(group_guid);
+      }
     } else {
       int tab_index = group->GetIndexOfTab(tab_guid.value()).value();
       const SavedTabGroupTab& tab = group->saved_tabs()[tab_index];
       UpsertEntitySpecific(
           SavedTabGroupTabToData(group->saved_tabs()[tab_index]),
           ongoing_write_batch_.get(), /*send_to_sync=*/!tab.is_pending_ntp());
+      // TODO(https://crbug.com/437033786): If a new tab is inserted in the
+      // middle of the group we need to update the positions of the existing
+      // tabs.
     }
 
     // There might be an updated user interaction time for the group. Hence

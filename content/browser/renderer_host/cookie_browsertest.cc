@@ -76,7 +76,7 @@ void EnableDevtoolsThirdPartyCookieRestriction(
 
 void SetCookieFromJS(RenderFrameHost* frame, std::string cookie) {
   EvalJsResult result = EvalJs(frame, "document.cookie = '" + cookie + "'");
-  EXPECT_TRUE(result.error.empty()) << result.error;
+  EXPECT_TRUE(result.is_ok()) << result;
 }
 
 std::string GetCookieFromJS(RenderFrameHost* frame) {

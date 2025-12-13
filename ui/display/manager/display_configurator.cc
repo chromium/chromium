@@ -198,50 +198,6 @@ DisplayConfigurator::DisplayLayoutManagerImpl::ParseDisplays(
     display_state.selected_mode = GetUserSelectedMode(*snapshot);
     cached_displays.push_back(display_state);
   }
-
-  // Hardware mirroring is now disabled by default until it is decided whether
-  // to permanently remove hardware mirroring support. See crbug.com/1161556 for
-  // details.
-  if (!features::IsHardwareMirrorModeEnabled())
-    return cached_displays;
-
-  // Hardware mirroring doesn't work on desktop-linux Chrome OS's fake displays.
-  // Skip mirror mode setup in that case to fall back on software mirroring.
-  if (!configure_displays_) {
-    return cached_displays;
-  }
-
-  if (cached_displays.size() <= 1)
-    return cached_displays;
-
-  std::vector<DisplayState*> displays;
-  int num_internal_displays = 0;
-  for (auto& display : cached_displays) {
-    if (display.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
-      ++num_internal_displays;
-    displays.emplace_back(&display);
-  }
-  CHECK_LT(num_internal_displays, 2);
-  LOG_IF(WARNING, num_internal_displays >= 2)
-      << "At least two internal displays detected.";
-
-  // Hardware mirroring doesn't work among displays on different devices. In
-  // this case we revert to software mirroring.
-  if (!AllDisplaysOnSameDevice(displays))
-    return cached_displays;
-
-  // Hardware mirroring doesn't work for displays that do not have display
-  // mode. In this case we revert to software mirroring.
-  if (!AllDisplaysHaveDisplayMode(displays))
-    return cached_displays;
-
-  bool can_mirror = false;
-  for (int attempt = 0; !can_mirror && attempt < 2; ++attempt) {
-    // Try preserving external display's aspect ratio on the first attempt.
-    // If that fails, fall back to the highest matching resolution.
-    bool preserve_aspect = attempt == 0;
-    can_mirror = FindExactMatchingMirrorMode(displays, preserve_aspect);
-  }
   return cached_displays;
 }
 
@@ -412,17 +368,10 @@ DisplayConfigurator::DisplayLayoutManagerImpl::GetUserSelectedMode(
     ManagedDisplayMode mode;
     const bool mode_found = state_controller->GetSelectedModeForDisplayId(
         display.display_id(), &mode);
-    if (display::features::IsListAllDisplayModesEnabled()) {
-      // When selecting any arbitrary display mode is enabled, we don't try to
-      // be smart about finding the best mode matching the user-selected display
-      // size, rather we find an exact match to the selected display mode.
-      selected_mode =
-          mode_found ? FindExactMatchingMode(display, mode) : nullptr;
-    } else {
-      selected_mode = mode_found
-                          ? FindDisplayModeMatchingSize(display, mode.size())
-                          : nullptr;
-    }
+    // When selecting any arbitrary display mode is enabled, we don't try to
+    // be smart about finding the best mode matching the user-selected display
+    // size, rather we find an exact match to the selected display mode.
+    selected_mode = mode_found ? FindExactMatchingMode(display, mode) : nullptr;
   }
 
   // Fall back to native mode.

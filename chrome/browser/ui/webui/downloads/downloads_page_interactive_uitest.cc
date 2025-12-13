@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -35,7 +36,7 @@ const char kClickFn[] = "el => el.click()";
 using ::testing::Eq;
 
 class DownloadsPageInteractiveUitest
-    : public InteractiveBrowserTestT<DownloadTestBase> {
+    : public InteractiveBrowserTestMixin<DownloadTestBase> {
  public:
   DownloadsPageInteractiveUitest() = default;
   ~DownloadsPageInteractiveUitest() override = default;
@@ -45,11 +46,11 @@ class DownloadsPageInteractiveUitest
     // reliably open in the same tab. (It only opens in the same tab if the
     // current tab is about:blank.)
     set_open_about_blank_on_browser_launch(true);
-    InteractiveBrowserTestT<DownloadTestBase>::SetUp();
+    InteractiveBrowserTestMixin<DownloadTestBase>::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTestT<DownloadTestBase>::SetUpOnMainThread();
+    InteractiveBrowserTestMixin<DownloadTestBase>::SetUpOnMainThread();
     embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
     ASSERT_TRUE(embedded_test_server()->Start());
   }

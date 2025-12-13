@@ -4,12 +4,19 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
-#include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "chromeos/ash/components/quick_start/logging.h"
+#include "crypto/obsolete/sha1.h"
 
 namespace ash::quick_start {
+std::string GetHashedAuthToken(std::string_view authentication_token) {
+  return std::string(
+      base::as_string_view(crypto::obsolete::Sha1::Hash(authentication_token)));
+}
 
 TargetDeviceConnectionBroker::TargetDeviceConnectionBroker() = default;
 TargetDeviceConnectionBroker::~TargetDeviceConnectionBroker() = default;
@@ -54,7 +61,23 @@ void TargetDeviceConnectionBroker::OnConnectionClosed(
 
 std::string TargetDeviceConnectionBroker::DerivePin(
     const std::string& authentication_token) const {
-  std::string hash_str = base::SHA1HashString(authentication_token);
+  // This algorithm is not as straightforward as it looks because of signed
+  // integer promotion rules. What it actually does is:
+  //
+  // Take an adjacent pair of bytes (b0, b1). Convert each to a *signed*
+  // integer (i0, i1) - remember this will sign-extend the high bits of (b0,
+  // b1) respectively. Then, compute: v = (i0 << 8) | i1. This value will be
+  // negative if either i0 or i1 was negative, so take its absolute value,
+  // then use the lowest digit of that absolute value as a digit of the PIN.
+  // Repeat, using subsequent pairs of bytes in the hash, for each digit of
+  // PIN we are generating.
+  //
+  // This is probably not what was intended, because if the high bit of b1
+  // happens to be set then the value of b0 is ignored, but it is not feasible
+  // to change - the current algorithm is baked into a lot of deployed devices
+  // that are not easy to update.
+  // See b/458497324.
+  std::string hash_str = GetHashedAuthToken(authentication_token);
   std::vector<int8_t> hash_ints =
       std::vector<int8_t>(hash_str.begin(), hash_str.end());
   return base::NumberToString(

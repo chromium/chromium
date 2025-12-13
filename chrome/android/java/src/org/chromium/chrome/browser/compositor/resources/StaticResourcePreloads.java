@@ -31,9 +31,7 @@ public class StaticResourcePreloads {
 
     /** A list of resources to load asynchronously once the compositor is initialized. */
     private static final int[] sAsynchronousResources =
-            new int[] {
-                R.drawable.btn_tabstrip_switch_normal, R.drawable.location_bar_incognito_badge
-            };
+            new int[] {R.drawable.location_bar_incognito_badge};
 
     private static final int[] sEmptyList = new int[] {};
 

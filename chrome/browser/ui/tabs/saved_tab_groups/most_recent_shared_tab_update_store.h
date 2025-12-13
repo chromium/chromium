@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_MOST_RECENT_SHARED_TAB_UPDATE_STORE_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_MOST_RECENT_SHARED_TAB_UPDATE_STORE_H_
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/saved_tab_groups/public/types.h"

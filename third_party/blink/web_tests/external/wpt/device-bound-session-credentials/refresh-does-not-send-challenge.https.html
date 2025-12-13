@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>DBSC refresh does not send back Sec-Session-Challenge</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="helper.js" type="module"></script>
@@ -15,7 +14,7 @@
     addCookieAndSessionCleanup(t);
 
     // Configure server to avoid sending back a challenge during refresh.
-    configureServer({ refreshSendsChallenge: false });
+    await configureServer({ refreshSendsChallenge: false });
 
     // Prompt starting a session, and wait until registration completes.
     const loginResponse = await fetch('login.py');
@@ -32,5 +31,5 @@
     const authResponseAfterExpiry = await fetch('verify_authenticated.py');
     assert_equals(authResponseAfterExpiry.status, 200);
     assert_true(documentHasCookie(expectedCookieAndValue));
-}, "Refresh does not send back Sec-Session-Challenge");
+}, "Refresh does not send back Secure-Session-Challenge");
 </script>

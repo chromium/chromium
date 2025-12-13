@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -30,10 +31,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -43,6 +46,7 @@ import java.util.Set;
 /** Tests for {@link InstalledWebappBroadcastReceiver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
 public class InstalledWebappBroadcastReceiverTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public Context mContext;
@@ -150,8 +154,8 @@ public class InstalledWebappBroadcastReceiverTest {
 
         mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
-        verify(mStore).resetPermission(eq(Origin.create(url1.getSpec())), anyInt());
-        verify(mStore).resetPermission(eq(Origin.create(url2.getSpec())), anyInt());
+        verify(mStore, times(2)).resetPermission(eq(Origin.create(url1.getSpec())), anyInt());
+        verify(mStore, times(2)).resetPermission(eq(Origin.create(url2.getSpec())), anyInt());
     }
 
     /** Tests we differentiate between app uninstalled and data cleared. */

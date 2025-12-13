@@ -1,0 +1,23 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsSensors}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsMotionSensorsDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.SENSORS]]"
+      allow-option-label="$i18n{siteSettingsMotionSensorsAllowed}"
+      allow-option-icon="privacy:sensors"
+      block-option-label="$i18n{siteSettingsMotionSensorsBlocked}"
+      block-option-sub-label=
+          "$i18n{siteSettingsMotionSensorsBlockedSubLabel}"
+      block-option-icon="privacy:sensors-off">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.SENSORS]]" read-only-list
+      allow-header="$i18n{siteSettingsMotionSensorsAllowedExceptions}"
+      block-header="$i18n{siteSettingsMotionSensorsBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

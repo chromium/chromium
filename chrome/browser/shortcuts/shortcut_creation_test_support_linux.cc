@@ -106,8 +106,7 @@ void ShortcutCreationTestSupport::LaunchShortcut(const base::FilePath& path) {
   CHECK(base::ReadFileToString(path, &file));
   base::CommandLine command_line(
       internal::ParseDesktopExecForCommandLine(GetDesktopEntry("Exec", file)));
-  ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
-      command_line, /*current_directory=*/{});
+  ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(command_line);
 }
 
 // static

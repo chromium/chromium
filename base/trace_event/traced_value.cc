@@ -715,10 +715,6 @@ TracedValue::ValueHolder::ValueHolder(TracedValue::Array& value) {
 }
 
 TracedValue::ValueHolder::ValueHolder(TracedValue::ValueHolder&& other) {
-  // Remember to call a destructor if necessary.
-  if (kept_value_type_ == KeptValueType::kStdStringType) {
-    delete (&kept_value_.std_string_value);
-  }
   switch (other.kept_value_type_) {
     case KeptValueType::kIntType: {
       kept_value_.int_value = other.kept_value_.int_value;
@@ -852,7 +848,7 @@ void TracedValue::DictionaryItem::WriteToValue(TracedValue* value) const {
 
 std::unique_ptr<TracedValue> TracedValue::Build(
     const std::initializer_list<DictionaryItem> items) {
-  std::unique_ptr<TracedValue> value(new TracedValue());
+  auto value = std::make_unique<TracedValue>();
   for (const auto& item : items) {
     item.WriteToValue(value.get());
   }

@@ -41,22 +41,19 @@ source_set("lib") {
   public_deps = [
     "//base",
     "//media",
-    "//media/capture:capture",
+    "//media/capture",
     "//media/capture/mojom:image_capture",
-    "//media/mojo/common:common",
+    "//media/mojo/common",
     "//mojo/public/cpp/system",
     "//services/video_capture/public/cpp",
     "//services/video_capture/public/mojom",
     "//services/video_capture/public/mojom:constants",
-    "//services/video_effects/buildflags",
-    "//services/video_effects/public/mojom:mojom",
     "//services/viz/public/cpp/gpu",
   ]
 
   deps = [
     "//media/capture:capture_lib",
     "//media/capture:capture_switches",
-    "//services/video_effects/buildflags",
   ]
 
   if (is_chromeos) {
@@ -75,7 +72,7 @@ source_set("lib") {
 
     deps += [
       "//base",
-      "//services/video_capture/public/cpp:cpp",
+      "//services/video_capture/public/cpp",
       "//services/video_capture/public/mojom",
     ]
 

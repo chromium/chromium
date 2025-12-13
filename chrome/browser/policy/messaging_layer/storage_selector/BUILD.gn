@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
-
 # This target facilitates `ReportingClient` ability to select underlying storage
 # for encrypted reporting pipeline report client. It is built into Chrome and
 # configured differently depending on the platform. In the case of ChromeOS, it

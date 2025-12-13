@@ -1,9 +1,7 @@
 include_rules = [
   "+chromeos/ash/components/borealis",
   "+chromeos/ash/components/dbus/resourced",
-  "+chromeos/chromeos/ash/experiences/arc",
   "+ui/aura",
-  "+ui/base",
   "+ui/views",
 
   # TODO(crbug.com/402346171): Components should not have dependencies to //ash.

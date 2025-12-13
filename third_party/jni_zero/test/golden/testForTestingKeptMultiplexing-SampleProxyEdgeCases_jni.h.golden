@@ -8,162 +8,161 @@
 
 #include <jni.h>
 
-#include "third_party/jni_zero/jni_export.h"
-#include "third_party/jni_zero/jni_zero_helper.h"
-// Macro for transition to enable_definition_macros=true.
-#define DEFINE_JNI_FOR_SampleProxyEdgeCases()
+#include "overridden/jni_zero_internal.h"
+#include "extra_include.h"
+
+// Example signatures (to be implemented by #including file).
+// static jint JNI_SampleProxyEdgeCases_AddStructB(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<jobject>& caller,
+//     const jni_zero::JavaRef<jobject>& b);
+//
+// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_ArrayTypes1(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<jintArray>& a,
+//     const jni_zero::JavaRef<jobjectArray>& b);
+//
+// static jni_zero::ScopedJavaLocalRef<jintArray> JNI_SampleProxyEdgeCases_ArrayTypes2(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<jintArray>& a,
+//     const jni_zero::JavaRef<jobjectArray>& b);
+//
+// static void JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<jobjectArray>& arg);
+//
+// static void JNI_SampleProxyEdgeCases_SetBool(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<jobject>& b,
+//     const jni_zero::JavaRef<jobject>& i);
+//
+// static jboolean JNI_SampleProxyEdgeCases_SetStringBuilder(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<jobject>& sb);
+//
+// static jint JNI_SampleProxyEdgeCases_SetStringBuilder(JNIEnv* env, jint sb);
+//
+// static void JNI_SampleProxyEdgeCases_FooForTest(JNIEnv* env);
+//
+// static void JNI_SampleProxyEdgeCases_FooForTesting(JNIEnv* env);
+//
+// static void JNI_SampleProxyEdgeCases_FooForTests(JNIEnv* env);
+//
+// void Instance::InstanceMethod(JNIEnv* env, const jni_zero::JavaRef<jobject>& jcaller);
+//
+// static void JNI_SampleProxyEdgeCases_StaticMethod(JNIEnv* env);
+//
 
 // Java to native functions
-// Forward declaration. To be implemented by the including .cc file.
-static jint JNI_SampleProxyEdgeCases_AddStructB(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& caller,
-    const jni_zero::JavaParamRef<jobject>& b);
-
-JNI_ZERO_MUXED_ENTRYPOINT jint Muxed_org_jni_1zero_SampleProxyEdgeCases_addStructB(
-    JNIEnv* env,
-    jobject caller,
-    jobject b) {
-  auto _ret = JNI_SampleProxyEdgeCases_AddStructB(
-      env,
-      jni_zero::JavaParamRef<jobject>(env, caller),
-      jni_zero::JavaParamRef<jobject>(env, b));
-  return _ret;
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_ArrayTypes1(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jintArray>& a,
-    const jni_zero::JavaParamRef<jobjectArray>& b);
-
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleProxyEdgeCases_arrayTypes1(
-    JNIEnv* env,
-    jobject a,
-    jobject b) {
-  auto _ret = JNI_SampleProxyEdgeCases_ArrayTypes1(
-      env,
-      jni_zero::JavaParamRef<jintArray>(env, static_cast<jintArray>(a)),
-      jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(b)));
-  return _ret.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jintArray> JNI_SampleProxyEdgeCases_ArrayTypes2(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jintArray>& a,
-    const jni_zero::JavaParamRef<jobjectArray>& b);
-
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleProxyEdgeCases_arrayTypes2(
-    JNIEnv* env,
-    jobject a,
-    jobject b) {
-  auto _ret = JNI_SampleProxyEdgeCases_ArrayTypes2(
-      env,
-      jni_zero::JavaParamRef<jintArray>(env, static_cast<jintArray>(a)),
-      jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(b)));
-  return _ret.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleProxyEdgeCases_FooForTest(JNIEnv* env);
-
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTest(JNIEnv* env) {
-  JNI_SampleProxyEdgeCases_FooForTest(env);
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleProxyEdgeCases_FooForTesting(JNIEnv* env);
-
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTesting(JNIEnv* env) {
-  JNI_SampleProxyEdgeCases_FooForTesting(env);
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleProxyEdgeCases_FooForTests(JNIEnv* env);
-
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTests(JNIEnv* env) {
-  JNI_SampleProxyEdgeCases_FooForTests(env);
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(JNIEnv* env);
-
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_foo__weirdly__escaped_name1(
-    JNIEnv* env) {
-  JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(env);
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jobjectArray>& arg);
-
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(
-    JNIEnv* env,
-    jobject arg) {
-  auto _ret = JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(
-      env,
-      jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(arg)));
-  return _ret.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleProxyEdgeCases_SetBool(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& b,
-    const jni_zero::JavaParamRef<jobject>& i);
-
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_setBool(
-    JNIEnv* env,
-    jobject b,
-    jobject i) {
-  JNI_SampleProxyEdgeCases_SetBool(
-      env,
-      jni_zero::JavaParamRef<jobject>(env, b),
-      jni_zero::JavaParamRef<jobject>(env, i));
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jboolean JNI_SampleProxyEdgeCases_SetStringBuilder(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& sb);
-
-JNI_ZERO_MUXED_ENTRYPOINT jboolean Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(
-    JNIEnv* env,
-    jobject sb) {
-  auto _ret = JNI_SampleProxyEdgeCases_SetStringBuilder(
-      env,
-      jni_zero::JavaParamRef<jobject>(env, sb));
-  return _ret;
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jint JNI_SampleProxyEdgeCases_SetStringBuilder(JNIEnv* env, jint sb);
-
-JNI_ZERO_MUXED_ENTRYPOINT jint Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(
-    JNIEnv* env,
-    jint sb) {
-  auto _ret = JNI_SampleProxyEdgeCases_SetStringBuilder(env, sb);
-  return _ret;
-}
-
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(
-    JNIEnv* env,
-    jlong nativeInstance) {
-  reinterpret_cast<Instance*>(nativeInstance)->InstanceMethod(
-      env,
-      jni_zero::JavaParamRef<jobject>(env, jcaller));
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleProxyEdgeCases_StaticMethod(JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(
-    JNIEnv* env) {
-  JNI_SampleProxyEdgeCases_StaticMethod(env);
-}
-
-
+// Emit a warning if DEFINE_JNI(SampleProxyEdgeCases) is missing in the including .cc file.
+#pragma clang diagnostic push
+#pragma clang diagnostic warning "-Wunused-macros"
+#define DEFINE_JNI_FOR_SampleProxyEdgeCases_SEE_JNI_ZERO_README()                                  \
+  namespace {                                                                                      \
+                                                                                                   \
+  JNI_ZERO_MUXED_ENTRYPOINT jint Muxed_org_jni_1zero_SampleProxyEdgeCases_addStructB(              \
+      JNIEnv* env,                                                                                 \
+      jobject caller,                                                                              \
+      jobject b) {                                                                                 \
+    auto _ret = JNI_SampleProxyEdgeCases_AddStructB(                                               \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, caller),                                      \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, b));                                          \
+    return _ret;                                                                                   \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleProxyEdgeCases_arrayTypes1(          \
+      JNIEnv* env,                                                                                 \
+      jobject a,                                                                                   \
+      jobject b) {                                                                                 \
+    auto _ret = JNI_SampleProxyEdgeCases_ArrayTypes1(                                              \
+        env,                                                                                       \
+        jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(a)),                 \
+        jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(b)));          \
+    return _ret.ReleaseLocal();                                                                    \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleProxyEdgeCases_arrayTypes2(          \
+      JNIEnv* env,                                                                                 \
+      jobject a,                                                                                   \
+      jobject b) {                                                                                 \
+    auto _ret = JNI_SampleProxyEdgeCases_ArrayTypes2(                                              \
+        env,                                                                                       \
+        jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(a)),                 \
+        jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(b)));          \
+    return _ret.ReleaseLocal();                                                                    \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_foo__weirdly__escaped_name1( \
+      JNIEnv* env) {                                                                               \
+    JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(env);                                     \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray( \
+      JNIEnv* env,                                                                                 \
+      jobject arg) {                                                                               \
+    auto _ret = JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(                             \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(arg)));        \
+    return _ret.ReleaseLocal();                                                                    \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_setBool(                 \
+      JNIEnv* env,                                                                                 \
+      jobject b,                                                                                   \
+      jobject i) {                                                                                 \
+    JNI_SampleProxyEdgeCases_SetBool(                                                              \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, b),                                           \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, i));                                          \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_MUXED_ENTRYPOINT jboolean Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(    \
+      JNIEnv* env,                                                                                 \
+      jobject sb) {                                                                                \
+    auto _ret = JNI_SampleProxyEdgeCases_SetStringBuilder(                                         \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, sb));                                         \
+    return _ret;                                                                                   \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_MUXED_ENTRYPOINT jint Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(        \
+      JNIEnv* env,                                                                                 \
+      jint sb) {                                                                                   \
+    auto _ret = JNI_SampleProxyEdgeCases_SetStringBuilder(env, sb);                                \
+    return _ret;                                                                                   \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTest(JNIEnv* env) { \
+    JNI_SampleProxyEdgeCases_FooForTest(env);                                                      \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTesting(           \
+      JNIEnv* env) {                                                                               \
+    JNI_SampleProxyEdgeCases_FooForTesting(env);                                                   \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTests(JNIEnv* env) { \
+    JNI_SampleProxyEdgeCases_FooForTests(env);                                                     \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(      \
+      JNIEnv* env,                                                                                 \
+      jlong nativeInstance) {                                                                      \
+    reinterpret_cast<Instance*>(nativeInstance)->InstanceMethod(                                   \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                                    \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(        \
+      JNIEnv* env) {                                                                               \
+    JNI_SampleProxyEdgeCases_StaticMethod(env);                                                    \
+  }                                                                                                \
+                                                                                                   \
+                                                                                                   \
+  }  /* namespace */
+#pragma clang diagnostic pop
 
 #endif  // org_jni_1zero_SampleProxyEdgeCases_JNI

@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -29,6 +30,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 
+using autofill::AutofillServerPrediction;
 using autofill::AutofillType;
 using autofill::AutofillUploadContents;
 using autofill::FieldGlobalId;
@@ -147,13 +149,13 @@ std::string GetFormFieldDataWithPropertiesMaskLogString(
 // field.
 std::string GetFieldServerPredictionLogString(
     FieldGlobalId field_id,
-    const base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>&
+    const base::flat_map<FieldGlobalId, AutofillServerPrediction>&
         predictions) {
   if (!predictions.contains(field_id)) {
     return std::string();
   }
   std::string result;
-  const AutofillType::ServerPrediction& prediction = predictions.at(field_id);
+  const AutofillServerPrediction& prediction = predictions.at(field_id);
 
   if (prediction.server_type() != autofill::NO_SERVER_DATA) {
     base::StrAppend(&result, {", Server Type= ",
@@ -175,7 +177,7 @@ std::string GetFieldServerPredictionLogString(
 // contained in `form`.
 std::string GetFormFieldsDataAndServerPredictionsLogString(
     const FormData& form,
-    const base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>&
+    const base::flat_map<FieldGlobalId, AutofillServerPrediction>&
         predictions) {
   std::string result;
   for (const FormFieldData& field : form.fields()) {
@@ -226,7 +228,7 @@ BrowserSavePasswordProgressLogger::~BrowserSavePasswordProgressLogger() =
 
 void BrowserSavePasswordProgressLogger::LogFormDataWithServerPredictions(
     const autofill::FormData& form,
-    const base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>&
+    const base::flat_map<FieldGlobalId, AutofillServerPrediction>&
         predictions) {
   std::string message = "Server predictions: {\n";
   message += GetFormDataLog(form);

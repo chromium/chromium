@@ -10,7 +10,7 @@
 #  include "config.h"
 #endif
 
-#include <meta-dbus-debug-control.h>
+#include "meta-dbus-debug-control.h"
 
 #include <string.h>
 #ifdef G_OS_UNIX
@@ -212,34 +212,6 @@ _g_value_equal (const GValue *a, const GValue *b)
 
 /* ---- Introspection data for org.gnome.Mutter.DebugControl ---- */
 
-static const _ExtendedGDBusPropertyInfo _meta_dbus_debug_control_property_info_color_management_protocol =
-{
-  {
-    -1,
-    (gchar *) "ColorManagementProtocol",
-    (gchar *) "b",
-    G_DBUS_PROPERTY_INFO_FLAGS_READABLE | G_DBUS_PROPERTY_INFO_FLAGS_WRITABLE,
-    NULL
-  },
-  "color-management-protocol",
-  FALSE,
-  TRUE
-};
-
-static const _ExtendedGDBusPropertyInfo _meta_dbus_debug_control_property_info_enable_hdr =
-{
-  {
-    -1,
-    (gchar *) "EnableHDR",
-    (gchar *) "b",
-    G_DBUS_PROPERTY_INFO_FLAGS_READABLE | G_DBUS_PROPERTY_INFO_FLAGS_WRITABLE,
-    NULL
-  },
-  "enable-hdr",
-  FALSE,
-  TRUE
-};
-
 static const _ExtendedGDBusPropertyInfo _meta_dbus_debug_control_property_info_force_hdr =
 {
   {
@@ -264,20 +236,6 @@ static const _ExtendedGDBusPropertyInfo _meta_dbus_debug_control_property_info_f
     NULL
   },
   "force-linear-blending",
-  FALSE,
-  TRUE
-};
-
-static const _ExtendedGDBusPropertyInfo _meta_dbus_debug_control_property_info_luminance_percentage =
-{
-  {
-    -1,
-    (gchar *) "LuminancePercentage",
-    (gchar *) "u",
-    G_DBUS_PROPERTY_INFO_FLAGS_READABLE | G_DBUS_PROPERTY_INFO_FLAGS_WRITABLE,
-    NULL
-  },
-  "luminance-percentage",
   FALSE,
   TRUE
 };
@@ -310,15 +268,27 @@ static const _ExtendedGDBusPropertyInfo _meta_dbus_debug_control_property_info_i
   TRUE
 };
 
+static const _ExtendedGDBusPropertyInfo _meta_dbus_debug_control_property_info_a11y_manager_without_access_control =
+{
+  {
+    -1,
+    (gchar *) "A11yManagerWithoutAccessControl",
+    (gchar *) "b",
+    G_DBUS_PROPERTY_INFO_FLAGS_READABLE | G_DBUS_PROPERTY_INFO_FLAGS_WRITABLE,
+    NULL
+  },
+  "a11y-manager-without-access-control",
+  FALSE,
+  TRUE
+};
+
 static const GDBusPropertyInfo * const _meta_dbus_debug_control_property_info_pointers[] =
 {
-  &_meta_dbus_debug_control_property_info_color_management_protocol.parent_struct,
-  &_meta_dbus_debug_control_property_info_enable_hdr.parent_struct,
   &_meta_dbus_debug_control_property_info_force_hdr.parent_struct,
   &_meta_dbus_debug_control_property_info_force_linear_blending.parent_struct,
-  &_meta_dbus_debug_control_property_info_luminance_percentage.parent_struct,
   &_meta_dbus_debug_control_property_info_session_management_protocol.parent_struct,
   &_meta_dbus_debug_control_property_info_inhibit_hw_cursor.parent_struct,
+  &_meta_dbus_debug_control_property_info_a11y_manager_without_access_control.parent_struct,
   NULL
 };
 
@@ -362,13 +332,11 @@ meta_dbus_debug_control_interface_info (void)
 guint
 meta_dbus_debug_control_override_properties (GObjectClass *klass, guint property_id_begin)
 {
-  g_object_class_override_property (klass, property_id_begin++, "color-management-protocol");
-  g_object_class_override_property (klass, property_id_begin++, "enable-hdr");
   g_object_class_override_property (klass, property_id_begin++, "force-hdr");
   g_object_class_override_property (klass, property_id_begin++, "force-linear-blending");
-  g_object_class_override_property (klass, property_id_begin++, "luminance-percentage");
   g_object_class_override_property (klass, property_id_begin++, "session-management-protocol");
   g_object_class_override_property (klass, property_id_begin++, "inhibit-hw-cursor");
+  g_object_class_override_property (klass, property_id_begin++, "a11y-manager-without-access-control");
   return property_id_begin - 1;
 }
 
@@ -383,12 +351,10 @@ meta_dbus_debug_control_override_properties (GObjectClass *klass, guint property
 /**
  * MetaDBusDebugControlIface:
  * @parent_iface: The parent interface.
- * @get_color_management_protocol: Getter for the #MetaDBusDebugControl:color-management-protocol property.
- * @get_enable_hdr: Getter for the #MetaDBusDebugControl:enable-hdr property.
+ * @get_a11y_manager_without_access_control: Getter for the #MetaDBusDebugControl:a11y-manager-without-access-control property.
  * @get_force_hdr: Getter for the #MetaDBusDebugControl:force-hdr property.
  * @get_force_linear_blending: Getter for the #MetaDBusDebugControl:force-linear-blending property.
  * @get_inhibit_hw_cursor: Getter for the #MetaDBusDebugControl:inhibit-hw-cursor property.
- * @get_luminance_percentage: Getter for the #MetaDBusDebugControl:luminance-percentage property.
  * @get_session_management_protocol: Getter for the #MetaDBusDebugControl:session-management-protocol property.
  *
  * Virtual table for the D-Bus interface <link linkend="gdbus-interface-org-gnome-Mutter-DebugControl.top_of_page">org.gnome.Mutter.DebugControl</link>.
@@ -401,24 +367,6 @@ static void
 meta_dbus_debug_control_default_init (MetaDBusDebugControlIface *iface)
 {
   /* GObject properties for D-Bus properties: */
-  /**
-   * MetaDBusDebugControl:color-management-protocol:
-   *
-   * Represents the D-Bus property <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.ColorManagementProtocol">"ColorManagementProtocol"</link>.
-   *
-   * Since the D-Bus property for this #GObject property is both readable and writable, it is meaningful to both read from it and write to it on both the service- and client-side.
-   */
-  g_object_interface_install_property (iface,
-    g_param_spec_boolean ("color-management-protocol", "ColorManagementProtocol", "ColorManagementProtocol", FALSE, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
-  /**
-   * MetaDBusDebugControl:enable-hdr:
-   *
-   * Represents the D-Bus property <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.EnableHDR">"EnableHDR"</link>.
-   *
-   * Since the D-Bus property for this #GObject property is both readable and writable, it is meaningful to both read from it and write to it on both the service- and client-side.
-   */
-  g_object_interface_install_property (iface,
-    g_param_spec_boolean ("enable-hdr", "EnableHDR", "EnableHDR", FALSE, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
   /**
    * MetaDBusDebugControl:force-hdr:
    *
@@ -438,15 +386,6 @@ meta_dbus_debug_control_default_init (MetaDBusDebugControlIface *iface)
   g_object_interface_install_property (iface,
     g_param_spec_boolean ("force-linear-blending", "ForceLinearBlending", "ForceLinearBlending", FALSE, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
   /**
-   * MetaDBusDebugControl:luminance-percentage:
-   *
-   * Represents the D-Bus property <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.LuminancePercentage">"LuminancePercentage"</link>.
-   *
-   * Since the D-Bus property for this #GObject property is both readable and writable, it is meaningful to both read from it and write to it on both the service- and client-side.
-   */
-  g_object_interface_install_property (iface,
-    g_param_spec_uint ("luminance-percentage", "LuminancePercentage", "LuminancePercentage", 0, G_MAXUINT32, 0, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
-  /**
    * MetaDBusDebugControl:session-management-protocol:
    *
    * Represents the D-Bus property <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.SessionManagementProtocol">"SessionManagementProtocol"</link>.
@@ -464,72 +403,15 @@ meta_dbus_debug_control_default_init (MetaDBusDebugControlIface *iface)
    */
   g_object_interface_install_property (iface,
     g_param_spec_boolean ("inhibit-hw-cursor", "InhibitHwCursor", "InhibitHwCursor", FALSE, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
-}
-
-/**
- * meta_dbus_debug_control_get_color_management_protocol: (skip)
- * @object: A #MetaDBusDebugControl.
- *
- * Gets the value of the <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.ColorManagementProtocol">"ColorManagementProtocol"</link> D-Bus property.
- *
- * Since this D-Bus property is both readable and writable, it is meaningful to use this function on both the client- and service-side.
- *
- * Returns: The property value.
- */
-gboolean 
-meta_dbus_debug_control_get_color_management_protocol (MetaDBusDebugControl *object)
-{
-  g_return_val_if_fail (META_DBUS_IS_DEBUG_CONTROL (object), FALSE);
-
-  return META_DBUS_DEBUG_CONTROL_GET_IFACE (object)->get_color_management_protocol (object);
-}
-
-/**
- * meta_dbus_debug_control_set_color_management_protocol: (skip)
- * @object: A #MetaDBusDebugControl.
- * @value: The value to set.
- *
- * Sets the <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.ColorManagementProtocol">"ColorManagementProtocol"</link> D-Bus property to @value.
- *
- * Since this D-Bus property is both readable and writable, it is meaningful to use this function on both the client- and service-side.
- */
-void
-meta_dbus_debug_control_set_color_management_protocol (MetaDBusDebugControl *object, gboolean value)
-{
-  g_object_set (G_OBJECT (object), "color-management-protocol", value, NULL);
-}
-
-/**
- * meta_dbus_debug_control_get_enable_hdr: (skip)
- * @object: A #MetaDBusDebugControl.
- *
- * Gets the value of the <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.EnableHDR">"EnableHDR"</link> D-Bus property.
- *
- * Since this D-Bus property is both readable and writable, it is meaningful to use this function on both the client- and service-side.
- *
- * Returns: The property value.
- */
-gboolean 
-meta_dbus_debug_control_get_enable_hdr (MetaDBusDebugControl *object)
-{
-  g_return_val_if_fail (META_DBUS_IS_DEBUG_CONTROL (object), FALSE);
-
-  return META_DBUS_DEBUG_CONTROL_GET_IFACE (object)->get_enable_hdr (object);
-}
-
-/**
- * meta_dbus_debug_control_set_enable_hdr: (skip)
- * @object: A #MetaDBusDebugControl.
- * @value: The value to set.
- *
- * Sets the <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.EnableHDR">"EnableHDR"</link> D-Bus property to @value.
- *
- * Since this D-Bus property is both readable and writable, it is meaningful to use this function on both the client- and service-side.
- */
-void
-meta_dbus_debug_control_set_enable_hdr (MetaDBusDebugControl *object, gboolean value)
-{
-  g_object_set (G_OBJECT (object), "enable-hdr", value, NULL);
+  /**
+   * MetaDBusDebugControl:a11y-manager-without-access-control:
+   *
+   * Represents the D-Bus property <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.A11yManagerWithoutAccessControl">"A11yManagerWithoutAccessControl"</link>.
+   *
+   * Since the D-Bus property for this #GObject property is both readable and writable, it is meaningful to both read from it and write to it on both the service- and client-side.
+   */
+  g_object_interface_install_property (iface,
+    g_param_spec_boolean ("a11y-manager-without-access-control", "A11yManagerWithoutAccessControl", "A11yManagerWithoutAccessControl", FALSE, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 }
 
 /**
@@ -599,39 +481,6 @@ meta_dbus_debug_control_set_force_linear_blending (MetaDBusDebugControl *object,
 }
 
 /**
- * meta_dbus_debug_control_get_luminance_percentage: (skip)
- * @object: A #MetaDBusDebugControl.
- *
- * Gets the value of the <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.LuminancePercentage">"LuminancePercentage"</link> D-Bus property.
- *
- * Since this D-Bus property is both readable and writable, it is meaningful to use this function on both the client- and service-side.
- *
- * Returns: The property value.
- */
-guint 
-meta_dbus_debug_control_get_luminance_percentage (MetaDBusDebugControl *object)
-{
-  g_return_val_if_fail (META_DBUS_IS_DEBUG_CONTROL (object), 0);
-
-  return META_DBUS_DEBUG_CONTROL_GET_IFACE (object)->get_luminance_percentage (object);
-}
-
-/**
- * meta_dbus_debug_control_set_luminance_percentage: (skip)
- * @object: A #MetaDBusDebugControl.
- * @value: The value to set.
- *
- * Sets the <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.LuminancePercentage">"LuminancePercentage"</link> D-Bus property to @value.
- *
- * Since this D-Bus property is both readable and writable, it is meaningful to use this function on both the client- and service-side.
- */
-void
-meta_dbus_debug_control_set_luminance_percentage (MetaDBusDebugControl *object, guint value)
-{
-  g_object_set (G_OBJECT (object), "luminance-percentage", value, NULL);
-}
-
-/**
  * meta_dbus_debug_control_get_session_management_protocol: (skip)
  * @object: A #MetaDBusDebugControl.
  *
@@ -697,6 +546,39 @@ meta_dbus_debug_control_set_inhibit_hw_cursor (MetaDBusDebugControl *object, gbo
   g_object_set (G_OBJECT (object), "inhibit-hw-cursor", value, NULL);
 }
 
+/**
+ * meta_dbus_debug_control_get_a11y_manager_without_access_control: (skip)
+ * @object: A #MetaDBusDebugControl.
+ *
+ * Gets the value of the <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.A11yManagerWithoutAccessControl">"A11yManagerWithoutAccessControl"</link> D-Bus property.
+ *
+ * Since this D-Bus property is both readable and writable, it is meaningful to use this function on both the client- and service-side.
+ *
+ * Returns: The property value.
+ */
+gboolean 
+meta_dbus_debug_control_get_a11y_manager_without_access_control (MetaDBusDebugControl *object)
+{
+  g_return_val_if_fail (META_DBUS_IS_DEBUG_CONTROL (object), FALSE);
+
+  return META_DBUS_DEBUG_CONTROL_GET_IFACE (object)->get_a11y_manager_without_access_control (object);
+}
+
+/**
+ * meta_dbus_debug_control_set_a11y_manager_without_access_control: (skip)
+ * @object: A #MetaDBusDebugControl.
+ * @value: The value to set.
+ *
+ * Sets the <link linkend="gdbus-property-org-gnome-Mutter-DebugControl.A11yManagerWithoutAccessControl">"A11yManagerWithoutAccessControl"</link> D-Bus property to @value.
+ *
+ * Since this D-Bus property is both readable and writable, it is meaningful to use this function on both the client- and service-side.
+ */
+void
+meta_dbus_debug_control_set_a11y_manager_without_access_control (MetaDBusDebugControl *object, gboolean value)
+{
+  g_object_set (G_OBJECT (object), "a11y-manager-without-access-control", value, NULL);
+}
+
 /* ------------------------------------------------------------------------ */
 
 /**
@@ -745,7 +627,7 @@ meta_dbus_debug_control_proxy_get_property (GObject      *object,
 {
   const _ExtendedGDBusPropertyInfo *info;
   GVariant *variant;
-  g_assert (prop_id != 0 && prop_id - 1 < 7);
+  g_assert (prop_id != 0 && prop_id - 1 < 5);
   info = (const _ExtendedGDBusPropertyInfo *) _meta_dbus_debug_control_property_info_pointers[prop_id - 1];
   variant = g_dbus_proxy_get_cached_property (G_DBUS_PROXY (object), info->parent_struct.name);
   if (info->use_gvariant)
@@ -792,7 +674,7 @@ meta_dbus_debug_control_proxy_set_property (GObject      *object,
 {
   const _ExtendedGDBusPropertyInfo *info;
   GVariant *variant;
-  g_assert (prop_id != 0 && prop_id - 1 < 7);
+  g_assert (prop_id != 0 && prop_id - 1 < 5);
   info = (const _ExtendedGDBusPropertyInfo *) _meta_dbus_debug_control_property_info_pointers[prop_id - 1];
   variant = g_dbus_gvalue_to_gvariant (value, G_VARIANT_TYPE (info->parent_struct.signature));
   g_dbus_proxy_call (G_DBUS_PROXY (object),
@@ -875,36 +757,6 @@ meta_dbus_debug_control_proxy_g_properties_changed (GDBusProxy *_proxy,
 }
 
 static gboolean 
-meta_dbus_debug_control_proxy_get_color_management_protocol (MetaDBusDebugControl *object)
-{
-  MetaDBusDebugControlProxy *proxy = META_DBUS_DEBUG_CONTROL_PROXY (object);
-  GVariant *variant;
-  gboolean value = FALSE;
-  variant = g_dbus_proxy_get_cached_property (G_DBUS_PROXY (proxy), "ColorManagementProtocol");
-  if (variant != NULL)
-    {
-      value = g_variant_get_boolean (variant);
-      g_variant_unref (variant);
-    }
-  return value;
-}
-
-static gboolean 
-meta_dbus_debug_control_proxy_get_enable_hdr (MetaDBusDebugControl *object)
-{
-  MetaDBusDebugControlProxy *proxy = META_DBUS_DEBUG_CONTROL_PROXY (object);
-  GVariant *variant;
-  gboolean value = FALSE;
-  variant = g_dbus_proxy_get_cached_property (G_DBUS_PROXY (proxy), "EnableHDR");
-  if (variant != NULL)
-    {
-      value = g_variant_get_boolean (variant);
-      g_variant_unref (variant);
-    }
-  return value;
-}
-
-static gboolean 
 meta_dbus_debug_control_proxy_get_force_hdr (MetaDBusDebugControl *object)
 {
   MetaDBusDebugControlProxy *proxy = META_DBUS_DEBUG_CONTROL_PROXY (object);
@@ -934,21 +786,6 @@ meta_dbus_debug_control_proxy_get_force_linear_blending (MetaDBusDebugControl *o
   return value;
 }
 
-static guint 
-meta_dbus_debug_control_proxy_get_luminance_percentage (MetaDBusDebugControl *object)
-{
-  MetaDBusDebugControlProxy *proxy = META_DBUS_DEBUG_CONTROL_PROXY (object);
-  GVariant *variant;
-  guint value = 0;
-  variant = g_dbus_proxy_get_cached_property (G_DBUS_PROXY (proxy), "LuminancePercentage");
-  if (variant != NULL)
-    {
-      value = g_variant_get_uint32 (variant);
-      g_variant_unref (variant);
-    }
-  return value;
-}
-
 static gboolean 
 meta_dbus_debug_control_proxy_get_session_management_protocol (MetaDBusDebugControl *object)
 {
@@ -971,6 +808,21 @@ meta_dbus_debug_control_proxy_get_inhibit_hw_cursor (MetaDBusDebugControl *objec
   GVariant *variant;
   gboolean value = FALSE;
   variant = g_dbus_proxy_get_cached_property (G_DBUS_PROXY (proxy), "InhibitHwCursor");
+  if (variant != NULL)
+    {
+      value = g_variant_get_boolean (variant);
+      g_variant_unref (variant);
+    }
+  return value;
+}
+
+static gboolean 
+meta_dbus_debug_control_proxy_get_a11y_manager_without_access_control (MetaDBusDebugControl *object)
+{
+  MetaDBusDebugControlProxy *proxy = META_DBUS_DEBUG_CONTROL_PROXY (object);
+  GVariant *variant;
+  gboolean value = FALSE;
+  variant = g_dbus_proxy_get_cached_property (G_DBUS_PROXY (proxy), "A11yManagerWithoutAccessControl");
   if (variant != NULL)
     {
       value = g_variant_get_boolean (variant);
@@ -1016,13 +868,11 @@ meta_dbus_debug_control_proxy_class_init (MetaDBusDebugControlProxyClass *klass)
 static void
 meta_dbus_debug_control_proxy_iface_init (MetaDBusDebugControlIface *iface)
 {
-  iface->get_color_management_protocol = meta_dbus_debug_control_proxy_get_color_management_protocol;
-  iface->get_enable_hdr = meta_dbus_debug_control_proxy_get_enable_hdr;
   iface->get_force_hdr = meta_dbus_debug_control_proxy_get_force_hdr;
   iface->get_force_linear_blending = meta_dbus_debug_control_proxy_get_force_linear_blending;
-  iface->get_luminance_percentage = meta_dbus_debug_control_proxy_get_luminance_percentage;
   iface->get_session_management_protocol = meta_dbus_debug_control_proxy_get_session_management_protocol;
   iface->get_inhibit_hw_cursor = meta_dbus_debug_control_proxy_get_inhibit_hw_cursor;
+  iface->get_a11y_manager_without_access_control = meta_dbus_debug_control_proxy_get_a11y_manager_without_access_control;
 }
 
 /**
@@ -1390,7 +1240,11 @@ meta_dbus_debug_control_skeleton_dbus_interface_get_properties (GDBusInterfaceSk
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_meta_dbus_debug_control_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _meta_dbus_debug_control_interface_info.parent_struct.properties[n] != NULL; n++)
@@ -1449,7 +1303,7 @@ meta_dbus_debug_control_skeleton_finalize (GObject *object)
 {
   MetaDBusDebugControlSkeleton *skeleton = META_DBUS_DEBUG_CONTROL_SKELETON (object);
   guint n;
-  for (n = 0; n < 7; n++)
+  for (n = 0; n < 5; n++)
     g_value_unset (&skeleton->priv->properties[n]);
   g_free (skeleton->priv->properties);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
@@ -1467,7 +1321,7 @@ meta_dbus_debug_control_skeleton_get_property (GObject      *object,
   GParamSpec   *pspec G_GNUC_UNUSED)
 {
   MetaDBusDebugControlSkeleton *skeleton = META_DBUS_DEBUG_CONTROL_SKELETON (object);
-  g_assert (prop_id != 0 && prop_id - 1 < 7);
+  g_assert (prop_id != 0 && prop_id - 1 < 5);
   g_mutex_lock (&skeleton->priv->lock);
   g_value_copy (&skeleton->priv->properties[prop_id - 1], value);
   g_mutex_unlock (&skeleton->priv->lock);
@@ -1483,8 +1337,13 @@ _meta_dbus_debug_control_emit_changed (gpointer user_data)
   guint num_changes;
 
   g_mutex_lock (&skeleton->priv->lock);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+  g_variant_builder_init_static (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#else
   g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
   g_variant_builder_init (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#endif
   for (l = skeleton->priv->changed_properties, num_changes = 0; l != NULL; l = l->next)
     {
       ChangedProperty *cp = l->data;
@@ -1586,7 +1445,7 @@ meta_dbus_debug_control_skeleton_set_property (GObject      *object,
 {
   const _ExtendedGDBusPropertyInfo *info;
   MetaDBusDebugControlSkeleton *skeleton = META_DBUS_DEBUG_CONTROL_SKELETON (object);
-  g_assert (prop_id != 0 && prop_id - 1 < 7);
+  g_assert (prop_id != 0 && prop_id - 1 < 5);
   info = (const _ExtendedGDBusPropertyInfo *) _meta_dbus_debug_control_property_info_pointers[prop_id - 1];
   g_mutex_lock (&skeleton->priv->lock);
   g_object_freeze_notify (object);
@@ -1613,18 +1472,16 @@ meta_dbus_debug_control_skeleton_init (MetaDBusDebugControlSkeleton *skeleton)
 
   g_mutex_init (&skeleton->priv->lock);
   skeleton->priv->context = g_main_context_ref_thread_default ();
-  skeleton->priv->properties = g_new0 (GValue, 7);
+  skeleton->priv->properties = g_new0 (GValue, 5);
   g_value_init (&skeleton->priv->properties[0], G_TYPE_BOOLEAN);
   g_value_init (&skeleton->priv->properties[1], G_TYPE_BOOLEAN);
   g_value_init (&skeleton->priv->properties[2], G_TYPE_BOOLEAN);
   g_value_init (&skeleton->priv->properties[3], G_TYPE_BOOLEAN);
-  g_value_init (&skeleton->priv->properties[4], G_TYPE_UINT);
-  g_value_init (&skeleton->priv->properties[5], G_TYPE_BOOLEAN);
-  g_value_init (&skeleton->priv->properties[6], G_TYPE_BOOLEAN);
+  g_value_init (&skeleton->priv->properties[4], G_TYPE_BOOLEAN);
 }
 
 static gboolean 
-meta_dbus_debug_control_skeleton_get_color_management_protocol (MetaDBusDebugControl *object)
+meta_dbus_debug_control_skeleton_get_force_hdr (MetaDBusDebugControl *object)
 {
   MetaDBusDebugControlSkeleton *skeleton = META_DBUS_DEBUG_CONTROL_SKELETON (object);
   gboolean value;
@@ -1635,7 +1492,7 @@ meta_dbus_debug_control_skeleton_get_color_management_protocol (MetaDBusDebugCon
 }
 
 static gboolean 
-meta_dbus_debug_control_skeleton_get_enable_hdr (MetaDBusDebugControl *object)
+meta_dbus_debug_control_skeleton_get_force_linear_blending (MetaDBusDebugControl *object)
 {
   MetaDBusDebugControlSkeleton *skeleton = META_DBUS_DEBUG_CONTROL_SKELETON (object);
   gboolean value;
@@ -1646,7 +1503,7 @@ meta_dbus_debug_control_skeleton_get_enable_hdr (MetaDBusDebugControl *object)
 }
 
 static gboolean 
-meta_dbus_debug_control_skeleton_get_force_hdr (MetaDBusDebugControl *object)
+meta_dbus_debug_control_skeleton_get_session_management_protocol (MetaDBusDebugControl *object)
 {
   MetaDBusDebugControlSkeleton *skeleton = META_DBUS_DEBUG_CONTROL_SKELETON (object);
   gboolean value;
@@ -1657,7 +1514,7 @@ meta_dbus_debug_control_skeleton_get_force_hdr (MetaDBusDebugControl *object)
 }
 
 static gboolean 
-meta_dbus_debug_control_skeleton_get_force_linear_blending (MetaDBusDebugControl *object)
+meta_dbus_debug_control_skeleton_get_inhibit_hw_cursor (MetaDBusDebugControl *object)
 {
   MetaDBusDebugControlSkeleton *skeleton = META_DBUS_DEBUG_CONTROL_SKELETON (object);
   gboolean value;
@@ -1667,35 +1524,13 @@ meta_dbus_debug_control_skeleton_get_force_linear_blending (MetaDBusDebugControl
   return value;
 }
 
-static guint 
-meta_dbus_debug_control_skeleton_get_luminance_percentage (MetaDBusDebugControl *object)
-{
-  MetaDBusDebugControlSkeleton *skeleton = META_DBUS_DEBUG_CONTROL_SKELETON (object);
-  guint value;
-  g_mutex_lock (&skeleton->priv->lock);
-  value = g_marshal_value_peek_uint (&(skeleton->priv->properties[4]));
-  g_mutex_unlock (&skeleton->priv->lock);
-  return value;
-}
-
 static gboolean 
-meta_dbus_debug_control_skeleton_get_session_management_protocol (MetaDBusDebugControl *object)
+meta_dbus_debug_control_skeleton_get_a11y_manager_without_access_control (MetaDBusDebugControl *object)
 {
   MetaDBusDebugControlSkeleton *skeleton = META_DBUS_DEBUG_CONTROL_SKELETON (object);
   gboolean value;
   g_mutex_lock (&skeleton->priv->lock);
-  value = g_marshal_value_peek_boolean (&(skeleton->priv->properties[5]));
-  g_mutex_unlock (&skeleton->priv->lock);
-  return value;
-}
-
-static gboolean 
-meta_dbus_debug_control_skeleton_get_inhibit_hw_cursor (MetaDBusDebugControl *object)
-{
-  MetaDBusDebugControlSkeleton *skeleton = META_DBUS_DEBUG_CONTROL_SKELETON (object);
-  gboolean value;
-  g_mutex_lock (&skeleton->priv->lock);
-  value = g_marshal_value_peek_boolean (&(skeleton->priv->properties[6]));
+  value = g_marshal_value_peek_boolean (&(skeleton->priv->properties[4]));
   g_mutex_unlock (&skeleton->priv->lock);
   return value;
 }
@@ -1729,13 +1564,11 @@ meta_dbus_debug_control_skeleton_class_init (MetaDBusDebugControlSkeletonClass *
 static void
 meta_dbus_debug_control_skeleton_iface_init (MetaDBusDebugControlIface *iface)
 {
-  iface->get_color_management_protocol = meta_dbus_debug_control_skeleton_get_color_management_protocol;
-  iface->get_enable_hdr = meta_dbus_debug_control_skeleton_get_enable_hdr;
   iface->get_force_hdr = meta_dbus_debug_control_skeleton_get_force_hdr;
   iface->get_force_linear_blending = meta_dbus_debug_control_skeleton_get_force_linear_blending;
-  iface->get_luminance_percentage = meta_dbus_debug_control_skeleton_get_luminance_percentage;
   iface->get_session_management_protocol = meta_dbus_debug_control_skeleton_get_session_management_protocol;
   iface->get_inhibit_hw_cursor = meta_dbus_debug_control_skeleton_get_inhibit_hw_cursor;
+  iface->get_a11y_manager_without_access_control = meta_dbus_debug_control_skeleton_get_a11y_manager_without_access_control;
 }
 
 /**

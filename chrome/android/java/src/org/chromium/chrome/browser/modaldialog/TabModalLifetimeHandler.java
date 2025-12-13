@@ -4,11 +4,17 @@
 
 package org.chromium.chrome.browser.modaldialog;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -35,10 +41,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
+import java.util.function.Supplier;
+
 /**
  * Class responsible for handling dismissal of a tab modal dialog on user actions outside the tab
  * modal dialog.
  */
+@NullMarked
 public class TabModalLifetimeHandler
         implements NativeInitObserver,
                 DestroyObserver,
@@ -81,15 +90,16 @@ public class TabModalLifetimeHandler
     private final Supplier<BrowserControlsVisibilityManager>
             mBrowserControlsVisibilityManagerSupplier;
     private final Supplier<FullscreenManager> mFullscreenManagerSupplier;
-    private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
+
     private final ObservableSupplier<ScrimManager> mScrimManagerSupplier;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final BackPressManager mBackPressManager;
-    private ChromeTabModalPresenter mPresenter;
-    private TabModelSelectorTabModelObserver mTabModelObserver;
+    private @MonotonicNonNull ChromeTabModalPresenter mPresenter;
+    private @MonotonicNonNull TabModelSelectorTabModelObserver mTabModelObserver;
     private final Runnable mHideContextualSearch;
-    private Tab mActiveTab;
+    private @Nullable Tab mActiveTab;
     private int mTabModalSuspendedToken;
 
     /**
@@ -160,13 +170,14 @@ public class TabModalLifetimeHandler
     public @BackPressResult int handleBackPress() {
         int result = shouldInterceptBackPress() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
         if (result == BackPressResult.SUCCESS) {
+            assumeNonNull(mPresenter); // shouldInterceptBackPress checks if mPresenter is null.
             mPresenter.dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK);
         }
         return result;
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressChangedSupplier;
     }
 
@@ -182,10 +193,10 @@ public class TabModalLifetimeHandler
 
     @Override
     public void onFinishNativeInitialization() {
-        assert mTabModelSelectorSupplier.hasValue();
+        assert mTabModelSelectorSupplier.get() != null;
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-        assert mBrowserControlsVisibilityManagerSupplier.hasValue();
-        assert mFullscreenManagerSupplier.hasValue();
+        assert mBrowserControlsVisibilityManagerSupplier.get() != null;
+        assert mFullscreenManagerSupplier.get() != null;
         mPresenter =
                 new ChromeTabModalPresenter(
                         mActivity,
@@ -197,7 +208,7 @@ public class TabModalLifetimeHandler
                         tabModelSelector,
                         mScrimManagerSupplier,
                         mEdgeToEdgeControllerSupplier);
-        assert mAppVisibilityDelegateSupplier.hasValue();
+        assert mAppVisibilityDelegateSupplier.get() != null;
         mAppVisibilityDelegateSupplier
                 .get()
                 .addDelegate(mPresenter.getBrowserControlsVisibilityDelegate());
@@ -219,7 +230,7 @@ public class TabModalLifetimeHandler
                 && mTabModalSuspendedToken == TokenHolder.INVALID_TOKEN;
     }
 
-    private void handleTabChanged(Tab tab) {
+    private void handleTabChanged(@Nullable Tab tab) {
         // Do not use lastId here since it can be the selected tab's ID if model is switched
         // inside tab switcher.
         if (tab != mActiveTab) {
@@ -235,6 +246,7 @@ public class TabModalLifetimeHandler
     }
 
     @Override
+    @SuppressWarnings("NullAway")
     public void onDestroy() {
         if (mTabModelObserver != null) mTabModelObserver.destroy();
         if (mPresenter != null) mPresenter.destroy();

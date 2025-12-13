@@ -67,7 +67,7 @@ class WebUIBubbleManagerTest : public ChromeViewsTestBase {
     ASSERT_TRUE(profile_manager_.SetUp());
     testing_profile_ = profile_manager_.CreateTestingProfile("Person 1");
     browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
-    ON_CALL(*browser_window_interface_, GetProfile)
+    ON_CALL(*browser_window_interface_, GetProfile())
         .WillByDefault(::testing::Return(testing_profile_.get()));
     ChromeViewsTestBase::SetUp();
   }

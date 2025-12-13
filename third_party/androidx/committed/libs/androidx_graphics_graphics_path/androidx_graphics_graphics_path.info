@@ -10,10 +10,10 @@ has_r_text_file = false
 is_manifest_empty = true
 manifest_package = "androidx.graphics.path"
 native_libraries = [
-  "jni/x86_64/libandroidx.graphics.path.so",
   "jni/arm64-v8a/libandroidx.graphics.path.so",
   "jni/armeabi-v7a/libandroidx.graphics.path.so",
-  "jni/x86/libandroidx.graphics.path.so"
+  "jni/x86/libandroidx.graphics.path.so",
+  "jni/x86_64/libandroidx.graphics.path.so"
 ]
 resources = [
   "res/values/values.xml"

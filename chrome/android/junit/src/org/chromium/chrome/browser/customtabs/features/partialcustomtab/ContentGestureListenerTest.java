@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialC
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content.browser.RenderCoordinatesImpl;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.function.BooleanSupplier;
 
@@ -46,6 +47,7 @@ public class ContentGestureListenerTest {
     @Mock private DragEventCallback mCallback;
     @Mock private RenderCoordinatesImpl mRenderCoordinates;
     @Mock private ContentView mTabContentView;
+    @Mock private WebContents mWebContents;
     @Mock private MotionEvent mEventSrc;
 
     private ContentGestureListener mListener;
@@ -56,6 +58,7 @@ public class ContentGestureListenerTest {
         mListener = new ContentGestureListener(() -> mTab, mCallback, mIsFullyExpanded);
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinates);
         when(mTab.getContentView()).thenReturn(mTabContentView);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
 
         mListener.onDown(Mockito.mock(MotionEvent.class));
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinates);

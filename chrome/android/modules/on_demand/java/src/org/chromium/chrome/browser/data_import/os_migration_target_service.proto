@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+package com.google.android.libraries.restore.osmigration.systemappapi;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.chrome.browser.data_import";
+option java_multiple_files = true;
+
+// Type of item to import and export. Lists only types supported by the browser.
+enum SystemAppApiItemType {
+  SYSTEM_APP_API_ITEM_TYPE_UNSPECIFIED = 0;
+  SYSTEM_APP_API_ITEM_TYPE_BROWSER_DATA = 5;
+}
+
+// Arguments of the target side Handshake method.
+message TargetHandshakeRequest {
+  // The type of item to handshake.
+  SystemAppApiItemType item_type = 1;
+
+  // The session id of the target import session.
+  bytes session_id = 2;
+}
+
+// Data returned by the target side Handshake method.
+message TargetHandshakeResponse {
+  // True if the API can be used to import the given item type.
+  bool supported = 1;
+
+  // Version of the Protobuf data format, e.g. "1" for v1.
+  int32 data_format_version = 3;
+
+  oneof handshake_response {
+    // ProtoTargetHandshakeResponse proto_handshake_response = 4;
+    FileTargetHandshakeResponse file_handshake_response = 5;
+  }
+}
+
+message FileTargetHandshakeResponse {}
+
+// Arguments of the ImportItem method in TargetService.
+message ImportItemRequest {
+  // The type of item being restored.
+  SystemAppApiItemType item_type = 1;
+
+  // Metadata of the requested item. Either proto batch metadata or file
+  // metadata.
+  oneof item_metadata {
+    // ProtoBatchMetadata proto_batch_metadata = 2;
+    // The format of the file metadata is defined in the respective data type
+    // proto spec.
+    Proto3Any file_metadata = 3;
+  }
+
+  // The session id of the target import session.
+  bytes session_id = 4;
+}
+
+// There is no way to google.protobuf.Any directly in this codebase, so this
+// proto just replicates it.
+message Proto3Any {
+  string type_url = 1;
+  bytes value = 2;
+}
+
+// Metadata for a `SYSTEM_APP_API_ITEM_TYPE_BROWSER_DATA` file provided in an
+// `ImportItemRequest`. To be parsed from `file_metadata.value`.
+message BrowserFileMetadata {
+  BrowserFileType file_type = 1;
+}
+
+enum BrowserFileType {
+  BROWSER_FILE_TYPE_UNSPECIFIED = 0;
+  BROWSER_FILE_TYPE_BOOKMARKS = 1;
+  BROWSER_FILE_TYPE_READING_LIST = 2;
+  BROWSER_FILE_TYPE_BROWSING_HISTORY = 3;
+}
+
+// Data returned by the ImportItem method in TargetService.
+message ImportItemResponse {
+  enum TransferError {
+    TRANSFER_ERROR_UNSPECIFIED = 0;
+    // An unknown error occurred.
+    TRANSFER_ERROR_UNKNOWN_ERROR = 1;
+  }
+  // Optional reason why an item couldn't be imported.
+  TransferError transfer_error = 1;
+}
+
+// Arguments of the ImportItemsDone method in TargetService.
+message ImportItemsDoneRequest {
+  enum CompleteStatus {
+    COMPLETE_STATUS_UNSPECIFIED = 0;
+    // All items have been processed for import.
+    COMPLETE_STATUS_SUCCESS = 1;
+    // Import has been aborted due to an error.
+    COMPLETE_STATUS_DISCONTINUED = 2;
+  }
+
+  // The type of item that has completed restoring.
+  SystemAppApiItemType item_type = 1;
+
+  // Signal to tell whether the System App has finished processing all the
+  // items.
+  CompleteStatus status = 2;
+
+  // The session id of the target import session.
+  bytes session_id = 3;
+}
+
+// Data returned by the ImportItemsDone method in TargetService.
+message ImportItemsDoneResponse {
+  // The number of items that were successfully restored. For batch data this
+  // should be the individual items not the batch count.
+  int32 success_item_count = 1;
+
+  // The number of items that failed to be restored. For batch data this
+  // should be the individual items not the batch count.
+  int32 failed_item_count = 2;
+
+  // The number of items that were ignored by the System App. For batch data
+  // this should be the individual items not the batch count.
+  int32 ignored_item_count = 3;
+}
+
+// API to pass items to be imported to the System App.
+service TargetService {
+  // Called at the beginning to get System App information and to establish that
+  // API is supported.
+  rpc Handshake(TargetHandshakeRequest) returns (TargetHandshakeResponse) {}
+
+  // Sends the items to be imported in the System App. The item is sent to the
+  // System App in the request as a parcelable reference, not as part of
+  // ImportItemRequest, but instead as metadata in the request headers.
+  rpc ImportItem(ImportItemRequest) returns (ImportItemResponse) {}
+
+  // Called when all the items for one type have been imported.
+  rpc ImportItemsDone(ImportItemsDoneRequest)
+      returns (ImportItemsDoneResponse) {}
+}

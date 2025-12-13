@@ -54,10 +54,7 @@ public class NewTabPageUtilUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({
-        OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE,
-        OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2
-    })
+    @Features.DisableFeatures({OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2})
     public void testIsInSingleUrlBarMode() {
         // Verifies isInSingleUrlBarMode() returns false on tablets.
         assertFalse(
@@ -76,10 +73,7 @@ public class NewTabPageUtilUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE,
-        OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2
-    })
+    @Features.EnableFeatures({OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2})
     public void testIsInSingleUrlBarMode_OmniboxMobileParityUpdateV2Enabled() {
         // Verifies isInSingleUrlBarMode() returns false on tablets.
         assertFalse(

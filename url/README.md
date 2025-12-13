@@ -74,6 +74,19 @@ using its own string type, so the insulation that the Utility layer provides is
 still useful. But some STL strings and calls to base functions have gradually
 been added in places where doing so is possible.
 
+## Unsafe buffer usages
+
+To ensure that the valid length of a buffer is always reliably conveyed, we are
+in the process of migrating functions that take a raw pointer and a size for
+string data. These functions are being updated to accept `std::string_view` or
+`std::u16string_view` instead. This change also applies to functions that only
+accept a raw pointer, which are being updated to take a `string_view` to
+prevent buffer overflows.
+
+Currently, the codebase contains a mix of both the old, unsafe functions and
+the new, safer `string_view`-based functions. Our goal is to eventually
+convert all of them. This ongoing effort is tracked in crbug.com/350788890.
+
 ## Caution for terminologies
 
 Due to historical usage, the term "Standard URL" is currently used within the

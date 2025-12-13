@@ -49,7 +49,7 @@ class CONTENT_EXPORT SlowWebPreferenceCache
   // InputDeviceEventObserver implementation
   void OnInputDeviceConfigurationChanged(uint8_t) override;
   // GpuSwitchingObserver implementation
-  void OnGpuSwitched(gl::GpuPreference) override;
+  void OnGpuSwitched() override;
 
  private:
   friend base::NoDestructor<SlowWebPreferenceCache>;

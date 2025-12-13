@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/experiences/arc/bluetooth/bluetooth_mojom_traits.h"
 
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,14 +48,14 @@ TEST(BluetoothStructTraitsTest, SerializeBluetoothUUID) {
       ConvertToMojo<arc::mojom::BluetoothUUID>(&uuid_device);
   EXPECT_EQ(kUuidSize, uuid_mojo->uuid.size());
   for (size_t i = 0; i < kUuidSize; i++) {
-    EXPECT_EQ(kUuidArray[i], uuid_mojo->uuid[i]);
+    UNSAFE_TODO(EXPECT_EQ(kUuidArray[i], uuid_mojo->uuid[i]));
   }
 }
 
 TEST(BluetoothStructTraitsTest, DeserializeBluetoothUUID) {
   arc::mojom::BluetoothUUIDPtr uuid_mojo = arc::mojom::BluetoothUUID::New();
   for (size_t i = 0; i < kUuidSize; i++) {
-    uuid_mojo->uuid.push_back(kUuidArray[i]);
+    uuid_mojo->uuid.push_back(UNSAFE_TODO(kUuidArray[i]));
   }
   uuid_mojo->uuid =
       std::vector<uint8_t>(std::begin(kUuidArray), std::end(kUuidArray));
@@ -121,7 +117,8 @@ TEST(BluetoothStructTraitsTest, DeserializeBluetoothAdvertisement) {
   EXPECT_EQ(converted_service->size(), 1U);
   EXPECT_EQ(converted_service->begin()->first, kUuid16Str);
   for (size_t i = 0; i < std::size(kServiceData); i++) {
-    EXPECT_EQ(kServiceData[i], converted_service->begin()->second[i]);
+    UNSAFE_TODO(
+        EXPECT_EQ(kServiceData[i], converted_service->begin()->second[i]));
   }
 
   std::optional<device::BluetoothAdvertisement::ManufacturerData>

@@ -17,8 +17,9 @@ class WebSocketMessageChunkAccumulatorTest : public testing::Test {
  public:
   using FakeTaskRunner = scheduler::FakeTaskRunner;
 
-  static Vector<char> Flatten(const Vector<base::span<const char>>& chunks) {
-    Vector<char> v;
+  static Vector<uint8_t> Flatten(
+      const Vector<base::span<const uint8_t>>& chunks) {
+    Vector<uint8_t> v;
     for (const auto& chunk : chunks) {
       v.AppendSpan(chunk);
     }
@@ -50,7 +51,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, Append) {
       MakeGarbageCollected<WebSocketMessageChunkAccumulator>(
           base::MakeRefCounted<FakeTaskRunner>());
 
-  Vector<char> chunk(8, 'x');
+  Vector<uint8_t> chunk(8, 'x');
 
   chunks->Append(base::span(chunk));
 
@@ -67,7 +68,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendChunkWithInternalChunkSize) {
       MakeGarbageCollected<WebSocketMessageChunkAccumulator>(task_runner);
   chunks->SetTaskRunnerForTesting(task_runner, task_runner->GetMockTickClock());
 
-  Vector<char> chunk(kSegmentSize, 'y');
+  Vector<uint8_t> chunk(kSegmentSize, 'y');
 
   chunks->Append(base::span(chunk));
 
@@ -83,7 +84,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendLargeChunk) {
       MakeGarbageCollected<WebSocketMessageChunkAccumulator>(task_runner);
   chunks->SetTaskRunnerForTesting(task_runner, task_runner->GetMockTickClock());
 
-  Vector<char> chunk(kSegmentSize * 2 + 2, 'y');
+  Vector<uint8_t> chunk(kSegmentSize * 2 + 2, 'y');
 
   chunks->Append(base::span(chunk));
 
@@ -101,15 +102,15 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
       MakeGarbageCollected<WebSocketMessageChunkAccumulator>(task_runner);
   chunks->SetTaskRunnerForTesting(task_runner, task_runner->GetMockTickClock());
 
-  Vector<char> chunk1(8, 'a');
-  Vector<char> chunk2(4, 'b');
-  Vector<char> chunk3;  // empty
-  Vector<char> chunk4(kSegmentSize * 3 - 12, 'd');
-  Vector<char> chunk5(6, 'e');
-  Vector<char> chunk6(kSegmentSize - 5, 'f');
+  Vector<uint8_t> chunk1(8, 'a');
+  Vector<uint8_t> chunk2(4, 'b');
+  Vector<uint8_t> chunk3;  // empty
+  Vector<uint8_t> chunk4(kSegmentSize * 3 - 12, 'd');
+  Vector<uint8_t> chunk5(6, 'e');
+  Vector<uint8_t> chunk6(kSegmentSize - 5, 'f');
 
   // This will grow over time.
-  Vector<char> expected;
+  Vector<uint8_t> expected;
 
   chunks->Append(base::span(chunk1));
   expected.AppendVector(chunk1);
@@ -175,8 +176,8 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, ClearAndAppend) {
       MakeGarbageCollected<WebSocketMessageChunkAccumulator>(task_runner);
   chunks->SetTaskRunnerForTesting(task_runner, task_runner->GetMockTickClock());
 
-  Vector<char> chunk1(8, 'x');
-  Vector<char> chunk2(3, 'y');
+  Vector<uint8_t> chunk1(8, 'x');
+  Vector<uint8_t> chunk2(3, 'y');
 
   chunks->Clear();
 
@@ -211,9 +212,9 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, ClearTimer) {
       MakeGarbageCollected<WebSocketMessageChunkAccumulator>(task_runner);
   chunks->SetTaskRunnerForTesting(task_runner, task_runner->GetMockTickClock());
 
-  Vector<char> chunk1(kSegmentSize * 4, 'x');
-  Vector<char> chunk2(kSegmentSize * 3, 'x');
-  Vector<char> chunk3(kSegmentSize * 1, 'x');
+  Vector<uint8_t> chunk1(kSegmentSize * 4, 'x');
+  Vector<uint8_t> chunk2(kSegmentSize * 3, 'x');
+  Vector<uint8_t> chunk3(kSegmentSize * 1, 'x');
 
   // We don't start the timer because GetPoolSizeForTesting() is 0.
   chunks->Clear();

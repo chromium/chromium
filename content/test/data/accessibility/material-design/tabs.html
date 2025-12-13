@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:clickTab1()
+@EXECUTE-AND-WAIT-FOR:clickTab2()
+@EXECUTE-AND-WAIT-FOR:clickTab3()
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web Tabs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-tabs",
+            "md-primary-tab",
+            "md-secondary-tab",
+            "md-icon"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+
+            const primaryTabs1 = document.createElement("md-tabs");
+            primaryTabs1.id = "test-tabs";
+            const tabInfos1 = [
+                { text: "Tab 1", id: "test-tab1" },
+                { text: "Tab 2", active: true, id: "test-tab2" },
+                { text: "Tab 3", id: "test-tab3" },
+                { text: "Disabled Tab", disabled: true }
+            ];
+            tabInfos1.forEach(info => {
+                const tab = document.createElement("md-primary-tab");
+                tab.textContent = info.text;
+                if (info.id) tab.id = info.id;
+                if (info.active) tab.active = true;
+                if (info.disabled) tab.disabled = true;
+                primaryTabs1.appendChild(tab);
+            });
+            statusDiv.appendChild(primaryTabs1);
+
+            const primaryTabs2 = document.createElement("md-tabs");
+            const tabInfos2 = [
+                { text: "Home", icon: "home" },
+                { text: "Search", icon: "search" },
+                { text: "Favorites", icon: "favorite", active: true }
+            ];
+            tabInfos2.forEach(info => {
+                const tab = document.createElement("md-primary-tab");
+                const icon = document.createElement("md-icon");
+                icon.slot = "icon";
+                icon.textContent = info.icon;
+                tab.appendChild(icon);
+                tab.appendChild(document.createTextNode(info.text));
+                if (info.active) tab.active = true;
+                primaryTabs2.appendChild(tab);
+            });
+            statusDiv.appendChild(primaryTabs2);
+
+            const secondaryTabs = document.createElement("md-tabs");
+            const tabInfos3 = [
+                { text: "Secondary 1" },
+                { text: "Secondary 2", active: true },
+                { text: "Secondary 3" }
+            ];
+            tabInfos3.forEach(info => {
+                const tab = document.createElement("md-secondary-tab");
+                tab.textContent = info.text;
+                if (info.active) tab.active = true;
+                secondaryTabs.appendChild(tab);
+            });
+            statusDiv.appendChild(secondaryTabs);
+
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+    <script>
+        async function clickTab1() {
+            const tab1 = document.getElementById("test-tab1");
+            if (tab1) {
+                tab1.click();
+                await tab1.updateComplete;
+                const statusDiv = document.getElementById("status");
+                const statusText = document.createElement("div");
+                statusText.textContent = "Tab 1 Clicked";
+                statusDiv.appendChild(statusText);
+                return "Tab 1 Clicked";
+            }
+            return "Failed to click Tab 1";
+        }
+
+        async function clickTab2() {
+            const tab2 = document.getElementById("test-tab2");
+            if (tab2) {
+                tab2.click();
+                await tab2.updateComplete;
+                const statusDiv = document.getElementById("status");
+                const statusText = document.createElement("div");
+                statusText.textContent = "Tab 2 Clicked";
+                statusDiv.appendChild(statusText);
+                return "Tab 2 Clicked";
+            }
+            return "Failed to click Tab 2";
+        }
+
+        async function clickTab3() {
+            const tab3 = document.getElementById("test-tab3");
+            if (tab3) {
+                tab3.click();
+                await tab3.updateComplete;
+                const statusDiv = document.getElementById("status");
+                const statusText = document.createElement("div");
+                statusText.textContent = "Tab 3 Clicked";
+                statusDiv.appendChild(statusText);
+                return "Tab 3 Clicked";
+            }
+            return "Failed to click Tab 3";
+        }
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+</html>

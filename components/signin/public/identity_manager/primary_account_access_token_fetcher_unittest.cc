@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -59,11 +60,8 @@ class PrimaryAccountAccessTokenFetcherTest
       AccessTokenFetcher::TokenCallback callback,
       PrimaryAccountAccessTokenFetcher::Mode mode,
       ConsentLevel consent) {
-    // API scope that does not require consent.
-    std::set<std::string> scopes = {
-        GaiaConstants::kChromeSafeBrowsingOAuth2Scope};
     return std::make_unique<PrimaryAccountAccessTokenFetcher>(
-        "test_consumer", identity_test_env_->identity_manager(), scopes,
+        OAuthConsumerId::kSync, identity_test_env_->identity_manager(),
         std::move(callback), mode, consent);
   }
 
@@ -77,12 +75,9 @@ class PrimaryAccountAccessTokenFetcherTest
 
   std::unique_ptr<PrimaryAccountAccessTokenFetcher> CreateDelayedStartFetcher(
       PrimaryAccountAccessTokenFetcher::Mode mode) {
-    // API scope that does not require consent.
-    std::set<std::string> scopes = {
-        GaiaConstants::kChromeSafeBrowsingOAuth2Scope};
     ConsentLevel consent = GetParam();
     return std::make_unique<PrimaryAccountAccessTokenFetcher>(
-        "test_consumer", identity_test_env_->identity_manager(), scopes, mode,
+        OAuthConsumerId::kSync, identity_test_env_->identity_manager(), mode,
         consent);
   }
 

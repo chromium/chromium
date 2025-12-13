@@ -11,26 +11,51 @@
 namespace switches {
 
 #if BUILDFLAG(IS_ANDROID)
-// Mitigate overlap cases between the legacy search engine promo and the
-// device-based program eligibility determinations.
-BASE_FEATURE(kMitigateLegacySearchEnginePromoOverlap,
-             "MitigateLegacySearchEnginePromoOverlap",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+BASE_FEATURE(kRestrictLegacySearchEnginePromoOnFormFactors,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kUseFinchPermanentCountryForFetchCountryId,
-             "UseFinchPermanentCountyForFetchCountryId",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kResolveRegionalCapabilitiesFromDevice,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-COMPONENT_EXPORT(REGIONAL_CAPABILITIES_SWITCHES)
-BASE_FEATURE(kTaiyaki, "Taiyaki", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTaiyaki,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+namespace {
+constexpr base::FeatureParam<RegionalCapabilitiesChoiceScreenSurface>::Option
+    kChoiceScreenSurfaceOptions[] = {
+        {RegionalCapabilitiesChoiceScreenSurface::kAll, "all"},
+        {RegionalCapabilitiesChoiceScreenSurface::kInFreOnly, "fre_only"}};
+}  // namespace
+
+const base::FeatureParam<RegionalCapabilitiesChoiceScreenSurface>
+    kTaiyakiChoiceScreenSurface{
+        &kTaiyaki, "choice_screen_surface",
+        RegionalCapabilitiesChoiceScreenSurface::kAll,
+        &kChoiceScreenSurfaceOptions};
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kDynamicProfileCountry,
-             "DynamicProfileCountry",
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+BASE_FEATURE(kCurrentDseHighlightOnChoiceScreenSupport,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWaffleRestrictToAssociatedCountries,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kStrictAssociatedCountriesCheck,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace switches

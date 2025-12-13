@@ -1,11 +1,11 @@
 This tests that list items are properly marked when some of the items are indirect children of a reversed list.
 
-12 Twelve
-11 Eleven
 10 Ten
 9 Nine
 8 Eight
--> 7 Seven
+7 Seven
+6 Six
+-> 5 Five
 4 Four
 3 Three
 -> 2 Two

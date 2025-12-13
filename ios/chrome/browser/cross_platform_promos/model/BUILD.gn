@@ -1,0 +1,86 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "cross_platform_promos_service.h",
+    "cross_platform_promos_service.mm",
+    "cross_platform_promos_service_factory.h",
+    "cross_platform_promos_service_factory.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    "//base",
+    "//components/desktop_to_mobile_promos",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/sync_device_info",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
+    "//ios/chrome/browser/tips_notifications/model:client",
+    "//ios/chrome/browser/tips_notifications/model:utils",
+  ]
+}
+
+source_set("data_remover") {
+  sources = [
+    "cross_platform_promos_data_remover.h",
+    "cross_platform_promos_data_remover.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+}
+
+source_set("notification_client") {
+  sources = [
+    "cross_platform_promos_notification_client.h",
+    "cross_platform_promos_notification_client.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "cross_platform_promos_data_remover_unittest.mm",
+    "cross_platform_promos_notification_client_unittest.mm",
+    "cross_platform_promos_service_unittest.mm",
+  ]
+  deps = [
+    ":data_remover",
+    ":model",
+    ":notification_client",
+    "//base",
+    "//base/test:test_support",
+    "//components/desktop_to_mobile_promos",
+    "//components/prefs:test_support",
+    "//components/sync_device_info",
+    "//components/sync_device_info:test_support",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

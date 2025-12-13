@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -16,7 +17,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -47,6 +48,8 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
+
+import java.util.function.Supplier;
 
 /** Holds dependencies for constructing a {@link TabSwitcherPane}. */
 @NullMarked
@@ -172,6 +175,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @param setOverlayViewCallback Sets a view to overlay the Hub.
+     * @param hubSearchBoxVisibilitySupplier Used to set the visibility of the hub search box.
      * @return a {@link TabSwitcherPaneCoordinator} to use.
      */
     TabSwitcherPaneCoordinator create(
@@ -180,17 +184,17 @@ public class TabSwitcherPaneCoordinatorFactory {
             ObservableSupplier<Boolean> isVisibleSupplier,
             ObservableSupplier<Boolean> isAnimatingSupplier,
             Callback<Integer> onTabClickCallback,
-            Callback<Boolean> setHairlineVisibilityCallback,
             boolean isIncognito,
             @Nullable Runnable onTabGroupCreation,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            Callback<@Nullable View> setOverlayViewCallback) {
+            Callback<@Nullable View> setOverlayViewCallback,
+            SettableNonNullObservableSupplier<Boolean> hubSearchBoxVisibilitySupplier) {
         int token = mMessageManagerTokenHolder.acquireToken();
         assert mMessageManager != null;
 
         return new TabSwitcherPaneCoordinator(
                 mActivity,
-                mProfileProviderSupplier,
+                assertNonNull(mProfileProviderSupplier.get()),
                 createTabGroupModelFilterSupplier(isIncognito),
                 mTabContentManager,
                 mBrowserControlsStateProvider,
@@ -204,7 +208,6 @@ public class TabSwitcherPaneCoordinatorFactory {
                 isVisibleSupplier,
                 isAnimatingSupplier,
                 onTabClickCallback,
-                setHairlineVisibilityCallback,
                 mMode,
                 /* supportsEmptyState= */ !isIncognito,
                 onTabGroupCreation,
@@ -215,7 +218,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                 mTabBookmarkerSupplier,
                 mUndoBarThrottle,
                 setOverlayViewCallback,
-                mTabSwitcherDragHandler);
+                mTabSwitcherDragHandler,
+                hubSearchBoxVisibilitySupplier);
     }
 
     /** Returns the {@link TabListMode} of the produced {@link TabListCoordinator}s. */
@@ -286,7 +290,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                             mLayoutStateProviderSupplier);
             if (mLifecycleDispatcher.isNativeInitializationFinished()) {
                 mMessageManager.initWithNative(
-                        mProfileProviderSupplier.get().getOriginalProfile(), getTabListMode());
+                        assumeNonNull(mProfileProviderSupplier.get()).getOriginalProfile(),
+                        getTabListMode());
             } else {
                 mLifecycleDispatcher.register(
                         new NativeInitObserver() {
@@ -294,7 +299,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                             public void onFinishNativeInitialization() {
                                 if (mMessageManager != null) {
                                     mMessageManager.initWithNative(
-                                            mProfileProviderSupplier.get().getOriginalProfile(),
+                                            assumeNonNull(mProfileProviderSupplier.get())
+                                                    .getOriginalProfile(),
                                             getTabListMode());
                                 }
                                 mLifecycleDispatcher.unregister(this);

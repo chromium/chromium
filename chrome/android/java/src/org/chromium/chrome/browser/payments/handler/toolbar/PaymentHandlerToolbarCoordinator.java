@@ -9,15 +9,15 @@ import android.view.Gravity;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarMediator.PaymentHandlerToolbarMediatorDelegate;
 import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
@@ -27,12 +27,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
 
+import java.util.function.Supplier;
+
 /**
  * PaymentHandlerToolbar coordinator, which owns the component overall, i.e., creates other objects
  * in the component and connects them. It decouples the implementation of this component from other
  * components and acts as the point of contact between them. Any code in this component that needs
  * to interact with another component does that through this coordinator.
  */
+@NullMarked
 public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMediatorDelegate {
     private final WebContents mWebContents;
     private final Activity mActivity;
@@ -50,17 +53,18 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
 
     /**
      * Constructs the payment-handler toolbar component coordinator.
+     *
      * @param activity The main activity.
      * @param webContents The {@link WebContents} of the payment handler app.
      * @param url The url of the payment handler app, i.e., that of
-     *         "PaymentRequestEvent.openWindow(url)".
+     *     "PaymentRequestEvent.openWindow(url)".
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      */
     public PaymentHandlerToolbarCoordinator(
-            @NonNull Activity activity,
-            @NonNull WebContents webContents,
-            @NonNull GURL url,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Activity activity,
+            WebContents webContents,
+            GURL url,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         assert activity != null;
         assert webContents != null;
         assert url != null;
@@ -68,6 +72,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
         mActivity = activity;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         int defaultSecurityLevel = ConnectionSecurityLevel.NONE;
+        int defaultMaliciousContentStatus = ConnectionMaliciousContentStatus.NONE;
         mModel =
                 new PropertyModel.Builder(PaymentHandlerToolbarProperties.ALL_KEYS)
                         .with(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, true)
@@ -76,7 +81,8 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                                 PaymentHandlerToolbarMediator.MINIMUM_LOAD_PROGRESS)
                         .with(
                                 PaymentHandlerToolbarProperties.SECURITY_ICON,
-                                getSecurityIconResource(defaultSecurityLevel))
+                                getSecurityIconResource(
+                                        defaultSecurityLevel, () -> defaultMaliciousContentStatus))
                         .with(
                                 PaymentHandlerToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION,
                                 getSecurityIconContentDescription(defaultSecurityLevel))
@@ -135,9 +141,18 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
 
     // Implement PaymentHandlerToolbarMediatorDelegate.
     @Override
-    public @DrawableRes int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel) {
+    public @ConnectionMaliciousContentStatus int getMaliciousContentStatus() {
+        return SecurityStateModel.getMaliciousContentStatusForWebContents(mWebContents);
+    }
+
+    // Implement PaymentHandlerToolbarMediatorDelegate.
+    @Override
+    public @DrawableRes int getSecurityIconResource(
+            @ConnectionSecurityLevel int securityLevel,
+            Supplier<@ConnectionMaliciousContentStatus Integer> maliciousContentStatus) {
         return SecurityStatusIcon.getSecurityIconResource(
                 securityLevel,
+                maliciousContentStatus,
                 mIsSmallDevice,
                 /* skipIconForNeutralState= */ false,
                 /* useLockIconForSecureState= */ true);
@@ -159,7 +174,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
         PageInfoController.show(
                 mActivity,
                 mWebContents,
-                null,
+                /* contentPublisher= */ null,
                 PageInfoController.OpenedFromSource.TOOLBAR,
                 new ChromePageInfoControllerDelegate(
                         mActivity,
@@ -170,8 +185,10 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                         /* storeInfoActionHandlerSupplier= */ null,
                         /* ephemeralTabCoordinatorSupplier= */ null,
                         ChromePageInfoHighlight.noHighlight(),
+                        null,
                         null),
                 ChromePageInfoHighlight.noHighlight(),
-                Gravity.TOP);
+                Gravity.TOP,
+                /* openPermissionsSubpage= */ false);
     }
 }

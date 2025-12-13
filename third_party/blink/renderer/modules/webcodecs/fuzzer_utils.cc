@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_shared_array_buffer.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -62,7 +61,7 @@ constexpr uint32_t kMaxVideoFrameDimension = 1024;
 
 base::ScopedClosureRunner MakeScopedGarbageCollectionRequest(
     v8::Isolate* isolate) {
-  return base::ScopedClosureRunner(WTF::BindOnce(
+  return base::ScopedClosureRunner(BindOnce(
       [](v8::Isolate* isolate) {
         // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
         //
@@ -74,7 +73,7 @@ base::ScopedClosureRunner MakeScopedGarbageCollectionRequest(
         isolate->RequestGarbageCollectionForTesting(
             v8::Isolate::kFullGarbageCollection);
       },
-      WTF::Unretained(isolate)));
+      Unretained(isolate)));
 }
 
 FakeFunction::FakeFunction(std::string name) : name_(std::move(name)) {}
@@ -193,27 +192,27 @@ AudioEncoderConfig* MakeAudioEncoderConfig(
   return config;
 }
 
-String ToAccelerationType(
+V8HardwarePreference::Enum ToAccelerationType(
     wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference type) {
   switch (type) {
     case wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference_ALLOW:
-      return "no-preference";
+      return V8HardwarePreference::Enum::kNoPreference;
     case wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference_DENY:
-      return "prefer-software";
+      return V8HardwarePreference::Enum::kPreferSoftware;
     case wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference_REQUIRE:
-      return "prefer-hardware";
+      return V8HardwarePreference::Enum::kPreferHardware;
   }
 }
 
-String ToBitrateMode(
+V8VideoEncoderBitrateMode::Enum ToBitrateMode(
     wc_fuzzer::ConfigureVideoEncoder_VideoEncoderBitrateMode mode) {
   switch (mode) {
     case wc_fuzzer::ConfigureVideoEncoder_VideoEncoderBitrateMode_CONSTANT:
-      return "constant";
+      return V8VideoEncoderBitrateMode::Enum::kConstant;
     case wc_fuzzer::ConfigureVideoEncoder_VideoEncoderBitrateMode_VARIABLE:
-      return "variable";
+      return V8VideoEncoderBitrateMode::Enum::kVariable;
     case wc_fuzzer::ConfigureVideoEncoder_VideoEncoderBitrateMode_QUANTIZER:
-      return "quantizer";
+      return V8VideoEncoderBitrateMode::Enum::kQuantizer;
   }
 }
 
@@ -229,12 +228,13 @@ String ToScalabilityMode(
   }
 }
 
-String ToLatencyMode(wc_fuzzer::ConfigureVideoEncoder_LatencyMode mode) {
+V8LatencyMode::Enum ToLatencyMode(
+    wc_fuzzer::ConfigureVideoEncoder_LatencyMode mode) {
   switch (mode) {
     case wc_fuzzer::ConfigureVideoEncoder_LatencyMode_QUALITY:
-      return "quality";
+      return V8LatencyMode::Enum::kQuality;
     case wc_fuzzer::ConfigureVideoEncoder_LatencyMode_REALTIME:
-      return "realtime";
+      return V8LatencyMode::Enum::kRealtime;
   }
 }
 
@@ -251,82 +251,96 @@ String ToContentHint(wc_fuzzer::ConfigureVideoEncoder_ContentHint hint) {
   }
 }
 
-String ToAlphaOption(wc_fuzzer::ConfigureVideoEncoder_AlphaOption option) {
+V8AlphaOption::Enum ToAlphaOption(
+    wc_fuzzer::ConfigureVideoEncoder_AlphaOption option) {
   switch (option) {
     case wc_fuzzer::ConfigureVideoEncoder_AlphaOption_KEEP:
-      return "keep";
+      return V8AlphaOption::Enum::kKeep;
     case wc_fuzzer::ConfigureVideoEncoder_AlphaOption_DISCARD:
-      return "discard";
+      return V8AlphaOption::Enum::kDiscard;
   }
 }
 
-String ToAacFormat(wc_fuzzer::AacFormat format) {
+V8AacBitstreamFormat::Enum ToAacFormat(wc_fuzzer::AacFormat format) {
   switch (format) {
     case wc_fuzzer::AAC:
-      return "aac";
+      return V8AacBitstreamFormat::Enum::kAac;
     case wc_fuzzer::ADTS:
-      return "adts";
+      return V8AacBitstreamFormat::Enum::kAdts;
   }
 }
 
-String ToBitrateMode(wc_fuzzer::BitrateMode bitrate_mode) {
+V8BitrateMode::Enum ToBitrateMode(wc_fuzzer::BitrateMode bitrate_mode) {
   switch (bitrate_mode) {
     case wc_fuzzer::VARIABLE:
-      return "variable";
+      return V8BitrateMode::Enum::kVariable;
     case wc_fuzzer::CONSTANT:
-      return "constant";
+      return V8BitrateMode::Enum::kConstant;
   }
 }
 
-String ToOpusSignal(wc_fuzzer::OpusSignal opus_signal) {
+V8OpusSignal::Enum ToOpusSignal(wc_fuzzer::OpusSignal opus_signal) {
   switch (opus_signal) {
     case wc_fuzzer::AUTO:
-      return "auto";
+      return V8OpusSignal::Enum::kAuto;
     case wc_fuzzer::MUSIC:
-      return "music";
+      return V8OpusSignal::Enum::kMusic;
     case wc_fuzzer::VOICE:
-      return "voice";
+      return V8OpusSignal::Enum::kVoice;
   }
 }
 
-String ToOpusApplication(wc_fuzzer::OpusApplication opus_application) {
+V8OpusApplication::Enum ToOpusApplication(
+    wc_fuzzer::OpusApplication opus_application) {
   switch (opus_application) {
     case wc_fuzzer::VOIP:
-      return "voip";
+      return V8OpusApplication::Enum::kVoip;
     case wc_fuzzer::AUDIO:
-      return "audio";
+      return V8OpusApplication::Enum::kAudio;
     case wc_fuzzer::LOWDELAY:
-      return "lowdelay";
+      return V8OpusApplication::Enum::kLowdelay;
   }
 }
 
-String ToChunkType(wc_fuzzer::EncodedChunkType type) {
+V8EncodedAudioChunkType::Enum ToAudioChunkType(
+    wc_fuzzer::EncodedChunkType type) {
   switch (type) {
     case wc_fuzzer::EncodedChunkType::KEY:
-      return "key";
+      return V8EncodedAudioChunkType::Enum::kKey;
     case wc_fuzzer::EncodedChunkType::DELTA:
-      return "delta";
+      return V8EncodedAudioChunkType::Enum::kDelta;
   }
 }
 
-String ToAudioSampleFormat(wc_fuzzer::AudioSampleFormat format) {
+V8EncodedVideoChunkType::Enum ToVideoChunkType(
+    wc_fuzzer::EncodedChunkType type) {
+  switch (type) {
+    case wc_fuzzer::EncodedChunkType::KEY:
+      return V8EncodedVideoChunkType::Enum::kKey;
+    case wc_fuzzer::EncodedChunkType::DELTA:
+      return V8EncodedVideoChunkType::Enum::kDelta;
+  }
+}
+
+V8AudioSampleFormat::Enum ToAudioSampleFormat(
+    wc_fuzzer::AudioSampleFormat format) {
   switch (format) {
     case wc_fuzzer::AudioSampleFormat::U8:
-      return "u8";
+      return V8AudioSampleFormat::Enum::kU8;
     case wc_fuzzer::AudioSampleFormat::S16:
-      return "s16";
+      return V8AudioSampleFormat::Enum::kS16;
     case wc_fuzzer::AudioSampleFormat::S32:
-      return "s32";
+      return V8AudioSampleFormat::Enum::kS32;
     case wc_fuzzer::AudioSampleFormat::F32:
-      return "f32";
+      return V8AudioSampleFormat::Enum::kF32;
     case wc_fuzzer::AudioSampleFormat::U8_PLANAR:
-      return "u8-planar";
+      return V8AudioSampleFormat::Enum::kU8Planar;
     case wc_fuzzer::AudioSampleFormat::S16_PLANAR:
-      return "s16-planar";
+      return V8AudioSampleFormat::Enum::kS16Planar;
     case wc_fuzzer::AudioSampleFormat::S32_PLANAR:
-      return "s32-planar";
+      return V8AudioSampleFormat::Enum::kS32Planar;
     case wc_fuzzer::AudioSampleFormat::F32_PLANAR:
-      return "f32-planar";
+      return V8AudioSampleFormat::Enum::kF32Planar;
   }
 }
 
@@ -358,7 +372,7 @@ EncodedVideoChunk* MakeEncodedVideoChunk(
 
   auto* init = EncodedVideoChunkInit::Create();
   init->setTimestamp(proto.timestamp());
-  init->setType(ToChunkType(proto.type()));
+  init->setType(ToVideoChunkType(proto.type()));
   init->setData(data);
 
   if (proto.has_duration())
@@ -376,7 +390,7 @@ EncodedAudioChunk* MakeEncodedAudioChunk(
 
   auto* init = EncodedAudioChunkInit::Create();
   init->setTimestamp(proto.timestamp());
-  init->setType(ToChunkType(proto.type()));
+  init->setType(ToAudioChunkType(proto.type()));
   init->setData(data);
 
   if (proto.has_duration())
@@ -480,19 +494,19 @@ VideoColorSpaceInit* MakeVideoColorSpaceInit(
   if (proto.has_primaries()) {
     switch (proto.primaries()) {
       case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_BT709:
-        init->setPrimaries("bt709");
+        init->setPrimaries(V8VideoColorPrimaries::Enum::kBt709);
         break;
       case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_BT470BG:
-        init->setPrimaries("bt470bg");
+        init->setPrimaries(V8VideoColorPrimaries::Enum::kBt470Bg);
         break;
       case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_SMPTE170M:
-        init->setPrimaries("smpte170m");
+        init->setPrimaries(V8VideoColorPrimaries::Enum::kSmpte170M);
         break;
       case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_BT2020:
-        init->setPrimaries("bt2020");
+        init->setPrimaries(V8VideoColorPrimaries::Enum::kBt2020);
         break;
       case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_SMPTE432:
-        init->setPrimaries("smpte432");
+        init->setPrimaries(V8VideoColorPrimaries::Enum::kSmpte432);
         break;
     }
   }
@@ -501,25 +515,25 @@ VideoColorSpaceInit* MakeVideoColorSpaceInit(
     switch (proto.transfer()) {
       case wc_fuzzer::
           VideoColorSpaceInit_VideoTransferCharacteristics_VTC_BT709:
-        init->setTransfer("bt709");
+        init->setTransfer(V8VideoTransferCharacteristics::Enum::kBt709);
         break;
       case wc_fuzzer::
           VideoColorSpaceInit_VideoTransferCharacteristics_VTC_SMPTE170M:
-        init->setTransfer("smpte170m");
+        init->setTransfer(V8VideoTransferCharacteristics::Enum::kSmpte170M);
         break;
       case wc_fuzzer::
           VideoColorSpaceInit_VideoTransferCharacteristics_VTC_IEC61966_2_1:
-        init->setTransfer("iec61966-2-1");
+        init->setTransfer(V8VideoTransferCharacteristics::Enum::kIec6196621);
         break;
       case wc_fuzzer::
           VideoColorSpaceInit_VideoTransferCharacteristics_VTC_LINEAR:
-        init->setTransfer("linear");
+        init->setTransfer(V8VideoTransferCharacteristics::Enum::kLinear);
         break;
       case wc_fuzzer::VideoColorSpaceInit_VideoTransferCharacteristics_VTC_PQ:
-        init->setTransfer("pq");
+        init->setTransfer(V8VideoTransferCharacteristics::Enum::kPq);
         break;
       case wc_fuzzer::VideoColorSpaceInit_VideoTransferCharacteristics_VTC_HLG:
-        init->setTransfer("hlg");
+        init->setTransfer(V8VideoTransferCharacteristics::Enum::kHlg);
         break;
     }
   }
@@ -527,20 +541,20 @@ VideoColorSpaceInit* MakeVideoColorSpaceInit(
   if (proto.has_matrix()) {
     switch (proto.matrix()) {
       case wc_fuzzer::VideoColorSpaceInit_VideoMatrixCoefficients_VMC_RGB:
-        init->setMatrix("rgb");
+        init->setMatrix(V8VideoMatrixCoefficients::Enum::kRgb);
         break;
       case wc_fuzzer::VideoColorSpaceInit_VideoMatrixCoefficients_VMC_BT709:
-        init->setMatrix("bt709");
+        init->setMatrix(V8VideoMatrixCoefficients::Enum::kBt709);
         break;
       case wc_fuzzer::VideoColorSpaceInit_VideoMatrixCoefficients_VMC_BT470BG:
-        init->setMatrix("bt470bg");
+        init->setMatrix(V8VideoMatrixCoefficients::Enum::kBt470Bg);
         break;
       case wc_fuzzer::VideoColorSpaceInit_VideoMatrixCoefficients_VMC_SMPTE170M:
-        init->setMatrix("smpte170m");
+        init->setMatrix(V8VideoMatrixCoefficients::Enum::kSmpte170M);
         break;
       case wc_fuzzer::
           VideoColorSpaceInit_VideoMatrixCoefficients_VMC_BT2020_NCL:
-        init->setMatrix("bt2020-ncl");
+        init->setMatrix(V8VideoMatrixCoefficients::Enum::kBt2020Ncl);
         break;
     }
   }
@@ -560,28 +574,28 @@ VideoFrame* MakeVideoFrame(
 
   switch (proto.init().format()) {
     case wc_fuzzer::VideoFrameBufferInit_VideoPixelFormat_I420:
-      init->setFormat("I420");
+      init->setFormat(V8VideoPixelFormat::Enum::kI420);
       break;
     case wc_fuzzer::VideoFrameBufferInit_VideoPixelFormat_I420A:
-      init->setFormat("I420A");
+      init->setFormat(V8VideoPixelFormat::Enum::kI420A);
       break;
     case wc_fuzzer::VideoFrameBufferInit_VideoPixelFormat_I444:
-      init->setFormat("I444");
+      init->setFormat(V8VideoPixelFormat::Enum::kI444);
       break;
     case wc_fuzzer::VideoFrameBufferInit_VideoPixelFormat_NV12:
-      init->setFormat("NV12");
+      init->setFormat(V8VideoPixelFormat::Enum::kNV12);
       break;
     case wc_fuzzer::VideoFrameBufferInit_VideoPixelFormat_RGBA:
-      init->setFormat("RGBA");
+      init->setFormat(V8VideoPixelFormat::Enum::kRGBA);
       break;
     case wc_fuzzer::VideoFrameBufferInit_VideoPixelFormat_RGBX:
-      init->setFormat("RGBX");
+      init->setFormat(V8VideoPixelFormat::Enum::kRGBX);
       break;
     case wc_fuzzer::VideoFrameBufferInit_VideoPixelFormat_BGRA:
-      init->setFormat("BGRA");
+      init->setFormat(V8VideoPixelFormat::Enum::kBGRA);
       break;
     case wc_fuzzer::VideoFrameBufferInit_VideoPixelFormat_BGRX:
-      init->setFormat("BGRX");
+      init->setFormat(V8VideoPixelFormat::Enum::kBGRX);
       break;
   }
 
@@ -666,8 +680,7 @@ AudioData* MakeAudioData(ScriptState* script_state,
     return nullptr;
   }
 
-  V8AudioSampleFormat format =
-      V8AudioSampleFormat::Create(ToAudioSampleFormat(proto.format())).value();
+  V8AudioSampleFormat format(ToAudioSampleFormat(proto.format()));
 
   int size_per_sample = SampleFormatToSampleSize(format);
   int number_of_samples = proto.channels().size() * proto.length();

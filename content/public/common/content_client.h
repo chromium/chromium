@@ -54,7 +54,7 @@ class ContentGpuClient;
 class ContentRendererClient;
 class ContentUtilityClient;
 struct CdmInfo;
-struct ContentPluginInfo;
+struct WebPluginInfo;
 
 // Setter and getter for the client. The client should be set early, before any
 // content code is called.
@@ -101,7 +101,7 @@ class CONTENT_EXPORT ContentClient {
   virtual void SetGpuInfo(const gpu::GPUInfo& gpu_info) {}
 
   // Gives the embedder a chance to register its own plugins.
-  virtual void AddPlugins(std::vector<content::ContentPluginInfo>* plugins) {}
+  virtual void AddPlugins(std::vector<content::WebPluginInfo>* plugins) {}
 
   // Gives the embedder a chance to register the Content Decryption Modules
   // (CDM) it supports, as well as the CDM host file paths to verify CDM host.
@@ -226,6 +226,10 @@ class CONTENT_EXPORT ContentClient {
   // SiteInstanceGroups on Android WebView while still enabling the feature by
   // default. Remove this carveout once remaining WebView issues are resolved.
   virtual bool ShouldAllowDefaultSiteInstanceGroup();
+
+  // Returns whether duplicate navigations should be ignored.
+  virtual bool ShouldIgnoreDuplicateNavs(const GURL& url,
+                                         bool is_renderer_initiated) const;
 
  private:
   // For SetBrowserClientAlwaysAllowForTesting().

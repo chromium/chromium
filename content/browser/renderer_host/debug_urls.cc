@@ -59,15 +59,13 @@ bool IsAsanDebugURL(const GURL& url) {
     return false;
   }
 
-  if (url.path_piece() == kAsanHeapOverflow ||
-      url.path_piece() == kAsanHeapUnderflow ||
-      url.path_piece() == kAsanUseAfterFree) {
+  if (url.path() == kAsanHeapOverflow || url.path() == kAsanHeapUnderflow ||
+      url.path() == kAsanUseAfterFree) {
     return true;
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (url.path_piece() == kAsanCorruptHeapBlock ||
-      url.path_piece() == kAsanCorruptHeap) {
+  if (url.path() == kAsanCorruptHeapBlock || url.path() == kAsanCorruptHeap) {
     return true;
   }
 #endif
@@ -81,25 +79,25 @@ void HandleAsanDebugURL(const GURL& url) {
   CHECK(IsAsanDebugURL(url));
 #if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_HWASAN)
 #if BUILDFLAG(IS_WIN)
-  if (url.path_piece() == kAsanCorruptHeapBlock) {
+  if (url.path() == kAsanCorruptHeapBlock) {
     base::debug::AsanCorruptHeapBlock();
     return;
   }
-  if (url.path_piece() == kAsanCorruptHeap) {
+  if (url.path() == kAsanCorruptHeap) {
     base::debug::AsanCorruptHeap();
     return;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  if (url.path_piece() == kAsanHeapOverflow) {
+  if (url.path() == kAsanHeapOverflow) {
     base::debug::AsanHeapOverflow();
     return;
   }
-  if (url.path_piece() == kAsanHeapUnderflow) {
+  if (url.path() == kAsanHeapUnderflow) {
     base::debug::AsanHeapUnderflow();
     return;
   }
-  if (url.path_piece() == kAsanUseAfterFree) {
+  if (url.path() == kAsanUseAfterFree) {
     base::debug::AsanHeapUseAfterFree();
     return;
   }
@@ -233,12 +231,12 @@ void HandleDebugURL(const GURL& url,
   }
   if (url == blink::kChromeUIMemoryPressureCriticalURL) {
     base::MemoryPressureListener::NotifyMemoryPressure(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     return;
   }
   if (url == blink::kChromeUIMemoryPressureModerateURL) {
     base::MemoryPressureListener::NotifyMemoryPressure(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+        base::MEMORY_PRESSURE_LEVEL_MODERATE);
     return;
   }
 }

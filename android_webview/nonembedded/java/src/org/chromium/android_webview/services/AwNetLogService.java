@@ -68,7 +68,6 @@ public class AwNetLogService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO(crbug.com/340272811): Check if NET_LOG flag is enabled before returning IBinder.
         return mBinder;
     }
 

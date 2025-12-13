@@ -1,0 +1,7 @@
+include_rules = [
+    "+ios/chrome/browser/web/model/choose_file/choose_file_controller.h",
+    "+ios/chrome/browser/web/model/choose_file/choose_file_controller_observer_bridge.h",
+    "+ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h",
+    "+ios/chrome/browser/web/model/choose_file/choose_file_util.h",
+    "+ios/chrome/browser/web/model/choose_file/choose_file_file_utils.h",
+]

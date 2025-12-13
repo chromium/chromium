@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 
-int kThumbnailSize = 100;
+constexpr int kThumbnailSize = 100;
 
 using testing::AtLeast;
 using testing::DoDefault;
@@ -57,7 +57,8 @@ ACTION_P2(QuitMessageLoop, quit_closure) {
 TEST_F(DesktopMediaListAshTest, ScreenOnly) {
   CreateList(DesktopMediaList::Type::kScreen);
   base::RunLoop loop;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
 
   EXPECT_CALL(observer_, OnSourceAdded(0));
   EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
@@ -74,7 +75,8 @@ TEST_F(DesktopMediaListAshTest, WindowOnly) {
   {
     base::RunLoop loop1;
     base::RunLoop loop2;
-    std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+    std::unique_ptr<aura::Window> window(
+        CreateTestWindowInShell({.window_id = 0}));
 
     EXPECT_CALL(observer_, OnSourceAdded(0));
     EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))

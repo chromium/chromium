@@ -11,6 +11,9 @@
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

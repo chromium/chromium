@@ -146,6 +146,9 @@ enum Destination {
   // |DATA_LOST_ACTIVITY| is for reporting data lost activity.
   DATA_LOST_ACTIVITY = 38;
 
+  // |SAAS_DOMAIN| is for reporting SaaS domain usage.
+  SAAS_DOMAIN = 39;
+
   reserved 8;
 }
 

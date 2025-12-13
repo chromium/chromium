@@ -141,35 +141,3 @@ TEST_F(HomeMetricsTest, TestTabResumptionFreshnessSignalPresent) {
           prefs::
               kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness));
 }
-
-// Verifies Parcel Tracking module doesn't update local state impression count
-// when no freshness signal exists
-TEST_F(HomeMetricsTest, TestParcelTrackingNoFreshnessSignal) {
-  EXPECT_EQ(
-      -1,
-      local_state()->GetInteger(
-          prefs::
-              kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness));
-  LogTopModuleImpressionForType(ContentSuggestionsModuleType::kParcelTracking,
-                                &pref_service_);
-  EXPECT_EQ(
-      -1,
-      local_state()->GetInteger(
-          prefs::
-              kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness));
-}
-
-// Verifies Parcel Tracking module increments local state impression count when
-// freshness signal exists
-TEST_F(HomeMetricsTest, TestParcelTrackingFreshnessSignalPresent) {
-  local_state()->SetInteger(
-      prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness,
-      15);
-  LogTopModuleImpressionForType(ContentSuggestionsModuleType::kParcelTracking,
-                                &pref_service_);
-  EXPECT_EQ(
-      16,
-      local_state()->GetInteger(
-          prefs::
-              kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness));
-}

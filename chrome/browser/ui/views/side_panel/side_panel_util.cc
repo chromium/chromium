@@ -7,11 +7,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
@@ -24,11 +26,48 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
+#include "chrome/common/chrome_features.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/ui/views/side_panel/glic/glic_legacy_side_panel_coordinator.h"
+#endif
+
+namespace {
+
+std::string_view GetSidePanelNameFor(SidePanelEntry::PanelType panel_type) {
+  switch (panel_type) {
+    case SidePanelEntry::PanelType::kContent:
+      return "SidePanel";
+    case SidePanelEntry::PanelType::kToolbar:
+      return "SidePanelToolbarHeight";
+  }
+
+  NOTREACHED() << "Invalid PanelType " << static_cast<int>(panel_type);
+}
+
+std::string_view GetAnimationNameFor(
+    SidePanelAnimationCoordinator::AnimationType animation_type) {
+  switch (animation_type) {
+    case SidePanelAnimationCoordinator::AnimationType::kOpen:
+      return "Open";
+    case SidePanelAnimationCoordinator::AnimationType::
+        kOpenWithContentTransition:
+      return "OpenWithContentTransition";
+    case SidePanelAnimationCoordinator::AnimationType::kClose:
+      return "Close";
+  }
+
+  NOTREACHED() << "Invalid AnimationType " << static_cast<int>(animation_type);
+}
+
+}  // namespace
 
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
@@ -42,6 +81,12 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   browser->browser_window_features()
       ->bookmarks_side_panel_coordinator()
       ->CreateAndRegisterEntry(window_registry);
+
+  if (webui_browser::IsWebUIBrowserEnabled()) {
+    // TODO(webium): Consider supporting additional side panels beyond reading
+    // list and bookmarks.
+    return;
+  }
 
   // Add history clusters.
   if (HistoryClustersSidePanelCoordinator::IsSupported(browser->profile()) &&
@@ -64,6 +109,15 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
         ->comments_side_panel_coordinator()
         ->CreateAndRegisterEntry(window_registry);
   }
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic::GlicEnabling::IsEnabledForProfile(browser->profile()) &&
+      browser->is_type_normal() &&
+      !glic::GlicEnabling::IsMultiInstanceEnabled()) {
+    browser->browser_window_features()
+        ->glic_side_panel_coordinator()
+        ->CreateAndRegisterEntry(browser, window_registry);
+  }
+#endif
 }
 
 SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
@@ -76,50 +130,85 @@ SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
   return content_view->GetProperty(kSidePanelContentProxyKey);
 }
 
+actions::ActionItem* SidePanelUtil::GetActionItem(
+    Browser* browser,
+    SidePanelEntry::Key entry_key) {
+  BrowserActions* const browser_actions = browser->browser_actions();
+  if (entry_key.id() == SidePanelEntryId::kExtension) {
+    std::optional<actions::ActionId> extension_action_id =
+        actions::ActionIdMap::StringToActionId(entry_key.ToString());
+    CHECK(extension_action_id.has_value());
+    actions::ActionItem* const action_item =
+        actions::ActionManager::Get().FindAction(
+            extension_action_id.value(), browser_actions->root_action_item());
+    CHECK(action_item);
+    return action_item;
+  }
+
+  std::optional<actions::ActionId> action_id =
+      SidePanelEntryIdToActionId(entry_key.id());
+  CHECK(action_id.has_value());
+  return actions::ActionManager::Get().FindAction(
+      action_id.value(), browser_actions->root_action_item());
+}
+
 void SidePanelUtil::RecordSidePanelOpen(
+    SidePanelEntry::PanelType type,
     std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
-  base::RecordAction(base::UserMetricsAction("SidePanel.Show"));
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({GetSidePanelNameFor(type), ".Show"}).c_str()));
 
   if (trigger.has_value()) {
-    base::UmaHistogramEnumeration("SidePanel.OpenTrigger", trigger.value());
+    base::UmaHistogramEnumeration(
+        base::StrCat({GetSidePanelNameFor(type), ".OpenTrigger"}),
+        trigger.value());
   }
 }
 
 void SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(
+    SidePanelEntry::PanelType type,
     std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
-    base::UmaHistogramEnumeration("SidePanel.OpenOrChangeEntryTrigger",
-                                  trigger.value());
+    base::UmaHistogramEnumeration(
+        base::StrCat({GetSidePanelNameFor(type), ".OpenOrChangeEntryTrigger"}),
+        trigger.value());
   }
 }
 
-void SidePanelUtil::RecordSidePanelClosed(base::TimeTicks opened_timestamp) {
-  base::RecordAction(base::UserMetricsAction("SidePanel.Hide"));
+void SidePanelUtil::RecordSidePanelClosed(SidePanelEntry::PanelType type,
+                                          base::TimeTicks opened_timestamp) {
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({GetSidePanelNameFor(type), ".Hide"}).c_str()));
 
-  base::UmaHistogramLongTimes("SidePanel.OpenDuration",
-                              base::TimeTicks::Now() - opened_timestamp);
+  base::UmaHistogramLongTimes(
+      base::StrCat({GetSidePanelNameFor(type), ".OpenDuration"}),
+      base::TimeTicks::Now() - opened_timestamp);
 }
 
-void SidePanelUtil::RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
+void SidePanelUtil::RecordSidePanelResizeMetrics(SidePanelEntry::PanelType type,
+                                                 SidePanelEntry::Id id,
                                                  int side_panel_contents_width,
                                                  int browser_window_width) {
   std::string entry_name = SidePanelEntryIdToHistogramName(id);
 
   // Metrics per-id and overall for side panel width after resize.
-  base::UmaHistogramCounts10000(
-      base::StrCat({"SidePanel.", entry_name, ".ResizedWidth"}),
-      side_panel_contents_width);
-  base::UmaHistogramCounts10000("SidePanel.ResizedWidth",
+  base::UmaHistogramCounts10000(base::StrCat({GetSidePanelNameFor(type), ".",
+                                              entry_name, ".ResizedWidth"}),
                                 side_panel_contents_width);
+  base::UmaHistogramCounts10000(
+      base::StrCat({GetSidePanelNameFor(type), ".ResizedWidth"}),
+      side_panel_contents_width);
 
   // Metrics per-id and overall for side panel width after resize as a
   // percentage of browser width.
   int width_percentage = side_panel_contents_width * 100 / browser_window_width;
   base::UmaHistogramPercentage(
-      base::StrCat({"SidePanel.", entry_name, ".ResizedWidthPercentage"}),
+      base::StrCat({GetSidePanelNameFor(type), ".", entry_name,
+                    ".ResizedWidthPercentage"}),
       width_percentage);
-  base::UmaHistogramPercentage("SidePanel.ResizedWidthPercentage",
-                               width_percentage);
+  base::UmaHistogramPercentage(
+      base::StrCat({GetSidePanelNameFor(type), ".ResizedWidthPercentage"}),
+      width_percentage);
 }
 
 void SidePanelUtil::RecordNewTabButtonClicked(SidePanelEntry::Id id) {
@@ -129,40 +218,53 @@ void SidePanelUtil::RecordNewTabButtonClicked(SidePanelEntry::Id id) {
 }
 
 void SidePanelUtil::RecordEntryShownMetrics(
+    SidePanelEntry::PanelType type,
     SidePanelEntry::Id id,
     base::TimeTicks load_started_timestamp) {
-  base::RecordComputedAction(base::StrCat(
-      {"SidePanel.", SidePanelEntryIdToHistogramName(id), ".Shown"}));
+  base::RecordComputedAction(
+      base::StrCat({GetSidePanelNameFor(type), ".",
+                    SidePanelEntryIdToHistogramName(id), ".Shown"}));
   if (load_started_timestamp != base::TimeTicks()) {
     base::UmaHistogramLongTimes(
-        base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
+        base::StrCat({GetSidePanelNameFor(type), ".",
+                      SidePanelEntryIdToHistogramName(id),
                       ".TimeFromEntryTriggerToShown"}),
         base::TimeTicks::Now() - load_started_timestamp);
   }
 }
 
-void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::Id id,
+void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::PanelType type,
+                                             SidePanelEntry::Id id,
                                              base::TimeTicks shown_timestamp) {
   base::UmaHistogramLongTimes(
-      base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
-                    ".ShownDuration"}),
+      base::StrCat({GetSidePanelNameFor(type), ".",
+                    SidePanelEntryIdToHistogramName(id), ".ShownDuration"}),
       base::TimeTicks::Now() - shown_timestamp);
+  // To measure extended usage times, Read Anything also needs a higher maximum
+  // than what's supported by the standard ShownDuration histogram.
+  if (type == SidePanelEntry::PanelType::kContent &&
+      id == SidePanelEntryId::kReadAnything) {
+    // TODO(crbug.com/456824119): Consider removing the standard ShownDuration
+    // histogram for Read Anything after this one has gathered enough data.
+    base::UmaHistogramCustomTimes("SidePanel.ReadAnything.ShownDurationMax1Day",
+                                  base::TimeTicks::Now() - shown_timestamp,
+                                  /*min=*/base::Seconds(1),
+                                  /*max=*/base::Hours(24),
+                                  /*buckets=*/100);
+  }
 }
 
 void SidePanelUtil::RecordEntryShowTriggeredMetrics(
+    SidePanelEntry::PanelType type,
     Browser* browser,
     SidePanelEntry::Id id,
     std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration(
-        base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
-                      ".ShowTriggered"}),
+        base::StrCat({GetSidePanelNameFor(type), ".",
+                      SidePanelEntryIdToHistogramName(id), ".ShowTriggered"}),
         trigger.value());
   }
-}
-
-void SidePanelUtil::RecordComboboxShown() {
-  base::UmaHistogramBoolean("SidePanel.ComboboxMenuShown", true);
 }
 
 void SidePanelUtil::RecordPinnedButtonClicked(SidePanelEntry::Id id,
@@ -173,7 +275,42 @@ void SidePanelUtil::RecordPinnedButtonClicked(SidePanelEntry::Id id,
 }
 
 void SidePanelUtil::RecordSidePanelAnimationMetrics(
-    base::TimeDelta largest_step_time) {
-  base::UmaHistogramTimes("SidePanel.TimeOfLongestAnimationStep",
-                          largest_step_time);
+    SidePanelEntry::PanelType panel_type,
+    SidePanelAnimationCoordinator::AnimationType animation_type,
+    base::TimeDelta largest_step_time,
+    int frames_per_second) {
+  if (!largest_step_time.is_zero()) {
+    base::UmaHistogramTimes(base::StrCat({GetSidePanelNameFor(panel_type),
+                                          ".TimeOfLongestAnimationStep"}),
+                            largest_step_time);
+  }
+
+  if (frames_per_second > 0) {
+    base::UmaHistogramCounts100(
+        base::StrCat({GetSidePanelNameFor(panel_type), ".",
+                      GetAnimationNameFor(animation_type), ".AnimationFPS"}),
+        frames_per_second);
+  }
+}
+
+void SidePanelUtil::RecordPanelClosedForOtherPanelTypeMetrics(
+    SidePanelEntry::PanelType closing_panel_type,
+    SidePanelEntry::PanelType opening_panel_type,
+    SidePanelEntryId closing_panel_id,
+    SidePanelEntryId opening_panel_id) {
+  base::RecordComputedAction(
+      base::StrCat({GetSidePanelNameFor(closing_panel_type), ".ClosedToOpen.",
+                    GetSidePanelNameFor(opening_panel_type)}));
+  if (closing_panel_id == SidePanelEntryId::kContextualTasks) {
+    base::RecordComputedAction(base::StrCat(
+        {GetSidePanelNameFor(closing_panel_type), ".",
+         SidePanelEntryIdToHistogramName(closing_panel_id), ".ClosedToOpen.",
+         GetSidePanelNameFor(opening_panel_type)}));
+    if (opening_panel_id == SidePanelEntryId::kGlic) {
+      base::RecordComputedAction(base::StrCat(
+          {GetSidePanelNameFor(closing_panel_type), ".",
+           SidePanelEntryIdToHistogramName(closing_panel_id), ".ClosedToOpen.",
+           SidePanelEntryIdToHistogramName(opening_panel_id)}));
+    }
+  }
 }

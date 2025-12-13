@@ -13,9 +13,9 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {CrLitElement, PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {SaveRequestType} from '../constants.js';
-
+const SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 type Constructor<T> = new (...args: any[]) => T;
+type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 
 export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
     superClass: T): T&Constructor<ViewerSaveControlsMixinInterface> => {
@@ -69,7 +69,7 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
     }
 
     /**
-     * Client code should override this method to return the appropriate
+     * Subclasses should override this method to return the appropriate
      * CrActionMenuElement.
      */
     getMenu(): CrActionMenuElement {
@@ -77,7 +77,7 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
     }
 
     /**
-     * Client code should override this method to return the appropriate
+     * Subclasses should override this method to return the appropriate
      * CrIconButtonElement.
      */
     getSaveButton(): CrIconButtonElement {
@@ -85,7 +85,7 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
     }
 
     /**
-     * Client code should override this method to return the appropriate save
+     * Subclasses should override this method to return the appropriate save
      * event type.
      */
     getSaveEventType(): string {
@@ -94,7 +94,7 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
 
     onSaveClick() {
       this.waitForEdits_().then(hasEdits => {
-        if (hasEdits) {
+        if (this.shouldShowSaveMenuOnSaveClick(hasEdits)) {
           this.showSaveMenu_();
         } else {
           this.dispatchSaveEvent_(SaveRequestType.ORIGINAL);
@@ -121,6 +121,14 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
     onSaveOriginalClick() {
       this.dispatchSaveEvent_(SaveRequestType.ORIGINAL);
       this.getMenu().close();
+    }
+
+    /**
+     * Subclasses can override this method to control whether the save menu
+     * should be shown.
+     */
+    shouldShowSaveMenuOnSaveClick(hasEdits: boolean): boolean {
+      return hasEdits;
     }
 
     private dispatchSaveEvent_(type: SaveRequestType) {
@@ -167,4 +175,5 @@ export interface ViewerSaveControlsMixinInterface {
   onSaveClick(): void;
   onSaveEditedClick(): void;
   onSaveOriginalClick(): void;
+  shouldShowSaveMenuOnSaveClick(hasEdits: boolean): boolean;
 }

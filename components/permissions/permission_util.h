@@ -198,6 +198,9 @@ class PermissionUtil {
 
   // Returns `true` if the current platform support permission chips.
   static bool DoesPlatformSupportChip();
+
+  // Returns the content settings type used by the Geolocation permission.
+  static ContentSettingsType GetGeolocationType();
 };
 
 }  // namespace permissions

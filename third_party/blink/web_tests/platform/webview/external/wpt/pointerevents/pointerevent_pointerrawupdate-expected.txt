@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] pointerrawupdate event not received
-  assert_false: Pointerrawupdate event should not have been received before pointermove. expected false got true
-Harness: the test ran to completion.

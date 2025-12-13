@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/trees/occlusion.h"
 
 #include <stddef.h>
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -58,25 +54,29 @@ TEST(OcclusionTest, IsOccludedNoTransform) {
   });
 
   Occlusion no_occlusion;
-  EXPECT_OCCLUSION(no_occlusion, rects, false, false, false, false);
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(no_occlusion, rects, false, false, false, false));
 
   Occlusion all_occluded_outside(
       gfx::Transform(), SimpleEnclosedRegion(20, 20), SimpleEnclosedRegion());
-  EXPECT_OCCLUSION(all_occluded_outside, rects, true, true, true, true);
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(all_occluded_outside, rects, true, true, true, true));
 
   Occlusion all_occluded_inside(
       gfx::Transform(), SimpleEnclosedRegion(), SimpleEnclosedRegion(20, 20));
-  EXPECT_OCCLUSION(all_occluded_inside, rects, true, true, true, true);
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(all_occluded_inside, rects, true, true, true, true));
 
   Occlusion all_occluded_mixed(gfx::Transform(),
                                SimpleEnclosedRegion(10, 20),
                                SimpleEnclosedRegion(10, 0, 10, 20));
-  EXPECT_OCCLUSION(all_occluded_mixed, rects, true, true, true, true);
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(all_occluded_mixed, rects, true, true, true, true));
 
   Occlusion some_occluded(gfx::Transform(),
                           SimpleEnclosedRegion(10, 10),
                           SimpleEnclosedRegion(10, 10, 10, 10));
-  EXPECT_OCCLUSION(some_occluded, rects, true, false, false, true);
+  UNSAFE_TODO(EXPECT_OCCLUSION(some_occluded, rects, true, false, false, true));
 }
 
 TEST(OcclusionTest, IsOccludedScaled) {
@@ -97,15 +97,19 @@ TEST(OcclusionTest, IsOccludedScaled) {
       half_scale, SimpleEnclosedRegion(10, 10), SimpleEnclosedRegion());
   Occlusion all_occluded_outside_double(
       double_scale, SimpleEnclosedRegion(40, 40), SimpleEnclosedRegion());
-  EXPECT_OCCLUSION(all_occluded_outside_half, rects, true, true, true, true);
-  EXPECT_OCCLUSION(all_occluded_outside_double, rects, true, true, true, true);
+  UNSAFE_TODO(EXPECT_OCCLUSION(all_occluded_outside_half, rects, true, true,
+                               true, true));
+  UNSAFE_TODO(EXPECT_OCCLUSION(all_occluded_outside_double, rects, true, true,
+                               true, true));
 
   Occlusion all_occluded_inside_half(
       half_scale, SimpleEnclosedRegion(), SimpleEnclosedRegion(10, 10));
   Occlusion all_occluded_inside_double(
       double_scale, SimpleEnclosedRegion(), SimpleEnclosedRegion(40, 40));
-  EXPECT_OCCLUSION(all_occluded_inside_half, rects, true, true, true, true);
-  EXPECT_OCCLUSION(all_occluded_inside_double, rects, true, true, true, true);
+  UNSAFE_TODO(EXPECT_OCCLUSION(all_occluded_inside_half, rects, true, true,
+                               true, true));
+  UNSAFE_TODO(EXPECT_OCCLUSION(all_occluded_inside_double, rects, true, true,
+                               true, true));
 
   Occlusion all_occluded_mixed_half(half_scale,
                                     SimpleEnclosedRegion(5, 10),
@@ -113,16 +117,20 @@ TEST(OcclusionTest, IsOccludedScaled) {
   Occlusion all_occluded_mixed_double(double_scale,
                                       SimpleEnclosedRegion(20, 40),
                                       SimpleEnclosedRegion(20, 0, 20, 40));
-  EXPECT_OCCLUSION(all_occluded_mixed_half, rects, true, true, true, true);
-  EXPECT_OCCLUSION(all_occluded_mixed_double, rects, true, true, true, true);
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(all_occluded_mixed_half, rects, true, true, true, true));
+  UNSAFE_TODO(EXPECT_OCCLUSION(all_occluded_mixed_double, rects, true, true,
+                               true, true));
 
   Occlusion some_occluded_half(
       half_scale, SimpleEnclosedRegion(5, 5), SimpleEnclosedRegion(5, 5, 5, 5));
   Occlusion some_occluded_double(double_scale,
                                  SimpleEnclosedRegion(20, 20),
                                  SimpleEnclosedRegion(20, 20, 20, 20));
-  EXPECT_OCCLUSION(some_occluded_half, rects, true, false, false, true);
-  EXPECT_OCCLUSION(some_occluded_double, rects, true, false, false, true);
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(some_occluded_half, rects, true, false, false, true));
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(some_occluded_double, rects, true, false, false, true));
 }
 
 TEST(OcclusionTest, IsOccludedTranslated) {
@@ -143,15 +151,19 @@ TEST(OcclusionTest, IsOccludedTranslated) {
       move_left, SimpleEnclosedRegion(-100, 0, 20, 20), SimpleEnclosedRegion());
   Occlusion all_occluded_outside_down(
       move_down, SimpleEnclosedRegion(0, 100, 20, 20), SimpleEnclosedRegion());
-  EXPECT_OCCLUSION(all_occluded_outside_left, rects, true, true, true, true);
-  EXPECT_OCCLUSION(all_occluded_outside_down, rects, true, true, true, true);
+  UNSAFE_TODO(EXPECT_OCCLUSION(all_occluded_outside_left, rects, true, true,
+                               true, true));
+  UNSAFE_TODO(EXPECT_OCCLUSION(all_occluded_outside_down, rects, true, true,
+                               true, true));
 
   Occlusion all_occluded_inside_left(
       move_left, SimpleEnclosedRegion(), SimpleEnclosedRegion(-100, 0, 20, 20));
   Occlusion all_occluded_inside_down(
       move_down, SimpleEnclosedRegion(), SimpleEnclosedRegion(0, 100, 20, 20));
-  EXPECT_OCCLUSION(all_occluded_inside_left, rects, true, true, true, true);
-  EXPECT_OCCLUSION(all_occluded_inside_down, rects, true, true, true, true);
+  UNSAFE_TODO(EXPECT_OCCLUSION(all_occluded_inside_left, rects, true, true,
+                               true, true));
+  UNSAFE_TODO(EXPECT_OCCLUSION(all_occluded_inside_down, rects, true, true,
+                               true, true));
 
   Occlusion all_occluded_mixed_left(move_left,
                                     SimpleEnclosedRegion(-100, 0, 10, 20),
@@ -159,8 +171,10 @@ TEST(OcclusionTest, IsOccludedTranslated) {
   Occlusion all_occluded_mixed_down(move_down,
                                     SimpleEnclosedRegion(0, 100, 10, 20),
                                     SimpleEnclosedRegion(10, 100, 10, 20));
-  EXPECT_OCCLUSION(all_occluded_mixed_left, rects, true, true, true, true);
-  EXPECT_OCCLUSION(all_occluded_mixed_down, rects, true, true, true, true);
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(all_occluded_mixed_left, rects, true, true, true, true));
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(all_occluded_mixed_down, rects, true, true, true, true));
 
   Occlusion some_occluded_left(move_left,
                                SimpleEnclosedRegion(-100, 0, 10, 10),
@@ -168,8 +182,10 @@ TEST(OcclusionTest, IsOccludedTranslated) {
   Occlusion some_occluded_down(move_down,
                                SimpleEnclosedRegion(0, 100, 10, 10),
                                SimpleEnclosedRegion(10, 110, 10, 10));
-  EXPECT_OCCLUSION(some_occluded_left, rects, true, false, false, true);
-  EXPECT_OCCLUSION(some_occluded_down, rects, true, false, false, true);
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(some_occluded_left, rects, true, false, false, true));
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(some_occluded_down, rects, true, false, false, true));
 }
 
 TEST(OcclusionTest, IsOccludedScaledAfterConstruction) {
@@ -196,8 +212,10 @@ TEST(OcclusionTest, IsOccludedScaledAfterConstruction) {
   Occlusion all_occluded_outside_double =
       all_occluded_outside.GetOcclusionWithGivenDrawTransform(double_transform);
 
-  EXPECT_OCCLUSION(all_occluded_outside_half, rects, true, true, true, true);
-  EXPECT_OCCLUSION(all_occluded_outside_double, rects, true, true, true, true);
+  UNSAFE_TODO(EXPECT_OCCLUSION(all_occluded_outside_half, rects, true, true,
+                               true, true));
+  UNSAFE_TODO(EXPECT_OCCLUSION(all_occluded_outside_double, rects, true, true,
+                               true, true));
 
   Occlusion some_occluded(gfx::Transform(),
                           SimpleEnclosedRegion(5, 5),
@@ -211,8 +229,10 @@ TEST(OcclusionTest, IsOccludedScaledAfterConstruction) {
   Occlusion some_occluded_double =
       some_occluded.GetOcclusionWithGivenDrawTransform(double_transform);
 
-  EXPECT_OCCLUSION(some_occluded_half, rects, true, false, false, true);
-  EXPECT_OCCLUSION(some_occluded_double, rects, true, false, false, true);
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(some_occluded_half, rects, true, false, false, true));
+  UNSAFE_TODO(
+      EXPECT_OCCLUSION(some_occluded_double, rects, true, false, false, true));
 }
 
 TEST(OcclusionTest, GetUnoccludedContentRectNoTransform) {

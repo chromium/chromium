@@ -124,10 +124,9 @@ class MODULES_EXPORT InspectorAccessibilityAgent
     void Fired() override { (agent_->*function_)(this, document_); }
 
     base::OnceClosure BindTimerClosure() final {
-      return WTF::BindOnce(&DocumentTimer::RunInternalTrampoline,
-                           WTF::Unretained(this),
-                           WrapWeakPersistent(agent_.Get()),
-                           WrapWeakPersistent(document_.Get()));
+      return BindOnce(&DocumentTimer::RunInternalTrampoline, Unretained(this),
+                      WrapWeakPersistent(agent_.Get()),
+                      WrapWeakPersistent(document_.Get()));
     }
 
    private:

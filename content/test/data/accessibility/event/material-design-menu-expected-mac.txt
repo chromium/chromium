@@ -1,0 +1,59 @@
+=== Accessibility tree before go() pass 1 ===
+AXWebArea AXTitle='Material Web Menu Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++AXButton AXDescription='Open Menu'
+=== End accessibility tree ===
+AXFocusedUIElementChanged on AXMenuItem AXDescription='Menu Item 1'
+AXMenuOpened on AXGroup
+=== Accessibility tree after go() pass 1 ===
+AXWebArea AXTitle='Material Web Menu Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++AXButton AXDescription='Open Menu'
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXMenuItem AXDescription='Menu Item 1' <<<<<< CHANGED
+++++++++++++AXGroup <<<<<< CHANGED
+++++++++++++++AXGroup <<<<<< CHANGED
+++++++++++AXMenuItem AXDescription='Menu Item 2' <<<<<< CHANGED
+++++++++++++AXGroup <<<<<< CHANGED
+++++++++++++++AXGroup <<<<<< CHANGED
+++++++++++AXMenuItem AXDescription='Menu Item 3' <<<<<< CHANGED
+++++++++++++AXGroup <<<<<< CHANGED
+++++++++++++++AXGroup <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+AXWebArea AXTitle='Material Web Menu Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++AXButton AXDescription='Open Menu'
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXMenuItem AXDescription='Menu Item 1'
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++AXMenuItem AXDescription='Menu Item 2'
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++AXMenuItem AXDescription='Menu Item 3'
+++++++++++++AXGroup
+++++++++++++++AXGroup
+=== End accessibility tree ===
+AXFocusedUIElementChanged on AXButton AXDescription='Open Menu'
+AXMenuClosed on AXWebArea AXTitle='Material Web Menu Events'
+=== Accessibility tree after go() pass 2 ===
+AXWebArea AXTitle='Material Web Menu Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++AXButton AXDescription='Open Menu'
+=== End accessibility tree ===

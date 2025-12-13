@@ -123,10 +123,8 @@ class TabLifecycleUnitSource : public BrowserListObserver,
   void OnBrowserNoLongerActive(Browser* browser) override;
 
   // LifecycleUnitObserver:
-  void OnLifecycleUnitStateChanged(
-      LifecycleUnit* lifecycle_unit,
-      LifecycleUnitState last_state,
-      LifecycleUnitStateChangeReason reason) override;
+  void OnLifecycleUnitStateChanged(LifecycleUnit* lifecycle_unit,
+                                   LifecycleUnitState last_state) override;
   void OnLifecycleUnitDestroyed(LifecycleUnit* lifecycle_unit) override;
 
   // This is called indirectly from the corresponding event on a PageNode in the

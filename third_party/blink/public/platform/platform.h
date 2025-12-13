@@ -50,6 +50,7 @@
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/cpu_performance.mojom-shared.h"
 #include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom-forward.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -420,18 +421,19 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Decodes the in-memory audio file data and returns the linear PCM audio data
   // in the |destination_bus|.
   // Returns true on success.
-  virtual bool DecodeAudioFileData(WebAudioBus* destination_bus,
-                                   base::span<const char> audio_file_data) {
-    return false;
+  virtual std::unique_ptr<WebAudioBus> DecodeAudioFileData(
+      base::span<const char> audio_file_data) {
+    return nullptr;
   }
 
   // Process lifetime management -----------------------------------------
 
-  // Disable/Enable sudden termination on a process level. When possible, it
-  // is preferable to disable sudden termination on a per-frame level via
-  // mojom::LocalFrameHost::SuddenTerminationDisablerChanged.
-  // This method should only be called on the main thread.
-  virtual void SuddenTerminationChanged(bool enabled) {}
+  // Allows/disallows sudden termination at the process level. May only be
+  // called on the main thread. Frame-level disablers use
+  // LocalFrame::UpdateSuddenTerminationStatus() instead of this. Disallowing
+  // sudden termination delays when the process is terminated by the browser but
+  // doesn't keep it alive.
+  virtual void SetSuddenTerminationAllowed(bool allowed) {}
 
   // System --------------------------------------------------------------
 
@@ -478,26 +480,11 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // GPU ----------------------------------------------------------------
   //
-  enum ContextType {
+  enum WebGLContextType {
     kWebGL1ContextType,  // WebGL 1.0 context, use only for WebGL canvases
     kWebGL2ContextType,  // WebGL 2.0 context, use only for WebGL canvases
-    kGLES2ContextType,   // GLES 2.0 context, default, good for using skia
-    kGLES3ContextType,   // GLES 3.0 context
-    kWebGPUContextType,  // WebGPU context
   };
-  struct ContextAttributes {
-    bool prefer_low_power_gpu = false;
-    bool fail_if_major_performance_caveat = false;
-    ContextType context_type = kGLES2ContextType;
-
-    // Offscreen contexts created for WebGL should not need the RasterInterface
-    // or GrContext. If either of these are set to false, it will not be
-    // possible to use the corresponding interface for the lifetime of the
-    // context.
-    bool enable_raster_interface = false;
-    bool support_grcontext = false;
-  };
-  struct GraphicsInfo {
+  struct WebGLContextInfo {
     unsigned vendor_id = 0;
     unsigned device_id = 0;
     unsigned reset_notification_strategy = 0;
@@ -517,9 +504,20 @@ class BLINK_PLATFORM_EXPORT Platform {
   // backed by an independent context. Returns null if the context cannot be
   // created or initialized.
   virtual std::unique_ptr<WebGraphicsContext3DProvider>
-  CreateOffscreenGraphicsContext3DProvider(const ContextAttributes&,
-                                           const WebURL& document_url,
-                                           GraphicsInfo*);
+  CreateWebGLGraphicsContextProvider(bool prefer_low_power_gpu,
+                                     bool fail_if_major_performance_caveat,
+                                     WebGLContextType context_type,
+                                     const WebURL& document_url,
+                                     WebGLContextInfo*);
+
+  enum class RasterContextType {
+    kSharedGpuContextWorker,
+    kVideoTrackRecorder,
+    kWebCodecsReadback,
+  };
+  virtual std::unique_ptr<WebGraphicsContext3DProvider>
+  CreateRasterGraphicsContextProvider(const WebURL& document_url,
+                                      RasterContextType context_type);
 
   // Returns a newly allocated and initialized offscreen context provider,
   // backed by the process-wide shared main thread context. Returns null if
@@ -810,6 +808,13 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Returns a sad page bitmap used when the child frame has crashed.
   virtual SkBitmap* GetSadPageBitmap() { return nullptr; }
 
+  // CPU Performance -----------------------------------------------------
+
+  // Returns the CPU performance tier.
+  virtual mojom::PerformanceTier GetCpuPerformanceTier() {
+    return mojom::PerformanceTier::kUnknown;
+  }
+
   // V8 Converter -------------------------------------------------
 
   // Returns WebV8ValueConverter that converts between v8::Value and
@@ -850,11 +855,12 @@ class BLINK_PLATFORM_EXPORT Platform {
       uint64_t private_memory_footprint_bytes) {}
 
   virtual bool IsUserLevelMemoryPressureSignalEnabled() { return false; }
-  virtual std::pair<base::TimeDelta, base::TimeDelta>
-  InertAndMinimumIntervalOfUserLevelMemoryPressureSignal() {
-    return std::make_pair(base::TimeDelta(), base::TimeDelta());
-  }
 #endif
+
+  // Memory Coordinator -------------------------------
+  // Invoked when the garbage collector is about to run its last GC before
+  // calling an OOM.
+  virtual void OnV8HeapLastResortGC() {}
 
  private:
   static void InitializeMainThreadCommon(

@@ -15,11 +15,15 @@
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "chrome/browser/permissions/notifications_permission_revocation_config.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "content/public/test/browser_task_environment.h"
 
 class PermissionRevocationRequestTestBase : public testing::Test {
@@ -139,8 +143,9 @@ class PermissionRevocationRequestTest
     : public PermissionRevocationRequestTestBase {
  public:
   PermissionRevocationRequestTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kAbusiveNotificationPermissionRevocation);
+    feature_list_.InitWithFeatures(
+        {features::kAbusiveNotificationPermissionRevocation},
+        {safe_browsing::kShowManualNotificationRevocationsSafetyHub});
   }
 
   ~PermissionRevocationRequestTest() override = default;
@@ -157,6 +162,7 @@ TEST_F(PermissionRevocationRequestTest, OriginIsNotOnBlockingLists) {
 }
 
 TEST_F(PermissionRevocationRequestTest, SafeBrowsingTest) {
+  base::HistogramTester histograms;
   const GURL origin_to_revoke = GURL("https://origin.com/");
 
   SetPermission(origin_to_revoke, CONTENT_SETTING_ALLOW);
@@ -181,6 +187,16 @@ TEST_F(PermissionRevocationRequestTest, SafeBrowsingTest) {
   VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ASK);
   EXPECT_TRUE(PermissionRevocationRequest::HasPreviouslyRevokedPermission(
       GetTestingProfile(), origin_to_revoke));
+  // Since showing manual revocations in Safety Hub is disabled, the revoked
+  // notification safety hub setting should not be set.
+  EXPECT_FALSE(safety_hub_util::IsUrlRevokedAbusiveNotification(
+      HostContentSettingsMapFactory::GetForProfile(GetTestingProfile()),
+      origin_to_revoke));
+
+  histograms.ExpectUniqueSample("SafeBrowsing.NotificationRevocationSource",
+                                safe_browsing::NotificationRevocationSource::
+                                    kSafeBrowsingUnwantedRevocation,
+                                /* expected_count */ 1);
 }
 
 TEST_F(PermissionRevocationRequestTest, PreloadDataTest) {
@@ -416,6 +432,32 @@ TEST_F(PermissionRevocationRequestTest, ExemptAbusiveOriginTest) {
   VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ASK);
 }
 
+TEST_F(PermissionRevocationRequestTest, UndoExemptAbusiveOriginTest) {
+  const GURL origin_to_exempt = GURL("https://origin-allow.com/");
+
+  PermissionRevocationRequest::ExemptOriginFromFutureRevocations(
+      GetTestingProfile(), origin_to_exempt);
+
+  SetPermission(origin_to_exempt, CONTENT_SETTING_ALLOW);
+
+  AddToPreloadDataBlocklist(origin_to_exempt, SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
+  AddToSafeBrowsingBlocklist(origin_to_exempt);
+
+  // The origin added to the exempt list will not be revoked.
+  QueryAndExpectDecisionForUrl(origin_to_exempt,
+                               Outcome::PERMISSION_NOT_REVOKED);
+
+  PermissionRevocationRequest::UndoExemptOriginFromFutureRevocations(
+      HostContentSettingsMapFactory::GetForProfile(GetTestingProfile()),
+      origin_to_exempt);
+
+  // The origin will be revoked after undoing the revocation exemption.
+  QueryAndExpectDecisionForUrl(origin_to_exempt,
+                               Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE);
+  VerifyNotificationsPermission(origin_to_exempt, CONTENT_SETTING_ASK);
+}
+
 TEST_F(PermissionRevocationRequestTest, SafeBrowsingDisabledTest) {
   const GURL origin_to_revoke = GURL("https://origin.com/");
 
@@ -507,4 +549,48 @@ TEST_F(PermissionDisruptiveRevocationEnabledTest,
   VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ASK);
   EXPECT_TRUE(PermissionRevocationRequest::HasPreviouslyRevokedPermission(
       GetTestingProfile(), origin_to_revoke));
+}
+
+class PermissionShowManualRevocationsSafetyHubEnabledTest
+    : public PermissionRevocationRequestTestBase {
+ public:
+  PermissionShowManualRevocationsSafetyHubEnabledTest() {
+    feature_list_.InitWithFeatures(
+        {safe_browsing::kShowManualNotificationRevocationsSafetyHub}, {});
+  }
+
+  ~PermissionShowManualRevocationsSafetyHubEnabledTest() override = default;
+
+  void SetUp() override {
+    PermissionRevocationRequestTestBase::SetUp();
+    safety_hub_test_util::CreateRevokedPermissionsService(GetTestingProfile());
+  }
+};
+
+TEST_F(PermissionShowManualRevocationsSafetyHubEnabledTest,
+       PermissionShowManualRevocationsSafetyHubEnabled) {
+  // Setup the origin to be revoked.
+  const GURL origin_to_revoke = GURL("https://origin.com/");
+  SetPermission(origin_to_revoke, CONTENT_SETTING_ALLOW);
+  AddToSafeBrowsingBlocklist(origin_to_revoke);
+  AddToPreloadDataBlocklist(origin_to_revoke, SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
+
+  // Verify that the permission is revoked and the revoked abusive notification
+  // Safety Hub setting is updated.
+  QueryAndExpectDecisionForUrl(origin_to_revoke,
+                               Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE);
+  VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ASK);
+  EXPECT_TRUE(PermissionRevocationRequest::HasPreviouslyRevokedPermission(
+      GetTestingProfile(), origin_to_revoke));
+  EXPECT_TRUE(safety_hub_util::IsUrlRevokedAbusiveNotification(
+      HostContentSettingsMapFactory::GetForProfile(GetTestingProfile()),
+      origin_to_revoke));
+  EXPECT_EQ(
+      safe_browsing::NotificationRevocationSource::
+          kSafeBrowsingUnwantedRevocation,
+      AbusiveNotificationPermissionsManager::
+          GetRevokedAbusiveNotificationRevocationSource(
+              HostContentSettingsMapFactory::GetForProfile(GetTestingProfile()),
+              origin_to_revoke));
 }

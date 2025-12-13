@@ -32,4 +32,4 @@ DropdownKeyValueAndroid DropdownKeyValueAndroid::FromJavaDropdownKeyValue(
 
 }  // namespace autofill
 
-DEFINE_JNI_FOR_DropdownKeyValue()
+DEFINE_JNI(DropdownKeyValue)

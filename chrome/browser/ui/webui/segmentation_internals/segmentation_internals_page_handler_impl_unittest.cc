@@ -14,7 +14,6 @@
 namespace {
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Return;
 
@@ -92,7 +91,7 @@ TEST_F(SegmentationInternalsPageHandlerImplTest, EmptyClientInfo) {
 
 TEST_F(SegmentationInternalsPageHandlerImplTest, ClientInfoNotified) {
   EXPECT_CALL(mock_client_, OnClientInfoAvailable(_))
-      .WillOnce(Invoke(
+      .WillOnce(
           [](std::vector<mojo::StructPtr<
                  segmentation_internals::mojom::ClientInfo>> client_infos) {
             ASSERT_EQ(client_infos.size(), 2u);
@@ -105,7 +104,7 @@ TEST_F(SegmentationInternalsPageHandlerImplTest, ClientInfoNotified) {
                       now);
             EXPECT_EQ(client_infos[1]->segment_info[0]->prediction_timestamp,
                       now + base::Seconds(10));
-          }));
+          });
   handler_->OnClientInfoAvailable(GetSampleClientInfos());
   mock_client_.FlushForTesting();
 }

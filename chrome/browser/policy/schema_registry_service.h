@@ -21,6 +21,7 @@ class SchemaRegistryService {
   // track |registry|.
   SchemaRegistryService(std::unique_ptr<SchemaRegistry> registry,
                         const Schema& chrome_schema,
+                        const Schema& extension_install_policy_schema,
                         CombinedSchemaRegistry* global_registry);
   SchemaRegistryService(const SchemaRegistryService&) = delete;
   SchemaRegistryService& operator=(const SchemaRegistryService&) = delete;

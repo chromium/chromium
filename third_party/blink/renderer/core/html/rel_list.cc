@@ -44,6 +44,7 @@ static HashSet<AtomicString>& SupportedTokensLink() {
                           AtomicString("canonical"),
                           AtomicString("modulepreload"),
                           AtomicString("allowed-alt-sxg"),
+                          AtomicString("compression-dictionary"),
                       }));
   // clang-format on
 
@@ -64,15 +65,9 @@ static HashSet<AtomicString>& SupportedTokensAnchorAndAreaAndForm() {
 bool RelList::ValidateTokenValue(const AtomicString& token_value,
                                  ExceptionState& state) const {
   //  https://html.spec.whatwg.org/C/#linkTypes
-  ExecutionContext* execution_context =
-      GetElement().GetDocument().GetExecutionContext();
-  if (GetElement().HasTagName(html_names::kLinkTag)) {
-    if (SupportedTokensLink().Contains(token_value)) {
-      return true;
-    } else if (CompressionDictionaryTransportFullyEnabled(execution_context) &&
-               token_value == "compression-dictionary") {
-      return true;
-    }
+  if (GetElement().HasTagName(html_names::kLinkTag) &&
+      SupportedTokensLink().Contains(token_value)) {
+    return true;
   } else if ((GetElement().HasTagName(html_names::kATag) ||
               GetElement().HasTagName(html_names::kAreaTag) ||
               GetElement().HasTagName(html_names::kFormTag) ||

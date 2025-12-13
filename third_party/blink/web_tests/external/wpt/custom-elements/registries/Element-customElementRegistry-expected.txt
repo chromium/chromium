@@ -8,7 +8,7 @@ This is a testharness.js-based test.
 [FAIL] customElementRegistry on a clone of a declarative shadow tree with shadowrootcustomelementregistry should return null
   assert_equals: expected (object) null but got (undefined) undefined
 [FAIL] customElementRegistry on a clone of a declarative shadow tree with shadowrootcustomelementregistry should return the global registry after getting inserted into a document
-  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+  assert_equals: expected (object) null but got (undefined) undefined
 [FAIL] customElementRegistry on an element inside a declarative shadow DOM with shadowrootcustomelementregistry should return the scoped registry after calling initialize
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] customElementRegistry on a builtin element created by calling createElement on CustomElementRegistry should return the registry

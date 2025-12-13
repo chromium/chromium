@@ -27,7 +27,7 @@ class DataTypeRegistry;
 class ServerConnectionManager;
 
 // Default number of items a client can commit in a single message.
-static const int kDefaultMaxCommitBatchSize = 25;
+constexpr int kDefaultMaxCommitBatchSize = 25;
 
 // SyncCycleContext encapsulates the contextual information and engine
 // components specific to a SyncCycle.  Unlike the SyncCycle, the context
@@ -87,7 +87,7 @@ class SyncCycleContext {
   }
   int32_t max_commit_batch_size() const { return max_commit_batch_size_; }
 
-  base::ObserverList<SyncEngineEventListener>::Unchecked* listeners() {
+  base::ObserverList<SyncEngineEventListener>* listeners() {
     return &listeners_;
   }
 
@@ -122,7 +122,7 @@ class SyncCycleContext {
   }
 
  private:
-  base::ObserverList<SyncEngineEventListener>::Unchecked listeners_;
+  base::ObserverList<SyncEngineEventListener> listeners_;
 
   const raw_ptr<ServerConnectionManager, DanglingUntriaged> connection_manager_;
 

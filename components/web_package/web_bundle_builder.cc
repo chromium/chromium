@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 
 namespace web_package {
 
@@ -135,7 +136,8 @@ std::vector<uint8_t> WebBundleBuilder::CreateBundle() {
 std::vector<uint8_t> WebBundleBuilder::CreateTopLevel() {
   cbor::Value::ArrayValue toplevel_array;
   toplevel_array.emplace_back(CreateByteString("🌐📦"));
-  toplevel_array.emplace_back(CreateByteString(std::string_view("b2\0\0", 4)));
+  toplevel_array.emplace_back(
+      CreateByteString(base::MakeStringViewWithNulChars("b2\0\0")));
   toplevel_array.emplace_back(Encode(cbor::Value(section_lengths_)));
   toplevel_array.emplace_back(sections_);
   // Put a dummy 8-byte bytestring.

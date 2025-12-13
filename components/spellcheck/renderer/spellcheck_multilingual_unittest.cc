@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
@@ -84,12 +80,12 @@ class MultilingualSpellCheckTest : public testing::Test {
   TestingSpellCheckProvider* provider() { return provider_.get(); }
 
  protected:
-  void ExpectSpellCheckWordResults(const std::string& languages,
-                                   const SpellcheckTestCase* test_cases,
-                                   size_t num_test_cases) {
+  void ExpectSpellCheckWordResults(
+      const std::string& languages,
+      base::span<const SpellcheckTestCase> test_cases) {
     ReinitializeSpellCheck(languages);
 
-    for (size_t i = 0; i < num_test_cases; ++i) {
+    for (size_t i = 0; i < test_cases.size(); ++i) {
       size_t misspelling_start = 0;
       size_t misspelling_length = 0;
       static_cast<blink::WebTextCheckClient*>(provider())
@@ -158,8 +154,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWord) {
 
   do {
     std::string reordered_languages = base::JoinString(permuted_languages, ",");
-    ExpectSpellCheckWordResults(reordered_languages, kTestCases,
-                                std::size(kTestCases));
+    ExpectSpellCheckWordResults(reordered_languages, kTestCases);
   } while (std::next_permutation(permuted_languages.begin(),
                                  permuted_languages.end()));
 }
@@ -189,8 +184,9 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWordEnglishSpanish) {
       {L"sand hola sand hola sand hola", 0, 0},
       {L"hola sand hola sand hola sand", 0, 0},
       {L"hola:legs", 0, 9},
-      {L"legs:hola", 0, 9}};
-  ExpectSpellCheckWordResults("en-US,es-ES", kTestCases, std::size(kTestCases));
+      {L"legs:hola", 0, 9},
+  };
+  ExpectSpellCheckWordResults("en-US,es-ES", kTestCases);
 }
 
 // If there are no spellcheck languages, no text should be marked as misspelled.

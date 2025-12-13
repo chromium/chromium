@@ -27,7 +27,7 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace blink {
 class WebMouseEvent;
@@ -101,12 +101,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // The contents auto-resized and the container should match it.
   virtual void ResizeDueToAutoResize(RenderWidgetHostImpl* render_widget_host,
                                      const gfx::Size& new_size) {}
-
-  // Callback to give the browser a chance to handle the specified mouse
-  // event before sending it to the renderer. Returns true if the event was
-  // handled, false otherwise. A true value means no more processing should
-  // happen on the event. The default return value is false.
-  virtual bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
 
   // Callback to give the browser a chance to handle the specified keyboard
   // event before sending it to the renderer. See enum for details on return

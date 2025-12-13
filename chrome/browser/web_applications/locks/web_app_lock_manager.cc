@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_holder.h"
 #include "chrome/browser/web_applications/locks/partitioned_lock_id.h"
 #include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
@@ -97,13 +97,16 @@ const char* KeysOnStaticPartitionToString(KeysOnStaticPartition key) {
   }
 }
 
+PartitionedLockId GetAllAppsLockId() {
+  return PartitionedLockId(
+      {static_cast<int>(LockPartition::kStatic),
+       base::NumberToString(KeysOnStaticPartition::kAllApps)});
+}
+
 PartitionedLockManager::PartitionedLockRequest GetAllAppsLock(
     PartitionedLockManager::LockType type) {
-  return PartitionedLockManager::PartitionedLockRequest(
-      PartitionedLockId(
-          {static_cast<int>(LockPartition::kStatic),
-           base::NumberToString(KeysOnStaticPartition::kAllApps)}),
-      type);
+  return PartitionedLockManager::PartitionedLockRequest(GetAllAppsLockId(),
+                                                        type);
 }
 
 PartitionedLockManager::PartitionedLockRequest GetSharedWebContentsLock() {
@@ -225,7 +228,9 @@ void WebAppLockManager::AcquireLock(
     base::OnceClosure on_lock_acquired,
     const base::Location& location) {
   CHECK(!lock.IsGranted());
-  AcquireLockImpl(lock.GetLockHolder(PassKey()), lock_description,
+  PartitionedLockHolder& holder =
+      lock.InitializeLockHolderForAcquire(PassKey());
+  AcquireLockImpl(holder, lock_description,
                   base::BindOnce(&WebAppLockManager::GrantLock<LockType>,
                                  GetWeakPtr(), lock.AsWeakPtr())
                       .Then(std::move(on_lock_acquired)),
@@ -270,17 +275,14 @@ WebAppLockManager::UpgradeAndAcquireLock(
       result_lock_description =
           std::make_unique<SharedWebContentsWithAppLockDescription>(app_ids);
 
-  // Upgrading requires the new lock to still hold all of the old locks.
-  std::swap(new_lock.GetLockHolder(PassKey()).locks,
-            old_lock->GetLockHolder(PassKey()).locks);
-
   // Note that the description given to `AcquireLock` is the
   // `AppLockDescription` and not the `SharedWebContentsWithAppLock`. This is
   // because `SharedWebContentsLock` already has the web contents lock granted,
   // and we only need the extra app locks.
-
+  PartitionedLockHolder& holder =
+      new_lock.InitializeLockHolderForUpgrade(std::move(old_lock), PassKey());
   AcquireLockImpl(
-      new_lock.GetLockHolder(PassKey()), AppLockDescription(app_ids),
+      holder, AppLockDescription(app_ids),
       base::BindOnce(
           &WebAppLockManager::GrantLock<SharedWebContentsWithAppLock>,
           GetWeakPtr(), new_lock.AsWeakPtr())
@@ -299,15 +301,37 @@ std::unique_ptr<AppLockDescription> WebAppLockManager::UpgradeAndAcquireLock(
   std::unique_ptr<AppLockDescription> result_lock_description =
       std::make_unique<AppLockDescription>(app_ids);
 
-  // Upgrading requires the new lock to still hold all of the old locks.
-  std::swap(new_lock.GetLockHolder(PassKey()).locks,
-            old_lock->GetLockHolder(PassKey()).locks);
-
-  AcquireLockImpl(new_lock.GetLockHolder(PassKey()), *result_lock_description,
+  PartitionedLockHolder& holder =
+      new_lock.InitializeLockHolderForUpgrade(std::move(old_lock), PassKey());
+  AcquireLockImpl(holder, *result_lock_description,
                   base::BindOnce(&WebAppLockManager::GrantLock<AppLock>,
                                  GetWeakPtr(), new_lock.AsWeakPtr())
                       .Then(std::move(on_lock_acquired)),
                   location);
+  return result_lock_description;
+}
+
+std::unique_ptr<AllAppsLockDescription>
+WebAppLockManager::UpgradeAndAcquireLock(
+    std::unique_ptr<SharedWebContentsWithAppLock> old_lock,
+    AllAppsLock& new_lock,
+    base::OnceClosure on_lock_acquired,
+    const base::Location& location) {
+  CHECK(!new_lock.IsGranted());
+  std::unique_ptr<AllAppsLockDescription> result_lock_description =
+      std::make_unique<AllAppsLockDescription>();
+
+  // Upgrading requires the new lock to still hold all of the old locks.
+  PartitionedLockHolder& holder =
+      new_lock.InitializeLockHolderForUpgrade(std::move(old_lock), PassKey());
+
+  // Upgrade to exclusive.
+  lock_manager_.UpgradeToExclusive(
+      holder, GetAllAppsLockId(),
+      base::BindOnce(&WebAppLockManager::GrantLock<AllAppsLock>, GetWeakPtr(),
+                     new_lock.AsWeakPtr())
+          .Then(std::move(on_lock_acquired)),
+      location);
   return result_lock_description;
 }
 

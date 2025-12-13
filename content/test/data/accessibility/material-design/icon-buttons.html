@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:selectToggleButton()
+@EXECUTE-AND-WAIT-FOR:deselectToggleButton()
+@EXECUTE-AND-WAIT-FOR:selectToggleButton()
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web Icon Buttons</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-icon-button",
+            "md-filled-icon-button",
+            "md-filled-tonal-icon-button",
+            "md-outlined-icon-button",
+            "md-icon"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const buttons = [
+                { tag: "md-icon-button", icon: "favorite", id: "test-toggle-button", toggle: true },
+                { tag: "md-filled-icon-button", icon: "settings" },
+                { tag: "md-filled-tonal-icon-button", icon: "home" },
+                { tag: "md-outlined-icon-button", icon: "search" },
+                { tag: "md-icon-button", icon: "delete", disabled: true }
+            ];
+            buttons.forEach(buttonInfo => {
+                const button = document.createElement(buttonInfo.tag);
+                if (buttonInfo.id) {
+                    button.id = buttonInfo.id;
+                }
+                if (buttonInfo.toggle) {
+                    button.toggle = true;
+                }
+                const icon = document.createElement("md-icon");
+                icon.textContent = buttonInfo.icon;
+                button.appendChild(icon);
+                if (buttonInfo.disabled) {
+                    button.disabled = true;
+                }
+                statusDiv.appendChild(button);
+            });
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    async function selectToggleButton() {
+        const button = document.getElementById("test-toggle-button");
+        if (button) {
+            button.selected = true;
+            await button.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Toggle Icon Button Selected";
+            statusDiv.appendChild(statusText);
+            return "Toggle Icon Button Selected";
+        }
+        return "Failed to select Toggle Icon Button";
+    }
+
+    async function deselectToggleButton() {
+        const button = document.getElementById("test-toggle-button");
+        if (button) {
+            button.selected = false;
+            await button.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Toggle Icon Button Deselected";
+            statusDiv.appendChild(statusText);
+            return "Toggle Icon Button Deselected";
+        }
+        return "Failed to deselect Toggle Icon Button";
+    }
+</script>
+</html>

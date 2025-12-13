@@ -22,8 +22,10 @@ class RelaunchRequiredDialogView : public views::DialogDelegateView {
  public:
   // Shows the dialog in |browser| for a relaunch that will be forced at
   // |deadline|. |on_accept| is run if the user accepts the prompt to restart.
+  // If |ap_style|, the dialog uses Advanced Protection string and icon.
   static views::Widget* Show(Browser* browser,
                              base::Time deadline,
+                             bool ap_style,
                              base::RepeatingClosure on_accept);
 
   RelaunchRequiredDialogView(const RelaunchRequiredDialogView&) = delete;
@@ -49,6 +51,7 @@ class RelaunchRequiredDialogView : public views::DialogDelegateView {
 
  private:
   RelaunchRequiredDialogView(base::Time deadline,
+                             bool ap_style,
                              base::RepeatingClosure on_accept);
 
   // Invoked when the timer fires to refresh the title text.
@@ -56,6 +59,9 @@ class RelaunchRequiredDialogView : public views::DialogDelegateView {
 
   // Timer that schedules title refreshes.
   RelaunchRequiredTimer relaunch_required_timer_;
+
+  // Show Advanced Protection Program string and icon.
+  bool ap_style_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_REQUIRED_DIALOG_VIEW_H_

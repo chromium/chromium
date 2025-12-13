@@ -9,9 +9,9 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "device/vr/public/mojom/layer_id.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "device/vr/public/mojom/xr_session.mojom-blink.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/modules/xr/average_timer.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_request_callback_collection.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
+#include "third_party/blink/renderer/modules/xr/xr_id_hash_traits.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source_array.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer_shared_image_manager.h"
@@ -72,7 +73,7 @@ class XRSystem;
 class XRTransientInputHitTestOptionsInit;
 class XRTransientInputHitTestSource;
 class XRViewData;
-class XRLayer;
+class XRFrameTransportDelegate;
 
 template <typename IDLType>
 class FrozenArray;
@@ -186,6 +187,7 @@ class XRSession final : public EventTarget,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(squeeze, kSqueeze)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(squeezestart, kSqueezestart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(squeezeend, kSqueezeend)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(visibilitymaskchange, kVisibilitymaskchange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(frameratechange, kFrameratechange)
 
   void updateRenderState(XRRenderStateInit* render_state_init,
@@ -224,7 +226,7 @@ class XRSession final : public EventTarget,
       const gfx::Transform& native_origin_from_anchor,
       const device::mojom::blink::XRNativeOriginInformationPtr&
           native_origin_information,
-      std::optional<uint64_t> maybe_plane_id,
+      std::optional<device::PlaneId> maybe_plane_id,
       ExceptionState& exception_state);
 
   // Helper POD type containing the information needed for anchor creation in
@@ -264,6 +266,9 @@ class XRSession final : public EventTarget,
   ScriptPromise<IDLArray<V8XRImageTrackingScore>> getTrackedImageScores(
       ScriptState* script_state,
       ExceptionState&);
+
+  ScriptPromise<IDLUndefined> initiateRoomCapture(ScriptState* script_state,
+                                                  ExceptionState&);
 
   // Called by JavaScript to manually end the session.
   ScriptPromise<IDLUndefined> end(ScriptState* script_state, ExceptionState&);
@@ -308,11 +313,7 @@ class XRSession final : public EventTarget,
   const AtomicString& InterfaceName() const override;
 
   void OnFocusChanged();
-  void OnFrame(double timestamp,
-               scoped_refptr<gpu::ClientSharedImage> output_shared_image,
-               const gpu::SyncToken& output_sync_token,
-               scoped_refptr<gpu::ClientSharedImage> camera_image_shared_image,
-               const gpu::SyncToken& camera_image_sync_token);
+  void OnFrame(double timestamp, Vector<XRSharedImageData> shared_images);
 
   const HeapVector<Member<XRViewData>>& views();
 
@@ -368,6 +369,7 @@ class XRSession final : public EventTarget,
   bool HasPendingActivity() const override;
 
   bool CanReportPoses() const;
+  bool CanReportInputPoses() const;
 
   // Return whether we should enable anti-aliasing for WebGL layers. Value
   // comes from the underlying XR runtime.
@@ -429,7 +431,15 @@ class XRSession final : public EventTarget,
     return layer_shared_image_manager_;
   }
 
-  uint32_t GetNextLayerId() { return ++last_layer_id_; }
+  device::LayerId GetNextLayerId() {
+    return layer_id_generator_.GenerateNextId();
+  }
+
+  device::mojom::blink::XRLayerManager* LayerManager();
+
+  // This is an opportunity for the session to dispatch any initial set of
+  // events. Called by |XrSystem| after the session query has resolved.
+  void DispatchInitialEvents();
 
  private:
   class XRSessionResizeObserverDelegate;
@@ -476,17 +486,14 @@ class XRSession final : public EventTarget,
 
   void OnSubscribeToHitTestResult(
       ScriptPromiseResolver<XRHitTestSource>* resolver,
-      device::mojom::SubscribeToHitTestResult result,
-      uint64_t subscription_id);
+      const std::optional<device::HitTestSubscriptionId>& subscription_id);
 
   void OnSubscribeToHitTestForTransientInputResult(
       ScriptPromiseResolver<XRTransientInputHitTestSource>* resolver,
-      device::mojom::SubscribeToHitTestResult result,
-      uint64_t subscription_id);
+      const std::optional<device::HitTestSubscriptionId>& subscription_id);
 
   void OnCreateAnchorResult(ScriptPromiseResolver<XRAnchor>* resolver,
-                            device::mojom::CreateAnchorResult result,
-                            uint64_t id);
+                            const std::optional<device::AnchorId>& id);
 
   void EnsureEnvironmentErrorHandler();
   void OnEnvironmentProviderError();
@@ -571,7 +578,7 @@ class XRSession final : public EventTarget,
   // |anchor_ids_to_pending_anchor_promises_|, and anchors that got created in
   // phase 3 live in |anchor_ids_to_anchors_|.
 
-  HeapHashMap<uint64_t, Member<XRAnchor>> anchor_ids_to_anchors_;
+  HeapHashMap<device::AnchorId, Member<XRAnchor>> anchor_ids_to_anchors_;
 
   // Set of promises returned from CreateAnchor that are still in-flight to the
   // device. Once the device calls us back with the newly created anchor id, the
@@ -581,7 +588,7 @@ class XRSession final : public EventTarget,
   // have not yet been resolved as their data is not yet available to blink.
   // Next frame update should contain the necessary data - the promise will be
   // resolved then.
-  HeapHashMap<uint64_t, Member<ScriptPromiseResolverBase>>
+  HeapHashMap<device::AnchorId, Member<ScriptPromiseResolverBase>>
       anchor_ids_to_pending_anchor_promises_;
 
   // Mapping of hit test source ids (aka hit test subscription ids) to hit test
@@ -595,9 +602,10 @@ class XRSession final : public EventTarget,
   // |hit_test_source_for_transient_input_ids_|.
   // For the specifics of HeapHashMap<Key, WeakMember<Value>> behavior, see:
   // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/heap/BlinkGCAPIReference.md#weak-collections
-  HeapHashMap<uint64_t, WeakMember<XRHitTestSource>>
+  HeapHashMap<device::HitTestSubscriptionId, WeakMember<XRHitTestSource>>
       hit_test_source_ids_to_hit_test_sources_;
-  HeapHashMap<uint64_t, WeakMember<XRTransientInputHitTestSource>>
+  HeapHashMap<device::HitTestSubscriptionId,
+              WeakMember<XRTransientInputHitTestSource>>
       hit_test_source_ids_to_transient_input_hit_test_sources_;
 
   // The entries in the above hash sets will be automatically removed by garbage
@@ -605,9 +613,9 @@ class XRSession final : public EventTarget,
   // introducing pre-finalizers on hit test sources, store the set of IDs that
   // we know about. We will then subsequently cross-reference the sets with hash
   // maps and notify the device about hit test sources that are no longer alive.
-  HashSet<uint64_t> hit_test_source_ids_;
-  HashSet<uint64_t> hit_test_source_for_transient_input_ids_;
-
+  HashSet<device::HitTestSubscriptionId> hit_test_source_ids_;
+  HashSet<device::HitTestSubscriptionId>
+      hit_test_source_for_transient_input_ids_;
   Member<XRPlaneManager> plane_manager_;
 
   // Populated iff the raw camera feature has been enabled and the session
@@ -618,7 +626,8 @@ class XRSession final : public EventTarget,
 
   Member<XRFrame> animation_frame_ = nullptr;
   Member<XRInputSourceArray> input_sources_;
-  Member<XRLayer> prev_base_layer_;
+  Member<XRInputSourceArray> empty_input_sources_;
+  Member<XRFrameTransportDelegate> prev_transport_delegate_ = nullptr;
   Member<ResizeObserver> resize_observer_;
   Member<XRCanvasInputProvider> canvas_input_provider_;
   Member<Element> overlay_element_;
@@ -652,6 +661,11 @@ class XRSession final : public EventTarget,
 
   bool canvas_was_resized_ = false;
 
+  // True if the 'layers' feature was requested for the current session.
+  bool layers_enabled_ = false;
+  // Used to synchronize the active render state with the layers backend.
+  bool should_update_layers_backend_ = false;
+
   // Indicates that we've already logged a metric, so don't need to log it
   // again.
   mutable bool did_log_getInputSources_ = false;
@@ -664,6 +678,8 @@ class XRSession final : public EventTarget,
   // Corresponds to mojo XRSession.supportsViewportScaling
   bool supports_viewport_scaling_ = false;
 
+  bool has_called_room_capture_ = false;
+
   std::unique_ptr<XRSessionViewportScaler> viewport_scaler_;
 
   // Indicates that this is a sensorless session which should only support the
@@ -671,7 +687,8 @@ class XRSession final : public EventTarget,
   bool sensorless_session_ = false;
 
   int16_t last_frame_id_ = -1;
-  uint32_t last_layer_id_ = 0;
+
+  device::LayerId::Generator layer_id_generator_;
 
   bool emulated_position_ = false;
 

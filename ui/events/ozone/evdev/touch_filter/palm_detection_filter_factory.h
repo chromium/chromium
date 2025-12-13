@@ -10,8 +10,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/shared_palm_detection_filter_state.h"

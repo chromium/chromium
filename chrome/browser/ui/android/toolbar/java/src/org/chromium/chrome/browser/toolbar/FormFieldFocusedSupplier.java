@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ImeAdapter;
@@ -18,14 +20,11 @@ import org.chromium.content_public.browser.WebContents;
  * also allows limited interaction with the current
  */
 @NullMarked
-public class FormFieldFocusedSupplier extends ObservableSupplierImpl<Boolean>
-        implements ImeEventObserver {
+public class FormFieldFocusedSupplier implements ImeEventObserver {
     private @Nullable WebContents mWebContents;
     private @Nullable ImeAdapter mImeAdapter;
-
-    public FormFieldFocusedSupplier() {
-        super(false);
-    }
+    private final SettableNonNullObservableSupplier<Boolean> mSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     /**
      * Start tracking a new WebContents and stop tracking the previous one, if any. If
@@ -40,23 +39,27 @@ public class FormFieldFocusedSupplier extends ObservableSupplierImpl<Boolean>
 
         if (newWebContents == null) {
             mImeAdapter = null;
-            set(false);
+            mSupplier.set(false);
             return;
         }
 
         mWebContents = newWebContents;
         mImeAdapter = ImeAdapter.fromWebContents(mWebContents);
         mImeAdapter.addEventObserver(this);
-        set(mImeAdapter.focusedNodeEditable());
+        mSupplier.set(mImeAdapter.focusedNodeEditable());
     }
 
     @Override
     public void onNodeAttributeUpdated(boolean editable, boolean password) {
-        super.set(editable);
+        mSupplier.set(editable);
     }
 
-    public boolean getAsBoolean() {
-        return hasValue() ? get() : false;
+    public boolean get() {
+        return mSupplier.get();
+    }
+
+    public NonNullObservableSupplier<Boolean> getObservable() {
+        return mSupplier;
     }
 
     /**

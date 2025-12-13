@@ -16,6 +16,7 @@
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/privacy_sandbox_ads_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/same_origin_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/service_worker_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/shared_storage_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/uma_file_and_data_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
@@ -45,16 +46,13 @@ void PageLoadMetricsEmbedderBase::RegisterCommonObservers(
     return;
   }
 
-  bool is_incognito = IsIncognito(tracker->GetWebContents());
   tracker->AddObserver(
-      std::make_unique<BackForwardCachePageLoadMetricsObserver>(is_incognito));
-  tracker->AddObserver(
-      std::make_unique<UmaPageLoadMetricsObserver>(is_incognito));
+      std::make_unique<BackForwardCachePageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<EarlyHintsPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<FencedFramesPageLoadMetricsObserver>());
-  tracker->AddObserver(
-      std::make_unique<PrerenderPageLoadMetricsObserver>(is_incognito));
+  tracker->AddObserver(std::make_unique<PrerenderPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<SameOriginPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<CrossOriginPageLoadMetricsObserver>());
   if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
@@ -67,10 +65,20 @@ void PageLoadMetricsEmbedderBase::RegisterCommonObservers(
       std::make_unique<UmaFileAndDataPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<PerformanceManagerMetricsObserver>());
   tracker->AddObserver(std::make_unique<UnstartedPagePaintObserver>());
+  tracker->AddObserver(
+      std::make_unique<ServiceWorkerPageLoadMetricsObserver>());
 }
 
 std::unique_ptr<base::OneShotTimer> PageLoadMetricsEmbedderBase::CreateTimer() {
   return std::make_unique<base::OneShotTimer>();
+}
+
+bool PageLoadMetricsEmbedderBase::HasWebUIConfig(const GURL& url) {
+  return false;
+}
+
+bool PageLoadMetricsEmbedderBase::IsInternalWebUI(const GURL& url) {
+  return true;
 }
 
 bool PageLoadMetricsEmbedderBase::ShouldObserveScheme(std::string_view scheme) {

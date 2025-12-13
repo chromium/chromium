@@ -13,7 +13,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -127,6 +126,13 @@ void ThirdPartyCredentialManagerBridge::Get(
   base::OnceCallback<void(PasswordCredentialResponse)> on_complete =
       base::BindOnce(&OnPasswordCredentialReceived, origin,
                      std::move(completion_callback));
+  // The only currently supported credential option is passwords, so if
+  // passwords are not requested there is nothing to return.
+  // See crbug.com/465717534.
+  if (!include_passwords) {
+    std::move(on_complete).Run(PasswordCredentialResponse(false, u"", u""));
+    return;
+  }
   jni_delegate_->Get(is_auto_select_allowed, include_passwords, federations,
                      origin, std::move(on_complete));
 }
@@ -142,3 +148,5 @@ void ThirdPartyCredentialManagerBridge::Store(
 }
 
 }  // namespace credential_management
+
+DEFINE_JNI(ThirdPartyCredentialManagerBridge)

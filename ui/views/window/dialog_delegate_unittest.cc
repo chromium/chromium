@@ -15,7 +15,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/events/event_processor.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/checkbox.h"

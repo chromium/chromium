@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -23,6 +22,8 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
+import java.util.function.Supplier;
+
 /**
  * Optional toolbar button which opens the current Custom Tab in BrApp. May be used by {@link
  * AdaptiveToolbarButtonController}.
@@ -31,7 +32,7 @@ import org.chromium.components.feature_engagement.Tracker;
 public class OpenInBrowserButtonController extends BaseButtonDataProvider {
 
     private final Runnable mOpenInBrowserRunnable;
-    private final Supplier<Tracker> mTrackerSupplier;
+    private final Supplier<@Nullable Tracker> mTrackerSupplier;
 
     /**
      * Creates {@code OpenInBrowserButtonController}.
@@ -47,7 +48,7 @@ public class OpenInBrowserButtonController extends BaseButtonDataProvider {
             Drawable buttonDrawable,
             Supplier<@Nullable Tab> activeTabSupplier,
             Runnable openInBrowserRunnable,
-            Supplier<Tracker> trackerSupplier) {
+            Supplier<@Nullable Tracker> trackerSupplier) {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
@@ -66,9 +67,10 @@ public class OpenInBrowserButtonController extends BaseButtonDataProvider {
     @Override
     public void onClick(View view) {
         mOpenInBrowserRunnable.run();
-        if (mTrackerSupplier.hasValue()) {
+        Tracker tracker = mTrackerSupplier.get();
+        if (tracker != null) {
             String event = EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_OPEN_IN_BROWSER_OPENED;
-            mTrackerSupplier.get().notifyEvent(event);
+            tracker.notifyEvent(event);
         }
         RecordUserAction.record("MobileTopToolbarOpenInBrowserButton");
     }

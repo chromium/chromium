@@ -59,4 +59,34 @@ TEST(ProxyChain, SerializeAndDeserialize) {
   }
 }
 
+// Ensure that attempting to deserialize a proxy chain with an invalid state
+// fails gracefully.
+TEST(ProxyChain, DeserializeProxyChainWithInvalidState) {
+  // Construct a network::mojom::ProxyChain with an invalid state (one that
+  // could not have been created by serialization of a net::ProxyChain).
+  network::mojom::ProxyChainPtr mojom_chain = network::mojom::ProxyChain::New();
+  std::vector<net::ProxyServer> proxy_servers{net::ProxyServer()};
+  mojom_chain->proxy_servers = std::make_optional(std::move(proxy_servers));
+  mojom_chain->ip_protection_chain_id =
+      net::ProxyChain::kNotIpProtectionChainId;
+
+  net::ProxyChain copied;
+  // Deserialization should fail gracefully without crashing.
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<network::mojom::ProxyChain>(
+      mojom_chain, copied));
+}
+
+// Same as above but for an IP Protection proxy chain.
+TEST(ProxyChain, DeserializeProxyChainWithInvalidStateIpProtection) {
+  network::mojom::ProxyChainPtr mojom_chain = network::mojom::ProxyChain::New();
+  std::vector<net::ProxyServer> proxy_servers{net::ProxyServer()};
+  mojom_chain->proxy_servers = std::make_optional(std::move(proxy_servers));
+  mojom_chain->ip_protection_chain_id =
+      net::ProxyChain::kMaxIpProtectionChainId;
+
+  net::ProxyChain copied;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<network::mojom::ProxyChain>(
+      mojom_chain, copied));
+}
+
 }  // namespace network

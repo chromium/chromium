@@ -58,16 +58,11 @@ class GraphBuilderOrt {
   // Factory method that creates a `GraphBuilderOrt`, builds the graph and
   // returns `ModelEditor::ModelInfo` which contains the model itself and the
   // external data (weights).
-  //
-  // Returns unexpected if it fails.
-  [[nodiscard]] static base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
-                                      mojom::ErrorPtr>
-  CreateAndBuild(
+  static std::unique_ptr<ModelEditor::ModelInfo> CreateAndBuild(
       const mojom::GraphInfo& graph_info,
       ContextProperties context_properties,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-          constant_operands,
-      bool is_external_data_supported);
+          constant_operands);
 
   GraphBuilderOrt(const GraphBuilderOrt&) = delete;
   GraphBuilderOrt& operator=(const GraphBuilderOrt&) = delete;
@@ -79,8 +74,7 @@ class GraphBuilderOrt {
       const mojom::GraphInfo& graph_info,
       ContextProperties context_properties,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-          constant_operands,
-      bool is_external_data_supported);
+          constant_operands);
 
   const mojom::Operand& GetOperand(OperandId operand_id) const;
 
@@ -94,6 +88,12 @@ class GraphBuilderOrt {
   // Generate a unique name for a newly created node by combining `label` and
   // `next_operation_id_`. ORT model doesn't allow duplicate names.
   std::string GenerateNodeName(std::string_view label);
+
+  // Generate a label for emulated operations by combining kInserted, op_type,
+  // optional additional_tag, kToEmulate, and the original operation label.
+  std::string GenerateEmulatedOpLabel(base::cstring_view op_type,
+                                      std::string_view original_label,
+                                      std::string_view additional_tag = "");
 
   // Create a new initializer for the graph with the given shape and data,
   // returning the name of the initializer.
@@ -126,20 +126,35 @@ class GraphBuilderOrt {
   // an initializer of `shape` with all elements set to `value`. The data type
   // of the initializer is determined by the `data_type` parameter.
   std::string CreateInitializerForFloat(OperandDataType data_type,
-                                        base::span<const int64_t> shape,
+                                        base::span<const uint32_t> shape,
                                         float value);
 
-  // A helper method creating a scalar initializer with the given float value.
-  std::string CreateScalarInitializerForFloat(OperandDataType data_type,
-                                              float value);
+  // A helper method wrapping the `CreateScalarInitializer` method above. It
+  // adds a scalar initializer with the given MLNumber value to the graph,
+  // returning the name of the initializer. The data type of the initializer is
+  // determined by the `data_type` parameter.
+  std::string CreateScalarInitializer(OperandDataType data_type,
+                                      const MLNumber& value);
 
   // A helper method creating an initializer with all elements set to 1.
   std::string CreateOneInitializer(OperandDataType data_type,
-                                   base::span<const int64_t> shape);
+                                   base::span<const uint32_t> shape);
 
   // A helper method creating an initializer with all elements set to 0.
   std::string CreateZeroInitializer(OperandDataType data_type,
-                                    base::span<const int64_t> shape);
+                                    base::span<const uint32_t> shape);
+
+  // A helper function used to transpose the weight or bias layout for the RNN
+  // operations (GRU, LSTM, etc.).
+  //
+  // Example:
+  //   To transpose gru weight or bias from "rzn" layout to "zrn" layout, pass
+  //   permutation as {1, 0, 2}.
+  //   To transpose lstm weight or bias from "ifgo" layout to "iofg" layout,
+  //   pass permutation as {0, 3, 1, 2}
+  std::string TransposeRnnWeightOrBiasLayout(
+      base::cstring_view weight_or_bias,
+      base::span<const uint32_t> permutation);
 
   void AddCastNode(base::cstring_view node_name,
                    base::cstring_view input,
@@ -158,6 +173,17 @@ class GraphBuilderOrt {
   std::string CreateExpandNode(base::cstring_view input,
                                base::span<const uint32_t> shape);
 
+  void AddResizeNode(base::cstring_view node_name,
+                     base::cstring_view input,
+                     base::cstring_view scales,
+                     base::cstring_view sizes,
+                     base::cstring_view mode,
+                     base::cstring_view output);
+  // A helper function used to blockwise expand the dimension of `input`
+  // according to `shape` by using `resize` operator with `nearest` mode.
+  std::string BlockwiseExpand(base::cstring_view input,
+                              base::span<const uint32_t> shape);
+
   void AddReshapeNode(base::cstring_view node_name,
                       base::cstring_view input,
                       base::cstring_view output,
@@ -175,6 +201,13 @@ class GraphBuilderOrt {
                     base::span<const int64_t> starts_value,
                     base::span<const int64_t> ends_value,
                     base::span<const int64_t> steps_value);
+
+  void AddTransposeNode(base::cstring_view node_name,
+                        base::cstring_view input,
+                        base::cstring_view output,
+                        base::span<const uint32_t> perm_value);
+  std::string CreateTransposeNode(base::cstring_view input,
+                                  base::span<const uint32_t> perm_value);
 
   // Clamp the indices to the range [-dim_size, dim_size), the given data type
   // should be indices's data type.
@@ -204,10 +237,16 @@ class GraphBuilderOrt {
   void AddConcatOperation(const mojom::Concat& concat);
   void AddConv2dOperation(const mojom::Conv2d& conv2d);
   void AddCumulativeSumOperation(const mojom::CumulativeSum& cumulative_sum);
+  template <typename T>
+    requires(std::is_same_v<T, mojom::DequantizeLinear> ||
+             std::is_same_v<T, mojom::QuantizeLinear>)
+  void AddDequantizeOrQuantizeLinearOperation(const T& operation,
+                                              base::cstring_view op_type);
   void AddEluOperation(const mojom::Elu& elu);
   void AddLogicalBinaryOperation(const mojom::ElementWiseBinary& logical_binary,
                                  base::cstring_view op_type);
-  void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
+  void AddLogicalUnaryOperation(const mojom::ElementWiseUnary& logical_unary,
+                                base::cstring_view op_type);
   void AddLogicalNotEqualOperation(const mojom::ElementWiseBinary& not_equal);
   void AddElementWiseBinaryOperation(
       const mojom::ElementWiseBinary& element_wise_binary);
@@ -216,11 +255,21 @@ class GraphBuilderOrt {
   void AddExpandOperation(const mojom::Expand& expand);
   void AddGatherNDOperation(const mojom::GatherND& gather_nd);
   void AddGemmOperation(const mojom::Gemm& gemm);
+  template <typename GruType>
+    requires(std::is_same_v<GruType, mojom::Gru> ||
+             std::is_same_v<GruType, mojom::GruCell>)
+  void AddGruOperation(const GruType& gru);
   void AddHardSigmoidOperation(const mojom::HardSigmoid& hard_sigmoid);
   void AddInstanceNormalizationOperation(
       const mojom::InstanceNormalization& instance_normalization);
+  void AddLayerNormalizationOperation(
+      const mojom::LayerNormalization& layer_normalization);
   void AddLeakyReluOperation(const mojom::LeakyRelu& leaky_relu);
   void AddLinearOperation(const mojom::Linear& linear);
+  template <typename LstmType>
+    requires(std::is_same_v<LstmType, mojom::Lstm> ||
+             std::is_same_v<LstmType, mojom::LstmCell>)
+  void AddLstmOperation(const LstmType& lstm);
   void AddMatMulOperation(const mojom::Matmul& matmul);
   void AddPadOperation(const mojom::Pad& pad);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
@@ -240,9 +289,7 @@ class GraphBuilderOrt {
   void AddTriangularOperation(const mojom::Triangular& triangular);
   void AddWhereOperation(const mojom::Where& where);
 
-  [[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
-                               mojom::ErrorPtr>
-  BuildModel();
+  std::unique_ptr<ModelEditor::ModelInfo> BuildModel();
 
   // An increasing id starting from 0, used for generating unique names for each
   // operand.

@@ -15,6 +15,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/device_signals/core/common/signals_features.h"
@@ -33,6 +33,8 @@
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_request.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -150,7 +152,6 @@ class ReportSchedulerTest : public ::testing::Test {
  protected:
   ReportSchedulerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        local_state_(TestingBrowserProcess::GetGlobal()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   ReportSchedulerTest(const ReportSchedulerTest&) = delete;
@@ -222,27 +223,33 @@ class ReportSchedulerTest : public ::testing::Test {
   void SetLastUploadInHour(base::TimeDelta gap, Profile* profile = nullptr) {
     previous_set_last_upload_timestamp_ = base::Time::Now() - gap;
 
-    auto* pref_service = profile ? profile->GetPrefs() : local_state_.Get();
+    auto* pref_service =
+        profile ? profile->GetPrefs()
+                : TestingBrowserProcess::GetGlobal()->local_state();
     pref_service->SetTime(kLastUploadTimestamp,
                           previous_set_last_upload_timestamp_);
   }
 
   void SetReportFrequency(base::TimeDelta frequency) {
-    local_state_.Get()->SetTimeDelta(kCloudReportingUploadFrequency, frequency);
+    TestingBrowserProcess::GetGlobal()->local_state()->SetTimeDelta(
+        kCloudReportingUploadFrequency, frequency);
   }
 
   void ToggleCloudReport(bool enabled) {
-    local_state_.Get()->SetManagedPref(kCloudReportingEnabled,
-                                       std::make_unique<base::Value>(enabled));
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
+        kCloudReportingEnabled, std::make_unique<base::Value>(enabled));
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
   void SetLastUploadVersion(const std::string& version) {
-    local_state_.Get()->SetString(kLastUploadVersion, version);
+    TestingBrowserProcess::GetGlobal()->local_state()->SetString(
+        kLastUploadVersion, version);
   }
 
   void ExpectLastUploadVersion(const std::string& version) {
-    EXPECT_EQ(local_state_.Get()->GetString(kLastUploadVersion), version);
+    EXPECT_EQ(TestingBrowserProcess::GetGlobal()->local_state()->GetString(
+                  kLastUploadVersion),
+              version);
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -250,7 +257,8 @@ class ReportSchedulerTest : public ::testing::Test {
   // Otherwise, it should be same as previous set timestamp.
   void ExpectLastUploadTimestampUpdated(bool is_updated) {
     auto current_last_upload_timestamp =
-        local_state_.Get()->GetTime(kLastUploadTimestamp);
+        TestingBrowserProcess::GetGlobal()->local_state()->GetTime(
+            kLastUploadTimestamp);
     if (is_updated) {
       EXPECT_EQ(base::Time::Now(), current_last_upload_timestamp);
     } else {
@@ -282,7 +290,6 @@ class ReportSchedulerTest : public ::testing::Test {
   virtual bool profile_security_signals_enabled() { return false; }
 
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_;
   TestingProfileManager profile_manager_;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -942,8 +949,10 @@ TEST_F(ReportSchedulerTest, OnNewVersionRegularReport) {
 
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 1, 1);
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
-// Profile security signals are not supported on Android nor ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+// Profile security signals are not supported on ChromeOS.
 class EnabledProfileSecuritySignalsReportSchedulerTest
     : public ReportSchedulerTest {
  protected:
@@ -1222,6 +1231,6 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   histogram_tester_.ExpectTotalCount(kSignalsReportingModeMetricName, 0);
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_reporting

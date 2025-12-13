@@ -72,6 +72,11 @@ class SingleClientWorkspaceDeskSyncTest : public SyncTest {
       const SingleClientWorkspaceDeskSyncTest&) = delete;
   ~SingleClientWorkspaceDeskSyncTest() override = default;
 
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
   base::Time AdvanceAndGetTime(base::TimeDelta delta = base::Milliseconds(10)) {
     clock_.Advance(delta);
     return clock_.Now();
@@ -88,7 +93,7 @@ class SingleClientWorkspaceDeskSyncTest : public SyncTest {
     service->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false, types_to_enable);
 
-    ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+    ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   }
 
   base::Uuid kTestUuid1_;

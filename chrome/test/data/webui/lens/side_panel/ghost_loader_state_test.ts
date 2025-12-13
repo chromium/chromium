@@ -37,7 +37,11 @@ suite('GhostLoaderState', () => {
     testBrowserProxy = new TestLensSidePanelBrowserProxy();
     SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
 
-    loadTimeData.overrideValues({showContextualSearchboxGhostLoader: true});
+    // This test can only be run with the AIM searchbox disabled, since the
+    // ghost loader is removed when the AIM searchbox is enabled.
+    loadTimeData.overrideValues(
+        {showContextualSearchboxGhostLoader: true, enableAimSearchbox: false});
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lensSidePanelElement = document.createElement('lens-side-panel-app');
     document.body.appendChild(lensSidePanelElement);

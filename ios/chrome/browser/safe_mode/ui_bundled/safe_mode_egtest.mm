@@ -82,8 +82,15 @@ void AssertTryAgainButtonOnPage() {
   AssertMessageOnPage(LocalizedString(@"IDS_IOS_SAFE_MODE_AW_SNAP"));
   AssertMessageOnPage(LocalizedString(@"IDS_IOS_SAFE_MODE_UNKNOWN_CAUSE"));
   AssertTryAgainButtonOnPage();
-  AssertMessageOnPage(
-      LocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT"));
+  // The crash report might be in the process of sending or already sent, code
+  // below handles both cases.
+  id<GREYMatcher> textMatcher = grey_anyOf(
+      grey_text(LocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT")),
+      grey_text(LocalizedString(@"IDS_IOS_SAFE_MODE_CRASH_REPORT_SENT")), nil);
+  id<GREYMatcher> labelMatcher =
+      grey_allOf(textMatcher, grey_kindOfClass([UILabel class]), nil);
+  [[EarlGrey selectElementWithMatcher:labelMatcher]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that Safe Mode screen is displayed with a message that there are
@@ -145,6 +152,13 @@ void AssertTryAgainButtonOnPage() {
 
 // Tests that an NTP is shown after 2 crashes.
 - (void)testPostCrashNTP {
+  // TODO(crbug.com/456803766): Test is flaky on iOS 18 iPad devices.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on pre iOS 26 iPad devices.");
+  }
+#endif
+
   [SafeModeAppInterface setFailedStartupAttemptCount:0];
   [ChromeEarlGrey closeAllTabsInCurrentMode];
   [ChromeEarlGrey openNewTab];

@@ -35,7 +35,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -49,6 +48,8 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUm
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.PartnerCustomizationsHomepageEnum;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.TaskCompletion;
 import org.chromium.components.embedder_support.util.UrlConstants;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link PartnerCustomizationsUma}. */
 @RunWith(BaseRobolectricTestRunner.class)

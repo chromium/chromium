@@ -21,6 +21,9 @@ use core::num::{
 /// for a type that is only [`NoUninit`], consider also implementing
 /// [`CheckedBitPattern`][crate::CheckedBitPattern].
 ///
+/// The rules for padding for various types and representations are documented
+/// in the Rust reference section on [type layout].
+///
 /// # Derive
 ///
 /// A `#[derive(NoUninit)]` macro is provided under the `derive` feature flag
@@ -47,8 +50,12 @@ use core::num::{
 /// * Structs need to be `repr(C)` or `repr(transparent)`. In the case of
 ///   `repr(C)`, the `packed` and `align` repr modifiers can be used as long as
 ///   all other rules end up being followed.
-/// * Enums need to have an explicit `#[repr(Int)]`
-/// * Enums must have only fieldless variants
+/// * Enums need to be `#[repr(Int)]`, `#[repr(C)]`, or both.
+/// * Enums may have fields. If the enum has fields,
+///     * Each variant's fields must individually follow the same rules as a struct
+///     * All variants must be the same size, and require no padding-to-alignment
+///     * There must be no padding needed between the discriminant type and the
+///       "fields struct" of any variant
 /// * It is disallowed for types to contain pointer types, `Cell`, `UnsafeCell`,
 ///   atomics, and any other forms of interior mutability.
 /// * More precisely: A shared reference to the type must allow reads, and
@@ -58,6 +65,8 @@ use core::num::{
 ///   it to deal with atomic and cells etc. We require the sharing predicate to
 ///   be trivial and permit only read-only access.
 /// * There's probably more, don't mess it up (I mean it).
+///
+/// [type layout]: <https://doc.rust-lang.org/reference/type-layout.html>
 pub unsafe trait NoUninit: Sized + Copy + 'static {}
 
 unsafe impl<T: Pod> NoUninit for T {}

@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/audio/audio_features.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/limits.h"

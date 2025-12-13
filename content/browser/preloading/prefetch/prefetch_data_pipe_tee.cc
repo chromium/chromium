@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prefetch/prefetch_data_pipe_tee.h"
 
 #include "base/containers/span.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_view_util.h"
 #include "mojo/public/cpp/system/string_data_source.h"

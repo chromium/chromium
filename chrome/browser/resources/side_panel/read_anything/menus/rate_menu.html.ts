@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ToolbarEvent} from '../common.js';
+import {ToolbarEvent} from '../content/read_anything_types.js';
 
 import type {RateMenuElement} from './rate_menu.js';
 

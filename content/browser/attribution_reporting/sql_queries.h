@@ -67,8 +67,6 @@ inline constexpr const char kCountActiveSourcesFromSourceOriginSql[] =
     "AND(event_level_active=1 OR aggregatable_active=1)"
     "AND expiry_time>?";
 
-inline constexpr const char kCountSourcesSql[] = "SELECT COUNT(*)FROM sources";
-
 inline constexpr const char kDedupKeySql[] =
     "SELECT dedup_key,report_type FROM dedup_keys WHERE source_id=?";
 
@@ -121,17 +119,6 @@ inline constexpr const char kSetReportTimeSql[] =
     "UPDATE reports "
     "SET report_time=?+ABS(RANDOM()%?)"
     "WHERE report_time<?";
-
-// Set the report time for all reports that are on their navigation-based retry
-// attempt to now + a random number of microseconds between `min_delay` and
-// `max_delay`, both inclusive. We filter out report times that are within this
-// random range so that reports are only updated once.
-inline constexpr const char kSetReportTimeOnNavigationSql[] =
-    "UPDATE reports "
-    "SET report_time=?1+ABS(RANDOM()%?2)"
-    "WHERE failed_send_attempts>0 AND failed_send_attempts=?3 AND "
-    "report_time>=?1+?2"
-    "RETURNING report_type";
 
 // clang-format off
 
@@ -296,14 +283,6 @@ inline constexpr const char
         " AND destination_site=?"
         " AND reporting_site=?"
         " AND time>?";
-
-inline constexpr const char
-    kRateLimitCountUniqueReportingOriginsPerSiteForAttributionSql[] =
-        "SELECT COUNT(DISTINCT reporting_origin)FROM rate_limits "
-        "WHERE " RATE_LIMIT_ATTRIBUTION_CONDITION
-        " AND destination_site=?"
-        " AND reporting_site=?"
-        " AND source_expiry_or_attribution_time>?";
 
 static_assert(RateLimitTable::kUnsetRecordId == -1,
               "update `report_id!=-1` query below");

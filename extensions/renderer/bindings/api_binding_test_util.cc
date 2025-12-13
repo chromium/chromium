@@ -55,8 +55,8 @@ std::string ReplaceSingleQuotes(std::string_view str) {
 }
 
 base::Value ValueFromString(std::string_view str) {
-  std::optional<base::Value> value =
-      base::JSONReader::Read(ReplaceSingleQuotes(str));
+  std::optional<base::Value> value = base::JSONReader::Read(
+      ReplaceSingleQuotes(str), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     ADD_FAILURE() << "Failed to parse " << str;
     return base::Value();

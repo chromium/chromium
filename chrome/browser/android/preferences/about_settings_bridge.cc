@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include <jni.h>
+
 #include <string>
 
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/android/jni_string.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/android/android_about_app_info.h"
@@ -20,9 +21,7 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
 static std::string JNI_AboutSettingsBridge_GetApplicationVersion(JNIEnv* env) {
-  base::android::BuildInfo* android_build_info =
-      base::android::BuildInfo::GetInstance();
-  return base::JoinString({android_build_info->host_package_label(),
+  return base::JoinString({base::android::apk_info::host_package_label(),
                            version_info::GetVersionNumber()},
                           kSeparator);
 }
@@ -32,3 +31,5 @@ static std::string JNI_AboutSettingsBridge_GetOSVersion(JNIEnv* env) {
       {version_info::GetOSType(), AndroidAboutAppInfo::GetOsInfo()},
       kSeparator);
 }
+
+DEFINE_JNI(AboutSettingsBridge)

@@ -62,10 +62,9 @@ void CompositorAnimationObserver::NotifyFailure() {
     TRACE_EVENT_BEGIN("ui", "LongCompositorAnimationObserved",
                       perfetto::ThreadTrack::Current(), *start_);
     TRACE_EVENT_END("ui");
-    LOG(DFATAL_OR_WARNING)
-        << "CompositorAnimationObserver is active for too long ("
-        << (base::TimeTicks::Now() - *start_).InSecondsF()
-        << "s) location=" << location_.ToString();
+    LOG(ERROR) << "CompositorAnimationObserver is active for too long ("
+               << (base::TimeTicks::Now() - *start_).InSecondsF()
+               << "s) location=" << location_.ToString();
   }
 }
 

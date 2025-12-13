@@ -5,11 +5,12 @@
 #include "components/persistent_cache/persistent_cache.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/notreached.h"
+#include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
-#include "components/persistent_cache/entry.h"
-#include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
+#include "components/persistent_cache/pending_backend.h"
 
 namespace persistent_cache {
 
@@ -17,8 +18,8 @@ namespace persistent_cache {
 // implementation to avoid littering the code with ifdefs.
 
 // static
-std::unique_ptr<PersistentCache> PersistentCache::Open(
-    BackendParams backend_params) {
+std::unique_ptr<PersistentCache> PersistentCache::Bind(
+    PendingBackend pending_backend) {
   NOTREACHED();
 }
 
@@ -30,13 +31,19 @@ PersistentCache::~PersistentCache() {
   NOTREACHED();
 }
 
-std::unique_ptr<Entry> PersistentCache::Find(std::string_view key) {
+base::expected<std::optional<EntryMetadata>, TransactionError>
+PersistentCache::Find(std::string_view key, BufferProvider buffer_provider) {
   NOTREACHED();
 }
 
-void PersistentCache::Insert(std::string_view key,
-                             base::span<const uint8_t> content,
-                             EntryMetadata metadata) {
+base::expected<void, TransactionError> PersistentCache::Insert(
+    std::string_view key,
+    base::span<const uint8_t> content,
+    EntryMetadata metadata) {
+  NOTREACHED();
+}
+
+LockState PersistentCache::Abandon() {
   NOTREACHED();
 }
 

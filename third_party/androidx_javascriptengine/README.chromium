@@ -2,7 +2,8 @@ Name: AndroidX JavaScriptEngine
 Short Name: androidx.javascriptengine
 URL: https://developer.android.com/jetpack/androidx/releases/javascriptengine
 Version: N/A
-Revision: DEPS
+Revision: 7539442db1dc790c64d0d9bade922329292d834b
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 Security Critical: no

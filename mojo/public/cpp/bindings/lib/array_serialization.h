@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_ARRAY_SERIALIZATION_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_ARRAY_SERIALIZATION_H_
 
@@ -17,7 +12,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/types/is_instantiation.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
@@ -191,7 +188,7 @@ struct ArraySerializer<
     Data* output = fragment.data();
     size_t size = input->GetSize();
     for (size_t i = 0; i < size; ++i)
-      Serialize<Element>(input->GetNext(), output->storage() + i);
+      Serialize<Element>(input->GetNext(), UNSAFE_TODO(output->storage() + i));
   }
 
   static bool DeserializeElements(Data* input,
@@ -225,7 +222,7 @@ struct ArraySerializer<
   using Element = typename MojomType::Element;
   using Traits = ArrayTraits<UserType>;
 
-  static_assert(IsAbslOptional<typename Traits::Element>::value,
+  static_assert(IsStdOptional<typename Traits::Element>::value,
                 "Output type should be optional");
   static_assert(sizeof(Element) == sizeof(DataElement),
                 "Incorrect array serializer");
@@ -485,7 +482,7 @@ struct ArraySerializer<MojomType,
     size_t size = input->GetSize();
     for (size_t i = 0; i < size; ++i) {
       MessageFragment<DataElement> inlined_union_element(fragment.message());
-      inlined_union_element.Claim(fragment->storage() + i);
+      inlined_union_element.Claim(UNSAFE_TODO(fragment->storage() + i));
       decltype(auto) next = input->GetNext();
       Serialize<Element>(next, inlined_union_element, true);
 

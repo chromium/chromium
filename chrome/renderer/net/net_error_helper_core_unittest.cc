@@ -397,7 +397,7 @@ TEST_F(NetErrorHelperCoreTest, GetErrorPageStateStringPlaceholders) {
   const std::string failed_url_string_escaped =
       base::EscapeForHTML(failed_url_string);
   const GURL failed_url(failed_url_string);
-  const std::string failed_url_host(failed_url.host());
+  const std::string failed_url_host(failed_url.GetHost());
 
   struct FieldWithPlaceholder {
     std::string_view key;

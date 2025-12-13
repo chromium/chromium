@@ -40,6 +40,11 @@ inline constexpr HRESULT kErrorInvalidCdmProxy =
 inline constexpr HRESULT DRM_E_TEE_INVALID_HWDRM_STATE =
     static_cast<HRESULT>(0x8004CD12);
 
+// HRESULT 0x8004DD2E is a value that old OEM drivers may return instead of
+// DRM_E_TEE_INVALID_HWDRM_STATE
+inline constexpr HRESULT DRM_OEM_E_ASD_ACTIVE_DISPLAY_FAIL =
+    static_cast<HRESULT>(0x8004DD2E);
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_WIN_HRESULTS_H_

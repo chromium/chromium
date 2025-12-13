@@ -19,7 +19,8 @@
     // is in a discovery-only mode, so re-attach.
     const { result: { sessionId } } =
         await this.testRunner_.browserP().Target.attachToBrowserTarget({});
-    const { protocol: bp } = new TestRunner.Session(testRunner, sessionId);
+    const { protocol: bp } =
+        new TestRunner.Session(this.testRunner_, sessionId);
     const fetcher = new FetchHelper(this.testRunner_, bp);
     await fetcher.enable();
     return {fetcher, FetchHelper};

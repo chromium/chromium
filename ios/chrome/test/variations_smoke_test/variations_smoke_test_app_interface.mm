@@ -6,7 +6,14 @@
 
 #import <sys/sysctl.h>
 
+#import <string>
+
+#import "base/base64.h"
 #import "base/process/process.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
+#import "base/threading/thread.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/pref_names.h"
@@ -29,15 +36,18 @@ base::Time GetProcessStartTime() {
 
 @implementation VariationsSmokeTestAppInterface
 
-+ (BOOL)isVariationsSeedStored {
-  variations::SeedReaderWriter* seedReaderWriter =
-      GetApplicationContext()
-          ->GetVariationsService()
-          ->GetSeedStoreForTesting()
-          ->GetSeedReaderWriterForTesting();
-  variations::StoredSeed storedSeed = seedReaderWriter->GetSeedData();
-  return !storedSeed.data.empty() && !storedSeed.signature.empty() &&
-         !seedReaderWriter->HasPendingWrite();
++ (void)isVariationsSeedStored:(void (^)(BOOL hasSeed))completion {
+  GetApplicationContext()
+      ->GetVariationsService()
+      ->GetSeedStoreForTesting()
+      ->GetSeedReaderWriterForTesting()
+      ->ReadSeedData(base::BindLambdaForTesting(
+          [completion](
+              variations::SeedReaderWriter::ReadSeedDataResult result) {
+            BOOL hasSeed =
+                (result.result != variations::LoadSeedResult::kEmpty);
+            completion(hasSeed);
+          }));
 }
 
 + (BOOL)variationsSeedFetchedInCurrentLaunch {
@@ -46,7 +56,7 @@ base::Time GetProcessStartTime() {
                                  ->GetVariationsService()
                                  ->GetSeedStoreForTesting()
                                  ->GetSeedReaderWriterForTesting()
-                                 ->GetSeedData()
+                                 ->GetSeedInfo()
                                  .client_fetch_time;
   // If there's no fetch time, the returned time will be 0 microseconds
   // from Windows epoch.
@@ -55,6 +65,17 @@ base::Time GetProcessStartTime() {
 
 + (void)localStatePrefsCommitPendingWrite {
   GetApplicationContext()->GetLocalState()->CommitPendingWrite();
+}
+
++ (void)storeSeed:(NSString*)seed_data andSignature:(NSString*)signature {
+  std::string string_seed = base::SysNSStringToUTF8(seed_data);
+  std::string string_signature = base::SysNSStringToUTF8(signature);
+  GetApplicationContext()
+      ->GetVariationsService()
+      ->GetSeedStoreForTesting()
+      ->GetSeedReaderWriterForTesting()
+      ->StoreBase64EncodedSeedAndSignatureForTesting(string_seed,
+                                                     string_signature);
 }
 
 @end

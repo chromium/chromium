@@ -63,7 +63,7 @@ source_set("ash_unit_tests") {
   testonly = true
   deps = [
     ":cpp",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/services/machine_learning/public/cpp:stub",

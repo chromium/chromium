@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/location_bar/model/web_location_bar_delegate.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "url/gurl.h"
 
@@ -30,10 +31,9 @@ void WebLocationBarImpl::OnNavigate(const GURL& destination_url,
     return;
   }
 
-  if (delegate_.webState) {
-    NewTabPageTabHelper* NTPTabHelper =
-        NewTabPageTabHelper::FromWebState(delegate_.webState);
-    if (NTPTabHelper->IsActive()) {
+  if (web::WebState* web_state = delegate_.webState) {
+    if (IsVisibleURLNewTabPage(web_state)) {
+      auto* NTPTabHelper = NewTabPageTabHelper::FromWebState(web_state);
       RecordHomeAction(IOSHomeActionType::kOmnibox,
                        NTPTabHelper->ShouldShowStartSurface());
     }

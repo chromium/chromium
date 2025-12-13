@@ -1,11 +1,14 @@
-/*
- * Summary: regular expressions handling
- * Description: basic API for libxml regular expressions handling used
- *              for XML Schemas and validation.
+/**
+ * @file
+ * 
+ * @brief Regular expressions
+ * 
+ * A regular expression engine used for DTD and XML Schema
+ * validation.
  *
- * Copy: See Copyright for the status of this software.
+ * @copyright See Copyright for the status of this software.
  *
- * Author: Daniel Veillard
+ * @author Daniel Veillard
  */
 
 #ifndef __XML_REGEXP_H__
@@ -22,17 +25,12 @@ extern "C" {
 #endif
 
 /**
- * xmlRegexpPtr:
- *
- * A libxml regular expression, they can actually be far more complex
- * thank the POSIX regex expressions.
+ * A libxml regular expression
  */
 typedef struct _xmlRegexp xmlRegexp;
 typedef xmlRegexp *xmlRegexpPtr;
 
 /**
- * xmlRegExecCtxtPtr:
- *
  * A libxml progressive regular expression evaluation context
  */
 typedef struct _xmlRegExecCtxt xmlRegExecCtxt;
@@ -41,29 +39,28 @@ typedef xmlRegExecCtxt *xmlRegExecCtxtPtr;
 /*
  * The POSIX like API
  */
-XMLPUBFUN xmlRegexpPtr
+XMLPUBFUN xmlRegexp *
 		    xmlRegexpCompile	(const xmlChar *regexp);
-XMLPUBFUN void			 xmlRegFreeRegexp(xmlRegexpPtr regexp);
+XMLPUBFUN void			 xmlRegFreeRegexp(xmlRegexp *regexp);
 XMLPUBFUN int
-		    xmlRegexpExec	(xmlRegexpPtr comp,
+		    xmlRegexpExec	(xmlRegexp *comp,
 					 const xmlChar *value);
 XML_DEPRECATED
 XMLPUBFUN void
 		    xmlRegexpPrint	(FILE *output,
-					 xmlRegexpPtr regexp);
+					 xmlRegexp *regexp);
 XMLPUBFUN int
-		    xmlRegexpIsDeterminist(xmlRegexpPtr comp);
+		    xmlRegexpIsDeterminist(xmlRegexp *comp);
 
 /**
- * xmlRegExecCallbacks:
- * @exec: the regular expression context
- * @token: the current token string
- * @transdata: transition data
- * @inputdata: input data
- *
  * Callback function when doing a transition in the automata
+ *
+ * @param exec  the regular expression context
+ * @param token  the current token string
+ * @param transdata  transition data
+ * @param inputdata  input data
  */
-typedef void (*xmlRegExecCallbacks) (xmlRegExecCtxtPtr exec,
+typedef void (*xmlRegExecCallbacks) (xmlRegExecCtxt *exec,
 	                             const xmlChar *token,
 				     void *transdata,
 				     void *inputdata);
@@ -72,35 +69,35 @@ typedef void (*xmlRegExecCallbacks) (xmlRegExecCtxtPtr exec,
  * The progressive API
  */
 XML_DEPRECATED
-XMLPUBFUN xmlRegExecCtxtPtr
-		    xmlRegNewExecCtxt	(xmlRegexpPtr comp,
+XMLPUBFUN xmlRegExecCtxt *
+		    xmlRegNewExecCtxt	(xmlRegexp *comp,
 					 xmlRegExecCallbacks callback,
 					 void *data);
 XML_DEPRECATED
 XMLPUBFUN void
-		    xmlRegFreeExecCtxt	(xmlRegExecCtxtPtr exec);
+		    xmlRegFreeExecCtxt	(xmlRegExecCtxt *exec);
 XML_DEPRECATED
 XMLPUBFUN int
-		    xmlRegExecPushString(xmlRegExecCtxtPtr exec,
+		    xmlRegExecPushString(xmlRegExecCtxt *exec,
 					 const xmlChar *value,
 					 void *data);
 XML_DEPRECATED
 XMLPUBFUN int
-		    xmlRegExecPushString2(xmlRegExecCtxtPtr exec,
+		    xmlRegExecPushString2(xmlRegExecCtxt *exec,
 					 const xmlChar *value,
 					 const xmlChar *value2,
 					 void *data);
 
 XML_DEPRECATED
 XMLPUBFUN int
-		    xmlRegExecNextValues(xmlRegExecCtxtPtr exec,
+		    xmlRegExecNextValues(xmlRegExecCtxt *exec,
 					 int *nbval,
 					 int *nbneg,
 					 xmlChar **values,
 					 int *terminal);
 XML_DEPRECATED
 XMLPUBFUN int
-		    xmlRegExecErrInfo	(xmlRegExecCtxtPtr exec,
+		    xmlRegExecErrInfo	(xmlRegExecCtxt *exec,
 					 const xmlChar **string,
 					 int *nbval,
 					 int *nbneg,

@@ -127,10 +127,8 @@ void MojoHostResolverImpl::Job::OnResolveDone(int result) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   std::vector<net::IPAddress> result_addresses;
-  if (request_->GetAddressResults()) {
-    for (const auto& endpoint : request_->GetAddressResults()->endpoints()) {
-      result_addresses.push_back(endpoint.address());
-    }
+  for (const auto& endpoint : request_->GetAddressResults().endpoints()) {
+    result_addresses.push_back(endpoint.address());
   }
 
   request_.reset();

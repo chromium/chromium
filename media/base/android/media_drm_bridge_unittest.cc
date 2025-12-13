@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/android/build_info.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -154,9 +153,9 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
 };
 
 TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_Widevine) {
-  // TODO(xhwang): Enable when b/13564917 is fixed.
-  // EXPECT_TRUE_IF_AVAILABLE(
-  //     IsKeySystemSupportedWithType(kWidevineKeySystem, kAudioMp4));
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
+      IsKeySystemSupportedWithType(kWidevineKeySystem, kAudioMp4),
+      kWidevineKeySystem);
   EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
       IsKeySystemSupportedWithType(kWidevineKeySystem, kVideoMp4),
       kWidevineKeySystem);

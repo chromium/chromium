@@ -10,7 +10,7 @@ found in the LICENSE file.
             <size android:height="@dimen/readaloud_expanded_player_seek_bar_height"/>
             <corners
                 android:radius="5dp"/>
-            <solid android:color="@macro/divider_line_bg_color"/>
+            <solid android:color="@color/divider_color"/>
         </shape>
     </item>
     <item

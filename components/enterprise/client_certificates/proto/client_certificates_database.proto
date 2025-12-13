@@ -4,9 +4,9 @@
 
 syntax = "proto3";
 
-option optimize_for = LITE_RUNTIME;
-
 package client_certificates_pb;
+
+option optimize_for = LITE_RUNTIME;
 
 message PrivateKey {
   enum PrivateKeySource {
@@ -18,6 +18,8 @@ message PrivateKey {
     PRIVATE_SOFTWARE_KEY = 2;
     // Chrome Browser with the key stored in OS key storage.
     PRIVATE_OS_SOFTWARE_KEY = 3;
+    // Chrome Browser with the key stored in Android StrongBox.
+    PRIVATE_ANDROID_KEY = 4;
   }
 
   // Represents the source of the private key, which will dictate how

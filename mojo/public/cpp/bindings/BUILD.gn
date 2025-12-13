@@ -49,13 +49,13 @@ component("bindings_base") {
     "clone_traits.h",
     "connection_group.cc",
     "connection_group.h",
+    "connection_group_ref.cc",
+    "connection_group_ref.h",
     "deprecated_interface_types_forward.h",
     "disconnect_reason.h",
     "enum_traits.h",
     "enum_utils.h",
     "equals_traits.h",
-    "features.cc",
-    "features.h",
     "interface_data_view.h",
     "interface_id.h",
     "lib/array_internal.cc",
@@ -200,6 +200,8 @@ component("bindings") {
     "lib/multiplex_router.h",
     "lib/native_enum_data.h",
     "lib/native_enum_serialization.h",
+    "lib/native_handle_type_converters.cc",
+    "lib/native_handle_type_converters.h",
     "lib/native_struct_serialization.cc",
     "lib/native_struct_serialization.h",
     "lib/pipe_control_message_handler.cc",
@@ -273,10 +275,7 @@ component("bindings") {
     "//mojo/public/interfaces/bindings",
   ]
 
-  deps = [
-    "//ipc:native_handle_type_converters",
-    "//mojo/core/embedder",
-  ]
+  deps = [ "//mojo/core/embedder" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 

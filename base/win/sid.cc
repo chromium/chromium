@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/win/sid.h"
+
+#include "base/compiler_specific.h"
 
 // clang-format off
 #include <windows.h>  // Must be in front of other Windows header files.
@@ -46,7 +43,8 @@ Sid FromSubAuthorities(const SID_IDENTIFIER_AUTHORITY& identifier_authority,
   sid->SubAuthorityCount = static_cast<UCHAR>(sub_authority_count);
   sid->IdentifierAuthority = identifier_authority;
   for (size_t index = 0; index < sub_authority_count; ++index) {
-    sid->SubAuthority[index] = static_cast<DWORD>(*sub_authorities++);
+    UNSAFE_TODO(sid->SubAuthority[index]) =
+        static_cast<DWORD>(*UNSAFE_TODO(sub_authorities++));
   }
   DCHECK(::IsValidSid(sid));
   return *Sid::FromPSID(sid);
@@ -95,7 +93,7 @@ int32_t WellKnownCapabilityToRid(WellKnownCapability capability) {
 
 Sid::Sid(const void* sid, size_t length)
     : sid_(static_cast<const char*>(sid),
-           static_cast<const char*>(sid) + length) {
+           UNSAFE_TODO(static_cast<const char*>(sid) + length)) {
   DCHECK(::IsValidSid(GetPSID()));
 }
 

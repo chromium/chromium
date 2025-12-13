@@ -19,17 +19,14 @@
 
 namespace {
 
-using testing::ElementsAre;
-using enum crypto::SignatureVerifier::SignatureAlgorithm;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using enum ::crypto::SignatureVerifier::SignatureAlgorithm;
 
 constexpr char kChallenge[] = "Y2hhbGxlbmdl";
 constexpr char kChallenge2[] = "Y2hhbGxlbmdlMg==";
 
-class BoundSessionRegistrationFetcherParamTest : public testing::Test {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kBoundSessionRegistrationListHeaderSupport};
-};
+class BoundSessionRegistrationFetcherParamTest : public testing::Test {};
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, AllInvalid) {
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos;
@@ -40,213 +37,150 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllInvalid) {
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, AllValid) {
   GURL registration_request = GURL("https://www.google.com/registration");
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=ES256,RS256; "
-                     "challenge=Y2hhbGxlbmdl;")
-          .Build(),
+  auto headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader(
               "Sec-Session-Google-Registration-List",
               "(ES256 RS256);path=\"startsession\";challenge=\"Y2hhbGxlbmdl\"")
-          .Build(),
-  };
+          .Build();
 
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
+  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          registration_request, headers.get());
 
-    ASSERT_EQ(maybe_params.size(), 1U);
-    const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
-    EXPECT_EQ(params.registration_endpoint(),
-              GURL("https://www.google.com/startsession"));
-    EXPECT_THAT(params.supported_algos(),
-                ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-    EXPECT_EQ(params.challenge(), kChallenge);
-  }
+  ASSERT_EQ(maybe_params.size(), 1U);
+  const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
+  EXPECT_EQ(params.registration_endpoint(),
+            GURL("https://www.google.com/startsession"));
+  EXPECT_THAT(params.supported_algos(),
+              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  EXPECT_EQ(params.challenge(), kChallenge);
 }
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidFullUrl) {
   GURL registration_request = GURL("https://www.google.com/registration");
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=https://accounts.google.com/startsession; "
-                     "supported-alg=ES256,RS256; challenge=Y2hhbGxlbmdl;")
-          .Build(),
+  auto headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader(
               "Sec-Session-Google-Registration-List",
               "(ES256 RS256);path=\"https://accounts.google.com/startsession\";"
               "challenge=\"Y2hhbGxlbmdl\"")
-          .Build(),
-  };
+          .Build();
 
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
+  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          registration_request, headers.get());
 
-    ASSERT_EQ(maybe_params.size(), 1U);
-    const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
-    EXPECT_EQ(params.registration_endpoint(),
-              GURL("https://accounts.google.com/startsession"));
-    EXPECT_THAT(params.supported_algos(),
-                ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-    EXPECT_EQ(params.challenge(), kChallenge);
-  }
+  ASSERT_EQ(maybe_params.size(), 1U);
+  const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
+  EXPECT_EQ(params.registration_endpoint(),
+            GURL("https://accounts.google.com/startsession"));
+  EXPECT_THAT(params.supported_algos(),
+              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  EXPECT_EQ(params.challenge(), kChallenge);
 }
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidFullDifferentUrl) {
   GURL registration_request = GURL("https://www.google.com/registration");
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=https://accounts.different.url/startsession;"
-                     "supported-alg=ES256,RS256; challenge=Y2hhbGxlbmdl;")
-          .Build(),
+  auto headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader("Sec-Session-Google-Registration-List",
                      "(ES256 RS256);"
                      "path=\"https://accounts.different.url/startsession\";"
                      "challenge=\"Y2hhbGxlbmdl\"")
-          .Build(),
-  };
+          .Build();
 
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
-    EXPECT_THAT(maybe_params, testing::IsEmpty());
-  }
+  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          registration_request, headers.get());
+  EXPECT_THAT(maybe_params, IsEmpty());
 }
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidEmptyRegistration) {
   GURL registration_request = GURL("https://www.google.com/registration");
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=; supported-alg=ES256,RS256; "
-                     "challenge=Y2hhbGxlbmdl;")
-          .Build(),
+  auto headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader("Sec-Session-Google-Registration-List",
                      "(ES256 RS256);path=\"\";challenge=\"Y2hhbGxlbmdl\"")
-          .Build(),
-  };
+          .Build();
 
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
+  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          registration_request, headers.get());
 
-    ASSERT_EQ(maybe_params.size(), 1U);
-    const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
-    EXPECT_EQ(params.registration_endpoint(),
-              GURL("https://www.google.com/registration"));
-    EXPECT_THAT(params.supported_algos(),
-                ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-    EXPECT_EQ(params.challenge(), kChallenge);
-  }
+  ASSERT_EQ(maybe_params.size(), 1U);
+  const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
+  EXPECT_EQ(params.registration_endpoint(),
+            GURL("https://www.google.com/registration"));
+  EXPECT_THAT(params.supported_algos(),
+              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  EXPECT_EQ(params.challenge(), kChallenge);
 }
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidSwapAlgo) {
   GURL registration_request = GURL("https://www.google.com/registration");
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=RS256,ES256; "
-                     "challenge=Y2hhbGxlbmdl;")
-          .Build(),
+  auto headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader(
               "Sec-Session-Google-Registration-List",
               "(RS256 ES256);path=\"startsession\";challenge=\"Y2hhbGxlbmdl\"")
-          .Build(),
-  };
+          .Build();
 
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
+  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          registration_request, headers.get());
 
-    ASSERT_EQ(maybe_params.size(), 1U);
-    const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
-    EXPECT_EQ(params.registration_endpoint(),
-              GURL("https://www.google.com/startsession"));
-    EXPECT_THAT(params.supported_algos(),
-                ElementsAre(RSA_PKCS1_SHA256, ECDSA_SHA256));
-    EXPECT_EQ(params.challenge(), kChallenge);
-  }
+  ASSERT_EQ(maybe_params.size(), 1U);
+  const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
+  EXPECT_EQ(params.registration_endpoint(),
+            GURL("https://www.google.com/startsession"));
+  EXPECT_THAT(params.supported_algos(),
+              ElementsAre(RSA_PKCS1_SHA256, ECDSA_SHA256));
+  EXPECT_EQ(params.challenge(), kChallenge);
 }
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidOneAlgo) {
   GURL registration_request = GURL("https://www.google.com/registration");
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=RS256; "
-                     "challenge=Y2hhbGxlbmdl;")
-          .Build(),
+  auto headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader("Sec-Session-Google-Registration-List",
                      "(RS256);path=\"startsession\";challenge=\"Y2hhbGxlbmdl\"")
-          .Build(),
-  };
+          .Build();
 
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
+  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          registration_request, headers.get());
 
-    ASSERT_EQ(maybe_params.size(), 1U);
-    const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
-    EXPECT_EQ(params.registration_endpoint(),
-              GURL("https://www.google.com/startsession"));
-    EXPECT_THAT(params.supported_algos(), ElementsAre(RSA_PKCS1_SHA256));
-    EXPECT_EQ(params.challenge(), kChallenge);
-  }
+  ASSERT_EQ(maybe_params.size(), 1U);
+  const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
+  EXPECT_EQ(params.registration_endpoint(),
+            GURL("https://www.google.com/startsession"));
+  EXPECT_THAT(params.supported_algos(), ElementsAre(RSA_PKCS1_SHA256));
+  EXPECT_EQ(params.challenge(), kChallenge);
 }
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidUnrecognizedAlgo) {
   GURL registration_request = GURL("https://www.google.com/registration");
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=RS256;BF512; "
-                     "challenge=Y2hhbGxlbmdl;")
-          .Build(),
+  auto headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader(
               "Sec-Session-Google-Registration-List",
               "(RS256 BF512);path=\"startsession\";challenge=\"Y2hhbGxlbmdl\"")
-          .Build(),
-  };
+          .Build();
 
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
+  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          registration_request, headers.get());
 
-    ASSERT_EQ(maybe_params.size(), 1U);
-    const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
-    EXPECT_EQ(params.registration_endpoint(),
-              GURL("https://www.google.com/startsession"));
-    EXPECT_THAT(params.supported_algos(), ElementsAre(RSA_PKCS1_SHA256));
-    EXPECT_EQ(params.challenge(), kChallenge);
-  }
+  ASSERT_EQ(maybe_params.size(), 1U);
+  const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
+  EXPECT_EQ(params.registration_endpoint(),
+            GURL("https://www.google.com/startsession"));
+  EXPECT_THAT(params.supported_algos(), ElementsAre(RSA_PKCS1_SHA256));
+  EXPECT_EQ(params.challenge(), kChallenge);
 }
 
-TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidWsbetaTrue) {
+TEST_F(BoundSessionRegistrationFetcherParamTest, WsbetaIsIgnored) {
   GURL registration_request = GURL("https://www.google.com/registration");
   std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
@@ -258,29 +192,6 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidWsbetaTrue) {
           .AddHeader("Sec-Session-Google-Registration-List",
                      "(ES256 RS256);path=\"startsession\";"
                      "challenge=\"Y2hhbGxlbmdl\";wsbeta=?1")
-          .Build(),
-  };
-
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
-
-    ASSERT_EQ(maybe_params.size(), 1U);
-    const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
-    EXPECT_TRUE(params.is_wsbeta());
-  }
-}
-
-TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidWsbetaFalse) {
-  GURL registration_request = GURL("https://www.google.com/registration");
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      // Legacy header doesn't support wsbeta parameter.
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=ES256,RS256; "
-                     "challenge=Y2hhbGxlbmdl; wsbeta=true")
           .Build(),
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader("Sec-Session-Google-Registration-List",
@@ -301,8 +212,12 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidWsbetaFalse) {
             registration_request, test_cases[i].get());
 
     ASSERT_EQ(maybe_params.size(), 1U);
-    const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
-    EXPECT_FALSE(params.is_wsbeta());
+    const BoundSessionRegistrationFetcherParam& param = maybe_params[0];
+    EXPECT_EQ(param.registration_endpoint(),
+              GURL("https://www.google.com/startsession"));
+    EXPECT_THAT(param.supported_algos(),
+                ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+    EXPECT_EQ(param.challenge(), kChallenge);
   }
 }
 
@@ -383,78 +298,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, ValidAndInvalid) {
   }
 }
 
-TEST_F(BoundSessionRegistrationFetcherParamTest,
-       ListHeaderOverridesLegacyHeader) {
-  GURL registration_request = GURL("https://www.google.com/registration");
-  auto response_headers =
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=ES256,RS256; "
-                     "challenge=Y2hhbGxlbmdl;")
-          .AddHeader(
-              "Sec-Session-Google-Registration-List",
-              "(ES256);path=\"startsession2\";challenge=\"Y2hhbGxlbmdlMg==\"")
-          .Build();
-  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-          registration_request, response_headers.get());
 
-  ASSERT_EQ(maybe_params.size(), 1U);
-  const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
-  EXPECT_EQ(params.registration_endpoint(),
-            GURL("https://www.google.com/startsession2"));
-  EXPECT_THAT(params.supported_algos(), ElementsAre(ECDSA_SHA256));
-  EXPECT_EQ(params.challenge(), kChallenge2);
-}
-
-TEST_F(BoundSessionRegistrationFetcherParamTest,
-       InvalidListHeaderOverridesLegacyHeader) {
-  GURL registration_request = GURL("https://www.google.com/registration");
-  auto response_headers =
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=ES256,RS256; "
-                     "challenge=Y2hhbGxlbmdl;")
-          // Invalid because of missing parameters.
-          .AddHeader("Sec-Session-Google-Registration-List",
-                     "();path=\"startsession\"")
-          .Build();
-
-  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-          registration_request, response_headers.get());
-  EXPECT_THAT(maybe_params, testing::IsEmpty());
-}
-
-// List header is ignored when the `kBoundSessionRegistrationListHeaderSupport`
-// is disabled.
-TEST(BoundSessionRegistrationFetcherParamListHeaderDisabledTest,
-     ListHeaderIgnored) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      kBoundSessionRegistrationListHeaderSupport);
-  GURL registration_request = GURL("https://www.google.com/registration");
-  auto response_headers =
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=ES256,RS256; "
-                     "challenge=Y2hhbGxlbmdl;")
-          .AddHeader(
-              "Sec-Session-Google-Registration-List",
-              "(ES256);path=\"startsession2\";challenge=\"Y2hhbGxlbmdlMg==\"")
-          .Build();
-  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-          registration_request, response_headers.get());
-
-  ASSERT_EQ(maybe_params.size(), 1U);
-  const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
-  EXPECT_EQ(params.registration_endpoint(),
-            GURL("https://www.google.com/startsession"));
-  EXPECT_THAT(params.supported_algos(),
-              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(params.challenge(), kChallenge);
-}
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, MissingHeader) {
   GURL registration_request = GURL("https://www.google.com/registration");
@@ -464,120 +308,67 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, MissingHeader) {
   std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::CreateFromHeaders(
           registration_request, response_headers.get());
-  EXPECT_THAT(maybe_params, testing::IsEmpty());
+  EXPECT_THAT(maybe_params, IsEmpty());
 }
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, MissingUrl) {
   GURL registration_request = GURL();
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=ES256,RS256; "
-                     "challenge=Y2hhbGxlbmdl;")
-          .Build(),
+  auto headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader(
               "Sec-Session-Google-Registration-List",
               "(ES256 RS256);path=\"startsession\";challenge=\"Y2hhbGxlbmdl\"")
-          .Build(),
-  };
+          .Build();
 
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
-    EXPECT_THAT(maybe_params, testing::IsEmpty());
-  }
+  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          registration_request, headers.get());
+  EXPECT_THAT(maybe_params, IsEmpty());
 }
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, MissingAlgo) {
   GURL registration_request = GURL("https://www.google.com/registration");
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      // Parameter is absent.
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; challenge=Y2hhbGxlbmdl;")
-          .Build(),
-      // Parameter is empty.
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=; "
-                     "challenge=Y2hhbGxlbmdl;")
-          .Build(),
+  auto headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader("Sec-Session-Google-Registration-List",
                      "();path=\"startsession\";challenge=\"Y2hhbGxlbmdl\"")
-          .Build(),
-  };
+          .Build();
 
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
-    EXPECT_THAT(maybe_params, testing::IsEmpty());
-  }
+  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          registration_request, headers.get());
+  EXPECT_THAT(maybe_params, IsEmpty());
 }
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, AbsentRegistration) {
   GURL registration_request = GURL("https://www.google.com/registration");
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "supported-alg=ES256,RS256; challenge=Y2hhbGxlbmdl;")
-          .Build(),
+  auto headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader("Sec-Session-Google-Registration-List",
                      "(ES256 RS256);challenge=\"Y2hhbGxlbmdl\"")
-          .Build()};
-
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
-    EXPECT_THAT(maybe_params, testing::IsEmpty());
-  }
+          .Build();
+  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          registration_request, headers.get());
+  EXPECT_THAT(maybe_params, IsEmpty());
 }
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, MissingChallenge) {
   GURL registration_request = GURL("https://www.google.com/registration");
-  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      // Parameter is absent.
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=ES256,RS256;")
-          .Build(),
-      // Parameter is empty.
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=ES256,RS256; "
-                     "challenge=;")
-          .Build(),
+  auto headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader("Sec-Session-Google-Registration-List",
                      "(ES256 RS256);path=\"startsession\"")
-          .Build(),
-  };
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    SCOPED_TRACE(i);
-    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
-        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
-            registration_request, test_cases[i].get());
-    EXPECT_THAT(maybe_params, testing::IsEmpty());
-  }
+          .Build();
+  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          registration_request, headers.get());
+  EXPECT_THAT(maybe_params, IsEmpty());
 }
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, InvalidChallenge) {
   GURL registration_request = GURL("https://www.google.com/registration");
   std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
-      // Non UTF-8 characters.
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
-          .AddHeader("Sec-Session-Google-Registration",
-                     "registration=startsession; supported-alg=ES256,RS256; "
-                     "challenge=ab\xC0\x80;")
-          .Build(),
       // Non UTF-8 characters.
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
           .AddHeader(
@@ -596,7 +387,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, InvalidChallenge) {
     std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
         BoundSessionRegistrationFetcherParam::CreateFromHeaders(
             registration_request, test_cases[i].get());
-    EXPECT_THAT(maybe_params, testing::IsEmpty());
+    EXPECT_THAT(maybe_params, IsEmpty());
   }
 }
 

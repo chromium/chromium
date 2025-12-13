@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/boca_receiver_app_ui/boca_receiver_untrusted_ui.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
 #include "ash/webui/file_manager/file_manager_untrusted_ui.h"
@@ -16,6 +17,7 @@
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_untrusted_ui.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/annotator/untrusted_annotator_ui_config.h"
+#include "chrome/browser/ash/boca/receiver/receiver_handler_delegate_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/apps/boca_web_app_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_app_untrusted_ui_config.h"
@@ -26,7 +28,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/projector_app/untrusted_projector_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/terminal_ui.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
-#include "chrome/browser/ui/webui/ash/scalable_iph/scalable_iph_debug_ui.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/browser/webui_config_map.h"
 
@@ -47,6 +48,21 @@ std::unique_ptr<content::WebUIConfig> MakeDemoModeAppUntrustedUIConfig() {
   return std::make_unique<DemoModeAppUntrustedUIConfig>(create_controller_func);
 }
 
+std::unique_ptr<content::WebUIConfig> MakeBocaReceiverUntrustedUIConfig() {
+  auto create_controller_func = base::BindRepeating(
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        auto delegate =
+            std::make_unique<boca_receiver::ReceiverHandlerDelegateImpl>(
+                web_ui);
+        return std::make_unique<BocaReceiverUntrustedUI>(web_ui,
+                                                         std::move(delegate));
+      });
+
+  return std::make_unique<BocaReceiverUntrustedUIConfig>(
+      create_controller_func);
+}
+
 void RegisterAshChromeUntrustedWebUIConfigs() {
   auto& map = content::WebUIConfigMap::GetInstance();
   // Add untrusted `WebUIConfig`s for Ash ChromeOS to the list here.
@@ -55,6 +71,7 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
   // `WebUI` is enabled or not. To conditionally enable/disable a WebUI,
   // developers should override `WebUIConfig::IsWebUIEnabled()`.
   map.AddUntrustedWebUIConfig(std::make_unique<BocaUIConfig>());
+  map.AddUntrustedWebUIConfig(MakeBocaReceiverUntrustedUIConfig());
   map.AddUntrustedWebUIConfig(std::make_unique<CroshUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<TerminalUIConfig>());
   map.AddUntrustedWebUIConfig(
@@ -72,7 +89,6 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
       std::make_unique<feedback::OsFeedbackUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(MakeDemoModeAppUntrustedUIConfig());
   map.AddUntrustedWebUIConfig(std::make_unique<MakoUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(std::make_unique<ScalableIphDebugUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<FocusModeUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<ScannerFeedbackUntrustedUIConfig>());

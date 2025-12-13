@@ -7,6 +7,8 @@
 #import "base/ios/block_types.h"
 #import "base/metrics/user_metrics.h"
 #import "base/time/time.h"
+#import "components/omnibox/common/omnibox_features.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 
@@ -29,10 +31,26 @@ constexpr base::TimeDelta kFadeDuration = base::Milliseconds(500);
 
 @end
 
-@implementation SearchEngineLogoContainerView
+@implementation SearchEngineLogoContainerView {
+  SearchEngineLogoState _logoState;
+  UIImageView* _shrunkLogoView;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
+    // Create logo view.
+    _shrunkLogoView = [[UIImageView alloc] init];
+    _shrunkLogoView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_shrunkLogoView];
+    // TODO(crbug.com/1170491): Ideally the width anchor added so the
+    // imageview frame matches the intrinsic size.
+    [NSLayoutConstraint activateConstraints:@[
+      [_shrunkLogoView.heightAnchor constraintEqualToAnchor:self.heightAnchor],
+      [_shrunkLogoView.centerXAnchor
+          constraintEqualToAnchor:self.centerXAnchor],
+      [_shrunkLogoView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor]
+    ]];
+
     // Create doodle view and add it to hierarchy.
     _doodleLogo = ios::provider::CreateAnimatedImageView();
     [self addSubview:_doodleLogo];
@@ -49,6 +67,7 @@ constexpr base::TimeDelta kFadeDuration = base::Milliseconds(500);
 
     // The doodle is originally hidden until `showingDoodle` is updated.
     [_doodleLogo setAlpha:0.0];
+    _logoState = SearchEngineLogoState::kLogo;
   }
   return self;
 }
@@ -64,13 +83,12 @@ constexpr base::TimeDelta kFadeDuration = base::Milliseconds(500);
 
 #pragma mark Public
 
-- (void)setStyle:(SearchEngineLogoContainerViewStyle)style
-        animated:(BOOL)animated {
-  if (_style == style) {
+- (void)setLogoState:(SearchEngineLogoState)logoState animated:(BOOL)animated {
+  if (_logoState == logoState) {
     return;
   }
-  _style = style;
-  BOOL showingDoodle = _style == SEARCH_ENGINE_LOGO_CONTAINER_VIEW_STYLE_DOODLE;
+  _logoState = logoState;
+  BOOL showingDoodle = _logoState == SearchEngineLogoState::kDoodle;
   UIView* logoView = self.shrunkLogoView;
   DCHECK(logoView.superview);
   if (!showingDoodle) {
@@ -137,26 +155,16 @@ constexpr base::TimeDelta kFadeDuration = base::Milliseconds(500);
 
 #pragma mark Accessors
 
-- (void)setStyle:(SearchEngineLogoContainerViewStyle)style {
-  [self setStyle:style animated:NO];
+- (SearchEngineLogoState)logoState {
+  return _logoState;
 }
 
 - (BOOL)isAnimatingDoodle {
   return [self.doodleLogo isAnimating];
 }
 
-- (void)setShrunkLogoView:(UIImageView*)shrunkLogoView {
-  _shrunkLogoView = shrunkLogoView;
-  _shrunkLogoView.translatesAutoresizingMaskIntoConstraints = NO;
-  _shrunkLogoView.contentMode = UIViewContentModeScaleAspectFill;
-  [self insertSubview:_shrunkLogoView atIndex:0];
-  // TODO(crbug.com/1170491): Ideally the width anchor added so the
-  // imageview frame matches the intrinsic size.
-  [NSLayoutConstraint activateConstraints:@[
-    [_shrunkLogoView.heightAnchor constraintEqualToAnchor:self.heightAnchor],
-    [_shrunkLogoView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-    [_shrunkLogoView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor]
-  ]];
+- (UIImageView*)shrunkLogoView {
+  return _shrunkLogoView;
 }
 
 - (void)setDoodleAltText:(NSString*)doodleAltText {
@@ -174,13 +182,13 @@ constexpr base::TimeDelta kFadeDuration = base::Milliseconds(500);
   // The logo doesn't have any actual behavior when tapped; it only tracks a
   // metric. To simplify accessibility, don't allow Voice Control to tap a
   // logo.
-  return self.style == SEARCH_ENGINE_LOGO_CONTAINER_VIEW_STYLE_DOODLE;
+  return _logoState == SearchEngineLogoState::kDoodle;
 }
 
 #pragma mark Internal
 
 - (void)logoWasTapped {
-  if (self.style == SEARCH_ENGINE_LOGO_CONTAINER_VIEW_STYLE_DOODLE) {
+  if (_logoState == SearchEngineLogoState::kDoodle) {
     base::RecordAction(base::UserMetricsAction("IOS.NTP.Doodle.Tapped"));
     [self.delegate searchEngineLogoContainerViewDoodleWasTapped:self];
   } else {

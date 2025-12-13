@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/auth_icon_view.h"
+
 #include "ash/test/ash_test_base.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/paint_throbber.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/views_drawing_test_utils.h"
 
 namespace ash {

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"

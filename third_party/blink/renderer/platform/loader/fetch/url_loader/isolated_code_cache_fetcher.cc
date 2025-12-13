@@ -127,8 +127,8 @@ void IsolatedCodeCacheFetcher::Start() {
   (*code_cache_host_)
       ->FetchCachedCode(
           code_cache_type_, initial_url_,
-          WTF::BindOnce(&IsolatedCodeCacheFetcher::DidReceiveCachedCode,
-                        base::WrapRefCounted(this)));
+          blink::BindOnce(&IsolatedCodeCacheFetcher::DidReceiveCachedCode,
+                          base::WrapRefCounted(this)));
 }
 
 void IsolatedCodeCacheFetcher::DidReceiveCachedCode(base::Time response_time,

@@ -32,11 +32,11 @@
 #ifndef COMPONENTS_BOOKMARKS_TEST_TEST_MATCHERS_H_
 #define COMPONENTS_BOOKMARKS_TEST_TEST_MATCHERS_H_
 
+#include "base/strings/utf_ostream_operators.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace bookmarks {
-namespace test {
+namespace bookmarks::test {
 
 MATCHER(IsFolder, "") {
   if (!arg) {
@@ -91,6 +91,14 @@ MATCHER_P2(IsUrlBookmark, title, url, "") {
                                      *arg, result_listener);
 }
 
+MATCHER_P3(IsUrlBookmark, title, url, date_added, "") {
+  return testing::ExplainMatchResult(IsUrlBookmark(title, url), arg,
+                                     result_listener) &&
+         testing::ExplainMatchResult(
+             testing::Property(&BookmarkNode::date_added, date_added), *arg,
+             result_listener);
+}
+
 MATCHER_P(HasUuid, uuid, "") {
   if (!arg) {
     *result_listener << "Got null bookmark node.";
@@ -111,7 +119,6 @@ MATCHER_P3(IsUrlBookmarkWithUuid, title, url, uuid, "") {
          testing::ExplainMatchResult(HasUuid(uuid), arg, result_listener);
 }
 
-}  // namespace test
-}  // namespace bookmarks
+}  // namespace bookmarks::test
 
 #endif  // COMPONENTS_BOOKMARKS_TEST_TEST_MATCHERS_H_

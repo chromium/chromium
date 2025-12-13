@@ -16,14 +16,26 @@ component("geolocation") {
     "//services/network/public/cpp",
   ]
   sources = [
+    "cache_eviction_options.cc",
+    "cache_eviction_options.h",
+    "cached_location_provider.cc",
+    "cached_location_provider.h",
     "geoposition.cc",
     "geoposition.h",
-    "simple_geolocation_provider.cc",
-    "simple_geolocation_provider.h",
+    "geoposition_context.cc",
+    "geoposition_context.h",
+    "live_location_provider.cc",
+    "live_location_provider.h",
+    "location_fetcher.cc",
+    "location_fetcher.h",
+    "location_provider.cc",
+    "location_provider.h",
     "simple_geolocation_request.cc",
     "simple_geolocation_request.h",
     "simple_geolocation_request_test_monitor.cc",
     "simple_geolocation_request_test_monitor.h",
+    "system_location_provider.cc",
+    "system_location_provider.h",
   ]
 }
 
@@ -42,5 +54,12 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gtest",
   ]
-  sources = [ "simple_geolocation_unittest.cc" ]
+  sources = [
+    "cache_eviction_options_unittest.cc",
+    "cached_location_provider_unittest.cc",
+    "location_fetcher_unittest.cc",
+    "system_location_provider_unittest.cc",
+    "test_utils.cc",
+    "test_utils.h",
+  ]
 }

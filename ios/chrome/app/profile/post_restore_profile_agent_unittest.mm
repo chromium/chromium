@@ -35,8 +35,7 @@ namespace {
 const char kFakePreRestoreAccountEmail[] = "person@example.org";
 
 // Creates a mock PromosManager.
-std::unique_ptr<KeyedService> CreateMockPromosManager(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> CreateMockPromosManager(ProfileIOS* profile) {
   return std::make_unique<NiceMock<MockPromosManager>>();
 }
 
@@ -65,6 +64,8 @@ class PostRestoreProfileAgentTest : public PlatformTest {
     profile_agent_ = [[PostRestoreProfileAgent alloc] init];
     [profile_state_ addAgent:profile_agent_];
   }
+
+  ~PostRestoreProfileAgentTest() override { profile_state_.profile = nullptr; }
 
   void TriggerProfileStateChange() {
     [profile_agent_ profileState:profile_state_

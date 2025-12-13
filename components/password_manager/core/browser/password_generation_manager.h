@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_GENERATION_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_GENERATION_MANAGER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 
@@ -98,7 +97,7 @@ class PasswordGenerationManager {
                              const PasswordForm& pending);
 
   // The client for the password form.
-  const raw_ptr<PasswordManagerClient> client_;
+  const raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
   // Stores the pre-saved credential.
   std::optional<PasswordForm> presaved_;
   // Stores the initially generated password, i.e. before any user edits.

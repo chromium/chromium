@@ -433,7 +433,7 @@ public class TabGridAccessibilityHelperTest {
                             action.getLabel());
                     break;
                 default:
-                    assert false;
+                    throw new AssertionError();
             }
         }
     }

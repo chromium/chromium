@@ -28,6 +28,8 @@ if (is_android) {
 } else if (is_mac) {
   import("//build/config/mac/rules.gni")
   import("//build/util/branding.gni")
+} else if (is_fuchsia) {
+  import("//build/config/fuchsia/config.gni")
 }
 
 build_ime = !is_ios
@@ -48,8 +50,8 @@ component("ui_data_pack") {
     ":base",
     "//chromeos/crosapi/mojom",  # This target requires minimal dependencies.
     "//ios/chrome/tools/strings:generate_localizable_strings",
-    "//third_party/blink/renderer/core:core",
-    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/platform",
     "//ui/gfx:*",
   ]
 
@@ -137,18 +139,6 @@ component("base") {
     "dragdrop/os_exchange_data_provider_factory.h",
     "ime/utf_offset.cc",
     "ime/utf_offset.h",
-    "interaction/element_identifier.cc",
-    "interaction/element_identifier.h",
-    "interaction/element_tracker.cc",
-    "interaction/element_tracker.h",
-    "interaction/framework_specific_implementation.cc",
-    "interaction/framework_specific_implementation.h",
-    "interaction/interaction_sequence.cc",
-    "interaction/interaction_sequence.h",
-    "interaction/typed_data.h",
-    "interaction/typed_data_collection.cc",
-    "interaction/typed_data_collection.h",
-    "interaction/typed_identifier.h",
     "l10n/formatter.cc",
     "l10n/formatter.h",
     "l10n/l10n_font_util.cc",
@@ -215,7 +205,6 @@ component("base") {
     "ui_base_exports.cc",
     "ui_base_paths.cc",
     "ui_base_paths.h",
-    "ui_base_switches.cc",
     "ui_base_switches.h",
     "ui_base_switches_util.cc",
     "ui_base_switches_util.h",
@@ -270,7 +259,6 @@ component("base") {
       "win/hwnd_metrics.h",
       "win/hwnd_subclass.cc",
       "win/hwnd_subclass.h",
-      "win/internal_constants.cc",
       "win/internal_constants.h",
       "win/lock_state.cc",
       "win/lock_state.h",
@@ -348,13 +336,10 @@ component("base") {
       "cocoa/user_interface_item_command_handler.h",
       "cocoa/views_hostable.h",
       "cocoa/window_size_constants.h",
-      "cocoa/window_size_constants.mm",
       "dragdrop/os_exchange_data_provider_builder_mac.h",
       "dragdrop/os_exchange_data_provider_builder_mac.mm",
       "dragdrop/os_exchange_data_provider_mac.h",
       "dragdrop/os_exchange_data_provider_mac.mm",
-      "interaction/element_tracker_mac.h",
-      "interaction/element_tracker_mac.mm",
       "resource/resource_bundle_mac.mm",
     ]
   }
@@ -398,8 +383,8 @@ component("base") {
       "base_window.h",
       "emoji/emoji_panel_helper.h",
       "owned_window_anchor.h",
+      "pointer/pointer_device.cc",
       "pointer/pointer_device.h",
-      "pointer/pointer_device_util.cc",
       "text/bytes_formatting.cc",
       "text/bytes_formatting.h",
       "themed_vector_icon.cc",
@@ -446,10 +431,11 @@ component("base") {
       sources += [ "pointer/pointer_device_ios.cc" ]
     } else if (is_linux || is_chromeos) {
       sources += [ "pointer/pointer_device_linux.cc" ]
+    } else if (is_fuchsia && is_web_engine) {
+      sources += [ "pointer/pointer_device_web_engine.cc" ]
     } else {
       # Empty implementation for all other cases.
-      sources += [ "pointer/pointer_device.cc" ]
-      sources -= [ "pointer/pointer_device_util.cc" ]
+      sources += [ "pointer/pointer_device_default.cc" ]
     }
   }
 
@@ -504,11 +490,12 @@ component("base") {
     "//third_party/brotli:dec",
     "//third_party/icu",
     "//third_party/modp_b64",
-    "//third_party/zlib:zlib",
+    "//third_party/zlib",
     "//third_party/zlib/google:compression_utils",
     "//ui/base:data_exchange",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/dragdrop/mojom",
+    "//ui/base/interaction",
     "//ui/display",
     "//ui/display/util:gpu_info_util",
     "//ui/strings",
@@ -538,8 +525,8 @@ component("base") {
     deps += [
       ":l10n_util_ios",
       "//base",
+      "//ui/events",
       "//ui/events:dom_keycode_converter",
-      "//ui/events:events",
       "//ui/events:events_base",
     ]
   }
@@ -752,22 +739,25 @@ if (use_blink) {
   }
 }
 
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":ui_base_features_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "//ui/base/ui_base_features.cc" ]
+    class_name = "org.chromium.ui.base.UiBaseFeatures"
+  }
+  android_library("ui_base_features_java") {
+    # Right now, this only includes the Java features. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
+}
+
 static_library("test_support") {
   testonly = true
   sources = [
     "data_transfer_policy/mock_data_transfer_policy_controller.cc",
     "data_transfer_policy/mock_data_transfer_policy_controller.h",
-    "interaction/element_test_util.cc",
-    "interaction/element_test_util.h",
-    "interaction/expect_call_in_scope.h",
-    "interaction/interaction_sequence_test_util.h",
-    "interaction/interactive_test.cc",
-    "interaction/interactive_test.h",
-    "interaction/interactive_test_definitions.h",
-    "interaction/interactive_test_internal.cc",
-    "interaction/interactive_test_internal.h",
-    "interaction/polling_state_observer.h",
-    "interaction/state_observer.h",
     "pointer/mock_touch_ui_controller.cc",
     "pointer/mock_touch_ui_controller.h",
     "resource/mock_resource_bundle_delegate.cc",
@@ -993,7 +983,7 @@ source_set("run_all_unittests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//mojo/core/embedder:embedder",
+    "//mojo/core/embedder",
     "//skia",
     "//testing/gtest",
     "//ui/base",
@@ -1008,13 +998,6 @@ test("ui_base_unittests") {
     "class_property_unittest.cc",
     "clipboard/file_info_unittest.cc",
     "ime/utf_offset_unittest.cc",
-    "interaction/element_identifier_unittest.cc",
-    "interaction/element_tracker_unittest.cc",
-    "interaction/framework_specific_implementation_unittest.cc",
-    "interaction/interaction_sequence_unittest.cc",
-    "interaction/interaction_test_util_unittest.cc",
-    "interaction/interactive_test_unittest.cc",
-    "interaction/typed_data_collection_unittest.cc",
     "l10n/l10n_util_unittest.cc",
     "l10n/time_format_unittest.cc",
     "models/image_model_unittest.cc",
@@ -1068,8 +1051,9 @@ test("ui_base_unittests") {
     "//ui/base/clipboard:file_info",
     "//ui/base/cursor:unittests",
     "//ui/base/data_transfer_policy:unittests",
+    "//ui/base/interaction:unit_tests",
     "//ui/base/metadata:metadata_tests",
-    "//ui/base/prediction:prediction",
+    "//ui/base/prediction",
     "//ui/color",
     "//ui/display",
     "//ui/gfx:test_support",
@@ -1108,7 +1092,6 @@ test("ui_base_unittests") {
       "cocoa/nsmenuitem_additions_unittest.mm",
       "cocoa/touch_bar_util_unittest.mm",
       "cocoa/tracking_area_unittest.mm",
-      "interaction/element_tracker_mac_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",
       "test/view_tree_validator_unittest.mm",
     ]
@@ -1334,6 +1317,7 @@ test("ui_base_unittests") {
       "//content/test:test_support",
       "//dbus:test_support",
       "//ui/base/accelerators/global_accelerator_listener",
+      "//ui/linux:linux_ui",
     ]
   }
 
@@ -1370,10 +1354,7 @@ if (is_linux || is_chromeos) {
   # This source set defines linux wm role names and must not have any external
   # dependencies and be kept as minimal as possible.
   source_set("wm_role_names") {
-    sources = [
-      "wm_role_names_linux.cc",
-      "wm_role_names_linux.h",
-    ]
+    sources = [ "wm_role_names_linux.h" ]
   }
 }
 
@@ -1390,7 +1371,7 @@ source_set("base_interactive_ui_tests") {
       ":test_support",
       "//base/test:test_support",
       "//testing/gtest",
-      "//ui/events:events",
+      "//ui/events",
     ]
   }
 }

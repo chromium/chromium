@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_mutator.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_view_controller_presentation_delegate.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -60,6 +59,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [self.tableViewModel
       addSectionWithIdentifier:SectionIdentifierDataTypesHeader];
+  self.tableView.separatorInset =
+      UIEdgeInsetsMake(0.f, kTableViewSeparatorInset, 0.f, 0.f);
   TableViewTextHeaderFooterItem* headerItem =
       [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
   headerItem.subtitle = l10n_util::GetNSString(
@@ -85,29 +86,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return [super tableView:tableView heightForFooterInSection:section];
 }
 
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  cell.separatorInset =
-      UIEdgeInsetsMake(0.f, kTableViewSeparatorInset, 0.f, 0.f);
-  TableViewSwitchCell* switchCell =
-      base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-  [switchCell.switchView addTarget:self
-                            action:@selector(entryTapped:)
-                  forControlEvents:UIControlEventTouchUpInside];
-  SyncSwitchItem* switchItem = base::apple::ObjCCast<SyncSwitchItem>(
-      [self.tableViewModel itemAtIndexPath:indexPath]);
-  switchCell.switchView.tag = switchItem.dataType;
-  return cell;
-}
-
 #pragma mark - Private
 
 // Called by the UISwitch.
-- (void)entryTapped:(UISwitch*)switchView {
+- (void)itemSwitchToggled:(UISwitch*)switchView {
   [self.mutator
       bulkUploadViewItemWithType:static_cast<BulkUploadType>(switchView.tag)
                       isSelected:switchView.isOn];
@@ -121,6 +103,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switchItem.detailText = viewItem.subtitle;
   switchItem.on = viewItem.selected;
   switchItem.dataType = static_cast<NSInteger>(viewItem.type);
+  switchItem.target = self;
+  switchItem.selector = @selector(itemSwitchToggled:);
+  switchItem.tag = switchItem.dataType;
   switchItem.accessibilityIdentifier = viewItem.accessibilityIdentifier;
   [self.tableViewModel addItem:switchItem
        toSectionWithIdentifier:SectionIdentifierDataTypes];

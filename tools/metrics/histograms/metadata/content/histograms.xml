@@ -79,8 +79,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Content.SharedWorker.Host.DestructionSource"
+    enum="SharedWorkerHostDestructionSource" expires_after="2026-06-07">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the reason why a SharedWorkerHost is destroyed. This is to
+    investigate why a shared worker is terminated unexpectedly. This is also
+    used for understanding the ratio of destruction cases.
+  </summary>
+</histogram>
+
+<histogram name="Content.SharedWorker.Service.LastClientCheckTime" units="ms"
+    expires_after="2026-05-31">
+  <owner>annasato@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time spent checking if a navigating page with a SharedWorker is the last
+    active client. This is recorded whenever a page with a SharedWorker
+    connection navigates away.
+  </summary>
+</histogram>
+
 <histogram name="ContentCapture.CaptureContentTime2" units="microseconds"
-    expires_after="2025-12-01">
+    expires_after="2026-06-01">
   <owner>elabadysayed@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
@@ -92,41 +114,41 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentCapture.SentContentCount2" units="count"
-    expires_after="2025-12-01">
+    expires_after="2026-06-01">
   <owner>elabadysayed@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>The total number of content captures sent for a document.</summary>
 </histogram>
 
 <histogram name="ContentNotifications.ClientStatus.Enabled.ByProvider"
-    enum="Boolean" expires_after="2026-01-20">
+    enum="Boolean" expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The status of the push notifications client toggle for Content.
   </summary>
 </histogram>
 
 <histogram name="ContentNotifications.ClientStatus.Sports.ByProvider"
-    enum="Boolean" expires_after="2026-01-20">
+    enum="Boolean" expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The status of the push notifications client toggle for Sports.
   </summary>
 </histogram>
 
 <histogram name="ContentNotifications.DismissAction" enum="Boolean"
-    expires_after="2026-01-20">
+    expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>The user has dismissed a content notification.</summary>
 </histogram>
 
 <histogram name="ContentNotifications.EligibilityType"
-    enum="ContentNotificationEligibilityType" expires_after="2026-01-20">
+    enum="ContentNotificationEligibilityType" expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The Type of elegibility for a given user for the Content Notifications
     feature. Includes details about what UI entrypoint type the user is elegible
@@ -135,9 +157,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.Notification.Action"
-    enum="ContentNotificationActionType" expires_after="2026-01-20">
+    enum="ContentNotificationActionType" expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Reports what actions has the user taken on a notification. This metric
     matches NAUs sent.
@@ -145,58 +167,48 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.NotificationActionUpload.Success"
-    enum="Boolean" expires_after="2026-01-20">
+    enum="Boolean" expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     After a notification action upload, whether the request succeeded or failed.
   </summary>
 </histogram>
 
 <histogram name="ContentNotifications.OpenURLAction.HasURL" enum="Boolean"
-    expires_after="2026-01-20">
+    expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     After a notification interaction, if the URL has successfully been parsed or
     if it has failed.
   </summary>
 </histogram>
 
-<histogram name="ContentNotifications.Promo.Prompt.Action"
-    enum="ContentNotificationPromptAction" expires_after="2026-01-20">
-  <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    The action taken by the user in response to the Set Up List Content
-    Notification OS notification permission prompt.
-  </summary>
-</histogram>
-
 <histogram
     name="ContentNotifications.Promo.ProvisionalNotifications.Entrypoint"
     enum="ContentNotificationPromoProvisionalEntrypoint"
-    expires_after="2026-01-20">
+    expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Provisional notifications were turned on from the Notifications Promo.
   </summary>
 </histogram>
 
 <histogram name="ContentNotifications.Promo.Snackbar.Event"
-    enum="ContentNotificationSnackbarEvent" expires_after="2026-01-20">
+    enum="ContentNotificationSnackbarEvent" expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Log the Set Up List Content Notification confirmation snackbar events.
   </summary>
 </histogram>
 
 <histogram name="ContentNotifications.Promo.TopOfFeed.Action"
-    enum="ContentNotificationTopOfFeedPromoAction" expires_after="2026-01-20">
+    enum="ContentNotificationTopOfFeedPromoAction" expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The action taken by the user in response to the Top of Feed Content
     Notifications promo.
@@ -204,18 +216,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.Promo.TopOfFeed.Event"
-    enum="ContentNotificationTopOfFeedPromoAction" expires_after="2026-01-20">
+    enum="ContentNotificationTopOfFeedPromoAction" expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     An event from the the Top of Feed Content Notifications promo.
   </summary>
 </histogram>
 
 <histogram name="ContentNotifications.Registration.BrowserStateUnavailable"
-    enum="Boolean" expires_after="2026-01-20">
+    enum="Boolean" expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     This logs if a SNo registration has not succeeded due to a BrowserState
     being unavailable at the time due to a Browser not being initialized.
@@ -223,9 +235,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.Settings.Action"
-    enum="ContentNotificationSettingsAction" expires_after="2026-01-20">
+    enum="ContentNotificationSettingsAction" expires_after="2027-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The action taken by the user in the content notification settings view.
   </summary>
@@ -379,7 +391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.Popups.StrongBlockerActions"
-    enum="StrongPopupBlockerAction" expires_after="2025-12-07">
+    enum="StrongPopupBlockerAction" expires_after="2026-04-12">
   <owner>csharrison@chromium.org</owner>
   <summary>
     Counts of various events related to the strong popup blocker (aka abusive
@@ -388,7 +400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultAutoVerifySetting"
-    enum="ContentSetting" expires_after="2026-01-11">
+    enum="ContentSetting" expires_after="2026-05-17">
   <owner>ryankalla@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -398,7 +410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultBackgroundSyncSetting"
-    enum="ContentSetting" expires_after="2025-11-16">
+    enum="ContentSetting" expires_after="2026-01-18">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -409,7 +421,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.RegularProfile.DefaultJavascriptOptimizationBlockedByOs"
-    enum="Boolean" expires_after="2026-01-01">
+    enum="Boolean" expires_after="2026-04-01">
   <owner>pkotwicz@google.com</owner>
   <owner>src/chrome/browser/site_protection/OWNERS</owner>
   <summary>
@@ -422,7 +434,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.RegularProfile.DefaultJavaScriptOptimizationSetting"
-    enum="ContentSetting" expires_after="2025-10-20">
+    enum="ContentSetting" expires_after="2026-04-20">
   <owner>pkotwicz@chromium.org</owner>
   <owner>src/chrome/browser/site_protection/OWNERS</owner>
   <summary>
@@ -443,6 +455,144 @@ chromium-metrics-reviews@google.com.
 
     This histogram is only recorded for regular profiles.
   </summary>
+</histogram>
+
+<histogram
+    name="ContentSettings.RegularProfile.Exceptions.{ContentSettingsType}"
+    units="units" expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
+  <owner>lshang@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    The number of user defined content setting exceptions at browser start.
+    Suffixed with the name of content setting types.
+
+    Histogram content setting type: {ContentSettingsType}
+
+    This histogram is only recorded for regular profiles as of M109.
+  </summary>
+  <token key="ContentSettingsType">
+    <variant name="app-banner" summary="App banner exceptions"/>
+    <variant name="auto-dark-web-content"
+        summary="Auto-dark web contents exceptions"/>
+    <variant name="auto-picture-in-picture"
+        summary="Automatic picture-in-picture exceptions"/>
+    <variant name="auto-select-certificate"
+        summary="Auto-select cert exceptions"/>
+    <variant name="automatic-downloads"
+        summary="Automatic downloads exceptions"/>
+    <variant name="autoplay" summary="Autoplay exception"/>
+    <variant name="background-sync" summary="Background sync exceptions"/>
+    <variant name="bluetooth-chooser-data" summary="Bluetooth chooser data"/>
+    <variant name="bluetooth-guard" summary="Bluetooth guard exceptions"/>
+    <variant name="client-hints" summary="Client hints"/>
+    <variant name="cookies" summary="Cookies exceptions"/>
+    <variant name="display-capture" summary="Display Capture Exceptions"/>
+    <variant name="durable-storage" summary="Durable Storage Exceptions"/>
+    <variant name="fullscreen" summary="Fullscreen exceptions"/>
+    <variant name="geolocation" summary="Geolocation exceptions"/>
+    <variant name="hid-chooser-data" summary="HID chooser data"/>
+    <variant name="images" summary="Images exceptions"/>
+    <variant name="important-site-info" summary="Important site info"/>
+    <variant name="installed-web-app-metadata"
+        summary="Installed web app metadata"/>
+    <variant name="javascript" summary="JavaScript exceptions"/>
+    <variant name="javascript-jit" summary="JavaScript JIT"/>
+    <variant name="javascript-optimizer" summary="JavaScript Optimizer"/>
+    <variant name="keygen" summary="Keygen exceptions"/>
+    <variant name="local-network"
+        summary="Local network access(local-only) exceptions"/>
+    <variant name="local-network-access"
+        summary="Local network access exceptions"/>
+    <variant name="loopback-network"
+        summary="Local network access(loopback-only) exceptions"/>
+    <variant name="media-engagement" summary="Media engagement exceptions"/>
+    <variant name="media-stream-camera" summary="Camera exceptions"/>
+    <variant name="media-stream-mic" summary="Microphone exceptions"/>
+    <variant name="midi-sysex" summary="Midi exceptions"/>
+    <variant name="mixed-script" summary="Mixed script exceptions"/>
+    <variant name="mouselock" summary="Mouse lock exceptions"/>
+    <variant name="notifications" summary="Notification exceptions"/>
+    <variant name="password-protection" summary="Password protection"/>
+    <variant name="permission-autoblocking-data"
+        summary="Permission autoblocking data"/>
+    <variant name="permission-autorevocation-data"
+        summary="Permission autorevocation data"/>
+    <variant name="plugins" summary="Plugins exceptions"/>
+    <variant name="popups" summary="Popups exceptions"/>
+    <variant name="ppapi-broker" summary="Ppapi broker exceptions"/>
+    <variant name="protected-media-identifier"
+        summary="Protected media exceptions"/>
+    <variant name="protocol-handler" summary="Protocol handler exceptions"/>
+    <variant name="push-messaging" summary="Push messaging exceptions"/>
+    <variant name="request-desktop-site"
+        summary="Request desktop site exceptions"/>
+    <variant name="safe-browsing-url-check-data"
+        summary="Safe browsing url check data"/>
+    <variant name="serial-chooser-data" summary="Serial chooser data"/>
+    <variant name="site-engagement" summary="Site engagement exceptions"/>
+    <variant name="sound" summary="Sound exceptions"/>
+    <variant name="ssl-cert-decisions" summary="SSL cert decisions exceptions"/>
+    <variant name="storage-access" summary="Storage Access exceptions"/>
+    <variant name="subresource-filter" summary="Subresource filter exceptions"/>
+    <variant name="subresource-filter-data" summary="Subresource filter data"/>
+    <variant name="tracking-protection"
+        summary="Tracking Protection exceptions"/>
+    <variant name="usb-chooser-data" summary="USB chooser data exceptions"/>
+    <variant name="web-app-installation"
+        summary="Web app installation exceptions"/>
+    <variant name="webid-active-session" summary="FedCM Active Session"/>
+    <variant name="webid-request" summary="FedCM Request"/>
+    <variant name="webid-share" summary="FedCM Share"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.RegularProfile.Exceptions.{ContentSettingsType}.{ContentSetting}"
+    units="units" expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
+  <owner>lshang@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    The number of user defined content setting exceptions at browser start.
+    Suffixed with the name of content setting types and the content setting.
+
+    Histogram content setting type: {ContentSettingsType} Histogram content
+    setting: {ContentSetting}
+
+    This histogram is only recorded for regular profiles as of M109.
+  </summary>
+  <token key="ContentSettingsType">
+    <variant name="cookies" summary="Cookies exceptions"/>
+    <variant name="javascript-jit" summary="JavaScript JIT"/>
+    <variant name="javascript-optimizer" summary="JavaScript Optimizer"/>
+    <variant name="popups" summary="Popups exceptions"/>
+    <variant name="storage-access" summary="Storage Access exceptions"/>
+    <variant name="subresource-filter" summary="Subresource filter exceptions"/>
+    <variant name="tracking-protection"
+        summary="Tracking Protection exceptions"/>
+  </token>
+  <token key="ContentSetting">
+    <variant name="Allow" summary="Allow"/>
+    <variant name="AllowThirdParty"
+        summary="All third parties allowed on a domain"/>
+    <variant name="Ask" summary="Ask"/>
+    <variant name="Block" summary="Block"/>
+    <variant name="DomainWildcardAllowThirdParty"
+        summary="Third-party cookies allowed for a site group using a domain
+                 wildcard"/>
+    <variant name="MaxRequester"
+        summary="Maximum number of exceptions per requester"/>
+    <variant name="MaxTopLevel"
+        summary="Maximum number of exceptions per top-level"/>
+    <variant name="SessionOnly" summary="Session only"/>
+    <variant name="TemporaryAllowThirdParty"
+        summary="Third-party cookies temporarily allowed on a domain"/>
+  </token>
 </histogram>
 
 <histogram
@@ -669,7 +819,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.{RegularProfileFiltered}DefaultRequestDesktopSiteSetting"
-    enum="ContentSetting" expires_after="2025-12-28">
+    enum="ContentSetting" expires_after="2026-05-03">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -758,98 +908,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="ContentSettings.{RegularProfileFiltered}Exceptions.{ContentSettingsType}"
-    units="units" expires_after="never">
-<!-- expires-never: tracked as an important privacy metric. -->
-
-  <owner>lshang@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <summary>
-    The number of user defined content setting exceptions at browser start.
-    Suffixed with the name of content setting types.
-
-    Histogram content setting type: {ContentSettingsType}
-
-    This histogram is only recorded {RegularProfileFiltered}.
-  </summary>
-  <token key="RegularProfileFiltered">
-    <variant name="RegularProfile."
-        summary="from version M-109. It is recorded only for regular profiles"/>
-  </token>
-  <token key="ContentSettingsType">
-    <variant name="app-banner" summary="App banner exceptions"/>
-    <variant name="auto-dark-web-content"
-        summary="Auto-dark web contents exceptions"/>
-    <variant name="auto-picture-in-picture"
-        summary="Automatic picture-in-picture exceptions"/>
-    <variant name="auto-select-certificate"
-        summary="Auto-select cert exceptions"/>
-    <variant name="automatic-downloads"
-        summary="Automatic downloads exceptions"/>
-    <variant name="autoplay" summary="Autoplay exception"/>
-    <variant name="background-sync" summary="Background sync exceptions"/>
-    <variant name="bluetooth-chooser-data" summary="Bluetooth chooser data"/>
-    <variant name="bluetooth-guard" summary="Bluetooth guard exceptions"/>
-    <variant name="client-hints" summary="Client hints"/>
-    <variant name="cookies" summary="Cookies exceptions"/>
-    <variant name="display-capture" summary="Display Capture Exceptions"/>
-    <variant name="durable-storage" summary="Durable Storage Exceptions"/>
-    <variant name="fullscreen" summary="Fullscreen exceptions"/>
-    <variant name="geolocation" summary="Geolocation exceptions"/>
-    <variant name="hid-chooser-data" summary="HID chooser data"/>
-    <variant name="images" summary="Images exceptions"/>
-    <variant name="important-site-info" summary="Important site info"/>
-    <variant name="installed-web-app-metadata"
-        summary="Installed web app metadata"/>
-    <variant name="javascript" summary="JavaScript exceptions"/>
-    <variant name="javascript-jit" summary="JavaScript JIT"/>
-    <variant name="javascript-optimizer" summary="JavaScript Optimizer"/>
-    <variant name="keygen" summary="Keygen exceptions"/>
-    <variant name="local-network-access"
-        summary="Local network access exceptions"/>
-    <variant name="media-engagement" summary="Media engagement exceptions"/>
-    <variant name="media-stream-camera" summary="Camera exceptions"/>
-    <variant name="media-stream-mic" summary="Microphone exceptions"/>
-    <variant name="midi-sysex" summary="Midi exceptions"/>
-    <variant name="mixed-script" summary="Mixed script exceptions"/>
-    <variant name="mouselock" summary="Mouse lock exceptions"/>
-    <variant name="notifications" summary="Notification exceptions"/>
-    <variant name="password-protection" summary="Password protection"/>
-    <variant name="permission-autoblocking-data"
-        summary="Permission autoblocking data"/>
-    <variant name="permission-autorevocation-data"
-        summary="Permission autorevocation data"/>
-    <variant name="plugins" summary="Plugins exceptions"/>
-    <variant name="popups" summary="Popups exceptions"/>
-    <variant name="ppapi-broker" summary="Ppapi broker exceptions"/>
-    <variant name="protected-media-identifier"
-        summary="Protected media exceptions"/>
-    <variant name="protocol-handler" summary="Protocol handler exceptions"/>
-    <variant name="push-messaging" summary="Push messaging exceptions"/>
-    <variant name="request-desktop-site"
-        summary="Request desktop site exceptions"/>
-    <variant name="safe-browsing-url-check-data"
-        summary="Safe browsing url check data"/>
-    <variant name="serial-chooser-data" summary="Serial chooser data"/>
-    <variant name="site-engagement" summary="Site engagement exceptions"/>
-    <variant name="sound" summary="Sound exceptions"/>
-    <variant name="ssl-cert-decisions" summary="SSL cert decisions exceptions"/>
-    <variant name="storage-access" summary="Storage Access exceptions"/>
-    <variant name="subresource-filter" summary="Subresource filter exceptions"/>
-    <variant name="subresource-filter-data" summary="Subresource filter data"/>
-    <variant name="tracking-protection"
-        summary="Tracking Protection exceptions"/>
-    <variant name="usb-chooser-data" summary="USB chooser data exceptions"/>
-    <variant name="web-app-installation"
-        summary="Web app installation exceptions"/>
-    <variant name="webid-active-session" summary="FedCM Active Session"/>
-    <variant name="webid-request" summary="FedCM Request"/>
-    <variant name="webid-share" summary="FedCM Share"/>
-  </token>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.ActivityLoggingEnabled" enum="Boolean"
     expires_after="2024-10-13">
   <owner>dewittj@chromium.org</owner>
@@ -857,6 +915,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether the feed was fetched with activity logging enabled. This is logged
     on every feed fetch.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.AllFeeds.Activity.ByProvider"
+    enum="FeedActivityBucket" expires_after="2026-01-18">
+  <owner>guiperez@google.com</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Tracks user activity buckets for the filter. Reported every time a metric is
+    reported through the MetricsProvider to allow filtering. The histogram used
+    for analysis is ContentSuggestions.Feed.AllFeeds.Activity, whilst this one
+    will only be used for the filter. Any changes to
+    ContentSuggestions.Feed.AllFeeds.Activity will also change how this metric
+    is reported.
   </summary>
 </histogram>
 
@@ -901,7 +973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentDuplication2.Position{Index}"
-    enum="Boolean" expires_after="2025-11-30">
+    enum="Boolean" expires_after="2026-04-05">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -980,7 +1052,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.DisplayStatusOnOpen"
-    enum="ContentSuggestionsDisplayStatus" expires_after="2025-11-30">
+    enum="ContentSuggestionsDisplayStatus" expires_after="2026-06-07">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1126,7 +1198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.Duration{NetworkEvent}"
-    units="ms" expires_after="2025-12-28">
+    units="ms" expires_after="2026-03-01">
   <owner>sczs@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1176,7 +1248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.ResponseSizeKB" units="KB"
-    expires_after="2025-11-30">
+    expires_after="2026-06-07">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1228,7 +1300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.RefreshTrigger"
-    enum="FeedRefreshTrigger" expires_after="2025-11-30">
+    enum="FeedRefreshTrigger" expires_after="2026-04-12">
   <owner>adamta@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1322,7 +1394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UploadActionsStatus"
-    enum="FeedUploadActionsStatus" expires_after="2025-11-30">
+    enum="FeedUploadActionsStatus" expires_after="2026-06-07">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1355,7 +1427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserActions" enum="FeedUserActionType"
-    expires_after="2025-11-30">
+    expires_after="2026-06-07">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1431,7 +1503,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.Feed.UserJourney.{Surface}.{Status}Duration"
-    units="ms" expires_after="2025-12-14">
+    units="ms" expires_after="2026-04-26">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1528,25 +1600,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.WebFeed.FollowCount.{Event}"
-    units="follows" expires_after="2025-02-10">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The number of web feeds the user is following. Reported {Event}.
-  </summary>
-  <token key="Event">
-    <variant name="AfterFollow" summary="after a successful follow action"/>
-    <variant name="AfterUnfollow" summary="after a successful unfollow action"/>
-    <variant name="ContentShown"
-        summary="after the Following feed is shown, and some content is
-                 displayed"/>
-    <variant name="NoContentShown"
-        summary="after the Following Feed is shown, and no content is
-                 available for display"/>
-  </token>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.WebFeed.FollowUriResult"
     enum="WebFeedSubscriptionRequestStatus" expires_after="2024-06-30">
   <owner>harringtond@chromium.org</owner>
@@ -1599,17 +1652,6 @@ chromium-metrics-reviews@google.com.
     Reported upon successfully following a web feed. Reported as 'true' if the
     web feed was recommended, even if the user did not see or interact with
     recommendation UI.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended"
-    enum="Boolean" expires_after="2024-06-30">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Whether the followed web feed was recommended by the server.
-
-    Reported upon successfully following a web feed.
   </summary>
 </histogram>
 
@@ -1683,16 +1725,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.WebFeed.SortType" enum="FeedSortType"
-    expires_after="2025-06-23">
-  <owner>adamta@google.com</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>The sort type that was selected from the feed's sort menu.</summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged"
-    enum="FeedSortType" expires_after="2026-01-04">
+    enum="FeedSortType" expires_after="2026-03-08">
   <owner>adamta@google.com</owner>
   <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1784,39 +1818,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Feed" summary="the For-You feed"/>
     <variant name="Feed.AllFeeds" summary="All Feeds combined"/>
     <variant name="Feed.WebFeed" summary="the Following/Web Feed"/>
-  </token>
-</histogram>
-
-<histogram name="ContentSuggestions.{FeedType}.Activity.ByProvider"
-    enum="FeedActivityBucket" expires_after="2025-11-17">
-  <owner>guiperez@google.com</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Tracks user activity buckets for the filter. Reported every time a metric is
-    reported through the MetricsProvider to allow filtering. The histogram used
-    for analysis is ContentSuggestions.{FeedType}.Activity, whilst this one will
-    only be used for the filter. Any changes to
-    ContentSuggestions.{FeedType}.Activity will also change how this metric is
-    reported.
-  </summary>
-  <token key="FeedType">
-    <variant name="Feed" summary="the For-You feed"/>
-    <variant name="Feed.AllFeeds" summary="All Feeds combined"/>
-    <variant name="Feed.WebFeed" summary="the Following/Web Feed"/>
-  </token>
-</histogram>
-
-<histogram name="ContentSuggestions.{FeedType}.CardIndexOnSwitch" units="index"
-    expires_after="2023-04-21">
-  <owner>adamta@google.com</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    iOS: Before switching to a new feed type, logs the index of the last visible
-    card.
-  </summary>
-  <token key="FeedType">
-    <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
 
@@ -1945,7 +1946,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.{FeedType}.LoadStreamStatus.BackgroundRefresh"
-    enum="FeedLoadStreamStatus" expires_after="2025-11-30">
+    enum="FeedLoadStreamStatus" expires_after="2026-06-07">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1963,7 +1964,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.LoadStreamStatus.Initial"
-    enum="FeedLoadStreamStatus" expires_after="2025-11-30">
+    enum="FeedLoadStreamStatus" expires_after="2026-06-07">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1998,7 +1999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.LoadStreamStatus.ManualRefresh"
-    enum="FeedLoadStreamStatus" expires_after="2025-11-30">
+    enum="FeedLoadStreamStatus" expires_after="2026-02-01">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>

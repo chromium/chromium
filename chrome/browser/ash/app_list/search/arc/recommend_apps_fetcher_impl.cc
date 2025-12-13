@@ -6,6 +6,8 @@
 
 #include <cstdint>
 #include <iomanip>
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/base64url.h"
@@ -147,7 +149,7 @@ void RecommendAppsFetcherImpl::OnDownloadTimeout() {
 }
 
 void RecommendAppsFetcherImpl::OnDownloaded(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   download_timer_.Stop();
 
   // TODO(thanhdng): Add a UMA histogram here recording the time difference.
@@ -184,7 +186,8 @@ void RecommendAppsFetcherImpl::OnDownloaded(
 
 std::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
     std::string_view response) {
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(response);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!parsed_json.has_value()) {
     LOG(ERROR) << "Error parsing response JSON: "

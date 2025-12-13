@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -32,6 +34,7 @@
 #include "url/origin.h"
 
 using testing::_;
+using testing::SaveArg;
 
 namespace {
 
@@ -198,10 +201,8 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
     controller->ShowAccountsDialog(
         content::RelyingPartyData(kTopFrameEtldPlusOne,
                                   /*iframe_for_display=*/u""),
-        {idp_data}, accounts_, rp_mode,
-        /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),
-        /*on_selected=*/base::DoNothing(), /*on_add_account=*/base::DoNothing(),
-        std::move(dismiss_callback),
+        {idp_data}, accounts_, rp_mode, /*on_selected=*/base::DoNothing(),
+        /*on_add_account=*/base::DoNothing(), std::move(dismiss_callback),
         /*accounts_displayed_callback=*/base::DoNothing());
   }
 
@@ -213,7 +214,7 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
         segmentation_platform::MockSegmentationPlatformService>();
     ON_CALL(*segmentation_platform_service_,
             GetClassificationResult(_, _, _, _))
-        .WillByDefault(testing::Invoke(
+        .WillByDefault(
             [&run_loop, result_label, delay_callback, this](
                 auto, auto,
                 scoped_refptr<segmentation_platform::InputContext>
@@ -225,7 +226,7 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
               result.ordered_labels = {result_label};
               if (this->optimization_guide_decider_) {
                 ASSERT_EQ(segmentation_platform::processing::ProcessedValue(
-                              web_contents()->GetLastCommittedURL().host()),
+                              web_contents()->GetLastCommittedURL().GetHost()),
                           input_context->GetMetadataArgument(
                               segmentation_platform::kFedCmHost));
                 ASSERT_EQ(segmentation_platform::processing::ProcessedValue(
@@ -266,7 +267,7 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE, base::BindOnce(std::move(callback), result)
                                  .Then(run_loop.QuitClosure()));
-            }));
+            });
     return segmentation_platform_service_.get();
   }
 
@@ -462,15 +463,16 @@ TEST_F(IdentityDialogControllerTest, SegmentationPlatformShowUi) {
           CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
           CreateMockOptimizationGuideDecider());
 
-  // Show should be called.
-  std::unique_ptr<MockAccountSelectionView> account_selection_view =
-      std::make_unique<MockAccountSelectionView>();
-  EXPECT_CALL(*account_selection_view, Show(_, _, _, _, _)).Times(1);
-  controller->SetAccountSelectionViewForTesting(
-      std::move(account_selection_view));
+  base::MockCallback<
+      IdentityDialogController::ShouldShowAccountsPassiveDialogCallback>
+      should_show_callback;
+  bool value = false;
+  EXPECT_CALL(should_show_callback, Run).WillOnce(SaveArg<0>(&value));
 
-  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+  controller->ShouldShowAccountsPassiveDialog(should_show_callback.Get());
+
   run_loop.Run();
+  EXPECT_EQ(true, value);
 }
 
 TEST_F(IdentityDialogControllerTest, SegmentationPlatformDontShowUi) {
@@ -486,20 +488,16 @@ TEST_F(IdentityDialogControllerTest, SegmentationPlatformDontShowUi) {
           CreateMockSegmentationPlatformService("FedCmUserQuiet", run_loop),
           CreateMockOptimizationGuideDecider());
 
-  // Show should not be called.
-  std::unique_ptr<MockAccountSelectionView> account_selection_view =
-      std::make_unique<MockAccountSelectionView>();
-  EXPECT_CALL(*account_selection_view, Show(_, _, _, _, _)).Times(0);
-  controller->SetAccountSelectionViewForTesting(
-      std::move(account_selection_view));
+  base::MockCallback<
+      IdentityDialogController::ShouldShowAccountsPassiveDialogCallback>
+      should_show_callback;
+  bool value = true;
+  EXPECT_CALL(should_show_callback, Run).WillOnce(SaveArg<0>(&value));
 
-  // Dismiss callback should be run.
-  base::MockCallback<DismissCallback> dismiss_callback;
-  EXPECT_CALL(dismiss_callback, Run).WillOnce(testing::Return());
+  controller->ShouldShowAccountsPassiveDialog(should_show_callback.Get());
 
-  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive,
-                     dismiss_callback.Get());
   run_loop.Run();
+  EXPECT_EQ(false, value);
 }
 
 TEST_F(IdentityDialogControllerTest,
@@ -523,14 +521,18 @@ TEST_F(IdentityDialogControllerTest,
             web_contents(),
             CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
             CreateMockOptimizationGuideDecider());
-    controller->SetAccountSelectionViewForTesting(
-        std::make_unique<MockAccountSelectionView>());
+
+    auto mock_view = std::make_unique<MockAccountSelectionView>();
+    EXPECT_CALL(*mock_view, Show).WillOnce(testing::Return(true));
+    controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
     EXPECT_CALL(*segmentation_platform_service_,
                 CollectTrainingData(_, _, _, _, _))
         .Times(1);
 
-    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+    controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
     run_loop.Run();
+    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
     // User selects an account.
     controller->OnAccountSelected(GURL(kIdpEtldPlusOne), accounts_[0]->id,
@@ -546,14 +548,18 @@ TEST_F(IdentityDialogControllerTest,
             web_contents(),
             CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
             CreateMockOptimizationGuideDecider());
-    controller->SetAccountSelectionViewForTesting(
-        std::make_unique<MockAccountSelectionView>());
+
+    auto mock_view = std::make_unique<MockAccountSelectionView>();
+    EXPECT_CALL(*mock_view, Show).WillOnce(testing::Return(true));
+    controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
     EXPECT_CALL(*segmentation_platform_service_,
                 CollectTrainingData(_, _, _, _, _))
         .Times(1);
 
-    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+    controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
     run_loop.Run();
+    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
     // User closes the dialog.
     controller->OnDismiss(
@@ -569,19 +575,49 @@ TEST_F(IdentityDialogControllerTest,
             web_contents(),
             CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
             CreateMockOptimizationGuideDecider());
-    controller->SetAccountSelectionViewForTesting(
-        std::make_unique<MockAccountSelectionView>());
+
+    auto mock_view = std::make_unique<MockAccountSelectionView>();
+    EXPECT_CALL(*mock_view, Show).WillOnce(testing::Return(true));
+    controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
     EXPECT_CALL(*segmentation_platform_service_,
                 CollectTrainingData(_, _, _, _, _))
         .Times(1);
 
-    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+    controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
     run_loop.Run();
+    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
     // Dialog gets dismissed for other reasons.
     controller->OnDismiss(IdentityDialogController::DismissReason::kOther);
   }
   CheckForSampleAndReset(IdentityDialogController::UserAction::kIgnored);
+}
+
+TEST_F(IdentityDialogControllerTest,
+       SegmentationPlatformTrainingDataNotCollectedWhenUiNotShown) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      segmentation_platform::features::kSegmentationPlatformFedCmUser);
+
+  base::RunLoop run_loop;
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(
+          web_contents(),
+          CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
+          CreateMockOptimizationGuideDecider());
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  EXPECT_CALL(*mock_view, Show).WillOnce(testing::Return(false));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  EXPECT_CALL(*segmentation_platform_service_,
+              CollectTrainingData(_, _, _, _, _))
+      .Times(0);
+
+  controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
+  run_loop.Run();
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+
+  controller->OnDismiss(IdentityDialogController::DismissReason::kCloseButton);
 }
 
 TEST_F(IdentityDialogControllerTest,
@@ -601,11 +637,50 @@ TEST_F(IdentityDialogControllerTest,
   controller->SetAccountSelectionViewForTesting(
       std::make_unique<MockAccountSelectionView>());
 
-  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+  controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
 
   // Reset the controller before running
   // `segmentation_platform_service_callback_`. This should not crash.
   controller.reset();
   std::move(segmentation_platform_service_callback_).Run();
   run_loop.Run();
+}
+
+class IdentityDialogControllerTestWithOptimizationDisabled
+    : public IdentityDialogControllerTest {
+ public:
+  IdentityDialogControllerTestWithOptimizationDisabled() {
+    list.InitWithFeatures(
+        /*enabled_features=*/{segmentation_platform::features::
+                                  kSegmentationPlatformFedCmUser},
+        /*disabled_features=*/{
+            optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList list;
+};
+
+// Tests that there is no crash if kSegmentationPlatformFedCmUser is enabled but
+// kOptimizationHints is disabled. See crbug.com/435613236.
+TEST_F(IdentityDialogControllerTestWithOptimizationDisabled, NoCrash) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+
+  base::MockCallback<base::OnceCallback<void(bool accepted)>> callback;
+  EXPECT_CALL(callback, Run(true)).WillOnce(testing::Return());
+  controller->RequestIdPRegistrationPermision(
+      url::Origin::Create(GURL("https://idp.example")), callback.Get());
+
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+
+  auto prompt_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  WaitForBubbleToBeShown(manager);
+
+  EXPECT_TRUE(prompt_factory->is_visible());
+
+  Accept(manager);
 }

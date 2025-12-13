@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -38,12 +37,12 @@ public class LoginPrompt {
     private AlertDialogEditText mPasswordView;
 
     /** This is a public interface that provides the result of the prompt. */
-    public static interface Observer {
+    public interface Observer {
         /** Cancel the authorization request. */
-        public void cancel();
+        void cancel();
 
         /** Proceed with the authorization with the given credentials. */
-        public void proceed(String username, String password);
+        void proceed(String username, String password);
     }
 
     /**
@@ -67,7 +66,7 @@ public class LoginPrompt {
         View v = LayoutInflater.from(mContext).inflate(R.layout.http_auth_dialog, null);
         mUsernameView = v.findViewById(R.id.username);
         mPasswordView = v.findViewById(R.id.password);
-        if (autofillUrl != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (autofillUrl != null) {
             // By default Android Autofill support is turned off for these controls because Chrome
             // uses its own autofill provider (Chrome Sync). If an app is using Android Autofill
             // then we need to enable Android Autofill for the controls.
@@ -138,5 +137,9 @@ public class LoginPrompt {
         mUsernameView.setText(username);
         mPasswordView.setText(password);
         mUsernameView.selectAll();
+    }
+
+    public AlertDialog getDialogForTesting() {
+        return mDialog;
     }
 }

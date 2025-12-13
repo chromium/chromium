@@ -21,6 +21,7 @@ source_set("translate_internals") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/translate/model",
+    "//ios/web/public:web_state_observer",
     "//ios/web/public/webui",
   ]
 }

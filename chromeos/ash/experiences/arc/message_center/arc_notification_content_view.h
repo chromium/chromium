@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/experiences/arc/message_center/arc_notification_item.h"
 #include "chromeos/ash/experiences/arc/message_center/arc_notification_surface_manager.h"
@@ -46,6 +47,9 @@ class ArcNotificationContentView
       public ArcNotificationItem::Observer,
       public ArcNotificationSurfaceManager::Observer,
       public views::WidgetObserver {
+  // TODO(crbug.com/449882589): Remove this macro once it gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
   METADATA_HEADER(ArcNotificationContentView, views::NativeViewHost)
 
  public:
@@ -112,7 +116,6 @@ class ArcNotificationContentView
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
-  void OnThemeChanged() override;
   views::FocusTraversable* GetFocusTraversable() override;
   void OnAccessibilityEvent(ax::mojom::Event event) override;
   void AddedToWidget() override;

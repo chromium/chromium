@@ -38,8 +38,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
-#include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -138,31 +136,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(kManagedMultiScreenCaptureAllowedForUrls);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-bool IsMultiScreenCaptureAllowed(const std::optional<GURL>& url) {
-#if BUILDFLAG(IS_CHROMEOS)
-  content::BrowserContext* context =
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-          user_manager::UserManager::Get()->GetPrimaryUser());
-  if (!context) {
-    return false;
-  }
-  auto* service =
-      policy::MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(
-          context);
-  if (!service) {
-    return false;
-  }
-
-  if (url.has_value()) {
-    return service->IsMultiScreenCaptureAllowed(*url);
-  } else {
-    return service->GetAllowListSize() > 0;
-  }
-#else
-  return false;
-#endif
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
@@ -266,6 +239,15 @@ void ShowCaptureTerminatedDialog(content::WebContents* contents) {
   TabModalConfirmDialog::Create(
       std::make_unique<CaptureTerminatedDialogDelegate>(contents), contents);
 #endif
+}
+
+bool CapturerRestrictedToSameOrigin(content::WebContents* capturer) {
+  if (!capturer) {
+    return false;
+  }
+  return GetAllowedCaptureLevel(
+             capturer->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL(),
+             capturer) == AllowedScreenCaptureLevel::kSameOrigin;
 }
 
 }  // namespace capture_policy

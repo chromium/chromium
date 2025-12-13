@@ -10,9 +10,7 @@
 namespace blink {
 
 HTMLSelectedContentElement::HTMLSelectedContentElement(Document& document)
-    : HTMLElement(html_names::kSelectedcontentTag, document) {
-  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
-}
+    : HTMLElement(html_names::kSelectedcontentTag, document) {}
 
 void HTMLSelectedContentElement::CloneContentsFromOptionElement(
     const HTMLOptionElement* option) {

@@ -17,13 +17,13 @@
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
@@ -137,9 +137,9 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
   }
 
  private:
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_ =
-      std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> zero_duration_mode_ =
+      std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+          gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   bool is_bubble_showing_ = false;
   base::RepeatingClosure animation_ended_closure_;
   base::RepeatingClosure animation_step_closure_;

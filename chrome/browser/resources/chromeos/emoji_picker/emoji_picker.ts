@@ -19,5 +19,6 @@ export {EmojiSearch} from './emoji_search.js';
 export {EMOJI_IMG_BUTTON_CLICK, EMOJI_PICKER_READY, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN} from './events.js';
 export {EmojiPrefixSearch} from './prefix_search.js';
 export {Trie} from './structs/trie.js';
-export {PaginatedGifResponses, Status} from './tenor_types.mojom-webui.js';
-export {EmojiGroupElement, GifSubcategoryData, VisualContent} from './types.js';
+export type {PaginatedGifResponses} from './tenor_types.mojom-webui.js';
+export {Status} from './tenor_types.mojom-webui.js';
+export type {EmojiGroupElement, GifSubcategoryData, VisualContent} from './types.js';

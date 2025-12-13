@@ -65,52 +65,6 @@ void EnumerateVideoEncodeAcceleratorSupportedProfile(
   enumerator->EndVideoEncodeAcceleratorSupportedProfile();
 }
 
-const char* ImageDecodeAcceleratorTypeToString(
-    gpu::ImageDecodeAcceleratorType type) {
-  switch (type) {
-    case gpu::ImageDecodeAcceleratorType::kJpeg:
-      return "JPEG";
-    case gpu::ImageDecodeAcceleratorType::kWebP:
-      return "WebP";
-    case gpu::ImageDecodeAcceleratorType::kUnknown:
-      return "Unknown";
-  }
-  NOTREACHED() << "Invalid ImageDecodeAcceleratorType.";
-}
-
-const char* ImageDecodeAcceleratorSubsamplingToString(
-    gpu::ImageDecodeAcceleratorSubsampling subsampling) {
-  switch (subsampling) {
-    case gpu::ImageDecodeAcceleratorSubsampling::k420:
-      return "4:2:0";
-    case gpu::ImageDecodeAcceleratorSubsampling::k422:
-      return "4:2:2";
-    case gpu::ImageDecodeAcceleratorSubsampling::k444:
-      return "4:4:4";
-  }
-}
-
-void EnumerateImageDecodeAcceleratorSupportedProfile(
-    const gpu::ImageDecodeAcceleratorSupportedProfile& profile,
-    gpu::GPUInfo::Enumerator* enumerator) {
-  enumerator->BeginImageDecodeAcceleratorSupportedProfile();
-  enumerator->AddString("imageType",
-                        ImageDecodeAcceleratorTypeToString(profile.image_type));
-  enumerator->AddString("minEncodedDimensions",
-                        profile.min_encoded_dimensions.ToString());
-  enumerator->AddString("maxEncodedDimensions",
-                        profile.max_encoded_dimensions.ToString());
-  std::string subsamplings;
-  for (size_t i = 0; i < profile.subsamplings.size(); i++) {
-    if (i > 0)
-      subsamplings += ", ";
-    subsamplings +=
-        ImageDecodeAcceleratorSubsamplingToString(profile.subsamplings[i]);
-  }
-  enumerator->AddString("subsamplings", subsamplings);
-  enumerator->EndImageDecodeAcceleratorSupportedProfile();
-}
-
 #if BUILDFLAG(IS_WIN)
 void EnumerateOverlayInfo(const gpu::OverlayInfo& info,
                           gpu::GPUInfo::Enumerator* enumerator) {
@@ -337,9 +291,6 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
         video_encode_accelerator_supported_profiles;
     bool jpeg_decode_accelerator_supported;
 
-    ImageDecodeAcceleratorSupportedProfiles
-        image_decode_accelerator_supported_profiles;
-
     bool subpixel_font_rendering;
     uint32_t visibility_callback_call_count;
 
@@ -416,8 +367,6 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     EnumerateVideoEncodeAcceleratorSupportedProfile(profile, enumerator);
   enumerator->AddBool("jpegDecodeAcceleratorSupported",
       jpeg_decode_accelerator_supported);
-  for (const auto& profile : image_decode_accelerator_supported_profiles)
-    EnumerateImageDecodeAcceleratorSupportedProfile(profile, enumerator);
   enumerator->AddBool("subpixelFontRendering", subpixel_font_rendering);
   enumerator->AddInt("visibilityCallbackCallCount",
                      visibility_callback_call_count);

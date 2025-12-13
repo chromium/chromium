@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_serviceworker_request
-  AssertionError
-Harness: the test ran to completion.

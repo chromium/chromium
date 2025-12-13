@@ -10,16 +10,28 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
+
+namespace {
+constexpr char kExtensionId1[] = "extension_id_1";
+constexpr char kExtensionId2[] = "extension_id_2";
+constexpr char kExtensionId3[] = "extension_id_3";
+constexpr char kExtension1Version1[] = "1.0.1.1";
+constexpr char kExtension1Version2[] = "2.0.1.1";
+constexpr char kExtension2Version2[] = "2.0.2.2";
+constexpr char kExtension3Version3[] = "3.0.3.3";
+}  // namespace
 
 class PolicyProtoDecodersTest : public testing::Test {
  public:
   PolicyMap policy_map_;
   PolicyMap expected_policy_map_;
   UserPolicyBuilder user_policy_;
+  ExtensionInstallPoliciesBuilder extension_install_policies_;
 
   base::WeakPtr<CloudExternalDataManager> external_data_manager_;
 };
@@ -260,4 +272,111 @@ TEST_F(PolicyProtoDecodersTest, PolicyWithFalseFilter) {
   EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
 }
 
+TEST_F(PolicyProtoDecodersTest, ExtensionInstallPolicies) {
+  base::Value::Dict expected_policy_value1;
+  base::Value::Dict& version_dict =
+      expected_policy_value1.Set(kExtension1Version1, base::Value::Dict())
+          ->GetDict();
+  version_dict.Set("action", 0);
+  version_dict.Set("reasons", base::Value::List());
+
+  base::Value::Dict expected_policy_value2;
+  base::Value::Dict& version_dict2 =
+      expected_policy_value2.Set(kExtension2Version2, base::Value::Dict())
+          ->GetDict();
+  version_dict2.Set("action", 1);
+  version_dict2.Set("reasons", base::Value::List());
+
+  base::Value::Dict expected_policy_value3;
+  base::Value::Dict& version_dict3 =
+      expected_policy_value3.Set(kExtension3Version3, base::Value::Dict())
+          ->GetDict();
+  version_dict3.Set("action", 2);
+  base::Value::List expected_reasons;
+  expected_reasons.Append(1);
+  expected_reasons.Append(2);
+  version_dict3.Set("reasons", std::move(expected_reasons));
+
+  base::Value::Dict& version_dict4 =
+      expected_policy_value1.Set(kExtension1Version2, base::Value::Dict())
+          ->GetDict();
+  version_dict4.Set("action", 0);
+  version_dict4.Set("reasons", base::Value::List());
+
+  expected_policy_map_.Set(kExtensionId1, POLICY_LEVEL_MANDATORY,
+                           POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                           base::Value(std::move(expected_policy_value1)),
+                           nullptr);
+  expected_policy_map_.Set(kExtensionId2, POLICY_LEVEL_MANDATORY,
+                           POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                           base::Value(std::move(expected_policy_value2)),
+                           nullptr);
+  expected_policy_map_.Set(kExtensionId3, POLICY_LEVEL_MANDATORY,
+                           POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                           base::Value(std::move(expected_policy_value3)),
+                           nullptr);
+
+  {
+    em::ExtensionInstallPolicy* policy =
+        extension_install_policies_.payload().add_policies();
+    policy->set_extension_id(kExtensionId1);
+    policy->set_extension_version(kExtension1Version1);
+    policy->set_action(em::ExtensionInstallPolicy::ACTION_UNSPECIFIED);
+  }
+  {
+    em::ExtensionInstallPolicy* policy =
+        extension_install_policies_.payload().add_policies();
+    policy->set_extension_id(kExtensionId2);
+    policy->set_extension_version(kExtension2Version2);
+    policy->set_action(em::ExtensionInstallPolicy::ACTION_ALLOW);
+  }
+  {
+    em::ExtensionInstallPolicy* policy =
+        extension_install_policies_.payload().add_policies();
+    policy->set_extension_id(kExtensionId3);
+    policy->set_extension_version(kExtension3Version3);
+    policy->set_action(em::ExtensionInstallPolicy::ACTION_BLOCK);
+    policy->add_reasons(em::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY);
+    policy->add_reasons(em::ExtensionInstallPolicy::REASON_RISK_SCORE);
+  }
+  {
+    em::ExtensionInstallPolicy* policy =
+        extension_install_policies_.payload().add_policies();
+    policy->set_extension_id(kExtensionId1);
+    policy->set_extension_version(kExtension1Version2);
+    policy->set_action(em::ExtensionInstallPolicy::ACTION_UNSPECIFIED);
+  }
+  DecodeProtoFields(extension_install_policies_.payload(), POLICY_SOURCE_CLOUD,
+                    POLICY_SCOPE_USER, &policy_map_);
+  EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
+}
+
+TEST_F(PolicyProtoDecodersTest, ExtensionInstallPoliciesMalformedNotSet) {
+  // Policy with no extension id should be ignored.
+  {
+    em::ExtensionInstallPolicy* policy =
+        extension_install_policies_.payload().add_policies();
+    policy->set_extension_version(kExtension1Version1);
+    policy->set_action(em::ExtensionInstallPolicy::ACTION_UNSPECIFIED);
+  }
+  // Policy with no extension version should be ignored.
+  {
+    em::ExtensionInstallPolicy* policy =
+        extension_install_policies_.payload().add_policies();
+    policy->set_extension_id(kExtensionId2);
+    policy->set_action(em::ExtensionInstallPolicy::ACTION_ALLOW);
+  }
+
+  // Policy with no extension id and version should be ignored.
+  {
+    em::ExtensionInstallPolicy* policy =
+        extension_install_policies_.payload().add_policies();
+    policy->set_action(em::ExtensionInstallPolicy::ACTION_BLOCK);
+    policy->add_reasons(em::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY);
+    policy->add_reasons(em::ExtensionInstallPolicy::REASON_RISK_SCORE);
+  }
+  DecodeProtoFields(extension_install_policies_.payload(), POLICY_SOURCE_CLOUD,
+                    POLICY_SCOPE_USER, &policy_map_);
+  EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
+}
 }  // namespace policy

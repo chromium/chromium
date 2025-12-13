@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -43,8 +45,9 @@ class FirstInputDelayBarrier : public BrowserListObserver,
                                public TabStripModelObserver {
  public:
   FirstInputDelayBarrier() {
-    if (BrowserList::GetInstance()->GetLastActive()) {
-      OnBrowserAdded(BrowserList::GetInstance()->GetLastActive());
+    if (BrowserWindowInterface* const active_browser =
+            GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
+      OnBrowserAddedInternal(active_browser);
     }
     BrowserList::AddObserver(this);
   }
@@ -74,10 +77,16 @@ class FirstInputDelayBarrier : public BrowserListObserver,
  private:
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override {
-    if (browser->tab_strip_model()->GetActiveWebContents()) {
-      ObserveWebContents(browser->tab_strip_model()->GetActiveWebContents());
+    OnBrowserAddedInternal(browser);
+  }
+
+  void OnBrowserAddedInternal(BrowserWindowInterface* browser) {
+    TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+    if (content::WebContents* const active_contents =
+            tab_strip_model->GetActiveWebContents()) {
+      ObserveWebContents(active_contents);
     }
-    browser->tab_strip_model()->AddObserver(this);
+    tab_strip_model->AddObserver(this);
   }
 
   // TabStripModelObserver:
@@ -153,20 +162,19 @@ class AshSessionRestorePageLoadMetricsObserverTest
   // input delay is not recorded since the browser window is not from a session
   // restore.
   void RunFirstInputDelaySetupTest() {
-    ASSERT_TRUE(BrowserList::GetInstance()->empty());
+    ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
     CreateBrowser(ProfileManager::GetActiveUserProfile());
 
-    ASSERT_TRUE(BrowserList::GetInstance()->GetLastActive());
-    content::WebContents* const web_contents = BrowserList::GetInstance()
-                                                   ->GetLastActive()
-                                                   ->tab_strip_model()
-                                                   ->GetActiveWebContents();
+    BrowserWindowInterface* const active_browser =
+        GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+    ASSERT_TRUE(active_browser);
+    content::WebContents* const web_contents =
+        active_browser->GetTabStripModel()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        BrowserList::GetInstance()->GetLastActive(),
-        embedded_test_server()->GetURL(kTestUrlRelativePath)));
+        active_browser, embedded_test_server()->GetURL(kTestUrlRelativePath)));
     SimulateMouseClick(web_contents);
 
     ASSERT_TRUE(first_input_delay_barrier_.Wait(web_contents));
@@ -192,11 +200,12 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
 // be recorded.
 IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
                        RecordsFirstInputDelay) {
-  Browser* const restored_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const restored_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(restored_browser);
 
   content::WebContents* const web_contents =
-      restored_browser->tab_strip_model()->GetActiveWebContents();
+      restored_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   SimulateMouseClick(web_contents);
   ASSERT_TRUE(first_input_delay_barrier_.Wait(web_contents));
@@ -215,19 +224,21 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
 // it wasn't for the restored window.
 IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
                        DoesNotRecordFirstInputDelayForManualWindow) {
-  Browser* const restored_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const restored_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(restored_browser);
 
   content::WebContents* const restored_web_contents =
-      restored_browser->tab_strip_model()->GetActiveWebContents();
+      restored_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(restored_web_contents);
-  ASSERT_EQ(restored_web_contents->GetVisibleURL().path(),
+  ASSERT_EQ(restored_web_contents->GetVisibleURL().GetPath(),
             kTestUrlRelativePath);
 
   Browser* const manual_browser =
       CreateBrowser(ProfileManager::GetActiveUserProfile());
   ASSERT_TRUE(manual_browser);
-  ASSERT_EQ(BrowserList::GetInstance()->GetLastActive(), manual_browser);
+  ASSERT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
+            manual_browser);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       manual_browser, embedded_test_server()->GetURL(kTestUrlRelativePath)));
 
@@ -240,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
 
   // Even after switching back to the restored window, first input delay should
   // not be recorded since the first input went to the manually opened window.
-  restored_browser->window()->Activate();
+  restored_browser->GetWindow()->Activate();
   SimulateMouseClick(restored_web_contents);
   ASSERT_TRUE(first_input_delay_barrier_.Wait(restored_web_contents));
 
@@ -258,22 +269,25 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
 // it wasn't for the restored window.
 IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
                        DoesNotRecordFirstInputDelayForManualTab) {
-  Browser* const browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(browser);
 
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+  ASSERT_TRUE(tab_strip_model);
   content::WebContents* const restored_web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(restored_web_contents);
-  ASSERT_EQ(restored_web_contents->GetVisibleURL().path(),
+  ASSERT_EQ(restored_web_contents->GetVisibleURL().GetPath(),
             kTestUrlRelativePath);
-  const int restored_tab_index = browser->tab_strip_model()->active_index();
+  const int restored_tab_index = tab_strip_model->active_index();
   ASSERT_TRUE(AddTabAtIndexToBrowser(
-      browser, restored_tab_index + 1,
+      browser->GetBrowserForMigrationOnly(), restored_tab_index + 1,
       embedded_test_server()->GetURL(kTestUrlRelativePath),
       ui::PAGE_TRANSITION_TYPED));
 
   content::WebContents* const manual_web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(manual_web_contents);
   ASSERT_NE(manual_web_contents, restored_web_contents);
 
@@ -282,9 +296,8 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
 
   // Even after switching back to the restored tab, first input delay should
   // not be recorded since the first input went to the manually opened tab.
-  browser->tab_strip_model()->ActivateTabAt(restored_tab_index);
-  ASSERT_EQ(browser->tab_strip_model()->GetActiveWebContents(),
-            restored_web_contents);
+  tab_strip_model->ActivateTabAt(restored_tab_index);
+  ASSERT_EQ(tab_strip_model->GetActiveWebContents(), restored_web_contents);
   SimulateMouseClick(restored_web_contents);
   ASSERT_TRUE(first_input_delay_barrier_.Wait(restored_web_contents));
 

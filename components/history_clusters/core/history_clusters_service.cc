@@ -371,9 +371,12 @@ void HistoryClustersService::PrintKeywordBagStateToLogMessage() const {
 
 void HistoryClustersService::OnURLVisited(
     history::HistoryService* history_service,
-    const history::URLRow& url_row,
-    const history::VisitRow& visit_row) {
-  if (!visit_row.originator_cache_guid.empty()) {
+    const history::VisitedURLInfo& visited_url_info) {
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
+  if (!visited_url_info.visit_row.originator_cache_guid.empty()) {
     received_synced_visit_since_last_update_ = true;
   }
 }

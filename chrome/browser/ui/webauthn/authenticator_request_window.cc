@@ -46,24 +46,6 @@ const char kGpmPasskeyResetSuccessUrl[] =
 const char kGpmPasskeyResetFailUrl[] =
     "https://passwords.google.com/embedded/passkeys/reset/error";
 
-// The kdi parameter here was generated from the following protobuf:
-//
-// {
-//   operation: RETRIEVAL
-//   retrieval_inputs: {
-//     security_domain_name: "hw_protected"
-//   }
-// }
-//
-// And then converted to bytes with:
-//
-// % gqui --outfile=rawproto:/tmp/out.pb from textproto:/tmp/input \
-//       proto gaia_frontend.ClientDecryptableKeyDataInputs
-//
-// Then the contents of `/tmp/out.pb` need to be base64url-encoded to produce
-// the "kdi" parameter's value.
-const char kKdi[] = "CAESDgoMaHdfcHJvdGVjdGVk";
-
 GURL GetGpmResetPinUrl() {
   std::string command_line_url =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -149,13 +131,13 @@ class PasskeyResetWebContentsObserver : public content::WebContentsObserver {
       return;
     }
     status_ = Status::kStarted;
-    if (url.path() == GURL(kGpmPasskeyResetSuccessUrl).path()) {
+    if (url.GetPath() == GURL(kGpmPasskeyResetSuccessUrl).GetPath()) {
       status_ = Status::kSuccess;
-    } else if (url.path() == GURL(kGpmPasskeyResetFailUrl).path()) {
+    } else if (url.GetPath() == GURL(kGpmPasskeyResetFailUrl).GetPath()) {
       status_ = Status::kFail;
     }
 
-    MaybeRunCallback(url.has_ref() ? url.ref() : "");
+    MaybeRunCallback(url.has_ref() ? url.GetRef() : "");
   }
 
   Status status() const { return status_; }
@@ -231,8 +213,7 @@ class AuthenticatorRequestWindow
     GURL url;
     switch (step_) {
       case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
-        url = GaiaUrls::GetInstance()->gaia_url().Resolve(
-            base::StrCat({"/encryption/unlock/desktop?kdi=", kKdi}));
+        url = GaiaUrls::GetInstance()->signin_chrome_passkey_unlock_url();
         device::enclave::RecordEvent(device::enclave::Event::kRecoveryShown);
         webauthn::user_actions::RecordRecoveryShown(model_->request_type);
         passkey_reset_observer_ =
@@ -346,5 +327,7 @@ void ShowAuthenticatorRequestWindow(content::WebContents* web_contents,
 
 bool IsAuthenticatorRequestWindowUrl(const GURL& url) {
   std::string kdi;
-  return net::GetValueForKeyInQuery(url, "kdi", &kdi) && kdi == kKdi;
+  return net::GetValueForKeyInQuery(url, "kdi", &kdi) &&
+         kdi == GaiaUrls::GetInstance()
+                    ->signin_chrome_passkey_unlock_kdi_parameter();
 }

@@ -45,14 +45,14 @@ const char kSimplePageURL[] = "http://simplepage";
 // ProgressView from primary toolbar.
 id<GREYMatcher> ProgressViewInPrimaryToolbar() {
   return grey_allOf(grey_ancestor(grey_kindOfClassName(@"PrimaryToolbarView")),
-                    grey_kindOfClassName(@"MDCProgressView"), nil);
+                    grey_kindOfClassName(@"UIProgressView"), nil);
 }
 
 // ProgresView from secondary toolbar.
 id<GREYMatcher> ProgressViewInSecondaryToolbar() {
   return grey_allOf(
       grey_ancestor(grey_kindOfClassName(@"SecondaryToolbarView")),
-      grey_kindOfClassName(@"MDCProgressView"), nil);
+      grey_kindOfClassName(@"UIProgressView"), nil);
 }
 
 // Matcher for `progressView` that should be visible at `progress`.

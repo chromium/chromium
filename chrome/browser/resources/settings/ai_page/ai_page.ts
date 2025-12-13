@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../settings_page/settings_section.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {EntityDataManagerProxy} from '../autofill_page/entity_data_manager_proxy.js';
-import {EntityDataManagerProxyImpl} from '../autofill_page/entity_data_manager_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {AiPageInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
@@ -33,11 +32,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
   static get properties() {
     return {
-      showAutofillAiControl_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showAutofillAiControl'),
-      },
-
       showComposeControl_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showComposeControl'),
@@ -62,30 +56,15 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showPasswordChangeControl'),
       },
-
-      autofillAiSubLabel_: {
-        type: String,
-        value: () => loadTimeData.getString('autofillAiDescription'),
-      },
     };
   }
 
-  static get observers() {
-    return [
-      `onAutofillAiPrefChanged_(
-          prefs.autofill.autofill_ai.opt_in_status.value)`,
-    ];
-  }
-
-  declare private showAutofillAiControl_: boolean;
-  private entityDataManager_: EntityDataManagerProxy =
-      EntityDataManagerProxyImpl.getInstance();
   declare private showComposeControl_: boolean;
   declare private showCompareControl_: boolean;
   declare private showHistorySearchControl_: boolean;
   declare private showTabOrganizationControl_: boolean;
   declare private showPasswordChangeControl_: boolean;
-  declare private autofillAiSubLabel_: string;
+
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -103,9 +82,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     }
     this.shouldRecordMetrics_ = false;
 
-    this.metricsBrowserProxy_.recordBooleanHistogram(
-        'Settings.AiPage.ElementVisibility.AutofillAI',
-        this.showAutofillAiControl_);
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Settings.AiPage.ElementVisibility.HistorySearch',
         this.showHistorySearchControl_);
@@ -128,15 +104,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().HISTORY_SEARCH);
-  }
-
-  private onAutofillAiRowClick_() {
-    this.recordInteractionMetrics_(
-        AiPageInteractions.AUTOFILL_AI_CLICK,
-        'Settings.AiPage.AutofillAIEntryPointClick');
-
-    const router = Router.getInstance();
-    router.navigateTo(router.getRoutes().AUTOFILL_AI);
   }
 
   private onCompareRowClick_() {
@@ -195,13 +162,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         loadTimeData.getString('historySearchSublabelOff');
   }
 
-  private async onAutofillAiPrefChanged_(): Promise<void> {
-    const optInStatus = await this.entityDataManager_.getOptInStatus();
-    this.autofillAiSubLabel_ = loadTimeData.getString(
-        optInStatus ? 'autofillAiDescriptionFeatureOn' :
-                      'autofillAiDescriptionFeatureOff');
-  }
-
   // SettingsViewMixin implementation.
   override getFocusConfig() {
     const map = new Map();
@@ -220,10 +180,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
     if (routes.AI_TAB_ORGANIZATION) {
       map.set(routes.AI_TAB_ORGANIZATION.path, '#tabOrganizationRowV2');
-    }
-
-    if (routes.AUTOFILL_AI) {
-      map.set(routes.AUTOFILL_AI.path, '#autofillAiRowV2');
     }
 
     return map;
@@ -257,6 +213,8 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         assert(this.showTabOrganizationControl_);
         triggerId = 'tabOrganizationRowV2';
         break;
+      default:
+        assertNotReached();
     }
 
     assert(triggerId);

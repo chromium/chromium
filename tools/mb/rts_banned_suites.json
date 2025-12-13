@@ -1,5 +1,6 @@
 {
     "*": [
+        "blink_python_tests",
         "chromedriver_py_tests",
         "chromedriver_py_tests_headless_shell",
         "chromedriver_replay_unittests",
@@ -14,14 +15,12 @@
         "telemetry_gpu_integration_test_android_chrome",
         "telemetry_gpu_integration_test_android_monochrome",
         "telemetry_gpu_integration_test_android_monochrome_bundle",
-        "telemetry_gpu_integration_test_android_weblayer",
         "telemetry_gpu_integration_test_android_webview",
         "telemetry_gpu_unittests",
         "telemetry_perf_unittests",
         "telemetry_perf_unittests_android_chrome",
         "telemetry_perf_unittests_android_monochrome",
         "telemetry_perf_unittests_android_monochrome_bundle",
-        "telemetry_perf_unittests_android_weblayer",
         "telemetry_perf_unittests_android_webview",
         "telemetry_unittests",
         "test_env_py_unittests",

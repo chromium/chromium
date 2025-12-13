@@ -63,6 +63,8 @@ class OpenXrHandTracker {
   // Must not be overridden by subclasses.
   mojom::XRHandTrackingDataPtr GetHandTrackingData() const;
 
+  std::optional<gfx::Transform> GetMojoFromJoint(XrHandJointEXT joint) const;
+
   // Gets an `OpenXrHandController` for this hand tracker if it supports parsing
   // data separately from any interaction profile implementation. A hand tracker
   // should either always return null or always return non-null.
@@ -109,11 +111,13 @@ class OpenXrHandTrackerFactory : public OpenXrExtensionHandlerFactory {
 
   const base::flat_set<std::string_view>& GetRequestedExtensions()
       const override;
-  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures(
-      const OpenXrExtensionEnumeration* extension_enum) const override;
+  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures()
+      const override;
 
-  bool IsEnabled(
-      const OpenXrExtensionEnumeration* extension_enum) const override;
+  void CheckAndUpdateEnabledState(
+      const OpenXrExtensionEnumeration* extension_enum,
+      XrInstance instance,
+      XrSystemId system) override;
   std::unique_ptr<OpenXrHandTracker> CreateHandTracker(
       const OpenXrExtensionHelper& extension_helper,
       XrSession session,

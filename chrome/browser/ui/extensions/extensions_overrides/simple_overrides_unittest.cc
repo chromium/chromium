@@ -9,13 +9,12 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
-#include "chrome/common/extensions/api/chrome_url_overrides.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "chrome/common/extensions/api/side_panel.h"
+#include "extensions/common/api/chrome_url_overrides.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/api/cross_origin_isolation.h"
 #include "extensions/common/api/declarative_net_request.h"
@@ -38,7 +37,7 @@ namespace {
 // encompass every feature. This ensures that when developers add a new
 // feature, they consider whether it should be allowed for "simple override"
 // extensions.
-const char* kDisallowedFeatures[] = {
+constexpr const char* kDisallowedFeatures[] = {
     // Manifest constants.
     extensions::manifest_keys::kAction,
     extensions::manifest_keys::kApp,

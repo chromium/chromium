@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/navigation_controller.h"
@@ -20,12 +20,12 @@
 #include "ui/display/tablet_state.h"
 
 TabletModePageBehavior::TabletModePageBehavior() {
-  display::Screen::GetScreen()->AddObserver(this);
-  OnTabletModeToggled(display::Screen::GetScreen()->InTabletMode());
+  display::Screen::Get()->AddObserver(this);
+  OnTabletModeToggled(display::Screen::Get()->InTabletMode());
 }
 
 TabletModePageBehavior::~TabletModePageBehavior() {
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display::Screen::Get()->RemoveObserver(this);
 }
 
 void TabletModePageBehavior::OnTabletModeToggled(bool enabled) {
@@ -48,8 +48,9 @@ void TabletModePageBehavior::OnDisplayTabletStateChanged(
   }
 }
 
-bool TabletModePageBehavior::ShouldTrackBrowser(Browser* browser) {
-  return display::Screen::GetScreen()->InTabletMode();
+bool TabletModePageBehavior::ShouldTrackBrowser(
+    BrowserWindowInterface* browser) {
+  return display::Screen::Get()->InTabletMode();
 }
 
 void TabletModePageBehavior::OnTabStripModelChanged(
@@ -80,32 +81,35 @@ void TabletModePageBehavior::SetMobileLikeBehaviorEnabled(bool enabled) {
     // trigger a refresh of their WebKit preferences.
     tab_strip_tracker_ = std::make_unique<BrowserTabStripTracker>(this, this);
     tab_strip_tracker_->Init();
-  } else {
+  } else if (ash::BrowserController::GetInstance()) {
     // Manually trigger a refresh for the existing webcontents' preferences.
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      TabStripModel* tab_strip_model = browser->tab_strip_model();
-      for (int i = 0; i < tab_strip_model->count(); ++i) {
-        content::WebContents* web_contents =
-            tab_strip_model->GetWebContentsAt(i);
-        DCHECK(web_contents);
+    ash::BrowserController::GetInstance()->ForEachBrowser(
+        ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+        [&](ash::BrowserDelegate& browser) {
+          for (size_t i = 0; i < browser.GetWebContentsCount(); ++i) {
+            content::WebContents* web_contents = browser.GetWebContentsAt(i);
+            DCHECK(web_contents);
 
-        web_contents->NotifyPreferencesChanged();
+            web_contents->NotifyPreferencesChanged();
 
-        // For a tab that is requesting its mobile version site (via
-        // chrome::ToggleRequestTabletSite()), and is not originated from ARC
-        // context, return to its normal version site when exiting tablet mode.
-        content::NavigationController& controller =
-            web_contents->GetController();
-        content::NavigationEntry* entry = controller.GetLastCommittedEntry();
-        if (entry && entry->GetIsOverridingUserAgent() &&
-            !web_contents->GetUserData(
-                arc::ArcWebContentsData::ArcWebContentsData::
-                    kArcTransitionFlag)) {
-          entry->SetIsOverridingUserAgent(false);
-          controller.LoadOriginalRequestURL();
-        }
-      }
-    }
+            // For a tab that is requesting its mobile version site (via
+            // chrome::ToggleRequestTabletSite()), and is not originated from
+            // ARC context, return to its normal version site when exiting
+            // tablet mode.
+            content::NavigationController& controller =
+                web_contents->GetController();
+            content::NavigationEntry* entry =
+                controller.GetLastCommittedEntry();
+            if (entry && entry->GetIsOverridingUserAgent() &&
+                !web_contents->GetUserData(
+                    arc::ArcWebContentsData::ArcWebContentsData::
+                        kArcTransitionFlag)) {
+              entry->SetIsOverridingUserAgent(false);
+              controller.LoadOriginalRequestURL();
+            }
+          }
+          return ash::BrowserController::kContinueIteration;
+        });
     tab_strip_tracker_ = nullptr;
   }
 }

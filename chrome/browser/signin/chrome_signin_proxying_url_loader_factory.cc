@@ -270,12 +270,9 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
 class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
     : public ResponseAdapter {
  public:
-  ProxyResponseAdapter(InProgressRequest* in_progress_request,
+  ProxyResponseAdapter(InProgressRequest& in_progress_request,
                        net::HttpResponseHeaders* headers)
-      : in_progress_request_(in_progress_request), headers_(headers) {
-    DCHECK(in_progress_request_);
-    DCHECK(headers_);
-  }
+      : in_progress_request_(in_progress_request), headers_(headers) {}
 
   ProxyResponseAdapter(const ProxyResponseAdapter&) = delete;
   ProxyResponseAdapter& operator=(const ProxyResponseAdapter&) = delete;
@@ -306,7 +303,9 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
   }
 
   void RemoveHeader(const std::string& name) override {
-    headers_->RemoveHeader(name);
+    if (headers_) {
+      headers_->RemoveHeader(name);
+    }
   }
 
   base::SupportsUserData::Data* GetUserData(const void* key) const override {
@@ -320,7 +319,7 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
   }
 
  private:
-  const raw_ptr<InProgressRequest> in_progress_request_;
+  const raw_ref<InProgressRequest> in_progress_request_;
   const raw_ptr<net::HttpResponseHeaders> headers_;
 };
 
@@ -422,7 +421,7 @@ void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
   // Even though |head| is const we can get a non-const pointer to the headers
   // and modifications we made are passed to the target client.
   {
-    ProxyResponseAdapter adapter(this, head->headers.get());
+    ProxyResponseAdapter adapter(*this, head->headers.get());
     factory_->delegate_->ProcessResponse(&adapter, GURL() /* redirect_url */);
     // The `adapter` must be destroyed before moving the `head` in the
     // `target_client_`.
@@ -437,7 +436,7 @@ void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveRedirect(
   // Even though |head| is const we can get a non-const pointer to the headers
   // and modifications we made are passed to the target client.
   {
-    ProxyResponseAdapter adapter(this, head->headers.get());
+    ProxyResponseAdapter adapter(*this, head->headers.get());
     factory_->delegate_->ProcessResponse(&adapter, redirect_info.new_url);
     // The `adapter` must be destroyed before moving the `head` in the
     // `target_client_`.

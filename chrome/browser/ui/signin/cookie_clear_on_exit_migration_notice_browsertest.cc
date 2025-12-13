@@ -14,8 +14,10 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/signin/cookie_clear_on_exit_migration_notice.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -27,6 +29,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -192,8 +195,7 @@ IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticeBrowserTest,
   // No notice shown if there is another browser for this profile.
   CloseBrowserSynchronously(browser_2);
 
-  ui_test_utils::BrowserChangeObserver browser_close_observer(
-      browser(), ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(browser());
 
   views::DialogDelegate* dialog_delegate =
       TryCloseBrowserAndWaitForNotice(*browser());
@@ -207,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticeBrowserTest,
   dialog_delegate->AcceptDialog();
 
   // User is migrated and browser is closed.
-  browser_close_observer.Wait();
+  browser_destroyed_observer.Wait();
   EXPECT_TRUE(GetProfile()->GetPrefs()->GetBoolean(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
 }
@@ -217,6 +219,13 @@ IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticeBrowserTest,
   SetGaiaCookieClearedOnExit(/*cleared=*/true);
   SetPrimaryAccount(signin::ConsentLevel::kSync,
                     /*is_explicit_signin=*/false);
+  // TODO(crbug.com/464457988): Mark sync setup as complete by default in the
+  // sign-in helper method.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(GetProfile());
+  sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  ASSERT_TRUE(sync_service->IsSyncFeatureEnabled());
   GetProfile()->GetPrefs()->ClearPref(
       prefs::kCookieClearOnExitMigrationNoticeComplete);
 }
@@ -248,8 +257,7 @@ IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticeBrowserTest,
   // User is migrated, and browser is not closed.
   EXPECT_TRUE(GetProfile()->GetPrefs()->GetBoolean(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
-  EXPECT_FALSE(browser()->IsAttemptingToCloseBrowser());
-  EXPECT_FALSE(browser()->IsBrowserClosing());
+  EXPECT_FALSE(browser()->capabilities()->IsAttemptingToCloseBrowser());
 
   // The browser can now be closed normally.
   CloseBrowserSynchronously(browser());

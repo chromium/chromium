@@ -8,7 +8,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -42,20 +41,12 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
 
   virtual ~CardUnmaskPromptControllerImpl();
 
-  // This should be OnceCallback<unique_ptr<CardUnmaskPromptView>> but there are
-  // tests which don't do the ownership correctly.
-  using CardUnmaskPromptViewFactory =
-      base::OnceCallback<CardUnmaskPromptView*()>;
-
-  // Functions called by ChromeAutofillClient.
-  // It is guaranteed that |view_factory| is called before this function
-  // returns, i.e., the callback will not outlive the stack frame of ShowPrompt.
-  virtual void ShowPrompt(CardUnmaskPromptViewFactory view_factory);
   // The CVC the user entered went through validation.
   void OnVerificationResult(
       payments::PaymentsAutofillClient::PaymentsRpcResult result);
 
   // CardUnmaskPromptController implementation.
+  void ShowPrompt(CardUnmaskPromptViewFactory view_factory) override;
   void OnUnmaskDialogClosed() override;
   void OnUnmaskPromptAccepted(std::u16string_view cvc,
                               const std::u16string& exp_month,

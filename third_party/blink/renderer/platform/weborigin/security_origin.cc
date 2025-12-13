@@ -710,10 +710,11 @@ String SecurityOrigin::CanonicalizeSpecialHost(const String& host,
   url::RawCanonOutputT<char> canon_output;
   if (host.Is8Bit()) {
     StringUtf8Adaptor utf8(host);
-    *success = url::CanonicalizeSpecialHost(
-        utf8.data(), url::Component(0, utf8.size()), canon_output, out_host);
+    *success = url::CanonicalizeSpecialHost(utf8.AsStringView(),
+                                            url::Component(0, utf8.size()),
+                                            canon_output, out_host);
   } else {
-    *success = url::CanonicalizeSpecialHost(UNSAFE_TODO(host.Characters16()),
+    *success = url::CanonicalizeSpecialHost(host.View16(),
                                             url::Component(0, host.length()),
                                             canon_output, out_host);
   }
@@ -731,10 +732,11 @@ String SecurityOrigin::CanonicalizeHost(const String& host,
   url::RawCanonOutputT<char> canon_output;
   if (host.Is8Bit()) {
     StringUtf8Adaptor utf8(host);
-    *success = url::CanonicalizeFileHost(
-        utf8.data(), url::Component(0, utf8.size()), canon_output, out_host);
+    *success = url::CanonicalizeFileHost(utf8.AsStringView(),
+                                         url::Component(0, utf8.size()),
+                                         canon_output, out_host);
   } else {
-    *success = url::CanonicalizeFileHost(UNSAFE_TODO(host.Characters16()),
+    *success = url::CanonicalizeFileHost(host.View16(),
                                          url::Component(0, host.length()),
                                          canon_output, out_host);
   }

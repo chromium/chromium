@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
     "ignore-certificate-errors"
 })
-@Batch(SiteSettingsTest.SITE_SETTINGS_BATCH_NAME)
+@Batch(Batch.PER_CLASS)
 public class ChromeSiteSettingsDelegateTest {
 
     public static final String BROWSING_DATA_HOST = "browsing-data.com";

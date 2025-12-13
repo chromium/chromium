@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 
+#include <memory>
+
 #include "base/notimplemented.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -17,26 +19,11 @@ static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
 
 namespace extensions {
 
-void ChromeExtensionsAPIClient::OpenFileUrl(
-    const GURL& file_url,
-    content::BrowserContext* browser_context) {
-  // TODO(crbug.com/417785325): Support opening file URLs on desktop Android.
-  NOTIMPLEMENTED();
-}
-
 std::unique_ptr<DevicePermissionsPrompt>
 ChromeExtensionsAPIClient::CreateDevicePermissionsPrompt(
     content::WebContents* web_contents) const {
   // TODO(crbug.com/417785993): Support device permissions prompts on desktop
   // Android.
-  return nullptr;
-}
-
-std::unique_ptr<SupervisedUserExtensionsDelegate>
-ChromeExtensionsAPIClient::CreateSupervisedUserExtensionsDelegate(
-    content::BrowserContext* browser_context) const {
-  // TODO(crbug.com/402488726): Support supervised users on desktop Android.
-  NOTIMPLEMENTED();
   return nullptr;
 }
 

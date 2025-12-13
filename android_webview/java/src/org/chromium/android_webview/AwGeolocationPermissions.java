@@ -28,7 +28,7 @@ public final class AwGeolocationPermissions {
     /** See {@link android.webkit.GeolocationPermissions}. */
     public interface Callback {
         /** See {@link android.webkit.GeolocationPermissions}. */
-        public void invoke(String origin, boolean allow, boolean retain);
+        void invoke(String origin, boolean allow, boolean retain);
     }
 
     public AwGeolocationPermissions(SharedPreferences sharedPreferences) {

@@ -8,8 +8,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/display/display_move_window_util.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/frame/multitask_menu_nudge_delegate_ash.h"
-#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -35,9 +35,9 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "ui/aura/window.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -47,7 +47,7 @@ namespace {
 // Returns the nudge controller associated with `window`.
 chromeos::MultitaskMenuNudgeController* GetNudgeControllerForWindow(
     aura::Window* window) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
         ->tablet_mode_multitask_menu_controller()
@@ -55,7 +55,7 @@ chromeos::MultitaskMenuNudgeController* GetNudgeControllerForWindow(
         ->nudge_controller_for_testing();
   }
 
-  if (auto* frame = NonClientFrameViewAsh::Get(window)) {
+  if (auto* frame = FrameViewAsh::Get(window)) {
     return chromeos::FrameCaptionButtonContainerView::TestApi(
                frame->GetHeaderView()->caption_button_container())
         .nudge_controller();
@@ -192,8 +192,8 @@ TEST_F(MultitaskMenuNudgeControllerTest,
 
   // We use non zero duration since we want to mimic real behavior of stacking
   // order changed on `window` before tablet mode is entered.
-  ui::ScopedAnimationDurationScaleMode scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   TabletModeControllerTestApi().EnterTabletMode();
 }
 
@@ -324,7 +324,7 @@ TEST_F(MultitaskMenuNudgeControllerTest, ClamshellNudgeBounds) {
   WindowState::Get(window.get())->Maximize();
   auto* nudge_widget = GetNudgeWidgetForWindow(window.get());
   ASSERT_TRUE(nudge_widget);
-  EXPECT_TRUE(display::Screen::GetScreen()
+  EXPECT_TRUE(display::Screen::Get()
                   ->GetDisplayNearestView(window.get())
                   .work_area()
                   .Contains(nudge_widget->GetWindowBoundsInScreen()));
@@ -340,7 +340,7 @@ TEST_F(MultitaskMenuNudgeControllerTest, ClamshellNudgeBounds) {
   WindowState::Get(window.get())->Maximize();
   nudge_widget = GetNudgeWidgetForWindow(window.get());
   ASSERT_TRUE(nudge_widget);
-  EXPECT_TRUE(display::Screen::GetScreen()
+  EXPECT_TRUE(display::Screen::Get()
                   ->GetDisplayNearestView(window.get())
                   .work_area()
                   .Contains(nudge_widget->GetWindowBoundsInScreen()));

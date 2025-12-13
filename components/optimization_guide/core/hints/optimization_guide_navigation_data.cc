@@ -61,14 +61,6 @@ void OptimizationGuideNavigationData::RecordOptimizationGuideUKM() const {
     builder.SetRegisteredOptimizationTypes(types_bitmask);
     did_record_metric = true;
   }
-  if (!registered_optimization_targets_.empty()) {
-    int64_t targets_bitmask = 0;
-    for (const auto& optimization_target : registered_optimization_targets_) {
-      targets_bitmask |= (int64_t{1} << static_cast<int>(optimization_target));
-    }
-    builder.SetRegisteredOptimizationTargets(targets_bitmask);
-    did_record_metric = true;
-  }
 
   // Only record UKM if a metric was recorded.
   if (did_record_metric) {

@@ -12,7 +12,10 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/identity/extension_token_key.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -104,7 +107,7 @@ class IdentityTokenCache {
     explicit AccessTokensKey(const ExtensionTokenKey& key);
     AccessTokensKey(const std::string& extension_id,
                     const CoreAccountId& account_id);
-    bool operator<(const AccessTokensKey& rhs) const;
+    auto operator<=>(const AccessTokensKey& rhs) const = default;
     std::string extension_id;
     CoreAccountId account_id;
   };

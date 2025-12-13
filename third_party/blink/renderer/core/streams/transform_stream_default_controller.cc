@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -104,10 +105,10 @@ class TransformStreamDefaultController::DefaultTransformAlgorithm final
       TransformStreamDefaultController* controller)
       : controller_(controller) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_EQ(argc, 1);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
+    DCHECK_EQ(argv.size(), 1u);
     v8::Isolate* isolate = script_state->GetIsolate();
     v8::TryCatch try_catch(isolate);
 
@@ -314,8 +315,8 @@ void TransformStreamDefaultController::Enqueue(
   if (rethrow_scope.HasCaught()) {
     // a. Perform ! TransformStreamErrorWritableAndUnblockWrite(stream,
     //    enqueueResult.[[Value]]).
-    TransformStream::ErrorWritableAndUnblockWrite(script_state, stream,
-                                                  rethrow_scope.GetException());
+    TransformStream::ErrorWritableAndUnblockWrite(
+        script_state, stream, rethrow_scope.TakeException());
 
     // b. Throw stream.[[readable]].[[storedError]].
     V8ThrowException::ThrowException(
@@ -366,7 +367,8 @@ ScriptPromise<IDLUndefined> TransformStreamDefaultController::PerformTransform(
   // needs to be returned to the outer scope.
   ScriptState::EscapableScope scope(script_state);
   ScriptPromise<IDLUndefined> transform_promise =
-      controller->transform_algorithm_->Run(script_state, 1, &chunk);
+      controller->transform_algorithm_->Run(script_state,
+                                            base::span_from_ref(chunk));
   DCHECK(!transform_promise.IsEmpty());
 
   // 2. Return the result of transforming transformPromise ...

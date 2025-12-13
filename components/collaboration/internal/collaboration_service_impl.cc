@@ -4,7 +4,6 @@
 
 #include "components/collaboration/internal/collaboration_service_impl.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/collaboration/internal/collaboration_controller.h"
@@ -365,30 +364,39 @@ SyncStatus CollaborationServiceImpl::GetSyncStatus() {
   syncer::SyncUserSettings* user_settings = sync_service_->GetUserSettings();
   // The mapping between the selected type and what is actually sync'ed is done
   // in `GetUserSelectableTypeInfo()`.
+  constexpr syncer::UserSelectableTypeSet kRequiredTypes =
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  bool sync_types_disabled_policy =
-      user_settings->IsTypeManagedByPolicy(syncer::UserSelectableType::kTabs) ||
-      user_settings->IsTypeManagedByPolicy(
-          syncer::UserSelectableType::kHistory);
-  if (sync_types_disabled_policy ||
-      sync_service_->GetDisableReasons().Has(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    return SyncStatus::kSyncDisabledByEnterprise;
-  }
-
-  syncer::UserSelectableTypeSet selected_types =
-      user_settings->GetSelectedTypes();
-  if (selected_types.Has(syncer::UserSelectableType::kTabs) &&
-      selected_types.Has(syncer::UserSelectableType::kHistory)) {
-    return SyncStatus::kSyncEnabled;
-  }
+      {syncer::UserSelectableType::kTabs, syncer::UserSelectableType::kHistory};
 #else
-  if (user_settings->GetSelectedTypes().HasAll(
-          {syncer::UserSelectableType::kSavedTabGroups})) {
-    return SyncStatus::kSyncEnabled;
-  }
+      {syncer::UserSelectableType::kSavedTabGroups};
 #endif
 
+  // Note: Policy checking is also handled in `CollaborationController`.
+  // However, setting `kSyncDisabledByEnterprise` is necessary for properly
+  // displaying an error message/hiding the "Share group" entry point if sync is
+  // disabled.
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    bool any_type_disabled_by_policy = false;
+    for (const syncer::UserSelectableType type : kRequiredTypes) {
+      if (user_settings->IsTypeManagedByPolicy(type)) {
+        any_type_disabled_by_policy = true;
+        break;
+      }
+    }
+    if (any_type_disabled_by_policy ||
+        sync_service_->GetDisableReasons().Has(
+            syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+      return SyncStatus::kSyncDisabledByEnterprise;
+    }
+  }
+
+  if (user_settings->GetSelectedTypes().HasAll(kRequiredTypes)) {
+    return SyncStatus::kSyncEnabled;
+  }
+
+  // TODO(crbug.com/40066949): Simplify this code once all users are migrated
+  // away from Sync-the-feature.
   if (sync_service_->IsSyncFeatureEnabled()) {
     // Sync-the-feature is enabled, but the required data types are not.
     // The user needs to enable them in settings.
@@ -397,7 +405,9 @@ SyncStatus CollaborationServiceImpl::GetSyncStatus() {
     if (base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos)) {
       // Sync-the-feature is not required, but the user needs to enable
-      // the required data types in settings.
+      // the required data types in settings. Note that this also includes cases
+      // where the user is not signed in at all - that is covered by
+      // GetSigninStatus().
       return SyncStatus::kSyncWithoutTabGroup;
     } else {
       // The user needs to enable Sync-the-feature.
@@ -462,9 +472,15 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
   if (policy_mode == BrowserSigninMode::kDisabled) {
     return CollaborationStatus::kDisabledForPolicy;
   }
-#else
+#elif BUILDFLAG(IS_ANDROID)
   if (!profile_prefs_->GetBoolean(::prefs::kSigninAllowed) &&
       profile_prefs_->IsManagedPreference(::prefs::kSigninAllowed)) {
+    return CollaborationStatus::kDisabledForPolicy;
+  }
+#else
+  if (!profile_prefs_->GetBoolean(::prefs::kSigninAllowedOnNextStartup) &&
+      profile_prefs_->IsManagedPreference(
+          ::prefs::kSigninAllowedOnNextStartup)) {
     return CollaborationStatus::kDisabledForPolicy;
   }
 #endif

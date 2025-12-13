@@ -27,7 +27,7 @@ RingBuffer::RingBuffer(scoped_refptr<gpu::Buffer> buffer,
       base_offset_(base_offset),
       size_(buffer->size() - base_offset),
       alignment_(alignment),
-      base_(static_cast<int8_t*>(buffer->memory())) {}
+      base_(buffer->as_byte_span()) {}
 
 RingBuffer::~RingBuffer() {
   DCHECK_EQ(num_used_blocks_, 0u);
@@ -55,38 +55,37 @@ void RingBuffer::FreeOldestBlock() {
   blocks_.pop_front();
 }
 
-void* RingBuffer::Alloc(uint32_t size) {
+base::span<uint8_t> RingBuffer::Alloc(const uint32_t size) {
   DCHECK_LE(size, size_) << "attempt to allocate more than maximum memory";
   // Similarly to malloc, an allocation of 0 allocates at least 1 byte, to
   // return different pointers every time.
-  if (size == 0) size = 1;
   // Allocate rounded to alignment size so that the offsets are always
   // memory-aligned.
-  size = RoundToAlignment(size);
-  DCHECK_LE(size, size_)
+  uint32_t aligned_size = RoundToAlignment(std::max(size, 1u));
+  DCHECK_LE(aligned_size, size_)
       << "attempt to allocate more than maximum memory after rounding";
 
   // Wait until there is enough room.
-  while (size > GetLargestFreeSizeNoWaitingInternal()) {
+  while (aligned_size > GetLargestFreeSizeNoWaitingInternal()) {
     FreeOldestBlock();
   }
 
-  if (size + free_offset_ > size_) {
+  if (aligned_size + free_offset_ > size_) {
     // Add padding to fill space before wrapping around
     blocks_.push_back(Block(free_offset_, size_ - free_offset_, PADDING));
     free_offset_ = 0;
   }
 
   Offset offset = free_offset_;
-  blocks_.push_back(Block(offset, size, IN_USE));
+  blocks_.push_back(Block(offset, aligned_size, IN_USE));
   num_used_blocks_++;
 
-  free_offset_ += size;
+  free_offset_ += aligned_size;
   if (free_offset_ == size_) {
     free_offset_ = 0;
   }
 
-  return GetPointer(offset + base_offset_);
+  return base_.subspan(offset + base_offset_, size);
 }
 
 void RingBuffer::FreePendingToken(void* pointer, uint32_t token) {

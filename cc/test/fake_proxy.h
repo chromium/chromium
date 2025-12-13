@@ -51,7 +51,6 @@ class FakeProxy : public Proxy {
   void QueueImageDecode(int request_id,
                         const DrawImage& image,
                         bool speculative) override;
-  bool SpeculativeDecodeRequestInFlight() const override;
   void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
   void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) override;

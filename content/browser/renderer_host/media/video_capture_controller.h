@@ -23,15 +23,11 @@
 #include "media/capture/mojom/video_capture_types.mojom-forward.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#endif
-
 namespace content {
+
+struct GlobalRenderFrameHostId;
 
 class VideoCaptureDeviceLaunchObserver;
 
@@ -66,6 +62,7 @@ class CONTENT_EXPORT VideoCaptureController
   // Buffers will be shared to the client as necessary. The client will continue
   // to receive frames from the device until RemoveClient() is called.
   void AddClient(const VideoCaptureControllerID& id,
+                 const GlobalRenderFrameHostId& render_frame_host_id,
                  VideoCaptureControllerEventHandler* event_handler,
                  const media::VideoCaptureSessionId& session_id,
                  const media::VideoCaptureParams& params,
@@ -122,8 +119,7 @@ class CONTENT_EXPORT VideoCaptureController
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  void OnNewSubCaptureTargetVersion(
-      uint32_t sub_capture_target_version) override;
+  void OnNewCaptureVersion(media::CaptureVersion capture_version) override;
   void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;
@@ -138,16 +134,9 @@ class CONTENT_EXPORT VideoCaptureController
 
   void OnDeviceConnectionLost();
 
-  void CreateAndStartDeviceAsync(
-      const media::VideoCaptureParams& params,
-      VideoCaptureDeviceLaunchObserver* callbacks,
-      base::OnceClosure done_cb,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor,
-#endif
-      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-          readonly_video_effects_manager);
+  void CreateAndStartDeviceAsync(const media::VideoCaptureParams& params,
+                                 VideoCaptureDeviceLaunchObserver* callbacks,
+                                 base::OnceClosure done_cb);
   void ReleaseDeviceAsync(base::OnceClosure done_cb);
   bool IsDeviceAlive() const;
   void GetPhotoState(
@@ -233,14 +222,12 @@ class CONTENT_EXPORT VideoCaptureController
 
   ~VideoCaptureController() override;
 
-  // Find a client of |id| and |handler| in |clients|.
+  // Find a client of |id| and |handler| in |controller_clients_|.
   ControllerClient* FindClient(const VideoCaptureControllerID& id,
-                               VideoCaptureControllerEventHandler* handler,
-                               const ControllerClients& clients);
+                               VideoCaptureControllerEventHandler* handler);
 
-  // Find a client of |session_id| in |clients|.
-  ControllerClient* FindClient(const base::UnguessableToken& session_id,
-                               const ControllerClients& clients);
+  // Find a client of |session_id| in |controller_clients_|.
+  ControllerClient* FindClient(const base::UnguessableToken& session_id);
 
   std::vector<BufferContext>::iterator FindBufferContextFromBufferContextId(
       int buffer_context_id);

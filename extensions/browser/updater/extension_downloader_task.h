@@ -67,9 +67,9 @@ struct ExtensionDownloaderTask {
   // non-zero versions).
   base::Version version{"0.0.0.0"};
 
-  // Used for metrics only and can be TYPE_UNKNOWN if e.g. the extension is
+  // Used for metrics only and can be Type::kUnknown if e.g. the extension is
   // not yet installed.
-  Manifest::Type type{Manifest::TYPE_UNKNOWN};
+  Manifest::Type type{Manifest::Type::kUnknown};
 
   // May be used to pass some additional data to the update server.
   std::string update_url_data;

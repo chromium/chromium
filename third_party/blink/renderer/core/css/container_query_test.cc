@@ -8,8 +8,10 @@
 
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/css/container_selector.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
@@ -30,7 +32,9 @@ namespace blink {
 class ContainerQueryTest : public PageTestBase {
  public:
   bool HasUnknown(StyleRuleContainer* rule) {
-    return rule && rule->GetContainerQuery().Query().HasUnknown();
+    return rule && (ContainerSelector::CollectFeatureFlags(
+                        rule->GetContainerQuery().Query()) &
+                    ContainerSelector::kFeatureUnknown);
   }
 
   enum class UnknownHandling {
@@ -62,14 +66,14 @@ class ContainerQueryTest : public PageTestBase {
     return &container->GetContainerQuery();
   }
 
-  std::optional<MediaQueryExpNode::FeatureFlags> FeatureFlagsFrom(
+  std::optional<ContainerSelector::FeatureFlags> FeatureFlagsFrom(
       String query_string) {
     ContainerQuery* query =
         ParseContainerQuery(query_string, UnknownHandling::kAllow);
     if (!query) {
       return std::nullopt;
     }
-    return GetInnerQuery(*query).CollectFeatureFlags();
+    return ContainerSelector::CollectFeatureFlags(GetInnerQuery(*query));
   }
 
   ContainerSelector ContainerSelectorFrom(String query_string) {
@@ -88,7 +92,7 @@ class ContainerQueryTest : public PageTestBase {
     return container->GetContainerQuery().ToString();
   }
 
-  const MediaQueryExpNode& GetInnerQuery(ContainerQuery& container_query) {
+  const ConditionalExpNode& GetInnerQuery(ContainerQuery& container_query) {
     return container_query.Query();
   }
 
@@ -209,34 +213,34 @@ TEST_F(ContainerQueryTest, ValidFeatures) {
 }
 
 TEST_F(ContainerQueryTest, FeatureFlags) {
-  EXPECT_EQ(MediaQueryExpNode::kFeatureUnknown,
+  EXPECT_EQ(ContainerSelector::kFeatureUnknown,
             FeatureFlagsFrom("(width: 100gil)"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
+  EXPECT_EQ(ContainerSelector::kFeatureWidth,
             FeatureFlagsFrom("(width: 100px)"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
+  EXPECT_EQ(ContainerSelector::kFeatureWidth,
             FeatureFlagsFrom("test_name (width: 100px)"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureHeight,
+  EXPECT_EQ(ContainerSelector::kFeatureHeight,
             FeatureFlagsFrom("(height < 100px)"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureInlineSize,
+  EXPECT_EQ(ContainerSelector::kFeatureInlineSize,
             FeatureFlagsFrom("(100px >= inline-size)"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureBlockSize,
+  EXPECT_EQ(ContainerSelector::kFeatureBlockSize,
             FeatureFlagsFrom("(100px = block-size)"));
-  EXPECT_EQ(static_cast<MediaQueryExpNode::FeatureFlags>(
-                MediaQueryExpNode::kFeatureWidth |
-                MediaQueryExpNode::kFeatureBlockSize),
+  EXPECT_EQ(static_cast<ContainerSelector::FeatureFlags>(
+                ContainerSelector::kFeatureWidth |
+                ContainerSelector::kFeatureBlockSize),
             FeatureFlagsFrom("((width) and (100px = block-size))"));
-  EXPECT_EQ(static_cast<MediaQueryExpNode::FeatureFlags>(
-                MediaQueryExpNode::kFeatureUnknown |
-                MediaQueryExpNode::kFeatureBlockSize),
+  EXPECT_EQ(static_cast<ContainerSelector::FeatureFlags>(
+                ContainerSelector::kFeatureUnknown |
+                ContainerSelector::kFeatureBlockSize),
             FeatureFlagsFrom("((unknown) and (100px = block-size))"));
   EXPECT_EQ(
-      static_cast<MediaQueryExpNode::FeatureFlags>(
-          MediaQueryExpNode::kFeatureWidth | MediaQueryExpNode::kFeatureHeight |
-          MediaQueryExpNode::kFeatureInlineSize),
+      static_cast<ContainerSelector::FeatureFlags>(
+          ContainerSelector::kFeatureWidth | ContainerSelector::kFeatureHeight |
+          ContainerSelector::kFeatureInlineSize),
       FeatureFlagsFrom("((width) or (height) or (inline-size))"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
+  EXPECT_EQ(ContainerSelector::kFeatureWidth,
             FeatureFlagsFrom("((width: 100px))"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
+  EXPECT_EQ(ContainerSelector::kFeatureWidth,
             FeatureFlagsFrom("(not (width: 100px))"));
 }
 
@@ -344,7 +348,8 @@ TEST_F(ContainerQueryTest, RuleCopy) {
   ASSERT_TRUE(container);
 
   // Copy via StyleRuleBase to test switch dispatch.
-  auto* copy_base = static_cast<StyleRuleBase*>(container)->Copy();
+  auto* copy_base =
+      static_cast<StyleRuleBase*>(container)->Clone(nullptr, nullptr);
   auto* copy = DynamicTo<StyleRuleContainer>(copy_base);
   ASSERT_TRUE(copy);
 
@@ -361,7 +366,7 @@ TEST_F(ContainerQueryTest, RuleCopy) {
   // The ContainerQuery should be copied.
   EXPECT_NE(&container->GetContainerQuery(), &copy->GetContainerQuery());
 
-  // The inner MediaQueryExpNode is immutable, and does not need to be copied.
+  // The inner ConditionalExpNode is immutable, and does not need to be copied.
   EXPECT_EQ(&GetInnerQuery(container->GetContainerQuery()),
             &GetInnerQuery(copy->GetContainerQuery()));
 }

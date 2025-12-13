@@ -14,7 +14,6 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -22,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -144,21 +144,6 @@ void HistogramCookieAge(const net::CanonicalCookie& cookie) {
       }
     }
   } else {
-    // We are studying the age of session cookies in active use. The record is
-    // split into two histograms to improve resolution.
-    if (!cookie.CreationDate().is_null()) {
-      const int session_cookie_age_in_hours =
-          (Time::Now() - cookie.CreationDate()).InHours();
-      if (session_cookie_age_in_hours > kHoursInOneWeek) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.SessionAgeInHoursGTOneWeek2",
-                                    session_cookie_age_in_hours,
-                                    kHoursInOneWeek + 1, kHoursInOneYear, 100);
-      } else {
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.SessionAgeInHoursLTEOneWeek2",
-                                    session_cookie_age_in_hours, 1,
-                                    kHoursInOneWeek + 1, 100);
-      }
-    }
     // Similar to the above, except this metric tracks time since the cookie was
     // last updated and not just initial creation.
     if (!cookie.LastUpdateDate().is_null()) {
@@ -195,16 +180,16 @@ namespace {
 // Version 23 - 2024/04/10 - https://crrev.com/c/5169630
 // Version 22 - 2024/03/22 - https://crrev.com/c/5378176
 // Version 21 - 2023/11/22 - https://crrev.com/c/5049032
-// Version 20 - 2023/11/14 - https://crrev.com/c/5030577
-// Version 19 - 2023/09/22 - https://crrev.com/c/4704672
-// Version 18 - 2022/04/19 - https://crrev.com/c/3594203
 //
 // Versions older than two years should be removed and marked as unsupported.
-// This was last done in February 2024. https://crrev.com/c/5300252
+// This was last done in November 2025. https://crrev.com/c/6908213
 // Be sure to update SQLitePersistentCookieStoreTest.TestInvalidVersionRecovery
 // to test the latest unsupported version number.
 //
 // Unsupported versions:
+// Version 20 - 2023/11/14 - https://crrev.com/c/5030577
+// Version 19 - 2023/09/22 - https://crrev.com/c/4704672
+// Version 18 - 2022/04/19 - https://crrev.com/c/3594203
 // Version 17 - 2022/01/25 - https://crrev.com/c/3416230
 // Version 16 - 2021/09/10 - https://crrev.com/c/3152897
 // Version 15 - 2021/07/01 - https://crrev.com/c/3001822
@@ -415,10 +400,10 @@ class SQLitePersistentCookieStore::Backend
 
   class PendingOperation {
    public:
-    enum OperationType {
-      COOKIE_ADD,
-      COOKIE_UPDATEACCESS,
-      COOKIE_DELETE,
+    enum class OperationType {
+      kAdd,
+      kUpdateLastAccessTime,
+      kDelete,
     };
 
     PendingOperation(OperationType op, const CanonicalCookie& cc)
@@ -514,20 +499,20 @@ class SQLitePersistentCookieStore::Backend
 namespace {
 
 // Possible values for the 'priority' column.
-enum DBCookiePriority {
-  kCookiePriorityLow = 0,
-  kCookiePriorityMedium = 1,
-  kCookiePriorityHigh = 2,
+enum class DBCookiePriority {
+  kLow = 0,
+  kMedium = 1,
+  kHigh = 2,
 };
 
 DBCookiePriority CookiePriorityToDBCookiePriority(CookiePriority value) {
   switch (value) {
-    case COOKIE_PRIORITY_LOW:
-      return kCookiePriorityLow;
-    case COOKIE_PRIORITY_MEDIUM:
-      return kCookiePriorityMedium;
-    case COOKIE_PRIORITY_HIGH:
-      return kCookiePriorityHigh;
+    case CookiePriority::COOKIE_PRIORITY_LOW:
+      return DBCookiePriority::kLow;
+    case CookiePriority::COOKIE_PRIORITY_MEDIUM:
+      return DBCookiePriority::kMedium;
+    case CookiePriority::COOKIE_PRIORITY_HIGH:
+      return DBCookiePriority::kHigh;
   }
 
   NOTREACHED();
@@ -535,12 +520,12 @@ DBCookiePriority CookiePriorityToDBCookiePriority(CookiePriority value) {
 
 CookiePriority DBCookiePriorityToCookiePriority(DBCookiePriority value) {
   switch (value) {
-    case kCookiePriorityLow:
-      return COOKIE_PRIORITY_LOW;
-    case kCookiePriorityMedium:
-      return COOKIE_PRIORITY_MEDIUM;
-    case kCookiePriorityHigh:
-      return COOKIE_PRIORITY_HIGH;
+    case DBCookiePriority::kLow:
+      return CookiePriority::COOKIE_PRIORITY_LOW;
+    case DBCookiePriority::kMedium:
+      return CookiePriority::COOKIE_PRIORITY_MEDIUM;
+    case DBCookiePriority::kHigh:
+      return CookiePriority::COOKIE_PRIORITY_HIGH;
   }
 
   NOTREACHED();
@@ -662,71 +647,6 @@ class IncrementTimeDelta {
   base::TimeDelta original_value_;
   base::Time start_;
 };
-
-bool CreateV20Schema(sql::Database* db) {
-  CHECK(!db->DoesTableExist("cookies"));
-
-  static constexpr char kCreateTableQuery[] =
-      "CREATE TABLE cookies("
-      "creation_utc INTEGER NOT NULL,"
-      "host_key TEXT NOT NULL,"
-      "top_frame_site_key TEXT NOT NULL,"
-      "name TEXT NOT NULL,"
-      "value TEXT NOT NULL,"
-      "encrypted_value BLOB NOT NULL,"
-      "path TEXT NOT NULL,"
-      "expires_utc INTEGER NOT NULL,"
-      "is_secure INTEGER NOT NULL,"
-      "is_httponly INTEGER NOT NULL,"
-      "last_access_utc INTEGER NOT NULL,"
-      "has_expires INTEGER NOT NULL,"
-      "is_persistent INTEGER NOT NULL,"
-      "priority INTEGER NOT NULL,"
-      "samesite INTEGER NOT NULL,"
-      "source_scheme INTEGER NOT NULL,"
-      "source_port INTEGER NOT NULL,"
-      "is_same_party INTEGER NOT NULL,"
-      "last_update_utc INTEGER NOT NULL);";
-
-  static constexpr char kCreateIndexQuery[] =
-      "CREATE UNIQUE INDEX cookies_unique_index "
-      "ON cookies(host_key, top_frame_site_key, name, path, source_scheme, "
-      "source_port)";
-
-  return db->Execute(kCreateTableQuery) && db->Execute(kCreateIndexQuery);
-}
-
-bool CreateV21Schema(sql::Database* db) {
-  CHECK(!db->DoesTableExist("cookies"));
-
-  static constexpr char kCreateTableQuery[] =
-      "CREATE TABLE cookies("
-      "creation_utc INTEGER NOT NULL,"
-      "host_key TEXT NOT NULL,"
-      "top_frame_site_key TEXT NOT NULL,"
-      "name TEXT NOT NULL,"
-      "value TEXT NOT NULL,"
-      "encrypted_value BLOB NOT NULL,"
-      "path TEXT NOT NULL,"
-      "expires_utc INTEGER NOT NULL,"
-      "is_secure INTEGER NOT NULL,"
-      "is_httponly INTEGER NOT NULL,"
-      "last_access_utc INTEGER NOT NULL,"
-      "has_expires INTEGER NOT NULL,"
-      "is_persistent INTEGER NOT NULL,"
-      "priority INTEGER NOT NULL,"
-      "samesite INTEGER NOT NULL,"
-      "source_scheme INTEGER NOT NULL,"
-      "source_port INTEGER NOT NULL,"
-      "last_update_utc INTEGER NOT NULL);";
-
-  static constexpr char kCreateIndexQuery[] =
-      "CREATE UNIQUE INDEX cookies_unique_index "
-      "ON cookies(host_key, top_frame_site_key, name, path, source_scheme, "
-      "source_port)";
-
-  return db->Execute(kCreateTableQuery) && db->Execute(kCreateIndexQuery);
-}
 
 bool CreateV22Schema(sql::Database* db) {
   CHECK(!db->DoesTableExist("cookies"));
@@ -1098,7 +1018,8 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
         /*source_port=*/statement.ColumnInt(16),                            //
         /*source_type=*/
         DBCookieSourceTypeToCookieSourceType(
-            static_cast<DBCookieSourceType>(statement.ColumnInt(18))));  //
+            static_cast<DBCookieSourceType>(statement.ColumnInt(18))),      //
+        CanonicalCookieFromStorageCallSite::kSqlitePersistentCookieStore);  //
     if (cc) {
       DLOG_IF(WARNING, cc->CreationDate() > Time::Now())
           << "CreationDate too recent";
@@ -1128,137 +1049,6 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
 std::optional<int>
 SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   int cur_version = meta_table()->GetVersionNumber();
-
-  if (cur_version == 18) {
-    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV19");
-
-    sql::Statement update_statement(
-        db()->GetCachedStatement(SQL_FROM_HERE,
-                                 "UPDATE cookies SET expires_utc = ? WHERE "
-                                 "has_expires = 1 AND expires_utc > ?"));
-    if (!update_statement.is_valid()) {
-      return std::nullopt;
-    }
-
-    sql::Transaction transaction(db());
-    if (!transaction.Begin()) {
-      return std::nullopt;
-    }
-
-    base::Time expires_cap = base::Time::Now() + base::Days(400);
-    update_statement.BindTime(0, expires_cap);
-    update_statement.BindTime(1, expires_cap);
-    if (!update_statement.Run()) {
-      return std::nullopt;
-    }
-
-    ++cur_version;
-    if (!meta_table()->SetVersionNumber(cur_version) ||
-        !meta_table()->SetCompatibleVersionNumber(
-            std::min(cur_version, kCompatibleVersionNumber)) ||
-        !transaction.Commit()) {
-      return std::nullopt;
-    }
-  }
-
-  if (cur_version == 19) {
-    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV20");
-
-    sql::Transaction transaction(db());
-    if (!transaction.Begin()) {
-      return std::nullopt;
-    }
-
-    if (!db()->Execute("DROP TABLE IF EXISTS cookies_old")) {
-      return std::nullopt;
-    }
-    if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old")) {
-      return std::nullopt;
-    }
-    if (!db()->Execute("DROP INDEX IF EXISTS cookies_unique_index")) {
-      return std::nullopt;
-    }
-
-    if (!CreateV20Schema(db())) {
-      return std::nullopt;
-    }
-
-    static constexpr char insert_cookies_sql[] =
-        "INSERT OR REPLACE INTO cookies "
-        "(creation_utc, host_key, top_frame_site_key, name, value, "
-        "encrypted_value, path, expires_utc, is_secure, is_httponly, "
-        "last_access_utc, has_expires, is_persistent, priority, samesite, "
-        "source_scheme, source_port, is_same_party, last_update_utc) "
-        "SELECT creation_utc, host_key, top_frame_site_key, name, value,"
-        "       encrypted_value, path, expires_utc, is_secure, is_httponly,"
-        "       last_access_utc, has_expires, is_persistent, priority, "
-        "       samesite, source_scheme, source_port, is_same_party, "
-        "last_update_utc "
-        "FROM cookies_old ORDER BY creation_utc ASC";
-    if (!db()->Execute(insert_cookies_sql)) {
-      return std::nullopt;
-    }
-    if (!db()->Execute("DROP TABLE cookies_old")) {
-      return std::nullopt;
-    }
-
-    ++cur_version;
-    if (!meta_table()->SetVersionNumber(cur_version) ||
-        !meta_table()->SetCompatibleVersionNumber(
-            std::min(cur_version, kCompatibleVersionNumber)) ||
-        !transaction.Commit()) {
-      return std::nullopt;
-    }
-  }
-
-  if (cur_version == 20) {
-    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV21");
-
-    sql::Transaction transaction(db());
-    if (!transaction.Begin()) {
-      return std::nullopt;
-    }
-
-    if (!db()->Execute("DROP TABLE IF EXISTS cookies_old")) {
-      return std::nullopt;
-    }
-    if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old")) {
-      return std::nullopt;
-    }
-    if (!db()->Execute("DROP INDEX IF EXISTS cookies_unique_index")) {
-      return std::nullopt;
-    }
-
-    if (!CreateV21Schema(db())) {
-      return std::nullopt;
-    }
-
-    static constexpr char insert_cookies_sql[] =
-        "INSERT OR REPLACE INTO cookies "
-        "(creation_utc, host_key, top_frame_site_key, name, value, "
-        "encrypted_value, path, expires_utc, is_secure, is_httponly, "
-        "last_access_utc, has_expires, is_persistent, priority, samesite, "
-        "source_scheme, source_port, last_update_utc) "
-        "SELECT creation_utc, host_key, top_frame_site_key, name, value,"
-        "       encrypted_value, path, expires_utc, is_secure, is_httponly,"
-        "       last_access_utc, has_expires, is_persistent, priority, "
-        "       samesite, source_scheme, source_port, last_update_utc "
-        "FROM cookies_old ORDER BY creation_utc ASC";
-    if (!db()->Execute(insert_cookies_sql)) {
-      return std::nullopt;
-    }
-    if (!db()->Execute("DROP TABLE cookies_old")) {
-      return std::nullopt;
-    }
-
-    ++cur_version;
-    if (!meta_table()->SetVersionNumber(cur_version) ||
-        !meta_table()->SetCompatibleVersionNumber(
-            std::min(cur_version, kCompatibleVersionNumber)) ||
-        !transaction.Commit()) {
-      return std::nullopt;
-    }
-  }
 
   if (cur_version == 21) {
     SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV22");
@@ -1463,17 +1253,17 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
 
 void SQLitePersistentCookieStore::Backend::AddCookie(
     const CanonicalCookie& cc) {
-  BatchOperation(PendingOperation::COOKIE_ADD, cc);
+  BatchOperation(PendingOperation::OperationType::kAdd, cc);
 }
 
 void SQLitePersistentCookieStore::Backend::UpdateCookieAccessTime(
     const CanonicalCookie& cc) {
-  BatchOperation(PendingOperation::COOKIE_UPDATEACCESS, cc);
+  BatchOperation(PendingOperation::OperationType::kUpdateLastAccessTime, cc);
 }
 
 void SQLitePersistentCookieStore::Backend::DeleteCookie(
     const CanonicalCookie& cc) {
-  BatchOperation(PendingOperation::COOKIE_DELETE, cc);
+  BatchOperation(PendingOperation::OperationType::kDelete, cc);
 }
 
 void SQLitePersistentCookieStore::Backend::BatchOperation(
@@ -1498,12 +1288,14 @@ void SQLitePersistentCookieStore::Backend::BatchOperation(
     PendingOperationsForKey& ops_for_key = iter_and_result.first->second;
     if (!iter_and_result.second) {
       // Insert failed -> already have ops.
-      if (po->op() == PendingOperation::COOKIE_DELETE) {
+      if (po->op() == PendingOperation::OperationType::kDelete) {
         // A delete op makes all the previous ones irrelevant.
         ops_for_key.clear();
-      } else if (po->op() == PendingOperation::COOKIE_UPDATEACCESS) {
+      } else if (po->op() ==
+                 PendingOperation::OperationType::kUpdateLastAccessTime) {
         if (!ops_for_key.empty() &&
-            ops_for_key.back()->op() == PendingOperation::COOKIE_UPDATEACCESS) {
+            ops_for_key.back()->op() ==
+                PendingOperation::OperationType::kUpdateLastAccessTime) {
           // If access timestamp is updated twice in a row, can dump the earlier
           // one.
           ops_for_key.pop_back();
@@ -1595,7 +1387,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
       }
 
       switch (po->op()) {
-        case PendingOperation::COOKIE_ADD:
+        case PendingOperation::OperationType::kAdd:
           add_statement.Reset(true);
           add_statement.BindTime(0, po->cc().CreationDate());
           add_statement.BindString(1, po->cc().Domain());
@@ -1626,7 +1418,8 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           add_statement.BindBool(11, po->cc().IsPersistent());
           add_statement.BindBool(12, po->cc().IsPersistent());
           add_statement.BindInt(
-              13, CookiePriorityToDBCookiePriority(po->cc().Priority()));
+              13, static_cast<int>(
+                      CookiePriorityToDBCookiePriority(po->cc().Priority())));
           add_statement.BindInt(
               14, CookieSameSiteToDBCookieSameSite(po->cc().SameSite()));
           add_statement.BindInt(15, static_cast<int>(po->cc().SourceScheme()));
@@ -1643,7 +1436,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           }
           break;
 
-        case PendingOperation::COOKIE_UPDATEACCESS:
+        case PendingOperation::OperationType::kUpdateLastAccessTime:
           update_access_statement.Reset(true);
           update_access_statement.BindTime(0, po->cc().LastAccessDate());
           update_access_statement.BindString(1, po->cc().Name());
@@ -1663,7 +1456,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           }
           break;
 
-        case PendingOperation::COOKIE_DELETE:
+        case PendingOperation::OperationType::kDelete:
           delete_statement.Reset(true);
           delete_statement.BindString(0, po->cc().Name());
           delete_statement.BindString(1, po->cc().Domain());

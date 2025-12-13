@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
@@ -91,7 +92,7 @@ const char* GetUpdateUrlChannelSuffix(version_info::Channel channel) {
 
 }  // namespace
 
-void ShowOutdatedUpgradeBubble(ui::ElementContext element_context,
+void ShowOutdatedUpgradeBubble(BrowserWindowInterface* browser,
                                content::PageNavigator* page_navigator,
                                bool auto_update_enabled) {
   if (g_upgrade_bubble_is_showing) {
@@ -121,8 +122,8 @@ void ShowOutdatedUpgradeBubble(ui::ElementContext element_context,
               base::UserMetricsAction("OutdatedUpgradeBubble.Later")))
           .Build();
 
-  chrome::ShowBubble(element_context, kToolbarAppMenuButtonElementId,
-                     std::move(dialog_model));
+  chrome::ShowBubble(BrowserElements::From(browser)->GetContext(),
+                     kToolbarAppMenuButtonElementId, std::move(dialog_model));
 
   base::RecordAction(
       auto_update_enabled

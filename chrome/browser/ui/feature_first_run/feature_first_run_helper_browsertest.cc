@@ -12,10 +12,10 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
@@ -63,8 +63,8 @@ IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
   auto* expected_content_view = content_view.get();
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  auto banner =
-      bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_SAVE_PASSPORT_LOTTIE);
+  auto banner = bundle.GetThemedLottieImageNamed(
+      IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE);
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto* dialog_widget =
@@ -86,10 +86,8 @@ IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
   EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_skia),
                                         gfx::Image(banner_view->GetImage())));
 
-  auto* actual_content_view =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kFeatureFirstRunDialogContentViewElementId,
-          browser()->window()->GetElementContext());
+  auto* actual_content_view = BrowserElementsViews::From(browser())->GetView(
+      kFeatureFirstRunDialogContentViewElementId);
   EXPECT_EQ(expected_content_view, actual_content_view);
 }
 

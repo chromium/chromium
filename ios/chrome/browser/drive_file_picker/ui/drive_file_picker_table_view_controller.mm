@@ -40,7 +40,7 @@ constexpr CGFloat kCellVerticalMarginsText = 12.0;
 constexpr CGFloat kCellVerticalMarginsTextAndSecondaryText = 8.0;
 constexpr CGFloat kCellTextToSecondaryTextVerticalPadding = 4.0;
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 constexpr CGFloat kTitleLogoSpacing = 3.0;
 constexpr CGFloat kLogoTitleFontMultiplier = 1.75;
 
@@ -293,11 +293,9 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
   [self.mutator loadFirstPage];
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                      @[ UITraitUserInterfaceStyle.class ])
-                       withAction:@selector(userInterfaceStyleDidChange)];
-  }
+  [self registerForTraitChanges:TraitCollectionSetForTraits(
+                                    @[ UITraitUserInterfaceStyle.class ])
+                     withAction:@selector(userInterfaceStyleDidChange)];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -314,55 +312,42 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   }
 }
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  // Dark/Light mode change ocurred.
-  if (self.traitCollection.userInterfaceStyle !=
-      previousTraitCollection.userInterfaceStyle) {
-    [self userInterfaceStyleDidChange];
-  }
-}
-#endif
-
 #pragma mark - UI actions
 
-- (void)didSelectSortingCriteria:(DriveItemsSortingType)sortingCriteria {
+- (void)didSelectSortingCriterion:
+    (DriveFilePickerSortingCriterion)sortingCriterion {
   UIAction* selectedSortingAction =
-      [self actionForSortingCriteria:sortingCriteria];
-  DriveItemsSortingOrder sortingDirection;
+      [self actionForSortingCriterion:sortingCriterion];
+  DriveFilePickerSortingDirection sortingDirection;
   switch (selectedSortingAction.state) {
     case UIMenuElementStateOn:
       // Action was already selected. Inverting sort direction.
       sortingDirection = selectedSortingAction.image == _sortAscendingSymbol
-                             ? DriveItemsSortingOrder::kDescending
-                             : DriveItemsSortingOrder::kAscending;
+                             ? DriveFilePickerSortingDirection::kDescending
+                             : DriveFilePickerSortingDirection::kAscending;
       break;
     case UIMenuElementStateOff:
       // Action was not selected.
-      switch (sortingCriteria) {
-        case DriveItemsSortingType::kName:
+      switch (sortingCriterion) {
+        case DriveFilePickerSortingCriterion::kName:
           // Default direction for sorting by name is ascending.
-          sortingDirection = DriveItemsSortingOrder::kAscending;
+          sortingDirection = DriveFilePickerSortingDirection::kAscending;
           break;
-        case DriveItemsSortingType::kModificationTime:
+        case DriveFilePickerSortingCriterion::kModificationTime:
           // Default direction for sorting by modification time is descending.
-          sortingDirection = DriveItemsSortingOrder::kDescending;
+          sortingDirection = DriveFilePickerSortingDirection::kDescending;
           break;
-        case DriveItemsSortingType::kOpeningTime:
+        case DriveFilePickerSortingCriterion::kOpeningTime:
           // Default direction for sorting by opening time is descending.
-          sortingDirection = DriveItemsSortingOrder::kDescending;
+          sortingDirection = DriveFilePickerSortingDirection::kDescending;
           break;
       }
       break;
     default:
       NOTREACHED();
   }
-  [self.mutator setSortingCriteria:sortingCriteria direction:sortingDirection];
+  [self.mutator setSortingCriterion:sortingCriterion
+                          direction:sortingDirection];
 }
 
 #pragma mark - Private
@@ -545,16 +530,17 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
       initWithScenario:kMenuScenarioHistogramSortDriveItemsEntry];
   __weak __typeof(self) weakSelf = self;
   _sortByNameAction = [actionFactory actionToSortDriveItemsByNameWithBlock:^{
-    [weakSelf didSelectSortingCriteria:DriveItemsSortingType::kName];
+    [weakSelf didSelectSortingCriterion:DriveFilePickerSortingCriterion::kName];
   }];
   _sortByModificationTimeAction =
       [actionFactory actionToSortDriveItemsByModificationTimeWithBlock:^{
-        [weakSelf
-            didSelectSortingCriteria:DriveItemsSortingType::kModificationTime];
+        [weakSelf didSelectSortingCriterion:DriveFilePickerSortingCriterion::
+                                                kModificationTime];
       }];
   _sortByOpeningTimeAction =
       [actionFactory actionToSortDriveItemsByOpeningTimeWithBlock:^{
-        [weakSelf didSelectSortingCriteria:DriveItemsSortingType::kOpeningTime];
+        [weakSelf didSelectSortingCriterion:DriveFilePickerSortingCriterion::
+                                                kOpeningTime];
       }];
 }
 
@@ -593,14 +579,15 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
                            _backgroundNoMatchingResultView);
 }
 
-// Returns the action corresponding to a given `sortingCriteria`.
-- (UIAction*)actionForSortingCriteria:(DriveItemsSortingType)sortingCriteria {
-  switch (sortingCriteria) {
-    case DriveItemsSortingType::kName:
+// Returns the action corresponding to a given `sortingCriterion`.
+- (UIAction*)actionForSortingCriterion:
+    (DriveFilePickerSortingCriterion)sortingCriterion {
+  switch (sortingCriterion) {
+    case DriveFilePickerSortingCriterion::kName:
       return _sortByNameAction;
-    case DriveItemsSortingType::kModificationTime:
+    case DriveFilePickerSortingCriterion::kModificationTime:
       return _sortByModificationTimeAction;
-    case DriveItemsSortingType::kOpeningTime:
+    case DriveFilePickerSortingCriterion::kOpeningTime:
       return _sortByOpeningTimeAction;
   }
 }
@@ -763,7 +750,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 - (void)setRootTitle {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   BOOL darkModeEnabled =
       (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
   self.navigationItem.titleView = CreateGoogleDriveImageView(darkModeEnabled);
@@ -1007,18 +994,19 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   _filterButton.enabled = enabled;
 }
 
-- (void)setSortingCriteria:(DriveItemsSortingType)criteria
-                 direction:(DriveItemsSortingOrder)direction {
+- (void)setSortingCriterion:(DriveFilePickerSortingCriterion)criterion
+                  direction:(DriveFilePickerSortingDirection)direction {
   _sortByNameAction.state = UIMenuElementStateOff;
   _sortByNameAction.image = nil;
   _sortByOpeningTimeAction.state = UIMenuElementStateOff;
   _sortByOpeningTimeAction.image = nil;
   _sortByModificationTimeAction.state = UIMenuElementStateOff;
   _sortByModificationTimeAction.image = nil;
-  UIAction* enabledSortingAction = [self actionForSortingCriteria:criteria];
-  enabledSortingAction.image = direction == DriveItemsSortingOrder::kAscending
-                                   ? _sortAscendingSymbol
-                                   : _sortDescendingSymbol;
+  UIAction* enabledSortingAction = [self actionForSortingCriterion:criterion];
+  enabledSortingAction.image =
+      direction == DriveFilePickerSortingDirection::kAscending
+          ? _sortAscendingSymbol
+          : _sortDescendingSymbol;
   enabledSortingAction.state = UIMenuElementStateOn;
   // The menu needs to be reset for the new state to appear.
   _sortButton.menu = [self createSortButtonMenu];

@@ -1,6 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef PARTITION_ALLOC_BUILD_CONFIG_H_
 #define PARTITION_ALLOC_BUILD_CONFIG_H_
 
@@ -79,8 +80,8 @@
 // The IS_CHROMEOS PA_BUILDFLAG macro is defined in buildflags.h.
 #define PA_IS_LINUX
 #endif  // !PA_BUILDFLAG(IS_CHROMEOS)
-// Include a system header to pull in features.h for glibc/uclibc macros.
-#include <assert.h>
+// Include features.h for glibc/uclibc macros.
+#include <features.h>
 #if defined(__GLIBC__) && !defined(__UCLIBC__)
 // We really are using glibc, not uClibc pretending to be glibc.
 #define PA_LIBC_GLIBC

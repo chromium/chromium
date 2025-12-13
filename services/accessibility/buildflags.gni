@@ -17,9 +17,4 @@ declare_args() {
   enable_accessibility_service_internal =
       enable_accessibility_service &&
       (is_chromeos || is_linux || is_mac || is_win || is_fuchsia)
-
-  # Used to determine if the Accessibility Service should run
-  # assistive technology features, or if the service is running
-  # in a browser embedded in an OS that already has those features.
-  supports_os_accessibility_service = is_fuchsia || is_chromeos
 }

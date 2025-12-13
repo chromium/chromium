@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_SIDE_PANEL_COORDINATOR_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_SIDE_PANEL_COORDINATOR_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/lens/lens_overlay_translate_options.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
@@ -29,7 +32,6 @@ class GURL;
 class LensOverlayController;
 class LensOverlaySidePanelWebView;
 class SidePanelEntryScope;
-class SidePanelCoordinator;
 
 enum class SidePanelEntryHideReason;
 
@@ -102,6 +104,8 @@ class LensOverlaySidePanelCoordinator
   // exist and then shows it.
   void RegisterEntryAndShow();
 
+  SidePanelEntry::PanelType GetPanelType() const;
+
   // Cleans up the side panel entry and closes the side panel.
   void DeregisterEntryAndCleanup();
 
@@ -125,9 +129,19 @@ class LensOverlaySidePanelCoordinator
     return lens_search_controller_->lens_overlay_controller();
   }
 
+  // Return the LensOverlayQueryController that is part of this tab.
+  LensOverlayQueryController* GetLensOverlayQueryController() {
+    return lens_search_controller_->lens_overlay_query_controller();
+  }
+
   // Return the LensSearchboxController that is part of this tab.
   LensSearchboxController* GetLensSearchboxController() {
     return lens_search_controller_->lens_searchbox_controller();
+  }
+
+  // Return the LensComposeboxController that is part of this tab.
+  LensComposeboxController* GetLensComposeboxController() {
+    return lens_search_controller_->lens_composebox_controller();
   }
 
   // Handles rendering text highlights on the main browser window based on
@@ -135,6 +149,12 @@ class LensOverlaySidePanelCoordinator
   // `nav_url` refers to the URL that the side panel was set to navigate to. It
   // is compared to the URL of the current open tab.
   bool MaybeHandleTextDirectives(const GURL& nav_url);
+
+  // Handles seeking videos on the main browser window based on navigations from
+  // the side panel. Returns true if handled, false otherwise. `nav_url` refers
+  // to the URL that the side panel was set to navigate to. It is compared to
+  // the URL of the current open tab.
+  bool MaybeHandleContextualMediaLink(const GURL& nav_url);
 
   // Whether the lens overlay entry is currently the active entry in the side
   // panel UI.
@@ -152,6 +172,8 @@ class LensOverlaySidePanelCoordinator
   void OnScrollToMessage(const std::vector<std::string>& text_fragments,
       uint32_t pdf_page_number) override;
   void RequestSendFeedback() override;
+  void OnAimMessage(const std::vector<uint8_t>& message) override;
+  void OnImageQueryWithEmptyText() override;
 
   // This method is used to set up communication between this instance and the
   // side panel WebUI. This is called by the WebUIController when the WebUI is
@@ -182,6 +204,9 @@ class LensOverlaySidePanelCoordinator
   // open a new tab.
   void SetLatestPageUrlWithResponse(const GURL& url);
 
+  // Sets whether the lens overlay is showing in the side panel WebUI.
+  virtual void SetIsOverlayShowing(bool is_showing);
+
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
     // This is the default state. This is the state when the side panel is not
@@ -203,6 +228,9 @@ class LensOverlaySidePanelCoordinator
   // Suppresses the ghost loader in the side panel.
   void SuppressGhostLoader();
 
+  // Focuses the searchbox in the side panel.
+  virtual void FocusSearchbox();
+
   /////////////////////////////////////////////////////////////////////////////
   // Test only methods.
   /////////////////////////////////////////////////////////////////////////////
@@ -220,6 +248,7 @@ class LensOverlaySidePanelCoordinator
 
   friend class ::LensOverlayController;
   friend class lens::LensOverlaySidePanelNavigationThrottle;
+  friend class lens::LensComposeboxController;
 
  protected:
   // Returns whether the side panel is bound to the WebUI.
@@ -250,6 +279,22 @@ class LensOverlaySidePanelCoordinator
   // panel.
   void SetPageContentUploadProgress(double progress);
 
+  // Passes the `message` to the side panel WebUI to be passed to the remote
+  // UI in the side panel iframe. `message` should be a serialized
+  // ClientToAimMessage proto.
+  virtual void SendClientMessageToAim(
+      const std::vector<uint8_t>& serialized_message);
+
+  // Notifies the side panel WebUI that the AIM handshake has been received.
+  virtual void AimHandshakeReceived();
+
+  // Notifies the side panel WebUI that the results have moved to/from the AIM
+  // UI. `on_aim` is true if the results are now in the AIM UI.
+  virtual void AimResultsChanged(bool on_aim);
+
+  // Focuses the results iframe in the side panel.
+  virtual void FocusResultsFrame();
+
  private:
   // Data class for constructing the side panel and storing side panel state for
   // kSuspended state.
@@ -279,10 +324,12 @@ class LensOverlaySidePanelCoordinator
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // ChromeWebModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // Whether the side panel should handle the URL differently since it has a
   // text directive and a URL that matches the current page. `nav_url` refers to
@@ -326,6 +373,9 @@ class LensOverlaySidePanelCoordinator
 
   // Called to get the URL for the "open in new tab" button.
   GURL GetOpenInNewTabUrl();
+
+  // Called to get the lens side panel's preferred default width.
+  int GetPreferredDefaultWidth();
 
   std::unique_ptr<views::View> CreateLensOverlayResultsView(
       SidePanelEntryScope& scope);
@@ -372,13 +422,6 @@ class LensOverlaySidePanelCoordinator
   // page.
   mojom::SidePanelResultStatus side_panel_result_status_ =
       mojom::SidePanelResultStatus::kUnknown;
-
-  // General side panel coordinator responsible for all side panel interactions.
-  // Separate from this class because this controls interactions to other side
-  // panels as well, not just the Lens results. The side_panel_coordinator
-  // lives with the browser view, so it should outlive this class. Therefore
-  // this can be assumed to be non-null.
-  raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
 
   raw_ptr<LensOverlaySidePanelWebView> side_panel_web_view_;
   base::WeakPtrFactory<LensOverlaySidePanelCoordinator> weak_ptr_factory_{this};

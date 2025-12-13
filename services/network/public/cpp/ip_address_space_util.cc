@@ -268,11 +268,33 @@ const AddressSpaceMap& NonPublicAddressSpaceMap() {
       // overridden by a killswitch feature flag in IPAddressToIPAddressSpace()
       // since these addresses were previously treated as public. See
       // https://crbug.com/40058874.
-      //
-      // TODO(https://crbug.com/40058874): decide if we should do the same for
-      // the all-zero IPv6 address.
       Entry(IPAddress(0, 0, 0, 0), 32, IPAddressSpace::kLoopback),
       Entry(IPAddress(0, 0, 0, 0), 8, IPAddressSpace::kLocal),
+      // IPv6 Null IP (RFC 1884): ::/128 is the unspecified address, but many
+      // documentation sources consider it to be treated the same as 0.0.0.0/32,
+      // so we map it to "loopback" out of an abundance of caution. RFC 1884
+      // specifies that the unspecified address "must never be assigned to any
+      // node" and "must not be used as the destination address of IPv6
+      // datagrams".
+      Entry(IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 128,
+            IPAddressSpace::kLoopback),
+      // Carrier Grade NAT (RFC 6598): 100.64.0.0/10
+      Entry(IPAddress(100, 64, 0, 0), 10, IPAddressSpace::kLocal),
+      // IPv6 Documentation Address Prefixes (RFC 3849, RFC 9637): 2001:db8::/32
+      // and 3fff::/20 are reserved for documrentation purposes, and they *must
+      // not* be routed to the public (and in general should not be used for
+      // production traffic). We include them for completeness. See
+      // https://github.com/WICG/local-network-access/issues/15.
+      Entry(
+          IPAddress(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+          32, IPAddressSpace::kLocal),
+      Entry(IPAddress(0x3f, 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 20,
+            IPAddressSpace::kLocal),
+      // IPv6 Site Local Unicast (RFC 3513): fec0::/10
+      // These are deprecated by RFC3879 but still allowed to be used.
+      // See https://github.com/WICG/local-network-access/issues/15
+      Entry(IPAddress(0xfe, 0xc0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 10,
+            IPAddressSpace::kLocal),
   }));
   return *kMap;
 }
@@ -280,22 +302,9 @@ const AddressSpaceMap& NonPublicAddressSpaceMap() {
 }  // namespace
 
 IPAddressSpace IPAddressToIPAddressSpace(const IPAddress& address) {
-  // The null IP block (0.0.0.0/8) was previously treated as public, but this
-  // was a loophole in Private Network Access and thus these addresses are now
-  // mapped to the local/private address space instead. This feature is a
-  // killswitch for this behavior to revert these addresses to the public
-  // address space.
-  if (base::FeatureList::IsEnabled(
-          network::features::kTreatNullIPAsPublicAddressSpace) &&
-      address.IsIPv4() &&
-      IPAddressMatchesPrefix(address, IPAddress(0, 0, 0, 0), 8)) {
-    return IPAddressSpace::kPublic;
-  }
   return NonPublicAddressSpaceMap().Apply(address).value_or(
       IPAddressSpace::kPublic);
 }
-
-namespace {
 
 IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
   if (!endpoint.address().IsValid()) {
@@ -309,8 +318,6 @@ IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
 
   return IPAddressToIPAddressSpace(endpoint.address());
 }
-
-}  // namespace
 
 std::string_view IPAddressSpaceToStringPiece(IPAddressSpace space) {
   switch (space) {
@@ -428,8 +435,21 @@ std::optional<net::IPAddress> ParsePrivateIpFromUrl(const GURL& url) {
   return address;
 }
 
-bool IsRFC6762LocalDomain(const GURL& url) {
-  return url.DomainIs("local");
+std::optional<mojom::IPAddressSpace> GetAddressSpaceFromUrl(const GURL& url) {
+  if (url.DomainIs("local")) {
+    return mojom::IPAddressSpace::kLocal;
+  }
+
+  if (url.DomainIs("localhost")) {
+    return mojom::IPAddressSpace::kLoopback;
+  }
+
+  net::IPAddress address;
+  if (!address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
+    return std::nullopt;
+  }
+  net::IPEndPoint endpoint(address, url.EffectiveIntPort());
+  return IPEndPointToIPAddressSpace(endpoint);
 }
 
 }  // namespace network

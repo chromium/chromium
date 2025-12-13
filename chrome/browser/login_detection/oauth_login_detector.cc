@@ -50,7 +50,7 @@ bool DoesAnyQueryParamExist(const std::set<std::string>& request_params,
     if (!check_ref) {
       continue;
     }
-    std::string url_ref = url.ref();
+    std::string url_ref = url.GetRef();
     base::flat_map<std::string, std::string> url_map = SplitUrl(url_ref);
     if (url_map.contains(param)) {
       return true;
@@ -81,7 +81,8 @@ OAuthLoginDetector::OAuthLoginDetector()
 
 OAuthLoginDetector::~OAuthLoginDetector() = default;
 
-std::optional<GURL> OAuthLoginDetector::GetSuccessfulLoginFlowSite(
+std::optional<OAuthLoginDetector::OAuthLoginFlowInfo>
+OAuthLoginDetector::GetSuccessfulLoginFlowSite(
     const GURL& prev_navigation_url,
     const std::vector<GURL>& redirect_chain) {
   for (size_t i = 0; i < redirect_chain.size(); i++) {
@@ -95,8 +96,9 @@ std::optional<GURL> OAuthLoginDetector::GetSuccessfulLoginFlowSite(
     // Check for OAuth login completion.
     if (login_flow_info_ && CheckSuccessfulLoginCompletion(navigation_url)) {
       auto oauth_requestor_site = login_flow_info_->oauth_requestor_site;
+      auto oauth_provider_site = login_flow_info_->oauth_provider_site;
       login_flow_info_.reset();
-      return oauth_requestor_site;
+      return OAuthLoginFlowInfo(oauth_provider_site, oauth_requestor_site);
     }
 
     // Check for start of login flow.
@@ -107,17 +109,20 @@ std::optional<GURL> OAuthLoginDetector::GetSuccessfulLoginFlowSite(
         // When this detector is opened for a popup window, treat the site of
         // the popup opener window site as the OAuth requestor site.
         login_flow_info_ =
-            OAuthLoginFlowInfo(navigation_url, *popup_opener_navigation_site_);
+            OAuthLoginFlowInfo(navigation_url.DeprecatedGetOriginAsURL(),
+                               *popup_opener_navigation_site_);
       } else if (prev_navigation_url.is_valid() &&
                  prev_navigation_url.SchemeIsHTTPOrHTTPS()) {
-        login_flow_info_ = OAuthLoginFlowInfo(
-            navigation_url, prev_navigation_url.DeprecatedGetOriginAsURL());
+        login_flow_info_ =
+            OAuthLoginFlowInfo(navigation_url.DeprecatedGetOriginAsURL(),
+                               prev_navigation_url.DeprecatedGetOriginAsURL());
       } else if (i != 0) {
         // Treat the start of the redirect chain as the previous navigation URL.
         // This allows detecting cases when a new window is opened to perform
         // the OAuth login.
-        login_flow_info_ = OAuthLoginFlowInfo(
-            navigation_url, redirect_chain[0].DeprecatedGetOriginAsURL());
+        login_flow_info_ =
+            OAuthLoginFlowInfo(navigation_url.DeprecatedGetOriginAsURL(),
+                               redirect_chain[0].DeprecatedGetOriginAsURL());
       }
     }
   }
@@ -134,7 +139,8 @@ void OAuthLoginDetector::DidOpenAsPopUp(const GURL& opener_navigation_url) {
   }
 }
 
-std::optional<GURL> OAuthLoginDetector::GetPopUpLoginFlowSite() const {
+std::optional<OAuthLoginDetector::OAuthLoginFlowInfo>
+OAuthLoginDetector::GetPopUpLoginFlowSite() const {
   // OAuth has never started.
   if (!login_flow_info_)
     return std::nullopt;
@@ -143,7 +149,8 @@ std::optional<GURL> OAuthLoginDetector::GetPopUpLoginFlowSite() const {
   if (!popup_opener_navigation_site_)
     return std::nullopt;
 
-  return login_flow_info_->oauth_requestor_site;
+  return OAuthLoginFlowInfo(login_flow_info_->oauth_provider_site,
+                            login_flow_info_->oauth_requestor_site);
 }
 
 bool OAuthLoginDetector::CheckSuccessfulLoginCompletion(

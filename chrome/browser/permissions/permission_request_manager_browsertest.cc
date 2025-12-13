@@ -19,21 +19,26 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
+#include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -41,6 +46,7 @@
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -72,7 +78,30 @@ const char* kPermissionsKillSwitchBlockedValue = permissions::
     ContentSettingPermissionContextBase::kPermissionsKillSwitchBlockedValue;
 const char kPermissionsKillSwitchTestGroup[] = "TestGroup";
 
-class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
+class PermissionRequestManagerBrowserTestBase : public InProcessBrowserTest {
+ public:
+  PermissionRequestManagerBrowserTestBase() = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  permissions::PermissionRequestManager* GetPermissionRequestManager() {
+    return permissions::PermissionRequestManager::FromWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
+  content::RenderFrameHost* GetActiveMainFrame() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
+  }
+};
+
+class PermissionRequestManagerBrowserTest
+    : public PermissionRequestManagerBrowserTestBase {
  public:
   PermissionRequestManagerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -87,25 +116,20 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
   ~PermissionRequestManagerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    PermissionRequestManagerBrowserTestBase::SetUpOnMainThread();
     permissions::PermissionRequestManager* manager =
         GetPermissionRequestManager();
     mock_permission_prompt_factory_ =
         std::make_unique<permissions::MockPermissionPromptFactory>(manager);
-
-    host_resolver()->AddRule("*", "127.0.0.1");
   }
 
   void TearDownOnMainThread() override {
+    PermissionRequestManagerBrowserTestBase::TearDownOnMainThread();
     ShutDownFirstTabMockPermissionPromptFactory();
   }
 
   void ShutDownFirstTabMockPermissionPromptFactory() {
     mock_permission_prompt_factory_.reset();
-  }
-
-  permissions::PermissionRequestManager* GetPermissionRequestManager() {
-    return permissions::PermissionRequestManager::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
   }
 
   permissions::MockPermissionPromptFactory* bubble_factory() {
@@ -187,13 +211,6 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
       EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
       EXPECT_EQ("granted", result);
     }
-  }
-
-  content::RenderFrameHost* GetActiveMainFrame() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetPrimaryMainFrame();
   }
 
  private:
@@ -418,6 +435,92 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest, MultipleTabs) {
           GetPermissionRequestManager()));
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(2, tab_strip_model->count());
+  ASSERT_EQ(1, tab_strip_model->active_index());
+
+  constexpr char kRequestNotifications[] = R"(
+      new Promise(resolve => {
+        Notification.requestPermission().then(function (permission) {
+          resolve(permission)
+        });
+      })
+      )";
+
+  {
+    permissions::PermissionRequestObserver observer(
+        tab_strip_model->GetWebContentsAt(1));
+
+    // Request permission in foreground tab, prompt should be shown.
+    EXPECT_TRUE(content::ExecJs(
+        tab_strip_model->GetWebContentsAt(1)->GetPrimaryMainFrame(),
+        kRequestNotifications,
+        content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+    observer.Wait();
+  }
+
+  EXPECT_EQ(1, bubble_factory_1->show_count());
+  EXPECT_FALSE(bubble_factory_0->is_visible());
+  EXPECT_TRUE(bubble_factory_1->is_visible());
+
+  tab_strip_model->ActivateTabAt(0);
+  EXPECT_FALSE(bubble_factory_0->is_visible());
+  EXPECT_FALSE(bubble_factory_1->is_visible());
+
+  tab_strip_model->ActivateTabAt(1);
+  EXPECT_EQ(2, bubble_factory_1->show_count());
+  EXPECT_FALSE(bubble_factory_0->is_visible());
+  EXPECT_TRUE(bubble_factory_1->is_visible());
+
+  {
+    permissions::PermissionRequestObserver observer(
+        tab_strip_model->GetWebContentsAt(0));
+
+    // Request notification in background tab. No prompt is shown until the
+    // tab itself is activated.
+    EXPECT_TRUE(content::ExecJs(
+        tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame(),
+        kRequestNotifications,
+        content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+    observer.Wait();
+    EXPECT_TRUE(observer.is_prompt_show_failed_hidden_tab());
+  }
+
+  EXPECT_FALSE(bubble_factory_0->is_visible());
+  EXPECT_EQ(2, bubble_factory_1->show_count());
+
+  tab_strip_model->ActivateTabAt(0);
+  EXPECT_TRUE(bubble_factory_0->is_visible());
+  EXPECT_EQ(1, bubble_factory()->show_count());
+  EXPECT_EQ(2, bubble_factory_1->show_count());
+}
+
+// Prompts are only shown for active tabs and (on Desktop) hidden on tab
+// switching
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       MultipleTabsInSplitView) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/empty.html"), 1);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/empty.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // SetUp() only creates a mock prompt factory for the first tab.
+  permissions::MockPermissionPromptFactory* bubble_factory_0 = bubble_factory();
+  std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory_1(
+      std::make_unique<permissions::MockPermissionPromptFactory>(
+          GetPermissionRequestManager()));
+
+  // Create a split with the two tabs.
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tab_strip_model->AddToNewSplit(
+      {0}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
   ASSERT_EQ(2, tab_strip_model->count());
   ASSERT_EQ(1, tab_strip_model->active_index());
 
@@ -705,6 +808,60 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
           back_forward_cache::DisabledReasonId::kPermissionRequestManager)));
 }
 
+class PermissionRequestManagerPostPromptBrowserTest
+    : public PermissionRequestManagerBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    PermissionRequestManagerBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void RequestPermission(permissions::RequestType request_type) {
+    const GURL kInitialURL =
+        embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+    bubble_factory()->set_response_type(
+        permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto request_supported =
+        std::make_unique<permissions::MockPermissionRequest>(
+            kInitialURL, request_type,
+            permissions::PermissionRequestGestureType::GESTURE,
+            /*request_state=*/nullptr);
+    GetPermissionRequestManager()->AddRequest(
+        web_contents->GetPrimaryMainFrame(), std::move(request_supported));
+
+    bubble_factory()->WaitForPermissionBubble();
+    EXPECT_EQ(1, bubble_factory()->show_count());
+  }
+
+  void CloseTab() {
+    browser()->tab_strip_model()->CloseWebContentsAt(
+        browser()->tab_strip_model()->active_index(),
+        TabCloseTypes::CLOSE_USER_GESTURE);
+  }
+
+  void NavigateAway(const std::string& url) {
+    const GURL gurl = embedded_test_server()->GetURL(url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  }
+
+  void SetFakePromptDisplayTime(permissions::RequestType request_type,
+                                base::TimeDelta duration) {
+    base::TimeTicks fake_display_time = base::TimeTicks::Now() - duration;
+    if (request_type == permissions::RequestType::kNotifications) {
+      GetPermissionRequestManager()
+          ->set_notification_request_first_display_time_for_testing(
+              fake_display_time);
+    } else if (request_type == permissions::RequestType::kGeolocation) {
+      GetPermissionRequestManager()
+          ->set_geolocation_request_first_display_time_for_testing(
+              fake_display_time);
+    }
+  }
+};
+
 class PermissionRequestManagerQuietUiBrowserTest
     : public PermissionRequestManagerBrowserTest {
  public:
@@ -719,10 +876,8 @@ class PermissionRequestManagerQuietUiBrowserTest
   using WarningReason = permissions::PermissionUiSelector::WarningReason;
 
   MockPermissionUiSelector* SetUiSelectorWithCannedDecision(
-      std::optional<QuietUiReason> quiet_ui_reason,
-      std::optional<WarningReason> warning_reason) {
-    auto selector = std::make_unique<MockPermissionUiSelector>(
-        UiDecision(quiet_ui_reason, warning_reason));
+      const UiDecision& decision) {
+    auto selector = std::make_unique<MockPermissionUiSelector>(decision);
     auto selector_ptr = selector.get();
     GetPermissionRequestManager()->set_permission_ui_selector_for_testing(
         std::move(selector));
@@ -777,8 +932,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   constexpr PermissionRequestRelevance kPermissionRequestRelevance =
       PermissionRequestRelevance::kVeryLow;
 
-  MockPermissionUiSelector* selector = SetUiSelectorWithCannedDecision(
-      QuietUiReason::kEnabledInPrefs, UiDecision::ShowNoWarning());
+  MockPermissionUiSelector* selector =
+      SetUiSelectorWithCannedDecision(UiDecision::UseQuietUi(
+          QuietUiReason::kEnabledInPrefs, UiDecision::ShowNoWarning()));
   selector->was_decision_held_back_ = std::make_optional(kWasDecisionHeldBack);
   selector->last_request_grant_likelihood_ =
       std::make_optional(kRequestGrantLikelihood);
@@ -814,8 +970,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   constexpr PermissionRequestRelevance kPermissionRequestRelevance =
       PermissionRequestRelevance::kVeryLow;
 
-  MockPermissionUiSelector* selector = SetUiSelectorWithCannedDecision(
-      QuietUiReason::kEnabledInPrefs, UiDecision::ShowNoWarning());
+  MockPermissionUiSelector* selector =
+      SetUiSelectorWithCannedDecision(UiDecision::UseQuietUi(
+          QuietUiReason::kEnabledInPrefs, UiDecision::ShowNoWarning()));
   selector->was_decision_held_back_ = std::make_optional(kWasDecisionHeldBack);
   selector->last_request_grant_likelihood_ =
       std::make_optional(kRequestGrantLikelihood);
@@ -842,8 +999,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
                        PermissionPromptDisposition) {
-  SetUiSelectorWithCannedDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                                  WarningReason::kAbusiveContent);
+  SetUiSelectorWithCannedDecision(
+      UiDecision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveContent,
+                             WarningReason::kAbusiveContent));
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto request_quiet = std::make_unique<permissions::MockPermissionRequest>(
@@ -868,8 +1026,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
                        PermissionPromptDispositionHidden) {
-  SetUiSelectorWithCannedDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                                  WarningReason::kAbusiveContent);
+  SetUiSelectorWithCannedDecision(
+      UiDecision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveContent,
+                             WarningReason::kAbusiveContent));
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -909,23 +1068,25 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
                        ConsoleMessages) {
   const struct {
-    std::optional<QuietUiReason> simulated_quiet_ui_reason;
-    std::optional<WarningReason> simulated_warning_reason;
+    UiDecision simulated_decision;
     const char* expected_message;
   } kTestCases[] = {
-      {UiDecision::UseNormalUi(), UiDecision::ShowNoWarning(), nullptr},
-      {QuietUiReason::kEnabledInPrefs, UiDecision::ShowNoWarning(), nullptr},
-      {QuietUiReason::kTriggeredByCrowdDeny, UiDecision::ShowNoWarning(),
+      {UiDecision::UseNormalUiAndShowNoWarning(), nullptr},
+      {UiDecision::UseQuietUi(QuietUiReason::kEnabledInPrefs,
+                              UiDecision::ShowNoWarning()),
        nullptr},
-      {QuietUiReason::kTriggeredDueToAbusiveRequests,
-       UiDecision::ShowNoWarning(),
+      {UiDecision::UseQuietUi(QuietUiReason::kTriggeredByCrowdDeny,
+                              UiDecision::ShowNoWarning()),
+       nullptr},
+      {UiDecision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveRequests,
+                              UiDecision::ShowNoWarning()),
        permissions::kAbusiveNotificationRequestsEnforcementMessage},
-      {UiDecision::UseNormalUi(), WarningReason::kAbusiveRequests,
+      {UiDecision::UseNormalUi(WarningReason::kAbusiveRequests),
        permissions::kAbusiveNotificationRequestsWarningMessage},
-      {QuietUiReason::kTriggeredDueToAbusiveContent,
-       UiDecision::ShowNoWarning(),
+      {UiDecision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveContent,
+                              UiDecision::ShowNoWarning()),
        permissions::kAbusiveNotificationContentEnforcementMessage},
-      {UiDecision::UseNormalUi(), WarningReason::kAbusiveContent,
+      {UiDecision::UseNormalUi(WarningReason::kAbusiveContent),
        permissions::kAbusiveNotificationContentWarningMessage},
   };
 
@@ -934,8 +1095,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   for (const auto& test : kTestCases) {
     SCOPED_TRACE(testing::Message() << "Test index: " << (&test - kTestCases));
 
-    SetUiSelectorWithCannedDecision(test.simulated_quiet_ui_reason,
-                                    test.simulated_warning_reason);
+    SetUiSelectorWithCannedDecision(test.simulated_decision);
 
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     content::WebContentsConsoleObserver console_observer(web_contents);
@@ -1394,8 +1554,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
       fenced_frame_host->GetOutermostMainFrame()));
   console_observer.SetPattern(kExpectedConsolePattern);
 
-  base::MockOnceCallback<void(blink::mojom::PermissionStatus)> callback;
-  EXPECT_CALL(callback, Run(blink::mojom::PermissionStatus::DENIED));
+  base::MockOnceCallback<void(content::PermissionResult)> callback;
+  EXPECT_CALL(callback, Run(content::PermissionResult(
+                            blink::mojom::PermissionStatus::DENIED,
+                            content::PermissionStatusSource::FENCED_FRAME)));
 
   content::PermissionController* permission_controller =
       browser()->profile()->GetPermissionController();
@@ -1479,6 +1641,602 @@ IN_PROC_BROWSER_TEST_F(
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   web_contents->GetController().GoBack();
   EXPECT_TRUE(request_state.cancelled);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PrePromptSessionDuration_Notification_1m) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  const GURL kInitialURL =
+      embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Set the page loaded time to 50 seconds ago.
+  GetPermissionRequestManager()->set_on_page_loaded_time_for_testing(
+      base::TimeTicks::Now() - base::Seconds(50));
+
+  // Request notification permission.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
+      kInitialURL, permissions::RequestType::kNotifications,
+      permissions::PermissionRequestGestureType::GESTURE,
+      /*request_state=*/nullptr);
+  GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
+                                            std::move(request_supported));
+
+  bubble_factory()->WaitForPermissionBubble();
+  EXPECT_EQ(1, bubble_factory()->show_count());
+
+  // Histogram should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Notifications."
+      "PrePromptSessionDuration1m",
+      base::Seconds(50).InMilliseconds(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PrePromptSessionDuration_Geolocation_1m) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  const GURL kInitialURL =
+      embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Set the page loaded time to 50 seconds ago.
+  GetPermissionRequestManager()->set_on_page_loaded_time_for_testing(
+      base::TimeTicks::Now() - base::Seconds(50));
+
+  // Request geolocation permission.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
+      kInitialURL, permissions::RequestType::kGeolocation,
+      permissions::PermissionRequestGestureType::GESTURE,
+      /*request_state=*/nullptr);
+  GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
+                                            std::move(request_supported));
+
+  bubble_factory()->WaitForPermissionBubble();
+  EXPECT_EQ(1, bubble_factory()->show_count());
+
+  // Histogram should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Geolocation."
+      "PrePromptSessionDuration1m",
+      base::Seconds(50).InMilliseconds(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PrePromptSessionDuration_Notification_5m) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  const GURL kInitialURL =
+      embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Set the page loaded time to 200 seconds ago.
+  GetPermissionRequestManager()->set_on_page_loaded_time_for_testing(
+      base::TimeTicks::Now() - base::Seconds(200));
+
+  // Request notification permission.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
+      kInitialURL, permissions::RequestType::kNotifications,
+      permissions::PermissionRequestGestureType::GESTURE,
+      /*request_state=*/nullptr);
+  GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
+                                            std::move(request_supported));
+
+  bubble_factory()->WaitForPermissionBubble();
+  EXPECT_EQ(1, bubble_factory()->show_count());
+
+  // Histogram should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Notifications."
+      "PrePromptSessionDuration5m",
+      base::Seconds(200).InMilliseconds(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PrePromptSessionDuration_Geolocation_5m) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  const GURL kInitialURL =
+      embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Set the page loaded time to 200 seconds ago.
+  GetPermissionRequestManager()->set_on_page_loaded_time_for_testing(
+      base::TimeTicks::Now() - base::Seconds(200));
+
+  // Request geolocation permission.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
+      kInitialURL, permissions::RequestType::kGeolocation,
+      permissions::PermissionRequestGestureType::GESTURE,
+      /*request_state=*/nullptr);
+  GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
+                                            std::move(request_supported));
+
+  bubble_factory()->WaitForPermissionBubble();
+  EXPECT_EQ(1, bubble_factory()->show_count());
+
+  // Histogram should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Geolocation."
+      "PrePromptSessionDuration5m",
+      base::Seconds(200).InMilliseconds(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PrePromptSessionDuration_Notification_1h) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  const GURL kInitialURL =
+      embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Set the page loaded time to 50 minutes ago.
+  GetPermissionRequestManager()->set_on_page_loaded_time_for_testing(
+      base::TimeTicks::Now() - base::Minutes(50));
+
+  // Request notification permission.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
+      kInitialURL, permissions::RequestType::kNotifications,
+      permissions::PermissionRequestGestureType::GESTURE,
+      /*request_state=*/nullptr);
+  GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
+                                            std::move(request_supported));
+
+  bubble_factory()->WaitForPermissionBubble();
+  EXPECT_EQ(1, bubble_factory()->show_count());
+
+  // Histogram should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Notifications."
+      "PrePromptSessionDuration1h",
+      base::Minutes(50).InMilliseconds(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PrePromptSessionDuration_Geolocation_1h) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  const GURL kInitialURL =
+      embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Set the page loaded time to 50 minutes ago.
+  GetPermissionRequestManager()->set_on_page_loaded_time_for_testing(
+      base::TimeTicks::Now() - base::Minutes(50));
+
+  // Request geolocation permission.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
+      kInitialURL, permissions::RequestType::kGeolocation,
+      permissions::PermissionRequestGestureType::GESTURE,
+      /*request_state=*/nullptr);
+  GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
+                                            std::move(request_supported));
+
+  bubble_factory()->WaitForPermissionBubble();
+  EXPECT_EQ(1, bubble_factory()->show_count());
+
+  // Histogram should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Geolocation."
+      "PrePromptSessionDuration1h",
+      base::Minutes(50).InMilliseconds(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_TabClose) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kNotifications);
+  CloseTab();
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_TwoNavigations) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kNotifications);
+  NavigateAway("/title1.html");
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration",
+      1);
+  NavigateAway("/title2.html");
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_TabClose_Geolocation) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kGeolocation);
+  CloseTab();
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_TwoNavigations_Geolocation) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kGeolocation);
+  NavigateAway("/title1.html");
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration", 1);
+  NavigateAway("/title2.html");
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_10s_Notifications) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kNotifications);
+  SetFakePromptDisplayTime(permissions::RequestType::kNotifications,
+                           base::Seconds(5));
+  CloseTab();
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications."
+      "PostPromptSessionDuration10s",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_10s_Geolocation) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kGeolocation);
+  SetFakePromptDisplayTime(permissions::RequestType::kGeolocation,
+                           base::Seconds(5));
+  CloseTab();
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration10s",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_1m_Notifications) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kNotifications);
+  SetFakePromptDisplayTime(permissions::RequestType::kNotifications,
+                           base::Seconds(30));
+  CloseTab();
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications."
+      "PostPromptSessionDuration10s",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration1m",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_Notifications_Over1m) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kNotifications);
+  SetFakePromptDisplayTime(permissions::RequestType::kNotifications,
+                           base::Seconds(70));
+  CloseTab();
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications."
+      "PostPromptSessionDuration10s",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration1m",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_1m_Geolocation) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kGeolocation);
+  SetFakePromptDisplayTime(permissions::RequestType::kGeolocation,
+                           base::Seconds(30));
+  CloseTab();
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration10s",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration1m",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_Geolocation_Over1m) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kGeolocation);
+  SetFakePromptDisplayTime(permissions::RequestType::kGeolocation,
+                           base::Seconds(70));
+  CloseTab();
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration10s",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration1m",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_5m_Notifications) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kNotifications);
+  SetFakePromptDisplayTime(permissions::RequestType::kNotifications,
+                           base::Minutes(3));
+  CloseTab();
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration5m",
+      base::Minutes(3).InMilliseconds(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_5m_Geolocation) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kGeolocation);
+  SetFakePromptDisplayTime(permissions::RequestType::kGeolocation,
+                           base::Minutes(3));
+  CloseTab();
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration5m",
+      base::Minutes(3).InMilliseconds(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_30m_Notifications) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kNotifications);
+  SetFakePromptDisplayTime(permissions::RequestType::kNotifications,
+                           base::Minutes(27));
+  CloseTab();
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Notifications."
+      "PostPromptSessionDuration30m",
+      base::Minutes(27).InMilliseconds(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_30m_Geolocation) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kGeolocation);
+  SetFakePromptDisplayTime(permissions::RequestType::kGeolocation,
+                           base::Minutes(28));
+  CloseTab();
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration30m",
+      base::Minutes(28).InMilliseconds(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PermissionRequestManagerPostPromptBrowserTest,
+    PostPromptSessionDuration_TwoNavigations_Geolocation_30m) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kGeolocation);
+  SetFakePromptDisplayTime(permissions::RequestType::kGeolocation,
+                           base::Minutes(28));
+  NavigateAway("/title1.html");
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration30m",
+      1);
+  NavigateAway("/title2.html");
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration30m",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PermissionRequestManagerPostPromptBrowserTest,
+    PostPromptSessionDuration_TwoNavigations_Notifications_30m) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kNotifications);
+  SetFakePromptDisplayTime(permissions::RequestType::kNotifications,
+                           base::Minutes(28));
+  NavigateAway("/title1.html");
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications."
+      "PostPromptSessionDuration30m",
+      1);
+  NavigateAway("/title2.html");
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications."
+      "PostPromptSessionDuration30m",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_10m_Notifications) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kNotifications);
+  SetFakePromptDisplayTime(permissions::RequestType::kNotifications,
+                           base::Minutes(7));
+  CloseTab();
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Notifications."
+      "PostPromptSessionDuration10m",
+      base::Minutes(7).InMilliseconds(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerPostPromptBrowserTest,
+                       PostPromptSessionDuration_10m_Geolocation) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kGeolocation);
+  SetFakePromptDisplayTime(permissions::RequestType::kGeolocation,
+                           base::Minutes(8));
+  CloseTab();
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration10m",
+      base::Minutes(8).InMilliseconds(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PermissionRequestManagerPostPromptBrowserTest,
+    PostPromptSessionDuration_TwoNavigations_Geolocation_10m) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kGeolocation);
+  SetFakePromptDisplayTime(permissions::RequestType::kGeolocation,
+                           base::Minutes(8));
+  NavigateAway("/title1.html");
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration10m",
+      1);
+  NavigateAway("/title2.html");
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration10m",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PermissionRequestManagerPostPromptBrowserTest,
+    PostPromptSessionDuration_TwoNavigations_Notifications_10m) {
+  base::HistogramTester histogram_tester;
+  RequestPermission(permissions::RequestType::kNotifications);
+  SetFakePromptDisplayTime(permissions::RequestType::kNotifications,
+                           base::Minutes(8));
+  NavigateAway("/title1.html");
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications."
+      "PostPromptSessionDuration10m",
+      1);
+  NavigateAway("/title2.html");
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications."
+      "PostPromptSessionDuration10m",
+      1);
+}
+
+class PermissionRequestManagerApproximateLocationBrowserTest
+    : public PermissionRequestManagerBrowserTestBase {
+  base::test::ScopedFeatureList scoped_feature_list_ =
+      base::test::ScopedFeatureList(
+          content_settings::features::kApproximateGeolocationPermission);
+};
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
+                       RequestGeolocationAndApproximateLocationGranted) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
+                                                            initial_url, 1);
+
+  ASSERT_TRUE(GetActiveMainFrame()->IsActive());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  blink::mojom::PermissionDescriptorPtr geolocation_permission_descriptor =
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              blink::PermissionType::GEOLOCATION);
+  content::PermissionResult approx_only_permission_result(
+      blink::mojom::PermissionStatus::GRANTED,
+      content::PermissionStatusSource::UNSPECIFIED,
+      GeolocationSetting({.approximate = PermissionOption::kAllowed,
+                          .precise = PermissionOption::kDenied}));
+
+  permissions::PermissionRequestManager* request_manager =
+      GetPermissionRequestManager();
+
+  {
+    request_manager->set_auto_response_for_test(
+        permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+    request_manager->set_auto_response_prompt_options_for_test(
+        GeolocationPromptOptions{.selected_accuracy =
+                                     GeolocationAccuracy::kApproximate});
+
+    base::RunLoop run_loop;
+    base::MockOnceCallback<void(content::PermissionResult)> callback;
+    EXPECT_CALL(callback, Run(approx_only_permission_result)).WillOnce([&] {
+      run_loop.Quit();
+    });
+
+    content::PermissionController* permission_controller =
+        browser()->profile()->GetPermissionController();
+    permission_controller->RequestPermissionFromCurrentDocument(
+        GetActiveMainFrame(),
+        content::PermissionRequestDescription(
+            geolocation_permission_descriptor.Clone(),
+            /*user_gesture=*/true),
+        callback.Get());
+
+    run_loop.Run();
+  }
+
+  // Now request the permission again. This should not trigger another prompt
+  // but it should keep returning the granted permission.
+  {
+    request_manager->set_auto_response_for_test(
+        permissions::PermissionRequestManager::AutoResponseType::NONE);
+
+    base::RunLoop run_loop;
+    base::MockOnceCallback<void(content::PermissionResult)> callback;
+    EXPECT_CALL(callback, Run(approx_only_permission_result)).WillOnce([&] {
+      run_loop.Quit();
+    });
+
+    content::PermissionController* permission_controller =
+        browser()->profile()->GetPermissionController();
+    EXPECT_EQ(permission_controller->GetPermissionResultForCurrentDocument(
+                  geolocation_permission_descriptor.Clone(),
+                  web_contents->GetPrimaryMainFrame()),
+              approx_only_permission_result);
+    permission_controller->RequestPermissionFromCurrentDocument(
+        web_contents->GetPrimaryMainFrame(),
+        content::PermissionRequestDescription(
+            geolocation_permission_descriptor.Clone(),
+            /*user_gesture=*/true),
+        callback.Get());
+
+    run_loop.Run();
+  }
 }
 
 }  // anonymous namespace

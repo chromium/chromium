@@ -12,6 +12,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -130,7 +131,8 @@ class DnsLatencyRoutineTest : public ::testing::Test {
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
   raw_ptr<Profile, DanglingUntriaged> test_profile_;
   std::unique_ptr<FakeTickClock> fake_tick_clock_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   TestingProfileManager profile_manager_;
   std::unique_ptr<DnsLatencyRoutine> dns_latency_routine_;
   base::WeakPtrFactory<DnsLatencyRoutineTest> weak_factory_{this};
@@ -142,8 +144,7 @@ class DnsLatencyRoutineTest : public ::testing::Test {
 TEST_F(DnsLatencyRoutineTest, TestSuccessfulResolutions) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/std::nullopt);
+      net::AddressList(FakeIPAddress()), net::HostResolverEndpointResults());
   SetUpAndRunRoutine(std::move(fake_dns_result),
                      kSuccessfulDnsResolutionDelayMs,
                      mojom::RoutineVerdict::kNoProblem, {});
@@ -154,9 +155,8 @@ TEST_F(DnsLatencyRoutineTest, TestSuccessfulResolutions) {
 TEST_F(DnsLatencyRoutineTest, TestUnsuccessfulResolution) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::ERR_NAME_NOT_RESOLVED,
-      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-      /*resolved_addresses=*/std::nullopt,
-      /*endpoint_results_with_metadata=*/std::nullopt);
+      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), net::AddressList(),
+      net::HostResolverEndpointResults());
   // The time taken to complete the resolution is not important for this test,
   // because a failed resolution attempt already results in a problem.
   SetUpAndRunRoutine(std::move(fake_dns_result),
@@ -171,8 +171,7 @@ TEST_F(DnsLatencyRoutineTest, TestUnsuccessfulResolution) {
 TEST_F(DnsLatencyRoutineTest, TestLatencySlightlyAboveThreshold) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/std::nullopt);
+      net::AddressList(FakeIPAddress()), net::HostResolverEndpointResults());
   SetUpAndRunRoutine(std::move(fake_dns_result), kSlightlyAboveThresholdDelayMs,
                      mojom::RoutineVerdict::kProblem,
                      {mojom::DnsLatencyProblem::kSlightlyAboveThreshold});
@@ -184,8 +183,7 @@ TEST_F(DnsLatencyRoutineTest, TestLatencySlightlyAboveThreshold) {
 TEST_F(DnsLatencyRoutineTest, TestLatencySignificantlyAboveThreshold) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/std::nullopt);
+      net::AddressList(FakeIPAddress()), net::HostResolverEndpointResults());
   SetUpAndRunRoutine(std::move(fake_dns_result),
                      kSignificantlyAboveThresholdDelayMs,
                      mojom::RoutineVerdict::kProblem,

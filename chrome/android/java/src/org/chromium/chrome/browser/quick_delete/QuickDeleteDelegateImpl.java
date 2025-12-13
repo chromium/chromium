@@ -4,27 +4,28 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * An implementation of the {@link QuickDeleteDelegate} to handle quick delete operations for
  * Chrome.
  */
+@NullMarked
 public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
-    private final @NonNull Supplier<Profile> mProfileSupplier;
-    private final @NonNull Supplier<TabSwitcher> mTabSwitcherSupplier;
+    private final Supplier<Profile> mProfileSupplier;
+    private final Supplier<TabSwitcher> mTabSwitcherSupplier;
 
     /**
      * @param profileSupplier A supplier for {@link Profile} that owns the data being deleted.
@@ -32,14 +33,13 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
      *     trigger the Quick Delete animation.
      */
     public QuickDeleteDelegateImpl(
-            @NonNull Supplier<Profile> profileSupplier,
-            @NonNull Supplier<TabSwitcher> tabSwitcherSupplier) {
+            Supplier<Profile> profileSupplier, Supplier<TabSwitcher> tabSwitcherSupplier) {
         mProfileSupplier = profileSupplier;
         mTabSwitcherSupplier = tabSwitcherSupplier;
     }
 
     @Override
-    public void performQuickDelete(@NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod) {
+    public void performQuickDelete(Runnable onDeleteFinished, @TimePeriod int timePeriod) {
         Profile profile = mProfileSupplier.get().getOriginalProfile();
         BrowsingDataBridge.getForProfile(profile)
                 .clearBrowsingData(
@@ -53,7 +53,7 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
     }
 
     @Override
-    void showQuickDeleteAnimation(@NonNull Runnable onAnimationEnd, @NonNull List<Tab> tabs) {
+    void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
         @Nullable TabSwitcher tabSwitcher = mTabSwitcherSupplier.get();
         if (tabSwitcher == null) {
             onAnimationEnd.run();
@@ -64,12 +64,6 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
 
     @Override
     boolean isInMultiWindowMode() {
-        return MultiWindowUtils.getInstanceCount() > 1;
-    }
-
-    @Override
-    void triggerHatsSurvey() {
-        Profile profile = mProfileSupplier.get().getOriginalProfile();
-        BrowsingDataBridge.getForProfile(profile).requestHatsSurvey(/* quickDelete= */ true);
+        return MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY) > 1;
     }
 }

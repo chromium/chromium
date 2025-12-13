@@ -1531,13 +1531,15 @@ static void CheckMulticolumnPositionedObjects(const LayoutBox* multicol,
        multicol->PhysicalFragments()) {
     EXPECT_TRUE(fragmentation_root.IsFragmentationContextRoot());
     EXPECT_FALSE(fragmentation_root.HasOutOfFlowFragmentChild());
-    for (const PhysicalFragmentLink& fragmentainer :
-         fragmentation_root.Children()) {
+    for (const PhysicalFragmentLink& child : fragmentation_root.Children()) {
+      const auto* fragmentainer = DynamicTo<PhysicalBoxFragment>(child.get());
+      ASSERT_TRUE(fragmentainer);
       EXPECT_TRUE(fragmentainer->IsFragmentainerBox());
       EXPECT_TRUE(fragmentainer->HasOutOfFlowFragmentChild());
-      for (const PhysicalFragmentLink& child : fragmentainer->Children()) {
-        if (child->GetLayoutObject() == abspos)
+      for (const PhysicalFragmentLink& grandchild : fragmentainer->Children()) {
+        if (grandchild->GetLayoutObject() == abspos) {
           return;
+        }
       }
     }
   }
@@ -1757,36 +1759,6 @@ TEST_F(OutOfFlowLayoutPartTest, RelayoutNestedMulticolWithOOF) {
   ASSERT_TRUE(fragmentainer);
   // It should still have two children: the relpos and the OOF.
   EXPECT_EQ(fragmentainer->Children().size(), 2u);
-}
-
-TEST_F(OutOfFlowLayoutPartTest, UseCountOutOfFlowNoInsets) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="position: absolute; justify-self: center;"></div>
-  )HTML");
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kOutOfFlowJustifySelfNoInsets));
-  EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfNoInsets));
-}
-
-TEST_F(OutOfFlowLayoutPartTest, UseCountOutOfFlowSingleInset) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="position: absolute; right: 0; bottom: 0; justify-self: center;"></div>
-  )HTML");
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kOutOfFlowJustifySelfSingleInset));
-  EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfSingleInset));
-}
-
-TEST_F(OutOfFlowLayoutPartTest, UseCountOutOfFlowBothInsets) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="position: absolute; inset: 0; justify-self: center;"></div>
-  )HTML");
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kOutOfFlowJustifySelfBothInsets));
-  EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfBothInsets));
 }
 
 TEST_F(OutOfFlowLayoutPartTest, EmptyFragmentainersBeforeOOF) {

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -26,6 +27,10 @@ using DiscardReason = DiscardEligibilityPolicy::DiscardReason;
 using CanDiscardResult::kDisallowed;
 using CanDiscardResult::kEligible;
 using CanDiscardResult::kProtected;
+using performance_manager::testing::ExpectCanDiscardDisallowedAllReasons;
+using performance_manager::testing::ExpectCanDiscardEligible;
+using performance_manager::testing::ExpectCanDiscardEligibleAllReasons;
+using performance_manager::testing::ExpectCanDiscardProtected;
 using ::testing::Contains;
 using ::testing::Return;
 
@@ -115,26 +120,6 @@ class DiscardEligibilityPolicyTest
                                  /*same_document=*/false,
                                  /*is_served_from_back_forward_cache=*/false);
   }
-
-  // Convenience wrappers for DiscardEligibilityPolicy::CanDiscard().
-  CanDiscardResult CanDiscard(
-      const PageNode* page_node,
-      DiscardReason discard_reason,
-      std::vector<CannotDiscardReason>* cannot_discard_reasons = nullptr) {
-    return DiscardEligibilityPolicy::GetFromGraph(graph())->CanDiscard(
-        page_node, discard_reason, kNonVisiblePagesUrgentProtectionTime,
-        cannot_discard_reasons);
-  }
-
-  CanDiscardResult CanDiscardWithMinimumTimeInBackground(
-      const PageNode* page_node,
-      DiscardReason discard_reason,
-      base::TimeDelta minimum_time_in_background,
-      std::vector<CannotDiscardReason>* cannot_discard_reasons = nullptr) {
-    return DiscardEligibilityPolicy::GetFromGraph(graph())->CanDiscard(
-        page_node, discard_reason, minimum_time_in_background,
-        cannot_discard_reasons);
-  }
 };
 
 TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardMultipleCurrentMainFrames) {
@@ -155,9 +140,7 @@ TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardMultipleCurrentMainFrames) {
   // An arbitrary "current" frame will be returned by GetMainFrameNode(). Make
   // sure the page can be discarded even if the one without a url is returned.
   // Discarding is only blocked if neither have a url.
-  EXPECT_EQ(kEligible, CanDiscard(page_node(), DiscardReason::URGENT));
-  EXPECT_EQ(kEligible, CanDiscard(page_node(), DiscardReason::PROACTIVE));
-  EXPECT_EQ(kEligible, CanDiscard(page_node(), DiscardReason::EXTERNAL));
+  ExpectCanDiscardEligibleAllReasons(page_node());
 
   SetPageAndFrameUrl(GURL(), page_node(), frame_node());
 
@@ -166,9 +149,13 @@ TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardMultipleCurrentMainFrames) {
   ASSERT_TRUE(other_frame_node->GetURL().is_empty());
   ASSERT_TRUE(other_frame_node->IsCurrent());
 
-  EXPECT_EQ(kProtected, CanDiscard(page_node(), DiscardReason::URGENT));
-  EXPECT_EQ(kProtected, CanDiscard(page_node(), DiscardReason::PROACTIVE));
-  EXPECT_EQ(kEligible, CanDiscard(page_node(), DiscardReason::EXTERNAL));
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kInvalidURL);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 
   SetPageAndFrameUrl(GURL("https://foo.com"), page_node(),
                      other_frame_node.get());
@@ -178,27 +165,18 @@ TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardMultipleCurrentMainFrames) {
   ASSERT_FALSE(other_frame_node->GetURL().is_empty());
   ASSERT_TRUE(other_frame_node->IsCurrent());
 
-  EXPECT_EQ(kEligible, CanDiscard(page_node(), DiscardReason::URGENT));
-  EXPECT_EQ(kEligible, CanDiscard(page_node(), DiscardReason::PROACTIVE));
-  EXPECT_EQ(kEligible, CanDiscard(page_node(), DiscardReason::EXTERNAL));
+  ExpectCanDiscardEligibleAllReasons(page_node());
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardVisiblePage) {
   page_node()->SetIsVisible(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kVisible));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kVisible));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kVisible);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardAudiblePage) {
@@ -206,59 +184,34 @@ TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardAudiblePage) {
   // Ensure that the discard is being blocked because audio is playing, not
   // because GetTimeSinceLastAudibleChange() is recent.
   task_env().FastForwardBy(kTabAudioProtectionTime * 2);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kAudible));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kAudible));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kAudible);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest,
        TestCannotDiscardPageWithDiscardAttemptMarker) {
   DiscardEligibilityPolicy::AddDiscardAttemptMarker(page_node());
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kDisallowed,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kDiscardAttempted));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kDisallowed,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kDiscardAttempted));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kDisallowed,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kDiscardAttempted));
+  ExpectCanDiscardDisallowedAllReasons(page_node(),
+                                       CannotDiscardReason::kDiscardAttempted);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardRecentlyAudiblePage) {
   page_node()->SetIsAudible(true);
   page_node()->SetIsAudible(false);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kRecentlyAudible));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kRecentlyAudible));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kRecentlyAudible);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 #endif
 
@@ -287,23 +240,8 @@ TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardNeverAudiblePage) {
   // from discarding due to kTabAudioProtectionTime.
   constexpr base::TimeDelta kMinTimeInBackground = kTabAudioProtectionTime / 2;
   task_env().FastForwardBy(kMinTimeInBackground);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kEligible, CanDiscardWithMinimumTimeInBackground(
-                           new_page_node.get(), DiscardReason::URGENT,
-                           kMinTimeInBackground, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
 
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible, CanDiscardWithMinimumTimeInBackground(
-                           new_page_node.get(), DiscardReason::PROACTIVE,
-                           kMinTimeInBackground, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible, CanDiscardWithMinimumTimeInBackground(
-                           new_page_node.get(), DiscardReason::EXTERNAL,
-                           kMinTimeInBackground, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardEligibleAllReasons(page_node(), kMinTimeInBackground);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
@@ -312,346 +250,213 @@ TEST_F(DiscardEligibilityPolicyTest,
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
   AdvanceClock(base::Seconds(1));
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kRecentlyVisible));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kRecentlyVisible));
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kRecentlyVisible);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible, CanDiscardWithMinimumTimeInBackground(
-                           page_node(), DiscardReason::URGENT, base::Seconds(1),
-                           &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible, CanDiscardWithMinimumTimeInBackground(
-                           page_node(), DiscardReason::PROACTIVE,
-                           base::Seconds(1), &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible, CanDiscardWithMinimumTimeInBackground(
-                           page_node(), DiscardReason::EXTERNAL,
-                           base::Seconds(1), &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardEligibleAllReasons(page_node(), base::Seconds(1));
 }
 #endif
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPdf) {
   SetPageAndFrameUrlWithMimeType(GURL("https://foo.com/doc.pdf"),
                                  "application/pdf");
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kPdf));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kPdf));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kPdf);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
-
-// TODO(crbug.com/422767952): Add a test case for Glic-pinned tabs.
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageWithoutMainFrame) {
   ResetFrameNode();
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kDisallowed,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kNoMainFrame));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kDisallowed,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kNoMainFrame));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kDisallowed,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kNoMainFrame));
+  ExpectCanDiscardDisallowedAllReasons(page_node(),
+                                       CannotDiscardReason::kNoMainFrame);
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageAlreadyDiscarded) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsDiscardedForTesting(true);
 
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kDisallowed,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kAlreadyDiscarded));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kDisallowed,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kAlreadyDiscarded));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kDisallowed,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kAlreadyDiscarded));
+  ExpectCanDiscardDisallowedAllReasons(page_node(),
+                                       CannotDiscardReason::kAlreadyDiscarded);
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardExtension) {
   SetPageAndFrameUrl(GURL("chrome-extension://foo"));
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kNotWebOrInternal));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kNotWebOrInternal));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kNotWebOrInternal);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageWithInvalidURL) {
   SetPageAndFrameUrl(GURL("foo42"));
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kInvalidURL));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kInvalidURL));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kInvalidURL);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest,
        TestCannotDiscardPageProtectedByExtension) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsAutoDiscardableForTesting(false);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kExtensionProtected));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kExtensionProtected));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kExtensionProtected);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageCapturingVideo) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingVideoForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kCapturingVideo));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kCapturingVideo));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kCapturingVideo);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageCapturingAudio) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingAudioForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kCapturingAudio));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kCapturingAudio));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kCapturingAudio);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageBeingMirrored) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsBeingMirroredForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kBeingMirrored));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kBeingMirrored));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kBeingMirrored);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageCapturingWindow) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingWindowForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kCapturingWindow));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kCapturingWindow));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kCapturingWindow);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageCapturingDisplay) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingDisplayForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kCapturingDisplay));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kCapturingDisplay));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kCapturingDisplay);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest,
        TestCannotDiscardPageConnectedToBluetoothDevice) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsConnectedToBluetoothDeviceForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec,
-              Contains(CannotDiscardReason::kConnectedToBluetooth));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec,
-              Contains(CannotDiscardReason::kConnectedToBluetooth));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kConnectedToBluetooth);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardIsConnectedToUSBDevice) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsConnectedToUSBDeviceForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kConnectedToUSB));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kConnectedToUSB));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kConnectedToUSB);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest,
        TestCannotDiscardPageWithFormInteractions) {
   frame_node()->SetHadFormInteraction();
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kFormInteractions));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kFormInteractions));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kFormInteractions);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageWithUserEdits) {
   frame_node()->SetHadUserEdits();
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kUserEdits));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kUserEdits));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kUserEdits);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardActiveTab) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsActiveTabForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kActiveTab));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kActiveTab));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kActiveTab);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest,
@@ -659,39 +464,20 @@ TEST_F(DiscardEligibilityPolicyTest,
   // The page is discardable if notification permission is denied.
   page_node()->OnNotificationPermissionStatusChange(
       blink::mojom::PermissionStatus::DENIED);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
 
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardEligibleAllReasons(page_node());
 
   // The page is discardable if notification permission is granted.
   page_node()->OnNotificationPermissionStatusChange(
       blink::mojom::PermissionStatus::GRANTED);
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec,
-              Contains(CannotDiscardReason::kNotificationsEnabled));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardEligible(page_node(), {DiscardReason::URGENT});
+  ExpectCanDiscardProtected(
+      page_node(), {DiscardReason::PROACTIVE, DiscardReason::SUGGESTED},
+      CannotDiscardReason::kNotificationsEnabled);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageOnNoDiscardList) {
@@ -702,167 +488,95 @@ TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageOnNoDiscardList) {
       ->SetNoDiscardPatternsForProfile(page->GetBrowserContextID(),
                                        {"youtube.com"});
   SetPageAndFrameUrl(GURL("https://www.youtube.com"));
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kOptedOut));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kOptedOut));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kOptedOut);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 
   SetPageAndFrameUrl(GURL("https://www.example.com"));
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
 
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardEligibleAllReasons(page_node());
 
   // Changing the no discard list rebuilds the matcher
   DiscardEligibilityPolicy::GetFromGraph(graph())
       ->SetNoDiscardPatternsForProfile(page->GetBrowserContextID(),
                                        {"google.com"});
   SetPageAndFrameUrl(GURL("https://www.youtube.com"));
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
 
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardEligibleAllReasons(page_node());
 
   SetPageAndFrameUrl(GURL("https://www.google.com"));
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kOptedOut));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kOptedOut));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kOptedOut);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 
   // Setting the no discard list to empty makes all URLs discardable again.
   DiscardEligibilityPolicy::GetFromGraph(graph())
       ->SetNoDiscardPatternsForProfile(page->GetBrowserContextID(), {});
   SetPageAndFrameUrl(GURL("https://www.google.com"));
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
 
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardEligibleAllReasons(page_node());
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPinnedTab) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsPinnedTabForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kPinnedTab));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kPinnedTab));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kPinnedTab);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardWithDevToolsOpen) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsDevToolsOpenForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kDevToolsOpen));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kDevToolsOpen));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kDevToolsOpen);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest,
        TestCannotProactivelyDiscardAfterUpdatedTitleOrFaviconInBackground) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetUpdatedTitleOrFaviconInBackgroundForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kBackgroundActivity));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardEligible(page_node(), {DiscardReason::URGENT});
+  ExpectCanDiscardProtected(
+      page_node(), {DiscardReason::PROACTIVE, DiscardReason::SUGGESTED},
+      CannotDiscardReason::kBackgroundActivity);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardWithPictureInPicture) {
   page_node()->SetHasPictureInPicture(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kPictureInPicture));
 
-  reasons_vec.clear();
-  EXPECT_EQ(kProtected,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kPictureInPicture));
-
-  reasons_vec.clear();
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+  ExpectCanDiscardProtected(page_node(),
+                            {DiscardReason::URGENT, DiscardReason::PROACTIVE,
+                             DiscardReason::SUGGESTED},
+                            CannotDiscardReason::kPictureInPicture);
+  ExpectCanDiscardEligible(
+      page_node(),
+      {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
 TEST_F(DiscardEligibilityPolicyTest, TestAlwaysDiscardForTesting) {
@@ -870,10 +584,8 @@ TEST_F(DiscardEligibilityPolicyTest, TestAlwaysDiscardForTesting) {
       ->set_always_discard_for_testing(true);
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsActiveTabForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_EQ(kEligible,
-            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
+
+  ExpectCanDiscardEligibleAllReasons(page_node());
 }
 
 }  // namespace performance_manager::policies

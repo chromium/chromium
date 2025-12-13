@@ -201,12 +201,12 @@ std::vector<ReportingEndpoint> FilterEndpointsByOrigin(
     const std::map<base::UnguessableToken, std::vector<ReportingEndpoint>>&
         document_endpoints,
     const url::Origin& origin) {
-  std::set<std::string> group_names;
+  std::set<std::string_view> group_names;
   std::vector<ReportingEndpoint> result;
   for (const auto& token_and_endpoints : document_endpoints) {
     for (const auto& endpoint : token_and_endpoints.second) {
       if (endpoint.group_key.origin == origin) {
-        if (group_names.insert(endpoint.group_key.group_name).second) {
+        if (group_names.emplace(endpoint.group_key.group_name).second) {
           // Push the endpoint only when the insertion succeeds.
           result.push_back(endpoint);
         }
@@ -219,7 +219,8 @@ std::vector<ReportingEndpoint> FilterEndpointsByOrigin(
 base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
 ReportingCacheImpl::GetV1ReportingEndpointsByOrigin() const {
   base::flat_map<url::Origin, std::vector<ReportingEndpoint>> result;
-  base::flat_map<url::Origin, base::flat_set<std::string>> group_name_helper;
+  base::flat_map<url::Origin, base::flat_set<std::string_view>>
+      group_name_helper;
   for (const auto& token_and_endpoints : document_endpoints_) {
     for (const auto& endpoint : token_and_endpoints.second) {
       // Document endpoints should have an origin.
@@ -227,7 +228,7 @@ ReportingCacheImpl::GetV1ReportingEndpointsByOrigin() const {
       auto origin = endpoint.group_key.origin.value();
       if (result.count(origin)) {
         if (group_name_helper.at(origin)
-                .insert(endpoint.group_key.group_name)
+                .emplace(endpoint.group_key.group_name)
                 .second) {
           // Push the endpoint only when the insertion succeeds.
           result.at(origin).push_back(endpoint);
@@ -237,8 +238,8 @@ ReportingCacheImpl::GetV1ReportingEndpointsByOrigin() const {
         endpoints_for_origin.push_back(endpoint);
         result.emplace(origin, endpoints_for_origin);
 
-        base::flat_set<std::string> group_names;
-        group_names.insert(endpoint.group_key.group_name);
+        base::flat_set<std::string_view> group_names;
+        group_names.emplace(endpoint.group_key.group_name);
         group_name_helper.emplace(origin, group_names);
       }
     }

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
+// TODO(crbug.com/390223051): spanify to fix the errors.
+#pragma allow_unsafe_buffers
 #endif
 
 #include "media/gpu/v4l2/v4l2_jpeg_encode_accelerator.h"
@@ -584,7 +584,7 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
   std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
       client_native_pixmap_factory_->ImportFromHandle(
           std::move(output_gmb_handle).native_pixmap_handle(),
-          native_pixmap_size, gfx::BufferFormat::R_8,
+          native_pixmap_size, viz::SinglePlaneFormat::kR_8,
           gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE);
   if (!native_pixmap) {
     VLOGF(1) << "Failed to import native pixmap";

@@ -1109,7 +1109,7 @@ class circular_deque {
     min_new_capacity =
         std::max(min_new_capacity, internal::kCircularBufferInitialCapacity);
 
-    // std::vector always grows by at least 50%. WTF::Deque grows by at least
+    // std::vector always grows by at least 50%. blink::Deque grows by at least
     // 25%. We expect queue workloads to generally stay at a similar size and
     // grow less than a vector might, so use 25%.
     SetCapacityTo(std::max(min_new_capacity, cur_capacity + cur_capacity / 4u));

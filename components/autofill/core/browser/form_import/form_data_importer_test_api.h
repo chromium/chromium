@@ -61,6 +61,11 @@ class FormDataImporterTestApi {
     return fdi_->ExtractAddressProfiles(form, extracted_address_profiles);
   }
 
+  base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(
+      const FormStructure& submitted_form) const {
+    return fdi_->ExtractGUIDsOfProfilesWithoutManualEdits(submitted_form);
+  }
+
   base::flat_map<FieldType, std::u16string> GetObservedFieldValues(
       base::span<const AutofillField* const> section_fields) {
     ProfileImportMetadata import_metadata;
@@ -107,10 +112,6 @@ class FormDataImporterTestApi {
     return fdi_->ProcessExtractedCreditCard(
         submitted_form, credit_card_import_candidate,
         is_credit_card_upstream_enabled, ukm_source_id);
-  }
-
-  std::optional<int64_t> fetched_card_instrument_id() {
-    return fdi_->fetched_card_instrument_id_;
   }
 
   void ImportAndProcessFormData(const FormStructure& submitted_form,

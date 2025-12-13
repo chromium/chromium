@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, Basic) {
       embedded_test_server()->port());
 
   base::FilePath app_dir;
-  BackgroundContentsClosedObserver closed_observer(browser()->profile());
+  BackgroundContentsClosedObserver closed_observer(profile());
   ASSERT_TRUE(CreateApp(app_manifest, &app_dir));
   ASSERT_TRUE(LoadExtension(app_dir));
   // Background mode should not be active until a background page is created.
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, ManifestBackgroundPage) {
   const Extension* extension = GetSingleLoadedExtension();
   background_waiter.WaitForBackgroundContents(extension->id());
   BackgroundContents* background_contents =
-      BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
+      BackgroundContentsServiceFactory::GetForProfile(profile())
           ->GetAppBackgroundContents((extension->id()));
   ASSERT_TRUE(background_contents);
 
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, NoJsBackgroundPage) {
   // happen when window.open creates a background page that switches
   // RenderViewHosts. See http://crbug.com/165138.
   chrome::ShowTaskManager(browser());
-  BackgroundContentsCreationObserver creation_observer(browser()->profile());
+  BackgroundContentsCreationObserver creation_observer(profile());
 
   std::string app_manifest = base::StringPrintf(
       "{"
@@ -310,9 +310,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, NoJsBackgroundPage) {
 
   // There isn't a background page loaded initially.
   const Extension* extension = GetSingleLoadedExtension();
-  ASSERT_FALSE(
-      BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
-          ->GetAppBackgroundContents(extension->id()));
+  ASSERT_FALSE(BackgroundContentsServiceFactory::GetForProfile(profile())
+                   ->GetAppBackgroundContents(extension->id()));
 
   BackgroundContentsTestWaiter background_waiter(profile());
   // The test makes sure that window.open returns null.
@@ -320,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, NoJsBackgroundPage) {
   background_waiter.WaitForBackgroundContents(extension->id());
   // And after it runs there should be a background page.
   BackgroundContents* background_contents =
-      BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
+      BackgroundContentsServiceFactory::GetForProfile(profile())
           ->GetAppBackgroundContents((extension->id()));
   ASSERT_TRUE(background_contents);
 
@@ -368,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, NoJsManifestBackgroundPage) {
   const Extension* extension = GetSingleLoadedExtension();
   background_waiter.WaitForBackgroundContents(extension->id());
   BackgroundContents* background_contents =
-      BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
+      BackgroundContentsServiceFactory::GetForProfile(profile())
           ->GetAppBackgroundContents((extension->id()));
   ASSERT_TRUE(background_contents);
 
@@ -512,9 +511,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_OpenThenClose) {
   ASSERT_TRUE(LoadExtension(app_dir));
   // There isn't a background page loaded initially.
   const Extension* extension = GetSingleLoadedExtension();
-  ASSERT_FALSE(
-      BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
-          ->GetAppBackgroundContents(extension->id()));
+  ASSERT_FALSE(BackgroundContentsServiceFactory::GetForProfile(profile())
+                   ->GetAppBackgroundContents(extension->id()));
   // Background mode should not be active until a background page is created.
   ASSERT_TRUE(VerifyBackgroundMode(false));
 
@@ -525,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_OpenThenClose) {
   background_waiter.WaitForBackgroundContents(extension->id());
   // Verify that the background contents exist.
   BackgroundContents* background_contents =
-      BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
+      BackgroundContentsServiceFactory::GetForProfile(profile())
           ->GetAppBackgroundContents((extension->id()));
   ASSERT_TRUE(background_contents);
 
@@ -545,9 +543,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_OpenThenClose) {
 
   // Background mode should no longer be active.
   ASSERT_TRUE(VerifyBackgroundMode(false));
-  ASSERT_FALSE(
-      BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
-          ->GetAppBackgroundContents(extension->id()));
+  ASSERT_FALSE(BackgroundContentsServiceFactory::GetForProfile(profile())
+                   ->GetAppBackgroundContents(extension->id()));
 }
 
 IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, UnloadExtensionWhileHidden) {
@@ -587,9 +584,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, UnloadExtensionWhileHidden) {
 
   const Extension* extension = GetSingleLoadedExtension();
   background_waiter->WaitForBackgroundContents(extension->id());
-  ASSERT_TRUE(
-      BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
-          ->GetAppBackgroundContents(extension->id()));
+  ASSERT_TRUE(BackgroundContentsServiceFactory::GetForProfile(profile())
+                  ->GetAppBackgroundContents(extension->id()));
 
   // We need to ensure `background_waiter` gets freed before the call to
   // UnloadExtensionViaTask(), otherwise we'll get a dangling raw_ptr warning.

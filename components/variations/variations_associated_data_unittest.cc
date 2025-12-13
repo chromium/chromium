@@ -49,7 +49,7 @@ class VariationsAssociatedDataTest : public ::testing::Test {
   ~VariationsAssociatedDataTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
     // process singletons.
-    testing::ClearAllVariationIDs();
+    test::ClearAllVariationIDs();
   }
 };
 
@@ -74,10 +74,10 @@ TEST_F(VariationsAssociatedDataTest, AssociateGoogleVariationID) {
   trial_true->AppendGroup(winner, 10);
 
   // Set GoogleVariationIDs so we can verify that they were chosen correctly.
-  AssociateGoogleVariationID(GOOGLE_APP, trial_true->trial_name(),
-                             default_name1, TEST_VALUE_A);
-  AssociateGoogleVariationID(GOOGLE_APP, trial_true->trial_name(), winner,
-                             TEST_VALUE_B);
+  AssociateGoogleVariationIDForTesting(GOOGLE_APP, trial_true->trial_name(),
+                                       default_name1, TEST_VALUE_A);
+  AssociateGoogleVariationIDForTesting(GOOGLE_APP, trial_true->trial_name(),
+                                       winner, TEST_VALUE_B);
 
   EXPECT_EQ(winner, trial_true->group_name());
   EXPECT_EQ(TEST_VALUE_B, GetIDForTrial(GOOGLE_APP, trial_true.get()));
@@ -88,10 +88,10 @@ TEST_F(VariationsAssociatedDataTest, AssociateGoogleVariationID) {
   const std::string loser = "ALoser";
   trial_false->AppendGroup(loser, 0);
 
-  AssociateGoogleVariationID(GOOGLE_APP, trial_false->trial_name(),
-                             default_name2, TEST_VALUE_A);
-  AssociateGoogleVariationID(GOOGLE_APP, trial_false->trial_name(), loser,
-                             TEST_VALUE_B);
+  AssociateGoogleVariationIDForTesting(GOOGLE_APP, trial_false->trial_name(),
+                                       default_name2, TEST_VALUE_A);
+  AssociateGoogleVariationIDForTesting(GOOGLE_APP, trial_false->trial_name(),
+                                       loser, TEST_VALUE_B);
 
   EXPECT_NE(loser, trial_false->group_name());
   EXPECT_EQ(TEST_VALUE_A, GetIDForTrial(GOOGLE_APP, trial_false.get()));
@@ -116,17 +116,63 @@ TEST_F(VariationsAssociatedDataTest, NoAssociation) {
   }
 }
 
-// Ensure that the AssociateGoogleVariationIDForce works as expected.
+// Ensure that the overwrite behavior of AssociateGoogleVariationID works as
+// expected.
 TEST_F(VariationsAssociatedDataTest, ForceAssociation) {
   EXPECT_EQ(EMPTY_ID, GetGoogleVariationID(APP, TRIAL, GROUP));
 
-  AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_A);
+  AssociateGoogleVariationIDForTesting(APP, TRIAL, GROUP, TEST_VALUE_A);
   EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(APP, TRIAL, GROUP));
-  AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_B);
-  EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(APP, TRIAL, GROUP));
-
-  AssociateGoogleVariationIDForce(APP, TRIAL, GROUP, TEST_VALUE_B);
+  AssociateGoogleVariationIDForTesting(APP, TRIAL, GROUP, TEST_VALUE_B);
   EXPECT_EQ(TEST_VALUE_B, GetGoogleVariationID(APP, TRIAL, GROUP));
+}
+
+TEST_F(VariationsAssociatedDataTest, TimeWindow) {
+  const base::Time start = base::Time::Now();
+  const base::Time end = start + base::Hours(1);
+  const TimeWindow time_window(start, end);
+
+  EXPECT_TRUE(time_window.IsValid());
+  EXPECT_EQ(start, time_window.start());
+  EXPECT_EQ(end, time_window.end());
+  EXPECT_FALSE(time_window.Contains(start - base::Seconds(1)));
+  EXPECT_TRUE(time_window.Contains(start));
+  EXPECT_TRUE(time_window.Contains(start + base::Seconds(1)));
+  EXPECT_TRUE(time_window.Contains(end - base::Seconds(1)));
+  EXPECT_TRUE(time_window.Contains(end));
+  EXPECT_FALSE(time_window.Contains(end + base::Seconds(1)));
+}
+
+TEST_F(VariationsAssociatedDataTest, InvalidTimeWindow_StartEqualsEnd) {
+  const base::Time start = base::Time::Now();
+  const base::Time end = start;
+  const TimeWindow time_window(start, end);
+
+  EXPECT_FALSE(time_window.IsValid());
+  EXPECT_EQ(start, time_window.start());
+  EXPECT_EQ(end, time_window.end());
+  EXPECT_FALSE(time_window.Contains(start - base::Seconds(1)));
+  EXPECT_FALSE(time_window.Contains(start));
+  EXPECT_FALSE(time_window.Contains(start + base::Seconds(1)));
+  EXPECT_FALSE(time_window.Contains(end - base::Seconds(1)));
+  EXPECT_FALSE(time_window.Contains(end));
+  EXPECT_FALSE(time_window.Contains(end + base::Seconds(1)));
+}
+
+TEST_F(VariationsAssociatedDataTest, InvalidTimeWindow_StartGreaterThanEnd) {
+  const base::Time start = base::Time::Now();
+  const base::Time end = start - base::Minutes(1);
+  const TimeWindow time_window(start, end);
+
+  EXPECT_FALSE(time_window.IsValid());
+  EXPECT_EQ(start, time_window.start());
+  EXPECT_EQ(end, time_window.end());
+  EXPECT_FALSE(time_window.Contains(start - base::Seconds(1)));
+  EXPECT_FALSE(time_window.Contains(start));
+  EXPECT_FALSE(time_window.Contains(start + base::Seconds(1)));
+  EXPECT_FALSE(time_window.Contains(end - base::Seconds(1)));
+  EXPECT_FALSE(time_window.Contains(end));
+  EXPECT_FALSE(time_window.Contains(end + base::Seconds(1)));
 }
 
 // Ensure that timeboxing works as expected.
@@ -135,7 +181,8 @@ TEST_F(VariationsAssociatedDataTest, Timeboxing) {
   const base::Time timestamp = base::Time::Now();
   const base::Time start = timestamp + base::Days(7);
   const base::Time end = timestamp + base::Days(14);
-  AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_A, {start, end});
+  AssociateGoogleVariationIDForTesting(APP, TRIAL, GROUP, TEST_VALUE_A,
+                                       {start, end});
 
   // The associated variation id is not visible before the time window starts.
   EXPECT_EQ(EMPTY_ID,
@@ -169,7 +216,8 @@ TEST_F(VariationsAssociatedDataTest, GetNextTimeWindowEvent_Basic) {
   EXPECT_EQ(base::Time::Max(), GetNextTimeWindowEvent(end));
 
   // Associate a variation id that becomes visible in 7 days, for 7 days.
-  AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_A, {start, end});
+  AssociateGoogleVariationIDForTesting(APP, TRIAL, GROUP, TEST_VALUE_A,
+                                       {start, end});
 
   // Validate the next time window event as 'current_time' moves forward.
   EXPECT_EQ(start, GetNextTimeWindowEvent(start - base::Days(1)));
@@ -195,7 +243,7 @@ TEST_F(VariationsAssociatedDataTest,
   // Associate a variation id for each time window.
   int i = 0;
   for (const auto& window : windows) {
-    AssociateGoogleVariationID(
+    AssociateGoogleVariationIDForTesting(
         APP, base::StrCat({TRIAL, "_", base::NumberToString(i)}), GROUP,
         TEST_VALUE_A + i, window);
     ++i;

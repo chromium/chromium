@@ -21,7 +21,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget_observer.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class PageNavigator;
@@ -50,8 +50,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Exposed constant for spacing between elements.
   static constexpr int kBetweenElementSpacing = 8;
 
-  explicit SavedTabGroupBar(Browser* browser, bool animations_enabled = true);
-  SavedTabGroupBar(Browser* browser,
+  explicit SavedTabGroupBar(BrowserWindowInterface* browser,
+                            bool animations_enabled = true);
+  SavedTabGroupBar(BrowserWindowInterface* browser,
                    TabGroupSyncService* tab_group_service,
                    bool animations_enabled = true);
   SavedTabGroupBar(const SavedTabGroupBar&) = delete;
@@ -113,6 +114,11 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Returns the list of SavedTabGroupButtons in their current order.
   std::vector<SavedTabGroupButton*> GetSavedTabGroupButtons() const;
 
+  // When called, display a menu that shows a "Create new tab group" option and
+  // all the saved tab groups (if there are any). Pressing on the saved tab
+  // groups opens the group into the tab strip.
+  void ShowEverythingMenu();
+
  private:
   // Adds the saved group denoted by `guid` as a button in the
   // `SavedTabGroupBar` if the `guid` exists in `saved_tab_group_model_`.
@@ -158,11 +164,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Creates the overflow button that houses saved tab groups that are not
   // visible in the SavedTabGroupBar.
   std::unique_ptr<SavedTabGroupOverflowButton> CreateOverflowButton();
-
-  // When called, display a menu that shows a "Create new tab group" option and
-  // all the saved tab groups (if there are any). Pressing on the saved tab
-  // groups opens the group into the tab strip.
-  void ShowEverythingMenu();
 
   // Updates the visibilites of all buttons up to `last_index_visible`. The
   // overflow button will be displayed based on `should_show_overflow`.
@@ -221,7 +222,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   raw_ptr<content::PageNavigator, AcrossTasksDanglingUntriaged>
       page_navigator_ = nullptr;
 
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
 
   // During a drag and drop session, `drag_data_` owns the state for the drag.
   std::unique_ptr<SavedTabGroupDragData> drag_data_;

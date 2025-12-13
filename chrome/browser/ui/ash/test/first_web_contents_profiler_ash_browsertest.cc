@@ -18,10 +18,11 @@
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -33,9 +34,9 @@ namespace {
 class FirstNonEmptyPaintObserver : public content::WebContentsObserver {
  public:
   FirstNonEmptyPaintObserver(base::HistogramTester* histogram_tester,
-                             Browser* browser)
+                             BrowserWindowInterface* browser)
       : content::WebContentsObserver(
-            browser->tab_strip_model()->GetActiveWebContents()),
+            browser->GetTabStripModel()->GetActiveWebContents()),
         histogram_tester_(histogram_tester) {
     CHECK(histogram_tester_);
   }
@@ -110,7 +111,7 @@ class FirstWebContentsProfilerAshTest : public InProcessBrowserTest {
 // Creates browser window that will be restored in the main test.
 IN_PROC_BROWSER_TEST_F(FirstWebContentsProfilerAshTest,
                        PRE_RecordsFirstWebContentsMetricsOnRestore) {
-  ASSERT_TRUE(BrowserList::GetInstance()->empty());
+  ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   FirstNonEmptyPaintObserver first_non_empty_paint_observer(
       &histogram_tester_,
@@ -130,9 +131,9 @@ IN_PROC_BROWSER_TEST_F(FirstWebContentsProfilerAshTest,
 // metrics should be recorded.
 IN_PROC_BROWSER_TEST_F(FirstWebContentsProfilerAshTest,
                        RecordsFirstWebContentsMetricsOnRestore) {
-  ASSERT_TRUE(BrowserList::GetInstance()->GetLastActive());
+  ASSERT_TRUE(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   FirstNonEmptyPaintObserver first_non_empty_paint_observer(
-      &histogram_tester_, BrowserList::GetInstance()->GetLastActive());
+      &histogram_tester_, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   ASSERT_TRUE(first_non_empty_paint_observer.Wait());
   histogram_tester_.ExpectTotalCount(
       "Startup.FirstWebContents.MainNavigationStart", 1);

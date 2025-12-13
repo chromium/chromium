@@ -8,7 +8,6 @@ import './auto_tab_groups_results_actions.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -116,7 +115,7 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
   }
 
   protected getName_(organization: TabOrganization): string {
-    return mojoString16ToString(organization.name);
+    return organization.name;
   }
 
   private getMaxScrollableHeight_(): number {

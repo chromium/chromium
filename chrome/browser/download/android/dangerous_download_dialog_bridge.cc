@@ -24,7 +24,7 @@
 #include "chrome/browser/download/android/jni_headers/DangerousDownloadDialogBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace {
 // Gets the "download domain" string shown in the dialog. Currently, this is
@@ -102,3 +102,5 @@ void DangerousDownloadDialogBridge::Cancelled(JNIEnv* env,
     download->Remove();
   }
 }
+
+DEFINE_JNI(DangerousDownloadDialogBridge)

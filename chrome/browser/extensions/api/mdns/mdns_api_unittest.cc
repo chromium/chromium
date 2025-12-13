@@ -223,7 +223,7 @@ class MDnsAPITest : public extensions::ExtensionServiceTestBase {
           "background.html");
     }
 
-    std::string error;
+    std::u16string error;
     return extensions::Extension::Create(
         bogus_file_pathname(name),
         extensions::mojom::ManifestLocation::kInvalidLocation, manifest,

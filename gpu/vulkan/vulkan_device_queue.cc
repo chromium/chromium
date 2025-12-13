@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/vulkan/vulkan_device_queue.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -64,9 +60,9 @@ class VulkanMetric final
   }
 
  private:
-  std::optional<uint64_t> Measure() const override {
+  std::optional<base::ByteCount> Measure() const override {
     auto allocated_used = vma::GetTotalAllocatedAndUsedMemory(vma_allocator_);
-    return allocated_used.first;
+    return base::ByteCount::FromUnsigned(allocated_used.first);
   }
   VmaAllocator vma_allocator_;
 };
@@ -222,8 +218,8 @@ bool VulkanDeviceQueue::Initialize(
   for (const char* extension : required_extensions) {
     if (std::ranges::none_of(physical_device_info.extensions,
                              [extension](const VkExtensionProperties& p) {
-                               return std::strcmp(extension, p.extensionName) ==
-                                      0;
+                               return UNSAFE_TODO(std::strcmp(
+                                          extension, p.extensionName)) == 0;
                              })) {
       // On Fuchsia, some device extensions are provided by layers.
       // TODO(penghuang): checking extensions against layer device extensions
@@ -240,8 +236,8 @@ bool VulkanDeviceQueue::Initialize(
   for (const char* extension : optional_extensions) {
     if (std::ranges::none_of(physical_device_info.extensions,
                              [extension](const VkExtensionProperties& p) {
-                               return std::strcmp(extension, p.extensionName) ==
-                                      0;
+                               return UNSAFE_TODO(std::strcmp(
+                                          extension, p.extensionName)) == 0;
                              })) {
       DLOG(ERROR) << "Optional Vulkan extension " << extension
                   << " is not supported.";

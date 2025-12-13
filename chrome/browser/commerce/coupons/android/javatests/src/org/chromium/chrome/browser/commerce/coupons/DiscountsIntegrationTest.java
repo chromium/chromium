@@ -122,6 +122,7 @@ public class DiscountsIntegrationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/447307244")
     public void testDiscountsContextualPageActionIconShown() {
         navigateAndWaitForDiscountsContextualPageActionIcon();
     }
@@ -130,7 +131,8 @@ public class DiscountsIntegrationTest {
     @SmallTest
     @Feature({"RenderTest"})
     @DisableIf.Build(sdk_equals = 32)
-    // Disabled on Android Automotive. See b/368117896
+    // Disabled on Android Automotive. See b/368117896; Fully disabled due to new flakes.
+    @DisabledTest(message = "https://crbug.com/444441793")
     public void testRenderDiscountContextualPageActionIcon() throws IOException {
         navigateAndWaitForDiscountsContextualPageActionIcon();
         mRenderTestRule.render(

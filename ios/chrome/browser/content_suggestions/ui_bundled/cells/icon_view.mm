@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_view.h"
 
+#import "base/notreached.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_view_configuration.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -14,28 +16,47 @@ namespace {
 constexpr CGFloat kIconContainerSize = 30;
 constexpr CGFloat kIconSquareContainerRadius = 7;
 
-// Returns a UIImageView for the given SF Symbol with color(s) `color_palette`,
-// using `default_symbol`.
-UIImageView* IconForSymbol(NSString* symbol,
-                           CGFloat symbol_width,
-                           BOOL default_symbol,
-                           NSArray<UIColor*>* color_palette = nil) {
+// Returns a UIImageView for the given local image resource using
+// `icon_view_configuration`.
+UIImageView* IconForImage(
+    const IconViewConfiguration* icon_view_configuration) {
+  UIImage* image = [UIImage imageNamed:icon_view_configuration.iconName];
+  UIImageView* icon = [[UIImageView alloc] initWithImage:image];
+
+  icon.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [icon.widthAnchor
+        constraintEqualToConstant:icon_view_configuration.iconWidth],
+    [icon.heightAnchor constraintEqualToAnchor:icon.widthAnchor],
+  ]];
+
+  return icon;
+}
+
+// Returns a UIImageView for the given SF Symbol using
+// `icon_view_configuration`.
+UIImageView* IconForSymbol(
+    const IconViewConfiguration* icon_view_configuration) {
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
       configurationWithWeight:UIImageSymbolWeightMedium];
 
-  if (color_palette) {
+  if (icon_view_configuration.symbolColorPalette) {
     UIImageSymbolConfiguration* colorConfig = [UIImageSymbolConfiguration
-        configurationWithPaletteColors:color_palette];
+        configurationWithPaletteColors:icon_view_configuration
+                                           .symbolColorPalette];
 
     config = [config configurationByApplyingConfiguration:colorConfig];
   }
 
-  UIImage* image = default_symbol
-                       ? DefaultSymbolWithConfiguration(symbol, config)
-                       : CustomSymbolWithConfiguration(symbol, config);
+  UIImage* image = icon_view_configuration.defaultSymbol
+                       ? DefaultSymbolWithConfiguration(
+                             icon_view_configuration.iconName, config)
+                       : CustomSymbolWithConfiguration(
+                             icon_view_configuration.iconName, config);
 
   // If no color palette is provided, make the symbol multicolor.
-  if (!color_palette) {
+  if (!icon_view_configuration.symbolColorPalette) {
     image = MakeSymbolMulticolor(image);
   }
 
@@ -44,7 +65,8 @@ UIImageView* IconForSymbol(NSString* symbol,
   icon.translatesAutoresizingMaskIntoConstraints = NO;
 
   [NSLayoutConstraint activateConstraints:@[
-    [icon.widthAnchor constraintEqualToConstant:symbol_width],
+    [icon.widthAnchor
+        constraintEqualToConstant:icon_view_configuration.iconWidth],
     [icon.heightAnchor constraintEqualToAnchor:icon.widthAnchor],
   ]];
 
@@ -77,84 +99,17 @@ UIView* IconInSquareContainer(UIImageView* icon, UIColor* containerColor) {
 }  // namespace
 
 @implementation IconView {
-  // The symbol name for the icon.
-  NSString* _symbol;
-  // The color palette of the icon.
-  NSArray<UIColor*>* _symbolColorPalette;
-  // The background color of the icon.
-  UIColor* _symbolBackgroundColor;
-  // The width of the symbol.
-  CGFloat _symbolWidth;
-  // YES if `_symbol` is a default symbol name. (NO if `_symbol` is a custom
-  // symbol name.)
-  BOOL _defaultSymbol;
-  // YES if this icon should configure itself in a smaller, compact
-  // size.
-  BOOL _compactLayout;
-  // YES if this icon should place itself within a square enclosure.
-  BOOL _inSquare;
+  // Configuration for this view.
+  IconViewConfiguration* _configuration;
   // The view containing the icon.
   UIView* _icon;
 }
-- (instancetype)initWithDefaultSymbol:(NSString*)defaultSymbolName
-                   symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
-                symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-                          symbolWidth:(CGFloat)symbolWidth
-                        compactLayout:(BOOL)compactLayout
-                             inSquare:(BOOL)inSquare {
-  if ((self = [super init])) {
-    _symbol = defaultSymbolName;
-    _symbolColorPalette = symbolColorPalette;
-    _symbolBackgroundColor = symbolBackgroundColor;
-    _symbolWidth = symbolWidth;
-    _defaultSymbol = YES;
-    _compactLayout = compactLayout;
-    _inSquare = inSquare;
-  }
 
-  return self;
-}
-
-- (instancetype)initWithDefaultSymbol:(NSString*)defaultSymbolName
-                          symbolWidth:(CGFloat)symbolWidth
-                        compactLayout:(BOOL)compactLayout
-                             inSquare:(BOOL)inSquare {
-  return [self initWithDefaultSymbol:defaultSymbolName
-                  symbolColorPalette:@[ [UIColor whiteColor] ]
-               symbolBackgroundColor:[UIColor colorNamed:kBlue500Color]
-                         symbolWidth:symbolWidth
-                       compactLayout:compactLayout
-                            inSquare:inSquare];
-}
-
-- (instancetype)initWithCustomSymbol:(NSString*)customSymbolName
-                  symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
-               symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-                         symbolWidth:(CGFloat)symbolWidth
-                       compactLayout:(BOOL)compactLayout
-                            inSquare:(BOOL)inSquare {
-  if ((self = [super init])) {
-    _symbol = customSymbolName;
-    _symbolColorPalette = symbolColorPalette;
-    _symbolBackgroundColor = symbolBackgroundColor;
-    _symbolWidth = symbolWidth;
-    _defaultSymbol = NO;
-    _compactLayout = compactLayout;
-    _inSquare = inSquare;
+- (instancetype)initWithConfiguration:(IconViewConfiguration*)configuration {
+  if ((self = [super initWithFrame:CGRectZero])) {
+    _configuration = [configuration copy];
   }
   return self;
-}
-
-- (instancetype)initWithCustomSymbol:(NSString*)customSymbolName
-                         symbolWidth:(CGFloat)symbolWidth
-                       compactLayout:(BOOL)compactLayout
-                            inSquare:(BOOL)inSquare {
-  return [self initWithCustomSymbol:customSymbolName
-                 symbolColorPalette:@[ [UIColor whiteColor] ]
-              symbolBackgroundColor:[UIColor colorNamed:kBlue500Color]
-                        symbolWidth:symbolWidth
-                      compactLayout:compactLayout
-                           inSquare:inSquare];
 }
 
 #pragma mark - UIView
@@ -185,10 +140,17 @@ UIView* IconInSquareContainer(UIImageView* icon, UIColor* containerColor) {
 
 // Creates the icon.
 - (UIView*)createIcon {
-  UIImageView* icon =
-      IconForSymbol(_symbol, _symbolWidth, _defaultSymbol, _symbolColorPalette);
-
-  return IconInSquareContainer(icon, _symbolBackgroundColor);
+  switch (_configuration.iconSource) {
+    case IconViewSourceType::kSymbol: {
+      UIImageView* icon = IconForSymbol(_configuration);
+      return IconInSquareContainer(icon, _configuration.symbolBackgroundColor);
+    }
+    case IconViewSourceType::kImage: {
+      UIImageView* icon = IconForImage(_configuration);
+      return IconInSquareContainer(icon, _configuration.symbolBackgroundColor);
+    }
+  }
+  NOTREACHED();
 }
 
 @end

@@ -10,18 +10,19 @@
 #include "base/containers/contains.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace syncer {
 
 const base::Value* GetAccountKeyedPrefValue(
     const PrefService* pref_service,
-    const char* pref_path,
+    std::string_view pref_path,
     const signin::GaiaIdHash& gaia_id_hash) {
   return pref_service->GetDict(pref_path).Find(gaia_id_hash.ToBase64());
 }
 
 void SetAccountKeyedPrefValue(PrefService* pref_service,
-                              const char* pref_path,
+                              std::string_view pref_path,
                               const signin::GaiaIdHash& gaia_id_hash,
                               base::Value value) {
   ScopedDictPrefUpdate update_account_dict(pref_service, pref_path);
@@ -29,7 +30,7 @@ void SetAccountKeyedPrefValue(PrefService* pref_service,
 }
 
 void ClearAccountKeyedPrefValue(PrefService* pref_service,
-                                const char* pref_path,
+                                std::string_view pref_path,
                                 const signin::GaiaIdHash& gaia_id_hash) {
   ScopedDictPrefUpdate update_account_dict(pref_service, pref_path);
   update_account_dict->Remove(gaia_id_hash.ToBase64());
@@ -37,9 +38,9 @@ void ClearAccountKeyedPrefValue(PrefService* pref_service,
 
 const base::Value* GetAccountKeyedPrefDictEntry(
     const PrefService* pref_service,
-    const char* pref_path,
+    std::string_view pref_path,
     const signin::GaiaIdHash& gaia_id_hash,
-    const char* key) {
+    std::string_view key) {
   const base::Value::Dict* account_values =
       pref_service->GetDict(pref_path).FindDict(gaia_id_hash.ToBase64());
   if (!account_values) {
@@ -49,9 +50,9 @@ const base::Value* GetAccountKeyedPrefDictEntry(
 }
 
 void SetAccountKeyedPrefDictEntry(PrefService* pref_service,
-                                  const char* pref_path,
+                                  std::string_view pref_path,
                                   const signin::GaiaIdHash& gaia_id_hash,
-                                  const char* key,
+                                  std::string_view key,
                                   base::Value value) {
   ScopedDictPrefUpdate update_account_dict(pref_service, pref_path);
   base::Value::Dict* account_values =
@@ -60,9 +61,9 @@ void SetAccountKeyedPrefDictEntry(PrefService* pref_service,
 }
 
 void RemoveAccountKeyedPrefDictEntry(PrefService* pref_service,
-                                     const char* pref_path,
+                                     std::string_view pref_path,
                                      const signin::GaiaIdHash& gaia_id_hash,
-                                     const char* key) {
+                                     std::string_view key) {
   ScopedDictPrefUpdate update_account_dict(pref_service, pref_path);
   base::Value::Dict* account_values =
       update_account_dict->FindDict(gaia_id_hash.ToBase64());
@@ -73,14 +74,17 @@ void RemoveAccountKeyedPrefDictEntry(PrefService* pref_service,
 
 void KeepAccountKeyedPrefValuesOnlyForUsers(
     PrefService* pref_service,
-    const char* pref_path,
+    std::string_view pref_path,
     const std::vector<signin::GaiaIdHash>& available_gaia_ids) {
+  absl::flat_hash_set<signin::GaiaIdHash> available_gaia_ids_set(
+      available_gaia_ids.begin(), available_gaia_ids.end());
+
   std::vector<std::string> removed_identities;
-  for (std::pair<const std::string&, const base::Value&> account_settings :
+  for (const auto [account_id, unused_value] :
        pref_service->GetDict(pref_path)) {
-    if (!base::Contains(available_gaia_ids, signin::GaiaIdHash::FromBase64(
-                                                account_settings.first))) {
-      removed_identities.push_back(account_settings.first);
+    if (!available_gaia_ids_set.contains(
+            signin::GaiaIdHash::FromBase64(account_id))) {
+      removed_identities.push_back(account_id);
     }
   }
   if (!removed_identities.empty()) {

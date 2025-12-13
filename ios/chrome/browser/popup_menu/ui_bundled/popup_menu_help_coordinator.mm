@@ -394,17 +394,13 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
     self.hasBlueDot = NO;
   }
 
-  if (IsBlueDotOnToolsMenuButtoneEnabled()) {
-    [self.UIUpdater setOverflowMenuBlueDot:self.hasBlueDot];
-  }
+  [self.UIUpdater setOverflowMenuBlueDot:self.hasBlueDot];
 }
 
 - (void)notifyIPHBubblePresenting {
   // Remove blue dot if IPH bubble will be presenting on tools menu button.
   self.hasBlueDot = NO;
-  if (IsBlueDotOnToolsMenuButtoneEnabled()) {
-    [self.UIUpdater setOverflowMenuBlueDot:self.hasBlueDot];
-  }
+  [self.UIUpdater setOverflowMenuBlueDot:self.hasBlueDot];
 }
 
 - (void)displayPopupMenuTabRemindersIPH {

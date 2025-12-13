@@ -22,7 +22,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import type {DeviceStateProperties, GlobalPolicy, ManagedOpenVPNProperties, ManagedProperties, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ActivationStateType, ApnAuthenticationType, ApnIpType, ApnSource, ApnState, InhibitReason, MatchType, ProxyMode, SuppressionType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {FakePasspointService} from 'chrome://webui-test/chromeos/fake_passpoint_service_mojom.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -64,6 +64,9 @@ suite('<settings-internet-detail-subpage>', () => {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: true,
       },
+    },
+    'proxy_override_rules': {
+      value: [],
     },
   };
 
@@ -342,7 +345,7 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(networkStateText.hasAttribute('warning'));
       assertEquals(
           internetDetailPage.i18n('networkListItemSignIn'),
-          networkStateText.textContent!.trim());
+          networkStateText.textContent.trim());
       const signinButton = getButton('signinButton');
       assertTrue(!!signinButton);
       assertFalse(signinButton.hidden);
@@ -368,7 +371,7 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(networkStateText.hasAttribute('warning'));
       assertEquals(
           internetDetailPage.i18n('networkListItemSignIn'),
-          networkStateText.textContent!.trim());
+          networkStateText.textContent.trim());
       const signinButton = getButton('signinButton');
       assertTrue(!!signinButton);
       assertFalse(signinButton.hidden);
@@ -394,7 +397,7 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(networkStateText.hasAttribute('warning'));
       assertEquals(
           internetDetailPage.i18n('networkListItemConnectedNoConnectivity'),
-          networkStateText.textContent!.trim());
+          networkStateText.textContent.trim());
       const signinButton = getButton('signinButton');
       assertTrue(!!signinButton);
       assertTrue(signinButton.hidden);
@@ -799,6 +802,84 @@ suite('<settings-internet-detail-subpage>', () => {
       const configureButton = getButton('configureButton');
       assertTrue(configureButton.hidden);
     });
+
+    // This test is intended to check that the static IP configuration of a
+    // network is included when setting network properties, even if those
+    // properties are wholly unrelated. For more information see
+    // https://crbug.com/448829077.
+    test(
+        'Static IP config is re-sent on unrelated property changes',
+        async () => {
+          init();
+          mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+
+          const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi');
+          wifiNetwork.source = OncSource.kUser;
+          wifiNetwork.connectable = true;
+          wifiNetwork.nameServersConfigType = {
+            activeValue: 'Static',
+            policySource: PolicySource.kNone,
+            policyValue: null,
+          };
+          wifiNetwork.ipAddressConfigType = {
+            activeValue: 'Static',
+            policySource: PolicySource.kNone,
+            policyValue: null,
+          };
+          const staticNameServers = ['8.8.8.8', '8.8.4.4'];
+          const staticIpAddress = '192.168.0.10';
+          const staticRoutingPrefix = 24;
+          const staticGateway = '192.168.0.1';
+          wifiNetwork.staticIpConfig = {
+            nameServers: {
+              activeValue: staticNameServers,
+              policySource: PolicySource.kNone,
+              policyValue: null,
+            },
+            ipAddress: {
+              activeValue: staticIpAddress,
+              policySource: PolicySource.kNone,
+              policyValue: null,
+            },
+            routingPrefix: {
+              activeValue: staticRoutingPrefix,
+              policySource: PolicySource.kNone,
+              policyValue: 0,
+            },
+            gateway: {
+              activeValue: staticGateway,
+              policySource: PolicySource.kNone,
+              policyValue: null,
+            },
+            type: IPConfigType.kIPv4,
+            webProxyAutoDiscoveryUrl: null,
+          };
+          mojoApi.setManagedPropertiesForTest(wifiNetwork);
+          internetDetailPage.init('wifi_guid', 'WiFi', 'wifi');
+          // Flush tasks to complete the request for the state of the network.
+          await flushTasks();
+          // Flush tasks to complete the subsequent request for the managed
+          // properties of the network.
+          await flushTasks();
+
+          const autoConnectToggle =
+              internetDetailPage.shadowRoot!
+                  .querySelector<SettingsToggleButtonElement>(
+                      '#autoConnectToggle');
+          assertTrue(!!autoConnectToggle);
+          assertFalse(autoConnectToggle.hidden);
+          assertFalse(autoConnectToggle.disabled);
+
+          autoConnectToggle.click();
+          await mojoApi.whenCalled('setProperties');
+
+          const config = mojoApi.getPropertiesToSetForTest();
+          assertTrue(config.autoConnect!.value);
+          assertEquals('Static', config.nameServersConfigType);
+          assertEquals('Static', config.ipAddressConfigType);
+          assertTrue(!!config.staticIpConfig);
+          assertDeepEquals(wifiNetwork.staticIpConfig, config.staticIpConfig);
+        });
   });
 
   suite('DetailsPageVPN', () => {
@@ -1028,7 +1109,7 @@ suite('<settings-internet-detail-subpage>', () => {
           internetDetailPage.shadowRoot!.querySelectorAll<HTMLButtonElement>(
               'cr-expand-button.settings-box');
       expandButtons.forEach((button: HTMLButtonElement) => {
-        assertNotEquals('Advanced', button.textContent!.trim());
+        assertNotEquals('Advanced', button.textContent.trim());
       });
     });
   });
@@ -1104,7 +1185,7 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(networkStateText.hasAttribute('warning'));
       assertEquals(
           internetDetailPage.i18n('networkMobileProviderLocked'),
-          networkStateText.textContent!.trim());
+          networkStateText.textContent.trim());
     });
 
     test(
@@ -1853,7 +1934,7 @@ suite('<settings-internet-detail-subpage>', () => {
             null;
         if (isApnRevampEnabled) {
           assertTrue(!!getApn());
-          assertEquals(apnName, getApn()!.textContent!.trim());
+          assertEquals(apnName, getApn()!.textContent.trim());
 
           const name = 'name';
           cellularNetwork.typeProperties.cellular!.connectedApn.name = name;
@@ -1861,7 +1942,7 @@ suite('<settings-internet-detail-subpage>', () => {
           internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
           await flushTasks();
           assertTrue(!!getApn());
-          assertEquals(name, getApn()!.textContent!.trim());
+          assertEquals(name, getApn()!.textContent.trim());
           assertFalse(getCrLink()!.hasAttribute('warning'));
 
           // Adding a restricted connectivity state should cause the sublabel to

@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import <memory>
 
 #import "base/functional/bind.h"
@@ -26,7 +24,8 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
@@ -50,21 +49,21 @@
 namespace {
 
 BOOL URLIsFlights(const GURL& URL) {
-  std::string_view path = URL.path_piece();
+  std::string_view path = URL.path();
   BOOL pathIsFlights = path.rfind("/travel/flights", 0) == 0;
 
   return lens::IsGoogleHostURL(URL) && pathIsFlights;
 }
 
 BOOL URLIsFinance(const GURL& URL) {
-  std::string_view path = URL.path_piece();
+  std::string_view path = URL.path();
   BOOL pathIsFinance = path.rfind("/finance", 0) == 0;
 
   return lens::IsGoogleHostURL(URL) && pathIsFinance;
 }
 
 BOOL URLIsShopping(const GURL& URL) {
-  std::string_view query = URL.query_piece();
+  std::string_view query = URL.query();
   BOOL queryMatchesShoppingParam = query.find("udm=28") != std::string::npos;
 
   return lens::IsGoogleHostURL(URL) && queryMatchesShoppingParam;
@@ -112,7 +111,7 @@ BOOL IsMinimizeBottomSheetURL(const GURL& URL) {
   if (!URL.SchemeIs("ae-action")) {
     return NO;
   }
-  std::string_view host = URL.host_piece();
+  std::string_view host = URL.host();
   return base::EqualsCaseInsensitiveASCII(host, "resultpanel-header-show");
 }
 
@@ -121,7 +120,7 @@ BOOL IsMaximizeBottomSheetURL(const GURL& URL) {
   if (!URL.SchemeIs("ae-action")) {
     return NO;
   }
-  std::string_view host = URL.host_piece();
+  std::string_view host = URL.host();
   return base::EqualsCaseInsensitiveASCII(host, "resultpanel-header-hide");
 }
 
@@ -162,7 +161,8 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
 @interface LensResultPageMediator () <CRWWebStateDelegate,
                                       CRWWebStateObserver,
-                                      CRWWebStatePolicyDecider>
+                                      CRWWebStatePolicyDecider,
+                                      UIGestureRecognizerDelegate>
 @end
 
 @implementation LensResultPageMediator {
@@ -186,6 +186,8 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   BOOL _isDarkMode;
   /// The last commited progress to the loading bar.
   float _lastCommitedProgress;
+  /// Most recent loaded HTTP headers.
+  NSDictionary<NSString*, NSString*>* _latestHttpHeaders;
 }
 
 - (instancetype)
@@ -229,7 +231,6 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 - (void)disconnect {
   if (_webState) {
     [self detachWebState];
-    _webState.reset();
   }
   _webStateObserverBridge.reset();
   _webStateDelegateBridge.reset();
@@ -252,13 +253,14 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     // The web view is hidden until the page fully loads to prevent a brief
     // flash of mixed dark and light UI elements.
     [_consumer setWebViewHidden:YES];
-    [self loadResultsURL:latestLoadedURL];
+    [self loadResultsURL:latestLoadedURL httpHeaders:_latestHttpHeaders];
   }
 }
 
 #pragma mark - LensOverlayResultConsumer
 
-- (void)loadResultsURL:(GURL)URL {
+- (void)loadResultsURL:(GURL)URL
+           httpHeaders:(NSDictionary<NSString*, NSString*>*)httpHeaders {
   CHECK(_webState, kLensOverlayNotFatalUntil);
 
   // Add light/dark mode query parameter.
@@ -272,9 +274,16 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   web::NavigationManager::WebLoadParams webParams =
       web::NavigationManager::WebLoadParams(URL);
 
-  // Add variation headers.
-  webParams.extra_headers =
-      web_navigation_util::VariationHeadersForURL(URL, _isIncognito);
+  // Keep track of the latest non-nil headers.
+  if (httpHeaders) {
+    _latestHttpHeaders = [httpHeaders copy];
+  }
+  NSMutableDictionary<NSString*, NSString*>* headers =
+      [_latestHttpHeaders mutableCopy] ?: [NSMutableDictionary dictionary];
+  // Add variation headers last, because they have precedence.
+  [headers addEntriesFromDictionary:web_navigation_util::VariationHeadersForURL(
+                                        URL, _isIncognito)];
+  webParams.extra_headers = headers;
 
   _webState->GetNavigationManager()->LoadURLWithParams(webParams);
 }
@@ -321,11 +330,11 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     }
 
     if (IsMaximizeBottomSheetURL(URL)) {
-      [self.presentationDelegate requestMaximizeBottomSheet];
+      [self.bottomSheetCommands requestMaximizeBottomSheet];
       return;
     }
 
-    [self.delegate lensResultPageOpenURLInNewTabRequsted:URL];
+    [self.delegate lensResultPageOpenURLInNewTabRequested:URL];
     [self.delegate
          lensResultPageMediator:self
         didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kWebNavigation];
@@ -336,19 +345,64 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     // AIM SRP requires lns_surface, but we can't use Chromnient's (4), so use
     // CHROME_SEARCH.
     URL = net::AppendOrReplaceQueryParameter(URL, "lns_surface", "45");
-    [self.delegate lensResultPageOpenURLInNewTabRequsted:URL];
+    [self.delegate lensResultPageOpenURLInNewTabRequested:URL];
     [self.delegate
          lensResultPageMediator:self
         didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kExploreBarTab];
+  } else if (base::FeatureList::IsEnabled(kLensSearchHeadersCheckEnabled) &&
+             requestInfo.target_frame_is_main && lens::IsGoogleHostURL(URL) &&
+             [self shouldAddHeaders:request]) {
+    // Only attach headers for navigation clicks targeting main frame.
+    [self loadResultsURL:URL httpHeaders:_latestHttpHeaders];
+    decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
   } else {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
+}
+
+- (BOOL)shouldAddHeaders:(NSURLRequest*)request {
+  if (_latestHttpHeaders == nil) {
+    return false;
+  }
+
+  NSDictionary<NSString*, NSString*>* allHeaders = request.allHTTPHeaderFields;
+  for (NSString* key in _latestHttpHeaders) {
+    if ([allHeaders objectForKey:key] == nil) {
+      return true;
+    }
+  }
+  return false;
 }
 
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   [_consumer setWebViewHidden:NO];
+  [self.delegate lensResultPageWebStateShown];
+
+  UIView* webView = webState->GetView();
+
+  UISwipeGestureRecognizer* downHorizontalRecognizer =
+      [[UISwipeGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(didSwipeOnWebView:)];
+  downHorizontalRecognizer.direction = UISwipeGestureRecognizerDirectionDown;
+
+  UISwipeGestureRecognizer* upHorizontalRecognizer =
+      [[UISwipeGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(didSwipeOnWebView:)];
+  upHorizontalRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
+
+  NSArray<UIGestureRecognizer*>* swipeRecognizers =
+      @[ downHorizontalRecognizer, upHorizontalRecognizer ];
+
+  for (UIGestureRecognizer* swipeRecognizer in swipeRecognizers) {
+    swipeRecognizer.enabled = YES;
+    swipeRecognizer.delegate = self;
+    swipeRecognizer.cancelsTouchesInView = NO;
+    [webView addGestureRecognizer:swipeRecognizer];
+  }
 }
 
 - (void)webState:(web::WebState*)webState
@@ -447,7 +501,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     }
   }
   // Open the URL in a new tab.
-  [self.delegate lensResultPageOpenURLInNewTabRequsted:URL];
+  [self.delegate lensResultPageOpenURLInNewTabRequested:URL];
   [self.delegate
        lensResultPageMediator:self
       didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kWebNavigation];
@@ -494,9 +548,10 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 - (void)contextMenuConfigurationProvider:
             (ContextMenuConfigurationProvider*)configurationProvider
         didOpenNewTabInBackgroundWithURL:(GURL)URL {
-  MDCSnackbarMessage* snackbarMessage = CreateSnackbarMessage(
-      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_NEW_TAB_MESSAGE));
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  SnackbarMessage* snackbarMessage = [[SnackbarMessage alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_LENS_OVERLAY_NEW_TAB_MESSAGE)];
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   __weak __typeof__(self) weakSelf = self;
   action.handler = ^() {
     [weakSelf activateWebStateWithURL:URL];
@@ -571,6 +626,11 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   }
 }
 
+- (void)didSwipeOnWebView:(UISwipeGestureRecognizer*)recognizer {
+  [self.delegate
+      lensResultPageWebViewDidSwipeWithDirection:recognizer.direction];
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateDestroyed:(web::WebState*)webState {
@@ -580,6 +640,14 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   }
 
   [self.delegate lensResultPageWebStateDestroyed];
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  return YES;
 }
 
 @end

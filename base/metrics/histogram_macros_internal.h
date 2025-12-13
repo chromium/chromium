@@ -15,6 +15,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/sparse_histogram.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 
@@ -56,9 +57,9 @@ struct EnumSizeTraits {
 // process.
 
 // In some cases (integration into 3rd party code), it's useful to separate the
-// definition of |atomic_histogram_pointer| from its use. To achieve this we
-// define HISTOGRAM_POINTER_USE, which uses an |atomic_histogram_pointer|, and
-// STATIC_HISTOGRAM_POINTER_BLOCK, which defines an |atomic_histogram_pointer|
+// definition of `atomic_histogram_pointer` from its use. To achieve this we
+// define HISTOGRAM_POINTER_USE, which uses an `atomic_histogram_pointer`, and
+// STATIC_HISTOGRAM_POINTER_BLOCK, which defines an `atomic_histogram_pointer`
 // and forwards to HISTOGRAM_POINTER_USE.
 #define HISTOGRAM_POINTER_USE(                                           \
     atomic_histogram_pointer, constant_histogram_name,                   \
@@ -70,7 +71,7 @@ struct EnumSizeTraits {
     if (!histogram_pointer) {                                            \
       /*                                                                 \
        * This is the slow path, which will construct OR find the         \
-       * matching histogram. |histogram_factory_get_invocation| includes \
+       * matching histogram. `histogram_factory_get_invocation` includes \
        * locks on a global histogram name map and is completely thread   \
        * safe.                                                           \
        */                                                                \
@@ -91,7 +92,7 @@ struct EnumSizeTraits {
   } while (0)
 
 // This is a helper macro used by other macros and shouldn't be used directly.
-// Defines the static |atomic_histogram_pointer| and forwards to
+// Defines the static `atomic_histogram_pointer` and forwards to
 // HISTOGRAM_POINTER_USE.
 #define STATIC_HISTOGRAM_POINTER_BLOCK(constant_histogram_name,               \
                                        histogram_add_method_invocation,       \
@@ -161,9 +162,8 @@ struct EnumSizeTraits {
                                   scale,                                       \
                                   flag) {}                                     \
     };                                                                         \
-    static base::LazyInstance<ScaledLinearHistogramInstance>::Leaky            \
-        scaled_leaky;                                                          \
-    scaled_leaky.Get().AddScaledCount(sample, count);                          \
+    static base::NoDestructor<ScaledLinearHistogramInstance> scaled_leaky;     \
+    scaled_leaky->AddScaledCount(sample, count);                               \
   } while (0)
 
 // Helper for 'overloading' UMA_HISTOGRAM_ENUMERATION with a variable number of
@@ -177,7 +177,7 @@ struct EnumSizeTraits {
       base::internal::EnumSizeTraits<std::decay_t<decltype(sample)>>::Count(), \
       flags)
 
-// Note: The value in |sample| must be strictly less than |enum_size|.
+// Note: The value in `sample` must be strictly less than `enum_size`.
 #define INTERNAL_UMA_HISTOGRAM_ENUMERATION_SPECIFY_BOUNDARY(name, sample,     \
                                                             enum_size, flags) \
   INTERNAL_HISTOGRAM_ENUMERATION_WITH_FLAG(name, sample, enum_size, flags)

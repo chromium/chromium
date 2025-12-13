@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -139,28 +140,25 @@ void SetCpusValue(const std::vector<CpuInfo>& infos,
   result->Set("cpus", std::move(cpu_results));
 }
 
-const double kBytesInKB = 1024;
-
-double GetAvailablePhysicalMemory(const base::SystemMemoryInfoKB& info) {
-  double available = static_cast<double>(
-      info.available == 0 ? info.free + info.reclaimable : info.available);
-
-  return available * kBytesInKB;
+double GetAvailablePhysicalMemory(const base::SystemMemoryInfo& info) {
+  const base::ByteSize available =
+      info.available.is_zero() ? info.free + info.reclaimable : info.available;
+  return available.InBytesF();
 }
 
-void SetMemValue(const base::SystemMemoryInfoKB& info,
+void SetMemValue(const base::SystemMemoryInfo& info,
                  const base::VmStatInfo& vmstat,
                  base::Value::Dict* result) {
   DCHECK(result);
   base::Value::Dict mem_result;
 
   // For values that may exceed the range of 32-bit signed integer, use double.
-  double total = static_cast<double>(info.total) * kBytesInKB;
+  double total = info.total.InBytesF();
   mem_result.Set("total", total);
   mem_result.Set("available", GetAvailablePhysicalMemory(info));
-  double swap_total = static_cast<double>(info.swap_total) * kBytesInKB;
+  double swap_total = info.swap_total.InBytesF();
   mem_result.Set("swapTotal", swap_total);
-  double swap_free = static_cast<double>(info.swap_free) * kBytesInKB;
+  double swap_free = info.swap_free.InBytesF();
   mem_result.Set("swapFree", swap_free);
 
   mem_result.Set("pswpin", ToCounter(vmstat.pswpin));
@@ -321,7 +319,7 @@ base::Value::Dict GetSysInfo() {
     DLOG(WARNING) << "Failed to get system CPU info.";
     cpu_infos.clear();
   }
-  base::SystemMemoryInfoKB mem_info;
+  base::SystemMemoryInfo mem_info;
   if (!GetSystemMemoryInfo(&mem_info)) {
     DLOG(WARNING) << "Failed to get system memory info.";
   }

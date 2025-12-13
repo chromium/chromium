@@ -5,7 +5,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/extension_test_message_listener.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -15,9 +18,6 @@ using SharedModuleTest = ExtensionApiTest;
 // the public-keys in their manifests are used to generate the extension ID, so
 // it can be imported correctly.  We use InstallExtension otherwise so the loads
 // happen through the CRX installer which validates imports.
-// TODO(crbug.com/391921314): Port to desktop Android once InstallExtension() is
-// available. This depends on ExtensionService / ExtensionRegistrar decoupling.
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SharedModuleTest, SharedModule) {
   // import_pass depends on this shared module.
   ASSERT_TRUE(LoadExtension(
@@ -52,7 +52,6 @@ IN_PROC_BROWSER_TEST_F(SharedModuleTest, SharedModuleInstallEvent) {
       test_data_dir_.AppendASCII("shared_module").AppendASCII("import_pass"),
       1));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(SharedModuleTest, SharedModuleLocale) {
   const Extension* extension = LoadExtension(

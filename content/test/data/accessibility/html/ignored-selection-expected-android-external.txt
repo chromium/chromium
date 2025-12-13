@@ -1,0 +1,4 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++TextView text:"this text is not ignored" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++TextView text:"after selection" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++TextView text:"Done" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

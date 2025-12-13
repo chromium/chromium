@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.ALL_KEYS;
@@ -32,8 +31,6 @@ import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomShee
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_TITLE;
 
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.content.res.Resources;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -51,7 +48,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -62,7 +60,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -76,7 +73,6 @@ import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 /** Tests for {@link PriceInsightsBottomSheetMediator}. */
 @Batch(Batch.UNIT_TESTS)
@@ -93,12 +89,8 @@ public class PriceInsightsBottomSheetMediatorTest {
     @Mock private Profile mMockProfile;
     @Mock private TabModelSelector mMockTabModelSelector;
     @Mock private ShoppingService mMockShoppingService;
-    @Mock private Resources mMockResources;
-    @Mock private BookmarkId mMockBookmarkId;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
-    @Mock private ObservableSupplier<Boolean> mMockPriceTrackingStateSupplier;
     @Mock private View mMockPriceHistoryChart;
-    @Mock private NotificationManager mMockNotificationManager;
 
     private static final String PRODUCT_TITLE = "Testing Sneaker";
     private static final String PRICE_TRACKING_DISABLED_BUTTON_TEXT = "Track";
@@ -110,27 +102,29 @@ public class PriceInsightsBottomSheetMediatorTest {
     private static final String CATALOG_ATTRIBUTES = "Stainless steel, Espresso Bundle";
     private static final PriceInsightsInfo PRICE_INSIGHTS_INFO_SINGLE_CATALOG =
             new PriceInsightsInfo(
-                    Optional.empty(),
+                    null,
                     "USD",
-                    Optional.empty(),
-                    Optional.empty(),
-                    Optional.empty(),
+                    null,
+                    null,
+                    null,
                     Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
-                    Optional.of(JUnitTestGURLs.EXAMPLE_URL),
+                    JUnitTestGURLs.EXAMPLE_URL,
                     0,
                     false);
     private static final PriceInsightsInfo PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS =
             new PriceInsightsInfo(
-                    Optional.empty(),
+                    null,
                     "USD",
-                    Optional.empty(),
-                    Optional.empty(),
-                    Optional.of(CATALOG_ATTRIBUTES),
+                    null,
+                    null,
+                    CATALOG_ATTRIBUTES,
                     Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
-                    Optional.of(JUnitTestGURLs.EXAMPLE_URL),
+                    JUnitTestGURLs.EXAMPLE_URL,
                     0,
                     true);
 
+    private final SettableNonNullObservableSupplier<Boolean> mPriceTrackingStateSupplier =
+            ObservableSuppliers.createNonNull(false);
     private PriceInsightsBottomSheetMediator mPriceInsightsMediator;
     private final PropertyModel mPropertyModel = new PropertyModel(ALL_KEYS);
     private Activity mActivity;
@@ -145,8 +139,7 @@ public class PriceInsightsBottomSheetMediatorTest {
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
 
-        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
-        doReturn(mMockPriceTrackingStateSupplier)
+        doReturn(mPriceTrackingStateSupplier)
                 .when(mMockPriceInsightsDelegate)
                 .getPriceTrackingStateSupplier(mMockTab);
 
@@ -189,7 +182,6 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceTrackingEligibleAndDisabled() {
-        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
         setShoppingServiceGetProductInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
@@ -213,7 +205,7 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceTrackingEligibleAndEnabled() {
-        doReturn(true).when(mMockPriceTrackingStateSupplier).get();
+        mPriceTrackingStateSupplier.set(true);
         setShoppingServiceGetProductInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
@@ -237,7 +229,6 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceTrackingButtonOnClick_Failed() {
-        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
         setShoppingServiceGetProductInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
@@ -309,11 +300,9 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testPriceTrackingStateSupplier() {
-        mPriceInsightsMediator.requestShowContent();
-        verify(mMockPriceTrackingStateSupplier, times(1)).addObserver(any());
-
+        assertEquals(1, mPriceTrackingStateSupplier.getObserverCount());
         mPriceInsightsMediator.closeContent();
-        verify(mMockPriceTrackingStateSupplier, times(1)).removeObserver(any());
+        assertEquals(0, mPriceTrackingStateSupplier.getObserverCount());
     }
 
     private void setResultForPriceTrackingUpdate(boolean success) {
@@ -321,7 +310,7 @@ public class PriceInsightsBottomSheetMediatorTest {
                         (InvocationOnMock invocation) -> {
                             if (success) {
                                 boolean newState = invocation.getArgument(1);
-                                doReturn(newState).when(mMockPriceTrackingStateSupplier).get();
+                                mPriceTrackingStateSupplier.set(newState);
                             }
                             ((Callback<Boolean>) invocation.getArgument(2)).onResult(success);
                             return null;
@@ -331,16 +320,7 @@ public class PriceInsightsBottomSheetMediatorTest {
     }
 
     private void setShoppingServiceGetProductInfoForUrl() {
-        ProductInfo productInfo =
-                new ProductInfo(
-                        null,
-                        null,
-                        Optional.of(12345L),
-                        Optional.empty(),
-                        null,
-                        0,
-                        null,
-                        Optional.empty());
+        ProductInfo productInfo = new ProductInfo(null, null, 12345L, null, null, 0, null, null);
         doReturn(productInfo).when(mMockShoppingService).getAvailableProductInfoForUrl(any());
     }
 

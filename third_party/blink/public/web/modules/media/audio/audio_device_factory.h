@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_DEVICE_FACTORY_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_DEVICE_FACTORY_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/audio/audio_sink_parameters.h"
 #include "media/audio/audio_source_parameters.h"

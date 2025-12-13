@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"

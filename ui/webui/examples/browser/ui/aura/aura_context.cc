@@ -44,7 +44,7 @@ class FocusRules : public wm::BaseFocusRules {
 
 class AuraContext::NativeCursorManager : public wm::NativeCursorManager {
  public:
-  NativeCursorManager() = default;
+  NativeCursorManager() { aura::client::SetCursorShapeClient(&cursor_loader_); }
   ~NativeCursorManager() override = default;
 
   void AddHost(aura::WindowTreeHost* host) { hosts_.insert(host); }
@@ -136,7 +136,7 @@ AuraContext::ContextualizedWindowTreeHost::~ContextualizedWindowTreeHost() {
 
 AuraContext::AuraContext()
     : screen_(aura::TestScreen::Create(gfx::Size(1024, 768))) {
-  DCHECK(!display::Screen::GetScreen());
+  DCHECK(!display::Screen::Get());
   display::Screen::SetScreenInstance(screen_.get());
   focus_controller_ = std::make_unique<wm::FocusController>(new FocusRules());
   auto native_cursor_manager = std::make_unique<NativeCursorManager>();

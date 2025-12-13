@@ -35,7 +35,7 @@ bool RemoveStreamDeviceFromArray(const MediaStreamDevice& device,
 MediaStreamDeviceObserver::MediaStreamDeviceObserver(LocalFrame* frame) {
   // There is no frame on unit tests.
   if (frame) {
-    frame->GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+    frame->GetInterfaceRegistry()->AddInterface(blink::BindRepeating(
         &MediaStreamDeviceObserver::BindMediaStreamDeviceObserverReceiver,
         weak_factory_.GetWeakPtr()));
   }

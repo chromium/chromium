@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "chromecast/media/api/audio_clock_simulator.h"
 
 #include <cmath>
 #include <tuple>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "chromecast/media/api/audio_clock_simulator.h"
 #include "media/base/sinc_resampler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,7 +56,7 @@ class FakeAudioProvider : public AudioProvider {
                      float* const* channel_data) {
     for (int f = 0; f < num_frames; ++f) {
       for (size_t c = 0; c < num_channels_; ++c) {
-        channel_data[c][f] = static_cast<float>(next_ + f);
+        UNSAFE_TODO(channel_data[c][f]) = static_cast<float>(next_ + f);
       }
     }
     next_ += num_frames;
@@ -109,7 +106,7 @@ TEST_P(AudioClockSimulatorTest, Fill) {
   float* test_data[1] = {output};
   int i;
   for (i = 0; i + request_size <= kBufferSize; i += request_size) {
-    test_data[0] = output + i;
+    test_data[0] = UNSAFE_TODO(output + i);
     int64_t timestamp = FramesToTime(i, kSampleRate);
 
     EXPECT_CALL(provider, FillFrames(_, _, _)).Times(testing::AnyNumber());
@@ -136,7 +133,7 @@ TEST(AudioClockSimulatorTest, ChangeRateDuringFill) {
         if (*rate_index >= 5) {
           return;
         }
-        clock->SetRate(rates[*rate_index]);
+        clock->SetRate(UNSAFE_TODO(rates[*rate_index]));
         *rate_index += 1;
       },
       clock.get(), rates, &rate_index));

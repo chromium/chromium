@@ -25,7 +25,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.UrlRequest.Status;

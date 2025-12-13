@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/strings/string_split.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -15,8 +14,6 @@
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -26,25 +23,22 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
-#include "components/image_fetcher/core/request_metadata.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/url_util.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
 
 using testing::_;
 using testing::AtLeast;
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 using testing::SaveArg;
@@ -138,8 +132,6 @@ class HatsNotificationControllerTest
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    display_service_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile());
     helper_ = std::make_unique<NetworkHandlerTestHelper>();
 
     std::string feature_list = kFeatureNonPrioritizedCommandLine;
@@ -170,7 +162,6 @@ class HatsNotificationControllerTest
 
   void TearDown() override {
     helper_.reset();
-    display_service_.reset();
     // Notifications may be deleted async.
     base::RunLoop().RunUntilIdle();
 
@@ -216,7 +207,6 @@ class HatsNotificationControllerTest
                : raw_ref<const HatsConfig>(kNonPrioritizedTestConfig);
   }
 
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   std::unique_ptr<NetworkHandlerTestHelper> helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -264,8 +254,9 @@ TEST_F(HatsNotificationControllerTest, NewDevice_ShouldNotShowNotification) {
   ASSERT_TRUE(base::Time::FromInternalValue(current_timestamp) >
               base::Time::FromInternalValue(initial_timestamp));
 
-  EXPECT_FALSE(display_service_->GetNotification(
-      HatsNotificationController::kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HatsNotificationController::kNotificationId));
 }
 
 TEST_F(HatsNotificationControllerTest, OldDevice_ShouldShowNotification) {
@@ -273,13 +264,16 @@ TEST_F(HatsNotificationControllerTest, OldDevice_ShouldShowNotification) {
   hats_notification_controller->Initialize(false);
 
   // Ensure notification was launched to confirm initialization.
-  EXPECT_TRUE(display_service_->GetNotification(
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       HatsNotificationController::kNotificationId));
 
   // Simulate dismissing notification by the user to clean up the notification.
-  display_service_->RemoveNotification(
-      NotificationHandler::Type::TRANSIENT,
-      HatsNotificationController::kNotificationId, /*by_user=*/true);
+  message_center::MessageCenter::Get()->RemoveNotification(
+      HatsNotificationController::kNotificationId, true /* by_user */);
+  // Verify it's gone from the message center.
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HatsNotificationController::kNotificationId));
 }
 
 TEST_F(HatsNotificationControllerTest, NoInternet_DoNotShowNotification) {
@@ -287,18 +281,21 @@ TEST_F(HatsNotificationControllerTest, NoInternet_DoNotShowNotification) {
 
   SendPortalState(hats_notification_controller,
                   NetworkState::PortalState::kUnknown);
-  EXPECT_FALSE(display_service_->GetNotification(
-      HatsNotificationController::kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HatsNotificationController::kNotificationId));
 
   SendPortalState(hats_notification_controller,
                   NetworkState::PortalState::kNoInternet);
-  EXPECT_FALSE(display_service_->GetNotification(
-      HatsNotificationController::kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HatsNotificationController::kNotificationId));
 
   SendPortalState(hats_notification_controller,
                   NetworkState::PortalState::kPortal);
-  EXPECT_FALSE(display_service_->GetNotification(
-      HatsNotificationController::kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HatsNotificationController::kNotificationId));
 }
 
 TEST_F(HatsNotificationControllerTest, DismissNotification_ShouldUpdatePref) {
@@ -357,25 +354,29 @@ TEST_F(HatsNotificationControllerTest,
   hats_notification_controller->Initialize(false);
 
   // Notification is launched.
-  EXPECT_TRUE(display_service_->GetNotification(
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       HatsNotificationController::kNotificationId));
 
   // Notification is removed when Internet connection is lost.
   SendPortalState(hats_notification_controller,
                   NetworkState::PortalState::kNoInternet);
-  EXPECT_FALSE(display_service_->GetNotification(
-      HatsNotificationController::kNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HatsNotificationController::kNotificationId));
 
   // Notification is launched again when Internet connection is regained.
   SendPortalState(hats_notification_controller,
                   NetworkState::PortalState::kOnline);
-  EXPECT_TRUE(display_service_->GetNotification(
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       HatsNotificationController::kNotificationId));
 
   // Simulate dismissing notification by the user to clean up the notification.
-  display_service_->RemoveNotification(
-      NotificationHandler::Type::TRANSIENT,
-      HatsNotificationController::kNotificationId, /*by_user=*/true);
+  message_center::MessageCenter::Get()->RemoveNotification(
+      HatsNotificationController::kNotificationId, true /* by_user */);
+  // Verify it's gone from the message center.
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HatsNotificationController::kNotificationId));
 }
 
 TEST_P(HatsNotificationControllerTest, ShouldShowSurveyToProfile) {
@@ -383,8 +384,9 @@ TEST_P(HatsNotificationControllerTest, ShouldShowSurveyToProfile) {
   PrefService* pref_service = profile()->GetPrefs();
   pref_service->SetTime(prefs::kHatsPrioritizedLastInteractionTimestamp,
                         base::Time::Now() - GetParam().prev_prio_hats);
-  pref_service->SetTime(prefs::kHatsLastInteractionTimestamp,
-                        base::Time::Now() - GetParam().prev_non_prio_hats);
+  pref_service->SetInt64(
+      prefs::kHatsLastInteractionTimestamp,
+      (base::Time::Now() - GetParam().prev_non_prio_hats).ToInternalValue());
 
   // Explanation by example:
   // Given HaTS config -> threshold_time: 90 days

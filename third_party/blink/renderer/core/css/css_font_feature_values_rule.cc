@@ -123,4 +123,9 @@ void CSSFontFeatureValuesRule::Trace(blink::Visitor* visitor) const {
   CSSRule::Trace(visitor);
 }
 
+const StyleRuleFontFeatureValues*
+CSSFontFeatureValuesRule::FontFeatureValues() {
+  return font_feature_values_rule_.Get();
+}
+
 }  // namespace blink

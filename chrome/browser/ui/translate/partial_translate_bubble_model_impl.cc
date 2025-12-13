@@ -217,7 +217,8 @@ void PartialTranslateBubbleModelImpl::TranslateFullPage(
     content::WebContents* web_contents) {
   translate::TranslateManager* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(web_contents);
-  translate_manager->ShowTranslateUI(GetTargetLanguageCode(), true);
+  translate_manager->ShowTranslateUI(/* source_code */ std::nullopt,
+                                     GetTargetLanguageCode(), true);
 }
 
 void PartialTranslateBubbleModelImpl::SetSourceTextTruncated(

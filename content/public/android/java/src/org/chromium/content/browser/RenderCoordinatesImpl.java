@@ -230,6 +230,7 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
     /**
      * @return Local CSS converted to physical coordinates.
      */
+    @Override
     public float fromLocalCssToPix(float css) {
         return css * mPageScaleFactor * mDeviceScaleFactor;
     }

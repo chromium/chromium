@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/network/network_ui_data.h"
 
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
@@ -44,8 +40,9 @@ template <typename Enum, int N>
 std::string EnumToString(const StringEnumEntry<Enum> (&table)[N],
                          Enum enum_value) {
   for (int i = 0; i < N; ++i) {
-    if (table[i].enum_value == enum_value)
-      return table[i].string;
+    if (UNSAFE_TODO(table[i]).enum_value == enum_value) {
+      return UNSAFE_TODO(table[i]).string;
+    }
   }
   return std::string();
 }
@@ -57,8 +54,9 @@ Enum StringToEnum(const StringEnumEntry<Enum> (&table)[N],
                   const std::string& str,
                   Enum fallback) {
   for (int i = 0; i < N; ++i) {
-    if (table[i].string == str)
-      return table[i].enum_value;
+    if (UNSAFE_TODO(table[i]).string == str) {
+      return UNSAFE_TODO(table[i]).enum_value;
+    }
   }
   return fallback;
 }
@@ -128,9 +126,7 @@ std::string NetworkUIData::GetAsJson() const {
     dict.Set(kKeyUserSettings, user_settings_->Clone());
   }
 
-  std::string json;
-  base::JSONWriter::Write(dict, &json);
-  return json;
+  return base::WriteJson(dict).value_or("");
 }
 
 std::string NetworkUIData::GetONCSourceAsString() const {

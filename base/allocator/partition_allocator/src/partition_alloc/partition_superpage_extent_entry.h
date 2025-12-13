@@ -9,6 +9,7 @@
 
 #include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/address_pool_manager_types.h"
+#include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_dcheck_helper.h"
@@ -55,17 +56,26 @@ static_assert(kMaxSuperPagesInPool / kSuperPageSize <=
 PA_ALWAYS_INLINE uintptr_t
 SuperPagesBeginFromExtent(const PartitionSuperPageExtentEntry* extent) {
   PA_DCHECK(0 < extent->number_of_consecutive_super_pages);
-  uintptr_t extent_as_uintptr = reinterpret_cast<uintptr_t>(extent);
+  uintptr_t extent_as_uintptr = PartitionMetadataPageToSuperPage(
+      reinterpret_cast<uintptr_t>(extent), GetMetadataOffset(extent->root));
   PA_DCHECK(ReservationOffsetTable::Get(extent_as_uintptr)
                 .IsManagedByNormalBuckets(extent_as_uintptr));
   return base::bits::AlignDown(extent_as_uintptr, kSuperPageAlignment);
 }
 
-// Returns the end of the last super page in the range of consecutive super
+// Returns the base of the first super page in the range of consecutive super
 // pages.
 //
 // CAUTION! |extent| must point to the extent of the first super page in the
 // range of consecutive super pages.
+uintptr_t SuperPagesBeginFromExtent(
+    const PartitionSuperPageExtentEntry* extent);
+
+// Returns the end of the last super page in the range of consecutive
+// super pages.
+//
+// CAUTION! |extent| must point to the extent of the first super page in
+// the range of consecutive super pages.
 PA_ALWAYS_INLINE uintptr_t
 SuperPagesEndFromExtent(const PartitionSuperPageExtentEntry* extent) {
   return SuperPagesBeginFromExtent(extent) +

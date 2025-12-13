@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/font_fallback_skia_impl.h"
 
 #include <set>
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/icu/source/common/unicode/normalizer2.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
@@ -47,7 +43,7 @@ void RetrieveCodepointsAndDecomposedCodepoints(std::u16string_view text,
   size_t offset = 0;
   while (offset < text.length()) {
     UChar32 codepoint;
-    U16_NEXT(text.data(), offset, text.length(), codepoint);
+    UNSAFE_TODO(U16_NEXT(text.data(), offset, text.length(), codepoint));
 
     if (codepoints->insert(codepoint).second) {
       // For each codepoint, add the decomposed codepoints.
@@ -71,7 +67,7 @@ size_t ComputeMissingGlyphsForGivenTypeface(std::u16string_view text,
   size_t i = 0;
   while (i < text.length()) {
     UChar32 codepoint;
-    U16_NEXT(text.data(), i, text.length(), codepoint);
+    UNSAFE_TODO(U16_NEXT(text.data(), i, text.length(), codepoint));
 
     // The glyph is present in the font.
     if (typeface->unicharToGlyph(codepoint) != 0)

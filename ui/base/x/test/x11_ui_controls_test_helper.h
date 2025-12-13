@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/test/ui_controls_aura.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/connection.h"
 
 namespace gfx {

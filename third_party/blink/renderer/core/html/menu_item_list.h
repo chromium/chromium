@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MENU_ITEM_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MENU_ITEM_LIST_H_
 
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/html_menu_owner_element.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -26,33 +28,15 @@ class CORE_EXPORT MenuItemListIterator final {
       const HTMLElement& owner_menu,
       StartingPoint starting_point = StartingPoint::kStart);
 
-  HTMLMenuItemElement& operator*() {
-    DCHECK(current_);
-    return *current_;
-  }
-  HTMLMenuItemElement* operator->() { return current_; }
-  MenuItemListIterator& operator++() {
-    if (current_) {
-      Advance(current_);
-    }
-    return *this;
-  }
-  MenuItemListIterator& operator--() {
-    if (current_) {
-      Retreat(current_);
-    }
-    return *this;
-  }
-  explicit operator bool() const { return current_; }
-  bool operator==(const MenuItemListIterator& other) const {
-    return current_ == other.current_;
-  }
-  bool operator!=(const MenuItemListIterator& other) const {
-    return !(*this == other);
-  }
+  HTMLMenuItemElement& operator*();
+  HTMLMenuItemElement* operator->();
+  MenuItemListIterator& operator++();
+  MenuItemListIterator& operator--();
+  explicit operator bool() const;
+  bool operator==(const MenuItemListIterator& other) const;
 
  private:
-  // These functions returns only a MENUITEM descendant of owner_menu_.
+  // These functions returns only a <menuitem> descendant of owner_menu_.
   void Advance(HTMLMenuItemElement* current);
   void Retreat(HTMLMenuItemElement* current);
 
@@ -64,38 +48,26 @@ class MenuItemList final {
   STACK_ALLOCATED();
 
  public:
-  explicit MenuItemList(const HTMLElement& owner_menu)
+  explicit MenuItemList(HTMLMenuOwnerElement& owner_menu)
       : owner_menu_(owner_menu) {}
 
   using Iterator = MenuItemListIterator;
-  Iterator begin() {
-    return Iterator(owner_menu_, MenuItemListIterator::StartingPoint::kStart);
-  }
-  Iterator end() {
-    return Iterator(owner_menu_, MenuItemListIterator::StartingPoint::kEnd);
-  }
-  Iterator last() {
-    return Iterator(owner_menu_, MenuItemListIterator::StartingPoint::kLast);
-  }
-  bool Empty() {
-    return !Iterator(owner_menu_, MenuItemListIterator::StartingPoint::kStart);
-  }
+  Iterator begin();
+  Iterator end();
+  Iterator last();
+  bool Empty();
   unsigned size() const;
   HTMLMenuItemElement* NextFocusableMenuItem(HTMLMenuItemElement& menuitem,
-                                             bool inclusive = false) {
-    return FindFocusableMenuItem(menuitem, /*forward*/ true, inclusive);
-  }
+                                             bool inclusive = false);
   HTMLMenuItemElement* PreviousFocusableMenuItem(HTMLMenuItemElement& menuitem,
-                                                 bool inclusive = false) {
-    return FindFocusableMenuItem(menuitem, /*forward*/ false, inclusive);
-  }
+                                                 bool inclusive = false);
 
  private:
   HTMLMenuItemElement* FindFocusableMenuItem(HTMLMenuItemElement& menuitem,
                                              bool forward,
                                              bool inclusive);
 
-  const HTMLElement& owner_menu_;
+  const HTMLMenuOwnerElement& owner_menu_;
 };
 
 }  // namespace blink

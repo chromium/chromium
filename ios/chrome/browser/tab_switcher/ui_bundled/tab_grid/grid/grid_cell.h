@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
 
 @class GridCell;
+typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
 @class LayoutGuideCenter;
 
 // Informs the receiver of actions on the cell.
@@ -43,6 +44,8 @@
 @property(nonatomic, weak) PriceCardView* priceCardView;
 // The layout guide center to use to refer to the selected cell.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+// The layout type configuration for the empty thumbnail.
+@property(nonatomic, assign) EmptyThumbnailLayoutType layoutType;
 
 // Returns a transition selection cell with the same theme and frame as `cell`,
 // but with no visible content view, no delegate, and no identifier.
@@ -55,20 +58,33 @@
 // Sets the price drop and displays the PriceViewCard.
 - (void)setPriceDrop:(NSString*)price previousPrice:(NSString*)previousPrice;
 
-// Fade in a new snapshot.
-- (void)fadeInSnapshot:(UIImage*)snapshot;
+// Hides the price drop annotation
+- (void)hidePriceDrop;
 
-// Starts the activity indicator animation.
-- (void)showActivityIndicator;
+// Starts the activity indicator animation over the favicon.
+- (void)showFaviconActivityIndicator;
 
-// Stops the activity indicator animation.
-- (void)hideActivityIndicator;
+// Stops the activity indicator animation over the favicon.
+- (void)hideFaviconActivityIndicator;
+
+// Starts the activity indicator animation over the snapshot.
+- (void)showSnapshotActivityIndicator;
+
+// Stops the activity indicator animation over the snapshot.
+- (void)hideSnapshotActivityIndicator;
 
 // Registers the cell as a layout guide.
 - (void)registerAsSelectedCellGuide;
 
 // Returns the snapshot view's frame in window coordinates.
 - (CGRect)snapshotFrame;
+
+// Sets the accessibility identifiers within this cell based on its current
+// `index`.
+- (void)setAccessibilityIdentifiersWithIndex:(NSUInteger)index;
+
+// Highlights or resets the highlighting of the cell.
+- (void)setHighlightForGrouping:(BOOL)highlight;
 
 @end
 

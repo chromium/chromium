@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/policy/status_collector/child_status_collector.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -36,7 +32,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_policy_builder.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
@@ -45,7 +41,6 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
@@ -65,7 +60,9 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_type.h"
@@ -175,9 +172,7 @@ bool GetFakeAndroidStatus(const std::string& status,
 
 class ChildStatusCollectorTest : public testing::Test {
  public:
-  ChildStatusCollectorTest()
-      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()),
-        user_data_dir_override_(chrome::DIR_USER_DATA) {
+  ChildStatusCollectorTest() : user_data_dir_override_(chrome::DIR_USER_DATA) {
     scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
                                                            "device_id");
 
@@ -191,16 +186,12 @@ class ChildStatusCollectorTest : public testing::Test {
     ash::SeneschalClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
     ash::LoginState::Initialize();
-
-    AddChildUser(AccountId::FromUserEmail("user0@gmail.com"));
   }
 
   ~ChildStatusCollectorTest() override {
     ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     ash::SeneschalClient::Shutdown();
-    // |testing_profile_| must be destructed while ConciergeClient is alive.
-    testing_profile_.reset();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::UpdateEngineClient::Shutdown();
@@ -213,6 +204,13 @@ class ChildStatusCollectorTest : public testing::Test {
   ChildStatusCollectorTest& operator=(const ChildStatusCollectorTest&) = delete;
 
   void SetUp() override {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+
+    AddChildUser(
+        AccountId::FromUserEmailGaiaId("user0@gmail.com", GaiaId("123456789")));
+
     RestartStatusCollector(base::BindRepeating(&GetEmptyAndroidStatus));
 
     // Disable network reporting since it requires additional setup.
@@ -228,7 +226,12 @@ class ChildStatusCollectorTest : public testing::Test {
     FastForwardTo(start_time);
   }
 
-  void TearDown() override { status_collector_.reset(); }
+  void TearDown() override {
+    status_collector_.reset();
+
+    testing_profile_ = nullptr;
+    profile_manager_.reset();
+  }
 
  protected:
   // States tracked to calculate a child's active time.
@@ -242,14 +245,9 @@ class ChildStatusCollectorTest : public testing::Test {
     kPeriodicCheckTriggered
   };
 
-  ash::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   void SimulateStateChanges(DeviceStateTransitions* states, int len) {
     for (int i = 0; i < len; i++) {
-      switch (states[i]) {
+      switch (UNSAFE_TODO(states[i])) {
         case DeviceStateTransitions::kEnterIdleState: {
           power_manager::ScreenIdleState state;
           state.set_off(true);
@@ -338,27 +336,25 @@ class ChildStatusCollectorTest : public testing::Test {
     run_loop_->Quit();
   }
 
-  void AddUserWithTypeAndAffiliation(const AccountId& account_id,
-                                     user_manager::UserType user_type,
-                                     bool is_affiliated) {
+  bool AddChildUser(const AccountId& account_id) {
+    auto* user =
+        user_manager::TestHelper(user_manager_.Get()).AddChildUser(account_id);
+    if (!user) {
+      return false;
+    }
+
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
+    ash::ScopedAccountIdAnnotator account_id_annotator(
+        profile_manager_->profile_manager(), account_id);
+
     // Build a profile with profile name=account e-mail because our testing
     // version of GetDMTokenForProfile returns the profile name.
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(account_id.GetUserEmail());
-    testing_profile_ = profile_builder.Build();
-
-    auto* user_manager = GetFakeUserManager();
-    auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, is_affiliated, user_type, testing_profile_.get());
-    user_manager->UserLoggedIn(
-        user->GetAccountId(),
-        user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
-  }
-
-  void AddChildUser(const AccountId& account_id) {
-    AddUserWithTypeAndAffiliation(account_id, user_manager::UserType::kChild,
-                                  false);
-    GetFakeUserManager()->set_current_user_child(true);
+    CHECK(!testing_profile_);
+    testing_profile_ =
+        profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
+    return true;
   }
 
   // Convenience method.
@@ -404,10 +400,6 @@ class ChildStatusCollectorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  // scoped_testing_local_state_ should be destructed after TestingProfile.
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
-
   ChromeContentClient content_client_;
   ChromeContentBrowserClient browser_content_client_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
@@ -415,8 +407,12 @@ class ChildStatusCollectorTest : public testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::FakeOwnerSettingsService owner_settings_service_{
       scoped_testing_cros_settings_.device_settings(), nullptr};
-  std::unique_ptr<TestingProfile> testing_profile_;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::ScopedUserManager user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<user_manager::FakeUserManagerDelegate>(),
+          TestingBrowserProcess::GetGlobal()->GetTestingLocalState())};
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> testing_profile_ = nullptr;
   em::ChildStatusReportRequest child_status_;
   std::unique_ptr<TestingChildStatusCollector> status_collector_;
   base::ScopedPathOverride user_data_dir_override_;
@@ -424,7 +420,8 @@ class ChildStatusCollectorTest : public testing::Test {
 
   // This property is required to instantiate the session manager, a singleton
   // which is used by the device status collector.
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 };
 
 TEST_F(ChildStatusCollectorTest, ReportingBootMode) {

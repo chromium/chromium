@@ -1,5 +1,6 @@
 include_rules = [
   "+components/crash/core/common/crash_key.h",
+  "+components/viz/common/resources/shared_image_format.h",
 ]
 
 specific_include_rules = {

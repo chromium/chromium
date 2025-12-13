@@ -11,9 +11,6 @@
 
 class Profile;
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
 
 namespace policy {
 
@@ -47,10 +44,6 @@ class DeveloperToolsPolicyHandler : public ConfigurationPolicyHandler {
                            policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
-  // Registers the pref for policy-set developer tools availability in
-  // |registry|.
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Returns the effective developer tools availability for the profile.
   static Availability GetEffectiveAvailability(Profile* profile);

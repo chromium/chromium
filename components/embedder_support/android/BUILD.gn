@@ -54,8 +54,11 @@ android_library("application_java") {
 android_library("util_java") {
   srcjar_deps = [ ":util_jni_headers" ]
   sources = [
+    "java/src/org/chromium/components/embedder_support/util/ExtensionUrlUtil.java",
     "java/src/org/chromium/components/embedder_support/util/InputStreamUtil.java",
     "java/src/org/chromium/components/embedder_support/util/Origin.java",
+    "java/src/org/chromium/components/embedder_support/util/PasswordEchoSettingObserver.java",
+    "java/src/org/chromium/components/embedder_support/util/PasswordEchoSettingState.java",
     "java/src/org/chromium/components/embedder_support/util/UrlConstants.java",
     "java/src/org/chromium/components/embedder_support/util/UrlUtilities.java",
     "java/src/org/chromium/components/embedder_support/util/WebResourceResponseInfo.java",
@@ -107,11 +110,11 @@ static_library("util") {
     "//components/google/core/common",
     "//components/version_info",
     "//content/public/browser",
-    "//mojo/public/cpp/bindings:bindings",
-    "//mojo/public/cpp/system:system",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
     "//net",
-    "//services/network/public/cpp:cpp",
-    "//services/network/public/mojom:mojom",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//url",
   ]
 }
@@ -145,6 +148,7 @@ static_library("view") {
 android_library("content_view_java") {
   deps = [
     ":embedder_util_java",
+    ":virtual_structure_java",
     "//base:base_java",
     "//build/android:build_java",
     "//components/android_autofill/browser:features_java",
@@ -155,6 +159,21 @@ android_library("content_view_java") {
   ]
   sources = [
     "java/src/org/chromium/components/embedder_support/view/ContentView.java",
+  ]
+}
+
+android_library("virtual_structure_java") {
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//components/optimization_guide/content/browser/android:optimization_guide_content_java",
+    "//components/optimization_guide/proto:optimization_guide_proto_java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+  sources = [
+    "java/src/org/chromium/components/embedder_support/virtual_structure/PageContentProtoViewStructureBuilder.java",
+    "java/src/org/chromium/components/embedder_support/virtual_structure/VirtualStructureProvider.java",
   ]
 }
 
@@ -183,6 +202,8 @@ static_library("web_contents_delegate") {
   sources = [
     "delegate/color_picker_bridge.cc",
     "delegate/color_picker_bridge.h",
+    "delegate/screenshot_result.cc",
+    "delegate/screenshot_result.h",
     "delegate/web_contents_delegate_android.cc",
     "delegate/web_contents_delegate_android.h",
   ]
@@ -253,6 +274,7 @@ android_library("web_contents_delegate_java") {
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerViewBinder.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorSuggestion.java",
     "java/src/org/chromium/components/embedder_support/delegate/OnColorChangedListener.java",
+    "java/src/org/chromium/components/embedder_support/delegate/ScreenshotResult.java",
     "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
   ]
 }
@@ -260,6 +282,7 @@ android_library("web_contents_delegate_java") {
 generate_jni("web_contents_delegate_jni_headers") {
   sources = [
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerBridge.java",
+    "java/src/org/chromium/components/embedder_support/delegate/ScreenshotResult.java",
     "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
   ]
 }
@@ -351,6 +374,7 @@ robolectric_library("junit_test_support") {
 
 robolectric_library("components_embedder_support_junit_tests") {
   sources = [
+    "junit/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParamsUnitTest.java",
     "junit/src/org/chromium/components/embedder_support/contextmenu/ContextMenuUtilsUnitTest.java",
     "junit/src/org/chromium/components/embedder_support/util/OriginTest.java",
     "junit/src/org/chromium/components/embedder_support/view/ContentViewTest.java",
@@ -375,12 +399,13 @@ robolectric_library("components_embedder_support_junit_tests") {
   ]
 }
 
-android_library("embedder_support_javatests") {
+android_library("unit_device_javatests") {
   testonly = true
   resources_package = "org.chromium.components.embedder_support"
 
   sources = [
     "javatests/src/org/chromium/components/embedder_support/delegate/ColorPickerDialogRenderTest.java",
+    "javatests/src/org/chromium/components/embedder_support/util/ExtensionUrlUtilTest.java",
     "javatests/src/org/chromium/components/embedder_support/util/UrlConstantsTest.java",
     "javatests/src/org/chromium/components/embedder_support/util/UrlUtilitiesUnitTest.java",
   ]
@@ -399,5 +424,43 @@ android_library("embedder_support_javatests") {
     "//ui/android:ui_java_resources",
     "//ui/android:ui_java_test_support",
     "//url:gurl_java",
+  ]
+}
+
+android_library("virtual_structure_javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/embedder_support/virtual_structure/PageContentProtoViewStructureBuilderTest.java" ]
+  deps = [
+    ":content_view_java",
+    ":virtual_structure_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//chrome/test/android:chrome_java_transit",
+    "//components/android_autofill/browser/test_support:java",
+    "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
+}
+
+robolectric_library("virtual_structure_junit_tests") {
+  sources = [ "junit/src/org/chromium/components/embedder_support/virtual_structure/PageContentProtoViewStructureBuilderUnitTest.java" ]
+  deps = [
+    ":virtual_structure_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base:callback_java",
+    "//components/android_autofill/browser/test_support:java",
+    "//components/optimization_guide/content/browser/android:optimization_guide_content_java",
+    "//components/optimization_guide/proto:optimization_guide_proto_java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:org_mockito_mockito_core_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/junit",
   ]
 }

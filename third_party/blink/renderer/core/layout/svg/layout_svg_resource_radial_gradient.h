@@ -53,7 +53,7 @@ class LayoutSVGResourceRadialGradient final : public LayoutSVGResourceGradient {
 
  private:
   const GradientAttributes& EnsureAttributes() const override;
-  scoped_refptr<Gradient> BuildGradient() const override;
+  std::unique_ptr<Gradient> BuildGradient() const override;
 
   mutable RadialGradientAttributes attributes_;
 };

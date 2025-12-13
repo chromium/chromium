@@ -332,7 +332,9 @@ std::string ParseHispanicLastNameExpression() {
 std::string ParseHispanicLastNameCoreExpression() {
   return CaptureTypeWithPattern(
       NAME_LAST_CORE,
-      {CaptureTypeWithPattern(NAME_LAST_FIRST, {kSingleWordRe}),
+      {CaptureTypeWithPattern(
+           NAME_LAST_FIRST,
+           {NoCapturePatternOptional(kLastNamePrefixRe), kSingleWordRe}),
        CaptureTypeWithPatternOptional(NAME_LAST_CONJUNCTION,
                                       kHispanicLastNameConjunctionsRe),
        // This capture doesn't capture last name prefix, because naming model
@@ -343,10 +345,8 @@ std::string ParseHispanicLastNameCoreExpression() {
 }
 
 std::string ParseHispanicLastNameExpressionWithCore() {
-  return CaptureTypeWithPattern(
-      NAME_LAST,
-      {CaptureTypeWithPatternOptional(NAME_LAST_PREFIX, kLastNamePrefixRe),
-       ParseHispanicLastNameCoreExpression()});
+  return CaptureTypeWithPattern(NAME_LAST,
+                                {ParseHispanicLastNameCoreExpression()});
 }
 
 // Returns an expression to parse a full Hispanic/Latinx name that

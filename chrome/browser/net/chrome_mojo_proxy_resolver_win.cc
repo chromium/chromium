@@ -13,11 +13,10 @@
 
 namespace {
 
-using proxy_resolver_win::mojom::WindowsSystemProxyResolver;
+using proxy_resolver::mojom::SystemProxyResolver;
 
-WindowsSystemProxyResolver* GetProxyResolver(
-    const base::TimeDelta& idle_timeout) {
-  static base::NoDestructor<mojo::Remote<WindowsSystemProxyResolver>> remote;
+SystemProxyResolver* GetProxyResolver(const base::TimeDelta& idle_timeout) {
+  static base::NoDestructor<mojo::Remote<SystemProxyResolver>> remote;
   if (!remote->is_bound()) {
     content::ServiceProcessHost::Launch(
         remote->BindNewPipeAndPassReceiver(),
@@ -26,7 +25,7 @@ WindowsSystemProxyResolver* GetProxyResolver(
             .Pass());
 
     // The service will report itself idle once there are no more bound
-    // WindowsSystemProxyResolver instances. This will happen pretty frequently,
+    // SystemProxyResolver instances. This will happen pretty frequently,
     // so we wait for |idle_timeout| before dropping the Remote to initiate
     // service process termination. Any subsequent call to GetProxyForUrl() will
     // launch a new process.
@@ -51,19 +50,19 @@ ChromeMojoProxyResolverWin::~ChromeMojoProxyResolverWin() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-mojo::PendingRemote<WindowsSystemProxyResolver>
+mojo::PendingRemote<SystemProxyResolver>
 ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiver() {
-  mojo::PendingRemote<WindowsSystemProxyResolver> remote;
+  mojo::PendingRemote<SystemProxyResolver> remote;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ChromeMojoProxyResolverWin>(base::Minutes(5)),
       remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }
 
-mojo::PendingRemote<WindowsSystemProxyResolver>
+mojo::PendingRemote<SystemProxyResolver>
 ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiverForTesting(
     const base::TimeDelta& idle_timeout) {
-  mojo::PendingRemote<WindowsSystemProxyResolver> remote;
+  mojo::PendingRemote<SystemProxyResolver> remote;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ChromeMojoProxyResolverWin>(idle_timeout),
       remote.InitWithNewPipeAndPassReceiver());

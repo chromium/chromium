@@ -17,9 +17,13 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1131805035311359397">Para makita kung ligtas ang iyong mga password mula sa mga paglabag sa data at iba pang isyu sa seguridad, <ph name="BEGIN_LINK" />mag-sign in sa Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">I-click ang menu ng Chromium</translation>
 <translation id="1157985233335035034">Mga kamakailang wika</translation>
+<translation id="1171831736360285680">Nagdagdag ang <ph name="PARTNER_NAME" /> ng extension na posibleng bumago sa paraan ng paggana ng Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Hindi na-install dahil hindi sinusuportahan ang iyong bersyon ng Windows.</translation>
 <translation id="1185134272377778587">Tungkol sa Chromium</translation>
 <translation id="1203500561924088507">Salamat sa pag-install. Dapat mong i-restart ang iyong browser bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
+<translation id="123265588161106468">Habang naka-sign in ka, magagamit mo ang iyong mga password at higit pa mula sa Google Account mo sa Chromium. Para baguhin ito, pumunta sa “Iyong account sa Chromium.”</translation>
 <translation id="1262876892872089030">Habang hindi aktibo ang tab na ito, nagbakante ng memory para mapanatiling mabilis ang Chromium. Puwede mong piliing palaging huwag isama ang site na ito sa pagiging hindi aktibo.</translation>
 <translation id="1265577313130862557">Na-block ng Chromium ang pag-download na ito dahil mapanganib ang file</translation>
 <translation id="126567311906253476">Kapag nagsa-sign in sa mga serbisyo ng Google tulad ng Gmail o YouTube gamit ang <ph name="USER_EMAIL" />, puwede kang awtomatikong mag-sign in sa Chromium gamit ang parehong account</translation>
@@ -32,13 +36,16 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1345251407431278948">Na-pin na! Maa-access mo ulit ang Paghahanap ng Larawan mula sa bagong button sa toolbar</translation>
 <translation id="1356661055722410047">Bago! Puwede kang magsalin ng text at mga larawan sa iyong screen</translation>
 <translation id="1383876407941801731">Hanapin</translation>
+<translation id="1397530502368084401">&amp;Pamahalaan ang Mga Profile sa Chromium</translation>
 <translation id="1414495520565016063">Naka-sign in ka sa Chromium!</translation>
 <translation id="141901961143729572">I-share ang iyong mga naiisip</translation>
 <translation id="1465192221147974788">Para i-share ang iyong window, payagan ang pag-record ng screen para sa Chromium sa System Settings.</translation>
 <translation id="1478370723027452770">Humingi ng tulong para sa Chrome na Pang-test</translation>
+<translation id="1496875977627931224">Kumusta <ph name="USER_NAME" />,<ph name="LINE_BREAK" />ano ang iniisip mo ngayon?</translation>
 <translation id="1497802159252041924">Error sa pag-install: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Pinoprotektahan ang page na ito</translation>
 <translation id="1524282610922162960">Magbahagi ng tab ng Chromium</translation>
+<translation id="154404805518949443">Mag-sign in sa Chromium</translation>
 <translation id="1547469039832541117">Tatapusin ang naka-highlight na gawain.</translation>
 <translation id="1553461853655228091">Kailangan ng Chromium ng access sa iyong camera para gumawa ng 3D na mapa ng kapaligiran mo</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Hindi na sinusuportahan ang extension na ito. Inirerekomenda ng Chromium na alisin mo ito.}one{Hindi na sinusuportahan ang mga extension na ito. Inirerekomenda ng Chromium na alisin mo ang mga ito.}other{Hindi na sinusuportahan ang mga extension na ito. Inirerekomenda ng Chromium na alisin mo ang mga ito.}}</translation>
@@ -48,6 +55,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1607715478322902680">{COUNT,plural, =0{Ipinag-aatas ng iyong administrator na ilunsad mo ulit ang Chromium para mailapat ang isang update}=1{Ipinag-aatas ng iyong administrator na ilunsad mo ulit ang Chromium para mailapat ang isang update. Hindi bubukas ulit ang iyong Incognito window.}one{Ipinag-aatas ng iyong administrator na ilunsad mo ulit ang Chromium para mailapat ang isang update. Hindi bubukas ulit ang iyong # Incognito window.}other{Ipinag-aatas ng iyong administrator na ilunsad mo ulit ang Chromium para mailapat ang isang update. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="1625909126243026060">Suriin ang mga pangunahing kontrol sa privacy at seguridad sa Chromium</translation>
 <translation id="1640672724030957280">Dina-download...</translation>
+<translation id="1680687534629375545">Magtanong sa Paghahanap ng Larawan tungkol sa page na ito</translation>
 <translation id="1709772298389099340">Nagbibigay ng mga mas mataas na pribilehiyo para sa <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Para makatulong na pahusayin ang mga feature na ito, ipinapadala ng Chromium sa Google ang iyong mga interaction dito. Posibleng basahin, iproseso, at i-annotate ang data na ito ng mga taong tagasuri.</translation>
 <translation id="1722488837206509557">Magbibigay-daan ito sa iyong pumili mula sa mga available na device at magpakita ng content sa mga ito.</translation>
@@ -60,17 +68,17 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1779356040007214683">Upang gawing mas ligtas ang Chromium, nag-disable kami ng ilang extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> at maaaring naidagdag nang hindi mo nalalaman.</translation>
 <translation id="1808667845054772817">Muling i-install ang Chromium</translation>
 <translation id="1820835682567584003">Sinusubukan ng Chromium na <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="183031085822326697">Sa susunod na buksan mo ang Chromium sa iyong <ph name="DEVICE_TYPE" />, makakakita ka ng prompt na gamitin ang Google Password Manager.</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
 <translation id="18552579716432081">Para ma-delete ang data mula sa pag-browse sa device lang na ito, habang pinapanatili ito sa iyong Google Account, <ph name="BEGIN_LINK" />mag-sign out sa Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Puwede mong pamahalaan ang iyong mga naka-sign in na Google Account. Ginagamit ang iyong mga Google Account para sa Chromium browser, Play Store, Gmail, at higit pa. Kung gusto mong magdagdag ng account para sa ibang tao, tulad ng miyembro ng pamilya, magdagdag na lang ng bagong tao sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Maghanap gamit ang Paghahanap ng Larawan</translation>
-<translation id="1863308913976887472">Puwedeng mag-store ang mga site sa Chromium tungkol sa iyong mga interes. Halimbawa, kung bibisita ka sa isang site para bumili ng mga sapatos para sa isang marathon, posibleng tukuyin ng site ang iyong interes bilang pagtakbo sa mga marathon. Sa ibang pagkakataon, kung bibisita ka sa ibang site para magparehistro para sa isang karera, puwedeng magpakita sa iyo ang site na iyon ng ad para sa running shoes batay sa mga interes mo.</translation>
 <translation id="1880677175115548835">Piliin ang text</translation>
 <translation id="1881322772814446296">Nagsa-sign in ka gamit ang isang pinamamahalaang account at nagbibigay sa administrator nito ng kontrol sa iyong profile sa Chromium. Permanenteng mauugnay ang iyong data sa Chromium, gaya ng iyong apps, mga bookmark, kasaysayan, password, at iba pang mga setting sa <ph name="USER_NAME" />. Matatanggal mo ang data na ito sa Google Accounts Dashboard, ngunit hindi mo maiuugnay ang data na ito sa isa pang account. Maaari ka ring gumawa ng bagong profile upang ihiwalay ang iyong umiiral na data sa Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Nakakatipid ng baterya ang Chromium sa pamamagitan ng paglimita sa aktibidad sa background at mga visual effect, gaya ng smooth na pag-scroll at mga frame rate ng video. <ph name="BEGIN_LINK" />Matuto pa tungkol sa Energy Saver<ph name="END_LINK" /></translation>
+<translation id="1898804291554630487">Magtanong tungkol sa page na ito</translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Kapag na-off ito, maaari kang mag-sign in sa mga site ng Google tulad ng Gmail nang hindi nagsa-sign in sa Chromium</translation>
-<translation id="1916451563296275579">Alisin ang data ng app na ito sa Chromium</translation>
 <translation id="1929939181775079593">Hindi gumagana ang Chromium. Muling ilunsad ngayon?</translation>
 <translation id="1933341829955786215">Nire-require sa iyo ng organisasyon mong <ph name="MANAGER" /> na mag-sign in sa Chromium</translation>
 <translation id="193439633299369377">Kailangang ma-restart ang ChromiumOS para mailapat ang update.</translation>
@@ -82,9 +90,12 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2008474315282236005">Magde-delete ito ng 1 item sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Hindi na-install. Pakisubukan ulit.</translation>
 <translation id="2020032459870799438">Para makita kung ligtas ang iyong iba pang password mula sa mga paglabag sa data at iba pang isyu sa seguridad, <ph name="BEGIN_LINK" />mag-sign in sa Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Mga Setting.</translation>
 <translation id="2049376729098081731">Piliin kung isasama ang history ng Chromium para sa mas naka-personalize na mga karanasan sa mga serbisyo ng Google</translation>
 <translation id="2054039611381840095">Para makatanggap ng mga update sa Chromium sa hinaharap, kakailanganin mo ng macOS 12 o mas bago. Gumagamit ng macOS 11 ang computer na ito.</translation>
+<translation id="2064856577282482477">I-click ang button na I-customize ang Chromium sa Page na Bagong Tab para bigyan ang Chromium ng bagong hitsura</translation>
 <translation id="2086476982681781442">Na-block ng Chromium ang pag-download na ito dahil mapanlinlang ang file at posible itong gumawa ng mga hindi inaasahang pagbabago sa iyong device</translation>
+<translation id="208726765006323911">Makakakita ka ng prompt na subukan ang <ph name="FEATURE_NAME" /> sa susunod na buksan mo ang Chromium iOS.</translation>
 <translation id="2099452623287920103">Aalisin sa device na ito ang iyong mga password at iba pang data sa Chromium na na-save mo sa iyong Google Account. Para magamit ulit ang mga ito sa Chromium, mag-sign in ulit.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chromium nang 1 minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}one{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chromium nang # minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}other{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chromium nang # na minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}}</translation>
 <translation id="2126108037660393668">Hindi na-verify ang na-download na file.</translation>
@@ -95,15 +106,26 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2185166961232948079">Chromium - Pag-sign in sa Network - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Error sa pagtingin kung may update: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Alisin ang account sa Chromium</translation>
+<translation id="2210502920229141283">Manatiling mas ligtas on the go gamit ang Pinahusay na Ligtas na Pag-browse sa Chromium para sa iOS</translation>
 <translation id="2210682093923538346">Mapanganib na site. Inalis ng Chromium ang mga notification.</translation>
 <translation id="2236949375853147973">Aking Aktibidad</translation>
 <translation id="2238130810669087193">Para makuha ang iyong mga address at higit pa sa lahat ng device mo, mag-sign in sa Chromium. Mase-save ang address na ito sa iyong Google Account pagkatapos mong mag-sign in.</translation>
-<translation id="2240214816234246077">Hindi mo ito binisita kamakailan. Inalis ng Chromium ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Kung nagpapahiram ka ng computer, ang mga kaibigan at kapamilya ay maaaring mag-browse nang hiwalay at i-set up ang Chromium sa paraang gusto nila.</translation>
+<translation id="2283803047247799269">Maghanap sa tab na ito gamit ang Paghahanap ng Larawan</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Inirerekomenda ng Chromium na i-pause ang tab na nagpapabagal sa iyong browser}one{Inirerekomenda ng Chromium na i-pause ang mga tab na nagpapabagal sa iyong browser}other{Inirerekomenda ng Chromium na i-pause ang mga tab na nagpapabagal sa iyong browser}}</translation>
+<translation id="2307973900865360088">Panatilihin sa Dock</translation>
 <translation id="2313870531055795960">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chromium. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chromium sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page.</translation>
-<translation id="232860113504534383">Ang Chromium mo, sa lahat ng lugar</translation>
+<translation id="2332076562712130931">Kapag ginawa ang aksyong ito:
+        <ph name="LINE_BREAKS" />
+          • Mare-reset ang ilang setting ng Chromium at shortcut ng Chromium
+          <ph name="LINE_BREAK" />
+          • Madi-disable ang mga extension
+          <ph name="LINE_BREAK" />
+          • Made-delete ang cookies at iba pang pansamantalang data ng site
+          <ph name="LINE_BREAKS" />
+          Hindi maaapektuhan ang mga bookmark, history, at naka-save na password.</translation>
 <translation id="2343156876103232566">Para magpadala ng numero sa iyong Android phone mula rito, mag-sign in sa Chromium sa parehong device.</translation>
+<translation id="2356070529366658676">Magtanong</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2361918034042471035">Gusto ng extension na "<ph name="EXTENSION_NAME" />" na mag-sign in ka sa Chromium</translation>
 <translation id="236943522426971115">I-disable ang Pagtakbo ng Chromium sa Background para sa Mga App</translation>
@@ -129,19 +151,20 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2620436844016719705">System</translation>
 <translation id="2629740064077610681">Makikita at mapapamahalaan ng iyong organisasyon ang data mula sa pag-browse, gaya ng mga bookmark, history, at mga password mo. Hindi nito makikita ang data mula sa pag-browse sa ibang profile sa Chromium</translation>
 <translation id="2635452620547538388">I-verify na ikaw ito para magamit at ma-save ang data sa Chromium sa iyong account, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="264613044588233783">Mas mabilis na tatakbo ang Chromium at gagana ayon sa pagkakadisenyo sa mga ito ang mga feature na gumagamit ng JavaScript (inirerekomenda)</translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang isang update}=1{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang isang update. Hindi magbubukas ulit ang iyong Incognito window.}one{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang isang update. Hindi magbubukas ulit ang iyong # Incognito window.}other{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang isang update. Hindi magbubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="2648074677641340862">May naganap na error sa operating system sa panahon ng pag-install. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="2661879430930417727">Kung magpapahiram ka ng device, puwedeng mag-browse nang hiwalay ang mga kaibigan at kapamilya, at puwede nilang i-set up ang Chromium sa paraang gusto nila</translation>
 <translation id="2711502716910134313">Tab ng Chromium</translation>
 <translation id="2718390899429598676">Para sa karagdagang seguridad, ie-encrypt ng Chromium ang iyong data.</translation>
 <translation id="2721354645805494590">Para alisin ang iyong Google Account sa Chromium, mag-sign out</translation>
+<translation id="2722636413143664436">Para makuha ang iyong mga password, bookmark, at higit pa sa lahat ng device mo, mag-sign in sa Chromium</translation>
 <translation id="2738871930057338499">Hindi makakonekta sa Internet. HTTP 403 Forbidden. Tingnan ang configuration ng iyong proxy.</translation>
 <translation id="2753623023919742414">I-click para maghanap</translation>
 <translation id="2768103863314748511">Itakda ang Chromium bilang iyong default na viewer ng PDF</translation>
-<translation id="2770231113462710648">Baguhin ang default na browser sa:</translation>
 <translation id="2785438272836277133">May malware ang extension na ito at hindi ito ligtas. Alisin ito sa Chromium para hindi na nito makita at mabago ang iyong data sa mga site na binibisita mo, kabilang ang iyong personal na impormasyon.</translation>
 <translation id="2799223571221894425">Ilunsad Muli</translation>
 <translation id="2803971713792056305">Iyong Chromium</translation>
+<translation id="2816462166102338036">Hanapin ang video na ito gamit ang Paghahanap ng Larawan</translation>
 <translation id="2841525013647267359">Isalin mula sa</translation>
 <translation id="2846251086934905009">Error sa pag-install: Hindi natapos ang installer. Na-abort ang pag-install.</translation>
 <translation id="2847479871509788944">Alisin sa Chromium...</translation>
@@ -152,68 +175,84 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2928420929544864228">Tapos na ang pag-install.</translation>
 <translation id="2933336679234709858">Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at ma-save ang data sa Chromium sa iyong Google Account.</translation>
 <translation id="2945997411976714835">Error sa pag-install: Hindi nagsimula ang proseso ng installer.</translation>
+<translation id="2948852018303413228">Mas mabilis na makapag-sign in sa mga site gamit ang mga na-save na password para sa Chromium sa iOS</translation>
+<translation id="2966959524256557996">Magdagdag ng bagong profile sa Chromium para panatilihing magkakahiwalay ang mga bookmark, password, at setting.</translation>
 <translation id="2970426615109535079">Pinapamahalaan ng iyong organisasyon ang Chromium</translation>
 <translation id="2977470724722393594">Napapanahon ang Chromium</translation>
 <translation id="2977506796191543575">Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chromium sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page</translation>
 <translation id="2981563588585023386">Para manatiling mas ligtas online sa pamamagitan ng mga pinili ng iyong magulang, mag-sign in sa Chromium</translation>
 <translation id="3003694935412297923">Lahat ng gawain</translation>
+<translation id="3012615494352020668">{count,plural, =1{Kailangang i-verify ng Chromium na ikaw ito bago ma-save ang ilang data sa iyong Google Account at magamit ito sa lahat ng device mo. Kung magsa-sign out ka ngayon, made-delete ang data na ito (1 item).}one{Kailangang i-verify ng Chromium na ikaw ito bago ma-save ang ilang data sa iyong Google Account at magamit ito sa lahat ng device mo. Kung magsa-sign out ka ngayon, made-delete ang data na ito ({count} item).}other{Kailangang i-verify ng Chromium na ikaw ito bago ma-save ang ilang data sa iyong Google Account at magamit ito sa lahat ng device mo. Kung magsa-sign out ka ngayon, made-delete ang data na ito ({count} na item).}}</translation>
 <translation id="3013473503895162900">Buksan ang <ph name="URL" /> sa bagong tab sa Chromium.</translation>
 <translation id="3032706164202344641">Hindi masuri ng Chromium ang iyong mga password. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="3032787606318309379">Idinaragdag sa Chromium...</translation>
 <translation id="3038232873781883849">Naghihintay sa pag-install...</translation>
 <translation id="3045032126857188731">Isinaling wika: <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">Isara ang dialog ng feedback</translation>
 <translation id="3068187312562070417">Iba pang profile sa Chromium</translation>
 <translation id="3068515742935458733">Tumulong na gawing mas mahusay ang Chromium sa pamamagitan ng pagpapadala ng mga ulat ng pag-crash at <ph name="UMA_LINK" /> sa Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB device ang ina-access ng isa o higit pang extension ng Chromium}=1{1 USB device ang ina-access ng isa o higit pang extension ng Chromium}one{# USB device ang ina-access ng isa o higit pang extension ng Chromium}other{# na USB device ang ina-access ng isa o higit pang extension ng Chromium}}</translation>
-<translation id="3101560983689755071">Naaapektuhan ng iyong history ng pag-browse ang mga ad na nakikita mo at mga interes tulad ng tinatantya sa ibaba. Para protektahan ang iyong privacy, awtomatikong ide-delete ng Chromium ang mga interes mo sa rolling na paraan bawat buwan. Puwedeng ma-refresh ang mga interes maliban na lang kung alisin mo ang mga ito.</translation>
+<translation id="3095811995836568724">History sa Chromium</translation>
 <translation id="3103660991484857065">Nabigong i-uncompress ng installer ang archive. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="310459126943037700">Hindi natapos ang (mga) gawain.</translation>
 <translation id="3130323860337406239">Ginagamit ng Chromium ang iyong mikropono.</translation>
+<translation id="3130333203120345554">Bagong paghahanap</translation>
 <translation id="3137969841538672700">Mag-drag para maghanap</translation>
 <translation id="3144188012276422546">Gumagamit ang tab na ito ng mga karagdagang resource. Para pahusayin ang iyong performance, hayaan ang Chromium na gawin itong hindi aktibo.</translation>
 <translation id="3149163023759831301">Para i-share ang iyong screen, payagan ang pag-record ng screen para sa Chromium sa System Settings</translation>
 <translation id="3155163173539279776">Muling ilunsad ang Chromium</translation>
 <translation id="3161522574479303604">Lahat ng wika</translation>
 <translation id="3179665906251668410">Buksan ang Link sa Inco&amp;gnito Window ng Chromium</translation>
+<translation id="3183357154200327217">Nagdagdag ang ibang program sa iyong computer ng tema na posibleng magpabago sa paraan ng paggana ng Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">I-customize ang iyong bagong profile sa Chromium</translation>
 <translation id="3224847870593914902">Para alisin ang iyong Google Account sa Chromium, mag-sign out sa Chromium sa page na Mga Setting</translation>
 <translation id="3234316605225071811">Itatanong sa iyo ng Chromium sa ibang pagkakataon kung gusto mong gamitin ang naka-save na impormasyon para i-autofill ang mga form para sa iyo</translation>
 <translation id="3258596308407688501">Hindi makakapag-read at makakapag-write ang Chromium sa direktoryo ng data nito:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 ang JavaScript at WebAssembly engine ng Chromium na ginagamit para pahusayin ang performance ng site</translation>
 <translation id="3286538390144397061">I-restart Ngayon</translation>
 <translation id="328888136576916638">Nawawala ang mga Google API key. Madi-disable ang ilang pagpapagana ng Chromium.</translation>
 <translation id="3296368748942286671">Patuloy na magpatakbo ng background na apps kapag nakasara ang Chromium</translation>
 <translation id="3313189106987092621">Bibigyan ka ng babala ng Chromium bago nito i-load ang anumang site na gumagamit ng hindi secure na koneksyon</translation>
 <translation id="3316771292331273802">Masa-sign out ka sa karamihan ng mga site kapag isinara mo ang lahat ng window ng Chromium, maliban sa iyong Google Account kung naka-sign in ka sa Chromium. Para payagan ang mga site na matandaan ka, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Binago ang iyong default na search engine mula sa labas ng Chromium. Para protektahan ka, ni-reset ito ng Chromium.</translation>
 <translation id="3352986031709923790">kanang sulok sa itaas ng lugar para sa paghahanap: kanan <ph name="RIGHT" />%, itaas <ph name="TOP" />%</translation>
+<translation id="3366305173356742781">Data sa Chromium sa iyong account</translation>
+<translation id="3369405342922656244">Maghanap sa page na ito gamit ang Paghahanap ng Larawan</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Lumipat sa kasalukuyang profile sa Chromium?</translation>
 <translation id="3412460710772753638">Sa Password Manager sa device na ito</translation>
+<translation id="3461644266919055473">Ginagawang iyo ang Chromium...</translation>
 <translation id="347328004046849135">Aabisuhan ka ng Chromium kapag nag-sign in ka gamit ang isang nakompromisong password</translation>
 <translation id="3474745554856756813">Magde-delete ito ng <ph name="ITEMS_COUNT" /> (na) item sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Puwedeng magpalipat-lipat sa mga profile sa Chromium sa pamamagitan ng <ph name="SHORTCUT" /></translation>
 <translation id="3509308970982693815">Pakisara ang lahat ng window sa Chromium at subukan ulit.</translation>
 <translation id="3522404737534491619">Para i-share ang iyong window, payagan ang pag-record ng screen para sa Chromium sa System Settings</translation>
 <translation id="3530103706039034513">Naka-sign in na si <ph name="EXISTING_USER" />.  Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chromium sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="3533435340678213462">Para protektahan ang iyong privacy, awtomatiko naming dine-delete ang mga interes mo na mas matagal sa 4 na linggo. Habang patuloy kang nagba-browse, posibleng lumabas ulit sa listahan ang isang interes. O puwede kang mag-alis ng mga interes na ayaw mong isaalang-alang ng Chromium.</translation>
 <translation id="3561853857681580870">Para i-share ang iyong screen, payagan ang pag-record ng screen para sa Chromium sa System Settings.</translation>
-<translation id="3567254597502212821">Iyong history ng pag-browse, record ng mga site na binisita mo gamit ang Chromium sa device na ito.</translation>
 <translation id="3597003331831379823">Hindi napagana ang pag-set up na may mga mas mataas na pribilehiyo. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Mag-sign in sa Chromium</translation>
 <translation id="3639635944603682591">Made-delete sa device na ito ang data sa pag-browse ng taong ito. Para ma-recover ang data, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{May available na bagong update para sa Chromium at ilalapat ito sa sandaling maglunsad ka ulit.}=1{May available na bagong update para sa Chromium at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong Incognito window.}one{May available na bagong update para sa Chromium at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong # Incognito window.}other{May available na bagong update para sa Chromium at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="3651803019964686660">Para magpadala ng numero sa iyong Android phone mula sa <ph name="ORIGIN" />, mag-sign in sa Chromium sa parehong device.</translation>
 <translation id="3667616615096815454">Hindi na-install, hindi kilala ng server ang application.</translation>
+<translation id="3675854891107786059">Gamitin ang iyong <ph name="BEGIN_LINK" />sariling passphrase<ph name="END_LINK" /> para i-encrypt ang lahat ng data sa Chromium sa Google Account mo. Hindi mae-encrypt ang mga paraan ng pagbabayad at address mula sa Google Pay. Hindi masi-sync ang history ng pag-browse mula sa Chromium.</translation>
 <translation id="3685209450716071127">Hindi masusuri ng Chromium ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para mailapat ang update na ito}=1{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para mailapat ang update na ito. Hindi bubukas ulit ang iyong Incognito window.}one{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para mailapat ang update na ito. Hindi bubukas ulit ang iyong # Incognito window.}other{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para mailapat ang update na ito. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="3713809861844741608">Buksan ang link sa bagong &amp;tab ng Chromium</translation>
 <translation id="3728124580182886854">I-link ang Chromium at iba pang serbisyo ng Google para sa pag-personalize at iba pang layunin</translation>
+<translation id="3729187154190517324">Palalimin ang iyong paghahanap sa pamamagitan ng pagdaragdag ng maraming tab, file, at tool gamit ang button na "Magdagdag ng tab at higit pa."</translation>
 <translation id="3788675262216168505">Pamahalaan ang Mga Profile sa Chromium</translation>
 <translation id="3790262771324122253">Alamin kung bakit bina-block ng Chromium ang ilang pag-download</translation>
 <translation id="379589255253486813">Ipapaalam sa iyo ng Chromium kung may anumang nangangailangan ng iyong pagsusuri</translation>
+<translation id="3798048725356732506">Tinutulungan ka ng mga profile sa Chromium na paghiwa-hiwalayin ang iba't ibang bahagi ng iyong buhay. Magdagdag ng bagong profile ngayon.</translation>
 <translation id="3802055581630249637">Nagpi-preload ang Chromium ng mga page na malamang na bisitahin mo, para mas mabilis na mag-load ang mga ito kapag binisita mo</translation>
 <translation id="3810973564298564668">Pamahalaan</translation>
+<translation id="3846683726093018685">**Ibuod:** Sa isang pangungusap na walang pang 30 salita, ilarawan ang pangunahing paksa at layunin ng content na nasa screenshot.
+
+          **Magmungkahi ng Mga Tanong:** Bumuo ng naka-bullet na listahan ng 3-5 nagpapaisip na tanong na puwedeng magamit ng isang user para mas maintindihan ang screenshot. Ang mga tanong na ito ay dapat may kasamang kahit isang partikular na tanong na tungkol sa visual na object, o sa disenyo o placement nito.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="3885770153807205175">Picker ng wika</translation>
 <translation id="388648406173476553">I-customize at kontrolin ang Chromium. May kailangan kang pagtuunan ng pansin - mag-click para sa mga detalye.</translation>
@@ -221,6 +260,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="390528597099634151">Naka-sign in na si <ph name="EXISTING_USER" /> sa profile sa Chromium na ito. Para panatilihing hiwalay ang iyong pag-browse, puwedeng gumawa ang Chromium ng sarili mong profile para sa iyo.</translation>
 <translation id="3909353120217047026">Lumalabag ang extension na ito sa patakaran ng Chrome Web Store, at posibleng hindi ito ligtas. Alisin ito sa Chromium para hindi na nito makita at mabago ang iyong data sa mga site na binibisita mo, kabilang ang iyong personal na impormasyon.</translation>
+<translation id="3937491663738985329">I-c&amp;ustomize ang Iyong Chromium</translation>
 <translation id="3941890832296813527">Error sa pag-install: Invalid o hindi sinusuportahan ang filename ng installer.</translation>
 <translation id="3945058413678539331">Sinusubukan ng Chromium na kopyahin ang mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="3954172517175569325">Aalisin sa device na ito ang mga password, paraan ng pagbabayad, at address na na-save mo sa iyong Google Account. Para magamit ulit ang mga ito sa Chromium, mag-sign in ulit.</translation>
@@ -234,11 +274,16 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4023601594785368013">Orihinal na wika: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Magbukas ng mga link sa Chromium mula sa anumang app. Para sa madaling pag-access, ipi-pin ito sa iyong taskbar.</translation>
 <translation id="4036079820698952681">Tulungang pahusayin ang Chromium sa pamamagitan ng pag-ulat sa <ph name="BEGIN_LINK" />mga kasalukuyang setting<ph name="END_LINK" /></translation>
+<translation id="4039097928859803404">Palaging ipakita ang mga shortcut ng AI Mode</translation>
 <translation id="4050175100176540509">May available na mahahalagang pagpapahusay sa seguridad at mga bagong feature sa pinakabagong bersyon.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
+<translation id="4061696872429826774">Nagdagdag ang ibang program sa iyong computer ng extension na posibleng magpabago sa paraan ng paggana ng Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Awtomatikong isinasara ng iyong organisasyon ang Chromium kapag hindi ito nagamit nang 1 minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}one{Awtomatikong isinasara ng iyong organisasyon ang Chromium kapag hindi ito nagamit nang # minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}other{Awtomatikong isinasara ng iyong organisasyon ang Chromium kapag hindi ito nagamit nang # na minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}}</translation>
 <translation id="4118474109249235144">Incognito sa Chromium</translation>
 <translation id="4122186850977583290">Pumunta sa page na Tungkol sa Chromium</translation>
+<translation id="4147856324248078748">I-c&amp;ustomize ang iyong Chromium</translation>
 <translation id="4148957013307229264">Ini-install...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Pag-sign in sa Network - Chromium</translation>
 <translation id="421369550622382712">Tumuklas ng mahuhusay na app, laro, extension at tema para sa Chromium.</translation>
@@ -252,6 +297,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4271805377592243930">Humingi ng tulong sa Chromium</translation>
 <translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>
 <translation id="4285930937574705105">Nabigo ang pag-install dahil sa hindi natukoy na error. Kung kasalukuyang tumatakbo ang Chromium, pakisara ito at subukan ulit.</translation>
+<translation id="4298125729853015961">Mag-export ng Mga Password mula sa Chromium</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4334241893986177674">Maghanap sa screenshot na ito</translation>
 <translation id="4334294535648607276">Tapos na ang pag-download.</translation>
@@ -282,6 +328,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4598116752460667024">Maghanap ng anumang proseso mula sa listahan.</translation>
 <translation id="4613863813562375431">Bersyon ng ChromiumOS</translation>
 <translation id="4621240073146040695">Halos napapanahon na! Muling ilunsad ang Chromium upang tapusin ang pag-a-update.</translation>
+<translation id="4625064703209785397">Pinapabilis ang mga site gamit ang V8 na engine ng Chromium pero ginagawang bahagyang hindi gaanong resistant sa mga attack ang Chromium</translation>
 <translation id="4654936675281451226">Mas naiintindihan ng Chromium ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo. Naka-on ang setting na ito.</translation>
 <translation id="4665829708273112819">Babala: Hindi mapipigilan ng Chromium ang pag-record ng mga extension sa iyong history ng pag-browse. Para i-disable ang extension na ito sa Incognito mode, i-unselect ang opsyong ito.</translation>
 <translation id="4673151026126227699">Kung magbabahagi ka rin ng mga ulat ng paggamit sa Chromium, isasama sa mga ulat na iyon ang mga URL na binibisita mo</translation>
@@ -293,6 +340,8 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4724676981607797757">Hindi na-install dahil sa error na hindi sinusuportahang protocol.</translation>
 <translation id="4746050847053251315">Umalis pa rin sa Chromium?</translation>
 <translation id="4748217263233248895">Naglapat ng espesyal na update sa seguridad para sa Chromium. Mag-restart na at ire-restore namin ang iyong mga tab.</translation>
+<translation id="4759645701210484457">Magtanong sa Chromium</translation>
+<translation id="4771701986670315895">Hindi mo ito binisita kamakailan. Inalis ng Chromium ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="COUNT" /> pa.</translation>
 <translation id="4788777615168560705">Hindi masuri ng Chromium ang iyong mga password. Subukan ulit pagkalipas ng 24 na oras o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Ginagamit nito ang parehong spellchecker na ginagamit sa paghahanap sa Google. Ipinapadala sa Google ang text na tina-type mo sa browser. Puwede mong baguhin ang gawing ito sa mga setting sa lahat ng oras.</translation>
 <translation id="4814736265800133385">Gamitin ang Chromium nang walang account</translation>
@@ -303,18 +352,23 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="494490797786467921">I-click para isara ang dialog ng pag-sign in sa Chromium</translation>
 <translation id="4950660488495335294">Gamit ang mga profile sa Chromium, magagawa mong paghiwalayin ang lahat ng iyong bagay-bagay sa Chromium. Gumawa ng mga profile para sa mga kaibigan at kapamilya, o gumawa ng magkahiwalay na profile para sa trabaho at kasiyahan.</translation>
 <translation id="4987820182225656817">Makakagamit ng Chromium ang mga bisita nang hindi nag-iiwan ng anumang bakas.</translation>
+<translation id="4992938037305302429">Iyong Account sa Chromium</translation>
 <translation id="4994636714258228724">Idagdag ang iyong sarili sa Chromium</translation>
 <translation id="5123973130450702873">Kailangan ng Chromium ng pahintulot para i-track ang iyong mga kamay</translation>
+<translation id="5141988424377517949">Hindi mo ito binisita kamakailan. Inalis ng Chromium ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">Ano ang iniisip mo ngayon?</translation>
 <translation id="5174969993834422967">Kadalasan mong bina-block ang mga notification. Para hayaan ang site na itong abisuhan ka, i-click ang icon ng notification sa kanang sulok ng iyong bar ng lokasyon.</translation>
+<translation id="5174983315706567306">Hindi sapat ang disk space.</translation>
 <translation id="5187123684706427865">Nagre-require ang Chromium account ng pag-authenticate ulit</translation>
 <translation id="5224391634244552924">Walang naka-save na password. Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="5231355151045086930">Mag-sign out sa Chromium</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
+<translation id="5254739261293693943">Magtanong tungkol sa video na ito</translation>
 <translation id="5277894862589591112">Para ilapat ang iyong mga pagbabago, muling ilunsad ang Chromium</translation>
 <translation id="5286907366254680517">Na-detect</translation>
 <translation id="5294316920224716406">Kapag nagba-browse sa Incognito mode, bibigyan ka ng babala ng Chromium bago nito i-load ang isang site na gumagamit ng hindi secure na koneksyon</translation>
-<translation id="5296845517486664001">Kapag naka-on ang mga trial at kung random kang inilagay ng Chromium sa isang aktibong trial, maaapektuhan ng iyong history ng pag-browse ang mga ad na makikita mo at ang mga interes tulad ng itinantya sa ibaba. Para protektahan ang iyong privacy, ide-delete ng Chromium ang mga interes mo sa rolling na paraan bawat buwan.</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
+<translation id="5346389065299425353">Palalimin ang iyong paghahanap sa pamamagitan ng pagdaragdag ng maraming tab, file, at tool</translation>
 <translation id="5352264705793813212">Nakakita ang Chromium ng ilang rekomendasyon sa kaligtasan para sa pagsusuri mo</translation>
 <translation id="5352361688875342522">Iba pang Profile sa Chromium</translation>
 <translation id="5358375970380395591">Nagsa-sign in ka gamit ang isang pinamamahalaang account at nagbibigay sa administrator nito ng kontrol sa iyong profile sa Chromium. Permanenteng mauugnay ang iyong data sa Chromium, gaya ng iyong apps, mga bookmark, kasaysayan, password, at iba pang mga setting sa <ph name="USER_NAME" />. Matatanggal mo ang data na ito sa Google Accounts Dashboard, ngunit hindi mo maiuugnay ang data na ito sa isa pang account. <ph name="LEARN_MORE" /></translation>
@@ -324,17 +378,18 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5386450000063123300">Ina-update ang Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Pagayan ang pag-sign in sa Chromium</translation>
 <translation id="5405650547142096840">Alisin mula sa Chromium</translation>
+<translation id="5424544524441439284">Pinapahina ang performance pero ginagawang mas matatag ang Chromium laban sa mga attack</translation>
 <translation id="5427571867875391349">Itakda ang Chromium bilang iyong default na browser</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Inirerekomenda ng Chromium na I-pause ang Tab na Nagpapabagal sa Iyong Browser}one{Inirerekomenda ng Chromium na I-pause ang Mga Tab na Nagpapabagal sa Iyong Browser}other{Inirerekomenda ng Chromium na I-pause ang Mga Tab na Nagpapabagal sa Iyong Browser}}</translation>
 <translation id="5473971139929175403">Posibleng hindi gumana nang maayos ang Chromium dahil hindi na ito sinusuportahan sa Linux distribution na ito.</translation>
 <translation id="5475924890392386523">Na-block ng Chromium ang pag-download na ito dahil puwedeng mapinsala ng file ang iyong mga personal na account at account sa social network</translation>
 <translation id="5480860683791598150">Kailangan ng Chromium ng access sa iyong lokasyon upang maibahagi ang lokasyon mo sa site na ito</translation>
-<translation id="5487574057737591516">Para protektahan ang iyong privacy, awtomatiko naming dine-delete ang mga interes mo na mas matagal sa 4 na linggo. Habang patuloy kang nagba-browse, posibleng lumabas ulit sa listahan ang isang interes. At kung magkakamali ang Chromium o kung ayaw mong makakita ng ilang partikular na ad, puwede kang mag-alis ng interes.</translation>
 <translation id="549669000822060376">Mangyaring maghintay habang ini-install ng Chromium ang mga pinakabagong update sa system.</translation>
 <translation id="5496810170689441661">Sinusubukan ng Chromium na i-edit ang mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="5524890928877629608">kaliwang sulok sa itaas ng lugar para sa paghahanap: kaliwa <ph name="LEFT" />%, itaas <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Magbukas ng mga PDF sa Chromium</translation>
+<translation id="5536164441519929134">Magtanong<ph name="LINE_BREAK" />tungkol sa tab na ito</translation>
 <translation id="5579324208890605088">Nagkaroon ng error sa startup: patakbuhin ang installer bilang karaniwang user, hindi bilang administrator.</translation>
 <translation id="5580770360767802657">Gamitin ang Chromium bilang default at i-pin ito</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
@@ -346,7 +401,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Ipakita ang Chromium sa wikang ito</translation>
 <translation id="569897634095159764">Hindi makakonekta sa Internet. Nagre-require ng pag-authenticate ang proxy server.</translation>
-<translation id="5761096224651992291">Hindi mo ito binisita kamakailan. Inalis ng Chromium ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
+<translation id="5713518899297503106">Nagbibigay-daan sa iyo ang mga profile sa Chromium na panatilihing magkahiwalay ang personal na pag-browse at trabaho. Magdagdag ng bagong profile ngayon.</translation>
 <translation id="5768371961535086509">Nagbabakante ng memory ang Chromium mula sa mga hindi aktibong tab. Binibigyan nito ang mga aktibong tab at iba pang app ng higit pang resource ng computer at pinapanatili nitong mabilis ang Chromium. Awtomatikong nagiging aktibo ulit ang iyong mga hindi aktibong tab kapag bumalik ka sa mga ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa Memory Saver<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="SETTINGS_LINK" /> ang data sa Chromium sa iyong account</translation>
 <translation id="5800158606660203929">I-customize at kontrolin ang Chromium. Itakda ang Chromium bilang default mo.</translation>
@@ -363,11 +418,13 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5924017743176219022">Kumokonekta sa Internet...</translation>
 <translation id="5941711191222866238">I-minimize</translation>
 <translation id="5949225980829865667">Para makuha ang bookmark na ito at higit pa sa lahat ng iyong device, mag-sign in sa Chromium</translation>
-<translation id="5972142260211327093">Kung random kang inilagay ng Chromium sa isang aktibong trial, maaapektuhan ng iyong history ng pag-browse ang mga ad na makikita mo at ang mga interes tulad ng itinantya sa ibaba. Para protektahan ang iyong privacy, ide-delete ng Chromium ang mga interes mo sa rolling na paraan bawat buwan. Nagre-refresh ang mga interes maliban na lang kung alisin mo ang mga ito.</translation>
+<translation id="5953657885167112863">I-personalize ang Chromium</translation>
+<translation id="5960071705175224773">Binago ng hindi kilalang app ang iyong mga setting</translation>
+<translation id="5968400720580217226">AI Mode</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Awtomatikong isinasara ng iyong organisasyon ang Chromium kapag hindi ito nagamit nang 1 minuto.}one{Awtomatikong isinasara ng iyong organisasyon ang Chromium kapag hindi ito nagamit nang # minuto.}other{Awtomatikong isinasara ng iyong organisasyon ang Chromium kapag hindi ito nagamit nang # na minuto.}}</translation>
 <translation id="5987687638152509985">I-update ang Chromium upang simulan ang pag-sync</translation>
-<translation id="5988505247484123880">Karaniwan para sa mga binibisita mong site na tandaan ang mga bagay na interesado ka, para ma-personalize ang iyong karanasan. Puwede ring mag-store ang mga site sa Chromium tungkol sa iyong mga interes.</translation>
 <translation id="6003112304606738118">Nagda-download... <ph name="HOURS" /> (na) oras na lang ang natitira</translation>
+<translation id="6009821354356307391">Mag-follow up</translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6058380562449900225">Para protektahan ang iyong data, hayaan ang Chromium na mag-alis ng mga pahintulot sa mga site na hindi mo binisita kamakailan. Hindi nito mapapahinto ang mga notification.</translation>
 <translation id="6063093106622310249">&amp;Buksan sa Chromium</translation>
@@ -376,6 +433,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6072463441809498330">Pabilisin ang Chromium</translation>
 <translation id="6096348254544841612">I-customize at kontrolin ang Chromium. May available na update.</translation>
 <translation id="6107893135096467929">Naka-on • Hindi ma-verify ng Chromium kung saan galing ang extension na ito</translation>
+<translation id="611228897408671387">Iyong account sa Chromium</translation>
 <translation id="6119438414301547735">Payagan ang extension na ipakita ang mga kahilingan sa access sa toolbar ng Chromium</translation>
 <translation id="6129621093834146363">Mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chromium.</translation>
 <translation id="6132897690380286411">Magsasara at magde-delete na ng data ang Chromium sa ilang saglit</translation>
@@ -386,8 +444,12 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6174920971222007286">Posibleng mapanganib ang file na ito<ph name="LINE_BREAK" />Puwedeng suriin ng Chromium ang download na ito para sa iyo kung ibibigay mo ang password. Ipapadala sa Ligtas na Pag-browse sa Google ang impormasyon tungkol sa file, pero mananatili sa iyong device ang content ng file at ang password.</translation>
 <translation id="6182736845697986886">Hindi na-install dahil sa isang internal na error sa server ng update.</translation>
 <translation id="6183079672144801177">Tiyaking naka-sign in ka sa Chromium sa iyong <ph name="TARGET_DEVICE_NAME" /> at pagkatapos ay subukang ipadala ulit.</translation>
+<translation id="6204922163963157461">Nagdagdag ang ibang program sa iyong computer ng app na posibleng magpabago sa paraan ng paggana ng Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">May mas bagong bersyon ng Chromium na ang computer na ito. Kung hindi gumagana ang software, mangyaring i-uninstall ang Chromium at subukan ulit.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Muli nang ilulunsad ang Chromium ngayon}=1{Muli nang ilulunsad ang Chromium sa loob ng 1 segundo}one{Muli nang ilulunsad ang Chromium sa loob ng # segundo}other{Muli nang ilulunsad ang Chromium sa loob ng # na segundo}}</translation>
+<translation id="6239161312595354541">Magtanong sa Paghahanap ng Larawan tungkol sa video na ito</translation>
 <translation id="6241367896540709610">Kailangan ng Chromium ng pahintulot sa access sa storage para makapag-download ng mga file</translation>
 <translation id="6245734527075554892">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chromium</translation>
 <translation id="6248213926982192922">Gawing default na browser ang Chromium</translation>
@@ -405,9 +467,11 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6366160072964553914">Na-block ng Chromium ang pag-download na ito dahil hindi karaniwang dina-download ang file at posibleng mapanganib ito</translation>
 <translation id="6373523479360886564">Sigurado ka bang nais mong i-uninstall ang Chromium?</translation>
 <translation id="6375219077595103062">Magdagdag ng shortcut papuntang Password Manager</translation>
+<translation id="6388799252195623474">tulungan ako dito</translation>
 <translation id="6390800440335263989">Para magpatuloy, mag-sign in sa Chromium bilang <ph name="EMAIL" />. Tinitiyak nitong mayroon ka ng mga patakaran ng iyong organisasyon.</translation>
 <translation id="6400112897226594999">Logo ng Chromium sa loob ng screen ng computer.</translation>
 <translation id="6403826409255603130">Ang Chromium ay isang web browser na nagpapatakbo ng mga webpage at application sa bilis ng kidlat. Ito ay mabilis, maaasahan, at madaling gamitin. Mas maingat na mag-browse sa web gamit ang proteksyon ng Chromium laban sa malware at phishing.</translation>
+<translation id="642132557830635295">Mas mabilis na tatakbo ang Chromium at gagana ang mga feature na gumagamit ng JavaScript ayon sa pagkakadisenyo sa mga ito</translation>
 <translation id="6436260184216827876">Hindi available ang Paghahanap ng Larawan. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="6442900851116057561">I-restart ang ChromiumOS</translation>
 <translation id="6443470774889161065">Nagpi-preload ang Chromium ng mas marami pang page na malamang na bibisitahin mo, para mas mabilis na mag-load ang mga ito kapag binisita mo.</translation>
@@ -418,7 +482,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="648319183876919572">Mas maraming magagawa ang Pinahusay na Ligtas na Pag-browse para protektahan ka laban sa mga mapanganib na website at download</translation>
 <translation id="6510925080656968729">I-uninstall ang Chromium</translation>
 <translation id="651535675648445253">Magbubukas ang mga shortcut sa Chromium</translation>
-<translation id="6524389414524528185">Habang naka-sign in ka, magagamit mo ang iyong mga password at higit pa mula sa Google Account mo sa Chromium. Puwede mo itong baguhin sa anumang oras sa mga setting.</translation>
 <translation id="6539122709674868420">Isinasara ng iyong organisasyon ang Chromium kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />. Na-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.</translation>
 <translation id="6542839706527980775">Ang bawat profile ay may sariling impormasyon sa Chromium tulad ng mga bookmark, history, mga password, at iba pa</translation>
 <translation id="6563921047760808519">Matuto pa tungkol sa kung <ph name="BEGIN_LINK" />paano pinapanatiling pribado ng Chromium ang iyong data<ph name="END_LINK" /></translation>
@@ -428,10 +491,12 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6598877126913850652">Pumunta sa mga setting ng notification ng Chromium</translation>
 <translation id="6600016381025017075">Maghanap ng kahit ano sa page na ito</translation>
 <translation id="6613594504749178791">Magkakabisa ang iyong mga pagbabago sa susunod na ilunsad mong muli ang Chromium.</translation>
+<translation id="6648212540664651655">Magpatuloy kung saan ka huminto: Ni-restore ng Chromium ang iyong mga tab mula sa huling session mo. Puwede mo itong i-off sa</translation>
 <translation id="665732753414869868">Kailangan ng Chromium ng pahintulot sa camera para makagawa ng 3D na mapa ng iyong kapaligiran</translation>
 <translation id="6669284030132180248">Kung sine-save mo rin ang iyong mga bookmark sa Google Account mo, puwede mong subaybayan sa Chromium ang mga presyo ng produkto at puwede kang maabisuhan kapag bumaba ang presyo</translation>
 <translation id="6676384891291319759">I-access ang Internet</translation>
 <translation id="668175097507315160">Hindi ma-sync ng ChromiumOS ang iyong data dahil sa isang error sa pag-sign in.</translation>
+<translation id="6691132793308828750">Alisin ang data ng app na ito sa Chromium</translation>
 <translation id="6692797197837897398">Binibigyan ka ng Chromium ng higit pang kontrol sa mga nakikita mong ad at nililimitahan nito kung ano ang matututunan ng mga site tungkol sa iyo kapag nagpakita ang mga ito ng mga naka-personalize na ad sa iyo</translation>
 <translation id="6709350901466051922">Kailangan ng Chromium ng pahintulot sa mikropono para sa site na ito</translation>
 <translation id="6712881677154121168">Error sa pag-download: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -440,20 +505,23 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktoryo ng profile o gumamit ng mas bagong bersyon ng Chromium.</translation>
 <translation id="6729124504294600478">Para makuha ang pag-personalize at iba pang feature, isama ang Chromium sa Aktibidad sa Web at App at mga naka-link na serbisyo ng Google</translation>
 <translation id="6734291798041940871">Naka-install na ang Chromium para sa lahat ng user sa iyong computer.</translation>
-<translation id="674245979920622322">Hindi mo ito binisita kamakailan. Inalis ng Chromium ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="COUNT" /> pa</translation>
+<translation id="6742093177587589736">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in sa Chromium. Mase-save ang bookmark na ito sa iyong Google Account pagkatapos mong mag-sign in.</translation>
 <translation id="6751374565094704799">Pinapabilis ang mga site gamit ang V8 na engine ng Chromium pero ginagawang bahagyang hindi gaanong resistant sa mga attack ang Chromium. Naka-on ang setting na ito.</translation>
+<translation id="6754665438209053659">{count,plural, =1{Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito (1 item).}one{Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito ({count} item).}other{Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito ({count} na item).}}</translation>
 <translation id="67706546131546258">Inirerekomenda ng Chromium na i-scan ang file na ito dahil posibleng mapanganib ito.</translation>
 <translation id="6779406956731413166">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromiumOS.</translation>
 <translation id="6831043979455480757">Isalin</translation>
 <translation id="6847869444787758381">Ipinapaalam sa iyo ng Chromium kung nakompromiso ang mga password mo</translation>
 <translation id="684888714667046800">Hindi makakonekta sa Internet. Kung gumagamit ka ng firewall, tiyaking nasa allowlist ang <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
+<translation id="6859580922007887573">Pindutin ang tab para magpatuloy</translation>
+<translation id="6862030660799253820">Hanapin ang larawang ito gamit ang Paghahanap ng Larawan</translation>
 <translation id="6873893289264747459">Napag-alaman ng Chromium na naglalaman ng malware ang "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6877155553248388166">kanang sulok sa ibaba ng lugar para sa paghahanap: kanan <ph name="RIGHT" />%, ibaba <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6901631050894301805">Itakda ang Chromium bilang iyong default browser at i-pin ito sa taskbar mo</translation>
-<translation id="6929417474050522668">Kapag naka-on ang mga trial, nagbibigay-daan ang pagsukat ng ad sa mga site na binibisita mo na humiling ng impormasyon mula sa Chromium na tumutulong sa site na sukatin ang performance ng mga ad ng mga ito. Pinaghihigpitan ng pagsukat ng ad ang cross-site na pagsubaybay sa pamamagitan ng paglilipat ng kaunting impormasyon hangga't posible sa pagitan ng mga site.</translation>
-<translation id="6940431691900807093">Sa ibang pagkakataon, puwedeng hilingin ng site na binibisita mo sa Chromium na makita ang iyong mga interes para ma-personalize ang mga ad na nakikita mo. Puwedeng magbahagi ng hanggang 3 interes ang Chromium.</translation>
+<translation id="6909503629704372277">&amp;Pamahalaan ang mga profile sa Chromium</translation>
+<translation id="6934579572334859869">Magtanong sa Paghahanap ng Larawan tungkol sa larawang ito</translation>
 <translation id="6964305034639999644">Buksan ang link sa inco&amp;gnito window ng Chromium</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Madaling hulaan ang mahihinang password. Hayaan ang Chromium na <ph name="BEGIN_LINK" />gumawa ng malalakas na password at tandaan ang mga ito para sa iyo<ph name="END_LINK" />.</translation>
@@ -464,20 +532,24 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="7024536598735240744">Error sa pag-unpack: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Inihinto ang Pag-install.</translation>
 <translation id="7045244423563602563">Gawing Iyo ang Chromium</translation>
+<translation id="7047386856539490735">Kapaki-pakinabang ba ang mga resultang ito?</translation>
 <translation id="705851970750939768">I-update ang Chromium</translation>
 <translation id="7067091210845072982">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chromium na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google.</translation>
 <translation id="7141270731789036260">I-customize ang Chrome for Testing</translation>
+<translation id="7147227333672430807">Magagamit mo ang Chromium sa tuwing magki-click ka ng mga link sa mga mensahe, dokumento, at iba pang app</translation>
 <translation id="7163519456498498587">Alisin ang <ph name="EXTENSION_NAME" /> sa Chromium</translation>
 <translation id="7173822816570314652">Nagde-delete ang iyong organisasyon ng data ng Chromium kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />. Posibleng kasama rito ang history, autofill, at mga download.</translation>
 <translation id="718435575166326686">Kailangan ng Chromium ng pahintulot sa camera para sa site na ito</translation>
 <translation id="7196312274710523067">Hindi mailunsad ang Chromium. Subukang muli.</translation>
 <translation id="7197677400338048821">Hindi masuri ng Chromium ang iyong mga password. Subukan ulit pagkalipas ng 24 na oras.</translation>
+<translation id="7213008767289637091">Panatilihin ang Chromium sa iyong Dock para mabilis itong mapuntahan anumang oras</translation>
 <translation id="7213407614656404070">Gamitin ang Chromium sa tuwing magki-click ka ng mga link sa mga mensahe, dokumento, at iba pang app</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7246575524853130370">Iyong mga interes tulad ng tinatantya ng Chromium</translation>
 <translation id="7274695763216404502">Na-pin na! Gamitin ulit ang Paghahanap ng Larawan mula sa toolbar</translation>
 <translation id="7288567540154601580">Mga tab at extension</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Inirerekomenda ng Chromium na alisin mo ito}one{Inirerekomenda ng Chromium na alisin mo ang mga ito}other{Inirerekomenda ng Chromium na alisin mo ang mga ito}}</translation>
+<translation id="7296334833518879294">Para i-share ang audio ng system, buksan ang Mga Setting ng System at payagan ang 'Pag-record Lang ng Audio ng System' para sa Chromium. Pagkatapos, kakailanganin mong i-restart ang Chromium.</translation>
 <translation id="7309928523159922338">Nagbibigay-daan ang pagsukat ng ad sa mga site na binibisita mo na humiling ng impormasyon mula sa Chromium na tumutulong sa site na sukatin ang performance ng mga ad ng mga ito. Pinaghihigpitan ng pagsukat ng ad ang cross-site na pagsubaybay sa pamamagitan ng paglilipat ng kaunting impormasyon hangga't posible sa pagitan ng mga site.</translation>
 <translation id="731795002583552498">Ina-update ang Chromium</translation>
 <translation id="7318036098707714271">Sira o di-wasto ang file ng iyong mga kagustuhan.
@@ -485,9 +557,13 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7339898014177206373">Bagong window</translation>
 <translation id="734373864078049451">Makikita dito ang iyong web, mga bookmark at iba pang mga bagay-bagay sa Chromium.</translation>
+<translation id="7347827960336370838">Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong <ph name="BEGIN_LINK" />i-delete ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Na-configure ng iyong system administrator ang Chromium para buksan ang <ph name="ALTERNATIVE_BROWSER_NAME" /> para ma-access ang <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
+<translation id="7376384068949534168">Hindi mo ito binisita kamakailan. Inalis ng Chromium ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Hindi na sinusuportahan ang extension na ito. Inirerekomenda ng Chromium na alisin mo na lang ito.</translation>
+<translation id="7413153308467572558">Magpatuloy kung saan ka huminto: Nire-restore ng Chromium ang iyong mga tab sa tuwing magre-restart ka. Para i-off ito, pumunta sa</translation>
+<translation id="7427879960656355200">Mag-import ng Mga Password sa Chromium</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Nakopya ang text</translation>
 <translation id="7451052299415159299">Kailangan ng Chromium ng pahintulot na i-access ang iyong camera para sa site na ito</translation>
@@ -495,12 +571,11 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7461356015007898716">Para makatanggap ng mga update sa Chromium sa hinaharap, mangangailangan ka ng Windows 10 o mas bago. Ang computer na ito ay gumagamit ng Windows 7.</translation>
 <translation id="7467949745582939695">Muling ilunsad ang Chromium?</translation>
 <translation id="7483335560992089831">Hindi ma-install ang parehong Bersyon ng Chromium na kasalukuyang tumatakbo. Pakisara ang Chromium at subukan ulit.</translation>
+<translation id="7517403744065880907">Mase-save at magagamit mo ang mga password at iba pa sa iyong Google Account kapag naka-sign in ka sa Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Malamang na gagana ang mga site na gaya ng inaasahan. Masa-sign out ka sa karamihan ng mga site kapag isinara mo ang lahat ng window ng Chromium, maliban sa iyong Google Account kung naka-sign in ka sa Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Muling ilulunsad ang Chromium sa loob ng 1 minuto}one{Muling ilulunsad ang Chromium sa loob ng # minuto}other{Muling ilulunsad ang Chromium sa loob ng # na minuto}}</translation>
 <translation id="7565444033145385702">Para protektahan ang iyong data, hayaan ang Chromium na mag-alis ng mga pahintulot sa mga site na hindi mo binisita kamakailan.</translation>
-<translation id="7582945390259497898">Puwedeng tantyahin ng Chromium ang iyong mga interes. Sa ibang pagkakataon, puwedeng hilingin ng site na binibisita mo sa Chromium na makita ang iyong mga interes para ma-personalize ang mga ad na nakikita mo.</translation>
 <translation id="7583399374488819119">Installer ng <ph name="COMPANY_NAME" /></translation>
-<translation id="7585391435984513350">Hindi mo ito binisita kamakailan. Inalis ng Chromium ang <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">Ginagamit ng Chromium ang iyong camera at mikropono.</translation>
 <translation id="7617377681829253106">Mas mahusay na ang Chromium</translation>
 <translation id="7622753900276619808">Mayroon ka na ngayong mas maraming feature na available sa Chromium</translation>
@@ -519,13 +594,17 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7810005234485217901">Puwede mong i-pin ang Paghahanap ng Larawan para madali itong ma-access</translation>
 <translation id="7828947555739565424">Mayroon nang profile sa Chromium na gumagamit ng account na ito sa device na ito</translation>
 <translation id="7845233973568007926">Salamat sa pag-install. Dapat mong i-restart ang iyong computer bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7853661403199074278">I-customize ang Chromium para bigyan ito ng bagong hitsura</translation>
 <translation id="7859018312476869945">Kapag nag-type ka sa address bar o sa box para sa paghahanap, ipapadala ng Chromium kung ano ang tina-type mo sa iyong default na search engine para makakuha ng mas magagandang suhestyon. Naka-off ito sa Incognito.</translation>
-<translation id="786097294490253281">Kapag na-click mo ang 'OK,' mase-save at magagamit mo ang mga password at makakagawa ka ng higit pa sa iyong Google Account kapag naka-sign in ka sa Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="7867198900892795913">Hindi ma-update ang Chromium sa pinakabagong bersyon, kaya may napapalampas kang mga bagong feature at pag-aayos sa seguridad.</translation>
 <translation id="7872446069773932638">Dina-download... <ph name="SECONDS" /> (na) segundo ang natitira</translation>
+<translation id="7873537467422636035">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
+<translation id="7877212753140190672">Magtanong tungkol sa larawang ito</translation>
+<translation id="7887929410013642057">Palaging Ipakita ang Mga Shortcut ng AI Mode</translation>
 <translation id="7888981273428720788">Itakda ang Chromium bilang iyong default</translation>
 <translation id="7934340546140346950">Awtomatikong ina-upgrade ng Chromium ang mga hindi secure na koneksyon sa HTTPS kapag posible</translation>
 <translation id="7937630085815544518">Naka-sign in ka sa Chromium bilang <ph name="USER_EMAIL_ADDRESS" />. Pakigamit ang parehong account upang mag-sign in muli.</translation>
+<translation id="7953047982688951904">I-download ang Chromium sa iyong telepono para magkaroon ng karagdagang layer ng proteksyon kapag on the go ka</translation>
 <translation id="7975919845073681630">Pangalawang pag-install ito ng Chromium at hindi ito maaaring gawing iyong default na browser.</translation>
 <translation id="7997934263947464652">Puwedeng mapinsala ng mga extension, app, at tema mula sa mga hindi kilalang source ang iyong device. Inirerekomenda ng Chromium na i-install lang ang mga ito mula sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -551,6 +630,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8248265253516264921">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chromium na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google. Puwede mo itong i-off sa mga setting anumang oras.</translation>
 <translation id="8254601181414348851">Mag-sign in sa Chromium sa bagong profile?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Babalaan ka ng Chromium<ph name="END_LINK" /> tungkol sa mga hindi ligtas na site at download</translation>
+<translation id="8295827201165805317">Hindi mo ito binisita kamakailan. Inalis ng Chromium ang <ph name="PERMISSION" />.</translation>
 <translation id="8313851650939857356">Nagkaroon ng error sa startup: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Isinasara ng iyong organisasyon ang Chromium kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">I-save bilang larawan</translation>
@@ -559,6 +639,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8359544530202147897">I-update ang Chromium para patuloy na magamit ang data sa Chromium sa iyong Google Account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Para makatanggap ng mga update sa Chromium sa hinaharap, kakailanganin mo ng Windows 10 o mas bago. Gumagamit ng Windows 8 ang computer na ito.</translation>
 <translation id="8362914115861174987">Isalin sa</translation>
+<translation id="8367705492654390392">Magtanong ng kahit na ano</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8372327902843331129">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in sa Chromium. Mase-save ang password na ito sa iyong Google Account pagkatapos mong mag-sign in.</translation>
 <translation id="837460953767177950">Pagkatapos, kakailanganin mong i-restart ang Chromium.</translation>
@@ -567,12 +648,16 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8416884904046428725">Kailangang i-verify ng Chromium na ikaw ito bago ma-save ang ilang data sa iyong Google Account at magamit ito sa lahat ng device mo. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Muling ilunsad ang Chromium sa loob ng isang araw}one{Muling ilunsad ang Chromium sa loob ng # araw}other{Muling ilunsad ang Chromium sa loob ng # na araw}}</translation>
 <translation id="8438543370129609977">Kapag ginamit mo ang Paghahanap ng Larawan, ipapadala sa server ang pamagat ng page, URL, at content, pati ang mga PDF. <ph name="LEARN_MORE" /></translation>
+<translation id="8447525028100794994">Matuto pa tungkol sa paghahanap gamit ang Paghahanap ng Larawan sa Chromium</translation>
 <translation id="8453117565092476964">Sira o di-wasto ang archive ng installer. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="8458614432758743027">Nagre-require ang Chromium ng Windows 10 o mas bago.</translation>
 <translation id="8463672209299734063">Opsyonal: Tumulong na pahusayin ang mga feature at performance ng ChromiumOS sa pamamagitan ng awtomatikong pagpapadala sa Google ng data ng diagnostic at paggamit.</translation>
 <translation id="8471947159125090285">Para magamit at ma-save ang data ng Chromium sa iyong Google Account, i-verify na ikaw ito</translation>
+<translation id="8482493977473846331">Nagpapakita ng mga prompt na mag-sign in sa Chromium</translation>
 <translation id="8493179195440786826">Luma na ang Chromium</translation>
+<translation id="850264194101621529">Salamat sa pagpili sa Chromium bilang iyong default browser!</translation>
 <translation id="8522801943730206384">Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito</translation>
+<translation id="8548787790260785208">Mabigyan ng babala kung makikita ng Chromium ang isa sa iyong mga password sa isang pampublikong breach sa data</translation>
 <translation id="8555465886620020932">Error sa serbisyo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Puwede mong i-pin ang Paghahanap ng Larawan para madali itong ma-access; i-click ang button na I-pin sa itaas ng panel sa gilid</translation>
 <translation id="856656450041460113">Maghanap sa listahan ng wika</translation>
@@ -581,17 +666,18 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ang Mga May-akda ng Chromium. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8601359445272098721">Bago! Puwede kang magsalin ng text at mga larawan sa iyong screen sa pamamagitan ng pagpili sa button na "isalin ang screen"</translation>
 <translation id="8619360774459241877">Inilulunsad ang Chromium...</translation>
-<translation id="8621669128220841554">Nabigo ang pag-install dahil sa hindi natukoy na error. Mangyaring i-download muli ang Chromium.</translation>
+<translation id="8624541899164515475">Mga setting, magbubukas sa bagong tab.</translation>
 <translation id="8648201657708811153">Hindi puwedeng gawing default na browser mo ang Google Chrome na Pang-test.</translation>
 <translation id="8697124171261953979">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chromium o naghanap mula sa Omnibox.</translation>
 <translation id="8704119203788522458">Ito ang iyong Chromium</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8719993436687031146">Mag-sign in sa Chromium?</translation>
+<translation id="8745263398357414606">Panatilihin ang lahat sa Chromium</translation>
 <translation id="8747073452963259673">kaliwang sulok sa ibaba ng lugar para sa paghahanap: kaliwa <ph name="LEFT" />%, ibaba <ph name="BOTTOM" />%</translation>
-<translation id="8768722695577490596">Made-delete lang ang mga password sa labas ng Chromium</translation>
 <translation id="878572486461146056">Error sa pag-install: Nag-apply ang administrator ng network mo ng Group Policy na pumipigil sa pag-install: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Kailangan ng Chromium ng pahintulot na i-access ang iyong camera at mikropono para sa site na ito</translation>
 <translation id="8818550178040858407">Mag-sign In sa Chromium?</translation>
+<translation id="8823401858233292222">Gawing default browser ang Chromium at i-pin ito sa taskbar</translation>
 <translation id="8826492472752484139">I-click ang “Password Manager”</translation>
 <translation id="8833697763442816810">ChromiumOS System</translation>
 <translation id="8852026904190808918">Ginagamit ang wikang ito para magpakita ng mga menu, setting, alerto, at iba pang text sa Chromium</translation>
@@ -600,12 +686,10 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8880203542552872219">Kung nagawa mo na ito, paki-edit ang iyong naka-save na password sa Chromium para tumugma ito sa bago mong password.</translation>
 <translation id="8891709362986793894">Nire-require sa iyo ng organisasyon mo na mag-sign in sa Chromium</translation>
 <translation id="8907580949721785412">Sinusubukan ng Chromium na ipakita ang mga password. I-type ang password sa Windows upang payagan ito.</translation>
-<translation id="8931379085695076764">Puwedeng tantyahin ng Chromium ang iyong mga interes batay sa history ng pag-browse mo mula sa mga nakalipas na ilang linggo. Mananatili ang impormasyong ito sa iyong device.</translation>
 <translation id="8941642502866065432">Hindi ma-update ang Chromium</translation>
 <translation id="897581876605952338">Logo ng Chromium Enterprise</translation>
 <translation id="8988036198400390003">Pamahalaan ang mga profile sa Chromium</translation>
 <translation id="9019929317751753759">Upang mas gawing ligtas ang Chromium, na-disable namin ang sumusunod na extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na maaaring naidagdag nang hindi mo nalalalaman.</translation>
-<translation id="9022552996538154597">Mag-sign in sa Chromium</translation>
 <translation id="904366664621834601">Na-block ng Chromium ang pag-download na ito dahil naglalaman ang naka-archive na file ng iba pang file na posibleng nagtatago ng malware</translation>
 <translation id="9062666675513499497">Mag-sign in sa Chromium kapag nag-sign in ka sa iba pang serbisyo ng Google</translation>
 <translation id="9078733879136747090">Awtomatikong isinara ang Chromium</translation>
@@ -617,9 +701,11 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="911206726377975832">Tatanggalin din ang iyong data sa pag-browse?</translation>
 <translation id="9134482777260927479">Tulong sa homework</translation>
 <translation id="9148058034647219655">Lumabas</translation>
+<translation id="9155105544013854680">Magpatuloy kung saan ka huminto: Puwedeng i-restore ng Chromium ang iyong mga tab sa tuwing magre-restart ka. Para i-on ito, pumunta sa</translation>
 <translation id="9158494823179993217">Na-configure ng iyong system administrator ang Chromium na magbukas ng alternatibong browser para i-access ang <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Ilunsad ulit para ma-update ang Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="9206863043651638213">Mas marami kang magagawa kapag naka-sign in ka sa Chromium</translation>
 <translation id="924957577793602335">Gawing iyo ang Chromium</translation>
 <translation id="93478295209880648">Maaaring hindi gumana nang maayos ang Chromium dahil hindi na ito sinusuportahan sa Windows XP o Windows Vista</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>

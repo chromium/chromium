@@ -58,6 +58,7 @@ PASS childWindow.navigator.windowControlsOverlay.ongeometrychange is null
 PASS childWindow.navigator.windowControlsOverlay.visible is false
 PASS childWindow.onabort is null
 PASS childWindow.onafterprint is null
+PASS childWindow.onanimationcancel is null
 PASS childWindow.onanimationend is null
 PASS childWindow.onanimationiteration is null
 PASS childWindow.onanimationstart is null
@@ -100,6 +101,8 @@ PASS childWindow.onended is null
 PASS childWindow.onerror is null
 PASS childWindow.onfocus is null
 PASS childWindow.onformdata is null
+PASS childWindow.ongamepadconnected is null
+PASS childWindow.ongamepaddisconnected is null
 PASS childWindow.ongotpointercapture is null
 PASS childWindow.onhashchange is null
 PASS childWindow.oninput is null

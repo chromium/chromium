@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_SECURE_DNS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_SECURE_DNS_HANDLER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

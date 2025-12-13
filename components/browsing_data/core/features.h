@@ -14,11 +14,16 @@ namespace browsing_data::features {
 BASE_DECLARE_FEATURE(kBrowsingDataModel);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Enables a revamped Delete Browsing Data dialog. This includes UI changes,
 // updates to history counter logic and removal of the bulk password deletion
 // option from the dialog.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kDbdRevampDesktop);
+
+// When enabled, calls to browsingData.removePasswords extension API would
+// result in an error response instead of a console warning.
+BASE_DECLARE_FEATURE(kPasswordRemovalExtensionErrorKillSwitch);
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }  // namespace browsing_data::features
 

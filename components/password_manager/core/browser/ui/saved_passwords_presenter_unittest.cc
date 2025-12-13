@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/scoped_observation.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -19,11 +20,13 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
@@ -32,6 +35,7 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -96,10 +100,28 @@ CredentialUIEntry AsCredentialUIEntry(
 }
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+constexpr char kDefaultFallbackIconUrl[] = "https://t1.gstatic.com/faviconV2";
+constexpr char kFallbackIconQueryParams[] =
+    "client=PASSWORD_MANAGER&type=FAVICON&fallback_opts=TYPE,SIZE,URL,"
+    "TOP_DOMAIN&size=32&url=";
+constexpr char kDefaultAndroidIcon[] =
+    "https://www.gstatic.com/images/branding/product/1x/play_apps_32dp.png";
+
+GURL CreateFaviconUrl(GURL url) {
+  GURL::Replacements replacements;
+  std::string query = kFallbackIconQueryParams +
+                      base::EscapeQueryParamValue(url.spec(),
+                                                  /*use_plus=*/false);
+  replacements.SetQueryStr(query);
+  return GURL(kDefaultFallbackIconUrl).ReplaceComponents(replacements);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 class SavedPasswordsPresenterTest : public testing::Test {
  protected:
   void SetUp() override {
-    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    store_->Init(/*affiliated_match_helper=*/nullptr);
     presenter_.Init();
     task_env_.RunUntilIdle();
   }
@@ -118,6 +140,8 @@ class SavedPasswordsPresenterTest : public testing::Test {
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
   void AdvanceClock(base::TimeDelta time) { task_env_.AdvanceClock(time); }
 
+  syncer::TestSyncService* GetSyncService() { return &test_sync_service_; }
+
   constexpr bool IsGroupingEnabled() {
 #if BUILDFLAG(IS_ANDROID)
     return false;
@@ -132,6 +156,7 @@ class SavedPasswordsPresenterTest : public testing::Test {
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
   FakeAffiliationService affiliation_service_;
+  syncer::TestSyncService test_sync_service_;
 #if !BUILDFLAG(IS_ANDROID)
   webauthn::TestPasskeyModel test_passkey_store_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
@@ -1082,7 +1107,11 @@ TEST_F(SavedPasswordsPresenterTest, DeleteAllDataWithPasskey) {
   EXPECT_CALL(completion_callback, Run(true)).Times(1);
   presenter().DeleteAllData(completion_callback.Get());
   RunUntilIdle();
-  EXPECT_TRUE(passkey_store().GetAllPasskeys().empty());
+  EXPECT_TRUE(
+      passkey_store()
+          .GetPasskeys(webauthn::PasskeyModel::AnyRp(),
+                       webauthn::PasskeyModel::ShadowedCredentials::kInclude)
+          .empty());
   EXPECT_TRUE(store().IsEmpty());
 }
 
@@ -1105,6 +1134,30 @@ TEST_F(SavedPasswordsPresenterTest, UndoRemoval) {
   presenter().UndoLastRemoval();
   RunUntilIdle();
   EXPECT_THAT(presenter().GetSavedCredentials(), ElementsAre(credential));
+}
+
+TEST_F(SavedPasswordsPresenterTest, UndoBackupRemoval) {
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  CredentialUIEntry credential_without_backup = CredentialUIEntry(form);
+  form.SetPasswordBackupNote(u"backup");
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  CredentialUIEntry credential_with_backup = CredentialUIEntry(form);
+
+  ASSERT_THAT(presenter().GetSavedCredentials(),
+              ElementsAre(credential_with_backup));
+
+  presenter().RemoveBackupPassword(credential_with_backup);
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              ElementsAre(credential_without_backup));
+
+  presenter().UndoLastRemoval();
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              ElementsAre(credential_with_backup));
 }
 
 TEST_F(SavedPasswordsPresenterTest, DeleteAllData) {
@@ -1138,10 +1191,8 @@ namespace {
 class SavedPasswordsPresenterWithTwoStoresTest : public testing::Test {
  protected:
   void SetUp() override {
-    profile_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
-    account_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
     presenter_.Init();
     RunUntilIdle();
   }
@@ -1878,6 +1929,166 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
       "PasswordManager.PasswordsGrouping.Time", base::Milliseconds(kDelay), 1);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_SingleSite) {
+  PasswordForm form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
+  form_1.actor_login_approved = true;
+
+  PasswordForm form_2 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 2);
+
+  store().AddLogins({form_1, form_2});
+  RunUntilIdle();
+
+  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
+              UnorderedElementsAre(ActorLoginPermission{
+                  .domain_info = {.name = "test1.com",
+                                  .url = form_1.url,
+                                  .signon_realm = form_1.signon_realm},
+                  .username = form_1.username_value,
+                  .favicon_url = CreateFaviconUrl(form_1.url)}));
+}
+
+TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
+  PasswordForm form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form_1.actor_login_approved = true;
+
+  PasswordForm form_2 = form_1;
+  store().AddLogins({form_1, form_2});
+  RunUntilIdle();
+
+  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
+              UnorderedElementsAre(ActorLoginPermission{
+                  .domain_info = {.name = "test0.com",
+                                  .url = form_1.url,
+                                  .signon_realm = form_1.signon_realm},
+                  .username = form_1.username_value,
+                  .favicon_url = CreateFaviconUrl(form_1.url)}));
+}
+
+TEST_F(SavedPasswordsPresenterTest,
+       GetAllowedActorLoginSites_SiteAndAppDifferentCredentials) {
+  PasswordForm form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form_1.actor_login_approved = true;
+
+  PasswordForm form_2 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
+  form_2.signon_realm = "android://hash@com.app.name/";
+  form_2.url = GURL();
+  form_2.app_display_name = "App Name";
+  form_2.actor_login_approved = true;
+  store().AddLogins({form_1, form_2});
+  RunUntilIdle();
+
+  EXPECT_THAT(
+      presenter().GetActorLoginPermissions(GetSyncService()),
+      UnorderedElementsAre(
+          ActorLoginPermission{
+              .domain_info = {.name = "test0.com",
+                              .url = form_1.url,
+                              .signon_realm = form_1.signon_realm},
+              .username = form_1.username_value,
+              .favicon_url = CreateFaviconUrl(form_1.url)},
+          ActorLoginPermission{
+              .domain_info = {.name = "App Name",
+                              .url = GURL("https://play.google.com/store/apps/"
+                                          "details?id=com.app.name"),
+                              .signon_realm = form_2.signon_realm},
+              .username = form_2.username_value,
+              .favicon_url = GURL(kDefaultAndroidIcon)}));
+}
+
+TEST_F(SavedPasswordsPresenterTest,
+       GetAllowedActorLoginSites_SameUsernameDifferentURLs) {
+  PasswordForm form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form_1.actor_login_approved = true;
+  form_1.username_value = u"shared_user";
+
+  PasswordForm form_2 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
+  form_2.actor_login_approved = true;
+  form_2.username_value = u"shared_user";
+  store().AddLogins({form_1, form_2});
+  RunUntilIdle();
+
+  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
+              UnorderedElementsAre(
+                  ActorLoginPermission{
+                      .domain_info = {.name = "test0.com",
+                                      .url = form_1.url,
+                                      .signon_realm = form_1.signon_realm},
+                      .username = form_1.username_value,
+                      .favicon_url = CreateFaviconUrl(form_1.url)},
+                  ActorLoginPermission{
+                      .domain_info = {.name = "test1.com",
+                                      .url = form_2.url,
+                                      .signon_realm = form_2.signon_realm},
+                      .username = form_2.username_value,
+                      .favicon_url = CreateFaviconUrl(form_2.url)}));
+}
+
+TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form.actor_login_approved = true;
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  presenter().RevokeActorLoginPermission(form.username_value,
+                                         form.signon_realm);
+  RunUntilIdle();
+
+  form.actor_login_approved = false;
+  EXPECT_THAT(store().stored_passwords(),
+              ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
+}
+
+TEST_F(SavedPasswordsPresenterTest,
+       RevokeActorLoginPermissionHandlesDuplicates) {
+  PasswordForm form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form_1.actor_login_approved = true;
+  form_1.password_element = u"pwd1";
+  PasswordForm form_2 = form_1;
+  form_2.password_element = u"pwd2";
+  store().AddLogin(form_1);
+  store().AddLogin(form_2);
+  RunUntilIdle();
+
+  presenter().RevokeActorLoginPermission(form_1.username_value,
+                                         form_1.signon_realm);
+  RunUntilIdle();
+
+  form_1.actor_login_approved = false;
+  form_2.actor_login_approved = false;
+  EXPECT_THAT(
+      store().stored_passwords(),
+      ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1, form_2))));
+}
+TEST_F(SavedPasswordsPresenterTest,
+       RevokeActorLoginPermissionHandlesAndroidApps) {
+  PasswordForm form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form_1.signon_realm = "android://cert=@app.name";
+  form_1.url = GURL();
+  form_1.app_display_name = "App Name";
+  store().AddLogin(form_1);
+  RunUntilIdle();
+
+  presenter().RevokeActorLoginPermission(form_1.username_value,
+                                         form_1.signon_realm);
+  RunUntilIdle();
+
+  form_1.actor_login_approved = false;
+  EXPECT_THAT(store().stored_passwords(),
+              ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1))));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // Prefixes like [m, mobile, www] are considered as "same-site".
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
        GetSavedCredentialsGroupsSameSites) {
@@ -2009,14 +2220,12 @@ class SavedPasswordsPresenterInitializationTest : public ::testing::Test {
     profile_store_ = base::MakeRefCounted<PasswordStore>(
         std::make_unique<FakePasswordStoreBackend>(
             IsAccountStore(false), profile_store_backend_runner()));
-    profile_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
 
     account_store_ = base::MakeRefCounted<PasswordStore>(
         std::make_unique<FakePasswordStoreBackend>(
             IsAccountStore(true), account_store_backend_runner()));
-    account_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
   }
 
   ~SavedPasswordsPresenterInitializationTest() override {

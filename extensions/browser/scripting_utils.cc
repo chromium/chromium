@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/browser_frame_context_data.h"
@@ -178,7 +179,7 @@ bool HasPermissionToInjectIntoFrame(const PermissionsData& permissions,
 
 // Constructs an array of file sources from the read file `data`.
 std::vector<InjectedFileSource> ConstructFileSources(
-    std::vector<std::unique_ptr<std::string>> data,
+    std::vector<std::string> data,
     std::vector<std::string> file_names) {
   // Note: CHECK (and not DCHECK) because if it fails, we have an out-of-bounds
   // access.
@@ -197,7 +198,7 @@ std::vector<InjectedFileSource> ConstructFileSources(
 // the constructed file sources on success or with an error on failure.
 void CheckLoadedResources(std::vector<std::string> file_names,
                           ResourcesLoadedCallback callback,
-                          std::vector<std::unique_ptr<std::string>> file_data,
+                          std::vector<std::string> file_data,
                           std::optional<std::string> load_error) {
   if (load_error) {
     std::move(callback).Run({}, std::move(load_error));
@@ -208,10 +209,9 @@ void CheckLoadedResources(std::vector<std::string> file_names,
       ConstructFileSources(std::move(file_data), std::move(file_names));
 
   for (const auto& source : file_sources) {
-    DCHECK(source.data);
     // TODO(devlin): What necessitates this encoding requirement? Is it needed
     // for blink injection?
-    if (!base::IsStringUTF8(*source.data)) {
+    if (!base::IsStringUTF8(source.data)) {
       static constexpr char kBadFileEncodingError[] =
           "Could not load file '*'. It isn't UTF-8 encoded.";
       std::string error = ErrorUtils::FormatErrorMessage(kBadFileEncodingError,
@@ -232,8 +232,7 @@ InjectionTarget::InjectionTarget(InjectionTarget&& other) = default;
 
 InjectionTarget::~InjectionTarget() = default;
 
-InjectedFileSource::InjectedFileSource(std::string file_name,
-                                       std::unique_ptr<std::string> data)
+InjectedFileSource::InjectedFileSource(std::string file_name, std::string data)
     : file_name(std::move(file_name)), data(std::move(data)) {}
 InjectedFileSource::InjectedFileSource(InjectedFileSource&&) = default;
 InjectedFileSource::~InjectedFileSource() = default;

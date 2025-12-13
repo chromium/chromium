@@ -2,6 +2,7 @@ Name: Google Fonts font files for font backend comparison tests
 URL: http://cl/559229536
 Version: N/A
 Revision: 20230913
+Update Mechanism: Static (https://crbug.com/422064814)
 License: OFL-1.1
 License File: LICENSE
 Security Critical: no

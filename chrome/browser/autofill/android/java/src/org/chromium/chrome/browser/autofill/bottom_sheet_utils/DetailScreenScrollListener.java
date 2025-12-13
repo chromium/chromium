@@ -11,10 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
-/**
- * Listener for scroll events of the recycler view holding addresses and credit cards.
- * TODO(crbug.com/40260900): Add test coverage for this class.
- */
+/** Listener for scroll events of the recycler view holding addresses and credit cards. */
 @NullMarked
 public class DetailScreenScrollListener extends RecyclerView.OnScrollListener {
     private final BottomSheetController mBottomSheetController;

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.base;
 
 import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
+import static org.chromium.chrome.browser.base.SplitCompatApplication.ON_DEMAND_SPLIT_NAME;
 
 import android.content.Context;
 
@@ -19,6 +20,10 @@ public class SplitCompatUtils {
 
     public static Object loadClassAndAdjustContextChrome(Context context, String className) {
         return loadClassAndAdjustContext(context, className, CHROME_SPLIT_NAME);
+    }
+
+    public static Object loadClassAndAdjustContextOnDemand(Context context, String className) {
+        return loadClassAndAdjustContext(context, className, ON_DEMAND_SPLIT_NAME);
     }
 
     public static Object loadClassAndAdjustContext(

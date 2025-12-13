@@ -18,11 +18,6 @@ class VIZ_COMMON_EXPORT ColorSpaceUtils {
       const gfx::DisplayColorSpaces& display_color_spaces,
       gfx::ContentColorUsage content_color_usage,
       bool has_transparent_background);
-
-  static gfx::ColorSpace CompositingColorSpace(
-      const gfx::DisplayColorSpaces& display_color_spaces,
-      gfx::ContentColorUsage content_color_usage,
-      bool has_transparent_background);
 };
 
 }  // namespace viz

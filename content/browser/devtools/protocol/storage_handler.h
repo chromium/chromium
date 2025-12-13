@@ -19,7 +19,6 @@
 #include "content/browser/devtools/protocol/storage.h"
 #include "content/browser/interest_group/devtools_enums.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "storage/browser/quota/quota_manager.h"
@@ -46,7 +45,8 @@ class StorageHandler
       public content::SharedStorageRuntimeManager::
           SharedStorageObserverInterface {
  public:
-  explicit StorageHandler(DevToolsAgentHostClient* client);
+  explicit StorageHandler(DevToolsAgentHostImpl* host,
+                          DevToolsAgentHostClient* client);
 
   StorageHandler(const StorageHandler&) = delete;
   StorageHandler& operator=(const StorageHandler&) = delete;
@@ -68,6 +68,8 @@ class StorageHandler
   // content::protocol::storage::Backend
   Response GetStorageKeyForFrame(const std::string& frame_id,
                                  std::string* serialized_storage_key) override;
+  Response GetStorageKey(std::optional<std::string> frame_id,
+                         std::string* serialized_storage_key) override;
   void ClearDataForOrigin(
       const std::string& origin,
       const std::string& storage_types,
@@ -269,6 +271,9 @@ class StorageHandler
 
   void ResetAttributionReporting();
 
+  Response GetStorageKeyForFrameInternal(const std::string& frame_id,
+                                         std::string* serialized_storage_key);
+
   // This doesn't update `interest_group_auction_tracking_enabled_` and does not
   // have to work on `storage_partition_`, unlike the public version.
   Response SetInterestGroupTrackingInternal(StoragePartition* storage_partition,
@@ -276,6 +281,8 @@ class StorageHandler
   void GotAllCookies(
       std::unique_ptr<Storage::Backend::GetCookiesCallback> callback,
       const std::vector<net::CanonicalCookie>& cookies);
+
+  const raw_ptr<DevToolsAgentHostImpl> host_;
 
   std::unique_ptr<Storage::Frontend> frontend_;
   raw_ptr<StoragePartition> storage_partition_{nullptr};

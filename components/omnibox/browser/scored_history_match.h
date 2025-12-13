@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"

@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/saved_tab_groups/coordinator/face_pile_configuration.h"
 #import "ios/chrome/browser/saved_tab_groups/coordinator/face_pile_coordinator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
@@ -51,6 +50,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
+#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/device_form_factor.h"
 
@@ -63,7 +63,6 @@ constexpr CGFloat kTabGroupPresentationDuration = 0.3;
 constexpr CGFloat kTabGroupDismissalDuration = 0.25;
 constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 // The preferred size in points for the avatar icons.
-constexpr CGFloat kLegacyFacePileAvatarSize = 24;
 constexpr CGFloat kFacePileAvatarSize = 26;
 }  // namespace
 
@@ -81,7 +80,7 @@ constexpr CGFloat kFacePileAvatarSize = 26;
   // Context Menu helper for the tabs.
   TabContextMenuHelper* _tabContextMenuHelper;
   // Tab group to display.
-  raw_ptr<const TabGroup> _tabGroup;
+  raw_ptr<const TabGroup, DanglingUntriaged> _tabGroup;
   // The coordinator for the user education half screen.
   SharedTabGroupUserEducationCoordinator* _userEducationCoordinator;
   // Coordinator that handles confirmation dialog when the last tab of a group
@@ -121,7 +120,7 @@ constexpr CGFloat kFacePileAvatarSize = 26;
 
   // Notify Welcome Back to remove Tab Groups from the eligible
   // features.
-  if (IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackEnabled()) {
     MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kTabGroups);
   }
 
@@ -532,12 +531,7 @@ constexpr CGFloat kFacePileAvatarSize = 26;
   FacePileConfiguration* config = [[FacePileConfiguration alloc] init];
   config.showsEmptyState = YES;
   config.groupID = data_sharing::GroupId(groupID);
-
-  if (IsContainedTabGroupEnabled()) {
-    config.avatarSize = kFacePileAvatarSize;
-  } else {
-    config.avatarSize = kLegacyFacePileAvatarSize;
-  }
+  config.avatarSize = kFacePileAvatarSize;
 
   FacePileCoordinator* facePileCoordinator =
       [[FacePileCoordinator alloc] initWithFacePileConfiguration:config

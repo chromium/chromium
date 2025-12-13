@@ -13,6 +13,7 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "field_trials.ts",
+    "private_metrics.ts",
   ]
   ts_files = [
     "browser_proxy.ts",
@@ -52,6 +53,7 @@ static_library("debug") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//build:branding_buildflags",
     "//components/metrics",
     "//components/metrics_services_manager",

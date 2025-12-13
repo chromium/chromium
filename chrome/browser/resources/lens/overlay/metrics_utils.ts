@@ -24,6 +24,18 @@ export enum ContextMenuOption {
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayContextMenuOption)
 
+// The possible events for the selection overlay close button.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(LensOverlaySelectionCloseButtonEvent)
+export enum LensOverlaySelectionCloseButtonEvent {
+  SHOWN = 0,
+  USED = 1,
+  // Must be last.
+  COUNT = 2,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlaySelectionCloseButtonEvent)
+
 export function recordContextMenuOptionShown(
     invocationSource: string, contextMenuOption: ContextMenuOption) {
   chrome.metricsPrivate.recordEnumerationValue(
@@ -77,4 +89,30 @@ export function recordAverageFps(averageFps: number) {
         buckets: 50,
       },
       Math.floor(averageFps));
+}
+
+export function recordLensOverlaySelectionCloseButtonShown(
+    invocationSource: string) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      `Lens.Overlay.ByInvocationSource.${
+          invocationSource}.SelectionState.CloseButtonEvent`,
+      LensOverlaySelectionCloseButtonEvent.SHOWN,
+      LensOverlaySelectionCloseButtonEvent.COUNT);
+  chrome.metricsPrivate.recordEnumerationValue(
+      `Lens.Overlay.SelectionState.CloseButtonEvent`,
+      LensOverlaySelectionCloseButtonEvent.SHOWN,
+      LensOverlaySelectionCloseButtonEvent.COUNT);
+}
+
+export function recordLensOverlaySelectionCloseButtonUsed(
+    invocationSource: string) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      `Lens.Overlay.ByInvocationSource.${
+          invocationSource}.SelectionState.CloseButtonEvent`,
+      LensOverlaySelectionCloseButtonEvent.USED,
+      LensOverlaySelectionCloseButtonEvent.COUNT);
+  chrome.metricsPrivate.recordEnumerationValue(
+      `Lens.Overlay.SelectionState.CloseButtonEvent`,
+      LensOverlaySelectionCloseButtonEvent.USED,
+      LensOverlaySelectionCloseButtonEvent.COUNT);
 }

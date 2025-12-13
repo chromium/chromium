@@ -159,7 +159,7 @@ class TabSearchPageHandler
       std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs) override;
 
   // BrowserTabStripTrackerDelegate:
-  bool ShouldTrackBrowser(Browser* browser) override;
+  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
 
   // Returns true if the WebContents hosting the WebUI is visible to the user
   // (in either a fully visible or partially occluded state).

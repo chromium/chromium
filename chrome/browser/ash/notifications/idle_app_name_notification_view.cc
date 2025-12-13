@@ -59,8 +59,7 @@ const int kWindowCornerRadius = 4;
 // Creates and shows the message widget for |view| with |animation_time_ms|.
 void CreateAndShowWidget(views::WidgetDelegateView* delegate,
                          int animation_time_ms) {
-  gfx::Size display_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().size();
+  gfx::Size display_size = display::Screen::Get()->GetPrimaryDisplay().size();
   gfx::Size view_size = delegate->GetPreferredSize();
   gfx::Rect bounds((display_size.width() - view_size.width()) / 2,
                    -view_size.height(), view_size.width(), view_size.height());

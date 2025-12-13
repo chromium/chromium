@@ -16,6 +16,7 @@ import org.chromium.net.test.ServerCertificate;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /** Java wrapper for net::EmbeddedTestServer. */
 @JNINamespace("cronet")
@@ -181,9 +182,15 @@ public final class NativeTestServer implements AutoCloseable {
         private final String mHeaders;
         private final String mContents;
 
-        public RawHttpResponse(String headers, String contents) {
-            mHeaders = headers;
-            mContents = contents;
+        private RawHttpResponse(String headers, String contents) {
+            mHeaders = Objects.requireNonNull(headers);
+            mContents = Objects.requireNonNull(contents);
+        }
+
+        public static RawHttpResponse createFromHeaders(List<String> headers) {
+            return new RawHttpResponse(
+                    /* headers= */ String.join("\r\n", Objects.requireNonNull(headers)),
+                    /* contents= */ "");
         }
 
         public String getHeaders() {

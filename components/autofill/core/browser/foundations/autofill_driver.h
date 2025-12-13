@@ -143,7 +143,28 @@ class AutofillDriver {
 
   // Returns the AutofillDriver of the parent frame, if such a frame and driver
   // exist, and nullptr otherwise.
+  //
+  // Two related properties are IsActive() and IsEmbedded().
   virtual AutofillDriver* GetParent() = 0;
+
+  // Returns true if the AutofillDriver is associated with a frame that is
+  // visible to the user, as opposed to being prerendered or bfcache.
+  //
+  // Two related properties are GetParent() and IsEmbedded().
+  //
+  // This terminology is borrowed from MPArch.
+  virtual bool IsActive() const = 0;
+
+  // Returns true if the AutofillDriver is associated with a frame from a frame
+  // tree that is embedded in another frame by a Guest View or <fencedframe>.
+  //
+  // Two related properties are GetParent() and IsActive().
+  //
+  // This terminology is borrowed from MPArch. (The MPArch documentation is not
+  // entirely consistent in its use of "embedded" and "outermost", so there may
+  // be references that are not equivalent to AutofillDriver's use of the term.
+  // See crbug.com/459210100.)
+  virtual bool IsEmbedded() const = 0;
 
   // The owning AutofillClient.
   virtual AutofillClient& GetAutofillClient() = 0;
@@ -162,14 +183,15 @@ class AutofillDriver {
   //     LifecycleState::kPendingReset), the driver gets a new UKM source ID.
   virtual ukm::SourceId GetPageUkmSourceId() const = 0;
 
-  // Returns whether the AutofillDriver instance is associated with an active
-  // frame in the MPArch sense.
-  virtual bool IsActive() const = 0;
+  // Returns whether the policy-controlled feature "autofill" is enabled in the
+  // document. In the main frame the permission is enabled by default. The main
+  // frame may pass it on to its children.
+  virtual bool IsPolicyControlledFeatureAutofillEnabled() const = 0;
 
-  // Returns whether the policy-controlled feature "shared-autofill" is enabled
-  // in the document. In the main frame the permission is enabled by default.
-  // The main frame may pass it on to its children.
-  virtual bool HasSharedAutofillPermission() const = 0;
+  // Returns true if the policy-controlled feature "manual-text" is enabled in
+  // the document. In the main frame the permission is enabled by default.
+  // Parent frames may pass it on to its children.
+  virtual bool IsPolicyControlledFeatureManualTextEnabled() const = 0;
 
   // Returns the IsolationInfo of the associated frame. May be nullopt if the
   // IsolationInfo is not used (for example, on iOS).
@@ -223,10 +245,10 @@ class AutofillDriver {
       base::OnceCallback<void(AutofillDriver* host_frame_driver,
                               const std::optional<FormData>& form)>;
 
-  // Extracts the given form and calls `response_handler` for the browser form
-  // that includes `form`.
+  // Extracts the form that contains the given field and calls
+  // `response_handler` for the browser form that includes that form.
   //
-  // The semantics may be a little surprising. Consider the following example:
+  // Consider the following example:
   //   <form id=f>
   //     <input>
   //     <iframe>
@@ -235,7 +257,7 @@ class AutofillDriver {
   //       </form>
   //     </iframe>
   //   </form>
-  // Calling ExtractForm() for "g" re-extracts that form and may then flatten it
+  // Calling ExtractForm() for "i" re-extracts that form and may then flatten it
   // into "f". So the `response_handler` is called for that browser form that
   // includes "f" and the newly-extracted "g".
   //
@@ -243,19 +265,29 @@ class AutofillDriver {
   //
   // More precisely:
   //
-  // If the `form` is found, `response_handler` is called with the driver that
-  // manages the browser form that includes `form` and that browser form itself
-  // (i.e., their `FormData.host_frame` and `AutofillDriver::GetFrameToken()`
-  // are equal). The driver is distinct from `this` if the form is managed by
-  // another frame (e.g., when `this` is a subframe and the form is managed by
-  // an ancestor).
+  // If a field with `field_id` is found, `response_handler` is called with the
+  // driver that manages the browser form that includes that field and that
+  // browser form itself (i.e., their `FormData::host_frame()` and
+  // `AutofillDriver::GetFrameToken()` are equal). The driver is distinct from
+  // `this` if the form is managed by another frame (e.g., when `this` is a
+  // subframe and the form is managed by an ancestor).
   //
-  // If the form is not found, the `response_handler` is called with nullptr for
-  // the driver and std::nullopt for the form.
-  virtual void ExtractForm(FormGlobalId form,
-                           BrowserFormHandler response_handler) = 0;
+  // If the field is not found, the `response_handler` is called with nullptr
+  // for the driver and std::nullopt for the form.
+  virtual void ExtractFormWithField(FieldGlobalId field_id,
+                                    BrowserFormHandler response_handler) = 0;
 
-  // Forwards `form` to the renderer.
+  // Tells the renderer to set the value of the given `fields`. Depending on
+  // `action_type`, this is either an autofill or an undo operation.
+  // The `action_persistence` determines whether it is merely a preview or not.
+  //
+  // `fill_id` uniquely identifies the fill operation. It does *not* uniquely
+  // identify this ApplyFormAction() call. See `FillId` for details.
+  //
+  // If `supports_refill` is true, the browser might respond to subsequent
+  // mojom::AutofillDriver::RequestRefill() calls with another
+  // ApplyFormAction().
+  // TODO(crbug.com/466333215): Add RequestRefill().
   //
   // `field_type_map` contains the type predictions of the fields that may be
   // modified; this parameter can be taken into account to decide which fields
@@ -279,7 +311,9 @@ class AutofillDriver {
   virtual base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::FormActionType action_type,
       mojom::ActionPersistence action_persistence,
-      base::span<const FormFieldData> data,
+      base::span<const FormFieldData> fields,
+      const FillId& fill_id,
+      bool supports_refill,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
       const Section& section_for_clear_form_on_ios) = 0;
@@ -295,7 +329,7 @@ class AutofillDriver {
   virtual void SendTypePredictionsToRenderer(const FormStructure& forms) = 0;
 
   // Exposes DOM Node IDs in an attribute "dom-node-id".
-  virtual void ExposeDomNodeIDs() = 0;
+  virtual void ExposeDomNodeIdsInAllFrames() = 0;
 
   // Tells the renderer to accept data list suggestions for |value|.
   virtual void RendererShouldAcceptDataListSuggestion(
@@ -332,6 +366,10 @@ class AutofillDriver {
       uint32_t number_of_ancestor_levels_to_search,
       base::OnceCallback<void(const std::string& amount)>
           response_callback) = 0;
+
+  virtual void DispatchEmailVerifiedEvent(
+      FieldGlobalId field_id,
+      const std::string& presentation_token) = 0;
 
  private:
   friend class AutofillDriverTestApi;

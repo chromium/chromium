@@ -1,0 +1,200 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module actor.webui.mojom;
+
+import "skia/public/mojom/bitmap.mojom";
+import "url/mojom/origin.mojom";
+
+//
+// Place the mojom structs that require Javascript bindings here.
+//
+
+// Contains information about the task.
+struct TaskOptions {
+  // A user-facing string that describes the task.
+  string? title;
+};
+
+// @generate glic_api
+// Describes how long the user grants the actor with the permission to actuate.
+// Used when the actor is to actuate with sensitive data, such as entering
+// payment information or login credentials.
+[Extensible]
+enum UserGrantedPermissionDuration {
+  // The user only grants a one-time permission. The user will be asked again.
+  // This is the default behavior.
+  [Default] kOneTime = 0,
+  // The user grants a permission to always allow the actor to actuate with
+  // sensitive data. The persistence of this permission is defined differently
+  // for different features.
+  kAlwaysAllow = 1,
+};
+
+//
+// Credential selection dialog.
+//
+
+// A credential for actor login. Mapped from actor_login::Credential in
+// components/password_manager/core/browser/actor_login/actor_login_types.h
+struct Credential {
+  int32 id;
+  string username;
+  // TODO(crbug.com/466132508): Remove these two fields once unused in the webui
+  string source_site_or_app;
+  url.mojom.Origin request_origin;
+  string display_origin;
+};
+
+struct SelectCredentialDialogRequest {
+  // The task ID that is requesting the credential selection.
+  int32 task_id;
+  // Whether the web client should show a dialog to let the user select a
+  // credential. The web client doesn't have to show the dialog if the user has
+  // granted UserGrantedPermissionDuration.ALWAYS_ALLOW to the actor.
+  bool show_dialog;
+  // The order of `credentials` is based on what the browser believes to be the
+  // best match to use.
+  array<Credential> credentials;
+  // The optional icons for each credential. The key is
+  // Credential.source_site_or_app. The icons are separated from the credentials
+  // as an optimisation to avoid serializing the same icon multiple times.
+  map<string, skia.mojom.BitmapN32> icons;
+};
+
+[Extensible]
+enum SelectCredentialDialogErrorReason {
+  // The hosting WebUI received the request, but the web client has not
+  // subscribed to the request yet. We couldn't show the dialog in this case.
+  [Default] kDialogPromiseNoSubscriber = 0,
+};
+
+struct SelectCredentialDialogResponse {
+  // The response is associated with the request that has the same task ID.
+  int32 task_id;
+  // Encodes the error message. The browser must discard all other fields
+  // (other than the ID) if the error message is set.
+  SelectCredentialDialogErrorReason? error_reason;
+  // Only set if the user changes the permission duration.
+  UserGrantedPermissionDuration? permission_duration;
+  // The ID of the selected credential. Null if the user closed the UI without
+  // making a selection.
+  int32? selected_credential_id;
+};
+
+//
+// Autofill suggestion selection dialog.
+//
+
+// An autofill suggestion for actor form filling. Mapped from
+// autofill::ActorSuggestion in
+// components/autofill/core/browser/integrators/glic/actor_form_filling_types.h
+struct AutofillSuggestion {
+  string id;
+  string title;
+  string details;
+  skia.mojom.BitmapN32? icon;
+};
+
+// A request to fill a form includes the requested data type and available
+// options.
+struct FormFillingRequest {
+  // See the FormFillingRequest.RequestedData enum in actions_data.proto.
+  int64 requested_data;
+  // The list of suggestions to show for this request.
+  array<AutofillSuggestion> suggestions;
+};
+
+struct SelectAutofillSuggestionsDialogRequest {
+  // The task ID that is requesting the autofill suggestion selection.
+  int32 task_id;
+  // The list of requested forms to be filled.
+  array<FormFillingRequest> form_filling_requests;
+};
+
+// LINT.IfChange(SelectAutofillSuggestionsDialogErrorReason)
+enum SelectAutofillSuggestionsDialogErrorReason {
+  // The hosting WebUI received the request, but the web client has not
+  // subscribed to the request yet. We couldn't show the dialog in this case.
+  kDialogPromiseNoSubscriber = 0,
+  // The requested task id did not match the response task id. This error is
+  // internal to the browser and not sent by the client over mojo.
+  kMismatchedTaskId = 1,
+  // The task is not connected to a delegate. I.e. attempting to run the task
+  // from the experimental actor API. This error is internal to the browser and
+  // not sent by the client over mojo.
+  kNoActorTaskDelegate = 2,
+};
+// LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:SelectAutofillSuggestionsDialogErrorReason)
+
+struct FormFillingResponse {
+  // The ID corresponding to the user selected suggestion.
+  string selected_suggestion_id;
+};
+
+// Contains either an error or the users' response to the offered autofill
+// suggestions.
+union SelectAutofillSuggestionsDialogResult {
+  SelectAutofillSuggestionsDialogErrorReason error_reason;
+  // The responses to each FormFillingRequest. The order of this list
+  // corresponds to the order of `requests` in the
+  // `SelectAutofillSuggestionsDialogRequest`.
+  array<FormFillingResponse> selected_suggestions;
+};
+
+struct SelectAutofillSuggestionsDialogResponse {
+  // The response is associated with the request that has the same task ID.
+  int32 task_id;
+  // The result will be either an error or the selected suggestion responses.
+  SelectAutofillSuggestionsDialogResult result;
+};
+
+// Contains information about the confirmation request
+// that also encodes what type of request is being sent.
+struct UserConfirmationDialogPayload {
+  url.mojom.Origin navigation_origin;
+  bool for_blocklisted_origin;
+};
+
+struct UserConfirmationDialogRequest {
+  UserConfirmationDialogPayload payload;
+};
+
+// Contains result of user confirmation dialog request.
+// Either a boolean indicating user decision, or an error.
+union UserConfirmationDialogResult {
+  bool permission_granted;
+  ConfirmationRequestErrorReason error_reason;
+};
+
+union ConfirmationRequestResult {
+  bool permission_granted;
+  ConfirmationRequestErrorReason error_reason;
+};
+
+struct UserConfirmationDialogResponse {
+  ConfirmationRequestResult result;
+};
+
+[Extensible]
+enum ConfirmationRequestErrorReason {
+  // The hosting WebUI received the request, but the web client has not
+  // subscribed to the request yet. We couldn't show the dialog in this case.
+  [Default] kRequestPromiseNoSubscriber = 0,
+  // The task requested a new user confirmation dialog before the current
+  // one completed.
+  kPreemptedByNewRequest = 1,
+};
+
+struct NavigationConfirmationRequest {
+  // The task ID that is checking the navigation.
+  int32 task_id;
+  url.mojom.Origin navigation_origin;
+};
+
+// Contains result of a navigation confirmation request.
+// Either a boolean indicating user decision, or an error.
+struct NavigationConfirmationResponse {
+  ConfirmationRequestResult result;
+};

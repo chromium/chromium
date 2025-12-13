@@ -7,10 +7,15 @@
 chrome-family-kids-reviews@google.com
 
 # ChromeOS
+# TODO(433734945): Remove agawronska after transition completes.
 agawronska@chromium.org    #{LAST_RESORT_SUGGESTION}
+zhangwenyu@google.com      #{LAST_RESORT_SUGGESTION}
+longbowei@google.com       #{LAST_RESORT_SUGGESTION}
 
 # Chrome Browser
 anthie@google.com       #{LAST_RESORT_SUGGESTION}
+ddac@chromium.com       #{LAST_RESORT_SUGGESTION}
+mlbipin@google.com      #{LAST_RESORT_SUGGESTION}
 ljjlee@google.com       #{LAST_RESORT_SUGGESTION}
 tju@google.com          #{LAST_RESORT_SUGGESTION}
 

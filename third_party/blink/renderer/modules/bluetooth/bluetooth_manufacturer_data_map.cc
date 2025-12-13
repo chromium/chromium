@@ -18,8 +18,7 @@ class BluetoothManufacturerDataMapIterationSource final
 
   bool FetchNextItem(ScriptState* script_state,
                      uint16_t& map_key,
-                     NotShared<DOMDataView>& map_value,
-                     ExceptionState&) override {
+                     NotShared<DOMDataView>& map_value) override {
     if (iterator_ == map_->Map().end())
       return false;
     map_key = iterator_->key->id;
@@ -51,16 +50,14 @@ BluetoothManufacturerDataMap::BluetoothManufacturerDataMap(
 BluetoothManufacturerDataMap::~BluetoothManufacturerDataMap() {}
 
 PairSyncIterable<BluetoothManufacturerDataMap>::IterationSource*
-BluetoothManufacturerDataMap::CreateIterationSource(ScriptState*,
-                                                    ExceptionState&) {
+BluetoothManufacturerDataMap::CreateIterationSource(ScriptState*) {
   return MakeGarbageCollected<BluetoothManufacturerDataMapIterationSource>(
       *this);
 }
 
 bool BluetoothManufacturerDataMap::GetMapEntry(ScriptState*,
                                                const uint16_t& key,
-                                               NotShared<DOMDataView>& value,
-                                               ExceptionState&) {
+                                               NotShared<DOMDataView>& value) {
   mojom::blink::WebBluetoothCompanyPtr company =
       mojom::blink::WebBluetoothCompany::New(key);
   auto it = parameter_map_.find(company);

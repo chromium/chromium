@@ -1,0 +1,394 @@
+description = "Clean up a `base::Feature` and its associated code"
+prompt = """
+# Task: Completely and safely remove the stale feature flag `{{args}}`
+from the codebase.
+
+This document outlines a robust and safe, three-phase process. The key is to
+move from discovery to execution methodically, with mandatory verification steps
+to ensure correctness and prevent regressions.
+
+## **Critical Directives & Absolute Restrictions**
+
+-   **DO NOT MODIFY `//tools/metrics/histograms/enums.xml`**. This file is a
+    hard constraint. Entries are required for historical data analysis. If your
+    search finds references in this file, you must ignore them and proceed with
+    removing the feature from all other locations. Acknowledge this rule in your
+    plan.
+
+-   **RESPECT USER CANCELLATIONS**. If a user cancels a tool operation, treat it
+    as a direct command to **stop** that course of action. Do not retry the same
+    or similar operations. Announce that you are stopping and ask for new
+    instructions.
+
+-   **Core Principle:** If a tool fails unexpectedly (e.g., `replace` finds an
+    incorrect number of occurrences), **STOP**.
+
+    1.  **Announce Failure:** State that the tool failed and that you are
+        entering a diagnostic phase.
+    2.  **Diagnose with `git diff` and `read_file`:** Investigate the current
+        state of the file to understand why the tool failed.
+    3.  **Formulate a Precise New Plan:** Based on your diagnosis, construct a
+        new, more precise operation (e.g., a `replace` call with more context
+        lines).
+    4.  **Confirm with User:** Present your findings and the new, precise
+        operation to the user for confirmation *before* attempting the second
+        execution. This prevents repeated failures.
+
+## Removal Process
+
+### Phase 1: Discovery & Planning
+
+This phase is for understanding and information gathering ONLY. Do not modify
+any code.
+
+1.  **Build a Complete Reference Map:**
+
+    *   Search for the feature flag definition. A feature flag can be defined in
+        multiple ways, and the C++ identifier for the feature might be different
+        from its string name:
+        *   `BASE_DECLARE_FEATURE(kMyFeature)` in a header file and
+            `BASE_FEATURE(kMyFeature, ...)` in a `.cc` file.
+        *   `BASE_FEATURE(kMyFeature, "MyFeatureName", ...)` where the feature
+            name is explicitly defined as different from the C++ identifier.
+        *   `BASE_FEATURE_PARAM` or `BASE_FEATURE_ENUM_PARAM` for features with
+            parameters. Thoroughly search for both the feature name string
+            (which `{{args}}` represents by default) AND its C++ identifier
+            (e.g., `k{{args}}` or a custom identifier if specified in the
+            `BASE_FEATURE` macro) to find every file that references the
+            feature.
+    *   Make a note of the feature's default state (enabled or disabled).
+        *   If you can't find a Blink-related feature, it might be generated
+            from the config file in
+            `//third_party/blink/renderer/platform/runtime_enabled_features.json5`.
+            Do not proceed in that case because determining the default state
+            isn't trivial.
+    *   Based on the file paths, inspect corresponding `BUILD.gn` files to
+        determine the precise build and test targets for later verification.
+
+2.  **Gather Context and History:**
+
+    *   Identify the file that contains the feature definition. Use `git log
+        <file_path>` to view the commit history for that file. Look for the
+        initial commit that introduced the feature. Reviewing this commit
+        provides valuable insight into its original purpose, the files it
+        touched, and the rationale behind its implementation.
+
+3.  **Formulate and Confirm the Execution Plan:**
+
+    *   Create a step-by-step plan ordered logically to avoid build errors:
+        1.  Remove feature usage (application logic, UI, tests).
+        2.  Remove feature definitions and configurations (`BASE_FEATURE`,
+            `about_flags.cc`, etc.).
+        3.  Clean up consequential dead code and build file entries.
+    *   Present a concise summary of your plan to the user for confirmation
+        before proceeding.
+
+### Phase 2: Execution & Iterative Refactoring
+
+Systematically follow the approved plan. For each file to be modified, perform
+the following steps in a loop:
+
+*   **a. Read:** **Immediately before modification**, read the entire file
+    content using `read_file` to ensure you are working with the current
+    version.
+*   **b. Modify:** Execute the code removal. For large or complex blocks, prefer
+    a **read-modify-write** strategy over `replace`.
+*   **c. Verify Change:** **Immediately after modification**, run `git diff
+    <file_path>`. Scrutinize the output to confirm:
+    *   The intended lines were removed.
+    *   No unintended lines were altered.
+    *   **Crucially, no artifacts like extra blank lines, incorrect indentation,
+        or dangling syntax were left behind.
+    *   The resulting code block should be clean and correctly formatted. If the
+        diff is not correctly formatted, the change must be corrected before
+        proceeding.
+*   **d. Verify Build:**
+    *   Only build once all production code modifications are complete. The
+        code will likely be in a non-compilable state during intermediate
+        steps.
+    *   Check if the output directory is for desktop or Android. Use
+        `autoninja` to confirm `chrome` (for desktop) or `chrome_public_apk`
+        (for Android) still builds.
+    *   Fix any errors before proceeding. **Do not run tests until the build is
+        successful.**
+
+#### Best Practices for Code Modification
+
+*   **Precision is Key:** The `replace` tool requires the `old_string` to be an
+    *exact* literal match, including all whitespace, indentation, and newlines.
+    Before using `replace`, always use `read_file` to copy the precise block of
+    text you intend to change.
+*   **Whitespace Precision:** The `replace` tool is extremely sensitive to
+    whitespace and newlines. When constructing the `old_string` parameter, you
+    must copy the target text **exactly** as it appears in the file. A single
+    extra space or a different type of line ending will cause the operation to
+    fail. Always use `read_file` to get a fresh, exact copy of the text block
+    you intend to modify.
+*   **Provide Ample Context:** To avoid ambiguity, the `old_string` should
+    include several lines of context before and after the code being changed.
+    This dramatically reduces the risk of modifying the wrong line or leaving
+    behind artifacts like extra blank lines.
+*   **Verify with `git diff`:** After every single modification, run `git diff
+    <file_path>`. Do not proceed until you have confirmed that the change is
+    exactly as you intended. This is not an optional step.
+*   **Favor Read-Modify-Write for Complex Changes:** For anything more than a
+    simple, single-line change, it is safer to read the entire file, perform the
+    modifications in your thought process, and then write the entire file back
+    with `write_file`.
+
+#### Execution Steps
+
+1.  **Simplify C++ Callsites:**
+
+    *   Find all C++ callsites where `base::FeatureList::IsEnabled` checks the
+        feature's enablement. Simplify the code as if you had inlined the
+        default value.
+    *   The final code should never contain `true` or `false` literals. Any
+        `true` or `false` in a boolean expression should be simplified as much
+        as possible. Any free `Is<X>Enabled` helper functions that are just
+        returning `true` or `false` should be inlined.
+
+2.  **Simplify Java Callsites:**
+
+    *   Check if `{{args}}` is registered in
+        `//chrome/browser/flags/android/chrome_feature_list.cc`. If so:
+        *   Find and remove a constant with the feature's name in
+            `//chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java`.
+        *   Simplify Java code that checks the feature using a procedure similar
+            to the C++ case. Java code checks feature enablement with
+            `ChromeFeatureList.isEnabled(ChromeFeatureList.MY_FEATURE)`.
+        *   Remove the entry from `kFeaturesExposedToJava` in
+            `chrome_feature_list.cc`.
+
+3.  **Simplify WebUI:**
+
+    *   WebUI is a framework to build Chrome-internal UIs using web
+        technologies. If you clean up C++ WebUI backend code (e.g., interacts
+        with a `content::WebUIDataSource`), you must also search the frontend
+        TypeScript files for code paths that can be simplified. See "Simplifying
+        WebUI" below for an example.
+
+4.  **Clean Up Tests:**
+
+    *   Find all test files (C++, Java, or TypeScript) that reference the
+        `{{args}}` feature and remove any stale tests or assertions that
+        exercise the non-default state.
+    *   To clean up parameterized GTests (`TEST_P`), do not delete the entire
+        test class. Keep the coverage for the feature's default state by
+        changing the tests into `TEST_F` or removing a parameter from a
+        `TEST_P`. See "Simplifying a test" below for an example.
+    *   Remove any references to the feature in test names.
+    *   After each test file update, first build the test target, then use
+        `//tools/autotest.py` to validate that the tests still pass.
+    *   **Finding the Right Test:** To find the relevant test for a modified
+        file (e.g., `foo.cc`), look for corresponding test files like
+        `foo_unittest.cc` or `foo_browsestest.cc` in the same directory.
+    *   **Using Test Filters:** When running tests, always use a filter to
+        target only the relevant tests. This is faster and avoids unexpected
+        interactive prompts.
+        *   **Example:** `tools/autotest.py -C out/Default content_browsertests`
+            `--gtest_filter="FeatureTest.*"`
+    *   **Troubleshooting Test Execution:** If `autotest.py` fails with an
+        error or hangs (it may be expecting interactive input), in these cases,
+        figure out how to proceed from the error message or run the test binary
+        directly:
+        *   **Example:** `out/Default/content_browsertests
+            --gtest_filter="FeatureTest.TestCase"`
+
+5.  **Remove Feature Definitions and Configurations:**
+
+    *   Delete the `BASE_FEATURE` definition identified in Phase 1.
+    *   Remove any flags in `//chrome/browser/about_flags.cc` and
+        `//ios/chrome/browser/flags/about_flags.mm` that reference the removed
+        feature. Do not touch any unrelated entries or alter their expiry
+        milestones. If you remove any flags, you must also remove all related
+        entries from:
+        *   `//chrome/browser/flag-metadata.json`
+        *   `//chrome/browser/flag_descriptions.h`
+        *   `//ios/chrome/browser/flags/ios_chrome_flag_descriptions.h`
+        *   `//ios/chrome/browser/flags/ios_chrome_flag_descriptions.cc`
+    *   Remove any stale stanzas from
+        `//testing/variations/fieldtrial_testing_config.json`.
+
+6.  **Clean Up Consequential Dead Code:**
+
+    *   **Crucially, identify and remove any `#include` directives that are no
+        longer needed after code removal.** This is a mandatory step to
+        maintain a clean codebase.
+    *   Whenever you remove code, you must also recursively search for and
+        remove code that will become unreachable (i.e., the last caller has been
+        removed).
+    *   Similarly, remove any constants that become unused.
+    *   Remember to clean up both declarations in `.h` files and definitions in
+        `.cc` files.
+    *   When removing code that loads a resource file, remove the resource file
+        too if no other references remain.
+    *   If any code removed references localized strings (e.g.,
+        `l10n_util::GetString16(ID_...`), search for a `.grd` or `.grdp` file
+        that defines that localized string ID and clean up any orphaned entries.
+        Also, remove any screenshot hashes (`.png.sha1` files) that describe the
+        orphaned strings.
+    *   If an entire test or source file is removed, you **must** also remove
+        its entry from the corresponding `BUILD.gn` file.
+
+### Phase 3: Final Verification
+
+1.  **Final Codebase Search:**
+
+    *   Run your initial search queries one last time to confirm that no
+        instances of the feature's identifiers remain (outside of ignored
+        files).
+
+2.  **Full Build and Test Execution:**
+
+    *   Check if the output directory is for desktop or Android. Use `autoninja`
+        to confirm `chrome` (for desktop) or `chrome_public_apk` (for Android)
+        still builds. Fix any errors.
+    *   Run all relevant tests identified in Phase 1 to confirm that the
+        refactoring was successful and introduced no regressions.
+
+3.  **Final Formatting and Review:**
+
+    *   Run `git cl format` to format the code.
+    *   Generate a final `git diff` of all changes for a comprehensive review
+        before concluding the task.
+
+## **General Guidelines**
+
+*   **Comment Accuracy:** When changing code, review the surrounding comments.
+    If a comment describes behavior that is being changed or removed, it
+    **must** be updated or deleted. A comment for a constant should describe
+    what it *is*, not what it *does* (e.g., "The delay..." not "Returns the
+    delay...").
+*   **Whitespace Precision:** When removing a block of code, ensure you also
+    remove the surrounding newlines to avoid leaving empty lines. The goal is to
+    leave the code as if the removed block was never there.
+*   **Naming Consistency:** Adhere strictly to existing naming conventions. Do
+    not rename variables or constants for stylistic preference. The goal is
+    removal and simplification, not renaming.
+*   Do not modify any logic for unrelated features. You'll often see families of
+    related features that share a prefix, but you should only focus on
+    `{{args}}`.
+*   In addition to removing dead code, try to simplify any data structures or
+    method parameters. For example:
+    *   Suppose a method takes a `std::optional<T>` that's `std::nullopt` with
+        the feature disabled, and `T` with the feature enabled. If the
+        feature-disabled case is being removed, then the parameter can just
+        become a value of type `T`.
+*   Use `rg` and `fdfind` to search for files when possible.
+*   Do not touch `//tools/metrics/histograms/enums.xml`. The entries are still
+    needed for decoding data in future Chrome versions.
+*   Do not stage or commit any changes so that the user can review your work
+    first.
+
+## **Examples**
+
+### Removing unreachable code
+
+Suppose we have code like:
+
+```cpp
+BASE_FEATURE(kFeatureV2, base::FEATURE_ENABLED_BY_DEFAULT);
+
+void DoFeatureV1() {
+  // <code for feature v1>
+}
+
+void DoFeatureV2() {
+  // <code for feature v2>
+}
+
+void DoFeature() {
+  // TODO: Remove v1 path once v2 ships.
+  if (base::FeatureList::IsEnabled(kFeatureV2)) {
+    DoFeatureV2();
+  } else {
+    DoFeatureV1();
+  }
+}
+```
+
+... where `DoFeature` is the only caller of `DoFeatureV1`. Then, the final
+state should look like:
+
+```cpp
+void DoFeature() {
+  // <code for feature v2>
+}
+```
+
+It's better to inline `DoFeatureV2()` into `DoFeature()` because there's no
+longer any need to distinguish against `DoFeatureV1()`.
+
+### Simplifying a test
+
+A common pattern to test both feature enabled/disabled paths is to use a test
+fixture parameterized over a boolean that specifies the feature state. The
+fixture holds a `ScopedFeatureList` that enables/disables the feature for the
+duration of the test:
+
+```cpp
+class FeatureTest : public testing::TestWithParam<bool> {
+ public:
+  FeatureTest() {
+    if (IsFeatureEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(kFeature);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(kFeature);
+    }
+  }
+
+  bool IsFeatureEnabled() { return GetParam(); }
+
+  // <other stuff>
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+}
+
+INSTANTIATE_TEST_SUITE_P(, FeatureTest, ::testing::Bool());
+
+TEST_P(FeatureTest, TestCase) {
+  // <common assertions>
+  if (IsFeatureEnabled()) {
+    // <assert feature enabled behavior>
+  } else {
+    // <assert feature disabled behavior>
+  }
+}
+```
+
+For `kFeature` enabled by default, the test can be simplified to:
+
+```cpp
+class FeatureTest {
+ public:
+  FeatureTest() = default;
+
+  // <other stuff>
+}
+
+TEST_F(FeatureTest, TestCase) {
+  // <common assertions>
+  // <assert feature-enabled behavior>
+}
+```
+
+### Simplifying WebUI
+
+Suppose we have a WebUI controller like:
+
+```cpp
+BASE_FEATURE(kMyFeature, base::FEATURE_ENABLED_BY_DEFAULT);
+
+FooDialogUI::FooDialogUI(content::WebUI* web_ui) {
+  content::WebUIDataSource* html_source = /* ... */;
+
+  html_source->AddBoolean("isMyFeatureEnabled",
+                          base::FeatureList::IsEnabled(kMyFeature));
+}
+```
+
+To clean up this code, we should remove the `AddBoolean()` line, then search for
+TypeScript files that consume `isMyFeatureEnabled` and simplify those callsites
+as if we had inlined `true`.
+"""

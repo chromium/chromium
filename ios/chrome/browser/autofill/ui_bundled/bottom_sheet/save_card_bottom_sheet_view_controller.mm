@@ -12,15 +12,14 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-// Credit card icon corner radius.
-CGFloat const kCreditCardIconCornerRadius = 5;
 
 // Default spacing used for the views in the bottom sheet.
 CGFloat const kSpacing = 10;
@@ -66,8 +65,7 @@ CGFloat const kChromeLogoHeight = 22;
 - (void)viewDidLoad {
   self.image = [self aboveTitleImage];
   self.imageViewAccessibilityLabel = [self aboveTitleImageAccessibilityLabel];
-  self.customSpacingBeforeImageIfNoNavigationBar =
-      kSpacingBeforeAboveTitleImage;
+  self.customSpacingBeforeImage = kSpacingBeforeAboveTitleImage;
   self.customSpacingAfterImage = kSpacingAfterAboveTitleImage;
   self.customSpacing = kSpacing;
   self.actionHandler = self;
@@ -102,11 +100,13 @@ CGFloat const kChromeLogoHeight = 22;
 }
 
 - (void)setAcceptActionText:(NSString*)acceptActionText {
-  self.primaryActionString = acceptActionText;
+  self.configuration.primaryActionString = acceptActionText;
+  [self reloadConfiguration];
 }
 
 - (void)setCancelActionText:(NSString*)cancelActionText {
-  self.secondaryActionString = cancelActionText;
+  self.configuration.secondaryActionString = cancelActionText;
+  [self reloadConfiguration];
 }
 
 - (void)setLegalMessages:(NSArray<SaveCardMessageWithLinks*>*)legalMessages {
@@ -126,14 +126,12 @@ CGFloat const kChromeLogoHeight = 22;
 
 - (void)showLoadingStateWithAccessibilityLabel:(NSString*)accessibilityLabel {
   self.primaryActionButton.accessibilityLabel = accessibilityLabel;
-  self.isLoading = YES;
-  self.isConfirmed = NO;
+  [self setLoading:YES];
 }
 
 - (void)showConfirmationState {
-  BOOL wasLoadingShown = self.isLoading;
-  self.isLoading = NO;
-  self.isConfirmed = YES;
+  BOOL wasLoadingShown = self.configuration.isLoading;
+  [self setConfirmed:YES];
   self.primaryActionButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME);
 
@@ -166,9 +164,9 @@ CGFloat const kChromeLogoHeight = 22;
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  TableViewDetailIconCell* cell =
-      [tableView dequeueReusableCellWithIdentifier:kDetailIconCellIdentifier
-                                      forIndexPath:indexPath];
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView
+                                                 forIndexPath:indexPath];
   return [self layoutCell:cell
         forTableViewWidth:tableView.frame.size.width
               atIndexPath:indexPath];
@@ -197,8 +195,7 @@ CGFloat const kChromeLogoHeight = 22;
   UITableView* tableView = [super createTableView];
 
   tableView.dataSource = self;
-  [tableView registerClass:TableViewDetailIconCell.class
-      forCellReuseIdentifier:kDetailIconCellIdentifier];
+  [TableViewCellContentConfiguration registerCellForTableView:tableView];
 
   return tableView;
 }
@@ -208,7 +205,7 @@ CGFloat const kChromeLogoHeight = 22;
 }
 
 - (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index {
-  TableViewDetailIconCell* cell = [[TableViewDetailIconCell alloc] init];
+  UITableViewCell* cell = [[UITableViewCell alloc] init];
   CGFloat tableWidth = [self tableViewWidth];
   cell = [self layoutCell:cell
         forTableViewWidth:[self tableViewWidth]
@@ -230,20 +227,9 @@ CGFloat const kChromeLogoHeight = 22;
 
 #pragma mark - UITextViewDelegate
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  // A link in legal message was clicked.
-  [self.delegate didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
-  return NO;
-}
-#endif
-
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   // A link in legal message was clicked.
   __weak __typeof__(self) weakSelf = self;
   return [UIAction actionWithHandler:^(UIAction* action) {
@@ -287,24 +273,28 @@ CGFloat const kChromeLogoHeight = 22;
 
 // Configures the cell for the table view with information of the card to be
 // saved.
-- (TableViewDetailIconCell*)layoutCell:(TableViewDetailIconCell*)cell
-                     forTableViewWidth:(CGFloat)tableViewWidth
-                           atIndexPath:(NSIndexPath*)indexPath {
+- (UITableViewCell*)layoutCell:(UITableViewCell*)cell
+             forTableViewWidth:(CGFloat)tableViewWidth
+                   atIndexPath:(NSIndexPath*)indexPath {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = _cardNameAndLastFourDigits;
+  configuration.subtitle = _cardExpiryDate;
+  configuration.customAccessibilityLabel = _cardAccessibilityLabel;
+
+  ImageContentConfiguration* imageConfiguration =
+      [[ImageContentConfiguration alloc] init];
+  imageConfiguration.image = _cardIcon;
+
+  configuration.leadingConfiguration = imageConfiguration;
+
+  cell.contentConfiguration = configuration;
+
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   cell.userInteractionEnabled = NO;
   cell.accessibilityIdentifier = _cardNameAndLastFourDigits;
-  cell.customAccessibilityLabel = _cardAccessibilityLabel;
-  [cell.textLabel setText:_cardNameAndLastFourDigits];
-  [cell setDetailText:_cardExpiryDate];
-  [cell setIconImage:_cardIcon
-            tintColor:nil
-      backgroundColor:cell.backgroundColor
-         cornerRadius:kCreditCardIconCornerRadius];
-  [cell updateIconBackgroundWidthToFitContent:YES];
-  [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
-  cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
-                                                  atIndexPath:indexPath];
+
   return cell;
 }
 

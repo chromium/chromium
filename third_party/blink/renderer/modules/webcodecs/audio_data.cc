@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -16,7 +17,6 @@
 #include "media/base/sample_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
@@ -637,17 +637,17 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
   const int channel = copy_to_options->planeIndex();
 
   CHECK_LT(channel, data_as_f32_bus_->channels());
-  float* src_data = data_as_f32_bus_->channel(channel);
-  float* offset_src_data = UNSAFE_TODO(src_data + offset);
-  CHECK_LE(UNSAFE_TODO(offset_src_data + frame_count),
-           UNSAFE_TODO(src_data + data_as_f32_bus_->frames()));
+  const size_t num_frames =
+      base::checked_cast<size_t>(data_as_f32_bus_->frames());
+  base::span<float> src_data = data_as_f32_bus_->channel(channel);
+  base::span<float> offset_src_data = src_data.subspan(offset);
+  CHECK_LE(offset_src_data.subspan(frame_count).data(),
+           src_data.subspan(num_frames).data());
   switch (dest_format) {
     case media::kSampleFormatPlanarU8: {
-      uint8_t* dest_data = dest.data();
       for (uint32_t i = 0; i < frame_count; ++i) {
-        UNSAFE_TODO(dest_data[i] =
-                        media::UnsignedInt8SampleTypeTraits::FromFloat(
-                            offset_src_data[i]));
+        dest[i] =
+            media::UnsignedInt8SampleTypeTraits::FromFloat(offset_src_data[i]);
       }
       return;
     }
@@ -671,10 +671,10 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
     }
     case media::kSampleFormatPlanarF32: {
       int32_t* dest_data = reinterpret_cast<int32_t*>(dest.data());
-      CHECK_LE(UNSAFE_TODO(offset_src_data + frame_count),
-               UNSAFE_TODO(src_data + data_as_f32_bus_->frames()));
-      UNSAFE_TODO(
-          memcpy(dest_data, offset_src_data, sizeof(float) * frame_count));
+      CHECK_LE(offset_src_data.subspan(frame_count).data(),
+               src_data.subspan(num_frames).data());
+      UNSAFE_TODO(memcpy(dest_data, offset_src_data.data(),
+                         sizeof(float) * frame_count));
       return;
     }
     default:

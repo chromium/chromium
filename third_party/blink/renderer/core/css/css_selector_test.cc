@@ -636,4 +636,16 @@ TEST(CSSSelector, RenestScope) {
   EXPECT_EQ(list, list->Renest(b));
 }
 
+#if DCHECK_IS_ON()
+
+TEST(CSSSelector, ShowWithParentPseudo) {
+  test::TaskEnvironment task_environment;
+  CSSSelectorList* list = ParseSelectorList("& .x");
+  ASSERT_TRUE(list);
+  ASSERT_TRUE(list->First());
+  list->First()->Show();  // Don't crash.
+}
+
+#endif  // DCHECK_IS_ON()
+
 }  // namespace blink

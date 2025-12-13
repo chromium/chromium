@@ -10,13 +10,6 @@
 
 namespace blink {
 
-template <typename T>
-struct CrossThreadCopier<webrtc::scoped_refptr<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = webrtc::scoped_refptr<T>;
-  static Type Copy(Type pointer) { return pointer; }
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_SCOPED_REFPTR_CROSS_THREAD_COPIER_H_

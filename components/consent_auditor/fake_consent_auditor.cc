@@ -47,24 +47,6 @@ void FakeConsentAuditor::RecordSyncConsent(
                     ConvertConsentStatus(consent.status()));
 }
 
-void FakeConsentAuditor::RecordAssistantActivityControlConsent(
-    const GaiaId& gaia_id,
-    const sync_pb::UserConsentTypes::AssistantActivityControlConsent& consent) {
-  gaia_id_ = gaia_id;
-  sync_pb::UserConsentSpecifics consent_specifics;
-  *consent_specifics.mutable_assistant_activity_control_consent() = consent;
-  recorded_consents_.push_back(std::move(consent_specifics));
-}
-
-void FakeConsentAuditor::RecordAccountPasswordsConsent(
-    const GaiaId& gaia_id,
-    const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent) {
-  gaia_id_ = gaia_id;
-  sync_pb::UserConsentSpecifics consent_specifics;
-  *consent_specifics.mutable_account_passwords_consent() = consent;
-  recorded_consents_.push_back(std::move(consent_specifics));
-}
-
 void FakeConsentAuditor::RecordGaiaConsent(
     const GaiaId& gaia_id,
     consent_auditor::Feature feature,

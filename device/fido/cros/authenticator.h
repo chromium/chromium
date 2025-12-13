@@ -19,7 +19,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 

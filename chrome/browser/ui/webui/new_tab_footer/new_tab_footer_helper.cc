@@ -13,6 +13,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "extensions/common/constants.h"
 
@@ -30,7 +31,7 @@ bool IsExtensionNtp(const GURL& url, Profile* profile) {
     return false;
   }
 
-  return extension_managing_ntp->id() == url.host();
+  return extension_managing_ntp->id() == url.GetHost();
 }
 
 bool IsNtp(const GURL& url,

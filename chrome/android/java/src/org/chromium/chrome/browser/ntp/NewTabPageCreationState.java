@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 
 /** UserData that tracks the creation state of a new tab page. */
 @NullMarked
@@ -64,7 +65,8 @@ public class NewTabPageCreationState implements UserData {
     private void maybeFocusOmnibox() {
         if (mIsNewlyCreated && mNtpLoaded) {
             mIsNewlyCreated = false;
-            assumeNonNull(mNewTabPageManager).focusSearchBox(false, null);
+            assumeNonNull(mNewTabPageManager)
+                    .focusSearchBox(false, AutocompleteRequestType.SEARCH, null);
         }
     }
 

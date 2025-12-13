@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_buffer_provider.h"
 
@@ -79,10 +78,7 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
   std::unique_ptr<RasterBuffer> AcquireBufferForRaster(
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
-      uint64_t previous_content_id,
-      bool depends_on_at_raster_decodes,
-      bool depends_on_hardware_accelerated_jpeg_candidates,
-      bool depends_on_hardware_accelerated_webp_candidates) override;
+      uint64_t previous_content_id) override;
   bool CanPartialRasterIntoProvidedResource() const override;
   bool IsResourceReadyToDraw(
       const ResourcePool::InUsePoolResource& resource) override;

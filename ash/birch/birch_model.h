@@ -20,7 +20,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;
@@ -36,7 +36,7 @@ class CoralItemRemover;
 // different providers. Both data and prefs are associated with the primary user
 // account.
 class ASH_EXPORT BirchModel : public SessionObserver,
-                              public SimpleGeolocationProvider::Observer,
+                              public SystemLocationProvider::Observer,
                               public BirchCoralProvider::Observer {
  public:
   // The callback for lost media data changes. The argument is the updated lost
@@ -149,7 +149,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
-  // SimpleGeolocationProvider::Observer:
+  // SystemLocationProvider::Observer:
   void OnGeolocationPermissionChanged(bool enabled) override;
 
   // BirchCoralProvider::Observer:
@@ -211,9 +211,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   };
 
   template <typename T>
-  void SetItems(DataTypeInfo<T>& data_info,
-                const std::vector<T>& items,
-                bool record_latency);
+  void SetItems(DataTypeInfo<T>& data_info, const std::vector<T>& items);
 
   // Called when a pending data fetch request timeout expires.
   void HandleRequestTimeout(size_t request_id);
@@ -248,9 +246,6 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void OnReleaseNotesPrefChanged();
   void OnCoralPrefChanged();
 
-  // Records metrics on which providers are hidden based on prefs.
-  void RecordProviderHiddenHistograms();
-
   // Whether `item_remover_` is created and initialized.
   bool IsItemRemoverInitialized();
 
@@ -267,9 +262,6 @@ class ASH_EXPORT BirchModel : public SessionObserver,
 
   // Called when the lost media data provider changed.
   void OnLostMediaDataProviderChanged();
-
-  // Whether this is a post-login fetch (occurring right after login).
-  bool is_post_login_fetch_ = false;
 
   size_t next_request_id_ = 0u;
   // Pending data fetched requests mapped by their request IDs. IDs are

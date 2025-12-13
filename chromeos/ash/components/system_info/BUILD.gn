@@ -18,9 +18,9 @@ component("system_info") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO_IMPL" ]
 
   deps = [
-    "//ash/strings:strings",
+    "//ash/strings",
     "//base",
-    "//chromeos/ash/services/cros_healthd/public/mojom:mojom",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus/power:power_manager_proto",
     "//ui/base",
   ]

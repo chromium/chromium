@@ -9,8 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/prerender_handle.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -20,6 +20,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
+class BookmarkBarPreloadPipelineManager;
 
 // Base class for buttons used on the bookmark bar.
 class BookmarkButtonBase : public views::LabelButton {
@@ -77,8 +78,11 @@ class BookmarkButton : public BookmarkButtonBase, public views::WidgetObserver {
                              const gfx::Rect& new_bounds) override;
 
  private:
+  void StartPreloading(const GURL& url, content::PreloadingType preloadingType);
   void StartPreconnecting(GURL url);
-  void StartPrerendering(GURL url);
+  void StopPreloadingTimers();
+
+  BookmarkBarPreloadPipelineManager* GetBookmarkBarPreloadPipelineManager();
 
   void UpdateMaxTooltipWidth();
 
@@ -88,8 +92,8 @@ class BookmarkButton : public BookmarkButtonBase, public views::WidgetObserver {
   PressedCallback callback_;
   const raw_ref<const GURL> url_;
   const raw_ptr<Browser> browser_;
-  base::RetainingOneShotTimer preloading_timer_;
-  base::WeakPtr<BookmarkBarPreloadPipelineManager> bookmarkbar_preload_manager_;
+  base::RetainingOneShotTimer preconnect_timer_;
+  base::RetainingOneShotTimer prefetch_timer_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

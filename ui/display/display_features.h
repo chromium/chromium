@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace display {
 namespace features {
@@ -27,9 +28,8 @@ COMPONENT_EXPORT(DISPLAY_FEATURES)
 BASE_DECLARE_FEATURE(kCtmColorManagement);
 #endif
 
-COMPONENT_EXPORT(DISPLAY_FEATURES) BASE_DECLARE_FEATURE(kListAllDisplayModes);
-
-COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsListAllDisplayModesEnabled();
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+BASE_DECLARE_FEATURE(kCADisplayLinkInBrowser);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES)
 BASE_DECLARE_FEATURE(kEnableEdidBasedDisplayIds);
@@ -81,6 +81,16 @@ BASE_DECLARE_FEATURE(kScreenWinDisplayLookupByHMONITOR);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES)
 bool IsScreenWinDisplayLookupByHMONITOREnabled();
+
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+BASE_DECLARE_FEATURE(kMaxExternalDisplaySupportedNotification);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+extern const base::FeatureParam<int>
+    kMaxExternalDisplaySupportedNotificationLimit;
+
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+bool IsMaxExternalDisplaySupportedNotificationEnabled();
 
 }  // namespace features
 }  // namespace display

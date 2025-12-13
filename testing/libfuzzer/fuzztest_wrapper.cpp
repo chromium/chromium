@@ -17,7 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
-#include "testing/libfuzzer/fuzztest_wrapper_buildflags.h"
+#include "testing/libfuzzer/buildflags.h"
 
 extern const char* kFuzzerBinary;
 extern const char* kFuzzerArgs;

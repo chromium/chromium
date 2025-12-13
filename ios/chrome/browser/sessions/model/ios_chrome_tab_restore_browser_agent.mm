@@ -36,7 +36,7 @@ void IOSChromeTabRestoreBrowserAgent::RecordHistoryForWebState(
   // presented the NTP.
   if (web_state->GetNavigationItemCount() <= 1) {
     const GURL& url = web_state->GetLastCommittedURL();
-    if (!url.is_valid() || url.host_piece() == kChromeUINewTabHost) {
+    if (!url.is_valid() || url.host() == kChromeUINewTabHost) {
       return;
     }
   }

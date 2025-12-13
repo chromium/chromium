@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -572,8 +573,15 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
 
 // Test that if the non-terminal abandonment will record the TimingInformation
 // metrics, and the `OnComplete` will record them again.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TabHiddenBeforeCommitAndFinishNavigation \
+  DISABLED_TabHiddenBeforeCommitAndFinishNavigation
+#else
+#define MAYBE_TabHiddenBeforeCommitAndFinishNavigation \
+  TabHiddenBeforeCommitAndFinishNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
-                       TabHiddenBeforeCommitAndFinishNavigation) {
+                       MAYBE_TabHiddenBeforeCommitAndFinishNavigation) {
   // Make sure the WebContents is currently shown, before hiding it later.
   web_contents()->WasShown();
 
@@ -996,9 +1004,9 @@ class FromGwsAbandonedPageLoadMetricsObserverWithCategoryBrowserTest
 
   GURL url_non_srp_with_category(const std::string& category) {
     GURL target = url_non_srp_2();
-    auto new_path = base::StrCat({target.path(), "?category=", category});
+    auto new_path = base::StrCat({target.GetPath(), "?category=", category});
 
-    GURL url(current_test_server()->GetURL(target.host(), new_path));
+    GURL url(current_test_server()->GetURL(target.GetHost(), new_path));
     EXPECT_FALSE(page_load_metrics::IsGoogleSearchResultUrl(url));
     return url;
   }

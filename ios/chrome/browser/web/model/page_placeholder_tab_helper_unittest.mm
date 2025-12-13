@@ -11,6 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -43,6 +44,7 @@ class PagePlaceholderTabHelperTest : public PlatformTest {
     // PagePlaceholderTabHelper uses SnapshotTabHelper, so ensure it has been
     // created.
     SnapshotTabHelper::CreateForWebState(web_state_.get());
+    SnapshotSourceTabHelper::CreateForWebState(web_state_.get());
     PagePlaceholderTabHelper::CreateForWebState(web_state_.get());
   }
 

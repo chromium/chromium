@@ -42,6 +42,7 @@ if (enable_java_templates) {
 
     # Required to prevent circular dependency from //tools/android/errorprone_plugin.
     enable_errorprone = false
+
     srcjar_deps = [
       ":native_libraries_gen",
       ":placeholder_build_config_srcjar",
@@ -60,6 +61,7 @@ if (enable_java_templates) {
       "java/src/org/chromium/build/annotations/Initializer.java",
       "java/src/org/chromium/build/annotations/MockedInTests.java",
       "java/src/org/chromium/build/annotations/MonotonicNonNull.java",
+      "java/src/org/chromium/build/annotations/NonNull.java",
       "java/src/org/chromium/build/annotations/NullMarked.java",
       "java/src/org/chromium/build/annotations/NullUnmarked.java",
       "java/src/org/chromium/build/annotations/Nullable.java",

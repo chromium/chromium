@@ -62,13 +62,6 @@ class VIZ_COMMON_EXPORT RendererSettings {
 
   OcclusionCullerSettings occlusion_culler_settings;
 
-#if BUILDFLAG(IS_ANDROID)
-  // The screen size at renderer creation time.
-  gfx::Size initial_screen_size = gfx::Size(0, 0);
-
-  gfx::ColorSpace color_space;
-#endif
-
 #if BUILDFLAG(IS_OZONE)
   // A list of overlay strategies that should be tried. If the list is empty
   // then overlays aren't supported.

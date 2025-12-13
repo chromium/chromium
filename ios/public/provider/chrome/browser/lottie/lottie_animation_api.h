@@ -24,6 +24,10 @@
 // Called to set a color for a key path.
 - (void)setColorValue:(UIColor*)color forKeypath:(NSString*)keypath;
 
+// Called to set a color gradient value for a key path.
+- (void)setGradientValue:(NSArray<UIColor*>*)colors
+              forKeypath:(NSString*)keypath;
+
 // Called to set a dictionary text provider.
 - (void)setDictionaryTextProvider:
     (NSDictionary<NSString*, NSString*>*)dictionaryTextProvider;

@@ -17,7 +17,6 @@ use displaydoc::Display;
 /// guaranteed to match with this version's `*_unstable` providers. Use with caution.
 /// </div>
 #[derive(Display, Debug, PartialEq, Eq, Copy, Clone)]
-#[allow(clippy::enum_variant_names)]
 #[non_exhaustive]
 pub enum ParseError {
     #[displaydoc("expected 'AND' condition")]

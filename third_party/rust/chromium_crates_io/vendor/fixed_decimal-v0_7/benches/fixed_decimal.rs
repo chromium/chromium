@@ -36,7 +36,7 @@ fn overview_bench(c: &mut Criterion) {
     let nums = triangular_nums(1e4);
     let values: Vec<_> = nums.iter().map(|n| n.to_string()).collect();
     c.bench_function("fixed_decimal/overview", |b| {
-        #[allow(clippy::suspicious_map)]
+        #[expect(clippy::suspicious_map)]
         b.iter(|| {
             // This benchmark focuses on short numbers and performs:
             // * Construction of FixedDecimals from isize
@@ -72,7 +72,6 @@ fn smaller_isize_benches(c: &mut Criterion) {
     // Instead, consider all inputs together in the same benchmark.
     c.bench_function("isize/smaller", |b| {
         b.iter(|| {
-            #[allow(clippy::suspicious_map)]
             nums.iter()
                 .map(|v| black_box(*v))
                 .map(Decimal::from)
@@ -89,7 +88,6 @@ fn larger_isize_benches(c: &mut Criterion) {
     // Instead, consider all inputs together in the same benchmark.
     c.bench_function("isize/larger", |b| {
         b.iter(|| {
-            #[allow(clippy::suspicious_map)]
             nums.iter()
                 .map(|v| black_box(*v))
                 .map(Decimal::from)

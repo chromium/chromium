@@ -7,7 +7,6 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("annotations") {
   deps = [
-    ":annotations_ts",
     ":text_ts",
     "//base",
     "//components/shared_highlighting/ios",
@@ -31,21 +30,6 @@ source_set("annotations") {
 
 compile_ts("compile_annotations_ts") {
   sources = [ "resources/annotations_constants.ts" ]
-}
-
-optimize_ts("annotations_ts") {
-  visibility = [
-    ":annotations",
-    ":inttests",
-  ]
-
-  sources = [ "resources/annotations.ts" ]
-
-  deps = [
-    ":compile_annotations_ts",
-    "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
-  ]
 }
 
 optimize_ts("annotations_test_ts") {
@@ -125,7 +109,6 @@ source_set("inttests") {
   deps = [
     ":annotations",
     ":annotations_test_ts",
-    ":annotations_ts",
     ":text_tests_ts",
     "//base",
     "//base/test:test_support",

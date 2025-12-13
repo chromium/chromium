@@ -17,7 +17,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
-#include "ui/native_theme/native_theme_utils.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace {
 
@@ -42,7 +42,7 @@ using testing::ElementsAre;
 
 TEST_F(ThreatDOMDetailsTest, Everything) {
   blink::WebRuntimeFeatures::EnableOverlayScrollbars(
-      ui::IsOverlayScrollbarEnabled());
+      ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar());
   // Configure a field trial to collect divs with attribute foo.
   std::unique_ptr<base::test::ScopedFeatureList> feature_list =
       SetupTagAndAttributeFeature();
@@ -286,7 +286,7 @@ TEST_F(ThreatDOMDetailsTest, DefaultTagAndAttributesList) {
   // Verify that the default tag and attribute list is initialized and used
   // when the Finch feature (ThreatDomDetailsTagAttributes) is disabled.
   blink::WebRuntimeFeatures::EnableOverlayScrollbars(
-      ui::IsOverlayScrollbarEnabled());
+      ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar());
   std::unique_ptr<base::test::ScopedFeatureList> feature_list(
       new base::test::ScopedFeatureList);
   feature_list->InitAndDisableFeature(

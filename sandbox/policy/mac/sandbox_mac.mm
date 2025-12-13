@@ -9,12 +9,10 @@
 
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
-#include "sandbox/policy/features.h"
 #include "sandbox/policy/mac/audio.sb.h"
 #include "sandbox/policy/mac/cdm.sb.h"
 #include "sandbox/policy/mac/common.sb.h"
@@ -22,11 +20,12 @@
 #include "sandbox/policy/mac/mirroring.sb.h"
 #include "sandbox/policy/mac/network.sb.h"
 #include "sandbox/policy/mac/on_device_model_execution.sb.h"
+#include "sandbox/policy/mac/on_device_translation.sb.h"
 #include "sandbox/policy/mac/print_backend.sb.h"
 #include "sandbox/policy/mac/print_compositor.sb.h"
+#include "sandbox/policy/mac/proxy_resolver.sb.h"
 #include "sandbox/policy/mac/renderer.sb.h"
 #include "sandbox/policy/mac/screen_ai.sb.h"
-#include "sandbox/policy/mac/on_device_translation.sb.h"
 #include "sandbox/policy/mac/speech_recognition.sb.h"
 #include "sandbox/policy/mac/utility.sb.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -74,6 +73,8 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
         return kSeatbeltPolicyString_on_device_model_execution;
       case sandbox::mojom::Sandbox::kOnDeviceTranslation:
         return kSeatbeltPolicyString_on_device_translation;
+      case sandbox::mojom::Sandbox::kProxyResolver:
+        return kSeatbeltPolicyString_proxy_resolver;
       // `kService` and `kUtility` are the same on OS_MAC, so fallthrough.
       case sandbox::mojom::Sandbox::kService:
       case sandbox::mojom::Sandbox::kServiceWithJit:
@@ -91,11 +92,6 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
 }
 
 bool CanCacheSandboxPolicy(sandbox::mojom::Sandbox sandbox_type) {
-  static const bool feature_enabled =
-      base::FeatureList::IsEnabled(features::kCacheMacSandboxProfiles);
-  if (!feature_enabled)
-    return false;
-
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kRenderer:
     case sandbox::mojom::Sandbox::kService:

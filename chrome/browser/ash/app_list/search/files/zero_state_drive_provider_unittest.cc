@@ -25,6 +25,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -130,7 +131,8 @@ class ZeroStateDriveProviderTest : public testing::Test {
     file_suggest_service_ = static_cast<TestFileSuggestKeyedService*>(
         ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
             profile_));
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
 
     auto provider = std::make_unique<ZeroStateDriveProvider>(
         profile_, &search_controller_,

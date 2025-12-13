@@ -137,6 +137,7 @@ void BrowserManagementService::UpdateManagementIconForProfile(
   enterprise_util::GetManagementIcon(
       GURL(profile->GetPrefs()->GetString(prefs::kEnterpriseLogoUrlForProfile)),
       profile,
+      enterprise_util::EnterpriseLogoUrlScope::kProfile,
       base::BindOnce(&BrowserManagementService::SetManagementIconForProfile,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -159,6 +160,7 @@ void BrowserManagementService::UpdateManagementIconForBrowser(
   }
   enterprise_util::GetManagementIcon(
       GURL(logo_url), profile,
+      enterprise_util::EnterpriseLogoUrlScope::kBrowser,
       base::BindOnce(&BrowserManagementService::SetManagementIconForBrowser,
                      weak_ptr_factory_.GetWeakPtr()));
 }

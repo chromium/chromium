@@ -1,13 +1,19 @@
-function BufferLoader(context, urlList, callback) {
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// BufferLoader – utility for fetching & decoding multiple audio files.
+function BufferLoader(context, urlList, callback, reject) {
   this.context = context;
   this.urlList = urlList;
   this.onload = callback;
+  this.onerror = reject;
   this.bufferList = new Array();
   this.loadCount = 0;
 }
 
-BufferLoader.prototype.loadBuffer =
-    function(url, index) {
+// BufferLoader – utility for fetching & decoding multiple audio files.
+BufferLoader.prototype.loadBuffer = function(url, index) {
   // Load buffer asynchronously
   let request = new XMLHttpRequest();
   request.open('GET', url, true);
@@ -15,36 +21,42 @@ BufferLoader.prototype.loadBuffer =
 
   let loader = this;
 
-  request.onload =
-      function() {
+  request.onload = function() {
     loader.context.decodeAudioData(
         request.response,
         function(decodedAudio) {
           try {
             loader.bufferList[index] = decodedAudio;
-            if (++loader.loadCount == loader.urlList.length)
+            if (++loader.loadCount === loader.urlList.length)
               loader.onload(loader.bufferList);
           } catch (e) {
-            console.log(e);
-            alert(
+            loader.onerror(
                 'BufferLoader: unable to load buffer ' + index +
-                ', url: ' + loader.urlList[index]);
+                ', url: ' + loader.urlList[index] + ' error: ' + e);
           }
         },
         function() {
-          alert('error decoding file data: ' + url);
+          loader.onerror('error decoding file data: ' + url);
         });
-  }
+  };
 
-      request.onerror =
-          function() {
-    alert('BufferLoader: XHR error');
-  }
+  request.onerror = function() {
+    loader.onerror('BufferLoader: XHR error');
+  };
 
-          request.send();
-}
+  request.send();
+};
 
-    BufferLoader.prototype.load = function() {
+BufferLoader.prototype.load = function() {
   for (let i = 0; i < this.urlList.length; ++i)
     this.loadBuffer(this.urlList[i], i);
+};
+
+// Returns a promise that resolves with an array of AudioBuffers once all
+// resources have loaded.
+function loadBuffers(context, urls) {
+  return new Promise((resolve, reject) => {
+    const loader = new BufferLoader(context, urls, resolve, reject);
+    loader.load();
+  });
 }

@@ -17,12 +17,14 @@
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "dbus/object_path.h"
+#include "network_connection_observer.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -68,6 +70,12 @@ void ConnectToNetworkErrorCallback(const std::string& error_name) {
 void SetPropertiesErrorCallback(const std::string& error_name) {
   NET_LOG(ERROR) << "AutoConnectHandler SetProperties failed."
                  << " Error name: " << error_name;
+}
+
+// Returns true if the `shill_object` (could be e.g. NetworkState or
+// DeviceState) has type "wifi".
+bool HasTypeWifi(const ManagedState* shill_object) {
+  return NetworkTypePattern::WiFi().MatchesType(shill_object->type());
 }
 
 std::string AutoConnectReasonsToString(int auto_connect_reasons) {
@@ -137,6 +145,7 @@ void AutoConnectHandler::Init(
   network_state_handler_ = network_state_handler;
   if (network_state_handler_) {
     network_state_handler_observer_.Observe(network_state_handler_.get());
+    CheckWifiEnabled();
   }
 
   managed_configuration_handler_ = managed_network_configuration_handler;
@@ -155,20 +164,33 @@ void AutoConnectHandler::LoggedInStateChanged() {
   // that we just connected.
   DisconnectWiFiIfPolicyRequires();
   DisconnectCellularIfPolicyRequires();
+
   RequestBestConnection(AutoConnectReason::AUTO_CONNECT_REASON_LOGGED_IN);
 }
 
-void AutoConnectHandler::ConnectToNetworkRequested(
+ConnectToNetworkRequestVerdict AutoConnectHandler::ConnectToNetworkRequested(
     const std::string& /*service_path*/) {
+  // If the ONC policy AllowOnlyPolicyWiFiToConnectIfAvailable should be
+  // enforced, block manual connection requests until at least one full scan has
+  // been done. They would interrupt scanning, and an initial scan is required
+  // to properly enforce the policy.
+  if (ShouldEnforceIsAllowOnlyPolicyWiFiToConnectIfAvailable() &&
+      !initial_scan_done_) {
+    return ConnectToNetworkRequestVerdict::kVetoWaitingForScan;
+  }
+
   // Stop any pending request to connect to the best newtork.
   request_best_connection_pending_ = false;
+
+  return ConnectToNetworkRequestVerdict::kProceed;
 }
 
 void AutoConnectHandler::PoliciesApplied(const std::string& userhash) {
-  if (userhash.empty())
+  if (userhash.empty()) {
     device_policy_applied_ = true;
-  else
+  } else {
     user_policy_applied_ = true;
+  }
 
   DisconnectWiFiIfPolicyRequires();
   DisconnectCellularIfPolicyRequires();
@@ -184,15 +206,18 @@ void AutoConnectHandler::PoliciesApplied(const std::string& userhash) {
 }
 
 void AutoConnectHandler::ScanCompleted(const DeviceState* device) {
-  if (device->type() != shill::kTypeWifi)
+  if (!HasTypeWifi(device)) {
     return;
+  }
 
-  // Enforce AllowOnlyPolicyWiFiToConnectIfAvailable policy if enabled.
+  initial_scan_done_ = true;
+
+  // Enforce AllowOnlyPolicyWiFiToConnectIfAvailable policy if enabled and a
+  // managed network is visible.
   const NetworkState* managed_network =
       network_state_handler_->GetAvailableManagedWifiNetwork();
-  if (device_policy_applied_ && user_policy_applied_ && managed_network &&
-      managed_configuration_handler_
-          ->AllowOnlyPolicyWiFiToConnectIfAvailable()) {
+  if (ShouldEnforceIsAllowOnlyPolicyWiFiToConnectIfAvailable() &&
+      managed_network) {
     const NetworkState* connected_network =
         network_state_handler_->ConnectedNetworkByType(
             NetworkTypePattern::WiFi());
@@ -204,6 +229,18 @@ void AutoConnectHandler::ScanCompleted(const DeviceState* device) {
       return;
     }
   }
+}
+
+void AutoConnectHandler::DevicePropertiesUpdated(const DeviceState* device) {
+  if (!HasTypeWifi(device)) {
+    return;
+  }
+
+  CheckWifiEnabled();
+}
+
+void AutoConnectHandler::DeviceListChanged() {
+  CheckWifiEnabled();
 }
 
 void AutoConnectHandler::ResolveRequestCompleted(
@@ -279,6 +316,10 @@ void AutoConnectHandler::CheckBestConnection() {
     //  - client certificate patterns resolved
     if (!user_policy_applied_ || !client_certs_resolved_)
       return;
+
+    // The scan started here will be seen as an "initial" scan after user
+    // login.
+    initial_scan_done_ = false;
   }
 
   request_best_connection_pending_ = false;
@@ -390,7 +431,7 @@ void AutoConnectHandler::DisconnectAndRemoveConfigOrDisableAutoConnect(
           !base::Contains(managed_configuration_handler_->GetBlockedHexSSIDs(),
                           network->GetHexSsid());
       bool shouldRemoveWifiConfig =
-          (network->type() == shill::kTypeWifi && network->IsInProfile()) &&
+          (HasTypeWifi(network) && network->IsInProfile()) &&
           !network_config_allowed;
 
       if (shouldRemoveWifiConfig) {
@@ -461,6 +502,34 @@ void AutoConnectHandler::CallShillScanAndConnectToBestServices() {
       base::BindOnce(&network_handler::ShillErrorCallbackFunction,
                      "ConnectToBestServices Failed", "",
                      network_handler::ErrorCallback()));
+}
+
+bool AutoConnectHandler::
+    ShouldEnforceIsAllowOnlyPolicyWiFiToConnectIfAvailable() {
+  // The policy should only be enforced in a user session.
+  // It should only be enforced after all policy-provided NetworkConfigurations
+  // have been configured in shill, for both device and user policy.
+  //
+  // That is why this checks `device_policy_applied_` even though it may seem
+  // redundant with checking the policy value (which is a device policy, but
+  // could be already true before all device NetworkConfigurations have been
+  // written to shill, as that's an async process).
+  //
+  // That is also why `user_policy_applied_` is checked instead of just user
+  // session state.
+  return device_policy_applied_ && user_policy_applied_ &&
+         managed_configuration_handler_
+             ->AllowOnlyPolicyWiFiToConnectIfAvailable();
+}
+
+void AutoConnectHandler::CheckWifiEnabled() {
+  const bool enabled =
+      network_state_handler_->IsTechnologyEnabled(NetworkTypePattern::WiFi());
+  if (wifi_enabled_ != enabled) {
+    initial_scan_done_ = false;
+  }
+
+  wifi_enabled_ = enabled;
 }
 
 }  // namespace ash

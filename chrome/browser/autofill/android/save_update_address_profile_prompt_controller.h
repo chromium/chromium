@@ -13,8 +13,10 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_view.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "content/public/browser/web_contents.h"
 
@@ -37,7 +39,7 @@ class SaveUpdateAddressProfilePromptController {
       autofill::PersonalDataManager* personal_data,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      SaveUpdateAddressProfilePromptMode prompt_mode,
       AutofillClient::AddressProfileSavePromptCallback decision_callback,
       base::OnceCallback<void()> dismissal_callback);
   SaveUpdateAddressProfilePromptController(
@@ -48,27 +50,24 @@ class SaveUpdateAddressProfilePromptController {
 
   void DisplayPrompt();
 
-  std::u16string GetTitle();
-  std::u16string GetRecordTypeNotice(signin::IdentityManager* profile);
-  std::u16string GetPositiveButtonText();
-  std::u16string GetNegativeButtonText();
+  std::u16string GetTitle() const;
+  std::u16string GetRecordTypeNotice(signin::IdentityManager* profile) const;
+  std::u16string GetPositiveButtonText() const;
+  std::u16string GetNegativeButtonText() const;
   // For save prompt:
-  std::u16string GetAddress();
-  std::u16string GetEmail();
-  std::u16string GetPhoneNumber();
+  std::u16string GetAddress() const;
+  std::u16string GetEmail() const;
+  std::u16string GetPhoneNumber() const;
   // For update prompt:
-  std::u16string GetSubtitle();
-  // Returns two strings listing formatted profile data that will change when
-  // the `original_profile_` is updated to `profile_`. The old values, which
-  // will be replaced, are the first value, and the new values, which will be
-  // saved, are the second value.
-  std::pair<std::u16string, std::u16string> GetDiffFromOldToNewProfile();
+  std::u16string GetSubtitle() const;
+  std::u16string GetOldDiff() const;
+  std::u16string GetNewDiff() const;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
   void OnUserAccepted(JNIEnv* env);
   void OnUserDeclined(JNIEnv* env);
   void OnUserEdited(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& jprofile);
+                    const base::android::JavaRef<jobject>& jprofile);
   // Called whenever the prompt is dismissed (e.g. because the user already
   // accepted/declined/edited the profile (after OnUserAccepted/Declined/Edited
   // is called) or it was closed without interaction).
@@ -77,6 +76,14 @@ class SaveUpdateAddressProfilePromptController {
  private:
   void RunSaveAddressProfileCallback(
       AutofillClient::AddressPromptUserDecision decision);
+
+  bool IsMigrationToAccount() const;
+
+  // Returns two strings listing formatted profile data that will change when
+  // the `original_profile_` is updated to `profile_`. The old values, which
+  // will be replaced, are the first value, and the new values, which will be
+  // saved, are the second value.
+  std::pair<std::u16string, std::u16string> GetDiffFromOldToNewProfile() const;
 
   // If the user explicitly accepted/dismissed/edited the profile.
   bool had_user_interaction_ = false;
@@ -91,15 +98,21 @@ class SaveUpdateAddressProfilePromptController {
   AutofillProfile profile_;
   // The profile (if exists) which will be updated if the user confirms.
   std::optional<AutofillProfile> original_profile_;
-  // The option which specifies whether the autofill profile is going to be
-  // migrated to user's Google Account.
-  bool is_migration_to_account_;
+  // The mode the prompt is displayed in.
+  SaveUpdateAddressProfilePromptMode prompt_mode_;
   // The callback to run once the user makes a decision.
   AutofillClient::AddressProfileSavePromptCallback decision_callback_;
   // The callback guaranteed to be run once the prompt is dismissed.
   base::OnceCallback<void()> dismissal_callback_;
   // The corresponding Java SaveUpdateAddressProfilePromptController.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  // This vector contains differences visible for the UI if the prompt is
+  // triggered for an existing profile update.
+  std::vector<ProfileValueDifference> differences_for_ui_;
+  // Contains the cached result of `GetDiffFromOldToNewProfile()`. It assigned
+  // only for the update prompts.
+  std::u16string old_diff_;
+  std::u16string new_diff_;
 };
 
 }  // namespace autofill

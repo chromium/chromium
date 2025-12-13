@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/viz/test/gpu_host_impl_test_api.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "components/viz/test/stub_gpu_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
@@ -35,7 +36,7 @@ const uint64_t kPeakMemory = kPeakMemoryMB * 1048576u;
 
 // Test implementation of viz::mojom::GpuService which only implements the peak
 // memory monitoring aspects.
-class TestGpuService : public viz::mojom::GpuService {
+class TestGpuService : public viz::StubGpuService {
  public:
   explicit TestGpuService(base::RepeatingClosure quit_closure)
       : quit_closure_(quit_closure) {}
@@ -58,95 +59,6 @@ class TestGpuService : public viz::mojom::GpuService {
   }
 
  private:
-  // mojom::GpuService:
-  void EstablishGpuChannel(int32_t client_id,
-                           uint64_t client_tracing_id,
-                           bool is_gpu_host,
-                           EstablishGpuChannelCallback callback) override {}
-  void SetChannelClientPid(int32_t client_id,
-                           base::ProcessId client_pid) override {}
-  void SetChannelDiskCacheHandle(
-      int32_t client_id,
-      const gpu::GpuDiskCacheHandle& handle) override {}
-  void OnDiskCacheHandleDestoyed(
-      const gpu::GpuDiskCacheHandle& handle) override {}
-  void CloseChannel(int32_t client_id) override {}
-#if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  void CreateArcVideoDecodeAccelerator(
-      mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver)
-      override {}
-  void CreateArcVideoDecoder(
-      mojo::PendingReceiver<arc::mojom::VideoDecoder> vd_receiver) override {}
-  void CreateArcVideoEncodeAccelerator(
-      mojo::PendingReceiver<arc::mojom::VideoEncodeAccelerator> vea_receiver)
-      override {}
-  void CreateArcVideoProtectedBufferAllocator(
-      mojo::PendingReceiver<arc::mojom::VideoProtectedBufferAllocator>
-          pba_receiver) override {}
-  void CreateArcProtectedBufferManager(
-      mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver)
-      override {}
-#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  void CreateJpegDecodeAccelerator(
-      mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
-          jda_receiver) override {}
-  void CreateJpegEncodeAccelerator(
-      mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
-          jea_receiver) override {}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_WIN)
-  void RegisterDCOMPSurfaceHandle(
-      mojo::PlatformHandle surface_handle,
-      RegisterDCOMPSurfaceHandleCallback callback) override {}
-  void UnregisterDCOMPSurfaceHandle(
-      const base::UnguessableToken& token) override {}
-#endif
-
-  void CreateVideoEncodeAcceleratorProvider(
-      mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
-          receiver) override {}
-
-  void BindWebNNContextProvider(
-      mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver,
-      int32_t client_id) override {}
-
-  void GetVideoMemoryUsageStats(
-      GetVideoMemoryUsageStatsCallback callback) override {}
-#if BUILDFLAG(IS_WIN)
-  void RequestDXGIInfo(RequestDXGIInfoCallback callback) override {}
-#endif
-  void LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
-                  const std::string& key,
-                  const std::string& data) override {}
-  void WakeUpGpu() override {}
-  void GpuSwitched(gl::GpuPreference active_gpu_heuristic) override {}
-  void DisplayAdded() override {}
-  void DisplayRemoved() override {}
-  void DisplayMetricsChanged() override {}
-  void DestroyAllChannels() override {}
-  void OnBackgroundCleanup() override {}
-  void OnBackgrounded() override {}
-  void OnForegrounded() override {}
-#if !BUILDFLAG(IS_ANDROID)
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level) override {}
-#endif
-#if BUILDFLAG(IS_APPLE)
-  void BeginCATransaction() override {}
-  void CommitCATransaction(CommitCATransactionCallback callback) override {}
-#endif
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
-  void WriteClangProfilingProfile(
-      WriteClangProfilingProfileCallback callback) override {}
-#endif
-  void GetDawnInfo(bool collect_metrics,
-                   GetDawnInfoCallback callback) override {}
-
-  void Crash() override {}
-  void Hang() override {}
-  void ThrowJavaException() override {}
-
   base::RepeatingClosure quit_closure_;
 };
 

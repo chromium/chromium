@@ -23,7 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals.mojom-forward.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -34,6 +34,8 @@
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
+#include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
 #include "components/user_education/common/session/user_education_session_manager.h"
 #include "components/user_education/common/tutorial/tutorial_description.h"
 #include "components/user_education/common/user_education_data.h"
@@ -427,6 +429,35 @@ std::string GetTutorialTypeString(
   return desc.can_be_restarted ? "Restartable Tutorial" : "Tutorial";
 }
 
+auto GetNtpPromoData(
+    const std::string& id,
+    const user_education::NtpPromoSpecification& spec,
+    const user_education::UserEducationContextPtr& context,
+    const user_education::UserEducationStorageService& storage) {
+  const auto data =
+      storage.ReadNtpPromoData(id).value_or(user_education::NtpPromoData());
+  std::vector<FeaturePromoDemoPageDataPtr> result;
+  std::string eligibility = [&]() {
+    switch (spec.eligibility_callback().Run(context)) {
+      case user_education::NtpPromoSpecification::Eligibility::kEligible:
+        return "Eligible";
+      case user_education::NtpPromoSpecification::Eligibility::kIneligible:
+        return "Not Eligible";
+      case user_education::NtpPromoSpecification::Eligibility::kCompleted:
+        return "Completed";
+    }
+  }();
+  result.emplace_back(FormatDemoPageData("Eligibility:", eligibility));
+  result.emplace_back(
+      FormatDemoPageData("Last top spot session:", data.last_top_spot_session));
+  result.emplace_back(FormatDemoPageData("Top spot session count:",
+                                         data.top_spot_session_count));
+  result.emplace_back(FormatDemoPageData("Last clicked at", data.last_clicked));
+  result.emplace_back(
+      FormatDemoPageData("First seen completed at", data.completed));
+  return result;
+}
+
 }  // namespace
 
 UserEducationInternalsPageHandlerImpl::UserEducationInternalsPageHandlerImpl(
@@ -479,7 +510,8 @@ void UserEducationInternalsPageHandlerImpl::StartTutorial(
   std::string result;
   if (tutorial_service) {
     const ui::ElementContext context =
-        chrome::FindBrowserWithProfile(profile_)->window()->GetElementContext();
+        BrowserElements::From(chrome::FindBrowserWithProfile(profile_))
+            ->GetContext();
     tutorial_service->StartTutorial(tutorial_id, context);
     if (!tutorial_service->IsRunningTutorial()) {
       result = "Failed to start tutorial " + tutorial_id;
@@ -589,20 +621,24 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
     return;
   }
 
-  auto* const interface =
-      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
-          web_ui_->GetWebContents());
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(profile_);
   auto* const controller =
-      interface ? interface->GetFeaturePromoController(
-                      base::PassKey<UserEducationInternalsPageHandlerImpl>())
-                : nullptr;
+      service ? service->GetFeaturePromoController(
+                    base::PassKey<UserEducationInternalsPageHandlerImpl>())
+              : nullptr;
 
   user_education::FeaturePromoParams params(*feature);
   params.show_promo_result_callback = base::BindOnce(
       &UserEducationInternalsPageHandlerImpl::OnFeaturePromoShowResult,
       weak_ptr_factory_.GetWeakPtr());
   if (controller) {
-    controller->MaybeShowPromoForDemoPage(std::move(params));
+    auto* const interface =
+        BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+            web_ui_->GetWebContents());
+    auto context = interface->GetUserEducationContext(
+        base::PassKey<UserEducationInternalsPageHandlerImpl>());
+    controller->MaybeShowPromoForDemoPage(std::move(params), context);
     pending_callback_ = std::move(callback);
   } else {
     std::move(callback).Run(std::string("No controller."));
@@ -885,4 +921,94 @@ void UserEducationInternalsPageHandlerImpl::LaunchWhatsNewStaging() {
   params.browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
   Navigate(&params);
 #endif
+}
+
+void UserEducationInternalsPageHandlerImpl::GetNtpPromos(
+    GetNtpPromosCallback callback) {
+  std::vector<FeaturePromoDemoPageInfoPtr> promos;
+
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(profile_);
+  if (service && service->ntp_promo_registry()) {
+    auto* const registry = service->ntp_promo_registry();
+    auto& storage = service->user_education_storage_service();
+    auto context =
+        BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+            web_ui_->GetWebContents())
+            ->GetUserEducationContext(
+                base::PassKey<UserEducationInternalsPageHandlerImpl>());
+    for (const auto& id : registry->GetNtpPromoIdentifiers()) {
+      const auto& spec = *registry->GetNtpPromoSpecification(id);
+      promos.emplace_back(FeaturePromoDemoPageInfo::New(
+          RemovePrefixAndCamelCase(id, ""),
+          spec.metadata().additional_description, id, "NTP Promo",
+          spec.metadata().launch_milestone,
+          GetSupportedPlatforms(spec.metadata().platforms),
+          GetRequiredFeatures(spec.metadata().required_features),
+          std::vector<std::string>(), "",
+          GetNtpPromoData(id, spec, context, storage)));
+    }
+  }
+
+  std::move(callback).Run(std::move(promos));
+}
+
+void UserEducationInternalsPageHandlerImpl::ClearNtpPromoData(
+    const std::string& id,
+    ClearNtpPromoDataCallback callback) {
+  auto* const storage_service = GetStorageService(profile_);
+  if (!storage_service) {
+    std::move(callback).Run(std::string("No storage service."));
+    return;
+  }
+  storage_service->ResetNtpPromoData(id);
+  std::move(callback).Run(std::string());
+}
+
+void UserEducationInternalsPageHandlerImpl::GetNtpPromoPreferences(
+    GetNtpPromoPreferencesCallback callback) {
+  std::vector<FeaturePromoDemoPageDataPtr> data;
+
+  auto* const storage_service = GetStorageService(profile_);
+  if (storage_service) {
+    const base::Time now = storage_service->GetCurrentTime();
+    const auto preferences = storage_service->ReadNtpPromoPreferences();
+
+    const auto mode = user_education::features::GetNtpBrowserPromoType();
+    std::string state;
+    switch (mode) {
+      case user_education::features::NtpBrowserPromoType::kNone:
+        state = "Disabled";
+        break;
+      case user_education::features::NtpBrowserPromoType::kSimple:
+        state = "Simple (single promo)";
+        break;
+      case user_education::features::NtpBrowserPromoType::kSetupList:
+        state = "Setup List";
+        break;
+    }
+    data.emplace_back(FormatDemoPageData("NTP promo mode", state));
+    data.emplace_back(
+        FormatDemoPageData("NTP promos disabled?", preferences.disabled));
+    const auto snoozed_until =
+        preferences.last_snoozed +
+        user_education::features::GetNtpSetupListSnoozeTime();
+    if (now < snoozed_until) {
+      data.emplace_back(
+          FormatDemoPageData("NTP promos snoozed until", snoozed_until));
+    }
+  }
+
+  return std::move(callback).Run(std::move(data));
+}
+
+void UserEducationInternalsPageHandlerImpl::ClearNtpPromoPreferences(
+    ClearNtpPromoPreferencesCallback callback) {
+  auto* const storage_service = GetStorageService(profile_);
+  if (!storage_service) {
+    std::move(callback).Run(std::string("No storage service."));
+    return;
+  }
+  storage_service->ResetNtpPromoPreferences();
+  std::move(callback).Run(std::string());
 }

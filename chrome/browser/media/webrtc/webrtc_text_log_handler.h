@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_TEXT_LOG_HANDLER_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_TEXT_LOG_HANDLER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -93,6 +92,8 @@ class WebRtcTextLogHandler {
   // Releases a stopped log to the caller.
   void ReleaseLog(std::unique_ptr<WebRtcLogBuffer>* log_buffer,
                   std::unique_ptr<WebRtcLogMetaDataMap>* meta_data);
+
+  base::RepeatingCallback<void(const std::string&)> GetLogMessageCallback();
 
   // Adds a message to the log.
   void LogMessage(const std::string& message);

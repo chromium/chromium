@@ -30,4 +30,5 @@ static base::Token JNI_Token_CreateRandom(JNIEnv* env) {
 
 }  // namespace base::android
 
-DEFINE_JNI_FOR_Token()
+DEFINE_JNI(Token)
+DEFINE_JNI(TokenBase)

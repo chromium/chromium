@@ -8,6 +8,10 @@
 
 namespace autofill {
 
+bool AutofillLocationBarBubble::IsMouseHovered() const {
+  return views::View::IsMouseHovered();
+}
+
 BEGIN_METADATA(AutofillLocationBarBubble)
 END_METADATA
 

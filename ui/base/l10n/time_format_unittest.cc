@@ -485,11 +485,11 @@ TEST_F(TimeFormatTest, SimpleAndDetailedStrings) {
 
 // Test strings in fallback path in case of translator error.
 TEST_F(TimeFormatTest, SimpleAndDetailedStringFallback) {
-  formatter_force_fallback = true;
-  g_container.Get().ResetForTesting();
+  SetFormatterForceFallbackForTesting(true);
+  ResetFormatterForTesting();
   TestStrings();
-  formatter_force_fallback = false;
-  g_container.Get().ResetForTesting();
+  SetFormatterForceFallbackForTesting(false);
+  ResetFormatterForTesting();
 }
 
 // crbug.com/159388: This test fails when daylight savings time ends.

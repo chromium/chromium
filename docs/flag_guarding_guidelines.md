@@ -61,12 +61,12 @@ from bad builds
 * Simple parameter changes (adding params, changing the type etc.)
 * Isolated refactorings where test coverage with high test coverage / confidence
 
-
 ## What type of flag rollout to use?
 * If a change has the potential to affect performance or memory
 ([internal link](http://go/chrome-browser-guiding-metrics)), or you want to
 analyze the impact of the launch on feature-specific metrics, use a
 disabled-by-default base::Feature flag and run an A/B experiment.
+But this should usually *not* be done for [web platform changes](#Prefer-waterfall-rollout-for-platform-changes).
 Non-Googler committers will need to work with owners of the code that work at
 Google to launch and monitor the experiment.
 * Otherwise it should be guarded minimally by an enabled-by-default
@@ -74,3 +74,28 @@ base::Feature flag, which can be remotely disabled by a server configuration.
     * For code in blink, this can be as simple as using a
 [Runtime Enabled Feature](/third_party/blink/renderer/platform/RuntimeEnabledFeatures.md),
 which has long been common-practice for new or changed APIs.
+
+## Prefer waterfall rollout for platform changes
+
+Web developers expect web platform APIs to behave predictably for all users on a
+given version of Chrome, and violating that expectation creates high risk of
+site breakage. And if a site is broken for only some % of its users (developer:
+"It works on my machine!"), it will take longer for the issue to be noticed, reported, and root-caused.
+
+For this reason, A/B testing or gradual Finch rollouts of developer-visible platform
+changes are **discouraged** and should not be done by default.
+
+Instead, developer-visible platform changes, such as adding / removing APIs,
+should usually use a "waterfall" rollout: land the change default-enabled on trunk,
+and let it bake in canary, dev, and beta before going to stable through the normal
+release process.
+
+This process ensures that developers have an opportunity to discover and file regressions
+by testing their sites in dev / beta, and have confidence that their sites work
+correctly on new Chrome releases before they reach stable users.
+
+The code should still be guarded by a base::Feature which can be used for a Finch
+[kill switch](http://go/finch-killswitch) if a serious post-stable regression is discovered.
+
+There are tradeoffs here, and in some cases those tradeoffs may favor a gradual Finch
+rollout of a platform change, but that should be the exception and not the rule.

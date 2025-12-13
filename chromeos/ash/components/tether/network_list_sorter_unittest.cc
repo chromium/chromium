@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/tether/network_list_sorter.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/tether_constants.h"
@@ -73,9 +69,9 @@ class NetworkListSorterTest : public testing::Test {
   void SortAndVerifySortOrder(int el0, int el1, int el2) {
     network_list_sorter_->SortTetherNetworkList(list_.get());
 
-    EXPECT_EQ(NetworkAtIndex(0)->guid(), kGuidArray[el0]);
-    EXPECT_EQ(NetworkAtIndex(1)->guid(), kGuidArray[el1]);
-    EXPECT_EQ(NetworkAtIndex(2)->guid(), kGuidArray[el2]);
+    UNSAFE_TODO(EXPECT_EQ(NetworkAtIndex(0)->guid(), kGuidArray[el0]));
+    UNSAFE_TODO(EXPECT_EQ(NetworkAtIndex(1)->guid(), kGuidArray[el1]));
+    UNSAFE_TODO(EXPECT_EQ(NetworkAtIndex(2)->guid(), kGuidArray[el2]));
   }
 
   std::unique_ptr<NetworkStateHandler::ManagedStateList> list_;

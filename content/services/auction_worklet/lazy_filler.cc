@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "gin/converter.h"
+#include "gin/public/gin_embedders.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
@@ -34,7 +35,7 @@ bool LazyFiller::DefineLazyAttribute(v8::Local<v8::Object> object,
 
   v8::Maybe<bool> success = object->SetLazyDataProperty(
       isolate->GetCurrentContext(), gin::StringToSymbol(isolate, name), getter,
-      v8::External::New(isolate, this),
+      v8::External::New(isolate, this, gin::kLazyFillerTag),
       /*attributes=*/v8::None,
       /*getter_side_effect_type=*/v8::SideEffectType::kHasNoSideEffect,
       /*setter_side_effect_type=*/v8::SideEffectType::kHasSideEffect);
@@ -56,7 +57,8 @@ bool LazyFiller::DefineLazyAttributeWithMetadata(
   }
   v8::Local<v8::Object> data =
       lazy_filler_template->NewInstance(context).ToLocalChecked();
-  data->SetInternalField(0, v8::External::New(isolate, this));
+  data->SetInternalField(0,
+                         v8::External::New(isolate, this, gin::kLazyFillerTag));
   data->SetInternalField(1, metadata);
 
   v8::Maybe<bool> success = object->SetLazyDataProperty(
@@ -73,7 +75,7 @@ void* LazyFiller::GetSelfWithMetadataInternal(
   v8::Local<v8::Object> data = v8::Local<v8::Object>::Cast(info.Data());
   metadata = data->GetInternalField(1).As<v8::Value>();
   return (data->GetInternalField(0).As<v8::Value>().As<v8::External>())
-      ->Value();
+      ->Value(gin::kLazyFillerTag);
 }
 
 }  // namespace auction_worklet

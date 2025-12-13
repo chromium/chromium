@@ -8,8 +8,7 @@ rsult@google.com
 sdefresne@chromium.org
 
 # ProfileManager and GetDefaultProfile and related
-skuhne@chromium.org
-
+hidehiko@chromium.org
 
 # Prefer rsult for these files over directory owners.
 per-file *profile_keyed_service_*=rsult@google.com

@@ -6,14 +6,18 @@
 #define CHROME_BROWSER_DOM_DISTILLER_TAB_UTILS_H_
 
 #include "base/functional/callback_forward.h"
+#include "url/gurl.h"
+
 namespace content {
 class WebContents;
 }  // namespace content
 
-// Creates a new WebContents and navigates it to view the URL of the current
-// page, while in the background starts distilling the current page. This method
-// takes ownership over the old WebContents after swapping in the new one.
-void DistillCurrentPageAndView(content::WebContents* old_web_contents);
+// Distills the current WebContents, waits for the result and continues to the
+// Viewer via a navigation if successful. This does not create any web
+// contents, or take ownership of the `web_contents` passed in.
+void DistillCurrentPageAndViewIfSuccessful(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> callback);
 
 // Starts distillation in the `source_web_contents`. The viewer needs to be
 // created separately.
@@ -30,5 +34,6 @@ void DistillAndView(content::WebContents* source_web_contents,
 void RunReadabilityHeuristicsOnWebContents(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> callback);
+
 
 #endif  // CHROME_BROWSER_DOM_DISTILLER_TAB_UTILS_H_

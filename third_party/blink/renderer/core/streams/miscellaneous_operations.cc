@@ -11,6 +11,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
@@ -76,9 +77,9 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
 
 class TrivialStreamAlgorithm final : public StreamAlgorithm {
  public:
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
     return ToResolvedUndefinedPromise(script_state);
   }
 };
@@ -94,19 +95,19 @@ class JavaScriptStreamAlgorithmWithoutExtraArg final : public StreamAlgorithm {
   // CreateAlgorithmFromUnderlyingMethod() in the standard, but it is
   // determined when the algorithm is called rather than when the algorithm is
   // created.
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
     // This method technically supports any number of arguments, but we only
     // call it with 0 or 1 in practice.
-    DCHECK_GE(argc, 0);
+    DCHECK_GE(argv.size(), 0u);
     auto* isolate = script_state->GetIsolate();
     // https://streams.spec.whatwg.org/#create-algorithm-from-underlying-method
     // 6.b.i. Return ! PromiseCall(method, underlyingObject, extraArgs).
     // In this class extraArgs is always empty, but there may be other arguments
     // supplied to the method.
     return PromiseCall(script_state, method_.Get(isolate), recv_.Get(isolate),
-                       argc, argv);
+                       argv.size(), argv.data());
   }
 
   void Trace(Visitor* visitor) const override {
@@ -132,22 +133,22 @@ class JavaScriptStreamAlgorithmWithExtraArg final : public StreamAlgorithm {
 
   // |argc| is equivalent to the "algoArgCount" argument to
   // CreateAlgorithmFromUnderlyingMethod() in the standard,
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_GE(argc, 0);
-    DCHECK_LE(argc, 1);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
+    DCHECK_GE(argv.size(), 0u);
+    DCHECK_LE(argv.size(), 1u);
     auto* isolate = script_state->GetIsolate();
     // https://streams.spec.whatwg.org/#create-algorithm-from-underlying-method
     // 6.c.
     //      i. Let fullArgs be a List consisting of arg followed by the
     //         elements of extraArgs in order.
     std::array<v8::Local<v8::Value>, 2> full_argv;
-    if (argc != 0) {
+    if (!argv.empty()) {
       full_argv[0] = argv[0];
     }
-    full_argv[argc] = extra_arg_.Get(isolate);
-    int full_argc = argc + 1;
+    full_argv[argv.size()] = extra_arg_.Get(isolate);
+    int full_argc = argv.size() + 1;
 
     //     ii. Return ! PromiseCall(method, underlyingObject, fullArgs).
     return PromiseCall(script_state, method_.Get(isolate), recv_.Get(isolate),
@@ -303,8 +304,8 @@ CORE_EXPORT v8::MaybeLocal<v8::Value> ResolveMethod(
   // 6. If method is not undefined,
   //    a. If ! IsCallable(method) is false, throw a TypeError exception.
   if (!method->IsFunction() && !method->IsUndefined()) {
-    exception_state.ThrowTypeError(String(name_for_error) +
-                                   " must be a function or undefined");
+    exception_state.ThrowTypeError(
+        StrCat({name_for_error, " must be a function or undefined"}));
     return v8::MaybeLocal<v8::Value>();
   }
 

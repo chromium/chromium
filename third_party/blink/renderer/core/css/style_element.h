@@ -40,6 +40,8 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
   virtual ~StyleElement();
   void Trace(Visitor*) const override;
 
+  bool IsModule() const;
+
  protected:
   enum ProcessingResult { kProcessingSuccessful, kProcessingFatalError };
 
@@ -69,14 +71,27 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
   bool CreatedByParser() const { return created_by_parser_; }
 
  private:
-  ProcessingResult CreateSheet(Element&, const String& text = String());
+  ProcessingResult CreateSheetOrModule(Element&, const String& text = String());
+  void AddImportMapEntry(Element&, const String& text);
   ProcessingResult Process(Element&);
   void ClearSheet(Element& owner_element);
+
+  // We want CSS Modules to behave similar to the "already started" flag Import
+  // Maps, essentially making it a one-shot operation when the <style> element
+  // is first connected. This behavior is subject to change based on WHATWG
+  // feedback. Once set on a given element, these types cannot change.
+  // TODO(crbug.com/448174611): Update this behavior based on WHATWG feedback.
+  enum class StyleType {
+    kPending,  // Still unknown.
+    kClassic,  // Definitely a classic style tag.
+    kModule    // Definitely a declarative CSS module.
+  };
 
   bool has_finished_parsing_children_ : 1;
   bool loading_ : 1;
   bool registered_as_candidate_ : 1;
   bool created_by_parser_ : 1;
+  StyleType element_type_{StyleType::kPending};
   TextPosition start_position_;
   PendingSheetType pending_sheet_type_;
   RenderBlockingBehavior render_blocking_behavior_;

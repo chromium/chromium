@@ -32,8 +32,8 @@ namespace {
 
 // TODO(mamir): remove those and adjust the code accordingly. Similarly in
 // tests.
-const char kNigoriStorageKey[] = "NigoriStorageKey";
-const char kRawNigoriClientTagHash[] = "NigoriClientTagHash";
+constexpr char kNigoriStorageKey[] = "NigoriStorageKey";
+constexpr char kRawNigoriClientTagHash[] = "NigoriClientTagHash";
 
 }  // namespace
 

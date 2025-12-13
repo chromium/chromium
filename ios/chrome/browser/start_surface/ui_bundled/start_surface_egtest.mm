@@ -4,14 +4,18 @@
 
 #import <XCTest/XCTest.h>
 
+#import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "build/branding_buildflags.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_app_interface.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/public/tab_resumption_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -50,6 +54,10 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
   }
 }
 
+NSString* const kGroupName = @"1group";
+const char kZeroSecondsThreshold[] = "0";
+const char kThreeSecondsThreshold[] = "3";
+
 }  // namespace
 
 // Integration tests for the Start Surface user flows.
@@ -61,38 +69,50 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kStartSurface.name) + "<" +
-      std::string(kStartSurface.name));
-  config.additional_args.push_back(
-      "--force-fieldtrials=" + std::string(kStartSurface.name) + "/Test");
-  config.additional_args.push_back(
-      "--force-fieldtrial-params=" + std::string(kStartSurface.name) +
-      ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
-      "/" + "0");
+
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
+
+  if ([self isRunningTest:@selector(FLAKY_testShowTabGroupInGridOnStart)] ||
+      [self isRunningTest:@selector
+            (testDoNotShowTabGroupInGridOnStartInIncognitoMode)]) {
+    config.features_enabled_and_params.push_back(
+        {kShowTabGroupInGridOnStart,
+         {{{kShowTabGroupInGridInactiveDurationInSeconds,
+            kZeroSecondsThreshold}}}});
+    config.features_enabled_and_params.push_back(
+        {kStartSurface,
+         {{{kReturnToStartSurfaceInactiveDurationInSeconds,
+            kThreeSecondsThreshold}}}});
+    return config;
+  }
+
+  config.features_enabled_and_params.push_back(
+      {kStartSurface,
+       {{{kReturnToStartSurfaceInactiveDurationInSeconds,
+          kZeroSecondsThreshold}}}});
+
   return config;
 }
 
 - (void)setUp {
   [super setUp];
   [[self class] closeAllTabs];
-  [TabResumptionAppInterface setUpMockShoppingService];
   [ChromeEarlGrey openNewTab];
 }
+
+// Loads the first tab with an URL.
+- (void)loadFirstTabURL {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL destinationURL = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:destinationURL];
+}
+
+#pragma mark - Tests
 
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile.
 - (void)testColdStartOpenStartSurface {
-// TODO(crbug.com/40262902): Test is flaky on iPad device. Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad device.");
-  }
-#endif
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
-  [ChromeEarlGrey loadURL:destinationUrl];
+  [self loadFirstTabURL];
 
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
@@ -108,9 +128,8 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 // Tests that navigating to a page and then backgrounding and foregrounding, an
 // NTP page is opened.
 - (void)testWarmStartOpenStartSurface {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
-  [ChromeEarlGrey loadURL:destinationUrl];
+  [self loadFirstTabURL];
+
   [ChromeEarlGrey
       waitForWebStateContainingText:"Anyone know any good pony jokes?"];
 
@@ -128,9 +147,7 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 // is opened with the Return to Recent Tab tile. Then, removing that last tab
 // also removes the tile while that NTP is still being shown.
 - (void)testRemoveRecentTabRemovesReturnToRecentTabTile {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
-  [ChromeEarlGrey loadURL:destinationUrl];
+  [self loadFirstTabURL];
 
   int non_start_tab_index = [ChromeEarlGrey indexOfActiveNormalTab];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
@@ -181,6 +198,127 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:1];
   [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
   [ChromeEarlGrey closeAllExtraWindows];
+}
+
+// Tests that the tab group in grid view is opened if Chrome is activated in the
+// right time interval.
+// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
+// to devices possibly running under Stage Manager, hence the app never goes
+// in the background. These tests expect the app to be backgrounding, and
+// fail.
+- (void)FLAKY_testShowTabGroupInGridOnStart {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a tab group with an item at 0.
+  chrome_test_util::CreateTabGroupAtIndex(0, kGroupName);
+
+  // Open the group.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridGroupCellAtIndex(
+                                          0)] performAction:grey_tap()];
+
+  // Open the tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Simulate background then foreground activation.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Check that the tab group in grid view is open
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the tab group in grid view is not opened if Chrome is not
+// activated in the right time interval.
+- (void)testDoNotShowTabGroupInGridOnStart {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a tab group with an item at 0.
+  chrome_test_util::CreateTabGroupAtIndex(0, kGroupName);
+
+  // Open the group.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridGroupCellAtIndex(
+                                          0)] performAction:grey_tap()];
+
+  // Open the tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Simulate background then foreground activation.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Check that the tab group in grid view is not open.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the tab group in grid view is not opened if Chrome is activated in
+// the right time interval but in Incognito mode.
+- (void)testDoNotShowTabGroupInGridOnStartInIncognitoMode {
+  [ChromeEarlGrey openNewIncognitoTab];
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a tab group with an item at 0.
+  chrome_test_util::CreateTabGroupAtIndex(0, kGroupName);
+
+  // Open the group.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridGroupCellAtIndex(
+                                          0)] performAction:grey_tap()];
+
+  // Open the tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Simulate background then foreground activation.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Check that the tab group in grid view is not open.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the created NTP is ungrouped, even if a group was active when
+// backgrounded.
+- (void)testOpenNTPOutsideTheActiveGroupAfterFourHoursInBackground {
+  [self loadFirstTabURL];
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  chrome_test_util::CreateTabGroupAtIndex(0, kGroupName);
+
+  // Open the group.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridGroupCellAtIndex(
+                                          0)] performAction:grey_tap()];
+
+  // Open the tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 1UL,
+                  @"One tab was expected to be open");
+
+  // Simulate background then foreground activation.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Assert NTP is visible by checking that the fake omnibox is here.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
+                  @"Two tabs were expected to be open");
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check that the NTP is not in the group and visible in the Tab Grid view.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(l10n_util::GetNSString(
+                                          IDS_NEW_TAB_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the group has only 1 tab.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridGroupCellWithName(
+                                   kGroupName, 1)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

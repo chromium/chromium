@@ -24,3 +24,5 @@ FilePath InsertImageIntoMediaStore(const FilePath& path) {
 }
 
 }  // namespace base
+
+DEFINE_JNI(ContentUriTestUtils)

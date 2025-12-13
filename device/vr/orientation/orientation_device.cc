@@ -32,7 +32,7 @@ namespace {
 static constexpr int kDefaultPumpFrequencyHz = 60;
 
 display::Display::Rotation GetRotation() {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (!screen) {
     // If we can't get rotation we'll assume it's 0.
     return display::Display::ROTATE_0;

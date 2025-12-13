@@ -89,12 +89,12 @@ suite('<settings-traffic-counters>', () => {
 
   function getDataUsageLabel(): string {
     const dataUsageLabelDiv = settingsTrafficCounters.$.dataUsageLabel;
-    return dataUsageLabelDiv.textContent!.trim();
+    return dataUsageLabelDiv.textContent.trim();
   }
 
   function getDataUsageSubLabel(): string {
     const dataUsageSubLabelDiv = settingsTrafficCounters.$.dataUsageSubLabel;
-    return dataUsageSubLabelDiv.textContent!.trim();
+    return dataUsageSubLabelDiv.textContent.trim();
   }
 
   setup(() => {

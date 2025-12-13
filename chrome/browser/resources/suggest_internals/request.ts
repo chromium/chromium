@@ -133,6 +133,9 @@ export class SuggestRequestElement extends CrLitElement {
               break;
             case 'X-Client-Data':
               urlType = 'webserver.gws.ClientDataHeader';
+              break;
+            default:
+              break;
           }
           return `"${
               groups

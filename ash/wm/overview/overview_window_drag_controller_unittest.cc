@@ -434,8 +434,7 @@ class OverviewWindowDragControllerDesksPortraitTabletTest
 
     // Setup a portrait internal display in tablet mode.
     UpdateDisplay("800x700");
-    const int64_t display_id =
-        display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
     set_internal_ = std::make_unique<display::test::ScopedSetInternalDisplayId>(
         display_manager(), display_id);
     ScreenOrientationControllerTestApi test_api(

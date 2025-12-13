@@ -23,7 +23,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_task_queue_controller.h"
@@ -72,7 +71,7 @@ std::unique_ptr<FrameSchedulerImpl> CreateFrameScheduler(
     bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type) {
   auto frame_scheduler = page_scheduler->CreateFrameScheduler(
-      delegate, is_in_embedded_frame_tree, frame_type);
+      delegate, LocalFrameToken(), is_in_embedded_frame_tree, frame_type);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler_impl(
       static_cast<FrameSchedulerImpl*>(frame_scheduler.release()));
   return frame_scheduler_impl;
@@ -259,6 +258,8 @@ class PageSchedulerImplTest : public testing::Test {
     EXPECT_EQ(5, counter);
   }
 
+  base::test::TaskEnvironment task_environment_;
+
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
@@ -273,22 +274,22 @@ class PageSchedulerImplTest : public testing::Test {
 TEST_F(PageSchedulerImplTest, TestDestructionOfFrameSchedulersBefore) {
   std::unique_ptr<blink::FrameScheduler> frame1(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, /*is_in_embedded_frame_tree=*/false,
+          nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
   std::unique_ptr<blink::FrameScheduler> frame2(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, /*is_in_embedded_frame_tree=*/false,
+          nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
 }
 
 TEST_F(PageSchedulerImplTest, TestDestructionOfFrameSchedulersAfter) {
   std::unique_ptr<blink::FrameScheduler> frame1(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, /*is_in_embedded_frame_tree=*/false,
+          nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
   std::unique_ptr<blink::FrameScheduler> frame2(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, /*is_in_embedded_frame_tree=*/false,
+          nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
   page_scheduler_.reset();
 }
@@ -423,9 +424,7 @@ TEST_F(PageSchedulerImplTest, IsLoadingTest) {
 
   // 2nd page finishes loading.
   frame_scheduler2->OnFirstContentfulPaintInMainFrame();
-  frame_scheduler2->OnFirstMeaningfulPaint(
-      base::TimeTicks::Now() -
-      GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint());
+  frame_scheduler2->OnFirstMeaningfulPaint();
 
   // Both pages are loaded.
   EXPECT_FALSE(page_scheduler_->IsLoading());
@@ -576,7 +575,6 @@ TEST_F(PageSchedulerImplTest, PageBackgrounded_EnableVirtualTime) {
 // Check that enabling virtual time while a backgrounded page is frozen
 // unfreezes it.
 TEST_F(PageSchedulerImplTest, PageFrozen_EnableVirtualTime) {
-  base::test::TaskEnvironment task_env;
   page_scheduler_->SetPageVisible(false);
   test_task_runner_->FastForwardUntilNoTasksRemain();
   EXPECT_TRUE(page_scheduler_->IsFrozen());
@@ -1166,7 +1164,6 @@ void InitializeTrialParams() {
 }  // namespace
 
 TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
-  base::test::TaskEnvironment test_env;
   InitializeTrialParams();
   page_scheduler_ =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
@@ -1226,6 +1223,10 @@ TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
 }
 
 TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
+  // Disabling StopInBackground (Android only) makes this easier to test as
+  // WebSockets are not exempt from background freezing.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kStopInBackground);
   InitializeTrialParams();
   std::unique_ptr<PageSchedulerImpl> page_scheduler =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
@@ -1335,14 +1336,12 @@ TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
 // Then, verify that making the page visible unfreezes it and allows tasks in
 // its task queues to run.
 TEST_F(PageSchedulerImplTest, PageFreezeAndSetVisible) {
-  base::test::TaskEnvironment task_env;
   TestFreeze(true);
 }
 
 // Same as before, but unfreeze the page explicitly instead of making it
 // visible.
 TEST_F(PageSchedulerImplTest, PageFreezeAndUnfreeze) {
-  base::test::TaskEnvironment task_env;
   TestFreeze(false);
 }
 
@@ -1378,7 +1377,6 @@ TEST_F(PageSchedulerImplTest, PageSchedulerDestroyedWhileAudioChangePending) {
 }
 
 TEST_F(PageSchedulerImplTest, AudiblePagesAreNotThrottled) {
-  base::test::TaskEnvironment task_env;
   page_scheduler_->SetPageVisible(false);
   EXPECT_TRUE(ThrottleableTaskQueue()->IsThrottled());
 
@@ -1398,7 +1396,6 @@ TEST_F(PageSchedulerImplTest, AudiblePagesAreNotThrottled) {
 // Regression test for crbug.com/1431695. Test freezing and state changes work
 // correctly if the OnAudioSilent timer fires after the page is frozen.
 TEST_F(PageSchedulerImplTest, FreezingRecentlyAudiblePage) {
-  base::test::TaskEnvironment task_env;
   page_scheduler_->AudioStateChanged(true);
   EXPECT_TRUE(page_scheduler_->IsAudioPlaying());
 
@@ -1424,7 +1421,6 @@ TEST_F(PageSchedulerImplTest, FreezingRecentlyAudiblePage) {
 // correctly if the AudioStateChanged notification occurs after the page is
 // frozen.
 TEST_F(PageSchedulerImplTest, FreezingAudiblePage) {
-  base::test::TaskEnvironment task_env;
   page_scheduler_->AudioStateChanged(true);
   EXPECT_TRUE(page_scheduler_->IsAudioPlaying());
 
@@ -1451,7 +1447,6 @@ TEST_F(PageSchedulerImplTest, BudgetBasedThrottlingForPageScheduler) {
 }
 
 TEST_F(PageSchedulerImplTest, TestPageBackgroundedTimerSuspension) {
-  base::test::TaskEnvironment task_env;
   int counter = 0;
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));

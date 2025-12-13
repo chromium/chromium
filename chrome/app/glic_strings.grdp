@@ -1,222 +1,266 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Glic specific strings (included from generated_resources.grd). -->
 <grit-part>
-  <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING" desc="Extra tool tip text, when the tab's context is being shared with Gemini" translateable="false">
-    You're sharing this page with Gemini
+  <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING" desc="Extra tool tip text, when the tab's context is being shared with Gemini">
+    You're sharing this tab with Gemini
   </message>
-  <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_SHARING" desc="Extra tool tip text, when the tab's context is being shared with Gemini" translateable="false">
-    You're sharing this page with Gemini
+  <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_SHARING" desc="Extra tool tip text, when the tab's context is being shared with Gemini">
+    You're sharing this tab with Gemini
   </message>
-  <message name="IDS_TAB_AX_LABEL_GLIC_ACCESSING" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the tab is sharing data with Gemini. Example: 'Google Photos - Tab context shared with Gemini'" translateable="false">
+  <message name="IDS_TAB_AX_LABEL_GLIC_ACCESSING" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the tab is sharing data with Gemini. Example: 'Wikipedia - Tab context shared with Gemini'">
     <ph name="WINDOW_TITLE">
-      $1<ex>Google Photos</ex>
-    </ph> - You're sharing this page with Gemini
+      $1<ex>Wikipedia</ex>
+    </ph> - You're sharing this tab with Gemini
   </message>
-  <message name="IDS_TAB_AX_LABEL_GLIC_SHARING" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the tab is sharing data with Gemini. Example: 'Google Photos - Tab context shared with Gemini'" translateable="false">
+  <message name="IDS_TAB_AX_LABEL_GLIC_SHARING" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the tab is sharing data with Gemini. Example: 'Wikipedia - Tab context shared with Gemini'">
     <ph name="WINDOW_TITLE">
-      $1<ex>Google Photos</ex>
+      $1<ex>Wikipedia</ex>
     </ph> - You're sharing this tab with Gemini for the duration of this conversation
   </message>
-  <message name="IDS_GLIC_PROMO_BODY" desc="Gemini promo body text." translateable="false">
+  <message name="IDS_GLIC_PROMO_BODY" desc="Text for a promo pointing to the Gemini icon in Chrome.">
     Chat with voice or text to get answers, key takeaways, and more as you browse
   </message>
-  <if expr="is_win or is_linux">
-    <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" translateable="false" desc="This is the menu item for customizing the keyboard shortcut.">
+  <if expr="is_win or is_linux or is_chromeos">
+    <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" desc="Menu text for the Gemini icon on the system try to open Chrome settings and change the keyboard shortcut for opening Gemini in Chrome.">
       Customize keyboard shortcut
     </message>
   </if>
   <if expr="is_macosx">
-    <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" translateable="false" desc="This is the menu item for customizing the keyboard shortcut.">
+    <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" desc="Menu text for the Gemini icon on the system try to open Chrome settings and change the keyboard shortcut for opening Gemini in Chrome. [With ellipsis]">
       Customize Keyboard Shortcut...
     </message>
   </if>
-  <if expr="is_macosx">
-    <message name="IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON" translateable="false" desc="This is the menu item for removing the Gemini status icon from the menu bar.">
-      Don't show Gemini in menu bar
-    </message>
-  </if>
-  <if expr="is_win or is_linux">
-    <message name="IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON" translateable="false" desc="This is the menu item for removing the Gemini status icon from the notifications area.">
-      Don't show Gemini in notifications area
-    </message>
-  </if>
-  <if expr="is_win or is_linux">
-    <message name="IDS_GLIC_STATUS_ICON_MENU_EXIT" translateable="false" desc="This is the menu item for exiting Chrome.">
+  <if expr="is_win or is_linux or is_chromeos">
+    <message name="IDS_GLIC_STATUS_ICON_MENU_EXIT" desc="This is the menu item for exiting Chrome.">
       Exit
     </message>
   </if>
-  <if expr="is_win or is_linux">
-    <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the Gemini status icon settings. (on Windows and Linux).">
+  <if expr="is_win or is_linux or is_chromeos">
+    <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" desc="This is the menu item for opening the Gemini status icon settings.">
       Settings
     </message>
   </if>
   <if expr="is_macosx">
-    <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the Gemini status icon settings. (on Mac only).">
+    <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" desc="This is the menu item for opening the Gemini status icon settings. [With ellipsis]">
       Settings...
     </message>
   </if>
-  <message name="IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE" translateable="false" desc="Help bubble message above the toggle for turning off the Gemini icon in the status tray/launcher area">
+  <message name="IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE" desc="Help bubble message above the toggle for turning off the Gemini icon in the status tray/launcher area">
     Don't show Gemini in menu bar
   </message>
-  <message name="IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE" translateable="false" desc="Help bubble message above the keyboard shortcut editor that allows customizing it">
+  <message name="IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE" desc="Help bubble message above the keyboard shortcut editor that allows customizing it">
     Customize the keyboard shortcut here
   </message>
-  <message name="IDS_GLIC_OFFLINE_NOTICE_HEADER" translateable="false" desc="This is the headline on the offline notice informing the user that there is no network connection.">
+  <message name="IDS_GLIC_OFFLINE_NOTICE_HEADER" desc="Headline on the offline notice informing the user that there is no network connection.">
     You're offline
   </message>
-  <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION" translateable="false" desc="This is the body text for the offline notice.">
+  <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION" desc="Body text for the offline notice.">
     Check your internet connection and try to use Gemini again
   </message>
-  <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the offline notice.">
+  <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON" desc="This is the button label text for the offline notice.">
     Try again
   </message>
-  <message name="IDS_GLIC_UNRESPONSIVE_MESSAGE" translateable="false" desc="This is the message that appears overlaying the floaty window for a few seconds if the Gemini backend becomes unresponsive.">
+  <message name="IDS_GLIC_UNRESPONSIVE_MESSAGE" desc="This is the message that appears overlaying the floaty window for a few seconds if the Gemini backend becomes unresponsive.">
     Gemini is refreshing...
   </message>
-  <message name="IDS_GLIC_ERROR_NOTICE_HEADER" translateable="false" desc="Headline on the error notice informing the user that Gemini failed to load.">
+  <message name="IDS_GLIC_ERROR_NOTICE_HEADER" desc="Headline on the error notice informing the user that Gemini failed to load.">
     Something went wrong
   </message>
-  <message name="IDS_GLIC_ERROR_NOTICE" translateable="false" desc="This is the text of the error notice.">
+  <message name="IDS_GLIC_ERROR_NOTICE" desc="This is the text of the error notice.">
     Gemini isn't available right now. Try again later.
   </message>
-  <message name="IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the error notice.">
+  <message name="IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON" desc="This is the button label text for the error notice.">
     Try again
   </message>
-  <message name="IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL" translateable="false" desc="Accessible label for the dialog notice and FRE close buttons.">
+  <message name="IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for the dialog notice and FRE close buttons.">
     Close
   </message>
-  <message name="IDS_GLIC_SIGN_IN_NOTICE_HEADER" translateable="false" desc="This is the headline on the Gemini sign in notice.">
+  <message name="IDS_GLIC_SIGN_IN_NOTICE_HEADER" desc="This is the headline on the Gemini sign in notice.">
     Verify it's you
   </message>
-  <message name="IDS_GLIC_SIGN_IN_NOTICE" translateable="false" desc="This is the text of the Gemini sign in notice.">
+  <message name="IDS_GLIC_SIGN_IN_NOTICE" desc="This is the text of the Gemini sign in notice.">
     To continue using Gemini, verify it's you
   </message>
-  <message name="IDS_GLIC_SIGN_IN_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for a button that opens the sign-in page.">
+  <message name="IDS_GLIC_SIGN_IN_NOTICE_ACTION_BUTTON" desc="This is the button label text for a button that opens the sign-in page.">
     Verify it's you
   </message>
-  <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_HEADER" translateable="false" desc="This is the headline on the Gemini ineligible profile notice.">
+  <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_HEADER" desc="This is the headline on the Gemini ineligible profile notice.">
     This account can't use Gemini
   </message>
-  <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for a button that opens the profile picker.">
+  <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_ACTION_BUTTON" desc="This is the button label text for a button that opens the profile picker.">
     Choose another profile
   </message>
-  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE" translateable="false" desc="This is the text of the Gemini disabled by admin notice.">
+  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE" desc="This is the text of the Gemini disabled by admin notice.">
     Contact your administrator for more information
   </message>
-  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_CLOSE_BUTTON" translateable="false" desc="This is the button label text for a button that closes the glic disabled by admin notice.">
+  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_WITH_LINK" desc="This is the text of the Gemini disabled by admin notice, with a link for more information..">
+    Contact your administrator or check <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;</ph><ph name="LINK_TEXT">$2<ex>gemini.google.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph> for more information
+  </message>
+  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_CLOSE_BUTTON" desc="This is the button label text for a button that closes the glic disabled by admin notice.">
     Got it
   </message>
-  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic disabled by admin notice.">
+  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_HEADER" desc="This is the headline on the glic disabled by admin notice.">
     Your organization has turned off this feature
   </message>
 
   <!-- Glic settings page strings -->
-  <message name="IDS_SETTINGS_GLIC_ROW_SUBLABEL" translateable="false" desc="Sublabel of the Gemini row button leading to the Gemini subpage.">
+  <message name="IDS_SETTINGS_GLIC_ROW_SUBLABEL" desc="Sublabel of the Gemini row button leading to the Gemini subpage.">
     AI assistant that gives key takeaways, clarifies concepts, finds answers and more
   </message>
-  <message name="IDS_SETTINGS_GLIC_POLICY_DISABLED_MESSAGE" translateable="false" desc="Message shown when Gemini is disabled by enterprise policy.">
+  <message name="IDS_SETTINGS_GLIC_POLICY_DISABLED_MESSAGE" desc="Message shown when Gemini is disabled by enterprise policy.">
     This feature is disabled by your organization
   </message>
-  <message name="IDS_SETTINGS_GLIC_PREFERENCES_SECTION" translateable="false" desc="Heading on settings page for basic preferences.">
+  <message name="IDS_SETTINGS_GLIC_PREFERENCES_SECTION" desc="Heading on settings page for basic preferences.">
     Preferences
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_SECTION" translateable="false" desc="Heading on settings page for permissions-related preferences.">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_SECTION" desc="Heading on settings page for permissions-related preferences.">
     Permissions
   </message>
-  <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE" translateable="false" desc="Name of the toggle that controls whether the Gemini icon is shown in the tabstrip.">
+  <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the tabstrip.">
     Show Gemini at the top of the browser
   </message>
-  <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the tabstrip.">
+  <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the tabstrip.">
     Quickly open Gemini whenever you need it
   </message>
   <if expr="is_macosx">
-    <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" translateable="false" desc="Name of the toggle that controls whether the Gemini icon is shown in the menu bar (on Mac only).">
+    <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the MacOS menu bar (on Mac only).">
       Show Gemini in Mac menu bar and turn on keyboard shortcut
     </message>
   </if>
   <if expr="not is_macosx">
-    <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" translateable="false" desc="Name of the toggle that controls whether the Gemini icon is shown in the system tray (on Windows and Linux).">
+    <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the system tray (on Windows and Linux).">
       Show Gemini in system tray and turn on keyboard shortcut
     </message>
   </if>
-  <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the menu bar (on Mac) / system tray (on Windows and Linux).">
+  <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the menu bar (on Mac) / system tray (on Windows and Linux).">
     Easy access to use Gemini across your device, even if Chrome is minimized.
   </message>
-  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" translateable="false" desc="Name of the keyboard shortcut setting.">
+  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" desc="Name of the keyboard shortcut setting.">
     Keyboard shortcut
   </message>
-  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL" translateable="false" desc="Sublabel describing the keyboard shortcut that's used to globally invoke Gemini.">
+  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL" desc="Sublabel describing the keyboard shortcut that's used to globally invoke Gemini.">
     Open Gemini with a keyboard shortcut.
   </message>
-  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_LEARN_MORE_LABEL" translateable="false" desc="Label for the 'Learn more' link in the sublabel describing the keyboard shortcut that's used to globally invoke Gemini.">
+  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_LEARN_MORE_LABEL" desc="Label for the 'Learn more' link in the sublabel for Gemini in Chrome settings.">
     Learn more
   </message>
-  <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT" translateable="false" desc="Name of the navigation shortcut setting.">
+  <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT" desc="Title for the navigation shortcut setting to leave and return to Gemini in Chrome.">
     Navigation shortcut
   </message>
-  <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_SUBLABEL" translateable="false" desc="Sublabel describing the keyboard shortcut navigate between Chrome and Gemini.">
+  <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_SUBLABEL" desc="Sublabel describing the keyboard shortcut navigate between Chrome and Gemini.">
     To leave or return to Gemini, use keyboard shortcut.
   </message>
-  <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING" translateable="false" desc="Name of the closed captioning setting.">
+  <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING" desc="Name of the closed captioning setting.">
     Closed Captioning
   </message>
-  <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING_SUBLABEL" translateable="false" desc="Sublabel describing that this setting will enable closed captions for Gemini Live.">
+  <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING_SUBLABEL" desc="Sublabel describing that this setting will enable closed captions for Gemini Live.">
     Show closed captions when using Gemini Live
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE" translateable="false" desc="Name of the location sharing setting.">
+  <message name="IDS_SETTINGS_GLIC_KEEP_SIDEPANEL_OPEN_ON_NEW_TABS" desc="Name of the daisy chain new tabs setting.">
+    Keep the Gemini sidebar open when you open a new tab
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE" desc="Name of the location sharing setting.">
     Precise Location
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing that this setting will share location data with Gemini for location-aware answers">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL" desc="Sublabel describing that this setting will share location data with Gemini for location-aware answers">
     Use your precise location for the most accurate Gemini results, instead of an estimated location based on your IP address.
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL_DATA_PROTECTED" translateable="false" desc="Sublabel describing that this setting will share location data with Gemini for location-aware answers, but the user's data is not used to improve the model">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will share location data with Gemini for location-aware answers, but the user's data is not used to improve the model">
     Use your precise location for the most accurate Gemini results, instead of an estimated location based on your IP address. Your data is not used to improve generative AI models
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE" translateable="false" desc="Name of the microphone setting.">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE" desc="Name of the microphone setting.">
     Microphone
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing that this setting will enable using the microphone to have a voice chat with Gemini">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL" desc="Sublabel describing that this setting will enable using the microphone to have a voice chat with Gemini">
     Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps Activity (if it's on)
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL_DATA_PROTECTED" translateable="false" desc="Sublabel describing that this setting will enable using the microphone to have a voice chat with Gemini, but the user's data is not used to improve the model">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable using the microphone to have a voice chat with Gemini, but the user's data is not used to improve the model">
     Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps Activity (if it's on). Your data is not used to improve generative AI models
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE" translateable="false" desc="Name of the enable current tab access setting.">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE" desc="Name of the enable current tab access setting.">
     Page content sharing
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini">
-    Share page content with Gemini to get more relevant answers.
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini">
+    Shares the current tab with Gemini, even as you switch tabs
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" translateable="false" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini, but the user's data is not used to improve the model">
-    Share page content with Gemini to get more relevant answers. Your data is not used to improve generative AI models.
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini, but the user's data is not used to improve the model">
+    Shares the current tab with Gemini, even as you switch tabs. Your data is not used to improve generative AI models.
+   </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE" desc="Name of the enable current default tab access setting.">
+    Share current tab by default
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" translateable="false" desc="Name of the Gemini Apps Activity link out.">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini by default for new conversations.">
+    The current tab is shared with Gemini when you start a new chat. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more about AI and privacy<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini by default, but the user's data is not used to improve the model.">
+    The current tab is shared with Gemini when you start a new chat. Your data is not used to improve generative AI models. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more about AI and privacy<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE" desc="Title for the Gemini feature introduction screen">
+    Let Gemini browse for you
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_SUBLABEL" desc="Subheader explaining what the Gemini feature does">
+    Gemini works in your tabs to complete tasks you give it. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" desc="Name of the Gemini Apps Activity link out.">
     Gemini Apps Activity
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_SUBLABEL" translateable="false" desc="Sublabel describing that this link allows the user to view and manage their activity relating to Gemini Apps.">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_SUBLABEL" desc="Sublabel describing that this link allows the user to view and manage their activity relating to Gemini Apps.">
     View and manage your Gemini Apps activity
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_URL" translateable="false" desc="URL to navigate when clicking the 'manage your activity' button.">
     https://myactivity.google.com/product/gemini?utm_source=gemini
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_1" translateable="false" desc="First point in the 'when on' column of the 'tab access' expando">
-    You’ll get more relevant answers related to the page content you’re sharing
+  <message name="IDS_SETTINGS_GLIC_EXTENSIONS_BUTTON" desc="Name of the Gemini Extensions link out.">
+    Manage connected apps
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_2" translateable="false" desc="Second point in the 'when on' column of the 'tab access' expando">
-    You can use voice or text chat to ask Gemini a question about the page content you’re sharing
+  <message name="IDS_SETTINGS_GLIC_EXTENSIONS_BUTTON_SUBLABEL" desc="Sublabel describing that this link allows the user to manage Gemini connected apps.">
+    Manage which apps Gemini connects to
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1" translateable="false" desc="First point in 'things to consider' column of the 'tab access' expando">
-    When you share a page with Gemini, the page’s full content and URL are sent to Google.
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_1" desc="First point in the 'when on' column of the 'tab access' expando">
+    You can easily ask Gemini questions about your current tab as you browse
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL" translateable="false" desc="Label for the 'Learn more' link in the 'things to consider' section.">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1" desc="First point in 'things to consider' column of the 'tab access' expando">
+    When you choose to share the current tab with Gemini, the tab’s full content, media and URL are sent to Google.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL" desc="Label for the 'Learn more' link in the 'things to consider' section.">
     Learn more
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_1" desc="First point in the 'when on' column of the 'default tab access' expands">
+    You can easily ask Gemini questions about the tabs you’re sharing as you browse.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_2" desc="Part of the description of the 'Share current tab by default' setting. It informs the user about what information is going to be shared with Gemini.">
+    Tabs opened from a chat or a shared tab are also shared with Gemini. In Live mode, only the current tab is shared by default.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1" desc="First point in 'things to consider' column of the 'default tab access' expands">
+    When tabs are shared, their page contents, media and URLs are sent to Google.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_2" desc="Second point in 'things to consider' column of the 'default tab access' expands">
+    Conversations about shared tabs may be seen by human reviewers to improve Gemini.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERSONAL_CONTEXT_LABEL" desc="Description for the Gemini personal context linkout.">
+      View and manage your personal context
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERSONAL_CONTEXT" desc="Title for the Gemini personal context section in Other Data.">
+      Personal context
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_WHEN_ON_1" desc="First point in 'when on' column of the 'let Gemini browse for you' expands">
+    Gemini can help you book appointments, create shopping carts, or do other tasks you give it.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_WHEN_ON_2" desc="Second point in 'when on' column of the 'let Gemini browse for you' expands">
+    Gemini shows its steps and tries to confirm before taking sensitive ones. You can stop or take over anytime.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_1" desc="First point in 'things to consider' column of the 'let Gemini browse for you' expands">
+    The page content and URLs that Gemini uses during a task will be shared with Google.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2" desc="Second point in 'things to consider' column of the 'let Gemini browse for you' expands">
+    Use Gemini carefully and <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>safely<ph name="LINK_END1">&lt;/a&gt;</ph>. You are responsible for Gemini's actions during a task, including mistakes and <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>unexpected results<ph name="LINK_END2">&lt;/a&gt;</ph> like purchases.
   </message>
 
   <!-- Glic button and tab strip context menu -->
-  <message name="IDS_GLIC_PIN" translateable="false" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is unpinned.">
+  <message name="IDS_GLIC_PIN" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is unpinned.">
     Pin Gemini
   </message>
-  <message name="IDS_GLIC_UNPIN" translateable="false" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is pinned.">
+  <message name="IDS_GLIC_UNPIN" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is pinned.">
     Unpin Gemini
   </message>
 
@@ -224,51 +268,106 @@
   <message name="IDS_GLIC_SCREEN_PICKER_REQUESTER" desc="Text shown on screen picker dialog that indicates the requesting source is Gemini." translateable="false">
     Gemini
   </message>
-  <message name="IDS_GLIC_SCREEN_PICKER_HEADLINE" desc="Title of the Gemini screen picker dialog used for specifying which screen to capture." translateable="false">
+  <message name="IDS_GLIC_SCREEN_PICKER_HEADLINE" desc="Title of the Gemini screen picker dialog used for specifying which screen to capture.">
     Choose a screen to capture
   </message>
-  <message name="IDS_GLIC_SCREEN_PICKER_DESCRIPTION" desc="Text that shows on the Gemini screen picker dialog to indicate what happens with the capture." translateable="false">
+  <message name="IDS_GLIC_SCREEN_PICKER_DESCRIPTION" desc="Text that shows on the Gemini screen picker dialog to indicate what happens with the capture.">
     Your screenshot can be used with your prompt or deleted
   </message>
-  <message name="IDS_GLIC_SCREEN_PICKER_CTA" desc="Text for call to action button on Gemini screen picker dialog. " translateable="false">
+  <message name="IDS_GLIC_SCREEN_PICKER_CTA" desc="Text for call to action button on Gemini screen picker dialog.">
     Take a screenshot
   </message>
 
   <!-- Glic Window -->
-  <message name="IDS_GLIC_WINDOW_TITLE" desc="Accessible title for the Gemini Window." translateable="false">
+  <message name="IDS_GLIC_INACTIVE_VIEW_CARD_TEXT" desc="Text displayed on the card when the Gemini conversation is in Floaty and the side panel is blurred.">
+    Your Gemini conversation is in another window. Click anywhere on this side panel to move it here.
+  </message>
+  <message name="IDS_GLIC_WINDOW_TITLE" desc="Accessible title for the Gemini Window." is_accessibility_with_no_ui="true">
     Gemini
   </message>
-  <message name="IDS_GLIC_WINDOW_TITLE_FIRST_LOAD" desc="Accessible title for the Gemini Window. Only included on first load." translateable="false">
+  <message name="IDS_GLIC_WINDOW_TITLE_FIRST_LOAD" desc="Accessible title for the Gemini Window. Only included on first load." is_accessibility_with_no_ui="true">
     Gemini. To return to where you were on the page press <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
   </message>
-  <message name="IDS_GLIC_WINDOW_FIRST_FOCUS_LOST_ANNOUNCEMENT" desc="Announcement triggered the first time the Gemini window loses focus." translateable="false">
+  <message name="IDS_GLIC_WINDOW_FIRST_FOCUS_LOST_ANNOUNCEMENT" desc="Announcement triggered the first time the Gemini window loses focus." is_accessibility_with_no_ui="true">
     To return to Gemini, press <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
   </message>
 
   <!-- Task Manager -->
-  <message name="IDS_TASK_MANAGER_GLIC_RENDERER_PREFIX" desc="Task Manager row for a renderer process used to host the Gemini UI" translateable="false">
+  <message name="IDS_TASK_MANAGER_GLIC_RENDERER_PREFIX" desc="Task Manager row for a renderer process used to host the Gemini UI">
     Gemini Host Renderer
   </message>
 
   <!-- Multi-Page -->
-  <message name="IDS_TAB_CXMENU_GLIC_START_SHARE" desc="The label of the tab context menu submenu for starting sharing the given tab or tabs with Gemini. [ICU syntax]" translateable="false">
+  <if expr="not use_titlecase">
+  <message name="IDS_TAB_CXMENU_GLIC_START_SHARE" desc="The label of the tab context menu submenu for starting sharing the given tab or tabs with Gemini. [ICU syntax]">
     {NUM_TABS, plural,
       =1 {Share tab with Gemini}
     other {Share # tabs with Gemini}}
   </message>
-  <message name="IDS_TAB_CXMENU_GLIC_STOP_SHARE" desc="The label of the tab context menu submenu for stopping sharing the given tab or tabs with Gemini. [ICU syntax]" translateable="false">
+  <message name="IDS_TAB_CXMENU_GLIC_STOP_SHARE" desc="The label of the tab context menu submenu for stopping sharing the given tab or tabs with Gemini. [ICU syntax]">
     {NUM_TABS, plural,
       =1 {Stop sharing tab with Gemini}
     other {Stop sharing # tabs with Gemini}}
   </message>
-  <message name="IDS_TAB_CXMENU_GLIC_SHARE_LIMIT" desc="The label of the tab context menu submenu when the number of tabs is beyond the supported limit. [ICU syntax]" translateable="false">
+  <message name="IDS_TAB_CXMENU_GLIC_SHARE_LIMIT" desc="The label of the tab context menu submenu when the number of tabs is beyond the supported limit. [ICU syntax]">
     {NUM_TABS, plural,
       =1 {Sharing selected tab would exceed the sharing limit}
     other {Sharing # tabs would exceed the sharing limit}}
   </message>
+  </if>
+  <if expr="use_titlecase">
+  <message name="IDS_TAB_CXMENU_GLIC_START_SHARE" desc="The label of the tab context menu submenu for starting sharing the given tab or tabs with Gemini. [ICU syntax]">
+    {NUM_TABS, plural,
+      =1 {Share Tab with Gemini}
+    other {Share # Tabs with Gemini}}
+  </message>
+  <message name="IDS_TAB_CXMENU_GLIC_STOP_SHARE" desc="The label of the tab context menu submenu for stopping sharing the given tab or tabs with Gemini. [ICU syntax]">
+    {NUM_TABS, plural,
+      =1 {Stop Sharing Tab with Gemini}
+    other {Stop Sharing # Tabs with Gemini}}
+  </message>
+  <message name="IDS_TAB_CXMENU_GLIC_SHARE_LIMIT" desc="The label of the tab context menu submenu when the number of tabs is beyond the supported limit. [ICU syntax]">
+    {NUM_TABS, plural,
+      =1 {Sharing Selected Tab Would Exceed the Sharing Limit}
+    other {Sharing # Tabs Would Exceed the Sharing Limit}}
+  </message>
+  </if>
 
   <!-- Glic button context menu. -->
   <message name="IDS_GLIC_BUTTON_CXMENU_UNPIN" desc="Name of the Glic button context menu item for unpinning Glic.">
     Unpin
+  </message>
+
+  <!-- Gemini tab strip button label -->
+  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_LABEL" desc="Label on the button used to open Gemini in Chrome.">
+    Gemini
+  </message>
+
+  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL" desc="Label on the button used to open Gemini in Chrome.">
+    Ask Gemini
+  </message>
+  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_BROWSE_LABEL" desc="Label on the button used to open Gemini in Chrome.">
+    Browse with AI
+  </message>
+
+  <!-- Content area context menu. -->
+  <if expr="use_titlecase">
+    <message name="IDS_CONTENT_CONTEXT_GLICSHAREIMAGE" desc="Share image with Gemini and recreate based on user-selected prompt">Create Image with Gemini</message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_CONTENT_CONTEXT_GLICSHAREIMAGE" desc="Share image with Gemini and recreate based on user-selected prompt">Create image with Gemini</message>
+  </if>
+  <!-- IPH -->
+  <if expr="use_titlecase">
+    <message name="IDS_GLIC_PROMO_CONFIRM" desc="The button that a user clicks to open Gemini.">Try Now</message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_GLIC_PROMO_CONFIRM" desc="The button that a user clicks to open Gemini.">Try now</message>
+  </if>
+  <message name="IDS_GLIC_TRYIT_TITLE" desc="Title for a promo pointing to the Gemini icon in Chrome, that opens Gemini in Chrome if selected.">
+    Get help with your tasks
+  </message>
+  <message name="IDS_GLIC_TRYIT_BODY" desc="Text for a promo pointing to the Gemini icon in Chrome, that opens Gemini in Chrome if selected.">
+    Chat with Gemini in Chrome to get answers, key takeaways, and more as you browse
   </message>
 </grit-part>

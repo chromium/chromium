@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//pdf/features.gni")
 
 assert(is_chromeos)
 
@@ -441,6 +442,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/local_image_search",
     "//chrome/browser/ash/arc/fileapi",
@@ -470,12 +472,13 @@ source_set("browser_tests") {
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
-    "//chrome/browser/sync:sync",
+    "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/cast_config",
     "//chrome/browser/ui/ash/sharesheet",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/views/select_file_dialog_extension",
+    "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chrome/browser/ui/webui/ash/office_fallback",
     "//chrome/browser/web_applications",
@@ -515,6 +518,8 @@ source_set("browser_tests") {
     "//components/application_locale_storage",
     "//components/download/public/common:public",
     "//components/drive",
+    "//components/enterprise/connectors/core:cloud_content_scanning",
+    "//components/enterprise/connectors/core:constants",
     "//components/file_access:test_support",
     "//components/keyed_service/core",
     "//components/media_router/browser:test_support",
@@ -561,6 +566,10 @@ source_set("browser_tests") {
     "//ui/views",
     "//url",
   ]
+
+  if (enable_pdf) {
+    deps += [ "//pdf:features" ]
+  }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.

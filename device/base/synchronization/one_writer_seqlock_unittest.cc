@@ -46,11 +46,10 @@ class BasicSeqLockTestThread : public base::PlatformThread::Delegate {
 
     for (unsigned i = 0; i < 1000; ++i) {
       TestData copy;
-      base::subtle::Atomic32 version;
+      int32_t version;
       do {
         version = seqlock_->ReadBegin();
-        OneWriterSeqLock::AtomicReaderMemcpy(&copy, data_.get(),
-                                             sizeof(TestData));
+        copy = std::atomic_ref(*data_).load(std::memory_order_relaxed);
       } while (seqlock_->ReadRetry(version));
 
       for (unsigned j = 1; j < 32; ++j)
@@ -84,7 +83,7 @@ class MaxRetriesSeqLockTestThread : public base::PlatformThread::Delegate {
     }
 
     for (unsigned i = 0; i < 10; ++i) {
-      base::subtle::Atomic32 version;
+      int32_t version;
       version = seqlock_->ReadBegin(100);
 
       EXPECT_NE(version & 1, 0);
@@ -128,7 +127,7 @@ TEST(OneWriterSeqLockTest, MAYBE_ManyThreads) {
       new_data.buffer[i] = new_data.buffer[0] + new_data.buffer[i - 1];
     }
     seqlock.WriteBegin();
-    OneWriterSeqLock::AtomicWriterMemcpy(&data, &new_data, sizeof(TestData));
+    std::atomic_ref(data).store(new_data, std::memory_order_relaxed);
     seqlock.WriteEnd();
 
     if (counter == 1)

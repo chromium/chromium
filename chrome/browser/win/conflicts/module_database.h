@@ -27,10 +27,6 @@ class SequencedTaskRunner;
 
 // A class that keeps track of all modules loaded across Chrome processes.
 //
-// It is also the main class behind third-party modules tracking, and owns the
-// different classes that required to identify incompatible applications and
-// record metrics.
-//
 // This is effectively a singleton, but doesn't use base::Singleton. The intent
 // is for the object to be created when Chrome is single-threaded, and for it
 // be set as the process-wide singleton via SetInstance.

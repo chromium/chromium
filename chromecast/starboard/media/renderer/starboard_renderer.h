@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,6 +23,11 @@
 #include "media/base/renderer_client.h"
 
 namespace chromecast {
+
+namespace metrics {
+class CastMetricsHelper;
+}  // namespace metrics
+
 namespace media {
 
 class VideoGeometrySetterService;
@@ -33,11 +39,13 @@ class VideoGeometrySetterService;
 // (media_task_runner, passed into the constructor).
 class StarboardRenderer : public ::media::Renderer {
  public:
-  StarboardRenderer(std::unique_ptr<StarboardApiWrapper> starboard,
-                    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
-                    const base::UnguessableToken& overlay_plane_id,
-                    bool enable_buffering,
-                    VideoGeometrySetterService* geometry_setter_service);
+  StarboardRenderer(
+      std::unique_ptr<StarboardApiWrapper> starboard,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+      const base::UnguessableToken& overlay_plane_id,
+      bool enable_buffering,
+      VideoGeometrySetterService* geometry_setter_service,
+      chromecast::metrics::CastMetricsHelper* cast_metrics_helper);
 
   // Disallow copy and assign.
   StarboardRenderer(const StarboardRenderer&) = delete;
@@ -69,11 +77,16 @@ class StarboardRenderer : public ::media::Renderer {
 
   std::unique_ptr<StarboardApiWrapper> starboard_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
-  ::media::RendererClient* client_ = nullptr;
+  raw_ptr<::media::RendererClient> client_ = nullptr;
   std::unique_ptr<StarboardPlayerManager> player_manager_;
   // This must be destructed before starboard_.
   GeometryChangeHandler geometry_change_handler_;
+  raw_ptr<chromecast::metrics::CastMetricsHelper> cast_metrics_helper_ =
+      nullptr;
   bool enable_buffering_ = true;
+  // Whether a Cast.Platform.Ended message has already been reported for this
+  // play. Used to avoid double reporting the Cast.Platform.Ended metric.
+  bool end_reported_ = false;
 
   // This is set if a volume change is made before SbPlayer is created.
   std::optional<float> pending_volume_;

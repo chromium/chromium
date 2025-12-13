@@ -7,12 +7,12 @@
 dictionary CookieListItem {
   USVString name;
   USVString value;
-  USVString? domain;
-  USVString path;
-  DOMHighResTimeStamp? expires;
-  boolean secure;
-  CookieSameSite sameSite;
-  boolean partitioned;
+  [Measure] USVString? domain;
+  [Measure] USVString path;
+  [Measure] DOMHighResTimeStamp? expires;
+  [Measure] boolean secure;
+  [Measure] CookieSameSite sameSite;
+  [Measure] boolean partitioned;
 };
 
 typedef sequence<CookieListItem> CookieList;

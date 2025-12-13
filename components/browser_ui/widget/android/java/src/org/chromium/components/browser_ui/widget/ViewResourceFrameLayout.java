@@ -4,12 +4,10 @@
 
 package org.chromium.components.browser_ui.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewParent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -59,7 +57,7 @@ public class ViewResourceFrameLayout extends OptimizedFrameLayout {
         return true;
     }
 
-    @SuppressLint("NewApi") // Used on O+, invalidateChildInParent used for previous versions.
+    // LINT.IfChange(OnDescendantInvalidated)
     @Override
     public void onDescendantInvalidated(View child, View target) {
         super.onDescendantInvalidated(child, target);
@@ -71,11 +69,5 @@ public class ViewResourceFrameLayout extends OptimizedFrameLayout {
             mResourceAdapter.invalidate(mTempRect);
         }
     }
-
-    @Override
-    public ViewParent invalidateChildInParent(int[] location, Rect dirty) {
-        ViewParent retVal = super.invalidateChildInParent(location, dirty);
-        if (isReadyForCapture()) mResourceAdapter.invalidate(dirty);
-        return retVal;
-    }
+    // LINT.ThenChange(//components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/ViewResourceCoordinatorLayout.java:OnDescendantInvalidated)
 }

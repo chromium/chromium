@@ -63,7 +63,7 @@ std::string GenerateSigninScopedDeviceId(bool for_ephemeral) {
            base::Uuid::GenerateRandomV4().AsLowercaseString();
   }
 
-  if (!base::FeatureList::IsEnabled(kStableDeviceId)) {
+  if (!base::FeatureList::IsEnabled(switches::kStableDeviceId)) {
     // Do not cache identifiers if the feature is not enabled yet.
     return base::Uuid::GenerateRandomV4().AsLowercaseString();
   }

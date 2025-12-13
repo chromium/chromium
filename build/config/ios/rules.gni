@@ -335,6 +335,17 @@ template("ios_app_bundle") {
       inputs += [ orderfile_path ]
     }
 
+    if (defined(invoker.link_framework_first)) {
+      link_framework_first = invoker.link_framework_first
+      if (!defined(ldflags)) {
+        ldflags = []
+      }
+      ldflags += [
+        "-framework",
+        link_framework_first,
+      ]
+    }
+
     if (target_environment == "simulator") {
       deps += [ ":$_generate_entitlements_target" ]
 
@@ -361,6 +372,8 @@ template("ios_app_bundle") {
         get_label_info(invoker.intents_target, "name") + ".module_info.json"
 
     action(_metadata_extraction) {
+      forward_variables_from(invoker, [ "testonly" ])
+
       _output_dir = "$target_out_dir/$target_name"
       _binary_path = "$target_out_dir/$_output_name"
 
@@ -413,6 +426,8 @@ template("ios_app_bundle") {
     }
 
     bundle_data(_metadata_bundledata) {
+      forward_variables_from(invoker, [ "testonly" ])
+
       public_deps = [ ":$_metadata_extraction" ]
       sources = get_target_outputs(":$_metadata_extraction")
       outputs = [ "{{bundle_resources_dir}}/" +
@@ -465,6 +480,7 @@ template("ios_app_bundle") {
       _info_plist_path,
     ]
     sources += ios_mobileprovision_files
+    sources += [ ios_mobileprovision_files_filelist ]
 
     outputs = [ _generate_entitlements_output ]
 
@@ -472,10 +488,8 @@ template("ios_app_bundle") {
       "generate-entitlements",
       "-e=" + rebase_path(_entitlements_path, root_build_dir),
       "-p=" + rebase_path(_info_plist_path, root_build_dir),
+      "-M=" + rebase_path(ios_mobileprovision_files_filelist, root_build_dir),
     ]
-    foreach(mobileprovision, ios_mobileprovision_files) {
-      args += [ "-m=" + rebase_path(mobileprovision, root_build_dir) ]
-    }
     args += rebase_path(outputs, root_build_dir)
   }
 
@@ -527,6 +541,10 @@ template("ios_app_bundle") {
                                "xcasset_compiler_flags",
                                "xcode_extra_attributes",
                              ])
+
+      if (defined(invoker.link_framework_first)) {
+        verify_as_first_framework = invoker.link_framework_first
+      }
 
       output_name = _output_name
       bundle_gen_dir = _variant.bundle_gen_dir
@@ -828,13 +846,7 @@ template("ios_framework_bundle") {
 
   if (_has_public_headers) {
     _public_headers = invoker.public_headers
-
     _framework_root_dir = "$root_out_dir/$_output_name.framework"
-    if (target_environment == "simulator" || target_environment == "device") {
-      _framework_contents_dir = _framework_root_dir
-    } else if (target_environment == "catalyst") {
-      _framework_contents_dir = "$_framework_root_dir/Versions/A"
-    }
 
     _compile_headers_map_target = _target_name + "_compile_headers_map"
     action(_compile_headers_map_target) {
@@ -868,26 +880,40 @@ template("ios_framework_bundle") {
     }
 
     _create_module_map_target = _target_name + "_module_map"
+    _module_map_bundle_data = _target_name + "_module_map_bundle_data"
     action(_create_module_map_target) {
-      visibility = [ ":$_framework_headers_target" ]
+      visibility = [
+        ":$_framework_headers_target",
+        ":$_module_map_bundle_data",
+      ]
+
       script = "//build/config/apple/write_framework_modulemap.py"
-      outputs = [ "$_framework_contents_dir/Modules/module.modulemap" ]
+      outputs = [ "$target_out_dir/$target_name/module.modulemap" ]
       args = [
         _output_name,
-        rebase_path("$_framework_contents_dir/Modules", root_build_dir),
+        rebase_path("$target_out_dir/$target_name", root_build_dir),
       ]
     }
 
-    _copy_public_headers_target = _target_name + "_copy_public_headers"
-    copy(_copy_public_headers_target) {
+    bundle_data(_module_map_bundle_data) {
+      visibility = [ ":$_framework_headers_target" ]
+      sources = get_target_outputs(":$_create_module_map_target")
+      outputs = [ "{{bundle_contents_dir}}/Modules/{{source_file_part}}" ]
+
+      public_deps = [ ":$_create_module_map_target" ]
+    }
+
+    _public_headers_bundle_data = _target_name + "_public_headers_bundle_data"
+    bundle_data(_public_headers_bundle_data) {
       forward_variables_from(invoker,
                              [
                                "testonly",
                                "deps",
                              ])
+
       visibility = [ ":$_framework_headers_target" ]
       sources = _public_headers
-      outputs = [ "$_framework_contents_dir/Headers/{{source_file_part}}" ]
+      outputs = [ "{{bundle_contents_dir}}/Headers/{{source_file_part}}" ]
 
       # Do not use forward_variables_from for "public_deps" as
       # we do not want to forward those dependencies.
@@ -905,7 +931,10 @@ template("ios_framework_bundle") {
         ":$_compile_headers_map_target",
         ":$_create_module_map_target",
       ]
-      public_deps = [ ":$_copy_public_headers_target" ]
+      public_deps = [
+        ":$_module_map_bundle_data",
+        ":$_public_headers_bundle_data",
+      ]
     }
   }
 
@@ -965,8 +994,6 @@ template("ios_framework_bundle") {
     output_name = _output_name
     bundle_binary_target = ":$_shared_library_target"
     bundle_binary_output = _output_name
-
-    has_public_headers = _has_public_headers
 
     # Framework do not have entitlements nor mobileprovision because they use
     # the one from the bundle using them (.app or .appex) as they are just

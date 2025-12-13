@@ -86,7 +86,6 @@ ts_files = [
   "file_manager/state/ducks/drive.ts",
   "file_manager/state/ducks/folder_shortcuts.ts",
   "file_manager/state/ducks/launch_params.ts",
-  "file_manager/state/ducks/materialized_views.ts",
   "file_manager/state/ducks/navigation.ts",
   "file_manager/state/ducks/preferences.ts",
   "file_manager/state/ducks/search.ts",

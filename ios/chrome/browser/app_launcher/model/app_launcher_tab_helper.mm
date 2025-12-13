@@ -9,12 +9,12 @@
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/policy/core/browser/url_blocklist_manager.h"
+#import "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#import "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
-#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
@@ -52,7 +52,7 @@ bool IsValidAppUrl(const GURL& app_url) {
 bool HasChromeAppScheme(const GURL& app_url) {
   NSArray* chrome_schemes =
       [[ChromeAppConstants sharedInstance] allBundleURLSchemes];
-  NSString* app_url_scheme = base::SysUTF8ToNSString(app_url.scheme());
+  NSString* app_url_scheme = base::SysUTF8ToNSString(app_url.GetScheme());
   return [chrome_schemes containsObject:app_url_scheme];
 }
 

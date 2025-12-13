@@ -11,8 +11,6 @@ include_rules = [
   # refactor chromeos codes in //chrome to break these dependencies; see
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
-  "+chrome/browser/extensions/extension_service.h",
-  "+chrome/browser/extensions/permissions/permissions_test_util.h",
   "+chrome/browser/extensions/test_extension_environment.h",
   "+chrome/common",
   "+chrome/test",

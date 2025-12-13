@@ -13,9 +13,13 @@ namespace autofill {
 class AutofillBubbleBase {
  public:
   virtual ~AutofillBubbleBase() = default;
+
   // Called from controller to shut down the bubble and prevent any further
   // action.
   virtual void Hide() = 0;
+
+  // Called from controller to check if the mouse is hovering over the view.
+  virtual bool IsMouseHovered() const = 0;
 };
 
 }  // namespace autofill

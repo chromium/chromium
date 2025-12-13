@@ -100,10 +100,10 @@ bool ScopedRasterTimer::AsyncGpuRasterTimer::CheckTimer(
 void ScopedRasterTimer::Host::CheckGpuTimers(
     gpu::raster::RasterInterface* raster_interface) {
   CHECK(raster_interface);
-  WTF::EraseIf(gpu_timers_,
-               [raster_interface](std::unique_ptr<AsyncGpuRasterTimer>& timer) {
-                 return timer->CheckTimer(*raster_interface);
-               });
+  EraseIf(gpu_timers_,
+          [raster_interface](std::unique_ptr<AsyncGpuRasterTimer>& timer) {
+            return timer->CheckTimer(*raster_interface);
+          });
 }
 
 void ScopedRasterTimer::Host::AddGpuTimer(

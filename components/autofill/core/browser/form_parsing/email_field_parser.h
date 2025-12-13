@@ -18,7 +18,7 @@ namespace autofill {
 class EmailFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
   explicit EmailFieldParser(FieldAndMatchInfo match, FieldType email_type);
 
   EmailFieldParser(const EmailFieldParser&) = delete;

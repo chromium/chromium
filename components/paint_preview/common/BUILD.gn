@@ -23,6 +23,8 @@ source_set("common") {
     "proto_validator.h",
     "recording_map.cc",
     "recording_map.h",
+    "redaction_params.cc",
+    "redaction_params.h",
     "serial_utils.cc",
     "serial_utils.h",
     "serialized_recording.cc",
@@ -36,6 +38,7 @@ source_set("common") {
   deps = [
     "//base",
     "//components/crash/core/common:crash_key",
+    "//net",
     "//skia",
     "//third_party/harfbuzz-ng",
     "//ui/gfx/geometry",
@@ -52,6 +55,8 @@ source_set("test_utils") {
   testonly = true
 
   sources = [
+    "mock_paint_preview_recorder.cc",
+    "mock_paint_preview_recorder.h",
     "test_utils.cc",
     "test_utils.h",
   ]
@@ -72,6 +77,7 @@ source_set("unit_tests") {
     "glyph_usage_unittest.cc",
     "paint_preview_tracker_unittest.cc",
     "proto_validator_unittest.cc",
+    "redaction_params_unittest.cc",
     "serial_utils_unittest.cc",
     "serialized_recording_unittest.cc",
     "subset_font_unittest.cc",
@@ -83,6 +89,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/crash/core/common:crash_key",
+    "//net",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

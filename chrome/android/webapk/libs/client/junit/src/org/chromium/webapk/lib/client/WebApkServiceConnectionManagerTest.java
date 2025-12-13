@@ -28,9 +28,9 @@ import org.robolectric.shadows.ShadowApplication;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.concurrent.Executor;
 
 /** Unit tests for {@link org.chromium.webapk.lib.client.WebApkServiceConnectionManager}. */
@@ -39,7 +39,7 @@ import java.util.concurrent.Executor;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebApkServiceConnectionManagerTest {
     private static class TestExecutor implements Executor {
-        private final LinkedList<Runnable> mPendingTasks = new LinkedList<>();
+        private final ArrayDeque<Runnable> mPendingTasks = new ArrayDeque<>();
 
         @Override
         public void execute(Runnable command) {

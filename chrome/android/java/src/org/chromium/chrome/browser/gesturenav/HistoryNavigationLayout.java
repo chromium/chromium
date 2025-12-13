@@ -190,7 +190,7 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
         removeView(mSideSlideLayout);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     boolean isLayoutDetached() {
         return mSideSlideLayout == null || mSideSlideLayout.getParent() == null;
     }

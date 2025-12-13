@@ -26,7 +26,7 @@ export function getHtml(this: DescriptionSectionElement) {
       this.description.summary.map((summaryItem, summaryIndex) => html`
         <span class="summary-text">${summaryItem.text}</span>
         ${summaryItem.urls.map((urlInfo, urlIndex) => html`
-        <description-citation .urlInfo=${urlInfo}
+        <description-citation .urlInfo="${urlInfo}"
             index="${this.computeCitationIndex_(summaryIndex, urlIndex)}"
             citation-count="${this.citationCount}"
             product-name="${this.productName}">

@@ -48,7 +48,8 @@ class PhoneHubUiControllerTest : public NoSessionAshTestBase,
   // NoSessionAshTestBase:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {features::kEcheSWA, features::kEcheNetworkConnectionState}, {});
+        /*enabled_features=*/{features::kEcheSWA},
+        /*disabled_features=*/{});
 
     NoSessionAshTestBase::SetUp();
 

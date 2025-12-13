@@ -86,22 +86,10 @@ public final class AuxiliarySearchDonorTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        "AndroidAppIntegrationV2:content_ttl_hours/5",
-        "AndroidAppIntegrationWithFavicon:skip_schema_check/true"
-    })
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.S, message = "The donation API is for S+.")
-    public void testDonateTabs() {
-        testDonateTabsImpl();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({
-        "AndroidAppIntegrationV2:content_ttl_hours/5",
         "AndroidAppIntegrationMultiDataSource:multi_data_source_skip_schema_check/true"
     })
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.S, message = "The donation API is for S+.")
-    public void testDonateTabs_MultiDataSource() {
+    public void testDonateTabs() {
         testDonateTabsImpl();
     }
 
@@ -174,7 +162,7 @@ public final class AuxiliarySearchDonorTest {
                                             webPage.getFavicon().getBytes()));
                         }
                     } catch (AppSearchException e) {
-                        assert false;
+                        throw new AssertionError();
                     }
                 });
     }

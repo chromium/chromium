@@ -12,7 +12,6 @@ import 'chrome://os-settings/os_settings.js';
 import type {LanguagesModel} from 'chrome://os-settings/lazy_load.js';
 import type {CrLinkRowElement, OsSettingsRoutes, Route, SettingsDevicePageElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {CrSettingsPrefs, DevicePageBrowserProxyImpl, ensureLazyLoaded, OsSettingsSubpageElement, resetGlobalScrollTargetForTesting, Router, routes, setGlobalScrollTargetForTesting} from 'chrome://os-settings/os_settings.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -92,8 +91,6 @@ suite('<settings-device-page> Input settings', () => {
   });
 
   setup(() => {
-    loadTimeData.overrideValues({enableInputDeviceSettingsSplit: true});
-
     Router.getInstance().navigateTo(routes.DEVICE);
 
     DevicePageBrowserProxyImpl.setInstanceForTesting(

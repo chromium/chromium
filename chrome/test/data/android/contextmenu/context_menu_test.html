@@ -1,6 +1,11 @@
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5" />
+<!-- LINT.IfChange(PageScaleFactor) -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<!-- LINT.ThenChange(
+  //chrome/android/javatests/src/org/chromium/chrome/browser/app/ContextMenuDragTest.java:PageScaleFactor,
+  //chrome/android/javatests/src/org/chromium/chrome/browser/contextmenu/ContextMenuTest.java:PageScaleFactor,
+  chrome/android/javatests/src/org/chromium/chrome/browser/tabmodel/ContextMenuLoadUrlParamsTest.java:PageScaleFactor) -->
 </head>
 <body>
 
@@ -9,6 +14,9 @@
   <a href="test_link.html" id="testLink">Test Link</a><br />
 
   <a href="test_link2.html" id="testLink2">Test Link 2></a><br />
+
+  <a href="test_link.html" id="interestForLink" interestfor="target">interestfor Link</a>
+  <div popover id="target">Target</div><br />
 
   <a href="test_link.html" id="testImageLink"><img src="test_image.png"></a><br /><br />
 

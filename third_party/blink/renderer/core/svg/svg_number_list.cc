@@ -32,13 +32,14 @@ SVGNumberList::SVGNumberList() = default;
 SVGNumberList::~SVGNumberList() = default;
 
 template <typename CharType>
-SVGParsingError SVGNumberList::Parse(const CharType*& ptr,
-                                     const CharType* end) {
-  const CharType* list_start = ptr;
-  while (ptr < end) {
+SVGParsingError SVGNumberList::Parse(base::span<const CharType> span) {
+  const size_t list_start_size = span.size();
+  while (!span.empty()) {
     float number = 0;
-    if (!ParseNumber(ptr, end, number))
-      return SVGParsingError(SVGParseStatus::kExpectedNumber, ptr - list_start);
+    if (!ParseNumber(span, number)) {
+      return SVGParsingError(SVGParseStatus::kExpectedNumber,
+                             list_start_size - span.size());
+    }
     Append(MakeGarbageCollected<SVGNumber>(number));
   }
   return SVGParseStatus::kNoError;
@@ -53,10 +54,7 @@ SVGParsingError SVGNumberList::SetValueAsString(const String& value) {
   // Don't call |clear()| if an error is encountered. SVG policy is to use
   // valid items before error.
   // Spec: http://www.w3.org/TR/SVG/single-page.html#implnote-ErrorProcessing
-  return VisitCharacters(value, [&](auto chars) {
-    const auto* start = chars.data();
-    return Parse(start, start + chars.size());
-  });
+  return VisitCharacters(value, [&](auto chars) { return Parse(chars); });
 }
 
 void SVGNumberList::Add(const SVGPropertyBase* other,

@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
-#import "ios/chrome/browser/reading_list/model/reading_list_constants.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_app_interface.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_constants.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_egtest_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -48,11 +49,11 @@ namespace {
 
 NSString* const kReadTitle = @"foobar";
 NSString* const kReadURL = @"http://readfoobar.com";
-NSString* kPage1Title = @"Page 1 Title";
+NSString* const kPage1Title = @"Page 1 Title";
 const char kPage1URL[] = "/page1";
-NSString* kPage2Title = @"Page 2 Title";
+NSString* const kPage2Title = @"Page 2 Title";
 const char kPage2URL[] = "/page2";
-constexpr base::TimeDelta kLongPressDuration = base::Seconds(1);
+constexpr base::TimeDelta kLongPressDuration = base::Seconds(2);
 constexpr base::TimeDelta kSyncActiveTimeout = base::Seconds(5);
 
 id<GREYMatcher> SignedInSnackbar(NSString* email) {
@@ -61,12 +62,8 @@ id<GREYMatcher> SignedInSnackbar(NSString* email) {
   return grey_text(snackbarMessage);
 }
 
-id<GREYMatcher> SignedInSnackbarUndoButton() {
-  return grey_accessibilityID(kSigninSnackbarUndo);
-}
-
-id<GREYMatcher> AddedToAccountReadingListSnackbarUndoButton() {
-  return grey_accessibilityID(kReadingListAddedToAccountSnackbarUndoID);
+id<GREYMatcher> SnackbarButton() {
+  return grey_accessibilityID(kSnackbarButtonAccessibilityId);
 }
 
 // Provides responses containing a custom title for fake URLs.
@@ -176,8 +173,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:SignedInSnackbar(
                                               fakeIdentity.userEmail)];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:SignedInSnackbarUndoButton()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SnackbarButton()];
 
   // Dismiss the snackbar.
   [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
@@ -207,8 +203,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail];
   // Tap on "Undo".
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(SignedInSnackbarUndoButton(),
-                                          grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:grey_allOf(
+                                   SnackbarButton(),
+                                   grey_accessibilityLabel(
+                                       l10n_util::GetNSString(
+                                           IDS_IOS_SIGNIN_SNACKBAR_UNDO)),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Verify that the snackbar disappears, the promo is shown, and the user is
   // signed-out.
@@ -339,8 +339,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // manager.
 - (void)testPromoShownWhenSyncDataNotRemovedWithBookmarksUpload {
   // Add last syncing account to mimic signing out without clearing data.
-  [ChromeEarlGrey setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaID
-                     forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
+  [ChromeEarlGrey
+      setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaId.ToNSString()
+         forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
 
   OpenReadingList();
   [SigninEarlGreyUI
@@ -398,9 +399,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Verify that the right snackbar appears and there's no undo button on it.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:AddedToLocalReadingListSnackbar()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(AddedToAccountReadingListSnackbarUndoButton(),
-                            grey_sufficientlyVisible(), nil)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(SnackbarButton(),
+                                          grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
 
   // Dismiss the snackbar.
@@ -488,7 +489,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Tap on undo when the snackbar appears.
   [ChromeEarlGrey
       waitForAndTapButton:grey_allOf(
-                              AddedToAccountReadingListSnackbarUndoButton(),
+                              SnackbarButton(),
+                              grey_accessibilityLabel(l10n_util::GetNSString(
+                                  IDS_IOS_READING_LIST_SNACKBAR_UNDO_ACTION)),
                               grey_sufficientlyVisible(), nil)];
   // Verify that Page 1 is not in the Reading List.
   OpenReadingList();
@@ -566,6 +569,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                          fakeIdentity.userEmail);
   // Remove Page 1 from the Reading List.
   OpenReadingList();
+  // TODO(crbug.com/446889046): Investigate if there is a better solution to fix
+  // flakiness on iOS26.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
       performAction:grey_longPressWithDuration(kLongPressDuration)];
   [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
@@ -624,27 +630,25 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Mark Page 1 as read.
   OpenReadingList();
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:VisibleReadingListItem(kPage1Title)];
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
       performAction:grey_longPressWithDuration(kLongPressDuration)];
   [[EarlGrey selectElementWithMatcher:ReadingListMarkAsReadButton()]
       performAction:grey_tap()];
-  // Wait one second since the reading list items may update multiple times.
-  // TODO(crbug.com/40268339): Check if this delay can be replaced by the use of
-  // waitForUIElementToAppearWithMatcher instead.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   // Verify that the unread and the read sections headers are visible.
   NSString* readHeaderText =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_READ_HEADER);
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_text(readHeaderText),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
+  // Wait until the header appears since the reading list items may update
+  // multiple times.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_text(readHeaderText)];
+
   NSString* unreadHeaderText =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_UNREAD_HEADER);
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_text(unreadHeaderText),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_text(unreadHeaderText)];
+
   // Verify that both items are visible and only one of them is unread.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:ReadingListItem(kPage1Title)];

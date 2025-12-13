@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/indexed_db_client_state_checker_factory.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"

@@ -15,11 +15,7 @@
 // Called when the coordinator did update the filter/sorting criteria.
 - (void)browseDriveFilePickerCoordinator:
             (BrowseDriveFilePickerCoordinator*)coordinator
-                         didUpdateFilter:(DriveFilePickerFilter)filter
-                         sortingCriteria:(DriveItemsSortingType)sortingCriteria
-                        sortingDirection:
-                            (DriveItemsSortingOrder)sortingDirection
-                     ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes;
+                        didUpdateOptions:(DriveFilePickerOptions)options;
 
 // Called when "Add account" button is triggered.
 - (void)coordinatorDidTapAddAccount:(ChromeCoordinator*)coordinator;

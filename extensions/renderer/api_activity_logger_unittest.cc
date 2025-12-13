@@ -19,8 +19,6 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/test_extensions_renderer_client.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_test_sink.h"
 
 namespace extensions {
 

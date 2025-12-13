@@ -35,6 +35,8 @@
 #include "chrome/credential_provider/gaiacp/scoped_lsa_policy.h"
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
 #include "crypto/aead.h"
+#include "crypto/evp.h"
+#include "crypto/random.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
@@ -157,48 +159,41 @@ bool UnpadSecret(const std::string& serialized_padded_secret,
 // Encrypts the given |secret| with the provided |public_key|. Returns a vector
 // of uint8_t as the encrypted secret.
 std::optional<std::vector<uint8_t>> PublicKeyEncrypt(
-    const std::string& public_key,
+    const std::string& public_key_spki,
     const std::string& secret) {
-  CBS pub_key_cbs;
-  CBS_init(&pub_key_cbs, reinterpret_cast<const uint8_t*>(&public_key[0]),
-           public_key.size());
-  bssl::UniquePtr<EVP_PKEY> pub_key(EVP_parse_public_key(&pub_key_cbs));
-  if (!pub_key || CBS_len(&pub_key_cbs)) {
+  bssl::UniquePtr<EVP_PKEY> public_key =
+      crypto::evp::PublicKeyFromBytes(base::as_byte_span(public_key_spki));
+  if (!public_key) {
     ERR_print_errors_cb(&LogBoringSSLError, /*unused*/ nullptr);
     return std::nullopt;
   }
 
-  RSA* rsa = EVP_PKEY_get0_RSA(pub_key.get());
+  RSA* rsa = EVP_PKEY_get0_RSA(public_key.get());
   if (!rsa) {
     ERR_print_errors_cb(&LogBoringSSLError, /*unused*/ nullptr);
     return std::nullopt;
   }
 
   // Generate a random session key and random nonce.
-  uint8_t session_key_with_nonce[kSessionKeyLength + kNonceLength];
-  RAND_bytes(session_key_with_nonce, sizeof(session_key_with_nonce));
+  std::array<uint8_t, kSessionKeyLength + kNonceLength> session_key_with_nonce;
+  crypto::RandBytes(session_key_with_nonce);
+  auto [session_key, nonce] =
+      base::span(session_key_with_nonce).split_at(kSessionKeyLength);
 
   // Encrypt the session key with the RSA public key.
   size_t rsa_len;
   std::vector<uint8_t> ciphertext(RSA_size(rsa));
   if (!RSA_encrypt(rsa, &rsa_len, ciphertext.data(), ciphertext.size(),
-                   session_key_with_nonce, sizeof(session_key_with_nonce),
+                   session_key_with_nonce.data(), session_key_with_nonce.size(),
                    RSA_PKCS1_OAEP_PADDING)) {
     ERR_print_errors_cb(&LogBoringSSLError, /*unused*/ nullptr);
     return std::nullopt;
   }
 
-  std::string session_key(session_key_with_nonce,
-                          session_key_with_nonce + kSessionKeyLength);
-
-  std::string sealed_secret;
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  aead.Init(&session_key);
-  aead.Seal(secret,
-            std::string_view(reinterpret_cast<const char*>(
-                                 &session_key_with_nonce[kSessionKeyLength]),
-                             kNonceLength),
-            /*ad=*/"", &sealed_secret);
+  aead.Init(session_key);
+  std::vector<uint8_t> sealed_secret =
+      aead.Seal(base::as_byte_span(secret), nonce, /*ad=*/{});
 
   ciphertext.insert(ciphertext.end(), sealed_secret.data(),
                     sealed_secret.data() + sealed_secret.size());

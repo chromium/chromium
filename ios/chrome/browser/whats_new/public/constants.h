@@ -11,4 +11,8 @@
 // menu.
 extern NSString* const kWhatsNewM116UsageEntryKey;
 
+// The identifier of the navigation bar button used to dismiss the What's New
+// view controller.
+extern NSString* const kWhatsNewTableViewNavigationDismissButtonId;
+
 #endif  // IOS_CHROME_BROWSER_WHATS_NEW_PUBLIC_CONSTANTS_H_

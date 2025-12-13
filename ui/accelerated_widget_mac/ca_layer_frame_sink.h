@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/gfx/ca_layer_params.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

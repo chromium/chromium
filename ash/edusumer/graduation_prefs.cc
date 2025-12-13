@@ -5,6 +5,7 @@
 #include "ash/edusumer/graduation_prefs.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash::graduation_prefs {

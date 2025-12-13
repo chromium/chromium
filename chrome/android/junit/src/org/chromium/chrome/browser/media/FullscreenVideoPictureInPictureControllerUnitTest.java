@@ -54,7 +54,6 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private Tab mTab;
     @Mock private MockWebContents mWebContents;
@@ -64,6 +63,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
     // Not a mock, since it's just a container and `final` anyway.
     private final UserDataHost mUserDataHost = new UserDataHost();
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     private FullscreenVideoPictureInPictureController mController;
 
@@ -112,12 +112,12 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         Context context = ContextUtils.getApplicationContext();
         ShadowPackageManager shadowPackageManager = Shadows.shadowOf(context.getPackageManager());
         shadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
+        mActivityTabProvider.setForTesting(mTab);
 
         when(mActivity.getSystemService(Context.ACTIVITY_SERVICE))
                 .thenReturn((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE));
         when(mActivity.getSystemService(Context.POWER_SERVICE)).thenReturn(mPowerManager);
         when(mActivity.getPackageManager()).thenReturn(context.getPackageManager());
-        when(mActivityTabProvider.get()).thenReturn(mTab);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mPowerManager.isInteractive()).thenReturn(true);
@@ -206,10 +206,10 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
 
         // Stash while media is playing.
-        mWebContentsObserverCaptor.getValue().mediaStartedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
         mController.onStashReported(true);
         verify(mMediaSession, times(1)).suspend();
-        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying(0);
 
         // Un-stash while media is still paused.
         mController.onStashReported(false);
@@ -229,7 +229,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         mController.onEnteredPictureInPictureMode();
         verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
         // Make sure that the video is paused.
-        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying(0);
 
         // Stashing paused video should do nothing.
         mController.onStashReported(true);
@@ -250,13 +250,13 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         mController.onEnteredPictureInPictureMode();
         verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
         // Stash normally.
-        mWebContentsObserverCaptor.getValue().mediaStartedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
         mController.onStashReported(true);
         verify(mMediaSession, times(1)).suspend();
-        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying(0);
 
         // Restart playback while still stashed.
-        mWebContentsObserverCaptor.getValue().mediaStartedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying(1, true, true);
 
         // Un-stash should do nothing since there's nothing to do.
         mController.onStashReported(false);
@@ -271,7 +271,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
     public void pictureInPictureDoesNotHideIfScreenIsOff() {
         enterPip();
         verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
-        mWebContentsObserverCaptor.getValue().mediaStartedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
         when(mPowerManager.isInteractive()).thenReturn(false);
 
         // Expect that there will be no attempt to exit pip yet, because the screen is off.

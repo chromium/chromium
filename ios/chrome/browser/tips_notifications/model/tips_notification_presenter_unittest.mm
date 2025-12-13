@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_commands.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -22,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -183,10 +183,10 @@ TEST_F(TipsNotificationPresenterTest, TestStartTrustedVaultKeyRetrievalFlow) {
   ON_CALL(*(sync_service_mock_->GetMockUserSettings()),
           IsTrustedVaultKeyRequiredForPreferredDataTypes())
       .WillByDefault(Return(true));
-  id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
+  id mock_handler = MockHandler(@protocol(SyncPresenterCommands));
   OCMExpect([mock_handler
-      performReauthToRetrieveTrustedVaultKey:
-          syncer::TrustedVaultUserActionTriggerForUMA::kNotification]);
+      showTrustedVaultReauthForFetchKeysWithTrigger:
+          trusted_vault::TrustedVaultUserActionTriggerForUMA::kNotification]);
   TipsNotificationPresenter::Present(
       browser_->AsWeakPtr(), TipsNotificationType::kTrustedVaultKeyRetrieval);
   EXPECT_OCMOCK_VERIFY(mock_handler);

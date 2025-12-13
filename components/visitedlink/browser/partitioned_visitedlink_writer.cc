@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/visitedlink/browser/partitioned_visitedlink_writer.h"
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -278,7 +274,7 @@ bool PartitionedVisitedLinkWriter::CreateVisitedLinkTableHelper(
     return false;
   }
 
-  memset(memory->mapping.memory(), 0, alloc_size);
+  UNSAFE_TODO(memset(memory->mapping.memory(), 0, alloc_size));
 
   // Save the header for other processes to read.
   PartitionedSharedHeader* header =
@@ -334,7 +330,7 @@ void PartitionedVisitedLinkWriter::ResizeTable(int32_t new_size) {
     // Now we have two tables, our local copy which is the old one, and the new
     // one loaded into this object where we need to copy the data.
     for (int32_t i = 0; i < old_table_length; i++) {
-      Fingerprint cur = old_hash_table[i];
+      Fingerprint cur = UNSAFE_TODO(old_hash_table[i]);
       if (cur) {
         AddFingerprint(cur, false);
       }
@@ -381,7 +377,7 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::AddFingerprint(
 
     if (cur_fingerprint == null_fingerprint_) {
       // End of probe sequence found, insert here.
-      hash_table_[cur_hash] = fingerprint;
+      UNSAFE_TODO(hash_table_[cur_hash]) = fingerprint;
       used_items_++;
       // If allowed, notify listener that a new visited link was added.
       if (send_notifications) {
@@ -439,7 +435,7 @@ bool PartitionedVisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint) {
     if (next_hash == deleted_hash) {
       break;  // We wrapped around and the whole table is full.
     }
-    if (!hash_table_[next_hash]) {
+    if (!UNSAFE_TODO(hash_table_[next_hash])) {
       break;  // Found the last spot.
     }
     end_range = next_hash;
@@ -452,15 +448,15 @@ bool PartitionedVisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint) {
   absl::InlinedVector<Fingerprint, 32> shuffled_fingerprints;
   Hash stop_loop = IncrementHash(end_range);  // The end range is inclusive.
   for (Hash i = deleted_hash; i != stop_loop; i = IncrementHash(i)) {
-    if (hash_table_[i] != fingerprint) {
+    if (UNSAFE_TODO(hash_table_[i]) != fingerprint) {
       // Don't save the one we're deleting!
-      shuffled_fingerprints.push_back(hash_table_[i]);
+      shuffled_fingerprints.push_back(UNSAFE_TODO(hash_table_[i]));
 
       // This will balance the increment of this value in AddFingerprint below
       // so there is no net change.
       used_items_--;
     }
-    hash_table_[i] = null_fingerprint_;
+    UNSAFE_TODO(hash_table_[i]) = null_fingerprint_;
   }
 
   if (!shuffled_fingerprints.empty()) {
@@ -658,7 +654,8 @@ void PartitionedVisitedLinkWriter::DeleteAllVisitedLinks() {
 
   // Clear the hash table.
   used_items_ = 0;
-  memset(hash_table_, 0, this->table_length_ * sizeof(Fingerprint));
+  UNSAFE_TODO(
+      memset(hash_table_, 0, this->table_length_ * sizeof(Fingerprint)));
 
   // Resize it if it is now too empty. Resize may write the new table out for
   // us, otherwise, schedule writing the new table to disk ourselves.
@@ -775,8 +772,8 @@ PartitionedVisitedLinkWriter::GetHashTableFromMapping(
   DCHECK(hash_table_mapping.IsValid());
   // Our table pointer is just the data immediately following the header.
   return reinterpret_cast<Fingerprint*>(
-      static_cast<char*>(hash_table_mapping.memory()) +
-      sizeof(PartitionedSharedHeader));
+      UNSAFE_TODO(static_cast<char*>(hash_table_mapping.memory()) +
+                  sizeof(PartitionedSharedHeader)));
 }
 
 }  // namespace visitedlink

@@ -189,6 +189,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.frame_interval_inputs;
   }
 
+  static const viz::TreesInVizTiming& trees_in_viz_timing(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.trees_in_viz_timing_details;
+  }
+
   static bool Read(viz::mojom::CompositorFrameMetadataDataView data,
                    viz::CompositorFrameMetadata* out);
 };

@@ -144,7 +144,7 @@ void StreamParserBuffer::SetPrerollBuffer(
   DCHECK(!preroll_buffer->end_of_stream());
   DCHECK(!preroll_buffer->preroll_buffer_);
   DCHECK(preroll_buffer->timestamp() <= timestamp());
-  DCHECK(preroll_buffer->discard_padding() == DecoderBuffer::DiscardPadding());
+  DCHECK(!preroll_buffer->discard_padding().has_value());
   DCHECK_EQ(preroll_buffer->type(), type());
   DCHECK_EQ(preroll_buffer->track_id(), track_id());
 

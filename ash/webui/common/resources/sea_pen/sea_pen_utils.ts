@@ -11,12 +11,16 @@ import {getSeaPenTemplates, parseTemplateText, QUERY} from './constants.js';
 import type {SeaPenQuery} from './sea_pen.mojom-webui.js';
 import type {SeaPenTemplateChip, SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 
+// Returns true if `maybeUrl` is a valid Url.
+export function isUrl(maybeUrl: unknown): maybeUrl is Url {
+  return !!maybeUrl && typeof maybeUrl === 'object' && 'url' in maybeUrl &&
+      typeof maybeUrl.url === 'string';
+}
+
 // Returns true if `maybeDataUrl` is a Url that contains a base64 encoded image.
-export function isImageDataUrl(maybeDataUrl: unknown): maybeDataUrl is Url {
-  return !!maybeDataUrl && typeof maybeDataUrl === 'object' &&
-      'url' in maybeDataUrl && typeof maybeDataUrl.url === 'string' &&
-      (maybeDataUrl.url.startsWith('data:image/png;base64') ||
-       maybeDataUrl.url.startsWith('data:image/jpeg;base64'));
+export function isImageDataUrl(maybeDataUrl: Url): boolean {
+  return maybeDataUrl.url.startsWith('data:image/png;base64') ||
+      maybeDataUrl.url.startsWith('data:image/jpeg;base64');
 }
 
 // SeaPenImageId must always be a positive

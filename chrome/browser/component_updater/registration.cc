@@ -4,10 +4,8 @@
 
 #include "chrome/browser/component_updater/registration.h"
 
-#include "afp_blocked_domain_list_component_installer.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -16,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/component_updater/afp_blocked_domain_list_component_remover.h"
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 #include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
@@ -25,13 +24,13 @@
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
-#include "chrome/browser/component_updater/masked_domain_list_component_installer.h"
+#include "chrome/browser/component_updater/masked_domain_list_component_remover.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/component_updater/open_cookie_database_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/component_updater/pnacl_component_installer.h"
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer.h"
-#include "chrome/browser/component_updater/probabilistic_reveal_token_component_installer.h"
+#include "chrome/browser/component_updater/probabilistic_reveal_token_component_remover.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
 #include "chrome/browser/component_updater/tpcd_metadata_component_installer.h"
@@ -54,10 +53,6 @@
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/component_updater/recovery_component_installer.h"
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -69,6 +64,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/component_updater/actor_safety_lists_component_installer.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -120,14 +116,9 @@ namespace component_updater {
 void RegisterComponentsForUpdate() {
   auto* const cus = g_browser_process->component_updater();
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   RegisterRecoveryImprovedComponent(cus, g_browser_process->local_state());
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_MAC)
-  RegisterRecoveryImprovedComponent(cus, g_browser_process->local_state());
-  RegisterRecoveryComponent(cus, g_browser_process->local_state());
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM)
   RegisterMediaFoundationWidevineCdmComponent(cus);
@@ -143,9 +134,7 @@ void RegisterComponentsForUpdate() {
   RegisterOptimizationHintsComponent(cus);
   RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(cus);
   RegisterFirstPartySetsComponent(cus);
-  RegisterMaskedDomainListComponent(cus);
   RegisterPrivacySandboxAttestationsComponent(cus);
-  RegisterAntiFingerprintingBlockedDomainListComponent(cus);
   if (history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
     RegisterHistorySearchStringsComponent(cus);
   }
@@ -154,10 +143,20 @@ void RegisterComponentsForUpdate() {
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
     // Clean up any remaining desktop sharing hub state.
     component_updater::DeleteDesktopSharingHub(path);
+    // TODO: crbug.com/457391753 - Remove this cleanup code in M146+.
+    component_updater::DeleteMaskedDomainList(path);
+
+    // TODO: crbug.com/456742487 - Remove this after M148.
+    DeleteProbabilisticRevealTokenRegistry(path);
 
     if (!history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
       DeleteHistorySearchStringsComponent(path);
     }
+
+    // Clean up any remaining state for the blocked domain list component.
+    //
+    // TODO(crbug.com/456488732): Delete this call in M156.
+    UnregisterAntiFingerprintingBlockedDomainListComponent(cus, path);
 
 #if BUILDFLAG(IS_CHROMEOS)
     // Lacros is sunsetted. While rootfs Lacros was already taken care of,
@@ -213,13 +212,15 @@ void RegisterComponentsForUpdate() {
 #if !BUILDFLAG(IS_ANDROID)
   RegisterIwaKeyDistributionComponent(cus);
   RegisterZxcvbnDataComponent(cus);
+  RegisterActorSafetyListsComponent(cus, base::OnceClosure());
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
   RegisterRealTimeUrlChecksAllowlistComponent(cus);
 #endif  // BUIDLFLAG(IS_ANDROID)
 
-  RegisterAutofillStatesComponent(cus, g_browser_process->local_state());
+  // TODO(crbug.com/466086121) - Remove this cleanup code in M153+.
+  DeleteAutofillStatesComponent(path);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   ManageScreenAIComponentRegistration(cus, g_browser_process->local_state());
@@ -260,8 +261,6 @@ void RegisterComponentsForUpdate() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   RegisterWasmTtsEngineComponent(cus, g_browser_process->local_state());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-  RegisterProbabilisticRevealTokenComponent(cus);
 }
 
 }  // namespace component_updater

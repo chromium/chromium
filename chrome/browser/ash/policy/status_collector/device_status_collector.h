@@ -13,15 +13,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -392,7 +392,7 @@ class DeviceStatusCollector : public StatusCollector,
   struct MemoryUsage {
     // Amount of free RAM (measures raw memory used by processes, not internal
     // memory waiting to be reclaimed by GC).
-    uint64_t bytes_of_ram_free;
+    base::ByteCount bytes_of_ram_free;
 
     // Sampling timestamp.
     base::Time timestamp;

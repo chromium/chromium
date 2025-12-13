@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
@@ -17,6 +12,7 @@
 #include <array>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
@@ -34,17 +30,17 @@ namespace {
 template <int factor, int index>
 float Weight(float /*dst*/[4], float src[4], float src1[4]) {
   if (factor == GL_SRC_COLOR)
-    return src[index];
+    return UNSAFE_TODO(src[index]);
   if (factor == GL_SRC_ALPHA)
-    return src[3];
+    return UNSAFE_TODO(src[3]);
   if (factor == GL_SRC1_COLOR_EXT)
-    return src1[index];
+    return UNSAFE_TODO(src1[index]);
   if (factor == GL_SRC1_ALPHA_EXT)
-    return src1[3];
+    return UNSAFE_TODO(src1[3]);
   if (factor == GL_ONE_MINUS_SRC1_COLOR_EXT)
-    return 1.0f - src1[index];
+    return 1.0f - UNSAFE_TODO(src1[index]);
   if (factor == GL_ONE_MINUS_SRC1_ALPHA_EXT)
-    return 1.0f - src1[3];
+    return 1.0f - UNSAFE_TODO(src1[3]);
   return 0.0f;
 }
 
@@ -57,14 +53,14 @@ void BlendEquationFuncAdd(float dst[4],
   std::array<float, 4> r;
   r[0] = src[0] * Weight<RGBs, 0>(dst, src, src1) +
          dst[0] * Weight<RGBd, 0>(dst, src, src1);
-  r[1] = src[1] * Weight<RGBs, 1>(dst, src, src1) +
-         dst[1] * Weight<RGBd, 1>(dst, src, src1);
-  r[2] = src[2] * Weight<RGBs, 2>(dst, src, src1) +
-         dst[2] * Weight<RGBd, 2>(dst, src, src1);
-  r[3] = src[3] * Weight<As, 3>(dst, src, src1) +
-         dst[3] * Weight<Ad, 3>(dst, src, src1);
+  r[1] = UNSAFE_TODO(src[1]) * Weight<RGBs, 1>(dst, src, src1) +
+         UNSAFE_TODO(dst[1]) * Weight<RGBd, 1>(dst, src, src1);
+  r[2] = UNSAFE_TODO(src[2]) * Weight<RGBs, 2>(dst, src, src1) +
+         UNSAFE_TODO(dst[2]) * Weight<RGBd, 2>(dst, src, src1);
+  r[3] = UNSAFE_TODO(src[3]) * Weight<As, 3>(dst, src, src1) +
+         UNSAFE_TODO(dst[3]) * Weight<Ad, 3>(dst, src, src1);
   for (int i = 0; i < 4; ++i) {
-    result[i] =
+    UNSAFE_TODO(result[i]) =
         static_cast<uint8_t>(std::floor(std::clamp(r[i], 0.0f, 1.0f) * 255.0f));
   }
 }

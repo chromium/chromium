@@ -13,16 +13,46 @@ import "url/mojom/origin.mojom";
 // GeolocationContext provides methods to bind Geolocation instance and to
 // set/clear overrides of geoposition that will apply to all Geolocation
 // instances created by this context.
+
+// Defines the level of permission a client has for accessing geolocation data.
+enum GeolocationPermissionLevel {
+  // Geolocation access is denied.
+  kDenied,
+  // The client is permitted to access only approximate location data.
+  kApproximate,
+  // The client is permitted to access precise location data.
+  kPrecise,
+};
+
 interface GeolocationContext {
   // Creates a Geolocation instance bound to `receiver`.
   // `requesting_url` is the URL of the top-level frame that made the request.
+  // `has_precise_permission` indicates whether the client is permitted to
+  // access precise location data. If false, approximate location will be
+  // returned even if precise location is requested. Implementations that do not
+  // support finer-grained permission control may return a precise location
+  // regardless of this flag. This method should not be called if geolocation
+  // access is entirely denied.
+  // TODO(crbug.com/453708846): The permission infrastructure is URL-based,
+  // which can be problematic for cases like `about:blank` URLs with different
+  // origins. Once the permission API supports origin-based checks, this method
+  // should be updated to take `url.mojom.Origin` instead of `url.mojom.Url`
+  // for permission check.
   BindGeolocation(pending_receiver<Geolocation> receiver,
                   url.mojom.Url requesting_url,
-                  GeolocationClientId client_id);
+                  GeolocationClientId client_id,
+                  bool has_precise_permission);
 
-  // Called when an origin has lost permission to access geolocation.
-  // Unbinds all Geolocation instances that were bound from the origin.
-  OnPermissionRevoked(url.mojom.Origin origin);
+  // Called when the permission level for an origin has changed.
+  // Implementers supporting granular permissions should update their accuracy
+  // settings when receiving `kPrecise` or `kApproximate`. For implementers
+  // that do not support granular permission control, these values can be
+  // treated as a no-op.
+  // A `permission_level` of `kDenied` revokes permission, unbinding all
+  // Geolocation instances for the origin. This replaces the deprecated
+  // `OnPermissionRevoked`.
+  OnPermissionUpdated(url.mojom.Origin origin,
+                     GeolocationPermissionLevel permission_level);
 
   // Enables geolocation override. This method can be used to trigger possible
   // location-specific behavior in GeolocationImpl created by this

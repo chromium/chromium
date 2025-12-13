@@ -57,7 +57,11 @@ class VideoAcceleratorUtil {
 
     // Encoders known to support temporal layers.
     private static final Set<String> TEMPORAL_SVC_SUPPORTING_ENCODERS =
-            Set.of("c2.qti.avc.encoder", "c2.exynos.h264.encoder");
+            Set.of(
+                    "c2.qti.avc.encoder",
+                    "c2.exynos.h264.encoder",
+                    "c2.cros-codecs.vaapi.avc.encoder",
+                    "c2.cros-codecs.vaapi.vp9.encoder");
 
     // Possible supported resolutions.
     private static final Resolution[] SUPPORTED_RESOLUTIONS = {
@@ -75,7 +79,7 @@ class VideoAcceleratorUtil {
         private final int mWidth;
         private final int mHeight;
 
-        public Resolution(int width, int height) {
+        Resolution(int width, int height) {
             mWidth = width;
             mHeight = height;
         }
@@ -102,6 +106,8 @@ class VideoAcceleratorUtil {
         public boolean supportsVbr;
         public @Nullable String name;
         public boolean isSoftwareCodec;
+        public boolean supportsLowLatency;
+        public boolean requiresLowLatency;
         public boolean supportsSecurePlayback;
         public boolean requiresSecurePlayback;
         public int maxNumberOfTemporalLayers;
@@ -167,6 +173,16 @@ class VideoAcceleratorUtil {
         }
 
         @CalledByNative("SupportedProfileAdapter")
+        public boolean supportsLowLatency() {
+            return this.supportsLowLatency;
+        }
+
+        @CalledByNative("SupportedProfileAdapter")
+        public boolean requiresLowLatency() {
+            return this.requiresLowLatency;
+        }
+
+        @CalledByNative("SupportedProfileAdapter")
         public boolean supportsSecurePlayback() {
             return this.supportsSecurePlayback;
         }
@@ -202,23 +218,6 @@ class VideoAcceleratorUtil {
     // choose not to report it as supported.
     private static boolean requiresHardwareEncoder(String type) {
         return !type.equalsIgnoreCase(MediaCodecUtil.MimeTypes.VIDEO_H264);
-    }
-
-    // H.264 high profile isn't required by Android platform, so we can only add support if
-    // we know its supported by the underlying codec.
-    private static boolean hasHighProfileSupport(String name) {
-        var lowerName = name.toLowerCase(Locale.ROOT);
-
-        // Some platforms seem to have a trailing `.` in the name...
-        return lowerName.startsWith("omx.google.h264.decoder")
-                || lowerName.startsWith("c2.android.avc.decoder");
-    }
-
-    // Return true if and only if this is a low latency decoder.
-    private static boolean isLowLatency(String name) {
-        var lowerName = name.toLowerCase(Locale.ROOT);
-        // This is usually a hw decoder provided by the OEM vendors.
-        return lowerName.endsWith(".low_latency");
     }
 
     private static int getNumberOfTemporalLayers(String name) {
@@ -361,7 +360,6 @@ class VideoAcceleratorUtil {
                     } catch (RuntimeException e) {
                         // This means mediaCodecProfileToChromiumMediaProfile() needs updating.
                         Log.w(TAG, "Unknown profile: " + cpl.profile + " for codec " + type);
-                        continue;
                     }
                 }
 
@@ -397,6 +395,8 @@ class VideoAcceleratorUtil {
                         profile.supportsVbr = supportsVbr;
                         profile.name = name;
                         profile.isSoftwareCodec = isSoftwareCodec;
+                        profile.supportsLowLatency = false;
+                        profile.requiresLowLatency = false;
                         profile.maxNumberOfTemporalLayers = maxNumberOfTemporalLayers;
                         profiles.add(profile);
 
@@ -415,6 +415,8 @@ class VideoAcceleratorUtil {
                             profile.supportsVbr = supportsVbr;
                             profile.name = name;
                             profile.isSoftwareCodec = isSoftwareCodec;
+                            profile.supportsLowLatency = false;
+                            profile.requiresLowLatency = false;
                             profile.maxNumberOfTemporalLayers = maxNumberOfTemporalLayers;
                             profiles.add(profile);
                         }
@@ -456,8 +458,6 @@ class VideoAcceleratorUtil {
                 // Skip duplicates. Harmless, but pollutes chrome://gpu
                 if (isAtLeastQ && info.isAlias()) continue;
                 if (info.isEncoder()) continue;
-                // Skip low latency codec in case duplication.
-                if (isLowLatency(info.getName())) continue;
 
                 MediaCodecInfo.CodecCapabilities capabilities = null;
                 try {
@@ -549,7 +549,6 @@ class VideoAcceleratorUtil {
                     } catch (RuntimeException e) {
                         // This means mediaCodecProfileToChromiumMediaProfile() needs updating.
                         Log.w(TAG, "Unknown profile: " + cpl.profile + " for codec " + type);
-                        continue;
                     }
                 }
 
@@ -592,15 +591,13 @@ class VideoAcceleratorUtil {
                     }
                 }
 
-                // Prior to Oreo, high profile support wasn't advertised properly.
-                if (codec == VideoCodec.H264
-                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.O
-                        && hasHighProfileSupport(info.getName())) {
-                    supportedProfileLevels.put(
-                            VideoCodecProfile.H264PROFILE_HIGH, kNoVideoCodecLevel);
-                }
-
                 boolean isSoftwareCodec = MediaCodecUtil.isSoftwareCodec(info);
+                boolean supportsLowLatency =
+                        capabilities.isFeatureSupported(
+                                MediaCodecInfo.CodecCapabilities.FEATURE_LowLatency);
+                boolean requiresLowLatency =
+                        capabilities.isFeatureRequired(
+                                MediaCodecInfo.CodecCapabilities.FEATURE_LowLatency);
                 boolean supportsSecurePlayback =
                         capabilities.isFeatureSupported(
                                 MediaCodecInfo.CodecCapabilities.FEATURE_SecurePlayback);
@@ -617,6 +614,8 @@ class VideoAcceleratorUtil {
                     profile.maxHeight = supportedHeights.getUpper();
                     profile.name = info.getName();
                     profile.isSoftwareCodec = isSoftwareCodec;
+                    profile.supportsLowLatency = supportsLowLatency;
+                    profile.requiresLowLatency = requiresLowLatency;
                     profile.supportsSecurePlayback = supportsSecurePlayback;
                     profile.requiresSecurePlayback = requiresSecurePlayback;
                     profiles.add(profile);
@@ -639,6 +638,10 @@ class VideoAcceleratorUtil {
                                     + profile.maxHeight
                                     + ", is_sw="
                                     + profile.isSoftwareCodec
+                                    + ", supports_low_latency="
+                                    + profile.supportsLowLatency
+                                    + ", requires_low_latency="
+                                    + profile.requiresLowLatency
                                     + ", supports_secure="
                                     + profile.supportsSecurePlayback
                                     + ", requires_secure="
@@ -656,6 +659,8 @@ class VideoAcceleratorUtil {
                         profile.maxHeight = supportedWidths.getUpper();
                         profile.name = info.getName();
                         profile.isSoftwareCodec = isSoftwareCodec;
+                        profile.supportsLowLatency = supportsLowLatency;
+                        profile.requiresLowLatency = requiresLowLatency;
                         profile.supportsSecurePlayback = supportsSecurePlayback;
                         profile.requiresSecurePlayback = requiresSecurePlayback;
                         profiles.add(profile);

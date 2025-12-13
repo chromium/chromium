@@ -35,9 +35,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
 
 namespace password_manager {
@@ -67,16 +64,14 @@ PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend)
     : backend_(std::move(backend)), construction_time_(base::Time::Now()) {}
 
 void PasswordStore::Init(
-    PrefService* prefs,
     std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper) {
   main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   DCHECK(main_task_runner_);
-  prefs_ = prefs;
   affiliated_match_helper_ = std::move(affiliated_match_helper);
 
   DCHECK(backend_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "passwords", "PasswordStore::InitOnBackgroundSequence", this);
+  TRACE_EVENT_BEGIN("passwords", "PasswordStore::InitOnBackgroundSequence",
+                    perfetto::Track::FromPointer(this));
   backend_->InitBackend(
       affiliated_match_helper_.get(),
       base::BindRepeating(&PasswordStore::NotifyLoginsChangedOnMainSequence,
@@ -316,9 +311,6 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("passwords", "PasswordStore::GetLogins",
-                                    consumer.get());
-
   backend_->GetGroupedMatchingLoginsAsync(
       form, base::BindOnce(
                 &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom,
@@ -431,10 +423,6 @@ void PasswordStore::ShutdownOnUIThread() {
 
   // The AffiliationService must be destroyed from the main sequence.
   affiliated_match_helper_.reset();
-
-  // PrefService is destroyed together with BrowserContext, and cannot be used
-  // anymore.
-  prefs_ = nullptr;
 }
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>
@@ -471,8 +459,9 @@ void PasswordStore::OnInitCompleted(bool success) {
     std::move(post_init_callback_).Run();
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "passwords", "PasswordStore::InitOnBackgroundSequence", this);
+  TRACE_EVENT_END("passwords",
+                  /* PasswordStore::InitOnBackgroundSequence */ perfetto::
+                      Track::FromPointer(this));
 }
 
 void PasswordStore::NotifyLoginsChangedOnMainSequence(
@@ -492,8 +481,8 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   base::UmaHistogramEnumeration(
       "PasswordManager.PasswordStore.OnLoginsRetained", logins_changed_trigger);
   if (!changes.has_value()) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "passwords", "LoginsRetrievedForOnLoginsRetained", this);
+    TRACE_EVENT_BEGIN("passwords", "LoginsRetrievedForOnLoginsRetained",
+                      perfetto::Track::FromPointer(this));
     // If the changes aren't provided, the store propagates the latest logins.
     backend_->GetAllLoginsAsync(base::BindOnce(
         &PasswordStore::NotifyLoginsRetainedOnMainSequence, this));
@@ -540,8 +529,10 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  TRACE_EVENT_NESTABLE_ASYNC_END0("passwords",
-                                  "LoginsRetrievedForOnLoginsRetained", this);
+  TRACE_EVENT_END(
+      "passwords",
+      /* LoginsRetrievedForOnLoginsRetained */ perfetto::Track::FromPointer(
+          this));
 #endif
 }
 

@@ -9,7 +9,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "remoting/base/logging.h"
 #include "remoting/protocol/webrtc_video_frame_adapter.h"
+#include "third_party/webrtc/api/video/video_frame.h"
 
 namespace remoting::protocol {
 
@@ -51,8 +53,11 @@ void WebrtcVideoTrackSource::AddOrUpdateSink(
     LOG(WARNING) << "More than one sink added, only the latest will be used.";
   }
   sink_ = sink;
-  main_task_runner_->PostTask(FROM_HERE,
-                              base::BindRepeating(add_sink_callback_, wants));
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(add_sink_callback_, wants)
+          .Then(base::BindOnce(&WebrtcVideoTrackSource::SendPendingFrame,
+                               weak_ptr_factory_.GetWeakPtr())));
 }
 
 void WebrtcVideoTrackSource::RemoveSink(
@@ -81,10 +86,7 @@ void WebrtcVideoTrackSource::RemoveEncodedSink(
 void WebrtcVideoTrackSource::SendCapturedFrame(
     std::unique_ptr<webrtc::DesktopFrame> desktop_frame,
     std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats) {
-  if (!sink_) {
-    LOG(WARNING) << "No sink registered, dropping frame.";
-    return;
-  }
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
   webrtc::VideoFrame video_frame = WebrtcVideoFrameAdapter::CreateVideoFrame(
       std::move(desktop_frame), std::move(frame_stats));
@@ -94,7 +96,31 @@ void WebrtcVideoTrackSource::SendCapturedFrame(
   // during a connection.
   video_frame.set_id(frame_id_++);
 
-  sink_->OnFrame(video_frame);
+  if (sink_) {
+    sink_->OnFrame(video_frame);
+    return;
+  }
+
+  HOST_LOG << "Frame will be sent to the sink after the sink is registered.";
+  pending_frame_ = std::make_unique<webrtc::VideoFrame>(std::move(video_frame));
+  // Make the entire frame dirty.
+  pending_frame_->set_update_rect(webrtc::VideoFrame::UpdateRect{
+      .offset_x = 0,
+      .offset_y = 0,
+      .width = video_frame.width(),
+      .height = video_frame.height(),
+  });
+}
+
+void WebrtcVideoTrackSource::SendPendingFrame() {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!pending_frame_) {
+    return;
+  }
+  HOST_LOG << "Sending pending frame to the sink.";
+  sink_->OnFrame(std::move(*pending_frame_));
+  pending_frame_.reset();
 }
 
 }  // namespace remoting::protocol

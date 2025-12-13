@@ -14,6 +14,12 @@
 @interface PageActionMenuEntrypointView
     : ExtendedTouchTargetButton <PageActionMenuEntryPointCommands>
 
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
+@property(nonatomic, assign) BOOL newBadgeVisible;
+
 // If YES, highlights PageActionMenu entry point. Otherwise, unhighlights.
 - (void)toggleEntryPointHighlight:(BOOL)highlight;
 

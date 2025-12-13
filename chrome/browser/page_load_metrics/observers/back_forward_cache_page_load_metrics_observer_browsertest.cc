@@ -434,17 +434,6 @@ return score;
   EXPECT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-  auto samples = histogram_tester().GetAllSamples(
-      internal::
-          kHistogramCumulativeShiftScoreMainFrameAfterBackForwardCacheRestore);
-  EXPECT_EQ(1ul, samples.size());
-  EXPECT_EQ(base::Bucket(page_load_metrics::LayoutShiftUmaValue(next_score), 1),
-            samples[0]);
-
-  histogram_tester().ExpectTotalCount(
-      internal::
-          kHistogramCumulativeShiftScoreMainFrameAfterBackForwardCacheRestore,
-      1);
   histogram_tester().ExpectTotalCount(
       internal::kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore, 1);
 
@@ -456,8 +445,6 @@ return score;
   // kBackForwardCacheEmitZeroSamplesForKeyMetrics.
   // As back-foward cache is used twice (once for A and once for B), the current
   // total count is 2.
-  histogram_tester().ExpectBucketCount(
-      "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame", 0, 2);
   histogram_tester().ExpectBucketCount(
       "PageLoad.LayoutInstability.CumulativeShiftScore", 0, 2);
 
@@ -474,18 +461,12 @@ return score;
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   histogram_tester().ExpectTotalCount(
-      internal::
-          kHistogramCumulativeShiftScoreMainFrameAfterBackForwardCacheRestore,
-      2);
-  histogram_tester().ExpectTotalCount(
       internal::kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore, 2);
 
   ExpectMetricCountForUrl(
       url_a, "CumulativeShiftScoreAfterBackForwardCacheRestore", 2);
 
   // As back-foward cache is used fourth in total.
-  histogram_tester().ExpectBucketCount(
-      "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame", 0, 4);
   histogram_tester().ExpectBucketCount(
       "PageLoad.LayoutInstability.CumulativeShiftScore", 0, 4);
 }
@@ -647,11 +628,6 @@ return score;
       "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
       "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2",
       2);
-  histogram_tester().ExpectTotalCount(
-      "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-      "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2."
-      "Incognito",
-      0);
 }
 
 // Verifies that the app resumes HistoryNavigation logging for a page if the

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -138,6 +138,11 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
     // advance directly to the consumerUpdate Screen.
     StartupUtils::SaveScreenAfterConsumerUpdate(
         GaiaInfoScreenView::kScreenId.name);
+
+    if (ash::features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
+      // Showing the GAIA screen requires OOBE to be marked complete.
+      StartupUtils::MarkOobeCompleted();
+    }
 
     LoginDisplayHost::default_host()
         ->GetWizardContextForTesting()

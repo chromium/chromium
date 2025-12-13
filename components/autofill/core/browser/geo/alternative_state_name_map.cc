@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/proto/states.pb.h"
 
 namespace autofill {
 

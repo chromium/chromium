@@ -32,7 +32,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -59,7 +61,9 @@ public class SimpleNoticeSheetRenderTest {
                     new ParameterSet().value(false, true).name("RTL"),
                     new ParameterSet().value(true, false).name("NightMode"));
 
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @Rule
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -77,6 +81,7 @@ public class SimpleNoticeSheetRenderTest {
     private static final SpannableString sText =
             SpannableString.valueOf("The text about the simple notice sheet");
     private static final String sButtonText = "Button";
+    private WebPageStation mPage;
 
     public SimpleNoticeSheetRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
         setRtlForTesting(useRtlLayout);
@@ -87,7 +92,7 @@ public class SimpleNoticeSheetRenderTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
         mBottomSheetController =
                 mActivityTestRule

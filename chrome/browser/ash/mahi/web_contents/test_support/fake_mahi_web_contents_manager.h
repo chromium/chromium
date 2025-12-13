@@ -8,8 +8,6 @@
 #include "chrome/browser/ash/mahi/web_contents/mahi_web_contents_manager_impl.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
-#include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace mahi {

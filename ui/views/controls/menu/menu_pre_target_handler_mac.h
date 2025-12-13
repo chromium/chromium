@@ -32,6 +32,7 @@ class MenuPreTargetHandlerMac : public MenuPreTargetHandler,
  private:
   // public:
   void NativeWidgetMacEventMonitorOnEvent(ui::Event* event,
+                                          bool target_is_this_window,
                                           bool* was_handled) final;
 
   std::unique_ptr<NativeWidgetMacEventMonitor> monitor_;

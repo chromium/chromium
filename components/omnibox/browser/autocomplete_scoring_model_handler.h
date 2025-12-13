@@ -30,7 +30,11 @@ class AutocompleteScoringModelHandler
       scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
       std::unique_ptr<AutocompleteScoringModelExecutor> model_executor,
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const std::optional<optimization_guide::proto::Any>& model_metadata);
+      const std::optional<optimization_guide::proto::Any>& model_metadata,
+      // If model_loading_task_runner is nullptr then model_task_runner will be
+      // used for model loading.
+      scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner =
+          nullptr);
   ~AutocompleteScoringModelHandler() override;
 
   // Disallow copy/assign.

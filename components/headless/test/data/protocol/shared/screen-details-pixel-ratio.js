@@ -6,13 +6,13 @@
 
 (async function(testRunner) {
   const {session, dp} =
-      await testRunner.startBlank('Tests screen details pixel ratio.');
+      await testRunner.startBlank('Tests screen details device pixel ratio.');
 
   const HttpInterceptor =
       await testRunner.loadScriptAbsolute('../resources/http-interceptor.js');
   const httpInterceptor = await (new HttpInterceptor(testRunner, dp)).init();
   httpInterceptor.setDisableRequestedUrlsLogging(true);
-  httpInterceptor.addFavIconResponse('https://example.com');
+
   httpInterceptor.addResponse(
       'https://example.com/index.html', `<html></html>`);
 
@@ -22,8 +22,8 @@
 
   const result = await session.evaluateAsync(async () => {
     const screenDetails = await getScreenDetails();
-    const screenInfos =
-        screenDetails.screens.map(s => `colorDepth=${s.colorDepth}`);
+    const screenInfos = screenDetails.screens.map(
+        s => `devicePixelRatio=${s.devicePixelRatio}`);
     return screenInfos.join('\n');
   });
 

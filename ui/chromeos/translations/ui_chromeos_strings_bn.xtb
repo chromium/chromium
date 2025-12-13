@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">প্রকার</translation>
 <translation id="1254593899333212300">সরাসরি ইন্টারনেট সংযোগ</translation>
 <translation id="1272293450992660632">আপনার পিনের মানগুলি মিলছে না।</translation>
+<translation id="1279040297980392566">স্ক্যান সম্পূর্ণ হওয়ার জন্য অপেক্ষা করা হচ্ছে, পরে আবার চেষ্টা করুন</translation>
 <translation id="1280820357415527819">মোবাইল নেটওয়ার্কের জন্য সার্চ করা হচ্ছে</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">এই মুহূর্তে Google ড্রাইভ উপলব্ধ নেই৷ একবার Google ড্রাইভ উপলব্ধ হলেই আপলোড করার কাজটি স্বয়ংক্রিয়ভাবে পুনরায় চালু হবে৷</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">১টি ফাইল নির্বাচিত</translation>
 <translation id="3817579325494460411">উল্লেখ নেই</translation>
 <translation id="3819448694985509187">ভুল পিন দিয়েছেন। আপনি আর ১ বার চেষ্টা করতে পারেন।</translation>
-<translation id="3822559385185038546">এই প্রক্সী আপনার প্রশাসক দ্বারা কার্যকরী করা হয়েছে</translation>
 <translation id="3830674330436234648">কোনো প্লেব্যাক উপলব্ধ নেই</translation>
 <translation id="383652340667548381">সার্বিয়</translation>
 <translation id="3839045880592694915">আপনার পরিষেবা প্রদানকারী মডেম কানেক্ট করার অনুমতি দেয় না। আরও বিবরণের জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
@@ -595,6 +595,7 @@
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5602622065581044566">বুলগেরিয়ান ভাষায় ফোনেটিক কীবোর্ড</translation>
 <translation id="5605830556594064952">মার্কিন যুক্তরাষ্ট্রীয় দভোরাক</translation>
+<translation id="560739212255190568">আপনার অ্যাডমিন নিম্নলিখিত প্রক্সি প্রয়োগ করার পাশাপাশি প্রক্সি ওভাররাইড করার নিয়ম সেট করেছেন</translation>
 <translation id="5618330573454123917">Macintosh সফ্টওয়্যার ব্যবহার করে এমন একটি কম্পিউটারের জন্য এই ফাইলটি ডিজাইন করা হয়েছে। আপনার ডিভাইস ChromeOS-এ চলে বলে সেটি এর জন্য মানানসই নয়। ChromeOS-এ ফাইল খোলা সম্পর্কে <ph name="BEGIN_LINK_HELP" />আরও জানুন<ph name="END_LINK_HELP" />।</translation>
 <translation id="5625294776298156701">তামিল ভাষায় তামিল৯৯ (Tamil99) কীবোর্ড</translation>
 <translation id="5633226425545095130">এই আইটেম অন্য কোথাও সরিয়ে দিলে, এটি শেয়ার করা ফোল্ডার '<ph name="DESTINATION_NAME" />' দেখতে পাওয়া প্রতিটি ব্যক্তির সাথে শেয়ার হয়ে যাবে।</translation>
@@ -786,7 +787,7 @@
 <translation id="7075931588889865715">থাই ভাষায় টিআইএস (TIS) ৮২০-২৫৩১ কীবোর্ড</translation>
 <translation id="708278670402572152">স্ক্যানিং সক্রিয় করতে সংযোগ বিচ্ছিন্ন করুন</translation>
 <translation id="7086590977277044826">তামিল ভাষায় ইনস্ক্রিপ্ট কীবোর্ড</translation>
-<translation id="7088615885725309056">পূর্বতর</translation>
+<translation id="7088615885725309056">পূর্বতম</translation>
 <translation id="7103992300314999525">ম্যাসিডোনিয়ান</translation>
 <translation id="7104338189998813914">আপনার OneDrive অ্যাকাউন্ট অ্যাক্সেস করার সময় কোনও সমস্যা হয়েছে</translation>
 <translation id="7106346894903675391">আরও সঞ্চয়স্থান কিনুন...</translation>
@@ -994,6 +995,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
 <translation id="8545476925160229291">ইংরেজি (মার্কিন যুক্তরাষ্ট্র)</translation>
 <translation id="854655314928502177">ওয়েব প্রক্সি অটো আবিষ্কার URL:</translation>
+<translation id="8547747809824590510">আপনার অ্যাডমিন প্রক্সি ওভাররাইড করার নিয়ম সেট করেছেন</translation>
 <translation id="8549186985808798022">ইতালিয়ান</translation>
 <translation id="8551494947769799688">লাটভিও</translation>
 <translation id="8560515948038859357">ক্যান্টনিজ</translation>
@@ -1054,6 +1056,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" নামের ফাইল আগে থেকেই আছে। অন্য একটি নাম লিখুন।</translation>
 <translation id="9046895021617826162">সংযোগ ব্যর্থ হয়েছে</translation>
 <translation id="9065512565307033593">আপনি যাচাই না করলে, আপনার নেটওয়ার্ক অ্যাক্সেস করার সুবিধা বন্ধ হয়ে যাবে।</translation>
+<translation id="9079844694307518094">আপনার অ্যাডমিন নিম্নলিখিত প্রক্সি প্রয়োগ করছেন</translation>
 <translation id="908378762078012445">রাশিয়ান ভাষায় ফোনেটিক আটসিল (AATSEEL) কীবোর্ড</translation>
 <translation id="9086302186042011942">সিঙ্ক হচ্ছে</translation>
 <translation id="9099674669267916096">পৃষ্ঠার সংখ্যা</translation>
@@ -1077,6 +1080,7 @@
 <translation id="9213073329713032541">ইনস্টলেশন চালু হয়েছে।</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">লুনার</translation>
+<translation id="931652069802536959">নেটওয়ার্ক নীতি অনুযায়ী ব্লক করা হয়েছে</translation>
 <translation id="938470336146445890">একটি ব্যবহারকারী সার্টিফিকেট ইনস্টল করুন৷</translation>
 <translation id="939736085109172342">নতুন ফোল্ডার</translation>
 <translation id="943972244133411984">পরিবর্তন করেছেন</translation>

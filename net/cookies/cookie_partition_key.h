@@ -14,7 +14,6 @@
 #include "base/types/optional_ref.h"
 #include "net/base/cronet_buildflags.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 
@@ -24,6 +23,7 @@
 
 namespace net {
 
+class NetworkIsolationKey;
 class SiteForCookies;
 
 class NET_EXPORT CookiePartitionKey {

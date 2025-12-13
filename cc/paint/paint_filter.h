@@ -131,14 +131,15 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
   static std::vector<sk_sp<SkImageFilter>> ToSkImageFilters(
       base::span<const sk_sp<PaintFilter>> filters);
 
+  static sk_sp<SkImageFilter> GetSkFilter(const PaintFilter* paint_filter) {
+    return paint_filter ? paint_filter->cached_sk_filter_ : nullptr;
+  }
+
  protected:
   PaintFilter(Type type,
               const CropRect* crop_rect,
               bool has_discardable_images);
 
-  static sk_sp<SkImageFilter> GetSkFilter(const PaintFilter* paint_filter) {
-    return paint_filter ? paint_filter->cached_sk_filter_ : nullptr;
-  }
   const sk_sp<SkImageFilter>& cached_sk_filter() const {
     return cached_sk_filter_;
   }

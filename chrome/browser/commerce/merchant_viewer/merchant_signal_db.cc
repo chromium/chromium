@@ -74,11 +74,10 @@ MerchantSignalDB::MerchantSignalDB(content::BrowserContext* browser_context)
                     ->GetForProfile(browser_context)) {}
 MerchantSignalDB::~MerchantSignalDB() = default;
 
-void MerchantSignalDB::Save(
-    JNIEnv* env,
-    std::string& key,
-    const jlong jtimestamp,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+void MerchantSignalDB::Save(JNIEnv* env,
+                            std::string& key,
+                            const jlong jtimestamp,
+                            const base::android::JavaRef<jobject>& jcallback) {
   MerchantSignalProto proto;
   proto.set_key(key);
   proto.set_trust_signals_message_displayed_timestamp(jtimestamp);
@@ -88,10 +87,9 @@ void MerchantSignalDB::Save(
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
-void MerchantSignalDB::Load(
-    JNIEnv* env,
-    std::string& key,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+void MerchantSignalDB::Load(JNIEnv* env,
+                            std::string& key,
+                            const base::android::JavaRef<jobject>& jcallback) {
   proto_db_->LoadOneEntry(
       key,
       base::BindOnce(&OnLoadCallbackSingleEntry,
@@ -101,7 +99,7 @@ void MerchantSignalDB::Load(
 void MerchantSignalDB::LoadWithPrefix(
     JNIEnv* env,
     std::string& prefix,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jobject>& jcallback) {
   proto_db_->LoadContentWithPrefix(
       prefix,
       base::BindOnce(&OnLoadCallbackMultipleEntry,
@@ -111,7 +109,7 @@ void MerchantSignalDB::LoadWithPrefix(
 void MerchantSignalDB::Delete(
     JNIEnv* env,
     std::string& key,
-    const base::android::JavaParamRef<jobject>& joncomplete_for_testing) {
+    const base::android::JavaRef<jobject>& joncomplete_for_testing) {
   proto_db_->DeleteOneEntry(
       key, base::BindOnce(&OnUpdateCallback,
                           base::android::ScopedJavaGlobalRef<jobject>(
@@ -120,7 +118,7 @@ void MerchantSignalDB::Delete(
 
 void MerchantSignalDB::DeleteAll(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& joncomplete_for_testing) {
+    const base::android::JavaRef<jobject>& joncomplete_for_testing) {
   proto_db_->DeleteAllContent(base::BindOnce(
       &OnUpdateCallback,
       base::android::ScopedJavaGlobalRef<jobject>(joncomplete_for_testing)));
@@ -128,10 +126,13 @@ void MerchantSignalDB::DeleteAll(
 
 static void JNI_MerchantTrustSignalsEventStorage_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& jprofile) {
+    const base::android::JavaRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& jprofile) {
   Java_MerchantTrustSignalsEventStorage_setNativePtr(
       env, obj,
       reinterpret_cast<intptr_t>(new MerchantSignalDB(
           content::BrowserContextFromJavaHandle(jprofile))));
 }
+
+DEFINE_JNI(MerchantTrustSignalsEventStorage)
+DEFINE_JNI(MerchantTrustSignalsEvent)

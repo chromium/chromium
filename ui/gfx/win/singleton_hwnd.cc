@@ -4,15 +4,19 @@
 
 #include "ui/gfx/win/singleton_hwnd.h"
 
-#include "base/memory/singleton.h"
+#include <utility>
+
+#include "base/callback_list.h"
+#include "base/no_destructor.h"
 #include "base/task/current_thread.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
+#include "base/win/windows_types.h"
 
 namespace gfx {
 
 // static
 SingletonHwnd* SingletonHwnd::GetInstance() {
-  return base::Singleton<SingletonHwnd>::get();
+  static base::NoDestructor<SingletonHwnd> s_hwnd;
+  return s_hwnd.get();
 }
 
 BOOL SingletonHwnd::ProcessWindowMessage(HWND window,
@@ -21,45 +25,33 @@ BOOL SingletonHwnd::ProcessWindowMessage(HWND window,
                                          LPARAM lparam,
                                          LRESULT& result,
                                          DWORD msg_map_id) {
-  if (!base::CurrentUIThread::IsSet()) {
-    // If there is no MessageLoop and SingletonHwnd is receiving messages, this
-    // means it is receiving messages via an external message pump such as COM
-    // uninitialization.
-    //
-    // It is unsafe to forward these messages as observers may depend on the
-    // existence of a MessageLoop to proceed.
-    return false;
+  // If there is no MessageLoop and SingletonHwnd is receiving messages, this
+  // means it is receiving messages via an external message pump such as COM
+  // uninitialization.
+  //
+  // It is unsafe to forward these messages as observers may depend on the
+  // existence of a MessageLoop to proceed.
+  if (base::CurrentUIThread::IsSet()) {
+    callback_list_.Notify(window, message, wparam, lparam);
   }
-
-  observer_list_.Notify(&SingletonHwndObserver::OnWndProc, window, message,
-                        wparam, lparam);
   return false;
 }
 
+base::CallbackListSubscription SingletonHwnd::RegisterCallback(
+    CallbackList::CallbackType callback) {
+  return callback_list_.Add(std::move(callback));
+}
+
 SingletonHwnd::SingletonHwnd() {
-  if (!base::CurrentUIThread::IsSet()) {
-    // Creating this window in (e.g.) a renderer inhibits shutdown on
-    // Windows. See http://crbug.com/230122 and http://crbug.com/236039.
-    return;
+  // Creating this window in (e.g.) a renderer inhibits Windows shutdown. See
+  // http://crbug.com/40312501 and http://crbug.com/40315446.
+  if (base::CurrentUIThread::IsSet()) {
+    WindowImpl::Init(NULL, Rect());
   }
-  WindowImpl::Init(NULL, Rect());
 }
 
 SingletonHwnd::~SingletonHwnd() {
-  // WindowImpl will clean up the hwnd value on WM_NCDESTROY.
-  if (hwnd())
-    DestroyWindow(hwnd());
-
-  // Tell all of our current observers to clean themselves up.
-  observer_list_.Notify(&SingletonHwndObserver::ClearWndProc);
-}
-
-void SingletonHwnd::AddObserver(SingletonHwndObserver* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void SingletonHwnd::RemoveObserver(SingletonHwndObserver* observer) {
-  observer_list_.RemoveObserver(observer);
+  NOTREACHED();  // Never destroyed.
 }
 
 }  // namespace gfx

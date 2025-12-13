@@ -220,7 +220,10 @@ void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
   }
 
   auto delete_key = [&provider](UnexportableSigningKey* key) {
-    provider->DeleteSigningKeySlowly(key->GetWrappedKey());
+    if (StatefulUnexportableKeyProvider* stateful_provider =
+            provider->AsStatefulUnexportableKeyProvider()) {
+      stateful_provider->DeleteSigningKeySlowly(key->GetWrappedKey());
+    }
     delete key;
   };
   base::ElapsedTimer key_creation_timer;

@@ -897,8 +897,8 @@ bool HistoryURLProvider::FixupExactSuggestion(
   // which will have empty reference fragments.)
   if ((type == UNVISITED_INTRANET) &&
       (params->input.type() != metrics::OmniboxInputType::URL) &&
-      url.username().empty() && url.password().empty() && url.port().empty() &&
-      (url.path_piece() == "/") && url.query().empty() &&
+      url.GetUsername().empty() && url.GetPassword().empty() &&
+      url.GetPort().empty() && (url.path() == "/") && url.GetQuery().empty() &&
       (parsed.CountCharactersBefore(url::Parsed::REF, true) !=
        parsed.CountCharactersBefore(url::Parsed::REF, false))) {
     return false;

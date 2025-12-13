@@ -9,18 +9,25 @@
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/net_errors.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webapps {
+namespace {
+using base::Bucket;
+using base::BucketsAre;
+using ::testing::IsEmpty;
 
-class WebAppUrlLoaderTest  : public content::RenderViewHostTestHarness  {
+class WebAppUrlLoaderTest : public content::RenderViewHostTestHarness {
  public:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -146,4 +153,70 @@ TEST_F(WebAppUrlLoaderTest, PrepareForLoad_ExcessiveDidFailLoad) {
   EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded, result.Get());
 }
 
-}  // namespace web_app
+TEST_F(WebAppUrlLoaderTest, RecordsHistogram) {
+  base::HistogramTester histogram_tester;
+
+  const GURL url1{"https://example.com"};
+  const GURL url2{"https://example.org"};
+  EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded,
+            LoadUrl(/*desired=*/url1, /*actual=*/url1));
+  EXPECT_THAT(histogram_tester.GetAllSamples("Webapp.WebAppUrlLoaderResult"),
+              BucketsAre(Bucket(WebAppUrlLoader::Result::kUrlLoaded, 1)));
+  EXPECT_EQ(WebAppUrlLoader::Result::kFailedUnknownReason,
+            LoadUrl(/*desired=*/url2, /*actual=*/url2,
+                    /*error_code=*/net::ERR_FAILED));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Webapp.WebAppUrlLoaderResult"),
+      BucketsAre(Bucket(WebAppUrlLoader::Result::kUrlLoaded, 1),
+                 Bucket(WebAppUrlLoader::Result::kFailedUnknownReason, 1)));
+}
+
+TEST_F(WebAppUrlLoaderTest, RecordsPrepareForLoadHistogram) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> future;
+  loader().PrepareForLoad(web_contents(), future.GetCallback());
+  web_contents_tester().TestDidFinishLoad(GURL{url::kAboutBlankURL});
+  EXPECT_TRUE(future.Wait());
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Webapp.WebAppUrlLoaderPrepareForLoadResult"),
+              BucketsAre(Bucket(WebAppUrlLoader::Result::kUrlLoaded, 1)));
+}
+
+TEST_F(WebAppUrlLoaderTest, RecordsHistogramOnWebContentsDestroyed) {
+  base::HistogramTester histogram_tester;
+  const GURL url{"https://example.com"};
+  base::test::TestFuture<WebAppUrlLoader::Result> result;
+  loader().LoadUrl(url, web_contents(), WebAppUrlLoader::UrlComparison::kExact,
+                   result.GetCallback());
+  DeleteContents();
+  EXPECT_EQ(WebAppUrlLoader::Result::kFailedWebContentsDestroyed, result.Get());
+  EXPECT_THAT(histogram_tester.GetAllSamples("Webapp.WebAppUrlLoaderResult"),
+              BucketsAre(Bucket(
+                  WebAppUrlLoader::Result::kFailedWebContentsDestroyed, 1)));
+}
+
+TEST_F(WebAppUrlLoaderTest, NoHistogramOnLoaderDestruction) {
+  base::HistogramTester histogram_tester;
+  const GURL url{"https://example.com"};
+  auto loader = std::make_unique<WebAppUrlLoader>();
+  bool callback_called = false;
+  auto callback = base::BindLambdaForTesting(
+      [&](WebAppUrlLoader::Result) { callback_called = true; });
+  loader->LoadUrl(url, web_contents(), WebAppUrlLoader::UrlComparison::kExact,
+                  std::move(callback));
+  // Destroy the loader. No metrics should be recorded.
+  loader.reset();
+  // Simulate the load finishing. The callback should still not be called
+  // because the loader is gone.
+  web_contents_tester().TestDidFinishLoad(url);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(callback_called);
+  EXPECT_THAT(histogram_tester.GetAllSamples("Webapp.WebAppUrlLoaderResult"),
+              IsEmpty());
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Webapp.WebAppUrlLoaderPrepareForLoadResult"),
+              IsEmpty());
+}
+
+}  // namespace
+}  // namespace webapps

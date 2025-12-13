@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -61,7 +62,6 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "media/media_buildflags.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/ct_policy_status.h"
@@ -1665,62 +1665,71 @@ class SignedExchangePKPBrowserTest
 
   void TearDownOnMainThread() override {
     if (IsOutOfProcessNetworkService()) {
-      mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-
       mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
       GetNetworkService()->BindTestInterfaceForTesting(
           network_service_test.BindNewPipeAndPassReceiver());
-      network_service_test->SetTransportSecurityStateSource(0);
+      base::test::TestFuture<void> future;
+      network_service_test->SetTransportSecurityStateTestSource(
+          false, future.GetCallback());
+      EXPECT_TRUE(future.Wait());
     } else {
-      RunOnIOThreadBlocking(
-          base::BindOnce(&SignedExchangePKPBrowserTest::CleanUpOnIOThread,
+      RunOnNetworkThreadBlocking(
+          base::BindOnce(&SignedExchangePKPBrowserTest::CleanUpOnNetworkThread,
                          base::Unretained(this)));
     }
     SignedExchangeRequestHandlerBrowserTest::TearDownOnMainThread();
   }
 
   void EnableStaticPins(int reporting_port) {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
     StoragePartition* partition = shell()
                                       ->web_contents()
                                       ->GetBrowserContext()
                                       ->GetDefaultStoragePartition();
-    partition->GetNetworkContext()->EnableStaticKeyPinningForTesting();
+    {
+      base::test::TestFuture<void> future;
+      partition->GetNetworkContext()->EnableStaticKeyPinningForTesting(
+          future.GetCallback());
+      EXPECT_TRUE(future.Wait());
+    }
     partition->FlushNetworkInterfaceForTesting();
 
     if (IsOutOfProcessNetworkService()) {
       mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
       GetNetworkService()->BindTestInterfaceForTesting(
           network_service_test.BindNewPipeAndPassReceiver());
-      network_service_test->SetTransportSecurityStateSource(reporting_port);
+      {
+        base::test::TestFuture<void> future;
+        network_service_test->SetTransportSecurityStateTestSource(
+            true, future.GetCallback());
+        EXPECT_TRUE(future.Wait());
+      }
     } else {
-      // TODO(crbug.com/40649862):  This code is not threadsafe, as the
-      // network stack does not run on the IO thread. Ideally, the
-      // NetworkServiceTest object would be set up in-process on the network
-      // service's thread, and this path would be removed.
-      RunOnIOThreadBlocking(base::BindOnce(
-          &SignedExchangePKPBrowserTest::SetTransportSecurityStateSourceOnIO,
-          base::Unretained(this), reporting_port));
+      // TODO(crbug.com/40649862): Ideally, the NetworkServiceTest object
+      // would be set up in-process on the network service's thread, and this
+      // path would be removed.
+      RunOnNetworkThreadBlocking(
+          base::BindOnce(&SignedExchangePKPBrowserTest::
+                             SetTransportSecurityStateSourceOnNetwork,
+                         base::Unretained(this), reporting_port));
     }
   }
 
  private:
-  void RunOnIOThreadBlocking(base::OnceClosure task) {
+  void RunOnNetworkThreadBlocking(base::OnceClosure task) {
     base::RunLoop run_loop;
-    GetIOThreadTaskRunner({})->PostTaskAndReply(FROM_HERE, std::move(task),
-                                                run_loop.QuitClosure());
+    content::GetNetworkTaskRunner()->PostTaskAndReply(
+        FROM_HERE, std::move(task), run_loop.QuitClosure());
     run_loop.Run();
   }
 
-  void SetTransportSecurityStateSourceOnIO(int reporting_port) {
+  void SetTransportSecurityStateSourceOnNetwork(int reporting_port) {
     transport_security_state_source_ =
-        std::make_unique<net::ScopedTransportSecurityStateSource>(
-            reporting_port);
+        std::make_unique<net::ScopedTransportSecurityStateSource>();
   }
 
-  void CleanUpOnIOThread() { transport_security_state_source_.reset(); }
+  void CleanUpOnNetworkThread() { transport_security_state_source_.reset(); }
 
-  // Only used when NetworkService is disabled. Accessed on IO thread.
+  // Only used when NetworkService is disabled. Accessed on network thread.
   std::unique_ptr<net::ScopedTransportSecurityStateSource>
       transport_security_state_source_;
 

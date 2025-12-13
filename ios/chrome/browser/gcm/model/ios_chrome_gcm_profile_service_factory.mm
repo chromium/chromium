@@ -56,14 +56,13 @@ IOSChromeGCMProfileServiceFactory::~IOSChromeGCMProfileServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  DCHECK(!context->IsOffTheRecord());
+    ProfileIOS* profile) const {
+  DCHECK(!profile->IsOffTheRecord());
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<gcm::GCMProfileService>(
       profile->GetPrefs(), profile->GetStatePath(),
       // This callback may be invoked on a background sequence, but it calls
@@ -81,5 +80,6 @@ IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
       GetProductCategoryForSubtypes(),
       IdentityManagerFactory::GetForProfile(profile),
       std::make_unique<gcm::GCMClientFactory>(), web::GetUIThreadTaskRunner({}),
-      web::GetIOThreadTaskRunner({}), blocking_task_runner);
+      web::GetIOThreadTaskRunner({}), blocking_task_runner,
+      GetApplicationContext()->GetOSCryptAsync());
 }

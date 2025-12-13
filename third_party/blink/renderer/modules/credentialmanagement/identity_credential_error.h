@@ -11,6 +11,7 @@
 namespace blink {
 
 class IdentityCredentialErrorInit;
+class ExceptionState;
 
 // https://fedidcg.github.io/FedCM/#browser-api-identity-credential-error-interface
 class MODULES_EXPORT IdentityCredentialError : public DOMException {
@@ -28,11 +29,12 @@ class MODULES_EXPORT IdentityCredentialError : public DOMException {
                           const String& code,
                           const String& url);
 
-  String code() const { return code_; }
+  String code(ExceptionState& exception_state) const;
+  String error() const;
   String url() const { return url_; }
 
  private:
-  const String code_;
+  const String error_code_;
   const String url_;
 };
 

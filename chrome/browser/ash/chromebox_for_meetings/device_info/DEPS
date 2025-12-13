@@ -15,9 +15,7 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/chromebox_for_meetings",
-  "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/settings",
-  "+chrome/common/channel_info.h",
 ]
 
 specific_include_rules = {

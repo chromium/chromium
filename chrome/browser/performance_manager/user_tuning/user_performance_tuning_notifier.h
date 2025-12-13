@@ -38,12 +38,12 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
     virtual void NotifyTabCountThresholdReached() = 0;
 
     // Called when the current total resident set size of all processes exceeds
-    // `resident_set_threshold_kb`.
+    // `resident_set_threshold`.
     virtual void NotifyMemoryThresholdReached() = 0;
   };
 
   UserPerformanceTuningNotifier(std::unique_ptr<Receiver> delegate,
-                                uint64_t resident_set_threshold_kb,
+                                base::ByteCount resident_set_threshold,
                                 int tab_count_threshold);
   ~UserPerformanceTuningNotifier() override;
 
@@ -68,8 +68,8 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
   std::unique_ptr<
       performance_manager::ProcessMetricsDecorator::ScopedMetricsInterestToken>
       metrics_interest_token_;
-  const uint64_t resident_set_threshold_kb_ = 0;
-  uint64_t previous_total_rss_ = 0;
+  const base::ByteCount resident_set_threshold_;
+  base::ByteCount previous_total_rss_;
 
   const int tab_count_threshold_ = 0;
   int tab_count_ = 0;

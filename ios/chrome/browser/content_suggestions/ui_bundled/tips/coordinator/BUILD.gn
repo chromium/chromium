@@ -1,0 +1,65 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "tips_magic_stack_mediator.h",
+    "tips_magic_stack_mediator.mm",
+    "tips_passwords_coordinator.h",
+    "tips_passwords_coordinator.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:shopping_service",
+    "//components/image_fetcher/core",
+    "//components/ntp_tiles:pref_names",
+    "//components/power_bookmarks/core",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tips/ui",
+    "//ios/chrome/browser/instructions_bottom_sheet/ui",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//net/traffic_annotation",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "tips_magic_stack_mediator_unittest.mm",
+    "tips_passwords_coordinator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/image_fetcher/core",
+    "//components/ntp_tiles:pref_names",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tips/ui",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

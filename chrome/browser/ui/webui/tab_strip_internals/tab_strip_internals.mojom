@@ -1,0 +1,230 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tab_strip_internals.mojom;
+
+import "chrome/browser/ui/webui/tabs/tabs.mojom";
+import "components/tab_groups/public/mojom/tab_group_types.mojom";
+import "mojo/public/mojom/base/token.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+// Root level data structure.
+struct Container {
+  // TODO (crbug.com/427204855): Revisit the definition of entries in
+  // TabStripTree and TabRestoreData to add more fields.
+  TabStripTree tabstrip_tree;
+  TabRestoreData tab_restore;
+  // TODO (crbug.com/427204855): Add session restore data.
+};
+
+// A tree structure representing the TabStrip.
+// It contains a collection of windows, each with its own TabStripModel.
+struct TabStripTree {
+  array<WindowNode> windows;
+};
+
+// Represents a single browser window's TabStripModel.
+struct WindowNode {
+  NodeId id;
+  TabStripModel tabstrip_model;
+  SelectionModel selection_model;
+};
+
+// Represents an opaque identifier for a node in the TabStripData tree.
+// Ensures that all ids are represented as strings.
+struct NodeId {
+  // The type of node referenced by the id.
+  enum Type {
+    // A tab.
+    kTab,
+    // A collection of tabs.
+    kCollection,
+    // A browser window.
+    kWindow,
+    // A tab restore Tab entry.
+    kTabRestoreTab,
+    // A tab restore Group entry.
+    kTabRestoreGroup,
+    // A tab restore Window entry.
+    kTabRestoreWindow,
+  };
+
+  // An opaque string that uniquely identifies the underlying resource.
+  string node_id;
+
+  // The type of resource referenced by this id.
+  Type type;
+};
+
+// Represents the TabStripModel for a single window.
+struct TabStripModel {
+  // Root node of the TabStripModel, which is always a TabStripCollection.
+  // It can be null when TabStripModel is empty.
+  // This can occur, for example, when a new browser window is created
+  // with no tabs yet, or when an existing window is being torn down.
+  Node? root;
+};
+
+// Represents a node in the TabStripModel.
+struct Node {
+  Data data;
+  array<Node> children;
+};
+
+// Represents actual data inside a TabStripModel node.
+// Using a union enforces that a node must be exactly one of the types below.
+union Data {
+  Tab tab;
+  TabStripCollection tab_strip_collection;
+  PinnedCollection pinned_tab_collection;
+  UnpinnedCollection unpinned_tab_collection;
+  GroupCollection tab_group_collection;
+  SplitCollection split_tab_collection;
+};
+
+// Metadata for an individual tab.
+struct Tab {
+  NodeId id;
+  string title;
+  url.mojom.Url url;
+  bool active;
+  bool visible;
+  bool selected;
+  bool pinned;
+  bool split;
+  array<tabs.mojom.TabAlertState> alert_states;
+  // TODO (crbug.com/427204855): Add more tab metadata as needed.
+};
+
+// Specific tab collections.
+
+// The root of the TabStripModel.
+struct TabStripCollection {
+ NodeId id;
+};
+
+// Collection for Pinned tabs.
+struct PinnedCollection {
+  NodeId id;
+};
+
+// Collection for Unpinned tabs.
+struct UnpinnedCollection {
+  NodeId id;
+};
+
+// Collection for tab groups.
+struct GroupCollection {
+  NodeId id;
+  TabGroupVisualData visualData;
+};
+
+// Additional metadata for group tabs.
+struct TabGroupVisualData {
+  string title;
+  tab_groups.mojom.Color color;
+  bool is_collapsed;
+};
+
+// Collection for split tabs.
+struct SplitCollection {
+  NodeId id;
+  SplitTabVisualData visualData;
+};
+
+// Additional metadata for split tabs.
+struct SplitTabVisualData {
+  enum Layout {
+    kVertical,
+    kHorizontal,
+  };
+
+  Layout layout;
+  double split_ratio;
+};
+
+// Details about selected tabs.
+struct SelectionModel {
+  int32 active_index = -1;
+  int32 anchor_index = -1;
+  array<int32> selected_indices;
+};
+
+// Contains session restore data from the TabRestoreService.
+// We will refer to it as tab restore data.
+struct TabRestoreData {
+  array<TabRestoreEntry> entries;
+};
+
+// Represents a tab restore entry which can either be a tab, window, or a group.
+// Using a union enforces that an entry must be exactly one of the types below.
+union TabRestoreEntry {
+  TabRestoreTab tab;
+  TabRestoreWindow window;
+  TabRestoreGroup group;
+};
+
+// Represents common fields for all tab restore entries.
+struct TabRestoreEntryBase {
+  int32 original_id;
+  // The time when the entry was added to TabRestoreService.
+  // It's not always set - can be nullptr or 0 in cases where
+  // a timestamp isn't available at entry creation.
+  mojo_base.mojom.Time? timestamp;
+};
+
+// Tab restore data for a Tab.
+struct TabRestoreTab {
+  NodeId id;
+  TabRestoreEntryBase restore_entry;
+  int32 browser_id;
+  int32 tabstrip_index;
+  bool pinned;
+  // Could be Null if the tab is not part of a group.
+  mojo_base.mojom.Token? group_id;
+  TabGroupVisualData? group_visual_data;
+  // Below fields represent properties of the selected navigation entry.
+  string title;
+  url.mojom.Url url;
+  // TODO (crbug.com/427204855): Add more tab metadata as needed.
+};
+
+// Tab restore data for a Group.
+struct TabRestoreGroup {
+  NodeId id;
+  TabRestoreEntryBase restore_entry;
+  int32 browser_id;
+  mojo_base.mojom.Token group_id;
+  TabGroupVisualData visual_data;
+  array<TabRestoreTab> tabs;
+};
+
+// Tab restore data for a Window.
+struct TabRestoreWindow {
+  NodeId id;
+  TabRestoreEntryBase restore_entry;
+  int32 selected_tab_index;
+  array<TabRestoreTab> tabs;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication
+// between renderer (JS side) and browser (C++ side).
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Browser-side (C++) handler for requests from the WebUI page (renderer).
+interface PageHandler {
+  // Called once to fetch the current state.
+  GetTabStripData() => (Container data);
+};
+
+// Renderer-side (JS) handler for requests from the browser.
+interface Page {
+  // Triggered whenever state changes.
+  OnTabStripUpdated(Container data);
+};

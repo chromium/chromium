@@ -2,7 +2,7 @@ rainhard@chromium.org
 sideyilmaz@chromium.org
 tommasin@chromium.org
 
+# Happiness Tracking Surveys (HaTS)
+per-file hats_browser_proxy.ts=msramek@google.com
+
 per-file cookies_page*=fmacintosh@google.com
-per-file incognito_tracking_protections_page*=fmacintosh@google.com
-per-file cr_lottie*=nsatragno@chromium.org
-per-file fingerprint*=nsatragno@chromium.org

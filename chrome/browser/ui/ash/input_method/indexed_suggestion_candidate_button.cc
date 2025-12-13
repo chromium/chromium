@@ -35,8 +35,7 @@ const views::Label::CustomFont kIndexFont = {
 IndexedSuggestionCandidateButton::IndexedSuggestionCandidateButton(
     PressedCallback callback,
     const std::u16string& candidate_text,
-    const std::u16string& index_text,
-    bool create_legacy_candidate)
+    const std::u16string& index_text)
     : views::Button(std::move(callback)) {
   GetViewAccessibility().SetName(candidate_text);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -45,42 +44,23 @@ IndexedSuggestionCandidateButton::IndexedSuggestionCandidateButton(
           .set_left_right(kLeftRightPadding, kLeftRightPadding)
           .set_top_bottom(kTopPadding, kBottomPadding),
       /* between_child_spacing=*/kBetweenSpacing));
-
-  if (create_legacy_candidate) {
-    // TODO(b/240357416): Remove when emoji suggestions uses horizontal layout.
-    BuildLegacyCandidate(candidate_text);
-  } else {
-    BuildCandidate(candidate_text, index_text);
-  }
+  BuildCandidate(candidate_text, index_text);
 }
 
 void IndexedSuggestionCandidateButton::SetHighlight(bool highlighted) {
   if (highlighted && !background()) {
-    // Legacy option does not have a rounded border.
-    // TODO(b/240357416): Remove legacy option when emoji suggestions uses
-    // horizontal layout.
-    int border_radius = is_legacy_candidate_ ? 0 : kBorderRadius;
     SetBackground(views::CreateRoundedRectBackground(
         ResolveSemanticColor(cros_styles::ColorName::kRippleColor),
-        border_radius));
+        kBorderRadius));
   }
   if (!highlighted && background()) {
     SetBackground(nullptr);
   }
 }
 
-void IndexedSuggestionCandidateButton::BuildLegacyCandidate(
-    const std::u16string& candidate_text) {
-  is_legacy_candidate_ = true;
-  AddChildView(
-      std::make_unique<views::Label>(candidate_text, kCandidateTextFont));
-}
-
 void IndexedSuggestionCandidateButton::BuildCandidate(
     const std::u16string& candidate_text,
     const std::u16string& index_text) {
-  is_legacy_candidate_ = false;
-
   // Displaying the candidate text (i.e. the "A" in the diagram below).
   //   +---+
   //   | A | <-- label being created

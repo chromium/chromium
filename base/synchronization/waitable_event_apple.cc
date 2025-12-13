@@ -127,8 +127,7 @@ bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
 }
 
 // static
-size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
-                                   size_t count) {
+size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> raw_waitables) {
   // On macOS 10.11+, using Mach port sets may cause system instability, per
   // https://crbug.com/756102. On macOS 10.12+, a kqueue can be used
   // instead to work around that.
@@ -142,18 +141,18 @@ size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
   const WaitManyPrimitive kPrimitive = KQUEUE;
 #endif
   if (kPrimitive == KQUEUE) {
-    std::vector<kevent64_s> events(count);
-    for (size_t i = 0; i < count; ++i) {
+    std::vector<kevent64_s> events(raw_waitables.size());
+    for (size_t i = 0; i < raw_waitables.size(); ++i) {
       EV_SET64(&events[i], raw_waitables[i]->receive_right_->Name(),
                EVFILT_MACHPORT, EV_ADD, 0, 0, i, 0, 0);
     }
 
-    std::vector<kevent64_s> out_events(count);
+    std::vector<kevent64_s> out_events(raw_waitables.size());
 
     ScopedFD wait_many(kqueue());
     PCHECK(wait_many.is_valid()) << "kqueue";
 
-    const int count_int = checked_cast<int>(count);
+    const int count_int = checked_cast<int>(raw_waitables.size());
     int rv = HANDLE_EINTR(kevent64(wait_many.get(), events.data(), count_int,
                                    out_events.data(), count_int, /*flags=*/0,
                                    /*timeout=*/nullptr));
@@ -188,7 +187,7 @@ size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
       port_set.reset(name);
     }
 
-    for (size_t i = 0; i < count; ++i) {
+    for (size_t i = 0; i < raw_waitables.size(); ++i) {
       kr = mach_port_insert_member(mach_task_self(),
                                    raw_waitables[i]->receive_right_->Name(),
                                    port_set.get());
@@ -206,7 +205,7 @@ size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
                   /*timeout=*/0, /*notify=*/MACH_PORT_NULL);
     MACH_CHECK(kr == MACH_RCV_TOO_LARGE, kr) << "mach_msg";
 
-    for (size_t i = 0; i < count; ++i) {
+    for (size_t i = 0; i < raw_waitables.size(); ++i) {
       WaitableEvent* event = raw_waitables[i];
       if (msg.header.msgh_local_port == event->receive_right_->Name()) {
         if (event->policy_ == ResetPolicy::AUTOMATIC) {

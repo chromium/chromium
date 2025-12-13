@@ -44,6 +44,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -535,5 +536,18 @@ public class SigninManagerIntegrationTest {
                             mIdentityManager.getAccountsWithRefreshTokens());
                 });
         signoutWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testSignIn_SignInCompletedHistogramRecorded() {
+        var signinHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SignIn.Completed", SigninAccessPoint.UNKNOWN);
+
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        signinHistogram.assertExpected(
+                "Signin should be recorded with unknown as the access point.");
     }
 }

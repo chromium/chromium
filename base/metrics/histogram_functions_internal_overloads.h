@@ -14,6 +14,8 @@
 #include <type_traits>
 
 #include "base/base_export.h"
+#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
@@ -180,12 +182,28 @@ BASE_EXPORT void UmaHistogramMicrosecondsTimes(const char* name,
 // LINT.IfChange(UmaHistogramMemory)
 BASE_EXPORT void UmaHistogramMemoryKB(const std::string& name, int sample);
 BASE_EXPORT void UmaHistogramMemoryKB(const char* name, int sample);
+BASE_EXPORT void UmaHistogramMemoryKB(const std::string& name,
+                                      ByteCount sample);
+BASE_EXPORT void UmaHistogramMemoryKB(const char* name, ByteCount sample);
+BASE_EXPORT void UmaHistogramMemoryKB(const std::string& name, ByteSize sample);
+BASE_EXPORT void UmaHistogramMemoryKB(const char* name, ByteSize sample);
 
 BASE_EXPORT void UmaHistogramMemoryMB(const std::string& name, int sample);
 BASE_EXPORT void UmaHistogramMemoryMB(const char* name, int sample);
+BASE_EXPORT void UmaHistogramMemoryMB(const std::string& name,
+                                      ByteCount sample);
+BASE_EXPORT void UmaHistogramMemoryMB(const char* name, ByteCount sample);
+BASE_EXPORT void UmaHistogramMemoryMB(const std::string& name, ByteSize sample);
+BASE_EXPORT void UmaHistogramMemoryMB(const char* name, ByteSize sample);
 
 BASE_EXPORT void UmaHistogramMemoryLargeMB(const std::string& name, int sample);
 BASE_EXPORT void UmaHistogramMemoryLargeMB(const char* name, int sample);
+BASE_EXPORT void UmaHistogramMemoryLargeMB(const std::string& name,
+                                           ByteCount sample);
+BASE_EXPORT void UmaHistogramMemoryLargeMB(const char* name, ByteCount sample);
+BASE_EXPORT void UmaHistogramMemoryLargeMB(const std::string& name,
+                                           ByteSize sample);
+BASE_EXPORT void UmaHistogramMemoryLargeMB(const char* name, ByteSize sample);
 // LINT.ThenChange(/base/metrics/histogram_functions.h:UmaHistogramMemory)
 
 // LINT.IfChange(UmaHistogramSparse)

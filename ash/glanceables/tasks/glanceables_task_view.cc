@@ -327,7 +327,6 @@ GlanceablesTaskView::GlanceablesTaskView(
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
   SetLayoutManagerUseConstrainedSpace(false);
 
   check_button_ =
@@ -344,7 +343,6 @@ GlanceablesTaskView::GlanceablesTaskView(
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
-  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
   contents_view_->SetLayoutManagerUseConstrainedSpace(false);
 
   tasks_title_view_ =

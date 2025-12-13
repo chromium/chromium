@@ -1,7 +1,7 @@
-From 156287a5bdf7e9e37266d0a14d80f89f23332b21 Mon Sep 17 00:00:00 2001
+From 5648cbab1eab94a4d1fe441cdf17c538de713ab1 Mon Sep 17 00:00:00 2001
 From: Alexander Cooper <alcooper@chromium.org>
-Date: Wed, 4 Dec 2024 14:34:00 -0800
-Subject: [PATCH] Ignore Android Content Provider Paths
+Date: Mon, 10 Nov 2025 17:39:46 -0800
+Subject: [PATCH 1/2] Ignore Android Content Provider Paths
 
 ---
  .../openxr/src_overrides/src/loader/android_utilities.cpp   | 6 ++++++
@@ -9,18 +9,18 @@ Subject: [PATCH] Ignore Android Content Provider Paths
  2 files changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/third_party/openxr/src_overrides/src/loader/android_utilities.cpp b/third_party/openxr/src_overrides/src/loader/android_utilities.cpp
-index 1f7424b8e6d02..7b80602780682 100644
+index 54db54fffdb0b..7aa148bd2a4de 100644
 --- a/third_party/openxr/src_overrides/src/loader/android_utilities.cpp
 +++ b/third_party/openxr/src_overrides/src/loader/android_utilities.cpp
-@@ -26,6 +26,7 @@
- #define ALOGI(...) __android_log_print(ANDROID_LOG_INFO, "OpenXR-Loader", __VA_ARGS__)
+@@ -24,6 +24,7 @@
+ #include "android_logging.h"
  
  namespace openxr_android {
 +#ifndef XRLOADER_DISABLE_CONTENT_PROVIDERS
  using wrap::android::content::ContentUris;
  using wrap::android::content::Context;
  using wrap::android::database::Cursor;
-@@ -290,8 +291,12 @@ static bool getActiveRuntimeCursor(wrap::android::content::Context const &contex
+@@ -288,8 +289,12 @@ static bool getActiveRuntimeCursor(wrap::android::content::Context const &contex
      }
      return true;
  }
@@ -33,7 +33,7 @@ index 1f7424b8e6d02..7b80602780682 100644
      jni::Array<std::string> projection = makeArray({active_runtime::Columns::PACKAGE_NAME, active_runtime::Columns::NATIVE_LIB_DIR,
                                                      active_runtime::Columns::SO_FILENAME, active_runtime::Columns::HAS_FUNCTIONS});
  
-@@ -347,6 +352,7 @@ int getActiveRuntimeVirtualManifest(wrap::android::content::Context const &conte
+@@ -345,6 +350,7 @@ int getActiveRuntimeVirtualManifest(wrap::android::content::Context const &conte
      ALOGE("Unable to open any of the broker provided runtimes.");
      cursor.close();
      return -1;
@@ -42,26 +42,26 @@ index 1f7424b8e6d02..7b80602780682 100644
  }  // namespace openxr_android
  
 diff --git a/third_party/openxr/src_overrides/src/loader/manifest_file.cpp b/third_party/openxr/src_overrides/src/loader/manifest_file.cpp
-index ca212d34357ce..166381c05faaa 100644
+index 4aa7c2fc00145..9dfd22c2a6413 100644
 --- a/third_party/openxr/src_overrides/src/loader/manifest_file.cpp
 +++ b/third_party/openxr/src_overrides/src/loader/manifest_file.cpp
-@@ -680,14 +680,14 @@ XrResult RuntimeManifestFile::FindManifestFiles(const std::string &openxr_comman
+@@ -682,14 +682,14 @@ XrResult RuntimeManifestFile::FindManifestFiles(const std::string &openxr_comman
          }
  #else  // !defined(XR_OS_WINDOWS) && !defined(XR_OS_LINUX)
  
--#if defined(XR_KHR_LOADER_INIT_SUPPORT) && defined(XR_USE_PLATFORM_ANDROID)
-+#if defined(XR_KHR_LOADER_INIT_SUPPORT) && defined(XR_USE_PLATFORM_ANDROID) && !defined(XRLOADER_DISABLE_CONTENT_PROVIDERS)
+-#if defined(XR_USE_PLATFORM_ANDROID) && defined(XR_HAS_REQUIRED_PLATFORM_LOADER_INIT_STRUCT)
++#if defined(XR_USE_PLATFORM_ANDROID) && defined(XR_HAS_REQUIRED_PLATFORM_LOADER_INIT_STRUCT) && !defined(XRLOADER_DISABLE_CONTENT_PROVIDERS)
          Json::Value virtualManifest;
          result = GetPlatformRuntimeVirtualManifest(virtualManifest);
          if (XR_SUCCESS == result) {
              RuntimeManifestFile::CreateIfValid(virtualManifest, "", manifest_files);
              return result;
          }
--#endif  // defined(XR_USE_PLATFORM_ANDROID) && defined(XR_KHR_LOADER_INIT_SUPPORT)
-+#endif  // defined(XR_USE_PLATFORM_ANDROID) && defined(XR_KHR_LOADER_INIT_SUPPORT) && !defined(XRLOADER_DISABLE_CONTENT_PROVIDERS)
+-#endif  // defined(XR_USE_PLATFORM_ANDROID) && defined(XR_HAS_REQUIRED_PLATFORM_LOADER_INIT_STRUCT)
++#endif  // defined(XR_USE_PLATFORM_ANDROID) && defined(XR_HAS_REQUIRED_PLATFORM_LOADER_INIT_STRUCT) && !defined(XRLOADER_DISABLE_CONTENT_PROVIDERS)
+ 
          if (!PlatformGetGlobalRuntimeFileName(XR_VERSION_MAJOR(XR_CURRENT_API_VERSION), filename)) {
              LoaderLogger::LogErrorMessage(
-                 openxr_command,
 -- 
-2.47.0.338.g60cca15819-goog
+2.52.0.rc1.455.g30608eb744-goog
 

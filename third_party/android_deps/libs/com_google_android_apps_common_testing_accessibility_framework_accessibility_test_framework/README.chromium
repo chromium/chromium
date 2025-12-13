@@ -1,6 +1,6 @@
 Name: Accessibility Test Framework
 Short Name: accessibility-test-framework
-URL: https://github.com/google/Accessibility-Test-Framework-for-Android
+URL: https://dl.google.com/dl/android/maven2/com/google/android/apps/common/testing/accessibility/framework/accessibility-test-framework/4.0.0/accessibility-test-framework-4.0.0.aar
 Version: 4.0.0
 Update Mechanism: Manual
 License: Android Software Development Kit License
@@ -11,6 +11,9 @@ Shipped: no
 
 Description:
 Library used to test for common accessibility issues.
+
+See also: https://github.com/google/Accessibility-Test-Framework-for-Android
+
 
 Local Modifications:
 No modifications.

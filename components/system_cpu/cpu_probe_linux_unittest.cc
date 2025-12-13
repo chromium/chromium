@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/system_cpu/cpu_probe_linux.h"
 
 #include <memory>
 #include <optional>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -52,7 +47,7 @@ class CpuProbeLinuxTest : public testing::Test {
       return false;
     }
     if (contents.size() > 0) {
-      if (!stat_file_.Write(0, contents.data(), contents.size())) {
+      if (!UNSAFE_TODO(stat_file_.Write(0, contents.data(), contents.size()))) {
         return false;
       }
     }

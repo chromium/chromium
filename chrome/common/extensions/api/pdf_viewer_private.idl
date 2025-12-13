@@ -6,6 +6,93 @@
 // functionality that the PDF Viewer needs from outside the PDF plugin. This API
 // is exclusively for the PDF Viewer.
 namespace pdfViewerPrivate {
+  // Must match `SaveRequestType` in `pdf/mojom/pdf.mojom` and
+  // `tools/typescript/definitions/pdf_viewer_private.d.ts`.
+  enum SaveRequestType {
+    ANNOTATION,
+    ORIGINAL,
+    EDITED,
+    SEARCHIFIED
+  };
+
+  // Enumeration of save to drive error types. Must match `SaveToDriveErrorType`
+  // in tools/typescript/definitions/pdf_viewer_private.d.ts and
+  // `PdfSaveToDriveErrorType` in
+  // tools/metrics/histograms/metadata/pdf/enums.xml.
+  enum SaveToDriveErrorType {
+    NO_ERROR,
+    UNKNOWN_ERROR,
+    QUOTA_EXCEEDED,
+    OFFLINE,
+    OAUTH_ERROR,
+    ACCOUNT_CHOOSER_CANCELED,
+    PARENT_FOLDER_SELECTION_FAILED
+  };
+
+  // Enumeration of save to drive status. Must match `SaveToDriveStatus` in
+  // tools/typescript/definitions/pdf_viewer_private.d.ts and
+  // `PdfSaveToDriveStatus` in
+  // tools/metrics/histograms/metadata/pdf/enums.xml.
+  enum SaveToDriveStatus {
+    NOT_STARTED,
+    INITIATED,
+    ACCOUNT_CHOOSER_SHOWN,
+    ACCOUNT_SELECTED,
+    ACCOUNT_ADD_SELECTED,
+    ACCOUNT_ADDED,
+    FETCH_OAUTH,
+    FETCH_PARENT_FOLDER,
+    UPLOAD_STARTED,
+    UPLOAD_IN_PROGRESS,
+    UPLOAD_COMPLETED,
+    UPLOAD_RETRIED,
+    UPLOAD_FAILED
+  };
+
+  // Progress of a save to drive request.
+  dictionary SaveToDriveProgress {
+    // The status of the upload.
+    SaveToDriveStatus status;
+
+    // The error type of the upload.
+    SaveToDriveErrorType errorType;
+
+    // The ID of the drive item that was uploaded. It is only set if the upload
+    // was successful, i.e. if `status` is `UPLOAD_COMPLETED`.
+    DOMString? driveItemId;
+
+    // The total size of the file in bytes. It is only set if the upload is in
+    // progress or completed, i.e. if `status` is `UPLOAD_STARTED`,
+    // `UPLOAD_IN_PROGRESS`, or `UPLOAD_COMPLETED`.
+    long? fileSizeBytes;
+
+    // The number of bytes that have been uploaded. It is only set if the upload
+    // is in progress or completed, i.e. if `status` is `UPLOAD_STARTED`,
+    // `UPLOAD_IN_PROGRESS`, or `UPLOAD_COMPLETED`.
+    long? uploadedBytes;
+
+    // The localized metadata and progress of the file. It is only set if the
+    // upload is in progress or completed, i.e. if `status` is `UPLOAD_STARTED`,
+    // `UPLOAD_IN_PROGRESS`, or `UPLOAD_COMPLETED`.
+    DOMString? fileMetadata;
+
+    // The name of the file. It is only set if the upload was successful, i.e.
+    // if `status` is `UPLOAD_COMPLETED`.
+    DOMString? fileName;
+
+    // The name of the parent folder. It is only set if the upload was
+    // successful, i.e. if `status` is `UPLOAD_COMPLETED`.
+    DOMString? parentFolderName;
+
+    // The email of the account that is chosen to save the PDF to Drive. It is
+    // only set after the account is selected.
+    DOMString? accountEmail;
+
+    // Whether the account is a managed account. It is only set after the
+    // account is selected.
+    boolean? accountIsManaged;
+  };
+
   // Nearly identical to mimeHandlerPrivate.StreamInfo, but without a mime type
   // nor a response header field. Those fields are unused by the PDF viewer.
   dictionary StreamInfo {
@@ -52,6 +139,13 @@ namespace pdfViewerPrivate {
         DOMString url,
         IsAllowedLocalFileAccessCallback callback);
 
+    // Sends a request to save the PDF to Google Drive if `saveRequestType` is
+    // set. Otherwise, if `saveRequestType` is not set, the default action is
+    // to cancel the existing upload.
+    static void saveToDrive(
+        optional SaveRequestType saveRequestType,
+        optional VoidCallback callback);
+
     // Sets the current tab title to `title` for a full-page PDF.
     static void setPdfDocumentTitle(
         DOMString title,
@@ -68,6 +162,13 @@ namespace pdfViewerPrivate {
     // Fired when the browser wants the listener to perform a save.
     // `streamUrl`: Unique ID for the instance that should perform the save.
     static void onSave(DOMString streamUrl);
+
+    // Fired when the browser wants the listener to update the save to drive
+    // progress.
+    // `streamUrl`: Unique ID for the instance that should perform the save.
+    // `progress`: The progress of the save to drive.
+    static void onSaveToDriveProgress(DOMString streamUrl,
+                                      SaveToDriveProgress progress);
 
     // Fired when the browser wants the listener to update the viewport based on
     // a different PDF URL.

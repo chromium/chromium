@@ -13,6 +13,7 @@ import android.view.ScrollCaptureSession;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureCallbackDelegate.EntryManagerWrapper;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -72,7 +73,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
         mDelegate.onScrollCaptureEnd(onReady);
     }
 
-    void setCurrentTab(Tab tab) {
+    void setCurrentTab(@Nullable Tab tab) {
         mDelegate.setCurrentTab(tab);
     }
 }

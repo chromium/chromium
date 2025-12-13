@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/common/drm_util.h"
 
 #include <xf86drm.h>
@@ -14,6 +9,7 @@
 
 #include <map>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,7 +82,8 @@ TEST_F(DrmUtilTest, TestDisplayModesExtraction) {
                                       {.hdisplay = 1280, .vdisplay = 768}};
   drmModeModeInfoPtr modes_ptr = static_cast<drmModeModeInfoPtr>(
       drmMalloc(kNumModes * sizeof(drmModeModeInfo)));
-  std::memcpy(modes_ptr, &modes[0], kNumModes * sizeof(drmModeModeInfo));
+  UNSAFE_TODO(
+      std::memcpy(modes_ptr, &modes[0], kNumModes * sizeof(drmModeModeInfo)));
 
   // Initialize a connector.
   drmModeConnector connector = {.connection = DRM_MODE_CONNECTED,
@@ -131,7 +128,7 @@ TEST_F(DrmUtilTest, TestDisplayModesExtraction) {
 
   // The preferred mode is always returned as the native mode, even when a valid
   // active pixel size supplied.
-  modes_ptr[2].type |= DRM_MODE_TYPE_PREFERRED;
+  UNSAFE_TODO(modes_ptr[2]).type |= DRM_MODE_TYPE_PREFERRED;
   extracted_modes = ExtractDisplayModes(&info, active_pixel_size, &current_mode,
                                         &native_mode);
   ASSERT_EQ(5u, extracted_modes.size());
@@ -142,7 +139,7 @@ TEST_F(DrmUtilTest, TestDisplayModesExtraction) {
   // While KMS specification says there should be at most one preferred mode per
   // connector, we found monitors with more than one preferred mode. With this
   // test we make sure the first one is the one used for native_mode.
-  modes_ptr[1].type |= DRM_MODE_TYPE_PREFERRED;
+  UNSAFE_TODO(modes_ptr[1]).type |= DRM_MODE_TYPE_PREFERRED;
   extracted_modes = ExtractDisplayModes(&info, active_pixel_size, &current_mode,
                                         &native_mode);
   ASSERT_EQ(5u, extracted_modes.size());

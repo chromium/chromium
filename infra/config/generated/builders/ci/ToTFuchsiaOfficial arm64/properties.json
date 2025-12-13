@@ -16,7 +16,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-clang-archive",
               "builder_group": "chromium.clang",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -50,7 +49,8 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTFuchsiaOfficial arm64/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/ToTFuchsiaOfficial arm64/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

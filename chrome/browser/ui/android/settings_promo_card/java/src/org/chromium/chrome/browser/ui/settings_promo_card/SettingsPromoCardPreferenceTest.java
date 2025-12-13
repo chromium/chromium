@@ -61,8 +61,8 @@ public class SettingsPromoCardPreferenceTest {
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
         when(mTestTracker.shouldTriggerHelpUi(any())).thenReturn(false);
 
-        SettingsPromoCardPreference preference =
-                new SettingsPromoCardPreference(mActivity, null, mTestTracker);
+        SettingsPromoCardPreference preference = new SettingsPromoCardPreference(mActivity, null);
+        preference.initialize(mTestTracker);
         View itemView = new FrameLayout(mActivity);
         PreferenceViewHolder viewHolder = PreferenceViewHolder.createInstanceForTests(itemView);
         preference.onBindViewHolder(viewHolder);
@@ -75,15 +75,12 @@ public class SettingsPromoCardPreferenceTest {
         when(mTestTracker.shouldTriggerHelpUi(any())).thenReturn(true);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
 
-        SettingsPromoCardPreference preference =
-                new SettingsPromoCardPreference(mActivity, null, mTestTracker);
-        Assert.assertTrue(preference.isVisible());
+        SettingsPromoCardPreference preference = new SettingsPromoCardPreference(mActivity, null);
+        preference.initialize(mTestTracker);
+        Assert.assertFalse(preference.isVisible());
 
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    preference.updatePreferences();
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> preference.updatePreferences());
         Assert.assertFalse(preference.isVisible());
     }
 }

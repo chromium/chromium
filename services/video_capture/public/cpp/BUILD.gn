@@ -19,11 +19,11 @@ source_set("cpp") {
   public_deps = [
     "//base",
     "//media",
-    "//media/capture:capture",
+    "//media/capture",
     "//services/video_capture/public/mojom",
   ]
 
-  deps = [ "//mojo/public/cpp/bindings:bindings" ]
+  deps = [ "//mojo/public/cpp/bindings" ]
 }
 
 source_set("mocks") {
@@ -46,7 +46,6 @@ source_set("mocks") {
 
   public_deps = [
     "//services/video_capture/public/mojom",
-    "//services/video_effects/buildflags",
     "//testing/gmock",
   ]
 }

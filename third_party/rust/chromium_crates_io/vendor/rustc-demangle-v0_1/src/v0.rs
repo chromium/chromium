@@ -1018,6 +1018,11 @@ impl<'a, 'b, 's> Printer<'a, 'b, 's> {
             b'B' => {
                 self.print_backref(Self::print_type)?;
             }
+            b'W' => {
+                self.print_type()?;
+                self.print(" is ")?;
+                self.print_pat()?;
+            }
             _ => {
                 // Go back to the tag, so `print_path` also sees it.
                 let _ = self.parser.as_mut().map(|p| p.next -= 1);
@@ -1074,6 +1079,36 @@ impl<'a, 'b, 's> Printer<'a, 'b, 's> {
 
         if open {
             self.print(">")?;
+        }
+
+        Ok(())
+    }
+
+    fn print_pat(&mut self) -> fmt::Result {
+        let tag = parse!(self, next);
+
+        match tag {
+            b'R' => {
+                self.print_const(false)?;
+                self.print("..=")?;
+                self.print_const(false)?;
+            }
+            b'O' => {
+                parse!(self, push_depth);
+                self.print_pat()?;
+                while !self.eat(b'E') {
+                    // May have reached the end of the string,
+                    // avoid going into an endless loop.
+                    if self.parser.is_err() {
+                        invalid!(self)
+                    }
+                    self.print(" | ")?;
+                    self.print_pat()?;
+                }
+                self.pop_depth();
+            }
+            b'N' => self.print("!null")?,
+            _ => invalid!(self),
         }
 
         Ok(())
@@ -1313,6 +1348,13 @@ mod tests {
             "_RINbNbCskIICzLVDPPb_5alloc5alloc8box_freeDINbNiB4_5boxed5FnBoxuEp6OutputuEL_ECs1iopQbuBiw2_3std",
             "alloc::alloc::box_free::<dyn alloc::boxed::FnBox<(), Output = ()>>"
         );
+    }
+
+    #[test]
+    fn demangle_pat_ty() {
+        t_nohash_type!("WmRm1_m9_", "u32 is 1..=9");
+        t_nohash_type!("WmORm1_m2_Rm5_m6_E", "u32 is 1..=2 | 5..=6");
+        assert!(::v0::demangle("_RMC0WmORm1_m2_Rm5_m6_").is_err());
     }
 
     #[test]

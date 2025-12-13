@@ -42,7 +42,6 @@
 #include "ui/views/widget/widget.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Mock;
 using testing::NiceMock;
 using testing::WithArg;

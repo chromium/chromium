@@ -4,15 +4,16 @@
 
 #include "chrome/browser/dom_distiller/tab_utils.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -26,9 +27,14 @@
 #include "components/dom_distiller/core/url_utils.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#endif
 
 namespace {
 
@@ -43,13 +49,20 @@ using dom_distiller::ViewerHandle;
 using dom_distiller::ViewRequestDelegate;
 
 // An no-op ViewRequestDelegate which holds a ViewerHandle and deletes itself
-// after the WebContents navigates or goes away. This class is a band-aid to
-// keep a TaskTracker around until the distillation starts from the viewer.
+// if the WebContents navigates or goes away as well as if the distillation
+// finishes. This class is a band-aid to keep a TaskTracker around until the
+// distillation fininishes, and makes it to the cache. An optional callback can
+// be provided which will be called when the article content is ready. The
+// callback will be invoked with false if the object is destroyed before the
+// callback is invoked.
 class SelfDeletingRequestDelegate : public ViewRequestDelegate,
                                     public content::WebContentsObserver {
  public:
-  explicit SelfDeletingRequestDelegate(content::WebContents* web_contents);
+  explicit SelfDeletingRequestDelegate(
+      content::WebContents* web_contents,
+      std::optional<base::OnceCallback<void(bool)>> callback = std::nullopt);
   ~SelfDeletingRequestDelegate() override;
+  void DeleteSelf();
 
   // ViewRequestDelegate implementation.
   void OnArticleReady(const DistilledArticleProto* article_proto) override;
@@ -64,47 +77,81 @@ class SelfDeletingRequestDelegate : public ViewRequestDelegate,
   // Takes ownership of the ViewerHandle to keep distillation alive until |this|
   // is deleted.
   void TakeViewerHandle(std::unique_ptr<ViewerHandle> viewer_handle);
+  void SetCallback(base::OnceCallback<void(bool)> callback);
 
  private:
   // The handle to the view request towards the DomDistillerService. It
   // needs to be kept around to ensure the distillation request finishes.
   std::unique_ptr<ViewerHandle> viewer_handle_;
+  std::optional<base::OnceCallback<void(bool)>> callback_;
+  base::Time start_time_;
+  bool deleting_ = false;
 };
+
+SelfDeletingRequestDelegate::SelfDeletingRequestDelegate(
+    content::WebContents* web_contents,
+    std::optional<base::OnceCallback<void(bool)>> callback)
+    : WebContentsObserver(web_contents),
+      callback_(std::move(callback)),
+      start_time_(base::Time::Now()) {}
+
+SelfDeletingRequestDelegate::~SelfDeletingRequestDelegate() = default;
+
+void SelfDeletingRequestDelegate::DeleteSelf() {
+  if (deleting_) {
+    return;
+  }
+  deleting_ = true;
+
+  // Ensure the callback is executed if the delegate is deleted before the
+  // article distillation finishes (e.g. the user navigates away). The callback
+  // is a OnceCallback, so if it has already been run, this will do nothing.
+  if (callback_ && !callback_->is_null()) {
+    std::move(callback_.value()).Run(false);
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
+}
+
+void SelfDeletingRequestDelegate::OnArticleReady(
+    const DistilledArticleProto* article_proto) {
+  if (callback_ && !callback_->is_null()) {
+    bool has_content = article_proto != nullptr && article_proto->pages_size() > 0 &&
+                       article_proto->pages(0).has_html() &&
+                       !article_proto->pages(0).html().empty();
+    std::move(callback_.value()).Run(has_content);
+  }
+  // Now that the work is done, always schedule for deletion.
+  DeleteSelf();
+}
+
+void SelfDeletingRequestDelegate::OnArticleUpdated(
+    ArticleDistillationUpdate article_update) {}
 
 void SelfDeletingRequestDelegate::PrimaryPageChanged(content::Page& page) {
   Observe(nullptr);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                this);
+  DeleteSelf();
 }
 
 void SelfDeletingRequestDelegate::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   Observe(nullptr);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                this);
+  DeleteSelf();
 }
 
 void SelfDeletingRequestDelegate::WebContentsDestroyed() {
   Observe(nullptr);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                this);
+  DeleteSelf();
 }
-
-SelfDeletingRequestDelegate::SelfDeletingRequestDelegate(
-    content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
-
-SelfDeletingRequestDelegate::~SelfDeletingRequestDelegate() = default;
-
-void SelfDeletingRequestDelegate::OnArticleReady(
-    const DistilledArticleProto* article_proto) {}
-
-void SelfDeletingRequestDelegate::OnArticleUpdated(
-    ArticleDistillationUpdate article_update) {}
 
 void SelfDeletingRequestDelegate::TakeViewerHandle(
     std::unique_ptr<ViewerHandle> viewer_handle) {
   viewer_handle_ = std::move(viewer_handle);
+}
+
+void SelfDeletingRequestDelegate::SetCallback(
+    base::OnceCallback<void(bool)> callback) {
+  callback_ = std::move(callback);
 }
 
 // Start loading the viewer URL of the current page in |web_contents|.
@@ -124,8 +171,12 @@ void MaybeStartDistillation(
     SelfDeletingRequestDelegate* view_request_delegate) {
   const GURL& last_committed_url =
       source_page_handle->web_contents()->GetLastCommittedURL();
-  if (!dom_distiller::url_utils::IsUrlDistillable(last_committed_url))
+  // For non-distillable URLs, return an empty article so the request is
+  // fulfilled and the delegate is deleted.
+  if (!dom_distiller::url_utils::IsUrlDistillable(last_committed_url)) {
+    view_request_delegate->OnArticleReady(nullptr);
     return;
+  }
 
   // Disable back-forward cache when the distillation is in progress as it would
   // be cancelled and would not be restarted when the page is restored from the
@@ -157,49 +208,26 @@ void OnReadabilityHeuristicResult(base::OnceCallback<void(bool)> callback,
 
 }  // namespace
 
-void DistillCurrentPageAndView(content::WebContents* old_web_contents) {
-  DCHECK(old_web_contents);
-  // Create new WebContents.
-  content::WebContents::CreateParams create_params(
-      old_web_contents->GetBrowserContext());
-  std::unique_ptr<content::WebContents> new_web_contents =
-      content::WebContents::Create(create_params);
-  DCHECK(new_web_contents);
-
-  // Copy all navigation state from the old WebContents to the new one.
-  new_web_contents->GetController().CopyStateFrom(
-      &old_web_contents->GetController(), /* needs_reload */ true);
-
-  // StartNavigationToDistillerViewer must come before swapping the tab contents
-  // to avoid triggering a reload of the page.  This reloadmakes it very
-  // difficult to distinguish between the intermediate reload and a user hitting
-  // the back button.
-  StartNavigationToDistillerViewer(new_web_contents.get(),
-                                   old_web_contents->GetLastCommittedURL());
-
-  // This is used to start distillation and keep task_tracker alive till
-  // main viewer is created.
-  // Observes |new_web_contents| and is self deleted in the following cases
-  // (whichever happens first).
-  // 1. After navigation to distiller viewer is completed
-  // 2. When |new_web_contents| is destroyed
-  // 3. When render process attached to |new_web_contents| is gone
-  // Observing new_web_contents instead of |old_web_contents| will make sure
-  // that the destruction of |old_web_contents| will happen along with other
-  // web_contents else we might end up caching it till browser close which will
-  // lead to improper shutdown.
-  // For more details refer - https://crbug.com/1221168
+void DistillCurrentPageAndViewIfSuccessful(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK(web_contents);
   SelfDeletingRequestDelegate* view_request_delegate =
-      new SelfDeletingRequestDelegate(new_web_contents.get());
-
-  TabAndroid* tab = TabAndroid::FromWebContents(old_web_contents);
-  std::unique_ptr<content::WebContents> old_web_contents_owned =
-      tab->SwapWebContents(std::move(new_web_contents),
-                           /*did_start_load=*/false,
-                           /*did_finish_load=*/false);
+      new SelfDeletingRequestDelegate(
+          web_contents,
+          base::BindOnce(
+              [](base::OnceCallback<void(bool)> callback,
+                 content::WebContents* web_contents, bool success) {
+                std::move(callback).Run(success);
+                if (success) {
+                  StartNavigationToDistillerViewer(
+                      web_contents, web_contents->GetLastCommittedURL());
+                }
+              },
+              std::move(callback), web_contents));
 
   std::unique_ptr<SourcePageHandleWebContents> source_page_handle(
-      new SourcePageHandleWebContents(old_web_contents_owned.release(), true));
+      new SourcePageHandleWebContents(web_contents, false));
 
   MaybeStartDistillation(std::move(source_page_handle), view_request_delegate);
 }
@@ -235,3 +263,4 @@ void RunReadabilityHeuristicsOnWebContents(
       base::BindOnce(OnReadabilityHeuristicResult, std::move(callback)),
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
 }
+

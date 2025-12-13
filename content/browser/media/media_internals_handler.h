@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_HANDLER_H_
 #define CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_HANDLER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 

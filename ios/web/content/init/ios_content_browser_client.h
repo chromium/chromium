@@ -23,8 +23,6 @@ class IOSContentBrowserClient : public content::ContentBrowserClient {
   std::string GetAcceptLangs(content::BrowserContext* context) override;
   std::string GetProduct() override;
   std::string GetUserAgent() override;
-  std::string GetUserAgentBasedOnPolicy(
-      content::BrowserContext* context) override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   std::unique_ptr<content::WebContentsViewDelegate> GetWebContentsViewDelegate(
       content::WebContents* web_contents) override;

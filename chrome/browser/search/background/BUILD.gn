@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_win || is_mac || is_linux || is_chromeos)
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 import("//third_party/protobuf/proto_library.gni")
 
@@ -12,22 +12,17 @@ source_set("background") {
     "ntp_custom_background_service.h",
     "ntp_custom_background_service_factory.h",
     "ntp_custom_background_service_observer.h",
-    "wallpaper_search/wallpaper_search_background_manager.h",
-    "wallpaper_search/wallpaper_search_background_manager_observer.h",
-    "wallpaper_search/wallpaper_search_data.h",
+    "theme_delegate.h",
   ]
   sources = [
     "ntp_background_service_factory.cc",
     "ntp_custom_background_service.cc",
     "ntp_custom_background_service_factory.cc",
-    "wallpaper_search/wallpaper_search_background_manager.cc",
-    "wallpaper_search/wallpaper_search_data.cc",
+    "theme_delegate.cc",
   ]
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/themes",
-    "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
     "//components/image_fetcher/core",
     "//components/keyed_service/core",
     "//components/prefs",
@@ -47,7 +42,6 @@ source_set("background") {
     "//chrome/browser/image_fetcher",
     "//chrome/common",
     "//components/application_locale_storage",
-    "//components/optimization_guide/core:features",
     "//components/pref_registry",
     "//components/search",
     "//components/themes",
@@ -57,6 +51,22 @@ source_set("background") {
     "//ui/gfx",
     "//ui/gfx/codec",
   ]
+
+  if (!is_android) {
+    public += [
+      "wallpaper_search/wallpaper_search_background_manager.h",
+      "wallpaper_search/wallpaper_search_background_manager_observer.h",
+      "wallpaper_search/wallpaper_search_data.h",
+    ]
+    sources += [
+      "wallpaper_search/wallpaper_search_background_manager.cc",
+      "wallpaper_search/wallpaper_search_data.cc",
+    ]
+    public_deps += [
+      "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
+    ]
+    deps += [ "//components/optimization_guide/core:features" ]
+  }
 }
 
 source_set("constants") {

@@ -26,7 +26,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
      * An observer to which events are propagated if and only if they involve the supplied bookmark
      * folder's direct descendants.
      */
-    public static interface Observer {
+    public interface Observer {
         /**
          * Invoked when a direct descendant of the supplied bookmark folder is added.
          *
@@ -34,7 +34,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
          * @param item the direct descendant that was added.
          * @param index the index at which the direct descendant was added.
          */
-        public void onBookmarkItemAdded(int observationId, BookmarkItem item, int index);
+        void onBookmarkItemAdded(int observationId, BookmarkItem item, int index);
 
         /**
          * Invoked when a direct descendant of the supplied bookmark folder is moved.
@@ -43,7 +43,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
          * @param index the index to which the direct descendant was moved.
          * @param oldIndex the index from which the direct descendant was moved.
          */
-        public void onBookmarkItemMoved(int observationId, int index, int oldIndex);
+        void onBookmarkItemMoved(int observationId, int index, int oldIndex);
 
         /**
          * Invoked when a direct descendant of the supplied bookmark folder is removed.
@@ -51,7 +51,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
          * @param observationId the ID for the observation that propagated the event.
          * @param index the index at which the direct descendant was removed.
          */
-        public void onBookmarkItemRemoved(int observationId, int index);
+        void onBookmarkItemRemoved(int observationId, int index);
 
         /**
          * Invoked when a direct descendant of the supplied bookmark folder is updated.
@@ -60,7 +60,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
          * @param item the direct descendant that was updated.
          * @param index the index at which the direct descendant was updated.
          */
-        public void onBookmarkItemUpdated(int observationId, BookmarkItem item, int index);
+        void onBookmarkItemUpdated(int observationId, BookmarkItem item, int index);
 
         /**
          * Invoked when the direct descendants of the supplied bookmark folder have changed. Note
@@ -70,7 +70,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
          * @param observationId the ID for the observation that propagated the event.
          * @param items the direct descendants that changed.
          */
-        public void onBookmarkItemsChanged(int observationId, List<BookmarkItem> items);
+        void onBookmarkItemsChanged(int observationId, List<BookmarkItem> items);
     }
 
     private final int mId;
@@ -132,7 +132,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
     }
 
     @Override
-    public void bookmarkNodeAdded(BookmarkItem parent, int index) {
+    public void bookmarkNodeAdded(BookmarkItem parent, int index, boolean addedByUser) {
         if (Objects.equals(mFolderId, parent.getId())) {
             mObserver.onBookmarkItemAdded(mId, getBookmarkByIndex(index), index);
         }

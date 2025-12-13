@@ -23,6 +23,7 @@ android_library("java") {
   deps = [
     ":features_java",
     "//base:base_java",
+    "//base:flagged_apis_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//components/autofill/android:autofill_java",
@@ -123,7 +124,7 @@ static_library("android") {
     "//components/prefs",
     "//components/security_state/content",
     "//components/user_prefs",
-    "//components/webauthn/android:android",
+    "//components/webauthn/android",
     "//content/public/browser",
     "//third_party/jni_zero",
     "//ui/android",
@@ -138,6 +139,8 @@ static_library("browser") {
     "android_form_event_logger.h",
     "autofill_provider.cc",
     "autofill_provider.h",
+    "autofill_type_util.cc",
+    "autofill_type_util.h",
   ]
   public_deps = [ "//components/autofill/core/browser" ]
   deps = [
@@ -152,7 +155,7 @@ source_set("unit_tests") {
     "android_autofill_client_unittest.cc",
     "android_autofill_provider_unittest.cc",
     "form_data_android_unittest.cc",
-    "form_event_logger_weblayer_android_unittest.cc",
+    "form_event_logger_android_unittest.cc",
     "form_field_data_android_unittest.cc",
   ]
   deps = [

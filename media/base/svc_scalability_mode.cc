@@ -2,61 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/svc_scalability_mode.h"
 
 #include <algorithm>
+#include <array>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/notreached.h"
 
 namespace media {
 namespace {
-constexpr SVCScalabilityMode kSVCScalabilityModeMap[3][3][3] = {
-    // kOff.
-    {
-        {SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
-         SVCScalabilityMode::kL1T3},
-        {SVCScalabilityMode::kS2T1, SVCScalabilityMode::kS2T2,
-         SVCScalabilityMode::kS2T3},
-        {SVCScalabilityMode::kS3T1, SVCScalabilityMode::kS3T2,
-         SVCScalabilityMode::kS3T3},
-    },
-    // kOn.
-    {
-        {SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
-         SVCScalabilityMode::kL1T3},
-        {SVCScalabilityMode::kL2T1, SVCScalabilityMode::kL2T2,
-         SVCScalabilityMode::kL2T3},
-        {SVCScalabilityMode::kL3T1, SVCScalabilityMode::kL3T2,
-         SVCScalabilityMode::kL3T3},
-    },
-    // kOnKeyPic.
-    {
-        {SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
-         SVCScalabilityMode::kL1T3},
-        {SVCScalabilityMode::kL2T1Key, SVCScalabilityMode::kL2T2Key,
-         SVCScalabilityMode::kL2T3Key},
-        {SVCScalabilityMode::kL3T1Key, SVCScalabilityMode::kL3T2Key,
-         SVCScalabilityMode::kL3T3Key},
-    }};
+constexpr std::array<SVCScalabilityMode, 3 * 3 * 3> kSVCScalabilityModeMap = {
+    {// kOff.
+     SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
+     SVCScalabilityMode::kL1T3, SVCScalabilityMode::kS2T1,
+     SVCScalabilityMode::kS2T2, SVCScalabilityMode::kS2T3,
+     SVCScalabilityMode::kS3T1, SVCScalabilityMode::kS3T2,
+     SVCScalabilityMode::kS3T3,
+     // kOn.
+     SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
+     SVCScalabilityMode::kL1T3, SVCScalabilityMode::kL2T1,
+     SVCScalabilityMode::kL2T2, SVCScalabilityMode::kL2T3,
+     SVCScalabilityMode::kL3T1, SVCScalabilityMode::kL3T2,
+     SVCScalabilityMode::kL3T3,
+     // kOnKeyPic.
+     SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
+     SVCScalabilityMode::kL1T3, SVCScalabilityMode::kL2T1Key,
+     SVCScalabilityMode::kL2T2Key, SVCScalabilityMode::kL2T3Key,
+     SVCScalabilityMode::kL3T1Key, SVCScalabilityMode::kL3T2Key,
+     SVCScalabilityMode::kL3T3Key}};
 }  // namespace
 
-std::vector<SVCScalabilityMode>
+base::flat_set<SVCScalabilityMode>
 GetSupportedScalabilityModesByHWEncoderForTesting() {
-  constexpr size_t kSVCMapSize =
-      sizeof(kSVCScalabilityModeMap) / sizeof(SVCScalabilityMode);
-  std::vector<SVCScalabilityMode> supported_svcs(
-      &kSVCScalabilityModeMap[0][0][0],
-      (&kSVCScalabilityModeMap[0][0][0]) + kSVCMapSize);
-  std::sort(supported_svcs.begin(), supported_svcs.end());
-  supported_svcs.erase(
-      std::unique(supported_svcs.begin(), supported_svcs.end()),
-      supported_svcs.end());
+  auto supported_svcs = base::flat_set<SVCScalabilityMode>(
+      kSVCScalabilityModeMap.begin(), kSVCScalabilityModeMap.end());
   CHECK_EQ(supported_svcs.size(), 21u);
   return supported_svcs;
 }
@@ -70,9 +52,9 @@ SVCScalabilityMode GetSVCScalabilityMode(
   CHECK(0 < num_temporal_layers && num_temporal_layers <= 3);
   CHECK(static_cast<int>(inter_layer_pred) >= 0 &&
         static_cast<int>(inter_layer_pred) < 3);
-  auto mode =
-      kSVCScalabilityModeMap[static_cast<int>(inter_layer_pred)]
-                            [num_spatial_layers - 1][num_temporal_layers - 1];
+  auto mode = kSVCScalabilityModeMap[static_cast<int>(inter_layer_pred) * 9 +
+                                     (num_spatial_layers - 1) * 3 +
+                                     (num_temporal_layers - 1)];
   CHECK_NE(mode, kInvalid);
   return mode;
 }

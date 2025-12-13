@@ -26,9 +26,18 @@
         update_depot_tools
         git cl creds-check --global
 
-5. If you are using a @google.com account:
+5. If you are using a @google.com account, or a linked @chromium.org account:
 
-    1. Run gcert once a day to authenticate your account.
+    1. Run `gcert` once a day to authenticate your account.
+
+6. Otherwise,
+
+    1. Run `git credential-luci login` to login
+
+    2. **Committers:** Run `git credential-luci reauth` once a day to
+       Re-Authenticate with your security key. To complete ReAuth over SSH or
+       remote desktop, see [Gerrit ReAuth Guide](./gerrit_reauth.md) for
+       instructions.
 
 ### (EVERYONE) Verification
 

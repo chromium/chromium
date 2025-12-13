@@ -18,20 +18,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<ScriptDecoder::Result> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = ScriptDecoder::Result;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<mojo::ScopedDataPipeConsumerHandle> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = mojo::ScopedDataPipeConsumerHandle;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
 namespace {
 void AppendDataImpl(Digestor* digestor,
                     StringBuilder* builder,

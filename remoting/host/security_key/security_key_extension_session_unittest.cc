@@ -80,6 +80,8 @@ class TestClientStub : public protocol::ClientStub {
 
   // protocol::CursorShapeStub implementation.
   void SetCursorShape(const protocol::CursorShapeInfo& cursor_shape) override;
+  void SetHostCursorPosition(
+      const protocol::HostCursorPosition& position) override;
 
   // protocol::KeyboardLayoutStub implementation.
   void SetKeyboardLayout(const protocol::KeyboardLayout& layout) override;
@@ -122,6 +124,9 @@ void TestClientStub::InjectClipboardEvent(
 
 void TestClientStub::SetCursorShape(
     const protocol::CursorShapeInfo& cursor_shape) {}
+
+void TestClientStub::SetHostCursorPosition(
+    const protocol::HostCursorPosition& position) {}
 
 void TestClientStub::SetKeyboardLayout(const protocol::KeyboardLayout& layout) {
 }
@@ -218,9 +223,8 @@ void SecurityKeyExtensionSessionTest::WaitForAndVerifyHostMessage() {
     expected_data.Append(kRequestData[i]);
   }
 
-  std::string expected_data_json;
-  base::JSONWriter::Write(expected_data, &expected_data_json);
-  client_stub_.CheckHostDataMessage(1, expected_data_json);
+  client_stub_.CheckHostDataMessage(
+      1, base::WriteJson(expected_data).value_or(""));
 }
 
 void SecurityKeyExtensionSessionTest::CreateSecurityKeyConnection() {

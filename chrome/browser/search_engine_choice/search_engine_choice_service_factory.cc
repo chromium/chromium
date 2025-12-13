@@ -9,10 +9,12 @@
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_client.h"
 #include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/variations/service/variations_service.h"
@@ -23,13 +25,17 @@ std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
     content::BrowserContext* context) {
   Profile& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
 
-  return std::make_unique<SearchEngineChoiceService>(
+  auto service = std::make_unique<SearchEngineChoiceService>(
       std::make_unique<SearchEngineChoiceServiceClient>(profile),
       CHECK_DEREF(profile.GetPrefs()), g_browser_process->local_state(),
       CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
                       GetForProfile(&profile)),
-      CHECK_DEREF(TemplateURLPrepopulateData::ResolverFactory::GetForProfile(
-          &profile)));
+      CHECK_DEREF(
+          TemplateURLPrepopulateData::ResolverFactory::GetForProfile(&profile)),
+      CHECK_DEREF(IdentityManagerFactory::GetForProfile(&profile)),
+      CHECK_DEREF(policy::ManagementServiceFactory::GetForPlatform()));
+  service->Init();
+  return service;
 }
 }  // namespace
 
@@ -47,6 +53,8 @@ SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
   DependsOn(
       regional_capabilities::RegionalCapabilitiesServiceFactory::GetInstance());
   DependsOn(TemplateURLPrepopulateData::ResolverFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(policy::ManagementServiceFactory::GetInstance());
 }
 
 SearchEngineChoiceServiceFactory::~SearchEngineChoiceServiceFactory() = default;
@@ -77,4 +85,10 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return BuildSearchEngineChoiceService(context);
 }
+
+void SearchEngineChoiceServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  SearchEngineChoiceService::RegisterProfilePrefs(registry);
+}
+
 }  // namespace search_engines

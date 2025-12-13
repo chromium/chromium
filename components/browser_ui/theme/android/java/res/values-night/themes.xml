@@ -1,93 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2022 The Chromium Authors
+Copyright 2025 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
 <resources>
-    <!-- Colors should be mirrored by Theme.BrowserUI.DialogWhenLarge.DayNight and
-         Theme.BrowserUI.AlertDialog.NoActionBar.DayNight. -->
-    <style name="Theme.BrowserUI.DayNight" parent="Theme.BrowserUI">
-        <!-- Color palettes -->
-        <item name="colorPrimary">@color/baseline_primary_80</item>
-        <item name="colorPrimaryInverse">@color/baseline_primary_40</item>
-        <item name="colorOnPrimary">@color/baseline_primary_20</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_90</item>
-        <item name="colorSecondaryContainer">@color/baseline_secondary_30</item>
-        <item name="colorOnSecondaryContainer">@color/baseline_secondary_90</item>
-        <item name="android:colorBackground">@color/baseline_neutral_10</item>
-        <item name="colorOnBackground">@color/baseline_neutral_90</item>
-        <item name="colorSurface">@color/gm3_baseline_surface_dark</item>
-        <item name="colorOnSurface">@color/baseline_neutral_90</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
-        <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
-        <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_dark</item>
-        <item name="colorSurfaceDim">@color/gm3_baseline_surface_dim_dark</item>
-        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_dark</item>
-        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_dark</item>
-        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_dark</item>
-        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_dark</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_60</item>
-        <item name="colorOutlineVariant">@color/baseline_neutral_variant_30</item>
-        <item name="colorError">@color/baseline_error_80</item>
-    </style>
-
-    <!-- Colors should be mirrored by Theme.BrowserUI.DayNight. -->
-    <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge">
-        <!-- Color palettes -->
-        <item name="colorPrimary">@color/baseline_primary_80</item>
-        <item name="colorPrimaryInverse">@color/baseline_primary_40</item>
-        <item name="colorOnPrimary">@color/baseline_primary_20</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_90</item>
-        <item name="colorSecondaryContainer">@color/baseline_secondary_30</item>
-        <item name="colorOnSecondaryContainer">@color/baseline_secondary_90</item>
-        <item name="android:colorBackground">@color/baseline_neutral_10</item>
-        <item name="colorOnBackground">@color/baseline_neutral_90</item>
-        <item name="colorSurface">@color/gm3_baseline_surface_dark</item>
-        <item name="colorOnSurface">@color/baseline_neutral_90</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
-        <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
-        <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_dark</item>
-        <item name="colorSurfaceDim">@color/gm3_baseline_surface_dim_dark</item>
-        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_dark</item>
-        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_dark</item>
-        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_dark</item>
-        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_dark</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_60</item>
-        <item name="colorOutlineVariant">@color/baseline_neutral_variant_30</item>
-        <item name="colorError">@color/baseline_error_80</item>
-    </style>
-
-    <!-- Colors should be mirrored by Theme.BrowserUI.DayNight. -->
-    <style name="Theme.BrowserUI.AlertDialog.NoActionBar.DayNight" parent="Theme.BrowserUI.AlertDialog.NoActionBar">
-        <!-- Color palettes -->
-        <item name="colorPrimary">@color/baseline_primary_80</item>
-        <item name="colorPrimaryInverse">@color/baseline_primary_40</item>
-        <item name="colorOnPrimary">@color/baseline_primary_20</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_90</item>
-        <item name="colorSecondaryContainer">@color/baseline_secondary_30</item>
-        <item name="colorOnSecondaryContainer">@color/baseline_secondary_90</item>
-        <item name="android:colorBackground">@color/baseline_neutral_10</item>
-        <item name="colorOnBackground">@color/baseline_neutral_90</item>
-        <item name="colorSurface">@color/gm3_baseline_surface_dark</item>
-        <item name="colorOnSurface">@color/baseline_neutral_90</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
-        <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
-        <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_dark</item>
-        <item name="colorSurfaceDim">@color/gm3_baseline_surface_dim_dark</item>
-        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_dark</item>
-        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_dark</item>
-        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_dark</item>
-        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_dark</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_60</item>
-        <item name="colorOutlineVariant">@color/baseline_neutral_variant_30</item>
-        <item name="colorError">@color/baseline_error_80</item>
-    </style>
+    <style name="Theme.BrowserUI.DayNight" parent="Theme.BrowserUI.Dark"/>
+    <style name="Theme.BrowserUI.DayNight.DialogWhenLarge" parent="Theme.BrowserUI.Dark.DialogWhenLarge"/>
+    <style name="Theme.BrowserUI.DayNight.AlertDialog.NoActionBar" parent="Theme.BrowserUI.Dark.AlertDialog.NoActionBar"/>
 </resources>

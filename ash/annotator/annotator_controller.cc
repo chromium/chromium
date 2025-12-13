@@ -9,6 +9,7 @@
 #include "ash/annotator/annotations_overlay_controller.h"
 #include "ash/annotator/annotator_metrics.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/annotator/annotations_overlay_view.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
@@ -16,6 +17,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/webui/annotator/public/cpp/annotator_client.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -90,13 +92,15 @@ void AnnotatorController::SetAnnotatorTool(const AnnotatorTool& tool) {
 }
 
 void AnnotatorController::ResetTools() {
-  if (annotator_enabled_) {
+  if (!annotator_enabled_) {
+    return;
+  }
     DCHECK(client_);
     ToggleAnnotatorCanvas();
     annotator_enabled_ = false;
     client_->Clear();
     UpdateAnnotationTrayAccessibleName(/*is_annotator_enabled=*/false);
-  }
+    NotifyStateChanged();
 }
 
 void AnnotatorController::RegisterView(aura::Window* new_root) {
@@ -137,6 +141,7 @@ void AnnotatorController::EnableAnnotatorTool() {
     ToggleAnnotatorCanvas();
     annotator_enabled_ = !annotator_enabled_;
     UpdateAnnotationTrayAccessibleName(annotator_enabled_);
+    NotifyStateChanged();
     // TODO(b/342104047): Decouple from projector metrics.
     RecordToolbarMetrics(ProjectorToolbar::kMarkerTool);
   }
@@ -164,6 +169,11 @@ void AnnotatorController::UpdateAnnotationTrayAccessibleName(
   if (auto* annotation_tray = GetAnnotationTrayForRoot(current_root_)) {
     annotation_tray->UpdateAccessibleName(is_annotator_enabled);
   }
+}
+
+void AnnotatorController::CreateAnnotationOverlayForMarkerMode(
+    aura::Window* window) {
+  CreateAnnotationOverlayForWindow(window, std::nullopt);
 }
 
 void AnnotatorController::SetToolClient(AnnotatorClient* client) {
@@ -200,6 +210,14 @@ AnnotatorController::CreateAnnotationsOverlayView() const {
   return client_->CreateAnnotationsOverlayView();
 }
 
+void AnnotatorController::AddObserver(AnnotatorObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AnnotatorController::RemoveObserver(AnnotatorObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void AnnotatorController::UpdateTrayEnabledState() {
   if (auto* annotation_tray = GetAnnotationTrayForRoot(current_root_)) {
     annotation_tray->SetTrayEnabled(GetAnnotatorAvailability());
@@ -208,11 +226,15 @@ void AnnotatorController::UpdateTrayEnabledState() {
 
 void AnnotatorController::ToggleAnnotatorCanvas() {
   auto* capture_mode_controller = CaptureModeController::Get();
-  // TODO(b/342104047): This check is necessary as long as we only toggle
-  // annotator from Projector. Once we start using the annotator outside of
-  // Projector, we should remove the check.
-  if (capture_mode_controller->is_recording_in_progress()) {
+  if (base::FeatureList::IsEnabled(ash::features::kAnnotatorMode) ||
+      capture_mode_controller->is_recording_in_progress()) {
     annotations_overlay_controller_->Toggle();
+  }
+}
+
+void AnnotatorController::NotifyStateChanged() {
+  for (AnnotatorObserver& observer : observers_) {
+    observer.OnAnnotatorStateChanged(annotator_enabled_);
   }
 }
 

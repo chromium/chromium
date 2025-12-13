@@ -32,7 +32,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
-#include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

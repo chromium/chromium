@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_export.h"

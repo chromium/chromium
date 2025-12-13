@@ -2652,9 +2652,9 @@ ArcBluetoothBridge::GetDeviceProperties(mojom::BluetoothPropertyType type,
 std::vector<mojom::BluetoothPropertyPtr>
 ArcBluetoothBridge::GetAdapterProperties(
     mojom::BluetoothPropertyType type) const {
-  // TODO(crbug.com/40189401): Since this function is invoked from ARC side, it
-  // is possible that adapter is not present or powered here. It's not
-  // meaningful to return any property when that happens.
+  // Since this function is invoked from ARC side, it is possible that adapter
+  // is not present or powered here. It's not meaningful to return any property
+  // when that happens.
   const std::string adapter_address = bluetooth_adapter_->GetAddress();
   if (adapter_address.empty()) {
     LOG(ERROR) << "Bluetooth adapter does not have a valid address";

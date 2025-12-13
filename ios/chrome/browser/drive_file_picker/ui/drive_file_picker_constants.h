@@ -28,6 +28,16 @@ extern NSString* const kDriveFilePickerStarredItemIdentifier;
 extern NSString* const kDriveFilePickerRecentItemIdentifier;
 extern NSString* const kDriveFilePickerSharedWithMeItemIdentifier;
 
+// The different first level options the user can select.
+enum class DriveFilePickerFirstLevel {
+  kMyDrive,
+  kSharedDrive,
+  kSharedWithMe,
+  kStarred,
+  kRecent,
+  kSearch
+};
+
 // Different types of collection which can be displayed in the file picker.
 enum class DriveFilePickerCollectionType {
   // Main collection with "My Drive", "Shared Drives", "Computers", etc.
@@ -51,29 +61,6 @@ enum class DriveFileDownloadStatus {
   kSuccess,
   kInterrupted,
   kFailed,
-};
-
-// Enum values for the drive sorting order.
-enum class DriveItemsSortingOrder {
-  kAscending = 0,
-  kDescending,
-};
-
-// Enum values for the drive sorting type.
-enum class DriveItemsSortingType {
-  kName = 0,
-  kModificationTime,
-  kOpeningTime,
-};
-
-// Enum values for the Drive file picker filtering mode.
-enum class DriveFilePickerFilter {
-  kOnlyShowArchives,
-  kOnlyShowAudio,
-  kOnlyShowVideos,
-  kOnlyShowImages,
-  kOnlyShowPDFs,
-  kShowAllFiles,
 };
 
 // Enum values for the background of the file picker.

@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_H_
 
+#include <list>
 #include <map>
 #include <set>
 #include <string>
@@ -26,6 +27,10 @@ class HttpResponseHeaders;
 class SharedDictionary;
 }  // namespace net
 
+namespace url_pattern {
+class SimpleUrlPatternMatcher;
+}
+
 namespace network {
 namespace mojom {
 enum class FetchResponseType : int32_t;
@@ -35,7 +40,6 @@ enum class SharedDictionaryError : int32_t;
 }  // namespace mojom
 
 class SharedDictionaryWriter;
-class SimpleUrlPatternMatcher;
 
 // Shared Dictionary Storage manages dictionaries for a particular
 // net::SharedDictionaryIsolationKey.
@@ -87,14 +91,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   // Called to create a SharedDictionaryWriter.
   virtual base::expected<scoped_refptr<SharedDictionaryWriter>,
                          mojom::SharedDictionaryError>
-  CreateWriter(const GURL& url,
-               base::Time last_fetch_time,
-               base::Time response_time,
-               base::TimeDelta expiration,
-               const std::string& match,
-               const std::set<mojom::RequestDestination>& match_dest,
-               const std::string& id,
-               std::unique_ptr<SimpleUrlPatternMatcher> matcher) = 0;
+  CreateWriter(
+      const GURL& url,
+      base::Time last_fetch_time,
+      base::Time response_time,
+      base::TimeDelta expiration,
+      const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id,
+      std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher) = 0;
 
   // If the matching dictionary is already registered, this method updates the
   // `last_fetch_time` of the registered dictionary, and returns true.
@@ -106,6 +111,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
       const std::string& match,
       const std::set<mojom::RequestDestination>& match_dest,
       const std::string& id,
+      const std::optional<base::TimeDelta>& ttl,
       base::Time last_fetch_time) = 0;
 };
 
@@ -120,15 +126,24 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
         std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
                  DictionaryInfoType>>& dictionary_info_map,
     const GURL& url,
-    mojom::RequestDestination destination) {
+    mojom::RequestDestination destination,
+    std::list<DictionaryInfoType*>& expired_entries) {
   auto it = dictionary_info_map.find(url::SchemeHostPort(url));
   if (it == dictionary_info_map.end()) {
     return nullptr;
   }
+  base::Time now = base::Time::Now();
   DictionaryInfoType* matched_info = nullptr;
   for (auto& item : it->second) {
     DictionaryInfoType& info = item.second;
     CHECK(std::make_tuple(info.match(), info.match_dest()) == item.first);
+
+    // Keep track of (but don't match) expired entries.
+    if (info.response_time() + info.expiration() <= now) {
+      expired_entries.push_back(&info);
+      continue;
+    }
+
     if (matched_info &&
         ((matched_info->match().size() > info.match().size()) ||
          (matched_info->match().size() == info.match().size() &&
@@ -164,7 +179,8 @@ DictionaryInfoType* FindRegisteredInDictionaryInfoMap(
     base::TimeDelta expiration,
     const std::string& match,
     const std::set<mojom::RequestDestination>& match_dest,
-    const std::string& id) {
+    const std::string& id,
+    const std::optional<base::TimeDelta>& ttl) {
   auto it1 = dictionary_info_map.find(url::SchemeHostPort(url));
   if (it1 == dictionary_info_map.end()) {
     return nullptr;
@@ -173,8 +189,10 @@ DictionaryInfoType* FindRegisteredInDictionaryInfoMap(
   if (it2 == it1->second.end()) {
     return nullptr;
   }
+  // The response_time can update on every fetch if "ttl" is used so only
+  // check for the exact match of response_time if a ttl isn't present.
   if (it2->second.url() == url &&
-      it2->second.response_time() == response_time &&
+      (ttl || it2->second.response_time() == response_time) &&
       it2->second.expiration() == expiration && it2->second.id() == id) {
     return &it2->second;
   } else {

@@ -73,8 +73,16 @@ class CORE_EXPORT GridTrackList {
   wtf_size_t RepeaterCount() const;
   // Returns the count of all tracks, ignoring those within an auto repeater.
   wtf_size_t TrackCountWithoutAutoRepeat() const;
+  // Returns the count of tracks up to an auto repeater. If there is no auto
+  // repeater, returns 0.
+  wtf_size_t TrackCountBeforeAutoRepeat() const {
+    return track_count_before_auto_repeat_;
+  }
   // Returns the number of tracks in the auto repeater, or 0 if there is none.
   wtf_size_t AutoRepeatTrackCount() const;
+  // Returns the start index of the auto repeater, or kNotFound if there is
+  // none.
+  wtf_size_t AutoRepeatTrackIndex() const { return auto_repeater_index_; }
   // Returns the count of line names not including auto repeaters. Note that
   // this is subtly different than `TrackCountWithoutAutoRepeat`, as it is
   // specifically line names (not sizes), and includes empty line names.
@@ -94,9 +102,11 @@ class CORE_EXPORT GridTrackList {
   // Sets the axis type (standalone or subgrid).
   void SetAxisType(GridAxisType axis_type);
 
-  // If true, this track list has a repeat definition with an auto sized track
-  // with an automatic number of repetitions.
-  bool HasAutoSizedRepeater() const { return has_auto_sized_repeater_; }
+  // If true, this track list has a repeat definition with an intrinsic sized
+  // track with an automatic number of repetitions.
+  bool HasIntrinsicSizedRepeater() const {
+    return has_intrinsic_sized_repeater_;
+  }
 
   // Clears all data.
   void Clear();
@@ -105,7 +115,6 @@ class CORE_EXPORT GridTrackList {
 
   void operator=(const GridTrackList& o);
   bool operator==(const GridTrackList& o) const;
-  bool operator!=(const GridTrackList& o) const { return !(*this == o); }
 
  private:
   // Returns the amount of tracks available before overflow.
@@ -124,14 +133,18 @@ class CORE_EXPORT GridTrackList {
   // Count of tracks ignoring those within an auto repeater.
   wtf_size_t track_count_without_auto_repeat_{0};
 
+  // Count of tracks up to an auto repeater. If there is no auto repeater, it is
+  // 0.
+  wtf_size_t track_count_before_auto_repeat_{0};
+
   // Count of line names outside of auto-repeaters. This is subtly different
   // than `track_count_without_auto_repeat_`, as that is track definitions,
   // while this tracks line names (including empty lines).
   wtf_size_t non_auto_repeat_line_count_{0};
 
-  // If true, this track list has a repeat definition with an auto sized track
-  // with an automatic number of repetitions.
-  bool has_auto_sized_repeater_{false};
+  // If true, this track list has a repeat definition with an intrinsic sized
+  // track with an automatic number of repetitions.
+  bool has_intrinsic_sized_repeater_{false};
 
   // The grid axis type (standalone or subgridded).
   GridAxisType axis_type_{GridAxisType::kStandaloneAxis};

@@ -11,11 +11,10 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/path_service.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,29 +24,16 @@
 
 namespace web_app {
 
-namespace {
-
-gfx::Image LoadTestPNG(const base::FilePath::CharType* path) {
-  base::FilePath data_root;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_root);
-  base::FilePath image_path = data_root.Append(path);
-  std::string png_data;
-  ReadFileToString(image_path, &png_data);
-  return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(png_data));
-}
-
-}  // namespace
-
 TEST(IconUtilsTests, MaskSquareSolidBackgroundDiyAppIcon) {
   // This test simulates a square icon without rounded corners
   // and a solid color square background. It will enter the mask logic
   // for maskable icons, determining if the output from MaskDiyAppIcon()
   // matches the pre-generated target icon.
-  gfx::Image square_icon =
-      LoadTestPNG(FILE_PATH_LITERAL("chrome/test/data/web_apps/blue-192.png"));
+  gfx::Image square_icon = web_app::test::LoadTestImageFromDisk(
+      base::FilePath("chrome/test/data/web_apps/blue-192.png"));
   ASSERT_TRUE(!square_icon.IsEmpty());
-  gfx::Image expected_masked_icon = LoadTestPNG(
-      FILE_PATH_LITERAL("chrome/test/data/web_apps/masked_blue-192.png"));
+  gfx::Image expected_masked_icon = web_app::test::LoadTestImageFromDisk(
+      base::FilePath("chrome/test/data/web_apps/masked_blue-192.png"));
   ASSERT_TRUE(!expected_masked_icon.IsEmpty());
   gfx::Image actual_masked_icon = MaskDiyAppIcon(square_icon);
   ASSERT_TRUE(!actual_masked_icon.IsEmpty());
@@ -61,11 +47,11 @@ TEST(IconUtilsTests, MaskNormalDiyAppIcon) {
   // masked after zooming out.
 
   // Small favicon
-  gfx::Image original_favicon = LoadTestPNG(
-      FILE_PATH_LITERAL("chrome/test/data/web_apps/pattern3-256.png"));
+  gfx::Image original_favicon = web_app::test::LoadTestImageFromDisk(
+      base::FilePath("chrome/test/data/web_apps/pattern3-256.png"));
   ASSERT_TRUE(!original_favicon.IsEmpty());
-  gfx::Image expected_masked_favicon = LoadTestPNG(
-      FILE_PATH_LITERAL("chrome/test/data/web_apps/masked_pattern3-256.png"));
+  gfx::Image expected_masked_favicon = web_app::test::LoadTestImageFromDisk(
+      base::FilePath("chrome/test/data/web_apps/masked_pattern3-256.png"));
   ASSERT_TRUE(!expected_masked_favicon.IsEmpty());
   gfx::Image actual_masked_favicon = MaskDiyAppIcon(original_favicon);
   ASSERT_TRUE(!actual_masked_favicon.IsEmpty());

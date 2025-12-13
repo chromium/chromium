@@ -25,12 +25,16 @@ export function setupExtendedReportingCheckbox() {
 
   const privacyLink = document.querySelector('#privacy-link');
   if (privacyLink) {
-    privacyLink.addEventListener('click', function() {
+    privacyLink.addEventListener('click', function(e) {
       sendCommand(SecurityInterstitialCommandId.CMD_OPEN_REPORTING_PRIVACY);
-      return false;
+      e.preventDefault();
     });
-    privacyLink.addEventListener('mousedown', function() {
-      return false;
+    privacyLink.addEventListener('auxclick', function(e) {
+      if (e.button === 1) {  // Middle click
+        sendCommand(
+            SecurityInterstitialCommandId.CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB);
+        e.preventDefault();
+      }
     });
   }
   document.querySelector('#opt-in-checkbox').checked =
@@ -55,6 +59,13 @@ export function setupExtendedReportingCheckbox() {
   if (whitepaperLink) {
     whitepaperLink.addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_OPEN_WHITEPAPER);
+      event.preventDefault();
+    });
+    whitepaperLink.addEventListener('auxclick', function(event) {
+      if (event.button === 1) { // Middle click
+        sendCommand(SecurityInterstitialCommandId.CMD_OPEN_WHITEPAPER_IN_NEW_TAB);
+        event.preventDefault();
+      }
     });
   }
 

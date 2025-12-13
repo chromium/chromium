@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/web_view_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/page_info/core/about_this_site_service.h"
@@ -90,7 +91,7 @@ void AboutThisSideSidePanelCoordinator::RegisterEntry(
             &AboutThisSideSidePanelCoordinator::GetOpenInNewTabUrl,
             base::Unretained(this)),
         /*more_info_callback=*/base::NullCallback(),
-        SidePanelEntry::kSidePanelDefaultContentWidth);
+        /*default_content_width_callback=*/base::NullCallback());
     registry->Register(std::move(entry));
   }
 }
@@ -110,8 +111,8 @@ void AboutThisSideSidePanelCoordinator::RegisterEntryAndShow(
     about_this_site_side_panel_view_->OpenUrl(last_url_info_->url_params);
   }
 
-  if (side_panel_ui->GetCurrentEntryId() !=
-      SidePanelEntry::Id::kAboutThisSite) {
+  if (!side_panel_ui->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntry::Id::kAboutThisSite))) {
     side_panel_ui->Show(SidePanelEntry::Id::kAboutThisSite);
   }
 }
@@ -140,8 +141,8 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
   // Update the SidePanel when a user navigates to another url with the
   // correct Diner URL.
   if (about_this_site_side_panel_view_ &&
-      side_panel_ui->GetCurrentEntryId() ==
-          SidePanelEntry::Id::kAboutThisSite) {
+      side_panel_ui->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntry::Id::kAboutThisSite))) {
     page_info::AboutThisSiteService::OnSameTabNavigation();
     RegisterEntryAndShow(
         page_info::AboutThisSiteService::CreateMoreAboutUrlForNavigation(
@@ -150,8 +151,8 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
 
   // If the about this site side panel is no longer being shown and the view is
   // cached, then we will remove the cached view since it shows the wrong page.
-  if (side_panel_ui->GetCurrentEntryId() !=
-          SidePanelEntry::Id::kAboutThisSite &&
+  if (!side_panel_ui->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntry::Id::kAboutThisSite)) &&
       about_this_site_side_panel_view_) {
     auto* entry = registry->GetEntryForKey(
         SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
@@ -190,7 +191,7 @@ SidePanelUI* AboutThisSideSidePanelCoordinator::GetSidePanelUI() {
 
 GURL AboutThisSideSidePanelCoordinator::GetOpenInNewTabUrl() {
   DCHECK(last_url_info_.has_value());
-  DCHECK(!base::Contains(last_url_info_.value().new_tab_url.query_piece(),
+  DCHECK(!base::Contains(last_url_info_.value().new_tab_url.query(),
                          page_info::AboutThisSiteRenderModeParameterName));
   return last_url_info_.value().new_tab_url;
 }

@@ -68,7 +68,7 @@ suite('ThemeSnapshotTest', () => {
     assertEquals(
         'foo',
         $$(themeSnapshotElement,
-           '.snapshot-container #customThemeTitle')!.textContent!.trim());
+           '.snapshot-container #customThemeTitle')!.textContent.trim());
     assertEquals(
         'chrome://theme/foo',
         $$<HTMLImageElement>(
@@ -100,8 +100,7 @@ suite('ThemeSnapshotTest', () => {
     assertEquals(
         'Default Chrome',
         $$(themeSnapshotElement,
-           '.snapshot-container #classicChromeThemeTitle')!.textContent!
-            .trim());
+           '.snapshot-container #classicChromeThemeTitle')!.textContent.trim());
   });
 
   test('uploading a background updates theme snapshot', async () => {
@@ -129,7 +128,7 @@ suite('ThemeSnapshotTest', () => {
     assertEquals(
         'Uploaded image',
         $$(themeSnapshotElement,
-           '.snapshot-container #uploadedThemeTitle')!.textContent!.trim());
+           '.snapshot-container #uploadedThemeTitle')!.textContent.trim());
   });
 
   test('classic chrome snapshot shows correct image', async () => {

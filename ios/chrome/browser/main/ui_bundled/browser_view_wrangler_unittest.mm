@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_observer.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
@@ -66,9 +66,6 @@ class BrowserViewWranglerTest : public PlatformTest {
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
-        PrerenderServiceFactory::GetInstance(),
-        PrerenderServiceFactory::GetDefaultFactory());
-    test_profile_builder.AddTestingFactory(
         ios::BookmarkModelFactory::GetInstance(),
         ios::BookmarkModelFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
@@ -78,6 +75,9 @@ class BrowserViewWranglerTest : public PlatformTest {
     test_profile_builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
+    test_profile_builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
 
     profile_ = std::move(test_profile_builder).Build();
     profile_->CreateOffTheRecordProfileWithTestingFactories(

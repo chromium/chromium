@@ -58,8 +58,6 @@ from typing import (
     get_args,
 )
 
-import six
-
 from urllib.parse import urljoin
 
 from blinkpy.common import exit_codes
@@ -81,7 +79,6 @@ from blinkpy.w3c.wpt_manifest import (
     WPTManifest,
     MANIFEST_NAME,
 )
-from blinkpy.web_tests.layout_package.bot_test_expectations import BotTestExpectationsFactory
 from blinkpy.web_tests.models.test_configuration import TestConfiguration
 from blinkpy.web_tests.models.test_run_results import TestRunException
 from blinkpy.web_tests.models.typ_types import (
@@ -320,7 +317,7 @@ class Port(object):
     FLAG_EXPECTATIONS_PREFIX = 'FlagExpectations'
 
     # The following two constants must match. When adding a new WPT root, also
-    # remember to add an alias rule to external/wpt/.config.json.
+    # remember to add an alias rule to external/wpt/config.tmpl.json.
     # WPT_DIRS maps WPT roots on the file system to URL prefixes on wptserve.
     # The order matters: '/' MUST be the last URL prefix.
     # Consider using port.wpt_dirs() instead.
@@ -2700,35 +2697,6 @@ class Port(object):
                     raise
 
         return expectations
-
-    def bot_expectations(self):
-        if not self.get_option('ignore_flaky_tests'):
-            return {}
-
-        full_port_name = self.determine_full_port_name(
-            self.host, self._options, self.port_name)
-        builder_category = self.get_option('ignore_builder_category', 'layout')
-        step_names = ['blink_web_tests', 'blink_wpt_tests']
-        retval = {}
-        for step_name in step_names:
-            factory = BotTestExpectationsFactory(self.host.builders, step_name)
-            # FIXME: This only grabs release builder's flakiness data. If we're running debug,
-            # when we should grab the debug builder's data.
-            expectations = factory.expectations_for_port(full_port_name,
-                                                         builder_category)
-
-            if not expectations:
-                continue
-
-            ignore_mode = self.get_option('ignore_flaky_tests')
-            if ignore_mode == 'very-flaky' or ignore_mode == 'maybe-flaky':
-                retval.update(expectations.flakes_by_path(ignore_mode == 'very-flaky'))
-            elif ignore_mode == 'unexpected':
-                retval.update(expectations.unexpected_results_by_path())
-            else:
-                _log.warning("Unexpected ignore mode: '%s'.", ignore_mode)
-
-        return retval
 
     def default_expectations_files(self):
         """Returns a list of paths to expectations files that apply by default.

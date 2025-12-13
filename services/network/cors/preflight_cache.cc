@@ -74,7 +74,6 @@ void PreflightCache::AppendEntry(
     const url::Origin& origin,
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key,
-    mojom::IPAddressSpace target_ip_address_space,
     std::unique_ptr<PreflightResult> preflight_result) {
   DCHECK(preflight_result);
 
@@ -84,8 +83,7 @@ void PreflightCache::AppendEntry(
     return;
   }
 
-  auto key = std::make_tuple(origin, url_spec, network_isolation_key,
-                             target_ip_address_space);
+  auto key = std::make_tuple(origin, url_spec, network_isolation_key);
   const auto existing_entry = cache_.find(key);
   if (existing_entry == cache_.end()) {
     // Since one new entry is always added below, let's purge one cache entry
@@ -100,7 +98,6 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     const url::Origin& origin,
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key,
-    mojom::IPAddressSpace target_ip_address_space,
     mojom::CredentialsMode credentials_mode,
     const std::string& method,
     const net::HttpRequestHeaders& request_headers,
@@ -108,8 +105,7 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     const net::NetLogWithSource& net_log,
     bool acam_preflight_spec_conformant) {
   // Check if the entry exists in the cache.
-  auto key = std::make_tuple(origin, url.spec(), network_isolation_key,
-                             target_ip_address_space);
+  auto key = std::make_tuple(origin, url.spec(), network_isolation_key);
   auto cache_entry = cache_.find(key);
   if (cache_entry == cache_.end()) {
     RecordCacheMetricNetLog(CacheMetric::kMiss, net_log);
@@ -191,12 +187,9 @@ size_t PreflightCache::CountEntriesForTesting() const {
 bool PreflightCache::DoesEntryExistForTesting(
     const url::Origin& origin,
     const std::string& url,
-    const net::NetworkIsolationKey& network_isolation_key,
-    mojom::IPAddressSpace target_ip_address_space) {
-  std::tuple<url::Origin, std::string, net::NetworkIsolationKey,
-             mojom::IPAddressSpace>
-      entry_key = std::make_tuple(origin, url, network_isolation_key,
-                                  target_ip_address_space);
+    const net::NetworkIsolationKey& network_isolation_key) {
+  std::tuple<url::Origin, std::string, net::NetworkIsolationKey> entry_key =
+      std::make_tuple(origin, url, network_isolation_key);
   return cache_.find(entry_key) != cache_.end();
 }
 

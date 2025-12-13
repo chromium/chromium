@@ -16,6 +16,10 @@
 
 enum class WindowOpenDisposition;
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 namespace ash {
 
 // Id to be used to get the wrapped web view using views::View::GetViewByID.

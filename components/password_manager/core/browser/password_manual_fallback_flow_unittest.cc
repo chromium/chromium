@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -131,8 +132,10 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               (override));
   MOCK_METHOD(void,
               FillField,
-              (const std::u16string&,
-               autofill::AutofillSuggestionTriggerSource),
+              (autofill::FieldRendererId,
+               const std::u16string&,
+               autofill::FieldPropertiesFlags field_flags,
+               base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
 };
@@ -183,7 +186,7 @@ class MockAffiliationService : public affiliations::FakeAffiliationService {
   MOCK_METHOD(void,
               GetPSLExtensions,
               (base::OnceCallback<void(std::vector<std::string>)>),
-              (const override));
+              (override));
 };
 
 class PasswordManualFallbackFlowTest : public Test {
@@ -196,8 +199,7 @@ class PasswordManualFallbackFlowTest : public Test {
         std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
             affiliation_service_.get());
     mock_affiliated_match_helper_ = profile_store_match_helper.get();
-    profile_password_store().Init(/*prefs=*/nullptr,
-                                  std::move(profile_store_match_helper));
+    profile_password_store().Init(std::move(profile_store_match_helper));
   }
 
   ~PasswordManualFallbackFlowTest() override {
@@ -618,11 +620,11 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptUsernameFieldByFieldSuggestion) {
   const FieldRendererId field_id = MakeFieldRendererId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(
-      driver(),
-      FillField(
-          std::u16string(u"username@example.com"),
-          autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
+  EXPECT_CALL(driver(),
+              FillField(field_id, std::u16string(u"username@example.com"),
+                        autofill::FieldPropertiesFlags::
+                            kAutofilledPasswordFormFilledViaManualFallback,
+                        _));
   EXPECT_CALL(
       autofill_client(),
       HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
@@ -950,11 +952,11 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthNotAvailable) {
 
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .WillOnce(Return(false));
-  EXPECT_CALL(
-      driver(),
-      FillField(
-          std::u16string(u"password"),
-          autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
+  EXPECT_CALL(driver(),
+              FillField(field_id, std::u16string(u"password"),
+                        autofill::FieldPropertiesFlags::
+                            kAutofilledPasswordFormFilledViaManualFallback,
+                        _));
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
                               SuggestionType::kFillPassword, u"Fill password",
                               CreateTestPasswordDetails()),
@@ -1069,11 +1071,11 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
-  EXPECT_CALL(
-      driver(),
-      FillField(
-          std::u16string(u"password"),
-          autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
+  EXPECT_CALL(driver(),
+              FillField(field_id, std::u16string(u"password"),
+                        autofill::FieldPropertiesFlags::
+                            kAutofilledPasswordFormFilledViaManualFallback,
+                        _));
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
@@ -1113,11 +1115,11 @@ TEST_F(PasswordManualFallbackFlowTest,
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
-  EXPECT_CALL(
-      driver(),
-      FillField(
-          std::u16string(u"password"),
-          autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
+  EXPECT_CALL(driver(),
+              FillField(field_id, std::u16string(u"password"),
+                        autofill::FieldPropertiesFlags::
+                            kAutofilledPasswordFormFilledViaManualFallback,
+                        _));
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(

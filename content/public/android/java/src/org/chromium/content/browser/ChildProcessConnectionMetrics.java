@@ -9,10 +9,12 @@ import androidx.collection.ArraySet;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ChildBindingState;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.BindService;
 import org.chromium.base.process_launcher.ChildProcessConnection;
+import org.chromium.base.process_launcher.ChildProcessConnectionState;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -163,58 +165,80 @@ public class ChildProcessConnectionMetrics {
         cancelEmitting();
     }
 
-    private boolean bindingManagerHasExclusiveVisibleBinding(ChildProcessConnection connection) {
-        if (mBindingManager != null) {
-            return mBindingManager.hasExclusiveVisibleBinding(connection);
-        }
-        return false;
-    }
-
     // These metrics are only emitted in the foreground.
     @VisibleForTesting
     void emitMetrics() {
         assert LauncherThread.runningOnLauncherThread();
 
-        // Binding counts from all connections.
+        // Connection count per binding state.
+        int strongConnectionCount = 0;
+        int visibleConnectionCount = 0;
+        int notPerceptibleConnectionCount = 0;
+        int waivedConnectionCount = 0;
+
+        // Raw service binding connection counts from all connections.
         int strongBindingCount = 0;
         int visibleBindingCount = 0;
         int notPerceptibleBindingCount = 0;
         int waivedBindingCount = 0;
 
-        // Bindings from BindingManager which could be waived.
-        int waivableBindingCount = 0;
+        // Connections from BindingManager which could be waived.
+        int waivableConnectionCount = 0;
 
-        // Visible and waived connections if BindingManager didn't exist.
-        int contentVisibleBindingCount = 0;
-        int contentWaivedBindingCount = 0;
+        // Connections with Visible and waived binding if BindingManager didn't exist.
+        int contentVisibleConnectionCount = 0;
+        int contentWaivedConnectionCount = 0;
 
         if (mBindingManager != null) {
-            waivableBindingCount = mBindingManager.getExclusiveBindingCount();
+            waivableConnectionCount = mBindingManager.getExclusiveBindingCount();
         }
 
         for (ChildProcessConnection connection : mConnections) {
-            if (connection.isStrongBindingBound()) {
+            // Connection count per binding state.
+            @ChildBindingState int bindingState = connection.bindingStateCurrent();
+            switch (bindingState) {
+                case ChildBindingState.STRONG:
+                    strongConnectionCount++;
+                    break;
+                case ChildBindingState.VISIBLE:
+                    visibleConnectionCount++;
+                    contentVisibleConnectionCount++;
+                    break;
+                case ChildBindingState.NOT_PERCEPTIBLE:
+                    notPerceptibleConnectionCount++;
+                    contentWaivedConnectionCount++;
+                    break;
+                case ChildBindingState.WAIVED:
+                case ChildBindingState.UNBOUND:
+                    // UNBOUND shouldn't be counted as waived, but we count them for the backward
+                    // compatibility. But in practice it should happen rarely and does not matter
+                    // much even if it does.
+                    waivedConnectionCount++;
+                    contentWaivedConnectionCount++;
+                    break;
+            }
+
+            // Raw service binding connection counts from all connections.
+            ChildProcessConnectionState connectionState =
+                    connection.getConnectionStateForDebugging();
+            if (connectionState.mIsStrongBound) {
                 strongBindingCount++;
-            } else if (connection.isVisibleBindingBound()) {
+            }
+            if (connectionState.mIsVisibleBound) {
                 visibleBindingCount++;
-                if (bindingManagerHasExclusiveVisibleBinding(connection)) {
-                    contentWaivedBindingCount++;
-                } else {
-                    contentVisibleBindingCount++;
-                }
-            } else if (connection.isNotPerceptibleBindingBound()) {
+            }
+            if (connectionState.mIsNotPerceptibleBound) {
                 notPerceptibleBindingCount++;
-                contentWaivedBindingCount++;
-            } else {
+            }
+            if (connectionState.mIsWaivedBound) {
                 waivedBindingCount++;
-                contentWaivedBindingCount++;
             }
         }
 
-        assert strongBindingCount
-                        + visibleBindingCount
-                        + notPerceptibleBindingCount
-                        + waivedBindingCount
+        assert strongConnectionCount
+                        + visibleConnectionCount
+                        + notPerceptibleConnectionCount
+                        + waivedConnectionCount
                 == mConnections.size();
         final int totalConnections = mConnections.size();
 
@@ -225,29 +249,62 @@ public class ChildProcessConnectionMetrics {
         RecordHistogram.recordCount100Histogram(
                 "Android.ChildProcessBinding.TotalConnections", totalConnections);
         RecordHistogram.recordCount100Histogram(
-                "Android.ChildProcessBinding.StrongConnections", strongBindingCount);
+                "Android.ChildProcessBinding.StrongConnections", strongConnectionCount);
         RecordHistogram.recordCount100Histogram(
-                "Android.ChildProcessBinding.VisibleConnections", visibleBindingCount);
+                "Android.ChildProcessBinding.VisibleConnections", visibleConnectionCount);
         RecordHistogram.recordCount100Histogram(
                 "Android.ChildProcessBinding.NotPerceptibleConnections",
-                notPerceptibleBindingCount);
+                notPerceptibleConnectionCount);
         RecordHistogram.recordCount100Histogram(
-                "Android.ChildProcessBinding.WaivedConnections", waivedBindingCount);
+                "Android.ChildProcessBinding.WaivedConnections", waivedConnectionCount);
+
+        // Raw service binding connection counts.
+        RecordHistogram.recordCount1000Histogram(
+                "Android.ChildProcessBinding.StrongBindingCount", strongBindingCount);
+        RecordHistogram.recordCount1000Histogram(
+                "Android.ChildProcessBinding.VisibleBindingCount", visibleBindingCount);
+        RecordHistogram.recordCount1000Histogram(
+                "Android.ChildProcessBinding.NotPerceptibleBindingCount",
+                notPerceptibleBindingCount);
+        RecordHistogram.recordCount1000Histogram(
+                "Android.ChildProcessBinding.WaivedBindingCount", waivedBindingCount);
+        RecordHistogram.recordCount1000Histogram(
+                "Android.ChildProcessBinding.TotalBindingCount",
+                strongBindingCount
+                        + visibleBindingCount
+                        + notPerceptibleBindingCount
+                        + waivedBindingCount);
 
         // Metrics if BindingManager wasn't running.
         RecordHistogram.recordCount100Histogram(
                 "Android.ChildProcessBinding.ContentVisibleConnections",
-                contentVisibleBindingCount);
+                contentVisibleConnectionCount);
         RecordHistogram.recordCount100Histogram(
-                "Android.ChildProcessBinding.ContentWaivedConnections", contentWaivedBindingCount);
+                "Android.ChildProcessBinding.ContentWaivedConnections",
+                contentWaivedConnectionCount);
         RecordHistogram.recordCount100Histogram(
-                "Android.ChildProcessBinding.WaivableConnections", waivableBindingCount);
+                "Android.ChildProcessBinding.WaivableConnections", waivableConnectionCount);
     }
 
     private void emitBinderIpcCount() {
         assert LauncherThread.runningOnLauncherThread();
-        int bindServiceCount = BindService.getAndResetBindServiceCount();
+        BindService.BinderCallCounter counter = BindService.getAndResetBinderCallCounter();
+        if (counter == null) {
+            return;
+        }
         RecordHistogram.recordCount100000Histogram(
-                "Android.ChildProcessBinding.BinderIPC.Count", bindServiceCount);
+                "Android.ChildProcessBinding.BinderIPC.BindService.Count",
+                counter.mBindServiceCount);
+        RecordHistogram.recordCount100000Histogram(
+                "Android.ChildProcessBinding.BinderIPC.UnbindService.Count",
+                counter.mUnbindServiceCount);
+        RecordHistogram.recordCount100000Histogram(
+                "Android.ChildProcessBinding.BinderIPC.UpdateServiceGroup.Count",
+                counter.mUpdateServiceGroupCount);
+        RecordHistogram.recordCount100000Histogram(
+                "Android.ChildProcessBinding.BinderIPC.Total.Count",
+                counter.mBindServiceCount
+                        + counter.mUnbindServiceCount
+                        + counter.mUpdateServiceGroupCount);
     }
 }

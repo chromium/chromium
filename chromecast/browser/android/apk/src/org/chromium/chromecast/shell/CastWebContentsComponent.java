@@ -36,12 +36,10 @@ public class CastWebContentsComponent {
     /** Params to start WebContents in activity or service. */
     static class StartParams {
         public final WebContents webContents;
-        public final String appId;
         public final boolean shouldRequestAudioFocus;
 
-        public StartParams(WebContents webContents, String appId, boolean shouldRequestAudioFocus) {
+        public StartParams(WebContents webContents, boolean shouldRequestAudioFocus) {
             this.webContents = webContents;
-            this.appId = appId;
             this.shouldRequestAudioFocus = shouldRequestAudioFocus;
         }
 
@@ -56,7 +54,8 @@ public class CastWebContentsComponent {
             }
 
             StartParams params = (StartParams) other;
-            return params.webContents == this.webContents && params.appId.equals(this.appId);
+            return params.webContents == this.webContents
+                    && params.shouldRequestAudioFocus == this.shouldRequestAudioFocus;
         }
     }
 
@@ -94,7 +93,6 @@ public class CastWebContentsComponent {
     private final Controller<WebContents> mHasWebContentsState = new Controller<>();
     private boolean mStarted;
     private boolean mEnableTouchInput;
-    private boolean mMediaPlaying;
     private final boolean mTurnOnScreen;
     private final boolean mKeepScreenOn;
 
@@ -130,8 +128,6 @@ public class CastWebContentsComponent {
                     filter.addDataPath(instanceUri.getPath(), PatternMatcher.PATTERN_LITERAL);
                     filter.addAction(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED);
                     filter.addAction(CastWebContentsIntentUtils.ACTION_ON_VISIBILITY_CHANGE);
-                    filter.addAction(
-                            CastWebContentsIntentUtils.ACTION_REQUEST_MEDIA_PLAYING_STATUS);
                     return new LocalBroadcastReceiverScope(filter, this::onReceiveIntent);
                 });
     }
@@ -152,14 +148,6 @@ public class CastWebContentsComponent {
             if (mSurfaceEventHandler != null) {
                 mSurfaceEventHandler.onVisibilityChange(visibilityType);
             }
-        } else if (CastWebContentsIntentUtils.isIntentOfRequestMediaPlayingStatus(intent)) {
-            Log.d(
-                    TAG,
-                    "Activity media play state requested: sessionId=%s, mediaPlaying=%b",
-                    mSessionId,
-                    mMediaPlaying);
-            // Just broadcast current value.
-            setMediaPlaying(mMediaPlaying);
         }
     }
 
@@ -171,9 +159,8 @@ public class CastWebContentsComponent {
     public void start(StartParams params) {
         Log.d(
                 TAG,
-                "Starting Cast activity: sessionId=%s, appId=%s, audioFocus=%b",
+                "Starting Cast activity: sessionId=%s, audioFocus=%b",
                 mSessionId,
-                params.appId,
                 params.shouldRequestAudioFocus);
 
         mHasWebContentsState.set(params.webContents);
@@ -200,19 +187,6 @@ public class CastWebContentsComponent {
         Log.d(TAG, "Touch input updated: enabled=" + enabled);
         mEnableTouchInput = enabled;
         sendIntentSync(CastWebContentsIntentUtils.enableTouchInput(mSessionId, enabled));
-    }
-
-    public void setAllowPictureInPicture(boolean allowPictureInPicture) {
-        Log.d(TAG, "PiP updated: allowed=" + allowPictureInPicture);
-        sendIntentSync(
-                CastWebContentsIntentUtils.allowPictureInPicture(
-                        mSessionId, allowPictureInPicture));
-    }
-
-    public void setMediaPlaying(boolean mediaPlaying) {
-        Log.d(TAG, "Media playing updated: playing=" + mediaPlaying);
-        mMediaPlaying = mediaPlaying;
-        sendIntentSync(CastWebContentsIntentUtils.mediaPlaying(mSessionId, mMediaPlaying));
     }
 
     public static void onComponentClosed(String sessionId) {

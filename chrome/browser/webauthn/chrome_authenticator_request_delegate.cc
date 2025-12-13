@@ -26,6 +26,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -73,20 +74,20 @@
 #include "content/public/browser/web_contents.h"
 #include "crypto/random.h"
 #include "device/fido/authenticator_get_assertion_response.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/cable_discovery_data.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
@@ -96,7 +97,7 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
@@ -115,7 +116,7 @@
 #include "ui/aura/window.h"
 #endif
 
-using PasswordCredentials = PasswordCredentialController::PasswordCredentials;
+using PasswordCredentials = PasswordCredentialFetcher::PasswordCredentials;
 using UIPresentation = ChromeAuthenticatorRequestDelegate::UIPresentation;
 using TransportAvailabilityInfo =
     device::FidoRequestHandlerBase::TransportAvailabilityInfo;
@@ -137,12 +138,9 @@ bool IsCredentialFromPlatformAuthenticator(
 // Returns true iff |user_id| starts with the prefix reserved for passkeys used
 // to authenticate to Google services.
 bool UserIdHasGooglePasskeyAuthPrefix(const std::vector<uint8_t>& user_id) {
-  constexpr std::string_view kPrefix = "GOOGLE_ACCOUNT:";
-  if (user_id.size() < kPrefix.size()) {
-    return false;
-  }
-  return UNSAFE_TODO(memcmp(user_id.data(), kPrefix.data(), kPrefix.size())) ==
-         0;
+  static constexpr std::string_view kPrefix = "GOOGLE_ACCOUNT:";
+  return user_id.size() >= kPrefix.size() &&
+         base::span(user_id).first(kPrefix.size()) == base::span(kPrefix);
 }
 
 // Filters |passkeys| to only contain credentials that are used to authenticate
@@ -464,9 +462,10 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
       bluetooth_adapter_power_on_callback);
   dialog_controller_->SetRequestBlePermissionCallback(
       request_ble_permission_callback);
-  if (password_controller_) {
-    password_controller_->SetPasswordSelectedCallback(
-        password_selected_callback_);
+  if (password_ui_controller_) {
+    password_ui_controller_->SetPasswordSelectedCallback(base::BindRepeating(
+        &ChromeAuthenticatorRequestDelegate::OnPasswordSelected,
+        weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -630,16 +629,15 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 #endif
 
   if (PasswordsUsable(credential_types_,
-                      dialog_controller_->ui_presentation())) {
-    // Only valid for the main frame.
-    if (!password_controller_ && GetRenderFrameHost()->IsInPrimaryMainFrame()) {
-      password_controller_ = std::make_unique<PasswordCredentialController>(
-          render_frame_host_id_, dialog_model_.get());
+                      dialog_controller_->ui_presentation()) &&
+      GetRenderFrameHost()->IsInPrimaryMainFrame()) {
+    if (!password_ui_controller_) {
+      password_ui_controller_ =
+          std::make_unique<PasswordCredentialUIController>(
+              render_frame_host_id_, dialog_model_.get());
     }
-    if (!password_controller_) {
-      return;
-    }
-    password_controller_->FetchPasswords(
+    password_fetcher_ = PasswordCredentialFetcher::Create(GetRenderFrameHost());
+    password_fetcher_->FetchPasswords(
         origin.GetURL(),
         base::BindOnce(
             &ChromeAuthenticatorRequestDelegate::OnPasswordCredentialsReceived,
@@ -704,6 +702,16 @@ void ChromeAuthenticatorRequestDelegate::ProvideChallengeUrl(
     base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
         callback) {
   dialog_controller_->ProvideChallengeUrl(url, std::move(callback));
+}
+
+void ChromeAuthenticatorRequestDelegate::StartObserving(
+    device::FidoRequestHandlerBase* request_handler) {
+  request_handler_observation_.Observe(request_handler);
+}
+
+void ChromeAuthenticatorRequestDelegate::StopObserving(
+    device::FidoRequestHandlerBase* request_handler) {
+  request_handler_observation_.Reset();
 }
 
 void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
@@ -825,9 +833,14 @@ void ChromeAuthenticatorRequestDelegate::OnCancelRequest() {
   std::move(cancel_callback_).Run();
 }
 
-void ChromeAuthenticatorRequestDelegate::SetPasswordControllerForTesting(
-    std::unique_ptr<PasswordCredentialController> controller) {
-  password_controller_ = std::move(controller);
+void ChromeAuthenticatorRequestDelegate::SetPasswordUIControllerForTesting(
+    std::unique_ptr<PasswordCredentialUIController> controller) {
+  password_ui_controller_ = std::move(controller);
+}
+
+void ChromeAuthenticatorRequestDelegate::SetPasswordFetcherForTesting(
+    std::unique_ptr<PasswordCredentialFetcher> fetcher) {
+  password_fetcher_ = std::move(fetcher);
 }
 
 content::RenderFrameHost*
@@ -1121,10 +1134,16 @@ void ChromeAuthenticatorRequestDelegate::FilterRecognizedCredentials(
 std::optional<int> ChromeAuthenticatorRequestDelegate::DaysSinceDate(
     const std::string& formatted_date,
     const base::Time now) {
+  std::vector<std::string> parts = base::SplitString(
+      formatted_date, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (parts.size() != 3) {
+    return std::nullopt;
+  }
+
   int year, month, day_of_month;
-  // sscanf will ignore trailing garbage, but we don't need to be strict here.
-  if (UNSAFE_TODO(sscanf(formatted_date.c_str(), "%u-%u-%u", &year, &month,
-                         &day_of_month)) != 3) {
+  if (!base::StringToInt(parts[0], &year) ||
+      !base::StringToInt(parts[1], &month) ||
+      !base::StringToInt(parts[2], &day_of_month)) {
     return std::nullopt;
   }
 
@@ -1234,8 +1253,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureICloudKeychain(
   dialog_controller_->set_allow_icloud_keychain(
       request_source == RequestSource::kWebAuthentication);
   dialog_controller_->set_has_icloud_drive_enabled(is_icloud_drive_enabled);
-  dialog_controller_->set_is_active_profile_authenticator_user(
-      is_active_profile_authenticator_user);
   dialog_controller_->set_should_create_in_icloud_keychain(
       ShouldCreateInICloudKeychain(
           request_source, is_active_profile_authenticator_user,
@@ -1244,6 +1261,19 @@ void ChromeAuthenticatorRequestDelegate::ConfigureICloudKeychain(
 }
 
 #endif
+
+void ChromeAuthenticatorRequestDelegate::OnPasswordSelected(
+    password_manager::CredentialInfo info) {
+  if (password_fetcher_) {
+    password_fetcher_->UpdateDateLastUsed(
+        info.id.value_or(std::u16string()),
+        info.password.value_or(std::u16string()));
+    password_fetcher_.reset();
+  }
+  if (password_selected_callback_) {
+    password_selected_callback_.Run(info);
+  }
+}
 
 void ChromeAuthenticatorRequestDelegate::OnPasswordCredentialsReceived(
     PasswordCredentials credentials) {
@@ -1263,6 +1293,6 @@ void ChromeAuthenticatorRequestDelegate::UpdateModelForTransportAvailability(
   dialog_model_->show_security_key_on_qr_sheet =
       base::Contains(tai.available_transports,
                      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
-  dialog_model_->is_off_the_record = tai.is_off_the_record_context;
+  dialog_model_->is_off_the_record = GetBrowserContext()->IsOffTheRecord();
   dialog_model_->platform_has_biometrics = tai.platform_has_biometrics;
 }

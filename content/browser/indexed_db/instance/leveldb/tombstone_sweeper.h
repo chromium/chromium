@@ -10,8 +10,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/feature_list.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"

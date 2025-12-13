@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ui/gfx/mac/io_surface.h"
+
+#include "components/viz/common/resources/shared_image_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gfx {
@@ -11,7 +13,7 @@ namespace {
 
 TEST(IOSurface, OddSizeMultiPlanar) {
   base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface =
-      CreateIOSurface(gfx::Size(101, 99), gfx::BufferFormat::YUV_420_BIPLANAR);
+      CreateIOSurface(gfx::Size(101, 99), viz::MultiPlaneFormat::kNV12);
   DCHECK(io_surface);
   // Plane sizes are rounded up.
   // https://crbug.com/1226056

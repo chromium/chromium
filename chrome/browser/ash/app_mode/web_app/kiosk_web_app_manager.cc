@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
@@ -27,6 +28,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -63,8 +65,13 @@ KioskAppManagerBase::App KioskWebAppManager::CreateAppByData(
   return app;
 }
 
-KioskWebAppManager::KioskWebAppManager()
-    : auto_launch_account_id_(EmptyAccountId()) {
+KioskWebAppManager::KioskWebAppManager(
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    KioskCryptohomeRemover* cryptohome_remover)
+    : KioskAppManagerBase(local_state, cryptohome_remover),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      auto_launch_account_id_(EmptyAccountId()) {
   CHECK(!g_web_kiosk_app_manager);  // Only one instance is allowed.
   g_web_kiosk_app_manager = this;
   UpdateAppsFromPolicy();
@@ -123,7 +130,10 @@ void KioskWebAppManager::UpdateApp(const AccountId& account_id,
                                    const web_app::IconBitmaps& icon_bitmaps) {
   for (auto& web_app : apps_) {
     if (web_app->account_id() == account_id) {
-      web_app->UpdateAppInfo(title, start_url, icon_bitmaps);
+      // This is populated by the KioskWebAppUpdateObserver which uses the raw
+      // icon without any effects and populates the `any` map of icon_bitmaps.
+      // As a result, it's fine to use `icon_bitmaps.any` here.
+      web_app->UpdateAppInfo(title, start_url, icon_bitmaps.any);
       return;
     }
   }
@@ -135,7 +145,9 @@ void KioskWebAppManager::AddAppForTesting(const AccountId& account_id,
   const std::string app_id =
       web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, install_url);
   apps_.push_back(std::make_unique<KioskWebAppData>(
-      *this, app_id, account_id, install_url, /*title*/ std::string(),
+      &local_state_.get(), shared_url_loader_factory_, *this, app_id,
+      account_id, install_url,
+      /*title*/ std::string(),
       /*icon_url*/ GURL()));
   NotifyKioskAppsChanged();
 }
@@ -188,12 +200,12 @@ void KioskWebAppManager::UpdateAppsFromPolicy() {
       old_apps.erase(old_it);
     } else {
       apps_.push_back(std::make_unique<KioskWebAppData>(
-          *this, app_id, account_id, std::move(url), title,
-          std::move(icon_url)));
+          &local_state_.get(), shared_url_loader_factory_, *this, app_id,
+          account_id, std::move(url), title, std::move(icon_url)));
       apps_.back()->LoadFromCache();
     }
 
-    KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(account_id);
+    cryptohome_remover_->CancelDelayedCryptohomeRemoval(account_id);
   }
 
   std::vector<const KioskAppDataBase*> old_apps_to_remove;

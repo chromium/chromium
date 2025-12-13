@@ -49,7 +49,8 @@ class TestDiscardableSharedMemoryManager;
 class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
     : public base::DiscardableMemoryAllocator,
       public base::trace_event::MemoryDumpProvider,
-      public base::CurrentThread::DestructionObserver {
+      public base::CurrentThread::DestructionObserver,
+      public base::MemoryPressureListener {
  public:
   DiscardableSharedMemoryManager();
 
@@ -143,9 +144,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
       int32_t id,
       base::UnsafeSharedMemoryRegion* shared_memory_region);
   void DeletedDiscardableSharedMemory(int32_t id, int client_id);
-  // Virtual for tests.
-  virtual void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
   void ReduceMemoryUsageUntilWithinMemoryLimit()
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void ReduceMemoryUsageUntilWithinLimit(size_t limit)
@@ -161,9 +159,11 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   // Invalidate weak pointers for the mojo thread.
   void InvalidateMojoThreadWeakPtrs(base::WaitableEvent* event);
 
-  // Create `memory_pressure_listener_` on a worker thread to receive memory
-  // pressure notifications there.
-  void CreateMemoryPressureListenerOnWorkerThread();
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
+
+  void HandleMemoryPressureOnSequence(
+      base::MemoryPressureLevel memory_pressure_level);
 
   int32_t next_client_id_;
 
@@ -179,8 +179,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   size_t default_memory_limit_ GUARDED_BY(lock_);
   size_t memory_limit_ GUARDED_BY(lock_);
   size_t bytes_allocated_ GUARDED_BY(lock_);
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_
-      GUARDED_BY(lock_);
   scoped_refptr<base::SingleThreadTaskRunner> enforce_memory_policy_task_runner_
       GUARDED_BY(lock_);
   base::RepeatingClosure enforce_memory_policy_callback_ GUARDED_BY(lock_);
@@ -194,6 +192,9 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   // of a sequence directly.
   base::CurrentThread mojo_thread_message_loop_;
   scoped_refptr<base::SingleThreadTaskRunner> mojo_thread_task_runner_;
+
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // A task runner to create `memory_pressure_listener_` on worker threads so
   // that `OnMemoryPressure` notification happens on the worker thread too.

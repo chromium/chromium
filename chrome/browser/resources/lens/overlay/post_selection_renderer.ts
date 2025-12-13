@@ -189,6 +189,10 @@ export class PostSelectionRendererElement extends
         (screenshot: ImageBitmap) => {
           renderScreenshot(this.$.backgroundImageCanvas, screenshot);
         });
+    ScreenshotBitmapBrowserProxyImpl.getInstance().addOnOverlayReshownListener(
+        (screenshot: ImageBitmap) => {
+          renderScreenshot(this.$.backgroundImageCanvas, screenshot);
+        });
     this.eventTracker_.add(
         document, 'render-post-selection',
         (e: CustomEvent<PostSelectionBoundingBox>) => {

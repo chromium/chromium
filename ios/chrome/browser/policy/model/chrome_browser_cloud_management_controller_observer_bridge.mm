@@ -22,3 +22,7 @@ void ChromeBrowserCloudManagementControllerObserverBridge::
     OnPolicyRegisterFinished(bool succeeded) {
   [observer_ policyRegistrationDidCompleteSuccessfuly:succeeded];
 }
+
+void ChromeBrowserCloudManagementControllerObserverBridge::OnShutdown() {
+  [observer_ controllerWillShutdown];
+}

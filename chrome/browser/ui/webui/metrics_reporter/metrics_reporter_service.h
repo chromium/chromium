@@ -30,12 +30,15 @@ class MetricsReporterService
   void BindReceiver(
       mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver);
 
-  MetricsReporter* metrics_reporter() { return &metrics_reporter_; }
+  MetricsReporter* metrics_reporter() { return metrics_reporter_.get(); }
+
+  void SetMetricsReporterForTesting(
+      std::unique_ptr<MetricsReporter> metrics_reporter);
 
  private:
   friend class content::WebContentsUserData<MetricsReporterService>;
 
-  MetricsReporter metrics_reporter_;
+  std::unique_ptr<MetricsReporter> metrics_reporter_;
 
   base::WeakPtrFactory<MetricsReporterService> weak_factory_{this};
 

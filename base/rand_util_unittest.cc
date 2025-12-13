@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/rand_util.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -153,12 +149,13 @@ TEST(RandUtilTest, BitsToOpenEndedUnitIntervalF) {
 TEST(RandUtilTest, RandBytes) {
   const size_t buffer_size = 50;
   uint8_t buffer[buffer_size];
-  memset(buffer, 0, buffer_size);
+  UNSAFE_TODO(memset(buffer, 0, buffer_size));
   RandBytes(buffer);
-  std::sort(buffer, buffer + buffer_size);
+  std::sort(buffer, UNSAFE_TODO(buffer + buffer_size));
   // Probability of occurrence of less than 25 unique bytes in 50 random bytes
   // is below 10^-25.
-  EXPECT_GT(std::unique(buffer, buffer + buffer_size) - buffer, 25);
+  UNSAFE_TODO(
+      EXPECT_GT(std::unique(buffer, buffer + buffer_size) - buffer, 25));
 }
 
 // Verify that calling RandBytes with an empty buffer doesn't fail.

@@ -6,22 +6,14 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_DOCUMENT_MANAGER_H_
 
 #include <map>
-#include <memory>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/preloading/prefetch/prefetch_type.h"
-#include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/common/content_export.h"
-#include "content/common/features.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/prefetch_metrics.h"
-#include "content/public/browser/preload_pipeline_info.h"
-#include "content/public/browser/preloading.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "net/http/http_no_vary_search_data.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
+#include "third_party/blink/public/mojom/tokens/tokens.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -29,7 +21,11 @@ namespace content {
 class PrefetchContainer;
 class PrefetchHandle;
 class PrefetchService;
+class PrefetchType;
+class PreloadPipelineInfo;
 class PreloadingPredictor;
+class SpeculationRulesTags;
+enum class PreloadingType;
 
 // Manages the state of and tracks metrics about prefetches for a single page
 // load.
@@ -121,7 +117,8 @@ class CONTENT_EXPORT PrefetchDocumentManager
 
   static void SetPrefetchServiceForTesting(PrefetchService* prefetch_service);
 
-  void ResetPrefetchAheadOfPrerenderIfExist(const GURL& url);
+  void ResetPrefetchAheadOfPrerenderIfExist(PreloadingType preloading_type,
+                                            const GURL& url);
 
  private:
   explicit PrefetchDocumentManager(RenderFrameHost* rfh);

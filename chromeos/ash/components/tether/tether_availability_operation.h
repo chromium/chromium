@@ -17,6 +17,10 @@
 #include "chromeos/ash/components/tether/scanned_device_info.h"
 #include "chromeos/ash/components/tether/tether_host.h"
 
+namespace base {
+class TaskRunner;
+}  // namespace base
+
 namespace ash::tether {
 
 class ConnectionPreserver;

@@ -24,6 +24,7 @@
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
+#import "components/autofill/ios/form_util/renderer_id_test_util.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
 #import "components/password_manager/core/browser/password_manager_driver.h"
 #import "components/password_manager/core/browser/password_manager_interface.h"
@@ -85,10 +86,14 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
       : AutofillTestWithWebState(std::make_unique<web::FakeWebClient>()) {
     web::FakeWebClient* web_client =
         static_cast<web::FakeWebClient*>(GetWebClient());
+    renderer_id_feature_ =
+        autofill::test::CreateRendererIdTestJavaScriptFeature();
     web_client->SetJavaScriptFeatures(
         {autofill::FormHandlersJavaScriptFeature::GetInstance(),
          autofill::FormUtilJavaScriptFeature::GetInstance(),
-         password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
+         autofill::AutofillJavaScriptFeature::GetInstance(),
+         password_manager::PasswordManagerJavaScriptFeature::GetInstance(),
+         renderer_id_feature_.get()});
   }
 
   PasswordFormHelperTest(const PasswordFormHelperTest&) = delete;
@@ -171,6 +176,7 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
   // PasswordFormHelper for testing.
   PasswordFormHelper* helper_;
   password_manager::MockPasswordManager password_manager_;
+  std::unique_ptr<web::JavaScriptFeature> renderer_id_feature_;
 };
 
 struct FindPasswordFormTestData {

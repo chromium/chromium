@@ -21,6 +21,7 @@
 #include "base/fuchsia/intl_profile_watcher.h"
 #include "base/fuchsia/koid.h"
 #include "base/fuchsia/process_context.h"
+#include "base/fuchsia/process_lifecycle.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
@@ -34,6 +35,8 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "components/fuchsia_component_support/inspect.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/posix_key_provider.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/histogram_fetcher.h"
@@ -186,6 +189,18 @@ void WebEngineBrowserMainParts::PostEarlyInitialization() {
 int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   DCHECK_EQ(context_bindings_.size(), 0u);
 
+  auto key_provider = std::make_unique<os_crypt_async::PosixKeyProvider>();
+  std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+      key_providers;
+  key_providers.emplace_back(/*precedence=*/5u, std::move(key_provider));
+  os_crypt_async_ =
+      std::make_unique<os_crypt_async::OSCryptAsync>(std::move(key_providers));
+  // Trigger async initialization of OSCrypt key providers.
+  os_crypt_async_->GetInstance(
+      base::DoNothing(), os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
+
+  network_connection_tracker_ = content::GetNetworkConnectionTracker();
+
   // Initialize the |component_inspector_| to allow diagnostics to be published.
   component_inspector_ = std::make_unique<inspect::ComponentInspector>(
       async_get_default_dispatcher(), inspect::PublishOptions{});
@@ -269,19 +284,12 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
       fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>(fit::bind_member(
           this, &WebEngineBrowserMainParts::HandleFrameHostRequest)));
 
-  // TODO(crbug.com/42050460): Create a base::ProcessLifecycle instance here, to
-  // trigger graceful shutdown on component stop, when migrated to CFv2.
-
   // Manage network-quality signals and send them to renderers. Provides input
   // for networking-related Client Hints.
   network_quality_tracker_ = std::make_unique<network::NetworkQualityTracker>(
       base::BindRepeating(&content::GetNetworkService));
   network_quality_observer_ =
       content::CreateNetworkQualityObserver(network_quality_tracker_.get());
-
-  // Now that all services have been published, it is safe to start processing
-  // requests to the service directory.
-  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
 
   // TODO(crbug.com/40162984): Update tests to make a service connection to the
   // Context and remove this workaround.
@@ -294,6 +302,15 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
 
 void WebEngineBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
+  // Allow the browser to teardown gracefully when explicitly destroyed by the
+  // framework.
+  lifecycle_ =
+      std::make_unique<base::ProcessLifecycle>(run_loop->QuitClosure());
+
+  // Now that all services have been published, it is safe to start processing
+  // requests to the service directory.
+  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
+
   quit_closure_ = run_loop->QuitClosure();
 }
 
@@ -349,11 +366,13 @@ void WebEngineBrowserMainParts::HandleContextRequest(
   std::unique_ptr<WebEngineBrowserContext> browser_context;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kIncognito)) {
     browser_context = WebEngineBrowserContext::CreateIncognito(
-        network_quality_tracker_.get());
+        network_quality_tracker_.get(), os_crypt_async_.get(),
+        network_connection_tracker_);
   } else {
     browser_context = WebEngineBrowserContext::CreatePersistent(
         base::FilePath(base::kPersistedDataDirectoryPath),
-        network_quality_tracker_.get());
+        network_quality_tracker_.get(), os_crypt_async_.get(),
+        network_connection_tracker_);
   }
 
   auto inspect_node_name =
@@ -390,7 +409,8 @@ void WebEngineBrowserMainParts::HandleFrameHostRequest(
   frame_host_bindings_.AddBinding(
       std::make_unique<FrameHostImpl>(
           component_inspector_->root().CreateChild(inspect_node_name),
-          devtools_controller_.get(), network_quality_tracker_.get()),
+          devtools_controller_.get(), network_quality_tracker_.get(),
+          os_crypt_async_.get(), network_connection_tracker_),
       std::move(request));
 }
 

@@ -20,7 +20,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.transition.Transition;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -42,6 +41,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
@@ -63,7 +63,6 @@ public class OptionalButtonCoordinatorTest {
     @Mock private BooleanSupplier mMockIsAnimationAllowedDelegate;
     @Mock private OptionalButtonView mMockOptionalButtonView;
     @Mock private UserEducationHelper mMockUserEducationHelper;
-    @Mock private Callback<Transition> mMockBeginDelayedTransition;
     @Mock private Tracker mMockTracker;
 
     @Captor ArgumentCaptor<Callback<Integer>> mCallbackArgumentCaptor;
@@ -82,7 +81,7 @@ public class OptionalButtonCoordinatorTest {
                         () -> mMockUserEducationHelper,
                         mMockRootView,
                         mMockIsAnimationAllowedDelegate,
-                        () -> mMockTracker);
+                        new ObservableSupplierImpl<>(mMockTracker));
     }
 
     @Test

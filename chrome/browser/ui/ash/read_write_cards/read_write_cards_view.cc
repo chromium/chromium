@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_view.h"
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -44,6 +46,10 @@ void ReadWriteCardsView::SetContextMenuBounds(
 
   context_menu_bounds_ = context_menu_bounds;
   UpdateBoundsForQuickAnswers();
+}
+
+std::optional<int> ReadWriteCardsView::GetMinWidth() const {
+  return std::nullopt;
 }
 
 void ReadWriteCardsView::UpdateBoundsForQuickAnswers() {}

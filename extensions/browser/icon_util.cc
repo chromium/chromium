@@ -20,7 +20,11 @@ namespace extensions {
 // The icon size parsed should always be the same as the icon size of the
 // extension action.
 // LINT.IfChange(ActionIconSize)
+#if BUILDFLAG(IS_ANDROID)
+constexpr int kActionIconSize = extension_misc::EXTENSION_ICON_SMALLISH;
+#else
 constexpr int kActionIconSize = extension_misc::EXTENSION_ICON_BITTY;
+#endif
 // LINT.ThenChange(/extensions/browser/extension_action.cc:ActionIconSize)
 
 IconParseResult ParseIconFromCanvasDictionary(const base::Value::Dict& dict,

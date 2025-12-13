@@ -13,19 +13,6 @@ void LeaveInPendingDeletionState(RenderFrameHost* rfh) {
   static_cast<RenderFrameHostImpl*>(rfh)->DoNotDeleteForTesting();
 }
 
-bool IsThirdPartyStoragePartitioningUserBypassEnabled(RenderFrameHost* rfh) {
-  DCHECK(rfh->IsInPrimaryMainFrame());
-
-  RuntimeFeatureStateDocumentData* document_data =
-      RuntimeFeatureStateDocumentData::GetForCurrentDocument(rfh);
-  DCHECK(document_data);
-
-  blink::RuntimeFeatureStateReadContext read_context =
-      document_data->runtime_feature_state_read_context();
-
-  return read_context.IsThirdPartyStoragePartitioningUserBypassEnabled();
-}
-
 void CreatePermissionService(
     RenderFrameHost* rfh,
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {

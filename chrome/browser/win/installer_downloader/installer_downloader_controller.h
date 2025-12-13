@@ -56,8 +56,6 @@ class InstallerDownloaderController final
   // A callback that will be run to show the installer download infobar in
   // `web_contents`.  `on_accept` will be run if the user accepts the prompt.
   // This will show the infobar on the actual tab.
-  //
-  // TODO(https://crbug.com/417709084): Make the infobar global to the browser.
   using ShowInfobarCallback = base::RepeatingCallback<infobars::InfoBar*(
       infobars::ContentInfoBarManager*,
       base::OnceClosure on_accept,
@@ -65,6 +63,8 @@ class InstallerDownloaderController final
 
   using GetActiveWebContentsCallback =
       base::RepeatingCallback<content::WebContents*()>;
+
+  using ShouldShowInfobarForProfileCallback = base::RepeatingCallback<bool()>;
 
   InstallerDownloaderController(
       ShowInfobarCallback show_infobar_callback,
@@ -99,10 +99,16 @@ class InstallerDownloaderController final
   void SetActiveWebContentsCallbackForTesting(
       GetActiveWebContentsCallback callback);
 
+  void SetShouldShowInfobarForProfileCallbackForTesting(
+      ShouldShowInfobarForProfileCallback callback);
+
  private:
   using BrowserAndActiveTabTrackerMap = std::map<
       BrowserWindowInterface*,
       std::unique_ptr<InstallerDownloaderInfobarWindowActiveTabTracker>>;
+
+  // Returns the active web contents from the the active windows.
+  content::WebContents* GetActiveWebContents();
 
   void OnEligibilityReady(std::optional<base::FilePath> destination);
   void OnDownloadCompleted(std::unique_ptr<ScopedProfileKeepAlive> keep_alive,
@@ -154,6 +160,8 @@ class InstallerDownloaderController final
   // 1. Close tab.
   // 2. Close browser window.
   bool user_initiated_info_bar_close_pending_ = false;
+
+  ShouldShowInfobarForProfileCallback should_show_infobar_for_profile_callback_;
 };
 
 }  // namespace installer_downloader

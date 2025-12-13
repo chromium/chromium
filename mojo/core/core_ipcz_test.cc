@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/core_ipcz.h"
 
 #include <array>
@@ -14,6 +9,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
@@ -72,7 +68,7 @@ class CoreIpczTest : public test::MojoTestBase {
                                        handles.size(), &options, &buffer,
                                        &buffer_size));
     EXPECT_GE(buffer_size, contents.size());
-    memcpy(buffer, contents.data(), contents.size());
+    UNSAFE_TODO(memcpy(buffer, contents.data(), contents.size()));
     return message;
   }
 
@@ -283,7 +279,7 @@ TEST_F(CoreIpczTest, BasicMessageUsage) {
   EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateMessagePipe(nullptr, &a, &b));
 
   constexpr std::string_view kMessage = "hellllooooo";
-  MojoMessageHandle message = CreateMessage(kMessage, {&b, 1u});
+  MojoMessageHandle message = CreateMessage(kMessage, UNSAFE_TODO({&b, 1u}));
 
   void* buffer;
   uint32_t num_bytes;
@@ -324,7 +320,7 @@ TEST_F(CoreIpczTest, MessageDestruction) {
   EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateMessagePipe(nullptr, &a, &b));
 
   constexpr std::string_view kMessage = "hellllooooo";
-  MojoMessageHandle message = CreateMessage(kMessage, {&b, 1u});
+  MojoMessageHandle message = CreateMessage(kMessage, UNSAFE_TODO({&b, 1u}));
 
   // Destroying the message must also close the attached pipe.
   MojoHandleSignalsState signals_state;
@@ -501,7 +497,7 @@ TEST_F(CoreIpczTest, BasicSharedBuffer) {
   void* address;
   EXPECT_EQ(MOJO_RESULT_OK,
             mojo().MapBuffer(buffer, 0, kContents.size(), nullptr, &address));
-  memcpy(address, kContents.data(), kContents.size());
+  UNSAFE_TODO(memcpy(address, kContents.data(), kContents.size()));
   EXPECT_EQ(MOJO_RESULT_OK, mojo().UnmapBuffer(address));
   address = nullptr;
 
@@ -725,7 +721,7 @@ TEST_F(CoreIpczTest, DataPipeTwoPhase) {
   EXPECT_EQ(5u, num_bytes);
   EXPECT_TRUE(buffer);
 
-  memcpy(buffer, kTestMessage.data(), num_bytes);
+  UNSAFE_TODO(memcpy(buffer, kTestMessage.data(), num_bytes));
   EXPECT_EQ(MOJO_RESULT_OK, mojo().EndWriteData(p, num_bytes, nullptr));
 
   const void* in_buffer;
@@ -882,7 +878,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(DataPipeTransferClient,
   EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(invitation));
 
   MojoHandle consumer;
-  EXPECT_EQ("", ReadFromMessagePipe(new_pipe, {&consumer, 1u}));
+  UNSAFE_TODO(EXPECT_EQ("", ReadFromMessagePipe(new_pipe, {&consumer, 1u})));
   EXPECT_NE(MOJO_HANDLE_INVALID, consumer);
 
   WaitForReadable(consumer);
@@ -933,9 +929,10 @@ TEST_F(CoreIpczTest, DataPipeTransfer) {
         MojoHandle consumer;
         EXPECT_EQ(MOJO_RESULT_OK,
                   mojo().CreateDataPipe(&options, &producer, &consumer));
-        EXPECT_EQ(MOJO_RESULT_OK,
-                  mojo().WriteMessage(
-                      new_pipe, CreateMessage("", {&consumer, 1u}), nullptr));
+        UNSAFE_TODO(EXPECT_EQ(
+            MOJO_RESULT_OK,
+            mojo().WriteMessage(new_pipe, CreateMessage("", {&consumer, 1u}),
+                                nullptr)));
         EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(new_pipe));
 
         // First attempt an oversized write, which should fail because this

@@ -362,6 +362,15 @@ BaseScrollBarThumb* ScrollBar::GetThumb() const {
   return thumb_;
 }
 
+ui::NativeTheme::PreferredColorScheme ScrollBar::GetColorScheme() const {
+  const ui::ColorProviderKey::ColorMode color_mode =
+      GetWidget() ? GetWidget()->GetColorMode()
+                  : ui::ColorProviderKey::ColorMode::kLight;
+  return color_mode == ui::ColorProviderKey::ColorMode::kDark
+             ? ui::NativeTheme::PreferredColorScheme::kDark
+             : ui::NativeTheme::PreferredColorScheme::kLight;
+}
+
 void ScrollBar::ScrollToPosition(int position) {
   controller()->ScrollToPosition(this, position);
 }

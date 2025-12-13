@@ -7,10 +7,12 @@
 #include <inttypes.h>
 
 #include "base/synchronization/lock.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
+#include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -69,26 +71,47 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
   // Conform the input bus into the internal mix bus, which represents
   // MediaStreamDestination's channel count.
 
-  // Synchronize with possible dynamic changes to the channel count.
-  base::AutoTryLock try_locker(process_lock_);
+  const unsigned old_channel_count = mix_bus_->NumberOfChannels();
+  unsigned new_channel_count = old_channel_count;
+  {
+    // Synchronize with possible dynamic changes to the channel count.
+    base::AutoTryLock try_locker(process_lock_);
 
-  // If we can get the lock, we can process normally by updating the
-  // mix bus to a new channel count, if needed.  If not, just use the
-  // old mix bus to do the mixing; we'll update the bus next time
-  // around.
-  if (try_locker.is_acquired()) {
-    unsigned new_channel_count = ChannelCount();
-    if (new_channel_count != mix_bus_->NumberOfChannels()) {
-      mix_bus_ = AudioBus::Create(
-          new_channel_count, GetDeferredTaskHandler().RenderQuantumFrames());
-      SetConsumerFormat(static_cast<int>(new_channel_count),
-                        Context()->sampleRate());
+    // If we can get the lock, we can process normally by updating the
+    // mix bus to a new channel count, if needed.  If not, just use the
+    // old mix bus to do the mixing; we'll update the bus next time
+    // around.
+    if (try_locker.is_acquired()) {
+      new_channel_count = ChannelCount();
     }
   }
 
-  mix_bus_->CopyFrom(*Input(0).Bus());
+  if (new_channel_count != old_channel_count) {
+    mix_bus_ = AudioBus::Create(new_channel_count,
+                                GetDeferredTaskHandler().RenderQuantumFrames());
+    {
+      base::AutoLock consumer_locker(consumer_lock_);
+      if (destination_consumer_) {
+        TRACE_EVENT2("webaudio", "MediaStreamAudioDestinationHandler::Process",
+                     "old_channel_count", old_channel_count,
+                     "new_channel_count", new_channel_count);
+        destination_consumer_->SetFormat(new_channel_count,
+                                         Context()->sampleRate());
+      }
+    }
+  }
 
-  ConsumeAudio(mix_bus_.get(), static_cast<int>(number_of_frames));
+  scoped_refptr<AudioBus> input_bus = Input(0).Bus();
+  const AudioBus* bus_to_consume = input_bus.get();
+
+  // If the input bus has the same number of channels as the mix bus we can use
+  // it directly and avoid a copy.
+  if (bus_to_consume->NumberOfChannels() != mix_bus_->NumberOfChannels()) {
+    mix_bus_->CopyFrom(*input_bus);
+    bus_to_consume = mix_bus_.get();
+  }
+
+  ConsumeAudio(bus_to_consume, static_cast<int>(number_of_frames));
 }
 
 void MediaStreamAudioDestinationHandler::SetChannelCount(
@@ -134,7 +157,7 @@ void MediaStreamAudioDestinationHandler::CheckNumberOfChannelsForInput(
 
   AudioHandler::CheckNumberOfChannelsForInput(input);
 
-  UpdatePullStatusIfNeeded();
+  Context()->GetDeferredTaskHandler().UpdatePullStatusWithFeatureCheck(this);
 }
 
 void MediaStreamAudioDestinationHandler::UpdatePullStatusIfNeeded() {
@@ -186,16 +209,6 @@ bool MediaStreamAudioDestinationHandler::RemoveConsumer() {
 
   destination_consumer_ = nullptr;
   return true;
-}
-
-void MediaStreamAudioDestinationHandler::SetConsumerFormat(
-    int number_of_channels, float sample_rate) {
-  base::AutoLock locker(consumer_lock_);
-  if (!destination_consumer_) {
-    return;
-  }
-
-  destination_consumer_->SetFormat(number_of_channels, sample_rate);
 }
 
 void MediaStreamAudioDestinationHandler::ConsumeAudio(

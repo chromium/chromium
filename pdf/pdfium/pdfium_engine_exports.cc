@@ -9,6 +9,8 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "pdf/document_metadata.h"
@@ -22,6 +24,7 @@
 #include "pdf/pdfium/pdfium_unsupported_features.h"
 #include "printing/nup_parameters.h"
 #include "services/screen_ai/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_attachment.h"
 #include "third_party/pdfium/public/fpdf_catalog.h"
@@ -48,6 +51,8 @@ namespace chrome_pdf {
 
 namespace {
 
+const char kPDFTableCellHeadersAttribute[] = "Headers";
+
 ScopedFPDFDocument CreatePdfDoc(
     std::vector<base::span<const uint8_t>> input_buffers) {
   if (input_buffers.empty())
@@ -73,7 +78,126 @@ bool IsValidPrintableArea(const gfx::Size& page_size,
          printable_area.bottom() <= page_size.height();
 }
 
-base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
+base::Value ConvertAttributeValueToBaseValue(
+    FPDF_STRUCTELEMENT_ATTR_VALUE attr_value) {
+  if (!attr_value) {
+    return base::Value();
+  }
+
+  FPDF_OBJECT_TYPE type = FPDF_StructElement_Attr_GetType(attr_value);
+  switch (type) {
+    case FPDF_OBJECT_BOOLEAN: {
+      FPDF_BOOL value;
+      if (FPDF_StructElement_Attr_GetBooleanValue(attr_value, &value)) {
+        return base::Value(static_cast<bool>(value));
+      }
+      break;
+    }
+    case FPDF_OBJECT_NUMBER: {
+      float value;
+      if (FPDF_StructElement_Attr_GetNumberValue(attr_value, &value)) {
+        return base::Value(static_cast<double>(value));
+      }
+      break;
+    }
+    case FPDF_OBJECT_STRING:
+    case FPDF_OBJECT_NAME: {
+      std::optional<std::u16string> string_value =
+          CallPDFiumWideStringBufferApiAndReturnOptional(
+              base::BindRepeating(FPDF_StructElement_Attr_GetStringValue,
+                                  attr_value),
+              true);
+
+      if (string_value) {
+        return base::Value(*string_value);
+      }
+      break;
+    }
+    case FPDF_OBJECT_ARRAY: {
+      base::Value::List array_list;
+      int count = FPDF_StructElement_Attr_CountChildren(attr_value);
+      for (int i = 0; i < count; ++i) {
+        FPDF_STRUCTELEMENT_ATTR_VALUE child_value =
+            FPDF_StructElement_Attr_GetChildAtIndex(attr_value, i);
+        base::Value child = ConvertAttributeValueToBaseValue(child_value);
+        array_list.Append(std::move(child));
+      }
+      return base::Value(std::move(array_list));
+    }
+    case FPDF_OBJECT_UNKNOWN:
+    default:
+      NOTREACHED();
+  }
+
+  return base::Value();
+}
+
+base::Value::List ConvertHeaderIDsToTagType(
+    const base::Value& headers_ids,
+    const absl::flat_hash_map<std::u16string, std::u16string>& id_to_type_map) {
+  base::Value::List tag_list;
+  for (const auto& header_id : headers_ids.GetList()) {
+    if (header_id.is_string()) {
+      std::u16string header_id_str = base::UTF8ToUTF16(header_id.GetString());
+
+      auto it = id_to_type_map.find(header_id_str);
+      if (it != id_to_type_map.end()) {
+        tag_list.Append(base::Value(it->second));
+      } else {
+        tag_list.Append("MISSING_OBJECT");
+      }
+    }
+  }
+  return tag_list;
+}
+
+base::Value::Dict ConvertPDFAttributeGroupToDict(
+    FPDF_STRUCTELEMENT_ATTR attr_group,
+    const absl::flat_hash_map<std::u16string, std::u16string>& id_to_type_map) {
+  base::Value::Dict attr_group_dict;
+  int attribute_count = FPDF_StructElement_Attr_GetCount(attr_group);
+
+  for (int i = 0; i < attribute_count; ++i) {
+    std::optional<std::string> attr_name =
+        CallPDFiumStringBufferApiAndReturnOptional(
+            base::BindRepeating(FPDF_StructElement_Attr_GetName,
+                                base::Unretained(attr_group), i),
+            true);
+    if (!attr_name) {
+      continue;
+    }
+
+    FPDF_STRUCTELEMENT_ATTR_VALUE attr_value =
+        FPDF_StructElement_Attr_GetValue(attr_group, attr_name->c_str());
+    if (!attr_value) {
+      continue;
+    }
+
+    base::Value value = ConvertAttributeValueToBaseValue(attr_value);
+    if (value.is_none()) {
+      continue;
+    }
+
+    // The headers attribute refers to PDF objects by ID, which can change
+    // between runs of a test, replace with the tag which  that ID refers to. If
+    // the value for headers is not a list, it does not follow the PDF
+    // 32000-2:2020 spec, see Table 384.
+    // TODO(crbug.com/447444686): The header might not be encountered yet, and
+    // other attributes may refer to ID. Account for this.
+    if (attr_name == kPDFTableCellHeadersAttribute && value.is_list()) {
+      base::Value::List headers =
+          ConvertHeaderIDsToTagType(value, id_to_type_map);
+      attr_group_dict.Set(*attr_name, std::move(headers));
+    } else {
+      attr_group_dict.Set(*attr_name, std::move(value));
+    }
+  }
+  return attr_group_dict;
+}
+
+base::Value RecursiveGetStructTree(
+    FPDF_STRUCTELEMENT struct_elem,
+    absl::flat_hash_map<std::u16string, std::u16string>& id_to_type_map) {
   int children_count = FPDF_StructElement_CountChildren(struct_elem);
   if (children_count <= 0)
     return base::Value();
@@ -83,6 +207,14 @@ base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
           base::BindRepeating(FPDF_StructElement_GetType, struct_elem), true);
   if (!opt_type)
     return base::Value();
+
+  std::optional<std::u16string> opt_id =
+      CallPDFiumWideStringBufferApiAndReturnOptional(
+          base::BindRepeating(FPDF_StructElement_GetID, struct_elem), true);
+
+  if (opt_id && !opt_id->empty()) {
+    id_to_type_map[*opt_id] = *opt_type;
+  }
 
   base::Value::Dict result;
   result.Set("type", *opt_type);
@@ -100,12 +232,32 @@ base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
   if (opt_lang)
     result.Set("lang", *opt_lang);
 
+  base::Value::List attribute_groups;
+  int attribute_group_count = FPDF_StructElement_GetAttributeCount(struct_elem);
+  for (int i = 0; i < attribute_group_count; i++) {
+    FPDF_STRUCTELEMENT_ATTR attr_group =
+        FPDF_StructElement_GetAttributeAtIndex(struct_elem, i);
+    if (!attr_group) {
+      continue;
+    }
+
+    base::Value::Dict attr_group_dict =
+        ConvertPDFAttributeGroupToDict(attr_group, id_to_type_map);
+    if (!attr_group_dict.empty()) {
+      attribute_groups.Append(std::move(attr_group_dict));
+    }
+  }
+
+  if (!attribute_groups.empty()) {
+    result.Set("attributes", std::move(attribute_groups));
+  }
+
   base::Value::List children;
   for (int i = 0; i < children_count; i++) {
     FPDF_STRUCTELEMENT child_elem =
         FPDF_StructElement_GetChildAtIndex(struct_elem, i);
 
-    base::Value child = RecursiveGetStructTree(child_elem);
+    base::Value child = RecursiveGetStructTree(child_elem, id_to_type_map);
     if (child.is_dict())
       children.Append(std::move(child));
   }
@@ -327,7 +479,8 @@ base::Value PDFiumEngineExports::GetPDFStructTreeForPage(
   if (!struct_root_elem)
     return base::Value();
 
-  return RecursiveGetStructTree(struct_root_elem);
+  absl::flat_hash_map<std::u16string, std::u16string> id_to_type_map;
+  return RecursiveGetStructTree(struct_root_elem, id_to_type_map);
 }
 
 std::optional<bool> PDFiumEngineExports::PDFDocHasOutline(

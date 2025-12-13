@@ -174,33 +174,4 @@ class SafetyCheckTableViewController: SettingsRootTableViewController, @preconcu
     return self.serviceDelegate?.isItemClickable(item) ?? false
   }
 
-  // MARK: UITabelViewDataSource
-
-  override func tableView(
-    _ tableView: UITableView,
-    cellForRowAt indexPath: IndexPath
-  ) -> UITableViewCell {
-    let cell = super.tableView(tableView, cellForRowAt: indexPath)
-    let tableItem = self.tableViewModel.item(at: indexPath)
-    if let delegate = self.serviceDelegate,
-      let item = tableItem,
-      delegate.isItemWithErrorInfo(item),
-      let settingsCheckCell = cell as? SettingsCheckCell
-    {
-      settingsCheckCell.infoButton.tag = item.type
-      settingsCheckCell.infoButton.addTarget(
-        self,
-        action: #selector(didTapErrorInfoButton),
-        for: .touchUpInside)
-    }
-    return cell
-  }
-
-  // MARK: Private
-
-  // Called when user tapped on the information button of an item. Shows popover with detailed
-  // description of an error if needed.
-  @objc func didTapErrorInfoButton(sender: UIButton) {
-    self.serviceDelegate?.infoButtonWasTapped(sender, usingItemType: sender.tag)
-  }
 }

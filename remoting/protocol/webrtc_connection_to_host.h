@@ -102,8 +102,10 @@ class WebrtcConnectionToHost : public ConnectionToHost,
   base::WeakPtr<AudioStub> audio_consumer_;
   raw_ptr<ClipboardStub> clipboard_stub_ = nullptr;
 
-  std::unique_ptr<Session> session_;
+  // `session_` holds a raw ptr to `transport_` so it should come after it to be
+  // destroyed first.
   std::unique_ptr<WebrtcTransport> transport_;
+  std::unique_ptr<Session> session_;
 
   std::unique_ptr<ClientControlDispatcher> control_dispatcher_;
   std::unique_ptr<ClientEventDispatcher> event_dispatcher_;

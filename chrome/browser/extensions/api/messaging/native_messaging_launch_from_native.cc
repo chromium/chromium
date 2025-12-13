@@ -35,7 +35,7 @@
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace extensions {
 namespace {

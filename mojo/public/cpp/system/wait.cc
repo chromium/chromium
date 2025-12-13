@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/system/wait.h"
 
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
@@ -137,7 +133,8 @@ MojoResult WaitMany(const Handle* handles,
     // successful. Otherwise balanced immediately below.
     contexts[i]->AddRef();
 
-    rv = MojoAddTrigger(trap.get().value(), handles[i].value(), signals[i],
+    rv = MojoAddTrigger(trap.get().value(), UNSAFE_TODO(handles[i]).value(),
+                        UNSAFE_TODO(signals[i]),
                         MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
                         contexts[i]->context_value(), nullptr);
     if (rv == MOJO_RESULT_INVALID_ARGUMENT) {
@@ -178,7 +175,7 @@ MojoResult WaitMany(const Handle* handles,
     DCHECK_EQ(MOJO_RESULT_OK, rv);
 
     // Wait for one of the contexts to signal. First one wins.
-    index = base::WaitableEvent::WaitMany(events.data(), events.size());
+    index = base::WaitableEvent::WaitMany(events);
     ready_result = contexts[index]->wait_result();
     ready_state = contexts[index]->wait_state();
   }
@@ -192,9 +189,10 @@ MojoResult WaitMany(const Handle* handles,
   if (signals_states) {
     for (size_t i = 0; i < num_handles; ++i) {
       if (i == index) {
-        signals_states[i] = ready_state;
+        UNSAFE_TODO(signals_states[i]) = ready_state;
       } else {
-        signals_states[i] = handles[i].QuerySignalsState();
+        UNSAFE_TODO(signals_states[i]) =
+            UNSAFE_TODO(handles[i]).QuerySignalsState();
       }
     }
   }

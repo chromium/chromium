@@ -1012,7 +1012,10 @@ class AppUpdateTest : public testing::Test {
       intent_filter->conditions.push_back(std::move(scheme_condition));
       intent_filter->conditions.push_back(std::move(host_condition));
 
-      state->intent_filters.push_back(intent_filter->Clone());
+      if (!state->intent_filters) {
+        state->intent_filters.emplace();
+      }
+      state->intent_filters->push_back(intent_filter->Clone());
       expect_intent_filters_.push_back(intent_filter->Clone());
       expect_intent_filters_changed_ = false;
       CheckExpects(u);
@@ -1040,7 +1043,10 @@ class AppUpdateTest : public testing::Test {
       intent_filter->conditions.push_back(std::move(scheme_condition));
       intent_filter->conditions.push_back(std::move(host_condition));
 
-      delta->intent_filters.push_back(intent_filter->Clone());
+      if (!delta->intent_filters) {
+        delta->intent_filters.emplace();
+      }
+      delta->intent_filters->push_back(intent_filter->Clone());
       expect_intent_filters_.push_back(intent_filter->Clone());
       expect_intent_filters_changed_ = true;
       expect_changed_ = true;
@@ -1049,7 +1055,7 @@ class AppUpdateTest : public testing::Test {
 
     if (state) {
       apps::AppUpdate::Merge(state, delta);
-      EXPECT_TRUE(IsEqual(expect_intent_filters_, state->intent_filters));
+      EXPECT_TRUE(IsEqual(expect_intent_filters_, *state->intent_filters));
       ExpectNoChange();
       CheckExpects(u);
     }

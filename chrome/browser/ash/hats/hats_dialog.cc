@@ -191,8 +191,8 @@ void HatsDialog::Show(const std::string& trigger_id,
 
 void HatsDialog::OnLoadingStateChanged(WebContents* source) {
   // Only trigger actions when the URL changes
-  if (action_ != source->GetURL().ref()) {
-    action_ = source->GetURL().ref();
+  if (action_ != source->GetURL().GetRef()) {
+    action_ = source->GetURL().GetRef();
     if (HandleClientTriggeredAction(action_, histogram_name_)) {
       source->ClosePage();
     }

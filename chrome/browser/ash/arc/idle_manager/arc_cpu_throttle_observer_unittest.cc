@@ -12,7 +12,9 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #include "chromeos/ash/experiences/arc/power/arc_power_bridge.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -38,10 +40,13 @@ class ArcCpuThrottleObserverTest : public testing::Test {
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
     service_manager_ = std::make_unique<ArcServiceManager>();
-    session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
-            base::BindRepeating(FakeArcSession::Create)));
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
+    session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)),
+        arc_dlc_installer_.get());
     testing_profile_ = std::make_unique<TestingProfile>();
 
     StabilityMetricsManager::Initialize(&local_state_);
@@ -63,7 +68,9 @@ class ArcCpuThrottleObserverTest : public testing::Test {
     arc::StabilityMetricsManager::Shutdown();
     testing_profile_.reset();
     session_manager_.reset();
+    arc_dlc_installer_.reset();
     service_manager_.reset();
+    ash::DlcserviceClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -80,6 +87,7 @@ class ArcCpuThrottleObserverTest : public testing::Test {
   raw_ptr<ArcMetricsService, DanglingUntriaged> arc_metrics_service_ = nullptr;
   ArcCpuThrottleObserver cpu_throttle_observer_;
   std::unique_ptr<ArcServiceManager> service_manager_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> session_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
   raw_ptr<ArcInstanceThrottle, DanglingUntriaged> test_instance_throttle_;

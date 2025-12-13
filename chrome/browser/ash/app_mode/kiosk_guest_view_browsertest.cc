@@ -10,8 +10,9 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -21,6 +22,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -29,8 +31,13 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "pdf/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace ash {
 
@@ -38,9 +45,28 @@ using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
+#if BUILDFLAG(ENABLE_PDF)
+
 // This web page opens a PDF file once `link1` is clicked.
 // That triggers a mime handler guest view creation.
 constexpr std::string_view kPdfOpenerUrl = "/pdf/test-iframe-pdf.html";
+
+// Open a PDF file in iframe of test-iframe-pdf.html web page.
+// `web_contents` is active browser web contents of test-iframe-pdf.html.
+bool OpenPdfInWebContents(content::WebContents* web_contents) {
+  return content::ExecJs(
+      web_contents,
+      "var button_to_open_pdf = document.getElementById('link1');"
+      "button_to_open_pdf.click();");
+}
+
+KioskMixin::DefaultServerWebAppOption PdfWebApp() {
+  return KioskMixin::DefaultServerWebAppOption{
+      /*account_id=*/"pdf-web-app@localhost",
+      /*url_path=*/kPdfOpenerUrl};
+}
+
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 void NotifyKioskGuestAdded(content::WebContents* guest_web_contents) {
   KioskController::Get().OnGuestAdded(guest_web_contents);
@@ -65,27 +91,12 @@ content::WebContents* OpenUrlInBrowser(GURL page_url) {
   return new_browser.tab_strip_model()->GetActiveWebContents();
 }
 
-// Open a PDF file in iframe of test-iframe-pdf.html web page.
-// `web_contents` is active browser web contents of test-iframe-pdf.html.
-bool OpenPdfInWebContents(content::WebContents* web_contents) {
-  return content::ExecJs(
-      web_contents,
-      "var button_to_open_pdf = document.getElementById('link1');"
-      "button_to_open_pdf.click();");
-}
-
 guest_view::TestGuestViewManager& GetGuestViewManager(
     guest_view::TestGuestViewManagerFactory& factory) {
   return CHECK_DEREF(factory.GetOrCreateTestGuestViewManager(
       &ash::kiosk::test::CurrentProfile(),
       extensions::ExtensionsAPIClient::Get()
           ->CreateGuestViewManagerDelegate()));
-}
-
-KioskMixin::DefaultServerWebAppOption PdfWebApp() {
-  return KioskMixin::DefaultServerWebAppOption{
-      /*account_id=*/"pdf-web-app@localhost",
-      /*url_path=*/kPdfOpenerUrl};
 }
 
 }  // namespace
@@ -97,8 +108,15 @@ class KioskGuestViewTest
   KioskGuestViewTest() {
     // Force allow Chrome Apps in Kiosk, since they are default disabled since
     // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
+    static constexpr char kEnabledFeatures[] = "AllowChromeAppsInKioskSessions";
+#if BUILDFLAG(ENABLE_PDF)
+    // GuestView PDF only.
+    static constexpr char kDisabledFeatures[] = "PdfOopif";
+#else
+    static constexpr char kDisabledFeatures[] = "";
+#endif  // BUILDFLAG(ENABLE_PDF)
+    scoped_feature_list_.InitFromCommandLine(kEnabledFeatures,
+                                             kDisabledFeatures);
   }
   KioskGuestViewTest(const KioskGuestViewTest&) = delete;
   KioskGuestViewTest& operator=(const KioskGuestViewTest&) = delete;
@@ -142,6 +160,8 @@ IN_PROC_BROWSER_TEST_P(KioskGuestViewTest, AddingWebViewGuestViewDoesNotCrash) {
   EXPECT_NO_FATAL_FAILURE(NotifyKioskGuestAdded(guest_view->web_contents()));
 }
 
+#if BUILDFLAG(ENABLE_PDF)
+
 IN_PROC_BROWSER_TEST_P(KioskGuestViewTest,
                        AddingMimeHandlerGuestViewDoesNotCrash) {
   // Open a new browser with locally served test-iframe-pdf.html web page.
@@ -158,15 +178,22 @@ IN_PROC_BROWSER_TEST_P(KioskGuestViewTest,
   EXPECT_NO_FATAL_FAILURE(NotifyKioskGuestAdded(guest_view->web_contents()));
 }
 
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     KioskGuestViewTest,
     testing::ValuesIn(KioskMixin::ConfigsToAutoLaunchEachAppType()),
     KioskMixin::ConfigName);
 
+#if BUILDFLAG(ENABLE_PDF)
+
 class WebKioskGuestViewTest : public MixinBasedInProcessBrowserTest {
  public:
-  WebKioskGuestViewTest() = default;
+  WebKioskGuestViewTest() {
+    // GuestView PDF only.
+    scoped_feature_list_.InitAndDisableFeature(chrome_pdf::features::kPdfOopif);
+  }
   WebKioskGuestViewTest(const WebKioskGuestViewTest&) = delete;
   WebKioskGuestViewTest& operator=(const WebKioskGuestViewTest&) = delete;
 
@@ -188,14 +215,14 @@ class WebKioskGuestViewTest : public MixinBasedInProcessBrowserTest {
                          {PdfWebApp()})};
 
   guest_view::TestGuestViewManagerFactory factory_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebKioskGuestViewTest,
                        AddingMimeHandlerGuestViewDoesNotCrash) {
-  auto* web_contents = BrowserList::GetInstance()
-                           ->get(0)
-                           ->tab_strip_model()
-                           ->GetActiveWebContents();
+  auto* const web_contents = GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                                 ->GetTabStripModel()
+                                 ->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   if (web_contents->IsLoading()) {
     content::WaitForLoadStop(web_contents);
@@ -211,5 +238,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskGuestViewTest,
                          guest_view->web_contents()));
   EXPECT_NO_FATAL_FAILURE(NotifyKioskGuestAdded(guest_view->web_contents()));
 }
+
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace ash

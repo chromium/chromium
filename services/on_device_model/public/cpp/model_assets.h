@@ -26,6 +26,8 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) ModelAssetPaths {
   base::FilePath weights;
   base::FilePath sp_model;
   base::FilePath cache;
+  base::FilePath encoder_cache;
+  base::FilePath adapter_cache;
 };
 
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) ModelFile {
@@ -72,6 +74,8 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) ModelAssets {
   ModelFile weights;
   base::FilePath sp_model_path;
   base::File cache;
+  base::File encoder_cache;
+  base::File adapter_cache;
 };
 
 // Helper to open files for ModelAssets given their containing paths.

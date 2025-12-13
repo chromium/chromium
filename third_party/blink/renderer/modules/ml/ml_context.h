@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -34,6 +35,10 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
+namespace gpu {
+class ClientSharedImage;
+}  // namespace gpu
+
 namespace blink {
 
 class ExecutionContext;
@@ -52,12 +57,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
       ExecutionContext* execution_context,
       const V8MLDeviceType device_type,
       const V8MLPowerPreference power_preference,
-      webnn::mojom::blink::CreateContextSuccessPtr create_context_success);
-
-  // Constructs for MLContext(GPUDevice).
-  MLContext(
-      ExecutionContext* execution_context,
-      GPUDevice* gpu_device,
       webnn::mojom::blink::CreateContextSuccessPtr create_context_success);
 
   MLContext(const MLContext&) = delete;
@@ -82,6 +81,12 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   ScriptPromise<MLTensor> createTensor(ScriptState* script_state,
                                        const MLTensorDescriptor* descriptor,
                                        ExceptionState& exception_state);
+
+  ScriptPromise<MLTensor> createExportableTensor(
+      ScriptState* script_state,
+      const MLTensorDescriptor* descriptor,
+      GPUDevice* device,
+      ExceptionState& exception_state);
 
   ScriptPromise<MLTensor> createConstantTensor(
       ScriptState* script_state,
@@ -120,6 +125,14 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   void OnGraphCreated(MLGraph* graph);
 
+  const mojo::ScopedDataPipeProducerHandle& write_tensor_producer() const {
+    return write_tensor_producer_;
+  }
+
+  const mojo::ScopedDataPipeConsumerHandle& read_tensor_consumer() const {
+    return read_tensor_consumer_;
+  }
+
  private:
   using LostProperty = ScriptPromiseProperty<MLContextLostInfo, IDLUndefined>;
 
@@ -130,6 +143,8 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                             ScriptPromiseResolver<blink::MLTensor>* resolver,
                             webnn::OperandDescriptor validated_descriptor,
                             webnn::MLTensorUsage usage,
+                            scoped_refptr<gpu::ClientSharedImage> shared_image,
+                            GPUDevice* gpu_device,
                             webnn::mojom::blink::CreateTensorResultPtr result);
 
   V8MLDeviceType device_type_;
@@ -142,6 +157,9 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   HeapMojoRemote<webnn::mojom::blink::WebNNContext> context_remote_;
   webnn::ContextProperties properties_;
 
+  mojo::ScopedDataPipeProducerHandle write_tensor_producer_;
+  mojo::ScopedDataPipeConsumerHandle read_tensor_consumer_;
+
   // Identifies this `WebNNContext` mojo instance in the service process.
   const blink::WebNNContextToken webnn_handle_;
 
@@ -152,10 +170,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   HeapHashSet<WeakMember<MLGraph>> graphs_;
   HeapHashSet<WeakMember<MLGraphBuilder>> graph_builders_;
   HeapHashSet<WeakMember<MLTensor>> tensors_;
-
-  // The `WebNNContext` was initialized from a WebGPU device which can be
-  // used for interop.
-  WeakMember<GPUDevice> gpu_device_;
 };
 
 }  // namespace blink

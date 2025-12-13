@@ -24,8 +24,8 @@ BLINK_PLATFORM_EXPORT base::FilePath WebStringToFilePath(const WebString&);
 BLINK_PLATFORM_EXPORT WebString FilePathToWebString(const base::FilePath&);
 
 #if INSIDE_BLINK
-BLINK_PLATFORM_EXPORT base::FilePath StringToFilePath(const WTF::String& str);
-BLINK_PLATFORM_EXPORT WTF::String FilePathToString(const base::FilePath&);
+BLINK_PLATFORM_EXPORT base::FilePath StringToFilePath(const String& str);
+BLINK_PLATFORM_EXPORT String FilePathToString(const base::FilePath&);
 #endif
 
 }  // namespace blink

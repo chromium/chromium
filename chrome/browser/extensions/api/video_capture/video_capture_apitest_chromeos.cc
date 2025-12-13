@@ -39,7 +39,7 @@ class VideoCaptureApiTestChromeOs : public PlatformAppBrowserTest {
     PlatformAppBrowserTest::SetUpOnMainThread();
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     owner_settings_service_ =
-        settings_helper_.CreateOwnerSettingsService(browser()->profile());
+        settings_helper_.CreateOwnerSettingsService(profile());
     // Verify fake devices are enabled. This is necessary to make sure there is
     // at least one device in the system. Otherwise, this test would fail on
     // machines without physical media devices since getUserMedia fails early in
@@ -58,7 +58,7 @@ class VideoCaptureApiTestChromeOs : public PlatformAppBrowserTest {
  protected:
   void EnterKioskSession() {
     user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    chromeos::SetUpFakeKioskSession();
+    chromeos::SetUpFakeChromeAppKioskSession();
   }
 
   void SetAutoLaunchApp() {

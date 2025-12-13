@@ -56,7 +56,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
@@ -65,6 +64,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/background.h"
 #include "ui/views/event_monitor.h"
@@ -119,14 +119,13 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
   auto* layer = view->layer();
   layer->SetFillsBoundsOpaquely(false);
 
-  if (features::IsForestFeatureEnabled() && !type_is_desk_button) {
+  if (!type_is_desk_button) {
     // Forest feature needs a transparent desks bar background. Still needs the
     // view layer to perform animations.
     return;
   }
 
-  if (features::IsBackgroundBlurEnabled() &&
-      chromeos::features::IsSystemBlurEnabled()) {
+  if (chromeos::features::IsSystemBlurEnabled()) {
     layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
@@ -141,7 +140,7 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
   const ui::ColorId background_color_id =
       chromeos::features::IsSystemBlurEnabled()
           ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
-          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+          : cros_tokens::kCrosSysSystemOnBaseOpaque;
   view->SetBackground(views::CreateSolidBackground(background_color_id));
 }
 
@@ -819,10 +818,7 @@ int DeskBarViewBase::GetPreferredBarHeight(aura::Window* root,
       if (state == State::kZero) {
         height = kDeskBarZeroStateHeight;
       } else {
-        height = DeskPreviewView::GetHeight(root) +
-                 (features::IsForestFeatureEnabled()
-                      ? kExpandedDeskBarHeight
-                      : kDeskBarNonPreviewAllocatedHeight);
+        height = DeskPreviewView::GetHeight(root) + kExpandedDeskBarHeight;
       }
       break;
   }
@@ -1092,8 +1088,7 @@ void DeskBarViewBase::NudgeDeskName(int desk_index) {
   if (type_ == Type::kOverview) {
     // If we're in tablet mode and there are no external keyboards, open up the
     // virtual keyboard.
-    if (display::Screen::GetScreen()->InTabletMode() &&
-        !HasExternalKeyboard()) {
+    if (display::Screen::Get()->InTabletMode() && !HasExternalKeyboard()) {
       keyboard::KeyboardUIController::Get()->ShowKeyboard(/*lock=*/false);
     }
   }
@@ -1224,7 +1219,7 @@ bool DeskBarViewBase::ShouldShowLibraryUi() {
   // Only update visibility when needed. This will save a lot of repeated work.
   if (library_ui_visibility_ == LibraryUiVisibility::kToBeChecked) {
     if (!saved_desk_util::ShouldShowSavedDesksOptions() ||
-        display::Screen::GetScreen()->InTabletMode()) {
+        display::Screen::Get()->InTabletMode()) {
       library_ui_visibility_ = LibraryUiVisibility::kHidden;
     } else {
       auto* desk_model = Shell::Get()->saved_desk_delegate()->GetDeskModel();
@@ -1356,10 +1351,10 @@ void DeskBarViewBase::OnActivateDeskTimer(const base::Uuid& uuid) {
 
 void DeskBarViewBase::HandleClickEvent(DeskMiniView* mini_view) {
   // A timer to delay closing the desk bar.
-  if (!ui::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (!gfx::ScopedAnimationDurationScaleMode::is_zero()) {
     desk_activation_timer_.Start(
         FROM_HERE,
-        ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
+        gfx::ScopedAnimationDurationScaleMode::duration_multiplier() *
             kAnimationDelayDuration,
         base::BindOnce(&DeskBarViewBase::OnActivateDeskTimer,
                        base::Unretained(this), mini_view->desk()->uuid()));
@@ -1924,19 +1919,10 @@ void DeskBarViewBase::MaybeUpdateDeskActionButtonTooltips() {
 
     int desk_index = desk_controller->GetDeskIndex(desk);
     auto* desk_action_view = mini_view->desk_action_view();
-    const std::u16string combine_desk_tooltip =
-        desk_controller->GetCombineDesksTargetName(desk);
     const std::u16string close_desk_tooltip =
         desk->name().empty() && desk_index != -1
             ? desk_controller->GetDeskDefaultName(desk_index)
             : desk->name();
-    // The combine desks button only exists if the feature is disabled. The
-    // context menu button that would appear in its place does not need to
-    // update its tooltip as it doesn't use a formatted string.
-    if (!features::IsForestFeatureEnabled()) {
-      desk_action_view->combine_desks_button()->UpdateTooltip(
-          combine_desk_tooltip);
-    }
     desk_action_view->close_all_button()->UpdateTooltip(close_desk_tooltip);
   }
 }

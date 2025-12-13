@@ -5,27 +5,32 @@
 #include "chrome/browser/updater/scheduler.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
 #include "base/time/time.h"
 
 namespace updater {
 
 namespace {
 
-void RunAndReschedule() {
-  DoPeriodicTasks(base::BindOnce([]() {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&RunAndReschedule), base::Hours(5));
-  }));
+void RunAndReschedule(base::RepeatingClosure prompt) {
+  DoPeriodicTasks(
+      prompt,
+      base::BindOnce(
+          [](base::RepeatingClosure prompt) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+                FROM_HERE, base::BindOnce(&RunAndReschedule, prompt),
+                base::Hours(5));
+          },
+          prompt));
 }
 
 }  // namespace
 
-void SchedulePeriodicTasks() {
+void SchedulePeriodicTasks(base::RepeatingClosure prompt) {
   // Delay a little bit to get out of the way of browser startup.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&RunAndReschedule), base::Seconds(19));
+      FROM_HERE, base::BindOnce(&RunAndReschedule, prompt), base::Seconds(19));
 }
 
 }  // namespace updater

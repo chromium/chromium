@@ -26,5 +26,5 @@ public @interface JniType {
      * ScopedJavaLocalRef<java_type> jni_zero::ToJniType<cpp_type>(JniEnv*, const cpp_type&);
      * </pre>
      */
-    public String value();
+    String value();
 }

@@ -23,7 +23,7 @@ source_set("passage_embeddings") {
       "passage_embeddings_op_resolver.h",
     ]
     public_deps += [
-      "//third_party/sentencepiece:sentencepiece",
+      "//third_party/sentencepiece",
       "//third_party/sentencepiece:sentencepiece_proto",
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",

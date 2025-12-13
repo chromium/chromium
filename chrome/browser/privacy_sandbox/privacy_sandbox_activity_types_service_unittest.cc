@@ -9,9 +9,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -64,9 +64,7 @@ class PrivacySandboxActivityTypesServiceTest : public testing::Test {
 class PrivacySandboxActivityTypeStorageTests
     : public PrivacySandboxActivityTypesServiceTest {
  public:
-  PrivacySandboxActivityTypeStorageTests()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())) {}
+  PrivacySandboxActivityTypeStorageTests() = default;
 
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
@@ -78,10 +76,6 @@ class PrivacySandboxActivityTypeStorageTests
 
  protected:
   base::HistogramTester histogram_tester;
-  ScopedTestingLocalState* local_state() { return local_state_.get(); }
-
- private:
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
 };
 
 TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyListOverflow) {
@@ -253,9 +247,7 @@ TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyTimeBackwards) {
 class PrivacySandboxActivityTypeStorageMetricsTests
     : public PrivacySandboxActivityTypesServiceTest {
  public:
-  PrivacySandboxActivityTypeStorageMetricsTests()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())) {}
+  PrivacySandboxActivityTypeStorageMetricsTests() = default;
 
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
@@ -313,15 +305,11 @@ class PrivacySandboxActivityTypeStorageMetricsTests
 
  protected:
   base::HistogramTester histogram_tester;
-  ScopedTestingLocalState* local_state() { return local_state_.get(); }
-
- private:
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
 };
 
 TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
        VerifyMetricsRecordsLength) {
-  local_state()->Get()->SetInt64(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetInt64(
       metrics::prefs::kMetricsReportingEnabledTimestamp,
       (base::Time::Now() - base::Days(10)).ToTimeT());
   privacy_sandbox_activity_types_service()->RecordActivityType(
@@ -356,7 +344,7 @@ TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
 
 TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
        VerifyMetricsPercentages) {
-  local_state()->Get()->SetInt64(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetInt64(
       metrics::prefs::kMetricsReportingEnabledTimestamp,
       (base::Time::Now() - base::Days(10)).ToTimeT());
   privacy_sandbox_activity_types_service()->RecordActivityType(
@@ -448,7 +436,7 @@ TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
 
 TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
        VerifyUserSegmentMetrics) {
-  local_state()->Get()->SetInt64(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetInt64(
       metrics::prefs::kMetricsReportingEnabledTimestamp,
       (base::Time::Now() - base::Days(10)).ToTimeT());
   for (int i = 0; i < 10; ++i) {
@@ -557,7 +545,7 @@ TEST_F(PrivacySandboxActivityTypeStorageMetricsTests, VerifyNoMetrics) {
   // future and we should receive no metrics on any of the data in the Activity
   // Type storage list. The list should still be populated to a size of 10
   // records.
-  local_state()->Get()->SetInt64(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetInt64(
       metrics::prefs::kMetricsReportingEnabledTimestamp,
       (base::Time::Now() + base::Days(10)).ToTimeT());
   for (int i = 0; i < 10; ++i) {
@@ -590,7 +578,7 @@ TEST_F(PrivacySandboxActivityTypeStorageMetricsTests, VerifyNoMetrics) {
 
 TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
        VerifyDurationSinceOldestRecordMetrics) {
-  local_state()->Get()->SetInt64(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetInt64(
       metrics::prefs::kMetricsReportingEnabledTimestamp,
       (base::Time::Now() - base::Days(10)).ToTimeT());
   privacy_sandbox_activity_types_service()->RecordActivityType(

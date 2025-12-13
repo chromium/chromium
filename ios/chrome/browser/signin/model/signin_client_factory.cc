@@ -28,8 +28,7 @@ SigninClientFactory::SigninClientFactory()
 SigninClientFactory::~SigninClientFactory() = default;
 
 std::unique_ptr<KeyedService> SigninClientFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<IOSChromeSigninClient>(
       profile, ios::HostContentSettingsMapFactory::GetForProfile(profile));
 }

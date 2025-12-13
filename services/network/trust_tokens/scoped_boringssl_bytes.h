@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_SCOPED_BORINGSSL_BYTES_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_SCOPED_BORINGSSL_BYTES_H_
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -44,7 +40,7 @@ class ScopedBoringsslBytes {
 
   base::span<const uint8_t> as_span() const {
     CHECK(ptr_);
-    return base::span(ptr_.get(), len_);
+    return UNSAFE_TODO(base::span(ptr_.get(), len_));
   }
 
  private:

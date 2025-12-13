@@ -43,8 +43,6 @@ class LayoutBoxModelObjectTest : public RenderingTest,
 INSTANTIATE_PAINT_TEST_SUITE_P(LayoutBoxModelObjectTest);
 
 // This test doesn't need to be a parameterized test.
-// TODO(https://crbug.com/353713061): caret-shape property doesn't apply for
-// browsing only case.
 TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
@@ -64,15 +62,15 @@ TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
       writing-mode: vertical-lr;
     }
     </style>
-    <div id='target-rl' class="target"></div>
-    <div id='target-lr' class="target"></div>
+    <div contenteditable id='target-rl' class="target"></div>
+    <div contenteditable id='target-lr' class="target"></div>
 
-    <div style="writing-mode:vertical-rl;">
+    <div contenteditable style="writing-mode:vertical-rl;">
     <br>
     <span id="target-inline-rl" class="target"></span>
     </div>
 
-    <div style="writing-mode:vertical-lr;">
+    <div contenteditable style="writing-mode:vertical-lr;">
     <br>
     <span id="target-inline-lr" class="target"></span>
     </div>
@@ -88,15 +86,17 @@ TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
 
   {
     auto* rl = GetLayoutBoxByElementId("target-rl");
-    EXPECT_EQ(PhysicalRect(rl->Size().width - kPaddingRight - kFontHeight,
-                           kPaddingTop, kFontHeight, kCaretWidth),
-              rl->LocalCaretRect(0, CaretShape::kBar));
-    EXPECT_EQ(PhysicalRect(rl->Size().width - kPaddingRight - kFontHeight,
-                           kPaddingTop, kFontHeight, kFontWidth),
-              rl->LocalCaretRect(0, CaretShape::kBlock));
-    EXPECT_EQ(PhysicalRect(
-                  rl->Size().width - kPaddingRight - kFontHeight - kCaretWidth,
-                  kPaddingTop, kCaretWidth, kFontWidth),
+    EXPECT_EQ(
+        PhysicalRect(rl->StitchedSize().width - kPaddingRight - kFontHeight,
+                     kPaddingTop, kFontHeight, kCaretWidth),
+        rl->LocalCaretRect(0, CaretShape::kBar));
+    EXPECT_EQ(
+        PhysicalRect(rl->StitchedSize().width - kPaddingRight - kFontHeight,
+                     kPaddingTop, kFontHeight, kFontWidth),
+        rl->LocalCaretRect(0, CaretShape::kBlock));
+    EXPECT_EQ(PhysicalRect(rl->StitchedSize().width - kPaddingRight -
+                               kFontHeight - kCaretWidth,
+                           kPaddingTop, kCaretWidth, kFontWidth),
               rl->LocalCaretRect(0, CaretShape::kUnderscore));
   }
   {
@@ -1221,7 +1221,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionNestedFixedPos) {
   )HTML");
 
   // The view size is set by the base class. This test depends on it.
-  ASSERT_EQ(PhysicalSize(800, 600), GetLayoutView().Size());
+  ASSERT_EQ(PhysicalSize(800, 600), GetLayoutView().StitchedSize());
 
   auto* outer_sticky = GetLayoutBoxModelObjectByElementId("outerSticky");
   auto* inner_sticky_top = GetLayoutBoxModelObjectByElementId("innerStickyTop");
@@ -1570,7 +1570,8 @@ TEST_P(LayoutBoxModelObjectTest, RemoveStickyUnderContain) {
 
   // This should not crash.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 }
 

@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/views/location_bar/merchant_trust_chip_button_controller.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
@@ -65,16 +64,7 @@ class MerchantTrustChipButtonInteractiveUITest
         {page_info::kMerchantTrust,
          {{page_info::kMerchantTrustForceShowUIForTestingName, "true"},
           {page_info::kMerchantTrustEnableOmniboxChipName,
-           GetParam() ? "true" : "false"}}},
-        {features::kHappinessTrackingSurveysForDesktopDemo, {}},
-        {features::kHappinessTrackingSurveysConfiguration,
-         {{"custom-url", GetSurveyURL().spec()}}},
-        {page_info::kMerchantTrustLearnSurvey,
-         {
-             {"probability", "1"},
-             {"user_prompted", "true"},
-             {"trigger_id", "load"},
-         }}};
+           GetParam() ? "true" : "false"}}}};
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
@@ -172,10 +162,6 @@ class MerchantTrustChipButtonInteractiveUITest
 
   GURL GetAnotherURL() {
     return https_server()->GetURL("a.test", "/title1.html");
-  }
-
-  GURL GetSurveyURL() {
-    return https_server()->GetURL("a.test", "/hats/hats_next_mock.html");
   }
 
  private:
@@ -322,32 +308,6 @@ IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
       PressButton(PageInfoMerchantTrustContentView::kViewReviewsId),
       // Wait for the side panel to show.
       WaitForShow(kSidePanelElementId));
-}
-
-IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
-                       MerchantTrustSubpageHats) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, GetURL()),
-      OpenMerchantTrustSubpage(),
-      WaitForShow(PageInfoMerchantTrustContentView::kHatsButtonId),
-      CheckView(
-          PageInfoMerchantTrustContentView::kHatsButtonId,
-          [](RichHoverButton* button) { return button->GetTitleText(); },
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HATS_BUTTON)),
-      // Press the HaTS button.
-      PressButton(PageInfoMerchantTrustContentView::kHatsButtonId),
-      CheckView(
-          PageInfoMerchantTrustContentView::kHatsButtonId,
-          [](RichHoverButton* button) { return button->GetTitleText(); },
-          l10n_util::GetStringUTF16(
-              IDS_PAGE_INFO_MERCHANT_TRUST_HATS_LOADING_BUTTON)),
-      // Wait for the bubble to be closed and for the survey to show.
-      WaitForHide(PageInfoMerchantTrustContentView::kElementIdForTesting),
-      InAnyContext(WaitForShow(kHatsNextWebDialogId)),
-      CheckHistogramCounts(kHatsShouldShowSurveyReasonHistogram,
-                           HatsServiceDesktop::ShouldShowSurveyReasons::kYes,
-                           1));
 }
 
 INSTANTIATE_TEST_SUITE_P(/*no_prefix*/,

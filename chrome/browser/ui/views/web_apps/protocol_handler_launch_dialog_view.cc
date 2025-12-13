@@ -16,7 +16,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -51,7 +51,7 @@ ProtocolHandlerLaunchDialogView::CreateAboveAppInfoView() {
       l10n_util::GetStringFUTF16(
           IDS_PROTOCOL_HANDLER_INTENT_PICKER_QUESTION,
           custom_handlers::ProtocolHandler::GetProtocolDisplayName(
-              url_.scheme())),
+              url_.GetScheme())),
       views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::TextStyle::STYLE_PRIMARY);
   open_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

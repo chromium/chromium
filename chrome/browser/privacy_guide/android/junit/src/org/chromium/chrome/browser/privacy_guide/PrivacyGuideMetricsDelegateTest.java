@@ -20,10 +20,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
@@ -32,15 +30,13 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-
-import java.util.Set;
 
 /** JUnit tests of the class {@link PrivacyGuideMetricsDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -52,7 +48,7 @@ public class PrivacyGuideMetricsDelegateTest {
     @Mock private Profile mProfile;
     @Mock private UnifiedConsentServiceBridge.Natives mNativeMock;
     @Mock private SyncService mSyncService;
-    @Mock private Set<Integer> mSyncTypes;
+    @Mock private HistorySyncHelper mHistorySyncHelper;
     @Mock private SafeBrowsingBridge.Natives mSafeBrowsingNativeMock;
     @Mock private PrefService mPrefServiceMock;
     @Mock private UserPrefs.Natives mUserPrefsNativesMock;
@@ -63,11 +59,12 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Before
     public void setUp() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         mPrivacyGuideMetricsDelegate = new PrivacyGuideMetricsDelegate(mProfile);
 
         UnifiedConsentServiceBridgeJni.setInstanceForTesting(mNativeMock);
+        // {@link PrivacyGuideUtils#canUpdateHistorySyncValue} assumes nonnull SyncService
         SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.getSelectedTypes()).thenReturn(mSyncTypes);
         SafeBrowsingBridgeJni.setInstanceForTesting(mSafeBrowsingNativeMock);
         UserPrefsJni.setInstanceForTesting(mUserPrefsNativesMock);
         when(mUserPrefsNativesMock.get(mProfile)).thenReturn(mPrefServiceMock);
@@ -92,7 +89,7 @@ public class PrivacyGuideMetricsDelegateTest {
 
     private void mockHistorySyncState(
             boolean initialHistorySyncState, boolean finalHistorySyncState) {
-        when(mSyncTypes.contains(UserSelectableType.HISTORY))
+        when(mHistorySyncHelper.isHistorySyncEnabled())
                 .thenReturn(initialHistorySyncState, finalHistorySyncState);
     }
 
@@ -334,7 +331,6 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookies_block3PIncognitoTo3PSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.INCOGNITO_ONLY, CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -348,7 +344,6 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookies_block3PTo3PIncognitoSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.BLOCK_THIRD_PARTY, CookieControlsMode.INCOGNITO_ONLY);
@@ -362,7 +357,6 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookies_block3PTo3PSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.BLOCK_THIRD_PARTY, CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -375,7 +369,6 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookies_offTo3PSettingsStatesHistogram() {
         mockCookieControlsMode(CookieControlsMode.OFF, CookieControlsMode.BLOCK_THIRD_PARTY);
         HistogramWatcher watcher =
@@ -388,7 +381,6 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookies_offTo3PIncognitoSettingsStatesHistogram() {
         mockCookieControlsMode(CookieControlsMode.OFF, CookieControlsMode.INCOGNITO_ONLY);
         HistogramWatcher watcher =

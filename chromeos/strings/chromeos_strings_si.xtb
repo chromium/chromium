@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">දොඩම්</translation>
 <translation id="1275718070701477396">තෝරාගත්</translation>
 <translation id="1290331692326790741">දුර්වල සංඥාව</translation>
+<translation id="1292474106138697109">පන්ති මෙවලම් සංදර්ශකය</translation>
 <translation id="1300115153046603471">APN වර්ගය පෙරනිමි සහ <ph name="ATTACH" /> වේ.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">හරවන්න</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989">රූප <ph name="IMAGE_COUNT" /></translation>
 <translation id="4300272766492248925">යෙදුම විවෘත කරන්න</translation>
 <translation id="430786093962686457">චිෆන්</translation>
+<translation id="4309762678330556039">ස්වයංක්‍රීයව අනුපත් තනන්න සහ ශ්‍රව්‍ය සොයන්න. ඔබ අන්තර්ජාලයට සම්බන්ධ නැති විට පවා ඔබට පටිගත කිරීම් තැනීමට හැක.</translation>
 <translation id="4310735698903592804">Google AI මගින් බල ගැන්වෙන මෑත වෝල්පේපර</translation>
 <translation id="4320904097188876154">නියෝන් රෝස</translation>
 <translation id="432961742358282111">අර්ථ දැක්වීම්, පරිවර්තන, හෝ ඒකක පරිවර්තන ලබා ගැනීමට දකුණු-ක්ලික් කරන්න හෝ ඔබාගෙන සිටින්න. මෙම විශේෂාංගය කළමනාකරණය කිරීමට වම් හෝ දකුණු ඊතල යතුරු භාවිත කරන්න.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">තවත් විකල්ප</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> යතුර පරීක්ෂා කරන ලදි</translation>
 <translation id="5606865426897221650">පටිත්ත</translation>
+<translation id="5612205513582918357">පන්ති මෙවලම් ඔබේ තිරය <ph name="RECEIVER_NAME" /> වෙත බෙදා ගනිමින් සිටී</translation>
 <translation id="5613201299517339763">ඔබ වරනය වී ඇත</translation>
 <translation id="5620281292257375798">අභ්‍යන්තර පමණයි</translation>
 <translation id="5628106863521633649">තිබෙන භාෂා</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">ක්ලවුඩ් ප්‍රවාහය</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ස්කෑනර ලබා ගත නොහැකිය</translation>
-<translation id="6231648282154119906">ඔබ තෝරාගත් ඉහළ නැංවූ ආරක්ෂණයේ කොටසක් ලෙස සැක සහිත ගොනු Google ආරක්ෂිත බ්‍රවුස් කිරීම මගින් ස්වයංක්‍රීයව ස්කෑන් කරනු ලැබේ.</translation>
 <translation id="6232017090690406397">බැටරිය</translation>
 <translation id="6234024205316847054">දළ සටහන් පෙන්වන්න</translation>
 <translation id="6243280677745499710">දැනට සකසා ඇත</translation>
@@ -1543,7 +1545,7 @@
 <translation id="779591286616261875">නව වාර්තාව යවන්න</translation>
 <translation id="7799817062559422778">ආලෝක ප්‍රකාරය</translation>
 <translation id="7802764839223122985">යතුර මඟ හැරී ඇත. <ph name="REASSIGN_INSTRUCTION" /></translation>
-<translation id="780301667611848630">එපා, ස්තූතියි</translation>
+<translation id="780301667611848630">එපා ස්තූතියි</translation>
 <translation id="7805768142964895445">තත්වය</translation>
 <translation id="7811024689617730980">1 සිට 31 දක්වා, ඇතුළුව ස්වයංක්‍රීය යළි සැකසීමේ දිනයක් තෝරන්න</translation>
 <translation id="7813073042185856802">කන්ද</translation>

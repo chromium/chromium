@@ -16,14 +16,14 @@ class Point;
 }  // namespace gfx
 
 namespace views {
-class NonClientFrameView;
+class FrameView;
 }
 
 namespace chromeos {
 
 // Returns the HitTestCompat for the specified point.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
-int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
+int FrameBorderNonClientHitTest(views::FrameView* view,
                                 const gfx::Point& point_in_widget);
 
 // Resolve the inferred opacity and updates the params.

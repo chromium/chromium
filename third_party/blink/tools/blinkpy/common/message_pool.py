@@ -43,7 +43,6 @@ import logging
 import multiprocessing
 import pickle
 import queue
-import six
 import sys
 import threading
 import traceback
@@ -397,7 +396,7 @@ class _WorkerProcess(multiprocessing.Process):
     def _raise(self, exc_info):
         exception_type, exception_value, exception_traceback = exc_info
         if self._running_inline:
-            six.reraise(exception_type, exception_value, exception_traceback)
+            raise exception_value.with_traceback(exception_traceback)
 
         if exception_type == KeyboardInterrupt:
             _log.debug('%s: interrupted, exiting', self.name)

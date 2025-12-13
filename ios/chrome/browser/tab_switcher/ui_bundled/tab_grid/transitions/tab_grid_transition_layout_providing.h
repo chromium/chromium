@@ -14,8 +14,11 @@
 @protocol TabGridTransitionLayoutProviding
 
 // Asks the provider for the layout of the tab grid to be used in transition
-// animations.
-- (TabGridTransitionLayout*)transitionLayout;
+// animations, given `isIncognito`.
+- (TabGridTransitionLayout*)transitionLayoutForIsIncognito:(BOOL)isIncognito;
+
+// Asks the provider if the selected cell is visible.
+- (BOOL)isSelectedCellVisible;
 
 @end
 

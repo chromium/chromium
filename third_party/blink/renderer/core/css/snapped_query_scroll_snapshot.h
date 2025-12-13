@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SNAPPED_QUERY_SCROLL_SNAPSHOT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SNAPPED_QUERY_SCROLL_SNAPSHOT_H_
 
-#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
+#include "third_party/blink/renderer/core/frame/post_layout_snapshot_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -22,22 +22,20 @@ class PaintLayerScrollableArea;
 // evaluate correctly on the subsequent style updates.
 class SnappedQueryScrollSnapshot
     : public GarbageCollected<SnappedQueryScrollSnapshot>,
-      public ScrollSnapshotClient {
+      public PostLayoutSnapshotClient {
  public:
   explicit SnappedQueryScrollSnapshot(PaintLayerScrollableArea& scroller);
 
   Element* GetSnappedTargetX() const { return snapped_target_x_; }
   Element* GetSnappedTargetY() const { return snapped_target_y_; }
 
-  // ScrollSnapshotClient:
-  void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
+  // PostLayoutSnapshotClient:
+  bool UpdateSnapshot() override;
   bool ShouldScheduleNextService() override;
 
   void Trace(Visitor*) const override;
 
  private:
-  bool UpdateSnappedTargets();
   void InvalidateSnappedTarget(Element* target);
 
   Member<PaintLayerScrollableArea> scroller_;

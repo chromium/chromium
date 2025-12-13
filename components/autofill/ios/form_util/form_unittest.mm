@@ -52,10 +52,9 @@ class FormJsTest : public web::JavascriptTest {
     web::JavascriptTest::SetUp();
     AddGCrWebScript();
     AddCommonScript();
-    AddMessageScript();
-    AddUserScript(@"fill");
-    AddUserScript(@"form");
     AddUserScript(@"autofill_form_features");
+    AddUserScript(@"form");
+    AddUserScript(@"form_util_tests");
   }
 
   FakeScriptMessageHandlerForFormTesting* handler_;
@@ -70,10 +69,11 @@ TEST_F(FormJsTest, GetIframeElements) {
 
   EXPECT_NSEQ(
       @"frame1,frame2",
-      ExecuteJavaScript(
-          web_view(),
-          @"const frames = __gCrWeb.form.getIframeElements(document.body);"
-          @"frames.map((f) => { return f.id; }).join();"));
+      ExecuteJavaScript(web_view(),
+                        @"const frames = "
+                        @"__gCrWeb.getRegisteredApi('form_test_api')."
+                        @"getFunction('getIframeElements')(document.body);"
+                        @"frames.map((f) => { return f.id; }).join();"));
 
   // Check that the return objects have a truthy contentWindow property.
   EXPECT_NSEQ(@YES,
@@ -96,11 +96,6 @@ TEST_F(FormJsTest, FormSubmitted_Deduping) {
        "args); }; "
        "UserMessageHandler.prototype.postMessage = newFn";
   ExecuteJavaScriptInWebView(web_view(), swizzleScript);
-
-  // Enable form submission deduping.
-  ExecuteJavaScriptInWebView(web_view(),
-                             @"__gCrWeb.autofill_form_features."
-                              "setAutofillDedupeFormSubmission(true);");
 
   // == Submit first form ==
 
@@ -175,32 +170,6 @@ TEST_F(FormJsTest, FormSubmitted_Deduping) {
                      "document.forms[1], 'TestHandler', false, false)");
   }
   EXPECT_TRUE(ExecuteJavaScript(web_view(), @"gMsgCount == 2"));
-}
-
-// Tests that the `formSubmitted` handler doesn't do deduping when the feature
-// doesn't allow it.
-TEST_F(FormJsTest, FormSubmitted_NoDeduping) {
-  // Create an arbitrary form to used as the submitted form.
-  LoadHtml(@"<form></form>");
-
-  // Enable deduping.
-  ExecuteJavaScriptInWebView(web_view(),
-                             @"__gCrWeb.autofill_form_features."
-                              "setAutofillDedupeFormSubmission(false);");
-
-  // Submit the form 4 times where each event should be reported (messaged over)
-  // because there is no deduping.
-  for (size_t i = 0; i < 4; ++i) {
-    ExecuteJavaScriptInWebView(
-        web_view(), @"__gCrWeb.form.formSubmitted("
-                     "document.forms[0], 'TestHandler', false, false)");
-  }
-
-  // Wait for all submission messages to be sent over.
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^bool() {
-        return handler_.messageCount == 4;
-      }));
 }
 
 }  // namespace autofill

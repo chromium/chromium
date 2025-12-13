@@ -46,8 +46,7 @@ class XRSetlike : public ValueSyncIterable<InterfaceType> {
     }
 
     bool FetchNextItem(ScriptState* script_state,
-                       ElementType*& value,
-                       ExceptionState& exception_state) override {
+                       ElementType*& value) override {
       if (index_ >= elements_.size()) {
         return false;
       }
@@ -72,8 +71,7 @@ class XRSetlike : public ValueSyncIterable<InterfaceType> {
   // Starts iteration over XRSetlike.
   // Needed for ValueSyncIterable to work properly.
   XRSetlike::IterationSource* CreateIterationSource(
-      ScriptState* script_state,
-      ExceptionState& exception_state) override {
+      ScriptState* script_state) override {
     return MakeGarbageCollected<XRSetlike::IterationSource>(elements());
   }
 };

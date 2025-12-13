@@ -9,9 +9,10 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProper
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SECTION_ON_CLICK_LISTENER;
 
-import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.widget.ImageView;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;

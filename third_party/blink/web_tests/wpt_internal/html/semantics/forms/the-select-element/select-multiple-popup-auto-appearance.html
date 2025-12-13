@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<meta name=fuzzy content="maxDifference=0-3;totalPixels=0-1">
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=match href="select-multiple-popup-auto-appearance-ref.html">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+select {
+  /* Remove the dropdown arrow so we don't have to reftest it. */
+  appearance: none;
+  /* Intrinsic width would be hard to build in a reftest. */
+  width: 100px;
+  /* This is different per platform, so make it consistent here. */
+  background-color: white;
+}
+</style>
+
+<select multiple size=1>
+  <option selected>selected one</option>
+  <option selected>selected two</option>
+  <option>unselected</option>
+  <optgroup label="optgroup label attribute">
+    <option>option in optgroup one</option>
+  </optgroup>
+  <optgroup>
+    <legend>optgroup legend element</legend>
+    <option>option in optgroup two</option>
+  </optgroup>
+  <option disabled>disabled option</option>
+  <option disabled selected>selected disabled option</option>
+</select>
+
+
+<script>
+(async () => {
+  await new Promise(requestAnimationFrame);
+  await test_driver.bless();
+  document.querySelector('select').showPicker();
+  await new Promise(requestAnimationFrame);
+  document.documentElement.classList.remove('reftest-wait');
+})();
+</script>

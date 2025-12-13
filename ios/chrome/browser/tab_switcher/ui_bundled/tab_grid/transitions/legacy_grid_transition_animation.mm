@@ -331,10 +331,9 @@ CGFloat CalculateResizeDampingCorrection(LegacyGridTransitionLayout* layout) {
       self.layout.activeItem.cell;
   // The top tab view starts at zero alpha but is crossfaded in.
   activeCell.topTabView.alpha = 0.0;
-  // If the active item is appearing, the main tab view is shown. If not, it's
-  // hidden, and may be faded in if it's expected to be different in content
-  // from the existing cell snapshot.
-  if (!self.layout.activeItem.isAppearing) {
+  // Hide the main tab view if a BVC snapshot isn't being used. It might be
+  // faded in later if its content differs from the existing cell snapshot.
+  if (!self.layout.activeItem.shouldUseBVCSnapshot) {
     activeCell.mainTabView.alpha = 0.0;
   }
 

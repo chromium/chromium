@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DEVICE_SIGNALS_CONSENT_CONSENT_DIALOG_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_DEVICE_SIGNALS_CONSENT_CONSENT_DIALOG_COORDINATOR_H_
 
+#include <memory>
+
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/device_signals_consent/consent_requester.h"
+#include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace ui {
@@ -20,7 +23,30 @@ class Widget;
 class Browser;
 class Profile;
 
-// View class for managing the device signals consent dialog widget.
+using RequestConsentCallback = base::RepeatingCallback<void()>;
+
+// Abstract base class that requests the collection of user consent for
+// sharing device signals.
+class ConsentRequester {
+ public:
+  virtual ~ConsentRequester() = default;
+
+  ConsentRequester(const ConsentRequester&) = delete;
+  ConsentRequester& operator=(const ConsentRequester&) = delete;
+
+  static std::unique_ptr<ConsentRequester> CreateConsentRequester(
+      Profile* profile);
+
+  static void SetConsentRequesterForTest(
+      std::unique_ptr<ConsentRequester> consent_requester);
+
+  virtual void RequestConsent(RequestConsentCallback callback) = 0;
+
+ protected:
+  ConsentRequester() = default;
+};
+
+// Concrete implementation that manages the device signals consent dialog.
 class ConsentDialogCoordinator : public ConsentRequester {
  public:
   ConsentDialogCoordinator(Browser* browser, Profile* profile);

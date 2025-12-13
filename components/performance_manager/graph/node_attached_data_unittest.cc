@@ -17,7 +17,7 @@ namespace performance_manager {
 namespace {
 
 // An implementation of map-stored user-data using the public interface.
-class BarData : public ExternalNodeAttachedDataImpl<BarData> {
+class BarData : public NodeAttachedDataImpl<BarData> {
  public:
   explicit BarData(const PageNode* page_node) : page_node_(page_node) {}
 
@@ -27,7 +27,7 @@ class BarData : public ExternalNodeAttachedDataImpl<BarData> {
 };
 
 // A second implementation, which should not be confused with BarData.
-class FooData : public ExternalNodeAttachedDataImpl<FooData> {
+class FooData : public NodeAttachedDataImpl<FooData> {
  public:
   explicit FooData(const PageNode* page_node) : page_node_(page_node) {}
 

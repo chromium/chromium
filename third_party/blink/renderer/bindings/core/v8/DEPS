@@ -1,10 +1,12 @@
 include_rules = [
-  "+components/miracle_parameter",
   "+tools/v8_context_snapshot/buildflags.h",
 ]
 specific_include_rules = {
   "script_promise_resolver_test.cc": [
     "+base/run_loop.h",
+  ],
+  "script_streamer.cc": [
+    "+net/http/http_response_headers.h",
   ],
   "script_streamer_test.cc": [
     "+base/threading/thread_restrictions.h",

@@ -81,7 +81,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   TestParsing(env, data_string);
 
-  std::optional<base::Value> parsed_json = base::JSONReader::Read(data_string);
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(data_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (parsed_json) {
     TestValidation(env, *parsed_json);
     TestMasking(env, *parsed_json);

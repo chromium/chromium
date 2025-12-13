@@ -91,12 +91,6 @@ class MandatoryReauthManager {
       NonInteractivePaymentMethodType non_interactive_payment_method_type,
       base::OnceCallback<void(bool)> authentication_complete_callback);
 
-  // This method is triggered once an authentication flow is completed. It will
-  // reset `device_authenticator_` before triggering `callback` with `success`.
-  void OnAuthenticationCompleted(
-      device_reauth::DeviceAuthenticator::AuthenticateCallback callback,
-      bool success);
-
   // Returns true if the user conditions denote that we should offer opt-in for
   // this user, false otherwise.
   // `card_record_type_if_non_interactive_authentication_flow_completed` will be

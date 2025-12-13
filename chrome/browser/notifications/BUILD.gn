@@ -11,9 +11,17 @@ source_set("notifications") {
   public_deps = [
     "//chrome/browser/notifications/proto",
     "//chrome/browser/notifications/scheduler",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//url",
   ]
 
-  sources = []
+  sources = [
+    "notification_common.h",
+    "notification_display_service.h",
+    "notification_display_service_factory.h",
+    "notification_handler.h",
+  ]
 
   if (is_android) {
     deps = [
@@ -147,8 +155,8 @@ if (is_android) {
       "//third_party/android_deps:espresso_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_core_java",
-      "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_ext_junit_java",
+      "//third_party/google-truth:google_truth_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/jni_zero:jni_zero_java",

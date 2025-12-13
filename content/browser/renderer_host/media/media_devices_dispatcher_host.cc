@@ -46,9 +46,9 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 #include "content/browser/media/capture/sub_capture_target_id_web_contents_helper.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 using blink::mojom::MediaDeviceType;
 
@@ -309,7 +309,7 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfig(
           render_frame_host_id_, std::move(config)));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 void MediaDevicesDispatcherHost::CloseFocusWindowOfOpportunity(
     const std::string& label) {
   media_stream_manager_->SetCapturedDisplaySurfaceFocus(
@@ -345,7 +345,7 @@ void MediaDevicesDispatcherHost::ProduceSubCaptureTargetId(
           render_frame_host_id_, type),
       std::move(callback));
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 void MediaDevicesDispatcherHost::SetPreferredSinkId(
     const std::string& hashed_sink_id,
@@ -421,9 +421,10 @@ void MediaDevicesDispatcherHost::AuthorizationCompleted(
 std::unique_ptr<AudioOutputAuthorizationHandler>
 MediaDevicesDispatcherHost::CreateAuthorizationHandler() {
   CHECK_CURRENTLY_ON(BrowserThread::IO);
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   return std::make_unique<AudioOutputAuthorizationHandler>(
       media_stream_manager_->audio_system(), media_stream_manager_,
-      render_frame_host_id_.child_id);
+      render_frame_host_id_.child_id.GetUnsafeValue());
 }
 
 void MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities(
@@ -630,13 +631,6 @@ void MediaDevicesDispatcherHost::OnEnumeratedAudioOutputDevices(
     const MediaDeviceEnumeration& enumeration) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (enumeration.empty()) {
-    auto result = blink::mojom::SelectAudioOutputResult::New();
-    result->status = blink::mojom::AudioOutputStatus::kNoDevices;
-    std::move(select_audio_output_callback_).Run(std::move(result));
-    return;
-  }
-
   if (!hashed_device_id.empty()) {
     for (const auto& device_info :
          enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]) {
@@ -817,7 +811,7 @@ void MediaDevicesDispatcherHost::FinalizeGetAudioInputCapabilities() {
 }
 
 void MediaDevicesDispatcherHost::ReceivedBadMessage(
-    int render_process_id,
+    ChildProcessId render_process_id,
     bad_message::BadMessageReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -829,7 +823,7 @@ void MediaDevicesDispatcherHost::ReceivedBadMessage(
 }
 
 void MediaDevicesDispatcherHost::SetBadMessageCallbackForTesting(
-    base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+    base::RepeatingCallback<void(ChildProcessId, bad_message::BadMessageReason)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!bad_message_callback_for_testing_);
@@ -838,7 +832,8 @@ void MediaDevicesDispatcherHost::SetBadMessageCallbackForTesting(
 
 void MediaDevicesDispatcherHost::SetCaptureHandleConfigCallbackForTesting(
     base::RepeatingCallback<
-        void(int, int, blink::mojom::CaptureHandleConfigPtr)> callback) {
+        void(ChildProcessId, int, blink::mojom::CaptureHandleConfigPtr)>
+        callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!capture_handle_config_callback_for_testing_);
   capture_handle_config_callback_for_testing_ = std::move(callback);

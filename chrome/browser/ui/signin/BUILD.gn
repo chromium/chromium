@@ -25,6 +25,7 @@ source_set("signin") {
     "//chrome/common",
     "//components/signin/public/base",
     "//components/sync/base",
+    "//ui/base/interaction",
     "//url",
   ]
 
@@ -64,6 +65,7 @@ source_set("impl") {
     "//base",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",
@@ -75,9 +77,11 @@ source_set("impl") {
     # TODO(crubug.com/430804948): This dependency is needed because
     # `signin_view_controller.cc` includes `signin_intercept_first_run_experience_dialog.h`,
     # temporarily built from profiles:impl, due to a circular dependency.
+    "//chrome/browser/signin:signin_promo",
     "//chrome/browser/ui/profiles:impl",
     "//chrome/browser/ui/signin",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/webui/signin",
     "//chrome/common",
     "//components/prefs",
@@ -88,7 +92,7 @@ source_set("impl") {
     "//components/sync/service",
     "//content/public/browser",
     "//google_apis",
-    "//ui/base",
+    "//ui/base/interaction",
     "//url",
   ]
 
@@ -106,8 +110,10 @@ source_set("impl") {
 
     deps += [
       "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/signin:signin_promo",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/web_applications",
       "//components/pref_registry",
       "//components/user_education/common",
     ]
@@ -137,8 +143,10 @@ if (!is_android) {
         "//chrome/browser/ui:browser_element_identifiers",
         "//chrome/browser/ui:ui_features",
         "//chrome/browser/ui/browser_window",
+        "//chrome/browser/ui/extensions",
         "//chrome/browser/ui/hats",
         "//chrome/browser/ui/hats:test_support",
+        "//chrome/browser/ui/passwords:test_support",
         "//chrome/browser/ui/webui/signin:test_support_ui",
         "//chrome/test:test_support",
         "//chrome/test:test_support_ui",
@@ -164,6 +172,10 @@ if (!is_android) {
           "dice_migration_service_pixel_browsertest.cc",
         ]
         deps += [ "//chrome/browser/ui/toasts" ]
+
+        # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+        # enable the diagnostic by removing this line.
+        configs += [ "//build/config/compiler:no_exit_time_destructors" ]
       }
     }
   }
@@ -181,11 +193,12 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser/sync",
+      "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/webui/signin:test_support_ui",
-      "//chrome/test:sync_integration_test_support",
       "//chrome/test:test_support_ui",
       "//components/signin/public/base",
       "//components/signin/public/base:signin_switches",
@@ -204,8 +217,9 @@ if (!is_android) {
         "signin_view_controller_browsertest.cc",
       ]
       deps += [
-        "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation",
-        "//chrome/test:sync_integration_test_support",
+        "//chrome/browser/ui/toasts/api:toasts",
+        "//chrome/browser/ui/webui/signin/signout_confirmation",
+        "//chrome/browser/web_applications:web_applications_test_support",
         "//chrome/test:test_support",
         "//components/sync:test_support",
       ]
@@ -213,11 +227,15 @@ if (!is_android) {
 
     if (!is_chromeos) {
       sources += [
+        "account_settings_page_pixel_browsertest.cc",
         "chrome_signout_confirmation_prompt_browsertest.cc",
         "cookie_clear_on_exit_migration_notice_browsertest.cc",
       ]
 
-      deps += [ "//chrome/browser/content_settings:content_settings_factory" ]
+      deps += [
+        "//chrome/browser/content_settings:content_settings_factory",
+        "//chrome/browser/profiles/batch_upload:test_support",
+      ]
     }
   }
 }

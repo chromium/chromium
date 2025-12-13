@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Bu kengaytma <ph name="KEY_PATH" /> kalit fayliga ega. Bu nomaqbul bo‘lishi mumkin.</translation>
 <translation id="5486326529110362464">Yopiq kalit uchun qiymat kiritilishi shart.</translation>
+<translation id="5707185214361380026">Kengaytmani bu yerdan yuklab bo‘lmadi:</translation>
 <translation id="5972529113578162692">Ushbu kompyuterda “<ph name="EXTENSION_NAME" />” kengaytmasini o‘chirish administrator tomonidan taqiqlangan.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_ID" /> (seriya raqami: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">Kengaytmani yuklab olishda xatolik yuz berdi</translation>
 <translation id="6322279351188361895">Yopiq kalitni o‘qib bo‘lmadi.</translation>
 <translation id="6391538222494443604">Joylashtiriladigan katalog mavjud bo‘lishi kerak.</translation>
 <translation id="641087317769093025">Kengaytmani arxivdan chiqarib bo‘lmadi</translation>

@@ -41,7 +41,7 @@
 namespace ash::input_method {
 namespace {
 
-const char* kWorkspaceDomainsWithPathDenylist[][2] = {
+constexpr const char* kWorkspaceDomainsWithPathDenylist[][2] = {
     {"calendar.google", ""}, {"docs.google", ""},      {"drive.google", ""},
     {"keep.google", ""},     {"mail.google", "/chat"}, {"mail.google", "/mail"},
     {"meet.google", ""},     {"script.google", ""},    {"sites.google", ""},
@@ -198,6 +198,7 @@ bool IsAppAllowed(std::string_view app_id) {
           extension_misc::kGoogleSlidesDemoAppId,
           ash::kGmailAppId,
           ash::kGoogleChatAppId,
+          ash::kOldGoogleChatAppId,
           ash::kGoogleMeetAppId,
           ash::kGoogleDocsAppId,
           ash::kGoogleSlidesAppId,
@@ -220,7 +221,8 @@ std::vector<std::string> GetAllowedInputMethodEngines() {
 
   // Loads allowed imes from field trials
   if (auto parsed = base::JSONReader::Read(
-          base::GetFieldTrialParamValue(kExperimentName, kImeAllowlistLabel));
+          base::GetFieldTrialParamValue(kExperimentName, kImeAllowlistLabel),
+          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       parsed.has_value() && parsed->is_list()) {
     for (const auto& item : parsed->GetList()) {
       if (item.is_string()) {
@@ -380,6 +382,10 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
     blocked_reasons.push_back(EditorBlockedReason::kBlockedBySetting);
   }
 
+  if (!context_->is_selection_valid()) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByInvalidSelection);
+  }
+
   if (!IsTriggerableFromTextLength(context_->selected_text_length())) {
     blocked_reasons.push_back(EditorBlockedReason::kBlockedByTextLength);
   }
@@ -440,6 +446,7 @@ bool EditorSwitch::CanBeTriggered() const {
                  chromeos::editor_menu::EditorEnterprisePolicy::kDisallowed) &&
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&
+         context_->is_selection_valid() &&
          context_->selected_text_length() <= kTextLengthMaxLimit &&
          (!base::FeatureList::IsEnabled(features::kOrcaOnlyInEnglishLocales) ||
           IsSystemInEnglishLanguage());

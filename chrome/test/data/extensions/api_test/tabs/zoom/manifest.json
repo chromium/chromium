@@ -1,0 +1,12 @@
+{
+  "name": "Tabs zoom test extension",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "A simple extension to test the chrome.tabs zoom API.",
+  "permissions": [
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "worker.js"
+  }
+}

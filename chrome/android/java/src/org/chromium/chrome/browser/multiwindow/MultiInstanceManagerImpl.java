@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.DisplayManager.DisplayListener;
-import android.util.Pair;
 import android.view.Display;
 
 import androidx.annotation.VisibleForTesting;
@@ -24,23 +23,28 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
+import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
@@ -56,7 +60,9 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.display.DisplayAndroidManager;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Manages multi-instance mode for an associated activity. After construction, call {@link
@@ -72,7 +78,8 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
                 MultiWindowModeStateDispatcher.MultiWindowModeObserver,
                 DestroyObserver,
                 MenuOrKeyboardActionController.MenuOrKeyboardActionHandler,
-                TopResumedActivityChangedObserver {
+                TopResumedActivityChangedObserver,
+                StartStopWithNativeObserver {
 
     private @Nullable Boolean mMergeTabsOnResume;
 
@@ -263,6 +270,13 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {}
 
+    // StartStopWithNativeObserver implementation.
+    @Override
+    public void onStartWithNative() {}
+
+    @Override
+    public void onStopWithNative() {}
+
     @Override
     public void onPauseWithNative() {
         removeOtherCTAStateObserver();
@@ -327,17 +341,30 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
     @Override
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
-        if (id == org.chromium.chrome.R.id.move_to_other_window_menu_id) {
+        int appSource = fromMenu ? NewWindowAppSource.MENU : NewWindowAppSource.KEYBOARD_SHORTCUT;
+        if (id == R.id.move_to_other_window_menu_id) {
             TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
             if (tabModelOrchestrator == null) return true;
             TabModelSelector tabModelSelector = tabModelOrchestrator.getTabModelSelector();
             if (tabModelSelector == null) return true;
 
             Tab currentTab = tabModelSelector.getCurrentTab();
-            if (currentTab != null) moveTabToOtherWindow(currentTab);
+            if (currentTab != null) {
+                moveTabsToOtherWindow(Collections.singletonList(currentTab), appSource);
+            }
             return true;
-        } else if (id == org.chromium.chrome.R.id.new_window_menu_id) {
-            openNewWindow("MobileMenuNewWindow");
+        } else if (id == R.id.new_window_menu_id) {
+            openNewWindow("MobileMenuNewWindow", /* incognito= */ false, appSource);
+            return true;
+        } else if (id == R.id.new_incognito_window_menu_id) {
+            TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
+            if (tabModelOrchestrator == null) return true;
+            TabModelSelector tabModelSelector = tabModelOrchestrator.getTabModelSelector();
+            if (tabModelSelector == null) return true;
+            Profile profile = tabModelSelector.getCurrentModel().getProfile();
+            if (profile != null && IncognitoUtils.isIncognitoModeEnabled(profile)) {
+                openNewWindow("MobileMenuNewIncognitoWindow", /* incognito= */ true, appSource);
+            }
             return true;
         }
 
@@ -429,9 +456,9 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     }
 
     @Override
-    public void moveTabToOtherWindow(Tab tab) {
-        if (MultiWindowUtils.getInstanceCount() == 1) {
-            moveTabToNewWindow(tab);
+    public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
+        if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE) == 1) {
+            moveTabsToNewWindow(tabs, source);
             return;
         }
 
@@ -439,7 +466,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         if (intent == null) return;
 
         onMultiInstanceModeStarted();
-        ReparentingTask.from(tab)
+        ReparentingTabsTask.from(tabs)
                 .begin(
                         mActivity,
                         intent,
@@ -448,24 +475,54 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         RecordUserAction.record("MobileMenuMoveToOtherWindow");
     }
 
-    protected void openNewWindow(String umaAction) {
+    @Override
+    public @Nullable Intent createNewWindowIntent(boolean isIncognito) {
+        assert !isIncognito : "Opening an incognito window isn't supported";
         assert mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
-                || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
-                || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
+                        || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
+                        || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()
+                : "Current windowing mode doesn't support opening a new window";
 
         Intent intent = mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent();
-        if (intent == null) return;
+        if (intent == null) {
+            return null;
+        }
+
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
 
+        // Remove LAUNCH_ADJACENT flag if shouldOpenInAdjacentWindow() is false and if the Activity
+        // is in a full screen window.
+        if (!mActivity.isInMultiWindowMode() && !MultiWindowUtils.shouldOpenInAdjacentWindow()) {
+            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+        }
+
+        return intent;
+    }
+    // TODO(crbug.com/455922432): Clean up the umaAction param.
+    protected void openNewWindow(
+            String umaAction, boolean incognito, @NewWindowAppSource int source) {
+        Intent intent = createNewWindowIntent(incognito);
+        if (intent == null) {
+            return;
+        }
+
         onMultiInstanceModeStarted();
         mActivity.startActivity(intent);
+        RecordHistogram.recordEnumeratedHistogram(
+                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
+                source,
+                NewWindowAppSource.NUM_ENTRIES);
         RecordUserAction.record(umaAction);
     }
 
     @Override
-    public Pair<Integer, Integer> allocInstanceId(int windowId, int taskId, boolean preferNew) {
-        return Pair.create(0, InstanceAllocationType.DEFAULT); // Use a default index 0.
+    public AllocatedIdInfo allocInstanceId(
+            int windowId, int taskId, boolean preferNew, boolean isIncognitoIntent) {
+        return new AllocatedIdInfo(
+                0,
+                InstanceAllocationType.DEFAULT,
+                SupportedProfileType.MIXED); // Use a default index 0.
     }
 
     @Override
@@ -514,7 +571,9 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         TabGroupModelFilter filter =
                 selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
 
-        assumeNonNull(filter);
+        // Skip if there is no regular/normal windows.
+        if (filter == null) return;
+
         Profile profile = filter.getTabModel().getProfile();
         if (profile == null || !TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) return;
 

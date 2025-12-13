@@ -7,13 +7,17 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.net.ExperimentalOptionsTranslationTestUtil.assertJsonEquals;
 import static org.chromium.net.ExperimentalOptionsTranslationTestUtil.toTelephoneKeyboardSequence;
 
+import android.os.Build;
+
 import androidx.annotation.OptIn;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.jni_zero.JNINamespace;
 import org.junit.Test;
@@ -22,6 +26,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.DnsOptions.StaleDnsOptions;
 import org.chromium.net.ExperimentalOptionsTranslationTestUtil.MockCronetBuilderImpl;
+
+import java.time.Duration;
 
 @RunWith(AndroidJUnit4.class)
 @Batch(Batch.UNIT_TESTS)
@@ -321,6 +327,23 @@ public class ExperimentalOptionsTranslationTest {
         builder.build();
         assertJsonEquals(
                 "{\"QUIC\":{},\"AsyncDNS\":{},\"StaleDNS\":{}}",
+                mockBuilderImpl.mEffectiveExperimentalOptions);
+    }
+
+    @Test
+    @SmallTest
+    public void testExperimentalOptions_setIdleConnectionTimeout() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+
+        var mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
+        new CronetEngine.Builder(mockBuilderImpl)
+                .setQuicOptions(
+                        QuicOptions.builder()
+                                .setIdleConnectionTimeout(Duration.ofSeconds(42))
+                                .build())
+                .build();
+        assertJsonEquals(
+                "{\"QUIC\":{\"idle_connection_timeout_seconds\": 42}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 }

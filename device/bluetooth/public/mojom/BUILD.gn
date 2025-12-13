@@ -56,7 +56,7 @@ mojom("mojom") {
       types = [
         {
           mojom = "bluetooth.mojom.UUID"
-          cpp = "::WTF::String"
+          cpp = "::blink::String"
           nullable_is_same_type = true
         },
       ]

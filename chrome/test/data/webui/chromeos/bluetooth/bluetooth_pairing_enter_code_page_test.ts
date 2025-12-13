@@ -42,7 +42,7 @@ suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
     assertEquals(
         bluetoothPairingEnterCodePage.i18n(
             'bluetoothPairingEnterKeys', deviceName),
-        message!.textContent!.trim());
+        message!.textContent.trim());
 
     const defaultKeyClass = 'center key ';
     const nextKeyClass = defaultKeyClass + 'next';
@@ -97,9 +97,9 @@ suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
     let keys = getKeys();
     assertTrue(!!keys.length);
     assertTrue(keys.length >= 6);
-    assertEquals(keys[0]!.textContent!.trim(), '1');
-    assertEquals(keys[1]!.textContent!.trim(), '2');
-    assertEquals(keys[5]!.textContent!.trim(), '6');
+    assertEquals(keys[0]!.textContent.trim(), '1');
+    assertEquals(keys[1]!.textContent.trim(), '2');
+    assertEquals(keys[5]!.textContent.trim(), '6');
 
     bluetoothPairingEnterCodePage.code = '987654';
     await flushAsync();
@@ -107,8 +107,8 @@ suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
     keys = getKeys();
     assertTrue(!!keys.length);
     assertTrue(keys.length >= 6);
-    assertEquals(keys[0]!.textContent!.trim(), '9');
-    assertEquals(keys[1]!.textContent!.trim(), '8');
-    assertEquals(keys[5]!.textContent!.trim(), '4');
+    assertEquals(keys[0]!.textContent.trim(), '9');
+    assertEquals(keys[1]!.textContent.trim(), '8');
+    assertEquals(keys[5]!.textContent.trim(), '4');
   });
 });

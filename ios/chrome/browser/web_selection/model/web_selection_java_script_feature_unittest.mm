@@ -23,7 +23,7 @@
 #import "testing/platform_test.h"
 
 namespace {
-NSString* kPageHTML =
+NSString* const kPageHTML =
     @"<html>"
      "  <body>"
      "    This text contains a <span id='selectid'>selection</span>."
@@ -101,10 +101,6 @@ class WebSelectionJavaScriptFeatureTest : public PlatformTest {
 
 // Tests that no selection is returned if nothing is selected.
 TEST_F(WebSelectionJavaScriptFeatureTest, GetNoSelection) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Script is only injected on iOS16+.
-    return;
-  }
   WebSelectionJavaScriptFeature::GetInstance()->GetSelectedText(web_state());
   task_environment_.AdvanceClock(base::Seconds(1));
   task_environment_.RunUntilIdle();
@@ -115,10 +111,6 @@ TEST_F(WebSelectionJavaScriptFeatureTest, GetNoSelection) {
 
 // Tests that selection in main frame is returned correctly.
 TEST_F(WebSelectionJavaScriptFeatureTest, GetSelectionMainFrame) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Script is only injected on iOS16+.
-    return;
-  }
   web::test::ExecuteJavaScript(@"window.getSelection().selectAllChildren("
                                 "document.getElementById('selectid'));",
                                web_state());
@@ -138,10 +130,6 @@ TEST_F(WebSelectionJavaScriptFeatureTest, GetSelectionMainFrame) {
 
 // Tests that selection in iframe is returned correctly.
 TEST_F(WebSelectionJavaScriptFeatureTest, GetSelectionIFrame) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Script is only injected on iOS16+.
-    return;
-  }
   web::test::ExecuteJavaScript(
       @"subWindow = document.getElementById('frame').contentWindow;"
        "subWindow.document.getSelection().selectAllChildren("

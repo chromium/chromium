@@ -135,6 +135,19 @@ float MaxAudioBufferSampleRate() {
   return 768000;
 }
 
+bool IsValidRenderQuantumSize(uint32_t render_quantum_size, float sample_rate) {
+  return render_quantum_size >= MinRenderQuantumSize() &&
+         render_quantum_size <= MaxRenderQuantumSize(sample_rate);
+}
+
+uint32_t MinRenderQuantumSize() {
+  return 1;
+}
+
+uint32_t MaxRenderQuantumSize(float sample_rate) {
+  return static_cast<uint32_t>(6 * sample_rate);
+}
+
 const std::string GetSinkIdForTracing(
     blink::WebAudioSinkDescriptor sink_descriptor) {
   std::string sink_id;

@@ -372,48 +372,37 @@ using tab_groups::SharingState;
 
   // Destructive actions.
   NSMutableArray<UIAction*>* destructiveActions = [[NSMutableArray alloc] init];
-  if (IsTabGroupSyncEnabled()) {
-    [destructiveActions
-        addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
-          [weakSelf.contextMenuDelegate closeTabGroup:weakGroup
-                                            incognito:incognito];
-        }]];
-    if (!incognito) {
-      switch (sharingState) {
-        case SharingState::kNotShared: {
-          [destructiveActions
-              addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
-                                                   incognito:incognito
-                                                  sourceView:cell];
-              }]];
-          break;
-        }
-        case SharingState::kShared: {
-          [destructiveActions
-              addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
-                [weakSelf.contextMenuDelegate leaveSharedTabGroup:weakGroup
-                                                       sourceView:cell];
-              }]];
-          break;
-        }
-        case SharingState::kSharedAndOwned: {
-          [destructiveActions
-              addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
-                [weakSelf.contextMenuDelegate deleteSharedTabGroup:weakGroup
-                                                        sourceView:cell];
-              }]];
-          break;
-        }
+  [destructiveActions addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+                        [weakSelf.contextMenuDelegate closeTabGroup:weakGroup
+                                                          incognito:incognito];
+                      }]];
+  if (!incognito) {
+    switch (sharingState) {
+      case SharingState::kNotShared: {
+        [destructiveActions
+            addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+              [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
+                                                sourceView:cell];
+            }]];
+        break;
+      }
+      case SharingState::kShared: {
+        [destructiveActions
+            addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+              [weakSelf.contextMenuDelegate leaveSharedTabGroup:weakGroup
+                                                     sourceView:cell];
+            }]];
+        break;
+      }
+      case SharingState::kSharedAndOwned: {
+        [destructiveActions
+            addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
+              [weakSelf.contextMenuDelegate deleteSharedTabGroup:weakGroup
+                                                      sourceView:cell];
+            }]];
+        break;
       }
     }
-  } else {
-    [destructiveActions
-        addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-          [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
-                                             incognito:incognito
-                                            sourceView:cell];
-        }]];
   }
   [menuElements addObject:[UIMenu menuWithTitle:@""
                                           image:nil

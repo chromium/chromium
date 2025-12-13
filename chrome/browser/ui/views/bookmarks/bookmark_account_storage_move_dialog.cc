@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -239,7 +240,8 @@ void ShowDialog(Browser* browser,
         index, dialog_type, std::move(closed_callback));
     profiles::OpenBrowserWindowForProfile(
         std::move(on_browser_ready), /*always_create=*/false,
-        /*is_new_profile=*/false, browser->GetProfile()->GetOriginalProfile());
+        /*is_new_profile=*/false, /*open_command_line_urls=*/false,
+        browser->GetProfile()->GetOriginalProfile());
     return;
   }
 

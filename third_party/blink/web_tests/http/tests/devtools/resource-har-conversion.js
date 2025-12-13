@@ -11,7 +11,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   TestRunner.addResult(`Tests conversion of Inspector's resource representation into HAR format.\n`);
 
-  await TestRunner.NetworkAgent.setCacheDisabled(true);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true});
   await TestRunner.reloadPagePromise();
   await TestRunner.evaluateInPagePromise(`
       var xhr = new XMLHttpRequest();

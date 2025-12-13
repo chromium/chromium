@@ -65,7 +65,8 @@ IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, DoNothingMethodsTest) {
   history::HistoryAddPageArgs should_add_args(
       GURL(), base::Time::Now(), 0, 0, std::nullopt, GURL(),
       history::RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
-      history::SOURCE_SYNCED, false, true);
+      history::SOURCE_SYNCED, history::VisitResponseCodeCategory::kNot404,
+      false, true);
   test_web_contents_delegate_->NavigationStateChanged(
       nullptr, content::InvalidateTypes(0));
   test_web_contents_delegate_->ActivateContents(nullptr);

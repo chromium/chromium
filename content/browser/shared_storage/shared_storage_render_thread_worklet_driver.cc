@@ -7,6 +7,7 @@
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/renderer.mojom.h"
+#include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom.h"

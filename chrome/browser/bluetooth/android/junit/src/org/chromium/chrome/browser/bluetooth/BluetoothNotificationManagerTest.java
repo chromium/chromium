@@ -13,9 +13,11 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -38,6 +40,7 @@ public class BluetoothNotificationManagerTest {
     private static final String TEST_URL_FORMATTED =
             UrlFormatter.formatUrlForSecurityDisplay(TEST_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private MockNotificationManagerProxy mMockNotificationManager;
     private final BluetoothNotificationManagerDelegate mDelegate =
             new BluetoothNotificationManagerDelegate() {
@@ -96,8 +99,6 @@ public class BluetoothNotificationManagerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mMockNotificationManager = new MockNotificationManagerProxy();
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
         mManager = new BluetoothNotificationManager(mDelegate);

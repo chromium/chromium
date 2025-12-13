@@ -36,7 +36,7 @@ void AddIgnoredKeyMessage(ConsoleLogger& logger,
                           const String& reason) {
   logger.AddConsoleMessage(
       mojom::ConsoleMessageSource::kOther, mojom::ConsoleMessageLevel::kWarning,
-      "Ignored an import map key \"" + key + "\": " + reason);
+      StrCat({"Ignored an import map key \"", key, "\": ", reason}));
 }
 
 void AddIgnoredValueMessage(ConsoleLogger& logger,
@@ -44,7 +44,7 @@ void AddIgnoredValueMessage(ConsoleLogger& logger,
                             const String& reason) {
   logger.AddConsoleMessage(
       mojom::ConsoleMessageSource::kOther, mojom::ConsoleMessageLevel::kWarning,
-      "Ignored an import map value of \"" + key + "\": " + reason);
+      StrCat({"Ignored an import map value of \"", key, "\": ", reason}));
 }
 
 // <specdef
@@ -97,7 +97,8 @@ KURL NormalizeValue(const String& key,
       //
       // <spec step="2.5.1">Report a warning to the console that the address was
       // invalid.</spec>
-      AddIgnoredValueMessage(logger, key, "Invalid URL: " + value_string);
+      AddIgnoredValueMessage(logger, key,
+                             StrCat({"Invalid URL: ", value_string}));
 
       // <spec step="2.5.2">Set normalized[specifierKey] to null.</spec>
       //
@@ -105,7 +106,8 @@ KURL NormalizeValue(const String& key,
       return NullURL();
 
     case ParsedSpecifier::Type::kBare:
-      AddIgnoredValueMessage(logger, key, "Bare specifier: " + value_string);
+      AddIgnoredValueMessage(logger, key,
+                             StrCat({"Bare specifier: ", value_string}));
       return NullURL();
 
     case ParsedSpecifier::Type::kURL:
@@ -117,8 +119,9 @@ KURL NormalizeValue(const String& key,
         // specifierKey ended in a slash, so must the address.</spec>
         AddIgnoredValueMessage(
             logger, key,
-            "Since specifierKey ended in a slash, so must the address: " +
-                value_string);
+            StrCat(
+                {"Since specifierKey ended in a slash, so must the address: ",
+                 value_string}));
 
         // <spec step="2.6.2">Set normalized[specifierKey] to null.</spec>
         //
@@ -149,8 +152,8 @@ void MergeModuleSpecifierMaps(ImportMap::SpecifierMap& old_map,
       // developer console.
       auto* message = MakeGarbageCollected<ConsoleMessage>(
           ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
-          "An import map rule for specifier '" + entry.key +
-              "' was removed, as it conflicted with an existing rule.");
+          StrCat({"An import map rule for specifier '", entry.key,
+                  "' was removed, as it conflicted with an existing rule."}));
       logger.AddConsoleMessage(message,
                                /*discard_duplicates=*/true);
       // 2.1.2. Continue.
@@ -274,11 +277,11 @@ ImportMap* ImportMap::Parse(const String& input,
         // potentialSpecifierMap is not a map, then throw a TypeError indicating
         // that the value of the scope with prefix scopePrefix must be a JSON
         // object.</spec>
-        *error_to_rethrow = ImportMapError(
-            ImportMapError::Type::kTypeError,
-            "Failed to parse import map: the value of the scope with prefix "
-            "\"" +
-                entry.first + "\" must be a JSON object.");
+        *error_to_rethrow =
+            ImportMapError(ImportMapError::Type::kTypeError,
+                           StrCat({"Failed to parse import map: the value of "
+                                   "the scope with prefix \"",
+                                   entry.first, "\" must be a JSON object."}));
         return MakeGarbageCollected<ImportMap>();
       }
 
@@ -292,10 +295,10 @@ ImportMap* ImportMap::Parse(const String& input,
       if (!prefix_url.IsValid()) {
         // <spec label="sort-and-normalize-scopes" step="2.3.1">Report a warning
         // to the console that the scope prefix URL was not parseable.</spec>
-        context.AddConsoleMessage(
-            mojom::ConsoleMessageSource::kOther,
-            mojom::ConsoleMessageLevel::kWarning,
-            "Ignored scope \"" + entry.first + "\": not parsable as a URL.");
+        context.AddConsoleMessage(mojom::ConsoleMessageSource::kOther,
+                                  mojom::ConsoleMessageLevel::kWarning,
+                                  StrCat({"Ignored scope \"", entry.first,
+                                          "\": not parsable as a URL."}));
 
         // <spec label="sort-and-normalize-scopes" step="2.3.2">Continue.</spec>
         continue;
@@ -572,8 +575,9 @@ std::optional<KURL> ImportMap::ResolveImportsMatch(
   // <spec step="1.2">... either asURL is null, or asURL is special</spec>
   if (parsed_specifier.GetType() == ParsedSpecifier::Type::kURL &&
       !SchemeRegistry::IsSpecialScheme(parsed_specifier.GetUrl().Protocol())) {
-    *debug_message = "Import Map: \"" + key +
-                     "\" skips prefix match because of non-special URL scheme";
+    *debug_message =
+        StrCat({"Import Map: \"", key,
+                "\" skips prefix match because of non-special URL scheme"});
 
     return std::nullopt;
   }
@@ -584,8 +588,9 @@ std::optional<KURL> ImportMap::ResolveImportsMatch(
   }
 
   // <spec step="2">Return null.</spec>
-  *debug_message = "Import Map: \"" + key +
-                   "\" matches with no entries and thus is not mapped.";
+  *debug_message =
+      StrCat({"Import Map: \"", key,
+              "\" matches with no entries and thus is not mapped."});
   return std::nullopt;
 }
 
@@ -605,8 +610,9 @@ KURL ImportMap::ResolveImportsMatchInternal(const String& key,
   // indicating that resolution of specifierKey was blocked by a null
   // entry.</spec>
   if (!matched->value.IsValid()) {
-    *debug_message = "Import Map: \"" + key + "\" matches with \"" +
-                     matched->key + "\" but is blocked by a null value";
+    *debug_message =
+        StrCat({"Import Map: \"", key, "\" matches with \"", matched->key,
+                "\" but is blocked by a null value"});
     return NullURL();
   }
 
@@ -624,9 +630,9 @@ KURL ImportMap::ResolveImportsMatchInternal(const String& key,
   // that resolution of specifierKey was blocked due to a URL parse
   // failure.</spec>
   if (!url.IsValid()) {
-    *debug_message = "Import Map: \"" + key + "\" matches with \"" +
-                     matched->key +
-                     "\" but is blocked due to relative URL parse failure";
+    *debug_message =
+        StrCat({"Import Map: \"", key, "\" matches with \"", matched->key,
+                "\" but is blocked due to relative URL parse failure"});
     return NullURL();
   }
 
@@ -635,14 +641,16 @@ KURL ImportMap::ResolveImportsMatchInternal(const String& key,
   // resolution of normalizedSpecifier was blocked due to it backtracking above
   // its prefix specifierKey.</spec>
   if (!url.GetString().StartsWith(matched->value.GetString())) {
-    *debug_message = "Import Map: \"" + key + "\" matches with \"" +
-                     matched->key + "\" but is blocked due to backtracking";
+    *debug_message =
+        StrCat({"Import Map: \"", key, "\" matches with \"", matched->key,
+                "\" but is blocked due to backtracking"});
     return NullURL();
   }
 
   // <spec step="1.2.9">Return url.</spec>
-  *debug_message = "Import Map: \"" + key + "\" matches with \"" +
-                   matched->key + "\" and is mapped to " + url.ElidedString();
+  *debug_message =
+      StrCat({"Import Map: \"", key, "\" matches with \"", matched->key,
+              "\" and is mapped to ", url.ElidedString()});
   return url;
 }
 
@@ -706,13 +714,17 @@ void ImportMap::MergeExistingAndNewImportMaps(
   // the algorithm's mutations directly on them. That's fine because the move
   // guarantees that no one will use this map for anything else.
   ImportMap::ScopesMap& new_import_map_scopes = new_import_map->scopes_map_;
+  ImportMap::ScopesVector& new_import_map_scopes_vector =
+      new_import_map->scopes_vector_;
   ImportMap::SpecifierMap& new_import_map_imports = new_import_map->imports_;
   ImportMap::IntegrityMap& new_import_map_integrity =
       new_import_map->integrity_;
 
   // 3. For each scopePrefix → scopeImports of newImportMapScopes:
-  for (auto& scope : new_import_map_scopes) {
-    ImportMap::SpecifierMap& scope_imports = scope.value;
+  for (auto& scope : new_import_map_scopes_vector) {
+    ImportMap::ScopesMap::iterator it = new_import_map_scopes.find(scope);
+    CHECK(it != new_import_map_scopes.end());
+    ImportMap::SpecifierMap& scope_imports = it->value;
     // 3.1. For each pair of global's resolved module set:
     //
     // 3.1.1. If pair's referring script does not start with scopePrefix,
@@ -729,7 +741,7 @@ void ImportMap::MergeExistingAndNewImportMaps(
     // already exist in that scope. We grab the set of specifier prefixes using
     // the current scope and then iterate over the scope's imports, removing any
     // specifiers whose prefix is in the set.
-    const auto& current_set_it = scoped_resolved_module_map.find(scope.key);
+    const auto& current_set_it = scoped_resolved_module_map.find(scope);
     if (current_set_it != scoped_resolved_module_map.end()) {
       const auto& current_resolved_set = current_set_it->value;
       Vector<AtomicString> specifiers_to_remove;
@@ -745,9 +757,9 @@ void ImportMap::MergeExistingAndNewImportMaps(
         auto* message = MakeGarbageCollected<ConsoleMessage>(
             ConsoleMessage::Source::kJavaScript,
             ConsoleMessage::Level::kWarning,
-            "An import map scope rule for specifier '" + specifier +
-                "' was removed, as it conflicted with already resolved module "
-                "specifiers.");
+            StrCat({"An import map scope rule for specifier '", specifier,
+                    "' was removed, as it conflicted with already resolved "
+                    "module specifiers."}));
         logger.AddConsoleMessage(message, /*discard_duplicates=*/true);
         // 3.1.2.1.2. Remove scopeImports[specifier].
         scope_imports.erase(specifier);
@@ -758,7 +770,7 @@ void ImportMap::MergeExistingAndNewImportMaps(
     // oldImportMap's scopes[scopePrefix] to the result of merging module
     // specifier maps, given scopeImports and oldImportMap's
     // scopes[scopePrefix].
-    const auto old_scope_specifier_map_it = scopes_map_.find(scope.key);
+    const auto old_scope_specifier_map_it = scopes_map_.find(scope);
     if (old_scope_specifier_map_it != scopes_map_.end()) {
       ImportMap::SpecifierMap& old_scope_specifier_map =
           old_scope_specifier_map_it->value;
@@ -766,8 +778,8 @@ void ImportMap::MergeExistingAndNewImportMaps(
     } else {
       // 3.3 Otherwise, set oldImportMap's scopes[scopePrefix] to
       // scopeImports.
-      scopes_map_.insert(scope.key, std::move(scope_imports));
-      scopes_vector_.push_back(scope.key);
+      scopes_map_.insert(scope, std::move(scope_imports));
+      scopes_vector_.push_back(scope);
     }
   }
 
@@ -777,6 +789,7 @@ void ImportMap::MergeExistingAndNewImportMaps(
     // 4.2 Set oldImportMap's integrity[url] to integrity.
     // Reversing the order for efficiency reasons. `insert` does nothing if the
     // key already exists.
+    AtomicString url_string = url.GetString();
     auto iter = integrity_.insert(std::move(url), new_integrity_value);
     // 4.1 If url exists in oldImportMap's integrity, then:
     if (!iter.is_new_entry) {
@@ -784,9 +797,9 @@ void ImportMap::MergeExistingAndNewImportMaps(
       // developer console.
       auto* message = MakeGarbageCollected<ConsoleMessage>(
           ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
-          "An import map integrity rule for url '" + url.GetString() +
-              "' was removed, as it conflicted with already defined integrity "
-              "rules.");
+          StrCat({"An import map integrity rule for url '", url_string,
+                  "' was removed, as it conflicted with already defined "
+                  "integrity rules."}));
       logger.AddConsoleMessage(message, /*discard_duplicates=*/true);
       // 4.1.2 Continue.
     }
@@ -809,9 +822,9 @@ void ImportMap::MergeExistingAndNewImportMaps(
     // developer console.
     auto* message = MakeGarbageCollected<ConsoleMessage>(
         ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
-        "An import map rule for specifier '" + specifier +
-            "' was removed, as it conflicted with already resolved module "
-            "specifiers.");
+        StrCat({"An import map rule for specifier '", specifier,
+                "' was removed, as it conflicted with already resolved module "
+                "specifiers."}));
     logger.AddConsoleMessage(message, /*discard_duplicates=*/true);
     // 5.2. Remove newImportMapImports[specifier].
     new_import_map_imports.erase(specifier);
@@ -819,6 +832,9 @@ void ImportMap::MergeExistingAndNewImportMaps(
   // 6. Set oldImportMap's imports to the result of merge module specifier
   // maps, given newImportMapImports and oldImportMap's imports.
   MergeModuleSpecifierMaps(imports_, new_import_map_imports, logger);
+
+  // Re-sort scopes_vector_ to ensure proper ordering after merging.
+  InitializeScopesVector();
 }
 
 // To be called when scopes_map_ is set/updated to make scopes_vector_ and

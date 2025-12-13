@@ -31,8 +31,6 @@
 
 namespace performance_manager {
 
-using performance_scenarios::MatchingScenarioObserver;
-using performance_scenarios::PerformanceScenarioObserver;
 using performance_scenarios::PerformanceScenarioObserverList;
 using performance_scenarios::ScenarioScope;
 
@@ -91,15 +89,11 @@ struct ScenarioTraits<LoadingScenario> {
 
   void NotifyProcessObservers(LoadingScenario old_scenario,
                               LoadingScenario new_scenario) const {
-    state_ptr->observers().Notify(
-        &PerformanceScenarioObserver::OnLoadingScenarioChanged,
-        ScenarioScope::kCurrentProcess, old_scenario, new_scenario);
     InputScenario input_scenario =
         state_ptr->shared_state().ReadOnlyRef().input.load(
             std::memory_order_relaxed);
-    state_ptr->matching_observers().Notify(
-        &MatchingScenarioObserver::NotifyIfScenarioMatchChanged,
-        ScenarioScope::kCurrentProcess, new_scenario, input_scenario);
+    state_ptr->process_observer_list().NotifyScenariosChanged(
+        old_scenario, new_scenario, input_scenario, input_scenario);
   }
 
   raw_ptr<PerformanceScenarioData> state_ptr;
@@ -124,15 +118,11 @@ struct ScenarioTraits<InputScenario> {
 
   void NotifyProcessObservers(InputScenario old_scenario,
                               InputScenario new_scenario) const {
-    state_ptr->observers().Notify(
-        &PerformanceScenarioObserver::OnInputScenarioChanged,
-        ScenarioScope::kCurrentProcess, old_scenario, new_scenario);
     LoadingScenario loading_scenario =
         state_ptr->shared_state().ReadOnlyRef().loading.load(
             std::memory_order_relaxed);
-    state_ptr->matching_observers().Notify(
-        &MatchingScenarioObserver::NotifyIfScenarioMatchChanged,
-        ScenarioScope::kCurrentProcess, loading_scenario, new_scenario);
+    state_ptr->process_observer_list().NotifyScenariosChanged(
+        loading_scenario, loading_scenario, old_scenario, new_scenario);
   }
 
   raw_ptr<PerformanceScenarioData> state_ptr;

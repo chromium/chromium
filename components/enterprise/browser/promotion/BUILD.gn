@@ -1,0 +1,31 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("prefs") {
+  sources = [
+    "promotion_prefs.cc",
+    "promotion_prefs.h",
+  ]
+  deps = [
+    "//base",
+    "//components/policy/proto",
+    "//components/pref_registry",
+  ]
+}
+
+source_set("promotion") {
+  sources = [
+    "promotion_eligibility_checker.cc",
+    "promotion_eligibility_checker.h",
+  ]
+  public_deps = [ ":prefs" ]
+
+  deps = [
+    "//base",
+    "//components/enterprise/browser/identifiers",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+  ]
+}

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 #include <string>
 #include <tuple>
@@ -19,6 +14,7 @@
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -765,13 +761,14 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
 
   // Second logical window
   for (int task_id = 3; task_id <= 5; task_id++) {
-    app_host()->OnTaskCreated(
-        task_id, info->package_name, info->activity, info->name,
-        CreateIntentUriWithShelfGroupAndLogicalWindow(
-            kTestShelfGroups[task_id], kTestLogicalWindows[task_id]),
-        0 /* session_id */);
+    app_host()->OnTaskCreated(task_id, info->package_name, info->activity,
+                              info->name,
+                              CreateIntentUriWithShelfGroupAndLogicalWindow(
+                                  UNSAFE_TODO(kTestShelfGroups[task_id]),
+                                  UNSAFE_TODO(kTestLogicalWindows[task_id])),
+                              0 /* session_id */);
     app_host()->OnTaskDescriptionChanged(
-        task_id, kTestWindowTitles[task_id],
+        task_id, UNSAFE_TODO(kTestWindowTitles[task_id]),
         arc_instance()->GenerateIconResponse(kGeneratedIconSize,
                                              false /* app_icon */),
         0, 0);

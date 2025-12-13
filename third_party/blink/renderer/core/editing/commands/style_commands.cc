@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_font_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -321,6 +322,31 @@ bool StyleCommands::ExecuteToggleStyleInList(LocalFrame& frame,
 
   const String new_style =
       ComputeToggleStyleInList(*selection_style, property_id, value);
+
+  // When toggling off a decoration in an empty element, clear the typing style
+  // completely rather than setting it to "none". This prevents stale decoration
+  // properties from being applied to subsequently typed text.
+  if (RuntimeEnabledFeatures::
+          FixStrikethroughToggleInEmptyContentEditableEnabled() &&
+      new_style == "none" &&
+      property_id == CSSPropertyID::kWebkitTextDecorationsInEffect) {
+    const VisibleSelection& selection =
+        frame.Selection().ComputeVisibleSelectionInDOMTree();
+
+    if (selection.IsCaret()) {
+      Element* element = AssociatedElementOf(selection.Start());
+      if (element && !element->HasChildren()) {
+        if (EditingStyle* typing_style = frame.GetEditor().TypingStyle()) {
+          // Remove all decoration-related properties to ensure clean state.
+          // Both -webkit-text-decorations-in-effect and text-decoration-line
+          // can contribute to decorations being applied.
+          typing_style->Style()->RemoveProperty(property_id);
+          typing_style->Style()->RemoveProperty(CSSPropertyID::kTextDecoration);
+          return true;
+        }
+      }
+    }
+  }
 
   // TODO(editing-dev): We shouldn't be having to convert new style into text.
   // We should have setPropertyCSSValue.

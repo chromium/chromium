@@ -2,5 +2,9 @@ specific_include_rules = {
   # Allow access from test file.
   "page_info_unittest\.cc": [
     "+chrome/browser/ui/views",
+    # Allow access from /chrome/browser/ui/page_info/page_info_unittest.cc
+    # for PageInfoRelatedWebsiteSetsTest tests.
+    # TODO(crbug.com/40145057): remove deprecated RWS and this include.
+    "+components/privacy_sandbox/privacy_sandbox_prefs.h",
   ]
 }

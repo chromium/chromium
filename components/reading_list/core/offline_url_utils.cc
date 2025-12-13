@@ -4,8 +4,10 @@
 
 #include "components/reading_list/core/offline_url_utils.h"
 
-#include "base/hash/md5.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "crypto/obsolete/md5.h"
 
 namespace {
 const base::FilePath::CharType kOfflineDirectory[] =
@@ -17,12 +19,16 @@ const base::FilePath::CharType kPDFFileName[] = FILE_PATH_LITERAL("file.pdf");
 
 namespace reading_list {
 
+std::string Md5AsHexForOfflineUrlUtils(std::string_view url) {
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(url));
+}
+
 base::FilePath OfflineRootDirectoryPath(const base::FilePath& profile_path) {
   return profile_path.Append(kOfflineDirectory);
 }
 
 std::string OfflineURLDirectoryID(const GURL& url) {
-  return base::MD5String(url.spec());
+  return Md5AsHexForOfflineUrlUtils(url.spec());
 }
 
 base::FilePath OfflineURLDirectoryAbsolutePath(

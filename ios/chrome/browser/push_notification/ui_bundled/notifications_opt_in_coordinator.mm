@@ -82,7 +82,8 @@
 - (void)presentSignIn {
   __weak __typeof(self) weakSelf = self;
   SigninCoordinatorCompletionCallback completion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> completionIdentity) {
         if (result != SigninCoordinatorResultSuccess) {
           [weakSelf.mediator disableUserSelectionForItem:kContent];
         }
@@ -202,6 +203,9 @@
         break;
       case PushNotificationClientId::kReminders:
         // Reminders are enabled with SendTab.
+        NOTREACHED();
+      case PushNotificationClientId::kCrossPlatformPromos:
+        // TODO:(crbug.com/445662240): Add toggle for this feature.
         NOTREACHED();
     }
   }

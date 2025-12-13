@@ -147,7 +147,8 @@
   __weak __typeof(self) weakSelf = self;
   GURL requestedURL = self.faviconPageURL;
   [faviconDataSource faviconForPageURL:[[CrURL alloc] initWithGURL:requestedURL]
-                            completion:^(FaviconAttributes* attributes) {
+                            completion:^(FaviconAttributes* attributes,
+                                         bool cached) {
                               DCHECK(attributes);
 
                               __typeof(self) strongSelf = weakSelf;
@@ -220,7 +221,7 @@
   return self;
 }
 
-- (void)configureCell:(TableViewCell*)tableCell
+- (void)configureCell:(LegacyTableViewCell*)tableCell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
 
@@ -265,7 +266,7 @@
   return self;
 }
 
-- (void)configureCell:(TableViewCell*)tableCell
+- (void)configureCell:(LegacyTableViewCell*)tableCell
            withStyler:(ChromeTableViewStyler*)styler {
   CHECK(self.credential.blocked_by_user);
   [super configureCell:tableCell withStyler:styler];

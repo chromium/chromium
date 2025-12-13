@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/offer_helper.h"
@@ -13,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/fake_server.h"
@@ -37,9 +39,16 @@ ACTION_P(QuitMessageLoop, loop) {
 
 }  // namespace
 
-class SingleClientOfferSyncTest : public SyncTest {
+class SingleClientOfferSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientOfferSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientOfferSyncTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
 
   ~SingleClientOfferSyncTest() override = default;
 
@@ -47,7 +56,17 @@ class SingleClientOfferSyncTest : public SyncTest {
   SingleClientOfferSyncTest& operator=(const SingleClientOfferSyncTest&) =
       delete;
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
  protected:
+  wallet_helper::StoreType GetStoreType() const {
+    return GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
+               ? wallet_helper::StoreType::kAccountStore
+               : wallet_helper::StoreType::kProfileStore;
+  }
+
   void WaitForNumberOfOffers(size_t expected_count,
                              autofill::PaymentsDataManager* paydm) {
     while (paydm->GetAutofillOffers().size() != expected_count ||
@@ -64,10 +83,18 @@ class SingleClientOfferSyncTest : public SyncTest {
                                                syncer::AUTOFILL_WALLET_OFFER)
         .Wait();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    SingleClientOfferSyncTest,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
 // Ensures that the offer sync type is enabled by default.
-IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EnabledByDefault) {
+IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, EnabledByDefault) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetClient(0)->service()->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_OFFER));
@@ -79,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EnabledByDefault) {
 // Excluded on Android because SyncServiceImplHarness doesn't have the ability
 // to mimic sync-paused on Android due to https://crbug.com/1373448.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSyncPaused) {
+IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ClearOnSyncPaused) {
   GetFakeServer()->SetOfferData({CreateDefaultSyncCardLinkedOffer()});
   ASSERT_TRUE(SetupSync());
 
@@ -89,12 +116,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSyncPaused) {
   ASSERT_EQ(1uL, paydm->GetAutofillOffers().size());
 
   // Pause sync, the offer data should be gone.
-  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+    GetClient(0)->EnterSignInPendingStateForPrimaryAccount();
+  } else {
+    GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  }
   WaitForNumberOfOffers(0, paydm);
   EXPECT_EQ(0uL, paydm->GetAutofillOffers().size());
 
   // Resume (unpause) sync, the data should come back.
-  GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+    GetClient(0)->ExitSignInPendingStateForPrimaryAccount();
+  } else {
+    GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  }
   // Wait until Sync restores the card and it arrives at paydm.
   WaitForNumberOfOffers(1, paydm);
   EXPECT_EQ(1uL, paydm->GetAutofillOffers().size());
@@ -104,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSyncPaused) {
 // ChromeOS does not sign out, so the test below does not apply.
 #if !BUILDFLAG(IS_CHROMEOS)
 // Offer data should get cleared from the database when the user signs out.
-IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSignOut) {
+IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ClearOnSignOut) {
   GetFakeServer()->SetOfferData({CreateDefaultSyncCardLinkedOffer()});
   ASSERT_TRUE(SetupSync());
   autofill::PaymentsDataManager* paydm = GetPaymentsDataManager(0);
@@ -121,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSignOut) {
 
 // Offer is not using incremental updates. Make sure existing data gets
 // replaced when synced down.
-IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest,
                        NewSyncDataShouldReplaceExistingData) {
   AutofillOfferData offer1 = GetCardLinkedOfferData1(/*offer_id=*/999);
   GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer1)});
@@ -148,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest,
 // Offer is not using incremental updates. The server either sends a non-empty
 // update with deletion gc directives and with the (possibly empty) full data
 // set, or (more often) an empty update.
-IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
+IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
   AutofillOfferData offer1 = GetCardLinkedOfferData1(/*offer_id=*/999);
   GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer1)});
   ASSERT_TRUE(SetupSync());
@@ -162,13 +197,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
 
   // Trigger a sync and wait for the new data to arrive.
   sync_pb::DataTypeState state_before =
-      GetWalletDataTypeState(syncer::AUTOFILL_WALLET_OFFER, 0);
+      GetWalletDataTypeState(syncer::AUTOFILL_WALLET_OFFER, 0, GetStoreType());
   ASSERT_TRUE(TriggerGetUpdatesAndWait());
 
   // Check that the new progress marker is stored for empty updates. This is a
   // regression check for crbug.com/924447.
   sync_pb::DataTypeState state_after =
-      GetWalletDataTypeState(syncer::AUTOFILL_WALLET_OFFER, 0);
+      GetWalletDataTypeState(syncer::AUTOFILL_WALLET_OFFER, 0, GetStoreType());
   EXPECT_NE(state_before.progress_marker().token(),
             state_after.progress_marker().token());
 
@@ -189,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
 
 // If the server sends the same offers with changed data, they should change on
 // the client.
-IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ChangedEntityGetsUpdated) {
+IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ChangedEntityGetsUpdated) {
   AutofillOfferData offer = GetCardLinkedOfferData1(/*offer_id=*/999);
   offer.SetEligibleInstrumentIdForTesting({111111});
   GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer)});
@@ -219,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ChangedEntityGetsUpdated) {
 
 // Offer data should get cleared from the database when the Autofill sync type
 // flag is disabled.
-IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableWalletSync) {
+IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ClearOnDisableWalletSync) {
   GetFakeServer()->SetOfferData({CreateDefaultSyncCardLinkedOffer()});
   ASSERT_TRUE(SetupSync());
 
@@ -229,8 +264,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableWalletSync) {
   ASSERT_EQ(1uL, paydm->GetAutofillOffers().size());
 
   // Turn off payments sync, the data should be gone.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPayments));
   WaitForNumberOfOffers(0, paydm);
   EXPECT_EQ(0uL, paydm->GetAutofillOffers().size());
 }

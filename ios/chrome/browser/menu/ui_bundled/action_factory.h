@@ -34,6 +34,10 @@ class TabGroup;
 // pasteboard.
 - (UIAction*)actionToCopyURL:(CrURL*)URL;
 
+// Creates a UIAction instance configured to copy a URL which will invoke the
+// given copy `block` upon execution.
+- (UIAction*)actionToCopyURLWithBlock:(ProceduralBlock)block;
+
 // Creates a UIAction instance configured for sharing which will invoke
 // the given `block` upon execution.
 - (UIAction*)actionToShareWithBlock:(ProceduralBlock)block;
@@ -113,6 +117,9 @@ class TabGroup;
 // Creates a UIAction instance for closing all the other tabs.
 - (UIAction*)actionToCloseAllOtherTabsWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance for deleting all browsing data.
+- (UIAction*)actionToDeleteBrowsingDataWithBlock:(ProceduralBlock)block;
+
 // Creates a UIAction instance for saving an image.
 - (UIAction*)actionSaveImageWithBlock:(ProceduralBlock)block;
 
@@ -138,6 +145,9 @@ class TabGroup;
 // `MobileWebContextMenuOpenTab` user action.
 - (ProceduralBlock)recordMobileWebContextMenuOpenTabActionWithBlock:
     (ProceduralBlock)block;
+
+// Creates a UIAction instance for creating a tab group without providing a tab.
+- (UIAction*)actionToCreateEmptyTabGroupWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance for adding `tabsNumber` tab in a new tab group.
 // `inSubmenu` changes the string to be displayed.
@@ -240,6 +250,21 @@ class TabGroup;
 // Creates a UIAction instance to show the recent activity in a shared tab
 // group.
 - (UIAction*)actionToShowRecentActivity:(ProceduralBlock)block;
+
+// Creates a UIAction instance for opening Gemini with an image attachment.
+// Invokes the given `block` when executed.
+- (UIAction*)actionToOpenImageInGeminiWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance to pin a site to the most visited tile.
+- (UIAction*)actionToPinSiteToMostVisitedTileWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance to unpin a site from the most visited tile.
+- (UIAction*)actionToUnpinSiteFromMostVisitedTileWithBlock:
+    (ProceduralBlock)block;
+
+// Creates a UIAction instance to edit a pined site on the most visited tile.
+- (UIAction*)actionToEditPinnedSiteOnMostVisitedTileWithBlock:
+    (ProceduralBlock)block;
 
 @end
 

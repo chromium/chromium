@@ -39,17 +39,17 @@ public class ChromeActivityTabModelBoundStation<HostActivity extends ChromeActiv
 
     /** Convenience method for |tabModelElement.get()|. */
     public TabModel getTabModel() {
-        return tabModelElement.get();
+        return tabModelElement.value();
     }
 
     /** Convenience method for |tabModelSelectorElement.get()|. */
     public TabModelSelector getTabModelSelector() {
-        return tabModelSelectorElement.get();
+        return tabModelSelectorElement.value();
     }
 
     /** Convenience method for |tabGroupModelFilterElement.get()|. */
     public TabGroupModelFilter getTabGroupModelFilter() {
-        return tabGroupModelFilterElement.get();
+        return tabGroupModelFilterElement.value();
     }
 
     /** Whether bound to an incognito TabModel. */

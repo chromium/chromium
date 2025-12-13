@@ -38,6 +38,10 @@
 
 namespace blink {
 
+// CounterDirectives stores the `counter-reset`, `counter-increment`, and
+// `counter-set` properties for a single counter identifier. An object of this
+// class represents all the counter-related directives specified on an element
+// for one specific counter.
 class CounterDirectives {
   DISALLOW_NEW();
 
@@ -47,15 +51,36 @@ class CounterDirectives {
   // FIXME: The code duplication here could possibly be replaced by using two
   // maps, or by using a container that held two generic Directive objects.
 
-  bool IsReset() const { return !!reset_value_; }
-  int ResetValue() const { return *reset_value_; }
+  // https://drafts.csswg.org/css-lists-3/#counter-reset
+
+  // Returns true when `counter-reset` either holds an <integer> value or it is
+  // reversed.
+  bool IsReset() const {
+    return reset_value_.has_value() || is_reset_reversed_;
+  }
+  // Returns an optional <integer> value of `counter-reset`. The return value is
+  // `nullopt` if the reversed function is specified and the <integer> is
+  // omitted(e.g., `counter-reset: reversed(list-item)`).
+  std::optional<int> ResetValue() const { return reset_value_; }
   void SetResetValue(int value) { reset_value_ = value; }
-  void ClearReset() { reset_value_.reset(); }
+  bool IsResetReversed() const { return is_reset_reversed_; }
+  void SetIsResetReversed() { is_reset_reversed_ = true; }
+  void ClearReset() {
+    reset_value_.reset();
+    is_reset_reversed_ = false;
+  }
   void InheritReset(const CounterDirectives& parent) {
     reset_value_ = parent.reset_value_;
+    is_reset_reversed_ = parent.is_reset_reversed_;
   }
 
-  bool IsIncrement() const { return !!increment_value_; }
+  // https://drafts.csswg.org/css-lists-3/#increment-set
+
+  bool HasIncrement() const { return increment_value_.has_value(); }
+  // Returns an <integer> value of `counter-increment`. If |HasIncrement()| is
+  // false, this call will crash. Otherwise, no crash happens even if the
+  // <integer> is omitted(e.g., `counter-increment: foo-bar`) because it has
+  // a default value.
   int IncrementValue() const { return *increment_value_; }
   void AddIncrementValue(int value) {
     increment_value_ = base::ClampAdd(increment_value_.value_or(0), value);
@@ -65,7 +90,10 @@ class CounterDirectives {
     increment_value_ = parent.increment_value_;
   }
 
-  bool IsSet() const { return !!set_value_; }
+  bool HasSet() const { return set_value_.has_value(); }
+  // Returns an <integer> value of `counter-set`. If |HasSet()| is false, this
+  // call will crash. Otherwise, no crash happens even if the <integer> is
+  // omitted(e.g., `counter-set: foo-bar`) because it has a default value.
   int SetValue() const { return *set_value_; }
   void SetSetValue(int value) { set_value_ = value; }
   void ClearSet() { set_value_.reset(); }
@@ -73,12 +101,12 @@ class CounterDirectives {
     set_value_ = parent.set_value_;
   }
 
-  bool IsDefined() const { return IsReset() || IsIncrement() || IsSet(); }
+  bool IsDefined() const { return IsReset() || HasIncrement() || HasSet(); }
 
   int CombinedValue() const {
     // If there is a counter-set, it overrides over values.
     // https://drafts.csswg.org/css-lists-3/#auto-numbering
-    if (IsSet()) {
+    if (HasSet()) {
       return SetValue();
     }
 
@@ -90,17 +118,14 @@ class CounterDirectives {
         .ValueOrDefault(reset_value_.value_or(0));
   }
 
-  friend bool operator==(const CounterDirectives&, const CounterDirectives&);
+  bool operator==(const CounterDirectives&) const = default;
 
  private:
   std::optional<int> reset_value_;
   std::optional<int> increment_value_;
   std::optional<int> set_value_;
+  bool is_reset_reversed_ = false;
 };
-
-inline bool operator!=(const CounterDirectives& a, const CounterDirectives& b) {
-  return !(a == b);
-}
 
 // Not to be deleted through a pointer to HashMap.
 class CounterDirectiveMap : public HashMap<AtomicString, CounterDirectives> {

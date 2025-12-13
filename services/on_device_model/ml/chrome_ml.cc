@@ -117,14 +117,27 @@ void RecordMediumTimesHistogram(const char* name, int64_t milliseconds) {
 
 }  // namespace
 
-ChromeML::ChromeML(const ChromeMLAPI* api) : api_(api) {}
+ChromeML::ChromeML(std::unique_ptr<ChromeMLHolder> holder)
+    : holder_(std::move(holder)), api_(&holder_->api()) {}
+ChromeML::ChromeML(const ChromeMLAPI* api) : holder_(nullptr), api_(api) {}
 ChromeML::~ChromeML() = default;
 
 // static
-ChromeML* ChromeML::Get(const std::optional<std::string>& library_name) {
+ChromeML* ChromeML::Get() {
   static base::NoDestructor<std::unique_ptr<ChromeML>> chrome_ml{
-      Create(library_name)};
+      Create(std::nullopt)};
   return chrome_ml->get();
+}
+
+// static
+std::unique_ptr<ChromeML> ChromeML::CreateForTesting(
+    const std::optional<std::string>& library_name) {
+  return Create(library_name);
+}
+
+// static
+std::unique_ptr<ChromeML> ChromeML::CreateForTesting(const ChromeMLAPI* api) {
+  return base::WrapUnique(new ChromeML(api));
 }
 
 #if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
@@ -175,14 +188,12 @@ std::unique_ptr<ChromeML> ChromeML::Create(
   gpu::SetKeysForCrashLogging(gpu_info);
 #endif
 
-  static base::NoDestructor<std::unique_ptr<ChromeMLHolder>> holder{
-      ChromeMLHolder::Create(library_name)};
-  ChromeMLHolder* holder_ptr = holder->get();
-  if (!holder_ptr) {
-    return {};
+  std::unique_ptr<ChromeMLHolder> holder = ChromeMLHolder::Create(library_name);
+  if (!holder) {
+    return nullptr;
   }
 
-  auto& api = holder_ptr->api();
+  auto& api = holder->api();
 
   dawnProcSetProcs(&dawn::native::GetProcs());
   api.InitDawnProcs(dawn::native::GetProcs());
@@ -203,7 +214,7 @@ std::unique_ptr<ChromeML> ChromeML::Create(
   if (api.SetFatalErrorNonGpuFn) {
     api.SetFatalErrorNonGpuFn(&FatalErrorFn);
   }
-  return base::WrapUnique(new ChromeML(&api));
+  return base::WrapUnique(new ChromeML(std::move(holder)));
 }
 
 const ChromeMLConstraintFns* GetConstraintFns() {

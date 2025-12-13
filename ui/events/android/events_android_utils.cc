@@ -59,4 +59,22 @@ MotionEvent::Action FromAndroidAction(int android_action) {
 
 #undef ACTION_CASE
 
+MotionEvent::ToolType FromAndroidToolType(int android_tool_type) {
+  switch (android_tool_type) {
+    case JNI_MotionEvent::TOOL_TYPE_UNKNOWN:
+      return MotionEvent::ToolType::UNKNOWN;
+    case JNI_MotionEvent::TOOL_TYPE_FINGER:
+      return MotionEvent::ToolType::FINGER;
+    case JNI_MotionEvent::TOOL_TYPE_STYLUS:
+      return MotionEvent::ToolType::STYLUS;
+    case JNI_MotionEvent::TOOL_TYPE_MOUSE:
+      return MotionEvent::ToolType::MOUSE;
+    case JNI_MotionEvent::TOOL_TYPE_ERASER:
+      return MotionEvent::ToolType::ERASER;
+    default:
+      NOTREACHED() << "Invalid Android MotionEvent tool type: "
+                   << android_tool_type;
+  }
+}
+
 }  // namespace ui

@@ -185,6 +185,8 @@ out/Default` from the command line. To compile one, pass the GN label to Ninja
 with no preceding "//" (so, for `//chrome/test:unit_tests` use `autoninja -C
 out/Default chrome/test:unit_tests`).
 
+See [Siso tips](../siso_tips.md) too.
+
 ## Run Chromium
 
 Once it is built, you can simply run the browser:

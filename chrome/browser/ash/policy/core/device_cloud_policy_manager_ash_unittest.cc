@@ -40,7 +40,6 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/attestation/fake_certificate.h"
@@ -72,6 +71,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/test_utils.h"
@@ -91,7 +91,6 @@ using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtMost;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::SaveArg;
 using ::testing::StrictMock;
@@ -230,7 +229,7 @@ class DeviceCloudPolicyManagerAshTest
     manager_->SetSigninProfileSchemaRegistry(&schema_registry_);
 
     user_manager_ = std::make_unique<user_manager::FakeUserManager>(
-        scoped_testing_local_state_.Get());
+        TestingBrowserProcess::GetGlobal()->local_state());
     manager_->OnUserManagerCreated(user_manager_.get());
 
     // SharedURLLoaderFactory and LocalState singletons have to be set since
@@ -242,7 +241,8 @@ class DeviceCloudPolicyManagerAshTest
     ash::SystemSaltGetter::Initialize();
     DeviceOAuth2TokenServiceFactory::Initialize(
         test_url_loader_factory_.GetSafeWeakWrapper(),
-        scoped_testing_local_state_.Get());
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->os_crypt_async());
 
     url_fetcher_response_code_ = net::HTTP_OK;
     url_fetcher_response_string_ =
@@ -314,7 +314,7 @@ class DeviceCloudPolicyManagerAshTest
   }
 
   void InitDeviceCloudPolicyInitializer() {
-    manager_->Initialize(scoped_testing_local_state_.Get());
+    manager_->Initialize(TestingBrowserProcess::GetGlobal()->local_state());
     EnrollmentRequisitionManager::Initialize();
     initializer_ = std::make_unique<DeviceCloudPolicyInitializer>(
         &device_management_service_, install_attributes_.get(),
@@ -373,9 +373,6 @@ class DeviceCloudPolicyManagerAshTest
   std::unique_ptr<reporting::ReportingClient::TestEnvironment>
       reporting_test_enviroment_;
 
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
-
   std::unique_ptr<ash::InstallAttributes> install_attributes_;
 
   net::HttpStatusCode url_fetcher_response_code_;
@@ -401,7 +398,8 @@ class DeviceCloudPolicyManagerAshTest
  private:
   // This property is required to instantiate the session manager, a singleton
   // which is used by the device status collector.
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 };
 
 TEST_F(DeviceCloudPolicyManagerAshTest, FreshDevice) {
@@ -412,7 +410,7 @@ TEST_F(DeviceCloudPolicyManagerAshTest, FreshDevice) {
   FlushDeviceSettings();
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
-  manager_->Initialize(scoped_testing_local_state_.Get());
+  manager_->Initialize(TestingBrowserProcess::GetGlobal()->local_state());
 
   PolicyBundle bundle;
   EXPECT_TRUE(manager_->policies().Equals(bundle));
@@ -726,8 +724,7 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
           GetCertificate(
               ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
               /*force_new_key=*/true, _, _, _, _))
-          .WillOnce(
-              WithArgs<7>(Invoke(CertCallbackSuccessWithValidCertificate)));
+          .WillOnce(WithArgs<7>(CertCallbackSuccessWithValidCertificate));
     }
     AddStateKeys();
   }

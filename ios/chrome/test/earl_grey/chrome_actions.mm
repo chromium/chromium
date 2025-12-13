@@ -74,4 +74,8 @@ id<GREYAction> OverscrollSwipe(GREYDirection direction) {
   return [ChromeActionsAppInterface overscrollSwipe:direction];
 }
 
+id<GREYAction> NotifyChangeTextInRange(NSString* text) {
+  return [ChromeActionsAppInterface notifyChangeTextInRange:text];
+}
+
 }  // namespace chrome_test_util

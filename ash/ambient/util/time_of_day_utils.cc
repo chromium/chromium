@@ -99,6 +99,15 @@ void InstallTimeOfDayDlc(std::string dlc_metrics_label,
       /*ProgressCallback=*/base::DoNothing());
 }
 
+// Whether the customization_id of this device is the special customization_id
+// for the jupiter screensaver.
+bool IsJupiterCustomizationId() {
+  const std::optional<std::string_view> customization_id =
+      system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          system::kCustomizationIdKey);
+  return customization_id == kJupiterScreensaverCustomizationId;
+}
+
 }  // namespace
 
 void GetAmbientVideoHtmlPath(std::string dlc_metrics_label,
@@ -114,17 +123,12 @@ void InstallAmbientVideoDlcInBackground() {
 }
 
 AmbientVideo GetDefaultAmbientVideo() {
-  return ShouldShowJupiterVideo() ? AmbientVideo::kJupiter
-                                  : AmbientVideo::kNewMexico;
+  return IsJupiterCustomizationId() ? AmbientVideo::kJupiter
+                                    : AmbientVideo::kNewMexico;
 }
 
 bool ShouldShowJupiterVideo() {
-  const std::optional<std::string_view> customization_id =
-      system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          system::kCustomizationIdKey);
-  VLOG(1) << __func__
-          << " customization_id: " << customization_id.value_or("null");
-  return customization_id == kJupiterScreensaverCustomizationId;
+  return features::IsJupiterScreensaverEnabled() || IsJupiterCustomizationId();
 }
 
 const base::FilePath::CharType kTimeOfDayCloudsVideo[] =

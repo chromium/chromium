@@ -34,8 +34,9 @@ public abstract class BookmarkModelObserver {
      *
      * @param parent The parent of the node being added.
      * @param index The index of the added node.
+     * @param addedByUser Whether the bookmark was added by the user of this device.
      */
-    public void bookmarkNodeAdded(BookmarkItem parent, int index) {
+    public void bookmarkNodeAdded(BookmarkItem parent, int index, boolean addedByUser) {
         bookmarkModelChanged();
     }
 

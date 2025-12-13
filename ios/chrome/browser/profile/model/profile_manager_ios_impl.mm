@@ -14,9 +14,9 @@
 #import "base/feature_list.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -370,6 +370,12 @@ ProfileAttributesStorageIOS*
 ProfileManagerIOSImpl::GetProfileAttributesStorage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return &profile_attributes_storage_;
+}
+
+base::FilePath ProfileManagerIOSImpl::GetProfilePath(std::string_view name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(profile_attributes_storage_.HasProfileWithName(name));
+  return profile_data_dir_.Append(name);
 }
 
 void ProfileManagerIOSImpl::OnProfileCreationStarted(

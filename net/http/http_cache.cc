@@ -9,15 +9,14 @@
 #include <string_view>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -34,7 +33,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "crypto/hash.h"
 #include "http_request_info.h"
 #include "net/base/cache_type.h"
 #include "net/base/features.h"
@@ -43,6 +44,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/task/task_runner.h"
 #include "net/base/upload_data_stream.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache_transaction.h"
@@ -64,6 +66,9 @@
 
 namespace net {
 
+BASE_FEATURE(kHttpCacheInitializeDiskCacheBackendEarly,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 // True if any HTTP cache has been initialized.
 bool g_init_cache = false;
@@ -71,6 +76,24 @@ bool g_init_cache = false;
 // True if split cache is enabled by default. Must be set before any HTTP cache
 // has been initialized.
 bool g_enable_split_cache = false;
+
+// Helper function to find the highest priority in a container of transactions.
+template <typename T>
+RequestPriority GetHighestPriority(const T& transactions) {
+  RequestPriority highest = RequestPriority::IDLE;
+  for (const auto tx : transactions) {
+    highest = std::max(highest, tx->priority());
+  }
+  return highest;
+}
+
+const scoped_refptr<base::SingleThreadTaskRunner>& TaskRunner(
+    net::RequestPriority priority) {
+  if (features::kNetTaskSchedulerHttpCache.Get()) {
+    return net::GetTaskRunner(priority);
+  }
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
+}
 
 }  // namespace
 
@@ -86,13 +109,15 @@ HttpCache::DefaultBackend::DefaultBackend(
         file_operations_factory,
     const base::FilePath& path,
     int max_bytes,
-    bool hard_reset)
+    bool hard_reset,
+    net::CacheEncryptionDelegate* cache_encryption_delegate)
     : type_(type),
       backend_type_(backend_type),
       file_operations_factory_(std::move(file_operations_factory)),
       path_(path),
       max_bytes_(max_bytes),
-      hard_reset_(hard_reset) {}
+      hard_reset_(hard_reset),
+      cache_encryption_delegate_(std::move(cache_encryption_delegate)) {}
 
 HttpCache::DefaultBackend::~DefaultBackend() = default;
 
@@ -101,7 +126,9 @@ std::unique_ptr<HttpCache::BackendFactory> HttpCache::DefaultBackend::InMemory(
     int max_bytes) {
   return std::make_unique<DefaultBackend>(MEMORY_CACHE, CACHE_BACKEND_DEFAULT,
                                           /*file_operations_factory=*/nullptr,
-                                          base::FilePath(), max_bytes, false);
+                                          base::FilePath(), max_bytes, false,
+                                          /*cache_encryption_delegate=*/
+                                          nullptr);
 }
 
 disk_cache::BackendResult HttpCache::DefaultBackend::CreateBackend(
@@ -116,13 +143,13 @@ disk_cache::BackendResult HttpCache::DefaultBackend::CreateBackend(
   if (app_status_listener_getter_) {
     return disk_cache::CreateCacheBackend(
         type_, backend_type_, file_operations_factory_, path_, max_bytes_,
-        reset_handling, net_log, std::move(callback),
-        app_status_listener_getter_);
+        reset_handling, net_log, cache_encryption_delegate_,
+        std::move(callback), app_status_listener_getter_);
   }
 #endif
   return disk_cache::CreateCacheBackend(
       type_, backend_type_, file_operations_factory_, path_, max_bytes_,
-      reset_handling, net_log, std::move(callback));
+      reset_handling, net_log, cache_encryption_delegate_, std::move(callback));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -131,6 +158,14 @@ void HttpCache::DefaultBackend::SetAppStatusListenerGetter(
   app_status_listener_getter_ = std::move(app_status_listener_getter);
 }
 #endif
+
+std::optional<CacheType> HttpCache::BackendFactory::GetCacheType() const {
+  return std::nullopt;
+}
+
+std::optional<CacheType> HttpCache::DefaultBackend::GetCacheType() const {
+  return type_;
+}
 
 //-----------------------------------------------------------------------------
 
@@ -316,6 +351,21 @@ bool HttpCache::ActiveEntry::CanTransactionWriteResponseHeaders(
   return true;
 }
 
+const scoped_refptr<base::SingleThreadTaskRunner>&
+HttpCache::ActiveEntry::GetTaskRunner() const {
+  // Calculate the highest request priority among all transactions in the entry.
+  RequestPriority highest = std::max(
+      {RequestPriority::IDLE, GetHighestPriority(done_headers_queue_),
+       GetHighestPriority(add_to_entry_queue_), GetHighestPriority(readers_)});
+  if (headers_transaction_) {
+    highest = std::max(highest, headers_transaction_->priority());
+  }
+  if (writers_) {
+    highest = std::max(highest, writers_->priority());
+  }
+  return TaskRunner(highest);
+}
+
 //-----------------------------------------------------------------------------
 
 // This structure keeps track of work items that are attempting to create or
@@ -324,7 +374,7 @@ struct HttpCache::PendingOp {
   PendingOp() = default;
   ~PendingOp() = default;
 
-  raw_ptr<disk_cache::Entry, AcrossTasksDanglingUntriaged> entry = nullptr;
+  raw_ptr<disk_cache::Entry> entry = nullptr;
   bool entry_opened = false;  // rather than created.
 
   std::unique_ptr<disk_cache::Backend> backend;
@@ -412,10 +462,7 @@ HttpCache::HttpCache(
   if (base::FeatureList::IsEnabled(features::kHttpCacheNoVarySearch)) {
     size_t max_entries = features::kHttpCacheNoVarySearchCacheMaxEntries.Get();
     if (max_entries) {
-      // TODO(https://crbug.com/382394774): Make
-      // kHttpCacheNoVarySearchCacheMaxEntries be a size_t param.
-      no_vary_search_cache_ =
-          std::make_unique<NoVarySearchCache>(static_cast<size_t>(max_entries));
+      no_vary_search_cache_ = std::make_unique<NoVarySearchCache>(max_entries);
     }
   }
   HttpNetworkSession* session = network_layer_->GetSession();
@@ -427,6 +474,14 @@ HttpCache::HttpCache(
   }
 
   net_log_ = session->net_log();
+  if (base::FeatureList::IsEnabled(kHttpCacheInitializeDiskCacheBackendEarly) &&
+      backend_factory_) {
+    if (auto maybe_cache_type = backend_factory_->GetCacheType()) {
+      if (*maybe_cache_type == CacheType::DISK_CACHE) {
+        CreateBackend(CompletionOnceCallback());
+      }
+    }
+  }
 }
 
 HttpCache::~HttpCache() {
@@ -517,6 +572,8 @@ void HttpCache::OnExternalCacheHit(
     return;
   }
 
+  TRACE_EVENT("net", "HttpCache::OnExternalCacheHit");
+
   HttpRequestInfo request_info;
   request_info.url = url;
   request_info.method = http_method;
@@ -537,6 +594,24 @@ void HttpCache::OnExternalCacheHit(
     }
   }
 
+  OnExternalCacheHitForRequest(request_info);
+
+  if (no_vary_search_cache_) {
+    auto result = no_vary_search_cache_->Lookup(request_info);
+    if (result) {
+      // Do this in addition to, rather than instead of, the URL passed to the
+      // function. If both exist in the cache, then we may need to fall back to
+      // the supplied URL in some cases so it is useful to keep it fresh. The
+      // version of the URL from the NoVarySearchCache is touched second so that
+      // it is slightly fresher and so less likely to be evicted.
+      request_info.url = result->original_url;
+      OnExternalCacheHitForRequest(request_info);
+    }
+  }
+}
+
+void HttpCache::OnExternalCacheHitForRequest(
+    const HttpRequestInfo& request_info) {
   std::optional<std::string> key = GenerateCacheKeyForRequest(&request_info);
   if (!key) {
     return;
@@ -638,12 +713,9 @@ std::string HttpCache::GetResourceURLFromHttpCacheKey(const std::string& key) {
 }
 
 // static
-bool HttpCache::CanGenerateCacheKeyForRequest(const HttpRequestInfo* request) {
-  // WARNING: If this function is changed to look at `request->url` in future,
-  // it will break GenerateCacheKeyForRequestWithAlternateURL(). Add an extra
-  // `url` parameter instead.
+bool HttpCache::CanGenerateCacheKeyForRequest(const HttpRequestInfo& request) {
   if (IsSplitCacheEnabled()) {
-    if (request->network_isolation_key.IsTransient()) {
+    if (request.network_isolation_key.IsTransient()) {
       return false;
     }
   }
@@ -660,7 +732,8 @@ std::string HttpCache::GenerateCacheKey(
     bool is_subframe_document_resource,
     bool is_mainframe_navigation,
     bool is_shared_resource,
-    std::optional<url::Origin> initiator) {
+    std::optional<url::Origin> initiator,
+    bool include_url) {
   // The first character of the key may vary depending on whether or not sending
   // credentials is permitted for this request. This only happens if the
   // SplitCacheByIncludeCredentials feature is enabled.
@@ -684,9 +757,7 @@ std::string HttpCache::GenerateCacheKey(
     }
 
     std::string_view is_cross_site_main_frame_navigation_prefix;
-    if (initiator.has_value() && is_mainframe_navigation &&
-        base::FeatureList::IsEnabled(
-            net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean)) {
+    if (initiator.has_value() && is_mainframe_navigation) {
       const bool is_initiator_cross_site =
           !net::SchemefulSite::IsSameSite(*initiator, url::Origin::Create(url));
       if (is_initiator_cross_site) {
@@ -698,6 +769,10 @@ std::string HttpCache::GenerateCacheKey(
         {kDoubleKeyPrefix, subframe_document_resource_prefix,
          is_cross_site_main_frame_navigation_prefix,
          *network_isolation_key.ToCacheKeyString(), kDoubleKeySeparator});
+    if (!include_url) {
+      // Remove the final space (kDoubleKeySeparator).
+      isolation_key.pop_back();
+    }
   }
 
   // The key format is:
@@ -706,36 +781,40 @@ std::string HttpCache::GenerateCacheKey(
   // Strip out the reference, username, and password sections of the URL and
   // concatenate with the credential_key, the post_key, and the network
   // isolation key if we are splitting the cache.
-  return base::StringPrintf("%c/%" PRId64 "/%s%s", credential_key,
-                            upload_data_identifier, isolation_key.c_str(),
-                            HttpUtil::SpecForRequest(url).c_str());
+  return base::StringPrintf(
+      "%c/%" PRId64 "/%s%s", credential_key, upload_data_identifier,
+      isolation_key.c_str(),
+      include_url ? HttpUtil::SpecForRequest(url).c_str() : "");
 }
 
 // static
 std::optional<std::string> HttpCache::GenerateCacheKeyForRequest(
     const HttpRequestInfo* request) {
-  return GenerateCacheKeyForRequestWithAlternateURL(request, request->url);
+  return GenerateCacheKeyInternal(*request, /*include_url=*/true);
 }
 
 // static
-std::optional<std::string>
-HttpCache::GenerateCacheKeyForRequestWithAlternateURL(
-    const HttpRequestInfo* request,
-    const GURL& url) {
-  CHECK(request);
-
+std::optional<std::string> HttpCache::GenerateCacheKeyInternal(
+    const HttpRequestInfo& request,
+    bool include_url) {
   if (!CanGenerateCacheKeyForRequest(request)) {
     return std::nullopt;
   }
 
   const int64_t upload_data_identifier =
-      request->upload_data_stream ? request->upload_data_stream->identifier()
-                                  : int64_t(0);
+      request.upload_data_stream ? request.upload_data_stream->identifier()
+                                 : int64_t{0};
   return GenerateCacheKey(
-      url, request->load_flags, request->network_isolation_key,
-      upload_data_identifier, request->is_subframe_document_resource,
-      request->is_main_frame_navigation, request->is_shared_resource,
-      request->initiator);
+      request.url, request.load_flags, request.network_isolation_key,
+      upload_data_identifier, request.is_subframe_document_resource,
+      request.is_main_frame_navigation, request.is_shared_resource,
+      request.initiator, include_url);
+}
+
+// static
+std::optional<std::string> HttpCache::GenerateCachePartitionKeyForRequest(
+    const HttpRequestInfo& request) {
+  return GenerateCacheKeyInternal(request, /*include_url=*/false);
 }
 
 // static
@@ -1229,9 +1308,9 @@ void HttpCache::DoomEntryValidationNoMatch(scoped_refptr<ActiveEntry> entry) {
   // for the transaction to not be found in this entry.
   for (HttpCache::Transaction* transaction : entry->add_to_entry_queue()) {
     transaction->ResetCachePendingState();
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(transaction->cache_io_callback(), ERR_CACHE_RACE));
+    TaskRunner(transaction->priority())
+        ->PostTask(FROM_HERE, base::BindOnce(transaction->cache_io_callback(),
+                                             ERR_CACHE_RACE));
   }
   entry->add_to_entry_queue().clear();
 }
@@ -1266,7 +1345,7 @@ void HttpCache::ProcessQueuedTransactions(scoped_refptr<ActiveEntry> entry) {
 
   // Post a task instead of invoking the io callback of another transaction here
   // to avoid re-entrancy.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  entry->GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&HttpCache::OnProcessQueuedTransactions,
                                 GetWeakPtr(), std::move(entry)));
 }
@@ -1277,7 +1356,7 @@ void HttpCache::ProcessAddToEntryQueue(scoped_refptr<ActiveEntry> entry) {
     // Post a task to put the AddTransactionToEntry handling at the back of
     // the task queue. This allows other tasks (like network IO) to jump
     // ahead and simulate different callback ordering for testing.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    entry->GetTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&HttpCache::ProcessAddToEntryQueueImpl,
                                   GetWeakPtr(), std::move(entry)));
   } else {
@@ -1300,10 +1379,13 @@ HttpCache::ParallelWritingPattern HttpCache::CanTransactionJoinExistingWriters(
   if (transaction->mode() == Transaction::READ) {
     return PARALLEL_WRITING_NOT_JOIN_READ_ONLY;
   }
-  if (transaction->GetResponseInfo()->headers &&
-      transaction->GetResponseInfo()->headers->GetContentLength() >
-          disk_cache_->MaxFileSize()) {
-    return PARALLEL_WRITING_NOT_JOIN_TOO_BIG_FOR_CACHE;
+  if (transaction->GetResponseInfo()->headers) {
+    std::optional<base::ByteCount> content_length =
+        transaction->GetResponseInfo()->headers->GetContentLength();
+    if (content_length &&
+        content_length->InBytes() > disk_cache_->MaxFileSize()) {
+      return PARALLEL_WRITING_NOT_JOIN_TOO_BIG_FOR_CACHE;
+    }
   }
   return PARALLEL_WRITING_JOIN;
 }
@@ -1434,11 +1516,11 @@ bool HttpCache::RemovePendingTransactionFromPendingOp(
 }
 
 void HttpCache::MarkKeyNoStore(const std::string& key) {
-  keys_marked_no_store_.Put(base::SHA1Hash(base::as_byte_span(key)));
+  keys_marked_no_store_.Put(crypto::hash::Sha256(key));
 }
 
 bool HttpCache::DidKeyLeadToNoStoreResponse(const std::string& key) {
-  return keys_marked_no_store_.Get(base::SHA1Hash(base::as_byte_span(key))) !=
+  return keys_marked_no_store_.Get(crypto::hash::Sha256(key)) !=
          keys_marked_no_store_.end();
 }
 
@@ -1511,7 +1593,7 @@ void HttpCache::OnIOComplete(int result, PendingOp* pending_op) {
         pending_op->entry->Doom();
       }
 
-      pending_op->entry->Close();
+      pending_op->entry.ExtractAsDangling()->Close();
       pending_op->entry = nullptr;
       try_restart_requests = true;
     }
@@ -1695,6 +1777,12 @@ void HttpCache::OnNoVarySearchCacheLoadComplete(
   auto provisional_no_vary_search_cache = std::move(no_vary_search_cache_);
   no_vary_search_cache_ = std::move(result.value());
   no_vary_search_cache_->MergeFrom(*provisional_no_vary_search_cache);
+  // The persisted cache may have had a different size than our current
+  // configuration. Reconfigure it and evict entries if necessary.
+  const size_t max_size = features::kHttpCacheNoVarySearchCacheMaxEntries.Get();
+  if (max_size >= 1) {
+    no_vary_search_cache_->SetMaxSize(max_size);
+  }
 }
 
 }  // namespace net

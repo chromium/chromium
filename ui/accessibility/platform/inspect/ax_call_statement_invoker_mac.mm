@@ -13,7 +13,7 @@
 #include "ui/accessibility/platform/inspect/ax_element_wrapper_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

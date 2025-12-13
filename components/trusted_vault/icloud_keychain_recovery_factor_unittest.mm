@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -26,9 +25,9 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
-#include "crypto/apple_keychain_v2.h"
-#include "crypto/fake_apple_keychain_v2.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/fake_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -438,7 +437,7 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
       nullptr;
   std::unique_ptr<ICloudKeychainRecoveryFactor> recovery_factor_;
 
-  crypto::ScopedFakeAppleKeychainV2 fake_keychain_{kKeychainAccessGroup};
+  crypto::apple::ScopedFakeKeychainV2 fake_keychain_{kKeychainAccessGroup};
   base::test::TaskEnvironment task_environment_;
 };
 

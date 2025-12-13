@@ -51,7 +51,7 @@ public final class TabClosureParamsUtils {
         }
 
         // Allow undo as long as the triggering motion was *not* from a mouse.
-        return !MotionEventUtils.isMouseEvent(
+        return !MotionEventUtils.isPointerEvent(
                 triggeringMotion.source, triggeringMotion.toolType[0]);
     }
 

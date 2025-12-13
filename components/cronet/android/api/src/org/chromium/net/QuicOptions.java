@@ -357,9 +357,11 @@ public final class QuicOptions {
          * @return the builder for chaining
          */
         @RequiresApi(VERSION_CODES.O)
+        // We use getSeconds(), not toSeconds(), because toSeconds() requires API>=31.
+        @SuppressWarnings("JavaDurationGetSecondsToToSeconds")
         public Builder setIdleConnectionTimeout(@NonNull Duration idleConnectionTimeout) {
             Objects.requireNonNull(idleConnectionTimeout);
-            return setIdleConnectionTimeoutSeconds(idleConnectionTimeout.toSeconds());
+            return setIdleConnectionTimeoutSeconds(idleConnectionTimeout.getSeconds());
         }
 
         /**

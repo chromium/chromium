@@ -4,6 +4,8 @@
 
 #include "chromeos/dbus/init/dbus_thread_manager_base.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
@@ -49,7 +51,7 @@ DBusThreadManagerBase::DBusThreadManagerBase()
     system_bus_options.bus_type = dbus::Bus::SYSTEM;
     system_bus_options.connection_type = dbus::Bus::PRIVATE;
     system_bus_options.dbus_task_runner = dbus_thread_->task_runner();
-    system_bus_ = new dbus::Bus(system_bus_options);
+    system_bus_ = new dbus::Bus(std::move(system_bus_options));
   }
 }
 

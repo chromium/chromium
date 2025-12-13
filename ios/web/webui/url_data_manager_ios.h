@@ -9,7 +9,7 @@
 #include <vector>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 
 namespace web {

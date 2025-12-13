@@ -16,7 +16,6 @@
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
@@ -30,6 +29,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -64,6 +64,8 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/address_list.h"
+#include "net/socket/tcp_client_socket.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -148,13 +150,13 @@ and then write commands into it:
 std::optional<autofill::FieldType> StringToFieldType(std::string_view str) {
   static auto map = [] {
     std::map<std::string_view, autofill::FieldType> map;
-    for (autofill::FieldType field_type : autofill::kAllFieldTypes) {
-      map[autofill::AutofillType(field_type).ToStringView()] = field_type;
+    for (autofill::FieldType field_type : autofill::FieldTypeSet::all()) {
+      map[autofill::FieldTypeToStringView(field_type)] = field_type;
     }
     for (autofill::HtmlFieldType html_field_type :
-         autofill::kAllHtmlFieldTypes) {
-      autofill::AutofillType field_type(html_field_type);
-      map[field_type.ToStringView()] = field_type.GetStorableType();
+         autofill::HtmlFieldTypeSet::all()) {
+      map[autofill::FieldTypeToStringView(html_field_type)] =
+          autofill::HtmlFieldTypeToBestCorrespondingFieldType(html_field_type);
     }
     return map;
   }();
@@ -469,7 +471,8 @@ std::optional<base::Value::Dict> ReadRecipeFile(
   }
 
   // Convert the file text into a json object.
-  std::optional<base::Value> parsed_json = base::JSONReader::Read(json_text);
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json) {
     ADD_FAILURE() << "Failed to deserialize json text!";
     return std::nullopt;
@@ -674,13 +677,7 @@ bool WebPageReplayServerWrapper::Start(
       args.push_back("--quiet_mode");
   }
   args.push_back(base::StringPrintf(
-      "--inject_scripts=%s,%s",
-      FilePathToUTF8(src_dir.AppendASCII("third_party")
-                         .AppendASCII("catapult")
-                         .AppendASCII("web_page_replay_go")
-                         .AppendASCII("deterministic.js")
-                         .value())
-          .c_str(),
+      "--inject_scripts=%s",
       FilePathToUTF8(src_dir.AppendASCII("chrome")
                          .AppendASCII("test")
                          .AppendASCII("data")
@@ -688,6 +685,7 @@ bool WebPageReplayServerWrapper::Start(
                          .AppendASCII("automation_helper.js")
                          .value())
           .c_str()));
+  args.push_back("--no_archive_certificates");
 
   // Specify the capture file.
   args.push_back(base::StringPrintf(
@@ -695,12 +693,46 @@ bool WebPageReplayServerWrapper::Start(
   if (!RunWebPageReplayCmd(args))
     return false;
 
-  // Sleep 5 seconds to wait for the web page replay server to start.
-  // TODO(crbug.com/40578543): create a process std stream reader class to use
-  // the process output to determine when the server is ready
   base::RunLoop wpr_launch_waiter;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
+  // This socket is created and destroyed on the IO thread, but it's simplest to
+  // declare it here, since its deleted by a callback that may be invoked
+  // asynchronously by its connect method, or calls its Connect method,
+  // depending on whether the connection attempt completes synchronously. Having
+  // two deletion paths makes BindOnce() not work well with it.
+  std::unique_ptr<net::TCPClientSocket> client_socket;
+
+  size_t connect_attempts = 0;
+  base::RepeatingCallback<void(int)> on_connect_complete;
+  auto bind_new_socket = base::BindLambdaForTesting([&]() {
+    net::AddressList addr(
+        net::IPEndPoint(net::IPAddress(127, 0, 0, 1), host_http_port_));
+    ++connect_attempts;
+    client_socket = std::make_unique<net::TCPClientSocket>(
+        addr, nullptr, nullptr, nullptr, net::NetLogSource());
+    int connect_result = client_socket->Connect(on_connect_complete);
+    // On ERR_IO_PENDING, `on_connect_complete` will be invoked
+    // asynchronously, so need to let the message loop spin until that
+    // happens.
+    if (connect_result == net::ERR_IO_PENDING) {
+      return;
+    }
+    // Otherwise, run `on_connect_complete` immediately.
+    on_connect_complete.Run(connect_result);
+  });
+
+  // Called on the IO thread once connection has completed. Destroys the
+  // `client_socket`, which may or may not be the object invoking the callback.
+  on_connect_complete = base::BindLambdaForTesting([&](int connect_result) {
+    client_socket.reset();
+    if (connect_result == net::OK || connect_attempts > 30) {
+      wpr_launch_waiter.Quit();
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, bind_new_socket, base::Seconds(1));
+    }
+  });
+
+  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, bind_new_socket);
   wpr_launch_waiter.Run();
 
   if (!web_page_replay_server_.IsValid()) {
@@ -967,8 +999,8 @@ bool TestRecipeReplayer::OverrideTimeClock(
     return false;
   }
   // Convert the file text into a json object.
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(decompressed_json_text);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      decompressed_json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json) {
     VLOG(1) << kTimeClockOverrideNotSetMessage << "Failed to deserialize json";
     return false;
@@ -2125,15 +2157,24 @@ bool TestRecipeReplayer::AllAssertionsPassed(
     return false;
   }
   for (const std::string& assertion : assertions) {
-    if (!EvalJs(frame, base::StringPrintf("(function() {"
-                                          "  try {"
-                                          "    %s"
-                                          "  } catch (ex) {}"
-                                          "  return false;"
-                                          "})();",
-                                          assertion.c_str()))
-             .ExtractBool()) {
-      VLOG(1) << "'" << assertion << "' failed!";
+    content::EvalJsResult result =
+        EvalJs(frame, base::StringPrintf("(function() {"
+                                         "  try {"
+                                         "    %s"
+                                         "  } catch (ex) {}"
+                                         "  return false;"
+                                         "})();",
+                                         assertion.c_str()));
+    if (!result.is_ok()) {
+      VLOG(1) << "'" << assertion << "' failed: " << result.ExtractError();
+      return false;
+    }
+    if (!result.is_bool()) {
+      VLOG(1) << "'" << assertion << "' failed: Did not return boolean.";
+      return false;
+    }
+    if (!result.ExtractBool()) {
+      VLOG(1) << "'" << assertion << "' failed: Returned false.";
       return false;
     }
   }
@@ -2171,7 +2212,7 @@ bool TestRecipeReplayer::GetElementProperty(
     *property = result.ExtractString();
     return true;
   }
-  *property = result.error;
+  *property = result.is_ok() ? "" : result.ExtractError();
   return false;
 }
 
@@ -2244,13 +2285,13 @@ bool TestRecipeReplayer::PlaceFocusOnElement(
 
   content::EvalJsResult result =
       content::EvalJs(frame, focus_on_target_field_js);
-  if (result.error.empty() && result.is_bool() && result.ExtractBool()) {
+  if (result.is_ok() && result.is_bool() && result.ExtractBool()) {
     return true;
   } else {
     VLOG(1) << "Failed to focus element through script:"
-            << (result.error.empty()
+            << (result.is_ok()
                     ? (result.is_bool() ? "Returned false" : "Not a valid bool")
-                    : result.error);
+                    : result.ExtractError());
 
     // Failing focusing on an element through script, use the less preferred
     // method of left mouse clicking the element.

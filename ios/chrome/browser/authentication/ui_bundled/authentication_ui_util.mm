@@ -15,6 +15,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/account_pref_utils.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -91,14 +93,12 @@ NSString* GetActionSheetCoordinatorMessage(
                        IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_NOT_SAVED_DATA);
     }
     case SignedInUserState::kManagedAccountClearsDataOnSignout:
-      // If `kIdentityDiscAccountMenu` is enabled, signing out may also cause
-      // tabs to be closed, see `MainControllerAuthenticationServiceDelegate::
+      // Signing out may also cause tabs to be closed, see
+      // `MainControllerAuthenticationServiceDelegate::
       //    ClearBrowsingDataForSignedinPeriod`.
-      return IsIdentityDiscAccountMenuEnabled()
-                 ? l10n_util::GetNSString(
-                       IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT)
-                 : l10n_util::GetNSString(
-                       IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT);
+      return l10n_util::GetNSString(
+          IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT);
+
     case SignedInUserState::kManagedAccountAndMigratedFromSyncing: {
       return nil;
     }
@@ -114,7 +114,8 @@ std::u16string HostedDomainForPrimaryAccount(
       identity_manager
           ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin))
-          .hosted_domain);
+          .GetHostedDomain()
+          .value_or(std::string()));
 }
 
 AlertCoordinator* ErrorCoordinator(NSError* error,
@@ -242,7 +243,7 @@ bool HasMachineLevelPolicies() {
 BOOL ShouldShowManagedConfirmationForHostedDomain(
     NSString* hosted_domain,
     signin_metrics::AccessPoint access_point,
-    NSString* gaia_id,
+    const GaiaId& gaia_id,
     PrefService* prefs) {
   if ([hosted_domain length] == 0) {
     // No hosted domain, don't show the dialog as there is no host.
@@ -296,7 +297,7 @@ SignedInUserState GetSignedInUserState(
 
 bool ForceLeavingPrimaryAccountConfirmationDialog(
     SignedInUserState signed_in_user_state,
-    std::string_view profile_name) {
+    ProfileIOS* profile) {
   switch (signed_in_user_state) {
     case SignedInUserState::kNotSyncingAndReplaceSyncWithSignin:
       return false;
@@ -309,10 +310,7 @@ bool ForceLeavingPrimaryAccountConfirmationDialog(
       // Show the dialog only if a managed account is signing out from the
       // personal profile. (This can only happen for managed accounts that were
       // already signed in before there was multi-profile support.)
-      return GetApplicationContext()
-                 ->GetProfileManager()
-                 ->GetProfileAttributesStorage()
-                 ->GetPersonalProfileName() == profile_name;
+      return IsPersonalProfile(profile);
   }
   NOTREACHED();
 }
@@ -417,9 +415,7 @@ ActionSheetCoordinator* GetLeavingPrimaryAccountConfirmationDialog(
       break;
     }
     case SignedInUserState::kManagedAccountAndMigratedFromSyncing: {
-      if (IsIdentityDiscAccountMenuEnabled()) {
-        actionSheetCoordinator.alertStyle = UIAlertControllerStyleAlert;
-      }
+      actionSheetCoordinator.alertStyle = UIAlertControllerStyleAlert;
       NSString* const clearFromDeviceTitle =
           l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON);
       [actionSheetCoordinator

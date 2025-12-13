@@ -19,15 +19,11 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwServiceWorkerSettings;
-import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.net.test.util.TestWebServer;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * Test service worker settings APIs.
@@ -249,38 +245,6 @@ public class AwServiceWorkerSettingsTest extends AwParameterizedTest {
                 "No requests should be made in cache-only mode",
                 0,
                 mWebServer.getRequestCount(FETCH_URL));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Preferences", "ServiceWorker"})
-    public void testGetUpdatedXrwAllowList() throws Throwable {
-        initAwServiceWorkerSettings();
-        final Set<String> allowList = Set.of("https://*.example.com", "https://*.google.com");
-
-        Assert.assertEquals(
-                Collections.emptySet(),
-                mAwServiceWorkerSettings.getRequestedWithHeaderOriginAllowList());
-
-        mAwServiceWorkerSettings.setRequestedWithHeaderOriginAllowList(allowList);
-
-        Assert.assertEquals(
-                allowList, mAwServiceWorkerSettings.getRequestedWithHeaderOriginAllowList());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Preferences", "ServiceWorker"})
-    public void testXRequestedWithAllowListSetByManifest() throws Throwable {
-        final Set<String> allowList = Set.of("https://*.example.com", "https://*.google.com");
-        try (var a = ManifestMetadataUtil.setXRequestedWithAllowListScopedForTesting(allowList)) {
-            // Only initialize once the manifest has been configured
-            initAwServiceWorkerSettings();
-
-            Set<String> changedList =
-                    mAwServiceWorkerSettings.getRequestedWithHeaderOriginAllowList();
-            Assert.assertEquals(allowList, changedList);
-        }
     }
 
     private String indexHtml(int fetches) {

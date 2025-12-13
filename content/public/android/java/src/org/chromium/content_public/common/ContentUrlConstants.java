@@ -6,7 +6,7 @@ package org.chromium.content_public.common;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** URL constants used by both Chrome, WebLayer and WebView. */
+/** URL constants used by both Chrome and WebView. */
 @NullMarked
 public final class ContentUrlConstants {
     public static final String ABOUT_SCHEME = "about";

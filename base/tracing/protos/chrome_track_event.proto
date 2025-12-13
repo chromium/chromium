@@ -40,6 +40,8 @@ message BlinkTaskScope {
     TASK_SCOPE_REQUEST_IDLE_CALLBACK = 7;
     TASK_SCOPE_XML_HTTP_REQUEST = 8;
     TASK_SCOPE_SOFT_NAVIGATION = 9;
+    TASK_SCOPE_MISC_EVENT = 10;
+    TASK_SCOPE_MICROTASK = 11;
   }
   optional TaskScopeType type = 1;
   optional int64 scope_task_id = 2;
@@ -705,6 +707,7 @@ message BackForwardCacheCanStoreDocumentResult {
     CACHE_LIMIT_PRUNED_ON_MODERATE_MEMORY_PRESSURE = 66;
     CACHE_LIMIT_PRUNED_ON_CRITICAL_MEMORY_PRESSURE = 67;
     SHARED_WORKER_MESSAGE = 68;
+    SHARED_WORKER_WITH_NO_ACTIVE_CLIENT = 69;
   }
 
   optional BackForwardCacheNotRestoredReason
@@ -850,6 +853,7 @@ message EventLatency {
     GESTURE_PINCH_UPDATE = 25;
     INERTIAL_GESTURE_SCROLL_UPDATE = 26;
     MOUSE_MOVED_EVENT = 27;
+    INERTIAL_GESTURE_SCROLL_END = 28;
   }
 
   optional EventType event_type = 1;
@@ -872,15 +876,242 @@ message EventLatency {
   // aggregation) in which the input was first presented. See also
   // ChromeGraphicsPipeline.display_trace_id.
   optional int64 display_trace_id = 8;
-  // This is set only for scroll updates and is based on the
-  // Event.ScrollJank.DelayedFramesPercentage.FixedWindow3 metric.
-  // NOTE: This field is a new experimental version of is_janky_scrolled_frame.
-  // This field aims to address the old field's shortcomings and eventually
-  // replace it. For now, we recommend you still use the old field
-  // (is_janky_scrolled_frame). See the
-  // Event.ScrollJank.DelayedFramesPercentage.FixedWindow3 histogram's
-  // documentation for more details.
-  optional bool is_janky_scrolled_frame_v3 = 9;
+
+  // Deprecated in favor of `ChromeTrackEvent.scroll_jank_v4.is_janky`. Not
+  // filled anymore in newer versions of Chrome.
+  optional bool is_janky_scrolled_frame_v3 = 9 [deprecated = true];
+
+  // Result of the Scroll Jank V4 Metric for a scroll update. This is set only
+  // for scroll updates. See
+  // cc::ScrollUpdateEventMetrics::ScrollJankV4MetricResults,
+  // https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
+  // and the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow histogram's
+  // documentation for more information.
+  //
+  // To simplify the documentation below, we use "this frame" to refer to the
+  // frame in which the scroll update was presented.
+  message ScrollJankV4Result {
+    // Next ID: 13
+
+    // This field is a new version of `EventLatency.is_janky_scrolled_frame`
+    // based on the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow
+    // metric. This field aims to address the old field's shortcomings and
+    // eventually replace it. True if and only if at least one value in
+    // `missed_vsyncs_per_jank_reason` is greater than zero.
+    optional bool is_janky = 1;
+
+    // Reason why Chrome's scroll jank v4 metric marked a scroll update as
+    // janky. A single scroll update can be janky for more than one reason.
+    // LINT.IfChange(JankReason)
+    enum JankReason {
+      JANK_REASON_UNSPECIFIED = 0;
+
+      // Chrome's input→frame delivery slowed down to the point that it missed
+      // one or more VSyncs.
+      MISSED_VSYNC_DUE_TO_DECELERATING_INPUT_FRAME_DELIVERY = 1;
+
+      // Chrome missed one or more VSyncs in the middle of a fast regular
+      // scroll.
+      MISSED_VSYNC_DURING_FAST_SCROLL = 2;
+
+      // Chrome missed one or more VSyncs during the transition from a fast
+      // regular scroll to a fling.
+      MISSED_VSYNC_AT_START_OF_FLING = 3;
+
+      // Chrome missed one or more VSyncs in the middle of a fling.
+      MISSED_VSYNC_DURING_FLING = 4;
+    }
+    // LINT.ThenChange(//cc/metrics/scroll_jank_v4_result.h:JankReason,//tools/metrics/histograms/metadata/event/histograms.xml:ScrollJankReasonV4)
+
+    // Number of VSyncs that that Chrome missed before presenting the scroll
+    // update for each reason. Essentially a map<JankReason, int32>.
+    message MissedVsyncsForJankReason {
+      optional JankReason jank_reason = 1;
+      optional int32 missed_vsyncs = 2;
+    }
+    repeated MissedVsyncsForJankReason missed_vsyncs_per_jank_reason = 2;
+
+    // Deprecated in favor of `updates.real.abs_total_raw_delta_pixels`.
+    //
+    // The absolute total raw (unpredicted) delta of all scroll updates included
+    // in this frame (in pixels).
+    optional float abs_total_raw_delta_pixels = 3;
+
+    // Deprecated in favor of `updates.real.max_abs_inertial_raw_delta_pixels`.
+    //
+    // The maximum absolute raw (unpredicted) delta out of all inertial (fling)
+    // scroll updates included in this frame (in pixels). Zero if there were no
+    // inertial scroll updates in this frame.
+    optional float max_abs_inertial_raw_delta_pixels = 4;
+
+    // How many VSyncs were between (A) this frame and (B) the previous frame.
+    // If this value is greater than one, then Chrome potentially missed one or
+    // more VSyncs (i.e. might have been able to present this scroll update
+    // earlier). Empty if this frame is the first frame in a scroll.
+    optional int32 vsyncs_since_previous_frame = 5;
+
+    // The running delivery cut-off based on frames preceding this frame. Empty
+    // if ANY of the following holds:
+    //
+    //   * This frame is the first frame in a scroll.
+    //   * All frames since the beginning of the scroll up to and including the
+    //     previous frame have been non-damaging.
+    //   * The most recent janky frame was non-damaging and all frames since
+    //     then up to and including the previous frame have been non-damaging.
+    optional int64 running_delivery_cutoff_us = 6;
+
+    // The running delivery cut-off adjusted for this frame. Empty if ANY of the
+    // following holds:
+    //
+    //   * This frame is the first frame in a scroll.
+    //   * This frame is non-damaging.
+    //   * All frames since the beginning of the scroll up to and including the
+    //     previous frame have been non-damaging.
+    //   * The most recent janky frame was non-damaging and all frames since
+    //     then up to and including the previous frame have been non-damaging.
+    //   * `vsyncs_since_previous_frame` is equal to one.
+    optional int64 adjusted_delivery_cutoff_us = 7;
+
+    // The delivery cut-off of this frame. Empty if this frame is non-damaging.
+    optional int64 current_delivery_cutoff_us = 8;
+
+    // Deprecated in favor of `damage_type`.
+    //
+    // Whether this frame is damaging. This frame is non-damaging if the
+    // following conditions are BOTH true:
+    //
+    //   1. All scroll updates in this frame are non-damaging. A scroll update
+    //      is non-damaging if it didn't cause a frame update and/or didn't
+    //      change the scroll offset.
+    //
+    //   2. All frames between (both ends exclusive):
+    //        a. the last frame presented by Chrome before this frame and
+    //        b. this frame
+    //      are non-damaging.
+    optional bool is_damaging_frame = 9;
+
+    // Information about the scroll updates that were included in this frame.
+    message ScrollUpdates {
+      // Real scroll updates which originated from hardware/OS.
+      message Real {
+        // Trace IDs of the first real scroll update included in this frame. Can
+        // be joined with EventLatency.event_latency_id.
+        optional int64 first_event_latency_id = 1;
+
+        // The absolute total raw (unpredicted) delta of all real scroll updates
+        // included in this frame (in pixels).
+        optional float abs_total_raw_delta_pixels = 2;
+
+        // The maximum absolute raw (unpredicted) delta out of all inertial
+        // (fling) scroll updates included in this frame (in pixels). Empty if
+        // there were no inertial scroll updates in this frame.
+        optional float max_abs_inertial_raw_delta_pixels = 3;
+      }
+      optional Real real = 1;
+
+      // Synthetic scroll updates which were predicted by Chrome
+      message Synthetic {
+        // Trace IDs of the first synthetic scroll update included in this
+        // frame. Can be joined with EventLatency.event_latency_id.
+        optional int64 first_event_latency_id = 1;
+      }
+      optional Synthetic synthetic = 2;
+
+      // Type of the first scroll update in this frame based on:
+      //
+      //   * For real scroll updates, we consider their actual input generation
+      //     timestamp.
+      //   * For synthetic scroll updates, we extrapolate their input generation
+      //     timestamp based on the input generation → begin frame duration of
+      //     the most recent real scroll update UNLESS ANY of the following
+      //     holds (in which case we DON'T extrapolate input generation
+      //     timestamps for synthetic scroll updates in this frame):
+      //       * This frame is janky.
+      //       * All frames since the beginning of the scroll up to and
+      //         including the previous frame have contained only synthetic
+      //         scroll updates.
+      //       * The most recent janky frame contained only synthetic scroll
+      //         updates and all frames since then up to and including the
+      //         previous frame have contained only synthetic scroll updates.
+      //
+      // If, based on the above rules, the scroll update with the earliest input
+      // generation timestamp is a real scroll update, then this frame's type is
+      // `REAL`. If the scroll update with the earliest input generation
+      // timestamp is a synthetic scroll update, then this frame's type is
+      // `SYNTHETIC_WITH_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP`.
+      //
+      // If this frame contained only synthetic scroll updates but it wasn't
+      // possible to extrapolate their input generation timestamp (for any of
+      // the reasons listed above), then this frame's type is
+      // `SYNTHETIC_WITHOUT_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP`.
+      //
+      // See `cc::ScrollJankV4FrameStage::ScrollUpdates` and
+      // `cc::ScrollJankV4Result::first_input_generation`.
+      enum FirstScrollUpdateType {
+        UNKNOWN = 0;
+        REAL = 1;
+        SYNTHETIC_WITH_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP = 2;
+        SYNTHETIC_WITHOUT_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP = 3;
+      }
+      optional FirstScrollUpdateType first_scroll_update_type = 3;
+    }
+    optional ScrollUpdates updates = 10;
+
+    // Type of scroll damage in this frame. A frame F is non-damaging if the
+    // following conditions are BOTH true:
+    //
+    //   1. All scroll updates in F are non-damaging. A scroll update
+    //      is non-damaging if it didn't cause a frame update (i.e.
+    //      `EventMetrics::caused_frame_update()` is false) and/or didn't change
+    //      the scroll offset (i.e. `ScrollEventMetrics::did_scroll()` is
+    //      false).
+    //
+    //   2. All frames between (both ends exclusive):
+    //        a. the last frame presented by Chrome before F and
+    //        b. F
+    //      are non-damaging.
+    //
+    // A non-damaging frame has its presentation timestamp extrapolated based on
+    // the begin frame → presentation duration of the most recent damaging frame
+    // UNLESS ANY of the following holds:
+    //
+    //   * This frame is janky and non-damaging.
+    //   * All frames since the beginning of the scroll up to and including this
+    //     frame have been non-damaging.
+    //   * The most recent janky frame was non-damaging and all frames since
+    //     then up to and including the this frame have been non-damaging.
+    //
+    // See `cc::ScrollJankV4Frame::ScrollDamage` and
+    // `cc::ScrollJankV4Result::presentation`.
+    //
+    // Note: The `updates.first_scroll_update_type` and `damage_type` fields are
+    // orthogonal. The former depends on whether the frame is synthetic (only
+    // contains synthetic scroll updates). The latter depends on whether the
+    // frame is damaging. For example:
+    //
+    //   * If a frame is synthetic and damaging, it will[1] have an extrapolated
+    //     input generation timestamp.
+    //   * If a frame is real and non-damaging, it will[1] have an extrapolated
+    //     presentation timestamp.
+    //   * If a frame is both synthetic and damaging, it will[1] have both
+    //     timestamps extrapolated.
+    //
+    // [1] As long as there's Chrome past performance to extrapolate based on.
+    enum DamageType {
+      UNKNOWN = 0;
+      DAMAGING = 1;
+      NON_DAMAGING_WITH_EXTRAPOLATED_PRESENTATION_TIMESTAMP = 2;
+      NON_DAMAGING_WITHOUT_EXTRAPOLATED_PRESENTATION_TIMESTAMP = 3;
+    }
+    optional DamageType damage_type = 11;
+
+    // The VSync interval that this frame was produced for according to the
+    // BeginFrameArgs.
+    optional int64 vsync_interval_us = 12;
+  }
+
+  // Deprecated in favor of top-level `ChromeTrackEvent.scroll_jank_v4`.
+  optional ScrollJankV4Result scroll_jank_v4 = 10 [deprecated = true];
 }
 
 message ProcessSingleton {
@@ -959,6 +1190,12 @@ message SequenceManagerTask {
     NORMAL_PRIORITY_CONTINUATION = 9;
     LOW_PRIORITY_CONTINUATION = 10;
     EXTREMELY_HIGH_PRIORITY = 11;
+
+    // Priorities used in Network Service.
+    MEDIUM_PRIORITY = 12;
+    LOWEST_PRIORITY = 13;
+    IDLE_PRIORITY = 14;
+    THROTTLED_PRIORITY = 15;
   }
 
   enum QueueName {
@@ -1029,11 +1266,20 @@ message SequenceManagerTask {
     V8_USER_VISIBLE_TQ = 56;
     V8_BEST_EFFORT_TQ = 57;
 
+    // TODO(crbug.com/450428442): Deprecate these TQ names when
+    // NetworkServicePerPriorityTaskQueues is enabled by default.
     NETWORK_SERVICE_THREAD_HIGH_TQ = 58;
     NETWORK_SERVICE_THREAD_DEFAULT_TQ = 59;
 
     UI_STARTUP_TQ = 60;
     IO_STARTUP_TQ = 61;
+
+    NETWORK_SERVICE_THREAD_THROTTLED_TQ = 62;
+    NETWORK_SERVICE_THREAD_IDLE_TQ = 63;
+    NETWORK_SERVICE_THREAD_LOWEST_TQ = 64;
+    NETWORK_SERVICE_THREAD_LOW_TQ = 65;
+    NETWORK_SERVICE_THREAD_MEDIUM_TQ = 66;
+    NETWORK_SERVICE_THREAD_HIGHEST_TQ = 67;
   }
 
   optional Priority priority = 1;
@@ -1111,122 +1357,6 @@ message UkmPageLoadTimingUpdate {
   optional double latest_largest_contentful_paint_ms = 4;
 
   optional double first_contentful_paint_ms = 5;
-}
-
-// A serialisation of v8StackFrame class.
-message V8StackFrame {
-  // Code location (path to the script and line/column number)
-  message ScriptLocation {
-    optional string source_url = 1;
-    optional int64 line_number = 2;
-    optional int64 column_number = 3;
-  }
-
-  // The name of the function that was called
-  optional string function_name = 1;
-
-  // If the function was defined in a script, contains the location within the
-  // script.
-  optional ScriptLocation script_location = 2;
-}
-
-// Serializes the blink::ExecutionContext object.
-message BlinkExecutionContext {
-  // Definition of different context types.
-  enum ContextType {
-    UNKNOWN_CONTEXT = 0;
-    WINDOW = 1;
-    WORKLET = 2;
-    DEDICATED_WORKER = 3;
-    SHARED_WORKER = 4;
-    SERVICE_WORKER = 5;
-  }
-
-  // Definition of world type.
-  enum WorldType {
-    WORLD_UNKNOWN = 0;
-    WORLD_MAIN = 1;
-    WORLD_ISOLATED = 2;
-    WORLD_INSPECTOR_ISOLATED = 3;
-    WORLD_REG_EXP = 4;
-    WORLD_FOR_V8_CONTEXT_SNAPSHOT_NON_MAIN = 5;
-    WORLD_WORKER = 6;
-    WORLD_SHADOW_REALM = 7;
-  }
-
-  optional ContextType type = 1;
-  // Contains url of frame or worker.
-  optional string url = 2;
-  // The origin of the execution context.
-  optional string origin = 3;
-  // The world type of the execution context.
-  optional WorldType world_type = 4;
-}
-
-// Serializes the blink::SourceLocation object.
-message BlinkSourceLocation {
-  optional string function_name = 1;
-  optional int32 script_id = 2;
-  optional string url = 3;
-  optional int32 line_number = 4;
-  optional int32 column_number = 5;
-  optional string stack_trace = 6;
-  repeated V8StackFrame stack_frames = 7;
-}
-
-// Contains the meta information for high entropy events (like api calls)
-// that are to be traced for debugging in the context of identifiability study.
-message BlinkHighEntropyAPI {
-  // Serialization of a parameter passed to a javascript function.
-  // Contains the stringified type of the object and some string representation
-  // of its value.
-  message JSFunctionArgument {
-    // Definition of different types of function parameters.
-    enum ArgumentType {
-      UNKNOWN_TYPE = 0;
-      NULL_TYPE = 1;
-      UNDEFINED = 2;
-      BIGINT = 3;
-      BOOLEAN = 4;
-      FUNCTION = 5;
-      NUMBER = 6;
-      STRING = 7;
-      SYMBOL = 8;
-      OBJECT = 9;
-    }
-    optional ArgumentType type = 1;
-    optional string value = 2;
-  }
-
-  // Describes a Javascript API call.
-  message CalledJsApi {
-    // Contains class and function name of api called
-    // similar to "Navigator.languages.get".
-    optional string identifier = 1;
-    repeated JSFunctionArgument func_arguments = 2;
-
-    // Deprecated in favour of outer source_location. Not filled anymore in
-    // newer versions of chrome.
-    optional BlinkSourceLocation source_location = 3 [deprecated = true];
-  }
-  optional BlinkExecutionContext execution_context = 1;
-  optional CalledJsApi called_api = 2;
-  optional BlinkSourceLocation source_location = 3;
-
-  // Describes lookup of a font.
-  message FontLookup {
-    enum FontLookupType {
-      FONT_LOOKUP_UNKNOWN_TYPE = 0;
-      FONT_LOOKUP_UNIQUE_OR_FAMILY_NAME = 1;
-      FONT_LOOKUP_UNIQUE_NAME_ONLY = 2;
-    }
-    optional FontLookupType type = 1;
-    optional string name = 2;
-    optional uint64 weight = 3;
-    optional uint64 width = 4;
-    optional uint64 slope = 5;
-  }
-  optional FontLookup font_lookup = 4;
 }
 
 // Contains information about a tab switch measurement.
@@ -2002,10 +2132,16 @@ message CompositorTimingHistoryV2 {
 message WebViewStartup {
   optional bool from_ui_thread = 1 [deprecated = true];
   // This enum must be kept in sync with WebViewChromiumAwInit.CallSite
+  // LINT.IfChange(WebViewStartup)
   enum CallSite {
     GET_AW_TRACING_CONTROLLER = 0;
     GET_AW_PROXY_CONTROLLER = 1;
+    // This entry should no longer be used. This was a catch all for all methods
+    // in the WebView instance but we now have different callsites for each
+    // method.
     WEBVIEW_INSTANCE = 2;
+    // This entry should no longer be used. This was a catch all for all static
+    // methods but we now have different callsites for each method.
     GET_STATICS = 3;
     GET_DEFAULT_GEOLOCATION_PERMISSIONS = 4;
     GET_DEFAULT_SERVICE_WORKER_CONTROLLER = 5;
@@ -2014,7 +2150,107 @@ message WebViewStartup {
     GET_DEFAULT_WEBVIEW_DATABASE = 8;
     GET_TRACING_CONTROLLER = 9;
     ASYNC_WEBVIEW_STARTUP = 10;
+    WEBVIEW_INSTANCE_OVERLAY_HORIZONTAL_SCROLLBAR = 11;
+    WEBVIEW_INSTANCE_OVERLAY_VERTICAL_SCROLLBAR = 12;
+    WEBVIEW_INSTANCE_GET_CERTIFICATE = 13;
+    WEBVIEW_INSTANCE_GET_HTTP_AUTH_USERNAME_PASSWORD = 14;
+    WEBVIEW_INSTANCE_SAVE_STATE = 15;
+    WEBVIEW_INSTANCE_RESTORE_STATE = 16;
+    WEBVIEW_INSTANCE_LOAD_URL = 17;
+    WEBVIEW_INSTANCE_POST_URL = 18;
+    WEBVIEW_INSTANCE_LOAD_DATA = 19;
+    WEBVIEW_INSTANCE_LOAD_DATA_WITH_BASE_URL = 20;
+    WEBVIEW_INSTANCE_EVALUATE_JAVASCRIPT = 21;
+    WEBVIEW_INSTANCE_CAN_GO_BACK = 22;
+    WEBVIEW_INSTANCE_CAN_GO_FORWARD = 23;
+    WEBVIEW_INSTANCE_CAN_GO_BACK_OR_FORWARD = 24;
+    WEBVIEW_INSTANCE_IS_PAUSED = 25;
+    WEBVIEW_INSTANCE_COPY_BACK_FORWARD_LIST = 26;
+    WEBVIEW_INSTANCE_SHOW_FIND_DIALOG = 27;
+    WEBVIEW_INSTANCE_SET_WEBVIEW_CLIENT = 28;
+    WEBVIEW_INSTANCE_SET_WEBCHROME_CLIENT = 29;
+    WEBVIEW_INSTANCE_CREATE_WEBMESSAGE_CHANNEL = 30;
+    WEBVIEW_INSTANCE_GET_ZOOM_CONTROLS = 31;
+    WEBVIEW_INSTANCE_ZOOM_IN = 32;
+    WEBVIEW_INSTANCE_ZOOM_OUT = 33;
+    WEBVIEW_INSTANCE_ZOOM_BY = 34;
+    WEBVIEW_INSTANCE_SET_RENDERER_PRIORITY_POLICY = 35;
+    WEBVIEW_INSTANCE_GET_RENDERER_REQUESTED_PRIORITY = 36;
+    WEBVIEW_INSTANCE_GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE = 37;
+    WEBVIEW_INSTANCE_SET_TEXT_CLASSIFIER = 38;
+    WEBVIEW_INSTANCE_GET_TEXT_CLASSIFIER = 39;
+    WEBVIEW_INSTANCE_AUTOFILL = 40;
+    WEBVIEW_INSTANCE_ON_PROVIDE_AUTOFILL_VIRTUAL_STRUCTURE = 41;
+    WEBVIEW_INSTANCE_ON_PROVIDE_CONTENT_CAPTURE_STRUCTURE = 42;
+    WEBVIEW_INSTANCE_SHOULD_DELAY_CHILD_PRESSED_STATE = 43;
+    WEBVIEW_INSTANCE_GET_ACCESSIBILITY_NODE_PROVIDER = 44;
+    WEBVIEW_INSTANCE_ON_PROVIDE_VIRTUAL_STRUCTURE = 45;
+    WEBVIEW_INSTANCE_PERFORM_ACCESSIBILITY_ACTION = 46;
+    WEBVIEW_INSTANCE_ON_DRAW = 47;
+    WEBVIEW_INSTANCE_SET_LAYOUT_PARAMS = 48;
+    WEBVIEW_INSTANCE_ON_DRAG_EVENT = 49;
+    WEBVIEW_INSTANCE_ON_CREATE_INPUT_CONNECTION = 50;
+    WEBVIEW_INSTANCE_ON_KEY_MULTIPLE = 51;
+    WEBVIEW_INSTANCE_ON_KEY_DOWN = 52;
+    WEBVIEW_INSTANCE_ON_KEY_UP = 53;
+    WEBVIEW_INSTANCE_ON_ATTACHED_TO_WINDOW = 54;
+    WEBVIEW_INSTANCE_DISPATCH_KEY_EVENT = 55;
+    WEBVIEW_INSTANCE_ON_TOUCH_EVENT = 56;
+    WEBVIEW_INSTANCE_ON_HOVER_EVENT = 57;
+    WEBVIEW_INSTANCE_ON_GENERIC_MOTION_EVENT = 58;
+    WEBVIEW_INSTANCE_REQUEST_FOCUS = 59;
+    WEBVIEW_INSTANCE_ON_MEASURE = 60;
+    WEBVIEW_INSTANCE_REQUEST_CHILD_RECTANGLE_ON_SCREEN = 61;
+    WEBVIEW_INSTANCE_SET_BACKGROUND_COLOR = 62;
+    WEBVIEW_INSTANCE_ON_START_TEMPORARY_DETACH = 63;
+    WEBVIEW_INSTANCE_ON_FINISH_TEMPORARY_DETACH = 64;
+    WEBVIEW_INSTANCE_ON_CHECK_IS_TEXT_EDITOR = 65;
+    WEBVIEW_INSTANCE_ON_APPLY_WINDOW_INSETS = 66;
+    WEBVIEW_INSTANCE_ON_RESOLVE_POINTER_ICON = 67;
+    WEBVIEW_INSTANCE_COMPUTE_HORIZONTAL_SCROLL_RANGE = 68;
+    WEBVIEW_INSTANCE_COMPUTE_HORIZONTAL_SCROLL_OFFSET = 69;
+    WEBVIEW_INSTANCE_COMPUTE_VERTICAL_SCROLL_RANGE = 70;
+    WEBVIEW_INSTANCE_COMPUTE_VERTICAL_SCROLL_OFFSET = 71;
+    WEBVIEW_INSTANCE_COMPUTE_VERTICAL_SCROLL_EXTENT = 72;
+    WEBVIEW_INSTANCE_COMPUTE_SCROLL = 73;
+    WEBVIEW_INSTANCE_CREATE_PRINT_DOCUMENT_ADAPTER = 74;
+    WEBVIEW_INSTANCE_EXTRACT_SMART_CLIP_DATA = 75;
+    WEBVIEW_INSTANCE_SET_SMART_CLIP_RESULT_HANDLER = 76;
+    WEBVIEW_INSTANCE_GET_RENDER_PROCESS = 77;
+    WEBVIEW_INSTANCE_GET_WEBVIEW_RENDERER_CLIENT_ADAPTER = 78;
+    WEBVIEW_INSTANCE_PAGE_UP = 79;
+    WEBVIEW_INSTANCE_PAGE_DOWN = 80;
+    WEBVIEW_INSTANCE_LOAD_URL_ADDITIONAL_HEADERS = 81;
+    WEBVIEW_INSTANCE_INIT = 82;
+    WEBVIEW_INSTANCE_CAPTURE_PICTURE = 83;
+    WEBVIEW_INSTANCE_GET_SCALE = 84;
+    WEBVIEW_INSTANCE_SET_INITIAL_SCALE = 85;
+    WEBVIEW_INSTANCE_GET_HIT_TEST_RESULT = 86;
+    WEBVIEW_INSTANCE_GET_URL = 87;
+    WEBVIEW_INSTANCE_GET_ORIGINAL_URL = 88;
+    WEBVIEW_INSTANCE_GET_TITLE = 89;
+    WEBVIEW_INSTANCE_GET_FAVICON = 90;
+    STATIC_FIND_ADDRESS = 91;
+    STATIC_GET_DEFAULT_USER_AGENT = 92;
+    STATIC_SET_WEB_CONTENTS_DEBUGGING_ENABLED = 93;
+    STATIC_CLEAR_CLIENT_CERT_PREFERENCES = 94;
+    STATIC_FREE_MEMORY_FOR_TESTS = 95;
+    STATIC_ENABLE_SLOW_WHOLE_DOCUMENT_DRAW = 96;
+    STATIC_PARSE_FILE_CHOOSER_RESULT = 97;
+    STATIC_INIT_SAFE_BROWSING = 98;
+    STATIC_SET_SAFE_BROWSING_ALLOWLIST = 99;
+    STATIC_GET_SAFE_BROWSING_PRIVACY_POLICY_URL = 100;
+    STATIC_IS_MULTI_PROCESS_ENABLED = 101;
+    STATIC_GET_VARIATIONS_HEADER = 102;
+    reserved 103, 104;
+    reserved "STATIC_SET_DEFAULT_TRAFFIC_STATS_TAG", "STATIC_SET_DEFAULT_TRAFFIC_STATS_UID";
+    STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE = 105;
+    STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE = 106;
+    GET_DEFAULT_COOKIE_MANAGER = 107;
+    // Remember to update WebViewStartupCallSite in enums.xml when adding new
+    // values here.
   }
+  // LINT.ThenChange(//android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumAwInit.java:CallSite)
 
   // LINT.IfChange(WebViewChromiumStartupMode)
   enum StartupMode {
@@ -2533,9 +2769,19 @@ message InputTransferHandler {
   optional TransferInputToVizResult transfer_result = 1;
 };
 
+message ResponseInfo {
+  // The HTTP response code. Will be left empty if the response code is unknown.
+  optional int64 response_code = 1;
+
+  // Whether the response was served from the HTTP cache.
+  optional bool was_http_cache = 2;
+};
+
 message ChromeTrackEvent {
+  reserved 1045;
+
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1077
+  // Next ID: 1079
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2632,8 +2878,6 @@ message ChromeTrackEvent {
 
     optional UkmPageLoadTimingUpdate ukm_page_load_timing_update = 1044;
 
-    optional BlinkHighEntropyAPI high_entropy_api = 1045;
-
     optional TabSwitchMeasurement tab_switch_measurement = 1046;
 
     optional ScrollDeltas scroll_deltas = 1047;
@@ -2700,5 +2944,9 @@ message ChromeTrackEvent {
     optional ChromeFrameReporter2 frame_reporter = 1075;
 
     optional InputTransferHandler input_transfer_handler = 1076;
+
+    optional ResponseInfo response_info = 1077;
+
+    optional EventLatency.ScrollJankV4Result scroll_jank_v4 = 1078;
   }
 }

@@ -19,6 +19,8 @@ namespace {
 constexpr uint32_t kLinuxDmabufVersion = 1;
 
 void CreateParams(wl_client* client, wl_resource* resource, uint32_t id) {
+  // base::DoNothing() is used because the ~TestZwpLinuxBufferParamsV1()
+  // takes care of the cleanup.
   wl_resource* params_resource =
       CreateResourceWithImpl<TestZwpLinuxBufferParamsV1>(
           client, &zwp_linux_buffer_params_v1_interface,

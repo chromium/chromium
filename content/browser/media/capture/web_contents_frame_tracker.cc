@@ -36,7 +36,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
@@ -330,9 +330,6 @@ void WebContentsFrameTracker::ApplySubCaptureTarget(
   DCHECK(callback);
 
   if (sub_capture_target_version_ >= sub_capture_target_version) {
-    // This will trigger a BadMessage from MediaStreamDispatcherHost.
-    // (MediaStreamDispatcherHost knows the capturer, whereas here we know
-    // the capturee.)
     std::move(callback).Run(
         media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion);
     return;

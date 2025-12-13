@@ -28,6 +28,7 @@ const base::FilePath::CharType kComponentPolicyCache[] =
 
 MachineLevelUserCloudPolicyManager::MachineLevelUserCloudPolicyManager(
     std::unique_ptr<MachineLevelUserCloudPolicyStore> store,
+    std::unique_ptr<MachineLevelUserCloudPolicyStore> extension_install_store,
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
     const base::FilePath& policy_dir,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
@@ -35,10 +36,13 @@ MachineLevelUserCloudPolicyManager::MachineLevelUserCloudPolicyManager(
     : CloudPolicyManager(dm_protocol::kChromeMachineLevelUserCloudPolicyType,
                          std::string(),
                          std::move(store),
+                         std::move(extension_install_store),
                          task_runner,
                          std::move(network_connection_tracker_getter)),
       user_store_(static_cast<MachineLevelUserCloudPolicyStore*>(
           CloudPolicyManager::store())),
+      extension_install_store_(static_cast<MachineLevelUserCloudPolicyStore*>(
+          CloudPolicyManager::extension_install_store())),
       external_data_manager_(std::move(external_data_manager)),
       policy_dir_(policy_dir) {}
 
@@ -92,6 +96,9 @@ void MachineLevelUserCloudPolicyManager::DisconnectAndRemovePolicy() {
   // that all external data references have been removed, causing the
   // |external_data_manager_| to clear its cache as well.
   user_store_->Clear();
+  if (extension_install_store_) {
+    extension_install_store_->Clear();
+  }
 }
 
 void MachineLevelUserCloudPolicyManager::Init(SchemaRegistry* registry) {
@@ -102,10 +109,16 @@ void MachineLevelUserCloudPolicyManager::Init(SchemaRegistry* registry) {
   ConfigurationPolicyProvider::Init(registry);
 
   store()->AddObserver(this);
+  if (extension_install_store()) {
+    extension_install_store()->AddObserver(this);
+  }
 
   // Load the policy from disk synchronously once the manager is initalized
   // during Chrome launch if the cache and the global dm token exist.
   store()->LoadImmediately();
+  if (extension_install_store()) {
+    extension_install_store()->LoadImmediately();
+  }
 }
 
 void MachineLevelUserCloudPolicyManager::Shutdown() {
@@ -116,7 +129,8 @@ void MachineLevelUserCloudPolicyManager::Shutdown() {
 
 void MachineLevelUserCloudPolicyManager::OnStoreLoaded(
     CloudPolicyStore* cloud_policy_store) {
-  DCHECK_EQ(store(), cloud_policy_store);
+  CHECK(store() == cloud_policy_store ||
+        extension_install_store() == cloud_policy_store);
   CloudPolicyManager::OnStoreLoaded(cloud_policy_store);
 
   // It's possible for |client()| to be null during startup if the store is

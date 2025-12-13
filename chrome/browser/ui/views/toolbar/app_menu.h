@@ -46,6 +46,9 @@ class AppMenu final : public views::MenuDelegate,
   // Shows the menu relative to the specified controller's button.
   void RunMenu(views::MenuButtonController* host);
 
+  // Shows the menu with an anchor in the parent widget given its bounds.
+  void RunMenu(views::Widget* parent, const gfx::Rect& anchor_screen_bounds);
+
   // Closes the menu if it is open, otherwise does nothing.
   void CloseMenu();
 

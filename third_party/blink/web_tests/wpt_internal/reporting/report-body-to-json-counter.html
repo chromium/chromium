@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/intervention.js"></script>
+<div id="target" style="padding: 10px; background-color: blue;">
+  <p>Testing ReportBody toJSON use counters</p>
+</div>
+<body>
+  <script type=module>
+    import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+    // Test that ONLY explicit .toJSON() calls are measured, NOT JSON.stringify().
+    // V8's JSON.stringify() internally calls toJSON() but passes a key parameter.
+    // Explicit .toJSON() calls pass no argument (null/undefined).
+    // We only use-count the non-parameterized overload to measure the breaking case.
+    //
+    // Test pattern for each report type:
+    // 1. Verify counter is clear.
+    // 2. Call JSON.stringify() - counter should NOT increment.
+    // 3. Call .toJSON() explicitly - counter SHOULD increment.
+
+    async_test(function(test) {
+      internals.clearUseCounter(document, WebFeature.kDeprecationReportBodyToJSON);
+      internals.clearUseCounter(document, WebFeature.kInterventionReportBodyToJSON);
+
+      // Track which report types we've tested to avoid testing the same type multiple times.
+      // The ReportingObserver can fire multiple times with different reports.
+      let deprecationSeen = false;
+      let interventionSeen = false;
+
+      const observer = new ReportingObserver(function(reports, observer) {
+        test.step(function() {
+          for (const report of reports) {
+            if (report.type === 'deprecation' && !deprecationSeen) {
+              deprecationSeen = true;
+
+              assert_false(internals.isUseCounted(document, WebFeature.kDeprecationReportBodyToJSON),
+                'Counter should be clear initially');
+
+              // JSON.stringify() should NOT increment counter.
+              const stringified = JSON.stringify(report.body);
+              assert_false(internals.isUseCounted(document, WebFeature.kDeprecationReportBodyToJSON),
+                'JSON.stringify() should NOT increment counter');
+
+              const parsed = JSON.parse(stringified);
+              assert_equals(parsed.id, report.body.id, 'Parsed id should match');
+              assert_equals(parsed.anticipatedRemoval, report.body.anticipatedRemoval, 'Parsed anticipatedRemoval should match');
+              assert_equals(parsed.message, report.body.message, 'Parsed message should match');
+              assert_equals(parsed.sourceFile, report.body.sourceFile, 'Parsed sourceFile should match');
+              assert_equals(parsed.lineNumber, report.body.lineNumber, 'Parsed lineNumber should match');
+              assert_equals(parsed.columnNumber, report.body.columnNumber, 'Parsed columnNumber should match');
+
+              // Explicit .toJSON() SHOULD increment counter.
+              const jsonResult = report.body.toJSON();
+              assert_true(internals.isUseCounted(document, WebFeature.kDeprecationReportBodyToJSON),
+                'Explicit toJSON() SHOULD increment counter');
+              assert_equals(jsonResult.id, report.body.id, 'toJSON result should match');
+            }
+
+            if (report.type === 'intervention' && !interventionSeen) {
+              interventionSeen = true;
+
+              internals.clearUseCounter(document, WebFeature.kInterventionReportBodyToJSON);
+              assert_false(internals.isUseCounted(document, WebFeature.kInterventionReportBodyToJSON),
+                'Counter should be clear initially');
+
+              // JSON.stringify() should NOT increment counter.
+              const stringified = JSON.stringify(report.body);
+              assert_false(internals.isUseCounted(document, WebFeature.kInterventionReportBodyToJSON),
+                'JSON.stringify() should NOT increment counter');
+
+              const parsed = JSON.parse(stringified);
+              assert_equals(parsed.id, report.body.id, 'Parsed id should match');
+              assert_equals(parsed.message, report.body.message, 'Parsed message should match');
+
+              // Explicit .toJSON() SHOULD increment counter.
+              const jsonResult = report.body.toJSON();
+              assert_true(internals.isUseCounted(document, WebFeature.kInterventionReportBodyToJSON),
+                'Explicit toJSON() SHOULD increment counter');
+              assert_equals(jsonResult.id, report.body.id, 'toJSON result should match');
+            }
+          }
+
+          if (deprecationSeen && interventionSeen) {
+            test.done();
+          }
+        });
+      });
+      observer.observe();
+
+      // Trigger both types of reports.
+      webkitRequestAnimationFrame(() => {});
+      causeIntervention();
+    }, 'ReportBody.toJSON() counters: only explicit .toJSON() calls are counted, not JSON.stringify()');
+  </script>
+</body>

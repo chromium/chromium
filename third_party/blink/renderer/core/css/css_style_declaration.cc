@@ -280,7 +280,7 @@ void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
       }
     }
     std::sort(property_names.begin(), property_names.end(),
-              WTF::CodeUnitCompareLessThan);
+              CodeUnitCompareLessThan);
   }
   names = property_names;
 }

@@ -68,9 +68,9 @@ public abstract class MediaRouterClient {
     /**
      * @param initiator the web contents that initiated the request.
      * @return a {@link FragmentManager} suitable for displaying a media router {@link
-     *         DialogFragment} in.
+     *     DialogFragment} in.
      */
-    public abstract FragmentManager getSupportFragmentManager(WebContents initiator);
+    public abstract @Nullable FragmentManager getSupportFragmentManager(WebContents initiator);
 
     /** Runs deferredTask on the main thread when the main thread is idle. */
     public abstract void addDeferredTask(Runnable deferredTask);

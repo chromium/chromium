@@ -343,7 +343,7 @@ export class InternetDetailDialogElement extends
   }
 
   private getDefaultConfigProperties_(): ConfigProperties {
-    return OncMojo.getDefaultConfigProperties(this.managedProperties_.type);
+    return OncMojo.getBaselineConfigProperties(this.managedProperties_);
   }
 
   private setMojoNetworkProperties_(config: ConfigProperties) {

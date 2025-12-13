@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/tests/common/controller.h"
 
 #include <memory>
@@ -14,7 +9,7 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/dcheck_is_on.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -25,10 +20,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/thread_pool.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/scoped_process_information.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -139,15 +138,15 @@ std::wstring MakePathToSys(const wchar_t* name, bool is_obj_man_path) {
 // to use synchronous launching.
 class TestBrokerServicesDelegateImpl : public BrokerServicesDelegate {
  public:
-  bool ParallelLaunchEnabled() override { return false; }
-
   void ParallelLaunchPostTaskAndReplyWithResult(
       const base::Location& from_here,
       base::OnceCallback<CreateTargetResult()> task,
       base::OnceCallback<void(CreateTargetResult)> reply) override {
-    // This function is only used for parallel launching and should not get
-    // called.
-    NOTREACHED();
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        from_here,
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+        std::move(task), std::move(reply));
   }
 
   void BeforeTargetProcessCreateOnCreationThread(
@@ -328,8 +327,15 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
       return SBOX_ERROR_GENERIC;
     }
   } else {
-    result = broker_->SpawnTarget(prog_name, arguments.c_str(),
-                                  std::move(policy_), &last_error, &target);
+    base::test::TaskEnvironment task_environment;
+    base::test::TestFuture<base::win::ScopedProcessInformation, DWORD,
+                           ResultCode>
+        test_future;
+    broker_->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy_),
+                              test_future.GetCallback());
+    base::win::ScopedProcessInformation proc_info;
+    std::tie(proc_info, last_error, result) = test_future.Take();
+    target = proc_info.Take();
   }
 
   if (SBOX_ALL_OK != result)
@@ -416,20 +422,21 @@ int DispatchCall(int argc, wchar_t **argv) {
     return SBOX_TEST_INVALID_PARAMETER;
 
   // We hard code two tests to avoid dispatch failures.
-  if (0 == _wcsicmp(argv[3], L"wait")) {
-      Sleep(INFINITE);
-      return SBOX_TEST_TIMED_OUT;
+  if (0 == _wcsicmp(UNSAFE_TODO(argv[3]), L"wait")) {
+    Sleep(INFINITE);
+    return SBOX_TEST_TIMED_OUT;
   }
 
-  if (0 == _wcsicmp(argv[3], L"ping"))
-      return SBOX_TEST_PING_OK;
+  if (0 == _wcsicmp(UNSAFE_TODO(argv[3]), L"ping")) {
+    return SBOX_TEST_PING_OK;
+  }
 
   // If the caller shared a shared memory handle with us attempt to open it
   // in read only mode and sleep infinitely if we succeed.
-  if (0 == _wcsicmp(argv[3], L"shared_memory_handle")) {
+  if (0 == _wcsicmp(UNSAFE_TODO(argv[3]), L"shared_memory_handle")) {
     HANDLE raw_handle = nullptr;
     std::string_view test_contents = "Hello World";
-    base::StringToUint(base::AsStringPiece16(argv[4]),
+    base::StringToUint(base::AsStringPiece16(UNSAFE_TODO(argv[4])),
                        reinterpret_cast<unsigned int*>(&raw_handle));
     if (raw_handle == nullptr)
       return SBOX_TEST_INVALID_PARAMETER;
@@ -461,7 +468,8 @@ int DispatchCall(int argc, wchar_t **argv) {
     return SBOX_TEST_TIMED_OUT;
   }
 
-  SboxTestsState state = static_cast<SboxTestsState>(_wtoi(argv[2]));
+  SboxTestsState state =
+      static_cast<SboxTestsState>(_wtoi(UNSAFE_TODO(argv[2])));
   if ((state <= MIN_STATE) || (state >= MAX_STATE))
     return SBOX_TEST_INVALID_PARAMETER;
 
@@ -471,16 +479,17 @@ int DispatchCall(int argc, wchar_t **argv) {
                          reinterpret_cast<wchar_t*>(&DispatchCall), &module))
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
-  std::string command_name = base::SysWideToMultiByte(argv[3], CP_UTF8);
+  std::string command_name =
+      base::SysWideToMultiByte(UNSAFE_TODO(argv[3]), CP_UTF8);
   CommandFunction command = reinterpret_cast<CommandFunction>(
                                 ::GetProcAddress(module, command_name.c_str()));
   if (!command)
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
   if (BEFORE_INIT == state)
-    return command(argc - 4, argv + 4);
+    return command(argc - 4, UNSAFE_TODO(argv + 4));
   else if (EVERY_STATE == state)
-    command(argc - 4, argv + 4);
+    command(argc - 4, UNSAFE_TODO(argv + 4));
 
   TargetServices* target = SandboxFactory::GetTargetServices();
   if (target) {
@@ -488,23 +497,25 @@ int DispatchCall(int argc, wchar_t **argv) {
       return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
     if (BEFORE_REVERT == state)
-      return command(argc - 4, argv + 4);
+      return command(argc - 4, UNSAFE_TODO(argv + 4));
     else if (EVERY_STATE == state)
-      command(argc - 4, argv + 4);
+      command(argc - 4, UNSAFE_TODO(argv + 4));
 
-#if defined(ADDRESS_SANITIZER)
-    // Bind and leak dbghelp.dll before the token is lowered, otherwise
-    // AddressSanitizer will crash when trying to symbolize a report.
-    if (!LoadLibraryA("dbghelp.dll"))
+#if defined(ADDRESS_SANITIZER) || CHECK_WILL_STREAM()
+    // Bind and leak dbghelp.dll before the token is lowered, otherwise some
+    // child process will fail with the wrong error code when they fail to
+    // symbolize a stack while crashing.
+    if (!LoadLibraryA("dbghelp.dll")) {
       return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
+    }
 #endif
 
     target->LowerToken();
-  } else if (0 != _wcsicmp(argv[1], L"-child-no-sandbox")) {
+  } else if (0 != _wcsicmp(UNSAFE_TODO(argv[1]), L"-child-no-sandbox")) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   }
 
-  return command(argc - 4, argv + 4);
+  return command(argc - 4, UNSAFE_TODO(argv + 4));
 }
 
 }  // namespace sandbox

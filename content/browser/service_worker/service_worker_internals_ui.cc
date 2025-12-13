@@ -742,9 +742,10 @@ void ServiceWorkerInternalsHandler::UnregisterWithScope(
 
   // ServiceWorkerContextWrapper::UnregisterServiceWorker doesn't work here
   // because that reduces a status code to boolean.
-  context->context()->UnregisterServiceWorker(scope, storage_key,
-                                              /*is_immediate=*/false,
-                                              std::move(callback));
+  context->context()->UnregisterServiceWorker(
+      scope, storage_key,
+      /*is_immediate=*/false,
+      ServiceWorkerRegistration::DeleteInitiator::kWebUI, std::move(callback));
 }
 
 }  // namespace content

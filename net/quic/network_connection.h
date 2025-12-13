@@ -40,7 +40,8 @@ class NET_EXPORT NetworkConnection
   const char* connection_description() { return connection_description_; }
 
   // NetworkChangeNotifier::IPAddressObserver methods:
-  void OnIPAddressChanged() override;
+  void OnIPAddressChanged(
+      NetworkChangeNotifier::IPAddressChangeType change_type) override;
 
   // NetworkChangeNotifier::ConnectionTypeObserver methods:
   void OnConnectionTypeChanged(

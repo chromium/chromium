@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.LayoutInflater;
@@ -34,6 +35,7 @@ import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.drawable.BorderDrawable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.AttrUtils;
 
 /** A binder class for color items on the color picker view. */
 @NullMarked
@@ -103,13 +105,14 @@ public class ColorPickerItemViewBinder {
         final View colorIcon = view.findViewById(R.id.color_picker_icon);
 
         if (isAndroidThemeModuleEnabled()) {
-            ((MaterialButton) colorIcon).setChecked(model.get(IS_SELECTED));
-            colorIcon.setEnabled(!model.get(IS_SELECTED));
+            var button = (MaterialButton) colorIcon;
+            button.setChecked(model.get(IS_SELECTED));
+            button.setEnabled(!model.get(IS_SELECTED));
 
             ViewOverlay overlay = colorIcon.getOverlay();
 
             if (model.get(IS_SELECTED)) {
-                BorderDrawable borderDrawable = getBorderDrawable(model, view);
+                BorderDrawable borderDrawable = getBorderDrawable(model, button);
                 overlay.add(borderDrawable);
             } else {
                 overlay.clear();
@@ -126,24 +129,46 @@ public class ColorPickerItemViewBinder {
         colorIcon.invalidate();
     }
 
-    private static BorderDrawable getBorderDrawable(PropertyModel model, View view) {
-        Resources res = view.getResources();
+    private static BorderDrawable getBorderDrawable(PropertyModel model, MaterialButton button) {
+        Resources res = button.getResources();
 
+        // Background drawable size.
+        int sizePx =
+                AttrUtils.getDimensionPixelSize(button.getContext(), R.attr.minInteractTargetSize);
+        // Inset of the background from the button's bounds.
+        int insetPx = button.getInsetTop();
+        // ShapeAppearanceModel for the checked state.
+        var shapeAppearanceModel =
+                button.getShapeAppearance()
+                        .getShapeForState(
+                                new int[] {
+                                    android.R.attr.state_checkable, android.R.attr.state_checked
+                                });
+        // Corner size of the checked (rounded rect) background. The reason we pass a RectF to
+        // #getCornerSize is because the corner size is calculated based on the bounds of the
+        // drawable, e.g. it could be a percentage.
+        float cornerSize =
+                shapeAppearanceModel
+                        .getTopLeftCornerSize()
+                        .getCornerSize(new RectF(0, 0, sizePx, sizePx));
         int borderWidthPx = res.getDimensionPixelSize(R.dimen.color_picker_button_stroke_width);
-        int insetPx = res.getDimensionPixelSize(R.dimen.color_picker_button_stroke_inset);
-        int borderRadiusPx = res.getDimensionPixelSize(R.dimen.color_picker_button_stroke_radius);
-        int touchTargetSize = res.getDimensionPixelSize(R.dimen.min_touch_target_size);
+        int borderOuterWidthPx =
+                res.getDimensionPixelSize(R.dimen.color_picker_button_stroke_outer_width);
+        // The border's corner size needs to be smaller to align with the outer corner radius.
+        int borderCornerSizePx = Math.round(cornerSize) - borderWidthPx - borderOuterWidthPx;
+        // We want to leave an outline around the button.
+        int borderInsetPx = insetPx + borderWidthPx + borderOuterWidthPx;
 
         BorderDrawable borderDrawable =
                 new BorderDrawable(
                         borderWidthPx,
-                        insetPx,
+                        borderInsetPx,
                         getColorPickerDialogBackgroundColor(
-                                view.getContext(), model.get(IS_INCOGNITO)),
-                        borderRadiusPx);
+                                button.getContext(), model.get(IS_INCOGNITO)),
+                        borderCornerSizePx);
 
         // Set the bounds of the drawable to match the color button view.
-        borderDrawable.setBounds(0, 0, touchTargetSize, touchTargetSize);
+        borderDrawable.setBounds(0, 0, sizePx, sizePx);
         return borderDrawable;
     }
 
@@ -165,7 +190,8 @@ public class ColorPickerItemViewBinder {
         Resources res = view.getContext().getResources();
 
         final @StringRes int colorDescRes =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        colorId);
         final @StringRes int selectedFormatDescRes =
                 isSelected
                         ? R.string

@@ -247,12 +247,6 @@ void LogPasswordGenerationSubmissionEvent(PasswordSubmissionEvent event) {
                                 SUBMISSION_EVENT_ENUM_COUNT);
 }
 
-void LogPasswordGenerationAvailableSubmissionEvent(
-    PasswordSubmissionEvent event) {
-  base::UmaHistogramEnumeration("PasswordGeneration.SubmissionAvailableEvent",
-                                event, SUBMISSION_EVENT_ENUM_COUNT);
-}
-
 void LogAutoSigninPromoUserAction(AutoSigninPromoUserAction action) {
   base::UmaHistogramEnumeration("PasswordManager.AutoSigninFirstRunDialog",
                                 action, AUTO_SIGNIN_PROMO_ACTION_COUNT);
@@ -317,10 +311,9 @@ void LogPasswordDropdownShown(
   }
 }
 
-void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,
-                                     bool off_the_record) {
-  base::UmaHistogramEnumeration("PasswordManager.PasswordDropdownItemSelected",
-                                type);
+void LogPasswordSuggestionSelected(PasswordDropdownSelectedOption type,
+                                   bool off_the_record) {
+  LogPasswordDropdownItemSelected(type);
   base::UmaHistogramBoolean("PasswordManager.ItemSelected.OffTheRecord",
                             off_the_record);
 
@@ -339,11 +332,18 @@ void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,
       break;
     case PasswordDropdownSelectedOption::kShowAll:
     case PasswordDropdownSelectedOption::kGenerate:
+    case PasswordDropdownSelectedOption::kBackupPassword:
+    case PasswordDropdownSelectedOption::kTroubleSigningIn:
     default:
       base::RecordAction(base::UserMetricsAction(
           "PasswordManager.PasswordDropdownSelected.Others"));
       break;
   }
+}
+
+void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type) {
+  base::UmaHistogramEnumeration("PasswordManager.PasswordDropdownItemSelected",
+                                type);
 }
 
 void LogPasswordSuccessfulSubmissionIndicatorEvent(
@@ -356,20 +356,6 @@ void LogPasswordAcceptedSaveUpdateSubmissionIndicatorEvent(
     autofill::mojom::SubmissionIndicatorEvent event) {
   base::UmaHistogramEnumeration(
       "PasswordManager.AcceptedSaveUpdateSubmissionIndicatorEvent", event);
-}
-
-void LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
-    int account_store_passwords_count) {
-  base::UmaHistogramCounts100(
-      "PasswordManager.AccountStoreCredentialsAfterOptIn",
-      account_store_passwords_count);
-}
-
-void LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
-    int blocklist_entries_count) {
-  base::UmaHistogramCounts100(
-      "PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn",
-      blocklist_entries_count);
 }
 
 void LogPasswordSettingsReauthResult(device_reauth::ReauthResult result) {
@@ -510,13 +496,6 @@ void LogUserInteractionsInPasswordManagementBubble(
       password_management_bubble_interaction);
 }
 
-void LogUserInteractionsInSharedPasswordsNotificationBubble(
-    SharedPasswordsNotificationBubbleInteractions interaction) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.SharedPasswordsNotificationBubble.UserAction",
-      interaction);
-}
-
 void LogProcessIncomingPasswordSharingInvitationResult(
     ProcessIncomingPasswordSharingInvitationResult result) {
   base::UmaHistogramEnumeration(
@@ -524,14 +503,6 @@ void LogProcessIncomingPasswordSharingInvitationResult(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void LogLocalPwdMigrationProgressState(
-    LocalPwdMigrationProgressState scheduling_state) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
-      "ProgressState",
-      scheduling_state);
-}
-
 void LogSharedPrefCredentialsAccessOutcome(
     SharedPrefCredentialsAccessOutcome outcome) {
   base::UmaHistogramEnumeration(
@@ -669,6 +640,22 @@ void LogCumulativeGetCredentialsMetrics(
 void LogPageContentCaptureFailure(PasswordChangeFlowStep step) {
   base::UmaHistogramEnumeration(
       "PasswordManager.PasswordChange.FailedCapturingPageContent", step);
+}
+
+void LogPrimaryPasswordUpdatedWithBackup(ukm::SourceId ukm_source_id) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordChangeRecoveryFlow",
+      password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+          kPrimaryPasswordUpdated);
+  ukm::builders::PasswordManager_ChangeRecovery(ukm_source_id)
+      .SetPasswordChangeRecoveryFlow(static_cast<int>(
+          PasswordChangeRecoveryFlowState::kPrimaryPasswordUpdated))
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void RecordBrowserAssistedLogin(BrowserAssistedLoginType login_type) {
+  base::UmaHistogramEnumeration("PasswordManager.BrowserAssistedLogin.Type",
+                                login_type);
 }
 
 }  // namespace password_manager::metrics_util

@@ -107,4 +107,33 @@ suite('SpeechModel', () => {
     speechModel.setEngineState(state3);
     assertEquals(state3, speechModel.getEngineState());
   });
+
+  test('incrementWordsHeard', () => {
+    assertEquals(0, speechModel.getWordsHeard());
+    speechModel.incrementWordsHeard();
+    assertEquals(1, speechModel.getWordsHeard());
+    speechModel.incrementWordsHeard();
+    speechModel.incrementWordsHeard();
+    speechModel.incrementWordsHeard();
+    assertEquals(4, speechModel.getWordsHeard());
+  });
+
+  test('setWordsHeard overrides increment', () => {
+    speechModel.incrementWordsHeard();
+    speechModel.incrementWordsHeard();
+    speechModel.incrementWordsHeard();
+    speechModel.incrementWordsHeard();
+    assertEquals(4, speechModel.getWordsHeard());
+
+    speechModel.setWordsHeard(1);
+    assertEquals(1, speechModel.getWordsHeard());
+  });
+
+  test('increment continues from setWordsHeard', () => {
+    speechModel.setWordsHeard(12);
+    assertEquals(12, speechModel.getWordsHeard());
+
+    speechModel.incrementWordsHeard();
+    assertEquals(13, speechModel.getWordsHeard());
+  });
 });

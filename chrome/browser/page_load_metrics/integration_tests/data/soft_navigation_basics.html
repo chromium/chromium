@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Simple Soft Navigation</title>
+<body>
+  <button id="next-page" onclick="loadNextPage()">Next!</button>
+  <main id="content"></main>
+</body>
+<script>
+  let currentPage = 0;
+
+  function loadPage() {
+    const hash = new URL(location.href).hash; // #image or #text in practice.
+
+    history.pushState({}, "", "/page.html?id=" + currentPage + hash);
+    let newContent;
+    if (hash === "#image") {
+      newContent = new Image();
+      newContent.src = "/images/lcp-133x106.png?id=" + currentPage;
+    } else {
+      newContent = document.createElement("div");
+      newContent.textContent = "This is the text written on page " + currentPage + ".";
+    }
+    document.getElementById("content").innerHTML = "";
+    document.getElementById("content").appendChild(newContent);
+  }
+
+  function loadNextPage() {
+    currentPage++;
+    loadPage();
+  }
+
+  // Intercept the browser's back button to trigger a soft navigation.
+  window.addEventListener('popstate', function(event) {
+    currentPage --;
+    loadPage();
+  });
+</script>

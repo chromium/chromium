@@ -37,7 +37,6 @@ using ::testing::AllOf;
 using ::testing::ByMove;
 using ::testing::Eq;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace {

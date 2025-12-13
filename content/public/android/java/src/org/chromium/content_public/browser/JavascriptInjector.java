@@ -105,7 +105,7 @@ public interface JavascriptInjector {
      */
     void removeInterface(String name);
 
-    public final class InjectedInterface {
+    final class InjectedInterface {
         private final Object mInjectedObject;
         private final @Nullable Class<? extends Annotation> mRequiredAnnotation;
         private final List<String> mMatcherRules;

@@ -11,45 +11,24 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
-#include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using base::Value;
-
 namespace policy {
 
-const webui::LocalizedString kPolicySources[POLICY_SOURCE_COUNT] = {
-    {"sourceEnterpriseDefault", IDS_POLICY_SOURCE_ENTERPRISE_DEFAULT},
-    {"commandLine", IDS_POLICY_SOURCE_COMMAND_LINE},
-    {"cloud", IDS_POLICY_SOURCE_CLOUD},
-    {"sourceActiveDirectory", IDS_POLICY_SOURCE_ACTIVE_DIRECTORY},
-    {"sourceDeviceLocalAccountOverrideDeprecated",
-     IDS_POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE},
-    {"platform", IDS_POLICY_SOURCE_PLATFORM},
-    {"priorityCloud", IDS_POLICY_SOURCE_CLOUD},
-    {"merged", IDS_POLICY_SOURCE_MERGED},
-    {"cloud_from_ash", IDS_POLICY_SOURCE_CLOUD_FROM_ASH},
-    {"restrictedManagedGuestSessionOverride",
-     IDS_POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE},
-};
+using base::Value;
 
-const char kIdKey[] = "id";
-const char kNameKey[] = "name";
-const char kPoliciesKey[] = "policies";
-const char kPolicyNamesKey[] = "policyNames";
-const char kChromePoliciesId[] = "chrome";
-const char kChromePoliciesName[] = "Chrome Policies";
+namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS)
-const char kPrecedenceOrderKey[] = "precedenceOrder";
-const char kPrecedencePoliciesId[] = "precedence";
-const char kPrecedencePoliciesName[] = "Policy Precedence";
+constexpr char kPrecedenceOrderKey[] = "precedenceOrder";
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-const char kDeviceLocalAccountPoliciesId[] = "deviceLocalAccountPolicies";
+constexpr char kDeviceLocalAccountPoliciesId[] = "deviceLocalAccountPolicies";
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+}  // namespace
 
 PolicyConversions::Delegate::Delegate(PolicyConversionsClient* client)
     : client_(client) {}

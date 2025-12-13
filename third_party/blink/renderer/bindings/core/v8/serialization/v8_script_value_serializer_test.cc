@@ -74,7 +74,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -850,8 +849,9 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   // deserialize correctly.
   V8TestingScope scope;
   ImageDataSettings* image_data_settings = ImageDataSettings::Create();
-  image_data_settings->setColorSpace("display-p3");
-  image_data_settings->setPixelFormat("rgba-float16");
+  image_data_settings->setColorSpace(V8PredefinedColorSpace::Enum::kDisplayP3);
+  image_data_settings->setPixelFormat(
+      V8ImageDataPixelFormat::Enum::kRgbaFloat16);
   ImageData* image_data = ImageData::ValidateAndCreate(
       2, 1, std::nullopt, image_data_settings,
       ImageData::ValidateAndCreateParams(), ASSERT_NO_EXCEPTION);
@@ -869,8 +869,10 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   EXPECT_NE(image_data, new_image_data);
   EXPECT_EQ(image_data->Size(), new_image_data->Size());
   ImageDataSettings* new_image_data_settings = new_image_data->getSettings();
-  EXPECT_EQ("display-p3", new_image_data_settings->colorSpace());
-  EXPECT_EQ("rgba-float16", new_image_data_settings->pixelFormat());
+  EXPECT_EQ(V8PredefinedColorSpace::Enum::kDisplayP3,
+            new_image_data_settings->colorSpace());
+  EXPECT_EQ(V8ImageDataPixelFormat::Enum::kRgbaFloat16,
+            new_image_data_settings->pixelFormat());
   SkPixmap new_pm = new_image_data->GetSkPixmap();
   EXPECT_EQ(kRGBA_F16_SkColorType, new_pm.info().colorType());
   EXPECT_EQ(200.f, reinterpret_cast<const float*>(new_pm.addr(0, 0))[0]);
@@ -932,8 +934,10 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV18) {
   ASSERT_NE(new_image_data, nullptr);
   EXPECT_EQ(gfx::Size(2, 1), new_image_data->Size());
   ImageDataSettings* new_image_data_settings = new_image_data->getSettings();
-  EXPECT_EQ("display-p3", new_image_data_settings->colorSpace());
-  EXPECT_EQ("rgba-float32", new_image_data_settings->pixelFormat());
+  EXPECT_EQ(V8PredefinedColorSpace::Enum::kDisplayP3,
+            new_image_data_settings->colorSpace());
+  EXPECT_EQ(V8ImageDataPixelFormat::Enum::kRgbaFloat32,
+            new_image_data_settings->pixelFormat());
   SkPixmap new_pm = new_image_data->GetSkPixmap();
   EXPECT_EQ(kRGBA_F32_SkColorType, new_pm.info().colorType());
   EXPECT_EQ(200u, static_cast<const uint8_t*>(new_pm.addr(0, 0))[0]);

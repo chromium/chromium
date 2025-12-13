@@ -41,7 +41,8 @@ namespace {
 class TestServiceImpl
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          ITestService> {
+          ITestService,
+          IFastRundown> {
  public:
   TestServiceImpl() = default;
   TestServiceImpl(const TestServiceImpl&) = delete;

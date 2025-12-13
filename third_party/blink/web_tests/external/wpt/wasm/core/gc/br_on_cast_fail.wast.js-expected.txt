@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #6 Test that WebAssembly compilation fails (br_on_cast_fail.wast:249)
+  assert_equals: expected true but got false
+[FAIL] #8 Test that WebAssembly compilation fails (br_on_cast_fail.wast:267)
+  assert_equals: expected true but got false
+[FAIL] #9 Test that WebAssembly compilation fails (br_on_cast_fail.wast:275)
+  assert_equals: expected true but got false
+[FAIL] #47 Test that WebAssembly compilation fails (br_on_cast_fail.wast:249)
+  assert_true: \n    at module (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:157:15)\n    at assert_invalid (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:186:3)\n    at br_on_cast_fail_wast_js (http://web-platform.test:8001/wasm/core/js/gc/br_on_cast_fail.wast.js:109:1)\n    at http://web-platform.test:8001/wasm/core/js/gc/br_on_cast_fail.wast.js:123:3 expected true got false
+[FAIL] #49 Test that WebAssembly compilation fails (br_on_cast_fail.wast:267)
+  assert_true: \n    at module (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:157:15)\n    at assert_invalid (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:186:3)\n    at br_on_cast_fail_wast_js (http://web-platform.test:8001/wasm/core/js/gc/br_on_cast_fail.wast.js:115:1)\n    at http://web-platform.test:8001/wasm/core/js/gc/br_on_cast_fail.wast.js:123:3 expected true got false
+[FAIL] #50 Test that WebAssembly compilation fails (br_on_cast_fail.wast:275)
+  assert_true: \n    at module (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:157:15)\n    at assert_invalid (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:186:3)\n    at br_on_cast_fail_wast_js (http://web-platform.test:8001/wasm/core/js/gc/br_on_cast_fail.wast.js:118:1)\n    at http://web-platform.test:8001/wasm/core/js/gc/br_on_cast_fail.wast.js:123:3 expected true got false
+Harness: the test ran to completion.
+

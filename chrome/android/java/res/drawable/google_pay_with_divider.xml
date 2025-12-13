@@ -37,5 +37,5 @@ found in the LICENSE file.
     </group>
     <path
         android:pathData="M50 16l0 -14 1 0 0 14z"
-        android:fillColor="@macro/divider_line_bg_color" />
+        android:fillColor="@color/divider_color" />
 </vector>

@@ -6,76 +6,52 @@
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audit.js"></script>
+    <script src="../resources/audit-util.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      // Any valid rate will do. Just need something to create an offline
-      // context.
-      let sampleRate = 44100;
+    <script>
+      // Any valid sample rate will do.
+      const sampleRate = 44100;
 
-      let audit = Audit.createTaskRunner();
+      promise_test(async t => {
+        const context = new OfflineAudioContext(1, 1, sampleRate);
 
-      // Context to use for decodeAudioData
-      let context;
-      // The encoded audio file that we want to decode.
-      let encodedAudio;
+        // The encoded audio file that we want to decode.
+        const arrayBuffer =
+            await loadFileFromUrl('../resources/hyper-reality/laughter.wav');
 
-      audit.define('initialize', (task, should) => {
-        // Create the context and load up any valid encoded audio file.
-        should(() => {
-          context = new OfflineAudioContext(1, 1, sampleRate);
-        }, 'Context creation').notThrow();
-
-        Audit.loadFileFromUrl('../resources/hyper-reality/laughter.wav')
-            .then(response => {
-              encodedAudio = response;
-              should(true, 'Loading of encoded audio file')
-                  .message('succeeded', 'failed');
-            })
-            .then(() => task.done());
-      });
-
-      audit.define('decode-audio-neuters', (task, should) => {
         // Decode the audio file and verify that it neuters the array, so that
-        // it can't be transfered somewhere else.
-        p = context.decodeAudioData(encodedAudio);
-        should(() => {
-          postMessage('', '*', [encodedAudio]);
-        }, 'Transfer of audio buffer').throw(DOMException, 'DataCloneError');
-        should(p, 'Decoding of audio').beResolved().then(() => task.done());
-      });
+        // it can't be transferred somewhere else.
+        const decodingPromise = context.decodeAudioData(arrayBuffer);
 
-      audit.define('neutered buffer', (task, should) => {
-        // Any non-empy ArrayBuffer will work.  We're going to transfer that
+        assert_throws_dom('DataCloneError', () => {
+          postMessage('', '*', [arrayBuffer]);
+        }, 'Transfer of audio buffer');
+
+        await decodingPromise;
+
+        // Any non-empty ArrayBuffer will work. We're going to transfer that
         // array before calling decodeAudioData.
-        let buffer = new ArrayBuffer(1000);
+        const arrayBuffer2 = new ArrayBuffer(1000);
 
-        should(() => {
-          postMessage('', '*', [buffer]);
-        }, 'Transfer buffer via postMessage').notThrow();
+        postMessage('', '*', [arrayBuffer2]);
 
-        should(
-            context.decodeAudioData(buffer),
-            'decodeAudioData on neutered buffer')
-            .beRejectedWith('DataCloneError')
-            .then(() => task.done());
-      });
+        await promise_rejects_dom(
+            t,
+            'DataCloneError',
+            context.decodeAudioData(arrayBuffer2),
+            'decodeAudioData on neutered buffer');
 
-      audit.define('decode neuters buffer and view', (task, should) => {
         // The ArrayBuffer and any views of the ArrayBuffer must be neutered.
-        let buffer = new ArrayBuffer(1000);
-        let view = new Uint32Array(buffer);
+        const arrayBuffer3 = new ArrayBuffer(1000);
+        const arrayView3 = new Uint32Array(arrayBuffer3);
 
-        context.decodeAudioData(buffer);
+        context.decodeAudioData(arrayBuffer3);
 
         // Now buffer and view should be neutered.
-        should(buffer.byteLength, 'buffer.byteLength').beEqualTo(0);
-        should(view.length, 'view.length').beEqualTo(0);
-        task.done();
-      });
-
-      audit.run();
+        assert_equals(arrayBuffer3.byteLength, 0, 'buffer.byteLength');
+        assert_equals(arrayView3.length, 0, 'view.length');
+      }, 'decodeAudioData neutering behaviour');
     </script>
   </body>
 </html>

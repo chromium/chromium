@@ -323,6 +323,14 @@ TEST_F(BitmapImageTest, pngHasColorProfile) {
   EXPECT_TRUE(image_->HasColorProfile());
 }
 
+TEST_F(BitmapImageTest, pngHasInvalidColorProfile) {
+  LoadImage("png-zero-gamma-color-profile.png");
+  auto actualBitmap = GenerateBitmap(0u);
+  auto expectedBitmap =
+      GenerateBitmapForImage("png-zero-gamma-color-profile-ref.png");
+  VerifyBitmap(actualBitmap, expectedBitmap);
+}
+
 TEST_F(BitmapImageTest, webpHasColorProfile) {
   LoadImage("webp-color-profile-lossy.webp");
   image_->PaintImageForCurrentFrame();

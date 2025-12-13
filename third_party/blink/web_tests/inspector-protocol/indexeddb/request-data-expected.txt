@@ -1,0 +1,136 @@
+Tests that requestData can query both object stores and indices
+Object store data entries
+key {
+    description : 1
+    type : number
+    value : 1
+}
+primaryKey {
+    description : 1
+    type : number
+    value : 1
+}
+value {
+    className : Object
+    description : Object
+    objectId : <string>
+    preview : {
+        description : Object
+        overflow : false
+        properties : [
+            [0] : {
+                name : x
+                type : number
+                value : 1
+            }
+            [1] : {
+                name : y
+                type : number
+                value : 3
+            }
+        ]
+        type : object
+    }
+    type : object
+}
+key {
+    description : 4
+    type : number
+    value : 4
+}
+primaryKey {
+    description : 4
+    type : number
+    value : 4
+}
+value {
+    className : Object
+    description : Object
+    objectId : <string>
+    preview : {
+        description : Object
+        overflow : false
+        properties : [
+            [0] : {
+                name : x
+                type : number
+                value : 4
+            }
+            [1] : {
+                name : y
+                type : number
+                value : 2
+            }
+        ]
+        type : object
+    }
+    type : object
+}
+Index data entries
+key {
+    description : 2
+    type : number
+    value : 2
+}
+primaryKey {
+    description : 4
+    type : number
+    value : 4
+}
+value {
+    className : Object
+    description : Object
+    objectId : <string>
+    preview : {
+        description : Object
+        overflow : false
+        properties : [
+            [0] : {
+                name : x
+                type : number
+                value : 4
+            }
+            [1] : {
+                name : y
+                type : number
+                value : 2
+            }
+        ]
+        type : object
+    }
+    type : object
+}
+key {
+    description : 3
+    type : number
+    value : 3
+}
+primaryKey {
+    description : 1
+    type : number
+    value : 1
+}
+value {
+    className : Object
+    description : Object
+    objectId : <string>
+    preview : {
+        description : Object
+        overflow : false
+        properties : [
+            [0] : {
+                name : x
+                type : number
+                value : 1
+            }
+            [1] : {
+                name : y
+                type : number
+                value : 3
+            }
+        ]
+        type : object
+    }
+    type : object
+}
+

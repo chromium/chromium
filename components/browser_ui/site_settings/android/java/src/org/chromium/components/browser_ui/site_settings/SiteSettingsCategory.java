@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.site_settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 
 import android.content.Context;
 import android.content.Intent;
@@ -80,6 +81,7 @@ public class SiteSettingsCategory {
         Type.SERIAL_PORT,
         Type.LOCAL_NETWORK_ACCESS,
         Type.WINDOW_MANAGEMENT,
+        Type.AUTO_PICTURE_IN_PICTURE,
         Type.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -123,9 +125,10 @@ public class SiteSettingsCategory {
         int SERIAL_PORT = 34;
         int LOCAL_NETWORK_ACCESS = 35;
         int WINDOW_MANAGEMENT = 36;
+        int AUTO_PICTURE_IN_PICTURE = 37;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 37;
+        int NUM_ENTRIES = 38;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -153,10 +156,18 @@ public class SiteSettingsCategory {
         mAndroidPermission = androidPermission;
     }
 
+    /** Construct a SiteSettingsCategory for type DEVICE_LOCATION. */
+    public static SiteSettingsCategory createForDeviceLocation(
+            BrowserContextHandle browserContextHandle, boolean forPreciseLocation) {
+        return new LocationCategory(browserContextHandle, forPreciseLocation);
+    }
+
     /** Construct a SiteSettingsCategory from a type. */
     public static SiteSettingsCategory createFromType(
             BrowserContextHandle browserContextHandle, @Type int type) {
-        if (type == Type.DEVICE_LOCATION) return new LocationCategory(browserContextHandle);
+        if (type == Type.DEVICE_LOCATION) {
+            return new LocationCategory(browserContextHandle, /* forPreciseLocation= */ true);
+        }
         if (type == Type.NFC) return new NfcCategory(browserContextHandle);
         if (type == Type.NOTIFICATIONS) return new NotificationCategory(browserContextHandle);
         if (type == Type.JAVASCRIPT_OPTIMIZER) {
@@ -215,6 +226,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.AR;
             case Type.AUTO_DARK_WEB_CONTENT:
                 return ContentSettingsType.AUTO_DARK_WEB_CONTENT;
+            case Type.AUTO_PICTURE_IN_PICTURE:
+                return ContentSettingsType.AUTO_PICTURE_IN_PICTURE;
             case Type.AUTOMATIC_DOWNLOADS:
                 return ContentSettingsType.AUTOMATIC_DOWNLOADS;
             case Type.BACKGROUND_SYNC:
@@ -233,7 +246,7 @@ public class SiteSettingsCategory {
             case Type.REQUEST_DESKTOP_SITE:
                 return ContentSettingsType.REQUEST_DESKTOP_SITE;
             case Type.DEVICE_LOCATION:
-                return ContentSettingsType.GEOLOCATION;
+                return getGeolocationType();
             case Type.FILE_EDITING:
                 return ContentSettingsType.FILE_SYSTEM_WRITE_GUARD;
             case Type.FEDERATED_IDENTITY_API:
@@ -311,6 +324,8 @@ public class SiteSettingsCategory {
                 return "augmented_reality";
             case Type.AUTO_DARK_WEB_CONTENT:
                 return "auto_dark_web_content";
+            case Type.AUTO_PICTURE_IN_PICTURE:
+                return "auto_picture_in_picture";
             case Type.ALL_SITES:
                 return "all_sites";
             case Type.AUTOMATIC_DOWNLOADS:
@@ -459,38 +474,30 @@ public class SiteSettingsCategory {
      *     calling this method, if osWarningExtra has no title, the preference should not be added
      *     to the preference screen.
      * @param context The current context.
-     * @param specificCategory Whether the warnings refer to a single category or is an aggregate
-     *     for many permissions.
      * @param appName The name of the app to use in warning strings.
      */
     public void configureWarningPreferences(
-            Preference osWarning,
-            Preference osWarningExtra,
-            Context context,
-            boolean specificCategory,
-            String appName) {
+            Preference osWarning, Preference osWarningExtra, Context context, String appName) {
         assert showPermissionBlockedMessage(context);
 
-        Intent perAppIntent = getIntentToEnableOsPerAppPermission(context);
         Intent globalIntent = getIntentToEnableOsGlobalPermission(context);
-        String perAppMessage =
-                getMessageForEnablingOsPerAppPermission(context, !specificCategory, appName);
         String globalMessage = getMessageForEnablingOsGlobalPermission(context);
         String unsupportedMessage = getMessageIfNotSupported(context);
 
         int color = SemanticColorUtils.getDefaultControlColorActive(context);
         ForegroundColorSpan linkSpan = new ForegroundColorSpan(color);
 
-        if (perAppIntent != null) {
+        boolean showPerAppWarning = shouldShowPerAppWarning(context);
+        if (showPerAppWarning) {
+            Intent perAppIntent = getAppInfoIntent(context);
+            String perAppMessage = getMessageForEnablingOsPerAppPermission(context, appName);
             SpannableString messageWithLink =
                     SpanApplier.applySpans(
                             perAppMessage, new SpanInfo("<link>", "</link>", linkSpan));
             osWarning.setTitle(messageWithLink);
             osWarning.setIntent(perAppIntent);
 
-            if (!specificCategory) {
-                osWarning.setIcon(getDisabledInAndroidIcon(context));
-            }
+            osWarning.setIcon(getDisabledInAndroidIcon(context));
         }
 
         if (!supportedGlobally()) {
@@ -504,13 +511,11 @@ public class SiteSettingsCategory {
             osWarningExtra.setTitle(messageWithLink);
             osWarningExtra.setIntent(globalIntent);
 
-            if (!specificCategory) {
-                if (perAppIntent == null) {
-                    osWarningExtra.setIcon(getDisabledInAndroidIcon(context));
-                } else {
-                    Drawable transparent = new ColorDrawable(Color.TRANSPARENT);
-                    osWarningExtra.setIcon(transparent);
-                }
+            if (!showPerAppWarning) {
+                osWarningExtra.setIcon(getDisabledInAndroidIcon(context));
+            } else {
+                Drawable transparent = new ColorDrawable(Color.TRANSPARENT);
+                osWarningExtra.setIcon(transparent);
             }
         }
     }
@@ -549,7 +554,7 @@ public class SiteSettingsCategory {
      * permission does not have a per-app setting or a global setting, true is assumed for either
      * that is missing (or both).
      */
-    boolean enabledInAndroid(Context context) {
+    public boolean enabledInAndroid(Context context) {
         return enabledGlobally() && enabledForChrome(context);
     }
 
@@ -573,6 +578,14 @@ public class SiteSettingsCategory {
     }
 
     /**
+     * Returns resource id for message about why adding exceptions is blocked. 0 should be returned
+     * if no message should be shown.
+     */
+    protected int getBlockAddingExceptionsReasonResourceId() {
+        return 0;
+    }
+
+    /**
      * Returns whether to show the 'permission blocked' message. Majority of the time, that is
      * warranted when the permission is either blocked per app or globally. But there are exceptions
      * to this, so the sub-classes can overwrite.
@@ -582,13 +595,11 @@ public class SiteSettingsCategory {
     }
 
     /**
-     * Returns the OS Intent to use to enable a per-app permission, or null if the permission is
-     * already enabled. Android M and above provides two ways of doing this for some permissions,
-     * most notably Location, one that is per-app and another that is global.
+     * Returns whether to show the warning to enable permissions per app, that is when the
+     * permission is blocked per app.
      */
-    private @Nullable Intent getIntentToEnableOsPerAppPermission(Context context) {
-        if (enabledForChrome(context)) return null;
-        return getAppInfoIntent(context);
+    protected boolean shouldShowPerAppWarning(Context context) {
+        return !enabledForChrome(context);
     }
 
     /**
@@ -602,14 +613,12 @@ public class SiteSettingsCategory {
 
     /**
      * Returns the message to display when per-app permission is blocked.
-     *
-     * @param plural Whether it applies to one per-app permission or multiple.
      */
-    protected String getMessageForEnablingOsPerAppPermission(
-            Context context, boolean plural, String appName) {
+    protected String getMessageForEnablingOsPerAppPermission(Context context, String appName) {
         @ContentSettingsType.EnumType int type = this.getContentSettingsType();
         int permission_string = R.string.android_permission_off;
-        if (type == ContentSettingsType.GEOLOCATION) {
+        if (type == ContentSettingsType.GEOLOCATION
+                || type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
             permission_string = R.string.android_location_permission_off;
         } else if (type == ContentSettingsType.MEDIASTREAM_MIC) {
             permission_string = R.string.android_microphone_permission_off;
@@ -622,8 +631,7 @@ public class SiteSettingsCategory {
         } else if (type == ContentSettingsType.NOTIFICATIONS) {
             permission_string = R.string.android_notifications_permission_off;
         }
-        return context.getString(
-                plural ? R.string.android_permission_off_plural : permission_string, appName);
+        return context.getString(permission_string, appName);
     }
 
     /** Returns the message to display when per-app permission is blocked. */
@@ -640,7 +648,7 @@ public class SiteSettingsCategory {
     }
 
     /** Returns an Intent to show the App Info page for the current app. */
-    private Intent getAppInfoIntent(Context context) {
+    protected Intent getAppInfoIntent(Context context) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(
                 new Uri.Builder().scheme("package").opaquePart(context.getPackageName()).build());
@@ -652,9 +660,35 @@ public class SiteSettingsCategory {
      *
      * @param permission The string of the permission to check.
      */
-    private boolean permissionOnInAndroid(String permission, Context context) {
+    protected boolean permissionOnInAndroid(String permission, Context context) {
         return PackageManager.PERMISSION_GRANTED
                 == ApiCompatibilityUtils.checkPermission(
                         context, permission, Process.myPid(), Process.myUid());
+    }
+
+    /**
+     * A SiteSettingsCategory for a generic OS-level permission warning. This is used when a site
+     * has multiple permissions that are blocked by the OS, so a single specific message is not
+     * appropriate.
+     */
+    static class GenericSiteSettingsCategory extends SiteSettingsCategory {
+        public GenericSiteSettingsCategory(BrowserContextHandle browserContextHandle) {
+            super(browserContextHandle, Type.ALL_SITES, "");
+        }
+
+        @Override
+        boolean showPermissionBlockedMessage(Context context) {
+            return true;
+        }
+
+        @Override
+        protected String getMessageForEnablingOsPerAppPermission(Context context, String appName) {
+            return context.getString(R.string.android_permission_off_plural, appName);
+        }
+
+        @Override
+        protected boolean shouldShowPerAppWarning(Context context) {
+            return true;
+        }
     }
 }

@@ -382,6 +382,17 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       <message name="IDS_SESSION_CRASHED_VIEW_UMA_OPTIN" desc="Text besides the checkbox to let users optin to UMA in the restore from previous crash bubble.">
         Help make Chromium better by sending crash reports and <ph name="UMA_LINK">$1<ex>usage statistics</ex></ph> to Google
       </message>
+      <message name="IDS_RESET_PROFILE_SETTINGS_EXPLANATION_IN_BULLET_POINTS" desc="A label formatted with bullet points describing the consequences of the 'reset profile settings' feature">
+        This action will:
+        <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
+          • Reset some Chromium settings and Chromium shortcuts
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          • Disable extensions
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          • Delete cookies and other temporary site data
+          <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
+          Bookmarks, history, and saved passwords won't be affected.
+      </message>
       <if expr="not is_chromeos">
         <!-- Browser Window Title Format -->
         <if expr="_is_chrome_for_testing_branded">
@@ -524,6 +535,12 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Chromium is unresponsive. Relaunch now?
         </message>
       </if>
+      <!-- General app failure messages -->
+      <if expr="not is_chromeos and not is_android">
+        <message name="IDS_COULDNT_STARTUP_PROFILE_ERROR" desc="Error displayed when Chrome cannot start because profiles were not opened correctly.">
+          Cannot start Chromium because something went wrong when opening your profile. Try to restart Chromium.
+        </message>
+      </if>
       <!-- Sharing messages -->
       <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES" desc="The label to be shown as a help text of the dialog when user click on a phone number, if there are no phones to choose from.">
         To send a number from here to your Android phone, sign in to Chromium on both devices.
@@ -650,9 +667,6 @@ Chromium is unable to recover your settings.
         <message name="IDS_SAME_VERSION_REPAIR_FAILED" desc="Error displayed if installation fails due to Chrome running.">
           Can not install the same Chromium version that is currently running. Please close Chromium and try again.
         </message>
-        <message name="IDS_SETUP_PATCH_FAILED" desc="Error message when setup.exe fails to patch itself.">
-          Installation failed due to unspecified error. Please download Chromium again.
-        </message>
         <message name="IDS_INSTALL_OS_NOT_SUPPORTED" desc="Error displayed if OS is not supported">
           Chromium requires Windows 10 or higher.
         </message>
@@ -686,6 +700,14 @@ Chromium is unable to recover your settings.
           Provides system tracing services for <ph name="BROWSER_NAME">$1<ex>Chromium</ex></ph>. If this service is disabled, performance traces created by the browser will not include system-wide events such as context switch and ready thread events.
         </message>
       </if>
+      <if expr="not is_android">
+        <message name="IDS_PASSWORD_MANAGER_IMPORT_DIALOG_TITLE" desc="The title of the file selection dialog for importing passwords">
+          Import Passwords To Chromium
+        </message>
+        <message name="IDS_PASSWORD_MANAGER_EXPORT_DIALOG_TITLE" desc="The title of the file selection dialog for exporting passwords">
+          Export Passwords From Chromium
+        </message>
+      </if>
       <!-- Options Dialog -->
       <if expr="is_win">
         <message name="IDS_SHORTCUT_TOOLTIP" desc="Text for the hover-on tooltip for the Chromium shortcuts.">
@@ -693,9 +715,6 @@ Chromium is unable to recover your settings.
         </message>
         <message name="IDS_UNINSTALL_DELETE_PROFILE" desc="Text to show user to ask whether to delete all the profile data also during uninstallation.">
           Also delete your browsing data?
-        </message>
-        <message name="IDS_UNINSTALL_SET_DEFAULT_BROWSER" desc="Text to ask whether to set another browser as default when Chromium is uninstalled.">
-          Change default browser to:
         </message>
         <message name="IDS_UNINSTALL_BUTTON_TEXT" desc="Label for uninstall button on Uninstall confirmation dialog.">
           Uninstall
@@ -705,6 +724,14 @@ Chromium is unable to recover your settings.
         </message>
         <message name="IDS_PIN_INFOBAR_BUTTON" desc="Label for the button on an infobar offering to pin Chromium to the taskbar. Pins Chromium when clicked.">
           Pin Chromium
+        </message>
+      </if>
+      <if expr="is_macosx">
+        <message name="IDS_PIN_INFOBAR_DOCK_TEXT" desc="Text to show in an infobar when Chromium is not in the Dock.">
+          Keep Chromium in your Dock to get to it quickly anytime
+        </message>
+        <message name="IDS_PIN_INFOBAR_DOCK_BUTTON" desc="Label for the button on an infobar offering to keep Chromium in the Dock.">
+          Keep in Dock
         </message>
       </if>
         <message name="IDS_DEFAULT_BROWSER_INFOBAR_TEXT" desc="Text to show in an infobar when Chromium is not the current default browser.">
@@ -995,6 +1022,34 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
+      <!-- Page menu. Android has separate strings for its menu -->
+      <if expr="not is_android">
+        <if expr="use_titlecase">
+          <then>
+            <message name="IDS_CUSTOMIZE_CHROME" desc="In Title Case: The text label of the Customize Chrome menu item">
+              C&amp;ustomize Your Chromium
+            </message>
+            <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="In Title Case: The title of the Other Chrome profiles section">
+              Other Chromium Profiles
+            </message>
+            <message name="IDS_MANAGE_CHROME_PROFILES" desc="In Title Case: The text label of the manage chrome profile item">
+              &amp;Manage Chromium Profiles
+            </message>
+          </then>
+          <else>
+            <message name="IDS_CUSTOMIZE_CHROME" desc="The text label of the Customize Chrome menu item">
+              C&amp;ustomize your Chromium
+            </message>
+            <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="The title of the Other Chrome profiles section">
+              Other Chromium profiles
+            </message>
+            <message name="IDS_MANAGE_CHROME_PROFILES" desc="The text label of the manage chrome profile item">
+              &amp;Manage Chromium profiles
+            </message>
+          </else>
+        </if>
+      </if>
+
       <message name="IDS_VIEW_PASSWORDS" desc="Item in the app menu which shows Password Manager page">
         P&amp;assword Manager
       </message>
@@ -1019,6 +1074,22 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
+      <!-- Session Restore Infobar -->
+      <message name="IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_SESSION" desc="Message that appears in the session restore infobar when the user has restored their tabs once.">
+        Continue where you left off: Chromium restored your tabs from your last session. You can turn this off in
+      </message>
+      <message name="IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_RESTART" desc="Message that appears in the session restore infobar when the user has restored their tabs multiple times.">
+        Continue where you left off: Chromium restores your tabs every time you restart. To turn this off, go to
+      </message>
+      <message name="IDS_SESSION_RESTORE_TURN_ON" desc="Message that appears in the session restore infobar to get the user to opt-in into session restore.">
+        Continue where you left off: Chromium can restore your tabs every time you restart. To turn this on, go to
+      </message>
+      <message name="IDS_SESSION_RESTORE_LINK" desc="Text for the link in the session restore infobar to open the Settings page.">
+         Settings.
+      </message>
+      <message name="IDS_SESSION_RESTORE_LINK_ARIA_LABEL" desc="Accessibility text for the link in the session restore infobar to open the Settings page.">
+        Settings, opens in new tab.
+      </message>
       <!-- Enterprise sign-in dialog -->
       <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE" desc="Title of the screen in the profile creation flow where the user is asked whether they want to confirm signing in to Chromium with their enterprise account when it is mandatory to sign in to Chromium with the enterprise account.">
         Your organization requires you to sign into Chromium
@@ -1088,6 +1159,9 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- NTP strings -->
+      <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_YOUR_CHROME" desc="The label for the category of actions that involve your Chrome data, such as opening the password manager or clearing browsing data.">
+        Your Chromium
+      </message>
       <if expr="_is_chrome_for_testing_branded">
         <then>
           <message name="IDS_NTP_CUSTOMIZE_BUTTON_LABEL" desc="Label for button on the New Tab Page that opens dialog to customize Chrome for Testing browser.">
@@ -1100,6 +1174,38 @@ Chromium is unable to recover your settings.
           </message>
         </else>
       </if>
+      <message name="IDS_NTP_MODULES_SETUP_LIST_TITLE" desc="Title shown at the top of the Setup List card.">
+        Make Chromium Yours
+      </message>
+      <message name="IDS_NTP_CUSTOMIZE_CHROME_RESET_TO_CLASSIC_CHROME_LABEL" desc="The label for the button for resetting theme back to default chrome in the New Tab Page customize chrome side panel.">
+        Reset to Default Chromium
+      </message>
+
+      <!-- New Tab Page browser feature promotions. -->
+      <if expr="not is_android">
+        <message name="IDS_NTP_CUSTOMIZATION_PROMO" desc="The text shown in the body of the New Tab Page browser customization promotion">
+          Customize Chromium to give your browser a new look
+        </message>
+        <message name="IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS" desc="The text shown in the body of the New Tab Page sign in promotion">
+          Sign in to Chromium to get your passwords, bookmarks, and more on all your devices
+        </message>
+      </if>
+
+      <!-- Customize Chrome Auto Promo Strings -->
+      <message name="IDS_IPH_CUSTOMIZE_CHROME_AUTO_OPEN_BODY" desc="The description of the IPH to auto open Customize Chromium">
+        Customize Chromium to give it a new look
+      </message>
+      <message name="IDS_IPH_CUSTOMIZE_CHROME_AUTO_OPEN_SCREENREADER" desc="The screenreader of the IPH to auto open Customize Chromium" is_accessibility_with_no_ui="true">
+        Click the Customize Chromium button on the New Tab Page to give Chromium a new look
+      </message>
+
+      <!-- Realbox Strings -->
+      <message name="IDS_IPH_REALBOX_CONTEXTUAL_ENTRYPOINT" desc="The description of the IPH shown for the realbox contextual entrypoint.">
+        Deepen your search by adding multiple tabs, files, and tools
+      </message>
+      <message name="IDS_IPH_REALBOX_CONTEXTUAL_ENTRYPOINT_SCREENREADER" desc="The screenreader text of the IPH shown for the realbox contextual entrypoint.">
+        Deepen your search by adding multiple tabs, files, and tools using the "Add a tab and more" button.
+      </message>
 
       <!-- Signin Email Confirmation tab modal dialog -->
       <if expr="not is_chromeos">
@@ -1165,7 +1271,7 @@ Chromium is unable to recover your settings.
           To stay safer online with your parent’s choices, sign in to Chromium
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN_REMINDER" desc="This string is the body text of a reminder message, which is intended to help users understand that they have been signed in to Chromium. The user previously signed in to a Google service (like Gmail or Maps), and saw the Chrome Signin Bubble intercept; when asked whether the user wanted to sign in to Chromium as well, the user selected yes. After a period of time, this reminder message appears at the top right of Chromium (pointing at the Profile Menu) to remind the user that they made this choice a while ago. This body text string comes after the 'Welcome back, USER_NAME' string. We are focusing on the benefit that user enjoys, now that they're signed in to Chromium. The tone should be welcoming.">
-          While you're signed in, you can use your passwords and more from your Google Account in Chromium. You can change this at any time in settings.
+          While you're signed in, you can use your passwords and more from your Google Account in Chromium. To change this, go to “Your account in Chromium”.
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN_REMINDER_SCREENREADER" desc="This string is the accessibility text of a reminder message, which is intended to help users understand that they have been signed in to Chrome.">
           While you're signed in, you can use your passwords and more from your Google Account in Chromium. <ph name="SHORTCUT">$1<ex>CTRL+SHIFT+M</ex></ph> can change your Google services settings.
@@ -1182,8 +1288,18 @@ Chromium is unable to recover your settings.
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY" desc="This is the subtitle of an error message dialog that appears when the user opens the Chromium Profile Menu and chooses 'Sign out of Chromium'. The error message appears when the user has saved some data (like a password or payment method) to Chromium, but Chromium wasn't able to save the data to the user's Google Account due to a sign-in error; we want to set expectations by clarifying that the data will be removed from the device. This subtitle is after the 'Some data isn’t saved yet' string. The tone should be cautionary, because we want to explain to the user that their data is not saved and will be deleted if they sign out. This string provides a path to resolution because it explains how the user can properly save their data before they sign out of Chromium.">
           Chromium needs to verify it’s you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data will be deleted.
         </message>
+        <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY_WITH_COUNT" desc="This is the subtitle of an error message dialog that appears when the user opens the Chromium Profile Menu and chooses 'Sign out of Chromium'. The error message appears when the user has saved some data (like a password or payment method) to Chromium, but Chromium wasn't able to save the data to the user's Google Account due to a sign-in error; we want to set expectations by clarifying that the data will be removed from the device. This subtitle is after the 'Some data isn’t saved yet' string. The tone should be cautionary, because we want to explain to the user that their data is not saved and will be deleted if they sign out. This string provides a path to resolution because it explains how the user can properly save their data before they sign out of Chromium.">
+          {count, plural,
+              =1 {Chromium needs to verify it’s you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data (1 item) will be deleted.}
+              other {Chromium needs to verify it’s you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data ({count} items) will be deleted.}}
+        </message>
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY"  desc="This is the subtitle of an error message dialog that appears when the user opens the Chromium Profile Menu and chooses 'Sign out of Chromium'. The error message appears when the user tries to sign out immediately after having saved saved some data (like a password or payment method) to Chromium and Chromium hasn't had time to save that data to the user's Google Account yet. This subtitle is after the 'Some data isn't saved yet' string. The tone should be cautionary, because we want to explain to the user that their data is not saved to their Google Account. This string asks the user to wait a few minutes before trying to sign out again.">
           Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.
+        </message>
+        <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY_WITH_COUNT"  desc="This is the subtitle of an error message dialog that appears when the user opens the Chromium Profile Menu and chooses 'Sign out of Chromium'. The error message appears when the user tries to sign out immediately after having saved saved some data (like a password or payment method) to Chromium and Chromium hasn't had time to save that data to the user's Google Account yet. This subtitle is after the 'Some data isn't saved yet' string. The tone should be cautionary, because we want to explain to the user that their data is not saved to their Google Account. This string asks the user to wait a few minutes before trying to sign out again.">
+          {count, plural,
+              =1 {Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data (1 item) will be deleted.}
+              other {Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data ({count} items) will be deleted.}}
         </message>
         <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_TEXT" desc="Body of a notice displayed when closing the last Chrome window, to inform the user about a change in the way the 'Clear cookie on exit' setting works.">
           You’ll be signed out of most sites when you close all Chromium windows, except your Google Account if you’re signed in to Chromium. To let sites remember you, <ph name="SETTINGS_LINK">$1<ex>go to settings</ex></ph>.
@@ -1242,7 +1358,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- Profile Menu -->
-      <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON" desc="Text for the button in the sign-in promo in the profile menu when the used is signed out.">
+      <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON" meaning="Button" desc="Text for the button in the sign-in promo in the profile menu when the used is signed out.">
         Sign in to Chromium
       </message>
       <message name="IDS_PROFILE_MENU_PLACEHOLDER_PROFILE_NAME" desc="Placeholder profile name, used when the user did not enter a name for their profile.">
@@ -1293,7 +1409,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <message name="IDS_APP_ALSO_DELETE_APPS_DATA" desc="Checkbox text to ask the user during uninstall; Whether they want to remove associated data for the app being uninstalled. Only used when uninstalling an app associated with a particular website.">
-        Remove this apps data from Chromium
+        Remove this app's data from Chromium
       </message>
 
       <!-- App shortcuts -->
@@ -1471,6 +1587,11 @@ Chromium is unable to recover your settings.
             Open Link in Chromium Inco&amp;gnito Window
           </message>
         </if>
+
+        <!-- On Sign-in Avatar Button Label Desktop -->
+        <message name="IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS" desc="The avatar button label when the user has just signed in. When clicked, it opens the profile menu.">
+          Making Chromium yours...
+        </message>
       </if>
 
       <!-- Update Recommended dialog -->
@@ -1603,6 +1724,9 @@ Chromium is unable to recover your settings.
       <message name="IDS_DESKTOP_MEDIA_PICKER_PERMISSION_RESTART_TEXT_MAC" desc="Supplementary text about the need to restart Chrome, displayed below the message about enabling screen-recording permissions on Mac when those permissions are missing." >
         You'll then need to restart Chromium.
       </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_SYSTEM_AUDIO_PERMISSION_TEXT_MAC" desc="Instructive text for how to enable system audio capture on Mac." >
+        To share system audio, open System Settings and allow 'System Audio Recording Only' for Chromium. You'll then need to restart Chromium.
+      </message>
 
       <!-- Runtime permission strings -->
       <if expr="is_android">
@@ -1663,6 +1787,16 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
+      <!-- Side panel strings -->
+      <message name="IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE" desc="The name of the Customize Chrome feature in the side panel combo box.">
+        Customize Chromium
+      </message>
+
+      <!-- History Strings -->
+      <message name="IDS_HISTORY_HISTORY_MENU_ITEM" desc="Label displayed in history sidebar button to display history.">
+        Chromium history
+      </message>
+
       <!-- Lens Overlay Strings -->
       <if expr="not is_android">
         <!-- Side Panel Pinnable Entrypoint Strings -->
@@ -1705,6 +1839,10 @@ Chromium is unable to recover your settings.
         <message name="IDS_LENS_OVERLAY_FEEDBACK_TOAST_MESSAGE"
           desc="The message on the toast prompting the user to share their thoughts by sending feedback.">
           Share your thoughts
+        </message>
+        <message name="IDS_LENS_OVERLAY_FEEDBACK_TOAST_MESSAGE_ALT"
+          desc="The message on the toast asking the user if the results are useful and to send feedback.">
+          Are these results useful?
         </message>
         <message name="IDS_LENS_OVERLAY_SEND_FEEDBACK_BUTTON_LABEL"
           desc="The label for the button that on click opens a feedback form for the user to send feedback about the feature.">
@@ -1908,11 +2046,63 @@ Chromium is unable to recover your settings.
           desc="The label of the Lens overlay entrypoint in the omnibox offering homework help">
           Homework help
         </message>
+        <message name="IDS_CONTENT_LENS_OVERLAY_ASK_GOOGLE_ENTRYPOINT_LABEL"
+          desc="The label of the Lens overlay entrypoint in the omnibox, allowing users to ask about the page">
+          Ask
+        </message>
         <message name="IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP"
           desc="The tooltip for the Lens overlay toolbar button.">
           Search with Image Search
         </message>
 
+        <message name="IDS_LENS_OVERLAY_ENTRYPOINT_LABEL_ALT1"
+          desc="Label for the Lens overlay command, through which the user can ask questions about the page.">
+          Ask about this page
+        </message>
+        <message name="IDS_LENS_OVERLAY_ENTRYPOINT_LABEL_ALT2"
+          desc="Label for the Lens overlay command, through which the user can ask the Image Search service questions about the page.">
+          Ask Image Search about this page
+        </message>
+        <message name="IDS_LENS_OVERLAY_ENTRYPOINT_LABEL_ALT3"
+          desc="Label for the Lens overlay command, through which the page will be searched using the Image Search service.">
+          Search this page with Image Search
+        </message>
+        <message name="IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT1"
+          desc="Label for the Lens overlay command, through which the user can ask questions about the image.">
+          Ask about this image
+        </message>
+        <message name="IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT2"
+          desc="Label for the Lens overlay command, through which the user can ask the Image Search service questions about the image.">
+          Ask Image Search about this image
+        </message>
+        <message name="IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT3"
+          desc="Label for the Lens overlay command, through which the image will be searched using the Image Search service.">
+          Search this image with Image Search
+        </message>
+        <message name="IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL"
+          desc="Label for the Lens overlay command, through which the current tab will be searched using the Image Search service.">
+          Search this tab with Image Search
+        </message>
+        <message name="IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT1"
+          desc="Label for the Lens overlay command, through which the user can ask questions about the video.">
+          Ask about this video
+        </message>
+        <message name="IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT2"
+          desc="Label for the Lens overlay command, through which the user can ask the Image Search service questions about the video.">
+          Ask Image Search about this video
+        </message>
+        <message name="IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT3"
+          desc="Label for the Lens overlay command, through which the video will be searched using the Image Search service.">
+          Search this video with Image Search
+        </message>
+      </if>
+
+      <message name="IDS_AI_MODE_ENTRYPOINT_LABEL"
+        desc="The label of the AI mode entrypoint in the omnibox" formatter_data="android_java">
+        AI Mode
+      </message>
+
+      <if expr="not is_android">
         <!-- Lens Side Panel Error Page -->
         <message name="IDS_SIDE_PANEL_LENS_OVERLAY_GENERIC_ERROR_PAGE_FIRST_LINE"
             desc="Text shown on the side panel for the Lens feature when there is a network or other server error. The texts informs the user that an error has occured.">
@@ -1952,9 +2142,17 @@ Chromium is unable to recover your settings.
           desc="Text link that is shown to users to learn more about privacy in relation to Google Lens.">
           Learn more
         </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_LEARN_MORE_ABOUT_GOOGLE_LENS_LINK"
+          desc="Accessibility label for text link that is shown to users to learn more about privacy in relation to Google Lens.">
+          Learn more about searching with Image Search in Chromium
+        </message>
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE"
           desc="The title of the lens permission search bubble dialog, introducing Lens as a way to search what's on their screen.">
           Search anything on this page
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_TAB_TO_CONTINUE"
+          desc="Instructs the user to press Tab to begin using the feature.">
+          Tab to continue
         </message>
 
         <!-- Title Case Dependent -->
@@ -1983,6 +2181,56 @@ Chromium is unable to recover your settings.
           desc="Default query for Lens searchbox to request help with the current page context.">
           help me with this
         </message>
+        <message name="IDS_LENS_CONTEXTUAL_SEARCH_ZERO_STATE_QUERY"
+          is_accessibility_with_no_ui="true"
+          desc="Default query for Lens searchbox to request help with the current page context in a low intent state.">
+          **Summarize:** In a single sentence under 30 words, describe the primary subject and purpose of the content in the screenshot.
+
+          **Suggest Questions:** Generate a bulleted list of 3-5 thought-provoking questions a user could ask to better understand the screenshot. These questions should include at least one that is specifically about a visual object, its design, or its placement.
+        </message>
+
+        <!-- AI Mode Strings -->
+        <message name="IDS_LENS_COMPOSEBOX_HINT_TEXT"
+          desc="The hint text of the AI mode searchbox in the Lens side panel. This text is shown in the searchbox when the user has not yet typed any text, and prompts the user to ask a follow up question.">
+          Ask a follow up
+        </message>
+
+        <message name="IDS_LENS_COMPOSEBOX_HINT_TEXT_ASK_ANYTHING"
+          desc="The hint text of the AI mode searchbox in the Lens tab. This text is shown in the searchbox when the user has not yet typed any text, and prompts the user to ask a question.">
+          Ask anything
+        </message>
+
+        <message name="IDS_AI_MODE_ASK_ABOUT_THIS_TAB"
+          desc="Title for the AI Mode zero state welcome message in the Lens side panel. Prompts the user to ask questions about the current tab. Includes a line break to force desired line wrapping.">
+          Ask<ph name="LINE_BREAK">$1</ph>about this tab
+        </message>
+
+        <message name="IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE"
+          desc="Title for the AI Mode zero state welcome message in the Lens tab. The first placeholder is the user's given name. Includes a line break to force desired line wrapping.">
+          Hi <ph name="USER_NAME">$1<ex>Josh</ex></ph>,<ph name="LINE_BREAK">$2</ph>what's on your mind today?
+        </message>
+
+        <message name="IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE_WITHOUT_NAME"
+          desc="Title for the AI Mode zero state welcome message in the Lens tab.">
+          What's on your mind today?
+        </message>
+
+        <message name="IDS_AI_MODE_NEW_SEARCH"
+          desc="Header in the Lens side panel indicating a new AI Mode search session.">
+          New search
+        </message>
+
+        <if expr="use_titlecase">
+          <message name="IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON"
+            desc="In Title Case: The text label of the omnibox context menu option to show the 'AI Mode' shortcut button">
+            Always Show AI Mode Shortcuts
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+        <message name="IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON" desc="The text label of the omnibox context menu option to show the 'AI Mode' shortcut button">
+          Always show AI Mode shortcuts
+        </message>
+        </if>
       </if>
 
       <!-- OOBE -->
@@ -2042,6 +2290,12 @@ Chromium is unable to recover your settings.
               =0 {Your administrator requires that you relaunch Chromium to apply an update}
               =1 {Your administrator requires that you relaunch Chromium to apply an update. Your Incognito window won't reopen.}
               other {Your administrator requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}}
+          </message>
+             <message name="IDS_ADVANCED_PROTECTION_RELAUNCH_REQUIRED_BODY" desc="The body text of a dialog that tells Advanced Protection users the browser must be relaunched with Incognito counter">
+             {COUNT, plural,
+              =0 {Advanced Protection requires that you relaunch Chromium to apply an update}
+              =1 {Advanced Protection requires that you relaunch Chromium to apply an update. Your Incognito window won't reopen.}
+              other {Advanced Protection requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}}
           </message>
         </if>
       </if>
@@ -2120,9 +2374,33 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- Chrome parent extension/app install blocking dialog. -->
-      <if expr="enable_extensions">
+      <if expr="enable_extensions_core">
         <message name="IDS_EXTENSION_PERMISSIONS_BLOCKED_BY_PARENT_PROMPT_MESSAGE" desc="Text for the dialog indicating that a parent has blocked extensions and apps.">
          Your parent has turned off "Permissions for sites, apps and extensions" for Chromium
+        </message>
+
+        <message name="IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_TITLE_APP" desc="Titlebar of the prompt window for an externally installed app">
+          Another program on your computer added an app that may change the way Chromium works.
+
+<ph name="EXTENSION_NAME">$1<ex>Babylon Toolbar</ex></ph>
+        </message>
+        <message name="IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_TITLE_EXTENSION" desc="Titlebar of the prompt window for an externally installed extension">
+          Another program on your computer added an extension that may change the way Chromium works.
+
+<ph name="EXTENSION_NAME">$1<ex>Babylon Toolbar</ex></ph>
+        </message>
+        <message name="IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_TITLE_THEME" desc="Titlebar of the prompt window for an externally installed theme">
+          Another program on your computer added a theme that may change the way Chromium works.
+
+<ph name="EXTENSION_NAME">$1<ex>Babylon Toolbar</ex></ph>
+        </message>
+        <message name="IDS_EXTENSION_EXTERNAL_INITIAL_INSTALL_PROMPT_TITLE_EXTENSION" desc="">
+          <ph name="PARTNER_NAME">$1<ex>Google</ex></ph> has added an extension that may change the way Chromium works.
+
+<ph name="EXTENSION_NAME">$2<ex>Babylon Toolbar</ex></ph>
+        </message>
+        <message name="IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_ABORT_BUTTON" desc="Button on the external install prompt to remove an extension installed by a third party.">
+          Remove from Chromium
         </message>
       </if>
 
@@ -2138,8 +2416,20 @@ Chromium is unable to recover your settings.
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2" desc="Title of a screen that lets the user choose which profile to use when browsing the web. *If the EN source doesn't translate well in your language, an alternative string 'Which Chromium profile would you like to use?' may be used instead">
           Who's using Chromium?
         </message>
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_KEEP_EVERYTHING_IN_CHROME" desc="Profile picker main view title.">
+          Keep everything in Chromium
+        </message>
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE" desc="Profile picker main view subtitle">
           With Chromium profiles, you can separate all your Chromium stuff. Create profiles for friends and family, or split between work and fun.
+        </message>
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_KEEP_WORK_AND_LIFE_SEPARATE" desc="Profile picker main view subtitle.">
+          Chromium profiles let you keep personal browsing and work apart. Add a new profile now.
+        </message>
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GOT_ANOTHER_GOOGLE_ACCOUNT" desc="Profile picker main view subtitle.">
+          Chromium profiles help you separate different parts of your life. Add a new profile now.
+        </message>
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_KEEP_TASKS_SEPARATE" desc="Profile picker main view subtitle.">
+          Add a new Chromium profile to keep bookmarks, passwords, and settings apart.
         </message>
         <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE" desc="Profile picker profile type choice title">
           Set up your new Chromium profile
@@ -2161,7 +2451,7 @@ Chromium is unable to recover your settings.
         </message>
 
         <!-- First Run Experience -->
-        <message name="IDS_FRE_SIGN_IN_TITLE_0"
+        <message name="IDS_FRE_SIGN_IN_TITLE_0" meaning="Title"
           desc="This string appears as a heading on a full-page screen that asks the user to sign in to Chromium with their Google Account. It appears when the user launches Chromium for the first time. When they sign in, they can personalize and customize Chromium and remember their settings in their Google Account. The tone should be inviting and alluring.">
           Sign in to Chromium
         </message>
@@ -2255,12 +2545,14 @@ Chromium is unable to recover your settings.
         Speeds up sites with Chromium's V8 engine but makes Chromium slightly less resistant to attacks. This setting is off.
       </message>
       <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_DESCRIPTION" desc="Description of the JavaScript optimizer content setting.">
-        V8 is Chromium’s JavaScript and WebAssembly engine used to improve site performance
+        Speeds up sites with Chromium's V8 engine but makes Chromium slightly less resistant to attacks
       </message>
       <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_ALLOWED_SUB_LABEL" desc="Sub-label for the enabled option of the JavaScript optimizer content setting.">
-        Chromium runs faster and features that use JavaScript should work as designed (recommended)
+        Chromium runs faster and features that use JavaScript should work as designed
       </message>
-
+      <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the JavaScript optimizer content setting.">
+        Reduces performance but makes Chromium more resistant to attacks
+      </message>
       <!-- ChromiumUpdater Strings -->
       <if expr="is_win">
         <message name="IDS_FRIENDLY_COMPANY_NAME" desc="Company name" translateable="false">
@@ -2431,6 +2723,9 @@ Chromium is unable to recover your settings.
         <message name="IDS_DOWNLOAD_HASH_MISMATCH"
                  desc="Error message displayed in the main dialog when the downloaded file fails hash verification.">
           The downloaded file failed verification.
+        </message>
+        <message name="IDS_UPDATER_DISK_FULL" desc="Error displayed if there is not enough disk space to install and application or download an update.">
+          Not enough disk space.
         </message>
         <message name="IDS_GENERIC_DOWNLOAD_ERROR"
                  desc="Error message displayed in the main dialog when the update client returns an error while downloading.">
@@ -2623,11 +2918,26 @@ Chromium is unable to recover your settings.
         <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_BETA" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is open. It indicates that this is the Beta version of the browser.">
           Close Gemini (Beta)
         </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered.">
+          Toggle Gemini in Chromium
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_CANARY" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered. It indicates that this is the Canary version of the browser.">
+          Toggle Gemini (Canary)
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_DEV" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered. It indicates that this is the Dev version of the browser.">
+          Toggle Gemini (Dev)
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_BETA" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered. It indicates that this is the Beta version of the browser.">
+          Toggle Gemini (Beta)
+        </message>
         <message name="IDS_GLIC_STATUS_ICON_MENU_SHOW" translateable="false" desc="This is the menu item for showing the glic UI.">
           Open Gemini in Chromium
         </message>
         <message name="IDS_GLIC_STATUS_ICON_MENU_CLOSE" translateable="false" desc="This is the menu item for closing the Glic window.">
           Close Gemini in Chromium
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_MENU_TOGGLE" translateable="false" desc="This is the menu item for toggling the glic UI.">
+          Toggle Gemini in Chromium
         </message>
         <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE" translateable="false" desc="This is the text of the glic ineligible profile notice.">
           To use Gemini in Chromium, sign in with a different Google Account
@@ -2665,6 +2975,10 @@ Chromium is unable to recover your settings.
         <message name="IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT" desc="Polite announcement that happens when a contextual nudge is shown next to the Glic button." translateable="false">
           To open Gemini in Chromium, press <ph name="GLOBAL_HOTKEY">$1<ex>⌘+G</ex></ph>
         </message>
+        <!-- Variant of the label on the Gemini button in the tabstrip-->
+        <message name="IDS_GLIC_BUTTON_ENTRYPOINT_ASK_BROWSER_LABEL" desc="Label on the button used to open Gemini in Chromium.">
+          Ask Chromium
+        </message>
       </if>
 
       <!-- UNO Promo strings for extensions -->
@@ -2678,13 +2992,16 @@ Chromium is unable to recover your settings.
       <message name="IDS_BOOKMARK_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE" desc="Text of the promo displayed at the bottom of the bookmark bubble asking the user to enable UNO.">
         To get this bookmark and more on all your devices, sign in to Chromium
       </message>
+      <message name="IDS_BOOKMARK_INSTALLED_BUBBLE_PROMO_EXPLICIT_SIGNIN_MESSAGE" desc="Text of the promo displayed after the bookmark bubble asking the user to enable UNO.">
+        To get your bookmarks and more on all your devices, sign in to Chromium. This bookmark will be saved in your Google Account after you sign in.
+      </message>
 
       <!-- Dice Migration strings -->
       <message name="IDS_DICE_MIGRATION_DIALOG_TITLE" desc="The title in the Dice Migration dialog advertising the sign-in benefit.">
-        Your Chromium, everywhere
+        Get more when you’re signed in to Chromium
       </message>
       <message name="IDS_DICE_MIGRATION_DIALOG_DESCRIPTION" desc="The content of the Dice Migration dialog advertising the benefits of signing in to Chrome.">
-        When you click 'Got it', you can save and use passwords and more in your Google Account whenever you're signed in to Chromium. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+        You’ll save and use passwords and more in your Google Account whenever you’re signed in to Chromium. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
       </message>
       <message name="IDS_DICE_MIGRATION_DIALOG_OK_BUTTON" desc="The primary button label in the Dice Migration dialog, letting the user acknowledge signing in to Chrome.">
         Got it
@@ -2694,6 +3011,57 @@ Chromium is unable to recover your settings.
       </message>
       <message name="IDS_DICE_MIGRATION_CONFIRMATION_TOAST_BUTTON" desc="The text on the button of the confirmation toast shown after the user clicks the accept button on the Dice Migration dialog, that allows the users to control the sync settings or sign out of Chrome.">
         Manage
+      </message>
+
+      <!-- Profile menu strings -->
+      <if expr="not is_android">
+        <if expr="use_titlecase">
+          <message name="IDS_PROFILE_MENU_ACCOUNT_SETTINGS_BUTTON" desc="Button in the avatar menu bubble view for opening Chrome account settings.">
+            Your Account in Chromium
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_PROFILE_MENU_ACCOUNT_SETTINGS_BUTTON" desc="Button in the avatar menu bubble view for opening Chrome account settings.">
+            Your account in Chromium
+          </message>
+        </if>
+      </if>
+
+      <!--Desktop to iOS promo strings-->
+      <if expr="not is_android">
+        <message name="IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop ESB promo bubble with a QR code.">
+          Download Chromium on your phone to add an extra layer of protection when you're on the go
+        </message>
+        <message name="IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_DESCRIPTION_REMINDER" desc="The description for the iOS desktop ESB promo bubble with a reminder button.">
+          Stay safer on the go with Enhanced Safe Browsing on Chromium for iOS
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_REMINDER" desc="The description for the footer of the iOS desktop password promo bubble.">
+          Sign in faster to sites using saved passwords for Chromium on iOS
+        </message>
+        <message name="IDS_IOS_DESKTOP_PROMO_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after uses choose to be reminded of the feature on their iOS device. The placeholder will be replaced by the name of the feature.">
+          You'll see a prompt to try <ph name="FEATURE_NAME">$1<ex>Google Lens</ex></ph> next time you open Chromium iOS.
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after uses choose to be reminded of the Password Manager on their iOS device.">
+          Next time you open Chromium on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>, you'll see a prompt to use Google Password Manager.
+        </message>
+      </if>
+
+      <!--Default Search Engine Reset Notification-->
+      <message name="IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_TITLE"
+         desc="Title of the notification shown when Chromium resets the default search engine (DSE) due to preference tampering.">
+        Your settings were changed by an unknown app
+      </message>
+      <message name="IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_BODY"
+         desc="Body text of the notification shown when Chromium resets the default search engine, explaining that a change from outside Chromium was detected.">
+        Your default search engine was changed from outside of Chromium. To protect you, Chromium reset it.
+      </message>
+      <message name="IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_GOT_IT_BUTTON"
+         desc="Label for the 'Got it' button in the default search engine reset notification, which dismisses the UI.">
+        Got it
+      </message>
+      <message name="IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_LEARN_MORE_BUTTON"
+         desc="Label for the 'Learn more' button in the default search engine reset notification, which opens a help center article.">
+        Learn more
       </message>
     </messages>
   </release>

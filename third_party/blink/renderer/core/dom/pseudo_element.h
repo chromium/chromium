@@ -34,10 +34,11 @@
 namespace blink {
 
 class ComputedStyle;
+class ContentData;
 
 class CORE_EXPORT PseudoElement : public Element {
  public:
-  // |view_transition_name| is used to uniquely identify a pseudo-element
+  // |pseudo_argument| is used to uniquely identify a pseudo-element
   // from a set of pseudo-elements which share the same |pseudo_id|. The current
   // usage of this ID is limited to pseudo-elements generated for a
   // ViewTransition. See
@@ -45,17 +46,14 @@ class CORE_EXPORT PseudoElement : public Element {
   static PseudoElement* Create(
       Element* parent,
       PseudoId pseudo_id,
-      const AtomicString& view_transition_name = g_null_atom);
+      const AtomicString& pseudo_argument = g_null_atom);
 
   PseudoElement(Element*,
                 PseudoId,
-                const AtomicString& view_transition_name = g_null_atom);
+                const AtomicString& pseudo_argument = g_null_atom);
 
   bool IsPseudoElement() const final { return true; }
 
-  const AtomicString& view_transition_name() const {
-    return view_transition_name_;
-  }
   const ComputedStyle* CustomStyleForLayoutObject(
       const StyleRecalcContext&) override;
   void AttachLayoutTree(AttachContext&) override;
@@ -71,9 +69,7 @@ class CORE_EXPORT PseudoElement : public Element {
   // unresolved = alias, kPseudoScrollMarkerGroup is resolved.
   // For styling and selector matching, return resolved version.
   PseudoId GetPseudoIdForStyling() const override;
-  const AtomicString& GetPseudoArgument() const override {
-    return view_transition_name_;
-  }
+  const AtomicString& GetPseudoArgument() const { return pseudo_argument_; }
 
   // Return the adjusted style needed by layout. In some cases computed style
   // cannot be used as-is by layout. display:contents needs to be adjusted to
@@ -100,9 +96,15 @@ class CORE_EXPORT PseudoElement : public Element {
   // ancestor.
   Element& UltimateOriginatingElement() const;
 
+  const ContentData* GetContentData() const;
+  ContentData* CreateMutableAltContentDataForCountersIfNeeded();
+
   virtual void Dispose();
 
-  static bool IsLayoutSiblingOfOriginatingElement(PseudoId pseudo_id);
+  static bool IsLayoutSiblingOfOriginatingElement(
+      const Element& originating_element,
+      PseudoId pseudo_id);
+  bool IsLayoutSiblingOfOriginatingElement() const;
 
   bool IsInertRoot() const override;
 
@@ -123,7 +125,7 @@ class CORE_EXPORT PseudoElement : public Element {
   };
 
   PseudoId pseudo_id_;
-  const AtomicString view_transition_name_;
+  const AtomicString pseudo_argument_;
   bool is_generated_name_ = false;
 };
 

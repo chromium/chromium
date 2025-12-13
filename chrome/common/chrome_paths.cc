@@ -68,19 +68,8 @@ const base::FilePath::CharType kComponentUpdatedWidevineCdmHint[] =
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 #if BUILDFLAG(IS_CHROMEOS)
-const base::FilePath::CharType kChromeOSTPMFirmwareUpdateLocation[] =
-    FILE_PATH_LITERAL("/run/tpm_firmware_update_location");
-const base::FilePath::CharType kChromeOSTPMFirmwareUpdateSRKVulnerableROCA[] =
-    FILE_PATH_LITERAL("/run/tpm_firmware_update_srk_vulnerable_roca");
 const base::FilePath::CharType kDeviceRefreshTokenFilePath[] =
     FILE_PATH_LITERAL("/home/chronos/device_refresh_token");
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-const base::FilePath::CharType kChromeOSCryptohomeMountRoot[] =
-    FILE_PATH_LITERAL("/home/user");
-#else
-const base::FilePath::CharType kFakeCryptohomeMountRootDirname[] =
-    FILE_PATH_LITERAL(".home_user");
-#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
 
 bool GetChromeOsCrdDataDirInternal(base::FilePath* result,
                                    bool* should_be_created) {
@@ -103,7 +92,6 @@ bool GetChromeOsCrdDataDirInternal(base::FilePath* result,
   return true;
 #endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
 }
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 base::FilePath& GetInvalidSpecifiedUserDataDirInternal() {
@@ -143,7 +131,6 @@ bool PathProvider(int key, base::FilePath* result) {
       return base::PathService::Get(chrome::DIR_USER_DATA, result);
 #else
       // Debug builds write next to the binary (in the build tree)
-      // TODO(crbug.com/40202595): implement workable solution for Fuchsia.
 #if BUILDFLAG(IS_MAC)
       // Apps may not write into their own bundle.
       if (base::apple::AmIBundled()) {
@@ -361,8 +348,7 @@ bool PathProvider(int key, base::FilePath* result) {
       }
 #else
       // If we're not bundled on mac or Android, resources.pak should be in
-      // the "assets" location (e.g. next to the binary, on many platforms, or
-      // in /pkg/data under Fuchsia, etc).
+      // the "assets" location (e.g. next to the binary, on many platforms).
       if (!base::PathService::Get(base::DIR_ASSETS, &cur)) {
         return false;
       }
@@ -371,24 +357,6 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
 
 #if BUILDFLAG(IS_CHROMEOS)
-    case chrome::DIR_CHROMEOS_WALLPAPERS:
-      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
-        return false;
-      }
-      cur = cur.Append(FILE_PATH_LITERAL("wallpapers"));
-      break;
-    case chrome::DIR_CHROMEOS_WALLPAPER_THUMBNAILS:
-      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
-        return false;
-      }
-      cur = cur.Append(FILE_PATH_LITERAL("wallpaper_thumbnails"));
-      break;
-    case chrome::DIR_CHROMEOS_CUSTOM_WALLPAPERS:
-      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
-        return false;
-      }
-      cur = cur.Append(FILE_PATH_LITERAL("custom_wallpapers"));
-      break;
     case chrome::DIR_CHROMEOS_CRD_DATA:
       if (!GetChromeOsCrdDataDirInternal(&cur,
                                          /*should_be_created=*/&create_dir)) {
@@ -396,6 +364,7 @@ bool PathProvider(int key, base::FilePath* result) {
       }
       break;
 #endif
+
     // The following are only valid in the development environment, and
     // will fail if executed from an installed executable (because the
     // generated path won't exist).
@@ -528,27 +497,13 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.Append(kGCMStoreDirname);
       break;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
-    case chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_LOCATION:
-      cur = base::FilePath(kChromeOSTPMFirmwareUpdateLocation);
-      break;
-    case chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA:
-      cur = base::FilePath(kChromeOSTPMFirmwareUpdateSRKVulnerableROCA);
-      break;
     case chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN:
       cur = base::FilePath(kDeviceRefreshTokenFilePath);
       break;
-    case chrome::DIR_CHROMEOS_HOMEDIR_MOUNT:
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-      cur = base::FilePath(kChromeOSCryptohomeMountRoot);
-#else
-      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
-        return false;
-      }
-      cur = cur.Append(kFakeCryptohomeMountRootDirname);
-#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
-      break;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
     case chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS:
       if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
         return false;

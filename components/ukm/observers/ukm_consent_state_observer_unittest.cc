@@ -101,7 +101,7 @@ class MockSyncService : public syncer::TestSyncService {
   }
 
   // The list of observers of the SyncService state.
-  base::ObserverList<syncer::SyncServiceObserver>::Unchecked observers_;
+  base::ObserverList<syncer::SyncServiceObserver> observers_;
 };
 
 class TestUkmConsentStateObserver : public UkmConsentStateObserver {
@@ -432,7 +432,7 @@ TEST_P(KioskUkmConsentStateObserverTest, VerifyDefaultConsent) {
   user_manager::UserManager::RegisterPrefs(local_state.registry());
   user_manager::ScopedUserManager user_manager(
       std::make_unique<user_manager::FakeUserManager>(&local_state));
-  chromeos::SetUpFakeKioskSession();
+  chromeos::SetUpFakeChromeAppKioskSession();
 
   sync_preferences::TestingPrefServiceSyncable prefs;
   RegisterUrlKeyedAnonymizedDataCollectionPref(prefs);

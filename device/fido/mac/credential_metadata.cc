@@ -2,27 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/mac/credential_metadata.h"
 
-#include <ostream>
-#include <string_view>
+#include <array>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
-#include "device/fido/public_key_credential_user_entity.h"
-#include "third_party/boringssl/src/include/openssl/digest.h"
-#include "third_party/boringssl/src/include/openssl/hkdf.h"
-#include "third_party/boringssl/src/include/openssl/rand.h"
+#include "crypto/hash.h"
+#include "crypto/kdf.h"
+#include "crypto/random.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 namespace device::fido::mac {
 
@@ -35,7 +30,8 @@ constexpr size_t kNonceLength = 12;
 std::vector<uint8_t> MakeAad(CredentialMetadata::Version version,
                              const std::string& rp_id) {
   std::vector<uint8_t> result = {static_cast<uint8_t>(version)};
-  result.insert(result.end(), rp_id.data(), rp_id.data() + rp_id.size());
+  result.insert(result.end(), rp_id.data(),
+                UNSAFE_TODO(rp_id.data() + rp_id.size()));
   return result;
 }
 
@@ -50,7 +46,6 @@ class Cryptor {
 
   enum Algorithm : uint8_t {
     kAes256Gcm = 0,
-    kHmacSha256 = 1,
     kAes256GcmSiv = 2,
   };
 
@@ -65,8 +60,6 @@ class Cryptor {
       base::span<const uint8_t> ciphertext,
       base::span<const uint8_t> authenticated_data) const;
 
-  std::string HmacForStorage(std::string_view data) const;
-
  private:
   static std::optional<crypto::Aead::AeadAlgorithm> ToAeadAlgorithm(
       Algorithm alg);
@@ -78,9 +71,9 @@ class Cryptor {
   Cryptor(const Cryptor&) = delete;
   Cryptor& operator=(const Cryptor&) = delete;
 
-  // Used to derive keys for the HMAC and AEAD operations. Chrome picks
-  // different secrets for each user profile. This ensures that credentials are
-  // logically tied to the Chrome user profile under which they were created.
+  // Used to derive keys for the AEAD operations. Chrome picks different secrets
+  // for each user profile. This ensures that credentials are logically tied to
+  // the Chrome user profile under which they were created.
   std::string secret_;
 };
 
@@ -106,19 +99,6 @@ std::optional<std::vector<uint8_t>> Cryptor::Unseal(
   return aead.Open(ciphertext, nonce, authenticated_data);
 }
 
-std::string Cryptor::HmacForStorage(std::string_view data) const {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  const std::string key = DeriveKey(Algorithm::kHmacSha256);
-  std::vector<uint8_t> digest(hmac.DigestLength());
-  CHECK(hmac.Init(key));
-  CHECK(hmac.Sign(data, digest.data(), hmac.DigestLength()));
-
-  // The keychain fields that store RP ID and User ID seem to only accept
-  // NSString (not NSData), so we HexEncode to ensure the result to be
-  // UTF-8-decodable.
-  return base::HexEncode(digest);
-}
-
 // static
 std::optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
     Algorithm alg) {
@@ -127,21 +107,15 @@ std::optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
       return crypto::Aead::AES_256_GCM;
     case Algorithm::kAes256GcmSiv:
       return crypto::Aead::AES_256_GCM_SIV;
-    case Algorithm::kHmacSha256:
-      NOTREACHED() << "invalid AEAD";
   }
 }
 
 std::string Cryptor::DeriveKey(Algorithm alg) const {
-  static constexpr size_t kKeyLength = 32u;
-  std::string key;
-  const uint8_t info = static_cast<uint8_t>(alg);
-  const bool hkdf_init =
-      ::HKDF(reinterpret_cast<uint8_t*>(base::WriteInto(&key, kKeyLength + 1)),
-             kKeyLength, EVP_sha256(),
-             reinterpret_cast<const uint8_t*>(secret_.data()), secret_.size(),
-             nullptr /* salt */, 0, &info, 1);
-  DCHECK(hkdf_init);
+  std::string key(32u, 0);
+  const std::array<uint8_t, 1> info = {static_cast<uint8_t>(alg)};
+  const base::span<const uint8_t> no_salt;
+  crypto::kdf::Hkdf(crypto::hash::kSha256, base::as_byte_span(secret_), no_salt,
+                    info, base::as_writable_byte_span(key));
   return key;
 }
 
@@ -208,11 +182,8 @@ bool CredentialMetadata::operator==(const CredentialMetadata& other) const {
 }
 
 std::string GenerateCredentialMetadataSecret() {
-  static constexpr size_t kSecretSize = 32u;
-  std::string secret;
-  RAND_bytes(
-      reinterpret_cast<uint8_t*>(base::WriteInto(&secret, kSecretSize + 1)),
-      kSecretSize);
+  std::string secret(32u, 0);
+  crypto::RandBytes(base::as_writable_byte_span(secret));
   return secret;
 }
 
@@ -256,7 +227,7 @@ std::vector<uint8_t> SealCredentialMetadata(
   DCHECK(pt);
 
   std::vector<uint8_t> nonce(kNonceLength);
-  RAND_bytes(nonce.data(), nonce.size());  // RAND_bytes always returns 1.
+  crypto::RandBytes(nonce);
   const std::vector<uint8_t> ct =
       Cryptor(secret).Seal(Cryptor::Algorithm::kAes256Gcm, nonce, *pt,
                            MakeAad(metadata.version, rp_id));
@@ -438,22 +409,12 @@ std::optional<CredentialMetadata> UnsealMetadataFromApplicationTag(
   return std::nullopt;
 }
 
-std::string EncodeRpIdAndUserIdDeprecated(const std::string& secret,
-                                          const std::string& rp_id,
-                                          base::span<const uint8_t> user_id) {
-  // Encoding RP ID along with the user ID hides whether the same user ID was
-  // reused on different RPs.
-  const auto* user_id_data = reinterpret_cast<const char*>(user_id.data());
-  return Cryptor(secret).HmacForStorage(
-      rp_id + "/" + std::string(user_id_data, user_id_data + user_id.size()));
-}
-
 std::string EncodeRpId(const std::string& secret, const std::string& rp_id) {
   // Encrypt with a fixed nonce to make the result deterministic while still
   // allowing the RP ID to be recovered from the ciphertext later.
   static constexpr std::array<uint8_t, kNonceLength> fixed_zero_nonce = {};
-  base::span<const uint8_t> pt(reinterpret_cast<const uint8_t*>(rp_id.data()),
-                               rp_id.size());
+  base::span<const uint8_t> UNSAFE_TODO(
+      pt(reinterpret_cast<const uint8_t*>(rp_id.data()), rp_id.size()));
   // Using AES-GCM with a fixed nonce would break confidentiality, so this uses
   // AES-GCM-SIV instead.
   const std::vector<uint8_t> ct =
@@ -497,9 +458,8 @@ std::vector<uint8_t> SealLegacyCredentialIdForTestingOnly(
     result.push_back(static_cast<uint8_t>(version));
   }
   auto nonce_begin = result.insert(result.end(), 12, 0);
-  base::span<uint8_t> nonce(nonce_begin, result.end());
-  DCHECK_EQ(nonce.size(), 12u);
-  RAND_bytes(nonce.data(), nonce.size());  // RAND_bytes always returns 1.
+  base::span<uint8_t> UNSAFE_TODO(nonce(nonce_begin, result.end()));
+  crypto::RandBytes(nonce);
 
   // Only V1 includes the `is_resident` bit. `sign_counter_type=kTimestamp` was
   // implicit before V3 and thus not encoded.
@@ -519,7 +479,7 @@ std::vector<uint8_t> SealLegacyCredentialIdForTestingOnly(
 
   std::vector<uint8_t> aad;
   aad.push_back(static_cast<uint8_t>(version));
-  aad.insert(aad.end(), rp_id.data(), rp_id.data() + rp_id.size());
+  aad.insert(aad.end(), rp_id.data(), UNSAFE_TODO(rp_id.data() + rp_id.size()));
   const std::vector<uint8_t> ct =
       Cryptor(secret).Seal(Cryptor::Algorithm::kAes256Gcm, nonce, *pt, aad);
   result.insert(result.end(), ct.begin(), ct.end());

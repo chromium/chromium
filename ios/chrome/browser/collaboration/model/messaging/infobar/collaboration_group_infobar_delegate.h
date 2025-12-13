@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import <memory>
+#import <set>
 #import <string>
 
 #import "base/memory/raw_ptr.h"

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 
-#import "base/feature_list.h"
 #import "base/types/expected.h"
 #import "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #import "components/enterprise/connectors/core/common.h"
@@ -14,36 +13,20 @@
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_types.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
-#import "google_apis/gaia/gaia_auth_util.h"
+#import "ios/chrome/browser/enterprise/common/util.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
-#import "ios/chrome/browser/enterprise/connectors/features.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-
-namespace {
-std::string GetDomainFromEmail(const std::string& email) {
-  size_t email_separator_pos = email.find('@');
-  if (email.empty() || email_separator_pos == std::string::npos ||
-      email_separator_pos == email.size() - 1) {
-    return std::string();
-  }
-  return gaia::ExtractDomainName(email);
-}
-
-}  // namespace
 
 namespace enterprise_connectors {
 
-ConnectorsService::ConnectorsService(ProfileIOS* profile) : profile_(profile) {
+ConnectorsService::ConnectorsService(ProfileIOS* profile)
+    : ConnectorsServiceBase(
+          std::make_unique<ConnectorsManager>(profile->GetPrefs(),
+                                              GetServiceProviderConfig())),
+      profile_(profile) {
   CHECK(profile_);
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
-
-  CHECK(profile_->IsOffTheRecord() || identity_manager_ != nullptr);
-  connectors_manager_ = std::make_unique<ConnectorsManager>(
-      profile_->GetPrefs(), GetServiceProviderConfig());
 }
 
 ConnectorsService::~ConnectorsService() = default;
@@ -56,44 +39,21 @@ std::string ConnectorsService::GetManagementDomain() {
   std::optional<policy::PolicyScope> policy_scope = std::nullopt;
 
   // Check the scope of the Url Filtering policy.
-  if (base::FeatureList::IsEnabled(kIOSEnterpriseRealtimeUrlFiltering)) {
+  if (std::optional<DmToken> dm_token =
+          GetDmToken(kEnterpriseRealTimeUrlCheckScope)) {
+    policy_scope = dm_token.value().scope;
+  }
+
+  // Machine scope has precedence, only update the scope if the previous
+  // policy is not already machine-scoped.
+  if (policy_scope != policy::PolicyScope::POLICY_SCOPE_MACHINE) {
     if (std::optional<DmToken> dm_token =
-            GetDmToken(kEnterpriseRealTimeUrlCheckScope)) {
+            GetDmToken(kOnSecurityEventScopePref)) {
       policy_scope = dm_token.value().scope;
     }
   }
 
-  // Check the scope of Event Reporting policy.
-  if (base::FeatureList::IsEnabled(kEnterpriseRealtimeEventReportingOnIOS)) {
-    // Machine scope has precedence, only update the scope if the previous
-    // policy is not already machine-scoped.
-    if (policy_scope != policy::PolicyScope::POLICY_SCOPE_MACHINE) {
-      if (std::optional<DmToken> dm_token =
-              GetDmToken(kOnSecurityEventScopePref)) {
-        policy_scope = dm_token.value().scope;
-      }
-    }
-  }
-
-  // Return empty string if none of the policies are enabled.
-  if (!policy_scope) {
-    return std::string();
-  }
-
-  // Retrieve the management domain for the give scope.
-  switch (*policy_scope) {
-      // Retrieve the domain via profile email for user-scoped policies.
-    case policy::PolicyScope::POLICY_SCOPE_USER: {
-      std::string profile_email = GetProfileEmail(identity_manager_);
-      return GetDomainFromEmail(profile_email);
-    }
-    case policy::PolicyScope::POLICY_SCOPE_MACHINE:
-      policy::MachineLevelUserCloudPolicyManager* manager =
-          GetApplicationContext()
-              ->GetBrowserPolicyConnector()
-              ->machine_level_user_cloud_policy_manager();
-      return policy::GetManagedBy(manager).value_or(std::string());
-  }
+  return enterprise::GetManagementDomain(policy_scope, profile_);
 }
 
 bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
@@ -102,13 +62,7 @@ bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
 }
 
 std::optional<std::string> ConnectorsService::GetBrowserDmToken() const {
-  auto browser_dm_token =
-      policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
-  if (!browser_dm_token.is_valid()) {
-    return std::nullopt;
-  }
-
-  return browser_dm_token.value();
+  return enterprise::GetBrowserDmToken();
 }
 
 std::optional<ConnectorsServiceBase::DmToken> ConnectorsService::GetDmToken(
@@ -143,15 +97,6 @@ PrefService* ConnectorsService::GetPrefs() {
 
 const PrefService* ConnectorsService::GetPrefs() const {
   return profile_->GetPrefs();
-}
-
-ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase() {
-  return connectors_manager_.get();
-}
-
-const ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase()
-    const {
-  return connectors_manager_.get();
 }
 
 policy::CloudPolicyManager*
@@ -194,7 +139,8 @@ std::unique_ptr<ClientMetadata> ConnectorsService::GetBasicClientMetadata() {
     metadata->mutable_device()->set_dm_token(*browser_dm_token);
   }
 
-  std::optional<std::string> profile_dm_token = GetUserDmToken(profile_);
+  std::optional<std::string> profile_dm_token =
+      enterprise::GetUserDmToken(profile_);
   if (profile_dm_token.has_value()) {
     metadata->mutable_profile()->set_dm_token(*profile_dm_token);
   }

@@ -1,5 +1,8 @@
-fjacky@chromium.org
 msramek@chromium.org
 
-per-file survey_config.cc=set noparent
-per-file survey_config.cc=file://chrome/browser/ui/hats/HATS_PRIVACY_OWNERS
+# The following two lines should be uncommented once another HaTS owner has been found.
+# per-file survey_config.cc=set noparent
+# per-file survey_config.cc=file://chrome/browser/ui/hats/HATS_PRIVACY_OWNERS
+
+# emeritus:
+# fjacky@chromium.org

@@ -1,0 +1,11 @@
+exit code: 0
+stdout:
+{'Name': 'The Chromium Project', 'URL': 'https://www.chromium.org', 'License': 'BSD-3-Clause', 'Shipped': 'yes', 'License File': ['LICENSE'], 'dir': ''}
+{'Name': 'AlwaysIncluded', 'URL': 'https://extra.com', 'Shipped': 'Yes', 'License': 'Apache 2.0', 'License File': ['extra_dir/LICENSE'], 'dir': 'extra_dir'}
+{'Name': 'narluga', 'URL': 'https://example.com', 'Shipped': 'Yes', 'License': 'Apache 2.0', 'License File': ['subdir/third_party/narluga_v1/LICENSE'], 'dir': 'subdir/third_party/narluga_v1'}
+{'Name': 'narluga', 'URL': 'https://example.com', 'Shipped': 'Yes', 'License': 'MIT', 'License File': ['subdir/third_party/narluga_v2/LICENSE'], 'dir': 'subdir/third_party/narluga_v2'}
+{'Name': 'Sample 3', 'URL': 'https://sample3', 'Shipped': 'yes', 'License': 'Apache 2.0', 'License File': ['third_party/sample3/the_license'], 'dir': 'third_party/sample3'}
+{'Name': 'Sample Library', 'URL': 'https://example.com', 'Shipped': 'No', 'License': 'Apache 2.0', 'License File': ['third_party/sample/LICENSE'], 'dir': 'third_party/sample'}
+{'Name': 'Sample Library 2a', 'URL': 'https://example.com', 'Shipped': 'Yes', 'License': 'Apache 2.0, MIT', 'License File': ['third_party/sample2/LICENSE.apache', 'third_party/sample2/LICENSE.mit'], 'dir': 'third_party/sample2'}
+{'Name': 'Sub Component', 'URL': 'https://example.com/sub', 'Shipped': 'Yes', 'License': 'MIT', 'License File': ['third_party/sample3/sub_component/LICENSE'], 'dir': 'third_party/sample3/sub_component'}
+stderr:

@@ -26,6 +26,7 @@
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/switches.h"
@@ -48,6 +49,8 @@
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

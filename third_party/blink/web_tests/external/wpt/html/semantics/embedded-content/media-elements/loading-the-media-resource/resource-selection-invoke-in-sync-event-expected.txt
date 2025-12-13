@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] await a stable state and sync event handlers
-  assert_equals: networkState after src removed expected 0 but got 3
-Harness: the test ran to completion.
-

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ntp_customization_custom_color_picker"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/ntp_customization_ntp_cards_margin">
+
+    <LinearLayout
+        android:id="@+id/color_indicators_and_titles"
+        android:baselineAligned="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/background_color_indicator_and_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+            <ImageView
+                android:id="@+id/background_color_circle"
+                android:layout_width="@dimen/ntp_customization_theme_collections_icon_placeholder_size"
+                android:layout_height="@dimen/ntp_customization_theme_collections_icon_placeholder_size"
+                android:background="@drawable/oval_primary_container"
+                android:visibility="invisible"
+                android:importantForAccessibility="no"/>
+            <TextView
+                android:id="@+id/background_color_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ntp_customization_edit_icon_padding"
+                android:text="@string/ntp_customization_type_background_color_hex_title" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/primary_color_indicator_and_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+            <ImageView
+                android:id="@+id/primary_color_circle"
+                android:layout_width="@dimen/ntp_customization_theme_collections_icon_placeholder_size"
+                android:layout_height="@dimen/ntp_customization_theme_collections_icon_placeholder_size"
+                android:background="@drawable/oval_primary_container"
+                android:visibility="invisible"
+                android:importantForAccessibility="no"/>
+            <TextView
+                android:id="@+id/primary_color_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ntp_customization_edit_icon_padding"
+                android:text="@string/ntp_customization_type_primary_color_hex_title" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/color_inputs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/background_color_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/ntp_customization_ntp_cards_margin"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:inputType="text"
+            android:autofillHints="no"
+            android:hint="@string/ntp_customization_hint_to_type_color_hex" />
+
+        <EditText
+            android:id="@+id/primary_color_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/ntp_customization_ntp_cards_margin"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:autofillHints="no"
+            android:hint="@string/ntp_customization_hint_to_type_color_hex" />
+    </LinearLayout>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/save_color_button"
+        style="@style/FilledButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:paddingEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:singleLine="true"
+        android:layout_marginTop="@dimen/ntp_customization_edit_icon_padding"
+        android:layout_marginStart="@dimen/auxiliary_search_module_button_padding_middle"
+        android:layout_gravity="bottom|end"
+        android:text="@string/save" />
+</LinearLayout>

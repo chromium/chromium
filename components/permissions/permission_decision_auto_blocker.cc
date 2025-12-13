@@ -16,6 +16,9 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/features.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/permissions/android/permissions_android_feature_map.h"
+#endif
 #include "components/permissions/permission_util.h"
 #include "url/gurl.h"
 
@@ -31,6 +34,12 @@ constexpr int kDefaultDismissalsBeforeBlock = 3;
 // The number of times that users may ignore a permission prompt from an origin
 // before it is automatically blocked.
 constexpr int kDefaultIgnoresBeforeBlock = 4;
+
+#if BUILDFLAG(IS_ANDROID)
+// The number of times that users may ignore a permission prompt from an origin.
+// before it is automatically blocked. This is used for the Clapper UI.
+constexpr int kClapperIgnoresBeforeBlock = 1;
+#endif
 
 // The number of times that users may dismiss a permission prompt that uses the
 // quiet UI from an origin before it is automatically blocked.
@@ -49,13 +58,13 @@ constexpr int kDefaultEmbargoDays = 7;
 // automatically blocked.
 constexpr int kFederatedIdentityApiDismissalsBeforeBlock = 1;
 
-// The number of times that users may ignore a FEDERATED_IDENTITY_API permission
-// prompt from an origin before it is automatically blocked.
-constexpr int kFederatedIdentityApiIgnoresBeforeBlock = 1;
-
-// The number of hours that an origin will stay under embargo for a requested
-// permission due to users ignoring the prompt.
-constexpr base::TimeDelta kFederatedIdentityApiIgnoresEmbargo = base::Hours(4);
+// The durations that an origin will stay under embargo for the
+// FEDERATED_IDENTITY_API permission due to the user explicitly dismissing the
+// permission prompt.
+constexpr auto kFederatedIdentityApiEmbargoDurationDismiss =
+    std::to_array<base::TimeDelta>({base::Hours(2) /* 1st dismissal */,
+                                    base::Days(1) /* 2nd dismissal */,
+                                    base::Days(7), base::Days(28)});
 
 // The duration that an origin will stay under embargo for the
 // FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION permission due to an auto re-authn
@@ -153,40 +162,17 @@ int GetDismissalsBeforeBlockForContentSettingsType(
              : kDefaultDismissalsBeforeBlock;
 }
 
-// Returns the number of times that users may ignore a permission prompt for an
-// origin for the passed-in |permission| before it is automatically blocked.
-int GetIgnoresBeforeBlockForContentSettingsType(
-    ContentSettingsType permission) {
-  return (permission == ContentSettingsType::FEDERATED_IDENTITY_API)
-             ? kFederatedIdentityApiIgnoresBeforeBlock
-             : kDefaultIgnoresBeforeBlock;
-}
-
 // The duration that an origin will stay under embargo for the passed-in
 // |permission| due to the user explicitly dismissing the permission prompt.
 base::TimeDelta GetEmbargoDurationForContentSettingsType(
     ContentSettingsType permission,
     int dismiss_count) {
-  // The durations that an origin will stay under embargo for the
-  // FEDERATED_IDENTITY_API permission due to the user explicitly dismissing the
-  // permission prompt.
-  auto FederatedIdentityApiEmbargoDurationDismiss =
-      std::to_array<base::TimeDelta>(
-          {base::Hours(base::GetFieldTrialParamByFeatureAsInt(
-               features::kFedCmUpdatedCooldownPeriod, "FirstDismissal", 2)),
-           base::Days(base::GetFieldTrialParamByFeatureAsInt(
-               features::kFedCmUpdatedCooldownPeriod, "SecondDismissal", 1)),
-           base::Days(base::GetFieldTrialParamByFeatureAsInt(
-               features::kFedCmUpdatedCooldownPeriod, "ThirdDismissal", 7)),
-           base::Days(base::GetFieldTrialParamByFeatureAsInt(
-               features::kFedCmUpdatedCooldownPeriod, "FourthDismissal", 28))});
-
   if (permission == ContentSettingsType::FEDERATED_IDENTITY_API) {
     int duration_index =
         std::clamp(dismiss_count - 1, 0,
                    static_cast<int>(
-                       FederatedIdentityApiEmbargoDurationDismiss.size() - 1));
-    return FederatedIdentityApiEmbargoDurationDismiss[duration_index];
+                       kFederatedIdentityApiEmbargoDurationDismiss.size() - 1));
+    return kFederatedIdentityApiEmbargoDurationDismiss[duration_index];
   }
 
   if (permission ==
@@ -202,15 +188,6 @@ base::TimeDelta GetEmbargoDurationForContentSettingsType(
   }
 
   return base::Days(kDefaultEmbargoDays);
-}
-
-// The duration that an origin will stay under embargo for the passed-in
-// |permission| due to the user ignoring the permission prompt.
-base::TimeDelta GetIgnoreEmbargoDurationForContentSettingsType(
-    ContentSettingsType permission) {
-  return (permission == ContentSettingsType::FEDERATED_IDENTITY_API)
-             ? kFederatedIdentityApiIgnoresEmbargo
-             : base::Days(kDefaultEmbargoDays);
 }
 
 base::Time GetEmbargoStartTime(base::Value::Dict* permission_dict,
@@ -309,9 +286,8 @@ PermissionDecisionAutoBlocker::GetEmbargoResult(
         content::PermissionStatusSource::MULTIPLE_DISMISSALS);
   }
 
-  if (IsUnderEmbargo(
-          permission_dict, kPermissionIgnoreEmbargoKey, current_time,
-          GetIgnoreEmbargoDurationForContentSettingsType(permission))) {
+  if (IsUnderEmbargo(permission_dict, kPermissionIgnoreEmbargoKey, current_time,
+                     base::Days(kDefaultEmbargoDays))) {
     return content::PermissionResult(
         PermissionStatus::DENIED,
         content::PermissionStatusSource::MULTIPLE_IGNORES);
@@ -375,11 +351,13 @@ std::set<GURL> PermissionDecisionAutoBlocker::GetEmbargoedOrigins(
 
   std::vector<ContentSettingsType> filtered_content_types;
   for (ContentSettingsType content_type : content_types) {
-    if (IsEnabledForContentSetting(content_type))
+    if (IsEnabledForContentSetting(content_type)) {
       filtered_content_types.emplace_back(content_type);
+    }
   }
-  if (filtered_content_types.empty())
+  if (filtered_content_types.empty()) {
     return std::set<GURL>();
+  }
 
   std::set<GURL> origins;
   for (const auto& e : settings_map_->GetSettingsForOneType(
@@ -438,7 +416,8 @@ bool PermissionDecisionAutoBlocker::RecordDismissAndEmbargo(
   if (current_dismissal_count_with_quiet_ui >=
       kDefaultDismissalsBeforeBlockWithQuietUi) {
     DCHECK(permission == ContentSettingsType::NOTIFICATIONS ||
-           permission == ContentSettingsType::GEOLOCATION);
+           permission == ContentSettingsType::GEOLOCATION ||
+           permission == ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
     PlaceUnderEmbargo(url, permission, kPermissionDismissalEmbargoKey);
     return true;
   }
@@ -459,8 +438,15 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
                                           settings_map_)
           : -1;
 
-  if (current_ignore_count >=
-      GetIgnoresBeforeBlockForContentSettingsType(permission)) {
+  int ignores_before_block = kDefaultIgnoresBeforeBlock;
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          permissions::kPermissionsAndroidClapperLoud)) {
+    ignores_before_block = kClapperIgnoresBeforeBlock;
+  }
+#endif
+
+  if (current_ignore_count >= ignores_before_block) {
     PlaceUnderEmbargo(url, permission, kPermissionIgnoreEmbargoKey);
     return true;
   }
@@ -468,7 +454,7 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
   if (current_ignore_count_with_quiet_ui >=
       kDefaultIgnoresBeforeBlockWithQuietUi) {
     DCHECK(permission == ContentSettingsType::NOTIFICATIONS ||
-           permission == ContentSettingsType::GEOLOCATION);
+           permission == permissions::PermissionUtil::GetGeolocationType());
     PlaceUnderEmbargo(url, permission, kPermissionIgnoreEmbargoKey);
     return true;
   }
@@ -488,8 +474,9 @@ bool PermissionDecisionAutoBlocker::RecordDisplayAndEmbargo(
 void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
     const GURL& url,
     ContentSettingsType permission) {
-  if (!IsEnabledForContentSetting(permission))
+  if (!IsEnabledForContentSetting(permission)) {
     return;
+  }
 
   base::Value::Dict dict = GetOriginAutoBlockerData(settings_map_, url);
 
@@ -553,8 +540,9 @@ void PermissionDecisionAutoBlocker::PlaceUnderEmbargo(
 void PermissionDecisionAutoBlocker::NotifyEmbargoStarted(
     const GURL& origin,
     ContentSettingsType content_setting) {
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnEmbargoStarted(origin, content_setting);
+  }
 }
 
 void PermissionDecisionAutoBlocker::SetClockForTesting(base::Clock* clock) {

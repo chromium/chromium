@@ -16,7 +16,7 @@
 #include "chromecast/cast_core/cast_core_switches.h"
 #include "chromecast/cast_core/runtime/browser/core_conversions.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_service_impl.h"
-#include "chromecast/metrics/cast_event_builder_simple.h"
+#include "chromecast/metrics/cast_event_builder_impl.h"
 #include "components/cast_receiver/browser/public/content_browser_client_mixins.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
 #include "components/cast_receiver/common/public/status.h"
@@ -196,7 +196,7 @@ cast_receiver::Status RuntimeServiceImpl::Stop() {
 }
 
 std::unique_ptr<CastEventBuilder> RuntimeServiceImpl::CreateEventBuilder() {
-  return std::make_unique<CastEventBuilderSimple>();
+  return std::make_unique<CastEventBuilderImpl>();
 }
 
 void RuntimeServiceImpl::HandleLoadApplication(

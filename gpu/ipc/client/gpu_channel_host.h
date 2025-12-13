@@ -10,6 +10,7 @@
 
 #include <atomic>
 #include <memory>
+#include <variant>
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
@@ -23,20 +24,21 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/client/gpu_channel_observer.h"
 #include "gpu/ipc/client/gpu_ipc_client_export.h"
-#include "gpu/ipc/client/image_decode_accelerator_proxy.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace IPC {
-class ChannelMojo;
+class Channel;
 }
 
 namespace gpu {
-class ClientSharedImageInterface;
+class SharedImageInterface;
 struct SyncToken;
 class GpuChannelHost;
 
@@ -145,11 +147,14 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
       std::vector<SyncToken> sync_token_dependencies,
       uint64_t release_count,
       base::OnceCallback<void(bool)> callback);
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   void CopyNativeGmbToSharedMemoryAsync(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback);
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
   // Crashes the GPU process. This functionality is added here because
   // of instability when creating a new tab just to navigate to
@@ -161,16 +166,10 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
   // running tests and is otherwise ignored.
   void TerminateGpuProcessForTesting();
 
-  // Virtual for testing.
-  virtual scoped_refptr<ClientSharedImageInterface>
-  CreateClientSharedImageInterface();
+  scoped_refptr<SharedImageInterface> CreateClientSharedImageInterface();
 
-  ImageDecodeAcceleratorProxy* image_decode_accelerator_proxy() {
-    return &image_decode_accelerator_proxy_;
-  }
-
-  // Calls ConnectionTracker::AddObserver() directly.
-  void AddObserver(GpuChannelLostObserver* obs);
+  // Calls ConnectionTracker::AddObserverIfNotAlreadyLost directly.
+  [[nodiscard]] bool AddObserverIfNotAlreadyLost(GpuChannelLostObserver* obs);
 
   // Calls ConnectionTracker::RemoveObserver() directly.
   void RemoveObserver(GpuChannelLostObserver* obs);
@@ -200,8 +199,10 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
 
     void OnDisconnectedFromGpuProcess();
 
-    // With |channel_obs_lock_|, it can becalled on any thread.
-    void AddObserver(GpuChannelLostObserver* obs);
+    // Adds observer if gpu channel is not already lost and returns true,
+    // otherwise returns false.
+    // With |channel_obs_lock_|, it can be called on any thread.
+    [[nodiscard]] bool AddObserverIfNotAlreadyLost(GpuChannelLostObserver* obs);
 
     // With |channel_obs_lock_|, it can be called on any thread.
     // Cannot be called during NotifyGpuChannelLost(). This creates a deadlock.
@@ -245,7 +246,7 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
 
    private:
     mutable base::Lock lock_;
-    std::unique_ptr<IPC::ChannelMojo> channel_ GUARDED_BY(lock_);
+    std::unique_ptr<IPC::Channel> channel_ GUARDED_BY(lock_);
   };
 
   struct OrderingBarrierInfo {
@@ -294,16 +295,17 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
   // soon as disconnection is detected.
   const scoped_refptr<ConnectionTracker> connection_tracker_;
 
-  mojo::SharedAssociatedRemote<mojom::GpuChannel> gpu_channel_;
+  using SharedRemote = mojo::SharedRemote<mojom::GpuChannel>;
+  using SharedAssociatedRemote =
+      mojo::SharedAssociatedRemote<mojom::GpuChannel>;
+  std::variant<SharedRemote, SharedAssociatedRemote> gpu_channel_;
+
   SharedImageInterfaceProxy shared_image_interface_;
 
   mutable base::Lock shared_memory_version_lock_;
   // Used to synchronize flushed request ids with the GPU process.
   std::optional<mojo::SharedMemoryVersionClient> shared_memory_version_client_
       GUARDED_BY(shared_memory_version_lock_);
-
-  // A client-side helper to send image decode requests to the GPU process.
-  ImageDecodeAcceleratorProxy image_decode_accelerator_proxy_;
 
   // Used to reduce frequency of metrics logging.
   base::MetricsSubSampler metrics_sub_sampler_;

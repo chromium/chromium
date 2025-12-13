@@ -2,15 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/actor/aggregated_journal_file_serializer.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/files/file_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
@@ -37,14 +32,14 @@ class AggregatedJournalFileSerializer::FileWriter {
     packet.AddSlice(message.data(), message.size());
 
     auto [preamble, preamble_size] = packet.GetProtoPreamble();
-    if (!file_handle_->WriteAtCurrentPosAndCheck(base::span(
-            reinterpret_cast<const uint8_t*>(preamble), preamble_size))) {
+    if (!file_handle_->WriteAtCurrentPosAndCheck(UNSAFE_TODO(base::span(
+            reinterpret_cast<const uint8_t*>(preamble), preamble_size)))) {
       return;
     }
 
     for (const perfetto::Slice& slice : packet.slices()) {
-      if (!file_handle_->WriteAtCurrentPosAndCheck(base::span(
-              static_cast<const uint8_t*>(slice.start), slice.size))) {
+      if (!file_handle_->WriteAtCurrentPosAndCheck(UNSAFE_TODO(base::span(
+              static_cast<const uint8_t*>(slice.start), slice.size)))) {
         return;
       }
     }

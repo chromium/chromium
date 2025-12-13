@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_DATA_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_DATA_H_
 
-#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -93,6 +92,8 @@ struct InstallableData {
   // i.e. a valid, installable web app manifest. The result might be different
   // depending on the task's |params|. If |installable_check_passed| was true
   // and the site isn't installable, the reason will be in |errors|.
+  // If the criteria was webapps::InstallableCriteria::kDoNotCheck, then this is
+  // always `true`.
   const bool installable_check_passed = false;
 };
 

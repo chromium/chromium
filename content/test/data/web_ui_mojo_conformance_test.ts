@@ -38,7 +38,7 @@ const knownFailures = new Set([
 ]);
 
 class Fixture {
-  private endpoint: mojo.internal.interfaceSupport.Endpoint;
+  private endpoint: mojo.internal.interfaceSupport.Endpoint<any>;
 
   constructor() {
     // We only need one end of the pipe

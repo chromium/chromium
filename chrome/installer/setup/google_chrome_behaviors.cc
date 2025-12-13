@@ -13,6 +13,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -91,18 +92,8 @@ bool IsMetricsEnabled(const base::FilePath& file_path) {
 
 }  // namespace
 
-// If |archive_type| is INCREMENTAL_ARCHIVE_TYPE and |install_status| does not
-// indicate a successful update, "-full" is appended to Chrome's "ap" value in
-// its ClientState key if it is not present, resulting in the full installer
-// being returned from the next update check. If |archive_type| is
-// FULL_ARCHIVE_TYPE or |install_status| indicates a successful update, "-full"
-// is removed from the "ap" value. "-stage:*" values are
-// unconditionally removed from the "ap" value.
-void UpdateInstallStatus(installer::ArchiveType archive_type,
-                         installer::InstallStatus install_status) {
-  GoogleUpdateSettings::UpdateInstallStatus(
-      install_static::IsSystemInstall(), archive_type,
-      InstallUtil::GetInstallReturnCode(install_status));
+void UpdateInstallStatus() {
+  GoogleUpdateSettings::UpdateInstallStatus();
 }
 
 // Returns a string holding the following URL query parameters:

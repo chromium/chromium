@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("themes") {
@@ -56,6 +57,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/application_locale_storage",
+    "//components/policy/core/browser",
+    "//components/prefs",
     "//components/search",
     "//components/version_info",
     "//services/network:test_support",
@@ -65,5 +68,36 @@ source_set("unit_tests") {
     "//url",
   ]
 
+  if (is_win || is_mac || is_linux || is_ios) {
+    sources += [ "theme_color_policy_handler_unittest.cc" ]
+    deps += [
+      ":policy",
+      ":prefs",
+      "//components/policy/core/browser",
+      "//components/prefs",
+    ]
+  }
+
   data = [ "//media/test/data/" ]
+}
+
+if (is_win || is_mac || is_linux || is_ios) {
+  source_set("policy") {
+    public = [ "theme_color_policy_handler.h" ]
+    sources = [ "theme_color_policy_handler.cc" ]
+    deps = [
+      ":prefs",
+      "//components/policy:generated",
+      "//components/policy:policy_code_generate",
+      "//components/policy/core/browser",
+      "//components/prefs",
+      "//components/strings",
+      "//skia",
+      "//third_party/re2",
+    ]
+  }
+}
+
+source_set("prefs") {
+  public = [ "pref_names.h" ]
 }

@@ -15,9 +15,9 @@ interface RendererHost {
   [Sync]
   GetBrowserHistogram(string name) => (string histogram_json);
 
-  // Notify the browser that this render process can or can't be suddenly
-  // terminated.
-  SuddenTerminationChanged(bool enabled);
+  // Allows/disallows sudden termination at the process level. This doesn't
+  // cover frame-level disablers.
+  SuddenTerminationAllowedChanged(bool allowed);
 
   // Sends a string to be recorded by UserMetrics.
   RecordUserMetricsAction(string action);

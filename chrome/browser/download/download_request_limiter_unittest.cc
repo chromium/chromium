@@ -9,6 +9,8 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_permission_request.h"
@@ -16,6 +18,9 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/navigation_controller.h"
@@ -1164,4 +1169,111 @@ TEST_F(DownloadRequestLimiterTest,
             download_request_limiter_->GetDownloadStatus(web_contents()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
+}
+
+// Verify AUTOMATIC_DOWNLOADS permission granted through Permission Prompt
+// is correctly marked as eligible (i.e. `last_visited` timestamp is tracked)
+// for Safety Hub auto-revocation when the
+// kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is enabled.
+TEST_F(DownloadRequestLimiterTest, SetContentSetting_LastVisited_Tracked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  NavigateAndCommit(kTestURL);
+  LoadCompleted();
+
+  // Simulate the first download that is always allowed (expect_continues = 1).
+  CanDownload(kTestURL);
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+
+  // Simulate the second download attempt that should prompt the user to choose
+  // whether to allow or not consequent downloads (expect_asks = 1).
+  // User chooses to ALLOW (expect_continues = 1).
+  UpdateExpectations(ACCEPT);
+  CanDownload(kTestURL);
+  ExpectAndResetCounts(1, 0, 1, __LINE__);
+
+  // Verify that `last_visited` was recorded and lies within the past 7 days.
+  //
+  // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to privacy.
+  // It rounds given timestamp down to the nearest multiple of 7 in the past.
+  // [1] components/content_settings/core/browser/content_settings_utils.cc
+  base::Time now = base::Time::Now();
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* hcsm = HostContentSettingsMapFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  hcsm->GetWebsiteSetting(kTestURL, kTestURL,
+                          ContentSettingsType::AUTOMATIC_DOWNLOADS, &info);
+  EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+  EXPECT_LE(info.metadata.last_visited(), now);
+}
+
+// Verify AUTOMATIC_DOWNLOADS permission blocked through Permission Prompt
+// is not marked as eligible (i.e. `last_visited` timestamp is tracked)
+// for Safety Hub auto-revocation even when the
+// kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is enabled.
+TEST_F(DownloadRequestLimiterTest,
+       SetContentSetting_LastVisited_NotTracked_WrongValue) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  NavigateAndCommit(kTestURL);
+  LoadCompleted();
+
+  // Simulate the first download that is always allowed (expect_continues = 1).
+  CanDownload(kTestURL);
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+
+  // Simulate the second download attempt that should prompt the user to choose
+  // whether to allow or not consequent downloads (expect_asks = 1).
+  // User chooses to BLOCK (expect_cancels = 1).
+  UpdateExpectations(CANCEL);
+  CanDownload(kTestURL);
+  ExpectAndResetCounts(0, 1, 1, __LINE__);
+
+  // Verify that `last_visited` is not recorded unless the value is ALLOW.
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* hcsm = HostContentSettingsMapFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  hcsm->GetWebsiteSetting(kTestURL, kTestURL,
+                          ContentSettingsType::AUTOMATIC_DOWNLOADS, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+// Verify AUTOMATIC_DOWNLOADS permission granted through Permission Prompt
+// is not marked as eligible (i.e. `last_visited` timestamp is tracked)
+// for Safety Hub auto-revocation because the
+// kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is disabled.
+TEST_F(DownloadRequestLimiterTest,
+       SetContentSetting_LastVisited_NotTracked_FeatureOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  NavigateAndCommit(kTestURL);
+  LoadCompleted();
+
+  // Simulate the first download that is always allowed (expect_continues = 1).
+  CanDownload(kTestURL);
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+
+  // Simulate the second download attempt that should prompt the user to choose
+  // whether to allow or not consequent downloads (expect_asks = 1).
+  // User chooses to ALLOW (expect_continues = 1).
+  UpdateExpectations(ACCEPT);
+  CanDownload(kTestURL);
+  ExpectAndResetCounts(1, 0, 1, __LINE__);
+
+  // Verify that `last_visited` is not recorded when the feature is off.
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* hcsm = HostContentSettingsMapFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  hcsm->GetWebsiteSetting(kTestURL, kTestURL,
+                          ContentSettingsType::AUTOMATIC_DOWNLOADS, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
 }

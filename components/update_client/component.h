@@ -17,7 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -68,8 +68,6 @@ struct UpdateContext;
 // kCanUpdate will transition to kUpdateError.
 class Component {
  public:
-  using CallbackHandleComplete = base::OnceCallback<void()>;
-
   Component(const UpdateContext& update_context, const std::string& id);
   Component(const Component&) = delete;
   Component& operator=(const Component&) = delete;
@@ -77,7 +75,7 @@ class Component {
 
   // Handles the current state of the component and makes it transition
   // to the next component state before |callback_handle_complete_| is invoked.
-  void Handle(CallbackHandleComplete callback_handle_complete);
+  void Handle(base::OnceClosure callback_handle_complete);
 
   CrxUpdateItem GetCrxUpdateItem() const;
 
@@ -350,8 +348,6 @@ class Component {
   // The error reported by the update checker.
   int update_check_error_ = 0;
 
-  base::FilePath payload_path_;
-
   // The byte counts below are valid for the current url being fetched.
   // |total_bytes| is equal to the size of the CRX file and |downloaded_bytes|
   // represents how much has been downloaded up to that point. A value of -1
@@ -386,7 +382,7 @@ class Component {
   // Contains the events which are therefore serialized in the requests.
   std::vector<base::Value::Dict> events_;
 
-  CallbackHandleComplete callback_handle_complete_;
+  base::OnceClosure callback_handle_complete_;
   std::unique_ptr<State> state_;
   const raw_ref<const UpdateContext> update_context_;
 

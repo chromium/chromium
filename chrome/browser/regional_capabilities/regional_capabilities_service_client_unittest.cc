@@ -4,6 +4,10 @@
 
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_client.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_client_android.h"
+#endif
+
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_test_environment.h"
@@ -12,15 +16,13 @@
 #include "components/variations/service/test_variations_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::country_codes::CountryId;
-
 namespace regional_capabilities {
 namespace {
 
-class RegionalCapabilitiesServiceClientTest : public testing::Test {
- public:
-  RegionalCapabilitiesServiceClientTest() = default;
+using ::country_codes::CountryId;
 
+class RegionalCapabilitiesServiceClientTest : public testing::Test {
+ protected:
   ~RegionalCapabilitiesServiceClientTest() override = default;
 
  protected:
@@ -28,6 +30,15 @@ class RegionalCapabilitiesServiceClientTest : public testing::Test {
 
   RegionalCapabilitiesTestEnvironment rcaps_env_;
 };
+
+#if BUILDFLAG(IS_ANDROID)
+// `RegionalCapabilitiesServiceClient` has outstanding Android-specific
+// virtual functions that are not implemented; they are available in the
+// `RegionalCapabilitiesServiceClientAndroid` class. Allows testing common
+// functionality for Android specific and general clients.
+using RegionalCapabilitiesServiceClient =
+    RegionalCapabilitiesServiceClientAndroid;
+#endif
 
 TEST_F(RegionalCapabilitiesServiceClientTest, GetVariationsLatestCountryId) {
   // Set up variations_service::GetLatestCountry().
@@ -41,7 +52,7 @@ TEST_F(RegionalCapabilitiesServiceClientTest, GetVariationsLatestCountryId) {
 
 TEST_F(RegionalCapabilitiesServiceClientTest,
        GetVariationsLatestCountryIdWithoutVariationsService) {
-  RegionalCapabilitiesServiceClient client(/* variations_service */ nullptr);
+  RegionalCapabilitiesServiceClient client(/*variations_service=*/ nullptr);
 
   EXPECT_EQ(client.GetVariationsLatestCountryId(), CountryId());
 }
@@ -55,7 +66,7 @@ TEST_F(RegionalCapabilitiesServiceClientTest, GetFallbackCountryId) {
 
 TEST_F(RegionalCapabilitiesServiceClientTest,
        GetFallbackCountryIdWithoutVariationsService) {
-  RegionalCapabilitiesServiceClient client(/* variations_service */ nullptr);
+  RegionalCapabilitiesServiceClient client(/*variations_service=*/nullptr);
 
   EXPECT_EQ(client.GetFallbackCountryId(),
             country_codes::GetCurrentCountryID());
@@ -71,12 +82,11 @@ TEST_F(RegionalCapabilitiesServiceClientTest, FetchCountryId) {
 
 TEST_F(RegionalCapabilitiesServiceClientTest,
        FetchCountryIdWithoutVariationsService) {
-  RegionalCapabilitiesServiceClient client(/* variations_service */ nullptr);
+  RegionalCapabilitiesServiceClient client(/*variations_service=*/ nullptr);
 
   base::test::TestFuture<CountryId> future;
   client.FetchCountryId(future.GetCallback());
   EXPECT_EQ(future.Get(), country_codes::GetCurrentCountryID());
 }
-
 }  // namespace
 }  // namespace regional_capabilities

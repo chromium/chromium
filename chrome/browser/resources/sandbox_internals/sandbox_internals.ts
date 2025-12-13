@@ -109,6 +109,8 @@ function androidHandler() {
         seccompStatus = 'Sandbox Started';
         isChromeSeccomp = true;
         break;
+      default:
+        break;
     }
     addStatusRow(
         'Seccomp-BPF Enabled (Chrome)', seccompStatus,

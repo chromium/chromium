@@ -14,11 +14,14 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -58,13 +61,28 @@ void UndoPasswordChangeController::OnTroubleSigningInClicked(
 
   base::UmaHistogramEnumeration(
       kPasswordChangeRecoveryFlowStateHistogram,
-      PasswordChangeRecoveryFlowState::kTroubleSigningInClicked);
+      password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+          kTroubleSigningInClicked);
+  ukm::builders::PasswordManager_ChangeRecovery(ukm_source_id_)
+      .SetPasswordChangeRecoveryFlow(static_cast<int>(
+          password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+              kTroubleSigningInClicked))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void UndoPasswordChangeController::OnLoginPotentiallyFailed(
     PasswordManagerDriver* driver,
     const PasswordForm& login_form) {
-  driver_ = driver;
+  auto password_field_it = std::ranges::find(
+      login_form.form_data.fields(), login_form.password_element_renderer_id,
+      &autofill::FormFieldData::renderer_id);
+  // Ignore forms where we couldn't possibly fill passwords. This is most likely
+  // a false positive failed login detection.
+  if (password_field_it == login_form.form_data.fields().end() ||
+      !password_field_it->is_focusable()) {
+    return;
+  }
+  driver_ = driver->AsWeakPtr();
   failed_login_form_ = login_form;
   password_form_cache_ = driver_->GetPasswordManager()->GetPasswordFormCache();
   password_form_cache_->AddObserver(this);
@@ -104,13 +122,30 @@ void UndoPasswordChangeController::OnSuggestionsHidden() {
 
     base::UmaHistogramEnumeration(
         kPasswordChangeRecoveryFlowStateHistogram,
-        PasswordChangeRecoveryFlowState::kProactiveRecoveryPopupShown);
+        password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+            kProactiveRecoveryPopupShown);
+    ukm::builders::PasswordManager_ChangeRecovery(ukm_source_id_)
+        .SetPasswordChangeRecoveryFlow(static_cast<int>(
+            password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+                kProactiveRecoveryPopupShown))
+        .Record(ukm::UkmRecorder::Get());
   }
   FinishObserving();
 }
+
+void UndoPasswordChangeController::OnNavigation(const url::Origin& origin,
+                                                ukm::SourceId ukm_source_id) {
+  if (current_origin_ != origin) {
+    ResetFlow();
+  }
+  current_origin_ = origin;
+  ukm_source_id_ = ukm_source_id;
+}
+
 void UndoPasswordChangeController::ResetFlow() {
   current_state_ = PasswordRecoveryState::kRegularFlow;
   current_username_ = u"";
+  FinishObserving();
 }
 
 void UndoPasswordChangeController::FinishObserving() {
@@ -129,11 +164,13 @@ void UndoPasswordChangeController::OnPasswordFormParsed(
   }
 
   if (form_manager->DoesManageSimilarForm(failed_login_form_.value(),
-                                          driver_)) {
+                                          driver_.get())) {
     const PasswordForm* form_best_match =
         password_manager_util::FindFormByUsername(
             form_manager->GetBestMatches(), failed_login_form_->username_value);
     if (!form_best_match || !form_best_match->GetPasswordBackup() ||
+        form_best_match->GetPasswordBackup() ==
+            failed_login_form_->password_value ||
         !base::FeatureList::IsEnabled(features::kShowRecoveryPassword)) {
       FinishObserving();
       return;

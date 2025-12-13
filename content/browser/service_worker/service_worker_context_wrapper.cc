@@ -26,10 +26,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -69,7 +71,6 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -100,9 +101,6 @@ GetRunningInfoVersionStatusForStatus(
       return ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::kRedundant;
   }
 }
-
-const base::FeatureParam<int> kUpdateDelayParam{
-    &blink::features::kServiceWorkerUpdateDelay, "update_delay_in_ms", 1000};
 
 void DidFindRegistrationForStartActiveWorker(
     ServiceWorkerContextWrapper::StatusCallback callback,
@@ -255,11 +253,6 @@ void ServiceWorkerContext::RunTask(
       base::BindOnce(&RunOnceClosure, std::move(ref), std::move(task)));
 }
 
-// static
-base::TimeDelta ServiceWorkerContext::GetUpdateDelay() {
-  return base::Milliseconds(kUpdateDelayParam.Get());
-}
-
 ServiceWorkerContextWrapper::ServiceWorkerContextWrapper(
     BrowserContext* browser_context)
     : core_observer_list_(
@@ -273,12 +266,6 @@ ServiceWorkerContextWrapper::ServiceWorkerContextWrapper(
   // Add this object as an observer of the wrapped |context_core_|. This lets us
   // forward observer methods to observers outside of content.
   core_observer_list_->AddObserver(this);
-
-  if (blink::IdentifiabilityStudySettings::Get()->IsActive()) {
-    identifiability_metrics_ =
-        std::make_unique<ServiceWorkerIdentifiabilityMetrics>();
-    core_observer_list_->AddObserver(identifiability_metrics_.get());
-  }
 }
 
 void ServiceWorkerContextWrapper::Init(
@@ -467,6 +454,15 @@ void ServiceWorkerContextWrapper::OnClientNavigated(const GURL& script_url,
   }
 }
 
+void ServiceWorkerContextWrapper::OnPushEventFinished(
+    const GURL& script_url,
+    const std::optional<std::vector<GURL>>& requested_urls) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  for (auto& observer : observer_list_) {
+    observer.OnPushEventFinished(script_url, requested_urls);
+  }
+}
+
 void ServiceWorkerContextWrapper::OnStarting(int64_t version_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -601,10 +597,15 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
       net::SimplifyUrlForRequest(options.scope), options.type,
       options.update_via_cache);
 
-  // TODO(crbug.com/40056874): initialize remaining fields
   PolicyContainerPolicies policy_container_policies;
   policy_container_policies.is_web_secure_context =
       network::IsUrlPotentiallyTrustworthy(script_url);
+  // TODO(crbug.com/435246545): Add browser test to test extensions and LNA.
+  // TODO(crbug.com/436098661): Figure out the right address space for payment
+  // apps
+  policy_container_policies.ip_address_space = content::CalculateIPAddressSpace(
+      options.scope, nullptr, GetContentClient()->browser());
+
   // TODO(bashi): Pass a valid outside fetch client settings object. Perhaps
   // changing this method to take a settings object.
   context()->RegisterServiceWorker(
@@ -649,9 +650,11 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorkerImpl(
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context()->UnregisterServiceWorker(net::SimplifyUrlForRequest(scope), key,
-                                     /*is_immediate=*/false,
-                                     std::move(callback));
+  context()->UnregisterServiceWorker(
+      net::SimplifyUrlForRequest(scope), key,
+      /*is_immediate=*/false,
+      ServiceWorkerRegistration::DeleteInitiator::kContentPublicApi,
+      std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::UnregisterServiceWorkerImmediatelyImpl(
@@ -659,16 +662,17 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorkerImmediatelyImpl(
     const blink::StorageKey& key,
     StatusCodeCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   if (!context_core_) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context()->UnregisterServiceWorker(net::SimplifyUrlForRequest(scope), key,
-                                     /*is_immediate=*/true,
-                                     std::move(callback));
+  context()->UnregisterServiceWorker(
+      net::SimplifyUrlForRequest(scope), key,
+      /*is_immediate=*/true,
+      ServiceWorkerRegistration::DeleteInitiator::kContentPublicApi,
+      std::move(callback));
 }
 
 ServiceWorkerExternalRequestResult
@@ -1508,8 +1512,6 @@ ServiceWorkerContextWrapper::~ServiceWorkerContextWrapper() {
   // tests where this object is not guaranteed to outlive the
   // ServiceWorkerContextCore it wraps.
   core_observer_list_->RemoveObserver(this);
-  if (identifiability_metrics_)
-    core_observer_list_->RemoveObserver(identifiability_metrics_.get());
 }
 
 void ServiceWorkerContextWrapper::FindRegistrationForScopeImpl(
@@ -1894,7 +1896,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
           ForServiceWorkerMainScript(this, version_id)) {
     params->Run(
         /*is_navigation=*/true, /*is_download=*/false, factory_builder,
-        /*factory_override=*/nullptr);
+        /*factory_override=*/nullptr, &header_client);
   }
 
   bool use_client_header_factory = header_client.is_valid();
@@ -1908,28 +1910,18 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
         /*cookie_overrides=*/std::nullopt);
   } else {
     DCHECK(storage_partition());
-    if (base::FeatureList::IsEnabled(
-            features::kPrivateNetworkAccessForWorkers)) {
-      if (url_loader_factory::GetTestingInterceptor()) {
-        url_loader_factory::GetTestingInterceptor().Run(
-            network::mojom::kBrowserProcessId, factory_builder);
-      }
-
-      network::mojom::URLLoaderFactoryParamsPtr params =
-          storage_partition_->CreateURLLoaderFactoryParams();
-      params->client_security_state = std::move(client_security_state);
-      remote =
-          std::move(factory_builder)
-              .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
-                  storage_partition_->GetNetworkContext(), std::move(params));
-    } else {
-      // Set up a Mojo connection to the network loader factory if it's not been
-      // created yet.
-      remote =
-          std::move(factory_builder)
-              .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
-                  storage_partition_->GetURLLoaderFactoryForBrowserProcess());
+    if (url_loader_factory::GetTestingInterceptor()) {
+      url_loader_factory::GetTestingInterceptor().Run(
+          network::mojom::kBrowserProcessId, factory_builder);
     }
+
+    network::mojom::URLLoaderFactoryParamsPtr params =
+        storage_partition_->CreateURLLoaderFactoryParams();
+    params->client_security_state = std::move(client_security_state);
+    remote =
+        std::move(factory_builder)
+            .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
+                storage_partition_->GetNetworkContext(), std::move(params));
   }
 
   // Clone context()->loader_factory_bundle_for_update_check() and set up the
@@ -1955,7 +1947,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
     // register the URLDataSource directly.
     if (base::FeatureList::IsEnabled(
             features::kEnableServiceWorkersForChromeScheme) &&
-        scope.scheme_piece() == kChromeUIScheme) {
+        scope.scheme() == kChromeUIScheme) {
       config->RegisterURLDataSource(browser_context());
       static_cast<blink::PendingURLLoaderFactoryBundle*>(
           loader_factory_bundle_info.get())
@@ -1965,7 +1957,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
                                         base::flat_set<std::string>()));
     } else if (base::FeatureList::IsEnabled(
                    features::kEnableServiceWorkersForChromeUntrusted) &&
-               scope.scheme_piece() == kChromeUIUntrustedScheme) {
+               scope.scheme() == kChromeUIUntrustedScheme) {
       config->RegisterURLDataSource(browser_context());
       static_cast<blink::PendingURLLoaderFactoryBundle*>(
           loader_factory_bundle_info.get())

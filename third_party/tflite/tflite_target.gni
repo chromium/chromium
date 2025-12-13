@@ -37,7 +37,10 @@
 #   conditional_deps = [ ":tflite_internal" ]
 # }
 
-import("//components/optimization_guide/features.gni")
+import("//build_overrides/build.gni")
+if (build_with_chromium) {
+  import("//components/optimization_guide/features.gni")
+}
 
 # Set of variables that are forwarded to the actual target.
 minimal_vars_to_forward_to_target = [
@@ -53,7 +56,10 @@ minimal_vars_to_forward_to_target = [
 ]
 
 declare_args() {
-  tflite_target_types = [ "" ]
+  tflite_target_types = []
+  if (build_with_chromium) {
+    tflite_target_types += [ "" ]
+  }
   if (build_with_internal_optimization_guide) {
     tflite_target_types += [ "_standalone" ]
   }
@@ -74,12 +80,19 @@ template("tflite_target_gen") {
         # Disable libc++ modules when compiling with Objective-C++ support, as
         # it is incompatible with the libc++ modules build on macOS.
         use_libcxx_modules = false
+
+        # TODO(crbug.com/433386027): Remove this after rolling mediapipe.
+        not_needed(invoker, [ "use_libcxx_modules" ])
+      } else if (defined(invoker.use_libcxx_modules)) {
+        # TODO(crbug.com/433386027): Remove this after rolling mediapipe.
+        use_libcxx_modules = invoker.use_libcxx_modules
       }
 
       if (defined(invoker.conditional_deps)) {
         _adjusted_deps = []
         foreach(dep, invoker.conditional_deps) {
-          _adjusted_name = dep + type
+          _adjusted_name = get_label_info(dep, "dir") + ":" +
+                           get_label_info(dep, "name") + type
           _adjusted_deps += [ _adjusted_name ]
         }
         if (defined(deps)) {
@@ -91,7 +104,8 @@ template("tflite_target_gen") {
       if (defined(invoker.conditional_public_deps)) {
         _adjusted_deps = []
         foreach(dep, invoker.conditional_public_deps) {
-          _adjusted_name = dep + type
+          _adjusted_name = get_label_info(dep, "dir") + ":" +
+                           get_label_info(dep, "name") + type
           _adjusted_deps += [ _adjusted_name ]
         }
         if (defined(public_deps)) {
@@ -132,7 +146,11 @@ vars_to_forward = minimal_vars_to_forward_to_target + [
 template("tflite_static_library") {
   tflite_target_gen(target_name) {
     target_type = "static_library"
-    forward_variables_from(invoker, vars_to_forward)
+    forward_variables_from(
+        invoker,
+        vars_to_forward +
+            # TODO(crbug.com/433386027): Remove this after rolling mediapipe.
+            [ "use_libcxx_modules" ])
   }
 }
 

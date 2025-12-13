@@ -113,7 +113,9 @@ public class DisplayAndroidTest {
         mDisplay.update(
                 /* name= */ null,
                 /* bounds= */ null,
-                /* insets= */ null,
+                /* workArea= */ null,
+                /* width= */ null,
+                /* height= */ null,
                 /* dipScale= */ null,
                 /* xdpi= */ null,
                 /* ydpi= */ null,

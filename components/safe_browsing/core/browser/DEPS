@@ -5,7 +5,6 @@ include_rules = [
   "+components/password_manager/core/common/password_manager_pref_names.h",
   "+components/sessions/core/session_id.h",
   "+components/version_info",
-  "+ipc/ipc_message.h",
   "+net/cookies",
   "+net/extras",
   "+net/http",

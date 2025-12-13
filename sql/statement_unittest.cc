@@ -20,6 +20,7 @@
 #include "sql/database.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -256,9 +257,7 @@ TEST_F(StatementTest, BindBlob) {
   Statement select(db_.GetUniqueStatement("SELECT b FROM blobs ORDER BY id"));
   for (const std::vector<uint8_t>& value : values) {
     ASSERT_TRUE(select.Step());
-    std::vector<uint8_t> column_value;
-    EXPECT_TRUE(select.ColumnBlobAsVector(0, &column_value));
-    EXPECT_EQ(value, column_value);
+    EXPECT_EQ(value, select.ColumnBlobAsVector(0));
   }
   EXPECT_FALSE(select.Step());
 }
@@ -289,9 +288,7 @@ TEST_F(StatementTest, BindBlob_String16Overload) {
   Statement select(db_.GetUniqueStatement("SELECT b FROM blobs ORDER BY id"));
   for (const std::u16string& value : values) {
     ASSERT_TRUE(select.Step());
-    std::u16string column_value;
-    EXPECT_TRUE(select.ColumnBlobAsString16(0, &column_value));
-    EXPECT_EQ(value, column_value);
+    EXPECT_THAT(select.ColumnBlobAsString16(0), testing::Optional(value));
   }
   EXPECT_FALSE(select.Step());
 }
@@ -333,11 +330,8 @@ TEST_F(StatementTest, BlobStressTest) {
   {
     Statement select(db_.GetUniqueStatement("SELECT * FROM blobs"));
     ASSERT_TRUE(select.Step());
-    std::string output50, output51;
-    EXPECT_TRUE(select.ColumnBlobAsString(50, &output50));
-    EXPECT_EQ("overwrite", output50);
-    EXPECT_TRUE(select.ColumnBlobAsString(51, &output51));
-    EXPECT_EQ(std::string(100, 'y'), output51);
+    EXPECT_EQ("overwrite", select.ColumnBlobAsString(50));
+    EXPECT_EQ(std::string(100, 'y'), select.ColumnBlobAsString(51));
   }
 
   // Make sure the underlying statement is reset i.e. the old bindings don't

@@ -19,6 +19,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -27,7 +29,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
@@ -45,6 +46,8 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.function.Supplier;
+
 /** Unit tests for {@link MinimizedCustomTabIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -53,33 +56,47 @@ import org.chromium.url.JUnitTestGURLs;
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
 public class MinimizedCustomTabIphControllerUnitTest {
-    @Rule
-    public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
+    public static class MinimizedFeatureRule extends ExternalResource {
+        @Override
+        protected void before() throws Throwable {
+            MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
+        }
+    }
+
+    public final ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(CustomTabActivity.class);
+
+    @Rule
+    public RuleChain mRuleChain =
+            RuleChain.outerRule(new MinimizedFeatureRule()).around(mActivityScenarioRule);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ActivityTabProvider mTabProvider;
     @Mock private UserEducationHelper mUserEducationHelper;
-    @Mock private Supplier<Profile> mProfileSupplier;
+    @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private Tab mTab;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
+    private Supplier<Profile> mProfileSupplier;
     private Activity mActivity;
     private MinimizedCustomTabIphController mController;
 
     @Before
     public void setUp() {
+        mProfileSupplier = () -> mProfile;
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         when(mTracker.isInitialized()).thenReturn(true);
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.CCT_MINIMIZED_FEATURE)).thenReturn(true);
         TrackerFactory.setTrackerForTests(mTracker);
-        when(mProfileSupplier.hasValue()).thenReturn(true);
         mController =
                 new MinimizedCustomTabIphController(
-                        mActivity, mTabProvider, mUserEducationHelper, mProfileSupplier);
+                        mActivity, mActivityTabProvider, mUserEducationHelper, mProfileSupplier);
         ViewStub minimizeStub = mActivity.findViewById(R.id.minimize_button_stub);
-        View minimizeView = minimizeStub.inflate();
+        View minimizeView =
+                minimizeStub != null
+                        ? minimizeStub.inflate()
+                        : mActivity.findViewById(R.id.custom_tabs_minimize_button);
         minimizeView.setVisibility(View.VISIBLE);
     }
 

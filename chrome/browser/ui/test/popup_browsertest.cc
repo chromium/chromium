@@ -15,7 +15,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 

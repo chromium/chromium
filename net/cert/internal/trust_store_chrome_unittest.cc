@@ -51,8 +51,8 @@ FindParsedCertificateInCertificateList(const std::string& hash,
   for (const auto& cert : certs) {
     std::shared_ptr<const bssl::ParsedCertificate> parsed =
         ToParsedCertificate(*cert);
-    std::string sha256_hex = base::ToLowerASCII(
-        base::HexEncode(crypto::SHA256Hash(parsed->der_cert())));
+    std::string sha256_hex =
+        base::HexEncodeLower(crypto::SHA256Hash(parsed->der_cert()));
     if (sha256_hex == hash) {
       return parsed;
     }
@@ -169,8 +169,8 @@ TEST(TrustStoreChromeTestNoFixture, Constraints) {
   for (const auto& cert : certs) {
     std::shared_ptr<const bssl::ParsedCertificate> parsed =
         ToParsedCertificate(*cert);
-    std::string sha256_hex = base::ToLowerASCII(
-        base::HexEncode(crypto::SHA256Hash(parsed->der_cert())));
+    std::string sha256_hex =
+        base::HexEncodeLower(crypto::SHA256Hash(parsed->der_cert()));
     if (sha256_hex == kConstrainedCertHash) {
       constrained_cert = parsed;
     } else if (sha256_hex == kUnconstrainedCertHash) {
@@ -230,6 +230,9 @@ TEST(TrustStoreChromeTestNoFixture, Constraints) {
       trust_store_chrome->GetConstraintsForCert(other_parsed.get()).empty());
 }
 
+// TODO(crbug.com/452986179): test verifying MTCs from the root store data, MTC
+// anchor constraints, etc, once implemented.
+
 TEST(TrustStoreChromeTestNoFixture, EnforceAnchorExpiryAndConstraints) {
   std::unique_ptr<TrustStoreChrome> trust_store_chrome =
       TrustStoreChrome::CreateTrustStoreForTesting(
@@ -283,7 +286,8 @@ TEST(TrustStoreChromeTestNoFixture,
       std::optional<ChromeRootStoreData> root_store_data =
           ChromeRootStoreData::CreateFromRootStoreProto(root_store);
       ASSERT_TRUE(root_store_data);
-      TrustStoreChrome trust_store_chrome(root_store_data.value());
+      TrustStoreChrome trust_store_chrome(&root_store_data.value(),
+                                          /*mtc_metadata=*/nullptr);
 
       std::shared_ptr<const bssl::ParsedCertificate> parsed =
           ToParsedCertificate(*root);
@@ -347,8 +351,8 @@ TEST(TrustStoreChromeTestNoFixture,
     }
 
     certs_with_tai++;
-    std::string hash = base::ToLowerASCII(
-        base::HexEncode(crypto::SHA256Hash(cert.root_cert_der)));
+    std::string hash =
+        base::HexEncodeLower(crypto::SHA256Hash(cert.root_cert_der));
     bool is_additional_cert =
         expected_additional_certificate_trust_by_hash.contains(hash);
     bssl::CertificateTrust expected_trust =
@@ -427,7 +431,8 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoAdditionalCertsAsTrustAnchors) {
       std::optional<ChromeRootStoreData> root_store_data =
           ChromeRootStoreData::CreateFromRootStoreProto(root_store);
       ASSERT_TRUE(root_store_data);
-      TrustStoreChrome trust_store_chrome(root_store_data.value());
+      TrustStoreChrome trust_store_chrome(&root_store_data.value(),
+                                          /*mtc_metadata=*/nullptr);
 
       std::shared_ptr<const bssl::ParsedCertificate> parsed =
           ToParsedCertificate(*root);
@@ -461,7 +466,8 @@ TEST(TrustStoreChromeTestNoFixture,
   std::optional<ChromeRootStoreData> root_store_data =
       ChromeRootStoreData::CreateFromRootStoreProto(root_store);
   ASSERT_TRUE(root_store_data);
-  TrustStoreChrome trust_store_chrome(root_store_data.value());
+  TrustStoreChrome trust_store_chrome(&root_store_data.value(),
+                                      /*mtc_metadata=*/nullptr);
 
   std::shared_ptr<const bssl::ParsedCertificate> parsed =
       ToParsedCertificate(*root);
@@ -488,7 +494,8 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoNonAnchorsAreNotTrusted) {
   std::optional<ChromeRootStoreData> root_store_data =
       ChromeRootStoreData::CreateFromRootStoreProto(root_store);
   ASSERT_TRUE(root_store_data);
-  TrustStoreChrome trust_store_chrome(root_store_data.value());
+  TrustStoreChrome trust_store_chrome(&root_store_data.value(),
+                                      /*mtc_metadata=*/nullptr);
 
   std::shared_ptr<const bssl::ParsedCertificate> parsed =
       ToParsedCertificate(*root);

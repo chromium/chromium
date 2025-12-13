@@ -41,7 +41,7 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
   // to SubmitCompositorFrame.
   void SubmitHitTestRegionList(
       const SurfaceId& surface_id,
-      const uint64_t frame_index,
+      const uint32_t frame_index,
       std::optional<HitTestRegionList> hit_test_region_list);
 
   // Returns the HitTestRegionList corresponding to the given
@@ -52,7 +52,7 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
   const HitTestRegionList* GetActiveHitTestRegionList(
       LatestLocalSurfaceIdLookupDelegate* delegate,
       const FrameSinkId& frame_sink_id,
-      uint64_t* store_active_frame_index = nullptr) const;
+      uint32_t* store_active_frame_index = nullptr) const;
 
   int64_t GetTraceId(const SurfaceId& id) const;
 
@@ -67,7 +67,7 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
 
   const raw_ptr<SurfaceManager> surface_manager_;
 
-  std::map<SurfaceId, base::flat_map<uint64_t, HitTestRegionList>>
+  std::map<SurfaceId, base::flat_map<uint32_t, HitTestRegionList>>
       hit_test_region_lists_;
 
   // Keeps track of the number of submitted HitTestRegionLists. This allows the

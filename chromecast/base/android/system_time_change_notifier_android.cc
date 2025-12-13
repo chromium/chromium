@@ -7,7 +7,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chromecast/base/jni_headers/SystemTimeChangeNotifierAndroid_jni.h"
 
-using jni_zero::JavaParamRef;
+using jni_zero::JavaRef;
 
 namespace chromecast {
 
@@ -29,3 +29,5 @@ void SystemTimeChangeNotifierAndroid::OnTimeChanged(
 }
 
 }  // namespace chromecast
+
+DEFINE_JNI(SystemTimeChangeNotifierAndroid)

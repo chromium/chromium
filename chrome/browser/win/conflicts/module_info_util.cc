@@ -8,6 +8,7 @@
 
 #include <tlhelp32.h>
 
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <string>
@@ -20,6 +21,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_generic.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -164,8 +166,9 @@ void GetCatalogCertificateInfo(const base::FilePath& filename,
       CreateFileW(filename.value().c_str(), GENERIC_READ,
                   FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
                   nullptr, OPEN_EXISTING, 0, nullptr));
-  if (!file_handle.IsValid())
+  if (!file_handle.is_valid()) {
     return;
+  }
 
   // Get the size we need for our hash.
   DWORD hash_size = 0;

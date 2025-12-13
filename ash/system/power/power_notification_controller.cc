@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,6 +30,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 
 using message_center::MessageCenter;
 using message_center::Notification;
@@ -160,6 +162,8 @@ void RecordCriticalNotificationOutcome(
 
 }  // namespace
 
+const char PowerNotificationController::kIncompatibleChargerNotificationId[] =
+    "incompatible-charger";
 const char PowerNotificationController::kUsbNotificationId[] = "usb-charger";
 
 PowerNotificationController::PowerNotificationController(
@@ -214,6 +218,10 @@ void PowerNotificationController::OnPowerStatusChanged() {
     return;
   }
 
+  if (ash::features::IsHybridChargerNotificationsEnabled()) {
+    MaybeShowIncompatibleChargerNotification();
+  }
+
   MaybeShowUsbChargerNotification();
   MaybeShowDualRoleNotification();
 
@@ -250,6 +258,8 @@ void PowerNotificationController::OnPowerStatusChanged() {
   }
 
   battery_was_full_ = PowerStatus::Get()->IsBatteryFull();
+  incompatible_charger_was_connected_ =
+      PowerStatus::Get()->IsIncompatibleChargerConnected();
   usb_charger_was_connected_ = PowerStatus::Get()->IsUsbChargerConnected();
   line_power_was_connected_ = PowerStatus::Get()->IsLinePowerConnected();
   remaining_time_to_empty_from_critical_state_ =
@@ -288,6 +298,50 @@ void PowerNotificationController::OnShellDestroying() {
           LowBatteryShutdown,
       base::TimeTicks::Now() - critical_notification_shown_time_);
   shell_observation_.Reset();
+}
+
+bool PowerNotificationController::MaybeShowIncompatibleChargerNotification() {
+  const PowerStatus& status = *PowerStatus::Get();
+
+  const bool show = status.IsIncompatibleChargerConnected();
+
+  if (show && !incompatible_charger_was_connected_) {
+    message_center::RichNotificationData rich_notification_data;
+    // Insufficient charger notifications should display on fullscreen windows.
+    rich_notification_data.fullscreen_visibility =
+        message_center::FullscreenVisibility::OVER_USER;
+
+    const auto incompatible_charger_title = l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_INCOMPATIBLE_CHARGER_TITLE);
+    const auto incompatible_charger_message = l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_INCOMPATIBLE_CHARGER_MESSAGE);
+
+    std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
+        message_center::NOTIFICATION_TYPE_SIMPLE,
+        kIncompatibleChargerNotificationId, incompatible_charger_title,
+        incompatible_charger_message, std::u16string(), GURL(),
+        message_center::NotifierId(
+            message_center::NotifierType::SYSTEM_COMPONENT, kNotifierPower,
+            NotificationCatalogName::kIncompatibleCharger),
+        rich_notification_data, nullptr /*=delegate*/,
+        kNotificationLowPowerChargerIcon,
+        message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+
+    notification->set_pinned(true);
+    notification->set_never_timeout(true);
+    notification->SetSystemPriority();
+
+    message_center_->AddNotification(std::move(notification));
+    return true;
+  }
+
+  if (!show && incompatible_charger_was_connected_) {
+    message_center_->RemoveNotification(kIncompatibleChargerNotificationId,
+                                        false);
+    return true;
+  }
+
+  return false;
 }
 
 bool PowerNotificationController::MaybeShowUsbChargerNotification() {

@@ -16,7 +16,8 @@
 
 namespace extensions {
 
-class UserScriptsUITest : public InteractiveBrowserTestT<UserScriptsAPITest> {
+class UserScriptsUITest
+    : public InteractiveBrowserTestMixin<UserScriptsAPITest> {
  public:
   // Checks that toggle is `!enabled` and then toggles it to `enabled` state.
   auto CheckCurrentToggleStateAndThenToggleItInUI(

@@ -14,6 +14,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -789,7 +790,15 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, SameSiteNavigation) {
   EXPECT_TRUE(data);
 
   // 3) Navigate to A2.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a2));
+  if (rfh_a1->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
+    // When RenderDocument is enabled, the DocumentUserData cleanup happens
+    // during the destruction of the RFH.
+    RenderFrameDeletedObserver observer(rfh_a1);
+    EXPECT_TRUE(NavigateToURL(shell(), url_a2));
+    observer.WaitUntilDeleted();
+  } else {
+    EXPECT_TRUE(NavigateToURL(shell(), url_a2));
+  }
 
   // 4) The associated DocumentUserData should be deleted.
   EXPECT_FALSE(data);

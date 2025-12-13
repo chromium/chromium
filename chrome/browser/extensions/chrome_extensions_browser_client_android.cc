@@ -17,8 +17,6 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_web_contents_observer.h"
-#include "extensions/browser/extensions_browser_interface_binders.h"
-#include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/browser/updater/null_extension_cache.h"
@@ -67,23 +65,7 @@ using content::BrowserThread;
 
 namespace extensions {
 
-namespace {
-
-class DesktopAndroidKioskDelegate : public KioskDelegate {
- public:
-  DesktopAndroidKioskDelegate() = default;
-  ~DesktopAndroidKioskDelegate() override = default;
-
-  bool IsAutoLaunchedKioskApp(const ExtensionId& id) const override {
-    // Desktop-android does not support kiosk apps.
-    return false;
-  }
-};
-
-}  // namespace
-
 void ChromeExtensionsBrowserClient::Init() {
-  kiosk_delegate_ = std::make_unique<DesktopAndroidKioskDelegate>();
   // Must occur after g_browser_process is initialized.
   user_script_listener_ = std::make_unique<UserScriptListener>();
   // Full safe browsing is not supported so use a stub delegate.
@@ -103,22 +85,11 @@ ChromeExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
   return mojo::PendingRemote<network::mojom::URLLoaderFactory>();
 }
 
-void ChromeExtensionsBrowserClient::RegisterBrowserInterfaceBindersForFrame(
-    mojo::BinderMapWithContext<content::RenderFrameHost*>* binder_map,
-    content::RenderFrameHost* render_frame_host,
-    const Extension* extension) const {
-  PopulateExtensionFrameBinders(binder_map, render_frame_host, extension);
-}
-
 void ChromeExtensionsBrowserClient::ReportError(
     content::BrowserContext* context,
     std::unique_ptr<ExtensionError> error) {
   LOG(ERROR) << error->GetDebugString();
   ErrorConsole::Get(context)->ReportError(std::move(error));
-}
-
-KioskDelegate* ChromeExtensionsBrowserClient::GetKioskDelegate() {
-  return kiosk_delegate_.get();
 }
 
 }  // namespace extensions

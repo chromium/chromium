@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/customization/customization_document.h"
 
 #include <stddef.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -88,10 +84,11 @@ std::string GetExpectedLanguage(const std::string& required) {
   std::string expected = required;
 
   for (size_t i = 0; i < std::size(locale_aliases); ++i) {
-    if (required != locale_aliases[i].locale_alias)
+    if (required != UNSAFE_TODO(locale_aliases[i]).locale_alias) {
       continue;
+    }
 
-    expected = locale_aliases[i].locale_name;
+    expected = UNSAFE_TODO(locale_aliases[i]).locale_name;
     break;
   }
 
@@ -123,7 +120,7 @@ std::string Print(const std::vector<std::string>& locales) {
   return result;
 }
 
-const char* kVPDInitialLocales[] = {
+constexpr const char* kVPDInitialLocales[] = {
     "ar",
     "ar,bg",
     "ar,bg,bn",

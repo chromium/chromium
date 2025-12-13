@@ -4,16 +4,16 @@
 
 #import <XCTest/XCTest.h>
 
-#import "base/files/file_util.h"
 #import "base/ios/ios_util.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

@@ -173,4 +173,6 @@ HEADLESS_COMPOSITOR_TEST(VirtualTimeIntersectionObserverWithViewport,
 HEADLESS_COMPOSITOR_TEST(VeryLargeViewportCrash,
                          "virtual-time/very-large-viewport-crash.js")
 
+HEADLESS_COMPOSITOR_TEST(VirtualTimeBlockedWorker,
+                         "virtual-time/blocked-worker.js")
 }  // namespace headless

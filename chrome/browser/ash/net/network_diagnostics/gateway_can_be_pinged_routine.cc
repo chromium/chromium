@@ -140,7 +140,8 @@ void GatewayCanBePingedRoutine::PingGateways() {
 bool GatewayCanBePingedRoutine::ParseICMPResult(const std::string& status,
                                                 std::string* ip,
                                                 base::TimeDelta* latency) {
-  std::optional<base::Value> parsed_value(base::JSONReader::Read(status));
+  std::optional<base::Value> parsed_value(
+      base::JSONReader::Read(status, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   if (!parsed_value.has_value()) {
     return false;
   }

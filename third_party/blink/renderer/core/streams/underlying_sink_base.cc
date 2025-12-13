@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "v8/include/v8.h"
 
@@ -32,9 +33,8 @@ void UnderlyingSinkStartAlgorithm::Trace(Visitor* visitor) const {
 
 ScriptPromise<IDLUndefined> UnderlyingSinkWriteAlgorithm::Run(
     ScriptState* script_state,
-    int argc,
-    v8::Local<v8::Value> argv[]) {
-  DCHECK_EQ(argc, 1);
+    base::span<v8::Local<v8::Value>> argv) {
+  DCHECK_EQ(argv.size(), 1u);
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::TryCatch try_catch(isolate);
   auto result = sink_->write(script_state,
@@ -54,9 +54,8 @@ void UnderlyingSinkWriteAlgorithm::Trace(Visitor* visitor) const {
 
 ScriptPromise<IDLUndefined> UnderlyingSinkCloseAlgorithm::Run(
     ScriptState* script_state,
-    int argc,
-    v8::Local<v8::Value> argv[]) {
-  DCHECK_EQ(argc, 0);
+    base::span<v8::Local<v8::Value>> argv) {
+  DCHECK_EQ(argv.size(), 0u);
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::TryCatch try_catch(isolate);
   auto result = sink_->close(script_state, PassThroughException(isolate));
@@ -74,9 +73,8 @@ void UnderlyingSinkCloseAlgorithm::Trace(Visitor* visitor) const {
 
 ScriptPromise<IDLUndefined> UnderlyingSinkAbortAlgorithm::Run(
     ScriptState* script_state,
-    int argc,
-    v8::Local<v8::Value> argv[]) {
-  DCHECK_EQ(argc, 1);
+    base::span<v8::Local<v8::Value>> argv) {
+  DCHECK_EQ(argv.size(), 1u);
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::TryCatch try_catch(isolate);
   auto result = sink_->abort(script_state,

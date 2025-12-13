@@ -8,6 +8,10 @@ source_set("choose_file") {
   sources = [
     "choose_file_controller.h",
     "choose_file_controller.mm",
+    "choose_file_controller_impl.h",
+    "choose_file_controller_impl.mm",
+    "choose_file_controller_observer_bridge.h",
+    "choose_file_controller_observer_bridge.mm",
     "choose_file_event.h",
     "choose_file_event.mm",
     "choose_file_event_holder.h",
@@ -22,8 +26,9 @@ source_set("choose_file") {
   deps = [
     ":choose_file_file_utils",
     ":choose_file_js",
-    ":choose_file_legacy_js",
+    ":last_tap_location_tab_helper",
     "//base",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -46,22 +51,38 @@ source_set("choose_file_file_utils") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
+source_set("last_tap_location_tab_helper") {
+  sources = [
+    "last_tap_location_tab_helper.h",
+    "last_tap_location_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "choose_file_controller_impl_unittest.mm",
+    "choose_file_controller_observer_bridge_unittest.mm",
     "choose_file_controller_unittest.mm",
     "choose_file_java_script_feature_unittest.mm",
     "choose_file_tab_helper_unittest.mm",
   ]
   deps = [
     ":choose_file",
+    ":last_tap_location_tab_helper",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 
@@ -84,15 +105,6 @@ compile_ts("choose_file_utils_js") {
 optimize_ts("choose_file_js") {
   visibility = [ ":choose_file" ]
   sources = [ "resources/choose_file.ts" ]
-  deps = [
-    ":choose_file_utils_js",
-    "//ios/web/public/js_messaging:util_scripts",
-  ]
-}
-
-optimize_ts("choose_file_legacy_js") {
-  visibility = [ ":choose_file" ]
-  sources = [ "resources/choose_file_legacy.ts" ]
   deps = [
     ":choose_file_utils_js",
     "//ios/web/public/js_messaging:util_scripts",

@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
@@ -19,6 +20,8 @@
 
 // This observable class keeps track of one-time permission related browsing
 // states.
+class OneTimePermissionsTrackerTest;
+
 class OneTimePermissionsTracker : public KeyedService {
   using NotifyFunction =
       void (OneTimePermissionsTracker::*)(const url::Origin&);
@@ -71,6 +74,13 @@ class OneTimePermissionsTracker : public KeyedService {
 
   // Fires all running timers for testing purposes.
   void FireRunningTimersForTesting();
+
+  FRIEND_TEST_ALL_PREFIXES(OneTimePermissionsTrackerTest,
+                           ShouldIgnoreOrigin_IsolatedWebApp);
+  FRIEND_TEST_ALL_PREFIXES(OneTimePermissionsTrackerTest,
+                           ShouldIgnoreOrigin_OpaqueOrigin);
+  FRIEND_TEST_ALL_PREFIXES(OneTimePermissionsTrackerTest,
+                           ShouldIgnoreOrigin_ChromePages);
 
  protected:
   void NotifyLastPageFromOriginClosed(const url::Origin& origin);

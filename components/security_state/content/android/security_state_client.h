@@ -17,7 +17,7 @@ SecurityStateClient* GetSecurityStateClient();
 class SecurityStateClient {
  public:
   SecurityStateClient() = default;
-  ~SecurityStateClient() = default;
+  virtual ~SecurityStateClient() = default;
 
   // Create a SecurityStateModelDelegate. This can return a nullptr.
   virtual std::unique_ptr<SecurityStateModelDelegate>

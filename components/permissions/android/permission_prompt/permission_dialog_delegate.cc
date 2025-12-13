@@ -14,6 +14,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/base/models/image_model.h"
@@ -287,8 +288,29 @@ void PermissionDialogDelegate::WebContentsDestroyed() {
   DismissDialog();
 }
 
+void PermissionDialogDelegate::OnGeolocationAccuracySelected(JNIEnv* env,
+                                                             jint accuracy) {
+  CHECK(permission_prompt_);
+
+  permission_prompt_->SetPromptOptions(GeolocationPromptOptions{
+      .selected_accuracy = static_cast<GeolocationAccuracy>(accuracy)});
+}
+
 static jint JNI_PermissionDialogDelegate_GetRequestTypeEnumSize(JNIEnv* env) {
   return static_cast<int>(RequestType::kMaxValue) + 1;
 }
 
+jint PermissionDialogDelegate::GetInitialGeolocationAccuracySelection(
+    JNIEnv* env) const {
+  CHECK(permission_prompt_);
+  CHECK_EQ(permission_prompt_->PermissionCount(), 1u);
+  CHECK_EQ(permission_prompt_->GetContentSettingType(0),
+           ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  return static_cast<int>(
+      permission_prompt_->GetInitialGeolocationAccuracySelection());
+}
+
 }  // namespace permissions
+
+DEFINE_JNI(PermissionDialogController)
+DEFINE_JNI(PermissionDialogDelegate)

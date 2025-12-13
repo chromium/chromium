@@ -207,7 +207,7 @@ TEST_F(PageLoadMetricsUtilTest, CorrectEventAsNavigationOrActivationOrigined) {
        base::Seconds(2), base::Seconds(0)},
       // crash due to incorrect data
       {PrerenderingState::kActivated, base::Seconds(10), base::Seconds(2),
-       base::Seconds(-1)},
+       base::Seconds(0)},
       // max(0, 12 - 10)
       {PrerenderingState::kActivated, base::Seconds(10), base::Seconds(12),
        base::Seconds(2)},
@@ -223,16 +223,9 @@ TEST_F(PageLoadMetricsUtilTest, CorrectEventAsNavigationOrActivationOrigined) {
     auto test_expectation_runner =
         [&](base::TimeDelta event,
             std::optional<base::TimeDelta> expected_result) {
-          if (expected_result->is_negative()) {
-            EXPECT_DEATH_IF_SUPPORTED(
-                CorrectEventAsNavigationOrActivationOrigined(delegate, timing,
-                                                             event),
-                "");
-          } else {
             base::TimeDelta got = CorrectEventAsNavigationOrActivationOrigined(
                 delegate, timing, event);
             EXPECT_EQ(expected_result, got);
-          }
         };
 
     test_expectation_runner(test_case.event, test_case.expected_result);

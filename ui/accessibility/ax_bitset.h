@@ -15,23 +15,25 @@
 namespace ui {
 
 // A helper class to store AX-related boolean enums.
-// IMPORTANT: This AXBitset implementation uses single uint64_t bitmasks and is
+// IMPORTANT: This AXBitset implementation uses single uint32_t bitmasks and is
 // therefore limited to managing enums whose underlying integer values are
-// strictly less than 64 (i.e., in the range [0, 63]). Enum values outside
+// strictly less than 32 (i.e., in the range [0, 31]). Enum values outside
 // this range will lead to incorrect behavior or will be ignored.
 template <typename T>
 class AXBitset {
  public:
   AXBitset() = default;
+  AXBitset(uint32_t initial_set_bits, uint32_t initial_values)
+      : set_bits_(initial_set_bits), values_(initial_values) {}
   ~AXBitset() = default;
 
-  uint64_t GetSetBits() const { return set_bits_; }
-  uint64_t GetValues() const { return values_; }
+  uint32_t GetSetBits() const { return set_bits_; }
+  uint32_t GetValues() const { return values_; }
 
   // Returns whether enum T at |value| is set to true, false or unset.
-  std::optional<bool> Has(T enum_value) const {
-    uint64_t index = static_cast<uint64_t>(enum_value);
-    uint64_t mask = 1ULL << index;
+  std::optional<bool> Get(T enum_value) const {
+    uint32_t index = static_cast<uint32_t>(enum_value);
+    uint32_t mask = 1u << index;
     // Check if the value is set.
     if (set_bits_ & mask) {
       return values_ & mask;
@@ -41,8 +43,8 @@ class AXBitset {
 
   // Sets the enum T at |enum_value| to true or false.
   void Set(T enum_value, bool bool_value) {
-    uint64_t index = static_cast<uint64_t>(enum_value);
-    uint64_t mask = 1ULL << index;
+    uint32_t index = static_cast<uint32_t>(enum_value);
+    uint32_t mask = 1u << index;
     // Mark as set.
     set_bits_ |= mask;
     if (bool_value) {
@@ -55,8 +57,8 @@ class AXBitset {
   }
 
   void Unset(T enum_value) {
-    uint64_t index = static_cast<uint64_t>(enum_value);
-    uint64_t mask = 1ULL << index;
+    uint32_t index = static_cast<uint32_t>(enum_value);
+    uint32_t mask = 1u << index;
     // Mark as not set.
     set_bits_ &= ~mask;
   }
@@ -69,17 +71,17 @@ class AXBitset {
   // attributes.
   void ForEach(
       base::FunctionRef<void(T attribute, bool value)> function) const {
-    uint64_t remainder = set_bits_;
+    uint32_t remainder = set_bits_;
 
     while (remainder) {
-      // Find the index (0-63) of the least significant bit that is set to 1
+      // Find the index (0-31) of the least significant bit that is set to 1
       // in 'remainder'. This corresponds to the enum's integer value.
       // std::countr_zero counts trailing zeros; e.g., for 0b...1000, it
       // returns 3.
       int index = std::countr_zero(remainder);
 
       T attribute = static_cast<T>(index);
-      uint64_t mask = 1ULL << index;
+      uint32_t mask = 1u << index;
       bool attribute_value = static_cast<bool>(values_ & mask);
 
       function(attribute, attribute_value);
@@ -116,8 +118,8 @@ class AXBitset {
   friend bool operator==(const AXBitset<U>& lhs, const AXBitset<U>& rhs);
 
  private:
-  uint64_t set_bits_ = 0;
-  uint64_t values_ = 0;
+  uint32_t set_bits_ = 0;
+  uint32_t values_ = 0;
 };
 
 template <typename T>

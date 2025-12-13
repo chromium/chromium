@@ -10,7 +10,10 @@ static_library("user_education") {
     "chrome_user_education_delegate.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//ui/base/interaction",
+  ]
 
   deps = [
     "//ash",
@@ -18,6 +21,7 @@ static_library("user_education") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/views/user_education",
     "//chrome/browser/user_education",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/browser_context_helper",
@@ -46,8 +50,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/browser_context_helper",
     "//components/user_manager",
     "//testing/gtest",
-    "//testing/gtest",
-    "//ui/base",
   ]
 }
 

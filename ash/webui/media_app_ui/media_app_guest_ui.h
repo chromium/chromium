@@ -17,14 +17,8 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
-
-namespace ui {
-class ColorChangeHandler;
-}
 
 namespace ash {
 
@@ -69,13 +63,6 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
   // content::WebContentsObserver:
   void ReadyToCommitNavigation(content::NavigationHandle* handle) override;
 
-  // Binds a PageHandler to MediaAppGuestUI. This handler grabs a reference to
-  // the page and pushes a colorChangeEvent to the untrusted JS running there
-  // when the OS color scheme has changed.
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
   // Binds UntrustedServiceFactory which is used to bind other interfaces
   // used to communicate between the untrusted MediaApp frame and the browser.
   void BindInterface(
@@ -114,7 +101,6 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
   // Whether ReadyToCommitNavigation has occurred for the main `app.html`.
   bool app_navigation_committed_ = false;
 
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::optional<bool> is_mantis_available_;
   std::unique_ptr<MantisUntrustedServiceManager>
       mantis_untrusted_service_manager_;

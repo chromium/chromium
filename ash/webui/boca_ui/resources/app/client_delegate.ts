@@ -362,6 +362,26 @@ export class ClientDelegateFactory {
       startSpotlight: async (crdConnectionCode: string) => {
         return await pageHandler.startSpotlight(crdConnectionCode);
       },
+      presentStudentScreen: async (student: Identity, receiverId: string) => {
+        const studentMojom: IdentityMojom = {
+          id: student.id,
+          name: student.name,
+          email: student.email,
+          photoUrl: student.photoUrl ? {url: student.photoUrl} : null
+        };
+        return (await pageHandler.presentStudentScreen(
+                    studentMojom, receiverId))
+            .success;
+      },
+      stopPresentingStudentScreen: async () => {
+        return (await pageHandler.stopPresentingStudentScreen()).success;
+      },
+      presentOwnScreen: async (receiverId: string) => {
+        return (await pageHandler.presentOwnScreen(receiverId)).success;
+      },
+      stopPresentingOwnScreen: async () => {
+        return (await pageHandler.stopPresentingOwnScreen()).success;
+      },
     };
   }
 

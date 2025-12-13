@@ -51,6 +51,8 @@ class WebContentsViewIOS : public WebContentsView,
   void FocusThroughTabTraversal(bool reverse) override;
   DropData* GetDropData() const override;
   gfx::Rect GetViewBounds() const override;
+  void Resize(const gfx::Rect& new_bounds) override;
+  gfx::Size GetSize() const override;
   void CreateView(gfx::NativeView context) override;
   RenderWidgetHostViewBase* CreateViewForWidget(
       RenderWidgetHost* render_widget_host) override;

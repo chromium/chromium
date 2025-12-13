@@ -16,7 +16,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"

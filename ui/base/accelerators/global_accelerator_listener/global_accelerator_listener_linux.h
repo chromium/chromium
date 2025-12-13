@@ -9,18 +9,22 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
+#include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/dbus/utils/connect_to_signal.h"
 #include "components/dbus/xdg/request.h"
 #include "dbus/bus.h"
 #include "dbus/object_proxy.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace dbus_xdg {
 class Request;
-enum class SystemdUnitStatus;
 }  // namespace dbus_xdg
 
 namespace ui {
@@ -44,8 +48,8 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
   FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
                            OnCommandsChanged);
 
-  using DbusShortcut = DbusStruct<DbusString, DbusDictionary>;
-  using DbusShortcuts = DbusArray<DbusShortcut>;
+  using DbusShortcut = std::tuple<std::string, dbus_xdg::Dictionary>;
+  using DbusShortcuts = std::vector<DbusShortcut>;
 
   // These are exposed in the header for testing.
   static constexpr char kPortalServiceName[] = "org.freedesktop.portal.Desktop";
@@ -83,31 +87,32 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
   void OnCommandsChanged(const std::string& accelerator_group_id,
                          const std::string& profile_id,
                          const ui::CommandMap& commands,
+                         gfx::AcceleratedWidget widget,
                          Observer* observer) override;
 
   void OnCreateSession(
-      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
+      base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
   void OnListShortcuts(
-      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
+      base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
   void OnBindShortcuts(
-      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
+      base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
 
   // Callbacks for DBus signals.
-  void OnActivatedSignal(dbus::Signal* signal);
+  void OnActivatedSignal(dbus_utils::ConnectToSignalResultSig<"ost"> result);
 
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
                          bool success);
 
-  void OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus status);
-
-  void OnServiceStarted(std::optional<bool> service_started);
+  void OnServiceStarted(uint32_t version);
 
   void CreateSession();
 
-  void BindShortcuts(const DbusShortcuts& old_shortcuts);
+  void BindShortcuts(DbusShortcuts old_shortcuts, std::string parent_handle);
 
   void CloseSession();
+
+  bool HasGlobalShortcuts() const;
 
   // DBus components.
   scoped_refptr<dbus::Bus> bus_;
@@ -118,6 +123,7 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
   BindState bind_state_ = BindState::kNotBound;
   const std::string session_token_;
 
+  gfx::AcceleratedWidget context_window_ = gfx::kNullAcceleratedWidget;
   std::map<std::string, BoundCommand> bound_commands_;
 
   base::WeakPtrFactory<GlobalAcceleratorListenerLinux> weak_ptr_factory_{this};

@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_table_view_controller.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_image_container_view.h"
@@ -14,13 +12,13 @@
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_consumer.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_mutator.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -274,7 +272,8 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
   NSString* messageText = l10n_util::GetNSString(
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_MENU_ITEM_STOP_TRACKING_SNACKBAR);
-  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:messageText];
   [self.snackbarCommandsHandler
       showSnackbarMessage:message
            withHapticType:UINotificationFeedbackTypeSuccess];

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "storage/browser/blob/blob_data_builder.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -44,7 +40,7 @@ bool BlobDataBuilder::FutureData::Populate(base::span<const uint8_t> data,
   if (!target.data())
     return false;
   DCHECK_EQ(target.size(), data.size());
-  std::memcpy(target.data(), data.data(), data.size());
+  UNSAFE_TODO(std::memcpy(target.data(), data.data(), data.size()));
   return true;
 }
 

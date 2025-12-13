@@ -12,16 +12,20 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -89,15 +93,14 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   }
 
   TabSearchContainer* tab_search_container() {
-    return browser_view()
-        ->tab_strip_region_view()
-        ->tab_search_container_for_testing();
+    return BrowserElementsViews::From(browser())->GetViewAs<TabSearchContainer>(
+        kTabSearchContainerElementId);
   }
 
   ProductSpecificationsButton* product_specifications_button() {
-    return browser_view()
-        ->tab_strip_region_view()
-        ->GetProductSpecificationsButton();
+    return BrowserElementsViews::From(browser())
+        ->GetViewAs<ProductSpecificationsButton>(
+            kProductSpecificationsButtonElementId);
   }
 
   MockProductSpecificationsEntryPointController* controller() {
@@ -106,7 +109,8 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   }
 
   bool GetRenderTabSearchBeforeTabStrip() {
-    return !tabs::GetTabSearchTrailingTabstrip(browser()->profile());
+    return tabs::GetTabSearchPosition(browser()->profile()) ==
+           tabs::TabSearchPosition::kLeadingTabstrip;
   }
 
   void SetLockedExpansionModeForTesting(LockedExpansionMode mode) {
@@ -132,11 +136,22 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ProductSpecificationsButtonOrder) {
-  auto* tab_strip_region_view = browser_view()->tab_strip_region_view();
+  if (tabs::IsVerticalTabsFeatureEnabled()) {
+    // TODO(crbug.com/444520866): The order of buttons will be different in
+    // verticals tabs so this test will need to be rewritten when we get to that
+    // point.
+    GTEST_SKIP();
+  }
 
-  if (features::IsTabSearchMoving()) {
+  auto* tab_strip_region_view =
+      views::AsViewClass<HorizontalTabStripRegionView>(
+          browser_view()->tab_strip_view());
+
+  if (features::HasTabSearchToolbarButton()) {
     TabStripActionContainer* action_container =
-        browser_view()->tab_strip_region_view()->GetTabStripActionContainer();
+        BrowserElementsViews::From(browser())
+            ->GetViewAs<TabStripActionContainer>(
+                kTabStripActionContainerElementId);
     ASSERT_TRUE(action_container->GetIndexOf(product_specifications_button())
                     .has_value());
   } else if (GetRenderTabSearchBeforeTabStrip()) {

@@ -87,7 +87,7 @@ class ArrayBufferContentsSegmentReader : public SegmentReader {
   base::span<const uint8_t> GetSomeData(size_t position) const override {
     return segment_reader_->GetSomeData(position);
   }
-  sk_sp<SkData> GetAsSkData() const override {
+  sk_sp<const SkData> GetAsSkData() const override {
     return segment_reader_->GetAsSkData();
   }
 
@@ -198,7 +198,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
       return;
     }
 
-    decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
+    decoder_ = std::make_unique<SequenceBound<ImageDecoderCore>>(
         decode_task_runner_, mime_type_, /*data=*/nullptr,
         /*data_complete=*/false, color_behavior, desired_size,
         animation_option_);
@@ -265,7 +265,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   construction_succeeded_ = true;
   data_complete_ = true;
   completed_property_->ResolveWithUndefined();
-  decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
+  decoder_ = std::make_unique<SequenceBound<ImageDecoderCore>>(
       decode_task_runner_, mime_type_, std::move(segment_reader),
       data_complete_, color_behavior, desired_size, animation_option_);
 
@@ -517,7 +517,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
     ++num_submitted_decodes_;
     decoder_->AsyncCall(&ImageDecoderCore::Decode)
         .WithArgs(request->frame_index, request->complete_frames_only,
-                  WTF::CrossThreadUnretained(request->abort_flag.get()))
+                  CrossThreadUnretained(request->abort_flag.get()))
         .Then(CrossThreadBindOnce(&ImageDecoderExternal::OnDecodeReady,
                                   MakeUnwrappingCrossThreadHandle(
                                       decode_weak_factory_.GetWeakCell())));

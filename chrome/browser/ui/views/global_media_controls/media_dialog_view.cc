@@ -82,10 +82,6 @@ static constexpr int kImageWidthDip = 20;
 static constexpr int kVerticalMarginDip = 10;
 
 std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    return l10n_util::GetStringUTF16(
-        IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_ENGLISH_ONLY);
-  }
   // The selected language is only shown when Live Caption is enabled.
   if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
     std::u16string language = speech::GetLanguageDisplayName(
@@ -498,7 +494,7 @@ void MediaDialogView::OnSettingsButtonPressed() {
   NavigateParams navigate_params(profile_,
                                  GURL(captions::GetCaptionSettingsUrl()),
                                  ui::PAGE_TRANSITION_LINK);
-  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&navigate_params);
 }

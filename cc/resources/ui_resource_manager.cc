@@ -8,8 +8,10 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "cc/resources/scoped_ui_resource.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace cc {
 
@@ -38,8 +40,9 @@ UIResourceId UIResourceManager::CreateUIResource(UIResourceClient* client) {
 
 void UIResourceManager::DeleteUIResource(UIResourceId uid) {
   const auto iter = ui_resource_client_map_.find(uid);
-  if (iter == ui_resource_client_map_.end())
+  if (iter == ui_resource_client_map_.end()) {
     return;
+  }
 
   UIResourceRequest request(UIResourceRequest::Type::kDelete, uid);
   ui_resource_request_queue_.push_back(request);
@@ -64,8 +67,9 @@ base::flat_map<UIResourceId, gfx::Size> UIResourceManager::GetUIResourceSizes()
     const {
   base::flat_map<UIResourceId, gfx::Size>::container_type items(
       ui_resource_client_map_.size());
-  for (const auto& pair : ui_resource_client_map_)
+  for (const auto& pair : ui_resource_client_map_) {
     items.push_back({pair.first, pair.second.size});
+  }
   return base::flat_map<UIResourceId, gfx::Size>(std::move(items));
 }
 
@@ -78,8 +82,9 @@ std::vector<UIResourceRequest> UIResourceManager::TakeUIResourcesRequests() {
 UIResourceId UIResourceManager::GetOrCreateUIResource(const SkBitmap& bitmap) {
   DCHECK(bitmap.pixelRef()->isImmutable());
   const auto resource = owned_shared_resources_.find(bitmap.pixelRef());
-  if (resource != owned_shared_resources_.end())
+  if (resource != owned_shared_resources_.end()) {
     return resource->second->id();
+  }
 
   // Evict all UIResources whose bitmaps are no longer referenced outside of the
   // map.

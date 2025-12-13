@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -14,6 +15,8 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
+#include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/resource_attribution/process_context.h"
@@ -46,7 +49,7 @@ class MemoryMeasurementDelegateImpl final : public MemoryMeasurementDelegate {
 
  private:
   void OnMemorySummary(base::OnceCallback<void(MemorySummaryMap)> callback,
-                       bool success,
+                       memory_instrumentation::mojom::RequestOutcome outcome,
                        std::unique_ptr<GlobalMemoryDump> memory_dump);
 
   raw_ptr<GraphImpl> graph_impl_;
@@ -60,7 +63,7 @@ void MemoryMeasurementDelegateImpl::RequestMemorySummary(
   // The memory instrumentation service is not available in unit tests unless
   // explicitly created.
   if (!mem_instrumentation) {
-    std::move(callback).Run({});
+    std::move(callback).Run(CreateMemorySummaryMap());
     return;
   }
   // TODO(crbug.com/40926264): Pass a set of processes to measure instead of
@@ -73,13 +76,13 @@ void MemoryMeasurementDelegateImpl::RequestMemorySummary(
 
 void MemoryMeasurementDelegateImpl::OnMemorySummary(
     base::OnceCallback<void(MemorySummaryMap)> callback,
-    bool success,
+    memory_instrumentation::mojom::RequestOutcome outcome,
     std::unique_ptr<GlobalMemoryDump> memory_dump) {
-  if (!success) {
-    std::move(callback).Run({});
+  if (outcome != memory_instrumentation::mojom::RequestOutcome::kSuccess) {
+    std::move(callback).Run(CreateMemorySummaryMap());
     return;
   }
-  MemorySummaryMap results;
+  MemorySummaryMap results = CreateMemorySummaryMap();
   CHECK(memory_dump);
   for (const auto& process_dump : memory_dump->process_dumps()) {
     ProcessNodeImpl* process_node =
@@ -93,8 +96,15 @@ void MemoryMeasurementDelegateImpl::OnMemorySummary(
     results.emplace(
         ProcessContext::FromProcessNode(process_node),
         MemorySummaryMeasurement{
-            .resident_set_size_kb = process_dump.os_dump().resident_set_kb,
-            .private_footprint_kb = process_dump.os_dump().private_footprint_kb,
+            .resident_set_size =
+                base::KiB(process_dump.os_dump().resident_set_kb),
+            .private_footprint =
+                base::KiB(process_dump.os_dump().private_footprint_kb),
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+            // `private_footprint_swap_kb` is only defined on these platforms
+            .private_swap =
+                base::KiB(process_dump.os_dump().private_footprint_swap_kb),
+#endif
         });
   }
   std::move(callback).Run(std::move(results));
@@ -132,6 +142,12 @@ MemoryMeasurementDelegate::GetDefaultFactory() {
   static base::NoDestructor<MemoryMeasurementDelegateFactoryImpl>
       default_factory;
   return default_factory.get();
+}
+
+// static
+MemoryMeasurementDelegate::MemorySummaryMap
+MemoryMeasurementDelegate::CreateMemorySummaryMap() {
+  return MemorySummaryMap(base::PassKey<MemoryMeasurementDelegate>{});
 }
 
 }  // namespace resource_attribution

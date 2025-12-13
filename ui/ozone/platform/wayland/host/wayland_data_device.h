@@ -91,6 +91,8 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, CancelIncomingDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
+                           DndDropPerformedWithNoneActionThenCancelled);
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            DestroyWindowWhileFetchingForeignData);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            LeaveWindowWhileFetchingData);
@@ -121,7 +123,7 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
   // The wl_data_device wrapped by this WaylandDataDevice.
   wl::Object<wl_data_device> data_device_;
 
-  raw_ptr<DragDelegate, DanglingUntriaged> drag_delegate_ = nullptr;
+  raw_ptr<DragDelegate> drag_delegate_ = nullptr;
 
   // There are two separate data offers at a time, the drag offer and the
   // selection offer, each with independent lifetimes. When we receive a new

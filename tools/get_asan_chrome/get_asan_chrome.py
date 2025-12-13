@@ -36,7 +36,7 @@ def get_current_os():
     return {
         'Windows': 'win64',
         'Linux': 'linux',
-        'Darwin': 'mac',
+        'Darwin': 'mac-arm64' if platform.machine() == 'arm64' else 'mac',
     }[platform.system()]
 
 
@@ -69,8 +69,9 @@ def get_release_metadata_by_version(version):
 def get_release_metadata_by_channel(release_info):
     os_to_platform = {
         'linux': 'linux',
-        'linux_debug': 'linux',
+        'linux-debug': 'linux',
         'mac': 'mac',
+        'mac-arm64': 'mac',
         'win64': 'win64',
     }
     platform = os_to_platform[release_info.os]
@@ -127,8 +128,9 @@ def download_asan_chrome(release_info, download_dir, quiet, retries=100):
     os_to_path = {
         'win64': 'win32-release_x64/asan-win32-release_x64',
         'linux': 'linux-release/asan-linux-release',
-        'linux_debug': 'linux-debug/asan-linux-debug',
+        'linux-debug': 'linux-debug/asan-linux-debug',
         'mac': 'mac-release/asan-mac-release',
+        'mac-arm64': 'mac-release-arm64/asan-mac-release',
         # 'mac_debug': 'mac-debug/asan-mac-debug',
         # 'ios': 'ios-release/asan-ios-release', # unsupported
         # android is currently unsupported
@@ -190,8 +192,9 @@ if __name__ == '__main__':
         choices=[
             'win64',
             'linux',
-            'linux_debug',
+            'linux-debug',
             'mac',
+            'mac-arm64',
         ],
         help='Operating system type as defined by Chromium Dash.')
     parser.add_argument(

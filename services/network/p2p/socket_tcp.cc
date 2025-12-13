@@ -73,15 +73,6 @@ P2PSocketTcpBase::P2PSocketTcpBase(
 
 P2PSocketTcpBase::~P2PSocketTcpBase() = default;
 
-bool P2PSocketTcpBase::InitAccepted(const net::IPEndPoint& remote_address,
-                                    std::unique_ptr<net::StreamSocket> socket) {
-  DCHECK(socket);
-  remote_address_.ip_address = remote_address;
-  // TODO(ronghuawu): Add FakeSSLServerSocket.
-  socket_ = std::move(socket);
-  return DoRead();
-}
-
 void P2PSocketTcpBase::Init(
     const net::IPEndPoint& local_address,
     uint16_t min_port,

@@ -60,18 +60,6 @@ class PasswordFormMetricsRecorder
   PasswordFormMetricsRecorder& operator=(const PasswordFormMetricsRecorder&) =
       delete;
 
-  // ManagerAction - What does the PasswordFormManager do with this form? Either
-  // it fills it, or it doesn't. If it doesn't fill it, that's either
-  // because it has no match or it is disabled via the AUTOCOMPLETE=off
-  // attribute. Note that if we don't have an exact match, we still provide
-  // candidates that the user may end up choosing.
-  enum ManagerAction {
-    kManagerActionNone = 0,
-    kManagerActionAutofilled,
-    kManagerActionBlocklisted_Obsolete,
-    kManagerActionMax
-  };
-
   // Result - What happens to the form?
   //
   // These values are persisted to logs. Entries should not be renumbered and
@@ -131,16 +119,14 @@ class PasswordFormMetricsRecorder
   // This enum is a designed to be able to collect all kinds of potentially
   // interesting user interactions with sites and password manager UI in
   // relation to a given form. In contrast to UserAction, it is intended to be
-  // extensible.
+  // extensible. Each value maps to a different `User.Action.*` UKM.
   enum class DetailedUserAction {
     // Interactions with password bubble.
-    kEditedUsernameInBubble = 100,
-    kSelectedDifferentPasswordInBubble = 101,
-    kTriggeredManualFallbackForSaving = 102,
-    kObsoleteTriggeredManualFallbackForUpdating = 103,  // unused
+    kEditedUsernameInBubble,
+    kSelectedDifferentPasswordInBubble,
+    kTriggeredManualFallbackForSaving,
 
-    // Interactions with form.
-    kCorrectedUsernameInForm = 200,
+    kCorrectedUsernameInForm,
   };
 
   // Indicator whether the user has seen a password generation popup and why.
@@ -166,8 +152,8 @@ class PasswordFormMetricsRecorder
     // The generated password was deleted by the user from the field
     // in which it was filled after being accepted.
     kPasswordDeleted = 2,
-    kPasswordRejectedInDialogObsolete = 3,  // obsolete
-    kMaxValue = kPasswordRejectedInDialogObsolete
+    // Deprecated: kPasswordRejectedInDialog = 3,
+    kMaxValue = kPasswordDeleted
   };
 
   // Represents form differences.
@@ -180,7 +166,8 @@ class PasswordFormMetricsRecorder
     kAutocompleteAttributes = 1 << 2,
     kFormControlTypes = 1 << 3,
     kFormFieldNames = 1 << 4,
-    kMaxFormDifferencesValue = 1 << 5,
+    kFormFieldFocusability = 1 << 5,
+    kMaxFormDifferencesValue = 1 << 6,
   };
 
   // Used in UMA histogram, please do NOT reorder.
@@ -190,8 +177,7 @@ class PasswordFormMetricsRecorder
   // to be filled. This decision is only recorded for the first time, the
   // browser informs the renderer about credentials for a given form.
   //
-  // Needs to stay in sync with PasswordManagerFirstWaitForUsernameReason in
-  // enums.xml.
+  // LINT.IfChange(WaitForUsernameReason)
   enum class WaitForUsernameReason {
     // Credentials may be filled on page load.
     kDontWait = 0,
@@ -205,10 +191,10 @@ class PasswordFormMetricsRecorder
     kFormNotGoodForFilling = 3,
     // User is on a site with an insecure main frame origin.
     kInsecureOrigin = 4,
-    // kTouchToFill = 5, Obsolete
+    // Deprecated: kTouchToFill = 5,
     // Show suggestion on account selection feature is enabled.
     kFoasFeature = 6,
-    // kReauthRequired = 7, Obsolete
+    // Deprecated: kReauthRequired = 7,
     // Password is already filled
     kPasswordPrefilled = 8,
     // A credential exists for affiliated website.
@@ -225,8 +211,13 @@ class PasswordFormMetricsRecorder
     kGroupedMatch = 13,
     // A form on a page is a single username form.
     kSingleUsernameForm = 14,
-    kMaxValue = kSingleUsernameForm,
+    // An actor task is ongoing on the page.
+    kActorTaskOngoing = 15,
+    // Password change is ongoing on the page.
+    kPasswordChangeOngoing = 16,
+    kMaxValue = kPasswordChangeOngoing,
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordManagerFirstWaitForUsernameReason)
 
   // Used in UMA histogram, please do NOT reorder.
   // Metric: "PasswordManager.MatchedFormType"
@@ -253,7 +244,7 @@ class PasswordFormMetricsRecorder
     kAffiliatedWebsites = 3,
     // A credential exists for another entity, which is grouped with the current
     // domain by the AffiliationService through a grouping affiliation.
-    kGrouped_Obsolete = 4,
+    // Deprecated: kGrouped = 4,
     // A credential exists for an Android application, which is grouped with the
     // current domain by the AffiliationService through the grouping
     // affiliations.
@@ -401,15 +392,8 @@ class PasswordFormMetricsRecorder
     kMaxValue = kWrong,
   };
 
-  // Called if the user could generate a password for this form.
-  void MarkGenerationAvailable();
-
   // Stores the user action associated with a generated password.
   void SetGeneratedPasswordStatus(GeneratedPasswordStatus status);
-
-  // Stores the password manager action. During destruction the last
-  // set value will be logged.
-  void SetManagerAction(ManagerAction manager_action);
 
   // Call these if/when we know the form submission worked or failed.
   // These routines are used to update internal statistics ("ActionsTaken").
@@ -519,10 +503,6 @@ class PasswordFormMetricsRecorder
   // `SingleUsernameFillingAssistance`), returns an empty string.
   std::string FillingAssinstanceToHatsInProductDataString();
 
-  void set_possible_username_used(bool value) {
-    possible_username_used_ = value;
-  }
-
   void set_username_updated_in_bubble(bool value) {
     username_updated_in_bubble_ = value;
   }
@@ -618,10 +598,6 @@ class PasswordFormMetricsRecorder
   PasswordGenerationPopupShown password_generation_popup_shown_ =
       PasswordGenerationPopupShown::kNotShown;
 
-  // These three fields record the "ActionsTaken" by the browser and
-  // the user with this form, and the result. They are combined and
-  // recorded in UMA when the PasswordFormMetricsRecorder is destroyed.
-  ManagerAction manager_action_ = kManagerActionNone;
   SubmitResult submit_result_ = SubmitResult::kNotSubmitted;
 
   // Presumed form type of the form that the PasswordFormManager is managing.
@@ -667,9 +643,6 @@ class PasswordFormMetricsRecorder
   std::optional<features_util::PasswordAccountStorageUsageLevel>
       account_storage_usage_level_;
   std::optional<metrics_util::SubmittedFormFrame> submitted_form_frame_;
-
-  // Whether a single username candidate was populated in prompt.
-  bool possible_username_used_ = false;
 
   bool username_updated_in_bubble_ = false;
 

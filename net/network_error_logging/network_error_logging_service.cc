@@ -66,7 +66,12 @@ const struct {
     {ERR_NAME_RESOLUTION_FAILED, kDnsPhase, "dns.failed"},
     {ERR_DNS_TIMED_OUT, kDnsPhase, "dns.timed_out"},
     {ERR_DNS_MALFORMED_RESPONSE, kDnsPhase, "dns.protocol"},
-    {ERR_DNS_SERVER_FAILED, kDnsPhase, "dns.server"},
+    // The following were all historically mapped to "dns.server".
+    {ERR_DNS_FORMAT_ERROR, kDnsPhase, "dns.server"},
+    {ERR_DNS_SERVER_FAILURE, kDnsPhase, "dns.server"},
+    {ERR_DNS_NOT_IMPLEMENTED, kDnsPhase, "dns.server"},
+    {ERR_DNS_REFUSED, kDnsPhase, "dns.server"},
+    {ERR_DNS_OTHER_FAILURE, kDnsPhase, "dns.server"},
 
     {ERR_TIMED_OUT, kConnectionPhase, "tcp.timed_out"},
     {ERR_CONNECTION_TIMED_OUT, kConnectionPhase, "tcp.timed_out"},

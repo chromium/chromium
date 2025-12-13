@@ -66,7 +66,7 @@ Below is an outline of how `unsafe` is used in this crate.
 
 * `util::pool::Pool` makes use of `unsafe` to implement a fast path for
 accessing an element of the pool. The fast path applies to the first thread
-that uses the pool. In effect, the fast path is fast because it avoid a mutex
+that uses the pool. In effect, the fast path is fast because it avoids a mutex
 lock. `unsafe` is also used in the no-std version of `Pool` to implement a spin
 lock for synchronization.
 * `util::lazy::Lazy` uses `unsafe` to implement a variant of
@@ -112,6 +112,6 @@ In the end, I do still somewhat consider this crate an experiment. It is
 unclear whether the strong boundaries between components will be an impediment
 to ongoing development or not. De-coupling tends to lead to slower development
 in my experience, and when you mix in the added cost of not introducing
-breaking changes all of the time, things can get quite complicated. But, I
+breaking changes all the time, things can get quite complicated. But, I
 don't think anyone has ever release the internals of a regex engine as a
 library before. So it will be interesting to see how it plays out!

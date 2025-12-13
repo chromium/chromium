@@ -147,7 +147,8 @@ void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,
         cookie.CreationDate(), adjusted_expiry_date, cookie.LastAccessDate(),
         cookie.LastUpdateDate(), cookie.SecureAttribute(), cookie.IsHttpOnly(),
         cookie.SameSite(), cookie.Priority(), cookie_partition_key,
-        cookie.SourceScheme(), cookie.SourcePort(), cookie.SourceType());
+        cookie.SourceScheme(), cookie.SourcePort(), cookie.SourceType(),
+        net::CanonicalCookieFromStorageCallSite::kCookieManager);
     if (!cookie_ptr) {
       net::CookieInclusionStatus cookie_inclusion_status;
       cookie_inclusion_status.AddExclusionReason(

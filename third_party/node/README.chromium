@@ -20,9 +20,10 @@ update NPM dependencies.
 Name: Mocha
 Short Name: mocha
 URL: https://github.com/mochajs/mocha
-Version: 10.4.0
-Revision: 0501b9a278ae40a01f989d70801f4886ee686445
+Version: 11.7.5
+Revision: 9a6a5db8401dec63ea81093dd862e9e9b13b44d0
 Update Mechanism: Manual
+Date: 2025-11-05
 License: MIT
 License File: node_modules/mocha/LICENSE
 Security Critical: no
@@ -41,10 +42,10 @@ Local Modifications:
 Name: Chai Assertion Library
 Short Name: chai
 URL: https://github.com/chaijs/chai
-Version: 5.1.1
-Revision: 37263c08b85f1f7a55d9522607a9b40f2ee651cd
+Version: 6.2.1
+Revision: 110a1eab94060fc383b4c46efd0e8ce4f16dc788
 Update Mechanism: Manual
-Date: 2024-06-20
+Date: 2025-11-11
 License: MIT
 License File: node_modules/chai/LICENSE
 Security Critical: no
@@ -107,7 +108,7 @@ https://github.com/microsoft/TypeScript/issues/30024
 Name: Type Definition for chai.js library
 Short Name: @types/chai
 URL: https://www.npmjs.com/package/@types/chai
-Version: 4.3.16
+Version: 5.2.3
 Update Mechanism: Manual
 License: MIT
 Security Critical: no
@@ -477,13 +478,17 @@ A thin library around native web component APIs, to be used in WebUI development
 as an alternative to Polymer.
 
 Local Modifications:
-See patches/lit_html.patch, which renames 'lit-html' trusted type policy to
-'lit-html-desktop' to workaround the fact that some CrOS-only UIs already use
-Lit via a different Lit bundle in third_party/material_web_components, which in
-turn results in an error as follows
+- See patches/lit_html.patch, which renames 'lit-html' trusted type policy to
+  'lit-html-desktop' to workaround the fact that some CrOS-only UIs already use
+  Lit via a different Lit bundle in third_party/material_web_components, which in
+  turn results in an error as follows
 
 Uncaught TypeError: Failed to execute 'createPolicy' on
 'TrustedTypePolicyFactory': Policy with name "lit-html" already exists."
+
+- See patches/lit_reactive_element.patch which restricts the allowed values for
+  PropertyDeclaration 'type' field to be one of
+  [String, Number, Boolean, Array, Object].
 
 -------------------- DEPENDENCY DIVIDER --------------------
 

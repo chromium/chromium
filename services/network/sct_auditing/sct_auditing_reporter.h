@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -170,7 +171,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   void ScheduleRequestWithBackoff(base::OnceClosure request,
                                   base::TimeDelta minimum_delay);
   void SendLookupQuery();
-  void OnSendLookupQueryComplete(std::unique_ptr<std::string> response_body);
+  void OnSendLookupQueryComplete(std::optional<std::string> response_body);
   void SendReport();
   void OnSendReportComplete(scoped_refptr<net::HttpResponseHeaders> headers);
   void MaybeRetryRequest();

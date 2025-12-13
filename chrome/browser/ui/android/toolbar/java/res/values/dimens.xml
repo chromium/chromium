@@ -14,6 +14,14 @@ found in the LICENSE file.
     <dimen name="tab_strip_reserved_top_padding">0dp</dimen>
 
     <dimen name="ntp_search_box_height">64dp</dimen>
+    <dimen name="ntp_search_box_height_tall">72dp</dimen>
+    <dimen name="ntp_search_box_elevation">3dp</dimen>
+
+    <!-- Tab group context menu on tablet tab strip -->
+    <!-- list_menu_item_horizontal_padding is 16dp and
+         color_picker_color_item_horizontal_padding is 8dp;
+         add 8dp extra padding here to align with the other menu items. -->
+    <dimen name="color_picker_horizontal_padding">8dp</dimen>
 
     <!-- Toolbar Phone - Optional toolbar button dimensions -->
     <!-- Padding of button's background, only visible when showing a contextual action. -->
@@ -39,20 +47,21 @@ found in the LICENSE file.
     <dimen name="bottom_controls_height">@dimen/min_touch_target_size</dimen>
 
     <!-- Custom Menu dimensions -->
-    <dimen name="tab_switcher_menu_width">250dp</dimen>
+    <dimen name="tab_switcher_menu_width">256dp</dimen>
     <dimen name="tab_switcher_menu_vertical_padding">4dp</dimen>
     <dimen name="adaptive_button_menu_vertical_padding">8dp</dimen>
 
     <!-- Custom Tabs dimensions -->
     <dimen name="toolbar_icon_height">24dp</dimen>
-    <dimen name="toolbar_icon_default_width">@dimen/toolbar_icon_height</dimen>
 
     <!-- Navigation history popup dimensions -->
     <dimen name="navigation_popup_width">312dp</dimen>
-    <dimen name="navigation_popup_item_height">56dp</dimen>
-    <dimen name="navigation_popup_default_padding">16dp</dimen>
+    <dimen name="navigation_popup_end_padding">16dp</dimen>
+    <!-- There is extra padding coming from navigation_popup_favicon_padding for the next two. -->
+    <dimen name="navigation_popup_start_padding">10dp</dimen>
+    <dimen name="navigation_popup_icon_text_spacing">6dp</dimen>
     <dimen name="navigation_popup_top_padding">8dp</dimen>
-    <dimen name="navigation_popup_favicon_bg_size">36dp</dimen>
+    <dimen name="navigation_popup_favicon_padding">6dp</dimen>
     <dimen name="navigation_popup_tablet_min_width">200dp</dimen>
     <dimen name="navigation_popup_tablet_max_width">500dp</dimen>
     <dimen name="navigation_popup_tablet_width_margin">48dp</dimen>
@@ -78,6 +87,11 @@ found in the LICENSE file.
 
     <!-- Extension Action Button Menu dimensions -->
     <dimen name="extension_action_button_list_menu_width" tools:ignore="UnusedResources">300dp</dimen>
+
+    <!-- Toolbar Extension Action Button Icon Canvas dimensions -->
+    <!-- The canvas will contain both icon itself and badge if it exists. -->
+    <dimen name="extension_action_icon_canvas_width" tools:ignore="UnusedResources">34dp</dimen>
+    <dimen name="extension_action_icon_canvas_height" tools:ignore="UnusedResources">34dp</dimen>
 
     <!-- Extension Action Popup dimensions -->
     <dimen name="extension_action_popup_min_width" tools:ignore="UnusedResources">25dp</dimen>

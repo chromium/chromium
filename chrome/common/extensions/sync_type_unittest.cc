@@ -53,7 +53,7 @@ class ExtensionSyncTypeTest : public testing::Test {
     if (type != THEME)
       source.Set(keys::kConvertedFromUserScript, type == USER_SCRIPT);
 
-    std::string error;
+    std::u16string error;
     scoped_refptr<Extension> extension = Extension::Create(
         extension_path, location, source, creation_flags, &error);
     EXPECT_TRUE(extension.get());
@@ -152,11 +152,11 @@ TEST_F(ExtensionSyncTypeTest, DisplayInXManifestProperties) {
   manifest.SetByDottedPath(keys::kPlatformAppBackgroundPage, "background.html");
 
   // Default to true.
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> app =
       Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
                         manifest, 0, &error);
-  EXPECT_EQ(error, std::string());
+  EXPECT_EQ(error, std::u16string());
   EXPECT_TRUE(AppDisplayInfo::ShouldDisplayInAppLauncher(*app));
   EXPECT_TRUE(AppDisplayInfo::ShouldDisplayInNewTabPage(*app));
 
@@ -164,7 +164,7 @@ TEST_F(ExtensionSyncTypeTest, DisplayInXManifestProperties) {
   manifest.Set(keys::kDisplayInLauncher, false);
   app = Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
                           manifest, 0, &error);
-  EXPECT_EQ(error, std::string());
+  EXPECT_EQ(error, std::u16string());
   EXPECT_FALSE(AppDisplayInfo::ShouldDisplayInAppLauncher(*app));
   EXPECT_FALSE(AppDisplayInfo::ShouldDisplayInNewTabPage(*app));
 
@@ -172,7 +172,7 @@ TEST_F(ExtensionSyncTypeTest, DisplayInXManifestProperties) {
   manifest.Set(keys::kDisplayInNewTabPage, true);
   app = Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
                           manifest, 0, &error);
-  EXPECT_EQ(error, std::string());
+  EXPECT_EQ(error, std::u16string());
   EXPECT_FALSE(AppDisplayInfo::ShouldDisplayInAppLauncher(*app));
   EXPECT_TRUE(AppDisplayInfo::ShouldDisplayInNewTabPage(*app));
 
@@ -181,7 +181,7 @@ TEST_F(ExtensionSyncTypeTest, DisplayInXManifestProperties) {
   manifest.Set(keys::kDisplayInNewTabPage, false);
   app = Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
                           manifest, 0, &error);
-  EXPECT_EQ(error, std::string());
+  EXPECT_EQ(error, std::u16string());
   EXPECT_TRUE(AppDisplayInfo::ShouldDisplayInAppLauncher(*app));
   EXPECT_FALSE(AppDisplayInfo::ShouldDisplayInNewTabPage(*app));
 
@@ -189,7 +189,7 @@ TEST_F(ExtensionSyncTypeTest, DisplayInXManifestProperties) {
   manifest.Set(keys::kDisplayInNewTabPage, "invalid");
   app = Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
                           manifest, 0, &error);
-  EXPECT_EQ(error, base::UTF16ToUTF8(errors::kInvalidDisplayInNewTabPage));
+  EXPECT_EQ(error, errors::kInvalidDisplayInNewTabPage);
 }
 
 TEST_F(ExtensionSyncTypeTest, OnlySyncInternal) {

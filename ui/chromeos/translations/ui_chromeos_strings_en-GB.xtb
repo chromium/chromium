@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direct Internet connection</translation>
 <translation id="1272293450992660632">PIN values do not match.</translation>
+<translation id="1279040297980392566">Waiting for scan to finish, retry later</translation>
 <translation id="1280820357415527819">Searching for mobile networks</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google Drive is not available right now. Uploading will automatically restart once Google Drive is back.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 file selected</translation>
 <translation id="3817579325494460411">Not provided</translation>
 <translation id="3819448694985509187">Incorrect PIN. You have one remaining attempt.</translation>
-<translation id="3822559385185038546">This proxy is enforced by your administrator</translation>
 <translation id="3830674330436234648">No playback available.</translation>
 <translation id="383652340667548381">Serbian</translation>
 <translation id="3839045880592694915">Your modem isn't allowed to connect by your operator. Contact your operator for more details.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">More options</translation>
 <translation id="5602622065581044566">Bulgarian with phonetic keyboard</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
+<translation id="560739212255190568">Your admin set proxy override rules in addition to enforcing the following proxy</translation>
 <translation id="5618330573454123917">This file is designed for a computer using Macintosh software. This is not compatible with your device which runs Chrome OS. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /> about opening files on Chrome OS.</translation>
 <translation id="5625294776298156701">Tamil with Tamil99 keyboard</translation>
 <translation id="5633226425545095130">Moving this item will share it with everyone who can see the shared folder '<ph name="DESTINATION_NAME" />'.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="8545476925160229291">English (US)</translation>
 <translation id="854655314928502177">Web Proxy Auto Discovery URL:</translation>
+<translation id="8547747809824590510">Your admin set proxy override rules</translation>
 <translation id="8549186985808798022">Italian</translation>
 <translation id="8551494947769799688">Latvian</translation>
 <translation id="8560515948038859357">Cantonese</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">The file named '<ph name="FILE_NAME" />' already exists. Please choose a different name.</translation>
 <translation id="9046895021617826162">Connection failed</translation>
 <translation id="9065512565307033593">If you fail to verify, your network access will be disabled.</translation>
+<translation id="9079844694307518094">Your admin is enforcing the following proxy</translation>
 <translation id="908378762078012445">Russian with phonetic AATSEEL keyboard</translation>
 <translation id="9086302186042011942">Syncing</translation>
 <translation id="9099674669267916096">Page count</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Installation successfully started.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">Lunar</translation>
+<translation id="931652069802536959">Network is blocked by policy</translation>
 <translation id="938470336146445890">Please install a user certificate.</translation>
 <translation id="939736085109172342">New folder</translation>
 <translation id="943972244133411984">Modified by</translation>

@@ -590,6 +590,23 @@ def GitCommit(args, title, error_if_no_changes=True):
             return False
 
 
+def GetMissingCrates(args):
+    missing_crates = []
+    current_crate_ids = crate_utils.GetCurrentCrateIds()
+    for needed_crate_id in args.remaining_args:
+        if needed_crate_id.startswith("-"):
+            # Assume this is a flag
+            continue
+        found = False
+        for crate_id in current_crate_ids:
+            if crate_id.startswith(needed_crate_id + "@"):
+                found = True
+                break
+        if not found:
+            missing_crates.append(needed_crate_id)
+    return missing_crates
+
+
 def BreakingUpdate(args):
     only_minor_updates = False
 
@@ -624,6 +641,16 @@ def BreakingUpdate(args):
 def AutoUpdate(args):
     upstream_branch = args.upstream_branch
     CheckoutInitialBranch(upstream_branch)
+
+    # Consider removing the check if upstream cargo detects this
+    # problem. See https://github.com/rust-lang/cargo/issues/16258
+    missing_crates = GetMissingCrates(args)
+    if len(missing_crates) == 1:
+        print("Missing crate:", missing_crates[0])
+        return
+    elif len(missing_crates) > 1:
+        print("Missing crates:", ", ".join(missing_crates))
+        return
 
     only_minor_updates = not DoArgsAskForBreakingChanges(args.remaining_args)
     if not only_minor_updates:
@@ -723,7 +750,7 @@ def ManualUpdate(args):
         print(f"  Running `git cl upload --commit-description=...` ...")
         description = CreateCommitDescription(title, diff)
         GitClUpload(f"--commit-description={description}", "-t",
-                    "Edit CL description to include vet policy")
+                    "Edit CL description to include more info")
 
 
 def main():

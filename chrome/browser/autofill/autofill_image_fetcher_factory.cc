@@ -68,3 +68,7 @@ JNI_AutofillImageFetcherFactory_GetForProfile(JNIEnv* env, Profile* profile) {
 #endif
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AutofillImageFetcherFactory)
+#endif

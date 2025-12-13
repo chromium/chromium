@@ -9,7 +9,11 @@
 #   //third_party/blink/renderer/core/origin_trials/
 #   //tools/origin_trials/
 
+danielrsmith@google.com
 iclelland@chromium.org
+jamescscott@google.com
+jrobbins@chromium.org
+jstenback@chromium.org
 mek@chromium.org
 
 per-file manual_completion_origin_trial_features.cc=set noparent

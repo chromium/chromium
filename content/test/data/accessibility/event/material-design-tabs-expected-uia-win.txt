@@ -1,0 +1,20 @@
+AriaProperties changed on role=tab, name=Tab 1
+Invoke_Invoked on role=tab, name=Tab 1
+SelectionItemIsSelected changed on role=tab, name=Tab 1
+SelectionItem_ElementSelected on role=tab, name=Tab 1
+=== Start Continuation ===
+AriaProperties changed on role=tab, name=Tab 1
+AriaProperties changed on role=tab, name=Tab 2
+Invoke_Invoked on role=tab, name=Tab 2
+SelectionItemIsSelected changed on role=tab, name=Tab 1
+SelectionItemIsSelected changed on role=tab, name=Tab 2
+SelectionItem_ElementRemovedFromSelection on role=tab, name=Tab 1
+SelectionItem_ElementSelected on role=tab, name=Tab 2
+=== Start Continuation ===
+AriaProperties changed on role=tab, name=Tab 2
+AriaProperties changed on role=tab, name=Tab 3
+Invoke_Invoked on role=tab, name=Tab 3
+SelectionItemIsSelected changed on role=tab, name=Tab 2
+SelectionItemIsSelected changed on role=tab, name=Tab 3
+SelectionItem_ElementRemovedFromSelection on role=tab, name=Tab 2
+SelectionItem_ElementSelected on role=tab, name=Tab 3

@@ -37,7 +37,6 @@
 <translation id="2311842470354187719">бетті үзу</translation>
 <translation id="2335594187091864976">күн мен уақыт таңдағышы</translation>
 <translation id="2393030564806080191">Оналтылық форматтағы түс</translation>
-<translation id="2398813069815436052">диалогтік терезе ашылды.</translation>
 <translation id="245932805758469625">бейненің соңына дейін қалған секундтар саны</translation>
 <translation id="248395913932153421">Күн</translation>
 <translation id="2508569020611168319">қойындылар тізімі</translation>
@@ -189,7 +188,7 @@
 <translation id="7529102961911894712">кері сілтеме</translation>
 <translation id="7647456547678091388">кеңес</translation>
 <translation id="7661956066982048809">графикалық құжат</translation>
-<translation id="7673697353781729403">Сағаттар</translation>
+<translation id="7673697353781729403">Сағат</translation>
 <translation id="7681220483256441252">индекс</translation>
 <translation id="7740050170769002709">HTML контенті</translation>
 <translation id="775297008183122718">Жазба жарамсыз.</translation>
@@ -223,6 +222,7 @@
 <translation id="8634971699417195529">Ай таңдау құралын көрсету</translation>
 <translation id="8711688047404765493">шығыс</translation>
 <translation id="8808573423886751634">тарау</translation>
+<translation id="8826423933757944500">жазу</translation>
 <translation id="8851136666856101339">басты</translation>
 <translation id="8861621546968757188">диалогтік терезені ашатын қалқымалы түйме</translation>
 <translation id="8889402386540077796">Реңкі</translation>

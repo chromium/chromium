@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ProgressBar;
 
-import androidx.annotation.StringRes;
+import com.airbnb.lottie.LottieAnimationView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.ExistingAccountRowViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.Objects;
 
 /** Stateless FullscreenSignin view binder. */
 @NullMarked
@@ -76,7 +78,7 @@ class FullscreenSigninViewBinder {
             updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.LOGO_DRAWABLE_ID) {
             int logoId = model.get(FullscreenSigninProperties.LOGO_DRAWABLE_ID);
-            LayoutParams params = view.getLogo().getLayoutParams();
+            LayoutParams params = view.getIcon().getLayoutParams();
 
             // TODO(crbug.com/390418475): Remove the if block below and
             // fullscreen_signin_logo_default_height when fre_product_logo will be a VectorDrawable
@@ -91,20 +93,35 @@ class FullscreenSigninViewBinder {
             } else {
                 params.height = LayoutParams.WRAP_CONTENT;
             }
-            view.getLogo().setImageResource(logoId);
-            view.getLogo().setLayoutParams(params);
-        } else if (propertyKey == FullscreenSigninProperties.TITLE_STRING_ID) {
-            @StringRes int textId = model.get(FullscreenSigninProperties.TITLE_STRING_ID);
-            view.getTitle().setText(textId);
-        } else if (propertyKey == FullscreenSigninProperties.SUBTITLE_STRING_ID) {
-            @StringRes int textId = model.get(FullscreenSigninProperties.SUBTITLE_STRING_ID);
-            if (textId != 0) {
-                view.getSubtitle().setText(textId);
+            view.getIcon().setImageResource(logoId);
+            view.getIcon().setLayoutParams(params);
+        } else if (propertyKey == FullscreenSigninProperties.PROFILE_PICTURE) {
+            view.getIcon().setImageDrawable(model.get(FullscreenSigninProperties.PROFILE_PICTURE));
+        } else if (propertyKey == FullscreenSigninProperties.SHOW_ANIMATION) {
+            boolean visible = model.get(FullscreenSigninProperties.SHOW_ANIMATION);
+            view.getAnimationView().setVisibility(visible ? View.VISIBLE : View.GONE);
+        } else if (propertyKey == FullscreenSigninProperties.START_ANIMATION) {
+            boolean startAnimation = model.get(FullscreenSigninProperties.START_ANIMATION);
+            LottieAnimationView animation = view.getAnimationView();
+            if (startAnimation) {
+                animation.playAnimation();
+            }
+        } else if (propertyKey == FullscreenSigninProperties.ANIMATOR_LISTENER) {
+            LottieAnimationView animation = view.getAnimationView();
+            animation.removeAllAnimatorListeners();
+            animation.addAnimatorListener(model.get(FullscreenSigninProperties.ANIMATOR_LISTENER));
+        } else if (Objects.equals(propertyKey, FullscreenSigninProperties.TITLE_STRING)) {
+            String text = model.get(FullscreenSigninProperties.TITLE_STRING);
+            view.getTitle().setText(text);
+        } else if (Objects.equals(propertyKey, FullscreenSigninProperties.SUBTITLE_STRING)) {
+            String text = model.get(FullscreenSigninProperties.SUBTITLE_STRING);
+            if (text != null) {
+                view.getSubtitle().setText(text);
             }
             updateBottomGroupVisibility(view, model);
-        } else if (propertyKey == FullscreenSigninProperties.DISMISS_BUTTON_STRING_ID) {
-            @StringRes int textId = model.get(FullscreenSigninProperties.DISMISS_BUTTON_STRING_ID);
-            view.getDismissButtonView().setText(textId);
+        } else if (Objects.equals(propertyKey, FullscreenSigninProperties.DISMISS_BUTTON_STRING)) {
+            String text = model.get(FullscreenSigninProperties.DISMISS_BUTTON_STRING);
+            view.getDismissButtonView().setText(text);
         } else if (propertyKey == FullscreenSigninProperties.FOOTER_STRING) {
             final CharSequence footerText = model.get(FullscreenSigninProperties.FOOTER_STRING);
             if (footerText == null) {
@@ -184,14 +201,14 @@ class FullscreenSigninViewBinder {
                 model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
         final boolean showManagementNotice =
                 model.get(FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE);
-        final @StringRes int textId = model.get(FullscreenSigninProperties.SUBTITLE_STRING_ID);
+        final String text = model.get(FullscreenSigninProperties.SUBTITLE_STRING);
         view.getTitle().setVisibility(showInitialLoadProgressSpinner ? View.GONE : View.VISIBLE);
         view.getSubtitle()
                 .setVisibility(
                         !showInitialLoadProgressSpinner
                                         && !isSelectedAccountSupervised
                                         && !showManagementNotice
-                                        && textId != 0
+                                        && text != null
                                 ? View.VISIBLE
                                 : View.GONE);
 

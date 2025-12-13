@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>drawElementImage draws selection</title>
+<link rel="help" href="https://drafts.csswg.org/css-highlight-api-1/">
+<link rel="match" href="selection-alone-with-decorations-painted-ref.html">
+<meta name="assert" value="When preserving privacy for readback, draw selection when it has decorations and shadows.">
+<script src="/wpt_internal/css/support/markers.js"></script>
+<style>
+  :focus {
+    outline: none;
+  }
+  #child {
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+  #canvas {
+    background: grey;
+  }
+  ::selection {
+    background-color: lime;
+    color: green;
+    text-decoration: 2px red underline;
+    text-shadow: pink 2px 5px;
+  }
+</style>
+<canvas id=canvas width="200" height="200" layoutsubtree>
+  <div id="child">
+    <div id="editable" contenteditable="true">Many things can happen.</div>
+  </div>
+</canvas>
+<script>
+  function runTest() {
+    setSelection(editable, 5, 11)
+
+    canvas.getContext("2d").drawElementImage(child, 0, 0);
+  }
+
+  onload = () => runTest();
+</script>

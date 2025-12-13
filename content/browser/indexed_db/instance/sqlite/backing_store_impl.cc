@@ -4,34 +4,18 @@
 
 #include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 
-#include <map>
 #include <vector>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/notimplemented.h"
-#include "base/types/expected_macros.h"
 #include "content/browser/indexed_db/file_path_util.h"
-#include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/status.h"
 
 namespace content::indexed_db::sqlite {
-
-std::tuple<std::unique_ptr<BackingStore>, Status, IndexedDBDataLossInfo, bool>
-BackingStoreImpl::OpenAndVerify(
-    base::FilePath directory,
-    storage::mojom::BlobStorageContext& blob_storage_context) {
-  return {
-      std::make_unique<BackingStoreImpl>(std::move(directory),
-                                         blob_storage_context),
-      Status::OK(),
-      IndexedDBDataLossInfo(),
-      false,
-  };
-}
 
 BackingStoreImpl::BackingStoreImpl(
     base::FilePath directory,
@@ -42,11 +26,6 @@ BackingStoreImpl::BackingStoreImpl(
 BackingStoreImpl::~BackingStoreImpl() = default;
 
 bool BackingStoreImpl::CanOpportunisticallyClose() const {
-  // In-memory stores have to stay alive.
-  if (in_memory()) {
-    return false;
-  }
-
   // There's not much of a point in deleting `this` since it doesn't use many
   // resources (just a tiny amount of memory). But for now, match the logic of
   // the LevelDB store, where `this` is cleaned up if there are no active
@@ -72,8 +51,11 @@ void BackingStoreImpl::StartPreCloseTasks(base::OnceClosure on_done) {
 void BackingStoreImpl::StopPreCloseTasks() {}
 
 int64_t BackingStoreImpl::GetInMemorySize() const {
-  NOTIMPLEMENTED();
-  return 0;
+  uint64_t total_size = 0;
+  for (const auto& [_, connection] : open_connections_) {
+    total_size += connection->GetInMemorySize();
+  }
+  return total_size;
 }
 
 StatusOr<bool> BackingStoreImpl::DatabaseExists(std::u16string_view name) {
@@ -91,7 +73,11 @@ StatusOr<bool> BackingStoreImpl::DatabaseExists(std::u16string_view name) {
 
 StatusOr<std::vector<blink::mojom::IDBNameAndVersionPtr>>
 BackingStoreImpl::GetDatabaseNamesAndVersions() {
-  std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
+  // Though the IDB spec does not mandate sorting, the LevelDB backing store has
+  // set a precedent of sorting databases by name. To avoid breaking clients
+  // that may depend on this, use a map to return the results in sorted order.
+  std::map<std::u16string, int64_t> names_and_versions;
+
   std::set<base::FilePath> already_open_file_names;
   for (const auto& [name, db] : open_connections_) {
     already_open_file_names.insert(DatabaseNameToFileName(name));
@@ -102,8 +88,7 @@ BackingStoreImpl::GetDatabaseNamesAndVersions() {
     if (version == blink::IndexedDBDatabaseMetadata::NO_VERSION) {
       continue;
     }
-    names_and_versions.push_back(
-        blink::mojom::IDBNameAndVersion::New(name, version));
+    names_and_versions.emplace(name, version);
   }
 
   if (!in_memory()) {
@@ -114,28 +99,34 @@ BackingStoreImpl::GetDatabaseNamesAndVersions() {
       std::ignore =
           DatabaseConnection::Open(/*name=*/{}, path, *this)
               .transform([&](std::unique_ptr<DatabaseConnection> connection) {
-                names_and_versions.push_back(
-                    blink::mojom::IDBNameAndVersion::New(
-                        connection->metadata().name,
-                        connection->metadata().version));
+                names_and_versions.emplace(connection->metadata().name,
+                                           connection->metadata().version);
               });
     });
   }
 
-  return names_and_versions;
+  std::vector<blink::mojom::IDBNameAndVersionPtr> result;
+  for (const auto& [name, version] : names_and_versions) {
+    result.emplace_back(blink::mojom::IDBNameAndVersion::New(name, version));
+  }
+  return result;
 }
 
 StatusOr<std::unique_ptr<BackingStore::Database>>
 BackingStoreImpl::CreateOrOpenDatabase(const std::u16string& name) {
-  auto it = open_connections_.find(name);
-  if (it == open_connections_.end()) {
-    ASSIGN_OR_RETURN(
-        std::unique_ptr<DatabaseConnection> db,
-        DatabaseConnection::Open(
-            name, directory_.Append(DatabaseNameToFileName(name)), *this));
-    it = open_connections_.emplace(name, std::move(db)).first;
+  if (auto it = open_connections_.find(name); it != open_connections_.end()) {
+    return it->second->CreateDatabaseWrapper();
   }
-  return std::make_unique<BackingStoreDatabaseImpl>(it->second->GetWeakPtr());
+  base::FilePath db_path =
+      in_memory() ? base::FilePath()
+                  : directory_.Append(DatabaseNameToFileName(name));
+  return DatabaseConnection::Open(name, std::move(db_path), *this)
+      .transform([&](std::unique_ptr<DatabaseConnection> connection) {
+        std::unique_ptr<BackingStoreDatabaseImpl> database =
+            connection->CreateDatabaseWrapper();
+        open_connections_[name] = std::move(connection);
+        return database;
+      });
 }
 
 uintptr_t BackingStoreImpl::GetIdentifierForMemoryDump() {

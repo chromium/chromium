@@ -33,6 +33,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -58,8 +60,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Manages multiple {@link TabModelSelector} instances, each owned by different {@link Activity}s.
@@ -112,6 +116,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     private @Nullable TabModelSelector mArchivedTabModelSelector;
     private boolean mKeepAllTabModelsLoaded;
+    private boolean mTabStateInitialized;
 
     TabWindowManagerImpl(
             TabModelSelectorFactory selectorFactory,
@@ -126,6 +131,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
     @Override
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
+        if (mTabStateInitialized) observer.onTabStateInitialized();
     }
 
     @Override
@@ -140,6 +146,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
+            MultiInstanceManager multiInstanceManager,
             MismatchedIndicesHandler mismatchedIndicesHandler,
             @WindowId int windowId) {
         if (windowId == INVALID_WINDOW_ID) return null;
@@ -205,7 +212,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
                         modalDialogManager,
                         profileProviderSupplier,
                         tabCreatorManager,
-                        nextTabPolicySupplier);
+                        nextTabPolicySupplier,
+                        multiInstanceManager);
         mWindowIdToSelectors.put(assignedWindowId, selector);
         mSelectorsToWindowId.put(selector, assignedWindowId);
         mActivityAssignments.put(activity, selector);
@@ -514,6 +522,21 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     @Override
+    public @Nullable TabWindowInfo getTabWindowInfoById(@TabId int tabId) {
+        for (Map.Entry<@WindowId Integer, TabModelSelector> entry :
+                mWindowIdToSelectors.entrySet()) {
+            TabModelSelector selector = entry.getValue();
+            for (TabModel tabModel : selector.getModels()) {
+                @Nullable final Tab tab = tabModel.getTabById(tabId);
+                if (tab != null) {
+                    return new TabWindowInfo(entry.getKey(), selector, tabModel, tab);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
     public @Nullable List<Tab> getGroupedTabsByWindow(
             @WindowId int windowId, Token tabGroupId, boolean isIncognito) {
         @Nullable TabModelSelector tabModelSelector = getTabModelSelectorById(windowId);
@@ -531,6 +554,13 @@ public class TabWindowManagerImpl implements TabWindowManager {
     @Override
     public @Nullable TabModelSelector getTabModelSelectorById(@WindowId int windowId) {
         return mWindowIdToSelectors.get(windowId);
+    }
+
+    @Override
+    public @WindowId int getWindowIdForSelector(TabModelSelector selector) {
+        @WindowId Integer windowId = mSelectorsToWindowId.get(selector);
+        if (windowId == null) return INVALID_WINDOW_ID;
+        return windowId;
     }
 
     @Override
@@ -567,7 +597,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
         mKeepAllTabModelsLoaded = true;
 
         List<TabModelSelector> tabModelSelectorList = new ArrayList<>();
-        List<InstanceInfo> instanceInfoList = multiInstanceManager.getInstanceInfo();
+        List<InstanceInfo> instanceInfoList =
+                multiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
         if (instanceInfoList.isEmpty()) {
             tabModelSelectorList.add(selector);
         } else {
@@ -582,6 +613,11 @@ public class TabWindowManagerImpl implements TabWindowManager {
         }
         TabModelUtils.runOnTabStateInitialized(
                 () -> {
+                    mTabStateInitialized = true;
+                    for (Observer observer : mObservers) {
+                        observer.onTabStateInitialized();
+                    }
+
                     TabModel model = tabModelSelectorList.get(0).getModel(/* incognito= */ false);
 
                     // TODO(https://crbug.com/420738506): Remove this post once the order is
@@ -591,6 +627,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
                             () -> {
                                 model.broadcastSessionRestoreComplete();
                                 unmapOrphanedTabGroups(profile, tabModelSelectorList);
+                                deleteOrphanedTabGroupData(tabModelSelectorList);
                             });
                 },
                 tabModelSelectorList.toArray(new TabModelSelector[0]));
@@ -616,6 +653,23 @@ public class TabWindowManagerImpl implements TabWindowManager {
         }
         TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilterList(
                 tabGroupSyncService, filterList);
+    }
+
+    private void deleteOrphanedTabGroupData(List<TabModelSelector> tabModelSelectors) {
+        if (!ChromeFeatureList.sTabGroupAndroidVisualDataCleanup.isEnabled()) return;
+
+        Set<String> tabGroupIdTokenStrings = new HashSet<>();
+        for (TabModelSelector selector : tabModelSelectors) {
+            var filterProvider = selector.getTabGroupModelFilterProvider();
+            for (boolean isIncognito : List.of(false, true)) {
+                TabGroupModelFilter filter = filterProvider.getTabGroupModelFilter(isIncognito);
+                assumeNonNull(filter);
+                for (Token tabGroupId : filter.getAllTabGroupIds()) {
+                    tabGroupIdTokenStrings.add(tabGroupId.toString());
+                }
+            }
+        }
+        TabGroupVisualDataStore.deleteTabGroupDataExcluding(tabGroupIdTokenStrings);
     }
 
     @Override
@@ -673,9 +727,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     private boolean isPossiblyAnArchivedTab() {
-        return ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled()
-                && (mArchivedTabModelSelector == null
-                        || !mArchivedTabModelSelector.isTabStateInitialized());
+        return mArchivedTabModelSelector == null
+                || !mArchivedTabModelSelector.isTabStateInitialized();
     }
 
     private @Nullable Tab getTabFromTabModelSelector(

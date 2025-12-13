@@ -19,7 +19,7 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
 
@@ -36,9 +36,10 @@ ScopedJavaLocalRef<jobject> ToJavaDropData(const DropData& drop_data) {
   }
 
   ScopedJavaLocalRef<jobject> jgurl;
-  if (!drop_data.url.is_empty()) {
-    jgurl = url::GURLAndroid::FromNativeGURL(env, drop_data.url);
-    jtext = ConvertUTF16ToJavaString(env, drop_data.url_title);
+  if (!drop_data.url_infos.empty()) {
+    const ui::ClipboardUrlInfo& url_info = drop_data.url_infos.front();
+    jgurl = url::GURLAndroid::FromNativeGURL(env, url_info.url);
+    jtext = ConvertUTF16ToJavaString(env, url_info.title);
   }
 
   // If file_contents is not empty, user is trying to drag image out of the
@@ -72,3 +73,5 @@ ScopedJavaLocalRef<jobject> ToJavaDropData(const DropData& drop_data) {
 }  // ToJavaDropData
 
 }  // namespace content
+
+DEFINE_JNI(DropDataAndroid)

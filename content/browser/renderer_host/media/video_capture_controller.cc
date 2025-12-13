@@ -22,9 +22,11 @@
 #include "base/token.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -33,11 +35,6 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_capture_device_client.h"
 #include "media/capture/video/video_capture_metrics.h"
-#include "services/video_effects/public/cpp/buildflags.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/compositor/image_transport_factory.h"
@@ -218,6 +215,7 @@ VideoCaptureController::GetWeakPtrForIOThread() {
 
 void VideoCaptureController::AddClient(
     const VideoCaptureControllerID& id,
+    const GlobalRenderFrameHostId& render_frame_host_id,
     VideoCaptureControllerEventHandler* event_handler,
     const media::VideoCaptureSessionId& session_id,
     const media::VideoCaptureParams& params,
@@ -266,8 +264,9 @@ void VideoCaptureController::AddClient(
   }
 
   // Do nothing if this client has called AddClient before.
-  if (FindClient(id, event_handler, controller_clients_))
+  if (FindClient(id, event_handler)) {
     return;
+  }
 
   // If the device has reported OnStarted event, report it to this client here.
   if (state_ == State::kStarted) {
@@ -279,6 +278,19 @@ void VideoCaptureController::AddClient(
   // If we already have gotten frame_info from the device, repeat it to the new
   // client.
   controller_clients_.push_back(std::move(client));
+
+#if BUILDFLAG(IS_MAC)
+  if (stream_type_ == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
+    const auto desktop_media_id = DesktopMediaID::Parse(device_id_);
+    if (desktop_media_id.type == DesktopMediaID::TYPE_SCREEN) {
+      PipScreenCaptureCoordinatorProxy::CaptureInfo capture_info;
+      capture_info.session_id = session_id;
+      capture_info.render_frame_host_id = render_frame_host_id;
+      capture_info.desktop_media_id = desktop_media_id;
+      PipScreenCaptureCoordinatorImpl::AddCapture(std::move(capture_info));
+    }
+  }
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 base::UnguessableToken VideoCaptureController::RemoveClient(
@@ -289,9 +301,18 @@ base::UnguessableToken VideoCaptureController::RemoveClient(
   string_stream << "VideoCaptureController::RemoveClient: id = " << id;
   EmitLogMessage(string_stream.str(), 1);
 
-  ControllerClient* client = FindClient(id, event_handler, controller_clients_);
+  ControllerClient* client = FindClient(id, event_handler);
   if (!client)
     return base::UnguessableToken();
+
+#if BUILDFLAG(IS_MAC)
+  if (stream_type_ == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
+    const auto desktop_media_id = DesktopMediaID::Parse(device_id_);
+    if (desktop_media_id.type == DesktopMediaID::TYPE_SCREEN) {
+      PipScreenCaptureCoordinatorImpl::RemoveCapture(client->session_id);
+    }
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   for (const auto& buffer_id : client->buffers_in_use) {
     OnClientFinishedConsumingBuffer(client, buffer_id,
@@ -314,7 +335,7 @@ void VideoCaptureController::PauseClient(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DVLOG(1) << "VideoCaptureController::PauseClient: id = " << id;
 
-  ControllerClient* client = FindClient(id, event_handler, controller_clients_);
+  ControllerClient* client = FindClient(id, event_handler);
   if (!client)
     return;
 
@@ -329,7 +350,7 @@ bool VideoCaptureController::ResumeClient(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DVLOG(1) << "VideoCaptureController::ResumeClient: id = " << id;
 
-  ControllerClient* client = FindClient(id, event_handler, controller_clients_);
+  ControllerClient* client = FindClient(id, event_handler);
   if (!client)
     return false;
 
@@ -373,7 +394,7 @@ void VideoCaptureController::StopSession(
                 << session_id;
   EmitLogMessage(string_stream.str(), 1);
 
-  ControllerClient* client = FindClient(session_id, controller_clients_);
+  ControllerClient* client = FindClient(session_id);
 
   if (client) {
     client->session_closed = true;
@@ -388,8 +409,10 @@ void VideoCaptureController::ReturnBuffer(
     const media::VideoCaptureFeedback& feedback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  ControllerClient* client = FindClient(id, event_handler, controller_clients_);
-  CHECK(client);
+  ControllerClient* client = FindClient(id, event_handler);
+  if (!client) {
+    return;
+  }
 
   auto buffers_in_use_entry_iter =
       std::ranges::find(client->buffers_in_use, buffer_id);
@@ -568,17 +591,17 @@ void VideoCaptureController::OnFrameDropped(
   }
 }
 
-void VideoCaptureController::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {
+void VideoCaptureController::OnNewCaptureVersion(
+    media::CaptureVersion capture_version) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   EmitLogMessage(
-      base::StringPrintf("%s(%u)", __func__, sub_capture_target_version), 3);
+      base::StringPrintf("%s(%s)", __func__, capture_version.ToString()), 3);
   for (const auto& client : controller_clients_) {
     if (client->session_closed) {
       continue;
     }
-    client->event_handler->OnNewSubCaptureTargetVersion(
-        client->controller_id, sub_capture_target_version);
+    client->event_handler->OnNewCaptureVersion(client->controller_id,
+                                               capture_version);
   }
 }
 
@@ -665,13 +688,7 @@ void VideoCaptureController::OnDeviceConnectionLost() {
 void VideoCaptureController::CreateAndStartDeviceAsync(
     const media::VideoCaptureParams& params,
     VideoCaptureDeviceLaunchObserver* observer,
-    base::OnceClosure done_cb,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor,
-#endif
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-        readonly_video_effects_manager) {
+    base::OnceClosure done_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureController::CreateAndStartDeviceAsync");
@@ -686,11 +703,7 @@ void VideoCaptureController::CreateAndStartDeviceAsync(
       device_id_, stream_type_, params, GetWeakPtrForIOThread(),
       base::BindOnce(&VideoCaptureController::OnDeviceConnectionLost,
                      GetWeakPtrForIOThread()),
-      this, std::move(done_cb),
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      std::move(video_effects_processor),
-#endif
-      std::move(readonly_video_effects_manager));
+      this, std::move(done_cb));
 }
 
 void VideoCaptureController::ReleaseDeviceAsync(base::OnceClosure done_cb) {
@@ -759,7 +772,7 @@ void VideoCaptureController::Resume() {
 void VideoCaptureController::ApplySubCaptureTarget(
     media::mojom::SubCaptureTargetType type,
     const base::Token& target,
-    uint32_t sub_capture_target_version,
+    uint32_t sub_capture_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -775,8 +788,8 @@ void VideoCaptureController::ApplySubCaptureTarget(
     return;
   }
 
-  launched_device_->ApplySubCaptureTarget(
-      type, target, sub_capture_target_version, std::move(callback));
+  launched_device_->ApplySubCaptureTarget(type, target, sub_capture_version,
+                                          std::move(callback));
 }
 
 void VideoCaptureController::RequestRefreshFrame() {
@@ -796,9 +809,8 @@ void VideoCaptureController::SetDesktopCaptureWindowIdAsync(
 
 VideoCaptureController::ControllerClient* VideoCaptureController::FindClient(
     const VideoCaptureControllerID& id,
-    VideoCaptureControllerEventHandler* handler,
-    const ControllerClients& clients) {
-  for (const auto& client : clients) {
+    VideoCaptureControllerEventHandler* handler) {
+  for (const auto& client : controller_clients_) {
     if (client->controller_id == id && client->event_handler == handler)
       return client.get();
   }
@@ -806,9 +818,8 @@ VideoCaptureController::ControllerClient* VideoCaptureController::FindClient(
 }
 
 VideoCaptureController::ControllerClient* VideoCaptureController::FindClient(
-    const base::UnguessableToken& session_id,
-    const ControllerClients& clients) {
-  for (const auto& client : clients) {
+    const base::UnguessableToken& session_id) {
+  for (const auto& client : controller_clients_) {
     if (client->session_id == session_id)
       return client.get();
   }

@@ -38,7 +38,8 @@ class AccessorySheetTabItemsModel
             Type.IBAN_INFO,
             Type.PASSKEY_SECTION,
             Type.PLUS_ADDRESS_SECTION,
-            Type.LOYALTY_CARD_INFO
+            Type.LOYALTY_CARD_INFO,
+            Type.DIVIDER
         })
         @Retention(RetentionPolicy.SOURCE)
         @interface Type {
@@ -84,6 +85,9 @@ class AccessorySheetTabItemsModel
 
             /** A section containing a Google Wallet loyalty card info. */
             int LOYALTY_CARD_INFO = 13;
+
+            /** An optional divider used to separate sections. */
+            int DIVIDER = 14;
         }
 
         private final Object mDataPiece;

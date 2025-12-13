@@ -58,7 +58,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/remote_commands/remote_commands_constants.h"
-#include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
 #include "components/policy/policy_constants.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
@@ -143,6 +143,7 @@ bool IsSkyVaultTTEnabled() {
 UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
     Profile* profile,
     std::unique_ptr<CloudPolicyStore> store,
+    std::unique_ptr<CloudPolicyStore> extension_install_store,
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
     const base::FilePath& component_policy_cache_path,
     PolicyEnforcement enforcement_type,
@@ -152,9 +153,10 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
     const AccountId& account_id,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : CloudPolicyManager(
-          dm_protocol::kChromeUserPolicyType,
+          dm_protocol::GetChromeUserPolicyType(),
           std::string(),
           std::move(store),
+          std::move(extension_install_store),
           task_runner,
           base::BindRepeating(content::GetNetworkConnectionTracker)),
       profile_(profile),
@@ -807,12 +809,11 @@ void UserCloudPolicyManagerAsh::OnProfileInitializationComplete(
   core()->StartRemoteCommandsService(
       std::make_unique<UserCommandsFactoryAsh>(profile_),
       PolicyInvalidationScope::kUser);
-  invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
+  invalidator_ = std::make_unique<RemoteCommandsInvalidator>(
+      invalidation_provider->GetInvalidationListener(
+          kRemoteCommandsInvalidationsProjectNumber),
       core(), base::DefaultClock::GetInstance(),
       PolicyInvalidationScope::kUser);
-
-  invalidator_->Initialize(invalidation_provider->GetInvalidationListener(
-      kRemoteCommandsInvalidationsProjectNumber));
 
   shutdown_subscription_ =
       UserCloudPolicyManagerAshNotifierFactory::GetInstance()
@@ -823,8 +824,6 @@ void UserCloudPolicyManagerAsh::OnProfileInitializationComplete(
 }
 
 void UserCloudPolicyManagerAsh::ShutdownRemoteCommands() {
-  // Unregister the RemoteCommandsInvalidatorImpl from the InvalidatorRegistrar.
-  invalidator_->Shutdown();
   invalidator_.reset();
   shutdown_subscription_ = {};
 }

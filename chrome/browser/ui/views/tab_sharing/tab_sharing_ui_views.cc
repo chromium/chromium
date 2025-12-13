@@ -16,18 +16,20 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/same_origin_observer.h"
+#include "chrome/browser/media/webrtc/webrtc_logging_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
@@ -51,7 +53,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
@@ -74,16 +76,13 @@ using content::WebContents;
 // TabSharingInfoBar.
 // This flag only has an effect if:
 // - the TabCaptureInfobarLinks feature is enabled.
-BASE_FEATURE(kTabSharingBarOmitHttpAndHttps,
-             "TabSharingBarOmitHttpAndHttps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTabSharingBarOmitHttpAndHttps, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Omit cryptographic url-schemes for the shared tab in the TabSharingInfoBar.
 // This flag only has an effect if:
 // - the TabCaptureInfobarLinks feature is enabled, and
 // - the TabSharingBarOmitHttpAndHttps feature is disabled.
 BASE_FEATURE(kTabSharingBarOmitCryptographic,
-             "TabSharingBarOmitCryptographic",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -139,16 +138,6 @@ url::Origin GetOriginFromId(GlobalRenderFrameHostId rfh_id) {
   return rfh->GetLastCommittedOrigin();
 }
 
-bool CapturerRestrictedToSameOrigin(GlobalRenderFrameHostId capturer_id) {
-  WebContents* capturer = WebContentsFromId(capturer_id);
-  if (!capturer) {
-    return false;
-  }
-  return capture_policy::GetAllowedCaptureLevel(
-             GetOriginFromId(capturer_id).GetURL(), capturer) ==
-         AllowedScreenCaptureLevel::kSameOrigin;
-}
-
 TabRole GetTabRole(bool is_capturing_tab, bool is_captured_tab) {
   if (is_capturing_tab && is_captured_tab) {
     return TabRole::kSelfCapturingTab;
@@ -192,7 +181,8 @@ TabSharingUIViews::TabSharingUIViews(
       can_focus_capturer_(GetOriginFromId(capturer).scheme() !=
                           extensions::kExtensionScheme),
       capturer_restricted_to_same_origin_(
-          CapturerRestrictedToSameOrigin(capturer)),
+          capture_policy::CapturerRestrictedToSameOrigin(
+              WebContentsFromId(capturer))),
       shared_tab_media_id_(media_id),
       capturer_name_(std::move(capturer_name)),
       shared_tab_(WebContents::FromRenderFrameHost(RenderFrameHost::FromID(
@@ -201,20 +191,19 @@ TabSharingUIViews::TabSharingUIViews(
       shared_tab_scheme_display_(GetSharedTabSchemeDisplay()),
       app_preferred_current_tab_(app_preferred_current_tab),
       capture_type_(capture_type),
-      captured_surface_control_active_(captured_surface_control_active) {
+      captured_surface_control_active_(captured_surface_control_active),
+      uma_logger_(content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  if (auto* rfh = content::RenderFrameHost::FromID(capturer)) {
+    if (auto* rph = rfh->GetProcess()) {
+      if (auto* wrlc = WebRtcLoggingController::FromRenderProcessHost(rph)) {
+        log_message_callback_ = wrlc->GetLogMessageCallback();
+      }
+    }
+  }
   Observe(shared_tab_);
   shared_tab_name_ = GetSharedTabName(shared_tab_, shared_tab_scheme_display_);
-
-  if (capturer_restricted_to_same_origin_) {
-    // base::Unretained is safe here because we own the origin observer, so it
-    // cannot outlive us.
-    shared_tab_origin_observer_ = std::make_unique<SameOriginObserver>(
-        shared_tab_, capturer_origin_,
-        base::BindRepeating(&TabSharingUIViews::StopCaptureDueToPolicy,
-                            base::Unretained(this)));
-  }
 
   WebContents* const capturer_wc = WebContentsFromId(capturer_);
   if (capturer_wc) {
@@ -231,7 +220,7 @@ TabSharingUIViews::~TabSharingUIViews() {
   // Unconditionally call StopSharing(), to ensure all clean-up has been
   // performed if tasks race (e.g., OnStarted() is called after
   // OnInfoBarRemoved()). See: https://crbug.com/1155426
-  StopSharing();
+  StopSharing("TabSharingUIViews destroyed");
 }
 
 gfx::NativeViewId TabSharingUIViews::OnStarted(
@@ -286,9 +275,13 @@ void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
       captured_surface_control_active_);
 }
 
-void TabSharingUIViews::StopSharing() {
+void TabSharingUIViews::StopSharing(std::string_view reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!stop_callback_.is_null()) {
+    if (log_message_callback_) {
+      log_message_callback_.Run(
+          base::StrCat({"TabSharingUIViews::StopSharing: ", reason}));
+    }
     std::move(stop_callback_).Run();
   }
 #if BUILDFLAG(IS_CHROMEOS)
@@ -301,21 +294,19 @@ void TabSharingUIViews::StopSharing() {
   shared_tab_ = nullptr;
 }
 
-void TabSharingUIViews::OnBrowserAdded(Browser* browser) {
+ScreensharingControlsHistogramLogger& TabSharingUIViews::GetUmaLogger() {
+  return uma_logger_;
+}
+
+void TabSharingUIViews::OnBrowserCreated(BrowserWindowInterface* browser) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(browser);
 
-  if (IsCapturableByCapturer(browser->profile())) {
-    browser->tab_strip_model()->AddObserver(this);
+  if (IsCapturableByCapturer(browser->GetProfile())) {
+    // TODO(crbug.com/452120900): Observer is auto-unregistered by the
+    // TabStripModel destructor.
+    browser->GetTabStripModel()->AddObserver(this);
   }
-}
-
-void TabSharingUIViews::OnBrowserRemoved(Browser* browser) {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  if (browser_list->empty()) {
-    browser_list->RemoveObserver(this);
-  }
-  browser->tab_strip_model()->RemoveObserver(this);
 }
 
 void TabSharingUIViews::OnTabStripModelChanged(
@@ -367,10 +358,11 @@ void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
   }
 
   infobar->owner()->RemoveObserver(this);
+
+  content::WebContents* content_for_removed_infobar = infobars_entry->first;
   infobars_.erase(infobars_entry);
-  if (infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar) ==
-      shared_tab_) {
-    StopSharing();
+  if (content_for_removed_infobar == shared_tab_) {
+    StopSharing("OnInfoBarRemoved");
   }
 }
 
@@ -391,7 +383,7 @@ void TabSharingUIViews::WebContentsDestroyed() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(crbug.com/40207587): Prevent StopSharing() from interacting with
   // |shared_tab_| while it is being destroyed.
-  StopSharing();
+  StopSharing("WebContentsDestroyed");
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -416,22 +408,23 @@ void TabSharingUIViews::ApplyDlpForAllUsersForTesting() {
 
 void TabSharingUIViews::CreateInfobarsForAllTabs() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    CHECK(browser);
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [this](BrowserWindowInterface* browser) {
+        if (!IsCapturableByCapturer(browser->GetProfile())) {
+          return true;
+        }
 
-    if (!IsCapturableByCapturer(browser->profile())) {
-      continue;
-    }
+        OnBrowserCreated(browser);
 
-    OnBrowserAdded(browser);
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->count(); i++) {
+          CreateInfobarForWebContents(tab_strip_model->GetWebContentsAt(i));
+        }
+        return true;
+      },
+      BrowserCollection::Order::kCreation);
 
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    for (int i = 0; i < tab_strip_model->count(); i++) {
-      CreateInfobarForWebContents(tab_strip_model->GetWebContentsAt(i));
-    }
-  }
-  browser_list->AddObserver(this);
+  browser_collection_observer_.Observe(GlobalBrowserCollection::GetInstance());
 #if BUILDFLAG(IS_CHROMEOS)
   // Observe only for managed users.
   if (g_apply_dlp_for_all_users_for_testing_ ||
@@ -532,7 +525,7 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
 }
 
 void TabSharingUIViews::RemoveInfobarsForAllTabs() {
-  BrowserList::GetInstance()->RemoveObserver(this);
+  browser_collection_observer_.Reset();
   TabStripModelObserver::StopObservingAll(this);
 
   for (const auto& infobars_entry : infobars_) {
@@ -563,23 +556,18 @@ void TabSharingUIViews::CreateTabCaptureIndicator() {
       content::MediaStreamUI::StateChangeCallback());
 }
 
-void TabSharingUIViews::StopCaptureDueToPolicy(content::WebContents* contents) {
-  DCHECK(shared_tab_ == contents);
-  StopSharing();
-  // We use |contents| rather than |shared_tab_| here because |shared_tab_| is
-  // cleared by the call to StopSharing().
-  capture_policy::ShowCaptureTerminatedDialog(contents);
-}
-
 void TabSharingUIViews::UpdateTabCaptureData(WebContents* contents,
                                              TabCaptureUpdate update) {
   if (!contents) {
     return;
   }
 
-  TabCaptureContentsBorderHelper::CreateForWebContents(contents);
   auto* const helper =
       TabCaptureContentsBorderHelper::FromWebContents(contents);
+
+  if (!helper) {
+    return;
+  }
 
   switch (update) {
     case TabCaptureUpdate::kCaptureAdded:

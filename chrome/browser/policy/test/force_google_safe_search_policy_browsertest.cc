@@ -118,8 +118,9 @@ IN_PROC_BROWSER_TEST_F(SafeSearchPolicyTest, ForceGoogleSafeSearch) {
   std::set<GURL> google_urls_requested;
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-        if (params->url_request.url.host() != "google.com")
+        if (params->url_request.url.GetHost() != "google.com") {
           return false;
+        }
         base::AutoLock auto_lock(lock);
         google_urls_requested.insert(params->url_request.url);
         std::string relative_path("chrome/test/data/simple.html");

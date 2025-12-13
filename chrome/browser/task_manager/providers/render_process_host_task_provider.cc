@@ -19,8 +19,9 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #endif
 
@@ -125,7 +126,7 @@ void RenderProcessHostTaskProvider::DeleteTask(
   tasks_by_rph_id_.erase(itr);
 }
 
-void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
+void RenderProcessHostTaskProvider::OnRenderProcessLaunched(
     content::RenderProcessHost* host) {
   if (is_updating_) {
     CreateTask(host);

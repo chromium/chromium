@@ -124,6 +124,14 @@ class VirtualCardUsageData;
 //                      card issuer or a third party platform represented by
 //                      an integer. Converted from CardBenefitSource enum from
 //                      the Chrome Sync response.
+//   card_creation_source
+//                      An enum indicating the source of the card creation.
+//                      kCreationSourceUnspecified is the default value.
+//                      kCreationSourceChromePayments means the card was added
+//                      through Chrome. kCreationSourceNonChromePayments
+//                      indicates the card was added through a non-Chrome
+//                      Payments surface (e.g., YouTube, Play Store, Android
+//                      Autofill).
 // -----------------------------------------------------------------------------
 // server_card_cloud_token_data
 //                      Stores data related to Cloud Primary Account Number
@@ -352,10 +360,6 @@ class VirtualCardUsageData;
 // -----------------------------------------------------------------------------
 class PaymentsAutofillTable : public WebDatabaseTable {
  public:
-  // Drops the tables created by PaymentsAutofillTable.
-  // TODO(crbug.com/390473673): Remove after M143.
-  class Dropper;
-
   PaymentsAutofillTable();
 
   PaymentsAutofillTable(const PaymentsAutofillTable&) = delete;
@@ -447,8 +451,14 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // This will clear all the local cvcs.
   bool ClearLocalCvcs();
 
-  // Method to clean up for crbug.com/411681430.
-  bool CleanupForCrbug411681430();
+  // Method to clear all local CVCs created before mid-May 2025. For more
+  // information, see crbug.com/411681430.
+  bool ClearLocalCvcsUpToMay2025();
+
+#if BUILDFLAG(IS_IOS)
+  // Method to clean up for crbug.com/445879524.
+  bool CleanupForCrbug445879524();
+#endif  // BUILDFLAG(IS_IOS)
 
   // Methods to add, update, remove and get the metadata for server cards and
   // IBANs.
@@ -590,6 +600,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion135AddCardInfoRetrievalEnrollmentState();
   bool MigrateToVersion136AddPaymentInstrumentCreationOptionsTable();
   bool MigrateToVersion141AddCardBenefitSourceColumn();
+  bool MigrateToVersion144AddCardCreationSourceColumn();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
@@ -623,18 +634,6 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool InitBenefitMerchantDomainsTable();
   bool InitGenericPaymentInstrumentsTable();
   bool InitPaymentInstrumentCreationOptionsTable();
-};
-
-class PaymentsAutofillTable::Dropper : public WebDatabaseTable {
- public:
-  Dropper();
-  Dropper(const Dropper&) = delete;
-  Dropper& operator=(const Dropper&) = delete;
-  ~Dropper() override;
-
-  TypeKey GetTypeKey() const override;
-  bool CreateTablesIfNecessary() override;
-  bool MigrateToVersion(int version, bool* update_compatible_version) override;
 };
 
 }  // namespace autofill

@@ -1,8 +1,7 @@
-use core::iter::FromIterator;
 use core::mem::{self, ManuallyDrop, MaybeUninit};
 use core::ops::{Deref, DerefMut};
 use core::ptr::{self, NonNull};
-use core::{cmp, fmt, hash, isize, slice, usize};
+use core::{cmp, fmt, hash, slice};
 
 use alloc::{
     borrow::{Borrow, BorrowMut},
@@ -17,7 +16,7 @@ use crate::bytes::Vtable;
 #[allow(unused)]
 use crate::loom::sync::atomic::AtomicMut;
 use crate::loom::sync::atomic::{AtomicPtr, AtomicUsize, Ordering};
-use crate::{offset_from, Buf, BufMut, Bytes, TryGetError};
+use crate::{Buf, BufMut, Bytes, TryGetError};
 
 /// A unique reference to a contiguous slice of memory.
 ///
@@ -226,7 +225,7 @@ impl BytesMut {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```ignore-wasm
     /// use bytes::{BytesMut, BufMut};
     /// use std::thread;
     ///
@@ -694,7 +693,7 @@ impl BytesMut {
                 let v_capacity = v.capacity();
                 let ptr = v.as_mut_ptr();
 
-                let offset = offset_from(self.ptr.as_ptr(), ptr);
+                let offset = self.ptr.as_ptr().offset_from(ptr) as usize;
 
                 // Compare the condition in the `kind == KIND_VEC` case above
                 // for more details.
@@ -780,7 +779,7 @@ impl BytesMut {
         self.ptr = vptr(v.as_mut_ptr());
         self.cap = v.capacity();
         debug_assert_eq!(self.len, v.len());
-        return true;
+        true
     }
 
     /// Attempts to cheaply reclaim already allocated capacity for at least `additional` more
@@ -986,7 +985,7 @@ impl BytesMut {
         // new start and updating the `len` field to reflect the new length
         // of the view.
         self.ptr = vptr(self.ptr.as_ptr().add(count));
-        self.len = self.len.checked_sub(count).unwrap_or(0);
+        self.len = self.len.saturating_sub(count);
         self.cap -= count;
     }
 
@@ -1171,7 +1170,8 @@ impl Buf for BytesMut {
 unsafe impl BufMut for BytesMut {
     #[inline]
     fn remaining_mut(&self) -> usize {
-        usize::MAX - self.len()
+        // Max allocation size is isize::MAX.
+        isize::MAX as usize - self.len()
     }
 
     #[inline]
@@ -1202,11 +1202,27 @@ unsafe impl BufMut for BytesMut {
     where
         Self: Sized,
     {
-        while src.has_remaining() {
-            let s = src.chunk();
-            let l = s.len();
-            self.extend_from_slice(s);
-            src.advance(l);
+        if !src.has_remaining() {
+            // prevent calling `copy_to_bytes`->`put`->`copy_to_bytes` infintely when src is empty
+            return;
+        } else if self.capacity() == 0 {
+            // When capacity is zero, try reusing allocation of `src`.
+            let src_copy = src.copy_to_bytes(src.remaining());
+            drop(src);
+            match src_copy.try_into_mut() {
+                Ok(bytes_mut) => *self = bytes_mut,
+                Err(bytes) => self.extend_from_slice(&bytes),
+            }
+        } else {
+            // In case the src isn't contiguous, reserve upfront.
+            self.reserve(src.remaining());
+
+            while src.has_remaining() {
+                let s = src.chunk();
+                let l = s.len();
+                self.extend_from_slice(s);
+                src.advance(l);
+            }
         }
     }
 
@@ -1284,7 +1300,7 @@ impl PartialEq for BytesMut {
 
 impl PartialOrd for BytesMut {
     fn partial_cmp(&self, other: &BytesMut) -> Option<cmp::Ordering> {
-        self.as_slice().partial_cmp(other.as_slice())
+        Some(self.cmp(other))
     }
 }
 
@@ -1719,10 +1735,10 @@ impl From<BytesMut> for Vec<u8> {
                 rebuild_vec(bytes.ptr.as_ptr(), bytes.len, bytes.cap, off)
             }
         } else {
-            let shared = bytes.data as *mut Shared;
+            let shared = bytes.data;
 
             if unsafe { (*shared).is_unique() } {
-                let vec = mem::replace(unsafe { &mut (*shared).vec }, Vec::new());
+                let vec = core::mem::take(unsafe { &mut (*shared).vec });
 
                 unsafe { release_shared(shared) };
 
@@ -1776,8 +1792,8 @@ unsafe fn rebuild_vec(ptr: *mut u8, mut len: usize, mut cap: usize, off: usize) 
 
 static SHARED_VTABLE: Vtable = Vtable {
     clone: shared_v_clone,
-    to_vec: shared_v_to_vec,
-    to_mut: shared_v_to_mut,
+    into_vec: shared_v_to_vec,
+    into_mut: shared_v_to_mut,
     is_unique: shared_v_is_unique,
     drop: shared_v_drop,
 };
@@ -1797,7 +1813,7 @@ unsafe fn shared_v_to_vec(data: &AtomicPtr<()>, ptr: *const u8, len: usize) -> V
         let shared = &mut *shared;
 
         // Drop shared
-        let mut vec = mem::replace(&mut shared.vec, Vec::new());
+        let mut vec = core::mem::take(&mut shared.vec);
         release_shared(shared);
 
         // Copy back buffer
@@ -1823,7 +1839,7 @@ unsafe fn shared_v_to_mut(data: &AtomicPtr<()>, ptr: *const u8, len: usize) -> B
         let v = &mut shared.vec;
         let v_capacity = v.capacity();
         let v_ptr = v.as_mut_ptr();
-        let offset = offset_from(ptr as *mut u8, v_ptr);
+        let offset = ptr.offset_from(v_ptr) as usize;
         let cap = v_capacity - offset;
 
         let ptr = vptr(ptr as *mut u8);

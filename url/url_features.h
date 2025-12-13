@@ -14,7 +14,7 @@ namespace url {
 // correspondingly update the EarlyAccess allow list in app shims/
 // (chrome/app_shim/app_shim_controller.mm). See https://crbug.com/1520386 for
 // more details.
-//
+
 // Returns true if space characters should be treated as invalid in URL host
 // parsing.
 COMPONENT_EXPORT(URL) bool IsDisallowingSpaceCharacterInURLHostParsing();
@@ -22,6 +22,12 @@ COMPONENT_EXPORT(URL) bool IsDisallowingSpaceCharacterInURLHostParsing();
 // When enabled, treat space characters as invalid in URL host parsing.
 COMPONENT_EXPORT(URL)
 BASE_DECLARE_FEATURE(kDisallowSpaceCharacterInURLHostParsing);
+
+// Returns true if IDNA ContextJ rules are applied in URL host parsing.
+COMPONENT_EXPORT(URL) bool IsUsingIDNAContextJRules();
+
+// When enabled, apply IDNA ContextJ rules in URL host parsing.
+COMPONENT_EXPORT(URL) BASE_DECLARE_FEATURE(kUseIDNAContextJRules);
 
 }  // namespace url
 

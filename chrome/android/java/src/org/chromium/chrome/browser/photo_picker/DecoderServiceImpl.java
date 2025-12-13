@@ -15,11 +15,12 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
+import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.components.browser_ui.photo_picker.ImageDecoder;
 
 /** A service to accept requests to take image file contents and decode them. */
 @NullMarked
-public class DecoderServiceImpl extends DecoderService.Impl {
+public class DecoderServiceImpl extends SplitCompatService.Impl {
     private static final String TAG = "DecoderService";
 
     private final ImageDecoder mDecoder = new ImageDecoder();

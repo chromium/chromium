@@ -56,9 +56,9 @@ constexpr double kTestVideoDurationMillisecond = 16682;
 #if !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
 
 void VerifyResponse(const content::EvalJsResult& result) {
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
 
-  const base::Value::Dict dict = result.ExtractDict();
+  const base::Value::Dict& dict = result.ExtractDict();
   const std::string* file_id = dict.FindString("fileId");
   ASSERT_TRUE(file_id);
   EXPECT_EQ(*file_id, kVideoFileId);
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
       "a JavaScript error: \"Failed to fetch DriveFS file with video file "
       "id=%s and error code=%d\"\n",
       kVideoFileId, drive::FILE_ERROR_NOT_FOUND);
-  EXPECT_EQ(result.error, expected_error);
+  EXPECT_EQ(result.ExtractError(), expected_error);
 }
 
 // Tests a disk I/O error when trying to access the file handle in launch.js.
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
   content::EvalJsResult result = EvalJs(app, script);
   EXPECT_EQ(
-      result.error,
+      result.ExtractError(),
       "a JavaScript error: \"NotFoundError: A requested file or directory "
       "could not be found at the time an operation was processed.\"\n");
 }
@@ -468,7 +468,8 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideoMimeType) {
 
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
   content::EvalJsResult result = EvalJs(app, script);
-  EXPECT_EQ(result.error, "a JavaScript error: \"NotAVideo: Not a video.\"\n");
+  EXPECT_EQ(result.ExtractError(),
+            "a JavaScript error: \"NotAVideo: Not a video.\"\n");
 }
 
 #endif  // !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)

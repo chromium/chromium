@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -15,10 +16,13 @@
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/language_code.h"
+#include "components/one_time_tokens/core/browser/mock_one_time_token_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,16 +33,27 @@ using testing::Return;
 using testing::Truly;
 
 namespace autofill {
+
+using one_time_tokens::OneTimeToken;
+using one_time_tokens::OneTimeTokenType;
+
 namespace {
 
-class AutofillVotesUploaderTest : public testing::Test {
+class AutofillVotesUploaderTest : public testing::Test,
+                                  public WithTestAutofillClientDriverManager<> {
  public:
   AutofillVotesUploaderTest() = default;
   ~AutofillVotesUploaderTest() override = default;
 
   void SetUp() override {
-    autofill_client_.SetPrefs(test::PrefServiceForTesting());
+    InitAutofillClient();
+    autofill_client().SetPrefs(test::PrefServiceForTesting());
     AddTestProfile();
+    feature_list_.InitAndEnableFeature(features::kAutofillSmsOtpCrowdsourcing);
+
+    std::unique_ptr<one_time_tokens::MockOneTimeTokenService> mock_service =
+        std::make_unique<one_time_tokens::MockOneTimeTokenService>();
+    autofill_client().set_one_time_token_service(std::move(mock_service));
   }
 
  protected:
@@ -53,20 +68,32 @@ class AutofillVotesUploaderTest : public testing::Test {
         /*is_https=*/true, /*use_month_type=*/false));
   }
 
+  std::unique_ptr<FormStructure> CreateOtpForm() {
+    return std::make_unique<FormStructure>(test::CreateTestOtpFormData());
+  }
+
   void AddTestProfile() {
-    autofill_client_.GetPersonalDataManager().address_data_manager().AddProfile(
-        test::GetFullProfile());
+    autofill_client()
+        .GetPersonalDataManager()
+        .address_data_manager()
+        .AddProfile(test::GetFullProfile());
   }
 
   void AddTestCreditCard() {
-    autofill_client_.GetPersonalDataManager()
+    autofill_client()
+        .GetPersonalDataManager()
         .payments_data_manager()
         .AddCreditCard(test::GetCreditCard());
   }
 
   MockAutofillCrowdsourcingManager& GetCrowdsourcingManager() {
     return static_cast<MockAutofillCrowdsourcingManager&>(
-        autofill_client_.GetCrowdsourcingManager());
+        autofill_client().GetCrowdsourcingManager());
+  }
+
+  one_time_tokens::MockOneTimeTokenService& GetMockOneTimeTokenService() {
+    return *static_cast<one_time_tokens::MockOneTimeTokenService*>(
+        autofill_client().GetOneTimeTokenService());
   }
 
   auto QuitRunLoopAndReturnTrue(base::RunLoop& run_loop) {
@@ -80,9 +107,9 @@ class AutofillVotesUploaderTest : public testing::Test {
                                AutofillDriver::LifecycleState from,
                                AutofillDriver::LifecycleState to) {
     static_cast<AutofillDriverFactory::Observer&>(
-        autofill_client_.GetVotesUploader())
+        autofill_client().GetVotesUploader())
         .OnAutofillDriverStateChanged(
-            autofill_client_.GetAutofillDriverFactory(), driver, from, to);
+            autofill_client().GetAutofillDriverFactory(), driver, from, to);
   }
 
   std::unique_ptr<FormStructure> CreateTestFormWithFrame(
@@ -94,14 +121,14 @@ class AutofillVotesUploaderTest : public testing::Test {
 
   bool MaybeStartVoteUploadProcess(std::unique_ptr<FormStructure> form,
                                    bool observed_submission) {
-    return autofill_client_.GetVotesUploader().MaybeStartVoteUploadProcess(
+    return autofill_client().GetVotesUploader().MaybeStartVoteUploadProcess(
         std::move(form), observed_submission, LanguageCode("en"),
         base::TimeTicks::Now(), u"", ukm::kInvalidSourceId);
   }
 
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   base::test::TaskEnvironment task_environment_;
-  TestAutofillClient autofill_client_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test basic vote upload process for form submission.
@@ -117,7 +144,8 @@ TEST_F(AutofillVotesUploaderTest, BasicVoteUpload) {
 
 // Test that vote upload returns false when no local profile data is available.
 TEST_F(AutofillVotesUploaderTest, NoLocalProfileReturnsFalse) {
-  autofill_client_.GetPersonalDataManager()
+  autofill_client()
+      .GetPersonalDataManager()
       .address_data_manager()
       .RemoveLocalProfilesModifiedBetween(base::Time::Min(), base::Time::Max());
 
@@ -159,6 +187,22 @@ TEST_F(AutofillVotesUploaderTest, CreditCardFormUpload) {
   run_loop.Run();
 }
 
+// Test vote upload for OTP forms.
+TEST_F(AutofillVotesUploaderTest, OtpFormUpload) {
+  constexpr char kOtp[] = "123456";
+  EXPECT_CALL(GetMockOneTimeTokenService(), GetCachedOneTimeTokens())
+      .WillOnce(Return(std::vector<OneTimeToken>{
+          OneTimeToken(OneTimeTokenType::kSmsOtp, kOtp, base::Time::Now())}));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest)
+      .WillOnce(QuitRunLoopAndReturnTrue(run_loop));
+
+  EXPECT_TRUE(MaybeStartVoteUploadProcess(CreateOtpForm(),
+                                          /*observed_submission=*/true));
+  run_loop.Run();
+}
+
 // Test that votes for distinct forms are uploaded separately.
 TEST_F(AutofillVotesUploaderTest, DistinctFormsUploadedSeparately) {
   std::unique_ptr<FormStructure> form1 = CreateTestForm();
@@ -181,10 +225,9 @@ TEST_F(AutofillVotesUploaderTest, DistinctFormsUploadedSeparately) {
 
 // Test that only the most recent vote for the same form is uploaded.
 TEST_F(AutofillVotesUploaderTest, MostRecentVoteForSameFormWins) {
-  TestAutofillDriver test_driver(&autofill_client_);
-
+  CreateAutofillDriver();
   FormData form_data = test::CreateTestAddressFormData();
-  form_data.set_host_frame(test_driver.GetFrameToken());
+  form_data.set_host_frame(autofill_driver().GetFrameToken());
 
   auto form1 = std::make_unique<FormStructure>(form_data);
   auto form2 = std::make_unique<FormStructure>(form_data);
@@ -214,7 +257,7 @@ TEST_F(AutofillVotesUploaderTest, MostRecentVoteForSameFormWins) {
                                           /*observed_submission=*/false));
 
   // Flush the votes.
-  TriggerFrameStateChange(test_driver, kActive, kInactive);
+  TriggerFrameStateChange(autofill_driver(), kActive, kInactive);
   run_loop.Run();
 }
 
@@ -252,62 +295,62 @@ TEST_F(AutofillVotesUploaderTest, PendingVotesFlushedOnSubmission) {
 
 // Test that pending votes are flushed when frame becomes inactive.
 TEST_F(AutofillVotesUploaderTest, PendingVotesFlushedOnFrameInactive) {
-  TestAutofillDriver test_driver(&autofill_client_);
-
+  CreateAutofillDriver();
   // Store a pending vote for a specific frame token that matches our test
   // driver.
   EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest).Times(0);
   // Create form and associate it with the test driver's frame.
-  EXPECT_TRUE(MaybeStartVoteUploadProcess(CreateTestFormWithFrame(test_driver),
-                                          /*observed_submission=*/false));
+  EXPECT_TRUE(
+      MaybeStartVoteUploadProcess(CreateTestFormWithFrame(autofill_driver()),
+                                  /*observed_submission=*/false));
   task_environment_.RunUntilIdle();
 
   base::RunLoop run_loop;
   EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest)
       .WillOnce(QuitRunLoopAndReturnTrue(run_loop));
   // Trigger frame inactive state change - this should flush pending votes.
-  TriggerFrameStateChange(test_driver, kActive, kInactive);
+  TriggerFrameStateChange(autofill_driver(), kActive, kInactive);
   run_loop.Run();
 }
 
 // Test that pending votes are flushed when frame is reset.
 TEST_F(AutofillVotesUploaderTest, PendingVotesFlushedOnFrameReset) {
-  TestAutofillDriver test_driver(&autofill_client_);
-
+  CreateAutofillDriver();
   // Store a pending vote.
   EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest).Times(0);
-  EXPECT_TRUE(MaybeStartVoteUploadProcess(CreateTestFormWithFrame(test_driver),
-                                          /*observed_submission=*/false));
+  EXPECT_TRUE(
+      MaybeStartVoteUploadProcess(CreateTestFormWithFrame(autofill_driver()),
+                                  /*observed_submission=*/false));
   task_environment_.RunUntilIdle();
 
   // First transition to PendingReset should not flush votes.
   EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest).Times(0);
-  TriggerFrameStateChange(test_driver, kActive, kPendingReset);
+  TriggerFrameStateChange(autofill_driver(), kActive, kPendingReset);
   task_environment_.RunUntilIdle();
 
   // Then transition out of PendingReset - this should flush pending votes.
   base::RunLoop run_loop;
   EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest)
       .WillOnce(QuitRunLoopAndReturnTrue(run_loop));
-  TriggerFrameStateChange(test_driver, kPendingReset, kActive);
+  TriggerFrameStateChange(autofill_driver(), kPendingReset, kActive);
   run_loop.Run();
 }
 
 // Test that pending votes are flushed when frame is deleted.
 TEST_F(AutofillVotesUploaderTest, PendingVotesFlushedOnFrameDeletion) {
-  TestAutofillDriver test_driver(&autofill_client_);
-
+  CreateAutofillDriver();
   // Store a pending vote.
   EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest).Times(0);
-  EXPECT_TRUE(MaybeStartVoteUploadProcess(CreateTestFormWithFrame(test_driver),
-                                          /*observed_submission=*/false));
+  EXPECT_TRUE(
+      MaybeStartVoteUploadProcess(CreateTestFormWithFrame(autofill_driver()),
+                                  /*observed_submission=*/false));
   task_environment_.RunUntilIdle();
 
   base::RunLoop run_loop;
   EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest)
       .WillOnce(QuitRunLoopAndReturnTrue(run_loop));
   // Trigger frame deletion - this should flush pending votes.
-  TriggerFrameStateChange(test_driver, kActive, kPendingDeletion);
+  TriggerFrameStateChange(autofill_driver(), kActive, kPendingDeletion);
   run_loop.Run();
 }
 

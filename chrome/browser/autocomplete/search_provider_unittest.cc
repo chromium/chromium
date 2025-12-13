@@ -43,6 +43,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -50,6 +51,7 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
@@ -163,7 +165,7 @@ class SearchProviderFeatureTestComponent {
       const bool command_line_overrides);
 
   ~SearchProviderFeatureTestComponent() {
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
   }
 
  private:
@@ -345,7 +347,7 @@ class BaseSearchProviderTest : public testing::Test,
   // to avoid a possible race.
   SearchProviderFeatureTestComponent feature_test_component_;
   content::BrowserTaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -1103,6 +1105,9 @@ TEST_F(SearchProviderTest, InlineMixedCaseMatches) {
 // Verifies AutocompleteControllers return results (including keyword
 // results) in the right order and set descriptions for them correctly.
 TEST_F(SearchProviderTest, KeywordOrderingAndDescriptions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kOmniboxSiteSearch);
+
   // Add an entry that corresponds to a keyword search with 'term2'.
   AddSearchToHistory(keyword_t_url_, u"term2", 1);
   profile_->BlockUntilHistoryProcessesPendingRequests();
@@ -1110,7 +1115,8 @@ TEST_F(SearchProviderTest, KeywordOrderingAndDescriptions) {
   AutocompleteController controller(
       std::make_unique<TestAutocompleteProviderClient>(
           profile_.get(), &test_url_loader_factory_),
-      AutocompleteProvider::TYPE_SEARCH);
+      AutocompleteControllerConfig{.provider_types =
+                                       AutocompleteProvider::TYPE_SEARCH});
   AutocompleteInput input(u"k t", metrics::OmniboxEventProto::OTHER,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
   controller.Start(input);
@@ -1130,15 +1136,7 @@ TEST_F(SearchProviderTest, KeywordOrderingAndDescriptions) {
   EXPECT_EQ(u"k", result.match_at(0).keyword);
   EXPECT_EQ(u"k", result.match_at(1).keyword);
 
-#if !BUILDFLAG(IS_ANDROID)
-  // On non-android, the top result will always have a description. Whether the
-  // second result has one doesn't matter much.  (If it was missing, people
-  // would infer that it's the same search provider as the one above it.)
   EXPECT_FALSE(result.match_at(0).description.empty());
-#else
-  // On Android, the top result should not have a description.
-  EXPECT_TRUE(result.match_at(0).description.empty());
-#endif
 }
 
 TEST_F(SearchProviderTest, KeywordVerbatim) {
@@ -4174,6 +4172,29 @@ TEST_F(SearchProviderRequestTest, LensContextualSearchboxSuggestRequest) {
   EXPECT_FALSE(provider_->done());
   EXPECT_TRUE(test_url_loader_factory_.IsPending(
       "https://www.google.com/suggest?q=foo&client=chrome-contextual"));
+}
+
+TEST_F(SearchProviderRequestTest, SendRequestWithAimToolMode) {
+  // Start a query.
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::NTP_COMPOSEBOX,
+                          ChromeAutocompleteSchemeClassifier(profile_.get()));
+  input.set_aim_tool_mode(
+      omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH);
+  input.set_current_url(GURL("https://www.example.com"));
+  provider_->Start(input, false);
+
+  // Make sure the default provider's suggest endpoint was queried with the
+  // expected client and Lens Suggest signals.
+  EXPECT_FALSE(provider_->done());
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+  EXPECT_TRUE(base::EndsWith(
+      test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+      "azm=1", base::CompareCase::SENSITIVE));
+
+  test_url_loader_factory_.AddResponse(
+      test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+      R"(["",[],[],[],{}])");
+  RunTillProviderDone();
 }
 
 TEST_F(SearchProviderRequestTest, LensContextualSearchboxNoSuggestRequest) {

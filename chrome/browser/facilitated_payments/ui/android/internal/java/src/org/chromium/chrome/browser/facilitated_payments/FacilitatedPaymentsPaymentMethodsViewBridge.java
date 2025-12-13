@@ -104,9 +104,11 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
     @CalledByNative
     public void requestShowContentForPaymentLink(
             @JniType("std::vector") Object[] eWallets, Object[] apps) {
-        mComponent.showSheetForPaymentLink(
-                (List<Ewallet>) (List<?>) Arrays.asList(eWallets),
-                (List<ResolveInfo>) (List<?>) Arrays.asList(apps));
+        List<Ewallet> eWalletList =
+                (eWallets == null) ? List.of() : (List<Ewallet>) (List<?>) Arrays.asList(eWallets);
+        List<ResolveInfo> appList =
+                (apps == null) ? List.of() : (List<ResolveInfo>) (List<?>) Arrays.asList(apps);
+        mComponent.showSheetForPaymentLink(eWalletList, appList);
     }
 
     /**

@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_DOWNLOADER_DELEGATE_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_DOWNLOADER_DELEGATE_H_
 
-#include <string>
-
-
+class GURL;
 class ProfileDownloader;
 
 namespace signin {
@@ -43,9 +41,9 @@ class ProfileDownloaderDelegate {
   virtual int GetDesiredImageSideLength() const = 0;
 
   // Returns the cached URL. If the cache URL matches the new image URL
-  // the image will not be downloaded. Return an empty string when there is no
+  // the image will not be downloaded. Return an empty GURL when there is no
   // cached URL.
-  virtual std::string GetCachedPictureURL() const = 0;
+  virtual const GURL& GetCachedPictureURL() const = 0;
 
   // Returns the IdentityManager associated with this download request.
   virtual signin::IdentityManager* GetIdentityManager() = 0;

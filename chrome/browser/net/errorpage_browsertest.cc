@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -39,7 +40,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
-#include "components/embedder_support/switches.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/google/core/common/google_util.h"
 #include "components/language/core/browser/pref_names.h"
@@ -75,7 +75,6 @@
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/test/url_request/url_request_mock_data_job.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
-#include "net/url_request/url_request_test_job.h"
 #include "services/network/public/cpp/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -88,30 +87,28 @@
 using content::BrowserThread;
 using content::NavigationController;
 using net::URLRequestFailedJob;
-using net::URLRequestTestJob;
 
 namespace {
 
-// Searches for first node containing |text|, and if it finds one, searches
-// through all ancestors seeing if any of them is of class "hidden". Since it
-// relies on the hidden class used by network error pages, not suitable for
-// general use.
+// Returns true if there is any visible node containing `text`.
 [[nodiscard]] bool IsDisplayingText(content::RenderFrameHost* render_frame_host,
                                     const std::string& text) {
   // clang-format off
-  std::string command = base::StringPrintf(R"(
-    function isNodeVisible(node) {
-      if (!node || node.classList.contains('hidden'))
-        return false;
-      if (!node.parentElement)
-        return true;
-      // Otherwise, we must check all parent nodes
-      return isNodeVisible(node.parentElement);
+  std::string command = content::JsReplace(R"(
+    function isDisplayingText() {
+      // Iterate through all matching nodes and check visibility.
+      let nodes = document.evaluate('//*[contains(text(),$1)]', document,
+        null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
+      while (node = nodes.iterateNext()) {
+        if (node.checkVisibility()) {
+          return true;
+        }
+      }
+      return false;
     }
-    var node = document.evaluate("//*[contains(text(),'%s')]", document,
-      null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    isNodeVisible(node);
-  )", text.c_str());
+
+    isDisplayingText();
+  )", text);
   // clang-format on
   return content::EvalJs(render_frame_host, command).ExtractBool();
 }
@@ -122,8 +119,8 @@ namespace {
       text);
 }
 
-// Expands the more box on the currently displayed error page.
-void ToggleHelpBox(Browser* browser) {
+// Expands the details box on the currently displayed error page.
+void ToggleDetails(Browser* browser) {
   EXPECT_TRUE(
       content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
                       "document.getElementById('details-button').click();"));
@@ -323,6 +320,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, FileNotFound) {
 }
 
 // Test that a DNS error occurring in the main frame displays an error page.
+// Also test that the details button works as intended.
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_Basic) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL()));
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
@@ -331,6 +329,23 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_Basic) {
   EXPECT_EQ(WebContentsCanShowDiagnosticsTool(
                 browser()->tab_strip_model()->GetActiveWebContents()),
             IsDisplayingDiagnosticsLink(browser()));
+
+  // Initially, the details should be collapsed.
+  EXPECT_FALSE(IsDisplayingText(
+      browser(), l10n_util::GetStringUTF8(
+                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY)));
+
+  // Clicking the details button should result in showing the full details.
+  ToggleDetails(browser());
+  EXPECT_TRUE(IsDisplayingText(
+      browser(), l10n_util::GetStringUTF8(
+                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY)));
+
+  // Clicking it again should hide the details.
+  ToggleDetails(browser());
+  EXPECT_FALSE(IsDisplayingText(
+      browser(), l10n_util::GetStringUTF8(
+                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY)));
 }
 
 // Test that a DNS error occurring in the main frame does not result in an
@@ -409,6 +424,12 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_DoReload) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
+  // Click the details button to expand displayed information.
+  ToggleDetails(browser());
+  EXPECT_TRUE(IsDisplayingText(
+      browser(), l10n_util::GetStringUTF8(
+                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY)));
+
   // Clicking the reload button should load the error page again.
   content::TestNavigationObserver nav_observer(web_contents, 1);
   // Can't use content::ExecJs because it waits for scripts to send
@@ -418,7 +439,14 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_DoReload) {
       u"document.getElementById('reload-button').click();",
       base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   nav_observer.Wait();
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(nav_observer.last_net_error_code(), net::ERR_NAME_NOT_RESOLVED);
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
+
+  // The reloaded page should no longer be displaying the details.
+  EXPECT_FALSE(IsDisplayingText(
+      browser(), l10n_util::GetStringUTF8(
+                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY)));
 }
 
 // Test that the reload button on a DNS error page works after a same document
@@ -465,8 +493,12 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError) {
       ChildFrameAt(browser()->tab_strip_model()->GetActiveWebContents(), 0);
   ASSERT_TRUE(child_frame);
 
-  EXPECT_TRUE(IsDisplayingText(
+  // The error should not be displayed.
+  EXPECT_FALSE(IsDisplayingText(
       child_frame, net::ErrorToShortString(net::ERR_NAME_NOT_RESOLVED)));
+  // The hostname technically should be, in a short error message, though with
+  // opacity 0, which changes to 1 on hover.
+  EXPECT_TRUE(IsDisplayingText(child_frame, "mock.failed.request"));
 }
 
 // This test fails regularly on win_rel trybots. See crbug.com/121540
@@ -637,46 +669,21 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, Incognito) {
 
 class ErrorPageAutoReloadTest : public InProcessBrowserTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(embedder_support::kEnableAutoReload);
+  static constexpr char kMagicPath[] = "/magic/path/";
+  static constexpr char kSuccessTitle[] = "Success";
+
+  ErrorPageAutoReloadTest() {
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &ErrorPageAutoReloadTest::HandleRequest, base::Unretained(this)));
+    EXPECT_TRUE(embedded_test_server()->Start());
   }
 
-  void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
+  ~ErrorPageAutoReloadTest() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+  }
 
-  void InstallInterceptor(const GURL& url, int32_t requests_to_fail) {
-    requests_ = failures_ = 0;
-
-    url_loader_interceptor_ =
-        std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
-            [](int32_t requests_to_fail, int32_t* requests, int32_t* failures,
-               content::URLLoaderInterceptor::RequestParams* params) {
-              if (params->url_request.url.host().find("googleapis.com") !=
-                  std::string::npos) {
-                return false;
-              }
-              if (params->url_request.url.path() == "/searchdomaincheck")
-                return false;
-              if (params->url_request.url.path() == "/favicon.ico")
-                return false;
-              if (params->url_request.url.DeprecatedGetOriginAsURL() ==
-                  GaiaUrls::GetInstance()->gaia_url())
-                return false;
-              (*requests)++;
-              if (*failures < requests_to_fail) {
-                (*failures)++;
-                network::URLLoaderCompletionStatus status;
-                status.error_code = net::ERR_CONNECTION_RESET;
-                params->client->OnComplete(status);
-                return true;
-              }
-
-              std::string body = URLRequestTestJob::test_data_1();
-              content::URLLoaderInterceptor::WriteResponse(
-                  URLRequestTestJob::test_headers(), body,
-                  params->client.get());
-              return true;
-            },
-            requests_to_fail, &requests_, &failures_));
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableAutoReload);
   }
 
   void NavigateToURLAndWaitForTitle(const GURL& url,
@@ -691,117 +698,67 @@ class ErrorPageAutoReloadTest : public InProcessBrowserTest {
               title_watcher.WaitAndGetTitle());
   }
 
-  void NavigateAndWaitForFailureWithAutoReload(const GURL& url) {
-    content::WebContents* const web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-
-    // Expect the first navigation to fail with a committed error page.
-    content::TestNavigationManager first_navigation(web_contents, url);
-    web_contents->GetController().LoadURL(url, content::Referrer(),
-                                          ui::PAGE_TRANSITION_TYPED,
-                                          /*extra_headers=*/std::string());
-    ASSERT_TRUE(first_navigation.WaitForNavigationFinished());
-    EXPECT_TRUE(first_navigation.was_committed());
-    EXPECT_FALSE(first_navigation.was_successful());
-
-    // Expect a second navigation to result from a failed auto-reload attempt.
-    // This should not be committed.
-    content::TestNavigationManager failed_auto_reload_navigation(web_contents,
-                                                                 url);
-    ASSERT_TRUE(failed_auto_reload_navigation.WaitForNavigationFinished());
-    EXPECT_FALSE(failed_auto_reload_navigation.was_committed());
+  // Sets the number of sequential requests to `kMagicPath` that will be failed.
+  // Must be called before there have been any requests to that path.
+  void SetRequestsToFail(int requests_to_fail) {
+    base::AutoLock lock(lock_);
+    EXPECT_EQ(requests_, 0);
+    EXPECT_EQ(requests_to_fail_, 0);
+    requests_to_fail_ = requests_to_fail;
   }
 
-  int32_t interceptor_requests() const { return requests_; }
-  int32_t interceptor_failures() const { return failures_; }
+  GURL GetMagicUrl() const {
+    return embedded_test_server()->GetURL(kMagicPath);
+  }
+
+  // Returns number of observed requests. Not const because grabbing a lock is
+  // considered to mutate it.
+  int requests() {
+    base::AutoLock lock(lock_);
+    return requests_;
+  }
 
  private:
-  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
-  int32_t requests_;
-  int32_t failures_;
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != kMagicPath) {
+      return nullptr;
+    }
+
+    base::AutoLock lock(lock_);
+
+    ++requests_;
+    if (requests_ <= requests_to_fail_) {
+      // An empty response. This should cause a failure with ERR_EMPTY_RESPONSE.
+      return std::make_unique<net::test_server::RawHttpResponse>(
+          /*headers=*/"", /*contents=*/"");
+    }
+
+    // Otherwise, succeed.
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_content("<html><title>Success</title></html>");
+    response->set_content_type("text/html");
+    return response;
+  }
+
+  base::Lock lock_;
+
+  // Number of requests to kMagicPath to fail. Once hit, all future requests
+  // will succeed. Must be set before any requests have succeeded.
+  int requests_to_fail_ GUARDED_BY(lock_) = 0;
+
+  // Total number of requests to kMagicPath. The first `requests_to_fail_` would
+  // have been failed, and the other ones, if there were any, succeeded.
+  int requests_ GUARDED_BY(lock_) = 0;
 };
 
-// Fails on official mac_trunk build. See crbug.com/465789.
-#if defined(OFFICIAL_BUILD) && BUILDFLAG(IS_MAC)
-#define MAYBE_AutoReload DISABLED_AutoReload
-#else
-#define MAYBE_AutoReload AutoReload
-#endif
-IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, MAYBE_AutoReload) {
-  GURL test_url("http://error.page.auto.reload");
-  const int32_t kRequestsToFail = 2;
-  InstallInterceptor(test_url, kRequestsToFail);
-  NavigateToURLAndWaitForTitle(test_url, "Test One");
-  // Note that the interceptor updates these variables on the IO thread,
-  // but this function reads them on the main thread. The requests have to be
-  // created (on the IO thread) before NavigateToURLAndWaitForTitle returns or
-  // this becomes racey.
-  EXPECT_EQ(kRequestsToFail, interceptor_failures());
-  EXPECT_EQ(kRequestsToFail + 1, interceptor_requests());
-}
-
-// TODO(crbug.com/40856405): Test is flaky.
-IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
-                       DISABLED_ManualReloadNotSuppressed) {
-  GURL test_url("http://error.page.auto.reload");
-  const int32_t kRequestsToFail = 3;
-  InstallInterceptor(test_url, kRequestsToFail);
-
-  // Wait for the error page and first autoreload.
-  NavigateAndWaitForFailureWithAutoReload(test_url);
-
-  EXPECT_EQ(2, interceptor_failures());
-  EXPECT_EQ(2, interceptor_requests());
-
-  ToggleHelpBox(browser());
-  EXPECT_TRUE(IsDisplayingText(
-      browser(), l10n_util::GetStringUTF8(
-                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_HEADER)));
-
-  content::WebContents* web_contents =
-    browser()->tab_strip_model()->GetActiveWebContents();
-  content::TestNavigationObserver nav_observer(web_contents, 1);
-  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"document.getElementById('reload-button').click();",
-      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
-  nav_observer.Wait();
-  EXPECT_FALSE(IsDisplayingText(
-      browser(), l10n_util::GetStringUTF8(
-                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_HEADER)));
-}
-
-// Make sure that a same document navigation does not cause issues with the
-// auto-reload timer.  Note that this test was added due to this case causing
-// a crash.  On regression, this test may hang due to a crashed renderer.
-// TODO(crbug.com/40709227): Flaky.
-IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
-                       DISABLED_IgnoresSameDocumentNavigation) {
-  GURL test_url("http://error.page.auto.reload");
-  InstallInterceptor(test_url, 2);
-
-  // Wait for the error page and first autoreload.
-  NavigateAndWaitForFailureWithAutoReload(test_url);
-
-  EXPECT_EQ(2, interceptor_failures());
-  EXPECT_EQ(2, interceptor_requests());
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  const std::u16string kExpectedTitle = u"Test One";
-  content::TitleWatcher title_watcher(web_contents, kExpectedTitle);
-
-  // Same-document navigation on an error page should not interrupt the
-  // scheduled auto-reload which should still be pending on the WebContents.
-  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"document.location='#';", base::NullCallback(),
-      content::ISOLATED_WORLD_ID_GLOBAL);
-
-  // Wait for the second auto reload to happen. It will succeed and update the
-  // WebContents' title.
-  EXPECT_EQ(kExpectedTitle, title_watcher.WaitAndGetTitle());
-
-  EXPECT_EQ(2, interceptor_failures());
-  EXPECT_EQ(3, interceptor_requests());
+// Make sure that autoreload is enabled and works in Chrome. Navigates to a URL
+// that fails on the first two load attempts, and succeeds on the third, and
+// waist for the third load to succeed.
+IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, AutoReload) {
+  SetRequestsToFail(2);
+  NavigateToURLAndWaitForTitle(GetMagicUrl(), kSuccessTitle);
+  EXPECT_EQ(requests(), 3);
 }
 
 class ErrorPageOfflineTest : public ErrorPageTest {
@@ -995,9 +952,10 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTestWithAllowDinosaurTrue,
 class ErrorPageForIDNTest : public InProcessBrowserTest {
  public:
   // Target hostname in different forms.
-  static const char kHostname[];
-  static const char kHostnameJSUnicode[];
-
+  static constexpr char kHostname[] = "xn--d1abbgf6aiiy.xn--p1ai";
+  static constexpr char kHostnameJsUtf8[] =
+      "\xD0\xBF\xD1\x80\xD0\xB5\xD0\xB7\xD0\xB8\xD0\xB4\xD0\xB5\xD0\xBD\xD1\x82"
+      "\x2E\xD1\x80\xD1\x84";
   ErrorPageForIDNTest() {
     // TODO(crbug.com/334954143) This test clears the AcceptLanguage Prefs which
     // causes Accept-Language to not work correctly. Fix the tests when turning
@@ -1017,18 +975,12 @@ class ErrorPageForIDNTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-const char ErrorPageForIDNTest::kHostname[] =
-    "xn--d1abbgf6aiiy.xn--p1ai";
-const char ErrorPageForIDNTest::kHostnameJSUnicode[] =
-    "\\u043f\\u0440\\u0435\\u0437\\u0438\\u0434\\u0435\\u043d\\u0442."
-    "\\u0440\\u0444";
-
 // Make sure error page shows correct unicode for IDN.
 IN_PROC_BROWSER_TEST_F(ErrorPageForIDNTest, IDN) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), URLRequestFailedJob::GetMockHttpUrlForHostname(
                      net::ERR_UNSAFE_PORT, kHostname)));
-  EXPECT_TRUE(IsDisplayingText(browser(), kHostnameJSUnicode));
+  EXPECT_TRUE(IsDisplayingText(browser(), kHostnameJsUtf8));
 }
 
 // Make sure HTTP/0.9 is disabled on non-default ports by default.

@@ -77,7 +77,11 @@ public class OverlayPanelManagerTest {
     private static class MockOverlayPanel extends OverlayPanel {
         private final @PanelPriority int mPriority;
         private final boolean mCanBeSuppressed;
+
+        @SuppressWarnings("HidingField")
         private ViewGroup mContainerView;
+
+        @SuppressWarnings("HidingField")
         private DynamicResourceLoader mResourceLoader;
 
         public MockOverlayPanel(

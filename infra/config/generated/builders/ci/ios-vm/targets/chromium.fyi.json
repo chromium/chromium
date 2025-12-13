@@ -9,20 +9,22 @@
           "--clones",
           "2",
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
-          "18.2",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16c5032a",
+          "17a400",
           "--xctest"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module iPhone 14 18.2",
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
+        "module_scheme": "xctest",
+        "name": "ios_chrome_integration_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42,37 +44,39 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_18_2",
-              "path": "Runtime-ios-18.2"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
-              "name": "xcode_ios_16c5032a",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
+          "shards": 9
         },
         "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPhone 14 18.2"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
           "--platform",
           "iPad (10th generation)",
           "--version",
-          "18.2",
+          "26.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16c5032a",
+          "17a400",
           "--xctest"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_unittests iPad (10th generation) 18.2",
+        "module_name": "//ios/chrome/test:ios_chrome_unittests",
+        "module_scheme": "gtest",
+        "name": "ios_chrome_unittests iPad (10th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -92,11 +96,11 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_18_2",
-              "path": "Runtime-ios-18.2"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
-              "name": "xcode_ios_16c5032a",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],
@@ -104,24 +108,26 @@
         },
         "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPad (10th generation) 18.2"
+        "variant_id": "iPad (10th generation) 26.0"
       },
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
-          "18.2",
+          "26.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16c5032a",
+          "17a400",
           "--xctest"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_unittests iPhone 14 18.2",
+        "module_name": "//ios/chrome/test:ios_chrome_unittests",
+        "module_scheme": "gtest",
+        "name": "ios_chrome_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -141,11 +147,11 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_18_2",
-              "path": "Runtime-ios-18.2"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
-              "name": "xcode_ios_16c5032a",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],
@@ -153,25 +159,27 @@
         },
         "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPhone 14 18.2"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
-          "18.2",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16c5032a",
+          "17a400",
           "--xctest"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module iPhone 14 18.2",
+        "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module",
+        "module_scheme": "xctest",
+        "name": "ios_web_shell_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -191,11 +199,11 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_18_2",
-              "path": "Runtime-ios-18.2"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
-              "name": "xcode_ios_16c5032a",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],
@@ -203,7 +211,7 @@
         },
         "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPhone 14 18.2"
+        "variant_id": "iPhone 16 26.0"
       }
     ]
   }

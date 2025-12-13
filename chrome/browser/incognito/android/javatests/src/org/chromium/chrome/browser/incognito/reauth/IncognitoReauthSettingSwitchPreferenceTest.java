@@ -23,17 +23,23 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
 
 /** Tests of {@link IncognitoReauthSettingSwitchPreference}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class IncognitoReauthSettingSwitchPreferenceTest {
     private static final String TITLE = "Preference Title";
     private static final String SUMMARY = "This is a summary.";
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public SettingsActivityTestRule<PlaceholderSettingsForTest> mSettingsActivityTestRule =
@@ -46,7 +52,6 @@ public class IncognitoReauthSettingSwitchPreferenceTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mSettingsActivityTestRule.startSettingsActivity();
         PreferenceFragmentCompat fragment =
                 (PreferenceFragmentCompat)

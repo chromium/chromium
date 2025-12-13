@@ -11,8 +11,8 @@
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
+#import "ios/chrome/browser/instructions_bottom_sheet/ui/instructions_bottom_sheet_coordinator.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-#import "ios/chrome/common/ui/instruction_view/instructions_half_sheet_coordinator.h"
 
 @interface BestFeaturesScreenDetailCoordinator () <
     ConfirmationAlertActionHandler>
@@ -26,7 +26,7 @@
   FeatureHighlightScreenshotViewController* _viewController;
   // The half sheet coordinator presented when the primary action button is
   // pressed.
-  InstructionsHalfSheetCoordinator* _halfSheetCoordinator;
+  InstructionsBottomSheetCoordinator* _halfSheetCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -50,9 +50,9 @@
 - (void)start {
   [super start];
   _viewController = [[FeatureHighlightScreenshotViewController alloc]
-      initWithFeatureHighlightItem:_bestFeaturesItem
-                     actionHandler:self];
-  _baseNavigationController.delegate = _viewController;
+      initWithFeatureHighlightItem:_bestFeaturesItem];
+  _viewController.actionHandler = self;
+  _baseNavigationController.navigationBarHidden = NO;
   [_baseNavigationController pushViewController:_viewController animated:YES];
 }
 
@@ -70,10 +70,11 @@
   base::UmaHistogramEnumeration(
       BestFeaturesActionHistogramForItemType(_bestFeaturesItem.type),
       BestFeaturesDetailScreenActionType::kShowMeHow);
-  _halfSheetCoordinator = [[InstructionsHalfSheetCoordinator alloc]
+  _halfSheetCoordinator = [[InstructionsBottomSheetCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser
-                instructionsList:_bestFeaturesItem.instructionSteps];
+                           title:_bestFeaturesItem.title
+                           steps:_bestFeaturesItem.instructionSteps];
   [_halfSheetCoordinator start];
 }
 

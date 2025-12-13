@@ -17,11 +17,6 @@ class PrefService;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
-// Returns the text for the current setting, based on the values of the
-// preference. Kept in this class, so that all of the code to translate from
-// preference to UI is in one place.
-+ (NSString*)timePeriodLabelForPrefs:(PrefService*)prefs;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TABLE_VIEW_CONTROLLER_H_

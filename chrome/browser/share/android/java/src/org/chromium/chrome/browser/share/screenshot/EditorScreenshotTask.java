@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.share.screenshot;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -17,6 +17,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -29,13 +31,14 @@ import org.chromium.ui.base.WindowAndroid;
  * chrome/android/java/src/org/chromium/chrome/browser/feedback/ScreenshotTask.java.
  */
 @JNINamespace("android")
+@NullMarked
 public final class EditorScreenshotTask implements EditorScreenshotSource {
     private final Activity mActivity;
     private final BottomSheetController mBottomSheetController;
 
     private boolean mDone;
-    private Bitmap mBitmap;
-    private Runnable mCallback;
+    private @Nullable Bitmap mBitmap;
+    private @Nullable Runnable mCallback;
 
     /**
      * Creates a {@link EditorScreenshotTask} instance that, will grab a screenshot of {@code
@@ -74,7 +77,7 @@ public final class EditorScreenshotTask implements EditorScreenshotSource {
     }
 
     @Override
-    public Bitmap getScreenshot() {
+    public @Nullable Bitmap getScreenshot() {
         return mBitmap;
     }
 
@@ -99,10 +102,10 @@ public final class EditorScreenshotTask implements EditorScreenshotSource {
 
         Rect rect = new Rect();
         activity.getWindow().getDecorView().getRootView().getWindowVisibleDisplayFrame(rect);
-        EditorScreenshotTaskJni.get()
+        org.chromium.chrome.browser.share.screenshot.EditorScreenshotTaskJni.get()
                 .grabWindowSnapshotAsync(
                         this,
-                        ((ChromeActivity) activity).getWindowAndroid(),
+                        assertNonNull(((ChromeActivity) activity).getWindowAndroid()),
                         rect.width(),
                         rect.height());
 
@@ -158,6 +161,9 @@ public final class EditorScreenshotTask implements EditorScreenshotSource {
     @NativeMethods
     interface Natives {
         void grabWindowSnapshotAsync(
-                EditorScreenshotTask callback, WindowAndroid window, int width, int height);
+                EditorScreenshotTask callback,
+                WindowAndroid window,
+                int width,
+                int height);
     }
 }

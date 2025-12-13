@@ -268,7 +268,7 @@ void ScopedWindowTucker::InitializeTuckHandleWidget() {
       });
   aura::Window* window_to_activate = nullptr;
   if (app_window_it == mru_windows.end()) {
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       window_to_activate = Shell::Get()->app_list_controller()->GetWindow();
     }
   } else {

@@ -27,7 +27,6 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -39,15 +38,16 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessi
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.signin.LegacySyncPromoView;
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.HoverHighlightViewListener;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
@@ -140,6 +140,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     private final int mFaviconSize;
     private boolean mHasForeignDataRecorded;
     private final RoundedIconGenerator mIconGenerator;
+    private final HoverHighlightViewListener mHoverListener;
 
     /**
      * A generic group of objects to be shown in the RecentTabsRowAdapter, such as the list of
@@ -222,6 +223,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                                 LayoutInflater.from(mActivity)
                                         .inflate(R.layout.recent_tabs_group_item, parent, false);
             }
+            groupView.setOnHoverListener(mHoverListener);
+            groupView.getExpandCollapseIcon().setOnHoverListener(mHoverListener);
             configureGroupView(groupView, isExpanded);
             return groupView;
         }
@@ -594,7 +597,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 @TabGroupColorId int colorId,
                 int tabCount) {
             final @StringRes int colorDescRes =
-                    ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
+                    TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                            colorId);
             String colorDesc = res.getString(colorDescRes);
             String contentDescription;
 
@@ -653,6 +657,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             viewHolder.textView.setContentDescription(null);
             // Reset the icon view.
             viewHolder.iconView.setVisibility(View.GONE);
+            // Explicitly telling this specific row's layout should react to hover events.
+            viewHolder.itemLayout.setOnHoverListener(mHoverListener);
             Resources res = mActivity.getResources();
             if (isHistoryLink(childPosition)) {
                 viewHolder.textView.setText(R.string.show_full_history);
@@ -673,48 +679,59 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                     res.getDimensionPixelSize(
                             R.dimen.recent_tabs_foreign_session_group_item_height));
             RecentlyClosedEntry entry = assumeNonNull(getChild(childPosition));
-            if (!(entry instanceof RecentlyClosedTab)) {
-                int tabCount = 0;
-                if (entry instanceof RecentlyClosedGroup) {
-                    RecentlyClosedGroup recentlyClosedGroup = (RecentlyClosedGroup) entry;
-                    List<RecentlyClosedTab> tabList = recentlyClosedGroup.getTabs();
-                    tabCount = tabList.size();
-
-                    String groupTitle = recentlyClosedGroup.getTitle();
-                    @TabGroupColorId int colorId = recentlyClosedGroup.getColor();
-                    if (TextUtils.isEmpty(groupTitle)) {
-                        viewHolder.textView.setText(
-                                res.getQuantityString(
-                                        R.plurals.recent_tabs_group_closure_without_title,
-                                        tabCount,
-                                        tabCount));
-                    } else {
-                        viewHolder.textView.setText(
-                                res.getString(
-                                        R.string.recent_tabs_group_closure_with_title, groupTitle));
-                    }
-                    setDomainText(res, viewHolder, tabCount, tabList);
-                    setContentDescription(res, viewHolder, groupTitle, colorId, tabCount);
-                    setIconView(viewHolder, colorId);
-                    loadGroupIcon(viewHolder);
+            if (entry instanceof RecentlyClosedWindow recentlyClosedWindow) {
+                viewHolder.textView.setText(recentlyClosedWindow.getTitle());
+                String activeTabDomain =
+                        UrlUtilities.getDomainAndRegistry(recentlyClosedWindow.getUrl(), false);
+                int inactiveTabCount = recentlyClosedWindow.getTabCount() - 1;
+                final String description;
+                if (inactiveTabCount > 0) {
+                    description =
+                            res.getQuantityString(
+                                    R.plurals.recent_tabs_window_closure_domain_text,
+                                    inactiveTabCount,
+                                    activeTabDomain,
+                                    inactiveTabCount);
+                } else {
+                    description = activeTabDomain;
                 }
-                if (entry instanceof RecentlyClosedBulkEvent) {
-                    RecentlyClosedBulkEvent recentlyClosedBulkEvent =
-                            (RecentlyClosedBulkEvent) entry;
-                    List<RecentlyClosedTab> tabList = recentlyClosedBulkEvent.getTabs();
-                    tabCount = tabList.size();
+                viewHolder.domainView.setText(description);
+                viewHolder.domainView.setVisibility(View.VISIBLE);
+                loadWindowIcon(viewHolder);
+            } else if (entry instanceof RecentlyClosedGroup recentlyClosedGroup) {
+                List<RecentlyClosedTab> tabList = recentlyClosedGroup.getTabs();
+                int tabCount = tabList.size();
 
+                String groupTitle = recentlyClosedGroup.getTitle();
+                @TabGroupColorId int colorId = recentlyClosedGroup.getColor();
+                if (TextUtils.isEmpty(groupTitle)) {
                     viewHolder.textView.setText(
-                            res.getString(R.string.recent_tabs_bulk_closure, tabCount));
-                    viewHolder.textView.setContentDescription(
+                            res.getQuantityString(
+                                    R.plurals.recent_tabs_group_closure_without_title,
+                                    tabCount,
+                                    tabCount));
+                } else {
+                    viewHolder.textView.setText(
                             res.getString(
-                                    R.string.recent_tabs_bulk_closure_accessibility, tabCount));
-                    setDomainText(res, viewHolder, tabCount, tabList);
-                    loadTabCount(viewHolder, tabCount);
+                                    R.string.recent_tabs_group_closure_with_title, groupTitle));
                 }
-            } else {
-                RecentlyClosedTab tab = (RecentlyClosedTab) entry;
+                setDomainText(res, viewHolder, tabCount, tabList);
+                setContentDescription(res, viewHolder, groupTitle, colorId, tabCount);
+                setIconView(viewHolder, colorId);
+                loadGroupIcon(viewHolder);
+            } else if (entry instanceof RecentlyClosedBulkEvent recentlyClosedBulkEvent) {
+                List<RecentlyClosedTab> tabList = recentlyClosedBulkEvent.getTabs();
+                int tabCount = tabList.size();
 
+                viewHolder.textView.setText(
+                        res.getString(R.string.recent_tabs_bulk_closure, tabCount));
+                viewHolder.textView.setContentDescription(
+                        res.getString(R.string.recent_tabs_bulk_closure_accessibility, tabCount));
+                setDomainText(res, viewHolder, tabCount, tabList);
+                loadTabCount(viewHolder, tabCount);
+            } else {
+                assert entry instanceof RecentlyClosedTab : "Unexpected entry type.";
+                RecentlyClosedTab tab = (RecentlyClosedTab) entry;
                 String title = TitleUtil.getTitleForDisplay(tab.getTitle(), tab.getUrl());
                 viewHolder.textView.setText(title);
 
@@ -881,6 +898,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         mFaviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
 
         mIconGenerator = FaviconUtils.createCircularIconGenerator(activity);
+        mHoverListener = new HoverHighlightViewListener();
 
         RecordHistogram.recordEnumeratedHistogram(
                 "HistoryPage.OtherDevicesMenu",
@@ -918,10 +936,19 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
 
     private void loadGroupIcon(final ViewHolder viewHolder) {
         Drawable image =
-                ResourcesCompat.getDrawable(
-                        mActivity.getResources(),
+                UiUtils.getTintedDrawable(
+                        mActivity,
                         R.drawable.ic_features_24dp,
-                        mActivity.getTheme());
+                        R.color.default_icon_color_tint_list);
+        viewHolder.imageView.setImageDrawable(image);
+    }
+
+    private void loadWindowIcon(final ViewHolder viewHolder) {
+        Drawable image =
+                UiUtils.getTintedDrawable(
+                        mActivity,
+                        R.drawable.ic_folder_outline_24dp,
+                        R.color.default_icon_color_tint_list);
         viewHolder.imageView.setImageDrawable(image);
     }
 

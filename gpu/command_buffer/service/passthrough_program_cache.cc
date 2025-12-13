@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/passthrough_program_cache.h"
 
 #include <stddef.h>
@@ -15,8 +10,10 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_view_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -164,13 +161,9 @@ void PassthroughProgramCache::Set(Key&& key,
     CacheProgramCallback callback_with_fallback =
         callback ? callback : cache_program_callback_;
     if (callback_with_fallback) {
-      // Convert the key and binary to string form.
-      std::string_view key_string(reinterpret_cast<const char*>(key.data()),
-                                  key.size());
-      std::string_view value_string(reinterpret_cast<const char*>(value.data()),
-                                    value.size());
-      std::string key_string_64 = base::Base64Encode(key_string);
-      std::string value_string_64 = base::Base64Encode(value_string);
+      // Convert the key and binary to base-64 string form.
+      std::string key_string_64 = base::Base64Encode(key);
+      std::string value_string_64 = base::Base64Encode(value);
       callback_with_fallback.Run(key_string_64, value_string_64);
     }
 
@@ -198,7 +191,7 @@ size_t PassthroughProgramCache::Get(const Key& key,
 
   if (value_size > 0) {
     if (static_cast<size_t>(value_size) >= entry_value.size()) {
-      memcpy(out_value, entry_value.data(), entry_value.size());
+      UNSAFE_TODO(memcpy(out_value, entry_value.data(), entry_value.size()));
     }
   }
 
@@ -215,7 +208,8 @@ EGLsizeiANDROID PassthroughProgramCache::BlobCacheGetImpl(
   }
 
   const uint8_t* key_begin = reinterpret_cast<const uint8_t*>(key);
-  PassthroughProgramCache::Key entry_key(key_begin, key_begin + key_size);
+  PassthroughProgramCache::Key entry_key(key_begin,
+                                         UNSAFE_TODO(key_begin + key_size));
 
   return Get(entry_key, value, value_size);
 }
@@ -229,11 +223,12 @@ void PassthroughProgramCache::BlobCacheSetImpl(const void* key,
   }
 
   const uint8_t* key_begin = reinterpret_cast<const uint8_t*>(key);
-  PassthroughProgramCache::Key entry_key(key_begin, key_begin + key_size);
+  PassthroughProgramCache::Key entry_key(key_begin,
+                                         UNSAFE_TODO(key_begin + key_size));
 
   const uint8_t* value_begin = reinterpret_cast<const uint8_t*>(value);
-  PassthroughProgramCache::Value entry_value(value_begin,
-                                             value_begin + value_size);
+  PassthroughProgramCache::Value entry_value(
+      value_begin, UNSAFE_TODO(value_begin + value_size));
 
   // Pass a null callback to use the default cache_program_callback_
   Set(std::move(entry_key), std::move(entry_value), CacheProgramCallback());

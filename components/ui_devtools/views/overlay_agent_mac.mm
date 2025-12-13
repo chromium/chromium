@@ -8,7 +8,7 @@
 
 #include "components/ui_devtools/views/view_element.h"
 #include "components/ui_devtools/views/widget_element.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui_devtools {
 

@@ -22,6 +22,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/posix/safe_strerror.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"

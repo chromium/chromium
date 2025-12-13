@@ -66,7 +66,8 @@ import {ElementsTestRunner} from 'elements_test_runner';
    * @param {!Promise}
    */
   async function nodeResolved(node, name, colorFormat = 'hex') {
-    const result = await TestRunner.OverlayAgent.getHighlightObjectForTest(node.id, undefined, undefined, colorFormat);
+    const {highlight: result} = await TestRunner.OverlayAgent.invoke_getHighlightObjectForTest(
+        {nodeId: node.id, colorFormat: colorFormat});
     TestRunner.addResult(name + JSON.stringify(result, null, 2));
   }
 
@@ -79,7 +80,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
    * @param {!Promise}
    */
   async function nodeResolvedApproximate(node, name, expectedWidth, expectedHeight, tolerance = 3) {
-    const result = await TestRunner.OverlayAgent.getHighlightObjectForTest(node.id);
+    const {highlight: result} = await TestRunner.OverlayAgent.invoke_getHighlightObjectForTest({nodeId: node.id});
 
     if (result['paths']) {
       for (const path of result['paths']) {

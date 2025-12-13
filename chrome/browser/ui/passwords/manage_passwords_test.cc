@@ -12,6 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/ui/mocks/mock_actor_ui_state_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
@@ -105,6 +108,26 @@ void ManagePasswordsTest::SetUpInProcessBrowserTestFixture() {
                                             -> std::unique_ptr<KeyedService> {
                       return std::make_unique<syncer::TestSyncService>();
                     }));
+
+                actor::ActorKeyedServiceFactory::GetInstance()
+                    ->SetTestingFactory(
+                        context,
+                        base::BindRepeating([](content::BrowserContext* context)
+                                                -> std::unique_ptr<
+                                                    KeyedService> {
+                          Profile* profile =
+                              Profile::FromBrowserContext(context);
+                          auto actor_keyed_service =
+                              std::make_unique<actor::ActorKeyedServiceFake>(
+                                  profile);
+                          std::unique_ptr<actor::ui::MockActorUiStateManager>
+                              ausm = std::make_unique<
+                                  actor::ui::MockActorUiStateManager>();
+                          actor_keyed_service->SetActorUiStateManagerForTesting(
+                              std::move(ausm));
+
+                          return std::move(actor_keyed_service);
+                        }));
               }));
 }
 

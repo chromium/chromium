@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <cstddef>
 #include <string>
 #include <string_view>
+#include <tuple>
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check_deref.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/load_profile.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
@@ -16,8 +19,12 @@
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -27,8 +34,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,10 +48,13 @@ using kiosk::test::CreatePopupBrowser;
 using kiosk::test::CreateRegularBrowser;
 using kiosk::test::CurrentProfile;
 using kiosk::test::DidKioskCloseNewWindow;
+using kiosk::test::DidKioskHideNewWindow;
 using kiosk::test::TheKioskWebApp;
 using kiosk::test::WaitKioskLaunched;
 
 namespace {
+
+constexpr const char* kTestUrlParams[] = {"", "https://www.test.com"};
 
 bool GetPolicyValueInPrefs(Profile& profile) {
   return profile.GetPrefs()->GetBoolean(prefs::kNewWindowsInKioskAllowed);
@@ -82,32 +94,50 @@ void CachePolicyValue(const std::string& account_id, PolicyValue policy_value) {
   });
 }
 
-std::string PolicyValueName(const testing::TestParamInfo<PolicyValue>& info) {
-  switch (info.param) {
+std::string UrlValueName(const std::string& url) {
+  return url.empty() ? "NavigateToEmptyUrl" : "NavigateToNonEmptyUrl";
+}
+
+std::string PolicyValueName(PolicyValue policy_value) {
+  switch (policy_value) {
     case PolicyValue::kUnset:
-      return "PolicyUnset";
+      return "WithPolicyUnset";
     case PolicyValue::kTrue:
-      return "PolicyTrue";
+      return "WithPolicyTrue";
     case PolicyValue::kFalse:
-      return "PolicyFalse";
+      return "WithPolicyFalse";
   }
+}
+
+std::string TestUrlName(const testing::TestParamInfo<const char*>& info) {
+  const auto& url = info.param;
+  return UrlValueName(url);
+}
+
+std::string TestValueName(
+    const testing::TestParamInfo<std::tuple<PolicyValue, const char*>>& info) {
+  const auto& [policy_value, url] = info.param;
+  return base::StrCat({UrlValueName(url), PolicyValueName(policy_value)});
+}
+
+size_t VisibleBrowserCount() {
+  auto visible_browsers =
+      ui_test_utils::FindMatchingBrowsers([](BrowserWindowInterface* browser) {
+        return browser->GetWindow() && browser->GetWindow()->IsVisible();
+      });
+  return visible_browsers.size();
 }
 
 }  // namespace
 
-// Verifies the `NewWindowsInKioskAllowed` policy when it is set to true.
-class NewWindowsInKioskAllowedTest : public MixinBasedInProcessBrowserTest {
+// Base class to test new windows in kiosk.
+// Note: `NewWindowsInKioskAllowed` policy is unset.
+class NewWindowsInKioskTest : public MixinBasedInProcessBrowserTest {
  public:
-  NewWindowsInKioskAllowedTest() = default;
-  NewWindowsInKioskAllowedTest(const NewWindowsInKioskAllowedTest&) = delete;
-  NewWindowsInKioskAllowedTest& operator=(const NewWindowsInKioskAllowedTest&) =
-      delete;
-  ~NewWindowsInKioskAllowedTest() override = default;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    CachePolicyValue(WebAppInConfig().account_id, PolicyValue::kTrue);
-  }
+  NewWindowsInKioskTest() = default;
+  NewWindowsInKioskTest(const NewWindowsInKioskTest&) = delete;
+  NewWindowsInKioskTest& operator=(const NewWindowsInKioskTest&) = delete;
+  ~NewWindowsInKioskTest() override = default;
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
@@ -118,39 +148,82 @@ class NewWindowsInKioskAllowedTest : public MixinBasedInProcessBrowserTest {
                     /*cached_configuration=*/Config()};
 };
 
-IN_PROC_BROWSER_TEST_F(NewWindowsInKioskAllowedTest, AllowsNewPopupWindows) {
+// Verifies the `NewWindowsInKioskAllowed` policy when it is set to true.
+class NewWindowsInKioskAllowedTest
+    : public NewWindowsInKioskTest,
+      public ::testing::WithParamInterface<const char*> {
+ public:
+  NewWindowsInKioskAllowedTest() = default;
+  NewWindowsInKioskAllowedTest(const NewWindowsInKioskAllowedTest&) = delete;
+  NewWindowsInKioskAllowedTest& operator=(const NewWindowsInKioskAllowedTest&) =
+      delete;
+  ~NewWindowsInKioskAllowedTest() override = default;
+
+  const GURL url() const { return GURL(GetParam()); }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    CachePolicyValue(WebAppInConfig().account_id, PolicyValue::kTrue);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(NewWindowsInKioskAllowedTest, CloseBrowserIfReOpen) {
+  ASSERT_TRUE(GetPolicyValueInPrefs(CurrentProfile()));
+
+  EXPECT_EQ(VisibleBrowserCount(), 1u);
+  Browser& browser = CreateRegularBrowser(CurrentProfile(), GURL());
+  ASSERT_TRUE(DidKioskHideNewWindow(&browser));
+  EXPECT_EQ(VisibleBrowserCount(), 1u);
+  ASSERT_FALSE(browser.window()->IsVisible());
+  browser.window()->Show();
+  ASSERT_TRUE(TestBrowserClosedWaiter(&browser).WaitUntilClosed());
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_P(NewWindowsInKioskAllowedTest, AllowsNewPopupWindows) {
   auto& profile = CurrentProfile();
   ASSERT_TRUE(GetPolicyValueInPrefs(profile));
 
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-  Browser& initial_browser = CHECK_DEREF(BrowserList::GetInstance()->get(0));
+  EXPECT_EQ(VisibleBrowserCount(), 1u);
+  Browser& initial_browser =
+      CHECK_DEREF(GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                      ->GetBrowserForMigrationOnly());
 
   Browser& popup =
-      CreatePopupBrowser(profile, WebAppWindowName(TheKioskWebApp()));
+      CreatePopupBrowser(profile, WebAppWindowName(TheKioskWebApp()), url());
 
   ASSERT_FALSE(DidKioskCloseNewWindow());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_EQ(VisibleBrowserCount(), 2u);
 
-  EXPECT_FALSE(initial_browser.GetBrowserView().CanUserEnterFullscreen());
-  EXPECT_FALSE(popup.GetBrowserView().CanUserEnterFullscreen());
+  EXPECT_FALSE(initial_browser.GetBrowserView()
+                   .GetExclusiveAccessContext()
+                   ->CanUserEnterFullscreen());
+  EXPECT_FALSE(popup.GetBrowserView()
+                   .GetExclusiveAccessContext()
+                   ->CanUserEnterFullscreen());
   EXPECT_TRUE(initial_browser.GetBrowserView().IsFullscreen());
   EXPECT_TRUE(popup.GetBrowserView().IsFullscreen());
 }
 
-IN_PROC_BROWSER_TEST_F(NewWindowsInKioskAllowedTest,
+IN_PROC_BROWSER_TEST_P(NewWindowsInKioskAllowedTest,
                        DisallowsNewRegularWindows) {
   ASSERT_TRUE(GetPolicyValueInPrefs(CurrentProfile()));
 
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-  Browser& browser = CreateRegularBrowser(CurrentProfile());
-  ASSERT_TRUE(TestBrowserClosedWaiter(&browser).WaitUntilClosed());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(VisibleBrowserCount(), 1u);
+  Browser& browser = CreateRegularBrowser(CurrentProfile(), url());
+  ASSERT_TRUE(DidKioskHideNewWindow(&browser));
+  EXPECT_EQ(VisibleBrowserCount(), 1u);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NewWindowsInKioskAllowedTest,
+                         testing::ValuesIn(kTestUrlParams),
+                         TestUrlName);
 
 // Verifies the `NewWindowsInKioskAllowed` policy when it is unset or false.
 class NewWindowsInKioskDisallowedTest
-    : public NewWindowsInKioskAllowedTest,
-      public testing::WithParamInterface<PolicyValue> {
+    : public NewWindowsInKioskTest,
+      public testing::WithParamInterface<std::tuple<PolicyValue, const char*>> {
  public:
   NewWindowsInKioskDisallowedTest() = default;
   NewWindowsInKioskDisallowedTest(const NewWindowsInKioskDisallowedTest&) =
@@ -159,31 +232,44 @@ class NewWindowsInKioskDisallowedTest
       const NewWindowsInKioskDisallowedTest&) = delete;
   ~NewWindowsInKioskDisallowedTest() override = default;
 
+  PolicyValue policy_value() const { return std::get<0>(GetParam()); }
+
+  const GURL url() const { return GURL(std::get<1>(GetParam())); }
+
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    CachePolicyValue(WebAppInConfig().account_id, /*policy_value=*/GetParam());
+    CachePolicyValue(WebAppInConfig().account_id, policy_value());
   }
 };
 
-IN_PROC_BROWSER_TEST_P(NewWindowsInKioskDisallowedTest, DisallowsNewWindows) {
+IN_PROC_BROWSER_TEST_P(NewWindowsInKioskDisallowedTest,
+                       HidesNewRegularBrowserWindows) {
   ASSERT_FALSE(GetPolicyValueInPrefs(CurrentProfile()));
 
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(VisibleBrowserCount(), 1u);
 
-  Browser& browser = CreateRegularBrowser(CurrentProfile());
-  ASSERT_TRUE(TestBrowserClosedWaiter(&browser).WaitUntilClosed());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  Browser& browser = CreateRegularBrowser(CurrentProfile(), url());
+  ASSERT_TRUE(DidKioskHideNewWindow(&browser));
+  EXPECT_EQ(VisibleBrowserCount(), 1u);
+}
 
-  Browser& popup =
-      CreatePopupBrowser(CurrentProfile(), WebAppWindowName(TheKioskWebApp()));
-  ASSERT_TRUE(TestBrowserClosedWaiter(&popup).WaitUntilClosed());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+IN_PROC_BROWSER_TEST_P(NewWindowsInKioskDisallowedTest,
+                       HidesNewAppBrowserWindows) {
+  ASSERT_FALSE(GetPolicyValueInPrefs(CurrentProfile()));
+
+  EXPECT_EQ(VisibleBrowserCount(), 1u);
+
+  Browser& popup = CreatePopupBrowser(
+      CurrentProfile(), WebAppWindowName(TheKioskWebApp()), url());
+  ASSERT_TRUE(DidKioskHideNewWindow(&popup));
+  EXPECT_EQ(VisibleBrowserCount(), 1u);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          NewWindowsInKioskDisallowedTest,
-                         testing::Values(PolicyValue::kUnset,
-                                         PolicyValue::kFalse),
-                         PolicyValueName);
+                         testing::Combine(testing::Values(PolicyValue::kUnset,
+                                                          PolicyValue::kFalse),
+                                          testing::ValuesIn(kTestUrlParams)),
+                         TestValueName);
 
 }  // namespace ash

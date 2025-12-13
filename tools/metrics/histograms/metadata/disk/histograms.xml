@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="DiskCache.0.Error" enum="DiskCacheError"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>wfh@chromium.org</owner>
   <owner>src/net/disk_cache/OWNERS</owner>
   <summary>
@@ -33,8 +33,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DiskCache.0.TotalIOTimeRead" units="ms"
+<histogram name="DiskCache.0.EvictedAge" units="ms" expires_after="2026-05-03">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/disk_cache/OWNERS</owner>
+  <summary>
+    The elapsed time since an entry evicted from the HTTP disk cache was last
+    used (or created). Logged once for every entry that is evicted, but only
+    when the value is less than a day.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.EvictedRank" enum="DiskCacheRanking"
     expires_after="2025-12-28">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/disk_cache/OWNERS</owner>
+  <summary>
+    The rank of a single entry evicted from the HTTP disk cache. Logged once for
+    every entry that is evicted.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalIOTimeRead" units="ms"
+    expires_after="2026-05-03">
   <owner>jam@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -45,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DiskCache.0.TotalIOTimeWrite" units="ms"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>jam@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -55,13 +75,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DiskCache.0.TrimmedDeletedRankingEntries" units="count"
+    expires_after="2026-05-03">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/disk_cache/OWNERS</owner>
+  <summary>
+    The number of deleted entries trimmed from the cache in a single call to
+    disk_cache::Eviction::TrimDeleted(). Logged one for every call to the method
+    for the HTTP cache when not emptying the cache.
+
+    Since this method will delete at most 20 entries in a single call, a value
+    of 20 may mean it called itself back asynchronously.
+  </summary>
+</histogram>
+
 <histogram name="DiskCache.HashBucketOK.Sampled" enum="Boolean"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>morlovich@chromium.org</owner>
   <owner>src/net/disk_cache/OWNERS</owner>
   <summary>
     Whenever an entry is looked for in the index hash table, reports whether
     it's in the right bucket. Sampled to report 1% of the time.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.MoveCacheToRestartCache.Windows"
+    enum="BooleanSuccess" expires_after="2026-05-03">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Record whether disk_cache::MoveCache() succeeded or not to RestartCache on
+    Windows. This is recorded on each call of MoveFileEx() to RestartCache. When
+    MoveFileEx() returns true, true is recorded.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.MoveCacheToRestartCacheError.Windows"
+    enum="WinGetLastError" expires_after="2026-05-03">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Record the Windows GetLastError after a failure of disk_cache::MoveCache().
+    This is recorded on each failure of MoveFileEx() to RestartCache.
   </summary>
 </histogram>
 

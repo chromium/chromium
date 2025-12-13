@@ -232,16 +232,15 @@ VRServiceImpl::VRServiceImpl(base::PassKey<XRRuntimeManagerTest>)
 VRServiceImpl::~VRServiceImpl() {
   DVLOG(2) << __func__;
   // Ensure that any active magic window sessions are disconnected to avoid
-  // collisions when a new session starts. See https://crbug.com/1017959, the
+  // collisions when a new session starts. See https://crbug.com/40655152, the
   // disconnect handler doesn't get called automatically on page navigation.
   for (auto it = magic_window_controllers_.begin();
        it != magic_window_controllers_.end(); ++it) {
     OnInlineSessionDisconnected(it.id());
   }
+  magic_window_controllers_.Clear();
 
-  if (on_exit_present_) {
-    std::move(on_exit_present_).Run();
-  }
+  OnExitPresent();
 
   runtime_manager_->RemoveService(this);
 }
@@ -306,6 +305,9 @@ void VRServiceImpl::RenderFrameDeleted(content::RenderFrameHost* host) {
   DVLOG(2) << __func__;
   if (host != render_frame_host_)
     return;
+
+  // Clear out the render_frame_host_ before doing any closing activities.
+  render_frame_host_ = nullptr;
 
   // Receiver should always be live here, as this is a SelfOwnedReceiver.
   // Close the receiver (and delete this VrServiceImpl) when the RenderFrameHost
@@ -426,6 +428,7 @@ void VRServiceImpl::OnImmersiveSessionCreated(
               request.runtime_id, *(request.options), enabled_features);
 
   render_frame_host_->GetProcess()->OnImmersiveXrSessionStarted();
+  has_immersive_session_ = true;
 
   // If the session specified a FrameSinkId that means that it is handling its
   // own compositing in a way that we should notify the WebContents about.
@@ -570,7 +573,7 @@ void VRServiceImpl::RequestSession(
 
 void VRServiceImpl::DoRequestPermissions(
     const std::vector<blink::PermissionType> request_permissions,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<PermissionResult>&)>
         result_callback) {
   PermissionController* permission_controller =
       GetWebContents()->GetBrowserContext()->GetPermissionController();
@@ -614,9 +617,9 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
 void VRServiceImpl::OnPermissionResultsForMode(
     SessionRequestData request,
     const std::vector<blink::PermissionType>& permissions,
-    const std::vector<blink::mojom::PermissionStatus>& permission_statuses) {
+    const std::vector<PermissionResult>& results) {
   DVLOG(2) << __func__ << ": permissions.size()=" << permissions.size();
-  DCHECK_EQ(permissions.size(), permission_statuses.size());
+  DCHECK_EQ(permissions.size(), results.size());
 
   // Prolong the user activation since the user may have taken long enough to
   // answer the permission prompts that the transient user activation expired.
@@ -627,8 +630,7 @@ void VRServiceImpl::OnPermissionResultsForMode(
   render_frame_host_->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kInteraction);
 
-  const XrPermissionResults permission_results(permissions,
-                                               permission_statuses);
+  const XrPermissionResults permission_results(permissions, results);
 
   bool is_consent_granted =
       permission_results.HasPermissionsFor(request.options->mode);
@@ -660,9 +662,8 @@ void VRServiceImpl::OnPermissionResultsForMode(
 void VRServiceImpl::OnPermissionResultsForFeatures(
     SessionRequestData request,
     const std::vector<blink::PermissionType>& permissions,
-    const std::vector<blink::mojom::PermissionStatus>& permission_statuses) {
-  const XrPermissionResults permission_results(permissions,
-                                               permission_statuses);
+    const std::vector<PermissionResult>& results) {
+  const XrPermissionResults permission_results(permissions, results);
 
   std::unordered_set<device::mojom::XRSessionFeature> rejected_features;
   for (auto& required_feature : request.required_features) {
@@ -922,13 +923,18 @@ void VRServiceImpl::OnMakeXrCompatibleComplete(
 void VRServiceImpl::OnExitPresent() {
   DVLOG(2) << __func__;
 
-  // Clear any XrRenderTarget that may have been set.
-  viz::FrameSinkId default_frame_sink_id;
-  static_cast<WebContentsImpl*>(GetWebContents())
-      ->OnXrHasRenderTarget(default_frame_sink_id);
+  if (render_frame_host_) {
+    // Clear any XrRenderTarget that may have been set.
+    viz::FrameSinkId default_frame_sink_id;
+    static_cast<WebContentsImpl*>(GetWebContents())
+        ->OnXrHasRenderTarget(default_frame_sink_id);
 
-  render_frame_host_->GetProcess()->OnImmersiveXrSessionStopped();
-  GetSessionMetricsHelper()->StopAndRecordImmersiveSession();
+    if (has_immersive_session_) {
+      render_frame_host_->GetProcess()->OnImmersiveXrSessionStopped();
+      GetSessionMetricsHelper()->StopAndRecordImmersiveSession();
+      has_immersive_session_ = false;
+    }
+  }
 
   if (on_exit_present_) {
     std::move(on_exit_present_).Run();

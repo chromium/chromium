@@ -80,7 +80,7 @@ impl Derivable for Pod {
     match &input.data {
       Data::Struct(_) => {
         let assert_no_padding = if !completly_packed {
-          Some(generate_assert_no_padding(input)?)
+          Some(generate_assert_no_padding(input, None, "Pod")?)
         } else {
           None
         };
@@ -237,10 +237,18 @@ impl Derivable for NoUninit {
         Repr::C | Repr::Transparent => Ok(()),
         _ => bail!("NoUninit requires the struct to be #[repr(C)] or #[repr(transparent)]"),
       },
-      Data::Enum(_) => if repr.repr.is_integer() {
-        Ok(())
-      } else {
-        bail!("NoUninit requires the enum to be an explicit #[repr(Int)]")
+      Data::Enum(DataEnum { variants,.. }) => {
+        if !enum_has_fields(variants.iter()) {
+          if matches!(repr.repr, Repr::C | Repr::Integer(_)) {
+            Ok(())
+          } else {
+            bail!("NoUninit requires the enum to be #[repr(C)] or #[repr(Int)]")
+          }
+        } else if matches!(repr.repr, Repr::Rust) {
+          bail!("NoUninit requires an explicit repr annotation because `repr(Rust)` doesn't have a specified type layout")
+        } else {
+          Ok(())
+        }
       },
       Data::Union(_) => bail!("NoUninit can only be derived on enums and structs")
     }
@@ -255,7 +263,8 @@ impl Derivable for NoUninit {
 
     match &input.data {
       Data::Struct(DataStruct { .. }) => {
-        let assert_no_padding = generate_assert_no_padding(&input)?;
+        let assert_no_padding =
+          generate_assert_no_padding(&input, None, "NoUninit")?;
         let assert_fields_are_no_padding = generate_fields_are_trait(
           &input,
           None,
@@ -268,8 +277,61 @@ impl Derivable for NoUninit {
         ))
       }
       Data::Enum(DataEnum { variants, .. }) => {
-        if variants.iter().any(|variant| !variant.fields.is_empty()) {
-          bail!("Only fieldless enums are supported for NoUninit")
+        if enum_has_fields(variants.iter()) {
+          // There are two different C representations for enums with fields:
+          // There's `#[repr(C)]`/`[repr(C, int)]` and `#[repr(int)]`.
+          // `#[repr(C)]` is equivalent to a struct containing the discriminant
+          // and a union of structs representing each variant's fields.
+          // `#[repr(int)]` is equivalent to a union containing structs of the
+          // discriminant and the fields.
+          //
+          // See https://doc.rust-lang.org/reference/type-layout.html#r-layout.repr.c.adt
+          // and https://doc.rust-lang.org/reference/type-layout.html#r-layout.repr.primitive.adt
+          //
+          // In practice the only difference between the two is whether and
+          // where padding bytes are placed. For `#[repr(C)]` enums, the first
+          // enum fields of all variants start at the same location (the first
+          // byte in the union). For `#[repr(int)]` enums, the structs
+          // representing each variant are layed out individually and padding
+          // does not depend on other variants, but only on the size of the
+          // discriminant and the alignment of the first field. The location of
+          // the first field might differ between variants, potentially
+          // resulting in less padding or padding placed later in the enum.
+          //
+          // The `NoUninit` derive macro asserts that no padding exists by
+          // removing all padding with `#[repr(packed)]` and checking that this
+          // doesn't change the size. Since the location and presence of
+          // padding bytes is the only difference between the two
+          // representations and we're removing all padding bytes, the resuling
+          // layout would identical for both representations. This means that
+          // we can just pick one of the representations and don't have to
+          // implement desugaring for both. We chose to implement the
+          // desugaring for `#[repr(int)]`.
+
+          let enum_discriminant = generate_enum_discriminant(input)?;
+          let variant_assertions = variants
+            .iter()
+            .map(|variant| {
+              let assert_no_padding =
+                generate_assert_no_padding(&input, Some(variant), "NoUninit")?;
+              let assert_fields_are_no_padding = generate_fields_are_trait(
+                &input,
+                Some(variant),
+                Self::ident(input, crate_name)?,
+              )?;
+
+              Ok(quote!(
+                  #assert_no_padding
+                  #assert_fields_are_no_padding
+              ))
+            })
+            .collect::<Result<Vec<_>>>()?;
+          Ok(quote! {
+            const _: () = {
+              #enum_discriminant
+              #(#variant_assertions)*
+            };
+          })
         } else {
           Ok(quote!())
         }
@@ -301,10 +363,10 @@ impl Derivable for CheckedBitPattern {
       },
       Data::Enum(DataEnum { variants,.. }) => {
         if !enum_has_fields(variants.iter()){
-          if repr.repr.is_integer() {
+          if matches!(repr.repr, Repr::C | Repr::Integer(_)) {
             Ok(())
           } else {
-            bail!("CheckedBitPattern requires the enum to be an explicit #[repr(Int)]")
+            bail!("CheckedBitPattern requires the enum to be #[repr(C)] or #[repr(Int)]")
           }
         } else if matches!(repr.repr, Repr::Rust) {
           bail!("CheckedBitPattern requires an explicit repr annotation because `repr(Rust)` doesn't have a specified type layout")
@@ -361,19 +423,29 @@ impl Derivable for CheckedBitPattern {
 
 pub struct TransparentWrapper;
 
+struct WrappedType {
+  wrapped_type: syn::Type,
+  /// Was the type given with a #[transparent(Type)] attribute.
+  explicit: bool,
+}
+
 impl TransparentWrapper {
-  fn get_wrapper_type(
+  fn get_wrapped_type(
     attributes: &[Attribute], fields: &Fields,
-  ) -> Option<TokenStream> {
-    let transparent_param = get_simple_attr(attributes, "transparent");
-    transparent_param.map(|ident| ident.to_token_stream()).or_else(|| {
+  ) -> Option<WrappedType> {
+    let transparent_param =
+      get_type_from_simple_attr(attributes, "transparent")
+        .map(|wrapped_type| WrappedType { wrapped_type, explicit: true });
+    transparent_param.or_else(|| {
       let mut types = get_field_types(&fields);
       let first_type = types.next();
       if let Some(_) = types.next() {
         // can't guess param type if there is more than one field
         return None;
       } else {
-        first_type.map(|ty| ty.to_token_stream())
+        first_type
+          .cloned()
+          .map(|wrapped_type| WrappedType { wrapped_type, explicit: false })
       }
     })
   }
@@ -383,15 +455,13 @@ impl Derivable for TransparentWrapper {
   fn ident(input: &DeriveInput, crate_name: &TokenStream) -> Result<syn::Path> {
     let fields = get_struct_fields(input)?;
 
-    let ty = match Self::get_wrapper_type(&input.attrs, &fields) {
-      Some(ty) => ty,
-      None => bail!(
-        "\
-        when deriving TransparentWrapper for a struct with more than one field \
-        you need to specify the transparent field using #[transparent(T)]\
-      "
-      ),
-    };
+    let WrappedType { wrapped_type: ty, .. } =
+      match Self::get_wrapped_type(&input.attrs, &fields) {
+        Some(ty) => ty,
+        None => bail!("when deriving TransparentWrapper for a struct with more \
+                       than one field, you need to specify the transparent field \
+                       using #[transparent(T)]"),
+      };
 
     Ok(syn::parse_quote!(#crate_name::TransparentWrapper<#ty>))
   }
@@ -402,19 +472,27 @@ impl Derivable for TransparentWrapper {
     let (impl_generics, _ty_generics, where_clause) =
       input.generics.split_for_impl();
     let fields = get_struct_fields(input)?;
-    let wrapped_type = match Self::get_wrapper_type(&input.attrs, &fields) {
-      Some(wrapped_type) => wrapped_type.to_string(),
-      None => unreachable!(), /* other code will already reject this derive */
-    };
+    let (wrapped_type, explicit) =
+      match Self::get_wrapped_type(&input.attrs, &fields) {
+        Some(WrappedType { wrapped_type, explicit }) => {
+          (wrapped_type.to_token_stream().to_string(), explicit)
+        }
+        None => unreachable!(), /* other code will already reject this derive */
+      };
     let mut wrapped_field_ty = None;
     let mut nonwrapped_field_tys = vec![];
     for field in fields.iter() {
       let field_ty = &field.ty;
       if field_ty.to_token_stream().to_string() == wrapped_type {
         if wrapped_field_ty.is_some() {
-          bail!(
-            "TransparentWrapper can only have one field of the wrapped type"
-          );
+          if explicit {
+            bail!("TransparentWrapper must have one field of the wrapped type. \
+                   The type given in `#[transparent(Type)]` must match tokenwise \
+                   with the type in the struct definition, not just be the same type. \
+                   You may be able to use a type alias to work around this limitation.");
+          } else {
+            bail!("TransparentWrapper must have one field of the wrapped type");
+          }
         }
         wrapped_field_ty = Some(field_ty);
       } else {
@@ -648,12 +726,15 @@ fn generate_checked_bit_pattern_enum(
   if enum_has_fields(variants.iter()) {
     generate_checked_bit_pattern_enum_with_fields(input, variants, crate_name)
   } else {
-    generate_checked_bit_pattern_enum_without_fields(input, variants)
+    generate_checked_bit_pattern_enum_without_fields(
+      input, variants, crate_name,
+    )
   }
 }
 
 fn generate_checked_bit_pattern_enum_without_fields(
   input: &DeriveInput, variants: &Punctuated<Variant, Token![,]>,
+  crate_name: &TokenStream,
 ) -> Result<(TokenStream, TokenStream)> {
   let span = input.span();
   let mut variants_with_discriminant =
@@ -696,10 +777,9 @@ fn generate_checked_bit_pattern_enum_without_fields(
     quote!(matches!(*bits, #first #(| #rest )*))
   };
 
-  let repr = get_repr(&input.attrs)?;
-  let integer = repr.repr.as_integer().unwrap(); // should be checked in attr check already
+  let (integer, defs) = get_enum_discriminant(input, crate_name)?;
   Ok((
-    quote!(),
+    quote!(#defs),
     quote! {
         type Bits = #integer;
 
@@ -721,12 +801,8 @@ fn generate_checked_bit_pattern_enum_with_fields(
 
   match representation.repr {
     Repr::Rust => unreachable!(),
-    repr @ (Repr::C | Repr::CWithDiscriminant(_)) => {
-      let integer = match repr {
-        Repr::C => quote!(::core::ffi::c_int),
-        Repr::CWithDiscriminant(integer) => quote!(#integer),
-        _ => unreachable!(),
-      };
+    Repr::C | Repr::CWithDiscriminant(_) => {
+      let (integer, defs) = get_enum_discriminant(input, crate_name)?;
       let input_ident = &input.ident;
 
       let bits_repr = Representation { repr: Repr::C, ..representation };
@@ -796,6 +872,8 @@ fn generate_checked_bit_pattern_enum_with_fields(
 
       Ok((
         quote! {
+          #defs
+
           #[doc = #GENERATED_TYPE_DOCUMENTATION]
           #[derive(::core::clone::Clone, ::core::marker::Copy, #crate_name::AnyBitPattern)]
           #bits_repr
@@ -981,14 +1059,28 @@ fn generate_checked_bit_pattern_enum_with_fields(
   }
 }
 
-/// Check that a struct has no padding by asserting that the size of the struct
-/// is equal to the sum of the size of it's fields
-fn generate_assert_no_padding(input: &DeriveInput) -> Result<TokenStream> {
+/// Check that a struct or enum has no padding by asserting that the size of
+/// the type is equal to the sum of the size of it's fields and discriminant
+/// (for enums, this must be asserted for each variant).
+fn generate_assert_no_padding(
+  input: &DeriveInput, enum_variant: Option<&Variant>, for_trait: &str,
+) -> Result<TokenStream> {
   let struct_type = &input.ident;
-  let enum_variant = None; // `no padding` check is not supported for `enum`s yet.
   let fields = get_fields(input, enum_variant)?;
 
-  let mut field_types = get_field_types(&fields);
+  // If the type is an enum, determine the type of its discriminant.
+  let enum_discriminant = if matches!(input.data, Data::Enum(_)) {
+    let ident =
+      Ident::new(&format!("{}Discriminant", input.ident), input.ident.span());
+    Some(ident.into_token_stream())
+  } else {
+    None
+  };
+
+  // Prepend the type of the discriminant to the types of the fields.
+  let mut field_types = enum_discriminant
+    .into_iter()
+    .chain(get_field_types(&fields).map(ToTokens::to_token_stream));
   let size_sum = if let Some(first) = field_types.next() {
     let size_first = quote!(::core::mem::size_of::<#first>());
     let size_rest = quote!(#( + ::core::mem::size_of::<#field_types>() )*);
@@ -998,10 +1090,14 @@ fn generate_assert_no_padding(input: &DeriveInput) -> Result<TokenStream> {
     quote!(0)
   };
 
-  Ok(quote! {const _: fn() = || {
-    #[doc(hidden)]
-    struct TypeWithoutPadding([u8; #size_sum]);
-    let _ = ::core::mem::transmute::<#struct_type, TypeWithoutPadding>;
+  let message =
+    format!("derive({for_trait}) was applied to a type with padding");
+
+  Ok(quote! {const _: () = {
+    assert!(
+        ::core::mem::size_of::<#struct_type>() == (#size_sum),
+        #message,
+    );
   };})
 }
 
@@ -1024,21 +1120,109 @@ fn generate_fields_are_trait(
   })
 }
 
-fn get_ident_from_stream(tokens: TokenStream) -> Option<Ident> {
-  match tokens.into_iter().next() {
-    Some(TokenTree::Group(group)) => get_ident_from_stream(group.stream()),
-    Some(TokenTree::Ident(ident)) => Some(ident),
-    _ => None,
+/// Get the type of an enum's discriminant.
+///
+/// For `repr(int)` and `repr(C, int)` enums, this will return the known bare
+/// integer type specified.
+///
+/// For `repr(C)` enums, this will extract the underlying size chosen by rustc.
+/// It will return a token stream which is a type expression that evaluates to
+/// a primitive integer type of this size, using our `EnumTagIntegerBytes`
+/// trait.
+///
+/// For fieldless `repr(C)` enums, we can feed the size of the enum directly
+/// into the trait.
+///
+/// For `repr(C)` enums with fields, we generate a new fieldless `repr(C)` enum
+/// with the same variants, then use that in the calculation. This is the
+/// specified behavior, see https://doc.rust-lang.org/stable/reference/type-layout.html#reprc-enums-with-fields
+///
+/// Returns a tuple of (type ident, auxiliary definitions)
+fn get_enum_discriminant(
+  input: &DeriveInput, crate_name: &TokenStream,
+) -> Result<(TokenStream, TokenStream)> {
+  let repr = get_repr(&input.attrs)?;
+  match repr.repr {
+    Repr::C => {
+      let e = if let Data::Enum(e) = &input.data { e } else { unreachable!() };
+      if enum_has_fields(e.variants.iter()) {
+        // If the enum has fields, we must first isolate the discriminant by
+        // removing all the fields.
+        let enum_discriminant = generate_enum_discriminant(input)?;
+        let discriminant_ident = Ident::new(
+          &format!("{}Discriminant", input.ident),
+          input.ident.span(),
+        );
+        Ok((
+          quote!(<[::core::primitive::u8; ::core::mem::size_of::<#discriminant_ident>()] as #crate_name::derive::EnumTagIntegerBytes>::Integer),
+          quote! {
+            #enum_discriminant
+          },
+        ))
+      } else {
+        // If the enum doesn't have fields, we can just use it directly.
+        let ident = &input.ident;
+        Ok((
+          quote!(<[::core::primitive::u8; ::core::mem::size_of::<#ident>()] as #crate_name::derive::EnumTagIntegerBytes>::Integer),
+          quote!(),
+        ))
+      }
+    }
+    Repr::Integer(integer) | Repr::CWithDiscriminant(integer) => {
+      Ok((quote!(#integer), quote!()))
+    }
+    _ => unreachable!(),
   }
 }
 
-/// get a simple #[foo(bar)] attribute, returning "bar"
-fn get_simple_attr(attributes: &[Attribute], attr_name: &str) -> Option<Ident> {
+fn generate_enum_discriminant(input: &DeriveInput) -> Result<TokenStream> {
+  let e = if let Data::Enum(e) = &input.data { e } else { unreachable!() };
+  let repr = get_repr(&input.attrs)?;
+  let repr = match repr.repr {
+    Repr::C => quote!(#[repr(C)]),
+    Repr::Integer(int) | Repr::CWithDiscriminant(int) => quote!(#[repr(#int)]),
+    Repr::Rust | Repr::Transparent => unreachable!(),
+  };
+  let ident =
+    Ident::new(&format!("{}Discriminant", input.ident), input.ident.span());
+  let variants = e.variants.iter().cloned().map(|mut e| {
+    e.fields = Fields::Unit;
+    e
+  });
+  Ok(quote! {
+    #repr
+    #[allow(dead_code)]
+    enum #ident {
+      #(#variants,)*
+    }
+  })
+}
+
+fn get_wrapped_type_from_stream(tokens: TokenStream) -> Option<syn::Type> {
+  let mut tokens = tokens.into_iter().peekable();
+  match tokens.peek() {
+    Some(TokenTree::Group(group)) => {
+      let res = get_wrapped_type_from_stream(group.stream());
+      tokens.next(); // remove the peeked token tree
+      match tokens.next() {
+        // If there were more tokens, the input was invalid
+        Some(_) => None,
+        None => res,
+      }
+    }
+    _ => syn::parse2(tokens.collect()).ok(),
+  }
+}
+
+/// get a simple `#[foo(bar)]` attribute, returning `bar`
+fn get_type_from_simple_attr(
+  attributes: &[Attribute], attr_name: &str,
+) -> Option<syn::Type> {
   for attr in attributes {
     if let (AttrStyle::Outer, Meta::List(list)) = (&attr.style, &attr.meta) {
       if list.path.is_ident(attr_name) {
-        if let Some(ident) = get_ident_from_stream(list.tokens.clone()) {
-          return Some(ident);
+        if let Some(ty) = get_wrapped_type_from_stream(list.tokens.clone()) {
+          return Some(ty);
         }
       }
     }
@@ -1139,10 +1323,6 @@ enum Repr {
 }
 
 impl Repr {
-  fn is_integer(&self) -> bool {
-    matches!(self, Self::Integer(..))
-  }
-
   fn as_integer(&self) -> Option<IntegerRepr> {
     if let Self::Integer(v) = self {
       Some(*v)

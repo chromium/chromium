@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <if expr="safe_browsing_use_internal_notifications_global_cache_origins">
+    <include name="IDR_NOTIFICATIONS_GLOBAL_CACHE_ORIGINS" file="../safe_browsing/internal/content/browser/notification_content_detection/notifications_global_cache_list.txt" type="BINDATA" compress="gzip" />
+  </if>
+  <if expr="not safe_browsing_use_internal_notifications_global_cache_origins">
+    <include name="IDR_NOTIFICATIONS_GLOBAL_CACHE_ORIGINS" file="../safe_browsing/content/browser/notification_content_detection/notifications_global_cache_list_placeholder.txt" type="BINDATA" />
+  </if>
+</grit-part>

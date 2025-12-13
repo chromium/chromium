@@ -134,7 +134,7 @@ void MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed() {
 }
 
 void MagicBoostControllerAsh::OnLinkPressed(const std::string& url) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 

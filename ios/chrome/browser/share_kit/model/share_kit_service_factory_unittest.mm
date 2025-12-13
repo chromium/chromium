@@ -17,8 +17,7 @@
 namespace {
 
 // Creates a MockTabGroupSyncService.
-std::unique_ptr<KeyedService> CreateMockSyncService(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
   return std::make_unique<
       ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
 }

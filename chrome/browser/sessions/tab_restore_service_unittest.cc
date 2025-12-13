@@ -272,7 +272,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
       std::optional<tab_groups::TabGroupId> group = std::nullopt,
       std::optional<tab_groups::TabGroupVisualData> group_visual_data =
           std::nullopt,
-      absl ::optional<ExtraData> extra_data = std::nullopt) {
+      std::optional<ExtraData> extra_data = std::nullopt) {
     // Create new window / tab IDs so that these remain distinct.
     window_id_ = SessionID::NewUnique();
     tab_id_ = SessionID::NewUnique();

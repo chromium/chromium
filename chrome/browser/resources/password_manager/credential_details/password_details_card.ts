@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import '../shared_style.css.js';
 import './credential_details_card.css.js';
+import './credential_field.js';
+import './credential_note.js';
 import '../dialogs/edit_password_dialog.js';
 import '../dialogs/multi_store_delete_password_dialog.js';
 import '../sharing/share_password_flow.js';
@@ -23,7 +26,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {htmlEscape} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {PasswordsMovedEvent, ValueCopiedEvent} from '../password_manager_app.js';
@@ -91,11 +94,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         value: false,
       },
 
-      isBackup: {
-        type: Boolean,
-        value: false,
-      },
-
       interactionsEnum_: {
         type: Object,
         value: PasswordViewPageInteractions,
@@ -138,8 +136,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   /* This is set by the parent element, to only show help buble on the first
    * card on the page. */
   declare shouldRegisterSharingPromo: boolean;
-  /* Set when the card should display the backup password */
-  declare isBackup: boolean;
   declare private showEditPasswordDialog_: boolean;
   declare private passwordSharingDisabled_: boolean;
   declare private showDeletePasswordDialog_: boolean;
@@ -162,10 +158,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   }
 
   private getPasswordValue_(): string|undefined {
-    if (this.isBackup) {
-      assert(this.password.backupPassword);
-      return this.password.backupPassword.value;
-    }
     if (this.isFederated_()) {
       return this.password.federationText;
     }
@@ -194,10 +186,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   }
 
   private onDeleteClick_() {
-    // TODO(crbug.com/420801799): Handle delete button for backup entries.
-    if (this.isBackup) {
-      return;
-    }
     PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSWORD_DELETE_BUTTON_CLICKED);
     if (this.password.storedIn ===
@@ -274,7 +262,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   }
 
   private computeShowShareButton_(): boolean {
-    return !this.isFederated_() && !this.isBackup &&
+    return !this.isFederated_() &&
         (this.isSyncingPasswords || this.isAccountStoreUser);
   }
 
@@ -295,7 +283,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     return this.password.username ?
         this.i18n(
             'passwordDetailsCardAriaLabel', this.getCredentialTypeString_(),
-            this.password.username) :
+            htmlEscape(this.password.username)) :
         this.getCredentialTypeString_();
   }
 
@@ -303,7 +291,8 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     return this.password.username ?
         this.i18n(
             'passwordDetailsCardEditButtonAriaLabel',
-            this.getCredentialTypeString_(), this.password.username) :
+            this.getCredentialTypeString_(),
+            htmlEscape(this.password.username)) :
         this.i18n(
             'passwordDetailsCardEditButtonNoUsernameAriaLabel',
             this.getCredentialTypeString_());
@@ -313,7 +302,8 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     return this.password.username ?
         this.i18n(
             'passwordDetailsCardDeleteButtonAriaLabel',
-            this.getCredentialTypeString_(), this.password.username) :
+            this.getCredentialTypeString_(),
+            htmlEscape(this.password.username)) :
         this.i18n(
             'passwordDetailsCardDeleteButtonNoUsernameAriaLabel',
             this.getCredentialTypeString_());

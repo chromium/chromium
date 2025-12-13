@@ -13,12 +13,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/client/context_support.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace viz {
 namespace {
 static const int kIdleCleanupDelaySeconds = 1;
-static const int kOldResourceCleanupDelaySeconds = 15;
 }  // namespace
 
 ContextCacheController::ScopedToken::ScopedToken() = default;
@@ -47,10 +45,6 @@ ContextCacheController::ContextCacheController(
 ContextCacheController::~ContextCacheController() {
   if (held_visibility_)
     ClientBecameNotVisible(std::move(held_visibility_));
-}
-
-void ContextCacheController::SetGrContext(GrDirectContext* gr_context) {
-  gr_context_ = gr_context;
 }
 
 void ContextCacheController::SetLock(base::Lock* lock) {
@@ -98,8 +92,6 @@ void ContextCacheController::ClientBecameNotVisible(
     // We are freeing resources now - cancel any pending idle callbacks.
     InvalidatePendingIdleCallbacks();
 
-    if (gr_context_)
-      gr_context_->freeGpuResources();
     context_support_->SetAggressivelyFreeResources(true);
     context_support_->FlushPendingWork();
   }
@@ -137,13 +129,6 @@ void ContextCacheController::ClientBecameNotBusy(
 
   DCHECK_GT(num_clients_busy_, 0u);
   --num_clients_busy_;
-
-  // Here we ask GrContext to free any resources that haven't been used in
-  // a long while even if it is under budget.
-  if (gr_context_) {
-    gr_context_->performDeferredCleanup(
-        std::chrono::seconds(kOldResourceCleanupDelaySeconds));
-  }
 
   // If we have become idle and we are visible, queue a task to drop resources
   // after a delay. If are not visible, we have already dropped resources.
@@ -204,9 +189,6 @@ void ContextCacheController::OnIdle(uint32_t idle_generation)
     PostIdleCallback(current_idle_generation_);
     return;
   }
-
-  if (gr_context_)
-    gr_context_->freeGpuResources();
 
   // Toggle SetAggressivelyFreeResources to drop command buffer data.
   context_support_->SetAggressivelyFreeResources(true);

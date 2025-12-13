@@ -44,7 +44,6 @@
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -63,6 +62,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -95,9 +95,6 @@ const char kDefaultNetwork[] = "default-network";
 // URL of Chrome Web Store.
 const char kWebStoreExtensionUpdateUrl[] =
     "https://clients2.google.com/service/update2/crx";
-
-// URL of off store extensions.
-const char kOffStoreExtensionUpdateUrl[] = "https://example.com/crx";
 
 auto BuildExtension(std::string extension_name, std::string extension_id) {
   return extensions::ExtensionBuilder(extension_name)
@@ -207,6 +204,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
         std::make_unique<FakeAcceleratorController>();
     accelerator_controller_ = fake_accelerator_controller.get();
     controller_ = std::make_unique<KioskLaunchController>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         /*host=*/nullptr, &screen_, FakeLoadProfileCallback(),
         /*app_launched_callback=*/app_launched_future_.GetCallback(),
         /*done_callback=*/launch_done_future_.GetCallback(),
@@ -317,7 +315,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
   void CheckLaunchError(KioskAppLaunchError::Error error) {
     const base::Value::Dict& dict =
-        g_browser_process->local_state()->GetDict("kiosk");
+        TestingBrowserProcess::GetGlobal()->local_state()->GetDict("kiosk");
     EXPECT_THAT(dict.FindInt("launch_error"), Eq(static_cast<int>(error)));
   }
 
@@ -349,16 +347,17 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   }
 
   LoadProfileCallback FakeLoadProfileCallback() {
-    return base::BindLambdaForTesting([&](const AccountId& app_account_id,
-                                          KioskAppType app_type,
-                                          LoadProfileResultCallback on_done) {
-      on_profile_loaded_callback_ = std::move(on_done);
-      return std::unique_ptr<CancellableJob>{};
-    });
+    return base::BindLambdaForTesting(
+        [&](PrefService* local_state, const AccountId& app_account_id,
+            KioskAppType app_type, LoadProfileResultCallback on_done) {
+          on_profile_loaded_callback_ = std::move(on_done);
+          return std::unique_ptr<CancellableJob>{};
+        });
   }
 
   TestingProfile profile_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_;
 
@@ -920,44 +919,6 @@ TEST_F(KioskLaunchControllerWithExtensionTest,
   EXPECT_TRUE(launcher().HasAppLaunched());
 
   histogram.ExpectTotalCount("Kiosk.Extensions.InstallTimedOut", 0);
-}
-
-TEST_F(KioskLaunchControllerWithExtensionTest,
-       WebStoreExtensionFailureShouldBeLogged) {
-  base::HistogramTester histogram;
-
-  SetForceInstallPolicy(kExtensionId, kWebStoreExtensionUpdateUrl);
-  RunUntilAppPrepared();
-  EXPECT_THAT(controller(), HasState(AppState::kInstallingExtensions,
-                                     NetworkUIState::kNotShowing));
-  EXPECT_THAT(
-      screen(),
-      HasViewState(
-          AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension));
-
-  SetExtensionFailed(
-      kExtensionId, kExtensionName,
-      extensions::InstallStageTracker::FailureReason::INVALID_ID);
-
-  histogram.ExpectUniqueSample(
-      "Kiosk.Extensions.InstallError.WebStore",
-      extensions::InstallStageTracker::FailureReason::INVALID_ID, 1);
-}
-
-TEST_F(KioskLaunchControllerWithExtensionTest,
-       OffStoreExtensionFailureShouldBeLogged) {
-  base::HistogramTester histogram;
-
-  SetForceInstallPolicy(kExtensionId, kOffStoreExtensionUpdateUrl);
-  RunUntilAppPrepared();
-
-  SetExtensionFailed(
-      kExtensionId, kExtensionName,
-      extensions::InstallStageTracker::FailureReason::INVALID_ID);
-
-  histogram.ExpectUniqueSample(
-      "Kiosk.Extensions.InstallError.OffStore",
-      extensions::InstallStageTracker::FailureReason::INVALID_ID, 1);
 }
 
 TEST_F(KioskLaunchControllerTest, TestFullFlow) {

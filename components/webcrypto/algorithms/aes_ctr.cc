@@ -2,22 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/numerics/safe_math.h"
 #include "components/webcrypto/algorithms/aes.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
@@ -53,7 +46,7 @@ Status AesCtrEncrypt128BitCounter(const EVP_CIPHER* cipher,
                                   base::span<const uint8_t, 16> counter,
                                   base::span<uint8_t> output) {
   DCHECK(cipher);
-  DCHECK_EQ(input.size(), output.size());
+  CHECK_EQ(input.size(), output.size());
 
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
   bssl::ScopedEVP_CIPHER_CTX context;
@@ -62,20 +55,22 @@ Status AesCtrEncrypt128BitCounter(const EVP_CIPHER* cipher,
     return Status::OperationError();
   }
 
-  int output_len = 0;
-  if (!EVP_CipherUpdate(context.get(), output.data(), &output_len, input.data(),
-                        base::checked_cast<int>(input.size()))) {
+  size_t output_len = 0;
+  if (!EVP_CipherUpdate_ex(context.get(), output.data(), &output_len,
+                           output.size(), input.data(), input.size())) {
     return Status::OperationError();
   }
-  int final_output_chunk_len = 0;
-  if (!EVP_CipherFinal_ex(context.get(), output.data() + output_len,
-                          &final_output_chunk_len)) {
+  auto remainder = output.subspan(output_len);
+  size_t final_output_chunk_len = 0;
+  if (!EVP_CipherFinal_ex2(context.get(), remainder.data(),
+                           &final_output_chunk_len, remainder.size())) {
     return Status::OperationError();
   }
 
   output_len += final_output_chunk_len;
-  if (static_cast<size_t>(output_len) != input.size())
+  if (output_len != input.size()) {
     return Status::ErrorUnexpected();
+  }
 
   return Status::Success();
 }
@@ -111,17 +106,18 @@ absl::uint128 GetCounter(
 std::array<uint8_t, AES_BLOCK_SIZE> BlockWithZeroedCounter(
     base::span<const uint8_t, AES_BLOCK_SIZE> counter_block,
     unsigned int counter_length_bits) {
-  unsigned int counter_length_bytes = counter_length_bits / 8;
-  unsigned int counter_length_bits_remainder = counter_length_bits % 8;
-
   std::array<uint8_t, AES_BLOCK_SIZE> new_counter_block;
-  memcpy(new_counter_block.data(), counter_block.data(), AES_BLOCK_SIZE);
+  auto out = base::span(new_counter_block);
 
-  size_t index = new_counter_block.size() - counter_length_bytes;
-  memset(&new_counter_block.front() + index, 0, counter_length_bytes);
+  const unsigned int counter_length_bytes = counter_length_bits / 8;
+  const unsigned int counter_length_bits_remainder = counter_length_bits % 8;
 
+  out.copy_from(counter_block);
+
+  std::ranges::fill(out.last(counter_length_bytes), 0);
   if (counter_length_bits_remainder) {
-    new_counter_block[index - 1] &= 0xFF << counter_length_bits_remainder;
+    const size_t index = new_counter_block.size() - counter_length_bytes - 1;
+    out[index] &= 0xFF << counter_length_bits_remainder;
   }
 
   return new_counter_block;
@@ -158,17 +154,12 @@ Status AesCtrEncryptDecrypt(const blink::WebCryptoAlgorithm& algorithm,
   if (counter_length_bits < 1 || counter_length_bits > 128)
     return Status::ErrorInvalidAesCtrCounterLength();
 
-  // The output of AES-CTR is the same size as the input. However BoringSSL
-  // expects buffer sizes as an "int".
-  base::CheckedNumeric<int> output_max_len = data.size();
-  if (!output_max_len.IsValid())
-    return Status::ErrorDataTooLarge();
-
   const EVP_CIPHER* const cipher = GetAESCipherByKeyLength(raw_key.size());
   if (!cipher)
     return Status::ErrorUnexpected();
 
-  buffer->resize(base::ValueOrDieForType<size_t>(output_max_len));
+  // The output of AES-CTR is the same size as the input.
+  buffer->resize(data.size());
   absl::uint128 current_counter =
       GetCounter(counter_block, counter_length_bits);
 

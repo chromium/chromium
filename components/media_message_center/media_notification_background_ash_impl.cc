@@ -5,6 +5,8 @@
 #include "components/media_message_center/media_notification_background_ash_impl.h"
 
 #include "base/i18n/rtl.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -68,11 +70,10 @@ SkPath MediaNotificationBackgroundAshImpl::GetArtworkClipPath(
                                     kArtworkSize.width();
   int y = view_bounds.bottom() - kArtworkBottomMargin - kArtworkSize.height();
 
-  SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(gfx::Rect(x, y, kArtworkSize.width(),
-                                                kArtworkSize.height())),
-                    kArtworkCornerRadius, kArtworkCornerRadius);
-  return path;
+  return SkPath::RRect(SkRRect::MakeRectXY(
+      gfx::RectToSkRect(
+          gfx::Rect(x, y, kArtworkSize.width(), kArtworkSize.height())),
+      kArtworkCornerRadius, kArtworkCornerRadius));
 }
 
 void MediaNotificationBackgroundAshImpl::Paint(gfx::Canvas* canvas,

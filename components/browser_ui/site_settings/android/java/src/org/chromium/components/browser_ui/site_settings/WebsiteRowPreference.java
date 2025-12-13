@@ -44,8 +44,6 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
 
     private Runnable mOnDeleteCallback;
 
-    private final boolean mShowRwsMembershipLabels;
-
     private final boolean mIsClickable;
 
     WebsiteRowPreference(
@@ -53,7 +51,6 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
             SiteSettingsDelegate siteSettingsDelegate,
             WebsiteEntry siteEntry,
             LayoutInflater layoutInflater,
-            boolean showRwsMembershipLabels,
             boolean isClickable) {
         super(context);
         mSiteSettingsDelegate = siteSettingsDelegate;
@@ -61,7 +58,6 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
         mLayoutInflater = layoutInflater;
         // Initialize with an empty callback.
         mOnDeleteCallback = CallbackUtils.emptyRunnable();
-        mShowRwsMembershipLabels = showRwsMembershipLabels;
         mIsClickable = isClickable;
 
         // To make sure the layout stays stable throughout, we assign a
@@ -206,19 +202,6 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
                 summary = HTTP;
             } else {
                 summary = getContext().getString(R.string.summary_with_one_bullet, HTTP, summary);
-            }
-        }
-
-        if (mSiteSettingsDelegate.shouldShowPrivacySandboxRwsUi()
-                && mSiteEntry.isPartOfRws()
-                && mShowRwsMembershipLabels) {
-            String rwsSummary = getContext().getString(R.string.all_sites_rws_label);
-            if (summary.isEmpty()) {
-                summary = rwsSummary;
-            } else {
-                summary =
-                        getContext()
-                                .getString(R.string.summary_with_one_bullet, summary, rwsSummary);
             }
         }
 

@@ -48,6 +48,12 @@ BASE_DECLARE_FEATURE(kUndoMigrationOfSyncingUserToSignedIn);
 // requirements.
 BASE_DECLARE_FEATURE(kForceMigrateSyncingUserToSignedIn);
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// Kill-switch for migration flow of all the users in the sync setup incomplete
+// state to signed-in history-off state.
+BASE_DECLARE_FEATURE(kMigrateOutOfSyncSetupIncompleteState);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace switches
 
 #endif  // COMPONENTS_BROWSER_SYNC_BROWSER_SYNC_SWITCHES_H_

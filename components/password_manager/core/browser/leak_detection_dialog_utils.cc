@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -18,7 +19,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #endif
 
 namespace password_manager {
@@ -29,14 +30,10 @@ constexpr char kPasswordCheckupURL[] =
     "https://passwords.google.com/checkup/start?hideExplanation=true";
 
 LeakedPasswordDetails::LeakedPasswordDetails(CredentialLeakType leak_type,
-                                             GURL origin,
-                                             std::u16string username,
-                                             std::u16string password,
+                                             PasswordForm credentials,
                                              bool in_account_store)
     : leak_type(leak_type),
-      origin(std::move(origin)),
-      username(std::move(username)),
-      password(std::move(password)),
+      credentials(std::move(credentials)),
       in_account_store(in_account_store) {}
 LeakedPasswordDetails::LeakedPasswordDetails(const LeakedPasswordDetails&) =
     default;
@@ -49,13 +46,11 @@ LeakedPasswordDetails& LeakedPasswordDetails::operator=(
 LeakedPasswordDetails& LeakedPasswordDetails::operator=(
     LeakedPasswordDetails&& other) = default;
 
-bool LeakedPasswordDetails::operator==(
-    const LeakedPasswordDetails& other) const = default;
-
 CredentialLeakType CreateLeakType(IsSaved is_saved,
                                   IsReused is_reused,
                                   IsSyncing is_syncing,
-                                  HasChangePasswordUrl has_change_password) {
+                                  HasChangePasswordUrl has_change_password,
+                                  IsSavedAsBackup is_saved_as_backup) {
   CredentialLeakType leak_type = 0;
   if (is_saved) {
     leak_type |= kPasswordSaved;
@@ -69,11 +64,18 @@ CredentialLeakType CreateLeakType(IsSaved is_saved,
   if (has_change_password) {
     leak_type |= kHasChangePasswordUrl;
   }
+  if (is_saved_as_backup) {
+    leak_type |= kPasswordSavedAsBackup;
+  }
   return leak_type;
 }
 
 bool IsPasswordSaved(CredentialLeakType leak_type) {
   return leak_type & CredentialLeakFlags::kPasswordSaved;
+}
+
+bool IsPasswordSavedAsBackup(CredentialLeakType leak_type) {
+  return leak_type & CredentialLeakFlags::kPasswordSavedAsBackup;
 }
 
 bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type) {
@@ -100,7 +102,7 @@ std::u16string GetLeakDetectionTooltip() {
 
 bool ShouldCheckPasswords(CredentialLeakType leak_type) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     return false;
   }
 #endif

@@ -16,6 +16,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/install_chrome_app.h"
 #include "chrome/browser/browser_process.h"
@@ -41,14 +42,20 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/shared_tab_group_version_upgrade_modal.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -134,8 +141,11 @@ StartupBrowserCreatorImpl::StartupBrowserCreatorImpl(
       browser_creator_(browser_creator),
       is_first_run_(is_first_run) {}
 
+StartupBrowserCreatorImpl::~StartupBrowserCreatorImpl() = default;
+
 // static
-void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
+void StartupBrowserCreatorImpl::MaybeToggleFullscreen(
+    BrowserWindowInterface* browser) {
   // In kiosk mode, we want to always be fullscreen.
   if (IsKioskModeEnabled() || base::CommandLine::ForCurrentProcess()->HasSwitch(
                                   switches::kStartFullscreen)) {
@@ -152,18 +162,23 @@ void StartupBrowserCreatorImpl::Launch(
 
   DetermineURLsAndLaunch(process_startup, restore_tabbed_browser);
 
-  if (command_line_->HasSwitch(switches::kInstallChromeApp)) {
-    install_chrome_app::InstallChromeApp(
-        command_line_->GetSwitchValueASCII(switches::kInstallChromeApp));
-  }
-
   // It's possible for there to be no browser window, e.g. if someone
   // specified a non-sensical combination of options
   // ("--kiosk --no_startup_window"); do nothing in that case.
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (browser) {
-    MaybeToggleFullscreen(browser);
+  BrowserWindowInterface* const browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (!browser) {
+    LOG(ERROR) << "No browser window found for startup.";
+    return;
   }
+
+  if (command_line_->HasSwitch(switches::kInstallChromeApp)) {
+    install_chrome_app::InstallChromeApp(
+        command_line_->GetSwitchValueASCII(switches::kInstallChromeApp),
+        browser);
+  }
+
+  MaybeToggleFullscreen(browser);
 }
 
 Browser* StartupBrowserCreatorImpl::OpenURLsInBrowser(
@@ -230,7 +245,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // asking us to open such a URL should really ask the handler directly.
     bool handled_by_chrome =
         ProfileIOData::IsHandledURL(tab.url) ||
-        (registry && registry->IsHandledProtocol(tab.url.scheme()));
+        (registry && registry->IsHandledProtocol(tab.url.GetScheme()));
     if (process_startup == chrome::startup::IsProcessStartup::kNo &&
         !handled_by_chrome) {
       continue;
@@ -430,9 +445,26 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
 
   // Finally, add info bars.
   AddInfoBarsIfNecessary(browser, profile_, *command_line_, is_first_run_,
-                         /*is_web_app=*/false);
+                         /*is_web_app=*/false, is_post_crash_launch,
+                         StartupBrowserCreator::WasRestarted());
 
-  tab_groups::MaybeShowSharedTabGroupVersionUpgradeModal(browser);
+  tab_groups::MaybeShowSharedTabGroupVersionOutOfDateModal(browser);
+  tab_groups::MaybeShowSharedTabGroupVersionUpToDateToast(browser);
+
+  if (base::FeatureList::IsEnabled(features::kNonMilestoneUpdateToast)) {
+    std::string current_version_string =
+        current_chrome_version_string_for_testing_.has_value()
+            ? current_chrome_version_string_for_testing_.value()
+            : CHROME_VERSION_STRING;
+    MaybeShowNonMilestoneUpdateToast(browser, current_version_string);
+  }
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Check for DSE integrity if flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kDseIntegrity)) {
+    // TODO(466065123): The controller will instantiate the model, check the
+    // pref, and show the notification if needed.
+  }
+#endif
 }
 
 StartupBrowserCreatorImpl::DetermineStartupTabsResult::
@@ -682,6 +714,38 @@ StartupBrowserCreatorImpl::DetermineSynchronousRestoreOptions(
   }
 
   return options;
+}
+
+// static
+void StartupBrowserCreatorImpl::MaybeShowNonMilestoneUpdateToast(
+    Browser* browser,
+    const std::string& current_version_string) {
+  if (!browser) {
+    return;
+  }
+
+  PrefService* local_state = g_browser_process->local_state();
+  std::string last_version_string =
+      local_state->GetString(prefs::kNonMilestoneUpdateToastVersion);
+
+  if (IsNonMilestoneUpdate(last_version_string, current_version_string)) {
+    browser->GetFeatures().toast_controller()->MaybeShowToast(
+        ToastParams(ToastId::kNonMilestoneUpdate));
+  }
+  local_state->SetString(prefs::kNonMilestoneUpdateToastVersion,
+                         current_version_string);
+}
+
+bool StartupBrowserCreatorImpl::IsNonMilestoneUpdate(
+    const std::string& last_version_string,
+    const std::string& current_version_string) {
+  base::Version last_version(last_version_string);
+  base::Version current_version(current_version_string);
+  if (!last_version.IsValid() || !current_version.IsValid()) {
+    return false;
+  }
+  return last_version.components()[0] == current_version.components()[0] &&
+         last_version < current_version;
 }
 
 // static

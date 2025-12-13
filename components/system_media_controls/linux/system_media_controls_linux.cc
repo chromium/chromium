@@ -118,12 +118,7 @@ SystemMediaControlsLinux::SystemMediaControlsLinux(
       file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
 
-SystemMediaControlsLinux::~SystemMediaControlsLinux() {
-  if (bus_) {
-    dbus_thread_linux::GetTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, bus_));
-  }
-}
+SystemMediaControlsLinux::~SystemMediaControlsLinux() = default;
 
 void SystemMediaControlsLinux::StartService() {
   if (started_) {
@@ -149,40 +144,38 @@ void SystemMediaControlsLinux::RemoveObserver(
 }
 
 void SystemMediaControlsLinux::SetIsNextEnabled(bool value) {
-  properties_->SetProperty(kMprisAPIPlayerInterfaceName, "CanGoNext",
-                           DbusBoolean(value));
+  properties_->SetProperty<"b">(kMprisAPIPlayerInterfaceName, "CanGoNext",
+                                value);
 }
 
 void SystemMediaControlsLinux::SetIsPreviousEnabled(bool value) {
-  properties_->SetProperty(kMprisAPIPlayerInterfaceName, "CanGoPrevious",
-                           DbusBoolean(value));
+  properties_->SetProperty<"b">(kMprisAPIPlayerInterfaceName, "CanGoPrevious",
+                                value);
 }
 
 void SystemMediaControlsLinux::SetIsPlayPauseEnabled(bool value) {
-  properties_->SetProperty(kMprisAPIPlayerInterfaceName, "CanPlay",
-                           DbusBoolean(value));
-  properties_->SetProperty(kMprisAPIPlayerInterfaceName, "CanPause",
-                           DbusBoolean(value));
+  properties_->SetProperty<"b">(kMprisAPIPlayerInterfaceName, "CanPlay", value);
+  properties_->SetProperty<"b">(kMprisAPIPlayerInterfaceName, "CanPause",
+                                value);
 }
 
 void SystemMediaControlsLinux::SetIsSeekToEnabled(bool value) {
-  properties_->SetProperty(kMprisAPIPlayerInterfaceName, "CanSeek",
-                           DbusBoolean(value));
+  properties_->SetProperty<"b">(kMprisAPIPlayerInterfaceName, "CanSeek", value);
 }
 
 void SystemMediaControlsLinux::SetPlaybackStatus(PlaybackStatus value) {
   auto status = [&]() {
     switch (value) {
       case PlaybackStatus::kPlaying:
-        return DbusString("Playing");
+        return "Playing";
       case PlaybackStatus::kPaused:
-        return DbusString("Paused");
+        return "Paused";
       case PlaybackStatus::kStopped:
-        return DbusString("Stopped");
+        return "Stopped";
     }
   };
-  properties_->SetProperty(kMprisAPIPlayerInterfaceName, "PlaybackStatus",
-                           status());
+  properties_->SetProperty<"s">(kMprisAPIPlayerInterfaceName, "PlaybackStatus",
+                                status());
 
   playing_ = (value == PlaybackStatus::kPlaying);
   if (playing_ && position_.has_value()) {
@@ -198,27 +191,24 @@ void SystemMediaControlsLinux::SetID(const std::string* value) {
     return;
   }
 
-  const std::string track_id =
+  track_id_ =
       base::StringPrintf(kMprisAPICurrentTrackPathFormatString, value->c_str());
-  SetMetadataPropertyInternal(
-      "mpris:trackid",
-      MakeDbusVariant(DbusObjectPath(dbus::ObjectPath(track_id))));
+  UpdateMetadata();
 }
 
 void SystemMediaControlsLinux::SetTitle(const std::u16string& value) {
-  SetMetadataPropertyInternal(
-      "xesam:title", MakeDbusVariant(DbusString(base::UTF16ToUTF8(value))));
+  title_ = base::UTF16ToUTF8(value);
+  UpdateMetadata();
 }
 
 void SystemMediaControlsLinux::SetArtist(const std::u16string& value) {
-  SetMetadataPropertyInternal(
-      "xesam:artist",
-      MakeDbusVariant(MakeDbusArray(DbusString(base::UTF16ToUTF8(value)))));
+  artist_ = {base::UTF16ToUTF8(value)};
+  UpdateMetadata();
 }
 
 void SystemMediaControlsLinux::SetAlbum(const std::u16string& value) {
-  SetMetadataPropertyInternal(
-      "xesam:album", MakeDbusVariant(DbusString(base::UTF16ToUTF8(value))));
+  album_ = base::UTF16ToUTF8(value);
+  UpdateMetadata();
 }
 
 void SystemMediaControlsLinux::SetThumbnail(const SkBitmap& bitmap) {
@@ -239,11 +229,14 @@ void SystemMediaControlsLinux::SetPosition(
 }
 
 void SystemMediaControlsLinux::ClearMetadata() {
-  SetTitle(std::u16string());
-  SetArtist(std::u16string());
-  SetAlbum(std::u16string());
-  SetThumbnail(SkBitmap());
-  ClearTrackId();
+  track_id_ = std::nullopt;
+  title_ = std::nullopt;
+  artist_ = std::nullopt;
+  album_ = std::nullopt;
+  length_ = std::nullopt;
+  art_url_ = std::nullopt;
+  UpdateMetadata();
+  thumbnail_.Reset();
   ClearPosition();
 }
 
@@ -258,47 +251,34 @@ std::string SystemMediaControlsLinux::GetServiceName() const {
 
 void SystemMediaControlsLinux::InitializeProperties() {
   // org.mpris.MediaPlayer2 interface properties.
-  auto set_property = [&](const std::string& property_name, auto&& value) {
-    properties_->SetProperty(kMprisAPIInterfaceName, property_name,
-                             std::forward<decltype(value)>(value), false);
-  };
-  set_property("CanQuit", DbusBoolean(false));
-  set_property("CanRaise", DbusBoolean(false));
-  set_property("HasTrackList", DbusBoolean(false));
+  SetProperty<"b">("CanQuit", false);
+  SetProperty<"b">("CanRaise", false);
+  SetProperty<"b">("HasTrackList", false);
 
-  set_property("Identity", DbusString(product_name_));
-  set_property("SupportedUriSchemes", DbusArray<DbusString>());
-  set_property("SupportedMimeTypes", DbusArray<DbusString>());
+  SetProperty<"s">("Identity", product_name_);
+  SetProperty<"as">("SupportedUriSchemes", {});
+  SetProperty<"as">("SupportedMimeTypes", {});
 
   // org.mpris.MediaPlayer2.Player interface properties.
-  auto set_player_property = [&](const std::string& property_name,
-                                 auto&& value) {
-    properties_->SetProperty(kMprisAPIPlayerInterfaceName, property_name,
-                             std::forward<decltype(value)>(value), false);
-  };
-  set_player_property("PlaybackStatus", DbusString("Stopped"));
-  set_player_property("Rate", DbusDouble(1.0));
-  set_player_property("Metadata", DbusDictionary());
-  set_player_property("Volume", DbusDouble(1.0));
-  set_player_property("Position", DbusInt64(0));
-  set_player_property("MinimumRate", DbusDouble(1.0));
-  set_player_property("MaximumRate", DbusDouble(1.0));
-  set_player_property("CanGoNext", DbusBoolean(false));
-  set_player_property("CanGoPrevious", DbusBoolean(false));
-  set_player_property("CanPlay", DbusBoolean(false));
-  set_player_property("CanPause", DbusBoolean(false));
-  set_player_property("CanSeek", DbusBoolean(false));
-  set_player_property("CanControl", DbusBoolean(true));
+  SetPlayerProperty<"s">("PlaybackStatus", "Stopped");
+  SetPlayerProperty<"d">("Rate", 1.0);
+  SetPlayerProperty<"a{sv}">("Metadata", {});
+  SetPlayerProperty<"d">("Volume", 1.0);
+  SetPlayerProperty<"x">("Position", 0);
+  SetPlayerProperty<"d">("MinimumRate", 1.0);
+  SetPlayerProperty<"d">("MaximumRate", 1.0);
+  SetPlayerProperty<"b">("CanGoNext", false);
+  SetPlayerProperty<"b">("CanGoPrevious", false);
+  SetPlayerProperty<"b">("CanPlay", false);
+  SetPlayerProperty<"b">("CanPause", false);
+  SetPlayerProperty<"b">("CanSeek", false);
+  SetPlayerProperty<"b">("CanControl", true);
 }
 
 void SystemMediaControlsLinux::InitializeDbusInterface() {
   // Bus may be set for testing.
   if (!bus_) {
-    dbus::Bus::Options bus_options;
-    bus_options.bus_type = dbus::Bus::SESSION;
-    bus_options.connection_type = dbus::Bus::PRIVATE;
-    bus_options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-    bus_ = base::MakeRefCounted<dbus::Bus>(bus_options);
+    bus_ = dbus_thread_linux::GetSharedSessionBus();
   }
 
   exported_object_ =
@@ -494,29 +474,42 @@ void SystemMediaControlsLinux::SetPositionMpris(
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
+void SystemMediaControlsLinux::UpdateMetadata() {
+  std::map<std::string, dbus_utils::Variant> metadata;
+
+  if (track_id_.has_value()) {
+    metadata["mpris:trackid"] =
+        dbus_utils::Variant::Wrap<"o">(dbus::ObjectPath(*track_id_));
+  }
+  if (title_.has_value()) {
+    metadata["xesam:title"] = dbus_utils::Variant::Wrap<"s">(*title_);
+  }
+  if (artist_.has_value()) {
+    metadata["xesam:artist"] = dbus_utils::Variant::Wrap<"as">(*artist_);
+  }
+  if (album_.has_value()) {
+    metadata["xesam:album"] = dbus_utils::Variant::Wrap<"s">(*album_);
+  }
+  if (length_.has_value()) {
+    metadata["mpris:length"] = dbus_utils::Variant::Wrap<"x">(*length_);
+  }
+  if (art_url_.has_value()) {
+    metadata["mpris:artUrl"] = dbus_utils::Variant::Wrap<"s">(*art_url_);
+  }
+
+  properties_->SetProperty<"a{sv}">(kMprisAPIPlayerInterfaceName, "Metadata",
+                                    std::move(metadata));
+}
+
 void SystemMediaControlsLinux::DoNothing(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
-void SystemMediaControlsLinux::SetMetadataPropertyInternal(
-    const std::string& property_name,
-    DbusVariant&& new_value) {
-  DbusVariant* dictionary_variant =
-      properties_->GetProperty(kMprisAPIPlayerInterfaceName, "Metadata");
-  DCHECK(dictionary_variant);
-  DbusDictionary* dictionary = dictionary_variant->GetAs<DbusDictionary>();
-  DCHECK(dictionary);
-  if (dictionary->Put(property_name, std::move(new_value))) {
-    properties_->PropertyUpdated(kMprisAPIPlayerInterfaceName, "Metadata");
-  }
-}
-
 void SystemMediaControlsLinux::ClearTrackId() {
-  SetMetadataPropertyInternal(
-      "mpris:trackid",
-      MakeDbusVariant(DbusObjectPath(dbus::ObjectPath(kMprisAPINoTrackPath))));
+  track_id_ = kMprisAPINoTrackPath;
+  UpdateMetadata();
 }
 
 void SystemMediaControlsLinux::ClearPosition() {
@@ -538,13 +531,13 @@ void SystemMediaControlsLinux::UpdatePosition(bool emit_signal) {
 
   // We never emit a PropertiesChanged signal for the "Position" property. We
   // only emit "Seeked" signals.
-  properties_->SetProperty(kMprisAPIPlayerInterfaceName, "Position",
-                           DbusInt64(position), /*emit_signal=*/false);
+  properties_->SetProperty<"x">(kMprisAPIPlayerInterfaceName, "Position",
+                                position, /*emit_signal=*/false);
 
-  properties_->SetProperty(kMprisAPIPlayerInterfaceName, "Rate",
-                           DbusDouble(rate), emit_signal);
-  SetMetadataPropertyInternal("mpris:length",
-                              MakeDbusVariant(DbusInt64(duration)));
+  properties_->SetProperty<"d">(kMprisAPIPlayerInterfaceName, "Rate", rate,
+                                emit_signal);
+  length_ = duration;
+  UpdateMetadata();
 
   if (!service_ready_ || !emit_signal || !position_.has_value()) {
     return;
@@ -578,8 +571,8 @@ void SystemMediaControlsLinux::OnThumbnailFileWritten(
     std::pair<base::FilePath, base::SequenceBound<base::ScopedTempFile>>
         thumbnail) {
   const auto& path = thumbnail.first;
-  auto url = path.empty() ? "" : "file://" + base::EscapePath(path.value());
-  SetMetadataPropertyInternal("mpris:artUrl", MakeDbusVariant(DbusString(url)));
+  art_url_ = path.empty() ? "" : "file://" + base::EscapePath(path.value());
+  UpdateMetadata();
   thumbnail_ = std::move(thumbnail.second);
 }
 

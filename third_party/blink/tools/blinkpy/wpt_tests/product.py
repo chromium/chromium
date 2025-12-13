@@ -14,7 +14,7 @@ from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.port.base import Port
 
 _log = logging.getLogger(__name__)
-IOS_VERSION = '17.0'
+IOS_VERSION = '18.0'
 IOS_DEVICE = 'iPhone 14 Pro'
 
 

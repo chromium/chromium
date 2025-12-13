@@ -6,6 +6,10 @@
 
 #include "chrome/browser/extensions/api/proxy/proxy_api_constants.h"
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 namespace proxy_api_constants {
 

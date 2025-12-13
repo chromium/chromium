@@ -22,13 +22,17 @@ class WebContents;
 // restrictive to least restrictive, to which capture may be restricted by
 // enterprise policy. It should not be used in Logs, so that it's order may be
 // changed as needed.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.media
+// GENERATED_JAVA_PREFIX_TO_STRIP: k
 enum class AllowedScreenCaptureLevel {
   kDisallowed = 0,
   kSameOrigin = 1,
   kTab = 2,
   kWindow = 3,
   kDesktop = 4,
-  kUnrestricted = kDesktop,
+  // kUnrestricted should be set to the value of the most permissive element
+  // (kDesktop), but using the actual symbol breaks Java enum generation.
+  kUnrestricted = 4,
 };
 
 namespace capture_policy {
@@ -72,14 +76,12 @@ void ShowCaptureTerminatedDialog(content::WebContents* contents);
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-// TODO(crbug.com/40230867): Use Origin instead of GURL.
-// Passing `std::nullopt` to `url` means "for any origin".
-bool IsMultiScreenCaptureAllowed(const std::optional<GURL>& url);
-
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 bool IsTransientActivationRequiredForGetDisplayMedia(
     content::WebContents* contents);
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+
+bool CapturerRestrictedToSameOrigin(content::WebContents* capturer);
 
 }  // namespace capture_policy
 

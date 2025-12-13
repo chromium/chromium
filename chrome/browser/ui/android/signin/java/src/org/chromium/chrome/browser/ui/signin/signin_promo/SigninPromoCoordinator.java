@@ -81,7 +81,7 @@ public class SigninPromoCoordinator {
     }
 
     /** Builds a promo view object for the corresponding access point. */
-    public View buildPromoView(ViewGroup parent) {
+    public View buildPromoView(@Nullable ViewGroup parent) {
         return LayoutInflater.from(mContext)
                 .inflate(getLayoutResId(mDelegate.getAccessPoint()), parent, false);
     }
@@ -98,6 +98,12 @@ public class SigninPromoCoordinator {
                         mMediator.getModel(), promoView, SigninPromoViewBinder::bind);
         mImpressionTracker = new ImpressionTracker(promoView);
         mImpressionTracker.setListener(mMediator::recordImpression);
+    }
+
+    void setLoadingStateForTesting(boolean shouldShowLoadingState) {
+        mMediator
+                .getModel()
+                .set(SigninPromoProperties.SHOULD_SHOW_LOADING_STATE, shouldShowLoadingState);
     }
 
     private void destroyPropertyModelChangeProcessor() {

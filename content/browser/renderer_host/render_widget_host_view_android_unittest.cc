@@ -25,6 +25,7 @@
 #include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/android/test_view_android_delegate.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -665,6 +666,85 @@ TEST_F(RenderWidgetHostViewAndroidTest, StopFlingingOnViz) {
   // been transferred to VizCompositorThread for handling.
   EXPECT_CALL(rir_delegate, StopFlingingOnViz).Times(1);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(RenderWidgetHostViewAndroidTest, UpdateControls) {
+  float dip_scale = 1.0f;
+  float top_height = 90.f;
+  float top_ratio = 1.f;
+  float top_min_height = 0.f;
+  float bottom_height = 50.f;
+  float bottom_ratio = 1.f;
+  float bottom_min_height = 0.f;
+
+  // Get the test view instance from the fixture.
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+
+  // 1. First call should return true as controls are uninitialized.
+  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, top_height, top_ratio,
+                                    top_min_height, bottom_height, bottom_ratio,
+                                    bottom_min_height));
+
+  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, top_height, top_ratio,
+                                     top_min_height, bottom_height,
+                                     bottom_ratio, bottom_min_height));
+
+  // 3. Change top_controls_height.
+  float new_top_height = 100.f;
+  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, new_top_height, top_ratio,
+                                    top_min_height, bottom_height, bottom_ratio,
+                                    bottom_min_height));
+  // Call again with same values, should return false.
+  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, new_top_height, top_ratio,
+                                     top_min_height, bottom_height,
+                                     bottom_ratio, bottom_min_height));
+
+  // 4. Change top_controls_shown_ratio.
+  float new_top_ratio = 0.5f;
+  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
+                                    top_min_height, bottom_height, bottom_ratio,
+                                    bottom_min_height));
+  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
+                                     top_min_height, bottom_height,
+                                     bottom_ratio, bottom_min_height));
+
+  // 5. Change top_controls_min_height_offset.
+  float new_top_min_height = 10.f;
+  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
+                                    new_top_min_height, bottom_height,
+                                    bottom_ratio, bottom_min_height));
+  // Call again with same values, should return false.
+  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
+                                     new_top_min_height, bottom_height,
+                                     bottom_ratio, bottom_min_height));
+
+  // 6. Change bottom_controls_shown_ratio.
+  float new_bottom_ratio = 0.0f;
+  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
+                                    new_top_min_height, bottom_height,
+                                    new_bottom_ratio, bottom_min_height));
+
+  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
+                                     new_top_min_height, bottom_height,
+                                     new_bottom_ratio, bottom_min_height));
+
+  // 7. Change bottom_controls_height while at 0% shown ratio.
+  float new_bottom_height = 60.f;
+  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
+                                    new_top_min_height, new_bottom_height,
+                                    new_bottom_ratio, bottom_min_height));
+  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
+                                     new_top_min_height, new_bottom_height,
+                                     new_bottom_ratio, bottom_min_height));
+
+  // 8. Change bottom_controls_min_height_offset.
+  float new_bottom_min_height = 10.f;
+  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
+                                    new_top_min_height, new_bottom_height,
+                                    new_bottom_ratio, new_bottom_min_height));
+  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
+                                     new_top_min_height, new_bottom_height,
+                                     new_bottom_ratio, new_bottom_min_height));
 }
 
 // Test for scaling.
@@ -1693,6 +1773,34 @@ TEST_F(RenderWidgetHostViewAndroidMixedOrientationStartupTest,
   OnPhysicalBackingSizeChanged(fullscreen_portrait_physical_backing);
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
   GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
+}
+
+TEST_F(RenderWidgetHostViewAndroidTest, LockUnlockPointer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kPointerLockOnAndroid);
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+
+  // Create a window and attach, so that GetWindowAndroid() doesn't return
+  // null.
+  auto window = ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(GetParentView());
+
+  ui::TestViewAndroidDelegate test_view_android_delegate;
+  test_view_android_delegate.SetupTestDelegate(rwhva->GetNativeView());
+  rwhva->Focus();
+
+  EXPECT_FALSE(rwhva->IsPointerLocked());
+
+  EXPECT_EQ(rwhva->LockPointer(false),
+            blink::mojom::PointerLockResult::kSuccess);
+  EXPECT_TRUE(rwhva->IsPointerLocked());
+
+  EXPECT_EQ(rwhva->ChangePointerLock(false),
+            blink::mojom::PointerLockResult::kSuccess);
+  EXPECT_TRUE(rwhva->IsPointerLocked());
+
+  rwhva->UnlockPointer();
+  EXPECT_FALSE(rwhva->IsPointerLocked());
 }
 
 }  // namespace content

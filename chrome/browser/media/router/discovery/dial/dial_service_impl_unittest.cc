@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/media/router/discovery/dial/dial_service_impl.h"
 
 #include <stddef.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -167,7 +163,8 @@ TEST_F(DialServiceImplTest, TestOnDeviceDiscovered) {
   int response_size = std::size(kValidResponse) - 1;
   dial_socket_->recv_buffer_ =
       base::MakeRefCounted<net::IOBufferWithSize>(response_size);
-  strncpy(dial_socket_->recv_buffer_->data(), kValidResponse, response_size);
+  UNSAFE_TODO(strncpy(dial_socket_->recv_buffer_->data(), kValidResponse,
+                      response_size));
   dial_socket_->recv_address_ =
       net::IPEndPoint(net::IPAddress::IPv4Localhost(), 12345);
 

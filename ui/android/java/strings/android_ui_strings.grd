@@ -214,6 +214,16 @@
       <message name="IDS_ACCESSIBILITY_LIST_MENU_BUTTON" desc="Content description for the button that shows option menu for a list item.">
         <ph name="NAME_OF_LIST_ITEM">%1$s<ex>Movie Title</ex></ph> Options
       </message>
+
+      <!-- List menu -->
+      <message name="IDS_SUBMENU_HEADER_BACK" desc="Accessibility label for a menu header which displays a back arrow and brings the user out of a submenu (to the parent folder level)">
+        Back
+      </message>
+
+      <!-- Hierarchical menu-->
+      <message name="IDS_HIERARCHICALMENU_A11Y_DEFAULT_PANE_TITLE" desc="Accessibility pane title used to tell users about navigation in a list menu (between layers of submenus). This string is only used when we cannot determine the header title.">
+        List menu
+      </message>
     </messages>
   </release>
 </grit>

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/byte_count.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/size.h"
@@ -19,13 +20,13 @@ struct SharedMemoryLimits {
     // Do not use more than 5% of extra shared memory, and do not use any extra
     // for memory contrained devices (<=1GB).
     max_mapped_memory_for_texture_upload =
-        base::SysInfo::AmountOfPhysicalMemory() > 1024ULL * 1024 * 1024
+        base::SysInfo::AmountOfPhysicalMemory() > base::GiB(1)
             ? base::saturated_cast<uint32_t>(
-                  base::SysInfo::AmountOfPhysicalMemory() / 20)
+                  base::SysInfo::AmountOfPhysicalMemory().InBytes() / 20)
             : 0;
 
     // On memory constrained devices, switch to lower limits.
-    if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512) {
+    if (base::SysInfo::AmountOfPhysicalMemory().InMiB() <= 512) {
       command_buffer_size = 512 * 1024;
       start_transfer_buffer_size = 32 * 1024;
       min_transfer_buffer_size = 32 * 1024;
@@ -53,7 +54,7 @@ struct SharedMemoryLimits {
     return limits;
   }
 
-  static SharedMemoryLimits ForOOPRasterContext() {
+  static SharedMemoryLimits ForGPURasterContext() {
     SharedMemoryLimits limits;
     limits.command_buffer_size = 64 * 1024;
     // TODO(khushalsagar): See if transfer buffer sizes can be fine-tuned

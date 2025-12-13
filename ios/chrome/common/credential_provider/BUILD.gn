@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/ios/ios_sdk.gni")
+import("//ios/build/chrome_build.gni")
 
 source_set("credential_provider") {
   sources = [
@@ -65,20 +66,88 @@ source_set("mock_credential_store") {
   deps = [ ":ui" ]
 }
 
+# TODO(crbug.com/450221329): Use a template for those targets.
+source_set("passkey_keychain_provider_chrome") {
+  public_deps = [ ":passkey_keychain_provider_header" ]
+  deps = [ ios_passkey_keychain_provider_chrome_target ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider_extension") {
+  public_deps = [ ":passkey_keychain_provider_header" ]
+  deps = [ ios_passkey_keychain_provider_extension_target ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider_header") {
+  sources = [ "passkey_keychain_provider.h" ]
+  deps = [
+    "//base",
+    "//components/webauthn/ios:passkey_types",
+  ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider_implementation") {
+  sources = [ "passkey_keychain_provider.mm" ]
+  deps = [
+    ":passkey_keychain_provider_header",
+    "//base",
+  ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider_bridge_chrome") {
+  sources = [
+    "passkey_keychain_provider_bridge.h",
+    "passkey_keychain_provider_bridge.mm",
+  ]
+  deps = [
+    ":credential_provider",
+    ":passkey_keychain_provider_chrome",
+    "//base",
+    "//components/sync/protocol",
+    "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/ios:passkey_types",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider_bridge_extension") {
+  sources = [
+    "passkey_keychain_provider_bridge.h",
+    "passkey_keychain_provider_bridge.mm",
+  ]
+  deps = [
+    ":credential_provider",
+    ":passkey_keychain_provider_extension",
+    "//base",
+    "//components/sync/protocol",
+    "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/ios:passkey_types",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "archivable_credential_store_unittest.mm",
     "archivable_credential_unittest.mm",
-    "as_credential_identity_categories_unittests.mm",
+    "as_credential_identity_categories_unittest.mm",
     "credential_store_util_unittest.mm",
-    "memory_credential_store_unittests.mm",
-    "multi_store_credential_store_unittests.mm",
-    "user_defaults_credential_store_unittests.mm",
+    "memory_credential_store_unittest.mm",
+    "multi_store_credential_store_unittest.mm",
+    "user_defaults_credential_store_unittest.mm",
   ]
   deps = [
     ":credential_provider",
     "//base/test:test_support",
+    "//components/sync/protocol",
     "//testing/gtest",
   ]
 }

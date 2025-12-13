@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/sync/data_type_store_service_factory.h",
   "+chrome/browser/ui/browser.h",
-  "+chrome/common/channel_info.h",
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]

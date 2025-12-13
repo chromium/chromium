@@ -5,16 +5,23 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_NEW_TAB_FOOTER_FOOTER_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_NEW_TAB_FOOTER_FOOTER_CONTROLLER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class ContentsContainerView;
 
+namespace views {
+class WebView;
+}  // namespace views
+
 namespace new_tab_footer {
 
 class NewTabFooterControllerObserver;
+class NewTabFooterWebView;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

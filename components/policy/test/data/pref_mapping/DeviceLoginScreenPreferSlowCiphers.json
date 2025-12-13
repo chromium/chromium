@@ -1,0 +1,16 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ssl.compliance.cipher",
+      "pref_location": "signin_profile",
+      "default_value": "",
+      "values_to_test": [
+        "cnsa",
+        "default"
+      ]
+    }
+  }
+]

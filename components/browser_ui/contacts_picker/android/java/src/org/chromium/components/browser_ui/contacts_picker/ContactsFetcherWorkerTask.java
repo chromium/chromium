@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.contacts_picker;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -16,6 +15,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContactsFetcher;
+import org.chromium.content_public.browser.ContactsFetcher.RetrievedContact;
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.util.ArrayList;
@@ -25,28 +26,18 @@ import java.util.Map;
 
 /** A worker task to retrieve images for contacts. */
 @NullMarked
-class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDetails>> {
+class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<RetrievedContact>> {
     private static final String[] PROJECTION = {
         ContactsContract.Contacts._ID,
         ContactsContract.Contacts.LOOKUP_KEY,
         ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
     };
 
-    /** An interface to use to communicate back the results to the client. */
-    public interface ContactsRetrievedCallback {
-        /**
-         * A callback to define to receive the contact details.
-         *
-         * @param contacts The contacts retrieved.
-         */
-        void contactsRetrieved(ArrayList<ContactDetails> contacts);
-    }
-
     // The content resolver to use for looking up contacts.
     private final ContentResolver mContentResolver;
 
     // The callback to use to communicate the results.
-    private final ContactsRetrievedCallback mCallback;
+    private final ContactsFetcher.ContactsRetrievedCallback mCallback;
 
     // Whether names were requested by the website.
     private final boolean mIncludeNames;
@@ -63,7 +54,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
     /**
      * A ContactsFetcherWorkerTask constructor.
      *
-     * @param context The Context to use.
+     * @param contentResolver The ContentResolver to use for the lookup.
      * @param callback The callback to use to communicate back the results.
      * @param includeNames Whether names were requested by the website.
      * @param includeEmails Whether to include emails in the data fetched.
@@ -71,13 +62,13 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
      * @param includeAddresses Whether to include telephones in the data fetched.
      */
     public ContactsFetcherWorkerTask(
-            Context context,
-            ContactsRetrievedCallback callback,
+            ContentResolver contentResolver,
+            ContactsFetcher.ContactsRetrievedCallback callback,
             boolean includeNames,
             boolean includeEmails,
             boolean includeTel,
             boolean includeAddresses) {
-        mContentResolver = context.getContentResolver();
+        mContentResolver = contentResolver;
         mCallback = callback;
         mIncludeNames = includeNames;
         mIncludeEmails = includeEmails;
@@ -91,7 +82,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
      * @return The icon representing a contact.
      */
     @Override
-    protected @Nullable ArrayList<ContactDetails> doInBackground() {
+    protected @Nullable ArrayList<RetrievedContact> doInBackground() {
         assert !ThreadUtils.runningOnUiThread();
 
         if (isCancelled()) return null;
@@ -238,7 +229,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
      *
      * @return The contact list as an array.
      */
-    public ArrayList<ContactDetails> getAllContacts() {
+    public ArrayList<RetrievedContact> getAllContacts() {
         Map<String, ArrayList<String>> emailMap =
                 mIncludeEmails
                         ? getDetails(
@@ -280,7 +271,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
             return new ArrayList<>();
         }
 
-        ArrayList<ContactDetails> contacts = new ArrayList<>(cursor.getCount());
+        ArrayList<RetrievedContact> contacts = new ArrayList<>(cursor.getCount());
         do {
             String id =
                     cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
@@ -308,7 +299,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
      * @param contacts The contacts retrieved.
      */
     @Override
-    protected void onPostExecute(@Nullable ArrayList<ContactDetails> contacts) {
+    protected void onPostExecute(@Nullable ArrayList<RetrievedContact> contacts) {
         assert ThreadUtils.runningOnUiThread();
 
         if (isCancelled()) return;

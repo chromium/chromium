@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">appelsiinit</translation>
 <translation id="1275718070701477396">Valittu</translation>
 <translation id="1290331692326790741">Heikko signaali</translation>
+<translation id="1292474106138697109">Ryhmätyökalujen näyttö</translation>
 <translation id="1300115153046603471">APN-tyyppi on oletus ja <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Muunna</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kuvaa</translation>
 <translation id="4300272766492248925">Avaa sovellus</translation>
 <translation id="430786093962686457">sifonki</translation>
+<translation id="4309762678330556039">Luo transkriptioita automaattisesti ja hae audiota. Voit luoda tallenteita myös ilman internetyhteyttä.</translation>
 <translation id="4310735698903592804">Viimeaikaisia Googlen tekoälyn luomia taustakuvia</translation>
 <translation id="4320904097188876154">neonpinkki</translation>
 <translation id="432961742358282111">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai painamalla sitä pitkään. Säädä ominaisuutta vasemmalla ja oikealla nuolella.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="5600027863942488546">Näppäin testattu: <ph name="KEY_NAME" /></translation>
 <translation id="5606865426897221650">Sarkain</translation>
+<translation id="5612205513582918357">Ryhmätyökalut jakaa näyttöä: <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Sinut on kirjattu ulos</translation>
 <translation id="5620281292257375798">Vain sisäinen</translation>
 <translation id="5628106863521633649">Kielivaihtoehdot</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Pilvityönkulku</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Skannereita ei saatavilla</translation>
-<translation id="6231648282154119906">Googlen selaussuoja tarkistaa epäilyttävät tiedostot automaattisesti osana valitsemaasi parannettua suojausta</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6234024205316847054">Näytä osioiden yhteenvedot</translation>
 <translation id="6243280677745499710">Nykyinen taustakuva</translation>

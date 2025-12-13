@@ -22,7 +22,7 @@
 #include "components/payments/content/browser_binding/fake_browser_bound_key.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
-#include "components/payments/content/mock_payment_manifest_web_data_service.h"
+#include "components/payments/content/mock_web_payments_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
@@ -60,9 +60,7 @@ using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-#if BUILDFLAG(IS_ANDROID)
 static constexpr char kAlgorithmIdentifier = 1;
-#endif  // BUILDFLAG(IS_ANDROID)
 static constexpr char kChallengeBase64[] = "aaaa";
 static constexpr char kCredentialIdBase64[] = "cccc";
 
@@ -134,7 +132,8 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
 
   scoped_refptr<FakeBrowserBoundKeyStore> browser_bound_key_store_ =
       base::MakeRefCounted<FakeBrowserBoundKeyStore>();
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
@@ -188,7 +187,6 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
   EXPECT_FALSE(on_instrument_details_error_called_);
 }
 
-#if BUILDFLAG(IS_ANDROID)
 struct BrowserBoundKeyTestParams {
   std::optional<
       std::vector<::device::PublicKeyCredentialParams::CredentialInfo>>
@@ -343,6 +341,7 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
   context_.set_is_off_the_record(GetParam().is_off_the_record);
   web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   base::HistogramTester histograms;
+  base::RunLoop run_loop;
   base::test::ScopedFeatureList features(
       blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
   auto authenticator =
@@ -354,8 +353,8 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
   const std::vector<uint8_t> public_key_as_cose_key({0x05, 0x06, 0x07, 0x08});
   const std::vector<uint8_t> signature({0x09, 0x0a, 0x0b, 0x0c});
   const std::vector<uint8_t> browser_bound_key_id({0x0d, 0x0e, 0x0f, 0x10});
-  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
-      base::MakeRefCounted<MockPaymentManifestWebDataService>();
+  scoped_refptr<MockWebPaymentsWebDataService> mock_service =
+      base::MakeRefCounted<MockWebPaymentsWebDataService>();
   auto binder = std::make_unique<PasskeyBrowserBinder>(browser_bound_key_store_,
                                                        mock_service);
   binder->SetRandomBytesAsVectorCallbackForTesting(base::BindRepeating(
@@ -370,16 +369,17 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(GetParam().credential_parameters), std::move(authenticator),
       /*payment_entities_logos=*/{});
+  app.SetWaitForGetBrowserBoundKeyForTesting(run_loop.QuitClosure());
   browser_bound_key_store_->PutFakeKey(FakeBrowserBoundKey(
       browser_bound_key_id, public_key_as_cose_key, signature,
       GetParam().algorithm_identifier, client_data_json,
       /*is_new=*/GetParam().is_new_bbk));
-  WebDataServiceConsumer* web_data_service_consumer = nullptr;
+  WebDataServiceRequestCallback web_data_service_callback;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
   EXPECT_CALL(*mock_service, GetBrowserBoundKey(Eq(credential_id),
                                                 Eq("effective_rp.example"), _))
-      .WillOnce(DoAll(SaveArg<2>(&web_data_service_consumer),
-                      Return(web_data_service_handle)));
+      .WillOnce(MoveArgAndReturn<2>(&web_data_service_callback,
+                                    web_data_service_handle));
 
   EXPECT_CALL(
       *mock_authenticator,
@@ -393,15 +393,44 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
       .WillOnce(InvokeAuthenticatorCallback(client_data_json));
   app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
 
+  if (GetParam().expect_browser_bound_key) {
+    // Last used time should only be set/updated on Windows platform.
+#if BUILDFLAG(IS_WIN)
+    if (GetParam().is_new_bbk) {
+      EXPECT_CALL(
+          *mock_service,
+          SetBrowserBoundKey(
+              _, _, _,
+              /*last_used=*/testing::Optional(base::Time::NowFromSystemTime()),
+              _));
+    } else {
+      EXPECT_CALL(*mock_service,
+                  UpdateBrowserBoundKeyLastUsed(
+                      _, _, /*last_used=*/base::Time::NowFromSystemTime(), _));
+    }
+#else
+    if (GetParam().is_new_bbk) {
+      EXPECT_CALL(
+          *mock_service,
+          SetBrowserBoundKey(_, _, _, /*last_used=*/Eq(std::nullopt), _));
+    } else {
+      EXPECT_CALL(*mock_service, UpdateBrowserBoundKeyLastUsed).Times(0);
+    }
+#endif
+  }
+
   // Simulate the retrieval of an existing browser bound key.
-  ASSERT_TRUE(web_data_service_consumer);
+  ASSERT_FALSE(web_data_service_callback.is_null());
   auto metadata_result =
       std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
           WDResultType::BROWSER_BOUND_KEY, GetParam().is_new_bbk
                                                ? std::vector<uint8_t>()
                                                : browser_bound_key_id);
-  web_data_service_consumer->OnWebDataServiceRequestDone(
-      web_data_service_handle, std::move(metadata_result));
+  std::move(web_data_service_callback)
+      .Run(web_data_service_handle, std::move(metadata_result));
+
+  // Wait for the Get BBK operation to complete.
+  run_loop.Run();
 
   ASSERT_TRUE(on_instrument_details_ready_called_);
   mojom::PaymentResponsePtr payment_response =
@@ -421,7 +450,6 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
       GetParam().expected_inclusion_metric_result,
       /*expected_bucket_count=*/1);
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 class SecurePaymentConfirmationAppWithUxRefreshFlagTest
     : public SecurePaymentConfirmationAppTest {
@@ -537,7 +565,7 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
 }
 
 TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
-       IgnoresPaymentEntitiesLogosWithoutBitmapsWhenAddingToPaymentOptions) {
+       PaymentEntitiesLogosWithoutBitmapsAreEmptyUrlsInPaymentOptions) {
   web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
                                      credential_id_bytes_.end());
@@ -570,10 +598,13 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
   // The first logo is not included because its bitmap is not set.
   EXPECT_THAT(
       payment_options,
-      Pointer(Field("payment_entities_logos",
-                    &blink::mojom::PaymentOptions::payment_entities_logos,
-                    Optional(ElementsAre(IsShownPaymentEntityLogo(
-                        kPaymentEntity2LogoUrl, "PaymentEntity #2"))))));
+      Pointer(Field(
+          "payment_entities_logos",
+          &blink::mojom::PaymentOptions::payment_entities_logos,
+          Optional(ElementsAre(
+              IsShownPaymentEntityLogo(GURL::EmptyGURL(), "PaymentEntity #1"),
+              IsShownPaymentEntityLogo(kPaymentEntity2LogoUrl,
+                                       "PaymentEntity #2"))))));
 }
 
 class SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest

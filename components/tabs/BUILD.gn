@@ -6,13 +6,17 @@ import("//build/config/ui.gni")
 
 source_set("public") {
   sources = [
+    "public/direct_child_walker.h",
     "public/pinned_tab_collection.h",
     "public/split_tab_collection.h",
     "public/split_tab_data.h",
     "public/supports_handles.h",
     "public/tab_collection.h",
+    "public/tab_collection_observer.h",
+    "public/tab_collection_types.h",
     "public/tab_group.h",
     "public/tab_group_tab_collection.h",
+    "public/tab_handle_factory.h",
     "public/tab_interface.h",
     "public/tab_strip_collection.h",
     "public/unpinned_tab_collection.h",
@@ -56,6 +60,7 @@ source_set("tabs") {
     "impl/tab_collection_storage.cc",
     "impl/tab_group.cc",
     "impl/tab_group_tab_collection.cc",
+    "impl/tab_handle_factory.cc",
     "impl/tab_strip_collection.cc",
     "impl/unpinned_tab_collection.cc",
   ]
@@ -69,18 +74,17 @@ source_set("tabs") {
 source_set("test_support") {
   testonly = true
 
-  if (toolkit_views) {
-    sources = [
-      "impl/mock_tab_interface.cc",
-      "public/mock_tab_interface.h",
-    ]
+  sources = [
+    "impl/mock_tab_group.cc",
+    "impl/mock_tab_interface.cc",
+    "public/mock_tab_group.h",
+    "public/mock_tab_interface.h",
+  ]
 
-    deps = [
-      ":public",
-      "//testing/gmock",
-      "//ui/views",
-    ]
-  }
+  deps = [
+    ":public",
+    "//testing/gmock",
+  ]
 }
 
 source_set("unit_tests") {
@@ -92,9 +96,9 @@ source_set("unit_tests") {
   # TODO(crbug.com/415965103): tab_collection_storage_unittest.cc
   # TODO(crbug.com/415965106): tab_iterator_unittest.cc
   sources = [
-    "impl/tab_handle_factory.cc",
+    "public/direct_child_walker_unittest.cc",
     "public/supports_handles_unittest.cc",
-    "public/tab_handle_factory.h",
+    "public/tab_collection_observer_unittest.cc",
     "public/tab_handle_factory_unittest.cc",
   ]
 
@@ -104,6 +108,7 @@ source_set("unit_tests") {
     ":public",
     ":split_tabs",
     ":tabs",
+    ":test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx/range",

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/explicitly_set_attr_elements_map.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
 #include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
@@ -31,13 +32,17 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
+#include "third_party/blink/renderer/core/html/display_ad_element_monitor.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
+#include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -154,6 +159,36 @@ void ElementRareDataVector::ClearColumnPseudoElements(wtf_size_t to_keep) {
     return;
   }
   data->ClearColumnPseudoElements(to_keep);
+}
+
+void ElementRareDataVector::AddOverscrollPseudoElement(PseudoElement& element) {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  if (!data) {
+    data = MakeGarbageCollected<PseudoElementData>();
+    SetField(FieldId::kPseudoElementData, data);
+  }
+  data->SetPseudoElement(element.GetPseudoId(), &element,
+                         element.GetPseudoArgument());
+}
+
+const OverscrollPseudoElementData*
+ElementRareDataVector::GetOverscrollPseudoElementData() const {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  if (!data) {
+    return nullptr;
+  }
+  return data->GetOverscrollAreaData();
+}
+
+void ElementRareDataVector::ClearOverscrollPseudoElements() {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  if (!data) {
+    return;
+  }
+  data->ClearOverscrollAreas();
 }
 
 CSSStyleDeclaration& ElementRareDataVector::EnsureInlineCSSStyleDeclaration(
@@ -528,28 +563,101 @@ AnchorElementObserver* ElementRareDataVector::GetAnchorElementObserver() const {
       GetField(FieldId::kAnchorElementObserver));
 }
 
+bool ElementRareDataVector::HasCustomElementRegistrySet() const {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  return fields_.HasField(FieldId::kCustomElementRegistry);
+}
+
 CustomElementRegistry* ElementRareDataVector::GetCustomElementRegistry() const {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  DCHECK(HasCustomElementRegistrySet());
   return static_cast<CustomElementRegistry*>(
-      GetField(FieldId::kCustomElementRegistry));
+      fields_.GetField(FieldId::kCustomElementRegistry).Get());
 }
 
 void ElementRareDataVector::SetCustomElementRegistry(CustomElementRegistry* registry) {
-  SetField(FieldId::kCustomElementRegistry, registry);
+  // An element's custom element registry should only be set once unless the
+  // registry is a global registry and can be reset during cross document node
+  // adoption.
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  DCHECK(!GetField(FieldId::kCustomElementRegistry) ||
+         static_cast<CustomElementRegistry*>(
+             GetField(FieldId::kCustomElementRegistry))
+             ->IsGlobalRegistry());
+  // We intentionally don't use ElementRareDataVector::SetField because it will
+  // erase the field if we set null to the field. However, when we want an
+  // element to have null registry explicitly, we want to keep the existence of
+  // field while setting it to null.
+  fields_.SetField(FieldId::kCustomElementRegistry, registry);
 }
 
-void ElementRareDataVector::IncrementImplicitlyAnchoredElementCount() {
-  EnsureWrappedField<wtf_size_t>(FieldId::kImplicitlyAnchoredElementCount)++;
+void ElementRareDataVector::ClearCustomElementRegistry() {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  fields_.EraseField(FieldId::kCustomElementRegistry);
 }
-void ElementRareDataVector::DecrementImplicitlyAnchoredElementCount() {
-  wtf_size_t& anchored_element_count =
-      EnsureWrappedField<wtf_size_t>(FieldId::kImplicitlyAnchoredElementCount);
-  DCHECK(anchored_element_count);
-  anchored_element_count--;
+
+ElementAnimationTriggerData* ElementRareDataVector::AnimationTriggerData() {
+  return static_cast<ElementAnimationTriggerData*>(
+      GetField(FieldId::kAnimationTriggerData));
 }
-bool ElementRareDataVector::HasImplicitlyAnchoredElement() const {
-  wtf_size_t* anchored_element_count =
-      GetWrappedField<wtf_size_t>(FieldId::kImplicitlyAnchoredElementCount);
-  return anchored_element_count && *anchored_element_count;
+
+ElementAnimationTriggerData&
+ElementRareDataVector::EnsureAnimationTriggerData() {
+  return EnsureField<ElementAnimationTriggerData>(
+      FieldId::kAnimationTriggerData);
+}
+
+DisplayAdElementMonitor* ElementRareDataVector::GetDisplayAdElementMonitor()
+    const {
+  return static_cast<DisplayAdElementMonitor*>(
+      GetField(FieldId::kDisplayAdElementMonitor));
+}
+
+DisplayAdElementMonitor& ElementRareDataVector::EnsureDisplayAdElementMonitor(
+    Element* element) {
+  return EnsureField<DisplayAdElementMonitor>(FieldId::kDisplayAdElementMonitor,
+                                              element);
+}
+
+void ElementRareDataVector::SetFocusgroupLastFocused(Element* element) {
+  // Store weak reference, this should not keep the element alive.
+  SetWrappedField<WeakMember<Element>>(FieldId::kFocusgroupLastFocused,
+                                       element);
+}
+
+Element* ElementRareDataVector::GetFocusgroupLastFocused() const {
+  if (auto* value = GetWrappedField<WeakMember<Element>>(
+          FieldId::kFocusgroupLastFocused)) {
+    return value->Get();
+  }
+  return nullptr;
+}
+
+ContentData* ElementRareDataVector::GetAltContentData() const {
+  if (auto* value =
+          GetWrappedField<Member<ContentData>>(FieldId::kAltContentData)) {
+    return value->Get();
+  }
+  return nullptr;
+}
+
+void ElementRareDataVector::SetAltContentData(ContentData* content_data) {
+  if (content_data) {
+    SetWrappedField<Member<ContentData>>(FieldId::kAltContentData,
+                                         content_data);
+  } else {
+    SetField(FieldId::kAltContentData, nullptr);
+  }
+}
+
+OverscrollAreaTracker& ElementRareDataVector::EnsureOverscrollAreaTracker(
+    Element* element) {
+  return EnsureField<class OverscrollAreaTracker>(
+      FieldId::kOverscrollAreaTracker, element);
+}
+OverscrollAreaTracker* ElementRareDataVector::OverscrollAreaTracker() const {
+  return static_cast<class OverscrollAreaTracker*>(
+      GetField(FieldId::kOverscrollAreaTracker));
 }
 
 void ElementRareDataVector::Trace(blink::Visitor* visitor) const {

@@ -4,11 +4,12 @@
 
 group("resources") {
   public_deps = [
-    "chrome_urls/resources:resources",
-    "flags/resources:resources",
-    "internal_debug_pages_disabled/resources:resources",
+    "chrome_urls/resources",
+    "flags/resources",
+    "internal_debug_pages_disabled/resources",
+    "regional_capabilities_internals/resources",
     "safe_browsing/resources",
-    "user_actions/resources:resources",
-    "version/resources:resources",
+    "user_actions/resources",
+    "version/resources",
   ]
 }

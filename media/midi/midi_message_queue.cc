@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/midi/midi_message_queue.h"
 
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "media/midi/message_util.h"
 
@@ -27,7 +23,7 @@ void MidiMessageQueue::Add(const std::vector<uint8_t>& data) {
 }
 
 void MidiMessageQueue::Add(const uint8_t* data, size_t length) {
-  queue_.insert(queue_.end(), data, data + length);
+  queue_.insert(queue_.end(), data, UNSAFE_TODO(data + length));
 }
 
 void MidiMessageQueue::Get(std::vector<uint8_t>* message) {

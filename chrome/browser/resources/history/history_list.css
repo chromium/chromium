@@ -5,8 +5,8 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
- * #import=./shared_style_lit.css.js
- * #include=cr-shared-style-lit shared-style-lit
+ * #import=./shared_style.css.js
+ * #include=cr-shared-style-lit shared-style
  * #css_wrapper_metadata_end */
 
 :host {

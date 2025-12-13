@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -54,8 +53,7 @@ namespace {
 
 const char kTestURL[] = "https://chromium.org";
 
-std::unique_ptr<KeyedService> CreateMockSyncService(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
   return std::make_unique<MockTabGroupSyncService>();
 }
 
@@ -111,7 +109,8 @@ class TabGroupLocalUpdateObserverTest : public PlatformTest {
 
     browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     local_observer_ = std::make_unique<TabGroupLocalUpdateObserver>(
-        browser_list_.get(), mock_service_);
+        browser_list_.get(), mock_service_,
+        SessionRestorationServiceFactory::GetForProfile(profile_.get()));
     browser_list_->AddBrowser(browser_.get());
 
     BrowserList* other_browser_list =
@@ -189,105 +188,6 @@ class TabGroupLocalUpdateObserverTest : public PlatformTest {
   std::unique_ptr<web::FakeNavigationContext> navigation_context_;
 };
 
-// Tests that the service is correctly updated when the title of a tab that was
-// added after creating the service is updated.
-TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateExistingTab) {
-  WebStateList* web_state_list = browser_->GetWebStateList();
-
-  web::FakeWebState* web_state = InsertWebState(web_state_list);
-  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-
-  TabGroupId tab_group_id = TabGroupId::GenerateNew();
-  web_state_list->CreateGroup({0}, {}, tab_group_id);
-
-  EXPECT_CALL(
-      *mock_service_,
-      NavigateTab(tab_group_id, web_state_id.identifier(), _, Eq(kNewTitle)))
-      .Times(1);
-  web_state->SetTitle(kNewTitle);
-}
-
-// Tests that the service is correctly updated when the title of a tab that was
-// existing when creating the service is updated.
-TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTab) {
-  WebStateList* web_state_list = browser_->GetWebStateList();
-
-  web::FakeWebState* web_state = InsertWebState(web_state_list);
-  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-
-  TabGroupId tab_group_id = TabGroupId::GenerateNew();
-  web_state_list->CreateGroup({0}, {}, tab_group_id);
-
-  EXPECT_CALL(
-      *mock_service_,
-      NavigateTab(tab_group_id, web_state_id.identifier(), _, Eq(kNewTitle)));
-  web_state->SetTitle(kNewTitle);
-}
-
-// Tests that the service is does not update the title when sync is paused.
-TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTabSyncPaused) {
-  local_observer_->SetSyncUpdatePaused(true);
-
-  WebStateList* web_state_list = browser_->GetWebStateList();
-
-  web::FakeWebState* web_state = InsertWebState(web_state_list);
-  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-
-  TabGroupId tab_group_id = TabGroupId::GenerateNew();
-  web_state_list->CreateGroup({0}, {}, tab_group_id);
-
-  EXPECT_CALL(
-      *mock_service_,
-      NavigateTab(tab_group_id, web_state_id.identifier(), _, Eq(kNewTitle)))
-      .Times(0);
-  web_state->SetTitle(kNewTitle);
-}
-
-// Tests that the service is correctly updated when the title of a tab that is
-// in a WebStateList that was added after the service creation is updated.
-TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewWebStateList) {
-  WebStateList* web_state_list = browser_same_profile_->GetWebStateList();
-
-  web::FakeWebState* web_state = InsertWebState(web_state_list);
-  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-
-  TabGroupId tab_group_id = TabGroupId::GenerateNew();
-  web_state_list->CreateGroup({0}, {}, tab_group_id);
-
-  // Add the Browser after the tab is inserted.
-  BrowserListFactory::GetForProfile(profile_.get())
-      ->AddBrowser(browser_same_profile_.get());
-
-  EXPECT_CALL(
-      *mock_service_,
-      NavigateTab(tab_group_id, web_state_id.identifier(), _, Eq(kNewTitle)));
-  web_state->SetTitle(kNewTitle);
-}
-
-// Tests that the service is correctly updated when the title of a tab that
-// inserted in a WebStateList that was added after the service creation is
-// updated.
-TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewWebStateListInsert) {
-  // Add the browser before inserting the tab.
-  BrowserListFactory::GetForProfile(profile_.get())
-      ->AddBrowser(browser_same_profile_.get());
-
-  WebStateList* web_state_list = browser_same_profile_->GetWebStateList();
-
-  std::unique_ptr<web::FakeWebState> unique_web_state = CreateWebState();
-  web::WebStateID web_state_id = unique_web_state->GetUniqueIdentifier();
-  web::FakeWebState* web_state = unique_web_state.get();
-  web_state_list->InsertWebState(std::move(unique_web_state));
-
-  TabGroupId tab_group_id = TabGroupId::GenerateNew();
-  web_state_list->CreateGroup({0}, {}, tab_group_id);
-
-  EXPECT_CALL(
-      *mock_service_,
-      NavigateTab(tab_group_id, web_state_id.identifier(), _, Eq(kNewTitle)));
-  web_state->SetTitle(kNewTitle);
-}
-
 // Tests that the service is correctly updated when the navigation of a tab is
 // updated.
 TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdate) {
@@ -300,8 +200,9 @@ TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdate) {
 
   EXPECT_CALL(*mock_service_,
               NavigateTab(tab_group_id, web_state_id.identifier(),
-                          Eq(GURL(kTestURL)), _));
+                          Eq(GURL(kTestURL)), Eq(kNewTitle)));
   web_state->SetCurrentURL(GURL(kTestURL));
+  web_state->SetTitle(kNewTitle);
   SetUpNavigationContext(web_state);
   web_state->OnNavigationFinished(navigation_context_.get());
 }

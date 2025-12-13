@@ -516,7 +516,7 @@ void NdkAudioEncoder::DrainOutput() {
   base::HeapArray<uint8_t> output_data;
   auto output_format = GetOutputFormat(options_);
   if (output_format == AudioEncoder::AacOutputFormat::ADTS) {
-    int adts_header_size = 0;
+    size_t adts_header_size = 0;
     output_data = aac_config_parser_.CreateAdtsFromEsds(mc_output_data,
                                                         &adts_header_size);
     if (output_data.empty()) {

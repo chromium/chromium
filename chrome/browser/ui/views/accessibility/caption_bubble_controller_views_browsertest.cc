@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -432,6 +432,10 @@ class CaptionBubbleControllerViewsTest
   }
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<LiveCaptionBubbleSettings> caption_bubble_settings_;
   std::unique_ptr<CaptionBubbleControllerViews> controller_;
@@ -592,8 +596,16 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
   EXPECT_LT(bubble_bounds.y(), web_contents_bounds_in_screen.bottom());
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_BubblePositioningSmallNonBrowserContext \
+  DISABLED_BubblePositioningSmallNonBrowserContext
+#else
+#define MAYBE_BubblePositioningSmallNonBrowserContext \
+  BubblePositioningSmallNonBrowserContext
+#endif
+// TODO(crbug.com/422049338): Re-enable once flakiness is addressed.
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
-                       BubblePositioningSmallNonBrowserContext) {
+                       MAYBE_BubblePositioningSmallNonBrowserContext) {
   auto context_widget =
       MakeWebViewWidget(browser()->profile(), {{0, 0}, {300, 100}});
 

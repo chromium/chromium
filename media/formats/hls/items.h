@@ -41,9 +41,6 @@ class MEDIA_EXPORT TagItem {
   // If this is an unknown tag, returns `std::nullopt`.
   std::optional<TagName> GetName() const { return name_; }
 
-  // Returns the name of the tag as a string.
-  std::string_view GetNameStr();
-
   // Returns the line number this tag appeared on.
   size_t GetLineNumber() const { return line_number_; }
 

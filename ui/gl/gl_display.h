@@ -165,7 +165,7 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
    public:
     explicit EGLGpuSwitchingObserver(EGLDisplay display);
     ~EGLGpuSwitchingObserver() override = default;
-    void OnGpuSwitched(GpuPreference active_gpu_heuristic) override;
+    void OnGpuSwitched() override;
 
    private:
     EGLDisplay display_ = EGL_NO_DISPLAY;

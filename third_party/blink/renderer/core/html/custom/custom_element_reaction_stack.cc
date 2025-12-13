@@ -93,9 +93,8 @@ void CustomElementReactionStack::EnqueueToBackupQueue(
 
   // If the processing the backup element queue is not set:
   if (!backup_queue_ || backup_queue_->empty()) {
-    element.GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
-        WTF::BindOnce(&CustomElementReactionStack::InvokeBackupQueue,
-                      Persistent<CustomElementReactionStack>(this)));
+    element.GetDocument().GetAgent().event_loop()->EnqueueMicrotask(BindOnce(
+        &CustomElementReactionStack::InvokeBackupQueue, WrapPersistent(this)));
   }
 
   Enqueue(backup_queue_, element, reaction);

@@ -25,7 +25,6 @@ enum class MiniMapMode {
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                       text:(NSString*)text
-                                       url:(NSURL*)URL
                                    withIPH:(BOOL)withIPH
                                       mode:(MiniMapMode)mode
     NS_DESIGNATED_INITIALIZER;

@@ -49,6 +49,10 @@ source_set("permissions") {
     "contexts/local_fonts_permission_context.h",
     "contexts/local_network_access_permission_context.cc",
     "contexts/local_network_access_permission_context.h",
+    "contexts/local_network_permission_context.cc",
+    "contexts/local_network_permission_context.h",
+    "contexts/loopback_network_permission_context.cc",
+    "contexts/loopback_network_permission_context.h",
     "contexts/midi_permission_context.cc",
     "contexts/midi_permission_context.h",
     "contexts/midi_sysex_permission_context.cc",
@@ -132,23 +136,28 @@ source_set("permissions") {
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
-    "//components/favicon/core:core",
+    "//components/favicon/core",
     "//components/guest_view/buildflags",
     "//components/keyed_service/content",
+    "//components/passage_embeddings",
     "//components/permissions/vector_icons",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/safety_check",
     "//components/strings:components_branded_strings_grit",
     "//components/strings:components_strings_grit",
+    "//components/tabs:public",
     "//components/ukm/content",
+    "//components/unified_consent",
     "//components/url_formatter",
+    "//components/user_prefs",
     "//components/variations",
     "//components/vector_icons",
     "//components/webrtc:media_stream_device_enumerator",
     "//content/public/browser",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
-    "//extensions/buildflags:buildflags",
+    "//extensions/buildflags",
     "//services/device/public/cpp/geolocation",
     "//services/device/public/mojom",
     "//services/metrics/public/cpp:ukm_builders",
@@ -201,16 +210,16 @@ source_set("permissions") {
       "contexts/nfc_permission_context_android.h",
     ]
     deps += [
-      "//components/favicon_base:favicon_base",
+      "//components/favicon_base",
       "//components/location/android:location_settings_dialog_enums_java",
       "//components/location/android:settings",
-      "//components/messages/android:android",
+      "//components/messages/android",
       "//components/permissions/android:core_jni",
       "//components/permissions/android:jni_headers",
       "//components/permissions/android:native",
       "//components/prefs",
       "//components/resources:android_resources",
-      "//components/security_state/core:core",
+      "//components/security_state/core",
       "//components/strings:components_strings_grit",
 
       # Our corresponding java library references Java files which use the
@@ -218,6 +227,24 @@ source_set("permissions") {
       "//components/webxr/android:features",
       "//third_party/jni_zero",
       "//ui/android",
+    ]
+  } else if (is_ios) {
+    sources += [
+      "ios/content/permission_prompt/permission_dialog.h",
+      "ios/content/permission_prompt/permission_dialog.mm",
+      "ios/content/permission_prompt/permission_dialog_delegate.h",
+      "ios/content/permission_prompt/permission_dialog_delegate.mm",
+      "ios/content/permission_prompt/permission_prompt_ios.h",
+      "ios/content/permission_prompt/permission_prompt_ios.mm",
+      "ios/content/permission_prompt/permission_prompt_ios_factory.mm",
+    ]
+    deps += [
+      "//base",
+      "//components/content_settings/core/common",
+      "//components/strings:components_strings_grit",
+      "//content/public/browser",
+      "//ui/base",
+      "//url",
     ]
   } else {
     sources += [
@@ -246,8 +273,12 @@ source_set("test_support") {
   sources = [
     "mock_chooser_controller_view.cc",
     "mock_chooser_controller_view.h",
+    "test/aivx_modelhandler_utils.cc",
+    "test/aivx_modelhandler_utils.h",
     "test/enums_to_string.cc",
     "test/enums_to_string.h",
+    "test/fake_permissions_aivx_modelhandlers.cc",
+    "test/fake_permissions_aivx_modelhandlers.h",
     "test/mock_permission_prompt.cc",
     "test/mock_permission_prompt.h",
     "test/mock_permission_prompt_factory.cc",
@@ -287,6 +318,7 @@ source_set("test_support") {
     "//components/vector_icons",
     "//content/public/browser",
     "//services/device/public/cpp:test_support",
+    "//skia",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx",
@@ -300,27 +332,31 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_setting_permission_context_base_unittest.cc",
-    "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
-    "contexts/geolocation_permission_context_unittest.cc",
-    "contexts/keyboard_lock_prompt_unittest.cc",
-    "contexts/midi_permission_context_unittest.cc",
-    "contexts/midi_sysex_permission_context_unittest.cc",
     "contexts/nfc_permission_context_unittest.cc",
     "contexts/wake_lock_permission_context_unittest.cc",
-    "object_permission_context_base_unittest.cc",
-    "pepc_initiated_permission_request_unittest.cc",
-    "permission_actions_history_unittest.cc",
-    "permission_decision_auto_blocker_unittest.cc",
     "permission_indicators_tab_data_unittest.cc",
-    "permission_manager_unittest.cc",
-    "permission_request_manager_unittest.cc",
     "permission_request_queue_unittest.cc",
-    "permission_uma_util_unittest.cc",
-    "resolvers/content_setting_permission_resolver_unittest.cc",
     "resolvers/geolocation_permission_resolver_unittest.cc",
   ]
-  if (!is_android) {
+  if (!is_ios) {
+    sources += [
+      "content_setting_permission_context_base_unittest.cc",
+      "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
+      "contexts/geolocation_permission_context_unittest.cc",
+      "contexts/keyboard_lock_prompt_unittest.cc",
+      "contexts/midi_permission_context_unittest.cc",
+      "contexts/midi_sysex_permission_context_unittest.cc",
+      "object_permission_context_base_unittest.cc",
+      "pepc_initiated_permission_request_unittest.cc",
+      "permission_actions_history_unittest.cc",
+      "permission_decision_auto_blocker_unittest.cc",
+      "permission_manager_unittest.cc",
+      "permission_request_manager_unittest.cc",
+      "permission_uma_util_unittest.cc",
+      "resolvers/content_setting_permission_resolver_unittest.cc",
+    ]
+  }
+  if (!is_android && !is_ios) {
     sources += [
       "bluetooth_chooser_controller_unittest.cc",
       "bluetooth_scanning_prompt_controller_unittest.cc",
@@ -334,6 +370,15 @@ source_set("unit_tests") {
       "android/permissions_reprompt_controller_android_unittest.cc",
     ]
   }
+  if (is_ios) {
+    sources += [
+      "ios/content/permission_prompt/permission_dialog_delegate_unittest.mm",
+      "ios/content/permission_prompt/permission_dialog_unittest.mm",
+      "ios/content/permission_prompt/permission_prompt_ios_unittest.mm",
+      "ios/content/permission_prompt/permission_prompt_test_util.h",
+      "ios/content/permission_prompt/permission_prompt_test_util.mm",
+    ]
+  }
   deps = [
     ":permissions",
     ":test_support",
@@ -344,11 +389,14 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser",
     "//components/keyed_service/content",
     "//components/prefs:test_support",
+    "//components/safety_check",
     "//components/security_state/core",
     "//components/strings:components_strings_grit",
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//components/ukm/content",
+    "//components/unified_consent",
+    "//components/user_prefs",
     "//components/variations",
     "//components/webrtc",
     "//content/test:test_support",

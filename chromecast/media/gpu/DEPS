@@ -1,8 +1,0 @@
-include_rules = [
-  "+chromecast/mojo",
-  "+gpu",
-  "+media/gpu",
-  "+media/mojo/clients",
-  "+media/video",
-  "+services/viz/public/cpp/gpu",
-]

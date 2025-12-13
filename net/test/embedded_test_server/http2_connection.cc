@@ -65,7 +65,7 @@ class Http2Connection::ResponseDelegate : public HttpResponseDelegate {
   }
 
   void SendResponseHeaders(HttpStatusCode status,
-                           const std::string& status_reason,
+                           std::string_view status_reason,
                            const base::StringPairs& headers) override {
     connection_->adapter()->SubmitResponse(stream_id_,
                                            GenerateHeaders(status, headers),
@@ -73,7 +73,7 @@ class Http2Connection::ResponseDelegate : public HttpResponseDelegate {
     connection_->SendIfNotProcessing();
   }
 
-  void SendRawResponseHeaders(const std::string& headers) override {
+  void SendRawResponseHeaders(std::string_view headers) override {
     scoped_refptr<HttpResponseHeaders> parsed_headers =
         HttpResponseHeaders::TryToCreate(headers);
     if (parsed_headers->response_code() == 0) {
@@ -90,9 +90,9 @@ class Http2Connection::ResponseDelegate : public HttpResponseDelegate {
         /*status_reason=*/"", header_pairs);
   }
 
-  void SendContents(const std::string& contents,
+  void SendContents(std::string_view contents,
                     base::OnceClosure callback) override {
-    chunks_.push(std::move(contents));
+    chunks_.emplace(contents);
     send_completion_callback_ = std::move(callback);
     connection_->adapter()->ResumeStream(stream_id_);
     connection_->SendIfNotProcessing();
@@ -104,16 +104,16 @@ class Http2Connection::ResponseDelegate : public HttpResponseDelegate {
     connection_->SendIfNotProcessing();
   }
 
-  void SendContentsAndFinish(const std::string& contents) override {
+  void SendContentsAndFinish(std::string_view contents) override {
     last_frame_ = true;
     SendContents(contents, base::DoNothing());
   }
 
   void SendHeadersContentAndFinish(HttpStatusCode status,
-                                   const std::string& status_reason,
+                                   std::string_view status_reason,
                                    const base::StringPairs& headers,
-                                   const std::string& contents) override {
-    chunks_.push(std::move(contents));
+                                   std::string_view contents) override {
+    chunks_.emplace(contents);
     last_frame_ = true;
     connection_->adapter()->SubmitResponse(stream_id_,
                                            GenerateHeaders(status, headers),

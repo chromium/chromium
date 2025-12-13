@@ -16,6 +16,7 @@ specific_include_rules = {
   "paint_op_raster_fuzzer.cc": [
     "+components/viz/test",
     "+gpu/command_buffer",
+    "+gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h",
   ],
   "paint_op_reader.cc": [
     "+components/crash/core/common",

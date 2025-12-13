@@ -52,7 +52,7 @@ class VulkanImplementationHeadless : public gpu::VulkanImplementation {
   void RegisterSysmemBufferCollection(VkDevice device,
                                       zx::eventpair service_handle,
                                       zx::channel sysmem_token,
-                                      gfx::BufferFormat format,
+                                      viz::SharedImageFormat format,
                                       gfx::BufferUsage usage,
                                       gfx::Size size,
                                       size_t min_buffer_count,

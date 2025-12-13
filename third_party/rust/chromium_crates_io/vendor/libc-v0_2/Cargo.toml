@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "libc"
-version = "0.2.174"
+version = "0.2.178"
 authors = ["The Rust Project Developers"]
 build = "build.rs"
 exclude = [
@@ -21,6 +21,7 @@ exclude = [
     "/.github/*",
     "/.cirrus.yml",
     "/triagebot.toml",
+    "cherry-pick-stable.sh",
 ]
 autolib = false
 autobins = false
@@ -45,9 +46,8 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/rust-lang/libc"
 
 [package.metadata.docs.rs]
-cargo-args = ["-Zbuild-std=core"]
-default-target = "x86_64-unknown-linux-gnu"
 features = ["extra_traits"]
+default-target = "x86_64-unknown-linux-gnu"
 targets = [
     "aarch64-apple-darwin",
     "aarch64-apple-ios",
@@ -109,6 +109,7 @@ targets = [
     "powerpc64-unknown-linux-gnu",
     "powerpc64-wrs-vxworks",
     "powerpc64le-unknown-linux-gnu",
+    "powerpc64le-unknown-linux-musl",
     "riscv32gc-unknown-linux-gnu",
     "riscv32i-unknown-none-elf",
     "riscv32imac-unknown-none-elf",
@@ -157,6 +158,11 @@ targets = [
     "x86_64-unknown-redox",
     "x86_64-wrs-vxworks",
 ]
+cargo-args = ["-Zbuild-std=core"]
+
+[package.metadata.cargo-semver-checks.lints]
+repr_align_removed = "warn"
+global_value_marked_deprecated = "warn"
 
 [features]
 align = []
@@ -179,7 +185,7 @@ name = "const_fn"
 path = "tests/const_fn.rs"
 
 [dependencies.rustc-std-workspace-core]
-version = "1.0.0"
+version = "1.0.1"
 optional = true
 
 [lints.clippy]

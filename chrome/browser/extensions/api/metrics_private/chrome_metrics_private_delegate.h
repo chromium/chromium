@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_API_METRICS_PRIVATE_CHROME_METRICS_PRIVATE_DELEGATE_H_
 
 #include "extensions/browser/api/metrics_private/metrics_private_delegate.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

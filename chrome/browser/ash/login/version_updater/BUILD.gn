@@ -21,7 +21,6 @@ static_library("version_updater") {
   deps = [
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
-    "//chromeos/ash/components/network/portal_detector",
     "//ui/base",
   ]
 }
@@ -56,8 +55,6 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/network:test_support",
-    "//chromeos/ash/components/network/portal_detector",
-    "//chromeos/ash/components/network/portal_detector:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

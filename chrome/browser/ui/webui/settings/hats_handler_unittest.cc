@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -25,12 +26,17 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/test_web_ui.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::_;
 
 class Profile;
+
+using safe_browsing::SafeBrowsingState;
+using safe_browsing::SecuritySettingsBundleSetting;
 
 namespace settings {
 
@@ -140,25 +146,75 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
   task_environment()->RunUntilIdle();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsService \
-  DISABLED_HandleSecurityPageHatsRequestPassesArgumentsToHatsService
-#else
-#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsService \
-  HandleSecurityPageHatsRequestPassesArgumentsToHatsService
-#endif
 TEST_F(HatsHandlerTest,
-       MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsService) {
+       HandleSecurityPageHatsRequest_NoSurveyIfSurveysDisabled) {
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, false);
+
+  // Check that the survey is not launched if surveys are disabled by pref.
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _, _, _, _))
+      .Times(0);
+
+  base::Value::List args;
+  args.Append(base::Value::List());  // No interactions
+  args.Append(static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
+  // Set the time spent on the page to 20,000 milliseconds, which is longer than
+  // the configured value from Finch, 15,000 milliseconds.
+  args.Append(20000);
+  args.Append(static_cast<int>(SecuritySettingsBundleSetting::STANDARD));
+
+  handler()->HandleSecurityPageHatsRequest(args);
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(HatsHandlerTest,
+       HandleSecurityPageHatsRequest_NoSurveyIfInsufficientTimeOnPage) {
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
+
+  // Check that the survey is not launched if the user has not spent enough
+  // time on the page.
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _, _, _, _))
+      .Times(0);
+
+  base::Value::List args;
+  args.Append(base::Value::List());  // No interactions
+  args.Append(static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
+  // Set the time spent on the page to 10,000 milliseconds, which is shorter
+  // than the configured value from Finch, 15,000 milliseconds.
+  args.Append(10000);
+  args.Append(static_cast<int>(SecuritySettingsBundleSetting::STANDARD));
+
+  handler()->HandleSecurityPageHatsRequest(args);
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(HatsHandlerTest,
+       HandleSecurityPageHatsRequest_PassesArgumentsToHatsService) {
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
+
   SurveyStringData expected_product_specific_data = {
-      {"Security Page User Action", "enhanced_protection_radio_button_clicked"},
-      {"Safe Browsing Setting Before Trigger", "standard_protection"},
-      {"Safe Browsing Setting After Trigger", "standard_protection"},
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"Client Channel", "stable"},
+      {"Security page user actions",
+       "enhanced_bundle_radio_button_clicked, "
+       "safe_browsing_row_expanded, "
+       "enhanced_safe_browsing_radio_button_clicked"},
+      {"Safe browsing setting when security page opened",
+       "standard_protection"},
+      {"Security settings bundle setting when security page opened",
+       "standard_protection"},
+      {"Safe browsing setting when security page closed",
+       "enhanced_protection"},
+      {"Security settings bundle setting when security page closed",
+       "enhanced_protection"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+      {"Client channel", "stable"},
 #else
-      {"Client Channel", "unknown"},
+      {"Client channel", "unknown"},
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"Time On Page", "20000"},
+      {"Time on page (bucketed seconds)",
+       base::NumberToString(ukm::GetExponentialBucketMinForUserTiming(20))},
   };
 
   // Check that triggering the security page handler function will trigger HaTS
@@ -168,55 +224,29 @@ TEST_F(HatsHandlerTest,
                            expected_product_specific_data, _, _))
       .Times(1);
 
+  base::Value::List interactions;
+  interactions.Append(static_cast<int>(HatsHandler::SecurityPageV2Interaction::
+                                           ENHANCED_BUNDLE_RADIO_BUTTON_CLICK));
+  interactions.Append(static_cast<int>(
+      HatsHandler::SecurityPageV2Interaction::SAFE_BROWSING_ROW_EXPANDED));
+  interactions.Append(
+      static_cast<int>(HatsHandler::SecurityPageV2Interaction::
+                           ENHANCED_SAFE_BROWSING_RADIO_BUTTON_CLICK));
+
   base::Value::List args;
-  args.Append(static_cast<int>(
-      HatsHandler::SecurityPageInteraction::RADIO_BUTTON_ENHANCED_CLICK));
-  args.Append(static_cast<int>(HatsHandler::SafeBrowsingSetting::STANDARD));
+  args.Append(std::move(interactions));
+  args.Append(static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
   // Set the time spent on the page to 20,000 milliseconds, which is longer than
   // the configured value from Finch, 15,000 milliseconds.
   args.Append(20000);
+  args.Append(static_cast<int>(SecuritySettingsBundleSetting::STANDARD));
 
-  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
-
-  handler()->HandleSecurityPageHatsRequest(args);
-  task_environment()->RunUntilIdle();
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction \
-  DISABLED_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction
-#else
-#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction \
-  HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction
-#endif
-TEST_F(
-    HatsHandlerTest,
-    MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction) {
-  // Reconfigure the feature parameter to require interaction to launch the
-  // survey.
-  base::test::FeatureRefAndParams security_page{
-      features::kHappinessTrackingSurveysForSecurityPage,
-      {{"security-page-time", "15s"},
-       {"security-page-require-interaction", "true"}}};
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters({security_page}, {});
-
-  // Verify that if there are no interactions on the security page but user
-  // interactions are required through finch, the survey will not be shown.
-  EXPECT_CALL(
-      *mock_hats_service_,
-      LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _, _, _, _))
-      .Times(0);
-
-  base::Value::List args;
-  args.Append(
-      static_cast<int>(HatsHandler::SecurityPageInteraction::NO_INTERACTION));
-  args.Append(static_cast<int>(HatsHandler::SafeBrowsingSetting::STANDARD));
-  args.Append(20000);
-
-  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
+  // The "current" settings prefs are read by the handler to determine the state
+  // of the page when the survey is requested.
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kSecuritySettingsBundle,
+      static_cast<int>(SecuritySettingsBundleSetting::ENHANCED));
 
   handler()->HandleSecurityPageHatsRequest(args);
   task_environment()->RunUntilIdle();

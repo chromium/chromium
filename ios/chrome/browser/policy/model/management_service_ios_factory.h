@@ -13,11 +13,13 @@ class ProfileIOS;
 namespace policy {
 
 class ManagementServiceIOS;
+class ManagementService;
 
 class ManagementServiceIOSFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static ManagementServiceIOSFactory* GetInstance();
   static ManagementServiceIOS* GetForProfile(ProfileIOS* profile);
+  static ManagementService* GetForPlatform();
 
  private:
   friend class base::NoDestructor<ManagementServiceIOSFactory>;
@@ -25,9 +27,9 @@ class ManagementServiceIOSFactory : public ProfileKeyedServiceFactoryIOS {
   ManagementServiceIOSFactory();
   ~ManagementServiceIOSFactory() override;
 
-  // ProfileKeyedServiceFactoryIOS:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace policy

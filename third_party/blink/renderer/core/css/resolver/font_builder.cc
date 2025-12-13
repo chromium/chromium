@@ -245,6 +245,12 @@ void FontBuilder::SetVariationSettings(
   font_description_.SetVariationSettings(std::move(settings));
 }
 
+void FontBuilder::SetFontLanguageOverride(
+    const AtomicString& language_override) {
+  Set(PropertySetFlag::kFontLanguageOverride);
+  font_description_.SetFontLanguageOverride(language_override);
+}
+
 void FontBuilder::SetFamilyDescription(
     FontDescription& font_description,
     const FontDescription::FamilyDescription& family_description) {
@@ -392,8 +398,8 @@ void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
   FontSizeAdjust size_adjust = font_description.SizeAdjust();
   if (size_adjust.IsFromFont() &&
       size_adjust.Value() == FontSizeAdjust::kFontSizeAdjustNone) {
-    std::optional<float> aspect_value = FontSizeFunctions::FontAspectValue(
-        font_data, size_adjust.GetMetric(), font_description.ComputedSize());
+    std::optional<float> aspect_value =
+        FontSizeFunctions::FontAspectValue(font_data, size_adjust.GetMetric());
     font_description.SetSizeAdjust(FontSizeAdjust(
         aspect_value.has_value() ? aspect_value.value()
                                  : FontSizeAdjust::kFontSizeAdjustNone,
@@ -505,6 +511,14 @@ bool FontBuilder::UpdateFontDescription(FontDescription& description,
         font_description_.VariationSettings()) {
       modified = true;
       description.SetVariationSettings(font_description_.VariationSettings());
+    }
+  }
+  if (IsSet(PropertySetFlag::kFontLanguageOverride)) {
+    if (description.FontLanguageOverride() !=
+        font_description_.FontLanguageOverride()) {
+      modified = true;
+      description.SetFontLanguageOverride(
+          font_description_.FontLanguageOverride());
     }
   }
   if (IsSet(PropertySetFlag::kFontSynthesisWeight)) {

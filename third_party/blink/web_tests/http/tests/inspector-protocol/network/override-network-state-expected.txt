@@ -1,0 +1,26 @@
+Verify that overrideNetworkState sets navigator.onLine and navigator.connection
+{
+    downlinkMax : null
+    effectiveType : 4g
+    onLine : true
+    rtt : 0
+    saveData : false
+    type : ethernet
+}
+{
+    downlinkMax : 0.000762939453125
+    effectiveType : 4g
+    onLine : true
+    rtt : 50
+    saveData : false
+    type : bluetooth
+}
+{
+    downlinkMax : 0.000762939453125
+    effectiveType : 4g
+    onLine : false
+    rtt : 50
+    saveData : false
+    type : bluetooth
+}
+

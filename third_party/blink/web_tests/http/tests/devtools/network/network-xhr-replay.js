@@ -39,7 +39,7 @@ import {NetworkTestRunner} from 'network_test_runner';
         NetworkTestRunner.NetworkLogEvents.RequestAdded,
         NetworkTestRunner.networkLog());
     await dumpRequest(originalRequest);
-    TestRunner.NetworkAgent.replayXHR(originalRequest.requestId());
+    TestRunner.NetworkAgent.invoke_replayXHR({requestId: originalRequest.requestId()});
     var {request: replayedRequest} = await TestRunner.waitForEvent(
         NetworkTestRunner.NetworkLogEvents.RequestAdded,
         NetworkTestRunner.networkLog());

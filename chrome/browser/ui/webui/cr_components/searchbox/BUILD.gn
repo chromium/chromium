@@ -1,0 +1,65 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("searchbox") {
+  sources = [
+    "contextual_search_type_converters.h",
+    "contextual_searchbox_handler.h",
+    "searchbox_handler.h",
+    "searchbox_omnibox_client.h",
+    "searchbox_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//components/contextual_search:public",
+    "//components/lens",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:mojo_bindings",
+    "//components/omnibox/composebox:mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx",
+    "//ui/webui/resources/cr_components/composebox:mojo_bindings",
+  ]
+}
+
+source_set("searchbox_impl") {
+  sources = [
+    "contextual_search_type_converters.cc",
+    "contextual_searchbox_handler.cc",
+    "searchbox_handler.cc",
+    "searchbox_omnibox_client.cc",
+    "searchbox_utils.cc",
+  ]
+  deps = [
+    ":searchbox",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/contextual_search",
+    "//chrome/browser/contextual_tasks",
+    "//chrome/browser/omnibox",
+    "//chrome/browser/preloading/search_preload",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+    "//components/contextual_search:public",
+    "//components/omnibox/browser:vector_icons",
+    "//components/search",
+    "//components/sessions",
+  ]
+}

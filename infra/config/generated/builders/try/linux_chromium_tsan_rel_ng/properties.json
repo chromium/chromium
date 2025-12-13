@@ -17,7 +17,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-memory-archive",
               "builder_group": "chromium.memory",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -41,7 +40,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-memory-archive",
               "builder_group": "chromium.memory",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -79,12 +77,9 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/linux_chromium_tsan_rel_ng/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/linux_chromium_tsan_rel_ng/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
-  },
-  "$build/flakiness": {
-    "check_for_flakiness": true,
-    "check_for_flakiness_with_resultdb": true
   },
   "$build/siso": {
     "configs": [

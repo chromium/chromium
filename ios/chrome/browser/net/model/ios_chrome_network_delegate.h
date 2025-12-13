@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "net/base/network_delegate_impl.h"
 
 class PrefService;

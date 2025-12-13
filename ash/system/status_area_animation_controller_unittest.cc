@@ -18,10 +18,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -112,8 +112,8 @@ class StatusAreaAnimationControllerTest : public AshTestBase {
 // animation.
 TEST_F(StatusAreaAnimationControllerTest,
        TrayItemAnimationDisabledDuringShowAnimation) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ASSERT_FALSE(test_api->IsTrayAnimating());
   ASSERT_FALSE(test_api->IsTrayShown());
   ASSERT_FALSE(notification_counter()->GetVisible());
@@ -141,8 +141,8 @@ TEST_F(StatusAreaAnimationControllerTest,
 // animation on a secondary display.
 TEST_F(StatusAreaAnimationControllerTest,
        TrayItemAnimationDisabledDuringShowAnimationOnSecondaryDisplay) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create two displays.
   UpdateDisplay("800x799,800x799");
@@ -181,8 +181,8 @@ TEST_F(StatusAreaAnimationControllerTest,
 // animation.
 TEST_F(StatusAreaAnimationControllerTest,
        TrayItemAnimationDisabledDuringHideAnimation) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ASSERT_FALSE(test_api->IsTrayAnimating());
   ASSERT_FALSE(test_api->IsTrayShown());
   ASSERT_FALSE(notification_counter()->GetVisible());
@@ -241,8 +241,8 @@ TEST_F(StatusAreaAnimationControllerTest,
 
   // Set the animation duration scale to some small non-zero value for the rest
   // of the test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Remove the notification to start the notification tray's hide animation.
   test_api->RemoveNotification(id);
@@ -287,8 +287,8 @@ TEST_F(StatusAreaAnimationControllerTest,
 
   // Set the animation duration scale to some small non-zero value for the
   // rest of the test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Remove the critical warning system notification to start the notification
   // icon's hide animation (note that the notification tray should remain
@@ -318,8 +318,8 @@ TEST_F(StatusAreaAnimationControllerTest,
 // even when it's not the initial show animation.
 TEST_F(StatusAreaAnimationControllerTest,
        TrayItemAnimationDisabledDuringNonInitialShowAnimation) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ASSERT_FALSE(test_api->IsTrayAnimating());
   ASSERT_FALSE(test_api->IsTrayShown());
   ASSERT_FALSE(notification_counter()->GetVisible());
@@ -365,8 +365,8 @@ TEST_F(StatusAreaAnimationControllerTest,
 // even when it's not the initial hide animation.
 TEST_F(StatusAreaAnimationControllerTest,
        TrayItemAnimationDisabledDuringNonInitialHideAnimation) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ASSERT_FALSE(test_api->IsTrayAnimating());
   ASSERT_FALSE(test_api->IsTrayShown());
   ASSERT_FALSE(notification_counter()->GetVisible());
@@ -424,8 +424,8 @@ TEST_F(StatusAreaAnimationControllerTest,
 // `TrayItemView` becomes visible.
 TEST_F(StatusAreaAnimationControllerTest,
        VisibleTrayItemDoesNotAnimateDuringNewTrayItemAnimation) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ASSERT_FALSE(test_api->IsTrayAnimating());
   ASSERT_FALSE(test_api->IsTrayShown());
 
@@ -463,8 +463,8 @@ TEST_F(StatusAreaAnimationControllerTest,
 // tray.
 TEST_F(StatusAreaAnimationControllerTest,
        VisibleTrayItemAnimatesOutWithoutCausingWholeTrayAnimation) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ASSERT_FALSE(test_api->IsTrayAnimating());
   ASSERT_FALSE(test_api->IsTrayShown());
 
@@ -519,8 +519,8 @@ TEST_F(StatusAreaAnimationControllerTest, ShowWhileHideAnimationIsRunning) {
 
   // Set the animation duration scale to some small non-zero value for the rest
   // of the test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Remove the notification, causing the notification tray to hide.
   test_api->RemoveNotification(id);
@@ -558,8 +558,8 @@ TEST_F(StatusAreaAnimationControllerTest, HideWhileShowAnimationIsRunning) {
 
   // Set the animation duration scale to some small non-zero value for the rest
   // of the test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Cause the notification tray to start to show by adding a notification.
   auto id = test_api->AddNotification();
@@ -601,8 +601,8 @@ TEST_F(StatusAreaAnimationControllerTest,
 
   // Set the animation duration scale to some small non-zero value for the rest
   // of the test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Toggle "Do not disturb" mode on and off to ensure that the notification
   // counter animates at least once (otherwise its animation object will still

@@ -8,13 +8,13 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -26,7 +26,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayou
  * Standard Preloading and No Preloading.
  */
 @NullMarked
-public class RadioButtonGroupPreloadPagesSettings extends Preference
+public class RadioButtonGroupPreloadPagesSettings extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener,
                 RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
     /** Interface that will subscribe to Preload Pages state details requested events. */

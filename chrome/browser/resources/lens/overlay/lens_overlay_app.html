@@ -145,7 +145,7 @@
     transition-delay: 80ms;
   }
 
-  .action-button {
+  .options-button {
     --cr-icon-button-icon-size: 24px;
     --cr-icon-button-size: 36px;
     --cr-icon-button-fill-color: var(--color-overlay-icon);
@@ -213,6 +213,7 @@
 
   #toast {
     justify-content: space-between;
+    z-index: 7;
   }
 
   :host([is-lens-overlay-contextual-searchbox-enabled]) #moreOptions {
@@ -292,6 +293,10 @@
     display: none;
   }
 
+  :host([overlay-reshow-in-progress]) lens-selection-overlay {
+    opacity: 0;
+  }
+
   .app-container :not(lens-selection-overlay) {
     transition: opacity 150ms linear;
   }
@@ -317,6 +322,87 @@
 
   initial-gradient {
     pointer-events: none;
+  }
+
+  #privacyNotice {
+    display: flex;
+    inset-block-start: 118px;
+    inset-inline-end: 72px;
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    border-radius: 24px;
+    background: #FFF;
+    /* Elevation Light/2 */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.30), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+    position: absolute;
+    width: 266px;
+    z-index: 6;  /* Keep aligned with cursor and context menu. */
+  }
+
+  :host(:not([is-lens-overlay-contextual-searchbox-enabled])) #privacyNotice {
+    inset-block-start: 34px;
+    inset-inline-end: 124px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][enable-csb-motion-tweaks]) #privacyNotice {
+    /* Set opacity to 0 so it can animate in with the searchbox. */
+    transition: none;
+    opacity: 0;
+  }
+
+  /* Keyframes for the privacy notice enter animation */
+  @keyframes privacyNoticeEnter {
+    0% {
+      opacity: 0;
+      transform: scale(0.9, 0.75);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1, 1);
+    }
+  }
+
+  :host([can-animate-in-close-button][enable-csb-motion-tweaks]) #privacyNotice {
+    animation: privacyNoticeEnter 483ms cubic-bezier(0, 0, 0, 1) forwards;
+    /* The above removes the transition so the privacy notice can animate in.
+     * Now that its animating, add the transition back so it can fade out when
+     * the overlay is closed. */
+    transition: inherit;
+  }
+
+  :host([search-box-hidden]) #privacyNotice {
+    /* Hide when initiating a drag. */
+    display: none;
+  }
+
+  #privacyNoticeHeader {
+    color: #1f1f1f;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  #privacyNoticeBody {
+    color: #1f1f1f;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+    min-height: 72px;
+  }
+
+  #privacyNoticeButtons {
+    --color-button-background-tonal: #D3E3FD;
+    --color-button-foreground-tonal: #041E49;
+    --color-button-background-prominent: #0B57D0;
+    --color-button-foreground-prominent: #FFFFFF;
+    display: flex;
+    gap: 8px;
+    justify-content: end;
+    width: 100%;
   }
 
   #searchboxContainer {
@@ -383,6 +469,16 @@
     inset-inline-start: 0;
     inset-inline-end: 0;
     top: 0;
+  }
+
+  /* Used for text that should only be visible to screen readers. */
+  .sr-only {
+    height: 1px;
+    left: -10000px;
+    overflow: hidden;
+    position: absolute;
+    top: auto;
+    width: 1px;
   }
 
   /**
@@ -474,6 +570,23 @@
       hidden$="[[!isImageRendered]]"
       on-pointerenter="handlePointerEnterBackgroundScrim"
       on-pointerleave="handlePointerLeaveBackgroundScrim"></div>
+  <template is="dom-if" if="[[isPrivacyNoticeVisible]]">
+    <div id="privacyNotice" aria-live="polite" tabindex="-1">
+      <div id="privacyNoticeHeader">$i18n{privacyNoticeHeader}
+      </div>
+      <div id="privacyNoticeBody">$i18nRaw{privacyNoticeBody}</div>
+      <div id="privacyNoticeButtons">
+        <cr-button id="privacyNoticeCancel" class="tonal-button"
+            on-click="onPrivacyNoticeCancel">
+          $i18n{privacyNoticeCancel}
+        </cr-button>
+        <cr-button id="privacyNoticeContinue" class="action-button"
+            on-click="onPrivacyNoticeContinue">
+          $i18n{privacyNoticeContinue}
+        </cr-button>
+      </div>
+    </div>
+  </template>
   <lens-selection-overlay id="selectionOverlay" theme="[[theme]]"
       is-searchbox-focused="[[isSearchboxFocused]]"
       are-language-pickers-open="[[areLanguagePickersOpen]]"
@@ -504,7 +617,7 @@
   <div id="optionsButtonContainer" class="button-container">
     <div id="moreOptions">
       <cr-icon-button iron-icon="cr:more-vert" id="moreOptionsButton"
-          class="action-button" on-click="onMoreOptionsButtonClick"
+          class="options-button" on-click="onMoreOptionsButtonClick"
           role="button" aria-label="$i18n{moreOptions}"
           aria-controls="moreOptionsMenu" aria-haspopup="menu"
           aria-expanded="[[moreOptionsMenuVisible]]" title="$i18n{moreOptions}">
@@ -533,7 +646,7 @@
         </div>
       </div>
     </div>
-    <cr-icon-button id="closeButton" class="action-button"
+    <cr-icon-button id="closeButton" class="options-button"
         on-click="onCloseButtonClick" aria-label="$i18n{close}"
         title="$i18n{close}"></cr-icon-button>
   </div>

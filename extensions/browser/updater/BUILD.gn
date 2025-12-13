@@ -71,6 +71,6 @@ source_set("test_support") {
 
   deps = [
     ":updater",
-    "//base:base",
+    "//base",
   ]
 }

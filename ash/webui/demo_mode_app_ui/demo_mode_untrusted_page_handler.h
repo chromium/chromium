@@ -9,7 +9,6 @@
 #include "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_untrusted_ui.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {

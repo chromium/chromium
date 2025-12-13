@@ -1,0 +1,137 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/actor/ui/actor_overlay_web_view.h"
+
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/chrome_features.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/webview/web_contents_set_background_color.h"
+#include "ui/views/view_class_properties.h"
+
+ActorOverlayWebView::ActorOverlayWebView(BrowserWindowInterface* browser)
+    : browser_(browser) {
+  // Required to create a new web contents if one doesn't exist.
+  SetBrowserContext(browser->GetProfile());
+  SetVisible(false);
+  SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  GetViewAccessibility().SetIsIgnored(true);
+}
+
+ActorOverlayWebView::~ActorOverlayWebView() {
+  CloseUI();
+  SetWebContents(nullptr);
+}
+
+void ActorOverlayWebView::ShowUI(tabs::TabInterface* tab,
+                                 base::OnceClosure callback) {
+  CHECK(features::kGlicActorUiOverlay.Get());
+  if (!web_contents()) {
+    // Creates a new web contents if one doesn't exist.
+    LoadInitialURL(GURL(chrome::kChromeUIActorOverlayURL));
+  }
+  // Disable mouse, keyboard, and a11y input events to underlying tab
+  // contents.
+  scoped_ignore_input_events_ = tab->GetContents()->IgnoreInputEvents(
+      std::nullopt, /*should_ignore_a11y_input=*/true);
+  // Set the tab interface
+  webui::SetTabInterface(web_contents(), tab);
+
+  // Make the view background transparent so it can act as an overlay.
+  content::RenderWidgetHostView* rwhv =
+      web_contents()->GetRenderWidgetHostView();
+  if (rwhv) {
+    rwhv->SetBackgroundColor(SK_ColorTRANSPARENT);
+  }
+
+  SetVisible(true);
+  web_contents()->WasShown();
+  // If the WebUI is available, let it handle the callback. Otherwise, add the
+  // callback to the list until the navigation commits.
+  if (actor::ui::ActorOverlayUI* webui = GetWebUi()) {
+    webui->SetHandlerInitializedCallback(std::move(callback));
+  } else {
+    pending_webui_init_callbacks_.push_back(std::move(callback));
+  }
+}
+
+void ActorOverlayWebView::CloseUI() {
+  if (web_contents()) {
+    SetVisible(false);
+    // Re-enable mouse, keyboard, and a11y input events to the underlying web
+    // contents by resetting the ScopedIgnoreInputEvents object.
+    scoped_ignore_input_events_.reset();
+    web_contents()->WasHidden();
+  }
+}
+
+void ActorOverlayWebView::SetOverlayBackground(bool is_visible) {
+  actor::ui::ActorOverlayUI* web_ui = GetWebUi();
+  if (!web_ui) {
+    return;
+  }
+
+  web_ui->SetOverlayBackground(is_visible);
+}
+
+void ActorOverlayWebView::SetBorderGlowVisibility(bool is_visible) {
+  actor::ui::ActorOverlayUI* web_ui = GetWebUi();
+  if (!web_ui) {
+    return;
+  }
+
+  web_ui->SetBorderGlowVisibility(is_visible);
+}
+
+void ActorOverlayWebView::MoveCursorTo(const gfx::Point& point,
+                                       base::OnceClosure callback) {
+  // Ensure the callback runs on any early return. We Release() ownership only
+  // when passing the callback to an asynchronous operation.
+  base::ScopedClosureRunner runner(std::move(callback));
+  if (!base::FeatureList::IsEnabled(features::kGlicActorUiOverlayMagicCursor)) {
+    return;
+  }
+  if (actor::ui::ActorOverlayUI* web_ui = GetWebUi()) {
+    web_ui->MoveCursorTo(point, runner.Release());
+  }
+}
+
+actor::ui::ActorOverlayUI* ActorOverlayWebView::GetWebUi() {
+  if (!web_contents()) {
+    return nullptr;
+  }
+
+  return web_contents()
+      ->GetWebUI()
+      ->GetController()
+      ->GetAs<actor::ui::ActorOverlayUI>();
+}
+
+void ActorOverlayWebView::PrimaryPageChanged(content::Page& page) {
+  if (pending_webui_init_callbacks_.empty()) {
+    return;
+  }
+  if (actor::ui::ActorOverlayUI* webui = GetWebUi()) {
+    for (auto& callback : pending_webui_init_callbacks_) {
+      webui->SetHandlerInitializedCallback(std::move(callback));
+    }
+  } else {
+    // TODO(crbug.com/422539773): Handle when WebUI initialization fails, this
+    // could happen if the navigation fails or renderer crashes. Running
+    // callback to not block actuation.
+    for (auto& callback : pending_webui_init_callbacks_) {
+      std::move(callback).Run();
+    }
+  }
+  pending_webui_init_callbacks_.clear();
+}
+
+BEGIN_METADATA(ActorOverlayWebView)
+END_METADATA

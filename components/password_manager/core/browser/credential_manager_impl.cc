@@ -3,21 +3,28 @@
 // found in the LICENSE file.
 #include "components/password_manager/core/browser/credential_manager_impl.h"
 
+#include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/credential_manager_logger.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -53,6 +60,10 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
     return;
   }
 
+  // Get the submitted form before it's erased in `NotifyStorePasswordCalled`.
+  std::optional<PasswordForm> submitted_form =
+      client_->GetPasswordManager()->GetSubmittedCredentials();
+  last_submitted_form_ = submitted_form ? submitted_form : last_submitted_form_;
   client_->NotifyStorePasswordCalled();
 
   std::unique_ptr<PasswordForm> form(
@@ -78,6 +89,25 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
   }
   form_manager_ = std::make_unique<CredentialManagerPasswordFormManager>(
       client_, std::move(form), this, nullptr, std::move(form_fetcher));
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (!last_submitted_form_) {
+    return;
+  }
+  bool pwm_credential_matches_cmapi_credential =
+      origin.IsSameOriginWith(last_submitted_form_->url) &&
+      last_submitted_form_->username_value == credential.id &&
+      last_submitted_form_->password_value == credential.password;
+  // Propagate the permissions set during Actor Login flow. The permission is
+  // stored in `PasswordFormManager` owned by Password Manager.
+  // last_submitted_form_ is saved as a member field because `Update` clears all
+  // password forms tracked by Password Manager and we are not guaranteed to
+  // receive a single `Update` call from a website.
+  if (base::FeatureList::IsEnabled(password_manager::features::kActorLogin) &&
+      last_submitted_form_->actor_login_approved &&
+      pwm_credential_matches_cmapi_credential) {
+    form_manager_->SetShouldStoreActorLoginPermission();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 void CredentialManagerImpl::PreventSilentAccess(
@@ -112,6 +142,17 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
     CredentialManagerLogger(client_->GetCurrentLogManager())
         .LogRequestCredential(GetOrigin(), mediation, federations);
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Return an empty credential if there is an active actor task.
+  if (client_->IsActorTaskActive()) {
+    std::move(callback).Run(CredentialManagerError::SUCCESS, CredentialInfo());
+    LogCredentialManagerGetResult(
+        metrics_util::CredentialManagerGetResult::kNone, mediation);
+    return;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   if (pending_request_ || !store) {
     // Callback error.
     std::move(callback).Run(
@@ -233,6 +274,7 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
   DCHECK(form_manager_);
   const PasswordForm& form = form_manager_->GetPendingCredentials();
   DCHECK(client_->IsSavingAndFillingEnabled(form.url));
+  last_submitted_form_ = std::nullopt;
 
   if (form.federation_origin.IsValid()) {
     // If this is a federated credential, check it against the federated matches

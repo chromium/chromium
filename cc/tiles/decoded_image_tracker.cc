@@ -3,22 +3,34 @@
 // found in the LICENSE file.
 
 #include "cc/tiles/decoded_image_tracker.h"
+
+#include <algorithm>
+
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 
 namespace cc {
 namespace {
-// Timeout images after 250ms, whether or not they've been used. This prevents
-// unbounded cache usage.
-const int64_t kTimeoutDurationMs = 250;
+// Release decoded data lock after this number of commits, to prevent unbounded
+// cache usage.
+const int kNumCommitsToLock = 3;
+
+// Timeout images after 4000ms, whether or not they've been used. This is a
+// fallback for kNumCommitsToLock in the event that the widget is not producing
+// commits (because it's throttled or paused).
+const int64_t kTimeoutDurationMs = 4000;
 }  // namespace
 
 DecodedImageTracker::ImageLock::ImageLock(
     DecodedImageTracker* tracker,
     ImageController::ImageDecodeRequestId request_id,
-    base::TimeTicks lock_time)
-    : tracker_(tracker), request_id_(request_id), lock_time_(lock_time) {}
+    int expiration_frame,
+    base::TimeTicks expiration_time)
+    : tracker_(tracker),
+      request_id_(request_id),
+      expiration_frame_(expiration_frame),
+      expiration_time_(expiration_time) {}
 
 DecodedImageTracker::ImageLock::~ImageLock() {
   tracker_->image_controller_->UnlockImageDecode(request_id_);
@@ -28,9 +40,14 @@ DecodedImageTracker::DecodedImageTracker(
     ImageController* controller,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : image_controller_(controller),
-      task_runner_(std::move(task_runner)),
-      tick_clock_(base::DefaultTickClock::GetInstance()) {
+      tick_clock_(base::DefaultTickClock::GetInstance()),
+      expiration_timer_(std::make_unique<base::RepeatingTimer>(tick_clock_)) {
   DCHECK(image_controller_);
+  expiration_timer_->SetTaskRunner(task_runner);
+  // This must be done after weak_ptr_factory_ is initialized.
+  timer_closure_ = std::make_unique<base::RepeatingClosure>(
+      base::BindRepeating(&DecodedImageTracker::CheckForExpiredDecodes,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 DecodedImageTracker::~DecodedImageTracker() {
@@ -65,6 +82,44 @@ void DecodedImageTracker::OnImagesUsedInDraw(
     locked_images_.erase(draw_image.paint_image().stable_id());
 }
 
+void DecodedImageTracker::SetSyncTreeFrameNumber(int frame_number) {
+  if (sync_tree_frame_number_ != frame_number) {
+    sync_tree_frame_number_ = frame_number;
+    CheckForExpiredDecodes();
+  }
+}
+
+void DecodedImageTracker::CheckForExpiredDecodes() {
+  if (locked_images_.empty()) {
+    return;
+  }
+
+  int current_frame = sync_tree_frame_number_;
+  auto now = tick_clock_->NowTicks();
+  base::TimeDelta new_delay = base::TimeDelta::Max();
+  base::EraseIf(
+      locked_images_,
+      [now, current_frame, &new_delay](
+          const std::pair<PaintImage::Id, std::unique_ptr<ImageLock>>& entry)
+          -> bool {
+        if (entry.second->expiration_frame() < current_frame ||
+            entry.second->expiration_time() <= now) {
+          return true;
+        }
+        new_delay = std::min(new_delay, entry.second->expiration_time() - now);
+        return false;
+      });
+  StartTimer(new_delay);
+}
+
+void DecodedImageTracker::SetTickClockForTesting(
+    const base::TickClock* tick_clock,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  tick_clock_ = tick_clock;
+  expiration_timer_ = std::make_unique<base::RepeatingTimer>(tick_clock_);
+  expiration_timer_->SetTaskRunner(task_runner);
+}
+
 void DecodedImageTracker::ImageDecodeFinished(
     base::OnceCallback<void(bool)> callback,
     PaintImage::Id image_id,
@@ -77,10 +132,15 @@ void DecodedImageTracker::ImageDecodeFinished(
     // If this image already exists, just replace it with the new (latest)
     // decode.
     locked_images_.erase(image_id);
+    auto delay = base::Milliseconds(kTimeoutDurationMs);
     locked_images_.emplace(
         image_id,
-        std::make_unique<ImageLock>(this, request_id, tick_clock_->NowTicks()));
-    EnqueueTimeout();
+        std::make_unique<ImageLock>(this, request_id,
+                                    sync_tree_frame_number_ + kNumCommitsToLock,
+                                    tick_clock_->NowTicks() + delay));
+    if (!expiration_timer_->IsRunning()) {
+      StartTimer(delay);
+    }
   }
   bool decode_succeeded =
       result == ImageController::ImageDecodeResult::SUCCESS ||
@@ -88,37 +148,12 @@ void DecodedImageTracker::ImageDecodeFinished(
   std::move(callback).Run(decode_succeeded);
 }
 
-void DecodedImageTracker::OnTimeoutImages() {
-  timeout_pending_ = false;
-  if (locked_images_.size() == 0)
+void DecodedImageTracker::StartTimer(base::TimeDelta delay) {
+  expiration_timer_->Stop();
+  if (delay == base::TimeDelta::Max()) {
     return;
-
-  auto now = tick_clock_->NowTicks();
-  auto timeout = base::Milliseconds(kTimeoutDurationMs);
-  for (auto it = locked_images_.begin(); it != locked_images_.end();) {
-    auto& image = it->second;
-    if (now - image->lock_time() < timeout) {
-      ++it;
-      continue;
-    }
-    it = locked_images_.erase(it);
   }
-
-  EnqueueTimeout();
-}
-
-void DecodedImageTracker::EnqueueTimeout() {
-  if (timeout_pending_)
-    return;
-  if (locked_images_.size() == 0)
-    return;
-
-  timeout_pending_ = true;
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&DecodedImageTracker::OnTimeoutImages,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::Milliseconds(kTimeoutDurationMs));
+  expiration_timer_->Start(FROM_HERE, delay, *timer_closure_);
 }
 
 }  // namespace cc

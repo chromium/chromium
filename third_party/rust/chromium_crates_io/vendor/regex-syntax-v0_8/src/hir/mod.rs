@@ -249,7 +249,7 @@ impl Hir {
 /// just get back the original `expr` since it's precisely equivalent.
 ///
 /// Smart constructors enable maintaining invariants about the HIR data type
-/// while also simulanteously keeping the representation as simple as possible.
+/// while also simultaneously keeping the representation as simple as possible.
 impl Hir {
     /// Returns an empty HIR expression.
     ///
@@ -718,7 +718,7 @@ pub enum HirKind {
     /// The empty regular expression, which matches everything, including the
     /// empty string.
     Empty,
-    /// A literalstring that matches exactly these bytes.
+    /// A literal string that matches exactly these bytes.
     Literal(Literal),
     /// A single character class that matches any of the characters in the
     /// class. A class can either consist of Unicode scalar values as
@@ -815,7 +815,7 @@ impl core::fmt::Debug for Literal {
 /// sequence of non-overlapping non-adjacent ranges of characters.
 ///
 /// There are no guarantees about which class variant is used. Generally
-/// speaking, the Unicode variat is used whenever a class needs to contain
+/// speaking, the Unicode variant is used whenever a class needs to contain
 /// non-ASCII Unicode scalar values. But the Unicode variant can be used even
 /// when Unicode mode is disabled. For example, at the time of writing, the
 /// regex `(?-u:a|\xc2\xa0)` will compile down to HIR for the Unicode class

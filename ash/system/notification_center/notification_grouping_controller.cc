@@ -224,7 +224,7 @@ const std::string& NotificationGroupingController::SetupParentNotification(
   // animations, the update to MessageCenter in primary display will interfere
   // the animation in the secondary display. Thus, calling this functions on all
   // display is needed.
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     auto* controller =
         message_center_utils::GetActiveNotificationViewControllerForDisplay(
             display.id());

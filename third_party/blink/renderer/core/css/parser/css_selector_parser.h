@@ -232,9 +232,10 @@ class CORE_EXPORT CSSSelectorParser {
                                    bool has_element_name,
                                    const AtomicString& element_name,
                                    wtf_size_t start_index_of_compound_selector);
-  void SplitCompoundAtImplicitShadowCrossingCombinator(
+  void SplitCompoundAtImplicitCombinator(
       base::span<CSSSelector> compound_selector);
   void RecordUsageAndDeprecations(base::span<CSSSelector>,
+                                  CSSNestingType,
                                   bool* has_visited_style = nullptr);
   static bool ContainsUnknownWebkitPseudoElements(
       base::span<CSSSelector> selectors);

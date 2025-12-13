@@ -23,3 +23,5 @@ JNI_RegionalCapabilitiesServiceFactory_GetRegionalCapabilitiesService(
 }
 
 }  // namespace regional_capabilities
+
+DEFINE_JNI(RegionalCapabilitiesServiceFactory)

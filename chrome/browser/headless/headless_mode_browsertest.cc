@@ -11,13 +11,11 @@
 // providing a compile time condition over the entire file.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-#include <memory>
 #include <string>
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -59,7 +57,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/display/display_switches.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/switches.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/view.h"
@@ -81,6 +79,8 @@ HeadlessModeBrowserTest::HeadlessModeBrowserTest() {
       FILE_PATH_LITERAL("chrome/browser/headless/test/data"));
   embedded_test_server()->AddDefaultHandlers(test_data);
 }
+
+HeadlessModeBrowserTest::~HeadlessModeBrowserTest() = default;
 
 void HeadlessModeBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
@@ -106,7 +106,9 @@ void HeadlessModeBrowserTest::AppendHeadlessCommandLineSwitches(
     headful_mode_ = true;
   } else {
     command_line->AppendSwitch(::switches::kHeadless);
-    headless::InitHeadlessMode();
+    auto init_headless_mode = headless::InitHeadlessMode();
+    CHECK(init_headless_mode.has_value()) << init_headless_mode.error();
+    headless_mode_handle_ = std::move(headless::InitHeadlessMode().value());
   }
 }
 
@@ -412,15 +414,7 @@ Widget* ShowTestBubble(Browser* browser) {
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessBubbleVisibility) {
-  // Desktop window widget should be headless.
-  gfx::NativeWindow desktop_window = browser()->window()->GetNativeWindow();
-  Widget* desktop_widget = Widget::GetWidgetForNativeWindow(desktop_window);
-  ASSERT_TRUE(desktop_widget);
-  ASSERT_TRUE(desktop_widget->is_headless());
-
-  // Bubble widget is expected to be headless.
   Widget* bubble_widget = ShowTestBubble(browser());
-  EXPECT_TRUE(bubble_widget->is_headless());
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // On Windows and Mac in headless mode we still have actual platform
@@ -439,8 +433,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessBubbleVisibility) {
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessBubbleSize) {
   Widget* bubble_widget = ShowTestBubble(browser());
-  ASSERT_TRUE(bubble_widget->is_headless());
-
   gfx::Rect bounds = test::GetPlatformWindowExpectedBounds(bubble_widget);
   EXPECT_FALSE(bounds.IsEmpty());
 }

@@ -10,6 +10,7 @@ create {
       version: "3.8.7"
     }
     unpack_archive: true
+    cpe_base_address: "cpe:/a:apache:maven"
   }
 }
 

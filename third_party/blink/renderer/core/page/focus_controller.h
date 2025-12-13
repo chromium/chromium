@@ -26,11 +26,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_FOCUS_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_FOCUS_CONTROLLER_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -42,7 +42,6 @@ class Document;
 class Element;
 class FocusChangedObserver;
 class Frame;
-class HTMLElement;
 class HTMLFrameOwnerElement;
 class InputDeviceCapabilities;
 class LocalFrame;
@@ -57,6 +56,15 @@ class CORE_EXPORT FocusController final
   explicit FocusController(Page*);
   FocusController(const FocusController&) = delete;
   FocusController& operator=(const FocusController&) = delete;
+
+  // If node is a reading-flow container or a display: contents element whose
+  // layout parent is a reading-flow container, return that container.
+  // This is a helper for SetReadingFlowInfo and Focusgroup. When called with
+  // |get_closest_ancestor| as true, it will return the closest ancestor
+  // container if one exists.
+  static const ContainerNode* ReadingFlowContainerOrDisplayContents(
+      const ContainerNode* node,
+      bool get_closest_ancestor = false);
 
   void SetFocusedFrame(Frame*, bool notify_embedder = true);
   void FocusDocumentView(Frame*, bool notify_embedder = true);
@@ -86,8 +94,9 @@ class CORE_EXPORT FocusController final
       RemoteFrame* from,
       LocalFrame* to,
       InputDeviceCapabilities* source_capabilities = nullptr);
-  static Element* FindFocusableElementInShadowHost(const Element& shadow_host);
-  static HTMLElement* FindScopeOwnerSlotOrReadingFlowContainer(const Element&);
+
+  static Element* FindScopeOwnerSlotOrScrollMarkerOrReadingFlowContainer(
+      const Element&);
 
   // Returns the next focusable element (likely an <input> field) after the
   // given element in focus traversal and within the enclosing <form> that
@@ -114,6 +123,8 @@ class CORE_EXPORT FocusController final
   bool IsFocused() const { return is_focused_ || is_emulating_focus_; }
 
   void SetFocusEmulationEnabled(bool);
+
+  void UpdateFocusOnNavigationCommit(Frame*, bool was_focused);
 
   void RegisterFocusChangedObserver(FocusChangedObserver*);
 

@@ -14,6 +14,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -44,6 +45,9 @@ class DownloadItemImplDelegate;
 class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
     : public DownloadItem,
       public DownloadDestinationObserver {
+  // TODO(crbug.com/422045023): Remove this macro once the bug gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // Information about the initial request that triggers the download. Most of
   // the fields are immutable after the DownloadItem is successfully
@@ -265,7 +269,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   const std::string& GetGuid() const override;
   DownloadState GetState() const override;
   void SetStateForTesting(DownloadState state) override;
-  void SetDownloadUrlForTesting(GURL url) override;
+  void SetDownloadUrlForTesting(const GURL& url) override;
   DownloadInterruptReason GetLastReason() const override;
   bool IsPaused() const override;
   bool AllowMetered() const override;
@@ -308,7 +312,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   DownloadItemRenameHandler* GetRenameHandler() override;
 #if BUILDFLAG(IS_ANDROID)
   bool IsFromExternalApp() override;
-  bool IsMustDownload() override;
+  bool AllowAutoOpenAfterCompletion() override;
 #endif  // BUILDFLAG(IS_ANDROID)
   bool IsDangerous() const override;
   bool IsInsecure() const override;
@@ -901,7 +905,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
 #if BUILDFLAG(IS_ANDROID)
   bool is_from_external_app_ = false;
-  bool is_must_download_ = false;
+  bool allow_auto_open_after_completion_ = true;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   THREAD_CHECKER(thread_checker_);

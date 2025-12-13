@@ -38,6 +38,18 @@ struct PaintPropertyTreeBuilderFragmentContext {
     STACK_ALLOCATED();
 
    public:
+    // Sets the given node to be the new overscroll parent node for this node.
+    void SetOverscrollParent(
+        const ScrollPaintPropertyNode& overscroll_parent) const {
+      // We should only be creating overscroll nodes for non-root
+      // scroll container elements.
+      CHECK(!scroll->IsRoot());
+      const_cast<ScrollPaintPropertyNode&>(overscroll_parent)
+          .SetParent(*scroll->Parent());
+      const_cast<ScrollPaintPropertyNode*>(scroll)->SetParent(
+          overscroll_parent);
+    }
+
     // The combination of a transform and paint offset describes a linear space.
     // When a layout object recur to its children, the main context is expected
     // to refer the object's border box, then the callee will derive its own

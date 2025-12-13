@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
 
 #include <stddef.h>
@@ -14,7 +9,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -340,7 +337,8 @@ AbortCallback FakeProvidedFileSystem::ReadFile(
   const FakeEntry* const entry = entry_it->second.get();
   std::vector<int> task_ids;
   while (current_offset < *entry->metadata->size && current_length) {
-    buffer->data()[current_offset - offset] = entry->contents[current_offset];
+    UNSAFE_TODO(buffer->data()[current_offset - offset]) =
+        entry->contents[current_offset];
     const bool has_more =
         (current_offset + 1 < *entry->metadata->size) && (current_length - 1);
     const int task_id = tracker_.PostTask(

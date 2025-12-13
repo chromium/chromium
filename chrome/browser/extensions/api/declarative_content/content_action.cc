@@ -6,9 +6,9 @@
 
 #include <map>
 
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -27,6 +27,7 @@
 #include "extensions/browser/icon_util.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/image_util.h"
@@ -36,6 +37,8 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -213,8 +216,10 @@ struct ContentActionFactory {
   }
 };
 
-base::LazyInstance<ContentActionFactory>::Leaky
-    g_content_action_factory = LAZY_INSTANCE_INITIALIZER;
+ContentActionFactory& GetContentActionFactory() {
+  static base::NoDestructor<ContentActionFactory> content_action_factory;
+  return *content_action_factory;
+}
 
 }  // namespace
 
@@ -449,7 +454,7 @@ std::unique_ptr<ContentAction> ContentAction::Create(
     return nullptr;
   }
 
-  ContentActionFactory& factory = g_content_action_factory.Get();
+  ContentActionFactory& factory = GetContentActionFactory();
   auto factory_method_iter = factory.factory_methods.find(*instance_type);
   if (factory_method_iter != factory.factory_methods.end())
     return (*factory_method_iter->second)(browser_context, extension,

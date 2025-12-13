@@ -9,7 +9,9 @@ found in the LICENSE file.
     <dimen name="confirmation_dialog_width">328dp</dimen>
     <dimen name="confirmation_dialog_side_margin">16dp</dimen>
     <dimen name="instance_switcher_dialog_content_padding">16dp</dimen>
+    <dimen name="instance_switcher_dialog_list_item_height">64dp</dimen>
     <dimen name="instance_switcher_dialog_list_item_padding">2dp</dimen>
     <dimen name="instance_switcher_dialog_max_info_top_padding">16dp</dimen>
     <dimen name="instance_switcher_dialog_favicon_start_margin">16dp</dimen>
+    <dimen name="rename_window_dialog_input_text_vertical_margin">16dp</dimen>
 </resources>

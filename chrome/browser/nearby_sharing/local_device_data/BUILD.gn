@@ -26,7 +26,7 @@ source_set("local_device_data") {
     "//chrome/browser/nearby_sharing/common",
     "//chromeos/ash/components/nearby/common/client",
     "//chromeos/ash/components/nearby/common/scheduling",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//components/prefs",
     "//components/user_manager",
     "//third_party/nearby:device_rpc_proto",

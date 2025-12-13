@@ -117,7 +117,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // function won't block on doing the release in the compositor thread.
   void Shutdown(bool delay_release);
 
-  void DidFirstVisuallyNonEmptyPaint(base::TimeTicks&);
+  void OnFirstContentfulPaint(const base::TimeTicks& first_paint_time);
 
   // Set the compositor as visible. If |visible| is true, then the compositor
   // will request a new layer frame sink, begin producing frames from the
@@ -208,6 +208,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // scheduler::WidgetScheduler::Delegate overrides:
   void RequestBeginMainFrameNotExpected(bool) override;
+  bool AreMainFramesPausedOrDeferred() const override;
 
   cc::AnimationHost* AnimationHost() const;
   cc::AnimationTimeline* ScrollAnimationTimeline() const;
@@ -278,7 +279,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void ImeFinishComposingText(bool keep_selection);
   bool IsForProvisionalFrame();
   void FlushInputProcessedCallback();
-  void CancelCompositionForPepper();
+  void CancelComposition();
 
   void RequestPresentationAfterScrollAnimationEnd(
       mojom::blink::Widget::ForceRedrawCallback callback);
@@ -406,12 +407,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Helper to get the non-emulated device scale factor.
   float GetOriginalDeviceScaleFactor() const;
 
-  // Requests that the callback be invoked after the next frame is generated and
-  // presented in the display compositor. Returns true if the callback was
-  // queued, false if the widget doesn't have a compositor and the callback is
-  // dropped without being invoked.
-  bool InsertVisualStateRequest(base::OnceClosure callback);
-
  private:
   static void AssertAreCompatible(const WidgetBase& a, const WidgetBase& b);
 
@@ -438,25 +433,28 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Called after the delay given in `RequestAnimationAfterDelay()`.
   void RequestAnimationAfterDelayTimerFired(TimerBase*);
 
+  // Mojo interfaces and params for a new LayerTreeFrameSink.
+  struct NewLayerTreeFrameSinkParams {
+    KURL url;
+    mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
+        compositor_frame_sink_receiver;
+    mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient>
+        compositor_frame_sink_client;
+    mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
+        render_frame_metadata_observer_client_receiver;
+    mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
+        render_frame_metadata_observer_remote;
+    std::unique_ptr<RenderFrameMetadataObserverImpl>
+        render_frame_metadata_observer;
+    std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams>
+        embedder_params;
+    LayerTreeFrameSinkCallback callback;
+  };
+
   // Finishes the call to RequestNewLayerTreeFrameSink() once the
   // |gpu_channel_host| is available.
-  // TODO(crbug.com/1278147): Clean up these parameters using either a struct or
-  // saving on WidgetBase if kEstablishGpuChannelAsync launches.
   void FinishRequestNewLayerTreeFrameSink(
-      const KURL& url,
-      mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
-          compositor_frame_sink_receiver,
-      mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient>
-          compositor_frame_sink_client,
-      mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
-          render_frame_metadata_observer_client_receiver,
-      mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
-          render_frame_metadata_observer_remote,
-      std::unique_ptr<RenderFrameMetadataObserverImpl>
-          render_frame_metadata_observer,
-      std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams>
-          params,
-      LayerTreeFrameSinkCallback callback,
+      NewLayerTreeFrameSinkParams params,
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
 
   // This will do exactly one of these, depending on the params:

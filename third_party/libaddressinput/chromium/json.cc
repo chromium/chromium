@@ -25,7 +25,7 @@ base::Value::Dict Parse(const std::string& json, bool* parser_error) {
 
   // |json| is converted to a |c_str()| here because rapidjson and other parts
   // of the standalone library use char* rather than std::string.
-  std::optional<base::Value> parsed(base::JSONReader::Read(json.c_str()));
+  std::optional<base::Value> parsed(base::JSONReader::Read(json.c_str(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   *parser_error = !parsed || !parsed->is_dict();
 
   if (*parser_error)

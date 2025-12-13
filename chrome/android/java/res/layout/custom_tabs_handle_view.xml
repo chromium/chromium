@@ -32,5 +32,5 @@ found in the LICENSE file.
         android:paddingStart="@dimen/custom_tabs_drag_handle_padding_side"
         android:paddingEnd="@dimen/custom_tabs_drag_handle_padding_side"
         android:contentDescription="@string/accessibility_custom_tab_drag_handle"
-        android:tint="@macro/drag_handlebar_color" />
+        android:tint="@macro/drag_handle_color" />
 </FrameLayout>

@@ -146,12 +146,12 @@ bool IsVersionConstraintSatisified(
 // we only check any version constraints, as we don't have a certificate here to
 // check any SCT constraints.
 bool IsAnchorTrustedOnThisChromeVersion(
-    const net::ChromeRootStoreData::Anchor& anchor) {
-  if (anchor.constraints.empty()) {
+    const std::vector<net::ChromeRootCertConstraints>& constraints) {
+  if (constraints.empty()) {
     return true;
   }
 
-  for (const auto& constraint : anchor.constraints) {
+  for (const auto& constraint : constraints) {
     if (IsVersionConstraintSatisified(constraint)) {
       return true;
     }
@@ -324,7 +324,7 @@ void CertVerifierServiceFactoryImpl::UpdateCtLogList(
       base::MakeRefCounted<certificate_transparency::ChromeCTPolicyEnforcer>(
           update_time, std::move(disqualified_logs), std::move(log_info),
           base::FeatureList::IsEnabled(
-              net::features::kEnableStaticCTAPIEnforcement));
+              net::features::kEnforceOneRfc6962CtPolicy));
 
   UpdateVerifierServices();
 
@@ -401,6 +401,35 @@ void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
   UpdateVerifierServices();
 }
 
+void CertVerifierServiceFactoryImpl::UpdateMtcMetadata(
+    mojo_base::ProtoWrapper new_mtc_metadata,
+    UpdateMtcMetadataCallback callback) {
+  // Ensure the callback is run regardless which return path is used.
+  base::ScopedClosureRunner scoped_callback_runner(std::move(callback));
+
+  auto message = new_mtc_metadata.As<chrome_root_store::MtcMetadata>();
+  if (!message.has_value()) {
+    LOG(ERROR) << "error parsing proto for MTC Metadata";
+    return;
+  }
+
+  // The message->update_time() is not checked here, as it is expected the
+  // PKIMetadataComponentInstallerService will check it and not send the data
+  // if it is out of date.
+
+  std::optional<net::ChromeRootStoreMtcMetadata> mtc_metadata =
+      net::ChromeRootStoreMtcMetadata::CreateFromMtcMetadataProto(
+          message.value());
+  if (!mtc_metadata) {
+    LOG(ERROR) << "error interpreting proto for MtcMetadata";
+    return;
+  }
+
+  proc_params_.root_store_mtc_metadata = std::move(mtc_metadata);
+
+  UpdateVerifierServices();
+}
+
 void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
     GetChromeRootStoreInfoCallback callback) {
   mojom::ChromeRootStoreInfoPtr info_ptr = mojom::ChromeRootStoreInfo::New();
@@ -409,7 +438,7 @@ void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
   info_ptr->version = proc_params_.root_store_data->version();
 
   for (const auto& anchor : proc_params_.root_store_data->trust_anchors()) {
-    if (!IsAnchorTrustedOnThisChromeVersion(anchor)) {
+    if (!IsAnchorTrustedOnThisChromeVersion(anchor.constraints)) {
       continue;
     }
     const bssl::ParsedCertificate* cert = anchor.certificate.get();
@@ -418,6 +447,42 @@ void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
     info_ptr->root_cert_info.push_back(mojom::ChromeRootCertInfo::New(
         GetHash(*cert),
         std::vector<uint8_t>(cert_bytes.begin(), cert_bytes.end())));
+  }
+
+  if (proc_params_.root_store_mtc_metadata) {
+    info_ptr->mtc_metadata_update_time =
+        proc_params_.root_store_mtc_metadata->update_time();
+
+    // TODO(crbug.com/452983502): when full MTCs are supported, populating
+    // `root_mtc_info` should be moved outside the
+    // `if (proc_params_.root_store_mtc_metadata)` so that we report MTC anchor
+    // info even when the metadata hasn't been loaded yet.
+    for (const auto& anchor :
+         proc_params_.root_store_data->mtc_trust_anchors()) {
+      if (!IsAnchorTrustedOnThisChromeVersion(anchor.constraints)) {
+        continue;
+      }
+      auto it = proc_params_.root_store_mtc_metadata->mtc_anchor_data().find(
+          anchor.log_id);
+      if (it == proc_params_.root_store_mtc_metadata->mtc_anchor_data().end()) {
+        continue;
+      }
+
+      const net::ChromeRootStoreMtcMetadata::MtcAnchorData& anchor_data =
+          it->second;
+
+      info_ptr->root_mtc_info.push_back(
+          mojom::ChromeRootMerkleTreeCertInfo::New(
+              net::x509_util::RelativeOidToString(anchor.log_id),
+              net::x509_util::RelativeOidToString(
+                  net::x509_util::AppendOidComponent(
+                      anchor_data.landmark_base_id,
+                      anchor_data.landmark_min_inclusive)),
+              net::x509_util::RelativeOidToString(
+                  net::x509_util::AppendOidComponent(
+                      anchor_data.landmark_base_id,
+                      anchor_data.landmark_max_inclusive))));
+    }
   }
 
   std::move(callback).Run(std::move(info_ptr));

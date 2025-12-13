@@ -14,8 +14,11 @@
 #include <list>
 
 #include "base/apple/mach_port_rendezvous_ios.h"
+#include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "content/browser/child_process_launcher.h"
@@ -368,8 +371,53 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
           includingResourceValuesForKeys:nil
                            relativeToURL:nil
                                    error:&error];
+      CHECK(error == nil) << base::SysNSStringToUTF8(
+          [error localizedDescription]);
+
       xpc_dictionary_set_data(message, "tmp_dir", bookmark_temp_dir.bytes,
                               bookmark_temp_dir.length);
+
+      if (is_gpu_process) {
+        // This should match the bundle ID that we set for the GPU process which
+        // for content_shell is in //content/shell/app/BUILD.gn and for chrome
+        // is in //ios/chrome/app/chrome_app.gni. In both cases we append the
+        // ".GPUProcessExtension" suffix to the main bundle ID.
+        NSString* gpu_bundle_id = [[[NSBundle mainBundle] bundleIdentifier]
+            stringByAppendingString:@".GPUProcessExtension"];
+
+        // Create a cache directory for the GPU extension process.
+        base::FilePath gpu_cache_path =
+            base::PathService::CheckedGet(base::DIR_CACHE)
+                .AppendUTF8(base::SysNSStringToUTF8(gpu_bundle_id));
+
+        base::File::Error file_error = base::File::FILE_OK;
+        CHECK(base::CreateDirectoryAndGetError(gpu_cache_path, &file_error))
+            << base::File::ErrorToString(file_error);
+
+        NSURL* gpu_cache_url = [NSURL
+            fileURLWithPath:base::SysUTF8ToNSString(gpu_cache_path.value())
+                isDirectory:TRUE];
+
+        // Put the cache directory in a bookmark, similar to TMP_DIR.
+        NSData* gpu_cache_bookmark = [gpu_cache_url
+                   bookmarkDataWithOptions:NSURLBookmarkCreationMinimalBookmark
+            includingResourceValuesForKeys:nil
+                             relativeToURL:nil
+                                     error:&error];
+        CHECK(error == nil)
+            << base::SysNSStringToUTF8([error localizedDescription]);
+
+        xpc_dictionary_set_data(message, "gpu_cache_dir",
+                                gpu_cache_bookmark.bytes,
+                                gpu_cache_bookmark.length);
+
+        // Per Apple, this needs to be propagated to the extension process to
+        // setenv the same value there.
+        const char* container_home_path = getenv("CFFIXED_USER_HOME");
+        CHECK_NE(container_home_path, nullptr);
+        xpc_dictionary_set_string(message, "browser_container_home",
+                                  container_home_path);
+      }
 
       xpc_dictionary_set_mach_send(
           message, "port", rendezvous_server_->GetMachSendRight().get());

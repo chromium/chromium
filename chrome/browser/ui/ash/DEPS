@@ -23,15 +23,12 @@ specific_include_rules = {
     "+ui/message_center",
   ],
 
-  "test_util\.*": [
-    "+ash",
-    "+chrome/browser/ash/crosapi",
+  "test_util\\.*": [
     "+chrome/browser/ui/ash",
     "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_window/public/browser_window_features.h",
     "+chrome/browser/ui/exclusive_access",
     "+chrome/browser/ui/views",
-    "+chrome/test/base",
   ],
 }

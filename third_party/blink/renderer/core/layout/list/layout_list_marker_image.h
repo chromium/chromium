@@ -17,11 +17,6 @@ class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
   explicit LayoutListMarkerImage(Element*);
   static LayoutListMarkerImage* CreateAnonymous(Document*);
 
-  bool IsLayoutNGObject() const override {
-    NOT_DESTROYED();
-    return true;
-  }
-
  private:
   bool IsListMarkerImage() const final {
     NOT_DESTROYED();

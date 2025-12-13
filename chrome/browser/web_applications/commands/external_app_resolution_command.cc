@@ -12,7 +12,6 @@
 #include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/to_string.h"
@@ -47,6 +46,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
@@ -85,6 +85,7 @@ static WebAppInstallInfo CreateInstallInfoForCreateDiy(
 
   return create_diy_app_info;
 }
+
 }  // namespace
 
 ExternalAppResolutionCommand::ExternalAppResolutionCommand(
@@ -107,9 +108,7 @@ ExternalAppResolutionCommand::ExternalAppResolutionCommand(
       install_options_(install_options),
       installed_placeholder_app_id_(std::move(installed_placeholder_app_id)),
       install_surface_(ConvertExternalInstallSourceToInstallSource(
-          install_options_.install_source)),
-      install_error_log_entry_(/*background_installation=*/true,
-                               install_surface_) {
+          install_options_.install_source)) {
   GetMutableDebugValue().Set("external_install_options",
                              install_options_.AsDebugValue());
   GetMutableDebugValue().Set(
@@ -300,6 +299,9 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
   CHECK(web_app_info_);
 
+  GetMutableDebugValue().Set("installable_error_code",
+                             static_cast<int>(error_code));
+
   if (install_params_->require_manifest && !valid_manifest_for_web_app) {
     LOG(WARNING) << "Did not install " << web_app_info_->manifest_id().spec()
                  << " because it didn't have a manifest for web app";
@@ -357,6 +359,11 @@ void ExternalAppResolutionCommand::RetrieveWebAppInfoFromManifest(
   // behave like DIY apps.
   construct_options.force_override_name = install_params_->install_as_diy;
 
+  // All external installs are done by Chrome and can be considered trusted.
+  construct_options.use_manifest_icons_as_trusted = true;
+
+  GetMutableDebugValue().Set("manifest_id", opt_manifest->id.spec());
+
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(
           *opt_manifest, *data_retriever_.get(),
@@ -381,7 +388,6 @@ void ExternalAppResolutionCommand::OnWebAppInstallInfoParsedFromManifest(
     web_app_info_->SetManifestIdAndStartUrl(
         GenerateManifestIdFromStartUrlOnly(document_url), document_url);
   }
-
   UpdateInfoWithParamsAndUpgradeLock(web_app_info_->is_generated_icon);
 }
 
@@ -406,13 +412,23 @@ void ExternalAppResolutionCommand::OnIconsRetrievedUpgradeLockDescription(
   CHECK(install_params_.has_value());
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
 
+  // External installs are considered trusted, all manifest icons can be used as
+  // trusted ones.
+  web_app_info_->trusted_icons = web_app_info_->manifest_icons;
   PopulateProductIcons(web_app_info_.get(), &icons_map);
+  PopulateTrustedIconBitmaps(*web_app_info_.get(), icons_map);
   PopulateOtherIcons(web_app_info_.get(), icons_map);
+  if (web_app_info_->is_generated_icon) {
+    GetMutableDebugValue().Set("is_generated_icon", true);
+  }
 
   RecordDownloadedIconsResultAndHttpStatusCodes(result, icons_http_results);
 
-  install_error_log_entry_.LogDownloadedIconsErrors(
-      *web_app_info_, result, icons_map, icons_http_results);
+  base::DictValue icon_errors =
+      LogDownloadedIconsErrors(result, icons_map, icons_http_results);
+  if (!icon_errors.empty()) {
+    GetMutableDebugValue().Set("icon_errors", std::move(icon_errors));
+  }
   UpdateInfoWithParamsAndUpgradeLock(result !=
                                      IconsDownloadedResult::kCompleted);
 }
@@ -497,13 +513,6 @@ void ExternalAppResolutionCommand::OnInstallFinalized(
           ->GetPrefs(),
       app_id_, install_surface_);
 
-  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
-    if (install_error_log_entry_.HasErrorDict()) {
-      command_manager()->LogToInstallManager(
-          install_error_log_entry_.TakeErrorDict());
-    }
-  }
-
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code),
                                                   install_surface_);
 
@@ -550,7 +559,7 @@ void ExternalAppResolutionCommand::
 
   if (is_placeholder_running) {
     provider().ui_manager().NotifyAppRelaunchState(
-        *installed_placeholder_app_id_, app_id_, web_app_info_->title,
+        *installed_placeholder_app_id_, app_id_, web_app_info_->title.value(),
         profile_->GetWeakPtr(), AppRelaunchState::kAppClosingForRelaunch);
   }
 
@@ -561,18 +570,15 @@ void ExternalAppResolutionCommand::
   GetMutableDebugValue().Set("relaunch_app_after_placeholder_uninstall",
                              relaunch_app_after_placeholder_uninstall_);
 
-  // Note: This practice of releasing the app lock and requesting a whole new
-  // lock is highly discouraged & very selectively OK for this one case.
   all_apps_lock_description_ = std::make_unique<AllAppsLockDescription>();
   all_apps_lock_ = std::make_unique<AllAppsLock>();
-  command_manager()->lock_manager().AcquireLock(
-      *all_apps_lock_description_, *all_apps_lock_,
+  command_manager()->lock_manager().UpgradeAndAcquireLock(
+      std::move(apps_lock_), *all_apps_lock_,
       base::BindOnce(
           &ExternalAppResolutionCommand::OnAllAppsLockGrantedRemovePlaceholder,
           weak_ptr_factory_.GetWeakPtr()),
       FROM_HERE);
   web_contents_ = nullptr;
-  apps_lock_.reset();
 }
 
 void ExternalAppResolutionCommand::OnAllAppsLockGrantedRemovePlaceholder() {
@@ -608,13 +614,12 @@ void ExternalAppResolutionCommand::OnPlaceholderUninstalledMaybeRelaunch(
   }
 
   provider().ui_manager().NotifyAppRelaunchState(
-      *installed_placeholder_app_id_, app_id_, web_app_info_->title,
+      *installed_placeholder_app_id_, app_id_, web_app_info_->title.value(),
       profile_->GetWeakPtr(), AppRelaunchState::kAppAboutToRelaunch);
   provider().ui_manager().LaunchWebApp(
       WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
           app_id_, *base::CommandLine::ForCurrentProcess(),
           /*current_directory=*/base::FilePath(),
-          /*url_handler_launch_url=*/std::nullopt,
           /*protocol_handler_launch_url=*/std::nullopt,
           /*file_launch_url=*/std::nullopt, /*launch_files=*/{}),
       LaunchWebAppWindowSetting::kOverrideWithWebAppConfig, *profile_,
@@ -629,9 +634,8 @@ void ExternalAppResolutionCommand::OnLaunch(base::WeakPtr<Browser>,
                                             base::Value debug_value) {
   GetMutableDebugValue().Set("launch", std::move(debug_value));
   provider().ui_manager().NotifyAppRelaunchState(
-      *installed_placeholder_app_id_, app_id_, web_app_info_->title,
+      *installed_placeholder_app_id_, app_id_, web_app_info_->title.value(),
       profile_->GetWeakPtr(), AppRelaunchState::kAppRelaunched);
-
   CompleteAndSelfDestruct(
       CommandResult::kSuccess,
       PrepareResult(/*is_offline_install=*/false,
@@ -709,6 +713,11 @@ void ExternalAppResolutionCommand::InstallFromInfo() {
   base::Extend(web_app_info_->additional_search_terms,
                std::move(install_params_->additional_search_terms));
   web_app_info_->install_url = install_params_->install_url;
+
+  // External installs are considered trusted, all manifest icons can be used as
+  // trusted ones.
+  web_app_info_->trusted_icons = web_app_info_->manifest_icons;
+  web_app_info_->trusted_icon_bitmaps = web_app_info_->icon_bitmaps;
 
   if (!apps_lock_) {
     apps_lock_ = std::make_unique<SharedWebContentsWithAppLock>();

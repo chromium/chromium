@@ -1,14 +1,17 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "base/containers/adapters.h"
 #include "base/containers/circular_deque.h"
 #include "build/build_config.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
@@ -36,6 +39,10 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
   void WaitForDidChangeVisibleSecurityState() { run_loop_.Run(); }
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   base::RunLoop run_loop_;
 };
 
@@ -66,14 +73,18 @@ class BreadcrumbManagerTabHelperBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   breadcrumbs::ScopedEnableBreadcrumbsForTesting enable_breadcrumbs_;
 };
 
 // Tests download navigation.
 IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest, Download) {
-  const GURL url =
-      ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("downloads"),
-                                base::FilePath().AppendASCII("a_zip_file.zip"));
+  const GURL url = chrome_test_utils::GetTestUrl(
+      base::FilePath().AppendASCII("downloads"),
+      base::FilePath().AppendASCII("a_zip_file.zip"));
   ui_test_utils::DownloadURL(browser(), url);
 
   // Breadcrumbs should have been logged for starting and finishing the

@@ -17,7 +17,6 @@
 #include "chrome/services/speech/speech_recognition_service_impl.h"
 #include "components/soda/constants.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace soda {
@@ -143,7 +142,6 @@ class SpeechRecognitionRecognizerImpl
 
   media::mojom::SpeechRecognitionOptionsPtr options_;
 
- protected:
   bool mask_offensive_words() { return mask_offensive_words_; }
 
  private:

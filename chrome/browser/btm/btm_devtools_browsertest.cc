@@ -67,14 +67,14 @@ class BtmBounceTrackingDevToolsIssueTest
 
   void WaitForIssueAndCheckTrackingSites(
       const std::vector<std::string>& sites) {
-    auto is_dips_issue = [](const base::Value::Dict& params) {
+    auto is_btm_issue = [](const base::Value::Dict& params) {
       return *(params.FindStringByDottedPath("issue.code")) ==
              "BounceTrackingIssue";
     };
 
     // Wait for notification of a Bounce Tracking Issue.
     base::Value::Dict params = WaitForMatchingNotification(
-        "Audits.issueAdded", base::BindRepeating(is_dips_issue));
+        "Audits.issueAdded", base::BindRepeating(is_btm_issue));
     ASSERT_EQ(*params.FindStringByDottedPath("issue.code"),
               "BounceTrackingIssue");
 

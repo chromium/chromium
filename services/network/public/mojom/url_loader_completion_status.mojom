@@ -30,9 +30,6 @@ struct URLLoaderCompletionStatus {
   // to represent what this field actually means.
   bool exists_in_cache = false;
 
-  // A copy of the data requested exists in the in-memory cache.
-  bool exists_in_memory_cache = false;
-
   // Time the request completed.
   mojo_base.mojom.TimeTicks completion_time;
 
@@ -47,23 +44,6 @@ struct URLLoaderCompletionStatus {
 
   // Optional CORS error details.
   CorsErrorStatus? cors_error_status;
-
-  // Information about any preflight request sent for Private Network Access
-  // as part of this load, that was not previously reported in
-  // `URLResponseHead`.
-  //
-  // Invariant: if `error_code` is 0/`OK`, then this is `kNone`. Indeed, in that
-  // case a `URLResponseHead` must have been previously sent to
-  // `URLLoaderClient`, in which the preflight result was reported already. In
-  // other words, this is only populated if the request failed before receiving
-  // headers.
-  //
-  // This is used to record metrics in the client for compatibility risk
-  // analysis and rollout monitoring. See https://crbug.com/1427470.
-  //
-  // TODO(crbug.com/40204695): Remove this once preflights are enforced.
-  PrivateNetworkAccessPreflightResult private_network_access_preflight_result =
-      PrivateNetworkAccessPreflightResult.kNone;
 
   // Optional Trust Tokens (https://github.com/wicg/trust-token-api) error
   // details.

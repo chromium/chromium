@@ -5,19 +5,19 @@
 #ifndef COMPONENTS_SYNC_TEST_FAKE_DATA_TYPE_SYNC_BRIDGE_H_
 #define COMPONENTS_SYNC_TEST_FAKE_DATA_TYPE_SYNC_BRIDGE_H_
 
-#include <map>
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
-#include <unordered_set>
 
 #include "base/functional/callback_forward.h"
+#include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace sync_pb {
 class EntityMetadata;
@@ -59,7 +59,8 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
     const EntityData& GetData(const std::string& key) const;
     const sync_pb::EntityMetadata& GetMetadata(const std::string& key) const;
 
-    const std::map<std::string, std::unique_ptr<EntityData>>& all_data() const {
+    const absl::flat_hash_map<std::string, std::unique_ptr<EntityData>>&
+    all_data() const {
       return data_store_;
     }
 
@@ -82,8 +83,8 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
    private:
     size_t data_change_count_ = 0;
     size_t metadata_change_count_ = 0;
-    std::map<std::string, std::unique_ptr<EntityData>> data_store_;
-    std::map<std::string, sync_pb::EntityMetadata> metadata_store_;
+    absl::flat_hash_map<std::string, std::unique_ptr<EntityData>> data_store_;
+    absl::flat_hash_map<std::string, sync_pb::EntityMetadata> metadata_store_;
     sync_pb::DataTypeState data_type_state_;
   };
 
@@ -121,6 +122,7 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   bool SupportsGetClientTag() const override;
   bool SupportsGetStorageKey() const override;
   bool SupportsUniquePositions() const override;
+  bool SupportsIncrementalUpdates() const override;
   sync_pb::UniquePosition GetUniquePosition(
       const sync_pb::EntitySpecifics& specifics) const override;
   ConflictResolution ResolveConflict(
@@ -176,9 +178,12 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   // position from specifics.
   void EnableUniquePositionSupport(ExtractUniquePositionCallback callback);
 
+  // Sets whether the bridge supports incremental updates.
+  void SetSupportsIncrementalUpdates(bool supports_incremental_updates);
+
   // Storage keys for the entities with deleted collaboration membership.
-  const std::set<std::string>& deleted_collaboration_membership_storage_keys()
-      const {
+  const absl::flat_hash_set<std::string>&
+  deleted_collaboration_membership_storage_keys() const {
     return deleted_collaboration_membership_storage_keys_;
   }
 
@@ -207,14 +212,14 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   const DataType type_;
 
   // The conflict resolution to use for calls to ResolveConflict.
-  ConflictResolution conflict_resolution_;
+  ConflictResolution conflict_resolution_ = ConflictResolution::kUseRemote;
 
   // The preference values that the bridge will ignore.
-  std::unordered_set<std::string> values_to_ignore_;
+  absl::flat_hash_set<std::string> values_to_ignore_;
 
   // The client tag hashes the bridge will mark as invalid in
   // calls to IsEntityDataValid().
-  std::set<ClientTagHash> invalid_remote_updates_;
+  absl::flat_hash_set<ClientTagHash> invalid_remote_updates_;
 
   // Whether an error should be produced on the next bridge call.
   bool error_next_ = false;
@@ -236,9 +241,12 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
 
   mutable size_t trimmed_specifics_change_count_ = 0;
 
-  std::set<std::string> deleted_collaboration_membership_storage_keys_;
+  absl::flat_hash_set<std::string>
+      deleted_collaboration_membership_storage_keys_;
 
   ExtractUniquePositionCallback extract_unique_positions_callback_;
+
+  bool supports_incremental_updates_ = true;
 };
 
 }  // namespace syncer

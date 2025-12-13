@@ -171,9 +171,7 @@ void MarkupFormatter::AppendStartMarkup(StringBuilder& result,
       NOTREACHED();
     case Node::kCdataSectionNode: {
       auto& cdata = To<CDATASection>(node);
-      if (RuntimeEnabledFeatures::
-              SerializeCdataAsTextInHTMLDocumentsEnabled() &&
-          SerializeAsHTML()) {
+      if (SerializeAsHTML()) {
         AppendText(result, cdata);
       } else {
         AppendCDATASection(result, cdata.data());

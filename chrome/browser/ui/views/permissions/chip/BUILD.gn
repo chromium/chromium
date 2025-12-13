@@ -10,13 +10,15 @@ source_set("chip") {
   ]
 
   public_deps = [
-    "//base:base",
-    "//chrome/browser/ui/content_settings:content_settings",
-    "//chrome/browser/ui/views/permissions:permissions",
-    "//components/permissions:permissions",
+    "//base",
+    "//chrome/browser/ui/content_settings",
+    "//chrome/browser/ui/views/permissions",
+    "//components/permissions",
     "//ui/gfx",
     "//ui/views",
   ]
+
+  deps = [ "//chrome/browser/ui:layout_constants" ]
 }
 
 source_set("impl") {
@@ -28,8 +30,9 @@ source_set("impl") {
   deps = [
     ":chip",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/themes:themes",
-    "//chrome/browser/ui/page_info:page_info",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui/page_info",
+    "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/page_info",
   ]
 }

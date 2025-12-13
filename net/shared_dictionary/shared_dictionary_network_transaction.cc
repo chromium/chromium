@@ -38,6 +38,7 @@
 #include "net/shared_dictionary/shared_dictionary_constants.h"
 #include "net/shared_dictionary/shared_dictionary_header_checker_source_stream.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/shared_dictionary/shared_dictionary_transaction_outcome.h"
 #include "net/ssl/ssl_private_key.h"
 
 namespace net {
@@ -167,6 +168,30 @@ void SharedDictionaryNetworkTransaction::OnStartCompleted(
 
   shared_dictionary_encoding_type_ = ParseSharedDictionaryEncodingType(
       *network_transaction_->GetResponseInfo()->headers);
+
+  if (shared_dictionary_) {
+    // Log UMA for whether the server used the dictionary if one was advertised.
+    switch (shared_dictionary_encoding_type_) {
+      case SharedDictionaryEncodingType::kSharedBrotli:
+        base::UmaHistogramEnumeration(
+            "Net.SharedDictionary.Transaction.Outcome",
+            SharedDictionaryTransactionOutcome::kDictionaryUsedBrotli);
+        break;
+
+      case SharedDictionaryEncodingType::kSharedZstd:
+        base::UmaHistogramEnumeration(
+            "Net.SharedDictionary.Transaction.Outcome",
+            SharedDictionaryTransactionOutcome::kDictionaryUsedZstandard);
+        break;
+
+      case SharedDictionaryEncodingType::kNotUsed:
+        base::UmaHistogramEnumeration(
+            "Net.SharedDictionary.Transaction.Outcome",
+            SharedDictionaryTransactionOutcome::kDictionaryNotUsed);
+        break;
+    }
+  }
+
   if (shared_dictionary_encoding_type_ ==
       SharedDictionaryEncodingType::kNotUsed) {
     std::move(callback).Run(result);
@@ -191,21 +216,6 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     return;
   }
 
-  if (!IsLocalhost(request_url)) {
-    if (!base::FeatureList::IsEnabled(
-            features::kCompressionDictionaryTransportOverHttp1) &&
-        negotiated_protocol_ != NextProto::kProtoHTTP2 &&
-        negotiated_protocol_ != NextProto::kProtoQUIC) {
-      shared_dictionary_.reset();
-      return;
-    }
-    if (!base::FeatureList::IsEnabled(
-            features::kCompressionDictionaryTransportOverHttp2) &&
-        negotiated_protocol_ == NextProto::kProtoHTTP2) {
-      shared_dictionary_.reset();
-      return;
-    }
-  }
   if (base::FeatureList::IsEnabled(
           features::kCompressionDictionaryTransportRequireKnownRootCert) &&
       !cert_is_issued_by_known_root_ && !IsLocalhost(request_url)) {

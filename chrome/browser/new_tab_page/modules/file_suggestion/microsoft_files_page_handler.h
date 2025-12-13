@@ -89,7 +89,7 @@ class MicrosoftFilesPageHandler
   // Triggers `callback` to be ran with fake file data after parsing.
   void ParseFakeData(GetFilesCallback callback);
   void OnJsonReceived(GetFilesCallback callback,
-                      std::unique_ptr<std::string> response_body);
+                      std::optional<std::string> response_body);
   void OnJsonParsed(GetFilesCallback callback,
                     data_decoder::DataDecoder::ValueOrError result);
   void RecordRequestMetrics();

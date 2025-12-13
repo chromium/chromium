@@ -4,6 +4,8 @@
 
 #include "components/themes/ntp_background_service.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/barrier_closure.h"
@@ -175,7 +177,7 @@ void NtpBackgroundService::FetchCollectionInfo() {
 }
 
 void NtpBackgroundService::OnCollectionInfoFetchComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   collection_info_.clear();
   // The loader will be deleted when the request is handled.
   std::unique_ptr<network::SimpleURLLoader> loader_deleter(
@@ -530,7 +532,7 @@ void NtpBackgroundService::FetchNextCollectionImage(
 }
 
 void NtpBackgroundService::OnNextImageInfoFetchComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // The loader will be deleted when the request is handled.
   std::unique_ptr<network::SimpleURLLoader> loader_deleter(
       std::move(next_image_loader_));
@@ -643,7 +645,7 @@ void NtpBackgroundService::FetchCollectionImageInfoInternal(
              base::OnceCallback<void(
                  ntp::background::GetImagesInCollectionResponse, ErrorType)>
                  collection_images_received_callback,
-             std::unique_ptr<std::string> response_body) {
+             std::optional<std::string> response_body) {
             if (pending_collection_image_info_loaders.empty()) {
               return;
             }

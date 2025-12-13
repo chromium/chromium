@@ -7,15 +7,20 @@
 # non-pixel tests here.
 
 AccessCodeCastDialogBrowserTest.*
+AccountSettingsPagePixelBrowserTest.*
+ActorUiDomNodeGeometryBrowserTest.*
+ActorUiHandoffButtonControllerPixelTest.*
 AddNewAddressProfileTest.*
 AppInfoDialogBrowserTest.*
 AppMenuBrowserTest*.InvokeUi_*
 AskGoogleForSuggestionsDialogTest.*
 BatchUploadDialogViewPixelTest.*
+BookmarkAccountStorageMoveDialogPixelTest*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
 BookmarkEditorViewBrowserTestMoveDialog.*
 BookmarkEditorViewBrowserTestWithAccountBookmarks.*
+BrowserViewLayoutDelegateImplBrowsertest.Screenshot*
 BrowserViewScrimPixelTest.*
 BubbleFrameViewBrowserTest.*
 BubbleSignInPromoInteractiveUITest.*
@@ -41,6 +46,7 @@ DiceMigrationServicePixelBrowserTest.*
 *DiceWebSigninInterceptionBubbleV1SyncPromoPixelTest.InvokeUi_*
 *DiceWebSigninInterceptionBubbleV2PixelTest.InvokeUi_*
 DeleteAddressProfileDialogControllerImplTest.InvokeUi_*
+DesktopBnplUiDelegateBrowserTest.*
 DesktopMediaPickerViewsBrowserTest.*
 DesktopPaymentsWindowManagerInteractiveUiTest*
 DocumentPictureInPicturePixelTest.*
@@ -70,15 +76,19 @@ IntentPickerDialogTest.*
 IntentPickerDialogGridViewTest.*
 InteractionTestUtilBrowserTest.CompareScreenshot_*
 InteractionTestUtilBrowserUiTest.CompareScreenshot_*
+*IOSPromoBubbleBrowserTest.*
 IsolatedWebAppInstallerViewUiPixelTest.*
+*ContextualTasks*PixelTest*
+*LensSidePanel*PixelTest*
 LHSIndicatorsUiBrowserTest.*
 LocalCardMigrationBrowserUiTest.*
 *MemorySaverChipInteractiveTest.*
 *MemorySaverFaviconTreatmentTest.*
 *MemorySaverImprovedFaviconTreatmentTest.*
 Mv2DeprecationReEnableDialogBrowserTest.*
-BookmarkAccountStorageMoveDialogPixelTest*
 NewTabPageTest.*
+NtpPromoVisualUiTest.*
+NtpRealboxUiTest.*
 OfferNotificationBubbleViewPixelBrowserTest.*
 OutdatedUpgradeBubbleTest.*
 PageActionPixelIconsHiddenTest.*
@@ -88,7 +98,6 @@ PageActionPixelTestShowChipReduced.*
 PageInfoBubbleViewAboutThisSiteDialogBrowserTest.*
 PageInfoBubbleViewDialogBrowserTest.*
 PageInfoBubbleViewPrivacySandboxDialogBrowserTest.*
-PageInfoBubbleViewHistoryDialogBrowserTest.*
 PageInfoBubbleViewCookiesSubpageBrowserTest.*
 PageInfoBubbleViewIsolatedWebAppBrowserTest.*
 PageInfoBubbleViewMerchantTrustDialogBrowserTest.*
@@ -157,9 +166,11 @@ TabSearchBubbleUIBrowserTest.*
 TranslateBubbleVisualTest.InvokeUi_*
 UpdateRecommendedDialogTest.*
 *WatermarkBrowserTest.*
-*WatermarkDisabledBrowserTest.*
+*WatermarkTestPageBrowserTest.*
+*WatermarkTestPageDynamicBrowserTest.*
 WebAppConfirmViewBrowserTest.*
 WebAppMenuBrowserTest.*
+WebAppUpdateReviewDialog.*
 ZoomBubbleDialogTest.*
 
 # To temporarily disable a test, add it here with a leading '-', like this:

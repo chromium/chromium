@@ -40,7 +40,7 @@ void FakeCrostiniFeatures::ClearAll() {
 }
 
 bool FakeCrostiniFeatures::CouldBeAllowed(Profile* profile,
-                                          std::string* reason) {
+                                          std::string* reason) const {
   if (could_be_allowed_.has_value()) {
     *reason = "some reason";
     return *could_be_allowed_;
@@ -48,7 +48,8 @@ bool FakeCrostiniFeatures::CouldBeAllowed(Profile* profile,
   return original_features_->CouldBeAllowed(profile, reason);
 }
 
-bool FakeCrostiniFeatures::IsAllowedNow(Profile* profile, std::string* reason) {
+bool FakeCrostiniFeatures::IsAllowedNow(Profile* profile,
+                                        std::string* reason) const {
   if (could_be_allowed_.has_value() && !could_be_allowed_) {
     *reason = "some reason";
     return false;
@@ -60,28 +61,28 @@ bool FakeCrostiniFeatures::IsAllowedNow(Profile* profile, std::string* reason) {
   return original_features_->IsAllowedNow(profile, reason);
 }
 
-bool FakeCrostiniFeatures::IsEnabled(Profile* profile) {
+bool FakeCrostiniFeatures::IsEnabled(Profile* profile) const {
   if (enabled_.has_value()) {
     return *enabled_;
   }
   return original_features_->IsEnabled(profile);
 }
 
-bool FakeCrostiniFeatures::IsExportImportUIAllowed(Profile* profile) {
+bool FakeCrostiniFeatures::IsExportImportUIAllowed(Profile* profile) const {
   if (export_import_ui_allowed_.has_value()) {
     return *export_import_ui_allowed_;
   }
   return original_features_->IsExportImportUIAllowed(profile);
 }
 
-bool FakeCrostiniFeatures::IsRootAccessAllowed(Profile* profile) {
+bool FakeCrostiniFeatures::IsRootAccessAllowed(Profile* profile) const {
   if (root_access_allowed_.has_value()) {
     return *root_access_allowed_;
   }
   return original_features_->IsRootAccessAllowed(profile);
 }
 
-bool FakeCrostiniFeatures::IsContainerUpgradeUIAllowed(Profile* profile) {
+bool FakeCrostiniFeatures::IsContainerUpgradeUIAllowed(Profile* profile) const {
   if (container_upgrade_ui_allowed_.has_value()) {
     return *container_upgrade_ui_allowed_;
   }
@@ -90,7 +91,7 @@ bool FakeCrostiniFeatures::IsContainerUpgradeUIAllowed(Profile* profile) {
 
 void FakeCrostiniFeatures::CanChangeAdbSideloading(
     Profile* profile,
-    CanChangeAdbSideloadingCallback callback) {
+    CanChangeAdbSideloadingCallback callback) const {
   if (can_change_adb_sideloading_.has_value()) {
     std::move(callback).Run(*can_change_adb_sideloading_);
     return;
@@ -98,14 +99,14 @@ void FakeCrostiniFeatures::CanChangeAdbSideloading(
   original_features_->CanChangeAdbSideloading(profile, std::move(callback));
 }
 
-bool FakeCrostiniFeatures::IsPortForwardingAllowed(Profile* profile) {
+bool FakeCrostiniFeatures::IsPortForwardingAllowed(Profile* profile) const {
   if (port_forwarding_allowed_.has_value()) {
     return *port_forwarding_allowed_;
   }
   return original_features_->IsPortForwardingAllowed(profile);
 }
 
-bool FakeCrostiniFeatures::IsMultiContainerAllowed(Profile* profile) {
+bool FakeCrostiniFeatures::IsMultiContainerAllowed(Profile* profile) const {
   return multi_container_allowed_.value_or(
       original_features_->IsMultiContainerAllowed(profile));
 }

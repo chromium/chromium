@@ -19,14 +19,20 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/web_applications/test",
+  "+components/webapps/isolated_web_apps/scheme.h",
   "+chrome/common",
   "+chrome/test",
 ]
 
 specific_include_rules = {
-   'api_guard_delegate_unittest.cc': [
-      '+chrome/browser/web_applications/test/web_app_install_test_utils.h',
+   "api_guard_delegate_unittest\\.cc": [
+      "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
+   ],
+   "base_telemetry_extension_api_guard_function_browsertest\\.cc": [
+      "+chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h",
    ],
 }

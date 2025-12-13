@@ -27,6 +27,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -86,10 +87,6 @@ class WTF_EXPORT AtomicString {
   StringImpl* Impl() const { return string_.Impl(); }
 
   bool Is8Bit() const { return string_.Is8Bit(); }
-  // Use Span16() instead.
-  UNSAFE_BUFFER_USAGE const UChar* Characters16() const {
-    return UNSAFE_TODO(string_.Characters16());
-  }
   wtf_size_t length() const { return string_.length(); }
   base::span<const LChar> Span8() const { return string_.Span8(); }
   base::span<const UChar> Span16() const { return string_.Span16(); }
@@ -214,6 +211,14 @@ class WTF_EXPORT AtomicString {
       Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const {
     return StringView(*this).Utf8(mode);
   }
+  // Returns a std::u16string_view pointing this AtomicString.
+  // This should be called only if !Is8Bit().
+  //
+  // This function should be removed after enabling C++23 because
+  // std::u16string_view(Span16()) will work with C++23.
+  std::u16string_view View16() const LIFETIME_BOUND {
+    return base::as_string_view(Span16());
+  }
 
   size_t CharactersSizeInBytes() const {
     return string_.CharactersSizeInBytes();
@@ -250,8 +255,8 @@ inline bool operator==(const AtomicString& a, const AtomicString& b) {
   return a.Impl() == b.Impl();
 }
 inline bool operator==(const AtomicString& a, const String& b) {
-  // We don't use equalStringView so we get the isAtomic() optimization inside
-  // WTF::equal.
+  // We don't use EqualStringView so we get the IsAtomic() optimization inside
+  // blink::Equal.
   return Equal(a.Impl(), b.Impl());
 }
 inline bool operator==(const String& a, const AtomicString& b) {
@@ -262,22 +267,6 @@ inline bool operator==(const AtomicString& a, const char* b) {
 }
 inline bool operator==(const char* a, const AtomicString& b) {
   return b == a;
-}
-
-inline bool operator!=(const AtomicString& a, const AtomicString& b) {
-  return a.Impl() != b.Impl();
-}
-inline bool operator!=(const AtomicString& a, const String& b) {
-  return !(a == b);
-}
-inline bool operator!=(const String& a, const AtomicString& b) {
-  return !(a == b);
-}
-inline bool operator!=(const AtomicString& a, const char* b) {
-  return !(a == b);
-}
-inline bool operator!=(const char* a, const AtomicString& b) {
-  return !(a == b);
 }
 
 // Define external global variables for the commonly used atomic strings.

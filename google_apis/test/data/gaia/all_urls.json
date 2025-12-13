@@ -70,7 +70,7 @@
       "url": "https://www.exampleapis.com/oauth2/v1/userinfo"
     },
     "list_accounts_url": {
-      "url": "https://accounts.example.com/ListAccounts?json=standard"
+      "url": "https://accounts.example.com/ListAccounts?json=standard&laf=b64bin"
     },
     "embedded_signin_url": {
       "url": "https://accounts.example.com/embedded/setup/chrome/usermenu"
@@ -81,8 +81,11 @@
     "reauth_url": {
       "url": "https://accounts.example.com/embedded/xreauth/chrome"
     },
-    "account_capabilities_url": {
+    "account_capabilities_batch_get_url": {
       "url": "https://accountcapabilities.exampleapis.com/v1/capabilities"
+    },
+    "account_capabilities_get_all_visible_url": {
+      "url": "https://accountcapabilities.exampleapis.com/v1/getAllVisibleCapabilities"
     },
     "get_check_connection_info_url": {
       "url": "https://accounts.example.com/GetCheckConnectionInfo"

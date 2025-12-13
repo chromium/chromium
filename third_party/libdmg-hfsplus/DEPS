@@ -1,0 +1,3 @@
+# libdmg-hfsplus is legacy C that must be used only in highly controlled
+# environments with controlled input.
+new_usages_requre_review = True

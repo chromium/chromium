@@ -1,0 +1,272 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Chrome DWA metrics
+along with a detailed description for each metric.
+
+Events may be marked with the attribute singular="True" to indicate that
+the event will only occur once per source, and multiple entries will just
+be describing additional metrics about the same event.
+-->
+
+<dwa-configuration>
+
+<event name="AttributionConversionsClientBounce">
+  <owner>linnan@google.com</owner>
+  <metric name="UserActivation.10s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 10s without any user activation by a
+      non-user-initiated navigation. Shared data hosts will be counted multiple
+      times.
+    </summary>
+  </metric>
+  <metric name="UserActivation.1s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 1s without any user activation by a
+      non-user-initiated navigation. Shared data hosts will be counted multiple
+      times.
+
+      Note that these data hosts are also counted in
+      &quot;UserActivation.5s&quot; and &quot;UserActivation.10s&quot;.
+    </summary>
+  </metric>
+  <metric name="UserActivation.5s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 5s without any user activation by a
+      non-user-initiated navigation. Shared data hosts will be counted multiple
+      times.
+
+      Note that these data hosts are also counted in
+      &quot;UserActivation.10s&quot;.
+    </summary>
+  </metric>
+  <metric name="UserInteraction.10s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 10s without any user interaction by
+      a non-user-initiated navigation. Shared data hosts will be counted
+      multiple times.
+    </summary>
+  </metric>
+  <metric name="UserInteraction.1s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 1s without any user interaction by a
+      non-user-initiated navigation. Shared data hosts will be counted multiple
+      times.
+
+      Note that these data hosts are also counted in
+      &quot;UserInteraction.5s&quot; and &quot;UserInteraction.10s&quot;.
+    </summary>
+  </metric>
+  <metric name="UserInteraction.5s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 5s without any user interaction by a
+      non-user-initiated navigation. Shared data hosts will be counted multiple
+      times.
+
+      Note that these data hosts are also counted in
+      &quot;UserInteraction.10s&quot;.
+    </summary>
+  </metric>
+</event>
+
+<event name="AttributionConversionsCreateReport">
+  <owner>zhouzj@google.com</owner>
+  <study name="UMA-Uniformity-Trial-1-Percent"/>
+  <metric name="AggregatableStatus"
+      enum="ConversionCreateAggregatableReportStatus">
+    <summary>
+      Records the outcome of whether aggregatable reports are stored
+      successfully or rejected and why. Recorded once for each trigger event
+      processed by the attribution storage layer. `kNotRegistered` will be
+      logged if the source or trigger doesn't declare aggregatable data.
+    </summary>
+  </metric>
+  <metric name="EventLevelStatus" enum="ConversionStorageCreateReportStatus">
+    <summary>
+      Records the outcome of whether event-level triggers are stored
+      successfully or rejected and why. Recorded once for each conversion event
+      processed by the attribution storage layer.
+    </summary>
+  </metric>
+</event>
+
+<event name="AttributionConversionsSendReport">
+  <owner>linnan@google.com</owner>
+  <owner>zhouzj@google.com</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <metric name="AggregatableReportDelayFromTrigger">
+    <summary>
+      Records the time in ms between a trigger and the aggregatable reporting.
+      This is emitted only when an aggregatable report is successfully sent.
+    </summary>
+  </metric>
+  <metric name="EventLevelExtraReportDelay">
+    <summary>
+      Records the &quot;extra&quot; non-scheduled time in ms it took for
+      event-level reporting. This is primarily due to a report's scheduled
+      report time taking place while the browser is closed. Recorded when an
+      event-level report is successfully sent.
+    </summary>
+  </metric>
+</event>
+
+<event name="AttributionConversionsStoreSource">
+  <owner>linnan@google.com</owner>
+  <owner>zhouzj@google.com</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <metric name="Status" enum="ConversionStorageSourceStatus">
+    <summary>
+      Records the status of source registration processing. Recorded once for
+      each source event processed by the attribution manager layer.
+    </summary>
+  </metric>
+</event>
+
+<event name="DwaTestMetric">
+  <owner>zhouzj@google.com</owner>
+  <summary>
+    A test DWA metric.
+  </summary>
+  <study name="ACTStudy"/>
+  <study name="LegacyStudy" expires_after="M135"/>
+  <study name="ModeBStudy"/>
+  <metric name="HasVideo" enum="Boolean">
+    <summary>
+      True if the page contains a video.
+    </summary>
+  </metric>
+  <metric name="Latency" expires_after="2025-07-25">
+    <summary>
+      The latency in ms.
+    </summary>
+  </metric>
+</event>
+
+<event name="InterestGroupAuction">
+  <owner>ammedina@google.com</owner>
+  <owner>abigailkatcoff@google.com</owner>
+  <metric name="Result" enum="AuctionResult">
+    <summary>
+      The final result type of running an on-device auction. Recorded on auction
+      completion/cancellation. DWA content key for this event corresponds to the
+      auction's seller's origin (regardless of whether they are top level or
+      not).
+
+      See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+      version of the FLEDGE explainer.
+    </summary>
+  </metric>
+</event>
+
+<event name="InterestGroupJoin">
+  <owner>qingxinwu@google.com</owner>
+  <metric name="Result" enum="InterestGroupJoinPermissionResult">
+    <summary>
+      The result of the permission check for the joinAdInterestGroup operation.
+      The DWA content key for this event corresponds to the interest group
+      owner's origin.
+
+      See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+      version of the FLEDGE explainer.
+    </summary>
+  </metric>
+</event>
+
+<event name="PrivacySandbox.AggregationService.ReportSenderAttempt">
+  <owner>alexmt@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <metric name="Status"
+      enum="PrivacySandboxAggregationServiceReportSenderStatus">
+    <summary>
+      Records the high level request status for every aggregatable report sent
+      to a reporting endpoint. Recorded for reports requested from any API (e.g.
+      Private Aggregation API).
+
+      Recorded for every aggregatable report. The sender might retry in case of
+      failure but only the final status will be counted for each report.
+    </summary>
+  </metric>
+</event>
+
+<event name="PrivacySandbox.IsAttributionReportingAllowed">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <metric name="Status" enum="PrivacySandboxApiAllowed">
+    <summary>
+      Whether or not the IsAttributionReportingAllowed operation was allowed by
+      Privacy Sandbox settings and why. Recorded at the time settings are
+      checked when performing the operation.
+    </summary>
+  </metric>
+</event>
+
+<event name="PrivacySandbox.IsPrivateAggregationAllowed">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <metric name="Status" enum="PrivacySandboxApiAllowed">
+    <summary>
+      Whether or not the IsPrivateAggregationAllowed operation was allowed by
+      Privacy Sandbox settings and why. Recorded at the time settings are
+      checked when performing the operation.
+    </summary>
+  </metric>
+</event>
+
+<event name="SharedStorage.RunFinishedInWorklet">
+  <owner>yaoxia@google.com</owner>
+  <owner>cammie@google.com</owner>
+  <summary>
+    Records the completion of the `run()` method execution within a Shared
+    Storage worklet. Only recorded upon successful execution and does not
+    capture early errors.
+  </summary>
+  <metric name="TimeInWorklet">
+    <summary>
+      The time, in milliseconds, that the `run()` method took to execute within
+      the Shared Storage worklet.
+    </summary>
+  </metric>
+</event>
+
+<event name="SharedStorage.SelectUrlFinishedInWorklet">
+  <owner>yaoxia@google.com</owner>
+  <owner>cammie@google.com</owner>
+  <summary>
+    Records the completion of the `selectURL()` method execution within a Shared
+    Storage worklet. Only recorded upon successful execution and does not
+    capture early errors.
+  </summary>
+  <metric name="TimeInWorklet">
+    <summary>
+      The time, in milliseconds, that the `selectURL()` method took to execute
+      within the Shared Storage worklet.
+    </summary>
+  </metric>
+</event>
+
+<event name="StorageAccess.RequestOutcome">
+  <owner>selya@google.com</owner>
+  <owner>cfredric@chromium.org</owner>
+  <metric name="Outcome" enum="StorageAccessAPIRequestOutcome">
+    <summary>
+      Records the outcome of a particular Storage Access API permission request
+      and the site that requested it.
+
+      Recorded at the time of the request, for every request.
+    </summary>
+  </metric>
+</event>
+
+</dwa-configuration>

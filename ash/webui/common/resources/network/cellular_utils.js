@@ -17,7 +17,6 @@ import {OncMojo} from './onc_mojo.js';
 /** @typedef {*} NetworkStateProperties */
 
 /**
- * TODO(b/162365553): Implement Edit mode.
  * @enum {string}
  */
 export const ApnDetailDialogMode = {

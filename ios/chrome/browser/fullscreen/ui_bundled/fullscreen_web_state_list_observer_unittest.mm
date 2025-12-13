@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -53,6 +54,7 @@ class FullscreenWebStateListObserverTest : public PlatformTest {
   FullscreenWebStateListObserverTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+    ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     TestFullscreenController::CreateForBrowser(browser_.get());
     TestFullscreenController* controller =
         TestFullscreenController::FromBrowser(browser_.get());

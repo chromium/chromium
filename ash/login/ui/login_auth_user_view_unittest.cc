@@ -20,20 +20,18 @@
 #include "ash/login/ui/smart_lock_auth_factor_model.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -161,7 +159,6 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
     return view_->disabled_auth_message_;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   LoginUserInfo user_;
   raw_ptr<views::View, DanglingUntriaged> container_ =
       nullptr;  // Owned by test widget view hierarchy.
@@ -183,14 +180,6 @@ class LoginAuthUserViewUnittest : public LoginAuthUserViewTestBase {
   void SetUp() override {
     LoginAuthUserViewTestBase::SetUp();
     InitializeViewForUser(CreateUser("user@domain.com"));
-  }
-};
-
-class LoginAuthUserViewPinOnlyUnittest : public LoginAuthUserViewUnittest {
- public:
-  LoginAuthUserViewPinOnlyUnittest() {
-    feature_list_.Reset();
-    feature_list_.InitAndEnableFeature(features::kAllowPasswordlessSetup);
   }
 };
 
@@ -251,6 +240,8 @@ TEST_F(LoginAuthUserViewUnittest,
 }
 
 TEST_F(LoginAuthUserViewUnittest, PasswordFieldChangeOnUpdateUser) {
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD);
+
   LoginAuthUserView::TestApi auth_test(view_);
   LoginPasswordView::TestApi password_test(auth_test.password_view());
 
@@ -359,7 +350,7 @@ TEST_F(LoginAuthUserViewUnittest, PasswordOnlyFieldMode) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(LoginAuthUserViewPinOnlyUnittest, PinOnlyModeWithAutosubmitEnabled) {
+TEST_F(LoginAuthUserViewUnittest, PinOnlyModeWithAutosubmitEnabled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginUserView* user_view(auth_test.user_view());
@@ -395,7 +386,7 @@ TEST_F(LoginAuthUserViewPinOnlyUnittest, PinOnlyModeWithAutosubmitEnabled) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(LoginAuthUserViewPinOnlyUnittest, PinOnlyModeWithAutosubmitDisabled) {
+TEST_F(LoginAuthUserViewUnittest, PinOnlyModeWithAutosubmitDisabled) {
   LoginAuthUserView::TestApi auth_test(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
   auto client = std::make_unique<MockLoginScreenClient>();
@@ -780,8 +771,8 @@ TEST_F(LoginAuthUserViewAuthFactorsUnittest, SmartLockInitialState) {
   user.smart_lock_state = SmartLockState::kConnectingToPhone;
   InitializeViewForUser(user);
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
   Shell::Get()->login_screen_controller()->ShowLockScreen();
@@ -795,8 +786,8 @@ TEST_F(LoginAuthUserViewAuthFactorsUnittest, SmartLockInitialState) {
 TEST_F(LoginAuthUserViewAuthFactorsUnittest, VerifySmartLockArrowTapCallback) {
   auto user = CreateUser("user@domain.com");
   InitializeViewForUser(user);
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
   Shell::Get()->login_screen_controller()->ShowLockScreen();

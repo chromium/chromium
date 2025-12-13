@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/renderer/skia_benchmarking_extension.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -227,11 +223,11 @@ void SkiaBenchmarking::Rasterize(gin::Arguments* args) {
   uint8_t* buffer_pixels = reinterpret_cast<uint8_t*>(buffer.Data());
   // Swizzle from native Skia format to RGBA as we copy out.
   for (size_t i = 0; i < bitmap.computeByteSize(); i += 4) {
-    uint32_t c = packed_pixels[i >> 2];
-    buffer_pixels[i] = SkPMColorGetR(c);
-    buffer_pixels[i + 1] = SkPMColorGetG(c);
-    buffer_pixels[i + 2] = SkPMColorGetB(c);
-    buffer_pixels[i + 3] = SkPMColorGetA(c);
+    uint32_t c = UNSAFE_TODO(packed_pixels[i >> 2]);
+    UNSAFE_TODO(buffer_pixels[i]) = SkPMColorGetR(c);
+    UNSAFE_TODO(buffer_pixels[i + 1]) = SkPMColorGetG(c);
+    UNSAFE_TODO(buffer_pixels[i + 2]) = SkPMColorGetB(c);
+    UNSAFE_TODO(buffer_pixels[i + 3]) = SkPMColorGetA(c);
   }
 
   args->Return(gin::DataObjectBuilder(isolate)

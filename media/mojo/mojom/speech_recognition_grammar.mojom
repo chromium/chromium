@@ -6,7 +6,6 @@ module media.mojom;
 
 import "url/mojom/url.mojom";
 
-[Stable]
 struct SpeechRecognitionGrammar {
   url.mojom.Url url;
   double weight;

@@ -5,15 +5,12 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D_VIDEO_DECODER_WRAPPER_H_
 #define MEDIA_GPU_WINDOWS_D3D_VIDEO_DECODER_WRAPPER_H_
 
-#include <Windows.h>
-
-#include <cstdint>
 #include <memory>
 #include <optional>
-#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/scoped_d3d_buffers.h"
 
@@ -40,6 +37,11 @@ class D3DVideoDecoderWrapper {
 
   // Clear all internal states.
   virtual void Reset() = 0;
+
+  // Set the initialized picture buffers that the D3D11VideoDecoder class is
+  // using.
+  virtual D3D11Status SetPictureBuffers(
+      base::span<scoped_refptr<D3D11PictureBuffer>> picture_buffers) = 0;
 
   // Start a frame and wait for the hardware to be ready for decoding.
   virtual bool WaitForFrameBegins(D3D11PictureBuffer* output_picture) = 0;

@@ -21,9 +21,9 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/plus_addresses/features.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -44,6 +44,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -58,12 +59,13 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "components/plus_addresses/resources/vector_icons.h"
+#include "components/plus_addresses/core/browser/resources/vector_icons.h"
 #endif
 
 namespace plus_addresses {

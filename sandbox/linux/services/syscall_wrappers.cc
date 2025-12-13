@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "sandbox/linux/services/syscall_wrappers.h"
 
 #include <fcntl.h>
@@ -18,6 +13,8 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <cerrno>
 #include <cstring>
 
 #include "base/check.h"
@@ -154,9 +151,9 @@ int sys_sigprocmask(int how, const sigset_t* set, std::nullptr_t oldset) {
   // In some toolchain (in particular Android and PNaCl toolchain),
   // sigset_t is 32 bits, but the Linux ABI uses more.
   LinuxSigSet linux_value;
-  std::memset(&linux_value, 0, sizeof(LinuxSigSet));
-  std::memcpy(&linux_value, set, std::min(sizeof(sigset_t),
-                                          sizeof(LinuxSigSet)));
+  UNSAFE_TODO(std::memset(&linux_value, 0, sizeof(LinuxSigSet)));
+  UNSAFE_TODO(std::memcpy(&linux_value, set,
+                          std::min(sizeof(sigset_t), sizeof(LinuxSigSet))));
 
   return syscall(__NR_rt_sigprocmask, how, &linux_value, nullptr,
                  sizeof(linux_value));

@@ -1,0 +1,9 @@
+CONSOLE ERROR: Opening and ending tag mismatch: p line 8 and body
+
+CONSOLE ERROR: Opening and ending tag mismatch: body line 6 and html
+
+CONSOLE ERROR: Opening and ending tag mismatch: html line 5 and xsl:template
+
+CONSOLE ERROR: Opening and ending tag mismatch: template line 4 and stylesheet
+
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.

@@ -7,13 +7,14 @@
 #include <array>
 
 #include "base/base64url.h"
-#include "base/hash/sha1.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "components/media_router/browser/route_message_util.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
+#include "crypto/hash.h"
 #include "url/url_util.h"
 
 namespace media_router {
@@ -296,7 +297,8 @@ base::Value::Dict DialInternalMessageUtil::CreateReceiver(
     const MediaSinkInternal& sink) const {
   base::Value::Dict receiver;
 
-  std::string label = base::SHA1HashString(sink.sink().id() + hash_token_);
+  std::string label(base::as_string_view(
+      crypto::hash::Sha256(sink.sink().id() + hash_token_)));
   base::Base64UrlEncode(label, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &label);
   receiver.Set("label", base::Value(label));

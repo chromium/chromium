@@ -98,6 +98,9 @@ items:
 - caption: Text Editor (supported since version 136)
   name: text_editor
   value: text_editor
+- caption: Vids (supported since version 143)
+  name: vids
+  value: vids
 owners:
 - file://components/policy/OWNERS
 - ayaelattar@chromium.org
@@ -130,6 +133,7 @@ schema:
     - google_maps
     - calculator
     - text_editor
+    - vids
     type: string
   type: array
 supported_on:

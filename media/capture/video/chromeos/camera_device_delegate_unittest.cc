@@ -168,7 +168,6 @@ class CameraDeviceDelegateTest : public ::testing::Test {
 
   void SetUp() override {
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
     VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(test_sii_);
     camera_hal_delegate_ = std::make_unique<CameraHalDelegate>(ui_task_runner_);
     if (!camera_hal_delegate_->Init()) {
@@ -626,7 +625,7 @@ TEST_F(CameraDeviceDelegateTest, StopBeforeOpened) {
       };
   EXPECT_CALL(mock_camera_module_, DoOpenDevice(0, _, _))
       .Times(1)
-      .WillOnce(Invoke(open_device_quit_loop_cb));
+      .WillOnce(open_device_quit_loop_cb);
 
   // Wait until the QuitRunLoop() call in |mock_camera_module_->OpenDevice()|.
   DoLoop();
@@ -665,7 +664,7 @@ TEST_F(CameraDeviceDelegateTest, StopAfterInitialized) {
 
   EXPECT_CALL(mock_camera_device_, DoConfigureStreams(_, _))
       .Times(1)
-      .WillOnce(Invoke(
+      .WillOnce(
           [this](cros::mojom::Camera3StreamConfigurationPtr& config,
                  base::OnceCallback<void(
                      int32_t, cros::mojom::Camera3StreamConfigurationPtr)>&
@@ -674,7 +673,7 @@ TEST_F(CameraDeviceDelegateTest, StopAfterInitialized) {
                       this->GetState());
             std::move(callback).Run(-ENODEV, {});
             this->QuitRunLoop();
-          }));
+          });
 
   // Wait until the QuitRunLoop call in |mock_camera_device_->ConfigureStreams|.
   DoLoop();
@@ -704,15 +703,14 @@ TEST_F(CameraDeviceDelegateTest, StopAfterStreamConfigured) {
 
   EXPECT_CALL(mock_camera_device_, DoConstructDefaultRequestSettings(_, _))
       .Times(1)
-      .WillOnce(Invoke(
-          [this](cros::mojom::Camera3RequestTemplate type,
-                 base::OnceCallback<void(cros::mojom::CameraMetadataPtr)>&
-                     callback) {
-            EXPECT_EQ(CameraDeviceContext::State::kStreamConfigured,
-                      this->GetState());
-            std::move(callback).Run({});
-            this->QuitRunLoop();
-          }));
+      .WillOnce([this](cros::mojom::Camera3RequestTemplate type,
+                       base::OnceCallback<void(cros::mojom::CameraMetadataPtr)>&
+                           callback) {
+        EXPECT_EQ(CameraDeviceContext::State::kStreamConfigured,
+                  this->GetState());
+        std::move(callback).Run({});
+        this->QuitRunLoop();
+      });
 
   // Wait until the QuitRunLoop call in |mock_camera_device_->ConfigureStreams|.
   DoLoop();
@@ -761,7 +759,7 @@ TEST_F(CameraDeviceDelegateTest, FailToOpenDevice) {
       };
   EXPECT_CALL(mock_camera_module_, DoOpenDevice(0, _, _))
       .Times(1)
-      .WillOnce(Invoke(open_device_with_error_cb));
+      .WillOnce(open_device_with_error_cb);
 
   device_delegate_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&CameraDeviceDelegate::AllocateAndStart,

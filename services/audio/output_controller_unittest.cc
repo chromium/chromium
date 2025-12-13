@@ -34,13 +34,12 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
-#include "services/audio/loopback_group_member.h"
+#include "services/audio/loopback_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -378,12 +377,12 @@ class OutputControllerTest : public ::testing::Test {
         .WillOnce(RunClosure(barrier))
         .WillRepeatedly(Return());
     EXPECT_CALL(mock_sync_reader_, Read(_, false))
-        .WillOnce(Invoke([barrier](AudioBus* data, bool /*is_mixing*/) {
+        .WillOnce([barrier](AudioBus* data, bool /*is_mixing*/) {
           data->Zero();
           data->channel(0)[0] = kBufferNonZeroData;
           barrier.Run();
           return true;
-        }))
+        })
         .WillRepeatedly(PopulateBuffer());
 
     controller_->Play();

@@ -158,8 +158,9 @@ IN_PROC_BROWSER_TEST_F(ChromeKioskCrashRestoreTest,
   // If app is not installed when restoring from crash, the kiosk launch is
   // expected to fail, as in that case the crash occured during the app
   // initialization - before the app was actually launched.
-  EXPECT_EQ(KioskAppLaunchError::Error::kUnableToLaunch,
-            KioskAppLaunchError::Get());
+  EXPECT_EQ(
+      KioskAppLaunchError::Error::kUnableToLaunch,
+      KioskAppLaunchError::Get(CHECK_DEREF(g_browser_process->local_state())));
 }
 
 class WebKioskCrashRestoreTest : public KioskCrashRestoreTest {
@@ -175,7 +176,9 @@ IN_PROC_BROWSER_TEST_F(WebKioskCrashRestoreTest, ShouldRelaunchCrashedWebApp) {
   // Wait for the kiosk app to launch (through the crash recovery flow).
   ASSERT_TRUE(WaitKioskLaunched());
   // Check there was no launch error.
-  EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
+  EXPECT_EQ(
+      KioskAppLaunchError::Error::kNone,
+      KioskAppLaunchError::Get(CHECK_DEREF(g_browser_process->local_state())));
 }
 
 }  // namespace ash

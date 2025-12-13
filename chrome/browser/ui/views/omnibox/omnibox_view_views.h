@@ -12,14 +12,13 @@
 #include <string>
 #include <string_view>
 
-#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/omnibox/browser/omnibox_popup_view.h"
-#include "components/omnibox/browser/omnibox_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -41,7 +40,7 @@
 #endif
 
 class LocationBarView;
-class OmniboxClient;
+class IconLabelBubbleView;
 
 namespace content {
 class WebContents;
@@ -65,14 +64,25 @@ class OmniboxViewViews
       public views::TextfieldController,
       public ui::CompositorObserver,
       public TemplateURLServiceObserver {
+  // TODO(crbug.com/392015004): Remove this macro once it gets fixed.
+  //
+  // Both `OmniboxView` and `views::Textfield` (*1) have the
+  // `ADVANCED_MEMORY_SAFETY_CHECKS` macro, hence there is ambiguity about which
+  // `operator new` should be used (although the two `operator new` are
+  // eventually equivalent). Choose `OmniboxView` with no deep reason.
+  //
+  // (*1) Note that `views::Textfield` inherits from `views::View`, which has
+  // the `ADVANCED_MEMORY_SAFETY_CHECKS` macro.
+  INHERIT_MEMORY_SAFETY_CHECKS(OmniboxView);
+
   METADATA_HEADER(OmniboxViewViews, views::Textfield)
 
  public:
   // Max width of the gradient mask used to smooth ElideAnimation edges.
   static const int kSmoothingGradientMaxWidth = 15;
 
-  OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
-                   bool popup_window_mode,
+  OmniboxViewViews(bool popup_window_mode,
+                   OmniboxController* controller,
                    LocationBarView* location_bar_view,
                    const gfx::FontList& font_list);
   OmniboxViewViews(const OmniboxViewViews&) = delete;
@@ -128,13 +138,12 @@ class OmniboxViewViews
   void SetAdditionalText(const std::u16string& additional_text) override;
   void EnterKeywordModeForDefaultSearchProvider() override;
   bool IsSelectAll() const override;
-  void GetSelectionBounds(std::u16string::size_type* start,
-                          std::u16string::size_type* end) const override;
+  gfx::Range GetSelectionBounds() const override;
   void SelectAll(bool reversed) override;
   void RevertAll() override;
   void SetFocus(bool is_user_initiated) override;
-  bool IsImeComposing() const override;
-  gfx::NativeView GetRelativeWindowForPopup() const override;
+  void ApplyFocusRingToAimButton(bool focus_aim) override;
+  bool AimButtonVisible() const override;
   bool IsImeShowingPopup() const override;
 
   // views::Textfield:
@@ -149,9 +158,6 @@ class OmniboxViewViews
   void RemovedFromWidget() override;
   std::u16string GetLabelForCommandId(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
-
-  // For testing only.
-  OmniboxPopupView* GetPopupViewForTesting() const;
 
  protected:
   // OmniboxView:
@@ -177,11 +183,13 @@ class OmniboxViewViews
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, DoNotNavigateOnDrop);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, AyncDropCallback);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, AccessibleTextSelectBoundTest);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsAIMButtonPreferenceTest,
+                           ButtonVisibilityTogglesWithPref_OmniboxFocused);
 
   enum class UnelisionGesture {
-    HOME_KEY_PRESSED,
-    MOUSE_RELEASE,
-    OTHER,
+    kHomeKeyPressed,
+    kMouseRelease,
+    kOther,
   };
 
   // Update the field with |text| and set the selection. |ranges| should not be
@@ -297,6 +305,7 @@ class OmniboxViewViews
   void OnCompositingStarted(ui::Compositor* compositor,
                             base::TimeTicks start_time) override;
   void OnDidPresentCompositorFrame(
+      ui::Compositor* compositor,
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
@@ -317,20 +326,32 @@ class OmniboxViewViews
   // Helper method to construct part of the context menu.
   void MaybeAddSendTabToSelfItem(ui::SimpleMenuModel* menu_contents);
 
-  // Called when the popup view becomes visible.
-  void OnPopupOpened();
-
   // Helper for updating placeholder color depending on whether its a keyword or
   // DSE placeholder.
   void UpdatePlaceholderTextColor();
 
+  // Returns true if the AIM hint impression limits have been reached.
+  bool AreAimHintImpressionLimitsReached() const;
+
+  // Returns true if the AIM placeholder text should be installed instead of the
+  // DSE placeholder text.
+  bool ShouldInstallAimPlaceholderText() const;
+
+  // Returns true if the AIM placeholder text should be visible. This differs
+  // from ShouldInstallAimPlaceholderText() because there are certain scenarios
+  // where the AIM placeholder text is installed but not visible.
+  bool ShouldShowAimPlaceholderText() const;
+
+  // Records an impression of the AIM hint text.
+  void RecordAimHintImpression();
+
+  // Returns the AI Mode page action icon view, if present, or nullptr if the
+  // view doesn't exist.
+  IconLabelBubbleView* GetAiModePageActionIconView() const;
+
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.
   bool popup_window_mode_;
-
-  // Owns either an OmniboxPopupViewViews or an OmniboxPopupViewWebUI.
-  std::unique_ptr<OmniboxPopupView> popup_view_;
-  base::CallbackListSubscription popup_view_opened_subscription_;
 
   // Selection persisted across temporary text changes, like popup suggestions.
   gfx::Range saved_temporary_selection_;
@@ -395,12 +416,12 @@ class OmniboxViewViews
 
   // The state machine for logging the Omnibox.CharTypedToRepaintLatency
   // histogram.
-  enum {
-    NOT_ACTIVE,           // Not currently tracking a char typed event.
-    CHAR_TYPED,           // Character was typed.
-    ON_PAINT_CALLED,      // Character was typed and OnPaint() called.
-    COMPOSITING_COMMIT,   // Compositing was committed after OnPaint().
-    COMPOSITING_STARTED,  // Compositing was started.
+  enum class LatencyHistogramState {
+    kNotActive,           // Not currently tracking a char typed event.
+    kCharTyped,           // Character was typed.
+    kOnPaintCalled,       // Character was typed and OnPaint() called.
+    kCompositingCommit,   // Compositing was committed after OnPaint().
+    kCompositingStarted,  // Compositing was started.
   } latency_histogram_state_;
 
   // The currently selected match, if any, with additional labelling text
@@ -413,6 +434,15 @@ class OmniboxViewViews
   // For example,  "Google https://google.com location from history",
   // this is set to 7 (the length of "Google ").
   int friendly_suggestion_text_prefix_length_;
+
+  // Used to track whether focus indicators have been changed to show the AI
+  // mode page action icon as focused. Only used when keyboard accessibility is
+  // disabled (which currently only happens on Mac).
+  bool aim_page_action_icon_has_fake_focus_ = false;
+
+  // Used to track whether the AIM hint has been shown during a single focus
+  // session (omnibox focused -> omnibox blurred).
+  bool aim_hint_shown_ = false;
 
   base::ScopedObservation<ui::Compositor, ui::CompositorObserver>
       scoped_compositor_observation_{this};

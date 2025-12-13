@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -25,6 +26,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/find_in_page/find_notification_details.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
@@ -44,6 +46,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_modifiers.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -73,6 +76,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabBId);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kTextCopiedState);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kTextSelectedState);
 const ui::Accelerator ctrl_c_accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN);
 const ui::Accelerator ctrl_v_accelerator(ui::VKEY_V, ui::EF_CONTROL_DOWN);
 }  // namespace
@@ -128,10 +133,9 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(FindResulStateObserver, kFindResultState);
 // FindBarViewsUiTest.
 class LegacyFindInPageTest : public InProcessBrowserTest {
  public:
-  LegacyFindInPageTest() {
-    // TODO(https://crbug.com/40183900): Undo this in the destructor!
-    FindBarHost::SetEnableAnimationsForTesting(false);
-  }
+  LegacyFindInPageTest() = default;
+  base::AutoReset<bool> enable_animation_for_test_ =
+      FindBarHost::SetEnableAnimationsForTesting(false);
 
   LegacyFindInPageTest(const LegacyFindInPageTest&) = delete;
   LegacyFindInPageTest& operator=(const LegacyFindInPageTest&) = delete;
@@ -197,12 +201,10 @@ class LegacyFindInPageTest : public InProcessBrowserTest {
   }
 };
 
-class FindBarViewsUiTest : public InteractiveBrowserTest {
+class FindBarViewsUiTest : public InteractiveBrowserTest,
+                           public ::testing::WithParamInterface<bool> {
  public:
-  FindBarViewsUiTest() {
-    // TODO(https://crbug.com/40183900): Undo this in the destructor!
-    FindBarHost::SetEnableAnimationsForTesting(false);
-  }
+  FindBarViewsUiTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -303,6 +305,9 @@ class FindBarViewsUiTest : public InteractiveBrowserTest {
         browser()->GetFeatures().GetFindBarController()->find_bar();
     return static_cast<FindBarHost*>(find_bar);
   }
+
+  base::AutoReset<bool> enable_animation_for_test_ =
+      FindBarHost::SetEnableAnimationsForTesting(false);
 };
 
 IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, CrashEscHandlers) {
@@ -734,6 +739,7 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, PrepopulateRespectBlank) {
 IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, PasteWithoutTextChange) {
   constexpr char16_t kSearchA[] = u"a";
   const GURL page_a = embedded_test_server()->GetURL("/a.html");
+
   RunTestSequence(
       ObserveState(kFindResultState,
                    [this]() {
@@ -1014,4 +1020,64 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, MatchOrdinalStableWhileTyping) {
       WaitForState(kFindResultState, []() { return FindResultState(1, 3); }),
       EnterText(FindBarView::kTextField, u"o", TextEntryMode::kAppend),
       WaitForState(kFindResultState, []() { return FindResultState(1, 3); }));
+}
+
+INSTANTIATE_TEST_SUITE_P(, FindBarViewsUiTest, ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, SelectionDuringFindPolicy) {
+  const bool clipboard_restricted_by_policy = GetParam();
+  if (clipboard_restricted_by_policy) {
+    data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "rule_name",
+                                   "rule_id": "rule_id",
+                                   "destinations": {
+                                     "os_clipboard": true
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "BLOCK"}
+                                   ]
+                                 })"});
+  }
+  const std::u16string_view text = clipboard_restricted_by_policy
+                                       ? u"42"
+                                       : u"This is some text with a link.";
+
+  const GURL page_url = embedded_test_server()->GetURL("/a.html");
+
+  // Helper function to check if text is selected.
+  auto has_selected_text = [this]() {
+#if BUILDFLAG(IS_MAC)
+    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
+                                                false, false, true));
+
+#else
+    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, true,
+                                                false, false, false));
+
+#endif
+    WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    if (!web_contents) {
+      return false;
+    }
+    auto* host_view = web_contents->GetRenderWidgetHostView();
+    return host_view->GetSelectedText() == u"This is some text with a link.";
+  };
+
+  RunTestSequence(
+      Init(page_url), WaitForWebContentsReady(kTabId), ShowFindBar(),
+      EnterText(FindBarView::kTextField, u"42"), HideFindBar(),
+      Focus(ContentsWebView::kContentsWebViewElementId),
+
+      // Wait for the selection to be "text".
+      // This will poll after the last attempt.
+      PollState(kTextSelectedState, has_selected_text),
+
+      WaitForState(kTextSelectedState, true),
+      // Show the Find bar.
+      ShowFindBar(), WaitForShow(FindBarView::kTextField),
+      // Verify the text in the find bar.
+      WithView(FindBarView::kTextField, [text](views::Textfield* textfield) {
+        EXPECT_EQ(textfield->GetText(), text);
+      }));
 }

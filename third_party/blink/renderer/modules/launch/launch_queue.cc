@@ -66,7 +66,7 @@ void LaunchQueue::MeasureLatencyFromBrowserProcess(
   std::string histogram_variant =
       navigation_started ? ".WithNavigation" : ".WithoutNavigation";
   std::string histogram_name =
-      base::StrCat({"WebApp.NavigationCapturing.LaunchParamsConsumedTime",
+      base::StrCat({"Webapp.NavigationCapturing.LaunchParamsConsumedTime",
                     histogram_variant});
   base::UmaHistogramMediumTimes(histogram_name, time_to_navigate);
 }

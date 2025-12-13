@@ -71,20 +71,20 @@ MediaStreamSet::MediaStreamSet(
     // itself is fully initialized.
     context->GetTaskRunner(TaskType::kInternalMedia)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&MediaStreamSet::OnMediaStreamSetInitialized,
-                                 WrapPersistent(this)));
+                   BindOnce(&MediaStreamSet::OnMediaStreamSetInitialized,
+                            WrapPersistent(this)));
     return;
   }
 
   // The set will be initialized when all of its streams are initialized.
   // When the last stream is initialized, its callback will trigger
   // a call to OnMediaStreamSetInitialized.
-  for (WTF::wtf_size_t stream_index = 0;
-       stream_index < stream_descriptors.size(); ++stream_index) {
+  for (wtf_size_t stream_index = 0; stream_index < stream_descriptors.size();
+       ++stream_index) {
     MediaStream::Create(context, stream_descriptors[stream_index],
                         /*track=*/nullptr,
-                        WTF::BindOnce(&MediaStreamSet::OnMediaStreamInitialized,
-                                      WrapPersistent(this)));
+                        BindOnce(&MediaStreamSet::OnMediaStreamInitialized,
+                                 WrapPersistent(this)));
   }
 }
 
@@ -109,8 +109,8 @@ void MediaStreamSet::InitializeGetAllScreensMediaStreams(
       MakeGarbageCollected<ScreenDetails>(window);
   const bool screen_details_match_descriptors =
       screen_details->screens().size() == stream_descriptors.size();
-  for (WTF::wtf_size_t stream_index = 0;
-       stream_index < stream_descriptors.size(); ++stream_index) {
+  for (wtf_size_t stream_index = 0; stream_index < stream_descriptors.size();
+       ++stream_index) {
     MediaStreamDescriptor* const descriptor = stream_descriptors[stream_index];
     DCHECK_EQ(1u, descriptor->NumberOfVideoComponents());
 
@@ -128,8 +128,8 @@ void MediaStreamSet::InitializeGetAllScreensMediaStreams(
   }
   context->GetTaskRunner(TaskType::kInternalMedia)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&MediaStreamSet::OnMediaStreamSetInitialized,
-                               WrapPersistent(this)));
+                 BindOnce(&MediaStreamSet::OnMediaStreamSetInitialized,
+                          WrapPersistent(this)));
 }
 
 void MediaStreamSet::OnMediaStreamSetInitialized() {

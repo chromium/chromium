@@ -5,8 +5,9 @@
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_set_description_observer.h"
 
 #include "base/check.h"
-#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 
 namespace blink {
 
@@ -96,15 +97,17 @@ void WebRtcSetDescriptionObserverHandlerImpl::OnSetDescriptionComplete(
   std::unique_ptr<webrtc::SessionDescriptionInterface>
       current_remote_description =
           CopySessionDescription(pc_->current_remote_description());
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&WebRtcSetDescriptionObserverHandlerImpl::
-                                    OnSetDescriptionCompleteOnMainThread,
-                                this, std::move(error), pc_->signaling_state(),
-                                std::move(transceiver_state_surfacer),
-                                std::move(pending_local_description),
-                                std::move(current_local_description),
-                                std::move(pending_remote_description),
-                                std::move(current_remote_description)));
+  PostCrossThreadTask(
+      *main_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&WebRtcSetDescriptionObserverHandlerImpl::
+                              OnSetDescriptionCompleteOnMainThread,
+                          blink::RetainedRef(this), std::move(error),
+                          pc_->signaling_state(),
+                          std::move(transceiver_state_surfacer),
+                          std::move(pending_local_description),
+                          std::move(current_local_description),
+                          std::move(pending_remote_description),
+                          std::move(current_remote_description)));
 }
 
 void WebRtcSetDescriptionObserverHandlerImpl::

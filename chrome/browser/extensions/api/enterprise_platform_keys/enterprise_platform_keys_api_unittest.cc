@@ -34,7 +34,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::NiceMock;
 
 namespace extensions {
@@ -65,7 +64,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    prefs_ = browser()->profile()->GetPrefs();
+    prefs_ = profile()->GetPrefs();
     SetAuthenticatedUser();
 
     // UserPrivateTokenKeyPermissionsManagerService and the underlying
@@ -76,7 +75,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
     ash::platform_keys::UserPrivateTokenKeyPermissionsManagerServiceFactory::
         GetInstance()
             ->SetTestingFactory(
-                browser()->profile(),
+                profile(),
                 base::BindRepeating(&EPKChallengeKeyTestBase::
                                         CreateKeyPermissionsManagerService,
                                     base::Unretained(this)));
@@ -128,7 +127,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   // user in the IdentityManager class.
   virtual void SetAuthenticatedUser() {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser()->profile()), kUserEmail,
+        IdentityManagerFactory::GetForProfile(profile()), kUserEmail,
         signin::ConsentLevel::kSync);
   }
 
@@ -255,7 +254,7 @@ TEST_F(EPKChallengeMachineKeyTest, KeyNotRegisteredByDefault) {
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
   EXPECT_CALL(*mock_tpm_challenge_key_, BuildResponse)
-      .WillOnce(Invoke(FakeRunCheckNotRegister));
+      .WillOnce(FakeRunCheckNotRegister);
 
   EXPECT_TRUE(api_test_utils::RunFunction(
       func_.get(), CreateArgs(), profile(),

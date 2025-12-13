@@ -21,7 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/widget_test.h"

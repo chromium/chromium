@@ -9,6 +9,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_version_internal.h"
+#include "base/command_line.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -18,6 +19,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/cstring_view.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
@@ -688,7 +690,7 @@ TEST(CheckTest, CheckDerefOfPointer) {
 
 TEST(CheckDeathTest, CheckDerefOfNullPointer) {
   std::string* null_pointer = nullptr;
-  EXPECT_CHECK("Check failed: null_pointer != nullptr. ",
+  EXPECT_CHECK("Check failed: *null_pointer. ",
                std::ignore = CHECK_DEREF(null_pointer));
 }
 
@@ -706,7 +708,7 @@ TEST(CheckTest, CheckDerefOfConstPointer) {
 
 TEST(CheckDeathTest, CheckDerefOfConstNullPointer) {
   std::string* const_null_pointer = nullptr;
-  EXPECT_CHECK("Check failed: const_null_pointer != nullptr. ",
+  EXPECT_CHECK("Check failed: *const_null_pointer. ",
                std::ignore = CHECK_DEREF(const_null_pointer));
 }
 

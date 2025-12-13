@@ -12,7 +12,7 @@
 
 @interface FakeFormActivityObserver : NSObject<FormActivityObserver>
 // Arguments passed to
-// |webState:didSubmitDocumentWithFormData:userInitiated:inFrame:|.
+// |webState:didSubmitDocumentWithFormData:userInitiated:inFrame:perfectFilling:|.
 @property(nonatomic, readonly)
     autofill::TestSubmitDocumentInfo* submitDocumentInfo;
 // Arguments passed to
@@ -48,7 +48,8 @@
 - (void)webState:(web::WebState*)webState
     didSubmitDocumentWithFormData:(const autofill::FormData&)formData
                    hasUserGesture:(BOOL)hasUserGesture
-                          inFrame:(web::WebFrame*)frame {
+                          inFrame:(web::WebFrame*)frame
+                   perfectFilling:(BOOL)perfectFilling {
   _submitDocumentInfo = std::make_unique<autofill::TestSubmitDocumentInfo>();
   _submitDocumentInfo->web_state = webState;
   _submitDocumentInfo->sender_frame = frame;
@@ -94,9 +95,11 @@ TEST_F(FormActivityObserverBridgeTest, DocumentSubmitted) {
   ASSERT_FALSE([observer_ submitDocumentInfo]);
   autofill::FormData kTestFormData;
   bool has_user_gesture = true;
+  bool perfect_filling = true;
   auto sender_frame = web::FakeWebFrame::Create("sender_frame", true);
   observer_bridge_.DocumentSubmitted(&fake_web_state_, sender_frame.get(),
-                                     kTestFormData, has_user_gesture);
+                                     kTestFormData, has_user_gesture,
+                                     perfect_filling);
   ASSERT_TRUE([observer_ submitDocumentInfo]);
   EXPECT_EQ(&fake_web_state_, [observer_ submitDocumentInfo]->web_state);
   EXPECT_EQ(sender_frame.get(), [observer_ submitDocumentInfo]->sender_frame);

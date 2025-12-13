@@ -116,11 +116,13 @@ class CONTENT_EXPORT IdentityProviderData
 
 // The relying party data that will be used to display a FedCM dialog. This data
 // is extracted from the website which invoked the API, not from the FedCM
-// endpoints themselves.
+// endpoints themselves, although whether iframe_for_display is set depends on
+// the response from the client metadata endpoint.
 struct CONTENT_EXPORT RelyingPartyData {
  public:
   RelyingPartyData(const std::u16string& rp_for_display,
-                   const std::u16string& iframe_for_display);
+                   const std::u16string& iframe_for_display,
+                   bool display_strings_may_change = false);
   RelyingPartyData(const RelyingPartyData& other);
   ~RelyingPartyData();
 
@@ -129,6 +131,11 @@ struct CONTENT_EXPORT RelyingPartyData {
   // `rp_for_display`.
   std::u16string iframe_for_display;
   gfx::Image rp_icon;
+  // This is true if the display strings in this object, especially
+  // iframe_for_display, may change later on. This can happen for a cross-site
+  // iframe before we receive the client metadata response, and the UI may want
+  // to avoid showing a title until the data is final.
+  bool display_strings_may_change;
 };
 
 // IdentityRequestDialogController is an interface, overridden and implemented
@@ -141,6 +148,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogDismissReason
+  // LINT.IfChange(DismissReason)
   enum class DismissReason {
     kOther = 0,
     kCloseButton = 1,
@@ -154,16 +162,19 @@ class CONTENT_EXPORT IdentityRequestDialogController {
     kBackPress = 6,
     // Android-specific
     kTapScrim = 7,
-    kSuppressed = 8,
+    kSuppressed = 8,  // obsolete
 
     kMaxValue = kSuppressed,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmCancelReason)
 
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogLinkType
   enum class LinkType { PRIVACY_POLICY, TERMS_OF_SERVICE };
 
+  using ShouldShowAccountsPassiveDialogCallback =
+      base::OnceCallback<void(bool)>;
   using AccountSelectionCallback =
       base::OnceCallback<void(const GURL& idp_config_url,
                               const std::string& /*account_id*/,
@@ -198,21 +209,26 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // When this is true, the dialog should not be immediately auto-accepted.
   virtual void SetIsInterceptionEnabled(bool enabled);
 
+  // Computes whether to show the dialog. Will be called before
+  // ShowAccountsDialog, but only in passive mode. If false is passed to the
+  // callback, the request will be cancelled.
+  virtual void ShouldShowAccountsPassiveDialog(
+      ShouldShowAccountsPassiveDialogCallback cb);
+
   // Shows and accounts selections for the given IDP. The `on_selected` callback
-  // is called with the selected account id or empty string otherwise.
-  // `new_accounts` are the accounts that were just logged in, which should
-  // be prioritized in the UI. The `accounts_display_callback` is called when
-  // the dialog is successfully shown so that the backend can record the time of
-  // display for metrics purposes. Returns true if the method successfully
-  // showed UI. When false, the caller should assume that the API invocation was
-  // terminated and the cleanup methods invoked. `rp_data` may be modified by
-  // this method, such as by setting the RP icon.
+  // is called with the selected account id or empty string otherwise. Accounts
+  // with `DisplayPriority::kNew` should be prioritized in the UI. The
+  // `accounts_display_callback` is called when the dialog is successfully shown
+  // so that the backend can record the time of display for metrics purposes.
+  // Returns true if the method successfully showed UI. When false, the caller
+  // should assume that the API invocation was terminated and the cleanup
+  // methods invoked. `rp_data` may be modified by this method, such as by
+  // setting the RP icon.
   virtual bool ShowAccountsDialog(
       RelyingPartyData rp_data,
       const std::vector<scoped_refptr<IdentityProviderData>>& idp_list,
       const std::vector<scoped_refptr<IdentityRequestAccount>>& accounts,
       blink::mojom::RpMode rp_mode,
-      const std::vector<scoped_refptr<IdentityRequestAccount>>& new_accounts,
       AccountSelectionCallback on_selected,
       LoginToIdPCallback on_add_account,
       DismissCallback dismiss_callback,
@@ -297,6 +313,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   // Notifies when the autofill data source is ready to be queried.
   virtual void NotifyAutofillSourceReadyForTesting();
+
+  // Whether UI has been shown or not.
+  virtual bool DidShowUi() const;
 
  protected:
   bool is_interception_enabled_{false};

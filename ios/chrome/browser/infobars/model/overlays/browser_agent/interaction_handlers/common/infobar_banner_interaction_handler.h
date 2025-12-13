@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_COMMON_INFOBAR_BANNER_INTERACTION_HANDLER_H_
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/infobar_interaction_handler.h"
 
 class OverlayRequestSupport;

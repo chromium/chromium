@@ -129,7 +129,7 @@ class PaintPreviewFrame {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (!(obj instanceof PaintPreviewFrame)) return false;
 
         PaintPreviewFrame other = (PaintPreviewFrame) obj;
         if (!this.mGuid.equals(other.mGuid)) return false;

@@ -137,7 +137,7 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
         // quantizer. Instead we just set CBR and set
         // VP9E_SET_QUANTIZER_ONE_PASS before each frame.
         config->rc_end_usage = VPX_CBR;
-        // Let the whole AV1 quantizer range to be used.
+        // Allow the whole VP8/VP9 quantizer range to be used.
         config->rc_max_quantizer = 63;
         config->rc_min_quantizer = 0;
         break;
@@ -577,7 +577,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  if (frame->format() == PIXEL_FORMAT_NV12 && frame->HasMappableGpuBuffer()) {
+  if (frame->format() == PIXEL_FORMAT_NV12 && frame->HasMappableSharedImage()) {
     frame = ConvertToMemoryMappedFrame(frame);
     if (!frame) {
       std::move(done_cb).Run(
@@ -731,6 +731,10 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     DCHECK_EQ(options_.bitrate->mode(), Bitrate::Mode::kExternal);
     // Convert double quantizer to an integer within codec's supported range.
     int qp = static_cast<int>(std::lround(encode_options.quantizer.value()));
+    if (base::FeatureList::IsEnabled(kStandardizeVP9AndAV1Quantizer)) {
+      // VP9 uses the same quantization range (0-63) as AV1.
+      qp = QIndexToQuantizer(VideoCodec::kVP9, qp);
+    }
     qp = std::clamp(qp, static_cast<int>(codec_config_.rc_min_quantizer),
                     static_cast<int>(codec_config_.rc_max_quantizer));
     vpx_codec_control(codec_.get(), VP9E_SET_QUANTIZER_ONE_PASS, qp);
@@ -831,13 +835,18 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
 }
 
 base::TimeDelta VpxVideoEncoder::GetFrameDuration(const VideoFrame& frame) {
-  // Frame has duration in metadata, use it.
-  if (frame.metadata().frame_duration.has_value())
-    return frame.metadata().frame_duration.value();
-
-  // Options have framerate specified, use it.
-  if (options_.framerate.has_value())
+  // Video encoder config has the framerate specified,
+  // since framerate's main purpose is rate control, we use it to
+  // calculate frame's duration used for rate control.
+  if (options_.framerate.has_value() && options_.framerate.value() > 0.0) {
     return base::Seconds(1.0 / options_.framerate.value());
+  }
+
+  // Frame has duration in metadata, use it.
+  if (frame.metadata().frame_duration.has_value() &&
+      !frame.metadata().frame_duration->is_zero()) {
+    return frame.metadata().frame_duration.value();
+  }
 
   // No real way to figure out duration, use time passed since the last frame
   // as an educated guess, but clamp it within a reasonable limits.

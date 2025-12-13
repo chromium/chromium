@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gtk/gtk_util.h"
 
 #include <locale.h>
@@ -21,18 +16,18 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_types.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_platform.h"
 #include "ui/linux/linux_ui.h"
-#include "ui/native_theme/common_theme.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
@@ -200,21 +195,23 @@ bool GtkInitFromCommandLine(int* argc, char** argv) {
   // Callers should have already called setlocale(LC_ALL, "") and
   // setlocale(LC_NUMERIC, "C") by now. Chrome does this in
   // service_manager::Main.
-  DCHECK_EQ(strcmp(setlocale(LC_NUMERIC, nullptr), "C"), 0);
+  UNSAFE_TODO(DCHECK_EQ(strcmp(setlocale(LC_NUMERIC, nullptr), "C"), 0));
   // This prevents GTK from calling setlocale(LC_ALL, ""), which potentially
   // overwrites the LC_NUMERIC locale to something other than "C".
   gtk_disable_setlocale();
   return GtkInitCheck(argc, argv);
 }
 
-void SetGtkTransientForAura(GtkWidget* dialog, aura::Window* parent) {
+void SetGtkTransientForAura(GtkWidget* dialog,
+                            aura::Window* parent,
+                            GtkUiPlatform* platform) {
   if (!parent || !parent->GetHost()) {
     return;
   }
 
   gtk_widget_realize(dialog);
   gfx::AcceleratedWidget parent_id = parent->GetHost()->GetAcceleratedWidget();
-  GtkUi::GetPlatform()->SetGtkWidgetTransientFor(dialog, parent_id);
+  platform->SetGtkWidgetTransientFor(dialog, parent_id);
 
   // We also set the |parent| as a property of |dialog|, so that we can unlink
   // the two later.
@@ -226,7 +223,10 @@ aura::Window* GetAuraTransientParent(GtkWidget* dialog) {
       g_object_get_data(G_OBJECT(dialog), kAuraTransientParent));
 }
 
-void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent) {
+void ClearAuraTransientParent(GtkWidget* dialog,
+                              aura::Window* parent,
+                              GtkUiPlatform* platform) {
+  CHECK(dialog);
   g_object_set_data(G_OBJECT(dialog), kAuraTransientParent, nullptr);
 
   if (!parent || !parent->GetHost()) {
@@ -234,7 +234,7 @@ void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent) {
   }
 
   gfx::AcceleratedWidget parent_id = parent->GetHost()->GetAcceleratedWidget();
-  GtkUi::GetPlatform()->ClearTransientFor(parent_id);
+  platform->ClearTransientFor(parent_id);
 }
 
 base::OnceClosure DisableHostInputHandling(GtkWidget* dialog,
@@ -294,6 +294,15 @@ CairoSurface::CairoSurface(SkBitmap& bitmap)
           cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, bitmap.width()))),
       cairo_(cairo_create(surface_)) {}
 
+CairoSurface::CairoSurface(void* pixels, int width, int height)
+    : surface_(cairo_image_surface_create_for_data(
+          static_cast<unsigned char*>(pixels),
+          CAIRO_FORMAT_ARGB32,
+          width,
+          height,
+          cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, width))),
+      cairo_(cairo_create(surface_)) {}
+
 CairoSurface::CairoSurface(const gfx::Size& size)
     : surface_(cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
                                           size.width(),
@@ -327,7 +336,7 @@ SkColor CairoSurface::GetAveragePixelValue(bool frame) {
   long a = 0, r = 0, g = 0, b = 0;
   unsigned int max_alpha = 0;
   for (int i = 0; i < width * height; i++) {
-    SkColor color = data[i];
+    SkColor color = UNSAFE_TODO(data[i]);
     max_alpha = std::max(SkColorGetA(color), max_alpha);
     a += SkColorGetA(color);
     r += SkColorGetR(color);
@@ -468,7 +477,8 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
         case CSS_PSEUDOCLASS: {
           GtkStateFlags state_flag = GTK_STATE_FLAG_NORMAL;
           for (const auto& pseudo_class_entry : pseudo_classes) {
-            if (strcmp(pseudo_class_entry.name, t.token().c_str()) == 0) {
+            if (UNSAFE_TODO(
+                    strcmp(pseudo_class_entry.name, t.token().c_str())) == 0) {
               state_flag = pseudo_class_entry.state_flag;
               break;
             }

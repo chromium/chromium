@@ -76,6 +76,10 @@ inline constexpr char kIsCrosDebugKey[] = "is_cros_debug";
 inline constexpr char kIsCrosDebugValueFalse[] = "0";
 inline constexpr char kIsCrosDebugValueTrue[] = "1";
 
+// A kernel key version is a number stored in the TPM, which is used to prevent
+// the device from rolling back to an older OS version with a lower key version.
+inline constexpr char kKernelKeyVersion[] = "tpm_kernver";
+
 // Manufacture date key.
 inline constexpr char kManufactureDateKey[] = "mfg_date";
 
@@ -127,6 +131,12 @@ inline constexpr char kSerialNumberKey[] = "serial_number";
 // Serial number key for Flex devices. In most cases, GetEnterpriseMachineID()
 // is the appropriate way to obtain the serial number.
 inline constexpr char kFlexIdKey[] = "flex_id";
+
+// System Management BIOS (SMBIOS)/Desktop Management Interface (DMI)
+// information for Flex devices.
+inline constexpr char kFlexSysVendorKey[] = "flex_sys_vendor";
+inline constexpr char kFlexProductNameKey[] = "flex_product_name";
+inline constexpr char kFlexProductVersionKey[] = "flex_product_version";
 
 // Display Profiles key.
 inline constexpr char kDisplayProfilesKey[] = "display_profiles";

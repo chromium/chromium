@@ -88,21 +88,6 @@ class CORE_EXPORT FindBuffer {
 
   bool IsInvalidMatch(MatchResultICU match) const;
 
-  Vector<String> BuffersForTesting() const;
-
- private:
-  // Collects text for one LayoutBlockFlow located within |range| to |buffer_|,
-  // might be stopped without finishing one full LayoutBlockFlow  if we
-  // encountered another LayoutBLockFlow, or if the end of |range| is
-  // surpassed. Saves the next starting node after the block (first node in
-  // another LayoutBlockFlow or after |end_position|) to |node_after_block_|.
-  void CollectTextUntilBlockBoundary(const EphemeralRangeInFlatTree& range,
-                                     RubySupport ruby_support);
-
-  // Replaces nodes that should be ignored with appropriate char constants.
-  static void ReplaceNodeWithCharConstants(const Node& node,
-                                           Vector<UChar>& buffer);
-
   // Mapping for position in buffer -> actual node where the text came from,
   // along with the offset in the OffsetMapping of this find_buffer.
   // This is needed because when we find a match in the buffer, we want to know
@@ -128,10 +113,32 @@ class CORE_EXPORT FindBuffer {
   // Since the LayoutBlockFlow for "aaa" and "ddd" is the same, they have the
   // same OffsetMapping, the |offset_in_mapping_| for the BufferNodeMapping in
   // run #3 is 4 (the index of first "d" character in the mapping text).
+  //
+  // Note: This is used only in FindBuffer class, and should be private, but
+  // it needs to be public because of
+  // WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS()
   struct BufferNodeMapping {
+    DISALLOW_NEW();
+    void Trace(Visitor*) const;
+    const Member<const OffsetMapping> offset_mapping;
     const unsigned offset_in_buffer;
     const unsigned offset_in_mapping;
   };
+
+  Vector<String> BuffersForTesting() const;
+
+ private:
+  // Collects text for one LayoutBlockFlow located within |range| to |buffer_|,
+  // might be stopped without finishing one full LayoutBlockFlow  if we
+  // encountered another LayoutBLockFlow, or if the end of |range| is
+  // surpassed. Saves the next starting node after the block (first node in
+  // another LayoutBlockFlow or after |end_position|) to |node_after_block_|.
+  void CollectTextUntilBlockBoundary(const EphemeralRangeInFlatTree& range,
+                                     RubySupport ruby_support);
+
+  // Replaces nodes that should be ignored with appropriate char constants.
+  static void ReplaceNodeWithCharConstants(const Node& node,
+                                           Vector<UChar>& buffer);
 
   const BufferNodeMapping* MappingForIndex(unsigned index) const;
 
@@ -148,19 +155,22 @@ class CORE_EXPORT FindBuffer {
   void AddTextToBuffer(const Text& text_node,
                        const EphemeralRangeInFlatTree& range,
                        Vector<UChar>& buffer,
-                       Vector<BufferNodeMapping>* mappings);
+                       HeapVector<BufferNodeMapping>* mappings);
 
   const Node* node_after_block_ = nullptr;
   Vector<UChar> buffer_;
   // buffer_list_ is usually empty. It contains items only if an element
   // with display:ruby-text exists.
   Vector<Vector<UChar>> buffer_list_;
-  Vector<BufferNodeMapping> buffer_node_mappings_;
+  HeapVector<BufferNodeMapping> buffer_node_mappings_;
   TextSearcherICU text_searcher_;
 
   const OffsetMapping* offset_mapping_ = nullptr;
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::FindBuffer::BufferNodeMapping)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_FIND_BUFFER_H_

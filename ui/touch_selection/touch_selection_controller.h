@@ -12,7 +12,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/selection_bound.h"
 #include "ui/touch_selection/longpress_drag_selector.h"
 #include "ui/touch_selection/selection_event_type.h"

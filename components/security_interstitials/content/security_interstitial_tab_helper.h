@@ -140,6 +140,15 @@ class SecurityInterstitialTabHelper
   void OpenWhitepaper() override;
   void ReportPhishingError() override;
   void OpenEnhancedProtectionSettings() override;
+  void OpenHelpCenterInNewTab() override;
+  void OpenDiagnosticInNewTab() override;
+  void OpenReportingPrivacyInNewTab() override;
+  void OpenWhitepaperInNewTab() override;
+  void ReportPhishingErrorInNewTab() override;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void ShowCertificateViewer() override;
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   void OpenAndroidAdvancedProtectionSettings() override;

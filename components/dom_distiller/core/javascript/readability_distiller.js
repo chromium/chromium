@@ -8,17 +8,14 @@ try {
   function initialize() {
     // This include will be processed at build time by grit.
     // clang-format off
-      // <include src="../../../../third_party/readability/src/Readability.js">
+      // <include src="../../../../third_party/readability/modded_src/Readability.js">
     // clang-format on
     window.Readability = Readability;
   }
-  window.setTimeout = function() {};
-  window.clearTimeout = function() {};
   initialize();
 
   const article = new Readability(document.cloneNode(/*deep=*/ true)).parse();
   return article;
-
 } catch (e) {
   window.console.error('Error during distillation: ' + e);
   if (e.stack !== undefined) {

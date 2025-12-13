@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "media/base/audio_parameters.h"
+#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -72,6 +73,12 @@ TEST(LocalMediaStreamAudioSourceAecTest, CanDisableSystemAec) {
 }
 
 TEST(LocalMediaStreamAudioSourceAecTest, CanEnableSystemAec) {
+  if (media::IsSystemLoopbackAsAecReferenceEnabled()) {
+    // Platform AEC is not used if Loopback AEC is enabled, see
+    // EchoCanceller::GetSystemWideAec().
+    return;
+  }
+
   test::TaskEnvironment task_environment;
   int platform_effects = GetPlatformEffects(SystemAec::kSupported);
   std::unique_ptr<LocalMediaStreamAudioSource> source =

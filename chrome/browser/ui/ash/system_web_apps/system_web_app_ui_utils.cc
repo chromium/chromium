@@ -22,11 +22,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -36,8 +31,6 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
@@ -204,16 +197,6 @@ void LaunchSystemWebAppAsync(Profile* profile,
     return;
   }
 
-  if (type == SystemWebAppType::PERSONALIZATION &&
-      profile_for_launch == profile) {
-    scalable_iph::ScalableIph* scalable_iph =
-        ScalableIphFactory::GetForBrowserContext(profile_for_launch);
-    if (scalable_iph) {
-      scalable_iph->RecordEvent(
-          scalable_iph::ScalableIph::Event::kOpenPersonalizationApp);
-    }
-  }
-
   SystemWebAppManager* manager = SystemWebAppManager::Get(profile_for_launch);
   if (!manager) {
     return;
@@ -343,15 +326,27 @@ BrowserDelegate* FindSystemWebAppBrowser(Profile* profile,
       user->GetAccountId(), app_id.value(), browser_type);
 }
 
+int CountSystemWebAppBrowsers(Profile* profile, SystemWebAppType app_type) {
+  auto* const provider = SystemWebAppManager::GetWebAppProvider(profile);
+  const std::optional<webapps::AppId> app_id =
+      GetAppIdForSystemWebApp(profile, app_type);
+  return provider && app_id.has_value()
+             ? provider->ui_manager().GetNumWindowsForApp(app_id.value())
+             : 0;
+}
+
 bool IsSystemWebApp(Browser* browser) {
   DCHECK(browser);
   return browser->app_controller() && browser->app_controller()->system_app();
 }
 
-bool IsBrowserForSystemWebApp(Browser* browser, SystemWebAppType type) {
+bool IsBrowserForSystemWebApp(BrowserWindowInterface* browser,
+                              SystemWebAppType type) {
   DCHECK(browser);
-  return browser->app_controller() && browser->app_controller()->system_app() &&
-         browser->app_controller()->system_app()->GetType() == type;
+  web_app::AppBrowserController* const app_controller =
+      web_app::AppBrowserController::From(browser);
+  return app_controller && app_controller->system_app() &&
+         app_controller->system_app()->GetType() == type;
 }
 
 std::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,

@@ -23,7 +23,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/embedder_support/android/view_jni_headers/ContentViewRenderView_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -39,10 +38,10 @@ ContentViewRenderView::ContentViewRenderView(JNIEnv* env,
 ContentViewRenderView::~ContentViewRenderView() = default;
 
 // static
-jlong JNI_ContentViewRenderView_Init(
+static jlong JNI_ContentViewRenderView_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jroot_window_android) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jroot_window_android) {
   gfx::NativeWindow root_window =
       ui::WindowAndroid::FromJavaWindowAndroid(jroot_window_android);
   ContentViewRenderView* content_view_render_view =
@@ -56,7 +55,7 @@ void ContentViewRenderView::Destroy(JNIEnv* env) {
 
 void ContentViewRenderView::SetCurrentWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   InitCompositor();
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
@@ -67,7 +66,7 @@ void ContentViewRenderView::SetCurrentWebContents(
 
 void ContentViewRenderView::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     jint width,
     jint height) {
   content::WebContents* web_contents =
@@ -97,8 +96,8 @@ std::optional<int> ContentViewRenderView::SurfaceChanged(
     jint format,
     jint width,
     jint height,
-    const JavaParamRef<jobject>& surface,
-    const JavaParamRef<jobject>& browser_input_token) {
+    const JavaRef<jobject>& surface,
+    const JavaRef<jobject>& browser_input_token) {
   std::optional<int> surface_handle = std::nullopt;
   if (current_surface_format_ != format) {
     current_surface_format_ = format;
@@ -133,3 +132,5 @@ void ContentViewRenderView::InitCompositor() {
 }
 
 }  // namespace embedder_support
+
+DEFINE_JNI(ContentViewRenderView)

@@ -68,7 +68,15 @@ class TwoClientExtensionAppsSyncTest : public AppsSyncTestBase {
       const TwoClientExtensionAppsSyncTest&) = delete;
 
   ~TwoClientExtensionAppsSyncTest() override = default;
+
+  // Apps sync is only supported with Sync-the-feature.
+  SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Chrome Apps are fully deprecated on all platforms except ChromeOS.
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(StartWithNoApps)) {
@@ -330,32 +338,30 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 
   // Change the launch type to window.
   extensions::SetLaunchType(GetProfile(1), extensions::kWebStoreAppId,
-                            extensions::LAUNCH_TYPE_WINDOW);
+                            extensions::LaunchType::kWindow);
   ASSERT_TRUE(AppsMatchChecker().Wait());
   ASSERT_EQ(extensions::GetLaunchTypePrefValue(
                 extensions::ExtensionPrefs::Get(GetProfile(0)),
                 extensions::kWebStoreAppId),
-            extensions::LAUNCH_TYPE_WINDOW);
+            extensions::LaunchType::kWindow);
 
   // Change the launch type to regular tab.
   extensions::SetLaunchType(GetProfile(1), extensions::kWebStoreAppId,
-                            extensions::LAUNCH_TYPE_REGULAR);
+                            extensions::LaunchType::kRegular);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
   ASSERT_EQ(extensions::GetLaunchTypePrefValue(
                 extensions::ExtensionPrefs::Get(GetProfile(0)),
                 extensions::kWebStoreAppId),
-            extensions::LAUNCH_TYPE_REGULAR);
+            extensions::LaunchType::kRegular);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, UnexpectedLaunchType) {
   ASSERT_TRUE(SetupSync());
-  // Wait until sync settles before we override the apps below.
-  ASSERT_TRUE(AwaitQuiescence());
   ASSERT_TRUE(AllProfilesHaveSameApps());
 
   extensions::SetLaunchType(GetProfile(1), extensions::kWebStoreAppId,
-                            extensions::LAUNCH_TYPE_REGULAR);
+                            extensions::LaunchType::kRegular);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
   const extensions::Extension* extension =
@@ -377,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, UnexpectedLaunchType) {
       *extension, original_data.enabled(), original_data.disable_reasons(),
       original_data.incognito_enabled(), original_data.remote_install(),
       original_data.update_url(), original_data.app_launch_ordinal(),
-      original_data.page_ordinal(), extensions::NUM_LAUNCH_TYPES);
+      original_data.page_ordinal(), extensions::LaunchType::kNumLaunchTypes);
   extension_sync_service->ApplySyncData(invalid_launch_type_data);
 
   // The launch type should remain the same.
@@ -446,6 +452,58 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                    ->enabled_extensions()
                    .Contains(kHostedAppId0));
 }
+
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
+                       UninstallOnWML) {
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
+  ASSERT_TRUE(SetupClients());
+
+  auto appid1 = InstallHostedApp(GetProfile(0), 0);
+  auto appid2 = InstallHostedApp(GetProfile(1), 0);
+  EXPECT_EQ(appid1, appid2);
+
+  int i = 1;
+
+  const int kNumCommonApps = 4;
+  for (int j = 0; j < kNumCommonApps; ++i, ++j) {
+    InstallHostedApp(GetProfile(0), i);
+    InstallHostedApp(GetProfile(1), i);
+  }
+
+  ASSERT_TRUE(SetupSync());
+  const int kNumProfile0Apps = 10;
+  for (int j = 0; j < kNumProfile0Apps; ++i, ++j) {
+    InstallHostedApp(GetProfile(0), i);
+  }
+
+  const int kNumProfile1Apps = 10;
+  for (int j = 0; j < kNumProfile1Apps; ++i, ++j) {
+    InstallHostedApp(GetProfile(1), i);
+  }
+
+  ASSERT_TRUE(AwaitQuiescence());
+
+  // Chrome App installs via sync are disabled on WML.
+  ASSERT_FALSE(apps_helper::HasSameApps(GetProfile(0), GetProfile(1)));
+
+  ASSERT_TRUE(
+      GetExtensionRegistry(GetProfile(0))->GetInstalledExtension(appid1));
+  ASSERT_TRUE(
+      GetExtensionRegistry(GetProfile(1))->GetInstalledExtension(appid2));
+
+  UninstallApp(GetProfile(0), 0);
+  ASSERT_TRUE(AwaitQuiescence());
+
+  // Uninstalls are still sync-ed and applied on WML devices.
+  ASSERT_FALSE(
+      GetExtensionRegistry(GetProfile(0))->GetInstalledExtension(appid1));
+  ASSERT_FALSE(
+      GetExtensionRegistry(GetProfile(1))->GetInstalledExtension(appid1));
+}
+
+#endif
 
 // TODO(akalin): Add tests exercising:
 //   - Offline installation/uninstallation behavior

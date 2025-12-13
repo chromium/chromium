@@ -12,12 +12,15 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils.BackEvent;
@@ -25,10 +28,14 @@ import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils.ReloadTyp
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Mediator that listens for window state changes and updates custom webapp header view that should
@@ -45,9 +52,9 @@ class WebAppHeaderLayoutMediator
     private final PropertyModel mModel;
     private final WebAppHeaderDelegate mHeaderDelegate;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private final ScrimManager mScrimManager;
-    private final Supplier<List<Rect>> mNonDraggableAreasSupplier;
+    private final Supplier<List<Rect>> mHeaderControlPositionSupplier;
     private final ObservableSupplierImpl<Integer> mWidthSupplier;
     private final ThemeColorProvider mThemeColorProvider;
     private final int mWebAppMinHeaderHeight;
@@ -56,11 +63,19 @@ class WebAppHeaderLayoutMediator
     private final ObservableSupplierImpl<Integer> mAppHeaderUnoccludedWidthSupplier;
     private final Callback<Boolean> mScrimVisibilityObserver;
     private @Nullable Callback<Integer> mOnButtonBottomInsetChanged;
+    private final Callback<Boolean> mSetHeaderAsOverlayCallback;
+    private boolean mHeaderAsOverlay;
+    private boolean mUserToggleHeaderAsOverlay;
+    private boolean mToggleButtonVisible;
     private int mButtonBottomInset;
     private final @DisplayMode.EnumType int mDisplayMode;
+    private final Callback<@Nullable Tab> mOnTabUpdate;
+    private final @Nullable String mClientPackageName;
 
     private int mDisabledControlsToken = TokenHolder.INVALID_TOKEN;
     private boolean mIsFirstAppHeaderStateUpdate = true;
+    private boolean mBrowserControlsVisible;
+    private @Nullable List<Rect> mSystemGestureExclusionRects;
 
     /**
      * Constructs the instance of {@link WebAppHeaderLayoutMediator}.
@@ -74,25 +89,32 @@ class WebAppHeaderLayoutMediator
      * @param webAppHeaderMinHeightFromResources minimal height from resources in px that web app
      *     header must take
      */
-    public WebAppHeaderLayoutMediator(
+    WebAppHeaderLayoutMediator(
             PropertyModel model,
             WebAppHeaderDelegate headerDelegate,
             DesktopWindowStateManager desktopWindowStateManager,
             ScrimManager scrimManager,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
-            Supplier<List<Rect>> nonDraggableAreasSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
+            Supplier<List<Rect>> headerControlPositionSupplier,
             ThemeColorProvider themeColorProvider,
             int webAppHeaderMinHeightFromResources,
             int headerButtonHeight,
-            int displayMode) {
+            int displayMode,
+            Callback<Boolean> setHeaderAsOverlayCallback,
+            @Nullable String clientPackageName) {
         mThemeColorProvider = themeColorProvider;
         mWebAppMinHeaderHeight = webAppHeaderMinHeightFromResources;
         mHeaderDelegate = headerDelegate;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mTabSupplier = tabSupplier;
-        mNonDraggableAreasSupplier = nonDraggableAreasSupplier;
+        mHeaderControlPositionSupplier = headerControlPositionSupplier;
         mHeaderButtonHeight = headerButtonHeight;
         mDisplayMode = displayMode;
+        mSetHeaderAsOverlayCallback = setHeaderAsOverlayCallback;
+        mHeaderAsOverlay = mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY;
+        mOnTabUpdate = this::onTabUpdate;
+        mTabSupplier.addObserver(mOnTabUpdate);
+        mClientPackageName = clientPackageName;
 
         mScrimVisibilityObserver =
                 (isScrimVisible) -> {
@@ -125,12 +147,72 @@ class WebAppHeaderLayoutMediator
 
         onThemeColorChanged(mThemeColorProvider.getThemeColor(), false);
         mThemeColorProvider.addThemeColorObserver(this);
+
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        mUserToggleHeaderAsOverlay =
+                mClientPackageName == null
+                        ? false
+                        : prefs.readStringSet(
+                                        ChromePreferenceKeys
+                                                .WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES)
+                                .contains(mClientPackageName);
+        mToggleButtonVisible = true;
+    }
+
+    public void setUserToggleHeaderAsOverlay(boolean userToggleHeaderAsOverlay) {
+        if (mUserToggleHeaderAsOverlay == userToggleHeaderAsOverlay) return;
+        mUserToggleHeaderAsOverlay = userToggleHeaderAsOverlay;
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        if (mClientPackageName != null) {
+            if (mUserToggleHeaderAsOverlay) {
+                prefs.addToStringSet(
+                        ChromePreferenceKeys.WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES,
+                        mClientPackageName);
+            } else {
+                prefs.removeFromStringSet(
+                        ChromePreferenceKeys.WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES,
+                        mClientPackageName);
+            }
+        }
+        updateHeaderAsOverlay();
+    }
+
+    public boolean getUserToggleHeaderAsOverlay() {
+        return mUserToggleHeaderAsOverlay;
+    }
+
+    public void didChangeToggleButtonVisiblity(boolean visible) {
+        mToggleButtonVisible = visible;
+        updateHeaderAsOverlay();
+    }
+
+    private void updateHeaderAsOverlay() {
+        mHeaderAsOverlay =
+                mCurrentHeaderState != null
+                        && mCurrentHeaderState.isInDesktopWindow()
+                        && mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY
+                        && !mBrowserControlsVisible
+                        && mUserToggleHeaderAsOverlay
+                        && mToggleButtonVisible;
+
+        final Tab tab = mTabSupplier.get();
+        if (tab == null) return;
+
+        final WebContents webContents = tab.getWebContents();
+        if (webContents == null) return;
+        webContents.setSupportsDraggableRegions(mHeaderAsOverlay);
+
+        mSetHeaderAsOverlayCallback.onResult(mHeaderAsOverlay);
+        updateBackgroundBars();
+        updateNonDraggableAreas();
     }
 
     private void onLayoutWidthUpdated(int width) {
         mWidthSupplier.set(width);
 
-        // Update draggable area even if width hasn't changed, because children might've changed.
+        // Update background bars and draggable areas even if width hasn't changed, because
+        // children might've changed.
+        updateBackgroundBars();
         updateNonDraggableAreas();
     }
 
@@ -139,6 +221,57 @@ class WebAppHeaderLayoutMediator
         if (visibility == View.GONE) {
             mWidthSupplier.set(0);
         }
+    }
+
+    private void onTabUpdate(@Nullable Tab tab) {
+        updateBackgroundBars();
+    }
+
+    private void updateBackgroundBars() {
+        final Tab tab = mTabSupplier.get();
+        if (tab == null) return;
+
+        final WebContents webContents = tab.getWebContents();
+        if (webContents == null) return;
+
+        if (mCurrentHeaderState == null || !mHeaderAsOverlay) {
+            mModel.set(WebAppHeaderLayoutProperties.BACKGROUND_CUTOUTS, null);
+            webContents.updateWindowControlsOverlay(new Rect());
+            return;
+        }
+
+        final int leftPadding = mCurrentHeaderState.getLeftPadding();
+
+        // This logic depends on all header controls being right-aligned.
+        int headerControlsLeftEdge = leftPadding + mCurrentHeaderState.getUnoccludedRectWidth();
+        List<Rect> controlPositions = mHeaderControlPositionSupplier.get();
+        if (controlPositions != null) {
+            for (Rect controlPosition : controlPositions) {
+                if (controlPosition.left < headerControlsLeftEdge) {
+                    headerControlsLeftEdge = controlPosition.left;
+                }
+            }
+        }
+
+        final int headerHeight =
+                Math.min(mCurrentHeaderState.getCaptionControlsHeight(), mHeaderButtonHeight);
+
+        Rect cutoutRect =
+                new Rect(
+                        leftPadding,
+                        mCurrentHeaderState.getCaptionControlsTopOffset(),
+                        headerControlsLeftEdge,
+                        mCurrentHeaderState.getCaptionControlsTopOffset() + headerHeight);
+        mModel.set(WebAppHeaderLayoutProperties.BACKGROUND_CUTOUTS, Arrays.asList(cutoutRect));
+
+        // The area passed to the web contents is different from the cutout specified in the app
+        // header because the app header needs to account for the status bar when making the cutout,
+        // whereas the web contents is not aware that the status bar exists.
+        //
+        // Therefore, the cutout rect should be offset vertically by the caption controls top offset
+        // while the web contents WCO rect should not be offset vertically.
+        webContents.updateWindowControlsOverlay(
+                new Rect(leftPadding, 0, headerControlsLeftEdge, headerHeight));
     }
 
     @Override
@@ -152,6 +285,7 @@ class WebAppHeaderLayoutMediator
         mCurrentHeaderState = newState;
 
         updatePaddings();
+        updateHeaderAsOverlay();
 
         mAppHeaderUnoccludedWidthSupplier.set(mCurrentHeaderState.getUnoccludedRectWidth());
         mModel.set(
@@ -223,10 +357,28 @@ class WebAppHeaderLayoutMediator
             return;
         }
 
-        final var areas = mNonDraggableAreasSupplier.get();
+        List<Rect> areas = new ArrayList<>();
+
+        List<Rect> controlPositions = mHeaderControlPositionSupplier.get();
+        if (controlPositions != null) {
+            areas.addAll(controlPositions);
+        }
+
+        if (mHeaderAsOverlay
+                && mSystemGestureExclusionRects != null
+                && !mSystemGestureExclusionRects.isEmpty()) {
+            areas.addAll(mSystemGestureExclusionRects);
+        }
+
         mModel.set(
                 WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS,
                 areas == null || areas.isEmpty() ? List.of(EMPTY_NON_DRAGGABLE_AREA) : areas);
+    }
+
+    @Override
+    public void onSystemGestureExclusionRectsChanged(List<Rect> rects) {
+        mSystemGestureExclusionRects = rects;
+        updateNonDraggableAreas();
     }
 
     /** Navigates back in the navigation history of the current {@link Tab}. */
@@ -295,6 +447,7 @@ class WebAppHeaderLayoutMediator
         mDesktopWindowStateManager.removeObserver(this);
         mThemeColorProvider.removeThemeColorObserver(this);
         mScrimManager.getScrimVisibilitySupplier().removeObserver(mScrimVisibilityObserver);
+        mTabSupplier.removeObserver(mOnTabUpdate);
     }
 
     @VisibleForTesting
@@ -304,5 +457,11 @@ class WebAppHeaderLayoutMediator
 
     int getButtonBottomInsetForTesting() {
         return mButtonBottomInset;
+    }
+
+    /** Called to update the mediator if browser controls (e.g. CCT banner) are visible. */
+    public void setBrowserControlsVisible(boolean visible) {
+        mBrowserControlsVisible = visible;
+        updateHeaderAsOverlay();
     }
 }

@@ -6,9 +6,11 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
@@ -64,12 +66,41 @@ void SafeBrowsingPrefChangeHandler::
       !base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting)) {
     return;
   }
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  if (sync_service && sync_service->IsSyncFeatureEnabled()) {
+    base::Time tailored_security_update_time = profile_->GetPrefs()->GetTime(
+        prefs::kAccountTailoredSecurityUpdateTimestamp);
+    if (tailored_security_update_time.is_null()) {
+      // The TailoredSecurityService has never run. Suppress this
+      // toast, which is reacting to stale data. When a user enables ESB through
+      // the Tailored Security flow, the
+      // `kEnhancedProtectionEnabledViaTailoredSecurity` pref is set to true.
+      // This allows us to distinguish between changes made by Tailored Security
+      // and changes that are synced from other devices. But if the update time
+      // is null, this means the Tailored Security service hasn't run yet.
+      return;
+    }
+  }
+
+  // Do not show a notification toast if the setting is managed by enterprise
+  // policy.
+  if (safe_browsing::IsSafeBrowsingPolicyManaged(*profile_->GetPrefs())) {
+    return;
+  }
   Browser* const browser = chrome::FindBrowserWithProfile(profile_);
   if (!browser) {
     return;
   }
+
+  // TODO(crbug.com/447592206): The correct long term solution is to refactor
+  // ToastController to use the UnownedUserData factory pattern for testability,
+  // which will be handled in a follow-up CL.
   ToastController* const controller =
-      browser->browser_window_features()->toast_controller();
+      toast_controller_for_testing_
+          ? static_cast<ToastController*>(toast_controller_for_testing_)
+          : browser->browser_window_features()->toast_controller();
   if (!controller) {
     return;
   }
@@ -88,6 +119,14 @@ void SafeBrowsingPrefChangeHandler::
 
   // Extract the enhanced protection pref value.
   bool is_enhanced_enabled = IsEnhancedProtectionEnabled(*profile_->GetPrefs());
+
+  if (is_enhanced_enabled &&
+      profile_->GetPrefs()->GetBoolean(
+          prefs::kEnhancedProtectionEnabledViaTailoredSecurity)) {
+    // The TailoredSecurityService just ran and showed its modal. Suppress this
+    // toast.
+    return;
+  }
 
   // The enhanced protection setting has been updated. To reflect this
   // change, we will show toasts to the user, taking into account both the
@@ -153,6 +192,8 @@ void SafeBrowsingPrefChangeHandler::
     // this device.
     if (profile_->GetPrefs()->GetBoolean(
             prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally)) {
+      profile_->GetPrefs()->SetBoolean(
+          prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally, false);
       retry_handler_->SaveRetryState(
           MessageRetryHandler::RetryState::NO_RETRY_NEEDED);
       return;
@@ -173,6 +214,14 @@ void SafeBrowsingPrefChangeHandler::
   }
 #endif
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+void SafeBrowsingPrefChangeHandler::SetToastControllerForTesting(
+    ToastController* controller) {
+  toast_controller_for_testing_ = controller;
+}
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 void SafeBrowsingPrefChangeHandler::RetryStateCallback() {

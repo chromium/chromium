@@ -30,6 +30,8 @@ source_set("frame") {
     "frame_header.h",
     "frame_utils.cc",
     "frame_utils.h",
+    "frame_view_chromeos.cc",
+    "frame_view_chromeos.h",
     "header_view.cc",
     "header_view.h",
     "highlight_border_overlay.cc",
@@ -61,8 +63,6 @@ source_set("frame") {
     "multitask_menu/multitask_menu_view.h",
     "multitask_menu/split_button_view.cc",
     "multitask_menu/split_button_view.h",
-    "non_client_frame_view_base.cc",
-    "non_client_frame_view_base.h",
   ]
 
   public_deps = [ "//ui/base/mojom:ui_base_types" ]
@@ -83,7 +83,7 @@ source_set("frame") {
     "//ui/base",
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/color",
-    "//ui/events/devices:devices",
+    "//ui/events/devices",
     "//ui/platform_window",
     "//ui/strings:ui_strings_grit",
     "//ui/views",
@@ -119,7 +119,7 @@ source_set("interactive_ui_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "non_client_frame_view_interactive_uitest.cc" ]
+  sources = [ "frame_view_chromeos_interactive_uitest.cc" ]
 
   deps = [
     ":frame",

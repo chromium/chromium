@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 
+#include <algorithm>
+
 #include "ash/constants/web_app_id_constants.h"
 #include "base/callback_list.h"
 #include "base/check_is_test.h"
@@ -16,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -26,16 +29,22 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
+#include "chrome/browser/web_applications/url_pattern_with_regex_matcher.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_scope.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -129,20 +138,23 @@ WebAppBrowserController::WebAppBrowserController(
   effective_display_mode_ =
       registrar().GetAppEffectiveDisplayMode(this->app_id());
   install_manager_observation_.Observe(&provider.install_manager());
+  registrar_observation_.Observe(&provider.registrar_unsafe());
   PerformDigitalAssetLinkVerification(browser);
 }
 
 WebAppBrowserController::~WebAppBrowserController() = default;
+
+WebAppBrowserController* WebAppBrowserController::From(
+    BrowserWindowInterface* browser) {
+  auto* result = AppBrowserController::From(browser);
+  return result ? result->AsWebAppBrowserController() : nullptr;
+}
 
 bool WebAppBrowserController::HasMinimalUiButtons() const {
   if (has_tab_strip()) {
     return false;
   }
   return effective_display_mode_ == DisplayMode::kMinimalUi;
-}
-
-bool WebAppBrowserController::IsHostedApp() const {
-  return true;
 }
 
 std::unique_ptr<TabMenuModelFactory>
@@ -187,6 +199,19 @@ bool WebAppBrowserController::AppUsesBorderlessMode() const {
          effective_display_mode_ == DisplayMode::kBorderless;
 }
 
+bool WebAppBrowserController::UrlMatchesBorderlessPattern(
+    const GURL& url) const {
+  const WebApp* app = registrar().GetAppById(app_id());
+  if (app == nullptr) {
+    return false;
+  }
+  return app->borderless_url_patterns().empty() ||
+         std::ranges::any_of(app->borderless_url_patterns(),
+                             [&url](const blink::SafeUrlPattern& p) {
+                               return UrlPatternWithRegexMatcher(p).Match(url);
+                             });
+}
+
 bool WebAppBrowserController::AppUsesTabbed() const {
   if (!base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip)) {
     return false;
@@ -195,7 +220,8 @@ bool WebAppBrowserController::AppUsesTabbed() const {
 }
 
 bool WebAppBrowserController::IsIsolatedWebApp() const {
-  return is_isolated_web_app_for_testing_ || registrar().IsIsolated(app_id());
+  return is_isolated_web_app_for_testing_ ||
+         registrar().AppMatches(app_id(), WebAppFilter::IsIsolatedApp());
 }
 
 void WebAppBrowserController::SetIsolatedWebAppTrueForTesting() {
@@ -227,6 +253,27 @@ bool WebAppBrowserController::HasPendingUpdate() const {
   }
   const WebApp* app = registrar().GetAppById(app_id());
   return app && app->pending_update_info().has_value();
+}
+
+bool WebAppBrowserController::HasPendingUpdateNotIgnoredByUser() const {
+  if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
+    return false;
+  }
+  const WebApp* app = registrar().GetAppById(app_id());
+  if (!app || !app->pending_update_info().has_value()) {
+    return false;
+  }
+  CHECK(app->pending_update_info()->has_was_ignored());
+  return !app->pending_update_info()->was_ignored();
+}
+
+void WebAppBrowserController::CreateMetadataAndTriggerAppUpdateDialog(
+    base::TimeTicks start_time) const {
+  provider_->scheduler().ReadAppUpdateDataFromDisk(
+      app_id(),
+      base::BindOnce(
+          &WebAppBrowserController::OnMetadataObtainedTriggerUpdateDialog,
+          weak_ptr_factory_.GetWeakPtr(), start_time));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -349,6 +396,22 @@ void WebAppBrowserController::OnWebAppInstallManagerDestroyed() {
   install_manager_observation_.Reset();
 }
 
+void WebAppBrowserController::OnWebAppEffectiveScopeChanged(
+    const webapps::AppId& app_id,
+    const WebAppScope& new_scope) {
+  if (app_id != this->app_id()) {
+    return;
+  }
+
+  // When the HostedAppController finally goes away, pipe through the
+  // WebAppScope appropriately to remove another registrar lookup.
+  UpdateCustomTabBarVisibility(/*animate=*/true);
+}
+
+void WebAppBrowserController::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
+}
+
 ui::ImageModel WebAppBrowserController::GetWindowAppIcon() const {
   if (app_icon_) {
     return *app_icon_;
@@ -417,11 +480,10 @@ std::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
-    std::optional<SkColor> dark_mode_color =
-        registrar().GetAppDarkModeThemeColor(app_id());
-
-    if (dark_mode_color) {
+  if (ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark) {
+    if (std::optional<SkColor> dark_mode_color =
+            registrar().GetAppDarkModeThemeColor(app_id())) {
       return dark_mode_color;
     }
   }
@@ -509,58 +571,13 @@ bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
   if (system_app() && system_app()->IsUrlInSystemAppScope(url)) {
     return true;
   }
-
-  if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    size_t extended_scope_score =
-        ChromeOsWebAppExperiments::GetExtendedScopeScore(app_id(), url.spec());
-    if (extended_scope_score > 0) {
-      return true;
-    }
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  size_t app_extended_scope_score =
-      registrar().GetAppExtendedScopeScore(url, app_id());
-  if (app_extended_scope_score > 0) {
-    return true;
-  }
-
-  GURL app_scope = registrar().GetAppScope(app_id());
-  if (!app_scope.is_valid()) {
+  std::optional<WebAppScope> scope = registrar().GetEffectiveScope(app_id());
+  if (!scope.has_value()) {
     return false;
   }
-
-  // https://w3c.github.io/manifest/#navigation-scope
-  // If url is same origin as scope and url path starts with scope path, return
-  // true. Otherwise, return false.
-  if (!url::IsSameOriginWith(app_scope, url)) {
-    // We allow an upgrade from http |app_scope| to https |url|.
-    if (app_scope.scheme() != url::kHttpScheme) {
-      return false;
-    }
-
-    GURL::Replacements rep;
-    rep.SetSchemeStr(url::kHttpsScheme);
-    GURL secure_app_scope = app_scope.ReplaceComponents(rep);
-    if (!url::IsSameOriginWith(secure_app_scope, url)) {
-      return false;
-    }
-  }
-  // Past here, the url and scope must be same-origin.
-
-  // For scopes without paths, return 'true' early (allowing blobs to be in
-  // scope).
-  if (!app_scope.has_path() || app_scope.path() == "/") {
-    return true;
-  }
-  if (url.scheme() == url::kBlobScheme) {
-    // Blobs can only be in-scope in the above case where the app scope doesn't
-    // have a path.
-    return false;
-  }
-  std::string scope_path = app_scope.path();
-  std::string url_path = url.path();
-  return base::StartsWith(url_path, scope_path, base::CompareCase::SENSITIVE);
+  return scope->IsInScope(url, {.allow_http_to_https_upgrade = true});
 }
 
 WebAppBrowserController* WebAppBrowserController::AsWebAppBrowserController() {
@@ -662,6 +679,12 @@ void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
 
   WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(contents);
   tab_helper->SetIsInAppWindow(app_id());
+
+  if (!did_notify_first_tab_) {
+    did_notify_first_tab_ = true;
+    tab_helper->NotifyIsFirstWebContentsInAppWindow(
+        base::PassKey<WebAppBrowserController>());
+  }
 }
 
 void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {
@@ -752,11 +775,29 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
 #endif
 }
 
+void WebAppBrowserController::OnMetadataObtainedTriggerUpdateDialog(
+    base::TimeTicks start_time,
+    std::optional<WebAppIdentityUpdate> identity_update) const {
+  if (!identity_update) {
+    return;
+  }
+
+  // TODO(crbug.com/436868803): Pipe calling of the final update command to this
+  // function.
+  web_app::ShowWebAppReviewUpdateDialog(
+      app_id(), *identity_update, browser(), start_time,
+      base::BindOnce([](WebAppIdentityUpdateResult result) {
+        base::UmaHistogramEnumeration("WebApp.PredictableUpdateDialog.Result",
+                                      result);
+      }));
+}
+
 std::optional<SkColor>
 WebAppBrowserController::GetResolvedManifestBackgroundColor() const {
-  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
-    auto dark_mode_color = registrar().GetAppDarkModeBackgroundColor(app_id());
-    if (dark_mode_color) {
+  if (ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark) {
+    if (std::optional<SkColor> dark_mode_color =
+            registrar().GetAppDarkModeBackgroundColor(app_id())) {
       return dark_mode_color;
     }
   }

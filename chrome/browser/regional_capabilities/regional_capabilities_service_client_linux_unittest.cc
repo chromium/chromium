@@ -6,13 +6,11 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_test_environment.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/test_variations_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,10 +33,6 @@ class RegionalCapabilitiesServiceClientLinuxTest : public testing::Test {
 };
 
 TEST_F(RegionalCapabilitiesServiceClientLinuxTest, FetchCountryId) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {switches::kUseFinchPermanentCountryForFetchCountryId}, {});
-
   // Set up variations_service::GetLatestCountry().
   rcaps_env_.pref_service().SetString(variations::prefs::kVariationsCountry,
                                       "fr");
@@ -52,27 +46,6 @@ TEST_F(RegionalCapabilitiesServiceClientLinuxTest, FetchCountryId) {
   base::test::TestFuture<CountryId> future;
   client.FetchCountryId(future.GetCallback());
   EXPECT_EQ(future.Get(), CountryId("DE"));
-}
-
-TEST_F(RegionalCapabilitiesServiceClientLinuxTest,
-       FetchCountryIdWithDisabledUseFinchPermanentCountryForFetchCountryId) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {}, {switches::kUseFinchPermanentCountryForFetchCountryId});
-
-  // Set up variations_service::GetLatestCountry().
-  rcaps_env_.pref_service().SetString(variations::prefs::kVariationsCountry,
-                                      "fr");
-
-  // Set up variations_service::GetStoredPermanentCountry().
-  rcaps_env_.variations_service().OverrideStoredPermanentCountry("DE");
-
-  RegionalCapabilitiesServiceClientLinux client(
-      &rcaps_env_.variations_service());
-
-  base::test::TestFuture<CountryId> future;
-  client.FetchCountryId(future.GetCallback());
-  EXPECT_EQ(future.Get(), CountryId("FR"));
 }
 
 }  // namespace

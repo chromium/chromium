@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 
 class BrowserTabStripTrackerDelegate;
+class BrowserWindowInterface;
 class TabStripModelObserver;
 
 // BrowserTabStripTracker attaches a TabStripModelObserver to a subset of
@@ -52,11 +53,11 @@ class BrowserTabStripTracker : public BrowserListObserver {
 
  private:
   // Returns true if a TabStripModelObserver should be added to |browser|.
-  bool ShouldTrackBrowser(Browser* browser);
+  bool ShouldTrackBrowser(BrowserWindowInterface* browser);
 
   // If ShouldTrackBrowser() returns true for |browser| then a
   // TabStripModelObserver is attached.
-  void MaybeTrackBrowser(Browser* browser);
+  void MaybeTrackBrowser(BrowserWindowInterface* browser);
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;

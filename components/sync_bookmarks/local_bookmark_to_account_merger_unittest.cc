@@ -22,6 +22,7 @@
 #include "components/bookmarks/test/test_matchers.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_bookmarks/switches.h"
+#include "components/sync_bookmarks/test_node_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -33,86 +34,11 @@ using bookmarks::test::IsFolder;
 using bookmarks::test::IsFolderWithUuid;
 using bookmarks::test::IsUrlBookmark;
 using bookmarks::test::IsUrlBookmarkWithUuid;
+using sync_bookmarks::test::FolderBuilder;
+using sync_bookmarks::test::UrlBuilder;
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::Ne;
-
-// Test class to build bookmark URLs conveniently and compactly in tests.
-class UrlBuilder {
- public:
-  UrlBuilder(const std::u16string& title, const GURL& url)
-      : title_(title), url_(url) {}
-  UrlBuilder(const UrlBuilder&) = default;
-  ~UrlBuilder() = default;
-
-  UrlBuilder& SetUuid(const base::Uuid& uuid) {
-    uuid_ = uuid;
-    return *this;
-  }
-
-  void Build(bookmarks::BookmarkModel* model,
-             const bookmarks::BookmarkNode* parent) const {
-    model->AddURL(parent, parent->children().size(), title_, url_,
-                  /*meta_info=*/nullptr, /*creation_time=*/std::nullopt, uuid_);
-  }
-
- private:
-  const std::u16string title_;
-  const GURL url_;
-  std::optional<base::Uuid> uuid_;
-};
-
-// Test class to build bookmark folders conveniently and compactly in tests.
-class FolderBuilder {
- public:
-  using FolderOrUrl = std::variant<FolderBuilder, UrlBuilder>;
-
-  static void AddChildTo(bookmarks::BookmarkModel* model,
-                         const bookmarks::BookmarkNode* parent,
-                         const FolderOrUrl& folder_or_url) {
-    if (std::holds_alternative<UrlBuilder>(folder_or_url)) {
-      std::get<UrlBuilder>(folder_or_url).Build(model, parent);
-    } else {
-      CHECK(std::holds_alternative<FolderBuilder>(folder_or_url));
-      std::get<FolderBuilder>(folder_or_url).Build(model, parent);
-    }
-  }
-
-  static void AddChildrenTo(bookmarks::BookmarkModel* model,
-                            const bookmarks::BookmarkNode* parent,
-                            const std::vector<FolderOrUrl>& children) {
-    for (const FolderOrUrl& folder_or_url : children) {
-      AddChildTo(model, parent, folder_or_url);
-    }
-  }
-
-  explicit FolderBuilder(const std::u16string& title) : title_(title) {}
-  FolderBuilder(const FolderBuilder&) = default;
-  ~FolderBuilder() = default;
-
-  FolderBuilder& SetChildren(std::vector<FolderOrUrl> children) {
-    children_ = std::move(children);
-    return *this;
-  }
-
-  FolderBuilder& SetUuid(const base::Uuid& uuid) {
-    uuid_ = uuid;
-    return *this;
-  }
-
-  void Build(bookmarks::BookmarkModel* model,
-             const bookmarks::BookmarkNode* parent) const {
-    const bookmarks::BookmarkNode* folder = model->AddFolder(
-        parent, parent->children().size(), title_,
-        /*meta_info=*/nullptr, /*creation_time=*/std::nullopt, uuid_);
-    AddChildrenTo(model, folder, children_);
-  }
-
- private:
-  const std::u16string title_;
-  std::vector<FolderOrUrl> children_;
-  std::optional<base::Uuid> uuid_;
-};
 
 class LocalBookmarkToAccountMergerTest : public testing::Test {
  protected:

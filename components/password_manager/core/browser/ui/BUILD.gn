@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("credential_ui_entry") {
@@ -24,15 +23,12 @@ source_set("credential_ui_entry") {
 
 source_set("ui") {
   sources = [
+    "actor_login_permission.h",
     "affiliated_group.cc",
     "affiliated_group.h",
-    "bulk_leak_check_service_adapter.cc",
-    "bulk_leak_check_service_adapter.h",
     "credential_provider_interface.h",
     "credential_utils.cc",
     "credential_utils.h",
-    "insecure_credentials_manager.cc",
-    "insecure_credentials_manager.h",
     "password_check_referrer.cc",
     "password_check_referrer.h",
     "password_undo_helper.cc",
@@ -45,11 +41,19 @@ source_set("ui") {
     "saved_passwords_presenter.cc",
     "saved_passwords_presenter.h",
   ]
+  if (!is_android) {
+    sources += [
+      "bulk_leak_check_service_adapter.cc",
+      "bulk_leak_check_service_adapter.h",
+      "insecure_credentials_manager.cc",
+      "insecure_credentials_manager.h",
+    ]
+  }
   public_deps = [ ":credential_ui_entry" ]
 
   deps = [
     "//components/affiliations/core/browser:affiliations",
-    "//components/autofill/core/common:common",
+    "//components/autofill/core/common",
     "//components/password_manager/core/browser:metrics_util",
     "//components/password_manager/core/browser:passkey_credential",
     "//components/password_manager/core/browser:password_form",
@@ -80,10 +84,9 @@ source_set("ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "bulk_leak_check_service_adapter_unittest.cc",
+    "affiliated_group_unittest.cc",
     "credential_ui_entry_unittest.cc",
     "credential_utils_unittest.cc",
-    "insecure_credentials_manager_unittest.cc",
     "password_undo_helper_unittest.cc",
     "passwords_grouper_unittest.cc",
     "post_save_compromised_helper_unittest.cc",
@@ -91,6 +94,8 @@ source_set("unit_tests") {
   ]
   if (!is_android) {
     sources += [
+      "bulk_leak_check_service_adapter_unittest.cc",
+      "insecure_credentials_manager_unittest.cc",
       "reuse_check_utility_unittest.cc",
       "weak_check_utility_unittest.cc",
     ]

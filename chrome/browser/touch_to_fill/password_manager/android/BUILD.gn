@@ -21,6 +21,7 @@ source_set("android") {
     "//chrome/browser/touch_to_fill/password_manager:public",
     "//chrome/browser/touch_to_fill/password_manager/android/internal:jni",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/passwords",
     "//components/password_manager/core/browser",
     "//components/strings:components_strings_grit",
     "//ui/android",
@@ -52,6 +53,7 @@ android_library("public_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillComponent.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/data/Credential.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/data/CredentialBase.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/data/WebauthnCredential.java",
   ]
 }
@@ -86,6 +88,7 @@ robolectric_binary("touch_to_fill_junit_tests") {
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/gif_player:gif_player_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

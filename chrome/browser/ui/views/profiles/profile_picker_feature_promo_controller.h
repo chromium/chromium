@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/feature_promo_controller_20.h"
+#include "components/user_education/common/user_education_context.h"
 
 class UserEducationService;
 class ProfilePickerView;
@@ -27,17 +28,20 @@ class ProfilePickerFeaturePromoController
 
  private:
   // user_education::FeaturePromoControllerCommon:
-  ui::ElementContext GetAnchorContext() const override;
   user_education::FeaturePromoResult CanShowPromoForElement(
-      ui::TrackedElement* anchor_element) const override;
-  const ui::AcceleratorProvider* GetAcceleratorProvider() const override;
+      ui::TrackedElement* anchor_element,
+      const user_education::UserEducationContextPtr&) const override;
   std::u16string GetBodyIconAltText() const override;
   const base::Feature* GetScreenReaderPromptPromoFeature() const override;
   const char* GetScreenReaderPromptPromoEventName() const override;
-  std::u16string GetTutorialScreenReaderHint() const override;
+  std::u16string GetTutorialScreenReaderHint(
+      const ui::AcceleratorProvider* accelerator_provider) const override;
   std::u16string GetFocusHelpBubbleScreenReaderHint(
       user_education::FeaturePromoSpecification::PromoType promo_type,
-      ui::TrackedElement* anchor_element) const override;
+      ui::TrackedElement* anchor_element,
+      const ui::AcceleratorProvider* accelerator_provider) const override;
+  user_education::UserEducationContextPtr GetContextForHelpBubble(
+      const ui::TrackedElement* anchor_element) const override;
 
   const raw_ptr<ProfilePickerView> profile_picker_view_;
 };

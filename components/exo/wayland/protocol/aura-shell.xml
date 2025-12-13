@@ -933,6 +933,7 @@
       </entry>
       <entry name="trusted_pinned" value="107" since="64">
         <description summary="window is trusted pinned">
+          <!-- TODO(crbug.com/429215055): Rename to a more appropriate name. -->
           The window is trusted pinned.
         </description>
       </entry>

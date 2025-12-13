@@ -12,10 +12,12 @@ import android.annotation.SuppressLint;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -27,6 +29,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for WebContentsAccessibilityImpl integration with accessibility services. */
@@ -34,7 +37,11 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @SuppressLint("VisibleForTests")
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-@DisableFeatures(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)
+@DisableFeatures({
+    ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS,
+    ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API
+})
+@EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
 @TestAnimations.EnableAnimations
 public class WebContentsAccessibilityTreeTest {
     // File path that holds all the relevant tests.
@@ -51,6 +58,15 @@ public class WebContentsAccessibilityTreeTest {
     @Rule
     public AccessibilityContentShellActivityTestRule mActivityTestRule =
             new AccessibilityContentShellActivityTestRule();
+
+    @Before
+    public void setUp() {
+        // Needed for `interestfor` in test_nameFromPopovertargetAndInterestfor.
+        // TODO(crbug.com/326681249): Remove when the feature is launched.
+        CommandLine.getInstance()
+                .appendSwitchWithValue(
+                        ContentSwitches.ENABLE_BLINK_FEATURES, "HTMLInterestForAttribute");
+    }
 
     /**
      * Perform a single test which will:
@@ -631,7 +647,10 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @DisableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE
+    })
     public void test_ariaLive() {
         performAriaTest("aria-live.html");
     }
@@ -645,7 +664,10 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @DisableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE
+    })
     public void test_ariaLiveWithContent() {
         performAriaTest("aria-live-with-content.html");
     }
@@ -733,6 +755,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaMismatchedTableAttr() {
         performAriaTest("aria-mismatched-table-attr.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaModal() {
+        performAriaTest("aria-modal.html");
     }
 
     @Test
@@ -1187,42 +1215,49 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionAnnotate() {
         performAriaTest("supplemental-description-annotate.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionButtonLabel() {
         performAriaTest("supplemental-description-button-label.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionImageButton() {
         performAriaTest("supplemental-description-image-button.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionLinks() {
         performAriaTest("supplemental-description-links.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionNav() {
         performAriaTest("supplemental-description-nav.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionRegion() {
         performAriaTest("supplemental-description-region.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionSelect() {
         performAriaTest("supplemental-description-select.html");
     }
@@ -1267,6 +1302,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/434253831")
     public void test_fontSize() {
         performCssTest("font-size.html");
     }
@@ -1403,6 +1439,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_aside_inside_section_role_generic() {
         performHtmlTest("aside-inside-section-role-generic.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_audio() {
+        performHtmlTest("audio.html");
     }
 
     @Test
@@ -1578,6 +1620,13 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_comboboxOptgroup() {
         performHtmlTest("combobox-optgroup.html");
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({"enable-experimental-web-platform-features"})
+    public void test_commandforPopoverMenus() {
+        performHtmlTest("commandfor-api-popover-menus.html");
     }
 
     @Test
@@ -1817,6 +1866,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_htmlVsAriaAttributes() {
+        performHtmlTest("html-vs-aria-attributes.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_htmlAttributesAndTagNames() {
         performHtmlTest("html-attributes-and-tag-names.html");
     }
@@ -1890,6 +1945,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_iframe() {
         performHtmlTest("iframe.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ignoredSelection() {
+        performHtmlTest("ignored-selection.html");
     }
 
     @Test
@@ -2369,6 +2430,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_nameFromPopovertargetAndInterestfor() {
+        performHtmlTest("name-from-popovertarget-and-interestfor.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_pre() {
         performHtmlTest("pre.html");
     }
@@ -2411,6 +2478,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/434253831")
     public void test_scrollableOverflow() {
         performHtmlTest("scrollable-overflow.html");
     }

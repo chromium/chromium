@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.multiwindow.RenameWindowDialogView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_bg_no_shadow">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.DialogTitle
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:ellipsize="end"
+            android:paddingHorizontal="@dimen/dialog_padding_sides"
+            android:paddingTop="@dimen/dialog_padding_sides"
+            android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/title_input_text"
+            android:contentDescription="@string/instance_switcher_name_window_confirm_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginVertical="@dimen/rename_window_dialog_input_text_vertical_margin"
+            android:imeOptions="flagNoExtractUi"
+            android:inputType="textCapSentences|textAutoCorrect"
+            android:selectAllOnFocus="true" />
+
+        <org.chromium.components.browser_ui.widget.DualControlLayout
+            android:id="@+id/button_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="?attr/dualControlLayoutVerticalPadding"
+            android:paddingHorizontal="?attr/dualControlLayoutHorizontalPadding"
+            app:stackedMargin="@dimen/button_bar_stacked_margin"
+            app:buttonAlignment="end">
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/positive_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/save"
+                style="?attr/buttonBarPositiveButtonStyle"/>
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/negative_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                style="?attr/buttonBarNegativeButtonStyle" />
+        </org.chromium.components.browser_ui.widget.DualControlLayout>
+
+    </LinearLayout>
+</org.chromium.chrome.browser.multiwindow.RenameWindowDialogView>

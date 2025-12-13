@@ -32,7 +32,7 @@ std::unique_ptr<base::WaitableEvent> SignalInitializationDone() {
   }
 
   std::unique_ptr<base::WaitableEvent> notifier_event;
-  if (init_done_notifier.IsValid()) {
+  if (init_done_notifier.is_valid()) {
     notifier_event =
         std::make_unique<base::WaitableEvent>(std::move(init_done_notifier));
     notifier_event->Signal();

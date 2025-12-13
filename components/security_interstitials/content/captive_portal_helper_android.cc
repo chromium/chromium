@@ -22,7 +22,7 @@
 
 namespace security_interstitials {
 
-void JNI_CaptivePortalHelper_SetOSReportsCaptivePortalForTesting(
+static void JNI_CaptivePortalHelper_SetOSReportsCaptivePortalForTesting(
     JNIEnv* env,
     jboolean os_reports_captive_portal) {
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -45,3 +45,5 @@ bool IsBehindCaptivePortal() {
 }
 
 }  // namespace security_interstitials
+
+DEFINE_JNI(CaptivePortalHelper)

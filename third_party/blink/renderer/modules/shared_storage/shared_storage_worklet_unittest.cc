@@ -21,6 +21,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "gin/array_buffer.h"
 #include "gin/dictionary.h"
 #include "gin/public/isolate_holder.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
+#include "third_party/blink/public/mojom/tokens/tokens.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -317,7 +319,13 @@ class MockMojomCoceCacheHost : public blink::mojom::blink::CodeCacheHost {
     return receiver_set_;
   }
 
-  // blink::mojom::blink::CoceCacheHost:
+  // blink::mojom::blink::CodeCacheHost:
+  void GetPendingBackend(blink::mojom::CodeCacheType cache_type,
+                         GetPendingBackendCallback callback) override {
+    // Shared Storage does not use a code cache when
+    // UsePersistentCacheForCodeCache is enabled.
+    NOTREACHED();
+  }
   void DidGenerateCacheableMetadata(mojom::CodeCacheType cache_type,
                                     const KURL& url,
                                     base::Time expected_response_time,
@@ -412,14 +420,16 @@ class SharedStorageWorkletTest : public PageTestBase {
   }
 
   void TearDown() override {
-    // Shut down the worklet gracefully. Otherwise, there could the a data race
-    // on accessing the base::FeatureList: the worklet thread may access the
-    // feature during SharedStorageWorkletGlobalScope::FinishOperation() or
-    // SharedStorageWorkletGlobalScope::NotifyContextDestroyed(), which can
-    // occur after the (maybe implicit) ScopedFeatureList is destroyed in the
-    // main thread.
-    shared_storage_worklet_service_.reset();
-    EXPECT_TRUE(worklet_terminated_future_.Wait());
+    if (worklet_service_initialized_) {
+      // Shut down the worklet gracefully. Otherwise, there could the a data
+      // race on accessing the base::FeatureList: the worklet thread may access
+      // the feature during SharedStorageWorkletGlobalScope::FinishOperation()
+      // or SharedStorageWorkletGlobalScope::NotifyContextDestroyed(), which can
+      // occur after the (maybe implicit) ScopedFeatureList is destroyed in the
+      // main thread.
+      shared_storage_worklet_service_.reset();
+      EXPECT_TRUE(worklet_terminated_future_.Wait());
+    }
 
     PageTestBase::TearDown();
   }
@@ -611,13 +621,15 @@ class SharedStorageWorkletTest : public PageTestBase {
 
     mojo::PendingRemote<mojom::blink::CodeCacheHost>
         pending_code_cache_host_remote;
-    mojo::PendingReceiver<mojom::blink::CodeCacheHost>
-        pending_code_cache_host_receiver =
-            pending_code_cache_host_remote.InitWithNewPipeAndPassReceiver();
+    if (!blink::features::IsPersistentCacheForCodeCacheEnabled()) {
+      mojo::PendingReceiver<mojom::blink::CodeCacheHost>
+          pending_code_cache_host_receiver =
+              pending_code_cache_host_remote.InitWithNewPipeAndPassReceiver();
 
-    mock_code_cache_host_->receiver_set().Add(
-        mock_code_cache_host_.get(),
-        std::move(pending_code_cache_host_receiver));
+      mock_code_cache_host_->receiver_set().Add(
+          mock_code_cache_host_.get(),
+          std::move(pending_code_cache_host_receiver));
+    }
 
     messaging_proxy_ = MakeGarbageCollected<SharedStorageWorkletMessagingProxy>(
         base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -653,7 +665,8 @@ class SharedStorageWorkletTest : public PageTestBase {
 
     shared_storage_worklet_service_->Initialize(
         std::move(pending_shared_storage_service_client_remote),
-        permissions_policy_state_->Clone(), embedder_context_);
+        permissions_policy_state_->Clone(), embedder_context_,
+        base::BindOnce([](const blink::SharedStorageWorkletToken&) {}));
 
     worklet_service_initialized_ = true;
   }
@@ -693,8 +706,19 @@ TEST_F(SharedStorageWorkletTest, AddModule_ScriptDownloadError) {
             "unexpected MIME type.");
 }
 
-TEST_F(SharedStorageWorkletTest,
-       CodeCache_NoClearDueToEmptyCache_NoGenerateData) {
+class SharedStorageWorkletCodeCacheTest : public SharedStorageWorkletTest {
+ protected:
+  void SetUp() override {
+    if (blink::features::IsPersistentCacheForCodeCacheEnabled()) {
+      GTEST_SKIP() << "SharedStorage does not use a CodeCache when "
+                      "UsePersistentCacheForCodeCache is enabled.";
+    }
+    SharedStorageWorkletTest::SetUp();
+  }
+};
+
+TEST_F(SharedStorageWorkletCodeCacheTest,
+       NoClearDueToEmptyCache_NoGenerateData) {
   // Configure to return empty data, with matched response time.
   mock_code_cache_host_->OverrideFetchCachedCodeResult(
       /*response_time=*/kScriptResponseTime,
@@ -714,8 +738,8 @@ TEST_F(SharedStorageWorkletTest,
   EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 0u);
 }
 
-TEST_F(SharedStorageWorkletTest,
-       CodeCache_DidClearDueToUnmatchedTime_NoGenerateData) {
+TEST_F(SharedStorageWorkletCodeCacheTest,
+       DidClearDueToUnmatchedTime_NoGenerateData) {
   // Configure to return non-empty data, with unmatched response time.
   mock_code_cache_host_->OverrideFetchCachedCodeResult(
       /*response_time=*/kScriptResponseTime - base::Days(1),
@@ -734,8 +758,8 @@ TEST_F(SharedStorageWorkletTest,
   EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 0u);
 }
 
-TEST_F(SharedStorageWorkletTest,
-       CodeCache_NoClearDueToMatchedTime_NoGenerateData) {
+TEST_F(SharedStorageWorkletCodeCacheTest,
+       NoClearDueToMatchedTime_NoGenerateData) {
   // Configure to return non-empty data, with matched response time.
   mock_code_cache_host_->OverrideFetchCachedCodeResult(
       /*response_time=*/kScriptResponseTime,
@@ -754,7 +778,7 @@ TEST_F(SharedStorageWorkletTest,
   EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 0u);
 }
 
-TEST_F(SharedStorageWorkletTest, CodeCache_DidGenerateData) {
+TEST_F(SharedStorageWorkletCodeCacheTest, DidGenerateData) {
   // Code cache will be generated when the code length is at least 1024 bytes.
   std::string large_script;
   while (large_script.size() < 1024) {
@@ -774,7 +798,7 @@ TEST_F(SharedStorageWorkletTest, CodeCache_DidGenerateData) {
   EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 1u);
 }
 
-TEST_F(SharedStorageWorkletTest, CodeCache_AddModuleTwice) {
+TEST_F(SharedStorageWorkletCodeCacheTest, AddModuleTwice) {
   // Code cache will be generated when the code length is at least 1024 bytes.
   std::string large_script;
   while (large_script.size() < 1024) {
@@ -798,7 +822,7 @@ TEST_F(SharedStorageWorkletTest, CodeCache_AddModuleTwice) {
   EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 2u);
 }
 
-TEST_F(SharedStorageWorkletTest, CodeCache_AddModuleThreeTimes) {
+TEST_F(SharedStorageWorkletCodeCacheTest, AddModuleThreeTimes) {
   // Code cache will be generated when the code length is at least 1024 bytes.
   std::string large_script;
   while (large_script.size() < 1024) {
@@ -4381,19 +4405,19 @@ class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
              "}}; register(\"test-operation\", TestClass);"}));
 
     EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [&](Vector<
                 blink::mojom::blink::AggregatableReportHistogramContributionPtr>
                     contributions) {
               ASSERT_EQ(contributions.size(), 1u);
               EXPECT_EQ(contributions[0]->bucket, expected_bucket);
               EXPECT_EQ(contributions[0]->value, expected_value);
-            }));
+            });
     if (expected_debug_mode_details->is_enabled) {
       EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode)
-          .WillOnce(testing::Invoke([&](mojom::blink::DebugKeyPtr debug_key) {
+          .WillOnce([&](mojom::blink::DebugKeyPtr debug_key) {
             EXPECT_TRUE(debug_key == expected_debug_mode_details->debug_key);
-          }));
+          });
     }
 
     RunResult run_result = Run("test-operation", CreateSerializedUndefined(),
@@ -4694,7 +4718,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
       base::BarrierClosure(2, run_loop.QuitClosure());
 
   EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](Vector<
               blink::mojom::blink::AggregatableReportHistogramContributionPtr>
                   contributions) {
@@ -4706,18 +4730,16 @@ TEST_F(SharedStoragePrivateAggregationTest,
                 mock_private_aggregation_host_->receiver_set()
                     .current_receiver();
             closure.Run();
-          }));
+          });
   EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode)
-      .WillOnce(
-          testing::Invoke([&](blink::mojom::blink::DebugKeyPtr debug_key) {
-            ASSERT_FALSE(debug_key.is_null());
-            EXPECT_EQ(debug_key->value, 1234u);
+      .WillOnce([&](blink::mojom::blink::DebugKeyPtr debug_key) {
+        ASSERT_FALSE(debug_key.is_null());
+        EXPECT_EQ(debug_key->value, 1234u);
 
-            enable_debug_mode_pipe_id =
-                mock_private_aggregation_host_->receiver_set()
-                    .current_receiver();
-            closure.Run();
-          }));
+        enable_debug_mode_pipe_id =
+            mock_private_aggregation_host_->receiver_set().current_receiver();
+        closure.Run();
+      });
 
   RunResult run_result =
       Run("contribute-to-histogram", CreateSerializedUndefined());
@@ -4749,27 +4771,27 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleDebugModeRequests) {
   )");
 
   EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode)
-      .WillOnce(testing::Invoke([](mojom::blink::DebugKeyPtr debug_key) {
+      .WillOnce([](mojom::blink::DebugKeyPtr debug_key) {
         EXPECT_EQ(debug_key, mojom::blink::DebugKey::New(1234u));
-      }));
+      });
 
   EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](Vector<
               blink::mojom::blink::AggregatableReportHistogramContributionPtr>
                  contributions) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 1);
             EXPECT_EQ(contributions[0]->value, 2);
-          }))
-      .WillOnce(testing::Invoke(
+          })
+      .WillOnce(
           [](Vector<
               blink::mojom::blink::AggregatableReportHistogramContributionPtr>
                  contributions) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 3);
             EXPECT_EQ(contributions[0]->value, 4);
-          }));
+          });
 
   RunResult run_result = Run("test-operation", CreateSerializedUndefined());
   EXPECT_TRUE(run_result.success);
@@ -4795,7 +4817,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
 
   EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode).Times(0);
   EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](Vector<
               blink::mojom::blink::AggregatableReportHistogramContributionPtr>
                   contributions) {
@@ -4804,7 +4826,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
             EXPECT_EQ(contributions[0]->value, 2);
 
             run_loop.Quit();
-          }));
+          });
 
   shared_storage_worklet_service_->RunOperation(
       "test-operation", CreateSerializedUndefined(),

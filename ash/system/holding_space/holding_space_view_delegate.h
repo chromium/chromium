@@ -130,7 +130,7 @@ class ASH_EXPORT HoldingSpaceViewDelegate
 
   // Registers a `callback` to be notified of changes to `selection_ui_`. To
   // unregister, destroy the returned subscription.
-  base::RepeatingClosureList::Subscription AddSelectionUiChangedCallback(
+  base::CallbackListSubscription AddSelectionUiChangedCallback(
       base::RepeatingClosureList::CallbackType callback);
 
   // Instructs the associated holding space tray to update its visibility. Note

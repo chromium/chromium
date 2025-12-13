@@ -2,7 +2,7 @@ Name: rustc-demangle-capi
 URL: https://crates.io/crates/rustc-demangle-capi
 Version: 0.1.1
 Revision: 8145ea3869767f044ca63667ca17eab544f3a8ee
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/LICENSE-APACHE
 Shipped: no

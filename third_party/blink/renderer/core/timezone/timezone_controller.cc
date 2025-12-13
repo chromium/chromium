@@ -22,7 +22,9 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "v8/include/v8.h"
 
@@ -33,9 +35,7 @@ namespace {
 // When enabled, the host timezone id is evaluated only when needed.
 // TODO(crbug.com/40287434): Cleanup the feature after running the experiment,
 // no later than January 2025.
-BASE_FEATURE(kLazyBlinkTimezoneInit,
-             "LazyBlinkTimezoneInit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLazyBlinkTimezoneInit, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Notify V8 that the date/time configuration of the system might have changed.
 void NotifyTimezoneChangeToV8(v8::Isolate* isolate) {
@@ -81,26 +81,12 @@ void DispatchTimeZoneChangeEventToFrames() {
   }
 }
 
-bool SetIcuTimeZoneAndNotifyV8(const String& timezone_id) {
-  DCHECK(!timezone_id.empty());
-  std::unique_ptr<icu::TimeZone> timezone(icu::TimeZone::createTimeZone(
-      icu::UnicodeString(timezone_id.Ascii().data(), -1, US_INV)));
-  CHECK(timezone);
-
-  if (*timezone == icu::TimeZone::getUnknown())
-    return false;
-
-  icu::TimeZone::adoptDefault(timezone.release());
-
+void NotifyTimezoneChangeOnMainThread() {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating(
-          [](v8::Isolate* isolate) { NotifyTimezoneChangeToV8(isolate); }));
-  WorkerThread::CallOnAllWorkerThreads(&NotifyTimezoneChangeOnWorkerThread,
-                                       TaskType::kInternalDefault);
+      ->ForEachMainThreadIsolate(&NotifyTimezoneChangeToV8);
   DispatchTimeZoneChangeEventToFrames();
-  return true;
 }
 
 }  // namespace
@@ -127,7 +113,7 @@ void TimeZoneController::Init() {
 
 // static
 TimeZoneController& TimeZoneController::instance() {
-  DEFINE_STATIC_LOCAL(TimeZoneController, instance, ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(TimeZoneController, instance, ());
   return instance;
 }
 
@@ -151,38 +137,51 @@ bool CanonicalEquals(const String& time_zone_a, const String& time_zone_b) {
 }
 
 // static
-std::unique_ptr<TimeZoneController::TimeZoneOverride>
+TimeZoneController::TimeZoneOverrideResult
 TimeZoneController::SetTimeZoneOverride(const String& timezone_id) {
   DCHECK(!timezone_id.empty());
+
+  base::AutoLock locker(instance().lock_);
+
+  if (timezone_id == instance().TimeZoneIdOverride()) {
+    // Do nothing.
+    return {TimeZoneOverrideStatus::kSuccess, nullptr};
+  }
+
   if (HasTimeZoneOverride()) {
     VLOG(1) << "Cannot override existing timezone override.";
-    return nullptr;
+    return {TimeZoneOverrideStatus::kAlreadyInEffect, nullptr};
   }
 
   // Only notify if the override and the host are different.
   if (!CanonicalEquals(timezone_id, instance().GetHostTimezoneId())) {
     if (!SetIcuTimeZoneAndNotifyV8(timezone_id)) {
       VLOG(1) << "Invalid override timezone id: " << timezone_id;
-      return nullptr;
+      return {TimeZoneOverrideStatus::kInvalidTimezone, nullptr};
     }
   }
   instance().override_timezone_id_ = timezone_id;
 
-  return std::unique_ptr<TimeZoneOverride>(new TimeZoneOverride());
+  return {TimeZoneOverrideStatus::kSuccess,
+          std::unique_ptr<TimeZoneOverride>(new TimeZoneOverride())};
 }
 
 // static
 bool TimeZoneController::HasTimeZoneOverride() {
+  instance().lock_.AssertAcquired();
   return !instance().override_timezone_id_.empty();
 }
 
 // static
 const String& TimeZoneController::TimeZoneIdOverride() {
+  instance().lock_.AssertAcquired();
   return instance().override_timezone_id_;
 }
 
 // static
 void TimeZoneController::ClearTimeZoneOverride() {
+  base::AutoLock locker(instance().lock_);
+
   DCHECK(HasTimeZoneOverride());
 
   if (!CanonicalEquals(instance().GetHostTimezoneId(),
@@ -197,6 +196,9 @@ void TimeZoneController::ClearTimeZoneOverride() {
 // static
 void TimeZoneController::ChangeTimeZoneOverride(const String& timezone_id) {
   DCHECK(!timezone_id.empty());
+
+  base::AutoLock locker(instance().lock_);
+
   if (!HasTimeZoneOverride()) {
     VLOG(1) << "Cannot change if there are no existing timezone override.";
     return;
@@ -212,8 +214,36 @@ void TimeZoneController::ChangeTimeZoneOverride(const String& timezone_id) {
   }
   instance().override_timezone_id_ = timezone_id;
 }
+
+bool TimeZoneController::SetIcuTimeZoneAndNotifyV8(const String& timezone_id) {
+  DCHECK(!timezone_id.empty());
+  std::unique_ptr<icu::TimeZone> timezone(icu::TimeZone::createTimeZone(
+      icu::UnicodeString(timezone_id.Ascii().data(), -1, US_INV)));
+  CHECK(timezone);
+
+  if (*timezone == icu::TimeZone::getUnknown()) {
+    return false;
+  }
+
+  icu::TimeZone::adoptDefault(timezone.release());
+
+  if (IsMainThread()) {
+    NotifyTimezoneChangeOnMainThread();
+  } else {
+    Thread::MainThread()
+        ->GetTaskRunner(MainThreadTaskRunnerRestricted())
+        ->PostTask(FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                                  &NotifyTimezoneChangeOnMainThread)));
+  }
+  WorkerThread::CallOnAllWorkerThreads(&NotifyTimezoneChangeOnWorkerThread,
+                                       TaskType::kInternalDefault);
+  return true;
+}
+
 void TimeZoneController::OnTimeZoneChange(const String& timezone_id) {
   DCHECK(IsMainThread());
+
+  base::AutoLock locker(instance().lock_);
 
   // Remember requested timezone id so we can set it when timezone
   // override is removed.
@@ -224,6 +254,7 @@ void TimeZoneController::OnTimeZoneChange(const String& timezone_id) {
 }
 
 const String& TimeZoneController::GetHostTimezoneId() {
+  lock_.AssertAcquired();
   if (host_timezone_id_.IsNull()) {
     CHECK(base::FeatureList::IsEnabled(kLazyBlinkTimezoneInit));
     host_timezone_id_ = GetCurrentTimezoneId();

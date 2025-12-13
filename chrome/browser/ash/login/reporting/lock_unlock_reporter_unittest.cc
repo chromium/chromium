@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/reporting/client/mock_report_queue.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -116,7 +117,8 @@ class LockUnlockTestHelper {
 
   LockUnlockRecord record_;
   int report_count_ = 0;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 };
 
 class LockUnlockReporterTest

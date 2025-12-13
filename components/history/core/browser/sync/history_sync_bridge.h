@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "components/history/core/browser/history_backend_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/sync/history_backend_for_sync.h"
@@ -61,6 +62,7 @@ class HistorySyncBridge : public syncer::DataTypeSyncBridge,
       const syncer::EntityData& entity_data) const override;
   std::string GetStorageKey(
       const syncer::EntityData& entity_data) const override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   syncer::ConflictResolution ResolveConflict(
       const std::string& storage_key,
       const syncer::EntityData& remote_data) const override;

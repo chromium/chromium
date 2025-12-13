@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
@@ -29,8 +28,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_outline.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
@@ -262,7 +265,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
 
     LookalikeTestHelper::SetUpLookalikeTestParams();
     // Check that the test top domain list contains google.
-    ASSERT_TRUE(IsTopDomain(lookalikes::GetDomainInfo("google.com")));
+    ASSERT_TRUE(url_formatter::IsTopDomain(GetURL("google.com")));
 
     InProcessBrowserTest::SetUpOnMainThread();
   }
@@ -404,7 +407,6 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<LookalikeTestHelper> test_helper_;
 };
@@ -968,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SafetyTipPageInfoBubbleViewBrowserTest,
     DoesntTriggerOnCharacterSwap_TopSiteWithDifferentRegistry) {
-  ASSERT_TRUE(IsTopDomain(lookalikes::GetDomainInfo("google.rs")));
+  ASSERT_TRUE(url_formatter::IsTopDomain(GetURL("google.rs")));
 
   base::HistogramTester histograms;
   // google.sr is within one character swap of google.rs which is a top domain.
@@ -1716,8 +1718,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
 }
 
 // Ensure prerender navigations don't close the Safety Tip.
+//
+// TODO(https://crbug.com/434744048): Re-enable after fixing flakiness.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
-                       StillShowAfterPrerenderNavigation) {
+                       DISABLED_StillShowAfterPrerenderNavigation) {
   // This domain is a lookalike of a top domain not in the top 500.
   const GURL kNavigatedUrl =
       embedded_test_server()->GetURL("accounts-google.com", "/title1.html");
@@ -1765,4 +1769,34 @@ class SafetyTipPageInfoBubbleViewDialogTest : public DialogBrowserTest {
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewDialogTest,
                        InvokeUi_Lookalike) {
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
+                       ShowLookalikeDialog) {
+  // Create a split tab.
+  ASSERT_TRUE(AddTabAtIndex(0, GetURL("example.com"),
+                            ui::PageTransition::PAGE_TRANSITION_TYPED));
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  tab_strip_model->ActivateTabAt(0);
+  tab_strip_model->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Trigger bubble to show on the 0 indexed tab.
+  auto kNavigatedUrl = GetURL("accounts-google.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(IsUIShowing());
+
+  // The highlight should show around the contents container for the 0th tab
+  // but not for the other tabs in the split.
+  std::vector<ContentsContainerView*> contents_container_views =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->multi_contents_view()
+          ->contents_container_views();
+  ASSERT_EQ(contents_container_views.size(), 2U);
+  EXPECT_TRUE(
+      contents_container_views[0]->contents_outline_view()->is_highlighted());
+  EXPECT_FALSE(
+      contents_container_views[1]->contents_outline_view()->is_highlighted());
 }

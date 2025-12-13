@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/mac/audio_toolbox_audio_decoder.h"
 
 #include <algorithm>
@@ -19,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "media/base/audio_buffer.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_discard_helper.h"
 #include "media/base/channel_layout.h"
@@ -169,11 +165,30 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   // Must be filled in each time in case AudioConverterFillComplexBuffer()
   // modified it during a previous call.
   output_buffer_list_->mNumberBuffers = output_bus_->channels();
+
+  // SAFETY: In `CreateDecoder` , we allocate memory for `output_buffer_list_`
+  // of `sizeof(AudioBufferList) + output_bus_->channels() *
+  // sizeof(AudioBuffer)`.
+  //
+  // From
+  // https://developer.apple.com/documentation/coreaudiotypes/audiobufferlist we
+  // learn that the structure of `AudioBufferList` is:
+  //
+  // ```
+  // struct AudioBufferList {
+  //   UInt32 mNumberBuffers;
+  //   AudioBuffer mBuffers[1];  // this is a variable length array of
+  //                             // mNumberBuffers elements
+  // };
+  // ```
+  //
+  // So the size of `output_buffer_list_` is sufficient.
+  auto buffer_span = UNSAFE_BUFFERS(base::span(
+      output_buffer_list_->mBuffers, output_buffer_list_->mNumberBuffers));
   for (int i = 0; i < output_bus_->channels(); ++i) {
-    output_buffer_list_->mBuffers[i].mNumberChannels = 1;
-    output_buffer_list_->mBuffers[i].mDataByteSize =
-        output_bus_->frames() * sizeof(float);
-    output_buffer_list_->mBuffers[i].mData = output_bus_->channel(i);
+    buffer_span[i].mNumberChannels = 1;
+    buffer_span[i].mDataByteSize = output_bus_->frames() * sizeof(float);
+    buffer_span[i].mData = output_bus_->channel(i).data();
   }
 
   // Decodes |num_frames| of encoded data into |output_bus_| by calling the
@@ -204,7 +219,8 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   limiter_queue_->Push(
       *output_bus_, num_frames, buffer->timestamp(),
       base::BindOnce(&AudioToolboxAudioDecoder::OnOutputReady,
-                     base::Unretained(this), buffer->time_info()));
+                     base::Unretained(this),
+                     AudioDiscardHelper::TimeInfo::FromBuffer(*buffer)));
 
   std::move(decode_cb_bound).Run(OkStatus());
 }
@@ -418,7 +434,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
 }
 
 void AudioToolboxAudioDecoder::OnOutputReady(
-    DecoderBuffer::TimeInfo time_info,
+    AudioDiscardHelper::TimeInfo time_info,
     scoped_refptr<AudioBuffer> output_buffer) {
   if (discard_helper_->ProcessBuffers(time_info, output_buffer.get())) {
     base::BindPostTaskToCurrentDefault(output_cb_)

@@ -103,7 +103,8 @@ class StubRecommendAppsFetcher : public apps::RecommendAppsFetcher {
       delegate_->OnLoadSuccess(base::Value());
       return;
     }
-    auto output = base::JSONReader::ReadAndReturnValueWithError(kJsonResponse);
+    auto output = base::JSONReader::ReadAndReturnValueWithError(
+        kJsonResponse, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(output.has_value());
     delegate_->OnLoadSuccess(std::move(*output));
   }

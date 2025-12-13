@@ -17,4 +17,18 @@ interface mixin GPUProgrammablePassEncoder {
     void pushDebugGroup(USVString groupLabel);
     [NoAllocDirectCall] void popDebugGroup();
     void insertDebugMarker(USVString markerLabel);
+
+    [RuntimeEnabled=WebGPUImmediatesFeature, RaisesException]
+    void setImmediates(
+        GPUSize32 rangeOffset,
+        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBuffer data,
+        optional GPUSize64 dataOffset = 0,
+        optional GPUSize64 size);
+
+    [RuntimeEnabled=WebGPUImmediatesFeature, RaisesException]
+    void setImmediates(
+        GPUSize32 rangeOffset,
+        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView data,
+        optional GPUSize64 dataOffset = 0,
+        optional GPUSize64 size);
 };

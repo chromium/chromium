@@ -10,12 +10,14 @@
 #include <memory>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/types/pass_key.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/view.h"
@@ -35,6 +37,13 @@ TrackedElementViews::~TrackedElementViews() = default;
 
 gfx::Rect TrackedElementViews::GetScreenBounds() const {
   return view()->GetBoundsInScreen();
+}
+
+gfx::NativeView TrackedElementViews::GetNativeView() const {
+  if (!view()->GetWidget()) {
+    return gfx::NativeView();
+  }
+  return view()->GetWidget()->GetNativeView();
 }
 
 std::string TrackedElementViews::ToString() const {
@@ -117,9 +126,10 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
     }
   }
 
-  View* FindFirstViewInContext(ui::ElementContext context) {
+  View* FindFirstViewInContext(ui::ElementContext context,
+                               bool require_visible) {
     for (const ViewData& data : view_data_) {
-      if (data.context == context) {
+      if (data.context == context && (!require_visible || data.visible())) {
         return data.view;
       }
     }
@@ -161,6 +171,7 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
         : view(v), context(initial_context) {}
     bool visible() const { return static_cast<bool>(element); }
     const raw_ptr<View> view;
+    bool notifying_hidden = false;
     ui::ElementContext context;
     std::unique_ptr<TrackedElementViews> element;
   };
@@ -216,9 +227,14 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
       ui::ElementTracker::GetFrameworkDelegate()->NotifyElementShown(
           data.element.get());
     } else if (!visible && was_visible) {
-      ui::ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(
-          data.element.get());
-      data.element.reset();
+      // Stop reentrance with notifying_hidden. A double call on
+      // NotifyElementHidden will crash.
+      if (!data.notifying_hidden) {
+        base::AutoReset<bool> auto_reset(&data.notifying_hidden, true);
+        ui::ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(
+            data.element.get());
+        data.element.reset();
+      }
     } else if (visible) {
       CHECK_EQ(data.context, old_context)
           << "We should always get a removed-from-widget notification before "
@@ -326,7 +342,7 @@ ui::ElementContext ElementTrackerViews::GetContextForWidget(Widget* widget) {
       return context;
     }
   }
-  return ui::ElementContext(primary);
+  return ui::ElementContext(primary, base::PassKey<ElementTrackerViews>());
 }
 
 TrackedElementViews* ElementTrackerViews::GetElementForView(
@@ -370,12 +386,13 @@ View* ElementTrackerViews::GetUniqueView(ui::ElementIdentifier id,
 }
 
 View* ElementTrackerViews::GetFirstMatchingView(ui::ElementIdentifier id,
-                                                ui::ElementContext context) {
+                                                ui::ElementContext context,
+                                                bool require_visible) {
   const auto it = element_data_.find(id);
   if (it == element_data_.end()) {
     return nullptr;
   }
-  return it->second.FindFirstViewInContext(context);
+  return it->second.FindFirstViewInContext(context, require_visible);
 }
 
 ElementTrackerViews::ViewList ElementTrackerViews::GetAllMatchingViews(
@@ -399,7 +416,8 @@ ElementTrackerViews::GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id) {
 
 Widget* ElementTrackerViews::GetWidgetForContext(ui::ElementContext context) {
   for (auto& [id, data] : element_data_) {
-    auto* const view = data.FindFirstViewInContext(context);
+    auto* const view =
+        data.FindFirstViewInContext(context, /*require_visible=*/false);
     if (view) {
       return view->GetWidget();
     }

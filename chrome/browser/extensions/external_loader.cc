@@ -8,6 +8,9 @@
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/external_provider_interface.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 

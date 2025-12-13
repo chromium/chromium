@@ -35,6 +35,9 @@ template("json_features") {
       "$compiler_root/code_util.py",
       "$compiler_root/json_parse.py",
     ]
+    if (defined(invoker.inputs)) {
+      inputs += invoker.inputs
+    }
     outputs = generated_files
     rebased = rebase_path(sources, root_build_dir)
     args = [

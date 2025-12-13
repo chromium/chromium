@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/feature_list.h"
+#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "build/build_config.h"
 #import "components/gcm_driver/crypto/gcm_encryption_provider.h"
@@ -90,13 +91,12 @@ IOSSharingServiceFactory::IOSSharingServiceFactory()
 IOSSharingServiceFactory::~IOSSharingServiceFactory() {}
 
 std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   if (!base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
     return nullptr;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);

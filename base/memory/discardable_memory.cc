@@ -11,25 +11,17 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "third_party/ashmem/ashmem.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace base {
 
 namespace features {
 #if BUILDFLAG(IS_POSIX)
 // Feature flag allowing the use of MADV_FREE discardable memory when there are
 // multiple supported discardable memory backings.
-BASE_FEATURE(kMadvFreeDiscardableMemory,
-             "MadvFreeDiscardableMemory",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMadvFreeDiscardableMemory, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kDiscardableMemoryBackingTrial,
-             "DiscardableMemoryBackingTrial",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDiscardableMemoryBackingTrial, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_ENUM_PARAM(DiscardableMemoryTrialGroup,
                         kDiscardableMemoryBackingParam,
@@ -51,7 +43,6 @@ DiscardableMemoryBacking GetBackingForFieldTrial() {
       GetDiscardableMemoryBackingFieldTrialGroup();
   switch (trial_group) {
     case DiscardableMemoryTrialGroup::kEmulatedSharedMemory:
-    case DiscardableMemoryTrialGroup::kAshmem:
       return DiscardableMemoryBacking::kSharedMemory;
     case DiscardableMemoryTrialGroup::kMadvFree:
       return DiscardableMemoryBacking::kMadvFree;
@@ -68,11 +59,6 @@ DiscardableMemoryBacking GetBackingForFieldTrial() {
 // Probe capabilities of this device to determine whether we should participate
 // in the discardable memory backing trial.
 bool DiscardableMemoryBackingFieldTrialIsEnabled() {
-#if BUILDFLAG(IS_ANDROID)
-  if (!ashmem_device_is_supported()) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
   if (base::GetMadvFreeSupport() != base::MadvFreeSupport::kSupported) {
     return false;
   }
@@ -101,12 +87,6 @@ DiscardableMemoryBacking GetDiscardableMemoryBacking() {
   }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_ANDROID)
-  if (ashmem_device_is_supported()) {
-    return DiscardableMemoryBacking::kSharedMemory;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_POSIX)
   if (base::FeatureList::IsEnabled(

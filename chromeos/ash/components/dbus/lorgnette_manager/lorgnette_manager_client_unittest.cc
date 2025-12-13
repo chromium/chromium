@@ -405,7 +405,7 @@ class LorgnetteManagerClientTest : public testing::Test {
     // Create a mock bus.
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    mock_bus_ = new dbus::MockBus(options);
+    mock_bus_ = new dbus::MockBus(std::move(options));
 
     // Create a mock lorgnette daemon proxy.
     mock_proxy_ = new dbus::MockObjectProxy(
@@ -422,37 +422,37 @@ class LorgnetteManagerClientTest : public testing::Test {
 
     // Save the client's scan status changed signal callback.
     EXPECT_CALL(*mock_proxy_.get(),
-                DoConnectToSignal(lorgnette::kManagerServiceInterface,
-                                  lorgnette::kScanStatusChangedSignal, _, _))
-        .WillOnce(WithArgs<2, 3>(Invoke(
+                ConnectToSignal(lorgnette::kManagerServiceInterface,
+                                lorgnette::kScanStatusChangedSignal, _, _))
+        .WillOnce(WithArgs<2, 3>(
             [&](dbus::ObjectProxy::SignalCallback signal_callback,
-                dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+                dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
               scan_status_changed_signal_callback_ = std::move(signal_callback);
 
               task_environment_.GetMainThreadTaskRunner()->PostTask(
-                  FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
+                  FROM_HERE, base::BindOnce(std::move(on_connected_callback),
                                             lorgnette::kManagerServiceInterface,
                                             lorgnette::kScanStatusChangedSignal,
                                             /*success=*/true));
-            })));
+            }));
 
     // Save the client's scanner list updated signal callback.
     EXPECT_CALL(*mock_proxy_.get(),
-                DoConnectToSignal(lorgnette::kManagerServiceInterface,
-                                  lorgnette::kScannerListChangedSignal, _, _))
-        .WillOnce(WithArgs<2, 3>(Invoke(
+                ConnectToSignal(lorgnette::kManagerServiceInterface,
+                                lorgnette::kScannerListChangedSignal, _, _))
+        .WillOnce(WithArgs<2, 3>(
             [&](dbus::ObjectProxy::SignalCallback signal_callback,
-                dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+                dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
               scanner_list_changed_signal_callback_ =
                   std::move(signal_callback);
 
               task_environment_.GetMainThreadTaskRunner()->PostTask(
                   FROM_HERE,
-                  base::BindOnce(std::move(*on_connected_callback),
+                  base::BindOnce(std::move(on_connected_callback),
                                  lorgnette::kManagerServiceInterface,
                                  lorgnette::kScannerListChangedSignal,
                                  /*success=*/true));
-            })));
+            }));
 
     // ShutdownAndBlock() will be called in TearDown().
     EXPECT_CALL(*mock_bus_.get(), ShutdownAndBlock()).WillOnce(Return());
@@ -479,8 +479,8 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetListScannersExpectation(dbus::Response* response) {
     list_scanners_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kListScannersMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(lorgnette::kListScannersMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(
             Invoke(this, &LorgnetteManagerClientTest::OnCallListScanners));
   }
@@ -490,8 +490,8 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetStartScannerDiscoveryExpectation(dbus::Response* response) {
     start_scanner_discovery_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kStartScannerDiscoveryMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(lorgnette::kStartScannerDiscoveryMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(Invoke(
             this, &LorgnetteManagerClientTest::OnCallStartScannerDiscovery));
   }
@@ -501,8 +501,8 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetStopScannerDiscoveryExpectation(dbus::Response* response) {
     stop_scanner_discovery_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kStopScannerDiscoveryMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(lorgnette::kStopScannerDiscoveryMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(Invoke(
             this, &LorgnetteManagerClientTest::OnCallStopScannerDiscovery));
   }
@@ -511,10 +511,9 @@ class LorgnetteManagerClientTest : public testing::Test {
   // will be called. When called, |mock_proxy_| will respond with |response|.
   void SetGetScannerCapabilitiesExpectation(dbus::Response* response) {
     get_scanner_capabilities_response_ = response;
-    EXPECT_CALL(
-        *mock_proxy_.get(),
-        DoCallMethod(HasMember(lorgnette::kGetScannerCapabilitiesMethod),
-                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+    EXPECT_CALL(*mock_proxy_.get(),
+                CallMethod(HasMember(lorgnette::kGetScannerCapabilitiesMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(Invoke(
             this, &LorgnetteManagerClientTest::OnCallGetScannerCapabilities));
   }
@@ -524,8 +523,8 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetOpenScannerExpectation(dbus::Response* response) {
     open_scanner_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kOpenScannerMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(lorgnette::kOpenScannerMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnOpenScanner));
   }
 
@@ -534,8 +533,8 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetCloseScannerExpectation(dbus::Response* response) {
     close_scanner_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kCloseScannerMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(lorgnette::kCloseScannerMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnCloseScanner));
   }
 
@@ -544,8 +543,8 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetSetOptionsExpectation(dbus::Response* response) {
     set_options_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kSetOptionsMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(lorgnette::kSetOptionsMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnSetOptions));
   }
 
@@ -554,8 +553,8 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetGetCurrentConfigExpectation(dbus::Response* response) {
     get_current_config_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kGetCurrentConfigMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(lorgnette::kGetCurrentConfigMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(
             Invoke(this, &LorgnetteManagerClientTest::OnGetCurrentConfig));
   }
@@ -566,7 +565,7 @@ class LorgnetteManagerClientTest : public testing::Test {
     start_prepared_scan_response_ = response;
     EXPECT_CALL(
         *mock_proxy_.get(),
-        DoCallMethod(HasMember(lorgnette::kStartPreparedScanMethod), _, _))
+        CallMethod(HasMember(lorgnette::kStartPreparedScanMethod), _, _))
         .WillOnce(
             Invoke(this, &LorgnetteManagerClientTest::OnStartPreparedScan));
   }
@@ -576,8 +575,8 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetStartScanExpectation(dbus::Response* response) {
     start_scan_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kStartScanMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(lorgnette::kStartScanMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnCallStartScan));
   }
 
@@ -586,7 +585,7 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetReadScanDataExpectation(dbus::Response* response) {
     read_scan_data_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kReadScanDataMethod), _, _))
+                CallMethod(HasMember(lorgnette::kReadScanDataMethod), _, _))
         .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnReadScanData));
   }
 
@@ -598,8 +597,8 @@ class LorgnetteManagerClientTest : public testing::Test {
                                   const std::string& scan_uuid = kScanUuid) {
     get_next_image_responses_.push({response, scan_uuid});
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kGetNextImageMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(lorgnette::kGetNextImageMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillRepeatedly(
             Invoke(this, &LorgnetteManagerClientTest::OnCallGetNextImage));
   }
@@ -609,8 +608,8 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetCancelScanExpectation(dbus::Response* response) {
     cancel_scan_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kCancelScanMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(lorgnette::kCancelScanMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnCallCancelScan));
   }
 
@@ -620,8 +619,8 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetCancelScanJobExpectation(dbus::Response* response) {
     cancel_scan_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kCancelScanMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(lorgnette::kCancelScanMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(
             Invoke(this, &LorgnetteManagerClientTest::OnCallCancelScanJob));
   }
@@ -697,30 +696,30 @@ class LorgnetteManagerClientTest : public testing::Test {
   // Responsible for responding to a kListScannersMethod call.
   void OnCallListScanners(dbus::MethodCall* method_call,
                           int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+                          dbus::ObjectProxy::ResponseCallback callback) {
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback), list_scanners_response_));
+        base::BindOnce(std::move(callback), list_scanners_response_));
   }
 
   // Responsible for responding to a kStartScannerDiscoveryMethod call.
   void OnCallStartScannerDiscovery(
       dbus::MethodCall* method_call,
       int timeout_ms,
-      dbus::ObjectProxy::ResponseCallback* callback) {
+      dbus::ObjectProxy::ResponseCallback callback) {
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback),
-                                  start_scanner_discovery_response_));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), start_scanner_discovery_response_));
   }
 
   // Responsible for responding to a kStopScannerDiscoveryMethod call.
   void OnCallStopScannerDiscovery(
       dbus::MethodCall* method_call,
       int timeout_ms,
-      dbus::ObjectProxy::ResponseCallback* callback) {
+      dbus::ObjectProxy::ResponseCallback callback) {
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback), stop_scanner_discovery_response_));
+        base::BindOnce(std::move(callback), stop_scanner_discovery_response_));
   }
 
   // Responsible for responding to a kGetScannerCapabilitiesMethod call, and
@@ -728,13 +727,13 @@ class LorgnetteManagerClientTest : public testing::Test {
   void OnCallGetScannerCapabilities(
       dbus::MethodCall* method_call,
       int timeout_ms,
-      dbus::ObjectProxy::ResponseCallback* callback) {
+      dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the scanner name was sent correctly.
     std::string device_name;
     ASSERT_TRUE(dbus::MessageReader(method_call).PopString(&device_name));
     EXPECT_EQ(device_name, kScannerDeviceName);
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback),
+        FROM_HERE, base::BindOnce(std::move(callback),
                                   get_scanner_capabilities_response_));
   }
 
@@ -742,22 +741,21 @@ class LorgnetteManagerClientTest : public testing::Test {
   // |method_call| is formatted correctly.
   void OnOpenScanner(dbus::MethodCall* method_call,
                      int timeout_ms,
-                     dbus::ObjectProxy::ResponseCallback* callback) {
+                     dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the open scan request was created and sent correctly.
     lorgnette::OpenScannerRequest request;
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
     EXPECT_THAT(request, EqualsProto(CreateOpenScannerRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(*callback), open_scanner_response_));
+        FROM_HERE, base::BindOnce(std::move(callback), open_scanner_response_));
   }
 
   // Responsible for responding to a kCloseScannerMethod call and verifying that
   // |method_call| is formatted correctly.
   void OnCloseScanner(dbus::MethodCall* method_call,
                       int timeout_ms,
-                      dbus::ObjectProxy::ResponseCallback* callback) {
+                      dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the close scan request was created and sent correctly.
     lorgnette::CloseScannerRequest request;
     ASSERT_TRUE(
@@ -765,28 +763,28 @@ class LorgnetteManagerClientTest : public testing::Test {
     EXPECT_THAT(request, EqualsProto(CreateCloseScannerRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback), close_scanner_response_));
+        base::BindOnce(std::move(callback), close_scanner_response_));
   }
 
   // Responsible for responding to a kSetOptionsMethod call and verifying
   // that |method_call| is formatted correctly.
   void OnSetOptions(dbus::MethodCall* method_call,
                     int timeout_ms,
-                    dbus::ObjectProxy::ResponseCallback* callback) {
+                    dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the set options request was created and sent correctly.
     lorgnette::SetOptionsRequest request;
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
     EXPECT_THAT(request, EqualsProto(CreateSetOptionsRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback), set_options_response_));
+        FROM_HERE, base::BindOnce(std::move(callback), set_options_response_));
   }
 
   // Responsible for responding to a kGetCurrentConfigMethod call and verifying
   // that |method_call| is formatted correctly.
   void OnGetCurrentConfig(dbus::MethodCall* method_call,
                           int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+                          dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the get config request was created and sent correctly.
     lorgnette::GetCurrentConfigRequest request;
     ASSERT_TRUE(
@@ -794,14 +792,14 @@ class LorgnetteManagerClientTest : public testing::Test {
     EXPECT_THAT(request, EqualsProto(CreateGetCurrentConfigRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback), get_current_config_response_));
+        base::BindOnce(std::move(callback), get_current_config_response_));
   }
 
   // Responsible for responding to a kStartPreparedScanMethod call and verifying
   // that |method_call| is formatted correctly.
   void OnStartPreparedScan(dbus::MethodCall* method_call,
                            int timeout_ms,
-                           dbus::ObjectProxy::ResponseCallback* callback) {
+                           dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the start prepared scan request was created and sent
     // correctly.
     lorgnette::StartPreparedScanRequest request;
@@ -810,28 +808,28 @@ class LorgnetteManagerClientTest : public testing::Test {
     EXPECT_THAT(request, EqualsProto(CreateStartPreparedScanRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback), start_prepared_scan_response_));
+        base::BindOnce(std::move(callback), start_prepared_scan_response_));
   }
 
   // Responsible for responding to a kStartScanMethod call and verifying that
   // |method_call| was formatted correctly.
   void OnCallStartScan(dbus::MethodCall* method_call,
                        int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the start scan request was created and sent correctly.
     lorgnette::StartScanRequest request;
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
     EXPECT_THAT(request, EqualsProto(CreateStartScanRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback), start_scan_response_));
+        FROM_HERE, base::BindOnce(std::move(callback), start_scan_response_));
   }
 
   // Responsible for responding to a kReadScanDataMethod call and verifying that
   // |method_call| is formatted correctly.
   void OnReadScanData(dbus::MethodCall* method_call,
                       int timeout_ms,
-                      dbus::ObjectProxy::ResponseCallback* callback) {
+                      dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the read scan data request was created and sent correctly.
     lorgnette::ReadScanDataRequest request;
     ASSERT_TRUE(
@@ -839,14 +837,14 @@ class LorgnetteManagerClientTest : public testing::Test {
     EXPECT_THAT(request, EqualsProto(CreateReadScanDataRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback), read_scan_data_response_));
+        base::BindOnce(std::move(callback), read_scan_data_response_));
   }
 
   // Responsible for responding to a kGetNextImageMethod call and verifying that
   // |method_call| was formatted correctly.
   void OnCallGetNextImage(dbus::MethodCall* method_call,
                           int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+                          dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the get next image request was sent correctly.
     ASSERT_FALSE(get_next_image_responses_.empty());
     auto response_and_uuid = get_next_image_responses_.front();
@@ -861,7 +859,7 @@ class LorgnetteManagerClientTest : public testing::Test {
 
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback), response_and_uuid.first));
+        base::BindOnce(std::move(callback), response_and_uuid.first));
     get_next_image_responses_.pop();
   }
 
@@ -869,28 +867,28 @@ class LorgnetteManagerClientTest : public testing::Test {
   // |method_call| was formatted correctly.
   void OnCallCancelScan(dbus::MethodCall* method_call,
                         int timeout_ms,
-                        dbus::ObjectProxy::ResponseCallback* callback) {
+                        dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the cancel scan request was created and sent correctly.
     lorgnette::CancelScanRequest request;
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
     EXPECT_THAT(request, EqualsProto(CreateCancelScanRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback), cancel_scan_response_));
+        FROM_HERE, base::BindOnce(std::move(callback), cancel_scan_response_));
   }
 
   // Responsible for responding to a kCancelScanMethod call (using a JobHandle)
   // and verifying that |method_call| was formatted correctly.
   void OnCallCancelScanJob(dbus::MethodCall* method_call,
                            int timeout_ms,
-                           dbus::ObjectProxy::ResponseCallback* callback) {
+                           dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the cancel scan request was created and sent correctly.
     lorgnette::CancelScanRequest request;
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
     EXPECT_THAT(request, EqualsProto(CreateCancelScanJobRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback), cancel_scan_response_));
+        FROM_HERE, base::BindOnce(std::move(callback), cancel_scan_response_));
   }
 
   // A message loop to emulate asynchronous behavior.

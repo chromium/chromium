@@ -7,19 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-// The minimum index value of the Bookmarks Shortcut content in the order behind
-// the four Most Visited tiles. NTPCollectionShortcutType is used as a proxy for
-// index value of the Shortcuts content.
-const int kShortcutMinimumIndex = 4;
-
 // Enum listing the collection shortcuts on NTP and similar surfaces.
 typedef NS_ENUM(NSInteger, NTPCollectionShortcutType) {
-  NTPCollectionShortcutTypeBookmark = kShortcutMinimumIndex,
+  NTPCollectionShortcutTypeBookmark = 0,
   NTPCollectionShortcutTypeReadingList,
   NTPCollectionShortcutTypeRecentTabs,
   NTPCollectionShortcutTypeHistory,
   NTPCollectionShortcutTypeWhatsNew,
-  NTPCollectionShortcutTypeCount
 };
 
 // Returns a localized title for a given collection shortcut type.
@@ -33,5 +27,13 @@ UIImage* SymbolForCollectionShortcutType(NTPCollectionShortcutType type);
 // the reading list tile when it's displaying the `count` badge, or, if
 // `count` = 0, for a reading list tile with no badge.
 NSString* AccessibilityLabelForReadingListCellWithCount(int count);
+
+// Returns the localized string for the button to add more pinned sites to the
+// most visied tile.
+NSString* TitleForMostVisitedTilePlusButton();
+
+// Returns the symbol image for the button to add more pinned sites to the most
+// visied tile.
+UIImage* SymbolForMostVisitedTilePlusButton();
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_TILE_CONSTANTS_H_

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PLUGINS_PLUGIN_OBSERVER_H_
 #define CHROME_BROWSER_PLUGINS_PLUGIN_OBSERVER_H_
 
-#include <string>
-
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/plugin.mojom.h"
@@ -14,15 +12,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/buildflags.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
 #error "Plugins should be enabled"
 #endif
-
-namespace infobars {
-class ContentInfoBarManager;
-}
 
 namespace content {
 class WebContents;
@@ -41,18 +34,12 @@ class PluginObserver : public content::WebContentsObserver,
 
   ~PluginObserver() override;
 
-  // Public for tests only.
-  static void CreatePluginObserverInfoBar(
-      infobars::ContentInfoBarManager* infobar_manager,
-      const std::u16string& plugin_name);
-
  private:
   friend class content::WebContentsUserData<PluginObserver>;
 
   explicit PluginObserver(content::WebContents* web_contents);
 
   // chrome::mojom::PluginHost methods.
-  void CouldNotLoadPlugin(const base::FilePath& plugin_path) override;
   void OpenPDF(const GURL& url) override;
 
   content::RenderFrameHostReceiverSet<chrome::mojom::PluginHost>

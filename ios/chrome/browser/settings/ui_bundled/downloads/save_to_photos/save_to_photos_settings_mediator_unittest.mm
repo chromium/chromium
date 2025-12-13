@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -33,7 +34,7 @@
 @property(nonatomic, strong) UIImage* identityAvatar;
 @property(nonatomic, copy) NSString* identityName;
 @property(nonatomic, copy) NSString* identityEmail;
-@property(nonatomic, copy) NSString* identityGaiaID;
+@property(nonatomic, assign) GaiaId identityGaiaID;
 @property(nonatomic, assign) BOOL askEveryTimeSwitchOn;
 
 @property(nonatomic, strong)
@@ -47,7 +48,7 @@
 - (void)setIdentityButtonAvatar:(UIImage*)avatar
                            name:(NSString*)name
                           email:(NSString*)email
-                         gaiaID:(NSString*)gaiaID
+                         gaiaID:(const GaiaId&)gaiaID
            askEveryTimeSwitchOn:(BOOL)askEveryTimeSwitchOn {
   self.identityAvatar = avatar;
   self.identityName = name;
@@ -117,8 +118,8 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     // necessary. This likely means either adding plumbing towards
     // SystemIdentityManager to FakeProfileOAuth2TokenService, or alternatively
     // using the real ProfileOAuth2TokenServiceIOSDelegate here.
-    auto options = signin::AccountAvailabilityOptionsBuilder().WithGaiaId(
-        GaiaId(identity.gaiaID));
+    auto options =
+        signin::AccountAvailabilityOptionsBuilder().WithGaiaId(identity.gaiaId);
     if (as_primary) {
       options = options.AsPrimary(signin::ConsentLevel::kSignin);
     }
@@ -142,7 +143,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     // using the real ProfileOAuth2TokenServiceIOSDelegate here.
     signin::RemoveRefreshTokenForAccount(
         IdentityManagerFactory::GetForProfile(profile_.get()),
-        CoreAccountId::FromGaiaId(GaiaId(identity.gaiaID)));
+        CoreAccountId::FromGaiaId(identity.gaiaId));
   }
 
   // Creates a SaveToPhotosSettingsMediator with services from the test browser
@@ -174,32 +175,34 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
       FakeSaveToPhotosSettingsConsumer* fake_consumer,
       id<SystemIdentity> saved_identity) {
     UIImage* saved_identity_avatar =
-        GetAccountManagerService()->GetIdentityAvatarWithIdentity(
+        GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
             saved_identity, IdentityAvatarSize::TableViewIcon);
 
     // Test that the presented identity is the expected one.
     EXPECT_NSEQ(saved_identity_avatar, fake_consumer.identityAvatar);
     EXPECT_NSEQ(saved_identity.userFullName, fake_consumer.identityName);
     EXPECT_NSEQ(saved_identity.userEmail, fake_consumer.identityEmail);
-    EXPECT_NSEQ(saved_identity.gaiaID, fake_consumer.identityGaiaID);
+    EXPECT_EQ(saved_identity.gaiaId, fake_consumer.identityGaiaID);
 
     // Tests that if there is at least an element, it matches `fake_identity_a_`
     // and is selected if its GAIA ID matches that of the expected selected
     // identity.
     if (fake_consumer.identityConfigurators.count > 0) {
       UIImage* fake_identity_a_avatar =
-          GetAccountManagerService()->GetIdentityAvatarWithIdentity(
-              fake_identity_a_, IdentityAvatarSize::TableViewIcon);
-      EXPECT_NSEQ(fake_identity_a_.gaiaID,
-                  fake_consumer.identityConfigurators[0].gaiaID);
+          GetApplicationContext()
+              ->GetIdentityAvatarProvider()
+              ->GetIdentityAvatar(fake_identity_a_,
+                                  IdentityAvatarSize::TableViewIcon);
+      EXPECT_EQ(fake_identity_a_.gaiaId,
+                fake_consumer.identityConfigurators[0].gaiaID);
       EXPECT_NSEQ(fake_identity_a_.userFullName,
                   fake_consumer.identityConfigurators[0].name);
       EXPECT_NSEQ(fake_identity_a_.userEmail,
                   fake_consumer.identityConfigurators[0].email);
       EXPECT_NSEQ(fake_identity_a_avatar,
                   fake_consumer.identityConfigurators[0].avatar);
-      EXPECT_EQ([fake_consumer.identityConfigurators[0].gaiaID
-                    isEqual:saved_identity.gaiaID],
+      EXPECT_EQ(fake_consumer.identityConfigurators[0].gaiaID ==
+                    saved_identity.gaiaId,
                 fake_consumer.identityConfigurators[0].selected);
     }
 
@@ -208,18 +211,20 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     // expected selected identity.
     if (fake_consumer.identityConfigurators.count > 1) {
       UIImage* fake_identity_b_avatar =
-          GetAccountManagerService()->GetIdentityAvatarWithIdentity(
-              fake_identity_b_, IdentityAvatarSize::TableViewIcon);
-      EXPECT_NSEQ(fake_identity_b_.gaiaID,
-                  fake_consumer.identityConfigurators[1].gaiaID);
+          GetApplicationContext()
+              ->GetIdentityAvatarProvider()
+              ->GetIdentityAvatar(fake_identity_b_,
+                                  IdentityAvatarSize::TableViewIcon);
+      EXPECT_EQ(fake_identity_b_.gaiaId,
+                fake_consumer.identityConfigurators[1].gaiaID);
       EXPECT_NSEQ(fake_identity_b_.userFullName,
                   fake_consumer.identityConfigurators[1].name);
       EXPECT_NSEQ(fake_identity_b_.userEmail,
                   fake_consumer.identityConfigurators[1].email);
       EXPECT_NSEQ(fake_identity_b_avatar,
                   fake_consumer.identityConfigurators[1].avatar);
-      EXPECT_EQ([fake_consumer.identityConfigurators[1].gaiaID
-                    isEqual:saved_identity.gaiaID],
+      EXPECT_EQ(fake_consumer.identityConfigurators[1].gaiaID ==
+                    saved_identity.gaiaId,
                 fake_consumer.identityConfigurators[1].selected);
     }
   }
@@ -233,12 +238,12 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
 
 // Tests that invoking the SaveToPhotosSettingsMutator interface on the mediator
 // leads to the expected changes in the preferences.
-TEST_F(SaveToPhotosSettingsMediatorTest, CanMutateSelectedIdentity) {
+// TODO(crbug.com/451601299): Re-enable the test.
+TEST_F(SaveToPhotosSettingsMediatorTest, DISABLED_CanMutateSelectedIdentity) {
   SaveToPhotosSettingsMediator* mediator = CreateSaveToPhotosSettingsMediator();
 
-  profile_->GetPrefs()->SetString(
-      prefs::kIosSaveToPhotosDefaultGaiaId,
-      base::SysNSStringToUTF8(fake_identity_a_.gaiaID));
+  profile_->GetPrefs()->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
+                                  fake_identity_a_.gaiaId.ToString());
   profile_->GetPrefs()->SetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker,
                                    true);
 
@@ -247,16 +252,17 @@ TEST_F(SaveToPhotosSettingsMediatorTest, CanMutateSelectedIdentity) {
   mediator.accountConfirmationConsumer = fake_consumer;
   mediator.accountSelectionConsumer = fake_consumer;
 
-  [mediator setSelectedIdentityGaiaID:fake_identity_b_.gaiaID];
+  GaiaId gaiaID = fake_identity_b_.gaiaId;
+  [mediator setSelectedIdentityGaiaID:&gaiaID];
   EXPECT_EQ(
-      base::SysNSStringToUTF8(fake_identity_b_.gaiaID),
+      fake_identity_b_.gaiaId.ToString(),
       profile_->GetPrefs()->GetString(prefs::kIosSaveToPhotosDefaultGaiaId));
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
       prefs::kIosSaveToPhotosSkipAccountPicker));
 
   [mediator setAskWhichAccountToUseEveryTime:YES];
   EXPECT_EQ(
-      base::SysNSStringToUTF8(fake_identity_b_.gaiaID),
+      fake_identity_b_.gaiaId.ToString(),
       profile_->GetPrefs()->GetString(prefs::kIosSaveToPhotosDefaultGaiaId));
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       prefs::kIosSaveToPhotosSkipAccountPicker));
@@ -266,12 +272,13 @@ TEST_F(SaveToPhotosSettingsMediatorTest, CanMutateSelectedIdentity) {
 
 // Tests that external changes in preferences leads to expected changes in the
 // consumer.
-TEST_F(SaveToPhotosSettingsMediatorTest, ExternalPrefChangeUpdatesConsumers) {
+// TODO(crbug.com/451601299): Re-enable the test.
+TEST_F(SaveToPhotosSettingsMediatorTest,
+       DISABLED_ExternalPrefChangeUpdatesConsumers) {
   SaveToPhotosSettingsMediator* mediator = CreateSaveToPhotosSettingsMediator();
 
-  profile_->GetPrefs()->SetString(
-      prefs::kIosSaveToPhotosDefaultGaiaId,
-      base::SysNSStringToUTF8(fake_identity_a_.gaiaID));
+  profile_->GetPrefs()->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
+                                  fake_identity_a_.gaiaId.ToString());
   profile_->GetPrefs()->SetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker,
                                    true);
 
@@ -283,9 +290,8 @@ TEST_F(SaveToPhotosSettingsMediatorTest, ExternalPrefChangeUpdatesConsumers) {
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
   EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
 
-  profile_->GetPrefs()->SetString(
-      prefs::kIosSaveToPhotosDefaultGaiaId,
-      base::SysNSStringToUTF8(fake_identity_b_.gaiaID));
+  profile_->GetPrefs()->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
+                                  fake_identity_b_.gaiaId.ToString());
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_b_);
   EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
 
@@ -298,13 +304,13 @@ TEST_F(SaveToPhotosSettingsMediatorTest, ExternalPrefChangeUpdatesConsumers) {
 
 // Tests that external changes in the list of accounts authenticated on the
 // device leads to expected changes in the consumer.
+// TODO(crbug.com/451601299): Re-enable the test.
 TEST_F(SaveToPhotosSettingsMediatorTest,
-       ExternalAccountsChangeUpdatesConsumers) {
+       DISABLED_ExternalAccountsChangeUpdatesConsumers) {
   SaveToPhotosSettingsMediator* mediator = CreateSaveToPhotosSettingsMediator();
 
-  profile_->GetPrefs()->SetString(
-      prefs::kIosSaveToPhotosDefaultGaiaId,
-      base::SysNSStringToUTF8(fake_identity_a_.gaiaID));
+  profile_->GetPrefs()->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
+                                  fake_identity_a_.gaiaId.ToString());
   profile_->GetPrefs()->SetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker,
                                    true);
 

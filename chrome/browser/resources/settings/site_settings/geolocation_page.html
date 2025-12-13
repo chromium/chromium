@@ -1,4 +1,8 @@
 <style include="cr-hidden-style settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsCategoryLocation}"
+    search-label="$i18n{siteSettingsAllSitesFilter}"
+    search-icon="settings20:filter-list"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
 <div class="content-settings-header secondary">
   $i18n{siteSettingsLocationDescription}
 </div>
@@ -99,3 +103,4 @@
     block-header="$i18n{siteSettingsLocationBlockedExceptions}"
     search-filter="[[searchTerm]]">
 </category-setting-exceptions>
+</settings-subpage>

@@ -37,13 +37,27 @@ std::optional<memory_pressure::ReclaimTarget> GetReclaimTarget() {
 
 }  // namespace
 
-UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy() = default;
+UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy()
+    : sustained_memory_pressure_timer_(
+          FROM_HERE,
+          base::Seconds(5),
+          base::BindRepeating(
+              &UrgentPageDiscardingPolicy::HandleMemoryPressureEvent,
+              base::Unretained(this))) {
+  if (base::FeatureList::IsEnabled(features::kSustainedPMUrgentDiscarding)) {
+    sustained_memory_pressure_evaluator_.emplace(base::BindRepeating(
+        &UrgentPageDiscardingPolicy::OnSustainedMemoryPressure,
+        base::Unretained(this)));
+  } else {
+    memory_pressure_listener_registration_.emplace(
+        FROM_HERE, base::MemoryPressureListenerTag::kUrgentPageDiscardingPolicy,
+        this);
+  }
+}
 UrgentPageDiscardingPolicy::~UrgentPageDiscardingPolicy() = default;
 
 void UrgentPageDiscardingPolicy::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!handling_memory_pressure_notification_);
-  graph->AddSystemNodeObserver(this);
   DCHECK(PageDiscardingHelper::GetFromGraph(graph))
       << "A PageDiscardingHelper instance should be registered against the "
          "graph in order to use this policy.";
@@ -51,7 +65,6 @@ void UrgentPageDiscardingPolicy::OnPassedToGraph(Graph* graph) {
 
 void UrgentPageDiscardingPolicy::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph->RemoveSystemNodeObserver(this);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -70,8 +83,6 @@ void UrgentPageDiscardingPolicy::OnReclaimTarget(
               reclaim_target, discard_protected_pages,
               DiscardEligibilityPolicy::DiscardReason::URGENT);
 
-  DCHECK(handling_memory_pressure_notification_);
-  handling_memory_pressure_notification_ = false;
   if (origin_time && first_discarded_at) {
     base::TimeDelta reclaim_arrival_duration =
         on_memory_pressure_at - *origin_time;
@@ -90,19 +101,34 @@ void UrgentPageDiscardingPolicy::DisableForTesting() {
 }
 
 void UrgentPageDiscardingPolicy::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel new_level) {
+    base::MemoryPressureLevel new_level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (g_disabled_for_testing) {
+  if (new_level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
   }
 
-  // The Memory Pressure Monitor will send notifications at regular interval,
-  // |handling_memory_pressure_notification_| prevents this class from trying to
-  // reply to multiple notifications at the same time.
-  if (handling_memory_pressure_notification_ ||
-      new_level != base::MemoryPressureListener::MemoryPressureLevel::
-                       MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  HandleMemoryPressureEvent();
+}
+
+void UrgentPageDiscardingPolicy::OnSustainedMemoryPressure(
+    bool is_sustained_memory_pressure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (is_sustained_memory_pressure) {
+    HandleMemoryPressureEvent();
+    // Start the time that will continuously discard a tab while under sustained
+    // memory pressure.
+    sustained_memory_pressure_timer_.Reset();
+  } else {
+    sustained_memory_pressure_timer_.Stop();
+  }
+}
+
+void UrgentPageDiscardingPolicy::HandleMemoryPressureEvent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (g_disabled_for_testing) {
     return;
   }
 
@@ -114,22 +140,15 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
     return;
   }
 
-  handling_memory_pressure_notification_ = true;
-
 #if BUILDFLAG(IS_CHROMEOS)
   base::TimeTicks on_memory_pressure_at = base::TimeTicks::Now();
   // Chrome OS memory pressure evaluator provides the memory reclaim target to
   // leave critical memory pressure. When Chrome OS is under heavy memory
   // pressure, discards multiple tabs to meet the memory reclaim target.
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(GetReclaimTarget),
-      base::BindOnce(&UrgentPageDiscardingPolicy::OnReclaimTarget,
-                     base::Unretained(this), on_memory_pressure_at));
+  OnReclaimTarget(on_memory_pressure_at, GetReclaimTarget());
 #else
   PageDiscardingHelper::GetFromGraph(GetOwningGraph())
       ->DiscardAPage(DiscardEligibilityPolicy::DiscardReason::URGENT);
-  DCHECK(handling_memory_pressure_notification_);
-  handling_memory_pressure_notification_ = false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

@@ -11,7 +11,6 @@
 
 #include <objbase.h>
 
-#include <delayimp.h>
 #include <mfapi.h>
 #include <mferror.h>
 #include <stddef.h>
@@ -46,6 +45,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/core_winrt_util.h"
+#include "base/win/delayload_helpers.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
@@ -58,6 +58,7 @@
 #include "media/capture/video/win/metrics.h"
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 #include "media/capture/video/win/video_capture_device_win.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using DevicesInfo = std::vector<media::VideoCaptureDeviceInfo>;
 using base::win::GetActivationFactory;
@@ -69,7 +70,6 @@ using Microsoft::WRL::ComPtr;
 namespace media {
 
 BASE_FEATURE(kMediaFoundationD3D11VideoCaptureBlocklist,
-             "MediaFoundationD3D11VideoCaptureBlocklist",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
@@ -237,24 +237,14 @@ bool LoadMediaFoundationDlls() {
 
   // Force-resolve all imports from modules accessed via /DELAYLOAD. Note that
   // MF.dll and MFPlat.DLL have already been resolved via
-  // InitializeMediaFoundation(). __HrLoadAllImportsForDll makes a
+  // InitializeMediaFoundation(). LoadAllImportsForDll() makes a
   // case-sensitive comparison to the module names in the dll.
   // LINT.IfChange
-  for (const char* mfdll : {"MFReadWrite.dll"}) {
-    // LINT.ThenChange(//chrome/common/win/delay_load_failure_hook.cc)
-    HRESULT hr = E_FAIL;
-    __try {
-      hr = __HrLoadAllImportsForDll(mfdll);
-    } __except (HRESULT_FACILITY(::GetExceptionCode()) == FACILITY_VISUALCPP
-                    ? EXCEPTION_EXECUTE_HANDLER
-                    : EXCEPTION_CONTINUE_SEARCH) {
-      // Resolution of all imports failed; possibly because the module failed
-      // to load or because one or more imports was not found.
-      hr = E_FAIL;
-    }
-    if (FAILED(hr)) {
-      return false;
-    }
+  auto loaded = base::win::LoadAllImportsForDll("MFReadWrite.dll");
+  // LINT.ThenChange(//chrome/common/win/delay_load_failure_hook.cc)
+  if (!loaded.value_or(false)) {
+    // Loading failed, or the module is not a delayload dep of this module.
+    return false;
   }
 
   // MFCaptureEngine is not imported via delayloads, but may be needed anyway.
@@ -391,7 +381,7 @@ class VideoCaptureDeviceFactoryWin::ComThreadData
   friend class base::RefCountedThreadSafe<ComThreadData>;
   ~ComThreadData() = default;
 
-  std::unordered_set<
+  absl::flat_hash_set<
       raw_ptr<IAsyncOperation<DeviceInformationCollection*>, CtnExperimental>>
       async_ops_;
   base::WeakPtr<VideoCaptureDeviceFactoryWin> device_factory_;
@@ -522,9 +512,9 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
   void UpdateDevicesInfoAvailability(
       std::vector<VideoCaptureDeviceInfo>* devices_info) {
     base::AutoLock lock(cache_lock_);
-    std::set<std::string> device_ids;
+    std::set<std::string_view> device_ids;
     for (auto& info : *devices_info) {
-      device_ids.insert(info.descriptor.device_id);
+      device_ids.emplace(info.descriptor.device_id);
       auto it = availability_cache_.find(info.descriptor.device_id);
       if (it != availability_cache_.end()) {
         info.descriptor.availability = it->second;

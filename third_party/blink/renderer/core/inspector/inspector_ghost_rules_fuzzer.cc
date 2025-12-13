@@ -19,7 +19,7 @@ void PopulateFuzzer(const std::string& input) {
   blink::DummyPageHolder holder;
   blink::CSSStyleSheet* sheet =
       blink::css_test_helpers::CreateStyleSheet(holder.GetDocument());
-  sheet->replaceSync(WTF::String(input), IGNORE_EXCEPTION_FOR_TESTING);
+  sheet->replaceSync(blink::String(input), IGNORE_EXCEPTION_FOR_TESTING);
   {
     blink::InspectorGhostRules ghost_rules;
     blink::HeapVector<blink::Member<blink::CSSStyleSheet>> sheets;

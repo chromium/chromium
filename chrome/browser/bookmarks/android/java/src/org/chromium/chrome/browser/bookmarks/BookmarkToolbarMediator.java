@@ -272,7 +272,6 @@ class BookmarkToolbarMediator
     public void onUiModeChanged(@BookmarkUiMode int mode) {
         mCurrentUiMode = mode;
 
-        // TODO(https://crbug.com/1439583): Update buttons.
         mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_MODE, mode);
         if (mode == BookmarkUiMode.LOADING) {
             mModel.set(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE, NavigationButton.NONE);

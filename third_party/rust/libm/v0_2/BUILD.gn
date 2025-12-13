@@ -197,6 +197,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Jorge Aparicio <jorge@japaric.io>"
   cargo_pkg_name = "libm"
   cargo_pkg_description = "libm in pure Rust"
+  cargo_pkg_repository = "https://github.com/rust-lang/compiler-builtins"
   cargo_pkg_version = "0.2.15"
 
   allow_unsafe = true

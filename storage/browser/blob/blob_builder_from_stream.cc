@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "storage/browser/blob/blob_builder_from_stream.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -85,7 +81,7 @@ class DataPipeConsumerHelper {
   virtual ~DataPipeConsumerHelper() = default;
 
   // Return false if population fails.
-  virtual bool Populate(base::span<const char> data,
+  virtual bool Populate(base::span<const uint8_t> data,
                         uint64_t bytes_previously_written) = 0;
   virtual void InvokeDone(
       mojo::ScopedDataPipeConsumerHandle pipe,
@@ -130,7 +126,7 @@ class DataPipeConsumerHelper {
       DCHECK_EQ(MOJO_RESULT_OK, result);
       data = data.first(base::checked_cast<size_t>(std::min(
           uint64_t{data.size()}, max_bytes_to_read_ - current_offset_)));
-      if (!Populate(base::as_chars(data), current_offset_)) {
+      if (!Populate(data, current_offset_)) {
         InvokeDone(mojo::ScopedDataPipeConsumerHandle(), PassProgressClient(),
                    false, current_offset_);
         delete this;
@@ -255,9 +251,9 @@ class BlobBuilderFromStream::WritePipeToFileHelper
         reply_runner_(std::move(reply_runner)),
         callback_(std::move(callback)) {}
 
-  bool Populate(base::span<const char> data,
+  bool Populate(base::span<const uint8_t> data,
                 uint64_t bytes_previously_written) override {
-    return file_.WriteAtCurrentPos(base::as_bytes(data)).has_value();
+    return file_.WriteAtCurrentPos(data).has_value();
   }
 
   void InvokeDone(mojo::ScopedDataPipeConsumerHandle pipe,
@@ -316,16 +312,14 @@ class BlobBuilderFromStream::WritePipeToFutureDataHelper
         item_(std::move(item)),
         callback_(std::move(callback)) {}
 
-  bool Populate(base::span<const char> data,
+  bool Populate(base::span<const uint8_t> data,
                 uint64_t bytes_previously_written) override {
     if (item_->type() == BlobDataItem::Type::kBytesDescription)
       item_->AllocateBytes();
-    std::memcpy(
-        item_->mutable_bytes()
-            .subspan(base::checked_cast<size_t>(bytes_previously_written),
-                     data.size())
-            .data(),
-        data.data(), data.size());
+    item_->mutable_bytes()
+        .subspan(base::checked_cast<size_t>(bytes_previously_written),
+                 data.size())
+        .copy_from(data);
     return true;
   }
 
@@ -676,16 +670,22 @@ void BlobBuilderFromStream::OnError(Result result) {
 
   if (!callback_)
     return;
+  RecordResult(result);
   std::move(callback_).Run(this, nullptr);
 }
 
 void BlobBuilderFromStream::OnSuccess() {
   DCHECK(context_);
   DCHECK(callback_);
+  RecordResult(Result::kSuccess);
   std::move(callback_).Run(
       this, context_->AddFinishedBlob(
                 base::Uuid::GenerateRandomV4().AsLowercaseString(),
                 content_type_, content_disposition_, std::move(items_)));
+}
+
+void BlobBuilderFromStream::RecordResult(Result result) {
+  UMA_HISTOGRAM_ENUMERATION("Storage.Blob.BuildFromStreamResult2", result);
 }
 
 bool BlobBuilderFromStream::ShouldStoreNextBlockOnDisk(uint64_t length_hint) {

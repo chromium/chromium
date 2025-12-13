@@ -840,7 +840,7 @@ TEST(BlinkColor, CarryForwardAnalogousMissingComponents) {
           Color::ColorSpace::kXYZD50,
           Color::FromColorSpace(Color::ColorSpace::kSRGB, std::nullopt, 1, 2),
           Color::FromColorSpace(Color::ColorSpace::kXYZD50, std::nullopt,
-                                1.017f, 3.634f),
+                                1.0171882f, 3.6346194f),
       },
       {
           // rgb(1 none 2) -> xyz(... none ...)
@@ -853,8 +853,8 @@ TEST(BlinkColor, CarryForwardAnalogousMissingComponents) {
           // rgb(1 2 none) -> xyz(... none)
           Color::ColorSpace::kXYZD50,
           Color::FromColorSpace(Color::ColorSpace::kSRGB, 1, 2, std::nullopt),
-          Color::FromColorSpace(Color::ColorSpace::kXYZD50, 2.344f, 3.773f,
-                                std::nullopt),
+          Color::FromColorSpace(Color::ColorSpace::kXYZD50, 2.3440469f,
+                                3.7738409f, std::nullopt),
       },
       {
           // rgb(none none none) -> lch(0 0 none)

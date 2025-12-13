@@ -79,7 +79,7 @@ class Nigori {
   static void SetUseScryptCostParameterForTesting(bool use_low_scrypt_cost);
 
   // Exposed for tests.
-  static const size_t kIvSize = 16;
+  static constexpr size_t kIvSize = 16;
 
  private:
   struct Keys {

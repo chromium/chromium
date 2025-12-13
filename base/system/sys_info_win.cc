@@ -20,6 +20,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
@@ -28,7 +30,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
@@ -115,14 +116,14 @@ std::vector<uint64_t> GetCoreProcessorMasks() {
   return processor_masks;
 }
 
-uint64_t AmountOfMemory(DWORDLONG MEMORYSTATUSEX::*memory_field) {
+base::ByteSize AmountOfMemory(DWORDLONG MEMORYSTATUSEX::* memory_field) {
   MEMORYSTATUSEX memory_info;
   memory_info.dwLength = sizeof(memory_info);
   if (!GlobalMemoryStatusEx(&memory_info)) {
     NOTREACHED();
   }
 
-  return memory_info.*memory_field;
+  return base::ByteSize(memory_info.*memory_field);
 }
 
 bool GetDiskSpaceInfo(const base::FilePath& path,
@@ -189,45 +190,47 @@ int SysInfo::NumberOfEfficientProcessorsImpl() {
 }
 
 // static
-uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
-  return AmountOfMemory(&MEMORYSTATUSEX::ullTotalPhys);
+ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
+  return AmountOfMemory(&MEMORYSTATUSEX::ullTotalPhys).AsDeprecatedByteCount();
 }
 
 // static
-uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
-  SystemMemoryInfoKB info;
+ByteSize SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+  SystemMemoryInfo info;
   if (!GetSystemMemoryInfo(&info)) {
-    return 0;
+    return ByteSize(0);
   }
-  return checked_cast<uint64_t>(info.avail_phys) * 1024;
+  return info.avail_phys;
 }
 
 // static
-uint64_t SysInfo::AmountOfVirtualMemory() {
+ByteSize SysInfo::AmountOfVirtualMemory() {
   return AmountOfMemory(&MEMORYSTATUSEX::ullTotalVirtual);
 }
 
 // static
-int64_t SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
+std::optional<int64_t> SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   int64_t available;
   if (!GetDiskSpaceInfo(path, &available, nullptr)) {
-    return -1;
+    return std::nullopt;
   }
+  CHECK(available >= 0, base::NotFatalUntil::M150);
   return available;
 }
 
 // static
-int64_t SysInfo::AmountOfTotalDiskSpace(const FilePath& path) {
+std::optional<int64_t> SysInfo::AmountOfTotalDiskSpace(const FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   int64_t total;
   if (!GetDiskSpaceInfo(path, nullptr, &total)) {
-    return -1;
+    return std::nullopt;
   }
+  CHECK(total >= 0, base::NotFatalUntil::M150);
   return total;
 }
 
@@ -239,16 +242,8 @@ std::string SysInfo::OperatingSystemName() {
 std::string SysInfo::OperatingSystemVersion() {
   win::OSInfo* os_info = win::OSInfo::GetInstance();
   win::OSInfo::VersionNumber version_number = os_info->version_number();
-  std::string version(StringPrintf("%d.%d.%d", version_number.major,
-                                   version_number.minor, version_number.build));
-  win::OSInfo::ServicePack service_pack = os_info->service_pack();
-  if (service_pack.major != 0) {
-    version += StringPrintf(" SP%d", service_pack.major);
-    if (service_pack.minor != 0) {
-      version += StringPrintf(".%d", service_pack.minor);
-    }
-  }
-  return version;
+  return StringPrintf("%d.%d.%d", version_number.major, version_number.minor,
+                      version_number.build);
 }
 
 // TODO: Implement OperatingSystemVersionComplete, which would include

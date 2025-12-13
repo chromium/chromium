@@ -8,34 +8,33 @@
 
 #include "base/auto_reset.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_web_ui.h"
-#include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/controlled_home_bubble_delegate.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
-#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/browser_url_handler.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
+#include "ui/base/base_window.h"
 
 namespace extensions {
 
 namespace {
 
 // Whether the NTP post-install UI is enabled. By default, this is limited to
-// Windows, Mac, and ChromeOS, but can be overridden for testing.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+// Windows, Mac, ChromeOS, and Desktop Android but can be overridden for
+// testing.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
 bool g_ntp_post_install_ui_enabled = true;
 #else
 bool g_ntp_post_install_ui_enabled = false;
@@ -103,17 +102,20 @@ void RegisterSettingsOverriddenUiPrefs(PrefRegistrySimple* registry) {
                                 PrefRegistry::NO_REGISTRATION_FLAGS);
 }
 
-void MaybeShowExtensionControlledHomeNotification(Browser* browser) {
+void MaybeShowExtensionControlledHomeNotification(
+    BrowserWindowInterface* browser,
+    content::WebContents* web_contents) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  auto* profile = browser->GetProfile();
   auto bubble_delegate =
-      std::make_unique<ControlledHomeBubbleDelegate>(browser);
+      std::make_unique<ControlledHomeDialogController>(profile, web_contents);
   if (!bubble_delegate->ShouldShow()) {
     return;
   }
 
   bubble_delegate->PendingShow();
-  browser->window()->GetExtensionsContainer()->ShowToolbarActionBubble(
-      std::move(bubble_delegate));
+  ShowControlledHomeDialog(profile, browser->GetWindow()->GetNativeWindow(),
+                           std::move(bubble_delegate));
 #endif
 }
 
@@ -126,29 +128,31 @@ void MaybeShowExtensionControlledSearchNotification(
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!profile) {
     return;
   }
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-      settings_overridden_params::GetSearchOverriddenParams(browser->profile());
+      settings_overridden_params::GetSearchOverriddenParams(profile);
   if (!params) {
     return;
   }
 
   auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
-      std::move(*params), browser->profile());
+      std::move(*params), profile);
   if (!dialog->ShouldShow()) {
     return;
   }
 
-  ShowSettingsOverriddenDialog(std::move(dialog), browser);
+  gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
+  ShowSettingsOverriddenDialog(std::move(dialog), parent_window);
 #endif
 }
 
 void MaybeShowExtensionControlledNewTabPage(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     content::WebContents* web_contents) {
   if (!g_ntp_post_install_ui_enabled) {
     return;
@@ -156,7 +160,7 @@ void MaybeShowExtensionControlledNewTabPage(
 
   // Acknowledge existing extensions if necessary.
   if (g_acknowledge_existing_ntp_extensions) {
-    AcknowledgePreExistingNtpExtensions(browser->profile());
+    AcknowledgePreExistingNtpExtensions(browser->GetProfile());
   }
 
   // Jump through a series of hoops to see if the web contents is pointing to
@@ -182,7 +186,7 @@ void MaybeShowExtensionControlledNewTabPage(
     return;  // Not being overridden by an extension.
   }
 
-  Profile* const profile = browser->profile();
+  Profile* const profile = browser->GetProfile();
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetNtpOverriddenParams(profile);
@@ -196,7 +200,8 @@ void MaybeShowExtensionControlledNewTabPage(
     return;
   }
 
-  ShowSettingsOverriddenDialog(std::move(dialog), browser);
+  ShowSettingsOverriddenDialog(std::move(dialog),
+                               browser->GetWindow()->GetNativeWindow());
 }
 
 }  // namespace extensions

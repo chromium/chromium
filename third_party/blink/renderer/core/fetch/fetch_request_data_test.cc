@@ -53,12 +53,12 @@ TEST(FetchRequestDataTest, CheckTrustTokenParamsAreCopiedWithCreate) {
   // create a fetch API request instance
   auto request = mojom::blink::FetchAPIRequest::New();
   // create a TrustTokenParams instance
-  WTF::Vector<::scoped_refptr<const ::blink::SecurityOrigin>> issuers;
+  Vector<::scoped_refptr<const ::blink::SecurityOrigin>> issuers;
   issuers.push_back(
       ::blink::SecurityOrigin::CreateFromString("https://aaa.example"));
   issuers.push_back(
       ::blink::SecurityOrigin::CreateFromString("https://bbb.example"));
-  WTF::Vector<WTF::String> additional_signed_headers = {"aaa", "bbb"};
+  Vector<String> additional_signed_headers = {"aaa", "bbb"};
   auto trust_token_params = network::mojom::blink::TrustTokenParams::New(
       network::mojom::TrustTokenOperationType::kRedemption,
       network::mojom::TrustTokenRefreshPolicy::kUseCached,

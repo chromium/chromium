@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 
-#include "base/memory/ref_counted.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -27,6 +27,10 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // delay waiting for dependent renderer process hosts to destroy.
   static void DestroyOriginalProfileWhenAppropriate(
       std::unique_ptr<Profile> profile);
+
+  // Overrides the timeout for destroying a profile. This is used in tests to
+  // prevent the timeout from firing prematurely.
+  static void SetDestroyProfileTimeoutForTesting(base::TimeDelta timeout);
 
   // Destroys the given off-the-record profile either instantly, or after a
   // short delay waiting for dependent renderer process hosts to destroy.
@@ -130,11 +134,15 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // Force-destruction timeout.
   const base::TimeDelta timeout_;
 
+  static base::TimeDelta GetDestroyProfileTimeout();
+
   bool is_prepared_for_destruction_ = false;
 
   // The initial value of |profile_| stored as uint64_t for traces. It is useful
   // for use in the destructor, because at the end, |profile_| is nullptr.
   const uint64_t profile_ptr_;
+
+  static std::optional<base::TimeDelta> destroy_profile_timeout_override_;
 
   base::WeakPtrFactory<ProfileDestroyer> weak_ptr_factory_{this};
 };

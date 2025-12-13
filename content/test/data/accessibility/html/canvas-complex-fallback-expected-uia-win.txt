@@ -6,7 +6,8 @@ Document
 ++++++Text Name='<newline>    '
 ++++++Group IsControlElement=false
 ++++++++Text Name='<newline>      '
-++++++++Text Name='Here we list the contents:'
+++++++++Group IsControlElement=false
+++++++++++Text Name='Here we list the contents:'
 ++++++++Text Name='<newline>      '
 ++++++++List
 ++++++++++Text Name='<newline>        '

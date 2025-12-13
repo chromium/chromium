@@ -24,7 +24,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/url_util.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS));
@@ -191,12 +191,12 @@ ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
 
   // We accept `cros-apps:install-app` or `cros-apps://install-app`, when parsed
   // with an opaque path (no host, path starts with //) or not.
-  if (url.host() != kAppInstallHost && url.path_piece() != kAppInstallHost &&
-      url.path_piece() != kAppInstallPath) {
+  if (url.GetHost() != kAppInstallHost && url.path() != kAppInstallHost &&
+      url.path() != kAppInstallPath) {
     return content::NavigationThrottle::PROCEED;
   }
 
-  QueryParams query_params = ExtractQueryParams(url.query_piece());
+  QueryParams query_params = ExtractQueryParams(url.query());
   if (!query_params.serialized_package_id.has_value()) {
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
   }

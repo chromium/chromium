@@ -39,26 +39,16 @@ public class DataSharingNetworkLoaderImpl implements DataSharingNetworkLoader {
     @Override
     public void loadUrl(
             GURL url,
-            String[] scopes,
             byte[] postData,
             @DataSharingRequestType int requestType,
             Callback<DataSharingNetworkResult> callback) {
         ThreadUtils.postOnUiThread(
                 () -> {
-                    loadUrlOnUiThread(url, scopes, postData, requestType, callback);
+                    if (mNativePtr != 0) {
+                        DataSharingNetworkLoaderImplJni.get()
+                                .loadUrl(mNativePtr, url, postData, requestType, callback);
+                    }
                 });
-    }
-
-    private void loadUrlOnUiThread(
-            GURL url,
-            String[] scopes,
-            byte[] postData,
-            @DataSharingRequestType int dataSharingRequestType,
-            Callback<DataSharingNetworkResult> callback) {
-        if (mNativePtr != 0) {
-            DataSharingNetworkLoaderImplJni.get()
-                    .loadUrl(mNativePtr, url, scopes, postData, dataSharingRequestType, callback);
-        }
     }
 
     @NativeMethods
@@ -66,7 +56,6 @@ public class DataSharingNetworkLoaderImpl implements DataSharingNetworkLoader {
         void loadUrl(
                 long nativeDataSharingNetworkLoaderAndroid,
                 GURL url,
-                String[] scopes,
                 byte[] postData,
                 int dataSharingRequestType,
                 Callback<DataSharingNetworkResult> callback);

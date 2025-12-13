@@ -32,6 +32,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -48,7 +50,6 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service_factory.h"
@@ -65,13 +66,11 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
-#include "chrome/browser/signin/accounts_policy_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/list_family_members_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/buildflags.h"
@@ -117,6 +116,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
@@ -136,6 +136,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #else
@@ -146,6 +148,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/hash/hash.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
@@ -158,6 +162,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -609,9 +614,29 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
   return to_return;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+namespace {
+// Returns the hash to identify the caller for investigation.
+// To stabilize against unrelated line edits in the file, we drop line number
+// from the source of the hash.
+uint32_t LocationHash(const base::Location& location) {
+  if (!location.has_source_info()) {
+    // Use 0 to indicate "missing source info" error.
+    return 0;
+  }
+  return base::PersistentHash(
+      base::StrCat({location.function_name(), location.file_name()}));
+}
+}  // namespace
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // static
-Profile* ProfileManager::GetPrimaryUserProfile() {
+Profile* ProfileManager::GetPrimaryUserProfile(
+#if BUILDFLAG(IS_CHROMEOS)
+    const base::Location& location
+#endif
+) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (IsLoggedIn()) {
     user_manager::UserManager* manager = user_manager::UserManager::Get();
@@ -641,10 +666,30 @@ Profile* ProfileManager::GetPrimaryUserProfile() {
       base::debug::DumpWithoutCrashing();
     }
 
+    LOG(ERROR) << "ProfileManager::GetPrimaryUserProfile is called "
+               << "in a user session but before initialization completion from "
+               << location.ToString();
+    base::UmaHistogramSparse(
+        "Ash.BrowserContext.UnexpectedGetPrimaryUserProfile.InSession.Location",
+        LocationHash(location));
+
     Profile* profile = ProfileManager::GetActiveUserProfile();
     if (profile && manager->IsLoggedInAsGuest())
       profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     return profile;
+  }
+
+  LOG(ERROR) << "ProfileManager::GetPrimaryUserProfile is called "
+             << "at sign in screen from " << location.ToString();
+  base::UmaHistogramSparse(
+      "Ash.BrowserContext.UnexpectedGetPrimaryUserProfile.LoginScreen.Location",
+      LocationHash(location));
+
+  // Respect profile creation configuration.
+  // GetActiveUserOrOffTheRecordProfile() may create the profile if missing.
+  // This means unexpected uses. See also crbug.com/40227502.
+  if (!ash::BrowserContextHelper::IsImplicitBrowserContextCreationEnabled()) {
+    return nullptr;
   }
 #endif
 
@@ -656,7 +701,11 @@ Profile* ProfileManager::GetPrimaryUserProfile() {
 }
 
 // static
-Profile* ProfileManager::GetActiveUserProfile() {
+Profile* ProfileManager::GetActiveUserProfile(
+#if BUILDFLAG(IS_CHROMEOS)
+    const base::Location& location
+#endif
+) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 #if BUILDFLAG(IS_CHROMEOS)
   if (!profile_manager)
@@ -671,8 +720,30 @@ Profile* ProfileManager::GetActiveUserProfile() {
     // TODO: This should be cleaned up with the new profile manager.
     if (user && user->is_profile_created())
       return ash::ProfileHelper::Get()->GetProfileByUser(user);
+
+    LOG(ERROR) << "ProfileManager::GetActiveUserProfile is called "
+               << "in a user session but before initialization completion from "
+               << location.ToString();
+    base::UmaHistogramSparse(
+        "Ash.BrowserContext.UnexpectedGetActiveUserProfile.InSession.Location",
+        LocationHash(location));
+  } else {
+    LOG(ERROR) << "ProfileManager::GetActiveUserProfile is called "
+               << "at sign in screen from " << location.ToString();
+    base::UmaHistogramSparse(
+        "Ash.BrowserContext.UnexpectedGetActiveUserProfile.LoginScreen."
+        "Location",
+        LocationHash(location));
+  }
+
+  // Respect profile creation configuration.
+  // GetActiveUserOrOffTheRecordProfile() may create the profile if missing.
+  // This means unexpected uses. See also crbug.com/40227502.
+  if (!ash::BrowserContextHelper::IsImplicitBrowserContextCreationEnabled()) {
+    return nullptr;
   }
 #endif
+
   Profile* profile = profile_manager->GetActiveUserOrOffTheRecordProfile();
   // |profile| could be null if the user doesn't have a profile yet and the path
   // is on a read-only volume (preventing Chrome from making a new one).
@@ -808,8 +879,9 @@ bool ProfileManager::IsValidProfile(const void* profile) {
       return true;
     std::vector<Profile*> otr_profiles =
         candidate->GetAllOffTheRecordProfiles();
-    if (base::Contains(otr_profiles, profile))
+    if (base::Contains(otr_profiles, profile)) {
       return true;
+    }
   }
   return false;
 }
@@ -1216,7 +1288,7 @@ std::unique_ptr<Profile> ProfileManager::CreateProfileAsyncHelper(
   return Profile::CreateProfile(path, this, Profile::CreateMode::kAsynchronous);
 }
 
-bool ProfileManager::HasKeepAliveForTesting(const Profile* profile,
+bool ProfileManager::HasKeepAliveForTesting(Profile* profile,
                                             ProfileKeepAliveOrigin origin) {
   DCHECK(profile);
   ProfileInfo* info = GetProfileInfoByPath(profile->GetPath());
@@ -1245,7 +1317,7 @@ void ProfileManager::RecordZombieMetrics() {
   base::UmaHistogramCounts100("Profile.ZombieProfileCount", zombie_count);
 }
 
-void ProfileManager::AddKeepAlive(const Profile* profile,
+bool ProfileManager::AddKeepAlive(Profile* profile,
                                   ProfileKeepAliveOrigin origin) {
   DCHECK_NE(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, origin);
 
@@ -1254,14 +1326,28 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
 
   ProfileInfo* info = GetProfileInfoByPath(profile->GetPath());
   if (!info) {
-    // Can be null in unit tests, when the Profile was not created via
-    // ProfileManager.
+    // Can be null in the following circumstances:
+    //
+    // 1. Unit tests, when the Profile was not created via ProfileManager.
+    // 2. AddKeepAlive() called too early during Profile creation.
+    // 3. AddKeepAlive() called too late during Profile's lifecycle: after we've
+    //    handed it off to ProfileDestroyer and it's scheduled for destruction.
+    //
+    // #1 is fine. #2 is always a bug, and #3 is usually a bug. You can mitigate
+    // #3 by using ScopedKeepAlive::TryAcquire() and checking if the result is
+    // null.
     VLOG(1) << "AddKeepAlive(" << profile->GetDebugName() << ", " << origin
-            << ") called before the Profile was added to the ProfileManager. "
+            << ") too early or too late in Profile's lifecycle. "
             << "The keepalive was not added. This may cause a crash during "
             << "teardown. (except in unit tests, where Profiles may not be "
             << "registered with the ProfileManager)";
-    return;
+    if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+      return false;
+    }
+    // On platforms where we don't destroy profiles on close (e.g. ChromeOS),
+    // we can treat a missing refcount as success because the profile stays
+    // alive anyway.
+    return true;
   }
 
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
@@ -1286,9 +1372,11 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
        base::FeatureList::IsEnabled(features::kDestroySystemProfiles))) {
     ClearFirstBrowserWindowKeepAlive(profile);
   }
+
+  return true;
 }
 
-void ProfileManager::RemoveKeepAlive(const Profile* profile,
+void ProfileManager::RemoveKeepAlive(Profile* profile,
                                      ProfileKeepAliveOrigin origin) {
   DCHECK_NE(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, origin);
 
@@ -1305,7 +1393,7 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
             << "ProfileManager. The keepalive was not removed.";
     // DumpWithoutCrashing turned off for a couple milestones until we fix the
     // root cause, due to the high volume of reports. See crbug.com/368360956.
-    if (version_info::GetMajorVersionNumberAsInt() >= 141) {
+    if (version_info::GetMajorVersionNumberAsInt() >= 144) {
       // TODO(crbug.com/368360956): Not incrementing the refcount will cause
       // `profile` to get destroyed too early. Remove or convert to a CHECK()
       // once the root cause is fixed.
@@ -1342,7 +1430,7 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
   UnloadProfileIfNoKeepAlive(info);
 }
 
-void ProfileManager::ClearFirstBrowserWindowKeepAlive(const Profile* profile) {
+void ProfileManager::ClearFirstBrowserWindowKeepAlive(Profile* profile) {
   CHECK(profile);
   CHECK(!profile->IsOffTheRecord());
 
@@ -1411,11 +1499,6 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
   for (auto& observer : observers_)
     observer.OnProfileAdded(profile);
 
-  if (AccountsPolicyManager* accounts_policy_manager =
-          AccountsPolicyManagerFactory::GetForProfile(profile)) {
-    accounts_policy_manager->Initialize();
-  }
-
 #if !BUILDFLAG(IS_ANDROID)
   // The caret browsing command-line switch toggles caret browsing on
   // initially, but the user can still toggle it from there.
@@ -1449,9 +1532,16 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   bool extensions_enabled = !go_off_the_record;
 #if BUILDFLAG(IS_CHROMEOS)
+  bool are_extensions_allowed_for_profile =
+      ash::IsSigninBrowserContext(profile);
+  if (chromeos::features::IsLockScreenBadgeAuthEnabled()) {
+    are_extensions_allowed_for_profile |=
+        ash::IsLockScreenBrowserContext(profile);
+  }
+
   if ((!base::CommandLine::ForCurrentProcess()->HasSwitch(
            switches::kDisableLoginScreenApps) &&
-       ash::ProfileHelper::IsSigninProfile(profile)) ||
+       are_extensions_allowed_for_profile) ||
       ash::IsShimlessRmaAppBrowserContext(profile)) {
     extensions_enabled = true;
   }
@@ -2088,11 +2178,19 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
       SaveActiveProfiles();
   }
 
-  Profile* original_profile = profile->GetOriginalProfile();
+  Profile* const original_profile = profile->GetOriginalProfile();
   // Do nothing if the closed window is not the last window of the same profile.
-  for (Browser* browser_iter : *BrowserList::GetInstance()) {
-    if (browser_iter->profile()->GetOriginalProfile() == original_profile)
-      return;
+  bool has_other_window = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [original_profile, &has_other_window](BrowserWindowInterface* browser) {
+        const Profile* const iter_profile = browser->GetProfile();
+        if (iter_profile->GetOriginalProfile() == original_profile) {
+          has_other_window = true;
+        }
+        return !has_other_window;
+      });
+  if (has_other_window) {
+    return;
   }
 
   if (profile->IsGuestSession()) {

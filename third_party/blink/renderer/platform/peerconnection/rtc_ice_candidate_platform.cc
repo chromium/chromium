@@ -6,8 +6,6 @@
 
 #include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/p2p/base/p2p_constants.h"
-#include "third_party/webrtc/p2p/base/port.h"
-#include "third_party/webrtc/pc/webrtc_sdp.h"
 
 namespace blink {
 
@@ -54,23 +52,17 @@ RTCIceCandidatePlatform::RTCIceCandidatePlatform(
       sdp_m_line_index_(std::move(sdp_m_line_index)),
       username_fragment_(std::move(username_fragment)),
       url_(std::move(url)) {
-  PopulateFields(false);
+  PopulateFields();
 }
 
-RTCIceCandidatePlatform::RTCIceCandidatePlatform(
-    String candidate,
-    String sdp_mid,
-    std::optional<uint16_t> sdp_m_line_index)
-    : candidate_(std::move(candidate)),
-      sdp_mid_(std::move(sdp_mid)),
-      sdp_m_line_index_(std::move(sdp_m_line_index)) {
-  PopulateFields(true);
-}
-
-void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
-  webrtc::Candidate c;
-  if (!webrtc::ParseCandidate(candidate_.Utf8(), &c, nullptr, true))
+void RTCIceCandidatePlatform::PopulateFields() {
+  webrtc::RTCErrorOr<webrtc::Candidate> parsed_candidate =
+      webrtc::Candidate::ParseCandidateString(candidate_.Utf8());
+  if (!parsed_candidate.ok()) {
     return;
+  }
+
+  const webrtc::Candidate& c = parsed_candidate.value();
 
   foundation_ = String::FromUTF8(c.foundation());
   component_ = CandidateComponentToString(c.component());
@@ -99,9 +91,6 @@ void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
   if (type_ == "relay" && priority_ && !url_.IsNull()) {
     relay_protocol_ = PriorityToRelayProtocol(*priority_);
   }
-
-  if (use_username_from_candidate)
-    username_fragment_ = String::FromUTF8(c.username());
 }
 
 }  // namespace blink

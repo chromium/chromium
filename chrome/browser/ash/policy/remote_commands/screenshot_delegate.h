@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
 #include "chrome/browser/ash/policy/uploading/upload_job.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/snapshot/snapshot.h"
 #include "url/gurl.h"
 

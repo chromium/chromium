@@ -46,7 +46,8 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Peter Glotfelty <peter.glotfelty@microsoft.com>"
   cargo_pkg_name = "strum_macros"
   cargo_pkg_description = "Helpful macros for working with enums and strings"
-  cargo_pkg_version = "0.27.1"
+  cargo_pkg_repository = "https://github.com/Peternator7/strum"
+  cargo_pkg_version = "0.27.2"
 
   allow_unsafe = false
 
@@ -54,7 +55,6 @@ cargo_crate("lib") {
     "//third_party/rust/heck/v0_5:lib",
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",
-    "//third_party/rust/rustversion/v1:lib",
     "//third_party/rust/syn/v2:lib",
   ]
 

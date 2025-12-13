@@ -228,12 +228,10 @@ void AdvancedProtectionStatusManagerDesktop::RefreshAdvancedProtectionStatus() {
   // can be determined from the "service flags" contained in the response.
   // Note that the (quite powerful) `kOAuth1LoginScope` is required for the
   // server to return the service flags.
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kOAuth1LoginScope);
-
   access_token_fetcher_ = std::make_unique<
       signin::PrimaryAccountAccessTokenFetcher>(
-      "advanced_protection_status_manager", identity_manager_, scopes,
+      signin::OAuthConsumerId::kAdvancedProtectionStatusManager,
+      identity_manager_,
       base::BindOnce(
           &AdvancedProtectionStatusManagerDesktop::OnAccessTokenFetchComplete,
           base::Unretained(this), unconsented_primary_account_id),

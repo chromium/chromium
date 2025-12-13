@@ -25,8 +25,30 @@ message ManagedPrinterConfiguration {
   // Optional. Printer description visible in the print preview dialog.
   optional string description = 3;
 
-  // Required. The URI used to connect to the printer.
-  optional string uri = 4;
+  // Serialized to JSON as an int (not a string).
+  enum UsbProtocol {
+    USB_PROTOCOL_UNSPECIFIED = 0;
+    USB_PROTOCOL_LEGACY_USB = 1;
+    USB_PROTOCOL_IPP_USB = 2;
+  }
+
+  message UsbDeviceId {
+    // Required.
+    int32 vendor_id = 1 [json_name = "vendor_id"];
+    // Required.
+    int32 product_id = 2 [json_name = "product_id"];
+    // Required.
+    UsbProtocol usb_protocol = 3 [json_name = "usb_protocol"];
+  }
+
+  // Required. Specifies the way the printer is connected to the device.
+  oneof connection_type {
+    // The URI used to connect to the printer.
+    string uri = 4;
+
+    // The IDs of the printer connected via USB.
+    UsbDeviceId usb_device_id = 7 [json_name = "usb_device_id"];
+  }
 
   // Defines the source of the PPD file to be used during printer setup.
   message PpdResource {

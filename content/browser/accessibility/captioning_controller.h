@@ -30,13 +30,13 @@ class CaptioningController : public WebContentsObserver {
   void SetTextTrackSettings(
       JNIEnv* env,
       jboolean textTracksEnabled,
-      const base::android::JavaParamRef<jstring>& textTrackBackgroundColor,
-      const base::android::JavaParamRef<jstring>& textTrackFontFamily,
-      const base::android::JavaParamRef<jstring>& textTrackFontStyle,
-      const base::android::JavaParamRef<jstring>& textTrackFontVariant,
-      const base::android::JavaParamRef<jstring>& textTrackTextColor,
-      const base::android::JavaParamRef<jstring>& textTrackTextShadow,
-      const base::android::JavaParamRef<jstring>& textTrackTextSize);
+      const base::android::JavaRef<jstring>& textTrackBackgroundColor,
+      const base::android::JavaRef<jstring>& textTrackFontFamily,
+      const base::android::JavaRef<jstring>& textTrackFontStyle,
+      const base::android::JavaRef<jstring>& textTrackFontVariant,
+      const base::android::JavaRef<jstring>& textTrackTextColor,
+      const base::android::JavaRef<jstring>& textTrackTextShadow,
+      const base::android::JavaRef<jstring>& textTrackTextSize);
 
  private:
   // WebContentsObserver implementation.

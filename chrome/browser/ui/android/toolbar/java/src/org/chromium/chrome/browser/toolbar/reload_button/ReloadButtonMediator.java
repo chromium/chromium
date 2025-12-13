@@ -18,6 +18,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -72,7 +73,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
             PropertyModel model,
             ReloadButtonCoordinator.Delegate delegate,
             ThemeColorProvider themeColorProvider,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Boolean> ntpLoadingSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
             Callback<String> showToast,
@@ -101,7 +102,6 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
         mModel.set(ReloadButtonProperties.LONG_CLICK_LISTENER, this::showActionToastOnReloadButton);
 
         updateBackground(mThemeColorProvider.getBrandedColorScheme());
-        mThemeColorProvider.addTintObserver(this);
 
         mNtpLoadingObserver =
                 (isLoading) -> {
@@ -175,6 +175,13 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
                         mInsets.bottom);
         mBackgroundResForTesting = backgroundRes;
         mModel.set(ReloadButtonProperties.BACKGROUND_HIGHLIGHT, drawable);
+
+        // When setting the background of a view to an `InsetDrawable`, the padding of the view
+        // is automatically set to the insets of the `InsetDrawable`. However, a bug prevents the
+        // padding from being set if the insets are all 0. The workaround is to set the padding
+        // explicitly.
+        // https://crbug.com/442688217
+        mModel.set(ReloadButtonProperties.PADDING, mInsets);
     }
 
     public @DrawableRes int getBackgroundResForTesting() {
@@ -220,6 +227,15 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     }
 
     /**
+     * Informs the button on whether there is enough space for it to be shown.
+     *
+     * @param hasSpaceToShow indicates whether the button view has space to show.
+     */
+    void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mModel.set(ReloadButtonProperties.HAS_SPACE_TO_SHOW, hasSpaceToShow);
+    }
+
+    /**
      * Checks whether view is visible or not.
      *
      * @return true - view is visible, false - view is not visible.
@@ -250,7 +266,6 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
 
         mNtpLoadingSupplier.removeObserver(mNtpLoadingObserver);
         mEnabledSupplier.removeObserver(mEnabledObserver);
-        mThemeColorProvider.removeTintObserver(this);
         mTabObserver.destroy();
     }
 }

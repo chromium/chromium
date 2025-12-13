@@ -12,10 +12,6 @@ class KeyedService;
 class ProfileIOS;
 struct ProviderStateService;
 
-namespace web {
-class BrowserState;
-}
-
 namespace ios {
 
 // Singleton that owns all ProviderStateServices and associates them with
@@ -31,9 +27,9 @@ class ProviderStateServiceFactory : public ProfileKeyedServiceFactoryIOS {
   ProviderStateServiceFactory();
   ~ProviderStateServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

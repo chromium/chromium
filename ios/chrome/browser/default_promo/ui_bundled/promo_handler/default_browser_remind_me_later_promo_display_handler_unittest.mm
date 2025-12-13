@@ -46,10 +46,7 @@
 - (void)showOmniboxPositionChoicePromo {
 }
 
-- (void)showSigninPromo {
-}
-
-- (void)showBWGPromo {
+- (void)showFullscreenSigninPromo {
 }
 
 - (void)showWelcomeBackPromo {

@@ -89,7 +89,8 @@ SearchPreloadSignalResult SearchPreloadPipeline::StartPrefetch(
       blink::mojom::Referrer(),
       /*referring_origin=*/std::nullopt, no_vary_search_hint,
       /*priority=*/std::nullopt, pipeline_info_, attempt->GetWeakPtr(),
-      /*holdback_status_override=*/std::nullopt,
+      /*holdback_status_override=*/
+      content::PreloadingHoldbackStatus::kUnspecified,
       /*ttl=*/features::kDsePreload2PrefetchTtl.Get());
   CHECK(prefetch_handle_);
   prefetch_handle_->SetOnPrefetchHeadReceivedCallback(base::BindRepeating(
@@ -97,7 +98,7 @@ SearchPreloadSignalResult SearchPreloadPipeline::StartPrefetch(
   if (!is_navigation_likely) {
     prefetch_handle_->SetOnPrefetchCompletedOrFailedCallback(
         base::BindRepeating(
-            &SearchPreloadService::OnOnSuggestPrefetchCompletedOrFailed,
+            &SearchPreloadService::OnSuggestPrefetchCompletedOrFailed,
             search_preload_service));
   }
 

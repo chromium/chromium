@@ -8,17 +8,19 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
 
 // The following structure defines permission status change events observed by
 // frames.
-struct CONTENT_EXPORT PermissionStatusSubscription {
-  PermissionStatusSubscription();
-  ~PermissionStatusSubscription();
+struct CONTENT_EXPORT PermissionResultSubscription {
+  explicit PermissionResultSubscription(
+      blink::mojom::PermissionDescriptorPtr descriptor);
+  ~PermissionResultSubscription();
 
-  blink::PermissionType permission;
+  blink::mojom::PermissionDescriptorPtr permission_descriptor;
   GURL requesting_origin;
   // According to a permission delegation policy, when a cross-origin iframe
   // uses permissions, the requesting origin could be overridden by a
@@ -29,7 +31,7 @@ struct CONTENT_EXPORT PermissionStatusSubscription {
   int render_process_id = -1;
   bool should_include_device_status;
 
-  base::RepeatingCallback<void(PermissionStatus, bool)> callback;
+  base::RepeatingCallback<void(PermissionResult, bool)> callback;
   std::optional<PermissionResult> permission_result;
 };
 

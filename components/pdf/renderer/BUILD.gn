@@ -22,6 +22,10 @@ static_library("renderer") {
     "pdf_accessibility_tree.cc",
     "pdf_accessibility_tree_builder.cc",
     "pdf_accessibility_tree_builder.h",
+    "pdf_accessibility_tree_builder_heuristic.cc",
+    "pdf_accessibility_tree_builder_heuristic.h",
+    "pdf_accessibility_tree_builder_structure.cc",
+    "pdf_accessibility_tree_builder_structure.h",
     "pdf_ax_action_target.cc",
     "pdf_view_web_plugin_client.cc",
     "pdf_view_web_plugin_client.h",
@@ -40,6 +44,7 @@ static_library("renderer") {
     "//pdf:accessibility",
     "//pdf:buildflags",
     "//pdf:features",
+    "//pdf:pdf_accessibility_constants_helper",
     "//pdf:pdf_view_web_plugin",
     "//printing/buildflags",
     "//services/screen_ai/buildflags",
@@ -72,11 +77,15 @@ static_library("renderer") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "pdf_accessibility_tree_unittest.cc" ]
+  sources = [
+    "pdf_accessibility_tree_builder_structure_unittest.cc",
+    "pdf_accessibility_tree_unittest.cc",
+  ]
 
   deps = [
     ":renderer",
     "//pdf:accessibility",
+    "//pdf:pdf_accessibility_constants_helper",
     "//pdf/mojom",
     "//testing/gtest",
     "//ui/gfx/geometry",
@@ -85,4 +94,8 @@ source_set("unit_tests") {
     # from ":renderer".
     "//v8",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

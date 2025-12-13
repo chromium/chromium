@@ -128,6 +128,40 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kWarmedUp"/>
 </enum>
 
+<!-- LINT.IfChange(OpenWindowUrlScheme) -->
+
+<enum name="OpenWindowUrlScheme">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kAboutBlank"/>
+  <int value="2" label="kAboutSrcDoc"/>
+  <int value="3" label="kBlob"/>
+  <int value="4" label="kContent"/>
+  <int value="5" label="kData"/>
+  <int value="6" label="kFile"/>
+  <int value="7" label="kFileSystem"/>
+  <int value="8" label="kFtp"/>
+  <int value="9" label="kHttp"/>
+  <int value="10" label="kHttps"/>
+  <int value="11" label="kJavascript"/>
+  <int value="12" label="kMailTo"/>
+  <int value="13" label="kTel"/>
+  <int value="14" label="kWs"/>
+  <int value="15" label="kWss"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/service_worker/service_worker_clients.cc:OpenWindowUrlScheme) -->
+
+<!-- LINT.IfChange(RaceNetworkRequestDataTransferResult) -->
+
+<enum name="RaceNetworkRequestDataTransferResult">
+  <int value="0" label="BothCompleted"/>
+  <int value="1" label="NetworkCompletedFetchHandlerNotCompleted"/>
+  <int value="2" label="FetchHandlerCompletedNetworkNotCompleted"/>
+  <int value="3" label="BothNotCompleted"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/common/service_worker/race_network_request_url_loader_client.cc:DataTransferCompletionResult) -->
+
 <enum name="ServiceWorkerDatabaseStatus">
   <int value="0" label="OK"/>
   <int value="1" label="Not Found Error"/>
@@ -179,6 +213,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="AutoPreload is handling fallback"/>
 </enum>
 
+<!-- LINT.IfChange(ServiceWorkerIPAddressSpace) -->
+
+<enum name="ServiceWorkerIPAddressSpace">
+  <int value="0" label="Loopback"/>
+  <int value="1" label="Local"/>
+  <int value="2" label="Public"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/services/storage/service_worker/service_worker_database.cc:ServiceWorkerIPAddressSpace) -->
+
 <enum name="ServiceWorkerMetrics.EventType">
   <int value="0" label="ACTIVATE"/>
   <int value="1" label="INSTALL"/>
@@ -229,6 +274,22 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Read data error"/>
 </enum>
 
+<!-- LINT.IfChange(ServiceWorkerRegistrationDeleteInitiator) -->
+
+<enum name="ServiceWorkerRegistrationDeleteInitiator">
+  <int value="0" label="Triggered by navigator.serviceWorker.unregister()"/>
+  <int value="1" label="Triggered by clearing site data"/>
+  <int value="2" label="Triggered by an emergency force-delete"/>
+  <int value="3" label="Triggered by a registration failure"/>
+  <int value="4"
+      label="Triggered via the public C++ API (e.g., extensions, DevTools)"/>
+  <int value="5"
+      label="Triggered by a user action on chrome://serviceworker-internals"/>
+  <int value="6" label="Triggered from a test"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_registration.h:DeleteInitiator) -->
+
 <enum name="ServiceWorkerRouterEvaluatorErrorEnums">
   <int value="0" label="kNoError"/>
   <int value="1" label="kInvalidType"/>
@@ -267,7 +328,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="NotEligibleByNoHeaderStored"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_main_resource_loader.cc:SyntheticResponseEligibility) -->
+<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_metrics.h:SyntheticResponseEligibility) -->
+
+<!-- LINT.IfChange(SyntheticResponseReloadReason) -->
+
+<enum name="SyntheticResponseReloadReason">
+  <int value="0" label="CachedResponseHeadCleared"/>
+  <int value="1" label="HeaderInconsistent"/>
+  <int value="2" label="Redirect"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_synthetic_response_manager.cc:SyntheticResponseReloadReason) -->
 
 <enum name="WorkerOrWorkletInterfaceNameType">
   <int value="0" label="kOther"/>

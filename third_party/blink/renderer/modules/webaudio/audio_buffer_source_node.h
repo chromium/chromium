@@ -26,10 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_BUFFER_SOURCE_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_BUFFER_SOURCE_NODE_H_
 
-#include <atomic>
-#include <memory>
-
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer_source_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"

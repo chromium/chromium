@@ -8,12 +8,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninConfig;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -52,18 +54,23 @@ public final class FullscreenSigninPromoLauncher {
         }
 
         FullscreenSigninAndHistorySyncConfig config =
-                new FullscreenSigninAndHistorySyncConfig.Builder().build();
-        @Nullable
-        Intent intent =
+                new FullscreenSigninAndHistorySyncConfig.Builder(
+                                context.getString(R.string.signin_fre_title),
+                                context.getString(R.string.signin_fre_subtitle),
+                                FullscreenSigninConfig.DISMISS_TEXT_NOT_INITIALIZED,
+                                context.getString(R.string.history_sync_title),
+                                context.getString(R.string.history_sync_subtitle))
+                        .build();
+        @Nullable Intent intent =
                 signinAndHistorySyncActivityLauncher.createFullscreenSigninIntent(
-                        context, profile, config, SigninAccessPoint.SIGNIN_PROMO);
+                        context, profile, config, SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
         if (intent == null) {
             return false;
         }
 
         context.startActivity(intent);
         prefManager.setSigninPromoNextShowTime(
-                System.currentTimeMillis()
+                TimeUtils.currentTimeMillis()
                         + TimeUnit.DAYS.toMillis(getDurationBetweenPromoTriggers()));
         prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
         var accounts =
@@ -80,25 +87,34 @@ public final class FullscreenSigninPromoLauncher {
             return true;
         }
 
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             return false;
         }
 
         final long nextShowTime = prefManager.getSigninPromoNextShowTime();
-        // We just store the next show time for now to ramp up clients for the experiment later.
-        // See crbug.com/408962000.
+        boolean useDate =
+                SigninFeatureMap.isEnabled(SigninFeatures.FULLSCREEN_SIGN_IN_PROMO_USE_DATE);
         if (nextShowTime == 0) {
             prefManager.setSigninPromoNextShowTime(
-                    System.currentTimeMillis()
+                    TimeUtils.currentTimeMillis()
                             + TimeUnit.DAYS.toMillis(getDurationBetweenPromoTriggers()));
+            // Don't show if next show time was never recorded in the past.
+            if (useDate) {
+                return false;
+            }
+        }
+        if (useDate && nextShowTime > TimeUtils.currentTimeMillis()) {
+            return false;
         }
 
         final int lastPromoMajorVersion = prefManager.getSigninPromoLastShownVersion();
         if (lastPromoMajorVersion == 0) {
             prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
-            return false;
+            if (!useDate) {
+                return false;
+            }
         }
-        if (currentMajorVersion < lastPromoMajorVersion + 2) {
+        if (!useDate && currentMajorVersion < lastPromoMajorVersion + 2) {
             // Promo can be shown at most once every 2 Chrome major versions.
             return false;
         }

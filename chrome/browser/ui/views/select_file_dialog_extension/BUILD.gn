@@ -15,6 +15,7 @@ static_library("select_file_dialog_extension") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//chrome/browser/app_mode",
     "//chrome/browser/apps/platform_apps",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/extensions/file_manager",

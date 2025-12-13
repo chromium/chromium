@@ -43,7 +43,6 @@
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/connector.h"
-#include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
@@ -66,7 +65,6 @@ namespace {
 constinit thread_local bool off_sequence_binding_allowed = false;
 
 BASE_FEATURE(kMojoChannelAssociatedSendUsesRunOrPostTask,
-             "MojoChannelAssociatedSendUsesRunOrPostTask",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Used to track some internal Channel state in pursuit of message leaks.

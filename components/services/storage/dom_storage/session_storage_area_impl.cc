@@ -15,11 +15,11 @@
 namespace storage {
 
 SessionStorageAreaImpl::SessionStorageAreaImpl(
-    SessionStorageMetadata::NamespaceEntry namespace_entry,
+    std::string namespace_id,
     blink::StorageKey storage_key,
     scoped_refptr<SessionStorageDataMap> data_map,
     RegisterNewAreaMap register_new_map_callback)
-    : namespace_entry_(namespace_entry),
+    : namespace_id_(std::move(namespace_id)),
       storage_key_(std::move(storage_key)),
       shared_data_map_(std::move(data_map)),
       register_new_map_callback_(std::move(register_new_map_callback)) {
@@ -44,10 +44,10 @@ bool SessionStorageAreaImpl::IsBound() const {
 }
 
 std::unique_ptr<SessionStorageAreaImpl> SessionStorageAreaImpl::Clone(
-    SessionStorageMetadata::NamespaceEntry namespace_entry) {
-  DCHECK(namespace_entry_ != namespace_entry);
+    std::string clone_namespace_id) {
+  CHECK_NE(namespace_id_, clone_namespace_id);
   return base::WrapUnique(
-      new SessionStorageAreaImpl(namespace_entry, storage_key_,
+      new SessionStorageAreaImpl(std::move(clone_namespace_id), storage_key_,
                                  shared_data_map_, register_new_map_callback_));
 }
 
@@ -139,7 +139,6 @@ void SessionStorageAreaImpl::FlushForTesting() {
   receivers_.FlushForTesting();
 }
 
-// Note: this can be called after invalidation of the |namespace_entry_|.
 void SessionStorageAreaImpl::OnConnectionError() {
   if (IsBound())
     return;
@@ -174,7 +173,7 @@ void SessionStorageAreaImpl::CreateNewMap(
     case NewMapType::FORKED:
       shared_data_map_ = SessionStorageDataMap::CreateClone(
           shared_data_map_->listener(),
-          register_new_map_callback_.Run(namespace_entry_, storage_key_),
+          register_new_map_callback_.Run(namespace_id_, storage_key_),
           shared_data_map_);
       break;
     case NewMapType::EMPTY_FROM_DELETE_ALL: {
@@ -183,7 +182,7 @@ void SessionStorageAreaImpl::CreateNewMap(
       // be correctly called. To do that, we manually call them here.
       shared_data_map_ = SessionStorageDataMap::CreateEmpty(
           shared_data_map_->listener(),
-          register_new_map_callback_.Run(namespace_entry_, storage_key_),
+          register_new_map_callback_.Run(namespace_id_, storage_key_),
           shared_data_map_->storage_area()->database());
       break;
     }

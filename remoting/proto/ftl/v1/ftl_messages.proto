@@ -190,7 +190,7 @@ message SignInGaiaResponse {
 
 message BatchAckMessagesRequest {
   RequestHeader header = 1;
-  repeated string message_ids = 4;
+  repeated string message_ids = 2;
 }
 
 message BatchAckMessagesResponse {

@@ -20,6 +20,23 @@ class PrefService;
 
 namespace safe_browsing {
 
+// Describes the reason for an unwanted notification revocation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(NotificationRevocationSource)
+enum class NotificationRevocationSource {
+  kSocialEngineeringBlocklist = 0,
+  kSafeBrowsingUnwantedRevocation = 1,
+  kStandardOneTapUnsubscribe = 2,
+  kSuspiciousWarningOneTapUnsubscribe = 3,
+  kDisruptiveAutoRevocation = 4,
+  kUserManuallyChangedSiteSetting = 5,
+  kUnknown = 6,
+  kSuspiciousContentAutoRevocation = 7,
+  kMaxValue = kSuspiciousContentAutoRevocation,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:NotificationRevocationSource)
+
 // This class is for logging Safe Browsing metrics regularly. Metrics are logged
 // everyday or at startup, if the last logging time was more than a day ago.
 // It is also responsible for adding Safe Browsing events in prefs and logging
@@ -114,6 +131,11 @@ class SafeBrowsingMetricsCollector : public KeyedService {
       delete;
 
   ~SafeBrowsingMetricsCollector() override = default;
+
+  // Log the histogram that shows the revocation source when notification
+  // permissions are removed.
+  static void LogSafeBrowsingNotificationRevocationSourceHistogram(
+      NotificationRevocationSource source);
 
   // Checks the last logging time. If the time is longer than a day ago, log
   // immediately. Otherwise, schedule the next logging with delay.

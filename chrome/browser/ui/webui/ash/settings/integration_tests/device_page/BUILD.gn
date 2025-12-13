@@ -22,6 +22,8 @@ if (!is_chromeos_device) {
       "//base/test:test_support",
       "//chrome/app:generated_resources",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/test:test_support_ui",
       "//chrome/test/base/ash/interactive:test_support",
       "//chromeos/dbus/power",
       "//device/udev_linux:test_support",

@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "device/vr/android/cardboard/scoped_cardboard_objects.h"
 #include "device/vr/android/xr_image_transport_base.h"
-#include "device/vr/android/xr_renderer.h"
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
 #include "third_party/cardboard/src/sdk/include/cardboard.h"
 #include "ui/gfx/geometry/transform.h"
@@ -43,14 +42,11 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardImageTransport
   gfx::Transform GetMojoFromView(CardboardEye eye,
                                  gfx::Transform mojo_from_viewer);
 
-  void SetOverlayAndWebXRVisibility(bool overlay_visible, bool webxr_visible);
-
   // Take the current WebXr Rendering Frame and render it to the supplied
   // framebuffer.
   void Render(WebXrPresentationState* webxr, GLuint framebuffer);
 
  private:
-  void EnsureOverlayTexture(const WebXrFrame* frame);
   void DoRuntimeInitialization() override;
   void UpdateDistortionMesh();
 
@@ -64,17 +60,8 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardImageTransport
   CardboardEyeTextureDescription left_eye_description_;
   CardboardEyeTextureDescription right_eye_description_;
 
-  internal::ScopedCardboardObject<CardboardDistortionRenderer*>
-      cardboard_renderer_;
+  internal::ScopedCardboardObject<CardboardDistortionRenderer*> renderer_;
   internal::ScopedCardboardObject<CardboardLensDistortion*> lens_distortion_;
-
-  std::unique_ptr<XrRenderer> xr_renderer_;
-
-  GLuint target_framebuffer_id_;
-  GLuint overlay_texture_ = 0;
-
-  bool webxr_visible_ = true;
-  bool overlay_visible_ = false;
 
   // Must be last.
   base::WeakPtrFactory<CardboardImageTransport> weak_ptr_factory_{this};

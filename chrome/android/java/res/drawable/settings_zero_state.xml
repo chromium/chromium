@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <path
+        android:pathData="M57.0951 100C52.6674 94.7092 50 87.8805 50 80.4255C50 63.622 63.5517 50 80.2686 50C87.8346 50 94.7522 52.7903 100.058 57.4031C105.352 52.7903 112.254 50 119.802 50C136.48 50 150 63.622 150 80.4255C150 87.8805 147.339 94.7092 142.922 100C147.339 105.291 150 112.12 150 119.574C150 136.378 136.48 150 119.802 150C112.254 150 105.352 147.21 100.058 142.597C94.7522 147.21 87.8346 150 80.2686 150C63.5517 150 50 136.378 50 119.574C50 112.12 52.6674 105.291 57.0951 100Z"
+        android:fillColor="@color/settings_search_logo_color_1" />
+    <path
+        android:pathData="M73.4688 72.4688C83.4271 62.5104 99.5729 62.5104 109.531 72.4688C119.49 82.4271 119.49 98.5729 109.531 108.531C99.5729 118.49 83.4271 118.49 73.4688 108.531C63.5104 98.5729 63.5104 82.4271 73.4688 72.4688Z"
+        android:strokeColor="@color/settings_search_logo_color_3"
+        android:strokeWidth="8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M108.631 114.288C107.069 112.726 107.069 110.193 108.631 108.631C110.194 107.069 112.726 107.069 114.288 108.631L135.284 129.627C136.846 131.189 136.846 133.722 135.284 135.284C133.722 136.846 131.19 136.846 129.627 135.284L108.631 114.288Z"
+        android:fillColor="@color/settings_search_logo_color_3" />
+    <path
+        android:pathData="M83.5 77H99.5A3.5 3.5 0 0 1 103 80.5V80.5A3.5 3.5 0 0 1 99.5 84H83.5A3.5 3.5 0 0 1 80 80.5V80.5A3.5 3.5 0 0 1 83.5 77Z"
+        android:fillColor="@color/settings_search_logo_color_2" />
+    <path
+        android:pathData="M83.5 87H99.5A3.5 3.5 0 0 1 103 90.5V90.5A3.5 3.5 0 0 1 99.5 94H83.5A3.5 3.5 0 0 1 80 90.5V90.5A3.5 3.5 0 0 1 83.5 87Z"
+        android:fillColor="@color/settings_search_logo_color_2" />
+    <path
+        android:pathData="M83.5 97H99.5A3.5 3.5 0 0 1 103 100.5V100.5A3.5 3.5 0 0 1 99.5 104H83.5A3.5 3.5 0 0 1 80 100.5V100.5A3.5 3.5 0 0 1 83.5 97Z"
+        android:fillColor="@color/settings_search_logo_color_2" />
+</vector>

@@ -40,8 +40,10 @@ void DataSharingUIDelegateAndroid::LazyInitializeIfNeeded() {
   // TODO(ritikagup): Add UMA metrics to track number of times init happens.
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_profile = profile_->GetJavaObject();
-  java_obj_.Reset(
-      env, Java_DataSharingUiDelegateAndroid_create(env, j_profile).obj());
+  java_obj_.Reset(env,
+                  Java_DataSharingUiDelegateAndroid_create(env, j_profile));
 }
 
 }  // namespace data_sharing
+
+DEFINE_JNI(DataSharingUiDelegateAndroid)

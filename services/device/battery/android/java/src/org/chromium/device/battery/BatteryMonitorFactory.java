@@ -21,7 +21,7 @@ import java.util.List;
  * status changes.
  */
 @NullMarked
-public class BatteryMonitorFactory implements InterfaceFactory<BatteryMonitor> {
+public class BatteryMonitorFactory implements InterfaceFactory<@Nullable BatteryMonitor> {
     private static final String TAG = "BattMonitorFactory";
 
     // Backing source of battery information.

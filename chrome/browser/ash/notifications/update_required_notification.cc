@@ -6,13 +6,14 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 
 using NotificationType = policy::MinimumVersionPolicyHandler::NotificationType;
 using MessageFormatter = base::i18n::MessageFormatter;
@@ -114,7 +115,14 @@ message_center::SystemNotificationWarningLevel GetWarningLevel(
 
 UpdateRequiredNotification::UpdateRequiredNotification() = default;
 
-UpdateRequiredNotification::~UpdateRequiredNotification() = default;
+UpdateRequiredNotification::~UpdateRequiredNotification() {
+  if (message_center::MessageCenter::Get()) {
+    Hide();
+  } else {
+    // TODO(crbug.com/454766826): Fix shutdown order so this isn't needed.
+    CHECK_IS_TEST();
+  }
+}
 
 void UpdateRequiredNotification::Show(NotificationType type,
                                       base::TimeDelta warning_time,
@@ -147,7 +155,7 @@ void UpdateRequiredNotification::DisplayNotification(
   message_center::RichNotificationData data;
   data.buttons.push_back(message_center::ButtonInfo(button_text));
 
-  message_center::Notification notification = ash::CreateSystemNotification(
+  auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kUpdateRequiredNotificationId,
       title, message, std::u16string() /*display_source*/, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -157,13 +165,15 @@ void UpdateRequiredNotification::DisplayNotification(
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_factory_.GetWeakPtr()),
       vector_icons::kBusinessIcon, color_type);
-  notification.set_priority(priority);
+  notification->set_priority(priority);
 
-  SystemNotificationHelper::GetInstance()->Display(notification);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 void UpdateRequiredNotification::Hide() {
-  SystemNotificationHelper::GetInstance()->Close(kUpdateRequiredNotificationId);
+  message_center::MessageCenter::Get()->RemoveNotification(
+      kUpdateRequiredNotificationId, false /* by_user */);
 }
 
 void UpdateRequiredNotification::Close(bool by_user) {

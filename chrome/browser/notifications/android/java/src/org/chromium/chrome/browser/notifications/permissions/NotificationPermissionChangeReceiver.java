@@ -48,11 +48,16 @@ public class NotificationPermissionChangeReceiver extends BroadcastReceiver {
             return;
         }
 
+        boolean blockedState =
+                intent.getBooleanExtra(NotificationManager.EXTRA_BLOCKED_STATE, false);
+
         String channelId = intent.getStringExtra(NotificationManager.EXTRA_NOTIFICATION_CHANNEL_ID);
         if (channelId == null) {
             return;
         }
         NotificationSettingsBridge.onNotificationChannelStateChanged(
                 channelId, intent.getBooleanExtra(NotificationManager.EXTRA_BLOCKED_STATE, false));
+        NotificationUmaTracker.getInstance()
+                .onNotificationChannelPermissionSettingChange(channelId, blockedState);
     }
 }

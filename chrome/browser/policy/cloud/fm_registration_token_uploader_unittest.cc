@@ -60,6 +60,7 @@ class FmRegistrationTokenUploaderTest : public testing::Test {
         core_(dm_protocol::kChromeDevicePolicyType,
               std::string(),
               &mock_store_,
+              &mock_extension_install_store_,
               task_environment_.GetMainThreadTaskRunner(),
               network::TestNetworkConnectionTracker::CreateGetter()) {}
 
@@ -76,6 +77,7 @@ class FmRegistrationTokenUploaderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockInvalidationListener> mock_invalidation_listener_;
   testing::NiceMock<MockCloudPolicyStore> mock_store_;
+  testing::NiceMock<MockCloudPolicyStore> mock_extension_install_store_;
   CloudPolicyCore core_;
 };
 
@@ -222,6 +224,21 @@ TEST_F(FmRegistrationTokenUploaderTest,
           MockInvalidationListener::RegistrationTokenUploadStatus::kFailed));
   uploader.OnRegistrationTokenReceived(kFakeRegistrationToken,
                                        kFakeTokenEndOfLife);
+  testing::Mock::VerifyAndClearExpectations(&mock_invalidation_listener_);
+
+  // The first retry should be scheduled in about 5 minutes.
+  // Let's wait for less (4 minutes) and check that no updates have been sent to
+  // the listener.
+
+  EXPECT_CALL(mock_invalidation_listener_, SetRegistrationUploadStatus(_))
+      .Times(0);
+
+  task_environment_.FastForwardBy(base::Minutes(4));
+  testing::Mock::VerifyAndClearExpectations(&mock_invalidation_listener_);
+
+  // Now setup up the actual expectations for a successful request and wait for
+  // the remaining minute.
+
   // Make next registration token upload requests successful.
   SetRegistrationTokenUploadState(
       *client_ptr,

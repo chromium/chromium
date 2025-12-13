@@ -12,6 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -65,6 +67,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -126,31 +130,41 @@ static bool ShouldDisplayWebNotificationOnFullScreen(Profile* profile,
 #else
   // Check to see if this notification comes from a webpage that is displaying
   // fullscreen content.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // Only consider the browsers for the profile that created the notification
-    if (browser->profile() != profile)
-      continue;
+  bool found = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, &origin,
+       &found](BrowserWindowInterface* browser_window_interface) {
+        // Only consider the browsers for the profile that created the
+        // notification
+        const Profile* const browser_profile =
+            browser_window_interface->GetProfile();
+        if (browser_profile != profile) {
+          return true;
+        }
 
-    content::WebContents* active_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    if (!active_contents)
-      continue;
+        content::WebContents* const active_contents =
+            browser_window_interface->GetTabStripModel()
+                ->GetActiveWebContents();
+        if (!active_contents) {
+          return true;
+        }
 
-    // Check to see if
-    //  (a) the active tab in the browser shares its origin with the
-    //      notification.
-    //  (b) the browser is fullscreen
-    //  (c) the browser has focus.
-    if (active_contents->GetURL().DeprecatedGetOriginAsURL() == origin &&
-        browser->GetFeatures()
-            .exclusive_access_manager()
-            ->context()
-            ->IsFullscreen() &&
-        browser->window()->IsActive()) {
-      return true;
-    }
-  }
-  return false;
+        // Check to see if
+        //  (a) the active tab in the browser shares its origin with the
+        //      notification.
+        //  (b) the browser is fullscreen
+        //  (c) the browser has focus.
+        if (active_contents->GetURL().DeprecatedGetOriginAsURL() == origin &&
+            browser_window_interface->GetFeatures()
+                .exclusive_access_manager()
+                ->context()
+                ->IsFullscreen() &&
+            browser_window_interface->GetWindow()->IsActive()) {
+          found = true;
+        }
+        return !found;
+      });
+  return found;
 #endif
 }
 
@@ -337,7 +351,7 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
           AreSuspiciousNotificationsAllowlistedByUser(origin),
           is_show_warnings_for_suspicious_notifications_enabled
               ? base::BindOnce(&PlatformNotificationServiceImpl::
-                                   UpdatePersistentMetadataThenDisplay,
+                                   HandleOnDeviceModelResponseThenMaybeDisplay,
                                weak_ptr_factory_.GetWeakPtr(), notification,
                                std::move(metadata))
               : base::DoNothing());
@@ -591,7 +605,7 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
       notification_data.title, notification_data.body,
       ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(
           notification_resources.notification_icon)),
-      base::UTF8ToUTF16(origin.host()), origin, notifier_id, optional_fields,
+      base::UTF8ToUTF16(origin.GetHost()), origin, notifier_id, optional_fields,
       nullptr /* delegate */);
 
   notification.set_context_message(DisplayNameForContextMessage(origin));
@@ -694,7 +708,7 @@ std::u16string PlatformNotificationServiceImpl::DisplayNameForContextMessage(
   if (origin.SchemeIs(extensions::kExtensionScheme)) {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(profile_)->GetExtensionById(
-            origin.host(), extensions::ExtensionRegistry::EVERYTHING);
+            origin.GetHost(), extensions::ExtensionRegistry::EVERYTHING);
     DCHECK(extension);
 
     return base::UTF8ToUTF16(extension->name());
@@ -773,20 +787,46 @@ bool PlatformNotificationServiceImpl::IsActivelyInstalledWebAppScope(
 #endif
 }
 
-void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
-    const message_center::Notification& notification,
-    std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
-    bool should_show_warning,
-    std::optional<std::string> serialized_content_detection_metadata) {
+void PlatformNotificationServiceImpl::
+    HandleOnDeviceModelResponseThenMaybeDisplay(
+        const message_center::Notification& notification,
+        std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
+        bool should_show_warning,
+        std::optional<std::string> serialized_content_detection_metadata) {
+  bool suspicious_notification_revoked = false;
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kAutoRevokeSuspiciousNotification) &&
+      should_show_warning) {
+#if BUILDFLAG(IS_ANDROID)
+    suspicious_notification_revoked = AbusiveNotificationPermissionsManager::
+        MaybeRevokeSuspiciousNotificationPermission(profile_,
+                                                    notification.origin_url());
+#endif
+
+    auto* service =
+        NotificationsEngagementServiceFactory::GetForProfile(profile_);
+    // This service might be missing for incognito profiles and in tests.
+    if (!suspicious_notification_revoked && service) {
+      // Increment suspicious count if the notification permission has not been
+      // revoked.
+      service->RecordNotificationSuspicious(notification.origin_url());
+    }
+  }
   if (base::FeatureList::IsEnabled(
           safe_browsing::kReportNotificationContentDetectionData)) {
+    // If the notification permission has been revoked, we do still want to
+    // record the notification in the database for re-grant scenario; however;
+    // there is no need to trigger `DidUpdatePersistentMetadata` callback.
     content::PlatformNotificationContext::WriteResourcesResultCallback
-        callback = base::BindOnce(
-            &PlatformNotificationServiceImpl::DidUpdatePersistentMetadata,
-            weak_ptr_factory_.GetWeakPtr(), std::move(persistent_metadata),
-            notification, should_show_warning);
+        callback = suspicious_notification_revoked
+                       ? base::DoNothing()
+                       : base::BindOnce(&PlatformNotificationServiceImpl::
+                                            DidUpdatePersistentMetadata,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        std::move(persistent_metadata),
+                                        notification, should_show_warning);
 #if BUILDFLAG(IS_ANDROID)
-    if (should_show_warning) {
+    if (should_show_warning && !suspicious_notification_revoked) {
       // Keep track of suspicious notification ids.
       safe_browsing::UpdateSuspiciousNotificationIds(
           HostContentSettingsMapFactory::GetForProfile(profile_),
@@ -807,6 +847,11 @@ void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
     }
     std::move(callback).Run(/*success=*/false);
   } else {
+    // Notification permission has been revoked due to suspicious content; do
+    // not show notification.
+    if (suspicious_notification_revoked) {
+      return;
+    }
     DoUpdatePersistentMetadataThenDisplay(std::move(persistent_metadata),
                                           notification, should_show_warning);
   }

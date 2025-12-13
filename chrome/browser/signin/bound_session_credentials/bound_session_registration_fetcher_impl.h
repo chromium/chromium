@@ -46,7 +46,8 @@ class BoundSessionRegistrationFetcherImpl
     kRequiredFieldMissing = 5,
     kInvalidSessionParams = 6,
     kRequiredCredentialFieldMissing = 7,
-    kMaxValue = kRequiredCredentialFieldMissing
+    kUnexpectedParserError = 8,
+    kMaxValue = kUnexpectedParserError
   };
 
   BoundSessionRegistrationFetcherImpl(
@@ -73,14 +74,7 @@ class BoundSessionRegistrationFetcherImpl
   template <class Result>
   using RegistrationErrorOr = base::expected<Result, RegistrationError>;
 
-  FRIEND_TEST_ALL_PREFIXES(BoundSessionRegistrationFetcherImplTest,
-                           ParseCredentials);
-  FRIEND_TEST_ALL_PREFIXES(BoundSessionRegistrationFetcherImplTest,
-                           ParseCredentialsError);
-  FRIEND_TEST_ALL_PREFIXES(BoundSessionRegistrationFetcherImplTest,
-                           ParseCredentialsSkipsExtraFields);
-
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
   void OnRegistrationTokenCreated(
       base::ElapsedTimer generate_registration_token_timer,
       std::optional<BindingKeyRegistrationTokenHelper::Result> result);
@@ -92,11 +86,7 @@ class BoundSessionRegistrationFetcherImpl
           params_or_error);
 
   RegistrationErrorOr<bound_session_credentials::BoundSessionParams>
-  ParseJsonResponse(const GURL& request_url,
-                    std::unique_ptr<std::string> response_body);
-
-  RegistrationErrorOr<std::vector<bound_session_credentials::Credential>>
-  ParseCredentials(const base::Value::List& credentials_list);
+  ParseJsonResponse(const std::string& response_body);
 
   BoundSessionRegistrationFetcherParam registration_params_;
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;

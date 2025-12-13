@@ -5,17 +5,13 @@
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_delegate_ios_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace enterprise {
 namespace {
-std::unique_ptr<KeyedService> BuildProfileIdService(
-    web::BrowserState* browser_state) {
-  auto* profile = ProfileIOS::FromBrowserState(browser_state);
-  DCHECK(profile);
+std::unique_ptr<KeyedService> BuildProfileIdService(ProfileIOS* profile) {
   return std::make_unique<ProfileIdService>(
       std::make_unique<ProfileIdDelegateIOSImpl>(profile), profile->GetPrefs());
 }
@@ -35,9 +31,9 @@ ProfileIdService* ProfileIdServiceFactoryIOS::GetForProfile(
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileIdServiceFactoryIOS::TestingFactory
 ProfileIdServiceFactoryIOS::GetDefaultFactory() {
-  return base::BindRepeating(&BuildProfileIdService);
+  return base::BindOnce(&BuildProfileIdService);
 }
 
 ProfileIdServiceFactoryIOS::ProfileIdServiceFactoryIOS()
@@ -47,9 +43,8 @@ ProfileIdServiceFactoryIOS::ProfileIdServiceFactoryIOS()
 ProfileIdServiceFactoryIOS::~ProfileIdServiceFactoryIOS() = default;
 
 std::unique_ptr<KeyedService>
-ProfileIdServiceFactoryIOS::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  return BuildProfileIdService(browser_state);
+ProfileIdServiceFactoryIOS::BuildServiceInstanceFor(ProfileIOS* profile) const {
+  return BuildProfileIdService(profile);
 }
 
 }  // namespace enterprise

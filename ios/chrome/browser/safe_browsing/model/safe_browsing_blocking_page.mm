@@ -86,8 +86,6 @@ void ReportOnSecurityInterstitialProceeded(
     ProfileIOS* profile,
     GURL url,
     safe_browsing::SBThreatType threat_type) {
-  if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
     enterprise_connectors::ReportingEventRouter* router =
         enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
             profile);
@@ -99,7 +97,6 @@ void ReportOnSecurityInterstitialProceeded(
     router->OnSecurityInterstitialProceeded(
         url, safe_browsing::GetThreatTypeStringForInterstitial(threat_type),
         /*net_error_code=*/0, referrer_chain);
-  }
 }
 
 }  // namespace

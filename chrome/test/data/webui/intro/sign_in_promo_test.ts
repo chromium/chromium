@@ -85,13 +85,13 @@ suite('SignInPromoTest', function() {
     test('buttons are disabled if disclaimer is empty', async function() {
       checkSignInButtons(signInPromoElement, true);
       assertTrue(
-          signInPromoElement.$.disclaimerText.textContent!.trim().length === 0);
+          signInPromoElement.$.disclaimerText.textContent.trim().length === 0);
 
       webUIListenerCallback(
           'managed-device-disclaimer-updated', 'managedDeviceDisclaimer');
       await microtasksFinished();
       assertTrue(
-          signInPromoElement.$.disclaimerText.textContent!.trim().length !== 0);
+          signInPromoElement.$.disclaimerText.textContent.trim().length !== 0);
       checkSignInButtons(signInPromoElement, false);
     });
   });

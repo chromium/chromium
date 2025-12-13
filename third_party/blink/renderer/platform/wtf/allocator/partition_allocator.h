@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 class WTF_EXPORT PartitionAllocator {
  public:
@@ -33,7 +33,7 @@ class WTF_EXPORT PartitionAllocator {
   template <typename T>
   static size_t QuantizedSize(size_t count) {
     CHECK_LE(count, MaxElementCountInBackingStore<T>());
-    return WTF::Partitions::BufferPotentialCapacity(count * sizeof(T));
+    return Partitions::BufferPotentialCapacity(count * sizeof(T));
   }
 
   template <typename T>
@@ -74,8 +74,7 @@ class WTF_EXPORT PartitionAllocator {
 
   template <typename Return, typename Metadata>
   static Return Malloc(size_t size, const char* type_name) {
-    return reinterpret_cast<Return>(
-        WTF::Partitions::FastMalloc(size, type_name));
+    return reinterpret_cast<Return>(Partitions::FastMalloc(size, type_name));
   }
 
   template <typename T, typename HashTable>
@@ -87,7 +86,7 @@ class WTF_EXPORT PartitionAllocator {
     return true;
   }
 
-  static void Free(void* address) { WTF::Partitions::FastFree(address); }
+  static void Free(void* address) { Partitions::FastFree(address); }
   template <typename T>
   static void* NewArray(size_t bytes) {
     return Malloc<void*, void>(bytes, WTF_HEAP_PROFILER_TYPE_NAME(T));
@@ -124,7 +123,7 @@ class WTF_EXPORT PartitionAllocator {
 template <>
 WTF_EXPORT char* PartitionAllocator::AllocateVectorBacking<char>(size_t);
 
-}  // namespace WTF
+}  // namespace blink
 
 #define USE_ALLOCATOR(ClassName, Allocator)                      \
  public:                                                         \

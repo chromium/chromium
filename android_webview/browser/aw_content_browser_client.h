@@ -13,14 +13,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "storage/browser/quota/quota_settings.h"
@@ -298,9 +297,6 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   AttributionReportingOsRegistrars GetAttributionReportingOsRegistrars(
       content::WebContents* web_contents) override;
   blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;
-  network::mojom::IpProtectionProxyBypassPolicy
-  GetIpProtectionProxyBypassPolicy() override;
-  bool WillProvidePublicFirstPartySets() override;
   bool IsFullCookieAccessAllowed(
       content::BrowserContext* browser_context,
       content::WebContents* web_contents,
@@ -325,6 +321,8 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& accessing_origin,
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific) override;
+
+  bool ShouldAnimateBackForwardTransitions() override;
 
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;

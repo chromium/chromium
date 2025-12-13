@@ -33,7 +33,7 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     /** Interface for receiving notifications of user actions. */
     public interface Callback {
         /** Called when the user has selected to uninstall the app. */
-        public void onUninstall();
+        void onUninstall();
     }
 
     private static final String TAG = "UpdateReportAbuseDlg";
@@ -48,7 +48,7 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     private final @Nullable String mAppShortName;
 
     // The package name for the app the user is uninstalling.
-    private final String mAppPackageName;
+    private final @Nullable String mAppPackageName;
 
     // Whether to show the checkbox for reporting abuse.
     private final boolean mShowAbuseCheckbox;
@@ -62,7 +62,7 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     public WebApkUpdateReportAbuseDialog(
             Context activityContext,
             ModalDialogManager manager,
-            String appPackageName,
+            @Nullable String appPackageName,
             @Nullable String appShortName,
             boolean showAbuseCheckbox,
             Callback callback) {
@@ -139,6 +139,8 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     }
 
     private void showAppInfoToUninstall() {
+        assert mAppPackageName != null;
+
         if (!PackageUtils.isPackageInstalled(mAppPackageName)) {
             Log.i(TAG, "WebApk not found: " + mAppPackageName);
             return;

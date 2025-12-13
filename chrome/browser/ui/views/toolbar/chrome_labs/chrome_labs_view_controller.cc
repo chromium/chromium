@@ -100,13 +100,11 @@ uint32_t GetCurrentDay() {
 }  // namespace
 
 ChromeLabsViewController::ChromeLabsViewController(
-    const ChromeLabsModel* model,
     ChromeLabsBubbleView* chrome_labs_bubble_view,
     Browser* browser,
     flags_ui::FlagsState* flags_state,
     flags_ui::FlagsStorage* flags_storage)
-    : model_(model),
-      chrome_labs_bubble_view_(chrome_labs_bubble_view),
+    : chrome_labs_bubble_view_(chrome_labs_bubble_view),
       browser_(browser),
       flags_state_(flags_state),
       flags_storage_(flags_storage) {
@@ -131,7 +129,8 @@ int ChromeLabsViewController::GetIndexOfEnabledLabState(
 
 void ChromeLabsViewController::ParseModelDataAndAddLabs() {
   // Create each lab item.
-  const std::vector<LabInfo>& all_labs = model_->GetLabInfo();
+  const std::vector<LabInfo>& all_labs =
+      ChromeLabsModel::GetInstance()->GetLabInfo();
   for (const auto& lab : all_labs) {
     const flags_ui::FeatureEntry* entry =
         flags_state_->FindFeatureEntryByName(lab.internal_name);

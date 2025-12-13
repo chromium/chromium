@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -63,14 +62,23 @@ class NetworkTimeTrackerTest : public ::testing::Test {
   class NetworkTimeTestObserver
       : public NetworkTimeTracker::NetworkTimeObserver {
    public:
-    NetworkTimeTestObserver() = default;
+    using Super = NetworkTimeTracker::NetworkTimeObserver;
+    explicit NetworkTimeTestObserver(NetworkTimeTracker* tracker)
+        : Super(tracker) {}
     ~NetworkTimeTestObserver() override = default;
 
     void OnNetworkTimeChanged(TimeTracker::TimeTrackerState state) override {
       times_called_++;
       last_state_ = state;
     }
+
+    void OnNetworkTimeTrackerDestroyed(NetworkTimeTracker* tracker) override {
+      Super::OnNetworkTimeTrackerDestroyed(tracker);
+      times_tracker_destroyed_++;
+    }
+
     int times_called_ = 0;
+    int times_tracker_destroyed_ = 0;
     TimeTracker::TimeTrackerState last_state_;
   };
 
@@ -741,21 +749,50 @@ TEST_F(NetworkTimeTrackerTest, CustomFetchBehaviorTest) {
 }
 
 TEST_F(NetworkTimeTrackerTest, ObserverTest) {
-  NetworkTimeTestObserver observer;
-  base::Time now = clock_->Now();
-  base::TimeTicks now_ticks = tick_clock_->NowTicks();
-  base::Time in_network_time = now;
-  tracker_->AddObserver(&observer);
-  UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
-                    now_ticks);
-  base::TimeDelta expected_offset = latency_ / 2;
+  // Test that the observer is notified when the network time changes.
+  // Also test that the observer removes itself as an observer when it is
+  // destroyed.
+  {
+    NetworkTimeTestObserver observer(tracker_.get());
+    base::Time now = clock_->Now();
+    base::TimeTicks now_ticks = tick_clock_->NowTicks();
+    base::Time in_network_time = now;
+    UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
+                      now_ticks);
+    base::TimeDelta expected_offset = latency_ / 2;
 
-  EXPECT_EQ(observer.times_called_, 1);
-  EXPECT_EQ(observer.last_state_.known_time, in_network_time - latency_ / 2);
-  EXPECT_EQ(observer.last_state_.system_time, now - expected_offset);
-  EXPECT_EQ(observer.last_state_.system_ticks, now_ticks - expected_offset);
-  EXPECT_EQ(observer.last_state_.uncertainty,
-            resolution_ + latency_ + adjustment_);
+    EXPECT_EQ(observer.times_called_, 1);
+    EXPECT_EQ(observer.last_state_.known_time, in_network_time - latency_ / 2);
+    EXPECT_EQ(observer.last_state_.system_time, now - expected_offset);
+    EXPECT_EQ(observer.last_state_.system_ticks, now_ticks - expected_offset);
+    EXPECT_EQ(observer.last_state_.uncertainty,
+              resolution_ + latency_ + adjustment_);
+  }
+  // The observer from the previous scope should have removed itself as an
+  // observer when it was destroyed, so this should not crash.
+  {
+    base::Time now = clock_->Now();
+    base::TimeTicks now_ticks = tick_clock_->NowTicks();
+    base::Time in_network_time = now;
+    UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
+                      now_ticks);
+  }
+}
+
+TEST_F(NetworkTimeTrackerTest, OnNetworkTimeTrackerDestroyed) {
+  // Reset the clock and tick clock pointers to avoid dangling raw_ptr errors.
+  // These clock objects are owned by the NetworkTimeTracker, and the test
+  // just keeps an extra pointer to them.
+  clock_ = nullptr;
+  tick_clock_ = nullptr;
+
+  // The observer should remove itself as an observer when it is notified that
+  // its network time tracker is destroyed, so this test should not crash when
+  // the observer is destroyed.
+  NetworkTimeTestObserver observer(tracker_.get());
+  ASSERT_EQ(observer.times_tracker_destroyed_, 0);
+  tracker_.reset();
+  ASSERT_EQ(observer.times_tracker_destroyed_, 1);
 }
 
 }  // namespace network_time

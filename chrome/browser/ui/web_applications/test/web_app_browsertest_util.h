@@ -22,6 +22,7 @@
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
+class BrowserWindowInterface;
 class GURL;
 class Profile;
 
@@ -123,7 +124,7 @@ AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser);
 // be defined.
 Browser* FindWebAppBrowser(Profile* profile, const webapps::AppId& app_id);
 
-void CloseAndWait(Browser* browser);
+void CloseAndWait(BrowserWindowInterface* browser);
 
 bool IsBrowserOpen(const Browser* test_browser);
 
@@ -136,7 +137,7 @@ std::optional<webapps::AppId> ForceInstallWebApp(Profile* profile, GURL url);
 // closing the web app window that appears after installation from page.
 class BrowserWaiter : public BrowserListObserver {
  public:
-  explicit BrowserWaiter(Browser* filter = nullptr);
+  explicit BrowserWaiter(BrowserWindowInterface* filter = nullptr);
   ~BrowserWaiter() override;
 
   Browser* AwaitAdded(
@@ -149,7 +150,8 @@ class BrowserWaiter : public BrowserListObserver {
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  const raw_ptr<Browser, AcrossTasksDanglingUntriaged> filter_ = nullptr;
+  const raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> filter_ =
+      nullptr;
 
   base::RunLoop added_run_loop_;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> added_browser_ = nullptr;

@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -123,7 +124,7 @@ class CrossThreadPendingSharedURLLoaderFactoryTest : public ::testing::Test {
             [](scoped_refptr<base::SequencedTaskRunner> client_runner,
                base::OnceClosure quit_closure,
                std::unique_ptr<SimpleURLLoader> loader,
-               std::unique_ptr<std::string> result) {
+               std::optional<std::string> result) {
               EXPECT_TRUE(client_runner->RunsTasksInCurrentSequence());
               if (!result) {
                 ADD_FAILURE();

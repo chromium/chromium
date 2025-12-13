@@ -14,6 +14,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
+#include "mojo/public/cpp/test_support/validation_errors_test_util.h"
+#include "mojo/public/tools/fuzzers/suppress_validation_error_logging.h"
 
 namespace content::mojolpm {
 // Global environment needed to run the interface being tested.

@@ -119,6 +119,7 @@ class ServiceWorkerContextCoreTest : public testing::Test,
     blink::ServiceWorkerStatusCode status;
     context()->UnregisterServiceWorker(
         scope, key, /*is_immediate=*/false,
+        ServiceWorkerRegistration::DeleteInitiator::kTest,
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode result_status) {
               status = result_status;

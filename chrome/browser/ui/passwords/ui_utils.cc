@@ -50,7 +50,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
-#include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #endif
 
 namespace {
@@ -213,6 +212,9 @@ std::string GetGooglePasswordManagerSubPageURLStr() {
 #if !BUILDFLAG(IS_ANDROID)
 void NavigateToManagePasswordsPage(Browser* browser,
                                    ManagePasswordsReferrer referrer) {
+  if (!browser) {
+    return;
+  }
   base::UmaHistogramEnumeration("PasswordManager.ManagePasswordsReferrer",
                                 referrer);
   chrome::ShowPasswordManager(browser);
@@ -221,6 +223,9 @@ void NavigateToManagePasswordsPage(Browser* browser,
 void NavigateToPasswordDetailsPage(Browser* browser,
                                    const std::string& password_domain_name,
                                    ManagePasswordsReferrer referrer) {
+  if (!browser) {
+    return;
+  }
   base::UmaHistogramEnumeration("PasswordManager.ManagePasswordsReferrer",
                                 referrer);
   chrome::ShowPasswordDetailsPage(browser, password_domain_name);

@@ -1,0 +1,51 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "fullscreen_signin_screen_coordinator.h",
+    "fullscreen_signin_screen_coordinator.mm",
+    "fullscreen_signin_screen_mediator.h",
+    "fullscreen_signin_screen_mediator.mm",
+    "fullscreen_signin_screen_mediator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/metrics:metrics_pref_names",
+    "//components/prefs",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync/service",
+    "//components/web_resource",
+    "//ios/chrome/app:change_profile_continuation",
+    "//ios/chrome/browser/authentication/fullscreen_signin_screen/ui",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:request_helper",
+    "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
+    "//ios/chrome/browser/authentication/ui_bundled/identity_chooser",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/logging",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/first_run/ui_bundled:utils",
+    "//ios/chrome/browser/first_run/ui_bundled/tos",
+    "//ios/chrome/browser/first_run/ui_bundled/uma",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator:animated_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:constants",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/sync/model",
+  ]
+}

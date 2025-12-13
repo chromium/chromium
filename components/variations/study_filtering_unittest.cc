@@ -940,10 +940,12 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithCountry) {
     AddExperiment("Default", 100, study);
     study->set_consistency(test.consistency);
     study->mutable_filter()->add_platform(Study::PLATFORM_ANDROID);
-    if (test.filter_country)
+    if (test.filter_country) {
       study->mutable_filter()->add_country(test.filter_country);
-    if (test.filter_exclude_country)
+    }
+    if (test.filter_exclude_country) {
       study->mutable_filter()->add_exclude_country(test.filter_exclude_country);
+    }
 
     auto client_state = CreateDummyClientFilterableState();
     client_state->locale = "en-CA";

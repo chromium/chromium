@@ -49,7 +49,8 @@
 <if expr="not is_linux">
           <template is="dom-if" if="[[prefs.extensions.theme.id.value]]">
             <div class="separator"></div>
-            <cr-button id="useDefault" on-click="onUseDefaultClick_">
+            <cr-button id="useDefault" on-click="onUseDefaultClick_"
+                aria-label="$i18n{resetToDefaultTheme}">
               $i18n{resetToDefault}
             </cr-button>
           </template>
@@ -89,7 +90,8 @@
           <template is="dom-if" if="[[showResetPinnedActionsButton_]]">
             <div class="separator"></div>
             <cr-button id="resetPinnedToolbarActions"
-                on-click="onResetPinnedToolbarActionsClick_">
+                on-click="onResetPinnedToolbarActionsClick_"
+                aria-label="$i18n{resetToolbarToDefault}">
               $i18n{resetToDefault}
             </cr-button>
           </template>
@@ -171,6 +173,19 @@
             label="$i18n{showBookmarksBar}">
         </settings-toggle-button>
 
+        <template is="dom-if" if="[[showVerticalTabsEnabled_]]">
+          <div class="cr-row">
+            <div class="flex cr-padded-text" aria-hidden="true">
+              $i18n{tabStripPosition}
+            </div>
+            <settings-dropdown-menu id="tabStripPosition"
+                label="$i18n{tabStripPosition}"
+                pref="{{prefs.vertical_tabs.enabled}}"
+                menu-options="[[tabStripOptions_]]">
+            </settings-dropdown-menu>
+          </div>
+        </template>
+
         <settings-toggle-button class="hr" id="showSavedTabGroups"
             pref="{{prefs.bookmark_bar.show_tab_groups}}"
             label="$i18n{showTabGroupsInBookmarksBar}">
@@ -181,25 +196,6 @@
             label="$i18n{autoPinNewTabGroups}">
         </settings-toggle-button>
 
-        <template is="dom-if" if="[[showTabSearchPositionSettings_]]" restamp>
-          <div class="cr-row" id="tabSearchPositionRow">
-            <div class="flex cr-padded-text" aria-hidden="true">
-              $i18n{tabSearchPosition}
-            </div>
-            <template is="dom-if" if="[[showTabSearchPositionRestartButton_]]"
-                restamp>
-              <cr-button id="tabSearchPositionRestart" role="alert"
-                  on-click="onTabSearchPositionRestartClick_">
-                $i18n{restart}
-              </cr-button>
-            </template>
-            <settings-dropdown-menu id="tabSearchPositionDropdown"
-                label="$i18n{tabSearchPosition}"
-                pref="{{prefs.tab_search.is_right_aligned}}"
-                menu-options="[[tabSearchOptions_]]">
-            </settings-dropdown-menu>
-          </div>
-        </template>
         <div class="cr-row">
           <div class="flex cr-padded-text" aria-hidden="true">
             $i18n{sidePanelPosition}
@@ -284,6 +280,10 @@
         </settings-toggle-button>
 </if>
       </div>
+      <settings-toggle-button class="hr" id="splitViewDragAndDrop"
+          pref="{{prefs.browser.split_view_drag_and_drop_enabled}}"
+          label="$i18n{allowSplitViewDragAndDrop}">
+      </settings-toggle-button>
     </settings-section>
     <template is="dom-if" if="[[showManagedThemeDialog_]]" restamp>
       <managed-dialog on-close="onManagedDialogClosed_"

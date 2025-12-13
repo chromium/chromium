@@ -32,11 +32,11 @@ void SeekableBuffer::Clear() {
 }
 
 size_t SeekableBuffer::Read(base::span<uint8_t> data) {
-  return InternalRead(data, data.size(), true, 0);
+  return InternalRead(base::SpanOrSize(data), true, 0);
 }
 
 size_t SeekableBuffer::Peek(base::span<uint8_t> data, size_t forward_offset) {
-  return InternalRead(data, data.size(), false, forward_offset);
+  return InternalRead(base::SpanOrSize(data), false, forward_offset);
 }
 
 base::span<const uint8_t> SeekableBuffer::GetCurrentChunk() const {
@@ -105,7 +105,8 @@ bool SeekableBuffer::SeekForward(size_t num_bytes) {
   }
 
   // Do a read of `num_bytes` bytes.
-  const size_t bytes_taken = InternalRead(std::nullopt, num_bytes, true, 0);
+  const size_t bytes_taken =
+      InternalRead(base::SpanOrSize<uint8_t>(num_bytes), true, 0);
   CHECK_EQ(bytes_taken, num_bytes);
   return true;
 }
@@ -174,8 +175,7 @@ void SeekableBuffer::EvictBackwardBuffers() {
   }
 }
 
-size_t SeekableBuffer::InternalRead(std::optional<base::span<uint8_t>> data,
-                                    size_t num_bytes,
+size_t SeekableBuffer::InternalRead(base::SpanOrSize<uint8_t> data,
                                     bool advance_position,
                                     size_t forward_offset) {
   auto current_buffer = current_buffer_;
@@ -183,29 +183,26 @@ size_t SeekableBuffer::InternalRead(std::optional<base::span<uint8_t>> data,
 
   size_t bytes_to_skip = forward_offset;
   size_t bytes_taken = 0;
-  while (bytes_taken < num_bytes) {
+  while (bytes_taken < data.size()) {
     if (current_buffer == buffers_.end()) {
       break;
     }
 
     scoped_refptr<DataBuffer> buffer = *current_buffer;
-    base::CheckedNumeric<size_t> remaining_bytes_in_buffer =
-        buffer->size() - current_buffer_offset;
+    auto buffer_data = buffer->data().subspan(current_buffer_offset);
 
     if (bytes_to_skip == 0) {
       // Find the right amount to copy from the current buffer referenced by
       // `buffer`. We shall copy no more than `size` bytes in total and
       // each single step copied no more than the current buffer size.
-      const size_t copied = std::min<size_t>(
-          num_bytes - bytes_taken, remaining_bytes_in_buffer.ValueOrDie());
+      const size_t copied =
+          std::min(data.size() - bytes_taken, buffer_data.size());
 
       // If seeking forward, data may be empty.
-      if (data) {
+      if (auto data_span = data.span()) {
         // We currently don't support only copying a subsection during reads.
-        CHECK_EQ(data.value().size(), num_bytes);
-        data->subspan(bytes_taken)
-            .copy_prefix_from(
-                buffer->data().subspan(current_buffer_offset, copied));
+        data_span->subspan(bytes_taken, copied)
+            .copy_from(buffer_data.first(copied));
       }
 
       // Increase total number of bytes copied, which regulates when to end this
@@ -216,8 +213,7 @@ size_t SeekableBuffer::InternalRead(std::optional<base::span<uint8_t>> data,
       // offset.
       current_buffer_offset += copied;
     } else {
-      const size_t skipped = std::min<size_t>(
-          remaining_bytes_in_buffer.ValueOrDie(), bytes_to_skip);
+      const size_t skipped = std::min(buffer_data.size(), bytes_to_skip);
       current_buffer_offset += skipped;
       bytes_to_skip -= skipped;
     }

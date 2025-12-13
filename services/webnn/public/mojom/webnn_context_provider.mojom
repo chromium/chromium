@@ -38,6 +38,10 @@ struct CreateContextSuccess {
   // of the context and is used to resolve a buffer in the service using the
   // context corresponding to this handle.
   blink.mojom.WebNNContextToken context_handle;
+  // Data pipes for transferring large data buffers between the renderer
+  // and the GPU process.
+  handle<data_pipe_producer>? write_tensor_producer;
+  handle<data_pipe_consumer>? read_tensor_consumer;
 };
 
 // Represents the return value of `WebNNContextProvider::CreateWebNNContext()`.

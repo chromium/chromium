@@ -138,14 +138,34 @@ cr-icon[icon='profiles:add'] {
 }
 
 #browseAsGuestButton {
-  margin-inline-start: var(--footer-spacing);
   padding: 8px 16px;
 }
 
 #browseAsGuestButton > cr-icon {
   margin-inline-end: 0;
-  --iron-icon-height: 24px;
-  --iron-icon-width: 24px;
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+}
+
+.footer-buttons-container {
+  display: flex;
+  margin-inline-start: var(--footer-spacing);
+  column-gap: 8px;
+}
+
+:host([is-open-all-profiles-button-experiment-enabled_]) .footer {
+  flex-direction: row-reverse;
+}
+
+:host([is-open-all-profiles-button-experiment-enabled_])
+  .footer-buttons-container {
+  margin-inline-start: 0;
+  margin-inline-end: var(--footer-spacing);
+}
+
+:host([is-open-all-profiles-button-experiment-enabled_]) #askOnStartup {
+  margin-inline-end: auto;
+  margin-inline-start: var(--footer-spacing);
 }
 
 cr-checkbox {

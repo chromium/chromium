@@ -18,6 +18,7 @@
 #include "services/media_session/public/cpp/features.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 
 namespace content {
@@ -34,30 +35,20 @@ std::set<media_session::mojom::MediaSessionAction> GetDefaultActions() {
           media_session::mojom::MediaSessionAction::kSeekBackward};
 }
 
-std::set<media_session::mojom::MediaSessionAction>
-AppendPictureInPictureActionsTo(
-    std::set<media_session::mojom::MediaSessionAction> actions) {
-  actions.insert(
-      {media_session::mojom::MediaSessionAction::kEnterPictureInPicture,
-       media_session::mojom::MediaSessionAction::kExitPictureInPicture});
-  return actions;
-}
-
 }  // namespace
 
 class MediaSessionControllersManagerTest
     : public RenderViewHostImplTestHarness,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   // Indices of the tuple parameters.
   static const int kIsInternalMediaSessionEnabled = 0;
   static const int kIsAudioFocusEnabled = 1;
+  static const int kIsBrowserInitiatedAutoPipEnabled = 2;
 
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back(media::kGlobalMediaControlsPictureInPicture);
 
     // Based on the parameters, switch them on.
     if (IsInternalMediaSessionEnabled()) {
@@ -75,6 +66,14 @@ class MediaSessionControllersManagerTest
           media_session::features::kMediaSessionService);
       disabled_features.push_back(
           media_session::features::kAudioFocusEnforcement);
+    }
+
+    if (IsBrowserInitiatedAutoPipEnabled()) {
+      enabled_features.push_back(
+          blink::features::kBrowserInitiatedAutomaticPictureInPicture);
+    } else {
+      disabled_features.push_back(
+          blink::features::kBrowserInitiatedAutomaticPictureInPicture);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -104,12 +103,29 @@ class MediaSessionControllersManagerTest
     return IsInternalMediaSessionEnabled() || IsAudioFocusEnabled();
   }
 
+  bool IsBrowserInitiatedAutoPipEnabled() const {
+    return std::get<kIsBrowserInitiatedAutoPipEnabled>(GetParam());
+  }
+
   void TearDown() override {
     manager_.reset();
     RenderViewHostImplTestHarness::TearDown();
   }
 
  protected:
+  std::set<media_session::mojom::MediaSessionAction>
+  AppendPictureInPictureActionsTo(
+      std::set<media_session::mojom::MediaSessionAction> actions) {
+    actions.insert(
+        {media_session::mojom::MediaSessionAction::kEnterPictureInPicture,
+         media_session::mojom::MediaSessionAction::kExitPictureInPicture});
+    if (IsBrowserInitiatedAutoPipEnabled()) {
+      actions.insert(
+          media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
+    }
+    return actions;
+  }
+
   MediaPlayerId media_player_id_ = MediaPlayerId::CreateMediaPlayerIdForTests();
   MediaPlayerId media_player_id2_ =
       MediaPlayerId::CreateMediaPlayerIdForTests();
@@ -392,8 +408,11 @@ TEST_P(MediaSessionControllersManagerTest,
 
 // First bool is to indicate whether InternalMediaSession is enabled.
 // Second bool is to indicate whether AudioFocus is enabled.
+// Third bool is to indicate whether BrowserInitiatedAutomaticPictureInPicture
+// is enabled.
 INSTANTIATE_TEST_SUITE_P(MediaSessionEnabledTestInstances,
                          MediaSessionControllersManagerTest,
                          ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
                                             ::testing::Bool()));
 }  // namespace content

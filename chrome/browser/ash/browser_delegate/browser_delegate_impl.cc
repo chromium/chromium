@@ -5,17 +5,27 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate_impl.h"
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_info.h"
+#include "ui/base/base_window.h"
 
 namespace ash {
 
@@ -34,6 +44,17 @@ BrowserType BrowserDelegateImpl::GetType() const {
 
 SessionID BrowserDelegateImpl::GetSessionID() const {
   return browser_->session_id();
+}
+
+const AccountId& BrowserDelegateImpl::GetAccountId() const {
+  const AccountId* id =
+      ash::AnnotatedAccountId::Get(browser_->profile()->GetOriginalProfile());
+  if (id) {
+    CHECK(id->is_valid());
+  } else {
+    CHECK_IS_TEST();
+  }
+  return id ? *id : EmptyAccountId();
 }
 
 bool BrowserDelegateImpl::IsOffTheRecord() const {
@@ -57,16 +78,57 @@ content::WebContents* BrowserDelegateImpl::GetWebContentsAt(
   return browser_->tab_strip_model()->GetWebContentsAt(index);
 }
 
+content::WebContents* BrowserDelegateImpl::GetInspectedWebContents() const {
+  if (GetType() != BrowserType::kDevTools) {
+    return nullptr;
+  }
+
+  content::WebContents* target_tab = nullptr;
+  if (auto* dev_tools_window = DevToolsWindow::AsDevToolsWindow(&*browser_)) {
+    target_tab = dev_tools_window->GetInspectedWebContents();
+  }
+
+  return target_tab;
+}
+
+ui::BaseWindow* BrowserDelegateImpl::GetWindow() const {
+  return browser_->window();
+}
+
 aura::Window* BrowserDelegateImpl::GetNativeWindow() const {
   return browser_->window()->GetNativeWindow();
 }
 
+std::optional<webapps::AppId> BrowserDelegateImpl::GetAppId() const {
+  // The implementation of `GetAppIdFromApplicationName()` isn't specific to
+  // WebApps, although the function resides in web_app_helpers.cc|h.
+  std::string app_id =
+      web_app::GetAppIdFromApplicationName(browser_->app_name());
+  return app_id.empty() ? std::nullopt : std::optional<webapps::AppId>(app_id);
+}
+
+bool BrowserDelegateImpl::IsWebApp() const {
+  return web_app::AppBrowserController::IsWebApp(&*browser_);
+}
+
+bool BrowserDelegateImpl::IsAttemptingToClose() const {
+  return browser_->IsAttemptingToCloseBrowser();
+}
+
 bool BrowserDelegateImpl::IsClosing() const {
-  return browser_->IsBrowserClosing();
+  return browser_->is_delete_scheduled();
 }
 
 bool BrowserDelegateImpl::IsActive() const {
   return browser_->window()->IsActive();
+}
+
+bool BrowserDelegateImpl::IsMinimized() const {
+  return browser_->window()->IsMinimized();
+}
+
+bool BrowserDelegateImpl::IsVisible() const {
+  return browser_->window()->IsVisible();
 }
 
 void BrowserDelegateImpl::Show() {
@@ -94,6 +156,14 @@ void BrowserDelegateImpl::AddTab(const GURL& url,
                                  TabDisposition disposition) {
   chrome::AddTabAt(&browser_.get(), url, index.has_value() ? *index : -1,
                    disposition == TabDisposition::kForeground);
+}
+
+void BrowserDelegateImpl::CloseWebContentsAt(size_t index,
+                                             UserGesture user_gesture) {
+  browser_->tab_strip_model()->CloseWebContentsAt(
+      index, user_gesture == UserGesture::kYes
+                 ? TabCloseTypes::CLOSE_USER_GESTURE
+                 : TabCloseTypes::CLOSE_NONE);
 }
 
 content::WebContents* BrowserDelegateImpl::NavigateWebApp(const GURL& url,
@@ -144,6 +214,14 @@ void BrowserDelegateImpl::MoveTab(size_t tab_index,
   target_tab_strip->InsertDetachedTabAt(
       TabStripModel::kNoTab, std::move(detached_tab),
       was_pinned ? AddTabTypes::ADD_PINNED : AddTabTypes::ADD_ACTIVE);
+}
+
+bool BrowserDelegateImpl::CreateWebAppFromActiveWebContents() {
+  return chrome::ExecuteCommand(&*browser_, IDC_INSTALL_PWA);
+}
+
+void BrowserDelegateImpl::ResetLocationBar() {
+  browser_->window()->GetLocationBar()->Revert();
 }
 
 }  // namespace ash

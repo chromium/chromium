@@ -57,14 +57,7 @@ void AudioCapturerLinux::OnDataRead(
     scoped_refptr<base::RefCountedString> data) {
   DCHECK(!callback_.is_null());
 
-  if (silence_detector_.IsSilence(
-          // TODO(danakj): This cast can cause UB, we should copy into integers
-          // or pass it as a byte span.
-          // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
-          UNSAFE_TODO(
-              reinterpret_cast<const int16_t*>(data->as_string().data())),
-          data->as_string().size() / sizeof(int16_t) /
-              AudioPipeReader::kChannels)) {
+  if (silence_detector_.IsSilence(base::as_byte_span(data->as_string()))) {
     return;
   }
 

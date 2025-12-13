@@ -88,7 +88,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   bool is_analyzing = false;
 
   // The HDR headroom to tone map to.
-  float destination_hdr_headroom = 1.f;
+  float destination_hdr_headroom = 0.f;
 };
 
 class CC_PAINT_EXPORT SharedImageProvider {
@@ -143,13 +143,6 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     bool context_supports_distance_field_text = true;
     int max_texture_size = 0;
     const ScrollOffsetMap* raster_inducing_scroll_offsets = nullptr;
-
-    // TODO(crbug.com/40136055): Cleanup after study completion.
-    //
-    // If true, perform serializaion in a way that avoids serializing transient
-    // members, such as IDs, so that a stable digest can be calculated. This
-    // means that serialized output can't be deserialized correctly.
-    bool for_identifiability_study = false;
   };
 
   struct CC_PAINT_EXPORT DeserializeOptions {
@@ -224,7 +217,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   // Returns the number of bytes used by the paint op buffer.
   size_t bytes_used() const {
-    return sizeof(*this) + reserved_ + subrecord_bytes_used_;
+    return sizeof(*this) + data_.size() + subrecord_bytes_used_;
   }
   // Returns the number of bytes used by paint ops.
   size_t paint_ops_size() const { return used_ + subrecord_bytes_used_; }
@@ -263,7 +256,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   const PaintOp& GetFirstOp() const {
     DCHECK(!empty());
-    return reinterpret_cast<const PaintOp&>(*data_);
+    return reinterpret_cast<const PaintOp&>(*data_.data());
   }
 
   template <typename T, typename... Args>
@@ -313,14 +306,14 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   }
 
   size_t GetOpOffsetForTracing(const PaintOp& op) const {
-    DCHECK_GE(reinterpret_cast<const char*>(&op), data_.get());
-    size_t result =
-        static_cast<size_t>(reinterpret_cast<const char*>(&op) - data_.get());
+    DCHECK_GE(reinterpret_cast<const uint8_t*>(&op), data_.data());
+    size_t result = static_cast<size_t>(reinterpret_cast<const uint8_t*>(&op) -
+                                        data_.data());
     DCHECK_LT(result, used_);
     return result;
   }
 
-  const char* DataBufferForTesting() const { return data_.get(); }
+  const uint8_t* DataBufferForTesting() const { return data_.data(); }
 
   const PaintOp& GetOpAtForTesting(size_t index) const;
 
@@ -340,7 +333,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   friend class PaintOp;
   friend class PaintOpBufferOffsetsTest;
   friend class SolidColorAnalyzer;
-  using BufferDataPtr = std::unique_ptr<char, base::AlignedFreeDeleter>;
+  using BufferData = base::HeapArray<uint8_t, base::AlignedFreeDeleter>;
 
   bool is_mutable() const { return unique(); }
 
@@ -356,19 +349,19 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   // Creates a new buffer sized to `new_size`, copying the old to the new (if
   // the old exists). Returns the old buffer.
-  BufferDataPtr ReallocBuffer(size_t new_size);
+  BufferData ReallocBuffer(size_t new_size);
 
   // Shrinks the buffer to fit `used_`. Returns the old buffer if this
   // allocated a new buffer, or nullptr.
-  BufferDataPtr ReallocIfNeededToFit();
+  BufferData ReallocIfNeededToFit();
 
   // Returns the allocated op.
   void* AllocatePaintOp(uint16_t aligned_size) {
     DCHECK(is_mutable());
-    if (used_ + aligned_size > reserved_) {
+    if (used_ + aligned_size > data_.size()) {
       return AllocatePaintOpSlowPath(aligned_size);
     } else {
-      void* op = UNSAFE_TODO(data_.get() + used_);
+      void* op = &data_[used_];
       used_ += aligned_size;
       op_count_++;
       return op;
@@ -378,9 +371,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   void ResetRetainingBuffer();
 
-  BufferDataPtr data_;
+  BufferData data_;
   size_t used_ = 0;
-  size_t reserved_ = 0;
   size_t op_count_ = 0;
 
   // Record additional bytes used by referenced sub-records and display lists.

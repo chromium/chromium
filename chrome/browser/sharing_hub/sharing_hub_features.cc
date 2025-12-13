@@ -66,9 +66,7 @@ bool HasPageAction(content::BrowserContext* context, bool is_popup_mode) {
 #endif
 }
 
-BASE_FEATURE(kDesktopScreenshots,
-             "DesktopScreenshots",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDesktopScreenshots, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {

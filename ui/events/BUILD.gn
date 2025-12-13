@@ -135,6 +135,8 @@ component("events_base") {
     "event_switches.cc",
     "event_switches.h",
     "events_base_export.h",
+    "features.cc",
+    "features.h",
     "gesture_curve.h",
     "gesture_event_details.cc",
     "gesture_event_details.h",
@@ -192,12 +194,10 @@ component("events_base") {
   }
 
   if (is_ios && use_blink) {
-    if (target_platform == "iphoneos") {
-      sources += [
-        "keycodes/keyboard_code_conversion_ios.h",
-        "keycodes/keyboard_code_conversion_ios.mm",
-      ]
-    }
+    sources += [
+      "keycodes/keyboard_code_conversion_ios.h",
+      "keycodes/keyboard_code_conversion_ios.mm",
+    ]
   }
 
   if (is_fuchsia) {
@@ -232,6 +232,17 @@ component("events_base") {
   }
 }
 
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    visibility = [ ":*" ]
+    sources = [ "features.cc" ]
+    class_name = "org.chromium.ui.events.UiEventsFeatures"
+  }
+  android_library("ui_events_features_java") {
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
+}
+
 component("events") {
   public = [
     "cocoa/cocoa_event_utils.h",
@@ -250,7 +261,6 @@ component("events") {
     "event_targeter.h",
     "event_utils.h",
     "events_export.h",
-    "features.h",
     "gestures/gesture_recognizer.h",
     "gestures/gesture_types.h",
     "null_event_targeter.h",
@@ -270,7 +280,6 @@ component("events") {
     "event_utils.cc",
     "events_exports.cc",
     "events_stub.cc",
-    "features.cc",
     "gestures/gesture_recognizer.cc",
     "gestures/gesture_types.cc",
     "null_event_targeter.cc",
@@ -363,7 +372,7 @@ component("events") {
   # Used for the feature flag check. Should be deleted once the feature is
   # enabled by default.
   if (is_win) {
-    deps += [ "//components/stylus_handwriting/win:win" ]
+    deps += [ "//components/stylus_handwriting/win" ]
   }
 
   if (use_ozone) {
@@ -394,6 +403,7 @@ component("events") {
 
   if (is_android) {
     public += [
+      "android/cached_historical_event_source.h",
       "android/drag_event_android.h",
       "android/event_handler_android.h",
       "android/events_android_utils.h",
@@ -403,13 +413,16 @@ component("events") {
       "android/motion_event_android.h",
       "android/motion_event_android_factory.h",
       "android/motion_event_android_java.h",
-      "android/motion_event_android_native.h",
+      "android/motion_event_android_source.h",
+      "android/motion_event_android_source_java.h",
+      "android/motion_event_android_source_native.h",
 
       # TODO(crbug.com/40255699): Move this outside is_android block when
       # consuming cross-platform code which uses it lands.
       "back_gesture_event.h",
     ]
     sources += [
+      "android/cached_historical_event_source.cc",
       "android/drag_event_android.cc",
       "android/event_handler_android.cc",
       "android/events_android.cc",
@@ -419,7 +432,8 @@ component("events") {
       "android/motion_event_android.cc",
       "android/motion_event_android_factory.cc",
       "android/motion_event_android_java.cc",
-      "android/motion_event_android_native.cc",
+      "android/motion_event_android_source_java.cc",
+      "android/motion_event_android_source_native.cc",
       "back_gesture_event.cc",
     ]
     deps += [
@@ -739,7 +753,6 @@ if (use_blink) {
       "//base",
       "//base/test:test_support",
       "//cc",
-      "//ipc:test_support",
       "//mojo/core/test:run_all_unittests",
       "//mojo/public/cpp/bindings",
       "//mojo/public/cpp/test_support:test_utils",
@@ -762,10 +775,13 @@ if (use_blink) {
       sources += [
         "android/motion_event_android_unittest.cc",
         "keycodes/keyboard_code_conversion_android_unittest.cc",
+        "mojom/motion_event_android_mojom_traits_unittest.cc",
       ]
       deps += [
         ":motionevent_jni_headers",
+        "//ui/android:motion_event_test_utils_jni_headers",
         "//ui/android:ui_full_java",
+        "//ui/android:ui_java_test_support",
       ]
     } else {
       data_deps = [ "//third_party/angle:includes" ]

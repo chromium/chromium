@@ -26,12 +26,14 @@
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_database.mojom-forward.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -57,8 +59,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/result_codes.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/site_for_cookies.h"
@@ -211,8 +212,7 @@ std::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
     const ServiceWorkerScriptCacheMap& script_cache_map,
     std::optional<blink::mojom::ServiceWorkerFetchHandlerType>
         fetch_handler_type) {
-  const std::unique_ptr<crypto::SecureHash> checksum =
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  crypto::hash::Hasher checksum(crypto::hash::kSha256);
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
       script_cache_map.GetResources();
   // Sort |resources| by |sha256_checksum| value not to make the merged value
@@ -235,12 +235,11 @@ std::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
     // value collisions: ab,cdef vs abcd,ef
     const std::string checksum_with_delimiter =
         *resource->sha256_checksum + "|";
-    checksum->Update(checksum_with_delimiter.data(),
-                     checksum_with_delimiter.size());
+    checksum.Update(base::as_string_view(checksum_with_delimiter));
   }
 
-  uint8_t result[crypto::kSHA256Length];
-  checksum->Finish(result, crypto::kSHA256Length);
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  checksum.Finish(result);
   const std::string encoded = base::HexEncode(result);
 
   if (fetch_handler_type) {
@@ -703,7 +702,7 @@ void ServiceWorkerVersion::ScheduleUpdate() {
   // and soon no one might hold a reference to us.
   context_->ProtectVersion(base::WrapRefCounted(this));
 
-  update_timer_.Start(FROM_HERE, ServiceWorkerContext::GetUpdateDelay(),
+  update_timer_.Start(FROM_HERE, ServiceWorkerContext::kUpdateDelay,
                       base::BindOnce(&ServiceWorkerVersion::StartUpdate,
                                      weak_factory_.GetWeakPtr()));
 }
@@ -767,10 +766,10 @@ int ServiceWorkerVersion::StartRequestWithCustomTimeout(
       event_type);
   InflightRequest* request_rawptr = request.get();
   int request_id = inflight_requests_.Add(std::move(request));
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-      "ServiceWorker", "ServiceWorkerVersion::Request",
-      TRACE_ID_LOCAL(request_rawptr), "Request id", request_id, "Event type",
-      ServiceWorkerMetrics::EventTypeToString(event_type));
+  TRACE_EVENT_BEGIN("ServiceWorker", "ServiceWorkerVersion::Request",
+                    perfetto::Track::FromPointer(request_rawptr), "Request id",
+                    request_id, "Event type",
+                    ServiceWorkerMetrics::EventTypeToString(event_type));
 
   base::TimeTicks expiration_time = tick_clock_->NowTicks() + timeout;
   auto [iter, is_inserted] = request_timeouts_.emplace(
@@ -846,9 +845,9 @@ bool ServiceWorkerVersion::FinishRequestWithFetchCount(int request_id,
       request->event_type, tick_clock_->NowTicks() - request->start_time_ticks,
       was_handled, fetch_count);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "ServiceWorker", "ServiceWorkerVersion::Request", TRACE_ID_LOCAL(request),
-      "Handled", was_handled);
+  // ServiceWorkerVersion::Request
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(request),
+                  "Handled", was_handled);
   request_timeouts_.erase(request->timeout_iter);
   inflight_requests_.Remove(request_id);
   // TODO(crbug.com/40864997): remove the following DCHECK when the cause
@@ -917,6 +916,12 @@ ServiceWorkerVersion::CreateSimpleEventCallback(int request_id) {
   // inflight responses of blink::mojom::ServiceWorker messages, is owned by
   // |this|.
   return base::BindOnce(&ServiceWorkerVersion::OnSimpleEventFinished,
+                        base::Unretained(this), request_id);
+}
+
+ServiceWorkerVersion::PushEventCallback
+ServiceWorkerVersion::CreatePushEventCallback(int request_id) {
+  return base::BindOnce(&ServiceWorkerVersion::OnPushEventFinished,
                         base::Unretained(this), request_id);
 }
 
@@ -1107,15 +1112,9 @@ void ServiceWorkerVersion::EvictBackForwardCachedControllee(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   controllee->EvictFromBackForwardCache(reason);
   controllees_to_be_evicted_[controllee->client_uuid()] = reason;
-  // TODO(crbug.com/341322515): remove this if expression with
-  // CHECK in RemoveControlleeFromBackForwardCacheMap().
-  // As I assumed in #comment21 of the crbug, this behavior can be expected
-  // for a dedicated worker.
-  if (!BFCacheContainsControllee(controllee->client_uuid()) &&
-      controllee->IsContainerForWorkerClient()) {
-    return;
+  if (controllee->was_controlled_when_entered_back_forward_cache()) {
+    RemoveControlleeFromBackForwardCacheMap(controllee->client_uuid());
   }
-  RemoveControlleeFromBackForwardCacheMap(controllee->client_uuid());
 }
 
 void ServiceWorkerVersion::AddObserver(Observer* observer) {
@@ -1553,10 +1552,10 @@ void ServiceWorkerVersion::OnStopping() {
   TRACE_EVENT0("ServiceWorker", "ServiceWorkerVersion::OnStopping");
   DCHECK(stop_time_.is_null());
   RestartTick(&stop_time_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
+  TRACE_EVENT_BEGIN(
       "ServiceWorker", "ServiceWorkerVersion::StopWorker",
-      TRACE_ID_WITH_SCOPE("ServiceWorkerVersion::StopWorker",
-                          stop_time_.since_origin().InMicroseconds()),
+      perfetto::NamedTrack("ServiceWorkerVersion::StopWorker",
+                           stop_time_.since_origin().InMicroseconds()),
       "Script", script_url_.spec(), "Version Status",
       VersionStatusToString(status_));
 
@@ -1630,11 +1629,10 @@ void ServiceWorkerVersion::SetCachedMetadata(const GURL& url,
                                              base::span<const uint8_t> data) {
   int64_t callback_id =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "ServiceWorker", "ServiceWorkerVersion::SetCachedMetadata",
-      TRACE_ID_WITH_SCOPE("ServiceWorkerVersion::SetCachedMetadata",
-                          callback_id),
-      "URL", url.spec());
+  TRACE_EVENT_BEGIN("ServiceWorker", "ServiceWorkerVersion::SetCachedMetadata",
+                    perfetto::NamedTrack(
+                        "ServiceWorkerVersion::SetCachedMetadata", callback_id),
+                    "URL", url.spec());
   script_cache_map_.WriteMetadata(
       url, data,
       base::BindOnce(&ServiceWorkerVersion::OnSetCachedMetadataFinished,
@@ -1644,10 +1642,10 @@ void ServiceWorkerVersion::SetCachedMetadata(const GURL& url,
 void ServiceWorkerVersion::ClearCachedMetadata(const GURL& url) {
   int64_t callback_id =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+  TRACE_EVENT_BEGIN(
       "ServiceWorker", "ServiceWorkerVersion::ClearCachedMetadata",
-      TRACE_ID_WITH_SCOPE("ServiceWorkerVersion::ClearCachedMetadata",
-                          callback_id),
+      perfetto::NamedTrack("ServiceWorkerVersion::ClearCachedMetadata",
+                           callback_id),
       "URL", url.spec());
   script_cache_map_.ClearMetadata(
       url, base::BindOnce(&ServiceWorkerVersion::OnClearCachedMetadataFinished,
@@ -2010,11 +2008,11 @@ void ServiceWorkerVersion::AddRoutes(
 void ServiceWorkerVersion::OnSetCachedMetadataFinished(int64_t callback_id,
                                                        size_t size,
                                                        int result) {
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "ServiceWorker", "ServiceWorkerVersion::SetCachedMetadata",
-      TRACE_ID_WITH_SCOPE("ServiceWorkerVersion::SetCachedMetadata",
-                          callback_id),
-      "result", result);
+  // ServiceWorkerVersion::SetCachedMetadata
+  TRACE_EVENT_END("ServiceWorker",
+                  perfetto::NamedTrack(
+                      "ServiceWorkerVersion::SetCachedMetadata", callback_id),
+                  "result", result);
   for (auto& observer : observers_) {
     observer.OnCachedMetadataUpdated(this, size);
   }
@@ -2022,11 +2020,11 @@ void ServiceWorkerVersion::OnSetCachedMetadataFinished(int64_t callback_id,
 
 void ServiceWorkerVersion::OnClearCachedMetadataFinished(int64_t callback_id,
                                                          int result) {
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "ServiceWorker", "ServiceWorkerVersion::ClearCachedMetadata",
-      TRACE_ID_WITH_SCOPE("ServiceWorkerVersion::ClearCachedMetadata",
-                          callback_id),
-      "result", result);
+  // ServiceWorkerVersion::ClearCachedMetadata
+  TRACE_EVENT_END("ServiceWorker",
+                  perfetto::NamedTrack(
+                      "ServiceWorkerVersion::ClearCachedMetadata", callback_id),
+                  "result", result);
   for (auto& observer : observers_) {
     observer.OnCachedMetadataUpdated(this, 0);
   }
@@ -2100,6 +2098,27 @@ void ServiceWorkerVersion::OnSimpleEventFinished(
       .Run(mojo::ConvertTo<blink::ServiceWorkerStatusCode>(status));
 }
 
+void ServiceWorkerVersion::OnPushEventFinished(
+    int request_id,
+    blink::mojom::ServiceWorkerEventStatus status,
+    const std::optional<std::vector<GURL>>& requested_urls) {
+  InflightRequest* request = inflight_requests_.Lookup(request_id);
+  // |request| will be null when the request has been timed out.
+  if (!request) {
+    return;
+  }
+  if (context_) {
+    context_->OnPushEventFinished(script_url_, requested_urls);
+  }
+  // Copy error callback before calling FinishRequest.
+  StatusCallback error_callback = std::move(request->error_callback);
+
+  FinishRequest(request_id,
+                status == blink::mojom::ServiceWorkerEventStatus::COMPLETED);
+  std::move(error_callback)
+      .Run(mojo::ConvertTo<blink::ServiceWorkerStatusCode>(status));
+}
+
 void ServiceWorkerVersion::CountFeature(blink::mojom::WebFeature feature) {
   if (!used_features_.insert(feature).second) {
     return;
@@ -2149,12 +2168,39 @@ ServiceWorkerVersion::BuildClientSecurityState() const {
   }
 
   const PolicyContainerPolicies& policies = policy_container_host_->policies();
+
+  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy =
+      DerivePrivateNetworkRequestPolicy(
+          policies.ip_address_space, policies.is_web_secure_context,
+          policies.allow_non_secure_local_network_access,
+          PrivateNetworkRequestContext::kWorker);
+
+  // Check for policy overrides on LNA. For service workers, we apply
+  // policy overrides based on the storage key's origin (which should be the
+  // same as the scope's origin).
+  //
+  // A worker that is shutting down may not get the overrides, but the worker is
+  // shutting down so that shouldn't matter too much.
+  if (context_) {
+    BrowserContext* browser_context = context_->wrapper()->browser_context();
+    // Check that the browser context is not nullptr.  It becomes nullptr
+    // when the service worker process manager is being shutdown.
+    if (browser_context) {
+      ContentBrowserClient* client = GetContentClient()->browser();
+      url::Origin origin = key_.origin();
+      ContentBrowserClient::PrivateNetworkRequestPolicyOverride
+          policy_override = client->ShouldOverridePrivateNetworkRequestPolicy(
+              browser_context, origin);
+      private_network_request_policy = OverrideLocalNetworkAccessPolicy(
+          private_network_request_policy, policy_override);
+    }
+  }
+
+  // TODO(crbug.com/395895368): try replacing the below with
+  // DeriveClientSecurityState
   return network::mojom::ClientSecurityState::New(
       policies.cross_origin_embedder_policy, policies.is_web_secure_context,
-      policies.ip_address_space,
-      DerivePrivateNetworkRequestPolicy(policies.ip_address_space,
-                                        policies.is_web_secure_context,
-                                        PrivateNetworkRequestContext::kWorker),
+      policies.ip_address_space, private_network_request_policy,
       policies.document_isolation_policy);
 }
 
@@ -2269,12 +2315,12 @@ void ServiceWorkerVersion::DidEnsureLiveRegistrationForStartWorker(
           return;
         } else {
           int trace_id = NextTraceId();
-          TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-              "ServiceWorker", "ServiceWorkerVersion::StartWorker",
-              TRACE_ID_WITH_SCOPE("ServiceWorkerVersion::StartWorker",
-                                  trace_id),
-              "Script", script_url_.spec(), "Purpose",
-              ServiceWorkerMetrics::EventTypeToString(purpose));
+          TRACE_EVENT_BEGIN("ServiceWorker",
+                            "ServiceWorkerVersion::StartWorker",
+                            perfetto::NamedTrack(
+                                "ServiceWorkerVersion::StartWorker", trace_id),
+                            "Script", script_url_.spec(), "Purpose",
+                            ServiceWorkerMetrics::EventTypeToString(purpose));
 
           embedded_worker_->ResumeInitializingGlobalScope();
 
@@ -2294,17 +2340,18 @@ void ServiceWorkerVersion::DidEnsureLiveRegistrationForStartWorker(
 
         if (warm_up_callbacks_.empty()) {
           int trace_id = NextTraceId();
-          TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-              "ServiceWorker", "ServiceWorkerVersion::WarmUpWorker",
-              TRACE_ID_WITH_SCOPE("ServiceWorkerVersion::WarmUpWorker",
-                                  trace_id),
-              "Script", script_url_.spec());
+          TRACE_EVENT_BEGIN("ServiceWorker",
+                            "ServiceWorkerVersion::WarmUpWorker",
+                            perfetto::NamedTrack(
+                                "ServiceWorkerVersion::WarmUpWorker", trace_id),
+                            "Script", script_url_.spec());
           warm_up_callbacks_.push_back(base::BindOnce(
               [](int trace_id, blink::ServiceWorkerStatusCode status) {
-                TRACE_EVENT_NESTABLE_ASYNC_END1(
-                    "ServiceWorker", "ServiceWorkerVersion::WarmUpWorker",
-                    TRACE_ID_WITH_SCOPE("ServiceWorkerVersion::WarmUpWorker",
-                                        trace_id),
+                // ServiceWorkerVersion::WarmUpWorker
+                TRACE_EVENT_END(
+                    "ServiceWorker",
+                    perfetto::NamedTrack("ServiceWorkerVersion::WarmUpWorker",
+                                         trace_id),
                     "Status", blink::ServiceWorkerStatusToString(status));
               },
               trace_id));
@@ -2312,12 +2359,12 @@ void ServiceWorkerVersion::DidEnsureLiveRegistrationForStartWorker(
       } else {
         if (start_callbacks_.empty()) {
           int trace_id = NextTraceId();
-          TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-              "ServiceWorker", "ServiceWorkerVersion::StartWorker",
-              TRACE_ID_WITH_SCOPE("ServiceWorkerVersion::StartWorker",
-                                  trace_id),
-              "Script", script_url_.spec(), "Purpose",
-              ServiceWorkerMetrics::EventTypeToString(purpose));
+          TRACE_EVENT_BEGIN("ServiceWorker",
+                            "ServiceWorkerVersion::StartWorker",
+                            perfetto::NamedTrack(
+                                "ServiceWorkerVersion::StartWorker", trace_id),
+                            "Script", script_url_.spec(), "Purpose",
+                            ServiceWorkerMetrics::EventTypeToString(purpose));
           start_callbacks_.push_back(base::BindOnce(
               &ServiceWorkerVersion::RecordStartWorkerResult,
               weak_factory_.GetWeakPtr(), purpose, prestart_status, trace_id,
@@ -2395,8 +2442,7 @@ void ServiceWorkerVersion::StartWorkerInternal() {
       outside_fetch_client_settings_object_.Clone();
 
   ContentBrowserClient* browser_client = GetContentClient()->browser();
-  params->user_agent = browser_client->GetUserAgentBasedOnPolicy(
-      context_->wrapper()->browser_context());
+  params->user_agent = browser_client->GetUserAgent();
   params->ua_metadata = browser_client->GetUserAgentMetadata();
   params->is_installed = IsInstalled(status_);
   params->script_url_to_skip_throttling = updated_script_url_;
@@ -2556,20 +2602,23 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
     return;
   }
 
-  // Are there requests that have not finished before their expiration.
-  bool has_kill_on_timeout = false;
-  bool has_continue_on_timeout = false;
-  // In case, `request_timeouts_` can be modified in the callbacks initiated
-  // in `MaybeTimeoutRequest`, we keep its contents locally during the
-  // following while loop.
-  std::set<InflightRequestTimeoutInfo> request_timeouts;
-  request_timeouts.swap(request_timeouts_);
-  auto timeout_iter = request_timeouts.begin();
-  while (timeout_iter != request_timeouts.end()) {
-    const InflightRequestTimeoutInfo& info = *timeout_iter;
-    if (!RequestExpired(info.expiration_time)) {
+  // 1. Identify timed-out requests and extract their info. This is done in a
+  // separate loop to avoid race conditions where a timeout callback adds a new
+  // request that could be immediately timed out.
+  std::vector<InflightRequestTimeoutInfo> timed_out_infos;
+  auto it = request_timeouts_.begin();
+  while (it != request_timeouts_.end()) {
+    if (!RequestExpired(it->expiration_time)) {
       break;
     }
+    timed_out_infos.push_back(*it);
+    it = request_timeouts_.erase(it);
+  }
+
+  // 2. Run the error callbacks for the timed-out requests.
+  bool has_kill_on_timeout = false;
+  bool has_continue_on_timeout = false;
+  for (const auto& info : timed_out_infos) {
     if (MaybeTimeoutRequest(info)) {
       switch (info.timeout_behavior) {
         case KILL_ON_TIMEOUT:
@@ -2580,14 +2629,12 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
           break;
       }
     }
-    timeout_iter = request_timeouts.erase(timeout_iter);
   }
-  // Ensure the `request_timeouts_` won't be touched during the loop.
-  DCHECK(request_timeouts_.empty());
-  request_timeouts_.swap(request_timeouts);
-  // TODO(crbug.com/40864997): remove the following DCHECK when the cause
-  // identified.
-  DCHECK_EQ(request_timeouts_.size(), inflight_requests_.size());
+
+  // TODO(crbug.com/40864997): This was promoted from a DCHECK to validate
+  // the fix for this bug. If no crashes are observed by the next release
+  // cycle, this CHECK and other related DCHECKs in this file can be removed.
+  CHECK_EQ(request_timeouts_.size(), inflight_requests_.size());
 
   if (has_kill_on_timeout &&
       running_status() != blink::EmbeddedWorkerStatus::kStopping) {
@@ -2636,9 +2683,10 @@ void ServiceWorkerVersion::RecordStartWorkerResult(
     bool is_browser_startup_complete,
     blink::ServiceWorkerStatusCode status) {
   if (trace_id != kInvalidTraceId) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1(
-        "ServiceWorker", "ServiceWorkerVersion::StartWorker",
-        TRACE_ID_WITH_SCOPE("ServiceWorkerVersion::StartWorker", trace_id),
+    // ServiceWorkerVersion::StartWorker
+    TRACE_EVENT_END(
+        "ServiceWorker",
+        perfetto::NamedTrack("ServiceWorkerVersion::StartWorker", trace_id),
         "Status", blink::ServiceWorkerStatusToString(status));
   }
   base::TimeTicks start_time = start_time_;
@@ -2690,12 +2738,21 @@ bool ServiceWorkerVersion::MaybeTimeoutRequest(
     return false;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1("ServiceWorker",
-                                  "ServiceWorkerVersion::Request",
-                                  TRACE_ID_LOCAL(request), "Error", "Timeout");
-  std::move(request->error_callback)
-      .Run(blink::ServiceWorkerStatusCode::kErrorTimeout);
+  // ServiceWorkerVersion::Request
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(request),
+                  "Error", "Timeout");
+
+  // Move the callback to a local variable before removing the request from the
+  // map, as the request object will be destroyed.
+  auto error_callback = std::move(request->error_callback);
+
+  // Remove the request from inflight_requests_ *before* running the callback.
+  // This restores the invariant that request_timeouts_ and inflight_requests_
+  // have the same size, preventing a DCHECK failure if the callback
+  // synchronously finishes another request.
   inflight_requests_.Remove(info.id);
+
+  std::move(error_callback).Run(blink::ServiceWorkerStatusCode::kErrorTimeout);
   return true;
 }
 
@@ -2827,10 +2884,11 @@ void ServiceWorkerVersion::OnStoppedInternal(
   }
 
   if (!stop_time_.is_null()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1(
-        "ServiceWorker", "ServiceWorkerVersion::StopWorker",
-        TRACE_ID_WITH_SCOPE("ServiceWorkerVersion::StopWorker",
-                            stop_time_.since_origin().InMicroseconds()),
+    // ServiceWorkerVersion::StopWorker
+    TRACE_EVENT_END(
+        "ServiceWorker",
+        perfetto::NamedTrack("ServiceWorkerVersion::StopWorker",
+                             stop_time_.since_origin().InMicroseconds()),
         "Restart", should_restart);
     ClearTick(&stop_time_);
   }
@@ -2862,9 +2920,10 @@ void ServiceWorkerVersion::OnStoppedInternal(
   base::IDMap<std::unique_ptr<InflightRequest>>::iterator iter(
       &inflight_requests_);
   while (!iter.IsAtEnd()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1(
-        "ServiceWorker", "ServiceWorkerVersion::Request",
-        TRACE_ID_LOCAL(iter.GetCurrentValue()), "Error", "Worker Stopped");
+    // ServiceWorkerVersion::Request
+    TRACE_EVENT_END("ServiceWorker",
+                    perfetto::Track::FromPointer(iter.GetCurrentValue()),
+                    "Error", "Worker Stopped");
     std::move(iter.GetCurrentValue()->error_callback)
         .Run(blink::ServiceWorkerStatusCode::kErrorFailed);
     iter.Advance();

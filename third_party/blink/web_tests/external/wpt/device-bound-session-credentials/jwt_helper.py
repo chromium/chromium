@@ -22,7 +22,7 @@ def decode_jwt(token, key=None):
         # If there is a key passed in (for refresh), use that for checking the signature below.
         # Otherwise (for registration), use the key sent within the JWT to check the signature.
         if key == None:
-            key = decoded_payload.get('key')
+            key = decoded_header.get('jwk')
         public_key = serialization.load_pem_public_key(jwk_to_pem(key))
         # Verifying the signature will throw an exception if it fails.
         verify_rs256_signature(header, payload, signature, public_key)
@@ -74,3 +74,27 @@ def decode_base64(encoded_data):
 
 def decode_base64_json(encoded_data):
     return json.loads(decode_base64(encoded_data))
+
+def thumbprint_for_jwk(jwk):
+    filtered_jwk = None
+    if jwk['kty'] == 'RSA':
+        filtered_jwk = dict()
+        filtered_jwk['kty'] = jwk['kty']
+        filtered_jwk['n'] = jwk['n']
+        filtered_jwk['e'] = jwk['e']
+    elif jwk['kty'] == 'EC':
+        filtered_jwk = dict()
+        filtered_jwk['kty'] = jwk['kty']
+        filtered_jwk['crv'] = jwk['crv']
+        filtered_jwk['x'] = jwk['x']
+        filtered_jwk['y'] = jwk['y']
+    else:
+        return None
+
+    serialized_jwk = json.dumps(filtered_jwk, sort_keys=True, separators=(',',':'))
+
+    digest = hashes.Hash(hashes.SHA256())
+    digest.update(serialized_jwk.encode("utf-8"))
+
+    thumbprint_base64 = base64.b64encode(digest.finalize(), altchars=b"-_").rstrip(b"=")
+    return thumbprint_base64.decode('ascii')

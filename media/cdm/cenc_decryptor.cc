@@ -72,11 +72,10 @@ void CopyExtraSettings(const DecoderBuffer& input, DecoderBuffer* output) {
 scoped_refptr<DecoderBuffer> DecryptCencBuffer(const DecoderBuffer& input,
                                                base::span<const uint8_t> key) {
   base::span<const uint8_t> sample = input;
-  CHECK(!sample.empty(), base::NotFatalUntil::M140) << "No data to decrypt.";
+  CHECK(!sample.empty()) << "No data to decrypt.";
 
   const DecryptConfig* decrypt_config = input.decrypt_config();
-  CHECK(decrypt_config, base::NotFatalUntil::M140)
-      << "No need to call Decrypt() on unencrypted buffer.";
+  CHECK(decrypt_config) << "No need to call Decrypt() on unencrypted buffer.";
   DCHECK_EQ(EncryptionScheme::kCenc, decrypt_config->encryption_scheme());
 
   if (key.size() != kRequiredKeyBytes) {

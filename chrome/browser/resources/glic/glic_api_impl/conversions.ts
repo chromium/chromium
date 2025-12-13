@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type * as actorWebUiMojom from '../actor_webui.mojom-webui.js';
 import type * as mojom from '../glic.mojom-webui.js';
 import type * as api from '../glic_api/glic_api.js';
+
+import type * as requestTypes from './request_types.js';
 
 
 /* eslint-disable-next-line @typescript-eslint/naming-convention */
@@ -69,15 +72,12 @@ type CheckEnumCompatibility<MojoEnum, TsEnum> = AnnotateError<
 
 // Ignore FLOATING and DOCKED in the api, as they're just deprecated aliases.
 assertNever<CheckEnumCompatibility<
-    typeof mojom.PanelState_Kind,
+    typeof mojom.PanelStateKind,
     Omit<typeof api.PanelStateKind, 'FLOATING'|'DOCKED'>>>();
 // kUnknown isn't in the public API because this is a closed enum, and will not
 // be expanded.
 assertNever<CheckEnumCompatibility<
     Omit<typeof mojom.WebClientMode, 'kUnknown'>, typeof api.WebClientMode>>();
-assertNever<CheckEnumCompatibility<
-    typeof mojom.ActInFocusedTabErrorReason,
-    typeof api.ActInFocusedTabErrorReason>>();
 assertNever<CheckEnumCompatibility<
     typeof mojom.CaptureScreenshotErrorReason,
     typeof api.CaptureScreenshotErrorReason>>();
@@ -90,3 +90,21 @@ assertNever<CheckEnumCompatibility<
     typeof api.SettingsPageField>>();
 assertNever<CheckEnumCompatibility<
     typeof mojom.HostCapability, typeof api.HostCapability>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.ActorTaskState, typeof api.ActorTaskState>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.ActorTaskPauseReason, typeof api.ActorTaskPauseReason>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.ActorTaskStopReason, typeof api.ActorTaskStopReason>>();
+assertNever<CheckEnumCompatibility<
+    typeof actorWebUiMojom.UserGrantedPermissionDuration,
+    typeof api.UserGrantedPermissionDuration>>();
+assertNever<CheckEnumCompatibility<
+    typeof actorWebUiMojom.SelectCredentialDialogErrorReason,
+    typeof requestTypes.SelectCredentialDialogErrorReason>>();
+assertNever<CheckEnumCompatibility<
+    typeof actorWebUiMojom.ConfirmationRequestErrorReason,
+    typeof requestTypes.ConfirmationRequestErrorReason>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.MetricUserInputReactionType,
+    typeof api.MetricUserInputReactionType>>();

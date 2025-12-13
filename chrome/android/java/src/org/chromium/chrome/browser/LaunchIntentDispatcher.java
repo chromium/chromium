@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager.RecentTaskInfo;
@@ -30,6 +33,9 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
@@ -39,9 +45,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -65,6 +69,7 @@ import java.util.Set;
  * Dispatches incoming intents to the appropriate activity based on the current configuration and
  * Intent fired.
  */
+@NullMarked
 public class LaunchIntentDispatcher {
     /** Extra indicating launch mode used. */
     public static final String EXTRA_LAUNCH_MODE =
@@ -142,13 +147,7 @@ public class LaunchIntentDispatcher {
 
     private LaunchIntentDispatcher(Activity activity, Intent intent) {
         mActivity = activity;
-        mIntent = IntentUtils.sanitizeIntent(intent);
-
-        // Needs to be called as early as possible, to accurately capture the
-        // time at which the intent was received.
-        if (mIntent != null && BrowserIntentUtils.getStartupRealtimeMillis(mIntent) == -1) {
-            BrowserIntentUtils.addStartupTimestampsToIntent(mIntent);
-        }
+        mIntent = assertNonNull(IntentUtils.sanitizeIntent(intent));
     }
 
     /**
@@ -250,7 +249,7 @@ public class LaunchIntentDispatcher {
 
     /** When started with an intent, maybe pre-resolve the domain. */
     private void maybePrefetchDnsInBackground() {
-        if (mIntent != null && Intent.ACTION_VIEW.equals(mIntent.getAction())) {
+        if (Intent.ACTION_VIEW.equals(mIntent.getAction())) {
             String maybeUrl = IntentHandler.getUrlFromIntent(mIntent);
             if (maybeUrl != null) {
                 WarmupManager.getInstance().maybePrefetchDnsForUrlInBackground(mActivity, maybeUrl);
@@ -385,25 +384,9 @@ public class LaunchIntentDispatcher {
                 "CustomTabs.Startup.StartedNavigationEarly", startedNavigationEarly);
         if (!startedNavigationEarly) maybePrefetchDnsInBackground();
 
-        // Strip EXTRA_CALLING_ACTIVITY_PACKAGE/EXTRA_LAUNCHED_FROM_PACKAGE if present on
-        // the original intent so that it cannot be spoofed by CCT client apps.
-        IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
-        IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE);
-
         Intent intent = new Intent(mIntent);
-        String packageName = mActivity.getCallingPackage(); // from startActivityForResult
-        String packageNameIdentitySharing = getCallingPackageIdentitySharing();
-        if (packageName == null) packageName = packageNameIdentitySharing;
-        if (packageName != null) {
-            intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
-        }
+        boolean identityShared = maybePutCallingAppPackage(intent);
 
-        // Pass the package name obtained via identity sharing API separately from the one
-        // obtained via startActivityForResult.
-        boolean identityShared = packageNameIdentitySharing != null;
-        if (identityShared) {
-            intent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, packageNameIdentitySharing);
-        }
         // Create and fire a launch intent.
         Intent launchIntent = createCustomTabActivityIntent(mActivity, intent);
         Uri extraReferrer = mActivity.getReferrer();
@@ -422,11 +405,31 @@ public class LaunchIntentDispatcher {
         return true;
     }
 
+    // Pass the target Activity the package name of the calling app.
+    // EXTRA_LAUNCHED_FROM_PACKAGE: set only when identity sharing is enabled by the calling app
+    // EXTRA_CALLING_ACTIVITY_PACKAGE: from either startActivityForResult or identity sharing
+    private boolean maybePutCallingAppPackage(Intent intent) {
+        // Strip EXTRA_CALLING_ACTIVITY_PACKAGE/EXTRA_LAUNCHED_FROM_PACKAGE if present on
+        // the original intent so that it cannot be spoofed by CCT client apps.
+        IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
+        IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE);
+
+        String packageName = mActivity.getCallingPackage();
+        String packageNameIdentitySharing = getCallingPackageIdentitySharing();
+        if (packageName == null) packageName = packageNameIdentitySharing;
+        if (packageName != null) {
+            intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
+        }
+        boolean hasIdentitySharingPackageName = packageNameIdentitySharing != null;
+        if (hasIdentitySharingPackageName) {
+            intent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, packageNameIdentitySharing);
+        }
+        return hasIdentitySharingPackageName;
+    }
+
     private boolean maybeStartNavigation() {
-        if (!WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(false)) return false;
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV)) return false;
-        if (IntentHandler.willLaunchIncognitoCustomTab(mIntent)) return false;
         if (!ProfileManager.isInitialized()) return false;
+        if (IntentHandler.willLaunchIncognitoCustomTab(mIntent)) return false;
         if (clearTopIntentsForCustomTabsEnabled(mIntent)
                 && SessionDataHolder.getInstance()
                                 .getActiveHandlerClassInCurrentTask(mIntent, mActivity)
@@ -469,7 +472,7 @@ public class LaunchIntentDispatcher {
      * Returns client package name obtained from {@link Activity#getLaunchedFromPackage()}. {@code
      * null} if the underlying OS doesn't support the feature.
      */
-    private String getCallingPackageIdentitySharing() {
+    private @Nullable String getCallingPackageIdentitySharing() {
         return BuildCompat.isAtLeastU() ? mActivity.getLaunchedFromPackage() : null;
     }
 
@@ -494,7 +497,7 @@ public class LaunchIntentDispatcher {
             }
             RecordHistogram.recordBooleanHistogram(
                     "Android.Intent.HasNonSpoofablePackageName", hasNonSpoofablePackageName());
-            boolean identityShared = getCallingPackageIdentitySharing() != null;
+            boolean identityShared = maybePutCallingAppPackage(newIntent);
             RecordHistogram.recordBooleanHistogram("Android.Intent.IdentityShared", identityShared);
         }
 
@@ -532,7 +535,9 @@ public class LaunchIntentDispatcher {
             newIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
 
-        if (newIntent.getComponent().getClassName().equals(mActivity.getClass().getName())) {
+        String className = assumeNonNull(newIntent.getComponent()).getClassName();
+        assumeNonNull(className);
+        if (className.equals(mActivity.getClass().getName())) {
             // We're trying to start activity that is already running - just continue.
             return Action.CONTINUE;
         }
@@ -544,7 +549,7 @@ public class LaunchIntentDispatcher {
             if (isContentScheme) {
                 Toast.makeText(
                                 mActivity,
-                                org.chromium.chrome.R.string.external_app_restricted_access_error,
+                                R.string.external_app_restricted_access_error,
                                 Toast.LENGTH_LONG)
                         .show();
             } else {

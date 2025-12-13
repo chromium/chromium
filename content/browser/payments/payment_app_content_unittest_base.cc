@@ -275,6 +275,7 @@ void PaymentAppContentUnitTestBase::UnregisterServiceWorker(
   bool called = false;
   worker_helper_->context()->UnregisterServiceWorker(
       scope_url, key, /*is_immediate=*/false,
+      ServiceWorkerRegistration::DeleteInitiator::kTest,
       base::BindOnce(&UnregisterServiceWorkerCallback, &called));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(called);

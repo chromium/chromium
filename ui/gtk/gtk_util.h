@@ -17,11 +17,15 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/window/frame_buttons.h"
 
+class SkBitmap;
+
 namespace aura {
 class Window;
 }
 
 namespace gtk {
+
+class GtkUiPlatform;
 
 const char* GtkCssMenu();
 const char* GtkCssMenuItem();
@@ -31,13 +35,17 @@ const char* GtkCssMenuScrollbar();
 
 // Sets |dialog| as transient for |parent|, which will keep it on top and center
 // it above |parent|. Do nothing if |parent| is nullptr.
-void SetGtkTransientForAura(GtkWidget* dialog, aura::Window* parent);
+void SetGtkTransientForAura(GtkWidget* dialog,
+                            aura::Window* parent,
+                            GtkUiPlatform* platform);
 
 // Gets the transient parent aura window for |dialog|.
 aura::Window* GetAuraTransientParent(GtkWidget* dialog);
 
 // Clears the transient parent for |dialog|.
-void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent);
+void ClearAuraTransientParent(GtkWidget* dialog,
+                              aura::Window* parent,
+                              GtkUiPlatform* platform);
 
 // Disable input events handling on `parent` to make `dialog` modal.  The caller
 // is responsible for running the returned closure when the dialog is hidden to
@@ -58,6 +66,10 @@ class CairoSurface {
   // Attaches a cairo surface to an SkBitmap so that GTK can render
   // into it.  |bitmap| must outlive this CairoSurface.
   explicit CairoSurface(SkBitmap& bitmap);
+
+  // Attaches a cairo surface to a pointer to pixel data.  `pixels`
+  // must outlive this CairoSurface.
+  CairoSurface(void* pixels, int width, int height);
 
   // Creates a new cairo surface with the given size.  The memory for
   // this surface is deallocated when this CairoSurface is destroyed.

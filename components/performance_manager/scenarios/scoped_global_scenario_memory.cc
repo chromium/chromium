@@ -23,10 +23,7 @@ ScopedGlobalScenarioMemory::ScopedGlobalScenarioMemory(
     base::SharedMemoryMapper* mapper) {
   auto state_ptr = std::make_unique<PerformanceScenarioData>(mapper);
   if (!state_ptr->HasSharedState()) {
-    // Mapping failed. Create an invalid `read_only_mapping_` so that the
-    // PerformanceScenarioObserverList exists but does nothing.
-    read_only_mapping_.emplace(performance_scenarios::ScenarioScope::kGlobal,
-                               base::ReadOnlySharedMemoryRegion());
+    // Mapping failed.
     return;
   }
   state_ptr->EnsureTracingTracks();

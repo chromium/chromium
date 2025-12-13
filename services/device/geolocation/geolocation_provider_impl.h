@@ -26,6 +26,10 @@
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#include "base/scoped_observation.h"
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+
 namespace base {
 template <typename Type>
 struct DefaultSingletonTraits;
@@ -133,6 +137,10 @@ class GeolocationProviderImpl
     user_did_opt_into_location_services_ = false;
   }
 
+  bool is_running_precise_for_testing() const { return is_running_precise_; }
+
+  // GeolocationProvider implementation:
+
   // Safe to call while there are no GeolocationProviderImpl clients
   // registered.
   void SetLocationProviderManagerForTesting(
@@ -151,6 +159,7 @@ class GeolocationProviderImpl
   // GeolocationSystemPermissionManager::PermissionObserver implementation.
   void OnSystemPermissionUpdated(
       LocationSystemPermissionStatus new_status) override;
+  void OnPermissionManagerShuttingDown() override;
 #endif
 
   static constexpr char kSystemPermissionDeniedErrorMessage[] =
@@ -241,7 +250,16 @@ class GeolocationProviderImpl
       low_accuracy_callbacks_;
 
   bool user_did_opt_into_location_services_ = false;
+  // When the `kApproximateGeolocationPermission` feature is disabled, this
+  // field stores the most recent geoposition result, which is shared among all
+  // clients.
   mojom::GeopositionResultPtr result_;
+  // When the `kApproximateGeolocationPermission` feature is enabled, these
+  // fields store the most recent high and low accuracy geoposition results
+  // respectively. This ensures that callbacks registered with a specific
+  // accuracy level receive the correct location updates.
+  mojom::GeopositionResultPtr high_accuracy_result_;
+  mojom::GeopositionResultPtr low_accuracy_result_;
 
   // True only in testing, where we want to use a custom position.
   bool ignore_location_updates_ = false;
@@ -261,16 +279,18 @@ class GeolocationProviderImpl
   // sends it to `internals_observers_`.
   bool diagnostics_enabled_ = false;
 
+  // This indicate the accuracy mode of the location provider while it is
+  // running.
+  bool is_running_precise_ = false;
+
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   LocationSystemPermissionStatus system_permission_status_ =
       LocationSystemPermissionStatus::kNotDetermined;
 
-  // On CrOS, GeolocationSystemPermissionManager may be destroyed before
-  // GeolocationProviderImpl. Retaining `observers_` allows
-  // GeolocationProviderImpl to safely unregister itself during its own
-  // destruction.
-  scoped_refptr<GeolocationSystemPermissionManager::PermissionObserverList>
-      observers_;
+  base::ScopedObservation<
+      GeolocationSystemPermissionManager,
+      GeolocationSystemPermissionManager::PermissionObserver>
+      geolocation_permission_observation_{this};
 #endif
 };
 

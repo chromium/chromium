@@ -17,11 +17,9 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
-#include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_kcer.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
@@ -29,10 +27,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/kcer/extra_instances.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
+#include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/resource_context.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/ssl/client_cert_store_nss.h"
 
@@ -80,23 +78,11 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
     Profile* profile = Profile::FromBrowserContext(browser_context_);
 
-    if (ash::features::ShouldUseKcerClientCertStore()) {
-      return std::make_unique<ClientCertStoreKcer>(
-          nullptr,  // no additional provider
-          kcer::KcerFactoryAsh::GetKcer(profile),
-          ProfileNetworkContextServiceFactory::GetForContext(profile)
-              ->GetClientCertIssuerSourceFactory());
-    } else {
-      const user_manager::User* user =
-          ProfileHelper::Get()->GetUserByProfile(profile);
-      // Use the device-wide system key slot only if the user is affiliated on
-      // the device.
-      const bool use_system_key_slot = user->IsAffiliated();
-      return std::make_unique<ClientCertStoreAsh>(
-          nullptr,  // no additional provider
-          use_system_key_slot, user->username_hash(),
-          ClientCertStoreAsh::PasswordDelegateFactory());
-    }
+    return std::make_unique<ClientCertStoreKcer>(
+        nullptr,  // no additional provider
+        kcer::KcerFactoryAsh::GetKcer(profile),
+        ProfileNetworkContextServiceFactory::GetForContext(profile)
+            ->GetClientCertIssuerSourceFactory());
   }
 
  private:
@@ -129,17 +115,10 @@ class DelegateForDevice : public PlatformKeysServiceImplDelegate,
   }
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
-    if (ash::features::ShouldUseKcerClientCertStore()) {
       return std::make_unique<ClientCertStoreKcer>(
           nullptr,  // no additional provider
           kcer::ExtraInstances::GetDeviceKcer(),
           base::BindOnce(&ClientCertIssuerSourceGetterForDevice));
-    } else {
-      return std::make_unique<ClientCertStoreAsh>(
-          nullptr,  // no additional provider
-          /*use_system_key_slot=*/true, /*username_hash=*/std::string(),
-          ClientCertStoreAsh::PasswordDelegateFactory());
-    }
   }
 
  private:

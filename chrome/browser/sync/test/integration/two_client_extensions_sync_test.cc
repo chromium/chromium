@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_registry.h"
 
 namespace {
 
@@ -21,10 +24,32 @@ using extensions_helper::IncognitoEnableExtension;
 using extensions_helper::InstallExtension;
 using extensions_helper::UninstallExtension;
 
-class TwoClientExtensionsSyncTest : public SyncTest {
+void UploadAllLocalExtensions(Profile* profile) {
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
+  for (const auto& extension : registry->enabled_extensions()) {
+    extensions::sync_util::UploadExtensionToAccount(profile, *extension);
+  }
+}
+
+// TODO(crbug.com/464239112): Clean up these tests. Many cover initial-merge
+// logic which might be redundant with batch upload. We probably just need one
+// test to cover batch upload.
+class TwoClientExtensionsSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientExtensionsSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientExtensionsSyncTest() : SyncTest(TWO_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
   ~TwoClientExtensionsSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   bool TestUsesSelfNotifications() override { return false; }
 
@@ -32,9 +57,15 @@ class TwoClientExtensionsSyncTest : public SyncTest {
   // TODO(https://crbug.com/40804030): Remove when these tests use only MV3
   // extensions.
   extensions::ScopedTestMV2Enabler mv2_enabler_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientExtensionsSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(StartWithNoExtensions)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -47,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
 #else
 #define MAYBE_StartWithSameExtensions StartWithSameExtensions
 #endif
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(MAYBE_StartWithSameExtensions)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
@@ -59,6 +90,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
   }
 
   ASSERT_TRUE(SetupSync());
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+    UploadAllLocalExtensions(GetProfile(0));
+    UploadAllLocalExtensions(GetProfile(1));
+  }
   ASSERT_TRUE(ExtensionsMatchChecker().Wait());
   EXPECT_EQ(kNumExtensions,
             static_cast<int>(GetInstalledExtensions(GetProfile(0)).size()));
@@ -70,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
 #else
 #define MAYBE_StartWithDifferentExtensions StartWithDifferentExtensions
 #endif
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(MAYBE_StartWithDifferentExtensions)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
@@ -94,13 +129,17 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
   }
 
   ASSERT_TRUE(SetupSync());
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+    UploadAllLocalExtensions(GetProfile(0));
+    UploadAllLocalExtensions(GetProfile(1));
+  }
   ASSERT_TRUE(ExtensionsMatchChecker().Wait());
   EXPECT_EQ(
       kNumCommonExtensions + kNumProfile0Extensions + kNumProfile1Extensions,
       static_cast<int>(GetInstalledExtensions(GetProfile(0)).size()));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(InstallDifferentExtensions)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
@@ -114,6 +153,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
   }
 
   ASSERT_TRUE(SetupSync());
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+    UploadAllLocalExtensions(GetProfile(0));
+    UploadAllLocalExtensions(GetProfile(1));
+  }
   ASSERT_TRUE(ExtensionsMatchChecker().Wait());
 
   const int kNumProfile0Extensions = 10;
@@ -132,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
       static_cast<int>(GetInstalledExtensions(GetProfile(0)).size()));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest, E2E_ENABLED(Add)) {
+IN_PROC_BROWSER_TEST_P(TwoClientExtensionsSyncTest, E2E_ENABLED(Add)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameExtensions());
@@ -143,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest, E2E_ENABLED(Add)) {
   EXPECT_EQ(1u, GetInstalledExtensions(GetProfile(0)).size());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest, E2E_ENABLED(Uninstall)) {
+IN_PROC_BROWSER_TEST_P(TwoClientExtensionsSyncTest, E2E_ENABLED(Uninstall)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameExtensions());
@@ -156,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest, E2E_ENABLED(Uninstall)) {
   EXPECT_TRUE(GetInstalledExtensions(GetProfile(0)).empty());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(UpdateEnableDisableExtension)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -176,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
   ASSERT_TRUE(ExtensionsMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(UpdateIncognitoEnableDisable)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -198,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
 
 // Regression test for bug 104399: ensure that an extension installed prior to
 // setting up sync, when uninstalled, is also uninstalled from sync.
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(UninstallPreinstalledExtensions)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
@@ -207,6 +250,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
   InstallExtension(GetProfile(0), 0);
 
   ASSERT_TRUE(SetupSync());
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+    UploadAllLocalExtensions(GetProfile(0));
+  }
 
   ASSERT_TRUE(ExtensionsMatchChecker().Wait());
   ASSERT_EQ(1u, GetInstalledExtensions(GetProfile(0)).size());

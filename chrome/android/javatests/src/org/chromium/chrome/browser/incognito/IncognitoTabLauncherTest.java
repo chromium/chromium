@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -34,9 +33,9 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -75,8 +74,8 @@ public class IncognitoTabLauncherTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testLaunchIncognitoNewTab() throws TimeoutException {
-        ChromeTabbedActivity activity = launchIncognitoTab(false);
-        assertIncognitoTabLaunched(activity, false);
+        IncognitoNewTabPageStation ntp = startOnIncognitoNtp(false);
+        assertIncognitoTabLaunched(ntp.getActivity(), false);
     }
 
     @Test
@@ -85,8 +84,8 @@ public class IncognitoTabLauncherTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testLaunchIncognitoNewTab_omniboxFocused_enabled_thirdParty()
             throws TimeoutException {
-        ChromeTabbedActivity activity = launchIncognitoTab(false);
-        assertIncognitoTabLaunched(activity, false);
+        IncognitoNewTabPageStation ntp = startOnIncognitoNtp(false);
+        assertIncognitoTabLaunched(ntp.getActivity(), false);
     }
 
     @Test
@@ -95,11 +94,12 @@ public class IncognitoTabLauncherTest {
     @DisabledTest(message = "crbug.com/1237504")
     public void testLaunchIncognitoNewTab_omniboxFocused_enabled_firstParty()
             throws TimeoutException {
-        ChromeTabbedActivity activity = launchIncognitoTab(true);
-        assertIncognitoTabLaunched(activity, true);
+        IncognitoNewTabPageStation ntp = startOnIncognitoNtp(true);
+        assertIncognitoTabLaunched(ntp.getActivity(), true);
     }
 
-    private ChromeTabbedActivity launchIncognitoTab(boolean asFirstParty) throws TimeoutException {
+    private IncognitoNewTabPageStation startOnIncognitoNtp(boolean asFirstParty)
+            throws TimeoutException {
         ExternalAuthUtils spy = Mockito.spy(ExternalAuthUtils.getInstance());
         doReturn(asFirstParty).when(spy).isGoogleSigned(any());
         ExternalAuthUtils.setInstanceForTesting(spy);
@@ -113,8 +113,9 @@ public class IncognitoTabLauncherTest {
         // ApplicationStatus internally, which ignores Tasks and tracks all Chrome Activities.
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> context.startActivity(intent));
-        return ChromeTabbedActivityTestRule.waitFor(ChromeTabbedActivity.class);
+        return mActivityRule
+                .startWithIntentTo(intent)
+                .arriveAt(IncognitoNewTabPageStation.newBuilder().withEntryPoint().build());
     }
 
     private Intent createLaunchIntent(Context context) throws TimeoutException {

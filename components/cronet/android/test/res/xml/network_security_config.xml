@@ -9,10 +9,17 @@ found in the LICENSE file.
 <network-security-config>
   <base-config>
     <trust-anchors>
-      <certificates src="@raw/quicroot"/>
-      <!-- Used by native test server (net::EmbeddedTestServer). It is unclear
-           why EmbeddedTestServer::RegisterTestCerts() does not consistently
-           work. -->
+      <!--
+        This should not usually be needed, as the test server code is supposed
+        to inject the test certs into X509Util automatically (see e.g.
+        EmbeddedTestServer::RegisterTestCerts()). However, this doesn't work
+        when tests run against platform HttpEngine (AOSP_PLATFORM), because in
+        this case the test server code is manipulating the state of the X509Util
+        class on the test side, not the one used by the Cronet code under test
+        (i.e. the platform code from the bootclasspath). We work around this
+        issue by adding the certificate here instead.
+      -->
+      <certificates src="@raw/quicroot" />
       <certificates src="@raw/root_ca_cert"/>
       <certificates src="system"/>
     </trust-anchors>

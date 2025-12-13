@@ -4,9 +4,8 @@
 
 #include "components/metrics/gms_metrics_provider.h"
 
+#include "base/android/device_info.h"
 #include "base/logging.h"
-
-#include "base/android/build_info.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 
@@ -69,8 +68,7 @@ bool GmsMetricsProvider::ProvideHistograms() {
 }
 
 std::string GmsMetricsProvider::GetGMSVersion() {
-  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
-  return info->gms_version_code();
+  return base::android::device_info::gms_version_code();
 }
 
 }  // namespace metrics

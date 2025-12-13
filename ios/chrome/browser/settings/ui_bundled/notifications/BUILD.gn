@@ -39,6 +39,7 @@ source_set("notifications") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/image",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -69,10 +70,12 @@ source_set("ui") {
     "//ios/chrome/browser/push_notification/ui_bundled:notifications_opt_in_ui",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/image",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
@@ -131,7 +134,6 @@ source_set("eg2_tests") {
   sources = [ "notifications_egtest.mm" ]
   deps = [
     ":constants",
-    ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
     "//components/commerce/core:feature_list",
@@ -143,33 +145,4 @@ source_set("eg2_tests") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("eg_app_support+eg2") {
-  testonly = true
-  sources = [
-    "notifications_earl_grey_app_interface.h",
-    "notifications_earl_grey_app_interface.mm",
-  ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//components/commerce/core:shopping_service_test_support",
-    "//ios/chrome/browser/commerce/model:shopping_service",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/test/app:test_support",
-    "//ios/web/public",
-  ]
-}
-
-source_set("eg_test_support+eg2") {
-  testonly = true
-  sources = [
-    "notifications_earl_grey_app_interface.h",
-    "notifications_earl_grey_app_interface_stub.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-  ]
 }

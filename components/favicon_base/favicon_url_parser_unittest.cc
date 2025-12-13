@@ -247,3 +247,37 @@ TEST_F(FaviconUrlParserTest, Favicon2ParsingForceLightMode) {
                                chrome::FaviconUrlFormat::kFavicon2, &parsed));
   EXPECT_TRUE(parsed.force_light_mode);
 }
+
+TEST_F(FaviconUrlParserTest, Favicon2ParsingForceEmptyDefaultFavicon) {
+  chrome::ParsedFaviconPath parsed;
+
+  // `forceEmptyDefaultFavicon` omitted.
+  parsed.force_empty_default_favicon = true;
+  EXPECT_TRUE(chrome::ParseFaviconPath("?pageUrl=https%3A%2F%2Fg.com",
+                                       chrome::FaviconUrlFormat::kFavicon2,
+                                       &parsed));
+  EXPECT_FALSE(parsed.force_empty_default_favicon);
+
+  // `forceEmptyDefaultFavicon` set to "foo" (invalid value).
+  parsed.force_empty_default_favicon = false;
+  EXPECT_FALSE(chrome::ParseFaviconPath(
+      "?forceEmptyDefaultFavicon=foo&pageUrl=https%3A%2F%2Fg.com",
+      chrome::FaviconUrlFormat::kFavicon2, &parsed));
+  EXPECT_FALSE(parsed.force_empty_default_favicon);
+
+  // `forceEmptyDefaultFavicon` set to "0".
+  parsed.force_empty_default_favicon = true;
+  EXPECT_TRUE(
+      chrome::ParseFaviconPath("?forceEmptyDefaultFavicon=0&pageUrl=https%3A%"
+                               "2F%2Fg.com",
+                               chrome::FaviconUrlFormat::kFavicon2, &parsed));
+  EXPECT_FALSE(parsed.force_empty_default_favicon);
+
+  // `forceEmptyDefaultFavicon` set to "1".
+  parsed.force_empty_default_favicon = false;
+  EXPECT_TRUE(
+      chrome::ParseFaviconPath("?forceEmptyDefaultFavicon=1&pageUrl=https%3A%"
+                               "2F%2Fg.com",
+                               chrome::FaviconUrlFormat::kFavicon2, &parsed));
+  EXPECT_TRUE(parsed.force_empty_default_favicon);
+}

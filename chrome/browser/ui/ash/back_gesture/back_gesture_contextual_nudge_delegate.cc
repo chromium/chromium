@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/ash/back_gesture/back_gesture_contextual_nudge_delegate.h"
 
 #include "ash/public/cpp/back_gesture_contextual_nudge_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "ui/aura/window.h"
 
 BackGestureContextualNudgeDelegate::BackGestureContextualNudgeDelegate(
@@ -29,20 +31,19 @@ void BackGestureContextualNudgeDelegate::MaybeStartTrackingNavigation(
   // Stop tracking the previous window before tracking a new window.
   StopTrackingNavigation();
 
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForNativeWindow(window);
-  if (!browser_view) {
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForWindow(window);
+  if (!browser) {
     return;
   }
 
   window_ = window;
   window_->AddObserver(this);
 
-  TabStripModel* tab_strip_model = browser_view->browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser->GetBrowser().tab_strip_model();
   tab_strip_model->AddObserver(this);
 
-  content::WebContents* contents = tab_strip_model->GetActiveWebContents();
-  Observe(contents);
+  Observe(browser->GetActiveWebContents());
 }
 
 void BackGestureContextualNudgeDelegate::DidFinishNavigation(
@@ -82,10 +83,11 @@ void BackGestureContextualNudgeDelegate::OnWindowDestroying(
 
 void BackGestureContextualNudgeDelegate::StopTrackingNavigation() {
   if (window_) {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForNativeWindow(window_);
-    DCHECK(browser_view);
-    browser_view->browser()->tab_strip_model()->RemoveObserver(this);
+    ash::BrowserDelegate* browser =
+        ash::BrowserController::GetInstance()->GetBrowserForWindow(window_);
+    if (browser) {
+      browser->GetBrowser().tab_strip_model()->RemoveObserver(this);
+    }
 
     window_->RemoveObserver(this);
     window_ = nullptr;

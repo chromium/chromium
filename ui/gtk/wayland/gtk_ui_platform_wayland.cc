@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_util.h"
 #include "ui/base/glib/glib_cast.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
@@ -34,15 +35,15 @@ void GtkUiPlatformWayland::OnInitialized() {
 }
 
 GdkWindow* GtkUiPlatformWayland::GetGdkWindow(
-    gfx::AcceleratedWidget window_id) {
+    gfx::AcceleratedWidget window_id) const {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
-bool GtkUiPlatformWayland::SetGtkWidgetTransientFor(
+void GtkUiPlatformWayland::SetGtkWidgetTransientFor(
     GtkWidget* widget,
     gfx::AcceleratedWidget parent) {
-  return ui::LinuxUiDelegate::GetInstance()->ExportWindowHandle(
+  ui::LinuxUiDelegate::GetInstance()->ExportWindowHandle(
       parent, base::BindOnce(&GtkUiPlatformWayland::OnHandleSetTransient,
                              weak_factory_.GetWeakPtr(), widget));
 }
@@ -58,8 +59,12 @@ void GtkUiPlatformWayland::ShowGtkWindow(GtkWindow* window) {
 }
 
 void GtkUiPlatformWayland::OnHandleSetTransient(GtkWidget* widget,
-                                                const std::string& handle) {
-  char* parent = const_cast<char*>(handle.c_str());
+                                                std::string handle) {
+  auto handle_no_prefix = base::RemovePrefix(handle, "wayland:");
+  if (!handle_no_prefix || handle_no_prefix->empty()) {
+    return;
+  }
+  char* parent = const_cast<char*>(handle_no_prefix->data());
   if (gtk::GtkCheckVersion(4)) {
     auto* toplevel = GlibCast<GdkToplevel>(
         gtk_native_get_surface(gtk_widget_get_native(widget)),
@@ -83,9 +88,8 @@ GtkUiPlatformWayland::CreateInputMethodContext(
 }
 
 bool GtkUiPlatformWayland::IncludeFontScaleInDeviceScale() const {
-  // Assume font scaling will be handled by Ozone/Wayland when WaylandUiScale
-  // feature is enabled.
-  return base::FeatureList::IsEnabled(features::kWaylandUiScale);
+  // Assume font scaling will be handled by Ozone/Wayland.
+  return true;
 }
 
 bool GtkUiPlatformWayland::IncludeScaleInCursorSize() const {

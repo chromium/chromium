@@ -25,6 +25,7 @@ source_set("eg_app_support+eg2") {
   ]
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/prefs",
     "//components/variations",
     "//components/variations/service",
@@ -39,5 +40,8 @@ source_set("eg_test_support+eg2") {
     "variations_smoke_test_app_interface.h",
     "variations_smoke_test_app_interface_stub.mm",
   ]
-  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
 }

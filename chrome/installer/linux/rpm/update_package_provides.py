@@ -13,7 +13,6 @@ import sys
 import urllib.request
 import xml.etree.ElementTree as ET
 
-
 LIBRARY_FILTER = {
     "ld-linux-x86-64.so",
     "libX11-xcb.so",
@@ -101,9 +100,9 @@ for distro in rpm_sources:
 
         response = urllib.request.urlopen(source + "repodata/repomd.xml")
         repomd = ET.fromstring(response.read())
-        primary = (source +
-                   repomd.find("./{%s}data[@type='primary']/{%s}location" %
-                               (REPO_NS, REPO_NS)).attrib["href"])
+        primary = (
+            source + repomd.find("./{%s}data[@type='primary']/{%s}location" %
+                                 (REPO_NS, REPO_NS)).attrib["href"])
         expected_checksum = repomd.find(
             "./{%s}data[@type='primary']/{%s}checksum[@type='sha256']" %
             (REPO_NS, REPO_NS)).text
@@ -124,9 +123,8 @@ for distro in rpm_sources:
                 continue
             package_name = package.find("./{%s}name" % COMMON_NS).text
             package_provides = []
-            for entry in package.findall(
-                    "./{%s}format/{%s}provides/{%s}entry" %
-                (COMMON_NS, RPM_NS, RPM_NS)):
+            for entry in package.findall("./{%s}format/{%s}provides/{%s}entry" %
+                                         (COMMON_NS, RPM_NS, RPM_NS)):
                 name = entry.attrib["name"]
                 for prefix in LIBRARY_FILTER:
                     if name.startswith(prefix):

@@ -98,11 +98,9 @@ UIView* CreateIconView(UIImage* icon) {
         break;
     }
     self.layer.cornerRadius = kCornerRadius;
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = @[ UITraitUserInterfaceStyle.class ];
-      [self registerForTraitChanges:traits
-                         withAction:@selector(updateColorOnTraitChange)];
-    }
+    NSArray<UITrait>* traits = @[ UITraitUserInterfaceStyle.class ];
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateColorOnTraitChange)];
   }
   return self;
 }
@@ -129,20 +127,6 @@ UIView* CreateIconView(UIImage* icon) {
 - (instancetype)initWithList:(NSArray<NSString*>*)instructionList {
   return [self initWithList:instructionList style:InstructionViewStyleDefault];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.userInterfaceStyle !=
-      previousTraitCollection.userInterfaceStyle) {
-    [self updateColorOnTraitChange];
-  }
-}
-#endif
 
 #pragma mark - Private
 

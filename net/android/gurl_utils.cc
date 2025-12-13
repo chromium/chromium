@@ -8,14 +8,14 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "net/net_jni_headers/GURLUtils_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace net {
 
-ScopedJavaLocalRef<jstring> JNI_GURLUtils_GetOrigin(
+static ScopedJavaLocalRef<jstring> JNI_GURLUtils_GetOrigin(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
+    const JavaRef<jstring>& url) {
   GURL host(base::android::ConvertJavaStringToUTF16(env, url));
 
   return base::android::ConvertUTF8ToJavaString(
@@ -23,3 +23,5 @@ ScopedJavaLocalRef<jstring> JNI_GURLUtils_GetOrigin(
 }
 
 }  // namespace net
+
+DEFINE_JNI(GURLUtils)

@@ -18,6 +18,7 @@ import android.graphics.drawable.BitmapDrawable;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
 
@@ -101,16 +103,19 @@ public class TileRendererTest {
     @Mock private ColorStateList mFakeColorStateList;
 
     private ShadowPostTaskImpl mPostTaskRunner;
+    private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
     private TilesLinearLayout mSharedParent;
     private final ArgumentCaptor<LargeIconCallback> mImageFetcherCallbackCaptor =
             ArgumentCaptor.forClass(LargeIconCallback.class);
 
     private Tile mTile;
+    private @TileSource.EnumType int mTileSource;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mActivityController = Robolectric.buildActivity(TestActivity.class);
+        mActivity = mActivityController.setup().get();
 
         mPostTaskRunner = new ShadowPostTaskImpl();
         ShadowPostTask.setTestImpl(mPostTaskRunner);
@@ -118,10 +123,7 @@ public class TileRendererTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
 
         mSharedParent = new TilesLinearLayout(mActivity, /* attrs= */ null);
-        SiteSuggestion siteSuggestion =
-                new SiteSuggestion("Example", TEST_URL, 0, TileSource.TOP_SITES, 0);
-        mTile = new Tile(siteSuggestion, 0);
-        mTile.setIconTint(mFakeColorStateList);
+        mTileSource = TileSource.TOP_SITES;
 
         // Set up mocks.
         doReturn(mTileSetupCallback).when(mTileSetupDelegate).createIconLoadCallback(any());
@@ -131,7 +133,17 @@ public class TileRendererTest {
         doReturn(mBitmap).when(mIconGenerator).generateIconForUrl(any(GURL.class));
     }
 
+    @After
+    public void tearDown() {
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
+        mActivityController.destroy();
+    }
+
     private SuggestionsTileView buildTileView(@TileStyle int style, int titleLines) {
+        SiteSuggestion siteSuggestion = new SiteSuggestion("Example", TEST_URL, 0, mTileSource, 0);
+        mTile = new Tile(siteSuggestion, 0);
+        mTile.setIconTint(mFakeColorStateList);
+
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TileRenderer tileRenderer =
@@ -225,6 +237,22 @@ public class TileRendererTest {
         ShadowDrawable shadowDrawable = shadowOf(mTile.getIcon());
         Assert.assertEquals(
                 R.drawable.ic_suggestion_magnifier, shadowDrawable.getCreatedFromResId());
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildTileView_TopSites_ContentDescription() {
+        SuggestionsTileView tileView = buildTileView(TileStyle.MODERN, TITLE_LINES);
+        Assert.assertEquals("Example: www.example.com", tileView.getContentDescription());
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildTileView_CustomLinks_ContentDescription() {
+        mTileSource = TileSource.CUSTOM_LINKS;
+        SuggestionsTileView tileView = buildTileView(TileStyle.MODERN, TITLE_LINES);
+        Assert.assertEquals(
+                "Example: Pinned shortcut: www.example.com", tileView.getContentDescription());
     }
 
     @Test

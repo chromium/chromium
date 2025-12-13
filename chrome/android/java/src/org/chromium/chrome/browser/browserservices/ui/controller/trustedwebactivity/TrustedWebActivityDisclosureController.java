@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
@@ -15,6 +18,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
  * Controls when Trusted Web Activity disclosure should be shown and hidden, reacts to interaction
  * with it.
  */
+@NullMarked
 public class TrustedWebActivityDisclosureController extends DisclosureController {
     private final ClientPackageNameProvider mClientPackageNameProvider;
 
@@ -31,14 +35,15 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
     public void onDisclosureAccepted() {
         TrustedWebActivityUmaRecorder.recordDisclosureAccepted();
         BrowserServicesStore.setUserAcceptedTwaDisclosureForPackage(
-                mClientPackageNameProvider.get());
+                assertNonNull(mClientPackageNameProvider.get()));
         super.onDisclosureAccepted();
     }
 
     @Override
     public void onDisclosureShown() {
         TrustedWebActivityUmaRecorder.recordDisclosureShown();
-        BrowserServicesStore.setUserSeenTwaDisclosureForPackage(mClientPackageNameProvider.get());
+        BrowserServicesStore.setUserSeenTwaDisclosureForPackage(
+                assertNonNull(mClientPackageNameProvider.get()));
         super.onDisclosureShown();
     }
 
@@ -46,12 +51,12 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
     protected boolean shouldShowDisclosure() {
         /* Has a disclosure been dismissed for this client package before? */
         return !BrowserServicesStore.hasUserAcceptedTwaDisclosureForPackage(
-                mClientPackageNameProvider.get());
+                assertNonNull(mClientPackageNameProvider.get()));
     }
 
     @Override
     protected boolean isFirstTime() {
         return !BrowserServicesStore.hasUserSeenTwaDisclosureForPackage(
-                mClientPackageNameProvider.get());
+                assertNonNull(mClientPackageNameProvider.get()));
     }
 }

@@ -34,8 +34,6 @@ class BrowserContext;
 
 namespace page_load_metrics {
 
-class PageLoadMetricsMemoryTracker;
-
 namespace {
 
 class TestPageLoadMetricsEmbedderInterface
@@ -66,6 +64,8 @@ class TestPageLoadMetricsEmbedderInterface
     return std::move(timer);
   }
 
+  bool HasWebUIConfig(const GURL& url) override { return false; }
+
   bool IsNoStatePrefetch(content::WebContents* web_contents) override {
     return false;
   }
@@ -76,17 +76,9 @@ class TestPageLoadMetricsEmbedderInterface
     return test_->is_non_tab_webui();
   }
 
+  bool IsInternalWebUI(const GURL& url) override { return true; }
+
   bool ShouldObserveScheme(std::string_view scheme) override { return false; }
-
-  bool IsIncognito(content::WebContents* web_contents) override {
-    return false;
-  }
-
-  page_load_metrics::PageLoadMetricsMemoryTracker*
-  GetMemoryTrackerForBrowserContext(
-      content::BrowserContext* browser_context) override {
-    return nullptr;
-  }
 
  private:
   raw_ptr<PageLoadMetricsObserverTester> test_;
@@ -381,17 +373,6 @@ void PageLoadMetricsObserverTester::RegisterObservers(
     PageLoadTracker* tracker) {
   if (!register_callback_.is_null())
     register_callback_.Run(tracker);
-}
-
-void PageLoadMetricsObserverTester::SimulateMemoryUpdate(
-    content::RenderFrameHost* render_frame_host,
-    int64_t delta_bytes) {
-  DCHECK(render_frame_host);
-  if (delta_bytes != 0) {
-    std::vector<MemoryUpdate> update(
-        {MemoryUpdate(render_frame_host->GetGlobalId(), delta_bytes)});
-    metrics_web_contents_observer_->OnV8MemoryChanged(update);
-  }
 }
 
 }  // namespace page_load_metrics

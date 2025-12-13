@@ -39,9 +39,17 @@ typedef (ArrayBuffer or ArrayBufferView or Blob or USVString) BlobPart;
     readonly attribute unsigned long long size;
     readonly attribute DOMString type;
 
-    // TODO(jsbell): start and end arguments should be [Clamp]
-    [RaisesException] Blob slice(optional long long start, optional long long end, optional DOMString contentType);
-    [CallWith=ScriptState] ReadableStream stream();
-    [CallWith=ScriptState] Promise<USVString> text();
-    [CallWith=ScriptState] Promise<ArrayBuffer> arrayBuffer();
+    // NOTE: According to the File API spec, the `end` argument should
+    // be treated as the Blob's size when `undefined`. However, our
+    // binding layer converts `undefined` to `0`, making it impossible
+    // for the C++ implementation to distinguish an explicitly passed
+    // `0` from an omitted argument. To workaround the binding issue, we
+    // provide a default value here, similar to WebKit's approach.
+    // This is slightly different from the spec but matches the expected
+    // behavior.
+    [RaisesException] Blob slice(optional [Clamp] long long start = 0, optional [Clamp] long long end = 0x7FFFFFFFFFFFFFFF, optional DOMString contentType = "");
+    [CallWith=ScriptState, NewObject] ReadableStream stream();
+    [CallWith=ScriptState, NewObject] Promise<USVString> text();
+    [CallWith=ScriptState, NewObject] Promise<ArrayBuffer> arrayBuffer();
+    [RuntimeEnabled=BlobBytes, CallWith=ScriptState, NewObject] Promise<Uint8Array> bytes();
 };

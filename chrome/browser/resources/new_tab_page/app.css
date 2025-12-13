@@ -11,6 +11,8 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --cr-composebox-input-placeholder-color:
+      var(--color-new-tab-page-common-input-placeholder);
   --cr-focus-outline-color: var(--color-new-tab-page-focus-ring);
   --cr-searchbox-height: 48px;
   --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
@@ -18,6 +20,7 @@
   --cr-searchbox-icon-size-in-searchbox: 20px;
   --cr-searchbox-icon-top-position: 0;
   --cr-searchbox-min-width: var(--ntp-search-box-width);
+  --cr-searchbox-results-search-icon-size: 20px;
   --ntp-theme-text-shadow: none;
   --ntp-one-google-bar-height: 56px;
   --ntp-search-box-width: 337px;
@@ -30,18 +33,24 @@
   --ntp-module-item-border-radius: 12px;
   --ntp-protected-icon-background-color: transparent;
   --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
+  --ntp-scrim-opacity_: 1;
 }
 
 /**
  * Hide everything that should not display when the composebox is open
  * so they are not tabbable.
  */
-:host([show-composebox_]) cr-most-visited,
-:host([show-composebox_]) ntp-middle-slot-promo,
-:host([show-composebox_]) ntp-modules,
-:host([show-composebox_]) #backgroundImageAttribution,
-:host([show-composebox_]) ntp-customize-buttons {
+:host([show-composebox_]:not([ntp-realbox-next-enabled_])) cr-most-visited,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_])) ntp-middle-slot-promo,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_])) ntp-modules,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_])) #backgroundImageAttribution,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_])) ntp-customize-buttons,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_])) setup-list-module-wrapper{
   display: none;
+}
+
+:host([ntp-realbox-next-enabled_]) {
+  --ntp-scrim-opacity_: 0.5;
 }
 
 /**
@@ -87,6 +96,23 @@ cr-most-visited {
   --ntp-protected-icon-background-color-hovered: rgba(0, 0, 0, .7);
 }
 
+/* The styles to create a stacking context for the OGB-related elements.
+ * The OGB has z-index of 1000 (set by inline styling),
+ * and it needs to be segregated to get the OGB scrimmed. */
+#oneGoogleBarStackingContext {
+  display: flex;
+  border: 0px;
+  top: 0;
+  width: 100%;
+  /* OGB is above any other element by default to keep the original behavior. */
+  z-index: 1000;
+}
+
+/* When scrim is applied, OGB must be behind it. */
+:host([show-scrim_]) #oneGoogleBarStackingContext {
+  z-index: 0;
+}
+
 #oneGoogleBarScrim {
   background: linear-gradient(rgba(0,0,0,0.25) 0%,
                               rgba(0,0,0,0.12) 45%,
@@ -130,14 +156,17 @@ cr-most-visited {
   z-index: 1;  /* Needed so it layers on top of OneGoogleBar. */
 }
 
-:host([show-composebox_]) #logo {
+:host([show-composebox_]) #logo,
+:host([ntp-realbox-next-enabled_][show-scrim_]) #logo {
   z-index: 2;
 }
 
 #searchboxContainer {
+  --cr-focus-outline-color: var(--color-searchbox-results-icon-focused-outline);
   display: inherit;
   margin-bottom: 16px;
   position: relative;
+  z-index: 2;
 }
 
 #modules:not([hidden]) {
@@ -269,13 +298,13 @@ svg {
   position: fixed;
 }
 
-ntp-composebox {
-  --ntp-composebox-width: var(--ntp-search-box-width);
-  --ntp-composebox-background-color:
-      var(--color-new-tab-page-composebox-background);
+cr-composebox {
+  --cr-composebox-width: var(--ntp-search-box-width);
+  --cr-composebox-background-color:
+      var(--color-composebox-background);
 }
 
-ntp-composebox,
+cr-composebox,
 ntp-lens-upload-dialog {
   left: 0;
   position: absolute;
@@ -284,10 +313,12 @@ ntp-lens-upload-dialog {
   z-index: 101;
 }
 
-#composeboxScrim {
-  background: var(--color-new-tab-page-composebox-scrim-background);
+#scrim {
+  background: var(--color-composebox-scrim-background);
   inset: 0;
+  opacity: var(--ntp-scrim-opacity_);
   position: fixed;
+  transition: all 250ms ease;
   z-index: 1;
 }
 
@@ -300,5 +331,27 @@ ntp-lens-upload-dialog {
   user interaction. It does not need to be visible.
 */
 #microsoftAuth {
+  display: none;
+}
+
+#dialogAnchor {
+  anchor-name: --dialog-anchor;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+#composeboxDialog {
+  background: transparent;
+  border: none;
+  left: anchor(left);
+  margin: 0;
+  overflow: visible;
+  position: absolute;
+  position-anchor: --dialog-anchor;
+  top: anchor(top);
+}
+
+#composeboxDialog::backdrop {
   display: none;
 }

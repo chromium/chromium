@@ -60,7 +60,8 @@
           "group": "tryserver.chromium.android"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-archive-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/android-archive-rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {
@@ -84,10 +85,10 @@
   },
   "builder_group": "chromium",
   "gardener_rotations": [
-    "chromium"
+    "android"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "android"
   ]
 }

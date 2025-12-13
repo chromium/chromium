@@ -29,7 +29,7 @@ NET_EXPORT_PRIVATE scoped_refptr<base::SingleThreadTaskRunner>
 GetSSLPlatformKeyTaskRunner();
 
 // Returns the public key of |certificate| as an |EVP_PKEY| or nullptr on error.
-bssl::UniquePtr<EVP_PKEY> GetClientCertPublicKey(
+NET_EXPORT_PRIVATE bssl::UniquePtr<EVP_PKEY> GetClientCertPublicKey(
     const X509Certificate* certificate);
 
 // Determines the key type and maximum signature length of |certificate|'s

@@ -15,8 +15,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -125,9 +123,12 @@ bool BocaSystemAppDelegate::ShouldHaveExtensionsContainerInToolbar() const {
 }
 
 bool BocaSystemAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
-  // Consumer SWA will also host 3P content, so we override app scope checks to
-  // prevent navigation outside the app.
-  return IsConsumerProfile(profile());
+  // The SWA is configured to host both 1P and 3P content depending on the use
+  // case. We relax URL scope checks for the following scenarios:
+  // 1. Consumer using the SWA when Class Tools is enabled.
+  // 2. Class Tools is disabled. This allows us to extend SWA usage beyond Class
+  // Tools (for example, locked quizzes).
+  return !IsEnabled(profile()) || IsConsumerProfile(profile());
 }
 
 bool BocaSystemAppDelegate::ShouldPinTab(GURL url) const {

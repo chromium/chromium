@@ -34,13 +34,19 @@ using data_sharing_pb::MemberRole;
 
 namespace {
 
+// URL used to create SavedTabGroupTab.
+constexpr char kTabURL[] = "https://google.com";
+
+// Title for the shared tab.
+constexpr char16_t kSharedTabTitle[] = u"Google";
+
 // Delay to observe when deleting a shared tab group from the server.
 constexpr base::TimeDelta kDeleteGroupDelay = base::Seconds(0.5);
 
 // Creates a saved tab belonging to `group_guid` group.
-tab_groups::SavedTabGroupTab CreateTab(const base::Uuid& group_guid) {
-  tab_groups::SavedTabGroupTab saved_tab(GURL("https://google.com"), u"Google",
-                                         group_guid,
+tab_groups::SavedTabGroupTab CreateTab(const base::Uuid& group_guid,
+                                       const GURL& url) {
+  tab_groups::SavedTabGroupTab saved_tab(url, kSharedTabTitle, group_guid,
                                          /*position=*/0);
   return saved_tab;
 }
@@ -57,7 +63,7 @@ tab_groups::SavedTabGroup CreateGroup(
 }
 
 // Creates a group member with the given `gaia_id` and `member_role`.
-data_sharing_pb::GroupMember CreateGroupMember(NSString* gaia_id,
+data_sharing_pb::GroupMember CreateGroupMember(const GaiaId& gaia_id,
                                                MemberRole member_role) {
   GroupMember member;
   if (member_role == data_sharing_pb::MEMBER_ROLE_OWNER) {
@@ -67,7 +73,7 @@ data_sharing_pb::GroupMember CreateGroupMember(NSString* gaia_id,
     member.set_display_name("Member");
     member.set_email("member@mail.com");
   }
-  member.set_gaia_id(base::SysNSStringToUTF8(gaia_id));
+  member.set_gaia_id(gaia_id.ToString());
   member.set_avatar_url("chrome://newtab");
   member.set_given_name("Given Name");
   member.set_role(member_role);
@@ -82,14 +88,14 @@ GroupData CreateGroupData(MemberRole member_role,
   group_data.set_group_id(collaboration_id);
   group_data.set_display_name("Display Name");
   *group_data.add_members() =
-      CreateGroupMember([FakeSystemIdentity fakeIdentity1].gaiaID, member_role);
+      CreateGroupMember([FakeSystemIdentity fakeIdentity1].gaiaId, member_role);
   MemberRole member_role2 = member_role == data_sharing_pb::MEMBER_ROLE_OWNER
                                 ? data_sharing_pb::MEMBER_ROLE_MEMBER
                                 : data_sharing_pb::MEMBER_ROLE_OWNER;
   *group_data.add_members() = CreateGroupMember(
-      [FakeSystemIdentity fakeIdentity2].gaiaID, member_role2);
+      [FakeSystemIdentity fakeIdentity2].gaiaId, member_role2);
   *group_data.add_members() =
-      CreateGroupMember([FakeSystemIdentity fakeIdentity3].gaiaID,
+      CreateGroupMember([FakeSystemIdentity fakeIdentity3].gaiaId,
                         data_sharing_pb::MEMBER_ROLE_MEMBER);
   group_data.set_access_token("fake_access_token");
   return group_data;
@@ -186,11 +192,11 @@ NSString* TestShareKitService::JoinTabGroup(ShareKitJoinConfiguration* config) {
   viewController.flowCompleteBlock = config.completion;
 
   // Set the joined group completion block.
-  auto joined_group_completion_block =
-      ^(NSString* collab_id, ProceduralBlock continuation_block) {
-        CreateSharedTabGroupInFakeServer(/*owner=*/false, collab_id);
-        continuation_block();
-      };
+  auto joined_group_completion_block = ^(NSString* collab_id,
+                                         ProceduralBlock continuation_block) {
+    CreateSharedTabGroupInFakeServer(/*owner=*/false, collab_id, GURL(kTabURL));
+    continuation_block();
+  };
 
   viewController.actionAcceptedBlock = joined_group_completion_block;
 
@@ -245,8 +251,8 @@ void TestShareKitService::LeaveGroup(ShareKitLeaveConfiguration* config) {
 void TestShareKitService::DeleteGroup(ShareKitDeleteConfiguration* config) {
   auto callback = config.callback;
   std::optional<tab_groups::SavedTabGroup> tab_group;
-  tab_groups::CollaborationId collaboration_id =
-      tab_groups::CollaborationId(base::SysNSStringToUTF8(config.collabID));
+  syncer::CollaborationId collaboration_id =
+      syncer::CollaborationId(base::SysNSStringToUTF8(config.collabID));
 
   for (const auto& group : tab_group_sync_service_->GetAllGroups()) {
     if (group.collaboration_id().has_value() &&
@@ -383,16 +389,16 @@ void TestShareKitService::ProcessTabGroupSharingResult(
   chrome_test_util::DeleteAllEntitiesForDataType(syncer::SAVED_TAB_GROUP);
 }
 
-void TestShareKitService::CreateSharedTabGroupInFakeServer(
-    bool owner,
-    NSString* collab_id) {
+void TestShareKitService::CreateSharedTabGroupInFakeServer(bool owner,
+                                                           NSString* collab_id,
+                                                           const GURL& url) {
   if (!tab_group_sync_service_) {
     return;
   }
 
   base::Uuid group_guid = base::Uuid::GenerateRandomV4();
   std::vector<tab_groups::SavedTabGroupTab> tabs;
-  tab_groups::SavedTabGroupTab tab = CreateTab(group_guid);
+  tab_groups::SavedTabGroupTab tab = CreateTab(group_guid, url);
   tabs.push_back(tab);
   chrome_test_util::AddTabToFakeServer(tab);
   chrome_test_util::AddGroupToFakeServer(

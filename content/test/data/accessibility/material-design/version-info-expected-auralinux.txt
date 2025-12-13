@@ -1,0 +1,16 @@
+[document web] name='Material Design Version Information'
+++[heading] name='Material Design Version Information'
+++++[static] name='Material Design Version Information'
+++[section] name='Version information'
+++++[section]
+++++++[static] name='Material Web Components Library: 2.3.0'
+++++[section]
+++++++[static] name='Material Design Info: Material Design Components v2.3.0'
+++++[section]
+++++++[static] name='Lit Framework: 3.1.0'
+++++[section]
+++++++[static] name='Source: third_party/material_web_components'
+++[section] name='Ready'
+++[section]
+++++[section]
+++++[push button] name='Test Button'

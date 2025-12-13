@@ -7,12 +7,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
@@ -22,6 +22,8 @@
 #include "extensions/common/manifest_handlers/icon_variants_handler.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/gfx/geometry/size.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -82,7 +84,7 @@ bool IconsHandler::Parse(Extension* extension, std::u16string* error) {
 
   std::vector<std::string> warnings;
   if (!manifest_handler_helpers::LoadIconsFromDictionary(
-          *icons_dict, &icons_info->icons, error, &warnings)) {
+          *extension, *icons_dict, &icons_info->icons, error, &warnings)) {
     return false;
   }
   for (const auto& warning : warnings) {

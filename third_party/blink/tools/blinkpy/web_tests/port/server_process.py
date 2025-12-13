@@ -31,7 +31,6 @@ import errno
 import logging
 import re
 import signal
-import six
 import sys
 import time
 

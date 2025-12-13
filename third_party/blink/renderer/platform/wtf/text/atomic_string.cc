@@ -36,22 +36,17 @@ namespace blink {
 ASSERT_SIZE(AtomicString, String);
 
 AtomicString::AtomicString(base::span<const LChar> chars)
-    : string_(AtomicStringTable::Instance().Add(
-          chars.data(),
-          base::checked_cast<wtf_size_t>(chars.size()))) {}
+    : string_(AtomicStringTable::Instance().Add(chars)) {}
 
 AtomicString::AtomicString(base::span<const UChar> chars,
                            AtomicStringUCharEncoding encoding)
-    : string_(AtomicStringTable::Instance().Add(
-          chars.data(),
-          base::checked_cast<wtf_size_t>(chars.size()),
-          encoding)) {}
+    : string_(AtomicStringTable::Instance().Add(chars, encoding)) {}
 
 AtomicString::AtomicString(const UChar* chars)
     : string_(AtomicStringTable::Instance().Add(
-          chars,
           // SAFETY: safe when `chars` points to a null-terminated cstring.
-          chars ? UNSAFE_BUFFERS(LengthOfNullTerminatedString(chars)) : 0,
+          UNSAFE_BUFFERS(
+              {chars, chars ? LengthOfNullTerminatedString(chars) : 0}),
           AtomicStringUCharEncoding::kUnknown)) {}
 
 AtomicString::AtomicString(const StringView& string_view)
@@ -115,8 +110,8 @@ AtomicString AtomicString::UpperASCII() const {
 }
 
 AtomicString AtomicString::Number(double number, unsigned precision) {
-  NumberToStringBuffer buffer;
-  return AtomicString(NumberToFixedPrecisionString(number, precision, buffer));
+  DoubleToStringConverter converter;
+  return AtomicString(converter.ToStringWithFixedPrecision(number, precision));
 }
 
 std::ostream& operator<<(std::ostream& out, const AtomicString& s) {

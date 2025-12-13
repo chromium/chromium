@@ -22,7 +22,7 @@ enum class QuantityBucket {
 };
 
 // Types that qualify a navigation for the
-// DIPS.TrustIndicator.DirectNavigationV2 UKM event. Should only contain core
+// `DIPS.TrustIndicator.DirectNavigationV2` UKM event. Should only contain core
 // page transition types (no qualifiers).
 constexpr const std::array<ui::PageTransition, 2>&
     kDirectNavigationPageTransitions{
@@ -87,7 +87,7 @@ QuantityBucket GetCrossSiteRedirectQuantity(
   }
 
   const std::string destination_site =
-      GetSiteForBtm(navigation.destination.url);
+      GetSiteForBtm(navigation.destination_url);
   if (destination_site != referring_site) {
     num_cross_site_redirects += 1;
   }
@@ -124,7 +124,7 @@ void MaybeEmitDirectNavigationUkm(const BtmNavigationInfo& navigation) {
   }
 
   ukm::SourceId source_id = navigation.server_redirects.empty()
-                                ? navigation.destination.source_id
+                                ? navigation.destination_source_id
                                 : navigation.server_redirects.front().source_id;
 
   ukm::builders::DIPS_TrustIndicator_DirectNavigationV2(source_id)
@@ -145,8 +145,8 @@ EntrypointInfo::EntrypointInfo(
       was_referral_client_redirect(was_referral_client_redirect_like) {}
 
 EntrypointInfo::EntrypointInfo(const BtmNavigationInfo& referral)
-    : site(GetSiteForBtm(referral.destination.url)),
-      source_id(referral.destination.source_id),
+    : site(GetSiteForBtm(referral.destination_url)),
+      source_id(referral.destination_source_id),
       had_active_storage_access(false),
       was_referral_client_redirect(WasClientRedirectLike(referral)) {}
 
@@ -204,7 +204,7 @@ void BtmNavigationFlowDetector::OnPageVisitReported(
     BtmPageVisitInfo page_visit,
     BtmNavigationInfo navigation) {
   CHECK(!previous_page_to_current_page_.has_value() ||
-        previous_page_to_current_page_->destination.url == page_visit.url);
+        previous_page_to_current_page_->destination_url == page_visit.url);
 
   // Slide our sliding window by one report (page visit + navigation).
   two_pages_ago_ = std::move(previous_page_);
@@ -499,6 +499,7 @@ bool BtmNavigationFlowDetector::
     return false;
   }
 
+  // We've now confirmed that `possible_entrypoint` is indeed an entrypoint.
   successor_interaction_tracking_state_.emplace(btm::EntrypointInfo(
       possible_entrypoint,
       WasClientRedirectLike(*previous_page_to_current_page_)));
@@ -508,7 +509,7 @@ bool BtmNavigationFlowDetector::
 }
 
 const std::string BtmNavigationFlowDetector::GetSiteForCurrentPage() const {
-  return GetSiteForBtm(previous_page_to_current_page_->destination.url);
+  return GetSiteForBtm(previous_page_to_current_page_->destination_url);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(BtmNavigationFlowDetector);

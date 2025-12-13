@@ -37,6 +37,7 @@
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -95,7 +96,6 @@
 #include "content/test/render_document_feature.h"
 #include "content/test/task_runner_deferring_throttle.h"
 #include "content/test/test_render_frame_host_factory.h"
-#include "ipc/ipc_security_test_util.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/features.h"
@@ -105,9 +105,11 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/url_request/url_request_failed_job.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -448,7 +450,7 @@ class FrameAncestorNavigationBrowserTest
         base::BindLambdaForTesting(
             [&](const net::test_server::HttpRequest& request) {
               base::AutoLock lock(lock_);
-              observed_request_headers_.emplace_back(request.GetURL().path(),
+              observed_request_headers_.emplace_back(request.GetURL().GetPath(),
                                                      request.headers);
             }));
     NavigationBaseBrowserTest::SetUpOnMainThread();
@@ -517,7 +519,7 @@ IN_PROC_BROWSER_TEST_P(FrameAncestorNavigationBrowserTest,
   EXPECT_THAT(
       observed_request_headers(),
       Contains(Pair(
-          inner_url.path(),
+          inner_url.GetPath(),
           testing::IsSupersetOf<HeaderMapMatchers>({
               testing::Pair("Sec-Fetch-Frame-Ancestors", expected_relation()),
           }))));
@@ -547,7 +549,7 @@ IN_PROC_BROWSER_TEST_P(FrameAncestorNavigationBrowserTest, SubframeRedirect) {
   load_observer.Wait();
 
   EXPECT_THAT(observed_request_headers(),
-              Contains(Pair(inner_url.path(),
+              Contains(Pair(inner_url.GetPath(),
                             testing::IsSupersetOf<HeaderMapMatchers>({
                                 testing::Pair("Sec-Fetch-Frame-Ancestors",
                                               expected_relation_for_redirect()),
@@ -572,7 +574,7 @@ IN_PROC_BROWSER_TEST_P(FrameAncestorNavigationBrowserTest, TopFrameRedirect) {
   // since it is same-origin with itself.
   EXPECT_THAT(observed_request_headers(),
               Contains(Pair(
-                  inner_url.path(),
+                  inner_url.GetPath(),
                   testing::IsSupersetOf<HeaderMapMatchers>({
                       testing::Pair("Sec-Fetch-Frame-Ancestors", "same-origin"),
                   }))));
@@ -604,7 +606,7 @@ IN_PROC_BROWSER_TEST_P(FrameAncestorNavigationBrowserTest,
                      JsReplace(subresource_request_script, redirecting_url)));
 
   EXPECT_THAT(observed_request_headers(),
-              Contains(Pair(inner_url.path(),
+              Contains(Pair(inner_url.GetPath(),
                             testing::IsSupersetOf<HeaderMapMatchers>({
                                 testing::Pair("Sec-Fetch-Frame-Ancestors",
                                               expected_relation_for_redirect()),
@@ -1852,38 +1854,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 }
 
 // Ensure the renderer process doesn't send too many IPC to the browser process
-// when history.pushState() and history.back() are called in a loop.
-// Failing to do so causes the browser to become unresponsive.
-// See https://crbug.com/882238
-// TODO(crbug.com/379844650): Disabled on Linux sanitizer bots due to flakiness.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
-#define MAYBE_IPCFlood_GoToEntryAtOffset DISABLED_IPCFlood_GoToEntryAtOffset
-#else
-#define MAYBE_IPCFlood_GoToEntryAtOffset IPCFlood_GoToEntryAtOffset
-#endif
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       MAYBE_IPCFlood_GoToEntryAtOffset) {
-  GURL url(embedded_test_server()->GetURL("/title1.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  WebContentsConsoleObserver console_observer(web_contents());
-  console_observer.SetPattern(
-      "Throttling navigation to prevent the browser from hanging. See "
-      "https://crbug.com/1038223. Command line switch "
-      "--disable-ipc-flooding-protection can be used to bypass the "
-      "protection");
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-    for(let i = 0; i<1000; ++i) {
-      history.pushState({},"page 2", "bar.html");
-      history.back();
-    }
-  )"));
-
-  ASSERT_TRUE(console_observer.Wait());
-}
-
-// Ensure the renderer process doesn't send too many IPC to the browser process
 // when doing a same-document navigation is requested in a loop.
 // Failing to do so causes the browser to become unresponsive.
 // TODO(arthursonzogni): Make the same test, but when the navigation is
@@ -2148,119 +2118,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
   response_2.WaitForRequest();
   EXPECT_FALSE(
       base::Contains(response_2.http_request()->headers, "header_name"));
-}
-
-// Name of header used by CorsInjectingUrlLoader.
-const std::string kCorsHeaderName = "test-header";
-
-// URLLoaderThrottle that stores the last value of |kCorsHeaderName|.
-class CorsInjectingUrlLoader : public blink::URLLoaderThrottle {
- public:
-  explicit CorsInjectingUrlLoader(std::string* last_cors_header_value)
-      : last_cors_header_value_(last_cors_header_value) {}
-
-  // blink::URLLoaderThrottle:
-  void WillStartRequest(network::ResourceRequest* request,
-                        bool* defer) override {
-    if (std::optional<std::string> header =
-            request->cors_exempt_headers.GetHeader(kCorsHeaderName);
-        header) {
-      last_cors_header_value_->swap(*header);
-    } else {
-      last_cors_header_value_->clear();
-    }
-  }
-
- private:
-  // See |NavigationCorsExemptBrowserTest::last_cors_header_value_| for details.
-  raw_ptr<std::string> last_cors_header_value_;
-};
-
-// ContentBrowserClient responsible for creating CorsInjectingUrlLoader.
-class CorsContentBrowserClient : public ContentBrowserTestContentBrowserClient {
- public:
-  explicit CorsContentBrowserClient(std::string* last_cors_header_value)
-      : last_cors_header_value_(last_cors_header_value) {}
-
-  // ContentBrowserClient overrides:
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-  CreateURLLoaderThrottles(
-      const network::ResourceRequest& request,
-      BrowserContext* browser_context,
-      const base::RepeatingCallback<WebContents*()>& wc_getter,
-      NavigationUIData* navigation_ui_data,
-      FrameTreeNodeId frame_tree_node_id,
-      std::optional<int64_t> navigation_id) override {
-    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-    throttles.push_back(
-        std::make_unique<CorsInjectingUrlLoader>(last_cors_header_value_));
-    return throttles;
-  }
-
- private:
-  // See |NavigationCorsExemptBrowserTest::last_cors_header_value_| for details.
-  raw_ptr<std::string> last_cors_header_value_;
-};
-
-class NavigationCorsExemptBrowserTest : public NavigationBaseBrowserTest {
- public:
-  NavigationCorsExemptBrowserTest() = default;
-
- protected:
-  const std::string& last_cors_header_value() const {
-    return last_cors_header_value_;
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ShellContentBrowserClient::set_allow_any_cors_exempt_header_for_browser(
-        true);
-    NavigationBaseBrowserTest::SetUpCommandLine(command_line);
-  }
-  void SetUpOnMainThread() override {
-    cors_content_browser_client_ =
-        std::make_unique<CorsContentBrowserClient>(&last_cors_header_value_);
-    host_resolver()->AddRule("*", "127.0.0.1");
-  }
-  void TearDownOnMainThread() override {
-    cors_content_browser_client_.reset();
-    ShellContentBrowserClient::set_allow_any_cors_exempt_header_for_browser(
-        false);
-  }
-
- private:
-  // Last value of kCorsHeaderName. Set by CorsInjectingUrlLoader.
-  std::string last_cors_header_value_;
-  std::unique_ptr<CorsContentBrowserClient> cors_content_browser_client_;
-};
-
-// Verifies a header added by way of SetRequestHeader() makes it into
-// |cors_exempt_headers|.
-IN_PROC_BROWSER_TEST_F(NavigationCorsExemptBrowserTest,
-                       SetCorsExemptRequestHeader) {
-  net::test_server::ControllableHttpResponse response(embedded_test_server(),
-                                                      "", true);
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  const std::string header_value = "value";
-  content::TestNavigationThrottleInserter throttle_inserter(
-      web_contents(),
-      base::BindLambdaForTesting(
-          [header_value](NavigationThrottleRegistry& registry) -> void {
-            NavigationRequest* request =
-                NavigationRequest::From(&registry.GetNavigationHandle());
-            auto throttle = std::make_unique<TestNavigationThrottle>(registry);
-            throttle->SetCallback(
-                TestNavigationThrottle::WILL_START_REQUEST,
-                base::BindLambdaForTesting([request, header_value]() {
-                  request->SetCorsExemptRequestHeader(kCorsHeaderName,
-                                                      header_value);
-                }));
-            registry.AddThrottle(std::move(throttle));
-          }));
-  shell()->LoadURL(embedded_test_server()->GetURL("/doc"));
-  response.WaitForRequest();
-  EXPECT_EQ(header_value, response.http_request()->headers.at(kCorsHeaderName));
-  EXPECT_EQ(header_value, last_cors_header_value());
 }
 
 // Test NavigationRequest::CheckAboutSrcDoc()
@@ -2810,7 +2667,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
 
   {
     WebContentsConsoleObserver console_observer(web_contents());
-    console_observer.SetPattern("Refused to execute inline script *");
+    console_observer.SetPattern("Executing inline script violates *");
 
     // 1) Load main document with CSP: script-src 'none'
     // 2) Open an about:srcdoc iframe. It inherits the CSP from its parent.
@@ -2841,7 +2698,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
 
   {
     WebContentsConsoleObserver console_observer(web_contents());
-    console_observer.SetPattern("Refused to execute inline script *");
+    console_observer.SetPattern("Executing inline script violates *");
 
     // 4) The iframe navigates back to about:srcdoc.
     web_contents()->GetController().GoBack();
@@ -2864,7 +2721,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
 
   {
     WebContentsConsoleObserver console_observer(web_contents());
-    console_observer.SetPattern("Refused to execute inline script *");
+    console_observer.SetPattern("Executing inline script violates *");
 
     // 1) Load main document with CSP: script-src 'none'
     // 2) Open an about:srcdoc iframe. It inherits the CSP from its parent.
@@ -2895,7 +2752,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
 
   {
     WebContentsConsoleObserver console_observer(web_contents());
-    console_observer.SetPattern("Refused to execute inline script *");
+    console_observer.SetPattern("Executing inline script violates *");
 
     // 4) The iframe navigates back to about:srcdoc.
     web_contents()->GetController().GoBack();
@@ -3884,12 +3741,12 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
 class GetEffectiveUrlClient : public ContentBrowserTestContentBrowserClient {
  public:
-  GURL GetEffectiveURL(content::BrowserContext* browser_context,
-                       const GURL& url) override {
+  std::optional<GURL> GetEffectiveURL(content::BrowserContext* browser_context,
+                                      const GURL& url) override {
     if (effective_url_) {
       return *effective_url_;
     }
-    return url;
+    return std::nullopt;
   }
 
   bool IsSuitableHost(RenderProcessHost* process_host,
@@ -4194,7 +4051,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   TestNavigationObserver observer(web_contents());
   shell()->LoadURL(embedded_test_server()->GetURL("/virtual-url.html"));
   observer.Wait();
-  EXPECT_EQ("/title2.html", observer.last_navigation_url().path());
+  EXPECT_EQ("/title2.html", observer.last_navigation_url().GetPath());
   EXPECT_EQ(2, rewrite_count);
 }
 
@@ -4278,9 +4135,25 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   loop.Run();
 }
 
+namespace {
+// TODO(crbug.com/450537562): Fix underlying behavior and run these tests with
+// the feature enabled.
+class NavigationBrowserTestNoRfhDtorDelay : public NavigationBrowserTest {
+ public:
+  NavigationBrowserTestNoRfhDtorDelay() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kDelayRfhDestructionsOnUnloadAndDetach);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+}  // namespace
+
 // A document initiates a form submission in another frame, then deletes itself.
 // Check the initiator frame token.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestNoRfhDtorDelay,
+                       FormSubmissionThenDeleteFrame) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   GURL always_referrer_url(embedded_test_server()->GetURL(
       "/set-header?Referrer-Policy: unsafe-url"));
@@ -4392,7 +4265,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
 // Same as the previous test, but for a remote frame navigation:
 // A document initiates a form submission in a cross-origin frame, then deletes
 // itself. Check the initiator frame token.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestNoRfhDtorDelay,
                        FormSubmissionInRemoteFrameThenDeleteFrame) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   GURL cross_origin_always_referrer_url(embedded_test_server()->GetURL(
@@ -4850,7 +4723,6 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
                                                       "/target.html");
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/target.html"));
-  RenderFrameSubmissionObserver frame_observer(web_contents());
   TestNavigationManager navigation_manager(web_contents(), url);
 
   // Load the document with document policy force-load-at-top set to false.
@@ -4872,9 +4744,12 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
 
-  // Scroll down the page a bit
-  EXPECT_TRUE(ExecJs(web_contents(), "window.scrollTo(0, 1000)"));
-  frame_observer.WaitForScrollOffsetAtTop(false);
+  {
+    RenderFrameSubmissionObserver frame_observer(web_contents());
+    // Scroll down the page a bit
+    EXPECT_TRUE(ExecJs(web_contents(), "window.scrollTo(0, 1000)"));
+    frame_observer.WaitForScrollOffsetAtTop(false);
+  }
 
   // Navigate away
   EXPECT_TRUE(ExecJs(web_contents(), "window.location = 'about:blank'"));
@@ -4887,9 +4762,10 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
 
   // Ensure scroll restoration activated
+  RenderFrameSubmissionObserver frame_observer(web_contents());
   frame_observer.WaitForScrollOffsetAtTop(false);
   const cc::RenderFrameMetadata& last_metadata =
-      RenderFrameSubmissionObserver(web_contents()).LastRenderFrameMetadata();
+      frame_observer.LastRenderFrameMetadata();
   EXPECT_FALSE(last_metadata.is_scroll_offset_at_top);
 }
 
@@ -8946,6 +8822,126 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   ASSERT_EQ(false, EvalJs(child_ftn, "document.hasFocus();"));
 }
 
+class PageLifecycleMetricsOnNewPageCommitBrowserTest
+    : public NavigationBrowserTest,
+      public testing::WithParamInterface<std::pair<std::string, std::string>> {
+ public:
+  PageLifecycleMetricsOnNewPageCommitBrowserTest() {
+    feature_list_.InitFromCommandLine(GetParam().first, GetParam().second);
+  }
+
+  void AddSlowPagehideEventHandlerToCurrentWebContents(
+      const base::Location location = FROM_HERE) {
+    // Wait for 1 second in the pagehide event handler as we want to measure the
+    // slow pagehide's callback case of 300 ms.
+    EXPECT_TRUE(ExecJs(web_contents(), R"(
+      window.addEventListener('pagehide', function() {
+        const start = Date.now();
+        while (Date.now() - start <= 300) {
+        }
+      });
+    )")) << location.ToString();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageLifecycleMetricsOnNewPageCommitBrowserTest,
+    testing::Values(
+        std::make_pair(/*enable_features=*/"BackForwardCache,RenderDocument",
+                       /*disable_features=*/""),
+        std::make_pair(/*enable_features=*/"RenderDocument",
+                       /*disable_features=*/"BackForwardCache"),
+        std::make_pair(
+            /*enable_features=*/"",
+            /*disable_features=*/"BackForwardCache,RenderDocument")));
+
+IN_PROC_BROWSER_TEST_P(PageLifecycleMetricsOnNewPageCommitBrowserTest,
+                       RecordUkm) {
+  const std::string_view kTargetUkmEntryName =
+      ukm::builders::PageLifecycleMetricsOnNewPageCommit::kEntryName;
+  const std::string_view kTargetUkmMetricName =
+      ukm::builders::PageLifecycleMetricsOnNewPageCommit::
+          kPageLifecycleEventsTotalProcessingTimeName;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  {
+    GURL url_1(embedded_test_server()->GetURL("a.test", "/title1.html"));
+    base::RunLoop ukm_loop;
+    ukm_recorder.SetOnAddEntryCallback(kTargetUkmEntryName,
+                                       ukm_loop.QuitClosure());
+    EXPECT_TRUE(NavigateToURL(shell(), url_1));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    ukm_loop.Run();
+    auto entries = ukm_recorder.GetEntriesByName(kTargetUkmEntryName);
+    EXPECT_EQ(1u, entries.size());
+    const ukm::mojom::UkmEntry* entry = entries[0];
+    ukm_recorder.ExpectEntrySourceHasUrl(entry, url_1);
+    // The previous page doesn't have pagehide.
+    EXPECT_NEAR(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName), 0u,
+                100u);
+  }
+
+  AddSlowPagehideEventHandlerToCurrentWebContents();
+
+  {
+    GURL url_2(embedded_test_server()->GetURL("a.test", "/title2.html"));
+    base::RunLoop ukm_loop;
+    ukm_recorder.SetOnAddEntryCallback(kTargetUkmEntryName,
+                                       ukm_loop.QuitClosure());
+    EXPECT_TRUE(NavigateToURL(shell(), url_2));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    ukm_loop.Run();
+    auto entries = ukm_recorder.GetEntriesByName(kTargetUkmEntryName);
+    EXPECT_EQ(2u, entries.size());
+    const ukm::mojom::UkmEntry* entry = entries[1];
+    ukm_recorder.ExpectEntrySourceHasUrl(entry, url_2);
+    // The previous page's pagehide will take over 300 ms.
+    EXPECT_NEAR(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName),
+                ukm::GetExponentialBucketMinForFineUserTiming(300u), 100u);
+  }
+
+  {
+    GURL url_3(embedded_test_server()->GetURL("a.test", "/title3.html"));
+    base::RunLoop ukm_loop;
+    ukm_recorder.SetOnAddEntryCallback(kTargetUkmEntryName,
+                                       ukm_loop.QuitClosure());
+    EXPECT_TRUE(NavigateToURL(shell(), url_3));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    ukm_loop.Run();
+    auto entries = ukm_recorder.GetEntriesByName(kTargetUkmEntryName);
+    EXPECT_EQ(3u, entries.size());
+    const ukm::mojom::UkmEntry* entry = entries[2];
+    ukm_recorder.ExpectEntrySourceHasUrl(entry, url_3);
+    // The previous page doesn't have pagehide.
+    EXPECT_NEAR(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName), 0u,
+                100u);
+  }
+
+  AddSlowPagehideEventHandlerToCurrentWebContents();
+
+  {
+    GURL url_4(embedded_test_server()->GetURL("b.test", "/title1.html"));
+    base::RunLoop ukm_loop;
+    ukm_recorder.SetOnAddEntryCallback(kTargetUkmEntryName,
+                                       ukm_loop.QuitClosure());
+    EXPECT_TRUE(NavigateToURL(shell(), url_4));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    ukm_loop.Run();
+    auto entries = ukm_recorder.GetEntriesByName(kTargetUkmEntryName);
+    EXPECT_EQ(4u, entries.size());
+    const ukm::mojom::UkmEntry* entry = entries[3];
+    ukm_recorder.ExpectEntrySourceHasUrl(entry, url_4);
+    // The previous page's pagehide event runs in a different renderer process,
+    // so this navigation is not blocked.
+    EXPECT_NEAR(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName), 0u,
+                100u);
+  }
+}
+
 class NavigationWithPageSwapBrowserTest : public NavigationBrowserTest {
  public:
   NavigationWithPageSwapBrowserTest() {
@@ -9126,8 +9122,8 @@ class NavigationBrowserTestPaintHoldingSubframe
     }
   }
 
-  void OnCopyDone(const SkBitmap& bitmap) {
-    bitmap_ = bitmap;
+  void OnCopyDone(const viz::CopyOutputBitmapWithMetadata& result) {
+    bitmap_ = result.bitmap;
     run_loop_->Quit();
   }
 
@@ -9838,6 +9834,41 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
   EXPECT_EQ(url_c, results[1].url);
 }
 
+// Verify that navigating from about:blank will defer the creation of the
+// speculative RFH until the network request is sent.
+IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
+                       NavigateFromAboutBlankDeferred) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  TestNavigationManager nav_manager(web_contents, url);
+  // Navigation from about:blank creates a new render frame host.
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(nav_manager.GetNavigationHandle());
+
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
+  // The speculative RFH shall be created after sending the request.
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::WILL_START_REQUEST);
+  ASSERT_TRUE(navigation_request->HasLoader());
+  RenderFrameHostImplWrapper speculative_rfh(
+      GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_TRUE(speculative_rfh);
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+
+  ASSERT_TRUE(nav_manager.WaitForResponse());
+  ASSERT_TRUE(GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+}
+
 class DeferSpeculativeRFHCreationReuseRFHTest : public NavigationBrowserTest {
  public:
   DeferSpeculativeRFHCreationReuseRFHTest() {
@@ -9973,7 +10004,7 @@ IN_PROC_BROWSER_TEST_F(VisualPropertiesSynchronization,
   // Ensure a frame has been produced.
   ASSERT_TRUE(
       EvalJsAfterLifecycleUpdate(web_contents->GetPrimaryMainFrame(), "", "")
-          .error.empty());
+          .is_ok());
 
   // Verify the renderer received the correct size for the viewport.
   EXPECT_GT(EvalJs(web_contents->GetPrimaryMainFrame(), "window.innerWidth;")
@@ -10114,7 +10145,7 @@ IN_PROC_BROWSER_TEST_F(HstsUpgradeBrowserTest, UpgradeTopLevelOnly) {
                                 ->GetDefaultStoragePartition()
                                 ->GetNetworkContext();
     base::RunLoop run_loop;
-    network_context->AddHSTS(url_of_hsts_frame_http.host(), expiry,
+    network_context->AddHSTS(url_of_hsts_frame_http.GetHost(), expiry,
                              include_subdomains, run_loop.QuitClosure());
     run_loop.Run();
   }

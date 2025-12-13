@@ -288,7 +288,7 @@ static void PadToSameLength(InterpolationValue& value,
       std::move(new_non_interpolable_values));
 }
 
-static bool InterpolableListsAreCompatible(
+bool ListInterpolationFunctions::InterpolableListsAreCompatible(
     const InterpolableList& a,
     const InterpolableList& b,
     wtf_size_t length,

@@ -8,8 +8,11 @@
 
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/country_type.h"
+#import "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/core/common/language_code.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_form_internal.h"
 #import "ios/web_view/test/test_with_locale_and_resources.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +37,12 @@ TEST_F(CWVAutofillFormTest, Initialization) {
   autofill::FormData form_data = autofill::test::CreateTestAddressFormData();
   std::unique_ptr<autofill::FormStructure> form_structure =
       std::make_unique<autofill::FormStructure>(form_data);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  const autofill::RegexPredictions regex_predictions = DetermineRegexTypes(
+      autofill::GeoIpCountryCode(""), autofill::LanguageCode(""),
+      form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(
+      autofill::GeoIpCountryCode(""), autofill::LanguageCode(""), nullptr);
   CWVAutofillForm* form =
       [[CWVAutofillForm alloc] initWithFormStructure:*form_structure];
   EXPECT_NSEQ(base::SysUTF16ToNSString(form_data.name()), form.name);

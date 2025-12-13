@@ -77,6 +77,10 @@ void SyncMetadataStoreChangeList::ClearMetadata(
   }
 }
 
+void SyncMetadataStoreChangeList::TransferChangesTo(MetadataChangeList* other) {
+  NOTREACHED();
+}
+
 const SyncMetadataStore*
 SyncMetadataStoreChangeList::GetMetadataStoreForTesting() const {
   return store_;

@@ -6,11 +6,12 @@
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_CHANGE_PROFILE_CHANGE_PROFILE_AUTHENTICATION_CONTINUATION_H_
 
 #import "ios/chrome/app/change_profile_continuation.h"
-#import "ios/chrome/browser/shared/coordinator/scene/widget_context.h"
+#import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
 
 // Returns a ChangeProfileContinuation that starts the sign-in or sign-out flow.
 ChangeProfileContinuation CreateChangeProfileAuthenticationContinuation(
-    WidgetContext* context,
-    NSSet<UIOpenURLContext*>* contexts);
+    URLContext* context,
+    NSSet<UIOpenURLContext*>* contexts,
+    BOOL openURL);
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_CHANGE_PROFILE_CHANGE_PROFILE_AUTHENTICATION_CONTINUATION_H_

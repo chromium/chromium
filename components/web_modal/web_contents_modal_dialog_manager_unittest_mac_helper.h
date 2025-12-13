@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_WEB_MODAL_WEB_CONTENTS_MODAL_DIALOG_MANAGER_UNITTEST_MAC_HELPER_H_
 #define COMPONENTS_WEB_MODAL_WEB_CONTENTS_MODAL_DIALOG_MANAGER_UNITTEST_MAC_HELPER_H_
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 // Returns a fake gfx::NativeWindow for testing purposes. This is a placeholder,
 // only usable for comparisons. Any attempt to actually use it will likely

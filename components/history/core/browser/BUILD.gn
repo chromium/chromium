@@ -2,6 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+component("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "top_sites_constants.h",
+  ]
+
+  deps = [ "//base" ]
+
+  # Used by `COMPONENT_EXPORT(HISTORY_FEATURES)` in `features.h` for dynamic
+  # linking. For more info, see: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/component_build.md#exporting-and-importing-symbols
+  defines = [ "IS_HISTORY_FEATURES_IMPL" ]
+}
+
 static_library("browser") {
   sources = [
     "browsing_history_driver.h",
@@ -18,8 +32,6 @@ static_library("browser") {
     "download_types.h",
     "expire_history_backend.cc",
     "expire_history_backend.h",
-    "features.cc",
-    "features.h",
     "history_backend.cc",
     "history_backend.h",
     "history_backend_client.h",
@@ -100,6 +112,7 @@ static_library("browser") {
   ]
 
   public_deps = [
+    ":features",
     "//components/sessions:session_id",
     "//components/sync/protocol",
     "//components/sync_device_info",
@@ -126,6 +139,7 @@ static_library("browser") {
     "//components/variations",
     "//components/version_info",
     "//components/visitedlink/core",
+    "//crypto",
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
@@ -193,8 +207,4 @@ source_set("unit_tests") {
   if (is_ios) {
     deps += [ "//components/test:history_test_bundle_data" ]
   }
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

@@ -13,8 +13,11 @@
 #include "chrome/browser/extensions/api/messaging/native_message_process_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/messaging/native_message_port.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

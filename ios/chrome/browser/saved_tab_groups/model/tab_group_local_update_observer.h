@@ -28,8 +28,10 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
                                     public web::WebStateObserver,
                                     public SessionRestorationObserver {
  public:
-  TabGroupLocalUpdateObserver(BrowserList* browser_list,
-                              TabGroupSyncService* sync_service);
+  TabGroupLocalUpdateObserver(
+      BrowserList* browser_list,
+      TabGroupSyncService* sync_service,
+      SessionRestorationService* session_restoration_service);
   ~TabGroupLocalUpdateObserver() override;
 
   TabGroupLocalUpdateObserver(const TabGroupLocalUpdateObserver&) = delete;
@@ -56,7 +58,6 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
   // WebStateObserver.
-  void TitleWasSet(web::WebState* web_state) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;

@@ -4,10 +4,7 @@
 
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -21,18 +18,12 @@ namespace blink {
 
 class SoftNavigationPaintAttributionTrackerTest : public RenderingTest {
  public:
-  SoftNavigationPaintAttributionTrackerTest() {
-    feature_list_.InitWithFeatures(
-        {features::kSoftNavigationDetectionPrePaintBasedAttribution}, {});
-    WebRuntimeFeatures::UpdateStatusFromBaseFeatures();
-  }
-
+  SoftNavigationPaintAttributionTrackerTest() = default;
   ~SoftNavigationPaintAttributionTrackerTest() override = default;
 
   SoftNavigationContext* CreateSoftNavigationContext() {
     return MakeGarbageCollected<SoftNavigationContext>(
-        *GetDocument().domWindow(),
-        features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution);
+        *GetDocument().domWindow());
   }
 
   SoftNavigationPaintAttributionTracker* Tracker() { return tracker_.Get(); }
@@ -51,7 +42,6 @@ class SoftNavigationPaintAttributionTrackerTest : public RenderingTest {
                    ->GetPaintAttributionTracker();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   Persistent<SoftNavigationPaintAttributionTracker> tracker_;
 };
 

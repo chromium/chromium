@@ -64,6 +64,10 @@ class VariationsServiceClient {
   // returns nullptr.
   virtual std::unique_ptr<SeedResponse> TakeSeedFromNativeVariationsSeedStore();
 
+  // If an invalid command-line was specified by the user, flag an error to the
+  // user and exit the process.
+  virtual void ExitWithMessage(const std::string& message);
+
   // Returns whether the client is enterprise.
   // TODO(manukh): crbug.com/1003025. This is inconsistent with UMA which
   // analyzes brand_code to determine if the client is an enterprise user:

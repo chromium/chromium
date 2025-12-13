@@ -23,6 +23,7 @@ import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Holder;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.build.annotations.Nullable;
@@ -122,6 +123,7 @@ public class SplitPreloaderTest {
 
     @Before
     public void setUp() {
+        BaseRobolectricTestRule.uninstallPausedExecutorService();
         BundleUtils.setHasSplitsForTesting(true);
         mContext = new MainContext(ContextUtils.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mContext);

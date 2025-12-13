@@ -12,14 +12,16 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/find_bar/find_bar_host_unittest_util.h"
+#include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -182,11 +184,10 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 // "Always Show Toolbar in Full Screen" is off.
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        MinimumContentOffset) {
-  DisableFindBarAnimationsDuringTesting(true);
+  base::AutoReset<bool> enable_animation_for_test =
+      FindBarHost::SetEnableAnimationsForTesting(false);
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  ImmersiveModeController* controller =
-      browser_view->immersive_mode_controller();
+  auto* const controller = ImmersiveModeController::From(browser());
   controller->SetEnabled(true);
   {
     ScopedAlwaysShowToolbar scoped_always_show(browser(), false);
@@ -216,28 +217,29 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
     chrome::CloseFind(browser());
     EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
   }
-  DisableFindBarAnimationsDuringTesting(false);
 }
 
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        ExtraInfobarOffset) {
   ScopedAlwaysShowToolbar scoped_always_show(browser(), false);
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ImmersiveModeControllerMac* controller =
       reinterpret_cast<ImmersiveModeControllerMac*>(
-          browser_view->immersive_mode_controller());
+          ImmersiveModeController::From(browser()));
   controller->SetEnabled(true);
 
   controller->OnImmersiveModeMenuBarRevealChanged(0);
+  RunScheduledLayouts();
   controller->OnAutohidingMenuBarHeightChanged(0);
   EXPECT_EQ(controller->GetExtraInfobarOffset(), 0);
 
   controller->OnImmersiveModeMenuBarRevealChanged(0.5);
+  RunScheduledLayouts();
   int half_revealed = controller->GetExtraInfobarOffset();
   EXPECT_GT(half_revealed, 0);
 
   controller->OnImmersiveModeMenuBarRevealChanged(1);
+  RunScheduledLayouts();
   int revealed = controller->GetExtraInfobarOffset();
   EXPECT_EQ(revealed, half_revealed * 2);
 
@@ -246,9 +248,11 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   EXPECT_EQ(controller->GetExtraInfobarOffset(), revealed + 30);
 
   controller->OnImmersiveModeMenuBarRevealChanged(0.5);
+  RunScheduledLayouts();
   EXPECT_EQ(controller->GetExtraInfobarOffset(), half_revealed + 15);
 
   controller->OnImmersiveModeMenuBarRevealChanged(0);
+  RunScheduledLayouts();
   EXPECT_EQ(controller->GetExtraInfobarOffset(), 0);
 }
 
@@ -381,7 +385,8 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        ContentFullscreenChildren) {
-  DisableFindBarAnimationsDuringTesting(true);
+  base::AutoReset<bool> enable_animation_for_test =
+      FindBarHost::SetEnableAnimationsForTesting(false);
 
   // Enter browser fullscreen.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
@@ -409,5 +414,28 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   EXPECT_EQ(browser_view->overlay_widget(), find_bar->parent());
 
   chrome::CloseFind(browser());
-  DisableFindBarAnimationsDuringTesting(false);
+}
+
+// Regression test for crbug.com/431671448. Asserts that the Browser is able to
+// tollerate the system destroying the overlay widget before the Browser widget.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       HandlesOverlayWidgetDestruction) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::Widget* overlay_widget = browser_view->overlay_widget();
+
+  // Transition to fullscreen.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  FullscreenController* fullscreen_controller = browser()
+                                                    ->GetFeatures()
+                                                    .exclusive_access_manager()
+                                                    ->fullscreen_controller();
+  EXPECT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+
+  // Simulate a synchronous destruction of the overlay widget. This should not
+  // crash.
+  overlay_widget->CloseNow();
+
+  // Transition out of fullscreen.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
 }

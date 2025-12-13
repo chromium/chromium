@@ -192,7 +192,8 @@ void LogHeuristicPredictionQualityMetrics(
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
-    QualityMetricType metric_type);
+    QualityMetricType metric_type,
+    base::TimeTicks now);
 
 void LogHeuristicPredictionQualityPerLabelSourceMetric(
     const AutofillField& field);
@@ -202,21 +203,24 @@ void LogMlPredictionQualityMetrics(
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
-    QualityMetricType metric_type);
+    QualityMetricType metric_type,
+    base::TimeTicks now);
 
 void LogServerPredictionQualityMetrics(
     FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
-    QualityMetricType metric_type);
+    QualityMetricType metric_type,
+    base::TimeTicks now);
 
 void LogOverallPredictionQualityMetrics(
     FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
-    QualityMetricType metric_type);
+    QualityMetricType metric_type,
+    base::TimeTicks now);
 
 void LogEmailFieldPredictionMetrics(const AutofillField& field);
 

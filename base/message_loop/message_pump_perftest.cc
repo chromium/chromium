@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -94,12 +95,13 @@ class ScheduleWorkTest : public testing::Test {
       maximum = std::max(maximum, laptime);
     } while (now - start < base::Seconds(kTargetTimeSec));
 
-    scheduling_times_[index] = now - start;
+    UNSAFE_TODO(scheduling_times_[index]) = now - start;
     if (ThreadTicks::IsSupported()) {
-      scheduling_thread_times_[index] = base::ThreadTicks::Now() - thread_start;
+      UNSAFE_TODO(scheduling_thread_times_[index]) =
+          base::ThreadTicks::Now() - thread_start;
     }
-    min_batch_times_[index] = minimum;
-    max_batch_times_[index] = maximum;
+    UNSAFE_TODO(min_batch_times_[index]) = minimum;
+    UNSAFE_TODO(max_batch_times_[index]) = maximum;
     target_message_loop_base()->GetTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ScheduleWorkTest::Increment,
                                   base::Unretained(this), schedule_calls));
@@ -166,10 +168,12 @@ class ScheduleWorkTest : public testing::Test {
     base::TimeDelta min_batch_time = base::TimeDelta::Max();
     base::TimeDelta max_batch_time = base::TimeDelta();
     for (int i = 0; i < num_scheduling_threads; ++i) {
-      total_time += scheduling_times_[i];
-      total_thread_time += scheduling_thread_times_[i];
-      min_batch_time = std::min(min_batch_time, min_batch_times_[i]);
-      max_batch_time = std::max(max_batch_time, max_batch_times_[i]);
+      total_time += UNSAFE_TODO(scheduling_times_[i]);
+      total_thread_time += UNSAFE_TODO(scheduling_thread_times_[i]);
+      min_batch_time =
+          std::min(min_batch_time, UNSAFE_TODO(min_batch_times_[i]));
+      max_batch_time =
+          std::max(max_batch_time, UNSAFE_TODO(max_batch_times_[i]));
     }
 
     std::string story_name = StringPrintf(

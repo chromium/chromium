@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_COMMERCE_CORE_SHOPPING_SERVICE_TEST_BASE_H_
 #define COMPONENTS_COMMERCE_CORE_SHOPPING_SERVICE_TEST_BASE_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>

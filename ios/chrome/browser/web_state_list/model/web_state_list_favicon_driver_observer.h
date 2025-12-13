@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_STATE_LIST_FAVICON_DRIVER_OBSERVER_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_STATE_LIST_FAVICON_DRIVER_OBSERVER_H_
 
-#include <map>
-
-#include "base/scoped_observation.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/favicon/core/favicon_driver_observer.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#include "components/favicon/ios/web_favicon_driver.h"
+#include "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
+
+class Browser;
 
 namespace web {
 class WebState;
@@ -27,10 +27,10 @@ class WebState;
 // The class listen to a WebStateList for the creation/replacement/removal
 // of WebStates.
 class WebStateListFaviconDriverObserver
-    : public WebStateListObserver,
+    : public TabsDependencyInstaller,
       public favicon::FaviconDriverObserver {
  public:
-  WebStateListFaviconDriverObserver(WebStateList* web_state_list,
+  WebStateListFaviconDriverObserver(Browser* browser,
                                     id<WebStateFaviconDriverObserver> observer);
 
   WebStateListFaviconDriverObserver(const WebStateListFaviconDriverObserver&) =
@@ -40,10 +40,12 @@ class WebStateListFaviconDriverObserver
 
   ~WebStateListFaviconDriverObserver() override;
 
-  // WebStateListObserver implementation:
-  void WebStateListDidChange(WebStateList* web_state_list,
-                             const WebStateListChange& change,
-                             const WebStateListStatus& status) override;
+  // TabsDependencyInstaller implementation:
+  void OnWebStateInserted(web::WebState* web_state) override;
+  void OnWebStateRemoved(web::WebState* web_state) override;
+  void OnWebStateDeleted(web::WebState* web_state) override;
+  void OnActiveWebStateChanged(web::WebState* old_active,
+                               web::WebState* new_active) override;
 
   // favicon::FaviconDriverObserver implementation.
   void OnFaviconUpdated(favicon::FaviconDriver* driver,
@@ -53,25 +55,14 @@ class WebStateListFaviconDriverObserver
                         const gfx::Image& image) override;
 
  private:
-  // Observes the FaviconDriver for `web_state` and updates the
-  // `driver_to_web_state_map_`.
-  void AddNewWebState(web::WebState* web_state);
-
-  // Stops observing the FaviconDriver for `web_state` and updates the
-  // `driver_to_web_state_map_`.
-  void DetachWebState(web::WebState* web_state);
-
   // The WebStateFaviconDriverObserver to which the FaviconDriver notification
   // are forwarded. Should not be nil.
   __weak id<WebStateFaviconDriverObserver> favicon_observer_;
 
-  // Maps FaviconDriver to the WebState they are attached to. Used
-  // to find the WebState that should be passed when forwarding the
-  // notification to WebStateFaviconDriverObservers.
-  std::map<favicon::FaviconDriver*, web::WebState*> driver_to_web_state_map_;
-
-  base::ScopedObservation<WebStateList, WebStateListObserver>
-      web_state_list_observation_{this};
+  // Observation of the FaviconDriver instances.
+  base::ScopedMultiSourceObservation<favicon::WebFaviconDriver,
+                                     favicon::FaviconDriverObserver>
+      favicon_driver_observations_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_STATE_LIST_FAVICON_DRIVER_OBSERVER_H_

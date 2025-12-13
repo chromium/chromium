@@ -4,35 +4,78 @@
 
 #include "chrome/browser/ui/browser_window/internal/android/android_base_window.h"
 
+#include <jni.h>
+
+#include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "chrome/browser/ui/browser_window/internal/jni/AndroidBaseWindow_jni.h"
+#include "ui/android/window_android.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
-AndroidBaseWindow::AndroidBaseWindow() = default;
+namespace {
+using base::android::AttachCurrentThread;
+using base::android::JavaRef;
+using base::android::ScopedJavaLocalRef;
+}  // namespace
 
-AndroidBaseWindow::~AndroidBaseWindow() = default;
+// Implements Java |AndroidBaseWindow.Natives#create|.
+static jlong JNI_AndroidBaseWindow_Create(JNIEnv* env,
+                                          const JavaRef<jobject>& caller) {
+  return reinterpret_cast<intptr_t>(new AndroidBaseWindow(env, caller));
+}
+
+AndroidBaseWindow::AndroidBaseWindow(
+    JNIEnv* env,
+    const JavaRef<jobject>& java_android_base_window) {
+  java_android_base_window_.Reset(env, java_android_base_window);
+}
+
+AndroidBaseWindow::~AndroidBaseWindow() {
+  Java_AndroidBaseWindow_clearNativePtr(AttachCurrentThread(),
+                                        java_android_base_window_);
+}
+
+void AndroidBaseWindow::Destroy(JNIEnv* env) {
+  delete this;
+}
 
 bool AndroidBaseWindow::IsActive() const {
-  NOTREACHED();
+  return Java_AndroidBaseWindow_isActive(AttachCurrentThread(),
+                                         java_android_base_window_);
 }
 
 bool AndroidBaseWindow::IsMaximized() const {
-  NOTREACHED();
+  return Java_AndroidBaseWindow_isMaximized(AttachCurrentThread(),
+                                            java_android_base_window_);
 }
 
 bool AndroidBaseWindow::IsMinimized() const {
-  NOTREACHED();
+  return Java_AndroidBaseWindow_isMinimized(AttachCurrentThread(),
+                                            java_android_base_window_);
 }
 
 bool AndroidBaseWindow::IsFullscreen() const {
-  NOTREACHED();
+  return Java_AndroidBaseWindow_isFullscreen(AttachCurrentThread(),
+                                             java_android_base_window_);
 }
 
 gfx::NativeWindow AndroidBaseWindow::GetNativeWindow() const {
-  NOTREACHED();
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_window_android =
+      Java_AndroidBaseWindow_getWindowAndroid(env, java_android_base_window_);
+  return ui::WindowAndroid::FromJavaWindowAndroid(j_window_android);
 }
 
 gfx::Rect AndroidBaseWindow::GetRestoredBounds() const {
-  NOTREACHED();
+  std::vector<int> sizes = Java_AndroidBaseWindow_getRestoredBounds(
+      AttachCurrentThread(), java_android_base_window_);
+  gfx::Rect bounds = gfx::Rect(
+      /*x=*/sizes[0], /*y=*/sizes[1], /*width=*/sizes[2], /*height=*/sizes[3]);
+  return bounds;
 }
 
 ui::mojom::WindowShowState AndroidBaseWindow::GetRestoredState() const {
@@ -40,11 +83,15 @@ ui::mojom::WindowShowState AndroidBaseWindow::GetRestoredState() const {
 }
 
 gfx::Rect AndroidBaseWindow::GetBounds() const {
-  NOTREACHED();
+  std::vector<int> sizes = Java_AndroidBaseWindow_getBounds(
+      AttachCurrentThread(), java_android_base_window_);
+  gfx::Rect bounds = gfx::Rect(
+      /*x=*/sizes[0], /*y=*/sizes[1], /*width=*/sizes[2], /*height=*/sizes[3]);
+  return bounds;
 }
 
 void AndroidBaseWindow::Show() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_show(AttachCurrentThread(), java_android_base_window_);
 }
 
 void AndroidBaseWindow::Hide() {
@@ -52,49 +99,63 @@ void AndroidBaseWindow::Hide() {
 }
 
 bool AndroidBaseWindow::IsVisible() const {
-  NOTREACHED();
+  return Java_AndroidBaseWindow_isVisible(AttachCurrentThread(),
+                                          java_android_base_window_);
 }
 
 void AndroidBaseWindow::ShowInactive() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_showInactive(AttachCurrentThread(),
+                                      java_android_base_window_);
 }
 
 void AndroidBaseWindow::Close() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_close(AttachCurrentThread(),
+                               java_android_base_window_);
 }
 
 void AndroidBaseWindow::Activate() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_activate(AttachCurrentThread(),
+                                  java_android_base_window_);
 }
 
 void AndroidBaseWindow::Deactivate() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_deactivate(AttachCurrentThread(),
+                                    java_android_base_window_);
 }
 
 void AndroidBaseWindow::Maximize() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_maximize(AttachCurrentThread(),
+                                  java_android_base_window_);
 }
 
 void AndroidBaseWindow::Minimize() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_minimize(AttachCurrentThread(),
+                                  java_android_base_window_);
 }
 
 void AndroidBaseWindow::Restore() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_restore(AttachCurrentThread(),
+                                 java_android_base_window_);
 }
 
 void AndroidBaseWindow::SetBounds(const gfx::Rect& bounds) {
-  NOTREACHED();
+  Java_AndroidBaseWindow_setBounds(AttachCurrentThread(),
+                                   java_android_base_window_, bounds.x(),
+                                   bounds.y(), bounds.right(), bounds.bottom());
 }
 
 void AndroidBaseWindow::FlashFrame(bool flash) {
-  NOTREACHED();
+  // As of Sep 16, 2025, Android OS didn't support |FlashFrame|.
 }
 
 ui::ZOrderLevel AndroidBaseWindow::GetZOrderLevel() const {
-  NOTREACHED();
+  return ui::ZOrderLevel::kNormal;
 }
 
 void AndroidBaseWindow::SetZOrderLevel(ui::ZOrderLevel order) {
-  NOTREACHED();
+  // Android doesn't support |SetZOrderLevel|.
+  // Per documentation of |ui::ZOrderLevel|, Android ZOrderLevel should always
+  // be |ui::ZOrderLevel::kNormal|.
 }
+
+DEFINE_JNI(AndroidBaseWindow)

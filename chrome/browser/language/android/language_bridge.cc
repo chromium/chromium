@@ -28,3 +28,5 @@ static std::vector<std::string> JNI_LanguageBridge_GetULPFromPreference(
     Profile* profile) {
   return language::LanguagePrefs(profile->GetPrefs()).GetULPLanguages();
 }
+
+DEFINE_JNI(LanguageBridge)

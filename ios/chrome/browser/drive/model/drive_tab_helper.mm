@@ -75,7 +75,7 @@ void DriveTabHelper::OnUploadUpdated(UploadTask* task) {
         {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
         base::BindOnce(base::PathExists, task_path),
         base::BindOnce(&DriveTabHelper::RemoveIfFileExists,
-                       weak_ptr_factory_.GetWeakPtr(), task_path, task));
+                       weak_ptr_factory_.GetWeakPtr(), task_path));
   }
 }
 
@@ -105,9 +105,8 @@ void DriveTabHelper::ResetSaveToDriveData(web::DownloadTask* task,
 }
 
 void DriveTabHelper::RemoveIfFileExists(base::FilePath task_path,
-                                        UploadTask* task,
                                         bool file_exists) {
-  if (!file_exists || task != upload_task_.get()) {
+  if (!file_exists) {
     return;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(

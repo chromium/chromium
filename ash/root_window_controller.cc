@@ -79,6 +79,7 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -369,8 +370,18 @@ class RootWindowTargeter : public aura::WindowTargeter {
       // adjust the location.
       bool bounded_click = ShouldConstrainMouseClick(event, has_capture_target);
       if (!has_capture_target || bounded_click) {
+        // TODO(crbug.com/462446075) : Remove this once the empty target window
+        // is identified.
+        if (window->bounds().IsEmpty()) {
+          LOG(ERROR) << " Window with empty bounds is target:"
+                     << window->GetName();
+          base::debug::DumpWithoutCrashing();
+        }
+        const gfx::Rect& window_bounds = window->bounds();
         gfx::Point new_location =
-            FitPointToBounds(event->location(), window->bounds());
+            window_bounds.IsEmpty()
+                ? event->location()
+                : FitPointToBounds(event->location(), window->bounds());
         // Do not change |location_f|. It's used to compute pixel position and
         // such client should know what they're doing.
         event->set_location(new_location);
@@ -920,7 +931,7 @@ void RootWindowController::StartSplitViewOverviewSession(
     return;
   }
 
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     OverviewController::Get()->StartOverview(
         action.value_or(OverviewStartAction::kSplitView),
         type.value_or(OverviewEnterExitType::kNormal));
@@ -1414,16 +1425,15 @@ RootWindowController::BuildBirchMenuModelAdapter(
       wallpaper_widget_controller()->GetWidget(), source_type,
       base::BindOnce(&RootWindowController::OnMenuClosed,
                      base::Unretained(this)),
-      display::Screen::GetScreen()->InTabletMode(), /*for_chip_menu=*/false);
+      display::Screen::Get()->InTabletMode(), /*for_chip_menu=*/false);
 }
 
 std::unique_ptr<AppMenuModelAdapter>
 RootWindowController::BuildShelfMenuModelAdapter(
     ui::mojom::MenuSourceType source_type) {
-  const bool tablet_mode = display::Screen::GetScreen()->InTabletMode();
-  const int64_t display_id = display::Screen::GetScreen()
-                                 ->GetDisplayNearestWindow(GetRootWindow())
-                                 .id();
+  const bool tablet_mode = display::Screen::Get()->InTabletMode();
+  const int64_t display_id =
+      display::Screen::Get()->GetDisplayNearestWindow(GetRootWindow()).id();
   auto shelf_menu_model_adapter = std::make_unique<ShelfMenuModelAdapter>(
       std::make_unique<ShelfContextMenuModel>(nullptr, display_id,
                                               /*menu_in_shelf=*/false),

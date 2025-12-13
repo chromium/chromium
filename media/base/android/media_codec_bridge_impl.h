@@ -57,7 +57,7 @@ class MEDIA_EXPORT VideoCodecConfig {
 
   // VP9 HDR metadata is only embedded in the container. HDR10 metadata is
   // embedded in the video stream.
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
 
   // Enables the async MediaCodec.Callback API. |on_buffers_available_cb|
   // will be called when input or output buffers are available. This will be
@@ -71,6 +71,9 @@ class MEDIA_EXPORT VideoCodecConfig {
   // Enables Block Model (LinearBlock).
   bool use_block_model = false;
 
+  // Sets the low latency mode flag on the codec.
+  bool use_low_latency_mode = false;
+
   // The profile of decoder.
   VideoCodecProfile profile;
 };
@@ -82,16 +85,6 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   // nullptr on failure.
   static std::unique_ptr<MediaCodecBridge> CreateVideoDecoder(
       const VideoCodecConfig& config);
-
-  // Creates and starts a new MediaCodec configured for encoding. Returns
-  // nullptr on failure.
-  static std::unique_ptr<MediaCodecBridge> CreateVideoEncoder(
-      VideoCodec codec,       // e.g. media::VideoCodec::kVP8
-      const gfx::Size& size,  // input frame size
-      int bit_rate,           // bits/second
-      int frame_rate,         // frames/second
-      int i_frame_interval,   // count
-      int color_format);      // MediaCodecInfo.CodecCapabilities.
 
   // Creates and starts a new MediaCodec configured for decoding. Returns
   // nullptr on failure.
@@ -123,9 +116,6 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   MediaCodecResult GetOutputSamplingRate(int* sampling_rate) override;
   MediaCodecResult GetOutputChannelCount(int* channel_count) override;
   MediaCodecResult GetOutputColorSpace(gfx::ColorSpace* color_space) override;
-  MediaCodecResult GetInputFormat(int* stride,
-                                  int* slice_height,
-                                  gfx::Size* encoded_size) override;
   MediaCodecResult QueueInputBuffer(int index,
                                     base::span<const uint8_t> data,
                                     base::TimeDelta presentation_time) override;
@@ -157,8 +147,6 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   std::string GetName() override;
   bool IsSoftwareCodec() override;
   bool SetSurface(const base::android::JavaRef<jobject>& surface) override;
-  void SetVideoBitrate(int bps, int frame_rate) override;
-  void RequestKeyFrameSoon() override;
   CodecType GetCodecType() const override;
   size_t GetMaxInputSize() override;
 

@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_view_controller.h"
 
-#import <MaterialComponents/MaterialProgressView.h>
-
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
@@ -42,7 +40,6 @@ const base::TimeDelta kBannerPromoAnimationDuration = base::Seconds(0.5);
 
 // TODO(crbug.com/374808149): Clean up the killswitch.
 BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
-             "PrimaryToolbarViewDidLoadUpdateViews",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 @interface PrimaryToolbarViewController () <TabGroupIndicatorViewDelegate>
@@ -102,14 +99,6 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 - (void)updateBackgroundColor {
   UIColor* backgroundColor =
       self.buttonFactory.toolbarConfiguration.backgroundColor;
-  if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar) &&
-      !self.hasOmnibox) {
-    if (self.pageThemeColor) {
-      backgroundColor = self.pageThemeColor;
-    } else if (self.underPageBackgroundColor) {
-      backgroundColor = self.underPageBackgroundColor;
-    }
-  }
   self.view.backgroundColor = backgroundColor;
 }
 
@@ -174,35 +163,20 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
       [self verticalMarginForLocationBarForFullscreenProgress:1];
 }
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  // iOS 17 and later introduce a new way to handle trait changes. If the OS
-  // version is iOS 17 or later, we skip the old way of updating views.
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  [self updateViews:self.view previousTraitCollection:previousTraitCollection];
-}
-#endif
-
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  // On iOS 17 and later, we register for specific trait changes (vertical and
-  // horizontal size classes) and provide a handler method
+  // We register for specific trait changes (vertical and horizontal size
+  // classes) and provide a handler method
   // `updateViews:previousTraitCollection:` to be called when those traits
   // change.
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[
-      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
-    ]
-                       withAction:@selector(updateViews:
-                                      previousTraitCollection:)];
-    // TODO(crbug.com/374808149): Clean up the killswitch.
-    if (base::FeatureList::IsEnabled(kPrimaryToolbarViewDidLoadUpdateViews)) {
-      [self updateViews:self.view previousTraitCollection:nil];
-    }
+  [self
+      registerForTraitChanges:
+          @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
+                   withAction:@selector(updateViews:previousTraitCollection:)];
+  // TODO(crbug.com/374808149): Clean up the killswitch.
+  if (base::FeatureList::IsEnabled(kPrimaryToolbarViewDidLoadUpdateViews)) {
+    [self updateViews:self.view previousTraitCollection:nil];
   }
 }
 
@@ -238,28 +212,21 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   }
   [super setIsNTP:isNTP];
   _isNTP = isNTP;
-  if (!CanShowTabStrip(self) || !self.shouldHideOmniboxOnNTP) {
+
+  // The omnibox is always visible when having two toolbars and no TabStrip.
+  BOOL omniboxAlwaysVisible =
+      IsSplitToolbarMode(self) && !CanShowTabStrip(self);
+  if (omniboxAlwaysVisible || !self.shouldHideOmniboxOnNTP) {
     return;
   }
 
   // This is hiding/showing and positionning the omnibox. This is only needed
   // if the omnibox should be hidden when there is only one toolbar.
-  if (!isNTP) {
-    // Reset any location bar view updates when not an NTP.
-    [self setScrollProgressForTabletOmnibox:1];
-  } else {
-    // Hides the omnibox.
-    [self setScrollProgressForTabletOmnibox:0];
-  }
+  [self setScrollProgressForTabletOmnibox:(isNTP ? 0 : 1)];
 }
 
 - (BOOL)locationBarIsExpanded {
-  for (NSLayoutConstraint* constraint in self.view.expandedConstraints) {
-    if (!constraint.isActive) {
-      return false;
-    }
-  }
-  return true;
+  return self.view.expanded;
 }
 
 #pragma mark - SharingPositioner
@@ -291,25 +258,20 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 #pragma mark - ToolbarAnimatee
 
 - (void)expandLocationBar {
-  [self deactivateViewLocationBarConstraints];
-  [NSLayoutConstraint activateConstraints:self.view.expandedConstraints];
+  self.view.expanded = YES;
   [self.delegate locationBarExpandedInViewController:self];
   [self.view layoutIfNeeded];
 }
 
 - (void)contractLocationBar {
-  [self deactivateViewLocationBarConstraints];
-  if (IsSplitToolbarMode(self)) {
-    [NSLayoutConstraint
-        activateConstraints:self.view.contractedNoMarginConstraints];
-  } else {
-    [NSLayoutConstraint activateConstraints:self.view.contractedConstraints];
-  }
+  self.view.splitToolbarMode = IsSplitToolbarMode(self);
+  self.view.expanded = NO;
   [self.delegate locationBarContractedInViewController:self];
   [self.view layoutIfNeeded];
 }
 
 - (void)showCancelButton {
+  self.view.cancelButtonStyle = [self.delegate styleForCancelButtonInToolbar];
   self.view.cancelButton.hidden = NO;
 }
 
@@ -343,9 +305,13 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 }
 
 - (void)setLocationBarHeightExpanded {
-  [self setLocationBarContainerHeight:LocationBarHeight(
-                                          self.traitCollection
-                                              .preferredContentSizeCategory)];
+  // Avoid resetting the location bar height to its steady state when focused
+  // with multiline enabled, since its height may have been adjusted.
+  if (!IsMultilineBrowserOmniboxEnabled() || !self.locationBarFocused) {
+    [self setLocationBarContainerHeight:LocationBarHeight(
+                                            self.traitCollection
+                                                .preferredContentSizeCategory)];
+  }
   self.view.matchNTPHeight = NO;
 }
 
@@ -437,14 +403,6 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
                                 [self clampedFontSizeMultiplier] +
                             ([self clampedFontSizeMultiplier] - 1) *
                                 kLocationBarVerticalMarginDynamicType);
-}
-
-// Deactivates the constraints on the location bar positioning.
-- (void)deactivateViewLocationBarConstraints {
-  [NSLayoutConstraint deactivateConstraints:self.view.contractedConstraints];
-  [NSLayoutConstraint
-      deactivateConstraints:self.view.contractedNoMarginConstraints];
-  [NSLayoutConstraint deactivateConstraints:self.view.expandedConstraints];
 }
 
 // Sets the height of the location bar container.

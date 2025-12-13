@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.graphics.Bitmap;
 import android.text.format.DateUtils;
-
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -22,6 +22,8 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -36,9 +38,11 @@ import java.io.File;
 
 /**
  * Stores data about an installed web app. Uses SharedPreferences to persist the data to disk.
- * This class must only be accessed via {@link WebappRegistry}, which is used to register and keep
- * track of web app data known to Chrome.
+ *
+ * <p>This class must only be accessed via {@link WebappRegistry}, which is used to register and
+ * keep track of web app data known to Chrome.
  */
+@NullMarked
 public class WebappDataStorage {
     private static final String TAG = "WebappDataStorage";
 
@@ -132,10 +136,11 @@ public class WebappDataStorage {
 
     /**
      * Called after data has been retrieved from storage.
+     *
      * @param <T> The type of the data being retrieved.
      */
-    public interface FetchCallback<T> {
-        public void onDataRetrieved(T readObject);
+    public interface FetchCallback<T extends @Nullable Object> {
+        void onDataRetrieved(T readObject);
     }
 
     /**
@@ -168,19 +173,23 @@ public class WebappDataStorage {
     /**
      * Asynchronously retrieves the splash screen image associated with the web app. The work is
      * performed on a background thread as it requires a potentially expensive image decode.
-     * @param callback Called when the splash screen image has been retrieved.
-     *                 The bitmap result will be null if no image was found.
+     *
+     * @param callback Called when the splash screen image has been retrieved. The bitmap result
+     *     will be null if no image was found.
      */
-    public void getSplashScreenImage(final FetchCallback<Bitmap> callback) {
-        new AsyncTask<Bitmap>() {
+    public void getSplashScreenImage(final FetchCallback<@Nullable Bitmap> callback) {
+        new AsyncTask<@Nullable Bitmap>() {
             @Override
-            protected final Bitmap doInBackground() {
-                return BitmapHelper.decodeBitmapFromString(
-                        mPreferences.getString(KEY_SPLASH_ICON, null));
+            protected @Nullable Bitmap doInBackground() {
+                String encodedIcon = mPreferences.getString(KEY_SPLASH_ICON, null);
+                if (encodedIcon == null) {
+                    return null;
+                }
+                return BitmapHelper.decodeBitmapFromString(encodedIcon);
             }
 
             @Override
-            protected final void onPostExecute(Bitmap result) {
+            protected void onPostExecute(@Nullable Bitmap result) {
                 assert callback != null;
                 callback.onDataRetrieved(result);
             }
@@ -198,9 +207,10 @@ public class WebappDataStorage {
 
     /**
      * Creates and returns a web app launch intent from the data stored in this object.
+     *
      * @return The web app launch intent.
      */
-    public Intent createWebappLaunchIntent() {
+    public @Nullable Intent createWebappLaunchIntent() {
         // Assume that all of the data is invalid if the version isn't set, so return a null intent.
         int version = mPreferences.getInt(KEY_VERSION, VERSION_INVALID);
         if (version == VERSION_INVALID) return null;
@@ -228,7 +238,7 @@ public class WebappDataStorage {
      * BrowserServicesIntentDataProvider}.
      */
     public void updateFromWebappIntentDataProvider(
-            BrowserServicesIntentDataProvider intentDataProvider) {
+            @Nullable BrowserServicesIntentDataProvider intentDataProvider) {
         if (intentDataProvider == null) return;
         WebappInfo info = WebappInfo.create(intentDataProvider);
 
@@ -258,13 +268,16 @@ public class WebappDataStorage {
             editor.putInt(KEY_VERSION, WebappConstants.WEBAPP_SHORTCUT_VERSION);
 
             if (info.isForWebApk()) {
-                editor.putString(KEY_WEBAPK_PACKAGE_NAME, info.webApkPackageName());
+                String webApkPackageName = info.webApkPackageName();
+                assumeNonNull(webApkPackageName);
+
+                editor.putString(KEY_WEBAPK_PACKAGE_NAME, webApkPackageName);
                 editor.putString(KEY_WEBAPK_MANIFEST_URL, info.manifestUrl());
                 editor.putString(KEY_WEBAPK_MANIFEST_ID, info.manifestIdWithFallback());
                 editor.putInt(KEY_WEBAPK_VERSION_CODE, info.webApkVersionCode());
                 editor.putLong(
                         KEY_WEBAPK_INSTALL_TIMESTAMP,
-                        fetchWebApkInstallTimestamp(info.webApkPackageName()));
+                        fetchWebApkInstallTimestamp(webApkPackageName));
             } else {
                 editor.putString(KEY_NAME, info.name());
                 editor.putString(KEY_SHORT_NAME, info.shortName());
@@ -380,7 +393,7 @@ public class WebappDataStorage {
     }
 
     /** Returns the package name if the data is for a WebAPK, null otherwise. */
-    public String getWebApkPackageName() {
+    public @Nullable String getWebApkPackageName() {
         return mPreferences.getString(KEY_WEBAPK_PACKAGE_NAME, null);
     }
 
@@ -545,8 +558,7 @@ public class WebappDataStorage {
     }
 
     /** Returns the path of the file which contains data to update the WebAPK. */
-    @Nullable
-    String getPendingUpdateRequestPath() {
+    @Nullable String getPendingUpdateRequestPath() {
         return mPreferences.getString(KEY_PENDING_UPDATE_FILE_PATH, null);
     }
 
@@ -631,12 +643,12 @@ public class WebappDataStorage {
     }
 
     /** Returns cached Web Manifest URL. */
-    public String getWebApkManifestUrl() {
+    public @Nullable String getWebApkManifestUrl() {
         return mPreferences.getString(KEY_WEBAPK_MANIFEST_URL, null);
     }
 
     /** Returns cached Web Manifest ID. */
-    public String getWebApkManifestId() {
+    public @Nullable String getWebApkManifestId() {
         return mPreferences.getString(KEY_WEBAPK_MANIFEST_ID, null);
     }
 

@@ -9,7 +9,6 @@ include_rules = [
   "+chrome/browser/ash/arc/arc_util.h",
   "+chrome/browser/ash/arc/fileapi",
   "+chrome/browser/ash/arc/intent_helper",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/profiles",

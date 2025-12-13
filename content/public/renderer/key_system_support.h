@@ -13,7 +13,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "media/base/key_system_capability.h"
 #include "media/base/key_systems_support_registration.h"
-#include "media/mojo/mojom/key_system_support.mojom.h"
 
 namespace content {
 

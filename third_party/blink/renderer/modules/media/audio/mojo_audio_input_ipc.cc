@@ -13,6 +13,7 @@
 #include "media/mojo/common/input_error_code_converter.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom-blink.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -44,7 +45,7 @@ void MojoAudioInputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
       client;
   factory_client_receiver_.Bind(client.InitWithNewPipeAndPassReceiver());
   factory_client_receiver_.set_disconnect_with_reason_handler(
-      base::BindOnce(&MojoAudioInputIPC::OnDisconnect, base::Unretained(this)));
+      BindOnce(&MojoAudioInputIPC::OnDisconnect, Unretained(this)));
 
   mojo::PendingReceiver<media::mojom::blink::AudioProcessorControls>
       controls_receiver;

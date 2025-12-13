@@ -13,7 +13,7 @@ class ColorProvider;
 
 COMPONENT_EXPORT(UI_BASE)
 ImageModel GetDefaultDisabledIconFromImageModel(ImageModel icon,
-                                                ColorProvider* = nullptr);
+                                                const ColorProvider* = nullptr);
 
 }  // namespace ui
 

@@ -189,6 +189,16 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
     return interrupted_by_mouse_event_;
   }
 
+  size_t hash() const {
+    // `code_` and `source_device_id_` are not used as they do not contribute to
+    // the equality.
+    return static_cast<size_t>(interrupted_by_mouse_event_)  // bool
+           | (static_cast<size_t>(key_state_) << 1)          // bool
+           | (static_cast<size_t>(key_code_) << 2)           // unsigned short.
+           | (static_cast<size_t>(MaskOutKeyEventFlags(modifiers_))
+              << 18);  // masked to 6 bits
+  }
+
  private:
   friend class AcceleratorTestMac;
   std::vector<std::u16string> GetLongFormModifiers() const;

@@ -15,7 +15,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "device/fido/cable/v2_constants.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace instance_id {
 class InstanceIDDriver;

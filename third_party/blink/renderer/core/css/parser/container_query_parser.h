@@ -6,25 +6,24 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CONTAINER_QUERY_PARSER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/container_query.h"
-#include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/core/css/parser/conditional_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 
 namespace blink {
 
 class CSSParserContext;
-class CSSIfParser;
+class ConditionalExpNode;
 
-class CORE_EXPORT ContainerQueryParser {
+class CORE_EXPORT ContainerQueryParser : public ConditionalParser {
   STACK_ALLOCATED();
 
  public:
   explicit ContainerQueryParser(const CSSParserContext&);
 
   // https://drafts.csswg.org/css-contain-3/#typedef-container-condition
-  const MediaQueryExpNode* ParseCondition(String);
-  const MediaQueryExpNode* ParseCondition(CSSParserTokenStream&);
+  const ConditionalExpNode* ParseCondition(String);
+  const ConditionalExpNode* ParseCondition(CSSParserTokenStream&);
 
   class StyleFeatureSet : public MediaQueryParser::FeatureSet {
     STACK_ALLOCATED();
@@ -39,16 +38,16 @@ class CORE_EXPORT ContainerQueryParser {
                                const ExecutionContext*) const override {
       return true;
     }
+    bool IsAllowedWithValue(const AtomicString& feature) const override {
+      return true;
+    }
     bool IsCaseSensitive(const AtomicString& feature) const override {
       // TODO(crbug.com/40217044): non-custom properties are case-insensitive.
       return true;
     }
     bool SupportsRange() const override { return false; }
     bool SupportsStyleRange() const override { return true; }
-    bool SupportsElementDependent() const override {
-      return RuntimeEnabledFeatures::
-          CSSSiblingFunctionsInContainerQueriesEnabled();
-    }
+    bool SupportsElementDependent() const override { return true; }
   };
 
  private:
@@ -57,19 +56,15 @@ class CORE_EXPORT ContainerQueryParser {
 
   using FeatureSet = MediaQueryParser::FeatureSet;
 
-  const MediaQueryExpNode* ConsumeQueryInParens(CSSParserTokenStream&);
-  const MediaQueryExpNode* ConsumeContainerCondition(CSSParserTokenStream&);
-  const MediaQueryExpNode* ConsumeFeatureQuery(CSSParserTokenStream&,
-                                               const FeatureSet&);
-  const MediaQueryExpNode* ConsumeFeatureQueryInParens(CSSParserTokenStream&,
-                                                       const FeatureSet&);
-  const MediaQueryExpNode* ConsumeFeatureCondition(CSSParserTokenStream&,
-                                                   const FeatureSet&);
-  const MediaQueryExpNode* ConsumeFeature(CSSParserTokenStream&,
-                                          const FeatureSet&);
+  const ConditionalExpNode* ConsumeLeaf(CSSParserTokenStream&) override;
+  const ConditionalExpNode* ConsumeFunction(CSSParserTokenStream&) override;
+
+  const ConditionalExpNode* ConsumeFeatureQuery(CSSParserTokenStream&,
+                                                const FeatureSet&);
+  const ConditionalExpNode* ConsumeFeature(CSSParserTokenStream&,
+                                           const FeatureSet&);
 
   const CSSParserContext& context_;
-  MediaQueryParser media_query_parser_;
 };
 
 }  // namespace blink

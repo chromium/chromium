@@ -80,8 +80,7 @@ std::string DiagnosticsDialog::Id() {
 }
 
 void DiagnosticsDialog::GetDialogSize(gfx::Size* size) const {
-  const display::Display display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display display = display::Screen::Get()->GetPrimaryDisplay();
 
   gfx::Size display_size = display.size();
 

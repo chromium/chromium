@@ -15,14 +15,15 @@ IpcMouseCursorMonitor::IpcMouseCursorMonitor(
 
 IpcMouseCursorMonitor::~IpcMouseCursorMonitor() = default;
 
-void IpcMouseCursorMonitor::Init(Callback* callback, Mode mode) {
+void IpcMouseCursorMonitor::Init(Callback* callback) {
   DCHECK(!callback_);
   DCHECK(callback);
   callback_ = callback;
   desktop_session_proxy_->SetMouseCursorMonitor(weak_factory_.GetWeakPtr());
 }
 
-void IpcMouseCursorMonitor::Capture() {
+void IpcMouseCursorMonitor::SetPreferredCaptureInterval(
+    base::TimeDelta interval) {
   // Ignore. DesktopSessionAgent will capture the cursor at the same time it
   // captures a screen frame when |IpcVideoFrameCapturer::Capture()| is called.
   // This saves an IPC roundtrip.
@@ -31,7 +32,13 @@ void IpcMouseCursorMonitor::Capture() {
 void IpcMouseCursorMonitor::OnMouseCursor(
     std::unique_ptr<webrtc::MouseCursor> cursor) {
   DCHECK(callback_);
-  callback_->OnMouseCursor(cursor.release());
+  callback_->OnMouseCursor(std::move(cursor));
+}
+
+void IpcMouseCursorMonitor::OnMouseCursorFractionalPosition(
+    const protocol::FractionalCoordinate& position) {
+  DCHECK(callback_);
+  callback_->OnMouseCursorFractionalPosition(position);
 }
 
 }  // namespace remoting

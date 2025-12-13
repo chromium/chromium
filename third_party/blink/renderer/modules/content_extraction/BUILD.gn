@@ -8,6 +8,8 @@ blink_modules_sources("content_extraction") {
   sources = [
     "ai_page_content_agent.cc",
     "ai_page_content_agent.h",
+    "ai_page_content_debug_utils.cc",
+    "ai_page_content_debug_utils.h",
     "document_chunker.cc",
     "document_chunker.h",
     "frame_metadata_observer_registry.cc",
@@ -26,7 +28,7 @@ blink_modules_sources("content_extraction") {
 
   deps = [
     "//services/metrics/public/cpp:ukm_builders",
-    "//third_party/blink/renderer/modules/accessibility:accessibility",
+    "//third_party/blink/renderer/modules/accessibility",
   ]
 
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]

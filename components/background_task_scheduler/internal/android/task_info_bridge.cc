@@ -55,3 +55,5 @@ base::android::ScopedJavaLocalRef<jobject> TaskInfoBridge::CreateTaskInfo(
 }
 
 }  // namespace background_task
+
+DEFINE_JNI(TaskInfoBridge)

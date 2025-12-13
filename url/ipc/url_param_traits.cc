@@ -49,8 +49,4 @@ bool ParamTraits<GURL>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<GURL>::Log(const GURL& p, std::string* l) {
-  l->append(p.spec());
-}
-
 }  // namespace IPC

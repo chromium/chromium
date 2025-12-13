@@ -22,9 +22,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 
-#include <algorithm>
-
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 
@@ -38,20 +35,7 @@ enum WhitespaceMode {
       kAllowLeadingWhitespace | kAllowTrailingWhitespace
 };
 
-// DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
-// usage.
-bool ParseNumber(const LChar*& ptr,
-                 const LChar* end,
-                 float& number,
-                 WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
 bool ParseNumber(base::span<const LChar>& span,
-                 float& number,
-                 WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
-
-// DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
-// usage.
-bool ParseNumber(const UChar*& ptr,
-                 const UChar* end,
                  float& number,
                  WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
 bool ParseNumber(base::span<const UChar>& span,
@@ -60,56 +44,69 @@ bool ParseNumber(base::span<const UChar>& span,
 
 bool ParseNumberOptionalNumber(const String& s, float& h, float& v);
 
-// DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
-// usage.
 template <typename CharType>
-inline bool SkipOptionalSVGSpaces(const CharType*& ptr, const CharType* end) {
-  while (ptr < end && IsHTMLSpace<CharType>(*ptr)) {
-    UNSAFE_TODO(ptr++);
+inline bool SkipOptionalSVGSpaces(const base::span<const CharType> chars,
+                                  size_t& position) {
+  while (position < chars.size() && IsHTMLSpace<CharType>(chars[position])) {
+    ++position;
   }
-  return ptr < end;
+  return position < chars.size();
 }
 
 template <typename CharType>
 constexpr inline bool SkipOptionalSVGSpaces(base::span<const CharType>& span) {
-  auto iter = std::ranges::find_if(
-      span, [](const CharType c) { return !IsHTMLSpace<CharType>(c); });
-  span = span.subspan(static_cast<size_t>(iter - span.begin()));
-  return !span.empty();
+  size_t position = 0;
+  const bool result = SkipOptionalSVGSpaces(span, position);
+  span = span.subspan(position);
+  return result;
 }
 
-// DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
-// usage.
+// Skips optional spaces and an optional delimiter (a comma, by default).
+// This is used for parsing separators in lists of values in SVG attributes.
+//
+// This function starts scanning `chars` at `position`, and returns the new
+// position after skipping characters.  If nothing can be skipped, `position`
+// is returned.
 template <typename CharType>
-inline bool SkipOptionalSVGSpacesOrDelimiter(const CharType*& ptr,
-                                             const CharType* end,
-                                             char delimiter = ',') {
-  if (ptr < end && !IsHTMLSpace<CharType>(*ptr) && *ptr != delimiter) {
-    return false;
+[[nodiscard]] size_t SkipOptionalSVGSpacesOrDelimiter(
+    const base::span<const CharType> chars,
+    size_t position,
+    char delimiter = ',') {
+  if (position < chars.size() && !IsHTMLSpace<CharType>(chars[position]) &&
+      chars[position] != delimiter) {
+    return position;
   }
-  if (SkipOptionalSVGSpaces(ptr, end)) {
-    if (*ptr == delimiter) {
-      UNSAFE_TODO(ptr++);
-      SkipOptionalSVGSpaces(ptr, end);
+  if (SkipOptionalSVGSpaces(chars, position)) {
+    if (chars[position] == delimiter) {
+      ++position;
+      SkipOptionalSVGSpaces(chars, position);
     }
   }
-  return ptr < end;
+  return position;
 }
 
 template <typename CharType>
 constexpr inline bool SkipOptionalSVGSpacesOrDelimiter(
     base::span<const CharType>& span,
     char delimiter = ',') {
-  if (!span.empty() && !IsHTMLSpace<CharType>(span[0]) &&
-      span[0] != delimiter) {
-    return false;
-  }
-  if (SkipOptionalSVGSpaces(span) && span[0] == delimiter) {
-    span = span.template subspan<1u>();
-    SkipOptionalSVGSpaces(span);
-  }
+  const size_t position = SkipOptionalSVGSpacesOrDelimiter(span, 0, delimiter);
+  span = span.subspan(position);
   return !span.empty();
 }
+
+// Scans `chars` from `position` until it finds a space or `delimiter`, and
+// returns a span of the characters scanned. This is used for tokenizing lists
+// of values in SVG attributes.
+//
+// Callers typically should do `position += span.size()` after calling this.
+[[nodiscard]] base::span<const LChar> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const LChar> chars,
+    size_t position,
+    char delimiter);
+[[nodiscard]] base::span<const UChar> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const UChar> chars,
+    size_t position,
+    char delimiter);
 
 }  // namespace blink
 

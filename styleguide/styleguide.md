@@ -8,6 +8,7 @@
         best-practices.
     *   [Blink C++ style](c++/blink-c++.md)
 *   [Chromium Objective-C style guide](objective-c/objective-c.md)
+*   [Chromium Rust style guide](rust/rust.md)
 *   [Chromium Swift style guide](swift/swift.md)
 *   [Java style guide for Android](java/java.md)
 *   [Chromium Python style guide](python/python.md)

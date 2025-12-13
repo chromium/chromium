@@ -12,7 +12,6 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
@@ -58,6 +57,7 @@ class CreditCardAccessorySheetViewBinder {
                 return new LoyaltyCardInfoViewHolder(
                         parent, uiConfiguration.loyaltyCardDrawableFunction);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
+            case AccessorySheetDataPiece.Type.DIVIDER:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
         assert false : "Unhandled type of data piece: " + viewType;
@@ -201,13 +201,15 @@ class CreditCardAccessorySheetViewBinder {
             case "unionPayCC":
                 return R.drawable.unionpay_metadata_card;
             case "verveCC":
-                if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_VERVE_CARD_SUPPORT)) {
-                    return R.drawable.verve_metadata_card;
-                }
-                break;
+                return R.drawable.verve_metadata_card;
             case "visaCC":
                 return R.drawable.visa_metadata_card;
+            case "affirm":
+                return R.drawable.affirm_linked;
+            case "zip":
+                return R.drawable.zip_linked;
+            case "klarna":
+                return R.drawable.klarna_linked;
         }
         return R.drawable.infobar_autofill_cc;
     }

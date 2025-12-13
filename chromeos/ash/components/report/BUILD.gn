@@ -7,7 +7,7 @@ import("//third_party/protobuf/proto_library.gni")
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //ash")
 
 source_set("fresnel_prefs") {
-  public_deps = [ "//components/prefs:prefs" ]
+  public_deps = [ "//components/prefs" ]
 
   deps = [ "//base" ]
 
@@ -42,13 +42,13 @@ source_set("utils") {
     "//chromeos/ash/components/dbus/private_computing:private_computing_proto",
     "//chromeos/ash/components/policy/weekly_time",
     "//chromeos/ash/components/system",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/version_info",
-    "//crypto:crypto",
-    "//google_apis:google_apis",
+    "//crypto",
+    "//google_apis",
     "//services/network/public/cpp",
     "//third_party/icu",
-    "//third_party/private_membership:private_membership",
+    "//third_party/private_membership",
     "//url",
   ]
 
@@ -78,18 +78,18 @@ component("report") {
     ":fresnel_prefs",
     ":fresnel_service_proto",
     ":utils",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//base",
-    "//chromeos/ash/components/dbus/private_computing:private_computing",
+    "//chromeos/ash/components/dbus/private_computing",
     "//chromeos/ash/components/dbus/session_manager",
-    "//chromeos/ash/components/dbus/system_clock:system_clock",
+    "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/system",
     "//components/policy/core/common:common_constants",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/version_info",
     "//services/network/public/cpp",
-    "//third_party/private_membership:private_membership",
+    "//third_party/private_membership",
   ]
 
   sources = [
@@ -140,12 +140,12 @@ source_set("unit_tests") {
     ":fresnel_service_proto",
     ":report",
     ":utils",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chromeos/ash/components/dbus/private_computing:private_computing",
-    "//chromeos/ash/components/dbus/session_manager:session_manager",
-    "//chromeos/ash/components/dbus/system_clock:system_clock",
+    "//chromeos/ash/components/dbus/private_computing",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/system",
@@ -154,7 +154,7 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gtest",
     "//third_party/icu",
-    "//third_party/private_membership:private_membership",
+    "//third_party/private_membership",
   ]
 
   data = [

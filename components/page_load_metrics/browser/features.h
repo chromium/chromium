@@ -23,9 +23,6 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kBeaconLeakageLoggingCategoryParamName);
 // The prefix of the URL category for beacon-leakage-related logging logic.
 BASE_DECLARE_FEATURE_PARAM(std::string, kBeaconLeakageLoggingCategoryPrefix);
 
-// Enables or disables per-frame memory monitoring.
-BASE_DECLARE_FEATURE(kV8PerFrameMemoryMonitoring);
-
 // Enables to emit zero values for some key metrics when back-forward cache is
 // used.
 //
@@ -46,6 +43,8 @@ BASE_DECLARE_FEATURE(kV8PerFrameMemoryMonitoring);
 BASE_DECLARE_FEATURE(kBackForwardCacheEmitZeroSamplesForKeyMetrics);
 
 BASE_DECLARE_FEATURE(kClickInputTracker);
+
+BASE_DECLARE_FEATURE(kPaidContentMetricsObserver);
 
 }  // namespace page_load_metrics::features
 

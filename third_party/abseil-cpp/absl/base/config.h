@@ -237,6 +237,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #error ABSL_HAVE_TLS cannot be directly set
 #elif (defined(__linux__)) && (defined(__clang__) || defined(_GLIBCXX_HAVE_TLS))
 #define ABSL_HAVE_TLS 1
+#elif defined(__INTEL_LLVM_COMPILER)
+#define ABSL_HAVE_TLS 1
 #endif
 
 // ABSL_HAVE_STD_IS_TRIVIALLY_DESTRUCTIBLE
@@ -358,10 +360,10 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 //   Darwin (macOS and iOS)            __APPLE__
 //   Akaros (http://akaros.org)        __ros__
 //   Windows                           _WIN32
-//   NaCL                              __native_client__
 //   AsmJS                             __asmjs__
 //   WebAssembly (Emscripten)          __EMSCRIPTEN__
 //   Fuchsia                           __Fuchsia__
+//   WebAssembly (WASI)                _WASI_EMULATED_MMAN (implies __wasi__)
 //
 // Note that since Android defines both __ANDROID__ and __linux__, one
 // may probe for either Linux or Android by simply testing for __linux__.
@@ -372,12 +374,13 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // POSIX.1-2001.
 #ifdef ABSL_HAVE_MMAP
 #error ABSL_HAVE_MMAP cannot be directly set
-#elif defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__) ||    \
-    defined(_AIX) || defined(__ros__) || defined(__native_client__) ||       \
-    defined(__asmjs__) || defined(__EMSCRIPTEN__) || defined(__Fuchsia__) || \
-    defined(__sun) || defined(__myriad2__) || defined(__HAIKU__) ||          \
-    defined(__OpenBSD__) || defined(__NetBSD__) || defined(__QNX__) ||       \
-    defined(__VXWORKS__) || defined(__hexagon__) || defined(__XTENSA__)
+#elif defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__) || \
+    defined(_AIX) || defined(__ros__) || defined(__asmjs__) ||            \
+    defined(__EMSCRIPTEN__) || defined(__Fuchsia__) || defined(__sun) ||  \
+    defined(__myriad2__) || defined(__HAIKU__) || defined(__OpenBSD__) || \
+    defined(__NetBSD__) || defined(__QNX__) || defined(__VXWORKS__) ||    \
+    defined(__hexagon__) || defined(__XTENSA__) ||                        \
+    defined(_WASI_EMULATED_MMAN)
 #define ABSL_HAVE_MMAP 1
 #endif
 
@@ -453,8 +456,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // WASI doesn't support signals
 #elif defined(__Fuchsia__)
 // Signals don't exist on fuchsia.
-#elif defined(__native_client__)
-// Signals don't exist on hexagon/QuRT
 #elif defined(__hexagon__)
 #else
 // other standard libraries
@@ -754,7 +755,7 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #ifdef ABSL_INTERNAL_HAS_CXA_DEMANGLE
 #error ABSL_INTERNAL_HAS_CXA_DEMANGLE cannot be directly set
 #elif defined(OS_ANDROID) && (defined(__i386__) || defined(__x86_64__))
-#define ABSL_INTERNAL_HAS_CXA_DEMANGLE 0
+#undef ABSL_INTERNAL_HAS_CXA_DEMANGLE
 #elif defined(__GNUC__)
 #define ABSL_INTERNAL_HAS_CXA_DEMANGLE 1
 #elif defined(__clang__) && !defined(_MSC_VER)

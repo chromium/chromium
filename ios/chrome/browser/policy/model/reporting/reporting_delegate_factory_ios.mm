@@ -30,6 +30,12 @@ ReportingDelegateFactoryIOS::GetReportSchedulerDelegate() const {
   return std::make_unique<ReportSchedulerIOS>();
 }
 
+std::unique_ptr<ReportScheduler::Delegate>
+ReportingDelegateFactoryIOS::GetReportSchedulerDelegate(
+    ProfileIOS* profile) const {
+  return std::make_unique<ReportSchedulerIOS>(profile);
+}
+
 std::unique_ptr<RealTimeReportGenerator::Delegate>
 ReportingDelegateFactoryIOS::GetRealTimeReportGeneratorDelegate() const {
   // Using nullptr as the new pipeline is not supported on iOS.

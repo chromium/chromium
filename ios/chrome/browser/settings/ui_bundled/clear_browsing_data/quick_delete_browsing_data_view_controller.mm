@@ -10,13 +10,15 @@
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data_view_controller_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_mutator.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -108,7 +110,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                                                 itemIdentifier.integerValue)];
            }];
 
-  RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
+  [TableViewCellContentConfiguration registerCellForTableView:self.tableView];
   RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(self.tableView);
 
   NSDiffableDataSourceSnapshot* snapshot =
@@ -331,23 +333,27 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 // Creates the browsing data cell.
-- (TableViewDetailIconCell*)createCellWithTitle:(NSString*)title
-                                        summary:(NSString*)summary
-                                           icon:(UIImage*)icon
-                                       selected:(BOOL)selected
-                        accessibilityIdentifier:
-                            (NSString*)accessibilityIdentifier {
-  TableViewDetailIconCell* cell =
-      DequeueTableViewCell<TableViewDetailIconCell>(self.tableView);
-  cell.textLabel.text = title;
-  // Placeholder description required by the constraint to avoid cell resize.
-  cell.detailText = summary ? summary : @" ";
-  cell.detailTextNumberOfLines = 0;
-  cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
-  [cell setIconImage:icon
-            tintColor:[UIColor colorNamed:kGrey500Color]
-      backgroundColor:cell.backgroundColor
-         cornerRadius:0];
+- (UITableViewCell*)createCellWithTitle:(NSString*)title
+                                summary:(NSString*)summary
+                                   icon:(UIImage*)icon
+                               selected:(BOOL)selected
+                accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = title;
+  configuration.subtitle = summary ?: @" ";
+
+  ColorfulSymbolContentConfiguration* symbolConfiguration =
+      [[ColorfulSymbolContentConfiguration alloc] init];
+  symbolConfiguration.symbolImage = icon;
+  symbolConfiguration.symbolTintColor = [UIColor colorNamed:kGrey500Color];
+
+  configuration.leadingConfiguration = symbolConfiguration;
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:self.tableView];
+
+  cell.contentConfiguration = configuration;
   cell.accessoryType = selected ? UITableViewCellAccessoryCheckmark
                                 : UITableViewCellAccessoryNone;
   cell.accessibilityIdentifier = accessibilityIdentifier;

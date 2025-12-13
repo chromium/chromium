@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/byte_count.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -63,7 +64,7 @@ struct RedirectInfo {
   // The origin of the URL after the redirect.
   //
   // The full URL is not available, because in some cases the path and query
-  // may be sanitized away - see https://crbug.com/973885.
+  // may be sanitized away - see https://crbug.com/40095391.
   url.mojom.Origin origin_of_new_url;
 
   // Various network related information.
@@ -77,7 +78,7 @@ struct ResourceLoadInfo {
   int64 request_id;
 
   // The final URL of the response (final = after all redirects).
-  // TODO(crbug.com/973885): use SchemeHostPort if applicable.
+  // TODO(crbug.com/40095391): use SchemeHostPort if applicable.
   url.mojom.Url final_url;
 
   // The response referrer.
@@ -117,12 +118,12 @@ struct ResourceLoadInfo {
   // The size of the response body before removing any content encodings.
   // Does not include redirects or sub-requests issued at lower levels (range
   // requests or auth). Does include bytes from the cache.
-  int64 raw_body_bytes;
+  mojo_base.mojom.ByteCount raw_body_bytes;
 
   // The total amount of data received from network after SSL decoding and proxy
   // handling. Pertains only to the last request, i.e. reset on redirects, but
   // not reset when multiple roundtrips are used for range requests or auth.
-  int64 total_received_bytes;
+  mojo_base.mojom.ByteCount total_received_bytes;
 
   // The list of redirects that led to this resource load. Empty if there were
   // no redirects.
@@ -130,4 +131,9 @@ struct ResourceLoadInfo {
 
   // The HTTP Status Code
   int32 http_status_code;
+
+  // True if HTTP authentication was used to fetch this response. This will not
+  // be set for proxy auth.
+  // This is part of an investigation so will be short lived. crbug.com/40269642
+  bool did_use_server_http_auth;
 };

@@ -2,19 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
+import("//build/config/clang/clang.gni")
 import("//third_party/flatbuffers/flatbuffer.gni")
 import("//third_party/mediapipe/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
 import("//third_party/tflite/tflite_target.gni")
-
-# Generate a buildflag header for compile-time checking of MediaPipe GPU support.
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags =
-      [ "MEDIAPIPE_BUILD_WITH_GPU_SUPPORT=$mediapipe_build_with_gpu_support" ]
-}
 
 action("stamp_metadata_parser_version") {
   script = "stamp_metadata_parser_version.py"
@@ -71,23 +64,10 @@ config("mediapipe_internal_config") {
 config("mediapipe_flags") {
   # This config is added to the public_config. Don't add cflags that disable
   # warnings here.
-  defines = [ "MEDIAPIPE_PROTO_LITE=1" ]
-
-  if (!mediapipe_build_with_gpu_support) {
-    defines += [ "MEDIAPIPE_DISABLE_GPU=1" ]
-  } else if (is_win || is_linux || is_mac) {
-    defines += [
-      "MEDIAPIPE_DISABLE_GPU=0",
-      "MEDIAPIPE_DISABLE_OPENCV=1",
-      "MEDIAPIPE_USE_WEBGPU=1",
-    ]
-
-    if (is_win) {
-      # When building with GPU support on Windows, we don't want MediaPipe to try
-      # and use pthreads, since they will be unavailable.
-      defines += [ "MEDIAPIPE_DISABLE_PTHREADS=1" ]
-    }
-  }
+  defines = [
+    "MEDIAPIPE_PROTO_LITE=1",
+    "MEDIAPIPE_DISABLE_GPU=1",
+  ]
 
   if (is_android) {
     defines += [ "MEDIAPIPE_NO_JNI=1" ]
@@ -222,7 +202,9 @@ source_set("com_google_audio_tools") {
     ":com_google_audio_tools_portable",
     ":mediapipe_shims",
   ]
-  if (is_win) {
+
+  # With clang modules, these are unneccesary.
+  if (is_win && !use_clang_modules) {
     cflags = [ "-permissive" ]
     defines = [ "_USE_MATH_DEFINES" ]
   }
@@ -287,18 +269,6 @@ tflite_source_set("mediapipe_tasks_always_link") {
         [ "src/mediapipe/calculators/tensor/inference_calculator_xnnpack.cc" ]
   }
 
-  if (mediapipe_build_with_gpu_support) {
-    sources += [
-      "src/mediapipe/calculators/tensor/image_to_tensor_calculator.cc",
-      "src/mediapipe/calculators/tensor/image_to_tensor_converter.h",
-      "src/mediapipe/calculators/tensor/image_to_tensor_utils.cc",
-      "src/mediapipe/calculators/tensor/image_to_tensor_utils.h",
-      "src/mediapipe/calculators/tensor/tensors_to_segmentation_utils.cc",
-      "src/mediapipe/calculators/tensor/tensors_to_segmentation_utils.h",
-      "src/mediapipe/gpu/webgpu/image_to_tensor_converter_webgpu_texture.cc",
-      "src/mediapipe/gpu/webgpu/image_to_tensor_converter_webgpu_texture.h",
-    ]
-  }
   include_dirs = [ "src/third_party/com_google_audio_tools" ]
   deps = [
     ":com_google_audio_tools",
@@ -325,7 +295,7 @@ tflite_source_set("mediapipe_tasks_always_link") {
     ":mediapipe_core",
     ":mediapipe_core_api2",
     ":mediapipe_tasks",
-    "//third_party/tflite:tflite",
+    "//third_party/tflite",
     "//third_party/tflite:tflite_builtin_op_resolver",
   ]
 }
@@ -370,7 +340,7 @@ tflite_source_set("mediapipe_core_always_link") {
   conditional_deps = [
     ":mediapipe_core",
     ":mediapipe_core_api2",
-    "//third_party/tflite:tflite",
+    "//third_party/tflite",
     "//third_party/tflite:tflite_builtin_op_resolver",
   ]
 }
@@ -570,6 +540,9 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/util/tflite/error_reporter.h",
   ]
 
+  # TODO(crbug.com/433386027): Remove this after rolling mediapipe.
+  use_libcxx_modules = false
+
   if (!is_win) {
     sources += [
       "src/mediapipe/framework/formats/shared_fd.h",
@@ -611,69 +584,6 @@ tflite_static_library("mediapipe_core") {
     "//third_party/zlib:minizip",
   ]
 
-  if (mediapipe_build_with_gpu_support) {
-    sources += [
-      "src/mediapipe/framework/formats/image.cc",
-      "src/mediapipe/framework/formats/image.h",
-      "src/mediapipe/framework/formats/image_frame.cc",
-      "src/mediapipe/framework/formats/image_frame.h",
-      "src/mediapipe/gpu/attachments.h",
-      "src/mediapipe/gpu/gl_base.h",
-      "src/mediapipe/gpu/gl_calculator_helper.cc",
-      "src/mediapipe/gpu/gl_calculator_helper.h",
-      "src/mediapipe/gpu/gl_context.cc",
-      "src/mediapipe/gpu/gl_context.h",
-      "src/mediapipe/gpu/gl_context_egl.cc",
-      "src/mediapipe/gpu/gl_context_internal.h",
-      "src/mediapipe/gpu/gl_context_nsgl.cc",
-      "src/mediapipe/gpu/gl_texture_buffer.cc",
-      "src/mediapipe/gpu/gl_texture_buffer.h",
-      "src/mediapipe/gpu/gl_texture_view.cc",
-      "src/mediapipe/gpu/gl_texture_view.h",
-      "src/mediapipe/gpu/gl_thread_collector.h",
-      "src/mediapipe/gpu/gpu_buffer.cc",
-      "src/mediapipe/gpu/gpu_buffer.h",
-      "src/mediapipe/gpu/gpu_buffer_format.cc",
-      "src/mediapipe/gpu/gpu_buffer_format.h",
-      "src/mediapipe/gpu/gpu_buffer_storage.cc",
-      "src/mediapipe/gpu/gpu_buffer_storage.h",
-      "src/mediapipe/gpu/gpu_buffer_storage_image_frame.cc",
-      "src/mediapipe/gpu/gpu_buffer_storage_image_frame.h",
-      "src/mediapipe/gpu/gpu_service.cc",
-      "src/mediapipe/gpu/gpu_service.h",
-      "src/mediapipe/gpu/gpu_shared_data_internal.cc",
-      "src/mediapipe/gpu/gpu_shared_data_internal.h",
-
-      # WebGpu files
-      "src/mediapipe/gpu/webgpu/tensor_webgpu_texture_view.cc",
-      "src/mediapipe/gpu/webgpu/webgpu_device_registration.cc",
-      "src/mediapipe/gpu/webgpu/webgpu_device_registration.h",
-      "src/mediapipe/gpu/webgpu/webgpu_service.cc",
-      "src/mediapipe/gpu/webgpu/webgpu_service.h",
-      "src/mediapipe/gpu/webgpu/webgpu_texture_buffer.cc",
-      "src/mediapipe/gpu/webgpu/webgpu_texture_buffer.h",
-      "src/mediapipe/gpu/webgpu/webgpu_texture_view.h",
-      "src/mediapipe/gpu/webgpu/webgpu_utils.cc",
-      "src/mediapipe/gpu/webgpu/webgpu_utils.h",
-      "src/mediapipe/web/jspi_check.h",
-    ]
-
-    if (is_mac) {
-      sources += [
-        "src/mediapipe/objc/CFHolder.h",
-        "src/mediapipe/objc/util.cc",
-        "src/mediapipe/objc/util.h",
-      ]
-    }
-
-    public_deps = [
-      "//third_party/angle:includes",
-      "//third_party/angle:libEGL_static",
-      "//third_party/angle:libGLESv2_static",
-      "//third_party/dawn/src/dawn:cpp",
-    ]
-  }
-
   if (is_android) {
     deps += [ "//third_party/cpu_features:ndk_compat" ]
   }
@@ -688,7 +598,7 @@ tflite_static_library("mediapipe_core") {
   ]
 
   conditional_deps = [
-    "//third_party/tflite:tflite",
+    "//third_party/tflite",
     "//third_party/tflite:tflite_builtin_op_resolver",
   ]
 }
@@ -724,7 +634,7 @@ tflite_static_library("mediapipe_core_api2") {
 
   conditional_deps = [
     ":mediapipe_core",
-    "//third_party/tflite:tflite",
+    "//third_party/tflite",
     "//third_party/tflite:tflite_builtin_op_resolver",
   ]
 }
@@ -817,12 +727,11 @@ tflite_static_library("mediapipe_tasks") {
     "//third_party/tflite:tflite_builtin_op_resolver",
   ]
 
-  conditional_public_deps = [ "//third_party/tflite:tflite" ]
+  conditional_public_deps = [ "//third_party/tflite" ]
 }
 
 tflite_group("mediapipe") {
   public_deps = [
-    ":buildflags",
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
   ]

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/files/file_util.h"
 #import "base/no_destructor.h"
 #import "base/path_service.h"
 #import "base/strings/string_number_conversions.h"
@@ -21,6 +20,7 @@
 #import "ios/chrome/browser/omnibox/eg_tests/test_fake_suggestions_service.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -75,9 +75,10 @@ const base::FilePath& GetTestDataDir() {
 
 + (BOOL)forceVariationID:(int)variationID {
   return variations::VariationsIdsProvider::ForceIdsResult::SUCCESS ==
-         variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
-             /*variation_ids=*/{base::NumberToString(variationID)},
-             /*command_line_variation_ids=*/"");
+         variations::VariationsIdsProvider::GetInstance()
+             ->ForceVariationIdsForTesting(
+                 /*variation_ids=*/{base::NumberToString(variationID)},
+                 /*command_line_variation_ids=*/"");
 }
 
 + (void)blockURLFromTopSites:(NSString*)URL {
@@ -161,14 +162,13 @@ const base::FilePath& GetTestDataDir() {
   return [[GREYAssertionBlock alloc]
                  initWithName:name
       assertionBlockWithError:^BOOL(id element, __strong NSError** errorOrNil) {
-        if (![element isKindOfClass:OmniboxTextFieldIOS.class]) {
+        if (![element conformsToProtocol:@protocol(OmniboxTextInput)]) {
           *errorOrNil = testing::NSErrorWithLocalizedDescription(
-              @"Element should be of class OmniboxTextFieldIOS.");
+              @"Element should conform to OmniboxTextInput.");
           return NO;
         }
-        OmniboxTextFieldIOS* textField =
-            base::apple::ObjCCastStrict<OmniboxTextFieldIOS>(element);
-        return textField.hasAutocompleteText == shouldHaveAutocompleteText;
+        id<OmniboxTextInput> textInput = (id<OmniboxTextInput>)element;
+        return textInput.hasAutocompleteText == shouldHaveAutocompleteText;
       }];
 }
 

@@ -75,10 +75,15 @@ chromium-metrics-reviews@google.com.
   <variant name=".FedCMAccountChooser"
       summary="Profile image fetcher for FedCM Account chooser."/>
   <variant name=".Feed" summary="Showing cache patterns only for Feed."/>
+  <variant name=".HomeCustomization"
+      summary="Background image fetcher for the Home Customization feature on
+               iOS."/>
   <variant name=".Internal"
       summary="Showing cache patterns only for Internal."/>
   <variant name=".NewTabPageAnimatedLogo"
       summary="Showing cache patterns only for NewTabPageAnimatedLogo."/>
+  <variant name=".NtpBackground"
+      summary="Background image fetcher for the New Tab Page on iOS."/>
   <variant name=".OfflinePages"
       summary="Showing cache patterns only for OfflinePages."/>
   <variant name=".Omnibox"
@@ -108,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.CacheHit"
-    enum="BooleanCacheHit" expires_after="2025-12-07">
+    enum="BooleanCacheHit" expires_after="2026-05-01">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -124,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ClientResult"
-    enum="ImageAnnotationServiceClientResult" expires_after="2025-10-05">
+    enum="ImageAnnotationServiceClientResult" expires_after="2026-04-01">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -139,7 +144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.DescFailure"
-    enum="DescFailureReason" expires_after="2025-10-05">
+    enum="DescFailureReason" expires_after="2026-04-01">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -151,7 +156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.DescType"
-    enum="ImageAnnotationServiceDescType" expires_after="2025-10-05">
+    enum="ImageAnnotationServiceDescType" expires_after="2026-04-01">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -166,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.EncodedJpegSizeKB"
-    units="KB" expires_after="2025-10-05">
+    units="KB" expires_after="2026-04-01">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -266,7 +271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ServerHttpResponseCode"
-    enum="HttpResponseCode" expires_after="2025-12-07">
+    enum="HttpResponseCode" expires_after="2026-02-09">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -311,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ServerRequestSizeKB"
-    units="KB" expires_after="2025-12-07">
+    units="KB" expires_after="2026-05-01">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -416,7 +421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageDecoder.Png.UiGfxIntoSkBitmap" units="microseconds"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>lukasza@chromium.org</owner>
   <owner>chrome-rust-experiments@google.com</owner>
   <summary>
@@ -434,7 +439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageDecoder.Png.UiGfxIntoVector" units="microseconds"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>lukasza@chromium.org</owner>
   <owner>chrome-rust-experiments@google.com</owner>
   <summary>
@@ -453,7 +458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.CacheMetadataCount{ImageFetcherCacheStrategy}"
-    units="records" expires_after="2025-10-12">
+    units="records" expires_after="2026-03-10">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -465,7 +470,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.CacheSize{ImageFetcherCacheStrategy}" units="KB"
-    expires_after="2025-10-12">
+    expires_after="2026-05-10">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -476,7 +481,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.Events{ImageFetcherClients}"
-    enum="ImageFetcherEvent" expires_after="2025-12-14">
+    enum="ImageFetcherEvent" expires_after="2026-05-10">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -490,7 +495,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.ImageLoadFromCacheTimeJava{ImageFetcherClients}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2026-03-10">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -503,7 +508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.ImageLoadFromCacheTime{ImageFetcherClients}"
-    units="ms" expires_after="2025-12-14">
+    units="ms" expires_after="2026-04-26">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -516,7 +521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.ImageLoadFromNativeTimeJava{ImageFetcherClients}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2026-03-10">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -530,7 +535,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageFetcher.ImageLoadFromNetworkAfterCacheHit{ImageFetcherClients}"
-    units="ms" expires_after="2025-12-14">
+    units="ms" expires_after="2026-05-10">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -543,7 +548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.ImageLoadFromNetworkTime{ImageFetcherClients}"
-    units="ms" expires_after="2025-12-14">
+    units="ms" expires_after="2026-05-10">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -556,7 +561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.LoadImageMetadata" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2026-03-10">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -566,7 +571,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.RequestStatusCode{ImageFetcherClients}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-12-14">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-05-10">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -580,7 +585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.TimeSinceLastCacheLRUEviction" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2026-03-10">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
   <summary>

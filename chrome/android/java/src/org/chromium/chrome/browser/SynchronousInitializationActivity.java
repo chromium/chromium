@@ -8,6 +8,9 @@ import android.os.Bundle;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -23,11 +26,12 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
  * died in the background with the Activity visible. One example is {@link BookmarkActivity} and its
  * kin.
  */
+@NullMarked
 public abstract class SynchronousInitializationActivity extends ChromeBaseAppCompatActivity {
     private final OneshotSupplierImpl<Profile> mProfileSupplier = new OneshotSupplierImpl<>();
 
     @Override
-    protected final void onCreate(Bundle savedInstanceState) {
+    protected final void onCreate(@Nullable Bundle savedInstanceState) {
         // Make sure the native is initialized before calling super.onCreate(), as calling
         // super.onCreate() will recreate fragments that might depend on the native code.
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
@@ -43,7 +47,8 @@ public abstract class SynchronousInitializationActivity extends ChromeBaseAppCom
      * Activity specific implementation corresponding to {@link
      * android.app.Activity#onCreate(Bundle)}
      */
-    protected void onCreateInternal(Bundle savedInstanceState) {}
+    @Initializer
+    protected void onCreateInternal(@Nullable Bundle savedInstanceState) {}
 
     /**
      * On initial startup, called when the profile is fully loaded and ready to use. This is not

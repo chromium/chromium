@@ -24,6 +24,16 @@ body {
   user-select: none;
 }
 
+#glic-app-container {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#glic-app-container[hidden] {
+  display: none;
+}
+
 webview:not([hidden]) {
   display: block;
   height: 100%;
@@ -40,10 +50,24 @@ webview:not([hidden]) {
   color: var(--color--on-surface);
 }
 
+#localPanels {
+  height: 100%;
+}
+
+#localPanels .dialog {
+  height: 100%;
+}
+
 .dialog .container {
   background: var(--color--surface-container);
   color: var(--color--on-surface-variant);
-  padding-bottom: 14px;
+}
+
+#localPanels .container {
+  display: flex;
+  flex-direction: column;
+  background: var(--color--surface);
+  height: 100%
 }
 
 #loadingPanel {
@@ -61,7 +85,12 @@ webview:not([hidden]) {
   justify-content: space-between;
 }
 
-#loadingPanel .p1 {
+#loadingPanel #sidePanelLoading .secondline {
+  flex-direction: column;
+  height: 100%;
+}
+
+#loadingPanel #floatingLoading .p1 {
   flex: 1;
   height: 17px;
   margin-right: 60px;
@@ -69,18 +98,56 @@ webview:not([hidden]) {
   border-radius: 5px;
 }
 
-#loadingPanel .p2 {
+#loadingPanel #floatingLoading .p2 {
   height: 16px;
   width: 76px;
   padding: 8px 2px;
   border-radius: 16px;
 }
 
-#loadingPanel .p3 {
+#loadingPanel #floatingLoading .p3 {
   height: 16px;
   width: 28px;
   padding: 8px 2px;
   border-radius: 8px;
+}
+
+#loadingPanel #sidePanelLoading .p1 {
+  height: 17px;
+  width: 78px;
+  margin-top: 4px;
+  border-radius: 12px;
+}
+
+.header-right-align {
+  display: flex;
+}
+
+#loadingPanel #sidePanelLoading .p2 {
+  height: 17px;
+  width: 78px;
+  margin-top: 4px;
+  border-radius: 12px;
+}
+
+.center-group {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+
+#loadingPanel #sidePanelLoading .p3 {
+  max-height: 244px;
+  flex-basis: 50%;
+  border-radius: 12px;
+  margin-top: 48px;
+  margin-bottom: 18px;
+}
+
+#loadingPanel #sidePanelLoading .p4 {
+  height: 112px;
+  border-radius: 12px;
 }
 
 .panel .header {
@@ -93,6 +160,14 @@ webview:not([hidden]) {
 
 #loadingPanel .header {
   padding-bottom: 8px;
+}
+
+.floating #sidePanelLoading {
+  display: none;
+}
+
+.sidePanel #floatingLoading {
+  display: none;
 }
 
 .panel .logo {
@@ -108,7 +183,7 @@ webview:not([hidden]) {
 
 .panel .close-button {
   --cr-icon-button-size: 24px;
-  --cr-icon-button-icon-size: 14px;
+  --cr-icon-button-icon-size: 20px;
   color: var(--color--on-surface-variant);
 }
 
@@ -117,7 +192,15 @@ webview:not([hidden]) {
   color: var(--color--on-surface);
   border-radius: 10px;
   padding: 12px;
-  margin: 0 14px;
+  text-align: center;
+}
+
+#localPanels .notice {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .notice .icon {
@@ -129,6 +212,22 @@ webview:not([hidden]) {
   color: var(--color--primary);
 }
 
+#disabledByAdminPanel .without-link {
+  display: inline-block;
+}
+
+#disabledByAdminPanel .with-link {
+  display: none;
+}
+
+#disabledByAdminPanel.show-disabled-by-admin-link .with-link {
+  display: inline-block;
+}
+
+#disabledByAdminPanel.show-disabled-by-admin-link .without-link {
+  display: none;
+}
+
 .dialog p {
   margin: 0 0 8px;
 }
@@ -137,6 +236,10 @@ webview:not([hidden]) {
   font-size: 14px;
   font-weight: 500;
   margin: 8px 0 4px;
+}
+
+.notice-message {
+  width: 300px;
 }
 
 /* Guest panel contains glic webview. If in the show-header state, a header
@@ -181,7 +284,6 @@ webview:not([hidden]) {
 }
 
 .tonal-button {
-  width: 100%;
   background-color: var(--color--secondary-container);
   color: var(--color--on-secondary-container);
 }
@@ -198,78 +300,44 @@ cr-progress {
 }
 
 .placeholder {
-  background-color: #35383b;
-  background-image:
-    linear-gradient(110deg, #161617 0%,
-                            #161617 10%,
-                            #1e1f20 30%,
-                            #35383b 50%,
-                            #1e1f20 70%,
-                            #161617 90%,
-                            #161617 100%);
-  background-size: calc(200cqw);
-  background-position: center;
-  animation: 1.5s infinite linear gradient-move,
-      1.5s infinite linear pulsedark;
+  background-color: var(--color--surface-container);
+  animation: 1s infinite ease-in-out opacity-fade;
 }
 
-@media (prefers-color-scheme: light) {
-  .placeholder {
-    background-image:
-      linear-gradient(110deg, #CDCDCD 0%,
-                              #CDCDCD 25%,
-                              #696B6C 33%,
-                              #727676 65%,
-                              #CDCDCD 75%,
-                              #CDCDCD 100%);
-      animation: 1.5s infinite linear gradient-move,
-          1.5s infinite linear pulselight;
-  }
-}
-
-@keyframes pulselight {
+@keyframes opacity-fade {
   0% {
-    opacity: 0.1;
+    opacity: 100%;
   }
-  22% {
-    opacity: 0.14;
-  }
-  67% {
-    opacity: 0.14;
-  }
-  80% {
-    opacity: 0.1;
+  33% {
+    opacity: 50%;
   }
   100% {
-    opacity: 0.1;
+    opacity: 100%;
   }
 }
 
-@keyframes pulsedark {
-  0% {
-    opacity: 0;
-  }
-  22% {
-    opacity: 1;
-  }
-  67% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
+.p2 {
+  animation-delay: 0.1s;
 }
 
-@keyframes gradient-move {
-  0% {
-    background-position: 100% 0;
-  }
-  100% {
-    background-position: 0 0;
-  }
+.p3 {
+  animation-delay: 0.2s;
+}
+
+.p4 {
+  animation-delay: 0.3s;
+}
+
+.p5 {
+  animation-delay: 0.4s;
+}
+
+.p6 {
+  animation-delay: 0.5s;
+}
+
+.p7 {
+  animation-delay: 0.6s;
 }
 
 .overlay {
@@ -325,4 +393,58 @@ cr-progress {
   color: var(--cr-fallback-color-primary);
   width: 20px;
   height: 20px;
+}
+
+#fre-app-container #freLoadingPanel .header {
+  position: static;
+  display: flex;
+  justify-content: space-between;
+}
+
+#fre-app-container #freLoadingPanel .container {
+  padding: 16px;
+}
+
+#fre-app-container #freLoadingPanel .title {
+  display: block;
+  width: 70px;
+  height: 20px;
+  border-radius: 12px;
+}
+
+#fre-app-container #freLoadingPanel .a {
+  width: 90px;
+  height: 45px;
+  border-radius: 48px;
+  align-self: flex-start;
+  margin-bottom: 16px;
+}
+
+#fre-app-container #freLoadingPanel .b {
+  height: 56px;
+  margin-bottom: 16px;
+}
+
+#fre-app-container #freLoadingPanel .c {
+  height: 118px;
+}
+
+#fre-app-container #freLoadingPanel .e {
+  height: 98px;
+  margin-bottom: 16px;
+}
+
+#fre-app-container #freLoadingPanel .f {
+  height: 32px;
+  margin-bottom: 12px;
+}
+
+#panelContainer #fre-app-container .g {
+  width: auto;
+  flex: 1;
+  height: 32px;
+}
+
+#freLoadingPanel .container {
+  background: var(--color--surface);
 }

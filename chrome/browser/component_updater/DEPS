@@ -1,12 +1,9 @@
 include_rules = [
-  "+chrome/browser/apps/app_provisioning_service",
   "+chrome/elevation_service",
-  "+chrome/browser/share",
   "+chrome/updater",
   "+components/tpcd/metadata",
   "+components/fingerprinting_protection_filter/common",
   "+components/cdm/common",
-  "+components/feed",
   "+components/live_caption",
   "+components/webapps/isolated_web_apps",
   "+components/soda",

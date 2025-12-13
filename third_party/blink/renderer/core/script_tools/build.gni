@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 blink_core_sources_script_tools = [
-  "automation_delegate.cc",
-  "automation_delegate.h",
-  "automation_delegate_supplement.cc",
-  "automation_delegate_supplement.h",
+  "model_context.cc",
+  "model_context.h",
+  "model_context_supplement.cc",
+  "model_context_supplement.h",
+  "model_context_testing.cc",
+  "model_context_testing.h",
 ]

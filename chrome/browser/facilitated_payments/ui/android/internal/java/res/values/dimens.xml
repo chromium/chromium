@@ -12,6 +12,10 @@ found in the LICENSE file.
     <dimen name="facilitated_payments_gpay_icon_height">32dp</dimen>
     <dimen name="facilitated_payments_fop_icon_height">24dp</dimen>
     <dimen name="facilitated_payments_fop_icon_width">40dp</dimen>
+    <dimen name="facilitated_payments_fop_title_top_margin">2dp</dimen>
+    <dimen name="facilitated_payments_open_in_new_icon_size">20dp</dimen>
+    <dimen name="facilitated_payments_open_in_new_icon_padding">1dp</dimen>
+    <dimen name="facilitated_payments_open_in_new_icon_margin_start">16dp</dimen>
     <dimen name="facilitated_payments_gpay_icon_header_height">24dp</dimen>
     <dimen name="facilitated_payments_security_illustration_top_margin">16dp</dimen>
     <dimen name="facilitated_payments_product_icon_height">28dp</dimen>

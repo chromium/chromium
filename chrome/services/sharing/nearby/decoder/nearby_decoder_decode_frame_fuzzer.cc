@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "chrome/services/sharing/nearby/decoder/nearby_decoder.h"
-
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
+#include "chrome/services/sharing/nearby/decoder/nearby_decoder.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "mojo/core/embedder/embedder.h"
@@ -44,7 +41,7 @@ struct Environment {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static base::NoDestructor<Environment> environment;
 
-  std::vector<uint8_t> buffer(data, data + size);
+  std::vector<uint8_t> buffer(data, UNSAFE_TODO(data + size));
   base::RunLoop run_loop;
   environment->decoder->DecodeFrame(
       buffer,

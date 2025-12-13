@@ -20,6 +20,7 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -42,10 +43,12 @@ class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.
     AccountPickerMediator(
             Context context,
             MVCListAdapter.ModelList listModel,
-            AccountPickerCoordinator.Listener listener) {
+            AccountPickerCoordinator.Listener listener,
+            IdentityManager identityManager) {
         mListModel = listModel;
         mAccountPickerListener = listener;
-        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
+        mProfileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context, identityManager);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
         mAccountManagerFacade.addObserver(this);

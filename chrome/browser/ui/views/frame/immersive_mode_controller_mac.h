@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
@@ -19,9 +20,6 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
-
-std::unique_ptr<ImmersiveModeController> CreateImmersiveModeControllerMac(
-    const BrowserView* browser_view);
 
 class ImmersiveModeControllerMac;
 
@@ -41,6 +39,7 @@ class ImmersiveModeOverlayWidgetObserver : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   raw_ptr<ImmersiveModeControllerMac> controller_;
@@ -68,7 +67,8 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
 
   // If `separate_tab_strip` is true, the tab strip is split out into its own
   // widget separate from the overlay view so that it can live in the title bar.
-  explicit ImmersiveModeControllerMac(bool separate_tab_strip);
+  explicit ImmersiveModeControllerMac(BrowserWindowInterface* window,
+                                      bool separate_tab_strip);
 
   ImmersiveModeControllerMac(const ImmersiveModeControllerMac&) = delete;
   ImmersiveModeControllerMac& operator=(const ImmersiveModeControllerMac&) =
@@ -89,7 +89,6 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   void OnFindBarVisibleBoundsChanged(
       const gfx::Rect& new_visible_bounds_in_screen) override;
   bool ShouldStayImmersiveAfterExitingFullscreen() override;
-  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   int GetMinimumContentOffset() const override;
   int GetExtraInfobarOffset() const override;
   void OnContentFullscreenChanged(bool is_content_fullscreen) override;
@@ -103,9 +102,6 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
 
   // views::ViewObserver implementation
   void OnViewBoundsChanged(views::View* observed_view) override;
-
-  // views::WidgetObserver implementation
-  void OnWidgetDestroying(views::Widget* widget) override;
 
   // views::Traversable:
   views::FocusSearch* GetFocusSearch() override;
@@ -133,13 +129,14 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
 
   gfx::Insets GetTabStripRegionViewInsets();
 
+  // Invoked when the associated browser is closed.
+  void BrowserDidClose(BrowserWindowInterface* browser);
+
   raw_ptr<BrowserView> browser_view_ = nullptr;  // weak
   std::unique_ptr<ImmersiveRevealedLock> focus_lock_;
   bool enabled_ = false;
   base::ScopedObservation<views::View, views::ViewObserver>
       top_container_observation_{this};
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      browser_frame_observation_{this};
   ImmersiveModeOverlayWidgetObserver overlay_widget_observer_{this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       overlay_widget_observation_{&overlay_widget_observer_};
@@ -171,9 +168,11 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   // space reserved for it) and the "Always Show Menu Bar" system setting.
   int menu_bar_height_ = 0;
 
+  std::optional<base::CallbackListSubscription> browser_close_subscription_;
+
   std::unique_ptr<views::BoundsAnimator> tab_bounds_animator_ = nullptr;
 
-  base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_;
+  base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_MAC_H_

@@ -28,6 +28,7 @@ cargo_crate("buildrs_support") {
   cargo_pkg_authors = "Josh Stone <cuviper@gmail.com>"
   cargo_pkg_name = "autocfg"
   cargo_pkg_description = "Automatic cfg for Rust compiler features"
+  cargo_pkg_repository = "https://github.com/cuviper/autocfg"
   cargo_pkg_version = "1.5.0"
 
   allow_unsafe = false

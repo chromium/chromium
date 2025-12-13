@@ -18,8 +18,8 @@
 
 static jlong JNI_ReauthenticatorBridge_Create(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_bridge,
-    const base::android::JavaParamRef<jobject>& activity,
+    const base::android::JavaRef<jobject>& java_bridge,
+    const base::android::JavaRef<jobject>& activity,
     Profile* profile,
     jint source) {
   return reinterpret_cast<intptr_t>(
@@ -27,8 +27,8 @@ static jlong JNI_ReauthenticatorBridge_Create(
 }
 
 ReauthenticatorBridge::ReauthenticatorBridge(
-    const base::android::JavaParamRef<jobject>& java_bridge,
-    const base::android::JavaParamRef<jobject>& activity,
+    const base::android::JavaRef<jobject>& java_bridge,
+    const base::android::JavaRef<jobject>& activity,
     Profile* profile,
     jint source)
     : java_bridge_(java_bridge), profile_(profile) {
@@ -73,3 +73,5 @@ void ReauthenticatorBridge::OnReauthenticationCompleted(bool auth_succeeded) {
 void ReauthenticatorBridge::Destroy(JNIEnv* env) {
   delete this;
 }
+
+DEFINE_JNI(ReauthenticatorBridge)

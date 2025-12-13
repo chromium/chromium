@@ -112,12 +112,10 @@ DemuxerManager::DemuxerManager(
     Client* client,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     MediaLog* log,
-    bool enable_instant_source_buffer_gc,
     std::unique_ptr<Demuxer> demuxer_override)
     : client_(client),
       media_task_runner_(std::move(media_task_runner)),
       media_log_(log->Clone()),
-      enable_instant_source_buffer_gc_(enable_instant_source_buffer_gc),
       demuxer_override_(std::move(demuxer_override)) {
   DCHECK(client_);
 }
@@ -148,8 +146,7 @@ void DemuxerManager::OnPipelineError(PipelineStatus error) {
   }
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (base::FeatureList::IsEnabled(kBuiltInHlsPlayer) &&
-      error == DEMUXER_ERROR_DETECTED_HLS) {
+  if (error == DEMUXER_ERROR_DETECTED_HLS) {
     hls_fallback_ = true;
 
     // If we've gotten a request to start HLS fallback and logging, we can
@@ -295,8 +292,7 @@ PipelineStatus DemuxerManager::CreateDemuxer(
   }
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (hls_fallback_ || (base::FeatureList::IsEnabled(kBuiltInHlsPlayer) &&
-                        loaded_url_.path_piece().ends_with(".m3u8"))) {
+  if (hls_fallback_ || loaded_url_.path().ends_with(".m3u8")) {
     std::unique_ptr<Demuxer> demuxer;
     std::tie(data_source_info_, demuxer) = CreateHlsDemuxer();
     SetDemuxer(std::move(demuxer));
@@ -318,7 +314,7 @@ PipelineStatus DemuxerManager::CreateDemuxer(
 #if BUILDFLAG(ENABLE_FFMPEG)
     SetDemuxer(CreateFFmpegDemuxer());
 #else
-    return DEMUXER_ERROR_COULD_NOT_OPEN;
+    return DEMUXER_ERROR_PROGRESSIVE_DISABLED;
 #endif
   } else {
     DCHECK(!HasDataSource());
@@ -395,7 +391,7 @@ bool DemuxerManager::WouldTaintOrigin() const {
     // HLS content.
     return true;
   }
-  return data_source_info_ ? data_source_info_->WouldTaintOrigin() : false;
+  return data_source_info_ && data_source_info_->WouldTaintOrigin();
 }
 
 bool DemuxerManager::HasDataSource() const {
@@ -426,21 +422,6 @@ bool DemuxerManager::IsStreaming() const {
          (demuxer_ && !demuxer_->IsSeekable());
 }
 
-bool DemuxerManager::PassedDataSourceTimingAllowOriginCheck() const {
-  // If there is no MultiBuffer, then there are no HTTP responses, and so this
-  // can safely return true. Specifically for the MSE case, the app itself
-  // sources the ArrayBuffer[Views], possibly not even from HTTP responses. Any
-  // TAO checks which are present to prevent deduction of the resource content
-  // can be assumed to have passed, as the content is already readable by the
-  // app. TAO checks which would be used to determine other network timing
-  // info, such as DNS lookup time, are not relevant as the media data is far
-  // removed from the network itself at this point, and so that info cannot be
-  // revealed via the MediaSource or WebMediaPlayer that's using MSE.
-  // TODO(crbug.com/40057824): Ensure that this returns the correct value for
-  // HLS media, based on the TAO checks performed on those resources.
-  return data_source_ ? data_source_->PassedTimingAllowOriginCheck() : true;
-}
-
 bool DemuxerManager::IsLiveContent() const {
   // Manifest demuxer reports true live content accurately, while all other
   // demuxers do not. TODO(crbug.com/40057824): Consider making IsSeekable
@@ -452,12 +433,6 @@ bool DemuxerManager::IsLiveContent() const {
 }
 
 std::unique_ptr<Demuxer> DemuxerManager::CreateChunkDemuxer() {
-  if (base::FeatureList::IsEnabled(kMemoryPressureBasedSourceBufferGC)) {
-    memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-        FROM_HERE, base::BindRepeating(&DemuxerManager::OnMemoryPressure,
-                                       base::Unretained(this)));
-  }
-
   return std::make_unique<ChunkDemuxer>(
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           &DemuxerManager::OnChunkDemuxerOpened, weak_factory_.GetWeakPtr())),
@@ -488,13 +463,13 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateFFmpegDemuxer() {
 std::tuple<raw_ptr<DataSourceInfo>, std::unique_ptr<Demuxer>>
 DemuxerManager::CreateHlsDemuxer() {
   bool would_taint_origin =
-      data_source_info_ ? data_source_info_->WouldTaintOrigin() : false;
+      data_source_info_ && data_source_info_->WouldTaintOrigin();
   auto engine = std::make_unique<HlsManifestDemuxerEngine>(
       client_->GetHlsDataSourceProvider(), media_task_runner_,
       BindPostTaskToCurrentDefault(base::BindRepeating(
-          &DemuxerManager::AddMediaTrack, weak_factory_.GetWeakPtr())),
+          &DemuxerManager::AddTrack, weak_factory_.GetWeakPtr())),
       BindPostTaskToCurrentDefault(base::BindRepeating(
-          &DemuxerManager::RemoveMediaTrack, weak_factory_.GetWeakPtr())),
+          &DemuxerManager::RemoveTrack, weak_factory_.GetWeakPtr())),
       would_taint_origin, loaded_url_, media_log_.get());
 
   raw_ptr<DataSourceInfo> datasource_info = engine.get();
@@ -527,45 +502,7 @@ void DemuxerManager::OnEncryptedMediaInitData(
   }
 }
 
-void DemuxerManager::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
-  DVLOG(2) << __func__ << " level=" << level;
-  DCHECK(base::FeatureList::IsEnabled(kMemoryPressureBasedSourceBufferGC));
-  DCHECK(GetDemuxerType() == DemuxerType::kChunkDemuxer);
 
-  if (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-
-  // The new value of `level` will take effect on the next
-  // garbage collection. Typically this means the next SourceBuffer append()
-  // operation, since per MSE spec, the garbage collection must only occur
-  // during SourceBuffer append(). But if memory pressure is critical it might
-  // be better to perform GC immediately rather than wait for the next append
-  // and potentially get killed due to out-of-memory.
-  // So if this experiment is enabled and pressure level is critical, we'll pass
-  // down force_instant_gc==true, which will force immediate GC on
-  // SourceBufferStreams.
-  bool force_instant_gc =
-      (enable_instant_source_buffer_gc_ &&
-       level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
-
-  if (!client_) {
-    return;
-  }
-
-  // base::Unretained is safe, since `demuxer_` is actually owned by
-  // `this` via this->demuxer_. Note the destruction of `demuxer_` is done
-  // from ~WMPI by first hopping to `media_task_runner_` to prevent race with
-  // this task.
-  // TODO(crbug.com/40243452) Get rid of this static cast.
-  media_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &ChunkDemuxer::OnMemoryPressure,
-          base::Unretained(static_cast<ChunkDemuxer*>(demuxer_.get())),
-          base::Seconds(client_->CurrentTime()), level, force_instant_gc));
-}
 
 void DemuxerManager::OnChunkDemuxerOpened() {
   CHECK(demuxer_);
@@ -600,7 +537,7 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
     switch (track->type()) {
       case MediaTrack::Type::kAudio:
       case MediaTrack::Type::kVideo:
-        client_->AddMediaTrack(*track);
+        client_->AddTrack(*track);
         break;
       default:
         // Text tracks are not supported through this code path.
@@ -611,11 +548,11 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-void DemuxerManager::AddMediaTrack(const media::MediaTrack& track) {
-  client_->AddMediaTrack(track);
+void DemuxerManager::AddTrack(const MediaTrack& track) {
+  client_->AddTrack(track);
 }
-void DemuxerManager::RemoveMediaTrack(const media::MediaTrack& track) {
-  client_->RemoveMediaTrack(track);
+void DemuxerManager::RemoveTrack(const MediaTrack& track) {
+  client_->RemoveTrack(track);
 }
 #endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 

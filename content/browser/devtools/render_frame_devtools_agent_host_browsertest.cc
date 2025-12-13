@@ -54,7 +54,7 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
     // Return a false in case that the url is a fenced frame test url to detach
     // the attached client in order to test that a fenced frame calls
     // OnNavigationRequestWillBeSent through the outer document.
-    if (url.path_piece().find(kFencedFramePath) != std::string_view::npos) {
+    if (url.path().find(kFencedFramePath) != std::string_view::npos) {
       return false;
     }
     return true;

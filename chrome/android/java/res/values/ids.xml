@@ -31,6 +31,7 @@ found in the LICENSE file.
     <item type="id" name="history_and_tabs_toggle"/>
 
     <!-- Keyboard shortcuts -->
+    <item type="id" name="close_window" />
     <item type="id" name="print_id" />
     <item type="id" name="focus_url_bar" />
     <item type="id" name="focus_and_clear_url_bar" />
@@ -43,6 +44,8 @@ found in the LICENSE file.
     <item type="id" name="dev_tools" />
     <item type="id" name="task_manager" />
     <item type="id" name="esc_key" />
+    <item type="id" name="feedback_form" />
+    <item type="id" name="view_source" />
 
     <!-- Editor dialog -->
     <item type="id" name="editor_dialog_done_button" />
@@ -56,6 +59,7 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_share_page" />
     <item type="id" name="contextmenu_print_page" />
     <item type="id" name="contextmenu_inspect_element" />
+    <item type="id" name="contextmenu_view_page_source" />
 
     <!-- Custom Tab Group -->
     <item type="id" name="contextmenu_open_in_new_chrome_tab" />
@@ -65,6 +69,7 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_open_in_new_tab" />
     <item type="id" name="contextmenu_open_in_new_tab_in_group" />
     <item type="id" name="contextmenu_open_in_incognito_tab" />
+    <item type="id" name="contextmenu_open_in_incognito_window" />
     <item type="id" name="contextmenu_open_in_other_window" />
     <item type="id" name="contextmenu_open_in_new_window" />
     <item type="id" name="contextmenu_show_interest_in_element" />
@@ -100,8 +105,9 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_remove_highlight" />
     <item type="id" name="contextmenu_learn_more" />
 
-    <!-- Other Group -->
+    <!-- Video Group -->
     <item type="id" name="contextmenu_save_video" />
+    <item type="id" name="contextmenu_picture_in_picture" />
 
     <!-- Menu item IDs for FullscreenActivities -->
     <item type="id" name="contextmenu_open_in_chrome" />
@@ -120,6 +126,7 @@ found in the LICENSE file.
 
     <!-- App Menu -->
     <item type="id" name="icon_row_menu_id" />
+    <item type="id" name="submenu_header_menu_id" />
     <item type="id" name="forward_menu_id" />
     <item type="id" name="bookmark_this_page_id" />
     <item type="id" name="offline_page_id" />
@@ -131,8 +138,16 @@ found in the LICENSE file.
     <item type="id" name="add_to_group_menu_id" />
     <item type="id" name="pin_tab_menu_id" />
     <item type="id" name="unpin_tab_menu_id" />
+    <item type="id" name="mute_site_menu_id" />
+    <item type="id" name="unmute_site_menu_id" />
     <item type="id" name="new_window_menu_id" />
+    <item type="id" name="new_incognito_window_menu_id" />
     <item type="id" name="move_to_other_window_menu_id" />
+    <item type="id" name="add_to_new_group_sub_menu_id" />
+    <item type="id" name="add_to_group_sub_menu_id" />
+    <item type="id" name="add_to_group_incognito_sub_menu_id" />
+    <item type="id" name="move_to_new_window_sub_menu_id" />
+    <item type="id" name="move_to_other_window_sub_menu_id" />
     <item type="id" name="manage_all_windows_menu_id" />
     <item type="id" name="divider_line_id" />
     <item type="id" name="open_history_menu_id" />
@@ -143,6 +158,8 @@ found in the LICENSE file.
     <item type="id" name="all_bookmarks_menu_id" />
     <item type="id" name="recent_tabs_menu_id" />
     <item type="id" name="extensions_menu_id" />
+    <item type="id" name="extensions_parent_menu_id" />
+    <item type="id" name="extensions_webstore_menu_id" />
     <item type="id" name="page_zoom_id" />
     <item type="id" name="share_menu_id" />
     <item type="id" name="direct_share_menu_id" />
@@ -167,6 +184,7 @@ found in the LICENSE file.
     <item type="id" name="reader_mode_prefs_id" />
     <item type="id" name="preferences_id" />
     <item type="id" name="ntp_customization_id" />
+    <item type="id" name="listen_to_feed_id" />
     <item type="id" name="help_id" />
     <item type="id" name="managed_by_divider_line_id" />
     <item type="id" name="managed_by_menu_id" />
@@ -176,6 +194,7 @@ found in the LICENSE file.
     <item type="id" name="menu_select_tabs" />
     <item type="id" name="menu_item_content_filter_divider_line_id" />
     <item type="id" name="menu_item_content_filter_help_center_id" />
+    <item type="id" name="duplicate_tab_menu_id" />
 
     <!-- Custom Tabs -->
     <item type="id" name="view_id_tag_key" />
@@ -189,5 +208,5 @@ found in the LICENSE file.
     <item type="id" name="custom_tabs_app_menu_item_id_6" />
     <item type="id" name="open_in_browser_id" />
     <item type="id" name="price_insights_menu_id" />
-
+    <item type="id" name="toggle_caret_browsing" />
 </resources>

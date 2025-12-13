@@ -30,6 +30,7 @@ namespace classroom {
 class Courses;
 class Students;
 class CourseWork;
+class CourseWorkMaterial;
 }  // namespace classroom
 }  // namespace google_apis
 
@@ -94,6 +95,20 @@ class ClassroomPageHandlerImpl {
       ListAssignmentsCallback callback,
       base::expected<std::unique_ptr<google_apis::classroom::CourseWork>,
                      google_apis::ApiErrorCode> result);
+
+  void ListCourseWorkMaterialsHelper(
+      const std::string& course_id,
+      const std::string& page_token,
+      std::unique_ptr<AssignmentList> fetched_assignments,
+      ListAssignmentsCallback callback);
+
+  void OnListCourseWorkMaterialsFetched(
+      const std::string& course_id,
+      std::unique_ptr<AssignmentList> fetched_assignments,
+      ListAssignmentsCallback callback,
+      base::expected<
+          std::unique_ptr<google_apis::classroom::CourseWorkMaterial>,
+          google_apis::ApiErrorCode> result);
 
   static std::unique_ptr<google_apis::RequestSender> CreateRequestSender();
 

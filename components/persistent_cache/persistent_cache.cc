@@ -7,15 +7,21 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
-#include "components/persistent_cache/backend_params.h"
-#include "components/persistent_cache/entry.h"
+#include "components/persistent_cache/backend_type.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
+#include "components/persistent_cache/transaction_error.h"
 
 namespace persistent_cache {
 
@@ -23,72 +29,60 @@ const char* GetBackendTypeName(BackendType backend_type) {
   switch (backend_type) {
     case BackendType::kSqlite:
       return "SQLite";
-    case BackendType::kMock:
-      return "Mock";
   }
 }
 
 // static
-std::unique_ptr<PersistentCache> PersistentCache::Open(
-    BackendParams backend_params) {
-  std::unique_ptr<Backend> backend;
-  switch (backend_params.type) {
-    case BackendType::kSqlite:
-      backend = std::make_unique<SqliteBackendImpl>(std::move(backend_params));
-      break;
-    case BackendType::kMock:
-      // Reserved for testing;
-      NOTREACHED();
+std::unique_ptr<PersistentCache> PersistentCache::Bind(
+    PendingBackend pending_backend) {
+  // If there is ever occasion to have more than one type, branch on the type
+  // here.
+  if (auto backend = SqliteBackendImpl::Bind(std::move(pending_backend));
+      backend) {
+    return std::make_unique<PersistentCache>(std::move(backend));
   }
 
-  return std::make_unique<PersistentCache>(std::move(backend));
+  return nullptr;
 }
 
-PersistentCache::PersistentCache(std::unique_ptr<Backend> backend) {
-  CHECK(backend);
-
-  base::ElapsedTimer timer;
-  if (backend->Initialize()) {
-    backend_ = std::move(backend);
-    base::UmaHistogramMicrosecondsTimes(
-        GetFullHistogramName("BackendInitialize"), timer.Elapsed());
-  }
+PersistentCache::PersistentCache(std::unique_ptr<Backend> backend)
+    : backend_(std::move(backend)) {
+  CHECK(backend_);
 }
 
 PersistentCache::~PersistentCache() = default;
 
-std::unique_ptr<Entry> PersistentCache::Find(std::string_view key) {
-  if (!backend_) {
-    return nullptr;
-  }
-
+base::expected<std::optional<EntryMetadata>, TransactionError>
+PersistentCache::Find(std::string_view key, BufferProvider buffer_provider) {
   std::optional<base::ElapsedTimer> timer = MaybeGetTimerForHistogram();
 
-  auto entry = backend_->Find(key);
+  auto entry_metadata = backend_->Find(key, buffer_provider);
 
   if (timer.has_value()) {
     base::UmaHistogramMicrosecondsTimes(GetFullHistogramName("Find"),
                                         timer->Elapsed());
   }
 
-  return entry;
+  return entry_metadata;
 }
 
-void PersistentCache::Insert(std::string_view key,
-                             base::span<const uint8_t> content,
-                             EntryMetadata metadata) {
-  if (!backend_) {
-    return;
-  }
-
+base::expected<void, TransactionError> PersistentCache::Insert(
+    std::string_view key,
+    base::span<const uint8_t> content,
+    EntryMetadata metadata) {
   std::optional<base::ElapsedTimer> timer = MaybeGetTimerForHistogram();
 
-  backend_->Insert(key, content, metadata);
-
+  auto result = backend_->Insert(key, content, metadata);
   if (timer.has_value()) {
     base::UmaHistogramMicrosecondsTimes(GetFullHistogramName("Insert"),
                                         timer->Elapsed());
   }
+
+  return result;
+}
+
+LockState PersistentCache::Abandon() {
+  return backend_->Abandon();
 }
 
 Backend* PersistentCache::GetBackendForTesting() {
@@ -98,6 +92,7 @@ Backend* PersistentCache::GetBackendForTesting() {
 std::optional<base::ElapsedTimer> PersistentCache::MaybeGetTimerForHistogram() {
   std::optional<base::ElapsedTimer> timer;
 
+  base::AutoLock lock(metrics_subsampler_lock_);
   if (metrics_subsampler_.ShouldSample(kTimingLoggingProbability)) {
     timer.emplace();
   }

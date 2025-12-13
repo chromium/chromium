@@ -20,5 +20,8 @@ NSString* const kDownloadManagerTryAgainAccessibilityIdentifier =
     @"kDownloadManagerTryAgainAccessibilityIdentifier";
 NSString* const kDownloadManagerCloseButtonAccessibilityIdentifier =
     @"kDownloadManagerCloseButtonAccessibilityIdentifier";
+NSString* const
+    kDownloadManagerDownloadReplacingOverlayAccessibilityIdentifier =
+        @"kDownloadManagerDownloadReplacingOverlayAccessibilityIdentifier";
 
 const NSTimeInterval kDownloadManagerAnimationDuration = 0.2;

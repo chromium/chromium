@@ -4,7 +4,6 @@
 
 module media.mojom;
 
-import "media/learning/mojo/public/mojom/learning_task_controller.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "media/mojo/mojom/video_decode_stats_recorder.mojom";
 import "media/mojo/mojom/playback_events_recorder.mojom";
@@ -94,11 +93,6 @@ interface MediaMetricsProvider {
   // Creates a VideoDecodeStatsRecorder instance.
   AcquireVideoDecodeStatsRecorder(
       pending_receiver<VideoDecodeStatsRecorder> recorder);
-
-  // Returns a LearningTaskController for the given |taskName|.
-  AcquireLearningTaskController(
-      string taskName,
-      pending_receiver<media.learning.mojom.LearningTaskController> controller);
 
   // Returns a PlaybackEventsRecorder instance. Implementation may drop the
   // |receiver| if it's not interested in recording playback events.

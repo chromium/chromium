@@ -59,9 +59,9 @@ suite('resolutionSelectTest', function() {
 
     assertEquals(2, select.length);
     assertEquals(
-        secondResolution.toString() + ' dpi', getOption(0).textContent!.trim());
+        secondResolution.toString() + ' dpi', getOption(0).textContent.trim());
     assertEquals(
-        firstResolution.toString() + ' dpi', getOption(1).textContent!.trim());
+        firstResolution.toString() + ' dpi', getOption(1).textContent.trim());
     assertEquals(secondResolution.toString(), select.value);
 
     // Selecting a different option should update the selected value.

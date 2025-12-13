@@ -37,6 +37,7 @@ struct CallTimerState {
     kEmitFormIssuesToDevtools,
     kExtractForms,
     kExtractFormsAndNotifyPasswordAutofillAgent,
+    kOnDevToolsSessionConnectionChanged,
   };
   CallSite call_site = internal::IsRequired();
   base::TimeTicks last_autofill_agent_reset = internal::IsRequired();

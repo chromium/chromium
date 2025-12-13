@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -163,7 +159,8 @@ TEST(SharedMemoryVideoFramePoolTest, ReportsCorrectUtilization) {
 
 // Returns true iff each plane of the given |frame| is filled with
 // |values[plane]|.
-bool PlanesAreFilledWithValues(const VideoFrame& frame, const uint8_t* values) {
+bool PlanesAreFilledWithValues(const VideoFrame& frame,
+                               base::span<const uint8_t> values) {
   static_assert(VideoFrame::Plane::kU == (VideoFrame::Plane::kY + 1) &&
                     VideoFrame::Plane::kV == (VideoFrame::Plane::kU + 1),
                 "enum values changed, will break code below");
@@ -171,12 +168,14 @@ bool PlanesAreFilledWithValues(const VideoFrame& frame, const uint8_t* values) {
        ++plane) {
     const uint8_t expected_value = values[plane - VideoFrame::Plane::kY];
     for (int y = 0; y < frame.rows(plane); ++y) {
-      const uint8_t* row = frame.visible_data(plane) + y * frame.stride(plane);
+      const uint8_t* row =
+          UNSAFE_TODO(frame.visible_data(plane) + y * frame.stride(plane));
       for (int x = 0; x < frame.row_bytes(plane); ++x) {
-        EXPECT_EQ(expected_value, row[x])
+        UNSAFE_TODO(EXPECT_EQ(expected_value, row[x]))
             << "at row " << y << " in plane " << plane;
-        if (expected_value != row[x])
+        if (expected_value != UNSAFE_TODO(row[x])) {
           return false;
+        }
       }
     }
   }

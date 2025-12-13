@@ -16,7 +16,6 @@ namespace segmentation_platform {
 namespace {
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 // Stores the client callbacks to |data|.
@@ -36,10 +35,9 @@ MockModelProvider::MockModelProvider(
         get_client_callback)
     : ModelProvider(segment_id), get_client_callback_(get_client_callback) {
   ON_CALL(*this, InitAndFetchModel(_))
-      .WillByDefault(
-          Invoke([&](const ModelUpdatedCallback& model_updated_callback) {
-            get_client_callback_.Run(model_updated_callback);
-          }));
+      .WillByDefault([&](const ModelUpdatedCallback& model_updated_callback) {
+        get_client_callback_.Run(model_updated_callback);
+      });
 }
 MockModelProvider::~MockModelProvider() = default;
 
@@ -67,8 +65,9 @@ std::unique_ptr<ModelProvider> TestModelProviderFactory::CreateProvider(
 
 std::unique_ptr<DefaultModelProvider>
 TestModelProviderFactory::CreateDefaultProvider(proto::SegmentId segment_id) {
-  if (!base::Contains(data_->segments_supporting_default_model, segment_id))
+  if (!base::Contains(data_->segments_supporting_default_model, segment_id)) {
     return nullptr;
+  }
 
   // The DefaultModelProvider is always expected to have valid segment info.
   // Some tests set up default providers without segment info.

@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/extension_disabled_ui.h"
+
 #include <stddef.h>
+
+#include <algorithm>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -22,7 +28,6 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
@@ -188,9 +193,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
   // increase dialog.
   GURL url = extension->url();
   int starting_tab_count = browser()->tab_strip_model()->count();
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(url);
   int tab_count = browser()->tab_strip_model()->count();
   EXPECT_EQ(starting_tab_count + 1, tab_count);
 
@@ -228,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
 
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
-        std::string path = params->url_request.url.path();
+        std::string path = params->url_request.url.GetPath();
         if (path == "/autoupdate/updates.xml") {
           content::URLLoaderInterceptor::WriteResponse(
               test_data_dir_.AppendASCII("permissions_increase")
@@ -273,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, RemoteInstall) {
 
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
-        std::string path = params->url_request.url.path();
+        std::string path = params->url_request.url.GetPath();
         if (path == "/autoupdate/updates.xml") {
           content::URLLoaderInterceptor::WriteResponse(
               test_data_dir_.AppendASCII("permissions_increase")
@@ -325,4 +328,45 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, RemoteInstall) {
               testing::UnorderedElementsAre(
                   extensions::disable_reason::DISABLE_REMOTE_INSTALL));
   EXPECT_TRUE(GetExtensionDisabledGlobalError());
+}
+
+namespace {
+int GetExtensionDisabledErrorCount(GlobalErrorService* service,
+                                   const std::u16string_view extension_name) {
+  DCHECK(!extension_name.empty());
+  DCHECK(service);
+  return std::ranges::count_if(service->errors(), [extension_name](
+                                                      GlobalError* error) {
+    return error->MenuItemCommandID() >= IDC_EXTENSION_INSTALL_ERROR_FIRST &&
+           error->MenuItemCommandID() <= IDC_EXTENSION_INSTALL_ERROR_LAST &&
+           error->MenuItemLabel().find(extension_name) != std::string::npos;
+  });
+}
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
+                       AllErrorsRemovedWhenExtensionRemoved) {
+  const Extension* extension = InstallIncreasingPermissionExtensionV1();
+  ASSERT_TRUE(extension);
+  AddExtensionDisabledError(browser()->profile(), extension, false);
+  extension = UpdateIncreasingPermissionExtension(extension, path_v2_, -1);
+  ASSERT_TRUE(extension);
+
+  const auto extension_name = base::UTF8ToUTF16(extension->name());
+  auto* global_error_service =
+      GlobalErrorServiceFactory::GetForProfile(profile());
+  // There must be two errors associated with the same extension; if this is not
+  // true, then this test isn't relevant anymore.
+  EXPECT_EQ(
+      GetExtensionDisabledErrorCount(global_error_service, extension_name), 2);
+
+  // Remove extension and make sure no errors left.
+  extensions::TestExtensionRegistryObserver test_observer(extension_registry(),
+                                                          extension->id());
+  UninstallExtension(extension->id());
+  test_observer.WaitForExtensionUninstalled();
+  // All ExtensionDisabledGlobalErrors related to removed extension should be
+  // removed too.
+  EXPECT_EQ(
+      GetExtensionDisabledErrorCount(global_error_service, extension_name), 0);
 }

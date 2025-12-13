@@ -21,7 +21,7 @@ class COMPONENT_EXPORT(INPUT) InputTokenForwarder {
 
   virtual void ForwardVizInputTransferToken(
       int surface_id,
-      base::android::ScopedJavaGlobalRef<jobject> viz_input_token) = 0;
+      const jni_zero::JavaRef<>& viz_input_token) = 0;
 
  protected:
   virtual ~InputTokenForwarder() = default;

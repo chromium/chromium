@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -42,10 +43,12 @@ DeviceDisablingManager::Observer::~Observer() = default;
 DeviceDisablingManager::Delegate::~Delegate() = default;
 
 DeviceDisablingManager::DeviceDisablingManager(
+    PrefService* local_state,
     Delegate* delegate,
     CrosSettings* cros_settings,
     user_manager::UserManager* user_manager)
-    : delegate_(delegate),
+    : local_state_(CHECK_DEREF(local_state)),
+      delegate_(delegate),
       browser_policy_connector_(
           g_browser_process->platform_part()->browser_policy_connector_ash()),
       cros_settings_(cros_settings),
@@ -142,8 +145,7 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
   // Update the enrollment domain.
   enrollment_domain_.clear();
   const std::string* maybe_enrollment_domain =
-      g_browser_process->local_state()
-          ->GetDict(prefs::kServerBackedDeviceState)
+      local_state_->GetDict(prefs::kServerBackedDeviceState)
           .FindString(policy::kDeviceStateManagementDomain);
   enrollment_domain_ =
       maybe_enrollment_domain ? *maybe_enrollment_domain : std::string();
@@ -154,8 +156,7 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
 
   // Update the disabled message.
   const std::string* maybe_disabled_message =
-      g_browser_process->local_state()
-          ->GetDict(prefs::kServerBackedDeviceState)
+      local_state_->GetDict(prefs::kServerBackedDeviceState)
           .FindString(policy::kDeviceStateDisabledMessage);
   std::string disabled_message =
       maybe_disabled_message ? *maybe_disabled_message : std::string();

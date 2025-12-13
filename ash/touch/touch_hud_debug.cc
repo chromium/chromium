@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -230,9 +232,8 @@ class TouchHudCanvas : public views::View {
     const gfx::Point& location = point.location;
     SkScalar x = SkIntToScalar(location.x());
     SkScalar y = SkIntToScalar(location.y());
-    SkPoint last;
-    if (!paths_[trace_index].getLastPt(&last) || x != last.x() ||
-        y != last.y()) {
+    std::optional<SkPoint> last = paths_[trace_index].getLastPt();
+    if (!last || x != last->x() || y != last->y()) {
       paths_[trace_index].addCircle(x, y, SkIntToScalar(kPointRadius));
       SchedulePaint();
     }
@@ -244,14 +245,14 @@ class TouchHudCanvas : public views::View {
       if (paths_[i].countPoints() == 0)
         continue;
       flags_.setColor(colors_[i]);
-      canvas->DrawPath(paths_[i], flags_);
+      canvas->DrawPath(paths_[i].snapshot(), flags_);
     }
   }
 
   cc::PaintFlags flags_;
 
   const raw_ref<const TouchLog, DanglingUntriaged> touch_log_;
-  std::array<SkPath, kMaxPaths> paths_;
+  std::array<SkPathBuilder, kMaxPaths> paths_;
   std::array<SkColor, kMaxPaths> colors_;
 
   int scale_;

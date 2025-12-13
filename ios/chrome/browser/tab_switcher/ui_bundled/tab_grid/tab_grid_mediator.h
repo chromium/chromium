@@ -33,8 +33,6 @@ class PrefService;
 @property(nonatomic, weak) id<TabGridPageMutator> incognitoPageMutator;
 // Mutator for Tab Groups.
 @property(nonatomic, weak) id<TabGridPageMutator> tabGroupsPageMutator;
-// Mutator for remote Tabs.
-@property(nonatomic, weak) id<TabGridPageMutator> remotePageMutator;
 
 // Mutator to handle toolbars modification.
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
@@ -51,7 +49,7 @@ class PrefService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Set the active page (incognito, regular or remote).
+// Set the active page (incognito, regular, or tab groups).
 - (void)setActivePage:(TabGridPage)page;
 // Stops mediating and disconnects from backend models.
 - (void)disconnect;

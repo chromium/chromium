@@ -10,5 +10,5 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 @FunctionalInterface
 public interface SelfFreezeCallback {
-    public void onSelfFreeze();
+    void onSelfFreeze();
 }

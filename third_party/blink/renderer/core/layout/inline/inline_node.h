@@ -183,7 +183,7 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   bool IsNGShapeCacheAllowed(const String&,
                              const Font*,
                              const InlineItems&,
-                             ShapeResultSpacing<String>&) const;
+                             ShapeResultSpacing&) const;
 
   InlineNodeData* MutableData() const {
     return To<LayoutBlockFlow>(box_.Get())->GetInlineNodeData();

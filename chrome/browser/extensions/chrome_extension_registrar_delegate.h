@@ -94,7 +94,7 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   // Called when reloading an unpacked extension fails.
   void OnUnpackedReloadFailure(const Extension* extension,
                                const base::FilePath& file_path,
-                               const std::string& error);
+                               const std::u16string& error);
 
   void RecordInstallHistograms(const Extension* extension);
 

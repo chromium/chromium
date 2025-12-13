@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/whats_new/ui/data_source/whats_new_data_source.h"
 
 #import "base/base_paths.h"
-#import "base/files/file_util.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/gtest_util.h"

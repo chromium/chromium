@@ -9,9 +9,12 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -34,13 +37,13 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     auto path = base::FilePath(FILE_PATH_LITERAL("browsing_data"));
-    url_a_ = ui_test_utils::GetTestUrl(
+    url_a_ = chrome_test_utils::GetTestUrl(
         path, base::FilePath(FILE_PATH_LITERAL("a.html")));
-    url_b_ = ui_test_utils::GetTestUrl(
+    url_b_ = chrome_test_utils::GetTestUrl(
         path, base::FilePath(FILE_PATH_LITERAL("b.html")));
-    url_c_ = ui_test_utils::GetTestUrl(
+    url_c_ = chrome_test_utils::GetTestUrl(
         path, base::FilePath(FILE_PATH_LITERAL("c.html")));
-    url_d_ = ui_test_utils::GetTestUrl(
+    url_d_ = chrome_test_utils::GetTestUrl(
         path, base::FilePath(FILE_PATH_LITERAL("d.html")));
     about_blank_ = GURL("about:blank");
   }
@@ -64,12 +67,11 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
   }
 
   Browser* AddBrowser(Browser* browser, const std::vector<GURL>& urls) {
-    ui_test_utils::BrowserChangeObserver new_browser_observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ui_test_utils::NavigateToURLWithDisposition(
         browser, urls[0], WindowOpenDisposition::NEW_WINDOW,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-    Browser* new_browser = new_browser_observer.Wait();
+    Browser* new_browser = browser_created_observer.Wait();
 #if BUILDFLAG(IS_MAC)
     content::HandleMissingKeyWindow();
 #endif
@@ -86,14 +88,18 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
 
   std::vector<GURL> GetEntries() {
     std::vector<GURL> urls;
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      for (int j = 0; j < browser->tab_strip_model()->count(); j++) {
-        content::NavigationController* controller =
-            &browser->tab_strip_model()->GetWebContentsAt(j)->GetController();
-        for (int i = 0; i < controller->GetEntryCount(); i++)
-          urls.push_back(controller->GetEntryAtIndex(i)->GetURL());
-      }
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&urls](BrowserWindowInterface* browser) {
+          TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+          for (int j = 0; j < tab_strip_model->count(); j++) {
+            content::NavigationController* const controller =
+                &tab_strip_model->GetWebContentsAt(j)->GetController();
+            for (int i = 0; i < controller->GetEntryCount(); i++) {
+              urls.push_back(controller->GetEntryAtIndex(i)->GetURL());
+            }
+          }
+          return true;
+        });
     return urls;
   }
 
@@ -151,15 +157,15 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, AddTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, AddWindow) {
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   AddBrowser(browser(), {url_a_, url_b_});
-  EXPECT_EQ(2U, BrowserList::GetInstance()->size());
-  ExpectEntries({about_blank_, url_a_, url_b_}, GetEntries());
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+  ExpectEntries({url_a_, url_b_, about_blank_}, GetEntries());
 
   AddBrowser(browser(), {url_c_, url_d_});
-  EXPECT_EQ(3U, BrowserList::GetInstance()->size());
-  ExpectEntries({about_blank_, url_a_, url_b_, url_c_, url_d_}, GetEntries());
+  EXPECT_EQ(3U, chrome::GetTotalBrowserCount());
+  ExpectEntries({url_c_, url_d_, url_a_, url_b_, about_blank_}, GetEntries());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, GoBack) {
@@ -282,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, TwoWindowsDeletion) {
   browsing_data::RemoveNavigationEntries(profile(),
                                          DeletionInfo::ForAllHistory());
 
-  ExpectEntries({url_b_, url_d_}, GetEntries());
+  ExpectEntries({url_d_, url_b_}, GetEntries());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, GoBackAndDelete) {

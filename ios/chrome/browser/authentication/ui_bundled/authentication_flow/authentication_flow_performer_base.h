@@ -25,7 +25,7 @@ enum class AccessPoint;
 
 // Completes the post-signin actions. In most cases the action is showing a
 // snackbar confirming sign-in with `identity` and an undo button to sign out
-// the user.
+// the user. The browser must be regular.
 void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
                                id<SystemIdentity> identity,
                                Browser* browser,

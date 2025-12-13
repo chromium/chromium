@@ -101,7 +101,7 @@ where
     K1: ZeroMapKV<'a> + ?Sized + Ord,
     V: ZeroMapKV<'a> + ?Sized,
 {
-    #[allow(clippy::type_complexity)] // it's a marker type, complexity doesn't matter
+    #[expect(clippy::type_complexity)] // it's a marker type, complexity doesn't matter
     marker: PhantomData<fn() -> (&'a K0::OwnedType, &'a K1::OwnedType, &'a V::OwnedType)>,
 }
 
@@ -172,7 +172,6 @@ struct TupleVecMap<K1, V> {
 }
 
 struct TupleVecMapVisitor<K1, V> {
-    #[allow(clippy::type_complexity)] // it's a marker type, complexity doesn't matter
     marker: PhantomData<fn() -> (K1, V)>,
 }
 
@@ -355,12 +354,20 @@ mod test {
     use crate::map2d::{ZeroMap2d, ZeroMap2dBorrowed};
 
     #[derive(serde::Serialize, serde::Deserialize)]
+    #[allow(
+        dead_code,
+        reason = "We are testing that these types can be deserialized, and Tests compatibility of custom impl with Serde derive."
+    )]
     struct DeriveTest_ZeroMap2d<'data> {
         #[serde(borrow)]
         _data: ZeroMap2d<'data, u16, str, [u8]>,
     }
 
     #[derive(serde::Serialize, serde::Deserialize)]
+    #[allow(
+        dead_code,
+        reason = "We are testing that these types can be deserialized, and Tests compatibility of custom impl with Serde derive."
+    )]
     struct DeriveTest_ZeroMap2dBorrowed<'data> {
         #[serde(borrow)]
         _data: ZeroMap2dBorrowed<'data, u16, str, [u8]>,

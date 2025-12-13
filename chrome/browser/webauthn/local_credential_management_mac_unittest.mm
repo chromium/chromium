@@ -10,11 +10,11 @@
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
-#include "crypto/apple_keychain_v2.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,7 +37,7 @@ class LocalCredentialManagementTest : public testing::Test {
       .keychain_access_group = "test-keychain-access-group",
       .metadata_secret = "TestMetadataSecret"};
   LocalCredentialManagementMac local_cred_man_{config_};
-  crypto::ScopedFakeAppleKeychainV2 keychain_{config_.keychain_access_group};
+  crypto::apple::ScopedFakeKeychainV2 keychain_{config_.keychain_access_group};
   device::fido::mac::TouchIdCredentialStore store_{config_};
 };
 
@@ -172,7 +172,7 @@ TEST_F(LocalCredentialManagementTest, EditUnknownCredential) {
   EXPECT_FALSE(future.Get());
 }
 
-class ScopedMockKeychain : crypto::AppleKeychainV2 {
+class ScopedMockKeychain : crypto::apple::KeychainV2 {
  public:
   ScopedMockKeychain() { SetInstanceOverride(this); }
   ~ScopedMockKeychain() override { ClearInstanceOverride(); }

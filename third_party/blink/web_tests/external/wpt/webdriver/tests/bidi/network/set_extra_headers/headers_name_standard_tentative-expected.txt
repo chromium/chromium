@@ -1,0 +1,33 @@
+This is a wdspec test.
+[FAIL] test_set_standard_headers[fetch-referer-some nonsense value]
+  KeyError: 'referer'
+[FAIL] test_set_standard_headers[fetch-x-unicode-value-\\u4f60\\u597d\\u4e16\\u754c]
+  AssertionError: assert ['????'] == ['你好世界']
+[FAIL] test_set_standard_headers[fetch-host-some nonsense value]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
+[FAIL] test_set_standard_headers[fetch-host-example.com]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
+[FAIL] test_set_standard_headers[fetch-keep-alive-some nonsense value]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
+[FAIL] test_set_standard_headers[fetch-keep-alive-timeout=5, max=200]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
+[FAIL] test_set_standard_headers[fetch-proxy-custom-header-some nonsense value]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
+[FAIL] test_set_standard_headers[navigation-referer-some nonsense value]
+  KeyError: 'referer'
+[FAIL] test_set_standard_headers[navigation-accept-application/json]
+  AssertionError: assert ['text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7'] == ['application/json']
+[FAIL] test_set_standard_headers[navigation-accept-some nonsense value]
+  AssertionError: assert ['text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7'] == ['some nonsense value']
+[FAIL] test_set_standard_headers[navigation-host-some nonsense value]
+  webdriver.bidi.error.UnknownErrorException: unknown error (net::ERR_INVALID_ARGUMENT)
+[FAIL] test_set_standard_headers[navigation-host-example.com]
+  webdriver.bidi.error.UnknownErrorException: unknown error (net::ERR_INVALID_ARGUMENT)
+[FAIL] test_set_standard_headers[navigation-keep-alive-some nonsense value]
+  webdriver.bidi.error.UnknownErrorException: unknown error (net::ERR_INVALID_ARGUMENT)
+[FAIL] test_set_standard_headers[navigation-keep-alive-timeout=5, max=200]
+  webdriver.bidi.error.UnknownErrorException: unknown error (net::ERR_INVALID_ARGUMENT)
+[FAIL] test_set_standard_headers[navigation-proxy-custom-header-some nonsense value]
+  webdriver.bidi.error.UnknownErrorException: unknown error (net::ERR_INVALID_ARGUMENT)
+Harness: the test ran to completion.
+

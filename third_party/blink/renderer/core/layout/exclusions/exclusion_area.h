@@ -95,9 +95,6 @@ struct CORE_EXPORT ExclusionArea final
   const Member<const ExclusionShapeData> shape_data;
 
   bool operator==(const ExclusionArea& other) const;
-  bool operator!=(const ExclusionArea& other) const {
-    return !(*this == other);
-  }
 };
 
 using ExclusionAreaPtrArray = HeapVector<Member<const ExclusionArea>>;

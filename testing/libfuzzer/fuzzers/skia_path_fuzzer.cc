@@ -33,8 +33,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   // In this case, we specifically don't want to include kDone_Verb.
-  SkPath path;
-  BuildPath(&data, &size, &path, SkPath::Verb::kClose_Verb);
+  const SkPath path = BuildPath(&data, &size, SkPath::Verb::kClose_Verb);
 
   // Try a few potentially interesting things with our path.
   path.contains(a, b);

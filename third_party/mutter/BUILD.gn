@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/mutter/visibility.gni")
+
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
 import("//third_party/wayland/wayland_protocol.gni")
@@ -78,10 +80,6 @@ pkg_config("xkbcommon") {
   packages = [ "xkbcommon" ]
 }
 
-wayland_protocol("color_management_protocol") {
-  sources = [ "src/src/wayland/protocol/color-management-v1.xml" ]
-}
-
 # TODO(crbug.com/396647882) Remove once wayland-protocols is rolled
 wayland_protocol("gtk_shell_protocol") {
   sources = [ "src/src/wayland/protocol/gtk-shell.xml" ]
@@ -104,6 +102,10 @@ wayland_protocol("fifo_protocol") {
 
 wayland_protocol("session_management_protocol") {
   sources = [ "src/src/wayland/protocol/session-management-v1.xml" ]
+}
+
+wayland_protocol("color_management_protocol") {
+  sources = [ "src/src/wayland/protocol/color-management-v1.xml" ]
 }
 
 # TODO(crbug.com/396647882) Remove once wayland-protocols is rolled
@@ -206,7 +208,7 @@ source_set("mtk") {
   public_configs = [ ":mtk_public_config" ]
 
   public_deps = [
-    "//third_party/glib:glib",
+    "//third_party/glib",
     "//third_party/glib:gobject",
   ]
 }
@@ -369,7 +371,6 @@ source_set("cogl") {
     "src/cogl/cogl/cogl-depth-state.c",
     "src/cogl/cogl/cogl-display-private.h",
     "src/cogl/cogl/cogl-display.c",
-    "src/cogl/cogl/cogl-display.h",
     "src/cogl/cogl/cogl-dma-buf-handle.c",
     "src/cogl/cogl/cogl-driver-private.h",
     "src/cogl/cogl/cogl-driver.c",
@@ -439,7 +440,6 @@ source_set("cogl") {
     "src/cogl/cogl/cogl-rectangle-map.h",
     "src/cogl/cogl/cogl-renderer-private.h",
     "src/cogl/cogl/cogl-renderer.c",
-    "src/cogl/cogl/cogl-renderer.h",
     "src/cogl/cogl/cogl-sampler-cache-private.h",
     "src/cogl/cogl/cogl-sampler-cache.c",
     "src/cogl/cogl/cogl-scanout.c",
@@ -514,7 +514,13 @@ source_set("clutter") {
   ]
 
   # non-literal string used in clutter-main.c:651
-  cflags_c = [ "-Wno-format-nonliteral" ]
+  cflags_c = [
+    "-Wno-format-nonliteral",
+
+    # We get "error: unused function" for unused debugging functions like
+    # clutter_frame_clock_state_to_string() in clutter-frame-clock.c:183
+    "-Wno-unused-function",
+  ]
 
   include_dirs = [ "include/clutter" ]
 
@@ -791,6 +797,7 @@ source_set("libmutter") {
 
   defines = [
     "G_LOG_DOMAIN=\"libmutter\"",
+    "ATK_LIVE_POLITE=0",
 
     # TODO(crbug.com/396647882) change the upstream usage
     # in src/backends/meta-monitor-manager-dummy.c ?
@@ -809,6 +816,10 @@ source_set("libmutter") {
     # meta-render-device-surfaceless.c:54
     "-Wno-non-literal-null-conversion",
 
+    # format specifies type 'char *' but the argument has type 'int'
+    # in meta-launcher.c:454
+    "-Wno-format",
+
     # TODO(crbug.com/396647882) remove this temporary measure to build with
     # missing gbm functions in sysroot gbm package.
     "-Wno-int-conversion",
@@ -825,6 +836,8 @@ source_set("libmutter") {
     "meta-private-enum-types.c",
 
     # generated dbus sources
+    "data/meta-dbus-a11y.c",
+    "data/meta-dbus-a11y.h",
     "data/meta-dbus-debug-control.c",
     "data/meta-dbus-debug-control.h",
     "data/meta-dbus-display-config.c",
@@ -903,6 +916,8 @@ source_set("libmutter") {
     "src/src/backends/edid-parse.c",
     "src/src/backends/edid.h",
     "src/src/backends/gsm-inhibitor-flag.h",
+    "src/src/backends/meta-a11y-manager.c",
+    "src/src/backends/meta-a11y-manager.h",
     "src/src/backends/meta-backend-private.h",
     "src/src/backends/meta-backend.c",
     "src/src/backends/meta-barrier-private.h",
@@ -928,6 +943,8 @@ source_set("libmutter") {
     "src/src/backends/meta-cursor-tracker.c",
     "src/src/backends/meta-cursor.c",
     "src/src/backends/meta-cursor.h",
+    "src/src/backends/meta-dbus-access-checker.c",
+    "src/src/backends/meta-dbus-access-checker.h",
     "src/src/backends/meta-dbus-session-manager.c",
     "src/src/backends/meta-dbus-session-manager.h",
     "src/src/backends/meta-dbus-session-watcher.c",
@@ -1151,6 +1168,8 @@ source_set("libmutter") {
     "src/src/wayland/meta-wayland-color-management.c",
     "src/src/wayland/meta-wayland-color-management.h",
     "src/src/wayland/meta-wayland-commit-timing.c",
+    "src/src/wayland/meta-wayland-cursor-shape.c",
+    "src/src/wayland/meta-wayland-cursor-shape.h",
     "src/src/wayland/meta-wayland-cursor-surface.c",
     "src/src/wayland/meta-wayland-cursor-surface.h",
     "src/src/wayland/meta-wayland-data-device-primary.c",
@@ -1405,7 +1424,6 @@ source_set("libmutter") {
     "src/src/backends/native/meta-thread-impl.c",
     "src/src/backends/native/meta-thread-impl.h",
     "src/src/backends/native/meta-thread-private.h",
-    "src/src/backends/native/meta-thread-private.h",
     "src/src/backends/native/meta-thread.c",
     "src/src/backends/native/meta-thread.h",
     "src/src/backends/native/meta-virtual-input-device-native.c",
@@ -1442,7 +1460,7 @@ source_set("libmutter") {
 
   deps = [
     ":clutter",
-    ":color_management_protocol",  # Remove once wayland-protocols is rolled
+    ":color_management_protocol",
     ":commit_timing_protocol",
     ":fifo_protocol",
     ":gtk_shell_protocol",  # Remove once wayland-protocols is rolled
@@ -1456,6 +1474,7 @@ source_set("libmutter") {
     "//third_party/libgudev",
     "//third_party/libinput",
     "//third_party/wayland:wayland_server_lib",
+    "//third_party/wayland-protocols:cursor_shape_protocol",
     "//third_party/wayland-protocols:drm_lease_protocol",
     "//third_party/wayland-protocols:fractional_scale_protocol",
     "//third_party/wayland-protocols:idle_inhibit_protocol",

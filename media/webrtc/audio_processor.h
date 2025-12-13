@@ -10,8 +10,10 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -21,6 +23,7 @@
 #include "media/base/audio_push_fifo.h"
 #include "media/webrtc/audio_delay_stats_reporter.h"
 #include "media/webrtc/webrtc_features.h"
+#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing_statistics.h"
@@ -76,7 +79,9 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
       LogCallback log_callback,
       const AudioProcessingSettings& settings,
       const media::AudioParameters& input_format,
-      const media::AudioParameters& output_format);
+      const media::AudioParameters& output_format,
+      raw_ptr<const tflite::FlatBufferModel>
+          neural_residual_echo_estimator_model);
 
   // See Create() for details.
   AudioProcessor(
@@ -181,12 +186,12 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // to the highest observed value of num_preferred_channels as long as it does
   // not exceed the number of channels of the output format.
   // Called on the capture thread.
-  std::optional<double> ProcessData(const float* const* process_ptrs,
+  std::optional<double> ProcessData(base::span<const float* const> process_ptrs,
                                     int process_frames,
                                     base::TimeDelta capture_delay,
                                     double volume,
                                     int num_preferred_channels,
-                                    float* const* output_ptrs);
+                                    AudioProcessorCaptureBus* output_bus);
 
   // Used as callback from |playout_fifo_| in OnPlayoutData().
   // Called on the playout thread.

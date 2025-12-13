@@ -46,7 +46,6 @@ static_library("demo_mode") {
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/arc/auth",
-    "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/policy/core",
@@ -83,7 +82,6 @@ static_library("demo_mode") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/arc/auth",
-    "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/policy/enrollment",
   ]
 }
@@ -240,6 +238,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/login:test_support",
+    "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/ui/ash/wallpaper:test_support",
     "//chrome/common:constants",
@@ -262,6 +261,7 @@ source_set("unit_tests") {
     "//components/policy/proto",
     "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//content/test:test_support",

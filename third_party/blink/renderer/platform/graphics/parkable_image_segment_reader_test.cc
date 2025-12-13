@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+#include <cstdint>
+
 #include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
 #include "skia/ext/skia_utils_base.h"
@@ -38,8 +41,7 @@ TEST_F(ParkableImageSegmentReaderTest, NonEmpty) {
   ASSERT_EQ(pi->size(), 0u);  // ParkableImage is empty when created.
 
   pi->Append(
-      WTF::SharedBuffer::Create(base::span_with_nul_from_cstring(g_abc)).get(),
-      0);
+      SharedBuffer::Create(base::span_with_nul_from_cstring(g_abc)).get(), 0);
   ASSERT_EQ(pi->size(),
             sizeof(g_abc));  // ParkableImage is larger after Append.
 
@@ -56,11 +58,10 @@ TEST_F(ParkableImageSegmentReaderTest, Append) {
   ASSERT_EQ(pi->size(), 0u);  // ParkableImage is empty when created.
 
   const size_t shared_buffer_size = sizeof(g_123) / 2;
-  pi->Append(
-      WTF::SharedBuffer::Create(
-          base::span_with_nul_from_cstring(g_123).first(shared_buffer_size))
-          .get(),
-      0);
+  pi->Append(SharedBuffer::Create(base::span_with_nul_from_cstring(g_123).first(
+                                      shared_buffer_size))
+                 .get(),
+             0);
   ASSERT_EQ(pi->size(),
             shared_buffer_size);  // ParkableImage is larger after Append.
 
@@ -69,7 +70,7 @@ TEST_F(ParkableImageSegmentReaderTest, Append) {
   EXPECT_EQ(segment_reader->size(), shared_buffer_size);
 
   pi->Append(
-      WTF::SharedBuffer::Create(base::span_with_nul_from_cstring(g_123)).get(),
+      SharedBuffer::Create(base::span_with_nul_from_cstring(g_123)).get(),
       pi->size());
   ASSERT_EQ(pi->size(),
             sizeof(g_123));  // ParkableImage is larger after Append.
@@ -80,7 +81,7 @@ TEST_F(ParkableImageSegmentReaderTest, Append) {
 
 TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
   const size_t kDataSize = 3.5 * 4096;
-  char data[kDataSize];
+  std::array<uint8_t, kDataSize> data;
   PrepareReferenceData(data);
 
   auto shared_buffer = SharedBuffer::Create();
@@ -111,7 +112,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
 
 TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
   const size_t kDataSize = 3.5 * 4096;
-  char data[kDataSize];
+  std::array<uint8_t, kDataSize> data;
   PrepareReferenceData(data);
 
   auto shared_buffer = SharedBuffer::Create();
@@ -143,7 +144,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
 
 TEST_F(ParkableImageSegmentReaderTest, GetAsSkDataLongLived) {
   const size_t kDataSize = 3.5 * 4096;
-  char data[kDataSize];
+  std::array<uint8_t, kDataSize> data;
   PrepareReferenceData(data);
 
   auto shared_buffer = SharedBuffer::Create();
@@ -158,7 +159,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkDataLongLived) {
   segment_reader = nullptr;
   parkable_image = nullptr;
 
-  UNSAFE_TODO(EXPECT_FALSE(memcmp(data, sk_data->bytes(), kDataSize)));
+  EXPECT_EQ(base::span(data), skia::as_byte_span(*sk_data));
 }
 
 }  // namespace blink

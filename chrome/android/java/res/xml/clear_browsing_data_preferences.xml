@@ -13,7 +13,8 @@ found in the LICENSE file.
         android:key="time_period_spinner"
         android:persistent="false"
         android:title="@string/clear_browsing_data_tab_period_title"
-        app:singleLine="true" />
+        app:singleLine="true"
+        app:backgroundStyle="none"/>
 
     <org.chromium.chrome.browser.browsing_data.ClearBrowsingDataCheckBoxPreference
         android:key="clear_history_checkbox"

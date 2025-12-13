@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "url/origin.h"

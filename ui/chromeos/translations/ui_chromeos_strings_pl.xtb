@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Gatunek</translation>
 <translation id="1254593899333212300">Bezpośrednie połączenie internetowe</translation>
 <translation id="1272293450992660632">Kody PIN nie są zgodne.</translation>
+<translation id="1279040297980392566">Czekam na zakończenie skanowania. Spróbuj ponownie później</translation>
 <translation id="1280820357415527819">Szukam sieci komórkowych</translation>
 <translation id="1293556467332435079">Pliki</translation>
 <translation id="1297922636971898492">Dysk Google nie jest teraz dostępny. Gdy znów będzie można z niego korzystać, przesyłanie zostanie automatycznie wznowione.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 wybrany plik</translation>
 <translation id="3817579325494460411">Brak danych</translation>
 <translation id="3819448694985509187">Nieprawidłowy kod PIN. Pozostała 1 próba.</translation>
-<translation id="3822559385185038546">Ten serwer proxy jest wymuszony przez administratora</translation>
 <translation id="3830674330436234648">Odtwarzanie jest niedostępne</translation>
 <translation id="383652340667548381">Serbski</translation>
 <translation id="3839045880592694915">Twój operator nie pozwala na połączenie przy użyciu tego modemu. Aby dowiedzieć się więcej, skontaktuj się z operatorem.</translation>
@@ -483,7 +483,7 @@
 <translation id="4805966553127040832">Przywracam elementy (<ph name="COUNT" />)</translation>
 <translation id="4826849268470072925">Tamilski ITRANS</translation>
 <translation id="4843566743023903107">Komputery Chromebase</translation>
-<translation id="4850886885716139402">Widok</translation>
+<translation id="4850886885716139402">Wyświetl</translation>
 <translation id="485316830061041779">Niemiecki</translation>
 <translation id="4862885579661885411">Ustawienia plików</translation>
 <translation id="4867079195717347957">Kliknij, by posortować kolumnę w kolejności malejącej.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5602622065581044566">Bułgarski z klawiaturą fonetyczną</translation>
 <translation id="5605830556594064952">amerykańska klawiatura Dvoraka</translation>
+<translation id="560739212255190568">Administrator ustawił reguły zastępowania serwera proxy oraz wymusza korzystanie z tego serwera proxy</translation>
 <translation id="5618330573454123917">To jest plik na komputery Mac. Twoje urządzenie z Chrome OS go nie obsługuje. <ph name="BEGIN_LINK_HELP" />Dowiedz się więcej<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
 <translation id="5625294776298156701">Tamilski z klawiaturą Tamil99</translation>
 <translation id="5633226425545095130">Przeniesienie tego elementu spowoduje jego udostępnienie wszystkim osobom, które mogą widzieć udostępniony folder „<ph name="DESTINATION_NAME" />”.</translation>
@@ -787,7 +788,7 @@
 <translation id="7075931588889865715">Tajski z klawiaturą TIS 820-2531</translation>
 <translation id="708278670402572152">Rozłącz, by włączyć skanowanie</translation>
 <translation id="7086590977277044826">Tamilski z klawiaturą InScript</translation>
-<translation id="7088615885725309056">Starsze</translation>
+<translation id="7088615885725309056">Starsza</translation>
 <translation id="7103992300314999525">Macedoński</translation>
 <translation id="7104338189998813914">Podczas uzyskiwania dostępu do konta OneDrive wystąpił problem</translation>
 <translation id="7106346894903675391">Kup więcej miejsca...</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="8545476925160229291">Angielski (USA)</translation>
 <translation id="854655314928502177">URL autowykrywania internetowego serwera proxy</translation>
+<translation id="8547747809824590510">Administrator ustawił reguły zastępowania serwera proxy</translation>
 <translation id="8549186985808798022">Włoski</translation>
 <translation id="8551494947769799688">Łotewski</translation>
 <translation id="8560515948038859357">Kantoński</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Istnieje już plik o nazwie „<ph name="FILE_NAME" />”. Wybierz inną nazwę.</translation>
 <translation id="9046895021617826162">Łączenie nie powiodło się</translation>
 <translation id="9065512565307033593">Jeśli nie uda Ci się dokonać weryfikacji, dostęp do sieci zostanie wyłączony.</translation>
+<translation id="9079844694307518094">Administrator wymusza korzystanie z tego serwera proxy</translation>
 <translation id="908378762078012445">Rosyjski z klawiaturą fonetyczną AATSEEL</translation>
 <translation id="9086302186042011942">Synchronizuję</translation>
 <translation id="9099674669267916096">Liczba stron</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Instalacja rozpoczęła się.</translation>
 <translation id="9219103736887031265">Grafika</translation>
 <translation id="9219908252191632183">Księżycowy</translation>
+<translation id="931652069802536959">Sieć jest zablokowana przez zasadę</translation>
 <translation id="938470336146445890">Zainstaluj certyfikat użytkownika.</translation>
 <translation id="939736085109172342">Nowy folder</translation>
 <translation id="943972244133411984">Zmodyfikowany przez:</translation>

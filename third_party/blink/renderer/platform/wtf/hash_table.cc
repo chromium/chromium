@@ -25,33 +25,33 @@
 
 #include "base/synchronization/lock.h"
 
-namespace WTF {
+namespace blink {
 
 static base::Lock& HashTableStatsLock() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
   return lock;
 }
 
-HashTableStats& HashTableStats::instance() {
+HashTableStats& HashTableStats::Instance() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(HashTableStats, stats, ());
   return stats;
 }
 
-void HashTableStats::copy(const HashTableStats* other) {
-  numAccesses = other->numAccesses.load(std::memory_order_relaxed);
-  numRehashes = other->numRehashes.load(std::memory_order_relaxed);
-  numRemoves = other->numRemoves.load(std::memory_order_relaxed);
-  numReinserts = other->numReinserts.load(std::memory_order_relaxed);
+void HashTableStats::Copy(const HashTableStats& other) {
+  num_accesses = other.num_accesses.load(std::memory_order_relaxed);
+  num_rehashes = other.num_rehashes.load(std::memory_order_relaxed);
+  num_removes = other.num_removes.load(std::memory_order_relaxed);
+  num_reinserts = other.num_reinserts.load(std::memory_order_relaxed);
 
-  maxCollisions = other->maxCollisions;
-  numCollisions = other->numCollisions;
-  memcpy(collisionGraph.data(), other->collisionGraph.data(),
-         sizeof(collisionGraph));
+  max_collisions = other.max_collisions;
+  num_collisions = other.num_collisions;
+  UNSAFE_TODO(memcpy(collision_graph.data(), other.collision_graph.data(),
+                     sizeof(collision_graph)));
 }
 
-void HashTableStats::recordCollisionAtCount(int count) {
+void HashTableStats::RecordCollisionAtCount(int count) {
   // The global hash table singleton needs to be atomically updated.
-  if (this == &instance()) {
+  if (this == &Instance()) {
     base::AutoLock locker(HashTableStatsLock());
     RecordCollisionAtCountWithoutLock(count);
   } else {
@@ -60,15 +60,16 @@ void HashTableStats::recordCollisionAtCount(int count) {
 }
 
 void HashTableStats::RecordCollisionAtCountWithoutLock(int count) {
-  if (count > maxCollisions)
-    maxCollisions = count;
-  numCollisions++;
-  collisionGraph[count]++;
+  if (count > max_collisions) {
+    max_collisions = count;
+  }
+  ++num_collisions;
+  ++collision_graph[count];
 }
 
 void HashTableStats::DumpStats() {
   // Lock the global hash table singleton while dumping.
-  if (this == &instance()) {
+  if (this == &Instance()) {
     base::AutoLock locker(HashTableStatsLock());
     DumpStatsWithoutLock();
   } else {
@@ -79,26 +80,26 @@ void HashTableStats::DumpStats() {
 void HashTableStats::DumpStatsWithoutLock() {
   std::stringstream collision_str;
   collision_str << std::fixed << std::setprecision(2);
-  for (int i = 1; i <= maxCollisions; i++) {
-    collision_str << "      " << collisionGraph[i] << " lookups with exactly "
+  for (int i = 1; i <= max_collisions; ++i) {
+    collision_str << "      " << collision_graph[i] << " lookups with exactly "
                   << i << " collisions ("
-                  << (100.0 * (collisionGraph[i] - collisionGraph[i + 1]) /
-                      numAccesses)
-                  << "% , " << (100.0 * collisionGraph[i] / numAccesses)
+                  << (100.0 * (collision_graph[i] - collision_graph[i + 1]) /
+                      num_accesses)
+                  << "% , " << (100.0 * collision_graph[i] / num_accesses)
                   << "% with this many or more)\n";
   }
 
   DLOG(INFO) << std::fixed << std::setprecision(2)
-             << "WTF::HashTable statistics:\n"
-             << "    " << numAccesses << " accesses\n"
-             << "    " << numCollisions << " total collisions, average "
-             << (1.0 * (numAccesses + numCollisions) / numAccesses)
+             << "blink::HashTable statistics:\n"
+             << "    " << num_accesses << " accesses\n"
+             << "    " << num_collisions << " total collisions, average "
+             << (1.0 * (num_accesses + num_collisions) / num_accesses)
              << " probes per access\n"
-             << "    longest collision chain: " << maxCollisions << "\n"
-             << collision_str.str() << "    " << numRehashes << " rehashes\n"
-             << "    " << numReinserts << " reinserts";
+             << "    longest collision chain: " << max_collisions << "\n"
+             << collision_str.str() << "    " << num_rehashes << " rehashes\n"
+             << "    " << num_reinserts << " reinserts";
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif

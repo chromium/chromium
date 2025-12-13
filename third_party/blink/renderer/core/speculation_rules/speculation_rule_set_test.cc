@@ -810,6 +810,56 @@ TEST_F(SpeculationRuleSetTest,
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
 }
 
+// Test that only prerender rule supports "form-submission".
+TEST_F(SpeculationRuleSetTest, RulesWithFormSubmission) {
+  auto* rule_set =
+      CreateRuleSet(R"({
+        "prefetch": [{
+          "urls": ["https://example.com/index2.html"],
+          "form_submission": true
+        }],
+        "prefetch_with_subresources": [{
+          "urls": ["https://example.com/index2.html"],
+          "form_submission": true
+        }],
+        "prerender": [{
+          "urls": ["https://example.com/index2.html"],
+          "form_submission": true
+        }],
+        "prerender_until_script": [{
+          "urls": ["https://example.com/index2.html"],
+          "form_submission": true
+        }]
+      })",
+                    KURL("https://example.com/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_EQ(rule_set->error_message(),
+            "\"form_submission\" may not be set for prefetch rules.");
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(
+      rule_set->prerender_rules(),
+      ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
+  EXPECT_THAT(
+      rule_set->prerender_until_script_rules(),
+      ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
+}
+
+TEST_F(SpeculationRuleSetTest, ParseFormSubmission) {
+  auto* rule_set = CreateRuleSet(
+      R"({
+        "prerender": [{
+          "urls": ["https://example.com/index2.html"],
+          "form_submission": true
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_EQ(rule_set->prerender_rules().size(), 1);
+  EXPECT_EQ(rule_set->prerender_rules()[0]->form_submission().value(), true);
+}
+
 TEST_F(SpeculationRuleSetTest, ReferrerPolicy) {
   auto* rule_set =
       CreateRuleSet(R"({
@@ -914,10 +964,9 @@ void PropagateRulesToStubSpeculationHost(
   frame.GetSettings()->SetScriptEnabled(true);
 
   auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
-  broker.SetBinderForTesting(
-      mojom::blink::SpeculationHost::Name_,
-      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
-                         WTF::Unretained(&speculation_host)));
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_,
+                             BindRepeating(&StubSpeculationHost::BindUnsafe,
+                                           Unretained(&speculation_host)));
 
   base::RunLoop run_loop;
   speculation_host.SetDoneClosure(run_loop.QuitClosure());
@@ -952,10 +1001,9 @@ testing::AssertionResult NoRulesPropagatedToStubSpeculationHost(
     IncludesStyleUpdate includes_style_update = IncludesStyleUpdate{true}) {
   LocalFrame& frame = page_holder.GetFrame();
   auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
-  broker.SetBinderForTesting(
-      mojom::blink::SpeculationHost::Name_,
-      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
-                         WTF::Unretained(&speculation_host)));
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_,
+                             BindRepeating(&StubSpeculationHost::BindUnsafe,
+                                           Unretained(&speculation_host)));
 
   bool done_was_called = false;
 
@@ -1210,18 +1258,18 @@ TEST_F(SpeculationRuleSetTest, RemoveInMicrotask) {
     ::testing::InSequence sequence;
     EXPECT_CALL(mock_callback, Run(::testing::SizeIs(2)));
     EXPECT_CALL(mock_callback, Run(::testing::SizeIs(1)));
-    EXPECT_CALL(mock_callback, Run(::testing::SizeIs(2)))
-        .WillOnce(::testing::Invoke([&]() { run_loop.Quit(); }));
+    EXPECT_CALL(mock_callback, Run(::testing::SizeIs(2))).WillOnce([&]() {
+      run_loop.Quit();
+    });
   }
   speculation_host.SetCandidatesUpdatedCallback(mock_callback.Get());
 
   LocalFrame& frame = page_holder.GetFrame();
   frame.GetSettings()->SetScriptEnabled(true);
   auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
-  broker.SetBinderForTesting(
-      mojom::blink::SpeculationHost::Name_,
-      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
-                         WTF::Unretained(&speculation_host)));
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_,
+                             BindRepeating(&StubSpeculationHost::BindUnsafe,
+                                           Unretained(&speculation_host)));
 
   // First simulated task adds the rule sets.
   InsertSpeculationRules(page_holder.GetDocument(),
@@ -3819,8 +3867,9 @@ TEST_F(DocumentRulesTest, RemoveForcesStyleUpdate) {
   {
     ::testing::InSequence sequence;
     EXPECT_CALL(mock_callback, Run(::testing::SizeIs(2)));
-    EXPECT_CALL(mock_callback, Run(::testing::SizeIs(3)))
-        .WillOnce(::testing::Invoke([&]() { run_loop.Quit(); }));
+    EXPECT_CALL(mock_callback, Run(::testing::SizeIs(3))).WillOnce([&]() {
+      run_loop.Quit();
+    });
   }
   speculation_host.SetCandidatesUpdatedCallback(mock_callback.Get());
 
@@ -3828,10 +3877,9 @@ TEST_F(DocumentRulesTest, RemoveForcesStyleUpdate) {
   Document& doc = page_holder.GetDocument();
   frame.GetSettings()->SetScriptEnabled(true);
   auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
-  broker.SetBinderForTesting(
-      mojom::blink::SpeculationHost::Name_,
-      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
-                         WTF::Unretained(&speculation_host)));
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_,
+                             BindRepeating(&StubSpeculationHost::BindUnsafe,
+                                           Unretained(&speculation_host)));
 
   for (StringView path : {"/baz", "/quux"}) {
     AddAnchor(*doc.body(), "https://example.com" + path);
@@ -3882,18 +3930,18 @@ TEST_F(DocumentRulesTest, RemoveWhileWaitingForStyle) {
   ::testing::StrictMock<base::MockCallback<base::RepeatingCallback<void(
       const Vector<mojom::blink::SpeculationCandidatePtr>&)>>>
       mock_callback;
-  EXPECT_CALL(mock_callback, Run(::testing::SizeIs(1)))
-      .WillOnce(::testing::Invoke([&]() { run_loop.Quit(); }));
+  EXPECT_CALL(mock_callback, Run(::testing::SizeIs(1))).WillOnce([&]() {
+    run_loop.Quit();
+  });
   speculation_host.SetCandidatesUpdatedCallback(mock_callback.Get());
 
   LocalFrame& frame = page_holder.GetFrame();
   Document& doc = page_holder.GetDocument();
   frame.GetSettings()->SetScriptEnabled(true);
   auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
-  broker.SetBinderForTesting(
-      mojom::blink::SpeculationHost::Name_,
-      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
-                         WTF::Unretained(&speculation_host)));
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_,
+                             BindRepeating(&StubSpeculationHost::BindUnsafe,
+                                           Unretained(&speculation_host)));
   auto event_loop = frame.DomWindow()->GetAgent()->event_loop();
 
   // First, add the rule set and matching links. Style is not yet clean for the

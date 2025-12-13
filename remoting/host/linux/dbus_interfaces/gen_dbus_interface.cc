@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <gio/gio.h>
 #include <glib.h>
 
@@ -17,6 +12,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
@@ -76,7 +72,7 @@ void WriteParameters(std::ostream& output, GDBusArgInfo** args) {
     return;
   }
   output << "      \"(\"" << std::endl;
-  for (GDBusArgInfo** arg = args; *arg != nullptr; ++arg) {
+  for (GDBusArgInfo** arg = args; *arg != nullptr; UNSAFE_TODO(++arg)) {
     output << "      \"" << (**arg).signature << "\"  // " << (**arg).name
            << std::endl;
   }
@@ -134,15 +130,15 @@ int main(int argc, char* argv[]) {
   output << "#include \"remoting/host/linux/gvariant_type.h\"" << std::endl
          << std::endl;
 
-  output << "namespace remoting {" << std::endl << std::endl;
-
   for (GDBusInterfaceInfo** interface = node->interfaces;
-       interface != nullptr && *interface != nullptr; ++interface) {
+       interface != nullptr && *interface != nullptr;
+       UNSAFE_TODO(++interface)) {
     std::string namespace_name = Namespace((**interface).name);
-    output << "namespace " << namespace_name << " {" << std::endl << std::endl;
+    output << "namespace remoting::" << namespace_name << " {" << std::endl
+           << std::endl;
 
     for (GDBusMethodInfo** method = (**interface).methods;
-         method != nullptr && *method != nullptr; ++method) {
+         method != nullptr && *method != nullptr; UNSAFE_TODO(++method)) {
       output << "// method" << std::endl;
       output << "struct " << (**method).name << " {" << std::endl;
       output << "  static constexpr char kInterfaceName[] = \""
@@ -159,7 +155,7 @@ int main(int argc, char* argv[]) {
     }
 
     for (GDBusPropertyInfo** property = (**interface).properties;
-         property != nullptr && *property != nullptr; ++property) {
+         property != nullptr && *property != nullptr; UNSAFE_TODO(++property)) {
       output << "// property" << std::endl;
       output << "struct " << (**property).name << " {" << std::endl;
       output << "  static constexpr char kInterfaceName[] = \""
@@ -182,7 +178,7 @@ int main(int argc, char* argv[]) {
     }
 
     for (GDBusSignalInfo** signal = (**interface).signals;
-         signal != nullptr && *signal != nullptr; ++signal) {
+         signal != nullptr && *signal != nullptr; UNSAFE_TODO(++signal)) {
       output << "// signal" << std::endl;
       output << "struct " << (**signal).name << " {" << std::endl;
       output << "  static constexpr char kInterfaceName[] = \""
@@ -194,10 +190,9 @@ int main(int argc, char* argv[]) {
       output << "  };" << std::endl;
       output << "};" << std::endl << std::endl;
     }
-    output << "}  // namespace " << namespace_name << std::endl << std::endl;
+    output << "}  // namespace remoting::" << namespace_name << std::endl
+           << std::endl;
   }
-
-  output << "}  // namespace remoting" << std::endl << std::endl;
 
   output << "#endif  // " << header_guard << std::endl;
 

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_option_item_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -79,22 +80,22 @@ constexpr const CGFloat kSubtitleBottomMargin = 17;
   self.headerImageShadowInset = kHeaderShadowInset;
   self.noBackgroundHeaderImageTopMarginPercentage = kHeaderTopMarginPercentage;
   self.headerImageBottomMargin = kHeaderBottomMargin;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* logo = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
 #else
   UIImage* logo = CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   self.headerImage = logo;
 
   self.titleHorizontalMargin = 0;
   self.subtitleBottomMargin = kSubtitleBottomMargin;
   self.titleText = l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_TITLE);
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_VALIDATE);
   self.subtitleText =
       l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_IPH_SUBTITLE);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_DISCARD);
 
   [_topAddressBar addTarget:self

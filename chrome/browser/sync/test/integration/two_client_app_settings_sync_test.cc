@@ -76,6 +76,11 @@ class TwoClientAppSettingsSyncTest
     // TODO(crbug.com/40724949): rewrite tests to not use verifier.
     return true;
   }
+
+  // APP_SETTINGS is only supported with Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 // For three independent extensions:
@@ -102,9 +107,6 @@ testing::AssertionResult StartWithSameSettingsTest(
   }
 
   if (!test()->SetupSync()) {
-    return testing::AssertionFailure();
-  }
-  if (!test()->AwaitQuiescence()) {
     return testing::AssertionFailure();
   }
   if (!AllExtensionSettingsSameAsVerifier()) {
@@ -160,9 +162,6 @@ testing::AssertionResult StartWithDifferentSettingsTest(
   }
 
   if (!test()->SetupSync()) {
-    return testing::AssertionFailure();
-  }
-  if (!test()->AwaitQuiescence()) {
     return testing::AssertionFailure();
   }
   if (!AllExtensionSettingsSameAsVerifier()) {
@@ -233,6 +232,11 @@ class TwoClientAppSettingsOsSyncTest : public SyncTest {
   bool UseVerifier() override {
     // TODO(crbug.com/40724949): rewrite tests to not use verifier.
     return true;
+  }
+
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
   }
 };
 

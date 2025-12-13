@@ -52,7 +52,7 @@ source_set("prefs") {
     "//ash/constants",
     "//base",
     "//chromeos/ash/services/multidevice_setup/public/mojom",
-    "//components/prefs:prefs",
+    "//components/prefs",
   ]
 }
 

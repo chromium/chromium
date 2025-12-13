@@ -2048,7 +2048,10 @@ TEST(Btree, ExtractAndGetNextEndIter) {
 
 TEST(Btree, ExtractDoesntCauseExtraMoves) {
 #ifdef _MSC_VER
-  GTEST_SKIP() << "This test fails on MSVC.";
+  // This conditional is to avoid an unreachable code warning.
+  if (_MSC_VER > 0) {
+    GTEST_SKIP() << "This test fails on MSVC.";
+  }
 #endif
 
   using Set = absl::btree_set<MovableOnlyInstance>;

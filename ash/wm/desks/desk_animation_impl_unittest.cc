@@ -21,7 +21,7 @@
 #include "base/barrier_closure.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -146,8 +146,8 @@ TEST_F(DeskActivationAnimationTest, CloseWindowDuringAnimation) {
 // Tests that if a fast swipe is detected, we will still wait for the ending
 // screenshot to be taken and animated to.
 TEST_F(DeskActivationAnimationTest, AnimatingAfterFastSwipe) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
@@ -230,8 +230,8 @@ class OverviewDeskNavigationTest : public AshTestBase {
 // Tests when we switch between desks in overview that the desk switch animation
 // doesn't exit overview.
 TEST_F(OverviewDeskNavigationTest, SwitchDesksWithoutExitingOverview) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   EnterOverview();
   auto* overview_controller = Shell::Get()->overview_controller();
@@ -297,8 +297,8 @@ TEST_F(OverviewDeskNavigationTest, ClickingMiniViewExitsOverview) {
 // Tests that overview is not exited when a short desk swipe is detected during
 // a desk activation animation.
 TEST_F(OverviewDeskNavigationTest, ShortSwipeStaysInOverview) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   EnterOverview();
   auto* overview_controller = Shell::Get()->overview_controller();

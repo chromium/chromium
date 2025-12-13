@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
-#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -51,7 +50,6 @@ FloatingWorkspaceServiceFactory::FloatingWorkspaceServiceFactory()
   DependsOn(DeskSyncServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
-  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   if (ash::features::IsFloatingSsoAllowed()) {
     DependsOn(ash::floating_sso::FloatingSsoServiceFactory::GetInstance());
   }
@@ -62,32 +60,20 @@ FloatingWorkspaceServiceFactory::~FloatingWorkspaceServiceFactory() = default;
 std::unique_ptr<KeyedService>
 FloatingWorkspaceServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
+    return nullptr;
+  }
   if (!user_manager::UserManager::Get()->IsPrimaryUser(
           BrowserContextHelper::Get()->GetUserByBrowserContext(context))) {
     // Floating Workspace is not supported for non-primary browser profiles.
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
-  floating_workspace_util::FloatingWorkspaceVersion version =
-      floating_workspace_util::FloatingWorkspaceVersion::kNoVersionEnabled;
-  if (floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
-    version = floating_workspace_util::FloatingWorkspaceVersion::
-        kFloatingWorkspaceV2Enabled;
-  } else if (floating_workspace_util::IsFloatingSsoEnabled(profile)) {
-    // When Floating Workspace feature is disabled, but Floating SSO is enabled,
-    // we still want to create FloatingWorkspaceService for auto-sign-out
-    // functionality.
-    // TODO(crbug.com/419508619): improve naming to avoid confusion of having
-    // FloatingWorkspaceService running when Floating Workspace is disabled as a
-    // feature.
-    version =
-        floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly;
-  }
+
   std::unique_ptr<FloatingWorkspaceService> service =
-      std::make_unique<FloatingWorkspaceService>(profile, version);
+      std::make_unique<FloatingWorkspaceService>(profile);
   service->Init(SyncServiceFactory::GetForProfile(profile),
-                DeskSyncServiceFactory::GetForProfile(profile),
-                DeviceInfoSyncServiceFactory::GetForProfile(profile));
+                DeskSyncServiceFactory::GetForProfile(profile));
   return service;
 }
 

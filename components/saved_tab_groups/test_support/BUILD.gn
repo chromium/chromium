@@ -10,10 +10,12 @@ proto_library("test_support_proto") {
   proto_in_dir = "//"
   sources = [
     "extended_saved_tab_group_specifics.proto",
-    "extended_shared_tab_group_account_data_specifics.proto",
     "extended_shared_tab_group_data_specifics.proto",
   ]
-  deps = [ "//components/sync/protocol" ]
+  deps = [
+    "//components/data_sharing:personal_collaboration_data_test_support_proto",
+    "//components/sync/protocol",
+  ]
 }
 
 source_set("test_support") {

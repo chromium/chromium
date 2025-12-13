@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace demo {
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "partition_alloc/slot_start.h"
+
 #include "partition_alloc/scheduler_loop_quarantine.h"
 
 #include "partition_alloc/extended_api.h"
@@ -81,15 +83,16 @@ class SchedulerLoopQuarantineTest : public testing::Test {
   QuarantineBranch* GetQuarantineBranch() { return branch_; }
 
   void Quarantine(void* object) {
-    auto* slot_span = internal::SlotSpanMetadata<
-        internal::MetadataKind::kReadOnly>::FromObject(object);
-    uintptr_t slot_start = GetPartitionRoot()->ObjectToSlotStart(object);
-    GetQuarantineBranch()->Quarantine(object, slot_span, slot_start);
+    internal::SlotStart slot_start = internal::SlotStart::Unchecked(object);
+    auto* slot_span = internal::SlotSpanMetadata::FromSlotStart(
+        slot_start.Untag(), GetPartitionRoot());
+    GetQuarantineBranch()->Quarantine(slot_start, slot_span);
   }
 
   size_t GetObjectSize(void* object) {
-    auto* entry_slot_span = internal::SlotSpanMetadata<
-        internal::MetadataKind::kReadOnly>::FromObject(object);
+    internal::SlotStart slot_start = internal::SlotStart::Unchecked(object);
+    auto* entry_slot_span = internal::SlotSpanMetadata::FromSlotStart(
+        slot_start.Untag(), GetPartitionRoot());
     return entry_slot_span->bucket->slot_size;
   }
 
@@ -112,6 +115,7 @@ struct SchedulerLoopQuarantineTestParamSmall {
       .branch_capacity_in_bytes = 256,
       .enable_quarantine = true,
       .enable_zapping = true,
+      .max_quarantine_size = 1024,
   };
 };
 struct SchedulerLoopQuarantineTestParamLarge {
@@ -120,6 +124,7 @@ struct SchedulerLoopQuarantineTestParamLarge {
       .branch_capacity_in_bytes = 2048,
       .enable_quarantine = true,
       .enable_zapping = true,
+      .max_quarantine_size = 1024,
   };
 };
 struct SchedulerLoopQuarantineTestParamSmallThreadBound {
@@ -128,6 +133,7 @@ struct SchedulerLoopQuarantineTestParamSmallThreadBound {
       .branch_capacity_in_bytes = 256,
       .enable_quarantine = true,
       .enable_zapping = true,
+      .max_quarantine_size = 1024,
   };
 };
 struct SchedulerLoopQuarantineTestParamLargeThreadBound {
@@ -136,6 +142,7 @@ struct SchedulerLoopQuarantineTestParamLargeThreadBound {
       .branch_capacity_in_bytes = 2048,
       .enable_quarantine = true,
       .enable_zapping = true,
+      .max_quarantine_size = 1024,
   };
 };
 
@@ -172,13 +179,13 @@ TYPED_TEST(SchedulerLoopQuarantineTest, Basic) {
 }
 
 TYPED_TEST(SchedulerLoopQuarantineTest, TooLargeAllocation) {
-  constexpr size_t kObjectSize = 1 << 26;  // 64 MiB.
-  const size_t capacity_in_bytes =
-      this->GetQuarantineBranch()->GetCapacityInBytes();
+  const size_t kThreshold =
+      std::min(this->GetConfig().max_quarantine_size,
+               this->GetConfig().branch_capacity_in_bytes);
 
-  void* object = this->GetPartitionRoot()->Alloc(kObjectSize);
-  const size_t size = this->GetObjectSize(object);
-  ASSERT_GT(size, capacity_in_bytes);
+  void* object = this->GetPartitionRoot()->Alloc(kThreshold + 1);
+  size_t size = this->GetObjectSize(object);
+  ASSERT_GT(size, kThreshold);
 
   this->Quarantine(object);
 
@@ -189,6 +196,15 @@ TYPED_TEST(SchedulerLoopQuarantineTest, TooLargeAllocation) {
   ASSERT_EQ(0u, stats.count);
   ASSERT_EQ(0u, stats.cumulative_size_in_bytes);
   ASSERT_EQ(0u, stats.cumulative_count);
+
+  // -32 to ensure it falls into a bucket with size under the threshold.
+  object = this->GetPartitionRoot()->Alloc(kThreshold - 32);
+  size = this->GetObjectSize(object);
+  ASSERT_LE(size, kThreshold);
+
+  this->Quarantine(object);
+
+  ASSERT_TRUE(this->GetQuarantineBranch()->IsQuarantinedForTesting(object));
 }
 
 TYPED_TEST(SchedulerLoopQuarantineTest, ScopedOptOut) {

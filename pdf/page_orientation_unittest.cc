@@ -9,6 +9,13 @@
 namespace chrome_pdf {
 namespace {
 
+TEST(PageOrientationTest, GetClockwiseRotationSteps) {
+  EXPECT_EQ(GetClockwiseRotationSteps(PageOrientation::kOriginal), 0);
+  EXPECT_EQ(GetClockwiseRotationSteps(PageOrientation::kClockwise90), 1);
+  EXPECT_EQ(GetClockwiseRotationSteps(PageOrientation::kClockwise180), 2);
+  EXPECT_EQ(GetClockwiseRotationSteps(PageOrientation::kClockwise270), 3);
+}
+
 TEST(PageOrientationTest, RotateClockwise) {
   EXPECT_EQ(RotateClockwise(PageOrientation::kOriginal),
             PageOrientation::kClockwise90);

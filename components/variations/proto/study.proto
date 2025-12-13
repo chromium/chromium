@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.variations";
@@ -11,14 +11,17 @@ package variations;
 
 import "layer.proto";
 
+option features.enum_type = CLOSED;
+option features.utf8_validation = NONE;
+
 // This defines the Protocol Buffer representation of a Chrome Variations study
 // as sent to clients of the Variations server.
 //
-// Next tag: 13
+// Next tag: 19
 message Study {
   // The name of the study. Should not contain spaces or special characters.
   // Ex: "my_study"
-  required string name = 1;
+  string name = 1 [features.field_presence = LEGACY_REQUIRED];
 
   // DEPRECATED: Prefer end_date instead.
   // The expiry date of the study in Unix time format. (Seconds since midnight
@@ -29,28 +32,33 @@ message Study {
   // a corresponding hardcoded field trial in the client.
   //
   // Ex: 1330893974  (corresponds to 2012-03-04 20:46:14Z)
-  optional int64 expiry_date = 3;
+  int64 expiry_date = 3;
 
   // Consistency setting for a study.
   enum Consistency {
-    SESSION = 0;  // Can't change within a session.
+    // OPEN enum type causes unknown values get preserved in the field directly,
+    // as opposed to the field defaulting to the first value. We then validate
+    // this explicitly in processed_study.cc.
+    option features.enum_type = OPEN;
+
+    SESSION = 0;    // Can't change within a session.
     PERMANENT = 1;  // Can't change for a given user.
   }
 
-  // Consistency setting for this study. Optional - defaults to SESSION.
+  // Consistency setting for this study.
   // Ex: PERMANENT
-  optional Consistency consistency = 7 [default = SESSION];
+  Consistency consistency = 7 [default = SESSION];
 
   // Optionally specifies which layer the study is a part of. A study must
   // specify both the ID of the layer and the ID(s) of the layer member(s)
-  // within that layer that the study should be constrained to.
-  optional LayerMemberReference layer = 16;
+  // within that layer to which the study should be constrained.
+  LayerMemberReference layer = 16;
 
   // Name of the experiment that gets the default experience. This experiment
   // must be included in the list below. If not specified, a generic default
   // experiment name is used.
   // Ex: "default"
-  optional string default_experiment_name = 8;
+  string default_experiment_name = 8;
 
   // Specifies under which conditions a |google_web_experiment_id| or
   // |google_web_trigger_experiment_id| is visible to Google web properties.
@@ -60,16 +68,30 @@ message Study {
     // details.
     ANY = 0;
 
-    // Only eligible requests initiated from a first-party context include the
+    // Only requests initiated from a first-party context include the
     // experiment ID.
     //
     // The following requests are considered to be from a first-party context:
     // requests initiated by (i) the browser, (ii) a Chrome internal page,
     // (iii) a main frame with a Google-owned domain, and (iv) a subframe
     // whose associated main frame has a Google-owned domain. See
-    // IsFirstPartyContext() in variations_http_headers.cc for more details.
+    // IsFirstPartyContext() in variations_http_headers.cc for details.
     FIRST_PARTY = 1;
   }
+
+  // The starting timestamp for Google web visibility, in Unix time format
+  // (seconds since epoch; midnight January 1, 1970 UTC). It specifies the date
+  // and time when Google web visibility should commence once this experiment
+  // is activated. If not set, or 0, the experiment becomes visible immediately
+  // upon activation.
+  int64 google_web_visibility_start_date = 17;
+
+  // The ending timestamp for Google web visibility, in Unix time format
+  // (seconds since epoch; midnight January 1, 1970 UTC). It specifies the date
+  // and time when Google web visibility should cease if this experiment
+  // is active. If not set, or 0, the experiment remains visible once
+  // activated.
+  int64 google_web_visibility_end_date = 18;
 
   // An experiment within the study.
   //
@@ -80,40 +102,39 @@ message Study {
     // Next tag: 3
     message Param {
       // The name of the parameter.
-      optional string name = 1;
+      string name = 1;
 
       // The value of the parameter.
-      optional string value = 2;
+      string value = 2;
     }
 
     // The name of the experiment within the study.
     // Ex: "bucketA"
-    required string name = 1;
+    string name = 1 [features.field_presence = LEGACY_REQUIRED];
 
     // The cut of the total probability taken for this experiment (the x in
     // x / N, where N is the sum of all x’s).  Ex: "50"
-    required uint32 probability_weight = 2;
+    uint32 probability_weight = 2 [features.field_presence = LEGACY_REQUIRED];
 
     // Optional id used to uniquely identify this experiment for Google web
     // properties.
-    optional uint64 google_web_experiment_id = 3;
+    uint64 google_web_experiment_id = 3;
 
     // Optional id used to allow this experiment to trigger experimental
     // behavior on Google web properties.
-    optional uint64 google_web_trigger_experiment_id = 8;
+    uint64 google_web_trigger_experiment_id = 8;
 
-    // Optional id that specifies under which conditions Google web and web
-    // trigger experiment ids are visible to Google web properties.
-    optional GoogleWebVisibility google_web_visibility = 16;
-
-    reserved 10;
+    // Optional visibility setting affecting |google_web_experiment_id| and
+    // |google_web_trigger_experiment_id| fields. See GoogleWebVisibility
+    // enum for details.
+    GoogleWebVisibility google_web_visibility = 16 [default = ANY];
 
     // Optional id used to uniquely identify this experiment when activating
     // integrations with the Android Google App.
     // IMPORTANT: This field is only approved for integrations with the Android
     // Google App and must receive a privacy review before extending to other
     // apps.
-    optional uint64 google_app_experiment_id = 15;
+    uint64 google_app_experiment_id = 15;
 
     // Specifies the feature association parameters for this experiment group.
     //
@@ -135,7 +156,7 @@ message Study {
       // selection via a random dice roll.
       // Mutually exclusive with |forcing_flag|, |forcing_feature_off| or
       // having a non-zero |probability_weight|.
-      optional string forcing_feature_on = 3;
+      string forcing_feature_on = 3;
 
       // Similar to |forcing_flag|, this is an optional name of a feature which
       // will cause this experiment to be activated, if that feature is disabled
@@ -143,9 +164,10 @@ message Study {
       // selection via a random dice roll.
       // Mutually exclusive with |forcing_flag|, |forcing_feature_on| or having
       // a non-zero |probability_weight|.
-      optional string forcing_feature_off = 4;
+      string forcing_feature_off = 4;
     }
-    optional FeatureAssociation feature_association = 12;
+
+    FeatureAssociation feature_association = 12;
 
     // Optional name of a Chrome flag that, when present, causes this experiment
     // to be forced. If the forcing_flag field is set, users will not be
@@ -153,7 +175,7 @@ message Study {
     // command line.
     // Mutually exclusive with |forcing_feature_on|, |forcing_feature_off| or
     // having a non-zero |probability_weight|.
-    optional string forcing_flag = 5;
+    string forcing_flag = 5;
 
     // Parameter values for this experiment.
     repeated Param param = 6;
@@ -180,19 +202,21 @@ message Study {
       // probability_weight of 0.
       KILL_CRITICAL = 3;
     }
-    optional Type type = 7 [default = NORMAL];
+
+    Type type = 7 [default = NORMAL];
 
     // A UI string to override, and the new value to use.
     message OverrideUIString {
       // The first 32 bits of the MD5 hash digest of the resource name to
       // override.
       // e.g. Hash("IDS_BOOKMARK_BAR_UNDO")
-      optional fixed32 name_hash = 1;
+      fixed32 name_hash = 1;
 
       // The new value of the string being overridden.
       // e.g. "Undo"
-      optional string value = 2;
+      string value = 2;
     }
+
     repeated OverrideUIString override_ui_string = 9;
   }
 
@@ -236,23 +260,30 @@ message Study {
   enum FormFactor {
     // Chrome Desktop on Windows, Mac, Linux, or Chrome OS.
     DESKTOP = 0;
+
     // Phone-based mobile Chrome, e.g. an Android phone or iPhone.
     PHONE = 1;
+
     // Tablet-based mobile Chrome, e.g. an Android tablet or iPad.
     TABLET = 2;
+
     // Chrome OS running in single-app Kiosk mode.
     KIOSK = 3;
+
     // Chrome OS running on Meet Hardware devices e.g. Chromebox For Meetings.
     MEET_DEVICE = 4;
+
     // Chrome running on Android TV.
     TV = 5;
+
     // Chrome running on Android Auto.
     AUTOMOTIVE = 6;
+
     // Chrome running on Android Foldable.
     FOLDABLE = 7;
   }
 
-  // Possible CPU architectures Chrome is running on. Only supported on M90+.
+  // Possible browser process CPU architectures on which Chrome is running.
   enum CpuArchitecture {
     X86_64 = 0;
     ARM64 = 1;
@@ -274,16 +305,18 @@ message Study {
     OPTIONAL_BOOL_FALSE = 2;
   }
 
-  // Possible states of the severity filter.
+  // Possible states of the policy restriction filter.
   enum PolicyRestriction {
     // No restriction configs apply to clients that do not have a
     // "ChromeVariations" policy set or if it is set to the variations enabled
     // value.
     NONE = 0;
+
     // Critical studies apply to both clients that have all variations enabled
     // or if the "ChromeVariations" policy is set to only allow critical
     // variations.
     CRITICAL = 1;
+
     // Critical-only studies apply *only* to clients that have the
     // "ChromeVariations" policy set to only allow critical variations.
     CRITICAL_ONLY = 2;
@@ -297,7 +330,7 @@ message Study {
     // The start date of the study in Unix time format. (Seconds since midnight
     // January 1, 1970 UTC). See: http://en.wikipedia.org/wiki/Unix_time
     // Ex: 1330893974  (corresponds to 2012-03-04 20:46:14Z)
-    optional int64 start_date = 1;
+    int64 start_date = 1;
 
     // The end date of the study in Unix time format. (Seconds since midnight
     // January 1, 1970 UTC). See: http://en.wikipedia.org/wiki/Unix_time
@@ -306,21 +339,21 @@ message Study {
     // expiry_date is that, when end_date is past, the field trial will not be
     // created. When expiry_date is past, the trial is still created, but will
     // be disabled, causing it to select its default group.
-    optional int64 end_date = 13;
+    int64 end_date = 13;
 
     // The minimum Chrome version for this study, allowing a trailing '*'
     // character for pattern matching. Inclusive. (To check for a match, iterate
     // over each component checking >= until a * or end of string is reached.)
     // Optional - if not specified, there is no minimum version.
     // Ex: "17.0.963.46", "17.0.963.*", "17.*"
-    optional string min_version = 2;
+    string min_version = 2;
 
     // The maximum Chrome version for this study; same formatting as
     // |min_version| above. Inclusive. (To check for a match, iterate over each
     // component checking <= until a * or end of string is reached.)
     // Optional - if not specified, there is no maximum version.
     // Ex: "19.*"
-    optional string max_version = 3;
+    string max_version = 3;
 
     // The minimum OS version for this study, allowing a trailing '*' character
     // for pattern matching. Inclusive. (To check for a match, iterate over each
@@ -328,50 +361,53 @@ message Study {
     // are sanitized into a list of digits separated by dots like so:
     //  Windows:  "6.2.7601 SP1"      --> "6.2.7601.1"
     //  Mac OS X: "10.11.2"           --> "10.11.2"
-    //  Linux:    "4.13.0-27-generic" --> "4.13.0"
+    //  Linux:    "4.13.0-32-generic" --> "4.13.0"
     // Optional - if not specified, there is no minimum version.
-    optional string min_os_version = 16;
+    string min_os_version = 16;
 
     // The maximum OS version for this study, allowing a trailing '*' character
     // for pattern matching. Inclusive. (To check for a match, iterate over each
     // component checking <= until a * or end of string is reached.)
     // Optional - if not specified, there is no minimum version.
     // Ex: See |min_os_version| for details.
-    optional string max_os_version = 17;
+    string max_os_version = 17;
 
     // List of channels that will receive this study. If omitted, the study
     // applies to all channels.
     // Ex: [BETA, STABLE]
-    repeated Channel channel = 4;
+    repeated Channel channel = 4 [features.repeated_field_encoding = EXPANDED];
 
-    // List of platforms that will receive this study. If omitted, the study
-    // applies to all platforms.
+    // List of platforms that will receive this study. At least one platform
+    // is required. If omitted, the study won't apply to any platform.
     // Ex: [PLATFORM_WINDOWS, PLATFORM_MAC]
-    repeated Platform platform = 5;
+    repeated Platform platform = 5
+        [features.repeated_field_encoding = EXPANDED];
 
     // List of locales that will receive this study. If omitted, the study
     // applies to all locales, unless |exclude_locale| is specified. Mutually
     // exclusive with |exclude_locale|.
-    // Ex: ["en-US", "en-CA"]
+    // Ex: ["en-US", "en-GB"]
     repeated string locale = 6;
 
     // List of locales that will be excluded from this study. If omitted, the
     // study applies to all locales unless |locale| is specified. Mutually
     // exclusive with |locale|.
-    // Ex: ["en-US", "en-CA"]
+    // Ex: ["en-US", "en-GB"]
     repeated string exclude_locale = 12;
 
     // List of form factors that will receive this study. If omitted, the study
     // applies to all form factors, unless |exclude_form_factor| is specified.
     // Mutually exclusive with |exclude_form_factor|.
     // Ex: [PHONE, TABLET]
-    repeated FormFactor form_factor = 7;
+    repeated FormFactor form_factor = 7
+        [features.repeated_field_encoding = EXPANDED];
 
     // List of form factors that will be excluded from this study. If omitted,
     // the study applies to all form factors unless |form_factor| is specified.
     // Mutually exclusive with |form_factor|.
-    // Takes the same range of values as form_factor, e.g. [PHONE, TABLET].
-    repeated FormFactor exclude_form_factor = 14;
+    // Ex: [PHONE, TABLET]
+    repeated FormFactor exclude_form_factor = 14
+        [features.repeated_field_encoding = EXPANDED];
 
     // List of hardware classes that will receive this study.
     // This supports Chrome OS and as of M77, Android.
@@ -421,7 +457,7 @@ message Study {
 
     // Specifies whether the config should apply to low-end devices only. This
     // is currently only supported on Android.
-    optional bool is_low_end_device = 15;
+    bool is_low_end_device = 15;
 
     // Specifies whether the config should apply to enterprise or non-enterprise
     // only. If omitted, the config applies to both groups.
@@ -429,55 +465,67 @@ message Study {
     //   enterprise.
     // - On chromeOS, registered mode determines enterprise status.
     // - Android, iOS, and linux consider all clients as non-enterprise.
-    optional bool is_enterprise = 18;
+    bool is_enterprise = 18;
 
     // Specifies the restrictions applied by the "ChromeVariations" policy to
     // the study. See the definition of the PolicyRestriction enum for details.
-    optional PolicyRestriction policy_restriction = 19 [default = NONE];
+    PolicyRestriction policy_restriction = 19 [default = NONE];
 
-    // List of CPU architectures that will receive this study. If omitted, the
-    // study applies to all architectures, unless |exclude_cpu_architecture| is
-    // specified. Mutually exclusive with |exclude_cpu_architecture|. Ex:
-    // [X86_32, ARM64]
-    repeated CpuArchitecture cpu_architecture = 20;
+    // Browser process CPU architectures that should receive or not receive this
+    // study. If |cpu_architecture| is omitted, the default behavior is for the
+    // study to apply to all CPU architectures not listed in
+    // |exclude_cpu_architecture|.
+    repeated CpuArchitecture cpu_architecture = 20
+        [features.repeated_field_encoding = EXPANDED];
 
-    // List of CPU architectures that will be excluded from this study. If
-    // omitted, the study applies to all architectures unless |cpu_architecture|
-    // is specified. Mutually exclusive with |cpu_architecture|. Takes the same
-    // range of values as cpu_architecture, e.g. [X86_32, ARM64].
-    repeated CpuArchitecture exclude_cpu_architecture = 21;
+    repeated CpuArchitecture exclude_cpu_architecture = 21
+        [features.repeated_field_encoding = EXPANDED];
 
     // Specifies that the config should apply only to clients where at least
     // one of the signed in users is a member of at least one of the specified
     // groups.
     // The values are the gaia ID of the google group.
-    repeated int64 google_group = 22 [packed = true];
+    repeated int64 google_group = 22;
 
     // Specifies that the config should apply only to clients where none
     // of the signed in users are a member of any of the specified groups.
     // The values are the gaia ID of the google group.
-    repeated int64 exclude_google_group = 23 [packed = true];
+    repeated int64 exclude_google_group = 23;
   }
 
   // Filtering criteria for this study. A study that is filtered out for a given
   // client is equivalent to that study not being sent at all.
-  optional Filter filter = 10;
+  Filter filter = 10;
 
   // Randomization seed to be used when |consistency| is set to PERMANENT. If
   // not specified, randomization will be done using the trial name.
-  optional uint32 randomization_seed = 11;
+  uint32 randomization_seed = 11;
 
   // Specifies whether the study starts as active initially, or whether it
   // requires the client to query its state before it is marked as active.
   enum ActivationType {
+    // OPEN enum type causes unknown values get preserved in the field directly,
+    // as opposed to the field defaulting to the first value. We then validate
+    // this explicitly in processed_study.cc.
+    option features.enum_type = OPEN;
+
     // The study will be activated when its state is queried by the client.
     // This is recommended for most studies that include client code.
     ACTIVATE_ON_QUERY = 0;
+
     // The study will be automatically activated when it is created. This
     // is recommended for studies that do not have any client logic.
     ACTIVATE_ON_STARTUP = 1;
+
+    // The study is first activated when it is queried. On browser restarts, the
+    // study remains active unless the client would be assigned to a different
+    // group. This is recommended to avoid problems of differential triggering
+    // associated with ACTIVATE_ON_QUERY and for studying longer-term effects
+    // without activation on start up. Only valid for studies using PERMANENT
+    // consistency.
+    STICKY_AFTER_QUERY = 2;
   }
 
   // Activation type for this study. Defaults to ACTIVATE_ON_QUERY if omitted.
-  optional ActivationType activation_type = 12;
+  ActivationType activation_type = 12;
 }

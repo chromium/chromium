@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_file_stream_reader.h"
 
 #include <string.h>
@@ -16,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
@@ -144,8 +140,9 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadRegularFileWithOffset) {
     EXPECT_TRUE(ReadData(&reader, buffer.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string_view(kData + kOffset10, strlen(kData) - kOffset10),
-            std::string_view(buffer->data(), buffer->size()));
+  UNSAFE_TODO(
+      EXPECT_EQ(std::string_view(kData + kOffset10, strlen(kData) - kOffset10),
+                std::string_view(buffer->data(), buffer->size())));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadRegularFileWithOffsets) {
@@ -160,11 +157,12 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadRegularFileWithOffsets) {
     EXPECT_TRUE(ReadData(&reader2, buffer2.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
-            std::string_view(buffer1->data(), buffer1->size()));
-  EXPECT_EQ(
+  UNSAFE_TODO(
+      EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
+                std::string_view(buffer1->data(), buffer1->size())));
+  UNSAFE_TODO(EXPECT_EQ(
       std::string_view(kData + kOffset15, strlen(kData) - kOffset5 - kOffset15),
-      std::string_view(buffer2->data(), buffer2->size()));
+      std::string_view(buffer2->data(), buffer2->size())));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest,
@@ -183,11 +181,12 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest,
     EXPECT_TRUE(ReadData(&reader2, buffer2.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
-            std::string_view(buffer1->data(), buffer1->size()));
-  EXPECT_EQ(
+  UNSAFE_TODO(
+      EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
+                std::string_view(buffer1->data(), buffer1->size())));
+  UNSAFE_TODO(EXPECT_EQ(
       std::string_view(kData + kOffset15, strlen(kData) - kOffset5 - kOffset15),
-      std::string_view(buffer2->data(), buffer2->size()));
+      std::string_view(buffer2->data(), buffer2->size())));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipe) {
@@ -210,8 +209,9 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipeWithOffset) {
     EXPECT_TRUE(ReadData(&reader, buffer.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string_view(kData + kOffset10, strlen(kData) - kOffset10),
-            std::string_view(buffer->data(), buffer->size()));
+  UNSAFE_TODO(
+      EXPECT_EQ(std::string_view(kData + kOffset10, strlen(kData) - kOffset10),
+                std::string_view(buffer->data(), buffer->size())));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipeWithOffsets) {
@@ -226,11 +226,12 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipeWithOffsets) {
     EXPECT_TRUE(ReadData(&reader2, buffer2.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
-            std::string_view(buffer1->data(), buffer1->size()));
-  EXPECT_EQ(
+  UNSAFE_TODO(
+      EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
+                std::string_view(buffer1->data(), buffer1->size())));
+  UNSAFE_TODO(EXPECT_EQ(
       std::string_view(kData + kOffset15, strlen(kData) - kOffset5 - kOffset15),
-      std::string_view(buffer2->data(), buffer2->size()));
+      std::string_view(buffer2->data(), buffer2->size())));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest,
@@ -248,11 +249,12 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest,
     EXPECT_TRUE(ReadData(&reader2, buffer2.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
-            std::string_view(buffer1->data(), buffer1->size()));
-  EXPECT_EQ(
+  UNSAFE_TODO(
+      EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
+                std::string_view(buffer1->data(), buffer1->size())));
+  UNSAFE_TODO(EXPECT_EQ(
       std::string_view(kData + kOffset15, strlen(kData) - kOffset5 - kOffset15),
-      std::string_view(buffer2->data(), buffer2->size()));
+      std::string_view(buffer2->data(), buffer2->size())));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, GetLength) {

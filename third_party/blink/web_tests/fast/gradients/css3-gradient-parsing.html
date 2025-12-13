@@ -49,13 +49,13 @@ test(() => {
 
 test(() => {
   assert_equals(testGradient("background-image: radial-gradient(white, black)", "background-image"), 'radial-gradient(rgb(255, 255, 255), rgb(0, 0, 0))');
-  assert_equals(testGradient("background-image: radial-gradient(at bottom right, white, black)", "background-image"), 'radial-gradient(at right bottom, rgb(255, 255, 255), rgb(0, 0, 0))');
+  assert_equals(testGradient("background-image: radial-gradient(at bottom right, white, black)", "background-image"), 'radial-gradient(at 100% 100%, rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(ellipse farthest-corner, white, black)", "background-image"), 'radial-gradient(rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(circle closest-corner, white, black)", "background-image"), 'radial-gradient(circle closest-corner, rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(circle, white, black)", "background-image"), 'radial-gradient(circle, rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(circle closest-side, white, black)", "background-image"), 'radial-gradient(circle closest-side, rgb(255, 255, 255), rgb(0, 0, 0))');
-  assert_equals(testGradient("background-image: radial-gradient(circle closest-side at top, white, black)", "background-image"), 'radial-gradient(circle closest-side at center top, rgb(255, 255, 255), rgb(0, 0, 0))');
-  assert_equals(testGradient("background-image: radial-gradient(circle closest-side at top left, white, black)", "background-image"), 'radial-gradient(circle closest-side at left top, rgb(255, 255, 255), rgb(0, 0, 0))');
+  assert_equals(testGradient("background-image: radial-gradient(circle closest-side at top, white, black)", "background-image"), 'radial-gradient(circle closest-side at 50% 0%, rgb(255, 255, 255), rgb(0, 0, 0))');
+  assert_equals(testGradient("background-image: radial-gradient(circle closest-side at top left, white, black)", "background-image"), 'radial-gradient(circle closest-side at 0% 0%, rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(circle closest-side at 10px 20%, white, black)", "background-image"), 'radial-gradient(circle closest-side at 10px 20%, rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(10px, 20%, circle closest-side, white, black)", "background-image"), 'none');
   assert_equals(testGradient("background-image: radial-gradient(circle 10px 20%, circle closest-side, white, black)", "background-image"), 'none');

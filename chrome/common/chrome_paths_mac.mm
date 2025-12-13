@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #include "base/base_paths.h"
 #include "base/check_op.h"
@@ -21,31 +22,6 @@
 #include "chrome/common/chrome_paths_internal.h"
 
 namespace {
-
-// Return an NSBundle* as the internal implementation of
-// chrome::OuterAppBundle(), which should be the only caller.
-NSBundle* OuterAppBundleInternal() {
-  @autoreleasepool {
-    if (!base::apple::AmIBundled()) {
-      // If unbundled (as in a test), there's no app bundle.
-      return nil;
-    }
-
-    if (!base::apple::IsBackgroundOnlyProcess()) {
-      // Shortcut: in the browser process, just return the main app bundle.
-      return NSBundle.mainBundle;
-    }
-
-    // From C.app/Contents/Frameworks/C.framework/Versions/1.2.3.4, go up five
-    // steps to C.app.
-    base::FilePath framework_path = chrome::GetFrameworkBundlePath();
-    base::FilePath outer_app_dir =
-        framework_path.DirName().DirName().DirName().DirName().DirName();
-    NSString* outer_app_dir_ns = base::SysUTF8ToNSString(outer_app_dir.value());
-
-    return [NSBundle bundleWithPath:outer_app_dir_ns];
-  }
-}
 
 char* ProductDirNameForBundle(NSBundle* chrome_bundle) {
   @autoreleasepool {
@@ -79,7 +55,7 @@ char* ProductDirNameForBundle(NSBundle* chrome_bundle) {
 // official canary channel, the Info.plist will have CrProductDirName set
 // to "Google/Chrome Canary".
 std::string ProductDirName() {
-  // Use OuterAppBundle() to get the main app's bundle. This key needs to live
+  // Use OuterBundle() to get the main app's bundle. This key needs to live
   // in the main app's bundle because it will be set differently on the canary
   // channel, and the autoupdate system dictates that there can be no
   // differences between channels within the versioned directory. This would
@@ -89,7 +65,7 @@ std::string ProductDirName() {
   // attempt to get the profile directory, so direct them to look in the outer
   // browser .app's Info.plist for the CrProductDirName key.
   static const char* product_dir_name =
-      ProductDirNameForBundle(chrome::OuterAppBundle());
+      ProductDirNameForBundle(base::apple::OuterBundle());
   return std::string(product_dir_name);
 }
 
@@ -208,11 +184,6 @@ bool GetLocalLibraryDirectory(base::FilePath* result) {
 
 bool GetGlobalApplicationSupportDirectory(base::FilePath* result) {
   return base::apple::GetLocalDirectory(NSApplicationSupportDirectory, result);
-}
-
-NSBundle* OuterAppBundle() {
-  static NSBundle* bundle = OuterAppBundleInternal();
-  return bundle;
 }
 
 bool ProcessNeedsProfileDir(const std::string& process_type) {

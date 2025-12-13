@@ -18,7 +18,6 @@
   <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34"/>
   <application
       android:name="org.chromium.android_webview.nonembedded.WebViewApkApplication"
-      android:extractNativeLibs="false"
       android:icon="@$PACKAGE:drawable/icon_webview"
       android:label="Android System WebView"
       android:multiArch="true"
@@ -169,6 +168,9 @@
       <meta-data android:name="STARTUP_FEATURE_CONFIGURE_PARTITIONED_COOKIES" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_DATA_DIRECTORY_SUFFIX" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_DIRECTORY_BASE_PATH" android:value="true"/>
+      <meta-data android:name="STARTUP_FEATURE_SET_UI_THREAD_STARTUP_MODE" android:value="true"/>
+      <meta-data android:name="STARTUP_FEATURE_SET_UI_THREAD_STARTUP_MODE_V2" android:value="true"/>
+      <meta-data android:name="STARTUP_FEATURE_SET_PROFILES_TO_LOAD" android:value="true"/>
     </service>  # DIFF-ANCHOR: c52936d7
     <service  # DIFF-ANCHOR: dc926e35
         android:name="org.chromium.android_webview.services.VariationsSeedServer"

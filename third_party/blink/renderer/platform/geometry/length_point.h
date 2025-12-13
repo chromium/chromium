@@ -46,9 +46,6 @@ struct LengthPoint {
   bool operator==(const LengthPoint& o) const {
     return x_ == o.x_ && y_ == o.y_;
   }
-  bool operator!=(const LengthPoint& o) const {
-    return x_ != o.x_ || y_ != o.y_;
-  }
 
   void SetX(const Length& x) { x_ = x; }
   const Length& X() const { return x_; }

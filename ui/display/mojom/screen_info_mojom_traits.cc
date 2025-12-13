@@ -20,6 +20,7 @@ bool StructTraits<display::mojom::ScreenInfoDataView, display::ScreenInfo>::
 
   out->device_scale_factor = data.device_scale_factor();
   out->depth = data.depth();
+  out->handwriting_radius = data.handwriting_radius();
   out->depth_per_component = data.depth_per_component();
   out->is_monochrome = data.is_monochrome();
   out->orientation_type = data.orientation_type();

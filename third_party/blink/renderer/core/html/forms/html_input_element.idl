@@ -25,9 +25,9 @@ enum SelectionMode { "select", "start", "end", "preserve" };
 
 [
     Exposed=Window,
-    HTMLConstructor,
     ActiveScriptWrappable
 ] interface HTMLInputElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, Reflect] attribute DOMString accept;
     [CEReactions, Reflect] attribute DOMString alt;
     [CEReactions, ImplementedAs=IDLExposedAutofillValue] attribute DOMString autocomplete;
@@ -114,4 +114,4 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [Reflect, MeasureAs=IncrementalAttribute] attribute boolean incremental;
 };
 
-HTMLInputElement includes PopoverInvokerElement;
+HTMLInputElement includes PopoverTargetAttributes;

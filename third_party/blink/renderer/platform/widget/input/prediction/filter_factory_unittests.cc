@@ -113,7 +113,7 @@ TEST_F(FilterFactoryTest, TestOneEuroParams) {
   GetFilterParams(FilterType::kOneEuro,
                   PredictorType::kScrollPredictorTypeKalman, &filter_params);
 
-  EXPECT_EQ((int)filter_params.size(), 2);
+  EXPECT_EQ(filter_params.size(), 2u);
   EXPECT_EQ(filter_params.find(ui::OneEuroFilter::kParamMincutoff)->second, 33);
   EXPECT_EQ(filter_params.find(ui::OneEuroFilter::kParamBeta)->second, 42);
 

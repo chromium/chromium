@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+  <title>WebGPU copyElementImageToTexture</title>
+  <meta charset="utf-8" />
+  <link rel="help" href="https://github.com/WICG/html-in-canvas" />
+  <link rel="match" href="copy_element_image_to_texture-ref.html" />
+  <link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
+  <script src="/common/reftest-wait.js"></script>
+
+  <style>
+   canvas {
+     border: 0;
+     width: 256px;
+     height: 192px;
+   }
+  </style>
+
+  <canvas layoutsubtree>
+    <div class="draw-element-wrapper">
+      <div class="css-is-awesome"></div>
+    </div>
+  </canvas>
+
+<script type="module">
+import { resizeToPixelGrid, copyElementImageToWebGPUCanvas } from "/wpt_internal/resources/canvas-draw-element/util.js";
+
+const adapter = await navigator.gpu.requestAdapter();
+const device = await adapter.requestDevice();
+const queue = device.queue;
+
+const cvs = document.querySelector("canvas");
+const ctx = cvs.getContext("webgpu");
+ctx.configure({
+  device: device,
+  format: navigator.gpu.getPreferredCanvasFormat(),
+  usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
+  alphaMode: "premultiplied",
+});
+await resizeToPixelGrid(cvs);
+copyElementImageToWebGPUCanvas(queue, ctx, cvs.firstElementChild);
+takeScreenshot();
+</script>
+</html>

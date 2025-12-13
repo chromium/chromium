@@ -1,0 +1,10 @@
+monorail: {
+  component: "Blink>PerformanceAPIs"
+}
+team_email: "speed-metrics-dev@chromium.org"
+wpt: {
+  notify: YES
+}
+buganizer_public: {
+  component_id: 1456231
+}

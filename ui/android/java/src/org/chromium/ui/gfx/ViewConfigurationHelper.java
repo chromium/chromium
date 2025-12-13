@@ -14,6 +14,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.build.annotations.NullMarked;
@@ -81,7 +82,8 @@ public class ViewConfigurationHelper {
                         getMinimumFlingVelocity(),
                         getTouchSlop(),
                         getDoubleTapSlop(),
-                        getMinScalingSpan());
+                        getMinScalingSpan(),
+                        getTextCursorBlinkInterval());
     }
 
     @CalledByNative
@@ -124,6 +126,16 @@ public class ViewConfigurationHelper {
         return toDips(getScaledMinScalingSpan());
     }
 
+    @CalledByNative
+    private int getTextCursorBlinkInterval() {
+        AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
+                AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate == null) {
+            return AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
+        }
+        return aconfigFlaggedApiDelegate.getTextCursorBlinkInterval(mViewConfiguration);
+    }
+
     private int getScaledMinScalingSpan() {
         final Resources res = ContextUtils.getApplicationContext().getResources();
         // The correct minimum scaling span depends on how we recognize scale
@@ -163,6 +175,7 @@ public class ViewConfigurationHelper {
                 float minimumFlingVelocity,
                 float touchSlop,
                 float doubleTapSlop,
-                float minScalingSpan);
+                float minScalingSpan,
+                int textCursorBlinkInterval);
     }
 }

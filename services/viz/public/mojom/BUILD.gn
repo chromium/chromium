@@ -9,6 +9,7 @@ mojom("mojom") {
     "compositing/animation.mojom",
     "compositing/begin_frame_args.mojom",
     "compositing/bitmap_in_shared_memory.mojom",
+    "compositing/blit_request.mojom",
     "compositing/compositing_mode_watcher.mojom",
     "compositing/compositor_frame.mojom",
     "compositing/compositor_frame_metadata.mojom",
@@ -39,6 +40,7 @@ mojom("mojom") {
     "compositing/thread.mojom",
     "compositing/tiling.mojom",
     "compositing/transferable_resource.mojom",
+    "compositing/trees_in_viz_timing.mojom",
     "compositing/vertical_scroll_direction.mojom",
     "compositing/video_detector_observer.mojom",
     "compositing/view_transition_element_resource_id.mojom",
@@ -58,16 +60,16 @@ mojom("mojom") {
   }
 
   public_deps = [
-    ":shared_image_format",
-    ":singleplanar_format",
     ":surfaces",
     "//cc/mojom:mojom_browser_controls",
     "//cc/mojom:mojom_layer_trees",
     "//gpu/ipc/common:interfaces",
-    "//media/mojo/mojom",
+    "//media/mojo/mojom:video_encode",
     "//mojo/public/mojom/base",
+    "//services/viz/public/mojom/compositing:shared_image_format",
+    "//services/viz/public/mojom/compositing/internal:singleplanar_format",
     "//skia/public/mojom",
-    "//third_party/blink/public/mojom/tokens:tokens",
+    "//third_party/blink/public/mojom/tokens",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
     "//ui/gfx/mojom:hdr_metadata",
@@ -222,6 +224,38 @@ mojom("mojom") {
       ]
       traits_sources = [ "//services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc" ]
       traits_headers = [ "//services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.TreesInVizTiming"
+          cpp = "::viz::TreesInVizTiming"
+          move_only = true
+        },
+      ]
+      traits_sources = [ "//services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.cc" ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.LetterboxingBehavior"
+          cpp = "::viz::LetterboxingBehavior"
+        },
+        {
+          mojom = "viz.mojom.BlitRequest"
+          cpp = "::viz::BlitRequest"
+          move_only = true
+        },
+      ]
+      traits_sources = [
+        "//services/viz/public/cpp/compositing/blit_request_mojom_traits.cc",
+      ]
+      traits_headers = [
+        "//services/viz/public/cpp/compositing/blit_request_mojom_traits.h",
+      ]
       traits_public_deps = [ "//components/viz/common" ]
     },
     {
@@ -502,6 +536,17 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "viz.mojom.TreesInVizTiming"
+          cpp = "::viz::TreesInVizTiming"
+          move_only = true
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
           mojom = "viz.mojom.FrameTimingDetails"
           cpp = "::viz::FrameTimingDetails"
         },
@@ -533,10 +578,11 @@ mojom("mojom") {
         "//gpu/ipc/common/mailbox_holder_mojom_traits.h",
         "//gpu/ipc/common/mailbox_mojom_traits.h",
         "//gpu/ipc/common/sync_token_mojom_traits.h",
-        "//ipc/ipc_message_utils.h",
+        "//ipc/param_traits_utils.h",
         "//services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h",
         "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.h",
         "//services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h",
+        "//services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.h",
         "//services/viz/public/cpp/compositing/compositor_render_pass_mojom_traits.h",
         "//services/viz/public/cpp/compositing/filter_operation_mojom_traits.h",
         "//services/viz/public/cpp/compositing/filter_operations_mojom_traits.h",
@@ -662,44 +708,4 @@ mojom("surfaces") {
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
   ]
-}
-
-# The enum that SharedImageFormat uses internally to denote singleplanar
-# formats. Must be defined in a separate file and GN target from
-# shared_image_format.mojom as it is used by shared_image_format.h, which
-# itself is used from shared_image_format_mojom_traits.*.
-# Not intended for client usage.
-mojom("singleplanar_format") {
-  generate_java = true
-  sources = [ "compositing/internal/singleplanar_format.mojom" ]
-  visibility = [
-    ":mojom",
-    ":shared_image_format",
-    "//components/viz/common:shared_image_format",
-  ]
-}
-
-mojom("shared_image_format") {
-  generate_java = true
-  sources = [ "compositing/shared_image_format.mojom" ]
-  enabled_features = []
-  if (use_ozone) {
-    enabled_features += [ "use_ozone" ]
-  }
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "viz.mojom.SharedImageFormat"
-          cpp = "::viz::SharedImageFormat"
-        },
-      ]
-      traits_headers = [ "//services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h" ]
-      traits_sources = [ "//services/viz/public/cpp/compositing/shared_image_format_mojom_traits.cc" ]
-      traits_public_deps = [ "//components/viz/common:shared_image_format" ]
-    },
-  ]
-
-  # TODO(crbug.com/40244048): Does this need to be public_deps vs. deps?
-  public_deps = [ ":singleplanar_format" ]
 }

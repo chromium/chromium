@@ -26,6 +26,8 @@ import java.lang.annotation.Target;
     CredentialManagerAndroidGetResult.PROVIDER_CONFIGURATION_ERROR,
     CredentialManagerAndroidGetResult.UNKNOWN,
     CredentialManagerAndroidGetResult.UNSUPPORTED,
+    CredentialManagerAndroidGetResult.PUBLIC_KEY_CREDENTIAL_ERROR,
+    CredentialManagerAndroidGetResult.NO_CREDENTIAL,
     CredentialManagerAndroidGetResult.COUNT
 })
 @Target(ElementType.TYPE_USE)
@@ -59,6 +61,12 @@ public @interface CredentialManagerAndroidGetResult {
      */
     int UNSUPPORTED = 7;
 
-    int COUNT = 8;
+    /** The operation failed due to a public key credential error. */
+    int PUBLIC_KEY_CREDENTIAL_ERROR = 8;
+
+    /** The operation failed due to no credential being found. */
+    int NO_CREDENTIAL = 9;
+
+    int COUNT = 10;
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:CredentialManagerAndroidGetResult)

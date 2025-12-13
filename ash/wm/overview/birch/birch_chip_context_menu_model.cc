@@ -86,7 +86,7 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_CHIP_MENU_OPEN_GROUP),
           CreateIconForMenuItem(kCoralOpenIcon));
       if (features::IsCoralFeatureEnabled() &&
-          !display::Screen::GetScreen()->InTabletMode() &&
+          !display::Screen::Get()->InTabletMode() &&
           !BirchBarController::Get()->is_informed_restore()) {
         AddItemWithIcon(
             base::to_underlying(CommandId::kCoralSaveForLater),

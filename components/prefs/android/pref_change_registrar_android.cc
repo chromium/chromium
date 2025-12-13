@@ -18,7 +18,7 @@ using base::android::ConvertUTF8ToJavaString;
 
 PrefChangeRegistrarAndroid::PrefChangeRegistrarAndroid(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
+    const JavaRef<jobject>& obj,
     PrefService* prefs) {
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_jobject_.Reset(env, obj);
@@ -30,9 +30,8 @@ void PrefChangeRegistrarAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void PrefChangeRegistrarAndroid::Add(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& j_preference) {
+void PrefChangeRegistrarAndroid::Add(JNIEnv* env,
+                                     const JavaRef<jstring>& j_preference) {
   std::string preference =
       base::android::ConvertJavaStringToUTF8(env, j_preference);
   pref_change_registrar_.Add(
@@ -41,9 +40,8 @@ void PrefChangeRegistrarAndroid::Add(
                           base::Unretained(this), preference));
 }
 
-void PrefChangeRegistrarAndroid::Remove(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& j_preference) {
+void PrefChangeRegistrarAndroid::Remove(JNIEnv* env,
+                                        const JavaRef<jstring>& j_preference) {
   pref_change_registrar_.Remove(
       base::android::ConvertJavaStringToUTF8(env, j_preference));
 }
@@ -55,9 +53,11 @@ void PrefChangeRegistrarAndroid::OnPreferenceChange(std::string preference) {
       base::android::ConvertUTF8ToJavaString(env, preference));
 }
 
-jlong JNI_PrefChangeRegistrar_Init(JNIEnv* env,
-                                   const JavaParamRef<jobject>& obj,
-                                   PrefService* prefs) {
+static jlong JNI_PrefChangeRegistrar_Init(JNIEnv* env,
+                                          const JavaRef<jobject>& obj,
+                                          PrefService* prefs) {
   return reinterpret_cast<intptr_t>(
       new PrefChangeRegistrarAndroid(env, obj, prefs));
 }
+
+DEFINE_JNI(PrefChangeRegistrar)

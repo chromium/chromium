@@ -32,7 +32,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
   <int value="1" label="Started"/>
   <int value="2" label="Not signed in on a collaboration flow attempt"/>
-  <int value="3" label="Canceled: due to sign in requirement"/>
+  <int value="3" label="Canceled - due to sign in requirement"/>
   <int value="4" label="Signin and sync requirements met"/>
   <int value="5" label="Signin not verified when finished"/>
   <int value="6" label="Signin verified when finished"/>
@@ -41,9 +41,44 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Data sharing service ready observed"/>
   <int value="10" label="Tab group sync service ready"/>
   <int value="11" label="All services ready for flow"/>
-  <int value="12" label="Failure: Device policy disables signin"/>
+  <int value="12" label="Failure - Device policy disables signin"/>
   <int value="13" label="Managed account signed in"/>
   <int value="14" label="Account info is not ready upon signin"/>
+  <int value="15" label="Canceled - While on join screen"/>
+  <int value="16" label="Accepted the join invitation"/>
+  <int value="17" label="Opened new group"/>
+  <int value="18" label="Opened existing group"/>
+  <int value="19" label="Failure - URL parsing"/>
+  <int value="20" label="Found collaboration, not tab group"/>
+  <int value="21" label="Failed - Read new group failed"/>
+  <int value="22" label="Read new group success"/>
+  <int value="23" label="Adding user to group"/>
+  <int value="24" label="Failure - Preview group full"/>
+  <int value="25" label="Failure - Preview fetch"/>
+  <int value="26" label="Preview successful"/>
+  <int value="27" label="Group exists when joined"/>
+  <int value="28" label="Tab group fetched"/>
+  <int value="29" label="People group fetched"/>
+  <int value="30" label="Success - Promote tab group"/>
+  <int value="31" label="Failure - Timeout waiting for services to be ready"/>
+  <int value="32"
+      label="Failure - Timeout waiting for sync and data sharing group"/>
+  <int value="33" label="Read new group when user is already member"/>
+  <int value="34" label="Failure - While adding the user to a group"/>
+  <int value="35" label="Share dialog shown"/>
+  <int value="36" label="Manage dialog shown"/>
+  <int value="37" label="Collaboration group created"/>
+  <int value="38" label="Success - Urls ready to share"/>
+  <int value="39" label="Failure - Sync group not found"/>
+  <int value="40" label="Failure - Created group missing ID"/>
+  <int value="41" label="Failure - Created group ID invalid"/>
+  <int value="42" label="Failure - Tab group null before migration"/>
+  <int value="43" label="Failure - Migration"/>
+  <int value="44" label="Failure - Read group"/>
+  <int value="45" label="Failure - URL creation"/>
+  <int value="46" label="Failure - Created group ID empty"/>
+  <int value="47" label="Canceled - Share dialog canceled"/>
+  <int value="48" label="Success - Tab group shared"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceFlowEvent) -->

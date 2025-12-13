@@ -81,7 +81,10 @@ class CORE_EXPORT TransitionInterpolation : public Interpolation {
 
   TypedInterpolationValue* GetInterpolatedValue() const;
 
-  void Interpolate(int iteration, double fraction) final;
+  void Interpolate(
+      int iteration,
+      double fraction,
+      EffectModel::IterationCompositeOperation iteration_composite) final;
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(type_);

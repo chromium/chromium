@@ -53,9 +53,9 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile, bool enable_staging) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
       enable_staging
-          ? "child-src chrome://webui-test https://www.google.com/ "
+          ? "frame-src chrome://webui-test https://www.google.com/ "
             "https://chrome-staging.corp.google.com/;"
-          : "child-src chrome://webui-test https://www.google.com/;");
+          : "frame-src chrome://webui-test https://www.google.com/;");
 }
 
 }  // namespace
@@ -83,7 +83,7 @@ WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)) {
   GURL url = web_ui->GetWebContents()->GetVisibleURL();
-  bool enable_staging = url.query_piece().compare("staging=true") == 0;
+  bool enable_staging = url.query().compare("staging=true") == 0;
   CreateAndAddWhatsNewUIHtmlSource(profile_, enable_staging);
 }
 

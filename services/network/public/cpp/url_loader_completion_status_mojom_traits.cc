@@ -23,8 +23,6 @@ bool StructTraits<network::mojom::URLLoaderCompletionStatusDataView,
          network::URLLoaderCompletionStatus* out) {
   if (!data.ReadCompletionTime(&out->completion_time) ||
       !data.ReadCorsErrorStatus(&out->cors_error_status) ||
-      !data.ReadPrivateNetworkAccessPreflightResult(
-          &out->private_network_access_preflight_result) ||
       !data.ReadTrustTokenOperationStatus(&out->trust_token_operation_status) ||
       !data.ReadSslInfo(&out->ssl_info) ||
       !data.ReadBlockedByResponseReason(&out->blocked_by_response_reason) ||
@@ -35,7 +33,6 @@ bool StructTraits<network::mojom::URLLoaderCompletionStatusDataView,
   out->error_code = data.error_code();
   out->extended_error_code = data.extended_error_code();
   out->exists_in_cache = data.exists_in_cache();
-  out->exists_in_memory_cache = data.exists_in_memory_cache();
   out->encoded_data_length = data.encoded_data_length();
   out->encoded_body_length = data.encoded_body_length();
   out->decoded_body_length = data.decoded_body_length();

@@ -7,6 +7,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -73,11 +74,11 @@ CollaborationMessagingPageActionIconView::GetCollaborationTabData() const {
   }
 
   auto* tab = tabs::TabInterface::GetFromContents(web_contents);
-  if (!tab || !tab->GetTabFeatures()) {
+  if (!tab) {
     return nullptr;
   }
 
-  return tab->GetTabFeatures()->collaboration_messaging_tab_data();
+  return tab_groups::CollaborationMessagingTabData::From(tab);
 }
 
 void CollaborationMessagingPageActionIconView::UpdateContent(
@@ -126,8 +127,16 @@ CollaborationMessagingPageActionIconView::GetGroupId() {
 
 void CollaborationMessagingPageActionIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
+  // Safe to assume TabInterface and BrowserWindowInterface are initialized by
+  // the time user clicks on the page action chip.
   auto* tab = tabs::TabInterface::GetFromContents(GetWebContents());
-  bubble_coordinator_.ShowForCurrentTab(
+  CHECK(tab);
+
+  auto* bubble_coordinator =
+      RecentActivityBubbleCoordinator::From(tab->GetBrowserWindowInterface());
+  CHECK(bubble_coordinator);
+
+  bubble_coordinator->ShowForCurrentTab(
       this, GetWebContents(),
       tab_groups::SavedTabGroupUtils::GetRecentActivity(
           profile_, GetGroupId(), tab->GetHandle().raw_value()),
@@ -137,7 +146,25 @@ void CollaborationMessagingPageActionIconView::OnExecuting(
 
 views::BubbleDialogDelegate*
 CollaborationMessagingPageActionIconView::GetBubble() const {
-  return bubble_coordinator_.GetBubble();
+  // This method gets called during Browser startup, before WebContents,
+  // TabInterface and BrowserWindowInterface gets initialized.
+  auto* web_contents = GetWebContents();
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  auto* tab = tabs::TabInterface::GetFromContents(web_contents);
+  if (!tab) {
+    return nullptr;
+  }
+
+  auto* bubble_coordinator =
+      RecentActivityBubbleCoordinator::From(tab->GetBrowserWindowInterface());
+  if (!bubble_coordinator) {
+    return nullptr;
+  }
+
+  return bubble_coordinator->GetBubble();
 }
 
 const gfx::VectorIcon& CollaborationMessagingPageActionIconView::GetVectorIcon()

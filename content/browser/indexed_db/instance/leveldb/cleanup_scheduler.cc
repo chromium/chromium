@@ -12,9 +12,8 @@
 
 namespace content::indexed_db::level_db {
 
-BASE_FEATURE(kIdbInSessionDbCleanup,
-             "IdbInSessionDbCleanup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIdbInSessionDbCleanup, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIdbVerifyInSessionDbCleanup, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 constexpr base::TimeDelta kTimeBetweenRuns = base::Minutes(30);
@@ -93,6 +92,7 @@ void LevelDBCleanupScheduler::RunCleanupTask() {
   base::TimeTicks time_before_round = base::TimeTicks::Now();
   switch (running_state_->cleanup_phase) {
     case Phase::kRunScheduled:
+      delegate_->OnCleanupStarted();
       running_state_->cleanup_phase = Phase::kTombstoneSweeper;
       ABSL_FALLTHROUGH_INTENDED;
     case Phase::kTombstoneSweeper:
@@ -138,9 +138,7 @@ void LevelDBCleanupScheduler::LogAndResetState() {
   last_run_ = base::TimeTicks::Now();
   running_state_.reset();
 
-  // Update the timers for traditional sweeper.
-  delegate_->UpdateEarliestSweepTime();
-  delegate_->UpdateEarliestCompactionTime();
+  delegate_->OnCleanupDone();
 }
 
 bool LevelDBCleanupScheduler::RunTombstoneSweeper() {

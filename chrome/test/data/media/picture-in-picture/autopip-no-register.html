@@ -18,4 +18,8 @@ function playVideo() {
 function muteVideo() {
   video.muted = true;
 }
+
+function register() {
+  navigator.mediaSession.setActionHandler('enterpictureinpicture', _=>{});
+}
 </script>

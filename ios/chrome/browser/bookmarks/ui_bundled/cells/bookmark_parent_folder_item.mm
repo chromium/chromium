@@ -7,8 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/i18n/rtl.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
-#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
+#import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -34,7 +33,7 @@
 
 #pragma mark TableViewItem
 
-- (void)configureCell:(TableViewCell*)tableCell
+- (void)configureCell:(LegacyTableViewCell*)tableCell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   BookmarkParentFolderCell* cell =
@@ -124,12 +123,10 @@
                                   kBookmarkCellHorizontalAccessoryViewSpacing));
   [self applyContentSizeCategoryStyles];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(applyContentSizeCategoryStyles)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(applyContentSizeCategoryStyles)];
 
   return self;
 }
@@ -139,20 +136,6 @@
   self.parentFolderNameLabel.text = nil;
   self.cloudSlashedView.hidden = YES;
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self applyContentSizeCategoryStyles];
-  }
-}
-#endif
 
 - (void)applyContentSizeCategoryStyles {
   if (UIContentSizeCategoryIsAccessibilityCategory(

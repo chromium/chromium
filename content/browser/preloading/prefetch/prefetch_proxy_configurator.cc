@@ -13,6 +13,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -37,7 +38,7 @@ PrefetchProxyConfigurator::MaybeCreatePrefetchProxyConfigurator(
 
 PrefetchProxyConfigurator::PrefetchProxyConfigurator(const GURL& proxy_url,
                                                      const std::string& api_key)
-    : prefetch_proxy_chain_(net::GetSchemeFromUriScheme(proxy_url.scheme()),
+    : prefetch_proxy_chain_(net::GetSchemeFromUriScheme(proxy_url.GetScheme()),
                             net::HostPortPair::FromURL(proxy_url)),
       clock_(base::DefaultClock::GetInstance()) {
   DCHECK(proxy_url.is_valid());

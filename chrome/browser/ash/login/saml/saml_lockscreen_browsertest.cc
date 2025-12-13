@@ -14,11 +14,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
+#include "chrome/browser/ash/login/saml/saml_test_utils.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/signin/authentication_flow_auto_reload_manager.h"
@@ -56,7 +57,6 @@
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "components/account_id/account_id.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -107,6 +107,9 @@ constexpr char kSAMLLinkedPageURLPattern[] =
     "*"
     "/linked";
 
+constexpr char kSamlRedirectDuringUnlockHistogram[] =
+    "ChromeOS.SAML.Unlock.SamlRedirectUsage";
+
 void ErrorCallbackFunction(base::OnceClosure run_loop_quit_closure,
                            const std::string& error_name,
                            const std::string& error_message) {
@@ -145,8 +148,6 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
-    // TODO(crbug.com/1177416) - Fix this with a proper SSL solution.
-    command_line->AppendSwitch(::switches::kIgnoreCertificateErrors);
 
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -805,6 +806,7 @@ IN_PROC_BROWSER_TEST_F(AutoStartTest, DialogShownOnReauthEnforcement) {
 // Verify that the "Enter Google Account Info" is shown during
 // AutoStart flow and pressing it initiates the standard reauth flow.
 IN_PROC_BROWSER_TEST_F(AutoStartTest, ChangeIdPButtonPresence) {
+  base::HistogramTester histogram_tester;
   Login();
   ForceOnlineReauthOnLockScreen();
   ScreenLockerTester().Lock();
@@ -819,6 +821,8 @@ IN_PROC_BROWSER_TEST_F(AutoStartTest, ChangeIdPButtonPresence) {
   auto saml_waiter = reauth_dialog_helper->CreateSamlPageLoadWaiter();
   reauth_dialog_helper->WaitForSigninWebview();
   saml_waiter->Wait();
+  histogram_tester.ExpectUniqueSample(kSamlRedirectDuringUnlockHistogram,
+                                      SamlRedirectEvent::kStartWithDomain, 1);
 
   // EGAI button should be visible during the AutoStart flow,
   // but not during normal reauth.
@@ -828,6 +832,9 @@ IN_PROC_BROWSER_TEST_F(AutoStartTest, ChangeIdPButtonPresence) {
   // With reauth endpoint we start on a Gaia page where user needs to click
   // "Next" before being redirected to SAML IdP page.
   reauth_dialog_helper->WaitForPrimaryGaiaButtonToBeEnabled();
+  histogram_tester.ExpectBucketCount(
+      kSamlRedirectDuringUnlockHistogram,
+      SamlRedirectEvent::kChangeToDefaultGoogleSignIn, 1);
   auto new_saml_waiter = reauth_dialog_helper->CreateSamlPageLoadWaiter();
   reauth_dialog_helper->ClickPrimaryGaiaButton();
 
@@ -1341,6 +1348,8 @@ class SamlSsoProfileTest : public SamlUnlockTest {
 // Test that during online reauth on the lock screen we can perform SAML
 // redirection without relying on domain-based redirection. Depending on
 // Gaia endpoint, we will rely either on an email, or on an SSO profile.
+// TODO(crbug.com/448384223): this should be rewritten as AutoStartTest, because
+// nowadays auto-start is the only lock screen flow where we use /samlredirect.
 IN_PROC_BROWSER_TEST_F(SamlSsoProfileTest, ReauthIndependentOfDomain) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 

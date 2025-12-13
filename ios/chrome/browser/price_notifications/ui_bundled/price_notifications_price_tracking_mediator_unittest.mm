@@ -56,7 +56,7 @@ const char kTestUrl[] = "https://www.merchant.com/price_drop_product";
 const char kTestUrlVariant[] =
     "https://www.merchant.com/price_drop_product?variant=1";
 const char kBookmarkTitle[] = "My product title";
-uint64_t kClusterId = 12345L;
+constexpr uint64_t kClusterId = 12345L;
 
 PriceInsightsItem* GetPriceInsightsItem() {
   PriceInsightsItem* item = [[PriceInsightsItem alloc] init];
@@ -128,7 +128,7 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
     TestProfileIOS* test_profile =

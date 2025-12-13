@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] e.style['-webkit-mask-position-y'] = "y-start" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['-webkit-mask-position-y'] = "y-end" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['-webkit-mask-position-y'] = "0.5em, y-start, y-end" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

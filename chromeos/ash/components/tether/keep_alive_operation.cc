@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/tether/keep_alive_operation.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"

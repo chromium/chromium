@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
@@ -34,6 +33,7 @@
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
@@ -44,7 +44,8 @@ namespace user_education {
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
-const ui::ElementContext kTestElementContext{1};
+constexpr ui::ElementContext kTestElementContext =
+    ui::ElementContext::CreateFakeContextForTesting(1);
 constexpr gfx::Rect kWidgetBounds{400, 200, 200, 200};
 }  // namespace
 

@@ -58,6 +58,10 @@ namespace {
 
 constexpr char kHostname[] = "direct-sockets.com";
 constexpr char kPrivateAddress[] = "10.8.0.1";
+// It is fine to reuse the same address, because
+// the port will be generated unique on this machine.
+// multicast addresses are in range 224.0.0.0 to 239.255.255.255.
+constexpr char kMulticastAddress[] = "237.132.100.17";
 
 constexpr std::string_view kTcpReadWriteScript = R"(
   new Promise(async (resolve, reject) => {
@@ -108,6 +112,16 @@ constexpr std::string_view kTcpReadWriteScript = R"(
       reject(err);
     }
   });
+)";
+
+constexpr std::string_view kMulticastJoinLeaveGroup = R"(
+  (async () => {
+    const socket = new UDPSocket({ localAddress: $1 });
+    const { multicastController } = await socket.opened;
+
+    await multicastController.joinGroup($2);
+    await multicastController.leaveGroup($2);
+  })();
 )";
 
 constexpr std::string_view kUdpConnectedReadWriteScript = R"(
@@ -239,6 +253,57 @@ static constexpr std::string_view kTcpServerExchangePacketWithTcpScript = R"(
   });
 )";
 
+const std::string kMulticastFunctionsScript = R"(
+    const assertEq = (actual, expected) => {
+      if (actual !== expected) {
+        throw `Expected ${JSON.stringify(expected)},
+          got ${JSON.stringify(actual)}`;
+      }
+    };
+    async function sendLoop(socket, requiredBytes) {
+      let bytesWritten = 0;
+      let chunkLength = 0;
+
+      const { writable } = await socket.opened;
+      const writer = writable.getWriter();
+
+      while (bytesWritten < requiredBytes) {
+        chunkLength = Math.min(chunkLength + 1,
+                              requiredBytes - bytesWritten);
+        let chunk = new Uint8Array(chunkLength);
+        for (let index = 0; index < chunkLength; index++) {
+          chunk[index] = bytesWritten % 256;
+          bytesWritten++;
+        }
+        await writer.ready;
+        await writer.write({ data: chunk });
+      }
+      assertEq(bytesWritten, requiredBytes);
+
+      writer.releaseLock();
+    }
+
+    async function readLoop(socket, requiredBytes) {
+      let bytesRead = 0;
+
+      const { readable } = await socket.opened;
+      const reader = readable.getReader();
+
+      while (bytesRead < requiredBytes) {
+        const { value: { data }, done } = await reader.read();
+        assertEq(done, false);
+        for (let index = 0; index < data.length; index++) {
+          assertEq(data[index], bytesRead % 256);
+          bytesRead++;
+        }
+      }
+      assertEq(bytesRead, requiredBytes);
+
+      reader.releaseLock();
+    }
+
+  )";
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 base::Value::Dict GenerateManifest(
@@ -266,11 +331,11 @@ auto AccessBlocked() {
 }
 
 auto PrivateNetworkAccessBlocked() {
-  return testing::HasSubstr("Access to private network is blocked");
+  return testing::HasSubstr("Access to local network is blocked");
 }
 
 auto ErrorIs(const auto& matcher) {
-  return testing::Field(&content::EvalJsResult::error, matcher);
+  return content::EvalJsResult::ErrorIs(matcher);
 }
 
 auto IsOk() {
@@ -669,7 +734,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
 class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
   content::RenderFrameHost* InstallAndOpenIsolatedWebApp(
-      bool with_pna = false) {
+      bool with_pna = false,
+      bool with_multicast = false) {
     using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
 
     auto manifest_builder =
@@ -679,11 +745,21 @@ class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
       manifest_builder.AddPermissionsPolicyWildcard(
           PermissionsPolicyFeature::kDirectSocketsPrivate);
     }
+    if (with_multicast) {
+      manifest_builder.AddPermissionsPolicyWildcard(
+          PermissionsPolicyFeature::kMulticastInDirectSockets);
+    }
     auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
                    .BuildBundle();
     web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
     return OpenApp(url_info.app_id());
   }
+};
+
+class IsolatedWebAppMulticastApiTest : public IsolatedWebAppApiTest {
+ private:
+  base::test::ScopedFeatureList features_{
+      blink::features::kMulticastInDirectSockets};
 };
 
 class IsolatedWebAppSharedWorkerApiTest
@@ -720,9 +796,16 @@ class IsolatedWebAppSharedWorkerApiTest
     });
   )";
 
+  IsolatedWebAppSharedWorkerApiTest() {
+    features_.InitWithFeatures({blink::features::kDirectSocketsInSharedWorkers,
+                                blink::features::kMulticastInDirectSockets},
+                               {});
+  }
+
   content::RenderFrameHost* InstallAndOpenIsolatedWebAppWithSharedWorkerScript(
       std::string_view shared_worker_script,
-      bool with_pna = false) {
+      bool with_pna = false,
+      bool with_multicast = false) {
     using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
 
     auto manifest_builder =
@@ -732,6 +815,10 @@ class IsolatedWebAppSharedWorkerApiTest
       manifest_builder.AddPermissionsPolicyWildcard(
           PermissionsPolicyFeature::kDirectSocketsPrivate);
     }
+    if (with_multicast) {
+      manifest_builder.AddPermissionsPolicyWildcard(
+          PermissionsPolicyFeature::kMulticastInDirectSockets);
+    }
     auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
                    .AddJs("/shared_worker.js", shared_worker_script)
                    .BuildBundle();
@@ -740,8 +827,7 @@ class IsolatedWebAppSharedWorkerApiTest
   }
 
  private:
-  base::test::ScopedFeatureList features_{
-      blink::features::kDirectSocketsInSharedWorkers};
+  base::test::ScopedFeatureList features_;
 };
 
 class IsolatedWebAppServiceWorkerApiTest
@@ -778,9 +864,16 @@ class IsolatedWebAppServiceWorkerApiTest
     });
   )";
 
+  IsolatedWebAppServiceWorkerApiTest() {
+    features_.InitWithFeatures({blink::features::kDirectSocketsInServiceWorkers,
+                                blink::features::kMulticastInDirectSockets},
+                               {});
+  }
+
   content::RenderFrameHost* InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
       std::string_view service_worker_script,
-      bool with_pna = false) {
+      bool with_pna = false,
+      bool with_multicast = false) {
     using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
 
     auto manifest_builder =
@@ -790,6 +883,10 @@ class IsolatedWebAppServiceWorkerApiTest
       manifest_builder.AddPermissionsPolicyWildcard(
           PermissionsPolicyFeature::kDirectSocketsPrivate);
     }
+    if (with_multicast) {
+      manifest_builder.AddPermissionsPolicyWildcard(
+          PermissionsPolicyFeature::kMulticastInDirectSockets);
+    }
     auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
                    .AddJs("/service_worker.js", service_worker_script)
                    .BuildBundle();
@@ -798,8 +895,7 @@ class IsolatedWebAppServiceWorkerApiTest
   }
 
  private:
-  base::test::ScopedFeatureList features_{
-      blink::features::kDirectSocketsInServiceWorkers};
+  base::test::ScopedFeatureList features_;
 };
 
 template <typename T>
@@ -925,6 +1021,10 @@ using ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest =
     ChromeDirectSocketsUdpIsolatedWebAppTestBase<
         IsolatedWebAppServiceWorkerApiTest>;
 
+using ChromeDirectSocketsUdpIsolatedWebAppMulticastTest =
+    ChromeDirectSocketsUdpIsolatedWebAppTestBase<
+        IsolatedWebAppMulticastApiTest>;
+
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
 
@@ -968,7 +1068,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
 
   constexpr std::string_view kUdpPna = R"(
     (async () => {
-      const socket = new UDPSocket({ remoteAddress: $1, remotePort: 459 });
+      const socket = new UDPSocket({ remoteAddress: $1, remotePort: 459, });
       await socket.opened;
     })();
   )";
@@ -996,6 +1096,166 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
 
   ASSERT_THAT(EvalJs(app_frame, content::JsReplace(kUdpPna, kPrivateAddress)),
               ErrorIs(PrivateNetworkAccessBlocked()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
+    UdpSocketWithMulticastParamsFailsWithoutMulticastPermissionPolicy) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/false);
+
+  constexpr std::string_view script = R"(
+    (async () => {
+      const socket = new UDPSocket({ remoteAddress: $1, remotePort: 459,
+         multicastAllowAddressSharing: true, multicastTimeToLive: 5, multicastLoopback: true });
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(script, kPrivateAddress)),
+              ErrorIs(testing::HasSubstr(
+                  "Cannot use Multicast options if permission "
+                  "policy 'direct-sockets-multicast' is absent")));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
+    UdpSocketHasNoMulticastControllerWithoutMulticastPermissionPolicy) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/false);
+
+  constexpr std::string_view script = R"(
+    (async () => {
+      const socket = new UDPSocket({ localAddress: $1 });
+      const { multicastController } = await socket.opened;
+      multicastController.joinGroup($2);
+    })();
+  )";
+
+  ASSERT_THAT(
+      EvalJs(app_frame, content::JsReplace(
+                            script, net::IPAddress::IPv4AllZeros().ToString(),
+                            kMulticastAddress)),
+      ErrorIs(testing::HasSubstr("Cannot read properties of undefined")));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
+                       MulticastJoinLeaveGroup) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
+
+  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(
+                                    kMulticastJoinLeaveGroup,
+                                    net::IPAddress::IPv4AllZeros().ToString(),
+                                    kMulticastAddress)),
+              IsOk());
+}
+
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UdpSocketMulticastExchange DISABLED_UdpSocketMulticastExchange
+#else
+#define MAYBE_UdpSocketMulticastExchange UdpSocketMulticastExchange
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
+                       MAYBE_UdpSocketMulticastExchange) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
+
+  std::string script = kMulticastFunctionsScript + R"(
+
+    (async () => {
+      const kRequiredDatagrams = 35;
+      const kRequiredBytes = kRequiredDatagrams * (kRequiredDatagrams + 1) / 2;
+      const receiverSocket = new UDPSocket({ localAddress: $1 });
+      const {localPort: multicastPort, multicastController} =
+          await receiverSocket.opened;
+      multicastController.joinGroup($2);
+
+      const senderSocket = new UDPSocket({
+        remoteAddress: $2,
+        remotePort: multicastPort,
+        multicastTimeToLive: 0,
+        multicastLoopback: true
+      });
+
+      const sendLoopPromise = sendLoop(senderSocket, kRequiredBytes);
+      const readLoopPromise = readLoop(receiverSocket, kRequiredBytes);
+
+      await Promise.all([sendLoopPromise, readLoopPromise]);
+
+      await senderSocket.close();
+      await receiverSocket.close();
+    })();
+  )";
+
+  ASSERT_THAT(
+      EvalJs(app_frame, content::JsReplace(
+                            script, net::IPAddress::IPv4AllZeros().ToString(),
+                            kMulticastAddress)),
+      IsOk());
+}
+
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UdpSocketMulticastExchangeMultipleReceivers \
+  DISABLED_UdpSocketMulticastExchangeMultipleReceivers
+#else
+#define MAYBE_UdpSocketMulticastExchangeMultipleReceivers \
+  UdpSocketMulticastExchangeMultipleReceivers
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
+                       MAYBE_UdpSocketMulticastExchangeMultipleReceivers) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
+
+  std::string script = kMulticastFunctionsScript + R"(
+    (async () => {
+      const kRequiredDatagrams = 35;
+      const kRequiredBytes = kRequiredDatagrams * (kRequiredDatagrams + 1) / 2;
+
+      // Create receiver 1.
+      const receiverSocket1 = new UDPSocket(
+          {localAddress: $1, multicastAllowAddressSharing: true});
+      const {
+        localPort: multicastPort,
+        multicastController: multicastController1
+      } = await receiverSocket1.opened;
+      multicastController1.joinGroup($2);
+
+      // Create receiver 2.
+      const receiverSocket2 = new UDPSocket({
+        localAddress: $1,
+        localPort: multicastPort,
+        multicastAllowAddressSharing: true
+      });
+      const {multicastController: multicastController2} =
+          await receiverSocket2.opened;
+      multicastController2.joinGroup($2);
+
+      const senderSocket = new UDPSocket({
+        remoteAddress: $2,
+        remotePort: multicastPort,
+        multicastTimeToLive: 0,
+        multicastLoopback: true
+      });
+
+      const readLoopPromise1 = readLoop(receiverSocket1, kRequiredBytes);
+      const readLoopPromise2 = readLoop(receiverSocket2, kRequiredBytes);
+      const sendLoopPromise = sendLoop(senderSocket, kRequiredBytes);
+
+      await Promise.all([sendLoopPromise, readLoopPromise1, readLoopPromise2]);
+
+      await senderSocket.close();
+      await receiverSocket1.close();
+      await receiverSocket2.close();
+    })();
+  )";
+
+  ASSERT_THAT(
+      EvalJs(app_frame, content::JsReplace(
+                            script, net::IPAddress::IPv4AllZeros().ToString(),
+                            kMulticastAddress)),
+      IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
@@ -1029,6 +1289,35 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
       base::StringPrintf(kServiceWorkerScriptTemplate,
                          content::JsReplace(kUdpBoundReadWriteScript, kHostname,
                                             test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
+          service_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
+                       MulticastJoinLeaveGroup) {
+  const std::string shared_worker_script = base::StringPrintf(
+      kSharedWorkerScriptTemplate,
+      content::JsReplace(kMulticastJoinLeaveGroup,
+                         net::IPAddress::IPv4AllZeros().ToString(),
+                         kMulticastAddress));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
+                       MulticastJoinLeaveGroup) {
+  const std::string service_worker_script = base::StringPrintf(
+      kServiceWorkerScriptTemplate,
+      content::JsReplace(kMulticastJoinLeaveGroup,
+                         net::IPAddress::IPv4AllZeros().ToString(),
+                         kMulticastAddress));
 
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebAppWithServiceWorkerScript(

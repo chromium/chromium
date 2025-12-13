@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 
+#include "base/byte_count.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -47,9 +48,9 @@
 #include "ui/views/test/button_test_api.h"
 
 namespace {
-constexpr int64_t kMemorySavingsKilobytes = 100 * 1024;
-constexpr int64_t kHighMemorySavingsKilobytes = 300 * 1024;
-constexpr int64_t kVeryHighMemorySavingsKilobytes = 3 * 1024 * 1024;
+constexpr base::ByteCount kNormalMemorySavings = base::MiB(100);
+constexpr base::ByteCount kHighMemorySavings = base::MiB(300);
+constexpr base::ByteCount kVeryHighMemorySavings = base::GiB(3);
 }  // namespace
 
 class MemorySaverChipViewTest
@@ -68,7 +69,7 @@ class MemorySaverChipViewTest
   void SetUp() override {
     MemorySaverUnitTestMixin::SetUp();
 
-    AddNewTab(kMemorySavingsKilobytes,
+    AddNewTab(kNormalMemorySavings,
               ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
     SetMemorySaverModeEnabled(true);
@@ -114,15 +115,14 @@ TEST_P(MemorySaverChipViewTest, ShouldShowChipForProactivelyDiscardedPage) {
 
 TEST_P(MemorySaverChipViewTest,
        ShouldNotShowChipWhenNonProactivelyDiscardPage) {
-  // Add a new tab that was discarded through extensions
-  AddNewTab(kMemorySavingsKilobytes,
+  // Add a new tab that was discarded through extensions.
+  AddNewTab(kNormalMemorySavings,
             ::mojom::LifecycleUnitDiscardReason::EXTERNAL);
   SetTabDiscardState(0, true);
   EXPECT_FALSE(GetPageActionView()->GetVisible());
 
-  // Add a new tab that was urgently discarded
-  AddNewTab(kMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::URGENT);
+  // Add a new tab that was urgently discarded.
+  AddNewTab(kNormalMemorySavings, ::mojom::LifecycleUnitDiscardReason::URGENT);
   SetTabDiscardState(0, true);
   EXPECT_FALSE(GetPageActionView()->GetVisible());
 }
@@ -180,14 +180,14 @@ TEST_P(MemorySaverChipViewTest, ShouldHideLabelAfterMultipleDiscards) {
 }
 
 TEST_P(MemorySaverChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
-  AddNewTab(kMemorySavingsKilobytes,
+  AddNewTab(kNormalMemorySavings,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   content::WebContents* web_contents_0 =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   content::WebContents* web_contents_1 =
       browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_EQ(2, tab_strip_model->GetTabCount());
+  EXPECT_EQ(2, tab_strip_model->count());
 
   SetTabDiscardState(0, true);
   EXPECT_TRUE(GetPageActionView()->ShouldShowLabel());
@@ -216,8 +216,7 @@ TEST_P(MemorySaverChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
 // eligible to expand.
 TEST_P(MemorySaverChipViewTest, ShouldExpandChipWhenConditionsAreMet) {
   SetChipExpandedCount(MemorySaverChipView::kChipAnimationCount);
-  AddNewTab(kHighMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  AddNewTab(kHighMemorySavings, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
   task_environment()->AdvanceClock(base::Hours(8));
   SetTabDiscardState(0, true);
@@ -245,8 +244,7 @@ TEST_P(MemorySaverChipViewTest, ShouldNotExpandForSavingsBelowThreshold) {
 TEST_P(MemorySaverChipViewTest, ShouldNotExpandWhenChipHasExpandedRecently) {
   SetChipExpandedCount(MemorySaverChipTabHelper::kChipAnimationCount);
   SetChipExpandedTimeToNow();
-  AddNewTab(kHighMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  AddNewTab(kHighMemorySavings, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
   task_environment()->AdvanceClock(base::Hours(8));
   SetTabDiscardState(0, true);
@@ -260,8 +258,7 @@ TEST_P(MemorySaverChipViewTest, ShouldNotExpandWhenChipHasExpandedRecently) {
 // expanded mode.
 TEST_P(MemorySaverChipViewTest, ShouldNotExpandWhenTabWasDiscardedRecently) {
   SetChipExpandedCount(MemorySaverChipTabHelper::kChipAnimationCount);
-  AddNewTab(kHighMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  AddNewTab(kHighMemorySavings, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
   SetTabDiscardState(0, true);
 
@@ -273,8 +270,7 @@ TEST_P(MemorySaverChipViewTest, ShouldNotExpandWhenTabWasDiscardedRecently) {
 // When the celebratory expanded chip is shown, UMA metrics should be logged.
 TEST_P(MemorySaverChipViewTest, ShouldLogMetricsForCelebratoryExpandedChip) {
   SetChipExpandedCount(MemorySaverChipTabHelper::kChipAnimationCount);
-  AddNewTab(kHighMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  AddNewTab(kHighMemorySavings, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
   task_environment()->AdvanceClock(base::Hours(8));
   SetTabDiscardState(0, true);
@@ -291,7 +287,7 @@ TEST_P(MemorySaverChipViewTest, MoreThan2GbMemorySavings) {
   SetChipExpandedCount(MemorySaverChipTabHelper::kChipAnimationCount);
 
   // Add a new tab with a >2GB memory saving.
-  AddNewTab(kVeryHighMemorySavingsKilobytes,
+  AddNewTab(kVeryHighMemorySavings,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
   // Fast-forward time, to exceed the time threshold for the chip to be shown.

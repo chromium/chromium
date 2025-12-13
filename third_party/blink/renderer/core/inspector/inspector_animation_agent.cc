@@ -253,12 +253,17 @@ BuildObjectForAnimationEffect(KeyframeEffect* effect) {
           .setDelay(delay)
           .setEndDelay(end_delay)
           .setIterationStart(computed_timing->iterationStart())
-          .setIterations(computed_timing->iterations())
           .setDuration(NormalizedDuration(computed_timing->duration()))
           .setDirection(computed_timing->direction().AsString())
           .setFill(computed_timing->fill().AsString())
           .setEasing(easing)
           .build();
+
+  double iterations = computed_timing->iterations();
+  if (std::isfinite(iterations)) {
+    animation_object->setIterations(iterations);
+  }
+
   if (effect->EffectTarget()) {
     animation_object->setBackendNodeId(
         IdentifiersFactory::IntIdForNode(effect->EffectTarget()));
@@ -564,7 +569,7 @@ String InspectorAnimationAgent::CreateCSSId(blink::Animation& animation) {
   Element* element = effect->EffectTarget();
   HeapVector<Member<CSSStyleDeclaration>> styles =
       css_agent_->MatchingStyles(element);
-  Digestor digestor(kHashAlgorithmSha1);
+  Digestor digestor(kHashAlgorithmSha256);
   digestor.UpdateUtf8(IsA<CSSTransition>(animation)
                           ? AnimationType::CSSTransition
                           : AnimationType::CSSAnimation);
@@ -831,9 +836,8 @@ void InspectorAnimationAgent::AnimationUpdated(blink::Animation* animation) {
         inspected_frames_->Root()->GetTaskRunner(TaskType::kInternalInspector);
     task_runner->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(&InspectorAnimationAgent::NotifyAnimationUpdated,
-                      WrapPersistent(weak_factory_.GetWeakCell()),
-                      animation_id),
+        BindOnce(&InspectorAnimationAgent::NotifyAnimationUpdated,
+                 WrapPersistent(weak_factory_.GetWeakCell()), animation_id),
         base::Milliseconds(50));
   }
 }

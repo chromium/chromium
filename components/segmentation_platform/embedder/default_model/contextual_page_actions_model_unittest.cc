@@ -4,7 +4,9 @@
 
 #include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/segmentation_platform/embedder/default_model/default_model_test_base.h"
+#include "components/segmentation_platform/public/features.h"
 
 namespace segmentation_platform {
 
@@ -19,13 +21,19 @@ class ContextualPageActionsModelTest : public DefaultModelTestBase {
       bool has_price_tracking,
       bool has_reader_mode,
       bool has_discounts = false,
-      bool has_tab_grouping_suggestions = false) {
+      bool has_tab_grouping_suggestions = false,
+      float non_contextual_click_count = 0,
+      float tab_group_shown_count = 0,
+      float tab_group_clicked_count = 0) {
     ModelProvider::Request input;
     input.push_back(has_discounts ? 1 : 0);
     input.push_back(has_price_insights ? 1 : 0);
     input.push_back(has_price_tracking ? 1 : 0);
     input.push_back(has_reader_mode ? 1 : 0);
     input.push_back(has_tab_grouping_suggestions ? 1 : 0);
+    input.push_back(non_contextual_click_count);
+    input.push_back(tab_group_shown_count);
+    input.push_back(tab_group_clicked_count);
     return input;
   }
 
@@ -34,7 +42,10 @@ class ContextualPageActionsModelTest : public DefaultModelTestBase {
       bool has_price_tracking,
       bool has_reader_mode,
       bool has_discounts = false,
-      bool has_tab_grouping_suggestions = false) {
+      bool has_tab_grouping_suggestions = false,
+      float non_contextual_click_count = 0,
+      float tab_group_shown_count = 0,
+      float tab_group_clicked_count = 0) {
     ModelProvider::Response response;
     response.push_back(has_discounts ? 1 : 0);
     response.push_back(has_price_insights ? 1 : 0);
@@ -151,6 +162,63 @@ TEST_F(ContextualPageActionsModelTest, ExecuteModelWithInput_TabSuggestions) {
                            /*expected_result=*/expected_response);
   // Discounts has greater priority than tab group suggestions.
   ExpectClassifierResults(input, {kContextualPageActionModelLabelDiscounts});
+}
+
+TEST_F(ContextualPageActionsModelTest,
+       TabSuggestionsThrottling_ThrottleOnNewTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kContextualPageActionTabGroupThrottling,
+        {{"throttle_on_new_tab", "true"}}}},
+      {});
+
+  ExpectInitAndFetchModel();
+
+  // Tab group suggestions = 1.
+  ModelProvider::Request input =
+      GetRequestInput(false, false, false, false, true);
+  ExpectExecutionWithInput(input, /*expected_error=*/false, {0, 0, 0, 0, 1});
+  ExpectClassifierResults(input, {kContextualPageActionModelLabelTabGrouping});
+
+  // Tab group suggestions = 1, non contextual click = 1. "group suggestions"
+  // is ignored due to non contextual clicks.
+  input = GetRequestInput(false, false, false, false, true, 1);
+  ExpectExecutionWithInput(input, /*expected_error=*/false, {0, 0, 0, 0, 0});
+  ExpectClassifierResults(input, {});
+
+  // Tab group shown but not clicked.
+  input = GetRequestInput(false, false, false, false, true, 0, 1, 0);
+  ExpectExecutionWithInput(input, /*expected_error=*/false, {0, 0, 0, 0, 1});
+  ExpectClassifierResults(input, {kContextualPageActionModelLabelTabGrouping});
+}
+
+TEST_F(ContextualPageActionsModelTest,
+       TabSuggestionsThrottling_ShowWhenNotClicked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kContextualPageActionTabGroupThrottling,
+        {{"show_when_not_clicked_in_last_day", "true"}}}},
+      {});
+
+  ExpectInitAndFetchModel();
+
+  // Tab group suggestions = 1.
+  ModelProvider::Request input =
+      GetRequestInput(false, false, false, false, true);
+  ExpectExecutionWithInput(input, /*expected_error=*/false, {0, 0, 0, 0, 1});
+  ExpectClassifierResults(input, {kContextualPageActionModelLabelTabGrouping});
+
+  // Price insights = 0, price tracking = 0, reader mode = 0, discounts = 0, tab
+  // group suggestions = 1, non contextual click = 1. "group suggestions" is
+  // not ignored (throttle_on_new_tab is not enabled).
+  input = GetRequestInput(false, false, false, false, true, 1);
+  ExpectExecutionWithInput(input, /*expected_error=*/false, {0, 0, 0, 0, 1});
+  ExpectClassifierResults(input, {kContextualPageActionModelLabelTabGrouping});
+
+  // Tab group shown but not clicked.
+  input = GetRequestInput(false, false, false, false, true, 0, 1, 0);
+  ExpectExecutionWithInput(input, /*expected_error=*/false, {0, 0, 0, 0, 0});
+  ExpectClassifierResults(input, {});
 }
 
 }  // namespace segmentation_platform

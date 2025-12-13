@@ -18,6 +18,7 @@ android_library("java") {
   ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/ApplyButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/EmptyHubBottomToolbarDelegate.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImpl.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonCoordinator.java",
@@ -25,6 +26,13 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonMediator.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonProperties.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonViewBinder.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubBottomToolbarCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubBottomToolbarDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubBottomToolbarDelegateFactory.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubBottomToolbarMediator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubBottomToolbarProperties.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubBottomToolbarView.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubBottomToolbarViewBinder.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubColorBlendAnimatorSetHelper.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubColorMixerImpl.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubColorSchemeUpdate.java",
@@ -76,7 +84,6 @@ android_library("java") {
     "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/user_education:java",
-    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
@@ -92,18 +99,21 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/edge_to_edge:java",
     "//url:url_java",
   ]
 }
 
 android_resources("java_resources") {
   sources = [
+    "android/res/color-night/hub_search_box_bg_color.xml",
     "android/res/color/hub_action_button_disabled_background_color.xml",
     "android/res/color/hub_action_button_disabled_icon_color.xml",
+    "android/res/color/hub_search_box_bg_color.xml",
     "android/res/drawable/hub_pane_switcher_background.xml",
     "android/res/drawable/hub_pane_switcher_item_selector.xml",
     "android/res/drawable/hub_search_box_background.xml",
-    "android/res/drawable/new_tab_button_background.xml",
+    "android/res/layout/hub_bottom_toolbar_layout.xml",
     "android/res/layout/hub_layout.xml",
     "android/res/layout/hub_overlay_container.xml",
     "android/res/layout/hub_pane_host_layout.xml",
@@ -147,7 +157,7 @@ android_library("unit_device_javatests") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
@@ -161,6 +171,9 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonMediatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonViewUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubBottomToolbarCoordinatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubBottomToolbarMediatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubBottomToolbarViewUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubColorMixerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubCoordinatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerImplUnitTest.java",
@@ -200,7 +213,6 @@ robolectric_library("junit") {
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/user_education:java",
     "//chrome/test/android:chrome_java_unit_test_support",
-    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/theme/android:java_resources",
@@ -220,6 +232,7 @@ robolectric_library("junit") {
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
+    "//ui/edge_to_edge:java",
     "//url:url_java",
   ]
 }

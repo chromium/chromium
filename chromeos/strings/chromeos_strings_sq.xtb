@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">portokaj</translation>
 <translation id="1275718070701477396">Përzgjedhur</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
+<translation id="1292474106138697109">Shfaqja e "Veglave të orës së mësimit"</translation>
 <translation id="1300115153046603471">APN-ja është e llojit të parazgjedhur dhe <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Konverto</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imazhe</translation>
 <translation id="4300272766492248925">Hap aplikacionin</translation>
 <translation id="430786093962686457">byrynxhyk</translation>
+<translation id="4309762678330556039">Krijo automatikisht transkriptime dhe kërko audio. Mund të krijosh regjistrime edhe kur nuk je i lidhur me internetin.</translation>
 <translation id="4310735698903592804">Imazhet e fundit të sfondit të mundësuara nga inteligjenca artificiale e Google</translation>
 <translation id="4320904097188876154">rozë neoni</translation>
 <translation id="432961742358282111">Kliko me butonin djathtas ose shtyp dhe mbaj shtypur për të marrë përkufizime, përkthime ose konvertime të njësive. Përdor tastet "Shigjeta majtas" ose "Shigjeta djathtas" për ta menaxhuar këtë veçori.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5600027863942488546">Tasti <ph name="KEY_NAME" /> u testua</translation>
 <translation id="5606865426897221650">Skeda</translation>
+<translation id="5612205513582918357">"Veglat e orës së mësimit" po ndajnë ekranin tënd me <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Ke dalë nga llogaria</translation>
 <translation id="5620281292257375798">Vetëm i brendshëm</translation>
 <translation id="5628106863521633649">Gjuhët e disponueshme</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Rrjedha e reve</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nuk ofrohet asnjë skaner</translation>
-<translation id="6231648282154119906">Skedarët e dyshimtë do të skanohen automatikisht nga "Shfletimi i sigurt i Google" si pjesë e mbrojtjes së përmirësuar që ke zgjedhur</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6234024205316847054">Shfaq strukturat</translation>
 <translation id="6243280677745499710">Caktuar aktualisht</translation>

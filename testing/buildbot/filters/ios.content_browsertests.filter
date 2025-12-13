@@ -74,7 +74,6 @@
 -KeyboardLockBrowserTest.LockRequestBeforeCrossOriginIFrameIsFullscreen
 -KeyboardLockBrowserTest.LockRequestWhileCrossOriginIFrameIsFullscreen
 -MemoryInstrumentationTest.PrivateFootprintComputation
--MojoSandboxTest.IsProcessSandboxed
 -NetworkResponseProtocolECHTest.SecurityDetailsECH
 -NoCompositingRenderWidgetHostViewBrowserTest.NoFallbackAfterHiddenNavigationFails
 -NoCompositingRenderWidgetHostViewBrowserTest.ValidLocalSurfaceIdAfterHiddenNavigation
@@ -85,7 +84,7 @@
 -PortalPixelBrowserTest.PageScaleRaster
 -PrerenderBrowserTest.ActivateOnLinkClick_TargetBlankWithNoopener_WithTargetHintBlank
 -PrerenderBrowserTest.ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
--PrerenderSequentialPrerenderingBrowserTest.MultipleNewTabPrerendering
+-PrerenderBrowserTest.MultipleNewTabPrerendering
 -RenderWidgetHostFoldableCSSTest.FoldablesCSSWithOverrides
 -RenderWidgetHostFoldableCSSTest.FoldablesCSSWithReload
 -RenderWidgetHostSitePerProcessTest.BrowserClosesSelectPopup
@@ -224,7 +223,6 @@
 -SystemTracingEndToEndBrowserTest.SimpleTraceEvent
 
 # These tests are flaky.
--All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
 -All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/0
 -All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/1
 -BackForwardCacheBrowserTest.DoesNotCacheIfSpeechRecognitionIsStarted
@@ -352,48 +350,27 @@
 # TODO(crbug.com/369224662): These tests have been failing since
 # https://crrev.com/c/5831814 and https://crrev.com/c/5840289.
 -All/DumpAccessibilityTreeTest.AccessibilityInputColorWithPopupOpen/blink
--All/DumpAccessibilityTreeTest.AccessibilityInputColorWithPopupOpen/blink
--All/DumpAccessibilityTreeTest.AccessibilityInputDateWithPopupOpen/blink
 -All/DumpAccessibilityTreeTest.AccessibilityInputDateWithPopupOpen/blink
 -All/DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
--All/DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
--All/DumpAccessibilityTreeTest.AccessibilityMultiSelectable/blink
 -All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
--All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
--All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
 -All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
 -All/OnScreenModeDumpAccessibilityTreeTest.ContentWith3ViewPortScrollsForOnScreenMode/blink
 
 # TODO(crbug.com/368335261): These tests have been failing since
 # https://crrev.com/c/5464569.
 -SensorBackForwardCacheBrowserTest.AccelerometerPausedWhileCached
--SensorBackForwardCacheBrowserTest.AccelerometerPausedWhileCached
--SensorBackForwardCacheBrowserTest.AmbientLightPausedWhileCached
 -SensorBackForwardCacheBrowserTest.AmbientLightPausedWhileCached
 -SensorBackForwardCacheBrowserTest.GravityPausedWhileCached
--SensorBackForwardCacheBrowserTest.GravityPausedWhileCached
 -SensorBackForwardCacheBrowserTest.GyroscopePausedWhileCached
--SensorBackForwardCacheBrowserTest.GyroscopePausedWhileCached
--SensorBackForwardCacheBrowserTest.LinearAccelerationPausedWhileCached
 -SensorBackForwardCacheBrowserTest.LinearAccelerationPausedWhileCached
 
 # TODO(crbug.com/370751355): These tests have been failing since
 # https://crrev.com/c/5642354.
 -All/SitePerProcessWithMainFrameThresholdLocalhostTest.AllowReuseLocalHost/1
 -All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/0
--All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/0
--All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/1
 -All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/1
 -All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/0
--All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/0
 -All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/1
--All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/1
-
-# TODO(crbug.com/372062085): These tests have been failing since
-# https://crrev.com/c/5854463.
--RenderFrameHostImplPartitionedPopinBrowserTest.CreateNewWindow_FailsWithAboutBlankTargetUrl
--RenderFrameHostImplPartitionedPopinBrowserTest.CreateNewWindow_FailsWithEmptyTargetUrl
--RenderFrameHostImplPartitionedPopinBrowserTest.CreateNewWindow_FailsWithHttpTargetUrl
 
 # TODO(crbug.com/373461927): This test has been failing since
 # https://crrev.com/c/5716290.
@@ -407,8 +384,6 @@
 # TODO(crbug.com/381282539): This test has been failing since
 # https://crrev.com/c/6013928.
 -ContentBrowserTest.BrowserCrashCallStack
--ContentBrowserTest.BrowserCrashCallStack
--ContentBrowserTest.MANUAL_BrowserCrash
 -ContentBrowserTest.MANUAL_BrowserCrash
 
 # TODO(crbug.com/382303507): This test has been failing since
@@ -427,8 +402,8 @@
 
 # TODO(crbug.com/384770166): These tests have been failing since
 # https://crrev.com/c/6101118.
--PrerenderTargetHintEnabledBrowserTest.ActivateOnWindowOpen_NewTab
--PrerenderTargetHintEnabledBrowserTest.ActivateOnWindowOpen_PopUp
+-PrerenderTargetHintBrowserTest.ActivateOnWindowOpen_NewTab
+-PrerenderTargetHintBrowserTest.ActivateOnWindowOpen_PopUp
 
 # TODO(crbug.com/393431139): These tests have been failing since
 # https://crrev.com/c/5201204.
@@ -440,10 +415,10 @@
 # TODO(crbug.com/402810071): These tests have been failing since
 # https://crrev.com/c/6261869. The blink::features::kPrerender2InNewTab feature
 # doesn't work on iOS correctly.
--PrerenderTargetHintEnabledBrowserTest.ActivateOnLinkClick_TargetBlankWithNoopener_WithTargetHintBlank
--PrerenderTargetHintEnabledBrowserTest.ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
--PrerenderTargetHintEnabledBrowserTest.BackgroundedPage_ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
--PrerenderTargetHintEnabledBrowserTest.SessionStorage_TargetBlank_WithTargetHintBlank
+-PrerenderTargetHintBrowserTest.ActivateOnLinkClick_TargetBlankWithNoopener_WithTargetHintBlank
+-PrerenderTargetHintBrowserTest.ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
+-PrerenderTargetHintBrowserTest.BackgroundedPage_ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
+-PrerenderTargetHintBrowserTest.SessionStorage_TargetBlank_WithTargetHintBlank
 -PrerenderTargetHintOriginTrialBrowserTest.Prerender2InNewTabOriginTrial
 
 # These tests have been failing since https://crrev.com/c/6459930.
@@ -458,9 +433,9 @@
 
 # TODO(crbug.com/427329344): These tests have been failing since
 # https://crrev.com/c/6636534.
--PrerenderTargetHintEnabledBrowserTest.ActivateOnBothTargetHint
--PrerenderTargetHintEnabledBrowserTest.ActivateOnOneSelfAndTwoBlankTargetHint
--PrerenderTargetHintEnabledBrowserTest.PrerenderBothTargetHintButRemovesTargetHintSelf
+-PrerenderTargetHintBrowserTest.ActivateOnBothTargetHint
+-PrerenderTargetHintBrowserTest.ActivateOnOneSelfAndTwoBlankTargetHint
+-PrerenderTargetHintBrowserTest.PrerenderBothTargetHintButRemovesTargetHintSelf
 
 # TODO(crbug.com/428021765): These tests have been failing between build #100[1]
 # and #667[2].
@@ -483,3 +458,44 @@
 # TODO(crbug.com/431553196): The test has been failing since
 # #935 build on the bot(https://ci.chromium.org/ui/p/chromium/builders/ci/ios-blink-rel-fyi/935/blamelist).
 -FencedFrameNestedModesTest/FencedFrameNestedModesTest.NestedModes/ParentModeOpaqueAds_ChildModeOpaqueAds
+
+# # TODO(crbug.com/437738588): The test has been failing since
+# https://crrev.com/c/6777074.
+-All/IndexedDBBrowserTest.SchedulingPriority/WithLevelDb
+-All/IndexedDBBrowserTest.SchedulingPriority/WithSqlite
+
+# TODO(crbug.com/437957113): The test has been failing since
+# https://crrev.com/c/6566111.
+-MojoSandboxTest.NotIsProcessSandboxed
+
+# TODO(crbug.com/445048341):  The test has been failing since
+# https://crrev.com/c/6917313.
+-All/DumpAccessibilityTreeTest.AccessibilityListMarkerMultiline/blink
+
+# TODO(crbug.com/40890727): The test has been flaky since
+# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fcontent%2Ftest%3Acontent_browsertests%2FFormControlsBrowserTest.MultiSelect?q=VHASH%3A52355b1ee364ed80
+-FormControlsBrowserTest.MultiSelect
+
+# TODO(crbug.com/452680511): The test has been failing since
+# https://crrev.com/c/6966639.
+-FileSystemChooserBrowserTest.DontShowWhileHidden
+-FileSystemChooserBrowserTest.ShowThenHide
+
+# TODO(crbug.com/454067890): The test has been failing since
+# https://crrev.com/c/6734221.
+-All/AudioServiceBrowserTest.GetUserMediaEcRemoteOnly/SystemAecAvailable
+-All/AudioServiceBrowserTest.GetUserMediaEcRemoteOnly/SystemAecNotAvailable
+
+# TODO(crbug.com/455304273): The test has been failing since
+# #7619 build on the bot(https://ci.chromium.org/ui/p/chromium/builders/ci/ios-blink-rel-fyi/7619/blamelist).
+-ContentBrowserTest.RunMockTests
+
+# TODO(crbug.com/460416956): The test has been failing since
+# https://crrev.com/c/7068613.
+-PrerenderUntilScriptBrowserTest.TargetBlank
+
+# TODO(crbug.com/463721931): The test below are flaky on the bot.
+-All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
+-All/NavigationControllerHistoryInterventionBrowserTest.TestHonorStickyActivationWithChildFrameCrossDocument/RDAllFrames_BFCacheDisabled
+-All/NavigationControllerHistoryInterventionBrowserTest.TestHonorStickyActivationWithChildFrameCrossDocument/RDAllFrames_BFCacheEnabled
+-All/VirtualBrowsingContextGroupTest.Navigation/RDCrashedFrame_BFCacheEnabled

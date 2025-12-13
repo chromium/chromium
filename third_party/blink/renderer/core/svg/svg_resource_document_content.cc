@@ -29,10 +29,11 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/isolated_svg_document_host.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
+#include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -141,8 +142,8 @@ SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
   auto* chrome_client = MakeGarbageCollected<ChromeClient>(this);
   document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
       *chrome_client, *agent_group_scheduler_, std::move(data),
-      WTF::BindOnce(&SVGResourceDocumentContent::AsyncLoadingFinished,
-                    WrapWeakPersistent(this)),
+      BindOnce(&SVGResourceDocumentContent::AsyncLoadingFinished,
+               WrapWeakPersistent(this)),
       /* inherited_settings */ nullptr, /* inherited_color_maps */ nullptr,
       IsolatedSVGDocumentHost::ProcessingMode::kStatic);
   // If IsLoaded() returns true then the document load completed synchronously,
@@ -202,8 +203,8 @@ void SVGResourceDocumentContent::AddObserver(
   if (IsLoaded()) {
     task_runner_->PostTask(
         FROM_HERE,
-        WTF::BindOnce(&SVGResourceDocumentContent::NotifyObserver,
-                      WrapPersistent(this), WrapWeakPersistent(observer)));
+        BindOnce(&SVGResourceDocumentContent::NotifyObserver,
+                 WrapPersistent(this), WrapWeakPersistent(observer)));
   }
 }
 
@@ -283,13 +284,16 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
   params.SetRequestDestination(network::mojom::RequestDestination::kImage);
 
   Page* page = document.GetPage();
-  auto& cache = page->GetSVGResourceDocumentCache();
+  auto& cache = page->GetSVGDocumentResourceTracker();
+  const SVGDocumentResourceTracker::CacheKey key =
+      SVGDocumentResourceTracker::MakeCacheKey(params);
 
-  const SVGResourceDocumentCache::CacheKey key =
-      SVGResourceDocumentCache::MakeCacheKey(params);
-  auto* cached_content = cache.Get(key);
-  if (cached_content && CanReuseContent(*cached_content)) {
-    return cached_content;
+  if (!RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
+    auto* cached_content = cache.Get(key);
+    if (cached_content && CanReuseContent(*cached_content)) {
+      return cached_content;
+    }
   }
 
   SVGDocumentResource* resource = SVGDocumentResource::Fetch(
@@ -297,7 +301,15 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
   if (!resource) {
     return nullptr;
   }
-  cache.Put(key, resource->GetContent());
+
+  if (RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
+    cache.AddResource(resource);
+    UseCounter::Count(document, WebFeature::kExternalSVGDocumentResources);
+  } else {
+    cache.Put(key, resource->GetContent());
+  }
+
   return resource->GetContent();
 }
 

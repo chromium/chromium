@@ -445,7 +445,7 @@ TEST_F(OriginTrialContextTest, GetEnabledNavigationFeatures) {
   auto enabled_navigation_features = GetEnabledNavigationFeatures();
   ASSERT_NE(nullptr, enabled_navigation_features.get());
   EXPECT_EQ(
-      WTF::Vector<mojom::blink::OriginTrialFeature>(
+      Vector<mojom::blink::OriginTrialFeature>(
           {mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPINavigation}),
       *enabled_navigation_features.get());
 }

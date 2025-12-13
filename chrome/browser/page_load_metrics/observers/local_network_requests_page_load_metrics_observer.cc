@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/page_load_metrics/observers/local_network_requests_page_load_metrics_observer.h"
 
-#include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -67,7 +66,8 @@ bool GetIPAndPort(
       *resource_ip = net::IPAddress::IPv4Localhost();
       ip_exists = true;
     } else {
-      ip_exists = net::ParseURLHostnameToAddress(final_url.host(), resource_ip);
+      ip_exists =
+          net::ParseURLHostnameToAddress(final_url.GetHost(), resource_ip);
     }
     *resource_port = final_url.EffectiveIntPort();
   }
@@ -83,26 +83,23 @@ bool GetIPAndPort(
 // Getter for the list of mappings for localhost ports that belong to special
 // categories that we want to track.
 const std::map<uint16_t, internal::PortType>& GetLocalhostPortCategories() {
-  static base::LazyInstance<std::map<uint16_t, internal::PortType>>::Leaky
-      localhost_port_categories = LAZY_INSTANCE_INITIALIZER;
-  if (localhost_port_categories.Get().empty()) {
-    localhost_port_categories.Get() = {
-        {80, internal::PORT_TYPE_WEB},     {443, internal::PORT_TYPE_WEB},
-        {8000, internal::PORT_TYPE_WEB},   {8008, internal::PORT_TYPE_WEB},
-        {8080, internal::PORT_TYPE_WEB},   {8081, internal::PORT_TYPE_WEB},
-        {8088, internal::PORT_TYPE_WEB},   {8181, internal::PORT_TYPE_WEB},
-        {8888, internal::PORT_TYPE_WEB},   {3306, internal::PORT_TYPE_DB},
-        {5432, internal::PORT_TYPE_DB},    {27017, internal::PORT_TYPE_DB},
-        {427, internal::PORT_TYPE_PRINT},  {515, internal::PORT_TYPE_PRINT},
-        {631, internal::PORT_TYPE_PRINT},  {9100, internal::PORT_TYPE_PRINT},
-        {9220, internal::PORT_TYPE_PRINT}, {9500, internal::PORT_TYPE_PRINT},
-        {3000, internal::PORT_TYPE_DEV},   {5000, internal::PORT_TYPE_DEV},
-        {9000, internal::PORT_TYPE_DEV},
-        // TODO(uthakore): Add additional port mappings based on further study.
-    };
-  }
-
-  return localhost_port_categories.Get();
+  static const base::NoDestructor<std::map<uint16_t, internal::PortType>>
+      localhost_port_categories{{
+          {80, internal::PORT_TYPE_WEB},     {443, internal::PORT_TYPE_WEB},
+          {8000, internal::PORT_TYPE_WEB},   {8008, internal::PORT_TYPE_WEB},
+          {8080, internal::PORT_TYPE_WEB},   {8081, internal::PORT_TYPE_WEB},
+          {8088, internal::PORT_TYPE_WEB},   {8181, internal::PORT_TYPE_WEB},
+          {8888, internal::PORT_TYPE_WEB},   {3306, internal::PORT_TYPE_DB},
+          {5432, internal::PORT_TYPE_DB},    {27017, internal::PORT_TYPE_DB},
+          {427, internal::PORT_TYPE_PRINT},  {515, internal::PORT_TYPE_PRINT},
+          {631, internal::PORT_TYPE_PRINT},  {9100, internal::PORT_TYPE_PRINT},
+          {9220, internal::PORT_TYPE_PRINT}, {9500, internal::PORT_TYPE_PRINT},
+          {3000, internal::PORT_TYPE_DEV},   {5000, internal::PORT_TYPE_DEV},
+          {9000, internal::PORT_TYPE_DEV},
+          // TODO(uthakore): Add additional port mappings based on further
+          // study.
+      }};
+  return *localhost_port_categories;
 }
 
 }  // namespace

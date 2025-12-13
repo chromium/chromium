@@ -12,6 +12,9 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
+#import "ios/web_view/internal/autofill/web_view_autofill_image_fetcher_factory.h"
+#import "ios/web_view/internal/autofill/web_view_autofill_image_fetcher_impl.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -41,6 +44,7 @@ WebViewPersonalDataManagerFactory::WebViewPersonalDataManagerFactory()
   DependsOn(WebViewIdentityManagerFactory::GetInstance());
   DependsOn(WebViewWebDataServiceWrapperFactory::GetInstance());
   DependsOn(WebViewSyncServiceFactory::GetInstance());
+  DependsOn(WebViewAutofillImageFetcherFactory::GetInstance());
 }
 
 WebViewPersonalDataManagerFactory::~WebViewPersonalDataManagerFactory() {}
@@ -58,14 +62,21 @@ WebViewPersonalDataManagerFactory::BuildServiceInstanceFor(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   auto* sync_service =
       WebViewSyncServiceFactory::GetForBrowserState(browser_state);
+
+  PrefService* prefs = browser_state->GetPrefs();
+  autofill::AutofillImageFetcherBase* autofill_image_fetcher = nullptr;
+  if (prefs->GetBoolean(ios_web_view::kUseImageFetcherEnabled)) {
+    autofill_image_fetcher =
+        WebViewAutofillImageFetcherFactory::GetForBrowserState(browser_state);
+  }
   return std::make_unique<autofill::PersonalDataManager>(
       profile_db, account_db, browser_state->GetPrefs(),
       ApplicationContext::GetInstance()->GetLocalState(),
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
       /*history_service=*/nullptr, sync_service, /*strike_database=*/nullptr,
-      /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr,
+      autofill_image_fetcher, /*shared_storage_handler=*/nullptr,
       ApplicationContext::GetInstance()->GetApplicationLocale(),
-      /*country_code=*/"");
+      /*country_code=*/"", /*autofill_optimization_guide=*/nullptr);
 }
 
 }  // namespace ios_web_view

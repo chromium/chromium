@@ -201,10 +201,6 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 
   GREYAssertEqual(linkToTextMatcher, nil, @"Link to text button visible");
 
-  // TODO(crbug.com/40191349): Tap to dismiss the system selection callout
-  // buttons so tearDown doesn't hang when `disabler` goes out of scope.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:grey_tap()];
 }
 
 // TODO(crbug.com/386205292): Test is flaky.
@@ -229,11 +225,6 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
                             selectorWithElementID:kSimpleTextElementId],
                         true)];
 
-  // TODO(crbug.com/40191349): Xcode 13 gesture recognizers seem to get stuck
-  // when the user longs presses on plain text.  For this test, disable EG
-  // synchronization.
-  ScopedSynchronizationDisabler disabler;
-
   // Ensure the menu is visible by finding the Paste button.
   // TODO(crbug.com/328271981): either remove call to selectElementWithMatcher
   // or do something with its return value
@@ -245,11 +236,6 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
       l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT));
 
   GREYAssertEqual(linkToTextMatcher, nil, @"Link to text button visible");
-
-  // TODO(crbug.com/40191349): Tap to dismiss the system selection callout
-  // buttons so tearDown doesn't hang when `disabler` goes out of scope.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:grey_tap()];
 }
 
 @end

@@ -31,14 +31,15 @@
 #include <memory>
 
 #include "base/notreached.h"
-#include "base/task/single_thread_task_runner.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
@@ -51,7 +52,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/use_counter_and_console_logger.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -60,6 +60,7 @@
 #include "v8/include/v8-forward.h"
 
 namespace base {
+class SingleThreadTaskRunner;
 class UnguessableToken;
 }  // namespace base
 
@@ -70,10 +71,6 @@ class UkmRecorder;
 namespace v8 {
 class MicrotaskQueue;
 }  // namespace v8
-
-namespace perfetto::protos::pbzero {
-class BlinkExecutionContext;
-}  // namespace perfetto::protos::pbzero
 
 namespace blink {
 
@@ -90,7 +87,6 @@ class ErrorEvent;
 class EventTarget;
 class FrameOrWorkerScheduler;
 class KURL;
-class LocalDOMWindow;
 class OriginTrialContext;
 class RuntimeFeatureStateOverrideContext;
 class PolicyContainer;
@@ -177,6 +173,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   virtual bool ShouldInstallV8Extensions() const { return false; }
 
+  virtual void MaybeRecordNetworkRequestUrlForPushEvents(const KURL& url) {}
+
   virtual void CountUseOnlyInCrossSiteIframe(mojom::blink::WebFeature feature) {
   }
 
@@ -254,12 +252,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   void SetLifecycleState(mojom::FrameLifecycleState);
   virtual void NotifyContextDestroyed();
 
-  using ConsoleLogger::AddConsoleMessage;
-
-  void AddConsoleMessage(ConsoleMessage* message,
-                         bool discard_duplicates = false) {
-    AddConsoleMessageImpl(message, discard_duplicates);
-  }
   virtual void AddInspectorIssue(AuditsIssue) = 0;
 
   void CountDeprecation(WebFeature feature) override;
@@ -454,10 +446,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
     return is_in_request_animation_frame_;
   }
 
-  // Write a representation of this object into a trace.
-  using Proto = perfetto::protos::pbzero::BlinkExecutionContext;
-  void WriteIntoTrace(perfetto::TracedProto<Proto> proto) const;
-
   // For use by FrameRequestCallbackCollection::ExecuteFrameCallbacks();
   // IsInRequestAnimationFrame() for the corresponding ExecutionContext will
   // return true while this instance exists.
@@ -481,6 +469,14 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // Returns the context's Storage Access API status.
   virtual net::StorageAccessApiStatus GetStorageAccessApiStatus() const {
     return net::StorageAccessApiStatus::kNone;
+  }
+
+  const std::optional<NoiseToken>& CanvasNoiseToken() const {
+    return canvas_noise_token_;
+  }
+
+  void SetCanvasNoiseToken(std::optional<NoiseToken> token) {
+    canvas_noise_token_ = token;
   }
 
  protected:
@@ -513,7 +509,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   unsigned circular_sequential_id_;
 
   bool in_dispatch_error_event_;
-  HeapVector<Member<ErrorEvent>> pending_exceptions_;
+  HeapVector<Member<ErrorEvent> > pending_exceptions_;
 
   mojom::FrameLifecycleState lifecycle_state_;
 
@@ -546,6 +542,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       runtime_feature_state_override_context_;
 
   bool require_trusted_types_ = false;
+
+  std::optional<NoiseToken> canvas_noise_token_;
 };
 
 }  // namespace blink

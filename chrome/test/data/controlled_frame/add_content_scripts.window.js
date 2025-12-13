@@ -19,9 +19,9 @@ function reload(controlledFrame) {
     controlledFrame.addEventListener('loadabort', onAbort);
     controlledFrame.addEventListener('loadcommit', onCommit);
 
-    // ControlledFrameElement.reload() doesn't actually trigger the loadcommit
-    // or loadabort events. Appending a new query parameter to the URL will
-    // force a new navigation.
+    // HTMLControlledFrameElement.reload() doesn't actually trigger the
+    // loadcommit or loadabort events. Appending a new query parameter to the
+    // URL will force a new navigation.
     controlledFrame.src += '&reload';
   });
 }
@@ -63,8 +63,5 @@ promise_test(async (test) => {
     runAt: 'document-start',
   }]);
 
-  const expectedErrorMessage =
-      'Required value \'content_scripts[*].matches\' is missing or invalid.';
-  return promise_rejects_exactly(
-      test, expectedErrorMessage, result, 'Promise should reject');
+  return promise_rejects_js(test, TypeError, result, 'Promise should reject');
 }, 'Reject a content script with invalid pattern');

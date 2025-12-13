@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
@@ -16,10 +15,12 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +48,7 @@ class AshAttestationCleanupManagerTest : public testing::Test {
 
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
         std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+        TestingBrowserProcess::GetGlobal()->local_state()));
 
     // To make user removable, two (or more) users are needed.
     user_manager::TestHelper test_helper(user_manager_.Get());
@@ -78,7 +79,6 @@ class AshAttestationCleanupManagerTest : public testing::Test {
 
   ash::ScopedStubInstallAttributes stub_install_attributes_;
   ash::ScopedTestingCrosSettings cros_settings_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   user_manager::ScopedUserManager user_manager_;
 
   content::BrowserTaskEnvironment task_environment_{

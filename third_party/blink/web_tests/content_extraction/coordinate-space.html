@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="./resources/consistent-rendering.css" rel="stylesheet" />
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="./resources/content-extraction-test-helpers.js"></script>
+  <script src="../resources/ahem.js"></script>
+
+  <style>
+    html, body { width: 100%; height: 200px; margin: 0; padding: 0; }
+    .large-content {
+      width: 1000px;
+      height: 1000px;
+      position: relative;
+      /* Show a nice grid so that we can visually verify the coordinate space */
+      background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+                  linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+                  linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+                  linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+      background-size: 100px 100px;
+      background-position: 0 0, 0 50px, 50px -50px, -50px 0px;
+    }
+
+    .spacer {
+      position: absolute;
+      bottom: -500px;
+      right: -500px;
+      width: 5000px;
+      height: 5000px;
+      background: transparent;
+    }
+    .test-text {
+      position: absolute;
+      top: 500px;   /* PAGE COORDINATE: Element positioned at Y=500 */
+      left: 500px;  /* PAGE COORDINATE: Element positioned at X=500 */
+      width: 200px;
+      height: 100px;
+      background-color: lightblue;
+      font-family: Ahem;
+      font-size: 20px;
+      line-height: 20px;
+      outline: 3px solid blue;
+      box-shadow: 0 0 10px rgba(0,0,255,0.5);
+    }
+
+    .viewport-info {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(255,255,255,0.9);
+      padding: 10px;
+      border: 1px solid #ccc;
+      font-family: monospace;
+      font-size: 12px;
+      z-index: 1000;
+    }
+  </style>
+
+  <script>
+    function runTest() {
+      /*
+       * COORDINATE SPACE TEST EXPLANATION:
+       *
+       * This test validates that fragment rectangles are correctly calculated
+       * in viewport coordinates after coordinate space transformation.
+       *
+       * SETUP:
+       * - Element positioned at PAGE coordinates (500, 500)
+       * - Viewport scrolled to offset (400, 400) - spacer ensures this is always possible
+       *
+       * EXPECTED BEHAVIOR:
+       * - Element appears at VIEWPORT coordinates: (500-scroll_x, 500-scroll_y)
+       * - Fragment rectangles should match viewport coordinates, NOT page coordinates
+       */
+
+      // Scroll to create coordinate space offset (spacer ensures this always works)
+      document.scrollingElement.scrollTo(400, 400);
+
+      const testElement = document.querySelector('.test-text');
+      let resultText = 'Page scroll position: ' +
+                      document.scrollingElement.scrollLeft + ',' +
+                      document.scrollingElement.scrollTop + '\n\n';
+
+      /*
+       * COORDINATE MATH VERIFICATION:
+       * - Element page position: (500, 500)
+       * - Scroll offset: (400, 400) [huge spacer ensures this is always possible]
+       * - Expected viewport position: (500-400, 500-400) = (100, 100)
+       * - Fragment boxes should match this viewport position
+       */
+      resultText += dumpContentNode(testElement.firstChild);
+
+      finishTest(resultText);
+    }
+  </script>
+</head>
+
+<!--
+COORDINATE SPACE TEST FOR CONTENT EXTRACTION
+
+PURPOSE:
+This test validates proper coordinate space handling in fragment rects.
+It ensures that AddClippedFragmentRect() correctly transforms page coordinates
+to viewport coordinates before intersection.
+
+COORDINATE SYSTEMS IN BLINK:
+1. PAGE COORDINATES: Absolute position within the entire document
+2. VIEWPORT COORDINATES: Position relative to the current visible area
+
+TEST SCENARIO:
+- Element at page position (500, 500)
+- After scrolling to (400, 400), element appears at viewport position (100, 100)
+- Fragment rectangles MUST be in viewport coordinates for correct rendering
+- Spacer ensures the full scroll is always achievable regardless of viewport size
+-->
+<body onload="runTest()">
+  <!-- Viewport coordinate info panel -->
+  <div class="viewport-info" id="viewport-info">
+    <div><strong>Coordinate Space Debug Info</strong></div>
+    <div>Scroll Position: <span id="scroll-pos">0, 0</span></div>
+    <div>Element Page Coords: 500, 500</div>
+    <div>Element Viewport Coords: <span id="viewport-coords">500, 500</span></div>
+    <div><em>Try scrolling to see coordinate changes!</em></div>
+  </div>
+
+  <div class="large-content">
+    <!-- Element positioned at PAGE coordinates (500, 500) -->
+    <div class="test-text">ABCD EFGH IJKL MNOP</div>
+
+    <!-- Spacer to ensure scrollable area regardless of viewport size -->
+    <div class="spacer"></div>
+  </div>
+
+  <script>
+    // Interactive coordinate tracking for manual testing
+    function updateCoordinateInfo() {
+      const scrollX = window.scrollX || document.documentElement.scrollLeft;
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+
+      document.getElementById('scroll-pos').textContent = `${scrollX}, ${scrollY}`;
+      document.getElementById('viewport-coords').textContent = `${500 - scrollX}, ${500 - scrollY}`;
+    }
+
+    // Update coordinate info on scroll for interactive testing
+    window.addEventListener('scroll', updateCoordinateInfo);
+    window.addEventListener('load', updateCoordinateInfo);
+  </script>
+</body>
+</html>

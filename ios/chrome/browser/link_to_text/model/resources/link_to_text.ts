@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import * as utils from '//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js';
 
 /**
@@ -42,4 +42,6 @@ function getLinkToText() {
   };
 }
 
-gCrWebLegacy.linkToText = {getLinkToText};
+const linkToTextApi = new CrWebApi();
+linkToTextApi.addFunction('getLinkToText', getLinkToText);
+gCrWeb.registerApi('linkToText', linkToTextApi);

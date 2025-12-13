@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/video_codec_string_parsers.h"
 
 #include <array>
@@ -38,9 +33,7 @@ namespace media {
 
 // TODO(crbug.com/40232176): Remove after rollout.
 // Allow parsing HEVC range extension codec string.
-BASE_FEATURE(kHEVCRextCodecStringParsing,
-             "HEVCRextCodecStringParsing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kHEVCRextCodecStringParsing, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   // Initialize optional fields to their defaults.
@@ -680,10 +673,7 @@ std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
     return std::nullopt;
   }
 
-  std::array<uint8_t, 6> constraint_flags;
-  memset(constraint_flags.data(), 0,
-         (constraint_flags.size() *
-          sizeof(decltype(constraint_flags)::value_type)));
+  std::array<uint8_t, 6> constraint_flags = {};
 
   if (elem.size() > 10) {
     DVLOG(4) << __func__ << ": unexpected number of trailing bytes in HEVC "

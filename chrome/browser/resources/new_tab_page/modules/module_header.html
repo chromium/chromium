@@ -1,0 +1,27 @@
+<div id="titleContainer">
+  <h2 id="title" ?hidden="${!this.headerText}">${this.headerText}</h2>
+  <div id="headerSpacer"></div>
+  <slot name="title-actions"></slot>
+  <cr-icon-button id="menuButton" title="${this.moreActionsText}"
+      class="icon-more-vert" @click="${this.onMenuButtonClick_}">
+  </cr-icon-button>
+</div>
+
+<cr-action-menu id="actionMenu"
+    role-description="$i18n{moduleHeaderMoreActionsMenu}">
+  ${this.menuItems.map(item => html`
+    <button id="${item.action}" class="dropdown-item"
+        @click="${this.onButtonClick_}" data-action="${item.action}">
+      <cr-icon class="action-menu-icon cr-icon" icon="${item.icon}"></cr-icon>
+      ${item.text}
+    </button>
+  `)}
+  ${!this.hideCustomize ? html`
+    <hr id="actionMenuDivider" ?hidden="${!this.showDivider_()}">
+    <button id="customize-module" class="dropdown-item"
+          @click="${this.onButtonClick_}" data-action="customize-module">
+    <cr-icon class="action-menu-icon cr-icon" icon="modules:tune"></cr-icon>
+        $i18n{modulesCustomizeButtonText}
+    </button>
+  ` : ''}
+</cr-action-menu>

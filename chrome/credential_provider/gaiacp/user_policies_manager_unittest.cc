@@ -75,8 +75,8 @@ TEST_F(GcpUserPoliciesBaseTest, DetectMissingAndStalePolicies) {
   UserPolicies policies;
   base::Value::Dict expected_response_value =
       base::Value::Dict().Set("policies", policies.ToValue());
-  std::string expected_response;
-  base::JSONWriter::Write(expected_response_value, &expected_response);
+  std::string expected_response =
+      base::WriteJson(expected_response_value).value_or("");
 
   fake_http_url_fetcher_factory()->SetFakeResponse(
       UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(sid),
@@ -174,8 +174,8 @@ TEST_P(GcpUserPoliciesFetchAndReadTest, CloudPoliciesWin) {
 
   base::Value::Dict expected_response_value =
       base::Value::Dict().Set("policies", policies_.ToValue());
-  std::string expected_response;
-  base::JSONWriter::Write(expected_response_value, &expected_response);
+  std::string expected_response =
+      base::WriteJson(expected_response_value).value_or("");
 
   GURL user_policies_url =
       UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(sid_);
@@ -212,8 +212,8 @@ TEST_P(GcpUserPoliciesFetchAndReadTest, RegistryValuesWin) {
       base::Value::Dict()
           .Set("enableGcpwAutoUpdate", policies_.enable_gcpw_auto_update)
           .Set("gcpwPinnedVersion", policies_.gcpw_pinned_version.ToString()));
-  std::string expected_response;
-  base::JSONWriter::Write(expected_response_value, &expected_response);
+  std::string expected_response =
+      base::WriteJson(expected_response_value).value_or("");
 
   fake_http_url_fetcher_factory()->SetFakeResponse(
       UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(sid_),
@@ -289,8 +289,8 @@ TEST_P(GcpUserPoliciesExtensionTest, WithUserDeviceContext) {
   policies.gcpw_pinned_version = GcpwVersion("1.2.3.4");
   base::Value::Dict expected_response_value =
       base::Value::Dict().Set("policies", policies.ToValue());
-  std::string expected_response;
-  base::JSONWriter::Write(expected_response_value, &expected_response);
+  std::string expected_response =
+      base::WriteJson(expected_response_value).value_or("");
 
   GURL user_policies_url =
       UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(

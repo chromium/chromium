@@ -31,7 +31,6 @@ using components_sharing_message::ResponseMessage;
 using components_sharing_message::SharingMessage;
 using ::testing::_;
 using ::testing::ByMove;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 
@@ -109,16 +108,16 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
   base::RunLoop loop;
 
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
-      .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
-                           base::TimeDelta response_timeout,
-                           components_sharing_message::SharingMessage message,
-                           SharingMessageSender::ResponseCallback callback) {
+      .WillOnce([&](const SharingTargetDeviceInfo& device_info,
+                    base::TimeDelta response_timeout,
+                    components_sharing_message::SharingMessage message,
+                    SharingMessageSender::ResponseCallback callback) {
         auto response = std::make_unique<ResponseMessage>();
         response->mutable_sms_fetch_response()->set_one_time_code("ABC");
         std::move(callback).Run(SharingSendMessageResult::kSuccessful,
                                 std::move(response));
         return base::DoNothing();
-      }));
+      });
 
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
@@ -154,14 +153,14 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
   base::RunLoop loop;
 
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
-      .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
-                           base::TimeDelta response_timeout,
-                           components_sharing_message::SharingMessage message,
-                           SharingMessageSender::ResponseCallback callback) {
+      .WillOnce([&](const SharingTargetDeviceInfo& device_info,
+                    base::TimeDelta response_timeout,
+                    components_sharing_message::SharingMessage message,
+                    SharingMessageSender::ResponseCallback callback) {
         std::move(callback).Run(SharingSendMessageResult::kAckTimeout,
                                 std::make_unique<ResponseMessage>());
         return base::DoNothing();
-      }));
+      });
 
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
@@ -194,14 +193,14 @@ TEST(SmsRemoteFetcherTest, RequestCancelled) {
 
   base::MockOnceClosure mock_callback;
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
-      .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
-                           base::TimeDelta response_timeout,
-                           components_sharing_message::SharingMessage message,
-                           SharingMessageSender::ResponseCallback callback) {
+      .WillOnce([&](const SharingTargetDeviceInfo& device_info,
+                    base::TimeDelta response_timeout,
+                    components_sharing_message::SharingMessage message,
+                    SharingMessageSender::ResponseCallback callback) {
         std::move(callback).Run(SharingSendMessageResult::kCancelled,
                                 std::make_unique<ResponseMessage>());
         return mock_callback.Get();
-      }));
+      });
 
   base::OnceClosure cancel_callback = FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
@@ -263,14 +262,14 @@ TEST(SmsRemoteFetcherTest, SendSharingMessageFailure) {
   base::RunLoop loop;
 
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
-      .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
-                           base::TimeDelta response_timeout,
-                           components_sharing_message::SharingMessage message,
-                           SharingMessageSender::ResponseCallback callback) {
+      .WillOnce([&](const SharingTargetDeviceInfo& device_info,
+                    base::TimeDelta response_timeout,
+                    components_sharing_message::SharingMessage message,
+                    SharingMessageSender::ResponseCallback callback) {
         std::move(callback).Run(SharingSendMessageResult::kAckTimeout,
                                 std::make_unique<ResponseMessage>());
         return base::DoNothing();
-      }));
+      });
 
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
@@ -308,10 +307,10 @@ TEST(SmsRemoteFetcherTest, UserDecline) {
   base::RunLoop loop;
 
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
-      .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
-                           base::TimeDelta response_timeout,
-                           components_sharing_message::SharingMessage message,
-                           SharingMessageSender::ResponseCallback callback) {
+      .WillOnce([&](const SharingTargetDeviceInfo& device_info,
+                    base::TimeDelta response_timeout,
+                    components_sharing_message::SharingMessage message,
+                    SharingMessageSender::ResponseCallback callback) {
         auto response = std::make_unique<ResponseMessage>();
         response->mutable_sms_fetch_response()->set_one_time_code("ABC");
         response->mutable_sms_fetch_response()->set_failure_type(
@@ -321,7 +320,7 @@ TEST(SmsRemoteFetcherTest, UserDecline) {
         std::move(callback).Run(SharingSendMessageResult::kSuccessful,
                                 std::move(response));
         return base::DoNothing();
-      }));
+      });
 
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},

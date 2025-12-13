@@ -10,7 +10,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -21,6 +20,8 @@
 #include "base/version.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/configurator.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service_impl.h"
@@ -28,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
+#include "components/update_client/update_client_errors.h"
 
 namespace updater {
 
@@ -46,11 +48,11 @@ struct AppInfo {
 struct PingInfo {
   PingInfo(const std::string& app_id,
            const base::Version& app_version,
-           int ping_reason)
+           UninstallPingReason ping_reason)
       : app_id_(app_id), app_version_(app_version), ping_reason_(ping_reason) {}
   std::string app_id_;
   base::Version app_version_;
-  int ping_reason_;
+  UninstallPingReason ping_reason_;
 };
 
 std::vector<AppInfo> GetRegisteredApps(
@@ -67,12 +69,13 @@ std::vector<AppInfo> GetRegisteredApps(
 
 std::vector<PingInfo> GetAppIDsToRemove(
     const std::vector<AppInfo>& apps,
-    base::RepeatingCallback<std::optional<int>(const std::string&,
-                                               const base::FilePath&)>
-        predicate) {
+    base::RepeatingCallback<
+        std::optional<UninstallPingReason>(const std::string&,
+                                           const base::FilePath&)> predicate) {
   std::vector<PingInfo> app_ids_to_remove;
   for (const auto& app : apps) {
-    std::optional<int> remove_reason = predicate.Run(app.app_id_, app.ecp_);
+    std::optional<UninstallPingReason> remove_reason =
+        predicate.Run(app.app_id_, app.ecp_);
     if (remove_reason) {
       app_ids_to_remove.emplace_back(app.app_id_, app.app_version_,
                                      *remove_reason);
@@ -99,12 +102,31 @@ void RemoveAppIDsAndSendUninstallPings(
     return;
   }
 
+  base::RepeatingCallback<bool(const PingInfo&)> remove_app =
+      base::BindRepeating(
+          [](scoped_refptr<PersistedData> persisted_data,
+             const PingInfo& app_to_remove) {
+            UninstallEndEvent event =
+                UninstallStartEvent()
+                    .SetAppId(app_to_remove.app_id_)
+                    .SetVersion(app_to_remove.app_version_.GetString())
+                    .SetReason(app_to_remove.ping_reason_)
+                    .WriteAsyncAndReturnEndEvent();
+            bool success = persisted_data->RemoveApp(app_to_remove.app_id_);
+            if (!success) {
+              event.AddError({.code = 1});
+            }
+            event.WriteAsync();
+            return success;
+          },
+          persisted_data);
+
   // If the terms of service have not been accepted, don't ping.
   if (persisted_data->GetEulaRequired()) {
-    for (const PingInfo& app_id_to_remove : app_ids_to_remove) {
-      const std::string& app_id = app_id_to_remove.app_id_;
-      if (!persisted_data->RemoveApp(app_id)) {
-        VLOG(0) << "Could not remove registration of app " << app_id;
+    for (const PingInfo& app_to_remove : app_ids_to_remove) {
+      if (!remove_app.Run(app_to_remove)) {
+        VLOG(0) << "Could not remove registration of app "
+                << app_to_remove.app_id_;
       }
     }
     std::move(callback).Run();
@@ -114,21 +136,17 @@ void RemoveAppIDsAndSendUninstallPings(
   const auto barrier_closure =
       base::BarrierClosure(app_ids_to_remove.size(), std::move(callback));
 
-  for (const PingInfo& app_id_to_remove : app_ids_to_remove) {
-    const std::string& app_id = app_id_to_remove.app_id_;
-    const int ping_reason = app_id_to_remove.ping_reason_;
-    const base::Version& app_version = app_id_to_remove.app_version_;
-    const std::string& brand = persisted_data->GetBrandCode(app_id);
-    const std::string& ap = persisted_data->GetAP(app_id);
-
-    if (persisted_data->RemoveApp(app_id)) {
+  for (const PingInfo& app_to_remove : app_ids_to_remove) {
+    const std::string& app_id = app_to_remove.app_id_;
+    const int ping_reason = static_cast<int>(app_to_remove.ping_reason_);
+    if (remove_app.Run(app_to_remove)) {
       VLOG(1) << "Uninstall ping for app id: " << app_id
               << ". Ping reason: " << ping_reason;
       update_client::CrxComponent crx_component;
-      crx_component.ap = ap;
+      crx_component.ap = persisted_data->GetAP(app_id);
       crx_component.app_id = app_id;
-      crx_component.brand = brand;
-      crx_component.version = app_version;
+      crx_component.brand = persisted_data->GetBrandCode(app_id);
+      crx_component.version = app_to_remove.app_version_;
       crx_component.requires_network_encryption = false;
       update_client->SendPing(
           crx_component,

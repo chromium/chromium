@@ -15,6 +15,15 @@ ChromeSecurityStateModelDelegate::GetSecurityLevel(
   ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(web_contents);
-  DCHECK(helper);
   return helper->GetSecurityLevel();
+}
+
+security_state::MaliciousContentStatus
+ChromeSecurityStateModelDelegate::GetMaliciousContentStatus(
+    content::WebContents* web_contents) const {
+  DCHECK(web_contents);
+  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
+  SecurityStateTabHelper* helper =
+      SecurityStateTabHelper::FromWebContents(web_contents);
+  return helper->GetMaliciousContentStatus();
 }

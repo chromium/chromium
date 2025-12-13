@@ -7,8 +7,6 @@ include_rules = [
   "+content/child",
   "+content/public/utility",
   "+content/services",
-  "+chromeos/ash/components/assistant/buildflags.h",
-  "+chromeos/ash/services/libassistant",
   "+chromeos/services/tts",
   "+device/vr/buildflags",
   "+device/vr/public",
@@ -23,7 +21,6 @@ include_rules = [
   "+services/tracing",
   "+services/screen_ai",
   "+services/video_capture",
-  "+services/video_effects",
   "+services/viz",
   "+sandbox/win/src",
 ]

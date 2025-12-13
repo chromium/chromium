@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Stefna</translation>
 <translation id="1254593899333212300">Beintenging við internetið</translation>
 <translation id="1272293450992660632">PIN-númer stemma ekki.</translation>
+<translation id="1279040297980392566">Bíður eftir að skönnun ljúki, reyndu aftur síðar</translation>
 <translation id="1280820357415527819">Leitar að farsímakerfum</translation>
 <translation id="1293556467332435079">Skrár</translation>
 <translation id="1297922636971898492">Google Drive er ekki í boði núna. Flutningur verður sjálfkrafa hafinn að nýju þegar Google Drive verður aftur tiltækt.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Ein skrá valin</translation>
 <translation id="3817579325494460411">Ekki gefið upp</translation>
 <translation id="3819448694985509187">Rangt PIN-númer. Þú átt 1 tilraun eftir.</translation>
-<translation id="3822559385185038546">Kerfisstjórinn valdi stillingar þessa staðgengilsþjóns</translation>
 <translation id="3830674330436234648">Spilun ekki tiltæk</translation>
 <translation id="383652340667548381">Serbneskt</translation>
 <translation id="3839045880592694915">Símafyrirtækið þitt kemur í veg fyrir að mótaldið geti tengst. Hafðu samband við símafyrirtækið þitt til að fá frekari upplýsingar.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="5602622065581044566">Búlgarska með hljóðritunarlyklaborði</translation>
 <translation id="5605830556594064952">Bandarískt Dvorak</translation>
+<translation id="560739212255190568">Stjórnandinn þinn stillti hnekkingarreglur staðgengilsþjóns auk þess að framfylgja eftirfarandi staðgengilsþjóni</translation>
 <translation id="5618330573454123917">Þessi skrá er hönnuð fyrir tölvu sem notar Macintosh-hugbúnað. Hún er ekki samhæf tækinu þínu sem keyrir ChromeOS. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í ChromeOS.</translation>
 <translation id="5625294776298156701">Tamíl með Tamil99-lyklaborði</translation>
 <translation id="5633226425545095130">Tilfærslu á þessu atriði er deilt með öllum sem hafa aðgang að samnýttu möppunni „<ph name="DESTINATION_NAME" />“.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, upplýsingar</translation>
 <translation id="8545476925160229291">Enska (bandarísk)</translation>
 <translation id="854655314928502177">Vefslóð fyrir sjálfvirka uppgötvun staðgengilsþjóna</translation>
+<translation id="8547747809824590510">Stjórnandinn þinn stillti hnekkingarreglur staðgengilsþjóns</translation>
 <translation id="8549186985808798022">Ítalska</translation>
 <translation id="8551494947769799688">Lettneskt</translation>
 <translation id="8560515948038859357">Kantónska</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Skrá með heitið „<ph name="FILE_NAME" />“ er þegar til staðar. Veldu annað heiti.</translation>
 <translation id="9046895021617826162">Tenging mistókst</translation>
 <translation id="9065512565307033593">Ef þú staðfestir ekki verður slökkt á netaðganginum þínum.</translation>
+<translation id="9079844694307518094">Stjórnandinn þinn framfylgir eftirfarandi staðgengli</translation>
 <translation id="908378762078012445">Rússneska með AATSEEL-hljóðritunarlyklaborði</translation>
 <translation id="9086302186042011942">Samstillir</translation>
 <translation id="9099674669267916096">Síðufjöldi</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Uppsetning hófst.</translation>
 <translation id="9219103736887031265">Myndir</translation>
 <translation id="9219908252191632183">Tungllandslag</translation>
+<translation id="931652069802536959">Lokað er á netkerfi vegna reglna</translation>
 <translation id="938470336146445890">Settu upp notandavottorð.</translation>
 <translation id="939736085109172342">Ný mappa</translation>
 <translation id="943972244133411984">Breytt af</translation>

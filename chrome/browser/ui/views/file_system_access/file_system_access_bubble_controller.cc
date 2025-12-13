@@ -8,8 +8,9 @@
 
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_usage_bubble_view.h"
+#include "content/public/browser/web_contents.h"
+
 namespace {
 std::vector<base::FilePath> GetPaths(
     const std::vector<content::PathInfo>& path_infos) {
@@ -22,8 +23,8 @@ std::vector<base::FilePath> GetPaths(
 }  // namespace
 
 // static
-void FileSystemAccessBubbleController::Show(Browser* browser) {
-  auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
+void FileSystemAccessBubbleController::Show(
+    content::WebContents* web_contents) {
   CHECK(web_contents);
 
   url::Origin origin =

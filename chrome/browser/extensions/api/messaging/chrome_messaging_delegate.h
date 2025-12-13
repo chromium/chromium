@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_EXTENSIONS_API_MESSAGING_CHROME_MESSAGING_DELEGATE_H_
 
 #include "extensions/browser/api/messaging/messaging_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

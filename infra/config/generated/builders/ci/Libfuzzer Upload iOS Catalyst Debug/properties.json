@@ -23,6 +23,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "chromium_clang",
+                "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "ios"
               },
@@ -77,5 +78,5 @@
   ],
   "upload_bucket": "chromium-browser-libfuzzer",
   "upload_directory": "ios-catalyst-debug",
-  "xcode_build_version": "16c5032a"
+  "xcode_build_version": "17a400"
 }

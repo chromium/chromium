@@ -30,7 +30,8 @@
 namespace blink {
 
 OESStandardDerivatives::OESStandardDerivatives(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_OES_standard_derivatives");

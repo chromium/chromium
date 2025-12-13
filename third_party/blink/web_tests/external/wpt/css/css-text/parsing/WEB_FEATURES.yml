@@ -1,4 +1,7 @@
 features:
+- name: line-break
+  files:
+  - line-break-*
 - name: text-spacing-trim
   files:
   - text-spacing-trim-*
@@ -20,3 +23,18 @@ features:
 - name: text-wrap-mode
   files:
   - text-wrap-mode-*
+- name: word-spacing
+  files:
+  - word-spacing-*
+- name: tab-size
+  files:
+  - tab-size-*
+- name: text-align
+  files:
+  - "text-align-all-*"
+  - text-align-computed.html
+  - text-align-invalid.html
+  - text-align-valid.html
+- name: text-align-last
+  files:
+  - "text-align-last-*"

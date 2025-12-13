@@ -350,7 +350,8 @@ const ReadingListEntry& ReadingListModelImpl::AddOrReplaceEntry(
     const GURL& url,
     const std::string& title,
     reading_list::EntrySource source,
-    base::TimeDelta estimated_read_time) {
+    std::optional<base::TimeDelta> estimated_read_time,
+    std::optional<base::Time> creation_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
   DCHECK(IsUrlSupported(url));
@@ -364,10 +365,10 @@ const ReadingListEntry& ReadingListModelImpl::AddOrReplaceEntry(
 
   std::string trimmed_title = TrimTitle(title);
 
-  auto entry =
-      base::MakeRefCounted<ReadingListEntry>(url, trimmed_title, clock_->Now());
-  if (!estimated_read_time.is_zero()) {
-    entry->SetEstimatedReadTime(estimated_read_time);
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      url, trimmed_title, creation_time.value_or(clock_->Now()));
+  if (estimated_read_time.has_value()) {
+    entry->SetEstimatedReadTime(*estimated_read_time);
   }
 
   AddEntry(std::move(entry), source);
@@ -698,8 +699,6 @@ void ReadingListModelImpl::StoreLoaded(
   DCHECK_EQ(read_entry_count_ + unread_entry_count_, entries_.size());
   loaded_ = true;
 
-  RecordCountMetrics(".OnModelLoaded");
-
   {
     // In rare cases, ModelReadyToSync() leads to the deletion of all local
     // entries. Such deletions should not be propagated to observers, because
@@ -709,6 +708,8 @@ void ReadingListModelImpl::StoreLoaded(
     sync_bridge_.ModelReadyToSync(/*model=*/this,
                                   std::move(result_or_error.value().second));
   }
+
+  RecordCountMetrics(".OnModelLoaded");
 
   for (auto& observer : observers_) {
     observer.ReadingListModelLoaded(this);

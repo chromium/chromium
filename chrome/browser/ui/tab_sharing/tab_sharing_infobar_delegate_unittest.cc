@@ -7,7 +7,7 @@
 #include <tuple>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
+#include "chrome/browser/ui/tab_sharing/mock_tab_sharing_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -16,7 +16,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/common/content_features.h"
 #include "media/capture/capture_switches.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -34,23 +33,6 @@ const std::u16string kSinkName = u"Living Room TV";
 
 const std::u16string kCapturedUrl = u"https://captured.chromium.org/";
 const std::u16string kCapturingUrl = u"https://capturing.chromium.org/";
-
-class MockTabSharingUIViews : public TabSharingUI {
- public:
-  MockTabSharingUIViews() = default;
-  MOCK_METHOD(void, StartSharing, (infobars::InfoBar * infobar));
-  MOCK_METHOD(void, StopSharing, ());
-
-  gfx::NativeViewId OnStarted(
-      base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback,
-      const std::vector<content::DesktopMediaID>& media_ids) override {
-    return 0;
-  }
-
-  void OnRegionCaptureRectChanged(
-      const std::optional<gfx::Rect>& region_capture_rect) override {}
-};
 
 }  // namespace
 
@@ -116,7 +98,7 @@ class TabSharingInfoBarDelegateTest
             url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
   }
 
-  MockTabSharingUIViews* tab_sharing_mock_ui() { return &mock_ui; }
+  MockTabSharingUI* tab_sharing_mock_ui() { return &mock_ui; }
 
  protected:
   const bool captured_surface_control_active_;
@@ -124,7 +106,7 @@ class TabSharingInfoBarDelegateTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  MockTabSharingUIViews mock_ui;
+  MockTabSharingUI mock_ui;
 };
 
 INSTANTIATE_TEST_SUITE_P(

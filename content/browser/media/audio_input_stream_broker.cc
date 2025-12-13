@@ -34,6 +34,7 @@ AudioInputStreamBroker::AudioInputStreamBroker(
     int render_frame_id,
     const std::string& device_id,
     const media::AudioParameters& params,
+    const base::UnguessableToken& group_id,
     uint32_t shared_memory_count,
     bool enable_agc,
     media::mojom::AudioProcessingConfigPtr processing_config,
@@ -43,6 +44,7 @@ AudioInputStreamBroker::AudioInputStreamBroker(
     : AudioStreamBroker(render_process_id, render_frame_id),
       device_id_(device_id),
       params_(params),
+      group_id_(group_id),
       shared_memory_count_(shared_memory_count),
       enable_agc_(enable_agc),
       deleter_(std::move(deleter)),
@@ -51,7 +53,8 @@ AudioInputStreamBroker::AudioInputStreamBroker(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(renderer_factory_client_);
   DCHECK(deleter_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("audio", "AudioInputStreamBroker", this);
+  TRACE_EVENT_BEGIN("audio", "AudioInputStreamBroker",
+                    perfetto::Track::FromPointer(this));
 
   // Unretained is safe because |this| owns |renderer_factory_client_|.
   renderer_factory_client_.set_disconnect_handler(base::BindOnce(
@@ -75,12 +78,14 @@ AudioInputStreamBroker::~AudioInputStreamBroker() {
   // TODO(crbug.com/40091014) update tab recording indicator.
 
   if (awaiting_created_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "CreateStream", this, "success",
-                                    "failed or cancelled");
+    // End "CreateStream" trace event.
+    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this), "success",
+                    "failed or cancelled");
   }
-  TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "AudioInputStreamBroker", this,
-                                  "disconnect reason",
-                                  static_cast<uint32_t>(disconnect_reason_));
+  // End "AudioInputStreamBroker" trace event.
+  TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this),
+                  "disconnect reason",
+                  static_cast<uint32_t>(disconnect_reason_));
 }
 
 void AudioInputStreamBroker::CreateStream(
@@ -88,8 +93,8 @@ void AudioInputStreamBroker::CreateStream(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!observer_receiver_.is_bound());
   DCHECK(!pending_client_receiver_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("audio", "CreateStream", this, "device id",
-                                    device_id_);
+  TRACE_EVENT_BEGIN("audio", "CreateStream", perfetto::Track::FromPointer(this),
+                    "device id", device_id_);
   awaiting_created_ = true;
 
   mojo::PendingRemote<media::mojom::AudioInputStreamClient> client;
@@ -115,7 +120,7 @@ void AudioInputStreamBroker::CreateStream(
       MediaInternals::GetInstance()->CreateMojoAudioLog(
           media::AudioLogFactory::AudioComponent::kAudioInputController,
           log_component_id, render_process_id(), render_frame_id()),
-      device_id_, params_, shared_memory_count_, enable_agc_,
+      device_id_, params_, group_id_, shared_memory_count_, enable_agc_,
       std::move(processing_config_),
       base::BindOnce(&AudioInputStreamBroker::StreamCreated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(stream)));
@@ -133,8 +138,9 @@ void AudioInputStreamBroker::StreamCreated(
     const std::optional<base::UnguessableToken>& stream_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   awaiting_created_ = false;
-  TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "CreateStream", this, "success",
-                                  !!data_pipe);
+  // End "CreateStream" trace event.
+  TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this), "success",
+                  !!data_pipe);
 
   if (!data_pipe) {
     disconnect_reason_ = DisconnectReason::kStreamCreationFailed;

@@ -136,15 +136,15 @@ void PrintTo(const Point& point, ::std::ostream* os);
 COMPONENT_EXPORT(GEOMETRY)
 Point ScaleToCeiledPoint(const Point& point, float x_scale, float y_scale);
 COMPONENT_EXPORT(GEOMETRY)
-Point ScaleToCeiledPoint(const Point& point, float x_scale);
+Point ScaleToCeiledPoint(const Point& point, float scale);
 COMPONENT_EXPORT(GEOMETRY)
 Point ScaleToFlooredPoint(const Point& point, float x_scale, float y_scale);
 COMPONENT_EXPORT(GEOMETRY)
-Point ScaleToFlooredPoint(const Point& point, float x_scale);
+Point ScaleToFlooredPoint(const Point& point, float scale);
 COMPONENT_EXPORT(GEOMETRY)
 Point ScaleToRoundedPoint(const Point& point, float x_scale, float y_scale);
 COMPONENT_EXPORT(GEOMETRY)
-Point ScaleToRoundedPoint(const Point& point, float x_scale);
+Point ScaleToRoundedPoint(const Point& point, float scale);
 
 }  // namespace gfx
 

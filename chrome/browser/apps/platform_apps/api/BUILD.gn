@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//chrome/common/apps/platform_apps/api/api_sources.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
@@ -26,14 +25,6 @@ source_set("api") {
   sources = [
     "browser/browser_api.cc",
     "browser/browser_api.h",
-    "browser_context_keyed_service_factories.cc",
-    "browser_context_keyed_service_factories.h",
-    "media_galleries/blob_data_source_factory.cc",
-    "media_galleries/blob_data_source_factory.h",
-    "media_galleries/media_galleries_api.cc",
-    "media_galleries/media_galleries_api.h",
-    "media_galleries/media_galleries_api_util.cc",
-    "media_galleries/media_galleries_api_util.h",
     "sync_file_system/sync_file_system_api.cc",
     "sync_file_system/sync_file_system_api.h",
     "sync_file_system/sync_file_system_api_helpers.cc",
@@ -57,8 +48,6 @@ source_set("api") {
     "//chrome/common",
     "//chrome/common/apps/platform_apps",
     "//chrome/common/apps/platform_apps/api",
-    "//chrome/services/media_gallery_util/public/cpp",
-    "//components/storage_monitor",
     "//components/web_modal",
     "//extensions/browser",
     "//ui/shell_dialogs",
@@ -73,15 +62,25 @@ source_set("api") {
     sources += [
       "arc_apps_private/arc_apps_private_api.cc",
       "arc_apps_private/arc_apps_private_api.h",
+      "browser_context_keyed_service_factories.cc",
+      "browser_context_keyed_service_factories.h",
       "enterprise_remote_apps/enterprise_remote_apps_api.cc",
       "enterprise_remote_apps/enterprise_remote_apps_api.h",
+      "media_galleries/blob_data_source_factory.cc",
+      "media_galleries/blob_data_source_factory.h",
+      "media_galleries/media_galleries_api.cc",
+      "media_galleries/media_galleries_api.h",
+      "media_galleries/media_galleries_api_util.cc",
+      "media_galleries/media_galleries_api_util.h",
     ]
 
     deps += [
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/remote_apps",
+      "//chrome/services/media_gallery_util/public/cpp",
       "//chromeos/components/remote_apps/mojom",
+      "//components/storage_monitor",
       "//ui/events:event_constants",
     ]
 

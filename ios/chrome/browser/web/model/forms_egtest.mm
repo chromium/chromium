@@ -42,7 +42,7 @@ constexpr char kDestinationText[] = "bar!";
 constexpr char kGenericText[] = "A generic page";
 
 // Label for the button in the form.
-NSString* kSubmitButtonLabel = @"submit";
+NSString* const kSubmitButtonLabel = @"submit";
 
 // Html form template with a submission button named "submit".
 constexpr char kFormHtmlTemplate[] =
@@ -374,7 +374,6 @@ id<GREYMatcher> ResendPostButtonMatcher() {
     [ChromeEarlGrey
         waitForSufficientlyVisibleElementWithMatcher:ResendPostButtonMatcher()];
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
     if (@available(iOS 26, *)) {
       [ChromeEarlGreyUI
           dismissByTappingOnTheWindowOfPopover:ResendPostButtonMatcher()];
@@ -382,10 +381,6 @@ id<GREYMatcher> ResendPostButtonMatcher() {
       [[EarlGrey selectElementWithMatcher:ElementToDismissAlert(@"Cancel")]
           performAction:grey_tap()];
     }
-#else
-    [[EarlGrey selectElementWithMatcher:ElementToDismissAlert(@"Cancel")]
-        performAction:grey_tap()];
-#endif
   }
 
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -571,7 +566,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
     // Wait for the accessory icon to appear.
     [ChromeEarlGrey waitForKeyboardToAppear];
 
-    // TODO(crbug.com/40227513): Move this logic into EG.
+    // There's currently no EG API to tap 'go' on the keyboard.
     XCUIApplication* app = [[XCUIApplication alloc] init];
     [[[app keyboards] buttons][@"go"] tap];
   }

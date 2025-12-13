@@ -22,6 +22,7 @@
 #include "components/exo/toast_surface.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/xdg_shell_surface.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -132,8 +133,8 @@ void ClientControlledShellSurfaceDelegate::ApplyStateChange(
     case chromeos::WindowStateType::kPinned:
       shell_surface_->SetPinned(chromeos::WindowPinType::kPinned);
       break;
-    case chromeos::WindowStateType::kTrustedPinned:
-      shell_surface_->SetPinned(chromeos::WindowPinType::kTrustedPinned);
+    case chromeos::WindowStateType::kLockedFullscreen:
+      shell_surface_->SetPinned(chromeos::WindowPinType::kLockedFullscreen);
       break;
     default:
       NOTIMPLEMENTED();
@@ -157,7 +158,7 @@ void ClientControlledShellSurfaceDelegate::ApplyBoundsChange(
     return;
 
   display::Display target_display;
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
 
   if (!screen->GetDisplayWithDisplayId(display_id, &target_display)) {
     return;
@@ -196,7 +197,7 @@ ExoTestHelper::~ExoTestHelper() = default;
 // static
 std::unique_ptr<Buffer> ExoTestHelper::CreateBuffer(
     ShellSurfaceBase* shell_surface,
-    gfx::BufferFormat format) {
+    viz::SharedImageFormat format) {
   return CreateBuffer(
       shell_surface->GetWidget()->GetWindowBoundsInScreen().size(), format);
 }
@@ -204,11 +205,10 @@ std::unique_ptr<Buffer> ExoTestHelper::CreateBuffer(
 // static
 std::unique_ptr<Buffer> ExoTestHelper::CreateBuffer(
     gfx::Size buffer_size,
-    gfx::BufferFormat buffer_format,
+    viz::SharedImageFormat format,
     bool is_overlay_candidate) {
-  return Buffer::CreateBuffer(buffer_size, buffer_format,
-                              gfx::BufferUsage::GPU_READ, "ExoTestHelper",
-                              gpu::kNullSurfaceHandle,
+  return Buffer::CreateBuffer(buffer_size, format, gfx::BufferUsage::GPU_READ,
+                              "ExoTestHelper", gpu::kNullSurfaceHandle,
                               /*shutdown_event=*/nullptr, is_overlay_candidate);
 }
 
@@ -216,9 +216,9 @@ std::unique_ptr<Buffer> ExoTestHelper::CreateBuffer(
 std::unique_ptr<Buffer> ExoTestHelper::CreateBufferFromGMBHandle(
     gfx::GpuMemoryBufferHandle handle,
     gfx::Size buffer_size,
-    gfx::BufferFormat buffer_format) {
+    viz::SharedImageFormat format) {
   return Buffer::CreateBufferFromGMBHandle(
-      std::move(handle), buffer_size, buffer_format, gfx::BufferUsage::GPU_READ,
+      std::move(handle), buffer_size, format, gfx::BufferUsage::GPU_READ,
       /*query_type=*/GL_COMMANDS_COMPLETED_CHROMIUM, /*use_zero_copy=*/true,
       /*is_overlay_candidate=*/false, /*y_invert=*/false);
 }

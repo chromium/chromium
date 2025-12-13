@@ -142,6 +142,9 @@ public class ListUtils {
                 // Dangerous UI is handled by GenericViewHolder.
                 return ViewType.GENERIC;
             }
+            if (DownloadUtils.isBlockedSensitiveDownload(offlineItem.item)) {
+                return ViewType.GENERIC;
+            }
             if (offlineItem.isGrouped) return ViewType.GROUP_CARD_ITEM;
 
             boolean inProgress =

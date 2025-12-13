@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
-#include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "content/public/browser/browser_context.h"
@@ -68,7 +68,7 @@ SyncedPrintersManagerFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<PrintersSyncBridge>(
           std::move(store_factory),
           base::BindRepeating(&syncer::ReportUnrecoverableError,
-                              chrome::GetChannel()));
+                              ash::GetChannel()));
 
   return SyncedPrintersManager::Create(std::move(sync_bridge));
 }

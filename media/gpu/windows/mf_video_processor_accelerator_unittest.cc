@@ -12,6 +12,7 @@
 #include <d3d11.h>
 #include <mfapi.h>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
 #include "build/build_config.h"

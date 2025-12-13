@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/phone_hub_app_loading_icon.h"
 
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -34,8 +35,8 @@ class LoadingCircle : public gfx::CanvasImageSource {
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
-    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+    flags.setColor(AshColorProvider::Get()->GetColor(
+        kColorAshControlBackgroundColorInactive));
     canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
   }
 };

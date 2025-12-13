@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -164,8 +163,6 @@ class ChromeArcUtilTest : public testing::Test {
   void TearDown() override {
     // Avoid retries, let the next test start safely.
     ResetArcAllowedCheckForTesting(profile_);
-    SetArcvmDlcImageStatusForTesting(
-        /*arcvm dlc image availability=*/std::nullopt);
     profile_manager_->DeleteTestingProfile(kTestProfileName);
     profile_ = nullptr;
     profile_manager_.reset();
@@ -190,7 +187,6 @@ class ChromeArcUtilTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 
  private:
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
@@ -270,45 +266,20 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_GuestAccount) {
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
-// The reven devices without the ARCVM DLC image is not allowed to
-// use arc.
-TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_NoArcvmDlcImage_Reven) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"", "--arc-availability=officially-supported", "--reven-branding"});
-  SetArcvmDlcImageStatusForTesting(/*arcvm dlc image availability=*/false);
-  EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
-}
-
 // Unmanaged account on managed device is not allowed to
 // use arc on reven board.
 TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_UnmanagedAccount_Reven) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported", "--reven-branding"});
-  SetArcvmDlcImageStatusForTesting(/*arcvm dlc image availability=*/true);
   cros_settings_test_helper_.InstallAttributes()->SetCloudManaged(
       "example.com", "fake-device-id");
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
-// Managed account on unmanaged device is not allowed to
-// use arc on reven board.
-TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_UnmanagedDevice_Reven) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"", "--arc-availability=officially-supported", "--reven-branding"});
-  SetArcvmDlcImageStatusForTesting(/*arcvm dlc image availability=*/true);
-  ScopedLogIn login(GetFakeUserManager(),
-                    AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
-  SetProfileIsManagedForTesting(profile());
-  EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
-}
-
-// Managed account on managed device is allowed to use arc
-// on reven board.
+// Managed account is allowed to use arc on reven board.
 TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_ManagedDeviceAccount_Reven) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported", "--reven-branding"});
-  SetArcvmDlcImageStatusForTesting(/*arcvm dlc image availability=*/true);
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
                         profile()->GetProfileUserName(), kTestGaiaId));

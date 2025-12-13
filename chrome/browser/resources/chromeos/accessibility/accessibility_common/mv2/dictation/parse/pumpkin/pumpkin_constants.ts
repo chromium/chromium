@@ -72,9 +72,6 @@ export enum PumpkinLocale {
 /**
  * Map from BCP-47 locale code (see dictation.cc) to directory name in
  * dictation/parse/pumpkin/ for supported Pumpkin locales.
- * TODO(crbug.com/1264544): Determine if all en* languages can be mapped to
- * en_us. Possible locales are listed in dictation.cc,
- * kWebSpeechSupportedLocales.
  */
 export const SUPPORTED_LOCALES = {
   // English.

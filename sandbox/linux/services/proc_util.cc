@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "sandbox/linux/services/proc_util.h"
 
 #include <dirent.h>
@@ -20,6 +15,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 
@@ -59,7 +55,8 @@ int ProcUtil::CountOpenFds(int proc_fd) {
   int count = 0;
   struct dirent* de;
   while ((de = readdir(dir.get()))) {
-    if (strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) {
+    if (UNSAFE_TODO(strcmp(de->d_name, ".")) == 0 ||
+        UNSAFE_TODO(strcmp(de->d_name, "..")) == 0) {
       continue;
     }
 
@@ -75,7 +72,7 @@ int ProcUtil::CountOpenFds(int proc_fd) {
 }
 
 bool ProcUtil::HasOpenDirectory(int proc_fd) {
-  DCHECK_LE(0, proc_fd);
+  CHECK_LE(0, proc_fd);
   int proc_self_fd =
       openat(proc_fd, "self/fd/", O_DIRECTORY | O_RDONLY | O_CLOEXEC);
 
@@ -88,7 +85,8 @@ bool ProcUtil::HasOpenDirectory(int proc_fd) {
 
   struct dirent* de;
   while ((de = readdir(dir.get()))) {
-    if (strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) {
+    if (UNSAFE_TODO(strcmp(de->d_name, ".")) == 0 ||
+        UNSAFE_TODO(strcmp(de->d_name, "..")) == 0) {
       continue;
     }
 
@@ -108,7 +106,8 @@ bool ProcUtil::HasOpenDirectory(int proc_fd) {
         readlinkat(proc_self_fd, de->d_name, filename, sizeof(filename)) !=
             -1) {
       static constexpr std::string_view kStalePrefix = "/google/cog/";
-      if (strncmp(filename, kStalePrefix.data(), kStalePrefix.size()) == 0) {
+      if (UNSAFE_TODO(strncmp(filename, kStalePrefix.data(),
+                              kStalePrefix.size())) == 0) {
         continue;
       }
     }

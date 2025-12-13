@@ -79,6 +79,11 @@
   white-space: nowrap;
 }
 
+#secondaryText {
+  /* Elide hostname from the front to prevent URL spoofing. */
+  direction: rtl;
+}
+
 #primaryText {
   color: var(--cr-primary-text-color);
   font-size: var(--mwb-primary-text-font-size);

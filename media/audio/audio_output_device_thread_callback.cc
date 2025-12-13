@@ -11,7 +11,9 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_device_stats_reporter.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -43,10 +45,15 @@ void AudioOutputDeviceThreadCallback::MapSharedMemory() {
   shared_memory_mapping_ = shared_memory_region_.MapAt(0, memory_length_);
   CHECK(shared_memory_mapping_.IsValid());
 
-  media::AudioOutputBuffer* buffer =
-      reinterpret_cast<media::AudioOutputBuffer*>(
-          shared_memory_mapping_.memory());
-  output_bus_ = media::AudioBus::WrapMemory(audio_parameters_, buffer->audio);
+  base::span<uint8_t> data = shared_memory_mapping_.GetMemoryAsSpan<uint8_t>();
+  base::span<uint8_t> audio_data_span =
+      data.subspan<sizeof(media::AudioOutputBufferParameters)>();
+
+  const media::AudioOutputBuffer* buffer =
+      shared_memory_mapping_.GetMemoryAs<media::AudioOutputBuffer>();
+  CHECK_EQ(audio_data_span.data(), buffer->audio);
+
+  output_bus_ = media::AudioBus::WrapMemory(audio_parameters_, audio_data_span);
   output_bus_->set_is_bitstream_format(audio_parameters_.IsBitstreamFormat());
 }
 
@@ -81,8 +88,7 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
   // that we have some data, we'll get another one after the device is awake and
   // ingesting data, which is what we want to track with this trace.
   if (callback_num_ == 2) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "StartingPlayback",
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this));
     if (first_play_start_time_) {
       UmaHistogramTimes("Media.Audio.Render.OutputDeviceStartTime2",
                         base::TimeTicks::Now() - *first_play_start_time_);
@@ -117,8 +123,8 @@ void AudioOutputDeviceThreadCallback::InitializePlayStartTime() {
     return;
 
   DCHECK(!callback_num_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("audio", "StartingPlayback",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("audio", "StartingPlayback",
+                    perfetto::Track::FromPointer(this));
   first_play_start_time_ = base::TimeTicks::Now();
 }
 

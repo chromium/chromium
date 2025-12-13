@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/drive/resource_metadata_storage.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -88,7 +84,8 @@ bool IsCacheEntryKey(const leveldb::Slice& key) {
     return false;
 
   const leveldb::Slice key_substring(
-      key.data() + key.size() - expected_suffix.size(), expected_suffix.size());
+      UNSAFE_TODO(key.data() + key.size() - expected_suffix.size()),
+      expected_suffix.size());
   return key_substring.compare(expected_suffix) == 0;
 }
 
@@ -119,7 +116,8 @@ bool IsIdEntryKey(const leveldb::Slice& key) {
                                        std::size(kIdEntryKeyPrefix) - 1);
   if (key.size() < 2 + expected_prefix.size())
     return false;
-  const leveldb::Slice key_substring(key.data() + 1, expected_prefix.size());
+  const leveldb::Slice key_substring(UNSAFE_TODO(key.data() + 1),
+                                     expected_prefix.size());
   return key[0] == kDBKeyDelimeter &&
       key_substring.compare(expected_prefix) == 0 &&
       key[expected_prefix.size() + 1] == kDBKeyDelimeter;
@@ -132,7 +130,7 @@ std::string GetResourceIdFromIdEntryKey(const leveldb::Slice& key) {
   // from the key.
   const size_t kPrefixLength = std::size(kIdEntryKeyPrefix) - 1;
   const int offset = kPrefixLength + 2;
-  return std::string(key.data() + offset, key.size() - offset);
+  return std::string(UNSAFE_TODO(key.data() + offset), key.size() - offset);
 }
 
 // Converts leveldb::Status to DBInitStatus.

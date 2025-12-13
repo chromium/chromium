@@ -6,8 +6,8 @@ import("//build/config/chrome_build.gni")
 
 source_set("reauth") {
   sources = [
-    "reauth_coordinator.h",
-    "reauth_coordinator.mm",
+    "signin_reauth_coordinator.h",
+    "signin_reauth_coordinator.mm",
   ]
   deps = [
     "//components/signin/public/identity_manager",
@@ -24,13 +24,14 @@ source_set("reauth") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "reauth_coordinator_unittest.mm" ]
+  sources = [ "signin_reauth_coordinator_unittest.mm" ]
   deps = [
     ":reauth",
     "//base",
     "//base/test:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//components/test/ios",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",

@@ -10,6 +10,7 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -121,7 +122,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   // Add 3 for the "://" which is not considered part of the scheme
   std::string URLWithoutScheme =
-      destinationURL.spec().substr(destinationURL.scheme().length() + 3);
+      destinationURL.spec().substr(destinationURL.GetScheme().length() + 3);
 
   [[EarlGrey selectElementWithMatcher:TabWithTitle(URLWithoutScheme)]
       assertWithMatcher:grey_notNil()];
@@ -139,7 +140,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   // Add 3 for the "://" which is not considered part of the scheme
   std::string URLWithoutScheme =
-      destinationURL.spec().substr(destinationURL.scheme().length() + 3);
+      destinationURL.spec().substr(destinationURL.GetScheme().length() + 3);
 
   [[EarlGrey selectElementWithMatcher:TabWithTitle(URLWithoutScheme)]
       assertWithMatcher:grey_notNil()];
@@ -285,7 +286,10 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
   const char kPageHTML[] =
       "<script>"
       "  function printMsg() {"
-      "    document.body.appendChild(document.createTextNode('Hello world!'));"
+      "    window.setTimeout(function() {"
+      "      document.body.appendChild("
+      "          document.createTextNode('Hello world!'));"
+      "      }, 1000);"
       "  }"
       "</script>"
       "<a href='chrome://version' id='link' onclick='printMsg()'>Version</a>";
@@ -309,6 +313,33 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   // Verify that no new tabs were open which could load chrome://version.
   [ChromeEarlGrey waitForMainTabCount:1];
+}
+
+// Tests that loading WebUI URL via an iframe on a http:// page blocks loading
+// the content.
+- (void)testLoadWebUIURLWithIFrame {
+  // Set up the test HTML server.
+  std::map<GURL, std::string> responses;
+  const GURL URL(web::test::HttpServer::MakeUrl("http://pageWithWebUILink"));
+  const char kPageHTML[] =
+      "<p>Hello world!</p>"
+      "<iframe src='chrome://chrome-urls' width='400' height='300'>";
+  responses[URL] = kPageHTML;
+  web::test::SetUpSimpleHttpServer(responses);
+
+  // Assert that test is starting with one tab.
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGrey waitForIncognitoTabCount:0];
+
+  // Load the page.
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Wait until the page content is rendered.
+  [ChromeEarlGrey waitForWebStateContainingText:"Hello world!"];
+
+  // Verify that the page does not show the content of the chrome:// page.
+  [ChromeEarlGrey waitForWebStateNotContainingText:"List of Chrome URLs"];
 }
 
 // Tests that evaluating user JavaScript that causes navigation correctly
@@ -339,7 +370,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:script];
 
-  // TODO(crbug.com/40227513): Move this logic into EG.
+  // There's currently no EG API to tap 'go' on the keyboard.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   [[[app keyboards] buttons][@"go"] tap];
 

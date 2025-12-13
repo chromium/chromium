@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUma
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.chrome.browser.webapps.WebApkServiceClient;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -88,7 +88,7 @@ public class NotificationPermissionUpdater {
                         new TrustedWebActivityClient.PermissionCallback() {
                             @Override
                             public void onPermission(
-                                    ComponentName app, @ContentSettingValues int settingValue) {
+                                    ComponentName app, @ContentSetting int settingValue) {
                                 updatePermission(
                                         origin,
                                         /* callback= */ 0,
@@ -120,7 +120,7 @@ public class NotificationPermissionUpdater {
 
                             @Override
                             public void onPermission(
-                                    ComponentName app, @ContentSettingValues int settingValue) {
+                                    ComponentName app, @ContentSetting int settingValue) {
                                 if (mCalled) return;
                                 mCalled = true;
                                 TrustedWebActivityUmaRecorder
@@ -146,7 +146,7 @@ public class NotificationPermissionUpdater {
             Origin origin, long callback, @Nullable String packageName) {
         if (TextUtils.isEmpty(packageName)) {
             InstalledWebappPermissionManager.resetStoredPermission(origin, TYPE);
-            InstalledWebappBridge.runPermissionCallback(callback, ContentSettingValues.BLOCK);
+            InstalledWebappBridge.runPermissionCallback(callback, ContentSetting.BLOCK);
             return;
         }
 
@@ -182,10 +182,7 @@ public class NotificationPermissionUpdater {
     }
 
     private static void updatePermission(
-            Origin origin,
-            long callback,
-            String packageName,
-            @ContentSettingValues int settingValue) {
+            Origin origin, long callback, String packageName, @ContentSetting int settingValue) {
         Log.d(TAG, "Updating notification permission to: %d", settingValue);
         InstalledWebappPermissionManager.updatePermission(origin, packageName, TYPE, settingValue);
         InstalledWebappBridge.runPermissionCallback(callback, settingValue);

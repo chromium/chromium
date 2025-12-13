@@ -6,11 +6,12 @@
 
 #import "components/enterprise/idle/action_type.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 
 namespace enterprise_idle {
 
 ActionSet GetActionSet(PrefService* prefs,
-                       AuthenticationService* auth_service) {
+                       signin::IdentityManager* identity_manager) {
   std::vector<ActionType> action_types = GetActionTypesFromPrefs(prefs);
   ActionSet action_set;
   for (ActionType action_type : action_types) {
@@ -23,7 +24,7 @@ ActionSet GetActionSet(PrefService* prefs,
         // not signed in before actions run.
       case ActionType::kSignOut:
         action_set.signout =
-            auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+            identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
         break;
 
       case ActionType::kClearBrowsingHistory:

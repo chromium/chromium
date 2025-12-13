@@ -7,6 +7,7 @@
 #import <optional>
 #import <string>
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -15,19 +16,23 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
+#import "components/omnibox/browser/autocomplete_controller_config.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/clipboard_provider.h"
 #import "components/omnibox/browser/history_url_provider.h"
+#import "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/browser/page_classification_functions.h"
 #import "components/omnibox/browser/verbatim_match.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_debugger_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_lens_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_metrics_recorder.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
@@ -35,6 +40,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "third_party/omnibox_proto/groups.pb.h"
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
@@ -51,12 +57,12 @@ using base::UserMetricsAction;
 
 @implementation OmniboxAutocompleteController {
   /// Client of the omnibox.
-  raw_ptr<OmniboxClient> _omniboxClient;
+  raw_ptr<OmniboxClient, DanglingUntriaged> _omniboxClient;
   /// Omnibox text model.
-  raw_ptr<OmniboxTextModel> _omniboxTextModel;
+  raw_ptr<OmniboxTextModel, DanglingUntriaged> _omniboxTextModel;
 
   /// The autocomplete controller.
-  std::unique_ptr<AutocompleteController> _autocompleteController;
+  raw_ptr<AutocompleteController> _autocompleteController;
   /// Autocomplete controller observer.
   std::unique_ptr<AutocompleteControllerObserverBridge>
       _autocompleteControllerObserverBridge;
@@ -64,18 +70,21 @@ using base::UserMetricsAction;
   PrefBackedBoolean* _bottomOmniboxEnabled;
   /// Preferred omnibox position, logged in omnibox logs.
   metrics::OmniboxEventProto::OmniboxPosition _preferredOmniboxPosition;
+  /// Where the omnibox is presented from.
+  OmniboxPresentationContext _omniboxPresentationContext;
 }
 
-- (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
-                     omniboxTextModel:(OmniboxTextModel*)omniboxTextModel {
+- (instancetype)
+     initWithOmniboxClient:(OmniboxClient*)omniboxClient
+    autocompleteController:(AutocompleteController*)autocompleteController
+          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
+       presentationContext:(OmniboxPresentationContext)presentationContext {
   self = [super init];
   if (self) {
     _omniboxClient = omniboxClient;
+    _autocompleteController = autocompleteController;
     _omniboxTextModel = omniboxTextModel;
-
-    _autocompleteController = std::make_unique<AutocompleteController>(
-        _omniboxClient->CreateAutocompleteProviderClient(),
-        AutocompleteClassifier::DefaultOmniboxProviders());
+    _omniboxPresentationContext = presentationContext;
 
     _autocompleteControllerObserverBridge =
         std::make_unique<AutocompleteControllerObserverBridge>(self);
@@ -84,7 +93,7 @@ using base::UserMetricsAction;
     _preferredOmniboxPosition = metrics::OmniboxEventProto::UNKNOWN_POSITION;
     _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:GetApplicationContext()->GetLocalState()
-                   prefName:prefs::kBottomOmnibox];
+                   prefName:omnibox::kIsOmniboxInBottomPosition];
     [_bottomOmniboxEnabled setObserver:self];
     // Initialize to the correct value.
     [self booleanDidChange:_bottomOmniboxEnabled];
@@ -103,13 +112,13 @@ using base::UserMetricsAction;
   [_bottomOmniboxEnabled setObserver:nil];
   _bottomOmniboxEnabled = nil;
   _autocompleteResultWrapper = nil;
-  _autocompleteController.reset();
+  _autocompleteController = nullptr;
   _omniboxTextModel = nullptr;
   _omniboxClient = nullptr;
 }
 
 - (AutocompleteController*)autocompleteController {
-  return _autocompleteController.get();
+  return _autocompleteController;
 }
 
 - (void)updatePopupSuggestions {
@@ -172,12 +181,21 @@ using base::UserMetricsAction;
           disposition:disposition];
 }
 
+#pragma mark - properties
+
+- (AutocompleteProviderClient*)autocompleteProviderClient {
+  if (!_autocompleteController) {
+    return nullptr;
+  }
+  return _autocompleteController->autocomplete_provider_client();
+}
+
 #pragma mark - AutocompleteControllerObserver
 
 - (void)autocompleteController:(AutocompleteController*)autocompleteController
     didUpdateResultChangingDefaultMatch:(BOOL)defaultMatchChanged {
   TRACE_EVENT0("omnibox", "OmniboxAutocompleteController::OnResultChanged");
-  DCHECK(autocompleteController == _autocompleteController.get());
+  DCHECK(autocompleteController == _autocompleteController);
   DCHECK(_omniboxClient);
 
   const bool popup_was_open = self.hasSuggestions;
@@ -281,6 +299,21 @@ using base::UserMetricsAction;
   [self updateWithSortedResults:_autocompleteController->result()];
 }
 
+- (void)selectMatchForOpening:(AutocompleteMatch&)match
+     withCustomDestinationURL:(GURL)destinationURL
+                        inRow:(NSUInteger)row
+                       openIn:(WindowOpenDisposition)disposition {
+  const auto matchSelectionTimestamp = base::TimeTicks();
+  match.destination_url = destinationURL;
+
+  [self openMatch:match
+               popupSelection:OmniboxPopupSelection(OmniboxPopupSelection(row))
+        windowOpenDisposition:disposition
+              alternateNavURL:GURL()
+                   pastedText:u""
+      matchSelectionTimestamp:matchSelectionTimestamp];
+}
+
 - (void)selectMatchForOpening:(const AutocompleteMatch&)match
                         inRow:(NSUInteger)row
                        openIn:(WindowOpenDisposition)disposition {
@@ -319,9 +352,9 @@ using base::UserMetricsAction;
     return;
   }
 
-    [self openSelection:OmniboxPopupSelection(row)
-              timestamp:matchSelectionTimestamp
-            disposition:disposition];
+  [self openSelection:OmniboxPopupSelection(row)
+            timestamp:matchSelectionTimestamp
+          disposition:disposition];
 }
 
 - (void)selectMatchForAppending:(const AutocompleteMatch&)match {
@@ -353,6 +386,31 @@ using base::UserMetricsAction;
 
 #pragma mark - OmniboxText events
 
+// Clears any existing suggestions and restarts the autocomplete process.
+// If there is text in the omnibox, it triggers a regular autocomplete request.
+// If the omnibox is empty, it triggers a zero-suggest request.
+- (void)clearAndRestartAutocomplete {
+  if (!_autocompleteController || !_omniboxTextModel) {
+    return;
+  }
+
+  [self stopAutocompleteWithClearSuggestions:YES];
+
+  // Restart autocomplete with the current text.
+  std::u16string text = _omniboxTextModel->user_text;
+  size_t cursorPosition = _omniboxTextModel->input.cursor_position();
+
+  if (text.length() != 0) {
+    [self startAutocompleteWithText:text
+                     cursorPosition:cursorPosition
+          preventInlineAutocomplete:NO];
+  } else {
+    // Force a fresh autocomplete request to ensure updated suggestions are
+    // fetched, treating this as an explicit user action.
+    [self startZeroSuggestRequestWithText:u"" userClobbered:YES];
+  }
+}
+
 - (void)startAutocompleteWithText:(const std::u16string&)text
                    cursorPosition:(size_t)cursorPosition
         preventInlineAutocomplete:(bool)preventInlineAutocomplete {
@@ -373,10 +431,8 @@ using base::UserMetricsAction;
   input.set_current_url(_omniboxClient->GetURL());
   input.set_current_title(_omniboxClient->GetTitle());
   input.set_prevent_inline_autocomplete(preventInlineAutocomplete);
-  if (std::optional<lens::proto::LensOverlaySuggestInputs> suggestInputs =
-          _omniboxClient->GetLensOverlaySuggestInputs()) {
-    input.set_lens_overlay_suggest_inputs(*suggestInputs);
-  }
+  [self attachSuggestInputsToAutocompleteInput:input];
+  [self attachAimToolModeToAutocompleteInput:input];
 
   [self startAutocompleteWithInput:input];
 }
@@ -421,11 +477,9 @@ using base::UserMetricsAction;
   input.set_current_url(_omniboxClient->GetURL());
   input.set_current_title(_omniboxClient->GetTitle());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
-  // Set the lens overlay suggest inputs, if available.
-  if (std::optional<lens::proto::LensOverlaySuggestInputs> suggestInputs =
-          _omniboxClient->GetLensOverlaySuggestInputs()) {
-    input.set_lens_overlay_suggest_inputs(*suggestInputs);
-  }
+  [self attachSuggestInputsToAutocompleteInput:input];
+  [self attachAimToolModeToAutocompleteInput:input];
+
   [self startAutocompleteWithInput:input];
 }
 
@@ -532,6 +586,39 @@ using base::UserMetricsAction;
 }
 
 #pragma mark - Private
+
+- (void)attachAimToolModeToAutocompleteInput:(AutocompleteInput&)input {
+  if (_omniboxPresentationContext != OmniboxPresentationContext::kComposebox ||
+      !_omniboxClient) {
+    return;
+  }
+
+  input.set_aim_tool_mode(_omniboxClient->AimToolMode());
+}
+
+/// Attaches the client's suggest inputs if valid.
+- (void)attachSuggestInputsToAutocompleteInput:(AutocompleteInput&)input {
+  if (!_omniboxClient) {
+    return;
+  }
+
+  std::optional<lens::proto::LensOverlaySuggestInputs> suggestInputs =
+      _omniboxClient->GetLensOverlaySuggestInputs();
+
+  if (!suggestInputs ||
+      _omniboxClient->AimToolMode() !=
+          omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED) {
+    return;
+  }
+
+  if ((_omniboxPresentationContext ==
+       OmniboxPresentationContext::kComposebox) &&
+      !AreLensSuggestInputsReady(suggestInputs)) {
+    return;
+  }
+
+  input.set_lens_overlay_suggest_inputs(*suggestInputs);
+}
 
 /// Wraps the suggestions and send them to the delegate.
 - (void)updateWithSortedResults:(const AutocompleteResult&)results {
@@ -696,9 +783,20 @@ using base::UserMetricsAction;
   }
 
   if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-    base::AutoReset<bool> tmp(&_omniboxTextModel->in_revert, true);
-    [self.omniboxTextController
-            revertAll];  // Revert the box to its unedited state.
+    // Skip the revert here to avoid changing the size of the multiline omnibox
+    // when accepting input, changes will be reverted at endEditing
+    // (crbug.com/458055336).
+    BOOL skipRevert = (IsMultilineBrowserOmniboxEnabled() &&
+                       _omniboxPresentationContext ==
+                           OmniboxPresentationContext::kLocationBar) ||
+                      (IsComposeboxIOSEnabled() &&
+                       _omniboxPresentationContext ==
+                           OmniboxPresentationContext::kComposebox);
+    if (!skipRevert) {
+      base::AutoReset<bool> tmp(&_omniboxTextModel->in_revert, true);
+      [self.omniboxTextController
+              revertAll];  // Revert the box to its unedited state.
+    }
   }
 
   if (!action) {
@@ -812,15 +910,20 @@ using base::UserMetricsAction;
       break;
     }
     case AutocompleteMatchType::CLIPBOARD_IMAGE: {
-      clipboardRecentContent->GetRecentImageFromClipboard(base::BindOnce(
-          [](OmniboxAutocompleteController* controller,
-             WindowOpenDisposition disposition, base::TimeTicks timestamp,
-             std::optional<gfx::Image> optionalImage) {
-            [controller openClipboardImage:optionalImage
-                               disposition:disposition
-                                 timestamp:timestamp];
-          },
-          weakSelf, disposition, timestamp));
+      if ([self.lensHander shouldUseLensForCopiedImage]) {
+        [self.lensHander lensCopiedImage];
+      } else {
+        clipboardRecentContent->GetRecentImageFromClipboard(base::BindOnce(
+            [](OmniboxAutocompleteController* controller,
+               WindowOpenDisposition disposition, base::TimeTicks timestamp,
+               std::optional<gfx::Image> optionalImage) {
+              [controller openClipboardImage:optionalImage
+                                 disposition:disposition
+                                   timestamp:timestamp];
+            },
+            weakSelf, disposition, timestamp));
+      }
+
       break;
     }
     default:
@@ -830,8 +933,7 @@ using base::UserMetricsAction;
 
 #pragma mark - Testing
 
-- (void)setAutocompleteController:
-    (std::unique_ptr<AutocompleteController>)controller {
+- (void)setAutocompleteController:(AutocompleteController*)controller {
   CHECK(_autocompleteControllerObserverBridge);
   // Remove observation on old controller.
   if (_autocompleteController) {
@@ -839,7 +941,7 @@ using base::UserMetricsAction;
         _autocompleteControllerObserverBridge.get());
   }
   // Set new controller.
-  _autocompleteController = std::move(controller);
+  _autocompleteController = controller;
   // Observe new controller.
   if (_autocompleteController) {
     _autocompleteController->AddObserver(
@@ -848,7 +950,7 @@ using base::UserMetricsAction;
     // Update the autocomplete controller in the metrics recorder and the text
     // controller.
     [self.omniboxMetricsRecorder
-        setAutocompleteController:_autocompleteController.get()];
+        setAutocompleteController:_autocompleteController];
   }
 }
 

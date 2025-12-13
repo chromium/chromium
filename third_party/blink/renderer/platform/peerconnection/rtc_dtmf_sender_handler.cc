@@ -18,7 +18,7 @@
 namespace blink {
 
 class RtcDtmfSenderHandler::Observer
-    : public WTF::ThreadSafeRefCounted<Observer>,
+    : public ThreadSafeRefCounted<Observer>,
       public webrtc::DtmfSenderObserverInterface {
  public:
   explicit Observer(scoped_refptr<base::SingleThreadTaskRunner> main_thread,
@@ -26,7 +26,7 @@ class RtcDtmfSenderHandler::Observer
       : main_thread_(std::move(main_thread)), handler_(handler) {}
 
  private:
-  friend class WTF::ThreadSafeRefCounted<Observer>;
+  friend class ThreadSafeRefCounted<Observer>;
 
   ~Observer() override {}
 

@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.partnercustomizations;
 
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.junit.rules.ExternalResource;
+
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
 
 /** Basic shared functionality for partner customization integration tests. */
-public class BasePartnerBrowserCustomizationIntegrationTestRule
-        extends ChromeTabbedActivityTestRule {
+public class BasePartnerBrowserCustomizationIntegrationTestRule extends ExternalResource {
     public BasePartnerBrowserCustomizationIntegrationTestRule() {}
 
     @Override
@@ -18,6 +18,5 @@ public class BasePartnerBrowserCustomizationIntegrationTestRule
                 true);
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 TestPartnerBrowserCustomizationsProvider.class.getName());
-        super.before();
     }
 }

@@ -34,67 +34,6 @@
 #include "mojo/public/cpp/bindings/deprecated_interface_types_forward.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
-namespace mojo {
-template <typename Interface>
-class PendingReceiver;
-template <typename Interface>
-class PendingRemote;
-template <typename Interface>
-class PendingAssociatedRemote;
-template <typename Interface>
-class PendingAssociatedReceiver;
-template <typename Interface>
-class ScopedHandleBase;
-class DataPipeProducerHandle;
-typedef ScopedHandleBase<DataPipeProducerHandle> ScopedDataPipeProducerHandle;
-class DataPipeConsumerHandle;
-typedef ScopedHandleBase<DataPipeConsumerHandle> ScopedDataPipeConsumerHandle;
-}  // namespace mojo
-
-namespace blink {
-
-template <typename Interface>
-struct CrossThreadCopier<mojo::PendingReceiver<Interface>>
-    : public CrossThreadCopierByValuePassThrough<
-          mojo::PendingReceiver<Interface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename Interface>
-struct CrossThreadCopier<mojo::PendingRemote<Interface>>
-    : public CrossThreadCopierByValuePassThrough<
-          mojo::PendingRemote<Interface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename Interface>
-struct CrossThreadCopier<mojo::PendingAssociatedRemote<Interface>>
-    : public CrossThreadCopierByValuePassThrough<
-          mojo::PendingAssociatedRemote<Interface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename Interface>
-struct CrossThreadCopier<mojo::PendingAssociatedReceiver<Interface>>
-    : public CrossThreadCopierByValuePassThrough<
-          mojo::PendingAssociatedReceiver<Interface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<mojo::ScopedDataPipeProducerHandle>
-    : public CrossThreadCopierByValuePassThrough<
-          mojo::ScopedDataPipeProducerHandle> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<mojo::ScopedDataPipeConsumerHandle>
-    : public CrossThreadCopierByValuePassThrough<
-          mojo::ScopedDataPipeConsumerHandle> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-}  // namespace blink
+// TODO(crbug.com/460743390): Delete this file after CrossThreadCopier removal.
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_MOJO_H_

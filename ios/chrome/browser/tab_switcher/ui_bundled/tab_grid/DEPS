@@ -3,6 +3,8 @@ include_rules = [
   "+components/saved_tab_groups/public",
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_coordinator.h",
+  "+ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h",
+  "+ios/chrome/browser/intelligence/features/features.h",
 ]
 
 specific_include_rules = {

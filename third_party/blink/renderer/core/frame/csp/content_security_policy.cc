@@ -39,7 +39,6 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
-#include "services/network/public/mojom/integrity_metadata.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
@@ -60,6 +59,7 @@
 #include "third_party/blink/renderer/core/frame/csp/csp_directive_list.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_hash_report_body.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
+#include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/integrity_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -71,7 +71,6 @@
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
-#include "third_party/blink/renderer/core/securitypolicyviolation_disposition_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -218,17 +217,8 @@ String ContentSecurityPolicy::StripURLForUseInReport(
   }
 
   // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
-  // > 2. Set url’s fragment to the empty string.
-  // > 3. Set url’s username to the empty string.
-  // > 4. Set url’s password to the empty string.
-  KURL stripped_url = url;
-  stripped_url.RemoveFragmentIdentifier();
-  stripped_url.SetUser(String());
-  stripped_url.SetPass(String());
-
-  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
   // > 5. Return the result of executing the URL serializer on url.
-  return stripped_url.GetString();
+  return CSPStripURL(url).GetString();
 }
 
 bool ContentSecurityPolicy::IsNonceableElement(const Element* element) {
@@ -254,10 +244,10 @@ bool ContentSecurityPolicy::IsNonceableElement(const Element* element) {
     for (const Attribute& attr : element->Attributes()) {
       const AtomicString& name = attr.LocalName();
       const AtomicString& value = attr.Value();
-      if (name.FindIgnoringASCIICase(kScriptString) != WTF::kNotFound ||
-          name.FindIgnoringASCIICase(kStyleString) != WTF::kNotFound ||
-          value.FindIgnoringASCIICase(kScriptString) != WTF::kNotFound ||
-          value.FindIgnoringASCIICase(kStyleString) != WTF::kNotFound) {
+      if (name.FindIgnoringASCIICase(kScriptString) != kNotFound ||
+          name.FindIgnoringASCIICase(kStyleString) != kNotFound ||
+          value.FindIgnoringASCIICase(kScriptString) != kNotFound ||
+          value.FindIgnoringASCIICase(kStyleString) != kNotFound) {
         nonceable = false;
         break;
       }
@@ -351,10 +341,11 @@ void ContentSecurityPolicy::ReportUseCounters(
     // This use counter is for the 'unsafe-eval' keyword. We pass an empty array
     // of hashes so this is logged if and only if 'unsafe-eval' is set,
     // regardless of hashes.
-    if (CSPDirectiveListAllowEval(*policy, this,
-                                  ReportingDisposition::kSuppressReporting,
-                                  kWillNotThrowException, g_empty_string,
-                                  /*script_hash_values=*/{})) {
+    if (CSPDirectiveListAllowEval(
+            *policy, this, ReportingDisposition::kSuppressReporting,
+            kWillNotThrowException, g_empty_string,
+            /*script_hash_values=*/{},
+            delegate_ && delegate_->ScriptSrcExtendedHashesEnabled())) {
       Count(WebFeature::kCSPWithUnsafeEval);
     }
 
@@ -406,6 +397,17 @@ void ContentSecurityPolicy::ReportUseCounters(
     }
     if (policy->trusted_types && policy->trusted_types->allow_duplicates) {
       Count(WebFeature::kTrustedTypesAllowDuplicates);
+    }
+
+    CSPOperativeDirective script_src = CSPDirectiveListOperativeDirective(
+        *policy, network::mojom::CSPDirectiveName::ScriptSrc);
+    if (script_src.source_list) {
+      if (CSPSourceListIsEvalHashPresent(*script_src.source_list)) {
+        Count(WebFeature::kCSPEvalHashes);
+      }
+      if (!script_src.source_list->url_hashes.empty()) {
+        Count(WebFeature::kCSPUrlHashes);
+      }
     }
   }
 }
@@ -487,7 +489,9 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
     UpgradeInsecureRequests();
 
   String disable_eval_message;
-  if (CSPDirectiveListShouldDisableEval(csp, disable_eval_message) &&
+  if (CSPDirectiveListShouldDisableEval(
+          csp, disable_eval_message,
+          delegate_ && delegate_->ScriptSrcExtendedHashesEnabled()) &&
       disable_eval_error_message_.IsNull()) {
     disable_eval_error_message_ = disable_eval_message;
   }
@@ -516,10 +520,10 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
       case CSPDirectiveName::StyleSrcAttr:
       case CSPDirectiveName::StyleSrcElem:
         for (const auto& hash_source : directive.value->hashes) {
-          UsesHashAlgorithm(hash_source->algorithm);
+          UsesHashAlgorithm(hash_source.algorithm);
         }
         for (const auto& hash_source : directive.value->eval_hashes) {
-          UsesHashAlgorithm(hash_source->algorithm);
+          UsesHashAlgorithm(hash_source.algorithm);
         }
         break;
       // Images, fonts, etc. do not support integrity checks, so we can skip
@@ -570,12 +574,13 @@ void ContentSecurityPolicy::SetOverrideAllowInlineStyle(bool value) {
 
 // static
 bool ContentSecurityPolicy::CheckHashAgainstPolicy(
-    Vector<network::mojom::blink::IntegrityMetadataPtr>& csp_hash_values,
+    Vector<network::IntegrityMetadata>& csp_hash_values,
     const network::mojom::blink::ContentSecurityPolicy& csp,
     InlineType inline_type) {
   for (const auto& csp_hash_value : csp_hash_values) {
-    if (CSPDirectiveListAllowHash(csp, *csp_hash_value, inline_type))
+    if (CSPDirectiveListAllowHash(csp, csp_hash_value, inline_type)) {
       return true;
+    }
   }
   return false;
 }
@@ -587,7 +592,7 @@ bool ContentSecurityPolicy::AllowInline(
     const String& content,
     const String& nonce,
     const String& context_url,
-    const WTF::OrdinalNumber& context_line,
+    const OrdinalNumber& context_line,
     ReportingDisposition reporting_disposition) {
   DCHECK(element || inline_type == InlineType::kScriptAttribute ||
          inline_type == InlineType::kNavigation);
@@ -628,7 +633,7 @@ bool ContentSecurityPolicy::AllowInline(
     }
   }
 
-  Vector<network::mojom::blink::IntegrityMetadataPtr> csp_hash_values;
+  Vector<network::IntegrityMetadata> csp_hash_values;
   FillInCSPHashValues(content, hash_algorithms_used_, csp_hash_values);
 
   // Step 2. Let result be "Allowed". [spec text]
@@ -677,12 +682,13 @@ bool ContentSecurityPolicy::AllowEval(
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& script_content) {
   bool is_allowed = true;
-  Vector<network::mojom::blink::IntegrityMetadataPtr> csp_hash_values;
+  Vector<network::IntegrityMetadata> csp_hash_values;
   FillInCSPHashValues(script_content, hash_algorithms_used_, csp_hash_values);
   for (const auto& policy : policies_) {
     is_allowed &= CSPDirectiveListAllowEval(
         *policy, this, reporting_disposition, exception_status, script_content,
-        csp_hash_values);
+        csp_hash_values,
+        delegate_ && delegate_->ScriptSrcExtendedHashesEnabled());
   }
   return is_allowed;
 }
@@ -741,8 +747,11 @@ void ContentSecurityPolicy::AddHashReportIfNeeded(
 String ContentSecurityPolicy::EvalDisabledErrorMessage() const {
   for (const auto& policy : policies_) {
     String message;
-    if (CSPDirectiveListShouldDisableEval(*policy, message))
+    if (CSPDirectiveListShouldDisableEval(
+            *policy, message,
+            delegate_ && delegate_->ScriptSrcExtendedHashesEnabled())) {
       return message;
+    }
   }
   return String();
 }
@@ -836,7 +845,8 @@ bool AllowResourceHintRequestForPolicy(
     ParserDisposition parser_disposition,
     const KURL& url_before_redirects,
     RedirectStatus redirect_status,
-    ReportingDisposition reporting_disposition) {
+    ReportingDisposition reporting_disposition,
+    bool script_src_extended_hashes_enabled) {
   // The loop ignores default-src directives, which is the directive to report
   // for resource hints. So we don't need to check report-only policies.
   if (csp.header->type == ContentSecurityPolicyType::kEnforce) {
@@ -858,8 +868,9 @@ bool AllowResourceHintRequestForPolicy(
          }) {
       if (CSPDirectiveListAllowFromSource(
               csp, policy, type, document_url, url, url_before_redirects,
-              redirect_status, ReportingDisposition::kSuppressReporting, nonce,
-              integrity_metadata, parser_disposition)) {
+              redirect_status, ReportingDisposition::kSuppressReporting,
+              script_src_extended_hashes_enabled, nonce, integrity_metadata,
+              parser_disposition)) {
         return true;
       }
     }
@@ -869,7 +880,8 @@ bool AllowResourceHintRequestForPolicy(
   return CSPDirectiveListAllowFromSource(
              csp, policy, CSPDirectiveName::DefaultSrc, document_url, url,
              url_before_redirects, redirect_status, reporting_disposition,
-             nonce, integrity_metadata, parser_disposition)
+             script_src_extended_hashes_enabled, nonce, integrity_metadata,
+             parser_disposition)
       .IsAllowed();
 }
 
@@ -899,7 +911,8 @@ bool ContentSecurityPolicy::AllowRequest(
              AllowResourceHintRequestForPolicy(
                  *policy, this, delegate_->Url(), url, nonce,
                  integrity_metadata, parser_disposition, url_before_redirects,
-                 redirect_status, reporting_disposition);
+                 redirect_status, reporting_disposition,
+                 delegate_ && delegate_->ScriptSrcExtendedHashesEnabled());
     });
   }
 
@@ -982,8 +995,9 @@ bool ContentSecurityPolicy::AllowFromSource(
     }
     result &= CSPDirectiveListAllowFromSource(
         *policy, this, type, delegate_->Url(), url, url_before_redirects,
-        redirect_status, reporting_disposition, nonce, integrity_metadata,
-        parser_disposition);
+        redirect_status, reporting_disposition,
+        delegate_ && delegate_->ScriptSrcExtendedHashesEnabled(), nonce,
+        integrity_metadata, parser_disposition);
   }
 
   if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
@@ -1207,8 +1221,8 @@ SourceLocation* GatherSecurityPolicyViolationEventData(
   init->setOriginalPolicy(header);
   init->setDisposition(
       header_type == ContentSecurityPolicyType::kEnforce
-          ? securitypolicyviolation_disposition_names::kEnforce
-          : securitypolicyviolation_disposition_names::kReport);
+          ? V8SecurityPolicyViolationEventDisposition::Enum::kEnforce
+          : V8SecurityPolicyViolationEventDisposition::Enum::kReport);
   init->setStatusCode(0);
 
   // See https://w3c.github.io/webappsec-csp/#create-violation-for-global.
@@ -1692,7 +1706,7 @@ bool ContentSecurityPolicy::ShouldBypassContentSecurityPolicy(
   return should_bypass_csp;
 }
 
-const WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>&
+const Vector<network::mojom::blink::ContentSecurityPolicyPtr>&
 ContentSecurityPolicy::GetParsedPolicies() const {
   return policies_;
 }

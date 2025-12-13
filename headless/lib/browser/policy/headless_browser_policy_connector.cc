@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "components/headless/policy/headless_mode_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"  // nogncheck http://crbug.com/1227148
-#include "components/policy/core/browser/url_blocklist_policy_handler.h"  // nogncheck http://crbug.com/1227148
+#include "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/common/async_policy_provider.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_paths.h"

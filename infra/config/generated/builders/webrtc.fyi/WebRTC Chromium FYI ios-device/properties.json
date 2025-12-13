@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-webrtc",
               "builder_group": "chromium.webrtc.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -40,7 +39,8 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/webrtc.fyi/WebRTC Chromium FYI ios-device/targets"
+      "targets_spec_directory": "infra/config/generated/builders/webrtc.fyi/WebRTC Chromium FYI ios-device/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {
@@ -64,5 +64,5 @@
   },
   "builder_group": "chromium.webrtc.fyi",
   "recipe": "chromium",
-  "xcode_build_version": "16c5032a"
+  "xcode_build_version": "17a400"
 }

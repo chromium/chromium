@@ -304,9 +304,7 @@ std::string RollbackNetworkConfig::Exporter::SerializeNetworkConfigs() const {
   auto complete_network_configuration =
       base::Value::Dict().Set(onc::toplevel_config::kNetworkConfigurations,
                               std::move(network_config_list));
-  std::string serialized_config;
-  base::JSONWriter::Write(complete_network_configuration, &serialized_config);
-  return serialized_config;
+  return base::WriteJson(complete_network_configuration).value_or("");
 }
 
 class RollbackNetworkConfig::Importer : public DeviceSettingsService::Observer,
@@ -366,7 +364,8 @@ RollbackNetworkConfig::Importer::~Importer() {
 void RollbackNetworkConfig::Importer::Import(const std::string& network_config,
                                              ImportCallback callback) {
   std::optional<base::Value::Dict> managed_onc_network_config =
-      base::JSONReader::ReadDict(network_config);
+      base::JSONReader::ReadDict(network_config,
+                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!managed_onc_network_config) {
     std::move(callback).Run(false);

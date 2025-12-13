@@ -28,7 +28,8 @@ class HintSessionFactory;
 
 class VIZ_SERVICE_EXPORT DisplayScheduler
     : public DisplaySchedulerBase,
-      public DynamicBeginFrameDeadlineOffsetSource {
+      public DynamicBeginFrameDeadlineOffsetSource,
+      public BeginFrameSource::SchedulerClient {
  public:
   // `max_pending_swaps_120hz`, if positive, is used as the number of pending
   // swaps while running at 120hz. Otherwise, this will fallback to
@@ -48,7 +49,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   void SetDamageTracker(DisplayDamageTracker* damage_tracker) override;
   void SetVisible(bool visible) override;
   void ForceImmediateSwapIfPossible() override;
-  void SetNeedsOneBeginFrame(bool needs_draw) override;
+  void SetNeedsOneBeginFrame(const BeginFrameArgs& args,
+                             bool needs_draw) override;
   void DidSwapBuffers() override;
   void DidReceiveSwapBuffersAck() override;
   void OutputSurfaceLost() override;
@@ -66,6 +68,9 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
 
   // DynamicBeginFrameDeadlineOffsetSource:
   base::TimeDelta GetDeadlineOffset(base::TimeDelta interval) const override;
+
+  // BeginFrameSource::SchedulerClient implementation.
+  void OnBeginFrameForScheduling(const BeginFrameArgs& args) override;
 
  protected:
   class BeginFrameObserver;

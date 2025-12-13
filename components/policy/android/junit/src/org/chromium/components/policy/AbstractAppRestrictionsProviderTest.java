@@ -178,7 +178,7 @@ public class AbstractAppRestrictionsProviderTest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Ensure that neither RECEIVER_EXPORTED nor RECEIVER_NOT_EXPORTED flags are set,
             // asserting that the receiver was only registered for protected broadcasts.
-            final int badMask = ContextUtils.RECEIVER_EXPORTED | ContextUtils.RECEIVER_NOT_EXPORTED;
+            final int badMask = Context.RECEIVER_EXPORTED | Context.RECEIVER_NOT_EXPORTED;
             Assert.assertEquals(0, dummyContext.getLastRegisteredReceiverFlags() & badMask);
         }
     }
@@ -203,7 +203,7 @@ public class AbstractAppRestrictionsProviderTest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Ensure that neither RECEIVER_EXPORTED nor RECEIVER_NOT_EXPORTED flags are set,
             // asserting that the receiver was only registered for protected broadcasts.
-            final int badMask = ContextUtils.RECEIVER_EXPORTED | ContextUtils.RECEIVER_NOT_EXPORTED;
+            final int badMask = Context.RECEIVER_EXPORTED | Context.RECEIVER_NOT_EXPORTED;
             Assert.assertEquals(0, dummyContext.getLastRegisteredReceiverFlags() & badMask);
         }
         provider.stopListening();

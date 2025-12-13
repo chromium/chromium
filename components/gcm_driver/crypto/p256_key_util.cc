@@ -4,59 +4,36 @@
 
 #include "components/gcm_driver/crypto/p256_key_util.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
-#include <memory>
+#include <array>
 #include <string_view>
-#include <vector>
 
 #include "base/logging.h"
-#include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
+#include "crypto/kex.h"
 #include "crypto/keypair.h"
-#include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/ecdh.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace gcm {
 
-namespace {
-
-// A P-256 field element consists of 32 bytes.
-const size_t kFieldBytes = 32;
-
-}  // namespace
-
-bool ComputeSharedP256Secret(crypto::keypair::PrivateKey key,
-                             std::string_view peer_public_key,
+bool ComputeSharedP256Secret(crypto::keypair::PrivateKey our_key,
+                             std::string_view their_point,
                              std::string* out_shared_secret) {
-  DCHECK(out_shared_secret);
-
-  EC_KEY* ec_private_key = EVP_PKEY_get0_EC_KEY(key.key());
-  if (!ec_private_key || !EC_KEY_check_key(ec_private_key)) {
+  if (!our_key.IsEcP256()) {
     DLOG(ERROR) << "The private key is invalid.";
     return false;
   }
 
-  bssl::UniquePtr<EC_POINT> point(
-      EC_POINT_new(EC_KEY_get0_group(ec_private_key)));
-
-  if (!point || !EC_POINT_oct2point(
-                    EC_KEY_get0_group(ec_private_key), point.get(),
-                    reinterpret_cast<const uint8_t*>(peer_public_key.data()),
-                    peer_public_key.size(), nullptr)) {
+  std::optional<crypto::keypair::PublicKey> their_key =
+      crypto::keypair::PublicKey::FromEcP256Point(
+          base::as_byte_span(their_point));
+  if (!their_key.has_value()) {
     DLOG(ERROR) << "Can't convert peer public value to curve point.";
     return false;
   }
 
-  uint8_t result[kFieldBytes];
-  if (ECDH_compute_key(result, sizeof(result), point.get(), ec_private_key,
-                       nullptr) != sizeof(result)) {
-    DLOG(ERROR) << "Unable to compute the ECDH shared secret.";
-    return false;
-  }
+  std::array<uint8_t, 32> result;
+  crypto::kex::EcdhP256(*their_key, our_key, result);
 
-  out_shared_secret->assign(reinterpret_cast<char*>(result), sizeof(result));
+  out_shared_secret->assign(base::as_string_view(result));
   return true;
 }
 

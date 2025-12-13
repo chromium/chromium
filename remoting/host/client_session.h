@@ -31,7 +31,7 @@
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
 #include "remoting/host/client_session_events.h"
-#include "remoting/host/desktop_and_cursor_composer_notifier.h"
+#include "remoting/host/cursor_visibility_notifier.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/host_experiment_session_plugin.h"
 #include "remoting/host/host_extension_session_manager.h"
@@ -44,6 +44,7 @@
 #include "remoting/protocol/clipboard_filter.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/connection_to_client.h"
+#include "remoting/protocol/coordinate_converter.h"
 #include "remoting/protocol/data_channel_manager.h"
 #include "remoting/protocol/display_size.h"
 #include "remoting/protocol/errors.h"
@@ -52,6 +53,7 @@
 #include "remoting/protocol/input_event_timestamps.h"
 #include "remoting/protocol/input_event_tracker.h"
 #include "remoting/protocol/input_filter.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "remoting/protocol/mouse_input_filter.h"
 #include "remoting/protocol/observing_input_filter.h"
 #include "remoting/protocol/pairing_registry.h"
@@ -60,7 +62,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 #include "ui/events/types/event_type.h"
 
 namespace remoting {
@@ -88,8 +89,8 @@ class ClientSession : public protocol::HostStub,
                       public ClientSessionControl,
                       public ClientSessionDetails,
                       public ClientSessionEvents,
-                      public DesktopAndCursorComposerNotifier::EventHandler,
-                      public webrtc::MouseCursorMonitor::Callback,
+                      public CursorVisibilityNotifier::EventHandler,
+                      public protocol::MouseCursorMonitor::Callback,
                       public mojom::ChromotingSessionServices {
  public:
   // Callback interface for passing events to the ChromotingHost.
@@ -197,11 +198,12 @@ class ClientSession : public protocol::HostStub,
   std::uint32_t desktop_session_id() const override;
   ClientSessionControl* session_control() override;
 
-  // DesktopAndCursorComposerNotifier::EventHandler interface
-  void SetComposeEnabled(bool enabled) override;
+  // CursorVisibilityNotifier::EventHandler interface
+  void OnCursorVisibilityChanged(bool visible) override;
 
-  // webrtc::MouseCursorMonitor::Callback implementation.
-  void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
+  // MouseCursorMonitor::Callback implementation.
+  void OnMouseCursor(
+      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
   // mojom::ChromotingSessionServices implementation.
@@ -301,11 +303,17 @@ class ClientSession : public protocol::HostStub,
   // whenever the screen id associated with the active window changes.
   void OnActiveDisplayChanged(webrtc::ScreenId display);
 
-  // Sets the fallback geometry on `fractional_input_filter_` according to the
+  // Sets the fallback geometry on `coordinate_converter` according to the
   // current display-layout and selected display index. This is only used for
   // single-stream mode, when the client provides fractional-coordinates without
   // any screen_id.
-  void UpdateFractionalFilterFallback();
+  void UpdateCoordinateConverterFallback();
+
+  // Calls SetComposeEnabled() on all video streams. This controls whether the
+  // host's cursor should be composed onto the desktop frame.
+  // TODO: crbug.com/455622961 - Remove this method once the
+  // clientRenderedHostCursor capability is fully rolled out.
+  void SetComposeEnabledOnVideoStreams(bool enabled);
 
   raw_ptr<EventHandler> event_handler_;
 
@@ -321,8 +329,16 @@ class ClientSession : public protocol::HostStub,
   // Pending actions to run once the desktop environment has been created.
   std::vector<base::OnceClosure> desktop_environment_ready_callbacks_;
 
+  // Used to convert fractional coordinates to absolute coordinates.
+  protocol::CoordinateConverter coordinate_converter_;
+
   // Tracker used to release pressed keys and buttons when disconnecting.
   protocol::InputEventTracker input_tracker_;
+
+  // Filter used to detect transitions into and out of client-side pointer lock,
+  // and to monitor local input to determine whether or not to include the mouse
+  // cursor in the desktop image.
+  CursorVisibilityNotifier cursor_visibility_notifier_;
 
   // Filter used to disable remote inputs during local input activity.
   RemoteInputFilter remote_input_filter_;
@@ -336,11 +352,6 @@ class ClientSession : public protocol::HostStub,
 
   // Filter used to notify listeners when remote input events are received.
   protocol::ObservingInputFilter observing_input_filter_;
-
-  // Filter used to detect transitions into and out of client-side pointer lock,
-  // and to monitor local input to determine whether or not to include the mouse
-  // cursor in the desktop image.
-  DesktopAndCursorComposerNotifier desktop_and_cursor_composer_notifier_;
 
   // Filter to used to stop clipboard items sent from the client being echoed
   // back to it.  It is the final element in the clipboard (client -> host)
@@ -467,6 +478,9 @@ class ClientSession : public protocol::HostStub,
   // subscription will be null and OnLocalSessionPoliciesChanged() will never
   // be called.
   base::CallbackListSubscription local_session_policy_update_subscription_;
+
+  bool host_cursor_rendered_by_client_ = false;
+  bool cursor_visible_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

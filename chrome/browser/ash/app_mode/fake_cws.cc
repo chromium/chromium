@@ -176,7 +176,8 @@ bool GetAppIdsFromUpdateUrl(const GURL& update_url,
 // false and does not change `ids`.
 bool GetAppIdsFromRequestBody(const std::string& request_body,
                               std::vector<std::string>* ids) {
-  const auto value = base::JSONReader::Read(request_body);
+  const auto value = base::JSONReader::Read(
+      request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value.has_value()) {
     return false;
   }
@@ -467,7 +468,7 @@ bool FakeCWS::GetUpdateCheckContent(const std::vector<std::string>& ids,
 std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
     const HttpRequest& request) {
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
-  std::string request_path = request_url.path();
+  std::string request_path = request_url.GetPath();
   if (request_path.find(update_check_end_point_) != std::string::npos &&
       !id_to_update_check_content_map_.empty()) {
     std::vector<std::string> ids;

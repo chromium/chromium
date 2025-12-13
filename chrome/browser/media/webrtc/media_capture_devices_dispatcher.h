@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_CAPTURE_DEVICES_DISPATCHER_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_CAPTURE_DEVICES_DISPATCHER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -22,6 +21,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 class Browser;
+class DesktopCaptureAccessHandler;
 class MediaAccessHandler;
 class MediaStreamCaptureIndicator;
 
@@ -90,7 +90,7 @@ class MediaCaptureDevicesDispatcher
                                  content::MediaResponseCallback callback,
                                  const extensions::Extension* extension);
 
-#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_FUCHSIA)
+#if defined(TOOLKIT_VIEWS)
   void ProcessSelectAudioOutputRequest(
       Browser* browser,
       const content::SelectAudioOutputRequest& request,
@@ -155,6 +155,10 @@ class MediaCaptureDevicesDispatcher
   void SetTestAudioCaptureDevices(const blink::MediaStreamDevices& devices);
   void SetTestVideoCaptureDevices(const blink::MediaStreamDevices& devices);
 
+  DesktopCaptureAccessHandler* desktop_capture_access_handler_for_test() {
+    return desktop_capture_access_handler_for_test_;
+  }
+
  private:
   friend class MediaCaptureDevicesDispatcherTest;
 
@@ -198,6 +202,10 @@ class MediaCaptureDevicesDispatcher
 
   // Handlers for processing media access requests.
   std::vector<std::unique_ptr<MediaAccessHandler>> media_access_handlers_;
+
+  // Only for testing, the desktop capture access handler, if one exists.
+  raw_ptr<DesktopCaptureAccessHandler>
+      desktop_capture_access_handler_for_test_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_CAPTURE_DEVICES_DISPATCHER_H_

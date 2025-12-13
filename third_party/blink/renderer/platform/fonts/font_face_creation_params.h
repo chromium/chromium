@@ -157,7 +157,7 @@ class FontFaceCreationParams {
 #if defined(ADDRESS_SANITIZER)
   // We put the `std::string` behind an optional as ASAN counter checks require
   // that we properly call constructors and destructors for all strings. This is
-  // not the case when `FontFaceCreationParams` is used in `WTF::HashMap` as key
+  // not the case when `FontFaceCreationParams` is used in `HashMap` as key
   // where we also cosntruct empty and deleted values that are never properly
   // destroyed.
   //

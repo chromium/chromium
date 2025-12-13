@@ -5,6 +5,7 @@
 #include "services/network/test/mock_devtools_observer.h"
 
 #include "base/run_loop.h"
+#include "base/unguessable_token.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
@@ -28,7 +29,9 @@ void MockDevToolsObserver::OnRawRequest(
     std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
     const base::TimeTicks timestamp,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    network::mojom::OtherPartitionInfoPtr site_has_cookie_in_other_partition) {
+    network::mojom::OtherPartitionInfoPtr site_has_cookie_in_other_partition,
+    const std::optional<base::UnguessableToken>&
+        applied_network_conditions_id) {
   raw_request_cookies_.insert(raw_request_cookies_.end(),
                               cookies_with_access_result.begin(),
                               cookies_with_access_result.end());
@@ -117,13 +120,6 @@ void MockDevToolsObserver::OnCorsError(
     const GURL& url,
     const network::CorsErrorStatus& status,
     bool is_warning) {
-  // Ignoring kUnexpectedPrivateNetworkAccess because the request will be
-  // restarted with a preflight and we care more about the CORS error that comes
-  // thereafter.
-  if (status.cors_error == mojom::CorsError::kUnexpectedPrivateNetworkAccess) {
-    return;
-  }
-
   OnCorsErrorParams params;
   params.devtools_request_id = devtools_request_id;
   params.initiator_origin = initiator_origin;

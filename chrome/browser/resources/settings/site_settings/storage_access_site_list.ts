@@ -10,6 +10,7 @@
  */
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import './storage_access_site_list_entry.js';
 import '../settings_shared.css.js';
 
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
@@ -18,8 +19,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {ContentSetting} from './constants.js';
 import {ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './constants.js';
+import type {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './storage_access_site_list.html.js';
 
 export interface StorageAccessSiteListElement {

@@ -50,17 +50,19 @@ GpuBrowsertestEstablishGpuChannelSyncRunLoop() {
 scoped_refptr<viz::ContextProviderCommandBuffer> GpuBrowsertestCreateContext(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
     bool wants_raster_interface) {
-  gpu::ContextCreationAttribs attributes;
-  attributes.enable_gles2_interface = !wants_raster_interface;
-  attributes.enable_grcontext = false;
-  attributes.enable_raster_interface = wants_raster_interface;
+  if (wants_raster_interface) {
+    return viz::ContextProviderCommandBuffer::CreateForRaster(
+        std::move(gpu_channel_host), content::kGpuStreamIdDefault,
+        content::kGpuStreamPriorityDefault, GURL(),
+        /*automatic_flushes=*/false, /*support_locking=*/false,
+        gpu::SharedMemoryLimits(),
+        viz::command_buffer_metrics::ContextType::FOR_TESTING,
+        /*lose_context_when_out_of_memory=*/false);
+  }
 
-  constexpr bool automatic_flushes = false;
-  constexpr bool support_locking = false;
-  return base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-      std::move(gpu_channel_host), content::kGpuStreamIdDefault,
-      content::kGpuStreamPriorityDefault, GURL(), automatic_flushes,
-      support_locking, gpu::SharedMemoryLimits(), attributes,
+  return viz::ContextProviderCommandBuffer::CreateForGL(
+      gpu_channel_host, content::kGpuStreamIdDefault,
+      content::kGpuStreamPriorityDefault, GURL(),
       viz::command_buffer_metrics::ContextType::FOR_TESTING);
 }
 

@@ -27,9 +27,9 @@ MemoryMetricsLogger* g_instance = nullptr;
 // Called once the metrics have been determined. Does the actual logging.
 void RecordMemoryMetricsImpl(
     MemoryMetricsLogger::RecordCallback done_callback,
-    bool success,
+    memory_instrumentation::mojom::RequestOutcome outcome,
     std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump) {
-  if (!success) {
+  if (outcome != memory_instrumentation::mojom::RequestOutcome::kSuccess) {
     if (done_callback) {
       std::move(done_callback).Run(false);
     }

@@ -177,7 +177,7 @@ Vector<LayoutUnit> FrameSetLayoutAlgorithm::LayoutAxis(
   // proportionally over all relative columns/rows.
   // NOTE: the relative value of 0* is treated as 1*.
   if (!relative_indices.empty()) {
-    wtf_size_t last_relative_index = WTF::kNotFound;
+    wtf_size_t last_relative_index = kNotFound;
     int64_t remaining_relative = remaining_length.ToInt();
     for (auto i : relative_indices) {
       sizes[i] = IntLayoutUnit(

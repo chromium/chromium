@@ -16,7 +16,6 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"

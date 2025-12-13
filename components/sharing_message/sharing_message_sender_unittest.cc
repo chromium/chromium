@@ -232,7 +232,7 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckTimedout) {
   EXPECT_CALL(
       *mock_sharing_fcm_sender_,
       SendMessageToFcmTarget(testing::_, testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(simulate_timeout));
+      .WillOnce(simulate_timeout);
 
   sharing_message_sender_.SendMessageToDevice(
       device_info, kTimeToLive, components_sharing_message::SharingMessage(),
@@ -266,7 +266,7 @@ TEST_F(SharingMessageSenderTest, SendMessageToDevice_InternalError) {
   EXPECT_CALL(
       *mock_sharing_fcm_sender_,
       SendMessageToFcmTarget(testing::_, testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(simulate_internal_error));
+      .WillOnce(simulate_internal_error);
 
   sharing_message_sender_.SendMessageToDevice(
       device_info, kTimeToLive, components_sharing_message::SharingMessage(),
@@ -298,7 +298,7 @@ TEST_F(SharingMessageSenderTest, SendUnencryptedMessageToDevice_InternalError) {
   EXPECT_CALL(
       *mock_sharing_ios_push_sender_,
       DoSendUnencryptedMessageToDevice(testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(simulate_internal_error));
+      .WillOnce(simulate_internal_error);
 
   sharing_message_sender_.SendUnencryptedMessageToDevice(
       device_info, sync_pb::UnencryptedSharingMessage(),
@@ -357,7 +357,7 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckReceived) {
   EXPECT_CALL(
       *mock_sharing_fcm_sender_,
       SendMessageToFcmTarget(testing::_, testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(simulate_expected_ack_message_received));
+      .WillOnce(simulate_expected_ack_message_received);
 
   sharing_message_sender_.SendMessageToDevice(
       device_info, kTimeToLive, std::move(sent_message),
@@ -400,7 +400,7 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckReceivedBeforeMessageId) {
   EXPECT_CALL(
       *mock_sharing_fcm_sender_,
       SendMessageToFcmTarget(testing::_, testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(simulate_expected_ack_message_received));
+      .WillOnce(simulate_expected_ack_message_received);
 
   sharing_message_sender_.SendMessageToDevice(
       device_info, kTimeToLive, std::move(sent_message),

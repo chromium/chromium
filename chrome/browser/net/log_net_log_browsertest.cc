@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -46,7 +47,8 @@ class LogNetLogTest : public InProcessBrowserTest {
         << "Could not read: " << net_log_path;
 
     // Parse it as JSON.
-    auto parsed = base::JSONReader::Read(file_contents);
+    auto parsed = base::JSONReader::Read(file_contents,
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_TRUE(parsed);
 
     // Detailed checking is done by LogNetLogExplicitFileTest, so this test just
@@ -54,7 +56,13 @@ class LogNetLogTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(LogNetLogTest, Exists) {
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/457605739): Flaky on ASAN on ChromeOS.
+#define MAYBE_Exists DISABLED_Exists
+#else
+#define MAYBE_Exists Exists
+#endif
+IN_PROC_BROWSER_TEST_F(LogNetLogTest, MAYBE_Exists) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/simple.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -96,7 +104,8 @@ class LogNetLogExplicitFileTest
         << "Could not read: " << net_log_path_;
 
     // Parse it as JSON.
-    auto parsed = base::JSONReader::Read(file_contents);
+    auto parsed = base::JSONReader::Read(file_contents,
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(parsed);
 
     // Ensure the root value is a dictionary.
@@ -181,8 +190,8 @@ class LogNetLogInvalidDurationTest
         << "Could not read: " << net_log_path_;
 
     // Parse it as JSON
-    std::optional<base::Value> log_value =
-        base::JSONReader::Read(file_contents);
+    std::optional<base::Value> log_value = base::JSONReader::Read(
+        file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(log_value.has_value());
     EXPECT_TRUE(log_value->is_dict());
   }
@@ -261,8 +270,8 @@ class LogNetLogValidDurationTest : public InProcessBrowserTest {
       return false;
     }
 
-    std::optional<base::Value> parsed_json =
-        base::JSONReader::Read(file_contents);
+    std::optional<base::Value> parsed_json = base::JSONReader::Read(
+        file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!parsed_json.has_value() || !parsed_json->is_dict()) {
       return false;
     }

@@ -10,106 +10,224 @@
 #ifndef BASE_MEMORY_MEMORY_PRESSURE_LISTENER_H_
 #define BASE_MEMORY_MEMORY_PRESSURE_LISTENER_H_
 
+#include <memory>
+
 #include "base/base_export.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
-#include "base/tracing_buildflags.h"
+#include "base/memory/memory_pressure_level.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
+#include "base/sequence_checker.h"
+#include "base/threading/thread_checker.h"
 
 namespace base {
 
-// To start listening, create a new instance, passing a callback to a
-// function that takes a MemoryPressureLevel parameter. To stop listening,
-// simply delete the listener object. The implementation guarantees
-// that the callback will always be called on the thread that created
-// the listener.
-// Note that even on the same thread, the callback is not guaranteed to be
-// called synchronously within the system memory pressure broadcast.
+class SingleThreadTaskRunner;
+
+enum class MemoryPressureListenerTag {
+  kTest = 0,
+  kHangWatcher = 1,
+  kMemBackend = 2,
+  kLevelDb = 3,
+  kSSLClientSessionCache = 4,
+  kVulkanInProcessContextProvider = 5,
+  kDemuxerManager = 6,
+  kFrameEvictionManager = 7,
+  kSlopBucket = 8,
+  kDiscardableSharedMemoryManager = 9,
+  kSharedStorageManager = 10,
+  kStagingBufferPool = 11,
+  kSharedDictionaryStorageOnDisk = 12,
+  kHttpNetworkSession = 13,
+  kBlobMemoryController = 14,
+  kQuicSessionPool = 15,
+  kImageDecodingStore = 16,
+  kCompositorGpuThread = 17,
+  kApplicationBreadcrumbsLogger = 18,
+  kSkiaOutputSurfaceImpl = 19,
+  kGpuImageDecodeCache = 20,
+  kResourcePool = 21,
+  kOnDeviceTailModelService = 22,
+  kGpuChannelManager = 23,
+  // Deprecated.
+  // kSharedDictionaryManagerOnDisk = 24,
+  kSharedDictionaryManager = 25,
+  kHistoryBackend = 26,
+  kMediaUrlIndex = 27,
+  kBFCachePolicy = 28,
+  kLayerTreeHostImpl = 29,
+  kCacheStorageManager = 30,
+  kPlayerCompositorDelegate = 31,
+  kNetworkServiceClient = 32,
+  kGpuChildThread = 33,
+  kNavigationEntryScreenshotManager = 34,
+  kGlicKeyedService = 35,
+  kRenderThreadImpl = 36,
+  kSpareRenderProcessHostManagerImpl = 37,
+  kDOMStorageContextWrapper = 38,
+  kGpuProcessHost = 39,
+  kPrerenderHostRegistry = 40,
+  kUrgentPageDiscardingPolicy = 41,
+  kTabLoader = 42,
+  kBackgroundTabLoadingPolicy = 43,
+  // Deprecated.
+  // kThumbnailCache = 44,
+  kUserspaceSwapPolicy = 45,
+  kWorkingSetTrimmerPolicyChromeOS = 46,
+  kLruRendererCache = 47,
+  kCastMemoryPressureControllerImpl = 48,
+  kFontGlobalContext = 49,
+  kClientDiscardableSharedMemoryManager = 50,
+  kMemoryReclaimerPressureListener = 51,
+  kSkiaGraphicsPressureListener = 52,
+  kBlinkIsolatesPressureListener = 53,
+  kUniqueFontSelector = 54,
+  kParkableStringManager = 55,
+  kPlainTextPainter = 56,
+  kMemoryCache = 57,
+  kResource = 58,
+  kResourceFetcher = 59,
+  kGlicProfileManager = 60,
+};
+
+// To start listening, derive from MemoryPressureListener, and use
+// MemoryPressureListenerRegistration to register your class with the global
+// registry. To stop listening, simply delete the registration object, which
+// will ensure that `OnMemoryPressure()` will no longer be invoked. The
+// implementation guarantees that the notification will always be received on
+// the thread that created the listener.
+//
+// If the registration can't be done on the main thread of the process, then
+// AsyncMemoryPressureListenerRegistration must be used, and notifications will
+// be asynchronous as well.
+//
 // Please see notes in MemoryPressureLevel enum below: some levels are
 // absolutely critical, and if not enough memory is returned to the system,
 // it'll potentially kill the app, and then later the app will have to be
 // cold-started.
 //
-// Example:
+// Example usage:
 //
-//    void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) {
-//       ...
-//    }
+// class ExampleMemoryPressureListener : public MemoryPressureListener {
+//  public:
+//   ExampleMemoryPressureListener()
+//       : memory_pressure_listener_registration_(tag, this) {}
+//   ~ExampleMemoryPressureListener() override;
 //
-//    // Start listening.
-//    auto listener = std::make_unique<MemoryPressureListener>(
-//        base::BindRepeating(&OnMemoryPressure));
+//   // MemoryPressureListener:
+//   void OnMemoryPressure(MemoryPressureLevel level) override {
+//     // Do something with `level`.
+//   }
 //
-//    ...
-//
-//    // Stop listening.
-//    listener.reset();
-//
-class BASE_EXPORT MemoryPressureListener {
+//  private:
+//   MemoryPressureListenerRegistration memory_pressure_listener_registration_;
+// };
+
+class BASE_EXPORT MemoryPressureListener : public CheckedObserver {
  public:
-  // A Java counterpart will be generated for this enum.
-  // The values needs to be kept in sync with the MemoryPressureLevel entry in
-  // enums.xml.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base
-  // GENERATED_JAVA_PREFIX_TO_STRIP: MEMORY_PRESSURE_LEVEL_
-  enum MemoryPressureLevel {
-    // No problems, there is enough memory to use. This event is not sent via
-    // callback, but the enum is used in other places to find out the current
-    // state of the system.
-    MEMORY_PRESSURE_LEVEL_NONE = 0,
-
-    // Modules are advised to free buffers that are cheap to re-allocate and not
-    // immediately needed.
-    MEMORY_PRESSURE_LEVEL_MODERATE = 1,
-
-    // At this level, modules are advised to free all possible memory.  The
-    // alternative is to be killed by the system, which means all memory will
-    // have to be re-created, plus the cost of a cold start.
-    MEMORY_PRESSURE_LEVEL_CRITICAL = 2,
-
-    // This must be the last value in the enum. The casing is different from the
-    // other values to make this enum work well with the
-    // UMA_HISTOGRAM_ENUMERATION macro.
-    kMaxValue = MEMORY_PRESSURE_LEVEL_CRITICAL,
-  };
-
-  using MemoryPressureCallback = RepeatingCallback<void(MemoryPressureLevel)>;
-  using SyncMemoryPressureCallback =
-      RepeatingCallback<void(MemoryPressureLevel)>;
-
-  MemoryPressureListener(
-      const base::Location& creation_location,
-      const MemoryPressureCallback& memory_pressure_callback);
-  MemoryPressureListener(
-      const base::Location& creation_location,
-      const MemoryPressureCallback& memory_pressure_callback,
-      const SyncMemoryPressureCallback& sync_memory_pressure_callback);
-
-  MemoryPressureListener(const MemoryPressureListener&) = delete;
-  MemoryPressureListener& operator=(const MemoryPressureListener&) = delete;
-
-  ~MemoryPressureListener();
-
   // Intended for use by the platform specific implementation.
+  // Note: This simply forwards the call to MemoryPressureListenerRegistry to
+  // avoid the need to refactor the whole codebase.
   static void NotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);
 
   // These methods should not be used anywhere else but in memory measurement
   // code, where they are intended to maintain stable conditions across
   // measurements.
+  // Note: This simply forwards the call to MemoryPressureListenerRegistry to
+  // avoid the need to refactor the whole codebase.
   static bool AreNotificationsSuppressed();
   static void SetNotificationsSuppressed(bool suppressed);
   static void SimulatePressureNotification(
       MemoryPressureLevel memory_pressure_level);
+  // Invokes `SimulatePressureNotification` asynchronously on the main thread,
+  // ensuring that any pending registration tasks have completed by the time it
+  // runs, then posts back `on_notification_sent_callback` to the calling
+  // sequence, allowing tests to ensure that the notification was received by
+  // the MemoryPressureListener under test.
+  static void SimulatePressureNotificationAsync(
+      MemoryPressureLevel memory_pressure_level,
+      OnceClosure on_notification_sent_callback);
+
+  virtual void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) = 0;
+};
+
+// Used for listeners that live on the main thread and must be called
+// synchronously. Prefer using MemoryPressureListenerRegistration as this will
+// eventually be removed.
+class BASE_EXPORT MemoryPressureListenerRegistration {
+ public:
+  MemoryPressureListenerRegistration(
+      MemoryPressureListenerTag,
+      MemoryPressureListener* memory_pressure_listener);
+
+  // Deprecated constructor that takes location as a parameter. Not removed just
+  // to avoid a mass-refactoring. This class will eventually be deleted in favor
+  // of the memory coordinator API (base::MemoryConsumer).
+  MemoryPressureListenerRegistration(
+      const Location& creation_location,
+      MemoryPressureListenerTag,
+      MemoryPressureListener* memory_pressure_listener);
+
+  MemoryPressureListenerRegistration(
+      const MemoryPressureListenerRegistration&) = delete;
+  MemoryPressureListenerRegistration& operator=(
+      const MemoryPressureListenerRegistration&) = delete;
+
+  ~MemoryPressureListenerRegistration();
 
   void Notify(MemoryPressureLevel memory_pressure_level);
-  void SyncNotify(MemoryPressureLevel memory_pressure_level);
+
+  MemoryPressureListenerTag tag() { return tag_; }
 
  private:
-  static void DoNotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);
+  MemoryPressureListenerTag tag_;
 
-  MemoryPressureCallback callback_;
-  SyncMemoryPressureCallback sync_memory_pressure_callback_;
+  raw_ptr<MemoryPressureListener> memory_pressure_listener_
+      GUARDED_BY_CONTEXT(thread_checker_);
 
-  const base::Location creation_location_;
+  THREAD_CHECKER(thread_checker_);
+};
+
+// Used for listeners that can exists on sequences other than the main thread
+// and don't need to be called synchronously.
+class BASE_EXPORT AsyncMemoryPressureListenerRegistration {
+ public:
+  AsyncMemoryPressureListenerRegistration(
+      const Location& creation_location,
+      MemoryPressureListenerTag tag,
+      MemoryPressureListener* memory_pressure_listener);
+
+  AsyncMemoryPressureListenerRegistration(
+      const AsyncMemoryPressureListenerRegistration&) = delete;
+  AsyncMemoryPressureListenerRegistration& operator=(
+      const AsyncMemoryPressureListenerRegistration&) = delete;
+
+  ~AsyncMemoryPressureListenerRegistration();
+
+ private:
+  class MainThread;
+
+  void Notify(MemoryPressureLevel memory_pressure_level);
+
+  raw_ptr<MemoryPressureListener> memory_pressure_listener_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Handle to the main thread's task runner. This is cached because it might no
+  // longer be registered at the time this instance is destroyed.
+  scoped_refptr<SingleThreadTaskRunner> main_thread_task_runner_;
+
+  // Parts of this class that lives on the main thread.
+  std::unique_ptr<MainThread> main_thread_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  const Location creation_location_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  WeakPtrFactory<AsyncMemoryPressureListenerRegistration> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace base

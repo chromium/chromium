@@ -35,6 +35,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -55,7 +56,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/test_native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/native/native_view_host.h"
@@ -2432,6 +2432,27 @@ TEST_F(ViewTest, PaintIntersectsOneChildInRTL) {
       ui::PaintContext(list.get(), 1.f, paint_area, false), root_view->size()));
   EXPECT_FALSE(v1->did_paint_);
   EXPECT_TRUE(v2->did_paint_);
+}
+
+TEST_F(ViewTest, GetPaintScaleType) {
+  View view;
+
+  // When PixelCanvasRecording is enabled, the scale type should be
+  // kScaleWithEdgeSnapping.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(::features::kEnablePixelCanvasRecording);
+    EXPECT_EQ(view.GetPaintScaleType(),
+              PaintInfo::ScaleType::kScaleWithEdgeSnapping);
+  }
+
+  // When PixelCanvasRecording is disabled, the scale type should return
+  // kUniformScaling.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(::features::kEnablePixelCanvasRecording);
+    EXPECT_EQ(view.GetPaintScaleType(), PaintInfo::ScaleType::kUniformScaling);
+  }
 }
 
 TEST_F(ViewTest, PaintInPromotedToLayer) {
@@ -5438,6 +5459,131 @@ TEST_F(ViewLayerTest, LayerClipRectChanged) {
   EXPECT_EQ(v1_layer->clip_rect(), v1_observer.GetLastClipRectAndReset());
 }
 
+TEST_F(ViewLayerTest, SetClipLayerToVisibleBounds) {
+  View* content_view = widget()->SetContentsView(std::make_unique<View>());
+
+  content_view->SetBoundsRect({100, 100});
+
+  std::unique_ptr<ui::Layer> v1_region_layer = std::make_unique<ui::Layer>();
+  v1_region_layer->SetBounds({80, 80});
+
+  // Create an intermediate container so that the origin of `v1` will be
+  // different from the origin of the `v1_layer`.
+  View* container = content_view->AddChildView(std::make_unique<View>());
+  container->SetBoundsRect({10, 10, 90, 90});
+
+  View* v1 = container->AddChildView(std::make_unique<View>());
+  v1->SetBoundsRect({100, 100});
+  v1->SetPaintToLayer();
+  v1->AddLayerToRegion(v1_region_layer.get(), LayerRegion::kAbove);
+  auto* v1_layer = v1->layer();
+  ASSERT_TRUE(v1_layer);
+  v1_layer->SetName("v1");
+
+  // Place v1 at the bottom right corner of v1.
+  View* v2 = v1->AddChildView(std::make_unique<View>());
+  v2->SetBoundsRect({50, 50, 50, 50});
+  v2->SetPaintToLayer();
+  auto* v2_layer = v2->layer();
+  ASSERT_TRUE(v2_layer);
+  v2_layer->SetName("v2");
+
+  EXPECT_TRUE(v1_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(v1_region_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(v2_layer->clip_rect().IsEmpty());
+
+  {
+    // View's visible bounds won't affect the layer's clip bounds
+    // by default.
+    constexpr gfx::Rect kClipBounds(10, 10, 10, 10);
+    v1_layer->SetClipRect(kClipBounds);
+    v1_region_layer->SetClipRect(kClipBounds);
+    v1->SetBoundsRect({110, 110});
+    EXPECT_EQ(v1_layer->clip_rect(), kClipBounds);
+    EXPECT_EQ(v1_region_layer->clip_rect(), kClipBounds);
+    EXPECT_TRUE(v2_layer->clip_rect().IsEmpty());
+  }
+
+  v1->SetClipLayerToVisibleBounds(true);
+  {
+    // Layer is Fully Visible Bounds.
+    constexpr gfx::Rect kFullyVisibleBounds(90, 90);
+    EXPECT_EQ(v1_layer->clip_rect(), kFullyVisibleBounds);
+    EXPECT_EQ(v1_region_layer->clip_rect(), kFullyVisibleBounds);
+    EXPECT_TRUE(v2_layer->clip_rect().IsEmpty());
+
+    // Now enable clipping on v2. v2 is partially visible.
+    v2->SetClipLayerToVisibleBounds(true);
+    EXPECT_EQ(v2_layer->clip_rect(), gfx::Rect(40, 40));
+  }
+
+  v1->SetBoundsRect({65, 0, 50, 50});
+  // Move v1 so that layer's are partially visible.
+  {
+    constexpr gfx::Rect kPartiallyVisibleBounds(25, 50);
+    EXPECT_EQ(v1_layer->clip_rect(), kPartiallyVisibleBounds);
+    EXPECT_EQ(v1_region_layer->clip_rect(), kPartiallyVisibleBounds);
+
+    // v2 is completely invisible.
+    EXPECT_FALSE(v2_layer->clip_rect().IsEmpty());
+    EXPECT_FALSE(v2->GetLocalBounds().Intersects(v2_layer->clip_rect()));
+  }
+
+  v1->SetBoundsRect({100, 0, 50, 50});
+  // Move v1 so that it's outside of the container. All layes must be invisible.
+  EXPECT_FALSE(v1_layer->clip_rect().IsEmpty());
+  EXPECT_FALSE(v1->GetLocalBounds().Intersects(v1_layer->clip_rect()));
+  EXPECT_FALSE(v1_region_layer->clip_rect().IsEmpty());
+  EXPECT_FALSE(v1->GetLocalBounds().Intersects(v1_region_layer->clip_rect()));
+  EXPECT_FALSE(v2_layer->clip_rect().IsEmpty());
+  EXPECT_FALSE(v2->GetLocalBounds().Intersects(v2_layer->clip_rect()));
+
+  v1->SetBoundsRect({90, 90});
+  // Move v1 back so that v1 layers are fully visible but v2 is partially
+  // visible.
+  EXPECT_TRUE(v1_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(v1_region_layer->clip_rect().IsEmpty());
+  EXPECT_FALSE(v2_layer->clip_rect().IsEmpty());
+  EXPECT_EQ(v2_layer->clip_rect(), gfx::Rect(40, 40));
+
+  // Shrink the parent.
+  // v1 is partially visible and v2 is completely invisible.
+  {
+    constexpr gfx::Rect kParentBounds(40, 30);
+    container->SetBoundsRect(kParentBounds);
+    EXPECT_EQ(v1_layer->clip_rect(), kParentBounds);
+    EXPECT_EQ(v1_region_layer->clip_rect(), kParentBounds);
+    EXPECT_FALSE(v2_layer->clip_rect().IsEmpty());
+    EXPECT_FALSE(v2->GetLocalBounds().Intersects(v2_layer->clip_rect()));
+  }
+
+  // Enlarge the parent so that v1 layers are fully visible, v2 is partially
+  // still visible.
+  container->SetBoundsRect({90, 90});
+  EXPECT_TRUE(v1_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(v1_region_layer->clip_rect().IsEmpty());
+  EXPECT_EQ(v2_layer->clip_rect(), gfx::Rect(40, 40));
+
+  {
+    // Make sure that disabling the flag will remove the clipping.
+    constexpr gfx::Rect kParentBounds(40, 30);
+    container->SetBoundsRect(kParentBounds);
+    EXPECT_EQ(v1_layer->clip_rect(), kParentBounds);
+    EXPECT_EQ(v1_region_layer->clip_rect(), kParentBounds);
+
+    v1->SetClipLayerToVisibleBounds(false);
+
+    EXPECT_TRUE(v1_layer->clip_rect().IsEmpty());
+    EXPECT_TRUE(v1_region_layer->clip_rect().IsEmpty());
+    EXPECT_FALSE(v2_layer->clip_rect().IsEmpty());
+
+    v2->SetClipLayerToVisibleBounds(false);
+    EXPECT_TRUE(v2_layer->clip_rect().IsEmpty());
+  }
+
+  v1->RemoveLayerFromRegions(v1_region_layer.get());
+}
+
 // Make sure layers are positioned correctly in RTL.
 TEST_F(ViewLayerTest, BoundInRTL) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");
@@ -6429,19 +6575,17 @@ TEST_F(ViewTest, OnThemeChanged) {
   Widget::InitParams params = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(params));
+  EXPECT_TRUE(widget->GetNativeTheme());
 
   TestView* test_view_ptr =
       widget->GetRootView()->AddChildView(std::move(test_view));
-  EXPECT_TRUE(test_view_ptr->native_theme_);
   EXPECT_EQ(widget->GetNativeTheme(), test_view_ptr->native_theme_);
-  EXPECT_TRUE(test_view_child->native_theme_);
   EXPECT_EQ(widget->GetNativeTheme(), test_view_child->native_theme_);
 
   // Child view added after the widget hierarchy exists should also get the
   // notification.
   TestView* test_view_child_2 =
       test_view_ptr->AddChildView(std::make_unique<TestView>());
-  EXPECT_TRUE(test_view_child_2->native_theme_);
   EXPECT_EQ(widget->GetNativeTheme(), test_view_child_2->native_theme_);
 }
 
@@ -6498,23 +6642,6 @@ TEST_F(ViewTest, ScopedTargetHandlerReceivesEvents) {
 }
 
 // See comment above test for details.
-class WidgetWithCustomTheme : public Widget {
- public:
-  explicit WidgetWithCustomTheme(ui::TestNativeTheme* theme) : theme_(theme) {}
-
-  WidgetWithCustomTheme(const WidgetWithCustomTheme&) = delete;
-  WidgetWithCustomTheme& operator=(const WidgetWithCustomTheme&) = delete;
-
-  ~WidgetWithCustomTheme() override = default;
-
-  // Widget:
-  const ui::NativeTheme* GetNativeTheme() const override { return theme_; }
-
- private:
-  raw_ptr<ui::TestNativeTheme> theme_;
-};
-
-// See comment above test for details.
 class ViewThatAddsViewInOnThemeChanged : public View {
   METADATA_HEADER(ViewThatAddsViewInOnThemeChanged, View)
 
@@ -6528,19 +6655,17 @@ class ViewThatAddsViewInOnThemeChanged : public View {
 
   ~ViewThatAddsViewInOnThemeChanged() override = default;
 
-  bool on_native_theme_changed_called() const {
-    return on_native_theme_changed_called_;
-  }
+  bool on_theme_changed_called() const { return on_theme_changed_called_; }
 
   // View:
   void OnThemeChanged() override {
     View::OnThemeChanged();
-    on_native_theme_changed_called_ = true;
+    on_theme_changed_called_ = true;
     GetWidget()->GetRootView()->AddChildView(std::make_unique<View>());
   }
 
  private:
-  bool on_native_theme_changed_called_ = false;
+  bool on_theme_changed_called_ = false;
 };
 
 BEGIN_METADATA(ViewThatAddsViewInOnThemeChanged)
@@ -6560,22 +6685,16 @@ void AddViewWithChildLayer(View* parent) {
 // called before the layer hierarchy was updated. OnThemeChanged() should be
 // called after the layer hierarchy matches the view hierarchy.
 TEST_F(ViewTest, CrashOnAddFromFromOnThemeChanged) {
-  ui::TestNativeTheme theme;
-  auto widget = std::make_unique<WidgetWithCustomTheme>(&theme);
-  test::WidgetDestroyedWaiter waiter(widget.get());
+  auto widget = std::make_unique<Widget>();
   Widget::InitParams params = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(50, 50, 350, 350);
   widget->Init(std::move(params));
 
   AddViewWithChildLayer(widget->GetRootView());
-  ViewThatAddsViewInOnThemeChanged* v = widget->GetRootView()->AddChildView(
+  const auto* const v = widget->GetRootView()->AddChildView(
       std::make_unique<ViewThatAddsViewInOnThemeChanged>());
-  EXPECT_TRUE(v->on_native_theme_changed_called());
-  // Initiate an explicit close and wait to ensure the |theme| outlives the
-  // |widget|.
-  widget->Close();
-  waiter.Wait();
+  EXPECT_TRUE(v->on_theme_changed_called());
 }
 
 // A View that removes its Layer when hidden.
@@ -6783,6 +6902,29 @@ TEST_F(ViewTest, TestEnabledChangedCallback) {
   test_view->SetEnabled(false);
   EXPECT_TRUE(enabled_changed);
   EXPECT_FALSE(test_view->GetEnabled());
+}
+
+TEST_F(ViewTest, TestEnabledInViewsSubtreeChangedCallback) {
+  auto test_view = std::make_unique<View>();
+  auto* test_child = test_view->AddChildView(std::make_unique<View>());
+  int enabled_vs_changed_count = 0;
+  auto callback = base::BindRepeating(
+      [](int* enabled_vs_changed_count) { ++(*enabled_vs_changed_count); },
+      &enabled_vs_changed_count);
+  auto subscription_1 =
+      test_view->AddEnabledInViewsSubtreeChangedCallback(callback);
+  auto subscription_2 =
+      test_child->AddEnabledInViewsSubtreeChangedCallback(callback);
+  test_view->SetEnabled(false);
+  EXPECT_EQ(2, enabled_vs_changed_count);
+
+  EXPECT_FALSE(test_view->GetEnabled());
+  EXPECT_FALSE(test_view->GetEnabledInViewsSubtree());
+
+  // The child view should save its enabled state, but should be in disabled
+  // visual state.
+  EXPECT_TRUE(test_child->GetEnabled());
+  EXPECT_FALSE(test_child->GetEnabledInViewsSubtree());
 }
 
 TEST_F(ViewTest, TestVisibleChangedCallback) {
@@ -7458,6 +7600,53 @@ TEST_F(BaseActionViewInterfaceTest, TestActionChanged) {
   // Test some properties to ensure that the right ActionViewInterface is linked
   // to the view.
   EXPECT_FALSE(action_view->GetEnabled());
+}
+
+TEST_F(ViewTest, GetViewByElementId) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kUniqueElementId1);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kUniqueElementId2);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDuplicateElementId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kUnusedElementId);
+
+  // Create a view hierarchy for testing:
+  // root
+  // |-- child1 (kDuplicateElementId)
+  // |   |-- grandchild1 (kUniqueElementId1)
+  // |-- child2 (kUniqueElementId2)
+  // |   |-- grandchild2 (kDuplicateElementId)
+  auto root = std::make_unique<View>();
+  View* child1 = root->AddChildView(std::make_unique<View>());
+  View* grandchild1 = child1->AddChildView(std::make_unique<View>());
+  View* child2 = root->AddChildView(std::make_unique<View>());
+  View* grandchild2 = child2->AddChildView(std::make_unique<View>());
+
+  grandchild1->SetProperty(kElementIdentifierKey, kUniqueElementId1);
+  child2->SetProperty(kElementIdentifierKey, kUniqueElementId2);
+  child1->SetProperty(kElementIdentifierKey, kDuplicateElementId);
+  grandchild2->SetProperty(kElementIdentifierKey, kDuplicateElementId);
+
+  // Search from root.
+  EXPECT_EQ(grandchild1, root->GetViewByElementId(kUniqueElementId1));
+  EXPECT_EQ(child2, root->GetViewByElementId(kUniqueElementId2));
+  EXPECT_EQ(nullptr, root->GetViewByElementId(kUnusedElementId));
+
+  // The search is depth-first, so the shallower view (child1) is found
+  // before the deeper view in a subsequent branch (grandchild2).
+  EXPECT_EQ(child1, root->GetViewByElementId(kDuplicateElementId));
+
+  // Search from a subtree.
+  EXPECT_EQ(grandchild1, child1->GetViewByElementId(kUniqueElementId1));
+  EXPECT_EQ(nullptr, child1->GetViewByElementId(kUniqueElementId2));
+
+  // Search from the view itself.
+  EXPECT_EQ(grandchild1, grandchild1->GetViewByElementId(kUniqueElementId1));
+
+  // Test const version.
+  const View* const_root = root.get();
+  EXPECT_EQ(grandchild1, const_root->GetViewByElementId(kUniqueElementId1));
+  EXPECT_EQ(child2, const_root->GetViewByElementId(kUniqueElementId2));
+  EXPECT_EQ(nullptr, const_root->GetViewByElementId(kUnusedElementId));
+  EXPECT_EQ(child1, const_root->GetViewByElementId(kDuplicateElementId));
 }
 
 }  // namespace views

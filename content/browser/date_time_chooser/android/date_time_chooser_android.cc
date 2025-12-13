@@ -123,3 +123,5 @@ void DateTimeChooser::CreateDateTimeChooser(WebContents* web_contents) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(DateTimeChooserAndroid)

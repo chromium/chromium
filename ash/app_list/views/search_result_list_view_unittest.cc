@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/test/views_test_base.h"
@@ -27,7 +28,7 @@ namespace ash {
 namespace test {
 
 namespace {
-int kDefaultSearchItems = 3;
+constexpr int kDefaultSearchItems = 3;
 
 // Preferred sizing for different types of search result views.
 constexpr int kPreferredWidth = 640;

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
@@ -27,6 +28,7 @@ class PLATFORM_EXPORT EnumerationBase {
   // Returns the IDL enumeration value as a string.
   // https://webidl.spec.whatwg.org/#dfn-enumeration-value
   const char* AsCStr() const { return string_literal_; }
+  StringView AsStringView() const { return string_literal_; }
   String AsString() const { return string_literal_; }
   AtomicString AsAtomicString() const { return AtomicString(string_literal_); }
 
@@ -86,38 +88,6 @@ template <typename EnumTypeClass>
 bool operator==(typename EnumTypeClass::Enum lhs, const EnumTypeClass& rhs) {
   DCHECK(!rhs.IsEmpty());
   return lhs == rhs.AsEnum();
-}
-
-// Migration adapters
-template <typename EnumTypeClass>
-  requires(std::derived_from<EnumTypeClass, bindings::EnumerationBase>)
-bool operator==(const EnumTypeClass& lhs, const String& rhs) {
-  DCHECK(!lhs.IsEmpty());
-  return lhs.AsString() == rhs;
-}
-
-template <typename EnumTypeClass>
-  requires(std::derived_from<EnumTypeClass, bindings::EnumerationBase>)
-bool operator==(const EnumTypeClass& lhs, const AtomicString& rhs) {
-  DCHECK(!lhs.IsEmpty());
-  return lhs.AsString() == rhs;
-}
-
-template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator==(const EnumTypeClass& lhs, const char* rhs) {
-  DCHECK(!lhs.IsEmpty());
-  return lhs.AsString() == rhs;
-}
-
-template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator==(const char* lhs, const EnumTypeClass& rhs) {
-  return rhs == lhs;
 }
 
 }  // namespace blink

@@ -31,15 +31,11 @@ const char kSwitchUserPolicy[] = "user-policy";
 const char kSwitchDevicePolicy[] = "device-policy";
 const char kSwitchUserImport[] = "user-import";
 
-const char* kSwitches[] = {
-  kSwitchErrorOnUnknownField,
-  kSwitchErrorOnWrongRecommended,
-  kSwitchErrorOnMissingField,
-  kSwitchManagedOnc,
-  kSwitchUserPolicy,
-  kSwitchDevicePolicy,
-  kSwitchUserImport
-};
+constexpr const char* kSwitches[] = {
+    kSwitchErrorOnUnknownField, kSwitchErrorOnWrongRecommended,
+    kSwitchErrorOnMissingField, kSwitchManagedOnc,
+    kSwitchUserPolicy,          kSwitchDevicePolicy,
+    kSwitchUserImport};
 
 // Return codes.
 enum ReturnCode {
@@ -53,11 +49,8 @@ enum ReturnCode {
 const char kToplevelConfiguration[] = "ToplevelConfiguration";
 const char kNetworkConfiguration[] = "NetworkConfiguration";
 const char kCertificate[] = "Certificate";
-const char* kTypes[] = {
-  kToplevelConfiguration,
-  kNetworkConfiguration,
-  kCertificate
-};
+constexpr const char* kTypes[] = {kToplevelConfiguration, kNetworkConfiguration,
+                                  kCertificate};
 
 void PrintHelp() {
   fprintf(stderr,

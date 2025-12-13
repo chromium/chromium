@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Property mask-size value '1px'
+  assert_equals: expected "1px auto" but got "1px"
+[FAIL] Property mask-size value '1px auto'
+  assert_equals: expected "1px auto" but got "1px"
+[FAIL] Property mask-size value 'auto, 100%' multiple values
+  assert_equals: expected "auto, 100% auto" but got "auto, 100%"
+[FAIL] Property mask-size value '100%' multiple values
+  assert_equals: expected "100% auto, 100% auto" but got "100%, 100%"
+Harness: the test ran to completion.
+

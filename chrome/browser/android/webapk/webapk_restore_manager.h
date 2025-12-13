@@ -44,7 +44,6 @@ class WebApkRestoreManager {
   using RestorableAppsCallback =
       base::OnceCallback<void(const std::vector<std::string>& app_ids,
                               const std::vector<std::u16string>& names,
-                              const std::vector<int>& last_used_in_days,
                               const std::vector<SkBitmap>& icons)>;
 
   void PrepareRestorableApps(std::vector<WebApkRestoreData>&& apps,
@@ -61,8 +60,7 @@ class WebApkRestoreManager {
 
  protected:
   virtual std::unique_ptr<WebApkRestoreTask> CreateNewTask(
-      std::unique_ptr<webapps::ShortcutInfo> restore_info,
-      base::Time last_used_time);
+      std::unique_ptr<webapps::ShortcutInfo> restore_info);
   virtual void OnTaskFinished(const GURL& manifest_id,
                               webapps::WebApkInstallResult result);
 

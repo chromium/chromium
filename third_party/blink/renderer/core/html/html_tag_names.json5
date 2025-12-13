@@ -7,8 +7,6 @@
     export: "CORE_EXPORT",
   },
 
-  // If you add any tag names here, remember to update html_tree_builder_test.cc.
-
   // Note that if an element is associated with a feature flag that has an
   // origin trial, you must:
   // * set runtimeFlagHasOriginTrial to true below, which disables the checks
@@ -211,6 +209,11 @@
       interfaceName: "HTMLFrameSetElement",
     },
     {
+      name: "geolocation",
+      interfaceName: "HTMLGeolocationElement",
+      runtimeEnabled: "GeolocationElement",
+    },
+    {
       name: "h1",
       interfaceName: "HTMLHeadingElement",
     },
@@ -273,6 +276,11 @@
     {
       name: "ins",
       interfaceName: "HTMLModElement",
+    },
+    {
+      name: "install",
+      interfaceName: "HTMLInstallElement",
+      runtimeEnabled: "InstallElement",
     },
     {
       name: "kbd",
@@ -463,7 +471,6 @@
       name: "selectedcontent",
       interfaceName: "HTMLSelectedContentElement",
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
-      runtimeEnabled: "CustomizableSelect",
     },
     {
       name: "slot",
@@ -551,6 +558,13 @@
     {
       name: "ul",
       interfaceName: "HTMLUListElement",
+    },
+    {
+      name: "usermedia",
+      interfaceName: "HTMLUserMediaElement",
+      runtimeEnabled: "UserMediaElement",
+      runtimeFlagHasOriginTrial: true,
+      noTypeHelpers: true,
     },
     {
       name: "var",

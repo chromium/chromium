@@ -133,9 +133,11 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
         std::move(std::get<signin::SigninChoiceCallback>(
             create_param->process_user_choice_callback)));
   }
-  CHECK(browser_ ||
-        type_ !=
-            ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation);
+  CHECK(
+      browser_ ||
+      (type_ !=
+           ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation ||
+       type_ == ManagedUserProfileNoticeUI::ScreenType::kProfilePicker));
   BrowserList::AddObserver(this);
 }
 
@@ -315,12 +317,12 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
 void ManagedUserProfileNoticeHandler::HandleCancel(
     const base::Value::List& args) {
   canceling_ = true;
-  // Move the `done_callback_` here to avoid it being potentially destroyed
-  // by `process_user_choice_with_confirmation_callback_` since it may destroy
-  // `this`.
   if (IsJavascriptAllowed()) {
     DisallowJavascript();
   }
+  // Move the `done_callback_` here to avoid it being potentially destroyed
+  // by `process_user_choice_with_confirmation_callback_` since it may destroy
+  // `this`.
   auto done_callback = std::move(done_callback_);
   if (process_user_choice_with_confirmation_callback_) {
     std::move(process_user_choice_with_confirmation_callback_)
@@ -444,6 +446,7 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
                        ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
                        : IDS_APP_CONTINUE));
       break;
+    case ManagedUserProfileNoticeUI::ScreenType::kProfilePicker:
     case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
       title = l10n_util::GetStringUTF8(
           profile_creation_required_by_policy_

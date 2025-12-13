@@ -79,7 +79,6 @@ source_set("model") {
     "//components/variations/service",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/enterprise/connectors",
-    "//ios/chrome/browser/enterprise/connectors:features",
     "//ios/chrome/browser/enterprise/connectors:util",
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/feature_engagement/model",
@@ -120,7 +119,10 @@ source_set("infobar_delegate") {
 
   deps = [
     "//components/infobars/core",
+    "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
+    "//ui/base",
   ]
 }
 
@@ -144,7 +146,7 @@ source_set("eg2_tests") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
-    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/bookmarks/test:eg_test_support+eg2",
     "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
@@ -206,11 +208,9 @@ source_set("unit_tests") {
     "//components/sync_user_events:test_support",
     "//components/unified_consent",
     "//ios/chrome/browser/enterprise/connectors",
-    "//ios/chrome/browser/enterprise/connectors:features",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/prerender/model",
-    "//ios/chrome/browser/prerender/model:test_support",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/sync/model",

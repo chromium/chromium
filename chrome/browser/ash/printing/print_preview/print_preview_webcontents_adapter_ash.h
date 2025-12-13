@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/printing/print_preview/print_preview_dialog_controller_cros.h"
 #include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "components/printing/common/print.mojom-forward.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::printing {

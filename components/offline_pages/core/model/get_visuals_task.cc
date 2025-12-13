@@ -32,12 +32,8 @@ std::unique_ptr<OfflinePageVisuals> GetVisualsSync(int64_t offline_id,
   result->offline_id = statement.ColumnInt64(0);
   int64_t expiration = statement.ColumnInt64(1);
   result->expiration = store_utils::FromDatabaseTime(expiration);
-  if (!statement.ColumnBlobAsString(2, &result->thumbnail))
-    result->thumbnail = std::string();
-
-  if (!statement.ColumnBlobAsString(3, &result->favicon))
-    result->favicon = std::string();
-
+  result->thumbnail = statement.ColumnBlobAsString(2);
+  result->favicon = statement.ColumnBlobAsString(3);
   return result;
 }
 

@@ -46,7 +46,10 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
   if (is_badged) {
     icon_background_ = AddChildView(std::make_unique<views::View>());
     if (item_in_folder_icon_) {
-      icon_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+      icon_background_->SetBackground(views::CreateLayerBasedSolidBackground(
+          cros_tokens::kCrosSysSystemOnBaseOpaque));
+      icon_background_->background()->SetInternalName(
+          "TopIconAnimationView/icon-background");
     } else {
       const int background_diameter =
           app_list_config->GetShortcutBackgroundContainerDimension();
@@ -66,7 +69,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
   auto icon_image = std::make_unique<views::ImageView>();
   icon_image->SetImage(ui::ImageModel::FromImageSkia(resized));
   icon_ = AddChildView(std::move(icon_image));
-  if (icon_background_ && icon_background_->layer()) {
+  if (is_badged && item_in_folder_icon_) {
     icon_->SetPaintToLayer();
     icon_->layer()->SetFillsBoundsOpaquely(false);
   }
@@ -227,15 +230,6 @@ gfx::Size TopIconAnimationView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return gfx::Size(grid_->app_list_config()->grid_tile_width(),
                    grid_->app_list_config()->grid_tile_height());
-}
-
-void TopIconAnimationView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  if (icon_background_ && icon_background_->layer()) {
-    icon_background_->layer()->SetColor(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBaseOpaque));
-  }
 }
 
 void TopIconAnimationView::Layout(PassKey) {

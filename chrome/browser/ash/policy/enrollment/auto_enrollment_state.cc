@@ -8,6 +8,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
+#include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace policy {
@@ -24,6 +25,8 @@ std::string_view AutoEnrollmentResultToString(AutoEnrollmentResult result) {
       return "Device disabled";
     case AutoEnrollmentResult::kSuggestedEnrollment:
       return "Suggested enrollment";
+    case AutoEnrollmentResult::kDeviceAlreadyOwned:
+      return "Device already owned";
   }
 }
 

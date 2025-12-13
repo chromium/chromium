@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import("//chrome/browser/resources/accessibility/tools/manifest.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
@@ -27,6 +26,7 @@ group("build") {
     "accessibility_common/mv3:build",
     "braille_ime:build",
     "chromevox/mv2:build",
+    "chromevox/mv3:build",
     "common:build",
     "enhanced_network_tts/mv2:build",
     "enhanced_network_tts/mv3:build",
@@ -89,16 +89,13 @@ accessibility_strings("accessibility_strings") {
 group("browser_tests") {
   testonly = true
   deps = [
-    "accessibility_common/mv2:browser_tests",
     "accessibility_common/mv3:browser_tests",
     "braille_ime:browser_tests",
     "chromevox/mv2:browser_tests",
+    "chromevox/mv3:browser_tests",
     "common:browser_tests",
-    "enhanced_network_tts/mv2:browser_tests",
     "enhanced_network_tts/mv3:browser_tests",
-    "select_to_speak/mv2:browser_tests",
     "select_to_speak/mv3:browser_tests",
-    "switch_access/mv2:browser_tests",
     "switch_access/mv3:browser_tests",
   ]
 }

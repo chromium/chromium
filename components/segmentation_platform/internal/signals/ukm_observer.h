@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/ukm/ukm_recorder_observer.h"
 

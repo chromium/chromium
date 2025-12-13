@@ -107,19 +107,21 @@ void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
   }
 
   // The Extensions Zero State promo prompts users without extensions to
-  // explore the Chrome Web Store.
-  if (!g_zero_state_promo_next_show_time_opt.has_value()) {
-    g_zero_state_promo_next_show_time_opt =
-        base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
-  } else if (base::TimeTicks::Now() >=
-                 g_zero_state_promo_next_show_time_opt.value() &&
-             ArePromotionsEnabled() &&
-             !extensions::util::AnyCurrentlyInstalledExtensionIsFromWebstore(
-                 browser_->profile())) {
-    g_zero_state_promo_next_show_time_opt =
-        base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
-    BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
-        feature_engagement::kIPHExtensionsZeroStatePromoFeature);
+  // explore the Chrome Web Store. Only triggered for normal browser types.
+  if (browser_->type() == Browser::TYPE_NORMAL) {
+    if (!g_zero_state_promo_next_show_time_opt.has_value()) {
+      g_zero_state_promo_next_show_time_opt =
+          base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
+    } else if (base::TimeTicks::Now() >=
+                   g_zero_state_promo_next_show_time_opt.value() &&
+               ArePromotionsEnabled() &&
+               !extensions::util::AnyCurrentlyInstalledExtensionIsFromWebstore(
+                   browser_->profile())) {
+      g_zero_state_promo_next_show_time_opt =
+          base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
+      BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+          feature_engagement::kIPHExtensionsZeroStatePromoFeature);
+    }
   }
 }
 

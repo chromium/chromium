@@ -18,6 +18,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,7 +43,8 @@ class CloudPolicyCoreTest : public testing::Test,
  protected:
   CloudPolicyCoreTest() {
     core_ = std::make_unique<CloudPolicyCore>(
-        dm_protocol::kChromeUserPolicyType, std::string(), &store_,
+        dm_protocol::GetChromeUserPolicyType(), std::string(), &store_,
+        &extension_install_store_,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         network::TestNetworkConnectionTracker::CreateGetter());
     prefs_.registry()->RegisterIntegerPref(
@@ -90,6 +92,7 @@ class CloudPolicyCoreTest : public testing::Test,
 
   TestingPrefServiceSimple prefs_;
   MockCloudPolicyStore store_;
+  MockCloudPolicyStore extension_install_store_;
   std::unique_ptr<CloudPolicyCore> core_;
 
   int core_connected_callback_count_ = 0;
@@ -104,12 +107,15 @@ TEST_F(CloudPolicyCoreTest, ConnectAndDisconnectAndDestroy) {
   EXPECT_FALSE(core_->client());
   EXPECT_FALSE(core_->service());
   EXPECT_FALSE(core_->refresh_scheduler());
+  EXPECT_TRUE(core_->extension_install_store());
+  EXPECT_FALSE(core_->extension_install_service());
 
   // Connect() brings up client and service.
   core_->Connect(
       std::unique_ptr<CloudPolicyClient>(new MockCloudPolicyClient()));
   EXPECT_TRUE(core_->client());
   EXPECT_TRUE(core_->service());
+  EXPECT_TRUE(core_->extension_install_service());
   EXPECT_FALSE(core_->refresh_scheduler());
   EXPECT_EQ(1, core_connected_callback_count_);
   EXPECT_EQ(0, refresh_scheduler_started_callback_count_);
@@ -119,6 +125,7 @@ TEST_F(CloudPolicyCoreTest, ConnectAndDisconnectAndDestroy) {
   core_->Disconnect();
   EXPECT_FALSE(core_->client());
   EXPECT_FALSE(core_->service());
+  EXPECT_FALSE(core_->extension_install_service());
   EXPECT_FALSE(core_->refresh_scheduler());
   EXPECT_EQ(1, core_connected_callback_count_);
   EXPECT_EQ(0, refresh_scheduler_started_callback_count_);
@@ -128,6 +135,7 @@ TEST_F(CloudPolicyCoreTest, ConnectAndDisconnectAndDestroy) {
   core_->Disconnect();
   EXPECT_FALSE(core_->client());
   EXPECT_FALSE(core_->service());
+  EXPECT_FALSE(core_->extension_install_service());
   EXPECT_FALSE(core_->refresh_scheduler());
   EXPECT_EQ(1, core_connected_callback_count_);
   EXPECT_EQ(0, refresh_scheduler_started_callback_count_);

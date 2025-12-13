@@ -190,65 +190,6 @@ static_assert(offsetof(DeleteQueriesEXTImmediate, header) == 0,
 static_assert(offsetof(DeleteQueriesEXTImmediate, n) == 4,
               "offset of DeleteQueriesEXTImmediate n should be 4");
 
-struct QueryCounterEXT {
-  typedef QueryCounterEXT ValueType;
-  static const CommandId kCmdId = kQueryCounterEXT;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLuint _id,
-            GLenum _target,
-            uint32_t _sync_data_shm_id,
-            uint32_t _sync_data_shm_offset,
-            GLuint _submit_count) {
-    SetHeader();
-    id = _id;
-    target = _target;
-    sync_data_shm_id = _sync_data_shm_id;
-    sync_data_shm_offset = _sync_data_shm_offset;
-    submit_count = _submit_count;
-  }
-
-  void* Set(void* cmd,
-            GLuint _id,
-            GLenum _target,
-            uint32_t _sync_data_shm_id,
-            uint32_t _sync_data_shm_offset,
-            GLuint _submit_count) {
-    static_cast<ValueType*>(cmd)->Init(_id, _target, _sync_data_shm_id,
-                                       _sync_data_shm_offset, _submit_count);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t id;
-  uint32_t target;
-  uint32_t sync_data_shm_id;
-  uint32_t sync_data_shm_offset;
-  uint32_t submit_count;
-};
-
-static_assert(sizeof(QueryCounterEXT) == 24,
-              "size of QueryCounterEXT should be 24");
-static_assert(offsetof(QueryCounterEXT, header) == 0,
-              "offset of QueryCounterEXT header should be 0");
-static_assert(offsetof(QueryCounterEXT, id) == 4,
-              "offset of QueryCounterEXT id should be 4");
-static_assert(offsetof(QueryCounterEXT, target) == 8,
-              "offset of QueryCounterEXT target should be 8");
-static_assert(offsetof(QueryCounterEXT, sync_data_shm_id) == 12,
-              "offset of QueryCounterEXT sync_data_shm_id should be 12");
-static_assert(offsetof(QueryCounterEXT, sync_data_shm_offset) == 16,
-              "offset of QueryCounterEXT sync_data_shm_offset should be 16");
-static_assert(offsetof(QueryCounterEXT, submit_count) == 20,
-              "offset of QueryCounterEXT submit_count should be 20");
-
 struct BeginQueryEXT {
   typedef BeginQueryEXT ValueType;
   static const CommandId kCmdId = kBeginQueryEXT;
@@ -953,16 +894,20 @@ struct CopySharedImageINTERNALImmediate {
             GLint _yoffset,
             GLint _x,
             GLint _y,
-            GLsizei _width,
-            GLsizei _height,
+            GLsizei _src_width,
+            GLsizei _src_height,
+            GLsizei _dest_width,
+            GLsizei _dest_height,
             const GLbyte* _mailboxes) {
     SetHeader();
     xoffset = _xoffset;
     yoffset = _yoffset;
     x = _x;
     y = _y;
-    width = _width;
-    height = _height;
+    src_width = _src_width;
+    src_height = _src_height;
+    dest_width = _dest_width;
+    dest_height = _dest_height;
     memcpy(ImmediateDataAddress(this), _mailboxes, ComputeDataSize());
   }
 
@@ -971,11 +916,14 @@ struct CopySharedImageINTERNALImmediate {
             GLint _yoffset,
             GLint _x,
             GLint _y,
-            GLsizei _width,
-            GLsizei _height,
+            GLsizei _src_width,
+            GLsizei _src_height,
+            GLsizei _dest_width,
+            GLsizei _dest_height,
             const GLbyte* _mailboxes) {
-    static_cast<ValueType*>(cmd)->Init(_xoffset, _yoffset, _x, _y, _width,
-                                       _height, _mailboxes);
+    static_cast<ValueType*>(cmd)->Init(_xoffset, _yoffset, _x, _y, _src_width,
+                                       _src_height, _dest_width, _dest_height,
+                                       _mailboxes);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -985,12 +933,14 @@ struct CopySharedImageINTERNALImmediate {
   int32_t yoffset;
   int32_t x;
   int32_t y;
-  int32_t width;
-  int32_t height;
+  int32_t src_width;
+  int32_t src_height;
+  int32_t dest_width;
+  int32_t dest_height;
 };
 
-static_assert(sizeof(CopySharedImageINTERNALImmediate) == 28,
-              "size of CopySharedImageINTERNALImmediate should be 28");
+static_assert(sizeof(CopySharedImageINTERNALImmediate) == 36,
+              "size of CopySharedImageINTERNALImmediate should be 36");
 static_assert(offsetof(CopySharedImageINTERNALImmediate, header) == 0,
               "offset of CopySharedImageINTERNALImmediate header should be 0");
 static_assert(offsetof(CopySharedImageINTERNALImmediate, xoffset) == 4,
@@ -1001,10 +951,18 @@ static_assert(offsetof(CopySharedImageINTERNALImmediate, x) == 12,
               "offset of CopySharedImageINTERNALImmediate x should be 12");
 static_assert(offsetof(CopySharedImageINTERNALImmediate, y) == 16,
               "offset of CopySharedImageINTERNALImmediate y should be 16");
-static_assert(offsetof(CopySharedImageINTERNALImmediate, width) == 20,
-              "offset of CopySharedImageINTERNALImmediate width should be 20");
-static_assert(offsetof(CopySharedImageINTERNALImmediate, height) == 24,
-              "offset of CopySharedImageINTERNALImmediate height should be 24");
+static_assert(
+    offsetof(CopySharedImageINTERNALImmediate, src_width) == 20,
+    "offset of CopySharedImageINTERNALImmediate src_width should be 20");
+static_assert(
+    offsetof(CopySharedImageINTERNALImmediate, src_height) == 24,
+    "offset of CopySharedImageINTERNALImmediate src_height should be 24");
+static_assert(
+    offsetof(CopySharedImageINTERNALImmediate, dest_width) == 28,
+    "offset of CopySharedImageINTERNALImmediate dest_width should be 28");
+static_assert(
+    offsetof(CopySharedImageINTERNALImmediate, dest_height) == 32,
+    "offset of CopySharedImageINTERNALImmediate dest_height should be 32");
 
 struct WritePixelsINTERNALImmediate {
   typedef WritePixelsINTERNALImmediate ValueType;

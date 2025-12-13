@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "ui/base/ozone_buildflags.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace viz {
 

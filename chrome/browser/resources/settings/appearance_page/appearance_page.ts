@@ -209,10 +209,27 @@ export class SettingsAppearancePageElement extends
         },
       },
 
-      showTabSearchPositionSettings_: {
+      tabStripOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              value: 'true',
+              name: loadTimeData.getString('uiFeatureAlignSide'),
+            },
+            {
+              value: 'false',
+              name: loadTimeData.getString('uiFeatureAlignTop'),
+            },
+          ];
+        },
+      },
+
+      showVerticalTabsEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('showTabSearchPositionSettings');
+          return loadTimeData.getBoolean('showVerticalTabsEnabled');
         },
       },
 
@@ -280,10 +297,11 @@ export class SettingsAppearancePageElement extends
   declare private showCustomChromeFrame_: boolean;
   // </if>
 
-  declare private showTabSearchPositionSettings_: boolean;
+  declare private showVerticalTabsEnabled_: boolean;
   declare private showTabSearchPositionRestartButton_: boolean;
   declare private showManagedThemeDialog_: boolean;
   declare private sidePanelOptions_: DropdownMenuOptionList;
+  declare private tabStripOptions_: DropdownMenuOptionList;
   declare private tabSearchOptions_: DropdownMenuOptionList;
   private appearanceBrowserProxy_: AppearanceBrowserProxy =
       AppearanceBrowserProxyImpl.getInstance();

@@ -6,7 +6,7 @@
 
 #include <dlfcn.h>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/logging.h"
 
 #define LOAD_FUNCTION(lib, func)                             \
@@ -47,8 +47,8 @@ const AChoreographerCompat33& AChoreographerCompat33::Get() {
 }
 
 AChoreographerCompat33::AChoreographerCompat33() {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_T) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_T) {
     supported = false;
     return;
   }

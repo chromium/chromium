@@ -4,6 +4,7 @@
 
 #include "ui/android/resources/nine_patch_resource.h"
 
+#include "base/check_op.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {

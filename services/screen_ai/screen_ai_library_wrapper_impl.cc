@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "services/screen_ai/screen_ai_library_wrapper_impl.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -92,13 +88,10 @@ bool ScreenAILibraryWrapperImpl::Load(const base::FilePath& library_path) {
 
   if (!LoadFunction(init_ocr_, "InitOCRUsingCallback") ||
       !LoadFunction(get_max_image_dimension_, "GetMaxImageDimension") ||
+      !LoadFunction(set_ocr_light_mode_, "SetOCRLightMode") ||
       !LoadFunction(perform_ocr_, "PerformOCR")) {
     return false;
   }
-
-  // TODO(crbug.com/412553116): Move to the the above block and make it
-  // mandatory after updating library min version.
-  LoadFunction(set_ocr_light_mode_, "SetOCRLightMode");
 
   // Main Content Extraction functions.
   if (!LoadFunction(init_main_content_extraction_,
@@ -157,11 +150,7 @@ bool ScreenAILibraryWrapperImpl::InitOCR() {
 
 NO_SANITIZE("cfi-icall")
 void ScreenAILibraryWrapperImpl::SetOCRLightMode(bool enabled) {
-  // TODO(crbug.com/412553116): Change to CHECK after updating library min
-  // version.
-  if (!set_ocr_light_mode_) {
-    return;
-  }
+  CHECK(set_ocr_light_mode_);
   set_ocr_light_mode_(enabled);
 }
 
@@ -224,8 +213,8 @@ ScreenAILibraryWrapperImpl::ExtractMainContent(
 
   node_ids = std::vector<int32_t>(nodes_count);
   if (nodes_count != 0) {
-    memcpy(node_ids->data(), library_buffer.get(),
-           nodes_count * sizeof(int32_t));
+    UNSAFE_TODO(memcpy(node_ids->data(), library_buffer.get(),
+                       nodes_count * sizeof(int32_t)));
   }
 
   free_library_allocated_int32_array_(library_buffer.release());

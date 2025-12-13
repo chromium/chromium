@@ -17,7 +17,6 @@
         "dut_pool": "chromium",
         "name": "chrome_all_tast_tests",
         "shard_level_retries_on_ctp": 1,
-        "tast_expr": "dummy expr",
         "test": "chrome_all_tast_tests",
         "timeout": 3600
       }

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -17,6 +18,9 @@
 #include "base/message_loop/message_pump.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
+#include "base/synchronization/lock.h"
+#include "base/synchronization/lock_metrics_recorder.h"
 #include "base/task/sequence_manager/tasks.h"
 #include "base/task/task_features.h"
 #include "base/threading/hang_watcher.h"
@@ -45,7 +49,6 @@ TimeTicks CapAtOneDay(TimeTicks next_run_time, LazyNow* lazy_now) {
 }
 
 BASE_FEATURE(kAvoidScheduleWorkDuringNativeEventProcessing,
-             "AvoidScheduleWorkDuringNativeEventProcessing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::atomic_bool g_run_tasks_by_batches = false;
@@ -80,7 +83,12 @@ ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     const SequenceManager::Settings& settings)
     : ThreadController(settings.clock),
       work_deduplicator_(associated_thread_),
-      can_run_tasks_by_batches_(settings.can_run_tasks_by_batches) {}
+      can_run_tasks_by_batches_(settings.can_run_tasks_by_batches),
+      is_main_thread_(settings.is_main_thread) {
+  if (settings.should_report_lock_metrics) {
+    LockMetricsRecorder::Get()->SetTargetCurrentThread();
+  }
+}
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     std::unique_ptr<MessagePump> message_pump,
@@ -238,6 +246,14 @@ void ThreadControllerWithMessagePumpImpl::
   main_thread_only().thread_task_runner_handle =
       std::make_unique<SingleThreadTaskRunner::CurrentDefaultHandle>(
           task_runner_);
+
+  if (is_main_thread_) {
+    main_thread_only().main_thread_default_task_runner_handle.reset();
+    main_thread_only().main_thread_default_task_runner_handle =
+        std::make_unique<SingleThreadTaskRunner::MainThreadDefaultHandle>(
+            task_runner_);
+  }
+
   // When the task runner is known, bind the power manager. Power notifications
   // are received through that sequence.
   power_monitor_.BindToCurrentThread();
@@ -556,6 +572,8 @@ void ThreadControllerWithMessagePumpImpl::DoIdleWork() {
     }
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+  LockMetricsRecorder::Get()->ReportLockAcquisitionTimes();
 
   if (main_thread_only().task_source->OnIdle()) {
     work_id_provider_->IncrementWorkId();

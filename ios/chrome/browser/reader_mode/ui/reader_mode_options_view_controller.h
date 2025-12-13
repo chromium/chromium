@@ -12,7 +12,7 @@
 @protocol ReaderModeOptionsMutator;
 
 // View controller for the reader mode options.
-@interface ReaderModeOptionsViewController : UINavigationController
+@interface ReaderModeOptionsViewController : UIViewController
 
 // The view that contains the controls for the Reader Mode options.
 @property(nonatomic, readonly) ReaderModeOptionsControlsView* controlsView;
@@ -22,14 +22,13 @@
 @property(nonatomic, weak) id<ReaderModeOptionsCommands>
     readerModeOptionsHandler;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithNavigationBarClass:(Class)navigationBarClass
-                              toolbarClass:(Class)toolbarClass NS_UNAVAILABLE;
-- (instancetype)initWithRootViewController:(UIViewController*)rootViewController
-    NS_UNAVAILABLE;
-- (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
+// Updates the visibility of the "Hide Reader mode" button.
+// This button is visible by default.
+- (void)updateHideReaderModeButtonVisibility:(BOOL)visible;
+
+// Returns the appropriate detent value for a sheet presentation in `context`.
+- (CGFloat)resolveDetentValueForSheetPresentation:
+    (id<UISheetPresentationControllerDetentResolutionContext>)context;
 
 @end
 

@@ -84,7 +84,7 @@ namespace {
   base::OnceClosure closure = base::BindOnce(^{
     closure_called = true;
   });
-  web::ClearBrowsingData(browser_state, types,
+  web::ClearBrowsingData(GetAnyKeyWindow(), browser_state, types,
                          base::Time::Now() - base::Minutes(1),
                          std::move(closure));
 

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_CONFIG_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_CONFIG_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/notreached.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
@@ -231,7 +232,7 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
   // compatibility.
   bool deprecated_should_freeze_initial_size_ = false;
 
-  static_assert(__LINE__ == 234, R"(
+  static_assert(__LINE__ == 235, R"(
 If adding or modifying a field in FencedFrameConfig, be sure to also make
 the field serializable. To do that:
 

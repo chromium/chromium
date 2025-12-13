@@ -4,6 +4,8 @@
 
 #include "base/timer/elapsed_timer.h"
 
+#include <concepts>
+
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,6 +16,12 @@ namespace {
 
 constexpr TimeDelta kSleepDuration = Milliseconds(20);
 }
+
+static_assert(std::movable<ElapsedTimer>);
+static_assert(std::copyable<ElapsedTimer>);
+
+static_assert(std::movable<ElapsedThreadTimer>);
+static_assert(std::copyable<ElapsedThreadTimer>);
 
 TEST(ElapsedTimerTest, Simple) {
   ElapsedTimer timer;

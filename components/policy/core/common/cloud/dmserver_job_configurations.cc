@@ -12,6 +12,7 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"

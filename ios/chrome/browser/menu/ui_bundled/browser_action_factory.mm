@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
@@ -265,7 +266,7 @@
                                                 referrer:referrer
                                                 webState:webState];
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* image =
       CustomSymbolWithPointSize(kGooglePhotosSymbol, kSymbolActionPointSize);
 #else
@@ -345,6 +346,36 @@
   }
 
   return action;
+}
+
+- (UIAction*)actionToLensCopiedImage {
+  __weak id<LensCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
+  void (^clipboardAction)(std::optional<gfx::Image>) =
+      ^(std::optional<gfx::Image> optionalImage) {
+        if (!optionalImage || !handler) {
+          return;
+        }
+
+        UIImage* image = [optionalImage.value().ToUIImage() copy];
+        SearchImageWithLensCommand* command =
+            [[SearchImageWithLensCommand alloc]
+                initWithImage:image
+                   entryPoint:LensEntrypoint::PlusButton];
+        [handler searchImageWithLens:command];
+      };
+
+  return
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS)
+                      image:DefaultSymbolWithPointSize(kClipboardActionSymbol,
+                                                       kSymbolActionPointSize)
+                       type:MenuActionType::SearchCopiedImage
+                      block:^{
+                        ClipboardRecentContent::GetInstance()
+                            ->GetRecentImageFromClipboard(
+                                base::BindOnce(clipboardAction));
+                      }];
 }
 
 - (UIAction*)actionToSearchCopiedImage {

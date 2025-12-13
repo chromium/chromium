@@ -4,7 +4,6 @@
 
 package org.chromium.content_public.browser;
 
-import android.content.Intent;
 import android.graphics.Rect;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -68,11 +67,7 @@ public abstract class ActionModeCallbackHelper {
         public void onGetContentRect(ActionMode mode, View view, Rect outRect) {}
 
         @Override
-        public boolean onDropdownItemClicked(
-                int groupId,
-                int id,
-                @Nullable Intent intent,
-                View.@Nullable OnClickListener clickListener) {
+        public boolean onDropdownItemClicked(SelectionMenuItem item, boolean closeMenu) {
             return false;
         }
     }
@@ -140,11 +135,7 @@ public abstract class ActionModeCallbackHelper {
     public abstract boolean onActionItemClicked(ActionMode mode, MenuItem item);
 
     /** Callback for when a drop-down menu item is clicked. */
-    public abstract boolean onDropdownItemClicked(
-            int groupId,
-            int id,
-            @Nullable Intent intent,
-            View.@Nullable OnClickListener clickListener);
+    public abstract boolean onDropdownItemClicked(SelectionMenuItem item, boolean closeMenu);
 
     /**
      * @see {@link ActionMode.Callback#onDestroyActionMode(ActionMode)}

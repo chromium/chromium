@@ -1,0 +1,71 @@
+/*
+ * Gold-Standard CSS Block for Maximum Rendering Consistency in Chromium Web Tests
+ * (Embraces engine-specific prefixes for ultimate control)
+ */
+
+/* 1. Universal Reset and Predictable Box Model
+ *--------------------------------------------------------------------------*/
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+/* 2. Consistent Font and Global Layout
+ *--------------------------------------------------------------------------*/
+::-webkit-scrollbar {
+  /* Ensure no scrollbars ever render. */
+  display: none;
+}
+
+body {
+  /* Use Ahem for perfectly consistent character boxes. */
+  font: 10px/1 Ahem;
+}
+
+/* 3. Consistent Form Controls (no platform-specific layout)
+ *--------------------------------------------------------------------------*/
+button,
+input,
+textarea {
+  /* The most robust way to remove all native OS styling. */
+  -webkit-appearance: none;
+
+  /* Apply a simple, predictable base style. */
+  background-color: #f0f0f0;
+  border: 1px solid #cccccc;
+  padding: 8px;
+
+  /* Ensure they inherit the consistent body font. */
+  font-family: inherit;
+  font-size: inherit;
+
+  /* Remove default browser outlines. */
+  outline: none;
+}
+
+select {
+  /* Apply the same visual base style as other controls. */
+  background-color: #f0f0f0;
+  border: 1px solid #cccccc;
+  padding: 8px;
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+}
+
+select,
+::picker(select) {
+  /* Use Blink's internal 'base-select' appearance for a minimal,
+     functional dropdown without full OS-native styling. */
+  -webkit-appearance: base-select;
+  appearance: base-select;
+}

@@ -565,7 +565,6 @@ TEST(CSSMathExpressionNode, TestProgressNotation) {
     EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
   }
 }
-
 TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
   const struct TestCase {
     const std::string input;
@@ -823,6 +822,86 @@ TEST(CSSMathExpressionNode, CSSMathTypeComplex) {
 
   EXPECT_EQ(((length + length) / length).Category(), kCalcNumber);
   EXPECT_EQ(((length + length) * (number + number)).Category(), kCalcLength);
+}
+
+TEST(CSSMathExpressionNode, InvalidRandomFunction) {
+  const std::string test_cases[] = {
+      "random(1px)",
+      "random(1px, 3px,)",
+      "random(1px, 3deg)",
+      "random(1px,, 3px)",
+      "random(1px, 3px, 9)",
+      "random(1px, 3px, 9px,)",
+      "random(1px 3px, 9px)",
+      "random(1px, 3px 9px)",
+      "random(, 1, 2, 3)",
+      "random(element-shared ident, 1, 2, 3)",
+      "random(ident element-shared, 1, 2, 3)",
+      "random(--ident element-shared --ident, 1, 2, 3)",
+      "random(element-shared 0, 1, 2, 3)",
+      "random(--ident 0, 1, 2, 3)",
+      "random(element-shared --ident 0, 1, 2, 3)",
+      "random(ident, 1, 2)",
+      "random(--ident 1, 2)",
+      "random(--ident,, 1, 2)",
+      "random(--ident element-shared 1, 2)",
+      "random(fixed, 1, 2)",
+      "random(fixed 3, 1, 2)",
+      "random(fixed 3px, 1, 2)",
+      "random(fixed 0.1 element-shared, 1, 2)",
+      "random(calc(1 + 1), calc(3px + 3px))",
+      "random(fixed calc(2 / 4), 0px, 100px)",
+
+      // Not random(), but tests that other functions doesn't accept random()'s
+      // arguments.
+      "round(fixed 0 0px, 100px)",
+  };
+
+  for (const auto& test_case : test_cases) {
+    CSSParserTokenStream stream(test_case.c_str());
+    const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
+        CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
+        kCSSAnchorQueryTypesNone);
+    EXPECT_FALSE(res);
+  }
+}
+
+TEST(CSSMathExpressionNode, ValidRandomFunction) {
+  const struct TestCase {
+    const char* input;
+    const char* output;
+  } test_cases[] = {
+      {"random(1, 3)", "random(1, 3)"},
+      {"random(1px, 3%)", "random(1px, 3%)"},
+      {"random(1px, 3px, 9px)", "random(1px, 3px, 9px)"},
+      {"random(calc(1 + 1), calc(3 + 3), round(10, 10))", "random(2, 6, 10)"},
+      {"random(element-shared --ident, 1, 2, 3)",
+       "random(--ident element-shared, 1, 2, 3)"},
+      {"random(--ident element-shared, 1, 2, 3)",
+       "random(--ident element-shared, 1, 2, 3)"},
+      {"random(element-shared auto, 1, 2, 3)",
+       "random(element-shared, 1, 2, 3)"},
+      {"random(auto element-shared, 1, 2, 3)",
+       "random(element-shared, 1, 2, 3)"},
+      {"random(--ident, 1, 2)", "random(--ident, 1, 2)"},
+      {"random(--ident, 1, 2, 3)", "random(--ident, 1, 2, 3)"},
+      {"random(auto, 1px, 2%)", "random(1px, 2%)"},
+      {"random(auto, 1, 2, 3)", "random(1, 2, 3)"},
+      {"random(fixed 0.1, 1px, 3px)", "random(fixed 0.1, 1px, 3px)"},
+      {"random(fixed .3, 0deg, 90deg)", "random(fixed 0.3, 0deg, 90deg)"}};
+
+  for (const auto& test_case : test_cases) {
+    CSSParserTokenStream stream(test_case.input);
+    const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
+        CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
+        kCSSAnchorQueryTypesNone);
+    EXPECT_TRUE(res);
+    EXPECT_EQ(res->CustomCSSText(), String(test_case.output));
+  }
 }
 
 }  // anonymous namespace

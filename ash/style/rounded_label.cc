@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_id.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
@@ -24,17 +25,24 @@ RoundedLabel::RoundedLabel(int horizontal_padding,
       preferred_height_(preferred_height) {
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
-  SetBackground(views::CreateSolidBackground(kColorAshShieldAndBase80));
   SetEnabledColor(kColorAshTextColorPrimary);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(rounding_dp));
   layer()->SetIsFastRoundedCorner(true);
+
+  SetBackground(views::CreateSolidBackground(
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemOnBaseOpaque));
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 }
 
 RoundedLabel::~RoundedLabel() = default;

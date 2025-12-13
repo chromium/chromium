@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -81,7 +82,7 @@ class GCM_EXPORT CheckinRequest {
 
   // Invoked from SimpleURLLoader.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
-                         std::unique_ptr<std::string> body);
+                         std::optional<std::string> body);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GCMClientImplCheckinTest, CheckinWithAccountsEmpty);

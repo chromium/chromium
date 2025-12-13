@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">laranjas</translation>
 <translation id="1275718070701477396">Linha selecionada</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
+<translation id="1292474106138697109">Exibição das Ferramentas para Sala de Aula</translation>
 <translation id="1300115153046603471">O APN é do tipo padrão e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Conversão</translation>
@@ -96,7 +97,7 @@
 <translation id="1371650399987522809">Feedback sobre o plano de fundo com a tecnologia de IA do Google</translation>
 <translation id="1374385338586507108">Definição</translation>
 <translation id="1376064675713230088">tiranossauro</translation>
-<translation id="1383876407941801731">Pesquisar</translation>
+<translation id="1383876407941801731">Pesquise</translation>
 <translation id="1387854245479784695">Isso é uma agregação de todos os núcleos</translation>
 <translation id="1388919980490622894">com gradação de cores</translation>
 <translation id="1393206549145430405">Castelo</translation>
@@ -197,7 +198,7 @@
 <translation id="1738949837603788263">Zona <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Não foi possível carregar as imagens. Verifique sua conexão de rede ou tente carregar novamente.</translation>
 <translation id="1751249301761991853">Pessoal</translation>
-<translation id="1751335846119670066">Quero ajuda para ler</translation>
+<translation id="1751335846119670066">Me ajude a ler</translation>
 <translation id="1753496554272155572">Sair da visualização do plano de fundo</translation>
 <translation id="1754578112426924640">Botão "Editar" para o atalho <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">App Diagnóstico</translation>
@@ -366,7 +367,7 @@
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2448857983905133469">Ferramentas para sala de aula</translation>
 <translation id="2468124392950503650">Selecione o comando para criar ou ver o <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guia de comandos<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Use a opção "Quero ajuda para escrever" para criar um rascunho ou refinar um trabalho com a tecnologia de IA do Google</translation>
+<translation id="2472215337771558851">Use a opção "Me ajude a escrever" para criar um rascunho ou refinar um trabalho com a tecnologia de IA do Google</translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
 <translation id="2480572840229215612">caranguejos</translation>
 <translation id="248546197012830854">O dispositivo está off-line. Conecte-se à rede Wi-Fi para ver o conteúdo de ajuda.</translation>
@@ -468,7 +469,7 @@
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Circunscritos</translation>
 <translation id="3060798442805232711">As ferramentas para sala de aula estão usando o microfone</translation>
-<translation id="3061850252076394168">ativar "Selecionar para ouvir"</translation>
+<translation id="3061850252076394168">ativar Selecionar para Ouvir</translation>
 <translation id="3066772729299747758">na terça-feira</translation>
 <translation id="3069085583900247081">Falha no teste</translation>
 <translation id="3078740164268491126">tabela</translation>
@@ -584,7 +585,7 @@
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> é o nome fácil de usar de <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="3600339377155080675">Espelhar tela</translation>
-<translation id="3602290021589620013">Visualizar</translation>
+<translation id="3602290021589620013">Prévia</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Mudar plano de fundo</translation>
 <translation id="360565022852130722">A rede Wi-Fi é protegida pelo protocolo fraco WEP 802.1x</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagens</translation>
 <translation id="4300272766492248925">Abrir app</translation>
 <translation id="430786093962686457">chiffon</translation>
+<translation id="4309762678330556039">Crie transcrições e pesquise áudio automaticamente. Você pode criar gravações mesmo quando não tiver uma conexão de internet.</translation>
 <translation id="4310735698903592804">Planos de fundo recentes com tecnologia de IA do Google</translation>
 <translation id="4320904097188876154">rosa-neon</translation>
 <translation id="432961742358282111">Clique com o botão direito do mouse ou toque e pressione para ver definições, traduções ou conversões de unidades. Use as teclas de seta para a esquerda ou direita para gerenciar esse recurso.</translation>
@@ -1011,7 +1013,7 @@
 <translation id="5410755018770633464">cachorros-quentes</translation>
 <translation id="5423849171846380976">Ativado</translation>
 <translation id="5430931332414098647">Tethering instantâneo</translation>
-<translation id="5431318178759467895">Colorido</translation>
+<translation id="5431318178759467895">Cor</translation>
 <translation id="5457599981699367932">Navegar como visitante</translation>
 <translation id="54609108002486618">Gerenciado</translation>
 <translation id="5461608756903394951">Download em andamento do modelo de transcrição em <ph name="LANGUAGE_NAME" /></translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5600027863942488546">A tecla <ph name="KEY_NAME" /> foi testada</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">As Ferramentas para Sala de Aula estão compartilhando sua tela com <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Você saiu da sua conta</translation>
 <translation id="5620281292257375798">Somente uso interno</translation>
 <translation id="5628106863521633649">Idiomas disponíveis</translation>
@@ -1088,7 +1091,7 @@
 <translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Álbum da galeria de arte</translation>
 <translation id="5859969039821714932">Atalho indisponível. Pressione um novo atalho sem <ph name="KEY" />.</translation>
-<translation id="5860033963881614850">Desativado</translation>
+<translation id="5860033963881614850">Desativada</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="586463370326011345">raio</translation>
 <translation id="5875913454160982848">Baixar modelo de transcrição</translation>
@@ -1143,7 +1146,7 @@
 <translation id="6074608334942655098">Parar de traduzir</translation>
 <translation id="6074752328838739425">Ocultar resumo</translation>
 <translation id="6075872808778243331">(Android) Latência do HTTP</translation>
-<translation id="6078323886959318429">Adicionar atalho</translation>
+<translation id="6078323886959318429">Criar atalho</translation>
 <translation id="6079693086494835199">Faça a redefinição para garantir que a página inicial padrão não seja um site de phishing. Use apenas sites em que você confia.</translation>
 <translation id="6090672065638047175">uma foto de uma árvore brilhante feita de estrelas com um lindo céu noturno e uma galáxia ao fundo</translation>
 <translation id="6091080061796993741">amarela</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Fluxo das nuvens</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nenhum scanner disponível</translation>
-<translation id="6231648282154119906">Arquivos suspeitos serão verificados automaticamente pela Navegação segura do Google como parte da proteção reforçada escolhida por você</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6234024205316847054">Mostrar esboço</translation>
 <translation id="6243280677745499710">Definido no momento</translation>
@@ -1330,7 +1332,7 @@
 <translation id="6899460405678814458">Mostrar resumo</translation>
 <translation id="6900701049656042631">Esse álbum não tem fotos. Para adicionar, acesse <ph name="LINK" /></translation>
 <translation id="6902359863093437070">Criar um plano de fundo com IA</translation>
-<translation id="6905163627763043954">Experimente</translation>
+<translation id="6905163627763043954">Testar</translation>
 <translation id="6905275015682612674">uma foto de longa exposição de uma praia bioluminescente ao pôr do sol com estrelas no céu, lindas cores pastel, 4k</translation>
 <translation id="6905724422583748843">Voltar para <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A tampa do scanner está aberta. Feche-a e tente novamente.</translation>
@@ -1418,7 +1420,7 @@
 <translation id="7212734716605298123">Atualizações de firmware para dispositivos externos</translation>
 <translation id="7216409898977639127">Operadora de celular</translation>
 <translation id="7221869452894271364">Recarregar esta página</translation>
-<translation id="7223952304612664117">Isso permite que os serviços do sistema utilizem a Precisão de local para determinar sua localização. Esse recurso usa informações sobre sensores e sinais sem fio para determinar o local do dispositivo.</translation>
+<translation id="7223952304612664117">Isso permite que os serviços do sistema utilizem a Precisão de Local para determinar sua localização. Esse recurso usa informações sobre sensores e sinais sem fio para determinar o local do dispositivo.</translation>
 <translation id="7233782086689993269">Atalho restaurado</translation>
 <translation id="723419678599947502">Criar título usando a IA do Google</translation>
 <translation id="725133483556299729">Selecione um e-mail</translation>
@@ -1468,7 +1470,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="741244894080940828">conversão</translation>
 <translation id="7415801143053185905">A latência do HTTP está muito alta</translation>
 <translation id="7418738250896500352">Há muitas palavras para simplificar</translation>
-<translation id="7425037327577270384">Quero ajuda para escrever</translation>
+<translation id="7425037327577270384">Me ajude a escrever</translation>
 <translation id="7425832472614771259">Modelo de transcrição em <ph name="LANGUAGE_NAME" /> <ph name="PROGRESS_PERCENTAGE" />% baixado</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Não é possível desativar ou remover esse APN. Desative ou remova os APNs <ph name="ATTACH" />.</translation>
@@ -1562,7 +1564,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="7859006200041800233">flor de cacto</translation>
 <translation id="7865217133132122390">Ativar microfone</translation>
 <translation id="7869143217755017858">Desativar o modo escuro</translation>
-<translation id="7878972877380405573">Resumir com o recurso "Quero ajuda para ler"</translation>
+<translation id="7878972877380405573">Resumir com o recurso "Me ajude a ler"</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de provedor</translation>
 <translation id="7882501334836096755">Chave pública</translation>
@@ -1744,7 +1746,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8723108084122415655">Rede não padrão acima do limite de latência</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8726019395068607495">Parado (porta aberta)</translation>
-<translation id="8730621377337864115">Concluir</translation>
+<translation id="8730621377337864115">Concluído</translation>
 <translation id="8739555075907731077">Atualização pausada (<ph name="PERCENTAGE_VALUE" />% concluída)</translation>
 <translation id="8747900814994928677">Confirmar alteração</translation>
 <translation id="8749478549112817787">Plano de fundo da câmera</translation>
@@ -1866,7 +1868,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="921080052717160800">Imagem definida como plano de fundo da câmera</translation>
 <translation id="9211490828691860325">Todos os espaços de trabalho</translation>
 <translation id="9218016617214286986">Mostrar APNs conhecidos</translation>
-<translation id="932327136139879170">Início</translation>
+<translation id="932327136139879170">Casa</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="950520315903467048">Está faltando a tecla para <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>

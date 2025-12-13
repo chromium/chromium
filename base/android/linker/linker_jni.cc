@@ -18,10 +18,17 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <unistd.h>
 
 #include <memory>
 
+#include <android/log.h>
+#include <sys/system_properties.h>
+
+#define LOG_E(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "linker-jni", __VA_ARGS__))
+
+#include "base/android/linker/ashmem.h"
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/android/linker/linker_jni.h"
 
@@ -237,7 +244,6 @@ bool CallJniOnLoad(void* handle) {
   LOG_INFO("Done");
   return true;
 }
-
 }  // namespace
 
 String::String(JNIEnv* env, jstring str) {
@@ -325,48 +331,6 @@ bool FindWebViewReservation(uintptr_t* out_address, size_t* out_size) {
   close(fd);
   return result;
 }
-
-// Starting with API level 26 (Android O) the following functions from
-// libandroid.so should be used to create shared memory regions to ensure
-// compatibility with the future versions:
-// * ASharedMemory_create()
-// * ASharedMemory_setProt()
-//
-// This is inspired by //third_party/ashmem/ashmem-dev.c, which cannot be
-// referenced from the linker library to avoid increasing binary size.
-//
-// *Not* threadsafe.
-struct SharedMemoryFunctions {
-  SharedMemoryFunctions() {
-    library_handle = dlopen("libandroid.so", RTLD_NOW);
-    create = reinterpret_cast<CreateFunction>(
-        dlsym(library_handle, "ASharedMemory_create"));
-    set_protection = reinterpret_cast<SetProtectionFunction>(
-        dlsym(library_handle, "ASharedMemory_setProt"));
-  }
-
-  bool IsWorking() const {
-    if (!create || !set_protection) {
-      LOG_ERROR("Cannot get the shared memory functions from libandroid");
-      return false;
-    }
-    return true;
-  }
-
-  ~SharedMemoryFunctions() {
-    if (library_handle) {
-      dlclose(library_handle);
-    }
-  }
-
-  typedef int (*CreateFunction)(const char*, size_t);
-  typedef int (*SetProtectionFunction)(int fd, int prot);
-
-  CreateFunction create;
-  SetProtectionFunction set_protection;
-
-  void* library_handle = nullptr;
-};
 
 void NativeLibInfo::ExportLoadInfoToJava() const {
   if (!env_) {
@@ -517,8 +481,7 @@ bool NativeLibInfo::LoadWithDlopenExt(const String& path, void** handle) {
   return true;
 }
 
-bool NativeLibInfo::CreateSharedRelroFd(
-    const SharedMemoryFunctions& functions) {
+bool NativeLibInfo::CreateSharedRelroFd() {
   LOG_INFO("Entering");
   if (!relro_start_ || !relro_size_) {
     LOG_ERROR("RELRO region is not populated");
@@ -526,13 +489,13 @@ bool NativeLibInfo::CreateSharedRelroFd(
   }
 
   // Create a writable shared memory region.
-  int shared_mem_fd = functions.create("cr_relro", relro_size_);
+  int shared_mem_fd = SharedMemoryRegionCreate("cr_relro", relro_size_);
   if (shared_mem_fd == -1) {
     LOG_ERROR("Cannot create the shared memory file");
     return false;
   }
   int rw_flags = PROT_READ | PROT_WRITE;
-  functions.set_protection(shared_mem_fd, rw_flags);
+  SharedMemoryRegionSetProtectionFlags(shared_mem_fd, rw_flags);
 
   // Map the region as writable.
   void* relro_copy_addr =
@@ -556,7 +519,7 @@ bool NativeLibInfo::CreateSharedRelroFd(
   // writable memory mappings, since they are not directly affected by the
   // change of region's protection flags.
   munmap(relro_copy_addr, relro_size_);
-  if (functions.set_protection(shared_mem_fd, PROT_READ) == -1) {
+  if (SharedMemoryRegionSetProtectionFlags(shared_mem_fd, PROT_READ) == -1) {
     LOG_ERROR("Failed to set the RELRO FD as read-only.");
     close(shared_mem_fd);
     return false;
@@ -566,8 +529,7 @@ bool NativeLibInfo::CreateSharedRelroFd(
   return true;
 }
 
-bool NativeLibInfo::ReplaceRelroWithSharedOne(
-    const SharedMemoryFunctions& functions) const {
+bool NativeLibInfo::ReplaceRelroWithSharedOne() const {
   LOG_INFO("Entering");
   if (relro_fd_ == -1 || !relro_start_ || !relro_size_) {
     LOG_ERROR("Replacement RELRO not ready");
@@ -626,15 +588,11 @@ bool NativeLibInfo::LoadLibrary(const String& library_path,
 
   // Spawn RELRO to a shared memory region by copying and remapping on top of
   // itself.
-  SharedMemoryFunctions functions;
-  if (!functions.IsWorking()) {
-    return false;
-  }
-  if (!CreateSharedRelroFd(functions)) {
+  if (!CreateSharedRelroFd()) {
     LOG_ERROR("Failed to create shared RELRO");
     return false;
   }
-  if (!ReplaceRelroWithSharedOne(functions)) {
+  if (!ReplaceRelroWithSharedOne()) {
     LOG_ERROR("Failed to convert RELRO to shared memory");
     CloseRelroFd();
     return false;
@@ -649,8 +607,7 @@ bool NativeLibInfo::LoadLibrary(const String& library_path,
 }
 
 bool NativeLibInfo::RelroIsIdentical(
-    const NativeLibInfo& other_lib_info,
-    const SharedMemoryFunctions& functions) const {
+    const NativeLibInfo& other_lib_info) const {
   // Abandon sharing if contents of the incoming RELRO region does not match the
   // current one. This can be useful for debugging, but should never happen in
   // the field.
@@ -699,12 +656,7 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
     return false;
   }
 
-  SharedMemoryFunctions functions;
-  if (!functions.IsWorking()) {
-    s_relro_sharing_status = RelroSharingStatus::NO_SHMEM_FUNCTIONS;
-    return false;
-  }
-  if (!RelroIsIdentical(other_lib_info, functions)) {
+  if (!RelroIsIdentical(other_lib_info)) {
     LOG_ERROR("RELRO is not identical");
     s_relro_sharing_status = RelroSharingStatus::NOT_IDENTICAL;
     return false;
@@ -718,7 +670,7 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
   //  * It does not rely on disallowing mprotect(PROT_WRITE)
   //  * This way |ReplaceRelroWithSharedOne()| is reused across spawning RELRO
   //    and receiving it
-  if (!other_lib_info.ReplaceRelroWithSharedOne(functions)) {
+  if (!other_lib_info.ReplaceRelroWithSharedOne()) {
     LOG_ERROR("Failed to use relro_fd");
     s_relro_sharing_status = RelroSharingStatus::REMAP_FAILED;
     return false;
@@ -731,17 +683,7 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
 bool NativeLibInfo::CreateSharedRelroFdForTesting() {
   // The library providing these functions will be dlclose()-ed after returning
   // from this context. The extra overhead of dlopen() is OK for testing.
-  SharedMemoryFunctions functions;
-  if (!functions.IsWorking()) {
-    abort();
-  }
-  return CreateSharedRelroFd(functions);
-}
-
-// static
-bool NativeLibInfo::SharedMemoryFunctionsSupportedForTesting() {
-  SharedMemoryFunctions functions;
-  return functions.IsWorking();
+  return CreateSharedRelroFd();
 }
 
 JNI_ZERO_BOUNDARY_EXPORT void

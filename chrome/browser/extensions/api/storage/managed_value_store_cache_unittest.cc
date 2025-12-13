@@ -38,7 +38,8 @@ constexpr auto kAnotherPolicyDomain =
     policy::PolicyDomain::POLICY_DOMAIN_SIGNIN_EXTENSIONS;
 
 base::Value::Dict CreateDict(const std::string& json) {
-  auto dict = base::JSONReader::Read(json);
+  auto dict =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_NE(dict, std::nullopt) << "Invalid json: '" << json << "'";
   return std::move(dict.value()).TakeDict();
 }

@@ -129,7 +129,8 @@ const char kHostFrameKey[] = "host_frame";
 - (void)webState:(web::WebState*)webState
     didSubmitDocumentWithFormData:(const FormData&)formData
                    hasUserGesture:(BOOL)hasUserGesture
-                          inFrame:(web::WebFrame*)frame {
+                          inFrame:(web::WebFrame*)frame
+                   perfectFilling:(BOOL)perfectFilling {
   DCHECK_EQ(_webState, webState);
   GURL pageURL = webState->GetLastCommittedURL();
   if (!frame->GetSecurityOrigin().IsSameOriginWith(pageURL)) {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/kcer/helpers/pkcs12_validator.h"
 
 #include <cert.h>
@@ -17,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -234,8 +230,8 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
       LOG(ERROR) << MakePkcs12CertImportErrorMessage(get_cert_der_result);
       return get_cert_der_result;
     }
-    CertDer cert_der_typed(
-        std::vector<uint8_t>(cert_der.get(), cert_der.get() + cert_der_size));
+    CertDer cert_der_typed(std::vector<uint8_t>(
+        cert_der.get(), UNSAFE_TODO(cert_der.get() + cert_der_size)));
 
     if (cert_cache.FindCert(cert_der_typed.value())) {
       LOG(WARNING) << "Cert is already installed, skipping";

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -332,6 +333,21 @@ TEST_F(NativeWidgetAuraTest, CreateMinimized) {
   widget->Show();
 
   EXPECT_TRUE(widget->IsMinimized());
+}
+
+TEST_F(NativeWidgetAuraTest, CreateWidgetWithNotStandardFrame) {
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW);
+  params.parent = nullptr;
+  params.context = root_window();
+  params.remove_standard_frame = true;
+  params.bounds.SetRect(0, 0, 1024, 800);
+  auto widget = std::make_unique<Widget>();
+  widget->Init(std::move(params));
+  widget->Show();
+
+  EXPECT_TRUE(widget->GetNativeWindow()->GetProperty(
+      aura::client::kRemoveStandardFrame));
 }
 
 // Tests that GetRestoreBounds returns the window bounds even if the window is

@@ -2,25 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/user_policies_manager.h"
 
 #include <limits>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -255,8 +251,8 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
     return (fetch_status_ = E_FAIL);
   }
 
-  int num_bytes_written =
-      policy_file->Write(0, policy_data.c_str(), policy_data.size());
+  int num_bytes_written = UNSAFE_TODO(
+      policy_file->Write(0, policy_data.c_str(), policy_data.size()));
 
   policy_file.reset();
 
@@ -288,13 +284,12 @@ bool UserPoliciesManager::GetUserPolicies(const std::wstring& sid,
     return false;
   }
 
-  std::vector<char> buffer(policy_file->GetLength());
-  policy_file->Read(0, buffer.data(), buffer.size());
+  std::vector<uint8_t> buffer(policy_file->GetLength());
+  policy_file->Read(0, buffer);
   policy_file.reset();
 
-  std::optional<base::Value::Dict> policy_data =
-      base::JSONReader::ReadDict(std::string_view(buffer.data(), buffer.size()),
-                                 base::JSON_ALLOW_TRAILING_COMMAS);
+  std::optional<base::Value::Dict> policy_data = base::JSONReader::ReadDict(
+      base::as_string_view(buffer), base::JSON_ALLOW_TRAILING_COMMAS);
   if (!policy_data) {
     LOGFN(ERROR) << "Failed to read policy data from file!";
     return false;

@@ -55,7 +55,7 @@ SELECT
       1
     FROM descendant_slice($id)
     WHERE
-      name = $descendant_name
+      name GLOB $descendant_name
     LIMIT 1
   );
 
@@ -149,7 +149,7 @@ SELECT
   extract_arg(arg_set_id, 'event_latency.event_latency_id') AS scroll_update_id,
   extract_arg(arg_set_id, 'event_latency.surface_frame_trace_id') AS surface_frame_trace_id,
   extract_arg(arg_set_id, 'event_latency.display_trace_id') AS display_trace_id,
-  _has_descendant_slice_with_name(slice.id, 'SubmitCompositorFrameToPresentationCompositorFrame') AS is_presented,
+  _has_descendant_slice_with_name(slice.id, 'Submit*ToPresentationCompositorFrame') AS is_presented,
   extract_arg(arg_set_id, 'event_latency.event_type') AS event_type,
   slice.track_id,
   extract_arg(arg_set_id, 'event_latency.vsync_interval_ms') AS vsync_interval_ms,

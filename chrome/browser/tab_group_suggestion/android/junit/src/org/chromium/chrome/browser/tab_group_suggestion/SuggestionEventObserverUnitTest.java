@@ -24,15 +24,15 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -87,21 +87,8 @@ public class SuggestionEventObserverUnitTest {
     public void setup() {
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
-        ObservableSupplier<Tab> currentTabSupplier =
-                new ObservableSupplier<>() {
-                    @Override
-                    public @Nullable Tab addObserver(Callback<Tab> obs, int behavior) {
-                        return null;
-                    }
-
-                    @Override
-                    public void removeObserver(Callback<Tab> obs) {}
-
-                    @Override
-                    public Tab get() {
-                        return mTab;
-                    }
-                };
+        SettableNullableObservableSupplier<Tab> currentTabSupplier =
+                ObservableSuppliers.createNullable(mTab);
         doReturn(currentTabSupplier).when(mTabModel).getCurrentTabSupplier();
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
         when(mTab.getId()).thenReturn(TAB_ID);
@@ -183,7 +170,10 @@ public class SuggestionEventObserverUnitTest {
 
     @Test
     public void testSelectFirstTab() {
-        ObservableSupplierImpl<Tab> currentTabSupplier = new ObservableSupplierImpl<>();
+        Mockito.clearInvocations(mGroupSuggestionsService);
+
+        SettableNullableObservableSupplier<Tab> currentTabSupplier =
+                ObservableSuppliers.createNullable();
         currentTabSupplier.set(mTab);
         doReturn(currentTabSupplier).when(mTabModel).getCurrentTabSupplier();
 

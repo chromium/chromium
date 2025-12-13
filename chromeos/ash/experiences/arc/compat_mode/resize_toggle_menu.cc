@@ -4,6 +4,9 @@
 
 #include "chromeos/ash/experiences/arc/compat_mode/resize_toggle_menu.h"
 
+#include <memory>
+#include <utility>
+
 #include "ash/public/cpp/arc_compat_mode_util.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
@@ -12,7 +15,7 @@
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/experiences/arc/compat_mode/overlay_dialog.h"
@@ -29,18 +32,22 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
 
@@ -50,38 +57,30 @@ namespace {
 
 constexpr int kButtonRadius = 12;
 constexpr int kBorderThicknessDp = 1;
+constexpr int kBubbleCornerRadius = 12;
 
 }  // namespace
 
-class RoundedCornerBubbleDialogDelegateView
-    : public views::BubbleDialogDelegateView {
-  METADATA_HEADER(RoundedCornerBubbleDialogDelegateView,
-                  views::BubbleDialogDelegateView)
-
+class ResizeToggleMenuBubbleDialogDelegate
+    : public views::BubbleDialogDelegate {
  public:
-  explicit RoundedCornerBubbleDialogDelegateView(int corner_radius)
-      : corner_radius_(corner_radius) {}
-
-  // views::View:
-  void AddedToWidget() override {
-    auto* const frame = GetBubbleFrameView();
-    if (frame) {
-      frame->SetRoundedCorners(gfx::RoundedCornersF(corner_radius_));
-    }
+  ResizeToggleMenuBubbleDialogDelegate(aura::Window* parent,
+                                       const gfx::Rect& anchor_rect)
+      : views::BubbleDialogDelegate(nullptr, views::BubbleBorder::Arrow::NONE) {
+    set_layer_type(ui::LAYER_NOT_DRAWN);
+    set_corner_radius(kBubbleCornerRadius);
+    SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+    set_parent_window(parent);
+    set_title_margins(gfx::Insets());
+    set_margins(gfx::Insets());
+    SetAnchorRect(anchor_rect);
+    SetTitle(l10n_util::GetStringUTF16(
+        IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TITLE));
+    SetShowTitle(false);
+    SetAccessibleWindowRole(ax::mojom::Role::kMenu);
   }
-
-  base::WeakPtr<RoundedCornerBubbleDialogDelegateView> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  const int corner_radius_;
-  base::WeakPtrFactory<RoundedCornerBubbleDialogDelegateView> weak_factory_{
-      this};
 };
-
-BEGIN_METADATA(RoundedCornerBubbleDialogDelegateView)
-END_METADATA
 
 ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
                                                  const gfx::VectorIcon& icon,
@@ -192,11 +191,14 @@ ResizeToggleMenu::ResizeToggleMenu(
 
   window_observation_.Observe(window);
 
+  bubble_delegate_ = MakeBubbleDelegate(
+      widget_, GetAnchorRect(),
+      base::BindRepeating(&ResizeToggleMenu::ApplyResizeCompatMode,
+                          base::Unretained(this)));
   bubble_widget_ =
-      views::BubbleDialogDelegateView::CreateBubble(MakeBubbleDelegateView(
-          widget_, GetAnchorRect(),
-          base::BindRepeating(&ResizeToggleMenu::ApplyResizeCompatMode,
-                              base::Unretained(this))));
+      base::WrapUnique<views::Widget>(views::BubbleDialogDelegate::CreateBubble(
+          bubble_delegate_.get(),
+          views::Widget::InitParams::CLIENT_OWNS_WIDGET));
   widget_observations_.AddObservation(widget_.get());
   widget_observations_.AddObservation(bubble_widget_.get());
   OverlayDialog::Show(widget_->GetNativeWindow(),
@@ -211,14 +213,13 @@ ResizeToggleMenu::~ResizeToggleMenu() {
 }
 
 void ResizeToggleMenu::OnWidgetClosing(views::Widget* widget) {
-  if (widget == bubble_widget_ && on_bubble_widget_closing_callback_) {
+  if (widget == bubble_widget_.get() && on_bubble_widget_closing_callback_) {
     std::move(on_bubble_widget_closing_callback_).Run();
   }
 
   OverlayDialog::CloseIfAny(widget_->GetNativeWindow());
   widget_observations_.RemoveAllObservations();
   widget_ = nullptr;
-  bubble_widget_ = nullptr;
 }
 
 void ResizeToggleMenu::OnWidgetBoundsChanged(views::Widget* widget,
@@ -265,75 +266,50 @@ gfx::Rect ResizeToggleMenu::GetAnchorRect() const {
                    client_view_rect.width(), 0);
 }
 
-std::unique_ptr<views::BubbleDialogDelegateView>
-ResizeToggleMenu::MakeBubbleDelegateView(
+std::unique_ptr<views::BubbleDialogDelegate>
+ResizeToggleMenu::MakeBubbleDelegate(
     views::Widget* parent,
     gfx::Rect anchor_rect,
     base::RepeatingCallback<void(ash::ResizeCompatMode)> command_handler) {
-  const int kCornerRadius = 12;
+  auto bubble_delegate = std::make_unique<ResizeToggleMenuBubbleDialogDelegate>(
+      parent->GetNativeView(), GetAnchorRect());
 
-  auto delegate_view =
-      std::make_unique<RoundedCornerBubbleDialogDelegateView>(kCornerRadius);
-  bubble_view_ = delegate_view->GetWeakPtr();
+  auto* contents_view =
+      bubble_delegate->SetContentsView(std::make_unique<views::View>());
+  contents_view->SetUseDefaultFillLayout(true);
 
-  // Setup delegate.
-  delegate_view->SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
-  delegate_view->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  delegate_view->set_parent_window(parent->GetNativeView());
-  delegate_view->set_title_margins(gfx::Insets());
-  delegate_view->set_margins(gfx::Insets());
-  delegate_view->SetAnchorRect(anchor_rect);
-  delegate_view->SetTitle(
-      l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TITLE));
-  delegate_view->SetShowTitle(false);
-  delegate_view->SetAccessibleWindowRole(ax::mojom::Role::kMenu);
-  // Clear root view's background color. We use the color in
-  // `background_view`.
-  delegate_view->SetBackgroundColor(SK_ColorTRANSPARENT);
+  contents_view->SetBorder(std::make_unique<views::HighlightBorder>(
+      kBubbleCornerRadius,
+      views::HighlightBorder::Type::kHighlightBorderNoShadow));
 
-  // Setup view.
-  delegate_view->SetUseDefaultFillLayout(true);
+  contents_view->SetPaintToLayer();
+  ui::Layer* contents_layer = contents_view->layer();
+  contents_layer->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kBubbleCornerRadius));
+  contents_layer->SetIsFastRoundedCorner(true);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    contents_layer->SetBackgroundBlur(ash::ColorProvider::kBackgroundBlurSigma);
+    contents_layer->SetBackdropFilterQuality(
+        ash::ColorProvider::kBackgroundBlurQuality);
+    contents_layer->SetFillsBoundsOpaquely(false);
+  }
 
-  delegate_view->SetBorder(std::make_unique<views::HighlightBorder>(
-      kCornerRadius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
-
-  // Add empty view for background blur.
   const ui::ColorId background_color_id =
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  views::View* background_view = nullptr;
-  delegate_view->AddChildView(
-      views::Builder<views::View>()
-          .CopyAddressTo(&background_view)
-          .SetUseDefaultFillLayout(true)
-          .SetBackground(views::CreateRoundedRectBackground(background_color_id,
-                                                            kCornerRadius))
-          .Build());
-
-  background_view->SetPaintToLayer();
-  if (chromeos::features::IsSystemBlurEnabled()) {
-    background_view->layer()->SetBackgroundBlur(
-        ash::ColorProvider::kBackgroundBlurSigma);
-    background_view->layer()->SetBackdropFilterQuality(
-        ash::ColorProvider::kBackgroundBlurQuality);
-    background_view->layer()->SetFillsBoundsOpaquely(false);
-  }
-  background_view->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(kCornerRadius));
-
-  auto* const container_view =
-      delegate_view->AddChildView(std::make_unique<views::View>());
+  contents_view->SetBackground(
+      views::CreateSolidBackground(background_color_id));
 
   auto* const provider = views::LayoutProvider::Get();
-  container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+  contents_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(16),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
-  const auto add_menu_button = [&container_view, &command_handler](
+  const auto add_menu_button = [&contents_view, &command_handler](
                                    ash::ResizeCompatMode command_id,
                                    const gfx::VectorIcon& icon, int string_id) {
-    return container_view->AddChildView(std::make_unique<MenuButtonView>(
+    return contents_view->AddChildView(std::make_unique<MenuButtonView>(
         base::BindRepeating(command_handler, command_id), icon, string_id));
   };
   phone_button_ =
@@ -347,17 +323,7 @@ ResizeToggleMenu::MakeBubbleDelegateView(
       IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);
 
   UpdateSelectedButton();
-
-  // We need to ensure that the layer is non-opaque for popup animation.
-  delegate_view->SetPaintToLayer();
-  delegate_view->layer()->SetFillsBoundsOpaquely(false);
-
-  // Note this view needs to be set to paint to layer so other view won't
-  // paint over it.
-  container_view->SetPaintToLayer();
-  container_view->layer()->SetFillsBoundsOpaquely(false);
-
-  return delegate_view;
+  return bubble_delegate;
 }
 
 void ResizeToggleMenu::UpdateSelectedButton() {
@@ -394,7 +360,7 @@ void ResizeToggleMenu::ApplyResizeCompatMode(ash::ResizeCompatMode mode) {
 }
 
 bool ResizeToggleMenu::IsBubbleShown() const {
-  return bubble_view_ && bubble_view_->GetWidget();
+  return bubble_delegate_ && bubble_delegate_->GetWidget();
 }
 
 void ResizeToggleMenu::CloseBubble() {

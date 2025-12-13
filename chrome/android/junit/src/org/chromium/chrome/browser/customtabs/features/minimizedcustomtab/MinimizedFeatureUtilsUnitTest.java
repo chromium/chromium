@@ -28,8 +28,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,24 +35,11 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils.MinimizedFeatureAvailability;
-import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtilsUnitTest.ShadowSysUtils;
 
 /** Unit tests for {@link MinimizedFeatureUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowSysUtils.class})
+@Config(manifest = Config.NONE)
 public class MinimizedFeatureUtilsUnitTest {
-    @Implements(SysUtils.class)
-    static class ShadowSysUtils {
-        public static boolean sIsLowEndDevice;
-
-        @Implementation
-        public static boolean isLowEndDevice() {
-            return sIsLowEndDevice;
-        }
-    }
-
     private static final String NAME = "Chrome";
     private static final int UID = 101;
     private static final String HISTOGRAM = "CustomTabs.MinimizedFeatureAvailability";
@@ -71,7 +56,7 @@ public class MinimizedFeatureUtilsUnitTest {
 
     @Before
     public void setUp() {
-        ShadowSysUtils.sIsLowEndDevice = false;
+        SysUtils.setIsLowEndDeviceForTesting(false);
         mApplicationInfo.uid = UID;
         when(mContext.getApplicationInfo()).thenReturn(mApplicationInfo);
         when(mContext.getPackageName()).thenReturn(NAME);
@@ -86,7 +71,7 @@ public class MinimizedFeatureUtilsUnitTest {
 
     @After
     public void tearDown() {
-        ShadowSysUtils.sIsLowEndDevice = false;
+        SysUtils.setIsLowEndDeviceForTesting(false);
     }
 
     @Test
@@ -100,7 +85,7 @@ public class MinimizedFeatureUtilsUnitTest {
 
     @Test
     public void testLowEndDevice() {
-        ShadowSysUtils.sIsLowEndDevice = true;
+        SysUtils.setIsLowEndDeviceForTesting(true);
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_LOW_END_DEVICE)) {

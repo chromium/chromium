@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/atomic_sequence_num.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -16,7 +17,6 @@
 #include "media/base/key_systems.h"
 #include "media/base/renderer.h"
 #include "media/base/video_codecs.h"
-#include "media/learning/mojo/mojo_learning_task_controller_service.h"
 #include "media/mojo/services/video_decode_stats_recorder.h"
 #include "media/mojo/services/watch_time_recorder.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -34,9 +34,20 @@
 
 namespace media {
 
+namespace {
+
+// A count of all MediaPlayers created in the current process. Used to generate
+// unique IDs for the purpose of tracking UKMs.
+static base::AtomicSequenceNumber g_next_player_id;
+
+}  // namespace
+
+MediaPlayerUkmId GetNextMediaPlayerUkmId() {
+  return MediaPlayerUkmId(g_next_player_id.GetNext());
+}
+
 constexpr char kInvalidInitialize[] = "Initialize() was not called correctly.";
 
-static uint64_t g_player_id = 0;
 
 MediaMetricsProvider::PipelineInfo::PipelineInfo(bool is_incognito)
     : is_incognito(is_incognito) {}
@@ -47,17 +58,13 @@ MediaMetricsProvider::MediaMetricsProvider(
     BrowsingMode is_incognito,
     FrameStatus is_top_frame,
     ukm::SourceId source_id,
-    learning::FeatureValue origin,
     VideoDecodePerfHistory::SaveCallback save_cb,
-    GetLearningSessionCallback learning_session_cb,
     IsShuttingDownCallback is_shutting_down_cb,
     PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb)
-    : player_id_(g_player_id++),
+    : player_id_(GetNextMediaPlayerUkmId()),
       is_top_frame_(is_top_frame == FrameStatus::kTopFrame),
       source_id_(source_id),
-      origin_(origin),
       save_cb_(std::move(save_cb)),
-      learning_session_cb_(std::move(learning_session_cb)),
       is_shutting_down_cb_(std::move(is_shutting_down_cb)),
       auto_pip_reason_cb_(std::move(auto_pip_reason_cb)),
       uma_info_(is_incognito == BrowsingMode::kIncognito) {}
@@ -78,7 +85,7 @@ MediaMetricsProvider::~MediaMetricsProvider() {
     return;
 
   ukm::builders::Media_WebMediaPlayerState builder(source_id_);
-  builder.SetPlayerID(player_id_);
+  builder.SetPlayerID(player_id_.value());
   builder.SetIsTopFrame(is_top_frame_);
   builder.SetIsEME(uma_info_.is_eme);
   builder.SetIsMSE(media_info_->is_mse);
@@ -202,17 +209,14 @@ void MediaMetricsProvider::Create(
     BrowsingMode is_incognito,
     FrameStatus is_top_frame,
     ukm::SourceId source_id,
-    learning::FeatureValue origin,
     VideoDecodePerfHistory::SaveCallback save_cb,
-    GetLearningSessionCallback learning_session_cb,
     IsShuttingDownCallback is_shutting_down_cb,
     PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb,
     mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MediaMetricsProvider>(
-          is_incognito, is_top_frame, source_id, origin, std::move(save_cb),
-          std::move(learning_session_cb), std::move(is_shutting_down_cb),
-          std::move(auto_pip_reason_cb)),
+          is_incognito, is_top_frame, source_id, std::move(save_cb),
+          std::move(is_shutting_down_cb), std::move(auto_pip_reason_cb)),
       std::move(receiver));
 }
 
@@ -372,7 +376,7 @@ void MediaMetricsProvider::AcquireVideoDecodeStatsRecorder(
   }
 
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<VideoDecodeStatsRecorder>(save_cb_, source_id_, origin_,
+      std::make_unique<VideoDecodeStatsRecorder>(save_cb_, source_id_,
                                                  is_top_frame_, player_id_),
       std::move(receiver));
 }
@@ -383,29 +387,6 @@ void MediaMetricsProvider::AcquirePlaybackEventsRecorder(
     (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID))
   PlaybackEventsRecorder::Create(std::move(receiver));
 #endif
-}
-
-void MediaMetricsProvider::AcquireLearningTaskController(
-    const std::string& taskName,
-    mojo::PendingReceiver<learning::mojom::LearningTaskController> receiver) {
-  learning::LearningSession* session = learning_session_cb_.Run();
-  if (!session) {
-    DVLOG(3) << __func__ << " Ignoring request, unable to get LearningSession.";
-    return;
-  }
-
-  auto controller = session->GetController(taskName);
-
-  if (!controller) {
-    DVLOG(3) << __func__ << " Ignoring request, no controller found for task: '"
-             << taskName << "'.";
-    return;
-  }
-
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<learning::MojoLearningTaskControllerService>(
-          controller->GetLearningTask(), source_id_, std::move(controller)),
-      std::move(receiver));
 }
 
 bool MediaMetricsProvider::IsInitialized() const {

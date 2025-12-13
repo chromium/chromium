@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -16,17 +16,17 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class CurrentTabObserver {
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private final TabObserver mTabObserver;
     private final Callback<@Nullable Tab> mTabSupplierCallback;
     private CallbackController mCallbackController;
     private @Nullable Tab mTab;
 
     /**
-     * @see #CurrentTabObserver(ObservableSupplier, TabObserver, Callback)
+     * @see #CurrentTabObserver(NullableObservableSupplier, TabObserver, Callback)
      */
     public CurrentTabObserver(
-            ObservableSupplier<@Nullable Tab> tabSupplier, TabObserver tabObserver) {
+            NullableObservableSupplier<Tab> tabSupplier, TabObserver tabObserver) {
         this(tabSupplier, tabObserver, null);
     }
 
@@ -38,21 +38,21 @@ public class CurrentTabObserver {
      * @param swapCallback Callback to invoke when the current tab is swapped.
      */
     public CurrentTabObserver(
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             TabObserver tabObserver,
             @Nullable Callback<@Nullable Tab> swapCallback) {
         mTabSupplier = tabSupplier;
         mTabObserver = tabObserver;
         mCallbackController = new CallbackController();
-        mTabSupplierCallback =
-                mCallbackController.makeCancelable(
-                        (tab) -> {
-                            if (mTab == tab) return;
-                            if (mTab != null) mTab.removeObserver(mTabObserver);
-                            mTab = tab;
-                            if (mTab != null) mTab.addObserver(mTabObserver);
-                            if (swapCallback != null) swapCallback.onResult(tab);
-                        });
+        Callback<@Nullable Tab> supplierCallback =
+                tab -> {
+                    if (mTab == tab) return;
+                    if (mTab != null) mTab.removeObserver(mTabObserver);
+                    mTab = tab;
+                    if (mTab != null) mTab.addObserver(mTabObserver);
+                    if (swapCallback != null) swapCallback.onResult(tab);
+                };
+        mTabSupplierCallback = mCallbackController.makeCancelable(supplierCallback);
         mTabSupplier.addObserver(mTabSupplierCallback);
     }
 

@@ -19,7 +19,7 @@ class ThumbnailMediaParser;
 // safely destroyed while a request is being processed.
 class ThumbnailGenerator {
  public:
-  explicit ThumbnailGenerator(const base::android::JavaParamRef<jobject>& jobj);
+  explicit ThumbnailGenerator(const base::android::JavaRef<jobject>& jobj);
 
   // Destroys the ThumbnailGenerator.  Any currently running ImageRequest will
   // delete itself when it has completed.
@@ -32,13 +32,12 @@ class ThumbnailGenerator {
   // located at |file_path| with a max size of |icon_size| in each dimension.
   // Invokes the Java #onthumbnailRetrieved(String, int, Bitmap, boolean) method
   // when finished.
-  void RetrieveThumbnail(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jcontent_id,
-      const base::android::JavaParamRef<jstring>& jfile_path,
-      const base::android::JavaParamRef<jstring>& jmime_type,
-      jint icon_size,
-      const base::android::JavaParamRef<jobject>& callback);
+  void RetrieveThumbnail(JNIEnv* env,
+                         const base::android::JavaRef<jstring>& jcontent_id,
+                         const base::android::JavaRef<jstring>& jfile_path,
+                         const base::android::JavaRef<jstring>& jmime_type,
+                         jint icon_size,
+                         const base::android::JavaRef<jobject>& callback);
 
  private:
   ~ThumbnailGenerator();

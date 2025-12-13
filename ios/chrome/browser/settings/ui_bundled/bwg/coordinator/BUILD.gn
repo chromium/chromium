@@ -8,6 +8,7 @@ source_set("coordinator") {
   deps = [
     ":protocols",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/settings/ui_bundled/bwg/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -16,6 +17,9 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//url",
   ]
 }

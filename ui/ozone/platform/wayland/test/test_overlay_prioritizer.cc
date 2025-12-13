@@ -6,6 +6,8 @@
 
 #include <overlay-prioritizer-server-protocol.h>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritized_surface.h"
@@ -27,12 +29,14 @@ void GetOverlayPrioritizedSurface(struct wl_client* client,
         "overlay_prioritizer exists");
     return;
   }
-
   wl_resource* prioritized_surface_resource = CreateResourceWithImpl<
       ::testing::NiceMock<TestOverlayPrioritizedSurface>>(
       client, &overlay_prioritized_surface_interface,
       wl_resource_get_version(resource), &kTestOverlayPrioritizedSurfaceImpl,
-      id, surface);
+      id,
+      base::BindOnce(&MockSurface::set_overlay_prioritized_surface,
+                     mock_surface->GetWeakPtr(), nullptr),
+      surface);
   DCHECK(prioritized_surface_resource);
   mock_surface->set_overlay_prioritized_surface(
       GetUserDataAs<TestOverlayPrioritizedSurface>(

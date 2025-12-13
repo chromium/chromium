@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -32,11 +33,12 @@
 namespace autofill {
 namespace {
 
+using base::test::EqualsProto;
 using testing::_;
 using testing::ElementsAre;
+using testing::ExplainMatchResult;
 using testing::Return;
 using testing::UnorderedElementsAre;
-using testing::ExplainMatchResult;
 
 constexpr char kGUID1[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kGUID2[] = "00000000-0000-0000-0000-000000000002";
@@ -332,6 +334,16 @@ TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_IgnoresLocalProfiles) {
        TestProfile(kGUID1, AutofillProfile::RecordType::kLocalOrSyncable)});
 }
 
+// Tests that AccountNameEmail profiles are not synced.
+TEST_F(ContactInfoSyncBridgeTest,
+       AutofillProfileChange_IgnoresAccountNameEmailProfiles) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  bridge().AutofillProfileChanged(
+      {AutofillProfileChange::ADD, kGUID1,
+       TestProfile(kGUID1, AutofillProfile::RecordType::kAccountNameEmail)});
+}
+
 // Tests that new local profiles are pushed to Sync.
 TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Add) {
   ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
@@ -452,11 +464,9 @@ TEST_F(ContactInfoSyncBridgeTest,
   contact_info_specifics->mutable_address_city()->set_value("City");
   contact_info_specifics->mutable_address_country()->set_value("Country");
 
-  EXPECT_EQ(bridge()
-                .TrimAllSupportedFieldsFromRemoteSpecifics(
-                    specifics_with_known_and_unknown_fields)
-                .SerializeAsString(),
-            specifics_with_only_unknown_fields.SerializePartialAsString());
+  EXPECT_THAT(bridge().TrimAllSupportedFieldsFromRemoteSpecifics(
+                  specifics_with_known_and_unknown_fields),
+              EqualsProto(specifics_with_only_unknown_fields));
 }
 
 // Tests that any `AutofillProfileChanged()` events are queued until sync is

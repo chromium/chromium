@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -108,17 +109,21 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void HidePopup() override {}
 
+  void SuppressAutomaticRefills(const FillId& fill_id) override {}
+
+  void RequestRefill(const FillId& fill_id) override {}
+
   void FocusOnNonFormField() override {}
 
   void FocusOnFormField(const FormData& form,
                         FieldRendererId field_id) override {}
 
-  void DidFillAutofillFormData(const FormData& form,
-                               base::TimeTicks timestamp) override {}
+  void DidAutofillForm(const FormData& form) override {}
 
   void DidEndTextFieldEditing() override {}
 
-  void SelectFieldOptionsDidChange(const autofill::FormData& form) override {}
+  void SelectFieldOptionsDidChange(const autofill::FormData& form,
+                                   FieldRendererId field_id) override {}
 
   // Records the form data received via FormSubmitted() call.
   std::unique_ptr<FormData> form_submitted_;
@@ -270,9 +275,10 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
     // user selection; simulates the menu actually popping up.
     SimulateElementClick(fname_element);
 
-    autofill_agent_->ApplyFieldsAction(mojom::FormActionType::kFill,
-                                       mojom::ActionPersistence::kFill,
-                                       GetFieldsForFilling({form_data}));
+    autofill_agent_->ApplyFieldsAction(
+        mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
+        GetFieldsForFilling({form_data}), FillId::Create(),
+        /*supports_refill=*/false);
   }
 
   // This triggers a layout update to apply JS changes like display = 'none'.
@@ -285,7 +291,7 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
     return focus_test_utils_->GetFocusLog(GetMainFrame()->GetDocument());
   }
 
-  test::AutofillUnitTestEnvironment autofill_test_environment_;
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   FakeContentAutofillDriver fake_driver_;
   std::unique_ptr<test::FocusTestUtils> focus_test_utils_;
 };
@@ -513,10 +519,8 @@ class FormAutocompleteSubmissionTest : public FormAutocompleteTest,
                                        public testing::WithParamInterface<int> {
  public:
   FormAutocompleteSubmissionTest() {
-    EXPECT_LE(GetParam(), 5);
+    EXPECT_LE(GetParam(), 3);
     std::vector<base::test::FeatureRef> features = {
-        features::kAutofillUseSubmittedFormInHtmlSubmission,
-        features::kAutofillPreferSavedFormAsSubmittedForm,
         features::kAutofillFixFormTracking,
         features::kAutofillReplaceCachedWebElementsByRendererIds,
         features::kAutofillReplaceFormElementObserver};
@@ -534,7 +538,7 @@ class FormAutocompleteSubmissionTest : public FormAutocompleteTest,
 
 INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
                          FormAutocompleteSubmissionTest,
-                         ::testing::Values(0, 1, 2, 3, 4, 5));
+                         ::testing::Values(0, 1, 2, 3));
 
 // Tests that submitting a form generates FormSubmitted message with the form
 // fields.

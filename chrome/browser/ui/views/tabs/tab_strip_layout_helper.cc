@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "tab_container_controller.h"
 #include "ui/gfx/range/range.h"
@@ -251,7 +252,7 @@ TabStripLayoutHelper::CalculateIdealBounds(std::optional<int> available_width) {
           : std::nullopt;
   const std::optional<int> active_split_tab_slot_index =
       active_tab_slot_index.has_value()
-          ? GetAdjacentSplitTab(active_tab_model_index.value())
+          ? GetAdjacentSplitTab(active_tab_slot_index.value())
           : std::nullopt;
   const int pinned_tab_count = GetPinnedTabCount();
   const std::optional<int> last_pinned_tab_slot_index =
@@ -401,24 +402,34 @@ int TabStripLayoutHelper::GetSlotIndexForGroupHeader(
 }
 
 std::optional<int> TabStripLayoutHelper::GetAdjacentSplitTab(
-    int tab_index) const {
+    int slot_index) const {
   const std::optional<split_tabs::SplitTabId> split_id =
-      slots_[tab_index].view->split();
+      slots_[slot_index].view->split();
   if (!split_id.has_value()) {
     return std::nullopt;
-  } else if (tab_index > 0 && slots_[tab_index - 1].view->split() == split_id) {
-    return tab_index - 1;
-  } else if (tab_index < static_cast<int>(slots_.size()) - 1 &&
-             slots_[tab_index + 1].view->split() == split_id) {
-    return tab_index + 1;
+  } else if (slot_index > 0 &&
+             slots_[slot_index - 1].view->split() == split_id) {
+    return slot_index - 1;
+  } else if (slot_index < static_cast<int>(slots_.size()) - 1 &&
+             slots_[slot_index + 1].view->split() == split_id) {
+    return slot_index + 1;
   }
   return std::nullopt;
 }
 
 bool TabStripLayoutHelper::SlotIsCollapsedTab(int i) const {
-  // The slot can only be collapsed if it is a tab and in a collapsed group.
-  // If the slot is indeed a tab and in a group, check the collapsed state of
-  // the group to determine if it is collapsed.
+  const std::optional<tab_groups::TabGroupId> focused_group =
+      controller_->GetFocusedGroup();
+
+  // If a group is focused, all other tabs and group headers should be
+  // collapsed.
+  if (focused_group.has_value()) {
+    const std::optional<tab_groups::TabGroupId> id = slots_[i].view->group();
+    return !id.has_value() || id.value() != focused_group.value();
+  }
+
+  // Otherwise, a tab is only collapsed if it is in an explicitly collapsed
+  // group.
   const std::optional<tab_groups::TabGroupId> id = slots_[i].view->group();
   return slots_[i].type == TabSlotView::ViewType::kTab && id.has_value() &&
          controller_->IsGroupCollapsed(id.value());

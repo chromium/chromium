@@ -12,9 +12,12 @@
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/managed_toolbar_pin_mode.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/url_pattern_set.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -225,6 +228,8 @@ bool IndividualSettings::Parse(const base::Value::Dict& dict,
   if (GetString(dict, schema_constants::kToolbarPin, &toolbar_pin_str)) {
     if (toolbar_pin_str == schema_constants::kDefaultUnpinned) {
       toolbar_pin = ManagedToolbarPinMode::kDefaultUnpinned;
+    } else if (toolbar_pin_str == schema_constants::kDefaultPinned) {
+      toolbar_pin = ManagedToolbarPinMode::kDefaultPinned;
     } else if (toolbar_pin_str == schema_constants::kForcePinned) {
       toolbar_pin = ManagedToolbarPinMode::kForcePinned;
     } else {
@@ -250,6 +255,7 @@ void IndividualSettings::Reset() {
   policy_blocked_hosts.ClearPatterns();
   policy_allowed_hosts.ClearPatterns();
   blocked_install_message.clear();
+  toolbar_pin = ManagedToolbarPinMode::kDefaultUnpinned;
 }
 
 GlobalSettings::GlobalSettings() = default;

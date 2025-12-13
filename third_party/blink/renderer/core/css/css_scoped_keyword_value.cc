@@ -9,7 +9,7 @@
 
 namespace blink::cssvalue {
 
-WTF::String CSSScopedKeywordValue::CustomCSSText() const {
+String CSSScopedKeywordValue::CustomCSSText() const {
   return GetCSSValueNameAs<AtomicString>(value_id_);
 }
 

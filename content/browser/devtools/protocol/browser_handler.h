@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
+#include "base/types/optional_ref.h"
 #include "components/download/public/common/download_item.h"
 #include "content/browser/devtools/protocol/browser.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
@@ -63,20 +64,27 @@ class BrowserHandler : public DevToolsDomainHandler,
   Response GetBrowserCommandLine(
       std::unique_ptr<protocol::Array<std::string>>* arguments) override;
 
-  Response SetPermission(
+  void SetPermission(
       std::unique_ptr<protocol::Browser::PermissionDescriptor> permission,
       const protocol::Browser::PermissionSetting& setting,
       std::optional<std::string> origin,
-      std::optional<std::string> browser_context_id) override;
+      std::optional<std::string> embedded_origin,
+      std::optional<std::string> browser_context_id,
+      std::unique_ptr<protocol::Browser::Backend::SetPermissionCallback>
+          callback) override;
 
-  Response GrantPermissions(
+  void GrantPermissions(
       std::unique_ptr<protocol::Array<protocol::Browser::PermissionType>>
           permissions,
       std::optional<std::string> origin,
-      std::optional<std::string> browser_context_id) override;
+      std::optional<std::string> browser_context_id,
+      std::unique_ptr<protocol::Browser::Backend::GrantPermissionsCallback>
+          callback) override;
 
-  Response ResetPermissions(
-      std::optional<std::string> browser_context_id) override;
+  void ResetPermissions(
+      std::optional<std::string> browser_context_id,
+      std::unique_ptr<protocol::Browser::Backend::ResetPermissionsCallback>
+          callback) override;
 
   Response SetDownloadBehavior(const std::string& behavior,
                                std::optional<std::string> browser_context_id,
@@ -108,6 +116,10 @@ class BrowserHandler : public DevToolsDomainHandler,
   void DownloadWillBegin(FrameTreeNode* ftn, download::DownloadItem* item);
 
  private:
+  // Adds the `browser_context_id` to contexts_with_overridden_permissions_.
+  void UpdateContextsWithOverriddenPermissions(
+      base::optional_ref<const std::string> browser_context_id);
+
   void SetDownloadEventsEnabled(bool enabled);
 
   // Retrieves the data for the given histogram, returning it in the converted
@@ -128,6 +140,8 @@ class BrowserHandler : public DevToolsDomainHandler,
   // Stores past histogram snapshots for producing histogram deltas.
   std::map<std::string, std::unique_ptr<base::HistogramSamples>, std::less<>>
       histograms_snapshots_;
+
+  base::WeakPtrFactory<BrowserHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace protocol

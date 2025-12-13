@@ -1,0 +1,122 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(!is_android)
+
+source_set("ui") {
+  sources = [
+    "actor_task_list_bubble.cc",
+    "actor_task_list_bubble.h",
+    "actor_task_list_bubble_row_button.cc",
+    "actor_task_list_bubble_row_button.h",
+  ]
+  deps = [
+    ":controller",
+    "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/actor/resources:grit_grit",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//content/public/browser",
+    "//ui/views",
+  ]
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
+}
+
+source_set("controller") {
+  sources = [ "actor_task_list_bubble_controller.h" ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//components/tabs:public",
+    "//ui/base/unowned_user_data",
+    "//ui/views",
+  ]
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:mojo_bindings",
+      "//chrome/browser/ui/tabs:glic",
+    ]
+  }
+}
+
+source_set("controller_impl") {
+  sources = [ "actor_task_list_bubble_controller.cc" ]
+  deps = [
+    ":controller",
+    ":ui",
+    "//base",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor/resources:grit",
+    "//chrome/browser/actor/ui",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/interaction",
+    "//ui/base",
+    "//ui/views",
+  ]
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:mojo_bindings",
+      "//chrome/browser/ui/tabs:glic",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "actor_task_list_bubble_controller_unittest.cc",
+    "actor_task_list_bubble_unittest.cc",
+  ]
+  deps = [
+    ":controller",
+    ":ui",
+    "//base",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic/test_support",
+      "//chrome/browser/ui/tabs:glic",
+    ]
+  }
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "actor_task_list_bubble_interactive_uitest.cc" ]
+  deps = [
+    ":controller",
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor/ui",
+    "//chrome/browser/actor/ui:actor_ui_interactive_base",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+    "//ui/base/interaction:test_support",
+    "//ui/events:test_support",
+  ]
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic/test_support",
+      "//chrome/browser/ui/tabs:glic",
+    ]
+  }
+}

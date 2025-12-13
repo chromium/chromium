@@ -26,6 +26,11 @@ inline constexpr char kGlicLauncherHotkey[] = "glic.launcher_hotkey";
 // hotkey for toggling focus between Glic and the browser window.
 inline constexpr char kGlicFocusToggleHotkey[] = "glic.focus_toggle_hotkey";
 
+// String pref that keeps track of whether any loaded profile is, or has ever
+// been, of a subscription tier that should enable multi-instance.
+inline constexpr char kGlicMultiInstanceEnabledBySubscriptionTier[] =
+    "glic.multi_instance_enabled_by_tier";
+
 // ************* PROFILE PREFS ***************
 // Prefs below are tied to a user profile
 
@@ -64,6 +69,10 @@ inline constexpr char kGlicGeolocationEnabled[] = "glic.geolocation_enabled";
 inline constexpr char kGlicMicrophoneEnabled[] = "glic.microphone_enabled";
 // Boolean pref that enables or disables tab context for Glic.
 inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
+// Boolean pref that enables or disables tab context for Glic by default when a
+// new Glic session starts.
+inline constexpr char kGlicDefaultTabContextEnabled[] =
+    "glic.default_tab_context_enabled";
 
 // Boolean pref that determines the rollout eligibility for the user profile.
 inline constexpr char kGlicRolloutEligibility[] =
@@ -87,6 +96,28 @@ inline constexpr char kGlicPreviousPositionY[] = "glic.previous_bounds.y";
 // Bool pref for the closed captioning setting.
 inline constexpr char kGlicClosedCaptioningEnabled[] =
     "glic.closed_captioning_enabled";
+
+// Bool pref for the daisy chain new tabs setting.
+inline constexpr char kGlicKeepSidepanelOpenOnNewTabsEnabled[] =
+    "glic.keep_sidepanel_open_on_new_tabs_enabled";
+
+// Value enums for the "glic.actuation_on_web" pref. Integer pref that
+// determines if glic actuation is enabled. This is controlled from the
+// enterprise policy.
+enum class GlicActuationOnWebPolicyState {
+  kMinValue = 0,
+
+  kEnabled = kMinValue,
+  kDisabled = 1,
+
+  kMaxValue = kDisabled
+};
+// This perf is only applicable to enterprise accounts.
+inline constexpr char kGlicActuationOnWeb[] = "glic.actuation_on_web";
+
+// Boolean pref for the user enabled actuation on web setting.
+inline constexpr char kGlicUserEnabledActuationOnWeb[] =
+    "glic.user_enabled_actuation_on_web";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

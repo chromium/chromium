@@ -332,8 +332,8 @@ void PausableScriptExecutor::PostExecuteAndDestroySelf(
     ExecutionContext* context) {
   task_handle_ = PostCancellableTask(
       *context->GetTaskRunner(TaskType::kJavascriptTimerImmediate), FROM_HERE,
-      WTF::BindOnce(&PausableScriptExecutor::ExecuteAndDestroySelf,
-                    WrapPersistent(this)));
+      BindOnce(&PausableScriptExecutor::ExecuteAndDestroySelf,
+               WrapPersistent(this)));
 }
 
 void PausableScriptExecutor::ExecuteAndDestroySelf() {
@@ -370,8 +370,8 @@ void PausableScriptExecutor::ExecuteAndDestroySelf() {
       keep_alive_ = this;
       MakeGarbageCollected<PromiseAggregator>(
           script_state_, results,
-          WTF::BindOnce(&PausableScriptExecutor::HandleResults,
-                        WrapWeakPersistent(this)));
+          BindOnce(&PausableScriptExecutor::HandleResults,
+                   WrapWeakPersistent(this)));
       break;
 
     case mojom::blink::PromiseResultOption::kDoNotWait:
@@ -408,7 +408,7 @@ void PausableScriptExecutor::HandleResults(
           }
           if (std::unique_ptr<base::Value> new_value = converter->FromV8Value(
                   results.back(), script_state_->GetContext())) {
-            value = base::Value::FromUniquePtrValue(std::move(new_value));
+            value = std::move(*new_value);
           }
         }
         break;

@@ -20,9 +20,11 @@ source_set("new_tab_footer") {
     "//chrome/browser/ui/webui/top_chrome",
     "//components/policy/core/browser",
     "//components/prefs",
-    "//extensions/browser:browser",
-    "//ui/menus:menus",
+    "//components/user_education/webui",
+    "//extensions/browser",
+    "//ui/menus",
     "//ui/webui",
+    "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
   ]
 }
 
@@ -43,11 +45,11 @@ source_set("impl") {
     "//chrome/browser/resources/new_tab_shared:resources_grit",
     "//chrome/browser/search",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/views/side_panel:side_panel",
+    "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui:webui_util",
-    "//chrome/browser/ui/webui/customize_buttons:customize_buttons",
+    "//chrome/browser/ui/webui/customize_buttons",
     "//chrome/common",
-    "//components/search:search",
+    "//components/search",
     "//content/public/browser",
     "//ui/base",
   ]

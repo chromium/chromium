@@ -39,7 +39,7 @@
 
 namespace browser_ui {
 namespace {
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 class SSLClientCertPendingRequests;
@@ -319,8 +319,8 @@ void ClientCertRequest::OnCancel() {
 static void JNI_SSLClientCertificateRequest_OnSystemRequestCompletion(
     JNIEnv* env,
     jlong request_id,
-    const JavaParamRef<jobjectArray>& encoded_chain_ref,
-    const JavaParamRef<jobject>& private_key_ref) {
+    const JavaRef<jobjectArray>& encoded_chain_ref,
+    const JavaRef<jobject>& private_key_ref) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Take back ownership of the request object.
@@ -402,3 +402,5 @@ size_t GetCountOfSSLClientCertificateSelectorForTesting(  // IN-TEST
 }
 
 }  // namespace browser_ui
+
+DEFINE_JNI(SSLClientCertificateRequest)

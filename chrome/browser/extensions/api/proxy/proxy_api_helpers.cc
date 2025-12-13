@@ -27,11 +27,14 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/proxy/proxy_api_constants.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "net/base/data_url.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_config.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

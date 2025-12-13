@@ -8,7 +8,6 @@ import android.os.SystemClock;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -19,10 +18,9 @@ import java.lang.ref.WeakReference;
 
 /** Records metrics related to saving passwords in CCTs, such as whether a PendingIntent */
 @NullMarked
-public class CctPasswordSavingMetricsRecorderBridge
-        implements UnownedUserData, WindowAndroid.ActivityStateObserver {
+public class CctPasswordSavingMetricsRecorderBridge implements WindowAndroid.ActivityStateObserver {
     public static final UnownedUserDataKey<CctPasswordSavingMetricsRecorderBridge> KEY =
-            new UnownedUserDataKey<>(CctPasswordSavingMetricsRecorderBridge.class);
+            new UnownedUserDataKey<>();
 
     static final String SUBMISSION_TO_REDIRECT_TIME_HISTOGRAM =
             "PasswordManager.CctFormSubmissionToRedirectTime";

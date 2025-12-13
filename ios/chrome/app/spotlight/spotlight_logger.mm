@@ -12,7 +12,7 @@
 
 namespace {
 
-NSString* kSpotlightDebuggerErrorLogKey = @"SpotlightDebuggerErrorLogKey";
+NSString* const kSpotlightDebuggerErrorLogKey = @"SpotlightDebuggerErrorLogKey";
 
 }  // namespace
 

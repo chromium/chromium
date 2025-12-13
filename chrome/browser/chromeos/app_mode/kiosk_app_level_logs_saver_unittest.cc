@@ -25,16 +25,15 @@ namespace {
 constexpr size_t kMaxLogEntriesAllowed = 3000u;
 constexpr int kDefaultLineNumber = 100;
 
-const std::u16string kDefaultMessage =
-    u"This is a log from the extension console.";
-const std::u16string kDefaultSource =
+const auto* kDefaultMessage = u"This is a log from the extension console.";
+const auto* kDefaultSource =
     u"chrome-extension://efdahhfldoeikfglgolhibmdidbnpneo/background.js";
-const std::u16string kDefaultStackTrace = u"method1\nmethod2\nmethod3";
+const auto* kDefaultStackTrace = u"method1\nmethod2\nmethod3";
 
-const std::u16string kDefaultFormattedMessage =
+const auto* kDefaultFormattedMessage =
     u"chrome-extension://efdahhfldoeikfglgolhibmdidbnpneo/background.js:100 "
     u"\"This is a log from the extension console.\"";
-const std::u16string kDefaultFormattedMessageWithStackTrace =
+const auto* kDefaultFormattedMessageWithStackTrace =
     u"chrome-extension://efdahhfldoeikfglgolhibmdidbnpneo/background.js:100 "
     u"\"This is a log from the extension console.\"\nstack_trace: "
     u"method1\nmethod2\nmethod3";

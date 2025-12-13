@@ -336,12 +336,12 @@ TEST(BspTreeTest, Coplanar) {
 
   // Now check that all of the things above still work when the polygons
   // are facing backwards.
-  std::vector<gfx::Point3F> vertices_a_rev(vertices_a);
-  std::vector<gfx::Point3F> vertices_b_rev(vertices_b);
-  std::vector<gfx::Point3F> vertices_c_rev(vertices_c);
-  std::reverse(vertices_a_rev.begin(), vertices_a_rev.end());
-  std::reverse(vertices_b_rev.begin(), vertices_b_rev.end());
-  std::reverse(vertices_c_rev.begin(), vertices_c_rev.end());
+  std::vector<gfx::Point3F> vertices_a_rev(vertices_a.rbegin(),
+                                           vertices_a.rend());
+  std::vector<gfx::Point3F> vertices_b_rev(vertices_b.rbegin(),
+                                           vertices_b.rend());
+  std::vector<gfx::Point3F> vertices_c_rev(vertices_c.rbegin(),
+                                           vertices_c.rend());
 
   std::unique_ptr<DrawPolygon> polygon_a_rev(CREATE_DRAW_POLYGON(
       vertices_a_rev, gfx::Vector3dF(0.0f, 0.0f, -1.0f), 0));

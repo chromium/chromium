@@ -12,13 +12,13 @@ import android.view.ViewStructure;
 import android.view.autofill.AutofillValue;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
-import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
@@ -39,7 +39,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     private int mVisualViewportInsetBottomPx;
 
     /** The inset supplier the observer is currently attached to. */
-    private @Nullable ApplicationViewportInsetSupplier mCurrentInsetSupplier;
+    private @Nullable NonNullObservableSupplier<ViewportInsets> mCurrentInsetSupplier;
 
     private final Callback<ViewportInsets> mInsetObserver =
             (unused) -> updateVisualViewportBottomInset();
@@ -59,7 +59,8 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
             getDragAndDropDelegate().setDragAndDropBrowserDelegate(mDragAndDropBrowserDelegate);
         }
 
-        mCurrentInsetSupplier = tab.getWindowAndroidChecked().getApplicationBottomInsetSupplier();
+        mCurrentInsetSupplier =
+                tab.getWindowAndroidChecked().getApplicationBottomInsetTracker().getSupplier();
         mCurrentInsetSupplier.addObserver(mInsetObserver);
 
         mTab.addObserver(
@@ -74,7 +75,8 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
                         if (window != null) {
                             mCurrentInsetSupplier =
                                     tab.getWindowAndroidChecked()
-                                            .getApplicationBottomInsetSupplier();
+                                            .getApplicationBottomInsetTracker()
+                                            .getSupplier();
                             mCurrentInsetSupplier.addObserver(mInsetObserver);
                         }
                         updateVisualViewportBottomInset();

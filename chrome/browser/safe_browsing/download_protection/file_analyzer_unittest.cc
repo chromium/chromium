@@ -16,6 +16,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/mock_binary_feature_extractor.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
+#include "components/enterprise/obfuscation/core/utils.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -1091,6 +1093,55 @@ TEST_F(FileAnalyzerTest, ZeroLengthSevenZipEntriesSupported) {
   EXPECT_EQ(result_.archived_binaries[1].file_path(), "empty");
   EXPECT_EQ(result_.archived_binaries[1].length(), 0);
   EXPECT_EQ(result_.inspection_performed, DownloadFileType::SEVEN_ZIP);
+}
+
+TEST_F(FileAnalyzerTest, ObfuscatedZipAnalysis) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {enterprise_obfuscation::kEnterpriseFileObfuscation,
+       enterprise_obfuscation::kEnterpriseFileObfuscationArchiveAnalyzer},
+      {});
+
+  scoped_refptr<MockBinaryFeatureExtractor> extractor =
+      new testing::StrictMock<MockBinaryFeatureExtractor>();
+  FileAnalyzer analyzer(extractor, /*is_obfuscated=*/true);
+  base::RunLoop run_loop;
+
+  base::FilePath target_file_name(FILE_PATH_LITERAL("target.zip"));
+  base::FilePath tmp_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("tmp.crdownload"));
+
+  base::ScopedTempDir zip_source_dir;
+  ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
+  std::string file_contents = "dummy file";
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
+      file_contents));
+  base::FilePath zip_path = temp_dir_.GetPath().AppendASCII("original.zip");
+  ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), zip_path,
+                       /* include_hidden_files= */ false));
+
+  // Obfuscate
+  std::string original_zip_content;
+  ASSERT_TRUE(base::ReadFileToString(zip_path, &original_zip_content));
+  enterprise_obfuscation::DownloadObfuscator obfuscator;
+  auto obfuscation_result =
+      obfuscator.ObfuscateChunk(base::as_byte_span(original_zip_content), true);
+  ASSERT_TRUE(obfuscation_result.has_value());
+  ASSERT_TRUE(base::WriteFile(tmp_path, obfuscation_result.value()));
+
+  analyzer.Start(
+      target_file_name, tmp_path, /*password=*/std::nullopt,
+      base::BindOnce(&FileAnalyzerTest::DoneCallback, base::Unretained(this),
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_TRUE(has_result_);
+  // It should be successfully analyzed as a zip
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
+  EXPECT_TRUE(result_.archived_executable);
+  EXPECT_EQ(result_.archive_summary.parser_status(),
+            ClientDownloadRequest::ArchiveSummary::VALID);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

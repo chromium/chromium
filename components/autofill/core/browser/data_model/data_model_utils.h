@@ -124,48 +124,67 @@ inline constexpr size_t kMaxAffixLengthForFormatString = 8;
 // - u"-N" means the value is a suffix of length `N`;
 // - u"0" means the value is a full value;
 // where `3 <= N <= 8`.
-bool IsValidAffixFormat(std::u16string_view format);
+// Excludes the clause for u"0" if `exclude_full_value == true`.
+bool IsValidAffixFormat(std::u16string_view format,
+                        bool exclude_full_value = false);
 
-// Converts the integer |expiration_month| to std::u16string. Returns a value
+// Indicates whether `format` designates a sub-component of an IATA flight
+// number (e.g., "LH89"). That is, `format` must have one of the following
+// values:
+// - "A" refers to the airline designator in a flight number. IATA allows for
+//   three-letter designators, but they are not used in practice. Therefore
+//   the designator is assumed to be the first two character of the full flight
+//   number ("LH").
+// - "N" refers to the numerical part, i.e. a 1-4 digit number following the
+//    airline designator ("89").
+// - "F" refers to full flight number ("LH89").
+// Excludes the case of 'F' if `exclude_full_value == true`.
+bool IsValidFlightNumberFormat(std::u16string_view format,
+                               bool exclude_full_value = false);
+
+// Converts the integer `expiration_month` to std::u16string. Returns a value
 // between ["01"-"12"].
 std::u16string Expiration2DigitMonthAsString(int expiration_month);
 
-// Converts the integer |expiration_year| to std::u16string. Returns a value
+// Converts the integer `expiration_year` to std::u16string. Returns a value
 // between ["00"-"99"].
 std::u16string Expiration2DigitYearAsString(int expiration_year);
 
-// Converts the integer |expiration_year| to std::u16string.
+// Converts the integer `expiration_year` to std::u16string.
 std::u16string Expiration4DigitYearAsString(int expiration_year);
 
 // Converts a string representation of a month (such as "February" or "feb."
-// or "2") into a numeric value in [1, 12]. Returns true on successful
-// conversion or false if a month was not recognized. When conversion fails,
-// |expiration_month| is not modified.
-bool ParseExpirationMonth(const std::u16string& text,
-                          const std::string& app_locale,
-                          int* expiration_month);
+// or "2") into a numeric value in [1, 12]. Returns the corresponding `int`
+// value if parsing was successful or `std::nullopt` if a month was not
+// recognized.
+std::optional<int> ParseMonthFromString(std::u16string_view text,
+                                        std::string_view app_locale);
 
-// Parses the |text| and stores the corresponding int value result in
-// |*expiration_year|. This function accepts two digit years as well as
-// four digit years between 2000 and 2999. Returns true on success.
-// On failure, no change is made to |*expiration_year|.
-bool ParseExpirationYear(const std::u16string& text, int* expiration_year);
+// Parses the `text` and returns the corresponding `int` value if parsing was
+// successful . This function accepts two digit years as well as four digit
+// years between 2000 and 2999. On failure, it returns `std::nullopt`.
+std::optional<int> ParseYearFromString(std::u16string_view text);
 
-// Sets |*expiration_month| to |value| if |value| is a valid month (1-12).
-// Returns if any change is made to |*expiration_month|.
-bool SetExpirationMonth(int value, int* expiration_month);
+// Returns the corresponding `int` value if parsing a valid month (1-12) was
+// successful. On failure, it returns `std::nullopt`.
+std::optional<int> GetExpirationMonth(int value);
 
-// Sets |*expiration_year| to |value| if |value| is a valid year. See comments
-// in the function body for the definition of "valid". Returns if any change is
-// made to |*expiration_year|.
-bool SetExpirationYear(int value, int* expiration_year);
+// Returns the corresponding `int` value if parsing the expiration year was
+// successful or `std::nullopt` if a valid year was not recognized. See
+// comments in the function body for the definition of "valid".
+std::optional<int> GetExpirationYear(int value);
 
-// Finds possible country code in |text| by fetching the first sub-group when
-// matched with |kAugmentedPhoneCountryCodeRe| regex. It basically looks for a
-// phone country code in the style of "+49" or "0049" in |text|. Preceding and
+// Finds possible country code in `text` by fetching the first sub-group when
+// matched with `kAugmentedPhoneCountryCodeRe` regex. It basically looks for a
+// phone country code in the style of "+49" or "0049" in `text`. Preceding and
 // following text is allowed unless that text contains digits. It returns the
 // country code in the form of "49" in the example or an empty string.
 std::u16string FindPossiblePhoneCountryCode(std::u16string_view text);
+
+// Returns the localized pattern for the given `pattern` and `locale`.
+// If the `locale` is invalid or localization fails, returns `std::nullopt`.
+std::optional<std::u16string> LocalizePattern(std::u16string_view pattern,
+                                              std::string_view locale);
 
 }  // namespace autofill::data_util
 

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "url/ipc/url_param_traits.h"
+
 #include <string>
 
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_message_utils.h"
+#include "base/pickle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/ipc/url_param_traits.h"
 
 namespace {
 
 GURL BounceUrl(const GURL& input) {
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::ParamTraits<GURL>::Write(&msg, input);
 
   GURL output;
@@ -32,14 +32,14 @@ void ExpectSerializationRoundtrips(const GURL& input) {
   // correctly serialized and deserialized, not just the spec.
   EXPECT_EQ(input.possibly_invalid_spec(), output.possibly_invalid_spec());
   EXPECT_EQ(input.is_valid(), output.is_valid());
-  EXPECT_EQ(input.scheme(), output.scheme());
-  EXPECT_EQ(input.username(), output.username());
-  EXPECT_EQ(input.password(), output.password());
-  EXPECT_EQ(input.host(), output.host());
-  EXPECT_EQ(input.port(), output.port());
-  EXPECT_EQ(input.path(), output.path());
-  EXPECT_EQ(input.query(), output.query());
-  EXPECT_EQ(input.ref(), output.ref());
+  EXPECT_EQ(input.GetScheme(), output.GetScheme());
+  EXPECT_EQ(input.GetUsername(), output.GetUsername());
+  EXPECT_EQ(input.GetPassword(), output.GetPassword());
+  EXPECT_EQ(input.GetHost(), output.GetHost());
+  EXPECT_EQ(input.GetPort(), output.GetPort());
+  EXPECT_EQ(input.GetPath(), output.GetPath());
+  EXPECT_EQ(input.GetQuery(), output.GetQuery());
+  EXPECT_EQ(input.GetRef(), output.GetRef());
 }
 
 }  // namespace
@@ -69,8 +69,9 @@ TEST(IPCMessageTest, SerializeGurl_ExcessivelyLong) {
 
 // Test of an invalid GURL.
 TEST(IPCMessageTest, SerializeGurl_InvalidUrl) {
-  IPC::Message msg;
+  base::Pickle msg;
   msg.WriteString("#inva://idurl/");
+
   GURL output;
   base::PickleIterator iter(msg);
   EXPECT_FALSE(IPC::ParamTraits<GURL>::Read(&msg, &iter, &output));
@@ -78,8 +79,9 @@ TEST(IPCMessageTest, SerializeGurl_InvalidUrl) {
 
 // Test of a corrupt deserialization input.
 TEST(IPCMessageTest, SerializeGurl_CorruptPayload) {
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   msg.WriteInt(99);
+
   GURL output;
   base::PickleIterator iter(msg);
   EXPECT_FALSE(IPC::ParamTraits<GURL>::Read(&msg, &iter, &output));
@@ -91,8 +93,8 @@ TEST(IPCMessageTest, SerializeGurl_WindowsDriveInPathReplacement) {
   {
     // #1: Try creating a file URL with a non-empty hostname.
     GURL url_without_windows_drive_letter("file://hostname/");
-    EXPECT_EQ("/", url_without_windows_drive_letter.path());
-    EXPECT_EQ("hostname", url_without_windows_drive_letter.host());
+    EXPECT_EQ("/", url_without_windows_drive_letter.GetPath());
+    EXPECT_EQ("hostname", url_without_windows_drive_letter.GetHost());
     ExpectSerializationRoundtrips(url_without_windows_drive_letter);
   }
 
@@ -108,8 +110,8 @@ TEST(IPCMessageTest, SerializeGurl_WindowsDriveInPathReplacement) {
     GURL url_made_with_replace_components =
         GURL("file://hostname/").ReplaceComponents(repl);
 
-    EXPECT_EQ(kNewPath, url_made_with_replace_components.path());
-    EXPECT_EQ("hostname", url_made_with_replace_components.host());
+    EXPECT_EQ(kNewPath, url_made_with_replace_components.GetPath());
+    EXPECT_EQ("hostname", url_made_with_replace_components.GetHost());
     EXPECT_EQ("file://hostname/C:/dir/file.txt",
               url_made_with_replace_components.spec());
     // This is the MAIN VERIFICATION in this test. This used to fail on Windows,
@@ -121,8 +123,8 @@ TEST(IPCMessageTest, SerializeGurl_WindowsDriveInPathReplacement) {
     // #3: Try to create a URL with a Windows drive letter and a non-empty
     // hostname directly.
     GURL url_created_directly("file://hostname/C:/dir/file.txt");
-    EXPECT_EQ("/C:/dir/file.txt", url_created_directly.path());
-    EXPECT_EQ("hostname", url_created_directly.host());
+    EXPECT_EQ("/C:/dir/file.txt", url_created_directly.GetPath());
+    EXPECT_EQ("hostname", url_created_directly.GetHost());
     EXPECT_EQ("file://hostname/C:/dir/file.txt", url_created_directly.spec());
     ExpectSerializationRoundtrips(url_created_directly);
 
@@ -141,8 +143,8 @@ TEST(IPCMessageTest, SerializeGurl_WindowsDriveInPathReplacement) {
     // #4: Try to create a URL with a Windows drive letter and "localhost" as
     // hostname directly.
     GURL url_created_directly("file://localhost/C:/dir/file.txt");
-    EXPECT_EQ("/C:/dir/file.txt", url_created_directly.path());
-    EXPECT_EQ("", url_created_directly.host());
+    EXPECT_EQ("/C:/dir/file.txt", url_created_directly.GetPath());
+    EXPECT_EQ("", url_created_directly.GetHost());
     EXPECT_EQ("file:///C:/dir/file.txt", url_created_directly.spec());
     ExpectSerializationRoundtrips(url_created_directly);
 

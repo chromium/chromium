@@ -11,6 +11,9 @@ namespace manual_fill {
 NSString* const kAccessoryPasswordAccessibilityIdentifier =
     @"ManualFillAccessoryPasswordAccessibilityIdentifier";
 
+NSString* const kExpandedManualFillPasswordFaviconID =
+    @"ExpandedManualFillPasswordFaviconID";
+
 NSString* const kPasswordDoneButtonAccessibilityIdentifier =
     @"ManualFillPasswordDoneButtonAccessibilityIdentifier";
 
@@ -36,9 +39,6 @@ NSString* const kMaskedPasswordButtonText = @"••••••••";
 
 // Payments
 
-NSString* const kAccessoryAddressAccessibilityIdentifier =
-    @"ManualFillAccessoryAddressAccessibilityIdentifier";
-
 NSString* const kPaymentManualFillGPayLogoID = @"PaymentManualFillGPayLogoID";
 
 NSString* const kCardTableViewAccessibilityIdentifier =
@@ -51,9 +51,6 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
     @"ManualFillAddPaymentMethodAccessibilityIdentifier";
 
 // Addresses
-
-NSString* const kAccessoryCreditCardAccessibilityIdentifier =
-    @"ManualFillAccessoryCreditCardAccessibilityIdentifier";
 
 NSString* const kAddressTableViewAccessibilityIdentifier =
     @"ManualFillManualFillAddressTableViewAccessibilityIdentifier";
@@ -71,6 +68,9 @@ NSString* const kCreatePlusAddressAccessibilityIdentifier =
 
 NSString* const kSelectPlusAddressAccessibilityIdentifier =
     @"SelectPlusAddressAccessibilityIdentifier";
+
+NSString* const kExpandedManualFillPlusAddressFaviconID =
+    @"ExpandedManualFillPlusAddressFaviconID";
 
 NSString* const kExpandedManualFillPlusAddressOverflowMenuID =
     @"ExpandedManualFillPlusAddressOverflowMenuID";
@@ -117,6 +117,7 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
       return manual_fill::ManualFillDataType::kPassword;
     case autofill::FillingProduct::kAutocomplete:
     case autofill::FillingProduct::kDataList:
+    case autofill::FillingProduct::kPasskey:
     case autofill::FillingProduct::kNone:
       return manual_fill::ManualFillDataType::kOther;
     case autofill::FillingProduct::kCompose:

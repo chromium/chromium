@@ -8,13 +8,14 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
+#include "components/input/features.h"
 #include "components/input/input_constants.h"
 #include "components/input/input_router_config_helper.h"
 #include "components/input/input_router_impl.h"
@@ -79,8 +80,11 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
                                  bool monitor_request) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }
-  void DispatchEvent(std::unique_ptr<blink::WebCoalescedInputEvent> event,
-                     DispatchEventCallback callback) override {
+  void DispatchEvent(
+      std::unique_ptr<blink::WebCoalescedInputEvent> event,
+      std::optional<std::unique_ptr<blink::WebCoalescedInputEvent>>
+          original_event_for_gesture,
+      DispatchEventCallback callback) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }
   void DispatchNonBlockingEvent(
@@ -116,9 +120,6 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   }
 };
 
-base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
-    LAZY_INSTANCE_INITIALIZER;
-
 }  // namespace
 
 RenderInputRouter::~RenderInputRouter() {
@@ -132,8 +133,9 @@ RenderInputRouter::RenderInputRouter(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : should_disable_hang_monitor_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kDisableHangMonitor)),
-      hung_renderer_delay_(kHungRendererDelay),
+              switches::kDisableHangMonitor) ||
+          !base::FeatureList::IsEnabled(input::features::kRendererHangWatcher)),
+      hung_renderer_delay_(input::features::kRendererHangWatcherDelay.Get()),
       fling_scheduler_(std::move(fling_scheduler)),
       latency_tracker_(
           std::make_unique<RenderInputRouterLatencyTracker>(delegate)),
@@ -237,7 +239,8 @@ blink::mojom::WidgetInputHandler* RenderInputRouter::GetWidgetInputHandler() {
   // the main frame is remote. This is because of ordering issues during
   // widget shutdown, so we present an UnboundWidgetInputHandler had
   // DLOGS the message calls.
-  return g_unbound_input_handler.Pointer();
+  static base::NoDestructor<UnboundWidgetInputHandler> unbound_input_handler;
+  return unbound_input_handler.get();
 }
 
 void RenderInputRouter::OnImeCompositionRangeChanged(
@@ -259,6 +262,12 @@ void RenderInputRouter::OnStartStylusWriting() {
 }
 
 bool RenderInputRouter::IsWheelScrollInProgress() {
+  if (gsb_filtered_for_paint_holding_) {
+    // If the GestureScrollBegin was filtered for paint holding, report that we
+    // are not scrolling, so that the MouseWheelEventQueue will keep sending new
+    // GSB events until we're ready to handle it.
+    return false;
+  }
   return is_in_gesture_scroll_[static_cast<int>(
       blink::WebGestureDevice::kTouchpad)];
 }
@@ -300,9 +309,34 @@ gfx::Size RenderInputRouter::GetRootWidgetViewportSize() {
   return root_view->GetVisibleViewportSize();
 }
 
+void RenderInputRouter::OnUnconfirmedTapConvertedToTap() {
+  // TODO(crbug.com/461701945): Reset gesture timers on Viz as well where
+  // `render_input_router_client_` is null.
+  if (render_input_router_client_) {
+    render_input_router_client_->OnUnconfirmedTapConvertedToTap();
+  }
+}
+
 blink::mojom::InputEventResultState RenderInputRouter::FilterInputEvent(
     const blink::WebInputEvent& event,
     const ui::LatencyInfo& latency_info) {
+  // Right after a navigation, RenderWidgetHost keeps the InputRouter inactive
+  // while browser paint-holding is active.  This is equivalent to a
+  // non-existent input event consumer.
+  bool filter_for_paint_holding =
+      base::FeatureList::IsEnabled(
+          blink::features::kDropInputEventsWhilePaintHolding) &&
+      input_router_ && !input_router_->IsActive();
+  if (event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
+    // If we filter a GSB for paint holding, we'd like to receive a new one -
+    // see IsWheelScrollInProgress. Note that we leave is_in_gesture_scroll_ set
+    // for bookkeeping.
+    gsb_filtered_for_paint_holding_ = filter_for_paint_holding;
+  }
+  if (filter_for_paint_holding) {
+    return blink::mojom::InputEventResultState::kNoConsumerExists;
+  }
+
   // Don't ignore touch cancel events, since they may be sent while input
   // events are being ignored in order to keep the renderer from getting
   // confused about how many touches are active.
@@ -610,17 +644,23 @@ void RenderInputRouter::SendGestureEventWithLatencyInfo(
     DispatchToRendererCallback& dispatch_callback) {
   const blink::WebGestureEvent& gesture_event = gesture_with_latency.event;
   if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
-    DCHECK(
-        !is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]);
+    DCHECK(!is_in_gesture_scroll_[static_cast<int>(
+               gesture_event.SourceDevice())] ||
+           gsb_filtered_for_paint_holding_)
+        << "kGestureScrollBegin should not be sent again when "
+        << gesture_event.SourceDevice() << " is in gesture scroll";
     is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())] =
         true;
   } else if (gesture_event.GetType() ==
              WebInputEvent::Type::kGestureScrollEnd) {
     DCHECK(
-        is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]);
+        is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())])
+        << "kGestureScrollEnd should not be sent when "
+        << gesture_event.SourceDevice() << " is not in gesture scroll";
     is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())] =
         false;
     is_in_touchpad_gesture_fling_ = false;
+    gsb_filtered_for_paint_holding_ = false;
   } else if (gesture_event.GetType() ==
              WebInputEvent::Type::kGestureFlingStart) {
     if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchpad) {
@@ -635,8 +675,10 @@ void RenderInputRouter::SendGestureEventWithLatencyInfo(
 
       is_in_touchpad_gesture_fling_ = true;
     } else {
-      DCHECK(is_in_gesture_scroll_[static_cast<int>(
-          gesture_event.SourceDevice())]);
+      DCHECK(
+          is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())])
+          << "kGestureFlingStart should not be sent when "
+          << gesture_event.SourceDevice() << " is not in gesture scroll";
 
       // The FlingController handles GFS with touchscreen source and sends GSU
       // events with inertial state to the renderer to progress the fling.

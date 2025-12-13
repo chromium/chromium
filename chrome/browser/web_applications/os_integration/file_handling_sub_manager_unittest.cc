@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
@@ -297,13 +296,7 @@ TEST_F(FileHandlingSubManagerConfigureTest,
   }
 
   UpdateDefaultHandlersPrefs({{file_extension, kInstallUrl.spec()}});
-
-  // Manually triggering OS synchronization.
-  // TODO(crbug.com/411023280): OS integration state is not automatically
-  // updated when the FileHandlingDefaultHandlers policy changes.
-  base::test::TestFuture<void> done;
-  provider().scheduler().SynchronizeOsIntegration(app_id, done.GetCallback());
-  ASSERT_TRUE(done.Wait());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   // Verify that file handling is allowed.
   {
@@ -323,6 +316,169 @@ TEST_F(FileHandlingSubManagerConfigureTest,
                   app_id),
               ApiApprovalState::kDisallowed);
   }
+}
+
+TEST_F(FileHandlingSubManagerConfigureTest,
+       PolicyRemovedMidSessionRevertsToUserChoice) {
+  const GURL kInstallUrl =
+      GURL("https://www.example.com/path/install_url.html");
+  const GURL kStartUrl = GURL("https://example.com/path/");
+  const GURL kManifestUrl = GURL("https://www.example.com/path/manifest.json");
+  const webapps::AppId app_id = web_app::GenerateAppId(std::nullopt, kStartUrl);
+  const std::string file_extension = ".txt";
+
+  {
+    fake_provider().GetFakeWebContentsManager()->CreateBasicInstallPageState(
+        kInstallUrl, kManifestUrl, kWebAppUrl);
+    auto& page_state =
+        fake_provider().GetFakeWebContentsManager()->GetOrCreatePageState(
+            kInstallUrl);
+
+    auto manifest = blink::mojom::Manifest::New();
+    manifest->id = manifest->start_url.GetWithoutRef();
+    manifest->scope = manifest->start_url.GetWithoutFilename();
+    manifest->manifest_url = page_state.manifest_url;
+    manifest->start_url = kStartUrl;
+
+    auto handler = blink::mojom::ManifestFileHandler::New();
+    handler->action = kStartUrl;
+    handler->name = u"Text";
+    std::vector<std::u16string> extensions = {u".txt"};
+    handler->accept.emplace(u"text/plain", extensions);
+    manifest->file_handlers.push_back(std::move(handler));
+
+    page_state.manifest_before_default_processing = std::move(manifest);
+  }
+
+  // Install app with file handlers
+  SynchronizeFuture result;
+  std::vector<ExternalInstallOptions> install_options_list;
+  install_options_list.emplace_back(kInstallUrl,
+                                    /*user_display_mode=*/std::nullopt,
+                                    ExternalInstallSource::kExternalPolicy);
+
+  provider().externally_managed_app_manager().SynchronizeInstalledApps(
+      std::move(install_options_list), ExternalInstallSource::kExternalPolicy,
+      result.GetCallback());
+  ASSERT_TRUE(result.Wait());
+
+  // Verify file handler os registration and default approval state.
+  ASSERT_TRUE(provider().registrar_unsafe().GetAppById(app_id));
+  auto initial_state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(initial_state.has_value());
+  ASSERT_TRUE(initial_state.value().has_file_handling());
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(app_id),
+      ApiApprovalState::kRequiresPrompt);
+
+  // User disallows file handling for the app.
+  base::test::TestFuture<void> future;
+  provider().scheduler().PersistFileHandlersUserChoice(
+      app_id, /*allowed=*/false, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Setting pref to overwrite the user choice.
+  UpdateDefaultHandlersPrefs({{file_extension, kInstallUrl.spec()}});
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  {
+    ASSERT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                  app_id),
+              ApiApprovalState::kDisallowed);
+    ASSERT_EQ(provider().registrar_unsafe().GetAppFileHandlerApprovalState(
+                  app_id, file_extension),
+              ApiApprovalState::kAllowed);
+    auto state_after_user_choice =
+        provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+    ASSERT_TRUE(state_after_user_choice.has_value());
+  }
+
+  // Resetting pref value, file handler approval state should default to
+  // previous user choice.
+  UpdateDefaultHandlersPrefs();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  {
+    EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                  app_id),
+              ApiApprovalState::kDisallowed);
+    EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerApprovalState(
+                  app_id, file_extension),
+              ApiApprovalState::kDisallowed);
+  }
+}
+
+TEST_F(FileHandlingSubManagerConfigureTest,
+       PolicyDefinedFileHandlerAddedMidSessionToManifest) {
+  const GURL kInstallUrl("https://www.example.com/install.html");
+  const GURL kStartUrl("https://example.com/path/");
+  const GURL kManifestUrl("https://www.example.com/manifest.json");
+  const webapps::AppId app_id = web_app::GenerateAppId(std::nullopt, kStartUrl);
+  const std::string file_extension = ".txt";
+
+  // Install the app WITHOUT any file handlers.
+  {
+    auto& page_state =
+        fake_provider().GetFakeWebContentsManager()->GetOrCreatePageState(
+            kInstallUrl);
+    page_state.url_load_result = {webapps::WebAppUrlLoaderResult::kUrlLoaded};
+    page_state.manifest_url = kManifestUrl;
+
+    auto manifest = blink::mojom::Manifest::New();
+    manifest->start_url = kStartUrl;
+    manifest->scope = kStartUrl.GetWithoutFilename();
+    page_state.manifest_before_default_processing = std::move(manifest);
+
+    std::vector<ExternalInstallOptions> install_options_list;
+    install_options_list.emplace_back(kInstallUrl,
+                                      /*user_display_mode=*/std::nullopt,
+                                      ExternalInstallSource::kExternalPolicy);
+    SynchronizeFuture result;
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+        std::move(install_options_list), ExternalInstallSource::kExternalPolicy,
+        result.GetCallback());
+    ASSERT_TRUE(result.Wait());
+  }
+
+  // User disallows file handling for the app.
+  base::test::TestFuture<void> future;
+  provider().scheduler().PersistFileHandlersUserChoice(
+      app_id, /*allowed=*/false, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Modify the manifest to ADD a file handler.
+  {
+    auto& page_state =
+        fake_provider().GetFakeWebContentsManager()->GetOrCreatePageState(
+            kInstallUrl);
+
+    auto handler = blink::mojom::ManifestFileHandler::New();
+    handler->action = kStartUrl;
+    handler->name = u"Text";
+    handler->accept.emplace(u"text/plain",
+                            std::vector<std::u16string>{u".txt"});
+    page_state.manifest_before_default_processing->file_handlers.push_back(
+        std::move(handler));
+  }
+
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(app_id),
+      ApiApprovalState::kDisallowed);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerApprovalState(
+                app_id, file_extension),
+            ApiApprovalState::kDisallowed);
+
+  // Allow the file handler via policy.
+  UpdateDefaultHandlersPrefs({{file_extension, kInstallUrl.spec()}});
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(app_id),
+      ApiApprovalState::kDisallowed);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerApprovalState(
+                app_id, file_extension),
+            ApiApprovalState::kAllowed);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -8,4 +8,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Single Tab module on tablets -->
   <dimen name="single_tab_module_tab_thumbnail_size">72dp</dimen>
+
+    <!-- Omnibox buttons (mic, lens, ...): pill-shaped on tablets -->
+    <dimen name="search_box_button_background_corner_radius">24dp</dimen>
 </resources>

@@ -5,6 +5,7 @@
 #include "content/shell/app/shell_main_delegate.h"
 
 #include <iostream>
+#include <memory>
 #include <tuple>
 #include <utility>
 #include <variant>
@@ -15,8 +16,9 @@
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/current_process.h"
 #include "base/strings/string_number_conversions.h"
@@ -46,6 +48,7 @@
 #include "content/web_test/browser/web_test_browser_main_runner.h"  // nogncheck
 #include "content/web_test/browser/web_test_content_browser_client.h"  // nogncheck
 #include "content/web_test/renderer/web_test_content_renderer_client.h"  // nogncheck
+#include "ui/native_theme/mock_os_settings_provider.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -60,7 +63,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#include "content/shell/app/paths_mac.h"
+#include "content/shell/app/paths_apple.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -102,8 +105,11 @@ enum class LoggingDest {
 };
 
 #if !BUILDFLAG(IS_FUCHSIA)
-base::LazyInstance<content::ShellCrashReporterClient>::Leaky
-    g_shell_crash_client = LAZY_INSTANCE_INITIALIZER;
+content::ShellCrashReporterClient& GetShellCrashReporterClient() {
+  static base::NoDestructor<content::ShellCrashReporterClient>
+      shell_crash_client;
+  return *shell_crash_client;
+}
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -221,6 +227,8 @@ std::optional<int> ShellMainDelegate::BasicStartupComplete() {
   logging::LogEventProvider::Initialize(kContentShellProviderName);
 
   v8_crashpad_support::SetUp();
+
+  base::win::EnableStrictHandleCheckingForCurrentProcess();
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -232,6 +240,12 @@ std::optional<int> ShellMainDelegate::BasicStartupComplete() {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (switches::IsRunWebTestsSwitchPresent()) {
+    // Instantiating `ui::OsSettingsProvider` will both provide sane default
+    // behavior and prevent `ui::OsSettingsProvider::Get()` from instantiating a
+    // platform-specific subclass.
+    os_settings_provider_ = std::make_unique<ui::OsSettingsProvider>(
+        ui::OsSettingsProvider::PriorityLevel::kTesting);
+
     const bool browser_process =
         command_line.GetSwitchValueASCII(switches::kProcessType).empty();
     if (browser_process) {
@@ -282,7 +296,7 @@ void ShellMainDelegate::PreSandboxStartup() {
     std::string process_type =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kProcessType);
-    crash_reporter::SetCrashReporterClient(g_shell_crash_client.Pointer());
+    crash_reporter::SetCrashReporterClient(&GetShellCrashReporterClient());
     // Reporting for sub-processes will be initialized in ZygoteForked.
     if (process_type != switches::kZygoteProcess) {
       crash_reporter::InitializeCrashpad(process_type.empty(), process_type);

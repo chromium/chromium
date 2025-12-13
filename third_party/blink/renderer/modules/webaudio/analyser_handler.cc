@@ -22,8 +22,7 @@ constexpr unsigned kDefaultNumberOfOutputChannels = 1;
 
 AnalyserHandler::AnalyserHandler(AudioNode& node, float sample_rate)
     : AudioHandler(NodeType::kNodeTypeAnalyser, node, sample_rate),
-      analyser_(
-          node.context()->GetDeferredTaskHandler().RenderQuantumFrames()) {
+      analyser_(node.context()->renderQuantumSize()) {
   AddInput();
   channel_count_ = kDefaultNumberOfInputChannels;
   AddOutput(kDefaultNumberOfOutputChannels);
@@ -213,7 +212,7 @@ void AnalyserHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
 
   AudioHandler::CheckNumberOfChannelsForInput(input);
 
-  UpdatePullStatusIfNeeded();
+  Context()->GetDeferredTaskHandler().UpdatePullStatusWithFeatureCheck(this);
 }
 
 }  // namespace blink

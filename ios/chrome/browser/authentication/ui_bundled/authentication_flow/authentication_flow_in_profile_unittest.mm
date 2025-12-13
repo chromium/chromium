@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
@@ -86,7 +87,7 @@ class AuthenticationFlowInProfileTest
       GetApplicationContext()
           ->GetAccountProfileMapper()
           ->MoveManagedAccountToPersonalProfileForTesting(
-              GaiaId(managed_identity_.gaiaID));
+              managed_identity_.gaiaId);
     }
     CHECK_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 3UL);
   }
@@ -144,7 +145,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignIn) {
   CreateAuthenticationFlowInProfile(PostSignInActionSet(), identity1_,
                                     access_point);
   // Start `authentication_flow_in_profile_` for `identity1_`.
-  base::test::TestFuture<SigninCoordinatorResult> future;
+  base::test::TestFuture<signin_ui::CancelationReason> future;
   [authentication_flow_in_profile_
       startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
   // Expect to call the performer to sign-in.
@@ -166,7 +167,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWhileBeingSignedIn) {
   CreateAuthenticationFlowInProfile(PostSignInActionSet(), identity1_,
                                     access_point);
   // Start `authentication_flow_in_profile_` for `identity1_`.
-  base::test::TestFuture<SigninCoordinatorResult> future;
+  base::test::TestFuture<signin_ui::CancelationReason> future;
   [authentication_flow_in_profile_
       startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
   // Note: No call to `-[AuthenticationFlowInProfilePerformer
@@ -189,7 +190,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignOutAndSignIn) {
   CreateAuthenticationFlowInProfile(PostSignInActionSet(), identity1_,
                                     access_point);
   // Start `authentication_flow_in_profile_` for `identity1_`.
-  base::test::TestFuture<SigninCoordinatorResult> future;
+  base::test::TestFuture<signin_ui::CancelationReason> future;
   [authentication_flow_in_profile_
       startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
   // Expect sign-out request.
@@ -228,7 +229,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWithUnknownIdentity) {
                                       viewController:[OCMArg any]
                                              browser:browser_.get()]);
   // Start `authentication_flow_in_profile_` for `unknown_identity`.
-  base::test::TestFuture<SigninCoordinatorResult> future;
+  base::test::TestFuture<signin_ui::CancelationReason> future;
   [authentication_flow_in_profile_
       startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
   // Expect to `authentication_flow_in_profile_` to fail.
@@ -243,7 +244,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWithManagedIdentity) {
   CreateAuthenticationFlowInProfile(PostSignInActionSet(), managed_identity_,
                                     access_point);
   // Start `authentication_flow_in_profile_` for `managed_identity_`.
-  base::test::TestFuture<SigninCoordinatorResult> future;
+  base::test::TestFuture<signin_ui::CancelationReason> future;
   [authentication_flow_in_profile_
       startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
   // Expect to call the performer to sign-in.
@@ -282,7 +283,7 @@ TEST_P(AuthenticationFlowInProfileTest,
   CreateAuthenticationFlowInProfile(PostSignInActionSet(), managed_identity_,
                                     access_point);
   // Start `authentication_flow_in_profile_` for `managed_identity_`.
-  base::test::TestFuture<SigninCoordinatorResult> future;
+  base::test::TestFuture<signin_ui::CancelationReason> future;
   [authentication_flow_in_profile_
       startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
   // Expect to call the performer to sign-in.
@@ -307,8 +308,7 @@ TEST_P(AuthenticationFlowInProfileTest,
   // Since the browser was destroyed, no other steps should happen (e.g. no
   // policy fetch, no post-signin actions).
   EXPECT_TRUE(future.Wait());
-  EXPECT_EQ(future.Get(),
-            SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
+  EXPECT_EQ(future.Get(), signin_ui::CancelationReason::kFailed);
 }
 
 // Tests that there is no crash if the browser is destroyed in the middle of the
@@ -319,7 +319,7 @@ TEST_P(AuthenticationFlowInProfileTest, BrowserDestroyedDuringFetchUserPolicy) {
   CreateAuthenticationFlowInProfile(PostSignInActionSet(), managed_identity_,
                                     access_point);
   // Start `authentication_flow_in_profile_` for `managed_identity_`.
-  base::test::TestFuture<SigninCoordinatorResult> future;
+  base::test::TestFuture<signin_ui::CancelationReason> future;
   [authentication_flow_in_profile_
       startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
   // Expect to call the performer to sign-in.
@@ -355,8 +355,7 @@ TEST_P(AuthenticationFlowInProfileTest, BrowserDestroyedDuringFetchUserPolicy) {
   // Since the browser was destroyed, no other steps should happen (e.g. no
   // post-signin actions).
   EXPECT_TRUE(future.Wait());
-  EXPECT_EQ(future.Get(),
-            SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
+  EXPECT_EQ(future.Get(), signin_ui::CancelationReason::kFailed);
 }
 
 // Tests that there is no crash if the browser is destroyed in the middle of the
@@ -369,7 +368,7 @@ TEST_P(AuthenticationFlowInProfileTest,
                                     access_point,
                                     /*preceding_history_sync=*/true);
   // Start `authentication_flow_in_profile_` for `identity1_`.
-  base::test::TestFuture<SigninCoordinatorResult> future;
+  base::test::TestFuture<signin_ui::CancelationReason> future;
   [authentication_flow_in_profile_
       startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
   // Expect to call the performer to sign-in.
@@ -394,8 +393,7 @@ TEST_P(AuthenticationFlowInProfileTest,
   // Since the browser was destroyed, no other steps should happen (e.g. no
   // post-signin actions).
   EXPECT_TRUE(future.Wait());
-  EXPECT_EQ(future.Get(),
-            SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
+  EXPECT_EQ(future.Get(), signin_ui::CancelationReason::kFailed);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

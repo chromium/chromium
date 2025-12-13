@@ -69,12 +69,12 @@ suite('<settings-privacy-hub-app-permission-row>', () => {
   }
 
   function getAppName(): string {
-    return testRow.shadowRoot!.querySelector('#appName')!.textContent!.trim();
+    return testRow.shadowRoot!.querySelector('#appName')!.textContent.trim();
   }
 
   function getPermissionText(): string {
     return testRow.shadowRoot!.querySelector(
-                                  '#permissionText')!.textContent!.trim();
+                                  '#permissionText')!.textContent.trim();
   }
 
   function getPermissionToggle(): CrToggleElement {

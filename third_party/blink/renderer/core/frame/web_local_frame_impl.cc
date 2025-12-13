@@ -209,6 +209,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
+#include "third_party/blink/renderer/core/html/anchor_element_utils.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -250,6 +251,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -274,6 +276,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -285,6 +288,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_family_names.h"
 #include "third_party/blink/renderer/core/layout/layout_font_accessor_win.h"
+#include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -889,9 +893,12 @@ gfx::PointF WebLocalFrameImpl::GetScrollOffset() const {
 
 bool WebLocalFrameImpl::SetScrollOffset(const gfx::PointF& offset) {
   if (ScrollableArea* scrollable_area = LayoutViewport()) {
+    // This function is only used in tests so we are using
+    // `ScrollSourceType::kAbsoluteScroll`.
     return scrollable_area->SetScrollOffset(
         scrollable_area->ScrollPositionToOffset(offset),
-        mojom::blink::ScrollType::kProgrammatic);
+        mojom::blink::ScrollType::kProgrammatic,
+        cc::ScrollSourceType::kAbsoluteScroll);
   }
   return false;
 }
@@ -1258,6 +1265,12 @@ void WebLocalFrameImpl::RequestNetworkIdleCallback(base::OnceClosure callback) {
   GetFrame()->RequestNetworkIdleCallback(std::move(callback));
 }
 
+void WebLocalFrameImpl::PostIdleTask(
+    const base::Location& location,
+    base::OnceCallback<void(base::TimeTicks deadline)> callback) {
+  ThreadScheduler::Current()->PostIdleTask(location, std::move(callback));
+}
+
 void WebLocalFrameImpl::ReplaceSelection(const WebString& text) {
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
@@ -1395,6 +1408,10 @@ void WebLocalFrameImpl::SetTextDirectionForTesting(
   frame_->SetTextDirection(direction);
 }
 
+void WebLocalFrameImpl::SetIsCaretBrowsingOverridden(bool overridden) {
+  GetFrame()->SetIsCaretBrowsingOverridden(overridden);
+}
+
 void WebLocalFrameImpl::ReplaceMisspelledRange(const WebString& text) {
   // If this caret selection has two or more markers, this function replace the
   // range covered by the first marker with the specified word as Microsoft Word
@@ -1470,7 +1487,7 @@ WebString WebLocalFrameImpl::SelectionAsText() const {
         TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior());
   }
 #if BUILDFLAG(IS_WIN)
-  ReplaceNewlinesWithWindowsStyleNewlines(text);
+  text = NormalizeLineEndingsToCRLF(text);
 #endif
   ReplaceNBSPWithSpace(text);
   return text;
@@ -1676,7 +1693,8 @@ bool WebLocalFrameImpl::SetEditableSelectionOffsets(int start, int end) {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::setEditableSelectionOffsets");
   if (EditContext* edit_context =
           GetFrame()->GetInputMethodController().GetActiveEditContext()) {
-    edit_context->SetSelection(start, end, /*dispatch_text_update_event=*/true);
+    edit_context->SetSelection(start, end, /*sync_selection=*/true,
+                               /*dispatch_text_update_event=*/true);
     return true;
   }
 
@@ -2271,7 +2289,6 @@ WebLocalFrameImpl::WebLocalFrameImpl(
     : WebNavigationControl(scope, frame_token),
       client_(client),
       local_frame_client_(MakeGarbageCollected<LocalFrameClientImpl>(this)),
-      autofill_client_(nullptr),
       find_in_page_(
           MakeGarbageCollected<FindInPage>(*this, interface_registry)),
       interface_registry_(interface_registry),
@@ -2723,8 +2740,11 @@ void WebLocalFrameImpl::SendPings(const WebURL& destination_url) {
     Element* anchor = node->EnclosingLinkEventParentOrSelf();
     // TODO(crbug.com/369219144): Should this be
     // DynamicTo<HTMLAnchorElementBase>?
-    if (auto* html_anchor = DynamicTo<HTMLAnchorElement>(anchor))
-      html_anchor->SendPings(destination_url);
+    if (IsA<HTMLAnchorElement>(anchor) || IsA<SVGAElement>(anchor)) {
+      AnchorElementUtils::SendPings(
+          destination_url, anchor->GetDocument(),
+          anchor->FastGetAttribute(html_names::kPingAttr));
+    }
   }
 }
 
@@ -3172,8 +3192,8 @@ void WebLocalFrameImpl::AddUserReidentificationIssueImpl(
     std::optional<std::string> devtools_request_id,
     const WebURL& affected_request_url) {
   DCHECK(GetFrame());
-  AuditsIssue::ReportUserReidentificationIssue(GetFrame(), devtools_request_id,
-                                               affected_request_url);
+  AuditsIssue::ReportUserReidentificationResourceBlockedIssue(
+      GetFrame(), devtools_request_id, affected_request_url);
 }
 
 void WebLocalFrameImpl::AddGenericIssueImpl(
@@ -3244,6 +3264,9 @@ WebDevToolsAgentImpl* WebLocalFrameImpl::DevToolsAgentImpl(
 void WebLocalFrameImpl::OnDevToolsSessionConnectionChanged(bool attached) {
   if (frame_widget_) {
     frame_widget_->OnDevToolsSessionConnectionChanged(attached);
+  }
+  if (autofill_client_) {
+    autofill_client_->OnDevToolsSessionConnectionChanged(attached);
   }
 }
 
@@ -3316,14 +3339,14 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
     for (const auto& reason_to_copy : reasons_to_copy->reasons) {
       mojom::blink::BFCacheBlockingDetailedReasonPtr reason =
           mojom::blink::BFCacheBlockingDetailedReason::New();
-      reason->name = WTF::String(reason_to_copy->name);
+      reason->name = String(reason_to_copy->name);
       if (reason_to_copy->source) {
         CHECK_GT(reason_to_copy->source->line_number, 0U);
         CHECK_GT(reason_to_copy->source->column_number, 0U);
         mojom::blink::ScriptSourceLocationPtr source_location =
             mojom::blink::ScriptSourceLocation::New(
                 KURL(reason_to_copy->source->url),
-                WTF::String(reason_to_copy->source->function_name),
+                String(reason_to_copy->source->function_name),
                 reason_to_copy->source->line_number,
                 reason_to_copy->source->column_number);
         reason->source = std::move(source_location);

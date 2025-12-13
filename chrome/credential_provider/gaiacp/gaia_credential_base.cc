@@ -2414,8 +2414,10 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
     const std::vector<std::wstring> allowed_domains = GetEmailDomainsList();
 
     if (!base::Contains(allowed_domains, email_domain)) {
-      LOGFN(VERBOSE) << "Account " << email
-                     << " isn't in a domain from allowed domains.";
+      LOGFN(ERROR) << "Account " << email
+                   << " isn't in a domain from allowed domains."
+                   << "Allowed Domains: "
+                   << base::JoinString(allowed_domains, L",");
       *status_text =
           CGaiaCredentialBase::AllocErrorString(IDS_INVALID_EMAIL_DOMAIN_BASE);
       SecurelyClearDictionaryValue(properties);

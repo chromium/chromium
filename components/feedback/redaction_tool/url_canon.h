@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This is a copy of url/url_canon.h circa 2023. It should be used only by
 // components/feedback/redaction_tool/.
 // We need a copy because the components/feedback/redaction_tool source code is
@@ -18,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/clamped_math.h"
@@ -86,7 +82,7 @@ class CanonOutputT {
     // In VC2005, putting this common case first speeds up execution
     // dramatically because this branch is predicted as taken.
     if (cur_len_ < buffer_len_) {
-      buffer_[cur_len_] = ch;
+      UNSAFE_TODO(buffer_[cur_len_]) = ch;
       cur_len_++;
       return;
     }
@@ -98,7 +94,7 @@ class CanonOutputT {
     }
 
     // Actually do the insertion.
-    buffer_[cur_len_] = ch;
+    UNSAFE_TODO(buffer_[cur_len_]) = ch;
     cur_len_++;
   }
 

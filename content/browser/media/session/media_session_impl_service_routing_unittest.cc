@@ -147,9 +147,6 @@ class MediaSessionImplServiceRoutingTest
     : public RenderViewHostImplTestHarness {
  public:
   MediaSessionImplServiceRoutingTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kMediaSessionEnterPictureInPicture);
-
     actions_.insert(MediaSessionAction::kPlay);
     actions_.insert(MediaSessionAction::kPause);
     actions_.insert(MediaSessionAction::kStop);
@@ -243,7 +240,11 @@ class MediaSessionImplServiceRoutingTest
   }
 
   MediaSessionServiceImpl* ComputeServiceForRouting() {
-    return MediaSessionImpl::Get(contents())->ComputeServiceForRouting();
+    auto* frame = static_cast<TestRenderFrameHost*>(
+        MediaSessionImpl::Get(contents())
+            ->ComputeFrameForRouting(/*ensure_service=*/true));
+    return services_.find(frame) != services_.end() ? services_[frame].get()
+                                                    : nullptr;
   }
 
   MediaSessionImpl* GetMediaSession() {
@@ -286,8 +287,6 @@ class MediaSessionImplServiceRoutingTest
   media_session::MediaMetadata empty_metadata_;
 
   std::set<MediaSessionAction> actions_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(MediaSessionImplServiceRoutingTest, NoFrameProducesAudio) {
@@ -1375,6 +1374,28 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
     observer.WaitForExpectedMetadata(expected_metadata);
   }
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest, GetRoutedFrameForPlayers) {
+  StartPlayerForFrame(main_frame_);
+  ASSERT_EQ(main_frame_, GetMediaSession()->GetRoutedFrame());
+  StartPlayerForFrame(sub_frame_);
+  ASSERT_EQ(main_frame_, GetMediaSession()->GetRoutedFrame());
+  ClearPlayersForFrame(main_frame_);
+  ASSERT_EQ(sub_frame_, GetMediaSession()->GetRoutedFrame());
+  ClearPlayersForFrame(sub_frame_);
+  ASSERT_EQ(nullptr, GetMediaSession()->GetRoutedFrame());
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest, GetRoutedFrameForServices) {
+  CreateServiceForFrame(main_frame_);
+  ASSERT_EQ(main_frame_, GetMediaSession()->GetRoutedFrame());
+  CreateServiceForFrame(sub_frame_);
+  ASSERT_EQ(main_frame_, GetMediaSession()->GetRoutedFrame());
+  DestroyServiceForFrame(main_frame_);
+  ASSERT_EQ(sub_frame_, GetMediaSession()->GetRoutedFrame());
+  DestroyServiceForFrame(sub_frame_);
+  ASSERT_EQ(nullptr, GetMediaSession()->GetRoutedFrame());
 }
 
 // Test duration duration update throttle behavior for routed service.

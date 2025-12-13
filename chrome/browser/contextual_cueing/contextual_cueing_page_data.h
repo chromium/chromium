@@ -16,12 +16,22 @@
 
 namespace contextual_cueing {
 
+// Contains data from a valid cueing response.
+struct CueingResult {
+  // The cue text to show to user.
+  std::string cue_label;
+  // Suggested prompt associated with the cue.
+  std::string prompt_suggestion;
+  // Whether the cue is contextual to page.
+  bool is_dynamic = false;
+};
+
 // Decider for contextual cueing that is scoped to `Page`.
 class ContextualCueingPageData
     : public content::PageUserData<ContextualCueingPageData> {
  public:
   using CueingDecisionCallback =
-      base::OnceCallback<void(base::expected<std::string, NudgeDecision>)>;
+      base::OnceCallback<void(base::expected<CueingResult, NudgeDecision>)>;
 
   ContextualCueingPageData(const ContextualCueingPageData&) = delete;
   ContextualCueingPageData& operator=(const ContextualCueingPageData&) = delete;

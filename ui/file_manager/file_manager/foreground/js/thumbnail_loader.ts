@@ -5,7 +5,7 @@
 import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
 import type {ImageTransformParam} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_orientation.js';
 import {createRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 
 import {getMediaType, isImage, isPDF, isRaw, isVideo} from '../../common/js/file_type.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
@@ -65,7 +65,8 @@ export class ThumbnailLoader {
     const mimeType = this.metadata_ && this.metadata_.contentMimeType;
 
     for (let i = 0; i < loadTargets.length; i++) {
-      switch (loadTargets[i]) {
+      const loadTarget = loadTargets[i]!;
+      switch (loadTarget) {
         case LoadTarget.CONTENT_METADATA:
           if (this.metadata_.thumbnail && this.metadata_.thumbnail.url) {
             this.thumbnailUrl_ = this.metadata_.thumbnail.url;
@@ -97,7 +98,7 @@ export class ThumbnailLoader {
           }
           break;
         default:
-          assertNotReached('Unkonwn load type: ' + loadTargets[i]);
+          assertNotReachedCase(loadTarget, 'Unkonwn load type: ' + loadTarget);
       }
       if (this.thumbnailUrl_) {
         break;
@@ -354,6 +355,8 @@ export class ThumbnailLoader {
         fill = (ratioFactor >= 1.0 - autoFillThreshold) &&
             (ratioFactor <= 1.0 + autoFillThreshold);
         break;
+      default:
+        assertNotReachedCase(fillMode);
     }
 
     if (boxWidth && boxHeight) {

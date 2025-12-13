@@ -14,9 +14,7 @@
 
 namespace content {
 class WebContents;
-#if !BUILDFLAG(IS_ANDROID)
 class DocumentPictureInPictureWindowController;
-#endif  // !BUILDFLAG(IS_ANDROID)
 class VideoPictureInPictureWindowController;
 
 // Interface for Picture in Picture window controllers. This is currently tied
@@ -32,10 +30,8 @@ class PictureInPictureWindowController {
   // pointer is guaranteed to be non-null.
   CONTENT_EXPORT static VideoPictureInPictureWindowController*
   GetOrCreateVideoPictureInPictureController(WebContents* web_contents);
-#if !BUILDFLAG(IS_ANDROID)
   CONTENT_EXPORT static DocumentPictureInPictureWindowController*
   GetOrCreateDocumentPictureInPictureController(WebContents* web_contents);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   virtual ~PictureInPictureWindowController() = default;
 

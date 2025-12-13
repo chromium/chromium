@@ -374,8 +374,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
   std::optional<FrameInfo> frame_info_;
   gfx::Size visible_size_;
   bool waiting_for_real_frame_info_ = false;
-  bool disable_coded_size_guessing_ =
-      !base::FeatureList::IsEnabled(kMediaCodecCodedSizeGuessing);
+  bool disable_coded_size_guessing_ = false;
 
   base::WeakPtrFactory<FrameInfoHelperImpl> weak_factory_{this};
 };

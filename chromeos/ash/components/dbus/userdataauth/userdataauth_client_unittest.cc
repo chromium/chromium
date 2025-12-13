@@ -185,7 +185,7 @@ class UserDataAuthClientTest : public testing::Test {
   void SetUp() override {
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    bus_ = new dbus::MockBus(options);
+    bus_ = new dbus::MockBus(std::move(options));
 
     dbus::ObjectPath userdataauth_object_path =
         dbus::ObjectPath(::user_data_auth::kUserDataAuthServicePath);
@@ -200,31 +200,31 @@ class UserDataAuthClientTest : public testing::Test {
                                userdataauth_object_path))
         .WillRepeatedly(Return(proxy_.get()));
 
-    EXPECT_CALL(*proxy_.get(), DoCallMethod(_, _, _))
+    EXPECT_CALL(*proxy_.get(), CallMethod(_, _, _))
         .WillRepeatedly(Invoke(this, &UserDataAuthClientTest::OnCallMethod));
 
     EXPECT_CALL(
         *proxy_,
-        DoConnectToSignal(::user_data_auth::kUserDataAuthInterface,
-                          ::user_data_auth::kDircryptoMigrationProgress, _, _))
+        ConnectToSignal(::user_data_auth::kUserDataAuthInterface,
+                        ::user_data_auth::kDircryptoMigrationProgress, _, _))
         .WillOnce(SaveArg<2>(&dircrypto_progress_callback_));
     EXPECT_CALL(*proxy_,
-                DoConnectToSignal(::user_data_auth::kUserDataAuthInterface,
-                                  ::user_data_auth::kLowDiskSpace, _, _))
+                ConnectToSignal(::user_data_auth::kUserDataAuthInterface,
+                                ::user_data_auth::kLowDiskSpace, _, _))
         .WillOnce(SaveArg<2>(&low_disk_space_callback_));
 
-    EXPECT_CALL(*proxy_,
-                DoConnectToSignal(
-                    ::user_data_auth::kUserDataAuthInterface,
-                    ::user_data_auth::kAuthEnrollmentProgressSignal, _, _))
+    EXPECT_CALL(
+        *proxy_,
+        ConnectToSignal(::user_data_auth::kUserDataAuthInterface,
+                        ::user_data_auth::kAuthEnrollmentProgressSignal, _, _))
         .WillOnce(SaveArg<2>(&auth_enrollment_callback_));
     EXPECT_CALL(*proxy_,
-                DoConnectToSignal(
+                ConnectToSignal(
                     ::user_data_auth::kUserDataAuthInterface,
                     ::user_data_auth::kPrepareAuthFactorProgressSignal, _, _))
         .WillOnce(SaveArg<2>(&prepare_auth_factor_progress_callback_));
 
-    EXPECT_CALL(*proxy_, DoConnectToSignal(
+    EXPECT_CALL(*proxy_, ConnectToSignal(
                              ::user_data_auth::kUserDataAuthInterface,
                              ::user_data_auth::kAuthFactorStatusUpdate, _, _))
         .WillOnce(SaveArg<2>(&auth_factor_status_update_callback_));
@@ -314,7 +314,7 @@ class UserDataAuthClientTest : public testing::Test {
   // Handles calls to |proxy_|'s `CallMethod()`.
   void OnCallMethod(dbus::MethodCall* method_call,
                     int timeout_ms,
-                    dbus::ObjectProxy::ResponseCallback* callback) {
+                    dbus::ObjectProxy::ResponseCallback callback) {
     std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
     dbus::MessageWriter writer(response.get());
     if (shall_message_parsing_fail_) {
@@ -354,7 +354,7 @@ class UserDataAuthClientTest : public testing::Test {
       ASSERT_FALSE(true) << "Unrecognized member: " << method_call->GetMember();
     }
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(RunResponseCallback, std::move(*callback),
+        FROM_HERE, base::BindOnce(RunResponseCallback, std::move(callback),
                                   std::move(response)));
   }
 

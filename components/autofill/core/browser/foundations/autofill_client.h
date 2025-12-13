@@ -7,72 +7,78 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#include "components/autofill/core/browser/filling/filling_product.h"
-#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
-#include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
-#include "components/autofill/core/browser/integrators/password_form_classification.h"
-#include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
-#include "components/autofill/core/browser/suggestions/suggestion.h"
-#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/aliases.h"
-#include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/form_interactions_flow.h"
-#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/device_reauth/device_authenticator.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
-#include "components/translate/core/browser/language_state.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/image/image.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 class GoogleGroupsManager;
+class GURL;
 class PrefService;
+
+namespace device_reauth {
+class DeviceAuthenticator;
+}
 
 namespace network {
 class SharedURLLoaderFactory;
+}
+
+namespace one_time_tokens {
+class OneTimeTokenService;
+}  // namespace one_time_tokens
+
+namespace optimization_guide {
+class ModelQualityLogsUploaderService;
+class RemoteModelExecutor;
+}  // namespace optimization_guide
+
+namespace optimization_guide::proto {
+class AnnotatedPageContent;
+}
+
+namespace plus_addresses::hats {
+enum class SurveyType;
 }
 
 namespace signin {
 class IdentityManager;
 }
 
+namespace strike_database {
+class StrikeDatabase;
+}
+
 namespace syncer {
 class SyncService;
 }
 
-namespace optimization_guide {
-class ModelQualityLogsUploaderService;
-}
-
-namespace optimization_guide::proto {
-class AnnotatedPageContent;
-}
+namespace translate {
+class LanguageState;
+class TranslateDriver;
+}  // namespace translate
 
 namespace ukm {
 class UkmRecorder;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace version_info {
@@ -81,34 +87,46 @@ enum class Channel;
 
 namespace autofill {
 
+class AutofillManager;
 class AddressNormalizer;
 class AutocompleteHistoryManager;
 class AutofillAblationStudy;
-class AutofillComposeDelegate;
-class AutofillCrowdsourcingManager;
-class AutofillDriverFactory;
-class AutofillOptimizationGuide;
-#if BUILDFLAG(IS_ANDROID)
-class AutofillSnackbarControllerImpl;
-#endif  // BUILDFLAG(IS_ANDROID)
-class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
 class AutofillAiManager;
 class AutofillAiModelCache;
 class AutofillAiModelExecutor;
+class AutofillComposeDelegate;
+class AutofillCrowdsourcingManager;
+class AutofillDriverFactory;
+class AutofillOptimizationGuideDecider;
 class AutofillProfile;
+#if BUILDFLAG(IS_ANDROID)
+class AutofillSnackbarControllerImpl;
+#endif  // BUILDFLAG(IS_ANDROID)
+class AutofillSuggestionDelegate;
+enum class AutofillTriggerSource;
+class IdentityCredentialDelegate;
 class EntityDataManager;
+class FastCheckoutClient;
 class FieldClassificationModelHandler;
+enum class FillingProduct;
 class FormDataImporter;
+class FormFieldData;
+struct FormInteractionsFlowId;
 class LogManager;
-class OtpSuggestionDelegate;
+class OtpFieldDetector;
+class OtpPhishGuardDelegate;
+struct PasswordFormClassification;
+class PasswordManagerDelegate;
 class PersonalDataManager;
+struct SelectOption;
+struct Suggestion;
+enum class SuggestionHidingReason;
+enum class SuggestionType;
 class SingleFieldFillRouter;
-class StrikeDatabase;
 class ValuablesDataManager;
 class VotesUploader;
-struct Suggestion;
-enum class WebauthnDialogState;
+class PasswordManagerAutofillHelperDelegate;
 
 namespace autofill_metrics {
 class FormInteractionsUkmLogger;
@@ -135,33 +153,53 @@ class AutofillClient {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class AddressPromptUserDecision {
-    kUndefined,
+    kUndefined = 0,
     // No prompt is shown and no decision is needed to proceed with the process.
-    kUserNotAsked,
+    kUserNotAsked = 1,
     // The user accepted the save/update/migration flow from the initial prompt.
-    kAccepted,
+    kAccepted = 2,
     // The user declined the save/update/migration flow from the initial prompt.
-    kDeclined,
+    kDeclined = 3,
     // The user accepted the save/update/migration flow from the edit dialog.
-    kEditAccepted,
+    kEditAccepted = 4,
     // The user declined the save/update/migration flow from the edit dialog.
-    kEditDeclined,
+    kEditDeclined = 5,
     // The user selected to never migrate a `kLocalOrSyncable` profile to the
     // account storage. Currently unused for new profile and update prompts, but
     // is triggered by explicitly declining a migration prompt.
-    kNever,
+    kNever = 6,
     // The user ignored the prompt.
-    kIgnored,
+    kIgnored = 7,
     // The save/update/migration message timed out before the user interacted.
     // This is only relevant on mobile.
-    kMessageTimeout,
+    kMessageTimeout = 8,
     // The user swipes away the save/update/migration message. This is only
     // relevant on mobile.
-    kMessageDeclined,
+    kMessageDeclined = 9,
     // The prompt is suppressed most likely because there is already another
     // prompt shown on the same tab.
-    kAutoDeclined,
+    kAutoDeclined = 10,
     kMaxValue = kAutoDeclined,
+  };
+
+  // Represents the user's possible decisions or outcomes in response to a
+  // prompt related to AutofillAi saving, updating, or migrating.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AutofillAiBubbleClosedReason {
+    // Bubble closed reason not specified.
+    kUnknown = 0,
+    // The user explicitly accepted the bubble.
+    kAccepted = 1,
+    // The user explicitly cancelled the bubble.
+    kCancelled = 2,
+    // The user explicitly closed the bubble (via the close button or the ESC).
+    kClosed = 3,
+    // The bubble was not interacted with.
+    kNotInteracted = 4,
+    // The bubble lost focus and was closed.
+    kLostFocus = 5,
+    kMaxValue = kLostFocus
   };
 
   // Describes the types of Iph shown by Autofill and anchored to a field.
@@ -196,45 +234,31 @@ class AutofillClient {
     PopupAnchorType anchor_type = PopupAnchorType::kField;
   };
 
-  // Describes the position of the Autofill popup on the screen.
-  struct PopupScreenLocation {
-    // The bounds of the popup in the screen coordinate system.
-    gfx::Rect bounds;
-    // Describes the position of the arrow on the popup's border and corresponds
-    // to a subset of the available options in `views::BubbleBorder::Arrow`.
-    enum class ArrowPosition {
-      kTopRight,
-      kTopLeft,
-      kBottomRight,
-      kBottomLeft,
-      kLeftTop,
-      kRightTop,
-      kMax = kRightTop
-    };
-    ArrowPosition arrow_position;
+  using EntityImportPromptResultCallback =
+      base::OnceCallback<void(AutofillAiBubbleClosedReason close_reason)>;
+
+  // The types of prompts that AutofillAi can show to the user after a form
+  // submission. The values are ordered by decreasing priority of being shown
+  // vis-a-vis each other.
+  enum class AutofillAiImportPromptType {
+    kSave = 0,
+    kUpdate = 1,
+    kMigrate = 2,
+    kMaxValue = kMigrate
   };
 
-  // Contains the result of a user interaction with the save/update AutofillAi
-  // prompt.
-  struct EntitySaveOrUpdatePromptResult final {
-    EntitySaveOrUpdatePromptResult();
-    EntitySaveOrUpdatePromptResult(bool did_user_decline,
-                                   std::optional<EntityInstance> entity);
-    EntitySaveOrUpdatePromptResult(const EntitySaveOrUpdatePromptResult&);
-    EntitySaveOrUpdatePromptResult(EntitySaveOrUpdatePromptResult&&);
-    EntitySaveOrUpdatePromptResult& operator=(
-        const EntitySaveOrUpdatePromptResult&);
-    EntitySaveOrUpdatePromptResult& operator=(EntitySaveOrUpdatePromptResult&&);
-    ~EntitySaveOrUpdatePromptResult();
-
-    // Whether the user explicitly declined the dialog.
-    bool did_user_decline = false;
-
-    // Non-empty iff the prompt was accepted.
-    std::optional<EntityInstance> entity;
+  // Specifies the type of the address save prompt.
+  enum class SaveAddressBubbleType {
+    // The standard "Save address" bubble.
+    kSave = 0,
+    // An altered save bubble, that offers migrating a profile to the Google
+    // Account.
+    kMigrateToAccount = 1,
+    // A bubble offering to merge the `kAccountNameEmail` and
+    // `kAccountHome/kAccountName` profiles into a single profile.
+    kHomeWorkNameEmailMerge = 2,
+    kMaxValue = kHomeWorkNameEmailMerge
   };
-  using EntitySaveOrUpdatePromptResultCallback =
-      base::OnceCallback<void(EntitySaveOrUpdatePromptResult result)>;
 
   // Callback to run when the user makes a decision on whether to save the
   // profile. If the user edits the Autofill profile and then accepts edits, the
@@ -284,6 +308,13 @@ class AutofillClient {
   // Autofill server.
   virtual AutofillCrowdsourcingManager& GetCrowdsourcingManager() = 0;
 
+  // Returns whether the client has a PersonalDataManager.
+  //
+  // TODO(crbug.cm/455121491) This is a temporary fix to avoid crashes when
+  // AutofillAnnotationsProviderImpl::AddAutofillInformation tries to query
+  // autofillable data but deals with an AndroidAutofillClient.
+  virtual bool HasPersonalDataManager() const;
+
   // Gets the PersonalDataManager instance associated with the original Chrome
   // profile.
   // To distinguish between (non-)incognito mode when deciding to persist data,
@@ -300,10 +331,12 @@ class AutofillClient {
   virtual EntityDataManager* GetEntityDataManager() = 0;
   const EntityDataManager* GetEntityDataManager() const;
 
-  // Gets the AutofillOptimizationGuide instance associated with the client.
-  // This function can return nullptr if we are on an unsupported platform, or
-  // if the AutofillOptimizationGuide's dependencies are not present.
-  virtual AutofillOptimizationGuide* GetAutofillOptimizationGuide() const;
+  // Gets the AutofillOptimizationGuideDecider instance associated with the
+  // client. This function can return nullptr if we are on an unsupported
+  // platform, or if the AutofillOptimizationGuideDecider's dependencies are not
+  // present.
+  virtual AutofillOptimizationGuideDecider*
+  GetAutofillOptimizationGuideDecider() const;
 
   // Gets the FieldClassificationModelHandler instance for autofill machine
   // learning predictions associated with the client.
@@ -344,6 +377,9 @@ class AutofillClient {
   // `kAutofillAiServerModel` is not enabled or the profile is OTR.
   virtual AutofillAiModelExecutor* GetAutofillAiModelExecutor();
 
+  // Returns the per-profile `RemoteModelExecutor`.
+  virtual optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor();
+
   // Returns nullptr if no identity credential conditional request was made
   // before.
   const IdentityCredentialDelegate* GetIdentityCredentialDelegate() const {
@@ -361,39 +397,6 @@ class AutofillClient {
   // password suggestions for the given `field_id`.
   virtual PasswordManagerDelegate* GetPasswordManagerDelegate(
       const FieldGlobalId& field_id);
-
-  // Returns the `OtpSuggestionDelegate` associated with the profile of
-  // the window of this tab.
-  virtual OtpSuggestionDelegate* GetOtpSuggestionDelegate();
-
-  // TODO(crbug.com/365494310): Move these methods to a plus-address-specific
-  // client class.
-
-  // Orchestrates UI for enterprise plus address creation; no-op
-  // except on supported platforms.
-  virtual void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
-                                        bool is_manual_fallback,
-                                        PlusAddressCallback callback);
-
-  enum class PlusAddressErrorDialogType {
-    kGenericError,
-    // The quota for plus address creation is exhausted (account-wide or
-    // site-specific).
-    kQuotaExhausted,
-    // The network request timed out.
-    kTimeout,
-  };
-  // Shows UI to inform the user about a plus address error (apart from
-  // affiliation errors).
-  virtual void ShowPlusAddressError(
-      PlusAddressErrorDialogType error_dialog_type,
-      base::OnceClosure on_accepted);
-
-  // Shows UI to inform the user about a plus address affiliation error.
-  virtual void ShowPlusAddressAffiliationError(
-      std::u16string affiliated_domain,
-      std::u16string affiliated_plus_address,
-      base::OnceClosure on_accepted);
 
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;
@@ -426,7 +429,7 @@ class AutofillClient {
   // returned so check before use.
   // TODO(crbug.com/40926442): Make sure all strike database usages check for
   // the nullptr.
-  virtual StrikeDatabase* GetStrikeDatabase() = 0;
+  virtual strike_database::StrikeDatabase* GetStrikeDatabase() = 0;
 
   // Gets the UKM service associated with this client (for metrics).
   virtual ukm::UkmRecorder* GetUkmRecorder() = 0;
@@ -469,12 +472,12 @@ class AutofillClient {
   // renders an update prompt where `original_profile` is the address profile
   // that will be updated if the user accepts the update prompt. Runs `callback`
   // once the user makes a decision with respect to the offer-to-save prompt.
-  // `is_migration_to_account` differentiates saving `profile` in browser or
+  // `save_address_bubble_type` differentiates saving `profile` in browser or
   // in user's Google account.
   virtual void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      SaveAddressBubbleType save_address_bubble_type,
       AddressProfileSavePromptCallback callback) = 0;
 
   // A unique identifier for suggestions UI (i.e. the keyboard accessory on
@@ -512,10 +515,6 @@ class AutofillClient {
   virtual void UpdateAutofillDataListValues(
       base::span<const SelectOption> datalist) = 0;
 
-  // Returns the information of the popup on the screen, if there is one that is
-  // showing. Note that this implemented only on Desktop.
-  virtual std::optional<PopupScreenLocation> GetPopupScreenLocation() const;
-
   // Returns the identifier of the suggestion UI that is currently showing or
   // `std::nullopt` is there is none.
   virtual std::optional<SuggestionUiSessionId>
@@ -551,6 +550,28 @@ class AutofillClient {
   // Triggers a survey to ask the user why they declined saving an address.
   virtual void TriggerDeclinedSaveAddressReasonSurvey();
 
+  // Triggers a survey after the user sees an Autofill AI suggestion and submits
+  // a form. The triggering happens only if the uses sees an Autofill AI
+  // suggestion, regardless of whether they accepted it or not.
+  // `suggestion_accepted` defines whether the suggestion seen by the user was
+  // accepted. `entity_type` defines the type of entity used to generate the
+  // suggestion.
+  virtual void TriggerAutofillAiFillingJourneySurvey(
+      bool suggestion_accepted,
+      EntityType entity_type,
+      const base::flat_set<EntityTypeName>& saved_entities,
+      const FieldTypeSet& triggering_field_types);
+
+  // Triggers a survey after the user sees an Autofill AI save prompt.
+  virtual void TriggerAutofillAiSavePromptSurvey(
+      bool prompt_accepted,
+      EntityType entity_type,
+      const base::flat_set<EntityTypeName>& saved_entities);
+
+  // Returns whether there is an active actor task for this client's tab (if
+  // one exists).
+  virtual bool IsActorTaskActive() const;
+
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const = 0;
 
@@ -558,22 +579,25 @@ class AutofillClient {
   // the client supports Autofill.
   virtual bool IsAutofillProfileEnabled() const = 0;
 
-  // Returns true if the value of the AutofillCreditCardEnabled pref is true
-  // and the client supports Autofill.
-  virtual bool IsAutofillPaymentMethodsEnabled() const = 0;
-
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() const = 0;
 
   // Returns whether password management is enabled as per the user preferences.
   virtual bool IsPasswordManagerEnabled() const = 0;
 
-  // Inform the client that the form has been filled.
-  virtual void DidFillForm(AutofillTriggerSource trigger_source,
-                           bool is_refill) = 0;
-
   // If the context is secure.
   virtual bool IsContextSecure() const = 0;
+
+  // Returns whether Google Wallet storage is supported.
+  virtual bool IsWalletStorageEnabled() const = 0;
+
+  // Returns true if the client supports saving CVCs. This allows specific
+  // clients (IosWebView) to opt out of the CVC saving feature.
+  virtual bool IsCvcSavingSupported() const;
+
+  // Returns true if all the conditions for enabling the upload of credit card
+  // are satisfied.
+  virtual bool IsCreditCardUploadEnabled() const;
 
   // Returns a LogManager instance (for chrome://autofill-internals). Note that
   // the return value may change over the lifetime of an AutofillClient from
@@ -664,10 +688,34 @@ class AutofillClient {
   // Shows a bubble asking whether the user wants to save or update Autofill AI
   // data. `old_entity` is present in the update cases. It is used to give users
   // a better understanding of what was updated.
-  virtual void ShowEntitySaveOrUpdateBubble(
+  virtual void ShowEntityImportBubble(
       EntityInstance new_entity,
       std::optional<EntityInstance> old_entity,
-      EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback);
+      EntityImportPromptResultCallback prompt_closed_callback);
+
+  virtual void ShowEmailVerifiedToast();
+
+  // May return null on platforms where OTPs are not supported.
+  virtual OtpFieldDetector* GetOtpFieldDetector();
+
+  // Returns the delegate for OTP phish guard, which can be used to perform
+  // security checks before offering an OTP. May return nullptr.
+  virtual OtpPhishGuardDelegate* GetOtpPhishGuardDelegate();
+
+  // May return null on platforms where no OneTimeTokenService is supported.
+  virtual one_time_tokens::OneTimeTokenService* GetOneTimeTokenService() const;
+
+  // Returns true if the primary main frame's document used the WebOTP API. This
+  // exists only for the main frame because only the main frame has the
+  // permission to call the WeOTP API.
+  virtual bool DocumentUsedWebOTP();
+
+  // Returns the helper for Password Manager integrations.
+  virtual PasswordManagerAutofillHelperDelegate*
+  GetPasswordManagerAutofillHelper();
+
+  // Returns the AutofillManager instance for the current frame/tab.
+  virtual AutofillManager* GetAutofillManagerForPrimaryMainFrame();
 };
 
 }  // namespace autofill

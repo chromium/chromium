@@ -10,10 +10,10 @@
 #include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
+#include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_origin.h"
-#include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -22,6 +22,7 @@ namespace blink {
 class CSSProperty;
 class CSSVariableData;
 class CSSProperty;
+class StyleRuleFunction;
 
 namespace cssvalue {
 

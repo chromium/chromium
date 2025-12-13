@@ -24,7 +24,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalNavigationParams(
 std::optional<blink::LocalFrameToken>
 GetInitiatorFrameTokenFromJavaAdditionalNavigationParams(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_object) {
+    const base::android::JavaRef<jobject>& j_object) {
   if (!j_object) {
     return std::nullopt;
   }
@@ -39,7 +39,7 @@ GetInitiatorFrameTokenFromJavaAdditionalNavigationParams(
 
 int GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_object) {
+    const base::android::JavaRef<jobject>& j_object) {
   if (!j_object) {
     return false;
   }
@@ -50,7 +50,7 @@ int GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
 std::optional<blink::AttributionSrcToken>
 GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_object) {
+    const base::android::JavaRef<jobject>& j_object) {
   if (!j_object) {
     return std::nullopt;
   }
@@ -64,3 +64,5 @@ GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
 }
 
 }  // namespace content
+
+DEFINE_JNI(AdditionalNavigationParamsUtils)

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/common/drm_wrapper.h"
 
 #include <fcntl.h>
@@ -18,6 +13,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -34,7 +30,7 @@ bool DrmCreateDumbBuffer(int fd,
                          uint32_t* handle,
                          uint32_t* stride) {
   struct drm_mode_create_dumb request;
-  memset(&request, 0, sizeof(request));
+  UNSAFE_TODO(memset(&request, 0, sizeof(request)));
   request.width = info.width();
   request.height = info.height();
   request.bpp = info.bytesPerPixel() << 3;
@@ -57,14 +53,14 @@ bool DrmCreateDumbBuffer(int fd,
 
 bool DrmDestroyDumbBuffer(int fd, uint32_t handle) {
   struct drm_mode_destroy_dumb destroy_request;
-  memset(&destroy_request, 0, sizeof(destroy_request));
+  UNSAFE_TODO(memset(&destroy_request, 0, sizeof(destroy_request)));
   destroy_request.handle = handle;
   return !drmIoctl(fd, DRM_IOCTL_MODE_DESTROY_DUMB, &destroy_request);
 }
 
 bool CanQueryForResources(int fd) {
   drm_mode_card_res resources;
-  memset(&resources, 0, sizeof(resources));
+  UNSAFE_TODO(memset(&resources, 0, sizeof(resources)));
   // If there is no error getting DRM resources then assume this is a
   // modesetting device.
   return !drmIoctl(fd, DRM_IOCTL_MODE_GETRESOURCES, &resources);
@@ -243,7 +239,7 @@ bool DrmWrapper::DestroyDumbBuffer(uint32_t handle) {
 
 bool DrmWrapper::MapDumbBuffer(uint32_t handle, size_t size, void** pixels) {
   struct drm_mode_map_dumb map_request;
-  memset(&map_request, 0, sizeof(map_request));
+  UNSAFE_TODO(memset(&map_request, 0, sizeof(map_request)));
   map_request.handle = handle;
   if (drmIoctl(drm_fd_.get(), DRM_IOCTL_MODE_MAP_DUMB, &map_request)) {
     PLOG(ERROR) << "Cannot prepare dumb buffer for mapping";
@@ -266,7 +262,7 @@ bool DrmWrapper::UnmapDumbBuffer(void* pixels, size_t size) {
 
 bool DrmWrapper::CloseBufferHandle(uint32_t handle) {
   struct drm_gem_close close_request;
-  memset(&close_request, 0, sizeof(close_request));
+  UNSAFE_TODO(memset(&close_request, 0, sizeof(close_request)));
   close_request.handle = handle;
   return !drmIoctl(drm_fd_.get(), DRM_IOCTL_GEM_CLOSE, &close_request);
 }
@@ -388,12 +384,12 @@ ScopedDrmPropertyPtr DrmWrapper::GetProperty(drmModeConnector* connector,
                connector->connector_id, "name", name);
   for (int i = 0; i < connector->count_props; ++i) {
     ScopedDrmPropertyPtr property(
-        drmModeGetProperty(drm_fd_.get(), connector->props[i]));
+        drmModeGetProperty(drm_fd_.get(), UNSAFE_TODO(connector->props[i])));
     if (!property) {
       continue;
     }
 
-    if (strcmp(property->name, name) == 0) {
+    if (UNSAFE_TODO(strcmp(property->name, name)) == 0) {
       return property;
     }
   }
@@ -467,15 +463,15 @@ ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(
                connector->connector_id, "name", name);
   for (int i = 0; i < connector->count_props; ++i) {
     ScopedDrmPropertyPtr property(
-        drmModeGetProperty(drm_fd_.get(), connector->props[i]));
+        drmModeGetProperty(drm_fd_.get(), UNSAFE_TODO(connector->props[i])));
     if (!property) {
       continue;
     }
 
-    if (strcmp(property->name, name) == 0 &&
+    if (UNSAFE_TODO(strcmp(property->name, name)) == 0 &&
         (property->flags & DRM_MODE_PROP_BLOB)) {
-      return ScopedDrmPropertyBlobPtr(
-          drmModeGetPropertyBlob(drm_fd_.get(), connector->prop_values[i]));
+      return ScopedDrmPropertyBlobPtr(drmModeGetPropertyBlob(
+          drm_fd_.get(), UNSAFE_TODO(connector->prop_values[i])));
     }
   }
 

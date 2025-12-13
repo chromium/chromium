@@ -10,6 +10,9 @@
 #include <variant>
 
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -132,12 +135,6 @@ IdentityTokenCache::AccessTokensKey::AccessTokensKey(
     const std::string& extension_id,
     const CoreAccountId& account_id)
     : extension_id(extension_id), account_id(account_id) {}
-
-bool IdentityTokenCache::AccessTokensKey::operator<(
-    const AccessTokensKey& rhs) const {
-  return std::tie(extension_id, account_id) <
-         std::tie(rhs.extension_id, rhs.account_id);
-}
 
 // Ensure that the access tokens are ordered by scope sizes.
 bool IdentityTokenCache::ScopesSizeCompare::operator()(

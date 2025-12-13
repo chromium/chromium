@@ -10,7 +10,6 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/metrics/histogram_macros.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -192,17 +191,8 @@ const gfx::VectorIcon& GetShortcutKeyIcon() {
   switch (Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay()) {
     case ui::mojom::MetaKey::kSearch:
       return kClipboardSearchIcon;
-    case ui::mojom::MetaKey::kLauncher: {
-      const auto* const assistant_state = AssistantState::Get();
-      const bool is_assistant_available =
-          assistant_state &&
-          assistant_state->allowed_state() ==
-              assistant::AssistantAllowedState::ALLOWED &&
-          assistant_state->settings_enabled().value_or(false);
-
-      return is_assistant_available ? kClipboardLauncherIcon
-                                    : kClipboardLauncherNoAssistantIcon;
-    }
+    case ui::mojom::MetaKey::kLauncher:
+      return kClipboardLauncherNoAssistantIcon;
     case ui::mojom::MetaKey::kLauncherRefresh:
       return kCampbellHeroIcon;
     case ui::mojom::MetaKey::kExternalMeta:

@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/base/request_priority.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/back_forward_cache_disabling_feature_tracker.h"
@@ -74,6 +75,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
  public:
   FrameSchedulerImpl(PageSchedulerImpl* page_scheduler,
                      FrameScheduler::Delegate* delegate,
+                     const LocalFrameToken& frame_token,
                      bool is_in_embedded_frame_tree,
                      FrameScheduler::FrameType frame_type);
   FrameSchedulerImpl(const FrameSchedulerImpl&) = delete;
@@ -116,27 +118,18 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
                                 DidCommitProvisionalLoadParams params = {
                                     base::TimeDelta()}) override;
   WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
-      const WTF::String& name,
+      const String& name,
       WebScopedVirtualTimePauser::VirtualTaskDuration duration) override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
 
   void OnFirstContentfulPaintInMainFrame() override;
-  void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override;
+  void OnFirstMeaningfulPaint() override;
   void OnMainFrameInteractive() override;
-  void OnDispatchLoadEvent() override;
   void OnDidInstallNewDocument() override;
   base::TimeDelta UnreportedTaskTime() const override;
 
   bool IsWaitingForContentfulPaint() const;
   bool IsWaitingForMeaningfulPaint() const;
-
-  // Returns true when
-  // 1. the FrameSchedulerImpl is still waiting for the meaningful paint signal,
-  // or
-  // 2. the FrameSchedulerImpl has received the meaningful paint signal not
-  // longer than `GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint` ago, and
-  // the load event is not dispatched yet.
-  bool IsLoading() const;
 
   // An "ordinary" FrameScheduler is responsible for a frame whose parent page
   // is a fully-featured page owned by a web view (as opposed to, e.g.: a Page
@@ -195,7 +188,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   // Returns the list of active features which currently tracked by the
   // scheduler for back-forward cache metrics.
-  WTF::HashSet<SchedulingPolicy::Feature>
+  HashSet<SchedulingPolicy::Feature>
   GetActiveFeaturesTrackedForBackForwardCacheMetrics() override;
 
   std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
@@ -215,6 +208,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   FrameSchedulerImpl(MainThreadSchedulerImpl* main_thread_scheduler,
                      PageSchedulerImpl* parent_page_scheduler,
                      FrameScheduler::Delegate* delegate,
+                     const LocalFrameToken& frame_token,
                      bool is_in_embedded_frame_tree,
                      FrameScheduler::FrameType frame_type);
 
@@ -355,6 +349,9 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   TraceableVariableController tracing_controller_;
   std::unique_ptr<FrameTaskQueueController> frame_task_queue_controller_;
 
+  const base::trace_event::TrackRegistration<perfetto::NamedTrack>
+      tracing_track_;
+
   const raw_ptr<MainThreadSchedulerImpl, DanglingUntriaged>
       main_thread_scheduler_;  // NOT OWNED
   raw_ptr<PageSchedulerImpl> parent_page_scheduler_;  // NOT OWNED
@@ -389,8 +386,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   BackForwardCacheDisablingFeatureTracker
       back_forward_cache_disabling_feature_tracker_;
 
-  TaskPriority default_loading_task_priority_ = TaskPriority::kNormalPriority;
-
   // These are the states of the Page.
   // They should be accessed via GetPageScheduler()->SetPageState().
   // they are here because we don't support page-level tracing yet.
@@ -401,12 +396,10 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
       waiting_for_contentful_paint_;
   TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
       waiting_for_meaningful_paint_;
-  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-      is_load_event_dispatched_;
   base::TimeTicks first_meaningful_paint_timestamp_;
 
   using TaskRunnerMap =
-      WTF::HashMap<TaskType, scoped_refptr<base::SingleThreadTaskRunner>>;
+      HashMap<TaskType, scoped_refptr<base::SingleThreadTaskRunner>>;
 
   // Map of all TaskRunners, indexed by TaskType.
   TaskRunnerMap task_runners_;

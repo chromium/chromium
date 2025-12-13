@@ -8,7 +8,6 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "components/webui/flags/feature_entry.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -53,10 +52,6 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
 
  private:
   void NotifyRestartCallback();
-
-  base::WeakPtr<actions::ActionItem> chrome_labs_action_item_ = nullptr;
-
-  raw_ptr<Browser> browser_;
 
   // This view will hold all the child lab items.
   raw_ptr<views::FlexLayoutView> menu_item_container_;

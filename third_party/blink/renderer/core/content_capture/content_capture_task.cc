@@ -62,9 +62,9 @@ ContentCaptureTask::ContentCaptureTask(LocalFrame& local_frame_root,
     histogram_reporter_ =
         base::MakeRefCounted<ContentCaptureTaskHistogramReporter>();
     task_session_->SetSentNodeCountCallback(
-        WTF::BindRepeating(&ContentCaptureTaskHistogramReporter::
-                               RecordsSentContentCountPerDocument,
-                           histogram_reporter_));
+        blink::BindRepeating(&ContentCaptureTaskHistogramReporter::
+                                 RecordsSentContentCountPerDocument,
+                             histogram_reporter_));
   }
 }
 

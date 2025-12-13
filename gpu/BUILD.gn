@@ -95,7 +95,6 @@ static_library("test_support") {
     "command_buffer/service/test_helper.h",
     "ipc/raster_in_process_context.cc",
     "ipc/raster_in_process_context.h",
-    "ipc/service/gpu_memory_buffer_factory_test_template.h",
     "ipc/webgpu_in_process_context.cc",
     "ipc/webgpu_in_process_context.h",
   ]
@@ -119,7 +118,7 @@ static_library("test_support") {
     "//gpu/ipc/client",
     "//gpu/ipc/common",
     "//gpu/ipc/service",
-    "//gpu/skia_bindings:skia_bindings",
+    "//gpu/skia_bindings",
     "//media",
     "//testing/gmock",
     "//testing/gtest",
@@ -135,6 +134,10 @@ static_library("test_support") {
     ]
   }
   deps += [ "//third_party/angle:translator" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (!is_android && !is_fuchsia && !is_chromeos && !is_ios) {
@@ -152,7 +155,7 @@ if (!is_android && !is_fuchsia && !is_chromeos && !is_ios) {
 
     deps = [
       ":gl_lpm_fuzzer_proto",
-      "//base:base",
+      "//base",
     ]
   }
 
@@ -191,12 +194,12 @@ if (!is_android && !is_fuchsia && !is_chromeos && !is_ios) {
       "//gpu/command_buffer/client:gles2_implementation",
       "//gpu/command_buffer/common:gles2_utils",
       "//gpu/ipc:gl_in_process_context",
-      "//gpu/ipc/service:service",
-      "//testing/gtest:gtest",
+      "//gpu/ipc/service",
+      "//testing/gtest",
       "//third_party/libprotobuf-mutator",
-      "//ui/gfx:gfx",
-      "//ui/gl:gl",
-      "//ui/gl/init:init",
+      "//ui/gfx",
+      "//ui/gl",
+      "//ui/gl/init",
     ]
 
     if (use_ozone) {
@@ -211,6 +214,7 @@ test("gl_tests") {
   sources = [
     "command_buffer/service/shared_image/egl_image_backing_factory_unittest.cc",
     "command_buffer/service/shared_image/gl_texture_image_backing_factory_unittest.cc",
+    "command_buffer/service/shared_image/shared_image_copy_manager_unittest.cc",
     "command_buffer/service/shared_image/shared_image_factory_unittest.cc",
     "command_buffer/service/shared_image/shared_image_manager_unittest.cc",
     "command_buffer/service/shared_image/shared_image_representation_unittest.cc",
@@ -230,7 +234,6 @@ test("gl_tests") {
     "command_buffer/tests/gl_cube_map_texture_unittest.cc",
     "command_buffer/tests/gl_depth_texture_unittest.cc",
     "command_buffer/tests/gl_deschedule_unittest.cc",
-    "command_buffer/tests/gl_discardable_textures_unittest.cc",
     "command_buffer/tests/gl_dynamic_config_unittest.cc",
     "command_buffer/tests/gl_ext_blend_func_extended_unittest.cc",
     "command_buffer/tests/gl_ext_multisample_compatibility_unittest.cc",
@@ -315,12 +318,16 @@ test("gl_tests") {
   deps += [ "//third_party/angle:translator" ]
 
   if (use_ozone) {
+    if (enable_vulkan) {
+      sources +=
+          [ "command_buffer/service/drm_modifiers_filter_vulkan_unittest.cc" ]
+    }
     deps += [ "//ui/ozone" ]
     sources += [ "command_buffer/service/shared_image/ozone_image_backing_factory_unittest.cc" ]
   }
 
   if (enable_vulkan) {
-    deps += [ "//gpu/vulkan/init:init" ]
+    deps += [ "//gpu/vulkan/init" ]
   }
 
   libs = []
@@ -366,6 +373,7 @@ test("gl_tests") {
     ]
 
     sources += [
+      "command_buffer/service/shared_image/dawn_image_backing_factory_unittest.cc",
       "command_buffer/service/shared_image/dawn_image_representation_unittest_common.cc",
       "command_buffer/service/shared_image/dawn_image_representation_unittest_common.h",
     ]
@@ -380,6 +388,10 @@ test("gl_tests") {
   if (is_chromeos) {
     deps += [ "//ui/gfx/linux:gbm" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("gpu_unittests") {
@@ -395,12 +407,13 @@ test("gpu_unittests") {
     "command_buffer/client/fenced_allocator_test.cc",
     "command_buffer/client/gles2_implementation_unittest.cc",
     "command_buffer/client/gles2_implementation_unittest_autogen.h",
+    "command_buffer/client/internal/mappable_buffer_shared_memory_unittest.cc",
+    "command_buffer/client/internal/mappable_buffer_test_template.h",
     "command_buffer/client/mapped_memory_unittest.cc",
     "command_buffer/client/mock_transfer_buffer.cc",
     "command_buffer/client/mock_transfer_buffer.h",
     "command_buffer/client/program_info_manager_unittest.cc",
     "command_buffer/client/query_tracker_unittest.cc",
-    "command_buffer/client/raster_implementation_gles_unittest.cc",
     "command_buffer/client/raster_implementation_unittest.cc",
     "command_buffer/client/raster_implementation_unittest_autogen.h",
     "command_buffer/client/ring_buffer_test.cc",
@@ -464,7 +477,6 @@ test("gpu_unittests") {
     "command_buffer/service/renderbuffer_manager_unittest.cc",
     "command_buffer/service/retaining_one_shot_timer_holder_unittest.cc",
     "command_buffer/service/scheduler_unittest.cc",
-    "command_buffer/service/service_discardable_manager_unittest.cc",
     "command_buffer/service/service_transfer_cache_unittest.cc",
     "command_buffer/service/shader_manager_unittest.cc",
     "command_buffer/service/shader_translator_cache_unittest.cc",
@@ -498,9 +510,6 @@ test("gpu_unittests") {
     "config/gpu_test_expectations_parser_unittest.cc",
     "config/gpu_util_unittest.cc",
     "ipc/client/command_buffer_proxy_impl_unittest.cc",
-    "ipc/client/image_decode_accelerator_proxy_unittest.cc",
-    "ipc/common/gpu_memory_buffer_impl_shared_memory_unittest.cc",
-    "ipc/common/gpu_memory_buffer_impl_test_template.h",
     "ipc/common/mojom_traits_unittest.cc",
     "ipc/host/gpu_disk_cache_unittest.cc",
     "ipc/service/gpu_channel_test_common.cc",
@@ -532,16 +541,9 @@ test("gpu_unittests") {
     ]
   }
 
-  if (is_chromeos) {
-    # Image decode acceleration with hardware is only supported in Chrome OS.
-    # The intention is to run this test in the linux-chromeos build.
-    sources += [ "ipc/service/image_decode_accelerator_stub_unittest.cc" ]
-  }
-
   if (is_mac) {
     sources += [
-      "ipc/common/gpu_memory_buffer_impl_io_surface_unittest.cc",
-      "ipc/service/gpu_memory_buffer_factory_io_surface_unittest.cc",
+      "command_buffer/client/internal/mappable_buffer_io_surface_unittest.cc",
     ]
   }
 
@@ -554,17 +556,17 @@ test("gpu_unittests") {
   }
 
   if (is_linux || is_chromeos || use_ozone) {
-    sources += [
-      "ipc/common/gpu_memory_buffer_impl_native_pixmap_unittest.cc",
-      "ipc/service/gpu_memory_buffer_factory_native_pixmap_unittest.cc",
-    ]
+    sources += [ "command_buffer/client/internal/mappable_buffer_native_pixmap_unittest.cc" ]
   }
 
   if (is_win) {
-    sources += [
-      "ipc/common/gpu_memory_buffer_impl_dxgi_unittest.cc",
-      "ipc/service/gpu_memory_buffer_factory_dxgi_unittest.cc",
-    ]
+    sources +=
+        [ "command_buffer/client/internal/mappable_buffer_dxgi_unittest.cc" ]
+  }
+
+  if (is_android) {
+    sources +=
+        [ "command_buffer/client/internal/mappable_buffer_ahb_unittest.cc" ]
   }
 
   if (is_linux || is_chromeos || is_android) {
@@ -596,6 +598,8 @@ test("gpu_unittests") {
   if (use_dawn) {
     sources += [
       "command_buffer/service/dawn_caching_interface_unittest.cc",
+      "command_buffer/service/dawn_platform_unittest.cc",
+      "command_buffer/service/gpu_persistent_cache_unittest.cc",
       "config/webgpu_blocklist_unittest.cc",
     ]
   }
@@ -613,12 +617,14 @@ test("gpu_unittests") {
     "//base/test:test_support",
     "//cc:test_support",
     "//cc/paint",
-    "//components/viz/common:shared_image_format",
+    "//components/persistent_cache",
+    "//components/viz/common/resources:shared_image_format",
     "//components/viz/test:test_support",
     "//gpu/command_buffer/client:gles2_c_lib",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/client:raster",
     "//gpu/command_buffer/client:webgpu",
+    "//gpu/command_buffer/client/internal",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2_utils",
     "//gpu/command_buffer/service",
@@ -656,7 +662,7 @@ test("gpu_unittests") {
 
   if (use_dawn) {
     deps += [
-      "//gpu/config:webgpu_blocklist_impl",
+      "//gpu/config",
       "//net:test_support",
       "//third_party/dawn/src/dawn:cpp",
       "//third_party/dawn/src/dawn:proc",
@@ -674,8 +680,12 @@ test("gpu_unittests") {
   }
 
   if (is_apple) {
-    deps += [ "//ui/accelerated_widget_mac:accelerated_widget_mac" ]
+    deps += [ "//ui/accelerated_widget_mac" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("gpu_perftests") {

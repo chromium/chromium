@@ -47,7 +47,7 @@ class OneGoogleBarLoaderImpl : public OneGoogleBarLoader {
   GURL GetApiUrl() const;
 
   void LoadDone(const network::SimpleURLLoader* simple_loader,
-                std::unique_ptr<std::string> response_body);
+                std::optional<std::string> response_body);
 
   void JsonParsed(data_decoder::DataDecoder::ValueOrError result);
 

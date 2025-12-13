@@ -17,7 +17,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwDarkMode_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace android_webview {
@@ -32,16 +32,16 @@ bool IsForceDarkEnabled(content::WebContents* web_contents) {
 }  // namespace
 
 // static
-jlong JNI_AwDarkMode_Init(JNIEnv* env,
-                          const JavaParamRef<jobject>& obj,
-                          const JavaParamRef<jobject>& java_web_contents) {
+static jlong JNI_AwDarkMode_Init(JNIEnv* env,
+                                 const JavaRef<jobject>& obj,
+                                 const JavaRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   DCHECK(web_contents);
   return reinterpret_cast<intptr_t>(new AwDarkMode(env, obj, web_contents));
 }
 
-void JNI_AwDarkMode_EnableSimplifiedDarkMode(JNIEnv* env) {
+static void JNI_AwDarkMode_EnableSimplifiedDarkMode(JNIEnv* env) {
   sShouldEnableSimplifiedDarkMode = true;
 }
 
@@ -180,3 +180,5 @@ void AwDarkMode::InferredColorSchemeUpdated(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwDarkMode)

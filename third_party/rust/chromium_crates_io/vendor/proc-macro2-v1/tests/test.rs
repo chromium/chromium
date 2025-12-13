@@ -4,7 +4,8 @@
     clippy::needless_pass_by_value,
     clippy::needless_raw_string_hashes,
     clippy::non_ascii_literal,
-    clippy::octal_escapes
+    clippy::octal_escapes,
+    clippy::uninlined_format_args
 )]
 
 use proc_macro2::{Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
@@ -145,6 +146,30 @@ fn literal_raw_string() {
         .unwrap_err();
 }
 
+#[cfg(procmacro2_semver_exempt)]
+#[test]
+fn literal_string_value() {
+    for string in ["", "...", "...\t...", "...\\...", "...\0...", "...\u{1}..."] {
+        assert_eq!(string, Literal::string(string).str_value().unwrap());
+        assert_eq!(
+            string,
+            format!("r\"{string}\"")
+                .parse::<Literal>()
+                .unwrap()
+                .str_value()
+                .unwrap(),
+        );
+        assert_eq!(
+            string,
+            format!("r##\"{string}\"##")
+                .parse::<Literal>()
+                .unwrap()
+                .str_value()
+                .unwrap(),
+        );
+    }
+}
+
 #[test]
 fn literal_byte_character() {
     #[track_caller]
@@ -188,6 +213,42 @@ fn literal_byte_string() {
     "b\"\\\r\n  \rx\"".parse::<TokenStream>().unwrap_err();
     "b\"\\\r\n  \u{a0}x\"".parse::<TokenStream>().unwrap_err();
     "br\"\u{a0}\"".parse::<TokenStream>().unwrap_err();
+}
+
+#[cfg(procmacro2_semver_exempt)]
+#[test]
+fn literal_byte_string_value() {
+    for bytestr in [
+        &b""[..],
+        b"...",
+        b"...\t...",
+        b"...\\...",
+        b"...\0...",
+        b"...\xF0...",
+    ] {
+        assert_eq!(
+            bytestr,
+            Literal::byte_string(bytestr).byte_str_value().unwrap(),
+        );
+        if let Ok(string) = str::from_utf8(bytestr) {
+            assert_eq!(
+                bytestr,
+                format!("br\"{string}\"")
+                    .parse::<Literal>()
+                    .unwrap()
+                    .byte_str_value()
+                    .unwrap(),
+            );
+            assert_eq!(
+                bytestr,
+                format!("br##\"{string}\"##")
+                    .parse::<Literal>()
+                    .unwrap()
+                    .byte_str_value()
+                    .unwrap(),
+            );
+        }
+    }
 }
 
 #[test]
@@ -257,6 +318,42 @@ fn literal_c_string() {
     for invalid in &[r#"c"\0""#, r#"c"\x00""#, r#"c"\u{0}""#, "c\"\0\""] {
         if let Ok(unexpected) = invalid.parse::<TokenStream>() {
             panic!("unexpected token: {:?}", unexpected);
+        }
+    }
+}
+
+#[cfg(procmacro2_semver_exempt)]
+#[test]
+fn literal_c_string_value() {
+    for cstr in [
+        c"",
+        c"...",
+        c"...\t...",
+        c"...\\...",
+        c"...\u{1}...",
+        c"...\xF0...",
+    ] {
+        assert_eq!(
+            cstr.to_bytes_with_nul(),
+            Literal::c_string(cstr).cstr_value().unwrap(),
+        );
+        if let Ok(string) = cstr.to_str() {
+            assert_eq!(
+                cstr.to_bytes_with_nul(),
+                format!("cr\"{string}\"")
+                    .parse::<Literal>()
+                    .unwrap()
+                    .cstr_value()
+                    .unwrap(),
+            );
+            assert_eq!(
+                cstr.to_bytes_with_nul(),
+                format!("cr##\"{string}\"##")
+                    .parse::<Literal>()
+                    .unwrap()
+                    .cstr_value()
+                    .unwrap(),
+            );
         }
     }
 }
@@ -454,6 +551,81 @@ fn source_text() {
 }
 
 #[test]
+fn lifetimes() {
+    let mut tokens = "'a 'static 'struct 'r#gen 'r#prefix#lifetime"
+        .parse::<TokenStream>()
+        .unwrap()
+        .into_iter();
+    assert!(match tokens.next() {
+        Some(TokenTree::Punct(punct)) => {
+            punct.as_char() == '\'' && punct.spacing() == Spacing::Joint
+        }
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Ident(ident)) => ident == "a",
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Punct(punct)) => {
+            punct.as_char() == '\'' && punct.spacing() == Spacing::Joint
+        }
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Ident(ident)) => ident == "static",
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Punct(punct)) => {
+            punct.as_char() == '\'' && punct.spacing() == Spacing::Joint
+        }
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Ident(ident)) => ident == "struct",
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Punct(punct)) => {
+            punct.as_char() == '\'' && punct.spacing() == Spacing::Joint
+        }
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Ident(ident)) => ident == "r#gen",
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Punct(punct)) => {
+            punct.as_char() == '\'' && punct.spacing() == Spacing::Joint
+        }
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Ident(ident)) => ident == "r#prefix",
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Punct(punct)) => {
+            punct.as_char() == '#' && punct.spacing() == Spacing::Alone
+        }
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Ident(ident)) => ident == "lifetime",
+        _ => false,
+    });
+
+    "' a".parse::<TokenStream>().unwrap_err();
+    "' r#gen".parse::<TokenStream>().unwrap_err();
+    "' prefix#lifetime".parse::<TokenStream>().unwrap_err();
+    "'prefix#lifetime".parse::<TokenStream>().unwrap_err();
+    "'aa'bb".parse::<TokenStream>().unwrap_err();
+    "'r#gen'a".parse::<TokenStream>().unwrap_err();
+}
+
+#[test]
 fn roundtrip() {
     fn roundtrip(p: &str) {
         println!("parse: {}", p);
@@ -630,16 +802,40 @@ fn raw_identifier() {
 }
 
 #[test]
+fn test_display_ident() {
+    let ident = Ident::new("proc_macro", Span::call_site());
+    assert_eq!(format!("{ident}"), "proc_macro");
+    assert_eq!(format!("{ident:-^14}"), "proc_macro");
+
+    let ident = Ident::new_raw("proc_macro", Span::call_site());
+    assert_eq!(format!("{ident}"), "r#proc_macro");
+    assert_eq!(format!("{ident:-^14}"), "r#proc_macro");
+}
+
+#[test]
 fn test_debug_ident() {
     let ident = Ident::new("proc_macro", Span::call_site());
-
-    #[cfg(not(span_locations))]
-    let expected = "Ident(proc_macro)";
-
-    #[cfg(span_locations)]
-    let expected = "Ident { sym: proc_macro }";
-
+    let expected = if cfg!(span_locations) {
+        "Ident { sym: proc_macro }"
+    } else {
+        "Ident(proc_macro)"
+    };
     assert_eq!(expected, format!("{:?}", ident));
+
+    let ident = Ident::new_raw("proc_macro", Span::call_site());
+    let expected = if cfg!(span_locations) {
+        "Ident { sym: r#proc_macro }"
+    } else {
+        "Ident(r#proc_macro)"
+    };
+    assert_eq!(expected, format!("{:?}", ident));
+}
+
+#[test]
+fn test_display_tokenstream() {
+    let tts = TokenStream::from_str("[a + 1]").unwrap();
+    assert_eq!(format!("{tts}"), "[a + 1]");
+    assert_eq!(format!("{tts:-^5}"), "[a + 1]");
 }
 
 #[test]

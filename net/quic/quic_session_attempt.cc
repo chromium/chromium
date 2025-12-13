@@ -279,7 +279,8 @@ int QuicSessionAttempt::DoCryptoConnect(int rv) {
 int QuicSessionAttempt::DoConfirmConnection(int rv) {
   UMA_HISTOGRAM_TIMES("Net.QuicSession.TimeFromResolveHostToConfirmConnection",
                       base::TimeTicks::Now() - dns_resolution_start_time_);
-  net_log().EndEvent(NetLogEventType::QUIC_SESSION_POOL_JOB_CONNECT);
+  net_log().EndEventWithNetErrorCode(
+      NetLogEventType::QUIC_SESSION_POOL_JOB_CONNECT, rv);
 
   if (was_alternative_service_recently_broken_) {
     UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.ConnectAfterBroken", rv == OK);

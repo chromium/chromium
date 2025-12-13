@@ -35,9 +35,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -56,6 +56,7 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -69,6 +70,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
@@ -83,6 +85,29 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/files/file_path.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "content/public/common/content_features.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/test_extension_dir.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 using captive_portal::CaptivePortalResult;
 using content::BrowserThread;
@@ -173,20 +198,55 @@ std::string CreateServerRedirect(const std::string& dest_url) {
 
 // Returns the total number of tabs across all Browsers, for all Profiles.
 int NumTabs() {
-  return std::distance(AllTabContentses().begin(), AllTabContentses().end());
+  int count = 0;
+  tabs::ForEachTabInterface([&count](tabs::TabInterface* tab) {
+    ++count;
+    return true;
+  });
+  return count;
 }
 
 // Returns the total number of loading tabs across all Browsers, for all
 // Profiles.
 int NumLoadingTabs() {
-  return std::ranges::count_if(AllTabContentses(),
-                               &content::WebContents::IsLoading);
+  int count = 0;
+  tabs::ForEachTabInterface([&count](tabs::TabInterface* tab) {
+    if (tab->GetContents()->IsLoading()) {
+      ++count;
+    }
+    return true;
+  });
+  return count;
 }
 
 bool IsLoginTab(WebContents* web_contents) {
   return captive_portal::CaptivePortalTabHelper::FromWebContents(web_contents)
       ->IsLoginTab();
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+content::WebContents* GetWebViewContents(content::RenderFrameHost* app_frame) {
+  extensions::WebViewGuest* web_view_guest = nullptr;
+  // Iterate over all frames in the app's WebContents.
+  app_frame->ForEachRenderFrameHostWithAction(
+      [&web_view_guest](content::RenderFrameHost* rfh) {
+        // Find the frame that hosts the WebViewGuest.
+        if (auto* web_view =
+                extensions::WebViewGuest::FromRenderFrameHost(rfh)) {
+          web_view_guest = web_view;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  CHECK(web_view_guest);
+
+  content::WebContents* web_contents = web_view_guest->web_contents();
+  CHECK(web_contents);
+
+  return web_contents;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Watch for `DidStopLoading` for one WebContents.
 struct LoadObserver : public WebContentsObserver {
@@ -358,10 +418,13 @@ class FailLoadsAfterLoginObserver : public LoadObserver::Observer {
 
 FailLoadsAfterLoginObserver::FailLoadsAfterLoginObserver()
     : waiting_for_navigation_(false) {
-  std::ranges::copy_if(
-      AllTabContentses(),
-      std::inserter(tabs_needing_navigation_, tabs_needing_navigation_.end()),
-      &content::WebContents::IsLoading);
+  tabs::ForEachTabInterface([this](tabs::TabInterface* tab) {
+    content::WebContents* const contents = tab->GetContents();
+    if (contents->IsLoading()) {
+      tabs_needing_navigation_.insert(contents);
+    }
+    return true;
+  });
   // Add an observer for each tab.
   for (WebContents* contents : tabs_needing_navigation_) {
     load_observers_.push_back(std::make_unique<LoadObserver>(this, contents));
@@ -943,6 +1006,99 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
       run_loop_->Quit();
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/40202416): Parametrize test to run with
+  // features::kGuestViewMPArch.
+  void CertErrorInWebAppWithEmbeddedFrameOpensCaptivePortal(
+      bool should_open_new_browser,
+      int num_navigations_to_wait_for,
+      base::FunctionRef<content::RenderFrameHost*()> install_and_open_web_app,
+      base::FunctionRef<void(content::RenderFrameHost* app_frame,
+                             const GURL& cert_error_url)>
+          create_embedded_frame) {
+    // Setup test server that responds with cert mismatched name error.
+    net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+    https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+    https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server.Start());
+
+    // The path does not matter.
+    GURL cert_error_url = https_server.GetURL(kTestServerLoginPath);
+
+    content::RenderFrameHost* web_app_frame = install_and_open_web_app();
+
+    MultiNavigationObserver navigation_observer;
+    CaptivePortalObserver portal_observer(browser()->profile());
+
+    int initial_tab_count = 0;
+
+    if (should_open_new_browser) {
+      // New browser is opened if there are no browsers with tab support.
+      // Need to close current browser for it.
+      CloseBrowserSynchronously(browser());
+      browser_closed_ = true;
+      initial_tab_count = 0;
+    } else {
+      TabStripModel* tab_strip_model = browser()->tab_strip_model();
+      ASSERT_FALSE(tab_strip_model->GetActiveWebContents()->IsLoading());
+      initial_tab_count = tab_strip_model->count();
+    }
+
+    size_t initial_browser_count = chrome::GetTotalBrowserCount();
+
+    // This starts navigation in embedded frame and waits for it to finish.
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
+    create_embedded_frame(web_app_frame, cert_error_url);
+
+    // Embedded Frame must have broken page which causes login tab
+    // to be opened in the browser().
+    portal_observer.WaitForResults(1);
+    // Wait for login tab to be opened.
+    navigation_observer.WaitForNavigations(num_navigations_to_wait_for);
+
+    content::WebContents* embedded_frame_web_contents =
+        GetWebViewContents(web_app_frame);
+    // Set the load time to be large, so the timer won't trigger.
+    captive_portal::CaptivePortalTabReloader* tab_reloader =
+        GetTabReloader(embedded_frame_web_contents);
+    ASSERT_TRUE(tab_reloader);
+    SetSlowSSLLoadTime(tab_reloader, base::Hours(1));
+
+    EXPECT_EQ(captive_portal::RESULT_BEHIND_CAPTIVE_PORTAL,
+              portal_observer.captive_portal_result());
+    EXPECT_EQ(1, portal_observer.num_results_received());
+
+    EXPECT_EQ(captive_portal::CaptivePortalTabReloader::STATE_BROKEN_BY_PORTAL,
+              GetStateOfTabReloader(embedded_frame_web_contents));
+
+    TabStripModel* tab_strip_model = nullptr;
+
+    if (should_open_new_browser) {
+      ASSERT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
+      BrowserWindowInterface* const new_browser =
+          browser_created_observer.Wait();
+      ASSERT_TRUE(new_browser);
+
+      tab_strip_model = new_browser->GetTabStripModel();
+    } else {
+      EXPECT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
+      tab_strip_model = browser()->tab_strip_model();
+    }
+
+    EXPECT_EQ(initial_tab_count + 1, tab_strip_model->count());
+    EXPECT_EQ(initial_tab_count, tab_strip_model->active_index());
+
+    WebContents* login_tab =
+        tab_strip_model->GetWebContentsAt(initial_tab_count);
+
+    EXPECT_EQ(captive_portal::CaptivePortalTabReloader::STATE_NONE,
+              GetStateOfTabReloader(login_tab));
+    EXPECT_TRUE(IsLoginTab(login_tab));
+    EXPECT_EQ(1, navigation_observer.NumNavigationsForTab(login_tab));
+  }
+
+#endif  //  BUILDFLAG(ENABLE_EXTENSIONS)
+
  protected:
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -953,20 +1109,19 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
   std::vector<mojo::ScopedMessagePipeHandle> abandoned_client_pipes_;
   std::atomic<bool> behind_captive_portal_;
 #if BUILDFLAG(IS_WIN)
-  base::win::ScopedDomainStateForTesting scoped_domain_;
+  std::optional<base::win::ScopedDomainStateForTesting> scoped_domain_;
 #endif
-  raw_ptr<const BrowserList> browser_list_;
   bool intercept_bad_cert_ = true;
+  bool browser_closed_ = false;
 };
 
 CaptivePortalBrowserTest::CaptivePortalBrowserTest()
-    : behind_captive_portal_(true),
+    : behind_captive_portal_(true) {
 #if BUILDFLAG(IS_WIN)
       // Mark as not enterprise managed to prevent the secure DNS mode from
       // being downgraded to off.
-      scoped_domain_(false),
+      scoped_domain_.emplace(false);
 #endif
-      browser_list_(BrowserList::GetInstance()) {
 }
 
 CaptivePortalBrowserTest::~CaptivePortalBrowserTest() = default;
@@ -998,7 +1153,7 @@ void CaptivePortalBrowserTest::SetUpOnMainThread() {
 
 bool CaptivePortalBrowserTest::OnIntercept(
     content::URLLoaderInterceptor::RequestParams* params) {
-  if (params->url_request.url.path() == kMockHttpsBadCertPath &&
+  if (params->url_request.url.GetPath() == kMockHttpsBadCertPath &&
       intercept_bad_cert_) {
     CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
     ongoing_mock_requests_.emplace_back(std::move(*params));
@@ -1028,9 +1183,9 @@ bool CaptivePortalBrowserTest::OnIntercept(
 
   if (url_string == kMockHttpsUrl || url_string == kMockHttpsUrl2 ||
       url_string == kMockHttpsQuickTimeoutUrl ||
-      params->url_request.url.path() == kRedirectToMockHttpsPath) {
+      params->url_request.url.GetPath() == kRedirectToMockHttpsPath) {
     CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-    if (params->url_request.url.path() == kRedirectToMockHttpsPath) {
+    if (params->url_request.url.GetPath() == kRedirectToMockHttpsPath) {
       net::RedirectInfo redirect_info;
       redirect_info.new_url = GURL(kMockHttpsUrl);
       redirect_info.new_method = "GET";
@@ -1111,7 +1266,9 @@ bool CaptivePortalBrowserTest::OnIntercept(
 
 void CaptivePortalBrowserTest::TearDownOnMainThread() {
   // No test should have a captive portal check pending on quit.
-  EXPECT_FALSE(CheckPending(browser()));
+  if (!browser_closed_) {
+    EXPECT_FALSE(CheckPending(browser()));
+  }
   url_loader_interceptor_.reset();
   abandoned_client_pipes_.clear();
 }
@@ -1191,10 +1348,14 @@ CaptivePortalBrowserTest::GetStateOfTabReloaderAt(Browser* browser,
 
 int CaptivePortalBrowserTest::NumTabsWithState(
     captive_portal::CaptivePortalTabReloader::State state) const {
-  return std::ranges::count(AllTabContentses(), state,
-                            [this](content::WebContents* web_contents) {
-                              return GetStateOfTabReloader(web_contents);
-                            });
+  int count = 0;
+  tabs::ForEachTabInterface([this, state, &count](tabs::TabInterface* tab) {
+    if (GetStateOfTabReloader(tab->GetContents()) == state) {
+      ++count;
+    }
+    return true;
+  });
+  return count;
 }
 
 int CaptivePortalBrowserTest::NumBrokenTabs() const {
@@ -1349,12 +1510,13 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
   int initial_active_index = tab_strip_model->active_index();
   int initial_loading_tabs = NumLoadingTabs();
   int expected_broken_tabs = NumBrokenTabs();
-  size_t initial_browser_count = browser_list_->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   if (captive_portal::CaptivePortalTabReloader::STATE_BROKEN_BY_PORTAL !=
       GetStateOfTabReloader(tab_strip_model->GetActiveWebContents())) {
     ++expected_broken_tabs;
   }
 
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   MultiNavigationObserver navigation_observer;
   CaptivePortalObserver portal_observer(browser->profile());
   ui_test_utils::NavigateToURLWithDisposition(
@@ -1369,23 +1531,23 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
     WebContents* login_tab;
 
     if (expect_new_login_browser) {
-      ASSERT_EQ(initial_browser_count + 1, browser_list_->size());
+      ASSERT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
 
       // Check the original browser
       ASSERT_EQ(initial_tab_count, tab_strip_model->count());
       EXPECT_EQ(initial_tab_count - 1, tab_strip_model->active_index());
 
       // Check the new popup browser
-      login_browser = browser_list_->get(initial_browser_count);
+      login_browser = browser_created_observer.Wait();
       EXPECT_EQ(Browser::TYPE_POPUP, login_browser->type());
-      login_tab = login_browser->tab_strip_model()->GetWebContentsAt(0);
+      login_tab = login_browser->GetTabStripModel()->GetWebContentsAt(0);
       EXPECT_TRUE(
           captive_portal::CaptivePortalTabHelper::FromWebContents(login_tab)
               ->is_captive_portal_window());
       EXPECT_EQ(base::ASCIIToUTF16(kLoginSecureDnsDisabledTitle),
                 login_tab->GetTitle());
     } else {
-      ASSERT_EQ(initial_browser_count, browser_list_->size());
+      ASSERT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
       ASSERT_EQ(initial_tab_count + 1, tab_strip_model->count());
       EXPECT_EQ(initial_tab_count, tab_strip_model->active_index());
       login_tab = tab_strip_model->GetWebContentsAt(initial_tab_count);
@@ -1398,7 +1560,7 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
               GetStateOfTabReloader(login_tab));
     EXPECT_TRUE(IsLoginTab(login_tab));
   } else {
-    ASSERT_EQ(initial_browser_count, browser_list_->size());
+    ASSERT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
     EXPECT_EQ(0, navigation_observer.num_navigations());
     EXPECT_EQ(initial_active_index, tab_strip_model->active_index());
     ASSERT_EQ(initial_tab_count, tab_strip_model->count());
@@ -1462,7 +1624,7 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
   int initial_active_index = tab_strip_model->active_index();
   int initial_loading_tabs = NumLoadingTabs();
   int expected_broken_tabs = NumBrokenTabs();
-  size_t initial_browser_count = browser_list_->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   if (captive_portal::CaptivePortalTabReloader::STATE_BROKEN_BY_PORTAL !=
       GetStateOfTabReloader(tab_strip_model->GetActiveWebContents())) {
     ++expected_broken_tabs;
@@ -1470,6 +1632,7 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
 
   MultiNavigationObserver navigation_observer;
   CaptivePortalObserver portal_observer(browser->profile());
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ui_test_utils::NavigateToURLWithDisposition(
       browser, error_url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
@@ -1482,23 +1645,23 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
     WebContents* login_tab;
 
     if (expect_new_login_browser) {
-      ASSERT_EQ(initial_browser_count + 1, browser_list_->size());
+      login_browser = browser_created_observer.Wait();
+      ASSERT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
 
       // Check the original browser
       ASSERT_EQ(initial_tab_count, tab_strip_model->count());
       EXPECT_EQ(initial_tab_count - 1, tab_strip_model->active_index());
 
       // Check the new popup browser
-      login_browser = browser_list_->get(initial_browser_count);
-      EXPECT_EQ(Browser::TYPE_POPUP, login_browser->type());
-      login_tab = login_browser->tab_strip_model()->GetWebContentsAt(0);
+      EXPECT_EQ(Browser::TYPE_POPUP, login_browser->GetType());
+      login_tab = login_browser->GetTabStripModel()->GetWebContentsAt(0);
       EXPECT_TRUE(
           captive_portal::CaptivePortalTabHelper::FromWebContents(login_tab)
               ->is_captive_portal_window());
       EXPECT_EQ(base::ASCIIToUTF16(kLoginSecureDnsDisabledTitle),
                 login_tab->GetTitle());
     } else {
-      ASSERT_EQ(initial_browser_count, browser_list_->size());
+      ASSERT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
       ASSERT_EQ(initial_tab_count + 1, tab_strip_model->count());
       EXPECT_EQ(initial_tab_count, tab_strip_model->active_index());
       login_tab = tab_strip_model->GetWebContentsAt(initial_tab_count);
@@ -1513,7 +1676,7 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
     EXPECT_TRUE(IsLoginTab(login_tab));
   } else {
     navigation_observer.WaitForNavigations(1);
-    ASSERT_EQ(initial_browser_count, browser_list_->size());
+    ASSERT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
     EXPECT_EQ(initial_active_index, tab_strip_model->active_index());
     EXPECT_EQ(1, navigation_observer.NumNavigationsForTab(
                      tab_strip_model->GetWebContentsAt(initial_active_index)));
@@ -1611,7 +1774,7 @@ void CaptivePortalBrowserTest::Login(Browser* captive_portal_browser,
   CaptivePortalObserver portal_observer(captive_portal_browser->profile());
 
   TabStripModel* tab_strip_model = captive_portal_browser->tab_strip_model();
-  size_t initial_browser_count = browser_list_->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   int initial_tab_count = NumTabs();
   ASSERT_EQ(num_loading_tabs, NumLoadingTabs());
   EXPECT_EQ(num_timed_out_tabs, NumBrokenTabs() - NumLoadingTabs());
@@ -1654,7 +1817,7 @@ void CaptivePortalBrowserTest::Login(Browser* captive_portal_browser,
 
   // Make sure that the broken tabs have reloaded, and there's no more
   // captive portal tab.
-  EXPECT_EQ(initial_browser_count, browser_list_->size());
+  EXPECT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
   EXPECT_EQ(initial_tab_count, NumTabs());
   EXPECT_EQ(captive_portal::CaptivePortalTabReloader::STATE_NONE,
             GetStateOfTabReloaderAt(captive_portal_browser, login_tab_index));
@@ -1891,6 +2054,212 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, HttpsIframeTimeout) {
   GURL url = https_server.GetURL(kTestServerIframeTimeoutPath);
   NavigateToPageExpectNoTest(browser(), url);
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class IWACaptivePortalBrowserTest : public CaptivePortalBrowserTest {
+ public:
+  IWACaptivePortalBrowserTest() {
+    iwa_scoped_feature_list_.InitWithFeatures(
+        {features::kIsolatedWebAppDevMode, features::kIsolatedWebApps}, {});
+  }
+
+  content::RenderFrameHost* InstallAndOpenWebApp() {
+    const std::unique_ptr<web_app::BundledIsolatedWebApp> bundle =
+        web_app::IsolatedWebAppBuilder(
+            web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+                network::mojom::PermissionsPolicyFeature::kControlledFrame))
+            .BuildBundle();
+    web_app::IsolatedWebAppUrlInfo url_info =
+        bundle->InstallChecked(browser()->profile());
+
+    return web_app::OpenIsolatedWebApp(browser()->profile(), url_info.app_id());
+  }
+
+  void CreateControlledFrame(content::RenderFrameHost* app_frame,
+                             const GURL& src) {
+    constexpr static std::string_view kCreateControlledFrame = R"(
+        new Promise((resolve, reject) => {
+          const controlledframe = document.createElement('controlledframe');
+          controlledframe.addEventListener('loadabort', (e) => {
+              resolve();
+          });
+          controlledframe.addEventListener('loadstop', (e) => {
+              reject('must abort load because of cert error');
+          });
+
+          controlledframe.src = $1;
+          document.body.appendChild(controlledframe);
+        });
+      )";
+    CHECK(ExecJs(app_frame, content::JsReplace(kCreateControlledFrame, src)));
+  }
+
+  base::test::ScopedFeatureList iwa_scoped_feature_list_;
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
+};
+
+// Make sure that broken page in Isolated Web App's Controlled Frame
+// causes new tab to be opened in existing browser window.
+IN_PROC_BROWSER_TEST_F(IWACaptivePortalBrowserTest,
+                       HttpsCertErrorControlledFrameNewTab) {
+  CertErrorInWebAppWithEmbeddedFrameOpensCaptivePortal(
+      /*should_open_new_browser=*/false, /*num_navigations_to_wait_for=*/2,
+      [this]() -> content::RenderFrameHost* {
+        return this->InstallAndOpenWebApp();
+      },
+      [this](content::RenderFrameHost* app_frame, const GURL& cert_error_url) {
+        CreateControlledFrame(app_frame, cert_error_url);
+      });
+}
+
+// Make sure that broken page in Isolated Web App's Controlled Frame
+// causes new browser window with login tab to be opened.
+// This happens when there is no current browser opened with tab support.
+IN_PROC_BROWSER_TEST_F(IWACaptivePortalBrowserTest,
+                       HttpsCertErrorControlledFrameNewBrowser) {
+  CertErrorInWebAppWithEmbeddedFrameOpensCaptivePortal(
+      /*should_open_new_browser=*/true, /*num_navigations_to_wait_for=*/2,
+      [this]() -> content::RenderFrameHost* {
+        return this->InstallAndOpenWebApp();
+      },
+      [this](content::RenderFrameHost* app_frame, const GURL& cert_error_url) {
+        CreateControlledFrame(app_frame, cert_error_url);
+      });
+}
+
+// ChromeApps are only enabled on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS)
+class ChromeAppCaptivePortalBrowserTest : public CaptivePortalBrowserTest {
+ public:
+  ChromeAppCaptivePortalBrowserTest() = default;
+
+  void LaunchPlatformApp(const extensions::Extension* extension) {
+    apps::AppServiceProxyFactory::GetForProfile(GetProfile())
+        ->BrowserAppLauncher()
+        ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+            extension->id(), apps::LaunchContainer::kLaunchContainerNone,
+            WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
+  }
+
+  content::RenderFrameHost* InstallAndLaunchChromeApp() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    extension_dir_.WriteManifest(R"({
+                      "name": "Captive Portal WebView Test App",
+                      "version": "1.0",
+                      "manifest_version": 2,
+                      "app": {
+                        "background": {
+                          "scripts": ["background.js"]
+                        }
+                      },
+                      "permissions": ["webview"]
+                    })");
+
+    extension_dir_.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+                      chrome.app.runtime.onLaunched.addListener(function() {
+                        chrome.app.window.create('embedder.html', {
+                          'innerBounds': {'width': 100, 'height': 100}
+                        });
+                      });
+                    )");
+
+    extension_dir_.WriteFile(FILE_PATH_LITERAL("embedder.html"), R"(
+                      <!DOCTYPE html>
+                      <html><head><title>Test Chrome App</title></head>
+                      <body>
+                          <script src="embedder.js"></script>
+                      </body></html>
+                    )");
+
+    extension_dir_.WriteFile(FILE_PATH_LITERAL("embedder.js"), R"(
+                  onload = function() {
+                    chrome.test.sendMessage('Launched');
+                  };
+                )");
+
+    ExtensionTestMessageListener listener("Launched");
+    extensions::ChromeTestExtensionLoader extension_loader(GetProfile());
+    extension_loader.set_pack_extension(false);
+
+    scoped_refptr<const extensions::Extension> extension =
+        extension_loader.LoadExtension(extension_dir_.UnpackedPath());
+    CHECK(extension);
+
+    apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+        extension->id());
+
+    LaunchPlatformApp(extension.get());
+
+    CHECK(listener.WaitUntilSatisfied());
+
+    // Flush any pending events to make sure we start with a clean slate.
+    content::RunAllPendingInMessageLoop();
+
+    extensions::AppWindowRegistry* app_registry =
+        extensions::AppWindowRegistry::Get(browser()->profile());
+
+    extensions::AppWindow* window =
+        app_registry->GetCurrentAppWindowForApp(extension->id());
+    CHECK(window);
+
+    return window->web_contents()->GetPrimaryMainFrame();
+  }
+
+  void CreateWebView(content::RenderFrameHost* app_frame, const GURL& src) {
+    // JavaScript to create a <webview> element and append it to the body.
+    constexpr static std::string_view kCreateWebView = R"(
+        new Promise((resolve, reject) => {
+          const webview = document.createElement('webview');
+          webview.addEventListener('loadabort', (e) => {
+              resolve();
+          });
+          webview.addEventListener('loadstop', (e) => {
+              reject('must abort load because of cert error');
+          });
+
+          webview.src = $1;
+          document.body.appendChild(webview);
+        });
+      )";
+    CHECK(ExecJs(app_frame, content::JsReplace(kCreateWebView, src)));
+  }
+
+ private:
+  extensions::TestExtensionDir extension_dir_;
+};
+
+// Make sure that a broken page (due to cert error) in a Chrome App's <webview>
+// causes a new login tab to be opened in the existing main browser window.
+IN_PROC_BROWSER_TEST_F(ChromeAppCaptivePortalBrowserTest,
+                       HttpsCertErrorWebViewNewTab) {
+  CertErrorInWebAppWithEmbeddedFrameOpensCaptivePortal(
+      /*should_open_new_browser=*/false, /*num_navigations_to_wait_for=*/1,
+      [this]() -> content::RenderFrameHost* {
+        return this->InstallAndLaunchChromeApp();
+      },
+      [this](content::RenderFrameHost* app_frame, const GURL& cert_error_url) {
+        this->CreateWebView(app_frame, cert_error_url);
+      });
+}
+
+// Make sure that a broken page (due to cert error) in a Chrome App's <webview>
+// causes a new browser with login tab to be opened.
+IN_PROC_BROWSER_TEST_F(ChromeAppCaptivePortalBrowserTest,
+                       HttpsCertErrorWebViewNewBrowser) {
+  CertErrorInWebAppWithEmbeddedFrameOpensCaptivePortal(
+      /*should_open_new_browser=*/true, /*num_navigations_to_wait_for=*/1,
+      [this]() -> content::RenderFrameHost* {
+        return this->InstallAndLaunchChromeApp();
+      },
+      [this](content::RenderFrameHost* app_frame, const GURL& cert_error_url) {
+        this->CreateWebView(app_frame, cert_error_url);
+      });
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Check the captive portal result when the test request reports a network
 // error.  The check is triggered by a slow loading page, and the page
@@ -2800,7 +3169,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, DISABLED_TwoWindows) {
   NavigateParams params(inactive_browser, GURL(kMockHttpsQuickTimeoutUrl),
                         ui::PAGE_TRANSITION_TYPED);
   params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-  params.window_action = NavigateParams::NO_ACTION;
+  params.window_action = NavigateParams::WindowAction::kNoAction;
   ui_test_utils::NavigateToURL(&params);
   navigation_observer.WaitForNavigations(2);
 
@@ -3077,7 +3446,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   EXPECT_EQ(1, navigation_observer.NumNavigationsForTab(tab));
   EXPECT_TRUE(tab->GetController().GetLastCommittedEntry()->GetPageType() ==
               content::PAGE_TYPE_ERROR);
-  EXPECT_EQ(2u, browser_list_->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(2, NumTabs());
 }
 
@@ -3086,7 +3455,8 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 // completes with a secure DNS error, which triggers another captive portal
 // check that should succeed.
 // TODO(crbug.com/339524384) Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/463028193) Flaky on Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_SlowLoadSecureDnsErrorAfterLogin \
   DISABLED_SlowLoadSecureDnsErrorAfterLogin
 #else
@@ -3123,9 +3493,9 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   navigation_observer.WaitForNavigations(1);
   WebContents* tab = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_EQ(1, navigation_observer.NumNavigationsForTab(tab));
-  EXPECT_TRUE(tab->GetController().GetLastCommittedEntry()->GetPageType() ==
-              content::PAGE_TYPE_NORMAL);
-  EXPECT_EQ(2u, browser_list_->size());
+  EXPECT_EQ(tab->GetController().GetLastCommittedEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(2, NumTabs());
 }
 

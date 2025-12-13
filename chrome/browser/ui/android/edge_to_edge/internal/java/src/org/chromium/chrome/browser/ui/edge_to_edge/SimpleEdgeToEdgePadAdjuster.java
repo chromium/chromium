@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -13,11 +11,11 @@ import android.widget.ScrollView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.ValueChangedCallback;
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /**
  * A simple implementation of {@link EdgeToEdgePadAdjuster} which can add a padding when e2e is on
@@ -30,10 +28,29 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
     private final int mDefaultBottomPadding;
     private final boolean mEnableClipToPadding;
     private final @Nullable ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private @Nullable ValueChangedCallback<EdgeToEdgeController> mControllerChangedCallback;
+    private @Nullable EdgeToEdgeController mEdgeToEdgeController;
+    private final Callback<EdgeToEdgeController> mControllerChangedCallback =
+            this::updateEdgeToEdgeController;
 
     SimpleEdgeToEdgePadAdjuster(View view, boolean enableClipToPadding) {
-        this(view, null, enableClipToPadding);
+        this(view, (EdgeToEdgeController) null, enableClipToPadding);
+    }
+
+    /**
+     * @param view The view that needs padding at the bottom.
+     * @param edgeToEdgeController The supplier to the edge to edge controller.
+     * @param enableClipToPadding Whether enable #setClipToPadding for compatible views (e.g
+     *     ScrollView).
+     */
+    public SimpleEdgeToEdgePadAdjuster(
+            View view,
+            @Nullable EdgeToEdgeController edgeToEdgeController,
+            boolean enableClipToPadding) {
+        mViewToPad = view;
+        mEnableClipToPadding = enableClipToPadding;
+        mDefaultBottomPadding = mViewToPad.getPaddingBottom();
+        mEdgeToEdgeControllerSupplier = null;
+        updateEdgeToEdgeController(edgeToEdgeController);
     }
 
     /**
@@ -52,16 +69,6 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
 
         if (mEdgeToEdgeControllerSupplier != null) {
-            mControllerChangedCallback =
-                    new ValueChangedCallback<>(
-                            (newController, oldController) -> {
-                                if (oldController != null) {
-                                    oldController.unregisterAdjuster(this);
-                                }
-                                if (newController != null) {
-                                    newController.registerAdjuster(this);
-                                }
-                            });
             mEdgeToEdgeControllerSupplier.addObserver(mControllerChangedCallback);
         }
     }
@@ -71,12 +78,9 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
         // Reset the bottom insets for the view.
         overrideBottomInset(0);
 
-        if (mEdgeToEdgeControllerSupplier == null) return;
-
-        assumeNonNull(mControllerChangedCallback);
-        mEdgeToEdgeControllerSupplier.removeObserver(mControllerChangedCallback);
-        if (mEdgeToEdgeControllerSupplier.get() != null) {
-            mEdgeToEdgeControllerSupplier.get().unregisterAdjuster(this);
+        updateEdgeToEdgeController(null);
+        if (mEdgeToEdgeControllerSupplier != null) {
+            mEdgeToEdgeControllerSupplier.removeObserver(mControllerChangedCallback);
         }
     }
 
@@ -100,6 +104,16 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
                 || mViewToPad instanceof RecyclerView
                 || mViewToPad instanceof ListView) {
             ((ViewGroup) mViewToPad).setClipToPadding(clipToPadding);
+        }
+    }
+
+    private void updateEdgeToEdgeController(@Nullable EdgeToEdgeController newController) {
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.unregisterAdjuster(this);
+        }
+        mEdgeToEdgeController = newController;
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.registerAdjuster(this);
         }
     }
 }

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SCROLL_STATE_QUERY_SNAPSHOT_H_
 
 #include "third_party/blink/renderer/core/css/container_state.h"
-#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
+#include "third_party/blink/renderer/core/frame/post_layout_snapshot_client.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -25,7 +25,7 @@ class Element;
 // evaluate correctly on the subsequent style update.
 class ScrollStateQuerySnapshot
     : public GarbageCollected<ScrollStateQuerySnapshot>,
-      public ScrollSnapshotClient {
+      public PostLayoutSnapshotClient {
  public:
   explicit ScrollStateQuerySnapshot(Element& container);
 
@@ -37,23 +37,16 @@ class ScrollStateQuerySnapshot
   ContainerScrollableFlags ScrollableVertical() const {
     return scrollable_vertical_;
   }
-  ContainerScrollDirection ScrollDirectionHorizontal() const {
-    return scroll_direction_horizontal_;
-  }
-  ContainerScrollDirection ScrollDirectionVertical() const {
-    return scroll_direction_vertical_;
-  }
+  ContainerScrolled ScrolledHorizontal() const { return scrolled_horizontal_; }
+  ContainerScrolled ScrolledVertical() const { return scrolled_vertical_; }
 
-  // ScrollSnapshotClient:
-  void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
+  // PostLayoutSnapshotClient:
+  bool UpdateSnapshot() override;
   bool ShouldScheduleNextService() override;
 
   void Trace(Visitor* visitor) const override;
 
  private:
-  bool UpdateScrollState();
-
   Member<Element> container_;
   ContainerStuckPhysical stuck_horizontal_ = ContainerStuckPhysical::kNo;
   ContainerStuckPhysical stuck_vertical_ = ContainerStuckPhysical::kNo;
@@ -61,11 +54,8 @@ class ScrollStateQuerySnapshot
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
   ContainerScrollableFlags scrollable_vertical_ =
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
-  ContainerScrollDirection scroll_direction_horizontal_ =
-      ContainerScrollDirection::kNone;
-  ContainerScrollDirection scroll_direction_vertical_ =
-      ContainerScrollDirection::kNone;
-  ScrollOffset previous_scroll_position_;
+  ContainerScrolled scrolled_horizontal_ = ContainerScrolled::kNone;
+  ContainerScrolled scrolled_vertical_ = ContainerScrolled::kNone;
 };
 
 }  // namespace blink

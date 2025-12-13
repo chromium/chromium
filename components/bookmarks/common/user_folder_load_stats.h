@@ -12,6 +12,7 @@ namespace bookmarks {
 struct UserFolderLoadStats {
   int total_folders = 0;
   int total_top_level_folders = 0;
+  int bookmark_bar_top_level_items = 0;
 };
 
 }  // namespace bookmarks

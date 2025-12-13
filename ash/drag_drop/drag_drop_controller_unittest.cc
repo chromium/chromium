@@ -56,6 +56,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -185,7 +186,7 @@ class CompletableLinearAnimation : public gfx::LinearAnimation {
   CompletableLinearAnimation& operator=(const CompletableLinearAnimation&) =
       delete;
 
-  void Complete() { Step(start_time() + duration()); }
+  void Complete() { Step(start_time() + GetDuration()); }
 };
 
 class TestDragDropController : public DragDropController {
@@ -468,10 +469,13 @@ class DragDropControllerTest : public AshTestBase {
     AshTestBase::SetUp();
 
     drag_drop_controller_ = std::make_unique<TestDragDropController>();
-    drag_drop_controller_->set_should_block_during_drag_drop(false);
+    drag_drop_controller_->SetDisableNestedLoopForTesting(true);
     drag_drop_controller_->set_enabled(true);
     aura::client::SetDragDropClient(Shell::GetPrimaryRootWindow(),
                                     drag_drop_controller_.get());
+
+    normal_duration_.emplace(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
 
   void TearDown() override {
@@ -530,14 +534,6 @@ class DragDropControllerTest : public AshTestBase {
     return widget;
   }
 
-  std::unique_ptr<TestDragDropController> drag_drop_controller_;
-  raw_ptr<NiceMock<MockShellDelegate>, DanglingUntriaged> mock_shell_delegate_ =
-      nullptr;
-
-  NiceMock<MockNewWindowDelegate> new_window_delegate_;
-
-  bool quit_ = false;
-
   void RunWithClosure(base::RepeatingCallback<void(bool)> loop) {
     quit_ = false;
 
@@ -548,6 +544,13 @@ class DragDropControllerTest : public AshTestBase {
       loop.Run(/*inside=*/false);
     }
   }
+
+  std::unique_ptr<TestDragDropController> drag_drop_controller_;
+  raw_ptr<NiceMock<MockShellDelegate>, DanglingUntriaged> mock_shell_delegate_ =
+      nullptr;
+  NiceMock<MockNewWindowDelegate> new_window_delegate_;
+  bool quit_ = false;
+  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 TEST_F(DragDropControllerTest, DragDropInSingleViewTest) {
@@ -1262,14 +1265,14 @@ TEST_F(DragDropControllerTest, DragObserverEvents) {
     {
       testing::InSequence sequence;
       EXPECT_CALL(observer, OnDragUpdated)
-          .WillOnce(testing::Invoke([&](const ui::DropTargetEvent& event) {
+          .WillOnce([&](const ui::DropTargetEvent& event) {
             gfx::Point root_location_in_screen = event.root_location();
             ::wm::ConvertPointToScreen(
                 static_cast<aura::Window*>(event.target())->GetRootWindow(),
                 &root_location_in_screen);
             EXPECT_EQ(gfx::Point(200, 0), root_location_in_screen);
             EXPECT_EQ(&event.data(), data_ptr);
-          }));
+          });
       EXPECT_CALL(observer, OnDragCompleted);
       EXPECT_CALL(observer, OnDropCompleted);
     }
@@ -1301,9 +1304,10 @@ TEST_F(DragDropControllerTest, SetEnabled) {
 }
 
 TEST_F(DragDropControllerTest, EventTarget) {
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
-      gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate =
+           aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+       .bounds = {100, 100}}));
   EventTargetTestDelegate delegate(window.get());
   aura::client::SetDragDropDelegate(window.get(), &delegate);
 
@@ -1323,7 +1327,7 @@ TEST_F(DragDropControllerTest, EventTarget) {
       FROM_HERE,
       base::BindLambdaForTesting([&]() { generator.ReleaseLeftButton(); }));
 
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  drag_drop_controller_->SetDisableNestedLoopForTesting(false);
   auto data = CreateDragData(/*with_image=*/false);
   drag_drop_controller_->StartDragAndDrop(
       std::move(data), window->GetRootWindow(), window.get(), gfx::Point(5, 5),
@@ -1359,7 +1363,7 @@ TEST_F(DragDropControllerTest, DragTabChangesDragOperationToMove) {
       FROM_HERE,
       base::BindLambdaForTesting([&]() { generator.ReleaseLeftButton(); }));
 
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  drag_drop_controller_->SetDisableNestedLoopForTesting(false);
   DragOperation operation = drag_drop_controller_->StartDragAndDrop(
       std::make_unique<ui::OSExchangeData>(), window->GetRootWindow(), window,
       gfx::Point(5, 5), ui::DragDropTypes::DRAG_NONE,
@@ -1413,9 +1417,10 @@ TEST_F(DragDropControllerTest, DragTabDoesNotCrashOnSourceWindowDestruction) {
 }
 
 TEST_F(DragDropControllerTest, ToplevelWindowDragDelegate) {
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
-      gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate =
+           aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+       .bounds = {100, 100}}));
 
   // Emulate a full drag and drop flow and verify that toplevel window drag
   // delegate gets notified about the events as expected.
@@ -1547,9 +1552,10 @@ TEST_F(DragDropControllerTest, ToplevelWindowDragDelegate) {
 }
 
 TEST_F(DragDropControllerTest, ToplevelWindowDragDelegateWithTouch) {
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
-      gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate =
+           aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+       .bounds = {100, 100}}));
 
   // Emulate a full drag and drop flow and verify that toplevel window drag
   // delegate gets notified about the events as expected.
@@ -1572,9 +1578,10 @@ TEST_F(DragDropControllerTest, ToplevelWindowDragDelegateWithTouch) {
 }
 
 TEST_F(DragDropControllerTest, ToplevelWindowDragDelegateWithTouch2) {
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
-      gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate =
+           aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+       .bounds = {100, 100}}));
 
   // Emulate a full drag and drop flow with touch and verify that toplevel
   // window drag delegate gets notified about the events as expected.
@@ -1618,9 +1625,10 @@ TEST_F(DragDropControllerTest, DragWithChromeTabDelegateTakesCapture) {
       .Times(1)
       .WillOnce(Return(true));
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
-      gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate =
+           aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+       .bounds = {100, 100}}));
 
   auto data = CreateDragData(/*with_image=*/true);
 
@@ -1724,9 +1732,10 @@ class DragDropControllerDlpTest : public DragDropControllerTest {
   void SetUp() override {
     DragDropControllerTest::SetUp();
 
-    window_.reset(CreateTestWindowInShellWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
-        /*id=*/-1, gfx::Rect(0, 0, 100, 100)));
+    window_ = base::WrapUnique(CreateTestWindowInShell(
+        {.delegate =
+             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+         .bounds = {100, 100}}));
     delegate_ = std::make_unique<EventTargetTestDelegate>(window_.get());
     aura::client::SetDragDropDelegate(window_.get(), delegate_.get());
     drag_and_drop_observer_ = std::make_unique<NiceMock<MockDragDropObserver>>(

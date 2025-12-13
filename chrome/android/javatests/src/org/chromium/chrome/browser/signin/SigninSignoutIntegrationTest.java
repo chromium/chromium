@@ -34,7 +34,9 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -59,6 +61,7 @@ import org.chromium.ui.test.util.MockitoHelper;
 /** Test the lifecycle of sign-in and sign-out. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class SigninSignoutIntegrationTest {
     @Rule
     public final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
@@ -120,7 +123,7 @@ public class SigninSignoutIntegrationTest {
                         "Signin.SignIn.Completed", SigninAccessPoint.SETTINGS);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
-        doReturn(true).when(mHistorySyncHelper).shouldSuppressHistorySync();
+        doReturn(false).when(mHistorySyncHelper).shouldDisplayHistorySync();
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mMainSettingsActivityTestRule.startSettingsActivity();
 

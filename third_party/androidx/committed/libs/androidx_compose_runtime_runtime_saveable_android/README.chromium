@@ -1,7 +1,7 @@
 Name: Compose Saveable
 Short Name: runtime-saveable-android
-URL: https://developer.android.com/jetpack/androidx/releases/compose-runtime#1.10.0-SNAPSHOT
-Version: 1.10.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14586925/artifacts/repository/androidx/compose/runtime/runtime-saveable-android/1.11.0-SNAPSHOT/runtime-saveable-android-1.11.0-20251213.041943-1.aar
+Version: 1.11.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Compose components that allow saving and restoring the local ui state
+
+See also: https://developer.android.com/jetpack/androidx/releases/compose-runtime#1.11.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

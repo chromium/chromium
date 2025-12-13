@@ -55,9 +55,7 @@ public class BatchUploadCardPreference extends Preference {
         mBatchUploadCardCoordinator.immediatelyHideBatchUploadCardAndUpdateItsVisibility();
     }
 
-    @Override
-    public void onDetached() {
-        super.onDetached();
+    void destroy() {
         mBatchUploadCardCoordinator.destroy();
     }
 

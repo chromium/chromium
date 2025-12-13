@@ -6,13 +6,13 @@
 
 #include <algorithm>
 
-#include "base/android/build_info.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/android/audio_manager_android.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/media_switches.h"

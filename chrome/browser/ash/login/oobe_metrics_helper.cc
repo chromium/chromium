@@ -7,13 +7,13 @@
 #include <map>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
@@ -138,25 +138,25 @@ bool IsOobeOnlyScreen(const OobeScreenId& screen_id) {
   return false;
 }
 
-std::string GetOnboardingTypeSuffix() {
-  base::Time oobe_time =
-      g_browser_process->local_state()->GetTime(prefs::kOobeStartTime);
+std::string GetOnboardingTypeSuffix(PrefService& local_state) {
+  base::Time oobe_time = local_state.GetTime(prefs::kOobeStartTime);
   return oobe_time.is_null() ? kUmaSubsequentOnboardingSuffix
                              : kUmaFirstOnboardingSuffix;
 }
 
-std::string GetMetricsClientID() {
+std::string GetMetricsClientID(PrefService& local_state,
+                               metrics::MetricsService* metrics_service) {
   std::string client_id;
-  if (g_browser_process->metrics_service()) {
-    client_id = g_browser_process->metrics_service()->GetClientId();
+  if (metrics_service) {
+    client_id = metrics_service->GetClientId();
   }
 
   // Early in OOBE `metrics_service()->GetClientId()` will return an empty
   // string. If that's the case look for the client ID in the preference
   // `kMetricsProvisionalClientID`.
   if (client_id.empty()) {
-    client_id = g_browser_process->local_state()->GetString(
-        metrics::prefs::kMetricsProvisionalClientID);
+    client_id =
+        local_state.GetString(metrics::prefs::kMetricsProvisionalClientID);
   }
 
   return client_id;
@@ -164,7 +164,33 @@ std::string GetMetricsClientID() {
 
 }  // namespace
 
-OobeMetricsHelper::OobeMetricsHelper() {
+OobeMetricsHelper::OobeMetricsHelper(PrefService* local_state,
+                                     metrics::MetricsService* metrics_service)
+    : local_state_getter_(base::BindRepeating(
+          [](PrefService* local_state) { return local_state; },
+          local_state)),
+      metrics_service_getter_(base::BindRepeating(
+          [](metrics::MetricsService* metrics_service) {
+            return metrics_service;
+          },
+          metrics_service)) {
+  CHECK(local_state);
+
+  Initialize();
+}
+
+OobeMetricsHelper::OobeMetricsHelper(
+    base::PassKey<LoginDisplayHostCommon>,
+    LocalStateGetterCallback local_state_getter,
+    MetricsServiceGetterCallback metrics_service_getter)
+    : local_state_getter_(std::move(local_state_getter)),
+      metrics_service_getter_(std::move(metrics_service_getter)) {
+  Initialize();
+}
+
+OobeMetricsHelper::~OobeMetricsHelper() = default;
+
+void OobeMetricsHelper::Initialize() {
   if (StatsReportingController::IsInitialized()) {
     stats_reporting_subscription_ =
         StatsReportingController::Get()->AddObserver(base::BindRepeating(
@@ -172,8 +198,6 @@ OobeMetricsHelper::OobeMetricsHelper() {
             base::Unretained(this)));
   }
 }
-
-OobeMetricsHelper::~OobeMetricsHelper() = default;
 
 void OobeMetricsHelper::RecordScreenShownStatus(OobeScreenId screen,
                                                 ScreenShownStatus status) {
@@ -200,7 +224,8 @@ void OobeMetricsHelper::RecordUpdatedStepShownStatus(OobeScreenId screen,
   std::string screen_name = GetCaptializedScreenName(screen);
   std::string histogram_name = kUmaScreenShownStatusName2 + screen_name;
   if (!IsOobeOnlyScreen(screen)) {
-    histogram_name += "." + GetOnboardingTypeSuffix();
+    histogram_name +=
+        "." + GetOnboardingTypeSuffix(CHECK_DEREF(local_state_getter_.Run()));
   }
   base::UmaHistogramEnumeration(histogram_name, status);
 }
@@ -239,7 +264,8 @@ void OobeMetricsHelper::RecordUpdatedStepCompletionTime(
   std::string screen_name = GetCaptializedScreenName(screen);
   std::string histogram_name = kUmaScreenCompletionTimeName2 + screen_name;
   if (!IsOobeOnlyScreen(screen)) {
-    histogram_name += "." + GetOnboardingTypeSuffix();
+    histogram_name +=
+        "." + GetOnboardingTypeSuffix(CHECK_DEREF(local_state_getter_.Run()));
   }
   base::UmaHistogramCustomTimes(histogram_name, step_time,
                                 base::Milliseconds(10), base::Minutes(10), 100);
@@ -254,17 +280,19 @@ void OobeMetricsHelper::RecordPreLoginOobeFirstStart() {
   // Record `False` to report the `Started` bucket.
   base::UmaHistogramBoolean(kUmaOobeFlowStatus, false);
 
+  PrefService& local_state = CHECK_DEREF(local_state_getter_.Run());
+  metrics::MetricsService* metrics_service = metrics_service_getter_.Run();
+
   // Store the metrics client ID to be later compared to the metrics
   // client ID at the end of OOBE.
-  g_browser_process->local_state()->SetString(
-      prefs::kOobeMetricsClientIdAtOobeStart, GetMetricsClientID());
+  local_state.SetString(prefs::kOobeMetricsClientIdAtOobeStart,
+                        GetMetricsClientID(local_state, metrics_service));
 
   // With pre-consent metrics feature, the consent status before first user sign
   // in is set to true. OobeMetricsHelper needs to record the consent status
   // when OOBE first starts.
   if (StatsReportingController::Get()->IsEnabled()) {
-    g_browser_process->local_state()->SetBoolean(
-        prefs::kOobeMetricsReportedAsEnabled, true);
+    local_state.SetBoolean(prefs::kOobeMetricsReportedAsEnabled, true);
   }
 }
 
@@ -313,7 +341,9 @@ void OobeMetricsHelper::RecordOnboardingStart(base::Time oobe_start_time) {
 
   // Record `False` to report the `Started` bucket.
   base::UmaHistogramBoolean(
-      kUmaOnboardingFlowStatus + GetOnboardingTypeSuffix(), false);
+      kUmaOnboardingFlowStatus +
+          GetOnboardingTypeSuffix(CHECK_DEREF(local_state_getter_.Run())),
+      false);
 }
 
 void OobeMetricsHelper::RecordOnboadingComplete(
@@ -323,6 +353,9 @@ void OobeMetricsHelper::RecordOnboadingComplete(
     observer.OnOnboardingCompleted();
   }
 
+  PrefService& local_state = CHECK_DEREF(local_state_getter_.Run());
+  metrics::MetricsService* metrics_service = metrics_service_getter_.Run();
+
   if (!oobe_start_time.is_null()) {
     // Record `True` to report the `Completed` bucket.
     base::UmaHistogramBoolean(kUmaOobeFlowStatus, true);
@@ -330,15 +363,15 @@ void OobeMetricsHelper::RecordOnboadingComplete(
                                 base::Time::Now() - oobe_start_time);
 
     // Record `Metrics Client ID Reset` histograms.
-    std::string initial_id = g_browser_process->local_state()->GetString(
-        prefs::kOobeMetricsClientIdAtOobeStart);
+    std::string initial_id =
+        local_state.GetString(prefs::kOobeMetricsClientIdAtOobeStart);
 
     if (initial_id.empty()) {
       base::UmaHistogramEnumeration(
           kUmaOobeMetricsClientIdReset2,
           OobeMetricsClientIdResetState::kInitialIDMissing);
     } else {
-      std::string current_id = GetMetricsClientID();
+      std::string current_id = GetMetricsClientID(local_state, metrics_service);
       if (current_id.empty()) {
         base::UmaHistogramEnumeration(
             kUmaOobeMetricsClientIdReset2,
@@ -362,17 +395,15 @@ void OobeMetricsHelper::RecordOnboadingComplete(
     // Record whether `StatsReportingController` reported a reset during OOBE.
     base::UmaHistogramBoolean(
         kUmaOobeStatsReportingControllerReportedReset,
-        g_browser_process->local_state()->GetBoolean(
+        local_state.GetBoolean(
             prefs::kOobeStatsReportingControllerReportedReset));
 
-    g_browser_process->local_state()->ClearPref(
-        prefs::kOobeMetricsReportedAsEnabled);
-    g_browser_process->local_state()->ClearPref(
-        prefs::kOobeStatsReportingControllerReportedReset);
+    local_state.ClearPref(prefs::kOobeMetricsReportedAsEnabled);
+    local_state.ClearPref(prefs::kOobeStatsReportingControllerReportedReset);
   }
 
   if (!onboarding_start_time.is_null()) {
-    std::string type = GetOnboardingTypeSuffix();
+    std::string type = GetOnboardingTypeSuffix(local_state);
 
     // Record `True` to report the `Completed` bucket.
     base::UmaHistogramBoolean(kUmaOnboardingFlowStatus + type, true);
@@ -421,8 +452,8 @@ void OobeMetricsHelper::RecordChoobeResume() {
 }
 
 void OobeMetricsHelper::RecordEnrollingUserType() {
-  bool is_consumer = g_browser_process->local_state()->GetBoolean(
-      prefs::kOobeIsConsumerSegment);
+  PrefService& local_state = CHECK_DEREF(local_state_getter_.Run());
+  bool is_consumer = local_state.GetBoolean(prefs::kOobeIsConsumerSegment);
   base::UmaHistogramBoolean("OOBE.Enrollment.IsUserEnrollingAConsumer",
                             is_consumer);
 }
@@ -439,28 +470,31 @@ void OobeMetricsHelper::RecordChromeVersion() {
 }
 
 void OobeMetricsHelper::OnStatsReportingSettingUpdated() {
+  PrefService& local_state = CHECK_DEREF(local_state_getter_.Run());
+
   // Return if the method was called outside of OOBE or the first onboarding
   // experience.
-  if (g_browser_process->local_state()
-          ->GetTime(prefs::kOobeStartTime)
-          .is_null()) {
+  if (local_state.GetTime(prefs::kOobeStartTime).is_null()) {
     return;
   }
 
   bool enabled = StatsReportingController::Get()->IsEnabled();
   if (enabled) {
-    g_browser_process->local_state()->SetBoolean(
-        prefs::kOobeMetricsReportedAsEnabled, true);
-  } else if (g_browser_process->local_state()->GetBoolean(
-                 prefs::kOobeMetricsReportedAsEnabled)) {
+    local_state.SetBoolean(prefs::kOobeMetricsReportedAsEnabled, true);
+  } else if (local_state.GetBoolean(prefs::kOobeMetricsReportedAsEnabled)) {
     base::debug::DumpWithoutCrashing();
 
     // It's possible that the `dump` will never be uploaded due to the client
     // ID reset, therefore, store that metrics was reset in OOBE to report it
     // at at later time.
-    g_browser_process->local_state()->SetBoolean(
-        prefs::kOobeStatsReportingControllerReportedReset, true);
+    local_state.SetBoolean(prefs::kOobeStatsReportingControllerReportedReset,
+                           true);
   }
+}
+
+void OobeMetricsHelper::RecordOobeNotCompletedErrorTrigger(
+    OobeNotCompletedTrigger trigger) {
+  base::UmaHistogramEnumeration("OOBE.OobeNotCompletedErrorTrigger", trigger);
 }
 
 void OobeMetricsHelper::AddObserver(Observer* observer) {

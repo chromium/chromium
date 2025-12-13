@@ -10,7 +10,7 @@
 #include <set>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "ios/web/download/download_task_impl.h"

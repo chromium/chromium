@@ -10,6 +10,7 @@
 #include <compare>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"

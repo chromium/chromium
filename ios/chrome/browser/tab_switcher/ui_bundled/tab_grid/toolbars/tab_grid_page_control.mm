@@ -58,7 +58,7 @@ UIControlEvents TabGridPageChangeByDragEvent = 1 << 25;
 // Given that, it's generally simpler to used fixed (frame-based) layout for
 // most of the content of this control. However, in order to accommodate RTL
 // layout, three layout guides are used to define the position of the
-// incognito, regular, and third panel sections. The layout frames of these
+// incognito, regular, and tab groups sections. The layout frames of these
 // guides are used to map points in the view to specific TabGridPage values.
 // This means that the initial view layout for this control happens in two
 // phases. -setupViews creates all of the subviews and the layout guides, but
@@ -133,12 +133,6 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
   return [[UIImageView alloc] initWithImage:image];
 }
 
-// Returns the page that the third panel represents given the current
-// experiments.
-TabGridPage ThirdTabGridPage() {
-  return IsTabGroupSyncEnabled() ? TabGridPageTabGroups : TabGridPageRemoteTabs;
-}
-
 }  // namespace
 
 @interface TabGridPageControl () <UIGestureRecognizerDelegate,
@@ -152,10 +146,10 @@ TabGridPage ThirdTabGridPage() {
 // Layout guides used to position segment-specific content.
 @property(nonatomic, weak) UILayoutGuide* incognitoGuide;
 @property(nonatomic, weak) UILayoutGuide* regularGuide;
-@property(nonatomic, weak) UILayoutGuide* thirdPanelGuide;
+@property(nonatomic, weak) UILayoutGuide* tabGroupsGuide;
 // The separator between incognito and regular tabs.
 @property(nonatomic, weak) UIView* firstSeparator;
-// The separator between the regular and third panels.
+// The separator between the regular and tab groups pages.
 @property(nonatomic, weak) UIView* secondSeparator;
 // The view for the slider.
 @property(nonatomic, weak) UIView* sliderView;
@@ -169,8 +163,8 @@ TabGridPage ThirdTabGridPage() {
 @property(nonatomic, weak) UIView* regularSelectedIcon;
 @property(nonatomic, weak) UILabel* regularLabel;
 @property(nonatomic, weak) UILabel* regularSelectedLabel;
-@property(nonatomic, weak) UIView* thirdPanelNotSelectedIcon;
-@property(nonatomic, weak) UIView* thirdPanelSelectedIcon;
+@property(nonatomic, weak) UIView* tabGroupsNotSelectedIcon;
+@property(nonatomic, weak) UIView* tabGroupsSelectedIcon;
 
 // Standard pointer interactions provided UIKit require views on which to attach
 // interactions. These transparent views are the size of the whole segment and
@@ -179,7 +173,7 @@ TabGridPage ThirdTabGridPage() {
 // pointer.
 @property(nonatomic, weak) UIView* incognitoHoverView;
 @property(nonatomic, weak) UIView* regularHoverView;
-@property(nonatomic, weak) UIView* thirdPanelHoverView;
+@property(nonatomic, weak) UIView* tabGroupsHoverView;
 
 // The center point for the slider corresponding to a `sliderPosition` of 0.
 @property(nonatomic) CGFloat sliderOrigin;
@@ -206,7 +200,7 @@ TabGridPage ThirdTabGridPage() {
 @implementation TabGridPageControl {
   UIAccessibilityElement* _incognitoAccessibilityElement;
   UIAccessibilityElement* _regularAccessibilityElement;
-  UIAccessibilityElement* _thirdPanelAccessibilityElement;
+  UIAccessibilityElement* _tabGroupsAccessibilityElement;
 
   // Highlighted view and associated icon.
   UIView* _highlightView;
@@ -241,25 +235,18 @@ TabGridPage ThirdTabGridPage() {
     _regularAccessibilityElement.accessibilityIdentifier =
         kTabGridRegularTabsPageButtonIdentifier;
 
-    _thirdPanelAccessibilityElement =
+    _tabGroupsAccessibilityElement =
         [[UIAccessibilityElement alloc] initWithAccessibilityContainer:self];
-    _thirdPanelAccessibilityElement.accessibilityTraits =
+    _tabGroupsAccessibilityElement.accessibilityTraits =
         UIAccessibilityTraitButton;
-    if (IsTabGroupSyncEnabled()) {
-      _thirdPanelAccessibilityElement.accessibilityLabel =
-          l10n_util::GetNSString(IDS_IOS_TAB_GRID_TAB_GROUPS_TITLE);
-      _thirdPanelAccessibilityElement.accessibilityIdentifier =
-          kTabGridTabGroupsPageButtonIdentifier;
-    } else {
-      _thirdPanelAccessibilityElement.accessibilityLabel =
-          l10n_util::GetNSString(IDS_IOS_TAB_GRID_REMOTE_TABS_TITLE);
-      _thirdPanelAccessibilityElement.accessibilityIdentifier =
-          kTabGridRemoteTabsPageButtonIdentifier;
-    }
+    _tabGroupsAccessibilityElement.accessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_TAB_GROUPS_TITLE);
+    _tabGroupsAccessibilityElement.accessibilityIdentifier =
+        kTabGridTabGroupsPageButtonIdentifier;
 
     self.accessibilityElements = @[
       _incognitoAccessibilityElement, _regularAccessibilityElement,
-      _thirdPanelAccessibilityElement
+      _tabGroupsAccessibilityElement
     ];
 
     [[NSNotificationCenter defaultCenter]
@@ -280,17 +267,13 @@ TabGridPage ThirdTabGridPage() {
 
   _scrolledToEdge = scrolledToEdge;
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
   } else {
-#endif
     CGFloat backgroundAlpha =
         scrolledToEdge ? kScrolledToTopBackgroundAlpha : kBackgroundAlpha;
     self.background.backgroundColor = [UIColor colorWithWhite:1
                                                         alpha:backgroundAlpha];
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif
 }
 
 #pragma mark - Public Properties
@@ -318,7 +301,7 @@ TabGridPage ThirdTabGridPage() {
   } else if (sliderPosition < 0.75) {
     _selectedPage = TabGridPageRegularTabs;
   } else {
-    _selectedPage = ThirdTabGridPage();
+    _selectedPage = TabGridPageTabGroups;
   }
 
   // Hide/show the separator based on the slider position. Add a delta for the
@@ -352,7 +335,6 @@ TabGridPage ThirdTabGridPage() {
     case TabGridPageRegularTabs:
       newPosition = 0.5;
       break;
-    case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
       newPosition = 1.0;
       break;
@@ -405,10 +387,9 @@ TabGridPage ThirdTabGridPage() {
             constraintEqualToAnchor:self.regularGuide.centerXAnchor]
       ]];
       break;
-    case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
-      pageGuide = self.thirdPanelGuide;
-      _highlightedIcon = self.thirdPanelNotSelectedIcon;
+      pageGuide = self.tabGroupsGuide;
+      _highlightedIcon = self.tabGroupsNotSelectedIcon;
       [NSLayoutConstraint activateConstraints:@[
         [highlightBackground.leadingAnchor
             constraintEqualToAnchor:self.regularGuide.centerXAnchor],
@@ -447,8 +428,8 @@ TabGridPage ThirdTabGridPage() {
 }
 
 - (CGRect)lastSegmentFrame {
-  return [self.thirdPanelGuide.owningView
-      convertRect:self.thirdPanelGuide.layoutFrame
+  return [self.tabGroupsGuide.owningView
+      convertRect:self.tabGroupsGuide.layoutFrame
            toView:nil];
 }
 
@@ -537,21 +518,21 @@ TabGridPage ThirdTabGridPage() {
   self.regularSelectedLabel.center =
       [self centerOfSegment:TabGridPageRegularTabs];
 
-  self.thirdPanelNotSelectedIcon.center =
-      [self centerOfSegment:ThirdTabGridPage()];
-  self.thirdPanelSelectedIcon.center =
-      [self centerOfSegment:ThirdTabGridPage()];
+  self.tabGroupsNotSelectedIcon.center =
+      [self centerOfSegment:TabGridPageTabGroups];
+  self.tabGroupsSelectedIcon.center =
+      [self centerOfSegment:TabGridPageTabGroups];
 
   self.incognitoHoverView.center =
       [self centerOfSegment:TabGridPageIncognitoTabs];
   self.regularHoverView.center = [self centerOfSegment:TabGridPageRegularTabs];
-  self.thirdPanelHoverView.center = [self centerOfSegment:ThirdTabGridPage()];
+  self.tabGroupsHoverView.center = [self centerOfSegment:TabGridPageTabGroups];
 
   // Determine the slider origin and range; this is based on the layout guides
   // and can't be computed until they are determined.
   self.sliderOrigin = CGRectGetMidX(self.incognitoGuide.layoutFrame);
   self.sliderRange =
-      CGRectGetMidX(self.thirdPanelGuide.layoutFrame) - self.sliderOrigin;
+      CGRectGetMidX(self.tabGroupsGuide.layoutFrame) - self.sliderOrigin;
 
   // Set the slider position using the new slider origin and range.
   self.sliderPosition = _sliderPosition;
@@ -571,8 +552,6 @@ TabGridPage ThirdTabGridPage() {
       return kTabGridIncognitoTabsPageButtonIdentifier;
     case TabGridPageRegularTabs:
       return kTabGridRegularTabsPageButtonIdentifier;
-    case TabGridPageRemoteTabs:
-      return kTabGridRemoteTabsPageButtonIdentifier;
     case TabGridPageTabGroups:
       return kTabGridTabGroupsPageButtonIdentifier;
   }
@@ -594,8 +573,8 @@ TabGridPage ThirdTabGridPage() {
       self.incognitoGuide.layoutFrame;
   _regularAccessibilityElement.accessibilityFrameInContainerSpace =
       self.regularGuide.layoutFrame;
-  _thirdPanelAccessibilityElement.accessibilityFrameInContainerSpace =
-      self.thirdPanelGuide.layoutFrame;
+  _tabGroupsAccessibilityElement.accessibilityFrameInContainerSpace =
+      self.tabGroupsGuide.layoutFrame;
 }
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -628,34 +607,23 @@ TabGridPage ThirdTabGridPage() {
       self.incognitoNotSelectedIcon = iconNotSelected;
       break;
     }
-    case TabGridPageRemoteTabs: {
-      iconSelected = ImageViewForSymbol(kRecentTabsSymbol, /*selected=*/true);
-      iconNotSelected =
-          ImageViewForSymbol(kRecentTabsSymbol, /*selected=*/false);
-      self.thirdPanelSelectedIcon = iconSelected;
-      self.thirdPanelNotSelectedIcon = iconNotSelected;
-      break;
-    }
     case TabGridPageTabGroups: {
       iconSelected = ImageViewForSymbol(kTabGroupsSymbol, /*selected=*/true,
                                         /*is_system_symbol=*/true);
       iconNotSelected = ImageViewForSymbol(kTabGroupsSymbol, /*selected=*/false,
                                            /*is_system_symbol=*/true);
-      self.thirdPanelSelectedIcon = iconSelected;
-      self.thirdPanelNotSelectedIcon = iconNotSelected;
+      self.tabGroupsSelectedIcon = iconSelected;
+      self.tabGroupsNotSelectedIcon = iconNotSelected;
       break;
     }
   }
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     iconNotSelected.tintColor = UIColor.whiteColor;
   } else {
-#endif
     iconNotSelected.tintColor = [UIColor colorNamed:kStaticGrey300Color];
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif
+
   iconSelected.tintColor = UIColor.blackColor;
 
   [self.contentView insertSubview:iconNotSelected belowSubview:self.sliderView];
@@ -667,20 +635,22 @@ TabGridPage ThirdTabGridPage() {
 - (void)setupViews {
   self.scrolledToEdge = YES;
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
-    UIGlassEffect* glassEffect = [[UIGlassEffect alloc] init];
+    UIGlassEffect* glassEffect =
+        [UIGlassEffect effectWithStyle:UIGlassEffectStyleRegular];
     glassEffect.interactive = YES;
+    glassEffect.tintColor = TabGridGlassButtonTintColor();
     UIVisualEffectView* backgroundView =
         [[UIVisualEffectView alloc] initWithEffect:glassEffect];
     backgroundView.frame = CGRectMake(0, 0, kOverallWidth, kSegmentHeight);
     [self addSubview:backgroundView];
     backgroundView.center =
         CGPointMake(kOverallWidth / 2.0, kOverallHeight / 2.0);
+    backgroundView.layer.cornerRadius = kSegmentHeight / 2;
+    backgroundView.layer.masksToBounds = YES;
     self.background = backgroundView;
     self.contentView = backgroundView.contentView;
   } else {
-#endif
     UIView* backgroundView = [[UIView alloc]
         initWithFrame:CGRectMake(0, 0, kOverallWidth, kSegmentHeight)];
     backgroundView.backgroundColor =
@@ -693,9 +663,7 @@ TabGridPage ThirdTabGridPage() {
         CGPointMake(kOverallWidth / 2.0, kOverallHeight / 2.0);
     self.background = backgroundView;
     self.contentView = backgroundView;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif
 
   // Set up the layout guides for the segments.
   UILayoutGuide* incognitoGuide = [[UILayoutGuide alloc] init];
@@ -704,17 +672,17 @@ TabGridPage ThirdTabGridPage() {
   UILayoutGuide* regularGuide = [[UILayoutGuide alloc] init];
   [self addLayoutGuide:regularGuide];
   self.regularGuide = regularGuide;
-  UILayoutGuide* thirdPanelGuide = [[UILayoutGuide alloc] init];
-  [self addLayoutGuide:thirdPanelGuide];
-  self.thirdPanelGuide = thirdPanelGuide;
+  UILayoutGuide* tabGroupsGuide = [[UILayoutGuide alloc] init];
+  [self addLayoutGuide:tabGroupsGuide];
+  self.tabGroupsGuide = tabGroupsGuide;
 
   // All of the guides are of the same height, and vertically centered in the
   // control.
   for (UILayoutGuide* guide in
-       @[ incognitoGuide, regularGuide, thirdPanelGuide ]) {
+       @[ incognitoGuide, regularGuide, tabGroupsGuide ]) {
     [guide.heightAnchor constraintEqualToConstant:kOverallHeight].active = YES;
     // Guides are all the same width. The regular guide is centered in the
-    // control, and the incognito and third panel guides are on the leading and
+    // control, and the incognito and tab groups guides are on the leading and
     // trailing sides of it, with separators in between.
     [guide.widthAnchor constraintEqualToConstant:kSegmentWidth].active = YES;
     [guide.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active =
@@ -737,7 +705,7 @@ TabGridPage ThirdTabGridPage() {
     [regularGuide.trailingAnchor
         constraintEqualToAnchor:secondSeparator.leadingAnchor],
     [secondSeparator.trailingAnchor
-        constraintEqualToAnchor:thirdPanelGuide.leadingAnchor],
+        constraintEqualToAnchor:tabGroupsGuide.leadingAnchor],
 
     [firstSeparator.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
     [secondSeparator.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
@@ -748,23 +716,19 @@ TabGridPage ThirdTabGridPage() {
   CGRect sliderFrame =
       CGRectMake(0, verticalMargin, kSliderWidth, kSliderHeight);
   UIView* slider = [[UIView alloc] initWithFrame:sliderFrame];
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+
   if (@available(iOS 26, *)) {
     slider.layer.cornerRadius = kSliderHeight / 2.0;
   } else {
-#endif
     slider.layer.cornerRadius = kSliderCornerRadius;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif
+
   slider.layer.masksToBounds = YES;
   slider.backgroundColor = UIColor.whiteColor;
   if (ios::provider::IsRaccoonEnabled()) {
-    if (@available(iOS 17.0, *)) {
-      slider.hoverStyle = [UIHoverStyle
-          styleWithShape:
-              [UIShape rectShapeWithCornerRadius:kBackgroundCornerRadius]];
-    }
+    slider.hoverStyle = [UIHoverStyle
+        styleWithShape:[UIShape
+                           rectShapeWithCornerRadius:kBackgroundCornerRadius]];
   }
   [self.contentView addSubview:slider];
   self.sliderView = slider;
@@ -779,7 +743,7 @@ TabGridPage ThirdTabGridPage() {
 
   [self addTabsIcon:TabGridPageRegularTabs];
   [self addTabsIcon:TabGridPageIncognitoTabs];
-  [self addTabsIcon:ThirdTabGridPage()];
+  [self addTabsIcon:TabGridPageTabGroups];
 
   UILabel* regularLabel = [self labelSelected:NO];
   [self.contentView insertSubview:regularLabel belowSubview:self.sliderView];
@@ -794,9 +758,9 @@ TabGridPage ThirdTabGridPage() {
   [center referenceView:self.incognitoHoverView
               underName:kTabGridPageControlIncognitoGuide];
   self.regularHoverView = [self configureHoverView];
-  self.thirdPanelHoverView = [self configureHoverView];
-  [center referenceView:self.thirdPanelHoverView
-              underName:kTabGridPageControlThirdPanelGuide];
+  self.tabGroupsHoverView = [self configureHoverView];
+  [center referenceView:self.tabGroupsHoverView
+              underName:kTabGridPageControlTabGroupsGuide];
 
   [self.sliderView
       addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
@@ -849,12 +813,11 @@ TabGridPage ThirdTabGridPage() {
   TabGridPage page;
   if (CGRectContainsPoint(self.incognitoGuide.layoutFrame, point)) {
     page = TabGridPageIncognitoTabs;
-  } else if (CGRectContainsPoint(self.thirdPanelGuide.layoutFrame, point)) {
-    page = ThirdTabGridPage();
+  } else if (CGRectContainsPoint(self.tabGroupsGuide.layoutFrame, point)) {
+    page = TabGridPageTabGroups;
   } else {
-    // bug: taps in the left- or rightmost `kSliderOverhang` points of the
-    // control will fall through to this case.
-    // TODO(crbug.com/41366258): Fix this.
+    // TODO(crbug.com/451554492): taps in the left- or rightmost
+    // `kSliderOverhang` points of the control will fall through to this case.
     page = TabGridPageRegularTabs;
   }
   if (page != self.selectedPage) {
@@ -870,9 +833,8 @@ TabGridPage ThirdTabGridPage() {
       return RectCenter(self.incognitoGuide.layoutFrame);
     case TabGridPageRegularTabs:
       return RectCenter(self.regularGuide.layoutFrame);
-    case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
-      return RectCenter(self.thirdPanelGuide.layoutFrame);
+      return RectCenter(self.tabGroupsGuide.layoutFrame);
   }
 }
 
@@ -900,11 +862,9 @@ TabGridPage ThirdTabGridPage() {
   CGRect segmentRect = CGRectMake(0, 0, kSegmentWidth, kSegmentHeight);
   UIView* hoverView = [[UIView alloc] initWithFrame:segmentRect];
   if (ios::provider::IsRaccoonEnabled()) {
-    if (@available(iOS 17.0, *)) {
-      hoverView.hoverStyle = [UIHoverStyle
-          styleWithShape:
-              [UIShape rectShapeWithCornerRadius:kBackgroundCornerRadius]];
-    }
+    hoverView.hoverStyle = [UIHoverStyle
+        styleWithShape:[UIShape
+                           rectShapeWithCornerRadius:kBackgroundCornerRadius]];
   }
   [self.contentView insertSubview:hoverView belowSubview:self.sliderView];
   [hoverView

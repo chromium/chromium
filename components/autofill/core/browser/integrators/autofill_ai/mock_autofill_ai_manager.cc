@@ -10,7 +10,7 @@ namespace autofill {
 
 MockAutofillAiManager::MockAutofillAiManager(
     autofill::AutofillClient* client,
-    autofill::StrikeDatabase* strike_database)
+    strike_database::StrikeDatabaseBase* strike_database)
     : AutofillAiManager(client, strike_database) {}
 
 MockAutofillAiManager::~MockAutofillAiManager() = default;

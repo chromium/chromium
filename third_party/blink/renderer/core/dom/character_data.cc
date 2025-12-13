@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -57,6 +58,7 @@ void CharacterData::setData(const String& data) {
   SetDataAndUpdate(data, TextDiffRange::Replace(0, old_length, data.length()),
                    kUpdateFromNonParser);
   GetDocument().DidRemoveText(*this, 0, old_length);
+  SoftNavigationHeuristics::ModifiedNode(this);
 }
 
 String CharacterData::substringData(unsigned offset,
@@ -75,7 +77,7 @@ String CharacterData::substringData(unsigned offset,
 }
 
 void CharacterData::ParserAppendData(const String& data) {
-  String new_str = this->data() + data;
+  String new_str = StrCat({this->data(), data});
 
   SetDataAndUpdate(new_str,
                    TextDiffRange::Insert(this->data().length(), data.length()),
@@ -83,7 +85,7 @@ void CharacterData::ParserAppendData(const String& data) {
 }
 
 void CharacterData::appendData(const String& data) {
-  String new_str = this->data() + data;
+  String new_str = StrCat({this->data(), data});
 
   SetDataAndUpdate(new_str,
                    TextDiffRange::Insert(this->data().length(), data.length()),
@@ -238,6 +240,7 @@ void CharacterData::DidModifyData(const String& old_data, UpdateSource source) {
 Node* CharacterData::Clone(Document& factory,
                            NodeCloningData& cloning_data,
                            ContainerNode* append_to,
+                           CustomElementRegistry*,
                            ExceptionState& append_exception_state) const {
   CharacterData* clone = CloneWithData(factory, data());
   if (cloning_data.Has(CloneOption::kPreserveDOMPartsMinimalAPI) &&

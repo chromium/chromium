@@ -6,9 +6,10 @@
 
 #include <dlfcn.h>
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -43,7 +44,7 @@ bool CanUseLibsecret() {
   dbus::Bus::Options bus_options;
   bus_options.bus_type = dbus::Bus::SESSION;
   bus_options.connection_type = dbus::Bus::PRIVATE;
-  auto bus = base::MakeRefCounted<dbus::Bus>(bus_options);
+  auto bus = base::MakeRefCounted<dbus::Bus>(std::move(bus_options));
 
   dbus::ObjectProxy* bus_proxy =
       bus->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
@@ -178,9 +179,7 @@ bool LibsecretLoader::EnsureLibsecretLoaded() {
   // be removed once the implementation is completed and is rolled out for
   // several Chrome releases to give users time for their stored credentials to
   // be migrated to the new backend.
-  const bool can_use_libsecret = CanUseLibsecret();
-  base::UmaHistogramBoolean("OSCrypt.Linux.CanUseLibsecret", can_use_libsecret);
-  return can_use_libsecret && LoadLibsecret() && LibsecretIsAvailable();
+  return CanUseLibsecret() && LoadLibsecret() && LibsecretIsAvailable();
 }
 
 // static

@@ -38,8 +38,10 @@ void FakeLocalFrame::GetTextSurroundingSelection(
   std::move(callback).Run(std::u16string(), 0, 0);
 }
 
-void FakeLocalFrame::SendInterventionReport(const std::string& id,
-                                            const std::string& message) {}
+void FakeLocalFrame::SendInterventionReport(
+    const std::string& id,
+    const std::string& message,
+    const std::optional<blink::FrameToken>& child_frame_token) {}
 
 void FakeLocalFrame::SetFrameOwnerProperties(
     blink::mojom::FrameOwnerPropertiesPtr properties) {}
@@ -48,8 +50,6 @@ void FakeLocalFrame::NotifyUserActivation(
     blink::mojom::UserActivationNotificationType notification_type) {}
 
 void FakeLocalFrame::NotifyVirtualKeyboardOverlayRect(const gfx::Rect&) {}
-
-void FakeLocalFrame::NotifyContextMenuInsetsObservers(const gfx::Rect&) {}
 
 void FakeLocalFrame::ShowInterestInElement(int) {}
 
@@ -116,8 +116,8 @@ void FakeLocalFrame::OnFrameVisibilityChanged(
 
 void FakeLocalFrame::PostMessageEvent(
     const std::optional<blink::RemoteFrameToken>& source_frame_token,
-    const std::u16string& source_origin,
-    const std::u16string& target_origin,
+    const std::optional<url::Origin>& source_origin,
+    const std::optional<url::Origin>& target_origin,
     blink::TransferableMessage message) {}
 
 void FakeLocalFrame::JavaScriptMethodExecuteRequest(
@@ -249,5 +249,9 @@ void FakeLocalFrame::UpdatePrerenderURL(const ::GURL& matched_url,
 void FakeLocalFrame::GetScrollPosition(GetScrollPositionCallback callback) {
   std::move(callback).Run(gfx::Point(0, 0));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void FakeLocalFrame::PerformSpellCheck() {}
+#endif
 
 }  // namespace content

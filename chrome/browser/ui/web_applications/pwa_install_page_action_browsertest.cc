@@ -37,6 +37,9 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -63,8 +66,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
@@ -188,6 +189,10 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
       enabled_features.push_back(
           {features::kPageActionsMigration,
            {{features::kPageActionsMigrationPwaInstall.name, "true"}}});
+    } else {
+      enabled_features.push_back(
+          {features::kPageActionsMigration,
+           {{features::kPageActionsMigrationPwaInstall.name, "false"}}});
     }
 
     features_.InitAndEnableFeaturesWithParameters(enabled_features, {});
@@ -668,8 +673,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, InputInOmnibox) {
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   LocationBar* location_bar = browser_view->GetLocationBarView();
-  OmniboxView* omnibox_view = location_bar->GetOmniboxView();
-  omnibox_view->model()->SetInputInProgress(true);
+  location_bar->GetOmniboxController()->edit_model()->SetInputInProgress(true);
   EXPECT_FALSE(GetPageActionView()->GetVisible());
 }
 

@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -21,7 +21,6 @@ import androidx.core.view.ViewCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -65,10 +64,12 @@ class TabStripViewBinder {
                             TabActionButtonData data =
                                     model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
                             assert data.type != TabActionButtonData.TabActionButtonType.OVERFLOW;
-                            data.tabActionListener.run(
-                                    v,
-                                    model.get(TabProperties.TAB_ID),
-                                    /* triggeringMotion= */ null);
+                            if (data.tabActionListener != null) {
+                                data.tabActionListener.run(
+                                        v,
+                                        model.get(TabProperties.TAB_ID),
+                                        /* triggeringMotion= */ null);
+                            }
                         });
             } else {
                 button.setOnClickListener(

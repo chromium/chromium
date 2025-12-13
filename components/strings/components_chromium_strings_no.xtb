@@ -2,34 +2,34 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="130631256467250065">Endringene trer i kraft neste gang du starter enheten på nytt.</translation>
+<translation id="261308610302996111">Gå til
+          Chromium-menyen &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          og sørg for at konfigurasjonen din er angitt til «ingen mellomtjener» eller «direkte».</translation>
 <translation id="275588974610408078">Krasjrapportering er ikke tilgjengelig i Chromium.</translation>
 <translation id="3064346599913645280">Du ser på en sikker Chromium-side</translation>
 <translation id="3255926992597692024">Chromium prøver å endre innstillingene for utfylling av betalingsmåter.</translation>
 <translation id="358997566136285270">Chromium-logo</translation>
 <translation id="4050599136622776556">Chromium prøver å redigere betalingsmåter.</translation>
 <translation id="4365115785552740256">Chromium er gjort mulig av åpen kilde-prosjektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> og annen <ph name="BEGIN_LINK_OSS" />åpen kilde-programvare<ph name="END_LINK_OSS" />.</translation>
-<translation id="4559775032954821361">Gå til
-          Chromium-menyen &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;          
-          LAN-innstillinger
-          og fjern avmerkingen for «Bruk en proxy-tjener for LAN-nettverket».</translation>
 <translation id="4622039161600275920">Denne siden er blokkert av Chromium</translation>
 <translation id="48558539577516920">Tillat at Chromium bruker nettverket, i brannmur- eller
           antivirusinnstillingene dine.</translation>
 <translation id="4949828774841497663">Gå til Programmer &gt; Systeminnstillinger &gt; Nettverk, velg det aktive nettverket, klikk på «Detaljer…»-knappen, og fjern avmerkingen for eventuelle proxy-tjenere som muligens er valgt.</translation>
-<translation id="580822234363523061">Gå til
+<translation id="6480456350195404966">Gå til
           Chromium-menyen &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
-          og sørg for at konfigurasjonen din er angitt til «ingen proxy-tjener» eller «direkte».</translation>
+          &gt;
+          Nettverk og internett &gt; Proxy-tjener
+          og velg bort «Oppdag innstillinger automatisk».</translation>
 <translation id="648062525172759633">Disse sidene er beregnet for bruk av Chromium-utviklere. Det kan hende at de ikke aktivt vedlikeholdes eller testes. For å slå dem på, gå til <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikk på knappen for å slå på feilsøkingssider, og gå til denne siden igjen.</translation>
 <translation id="6549378540556750549">Chromium er også gjort mulig av annen <ph name="BEGIN_LINK_OSS" />programvare med åpen kildekode<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Endringene dine trer i kraft neste gang du starter Chromium.</translation>

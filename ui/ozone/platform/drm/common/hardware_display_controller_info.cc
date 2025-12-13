@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/common/hardware_display_controller_info.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/edid_parser.h"
@@ -69,7 +65,7 @@ display::DisplaySnapshot::DisplayModeList
 HardwareDisplayControllerInfo::GetModesOfSize(const gfx::Size& size) {
   display::DisplaySnapshot::DisplayModeList modes;
   for (int i = 0; i < connector_->count_modes; ++i) {
-    const drmModeModeInfo& mode = connector_->modes[i];
+    const drmModeModeInfo& mode = UNSAFE_TODO(connector_->modes[i]);
     if (ModeSize(mode) == size) {
       modes.push_back(CreateDisplayMode(
           mode, edid_parser_ ? edid_parser_->vsync_rate_min() : std::nullopt));

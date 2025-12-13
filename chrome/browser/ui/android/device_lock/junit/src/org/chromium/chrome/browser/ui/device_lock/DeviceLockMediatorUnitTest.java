@@ -240,13 +240,14 @@ public class DeviceLockMediatorUnitTest {
                 /* onDeviceLockRefusedCalls= */ 0);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     @Test
     public void testCreateDeviceLockOnClick_nullAccount_noReauthenticationTriggered() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .CREATE_DEVICE_LOCK_CLICKED)
                         .build();
@@ -267,6 +268,7 @@ public class DeviceLockMediatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     @Test
     public void
             testCreateDeviceLockOnClick_previouslySetDeviceLock_callsDelegateOnDeviceLockReady() {
@@ -275,7 +277,7 @@ public class DeviceLockMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .CREATE_DEVICE_LOCK_CLICKED)
                         .build();
@@ -296,13 +298,14 @@ public class DeviceLockMediatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     @Test
     public void testCreateDeviceLockOnClick_noDeviceLockCreated_noDelegateCalls() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .CREATE_DEVICE_LOCK_CLICKED)
                         .build();
@@ -323,13 +326,14 @@ public class DeviceLockMediatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     @Test
     public void testCreateDeviceLockOnClick_rejectedAccountReauthentication_noDelegateCalls() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .CREATE_DEVICE_LOCK_CLICKED)
                         .build();
@@ -350,6 +354,7 @@ public class DeviceLockMediatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     @Test
     public void
             testGoToOSSettingsOnClick_deviceLockCreatedSuccessfully_callsDelegateOnDeviceLockReady() {
@@ -357,7 +362,7 @@ public class DeviceLockMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .GO_TO_OS_SETTINGS_CLICKED)
                         .build();
@@ -378,6 +383,7 @@ public class DeviceLockMediatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     @Test
     public void testGoToOSSettingsOnClick_previouslySetDeviceLock_callsDelegateOnDeviceLockReady() {
         doReturn(true).when(mKeyguardManager).isDeviceSecure();
@@ -385,7 +391,7 @@ public class DeviceLockMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .GO_TO_OS_SETTINGS_CLICKED)
                         .build();
@@ -406,13 +412,14 @@ public class DeviceLockMediatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     @Test
     public void testGoToOSSettingsOnClick_noDeviceLockCreated_noDelegateCalls() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .GO_TO_OS_SETTINGS_CLICKED)
                         .build();
@@ -433,13 +440,14 @@ public class DeviceLockMediatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     @Test
     public void testGoToOSSettingsOnClick_rejectedAccountReauthentication_noDelegateCalls() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .GO_TO_OS_SETTINGS_CLICKED)
                         .build();
@@ -460,13 +468,14 @@ public class DeviceLockMediatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     @Test
     public void testUserUnderstandsOnClick_successfulChallenges_callsDelegateOnDeviceLockReady() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .USER_UNDERSTANDS_CLICKED)
                         .build();
@@ -494,7 +503,7 @@ public class DeviceLockMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .USER_UNDERSTANDS_CLICKED)
                         .build();
@@ -521,7 +530,7 @@ public class DeviceLockMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .USER_UNDERSTANDS_CLICKED)
                         .build();
@@ -548,7 +557,7 @@ public class DeviceLockMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .USER_UNDERSTANDS_CLICKED)
                         .build();
@@ -575,7 +584,7 @@ public class DeviceLockMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .USER_UNDERSTANDS_CLICKED)
                         .build();
@@ -602,7 +611,7 @@ public class DeviceLockMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
-                                        + mDelegate.getSource(),
+                                        + DeviceLockActivityLauncher.Source.AUTOFILL,
                                 DeviceLockDialogMetrics.DeviceLockDialogAction.DISMISS_CLICKED)
                         .build();
 

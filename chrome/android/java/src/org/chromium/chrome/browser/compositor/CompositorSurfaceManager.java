@@ -19,16 +19,16 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public interface CompositorSurfaceManager {
     /** Delivers Surface lifecycle events to the target of this CompositorSurfaceManager. */
-    public interface SurfaceManagerCallbackTarget {
-        public void surfaceRedrawNeededAsync(Runnable drawingFinished);
+    interface SurfaceManagerCallbackTarget {
+        void surfaceRedrawNeededAsync(Runnable drawingFinished);
 
-        public void surfaceChanged(Surface surface, int format, int width, int height);
+        void surfaceChanged(Surface surface, int format, int width, int height);
 
-        public void surfaceCreated(Surface surface);
+        void surfaceCreated(Surface surface);
 
-        public void surfaceDestroyed(Surface surface, boolean androidSurfaceDestroyed);
+        void surfaceDestroyed(Surface surface, boolean androidSurfaceDestroyed);
 
-        public void unownedSurfaceDestroyed();
+        void unownedSurfaceDestroyed();
     }
 
     /** Turn off everything. */

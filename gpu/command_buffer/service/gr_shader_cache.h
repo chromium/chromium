@@ -57,8 +57,7 @@ class RASTER_EXPORT GrShaderCache
 
   void PopulateCache(const std::string& key, const std::string& data);
   void CacheClientIdOnDisk(int32_t client_id);
-  void PurgeMemory(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void PurgeMemory(base::MemoryPressureLevel memory_pressure_level);
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -135,7 +134,6 @@ class RASTER_EXPORT GrShaderCache
   base::flat_map<base::PlatformThreadId, int32_t> current_client_id_
       GUARDED_BY(lock_);
   bool need_store_pipeline_cache_ GUARDED_BY(lock_) = false;
-  const bool enable_vk_pipeline_cache_;
 
   // Bound to the thread on which GrShaderCache is created. Some methods can
   // only be called on this thread. GrShaderCache is created on gpu main thread.

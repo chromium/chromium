@@ -7,6 +7,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/common/url_constants.h"
@@ -21,7 +22,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 namespace media_router {
@@ -105,12 +105,6 @@ void AccessCodeCastUI::BindInterface(
         receiver) {
   factory_receiver_.reset();
   factory_receiver_.Bind(std::move(receiver));
-}
-
-void AccessCodeCastUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void AccessCodeCastUI::CreatePageHandler(

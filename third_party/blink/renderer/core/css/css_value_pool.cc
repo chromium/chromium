@@ -47,6 +47,7 @@ CSSValuePool::CSSValuePool()
       unset_value_(MakeGarbageCollected<CSSUnsetValue>(PassKey())),
       revert_value_(MakeGarbageCollected<CSSRevertValue>(PassKey())),
       revert_layer_value_(MakeGarbageCollected<CSSRevertLayerValue>(PassKey())),
+      revert_rule_value_(MakeGarbageCollected<CSSRevertRuleValue>(PassKey())),
       invalid_variable_value_(MakeGarbageCollected<CSSInvalidVariableValue>()),
       cyclic_variable_value_(
           MakeGarbageCollected<CSSCyclicVariableValue>(PassKey())),
@@ -68,6 +69,7 @@ void CSSValuePool::Trace(Visitor* visitor) const {
   visitor->Trace(unset_value_);
   visitor->Trace(revert_value_);
   visitor->Trace(revert_layer_value_);
+  visitor->Trace(revert_rule_value_);
   visitor->Trace(invalid_variable_value_);
   visitor->Trace(cyclic_variable_value_);
   visitor->Trace(initial_color_value_);

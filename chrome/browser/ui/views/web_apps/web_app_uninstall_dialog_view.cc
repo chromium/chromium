@@ -15,7 +15,10 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
@@ -32,7 +35,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
@@ -60,7 +63,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
     Profile* profile,
     webapps::AppId app_id,
     webapps::WebappUninstallSource uninstall_source,
-    std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps,
+    web_app::IconMetadataFromDisk icon_metadata,
     web_app::UninstallDialogCallback uninstall_choice_callback)
     : app_id_(std::move(app_id)),
       profile_(profile),
@@ -73,8 +76,8 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   DCHECK(!app_start_url.is_empty());
   DCHECK(app_start_url.is_valid());
 
+  web_app::SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
   gfx::Size image_size{kIconSizeInDip, kIconSizeInDip};
-
   image_ = gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
                               kIconSizeInDip, std::move(icon_bitmaps)),
                           image_size);
@@ -86,12 +89,10 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
 
   SetTitle(l10n_util::GetStringUTF16(IDS_APP_UNINSTALL_PROMPT_TITLE));
 
-  AddChildViewRaw(WebAppIconNameAndOriginView::Create(
-                   image_,
-                   base::UTF8ToUTF16(
-                       provider_->registrar_unsafe().GetAppShortName(app_id_)),
-                   app_start_url)
-                   .release());
+  AddChildView(WebAppIconNameAndOriginView::Create(
+      image_,
+      base::UTF8ToUTF16(provider_->registrar_unsafe().GetAppShortName(app_id_)),
+      app_start_url, icon_metadata.purpose == web_app::IconPurpose::MASKABLE));
   SetButtonLabel(
       ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_APP_BUTTON));
@@ -125,7 +126,8 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
 
   // For IWAs checkbox will not be displayed, removal of storage is
   // automatically enforced.
-  if (!provider_->registrar_unsafe().IsIsolated(app_id_)) {
+  if (!provider_->registrar_unsafe().AppMatches(
+          app_id_, web_app::WebAppFilter::IsIsolatedApp())) {
     std::u16string checkbox_label =
         l10n_util::GetStringUTF16(IDS_APP_ALSO_DELETE_APPS_DATA);
 
@@ -133,8 +135,6 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
     checkbox->SetMultiLine(true);
     checkbox_ = checkbox_container->AddChildView(std::move(checkbox));
   }
-
-  AddChildViewRaw(checkbox_container);
 
   uninstall_source_ = uninstall_source;
   install_manager_observation_.Observe(&provider_->install_manager());
@@ -149,7 +149,8 @@ WebAppUninstallDialogDelegateView::~WebAppUninstallDialogDelegateView() {
 
 void WebAppUninstallDialogDelegateView::OnDialogAccepted() {
   DCHECK(provider_);
-  bool is_isolated_web_app = provider_->registrar_unsafe().IsIsolated(app_id_);
+  bool is_isolated_web_app = provider_->registrar_unsafe().AppMatches(
+      app_id_, web_app::WebAppFilter::IsIsolatedApp());
   bool clear_site_data = checkbox_ && checkbox_->GetChecked();
 
   HistogramCloseAction action =
@@ -224,10 +225,10 @@ void ShowWebAppUninstallDialog(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent,
-    std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps,
+    IconMetadataFromDisk icon_metadata,
     web_app::UninstallDialogCallback uninstall_dialog_result_callback) {
   auto* view = new WebAppUninstallDialogDelegateView(
-      profile, app_id, uninstall_source, std::move(icon_bitmaps),
+      profile, app_id, uninstall_source, std::move(icon_metadata),
       std::move(uninstall_dialog_result_callback));
   constrained_window::CreateBrowserModalDialogViews(view, parent)->Show();
   view->ProcessAutoConfirmValue();

@@ -14,12 +14,10 @@
 namespace {
 
 // Helper function to create an `TipsManagerIOS` instance.
-std::unique_ptr<KeyedService> BuildServiceInstance(web::BrowserState* context) {
+std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS* profile) {
   if (!IsSegmentationTipsManagerEnabled()) {
     return nullptr;
   }
-
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   return std::make_unique<TipsManagerIOS>(
       profile->GetPrefs(), GetApplicationContext()->GetLocalState());
@@ -55,15 +53,15 @@ TipsManagerIOSFactory::~TipsManagerIOSFactory() = default;
 // static
 TipsManagerIOSFactory::TestingFactory
 TipsManagerIOSFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildServiceInstance);
+  return base::BindOnce(&BuildServiceInstance);
 }
 
 std::unique_ptr<KeyedService> TipsManagerIOSFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildServiceInstance(context);
+    ProfileIOS* profile) const {
+  return BuildServiceInstance(profile);
 }
 
-void TipsManagerIOSFactory::RegisterBrowserStatePrefs(
+void TipsManagerIOSFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   segmentation_platform::TipsManager::RegisterProfilePrefs(registry);
 }

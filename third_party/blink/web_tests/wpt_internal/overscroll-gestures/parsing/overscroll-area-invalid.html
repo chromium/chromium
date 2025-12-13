@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<title>Overscroll Area Parsing Test - invalid</title>
+<meta name="assert" content="overscroll-area supports the full grammar 'none | <dashed-ident>#'.">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+
+<script>
+test_invalid_value("overscroll-area", "none --foo");
+test_invalid_value("overscroll-area", "none, --foo");
+test_invalid_value("overscroll-area", "-foo");
+test_invalid_value("overscroll-area", "foo");
+test_invalid_value("overscroll-area", "foo --bar");
+test_invalid_value("overscroll-area", "foo, --bar");
+test_invalid_value("overscroll-area", "--foo bar");
+test_invalid_value("overscroll-area", "--foo, bar");
+test_invalid_value("overscroll-area", "--foo none");
+test_invalid_value("overscroll-area", "--foo, none");
+</script>
+

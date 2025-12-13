@@ -23,7 +23,6 @@
 
 using testing::_;
 using testing::Eq;
-using testing::Invoke;
 using testing::Return;
 using testing::SizeIs;
 
@@ -67,14 +66,14 @@ class RankFetcherHelperTest : public testing::Test {
       const std::vector<std::string>& modules_rank_result) {
     EXPECT_CALL(segmentation_service_, GetClassificationResult(_, _, _, _))
         .Times(1)
-        .WillOnce(Invoke([&](const std::string& segmentation_key,
-                             const PredictionOptions& prediction_options,
-                             scoped_refptr<InputContext> input_context,
-                             ClassificationResultCallback callback) {
+        .WillOnce([&](const std::string& segmentation_key,
+                      const PredictionOptions& prediction_options,
+                      scoped_refptr<InputContext> input_context,
+                      ClassificationResultCallback callback) {
           ClassificationResult result(PredictionStatus::kSucceeded);
           result.ordered_labels = modules_rank_result;
           std::move(callback).Run(result);
-        }));
+        });
   }
 
   // Warning: Keep `card_rank_result` alive till end of the test.
@@ -84,10 +83,10 @@ class RankFetcherHelperTest : public testing::Test {
         segmentation_service_,
         GetAnnotatedNumericResult(kEphemeralHomeModuleBackendKey, _, _, _))
         .Times(1)
-        .WillOnce(Invoke([&](const std::string& segmentation_key,
-                             const PredictionOptions& prediction_options,
-                             scoped_refptr<InputContext> input_context,
-                             AnnotatedNumericResultCallback callback) {
+        .WillOnce([&](const std::string& segmentation_key,
+                      const PredictionOptions& prediction_options,
+                      scoped_refptr<InputContext> input_context,
+                      AnnotatedNumericResultCallback callback) {
           AnnotatedNumericResult result(PredictionStatus::kSucceeded);
           for (const auto& it : card_rank_result) {
             result.result.mutable_output_config()
@@ -97,16 +96,16 @@ class RankFetcherHelperTest : public testing::Test {
             result.result.add_result(it.second);
           }
           std::move(callback).Run(result);
-        }));
+        });
   }
 
   void ReturnInputKeys(int count) {
     EXPECT_CALL(segmentation_service_, GetInputKeysForModel(_, _))
         .Times(count)
-        .WillRepeatedly(Invoke([&](const std::string& segmentation_key,
-                                   InputContextKeysCallback callback) {
+        .WillRepeatedly([&](const std::string& segmentation_key,
+                            InputContextKeysCallback callback) {
           std::move(callback).Run({kInput1, kInput2, kInput3, kInput4});
-        }));
+        });
   }
 
   void ReturnEphermeralFailure() {
@@ -114,13 +113,13 @@ class RankFetcherHelperTest : public testing::Test {
         segmentation_service_,
         GetAnnotatedNumericResult(kEphemeralHomeModuleBackendKey, _, _, _))
         .Times(1)
-        .WillOnce(Invoke([&](const std::string& segmentation_key,
-                             const PredictionOptions& prediction_options,
-                             scoped_refptr<InputContext> input_context,
-                             AnnotatedNumericResultCallback callback) {
+        .WillOnce([&](const std::string& segmentation_key,
+                      const PredictionOptions& prediction_options,
+                      scoped_refptr<InputContext> input_context,
+                      AnnotatedNumericResultCallback callback) {
           AnnotatedNumericResult result(PredictionStatus::kFailed);
           std::move(callback).Run(result);
-        }));
+        });
   }
 
  protected:

@@ -41,7 +41,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   void Configure(DataTypeSet preferred_types,
                  const ConfigureContext& context) override;
   void DataTypePreconditionChanged(DataType type) override;
-  void ResetDataTypeErrors() override;
 
   // Needed only for backend migration.
   void PurgeForMigration(DataTypeSet undesired_types) override;
@@ -55,6 +54,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   DataTypeSet GetActiveProxyDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   DataTypeSet GetDataTypesWithPermanentErrors() const override;
+  DataTypeStatusTable::TypeErrorMap GetDataTypeErrors() const override;
   void GetTypesWithUnsyncedData(
       DataTypeSet requested_types,
       base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback)
@@ -105,6 +105,8 @@ class DataTypeManagerImpl : public DataTypeManager,
   void ForceReconfiguration();
 
   void Restart();
+
+  void ResetDataTypeErrors();
 
   void NotifyStart();
   void NotifyDone(ConfigureStatus status);

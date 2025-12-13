@@ -38,16 +38,27 @@
 // The view controller of the currently active grid (regular, incognito, etc.).
 @property(nonatomic, weak, readonly) UIViewController* activeGrid;
 
+// The view controller of the pinned tabs.
+@property(nonatomic, weak, readonly) UIViewController* pinnedTabs;
+
 // Whether the top toolbar should be scaled during the animation (disabled for
 // devices displaying the tab strip).
 @property(nonatomic, assign, readonly) BOOL shouldScaleTopToolbar;
 
 // Whether the current tab is in incognito mode.
-@property(nonatomic, assign, readonly) BOOL isIncognito;
+@property(nonatomic, assign, readonly) BOOL incognito;
+
+// Whether the active cell is from a pinned tab.
+@property(nonatomic, assign, readonly) BOOL activeCellPinned;
+
+// Whether the top toolbar is hidden during the animation.
+@property(nonatomic, assign, readonly) BOOL topToolbarHidden;
 
 - (instancetype)initWithDestinationFrame:(CGRect)destinationFrame
                              originFrame:(CGRect)originFrame
                               activeGrid:(UIViewController*)activeGrid
+                              pinnedTabs:(UIViewController*)pinnedTabs
+                        activeCellPinned:(BOOL)activeCellPinned
                             animatedView:(UIView*)animatedView
                          contentSnapshot:(UIImage*)contentSnapshot
                         topToolbarHeight:(CGFloat)topToolbarHeight
@@ -55,7 +66,8 @@
                   topToolbarSnapshotView:(UIView*)topToolbarSnapshotView
                bottomToolbarSnapshotView:(UIView*)bottomToolbarSnapshotView
                    shouldScaleTopToolbar:(BOOL)shouldScaleTopToolbar
-                             isIncognito:(BOOL)isIncognito
+                               incognito:(BOOL)incognito
+                        topToolbarHidden:(BOOL)topToolbarHidden
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

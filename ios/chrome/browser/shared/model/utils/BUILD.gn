@@ -13,6 +13,7 @@ source_set("utils") {
     "notification_observer_bridge.h",
     "notification_observer_bridge.mm",
     "observable_boolean.h",
+    "observable_string.h",
     "rust_unzipper.h",
     "rust_unzipper.mm",
   ]
@@ -32,6 +33,8 @@ source_set("test_support") {
   sources = [
     "fake_observable_boolean.h",
     "fake_observable_boolean.mm",
+    "fake_observable_string.h",
+    "fake_observable_string.mm",
     "first_run_test_util.h",
     "first_run_test_util.mm",
   ]
@@ -50,6 +53,6 @@ rust_static_library("zip_ffi_glue") {
   visibility = [ ":utils" ]
   deps = [
     "//third_party/rust/anyhow/v1:lib",
-    "//third_party/rust/zip/v4:lib",
+    "//third_party/rust/zip/v6:lib",
   ]
 }

@@ -21,7 +21,6 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -173,7 +172,7 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   void RequestCompleted(int request_index,
                         const network::SimpleURLLoader* source,
                         int response_code,
-                        std::unique_ptr<std::string> response_body);
+                        std::optional<std::string> response_body);
 
   // Callback for parsing the response JSON string into `base::Value` in an
   // isolated process.

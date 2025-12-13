@@ -47,6 +47,8 @@ component("views_examples_lib") {
     "designer_example.h",
     "dialog_example.cc",
     "dialog_example.h",
+    "dialog_model_example.cc",
+    "dialog_model_example.h",
     "example_base.cc",
     "example_base.h",
     "example_combobox_model.cc",
@@ -144,7 +146,7 @@ component("views_examples_lib") {
   ]
 
   public_deps = [
-    "//ui/base/mojom:mojom",
+    "//ui/base/mojom",
     "//ui/base/mojom:ui_base_types",
   ]
 
@@ -192,8 +194,7 @@ source_set("views_examples_proc") {
     ]
     deps += [
       "//ui/base:pixel_diff_test_support",
-      "//ui/native_theme:native_theme",
-      "//ui/native_theme:native_theme_browser",
+      "//ui/native_theme",
       "//ui/snapshot",
     ]
   }
@@ -510,9 +511,6 @@ test("views_examples_unittests") {
       "//ui/aura",
       "//ui/wm",
     ]
-  }
-  if (is_win) {
-    deps += [ "//ui/native_theme:native_theme_browser" ]
   }
 
   if (is_fuchsia) {

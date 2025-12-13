@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_DEVICE_INFO_FAKE_DEVICE_INFO_TRACKER_H_
 #define COMPONENTS_SYNC_DEVICE_INFO_FAKE_DEVICE_INFO_TRACKER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -41,7 +40,7 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
   std::vector<const DeviceInfo*> GetAllChromeDeviceInfo() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  std::map<DeviceInfo::FormFactor, int> CountActiveDevicesByType()
+  absl::flat_hash_map<DeviceInfo::FormFactor, int> CountActiveDevicesByType()
       const override;
   void ForcePulseForTest() override;
   bool IsRecentLocalCacheGuid(const std::string& cache_guid) const override;
@@ -68,7 +67,7 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
   // Overrides the result of CountActiveDevicesByType() to |counts| instead of
   // the actual number of devices in |devices_|.
   void OverrideActiveDeviceCount(
-      const std::map<DeviceInfo::FormFactor, int>& counts);
+      const absl::flat_hash_map<DeviceInfo::FormFactor, int>& counts);
 
   // Marks an existing DeviceInfo entry as being on the local device.
   void SetLocalCacheGuid(const std::string& cache_guid);
@@ -79,7 +78,7 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
   // DeviceInfo stored here are not necessarily owned.
   std::vector<raw_ptr<const DeviceInfo, VectorExperimental>> devices_;
   std::string local_device_cache_guid_;
-  std::optional<std::map<DeviceInfo::FormFactor, int>>
+  std::optional<absl::flat_hash_map<DeviceInfo::FormFactor, int>>
       device_count_per_type_override_;
   // Registered observers, not owned.
   base::ObserverList<Observer, true>::Unchecked observers_;

@@ -35,7 +35,6 @@ namespace {
 const char kGoogleCalendarLastDismissedTimePrefName[] =
     "NewTabPage.GoogleCalendar.LastDimissedTime";
 
-// TODO(crbug.com/343738665): Update when more granular policy is added.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("google_calendar_page_handler", R"(
        semantics {
@@ -87,15 +86,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 
 std::unique_ptr<google_apis::RequestSender> MakeSender(Profile* profile) {
-  std::vector<std::string> scopes = {
-      GaiaConstants::kCalendarReadOnlyOAuth2Scope};
   auto url_loader_factory = profile->GetURLLoaderFactory();
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<google_apis::RequestSender>(
       std::make_unique<google_apis::AuthService>(
           identity_manager,
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-          url_loader_factory, scopes),
+          url_loader_factory,
+          signin::OAuthConsumerId::kAuthServiceCalendar),
       url_loader_factory,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,

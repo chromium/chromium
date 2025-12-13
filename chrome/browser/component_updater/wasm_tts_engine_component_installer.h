@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/prefs/pref_service.h"
@@ -31,6 +32,7 @@ class WasmTtsEngineComponentInstallerPolicy : public ComponentInstallerPolicy {
   static void RegisterPrefs(PrefRegistrySimple* registry);
   static void GetWasmTTSEngineDirectory(
       base::OnceCallback<void(const base::FilePath&)> callback);
+  static bool IsWasmTTSEngineDirectorySet();
 
  private:
   // The following methods override ComponentInstallerPolicy.

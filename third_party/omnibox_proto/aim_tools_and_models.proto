@@ -1,0 +1,27 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'AimToolsAndModelsProto';
+
+package omnibox;
+
+// AIM tools and models.
+// In the AIM Composebox, tools and models can be added to a query to enter a
+// specific mode. For example, some modes include "deep search", "create
+// images", and "canvas".
+// Next ID: 5
+enum ChromeAimToolsAndModels {
+  TOOL_MODE_UNSPECIFIED = 0;
+  TOOL_MODE_DEEP_SEARCH = 1;
+  TOOL_MODE_CANVAS = 2;
+  TOOL_MODE_IMAGE_GEN = 4;
+  TOOL_MODE_IMAGE_GEN_UPLOAD = 7;
+
+  // Reserved for TOOL_MODE_GEMINI_PRO. Will be added back if client needs it.
+  reserved 3;
+}

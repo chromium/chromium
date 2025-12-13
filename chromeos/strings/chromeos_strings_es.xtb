@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">naranjas</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
 <translation id="1290331692326790741">Señal débil</translation>
+<translation id="1292474106138697109">Pantalla de Herramientas de clase</translation>
 <translation id="1300115153046603471">El APN es de tipo predeterminado y <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Convertir</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">Contenido de ayuda destacado</translation>
 <translation id="2277631741861284101">Graba y comparte tu audio fácilmente</translation>
 <translation id="2279051792571591988">Restaurar valores predeterminados</translation>
-<translation id="2286454467119466181">Sencilla</translation>
+<translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">No hay imágenes disponibles. Para añadir fotos, accede a <ph name="LINK" /></translation>
 <translation id="2294577623958216786">El horario actual está programado de <ph name="SUNRISE" /> a <ph name="SUNSET" />. Para actualizar automáticamente el horario de la puesta y la salida del sol, activa el acceso a la ubicación.</translation>
 <translation id="2305172810646967500">negro</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imágenes</translation>
 <translation id="4300272766492248925">Abrir aplicación</translation>
 <translation id="430786093962686457">gasa</translation>
+<translation id="4309762678330556039">Crea transcripciones automáticamente y busca audio. Puedes crear grabaciones aunque no tengas conexión a Internet.</translation>
 <translation id="4310735698903592804">Fondos de pantalla recientes creados con la tecnología de la IA de Google</translation>
 <translation id="4320904097188876154">rosa neón</translation>
 <translation id="432961742358282111">Haz clic con el botón derecho o mantén pulsado para consultar definiciones, traducciones o conversiones de unidades. Usa las teclas de flecha hacia la izquierda y derecha para gestionar esta función.</translation>
@@ -787,7 +789,7 @@
 <translation id="4431821876790500265">Ver informe</translation>
 <translation id="4443192710976771874">rojo</translation>
 <translation id="4447592701292766824">No se puede crear un resumen de este contenido</translation>
-<translation id="4448096106102522892">isla</translation>
+<translation id="4448096106102522892">una isla</translation>
 <translation id="445059817448385655">Contraseña antigua</translation>
 <translation id="4453205916657964690">Máscara de subred</translation>
 <translation id="4454245904991689773">Guardar en</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5600027863942488546">Tecla <ph name="KEY_NAME" /> probada</translation>
 <translation id="5606865426897221650">Tabulador</translation>
+<translation id="5612205513582918357">Herramientas de clase está compartiendo tu pantalla con <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Se ha cerrado la sesión</translation>
 <translation id="5620281292257375798">Solo para uso interno</translation>
 <translation id="5628106863521633649">Idiomas disponibles</translation>
@@ -1143,7 +1146,7 @@
 <translation id="6074608334942655098">Dejar de traducir</translation>
 <translation id="6074752328838739425">Ocultar resumen</translation>
 <translation id="6075872808778243331">(Android) Latencia de HTTP</translation>
-<translation id="6078323886959318429">Acceso directo</translation>
+<translation id="6078323886959318429">Añadir acceso directo</translation>
 <translation id="6079693086494835199">Restablece para asegurarte de que la página principal predeterminada no sea un sitio de phishing. Usa solo sitios web de confianza.</translation>
 <translation id="6090672065638047175">Una foto de un árbol brillante hecho de estrellas con un hermoso cielo nocturno y una galaxia de fondo.</translation>
 <translation id="6091080061796993741">amarillo</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Movimiento de las nubes</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">No hay escáneres disponibles</translation>
-<translation id="6231648282154119906">Navegación segura de Google analizará automáticamente los archivos sospechosos como parte de la protección mejorada que has elegido</translation>
 <translation id="6232017090690406397">Batería</translation>
 <translation id="6234024205316847054">Mostrar detalles</translation>
 <translation id="6243280677745499710">Opción actual</translation>
@@ -1200,7 +1202,7 @@
 <translation id="6318437367327684789">siempre</translation>
 <translation id="6319207335391420837">Actualizar el firmware de <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activar salvapantallas</translation>
-<translation id="6324916366299863871">Editar combinación de teclas</translation>
+<translation id="6324916366299863871">Editar acceso directo</translation>
 <translation id="6325525973963619867">Se ha producido un error.</translation>
 <translation id="6327262166342360252">Este fondo de pantalla se ha creado con IA usando el siguiente texto: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema oscuro automático</translation>
@@ -1786,7 +1788,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8910721771319628100">La red predeterminada supera el umbral de latencia</translation>
 <translation id="8912306040879976619">Zonas del teclado</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
-<translation id="8918813738569491921">piedra de sal</translation>
+<translation id="8918813738569491921">una piedra de sal</translation>
 <translation id="8919837981463578619">No se ha podido imprimir - Falta una bandeja</translation>
 <translation id="8924154518905976972">Exportar audio</translation>
 <translation id="8928727111548978589">No se ha podido imprimir - Sin papel</translation>
@@ -1866,7 +1868,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="921080052717160800">Imagen establecida como fondo de la cámara</translation>
 <translation id="9211490828691860325">Todos los escritorios</translation>
 <translation id="9218016617214286986">Mostrar APNs conocidos</translation>
-<translation id="932327136139879170">Página principal</translation>
+<translation id="932327136139879170">Casa</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="950520315903467048">Falta la tecla para <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>

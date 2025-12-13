@@ -4,8 +4,10 @@
 
 #include "ui/color/dynamic_color/palette_factory.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -16,6 +18,7 @@
 #include "third_party/material_color_utilities/src/cpp/palettes/tones.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/dynamic_color/palette.h"
+#include "ui/gfx/color_palette.h"
 
 namespace ui {
 
@@ -173,6 +176,13 @@ base::flat_map<S, T> Zip(const std::array<S, N>& keys,
   return base::flat_map<S, T>(base::sorted_unique_t(), std::move(zipped));
 }
 
+// Represents a pair of Chroma (in the range [0, 120]) and Tone (in the range
+// [0, 100]) used in the Hue-Chroma-Tone (HCT) color space.
+struct ChromaTonePair {
+  double chroma = 0.0;
+  double tone = 0.0;
+};
+
 }  // namespace
 
 std::unique_ptr<Palette> GeneratePalette(SkColor seed_color,
@@ -231,6 +241,63 @@ std::unique_ptr<Palette> GeneratePalette(SkColor seed_color,
   }
 
   return FromConfig(seed_color, config);
+}
+
+void GenerateStandardShadesFromHue(
+    std::optional<int> hue,
+    std::array<SkColor, kGeneratedShadesCount>& shades) {
+  if (!hue.has_value()) {
+    static constexpr SkColor kGreyShades[kGeneratedShadesCount] = {
+        gfx::kGoogleGrey050,
+        gfx::kGoogleGrey100,
+        gfx::kGoogleGrey200,
+        gfx::kGoogleGrey300,
+        gfx::kGoogleGrey400,
+        gfx::kGoogleGrey500,
+        gfx::kGoogleGrey600,
+        gfx::kGoogleGrey700,
+        gfx::kGoogleGrey800,
+        gfx::kGoogleGrey900,
+        // Google colors are only defined 50 through 900 but we will need a
+        // shade darker than 900 for the dark variant of
+        // `kColorTabGroupBookmarkBar<Color>` when it's customized. This is the
+        // same shade used as the dark variant for
+        // `kColorTabGroupBookmarkBarGrey` in
+        // "chrome/browser/ui/color/chrome_color_mixer.cc"
+        //
+        // TODO(crbug.com/433421598): Define this shade
+        // somewhere in //ui so that it can be shared between this file and
+        // "chrome/browser/ui/color/chrome_color_mixer.cc".
+        SkColorSetRGB(0x4C, 0x4D, 0x4E),
+    };
+
+    std::copy(std::begin(kGreyShades), std::end(kGreyShades), shades.begin());
+    return;
+  }
+
+  DCHECK_GE(*hue, 0);
+  DCHECK_LE(*hue, 360);
+
+  static constexpr ChromaTonePair
+      kChromaToneValuesForStandardShades[kGeneratedShadesCount] = {
+          {10.53, 95.01},  // Shade 50
+          {21.49, 90.30},  // Shade 100
+          {34.89, 83.08},  // Shade 200
+          {48.73, 76.14},  // Shade 300
+          {61.03, 69.01},  // Shade 400
+          {69.52, 63.13},  // Shade 500
+          {69.20, 56.72},  // Shade 600
+          {65.14, 50.50},  // Shade 700
+          {61.43, 44.29},  // Shade 800
+          {57.22, 39.13},  // Shade 900
+          {15.85, 28.78}   // Shade 1000
+      };
+
+  auto shade_it = shades.begin();
+  for (const ChromaTonePair& pair : kChromaToneValuesForStandardShades) {
+    material_color_utilities::Hct hct_shade(*hue, pair.chroma, pair.tone);
+    *shade_it++ = hct_shade.ToInt();
+  }
 }
 
 }  // namespace ui

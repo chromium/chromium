@@ -27,6 +27,7 @@
 #include "components/update_client/pipeline_util.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/task_traits.h"
+#include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
 #include "components/zucchini/zucchini.h"
@@ -68,9 +69,9 @@ void VerifyAndCleanUp(
     const base::FilePath& new_file,
     const std::string& output_hash,
     int result) {
-  base::DeleteFile(patch_file);
+  RetryFileOperation(&base::DeleteFile, patch_file);
   if (result) {
-    base::DeleteFile(new_file);
+    DeleteFileAndEmptyParentDirectory(new_file);
     std::move(callback).Run(base::unexpected<CategorizedError>(
         {.category = ErrorCategory::kUnpack,
          .code = static_cast<int>(UnpackerError::kDeltaOperationFailure),
@@ -79,7 +80,7 @@ void VerifyAndCleanUp(
   }
 
   if (!VerifyFileHash256(new_file, output_hash)) {
-    base::DeleteFile(new_file);
+    DeleteFileAndEmptyParentDirectory(new_file);
     std::move(callback).Run(base::unexpected<CategorizedError>(
         {.category = ErrorCategory::kUnpack,
          .code = static_cast<int>(UnpackerError::kPatchOutHashMismatch)}));
@@ -123,7 +124,11 @@ void CacheLookupDone(
   if (!cache_result.has_value()) {
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, kTaskTraits,
-        base::BindOnce(IgnoreResult(&base::DeleteFile), patch_file),
+        base::BindOnce(
+            [](const base::FilePath& patch_file) {
+              DeleteFileAndEmptyParentDirectory(patch_file);
+            },
+            patch_file),
         base::BindOnce(std::move(callback),
                        base::unexpected<CategorizedError>(
                            {.category = ErrorCategory::kUnpack,
@@ -143,11 +148,13 @@ base::OnceClosure ZucchiniOperation(
     scoped_refptr<CrxCache> crx_cache,
     scoped_refptr<Patcher> patcher,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(ComponentState)> state_tracker,
     const std::string& previous_hash,
     const std::string& output_hash,
     const base::FilePath& patch_file,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback) {
+  state_tracker.Run(ComponentState::kPatching);
   crx_cache->GetByHash(
       previous_hash,
       base::BindOnce(&CacheLookupDone, patcher, patch_file,

@@ -186,8 +186,7 @@ class MockPeerConnectionDependencyFactory
       const webrtc::PeerConnectionInterface::RTCConfiguration& config,
       blink::WebLocalFrame* frame,
       webrtc::PeerConnectionObserver* observer,
-      ExceptionState& exception_state,
-      RTCRtpTransport* rtp_transport) override;
+      ExceptionState& exception_state) override;
   scoped_refptr<webrtc::VideoTrackSourceInterface> CreateVideoTrackSourceProxy(
       webrtc::VideoTrackSourceInterface* source) override;
   scoped_refptr<webrtc::MediaStreamInterface> CreateLocalMediaStream(
@@ -195,9 +194,9 @@ class MockPeerConnectionDependencyFactory
   scoped_refptr<webrtc::VideoTrackInterface> CreateLocalVideoTrack(
       const String& id,
       webrtc::VideoTrackSourceInterface* source) override;
-  webrtc::IceCandidateInterface* CreateIceCandidate(const String& sdp_mid,
-                                                    int sdp_mline_index,
-                                                    const String& sdp) override;
+  webrtc::IceCandidate* CreateIceCandidate(const String& sdp_mid,
+                                           int sdp_mline_index,
+                                           const String& sdp) override;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetWebRtcNetworkTaskRunner()
       override;

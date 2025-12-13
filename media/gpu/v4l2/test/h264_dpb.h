@@ -50,7 +50,7 @@ struct H264SliceMetadata {
 // describe the pictures used in the H.264 decoding process.
 class H264DPB : public std::map<uint64_t, H264SliceMetadata> {
  public:
-  H264DPB() = default;
+  H264DPB();
   ~H264DPB() = default;
 
   H264DPB(const H264DPB&) = delete;

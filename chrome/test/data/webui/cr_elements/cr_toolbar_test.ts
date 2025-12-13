@@ -49,7 +49,7 @@ suite('cr-toolbar', function() {
     const newLogo = toolbar.querySelector('#logo');
     assertTrue(!!newLogo);
     assertEquals('product-logo', newLogo.assignedSlot!.name);
-    assertEquals('New logo', newLogo.textContent!.trim());
+    assertEquals('New logo', newLogo.textContent.trim());
   });
 
   test('Sends input aria-description', () => {

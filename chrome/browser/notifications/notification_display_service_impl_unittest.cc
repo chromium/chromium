@@ -359,7 +359,7 @@ TEST_F(DesktopNotificationDisplayServiceImplTest, SnoozeDuringScreenCapture) {
       NotificationOperation::kClick,
       NotificationHandler::Type::NOTIFICATIONS_MUTED, /*origin=*/GURL(),
       kMuteNotificationId, /*action_index=*/0, /*reply=*/std::nullopt,
-      /*by_user=*/true,
+      /*by_user=*/true, /*is_suspicious=*/false,
       base::BindOnce([](base::RunLoop* looper) { looper->Quit(); }, &run_loop));
   run_loop.Run();
 

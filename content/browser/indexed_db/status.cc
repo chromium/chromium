@@ -7,6 +7,9 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "sql/database.h"
+#include "sql/error_delegate_util.h"
+#include "sql/sqlite_result_code.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 namespace content::indexed_db {
@@ -18,7 +21,13 @@ Status::Status(const Status& rhs) = default;
 Status::Status(Status&& rhs) noexcept = default;
 
 Status::Status(leveldb::Status&& status) noexcept
-    : type_(Type::kDatabaseEngine), leveldb_status_(std::move(status)) {}
+    : type_(status.ok() ? Type::kOk : Type::kDatabaseEngine),
+      leveldb_status_(std::move(status)) {}
+
+Status::Status(sql::Database& db) noexcept
+    : type_(Type::kDatabaseEngine),
+      sqlite_code_(sql::ToSqliteResultCode(db.GetErrorCode())),
+      msg_(db.GetErrorMessage()) {}
 
 Status::Status(Status::Type type, std::string_view msg)
     : type_(type), msg_(msg) {
@@ -74,16 +83,24 @@ bool Status::IsNotFound() const {
 
 bool Status::IsCorruption() const {
   return type_ == Type::kCorruption ||
-         (leveldb_status_ && leveldb_status_->IsCorruption());
+         (leveldb_status_ && leveldb_status_->IsCorruption()) ||
+         (sqlite_code_ &&
+          sql::IsErrorCatastrophic(static_cast<int>(sqlite_code_.value())));
 }
 
 bool Status::IsIOError() const {
   return type_ == Type::kIoError ||
-         (leveldb_status_ && leveldb_status_->IsIOError());
+         (leveldb_status_ && leveldb_status_->IsIOError()) ||
+         sqlite_code_ == sql::SqliteResultCode::kIo ||
+         sqlite_code_ == sql::SqliteResultCode::kError;
 }
 
 bool Status::IsInvalidArgument() const {
   return type_ == Type::kInvalidArgument;
+}
+
+void Status::Log(std::string_view histogram_name) const {
+  base::UmaHistogramEnumeration(histogram_name, type_);
 }
 
 std::string Status::ToString() const {
@@ -97,31 +114,30 @@ bool Status::IndicatesDiskFull() const {
   return leveldb_status_ && leveldb_env::IndicatesDiskFull(*leveldb_status_);
 }
 
-void Status::Log(std::string_view histogram_name) const {
-  base::UmaHistogramEnumeration(
-      histogram_name,
-      static_cast<leveldb_env::LevelDBStatusValue>(GetTypeForLegacyLogging()),
-      leveldb_env::LEVELDB_STATUS_MAX);
-}
-
-int Status::GetTypeForLegacyLogging() const {
+void Status::LogLevelDbStatus(std::string_view histogram_name) const {
+  leveldb_env::LevelDBStatusValue value;
   switch (type_) {
     case Type::kOk:
-      return leveldb_env::LEVELDB_STATUS_OK;
+      value = leveldb_env::LEVELDB_STATUS_OK;
+      break;
     case Type::kNotFound:
-      return leveldb_env::LEVELDB_STATUS_NOT_FOUND;
+      value = leveldb_env::LEVELDB_STATUS_NOT_FOUND;
+      break;
     case Type::kCorruption:
-      return leveldb_env::LEVELDB_STATUS_CORRUPTION;
-    case Type::kNotSupported:
-      return leveldb_env::LEVELDB_STATUS_NOT_SUPPORTED;
+      value = leveldb_env::LEVELDB_STATUS_CORRUPTION;
+      break;
     case Type::kInvalidArgument:
-      return leveldb_env::LEVELDB_STATUS_INVALID_ARGUMENT;
+      value = leveldb_env::LEVELDB_STATUS_INVALID_ARGUMENT;
+      break;
     case Type::kIoError:
-      return leveldb_env::LEVELDB_STATUS_IO_ERROR;
+      value = leveldb_env::LEVELDB_STATUS_IO_ERROR;
+      break;
     case Type::kDatabaseEngine:
-      return leveldb_env::GetLevelDBStatusUMAValue(*leveldb_status_);
+      value = leveldb_env::GetLevelDBStatusUMAValue(*leveldb_status_);
+      break;
   }
-  NOTREACHED();
+  base::UmaHistogramEnumeration(histogram_name, value,
+                                leveldb_env::LEVELDB_STATUS_MAX);
 }
 
 }  // namespace content::indexed_db

@@ -244,6 +244,15 @@ class CC_BASE_EXPORT MathUtil {
   static gfx::Vector2dF ProjectVector(const gfx::Vector2dF& source,
                                       const gfx::Vector2dF& destination);
 
+  // Scales the input |point| by the inverse of the given |scale|.
+  // This function safeguards against a scale of 0 by using a minimum epsilon.
+  static gfx::PointF ScalePointByInverse(const gfx::PointF& point, float scale);
+
+  // Scales the input |vector| by the inverse of the given |scale|.
+  // This function safeguards against a scale of 0 by using a minimum epsilon.
+  static gfx::Vector2dF ScaleVectorByInverse(const gfx::Vector2dF& vector,
+                                             float scale);
+
   static bool FromValue(const base::Value*, gfx::Rect* out_rect);
 
   static void AddToTracedValue(const char* name,

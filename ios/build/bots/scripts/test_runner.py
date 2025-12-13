@@ -20,6 +20,7 @@ import time
 from typing import List, Optional
 
 import constants
+import exception_utils
 import file_util
 import gtest_utils
 import mac_util
@@ -222,10 +223,12 @@ def terminate_process(proc, proc_name):
 
 
 # TODO(crbug.com/40115765): Moved print_process_output to utils class.
-def print_process_output(proc,
-                         proc_name=None,
-                         parser=None,
-                         timeout=constants.READLINE_TIMEOUT):
+def print_process_output(
+    proc,
+    proc_name=None,
+    parser=None,
+    timeout=constants.READLINE_TIMEOUT,
+    exception_checker: exception_utils.ExceptionChecker = None):
   """Logs process messages in console and waits until process is done.
 
   Method waits until no output message and if no message for timeout seconds,
@@ -240,6 +243,7 @@ def print_process_output(proc,
       If proc_name is not specified, process name will be used to kill process.
     parser: A parser.
     timeout: A timeout(in seconds) to subprocess.stdout.readline method.
+    exception_checker: (ExceptionChecker) will check each line for exceptions.
   """
   out = []
   if not proc_name:
@@ -267,11 +271,15 @@ def print_process_output(proc,
     out.append(line)
     if parser:
       parser.ProcessLine(line)
+    if exception_checker:
+      exception_checker.check_line(line)
     LOGGER.info(line)
     sys.stdout.flush()
 
   if parser:
     parser.Finalize()
+  if exception_checker:
+    exception_checker.throw_first()
   LOGGER.debug('Finished print_process_output.')
   return out
 
@@ -333,7 +341,9 @@ class TestRunner(object):
       test_cases: List of tests to be included in the test run. None or [] to
         include all tests.
       xctest: Whether or not this is an XCTest.
-
+      exception_checker: (ExceptionChecker) An exception checker that will check
+        logs for infra related issues and raise them as exceptions. Default is
+        None.
     Raises:
       AppNotFoundError: If the given app does not exist.
       PlugInsNotFoundError: If the PlugIns directory does not exist for XCTests.
@@ -369,6 +379,8 @@ class TestRunner(object):
     self.readline_timeout = (
         kwargs.get('readline_timeout') or constants.READLINE_TIMEOUT)
     self.output_disabled_tests = kwargs.get('output_disabled_tests') or False
+
+    self.exception_checker = kwargs.get('exception_checker')
 
     self.test_results = init_test_result_defaults()
 
@@ -737,7 +749,6 @@ class SimulatorTestRunner(TestRunner):
       test_cases: List of tests to be included in the test run. None or [] to
         include all tests.
       use_clang_coverage: Whether code coverage is enabled in this run.
-      wpr_tools_path: Path to pre-installed WPR-related tools
       xctest: Whether or not this is an XCTest.
 
     Raises:
@@ -758,7 +769,8 @@ class SimulatorTestRunner(TestRunner):
     self.start_time = None
     self.version = version
     self.clones = kwargs.get('clones') or 1
-    self.udid = iossim_util.get_simulator(self.platform, self.version)
+    self.udid = iossim_util.get_simulator(self.platform, self.version,
+                                          self.out_dir)
     self.platform_type = iossim_util.get_platform_type_by_platform(
         self.platform)
     self.use_clang_coverage = kwargs.get('use_clang_coverage') or False
@@ -986,6 +998,8 @@ class DeviceTestRunner(TestRunner):
       test_cases: List of tests to be included in the test run. None or [] to
         include all tests.
       xctest: Whether or not this is an XCTest.
+      exception_checker: (ExceptionChecker) an exception checker that checks
+        log lines for infra related issues and raises them as exceptions.
 
     Raises:
       AppNotFoundError: If the given app does not exist.
@@ -994,6 +1008,9 @@ class DeviceTestRunner(TestRunner):
       XCTestPlugInNotFoundError: If the .xctest PlugIn does not exist.
     """
     super(DeviceTestRunner, self).__init__(app_path, out_dir, **kwargs)
+
+    self.exception_checker = kwargs.get(
+        'exception_checker', exception_utils.DeviceExceptionChecker())
 
     self.udid = subprocess.check_output(['idevice_id',
                                          '--list']).decode('utf-8').rstrip()

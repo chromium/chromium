@@ -64,12 +64,13 @@ void MojoInterfaceInterceptor::start(ExceptionState& exception_state) {
     started_ = true;
     if (!Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
             interface_name,
-            WTF::BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
-                               WrapWeakPersistent(this)))) {
+            BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
+                          WrapWeakPersistent(this)))) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,
-          "Interface " + interface_name_ +
-              " is already intercepted by another MojoInterfaceInterceptor.");
+          StrCat({"Interface ", interface_name_,
+                  " is already intercepted by another "
+                  "MojoInterfaceInterceptor."}));
     }
 
     return;
@@ -85,24 +86,26 @@ void MojoInterfaceInterceptor::start(ExceptionState& exception_state) {
     DCHECK(context->ShouldUseMojoJSInterfaceBroker());
     if (!context->GetMojoJSInterfaceBroker().SetBinderForTesting(
             interface_name,
-            WTF::BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
-                               WrapWeakPersistent(this)))) {
+            BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
+                          WrapWeakPersistent(this)))) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,
-          "Interface " + interface_name_ +
-              " is already intercepted by another MojoInterfaceInterceptor.");
+          StrCat({"Interface ", interface_name_,
+                  " is already intercepted by another "
+                  "MojoInterfaceInterceptor."}));
     }
     return;
   }
 
   if (!context->GetBrowserInterfaceBroker().SetBinderForTesting(
           interface_name,
-          WTF::BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
-                             WrapWeakPersistent(this)))) {
+          BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
+                        WrapWeakPersistent(this)))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
-        "Interface " + interface_name_ +
-            " is already intercepted by another MojoInterfaceInterceptor.");
+        StrCat(
+            {"Interface ", interface_name_,
+             " is already intercepted by another MojoInterfaceInterceptor."}));
   }
 }
 
@@ -169,10 +172,10 @@ void MojoInterfaceInterceptor::OnInterfaceRequest(
   // request is being satisfied by another process.
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMicrotask)
-      ->PostTask(FROM_HERE,
-                 WTF::BindOnce(
-                     &MojoInterfaceInterceptor::DispatchInterfaceRequestEvent,
-                     WrapPersistent(this), std::move(handle)));
+      ->PostTask(
+          FROM_HERE,
+          BindOnce(&MojoInterfaceInterceptor::DispatchInterfaceRequestEvent,
+                   WrapPersistent(this), std::move(handle)));
 }
 
 void MojoInterfaceInterceptor::DispatchInterfaceRequestEvent(

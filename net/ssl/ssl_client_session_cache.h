@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "net/base/host_port_pair.h"
@@ -32,7 +33,7 @@ class Clock;
 
 namespace net {
 
-class NET_EXPORT SSLClientSessionCache {
+class NET_EXPORT SSLClientSessionCache : public base::MemoryPressureListener {
  public:
   struct Config {
     // The maximum number of entries in the cache.
@@ -66,12 +67,18 @@ class NET_EXPORT SSLClientSessionCache {
   SSLClientSessionCache(const SSLClientSessionCache&) = delete;
   SSLClientSessionCache& operator=(const SSLClientSessionCache&) = delete;
 
-  ~SSLClientSessionCache();
+  ~SSLClientSessionCache() override;
 
   // Returns true if |entry| is expired as of |now|.
   static bool IsExpired(SSL_SESSION* session, time_t now);
 
   size_t size() const;
+
+  // Returns the current generation number. When a new socket is initialized,
+  // the `generation_number()` at the time should be recorded and used when
+  // inserting the session into the cache, which will ensure that sessions
+  // created with stale configs don't get cached.
+  uint64_t generation_number() const { return generation_number_; }
 
   // Returns the session associated with |cache_key| and moves it to the front
   // of the MRU list. Returns nullptr if there is none.
@@ -79,8 +86,11 @@ class NET_EXPORT SSLClientSessionCache {
 
   // Inserts |session| into the cache at |cache_key|. If there is an existing
   // one, it is released. Every |expiration_check_count| calls, the cache is
-  // checked for stale entries.
-  void Insert(const Key& cache_key, bssl::UniquePtr<SSL_SESSION> session);
+  // checked for stale entries. If |generation_number| does not match the
+  // current |generation_number_|, the insert will be ignored.
+  void Insert(uint64_t generation_number,
+              const Key& cache_key,
+              bssl::UniquePtr<SSL_SESSION> session);
 
   // Clears early data support for all current sessions associated with
   // |cache_key|. This may be used after a 0-RTT reject to avoid unnecessarily
@@ -90,7 +100,8 @@ class NET_EXPORT SSLClientSessionCache {
   // Removes all entries associated with items in |servers|.
   void FlushForServers(const base::flat_set<HostPortPair>& servers);
 
-  // Removes all entries from the cache.
+  // Removes all entries from the cache and updates the generation number.
+  // Future insertions will be ignored unless they match the new generation.
   void Flush();
 
   void SetClockForTesting(base::Clock* clock);
@@ -121,13 +132,15 @@ class NET_EXPORT SSLClientSessionCache {
 
   // Clear cache on low memory notifications callback.
   void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   raw_ptr<base::Clock> clock_;
+  uint64_t generation_number_ = 0;
   Config config_;
   base::LRUCache<Key, Entry> cache_;
   size_t lookups_since_flush_ = 0;
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 };
 
 }  // namespace net

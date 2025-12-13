@@ -156,7 +156,7 @@ class BaseSelectFileDialogExtensionBrowserTest
     use_file_type_filter_ = GetParam().file_type_filter;
   }
 
-  enum DialogButtonType { DIALOG_BTN_OK, DIALOG_BTN_CANCEL };
+  enum DialogButtonType { kDialogBtnOk, kDialogBtnCancel };
 
   void SetUp() override {
     // Create the dialog wrapper and listener objects.
@@ -292,7 +292,7 @@ class BaseSelectFileDialogExtensionBrowserTest
 
   void ClickJsButton(content::RenderFrameHost* frame_host,
                      DialogButtonType button_type) {
-    std::string button_class = (button_type == DIALOG_BTN_OK)
+    std::string button_class = (button_type == kDialogBtnOk)
                                    ? ".button-panel .ok"
                                    : ".button-panel .cancel";
     std::u16string script = base::ASCIIToUTF16(
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, DestroyListener2) {
 
   // This will close the FrameHost/WebContents and will try to close the
   // `dialog_`.
-  ClickJsButton(frame_host, DIALOG_BTN_CANCEL);
+  ClickJsButton(frame_host, kDialogBtnCancel);
 
   base::RunLoop().RunUntilIdle();
 }
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, CanResize) {
   // `PendingDialog::map_`. `PendingDialog::map_` otherwise prevents the dialog
   // from being destroyed on `reset()` in test TearDown and the
   // `SelectFileDialog::listener_` becomes dangling.
-  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+  CloseDialog(kDialogBtnCancel, owning_window);
 }
 
 IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
   ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
                                      base::FilePath(), owning_window, ""));
   // Click the "Cancel" button.
-  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+  CloseDialog(kDialogBtnCancel, owning_window);
 
   // Listener should have been informed of the cancellation.
   ASSERT_FALSE(listener_->file_selected());
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
   ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
                                      test_file, owning_window, "dialog-ready"));
   // Click the "Open" button.
-  CloseDialog(DIALOG_BTN_OK, owning_window);
+  CloseDialog(kDialogBtnOk, owning_window);
 
   // Listener should have been informed that the file was opened.
   ASSERT_TRUE(listener_->file_selected());
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
   ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_SAVEAS_FILE,
                                      test_file, owning_window, "dialog-ready"));
   // Click the "Save" button.
-  CloseDialog(DIALOG_BTN_OK, owning_window);
+  CloseDialog(kDialogBtnOk, owning_window);
 
   // Listener should have been informed that the file was saved.
   ASSERT_TRUE(listener_->file_selected());
@@ -507,12 +507,12 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
   // Open a singleton tab in background.
   NavigateParams p(browser(), GURL("http://www.google.com"),
                    ui::PAGE_TRANSITION_LINK);
-  p.window_action = NavigateParams::SHOW_WINDOW;
+  p.window_action = NavigateParams::WindowAction::kShowWindow;
   p.disposition = WindowOpenDisposition::SINGLETON_TAB;
   Navigate(&p);
 
   // Click the "Cancel" button.
-  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+  CloseDialog(kDialogBtnCancel, owning_window);
 
   // Listener should have been informed of the cancellation.
   ASSERT_FALSE(listener_->file_selected());
@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, OpenTwoDialogs) {
   ASSERT_FALSE(second_dialog_->IsRunning(owning_window));
 
   // Click the "Cancel" button.
-  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+  CloseDialog(kDialogBtnCancel, owning_window);
 
   // Listener should have been informed of the cancellation.
   ASSERT_FALSE(listener_->file_selected());
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
                                      base::FilePath(), owning_window, ""));
 
   // Click the "Cancel" button.
-  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+  CloseDialog(kDialogBtnCancel, owning_window);
 
   // Listener should have been informed of the cancellation.
   ASSERT_TRUE(listener_->canceled());
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
   ASSERT_EQ(dialog_->owner_.dialog_caller->url().value(), url);
 
   // Click the "Cancel" button.
-  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+  CloseDialog(kDialogBtnCancel, owning_window);
 
   // Listener should have been informed of the cancellation.
   ASSERT_FALSE(listener_->file_selected());
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest,
   EXPECT_EQ(dialog_window->GetProperty(chromeos::kFrameInactiveColorKey),
             dialog_title_bar_color);
 
-  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+  CloseDialog(kDialogBtnCancel, owning_window);
 }
 
 IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest,
@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest,
   EXPECT_EQ(dialog_window->GetProperty(chromeos::kFrameInactiveColorKey),
             dialog_title_bar_color);
 
-  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+  CloseDialog(kDialogBtnCancel, owning_window);
 }
 
 INSTANTIATE_TEST_SUITE_P(SystemWebApp,
@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionDarkLightModeEnabledTest,
   EXPECT_NE(dialog_window->GetProperty(chromeos::kFrameInactiveColorKey),
             initial_inactive_color);
 
-  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+  CloseDialog(kDialogBtnCancel, owning_window);
 }
 
 INSTANTIATE_TEST_SUITE_P(SystemWebApp,
@@ -814,7 +814,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpDownloadAllow) {
       .WillOnce(base::test::RunOnceCallback<2>(true));
 
   // Click the "Save" button.
-  CloseDialog(DIALOG_BTN_OK, owning_window);
+  CloseDialog(kDialogBtnOk, owning_window);
 
   // Listener should have been informed of the selection.
   ASSERT_TRUE(listener_->file_selected());
@@ -846,7 +846,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpDownloadBlock) {
       .WillOnce(base::test::RunOnceCallback<2>(false));
 
   // Click the "Save" button.
-  CloseDialog(DIALOG_BTN_OK, owning_window);
+  CloseDialog(kDialogBtnOk, owning_window);
 
   // Listener should have been informed of the cancellation.
   ASSERT_FALSE(listener_->file_selected());
@@ -893,7 +893,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpUploadAllow) {
       .WillOnce(base::test::RunOnceCallback<2>(selected_files));
 
   // Click the "Save" button.
-  CloseDialog(DIALOG_BTN_OK, owning_window);
+  CloseDialog(kDialogBtnOk, owning_window);
 
   // Listener should have been informed of the selection.
   ASSERT_TRUE(listener_->file_selected());
@@ -941,7 +941,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpUploadBlock) {
           base::test::RunOnceCallback<2>(std::vector<ui::SelectedFileInfo>()));
 
   // Click the "Save" button.
-  CloseDialog(DIALOG_BTN_OK, owning_window);
+  CloseDialog(kDialogBtnOk, owning_window);
 
   // Listener should have been informed of the cancellation.
   ASSERT_FALSE(listener_->file_selected());

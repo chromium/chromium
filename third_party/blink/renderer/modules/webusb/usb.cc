@@ -203,8 +203,8 @@ ScriptPromise<IDLSequence<USBDevice>> USB::getDevices(
       MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<USBDevice>>>(
           script_state, exception_state.GetContext());
   get_devices_requests_.insert(resolver);
-  service_->GetDevices(WTF::BindOnce(&USB::OnGetDevices, WrapPersistent(this),
-                                     WrapPersistent(resolver)));
+  service_->GetDevices(BindOnce(&USB::OnGetDevices, WrapPersistent(this),
+                                WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -261,7 +261,7 @@ ScriptPromise<USBDevice> USB::requestDevice(
          mojo_options->exclusion_filters.size());
   get_permission_requests_.insert(resolver);
   service_->GetPermission(std::move(mojo_options),
-                          resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                          resolver->WrapCallbackInScriptScope(BindOnce(
                               &USB::OnGetPermission, WrapPersistent(this))));
   return promise;
 }
@@ -423,7 +423,7 @@ void USB::EnsureServiceConnection() {
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(task_runner));
   service_.set_disconnect_handler(
-      WTF::BindOnce(&USB::OnServiceConnectionError, WrapWeakPersistent(this)));
+      BindOnce(&USB::OnServiceConnectionError, WrapWeakPersistent(this)));
 
   DCHECK(!client_receiver_.is_bound());
 

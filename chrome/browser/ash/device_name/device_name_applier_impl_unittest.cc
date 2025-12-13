@@ -31,17 +31,17 @@ class DeviceNameApplierImplTest : public testing::Test {
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
 
     ON_CALL(*mock_adapter_, SetName(_, _, _))
-        .WillByDefault(testing::Invoke(
-            [this](const std::string& name, base::OnceClosure success_callback,
-                   base::OnceClosure error_callback) {
-              device_name_ = name;
-              set_name_success_callback_ = std::move(success_callback);
-              set_name_error_callback_ = std::move(error_callback);
-            }));
+        .WillByDefault([this](const std::string& name,
+                              base::OnceClosure success_callback,
+                              base::OnceClosure error_callback) {
+          device_name_ = name;
+          set_name_success_callback_ = std::move(success_callback);
+          set_name_error_callback_ = std::move(error_callback);
+        });
 
-    ON_CALL(*mock_adapter_, GetName()).WillByDefault(testing::Invoke([this]() {
+    ON_CALL(*mock_adapter_, GetName()).WillByDefault([this]() {
       return device_name_;
-    }));
+    });
   }
 
   base::TimeDelta GetCurrentBackoffDelay() {

@@ -8,9 +8,9 @@
 #include <optional>
 
 #include "base/values.h"
-#include "base/version.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "url/gurl.h"
 namespace web_app {
 
@@ -25,7 +25,7 @@ class PolicyGenerator {
       const web_package::SignedWebBundleId& web_bundle_id,
       const GURL& update_manifest_url,
       const std::optional<UpdateChannel>& update_channel = std::nullopt,
-      const std::optional<base::Version>& pinned_version = std::nullopt,
+      const std::optional<IwaVersion>& pinned_version = std::nullopt,
       bool allow_downgrades = false);
 
   base::Value Generate();

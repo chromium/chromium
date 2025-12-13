@@ -10,21 +10,23 @@ import android.content.res.ColorStateList;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
 /** Maintains the toolbar color for {@link CustomTabActivity}. */
+@NullMarked
 public class CustomTabToolbarColorController
         implements ThemeColorProvider.ThemeColorObserver,
                 ThemeColorProvider.TintObserver,
@@ -35,8 +37,8 @@ public class CustomTabToolbarColorController
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
-    private DesktopWindowStateManager.AppHeaderObserver mHeaderObserver;
-    private ToolbarManager mToolbarManager;
+    private DesktopWindowStateManager.@Nullable AppHeaderObserver mHeaderObserver;
+    private @Nullable ToolbarManager mToolbarManager;
 
     /** Whether the current activity is in a focused window, the top resumed activity. */
     private boolean mIsTopResumedActivity;
@@ -155,7 +157,7 @@ public class CustomTabToolbarColorController
         return mBrowserServicesThemeColorProvider.getBrandedColorScheme();
     }
 
-    private ColorStateList resolveTint(@BrandedColorScheme int brandedColorScheme) {
+    private @Nullable ColorStateList resolveTint(@BrandedColorScheme int brandedColorScheme) {
         if (shouldUseDefaultThemeForWebApp()) {
             return ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme);
         }
@@ -164,7 +166,7 @@ public class CustomTabToolbarColorController
     }
 
     private int getDefaultColor() {
-        return SurfaceColorUpdateUtils.getDefaultThemeColor(
+        return ChromeColors.getDefaultThemeColor(
                 mContext, mIntentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO);
     }
 
@@ -183,7 +185,7 @@ public class CustomTabToolbarColorController
     }
 
     @VisibleForTesting
-    DesktopWindowStateManager.AppHeaderObserver getAppHeaderObserver() {
+    DesktopWindowStateManager.@Nullable AppHeaderObserver getAppHeaderObserver() {
         return mHeaderObserver;
     }
 }

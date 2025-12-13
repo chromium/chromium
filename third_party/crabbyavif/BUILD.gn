@@ -13,6 +13,7 @@ rust_bindgen_generator("crabbyavif_dav1d_bindings") {
   bindgen_flags = [
     "no-doc-comments",
     "generate=functions,types,vars,methods,constructors,destructors",
+    "allowlist-item=DAV1D_MAX_THREADS",
     "allowlist-item=dav1d_close",
     "allowlist-item=dav1d_data_unref",
     "allowlist-item=dav1d_data_wrap",
@@ -22,6 +23,7 @@ rust_bindgen_generator("crabbyavif_dav1d_bindings") {
     "allowlist-item=dav1d_open",
     "allowlist-item=dav1d_picture_unref",
     "allowlist-item=dav1d_send_data",
+    "allowlist-item=dav1d_version",
   ]
 }
 
@@ -33,6 +35,7 @@ rust_static_library("crabbyavif_dav1d_sys") {
   crate_name = "dav1d_sys"
   sources = [ "src/sys/dav1d-sys/src/lib.rs" ]
   bindgen_deps = [ ":crabbyavif_dav1d_bindings" ]
+  features = [ "dav1d" ]
 }
 
 rust_bindgen_generator("crabbyavif_libyuv_bindings") {
@@ -95,6 +98,7 @@ rust_bindgen_generator("crabbyavif_libyuv_bindings") {
     "allowlist-item=I444AlphaToARGBMatrix",
     "allowlist-item=I444ToARGBMatrix",
     "allowlist-item=I444ToRGB24Matrix",
+    "allowlist-item=LIBYUV_VERSION",
     "allowlist-item=NV12Scale",
     "allowlist-item=NV12ToARGBMatrix",
     "allowlist-item=NV12ToRGB565Matrix",
@@ -136,10 +140,12 @@ rust_static_library("crabbyavif_libyuv_sys") {
   crate_name = "libyuv_sys"
   sources = [ "src/sys/libyuv-sys/src/lib.rs" ]
   bindgen_deps = [ ":crabbyavif_libyuv_bindings" ]
+  features = [ "libyuv" ]
 }
 
 rust_static_library("crabbyavif") {
   crate_root = "src/src/lib.rs"
+  edition = "2021"
 
   # This library exposes a C API and uses a couple of C/C++ libraries. So unsafe
   # has to be allowed in order to allow those. The core library itself does not
@@ -164,9 +170,11 @@ rust_static_library("crabbyavif") {
     "src/src/image.rs",
     "src/src/internal_utils/io.rs",
     "src/src/internal_utils/mod.rs",
+    "src/src/internal_utils/sampletransform.rs",
     "src/src/internal_utils/stream.rs",
     "src/src/lib.rs",
     "src/src/parser/exif.rs",
+    "src/src/parser/mini.rs",
     "src/src/parser/mod.rs",
     "src/src/parser/mp4box.rs",
     "src/src/parser/obu.rs",
@@ -178,6 +186,7 @@ rust_static_library("crabbyavif") {
     "src/src/reformat/rgb_impl.rs",
     "src/src/reformat/scale.rs",
     "src/src/utils/clap.rs",
+    "src/src/utils/error.rs",
     "src/src/utils/mod.rs",
     "src/src/utils/pixels.rs",
     "src/src/utils/reader/mod.rs",
@@ -195,7 +204,7 @@ rust_static_library("crabbyavif") {
 
   # Required for disable_cfi feature.
   configs -= [ "//build/config/compiler:disallow_unstable_features" ]
-  rustflags = [ "-Zallow-features=no_sanitize" ]
+  rustflags = [ "-Zallow-features=sanitize" ]
 
   public_deps = [ ":header_files" ]
   deps = [

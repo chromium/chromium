@@ -32,6 +32,8 @@ WebThreadScheduler::CreateMainThreadScheduler(
                       .SetShouldSampleCPUTime(true)
                       .SetAddQueueTimeToTasks(true)
                       .SetPrioritySettings(CreatePrioritySettings())
+                      .SetIsMainThread(true)
+                      .SetShouldReportLockMetrics(true)
                       .Build();
   auto sequence_manager =
       message_pump
@@ -50,10 +52,6 @@ WebThreadScheduler::DeprecatedDefaultTaskRunner() {
 }
 
 std::unique_ptr<MainThread> WebThreadScheduler::CreateMainThread() {
-  NOTREACHED();
-}
-
-void WebThreadScheduler::SetRendererHidden(bool hidden) {
   NOTREACHED();
 }
 

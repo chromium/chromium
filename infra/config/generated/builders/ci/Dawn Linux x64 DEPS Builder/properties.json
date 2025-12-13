@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
               "builder_group": "chromium.dawn",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -38,7 +37,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
               "builder_group": "chromium.dawn",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -68,7 +66,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
               "builder_group": "chromium.dawn",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -118,7 +115,8 @@
           "group": "tryserver.chromium.dawn"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Linux x64 DEPS Builder/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Dawn Linux x64 DEPS Builder/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

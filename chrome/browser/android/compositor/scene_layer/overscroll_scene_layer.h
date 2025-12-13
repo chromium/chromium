@@ -26,8 +26,8 @@ class OverscrollSceneLayer : public SceneLayer,
                              public ui::OverscrollGlowClient {
  public:
   OverscrollSceneLayer(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& jobj,
-                       const base::android::JavaParamRef<jobject>& jwindow);
+                       const base::android::JavaRef<jobject>& jobj,
+                       const base::android::JavaRef<jobject>& jwindow);
 
   OverscrollSceneLayer(const OverscrollSceneLayer&) = delete;
   OverscrollSceneLayer& operator=(const OverscrollSceneLayer&) = delete;
@@ -40,12 +40,11 @@ class OverscrollSceneLayer : public SceneLayer,
                jint width,
                jint height);
   jboolean Update(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& jresource_manager,
+                  const base::android::JavaRef<jobject>& jresource_manager,
                   jfloat accumulated_overscroll_x,
                   jfloat delta_x);
-  void SetContentTree(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcontent_tree);
+  void SetContentTree(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& jcontent_tree);
   void OnReset(JNIEnv* env);
 
   void SetNeedsAnimate();

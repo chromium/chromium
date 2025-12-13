@@ -27,21 +27,22 @@ class AppMenuIconController : public GlobalErrorObserver,
                               public UpgradeObserver {
  public:
   enum class IconType {
-    NONE,
-    UPGRADE_NOTIFICATION,
-    GLOBAL_ERROR,
-    DEFAULT_BROWSER_PROMPT,
+    kNone,
+    kUpgradeNotification,
+    kGlobalError,
   };
   enum class Severity {
-    NONE,
-    LOW,
-    MEDIUM,
-    HIGH,
+    kNone,
+    kLow,
+    kMedium,
+    kHigh,
   };
 
   // The app menu icon's type and severity.
   struct TypeAndSeverity {
     IconType type;
+    // When `type` is `IconType::kGlobalError`, this reflects the severity of
+    // the highest-severity global error.
     Severity severity;
     bool use_primary_colors = false;
   };

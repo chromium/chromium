@@ -92,7 +92,7 @@ RenderingContextDescriptionCodec::RenderingContextDescriptionCodec(
   key_.set<RenderingAPIField>(
       static_cast<uint32_t>(context->GetRenderingAPI()));
   // The padding field ensures at least one bit is set in the key in order
-  // to avoid a key == 0, which is not supported by WTF::HashSet
+  // to avoid a key == 0, which is not supported by blink::HashSet.
   key_.set<PaddingField>(true);
 }
 
@@ -186,7 +186,7 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
   TRACE_EVENT0("blink", "CanvasPerformanceMonitor::RecordMetrics");
   base::TimeDelta elapsed_time = end_time - start_time;
   constexpr size_t kKiloByte = 1024;
-  size_t partition_alloc_kb = WTF::Partitions::TotalActiveBytes() / kKiloByte;
+  size_t partition_alloc_kb = Partitions::TotalActiveBytes() / kKiloByte;
   size_t blink_gc_alloc_kb =
       ProcessHeap::TotalAllocatedObjectSize() / kKiloByte;
 

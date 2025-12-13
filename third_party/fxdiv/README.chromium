@@ -1,8 +1,10 @@
 Name: FXDiv
 Short Name: fxdiv
 URL: https://github.com/Maratyszcza/FXdiv
-Version: 63058eff77e11aa15bf531df5dd34395ec3017c8
+Version: N/A
+Revision: 63058eff77e11aa15bf531df5dd34395ec3017c8
 Date: 2022-04-22
+Update Mechanism: Manual
 License: MIT
 License File: src/LICENSE
 Security Critical: Yes

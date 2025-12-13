@@ -204,3 +204,5 @@ TEST_F(MediaRouterAndroidTest, OnRouteMediaSourceUpdated) {
 }
 
 }  // namespace media_router
+
+DEFINE_JNI(TestMediaRouterClient)

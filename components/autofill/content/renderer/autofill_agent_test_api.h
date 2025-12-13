@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/password_autofill_agent.h"
 
 namespace autofill {
 
@@ -20,10 +21,6 @@ class AutofillAgentTestApi {
   FormTracker& form_tracker() { return *agent_->form_tracker_; }
   void set_form_tracker(std::unique_ptr<FormTracker> form_tracker) {
     agent_->form_tracker_ = std::move(form_tracker);
-  }
-
-  std::optional<FormData> provisionally_saved_form() {
-    return agent_->provisionally_saved_form();
   }
 
   void FocusedElementChanged(blink::WebElement new_focused_element) {
@@ -45,9 +42,11 @@ class AutofillAgentTestApi {
     agent_->ShowSuggestionsForContentEditable(element, trigger_source);
   }
 
-  void OnFormNoLongerSubmittable() { agent_->OnFormNoLongerSubmittable(); }
-
   const FormCache& form_cache() { return agent_->form_cache_; }
+
+  PasswordAutofillAgent& password_autofill_agent() {
+    return *agent_->password_autofill_agent_;
+  }
 
   const base::OneShotTimer& process_forms_after_dynamic_change_timer() {
     return agent_->process_forms_after_dynamic_change_timer_;

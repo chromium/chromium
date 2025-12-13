@@ -6,17 +6,17 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_TOOL_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/aggregated_journal.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom-forward.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "chrome/common/actor/task_id.h"
 #include "content/public/browser/weak_document_ptr.h"
 
 namespace actor {
@@ -36,23 +36,27 @@ class ToolController {
 
   enum class State {
     kInit = 0,
-    kReady,
+    kReady,  // Ready for CreateToolAndValidate().
+    kCreating,
     kValidating,
+    kPostValidate,
+    kInvokable,  // Ready for Invoke().
     kPreInvoke,
     kInvoking,
     kPostInvoke,
   };
 
-  ToolController(ActorTask& actor_task, AggregatedJournal& journal);
+  ToolController(ActorTask& actor_task, ToolDelegate& tool_delegate);
   ~ToolController();
   ToolController(const ToolController&) = delete;
   ToolController& operator=(const ToolController&) = delete;
 
   // Invokes a tool action.
-  void Invoke(
+  void CreateToolAndValidate(
       const ToolRequest& request,
-      const optimization_guide::proto::AnnotatedPageContent* last_observation,
-      ResultCallback result_callback);
+      ResultCallback callback);
+  void Invoke(ResultCallback result_callback);
+  void Cancel();
 
   static std::string StateToString(State state);
 
@@ -66,9 +70,15 @@ class ToolController {
   // the initiator. Must only be called when a tool invocation is in-progress.
   void CompleteToolRequest(mojom::ActionResultPtr result);
 
-  void ValidationComplete(mojom::ActionResultPtr result);
-  void InvokeTool(mojom::ActionResultPtr result);
+  void PostValidate(mojom::ActionResultPtr result);
+  void PostUpdateTask(mojom::ActionResultPtr result);
   void PostInvokeTool(mojom::ActionResultPtr result);
+  void WaitForObservation(mojom::ActionResultPtr action_result);
+  void ObservationDelayComplete(
+      mojom::ActionResultPtr action_result,
+      ObservationDelayController::Result observation_result);
+
+  AggregatedJournal& journal() { return tool_delegate_->GetJournal(); }
 
   State state_ = State::kInit;
 
@@ -77,22 +87,24 @@ class ToolController {
     ActiveState(
         std::unique_ptr<Tool> tool,
         ResultCallback completion_callback,
-        std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
-        const optimization_guide::proto::AnnotatedPageContent*
-            last_observation);
+        std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry);
     ~ActiveState();
     ActiveState(const ActiveState&) = delete;
     ActiveState& operator=(const ActiveState&) = delete;
 
     // Both `tool` and `completion_callback` are guaranteed to be non-null while
     // active_state_ is set.
+    // `completion_callback` holds two different callbacks over its lifetime:
+    // a callback for when CreateToolAndValidate is finished and, next, a
+    // callback for when Invoke is finished.
     std::unique_ptr<Tool> tool;
     ResultCallback completion_callback;
     std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry;
-    raw_ptr<const optimization_guide::proto::AnnotatedPageContent>
-        last_observation;
   };
   std::optional<ActiveState> active_state_;
+
+  ObservationDelayController::PageStabilityConfig
+      observation_page_stability_config_;
 
   // Set while a tool invocation is in progress, delays invocation of the
   // completion_callback until the page is ready for observation.
@@ -101,7 +113,7 @@ class ToolController {
   // ActorTask indirectly owns `this`.
   raw_ptr<ActorTask> task_;
 
-  base::SafeRef<AggregatedJournal> journal_;
+  raw_ref<ToolDelegate> tool_delegate_;
 
   base::WeakPtrFactory<ToolController> weak_ptr_factory_{this};
 };

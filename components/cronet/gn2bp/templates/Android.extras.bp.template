@@ -116,7 +116,7 @@ filegroup {
     name: "${GN2BP_MODULE_PREFIX}javatests_resources",
     srcs: [
         "net/data/ssl/certificates/**/*",
-        "components/cronet/testing/test_server/data/**/*",
+        "components/cronet/android/test/test_server/data/**/*",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -168,7 +168,10 @@ java_defaults {
         "framework-statsd.stubs.module_lib",
         "framework-wifi.stubs.module_lib",
         "framework-sdkextensions.stubs.module_lib",
-    ],
+    ] + select(release_flag("RELEASE_CONSCRYPT_NSC"), {
+        true: ["framework-conscrypt-nsc.stubs"],
+        default: ["framework-network-security-config.stubs.module_lib"],
+    }),
     visibility: [
         "//external/cronet:__subpackages__",
     ],

@@ -18,11 +18,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/connection_error_callback.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/sync_method_traits.h"
+#include "mojo/public/cpp/bindings/message_metadata_helpers.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/raw_ptr_impl_ref_traits.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/runtime_features.h"
 
 namespace mojo {

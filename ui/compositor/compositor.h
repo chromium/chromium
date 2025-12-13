@@ -55,7 +55,7 @@
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace base {
@@ -79,6 +79,7 @@ class DelegatedInkPointRenderer;
 struct PresentationFeedback;
 class Rect;
 class Size;
+class ScopedAnimationDurationScaleMode;
 }  // namespace gfx
 
 namespace viz {
@@ -95,7 +96,6 @@ class RasterContextProvider;
 namespace ui {
 class Compositor;
 class Layer;
-class ScopedAnimationDurationScaleMode;
 class ScrollInputHandler;
 class CompositorMetricsTracker;
 class CompositorPropertyTreeDelegate;
@@ -604,7 +604,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private_;
   mojo::AssociatedRemote<viz::mojom::ExternalBeginFrameController>
       external_begin_frame_controller_;
-  raw_ptr<ExternalBeginFrameControllerClientFactory>
+  raw_ptr<ExternalBeginFrameControllerClientFactory, DanglingUntriaged>
       external_begin_frame_controler_client_factory_;
 
   // Used to hold on to IssueExternalBeginFrame(NoAck) arguments if
@@ -679,7 +679,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   LayerAnimatorCollection layer_animator_collection_;
   scoped_refptr<cc::AnimationTimeline> animation_timeline_;
-  std::unique_ptr<ScopedAnimationDurationScaleMode> slow_animations_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> slow_animations_;
 
   SkM44 display_color_matrix_;
   gfx::DisplayColorSpaces display_color_spaces_;

@@ -5,8 +5,9 @@
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/switch_content_view.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_view.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/public/test/earl_grey/web_view_actions.h"
@@ -67,7 +68,7 @@ NSArray<NSValue*>* TouchPath(CGPoint start, CGPoint end) {
   return touch_path;
 }
 
-NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
+NSString* const kChromeActionsErrorDomain = @"ChromeActionsError";
 
 }  // namespace
 
@@ -98,11 +99,18 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
           // action interacts with UI, kick it over to the main thread.
           __block BOOL success = NO;
           grey_dispatch_sync_on_main_thread(^{
-            TableViewSwitchCell* switchCell =
-                base::apple::ObjCCast<TableViewSwitchCell>(collectionViewCell);
-            if (!switchCell) {
+            UITableViewCell* cell =
+                base::apple::ObjCCast<UITableViewCell>(collectionViewCell);
+            TableViewCellContentView* contentView =
+                base::apple::ObjCCast<TableViewCellContentView>(
+                    cell.contentView);
+            SwitchContentView* switchContentView =
+                base::apple::ObjCCastStrict<SwitchContentView>(
+                    [contentView trailingContentViewForTesting]);
+
+            if (!switchContentView) {
               NSString* description = @"The element isn't of the expected type "
-                                      @"(TableViewSwitchCell).";
+                                      @"(SwitchContentView).";
               *errorOrNil = [NSError
                   errorWithDomain:kChromeActionsErrorDomain
                              code:0
@@ -110,7 +118,8 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
               success = NO;
               return;
             }
-            UISwitch* switchView = switchCell.switchView;
+
+            UISwitch* switchView = [switchContentView switchForTesting];
             if (switchView.on != on) {
               id<GREYAction> action = [GREYActions actionForTurnSwitchOn:on];
               success = [action perform:switchView error:errorOrNil];
@@ -321,4 +330,37 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
           return YES;
         }];
 }
+
++ (id<GREYAction>)notifyChangeTextInRange:(NSString*)text {
+  return [GREYActionBlock
+      actionWithName:@"Notifies the text view of an iminent change in content."
+         constraints:nil
+        performBlock:^(UIView* element, NSError* __strong* errorOrNil) {
+          if ([element isKindOfClass:[UITextField class]]) {
+            // For UITextField the action is NO-OP.
+            return YES;
+          }
+          if (![element isKindOfClass:[UITextView class]]) {
+            NSString* errorDescription =
+                [NSString stringWithFormat:
+                              @"Target view should be of kind UITextView:\n%@",
+                              [element grey_description]];
+            *errorOrNil = [NSError
+                errorWithDomain:@"Invalid element type"
+                           code:0
+                       userInfo:@{@"Failure Reason" : (errorDescription)}];
+            // Indicates that the action failed.
+            return NO;
+          }
+
+          UITextView* textView = (UITextView*)element;
+          NSRange selectedNSRange = NSMakeRange(0, [textView.text length]);
+          [textView.delegate textView:textView
+              shouldChangeTextInRange:selectedNSRange
+                      replacementText:text];
+          // Indicates that the action was executed successfully.
+          return YES;
+        }];
+}
+
 @end

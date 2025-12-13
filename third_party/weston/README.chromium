@@ -2,6 +2,7 @@ Name: Weston - reference Wayland compositor
 Short Name: Weston
 URL: https://gitlab.freedesktop.org/wayland/weston
 Version: 12.0.1
+Update Mechanism: Manual
 License: MIT
 License File: LICENSE
 Security Critical: no

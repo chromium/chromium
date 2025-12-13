@@ -7,7 +7,7 @@ COMMON_PERF_DATA = [
   "//third_party/crossbench/cb.py",
   "//third_party/crossbench/crossbench/",
   "//third_party/crossbench/config/",
-  "//third_party/crossbench/android_protoc/",
+  "//third_party/crossbench/protoc/",
 ]
 
 if (!is_android) {
@@ -98,6 +98,9 @@ group("perf_without_chrome") {
 
     # For Pylib used by VR tests
     "//build/android/pylib/",
+
+    # For process perf results
+    "//build/util/lib/",
 
     # For Crossbench WPR network
     "//third_party/webpagereplay/",

@@ -5,10 +5,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/signin/dice_migration_service_factory.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "content/public/test/browser_test.h"
@@ -21,38 +23,58 @@ constexpr char kScreenshotBaselineCL[] = "6727956";
 const gfx::Image kAccountImage = gfx::test::CreateImage(20, 20, SK_ColorYELLOW);
 const char kAccountImageUrl[] = "ACCOUNT_IMAGE_URL";
 
-class DiceMigrationServicePixelBrowserTest
-    : public SigninBrowserTestBaseT<InteractiveBrowserTest> {
+// Utility macro to implicitly sign in the user in a PRE test.
+// NOTE: `test_suite` must be a subclass of
+// `DiceMigrationServicePixelBrowserTest`.
+#define DICE_MIGRATION_TEST_F(test_suite, test_name)    \
+  IN_PROC_BROWSER_TEST_F(test_suite, PRE_##test_name) { \
+    ImplicitlySignIn();                                 \
+  }                                                     \
+  IN_PROC_BROWSER_TEST_F(test_suite, test_name)
+
+class DiceMigrationServicePixelBrowserTest : public InteractiveBrowserTest {
  public:
-  void SetUpOnMainThread() override {
-    SigninBrowserTestBaseT<InteractiveBrowserTest>::SetUpOnMainThread();
-    // Implicitly sign in.
-    AccountInfo account_info = signin::MakeAccountAvailable(
-        identity_manager(),
-        signin::AccountAvailabilityOptionsBuilder()
-            .AsPrimary(signin::ConsentLevel::kSignin)
-            // `kWebSignin` is not explicit signin.
-            .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-            .Build(kTestEmail));
+  DiceMigrationServicePixelBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{switches::kOfferMigrationToDiceUsers},
+        /*disabled_features=*/{switches::kForcedDiceMigration});
   }
 
   DiceMigrationService* GetDiceMigrationService() {
     return DiceMigrationServiceFactory::GetForProfile(GetProfile());
   }
 
+  signin::IdentityManager* GetIdentityManager() {
+    return IdentityManagerFactory::GetForProfile(GetProfile());
+  }
+
+  void ImplicitlySignIn() {
+    signin::MakeAccountAvailable(
+        GetIdentityManager(),
+        signin::AccountAvailabilityOptionsBuilder()
+            .AsPrimary(signin::ConsentLevel::kSignin)
+            .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+            .Build(kTestEmail));
+  }
+
   auto TriggerDialog() {
     return Do([&]() {
-      GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().FireNow();
     });
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kOfferMigrationToDiceUsers};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // This dialog is shown during all but the final time the migration is offered.
-IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest, DialogView) {
+DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest, DialogView) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   RunTestSequence(
       TriggerDialog(),
 
@@ -68,12 +90,18 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest, DialogView) {
                         /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest,
-                       DialogViewWithAccountImage) {
+DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest,
+                      DialogViewWithAccountImage) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   // Set a custom account image.
   signin::SimulateAccountImageFetch(
-      identity_manager(),
-      identity_manager()
+      GetIdentityManager(),
+      GetIdentityManager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .account_id,
       kAccountImageUrl, kAccountImage);
@@ -95,8 +123,14 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest,
 }
 
 // This dialog is shown only during the final time the migration is offered.
-IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest,
-                       DialogViewFinalVariant) {
+DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest,
+                      DialogViewFinalVariant) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   // Set the dialog shown count to the max - 1 to show the final variant.
   GetProfile()->GetPrefs()->SetInteger(
       kDiceMigrationDialogShownCount,
@@ -117,7 +151,13 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest,
                       /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest, Toast) {
+DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest, Toast) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   RunTestSequence(TriggerDialog(),
 
                   SetOnIncompatibleAction(
@@ -137,6 +177,62 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest, Toast) {
                   Screenshot(toasts::ToastView::kToastViewId,
                              /*screenshot_name=*/"dice_migration_toast",
                              /*baseline_cl=*/kScreenshotBaselineCL));
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest, IdentityPill) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  constexpr char16_t kNewUrl1[] = u"chrome://version";
+  constexpr char16_t kNewUrl2[] = u"chrome://settings";
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  RunTestSequence(
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshots not supported in all testing environments."),
+
+      // The identity pill is not expanded by default.
+      Screenshot(kToolbarAvatarButtonElementId,
+                 /*screenshot_name=*/"dice_migration_identity_pill_closed",
+                 /*baseline_cl=*/kScreenshotBaselineCL),
+
+      TriggerDialog(),
+
+      WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+      // Navigate to another page using the omnibox.
+      // NOTE: This is only done to introduce some delay to finish setting up
+      // the expanded identity pill and avoid flakiness.
+      // TODO(crbug.com/440020019): Look for a way to avoid this workaround.
+      InstrumentTab(kActiveTab), EnterText(kOmniboxElementId, kNewUrl1),
+      Confirm(kOmniboxElementId),
+      WaitForWebContentsNavigation(kActiveTab, GURL(kNewUrl1)),
+
+      // The identity pill is expanded when the dialog is shown.
+      Screenshot(kToolbarAvatarButtonElementId,
+                 /*screenshot_name=*/"dice_migration_identity_pill_open",
+                 /*baseline_cl=*/kScreenshotBaselineCL),
+
+      // Press the "Got it" button.
+      PressButton(DiceMigrationService::kAcceptButtonElementId),
+
+      WaitForHide(DiceMigrationService::kAcceptButtonElementId),
+
+      // Navigate to another page using the omnibox.
+      // NOTE: This is only done to introduce some delay to finish collapsing
+      // the expanded identity pill and avoid flakiness.
+      // TODO(crbug.com/440020019): Look for a way to avoid this workaround.
+      EnterText(kOmniboxElementId, kNewUrl2), Confirm(kOmniboxElementId),
+      WaitForWebContentsNavigation(kActiveTab, GURL(kNewUrl2)),
+
+      // The identity pill is collapsed again.
+      Screenshot(kToolbarAvatarButtonElementId,
+                 /*screenshot_name=*/"dice_migration_identity_pill_closed",
+                 /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
 }  // namespace

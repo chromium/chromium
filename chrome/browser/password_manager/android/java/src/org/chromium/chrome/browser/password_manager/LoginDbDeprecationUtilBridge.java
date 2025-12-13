@@ -10,9 +10,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.user_prefs.UserPrefs;
 
 import java.io.File;
 
@@ -48,12 +46,7 @@ public class LoginDbDeprecationUtilBridge {
         if (sHasCsvFileForTesting != null) {
             return sHasCsvFileForTesting;
         }
-        String path = getAutoExportCsvFilePath(profile);
-        File file = new File(path);
-        // If the file is scheduled for deletion, it means that there is no more use for it and
-        // the only reason it's still there is that the deletion failed.
-        return file.exists()
-                && !UserPrefs.get(profile).getBoolean(Pref.UPM_AUTO_EXPORT_CSV_NEEDS_DELETION);
+        return new File(getAutoExportCsvFilePath(profile)).exists();
     }
 
     @NativeMethods

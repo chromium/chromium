@@ -33,7 +33,7 @@ ScriptPromise<IDLUndefined> InternalsStorageAccess::setStorageAccess(
   auto* raw_storage_access_automation = storage_access_automation.get();
   raw_storage_access_automation->SetStorageAccess(
       origin, embedding_origin, blocked,
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,

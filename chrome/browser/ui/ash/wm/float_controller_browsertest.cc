@@ -12,9 +12,10 @@
 #include "ash/wm/window_state.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
@@ -29,7 +30,7 @@ namespace {
 
 // Tuck a window to the bottom right corner by generating a fling.
 void TuckWindow(aura::Window* window) {
-  auto* frame_view = static_cast<BrowserNonClientFrameViewChromeOS*>(
+  auto* frame_view = static_cast<BrowserFrameViewChromeOS*>(
       views::Widget::GetWidgetForNativeView(window)
           ->non_client_view()
           ->frame_view());
@@ -58,12 +59,16 @@ IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
   ash::test::CreateSystemWebApp(browser()->profile(),
                                 ash::SystemWebAppType::FILE_MANAGER);
   aura::Window* browser_window1 =
-      BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+          ->GetWindow()
+          ->GetNativeWindow();
 
   ash::test::CreateSystemWebApp(browser()->profile(),
                                 ash::SystemWebAppType::SETTINGS);
   aura::Window* browser_window2 =
-      BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+          ->GetWindow()
+          ->GetNativeWindow();
 
   ASSERT_NE(browser()->window()->GetNativeWindow(), browser_window1);
   ASSERT_NE(browser()->window()->GetNativeWindow(), browser_window2);
@@ -107,41 +112,4 @@ IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
   ash::ShellTestApi().WaitForWindowFinishAnimating(browser_window2);
   ASSERT_TRUE(
       float_controller->IsFloatedWindowTuckedForTablet(browser_window2));
-}
-
-// Tests that flinging down from the client area to move a floated window does
-// not open the web ui tab strip.
-IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
-                       FlingDownDoesNotOpenTabStrip) {
-  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
-
-  // A floated window is magnetized to the bottom right by default.
-  aura::Window* window = browser()->window()->GetNativeWindow();
-  ui::test::EventGenerator event_generator(window->GetRootWindow(), window);
-  event_generator.PressAndReleaseKeyAndModifierKeys(
-      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  ASSERT_TRUE(ash::WindowState::Get(window)->IsFloated());
-  ASSERT_EQ(ash::FloatController::MagnetismCorner::kBottomRight,
-            ash::FloatTestApi::GetMagnetismCornerForBounds(
-                window->GetBoundsInScreen()));
-
-  // Drag the window up to the top right.
-  auto get_draggable_point = [](aura::Window* window) {
-    return gfx::Point(window->GetBoundsInScreen().CenterPoint().x(),
-                      window->GetBoundsInScreen().y() + 10);
-  };
-  event_generator.set_current_screen_location(get_draggable_point(window));
-  event_generator.PressMoveAndReleaseTouchBy(0, -200);
-  ASSERT_EQ(ash::FloatController::MagnetismCorner::kTopRight,
-            ash::FloatTestApi::GetMagnetismCornerForBounds(
-                window->GetBoundsInScreen()));
-
-  // Drag the window back down. Test that it doesn't open the tab strip.
-  event_generator.set_current_screen_location(get_draggable_point(window));
-  event_generator.PressMoveAndReleaseTouchBy(0, 200);
-  ASSERT_EQ(ash::FloatController::MagnetismCorner::kBottomRight,
-            ash::FloatTestApi::GetMagnetismCornerForBounds(
-                window->GetBoundsInScreen()));
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  EXPECT_FALSE(browser_view->webui_tab_strip()->GetVisible());
 }

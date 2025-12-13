@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 
-#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -98,8 +97,8 @@ bool BMPImageDecoder::ProcessFileHeader(wtf_size_t& img_data_offset) {
   // Read file header.
   DCHECK(!decoded_offset_);
   FastSharedBufferReader fast_reader(data_);
-  char buffer[kSizeOfFileHeader];
-  const char* file_header;
+  std::array<uint8_t, kSizeOfFileHeader> buffer;
+  base::span<const uint8_t> file_header;
   uint16_t file_type;
   if (!GetFileType(fast_reader, buffer, file_header, file_type)) {
     return false;
@@ -130,14 +129,14 @@ bool BMPImageDecoder::ProcessFileHeader(wtf_size_t& img_data_offset) {
     return SetFailed();
   }
 
-  img_data_offset = BMPImageReader::ReadUint32(&UNSAFE_TODO(file_header[10]));
+  img_data_offset = BMPImageReader::ReadUint32(file_header.subspan(10u));
   decoded_offset_ += kSizeOfFileHeader;
   return true;
 }
 
 bool BMPImageDecoder::GetFileType(const FastSharedBufferReader& fast_reader,
-                                  char* buffer,
-                                  const char*& file_header,
+                                  base::span<uint8_t> buffer,
+                                  base::span<const uint8_t>& file_header,
                                   uint16_t& file_type) const {
   if (data_->size() - decoded_offset_ < kSizeOfFileHeader) {
     return false;
@@ -145,7 +144,7 @@ bool BMPImageDecoder::GetFileType(const FastSharedBufferReader& fast_reader,
   file_header = fast_reader.GetConsecutiveData(decoded_offset_,
                                                kSizeOfFileHeader, buffer);
   file_type = (static_cast<uint16_t>(file_header[0]) << 8) |
-              static_cast<uint8_t>(UNSAFE_TODO(file_header[1]));
+              static_cast<uint8_t>(file_header[1]);
   return true;
 }
 

@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import './icons.html.js';
 import './profile_card.js';
 import '/strings.m.js';
 
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -32,10 +35,11 @@ import {getHtml} from './profile_picker_main_view.html.js';
 
 export interface ProfilePickerMainViewElement {
   $: {
-    addProfile: HTMLElement,
+    addProfile: CrButtonElement,
     askOnStartup: CrCheckboxElement,
     'picker-logo': HTMLElement,
     browseAsGuestButton: HTMLElement,
+    openAllProfilesButton: HTMLElement,
     profilesContainer: HTMLElement,
     profilesWrapper: HTMLElement,
     forceSigninErrorDialog: CrDialogElement,
@@ -70,13 +74,16 @@ export class ProfilePickerMainViewElement extends
       askOnStartup_: {type: Boolean},
       guestModeEnabled_: {type: Boolean},
       profileCreationAllowed_: {type: Boolean},
+      pickerButtonsDisabled_: {type: Boolean},
       forceSigninErrorDialogTitle_: {type: String},
       forceSigninErrorDialogBody_: {type: String},
       forceSigninErrorProfilePath_: {type: String},
       shouldShownSigninButton_: {type: Boolean},
-
+      shouldShowOpenAllProfilesButton_: {type: Boolean},
       // Exposed to CSS as 'is-glic_'.
       isGlic_: {type: Boolean, reflect: true},
+      // Exposed to CSS as 'is-open-all-profiles-button-experiment-enabled_'.
+      isOpenAllProfilesButtonExperimentEnabled_: {type: Boolean, reflect: true},
     };
   }
 
@@ -100,6 +107,8 @@ export class ProfilePickerMainViewElement extends
   private dragDelegate_: DragDropReorderTileListDelegate|null = null;
   private dragDuration_: number = 300;
 
+  protected accessor pickerButtonsDisabled_: boolean = false;
+
   // TODO(crbug.com/40280498): Move the dialog into it's own element with the
   // below members. This dialog state should be independent of the Profile
   // Picker itself.
@@ -108,12 +117,21 @@ export class ProfilePickerMainViewElement extends
   private accessor forceSigninErrorProfilePath_: string = '';
   protected accessor shouldShownSigninButton_: boolean = false;
 
+  protected accessor isOpenAllProfilesButtonExperimentEnabled_: boolean =
+      loadTimeData.getBoolean('isOpenAllProfilesButtonExperimentEnabled');
+  private maxProfilesCountToShowOpenAllProfilesButton_: number =
+      loadTimeData.getInteger('maxProfilesCountToShowOpenAllProfilesButton');
+  protected accessor shouldShowOpenAllProfilesButton_: boolean = false;
+
+  private showProfilePickerToAllUsersExperiment_: boolean =
+      loadTimeData.getBoolean('showProfilePickerToAllUsersExperiment');
+  private isProfilePickerTextVariationsEnabled_: boolean =
+      loadTimeData.getBoolean('isProfilePickerTextVariationsEnabled');
+
   private eventTracker_: EventTracker = new EventTracker();
 
   override firstUpdated() {
     this.addEventListener('view-enter-finish', this.onViewEnterFinish_);
-
-    this.addEventListener('toggle-drag', this.toggleDrag_);
   }
 
   override connectedCallback() {
@@ -127,6 +145,9 @@ export class ProfilePickerMainViewElement extends
         'display-force-signin-error-dialog',
         (title: string, body: string, profilePath: string) =>
             this.showForceSigninErrorDialog(title, body, profilePath));
+    this.addWebUiListener('reset-picker-buttons', () => {
+      this.enableAllPickerButtons_();
+    });
     if (!this.isGlic_) {
       this.addWebUiListener(
           'guest-mode-availability-updated',
@@ -154,6 +175,12 @@ export class ProfilePickerMainViewElement extends
       // The strings containing the link may appear dynamically, so we need to
       // update their `click` events accordingly.
       this.updateLearnMoreLinkEvents_();
+      this.computeShouldShowOpenAllProfilesButton_();
+    }
+
+    if (changedPrivateProperties.has('shouldShowOpenAllProfilesButton_') &&
+        this.shouldShowOpenAllProfilesButton_) {
+      this.manageProfilesBrowserProxy_.recordOpenAllProfilesButtonShown();
     }
   }
 
@@ -170,6 +197,9 @@ export class ProfilePickerMainViewElement extends
 
   override onRouteChange(route: Routes) {
     if (route === Routes.MAIN) {
+      // Every time we go back to the main route, we re-enable all the profile
+      // card buttons.
+      this.enableAllPickerButtons_();
       return;
     }
     this.previousRoute_ = route;
@@ -255,6 +285,8 @@ export class ProfilePickerMainViewElement extends
     if (!isProfileCreationAllowed()) {
       return;
     }
+
+    this.disableAllPickerButtons_();
     chrome.metricsPrivate.recordUserAction('ProfilePicker_AddClicked');
     navigateTo(Routes.NEW_PROFILE);
   }
@@ -264,6 +296,22 @@ export class ProfilePickerMainViewElement extends
       return;
     }
     this.manageProfilesBrowserProxy_.launchGuestProfile();
+  }
+
+  protected onOpenAllProfilesClick_() {
+    this.disableAllPickerButtons_();
+    chrome.metricsPrivate.recordUserAction(
+        'ProfilePicker_OpenAllProfilesClicked');
+    this.manageProfilesBrowserProxy_.launchAllProfiles(
+        this.profilesList_.map(profile => profile.profilePath));
+  }
+
+  private computeShouldShowOpenAllProfilesButton_() {
+    this.shouldShowOpenAllProfilesButton_ =
+        this.isOpenAllProfilesButtonExperimentEnabled_ &&
+        1 < this.profilesList_.length &&
+        this.profilesList_.length <=
+            this.maxProfilesCountToShowOpenAllProfilesButton_;
   }
 
   private maybeUpdateGuestMode_(enableGuestMode: boolean) {
@@ -282,22 +330,40 @@ export class ProfilePickerMainViewElement extends
     const index = this.profilesList_.findIndex(
         profile => profile.profilePath === profilePath);
     assert(index !== -1);
-    // TODO(crbug.com/40123459): Add animation.
     this.profilesList_.splice(index, 1);
     this.requestUpdate();
+    this.computeShouldShowOpenAllProfilesButton_();
   }
 
   private computeHideAskOnStartup_(): boolean {
-    return !isAskOnStartupAllowed() || this.profilesList_.length < 2;
+    const shouldShowBasedOnProfilesCount = this.profilesList_.length >= 2 ||
+        (this.profilesList_.length >= 1 &&
+         this.showProfilePickerToAllUsersExperiment_);
+
+    return !isAskOnStartupAllowed() || !shouldShowBasedOnProfilesCount;
   }
 
-  private toggleDrag_(e: Event) {
+  protected toggleDrag_(e: Event) {
     if (!this.dragDelegate_) {
       return;
     }
 
     const customEvent = e as CustomEvent;
     this.dragDelegate_.toggleDrag(customEvent.detail.toggle);
+  }
+
+  protected disableAllPickerButtons_() {
+    this.pickerButtonsDisabled_ = true;
+    if (this.dragDelegate_) {
+      this.dragDelegate_.toggleDrag(false);
+    }
+  }
+
+  private enableAllPickerButtons_() {
+    this.pickerButtonsDisabled_ = false;
+    if (this.dragDelegate_) {
+      this.dragDelegate_.toggleDrag(true);
+    }
   }
 
   // Redirects the call to the handler, to create/use a browser to show the
@@ -308,24 +374,32 @@ export class ProfilePickerMainViewElement extends
   }
 
   protected getTitle_(): TrustedHTML {
-    const titleStringResouce =
-        // <if expr="enable_glic">
-        this.isProfileListLoadedAndEmptyAndGlic_() ? 'glicTitleNoProfile' :
-        // </if>
-                                                     'mainViewTitle';
-    // Special styling through 'class' attribute in some version of the title.
+    // <if expr="enable_glic">
+    if (this.isProfileListLoadedAndEmptyAndGlic_()) {
+      // Special styling through 'class' attribute in some version of the title.
+      return this.i18nAdvanced('glicTitleNoProfile', {attrs: ['class']});
+    }
+    // </if>
+    const titleStringResouce = this.isProfilePickerTextVariationsEnabled_ &&
+            this.profilesList_.length === 1 ?
+        'mainViewSingleProfileTitle' :
+        'mainViewTitle';
     return this.i18nAdvanced(titleStringResouce, {attrs: ['class']});
   }
 
   protected getSubtitle_(): TrustedHTML {
-    const subtitleStringResource =
-        // <if expr="enable_glic">
-        this.isProfileListLoadedAndEmptyAndGlic_() ?
-        'mainViewSubtitleGlicNoProfile' :
-        // </if>
+    // <if expr="enable_glic">
+    if (this.isProfileListLoadedAndEmptyAndGlic_()) {
+      // Special tagging through 'class' attribute in some version of the
+      // subtitle.
+      return this.i18nAdvanced(
+          'mainViewSubtitleGlicNoProfile', {attrs: ['class']});
+    }
+    // </if>
+    const subtitleStringResource = this.isProfilePickerTextVariationsEnabled_ &&
+            this.profilesList_.length === 1 ?
+        'mainViewSingleProfileSubtitle' :
         'mainViewSubtitle';
-    // Special tagging through 'class' attribute in some version of the
-    // subtitle.
     return this.i18nAdvanced(subtitleStringResource, {attrs: ['class']});
   }
 

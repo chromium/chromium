@@ -28,8 +28,12 @@ static_library("home_modules") {
     sources += [
       "address_bar_position_ephemeral_module.cc",
       "address_bar_position_ephemeral_module.h",
+      "app_bundle_promo_ephemeral_module.cc",
+      "app_bundle_promo_ephemeral_module.h",
       "autofill_passwords_ephemeral_module.cc",
       "autofill_passwords_ephemeral_module.h",
+      "default_browser_promo_ephemeral_module.cc",
+      "default_browser_promo_ephemeral_module.h",
       "enhanced_safe_browsing_ephemeral_module.cc",
       "enhanced_safe_browsing_ephemeral_module.h",
       "lens_ephemeral_module.cc",
@@ -53,6 +57,8 @@ static_library("home_modules") {
       "tab_group_promo.h",
       "tab_group_sync_promo.cc",
       "tab_group_sync_promo.h",
+      "tips_notifications_promo.cc",
+      "tips_notifications_promo.h",
     ]
   }
 
@@ -74,7 +80,9 @@ source_set("constants") {
     "constants.cc",
     "constants.h",
   ]
+
   public_deps = [ "//base" ]
+
   deps = [ "//components/segmentation_platform/embedder/home_modules/tips_manager:constants" ]
 }
 
@@ -95,7 +103,9 @@ source_set("unit_tests") {
   if (is_ios) {
     sources += [
       "address_bar_position_ephemeral_module_unittest.cc",
+      "app_bundle_promo_ephemeral_module_unittest.cc",
       "autofill_passwords_ephemeral_module_unittest.cc",
+      "default_browser_promo_ephemeral_module_unittest.cc",
       "enhanced_safe_browsing_ephemeral_module_unittest.cc",
       "lens_ephemeral_module_unittest.cc",
       "save_passwords_ephemeral_module_unittest.cc",
@@ -110,6 +120,7 @@ source_set("unit_tests") {
       "quick_delete_promo_unittest.cc",
       "tab_group_promo_unittest.cc",
       "tab_group_sync_promo_unittest.cc",
+      "tips_notifications_promo_unittest.cc",
     ]
   }
 

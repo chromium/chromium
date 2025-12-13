@@ -461,7 +461,7 @@ TEST_F(DisplaySettingsProviderTest, NewDisplayConnectedHistogram) {
           kNewDisplayConnected,
       0);
 
-  int64_t id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t id = display::Screen::Get()->GetPrimaryDisplay().id();
   provider_->OnDisplayAdded(display::Display(id));
 
   // Expect to count new display is connected.
@@ -500,7 +500,7 @@ TEST_F(DisplaySettingsProviderTest, NewDisplayConnectedHistogram) {
 // Test histogram is recorded when user overrides system default display
 // settings.
 TEST_F(DisplaySettingsProviderTest, UserOverrideDefaultSettingsHistogram) {
-  int64_t id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t id = display::Screen::Get()->GetPrimaryDisplay().id();
   provider_->OnDisplayAdded(display::Display(id));
 
   constexpr uint16_t kTimeDeltaInMinute = 15;
@@ -546,7 +546,7 @@ TEST_F(DisplaySettingsProviderTest, UserOverrideDefaultSettingsHistogram) {
 // settings after 60 minutes.
 TEST_F(DisplaySettingsProviderTest,
        UserOverrideDefaultSettingsHistogramNotFired) {
-  int64_t id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t id = display::Screen::Get()->GetPrimaryDisplay().id();
   provider_->OnDisplayAdded(display::Display(id));
 
   constexpr uint16_t kTimeDeltaInMinute = 61;

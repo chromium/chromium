@@ -465,9 +465,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HttpHostMatchingExtensionId) {
   url = url.ReplaceComponents(replace_host);
 
   // Load a page from the test host in a new tab.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(url);
 
   // Sanity check that there's no bleeding between the extension and the tab.
   content::WebContents* tab_web_contents =
@@ -512,9 +510,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, NoBackgroundPage) {
   NavigateToURL(GURL("about:blank"));
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(extension_url);
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 }
 
@@ -787,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // Disabling web security is necessary to test the browser enforcement;
   // without it, the loads in this test would be blocked by
   // SecurityOrigin::canDisplay() as invalid local resource loads.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kWebKitWebSecurityEnabled, false);
 
   // Create a simple extension without a background page.
@@ -916,7 +912,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // Disabling web security is necessary to test the browser enforcement;
   // without it, the loads in this test would be blocked by
   // SecurityOrigin::CanDisplay() as invalid local resource loads.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kWebKitWebSecurityEnabled, false);
 
   // Create a simple extension without a background page.
@@ -989,7 +985,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // Disabling web security is necessary to test the browser enforcement;
   // without it, the loads in this test would be blocked by
   // SecurityOrigin::canDisplay() as invalid local resource loads.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kWebKitWebSecurityEnabled, false);
 
   // Create a simple extension without a background page.
@@ -1117,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // Disabling web security is necessary to test the browser enforcement;
   // without it, the loads in this test would be blocked by
   // SecurityOrigin::canDisplay() as invalid local resource loads.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kWebKitWebSecurityEnabled, false);
 
   // Load a simple app that has the "webview" permission.  The app will also
@@ -1133,8 +1129,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_TRUE(app->permissions_data()->HasAPIPermission(
       mojom::APIPermissionID::kWebView));
 
-  auto app_windows = AppWindowRegistry::Get(browser()->profile())
-                         ->GetAppWindowsForApp(app->id());
+  auto app_windows =
+      AppWindowRegistry::Get(profile())->GetAppWindowsForApp(app->id());
   EXPECT_EQ(1u, app_windows.size());
   content::WebContents* app_tab = (*app_windows.begin())->web_contents();
   content::RenderFrameHost* app_render_frame_host =
@@ -1146,8 +1142,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // Wait for the app's guest WebContents to load.
   guest_view::TestGuestViewManager* guest_manager =
       static_cast<guest_view::TestGuestViewManager*>(
-          guest_view::TestGuestViewManager::FromBrowserContext(
-              browser()->profile()));
+          guest_view::TestGuestViewManager::FromBrowserContext(profile()));
   auto* guest_view = guest_manager->WaitForSingleGuestViewCreated();
   guest_manager->WaitUntilAttached(guest_view);
   auto* guest_render_frame_host =
@@ -1392,7 +1387,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // should work.
   GURL extension2_empty = extension2->GetResourceURL("empty.html");
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension2, extension2_empty.path(), &initiator_origin));
+      extension2, extension2_empty.GetPath(), &initiator_origin));
   {
     content::RenderFrameDeletedObserver frame_deleted_observer(
         ChildFrameAt(main_frame, 0));
@@ -1409,7 +1404,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // able to navigate to extension2's manifest.json.
   GURL extension2_manifest = extension2->GetResourceURL("manifest.json");
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension2, extension2_manifest.path(), &initiator_origin));
+      extension2, extension2_manifest.GetPath(), &initiator_origin));
   {
     content::TestNavigationObserver nav_observer(tab, 1);
     EXPECT_TRUE(

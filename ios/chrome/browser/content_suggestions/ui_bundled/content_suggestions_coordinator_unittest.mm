@@ -12,8 +12,8 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_collection_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_container_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_collection_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
@@ -46,7 +46,7 @@
 
 namespace {
 std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    web::BrowserState* browser_state) {
+    ProfileIOS* profile) {
   return std::make_unique<feature_engagement::test::MockTracker>();
 }
 }  // namespace
@@ -77,8 +77,7 @@ class ContentSuggestionsCoordinatorTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::vector<scoped_refptr<ReadingListEntry>>()));
+        ReadingListModelTestingFactoryWithFakeStorage({}));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
@@ -88,7 +87,7 @@ class ContentSuggestionsCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
 

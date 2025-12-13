@@ -5,18 +5,9 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 
 #include "base/path_service.h"
-#include "chrome/browser/optimization_guide/chrome_prediction_model_store.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-
-// static
-void MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState() {
-}
-
-// static
-void MockOptimizationGuideKeyedService::ResetForTesting() {
-}
 
 MockOptimizationGuideKeyedService::MockOptimizationGuideKeyedService()
     : OptimizationGuideKeyedService(nullptr) {}

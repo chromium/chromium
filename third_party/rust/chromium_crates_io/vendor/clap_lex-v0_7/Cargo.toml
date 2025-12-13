@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap_lex"
-version = "0.7.5"
+version = "0.7.6"
 build = false
 include = [
     "build.rs",
@@ -43,45 +43,45 @@ repository = "https://github.com/clap-rs/clap"
 
 [[package.metadata.release.pre-release-replacements]]
 file = "CHANGELOG.md"
-min = 1
-replace = "{{version}}"
 search = "Unreleased"
-
-[[package.metadata.release.pre-release-replacements]]
-exactly = 1
-file = "CHANGELOG.md"
-replace = "...{{tag_name}}"
-search = '\.\.\.HEAD'
-
-[[package.metadata.release.pre-release-replacements]]
-file = "CHANGELOG.md"
+replace = "{{version}}"
 min = 1
-replace = "{{date}}"
-search = "ReleaseDate"
 
 [[package.metadata.release.pre-release-replacements]]
-exactly = 1
 file = "CHANGELOG.md"
+search = '\.\.\.HEAD'
+replace = "...{{tag_name}}"
+exactly = 1
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CHANGELOG.md"
+search = "ReleaseDate"
+replace = "{{date}}"
+min = 1
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CHANGELOG.md"
+search = "<!-- next-header -->"
 replace = """
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 """
-search = "<!-- next-header -->"
+exactly = 1
 
 [[package.metadata.release.pre-release-replacements]]
-exactly = 1
 file = "CHANGELOG.md"
+search = "<!-- next-url -->"
 replace = """
 <!-- next-url -->
 [Unreleased]: https://github.com/clap-rs/clap/compare/{{tag_name}}...HEAD"""
-search = "<!-- next-url -->"
+exactly = 1
 
 [[package.metadata.release.pre-release-replacements]]
-exactly = 4
 file = "README.md"
-prerelease = true
-replace = "github.com/clap-rs/clap/blob/{{tag_name}}/"
 search = "github.com/clap-rs/clap/blob/[^/]+/"
+replace = "github.com/clap-rs/clap/blob/{{tag_name}}/"
+exactly = 4
+prerelease = true
 
 [lib]
 name = "clap_lex"

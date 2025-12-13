@@ -56,6 +56,17 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
                              base::SPLIT_WANT_NONEMPTY);
   }
 
+  void ChooseFeatures(
+      std::vector<base::test::FeatureRef>* enabled_features,
+      std::vector<base::test::FeatureRef>* disabled_features) override {
+#if BUILDFLAG(IS_ANDROID)
+    disabled_features->emplace_back(
+        features::kAccessibilityPopulateSupplementalDescriptionApi);
+#endif  // BUILDFLAG(IS_ANDROID)
+    DumpAccessibilityTestBase::ChooseFeatures(enabled_features,
+                                              disabled_features);
+  }
+
   void RunBaseTest(const base::FilePath::CharType* file_path,
                    const char* qualifier) {
     base::FilePath test_path = GetTestFilePath("accessibility", qualifier);
@@ -634,6 +645,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromContent) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromContentDfn) {
   RunAccNameTest(FILE_PATH_LITERAL("name-from-content-dfn.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromContentOfAddress) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-from-content-of-address.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromContentOfLabel) {

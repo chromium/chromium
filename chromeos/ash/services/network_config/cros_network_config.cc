@@ -359,7 +359,7 @@ std::optional<GURL> GetPortalProbeUrl(const NetworkState* network) {
       if (probe_url.is_valid())
         return probe_url;
       else
-        return GURL(captive_portal::CaptivePortalDetector::kDefaultURL);
+        return GURL(captive_portal::CaptivePortalDetector::GetDefaultUrl());
     }
     case NetworkState::PortalState::kNoInternet:
       return std::nullopt;
@@ -3279,7 +3279,8 @@ void CrosNetworkConfig::StartConnectFailure(int callback_id,
              error_name == NetworkConnectionHandler::kErrorCertLoadTimeout ||
              error_name == NetworkConnectionHandler::kErrorConfigureFailed) {
     result = mojom::StartConnectResult::kNotConfigured;
-  } else if (error_name == NetworkConnectionHandler::kErrorBlockedByPolicy) {
+  } else if (error_name == NetworkConnectionHandler::kErrorBlockedByPolicy ||
+             error_name == NetworkConnectionHandler::kErrorWaitingForScan) {
     result = mojom::StartConnectResult::kBlocked;
   } else {
     result = mojom::StartConnectResult::kUnknown;

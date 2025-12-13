@@ -6,14 +6,10 @@ package org.chromium.chrome.browser.password_manager;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
-import android.content.Context;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
-import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 
 /**
  * This factory returns an implementation for the launcher. The factory itself is also implemented
@@ -46,23 +42,8 @@ public abstract class CredentialManagerLauncherFactory {
      * @return An implementation of the {@link CredentialManagerLauncher} if one exists.
      *     <p>TODO(crbug.com/40854052): Check if backend could be instantiated and throw error
      */
-    public @Nullable CredentialManagerLauncher createLauncher()
-            throws CredentialManagerBackendException {
+    public @Nullable CredentialManagerLauncher createLauncher() {
         return null;
-    }
-
-    /**
-     * Creates and returns new instance of the downstream implementation provided by subclasses.
-     *
-     * Downstream should override this method with actual implementation.
-     *
-     * @return An implementation of the {@link CredentialManagerLauncher} if one exists.
-     */
-    protected CredentialManagerLauncher doCreateLauncher(Context context)
-            throws CredentialManagerBackendException {
-        throw new CredentialManagerBackendException(
-                "Downstream implementation is not present.",
-                CredentialManagerError.BACKEND_NOT_AVAILABLE);
     }
 
     public static void setFactoryForTesting(

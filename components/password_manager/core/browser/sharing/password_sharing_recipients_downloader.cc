@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/sharing/password_sharing_recipients_downloader.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -16,6 +18,7 @@
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -27,8 +30,6 @@ namespace password_manager {
 
 namespace {
 
-constexpr char kPasswordSharingRecipientsOAuthConsumerName[] =
-    "PasswordSharingRecipients";
 constexpr char kPasswordSharingRecipientsEndpoint[] =
     "password_sharing_recipients";
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(10);
@@ -101,10 +102,6 @@ void PasswordSharingRecipientsDownloader::AccessTokenFetched(
   DVLOG(1) << "Access token fetch complete, error state: "
            << static_cast<int>(error.state());
 
-  base::UmaHistogramEnumeration(
-      "PasswordManager.PasswordSharingRecipients.FetchAccessTokenResult",
-      error.state(), GoogleServiceAuthError::NUM_STATES);
-
   CHECK(ongoing_access_token_fetch_);
   ongoing_access_token_fetch_.reset();
 
@@ -127,7 +124,7 @@ void PasswordSharingRecipientsDownloader::AccessTokenFetched(
 }
 
 void PasswordSharingRecipientsDownloader::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(on_request_complete_callback_);
   CHECK(!ongoing_access_token_fetch_);
@@ -236,7 +233,7 @@ GURL PasswordSharingRecipientsDownloader::GetPasswordSharingRecipientsURL(
     version_info::Channel channel) {
   GURL sync_service_url = syncer::GetSyncServiceURL(
       *base::CommandLine::ForCurrentProcess(), channel);
-  std::string path = sync_service_url.path();
+  std::string path = sync_service_url.GetPath();
   if (path.empty() || *path.rbegin() != '/') {
     path += '/';
   }
@@ -250,8 +247,8 @@ void PasswordSharingRecipientsDownloader::StartFetchingAccessToken() {
   CHECK(!ongoing_access_token_fetch_);
   ongoing_access_token_fetch_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          kPasswordSharingRecipientsOAuthConsumerName, identity_manager_,
-          signin::ScopeSet{GaiaConstants::kChromeSyncOAuth2Scope},
+          signin::OAuthConsumerId::kPasswordSharingRecipientsDownloader,
+          identity_manager_,
           base::BindOnce(
               &PasswordSharingRecipientsDownloader::AccessTokenFetched,
               base::Unretained(this)),

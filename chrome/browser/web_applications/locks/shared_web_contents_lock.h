@@ -22,9 +22,6 @@ class WebAppLockManager;
 // contents, like install web apps and fetch data.
 //
 // Locks can be acquired by using the `WebAppLockManager`.
-//
-// Note: Accessing a lock before it is granted or after the WebAppProvider
-// system has shutdown (or the profile has shut down) will CHECK-fail.
 class SharedWebContentsLockDescription : public LockDescription {
  public:
   SharedWebContentsLockDescription();
@@ -48,7 +45,7 @@ class SharedWebContentsLock : public Lock,
   using LockDescription = SharedWebContentsLockDescription;
 
   SharedWebContentsLock();
-  ~SharedWebContentsLock();
+  ~SharedWebContentsLock() override;
 
   base::WeakPtr<SharedWebContentsLock> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();

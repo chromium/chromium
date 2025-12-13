@@ -16,12 +16,18 @@
 #include "net/net_buildflags.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "components/webapps/isolated_web_apps/scheme.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // static
-bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
+bool ProfileIOData::IsHandledProtocol(std::string_view scheme) {
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
 
   constexpr auto kProtocolList = base::MakeFixedFlatSet<std::string_view>({
@@ -50,9 +56,11 @@ bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
       url::kBlobScheme,
       url::kFileSystemScheme,
       chrome::kChromeSearchScheme,
-#if !BUILDFLAG(IS_ANDROID)
-      chrome::kIsolatedAppScheme,
-#endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+      webapps::kIsolatedAppScheme,
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
   });
 
   return kProtocolList.contains(scheme);
@@ -65,5 +73,5 @@ bool ProfileIOData::IsHandledURL(const GURL& url) {
     return true;
   }
 
-  return IsHandledProtocol(url.scheme());
+  return IsHandledProtocol(url.GetScheme());
 }

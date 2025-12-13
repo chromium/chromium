@@ -20,12 +20,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -98,14 +100,16 @@ const std::vector<base::FilePath> GetTestFiles() {
 // then values have been entered. Returns the resulting FormStructure.
 std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
     const FormData& form) {
-  auto cached_form_structure =
-      std::make_unique<FormStructure>(test::WithoutValues(form));
-  cached_form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-
   auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->RetrieveFromCache(
-      *cached_form_structure,
-      FormStructure::RetrieveFromCacheReason::kFormImport);
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  for (size_t i = 0; i < form_structure->field_count(); ++i) {
+    test_api(*form_structure->field(i)).set_initial_value(u"");
+  }
   return form_structure;
 }
 

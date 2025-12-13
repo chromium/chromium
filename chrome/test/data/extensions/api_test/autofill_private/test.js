@@ -41,6 +41,7 @@ var ENTITY_INSTANCE = {
     addEntityTypeString: 'Add driver\'s license',
     editEntityTypeString: 'Edit driver\'s license',
     deleteEntityTypeString: 'Delete driver\'s license',
+    supportsWalletStorage: false,
   },
   attributeInstances: [
     {
@@ -211,8 +212,10 @@ function updateCreditCardForCvc(updatedCvcValue) {
 function entityInstaceToEntityInstanceWithLabels(entityInstance, sublabel) {
   return ({
     guid: entityInstance.guid,
+    type: entityInstance.type,
     entityInstanceLabel: entityInstance.type.typeNameAsString,
     entityInstanceSubLabel: sublabel,
+    storedInWallet: false,
   });
 };
 
@@ -441,6 +444,10 @@ var availableTests = [
                 type: chrome.autofillPrivate.FieldType.ALTERNATIVE_FULL_NAME,
                 value: ALTERNATIVE_FULL_NAME
               },
+              {
+                type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_COUNTRY,
+                value: "JP"
+              }
             ],
           });
           // Alternative name set with a separator. Metric is emitted.
@@ -451,6 +458,10 @@ var availableTests = [
                 type: chrome.autofillPrivate.FieldType.ALTERNATIVE_FULL_NAME,
                 value: ALTERNATIVE_FULL_NAME_SEPARATOR
               },
+              {
+                type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_COUNTRY,
+                value: "JP"
+              }
             ],
           });
         }));
@@ -915,6 +926,7 @@ var availableTests = [
             addEntityTypeString: 'Add driver\'s license',
             editEntityTypeString: 'Edit driver\'s license',
             deleteEntityTypeString: 'Delete driver\'s license',
+            supportsWalletStorage: false,
           },
           attributeInstances: [
             {
@@ -964,6 +976,7 @@ var availableTests = [
             addEntityTypeString: 'Add passport',
             editEntityTypeString: 'Edit passport',
             deleteEntityTypeString: 'Delete passport',
+            supportsWalletStorage: false,
           },
           attributeInstances: [
             {
@@ -1004,6 +1017,7 @@ var availableTests = [
             addEntityTypeString: 'Add passport',
             editEntityTypeString: 'Edit passport',
             deleteEntityTypeString: 'Delete passport',
+            supportsWalletStorage: false,
           },
           attributeInstances: [
             {
@@ -1044,6 +1058,7 @@ var availableTests = [
             addEntityTypeString: 'Add passport',
             editEntityTypeString: 'Edit passport',
             deleteEntityTypeString: 'Delete passport',
+            supportsWalletStorage: false,
           },
           attributeInstances: [
             {
@@ -1094,6 +1109,7 @@ var availableTests = [
             addEntityTypeString: 'Add vehicle',
             editEntityTypeString: 'Edit vehicle',
             deleteEntityTypeString: 'Delete vehicle',
+            supportsWalletStorage: false,
           },
           attributeInstances: [
             {
@@ -1126,6 +1142,7 @@ var availableTests = [
             addEntityTypeString: 'Add vehicle',
             editEntityTypeString: 'Edit vehicle',
             deleteEntityTypeString: 'Delete vehicle',
+            supportsWalletStorage: false,
           },
           attributeInstances: [
             {
@@ -1266,8 +1283,9 @@ var availableTests = [
     chrome.test.succeed();
   },
 
-  async function getAllEntityTypes() {
-    const entityTypesList = await chrome.autofillPrivate.getAllEntityTypes();
+  async function getWritableEntityTypes() {
+    const entityTypesList =
+        await chrome.autofillPrivate.getWritableEntityTypes();
     const expectedEntityTypesList = [
       {
         typeName: 0,
@@ -1275,6 +1293,7 @@ var availableTests = [
         addEntityTypeString: 'Add passport',
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
+        supportsWalletStorage: false,
       },
       {
         typeName: 1,
@@ -1282,6 +1301,7 @@ var availableTests = [
         addEntityTypeString: 'Add driver\'s license',
         editEntityTypeString: 'Edit driver\'s license',
         deleteEntityTypeString: 'Delete driver\'s license',
+        supportsWalletStorage: false,
       },
       {
         typeName: 2,
@@ -1289,11 +1309,22 @@ var availableTests = [
         addEntityTypeString: 'Add vehicle',
         editEntityTypeString: 'Edit vehicle',
         deleteEntityTypeString: 'Delete vehicle',
+        supportsWalletStorage: false,
       },
     ];
     for (const index in expectedEntityTypesList) {
       chrome.test.assertEq(
           expectedEntityTypesList[index], entityTypesList[index]);
+    }
+    chrome.test.succeed();
+  },
+
+  async function verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes() {
+    const entityTypesList =
+        await chrome.autofillPrivate.getWritableEntityTypes();
+    for (const index in entityTypesList) {
+      chrome.test.assertFalse(
+          entityTypesList[index].typeName === 6);  // Flight reservation
     }
     chrome.test.succeed();
   },
@@ -1361,6 +1392,64 @@ var availableTests = [
         false, await chrome.autofillPrivate.getAutofillAiOptInStatus());
     chrome.test.succeed();
   },
+
+  async function testEntityTypeInEntityInstanceWithLabels() {
+    // Add an entity to ensure there is something to load.
+    await new Promise(resolve => {
+      chrome.test.listenOnce(
+          chrome.autofillPrivate.onEntityInstancesChanged, resolve);
+      chrome.autofillPrivate.addOrUpdateEntityInstance(ENTITY_INSTANCE);
+    });
+
+    const entityInstancesWithLabelsList =
+        await chrome.autofillPrivate.loadEntityInstances();
+    chrome.test.assertEq(1, entityInstancesWithLabelsList.length);
+    const entityInstanceWithLabels = entityInstancesWithLabelsList[0];
+
+    chrome.test.assertTrue(
+        !!entityInstanceWithLabels.type,
+        'EntityInstanceWithLabels should have a type property');
+    chrome.test.assertEq(
+        ENTITY_INSTANCE.type, entityInstanceWithLabels.type,
+        'The type property should match the entity type');
+
+    chrome.test.succeed();
+  },
+
+  async function optIntoWalletablePassDetection() {
+    chrome.test.assertTrue(
+        await chrome.autofillPrivate.setWalletablePassDetectionOptInStatus(
+            true));
+    chrome.test.succeed();
+  },
+
+  async function optOutOfWalletablePassDetection() {
+    chrome.test.assertTrue(
+        await chrome.autofillPrivate.setWalletablePassDetectionOptInStatus(
+            false));
+    chrome.test.succeed();
+  },
+
+  async function optIntoWalletablePassDetectionExpectingFailure() {
+    chrome.test.assertFalse(
+        await chrome.autofillPrivate.setWalletablePassDetectionOptInStatus(
+            true));
+    chrome.test.succeed();
+  },
+
+  async function verifyUserOptedIntoWalletablePassDetection() {
+    chrome.test.assertEq(
+        true,
+        await chrome.autofillPrivate.getWalletablePassDetectionOptInStatus());
+    chrome.test.succeed();
+  },
+
+  async function verifyUserOptedOutOfWalletablePassDetection() {
+    chrome.test.assertEq(
+        false,
+        await chrome.autofillPrivate.getWalletablePassDetectionOptInStatus());
+    chrome.test.succeed();
+  },
 ];
 
 /** @const */
@@ -1413,15 +1502,21 @@ var TESTS_FOR_CONFIG = {
   'loadFirstEntityInstance': ['loadFirstEntityInstance'],
   'loadUpdatedEntityInstance': ['loadUpdatedEntityInstance'],
   'getEntityInstanceByGuid': ['getEntityInstanceByGuid'],
-  'getAllEntityTypes': ['getAllEntityTypes'],
+  'getWritableEntityTypes': ['getWritableEntityTypes'],
+  'verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes':
+      ['verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes'],
   'getAllAttributeTypesForEntityTypeName':
       ['getAllAttributeTypesForEntityTypeName'],
   'testExpectedLabelsAreGenerated': ['testExpectedLabelsAreGenerated'],
+  'testEntityTypeInEntityInstanceWithLabels':
+      ['testEntityTypeInEntityInstanceWithLabels'],
   'getEmptyPayOverTimeIssuerList': ['getEmptyPayOverTimeIssuerList'],
   'optIntoAutofillAi': ['optIntoAutofillAi'],
   'optOutOfAutofillAi': ['optOutOfAutofillAi'],
   'verifyUserOptedIntoAutofillAi': ['verifyUserOptedIntoAutofillAi'],
   'verifyUserOptedOutOfAutofillAi': ['verifyUserOptedOutOfAutofillAi'],
+  'optIntoWalletablePassDetectionExpectingFailure':
+      ['optIntoWalletablePassDetectionExpectingFailure'],
 };
 
 var testConfig = window.location.search.substring(1);

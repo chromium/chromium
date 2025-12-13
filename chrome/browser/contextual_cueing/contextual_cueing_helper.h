@@ -26,6 +26,7 @@ namespace contextual_cueing {
 
 class ContextualCueingService;
 class ScopedNudgeDecisionRecorder;
+struct CueingResult;
 
 class ContextualCueingHelper
     : public content::WebContentsObserver,
@@ -75,7 +76,7 @@ class ContextualCueingHelper
   void OnCueingDecision(
       std::unique_ptr<ScopedNudgeDecisionRecorder> decision_recorder,
       base::TimeTicks document_available_time,
-      base::expected<std::string, NudgeDecision> decision_result);
+      base::expected<CueingResult, NudgeDecision> decision_result);
 
   bool IsBrowserBlockingNudges(ScopedNudgeDecisionRecorder* recorder);
 

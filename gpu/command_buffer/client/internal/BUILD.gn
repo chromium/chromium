@@ -1,0 +1,68 @@
+import("//build/config/ui.gni")
+
+component("internal") {
+  visibility = [
+    # TODO(blundell): Figure out how to sustainably restrict this to only being
+    # visible to gpu_unittests. That target comes with a large number of
+    # associated generated targets that would also need to be allowlisted here.
+    "//gpu:*",
+    "//gpu/command_buffer/client:client_sources",
+  ]
+
+  sources = [
+    "mappable_buffer.h",
+    "mappable_buffer_shared_memory.cc",
+    "mappable_buffer_shared_memory.h",
+  ]
+
+  if (is_win) {
+    sources += [
+      "mappable_buffer_dxgi.cc",
+      "mappable_buffer_dxgi.h",
+    ]
+    libs = [
+      "d3d11.lib",
+      "dxguid.lib",
+    ]
+  }
+  if (use_ozone) {
+    sources += [
+      "mappable_buffer_native_pixmap.cc",
+      "mappable_buffer_native_pixmap.h",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "mappable_buffer_ahb.cc",
+      "mappable_buffer_ahb.h",
+    ]
+  }
+
+  configs += [
+    "//gpu/command_buffer/client:implementation",
+    "//third_party/khronos:khronos_headers",
+  ]
+
+  public_deps = [ "//gpu/command_buffer/client:export" ]
+
+  deps = [
+    "//gpu/command_buffer/common",
+    "//ui/gl",
+  ]
+
+  if (is_apple) {
+    sources += [
+      "mappable_buffer_io_surface.cc",
+      "mappable_buffer_io_surface.h",
+    ]
+    frameworks = [
+      "IOSurface.framework",
+      "CoreFoundation.framework",
+    ]
+  }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+}

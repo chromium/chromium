@@ -18,6 +18,8 @@ EnumTraits<media::mojom::AutoPipReason,
       return media::mojom::AutoPipReason::kVideoConferencing;
     case ::media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback:
       return media::mojom::AutoPipReason::kMediaPlayback;
+    case ::media::PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated:
+      return media::mojom::AutoPipReason::kBrowserInitiated;
   }
   NOTREACHED();
 }
@@ -38,6 +40,10 @@ bool EnumTraits<media::mojom::AutoPipReason,
     case media::mojom::AutoPipReason::kMediaPlayback:
       *output =
           ::media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
+      return true;
+    case media::mojom::AutoPipReason::kBrowserInitiated:
+      *output =
+          ::media::PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated;
       return true;
   }
   NOTREACHED();

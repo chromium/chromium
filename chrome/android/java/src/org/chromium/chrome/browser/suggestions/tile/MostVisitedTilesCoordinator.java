@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -66,7 +65,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
 
-        ((ViewStub) mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout_stub)).inflate();
         MostVisitedTilesLayout tilesLayout =
                 mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
 
@@ -83,10 +81,9 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mMediator =
                 new MostVisitedTilesMediator(
-                        activity.getResources(),
+                        activity,
                         mUiConfig,
                         tilesLayout,
-                        mvTilesContainerLayout.findViewById(R.id.mv_tiles_placeholder_stub),
                         mRenderer,
                         propertyModel,
                         isTablet,
@@ -143,13 +140,9 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                 mRenderer);
     }
 
-    /**
-     * Sets the visibility of the Most Visited Tiles section.
-     *
-     * @param isMvtVisible True to show the section, false to hide it.
-     */
-    public void setMvtVisibility(boolean isMvtVisible) {
-        mMediator.setMvtVisibility(isMvtVisible);
+    /** Updates the visibility of the Most Visited Tiles section. */
+    public void updateMvtVisibility() {
+        mMediator.updateMvtVisibility();
     }
 
     /** Called when the TasksSurface is hidden or NewTabPageLayout is destroyed. */
@@ -174,9 +167,5 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     public void onConfigurationChanged(Configuration newConfig) {
         mMediator.onConfigurationChanged();
         mUiConfig.updateDisplayStyle();
-    }
-
-    public void onTemplateURLServiceChangedForTesting() {
-        mMediator.onTemplateURLServiceChanged();
     }
 }

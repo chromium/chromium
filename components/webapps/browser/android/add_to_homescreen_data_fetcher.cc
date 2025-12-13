@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/build_info.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -220,8 +219,8 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
   shortcut_info_.UpdateDisplayMode(webapk_compatible);
 
   AddToHomescreenParams::AppType app_type =
-      data.manifest_url->is_empty() ? AddToHomescreenParams::AppType::WEBAPK_DIY
-                                    : AddToHomescreenParams::AppType::WEBAPK;
+      AddToHomescreenParams::GetWebAppInstallType(
+          /*has_manifest=*/!data.manifest_url->is_empty());
 
   observer_->OnUserTitleAvailable(
       webapk_compatible ? shortcut_info_.name : shortcut_info_.user_title,

@@ -9,6 +9,7 @@
 #import "base/files/file.h"
 #import "base/files/file_path.h"
 #import "base/json/json_writer.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -35,7 +36,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 namespace {
 
 NSString* GetIdForWebState(web::WebState* web_state) {
-  return web_state->GetStableIdentifier();
+  return base::SysUTF8ToNSString(base::NumberToString(
+      web_state->GetUniqueIdentifier().ToSessionID().id()));
 }
 
 WebStateList* GetCurrentWebStateList() {
@@ -45,14 +47,21 @@ WebStateList* GetCurrentWebStateList() {
 }
 
 web::WebState* GetWebStateWithId(NSString* tab_id) {
+  int value = 0;
+  if (!base::StringToInt(base::SysNSStringToUTF8(tab_id), &value)) {
+    return nullptr;
+  }
+
+  web::WebStateID web_state_id = web::WebStateID::FromSerializedValue(value);
+
   WebStateList* web_state_list = GetCurrentWebStateList();
   for (int i = 0; i < web_state_list->count(); ++i) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    if ([tab_id isEqualToString:GetIdForWebState(web_state)]) {
+    if (web_state_id == web_state->GetUniqueIdentifier()) {
       return web_state;
     }
   }
-  return nil;
+  return nullptr;
 }
 
 // Returns the index of the WebState with the given tab_id, or
@@ -246,9 +255,7 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
     return nil;
   }
 
-  std::string resultAsJSON;
-  base::JSONWriter::Write(*messageValue, &resultAsJSON);
-  return base::SysUTF8ToNSString(resultAsJSON);
+  return base::SysUTF8ToNSString(base::WriteJson(*messageValue).value_or(""));
 }
 
 + (void)enablePopups {

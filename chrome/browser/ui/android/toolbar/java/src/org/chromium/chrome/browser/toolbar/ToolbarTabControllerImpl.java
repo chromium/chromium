@@ -7,11 +7,10 @@ package org.chromium.chrome.browser.toolbar;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -20,20 +19,22 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.PageTransition;
 
+import java.util.Collections;
+import java.util.function.Supplier;
+
 /** Implementation of {@link ToolbarTabController}. */
 @NullMarked
 public class ToolbarTabControllerImpl implements ToolbarTabController {
-    private final Supplier<Tab> mTabSupplier;
-    private final Supplier<Tracker> mTrackerSupplier;
+    private final Supplier<@Nullable Tab> mTabSupplier;
+    private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private final ObservableSupplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
     private final Supplier<String> mHomepageUrlSupplier;
     private final Runnable mOnSuccessRunnable;
-    private final Supplier<Tab> mActivityTabSupplier;
+    private final Supplier<@Nullable Tab> mActivityTabSupplier;
     private final TabCreatorManager mTabCreatorManager;
     private final @Nullable MultiInstanceManager mMultiInstanceManager;
 
@@ -51,12 +52,12 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
      * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to new windows
      */
     public ToolbarTabControllerImpl(
-            Supplier<Tab> tabSupplier,
-            Supplier<Tracker> trackerSupplier,
+            Supplier<@Nullable Tab> tabSupplier,
+            Supplier<@Nullable Tracker> trackerSupplier,
             ObservableSupplier<BottomControlsCoordinator> bottomControlsCoordinatorSupplier,
             Supplier<String> homepageUrlSupplier,
             Runnable onSuccessRunnable,
-            Supplier<Tab> activityTabSupplier,
+            Supplier<@Nullable Tab> activityTabSupplier,
             TabCreatorManager tabCreatorManager,
             @Nullable MultiInstanceManager multiInstanceManager) {
         mTabSupplier = tabSupplier;
@@ -110,7 +111,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             if (newTab == null) return false;
             newTab.goBack();
             if (mMultiInstanceManager == null) return false;
-            mMultiInstanceManager.moveTabToNewWindow(newTab);
+            mMultiInstanceManager.moveTabsToNewWindow(
+                    Collections.singletonList(newTab), NewWindowAppSource.KEYBOARD_SHORTCUT);
             // Don't run mOnSuccessRunnable since nothing happened in the current tab.
             return true;
         }
@@ -149,7 +151,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             if (newTab == null) return false;
             newTab.goForward();
             if (mMultiInstanceManager == null) return false;
-            mMultiInstanceManager.moveTabToNewWindow(newTab);
+            mMultiInstanceManager.moveTabsToNewWindow(
+                    Collections.singletonList(newTab), NewWindowAppSource.KEYBOARD_SHORTCUT);
             // Don't run mOnSuccessRunnable since nothing happened in the current tab.
             return true;
         }
@@ -188,7 +191,6 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     @Override
     public void openHomepage() {
         RecordUserAction.record("Home");
-        recordHomeButtonUserPerProfileType();
         Tab currentTab = mTabSupplier.get();
         if (currentTab == null) return;
         String homePageUrl = mHomepageUrlSupplier.get();
@@ -231,14 +233,5 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         if (tab == null || tracker == null) return;
 
         tracker.notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
-    }
-
-    private void recordHomeButtonUserPerProfileType() {
-        Tab tab = mTabSupplier.get();
-        if (tab == null) return;
-        Profile profile = tab.getProfile();
-        @BrowserProfileType int type = Profile.getBrowserProfileTypeFromProfile(profile);
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.HomeButton.PerProfileType", type, BrowserProfileType.MAX_VALUE);
     }
 }

@@ -77,9 +77,6 @@ class TestClient {
   zcr_vsync_feedback_v1* vsync_feedback() {
     return globals().vsync_feedback.get();
   }
-  zcr_color_manager_v1* color_manager() {
-    return globals().color_manager.get();
-  }
   zcr_stylus_v2* stylus() { return globals().stylus.get(); }
   zcr_remote_shell_v1* cr_remote_shell_v1() {
     return globals().cr_remote_shell_v1.get();

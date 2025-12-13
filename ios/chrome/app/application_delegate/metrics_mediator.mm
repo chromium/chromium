@@ -7,6 +7,9 @@
 #import <mach/mach.h>
 #import <sys/sysctl.h>
 
+#import <set>
+#import <vector>
+
 #import "base/functional/bind.h"
 #import "base/ios/device_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -31,7 +34,6 @@
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
@@ -433,7 +435,7 @@ BOOL _credentialExtensionWasUsed = NO;
   // Amount of time after which a tab is considered as absolutely inactive.
   constexpr base::TimeDelta kAbsoluteInactiveTabThreshold = base::Days(21);
 
-  NSMutableSet* uniqueURLs = [NSMutableSet set];
+  std::set<GURL> uniqueURLs;
   std::vector<base::TimeDelta> timesSinceCreation;
   const base::Time now = base::Time::Now();
 
@@ -476,12 +478,11 @@ BOOL _credentialExtensionWasUsed = NO;
         NTPTabCount++;
       }
 
-      // Count duplicate URLs.
-      NSString* URLString = base::SysUTF8ToNSString(URL.GetWithoutRef().spec());
-      if ([uniqueURLs containsObject:URLString]) {
+      // Count duplicate URLs (if the URL is not inserted, then it is a
+      // duplicate, otherwise it is a new distinct URL).
+      auto [_, inserted] = uniqueURLs.insert(URL.GetWithoutRef());
+      if (!inserted) {
         duplicatedTabCount++;
-      } else {
-        [uniqueURLs addObject:URLString];
       }
 
       // Count old tabs.
@@ -587,11 +588,6 @@ BOOL _credentialExtensionWasUsed = NO;
     // Remove the value so it's not reused if the app crashes.
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:kAppEnteredBackgroundDateKey];
-  }
-
-  // Log browser cold start for default browser promo experiment stats.
-  if (scenes.count != 0) {
-    LogBrowserLaunched(startupInformation.isColdStart);
   }
 
   if (!startupInformation.isColdStart) {

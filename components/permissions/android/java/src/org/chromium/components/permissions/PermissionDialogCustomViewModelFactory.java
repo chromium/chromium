@@ -5,12 +5,13 @@
 package org.chromium.components.permissions;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.text.TextUtils;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** This class creates the model for the permission dialog custom view. */
@@ -37,8 +38,8 @@ class PermissionDialogCustomViewModelFactory {
                                 context.getTheme()))
                 .with(
                         PermissionDialogCustomViewProperties.ICON_TINT,
-                        AppCompatResources.getColorStateList(
-                                context, R.color.default_icon_color_accent1_tint_list))
+                        ColorStateList.valueOf(
+                                SemanticColorUtils.getDefaultIconColorOnAccent1Container(context)))
                 .with(
                         PermissionDialogCustomViewProperties.CLOSE_BUTTON_CALLBACK,
                         delegate::onCloseButtonClicked)

@@ -60,11 +60,11 @@ function testTailTime(should, context, options) {
   })
 }
 
-// TODO(saqlain): testTailTimeModern() is the testharness.js-compatible version
+// TODO(saqlain): testTailTime_W3CTH() is the testharness.js-compatible version
 // of testTailTime(). It replaces the old audit.js-style assertions with
 // standard testharness.js assertions. Once all audit.js tests are migrated,
 // rename this to testTailTime() and delete the old one.
-function testTailTimeModern(context, options) {
+function testTailTime_W3CTH(context, options) {
   const src = new ConstantSourceNode(context, {offset: 1});
   const f = new BiquadFilterNode(context, options.filterOptions);
 

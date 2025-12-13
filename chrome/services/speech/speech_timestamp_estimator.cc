@@ -122,59 +122,62 @@ void SpeechTimestampEstimator::AdjustLastMediaTimestampForSilence(
   running_silence_duration_.reset();
 }
 
-void SpeechTimestampEstimator::PopFrontUntil(SpeechTimestamp end_timestamp) {
-  CHECK(!playback_chunks_.empty());
+void SpeechTimestampEstimator::PopFrontUntil(
+    base::circular_deque<PlaybackChunk>& chunks,
+    SpeechTimestamp end_timestamp) {
+  CHECK(!chunks.empty());
   CHECK_LE(end_timestamp, current_speech_time_);
-  CHECK_EQ(playback_chunks_.back().SpeechEnd(), current_speech_time_);
+  CHECK_EQ(chunks.back().SpeechEnd(), current_speech_time_);
 
   // Remove all chunks that have ended before `end_timestamp`.
-  while (playback_chunks_.front().SpeechEnd() < end_timestamp) {
-    playback_chunks_.pop_front();
+  while (chunks.front().SpeechEnd() < end_timestamp) {
+    chunks.pop_front();
   }
 
   // We should always have a leftover chunk, even if `end_timestamp` is equal to
   // `current_speech_time_`.
-  CHECK(!playback_chunks_.empty());
+  CHECK(!chunks.empty());
 
   // Partially discard the front chunk until `end_timestamp` (exclusively),
   // if it starts before `end_timestamp`.
-  PlaybackChunk& front_chunk = playback_chunks_.front();
+  PlaybackChunk& front_chunk = chunks.front();
   if (front_chunk.speech_start < end_timestamp) {
     PlaybackDuration duration =
         CalculateDuration(front_chunk.speech_start, end_timestamp);
-
     front_chunk.TrimStart(duration);
   }
 
   // We should always have a leftover chunk, potentially with 0 duration, since
   // we popped [0, `end_timestamp`), not [0, `end_timestamp`].
-  CHECK(!playback_chunks_.empty());
+  CHECK(!chunks.empty());
 }
 
-std::vector<PlaybackChunk> SpeechTimestampEstimator::TakeFrontUntil(
+std::vector<SpeechTimestampEstimator::PlaybackChunk>
+SpeechTimestampEstimator::TakeFrontUntil(
+    base::circular_deque<PlaybackChunk>& chunks,
     SpeechTimestamp end_timestamp) {
-  CHECK(!playback_chunks_.empty());
+  CHECK(!chunks.empty());
   CHECK_LE(end_timestamp, current_speech_time_);
-  CHECK_EQ(playback_chunks_.back().SpeechEnd(), current_speech_time_);
+  CHECK_EQ(chunks.back().SpeechEnd(), current_speech_time_);
 
   std::vector<PlaybackChunk> results;
 
   // Take all complete chunks before `end_timestamp`.
-  while (playback_chunks_.front().SpeechEnd() < end_timestamp) {
+  while (chunks.front().SpeechEnd() < end_timestamp) {
     // Don't save chunks with no duration.
-    if (!playback_chunks_.front().playback_duration->is_zero()) {
-      results.push_back(std::move(playback_chunks_.front()));
+    if (!chunks.front().playback_duration->is_zero()) {
+      results.push_back(std::move(chunks.front()));
     }
-    playback_chunks_.pop_front();
+    chunks.pop_front();
   }
 
   // We should always have a leftover chunk, even if `end_timestamp` is equal to
   // `current_speech_time_`.
-  CHECK(!playback_chunks_.empty());
+  CHECK(!chunks.empty());
 
   // Split the front chunk at `end_timestamp`, and save the results before
   // `end_timestamp`.
-  PlaybackChunk& front_chunk = playback_chunks_.front();
+  PlaybackChunk& front_chunk = chunks.front();
   if (front_chunk.speech_start < end_timestamp) {
     PlaybackDuration duration =
         CalculateDuration(front_chunk.speech_start, end_timestamp);
@@ -188,7 +191,7 @@ std::vector<PlaybackChunk> SpeechTimestampEstimator::TakeFrontUntil(
 
   // We should always have a leftover chunk, potentially with 0 duration, since
   // we took [0, `end_timestamp`), not [0, `end_timestamp`].
-  CHECK(!playback_chunks_.empty());
+  CHECK(!chunks.empty());
 
   return results;
 }
@@ -196,9 +199,8 @@ std::vector<PlaybackChunk> SpeechTimestampEstimator::TakeFrontUntil(
 MediaRanges SpeechTimestampEstimator::TakeTimestampsInRange(
     SpeechTimestamp start,
     SpeechTimestamp end) {
-  CHECK_LT(start, end);
-
-  if (playback_chunks_.empty()) {
+  // Verify the timestamps and chunks.
+  if (start >= end || playback_chunks_.empty()) {
     return MediaRanges();
   }
 
@@ -213,16 +215,49 @@ MediaRanges SpeechTimestampEstimator::TakeTimestampsInRange(
   }
 
   // Trim the front of the queue, from [0, `start`).
-  PopFrontUntil(start);
+  PopFrontUntil(playback_chunks_, start);
 
   // `playback_chunks_` no longer contain any timestamps before `start`.
   // Take all playback chunks from [0, `end`), which is now [`start`, `end`).
-  auto playbacks = TakeFrontUntil(end);
+  auto playbacks = TakeFrontUntil(playback_chunks_, end);
 
   // We should always have one chunk leftover (sometimes with 0 duration),
   // since we removed [0, `end`), not [0, `end`].
   CHECK(!playback_chunks_.empty());
 
+  return ConvertToMediaRanges(playbacks);
+}
+
+MediaRanges SpeechTimestampEstimator::PeekTimestampsInRange(
+    SpeechTimestamp start,
+    SpeechTimestamp end) {
+  // Verify the timestamps and chunks.
+  if (start >= end || playback_chunks_.empty()) {
+    return MediaRanges();
+  }
+
+  // Clamp inputs.
+  constexpr auto kSpeechTimeZero = SpeechTimestamp(base::Seconds(0));
+  start = std::clamp(start, kSpeechTimeZero, current_speech_time_);
+  end = std::clamp(end, kSpeechTimeZero, current_speech_time_);
+
+  // Clamping values can collapse them to the same point.
+  if (start == end) {
+    return MediaRanges();
+  }
+
+  // Create a copy of the chunks to avoid modifying the original state.
+  auto chunks_copy = playback_chunks_;
+
+  // Operate on the copy.
+  PopFrontUntil(chunks_copy, start);
+  auto playbacks = TakeFrontUntil(chunks_copy, end);
+
+  return ConvertToMediaRanges(playbacks);
+}
+
+MediaRanges SpeechTimestampEstimator::ConvertToMediaRanges(
+    const std::vector<PlaybackChunk>& playbacks) {
   MediaRanges results;
   results.reserve(playbacks.size());
 

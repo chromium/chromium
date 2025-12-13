@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
@@ -206,10 +207,7 @@ AudioParamHandler::AudioParamHandler(BaseAudioContext& context,
       rate_mode_(rate_mode),
       min_value_(min_value),
       max_value_(max_value),
-      summing_bus_(
-          AudioBus::Create(1,
-                           GetDeferredTaskHandler().RenderQuantumFrames(),
-                           false)) {
+      summing_bus_(AudioBus::Create(1, RenderQuantumFrames(), false)) {
   // An AudioParam needs the destination handler to run the timeline.  But the
   // destination may have been destroyed (e.g. page gone), so the destination is
   // null.  However, if the destination is gone, the AudioParam will never get
@@ -225,17 +223,13 @@ AudioDestinationHandler& AudioParamHandler::DestinationHandler() const {
   return *destination_handler_;
 }
 
-void AudioParamHandler::SetParamType(AudioParamType param_type) {
-  param_type_ = param_type;
-}
-
 void AudioParamHandler::SetCustomParamName(const String name) {
   DCHECK(param_type_ == AudioParamType::kParamTypeAudioWorklet);
   custom_param_name_ = name;
 }
 
 String AudioParamHandler::GetParamName() const {
-  switch (GetParamType()) {
+  switch (param_type_) {
     case AudioParamType::kParamTypeAudioBufferSourcePlaybackRate:
       return "AudioBufferSource.playbackRate";
     case AudioParamType::kParamTypeAudioBufferSourceDetune:
@@ -310,27 +304,22 @@ String AudioParamHandler::GetParamName() const {
 float AudioParamHandler::Value() {
   // Update value for timeline.
   float v = IntrinsicValue();
-  if (GetDeferredTaskHandler().IsAudioThread()) {
-    auto [has_value, timeline_value] =
-        ValueForContextTime(DestinationHandler(), v, MinValue(), MaxValue(),
-                            GetDeferredTaskHandler().RenderQuantumFrames());
+  if (IsAudioThread()) {
+    auto [has_value, timeline_value] = ValueForContextTime(
+        DestinationHandler(), v, MinValue(), MaxValue(), RenderQuantumFrames());
 
     if (has_value) {
       v = timeline_value;
     }
   }
 
-  SetIntrinsicValue(v);
+  SetValue(v);
   return v;
 }
 
-void AudioParamHandler::SetIntrinsicValue(float new_value) {
-  new_value = ClampTo(new_value, min_value_, max_value_);
-  intrinsic_value_.store(new_value, std::memory_order_relaxed);
-}
-
 void AudioParamHandler::SetValue(float value) {
-  SetIntrinsicValue(value);
+  value = ClampTo(value, min_value_, max_value_);
+  intrinsic_value_.store(value, std::memory_order_relaxed);
 }
 
 float AudioParamHandler::FinalValue() {
@@ -341,7 +330,7 @@ float AudioParamHandler::FinalValue() {
 
 void AudioParamHandler::CalculateSampleAccurateValues(
     base::span<float> values) {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(IsAudioThread());
   DCHECK(!values.empty());
 
   CalculateFinalValues(values, IsAudioRate());
@@ -349,7 +338,7 @@ void AudioParamHandler::CalculateSampleAccurateValues(
 
 void AudioParamHandler::CalculateFinalValues(base::span<float> values,
                                              bool sample_accurate) {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(IsAudioThread());
   DCHECK(!values.empty());
 
   // The calculated result will be the "intrinsic" value summed with all
@@ -363,21 +352,21 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
     float value = IntrinsicValue();
     auto [has_value, timeline_value] =
         ValueForContextTime(DestinationHandler(), value, MinValue(), MaxValue(),
-                            GetDeferredTaskHandler().RenderQuantumFrames());
+                            RenderQuantumFrames());
 
     if (has_value) {
       value = timeline_value;
     }
 
     std::ranges::fill(values, value);
-    SetIntrinsicValue(value);
+    SetValue(value);
   }
 
   // If there are any connections, sum all of the audio-rate connections
   // together (unity-gain summing junction).  Note that connections would
   // normally be mono, but we mix down to mono if necessary.
   if (NumberOfRenderingConnections() > 0) {
-    DCHECK_LE(values.size(), GetDeferredTaskHandler().RenderQuantumFrames());
+    DCHECK_LE(values.size(), RenderQuantumFrames());
 
     // If we're not sample accurate, we only need one value, so make the summing
     // bus have length 1.  When the connections are added in, only the first
@@ -390,8 +379,7 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
       DCHECK(output);
 
       // Render audio from this output.
-      AudioBus* connection_bus =
-          output->Pull(nullptr, GetDeferredTaskHandler().RenderQuantumFrames());
+      AudioBus* connection_bus = output->Pull(nullptr, RenderQuantumFrames());
 
       // Sum, with unity-gain.
       summing_bus_->SumFrom(*connection_bus);
@@ -425,17 +413,20 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
 void AudioParamHandler::CalculateTimelineValues(base::span<float> values) {
   // Calculate values for this render quantum.  Normally
   // `number_of_values` will equal to
-  // GetDeferredTaskHandler().RenderQuantumFrames() (the render quantum size).
+  // RenderQuantumFrames() (the render quantum size).
   double sample_rate = DestinationHandler().SampleRate();
   size_t start_frame = DestinationHandler().CurrentSampleFrame();
   size_t end_frame = start_frame + values.size();
 
   // Note we're running control rate at the sample-rate.
   // Pass in the current value as default value.
-  SetIntrinsicValue(
-      ValuesForFrameRange(start_frame, end_frame, IntrinsicValue(), values,
-                          sample_rate, sample_rate, MinValue(), MaxValue(),
-                          GetDeferredTaskHandler().RenderQuantumFrames()));
+  SetValue(ValuesForFrameRange(start_frame, end_frame, IntrinsicValue(), values,
+                               sample_rate, sample_rate, MinValue(), MaxValue(),
+                               RenderQuantumFrames()));
+}
+
+double AudioParamHandler::ClampedToCurrentTime(double time) {
+  return std::max(time, DestinationHandler().CurrentTime());
 }
 
 String AudioParamHandler::EventToString(const ParamEvent& event) const {
@@ -721,45 +712,50 @@ AudioParamHandler::ParamEvent::ParamEvent(
 }
 
 void AudioParamHandler::SetValueAtTime(float value,
-                                       double time,
+                                       double start_time,
                                        ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (!IsNonNegativeAudioParamTime(time, exception_state)) {
+  if (!IsNonNegativeAudioParamTime(start_time, exception_state)) {
     return;
   }
 
+  start_time = ClampedToCurrentTime(start_time);
+
   base::AutoLock locker(events_lock_);
-  InsertEvent(ParamEvent::CreateSetValueEvent(value, time), exception_state);
+  InsertEvent(ParamEvent::CreateSetValueEvent(value, start_time),
+              exception_state);
 }
 
 void AudioParamHandler::LinearRampToValueAtTime(
     float value,
-    double time,
+    double end_time,
     float initial_value,
     double call_time,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (!IsNonNegativeAudioParamTime(time, exception_state)) {
+  if (!IsNonNegativeAudioParamTime(end_time, exception_state)) {
     return;
   }
 
+  end_time = ClampedToCurrentTime(end_time);
+
   base::AutoLock locker(events_lock_);
-  InsertEvent(
-      ParamEvent::CreateLinearRampEvent(value, time, initial_value, call_time),
-      exception_state);
+  InsertEvent(ParamEvent::CreateLinearRampEvent(value, end_time, initial_value,
+                                                call_time),
+              exception_state);
 }
 
 void AudioParamHandler::ExponentialRampToValueAtTime(
     float value,
-    double time,
+    double end_time,
     float initial_value,
     double call_time,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (!IsNonNegativeAudioParamTime(time, exception_state)) {
+  if (!IsNonNegativeAudioParamTime(end_time, exception_state)) {
     return;
   }
 
@@ -772,43 +768,49 @@ void AudioParamHandler::ExponentialRampToValueAtTime(
     return;
   }
 
+  end_time = ClampedToCurrentTime(end_time);
+
   base::AutoLock locker(events_lock_);
-  InsertEvent(ParamEvent::CreateExponentialRampEvent(value, time, initial_value,
-                                                     call_time),
+  InsertEvent(ParamEvent::CreateExponentialRampEvent(value, end_time,
+                                                     initial_value, call_time),
               exception_state);
 }
 
 void AudioParamHandler::SetTargetAtTime(float target,
-                                        double time,
+                                        double start_time,
                                         double time_constant,
                                         ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (!IsNonNegativeAudioParamTime(time, exception_state) ||
+  if (!IsNonNegativeAudioParamTime(start_time, exception_state) ||
       !IsNonNegativeAudioParamTime(time_constant, exception_state,
                                    "Time constant")) {
     return;
   }
+
+  start_time = ClampedToCurrentTime(start_time);
 
   base::AutoLock locker(events_lock_);
 
   // If timeConstant = 0, we instantly jump to the target value, so
   // insert a SetValueEvent instead of SetTargetEvent.
   if (time_constant == 0) {
-    InsertEvent(ParamEvent::CreateSetValueEvent(target, time), exception_state);
-  } else {
-    InsertEvent(ParamEvent::CreateSetTargetEvent(target, time, time_constant),
+    InsertEvent(ParamEvent::CreateSetValueEvent(target, start_time),
                 exception_state);
+  } else {
+    InsertEvent(
+        ParamEvent::CreateSetTargetEvent(target, start_time, time_constant),
+        exception_state);
   }
 }
 
 void AudioParamHandler::SetValueCurveAtTime(const Vector<float>& curve,
-                                            double time,
+                                            double start_time,
                                             double duration,
                                             ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (!IsNonNegativeAudioParamTime(time, exception_state) ||
+  if (!IsNonNegativeAudioParamTime(start_time, exception_state) ||
       !IsPositiveAudioParamTime(duration, exception_state, "Duration")) {
     return;
   }
@@ -821,10 +823,12 @@ void AudioParamHandler::SetValueCurveAtTime(const Vector<float>& curve,
     return;
   }
 
+  start_time = ClampedToCurrentTime(start_time);
+
   base::AutoLock locker(events_lock_);
-  bool result =
-      InsertEvent(ParamEvent::CreateSetValueCurveEvent(curve, time, duration),
-                  exception_state);
+  bool result = InsertEvent(
+      ParamEvent::CreateSetValueCurveEvent(curve, start_time, duration),
+      exception_state);
   // `InsertEvent` will have already thrown an exception for us if `result` is
   // false.
   if (!result) {
@@ -833,9 +837,9 @@ void AudioParamHandler::SetValueCurveAtTime(const Vector<float>& curve,
   // Insert a setValueAtTime event too to establish an event so that all
   // following events will process from the end of the curve instead of the
   // beginning.
-  InsertEvent(
-      ParamEvent::CreateSetValueCurveEndEvent(curve.back(), time + duration),
-      exception_state);
+  InsertEvent(ParamEvent::CreateSetValueCurveEndEvent(curve.back(),
+                                                      start_time + duration),
+              exception_state);
 }
 
 bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
@@ -856,15 +860,15 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
 
   double insert_time = event->Time();
 
-  if (!events_.size() &&
+  if (events_.empty() &&
       (event->GetType() == ParamEvent::Type::kLinearRampToValue ||
        event->GetType() == ParamEvent::Type::kExponentialRampToValue)) {
     // There are no events preceding these ramps.  Insert a new
     // setValueAtTime event to set the starting point for these
-    // events.  Use a time of 0 to make sure it precedes all other
-    // events.  This will get fixed when when handle new events.
-    events_.insert(0, AudioParamHandler::ParamEvent::CreateSetValueEvent(
-                          event->InitialValue(), 0));
+    // events.
+    events_.insert(
+        0, AudioParamHandler::ParamEvent::CreateSetValueEvent(
+               event->InitialValue(), DestinationHandler().CurrentTime()));
     new_events_.insert(events_[0].get());
   }
 
@@ -980,18 +984,27 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
   return true;
 }
 
-bool AudioParamHandler::HasValues(size_t current_frame,
-                                  double sample_rate,
-                                  unsigned render_quantum_frames) const {
+bool AudioParamHandler::HasSampleAccurateValues() const {
+  if (NumberOfRenderingConnections()) {
+    return true;
+  }
+
   base::AutoTryLock try_locker(events_lock_);
 
   if (try_locker.is_acquired()) {
-    unsigned n_events = events_.size();
+    // Return true if the AudioParam timeline needs to run in this rendering
+    // quantum.  This means some automation is already running or is scheduled
+    // to run in the current rendering quantum.
+    const unsigned n_events = events_.size();
 
     // Clearly, if there are no scheduled events, we have no timeline values.
     if (n_events == 0) {
       return false;
     }
+
+    const size_t current_frame = destination_handler_->CurrentSampleFrame();
+    const double sample_rate = destination_handler_->SampleRate();
+    const unsigned render_quantum_frames = RenderQuantumFrames();
 
     // Handle the case where the first event (of certain types) is in the
     // future.  Then, no sample-accurate processing is needed because the event
@@ -1072,6 +1085,8 @@ void AudioParamHandler::CancelScheduledValues(double cancel_time,
     return;
   }
 
+  cancel_time = ClampedToCurrentTime(cancel_time);
+
   base::AutoLock locker(events_lock_);
 
   // Remove all events starting at startTime.
@@ -1104,6 +1119,8 @@ void AudioParamHandler::CancelAndHoldAtTime(double cancel_time,
   if (!IsNonNegativeAudioParamTime(cancel_time, exception_state)) {
     return;
   }
+
+  cancel_time = ClampedToCurrentTime(cancel_time);
 
   base::AutoLock locker(events_lock_);
 
@@ -1278,12 +1295,12 @@ float AudioParamHandler::ValuesForFrameRange(size_t start_frame,
 }
 
 float AudioParamHandler::ValuesForFrameRangeImpl(
-    size_t start_frame,
-    size_t end_frame,
+    const size_t start_frame,
+    const size_t end_frame,
     float default_value,
     base::span<float> values,
-    double sample_rate,
-    double control_rate,
+    const double sample_rate,
+    const double control_rate,
     unsigned render_quantum_frames) {
   DCHECK_GE(values.size(), 1u);
 
@@ -1350,17 +1367,17 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
                    : ParamEvent::Type::kLastType,
         current_frame, sample_rate, control_rate, value);
 
-    float value1 = event->Value();
-    double time1 = event->Time();
+    const float value1 = event->Value();
+    const double time1 = event->Time();
 
     // Check to see if an event was cancelled.
-    auto [value2, time2, next_event_type] = HandleCancelValues(
+    const auto [value2, time2, next_event_type] = HandleCancelValues(
         event, next_event, next_event ? next_event->Value() : value1,
         next_event ? next_event->Time() : end_frame / sample_rate + 1);
 
     DCHECK(!std::isnan(value1));
     DCHECK(!std::isnan(value2));
-    DCHECK_GE(time2, time1);
+    CHECK_GE(time2, time1);
 
     // `fill_to_end_frame` is the exclusive upper bound of the last frame to be
     // computed for this event.  It's either the last desired frame
@@ -1375,34 +1392,29 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
     // However, `time2` can be very large, so compute this carefully in the case
     // where `time2` exceeds the size of a size_t.
 
-    size_t fill_to_end_frame = end_frame;
-    if (end_frame > time2 * sample_rate) {
-      fill_to_end_frame = static_cast<size_t>(ceil(time2 * sample_rate));
-    }
+    const size_t fill_to_end_frame =
+        end_frame > time2 * sample_rate
+            ? static_cast<size_t>(ceil(time2 * sample_rate))
+            : end_frame;
 
     DCHECK_GE(fill_to_end_frame, start_frame);
-    size_t fill_to_frame = fill_to_end_frame - start_frame;
-    fill_to_frame = std::min(fill_to_frame, values.size());
+    const size_t fill_to_frame =
+        std::min(fill_to_end_frame - start_frame, values.size());
     // Time should be monotonically forward. So `fill_to_frame` should be
     // greater than or equal to `write_index`. We have ensured that the time
     // does not overlap when inserting events.
-    DCHECK_GE(fill_to_frame, write_index);
-
-    const AutomationState current_state = {
-        start_frame,  end_frame,     sample_rate,
-        control_rate, fill_to_frame, fill_to_end_frame,
-        value1,       time1,         value2,
-        time2,        event,         i,
-    };
+    CHECK_GE(fill_to_frame, write_index);
 
     // First handle linear and exponential ramps which require looking ahead to
     // the next event.
     if (next_event_type == ParamEvent::Type::kLinearRampToValue) {
       std::tie(current_frame, value, write_index) = ProcessLinearRamp(
-          current_state, values, current_frame, value, write_index);
+          fill_to_frame, time1, time2, value1, value2, sample_rate, values,
+          current_frame, value, write_index);
     } else if (next_event_type == ParamEvent::Type::kExponentialRampToValue) {
       std::tie(current_frame, value, write_index) = ProcessExponentialRamp(
-          current_state, values, current_frame, value, write_index);
+          fill_to_frame, time1, time2, value1, value2, sample_rate, values,
+          current_frame, value, write_index);
     } else {
       // Handle event types not requiring looking ahead to the next event.
       switch (event->GetType()) {
@@ -1420,8 +1432,10 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
         }
 
         case ParamEvent::Type::kCancelValues: {
-          std::tie(current_frame, value, write_index) = ProcessCancelValues(
-              current_state, values, current_frame, value, write_index);
+          std::tie(current_frame, value, write_index) =
+              ProcessCancelValues(fill_to_frame, time1, sample_rate,
+                                  control_rate, fill_to_end_frame, event, i,
+                                  values, current_frame, value, write_index);
           break;
         }
 
@@ -1439,14 +1453,18 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
         }
 
         case ParamEvent::Type::kSetTarget: {
-          std::tie(current_frame, value, write_index) = ProcessSetTarget(
-              current_state, values, current_frame, value, write_index);
+          std::tie(current_frame, value, write_index) =
+              ProcessSetTarget(fill_to_frame, time1, value1, sample_rate,
+                               control_rate, fill_to_end_frame, event, values,
+                               current_frame, value, write_index);
           break;
         }
 
         case ParamEvent::Type::kSetValueCurve: {
           std::tie(current_frame, value, write_index) = ProcessSetValueCurve(
-              current_state, values, current_frame, value, write_index);
+              fill_to_frame, time1, sample_rate, start_frame, end_frame,
+              fill_to_end_frame, event, values, current_frame, value,
+              write_index);
           break;
         }
         case ParamEvent::Type::kLastType:
@@ -1463,6 +1481,7 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
     // `new_events_` should be empty here so we don't have to
     // do any updates due to this mutation of `events_`.
     DCHECK_EQ(new_events_.size(), 0u);
+
     RemoveOldEvents(last_skipped_event_index - 1);
   }
 
@@ -1598,9 +1617,10 @@ bool AudioParamHandler::HandleAllEventsInThePast(
       }
     }
 
-    // `events_` is being mutated.  `new_events_` better be empty because there
-    // are raw pointers there.
+    // `events_` is being mutated.  `new_events_` better be empty because
+    // there are raw pointers there.
     DCHECK_EQ(new_events_.size(), 0U);
+
     // The event has finished, so just copy the default value out.
     // Since all events are now also in the past, we can just remove all
     // timeline events too because `default_value` has the expected
@@ -1764,18 +1784,16 @@ AudioParamHandler::HandleCancelValues(const ParamEvent* current_event,
 }
 
 std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessLinearRamp(
-    const AutomationState& current_state,
+    const size_t fill_to_frame,
+    const double time1,
+    const double time2,
+    const float value1,
+    const float value2,
+    const double sample_rate,
     base::span<float> values,
     size_t current_frame,
     float value,
     unsigned write_index) {
-  auto fill_to_frame = current_state.fill_to_frame;
-  auto time1 = current_state.time1;
-  auto time2 = current_state.time2;
-  auto value1 = current_state.value1;
-  auto value2 = current_state.value2;
-  auto sample_rate = current_state.sample_rate;
-
   double delta_time = time2 - time1;
   DCHECK_GE(delta_time, 0);
   // Since delta_time is a double, 1/delta_time can easily overflow a float.
@@ -1844,18 +1862,16 @@ std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessLinearRamp(
 }
 
 std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessExponentialRamp(
-    const AutomationState& current_state,
+    const size_t fill_to_frame,
+    const double time1,
+    const double time2,
+    const float value1,
+    const float value2,
+    const double sample_rate,
     base::span<float> values,
     size_t current_frame,
     float value,
     unsigned write_index) {
-  auto fill_to_frame = current_state.fill_to_frame;
-  auto time1 = current_state.time1;
-  auto time2 = current_state.time2;
-  auto value1 = current_state.value1;
-  auto value2 = current_state.value2;
-  auto sample_rate = current_state.sample_rate;
-
   DCHECK_GE(fill_to_frame, write_index);
   if (value1 * value2 <= 0 || time1 >= time2) {
     // It's an error 1) if `value1` and `value2` have opposite signs or if one
@@ -1917,18 +1933,17 @@ std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessExponentialRamp(
 }
 
 std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessSetTarget(
-    const AutomationState& current_state,
+    const size_t fill_to_frame,
+    const double time1,
+    const float value1,
+    const double sample_rate,
+    const double control_rate,
+    const size_t fill_to_end_frame,
+    const ParamEvent* const event,
     base::span<float> values,
     size_t current_frame,
     float value,
     unsigned write_index) {
-  auto fill_to_frame = current_state.fill_to_frame;
-  auto time1 = current_state.time1;
-  auto value1 = current_state.value1;
-  auto sample_rate = current_state.sample_rate;
-  auto control_rate = current_state.control_rate;
-  auto fill_to_end_frame = current_state.fill_to_end_frame;
-  auto* event = current_state.event.get();
   DCHECK_GE(fill_to_frame, write_index);
 
   // Exponential approach to target value with given time constant.
@@ -2036,18 +2051,17 @@ std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessSetTarget(
 }
 
 std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessSetValueCurve(
-    const AutomationState& current_state,
+    size_t fill_to_frame,
+    const double time1,
+    const double sample_rate,
+    const size_t start_frame,
+    const size_t end_frame,
+    size_t fill_to_end_frame,
+    const ParamEvent* const event,
     base::span<float> values,
     size_t current_frame,
     float value,
     unsigned write_index) {
-  auto fill_to_frame = current_state.fill_to_frame;
-  auto time1 = current_state.time1;
-  auto sample_rate = current_state.sample_rate;
-  auto start_frame = current_state.start_frame;
-  auto end_frame = current_state.end_frame;
-  auto fill_to_end_frame = current_state.fill_to_end_frame;
-  auto* event = current_state.event.get();
   DCHECK_GE(fill_to_frame, write_index);
 
   base::span<const float> curve_data(event->Curve());
@@ -2237,18 +2251,17 @@ std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessSetValueCurve(
 }
 
 std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessCancelValues(
-    const AutomationState& current_state,
+    const size_t fill_to_frame,
+    const double time1,
+    const double sample_rate,
+    const double control_rate,
+    const size_t fill_to_end_frame,
+    const ParamEvent* const event,
+    const int event_index,
     base::span<float> values,
     size_t current_frame,
     float value,
     unsigned write_index) {
-  auto fill_to_frame = current_state.fill_to_frame;
-  auto time1 = current_state.time1;
-  auto sample_rate = current_state.sample_rate;
-  auto control_rate = current_state.control_rate;
-  auto fill_to_end_frame = current_state.fill_to_end_frame;
-  auto* event = current_state.event.get();
-  auto event_index = current_state.event_index;
   DCHECK_GE(fill_to_frame, write_index);
 
   // If the previous event was a SetTarget or ExponentialRamp
@@ -2292,7 +2305,7 @@ void AudioParamHandler::RemoveCancelledEvents(
     }
   }
 
-  // Now we can remove the cancelled events from the list.
+  // Remove the cancelled events from the list.
   events_.EraseAt(first_event_to_remove,
                   events_.size() - first_event_to_remove);
 }

@@ -76,6 +76,14 @@
   // NO-OP
 }
 
+- (void)setHUDViewHidden:(BOOL)hidden {
+  // NO-OP
+}
+
+- (void)setGuidanceViewHidden:(BOOL)hidden {
+  // NO-OP
+}
+
 - (void)disableFlyoutMenu:(BOOL)disable {
   // NO-OP
 }
@@ -98,6 +106,10 @@
 
 - (CGSize)imageSize {
   return CGSizeZero;
+}
+
+- (void)zoomImageToCenter:(UIEdgeInsets)insets {
+  // NO-OP
 }
 
 #pragma mark - Public

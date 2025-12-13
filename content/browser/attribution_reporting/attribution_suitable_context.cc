@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "components/url_matcher/url_util.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
@@ -117,9 +116,6 @@ std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
       attribution_host->GetMostRecentNavigationInputEvent(),
       AttributionOsLevelManager::GetAttributionReportingOsRegistrars(
           web_contents),
-      !url_matcher::util::GetGoogleAmpViewerEmbeddedURL(
-           initiator_root_frame->GetLastCommittedURL())
-           .is_empty(),
       UkmSourceIdAllowed(initiator_root_frame)
           ? attribution_host->GetPageUkmSourceId()
           : ukm::kInvalidSourceId,
@@ -135,12 +131,11 @@ AttributionSuitableContext AttributionSuitableContext::CreateForTesting(
     AttributionInputEvent last_input_event,
     ContentBrowserClient::AttributionReportingOsRegistrars os_registrars,
     AttributionDataHostManager* attribution_data_host_manager,
-    bool is_context_google_amp_viewer,
     ukm::SourceId ukm_source_id) {
   return AttributionSuitableContext(
       std::move(context_origin), is_nested_within_fenced_frame,
       root_render_frame_id, last_navigation_id, last_input_event, os_registrars,
-      is_context_google_amp_viewer, ukm_source_id,
+      ukm_source_id,
       attribution_data_host_manager ? attribution_data_host_manager->AsWeakPtr()
                                     : nullptr);
 }
@@ -166,7 +161,6 @@ AttributionSuitableContext::AttributionSuitableContext(
     int64_t last_navigation_id,
     AttributionInputEvent last_input_event,
     ContentBrowserClient::AttributionReportingOsRegistrars os_registrars,
-    bool is_context_google_amp_viewer,
     ukm::SourceId ukm_source_id,
     base::WeakPtr<AttributionDataHostManager> attribution_data_host_manager)
     : context_origin_(std::move(context_origin)),
@@ -175,7 +169,6 @@ AttributionSuitableContext::AttributionSuitableContext(
       last_navigation_id_(last_navigation_id),
       last_input_event_(std::move(last_input_event)),
       os_registrars_(os_registrars),
-      is_context_google_amp_viewer_(is_context_google_amp_viewer),
       ukm_source_id_(ukm_source_id),
       attribution_data_host_manager_(attribution_data_host_manager) {}
 

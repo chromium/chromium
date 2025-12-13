@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 namespace content {

@@ -242,13 +242,6 @@ struct StructTraits<blink::mojom::AttributionSrcTokenDataView,
           blink::AttributionSrcToken> {};
 
 template <>
-struct StructTraits<blink::mojom::ClipboardSequenceNumberTokenDataView,
-                    blink::ClipboardSequenceNumberToken>
-    : public blink::TokenMojomTraitsHelper<
-          blink::mojom::ClipboardSequenceNumberTokenDataView,
-          blink::ClipboardSequenceNumberToken> {};
-
-template <>
 struct BLINK_COMMON_EXPORT
     UnionTraits<blink::mojom::ExecutionContextTokenDataView,
                 blink::ExecutionContextToken> {

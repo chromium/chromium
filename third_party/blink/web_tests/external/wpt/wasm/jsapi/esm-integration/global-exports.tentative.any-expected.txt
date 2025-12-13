@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] WebAssembly module global values should be unwrapped when importing in ESM integration
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/globals.wasm"
+[FAIL] WebAssembly mutable global values should be unwrapped when importing in ESM integration
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/globals.wasm"
+[FAIL] WebAssembly local global values should be unwrapped when exporting in ESM integration
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/globals.wasm"
+[FAIL] WebAssembly module globals from imported WebAssembly modules should be unwrapped
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/globals.wasm"
+[FAIL] WebAssembly should properly handle all global types
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/globals.wasm"
+Harness: the test ran to completion.
+

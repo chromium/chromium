@@ -151,9 +151,9 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
     waiter->AddMinimumLargestContentfulPaintImageExpectation(1);
 
     content::EvalJsResult result = EvalJs(web_contents(), test_name[i]);
-    EXPECT_EQ("", result.error);
+    EXPECT_TRUE(result.is_ok());
 
-    const auto list = result.ExtractList();
+    const auto& list = result.ExtractList();
     EXPECT_EQ(1u, list.size());
     ASSERT_TRUE(list[0].is_dict());
 
@@ -230,7 +230,6 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
 }
 
 // TODO(crbug.com/40936591): This test is flaky on ChromeOS and Linux.
-// TODO(crbug.com/382573509): and flaky on Windows.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_LargestContentfulPaint_SubframeInput \
   DISABLED_LargestContentfulPaint_SubframeInput
@@ -260,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 
   content::EvalJsResult lcp_before_paint_preview =
       EvalJs(web_contents(), "block_for_next_lcp()");
-  EXPECT_EQ("", lcp_before_paint_preview.error);
+  EXPECT_TRUE(lcp_before_paint_preview.is_ok());
 
   paint_preview::PaintPreviewClient::CreateForWebContents(
       web_contents());  // Is a singleton.
@@ -278,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 
   base::RunLoop run_loop;
   client->CapturePaintPreview(
-      params, web_contents()->GetPrimaryMainFrame(),
+      std::move(params), web_contents()->GetPrimaryMainFrame(),
       base::BindOnce(
           [](base::OnceClosure callback, base::UnguessableToken,
              paint_preview::mojom::PaintPreviewStatus,
@@ -290,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 
   content::EvalJsResult lcp_after_paint_preview =
       EvalJs(web_contents(), "trigger_repaint_and_block_for_next_lcp()");
-  EXPECT_EQ("", lcp_after_paint_preview.error);
+  EXPECT_TRUE(lcp_after_paint_preview.is_ok());
 
   // When PaintPreview creates new LCP candidates, we compare the short text and
   // the long text here, which will fail. But in order to consistently get the
@@ -423,8 +422,8 @@ class IsAnimatedLCPTest : public MetricIntegrationTest {
     }
     Start();
     Load(html_name);
-    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(), "run_test()").error,
-              "");
+    EXPECT_TRUE(
+        EvalJs(web_contents()->GetPrimaryMainFrame(), "run_test()").is_ok());
 
     // Need to navigate away from the test html page to force metrics to get
     // flushed/synced.
@@ -579,17 +578,15 @@ class LargestContentfulPaintTypeTest : public MetricIntegrationTest {
   }
 
   void AddImage(const std::string& imgSrc) {
-    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                     content::JsReplace("add_image($1)", imgSrc))
-                  .error,
-              "");
+    EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                       content::JsReplace("add_image($1)", imgSrc))
+                    .is_ok());
   }
 
   void AddText(std::string_view text) {
-    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                     content::JsReplace("add_text($1)", text))
-                  .error,
-              "");
+    EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                       content::JsReplace("add_text($1)", text))
+                    .is_ok());
   }
 };
 
@@ -755,14 +752,9 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, MAYBE_DataURIType_SVG) {
 }
 
 // (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
-// (https://crbug.com/1405307): Flaky on ChromeOS and Linux as well.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_DataURIType_Video DISABLED_DataURIType_Video
-#else
-#define MAYBE_DataURIType_Video DataURIType_Video
-#endif
+// (https://crbug.com/1405307): Flaky on ChromeOS, Linux, and Windows as well.
 IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
-                       MAYBE_DataURIType_Video) {
+                       DISABLED_DataURIType_Video) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kVideo |
                   blink::LargestContentfulPaintType::kDataURI;
@@ -783,10 +775,9 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LCPBreakdownTimings) {
 
   std::string url = "/images/lcp-16x16.png";
   std::string element_id = "image";
-  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                   content::JsReplace("addImage($1, $2)", url, element_id))
-                .error,
-            "");
+  EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("addImage($1, $2)", url, element_id))
+                  .is_ok());
   double web_exposed_lcp = EvalJs(web_contents()->GetPrimaryMainFrame(),
                                   content::JsReplace("getLCP($1)", element_id))
                                .ExtractDouble();
@@ -852,8 +843,8 @@ class LcpBreakdownTimingsTest : public MetricIntegrationTest {
 
     // Execute script if any.
     if (!script.empty()) {
-      EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(), script).error,
-                "");
+      EXPECT_TRUE(
+          EvalJs(web_contents()->GetPrimaryMainFrame(), script).is_ok());
     }
 
     waiter0->Wait();
@@ -893,8 +884,8 @@ class LcpBreakdownTimingsTest : public MetricIntegrationTest {
 
     // Execute script if any.
     if (!script.empty()) {
-      EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(), script).error,
-                "");
+      EXPECT_TRUE(
+          EvalJs(web_contents()->GetPrimaryMainFrame(), script).is_ok());
     }
 
     waiter1->Wait();
@@ -1196,10 +1187,9 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   const std::string url1 = "/images/lcp-16x16.png";
   const std::string element_id1 = "image";
 
-  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                   content::JsReplace("addImage($1, $2)", url1, element_id1))
-                .error,
-            "");
+  EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("addImage($1, $2)", url1, element_id1))
+                  .is_ok());
 
   waiter->Wait();
 
@@ -1207,10 +1197,9 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 
   const std::string element_id2 = "text";
 
-  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                   content::JsReplace("addText($1, $2)", element_id2))
-                .error,
-            "");
+  EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("addText($1, $2)", element_id2))
+                  .is_ok());
 
   waiter->Wait();
 
@@ -1251,10 +1240,9 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   // Load an image.
   const std::string url1 = "/images/lcp-16x16.png";
   const std::string element_id1 = "image";
-  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                   content::JsReplace("addImage($1, $2)", url1, element_id1))
-                .error,
-            "");
+  EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("addImage($1, $2)", url1, element_id1))
+                  .is_ok());
 
   waiter->Wait();
 
@@ -1267,10 +1255,9 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   const std::string url2 = "/images/lcp-256x256.png";
   const std::string element_id2 = "larger_image";
 
-  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                   content::JsReplace("addImage($1, $2)", url2, element_id2))
-                .error,
-            "");
+  EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("addImage($1, $2)", url2, element_id2))
+                  .is_ok());
 
   double web_exposed_lcp2 =
       EvalJs(web_contents()->GetPrimaryMainFrame(),
@@ -1333,8 +1320,8 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 
   Load("/lcp_detached_window.html");
 
-  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(), "runTest()").error,
-            "");
+  EXPECT_TRUE(
+      EvalJs(web_contents()->GetPrimaryMainFrame(), "runTest()").is_ok());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 

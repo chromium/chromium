@@ -12,6 +12,8 @@ static_library("test_support") {
   sources = [
     "child_logged_in_browser_test_mixin.cc",
     "child_logged_in_browser_test_mixin.h",
+    "glic_user_session_test_helper.cc",
+    "glic_user_session_test_helper.h",
     "kiosk_app_logged_in_browser_test_mixin.cc",
     "kiosk_app_logged_in_browser_test_mixin.h",
     "public_account_logged_in_browser_test_mixin.cc",
@@ -25,13 +27,18 @@ static_library("test_support") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/settings:test_support",
+    "//chromeos/ash/services/network_config:in_process_instance",
+    "//chromeos/services/network_config/public/cpp:test_support",
     "//components/account_id",
     "//components/policy/proto",
     "//components/prefs",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/user_manager:test_support",
   ]
 }

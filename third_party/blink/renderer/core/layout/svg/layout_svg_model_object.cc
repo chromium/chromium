@@ -94,7 +94,8 @@ void LayoutSVGModelObject::AddOutlineRects(OutlineRectCollector& collector,
     *info = OutlineInfo::GetUnzoomedFromStyle(StyleRef());
 }
 
-gfx::RectF LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility(
+    IncludeDescendants include_descendants) const {
   NOT_DESTROYED();
   return DecoratedBoundingBox();
 }
@@ -103,6 +104,21 @@ void LayoutSVGModelObject::WillBeDestroyed() {
   NOT_DESTROYED();
   SVGResources::ClearEffects(*this);
   LayoutObject::WillBeDestroyed();
+}
+
+bool LayoutSVGModelObject::MapToVisualRectInAncestorSpaceInternal(
+    const LayoutBoxModelObject* ancestor,
+    TransformState& transform_state,
+    VisualRectFlags visual_rect_flags) const {
+  NOT_DESTROYED();
+  transform_state.Flatten();
+  PhysicalRect rect = PhysicalRect::FastAndLossyFromRectF(
+      transform_state.LastPlanarQuad().BoundingBox());
+  // Apply other mappings on local SVG coordinates.
+  bool retval = SVGLayoutSupport::MapToVisualRectInAncestorSpace(
+      *this, ancestor, gfx::RectF(rect), rect);
+  transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
+  return retval;
 }
 
 bool LayoutSVGModelObject::CheckForImplicitTransformChange(
@@ -143,10 +159,12 @@ void LayoutSVGModelObject::ImageChanged(WrappedImagePtr image,
   }
 }
 
-void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
-                                          const ComputedStyle* old_style) {
+void LayoutSVGModelObject::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutObject::StyleDidChange(diff, old_style);
+  LayoutObject::StyleDidChange(diff, old_style, style_change_context);
 
   if (diff.NeedsFullLayout()) {
     if (diff.TransformChanged())

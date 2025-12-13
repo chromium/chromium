@@ -254,8 +254,7 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
   receiver_.set_disconnect_handler(base::BindOnce(
       &SocketExtensionWithDnsLookupFunction::OnComplete, base::Unretained(this),
       net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-      /*resolved_addresses=*/std::nullopt,
-      /*endpoint_results_with_metadata=*/std::nullopt));
+      net::AddressList(), net::HostResolverEndpointResults()));
 
   // Balanced in OnComplete().
   AddRef();
@@ -264,14 +263,13 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
 void SocketExtensionWithDnsLookupFunction::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const std::optional<net::AddressList>& resolved_addresses,
-    const std::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata) {
+    const net::AddressList& resolved_addresses,
+    const net::HostResolverEndpointResults& alternative_endpoints) {
   host_resolver_.reset();
   receiver_.reset();
   if (result == net::OK) {
-    DCHECK(resolved_addresses && !resolved_addresses->empty());
-    addresses_ = resolved_addresses.value();
+    DCHECK(!resolved_addresses.empty());
+    addresses_ = resolved_addresses;
   }
   AfterDnsLookup(result);
 

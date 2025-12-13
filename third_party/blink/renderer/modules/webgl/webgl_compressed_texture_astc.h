@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class WebGLCompressedTextureASTC final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -27,12 +29,12 @@ class WebGLCompressedTextureASTC final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLCompressedTextureASTC(WebGLRenderingContextBase*);
+  WebGLCompressedTextureASTC(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
   static const std::array<BlockSizeCompressASTC, 14> kBlockSizeCompressASTC;
 
-  Vector<WTF::String> getSupportedProfiles();
+  Vector<String> getSupportedProfiles();
 };
 
 }  // namespace blink

@@ -69,15 +69,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -106,9 +102,9 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -123,7 +119,6 @@ import java.util.Map;
 /** End-to-end test for the selectable TabListEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
 @Batch(Batch.PER_CLASS)
 public class SelectableTabListEditorTest {
     private static final String PAGE_WITH_HTTPS_CANONICAL_URL =
@@ -224,7 +219,8 @@ public class SelectableTabListEditorTest {
                                     mEdgeToEdgeSupplier,
                                     CreationMode.FULL_SCREEN,
                                     /* undoBarExplicitTrigger= */ null,
-                                    /* componentName= */ null);
+                                    /* componentName= */ null,
+                                    TabListEditorCoordinator.UNLIMITED_SELECTION);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =
@@ -324,7 +320,9 @@ public class SelectableTabListEditorTest {
                     }
                     // Don't notify to avoid snackbar appearing.
                     filter.mergeListOfTabsToGroup(
-                            tabs.subList(1, tabs.size()), tabs.get(0), /* notify= */ false);
+                            tabs.subList(1, tabs.size()),
+                            tabs.get(0),
+                            /* notify= */ TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY);
                 });
     }
 
@@ -368,7 +366,6 @@ public class SelectableTabListEditorTest {
 
     @Test
     @RequiresApi(Build.VERSION_CODES.R)
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @Feature("DesktopWindow")
     @SmallTest
@@ -1575,7 +1572,6 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgePadAdjuster() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1919,14 +1915,16 @@ public class SelectableTabListEditorTest {
 
     /** Retrieves all tabs from the current tab model */
     private List<Tab> getTabsInCurrentTabModel() {
-        List<Tab> tabs = new ArrayList<>();
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<Tab> tabs = new ArrayList<>();
 
-        TabModel currentTabModel = mTabModelSelector.getCurrentModel();
-        for (int i = 0; i < currentTabModel.getCount(); i++) {
-            tabs.add(currentTabModel.getTabAt(i));
-        }
-
-        return tabs;
+                    TabModel currentTabModel = mTabModelSelector.getCurrentModel();
+                    for (int i = 0; i < currentTabModel.getCount(); i++) {
+                        tabs.add(currentTabModel.getTabAt(i));
+                    }
+                    return tabs;
+                });
     }
 
     /**
@@ -1934,15 +1932,20 @@ public class SelectableTabListEditorTest {
      * tab model
      */
     private List<Tab> getTabsInCurrentTabGroupModelFilter() {
-        List<Tab> tabs = new ArrayList<>();
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<Tab> tabs = new ArrayList<>();
 
-        TabGroupModelFilter filter =
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
-        for (int i = 0; i < filter.getIndividualTabAndGroupCount(); i++) {
-            tabs.add(filter.getRepresentativeTabAt(i));
-        }
+                    TabGroupModelFilter filter =
+                            mTabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getCurrentTabGroupModelFilter();
+                    for (int i = 0; i < filter.getIndividualTabAndGroupCount(); i++) {
+                        tabs.add(filter.getRepresentativeTabAt(i));
+                    }
 
-        return tabs;
+                    return tabs;
+                });
     }
 
     private void showSelectionEditor(List<Tab> tabs, @Nullable List<TabListEditorAction> actions) {

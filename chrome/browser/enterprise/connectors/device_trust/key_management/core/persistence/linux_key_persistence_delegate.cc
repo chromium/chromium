@@ -167,8 +167,6 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
 scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
     KeyStorageType type,
     LoadPersistedKeyResult* result) {
-  // TODO(b/301644429): Verify if the errors should be finer grained for "not
-  // found" versus other error types.
   std::string file_content;
   if (!base::ReadFileToStringWithMaxSize(GetSigningKeyFilePath(), &file_content,
                                          kMaxBufferSize) ||
@@ -182,7 +180,8 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
   }
 
   // Get dictionary key info.
-  auto keyinfo = base::JSONReader::ReadDict(file_content);
+  auto keyinfo = base::JSONReader::ReadDict(
+      file_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!keyinfo) {
     RecordFailure(
         KeyPersistenceOperation::kLoadKeyPair,

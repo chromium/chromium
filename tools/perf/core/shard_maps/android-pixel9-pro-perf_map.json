@@ -20,7 +20,6 @@
                 "display_name": "loadline_phone.crossbench",
                 "arguments": [
                     "--cool-down-threshold=moderate",
-                    "--no-splash",
                     "--debug"
                 ]
             }
@@ -41,10 +40,24 @@
     },
     "3": {
         "crossbench": {
+            "sp3": {
+                "display_name": "speedometer3.a11y.crossbench",
+                "arguments": [
+                    "--fileserver",
+                    "--debug",
+                    "--extra-browser-args=--force-renderer-accessibility"
+                ]
+            },
             "speedometer_3": {
                 "display_name": "speedometer3.crossbench",
                 "arguments": [
                     "--fileserver",
+                    "--debug"
+                ]
+            },
+            "loadline2-phone": {
+                "display_name": "loadline2_phone.crossbench",
+                "arguments": [
                     "--debug"
                 ]
             }
@@ -52,14 +65,14 @@
         "benchmarks": {}
     },
     "extra_infos": {
-        "num_stories": 5,
-        "predicted_min_shard_time": 60,
-        "predicted_min_shard_index": 3,
+        "num_stories": 6,
+        "predicted_min_shard_time": 70.0,
+        "predicted_min_shard_index": 0,
         "predicted_max_shard_time": 7000,
         "predicted_max_shard_index": 1,
         "shard #0": 70.0,
         "shard #1": 7000,
         "shard #2": 360,
-        "shard #3": 60
+        "shard #3": 120
     }
 }

@@ -100,11 +100,11 @@ struct HostResolverRequest {
   bool reset_client = false;
 };
 
-using ResolveHostFuture = base::test::TestFuture<
-    int,
-    const net::ResolveErrorInfo&,
-    const std::optional<net::AddressList>&,
-    const std::optional<net::HostResolverEndpointResults>&>;
+using ResolveHostFuture =
+    base::test::TestFuture<int,
+                           const net::ResolveErrorInfo&,
+                           const net::AddressList&,
+                           const net::HostResolverEndpointResults&>;
 
 TEST_F(SimpleHostResolverTest, ResolveFourAddresses) {
   auto network_context = MockNetworkContext::CreateNetworkContext(
@@ -156,12 +156,12 @@ TEST_F(SimpleHostResolverTest, ResolveFourAddresses) {
 
   for (const auto& [future, resolver_result] : futures) {
     const auto& [result, resolve_error_info, resolved_addresses,
-                 endpoint_results_with_metadata] = future->Get();
+                 alternative_endpoints] = future->Get();
     EXPECT_EQ(result, resolver_result.result);
     if (!resolver_result.resolved_address) {
-      EXPECT_FALSE(resolved_addresses);
+      EXPECT_THAT(resolved_addresses, testing::IsEmpty());
     } else {
-      EXPECT_THAT(resolved_addresses->endpoints(),
+      EXPECT_THAT(resolved_addresses.endpoints(),
                   testing::ElementsAre(*resolver_result.resolved_address));
     }
   }

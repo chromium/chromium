@@ -17,7 +17,7 @@ import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/pers
 import {isManagedSeaPenEnabled, isSeaPenEnabled, isSeaPenTextInputEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
 import {cleanUpSeaPenQueryStates} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
 import {getSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
-import {isImageDataUrl, isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {isImageDataUrl, isNonEmptyArray, isUrl} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
@@ -163,7 +163,7 @@ function getImages(
   for (const image of localImages) {
     const key = getPathOrSymbol(image);
     const data = localImageData[key];
-    if (isImageDataUrl(data)) {
+    if (isUrl(data) && isImageDataUrl(data)) {
       result.push(data);
     }
     // Add at most |kMaximumLocalImagePreviews| thumbnail urls.
@@ -204,7 +204,7 @@ function getLocalTile(
   // Count all images that failed to load and subtract them from "My Images"
   // count.
   const failureCount = Object.values(localImageData).reduce((result, next) => {
-    return !isImageDataUrl(next) ? result + 1 : result;
+    return (!isUrl(next) || !isImageDataUrl(next)) ? result + 1 : result;
   }, 0);
 
   const successCount = localImages.length - failureCount;

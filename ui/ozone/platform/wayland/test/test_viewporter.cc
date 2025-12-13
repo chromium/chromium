@@ -8,6 +8,8 @@
 #include <wayland-server-core.h>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_viewport.h"
 
@@ -27,11 +29,13 @@ void GetViewport(struct wl_client* client,
                            "viewport exists");
     return;
   }
-
   wl_resource* viewport_resource =
       CreateResourceWithImpl<::testing::NiceMock<TestViewport>>(
           client, &wp_viewport_interface, wl_resource_get_version(resource),
-          &kTestViewportImpl, id, surface);
+          &kTestViewportImpl, id,
+          base::BindOnce(&MockSurface::set_viewport, mock_surface->GetWeakPtr(),
+                         nullptr),
+          surface);
   DCHECK(viewport_resource);
   mock_surface->set_viewport(GetUserDataAs<TestViewport>(viewport_resource));
 }

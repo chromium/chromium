@@ -8,10 +8,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,11 +21,7 @@ class LowDiskMetricsServiceTest
     : public testing::TestWithParam<
           std::tuple<KioskLowDiskSeverity, uint64_t>> {
  public:
-  LowDiskMetricsServiceTest()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())) {
-    UserDataAuthClient::InitializeFake();
-  }
+  LowDiskMetricsServiceTest() { UserDataAuthClient::InitializeFake(); }
 
   LowDiskMetricsServiceTest(const LowDiskMetricsServiceTest&) = delete;
   LowDiskMetricsServiceTest& operator=(const LowDiskMetricsServiceTest&) =
@@ -34,19 +30,20 @@ class LowDiskMetricsServiceTest
   KioskLowDiskSeverity severity() const { return std::get<0>(GetParam()); }
   uint64_t disk_free_bytes() const { return std::get<1>(GetParam()); }
 
-  TestingPrefServiceSimple* local_state() { return local_state_->Get(); }
-
   void SetUp() override {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
-    local_state()->RemoveUserPref(prefs::kKioskMetrics);
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->RemoveUserPref(
+        prefs::kKioskMetrics);
   }
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
   std::optional<KioskLowDiskSeverity> GetLowDiskSeverityFromLocalState() {
-    const auto& metrics_dict = local_state()->GetDict(prefs::kKioskMetrics);
+    const auto& metrics_dict =
+        TestingBrowserProcess::GetGlobal()->local_state()->GetDict(
+            prefs::kKioskMetrics);
     const auto severity_value = metrics_dict.FindInt(kKioskLowDiskSeverity);
     if (!severity_value) {
       return std::nullopt;
@@ -63,12 +60,11 @@ class LowDiskMetricsServiceTest
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
 };
 
 TEST_P(LowDiskMetricsServiceTest, Severity) {
-  auto service =
-      std::make_unique<LowDiskMetricsService>(CHECK_DEREF(local_state()));
+  auto service = std::make_unique<LowDiskMetricsService>(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
   histogram_tester()->ExpectTotalCount(kKioskSessionLowDiskSeverityHistogram,
                                        0);
@@ -82,7 +78,8 @@ TEST_P(LowDiskMetricsServiceTest, Severity) {
                                        1);
   EXPECT_EQ(GetLowDiskSeverityFromLocalState().value(), severity());
 
-  service = std::make_unique<LowDiskMetricsService>(CHECK_DEREF(local_state()));
+  service = std::make_unique<LowDiskMetricsService>(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   histogram_tester()->ExpectBucketCount(
       kKioskSessionLowDiskHighestSeverityHistogram, severity(), 1);
   EXPECT_EQ(GetLowDiskSeverityFromLocalState().value(),
@@ -90,8 +87,8 @@ TEST_P(LowDiskMetricsServiceTest, Severity) {
 }
 
 TEST_F(LowDiskMetricsServiceTest, Update) {
-  auto service =
-      std::make_unique<LowDiskMetricsService>(CHECK_DEREF(local_state()));
+  auto service = std::make_unique<LowDiskMetricsService>(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
   SendLowDiskSpaceEvent(kLowDiskMediumThreshold + 1);
   histogram_tester()->ExpectBucketCount(kKioskSessionLowDiskSeverityHistogram,

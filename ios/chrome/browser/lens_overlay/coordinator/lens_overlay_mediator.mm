@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/base64url.h"
 #import "base/check.h"
 #import "base/memory/weak_ptr.h"
@@ -69,7 +65,7 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 
 @implementation LensOverlayMediator {
   /// The profile pref service.
-  raw_ptr<const PrefService> _profilePrefs;
+  raw_ptr<const PrefService, DanglingUntriaged> _profilePrefs;
   /// Search engine observer.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   /// Orchestrates the navigation in the bottom sheet of the lens result page.
@@ -160,11 +156,11 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
                                      totalAnimationDuration * NSEC_PER_SEC),
                        dispatch_get_main_queue(), ^{
                          [weakSelf.delegate
-                             lensOverlayMediatorOpenURLInNewTabRequsted:URL];
+                             lensOverlayMediatorOpenURLInNewTabRequested:URL];
                        });
       } else {
         [self.delegate
-            lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
+            lensOverlayMediatorOpenURLInNewTabRequested:destinationURL];
       }
 
       [self.metricsRecorder recordNewTabGeneratedWithSource:
@@ -197,7 +193,7 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   [self.omniboxCoordinator focusOmnibox];
   [self.toolbarConsumer setOmniboxFocused:YES];
   [self.omniboxCoordinator.animatee setClearButtonFaded:NO];
-  [self.presentationDelegate requestMaximizeBottomSheet];
+  [self.bottomSheetCommands requestMaximizeBottomSheet];
 }
 
 - (void)defocusOmnibox {
@@ -257,13 +253,13 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
       // bottom sheet hidden, as no auto selection happens at this stage.
       [self.lensHandler resetSelectionAreaToInitialPosition:^{
       }];
-      [self.presentationDelegate
+      [self.bottomSheetCommands
           showInfoMessage:LensOverlayBottomSheetInfoMessageType::
                               kImageTranslatedIndication];
     } else if (noSelectionInTranslate) {
       // A missing selection without a switch in modes indicates the user
       // intended to dismiss the current selection.
-      [self.presentationDelegate
+      [self.bottomSheetCommands
           showInfoMessage:LensOverlayBottomSheetInfoMessageType::
                               kImageTranslatedIndication];
     }
@@ -282,8 +278,8 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   };
   [self.toolbarConsumer setOmniboxEnabled:YES];
   // Make sure the bottom sheet is dismissed before triggering any alert.
-  if (self.presentationDelegate) {
-    [self.presentationDelegate hideBottomSheetWithCompletion:completion];
+  if (self.bottomSheetCommands) {
+    [self.bottomSheetCommands hideBottomSheetWithCompletion:completion];
   } else {
     completion();
   }
@@ -321,7 +317,7 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
     didRequestToOpenURL:(GURL)URL {
-  [self.resultConsumer loadResultsURL:URL];
+  [self.resultConsumer loadResultsURL:URL httpHeaders:nil];
 }
 
 - (void)lensOverlayDidOpenOverlayMenu:(id<ChromeLensOverlay>)lensOverlay {
@@ -341,7 +337,8 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   _currentLensResult = result;
   _thumbnailRemoved = NO;
   // Load the URL, it will start the result UI.
-  [self.resultConsumer loadResultsURL:result.searchResultURL];
+  [self.resultConsumer loadResultsURL:result.searchResultURL
+                          httpHeaders:result.resultsHttpHeaders];
   [self updateForLensResult:result];
 }
 
@@ -361,7 +358,7 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
         setThumbnailImage:_currentLensResult.selectionPreviewImage];
   }
   [self updateOmniboxText:omniboxText];
-  [self.resultConsumer loadResultsURL:URL];
+  [self.resultConsumer loadResultsURL:URL httpHeaders:nil];
 }
 
 - (void)onBackNavigationAvailabilityMaybeChanged:(BOOL)canGoBack {
@@ -417,6 +414,15 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 
 #pragma mark - LensResultPageMediatorDelegate
 
+- (void)lensResultPageWebStateShown {
+  [self.currentLensResult resultWebviewShown];
+}
+
+- (void)lensResultPageWebViewDidSwipeWithDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  [self.currentLensResult resultWebviewSwipedWithDirection:direction];
+}
+
 - (void)lensResultPageWebStateDestroyed {
   [self destroyLensUIAnimated:YES
                        reason:lens::LensOverlayDismissalSource::kTabClosed];
@@ -433,8 +439,8 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   [self.metricsRecorder recordNewTabGeneratedWithSource:newTabSource];
 }
 
-- (void)lensResultPageOpenURLInNewTabRequsted:(GURL)URL {
-  [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:URL];
+- (void)lensResultPageOpenURLInNewTabRequested:(GURL)URL {
+  [self.delegate lensOverlayMediatorOpenURLInNewTabRequested:URL];
 }
 
 #pragma mark - Private
@@ -472,9 +478,9 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   [self updateOmniboxText:result.queryText];
 
   if (result.isGeneratedInTranslate) {
-    [self.presentationDelegate didLoadTranslateResult];
+    [self.bottomSheetCommands adjustForTranslateResult];
   } else {
-    [self.presentationDelegate didLoadSelectionResult];
+    [self.bottomSheetCommands adjustForSelectionResult];
   }
 }
 
@@ -497,13 +503,10 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
     self.omniboxClient->SetLensOverlaySuggestInputs(std::nullopt);
     return;
   }
-  std::string encodedString;
-  base::span<const uint8_t> signals = base::span<const uint8_t>(
-      static_cast<const uint8_t*>(result.suggestSignals.bytes),
-      result.suggestSignals.length);
 
-  Base64UrlEncode(signals, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                  &encodedString);
+  std::string encodedString;
+  Base64UrlEncode(base::apple::NSDataToSpan(result.suggestSignals),
+                  base::Base64UrlEncodePolicy::INCLUDE_PADDING, &encodedString);
 
   if (!encodedString.empty()) {
     lens::proto::LensOverlaySuggestInputs response;

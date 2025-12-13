@@ -9,6 +9,8 @@
 #import <memory>
 #import <utility>
 
+#import "base/debug/crash_logging.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/time/time.h"
@@ -39,9 +41,9 @@ class InterstitialHTMLSource : public web::URLDataSourceIOS {
   // web::URLDataSourceIOS:
   std::string GetSource() const override;
   void StartDataRequest(
-      const std::string& path,
+      std::string_view path,
       web::URLDataSourceIOS::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string& path) const override;
+  std::string GetMimeType(std::string_view path) const override;
 
   // The ProfileIOS passed on initialization.  Used to construct
   // WebStates that are passed to IOSSecurityInterstitialPages.
@@ -60,7 +62,7 @@ InterstitialHTMLSource::InterstitialHTMLSource(ProfileIOS* profile)
 InterstitialHTMLSource::~InterstitialHTMLSource() = default;
 
 std::string InterstitialHTMLSource::GetMimeType(
-    const std::string& mime_type) const {
+    std::string_view mime_type) const {
   return "text/html";
 }
 
@@ -69,7 +71,7 @@ std::string InterstitialHTMLSource::GetSource() const {
 }
 
 void InterstitialHTMLSource::StartDataRequest(
-    const std::string& path,
+    std::string_view path,
     web::URLDataSourceIOS::GotDataCallback callback) {
   std::unique_ptr<web::WebState> web_state =
       web::WebState::Create(web::WebState::CreateParams(profile_));
@@ -79,7 +81,7 @@ void InterstitialHTMLSource::StartDataRequest(
   // Using this form of the path so we can do exact matching, while ignoring the
   // query (everything after the ? character).
   GURL url = GURL(kChromeUIInterstitialsURL).GetWithEmptyPath().Resolve(path);
-  std::string path_without_query = url.path();
+  std::string path_without_query = url.GetPath();
   if (path_without_query == kChromeInterstitialSslPath) {
     interstitial_page = CreateSslBlockingPage(web_state.get(), url);
   } else if (path_without_query == kChromeInterstitialCaptivePortalPath) {
@@ -90,9 +92,12 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_page = CreateEnterpriseBlockPage(web_state.get(), url);
   } else if (path_without_query == kChromeInterstitialEnterpriseWarn) {
     interstitial_page = CreateEnterpriseWarnPage(web_state.get(), url);
+  } else {
+    // This page is not implemented. It should either be implemented or hidden
+    // from the HTML on iOS as was done in crrev.com/c/3722515.
+    SCOPED_CRASH_KEY_STRING256("Interstitials", "path", path_without_query);
+    base::debug::DumpWithoutCrashing();
   }
-  // TODO(crbug.com/40681491): Update the page HTML when a link for an
-  // unsupported interstitial type is tapped.
 
   // Use the HTML generated from the interstitial page if created
   // successfully.  Otherwise, return the default chrome://interstitials HTML.

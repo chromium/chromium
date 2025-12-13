@@ -40,7 +40,7 @@ TEST_F(FileHandlersManifestTest, InvalidFileHandlers) {
       Testcase("file_handlers_invalid_verb.json",
                errors::kInvalidFileHandlerVerb),
   };
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 TEST_F(FileHandlersManifestTest, ValidFileHandlers) {

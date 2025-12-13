@@ -83,7 +83,7 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
       profile_store_(profile_store),
       account_store_(account_store),
       reuse_manager_(reuse_manager),
-      password_feature_manager_(pref_service, sync_service),
+      password_feature_manager_(sync_service),
       credentials_filter_(this),
       requirements_service_(requirements_service),
       helper_(this) {
@@ -244,8 +244,8 @@ void WebViewPasswordManagerClient::NotifyStorePasswordCalled() {
 void WebViewPasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::LeakedPasswordDetails details) {
   [bridge_ showPasswordBreachForLeakType:details.leak_type
-                                     URL:details.origin
-                                username:details.username];
+                                     URL:details.credentials.url
+                                username:details.credentials.username_value];
 }
 
 void WebViewPasswordManagerClient::NotifyKeychainError() {}

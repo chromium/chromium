@@ -20,7 +20,7 @@
 #include "chromeos/ash/experiences/arc/session/mojo_invitation_manager.h"
 
 namespace base {
-struct SystemMemoryInfoKB;
+struct SystemMemoryInfo;
 }
 
 namespace cryptohome {
@@ -164,7 +164,7 @@ class ArcSessionImpl : public ArcSession,
   };
 
   using SystemMemoryInfoCallback =
-      base::RepeatingCallback<bool(base::SystemMemoryInfoKB*)>;
+      base::RepeatingCallback<bool(base::SystemMemoryInfo*)>;
 
   ArcSessionImpl(
       std::unique_ptr<Delegate> delegate,

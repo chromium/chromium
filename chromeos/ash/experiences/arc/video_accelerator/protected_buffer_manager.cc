@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_checker.h"
@@ -34,6 +35,7 @@ constexpr size_t kMaxConcurrentProtectedBufferAllocators = 32;
 // Maximum number of concurrent allocated protected buffers in a single
 // ProtectedBufferAllocator. This limitation, 64 is arbitrarily chosen.
 constexpr size_t kMaxBuffersPerAllocator = 64;
+
 }  // namespace
 
 class ProtectedBufferManager::ProtectedBuffer {
@@ -122,7 +124,7 @@ class ProtectedBufferManager::ProtectedNativePixmap
   // Allocate a ProtectedNativePixmap of |format| and |size|.
   static std::unique_ptr<ProtectedNativePixmap> Create(
       scoped_refptr<gfx::NativePixmap> dummy_handle,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size);
 
   gfx::NativePixmapHandle DuplicateNativePixmapHandle() const override {
@@ -149,7 +151,7 @@ ProtectedBufferManager::ProtectedNativePixmap::~ProtectedNativePixmap() {}
 std::unique_ptr<ProtectedBufferManager::ProtectedNativePixmap>
 ProtectedBufferManager::ProtectedNativePixmap::Create(
     scoped_refptr<gfx::NativePixmap> dummy_handle,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size) {
   std::unique_ptr<ProtectedNativePixmap> protected_pixmap(
       new ProtectedNativePixmap(std::move(dummy_handle)));
@@ -193,7 +195,7 @@ class ProtectedBufferManager::ProtectedBufferAllocatorImpl
   bool AllocateProtectedSharedMemory(base::ScopedFD dummy_fd,
                                      size_t size) override;
   bool AllocateProtectedNativePixmap(base::ScopedFD dummy_fd,
-                                     gfx::BufferFormat format,
+                                     viz::SharedImageFormat format,
                                      const gfx::Size& size) override;
   void ReleaseProtectedBuffer(base::ScopedFD dummy_fd) override;
 
@@ -231,7 +233,7 @@ bool ProtectedBufferManager::ProtectedBufferAllocatorImpl::
 
 bool ProtectedBufferManager::ProtectedBufferAllocatorImpl::
     AllocateProtectedNativePixmap(base::ScopedFD dummy_fd,
-                                  gfx::BufferFormat format,
+                                  viz::SharedImageFormat format,
                                   const gfx::Size& size) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return protected_buffer_manager_->AllocateProtectedNativePixmap(
@@ -325,11 +327,11 @@ bool ProtectedBufferManager::AllocateProtectedSharedMemory(
 bool ProtectedBufferManager::AllocateProtectedNativePixmap(
     uint64_t allocator_id,
     base::ScopedFD dummy_fd,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size) {
   VLOGF(2) << "allocator_id: " << allocator_id
            << ", dummy_fd: " << dummy_fd.get()
-           << ", format: " << static_cast<int>(format)
+           << ", format: " << format.ToString()
            << ", size: " << size.ToString();
 
   // Import the |dummy_fd| to produce a unique id for it.
@@ -509,7 +511,7 @@ scoped_refptr<gfx::NativePixmap> ProtectedBufferManager::ImportDummyFd(
   scoped_refptr<gfx::NativePixmap> pixmap =
       factory->CreateNativePixmapForProtectedBufferHandle(
           gfx::kNullAcceleratedWidget, kDummyBufferSize,
-          gfx::BufferFormat::RGBA_8888, std::move(pixmap_handle));
+          viz::SinglePlaneFormat::kRGBA_8888, std::move(pixmap_handle));
   if (!pixmap) {
     VLOGF(1) << "Failed importing dummy handle";
     return nullptr;

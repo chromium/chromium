@@ -1,3 +1,2 @@
-CONSOLE ERROR: Refused to connect to 'https://localhost:8443/resources/dummy.txt' because it violates the following Content Security Policy directive: "connect-src http://127.0.0.1:8000".
-
+CONSOLE ERROR: Connecting to 'https://localhost:8443/resources/dummy.txt' violates the following Content Security Policy directive: "connect-src http://127.0.0.1:8000". The action has been blocked.
 

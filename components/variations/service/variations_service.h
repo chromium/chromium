@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
@@ -233,9 +234,10 @@ class VariationsService
       std::unique_ptr<base::FeatureList> feature_list,
       PlatformFieldTrials* platform_field_trials);
 
-  // Returns the names of studies and their groups which could possibly be
-  // forced.
-  std::vector<StudyGroupNames> GetStudiesAvailableToForce();
+  // Calls to the callback with the studies and their groups which could
+  // possibly be forced.
+  void GetStudiesAvailableToForce(
+      base::OnceCallback<void(std::vector<StudyGroupNames>)> done_callback);
 
   // The seed type used.
   SeedType GetSeedType() const;
@@ -263,6 +265,12 @@ class VariationsService
   // Returns the fetch time of the latest seed. Returns base::Time() if there is
   // no seed.
   base::Time GetLatestSeedFetchTime();
+
+  // Calls `done_callback` with the stored seed info for debugging. Reads either
+  // the latest or the safe seed, according to the specified `seed_type`.
+  void GetStoredSeedInfoForDebugging(
+      base::OnceCallback<void(StoredSeedInfo)> done_callback,
+      VariationsSeedStore::SeedType seed_type);
 
  protected:
   // Gets the serial number of the most recent Finch seed. Virtual for testing.
@@ -369,7 +377,7 @@ class VariationsService
   void NotifyObservers(const SeedSimulationResult& result);
 
   // Called by SimpleURLLoader when |pending_seed_request_| load completes.
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // Retry the fetch over HTTP, called by OnSimpleLoaderComplete when a request
   // fails. Returns true is the fetch was successfully started, this does not
@@ -389,6 +397,13 @@ class VariationsService
   // |encrypted|. Returns true on success, false on failure. The encryption can
   // be done in-place.
   bool EncryptString(const std::string& plaintext, std::string* encrypted);
+
+  // Calls `done_callback` with the studies and their groups which could
+  // possibly be forced from the given `seed`.
+  void GetStudiesAvailableToForceFromSeed(
+      base::OnceCallback<void(std::vector<StudyGroupNames>)> done_callback,
+      bool success,
+      VariationsSeed seed);
 
   std::unique_ptr<VariationsServiceClient> client_;
 

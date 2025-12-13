@@ -11,7 +11,6 @@
 
 @protocol PasswordDetailsHandler;
 @protocol AddPasswordViewControllerDelegate;
-@protocol ReauthenticationProtocol;
 
 // Screen which allows the user to save a new password.
 @interface AddPasswordViewController
@@ -24,10 +23,6 @@
 
 // Delegate for CredentialDetails related actions e.g. Password editing.
 @property(nonatomic, weak) id<AddPasswordViewControllerDelegate> delegate;
-
-// Module containing the reauthentication mechanism for interactions
-// with password.
-@property(nonatomic, weak) id<ReauthenticationProtocol> reauthModule;
 
 @end
 

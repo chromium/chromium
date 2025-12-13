@@ -475,7 +475,7 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
         }
 
         decoder_->SetStream(current_decode_request_->bitstream_id,
-                            *current_decode_request_->buffer);
+                            current_decode_request_->buffer);
         break;
 
       case AcceleratedVideoDecoder::kRanOutOfSurfaces:
@@ -607,7 +607,6 @@ bool V4L2StatelessVideoDecoderBackend::ApplyResolution(
   format.fmt.pix_mp.width = pic_size.width();
   format.fmt.pix_mp.height = pic_size.height();
   if (device_->Ioctl(VIDIOC_S_FMT, &format) != 0) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSFmt);
     VPLOGF(1) << "Failed setting OUTPUT format";
     return false;
   }

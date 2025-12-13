@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/data_type_manager.h"
 
@@ -19,12 +20,12 @@ namespace syncer {
 
 // Interface for anything that wants to know when the migrator's state
 // changes.
-class MigrationObserver {
+class MigrationObserver : public base::CheckedObserver {
  public:
   virtual void OnMigrationStateChange() = 0;
 
  protected:
-  virtual ~MigrationObserver();
+  ~MigrationObserver() override;
 };
 
 // A class to perform migration of a datatype pursuant to the 'MIGRATION_DONE'
@@ -88,7 +89,7 @@ class BackendMigrator {
 
   State state_;
 
-  base::ObserverList<MigrationObserver>::Unchecked migration_observers_;
+  base::ObserverList<MigrationObserver> migration_observers_;
 
   DataTypeSet to_migrate_;
 

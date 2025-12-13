@@ -13,7 +13,7 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "chromium.build.test",
+              "builder_group": "chromium.build",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -62,6 +62,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.build.test",
+  "builder_group": "chromium.build",
   "recipe": "chrome_build/build_perf_siso"
 }

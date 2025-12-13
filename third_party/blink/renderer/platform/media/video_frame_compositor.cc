@@ -118,18 +118,12 @@ void VideoFrameCompositor::OnRendererStateUpdate(bool new_state) {
   DCHECK_NE(rendering_, new_state);
   rendering_ = new_state;
 
-  if (!auto_open_close_) {
-    auto_open_close_ = std::make_unique<
-        base::trace_event::AutoOpenCloseEvent<kTracingCategory>>(
-        base::trace_event::AutoOpenCloseEvent<kTracingCategory>::Type::kAsync,
-        "VideoPlayback");
-  }
-
+  auto track = perfetto::NamedTrack::ThreadScoped("VideoPlayback", this);
   if (rendering_) {
-    auto_open_close_->Begin();
+    TRACE_EVENT_BEGIN(kTracingCategory, "Rendering", track);
   } else {
     new_processed_frame_cb_.Reset();
-    auto_open_close_->End();
+    TRACE_EVENT_END(kTracingCategory, track);
   }
 
   if (rendering_) {
@@ -380,7 +374,7 @@ bool VideoFrameCompositor::ProcessNewFrame(
     return false;
   }
 
-  // TODO(crbug.com/1447318): Add other cases where the frame is not readable.
+  // TODO(crbug.com/40064689): Add other cases where the frame is not readable.
   bool is_frame_readable = !frame->metadata().dcomp_surface;
 
   // Copy to a local variable to avoid potential deadlock when executing the
@@ -500,7 +494,7 @@ void VideoFrameCompositor::OnContextLost() {
   // has no concept of resetting current_frame_, so a black frame is set.
   base::AutoLock lock(current_frame_lock_);
   if (!current_frame_ || (!current_frame_->HasSharedImage() &&
-                          !current_frame_->HasMappableGpuBuffer())) {
+                          !current_frame_->HasMappableSharedImage())) {
     return;
   }
   scoped_refptr<media::VideoFrame> black_frame =

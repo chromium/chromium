@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
@@ -54,7 +53,8 @@
       ],
       "retry_failed_shards": true,
       "retry_invalid_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Android x64 Builder All Targets (dbg)/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Android x64 Builder All Targets (dbg)/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

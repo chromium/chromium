@@ -26,10 +26,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<std::optional<LocalFrameToken>>
-    : public CrossThreadCopierPassThrough<std::optional<LocalFrameToken>> {};
-
 namespace {
 
 // Determines whether a script frame should be included in the call stack.
@@ -80,7 +76,7 @@ void PostHandleCollectedCallStackTask(
       *Platform::Current()->GetIOTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(
           &JavaScriptCallStackCollector::HandleCallStackCollected,
-          WTF::CrossThreadUnretained(collector), builder.ReleaseString(),
+          CrossThreadUnretained(collector), builder.ReleaseString(),
           frame_token));
 }
 
@@ -155,9 +151,9 @@ void JavaScriptCallStackCollector::CollectJavaScriptCallStack() {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating(
-          &JavaScriptCallStackCollector::InterruptIsolateAndCollectCallStack,
-          WTF::Unretained(this)));
+      ->ForEachMainThreadIsolate([this](v8::Isolate* isolate) {
+        InterruptIsolateAndCollectCallStack(isolate);
+      });
 }
 
 }  // namespace blink

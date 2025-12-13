@@ -12,7 +12,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 class TabStripModel;
 class TabMenuModelDelegate;
@@ -66,7 +66,7 @@ class ExistingWindowSubMenuModel : public ExistingBaseSubMenuModel {
   // Builds a vector of MenuItemInfo structs for the given browsers.
   static std::vector<ExistingWindowSubMenuModel::MenuItemInfo>
   BuildMenuItemInfoVectorForBrowsers(
-      const std::vector<Browser*>& existing_browsers);
+      const std::vector<BrowserWindowInterface*>& existing_browsers);
 
  private:
   // ExistingBaseSubMenuModel:

@@ -381,8 +381,10 @@ public class PrintingControllerTest {
         // ensure two tabs are open.
         TabUiTestHelper.createTabs(cta, false, 2);
 
-        Tab hiddenTab = cta.getCurrentTabModel().getTabAt(0);
-        Tab currentTab = cta.getCurrentTabModel().getTabAt(1);
+        Tab hiddenTab =
+                ThreadUtils.runOnUiThreadBlocking(() -> cta.getCurrentTabModel().getTabAt(0));
+        Tab currentTab =
+                ThreadUtils.runOnUiThreadBlocking(() -> cta.getCurrentTabModel().getTabAt(1));
 
         // hidden (background) tab should not be allowed to print.
         assertTrue("hiddenTab should be hidden.", hiddenTab.isHidden());

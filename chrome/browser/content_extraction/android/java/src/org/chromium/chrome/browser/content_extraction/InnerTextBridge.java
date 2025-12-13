@@ -8,20 +8,19 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
-
-import java.util.Optional;
 
 @NullMarked
 public class InnerTextBridge {
     public static void getInnerText(
-            RenderFrameHost webContents, Callback<Optional<String>> innerTextCallback) {
+            RenderFrameHost webContents, Callback<@Nullable String> innerTextCallback) {
         InnerTextBridgeJni.get().getInnerText(webContents, innerTextCallback);
     }
 
     @NativeMethods
     public interface Natives {
         void getInnerText(
-                RenderFrameHost webContents, Callback<Optional<String>> innerTextCallback);
+                RenderFrameHost webContents, Callback<@Nullable String> innerTextCallback);
     }
 }

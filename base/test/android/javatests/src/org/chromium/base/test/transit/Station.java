@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import static org.chromium.base.test.transit.Condition.whether;
+
 import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
@@ -23,10 +25,10 @@ import java.util.List;
  * <p>Transitions should be done between Stations. The transit-layer derived class should expose
  * screen-specific methods for the test-layer to use.
  *
- * @param <HostActivity> The activity this station is associate to.
+ * @param <HostActivityT> The activity this station is associate to.
  */
 @NullMarked
-public abstract class Station<HostActivity extends Activity> extends ConditionalState {
+public abstract class Station<HostActivityT extends Activity> extends ConditionalState {
     private static final String TAG = "Transit";
     private static int sLastStationId;
 
@@ -35,9 +37,9 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     // be queried.
     private final List<Facility<?>> mFacilities = new ArrayList<>();
     private final String mName;
-    private final @Nullable Class<HostActivity> mActivityClass;
+    private final @Nullable Class<HostActivityT> mActivityClass;
 
-    protected final @Nullable ActivityElement<HostActivity> mActivityElement;
+    protected @Nullable ActivityElement<HostActivityT> mActivityElement;
 
     /**
      * Create a base station.
@@ -45,16 +47,14 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
      * @param activityClass the subclass of Activity this Station expects as an element. Expect no
      *     Activity if null.
      */
-    protected Station(@Nullable Class<HostActivity> activityClass) {
+    protected Station(@Nullable Class<HostActivityT> activityClass) {
         mActivityClass = activityClass;
         mId = sLastStationId++;
         mName = String.format("<S%d: %s>", mId, getClass().getSimpleName());
         TrafficControl.notifyCreatedStation(this);
 
         if (mActivityClass != null) {
-            mActivityElement = mElements.declareActivity(mActivityClass);
-        } else {
-            mActivityElement = null;
+            mElements.declareActivity(mActivityClass);
         }
     }
 
@@ -78,6 +78,24 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
         return mName;
     }
 
+    @Override
+    @Nullable ActivityElement<?> determineActivityElement() {
+        return mActivityElement;
+    }
+
+    @Override
+    <T extends Activity> void onDeclaredActivityElement(ActivityElement<T> element) {
+        assert mActivityElement == null
+                : String.format(
+                        "%s already declared an ActivityElement with id %s",
+                        getName(), mActivityElement.getId());
+        assert element.getActivityClass().equals(mActivityClass)
+                : String.format(
+                        "%s expected an ActivityElement of type %s but got %s",
+                        getName(), mActivityClass, element.getActivityClass());
+        mActivityElement = (ActivityElement<HostActivityT>) element;
+    }
+
     /**
      * @return the self-incrementing id for logging purposes.
      */
@@ -91,7 +109,7 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
             originStation.assertInPhase(Phase.ACTIVE);
             ActivityElement<?> originActivityElement = originStation.getActivityElement();
             if (originActivityElement != null) {
-                mActivityElement.requireToBeInSameTask(originActivityElement.get());
+                mActivityElement.requireToBeInSameTask(originActivityElement.value());
             } else {
                 mActivityElement.requireNoParticularTask();
             }
@@ -106,7 +124,7 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     }
 
     /** Get the activity element associate with this station, if there's any. */
-    public @Nullable ActivityElement<HostActivity> getActivityElement() {
+    public @Nullable ActivityElement<HostActivityT> getActivityElement() {
         return mActivityElement;
     }
 
@@ -116,9 +134,32 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
      * <p>The element is only guaranteed to exist as long as the station is ACTIVE or in transition
      * triggers when it is already TRANSITIONING_FROM.
      */
-    public HostActivity getActivity() {
+    public HostActivityT getActivity() {
         assert mActivityElement != null
                 : "Requesting an ActivityElement for a station with no host activity.";
-        return mActivityElement.get();
+        return mActivityElement.value();
+    }
+
+    /** Finish the activity associated with this station. */
+    public void finishActivity() {
+        assert mActivityElement != null;
+        mActivityElement.expectActivityDestroyed();
+        runTo(() -> getActivity().finish()).reachLastStop();
+    }
+
+    /** Brings the task of the associated Activity to front and waits until it has focus. */
+    public void bringWindowToFront() {
+        assert mActivityElement != null;
+        mActivityElement
+                .bringWindowToFrontTo()
+                .waitFor(
+                        SimpleConditions.instrumentationThreadCondition(
+                                String.format("%s has window focus", getName()),
+                                mActivityElement,
+                                activity ->
+                                        whether(
+                                                activity.getWindow()
+                                                        .getDecorView()
+                                                        .hasWindowFocus())));
     }
 }

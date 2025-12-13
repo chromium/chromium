@@ -153,25 +153,21 @@ void MediaInterfaceFactory::CreateMediaFoundationRenderer(
     mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
-        renderer_extension_receiver,
-    mojo::PendingRemote<media::mojom::MediaFoundationRendererClientExtension>
-        client_extension_remote) {
+        renderer_extension_receiver) {
   if (!task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&MediaInterfaceFactory::CreateMediaFoundationRenderer,
                        weak_this_, std::move(media_log_remote),
                        std::move(receiver),
-                       std::move(renderer_extension_receiver),
-                       std::move(client_extension_remote)));
+                       std::move(renderer_extension_receiver)));
     return;
   }
 
   DVLOG(1) << __func__;
   GetMediaInterfaceFactory()->CreateMediaFoundationRenderer(
       std::move(media_log_remote), std::move(receiver),
-      std::move(renderer_extension_receiver),
-      std::move(client_extension_remote));
+      std::move(renderer_extension_receiver));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

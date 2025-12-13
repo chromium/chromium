@@ -87,6 +87,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowFullscreenController {
   // Called by -[NSWindowDelegate windowWill/DidEnter/ExitFullScreen:].
   void OnWindowWillEnterFullscreen();
   void OnWindowDidEnterFullscreen();
+  void OnWindowDidFailToEnterFullscreen();
   void OnWindowWillExitFullscreen();
   void OnWindowDidExitFullscreen();
 

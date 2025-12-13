@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:clickFilledButton()
+@EXECUTE-AND-WAIT-FOR:disableOutlinedButton()
+@EXECUTE-AND-WAIT-FOR:enableOutlinedButton()
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web Buttons</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-filled-button",
+            "md-outlined-button",
+            "md-text-button"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const buttons = [
+                { tag: "md-filled-button", text: "Filled Button" },
+                { tag: "md-outlined-button", text: "Outlined Button" },
+                { tag: "md-text-button", text: "Text Button" },
+                { tag: "md-filled-button", text: "Disabled Button", disabled: true }
+            ];
+            buttons.forEach(buttonInfo => {
+                const button = document.createElement(buttonInfo.tag);
+                button.textContent = buttonInfo.text;
+                if (buttonInfo.disabled) {
+                    button.disabled = true;
+                }
+                statusDiv.appendChild(button);
+            });
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+    <script>
+        async function clickFilledButton() {
+            const button = document.querySelector("md-filled-button");
+            if (button) {
+                button.click();
+                const statusDiv = document.getElementById("status");
+                const statusText = document.createElement("div");
+                statusText.textContent = "Filled Button Clicked";
+                statusDiv.appendChild(statusText);
+                return "Filled Button Clicked";
+            }
+            return "Failed to click Filled Button";
+        }
+
+        async function disableOutlinedButton() {
+            const button = document.querySelector("md-outlined-button");
+            if (button) {
+                button.disabled = true;
+                const statusDiv = document.getElementById("status");
+                const statusText = document.createElement("div");
+                statusText.textContent = "Outlined Button Disabled";
+                statusDiv.appendChild(statusText);
+                return "Outlined Button Disabled";
+            }
+            return "Failed to disable Outlined Button";
+        }
+
+        async function enableOutlinedButton() {
+            const button = document.querySelector("md-outlined-button");
+            if (button) {
+                button.disabled = false;
+                const statusDiv = document.getElementById("status");
+                const statusText = document.createElement("div");
+                statusText.textContent = "Outlined Button Enabled";
+                statusDiv.appendChild(statusText);
+                return "Outlined Button Enabled";
+            }
+            return "Failed to enable Outlined Button";
+        }
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+</html>

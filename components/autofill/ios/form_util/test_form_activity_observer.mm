@@ -34,7 +34,8 @@ int TestFormActivityObserver::number_of_events_received() {
 void TestFormActivityObserver::DocumentSubmitted(web::WebState* web_state,
                                                  web::WebFrame* sender_frame,
                                                  const FormData& form_data,
-                                                 bool has_user_gesture) {
+                                                 bool has_user_gesture,
+                                                 bool perfect_filling) {
   ASSERT_EQ(web_state_, web_state);
   number_of_events_received_++;
   submit_document_info_ = std::make_unique<TestSubmitDocumentInfo>();

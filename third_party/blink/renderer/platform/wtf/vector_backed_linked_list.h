@@ -154,7 +154,7 @@ class ConstructTraits<blink::VectorBackedLinkedListNode<ValueType, Allocator>,
       static_assert(VectorTraits<Node>::kCanMoveWithMemcpy,
                     "Garbage collected types used in VectorBackedLinkedList "
                     "should be movable with memcpy");
-      WTF::AtomicWriteMemcpy<sizeof(Node), alignof(Node)>(location, &element);
+      AtomicWriteMemcpy<sizeof(Node), alignof(Node)>(location, &element);
       return reinterpret_cast<Node*>(location);
     }
   };
@@ -173,7 +173,7 @@ class ConstructTraits<blink::VectorBackedLinkedListNode<ValueType, Allocator>,
 // Unlike normal linked-list implementations, keeping a pointer to an element is
 // unsafe because elements would be moved by vector buffer reallocation. Use
 // index numbers instead.
-template <typename ValueType, typename Allocator = WTF::PartitionAllocator>
+template <typename ValueType, typename Allocator = PartitionAllocator>
 class VectorBackedLinkedList {
   USE_ALLOCATOR(VectorBackedLinkedList, Allocator);
 
@@ -405,10 +405,6 @@ class VectorBackedLinkedListIterator {
     return iterator_ == other.iterator_;
   }
 
-  bool operator!=(const VectorBackedLinkedListIterator& other) const {
-    return !(*this == other);
-  }
-
   operator const_iterator() const { return iterator_; }
 
   // Returns the index number of an element to which this iterator points.
@@ -482,10 +478,6 @@ class VectorBackedLinkedListConstIterator {
   bool operator==(const VectorBackedLinkedListConstIterator& other) const {
     DCHECK_EQ(container_, other.container_);
     return index_ == other.index_;
-  }
-
-  bool operator!=(const VectorBackedLinkedListConstIterator& other) const {
-    return !(*this == other);
   }
 
  protected:
@@ -566,10 +558,6 @@ class VectorBackedLinkedListReverseIterator {
 
   bool operator==(const VectorBackedLinkedListReverseIterator& other) const {
     return iterator_ == other.iterator_;
-  }
-
-  bool operator!=(const VectorBackedLinkedListReverseIterator& other) const {
-    return !(*this == other);
   }
 
   operator const_reverse_iterator() const { return iterator_; }

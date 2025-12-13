@@ -115,7 +115,7 @@ void ServiceWorkerScriptLoaderFactory::CreateLoaderAndStart(
               base::BindOnce(
                   &ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished,
                   weak_factory_.GetWeakPtr(), std::move(receiver), options,
-                  resource_request, std::move(client))));
+                  resource_request.url, std::move(client))));
           return;
         case ServiceWorkerSingleScriptUpdateChecker::Result::kFailed:
           // Network failure is treated as D.2
@@ -225,7 +225,7 @@ void ServiceWorkerScriptLoaderFactory::CopyScript(
 void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     uint32_t options,
-    const network::ResourceRequest& resource_request,
+    const GURL& resource_request_url,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     int64_t new_resource_id,
     net::Error error) {
@@ -244,7 +244,7 @@ void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
 
   if (error != net::OK) {
     version->script_cache_map()->NotifyFinishedCaching(
-        resource_request.url, resource_size, sha256_checksum, error,
+        resource_request_url, resource_size, sha256_checksum, error,
         ServiceWorkerConsts::kServiceWorkerCopyScriptError);
 
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
@@ -255,7 +255,7 @@ void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
   // The copy operation is successful, add the newly copied resource record to
   // the script cache map to identify that the script is installed.
   version->script_cache_map()->NotifyFinishedCaching(
-      resource_request.url, resource_size, sha256_checksum, net::OK,
+      resource_request_url, resource_size, sha256_checksum, net::OK,
       std::string());
 
   // Use ServiceWorkerInstalledScriptLoader to load the new copy.
@@ -265,7 +265,7 @@ void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ServiceWorkerInstalledScriptLoader>(
           options, std::move(client), std::move(resource_reader), version,
-          resource_request.url),
+          resource_request_url),
       std::move(receiver));
 }
 

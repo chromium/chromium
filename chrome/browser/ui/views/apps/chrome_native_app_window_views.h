@@ -37,10 +37,8 @@ class ChromeNativeAppWindowViews
       views::Widget* widget);
   virtual void InitializeDefaultWindow(
       const extensions::AppWindow::CreateParams& create_params);
-  virtual std::unique_ptr<views::NonClientFrameView>
-  CreateStandardDesktopAppFrame();
-  virtual std::unique_ptr<views::NonClientFrameView>
-  CreateNonStandardAppFrame() = 0;
+  virtual std::unique_ptr<views::FrameView> CreateStandardDesktopAppFrame();
+  virtual std::unique_ptr<views::FrameView> CreateNonStandardAppFrame() = 0;
   virtual bool ShouldRemoveStandardFrame();
 
   // ui::BaseWindow implementation.
@@ -51,7 +49,7 @@ class ChromeNativeAppWindowViews
   // WidgetDelegate implementation.
   ui::ImageModel GetWindowAppIcon() override;
   ui::ImageModel GetWindowIcon() override;
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   bool WidgetHasHitTestMask() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;

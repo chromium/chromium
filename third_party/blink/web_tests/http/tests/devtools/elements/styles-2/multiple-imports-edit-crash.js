@@ -54,9 +54,11 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   function matchedStylesCallback(matchedResult) {
     styleSheetId = matchedResult.nodeStyles()[1].styleSheetId;
     TestRunner.addResult('Setting stylesheet text...');
-    TestRunner.CSSAgent.setStyleSheetText(
-        styleSheetId,
-        '@import url(../styles/resources/multiple-imports-edit-crash-1.css);\n@import url(../styles/resources/multiple-imports-edit-crash-2.css);\n#inspected { color: black }\n');
+    TestRunner.CSSAgent.invoke_setStyleSheetText({
+      styleSheetId: styleSheetId,
+      text:
+          '@import url(../styles/resources/multiple-imports-edit-crash-1.css);\n@import url(../styles/resources/multiple-imports-edit-crash-2.css);\n#inspected { color: black }\n'
+    });
   }
 
   var addsExpected = 2;

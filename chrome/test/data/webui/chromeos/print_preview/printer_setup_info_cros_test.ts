@@ -87,7 +87,7 @@ suite('PrinterSetupInfoTest', function() {
             getShadowElement<CrButtonElement>(setupInfoElement, 'cr-button');
         assertEquals(
             setupInfoElement.i18n(managePrintersLabelKey),
-            managePrintersButton.textContent!.trim());
+            managePrintersButton.textContent.trim());
       });
 
   /**
@@ -137,10 +137,10 @@ suite('PrinterSetupInfoTest', function() {
                 '.message-detail')!;
         assertEquals(
             setupInfoElement.i18n(noPrintersMessageHeadingLabelKey),
-            messageHeading.textContent!.trim());
+            messageHeading.textContent.trim());
         assertEquals(
             setupInfoElement.i18n(noPrintersMessageDetailLabelKey),
-            messageDetail.textContent!.trim());
+            messageDetail.textContent.trim());
 
         // Change message type to 'printer-offline'.
         setupInfoElement.messageType =
@@ -161,10 +161,10 @@ suite('PrinterSetupInfoTest', function() {
         // type.
         assertEquals(
             setupInfoElement.i18n(printerOfflineMessageHeadingLabelKey),
-            messageHeading.textContent!.trim());
+            messageHeading.textContent.trim());
         assertEquals(
             setupInfoElement.i18n(printerOfflineMessageDetailLabelKey),
-            messageDetail.textContent!.trim());
+            messageDetail.textContent.trim());
       });
 
   /**

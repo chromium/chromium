@@ -67,6 +67,17 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
                               remote_.BindNewPipeAndPassReceiver());
   }
 
+  void NavigateAndCreateClipboardHostImpl(const GURL& url) {
+    if (remote_.is_bound()) {
+      remote_.reset();
+    }
+    NavigateAndCommit(url);
+    // Recreating this after navigation is necessary because we usually change
+    // RFH on navigation and clipboard host is bound to RFH.
+    ClipboardHostImpl::Create(web_contents()->GetPrimaryMainFrame(),
+                              remote_.BindNewPipeAndPassReceiver());
+  }
+
   bool IsFormatAvailable(ui::ClipboardFormatType type) {
     return system_clipboard()->IsFormatAvailable(
         type, ui::ClipboardBuffer::kCopyPaste,
@@ -119,7 +130,7 @@ TEST_F(ClipboardHostImplTest, SimpleImage_ReadPng) {
 }
 
 TEST_F(ClipboardHostImplTest, DoesNotCacheClipboard) {
-  ui::ClipboardSequenceNumberToken unused_sequence_number;
+  absl::uint128 unused_sequence_number;
   mojo_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
                                       &unused_sequence_number);
 
@@ -167,6 +178,34 @@ TEST_F(ClipboardHostImplTest, ReadAvailableTypes_TextUriList) {
   mojo_clipboard()->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &types);
   EXPECT_TRUE(base::Contains(types, u"text/plain"));
   EXPECT_TRUE(base::Contains(types, u"text/uri-list"));
+}
+
+TEST_F(ClipboardHostImplTest, GetSequenceNumber) {
+  NavigateAndCreateClipboardHostImpl(GURL("https://google.com/"));
+  absl::uint128 id1;
+  mojo_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste, &id1);
+
+  // Writing to the clipboard should change the sequence number and thus the ID.
+  const SkBitmap kBitmap = gfx::test::CreateBitmap(3, 2);
+  mojo_clipboard()->WriteImage(kBitmap);
+  mojo_clipboard()->CommitWrite();
+  mojo_clipboard().FlushForTesting();
+
+  absl::uint128 id2;
+  mojo_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste, &id2);
+  EXPECT_NE(id1, id2);
+
+  // The ID should be stable if the clipboard hasn't changed.
+  absl::uint128 id3;
+  mojo_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste, &id3);
+  EXPECT_EQ(id2, id3);
+
+  NavigateAndCreateClipboardHostImpl(GURL("https://foobar.com/"));
+  // Even though the clipboard contents haven't changed, a different origin
+  // should not have the same sequence number.
+  absl::uint128 id4;
+  mojo_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste, &id4);
+  EXPECT_NE(id3, id4);
 }
 
 class ClipboardHostImplWriteTest : public RenderViewHostTestHarness {
@@ -762,7 +801,8 @@ class ClipboardHostImplChangeTest : public RenderViewHostTestHarness {
   ClipboardHostImplChangeTest()
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(features::kClipboardChangeEvent);
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPlatformClipboardMonitor);
     ui::TestClipboard::CreateForCurrentThread();
   }
 
@@ -806,7 +846,11 @@ class MockClipboardListener : public blink::mojom::ClipboardListener {
   ~MockClipboardListener() override = default;
 
   // Implementation of blink::mojom::ClipboardListener
-  MOCK_METHOD(void, OnClipboardDataChanged, (), (override));
+  MOCK_METHOD(void,
+              OnClipboardDataChanged,
+              (const std::vector<std::u16string>& types,
+               const absl::uint128& change_id),
+              (override));
 
   mojo::PendingRemote<blink::mojom::ClipboardListener> GetRemote() {
     mojo::PendingRemote<blink::mojom::ClipboardListener> remote;
@@ -828,7 +872,7 @@ TEST_F(ClipboardHostImplChangeTest, AddClipboardListener) {
   auto mock_listener = std::make_unique<MockClipboardListener>();
 
   // Set up the expectation that OnClipboardDataChanged will be called once
-  EXPECT_CALL(*mock_listener, OnClipboardDataChanged()).Times(1);
+  EXPECT_CALL(*mock_listener, OnClipboardDataChanged).Times(1);
 
   // Add the clipboard listener to the clipboard host
   clipboard_host_impl()->RegisterClipboardListener(mock_listener->GetRemote());
@@ -851,7 +895,7 @@ TEST_F(ClipboardHostImplChangeTest, ClipboardListenerDisconnect) {
   auto mock_listener = std::make_unique<MockClipboardListener>();
 
   // Set up the expectation that OnClipboardDataChanged will not be called
-  EXPECT_CALL(*mock_listener, OnClipboardDataChanged()).Times(0);
+  EXPECT_CALL(*mock_listener, OnClipboardDataChanged).Times(0);
 
   // Add the clipboard listener to the clipboard host
   clipboard_host_impl()->RegisterClipboardListener(mock_listener->GetRemote());

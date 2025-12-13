@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 
 namespace {
 // Delay before showing the promo after the timer starts.
@@ -20,7 +21,17 @@ constexpr base::TimeDelta kPromoDisplayDelay = base::Seconds(1);
 constexpr base::TimeDelta kPromoTimeout = base::Seconds(8);
 }  // namespace
 
+namespace signin {
+// Returns whether it is possible to start a sign-in.
+bool SigninIsPossible(AuthenticationService* auth_service) {
+  return !auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
+         auth_service->SigninEnabled();
+}
+
+}  // namespace signin
+
 @interface NonModalSignInPromoMediator () <
+    AuthenticationServiceObserving,
     IdentityManagerObserverBridgeDelegate>
 @end
 
@@ -42,6 +53,10 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(8);
 
   // The type of promo (password or bookmark) being shown.
   SignInPromoType _promoType;
+
+  // Observer for auth service status changes.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
 }
 
 - (instancetype)
@@ -51,22 +66,32 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(8);
                         promoType:(SignInPromoType)promoType {
   self = [super init];
   if (self) {
+    CHECK(authService, base::NotFatalUntil::M145);
+    CHECK(identityManager, base::NotFatalUntil::M145);
+    CHECK(tracker, base::NotFatalUntil::M145);
     _authService = authService;
     _tracker = tracker;
     _promoType = promoType;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(authService,
+                                                              self);
   }
   return self;
+}
+
+- (void)dealloc {
+  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
 }
 
 #pragma mark - Public
 
 - (void)startPromoDisplayTimer {
   _displayTimer = nil;
-  // Check if the user is already signed in
-  if (_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  // Check if the user is already signed in or if sign-in is disabled
+  if (!signin::SigninIsPossible(_authService)) {
     // Inform coordinator to dismiss UI.
     [self.delegate nonModalSignInPromoMediatorShouldDismiss:self];
     return;
@@ -101,6 +126,7 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(8);
 
 - (void)disconnect {
   _identityManagerObserver.reset();
+  _authServiceObserverBridge.reset();
   _authService = nil;
   _tracker = nil;
 }
@@ -156,18 +182,29 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(8);
   LogNonModalSignInPromoAction(NonModalSignInPromoAction::kTimeout, _promoType);
 }
 
+- (void)maybeCancelPromo {
+  // Cancels the current promo if it should not be displayed.
+  if (signin::SigninIsPossible(_authService)) {
+    return;
+  }
+  _displayTimer = nullptr;
+  [self stopTimeOutTimers];
+
+  // Inform coordinator to dismiss UI.
+  [self.delegate nonModalSignInPromoMediatorShouldDismiss:self];
+}
+
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  // If user signs in, stop showing the promo.
-  if (_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    _displayTimer = nullptr;
-    [self stopTimeOutTimers];
+  [self maybeCancelPromo];
+}
 
-    // Inform coordinator to dismiss UI.
-    [self.delegate nonModalSignInPromoMediatorShouldDismiss:self];
-  }
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  [self maybeCancelPromo];
 }
 
 @end

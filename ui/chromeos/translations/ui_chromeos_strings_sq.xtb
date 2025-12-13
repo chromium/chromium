@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Zhanri</translation>
 <translation id="1254593899333212300">Lidhje direkte e internetit</translation>
 <translation id="1272293450992660632">Vlerat e kodit PIN nuk përputhen.</translation>
+<translation id="1279040297980392566">Po pret që të përfundojë skanimi. Riprovo më vonë</translation>
 <translation id="1280820357415527819">Po kërkon për rrjete celulare</translation>
 <translation id="1293556467332435079">Skedarët</translation>
 <translation id="1297922636971898492">"Disku i Google" nuk ofrohet tani. Ngarkimi do të rifillojë automatikisht pasi të kthehet "Disku i Google".</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 skedar i zgjedhur</translation>
 <translation id="3817579325494460411">Nuk jepet</translation>
 <translation id="3819448694985509187">Kodi PIN është i pasaktë. Ke 1 përpjekje të mbetur.</translation>
-<translation id="3822559385185038546">Ky përfaqësues zbatohet nga administratori yt</translation>
 <translation id="3830674330436234648">Luajtja e padisponueshme</translation>
 <translation id="383652340667548381">Serbisht</translation>
 <translation id="3839045880592694915">Modemi yt nuk lejohet që të lidhet nga operatori celular. Kontakto me operatorin celular për më shumë detaje.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5602622065581044566">Bullgarisht me tastierë fonetike</translation>
 <translation id="5605830556594064952">Amerikane Dvorak</translation>
+<translation id="560739212255190568">Administratori yt ka caktuar rregullat e anulimit për procy-in përveç zbatimit të proxy-it të mëposhtëm</translation>
 <translation id="5618330573454123917">Ky skedar është i projektuar për kompjuterë që përdorin softuerë të Macintosh. Kjo nuk përputhet me pajisjen tënde e cila punon me ChromeOS. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në ChromeOS.</translation>
 <translation id="5625294776298156701">Tamilisht me tastierë Tamil99</translation>
 <translation id="5633226425545095130">Zhvendosja e këtij artikulli do ta ndajë atë me të gjithë ata që mund ta shikojnë dosjen e ndarë "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detaje</translation>
 <translation id="8545476925160229291">Anglisht (SHBA)</translation>
 <translation id="854655314928502177">URL-ja me zbulim automatik të përfaqësuesit të uebit:</translation>
+<translation id="8547747809824590510">Administratori yt ka caktuar rregullat e anulimit për proxy-in</translation>
 <translation id="8549186985808798022">Italisht</translation>
 <translation id="8551494947769799688">Letonisht</translation>
 <translation id="8560515948038859357">Kantonisht</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Skedari me emrin "<ph name="FILE_NAME" />" ekziston tashmë. Zgjidh një emër tjetër.</translation>
 <translation id="9046895021617826162">Lidhja dështoi</translation>
 <translation id="9065512565307033593">Nëse nuk e verifikon, qasja jote në rrjet do të çaktivizohet.</translation>
+<translation id="9079844694307518094">Administratori yt po zbaton proxy-in e mëposhtëm</translation>
 <translation id="908378762078012445">Rusisht me tastierë fonetike AATSEEL</translation>
 <translation id="9086302186042011942">Po sinkronizon</translation>
 <translation id="9099674669267916096">Numri i faqeve</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Instalimi filloi me sukses.</translation>
 <translation id="9219103736887031265">Imazhet</translation>
 <translation id="9219908252191632183">Hënor</translation>
+<translation id="931652069802536959">Rrjeti është i bllokuar nga politika</translation>
 <translation id="938470336146445890">Instalo një certifikatë përdoruesi.</translation>
 <translation id="939736085109172342">Dosje e re</translation>
 <translation id="943972244133411984">Modifikuar nga</translation>

@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
 #include "content/public/test/browser_test.h"
 
@@ -81,10 +83,21 @@ class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
   std::multimap<int64_t, UserConsentSpecifics> expected_specifics_;
 };
 
-class SingleClientUserConsentsSyncTest : public SyncTest {
+class SingleClientUserConsentsSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientUserConsentsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientUserConsentsSyncTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
   ~SingleClientUserConsentsSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   bool ExpectUserConsents(
       std::vector<UserConsentSpecifics> expected_specifics) {
@@ -96,9 +109,12 @@ class SingleClientUserConsentsSyncTest : public SyncTest {
   GaiaId GetGaiaId() const {
     return GetClient(0)->GetGaiaIdForAccount(SyncTestAccount::kDefaultAccount);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest, ShouldSubmit) {
+IN_PROC_BROWSER_TEST_P(SingleClientUserConsentsSyncTest, ShouldSubmit) {
   ASSERT_TRUE(SetupSync());
   ASSERT_EQ(
       0u,
@@ -119,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest, ShouldSubmit) {
 
 // ChromeOS does not support signing out of a primary account.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientUserConsentsSyncTest,
     ShouldPreserveConsentsOnSignoutAndResubmitWhenReenabled) {
   // Set up the clients (profiles), but do *not* set up Sync yet.
@@ -147,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientUserConsentsSyncTest,
                        ShouldPreserveConsentsLoggedBeforeSyncSetup) {
   // Set up the clients (profiles), but do *not* set up Sync yet.
   ASSERT_TRUE(SetupClients());
@@ -185,14 +201,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
 // ChromeOS does not support late signin after profile creation, so the test
 // below does not apply, at least in the current form.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientUserConsentsSyncTest,
                        ShouldSubmitIfSignedInAlthoughFullSyncNotEnabled) {
+  if (GetSetupSyncMode() != SetupSyncMode::kSyncTransportOnly) {
+    GTEST_SKIP() << "This test is for transport-only mode.";
+  }
   // We avoid calling SetupSync(), because we don't want to turn on full sync,
   // only sign in such that the standalone transport starts.
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
-  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive())
       << "Full sync should be disabled";
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -217,5 +235,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
   EXPECT_TRUE(ExpectUserConsents({specifics}));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientUserConsentsSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
 
 }  // namespace

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
@@ -129,6 +128,8 @@ source_set("renderer") {
     "extension_throttle_entry.h",
     "extension_throttle_manager.cc",
     "extension_throttle_manager.h",
+    "extension_throttle_manager_access.cc",
+    "extension_throttle_manager_access.h",
     "extension_url_loader_throttle.cc",
     "extension_url_loader_throttle.h",
     "extension_web_view_helper.cc",
@@ -389,6 +390,7 @@ source_set("unit_tests") {
     "bindings/argument_spec_builder.h",
     "bindings/argument_spec_unittest.cc",
     "bindings/binding_access_checker_unittest.cc",
+    "bindings/declarative_event_unittest.cc",
     "bindings/event_emitter_unittest.cc",
     "bindings/exception_handler_unittest.cc",
     "bindings/listener_tracker_unittest.cc",
@@ -404,10 +406,12 @@ source_set("unit_tests") {
     "module_system_test.cc",
     "module_system_test.h",
     "module_system_unittest.cc",
+    "native_extension_bindings_system_unittest.cc",
     "safe_builtins_unittest.cc",
     "scoped_web_frame.cc",
     "scoped_web_frame.h",
     "script_context_set_unittest.cc",
+    "storage_area_unittest.cc",
     "utils_unittest.cc",
   ]
 
@@ -417,7 +421,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//components/crx_file:crx_file",
+    "//components/crx_file",
     "//content/test:test_support",
     "//extensions:extensions_renderer_resources",
     "//extensions:test_support",
@@ -425,7 +429,6 @@ source_set("unit_tests") {
     "//extensions/common",
     "//gin",
     "//gin:gin_test",
-    "//ipc:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -439,9 +442,6 @@ source_set("unit_tests") {
     sources += [
       "api/automation/automation_internal_custom_bindings_unittests.cc",
       "api/feedback_private_hooks_delegate_unittest.cc",
-      "bindings/declarative_event_unittest.cc",
-      "native_extension_bindings_system_unittest.cc",
-      "storage_area_unittest.cc",
     ]
   }
 }

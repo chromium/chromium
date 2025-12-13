@@ -112,11 +112,8 @@ bool WebTestPermissionManager::PermissionDescription::operator==(
 }
 
 bool WebTestPermissionManager::PermissionDescription::operator==(
-    PermissionStatusSubscription* other) const {
-  // TODO(crbug.com/408965890): Add support for multi-state permissions. The
-  // following won't work for detecting changes in permission options.
-  if (blink::PermissionDescriptorToPermissionType(permission_descriptor) !=
-      other->permission) {
+    PermissionResultSubscription* other) const {
+  if (permission_descriptor != other->permission_descriptor) {
     return false;
   }
 
@@ -165,22 +162,23 @@ WebTestPermissionManager::~WebTestPermissionManager() = default;
 void WebTestPermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (render_frame_host->IsNestedWithinFencedFrame()) {
-    std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
+    std::move(callback).Run(std::vector<content::PermissionResult>(
         request_description.permissions.size(),
-        blink::mojom::PermissionStatus::DENIED));
+        PermissionResult(blink::mojom::PermissionStatus::DENIED,
+                         PermissionStatusSource::FENCED_FRAME)));
     return;
   }
 
-  std::vector<blink::mojom::PermissionStatus> result;
+  std::vector<PermissionResult> result;
   result.reserve(request_description.permissions.size());
   const GURL& embedding_origin = PermissionUtil::GetLastCommittedOriginAsURL(
       render_frame_host->GetMainFrame());
   for (const auto& permission : request_description.permissions) {
-    result.push_back(GetPermissionStatusForRequestPermission(
+    result.emplace_back(GetPermissionStatusForRequestPermission(
         permission, request_description.requesting_origin, embedding_origin));
   }
 
@@ -207,22 +205,21 @@ void WebTestPermissionManager::ResetPermission(blink::PermissionType permission,
 void WebTestPermissionManager::RequestPermissionsFromCurrentDocument(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
-        callback) {
+    base::OnceCallback<void(const std::vector<PermissionResult>&)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (render_frame_host->IsNestedWithinFencedFrame()) {
-    std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
+    std::move(callback).Run(std::vector<PermissionResult>(
         request_description.permissions.size(),
-        blink::mojom::PermissionStatus::DENIED));
+        PermissionResult(blink::mojom::PermissionStatus::DENIED)));
     return;
   }
 
-  std::vector<blink::mojom::PermissionStatus> result;
+  std::vector<PermissionResult> result;
   result.reserve(request_description.permissions.size());
   const GURL& embedding_origin = PermissionUtil::GetLastCommittedOriginAsURL(
       render_frame_host->GetMainFrame());
   for (const auto& permission : request_description.permissions) {
-    result.push_back(GetPermissionStatusForRequestPermission(
+    result.emplace_back(GetPermissionStatusForRequestPermission(
         permission, request_description.requesting_origin, embedding_origin));
   }
 
@@ -302,47 +299,58 @@ WebTestPermissionManager::GetPermissionResultForOriginWithoutContext(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
-  blink::mojom::PermissionStatus status =
-      GetPermissionStatus(permission_descriptor, requesting_origin.GetURL(),
-                          embedding_origin.GetURL());
-
-  return PermissionResult(status, content::PermissionStatusSource::UNSPECIFIED);
+  // If permissions start relying on permission setting states (instead of
+  // permission status only) for web tests, the permission setting will need to
+  // be set in the permission result.
+  return PermissionResult(GetPermissionStatus(permission_descriptor,
+                                              requesting_origin.GetURL(),
+                                              embedding_origin.GetURL()));
 }
 
-blink::mojom::PermissionStatus
-WebTestPermissionManager::GetPermissionStatusForCurrentDocument(
+PermissionResult
+WebTestPermissionManager::GetPermissionResultForCurrentDocument(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
   if (render_frame_host->IsNestedWithinFencedFrame())
-    return blink::mojom::PermissionStatus::DENIED;
-  return GetPermissionStatus(
+    return PermissionResult(blink::mojom::PermissionStatus::DENIED);
+  // If permissions start relying on permission setting states (instead of
+  // permission status only) for web tests, the permission setting will need to
+  // be set in the permission result.
+  return PermissionResult(GetPermissionStatus(
       permission_descriptor,
       PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host),
       PermissionUtil::GetLastCommittedOriginAsURL(
-          render_frame_host->GetMainFrame()));
+          render_frame_host->GetMainFrame())));
 }
 
-blink::mojom::PermissionStatus
-WebTestPermissionManager::GetPermissionStatusForWorker(
+PermissionResult WebTestPermissionManager::GetPermissionResultForWorker(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
-  return GetPermissionStatus(permission_descriptor, worker_origin,
-                             worker_origin);
+  // If permissions start relying on permission setting states (instead of
+  // permission status only) for web tests, the permission setting will need to
+  // be set in the permission result.
+  return PermissionResult(
+      GetPermissionStatus(permission_descriptor, worker_origin, worker_origin));
 }
 
-blink::mojom::PermissionStatus
-WebTestPermissionManager::GetPermissionStatusForEmbeddedRequester(
+PermissionResult
+WebTestPermissionManager::GetPermissionResultForEmbeddedRequester(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     const url::Origin& overridden_origin) {
   if (render_frame_host->IsNestedWithinFencedFrame()) {
-    return blink::mojom::PermissionStatus::DENIED;
+    return PermissionResult(blink::mojom::PermissionStatus::DENIED,
+                            PermissionStatusSource::FENCED_FRAME);
   }
-  return GetPermissionStatus(permission_descriptor, overridden_origin.GetURL(),
-                             PermissionUtil::GetLastCommittedOriginAsURL(
-                                 render_frame_host->GetMainFrame()));
+  // If permissions start relying on permission setting states (instead of
+  // permission status only) for web tests, the permission setting will need to
+  // be set in the permission result.
+  return PermissionResult(
+      GetPermissionStatus(permission_descriptor, overridden_origin.GetURL(),
+                          PermissionUtil::GetLastCommittedOriginAsURL(
+                              render_frame_host->GetMainFrame())));
 }
 
 void WebTestPermissionManager::OnPermissionStatusChangeSubscriptionAdded(
@@ -352,7 +360,7 @@ void WebTestPermissionManager::OnPermissionStatusChangeSubscriptionAdded(
   if (!subscriptions() || subscriptions()->IsEmpty()) {
     return;
   }
-  content::PermissionStatusSubscription* subscription =
+  content::PermissionResultSubscription* subscription =
       subscriptions()->Lookup(subscription_id);
   if (!subscription) {
     return;
@@ -368,17 +376,15 @@ void WebTestPermissionManager::OnPermissionStatusChangeSubscriptionAdded(
                 ->GetMainFrame());
   }
   subscription->requesting_origin_delegation = subscription->requesting_origin;
-  // TODO(crbug.com/408965890): Add support for multi-state permissions. The
-  // following won't work for detecting changes in permission options.
-  subscription->permission_result = PermissionResult(
-      GetPermissionStatus(
-          PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
-              subscription->permission),
-          subscription->requesting_origin, subscription->embedding_origin),
-      content::PermissionStatusSource::UNSPECIFIED);
+  // If permissions start relying on permission setting states (instead of
+  // permission status only) for web tests, the permission setting will need to
+  // be set in the permission result.
+  subscription->permission_result = PermissionResult(GetPermissionStatus(
+      subscription->permission_descriptor, subscription->requesting_origin,
+      subscription->embedding_origin));
 }
 
-void WebTestPermissionManager::UnsubscribeFromPermissionStatusChange(
+void WebTestPermissionManager::UnsubscribeFromPermissionResultChange(
     content::PermissionController::SubscriptionId subscription_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
@@ -409,7 +415,8 @@ void WebTestPermissionManager::SetPermission(
     }
   }
 
-  OnPermissionChanged(description, status, std::move(callback));
+  OnPermissionChanged(description, PermissionResult(status),
+                      std::move(callback));
 }
 
 void WebTestPermissionManager::SetPermission(
@@ -448,7 +455,7 @@ void WebTestPermissionManager::Bind(
 
 void WebTestPermissionManager::OnPermissionChanged(
     const PermissionDescription& permission,
-    blink::mojom::PermissionStatus status,
+    PermissionResult permission_result,
     blink::test::mojom::PermissionAutomation::SetPermissionCallback
         permission_callback) {
   if (!subscriptions()) {
@@ -461,22 +468,24 @@ void WebTestPermissionManager::OnPermissionChanged(
   for (content::PermissionController::SubscriptionsMap::iterator iter(
            subscriptions());
        !iter.IsAtEnd(); iter.Advance()) {
-    PermissionStatusSubscription* subscription = iter.GetCurrentValue();
+    PermissionResultSubscription* subscription = iter.GetCurrentValue();
     if (permission != subscription) {
       continue;
     }
 
     if (subscription->permission_result &&
-        subscription->permission_result->status == status) {
+        subscription->permission_result->status == permission_result.status &&
+        subscription->permission_result->retrieved_permission_setting ==
+            permission_result.retrieved_permission_setting) {
       continue;
     }
 
-    subscription->permission_result =
-        PermissionResult(status, PermissionStatusSource::UNSPECIFIED);
+    subscription->permission_result = permission_result;
 
     // Add the callback to |callbacks| which will be run after the loop to
     // prevent re-entrance issues.
-    callbacks.push_back(base::BindOnce(subscription->callback, status,
+    callbacks.push_back(base::BindOnce(subscription->callback,
+                                       permission_result,
                                        /*ignore_status_override=*/false));
   }
 
@@ -498,7 +507,7 @@ void WebTestPermissionManager::OnPermissionChanged(
                       permission.origin),
                   ContentSettingsPattern::FromURLToSchemefulSitePattern(
                       permission.embedding_origin),
-                  status),
+                  permission_result.status),
               base::BindOnce(std::move(permission_callback), /*success=*/true));
       break;
     case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS: {
@@ -531,7 +540,7 @@ void WebTestPermissionManager::OnPermissionChanged(
           GetContentSettings(
               ContentSettingsPattern::FromURL(permission.origin),
               ContentSettingsPattern::FromURL(permission.embedding_origin),
-              status),
+              permission_result.status),
           base::BindOnce(barrier_callback, true));
 
       cookie_manager->SetContentSettings(
@@ -539,7 +548,7 @@ void WebTestPermissionManager::OnPermissionChanged(
           GetContentSettings(
               ContentSettingsPattern::FromURL(permission.origin),
               ContentSettingsPattern::FromURL(permission.embedding_origin),
-              status),
+              permission_result.status),
           base::BindOnce(barrier_callback, true));
 
       break;

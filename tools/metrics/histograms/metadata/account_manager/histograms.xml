@@ -50,8 +50,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccountManager.EduCoexistence.FetchAccessTokenResult"
-    enum="GoogleServiceAuthError" expires_after="2025-10-01">
-  <owner>agawronska@chromium.org</owner>
+    enum="GoogleServiceAuthError" expires_after="2026-10-01">
+  <owner>longbowei@google.com</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     The result of fetching an access token for the child with `accounts.reauth`
@@ -61,8 +62,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccountManager.EduCoexistenceV2.InSessionFlowResult"
-    enum="EduCoexistenceFlowV2Result" expires_after="2025-10-01">
-  <owner>agawronska@chromium.org</owner>
+    enum="EduCoexistenceFlowV2Result" expires_after="2026-10-01">
+  <owner>longbowei@google.com</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the last completed step in the EDU account addition flow. Allows to
@@ -71,8 +73,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccountManager.EduCoexistenceV2.OnboardingFlowResult"
-    enum="EduCoexistenceFlowV2Result" expires_after="2025-10-01">
-  <owner>agawronska@chromium.org</owner>
+    enum="EduCoexistenceFlowV2Result" expires_after="2026-10-01">
+  <owner>longbowei@google.com</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the last completed step in the EDU account addition flow. Allows to
@@ -156,7 +159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccountManager.NumAccounts" units="count"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>sinhak@chromium.org</owner>
   <owner>emaamari@google.com</owner>
   <summary>

@@ -147,6 +147,8 @@ class AddPasswordViewControllerTest
   }
 
   FakeAddPasswordDelegate* delegate_ = nil;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      password_manager::features::kSuggestStrongPasswordInAddPassword};
 };
 
 // Tests that password is shown/hidden.
@@ -181,7 +183,7 @@ TEST_F(AddPasswordViewControllerTest, TestSectionsInAdd) {
   EXPECT_EQ(5, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(0, NumberOfItemsInSection(1));
-  EXPECT_EQ(3, NumberOfItemsInSection(2));
+  EXPECT_EQ(4, NumberOfItemsInSection(2));
 
   CheckSectionFooter(
       [NSString stringWithFormat:@"%@\n\n%@",
@@ -209,7 +211,7 @@ TEST_F(AddPasswordViewControllerTest, TestSectionsInAddDuplicated) {
   EXPECT_EQ(6, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(0, NumberOfItemsInSection(1));
-  EXPECT_EQ(3, NumberOfItemsInSection(2));
+  EXPECT_EQ(4, NumberOfItemsInSection(2));
   EXPECT_EQ(2, NumberOfItemsInSection(3));
 }
 
@@ -259,13 +261,6 @@ TEST_F(AddPasswordViewControllerTest, TestShowDuplicatedCredential) {
 
 // Tests for testing suggest strong password.
 TEST_F(AddPasswordViewControllerTest, TestSuggestStrongPassword) {
-  // Enable flag `kSuggestStrongPasswordInAddPassword` for the test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  std::vector<base::test::FeatureRef> enabled_features;
-  enabled_features.push_back(
-      password_manager::features::kSuggestStrongPasswordInAddPassword);
-  scoped_feature_list.InitWithFeatures(enabled_features, {});
-
   AddPasswordViewController* passwords_controller =
       static_cast<AddPasswordViewController*>(controller());
   [passwords_controller loadModel];

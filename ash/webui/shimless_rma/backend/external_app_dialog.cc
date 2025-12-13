@@ -188,8 +188,7 @@ ExternalAppDialog::~ExternalAppDialog() {
 }
 
 void ExternalAppDialog::GetDialogSize(gfx::Size* size) const {
-  gfx::Size screen_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().size();
+  gfx::Size screen_size = display::Screen::Get()->GetPrimaryDisplay().size();
   *size = gfx::Size(kRelativeScreenWidth * screen_size.width(),
                     kRelativeScreenHeight * screen_size.height());
 }

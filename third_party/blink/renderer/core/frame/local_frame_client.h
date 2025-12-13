@@ -35,6 +35,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -43,7 +44,6 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
@@ -53,7 +53,6 @@
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
-#include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -63,6 +62,7 @@
 #include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_manifest_manager.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/icon_url.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
@@ -86,6 +86,7 @@ class SharedURLLoaderFactory;
 namespace blink {
 
 class AssociatedInterfaceProvider;
+class ChildURLLoaderFactoryBundle;
 class DocumentLoader;
 class HTMLFencedFrameElement;
 class HTMLFormElement;
@@ -155,7 +156,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       mojom::blink::SameDocumentNavigationType,
       bool is_client_redirect,
       bool is_browser_initiated,
-      bool should_skip_screenshot) {}
+      bool should_skip_screenshot,
+      base::UnguessableToken same_document_metrics_token) {}
   virtual void DidFailAsyncSameDocumentCommit() {}
   virtual void DispatchDidOpenDocumentInputStream(const KURL&) {}
   virtual void DispatchDidReceiveTitle(const String&) = 0;
@@ -208,8 +210,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual bool NavigateBackForward(
       int offset,
       base::TimeTicks actual_navigation_start,
-      std::optional<scheduler::TaskAttributionId>
-          soft_navigation_heuristics_task_id) const = 0;
+      std::optional<scheduler::TaskAttributionId> task_state_id) const = 0;
 
   virtual void DidDispatchPingLoader(const KURL&) = 0;
 
@@ -244,7 +245,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual void DidObserveNewFeatureUsage(const UseCounterFeature&) {}
 
   // A new soft navigation was observed.
-  virtual void DidObserveSoftNavigation(SoftNavigationMetrics metrics) {}
+  virtual void DidObserveSoftNavigation(
+      SoftNavigationMetricsForReporting metrics) {}
 
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {

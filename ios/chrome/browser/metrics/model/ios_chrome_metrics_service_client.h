@@ -8,6 +8,7 @@
 #import <stdint.h>
 
 #import <memory>
+#import <optional>
 #import <set>
 #import <string>
 #import <string_view>
@@ -37,6 +38,10 @@ class PrefRegistrySimple;
 class ProfileIOS;
 class ProfileManagerIOS;
 
+namespace regional_capabilities {
+class CountryIdHolder;
+}
+
 namespace metrics {
 class MetricsService;
 class MetricsStateManager;
@@ -52,6 +57,10 @@ class UkmService;
 
 namespace metrics::dwa {
 class DwaService;
+}
+
+namespace metrics::private_metrics {
+class PumaService;
 }
 
 // IOSChromeMetricsServiceClient provides an implementation of
@@ -83,6 +92,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
   metrics::dwa::DwaService* GetDwaService() override;
+  metrics::private_metrics::PumaService* GetPumaService() override;
   void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
@@ -105,6 +115,8 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   bool AreNotificationListenersEnabledOnAllProfiles() override;
   std::string GetUploadSigningKey() override;
   bool ShouldStartUpFast() const override;
+  std::optional<regional_capabilities::CountryIdHolder>
+  GetProfileCountryIdForPrivateMetricsReporting() override;
 
   // ukm::HistoryDeleteObserver:
   void OnHistoryDeleted() override;
@@ -220,6 +232,9 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   // The DwaService that `this` is a client of.
   std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
+
+  // The PumaService that `this` is a client of.
+  std::unique_ptr<metrics::private_metrics::PumaService> puma_service_;
 
   // Observation of the ProfileManagerIOS.
   base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>

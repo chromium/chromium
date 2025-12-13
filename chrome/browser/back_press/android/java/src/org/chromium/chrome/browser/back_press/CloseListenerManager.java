@@ -8,8 +8,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -25,14 +27,15 @@ import org.chromium.content_public.browser.WebContents;
  */
 @NullMarked
 public class CloseListenerManager implements BackPressHandler, Destroyable {
-    private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplier<Tab> mActivityTabSupplier;
-    private final Callback<Tab> mOnTabChanged = this::onTabChanged;
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
+
+    private final NullableObservableSupplier<Tab> mActivityTabSupplier;
+    private final Callback<@Nullable Tab> mOnTabChanged = this::onTabChanged;
     private @Nullable Tab mTab;
     private @Nullable TabObserver mTabObserver;
 
-    public CloseListenerManager(ObservableSupplier<Tab> activityTabSupplier) {
+    public CloseListenerManager(NullableObservableSupplier<Tab> activityTabSupplier) {
         mActivityTabSupplier = activityTabSupplier;
         mActivityTabSupplier.addObserver(mOnTabChanged);
         updateObserver();
@@ -47,7 +50,7 @@ public class CloseListenerManager implements BackPressHandler, Destroyable {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressChangedSupplier;
     }
 
@@ -62,7 +65,7 @@ public class CloseListenerManager implements BackPressHandler, Destroyable {
         }
     }
 
-    private void onTabChanged(Tab tab) {
+    private void onTabChanged(@Nullable Tab tab) {
         onBackPressStateChanged();
         updateObserver();
     }

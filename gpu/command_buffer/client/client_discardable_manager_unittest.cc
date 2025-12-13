@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/client/client_discardable_manager.h"
 
-#include "gpu/command_buffer/client/client_discardable_texture_manager.h"
+#include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -218,25 +218,6 @@ TEST(ClientDiscardableManagerTest, FreeDeleted) {
     manager.FreeHandle(handle_ids[i]);
   }
   manager.CheckPendingForTesting(&command_buffer);
-}
-
-TEST(ClientDiscardableTextureManagerTest, BasicUsage) {
-  FakeCommandBuffer command_buffer;
-  ClientDiscardableTextureManager manager;
-  {
-    ClientDiscardableHandle handle =
-        manager.InitializeTexture(&command_buffer, 1);
-    EXPECT_TRUE(handle.IsLockedForTesting());
-    EXPECT_EQ(handle.shm_id(), 1);
-    EXPECT_FALSE(DeleteClientHandleForTesting(handle));
-    UnlockClientHandleForTesting(handle);
-    manager.LockTexture(1);
-    EXPECT_FALSE(DeleteClientHandleForTesting(handle));
-    UnlockAndDeleteClientHandleForTesting(handle);
-  }
-  manager.FreeTexture(1);
-  manager.DiscardableManagerForTesting()->CheckPendingForTesting(
-      &command_buffer);
 }
 
 }  // namespace gpu

@@ -8,6 +8,7 @@
 #import <string_view>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_data.h"
@@ -51,6 +52,7 @@ class ExtensionSearchEngineDataUpdaterTest : public PlatformTest {
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<ExtensionSearchEngineDataUpdater> observer_;
   NSString* search_by_image_key_;

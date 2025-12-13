@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
@@ -29,6 +25,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/union_unittest.test-mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "mojo/public/cpp/test_support/validation_errors_test_util.h"
 #include "mojo/public/interfaces/bindings/tests/test_structs.test-mojom.h"
 #include "mojo/public/interfaces/bindings/tests/test_unions.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -464,7 +461,7 @@ TEST(UnionTest, StringValidateOOB) {
   fragment->data.f_f_string.offset = 8;
   char* ptr = reinterpret_cast<char*>(&fragment->data.f_f_string);
   mojo::internal::ArrayHeader* array_header =
-      reinterpret_cast<mojo::internal::ArrayHeader*>(ptr + *ptr);
+      reinterpret_cast<mojo::internal::ArrayHeader*>(UNSAFE_TODO(ptr + *ptr));
   array_header->num_bytes = 20;  // This should go out of bounds.
   array_header->num_elements = 20;
   mojo::internal::ValidationContext validation_context(fragment.data(), 32, 0,
@@ -536,11 +533,11 @@ TEST(UnionTest, ObjectUnionInArraySerialization) {
 
   std::vector<char> new_buf;
   new_buf.resize(size);
-  memcpy(new_buf.data(), data, size);
+  UNSAFE_TODO(memcpy(new_buf.data(), data, size));
 
-  data =
+  data = UNSAFE_TODO(
       reinterpret_cast<mojo::internal::Array_Data<internal::ObjectUnion_Data>*>(
-          new_buf.data());
+          new_buf.data()));
   mojo::internal::ValidationContext validation_context(
       data, static_cast<uint32_t>(size), 0, 0);
   constexpr const mojo::internal::ContainerValidateParams& validate_params =

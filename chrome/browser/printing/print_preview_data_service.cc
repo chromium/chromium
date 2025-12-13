@@ -43,22 +43,22 @@ class PrintPreviewDataStore {
   ~PrintPreviewDataStore() = default;
 
   // Get the preview page for the specified `index`.
-  void GetPreviewDataForIndex(
-      int index,
-      scoped_refptr<base::RefCountedMemory>* data) const {
-    if (IsInvalidIndex(index))
-      return;
+  scoped_refptr<base::RefCountedMemory> GetPreviewDataForIndex(
+      int index) const {
+    if (IsInvalidIndex(index)) {
+      return nullptr;
+    }
 
     auto it = page_data_map_.find(index);
-    if (it != page_data_map_.end())
-      *data = it->second.get();
+    return it != page_data_map_.end() ? it->second.get() : nullptr;
   }
 
   // Set/Update the preview data entry for the specified `index`.
   void SetPreviewDataForIndex(int index,
                               scoped_refptr<base::RefCountedMemory> data) {
-    if (IsInvalidIndex(index))
+    if (IsInvalidIndex(index)) {
       return;
+    }
 
     DCHECK(data);
 #if DCHECK_IS_ON()
@@ -115,22 +115,21 @@ PrintPreviewDataService::PrintPreviewDataService() = default;
 
 PrintPreviewDataService::~PrintPreviewDataService() = default;
 
-void PrintPreviewDataService::GetDataEntry(
+scoped_refptr<base::RefCountedMemory> PrintPreviewDataService::GetDataEntry(
     int32_t preview_ui_id,
-    int index,
-    scoped_refptr<base::RefCountedMemory>* data_bytes) const {
-  *data_bytes = nullptr;
+    int index) const {
   auto it = data_store_map_.find(preview_ui_id);
-  if (it != data_store_map_.end())
-    it->second->GetPreviewDataForIndex(index, data_bytes);
+  return it != data_store_map_.end() ? it->second->GetPreviewDataForIndex(index)
+                                     : nullptr;
 }
 
 void PrintPreviewDataService::SetDataEntry(
     int32_t preview_ui_id,
     int index,
     scoped_refptr<base::RefCountedMemory> data_bytes) {
-  if (!base::Contains(data_store_map_, preview_ui_id))
+  if (!base::Contains(data_store_map_, preview_ui_id)) {
     data_store_map_[preview_ui_id] = std::make_unique<PrintPreviewDataStore>();
+  }
   data_store_map_[preview_ui_id]->SetPreviewDataForIndex(index,
                                                          std::move(data_bytes));
 }

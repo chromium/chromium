@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.ColorUtils;
@@ -122,8 +122,7 @@ public class TabListSceneLayer extends SceneLayer {
             LayoutTab t = tabs[i];
             final float decoration = t.getDecorationAlpha();
             boolean useIncognitoColors = t.isIncognito();
-            int defaultThemeColor =
-                    SurfaceColorUpdateUtils.getDefaultThemeColor(context, useIncognitoColors);
+            int defaultThemeColor = ChromeColors.getDefaultThemeColor(context, useIncognitoColors);
 
             // TODO(dtrainor, clholgat): remove "* dpToPx" once the native part fully supports dp.
             TabListSceneLayerJni.get()

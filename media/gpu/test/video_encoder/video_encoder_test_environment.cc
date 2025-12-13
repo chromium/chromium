@@ -20,13 +20,16 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/bitrate.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/test/raw_video.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/gl/gl_implementation.h"
+#include "ui/gl/init/gl_factory.h"
+#endif
 
 namespace media {
 namespace test {
@@ -343,11 +346,23 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
       content_type_(content_type),
       save_output_bitstream_(save_output_bitstream),
       reverse_(reverse),
-      frame_output_config_(frame_output_config),
-      gpu_memory_buffer_factory_(
-          gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)) {}
+      frame_output_config_(frame_output_config) {}
 
 VideoEncoderTestEnvironment::~VideoEncoderTestEnvironment() = default;
+
+void VideoEncoderTestEnvironment::SetUp() {
+  VideoTestEnvironment::SetUp();
+#if BUILDFLAG(IS_ANDROID)
+  CHECK(gl::init::InitializeGLOneOff(gl::GpuPreference::kDefault));
+#endif
+}
+
+void VideoEncoderTestEnvironment::TearDown() {
+#if BUILDFLAG(IS_ANDROID)
+  gl::init::ShutdownGL(nullptr, false);
+#endif
+  VideoTestEnvironment::TearDown();
+}
 
 media::test::RawVideo* VideoEncoderTestEnvironment::Video() const {
   return video_.get();
@@ -428,9 +443,5 @@ const FrameOutputConfig& VideoEncoderTestEnvironment::ImageOutputConfig()
   return frame_output_config_;
 }
 
-gpu::GpuMemoryBufferFactory*
-VideoEncoderTestEnvironment::GetGpuMemoryBufferFactory() const {
-  return gpu_memory_buffer_factory_.get();
-}
 }  // namespace test
 }  // namespace media

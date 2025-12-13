@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/ownership/owner_key_util_impl.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -73,8 +69,8 @@ class OwnerKeyUtilImplTest : public testing::Test {
 
 TEST_F(OwnerKeyUtilImplTest, ImportPublicKey) {
   // Export public key, so that we can compare it to the one we get off disk.
-  std::vector<uint8_t> public_key(kTestKeyData,
-                                  kTestKeyData + sizeof(kTestKeyData));
+  std::vector<uint8_t> public_key(
+      kTestKeyData, UNSAFE_TODO(kTestKeyData + sizeof(kTestKeyData)));
   ASSERT_TRUE(base::WriteFile(key_file_, public_key));
   EXPECT_TRUE(util_->IsPublicKeyPresent());
 

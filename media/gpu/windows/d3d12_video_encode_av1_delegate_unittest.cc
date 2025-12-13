@@ -8,6 +8,9 @@
 #include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 
 #include "base/rand_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_encoder.h"
 #include "media/base/win/d3d12_mocks.h"
 #include "media/base/win/d3d12_video_mocks.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate_unittest.h"
@@ -16,7 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -46,6 +48,7 @@ class D3D12VideoEncodeAV1DelegateTest
   ~D3D12VideoEncodeAV1DelegateTest() override = default;
 
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(kStandardizeVP9AndAV1Quantizer);
     device_ = MakeComPtr<NiceMock<D3D12DeviceMock>>();
     video_device3_ = MakeComPtr<NiceMock<D3D12VideoDevice3Mock>>();
     ON_CALL(*video_device3_.Get(), QueryInterface(IID_ID3D12Device, _))
@@ -53,9 +56,9 @@ class D3D12VideoEncodeAV1DelegateTest
     ON_CALL(*video_device3_.Get(), QueryInterface(IID_ID3D12VideoDevice1, _))
         .WillByDefault(SetComPointeeAndReturnOk<1>(video_device3_.Get()));
     ON_CALL(*video_device3_.Get(), CheckFeatureSupport(_, _, _))
-        .WillByDefault(Invoke([](D3D12_FEATURE_VIDEO feature,
-                                 void* pFeatureSupportData,
-                                 UINT FeatureSupportDataSize) -> HRESULT {
+        .WillByDefault([](D3D12_FEATURE_VIDEO feature,
+                          void* pFeatureSupportData,
+                          UINT FeatureSupportDataSize) -> HRESULT {
           if (feature == D3D12_FEATURE_VIDEO_ENCODER_CODEC) {
             auto* feature_data =
                 static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC*>(
@@ -87,10 +90,15 @@ class D3D12VideoEncodeAV1DelegateTest
             CHECK_EQ(*feature_data->Profile.pAV1Profile,
                      D3D12_VIDEO_ENCODER_AV1_PROFILE_MAIN);
             auto* av1_support = feature_data->CodecSupportLimits.pAV1Support;
+            av1_support->SupportedInterpolationFilters =
+                D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAG_EIGHTTAP;
             av1_support->SupportedFeatureFlags =
                 D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CDEF_FILTERING |
                 D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_ORDER_HINT_TOOLS |
+                D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER |
                 D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_REDUCED_TX_SET;
+            av1_support->RequiredFeatureFlags =
+                D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER;
             feature_data->IsSupported = true;
           } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_SUPPORT1) {
             auto* feature_data =
@@ -101,7 +109,7 @@ class D3D12VideoEncodeAV1DelegateTest
                 D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK;
           }
           return S_OK;
-        }));
+        });
 
     encoder_delegate_ =
         std::make_unique<MockD3D12VideoEncodeAV1Delegate>(video_device3_);
@@ -134,23 +142,85 @@ class D3D12VideoEncodeAV1DelegateTest
         post_encode_flags, post_encode_values, frame_header_);
   }
 
-  void UpdateLoopRestoration(
-      const D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG& restoration_config,
-      AV1BitstreamBuilder::FrameHeader& frame_header) {
-    GetMockDelegate()->UpdateFrameHeaderLoopRestoration(restoration_config,
-                                                        frame_header);
-  }
-
   Microsoft::WRL::ComPtr<D3D12DeviceMock> device_;
   Microsoft::WRL::ComPtr<D3D12VideoDevice3Mock> video_device3_;
   AV1BitstreamBuilder::FrameHeader frame_header_{};
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(D3D12VideoEncodeAV1DelegateTest, GetSupportedProfiles) {
   std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
       expected_profiles = {
-          {AV1PROFILE_PROFILE_MAIN, {PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE}}};
-  EXPECT_CALL(*video_device3_.Get(), CheckFeatureSupport).Times(6);
+          {AV1PROFILE_PROFILE_MAIN,
+           {PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE, PIXEL_FORMAT_ABGR}}};
+  EXPECT_CALL(*video_device3_.Get(), CheckFeatureSupport).Times(7);
+  auto profiles =
+      D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(video_device3_.Get());
+  EXPECT_EQ(profiles, expected_profiles);
+}
+
+TEST_F(D3D12VideoEncodeAV1DelegateTest, GetSupportedProfiles_HighProfile) {
+  // Simulate only AV1 high profile is supported and only PIXEL_FORMAT_ABGR is
+  // supported for it. Patch the mock to only support high profile and ABGR
+  // format.
+  ON_CALL(*video_device3_.Get(), CheckFeatureSupport(_, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO feature, void* pFeatureSupportData,
+                        UINT FeatureSupportDataSize) -> HRESULT {
+        if (feature == D3D12_FEATURE_VIDEO_ENCODER_CODEC) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC*>(
+                  pFeatureSupportData);
+          feature_data->IsSupported =
+              feature_data->Codec == D3D12_VIDEO_ENCODER_CODEC_AV1;
+        } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_PROFILE_LEVEL) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL*>(
+                  pFeatureSupportData);
+          CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+          CHECK(feature_data->Profile.pAV1Profile);
+          feature_data->IsSupported = (*feature_data->Profile.pAV1Profile ==
+                                       D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH);
+        } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_INPUT_FORMAT) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT*>(
+                  pFeatureSupportData);
+          CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+          CHECK_EQ(*feature_data->Profile.pAV1Profile,
+                   D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH);
+          feature_data->IsSupported = feature_data->Format == DXGI_FORMAT_AYUV;
+        } else if (feature ==
+                   D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT) {
+          auto* feature_data = static_cast<
+              D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT*>(
+              pFeatureSupportData);
+          CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+          CHECK_LE(*feature_data->Profile.pAV1Profile,
+                   D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH);
+          auto* av1_support = feature_data->CodecSupportLimits.pAV1Support;
+          av1_support->SupportedInterpolationFilters =
+              D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAG_EIGHTTAP;
+          av1_support->SupportedFeatureFlags =
+              D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CDEF_FILTERING |
+              D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_ORDER_HINT_TOOLS |
+              D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER |
+              D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_REDUCED_TX_SET;
+          av1_support->RequiredFeatureFlags =
+              D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER;
+          feature_data->IsSupported = true;
+        } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_SUPPORT1) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT1*>(
+                  pFeatureSupportData);
+          CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+          feature_data->SupportFlags =
+              D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK;
+        }
+        return S_OK;
+      });
+  std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
+      expected_profiles = {{AV1PROFILE_PROFILE_HIGH, {PIXEL_FORMAT_ABGR}}};
   auto profiles =
       D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(video_device3_.Get());
   EXPECT_EQ(profiles, expected_profiles);
@@ -201,6 +271,44 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrame) {
     EXPECT_GT(metadata.payload_size_bytes, kStreamSize);
     EXPECT_LE(metadata.payload_size_bytes, kBufferSize);
     EXPECT_GT(metadata.qp, 0);
+  }
+}
+
+TEST_F(D3D12VideoEncodeAV1DelegateTest, ExternalRateControl) {
+  VideoEncodeAccelerator::Config config = GetDefaultConfig();
+  config.bitrate = Bitrate::ExternalRateControl();
+  EXPECT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  std::array<uint8_t, 3> quantizers = {56, 26, 10};
+  for (size_t i = 0; i < quantizers.size(); i++) {
+    auto input_frame = MakeComPtr<NiceMock<D3D12ResourceMock>>();
+    EXPECT_CALL(*input_frame.Get(), GetDesc())
+        .WillOnce(Return(D3D12_RESOURCE_DESC{
+            .Width = static_cast<UINT64>(config.input_visible_size.width()),
+            .Height = static_cast<UINT>(config.input_visible_size.height()),
+            .Format = VideoPixelFormatToDxgiFormat(config.input_format),
+        }));
+    constexpr size_t kBufferSize = 4096;
+    constexpr size_t kStreamSize = 3072;
+    auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+    BitstreamBuffer bitstream_buffer(base::RandInt(0, 7 /*MaxDPBSize - 1*/),
+                                     shared_memory.Duplicate(), kBufferSize);
+    EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
+        .WillOnce(Return(EncoderStatus::Codes::kOk));
+    EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+        .WillRepeatedly(
+            [&] { return GetEncoderOutputMetadataResourceMap(kStreamSize); });
+    EXPECT_CALL(*GetMockDelegate(), GetEncodedBitstreamWrittenBytesCount(_))
+        .WillRepeatedly(Return(kStreamSize));
+
+    VideoEncoder::EncodeOptions options;
+    options.quantizer = quantizers[i];
+    auto result = encoder_delegate_->Encode(
+        input_frame.Get(), 0 /*input_frame_subresource*/,
+        gfx::ColorSpace::CreateSRGB(), bitstream_buffer, options);
+    EXPECT_EQ(result.has_value(), true);
+    auto [bitstream_buffer_id, metadata] = std::move(result).value();
+    EXPECT_EQ(metadata.qp, quantizers[i]);
   }
 }
 
@@ -353,24 +461,6 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, UpdateFrameHeaderPostEncode) {
   UpdatePostEncodeValues(post_encode_values, post_encode_flags);
   EXPECT_EQ(frame_header_.reference_select,
             post_encode_values.CompoundPredictionType);
-
-  // Update loop restoration params.
-  D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG restoration_config{};
-  restoration_config.FrameRestorationType[0] =
-      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_SGRPROJ;
-  restoration_config.FrameRestorationType[1] =
-      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_WIENER;
-  restoration_config.FrameRestorationType[2] =
-      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_DISABLED;
-  restoration_config.LoopRestorationPixelSize[0] =
-      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_128x128;
-  restoration_config.LoopRestorationPixelSize[1] =
-      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_64x64;
-  restoration_config.LoopRestorationPixelSize[2] =
-      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_DISABLED;
-  UpdateLoopRestoration(restoration_config, frame_header_);
-  EXPECT_EQ(frame_header_.lr_unit_shift, 1u);
-  EXPECT_EQ(frame_header_.lr_uv_shift, 1u);
 }
 
 }  // namespace media

@@ -63,19 +63,14 @@ MandatoryReauthManager::GetNonInteractivePaymentMethodType(
 void MandatoryReauthManager::Authenticate(
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
   CHECK(device_authenticator_);
-  device_authenticator_->AuthenticateWithMessage(
-      u"", base::BindOnce(&MandatoryReauthManager::OnAuthenticationCompleted,
-                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  device_authenticator_->AuthenticateWithMessage(u"", std::move(callback));
 }
 
 void MandatoryReauthManager::AuthenticateWithMessage(
     const std::u16string& message,
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
   CHECK(device_authenticator_);
-  device_authenticator_->AuthenticateWithMessage(
-      message,
-      base::BindOnce(&MandatoryReauthManager::OnAuthenticationCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  device_authenticator_->AuthenticateWithMessage(message, std::move(callback));
 }
 
 void MandatoryReauthManager::StartDeviceAuthentication(
@@ -104,7 +99,7 @@ void MandatoryReauthManager::StartDeviceAuthentication(
       non_interactive_payment_method_type, authentication_method,
       autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   AuthenticateWithMessage(
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH),
       std::move(authentication_complete_callback));
@@ -116,12 +111,6 @@ void MandatoryReauthManager::StartDeviceAuthentication(
 #else
   NOTREACHED();
 #endif
-}
-
-void MandatoryReauthManager::OnAuthenticationCompleted(
-    device_reauth::DeviceAuthenticator::AuthenticateCallback callback,
-    bool success) {
-  std::move(callback).Run(success);
 }
 
 bool MandatoryReauthManager::ShouldOfferOptin(
@@ -228,7 +217,7 @@ void MandatoryReauthManager::OnUserAcceptedOptInPrompt() {
       opt_in_source_,
       /*opt_in=*/true,
       autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   AuthenticateWithMessage(
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT),
       base::BindOnce(
@@ -282,7 +271,6 @@ MandatoryReauthManager::GetAuthenticationMethod() {
   }
 #if BUILDFLAG(IS_ANDROID)
   switch (device_authenticator_->GetBiometricAvailabilityStatus()) {
-    case BiometricStatus::kRequired:
     case BiometricStatus::kBiometricsAvailable:
       return MandatoryReauthAuthenticationMethod::kBiometric;
     case BiometricStatus::kOnlyLskfAvailable:

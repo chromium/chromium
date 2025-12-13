@@ -119,6 +119,14 @@ const mojom::KeyboardSettings kKeyboardSettings3(
     kDefaultFkey,
     kDefaultFkey);
 
+const mojom::KeyboardSettings kKeyboardSettings4(
+    /*modifier_remappings=*/{},
+    /*top_row_are_fkeys=*/false,
+    /*suppress_meta_fkey_rewrites=*/false,
+    nullptr,
+    std::nullopt,
+    std::nullopt);
+
 }  // namespace
 
 class KeyboardPrefHandlerTest : public AshTestBase {
@@ -781,6 +789,33 @@ TEST_F(KeyboardPrefHandlerTest, DefaultNotPersistedUntilUpdated) {
       settings_dict->contains(prefs::kKeyboardSettingSuppressMetaFKeyRewrites));
   CheckKeyboardSettingsAndDictAreEqual(kKeyboardSettingsDefault,
                                        *settings_dict);
+}
+
+TEST_F(KeyboardPrefHandlerTest,
+       NewKeyboard_ManagedEnterprisePolicy_Initalizes_FunctionKey_NoSixPack) {
+  mojom::KeyboardPolicies policies;
+  policies.home_and_end_keys_policy =
+      mojom::InputDeviceSettingsSixPackKeyPolicy::New(
+          mojom::PolicyStatus::kManaged,
+          ui::mojom::SixPackShortcutModifier::kSearch);
+  policies.page_up_and_page_down_keys_policy =
+      mojom::InputDeviceSettingsSixPackKeyPolicy::New(
+          mojom::PolicyStatus::kManaged,
+          ui::mojom::SixPackShortcutModifier::kAlt);
+  policies.delete_key_policy = mojom::InputDeviceSettingsSixPackKeyPolicy::New(
+      mojom::PolicyStatus::kManaged, ui::mojom::SixPackShortcutModifier::kAlt);
+  policies.insert_key_policy = mojom::InputDeviceSettingsSixPackKeyPolicy::New(
+      mojom::PolicyStatus::kManaged, ui::mojom::SixPackShortcutModifier::kNone);
+
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kKeyboardKey1;
+  keyboard.meta_key = ui::mojom::MetaKey::kSearch;
+  keyboard.modifier_keys = {ui::mojom::ModifierKey::kFunction};
+
+  pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
+                                            &keyboard);
+
+  EXPECT_EQ(kKeyboardSettings4, *keyboard.settings);
 }
 
 TEST_F(KeyboardPrefHandlerTest,

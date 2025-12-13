@@ -336,10 +336,6 @@ public class MessagesMetrics {
                 return "SaveCardFailure";
             case MessageIdentifier.VIRTUAL_CARD_ENROLL_FAILURE:
                 return "VirtualCardEnrollFailure";
-            case MessageIdentifier.PROMPT_HATS_QUICK_DELETE:
-                return "PromptHatsQuickDelete";
-            case MessageIdentifier.PROMPT_HATS_SAFETY_HUB:
-                return "PromptHatsSafetyHub";
             case MessageIdentifier.DEFAULT_BROWSER_PROMO:
                 return "DefaultBrowserPromo";
             case MessageIdentifier.TAB_REMOVED_THROUGH_COLLABORATION:
@@ -352,14 +348,22 @@ public class MessagesMetrics {
                 return "CollaborationRemoved";
             case MessageIdentifier.CCT_ACCOUNT_MISMATCH_NOTICE:
                 return "CctAccountMismatchNotice";
-            case MessageIdentifier.PROMPT_HATS_CLEAR_BROWSING_DATA:
-                return "PromptHatsClearBrowsingData";
             case MessageIdentifier.OS_ADVANCED_PROTECTION_SETTING_CHANGED_MESSAGE:
                 return "OsAdvancedProtectionSettingChangedMessage";
             case MessageIdentifier.MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT:
                 return "MultiInstanceRestorationOnDowngradedLimit";
             case MessageIdentifier.UPDATE_CHROME_FOR_TAB_GROUP_SHARE:
                 return "UpdateChromeForTabGroupShare";
+            case MessageIdentifier.MODE_B_ROLLBACK_MESSAGE:
+                return "ModeBRollbackMessage";
+            case MessageIdentifier.RELOAD_PAGE:
+                return "ReloadPage";
+            case MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT:
+                return "MultiInstanceCreationLimit";
+            case MessageIdentifier.PERMISSION_PROMPT_LOUD:
+                return "PermissionPromptLoud";
+            case MessageIdentifier.SAVE_UPDATE_ENTITY:
+                return "SaveUpdateEntity";
             default:
                 return "Unknown";
         }

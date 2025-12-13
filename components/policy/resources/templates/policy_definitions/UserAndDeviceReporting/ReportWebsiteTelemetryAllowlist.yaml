@@ -5,7 +5,7 @@ desc: |-
 
   Setting the policy controls website telemetry reporting for allowlisted URLs.
   If unset, no website telemetry will be reported.
-  For detailed information on valid URL patterns, see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Only HTTP and HTTPS URL schemes are allowed for this policy.
+  For detailed information on valid URL patterns, see https://chromeenterprise.google/policies/url-patterns/. Only HTTP and HTTPS URL schemes are allowed for this policy.
 example_value:
 - 'example.com'
 - 'https://ssl.server.com'

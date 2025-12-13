@@ -12,18 +12,11 @@ Rendered version of this file: https://chromium.googlesource.com/chromium/src/+/
 ## Procedure for adding/modifying file type(s)
   * **Edit** `download_file_types.asciipb` and `enums.xml`.
   * Get it reviewed, **submit.**
+  * The Component Updater system will notice those files and import them, but will not push them yet.
+  * Wait 1-3 day for this to run on Canary to verify it doesn't crash Chrome.
   * **Push** it to all users via component update:
-    * Wait 1-3 day for this to run on Canary to verify it doesn't crash Chrome.
-    * In a synced checkout, run the following to generate protos for all
-      platforms and push them to GCS. Replace the arg with your build directory:
-        * % `components/safe_browsing/content/resources/push_file_type_proto.py -d
-          out-gn/Debug`
-    * It will ask you to double check its actions before proceeding.  It will
-      fail if you're not a member of
-      `chrome-file-type-policies-pushers@google.com`, since that's required for
-      access to the GCS bucket.
-    * The Component Updater system will notice those files and push them to
-      users within ~6 hours. If not, contact `waffles@.`
+    * See http://go/safe-browsing-file-type-policies-push (internal only) for details.
+    * This is expected take around 6 hours to push to all users.
 
 ## Procedure for rollback
 While Omaha allows rollback through the release manager, the Chrome client will
@@ -32,34 +25,6 @@ versions on Canary/Dev channel). Rolling back a bad version is best achieved by:
   * **Reverting** the changes on the Chromium source tree.
   * **Submitting** a new CL incrementing the version number.
   * **Push** the newest version, as above.
-
-## Procedure for incremental rollout
-  * Open the Omaha Release manager at:
-    https://omaharelease.corp.google.com/product/1436/cohorts
-  * **Disable** the automatic push by changing the _Push Scheduler_ from
-    `LATEST_TO_AUTO` to `NONE`. Then commit the changes by clicking _Commit
-    Automation Changes_.
-  * **Upload** the new version of the file types.
-    * In a synced checkout, run the following to generate protos for all
-      platforms and push them to GCS. Replace the arg with your build directory:
-        * % `components/safe_browsing/content/resources/push_file_type_proto.py -d
-          out-gn/Debug`
-  * Create a new cohort.
-    * Under _Cohorts_, click _Manage_, then _Create Subcohort_ of Auto.
-    * Select a name and percentage for the new cohort.
-    * Return to the product page.
-  * **Push** to the new cohort.
-    * Select _Edit Schedule_ for the new cohort, and select the newest file
-      group and a time to roll out.
-  * After the incremental rollout is complete, remember to set the _Push
-    Scheduler_ back to `LATEST_TO_AUTO`
-
-Note: Everything after disabling automation could be scripted through the
-[ReleaseServiceManager](http://google3/java/com/google/installer/releasemanager/proto/releasemanager_stubby.proto).
-An example script using this API is
-[here](http://google3/googleclient/installer/tools/release/keystone/create_release_testing_cohorts.py).
-If we regularly need incremental rollouts, it may be worth creating our own
-scripts to do so reliably.
 
 ## Guidelines for a DownloadFileType entry:
 See `download_file_types.proto` for all fields.

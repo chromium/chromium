@@ -142,7 +142,7 @@ mod kv_support {
     }
 
     #[cfg(feature = "kv_serde")]
-    pub fn capture_serde<'a, V: serde::Serialize + ?Sized>(v: &'a &'a V) -> Value<'a> {
+    pub fn capture_serde<'a, V: serde_core::Serialize + ?Sized>(v: &'a &'a V) -> Value<'a> {
         Value::from_serde(v)
     }
 }

@@ -125,8 +125,8 @@ gfx::Rect GetSnappedWindowBoundsInParent(aura::Window* window,
                                          float snap_ratio) {
   return GetSnappedWindowBounds(
       screen_util::GetDisplayWorkAreaBoundsInParent(window),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window), window,
-      type, snap_ratio);
+      display::Screen::Get()->GetDisplayNearestWindow(window), window, type,
+      snap_ratio);
 }
 
 gfx::Rect GetDefaultSnappedWindowBoundsInParent(aura::Window* window,
@@ -231,7 +231,7 @@ chromeos::OrientationType GetSnapDisplayOrientation(
   // This function is used by `GetSnappedWindowBounds()` for clamshell mode
   // only. Tablet mode uses a different function
   // `SplitViewController::GetSnappedWindowBoundsInScreen()`.
-  DCHECK(!display::Screen::GetScreen()->InTabletMode());
+  DCHECK(!display::Screen::Get()->InTabletMode());
 
   const display::Display::Rotation& rotation =
       Shell::Get()
@@ -320,10 +320,8 @@ void SetBoundsInScreen(aura::Window* window,
     }
   }
   gfx::Point origin(bounds_in_screen.origin());
-  const gfx::Point display_origin = display::Screen::GetScreen()
-                                        ->GetDisplayNearestWindow(window)
-                                        .bounds()
-                                        .origin();
+  const gfx::Point display_origin =
+      display::Screen::Get()->GetDisplayNearestWindow(window).bounds().origin();
   origin.Offset(-display_origin.x(), -display_origin.y());
   window->SetBounds(gfx::Rect(origin, bounds_in_screen.size()));
 }

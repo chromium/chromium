@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/autofill/payments/bnpl_tos_dialog.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
 #include "content/public/test/browser_test.h"
@@ -26,7 +27,7 @@ class BnplTosViewDesktopBrowserTest : public DialogBrowserTest {
       const BnplTosViewDesktopBrowserTest&) = delete;
 
   void ShowUi(const std::string& name) override {
-    BnplTosModel model;
+    payments::BnplTosModel model;
     model.issuer = BnplIssuer(
         /*instrument_id=*/std::nullopt, BnplIssuer::IssuerId::kBnplAffirm,
         std::vector<BnplIssuer::EligiblePriceRange>{});
@@ -36,7 +37,8 @@ class BnplTosViewDesktopBrowserTest : public DialogBrowserTest {
             "with"
             "{0}.\", \"template_parameter\": [ { \"display_text\": "
             "\"a link\", \"url\": \"http://www.example.com/\" "
-            "} ] }] }")
+            "} ] }] }",
+            base::JSON_PARSE_CHROMIUM_EXTENSIONS)
             ->GetDict(),
         &model.legal_message_lines, true);
 

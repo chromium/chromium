@@ -26,7 +26,7 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -41,7 +41,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -329,11 +328,10 @@ class BackdropURLLoader {
 
   // Starts downloading the proto. |request_body| is a serialized proto and
   // will be used as the upload body if it is a POST request.
-  void Start(
-      std::unique_ptr<network::ResourceRequest> resource_request,
-      const std::optional<std::string>& request_body,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      network::SimpleURLLoader::BodyAsStringCallbackDeprecated callback) {
+  void Start(std::unique_ptr<network::ResourceRequest> resource_request,
+             const std::optional<std::string>& request_body,
+             const net::NetworkTrafficAnnotationTag& traffic_annotation,
+             network::SimpleURLLoader::BodyAsStringCallback callback) {
     // No ongoing downloading task.
     DCHECK(!simple_loader_);
 
@@ -354,9 +352,8 @@ class BackdropURLLoader {
 
  private:
   // Called when the download completes.
-  void OnUrlDownloaded(
-      network::SimpleURLLoader::BodyAsStringCallbackDeprecated callback,
-      std::unique_ptr<std::string> response_body) {
+  void OnUrlDownloaded(network::SimpleURLLoader::BodyAsStringCallback callback,
+                       std::optional<std::string> response_body) {
     loader_factory_.reset();
 
     if (simple_loader_->NetError() == net::OK && response_body) {
@@ -375,7 +372,7 @@ class BackdropURLLoader {
                << response_code << " with network error"
                << simple_loader_->NetError();
     simple_loader_.reset();
-    std::move(callback).Run(std::make_unique<std::string>());
+    std::move(callback).Run(std::string());
   }
 
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
@@ -452,24 +449,19 @@ void AmbientBackendControllerImpl::FetchWeather(
   auto response_handler =
       [](FetchWeatherCallback callback,
          std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
-         std::unique_ptr<std::string> response) {
+         std::optional<std::string> response) {
         constexpr char kJsonPrefix[] = ")]}'\n";
 
         if (response && response->length() > strlen(kJsonPrefix)) {
-          auto json_handler =
-              [](FetchWeatherCallback callback,
-                 data_decoder::DataDecoder::ValueOrError result) {
-                if (result.has_value()) {
-                  std::move(callback).Run(ToWeatherInfo(*result));
-                } else {
-                  DVLOG(1) << "Failed to parse weather json.";
-                  std::move(callback).Run(std::nullopt);
-                }
-              };
-
-          data_decoder::DataDecoder::ParseJsonIsolated(
-              response->substr(strlen(kJsonPrefix)),
-              base::BindOnce(json_handler, std::move(callback)));
+          std::optional<base::Value> result =
+              base::JSONReader::Read(response->substr(strlen(kJsonPrefix)),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+          if (result.has_value()) {
+            std::move(callback).Run(ToWeatherInfo(*result));
+          } else {
+            DVLOG(1) << "Failed to parse weather json.";
+            std::move(callback).Run(std::nullopt);
+          }
         } else {
           std::move(callback).Run(std::nullopt);
         }
@@ -558,7 +550,7 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
 void AmbientBackendControllerImpl::OnScreenUpdateInfoFetched(
     OnScreenUpdateInfoFetchedCallback callback,
     std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   DCHECK(backdrop_url_loader);
 
   // Parse the |ScreenUpdate| out from the response string.
@@ -600,7 +592,7 @@ void AmbientBackendControllerImpl::StartToGetSettings(
 void AmbientBackendControllerImpl::OnGetSettings(
     GetSettingsCallback callback,
     std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   DCHECK(backdrop_url_loader);
 
   auto settings = BackdropClientConfig::ParseGetSettingsResponse(*response);
@@ -646,7 +638,7 @@ void AmbientBackendControllerImpl::OnUpdateSettings(
     UpdateSettingsCallback callback,
     const AmbientSettings& settings,
     std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   DCHECK(backdrop_url_loader);
 
   const bool success =
@@ -697,7 +689,7 @@ void AmbientBackendControllerImpl::FetchPersonalAlbumsInternal(
 void AmbientBackendControllerImpl::OnPersonalAlbumsFetched(
     OnPersonalAlbumsFetchedCallback callback,
     std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   DCHECK(backdrop_url_loader);
 
   // Parse the |PersonalAlbumsResponse| out from the response string.

@@ -8,7 +8,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.webauthn.Fido2CredentialRequest.ConditionalUiState;
+import org.chromium.components.webauthn.Fido2CredentialRequest.CancellableUiState;
 
 /**
  * This class is responsible for emitting histograms regarding CredMan usage in
@@ -104,11 +104,11 @@ public class CredManMetricsHelper {
     }
 
     public void reportGetCredentialMetrics(
-            @CredManGetRequestEnum int value, ConditionalUiState conditionalUiState) {
-        assert !(conditionalUiState == ConditionalUiState.NONE)
+            @CredManGetRequestEnum int value, @CancellableUiState int cancellableUiState) {
+        assert !(cancellableUiState == CancellableUiState.NONE)
                         || !(value == CredManGetRequestEnum.SUCCESS_PASSWORD)
                 : "Passwords cannot be received from modal requests!";
-        if (conditionalUiState == ConditionalUiState.NONE) {
+        if (cancellableUiState == CancellableUiState.NONE) {
             RecordHistogram.recordEnumeratedHistogram(
                     "WebAuthentication.Android.CredManModalRequests",
                     value,

@@ -9,6 +9,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 // The distance the mouse can be dragged outside the bounds of the thumb during
@@ -141,6 +142,15 @@ void BaseScrollBarThumb::OnStateChanged() {
 
 bool BaseScrollBarThumb::IsHorizontal() const {
   return scroll_bar_->GetOrientation() == ScrollBar::Orientation::kHorizontal;
+}
+
+ui::NativeTheme::PreferredColorScheme BaseScrollBarThumb::GetColorScheme() const {
+  const ui::ColorProviderKey::ColorMode color_mode =
+      GetWidget() ? GetWidget()->GetColorMode()
+                  : ui::ColorProviderKey::ColorMode::kLight;
+  return color_mode == ui::ColorProviderKey::ColorMode::kDark
+             ? ui::NativeTheme::PreferredColorScheme::kDark
+             : ui::NativeTheme::PreferredColorScheme::kLight;
 }
 
 BEGIN_METADATA(BaseScrollBarThumb)

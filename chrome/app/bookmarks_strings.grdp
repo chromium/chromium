@@ -203,6 +203,33 @@
   <message name="IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL" desc="Message in the message box shown if user asks to open a lot of bookmarks in a folder. The number will always be 15 or more.">
     Are you sure you want to open <ph name="TAB_COUNT">$1<ex>20</ex></ph> tabs?
   </message>
+  <if expr="not is_android">
+    <message name="IDS_BOOKMARK_BAR_ALREADY_CREATED_GROUP" desc="Message in the message box shown when user opens a bookmark folder as tab group if user already did that before">
+      A tab group was already created with this bookmark folder. Do you want to create a new tab group or replace the existing one?
+    </message>
+    <if expr="not use_titlecase">
+      <message name="IDS_BOOKMARK_BAR_REPLACE_OR_CREATE_NEW_GROUP_TITLE" desc="Title of the message box shown when user opens a bookmark folder as tab group if user already did that before">
+        Replace or create new group?
+      </message>
+      <message name="IDS_BOOKMARK_BAR_CREATE_NEW_GROUP_BUTTON" desc="Create new group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
+        Create new tab group
+      </message>
+      <message name="IDS_BOOKMARK_BAR_REPLACE_OLD_GROUP_BUTTON" desc="Replace old group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
+        Replace existing tab group
+      </message>
+    </if>
+    <if expr="use_titlecase">
+      <message name="IDS_BOOKMARK_BAR_REPLACE_OR_CREATE_NEW_GROUP_TITLE" desc="In title case: Title of the message box shown when user opens a bookmark folder as tab group if user already did that before">
+        Replace or Create New Group?
+      </message>
+      <message name="IDS_BOOKMARK_BAR_CREATE_NEW_GROUP_BUTTON" desc="In title case: Create new group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
+        Create New Tab Group
+      </message>
+      <message name="IDS_BOOKMARK_BAR_REPLACE_OLD_GROUP_BUTTON" desc="In title case: Replace old group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
+        Replace Existing Tab Group
+      </message>
+    </if>
+  </if>
   <!-- End of Bookmarks Bar Context Menu strings. -->
 
   <!-- Begin of Bookmarks Bubble strings. -->
@@ -274,6 +301,12 @@
   </if>
   <!-- End of Desktop to iOS Promo strings. -->
 
+  <!-- UNO Promo strings for bookmarks -->
+  <message name="IDS_BOOKMARK_PROMO_TITLE" desc="This is the body text of a confirmation message and means that the bookmark was either saved locally, or to the user's pending account storage if their sign-in credentials have expired. It appears after a bookmark save if the user is not signed in to Chrome or their sign-in credentials have expired. If the user wants to save this data to their Google Account, they can click the button at the bottom of this message. The tone should be motivating.">
+    Use bookmarks across devices
+  </message>
+  <!-- End of UNO Promo strings for bookmarks -->
+
   <!-- Begin of Bookmark Editor strings. -->
   <message name="IDS_BOOKMARK_EDITOR_NAME_LABEL" desc="Label shown before the title/name of the URL." meaning="Name of an inanimate object">
     Name
@@ -297,6 +330,9 @@
      =1 {This folder contains a bookmark. Are you sure you want to delete it?}
      other {This folder contains # bookmarks. Are you sure you want to delete it?}}
   </message>
+  <message name="IDS_TAB_GROUP_TO_BOOKMARK_FOLDER_SUBTITLE" desc="The subtitle of the tab group convert to bookmark folder dialog.">
+    When you click save, this tab group will become a bookmark folder and will be removed from your groups on all devices
+  </message>
   <if expr="not use_titlecase">
     <message name="IDS_BOOKMARK_EDITOR_NEW_FOLDER_BUTTON" desc="Text on the new folder button.">
       New folder
@@ -315,6 +351,9 @@
     </message>
     <message name="IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE" desc="The title of the Bookmark All Tabs dialog.">
       Bookmark all tabs
+    </message>
+    <message name="IDS_TAB_GROUP_TO_BOOKMARK_FOLDER_TITLE" desc="The subtitle of the tab group convert to bookmark folder dialog.">
+      Convert tab group into bookmark folder
     </message>
   </if>
   <if expr="use_titlecase">
@@ -335,6 +374,9 @@
     </message>
     <message name="IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE" desc="In Title Case: The title of the Bookmark All Tabs dialog.">
       Bookmark All Tabs
+    </message>
+    <message name="IDS_TAB_GROUP_TO_BOOKMARK_FOLDER_TITLE" desc="The title of the tab group convert to bookmark folder dialog.">
+      Convert Tab Group into Bookmark Folder
     </message>
   </if>
   <!-- End of Bookmarks Editor strings. -->

@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -17,10 +18,6 @@
 namespace {
 
 const float kDefaultFontScale = 1.0f;
-
-// These values should agree with those in distiller_native_javascript.cc.
-const float kMinFontScale = 0.4f;
-const float kMaxFontScale = 3.0f;
 
 }  // namespace
 
@@ -36,7 +33,8 @@ DistilledPagePrefs::DistilledPagePrefs(PrefService* pref_service)
   pref_change_registrar_.Add(
       prefs::kTheme,
       base::BindRepeating(&DistilledPagePrefs::NotifyOnChangeTheme,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr(),
+                          ThemeSettingsUpdateSource::kUserPreference));
   pref_change_registrar_.Add(
       prefs::kFontScale,
       base::BindRepeating(&DistilledPagePrefs::NotifyOnChangeFontScaling,
@@ -75,38 +73,78 @@ mojom::FontFamily DistilledPagePrefs::GetFontFamily() {
   return mojom::FontFamily::kSansSerif;
 }
 
-void DistilledPagePrefs::SetTheme(mojom::Theme new_theme) {
+void DistilledPagePrefs::SetUserPrefTheme(mojom::Theme new_theme) {
+  if (static_cast<mojom::Theme>(pref_service_->GetInteger(prefs::kTheme)) ==
+      new_theme) {
+    return;
+  }
   pref_service_->SetInteger(prefs::kTheme, static_cast<int32_t>(new_theme));
+}
+
+void DistilledPagePrefs::SetDefaultTheme(mojom::Theme default_theme) {
+  if (default_theme_ == default_theme) {
+    return;
+  }
+  default_theme_ = default_theme;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DistilledPagePrefs::NotifyOnChangeTheme,
-                                weak_ptr_factory_.GetWeakPtr()));
+                                weak_ptr_factory_.GetWeakPtr(),
+                                ThemeSettingsUpdateSource::kSystem));
 }
 
 mojom::Theme DistilledPagePrefs::GetTheme() {
-  auto theme =
-      static_cast<mojom::Theme>(pref_service_->GetInteger(prefs::kTheme));
+  mojom::Theme theme;
+  if (pref_service_->FindPreference(prefs::kTheme)->HasUserSetting()) {
+    theme = static_cast<mojom::Theme>(pref_service_->GetInteger(prefs::kTheme));
+  } else {
+    theme = default_theme_;
+  }
   if (mojom::IsKnownEnumValue(theme))
     return theme;
 
   // Persisted data was incorrect, trying to clean it up by storing the
   // default.
-  SetTheme(mojom::Theme::kLight);
+  SetUserPrefTheme(mojom::Theme::kLight);
   return mojom::Theme::kLight;
 }
 
-void DistilledPagePrefs::SetFontScaling(float scaling) {
+void DistilledPagePrefs::SetUserPrefFontScaling(float scaling) {
   pref_service_->SetDouble(prefs::kFontScale, scaling);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DistilledPagePrefs::NotifyOnChangeFontScaling,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
+void DistilledPagePrefs::SetDefaultFontScaling(float scaling) {
+  // Default zoom level pref is outside of the distilled page prefs font
+  // scaling range, so set it to the closest boundary.
+  default_font_scaling_ = scaling;
+#if BUILDFLAG(IS_ANDROID)
+  ClampDefaultFontScaling();
+#else
+  default_font_scaling_ = std::clamp(scaling, kMinFontScale, kMaxFontScale);
+#endif
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&DistilledPagePrefs::NotifyOnChangeFontScaling,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
 float DistilledPagePrefs::GetFontScaling() {
-  float scaling = pref_service_->GetDouble(prefs::kFontScale);
+  float scaling;
+  if (pref_service_->FindPreference(prefs::kFontScale)->HasUserSetting()) {
+    scaling = pref_service_->GetDouble(prefs::kFontScale);
+  } else {
+#if BUILDFLAG(IS_ANDROID)
+    ClampDefaultFontScaling();
+    scaling = default_font_scaling_;
+#else
+    scaling = kDefaultFontScale;
+#endif
+  }
   if (scaling < kMinFontScale || scaling > kMaxFontScale) {
     // Persisted data was incorrect, trying to clean it up by storing the
     // default.
-    SetFontScaling(kDefaultFontScale);
+    SetUserPrefFontScaling(kDefaultFontScale);
     return kDefaultFontScale;
   }
   return scaling;
@@ -120,16 +158,33 @@ void DistilledPagePrefs::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void DistilledPagePrefs::ClampDefaultFontScaling() {
+  float min_font_scale;
+  float max_font_scale;
+  if (base::FeatureList::IsEnabled(dom_distiller::kReaderModeDistillInApp)) {
+    min_font_scale = kMinFontScaleAndroidInApp;
+    max_font_scale = kMaxFontScaleAndroidInApp;
+  } else {
+    min_font_scale = kMinFontScaleAndroidCCT;
+    max_font_scale = kMaxFontScaleAndroidCCT;
+  }
+  default_font_scaling_ =
+      std::clamp(default_font_scaling_, min_font_scale, max_font_scale);
+}
+#endif
+
 void DistilledPagePrefs::NotifyOnChangeFontFamily() {
   mojom::FontFamily new_font_family = GetFontFamily();
   for (Observer& observer : observers_)
     observer.OnChangeFontFamily(new_font_family);
 }
 
-void DistilledPagePrefs::NotifyOnChangeTheme() {
+void DistilledPagePrefs::NotifyOnChangeTheme(
+    ThemeSettingsUpdateSource source) {
   mojom::Theme new_theme = GetTheme();
   for (Observer& observer : observers_)
-    observer.OnChangeTheme(new_theme);
+    observer.OnChangeTheme(new_theme, source);
 }
 
 void DistilledPagePrefs::NotifyOnChangeFontScaling() {

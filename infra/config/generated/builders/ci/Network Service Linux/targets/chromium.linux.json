@@ -8,6 +8,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
         "name": "network_service_web_request_proxy_browser_tests",
         "swarming": {
           "dimensions": {

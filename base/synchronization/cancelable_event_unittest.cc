@@ -154,7 +154,7 @@ TEST_F(CancelableEventTest, BothCancelFailureAndSucceedOccurUnderContention) {
 
   // Used to adjust race timings to favor the case which has not yet been seen
   // (cancel fail/success).
-  internal::ClampedNumeric<unsigned int> wait_ms = 0;
+  ClampedNumeric<unsigned int> wait_ms = 0;
   bool succeeded = false;
   bool failed = false;
   for (int i = 0; i < 10 && (!failed || !succeeded); ++i) {

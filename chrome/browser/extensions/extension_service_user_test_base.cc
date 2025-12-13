@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -18,6 +19,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

@@ -6,6 +6,7 @@
 #include "chromeos/ash/components/tether/fake_tether_availability_operation.h"
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 
 namespace ash::tether {

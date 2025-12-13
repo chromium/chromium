@@ -1,0 +1,312 @@
+This test dumps the output of Intl.NumberFormat.prototype.format() for
+some common locales.
+
+[am] Amharic
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [ETB] ብር 12,345.00
+
+[ar] Arabic
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+
+[ar-EG] Arabic (Egypt)
+  [default] ١٢٣
+  [default] ١٬٢٣٤
+  [default] ١٢٬٣٤٥
+  [EGP] ‏١٢٬٣٤٥٫٠٠ ج.م.‏
+
+[ar-SD] Arabic (Sudan)
+  [default] ١٢٣
+  [default] ١٬٢٣٤
+  [default] ١٢٬٣٤٥
+  [SDG] ‏١٢٬٣٤٥٫٠٠ ج.س.
+
+[ar-SY] Arabic (Syria)
+  [default] ١٢٣
+  [default] ١٬٢٣٤
+  [default] ١٢٬٣٤٥
+  [SYP] ‏١٢٬٣٤٥ ل.س.‏
+
+[bn] Bangla
+  [default] ১২৩
+  [default] ১,২৩৪
+  [default] ১২,৩৪৫
+  [BDT] ১২,৩৪৫.০০৳
+
+[de] German
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [EUR] 12.345,00 €
+
+[en] English
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+
+[en-AU] Australian English
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [AUD] $12,345.00
+
+[en-CA] Canadian English
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [CAD] $12,345.00
+
+[en-GB] British English
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [GBP] £12,345.00
+
+[en-IE] English (Ireland)
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [EUR] €12,345.00
+
+[en-IN] English (India)
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [INR] ₹12,345.00
+
+[en-NG] English (Nigeria)
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [NGN] ₦12,345.00
+
+[en-NZ] English (New Zealand)
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [NZD] $12,345.00
+
+[en-PH] English (Philippines)
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [PHP] ₱12,345.00
+
+[en-PK] English (Pakistan)
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [PKR] Rs 12,345.00
+
+[en-TZ] English (Tanzania)
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [TZS] TSh 12,345.00
+
+[en-US] American English
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [USD] $12,345.00
+
+[en-ZA] English (South Africa)
+  [default] 123
+  [default] 1 234
+  [default] 12 345
+  [ZAR] R 12 345,00
+
+[es] Spanish
+  [default] 123
+  [default] 1234
+  [default] 12.345
+
+[es-419] Latin American Spanish
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+
+[es-ES] European Spanish
+  [default] 123
+  [default] 1234
+  [default] 12.345
+  [EUR] 12.345,00 €
+
+[es-MX] Mexican Spanish
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [MXN] $12,345.00
+
+[fa] Persian
+  [default] ۱۲۳
+  [default] ۱٬۲۳۴
+  [default] ۱۲٬۳۴۵
+  [IRR] ‎ریال ۱۲٬۳۴۵
+
+[fil] Filipino
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [PHP] ₱12,345.00
+
+[fr] French
+  [default] 123
+  [default] 1 234
+  [default] 12 345
+  [EUR] 12 345,00 €
+
+[gu] Gujarati
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [INR] ₹12,345.00
+
+[hi] Hindi
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [INR] ₹12,345.00
+
+[id] Indonesian
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [IDR] Rp 12.345,00
+
+[it] Italian
+  [default] 123
+  [default] 1234
+  [default] 12.345
+  [EUR] 12.345,00 €
+
+[ja] Japanese
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [JPY] ￥12,345
+
+[kn] Kannada
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [INR] ₹12,345.00
+
+[ko] Korean
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [KRW] ₩12,345
+
+[mr] Marathi
+  [default] १२३
+  [default] १,२३४
+  [default] १२,३४५
+  [INR] ₹१२,३४५.००
+
+[nl] Dutch
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [EUR] € 12.345,00
+
+[pl] Polish
+  [default] 123
+  [default] 1234
+  [default] 12 345
+  [PLN] 12 345,00 zł
+
+[pt-BR] Brazilian Portuguese
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [BRL] R$ 12.345,00
+
+[pt-PT] European Portuguese
+  [default] 123
+  [default] 1234
+  [default] 12 345
+  [EUR] 12 345,00 €
+
+[ru] Russian
+  [default] 123
+  [default] 1 234
+  [default] 12 345
+  [RUB] 12 345,00 ₽
+
+[sv-SE] Swedish (Sweden)
+  [default] 123
+  [default] 1 234
+  [default] 12 345
+  [SEK] 12 345,00 kr
+
+[sw] Swahili
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [TZS] TSh 12,345.00
+
+[ta] Tamil
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [INR] ₹12,345.00
+
+[te] Telugu
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [INR] ₹12,345.00
+
+[th] Thai
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [THB] ฿12,345.00
+
+[tl] Filipino
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [PHP] ₱12,345.00
+
+[tr] Turkish
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [TRY] ₺12.345,00
+
+[ur] Urdu
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [PKR] Rs 12,345.00
+
+[vi] Vietnamese
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [VND] 12.345 ₫
+
+[zh-CN] Chinese (China)
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [CNY] ¥12,345.00
+
+[zh-HK] Chinese (Hong Kong)
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [HKD] HK$12,345.00
+
+[zh-TW] Chinese (Taiwan)
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [TWD] $12,345.00
+
+

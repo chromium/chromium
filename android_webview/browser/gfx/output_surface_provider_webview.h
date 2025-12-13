@@ -10,7 +10,7 @@
 #include "android_webview/browser/gfx/aw_gl_surface.h"
 #include "android_webview/common/gfx/aw_gr_context_options_provider.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/command_buffer/service/shared_context_state.h"

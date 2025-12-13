@@ -45,9 +45,9 @@ std::u16string GetSubtitle(const content::RelyingPartyData& rp_data) {
   if (rp_data.iframe_for_display.empty()) {
     return std::u16string();
   }
-  return l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE,
-                                    rp_data.rp_for_display,
-                                    rp_data.iframe_for_display);
+  return l10n_util::GetStringFUTF16(
+      IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE_FOR_EMBED, rp_data.rp_for_display,
+      rp_data.iframe_for_display);
 }
 
 void SendAccessibilityEvent(views::Widget* widget,

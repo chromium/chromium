@@ -6,6 +6,7 @@
 #define ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_FEATURE_TOUR_H_
 
 #include "ash/ash_export.h"
+#include "ash/quick_insert/views/quick_insert_feature_tour_dialog_view.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -33,10 +34,7 @@ namespace ash {
 
 class ASH_EXPORT QuickInsertFeatureTour : public wm::ActivationChangeObserver {
  public:
-  enum class EditorStatus {
-    kEligible,
-    kNotEligible,
-  };
+  using EditorStatus = QuickInsertFeatureTourDialogView::EditorStatus;
 
   QuickInsertFeatureTour();
   QuickInsertFeatureTour(const QuickInsertFeatureTour&) = delete;
@@ -67,10 +65,12 @@ class ASH_EXPORT QuickInsertFeatureTour : public wm::ActivationChangeObserver {
 
   views::Widget* widget_for_testing();
 
-  // Returns the button to learn more.
-  const views::Button* learn_more_button_for_testing() const;
+  // Returns the link to learn more.
+  const views::Link* learn_more_link_for_testing() const;
   // Returns the button to complete the tour.
   const views::Button* complete_button_for_testing() const;
+  // Returns the button to close the tour.
+  const views::Button* close_button_for_testing() const;
   // Returns the title of the feature tour.
   std::u16string_view GetTitleTextForTesting() const;
   // Returns the description of the feature tour.

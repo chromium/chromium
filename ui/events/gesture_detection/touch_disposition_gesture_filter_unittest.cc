@@ -1141,6 +1141,21 @@ TEST_F(TouchDispositionGestureFilterTest, EventFlagPropagation) {
   EXPECT_EQ(0, LastSentGestureFlags());
 }
 
+TEST_F(TouchDispositionGestureFilterTest, SendEmptyGestureScrollUpdate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSendEmptyGestureScrollUpdate);
+  // Simulate a scroll.
+  SendPacket(PressTouchPoint(), Gestures(EventType::kGestureScrollBegin));
+  SendTouchNotConsumedAckForLastTouch();
+  EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollBegin),
+                            GetAndResetSentGestures()));
+
+  // A touch move with no gestures should trigger a synthetic scroll update.
+  SendPacket(MoveTouchPoint(), NoGestures());
+  SendTouchNotConsumedAckForLastTouch();
+  EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollUpdate),
+                            GetAndResetSentGestures()));
+}
 
 TEST_F(TouchDispositionGestureFilterTest, PreviousScrollPrevented) {
   SendPacket(PressTouchPoint(), Gestures(EventType::kGestureBegin));

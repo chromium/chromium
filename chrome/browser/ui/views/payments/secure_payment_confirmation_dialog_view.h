@@ -64,6 +64,7 @@ class SecurePaymentConfirmationDialogView
   void ShowDialog(content::WebContents* web_contents,
                   base::WeakPtr<SecurePaymentConfirmationModel> model,
                   VerifyCallback verify_callback,
+                  AnotherWayCallback another_way_callback,
                   CancelCallback cancel_callback,
                   OptOutCallback opt_out_callback) override;
   void OnModelUpdated() override;

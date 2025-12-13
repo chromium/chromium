@@ -8,10 +8,10 @@ Trying to postMessage iframe
     callFrames : [
         [0] : {
             columnNumber : 33
-            functionName : 
+            functionName :
             lineNumber : 1
             scriptId : <string>
-            url : 
+            url :
         }
     ]
 }

@@ -13,7 +13,6 @@
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
@@ -49,6 +48,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/test_widget_builder.h"
 
 namespace exo {
 namespace {
@@ -893,14 +893,14 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
 
   ash::ArcOverlayManager arc_overlay_manager_;
 
-  auto* widget1 = ash::TestWidgetBuilder()
+  auto* widget1 = views::test::TestWidgetBuilder()
                       .SetBounds(gfx::Rect(200, 200))
                       .BuildOwnedByNativeWidget();
   views::Textfield* textfield1 = new views::Textfield();
   widget1->GetContentsView()->AddChildViewRaw(textfield1);
   textfield1->SetBounds(0, 0, 100, 100);
 
-  auto* widget2 = ash::TestWidgetBuilder()
+  auto* widget2 = views::test::TestWidgetBuilder()
                       .SetBounds(gfx::Rect(200, 200))
                       .BuildOwnedByNativeWidget();
 
@@ -1230,7 +1230,7 @@ TEST_F(KeyboardTest, KeyRepeatSettingsUpdateOnProfileChange) {
   // Switching user should load new prefs.
   EXPECT_CALL(*delegate_ptr,
               OnKeyRepeatSettingsChanged(true, kDelta1000Ms, kDelta1000Ms));
-  SimulateUserLogin({email});
+  SwitchActiveUser(inactive_account_id);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 

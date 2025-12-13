@@ -19,6 +19,8 @@ class ToolRequestVisitorFunctor;
 // OOPIFs or RenderWidgetHosts).
 class DragAndReleaseToolRequest : public PageToolRequest {
  public:
+  static constexpr char kName[] = "DragAndRelease";
+
   DragAndReleaseToolRequest(tabs::TabHandle tab_handle,
                             const PageTarget& from_target,
                             const PageTarget& to_target);
@@ -28,10 +30,11 @@ class DragAndReleaseToolRequest : public PageToolRequest {
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest
-  std::string JournalEvent() const override;
+  std::string_view Name() const override;
 
   // PageToolRequest
-  mojom::ToolActionPtr ToMojoToolAction() const override;
+  mojom::ToolActionPtr ToMojoToolAction(
+      content::RenderFrameHost& frame) const override;
   std::unique_ptr<PageToolRequest> Clone() const override;
 
  private:

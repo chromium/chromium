@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "ipcz/block_allocator.h"
-
 #include <atomic>
 #include <cstring>
 #include <set>
 #include <thread>
 #include <vector>
 
+#include "ipcz/block_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 namespace {
@@ -43,7 +38,7 @@ TEST_F(BlockAllocatorTest, Basic) {
   for (size_t i = 0; i < allocator().capacity(); ++i) {
     void* block = allocator().Allocate();
     ASSERT_TRUE(block);
-    memset(block, 0xaa, kBlockSize);
+    IPCZ_UNSAFE_TODO(memset(block, 0xaa, kBlockSize));
     auto [it, inserted] = blocks.insert(block);
     EXPECT_TRUE(inserted);
   }
@@ -55,9 +50,9 @@ TEST_F(BlockAllocatorTest, Basic) {
   // bytes, as all blocks were allocated and filled completely.
   constexpr size_t kNumAllocatedBytes = kPageSize - kBlockSize;
   char expected_data[kNumAllocatedBytes];
-  memset(expected_data, 0xaa, kNumAllocatedBytes);
-  EXPECT_EQ(0, memcmp(allocator().region().data() + kBlockSize, expected_data,
-                      kNumAllocatedBytes));
+  IPCZ_UNSAFE_TODO(memset(expected_data, 0xaa, kNumAllocatedBytes));
+  IPCZ_UNSAFE_TODO(EXPECT_EQ(0, memcmp(allocator().region().data() + kBlockSize,
+                                       expected_data, kNumAllocatedBytes)));
 
   for (void* block : blocks) {
     EXPECT_TRUE(allocator().Free(block));
@@ -117,12 +112,12 @@ TEST_F(BlockAllocatorTest, StressTest) {
       for (size_t j = 0; j < kNumAllocationsPerIteration; ++j) {
         if (auto* p =
                 static_cast<std::atomic<uint32_t>*>(allocator().Allocate())) {
-          allocations[num_allocations++] = p;
+          IPCZ_UNSAFE_TODO(allocations[num_allocations++]) = p;
           p->store(id, std::memory_order_relaxed);
         }
       }
       for (size_t j = 0; j < num_allocations; ++j) {
-        std::atomic<uint32_t>* p = allocations[j];
+        std::atomic<uint32_t>* p = IPCZ_UNSAFE_TODO(allocations[j]);
         EXPECT_EQ(id, p->load(std::memory_order_relaxed));
         EXPECT_TRUE(allocator().Free(p));
       }

@@ -9,22 +9,24 @@ namespace tabs {
 // Alert states for a tab. Any number of these (or none) may apply at once.
 // LINT.IfChange(TabAlert)
 enum class TabAlert {
-  MEDIA_RECORDING,        // Audio/Video [both] being recorded, consumed by tab.
-  TAB_CAPTURING,          // Tab contents being captured.
-  AUDIO_PLAYING,          // Audible audio is playing from the tab.
-  AUDIO_MUTING,           // Tab audio is being muted.
-  BLUETOOTH_CONNECTED,    // Tab is connected to a BT Device.
-  BLUETOOTH_SCAN_ACTIVE,  // Tab is actively scanning for BT devices.
-  USB_CONNECTED,          // Tab is connected to a USB device.
-  HID_CONNECTED,          // Tab is connected to a HID device.
-  SERIAL_CONNECTED,       // Tab is connected to a serial device.
-  PIP_PLAYING,            // Tab contains a video in Picture-in-Picture mode.
-  DESKTOP_CAPTURING,      // Desktop contents being recorded, consumed by tab.
-  VR_PRESENTING_IN_HEADSET,  // VR content is being presented in a headset.
-  AUDIO_RECORDING,           // Audio [only] being recorded, consumed by tab.
-  VIDEO_RECORDING,           // Video [only] being recorded, consumed by tab.
-  GLIC_ACCESSING,            // Glic is accessing the tab's contents.
-  GLIC_SHARING,              // The tab's contents are shared with glic.
+  kMediaRecording,       // Audio/Video [both] being recorded, consumed by tab.
+  kTabCapturing,         // Tab contents being captured.
+  kAudioPlaying,         // Audible audio is playing from the tab.
+  kAudioMuting,          // Tab audio is being muted.
+  kBluetoothConnected,   // Tab is connected to a BT Device.
+  kBluetoothScanActive,  // Tab is actively scanning for BT devices.
+  kUsbConnected,         // Tab is connected to a USB device.
+  kHidConnected,         // Tab is connected to a HID device.
+  kSerialConnected,      // Tab is connected to a serial device.
+  kPipPlaying,           // Tab contains a video in Picture-in-Picture mode.
+  kDesktopCapturing,     // Desktop contents being recorded, consumed by tab.
+  kVrPresentingInHeadset,  // VR content is being presented in a headset.
+  kAudioRecording,         // Audio [only] being recorded, consumed by tab.
+  kVideoRecording,         // Video [only] being recorded, consumed by tab.
+  kGlicAccessing,          // Glic is accessing the tab's contents.
+  kGlicSharing,            // The tab's contents are shared with glic.
+  kActorAccessing,         // Actor is accessing the tab's contents.
+  kActorWaitingOnUser,     // Actor is waiting on user to respond.
 };
 // Any changes to the TabAlert enum needs to be updated in CompareAlerts as
 // well.

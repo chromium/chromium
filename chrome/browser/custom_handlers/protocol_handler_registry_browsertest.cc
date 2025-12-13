@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
   ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
           browser()->profile());
-  ASSERT_EQ(1u, registry->GetHandlersFor(url.scheme()).size());
+  ASSERT_EQ(1u, registry->GetHandlersFor(url.GetScheme()).size());
   menu.reset(CreateContextMenu(url));
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
 }
@@ -173,12 +173,12 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
   ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
           browser()->profile());
-  ASSERT_EQ(1u, registry->GetHandlersFor(url.scheme()).size());
+  ASSERT_EQ(1u, registry->GetHandlersFor(url.GetScheme()).size());
   menu.reset(CreateContextMenu(url));
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
   RemoveProtocolHandler(std::string("web+search"),
                         GURL("https://www.google.com/%s"));
-  ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
+  ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
   menu.reset(CreateContextMenu(url));
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
 }
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
   ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
           browser()->profile());
-  ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
+  ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
 
   // Ensure there is no registration pending.
   ASSERT_TRUE(content_settings->pending_protocol_handler().IsEmpty());
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Verify the registration is ignored if no user gesture involved.
-  ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
+  ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
 
   // Verify the handler registration is pending.
   ASSERT_TRUE(content_settings->pending_protocol_handler().IsValid());
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest, FencedFrame) {
   ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
           browser()->profile());
-  ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
+  ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
 
   // Attempt to add an entry.
   ProtocolHandlerChangeWaiter waiter(registry);
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest, FencedFrame) {
   waiter.Wait();
 
   // Ensure the registry is still empty.
-  ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
+  ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
 }
 
 using RegisterProtocolHandlerExtensionBrowserTest =
@@ -387,17 +387,17 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerIsolatedWebAppsTest,
     navigator.registerProtocolHandler("web+meow", "%s");
   )";
   ASSERT_THAT(EvalJs(web_contents, base::StringPrintf(kRegisterProtocolScript,
-                                                      protocol_url.spec()))
-                  .error,
-              testing::HasSubstr("Isolated Web Apps do not support "
-                                 "registering/unregistering protocol"));
+                                                      protocol_url.spec())),
+              content::EvalJsResult::ErrorIs(
+                  testing::HasSubstr("Isolated Web Apps do not support "
+                                     "registering/unregistering protocol")));
 
   static constexpr std::string_view kUnegisterProtocolScript = R"(
     navigator.unregisterProtocolHandler("web+meow", "%s");
   )";
   ASSERT_THAT(EvalJs(web_contents, base::StringPrintf(kUnegisterProtocolScript,
-                                                      protocol_url.spec()))
-                  .error,
-              testing::HasSubstr("Isolated Web Apps do not support "
-                                 "registering/unregistering protocol"));
+                                                      protocol_url.spec())),
+              content::EvalJsResult::ErrorIs(
+                  testing::HasSubstr("Isolated Web Apps do not support "
+                                     "registering/unregistering protocol")));
 }

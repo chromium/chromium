@@ -10,10 +10,16 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator_delegate.h"
+#import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
+#import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/credential_exchange/coordinator/credential_import_coordinator.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -35,7 +41,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_settings_commands.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions/widget_promo_instructions_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -53,12 +59,13 @@
 
 @interface PasswordsCoordinator () <
     AddPasswordCoordinatorDelegate,
+    CredentialImportCoordinatorDelegate,
     PasswordDetailsCoordinatorDelegate,
     PasswordCheckupCoordinatorDelegate,
     PasswordSettingsCoordinatorDelegate,
     PasswordsSettingsCommands,
     PasswordManagerViewControllerPresentationDelegate,
-    ReauthenticationCoordinatorDelegate,
+    LocalReauthenticationCoordinatorDelegate,
     TrustedVaultReauthenticationCoordinatorDelegate,
     WidgetPromoInstructionsCoordinatorDelegate>
 
@@ -91,7 +98,8 @@
 
 // Coordinator for blocking password manager until successful Local
 // Authentication.
-@property(nonatomic, strong) ReauthenticationCoordinator* reauthCoordinator;
+@property(nonatomic, strong)
+    LocalReauthenticationCoordinator* reauthCoordinator;
 
 // Coordinator that presents the instructions on how to install the Password
 // Manager widget.
@@ -111,6 +119,12 @@
   // Displays the Trusted Vault reauthentication dialog.
   TrustedVaultReauthenticationCoordinator*
       _trustedVaultReauthenticationCoordinator;
+
+  // The coordinator for the Credential Exchange feature handling the import.
+  CredentialImportCoordinator* _credentialImportCoordinator;
+
+  // If needed, used for sign-in during the Credential Exchange import flow.
+  SigninCoordinator* _signinCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -147,8 +161,7 @@
       initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                        GetForProfile(profile)
                      faviconLoader:faviconLoader
-                       syncService:SyncServiceFactory::GetForProfile(profile)
-                       prefService:profile->GetPrefs()];
+                       syncService:SyncServiceFactory::GetForProfile(profile)];
   self.mediator.tracker =
       feature_engagement::TrackerFactory::GetForProfile(profile);
 
@@ -222,6 +235,9 @@
       stopWithUIDismissal:!_authDidFailForChildCoordinator];
   self.addPasswordCoordinator.delegate = nil;
   self.addPasswordCoordinator = nil;
+
+  [self dismissCredentialImportCoordinator];
+  [self dismissSigninCoordinator];
 
   [self.reauthCoordinator stop];
   self.reauthCoordinator.delegate = nil;
@@ -389,9 +405,15 @@
 - (void)performReauthenticationForRetrievingTrustedVaultKey {
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
-  syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kPasswordManagerSettings;
-  CHECK(!_trustedVaultReauthenticationCoordinator, base::NotFatalUntil::M145);
+  trusted_vault::TrustedVaultUserActionTriggerForUMA trigger = trusted_vault ::
+      TrustedVaultUserActionTriggerForUMA::kPasswordManagerSettings;
+  if (_trustedVaultReauthenticationCoordinator) {
+    // This method can be called while the previous trusted vault reauth is
+    // being dismissed. This is probably a mistap. If not, the user can tap
+    // again once the view is entirely dismissed, as this will cause the
+    // execution of `dismissTrustedVaultReauthenticationCoordinator`.
+    return;
+  }
   _trustedVaultReauthenticationCoordinator =
       [[TrustedVaultReauthenticationCoordinator alloc]
           initWithBaseViewController:self.passwordsViewController
@@ -473,13 +495,18 @@
   [self restartReauthCoordinator];
 }
 
-#pragma mark - ReauthenticationCoordinatorDelegate
+#pragma mark - LocalReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   DCHECK_EQ(_reauthCoordinator, coordinator);
 
   [_visitsRecorder maybeRecordVisitMetric];
+
+  if (self.credentialImportUUID) {
+    [self startCredentialImport];
+    return;
+  }
 
   [self.mediator askFETToShowPasswordManagerWidgetPromo];
 
@@ -494,7 +521,7 @@
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   CHECK_EQ(_reauthCoordinator, coordinator);
 
   [_delegate dismissPasswordManagerAfterFailedReauthentication];
@@ -523,6 +550,15 @@
   CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator);
   [self.mediator displayOrHideTrustedVaultPasswordManagerWidgetPromo];
   [self dismissTrustedVaultReauthenticationCoordinator];
+}
+
+#pragma mark - CredentialImportCoordinatorDelegate
+
+- (void)credentialImportCoordinatorDidFinish:
+    (CredentialImportCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _credentialImportCoordinator);
+  [self dismissCredentialImportCoordinator];
+  [self restartReauthCoordinator];
 }
 
 #pragma mark - Private
@@ -562,7 +598,7 @@
   // triggering reauth at the same time with undefined behavior.
   DCHECK(!_reauthCoordinator);
 
-  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser
                 reauthenticationModule:_reauthModule
@@ -583,7 +619,7 @@
   // Popping the view controller in case Local Authentication was triggered
   // outside reauthCoordinator before starting the child coordinator. Local
   // Authentication changes the scene state which triggers the presentation of
-  // the ReauthenticationViewController by reauthCoordinator. Ideally
+  // the LocalReauthenticationViewController by reauthCoordinator. Ideally
   // reauthCoordinator would be stopped when Local Authentication is triggered
   // outside of it but still defending against that scenario to avoid leaving an
   // unintended view controller in the navigation stack.
@@ -608,6 +644,80 @@
   [_trustedVaultReauthenticationCoordinator stop];
   _trustedVaultReauthenticationCoordinator.delegate = nil;
   _trustedVaultReauthenticationCoordinator = nil;
+}
+
+// Starts the credential import. If the user is signed-in, then displays the
+// credential import sheet. Otherwise, display a sign-in sheet.
+- (void)startCredentialImport {
+  CHECK(self.credentialImportUUID);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+  if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    [self startCredentialImportCoordinator];
+    return;
+  }
+
+  CHECK(!_signinCoordinator, base::NotFatalUntil::M151);
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::kSettings;
+  _signinCoordinator = [SigninCoordinator
+      consistencyPromoSigninCoordinatorWithBaseViewController:
+          self.viewController
+                                                      browser:self.browser
+                                                 contextStyle:
+                                                     SigninContextStyle::
+                                                         kDefault
+                                                  accessPoint:accessPoint
+                                         prepareChangeProfile:nil
+                                         continuationProvider:
+                                             DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf signinForImportFinishedWithCoordinator:coordinator
+                                                identity:identity];
+      };
+  [_signinCoordinator start];
+}
+
+// Handles signin completion for credential import. If user successfully signed
+// in, starts the credential import coordinator. Otherwise, just returns as the
+// import should not start.
+- (void)signinForImportFinishedWithCoordinator:(SigninCoordinator*)coordinator
+                                      identity:(id<SystemIdentity>)identity {
+  CHECK_EQ(coordinator, _signinCoordinator);
+  [self dismissSigninCoordinator];
+  if (identity) {
+    [self startCredentialImportCoordinator];
+  }
+}
+
+// Starts the credential import coordinator.
+- (void)startCredentialImportCoordinator {
+  [self stopReauthCoordinatorBeforeStartingChildCoordinator];
+
+  _credentialImportCoordinator = [[CredentialImportCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                            UUID:self.credentialImportUUID
+                    reauthModule:self.reauthModule];
+  self.credentialImportUUID = nil;
+  _credentialImportCoordinator.delegate = self;
+  [_credentialImportCoordinator start];
+}
+
+// Stops the credential import coordinator.
+- (void)dismissCredentialImportCoordinator {
+  [_credentialImportCoordinator stop];
+  _credentialImportCoordinator.delegate = nil;
+  _credentialImportCoordinator = nil;
+}
+
+// Stops the sign-in coordinator.
+- (void)dismissSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
 }
 
 @end

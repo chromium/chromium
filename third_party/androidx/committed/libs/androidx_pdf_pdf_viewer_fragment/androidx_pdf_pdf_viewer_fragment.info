@@ -11,6 +11,7 @@ is_manifest_empty = true
 manifest_package = "androidx.pdf.viewer.fragment"
 resources = [
   "res/layout/pdf_viewer_fragment.xml",
+  "res/layout/saving_progress_overlay.xml",
   "res/values/values.xml"
 ]
 subjar_tuples = []

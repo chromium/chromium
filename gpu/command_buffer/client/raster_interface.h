@@ -42,7 +42,6 @@ extern "C" typedef const struct _GLcolorSpace* GLcolorSpace;
 
 namespace gpu {
 
-class ClientSharedImage;
 struct Mailbox;
 
 namespace raster {
@@ -55,6 +54,7 @@ class RasterInterface : public InterfaceBase {
   virtual ~RasterInterface() {}
 
   // This function will not perform any color conversion during the copy.
+  // The same width/height is assumed for the destination.
   virtual void CopySharedImage(const gpu::Mailbox& source_mailbox,
                                const gpu::Mailbox& dest_mailbox,
                                GLint xoffset,
@@ -63,6 +63,11 @@ class RasterInterface : public InterfaceBase {
                                GLint y,
                                GLsizei width,
                                GLsizei height) = 0;
+  // This function will not perform any color conversion during the copy.
+  virtual void CopySharedImage(const gpu::Mailbox& source_mailbox,
+                               const gpu::Mailbox& dest_mailbox,
+                               const gfx::Rect& source_rect,
+                               const gfx::Rect& dest_rect) = 0;
 
   // Asynchronously writes pixels from caller-owned memory inside
   // |src_sk_pixmap| into |dest_mailbox|.
@@ -111,29 +116,19 @@ class RasterInterface : public InterfaceBase {
       const ScrollOffsetMap* raster_inducing_scroll_offsets,
       size_t* max_op_size_hint) = 0;
 
-  // Schedules a hardware-accelerated image decode and a sync token that's
-  // released when the image decode is complete. If the decode could not be
-  // scheduled, an empty sync token is returned. This method should only be
-  // called if ContextSupport::CanDecodeWithHardwareAcceleration() returns true.
-  virtual SyncToken ScheduleImageDecode(
-      base::span<const uint8_t> encoded_data,
-      const gfx::Size& output_size,
-      uint32_t transfer_cache_entry_id,
-      const gfx::ColorSpace& target_color_space,
-      bool needs_mips) = 0;
-
-  // Starts an asynchronous readback of |source_mailbox| into caller-owned
-  // memory |out|.
-  // |dst_row_bytes| is a per row stride expected in the |out| buffer.
+  // Starts an asynchronous readback of `source_mailbox` into caller-owned
+  // memory represented by `out`.
+  // `dst_row_bytes` is a per row stride expected in the `out` buffer.
   // |source_origin| specifies texture coordinate directions, but
-  // pixels in |out| laid out with top-left origin.
+  // pixels in `out` are laid out with top-left origin.
   // Currently supports the kRGBA_8888_SkColorType and
   // kBGRA_8888_SkColorType color types.
-  // |out| must remain valid  until |readback_done| is called with
-  // a bool indicating if the readback was successful.
-  // |source_size| describes dimensions of the |source_mailbox| texture.
-  // |dst_info| |source_starting_point| describe subregion that needs to be read
-  // On success |out| will contain the pixel data copied back from the GPU
+  // The memory backing `out` must remain valid until `readback_done` is called
+  // with a bool indicating if the readback was successful.
+  // `source_size` describes dimensions of the `source_mailbox` texture.
+  // `dst_info` and `source_starting_point` describe the subregion that needs
+  // to be read.
+  // On success, `out` will contain the pixel data copied back from the GPU
   // process.
   virtual void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
@@ -143,17 +138,17 @@ class RasterInterface : public InterfaceBase {
       const gfx::Point& source_starting_point,
       const SkImageInfo& dst_info,
       GLuint dst_row_bytes,
-      unsigned char* out,
+      base::span<uint8_t> out,
       base::OnceCallback<void(bool)> readback_done) = 0;
 
-  // Starts an asynchronus readback and translation of RGBA |source_mailbox|
-  // into caller-owned |[yuv]_plane_data|. All provided pointers must remain
-  // valid until |readback_done| is called with a bool indicating if readback
-  // was successful. On success the provided memory will contain pixel data in
-  // I420 format copied from |source_mailbox| in the GPU process.
-  // |release_mailbox| is called when all operations requiring a valid mailbox
-  // have completed, indicating that the caller can perform any necessary
-  // cleanup.
+  // Starts an asynchronous readback and translation of RGBA `source_mailbox`
+  // into caller-owned memory represented by `[yuv]_plane_data`. The memory
+  // backing these spans must remain valid until `readback_done` is called with
+  // a bool indicating if readback was successful. On success, the provided
+  // spans will contain pixel data in I420 format copied from `source_mailbox`
+  // in the GPU process. `release_mailbox` is called when all operations
+  // requiring a valid mailbox have completed, indicating that the caller can
+  // perform any necessary cleanup.
   virtual void ReadbackYUVPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
@@ -161,11 +156,11 @@ class RasterInterface : public InterfaceBase {
       const gfx::Rect& output_rect,
       bool vertically_flip_texture,
       int y_plane_row_stride_bytes,
-      unsigned char* y_plane_data,
+      base::span<uint8_t> y_plane_data,
       int u_plane_row_stride_bytes,
-      unsigned char* u_plane_data,
+      base::span<uint8_t> u_plane_data,
       int v_plane_row_stride_bytes,
-      unsigned char* v_plane_data,
+      base::span<uint8_t> v_plane_data,
       const gfx::Point& paste_location,
       base::OnceCallback<void()> release_mailbox,
       base::OnceCallback<void(bool)> readback_done) = 0;
@@ -182,22 +177,6 @@ class RasterInterface : public InterfaceBase {
                                    int src_y,
                                    int plane_index,
                                    void* dst_pixels) = 0;
-
-  // Raster via GrContext.
-  virtual GLuint CreateAndConsumeForGpuRaster(const gpu::Mailbox& mailbox) = 0;
-  virtual GLuint CreateAndConsumeForGpuRaster(
-      const scoped_refptr<gpu::ClientSharedImage>& shared_image) = 0;
-
-  virtual void DeleteGpuRasterTexture(GLuint texture) = 0;
-  virtual void BeginGpuRaster() = 0;
-  virtual void EndGpuRaster() = 0;
-  virtual void BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
-                                                    GLenum mode) = 0;
-  virtual void EndSharedImageAccessDirectCHROMIUM(GLuint texture) = 0;
-
-  virtual void InitializeDiscardableTextureCHROMIUM(GLuint texture) = 0;
-  virtual void UnlockDiscardableTextureCHROMIUM(GLuint texture) = 0;
-  virtual bool LockDiscardableTextureCHROMIUM(GLuint texture) = 0;
 
 // Include the auto-generated part of this class. We split this because
 // it means we can easily edit the non-auto generated parts right here in

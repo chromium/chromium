@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // Functions for canonicalizing "mailto:" URLs.
 
+#include "base/compiler_specific.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_file.h"
@@ -36,8 +32,7 @@ bool ShouldEncodeMailboxCharacter(UCHAR uch) {
 }
 
 template <typename CHAR, typename UCHAR>
-bool DoCanonicalizeMailtoURL(const URLComponentSource<CHAR>& source,
-                             const Parsed& parsed,
+bool DoCanonicalizeMailtoUrl(const Replacements<CHAR>& source,
                              CanonOutput* output,
                              Parsed* new_parsed) {
   // mailto: only uses {scheme, path, query} -- clear the rest.
@@ -56,17 +51,17 @@ bool DoCanonicalizeMailtoURL(const URLComponentSource<CHAR>& source,
   bool success = true;
 
   // Path
-  if (parsed.path.is_valid()) {
+  if (source.components().path.is_valid()) {
     new_parsed->path.begin = output->length();
 
     // Copy the path using path URL's more lax escaping rules.
     // We convert to UTF-8 and escape non-ASCII, but leave most
     // ASCII characters alone.
-    size_t end = static_cast<size_t>(parsed.path.end());
-    for (size_t i = static_cast<size_t>(parsed.path.begin); i < end; ++i) {
-      UCHAR uch = static_cast<UCHAR>(source.path[i]);
+    auto path_view = *source.MaybePath();
+    for (size_t i = 0; i < path_view.length(); ++i) {
+      UCHAR uch = static_cast<UCHAR>(path_view[i]);
       if (ShouldEncodeMailboxCharacter<UCHAR>(uch))
-        success &= AppendUTF8EscapedChar(source.path, &i, end, output);
+        success &= AppendUtf8EscapedChar(path_view, &i, output);
       else
         output->push_back(static_cast<char>(uch));
     }
@@ -78,55 +73,50 @@ bool DoCanonicalizeMailtoURL(const URLComponentSource<CHAR>& source,
   }
 
   // Query -- always use the default UTF8 charset converter.
-  CanonicalizeQuery(parsed.query.maybe_as_string_view_on(source.query), nullptr,
-                    output, &new_parsed->query);
+  CanonicalizeQuery(source.MaybeQuery(), nullptr, output, &new_parsed->query);
 
   return success;
 }
 
 } // namespace
 
-bool CanonicalizeMailtoURL(const char* spec,
-                           int spec_len,
+bool CanonicalizeMailtoUrl(std::string_view spec,
                            const Parsed& parsed,
                            CanonOutput* output,
                            Parsed* new_parsed) {
-  return DoCanonicalizeMailtoURL<char, unsigned char>(
-      URLComponentSource<char>(spec), parsed, output, new_parsed);
+  return DoCanonicalizeMailtoUrl<char, unsigned char>(
+      Replacements<char>(spec, parsed), output, new_parsed);
 }
 
-bool CanonicalizeMailtoURL(const char16_t* spec,
-                           int spec_len,
+bool CanonicalizeMailtoUrl(std::u16string_view spec,
                            const Parsed& parsed,
                            CanonOutput* output,
                            Parsed* new_parsed) {
-  return DoCanonicalizeMailtoURL<char16_t, char16_t>(
-      URLComponentSource<char16_t>(spec), parsed, output, new_parsed);
+  return DoCanonicalizeMailtoUrl<char16_t, char16_t>(
+      Replacements<char16_t>(spec, parsed), output, new_parsed);
 }
 
-bool ReplaceMailtoURL(const char* base,
+bool ReplaceMailtoUrl(std::string_view base,
                       const Parsed& base_parsed,
                       const Replacements<char>& replacements,
                       CanonOutput* output,
                       Parsed* new_parsed) {
-  URLComponentSource<char> source(base);
-  Parsed parsed(base_parsed);
-  SetupOverrideComponents(base, replacements, &source, &parsed);
-  return DoCanonicalizeMailtoURL<char, unsigned char>(
-      source, parsed, output, new_parsed);
+  Replacements<char> overridden(base, base_parsed);
+  SetupOverrideComponents(replacements, overridden);
+  return DoCanonicalizeMailtoUrl<char, unsigned char>(overridden, output,
+                                                      new_parsed);
 }
 
-bool ReplaceMailtoURL(const char* base,
+bool ReplaceMailtoUrl(std::string_view base,
                       const Parsed& base_parsed,
                       const Replacements<char16_t>& replacements,
                       CanonOutput* output,
                       Parsed* new_parsed) {
   RawCanonOutput<1024> utf8;
-  URLComponentSource<char> source(base);
-  Parsed parsed(base_parsed);
-  SetupUTF16OverrideComponents(base, replacements, &utf8, &source, &parsed);
-  return DoCanonicalizeMailtoURL<char, unsigned char>(
-      source, parsed, output, new_parsed);
+  Replacements<char> overridden(base, base_parsed);
+  SetupUtf16OverrideComponents(replacements, utf8, overridden);
+  return DoCanonicalizeMailtoUrl<char, unsigned char>(overridden, output,
+                                                      new_parsed);
 }
 
 }  // namespace url

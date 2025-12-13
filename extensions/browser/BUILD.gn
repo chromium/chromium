@@ -3,10 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
+import("//rlz/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 if (enable_desktop_android_extensions) {
@@ -91,6 +92,8 @@ source_set("browser_sources") {
   visibility = [ "./*" ]
 
   sources = [
+    "active_install_data.cc",
+    "active_install_data.h",
     "activity.cc",
     "activity.h",
     "allowlist_state.h",
@@ -213,9 +216,15 @@ source_set("browser_sources") {
     "blob_reader.cc",
     "blob_reader.h",
     "blocked_action_type.h",
+    "blocklist.cc",
+    "blocklist.h",
+    "blocklist_check.cc",
+    "blocklist_check.h",
     "blocklist_extension_prefs.cc",
     "blocklist_extension_prefs.h",
     "blocklist_state.h",
+    "blocklist_state_fetcher.cc",
+    "blocklist_state_fetcher.h",
     "bookmark_app_util.cc",
     "bookmark_app_util.h",
     "browser_context_keyed_api_factory.h",
@@ -269,10 +278,10 @@ source_set("browser_sources") {
     "event_router_factory.h",
     "events/event_ack_data.cc",
     "events/event_ack_data.h",
+    "events/event_dispatch_helper.cc",
+    "events/event_dispatch_helper.h",
     "events/lazy_event_dispatch_util.cc",
     "events/lazy_event_dispatch_util.h",
-    "events/lazy_event_dispatcher.cc",
-    "events/lazy_event_dispatcher.h",
     "extension_action.cc",
     "extension_action.h",
     "extension_action_icon_factory.cc",
@@ -317,6 +326,7 @@ source_set("browser_sources") {
     "extension_icon_manager.h",
     "extension_icon_placeholder.cc",
     "extension_icon_placeholder.h",
+    "extension_management_client.h",
     "extension_navigation_registry.cc",
     "extension_navigation_registry.h",
     "extension_navigation_throttle.cc",
@@ -360,6 +370,8 @@ source_set("browser_sources") {
     "extension_util.h",
     "extension_web_contents_observer.cc",
     "extension_web_contents_observer.h",
+    "extension_webkit_preferences.cc",
+    "extension_webkit_preferences.h",
     "extension_zoom_request_client.cc",
     "extension_zoom_request_client.h",
     "extensions_browser_api_provider.h",
@@ -386,11 +398,23 @@ source_set("browser_sources") {
     "image_loader_factory.h",
     "image_sanitizer.cc",
     "image_sanitizer.h",
+    "install_approval.cc",
+    "install_approval.h",
     "install_flag.h",
     "install_gate.h",
+    "install_observer.cc",
+    "install_observer.h",
     "install_prefs_helper.cc",
     "install_prefs_helper.h",
+    "install_prompt_permissions.cc",
+    "install_prompt_permissions.h",
+    "install_signer.cc",
+    "install_signer.h",
     "install_stage.h",
+    "install_tracker.cc",
+    "install_tracker.h",
+    "install_verifier.cc",
+    "install_verifier.h",
     "json_file_sanitizer.cc",
     "json_file_sanitizer.h",
     "l10n_file_util.cc",
@@ -407,8 +431,11 @@ source_set("browser_sources") {
     "lazy_context_task_queue.h",
     "load_and_localize_file.cc",
     "load_and_localize_file.h",
+    "load_error_reporter.cc",
+    "load_error_reporter.h",
     "management_policy.cc",
     "management_policy.h",
+    "manifest_check_level.h",
     "media_capture_util.cc",
     "media_capture_util.h",
     "message_service_api.cc",
@@ -431,6 +458,14 @@ source_set("browser_sources") {
     "pending_extension_manager.h",
     "pending_extension_manager_factory.cc",
     "pending_extension_manager_factory.h",
+    "permissions/active_tab_permission_granter.cc",
+    "permissions/active_tab_permission_granter.h",
+    "permissions/permissions_updater.cc",
+    "permissions/permissions_updater.h",
+    "permissions/scripting_permissions_modifier.cc",
+    "permissions/scripting_permissions_modifier.h",
+    "permissions/site_permissions_helper.cc",
+    "permissions/site_permissions_helper.h",
     "permissions_manager.cc",
     "permissions_manager.h",
     "policy_check.cc",
@@ -448,7 +483,6 @@ source_set("browser_sources") {
     "process_manager_delegate.h",
     "process_manager_factory.cc",
     "process_manager_factory.h",
-    "process_manager_observer.cc",
     "process_manager_observer.h",
     "process_map.cc",
     "process_map.h",
@@ -469,6 +503,8 @@ source_set("browser_sources") {
     "safe_browsing_delegate.h",
     "sandboxed_unpacker.cc",
     "sandboxed_unpacker.h",
+    "scoped_active_install.cc",
+    "scoped_active_install.h",
     "script_executor.cc",
     "script_executor.h",
     "script_injection_tracker.cc",
@@ -499,6 +535,8 @@ source_set("browser_sources") {
     "state_store_test_observer.h",
     "suggest_permission_util.cc",
     "suggest_permission_util.h",
+    "supervised_extension_approval_result.h",
+    "supervised_user_extensions_delegate.cc",
     "supervised_user_extensions_delegate.h",
     "task_queue_util.cc",
     "task_queue_util.h",
@@ -549,13 +587,17 @@ source_set("browser_sources") {
     "//components/input",
     "//components/javascript_dialogs",
     "//components/keyed_service/content",
-    "//components/keyed_service/content:content",
     "//components/keyed_service/core",
     "//components/pdf/common:constants",
     "//components/permissions",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/proto:crx_info_proto",
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
     "//components/sessions",
@@ -569,10 +611,8 @@ source_set("browser_sources") {
     "//components/vector_icons",
     "//components/version_info",
     "//components/web_cache/browser",
-    "//components/web_cache/browser:browser",
     "//components/zoom",
     "//content/public/browser",
-    "//content/public/browser:browser",
     "//content/public/common",
     "//content/public/common:buildflags",
     "//extensions:extensions_browser_resources",
@@ -591,7 +631,8 @@ source_set("browser_sources") {
     "//net",
     "//pdf:buildflags",
     "//pdf:features",
-    "//services/data_decoder/public/cpp:cpp",
+    "//rlz/buildflags",
+    "//services/data_decoder/public/cpp",
     "//services/device/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
@@ -601,7 +642,7 @@ source_set("browser_sources") {
     "//skia",
     "//skia/public/mojom",
     "//third_party/blink/public/common",
-    "//third_party/flatbuffers:flatbuffers",
+    "//third_party/flatbuffers",
     "//third_party/re2",
     "//third_party/zlib/google:zip",
     "//tools/json_schema_compiler:generated_api_util",
@@ -618,8 +659,13 @@ source_set("browser_sources") {
     ]
   }
 
+  if (enable_rlz) {
+    deps += [ "//rlz:rlz_lib" ]
+  }
+
   public_deps = [
     "//base",
+    "//components/safe_browsing/core/browser/db:v4_protocol_config",
     "//components/url_matcher",
     "//components/url_pattern_index",
     "//components/value_store",
@@ -630,7 +676,7 @@ source_set("browser_sources") {
     "//extensions/common:mojom",
     "//ipc",
     "//mojo/public/cpp/bindings",
-    "//services/device/public/cpp/usb:usb",
+    "//services/device/public/cpp/usb",
     "//third_party/re2",
   ]
 
@@ -793,16 +839,26 @@ source_set("test_support") {
     "mock_display_info_provider.h",
     "mock_screen.cc",
     "mock_screen.h",
+    "permissions/permissions_test_util.cc",
+    "permissions/permissions_test_util.h",
     "preload_check_test_util.cc",
     "preload_check_test_util.h",
+    "scoped_database_manager_for_test.cc",
+    "scoped_database_manager_for_test.h",
     "script_result_queue.cc",
     "script_result_queue.h",
     "service_worker/service_worker_test_utils.cc",
     "service_worker/service_worker_test_utils.h",
+    "test_blocklist.cc",
+    "test_blocklist.h",
+    "test_blocklist_state_fetcher.cc",
+    "test_blocklist_state_fetcher.h",
     "test_event_router_observer.cc",
     "test_event_router_observer.h",
     "test_extension_console_observer.cc",
     "test_extension_console_observer.h",
+    "test_extension_prefs.cc",
+    "test_extension_prefs.h",
     "updater/extension_cache_fake.cc",
     "updater/extension_cache_fake.h",
     "updater/extension_downloader_test_helper.cc",
@@ -812,21 +868,30 @@ source_set("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/pref_registry",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/common/proto:crx_info_proto_gen",
+    "//components/sync/model",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/update_client",
     "//components/value_store:test_support",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions/browser",
     "//extensions/browser/api/system_display:display_info_provider",
-    "//extensions/browser/updater:updater",
+    "//extensions/browser/updater",
     "//extensions/common",
     "//extensions/common:test_support",
-    "//extensions/common/api:api",
+    "//extensions/common/api",
     "//net/traffic_annotation:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/base/idle:idle",
+    "//ui/base/idle",
   ]
 
   if (is_chromeos) {
@@ -835,8 +900,19 @@ source_set("test_support") {
       "api/feedback_private/mock_feedback_service.h",
     ]
     deps += [
-      "//components/crash/core/app:app",
+      "//components/crash/core/app",
       "//net:test_support",
+    ]
+  }
+
+  if (safe_browsing_mode == 1 || safe_browsing_mode == 2) {
+    sources += [
+      "fake_safe_browsing_database_manager.cc",
+      "fake_safe_browsing_database_manager.h",
+    ]
+    deps += [
+      "//components/safe_browsing/core/browser/db:test_database_manager",
+      "//components/safe_browsing/core/browser/db:v4_test_util",
     ]
   }
 
@@ -880,11 +956,15 @@ source_set("unit_tests") {
     "api/storage/storage_api_unittest.cc",
     "api/storage/storage_frontend_unittest.cc",
     "api/system_network/system_network_api_unittest.cc",
+    "api/web_request/extension_web_request_event_router_unittest.cc",
     "api/web_request/form_data_parser_unittest.cc",
     "api/web_request/upload_data_presenter_unittest.cc",
     "api/web_request/web_request_info_unittest.cc",
     "api/web_request/web_request_permissions_unittest.cc",
     "api/web_request/web_request_time_tracker_unittest.cc",
+    "blocklist_check_unittest.cc",
+    "blocklist_extension_prefs_unittest.cc",
+    "blocklist_state_fetcher_unittest.cc",
     "browser_frame_context_data_unittest.cc",
     "computed_hashes_unittest.cc",
     "content_hash_fetcher_unittest.cc",
@@ -913,12 +993,14 @@ source_set("unit_tests") {
     "file_reader_unittest.cc",
     "image_loader_unittest.cc",
     "image_sanitizer_unittest.cc",
+    "install_tracker_unittest.cc",
     "json_file_sanitizer_unittest.cc",
     "lazy_background_task_queue_unittest.cc",
     "management_policy_unittest.cc",
     "message_tracker_unittest.cc",
     "mojo/keep_alive_impl_unittest.cc",
     "path_util_unittest.cc",
+    "permissions/site_permissions_helper_unittest.cc",
     "permissions_manager_unittest.cc",
     "policy_check_unittest.cc",
     "preload_check_group_unittest.cc",
@@ -952,10 +1034,12 @@ source_set("unit_tests") {
     "//components/keyed_service/content",
     "//components/onc",
     "//components/permissions:permissions_common",
-    "//components/pref_registry:pref_registry",
+    "//components/policy/core/common:test_support",
+    "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
+    "//components/safe_browsing/core/common/proto:crx_info_proto_gen",
     "//components/services/unzip:in_process",
     "//components/services/unzip/content",
     "//components/sync_preferences:test_support",
@@ -973,14 +1057,13 @@ source_set("unit_tests") {
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
-    "//extensions/browser/updater:updater",
+    "//extensions/browser/updater",
     "//extensions/buildflags",
     "//extensions/common",
     "//extensions/common:mojom",
     "//extensions/common:test_support",
     "//extensions/common/api",
     "//extensions/strings",
-    "//ipc:test_support",
     "//net:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/mojom",
@@ -1061,6 +1144,12 @@ source_set("unit_tests") {
     ]
   }
 
+  if (safe_browsing_mode == 1) {
+    sources += [ "../browser/blocklist_unittest.cc" ]
+    deps +=
+        [ "//components/safe_browsing/content/browser:client_side_detection" ]
+  }
+
   data = [
     "//extensions/browser/extension_event_histogram_value.h",
     "//extensions/browser/extension_function_histogram_value.h",
@@ -1107,7 +1196,6 @@ if (enable_extensions) {
       "api/system_storage/system_storage_eject_apitest.cc",
       "api/usb/usb_apitest.cc",
       "browsertest_util_browsertest.cc",
-      "content_script_matching_browsertest.cc",
       "extension_frame_host_browsertest.cc",
       "guest_view/app_view/app_view_apitest.cc",
       "guest_view/web_view/web_view_apitest.cc",

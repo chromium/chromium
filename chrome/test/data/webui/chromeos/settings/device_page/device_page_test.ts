@@ -8,7 +8,6 @@ import 'chrome://os-settings/lazy_load.js';
 import type {SettingsAudioElement, SettingsPerDeviceKeyboardElement} from 'chrome://os-settings/lazy_load.js';
 import type {ControlledRadioButtonElement, CrIconButtonElement, CrSliderElement, CrToggleElement, Route, SettingsDevicePageElement, SettingsRadioGroupElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
@@ -47,7 +46,6 @@ suite('<settings-device-page>', () => {
 
     browserProxy = new TestDevicePageBrowserProxy();
     DevicePageBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    setDeviceSplitEnabled(true);
   });
 
   async function init(): Promise<void> {
@@ -63,16 +61,7 @@ suite('<settings-device-page>', () => {
   });
 
   /**
-   * Set enableInputDeviceSettingsSplit feature flag to true for split tests.
-   */
-  function setDeviceSplitEnabled(isEnabled: boolean): void {
-    loadTimeData.overrideValues({
-      enableInputDeviceSettingsSplit: isEnabled,
-    });
-  }
-
-  /**
-   * Set enablePeripheralCustomization feature flag to true for split tests.
+   * Set enablePeripheralCustomization feature flag to true for tests.
    */
   function setPeripheralCustomizationEnabled(isEnabled: boolean): void {
     loadTimeData.overrideValues({
@@ -101,7 +90,6 @@ suite('<settings-device-page>', () => {
     assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#displayRow')));
     assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#audioRow')));
 
-    // enableInputDeviceSettingsSplit feature flag by default is turned on.
     assertTrue(
         isVisible(devicePage.shadowRoot!.querySelector('#perDeviceMouseRow')));
     assertTrue(isVisible(
@@ -110,48 +98,9 @@ suite('<settings-device-page>', () => {
         devicePage.shadowRoot!.querySelector('#perDevicePointingStickRow')));
     assertTrue(isVisible(
         devicePage.shadowRoot!.querySelector('#perDeviceKeyboardRow')));
-    assertFalse(
-        isVisible(devicePage.shadowRoot!.querySelector('#pointersRow')));
-    assertFalse(
-        isVisible(devicePage.shadowRoot!.querySelector('#keyboardRow')));
 
     // enablePeripheralCustomization feature flag by default is turned on.
     assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#tabletRow')));
-
-    // Turn off the enableInputDeviceSettingsSplit feature flag.
-    setDeviceSplitEnabled(false);
-    await init();
-    assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#pointersRow')));
-    assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#keyboardRow')));
-
-    webUIListenerCallback('has-mouse-changed', false);
-    await flushTasks();
-    assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#pointersRow')));
-
-    webUIListenerCallback('has-pointing-stick-changed', false);
-    await flushTasks();
-    assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#pointersRow')));
-
-    webUIListenerCallback('has-touchpad-changed', false);
-    await flushTasks();
-    assertFalse(
-        isVisible(devicePage.shadowRoot!.querySelector('#pointersRow')));
-
-    webUIListenerCallback('has-mouse-changed', true);
-    await flushTasks();
-    assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#pointersRow')));
-
-    // Turn off the enablePeripheralCustomization feature flag.
-    setPeripheralCustomizationEnabled(false);
-    await init();
-    assertFalse(isVisible(devicePage.shadowRoot!.querySelector('#tabletRow')));
-  });
-
-  test('per-device-mouse row visibility', async () => {
-    setDeviceSplitEnabled(false);
-    await init();
-    assertFalse(
-        isVisible(devicePage.shadowRoot!.querySelector('#perDeviceMouseRow')));
   });
 
   test(
@@ -160,8 +109,6 @@ suite('<settings-device-page>', () => {
         const provider = new FakeInputDeviceSettingsProvider();
         setInputDeviceSettingsProviderForTesting(provider);
 
-        // Tests with flag on.
-        setDeviceSplitEnabled(true);
         await init();
 
         provider.setFakeMice(fakeMice);
@@ -178,28 +125,7 @@ suite('<settings-device-page>', () => {
         await flushTasks();
         assertTrue(isVisible(
             devicePage.shadowRoot!.querySelector('#perDeviceMouseRow')));
-
-        // Tests with flag off.
-        setDeviceSplitEnabled(false);
-        await init();
-
-        webUIListenerCallback('has-mouse-changed', true);
-        await init();
-        assertFalse(isVisible(
-            devicePage.shadowRoot!.querySelector('#perDeviceMouseRow')));
-
-        webUIListenerCallback('has-mouse-changed', false);
-        await flushTasks();
-        assertFalse(isVisible(
-            devicePage.shadowRoot!.querySelector('#perDeviceMouseRow')));
       });
-
-  test('per-device-touchpad row visibility', async () => {
-    setDeviceSplitEnabled(false);
-    await init();
-    assertFalse(isVisible(
-        devicePage.shadowRoot!.querySelector('#perDeviceTouchpadRow')));
-  });
 
   test(
       'per-device-touchpad row visiblity based on connected devices',
@@ -207,8 +133,6 @@ suite('<settings-device-page>', () => {
         const provider = new FakeInputDeviceSettingsProvider();
         setInputDeviceSettingsProviderForTesting(provider);
 
-        // Tests with flag on.
-        setDeviceSplitEnabled(true);
         await init();
 
         provider.setFakeTouchpads(fakeTouchpads);
@@ -225,28 +149,7 @@ suite('<settings-device-page>', () => {
         await flushTasks();
         assertTrue(isVisible(
             devicePage.shadowRoot!.querySelector('#perDeviceTouchpadRow')));
-
-        // Tests with flag off.
-        setDeviceSplitEnabled(false);
-        await init();
-
-        webUIListenerCallback('has-touchpad-changed', true);
-        await flushTasks();
-        assertFalse(isVisible(
-            devicePage.shadowRoot!.querySelector('#perDeviceTouchpadRow')));
-
-        webUIListenerCallback('has-touchpad-changed', false);
-        await flushTasks();
-        assertFalse(isVisible(
-            devicePage.shadowRoot!.querySelector('#perDeviceTouchpadRow')));
       });
-
-  test('per-device-pointing-stick row visibility', async () => {
-    setDeviceSplitEnabled(false);
-    await init();
-    assertFalse(isVisible(
-        devicePage.shadowRoot!.querySelector('#perDevicePointingStickRow')));
-  });
 
   test(
       'per-device-pointing-stick row visibility based on devices connected',
@@ -254,8 +157,6 @@ suite('<settings-device-page>', () => {
         const provider = new FakeInputDeviceSettingsProvider();
         setInputDeviceSettingsProviderForTesting(provider);
 
-        // Tests with flag on.
-        setDeviceSplitEnabled(true);
         await init();
 
         provider.setFakePointingSticks(fakePointingSticks);
@@ -272,28 +173,7 @@ suite('<settings-device-page>', () => {
         await flushTasks();
         assertTrue(isVisible(devicePage.shadowRoot!.querySelector(
             '#perDevicePointingStickRow')));
-
-        // Tests with flag off.
-        setDeviceSplitEnabled(false);
-        await init();
-
-        webUIListenerCallback('has-pointing-stick-stick-changed', true);
-        await flushTasks();
-        assertFalse(isVisible(devicePage.shadowRoot!.querySelector(
-            '#perDevicePointingStickRow')));
-
-        webUIListenerCallback('has-pointing-stick-changed', false);
-        await flushTasks();
-        assertFalse(isVisible(devicePage.shadowRoot!.querySelector(
-            '#perDevicePointingStickRow')));
       });
-
-  test('per-device-keyboard row visibility', async () => {
-    setDeviceSplitEnabled(false);
-    await init();
-    assertFalse(isVisible(
-        devicePage.shadowRoot!.querySelector('#perDeviceKeyboardRow')));
-  });
 
   suite('graphics tablet subpage', () => {
     function queryTabletRow(): HTMLElement|null {
@@ -614,19 +494,19 @@ suite('<settings-device-page>', () => {
       const inputSectionHeader =
           audioPage.shadowRoot!.querySelector('#audioInputTitle');
       assertTrue(!!inputSectionHeader);
-      assertEquals('Input', inputSectionHeader.textContent!.trim());
+      assertEquals('Input', inputSectionHeader.textContent.trim());
       const inputDeviceSubsectionHeader =
           audioPage.shadowRoot!.querySelector('#audioInputDeviceLabel');
       assertTrue(!!inputDeviceSubsectionHeader);
       assertEquals(
-          'Microphone', inputDeviceSubsectionHeader.textContent!.trim());
+          'Microphone', inputDeviceSubsectionHeader.textContent.trim());
       const inputDeviceSubsectionDropdown =
           audioPage.shadowRoot!.querySelector('#audioInputDeviceDropdown');
       assertTrue(isVisible(inputDeviceSubsectionDropdown));
       const inputGainSubsectionHeader =
           audioPage.shadowRoot!.querySelector('#audioInputGainLabel');
       assertTrue(!!inputGainSubsectionHeader, 'audioInputGainLabel');
-      assertEquals('Volume', inputGainSubsectionHeader.textContent!.trim());
+      assertEquals('Volume', inputGainSubsectionHeader.textContent.trim());
       const inputVolumeButton =
           audioPage.shadowRoot!.querySelector('#audioInputGainMuteButton');
       assertTrue(isVisible(inputVolumeButton), 'audioInputGainMuteButton');
@@ -1370,10 +1250,10 @@ suite('<settings-device-page>', () => {
       // Default state should be unmuted so show the toggle mute tooltip.
       assertEquals(
           loadTimeData.getString('audioToggleToMuteTooltip'),
-          outputMuteTooltip.textContent!.trim());
+          outputMuteTooltip.textContent.trim());
       assertEquals(
           loadTimeData.getString('audioToggleToMuteTooltip'),
-          inputMuteTooltip.textContent!.trim());
+          inputMuteTooltip.textContent.trim());
 
       // Test muted by user case.
       crosAudioConfig.setAudioSystemProperties(
@@ -1381,10 +1261,10 @@ suite('<settings-device-page>', () => {
       await flushTasks();
       assertEquals(
           loadTimeData.getString('audioToggleToUnmuteTooltip'),
-          outputMuteTooltip.textContent!.trim());
+          outputMuteTooltip.textContent.trim());
       assertEquals(
           loadTimeData.getString('audioToggleToUnmuteTooltip'),
-          inputMuteTooltip.textContent!.trim());
+          inputMuteTooltip.textContent.trim());
 
       // Test muted by policy case.
       crosAudioConfig.setAudioSystemProperties(
@@ -1392,10 +1272,10 @@ suite('<settings-device-page>', () => {
       await flushTasks();
       assertEquals(
           loadTimeData.getString('audioMutedByPolicyTooltip'),
-          outputMuteTooltip.textContent!.trim());
+          outputMuteTooltip.textContent.trim());
       assertEquals(
           loadTimeData.getString('audioMutedByPolicyTooltip'),
-          inputMuteTooltip.textContent!.trim());
+          inputMuteTooltip.textContent.trim());
 
       // Test muted externally case.
       crosAudioConfig.setAudioSystemProperties(
@@ -1403,10 +1283,10 @@ suite('<settings-device-page>', () => {
       await flushTasks();
       assertEquals(
           loadTimeData.getString('audioMutedExternallyTooltip'),
-          outputMuteTooltip.textContent!.trim());
+          outputMuteTooltip.textContent.trim());
       assertEquals(
           loadTimeData.getString('audioMutedExternallyTooltip'),
-          inputMuteTooltip.textContent!.trim());
+          inputMuteTooltip.textContent.trim());
     });
 
     test(
@@ -1612,32 +1492,9 @@ suite('<settings-device-page>', () => {
       return devicePage.shadowRoot!.querySelector('#keyboardRow');
     }
 
-    test('Keyboard row is not visible if device split is enabled', async () => {
-      setDeviceSplitEnabled(true);
-
+    test('Keyboard row is not visible', async () => {
       await init();
       assertFalse(isVisible(queryKeyboardRow()));
-    });
-
-    test('Keyboard row is visible if device split is disabled', async () => {
-      setDeviceSplitEnabled(false);
-
-      await init();
-      assertTrue(isVisible(queryKeyboardRow()));
-    });
-
-    test('Clicking keyboard row goes to keyboard subpage', async () => {
-      setDeviceSplitEnabled(false);
-      await init();
-
-      const keyboardRow = queryKeyboardRow();
-      assertTrue(!!keyboardRow);
-      keyboardRow.click();
-
-      assertEquals(routes.KEYBOARD, Router.getInstance().currentRoute);
-      const subpage = devicePage.shadowRoot!.querySelector<HTMLElement>(
-          'settings-keyboard');
-      assertTrue(!!subpage);
     });
   });
 
@@ -1686,32 +1543,9 @@ suite('<settings-device-page>', () => {
       return devicePage.shadowRoot!.querySelector('#pointersRow');
     }
 
-    test('Pointers row is not visible if device split is enabled', async () => {
-      setDeviceSplitEnabled(true);
-
+    test('Pointers row is not visible', async () => {
       await init();
       assertFalse(isVisible(queryPointersRow()));
-    });
-
-    test('Pointers row is visible if device split is disabled', async () => {
-      setDeviceSplitEnabled(false);
-
-      await init();
-      assertTrue(isVisible(queryPointersRow()));
-    });
-
-    test('Clicking pointers row goes to pointers subpage', async () => {
-      setDeviceSplitEnabled(false);
-      await init();
-
-      const pointersRow = queryPointersRow();
-      assertTrue(!!pointersRow);
-      pointersRow.click();
-
-      assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-      const subpage = devicePage.shadowRoot!.querySelector<HTMLElement>(
-          'settings-pointers');
-      assertTrue(!!subpage);
     });
   });
 

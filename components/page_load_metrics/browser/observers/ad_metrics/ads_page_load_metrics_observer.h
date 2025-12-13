@@ -9,10 +9,10 @@
 #include <map>
 #include <memory>
 
+#include "base/byte_count.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/scoped_observation.h"
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
@@ -62,11 +62,12 @@ class AdsPageLoadMetricsObserver
     // Gets a random amount of noise to add to a threshold. The generated noise
     // is uniform random over the range 0 to kMaxThresholdNoiseBytes. Virtual
     // for testing.
-    virtual int GetNetworkThresholdNoiseForFrame() const;
+    virtual base::ByteCount GetNetworkThresholdNoiseForFrame() const;
 
     // Maximum amount of additive noise to add to the network threshold to
     // obscure cross origin resource sizes: 1303 KB.
-    static const int kMaxNetworkThresholdNoiseBytes = 1303 * 1024;
+    static constexpr base::ByteCount kMaxNetworkThresholdNoiseBytes =
+        base::KiB(1303);
 
    private:
     // Whether to use noise.
@@ -80,7 +81,7 @@ class AdsPageLoadMetricsObserver
       heavy_ad_intervention::HeavyAdService* heavy_ad_service,
       history::HistoryService* history_service,
       const ApplicationLocaleGetter& application_local_getter,
-      bool is_incognito);
+      bool is_in_foreground);
 
   // For a given frame, returns whether or not the frame's url would be
   // considered same origin to the outermost main frame's url.
@@ -93,7 +94,7 @@ class AdsPageLoadMetricsObserver
       heavy_ad_intervention::HeavyAdService* heavy_ad_service,
       history::HistoryService* history_service,
       const ApplicationLocaleGetter& application_local_getter,
-      bool is_incognito,
+      bool is_in_foreground,
       base::TickClock* clock = nullptr,
       heavy_ad_intervention::HeavyAdBlocklist* blocklist = nullptr);
 
@@ -122,6 +123,8 @@ class AdsPageLoadMetricsObserver
       content::NavigationHandle* navigation_handle) override;
   void OnDidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle) override;
+  ObservePolicy OnHidden(const mojom::PageLoadTiming& timing) override;
+  ObservePolicy OnShown() override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const mojom::PageLoadTiming& timing) override;
   void OnComplete(const mojom::PageLoadTiming& timing) override;
@@ -141,11 +144,9 @@ class AdsPageLoadMetricsObserver
       const gfx::Rect& main_frame_intersection_rect) override;
   void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
-  void OnMainFrameImageAdRectsChanged(
-      const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) override;
+  void OnMainFrameAdRectsChanged(
+      const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) override;
   void OnSubFrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
-  void OnV8MemoryChanged(
-      const std::vector<MemoryUpdate>& memory_updates) override;
   void OnAdAuctionComplete(bool is_server_auction,
                            bool is_on_device_auction,
                            content::AuctionResult result) override;
@@ -154,8 +155,6 @@ class AdsPageLoadMetricsObserver
       std::unique_ptr<HeavyAdThresholdNoiseProvider> noise_provider) {
     heavy_ad_threshold_noise_provider_ = std::move(noise_provider);
   }
-
-  void UpdateAggregateMemoryUsage(int64_t bytes, FrameVisibility visibility);
 
   void CleanupDeletedFrame(content::FrameTreeNodeId id,
                            FrameTreeData* frame_data,
@@ -220,8 +219,9 @@ class AdsPageLoadMetricsObserver
 
   // Gets the number of bytes that we may have not attributed to ad
   // resources due to the resource being reported as an ad late.
-  int GetUnaccountedAdBytes(int process_id,
-                            const mojom::ResourceDataUpdatePtr& resource) const;
+  base::ByteCount GetUnaccountedAdBytes(
+      int process_id,
+      const mojom::ResourceDataUpdatePtr& resource) const;
 
   // Updates page level counters for resource loads.
   void ProcessResourceForPage(content::RenderFrameHost* render_frame_host,
@@ -352,9 +352,6 @@ class AdsPageLoadMetricsObserver
 
   // Tracks number of memory updates received.
   int memory_update_count_ = 0;
-
-  // Whether the WebContents being observed is for an Incognito profile.
-  bool is_incognito_;
 };
 
 }  // namespace page_load_metrics

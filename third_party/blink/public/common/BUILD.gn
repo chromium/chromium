@@ -71,7 +71,6 @@ component("common") {
   output_name = "blink_common"
 
   public_deps = [
-    "//third_party/blink/common/privacy_budget:privacy_budget",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_modules",
     "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings",
@@ -148,8 +147,8 @@ source_set("headers") {
     "fenced_frame/redacted_fenced_frame_config_mojom_traits.h",
     "fetch/fetch_api_request_headers_map.h",
     "fetch/fetch_api_request_headers_mojom_traits.h",
-    "fingerprinting_protection/canvas_noise_token.h",
-    "forcedark/forcedark_switches.h",
+    "fingerprinting_protection/noise_token.h",
+    "fingerprinting_protection/noise_token_mojom_traits.h",
     "frame/delegated_capability_request_token.h",
     "frame/fenced_frame_sandbox_flags.h",
     "frame/frame_ad_evidence.h",
@@ -269,7 +268,6 @@ source_set("headers") {
     "peerconnection/webrtc_ip_handling_policy.h",
     "peerconnection/webrtc_ip_handling_url_entry.h",
     "performance/largest_contentful_paint_type.h",
-    "performance/performance_timeline_constants.h",
     "permissions/permission_utils.h",
     "permissions_policy/document_policy.h",
     "permissions_policy/document_policy_features.h",
@@ -301,6 +299,7 @@ source_set("headers") {
     "subresource_load_metrics.h",
     "switches.h",
     "thread_safe_browser_interface_broker_proxy.h",
+    "tracing_support.h",
     "unique_name/unique_name_helper.h",
     "use_counter/use_counter_feature.h",
     "use_counter/use_counter_feature_tracker.h",
@@ -329,12 +328,11 @@ source_set("headers") {
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/network/public/mojom:mojom_permissions_policy",
     "//skia",
     "//skia/public/mojom:shared_typemap_traits",
     "//third_party/blink/public:runtime_features_for_public",
-    "//third_party/blink/public/common/privacy_budget",
     "//third_party/blink/public/common/tokens:tokens_headers",
     "//third_party/blink/public/mojom:mojom_modules_headers",
     "//third_party/blink/public/mojom:mojom_platform_shared",
@@ -361,7 +359,7 @@ source_set("headers") {
     "//mojo/public/cpp/system",
     "//mojo/public/mojom/base",
     "//net",
-    "//ui/base:base",
+    "//ui/base",
   ]
 
   # Chromium without blink doesn't use and must not depend on //media

@@ -44,7 +44,8 @@ enum class WhatsNewType {
   kPasskeys = 28,
   kChooseFromDrive = 29,
   kSaveToDrive = 30,
-  kMaxValue = kSaveToDrive
+  kBlingEnterpriseProfiles = 31,
+  kMaxValue = kBlingEnterpriseProfiles
 };
 
 // An enum representing the different primary button actions for features in
@@ -60,7 +61,8 @@ enum class WhatsNewPrimaryAction {
   kLens = 5,
   kSafeBrowsingSettings = 6,
   kChromePasswordManager = 7,
-  kMaxValue = kChromePasswordManager,
+  kNewTab = 8,
+  kMaxValue = kNewTab,
 };
 
 class GURL;

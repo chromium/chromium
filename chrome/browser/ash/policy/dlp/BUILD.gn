@@ -47,6 +47,7 @@ static_library("dlp") {
     "//chrome/browser/ash/policy/dlp/dialogs",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp/dialogs",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:chrome_features",
@@ -80,10 +81,10 @@ static_library("dlp") {
     # TODO(b/354095042): Use targets having headers directly included from
     # chrome/browser/ash/policy/dlp/files_policy_notification_manager.cc
     # instead after fixing cyclic dependency.
-    "//chrome/app/vector_icons:vector_icons",
+    "//chrome/app/vector_icons",
     "//chromeos/ash/components/dbus:vm_applications_apps_proto",
     "//chromeos/ash/components/drivefs",
-    "//chromeos/ash/experiences/arc/mojom:mojom",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/paint_preview/buildflags",
 
     # TODO(b/354095042): Use targets having headers directly included from
@@ -205,6 +206,7 @@ source_set("browser_tests") {
     "//chrome/browser/enterprise/data_controls",
     "//chrome/browser/enterprise/data_controls:test_support",
     "//chrome/browser/extensions",
+    "//chrome/browser/media:access_handler",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

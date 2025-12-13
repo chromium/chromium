@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -35,9 +34,15 @@ class Rect;
 
 namespace autofill {
 
+class AddressDataManager;
 class AutofillDriver;
 class BrowserAutofillManager;
 class CreditCard;
+
+// Retrieves a copy of the profile that the `payload` refers to.
+std::optional<AutofillProfile> GetProfileFromPayload(
+    const AddressDataManager& adm,
+    const Suggestion::AutofillProfilePayload& payload);
 
 // Delegate for in-browser Autocomplete and Autofill display and selection.
 class AutofillExternalDelegate : public AutofillSuggestionDelegate {
@@ -97,13 +102,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
 
   // Records query results and correctly formats them before sending them off
   // to be displayed. Called when an Autofill query result is available.
-  // `suggestion_ranking_context` contains information regarding the ranking of
-  // suggestions in `input_suggestions` and is used for metrics logging.
   virtual void OnSuggestionsReturned(
       FieldGlobalId field_id,
-      const std::vector<Suggestion>& input_suggestions,
-      std::optional<autofill_metrics::SuggestionRankingContext>
-          suggestion_ranking_context);
+      const std::vector<Suggestion>& input_suggestions);
 
   // Returns true if there is a screen reader installed on the machine.
   virtual bool HasActiveScreenReader() const;
@@ -122,12 +123,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
 
   void AttemptToDisplayAutofillSuggestionsForTest(
       std::vector<Suggestion> suggestions,
-      std::optional<autofill_metrics::SuggestionRankingContext>
-          suggestion_ranking_context,
       AutofillSuggestionTriggerSource trigger_source,
       bool is_update) {
     AttemptToDisplayAutofillSuggestions(std::move(suggestions),
-                                        std::move(suggestion_ranking_context),
                                         trigger_source, is_update);
   }
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtrForTest() {
@@ -135,6 +133,12 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   }
 
  private:
+  // Returns the `AutofillProfile` that an address suggestion contains as
+  // payload or `std::nullopt` if the profile cannot be found. Assumes that
+  // `suggestion` has an `AutofillProfilePayload`.
+  std::optional<AutofillProfile> GetProfileFromAddressSuggestion(
+      const Suggestion& suggestion) const;
+
   // Tries to display `suggestions` in the suggestions UI. If `is_update` is
   // true, then `AutofillClient::UpdateAutofillSuggestions` is called, which
   // means that suggestions will only be shown if there is currently suggestion
@@ -142,8 +146,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // `SuggestionsUiSessionId` will be assigned.
   void AttemptToDisplayAutofillSuggestions(
       std::vector<Suggestion> suggestions,
-      std::optional<autofill_metrics::SuggestionRankingContext>
-          suggestion_ranking_context,
       AutofillSuggestionTriggerSource trigger_source,
       bool is_update);
 
@@ -178,20 +180,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   void DidAcceptPaymentsSuggestion(const Suggestion& suggestion,
                                    const SuggestionMetadata& metadata);
 
-  // Creates a specialized version of a single field fill callback that converts
-  // the argument from UTF8 to UTF16 and set `EMAIL_ADDRESS` as the filled type.
-  PlusAddressCallback CreatePlusAddressCallback(SuggestionType suggestion_type);
-
-  // Creates a plus address callback (see `CreatePlusAddressCallback`) which
-  // triggers a plus address was created using the manual fallback.
-  PlusAddressCallback CreateInlinePlusAddressCallback(
-      SuggestionType suggestion_type);
-
-  // Informs the `AutofillPlusAddress` delegate and passes callbacks for
-  // hiding/updating suggestions UI and filling.
-  void DidAcceptCreateNewPlusAddressInlineSuggestion(
-      const Suggestion& suggestion);
-
   // Called when a credit card is scanned using device camera.
   void OnCreditCardScanned(const CreditCard& card);
 
@@ -204,11 +192,11 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // If `is_preview` is true then this is just a preview to show the user what
   // would be selected and if `is_preview` is false then the user has selected
   // this data.
-  void FillAutofillFormData(SuggestionType type,
-                            const Suggestion::Payload& payload,
-                            std::optional<SuggestionMetadata> metadata,
-                            bool is_preview,
-                            AutofillTriggerSource trigger_source);
+  void AutofillForm(SuggestionType type,
+                    const Suggestion::Payload& payload,
+                    std::optional<SuggestionMetadata> metadata,
+                    bool is_preview,
+                    AutofillTriggerSource trigger_source);
 
   // Previews the value from `profile` specified in the `suggestion`.
   void PreviewAddressFieldByFieldFillingSuggestion(
@@ -240,15 +228,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // Returns the text (i.e. |Suggestion| value) for Chrome autofill options.
   std::u16string GetSettingsSuggestionValue() const;
 
-  // Returns the trigger source to use to reopen the popup after an edit or
-  // delete address profile dialog is closed.
-  AutofillSuggestionTriggerSource GetReopenTriggerSource() const;
-
-  // Checks the user's accepted suggestion and logs metrics on the ranking of
-  // the suggestion in the Autofill dropdown.
-  void LogRankingContextAfterSuggestionAccepted(
-      const Suggestion& accepted_suggestion);
-
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 
   // If non-negative, OnSuggestionsReturned() passes one of the suggestions
@@ -265,12 +244,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   AutofillSuggestionTriggerSource trigger_source_;
 
   std::vector<SuggestionType> shown_suggestion_types_;
-
-  // Contains information on the ranking of suggestions using the new and old
-  // ranking algorithm. Used for metrics logging. If the new ranking algorithm
-  // is not enabled, this will be nullopt.
-  std::optional<autofill_metrics::SuggestionRankingContext>
-      suggestion_ranking_context_;
 
   // The current data list values.
   std::vector<SelectOption> datalist_;

@@ -8,12 +8,12 @@
 #         mac highsierra mojave catalina bigsur monterey ventura sonoma sequoia
 #         win win8 win10 win11 ]
 # Devices
-# tags: [ android-pixel-2 android-pixel-4 android-pixel-6
+# tags: [ android-pixel-2 android-pixel-4 android-pixel-6 android-pixel-10
 #             android-shield-android-tv android-sm-a137f android-sm-a236b
 #             android-sm-s911u1
 #         android-brya android-corsola
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
-#             chromeos-board-octopus chromeos-board-volteer
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -28,7 +28,8 @@
 #         web-engine-shell
 #         cros-chrome ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
+# tags: [ amd amd-0x150e amd-0x1900 amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821
+#             amd-0x7340 amd-0x7480
 #         apple apple-apple-m1 apple-apple-m2 apple-apple-m3
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -36,6 +37,7 @@
 #         arm
 #         google google-0xffff google-0xc0de
 #         imagination
+#         imagination-technologies
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0x3e92
 #             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
@@ -62,6 +64,7 @@
 # tags: [ mesa_lt_19.1
 #         mesa_ge_21.0
 #         mesa_ge_23.2
+#         mesa_ge_24.2
 #         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601
 #         nvidia_ge_535.183.01 nvidia_lt_535.183.01 ]
 # ASan
@@ -123,33 +126,12 @@ crbug.com/1379766 [ mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_ContentHint_av01.0.04M.08_detail [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeColorSpace_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_ContentHint_av01.0.04M.08_motion [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_ContentHint_av01.0.04M.08_text [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_Encode_arraybuffer_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_Encode_camera_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_Encode_capture_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_Encode_hw_decoder_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_Encode_offscreen_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_Encode_sw_decoder_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_arraybuffer_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_arraybuffer_avc1.42001E [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_camera_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_capture_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_hw_decoder_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_offscreen_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_offscreen_avc1.42001E [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_sw_decoder_av01.0.04M.08 [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_constant_quality [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_constant_realtime [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_variable_quality [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_variable_realtime [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_FrameSizeChange_av01.0.04M.08_arraybuffer [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_FrameSizeChange_av01.0.04M.08_camera [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_FrameSizeChange_av01.0.04M.08_capture [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_FrameSizeChange_av01.0.04M.08_sw_decoder [ Failure ]
-crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_MixedSourceEncoding_av01.0.04M.08 [ Failure ]
+crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_arraybuffer [ Failure ]
+crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_camera [ Failure ]
+crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_capture [ Failure ]
+crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ Failure ]
+crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_offscreen [ Failure ]
+crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_sw_decoder [ Failure ]
 
 
 # AVC, HEVC, and VP8 VBR seems to be unreliable on some Android devices
@@ -161,7 +143,7 @@ crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-c
 
 # MediaFoundation report `max_macroblocks_per_second=194400`, but only supports 1920x1080
 # up to 238fps instead of 240fps.
-crbug.com/373648897 [ win qualcomm ] WebCodecs_EncodingFramerateResolutions_1920x1080_240_hvc1.1.6.L186.B0_prefer-hardware_quality [ Failure ]
+crbug.com/373648897 [ memory_lt_16gb qualcomm-0x41333430 win ] WebCodecs_EncodingFramerateResolutions_1920x1080_240_hvc1.1.6.L186.B0_prefer-hardware_quality [ Failure ]
 
 
 # Encoding rate control bitrate is too far off on older Windows Qualcomm GPUs.
@@ -171,100 +153,192 @@ crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hv
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_3000000 [ Failure ]
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
 
-# Graphite failures
-crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_avc1.42001E_prefer-hardware [ Failure ]
 
 # Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
-crbug.com/371802469 [ mac intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
+crbug.com/371802469 [ graphite-disabled intel no-asan sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
+crbug.com/371802469 [ intel sonoma ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
 # Same with prefer-hardware
 crbug.com/371802469 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/371802469 [ amd-0x7340 angle-metal graphite-disabled mac ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 
-crbug.com/389978730 [ win11 nvidia-0x2783 ] WebCodecs_EncodeColorSpace_av01.0.04M.08_prefer-hardware [ Failure ]
 
-# Win/AMD RX 7600 Failures
-crbug.com/398904317 [ win11 amd-0x7480 ] WebCodecs_DrawImage_hw_decoder [ Failure ]
-crbug.com/398904317 [ win11 amd-0x7480 ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
-crbug.com/398904317 [ win11 amd-0x7480 ] WebCodecs_copyTo_hw_decoder [ Failure ]
+# Win11/AMD RDNA3/3.5 Failures
+crbug.com/398904317 [ win11 amd ] WebCodecs_DrawImage_hw_decoder [ Failure ]
+crbug.com/398904317 [ win11 amd ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
+crbug.com/398904317 [ win11 amd ] WebCodecs_copyTo_hw_decoder [ Failure ]
+
+# Linux/AMD RX 7600 Failures
+crbug.com/436300892 [ linux amd mesa_ge_24.2 ] WebCodecs_DrawImage_hw_decoder [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_arraybuffer_av01.0.04M.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_arraybuffer_avc1.42001E_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_arraybuffer_vp09.00.10.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_camera_av01.0.04M.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_camera_avc1.42001E_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_camera_vp09.00.10.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_capture_av01.0.04M.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_capture_avc1.42001E_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_capture_vp09.00.10.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_hw_decoder_av01.0.04M.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_hw_decoder_avc1.42001E_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_hw_decoder_vp09.00.10.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_hw_decoder_vp8_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_offscreen_av01.0.04M.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_offscreen_vp09.00.10.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_sw_decoder_av01.0.04M.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_sw_decoder_avc1.42001E_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_sw_decoder_vp09.00.10.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_Encode_hw_decoder_av01.0.04M.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_Encode_hw_decoder_avc1.42001E_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_Encode_hw_decoder_avc1.64001E_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_Encode_hw_decoder_vp09.00.10.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_Encode_hw_decoder_vp8_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_FrameSizeChange_av01.0.04M.08_hw_decoder [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_FrameSizeChange_vp09.00.10.08_hw_decoder [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_FrameSizeChange_vp8_hw_decoder [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_0 [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_1 [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_3 [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_MixedSourceEncoding_av01.0.04M.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_MixedSourceEncoding_avc1.42001E_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_MixedSourceEncoding_vp09.00.10.08_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_MixedSourceEncoding_vp8_prefer-software [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_3 [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_2 [ Failure ]
+crbug.com/436300892 [ linux amd mesa_ge_24.2 ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_3 [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_2 [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_3 [ Failure ]
+crbug.com/436300892 [ linux amd mesa_ge_24.2 ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_convertToRGB_hw_decoder [ Failure ]
+crbug.com/436300892 [ linux amd mesa_ge_24.2 ] WebCodecs_copyTo_hw_decoder [ Failure ]
+
+# Linux/AMD 890M Failures
+# Commented out until full procurement is ready since UAT is done.
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_arraybuffer_av01.0.04M.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_arraybuffer_avc1.42001E_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_arraybuffer_vp09.00.10.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_camera_av01.0.04M.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_camera_avc1.42001E_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_camera_vp09.00.10.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_capture_av01.0.04M.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_capture_avc1.42001E_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_capture_vp09.00.10.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_hw_decoder_av01.0.04M.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_hw_decoder_avc1.42001E_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_hw_decoder_vp09.00.10.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_hw_decoder_vp8_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_offscreen_av01.0.04M.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_offscreen_vp09.00.10.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_sw_decoder_av01.0.04M.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_sw_decoder_avc1.42001E_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_sw_decoder_vp09.00.10.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_Encode_hw_decoder_av01.0.04M.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_Encode_hw_decoder_avc1.42001E_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_Encode_hw_decoder_avc1.64001E_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_Encode_hw_decoder_vp09.00.10.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_Encode_hw_decoder_vp8_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_FrameSizeChange_av01.0.04M.08_hw_decoder [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_FrameSizeChange_vp09.00.10.08_hw_decoder [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_FrameSizeChange_vp8_hw_decoder [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_0 [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_1 [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_3 [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_MixedSourceEncoding_av01.0.04M.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_MixedSourceEncoding_avc1.42001E_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_MixedSourceEncoding_vp09.00.10.08_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_MixedSourceEncoding_vp8_prefer-software [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_3 [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_2 [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_2 [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_3 [ Failure ]
+# crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_convertToRGB_hw_decoder [ Failure ]
 
 # Android Desktop/Brya Failures
-crbug.com/416483573 [ android android-brya ] WebCodecs_DrawImage_hw_decoder [ Failure ]
-crbug.com/416483573 [ android android-brya ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_1500000 [ Failure ]
-crbug.com/416483573 [ android android-brya ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_1500000 [ Failure ]
-crbug.com/416483573 [ android android-brya ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
-crbug.com/416483573 [ android android-brya ] WebCodecs_copyTo_hw_decoder [ Failure ]
-
-
-# Common Android Desktop Failures
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeColorSpace_vp09.00.10.08_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_arraybuffer_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_arraybuffer_avc1.42001E_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_arraybuffer_vp09.00.10.08_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_arraybuffer_vp09.00.10.08_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_arraybuffer_vp8_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_camera_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_camera_avc1.42001E_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_camera_vp09.00.10.08_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_camera_vp09.00.10.08_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_camera_vp8_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_capture_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_capture_avc1.42001E_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_capture_vp09.00.10.08_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_capture_vp09.00.10.08_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_capture_vp8_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_hw_decoder_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_hw_decoder_avc1.42001E_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_hw_decoder_vp09.00.10.08_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_hw_decoder_vp09.00.10.08_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_hw_decoder_vp8_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_offscreen_vp09.00.10.08_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_offscreen_vp09.00.10.08_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_offscreen_vp8_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_sw_decoder_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_sw_decoder_avc1.42001E_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_sw_decoder_vp09.00.10.08_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_sw_decoder_vp09.00.10.08_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeDecode_sw_decoder_vp8_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_Encode_hw_decoder_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_Encode_hw_decoder_avc1.42001E_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_Encode_hw_decoder_avc1.64001E_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_Encode_hw_decoder_vp09.00.10.08_prefer-hardware [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_Encode_hw_decoder_vp09.00.10.08_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_Encode_hw_decoder_vp8_prefer-software [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_FrameSizeChange_vp09.00.10.08_hw_decoder [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_FrameSizeChange_vp8_hw_decoder [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_2 [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_3 [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_SVC_vp8_prefer-software_layers_2 [ Failure ]
-crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_SVC_vp8_prefer-software_layers_3 [ Failure ]
+crbug.com/459560016 [ android android-brya ] WebCodecs_SVC_avc1.42001E_prefer-hardware_layers_3 [ Failure ]
+crbug.com/459560016 [ android android-brya ] WebCodecs_SVC_vp09.00.10.08_prefer-hardware_layers_2 [ Failure ]
+crbug.com/459560016 [ android android-brya ] WebCodecs_SVC_vp09.00.10.08_prefer-hardware_layers_3 [ Failure ]
 
 # Flaky failures that started when upgrading to Mac 15.4
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_*hvc*prefer-hardware* [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_detail [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
+crbug.com/416294710 [ angle-metal intel-0x3e9b sequoia ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_text [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_arraybuffer [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_capture [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_hw_decoder [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_offscreen [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_sw_decoder [ Failure ]
 
 # Mac Intel SharedImage Synchronization Flakes
-crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_DrawImage_camera [ Failure ]
+crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_arraybuffer_avc1.42001E_prefer-hardware [ Failure ]
 crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_arraybuffer_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-* [ Failure ]
 crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_offscreen_vp09.00.10.08_prefer-software [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Failure ]
+crbug.com/417899571 [ angle-metal asan intel-0x3e9b sonoma ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Failure ]
+crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_* [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_avc1.42001E_prefer-* [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_* [ Failure ]
+crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
 
+#Mac Intel WebCodecs Flakes
+crbug.com/446649135 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-software_constant_3000000 [ Failure ]
+crbug.com/446649135 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_constant_3000000 [ Failure ]
+
+# Pixel 10
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-hardware_constant_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-hardware_constant_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-hardware_constant_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-hardware_variable_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-hardware_variable_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-hardware_variable_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-software_constant_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-software_constant_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-software_constant_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-software_variable_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-software_variable_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-software_variable_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_constant_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_constant_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_constant_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp09.00.10.08_prefer-software_constant_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp09.00.10.08_prefer-software_constant_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp09.00.10.08_prefer-software_constant_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp09.00.10.08_prefer-software_variable_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp09.00.10.08_prefer-software_variable_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp09.00.10.08_prefer-software_variable_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp8_prefer-software_constant_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp8_prefer-software_constant_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp8_prefer-software_constant_3000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp8_prefer-software_variable_1500000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp8_prefer-software_variable_2000000 [ Failure ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp8_prefer-software_variable_3000000 [ Failure ]
+
+# Snapdragon X Elite
+crbug.com/452841787 [ win11 qualcomm-0x36334330 ] WebCodecs_FrameSizeChange_av01.0.04M.08_* [ Failure ]
+
+# vaInitialize fails on chromeos-board-amd64-generic VMs
+crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_copyTo_offscreen [ Failure ]
+crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_EncodeDecode_capture_vp8_prefer-software [ Failure ]
+crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_EncodeDecode_capture_avc1.42001E_prefer-software [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

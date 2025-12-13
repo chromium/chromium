@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 namespace web_app {

@@ -35,6 +35,7 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/metrics/metrics_service.h"
@@ -44,7 +45,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/subresource_filter/content/shared/browser/ruleset_service.h"
+#include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
@@ -67,7 +68,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/apps/platform_apps/chrome_apps_browser_api_provider.h"
-#include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/ui/apps/chrome_app_window_client.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"
@@ -90,6 +90,7 @@
 #include "chrome/browser/hid/hid_status_icon.h"
 #include "chrome/browser/usb/usb_status_icon.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_init.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -99,6 +100,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/media_galleries/media_file_system_registry.h"
 #endif
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
@@ -183,9 +185,54 @@ TestingBrowserProcess::~TestingBrowserProcess() {
   DCHECK_EQ(static_cast<BrowserProcess*>(nullptr), g_browser_process);
 }
 
+std::unique_ptr<TestingProfileManager>
+TestingBrowserProcess::SetUpGlobalFeaturesForTesting(bool profile_manager) {
+  CreateGlobalFeaturesPreProfileManager();
+
+  std::unique_ptr<TestingProfileManager> testing_profile_manager;
+  if (profile_manager) {
+    testing_profile_manager = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    CHECK(testing_profile_manager->SetUp());
+  }
+
+  CreateGlobalFeaturesPostProfileManager();
+
+  return testing_profile_manager;
+}
+
+void TestingBrowserProcess::TearDownGlobalFeaturesForTesting(
+    std::unique_ptr<TestingProfileManager> profile_manager) {
+  CHECK(features_);
+  features_->PostMainMessageLoopRun();
+
+  profile_manager.reset();
+
+  // ResourceCoordinatorParts owns TabLifecycleUnitSource, which depends on a
+  // Global Feature (GlobalBrowserCollection). Thus, we need to make sure
+  // ResourceCoordinatorParts is destroyed before GlobalFeatures is completely
+  // shut down.
+  resource_coordinator_parts_.reset();
+
+  features_->PostDestroyThreads();
+}
+
+ui::UnownedUserDataHost& TestingBrowserProcess::GetUnownedUserDataHost() {
+  return unowned_user_data_host_;
+}
+
+const ui::UnownedUserDataHost& TestingBrowserProcess::GetUnownedUserDataHost()
+    const {
+  return unowned_user_data_host_;
+}
+
 void TestingBrowserProcess::Init() {
   features_ = GlobalFeatures::CreateGlobalFeatures();
-  features_->Init();
+  // Only initialize core features for now. If needed unit tests can call
+  // TestingBrowserProcess::CreateGlobalFeaturesForTesting() to initialize rest
+  // of the features.
+  features_->PreBrowserProcessInitCore();
+  features_->PostBrowserProcessInitCore();
 
   // Assume locale is initialized to "en" during initialization.
   features_->application_locale_storage()->Set("en");
@@ -215,6 +262,7 @@ void TestingBrowserProcess::Init() {
   ChromePermissionsClient::GetInstance();
 
 #if !BUILDFLAG(IS_ANDROID)
+  web_app::InitializeIsolatedWebAppRuntime();
   KeepAliveRegistry::GetInstance()->SetIsShuttingDown(false);
 #if BUILDFLAG(IS_CHROMEOS)
   hid_system_tray_icon_ = std::make_unique<HidPinnedNotification>();
@@ -233,8 +281,7 @@ void TestingBrowserProcess::FlushLocalStateAndReply(base::OnceClosure reply) {
   NOTREACHED();
 }
 
-void TestingBrowserProcess::EndSession() {
-}
+void TestingBrowserProcess::EndSession() {}
 
 metrics_services_manager::MetricsServicesManager*
 TestingBrowserProcess::GetMetricsServicesManager() {
@@ -390,19 +437,15 @@ TestingBrowserProcess::subresource_filter_ruleset_service() {
   return subresource_filter_ruleset_service_.get();
 }
 
-subresource_filter::RulesetService*
-TestingBrowserProcess::fingerprinting_protection_ruleset_service() {
-  return fingerprinting_protection_ruleset_service_.get();
-}
-
 BrowserProcessPlatformPart* TestingBrowserProcess::platform_part() {
   return platform_part_.get();
 }
 
 NotificationUIManager* TestingBrowserProcess::notification_ui_manager() {
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
-  if (!notification_ui_manager_.get())
+  if (!notification_ui_manager_.get()) {
     notification_ui_manager_ = NotificationUIManager::Create();
+  }
   return notification_ui_manager_.get();
 #else
   return nullptr;
@@ -426,8 +469,7 @@ IntranetRedirectDetector* TestingBrowserProcess::intranet_redirect_detector() {
 
 void TestingBrowserProcess::CreateDevToolsProtocolHandler() {}
 
-void TestingBrowserProcess::CreateDevToolsAutoOpener() {
-}
+void TestingBrowserProcess::CreateDevToolsAutoOpener() {}
 
 bool TestingBrowserProcess::IsShuttingDown() {
   return is_shutting_down_;
@@ -435,8 +477,9 @@ bool TestingBrowserProcess::IsShuttingDown() {
 
 printing::PrintJobManager* TestingBrowserProcess::print_job_manager() {
 #if BUILDFLAG(ENABLE_PRINTING)
-  if (!print_job_manager_.get())
+  if (!print_job_manager_.get()) {
     print_job_manager_ = std::make_unique<printing::PrintJobManager>();
+  }
   return print_job_manager_.get();
 #else
   NOTIMPLEMENTED();
@@ -490,8 +533,9 @@ DownloadStatusUpdater* TestingBrowserProcess::download_status_updater() {
 }
 
 DownloadRequestLimiter* TestingBrowserProcess::download_request_limiter() {
-  if (!download_request_limiter_)
+  if (!download_request_limiter_) {
     download_request_limiter_ = base::MakeRefCounted<DownloadRequestLimiter>();
+  }
   return download_request_limiter_.get();
 }
 
@@ -504,16 +548,14 @@ TestingBrowserProcess::component_updater() {
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 MediaFileSystemRegistry* TestingBrowserProcess::media_file_system_registry() {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-  return nullptr;
-#else
-  if (!media_file_system_registry_)
+  if (!media_file_system_registry_) {
     media_file_system_registry_ = std::make_unique<MediaFileSystemRegistry>();
+  }
   return media_file_system_registry_.get();
-#endif
 }
+#endif
 
 network_time::NetworkTimeTracker*
 TestingBrowserProcess::network_time_tracker() {
@@ -584,13 +626,23 @@ GlobalFeatures* TestingBrowserProcess::GetFeatures() {
 }
 
 void TestingBrowserProcess::CreateGlobalFeaturesForTesting() {
+  CreateGlobalFeaturesPreProfileManager();
+  CreateGlobalFeaturesPostProfileManager();
+}
+
+void TestingBrowserProcess::CreateGlobalFeaturesPreProfileManager() {
   // To replace the GlobalFeatures, shutdown the default instance first.
   CHECK(features_);
-  features_->Shutdown();
+  features_->PostMainMessageLoopRun();
+  features_->PostDestroyThreads();
   features_.reset();
 
   features_ = GlobalFeatures::CreateGlobalFeatures();
-  features_->Init();
+  features_->PreBrowserProcessInit();
+}
+
+void TestingBrowserProcess::CreateGlobalFeaturesPostProfileManager() {
+  features_->PostBrowserProcessInit();
 
   // Assume locale is initialized to "en" during initialization.
   features_->application_locale_storage()->Set("en");
@@ -671,11 +723,6 @@ void TestingBrowserProcess::SetWebRtcLogUploader(
 void TestingBrowserProcess::SetRulesetService(
     std::unique_ptr<subresource_filter::RulesetService> ruleset_service) {
   subresource_filter_ruleset_service_.swap(ruleset_service);
-}
-
-void TestingBrowserProcess::SetFingerprintingProtectionRulesetService(
-    std::unique_ptr<subresource_filter::RulesetService> ruleset_service) {
-  fingerprinting_protection_ruleset_service_.swap(ruleset_service);
 }
 
 void TestingBrowserProcess::SetShuttingDown(bool is_shutting_down) {

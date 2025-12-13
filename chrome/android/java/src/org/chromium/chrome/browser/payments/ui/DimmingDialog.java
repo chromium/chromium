@@ -42,9 +42,6 @@ import java.util.Collection;
  * the web contents of a payment handler CCT to also dim on some versions of Android (e.g., Nougat).
  *
  * <p>Note: Do not use this class outside of the payments.ui package!
- * TODO(crbug.com/40560343): Revert the visibility to package default again when it is no longer
- * used by Autofill Assistant.
- * Revert the visibility to package default again when it is no longer used by Autofill Assistant.
  */
 @NullMarked
 /* package */ class DimmingDialog {
@@ -59,7 +56,7 @@ import java.util.Collection;
     /** Length of the animation to hide the bottom sheet UI. */
     private static final int DIALOG_EXIT_ANIMATION_MS = 195;
 
-    private final Dialog mDialog;
+    private final AlwaysDismissedDialog mDialog;
     private final ViewGroup mFullContainer;
     private final int mAnimatorTranslation;
     private @Nullable OnDismissListener mDismissListener;
@@ -116,13 +113,17 @@ import java.util.Collection;
                 !ColorUtils.shouldUseLightForegroundOnBackground(window.getStatusBarColor()));
     }
 
-    /** @param bottomSheetView The view to show in the bottom sheet. */
-    /* package */ void addBottomSheetView(View bottomSheetView) {
+    /**
+     * @param bottomSheetView The view to show in the bottom sheet.
+     * @param backgroundColor The color for the bottom sheet view. Used to color navigation bar.
+     */
+    /* package */ void addBottomSheetView(View bottomSheetView, int backgroundColor) {
         FrameLayout.LayoutParams bottomSheetParams =
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         bottomSheetParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         mFullContainer.addView(bottomSheetView, bottomSheetParams);
         bottomSheetView.addOnLayoutChangeListener(new FadeInAnimator());
+        mDialog.setNavBarColor(backgroundColor);
     }
 
     /**

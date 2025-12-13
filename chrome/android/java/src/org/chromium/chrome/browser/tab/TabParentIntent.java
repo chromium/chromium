@@ -9,9 +9,10 @@ import android.content.Intent;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 /**
  * A holder of {@link Intent} object to be used to bring back the parent {@link Activity} from which

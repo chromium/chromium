@@ -485,12 +485,12 @@ void RemoteWebAuthnNativeMessagingHost::SendMessageToClient(
     base::Value::Dict message) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  std::string message_json;
-  if (!base::JSONWriter::Write(message, &message_json)) {
+  std::optional<std::string> message_json = base::WriteJson(message);
+  if (!message_json.has_value()) {
     LOG(ERROR) << "Failed to write message to JSON";
     return;
   }
-  client_->PostMessageFromNativeHost(message_json);
+  client_->PostMessageFromNativeHost(message_json.value());
 }
 
 const base::Value* RemoteWebAuthnNativeMessagingHost::FindMessageIdOrSendError(

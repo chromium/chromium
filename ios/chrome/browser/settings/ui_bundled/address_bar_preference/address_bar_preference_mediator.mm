@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/address_bar_preference_mediator.h"
 
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/address_bar_preference_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -23,7 +24,7 @@
   if (self) {
     _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:GetApplicationContext()->GetLocalState()
-                   prefName:prefs::kBottomOmnibox];
+                   prefName:omnibox::kIsOmniboxInBottomPosition];
     [_bottomOmniboxEnabled setObserver:self];
   }
   return self;

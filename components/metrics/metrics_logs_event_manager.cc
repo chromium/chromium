@@ -17,14 +17,16 @@ MetricsLogsEventManager::ScopedNotifyLogType::ScopedNotifyLogType(
     : logs_event_manager_(logs_event_manager) {
   DCHECK(!instance_exists_);
   instance_exists_ = true;
-  if (logs_event_manager_)
+  if (logs_event_manager_) {
     logs_event_manager_->NotifyLogType(log_type);
+  }
 }
 
 MetricsLogsEventManager::ScopedNotifyLogType::~ScopedNotifyLogType() {
   DCHECK(instance_exists_);
-  if (logs_event_manager_)
+  if (logs_event_manager_) {
     logs_event_manager_->NotifyLogType(std::nullopt);
+  }
   instance_exists_ = false;
 }
 

@@ -13,10 +13,17 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 
-/** The JNI bridge for Quick Delete on Android to fetch browsing history data. */
+/**
+ * The JNI bridge for Quick Delete on Android to fetch browsing history data.
+ * TODO(crbug.com/406230204): Update bridge name to more accurately reflect it's purpose, which is
+ * to fetch History count.
+ */
 @NullMarked
 class QuickDeleteBridge {
     private long mNativeQuickDeleteBridge;
+
+    /** Called when the lastVisitedDomain and domainCount are fetched. */
+    private final DomainVisitsCallback mCallback;
 
     /** Interface for a class that is fetching visited domains information. */
     public interface DomainVisitsCallback {
@@ -36,9 +43,11 @@ class QuickDeleteBridge {
      * Creates a {@link QuickDeleteBridge} for accessing browsing history data for the current user.
      *
      * @param profile {@link Profile} The profile for which to fetch the browsing history.
+     * @param callback The callback to call with the last visited domain and domain count.
      */
-    public QuickDeleteBridge(Profile profile) {
-        mNativeQuickDeleteBridge = QuickDeleteBridgeJni.get().init(profile);
+    public QuickDeleteBridge(Profile profile, DomainVisitsCallback callback) {
+        mNativeQuickDeleteBridge = QuickDeleteBridgeJni.get().init(this, profile);
+        mCallback = callback;
     }
 
     /** Destroys this instance so no further calls can be executed. */
@@ -50,32 +59,27 @@ class QuickDeleteBridge {
     }
 
     /**
-     * Gets the synced last visited domain and unique domain count on all devices within the time
-     * period.
+     * Restarts the HistoryCounter with the selected time period.
      *
      * @param timePeriod The time period to fetch the results for.
-     * @param callback The callback to call with the last visited domain and domain count.
      */
-    public void getLastVisitedDomainAndUniqueDomainCount(
-            @TimePeriod int timePeriod, DomainVisitsCallback callback) {
+    public void restartCounterForTimePeriod(@TimePeriod int timePeriod) {
         QuickDeleteBridgeJni.get()
-                .getLastVisitedDomainAndUniqueDomainCount(
-                        mNativeQuickDeleteBridge, timePeriod, callback);
+                .restartCounterForTimePeriod(mNativeQuickDeleteBridge, timePeriod);
     }
 
     @CalledByNative
-    private static void onLastVisitedDomainAndUniqueDomainCountReady(
-            DomainVisitsCallback callback, String lastVisitedDomain, int domainCount) {
-        callback.onLastVisitedDomainAndUniqueDomainCountReady(lastVisitedDomain, domainCount);
+    private void onLastVisitedDomainAndUniqueDomainCountReady(
+            String lastVisitedDomain, int domainCount) {
+        mCallback.onLastVisitedDomainAndUniqueDomainCountReady(lastVisitedDomain, domainCount);
     }
 
     @NativeMethods
     interface Natives {
-        long init(@JniType("Profile*") @Nullable Profile profile);
+        long init(QuickDeleteBridge self, @JniType("Profile*") @Nullable Profile profile);
 
         void destroy(long nativeQuickDeleteBridge);
 
-        void getLastVisitedDomainAndUniqueDomainCount(
-                long nativeQuickDeleteBridge, int timePeriod, DomainVisitsCallback callback);
+        void restartCounterForTimePeriod(long nativeQuickDeleteBridge, int timePeriod);
     }
 }

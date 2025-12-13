@@ -14,8 +14,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -104,24 +104,26 @@ void CustomHomePagesTableModel::SetToCurrentlyOpenPages(
 
   // Add tabs from appropriate browser windows.
   size_t add_index = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!ShouldIncludeBrowser(browser)) {
-      continue;
-    }
-
-    for (int tab_index = 0; tab_index < browser->tab_strip_model()->count();
-         ++tab_index) {
-      content::WebContents* contents =
-          browser->tab_strip_model()->GetWebContentsAt(tab_index);
-      if (contents == ignore_contents) {
-        continue;
-      }
-      const GURL url = contents->GetURL();
-      if (!url.is_empty() && !url.SchemeIs(content::kChromeDevToolsScheme)) {
-        AddWithoutNotification(add_index++, url);
-      }
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, ignore_contents, &add_index](BrowserWindowInterface* browser) {
+        if (!ShouldIncludeBrowser(browser)) {
+          return true;
+        }
+        TabStripModel* const tab_model = browser->GetTabStripModel();
+        for (int tab_index = 0; tab_index < tab_model->count(); ++tab_index) {
+          content::WebContents* const contents =
+              tab_model->GetWebContentsAt(tab_index);
+          if (contents == ignore_contents) {
+            continue;
+          }
+          const GURL url = contents->GetURL();
+          if (!url.is_empty() &&
+              !url.SchemeIs(content::kChromeDevToolsScheme)) {
+            AddWithoutNotification(add_index++, url);
+          }
+        }
+        return true;
+      });
   LoadAllTitles();
 }
 
@@ -155,9 +157,10 @@ void CustomHomePagesTableModel::SetObserver(ui::TableModelObserver* observer) {
   observer_ = observer;
 }
 
-bool CustomHomePagesTableModel::ShouldIncludeBrowser(Browser* browser) {
+bool CustomHomePagesTableModel::ShouldIncludeBrowser(
+    BrowserWindowInterface* browser) {
   // Do not include incognito browsers.
-  if (browser->profile() != profile_) {
+  if (browser->GetProfile() != profile_) {
     return false;
   }
 #if BUILDFLAG(IS_CHROMEOS)
@@ -176,7 +179,7 @@ void CustomHomePagesTableModel::LoadTitle(Entry* entry) {
                                            ServiceAccessType::EXPLICIT_ACCESS);
   if (history_service) {
     entry->task_id = history_service->QueryURL(
-        entry->url, false,
+        entry->url,
         base::BindOnce(&CustomHomePagesTableModel::OnGotTitle,
                        base::Unretained(this), entry->url, false),
         &task_tracker_);
@@ -194,7 +197,7 @@ void CustomHomePagesTableModel::LoadAllTitles() {
   for (Entry& entry : entries_) {
     if (history_service) {
       entry.task_id = history_service->QueryURL(
-          entry.url, false,
+          entry.url,
           base::BindOnce(&CustomHomePagesTableModel::OnGotOneOfManyTitles,
                          base::Unretained(this), entry.url),
           &task_tracker_);

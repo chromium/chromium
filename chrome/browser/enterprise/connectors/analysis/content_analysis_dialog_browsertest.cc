@@ -16,7 +16,6 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
@@ -1169,6 +1168,18 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
   EXPECT_EQ(nullptr, dialog->GetSideIconSpinnerForTesting());
   EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
             u"Some of these files are encrypted. Ask their owner to decrypt.");
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
+                       TestOpenInForceSaveToCloudState) {
+  auto* dialog = CreateContentAnalysisDialog(
+                     std::make_unique<MockDelegate>(),
+                     FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD)
+                     ->dialog_delegate_for_testing();
+  EXPECT_EQ(nullptr, dialog->GetSideIconSpinnerForTesting());
+  EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
+            u"This file has sensitive or dangerous data. Your organization "
+            u"will let you save it to cloud storage or discard it");
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,

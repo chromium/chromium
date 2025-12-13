@@ -7,8 +7,10 @@
 #include <memory>
 #include <optional>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,8 +19,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -255,11 +255,10 @@ void PluginVmInstallerView::OnStateUpdated(InstallingState new_state) {
 }
 
 void PluginVmInstallerView::OnLinkClicked() {
-  NavigateParams params(profile_,
-                        GURL("https://support.google.com/chrome/a/?p=pluginvm"),
-                        ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
+      GURL("https://support.google.com/chrome/a/?p=pluginvm"),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void PluginVmInstallerView::OnProgressUpdated(double fraction_complete) {
@@ -355,8 +354,8 @@ std::u16string PluginVmInstallerView::GetMessage() const {
       return l10n_util::GetStringFUTF16(
           IDS_PLUGIN_VM_INSTALLER_CONFIRMATION_MESSAGE,
           ui::FormatBytesWithUnits(
-              plugin_vm_installer_->RequiredFreeDiskSpace(),
-              ui::DATA_UNITS_GIBIBYTE,
+              base::ByteCount(plugin_vm_installer_->RequiredFreeDiskSpace()),
+              ui::DataUnits::kGibibyte,
               /*show_units=*/true));
     case State::kInstalling:
       switch (installing_state_) {
@@ -454,8 +453,9 @@ std::u16string PluginVmInstallerView::GetMessage() const {
           return l10n_util::GetStringFUTF16(
               IDS_PLUGIN_VM_INSUFFICIENT_DISK_SPACE_MESSAGE,
               ui::FormatBytesWithUnits(
-                  plugin_vm_installer_->RequiredFreeDiskSpace(),
-                  ui::DATA_UNITS_GIBIBYTE,
+                  base::ByteCount(
+                      plugin_vm_installer_->RequiredFreeDiskSpace()),
+                  ui::DataUnits::kGibibyte,
                   /*show_units=*/true),
               app_name_);
       }
@@ -585,12 +585,15 @@ std::u16string PluginVmInstallerView::GetDownloadProgressMessage(
   if (content_length > 0) {
     return l10n_util::GetStringFUTF16(
         IDS_PLUGIN_VM_INSTALLER_DOWNLOAD_PROGRESS_MESSAGE,
-        ui::FormatBytesWithUnits(bytes_downloaded, ui::DATA_UNITS_GIBIBYTE,
-                                 /*show_units=*/false),
-        ui::FormatBytesWithUnits(content_length, ui::DATA_UNITS_GIBIBYTE,
+        ui::FormatBytesWithUnits(base::ByteCount(bytes_downloaded),
+                                 ui::DataUnits::kGibibyte,
+                                 /*(show_units)=*/false),
+        ui::FormatBytesWithUnits(base::ByteCount(content_length),
+                                 ui::DataUnits::kGibibyte,
                                  /*show_units=*/true));
   } else {
-    return ui::FormatBytesWithUnits(bytes_downloaded, ui::DATA_UNITS_GIBIBYTE,
+    return ui::FormatBytesWithUnits(base::ByteCount(bytes_downloaded),
+                                    ui::DataUnits::kGibibyte,
                                     /*show_units=*/true);
   }
 }

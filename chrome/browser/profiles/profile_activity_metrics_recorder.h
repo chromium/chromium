@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_ACTIVITY_METRICS_RECORDER_H_
 
 #include <stddef.h>
+
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -15,12 +16,13 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 
-class Browser;
+class BrowserWindowInterface;
+class GlobalBrowserCollection;
 
 class ProfileActivityMetricsRecorder
-    : public BrowserListObserver,
+    : public BrowserCollectionObserver,
       public metrics::DesktopSessionDurationTracker::Observer,
       public ProfileObserver {
  public:
@@ -35,8 +37,8 @@ class ProfileActivityMetricsRecorder
   // Cleans up any global state for testing.
   static void CleanupForTesting();
 
-  // BrowserListObserver overrides:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // BrowserCollectionObserver overrides:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
   // metrics::DesktopSessionDurationTracker::Observer overrides:
   void OnSessionEnded(base::TimeDelta session_length,
@@ -63,6 +65,8 @@ class ProfileActivityMetricsRecorder
 
   base::ActionCallback action_callback_;
 
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 

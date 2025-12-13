@@ -37,7 +37,6 @@
 #include "android_webview/browser_jni_headers/AwQuotaManagerBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using content::BrowserThread;
@@ -169,9 +168,8 @@ void GetStorageKeysTask::DoneOnUIThread() {
 // been invoked.
 class DeleteDataObserver : public content::BrowsingDataRemover::Observer {
  public:
-  explicit DeleteDataObserver(
-      content::BrowsingDataRemover* data_remover,
-      const base::android::JavaParamRef<jobject>& callback)
+  explicit DeleteDataObserver(content::BrowsingDataRemover* data_remover,
+                              const base::android::JavaRef<jobject>& callback)
       : observation_(this), callback_(callback) {
     observation_.Observe(data_remover);
   }
@@ -241,7 +239,7 @@ QuotaManager* AwQuotaManagerBridge::GetQuotaManager() const {
 
 void AwQuotaManagerBridge::DeleteBrowsingData(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jobject>& jcallback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   content::BrowsingDataRemover* data_remover =
@@ -257,7 +255,7 @@ void AwQuotaManagerBridge::DeleteBrowsingData(
 std::string AwQuotaManagerBridge::DeleteBrowsingDataForSite(
     JNIEnv* env,
     std::string& domain,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jobject>& jcallback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder =
@@ -294,7 +292,7 @@ void AwQuotaManagerBridge::DeleteAllDataFramework(JNIEnv* env) {
 
 void AwQuotaManagerBridge::DeleteOriginFramework(
     JNIEnv* env,
-    const JavaParamRef<jstring>& origin) {
+    const JavaRef<jstring>& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::u16string origin_string(
       base::android::ConvertJavaStringToUTF16(env, origin));
@@ -308,8 +306,8 @@ void AwQuotaManagerBridge::DeleteOriginFramework(
 }
 
 void AwQuotaManagerBridge::GetOrigins(JNIEnv* env,
-                                      const JavaParamRef<jobject>& object,
-                                      const JavaParamRef<jobject>& callback) {
+                                      const JavaRef<jobject>& object,
+                                      const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GetOriginsCallback ui_callback = base::BindOnce(
       [](const JavaRef<jobject>& obj, const JavaRef<jobject>& callback,
@@ -349,8 +347,8 @@ void OnUsageAndQuotaObtained(
 
 void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
     JNIEnv* env,
-    const JavaParamRef<jstring>& origin,
-    const JavaParamRef<jobject>& callback,
+    const JavaRef<jstring>& origin,
+    const JavaRef<jobject>& callback,
     bool is_quota) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::u16string origin_string(
@@ -375,3 +373,5 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwQuotaManagerBridge)

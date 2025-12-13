@@ -206,16 +206,15 @@ void VideoCaptureDeviceMacWithImageCaptureTest::
     device->SetIsPortraitEffectSupportedForTesting(false);
     mojom::PhotoState* photo_state = GetPhotoState(device);
 
-    ASSERT_FALSE(photo_state->supported_background_blur_modes);
+    EXPECT_EQ(photo_state->supported_background_blur_modes.size(), 0u);
   }
   {
     device->SetIsPortraitEffectSupportedForTesting(true);
     device->SetIsPortraitEffectActiveForTesting(false);
     mojom::PhotoState* photo_state = GetPhotoState(device);
 
-    ASSERT_TRUE(photo_state->supported_background_blur_modes);
-    EXPECT_EQ(photo_state->supported_background_blur_modes->size(), 1u);
-    EXPECT_EQ(photo_state->supported_background_blur_modes.value()[0],
+    EXPECT_EQ(photo_state->supported_background_blur_modes.size(), 1u);
+    EXPECT_EQ(photo_state->supported_background_blur_modes[0],
               mojom::BackgroundBlurMode::OFF);
     EXPECT_EQ(photo_state->background_blur_mode,
               mojom::BackgroundBlurMode::OFF);
@@ -225,9 +224,8 @@ void VideoCaptureDeviceMacWithImageCaptureTest::
     device->SetIsPortraitEffectActiveForTesting(true);
     mojom::PhotoState* photo_state = GetPhotoState(device);
 
-    ASSERT_TRUE(photo_state->supported_background_blur_modes);
-    EXPECT_EQ(photo_state->supported_background_blur_modes->size(), 1u);
-    EXPECT_EQ(photo_state->supported_background_blur_modes.value()[0],
+    EXPECT_EQ(photo_state->supported_background_blur_modes.size(), 1u);
+    EXPECT_EQ(photo_state->supported_background_blur_modes[0],
               mojom::BackgroundBlurMode::BLUR);
     EXPECT_EQ(photo_state->background_blur_mode,
               mojom::BackgroundBlurMode::BLUR);

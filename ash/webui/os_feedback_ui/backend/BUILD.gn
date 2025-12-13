@@ -23,7 +23,6 @@ static_library("backend") {
     "//content/public/browser",
     "//google_apis",
     "//mojo/public/cpp/bindings",
-    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
@@ -46,12 +45,11 @@ source_set("unit_tests") {
     "//content/public/browser",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
-    "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

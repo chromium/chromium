@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -54,7 +53,7 @@ static String GetContentTypeFromFileName(const String& name,
                                          File::ContentTypeLookupPolicy policy) {
   String type;
   wtf_size_t index = name.ReverseFind('.');
-  if (index != WTF::kNotFound) {
+  if (index != kNotFound) {
     if (policy == File::kWellKnownContentTypes) {
       type = MIMETypeRegistry::GetWellKnownMIMETypeForExtension(
           name.Substring(index + 1));
@@ -135,7 +134,8 @@ File* File::Create(ExecutionContext* context,
     last_modified = base::Time::Now();
   }
   DCHECK(options->hasEndings());
-  bool normalize_line_endings_to_native = options->endings() == "native";
+  const bool normalize_line_endings_to_native =
+      options->endings() == V8EndingType::Enum::kNative;
   if (normalize_line_endings_to_native)
     UseCounter::Count(context, WebFeature::kFileAPINativeLineEndings);
 

@@ -10,7 +10,6 @@
 #include "ash/public/cpp/tab_strip_delegate.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "content/public/browser/web_ui.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace mojom = ash::boca::mojom;
 

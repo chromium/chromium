@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -34,6 +33,11 @@ std::string AshDnsOverHttpsConfigSource::GetDnsOverHttpsMode() const {
 
 std::string AshDnsOverHttpsConfigSource::GetDnsOverHttpsTemplates() const {
   return secure_dns_manager_ ? dns_over_https_templates_ : std::string();
+}
+
+bool AshDnsOverHttpsConfigSource::AutomaticModeFallbackToDohEnabled() const {
+  // TODO(crbug.com/448683318): Add support for the fallback on Chrome OS here.
+  return false;
 }
 
 bool AshDnsOverHttpsConfigSource::IsConfigManaged() const {

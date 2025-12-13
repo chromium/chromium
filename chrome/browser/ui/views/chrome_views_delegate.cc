@@ -103,7 +103,7 @@ void ChromeViewsDelegate::SaveWindowPlacement(
   window_preferences.Set("maximized",
                          show_state == ui::mojom::WindowShowState::kMaximized);
 
-  gfx::Rect work_area(display::Screen::GetScreen()
+  gfx::Rect work_area(display::Screen::Get()
                           ->GetDisplayNearestView(window->GetNativeView())
                           .work_area());
   window_preferences.Set("work_area_left", work_area.x());

@@ -65,9 +65,9 @@ void BytesUploader::StartReading(
     return;
   }
   upload_pipe_ = std::move(upload_pipe);
-  upload_pipe_watcher_.Watch(upload_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-                             WTF::BindRepeating(&BytesUploader::OnPipeWriteable,
-                                                WrapWeakPersistent(this)));
+  upload_pipe_watcher_.Watch(
+      upload_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+      BindRepeating(&BytesUploader::OnPipeWriteable, WrapWeakPersistent(this)));
   consumer_->SetClient(this);
   if (consumer_->GetPublicState() ==
       BytesConsumer::PublicState::kReadableOrWaiting) {

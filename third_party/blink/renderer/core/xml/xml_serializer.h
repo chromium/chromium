@@ -39,7 +39,7 @@ class XMLSerializer final : public ScriptWrappable {
 
   XMLSerializer() = default;
 
-  WTF::String serializeToString(Node*);
+  String serializeToString(Node*);
 };
 
 }  // namespace blink

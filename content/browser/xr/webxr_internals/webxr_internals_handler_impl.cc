@@ -29,7 +29,6 @@ std::string GetOSVersion() {
 
 #if BUILDFLAG(IS_WIN)
   std::string win_version = base::SysInfo::OperatingSystemVersion();
-  base::ReplaceSubstringsAfterOffset(&win_version, 0, " SP", ".");
   os_version = win_version;
 #else
   // Every other OS is supported by OperatingSystemVersionNumbers

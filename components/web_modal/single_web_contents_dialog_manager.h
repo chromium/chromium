@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_WEB_MODAL_SINGLE_WEB_CONTENTS_DIALOG_MANAGER_H_
 #define COMPONENTS_WEB_MODAL_SINGLE_WEB_CONTENTS_DIALOG_MANAGER_H_
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class WebContents;

@@ -10,14 +10,17 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/memory/writable_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/input/utils.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/input/viz_touch_state.h"
 #include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
@@ -31,7 +34,9 @@ namespace viz {
 HostFrameSinkManager::HostFrameSinkManager()
     : debug_renderer_settings_(CreateDefaultDebugRendererSettings()) {}
 
-HostFrameSinkManager::~HostFrameSinkManager() = default;
+HostFrameSinkManager::~HostFrameSinkManager() {
+  viz_touch_state_ro_mapping_ = base::ReadOnlySharedMemoryMapping();
+}
 
 void HostFrameSinkManager::SetLocalManager(
     mojom::FrameSinkManager* frame_sink_manager) {
@@ -69,6 +74,12 @@ void HostFrameSinkManager::SetConnectionLostCallback(
   connection_lost_callback_ = std::move(callback);
 }
 
+void HostFrameSinkManager::SetViewTransitionResourcesCapturedCallback(
+    const blink::ViewTransitionToken& token,
+    base::OnceClosure callback) {
+  view_transition_callbacks_[token] = std::move(callback);
+}
+
 void HostFrameSinkManager::RegisterFrameSinkId(
     const FrameSinkId& frame_sink_id,
     HostFrameSinkClient* client,
@@ -102,7 +113,8 @@ bool HostFrameSinkManager::IsFrameSinkIdRegistered(
 
 void HostFrameSinkManager::InvalidateFrameSinkId(
     const FrameSinkId& frame_sink_id,
-    HostFrameSinkClient* client) {
+    HostFrameSinkClient* client,
+    base::OnceClosure callback) {
   DCHECK(frame_sink_id.is_valid());
 
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];
@@ -116,8 +128,9 @@ void HostFrameSinkManager::InvalidateFrameSinkId(
   data.client = nullptr;
 
   // There may be frame sink hierarchy information left in FrameSinkData.
-  if (data.IsEmpty())
+  if (data.IsEmpty()) {
     frame_sink_data_map_.erase(frame_sink_id);
+  }
 
   display_hit_test_query_.erase(frame_sink_id);
 
@@ -126,10 +139,6 @@ void HostFrameSinkManager::InvalidateFrameSinkId(
     // the platform window (eg. XWindow or HWND) get destroyed before the
     // platform window is destroyed.
     mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
-#if BUILDFLAG(IS_ANDROID)
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Viz.SyncDestroyCompositorFrameSink.ExecutionTime");
-#endif
     frame_sink_manager_->DestroyCompositorFrameSink(frame_sink_id);
 
     // Other synchronous IPCs continue to get processed while
@@ -138,7 +147,23 @@ void HostFrameSinkManager::InvalidateFrameSinkId(
     // reference at this point.
   }
 
-  frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id);
+  base::OnceClosure invalidate_callback;
+  if (callback) {
+    DCHECK(!frame_sink_invalidate_callbacks_.contains(frame_sink_id));
+    frame_sink_invalidate_callbacks_.emplace(frame_sink_id,
+                                             std::move(callback));
+    invalidate_callback =
+        base::BindOnce(&HostFrameSinkManager::InvalidateFrameSinkCallback,
+                       base::Unretained(this), frame_sink_id);
+  }
+
+  frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id,
+                                             std::move(invalidate_callback));
+}
+
+void HostFrameSinkManager::InvalidateFrameSinkCallback(
+    const FrameSinkId& frame_sink_id) {
+  frame_sink_invalidate_callbacks_.erase(frame_sink_id);
 }
 
 void HostFrameSinkManager::SetFrameSinkDebugLabel(
@@ -242,12 +267,16 @@ void HostFrameSinkManager::OnFrameTokenChanged(
     base::TimeTicks activation_time) {
   DCHECK(frame_sink_id.is_valid());
   auto iter = frame_sink_data_map_.find(frame_sink_id);
-  if (iter == frame_sink_data_map_.end())
+  if (iter == frame_sink_data_map_.end()) {
     return;
+  }
 
   const FrameSinkData& data = iter->second;
-  if (data.client)
+  if (data.client) {
+    // TODO(crbug.com/431761865): Remove after the bug is fixed.
+    SCOPED_CRASH_KEY_STRING32("content", "debug_label", data.debug_label);
     data.client->OnFrameTokenChanged(frame_token, activation_time);
+  }
 }
 
 bool HostFrameSinkManager::RegisterFrameSinkHierarchy(
@@ -279,8 +308,9 @@ void HostFrameSinkManager::UnregisterFrameSinkHierarchy(
   size_t num_erased = std::erase(parent_data.children, child_frame_sink_id);
   CHECK_EQ(num_erased, 1u);
 
-  if (parent_data.IsEmpty())
+  if (parent_data.IsEmpty()) {
     frame_sink_data_map_.erase(parent_frame_sink_id);
+  }
 
   frame_sink_manager_->UnregisterFrameSinkHierarchy(parent_frame_sink_id,
                                                     child_frame_sink_id);
@@ -292,18 +322,21 @@ void HostFrameSinkManager::AddVideoDetectorObserver(
 }
 
 void HostFrameSinkManager::CreateVideoCapturer(
-    mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver) {
-  frame_sink_manager_->CreateVideoCapturer(std::move(receiver));
+    mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
+    uint32_t capture_version_source) {
+  frame_sink_manager_->CreateVideoCapturer(std::move(receiver),
+                                           capture_version_source);
 }
 
 std::unique_ptr<ClientFrameSinkVideoCapturer>
-HostFrameSinkManager::CreateVideoCapturer() {
+HostFrameSinkManager::CreateVideoCapturer(uint32_t capture_version_source) {
   return std::make_unique<ClientFrameSinkVideoCapturer>(base::BindRepeating(
       [](base::WeakPtr<HostFrameSinkManager> self,
+         uint32_t capture_version_source,
          mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver) {
-        self->CreateVideoCapturer(std::move(receiver));
+        self->CreateVideoCapturer(std::move(receiver), capture_version_source);
       },
-      weak_ptr_factory_.GetWeakPtr()));
+      weak_ptr_factory_.GetWeakPtr(), capture_version_source));
 }
 
 void HostFrameSinkManager::EvictSurfaces(
@@ -341,6 +374,13 @@ void HostFrameSinkManager::NotifyRendererBlockStateChanged(
 
 void HostFrameSinkManager::RequestInputBack() {
   frame_sink_manager_->RequestInputBack();
+}
+
+const VizTouchState* HostFrameSinkManager::GetVizTouchStatePtr() const {
+  if (viz_touch_state_ro_mapping_.IsValid()) {
+    return viz_touch_state_ro_mapping_.GetMemoryAs<const VizTouchState>();
+  }
+  return nullptr;
 }
 
 void HostFrameSinkManager::SetOnCopyOutputReadyCallback(
@@ -404,6 +444,9 @@ void HostFrameSinkManager::OnConnectionLost() {
 
   metrics_recorder_remote_.reset();
 
+  // Clear the shared memory mapping
+  viz_touch_state_ro_mapping_ = base::ReadOnlySharedMemoryMapping();
+
 #if BUILDFLAG(IS_ANDROID)
   // Any cached back buffers are invalid once the connection to the
   // FrameSinkManager is lost.
@@ -417,8 +460,11 @@ void HostFrameSinkManager::OnConnectionLost() {
     map_entry.second.wait_on_destruction = false;
   }
 
-  if (!connection_lost_callback_.is_null())
+  frame_sink_invalidate_callbacks_.clear();
+
+  if (!connection_lost_callback_.is_null()) {
     connection_lost_callback_.Run();
+  }
 }
 
 void HostFrameSinkManager::RegisterAfterConnectionLoss() {
@@ -450,16 +496,17 @@ void HostFrameSinkManager::RegisterAfterConnectionLoss() {
 
 void HostFrameSinkManager::OnFirstSurfaceActivation(
     const SurfaceInfo& surface_info) {
-
   auto it = frame_sink_data_map_.find(surface_info.id().frame_sink_id());
 
   // If we've received a bogus or stale SurfaceId from Viz then just ignore it.
-  if (it == frame_sink_data_map_.end())
+  if (it == frame_sink_data_map_.end()) {
     return;
+  }
 
   FrameSinkData& frame_sink_data = it->second;
-  if (frame_sink_data.client)
+  if (frame_sink_data.client) {
     frame_sink_data.client->OnFirstSurfaceActivation(surface_info);
+  }
 }
 
 void HostFrameSinkManager::OnAggregatedHitTestRegionListUpdated(
@@ -468,15 +515,17 @@ void HostFrameSinkManager::OnAggregatedHitTestRegionListUpdated(
   auto iter = display_hit_test_query_.find(frame_sink_id);
   // The corresponding HitTestQuery has already been deleted, so drop the
   // in-flight hit-test data.
-  if (iter == display_hit_test_query_.end())
+  if (iter == display_hit_test_query_.end()) {
     return;
+  }
 
   iter->second->OnAggregatedHitTestRegionListUpdated(hit_test_data);
 
   // Ensure that HitTestQuery are updated so that observers are not working with
   // stale data.
-  for (HitTestRegionObserver& observer : observers_)
+  for (HitTestRegionObserver& observer : observers_) {
     observer.OnAggregatedHitTestRegionListUpdated(frame_sink_id, hit_test_data);
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -500,8 +549,34 @@ void HostFrameSinkManager::OnScreenshotCaptured(
   }
   auto callback = std::move(it->second);
   screenshot_destinations_.erase(it);
-  std::move(callback).Run(
-      copy_output_result->ScopedAccessSkBitmap().GetOutScopedBitmap());
+  std::move(callback).Run(std::move(copy_output_result));
+}
+
+void HostFrameSinkManager::OnVizTouchStateAvailable(
+    base::ReadOnlySharedMemoryRegion region) {
+  DCHECK(!viz_touch_state_ro_mapping_.IsValid());
+  if (!region.IsValid()) {
+    DLOG(ERROR) << "Received invalid ReadOnlySharedMemoryRegion from Viz.";
+    return;
+  }
+
+  viz_touch_state_ro_mapping_ = region.Map();
+  if (!viz_touch_state_ro_mapping_.IsValid()) {
+    DLOG(ERROR) << "Failed to map VizTouchState shared memory.";
+    return;
+  }
+}
+
+void HostFrameSinkManager::OnViewTransitionResourcesCaptured(
+    const blink::ViewTransitionToken& transition_token) {
+  auto it = view_transition_callbacks_.find(transition_token);
+  if (it == view_transition_callbacks_.end()) {
+    return;
+  }
+
+  auto closure = std::move(it->second);
+  view_transition_callbacks_.erase(it);
+  std::move(closure).Run();
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -521,8 +596,9 @@ uint32_t HostFrameSinkManager::CacheBackBufferForRootSink(
 void HostFrameSinkManager::EvictCachedBackBuffer(uint32_t cache_id) {
   DCHECK(frame_sink_manager_remote_);
 
-  if (cache_id < min_valid_cache_back_buffer_id_)
+  if (cache_id < min_valid_cache_back_buffer_id_) {
     return;
+  }
 
   // This synchronous call ensures that the GL context/surface that draw to
   // the platform window (eg. XWindow or HWND) get destroyed before the
@@ -580,6 +656,7 @@ HostFrameSinkManager::GetFrameSinkManagerTestApi() {
 
 void HostFrameSinkManager::ClearUnclaimedViewTransitionResources(
     const blink::ViewTransitionToken& transition_token) {
+  view_transition_callbacks_.erase(transition_token);
   frame_sink_manager_->ClearUnclaimedViewTransitionResources(transition_token);
 }
 
@@ -590,7 +667,7 @@ HostFrameSinkManager::FrameSinkData::FrameSinkData(FrameSinkData&& other) =
 
 HostFrameSinkManager::FrameSinkData::~FrameSinkData() = default;
 
-HostFrameSinkManager::FrameSinkData& HostFrameSinkManager::FrameSinkData::
-operator=(FrameSinkData&& other) = default;
+HostFrameSinkManager::FrameSinkData&
+HostFrameSinkManager::FrameSinkData::operator=(FrameSinkData&& other) = default;
 
 }  // namespace viz

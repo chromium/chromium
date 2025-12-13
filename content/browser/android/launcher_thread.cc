@@ -34,3 +34,5 @@ LauncherThread::~LauncherThread() = default;
 
 }  // namespace android
 }  // namespace content
+
+DEFINE_JNI(LauncherThread)

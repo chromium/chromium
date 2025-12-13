@@ -6,14 +6,15 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
+#include "components/strike_database/strike_database.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace autofill {
 
 // static
-StrikeDatabase* StrikeDatabaseFactory::GetForProfile(Profile* profile) {
-  return static_cast<StrikeDatabase*>(
+strike_database::StrikeDatabase* StrikeDatabaseFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<strike_database::StrikeDatabase*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
@@ -49,7 +50,8 @@ StrikeDatabaseFactory::BuildServiceInstanceForBrowserContext(
   // Note: This instance becomes owned by an object that never gets destroyed,
   // effectively leaking it until browser close. Only one is created per
   // profile, and closing-then-opening a profile returns the same instance.
-  return std::make_unique<StrikeDatabase>(db_provider, profile->GetPath());
+  return std::make_unique<strike_database::StrikeDatabase>(db_provider,
+                                                           profile->GetPath());
 }
 
 }  // namespace autofill

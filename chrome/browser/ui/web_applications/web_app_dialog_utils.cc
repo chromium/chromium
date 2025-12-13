@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -284,12 +285,14 @@ void CreateWebAppForBackgroundInstall(
     std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
     const GURL& install_url,
     const std::optional<GURL>& manifest_id,
+    const GURL& last_committed_url,
     WebAppInstalledCallback installed_callback) {
   auto* provider = WebAppProvider::GetForWebContents(initiating_web_contents);
   CHECK(provider);
 
   provider->scheduler().InstallAppFromUrl(
       install_url, manifest_id, initiating_web_contents->GetWeakPtr(),
+      last_committed_url,
       base::BindOnce(&OnWebAppInstallShowInstallDialog,
                      WebAppInstallFlow::kInstallSite,
                      webapps::WebappInstallSource::WEB_INSTALL,
@@ -298,28 +301,27 @@ void CreateWebAppForBackgroundInstall(
       std::move(installed_callback));
 }
 
-void ShowPwaInstallDialog(Browser* browser) {
-  CHECK(browser);
+void ShowPwaInstallDialog(BrowserWindowInterface* bwi) {
+  CHECK(bwi);
 
   base::RecordAction(base::UserMetricsAction("PWAInstallIcon"));
 
   content::WebContents* const web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      bwi->GetTabStripModel()->GetActiveWebContents();
   CHECK(web_contents);
 
-  PwaInstallPageActionController* pwa_install_controller =
-      browser->GetActiveTabInterface()
+  PwaInstallPageActionController* const pwa_install_controller =
+      bwi->GetActiveTabInterface()
           ->GetTabFeatures()
           ->pwa_install_page_action_controller();
   pwa_install_controller->SetIsExecuting(true);
 
   // Close PWA install IPH if it is showing.
   PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown;
-  bool install_icon_clicked_after_iph_shown =
-      BrowserUserEducationInterface::From(browser)
-          ->NotifyFeaturePromoFeatureUsed(
-              feature_engagement::kIPHDesktopPwaInstallFeature,
-              FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  const bool install_icon_clicked_after_iph_shown =
+      BrowserUserEducationInterface::From(bwi)->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHDesktopPwaInstallFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   if (install_icon_clicked_after_iph_shown) {
     iph_state = PwaInProductHelpState::kShown;
   }

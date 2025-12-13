@@ -41,10 +41,6 @@ bool CustomThemeSupplier::HasCustomImage(int id) const {
   return false;
 }
 
-bool CustomThemeSupplier::CanUseIncognitoColors() const {
-  return true;
-}
-
 ui::NativeTheme* CustomThemeSupplier::GetNativeTheme() const {
   return ui::NativeTheme::GetInstanceForNativeUi();
 }

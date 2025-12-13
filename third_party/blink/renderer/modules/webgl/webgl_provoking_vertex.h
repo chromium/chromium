@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class WebGLProvokingVertex final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -17,7 +19,7 @@ class WebGLProvokingVertex final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLProvokingVertex(WebGLRenderingContextBase*);
+  WebGLProvokingVertex(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 

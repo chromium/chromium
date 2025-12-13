@@ -5,11 +5,11 @@
 #ifndef CHROME_COMMON_PROFILER_THREAD_PROFILER_CONFIGURATION_H_
 #define CHROME_COMMON_PROFILER_THREAD_PROFILER_CONFIGURATION_H_
 
-#include <initializer_list>
 #include <optional>
 #include <string>
 #include <variant>
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "components/sampling_profiler/process_type.h"
@@ -93,7 +93,7 @@ class ThreadProfilerConfiguration {
   // randValue is a random value in the interval [0, 1) and is used to
   // determine the variation group.
   static VariationGroup ChooseVariationGroup(
-      std::initializer_list<Variation> variations,
+      base::span<const Variation> variations,
       double randValue);
 
  private:

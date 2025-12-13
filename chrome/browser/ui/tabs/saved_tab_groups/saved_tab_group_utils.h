@@ -10,13 +10,15 @@
 
 #include "base/containers/span.h"
 #include "base/uuid.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
-#include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -51,14 +53,6 @@ class SavedTabGroupUtils {
 
   // Helper method for checking whether the feature can be used.
   static bool IsEnabledForProfile(Profile* profile);
-
-  // TODO(crbug.com/350514491): Default to using the TabGroupSyncService when
-  // crbug.com/350514491 is complete.
-  // When IsTabGroupSyncServiceDesktopMigrationEnabled() is true use the
-  // TabGroupSyncService. Otherwise, use SavedTabGroupKeyedService::proxy. This
-  // function will only return nullptr when the services cannot be created, or
-  // the profile is non-regular (Ex: incognito or guest mode).
-  static TabGroupSyncService* GetServiceForProfile(Profile* profile);
 
   static void RemoveGroupFromTabstrip(
       const Browser* browser,
@@ -144,6 +138,10 @@ class SavedTabGroupUtils {
   static ui::TrackedElement* GetAnchorElementForTabGroupsV2IPH(
       const ui::ElementTracker::ElementList& elements);
 
+  // Returns the correct help bubble arrow for the Saved Groups V2 IPH.
+  static user_education::HelpBubbleArrow GetArrowForTabGroupsV2IPH(
+      const ui::TrackedElement* el);
+
   // Returns true if new tab groups should be pinned.
   static bool ShouldAutoPinNewTabGroups(Profile* profile);
 
@@ -162,7 +160,7 @@ class SavedTabGroupUtils {
   // is missing or not accessible.
   static std::vector<data_sharing::GroupMember> GetMembersOfSharedTabGroup(
       Profile* profile,
-      const tab_groups::CollaborationId& collaboration_id);
+      const syncer::CollaborationId& collaboration_id);
 
   // Returns the GroupId for this tab group's collaboration.
   static std::optional<data_sharing::GroupId> GetDataSharingGroupId(
@@ -180,8 +178,17 @@ class SavedTabGroupUtils {
   // must exist.
   static tabs::TabInterface* GetGroupedTab(LocalTabGroupID group_id,
                                            LocalTabID tab_id);
-};
 
+  static void PerformTabGroupMenuAction(const TabGroupMenuAction& action,
+                                        const TabGroupMenuContext& context,
+                                        Browser* browser,
+                                        TabGroupSyncService* tab_group_service);
+
+  static void RecordOpenSharedGroupMetrics(const TabGroupMenuContext& context);
+
+  static void RecordSavedTabGroupSubmenuMetric(
+      const TabGroupMenuContext& context);
+};
 }  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_UTILS_H_

@@ -2,6 +2,8 @@ Name: Google Toolbox for Mac
 Short Name: google-toolbox-for-mac
 URL: https://github.com/google/google-toolbox-for-mac
 Version: 626
+Revision: dc8a578a50173b642b272fe4092e7d583846e2e5
+Update Mechanism: Manual
 Security Critical: Yes
 Shipped: yes
 License: Apache-2.0

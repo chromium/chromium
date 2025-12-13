@@ -7,7 +7,10 @@ source_set("tabs_public") {
 
   public_deps = [ "//base" ]
 
-  deps = [ "//content/public/browser" ]
+  deps = [
+    "//content/public/browser",
+    "//ui/base/unowned_user_data",
+  ]
 }
 
 source_set("tabs_impl") {
@@ -16,11 +19,12 @@ source_set("tabs_impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":tabs_public",
-    "//chrome/browser/privacy_sandbox/incognito:tab_observer",
     "//chrome/browser/sync",
     "//components/external_intents/android",
     "//components/favicon/content",
+    "//components/lens",
     "//components/metrics:content",
+    "//components/tabs:public",
     "//content/public/browser",
   ]
 }

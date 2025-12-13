@@ -26,6 +26,7 @@ include_rules = [
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_navigator.h",
+  "+chrome/browser/ui/interaction",
   "+chrome/grit",
   "+chrome/test",
 ]

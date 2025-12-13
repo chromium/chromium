@@ -1,0 +1,7 @@
+{
+  "ToTRustLinux(dbg)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  }
+}

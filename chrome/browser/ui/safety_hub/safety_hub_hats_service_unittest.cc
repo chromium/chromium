@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -76,7 +74,6 @@ class SafetyHubHatsServiceTest : public testing::Test {
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     identity_test_env_ = identity_test_env_adaptor_->identity_test_env();
 
-    feature_list_.InitWithFeatures({features::kSafetyHub}, {});
     identity_test_env()->MakePrimaryAccountAvailable(
         kEmail, signin::ConsentLevel::kSignin);
 
@@ -191,7 +188,6 @@ class SafetyHubHatsServiceTest : public testing::Test {
   raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_;
-  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<TestPasswordStore> profile_store_;
   scoped_refptr<TestPasswordStore> account_store_;
   raw_ptr<BulkLeakCheckService> bulk_leak_check_service_;

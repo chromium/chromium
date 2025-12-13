@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">संत्री</translation>
 <translation id="1275718070701477396">निवडले</translation>
 <translation id="1290331692326790741">खराब सिग्नल</translation>
+<translation id="1292474106138697109">क्लास टूल डिस्प्ले</translation>
 <translation id="1300115153046603471">APN हे डीफॉल्ट आणि <ph name="ATTACH" /> या प्रकारचे आहे.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">रूपांतर करा</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">सर्वोत्तम मदत आशय</translation>
 <translation id="2277631741861284101">तुमचा ऑडिओ सहजरीत्या रेकॉर्ड करून शेअर करा</translation>
 <translation id="2279051792571591988">डीफॉल्ट रिस्टोअर करा</translation>
-<translation id="2286454467119466181">साधी</translation>
+<translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">इमेज उपलब्ध नाही. फोटो जोडण्यासाठी, <ph name="LINK" /> वर जा</translation>
 <translation id="2294577623958216786">सद्य शेड्यूल हे <ph name="SUNRISE" />-<ph name="SUNSET" /> वर सेट केले आहे. सूर्यास्त आणि सूर्योदय शेड्यूल आपोआप अपडेट करण्यासाठी, सिस्टीम स्थान अ‍ॅक्सेस सुरू करा.</translation>
 <translation id="2305172810646967500">काळा</translation>
@@ -535,7 +536,7 @@
 <translation id="3360306038446926262">विंडो</translation>
 <translation id="3361618936611118375">सुशी</translation>
 <translation id="3368922792935385530">कनेक्ट केले</translation>
-<translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमची सुरू असलेली प्रिंट कार्ये साफ केली जाणार नाहीत.</translation>
+<translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमचे सुरू असलेले प्रिंट जॉब साफ केले जाणार नाहीत.</translation>
 <translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">अर्थ फ्लो वॉलपेपर</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> या अक्षरासह <ph name="LETTERS_COLOR" /> बॅकग्राउंड</translation>
@@ -715,7 +716,7 @@
 <translation id="4170180284036919717">फोटो काढा</translation>
 <translation id="4170700058716978431">करता आली नाही</translation>
 <translation id="4171077696775491955">ब्राइटनेस कमी करा</translation>
-<translation id="4176463684765177261">अक्षम केले</translation>
+<translation id="4176463684765177261">बंद केले</translation>
 <translation id="4176659219503619100">कंट्रोल पॅनल</translation>
 <translation id="4192913637640303603">रेकॉर्डिंगची शीर्षके तयार करू शकत नाही</translation>
 <translation id="4193496492959950834">Recorder सेटिंग्ज</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
 <translation id="4300272766492248925">अ‍ॅप उघडा</translation>
 <translation id="430786093962686457">शिफॉन</translation>
+<translation id="4309762678330556039">आपोआप ट्रान्स्क्रिप्शन तयार करा आणि ऑडिओ शोधा. तुम्ही इंटरनेटशी कनेक्ट केलेले नसतानादेखील रेकॉर्डिंग तयार करू शकता.</translation>
 <translation id="4310735698903592804">Google AI द्वारे समर्थित अलीकडील वॉलपेपर</translation>
 <translation id="4320904097188876154">निऑन पिंक</translation>
 <translation id="432961742358282111">व्याख्या, भाषांतरे किंवा युनिट रूपांतरे मिळवण्यासाठी राइट-क्लिक करा अथवा प्रेस करून धरून ठेवा. हे वैशिष्ट्य व्यवस्थापित करण्यासाठी लेफ्ट किंवा राइट अ‍ॅरो की वापरा.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> की तपासली</translation>
 <translation id="5606865426897221650">टॅब</translation>
+<translation id="5612205513582918357">क्लास टूल <ph name="RECEIVER_NAME" /> सोबत तुमची स्क्रीन शेअर करत आहे</translation>
 <translation id="5613201299517339763">तुम्हाला साइन आउट केले गेले आहे</translation>
 <translation id="5620281292257375798">फक्त अंतर्गत</translation>
 <translation id="5628106863521633649">उपलब्ध भाषा</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">ढगांचा प्रवाह</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">कोणतेही स्कॅनर उपलब्ध नाहीत</translation>
-<translation id="6231648282154119906">तुम्ही निवडलेल्या वर्धित संरक्षणाचा भाग म्हणून Google सुरक्षित ब्राउझिंग हे संशयास्पद फाइल आपोआप स्कॅन करेल</translation>
 <translation id="6232017090690406397">बॅटरी</translation>
 <translation id="6234024205316847054">आउटलाइन दाखवा</translation>
 <translation id="6243280677745499710">सध्या सेट केला आहे</translation>

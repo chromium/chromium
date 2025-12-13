@@ -53,10 +53,10 @@ void DrawClippedCircle(gfx::Canvas& canvas,
                        SkColor circle_color,
                        bool clip_right_of_circle) {
   if (clip_right_of_circle) {
-    SkPath right_clip_circle;
-    right_clip_circle.addCircle(diameter + (diameter / 3.0f), diameter / 2.0f,
-                                diameter / 2.0f);
-    right_clip_circle.setFillType(SkPathFillType::kInverseWinding);
+    const SkPath right_clip_circle =
+        SkPath::Circle(diameter + (diameter / 3.0f), diameter / 2.0f,
+                       diameter / 2.0f)
+            .makeFillType(SkPathFillType::kInverseWinding);
     canvas.ClipPath(right_clip_circle, /*do_anti_alias=*/true);
   }
 
@@ -154,8 +154,8 @@ std::unique_ptr<AvatarImageView> CreateCircleAvatarImageView(
                      /*is_opaque=*/false);
   canvas.Save();
 
-  SkPath circle_path;
-  circle_path.addCircle(diameter / 2.0f, diameter / 2.0f, diameter / 2.0f);
+  const SkPath circle_path =
+      SkPath::Circle(diameter / 2.0f, diameter / 2.0f, diameter / 2.0f);
   canvas.ClipPath(circle_path, /*do_anti_alias=*/true);
 
   const int img_width = image_skia.width();
@@ -198,7 +198,7 @@ void ManageSharingAvatarContainer::UpdateMemberGfxImage(
 
 ManageSharingAvatarContainer::ManageSharingAvatarContainer(
     Profile* profile,
-    const tab_groups::CollaborationId& collaboration_id)
+    const syncer::CollaborationId& collaboration_id)
     : data_sharing_service_(
           data_sharing::DataSharingServiceFactory::GetForProfile(profile)),
       profile_(profile),

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "components/gwp_asan/common/pack_stack_trace.h"
 
@@ -22,7 +18,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* Data, size_t Size) {
     return 0;
 
   size_t unpacked_max_size = *reinterpret_cast<const size_t*>(Data);
-  Data += sizeof(size_t);
+  UNSAFE_TODO(Data += sizeof(size_t));
   Size -= sizeof(size_t);
 
   // This should always be large enough to hold the output.

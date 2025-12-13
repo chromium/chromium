@@ -91,7 +91,7 @@ H265Decoder::H265Decoder(const uint8_t* stream_data,
                          SharedVASurface::FetchPolicy fetch_policy)
     : VideoDecoder::VideoDecoder(va_device, fetch_policy), wrapper_(va_device) {
   Reset();
-  parser_.SetStream(stream_data, stream_len);
+  parser_.SetStream(base::span(stream_data, stream_len));
 }
 
 H265Decoder::~H265Decoder() {

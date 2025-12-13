@@ -46,22 +46,9 @@ void FakeP2PSocketDelegate::DestroySocket(P2PSocket* socket) {
 void FakeP2PSocketDelegate::DumpPacket(base::span<const uint8_t> data,
                                        bool incoming) {}
 
-void FakeP2PSocketDelegate::AddAcceptedConnection(
-    std::unique_ptr<P2PSocket> accepted) {
-  accepted_.push_back(std::move(accepted));
-}
-
 void FakeP2PSocketDelegate::ExpectDestruction(
     std::unique_ptr<P2PSocket> socket) {
   sockets_to_be_destroyed_.push_back(std::move(socket));
-}
-
-std::unique_ptr<P2PSocket> FakeP2PSocketDelegate::pop_accepted_socket() {
-  if (accepted_.empty())
-    return nullptr;
-  auto result = std::move(accepted_.front());
-  accepted_.pop_front();
-  return result;
 }
 
 FakeSocket::FakeSocket(std::string* written_data)

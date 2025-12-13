@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <optional>
 #include <string>
 #include <vector>
@@ -102,7 +103,7 @@ struct MEDIA_EXPORT SampleEncryptionEntry {
   // anywhere.
   bool GetTotalSizeOfSubsamples(size_t* total_size) const;
 
-  uint8_t initialization_vector[kInitializationVectorSize];
+  std::array<uint8_t, kInitializationVectorSize> initialization_vector{};
   std::vector<SubsampleEntry> subsamples;
 };
 
@@ -143,7 +144,7 @@ struct MEDIA_EXPORT TrackEncryption : Box {
   uint8_t default_crypt_byte_block;
   uint8_t default_skip_byte_block;
   uint8_t default_constant_iv_size;
-  uint8_t default_constant_iv[kInitializationVectorSize];
+  std::array<uint8_t, kInitializationVectorSize> default_constant_iv;
 };
 
 struct MEDIA_EXPORT SchemeInfo : Box {
@@ -232,7 +233,7 @@ struct MEDIA_EXPORT AVCDecoderConfigurationRecord : Box {
   //       context and therefore the box header is not expected to be present
   //       in |data|.
   // Returns true if |data| was successfully parsed.
-  bool Parse(const uint8_t* data, int data_size);
+  bool Parse(base::span<const uint8_t> data);
   bool Serialize(std::vector<uint8_t>& output) const;
 
   uint8_t version;
@@ -353,7 +354,7 @@ struct MEDIA_EXPORT VideoSampleEntry : Box {
   // will be used to upgrade `video_info` from its backwards
   // compatible codec (e.g., H.264, H.265) to a Dolby Vision codec.
   std::optional<CodecProfileLevel> dv_info;
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
 
   bool IsFormatValid() const;
 
@@ -499,7 +500,7 @@ struct MEDIA_EXPORT CencSampleEncryptionInfoEntry {
   uint8_t crypt_byte_block;
   uint8_t skip_byte_block;
   uint8_t constant_iv_size;
-  uint8_t constant_iv[kInitializationVectorSize];
+  std::array<uint8_t, kInitializationVectorSize> constant_iv;
 };
 
 struct MEDIA_EXPORT SampleGroupDescription : Box {  // 'sgpd'.

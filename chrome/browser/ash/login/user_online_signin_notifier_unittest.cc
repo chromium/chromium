@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/login/user_online_signin_notifier.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

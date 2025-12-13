@@ -16,6 +16,7 @@ import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.impl.CronetLogger;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Logger for logging cronet's telemetry */
@@ -224,7 +225,27 @@ public class CronetLoggerImpl extends CronetLogger {
                     convertToProtoFailureReason(trafficInfo.getFailureReason()),
                     OptionalBoolean.fromBoolean(trafficInfo.getIsSocketReused()).getValue(),
                     trafficInfo.getCronetVersion(),
-                    convertToProtoCronetEngineBuilderInitializedSource(trafficInfo.getCronetSource()));
+                    convertToProtoCronetEngineBuilderInitializedSource(
+                            trafficInfo.getCronetSource()),
+                    trafficInfo.getTimeToEstablishDNSMicros() == -1
+                            ? -1
+                            : TimeUnit.MICROSECONDS.toMillis(
+                                    trafficInfo.getTimeToEstablishDNSMicros()),
+                    trafficInfo.getTimeToEstablishSSLMicros() == -1
+                            ? -1
+                            : TimeUnit.MICROSECONDS.toMillis(
+                                    trafficInfo.getTimeToEstablishSSLMicros()),
+                    trafficInfo.getTimeToConnectMicros() == -1
+                            ? -1
+                            : TimeUnit.MICROSECONDS.toMillis(trafficInfo.getTimeToConnectMicros()),
+                    trafficInfo.getTimeToSendFirstByteMicros() == -1
+                            ? -1
+                            : TimeUnit.MICROSECONDS.toMillis(
+                                    trafficInfo.getTimeToSendFirstByteMicros()),
+                    trafficInfo.getTimeToEstablishDNSMicros(),
+                    trafficInfo.getTimeToEstablishSSLMicros(),
+                    trafficInfo.getTimeToConnectMicros(),
+                    trafficInfo.getTimeToSendFirstByteMicros());
         } catch (Exception e) {
             // using addAndGet because another thread might have modified samplesRateLimited's value
             mSamplesRateLimited.addAndGet(samplesRateLimitedCount);

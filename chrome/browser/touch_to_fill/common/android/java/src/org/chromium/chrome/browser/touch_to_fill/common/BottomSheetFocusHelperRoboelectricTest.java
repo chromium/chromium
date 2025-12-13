@@ -9,12 +9,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.UserData;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.Tab;
@@ -30,6 +31,7 @@ import org.chromium.ui.base.WindowAndroid;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 public class BottomSheetFocusHelperRoboelectricTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
     @Mock private BottomSheetController mBottomSheetController;
@@ -38,11 +40,9 @@ public class BottomSheetFocusHelperRoboelectricTest {
     @Mock private WebContentsAccessibility mWebContentsAccessibility;
     @Mock private Tab mTab;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private UserData mUserData;
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         mBottomSheetFocusHelper =
                 new BottomSheetFocusHelper(mBottomSheetController, mWindowAndroid);
         mBottomSheetFocusHelper.setWebContentsAccessibility(mWebContentsAccessibility);

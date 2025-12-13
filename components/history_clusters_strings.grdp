@@ -7,7 +7,7 @@
     Actions
   </message>
   <message name="IDS_HISTORY_CLUSTERS_DELETE_PRIOR_VISITS_CONFIRM_BUTTON" desc="Text for the button used to confirm the dialog asking if they would like to proceed with deletion.">
-    Remove
+    Delete
   </message>
   <message name="IDS_HISTORY_CLUSTERS_DELETE_PRIOR_VISITS_WARNING" desc="Warning shown before deleting from the history clusters page">
     Are you sure you want to delete these pages from your history?
@@ -68,16 +68,16 @@
     Related searches
   </message>
   <message name="IDS_HISTORY_CLUSTERS_REMOVE_ALL_ITEMS" desc="Label of the item in drop-down menu that allows the user to remove a group of history items.">
-    Remove all from history
+    Delete all from history
   </message>
   <message name="IDS_HISTORY_CLUSTERS_REMOVE_PAGE" desc="Label of the item in drop-down menu that allows the user to remove a history item.">
-    Remove from history
+    Delete from history
   </message>
   <message name="IDS_HISTORY_CLUSTERS_REMOVE_ITEM_TOAST" desc="Confirmation message shown after user successfully removes one history item from the item's drop-down menu.">
-    Item removed
+    Item deleted
   </message>
   <message name="IDS_HISTORY_CLUSTERS_REMOVE_SELECTED_ITEMS" desc="Title of the button that allows the user to remove the selected history cluster items">
-    Remove selected items
+    Delete selected items
   </message>
   <message name="IDS_HISTORY_CLUSTERS_SAVED_IN_TABGROUP_LABEL" desc="A label indicating whether a history item was added to a tab group.">
     Saved in tab group

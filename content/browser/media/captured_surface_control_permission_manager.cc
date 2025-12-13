@@ -24,37 +24,40 @@ namespace content {
 namespace {
 
 using ::blink::mojom::PermissionStatus;
-using PermissionResult =
-    ::content::CapturedSurfaceControlPermissionManager::PermissionResult;
+using CapturedSurfaceControlPermissionStatus =
+    ::content::CapturedSurfaceControlPermissionManager::
+        CapturedSurfaceControlPermissionStatus;
 
 // Translate between callbacks expecting different types.
-base::OnceCallback<void(PermissionStatus)> WrapCallback(
-    base::OnceCallback<void(PermissionResult)> callback) {
+base::OnceCallback<void(content::PermissionResult)> WrapCallback(
+    base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)> callback) {
   return base::BindOnce(
-      [](base::OnceCallback<void(PermissionResult)> callback,
-         PermissionStatus permission_status) {
-        std::move(callback).Run(permission_status == PermissionStatus::GRANTED
-                                    ? PermissionResult::kGranted
-                                    : PermissionResult::kDenied);
+      [](base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)>
+             callback,
+         content::PermissionResult permission_result) {
+        std::move(callback).Run(
+            permission_result.status == PermissionStatus::GRANTED
+                ? CapturedSurfaceControlPermissionStatus::kGranted
+                : CapturedSurfaceControlPermissionStatus::kDenied);
       },
       std::move(callback));
 }
 
 void CheckPermissionOnUIThread(
     GlobalRenderFrameHostId capturer_rfh_id,
-    base::OnceCallback<void(PermissionResult)> callback) {
+    base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   RenderFrameHostImpl* const capturer_rfhi =
       RenderFrameHostImpl::FromID(capturer_rfh_id);
   if (!capturer_rfhi) {
-    std::move(callback).Run(PermissionResult::kError);
+    std::move(callback).Run(CapturedSurfaceControlPermissionStatus::kError);
     return;
   }
 
   BrowserContext* const browser_context = capturer_rfhi->GetBrowserContext();
   if (!browser_context) {
-    std::move(callback).Run(PermissionResult::kError);
+    std::move(callback).Run(CapturedSurfaceControlPermissionStatus::kError);
     return;
   }
 
@@ -62,14 +65,14 @@ void CheckPermissionOnUIThread(
       WebContentsImpl::FromRenderFrameHostImpl(capturer_rfhi);
   if (!capturer_wc) {
     // The capturing frame or tab appears to have closed asynchronously.
-    std::move(callback).Run(PermissionResult::kError);
+    std::move(callback).Run(CapturedSurfaceControlPermissionStatus::kError);
     return;
   }
 
   PermissionController* const permission_controller =
       browser_context->GetPermissionController();
   if (!permission_controller) {
-    std::move(callback).Run(PermissionResult::kError);
+    std::move(callback).Run(CapturedSurfaceControlPermissionStatus::kError);
     return;
   }
 
@@ -79,10 +82,10 @@ void CheckPermissionOnUIThread(
               blink::PermissionType::CAPTURED_SURFACE_CONTROL),
       capturer_rfhi)) {
     case PermissionStatus::GRANTED:
-      std::move(callback).Run(PermissionResult::kGranted);
+      std::move(callback).Run(CapturedSurfaceControlPermissionStatus::kGranted);
       return;
     case PermissionStatus::DENIED:
-      std::move(callback).Run(PermissionResult::kDenied);
+      std::move(callback).Run(CapturedSurfaceControlPermissionStatus::kDenied);
       return;
     case PermissionStatus::ASK:
       break;
@@ -90,7 +93,7 @@ void CheckPermissionOnUIThread(
 
   const bool user_gesture = capturer_rfhi->HasTransientUserActivation();
   if (!user_gesture) {
-    std::move(callback).Run(PermissionResult::kDenied);
+    std::move(callback).Run(CapturedSurfaceControlPermissionStatus::kDenied);
     return;
   }
 
@@ -115,12 +118,12 @@ CapturedSurfaceControlPermissionManager::
     ~CapturedSurfaceControlPermissionManager() = default;
 
 void CapturedSurfaceControlPermissionManager::CheckPermission(
-    base::OnceCallback<void(PermissionResult)> callback) {
+    base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAutoGrantCapturedSurfaceControlPrompt)) {
-    std::move(callback).Run(PermissionResult::kGranted);
+    std::move(callback).Run(CapturedSurfaceControlPermissionStatus::kGranted);
     return;
   }
 
@@ -140,14 +143,14 @@ void CapturedSurfaceControlPermissionManager::CheckPermission(
 // static
 void CapturedSurfaceControlPermissionManager::OnCheckResultStatic(
     base::WeakPtr<CapturedSurfaceControlPermissionManager> manager,
-    base::OnceCallback<void(PermissionResult)> callback,
-    PermissionResult result) {
+    base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)> callback,
+    CapturedSurfaceControlPermissionStatus result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!manager) {
     // Intentionally ignore `result`, as the capture-session stopped
     // asynchronously and the result is no longer relevant.
-    std::move(callback).Run(PermissionResult::kError);
+    std::move(callback).Run(CapturedSurfaceControlPermissionStatus::kError);
     return;
   }
 
@@ -155,8 +158,8 @@ void CapturedSurfaceControlPermissionManager::OnCheckResultStatic(
 }
 
 void CapturedSurfaceControlPermissionManager::OnCheckResult(
-    base::OnceCallback<void(PermissionResult)> callback,
-    PermissionResult result) {
+    base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)> callback,
+    CapturedSurfaceControlPermissionStatus result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   std::move(callback).Run(result);

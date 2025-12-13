@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/passage_embeddings/passage_embeddings_service_controller.h"
@@ -49,6 +50,7 @@ class TestOptimizationGuideModelProvider
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
       const std::optional<optimization_guide::proto::Any>& model_metadata,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       optimization_guide::OptimizationTargetModelObserver* observer) override {
     target_observed_future_->SetValue(
         optimization_target ==
@@ -83,6 +85,7 @@ class TestOptimizationGuideModelProvider
     }
   }
 
+  base::test::TaskEnvironment task_environment_;
   raw_ptr<base::test::TestFuture<bool>> target_observed_future_;
   base::ObserverList<optimization_guide::OptimizationTargetModelObserver>
       observer_list_;
@@ -108,8 +111,8 @@ TEST_F(PassageEmbedderModelObserverTest, ObservesTargetAndNotifiesObserver) {
   EXPECT_FALSE(model_info_received_future_.IsReady());
 
   auto passage_embedder_model_observer =
-      std::make_unique<PassageEmbedderModelObserver>(
-          model_provider.get(), service_controller.get(), false);
+      std::make_unique<PassageEmbedderModelObserver>(model_provider.get(),
+                                                     service_controller.get());
 
   EXPECT_TRUE(target_observed_future_.IsReady());
   EXPECT_TRUE(target_observed_future_.Take());

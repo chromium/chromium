@@ -9,6 +9,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "media/audio/audio_features.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,12 +109,13 @@ class TestPlatform : public TestingPlatformSupport {
 
 class AudioCallback : public AudioIOCallback {
  public:
-  void Render(AudioBus*,
+  void Render(AudioBus* audio_bus,
               uint32_t frames_to_process,
               const AudioIOPosition&,
               const AudioCallbackMetric&,
               base::TimeDelta delay,
               const media::AudioGlitchInfo& glitch_info) override {
+    audio_bus->Zero();
     frames_processed_ += frames_to_process;
     last_latency_ = delay;
     glitch_accumulator_.Add(glitch_info);
@@ -154,10 +156,6 @@ class AudioDestinationTest
 // kWebAudioRemoveAudioDestinationResampler to ensure the resampler can be
 // created.
 TEST_P(AudioDestinationTest, ResamplingTest) {
-#if defined(MEMORY_SANITIZER)
-  // TODO(crbug.com/342415791): Fix and re-enable tests with MSan.
-  GTEST_SKIP();
-#else
   feature_list_.InitAndDisableFeature(
       features::kWebAudioRemoveAudioDestinationResampler);
   ScopedTestingPlatformSupport<TestPlatform> platform;
@@ -206,14 +204,9 @@ TEST_P(AudioDestinationTest, ResamplingTest) {
   const int expected_processed_frames =
       RoundUpToRenderQuantum(scaled_requested_frames);
   EXPECT_EQ(expected_processed_frames, callback_.frames_processed_);
-#endif
 }
 
 TEST_P(AudioDestinationTest, GlitchAndDelay) {
-#if defined(MEMORY_SANITIZER)
-  // TODO(crbug.com/342415791): Fix and re-enable tests with MSan.
-  GTEST_SKIP();
-#else
   feature_list_.InitAndDisableFeature(
       features::kWebAudioRemoveAudioDestinationResampler);
   ScopedTestingPlatformSupport<TestPlatform> platform;
@@ -278,7 +271,6 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
   }
 
   audio_destination->Stop();
-#endif
 }
 
 // This test verifies that the AudioDestination resampler is correctly removed

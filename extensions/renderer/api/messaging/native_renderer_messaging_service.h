@@ -31,7 +31,7 @@ enum class SerializationFormat;
 
 class NativeExtensionBindingsSystem;
 class ScriptContextSetIterable;
-struct Message;
+class Message;
 struct MessageTarget;
 struct PortId;
 

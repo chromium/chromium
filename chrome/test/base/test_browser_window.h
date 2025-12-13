@@ -9,12 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -22,7 +23,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/common/buildflags.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
-#include "ui/base/interaction/element_identifier.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -54,7 +55,7 @@ class SharingHubBubbleView;
 // contains a valid LocationBar, all other getters return NULL.
 // However, some of them can be preset to a specific value.
 // See BrowserWithTestWindowTest for an example of using this class.
-class TestBrowserWindow : public BrowserWindow {
+class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
  public:
   TestBrowserWindow();
   TestBrowserWindow(const TestBrowserWindow&) = delete;
@@ -84,7 +85,6 @@ class TestBrowserWindow : public BrowserWindow {
   ui::NativeTheme* GetNativeTheme() override;
   const ui::ThemeProvider* GetThemeProvider() const override;
   const ui::ColorProvider* GetColorProvider() const override;
-  ui::ElementContext GetElementContext() override;
   int GetTopControlsHeight() const override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   std::vector<StatusBubble*> GetStatusBubbles() override;
@@ -92,7 +92,8 @@ class TestBrowserWindow : public BrowserWindow {
   void BookmarkBarStateChanged(
       BookmarkBar::AnimateChangeType change_type) override {}
   void TemporarilyShowBookmarkBar(base::TimeDelta duration) override {}
-  void UpdateDevTools() override {}
+  void UpdateDevTools(content::WebContents* inspected_web_contents) override {}
+  bool CanDockDevTools() const override;
   void UpdateLoadingAnimations(bool is_visible) override {}
   void SetStarredState(bool is_starred) override {}
   void OnActiveTabChanged(content::WebContents* old_contents,
@@ -129,7 +130,6 @@ class TestBrowserWindow : public BrowserWindow {
   void UpdateToolbar(content::WebContents* contents) override {}
   bool UpdateToolbarSecurityState() override;
   void UpdateCustomTabBarVisibility(bool visible, bool animate) override {}
-  void SetContentScrimVisibility(bool visible) override {}
   void SetDevToolsScrimVisibility(bool visible) override {}
   void ResetToolbarTabState(content::WebContents* contents) override {}
   void FocusToolbar() override {}
@@ -143,11 +143,11 @@ class TestBrowserWindow : public BrowserWindow {
   void RotatePaneFocus(bool forwards) override {}
   void FocusWebContentsPane() override {}
   void ShowAppMenu() override {}
-  bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override;
   void PreHandleDragUpdate(const content::DropData& drop_data,
                            const gfx::PointF& point) override {}
 
   void PreHandleDragExit() override {}
+  void HandleDragEnded() override {}
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;
@@ -161,7 +161,6 @@ class TestBrowserWindow : public BrowserWindow {
   bool IsToolbarShowing() const override;
   bool IsBorderlessModeEnabled() const override;
   void ShowChromeLabs() override {}
-  views::WebView* GetContentsWebView() override;
   BrowserView* AsBrowserView() override;
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;
@@ -189,8 +188,7 @@ class TestBrowserWindow : public BrowserWindow {
       content::WebContents* contents,
       bool show_signin_button) override;
 #if BUILDFLAG(IS_CHROMEOS)
-  views::Button* GetSharingHubIconButton() override;
-  void ToggleMultitaskMenu() const override;
+  void ToggleMultitaskMenu() override;
 #else
   sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
       share::ShareAttempt attempt) override;
@@ -208,8 +206,6 @@ class TestBrowserWindow : public BrowserWindow {
   void ShowOneClickSigninConfirmation(
       const std::u16string& email,
       base::OnceCallback<void(bool)> confirmed_callback) override {}
-  views::View* GetTopContainer() override;
-  views::View* GetLensOverlayView() override;
   DownloadBubbleUIController* GetDownloadBubbleUIController() override;
   void ConfirmBrowserCloseWithPendingDownloads(
       int download_count,
@@ -219,6 +215,8 @@ class TestBrowserWindow : public BrowserWindow {
   std::unique_ptr<FindBar> CreateFindBar() override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHostFor(
+      content::WebContents* web_contents) override;
   void ShowAvatarBubbleFromAvatarButton(bool is_source_keyboard) override {}
   void MaybeShowProfileSwitchIPH() override {}
   void MaybeShowSupervisedUserProfileSignInIPH() override {}
@@ -271,12 +269,8 @@ class TestBrowserWindow : public BrowserWindow {
 
   bool IsClosed() const { return is_closed_; }
 
-  void set_element_context(ui::ElementContext element_context) {
-    element_context_ = element_context;
-  }
-
  protected:
-  void DestroyBrowser() override {}
+  void DeleteBrowserWindow() final;
 
  private:
   class TestLocationBar : public LocationBar {
@@ -293,13 +287,18 @@ class TestBrowserWindow : public BrowserWindow {
     void SaveStateToContents(content::WebContents* contents) override {}
     void Revert() override {}
     OmniboxView* GetOmniboxView() override;
+    OmniboxController* GetOmniboxController() override;
     LocationBarTesting* GetLocationBarForTesting() override;
     LocationBarModel* GetLocationBarModel() override;
     content::WebContents* GetWebContents() override;
+    std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
+        override;
     void OnChanged() override {}
-    void OnPopupVisibilityChanged() override {}
     void UpdateWithoutTabRestore() override {}
   };
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override;
 
   autofill::TestAutofillBubbleHandler autofill_bubble_handler_;
   TestLocationBar location_bar_;
@@ -313,23 +312,10 @@ class TestBrowserWindow : public BrowserWindow {
   bool is_tab_strip_editable_ = true;
   bool is_tab_modal_popup_deprecated_ = false;
 
-  ui::ElementContext element_context_;
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observer_{this};
+  raw_ptr<Browser> browser_;
   base::OnceClosure close_callback_;
-};
-
-// Handles destroying a TestBrowserWindow when the Browser it is attached to is
-// destroyed.
-class TestBrowserWindowOwner : public BrowserListObserver {
- public:
-  explicit TestBrowserWindowOwner(std::unique_ptr<TestBrowserWindow> window);
-  TestBrowserWindowOwner(const TestBrowserWindowOwner&) = delete;
-  TestBrowserWindowOwner& operator=(const TestBrowserWindowOwner&) = delete;
-  ~TestBrowserWindowOwner() override;
-
- private:
-  // Overridden from BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
-  std::unique_ptr<TestBrowserWindow> window_;
 };
 
 // Helper that handle the lifetime of TestBrowserWindow instances.

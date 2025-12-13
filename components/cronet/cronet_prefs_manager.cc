@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/cronet/cronet_prefs_manager.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -18,6 +14,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -37,35 +34,31 @@ namespace cronet {
 namespace {
 
 // Name of the pref used for HTTP server properties persistence.
-const char kHttpServerPropertiesPref[] = "net.http_server_properties";
+constexpr char kHttpServerPropertiesPref[] = "net.http_server_properties";
 // Name of preference directory.
-const base::FilePath::CharType kPrefsDirectoryName[] =
+constexpr base::FilePath::CharType kPrefsDirectoryName[] =
     FILE_PATH_LITERAL("prefs");
 // Name of preference file.
-const base::FilePath::CharType kPrefsFileName[] =
+constexpr base::FilePath::CharType kPrefsFileName[] =
     FILE_PATH_LITERAL("local_prefs.json");
 // Current version of disk storage.
-const int32_t kStorageVersion = 1;
-// Version number used when the version of disk storage is unknown.
-const uint32_t kStorageVersionUnknown = 0;
+constexpr int32_t kStorageVersion = 1;
 // Name of the pref used for host cache persistence.
-const char kHostCachePref[] = "net.host_cache";
+constexpr char kHostCachePref[] = "net.host_cache";
 // Name of the pref used for NQE persistence.
-const char kNetworkQualitiesPref[] = "net.network_qualities";
+constexpr char kNetworkQualitiesPref[] = "net.network_qualities";
 
 bool IsCurrentVersion(const base::FilePath& version_filepath) {
   if (!base::PathExists(version_filepath))
     return false;
   base::File version_file(version_filepath,
                           base::File::FLAG_OPEN | base::File::FLAG_READ);
-  uint32_t version = kStorageVersionUnknown;
-  int bytes_read =
-      version_file.Read(0, reinterpret_cast<char*>(&version), sizeof(version));
-  if (bytes_read != sizeof(version)) {
+  std::array<uint8_t, sizeof(uint32_t)> buf;
+  if (version_file.Read(0, buf) != buf.size()) {
     DLOG(WARNING) << "Cannot read from version file.";
     return false;
   }
-  return version == kStorageVersion;
+  return base::U32FromLittleEndian(buf) == kStorageVersion;
 }
 
 // TODO(xunjieli): Handle failures.
@@ -92,10 +85,8 @@ void InitializeStorageDirectory(const base::FilePath& dir) {
   }
 
   DCHECK(new_version_file.created());
-  uint32_t new_version = kStorageVersion;
-  int bytes_written = new_version_file.Write(
-      0, reinterpret_cast<char*>(&new_version), sizeof(new_version));
-  if (bytes_written != sizeof(new_version)) {
+  if (new_version_file.Write(0, base::U32ToLittleEndian(kStorageVersion)) !=
+      sizeof(kStorageVersion)) {
     DLOG(WARNING) << "Cannot write to version file.";
     return;
   }

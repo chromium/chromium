@@ -637,8 +637,7 @@ void HotseatWidgetDelegateView::SetTranslucentBackground(
 }
 
 void HotseatWidgetDelegateView::SetBackgroundBlur(bool enable_blur) {
-  if (!features::IsBackgroundBlurEnabled() ||
-      !chromeos::features::IsSystemBlurEnabled() || blur_lock_ > 0) {
+  if (!chromeos::features::IsSystemBlurEnabled() || blur_lock_ > 0) {
     return;
   }
 
@@ -730,7 +729,7 @@ HotseatWidget::~HotseatWidget() {
 }
 
 bool HotseatWidget::ShouldShowHotseatBackground() {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 void HotseatWidget::Initialize(aura::Window* container, Shelf* shelf) {
@@ -816,7 +815,7 @@ void HotseatWidget::OnShelfConfigUpdated() {
 bool HotseatWidget::IsExtended() const {
   DCHECK(GetShelfView()->shelf()->IsHorizontalAlignment());
   const int extended_bottom =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestView(GetShelfView()->GetWidget()->GetNativeView())
           .bounds()
           .bottom() -

@@ -31,6 +31,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -40,7 +41,6 @@ import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.CursorOffset;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.DragShadowSpec;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
-import org.chromium.ui.util.XrUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -120,7 +120,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             int dragObjRectWidth,
             int dragObjRectHeight) {
         // Tab tearing to be enabled on XR device all the time.
-        if (isA11yStateEnabled() && !XrUtils.isXrDevice()) return false;
+        if (isA11yStateEnabled() && !DeviceInfo.isXr()) return false;
         int windowWidth = containerView.getRootView().getWidth();
         int windowHeight = containerView.getRootView().getHeight();
         View.DragShadowBuilder dragShadowBuilder =
@@ -142,7 +142,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     public boolean startDragAndDrop(
             View containerView, DragShadowBuilder dragShadowBuilder, DropDataAndroid dropData) {
         // Tab tearing to be enabled on XR device all the time.
-        if (isA11yStateEnabled() && !XrUtils.isXrDevice()) return false;
+        if (isA11yStateEnabled() && !DeviceInfo.isXr()) return false;
         return startDragAndDropInternal(containerView, dragShadowBuilder, dropData);
     }
 
@@ -437,8 +437,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         // Only record metrics when drop does not happen for ContentView.
         if (!mIsDropOnView) {
             assert mDragStartSystemElapsedTime > 0;
-            long dragDuration = SystemClock.elapsedRealtime() - mDragStartSystemElapsedTime;
-            recordDragDurationAndResult(dragDuration, dragResult);
             recordDragTargetType(mDragTargetType);
         }
         // Allow drop into ContentView when files are supported by clank.
@@ -485,11 +483,5 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     private void recordDragTargetType(@DragTargetType int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.DragDrop.FromWebContent.TargetType", type, DragTargetType.NUM_ENTRIES);
-    }
-
-    private void recordDragDurationAndResult(long duration, boolean result) {
-        String histogramPrefix = "Android.DragDrop.FromWebContent.Duration.";
-        String suffix = result ? "Success" : "Canceled";
-        RecordHistogram.deprecatedRecordMediumTimesHistogram(histogramPrefix + suffix, duration);
     }
 }

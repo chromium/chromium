@@ -810,7 +810,6 @@ bool ExecuteFileTask(Profile* profile,
         ash::cloud_upload::kOpenInitialCloudProviderMetric,
         ash::cloud_upload::CloudProvider::kNone);
   }
-  // TODO(b/284800493): Add a test that VirtualTasks get run.
   if (IsVirtualTask(task)) {
     const bool started = ExecuteVirtualTask(profile, task, file_urls);
     if (done) {
@@ -955,7 +954,6 @@ void FindAllTypesOfTasks(Profile* profile,
     return;
   }
 
-  // TODO(b/284800493): Add a test that VirtualTasks are found.
   MatchVirtualTasks(profile, entries, file_urls, dlp_source_urls,
                     &resulting_tasks->tasks);
 

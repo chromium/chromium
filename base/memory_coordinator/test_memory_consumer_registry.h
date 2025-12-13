@@ -9,6 +9,8 @@
 
 #include <vector>
 
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
 
 namespace base {
@@ -33,10 +35,16 @@ class TestMemoryConsumerRegistry : public MemoryConsumerRegistry {
   // Invokes DoReleaseMemory() on all consumers.
   void NotifyReleaseMemory();
 
+  void NotifyUpdateMemoryLimitAsync(int percentage,
+                                    OnceClosure on_notification_sent_callback);
+  void NotifyReleaseMemoryAsync(OnceClosure on_notification_sent_callback);
+
   size_t size() const { return memory_consumers_.size(); }
 
  private:
   std::vector<RegisteredMemoryConsumer> memory_consumers_;
+
+  WeakPtrFactory<TestMemoryConsumerRegistry> weak_ptr_factory_{this};
 };
 
 }  // namespace base

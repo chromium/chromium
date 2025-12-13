@@ -28,3 +28,5 @@ bool AnnouncementNotificationDelegateAndroid::IsFirstRun() {
   return Java_AnnouncementNotificationManager_isFirstRun(
       base::android::AttachCurrentThread());
 }
+
+DEFINE_JNI(AnnouncementNotificationManager)

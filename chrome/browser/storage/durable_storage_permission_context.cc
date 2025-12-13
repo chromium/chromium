@@ -96,7 +96,7 @@ void DurableStoragePermissionContext::DecidePermission(
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   if (registerable_domain.empty() &&
       request_data->requesting_origin.HostIsIPAddress()) {
-    registerable_domain = request_data->requesting_origin.host();
+    registerable_domain = request_data->requesting_origin.GetHost();
   }
 
   std::set<std::string> installed_registerable_domains =

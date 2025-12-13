@@ -11,16 +11,31 @@
 #include "chrome/browser/login_detection/login_detection_type.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace login_detection {
+
+// The only purpose of this class currently is to be friended by the
+// UkmRecorder. It therefore cannot be in the anonymous namespace.
+class IdentityProviderMetrics {
+ public:
+  // Gets the ukm source id for a web identity provider.
+  static ukm::SourceId GetUkmSourceIdForWebIdentityFromScope(
+      const GURL& provider) {
+    return ukm::UkmRecorder::GetSourceIdForWebIdentityFromScope(
+        base::PassKey<IdentityProviderMetrics>(), provider);
+  }
+};
 
 namespace {
 
@@ -30,14 +45,27 @@ PrefService* GetPrefs(content::WebContents* web_contents) {
 }
 
 void RecordLoginDetectionMetrics(LoginDetectionType type,
+                                 const std::optional<GURL>& provider,
                                  ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration("Login.PageLoad.DetectionType", type);
 
   if (type == LoginDetectionType::kNoLogin) {
     return;
   }
+  password_manager::metrics_util::RecordBrowserAssistedLogin(
+      password_manager::metrics_util::BrowserAssistedLoginType::kNonFedCmOAuth);
   ukm::builders::LoginDetectionV2 builder(ukm_source_id);
   builder.SetPage_LoginType(static_cast<int64_t>(type))
+      .Record(ukm::UkmRecorder::Get());
+
+  if (!provider) {
+    return;
+  }
+
+  ukm::builders::LoginDetectionV2IdentityProvider identity_provider_builder(
+      IdentityProviderMetrics::GetUkmSourceIdForWebIdentityFromScope(
+          *provider));
+  identity_provider_builder.SetPage_LoginType(static_cast<int64_t>(type))
       .Record(ukm::UkmRecorder::Get());
 }
 
@@ -90,15 +118,16 @@ void LoginDetectionTabHelper::DidFinishNavigation(
   // Check if OAuth login on the site happened now. This check should happen
   // first before other checks since this could be a repeated OAuth login and
   // the time of login will be updated.
-  if (auto signedin_site = oauth_login_detector_->GetSuccessfulLoginFlowSite(
+  if (auto login_info = oauth_login_detector_->GetSuccessfulLoginFlowSite(
           prev_navigation_url, navigation_handle->GetRedirectChain())) {
-    ProcessNewSignedInSite(*signedin_site);
+    ProcessNewSignedInSite(login_info->oauth_requestor_site);
     RecordLoginDetectionMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow,
+                                login_info->oauth_provider_site,
                                 navigation_handle->GetNextPageUkmSourceId());
     return;
   }
 
-  RecordLoginDetectionMetrics(LoginDetectionType::kNoLogin,
+  RecordLoginDetectionMetrics(LoginDetectionType::kNoLogin, std::nullopt,
                               navigation_handle->GetNextPageUkmSourceId());
 }
 
@@ -134,10 +163,11 @@ void LoginDetectionTabHelper::PrimaryPageChanged(content::Page& page) {
 }
 
 void LoginDetectionTabHelper::WebContentsDestroyed() {
-  if (auto signedin_site = oauth_login_detector_->GetPopUpLoginFlowSite()) {
-    ProcessNewSignedInSite(*signedin_site);
+  if (auto login_info = oauth_login_detector_->GetPopUpLoginFlowSite()) {
+    ProcessNewSignedInSite(login_info->oauth_requestor_site);
     RecordLoginDetectionMetrics(
-        LoginDetectionType::kOauthPopUpFirstTimeLoginFlow, ukm_source_id_);
+        LoginDetectionType::kOauthPopUpFirstTimeLoginFlow,
+        login_info->oauth_provider_site, ukm_source_id_);
   }
   oauth_login_detector_.reset();
 }

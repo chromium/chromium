@@ -97,7 +97,7 @@ TEST_F(SharedModuleManifestTest, ExportParseErrors) {
                "Error at key 'export.allowlist'. Type is invalid. Expected "
                "list, found string."),
   };
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 TEST_F(SharedModuleManifestTest, SharedModuleStaticFunctions) {
@@ -175,7 +175,7 @@ TEST_F(SharedModuleManifestTest, ImportParseErrors) {
       Testcase("shared_module_import_invalid_version.json",
                "Invalid value for 'import[0].minimum_version'."),
   };
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 }  // namespace extensions

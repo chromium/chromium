@@ -19,7 +19,7 @@ struct DeriveTest_SinglePlaceholderPattern_Cow<'data> {
         borrow,
         deserialize_with = "icu_pattern::deserialize_borrowed_cow::<SinglePlaceholder, _>"
     )]
-    data: Cow<'data, Pattern<SinglePlaceholder>>,
+    pub data: Cow<'data, Pattern<SinglePlaceholder>>,
 }
 
 #[test]

@@ -280,4 +280,10 @@ FakeHostAuthenticatorFactory::CreateAuthenticator(
   return std::move(authenticator);
 }
 
+std::unique_ptr<AuthenticatorFactory> FakeHostAuthenticatorFactory::Clone()
+    const {
+  return std::make_unique<FakeHostAuthenticatorFactory>(messages_till_started_,
+                                                        config_);
+}
+
 }  // namespace remoting::protocol

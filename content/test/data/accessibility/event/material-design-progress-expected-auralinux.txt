@@ -1,0 +1,41 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web Progress Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[progress bar] name='Test Progress' current=0.500000 minimum=0.000000 maximum=1.000000
+=== End accessibility tree ===
+VALUE-CHANGED:0 role=ROLE_PROGRESS_BAR name='Test Progress' ENABLED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web Progress Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[progress bar] name='Test Progress' current=0.000000 minimum=0.000000 maximum=1.000000 <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+[document web] name='Material Web Progress Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[progress bar] name='Test Progress' current=0.000000 minimum=0.000000 maximum=1.000000
+=== End accessibility tree ===
+VALUE-CHANGED:0.699999988079071 role=ROLE_PROGRESS_BAR name='Test Progress' ENABLED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 2 ===
+[document web] name='Material Web Progress Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[progress bar] name='Test Progress' current=0.700000 minimum=0.000000 maximum=1.000000 <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+[document web] name='Material Web Progress Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[progress bar] name='Test Progress' current=0.700000 minimum=0.000000 maximum=1.000000
+=== End accessibility tree ===
+VALUE-CHANGED:1 role=ROLE_PROGRESS_BAR name='Test Progress' ENABLED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 3 ===
+[document web] name='Material Web Progress Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[progress bar] name='Test Progress' current=1.000000 minimum=0.000000 maximum=1.000000 <<<<<< CHANGED
+=== End accessibility tree ===

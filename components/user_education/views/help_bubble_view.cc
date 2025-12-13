@@ -106,7 +106,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
     // alpha baked into the color, but we currently don't have that yet, so
     // switch back to using the old default alpha blending mode.
     auto* const ink_drop = views::InkDrop::Get(this);
-    ink_drop->SetBaseColorId(
+    ink_drop->SetBaseColor(
         is_default_button_
             ? delegate_->GetHelpBubbleDefaultButtonForegroundColorId()
             : delegate_->GetHelpBubbleForegroundColorId());

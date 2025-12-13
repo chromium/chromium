@@ -11,11 +11,10 @@ import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.LogicalElement;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.edge_to_edge.EdgeToEdgeConditions.BottomControlsStackerCondition;
 import org.chromium.chrome.test.transit.edge_to_edge.EdgeToEdgeConditions.EdgeToEdgeControllerCondition;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.test.transit.HtmlElement;
 import org.chromium.content_public.browser.test.transit.HtmlElementSpec;
@@ -23,8 +22,7 @@ import org.chromium.content_public.browser.test.transit.HtmlElementSpec;
 /**
  * Station represent an page that has viewport-fit=cover. It expects an {@link
  * org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController} to be ready when the page
- * loads, so it requires the test to have corresponding test flag setup to make {@link
- * EdgeToEdgeUtils#isChromeEdgeToEdgeFeatureEnabled()}
+ * loads.
  */
 public class ViewportFitCoverPageStation extends WebPageStation {
     /** Page opt-in edge-to-edge with sub frames. */
@@ -63,7 +61,7 @@ public class ViewportFitCoverPageStation extends WebPageStation {
 
     /** Load the test page viewport-fit-cover-sub-frames-main.html. */
     public static ViewportFitCoverPageStation loadViewportFitCoverPage(
-            ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
+            ChromeTabbedActivityTestRule activityTestRule, CtaPageStation currentPageStation) {
         String url = activityTestRule.getTestServer().getURL(PATH_VIEWPORT_FIT_COVER_SUB_FRAMES);
         return currentPageStation.loadPageProgrammatically(
                 url, new Builder<>(ViewportFitCoverPageStation::new));

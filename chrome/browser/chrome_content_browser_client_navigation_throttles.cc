@@ -10,11 +10,13 @@
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_sharing/data_sharing_navigation_throttle.h"
+#include "chrome/browser/enterprise/data_protection/view_source_navigation_throttle.h"
 #include "chrome/browser/first_party_sets/first_party_sets_navigation_throttle.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/plugins/pdf_iframe_navigation_throttle.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_navigation_throttle.h"
@@ -31,13 +33,13 @@
 #include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 #include "chrome/browser/ui/web_applications/navigation_capturing_redirection_throttle.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 #include "components/captive_portal/core/buildflags.h"
-#include "components/embedder_support/switches.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
-#include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
-#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/history/content/browser/visited_link_navigation_throttle.h"
 #include "components/lens/lens_features.h"
@@ -46,12 +48,15 @@
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
+#include "components/policy/content/safe_search_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/content/insecure_form_navigation_throttle.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/content/ssl_error_navigation_throttle.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/tabs/public/tab_interface.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
@@ -74,13 +79,14 @@
 #include "chrome/browser/actor/actor_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/web_app_link_capturing_delegate.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_navigation_throttle.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/page_info/web_view_side_panel_throttle.h"
 #include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_navigation_throttle.h"
+#include "chrome/browser/ui/read_anything/read_anything_side_panel_navigation_throttle.h"
 #include "chrome/browser/ui/search/new_tab_page_navigation_throttle.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_navigation_throttle.h"
 #include "chrome/browser/ui/web_applications/tabbed_web_app_navigation_throttle.h"
 #include "chrome/browser/ui/web_applications/webui_web_app_navigation_throttle.h"
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_response_capture_navigation_throttle.h"
@@ -103,12 +109,8 @@
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
-#include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "extensions/browser/extension_navigation_throttle.h"
-#include "extensions/browser/extensions_browser_client.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -158,7 +160,12 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
 #include "chrome/browser/enterprise/incognito/incognito_navigation_throttle.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+#include "chrome/browser/extensions/user_script_listener.h"
+#include "extensions/browser/extension_navigation_throttle.h"
+#include "extensions/browser/extensions_browser_client.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 namespace {
@@ -200,8 +207,10 @@ void HandleSSLErrorWrapper(
 // Returns whether `web_contents` is within a hosted app.
 bool IsInHostedApp(content::WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  return web_app::AppBrowserController::IsWebApp(browser);
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  return tab && web_app::AppBrowserController::IsWebApp(
+                    tab->GetBrowserWindowInterface());
 #else
   return false;
 #endif
@@ -213,10 +222,10 @@ bool IsErrorPageAutoReloadEnabled() {
   if (command_line.HasSwitch(switches::kEnableAutomation)) {
     return false;
   }
-  if (command_line.HasSwitch(embedder_support::kEnableAutoReload)) {
+  if (command_line.HasSwitch(switches::kEnableAutoReload)) {
     return true;
   }
-  if (command_line.HasSwitch(embedder_support::kDisableAutoReload)) {
+  if (command_line.HasSwitch(switches::kDisableAutoReload)) {
     return false;
   }
   return true;
@@ -337,7 +346,7 @@ void CreateAndAddChromeThrottlesForNavigation(
   Profile* profile =
       Profile::FromBrowserContext(handle.GetWebContents()->GetBrowserContext());
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!extensions::ChromeContentBrowserClientExtensionsPart::
           AreExtensionsDisabledForProfile(profile)) {
     registry.AddThrottle(
@@ -362,15 +371,6 @@ void CreateAndAddChromeThrottlesForNavigation(
     throttle_manager->MaybeCreateAndAddNavigationThrottles(registry);
   }
 
-  if (fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionEnabledForIncognitoState(
-              profile ? profile->IsIncognitoProfile() : false)) {
-    if (auto* throttle_manager = fingerprinting_protection_filter::
-            ThrottleManager::FromNavigationHandle(handle)) {
-      throttle_manager->MaybeCreateAndAddNavigationThrottles(registry);
-    }
-  }
-
   LookalikeUrlNavigationThrottle::MaybeCreateAndAdd(registry);
 
   PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
@@ -386,8 +386,13 @@ void CreateAndAddChromeThrottlesForNavigation(
 
   PasswordManagerNavigationThrottle::MaybeCreateAndAdd(registry);
 
+  content::BrowserContext* context =
+      handle.GetWebContents()->GetBrowserContext();
   registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-      registry, handle.GetWebContents()->GetBrowserContext()));
+      registry, user_prefs::UserPrefs::Get(context),
+      ChromePolicyBlocklistServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context)),
+      SafeSearchFactory::GetForBrowserContext(context)));
 
   // Before setting up SSL error detection, configure SSLErrorHandler to invoke
   // the relevant extension API whenever an SSL interstitial is shown.
@@ -430,6 +435,11 @@ void CreateAndAddChromeThrottlesForNavigation(
         // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    contextual_tasks::ContextualTasksNavigationThrottle::MaybeCreateAndAdd(
+        registry);
+  }
+
   DevToolsWindow::MaybeCreateAndAddNavigationThrottle(registry);
 
   NewTabPageNavigationThrottle::MaybeCreateAndAdd(registry);
@@ -453,6 +463,8 @@ void CreateAndAddChromeThrottlesForNavigation(
         std::make_unique<safe_browsing::DelayedWarningNavigationThrottle>(
             registry));
   }
+  enterprise_data_protection::ViewSourceNavigationThrottle::MaybeCreateAndAdd(
+      registry, ui_manager);
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -563,4 +575,7 @@ void CreateAndAddChromeThrottlesForNavigation(
 
   actor::ActorNavigationThrottle::MaybeCreateAndAdd(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  dom_distiller::DistillerPageWebContents::MaybeCreateAndAddNavigationThrottle(
+      registry);
 }

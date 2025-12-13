@@ -197,6 +197,18 @@
 # R8 appears to be fine with but other processors (e.g. internal Google
 # ProGuard) may not be. See b/315269496.
 -dontwarn android.util.StatsLog
+
+# These annotations are only used by the jni_zero code generator, and are not
+# needed at runtime. There are cases where we can end up shipping classes that
+# have @CalledByNative methods, but we don't ship jni_zero because there is no
+# native code; for example, CronetMetrics when called by the Java/fallback
+# Cronet impl (as opposed to the native impl). See also
+# https://crbug.com/445372626.
+#
+# The `internal.` prefix is due to renaming rules - see repackage_jars in
+# BUILD.gn.
+-dontwarn internal.org.jni_zero.CalledByNative
+-dontwarn internal.org.jni_zero.JNINamespace
 # -------- Config Path: third_party/androidx/androidx_annotations.flags --------
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be

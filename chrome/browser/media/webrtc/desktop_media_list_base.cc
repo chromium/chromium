@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media/webrtc/desktop_media_list_base.h"
 
 #include <set>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -115,7 +111,7 @@ void DesktopMediaListBase::ShowDelegatedList() {}
 DesktopMediaListBase::SourceDescription::SourceDescription(
     DesktopMediaID id,
     const std::u16string& name)
-    : id(id), name(name) {}
+    : id(id), name(name), is_chromium_window(std::nullopt) {}
 
 void DesktopMediaListBase::UpdateSourcesList(
     const std::vector<SourceDescription>& new_sources) {
@@ -147,6 +143,7 @@ void DesktopMediaListBase::UpdateSourcesList(
         sources_.insert(sources_.begin() + i, Source());
         sources_[i].id = new_sources[i].id;
         sources_[i].name = new_sources[i].name;
+        sources_[i].is_chromium_window = new_sources[i].is_chromium_window;
         if (observer_)
           observer_->OnSourceAdded(i);
       }
@@ -229,8 +226,8 @@ void DesktopMediaListBase::UpdateSourcePreview(const DesktopMediaID& id,
 uint32_t DesktopMediaListBase::GetImageHash(const gfx::Image& image) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   SkBitmap bitmap = image.AsBitmap();
-  return base::FastHash(base::span(static_cast<uint8_t*>(bitmap.getPixels()),
-                                   bitmap.computeByteSize()));
+  return base::FastHash(UNSAFE_TODO(base::span(
+      static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize())));
 }
 
 void DesktopMediaListBase::OnRefreshComplete() {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/common/schema.h"
 
 #include <limits.h>
@@ -29,6 +24,7 @@
 #include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -52,8 +48,9 @@ using internal::SchemaNode;
 
 std::string ErrorPathToString(const std::string& policy_name,
                               PolicyErrorPath error_path) {
-  if (error_path.empty())
+  if (error_path.empty()) {
     return std::string();
+  }
 
   std::stringstream error_path_string{policy_name};
   error_path_string << policy_name;
@@ -210,10 +207,12 @@ bool MapSchemaKeyToValueType(const std::string& schema_key,
                              base::Value::Type* value_type) {
   const SchemaKeyToValueType* entry =
       std::lower_bound(begin, end, schema_key, CompareToString);
-  if (entry == end || entry->key != schema_key)
+  if (entry == end || entry->key != schema_key) {
     return false;
-  if (value_type)
+  }
+  if (value_type) {
     *value_type = entry->type;
+  }
   return true;
 }
 
@@ -241,10 +240,12 @@ bool StrategyAllowUnknownWithoutWarning(SchemaOnErrorStrategy strategy) {
 void SchemaErrorFound(PolicyErrorPath* out_error_path,
                       std::string* out_error,
                       const std::string& msg) {
-  if (out_error_path)
+  if (out_error_path) {
     *out_error_path = {};
-  if (out_error)
+  }
+  if (out_error) {
     *out_error = msg;
+  }
 }
 
 void AddListIndexPrefixToPath(int index, PolicyErrorPath* path) {
@@ -507,37 +508,37 @@ class Schema::InternalStorage
 
   const SchemaNode* schema(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.schema_nodes + index;
+    return UNSAFE_TODO(schema_data_.schema_nodes + index);
   }
 
   const PropertiesNode* properties(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.properties_nodes + index;
+    return UNSAFE_TODO(schema_data_.properties_nodes + index);
   }
 
   const PropertyNode* property(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.property_nodes + index;
+    return UNSAFE_TODO(schema_data_.property_nodes + index);
   }
 
   const RestrictionNode* restriction(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.restriction_nodes + index;
+    return UNSAFE_TODO(schema_data_.restriction_nodes + index);
   }
 
   const char* const* required_property(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.required_properties + index;
+    return UNSAFE_TODO(schema_data_.required_properties + index);
   }
 
   const int* int_enums(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.int_enums + index;
+    return UNSAFE_TODO(schema_data_.int_enums + index);
   }
 
   const char* const* string_enums(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.string_enums + index;
+    return UNSAFE_TODO(schema_data_.string_enums + index);
   }
 
   // Compiles regular expression |pattern|. The result is cached and will be
@@ -844,6 +845,9 @@ base::expected<void, std::string> Schema::InternalStorage::Parse(
   } else if (schema.contains(schema::kEnum)) {
     RETURN_IF_ERROR(ParseEnum(schema, type, schema_node));
   } else if (schema.contains(schema::kPattern)) {
+    if (type != base::Value::Type::STRING) {
+      return base::unexpected("Only strings can have a pattern");
+    }
     RETURN_IF_ERROR(ParseStringPattern(schema, schema_node));
   } else if (schema.contains(schema::kMinimum) ||
              schema.contains(schema::kMaximum)) {
@@ -948,6 +952,10 @@ base::expected<void, std::string> Schema::InternalStorage::ParseDictionary(
       schema.FindList(schema::kRequired);
   if (required_properties) {
     for (const base::Value& val : *required_properties) {
+      if (!val.is_string()) {
+        return base::unexpected(
+            "Items in the 'required' property must be strings.");
+      }
       strings_.push_back(val.GetString());
       required_properties_.push_back(strings_.back().c_str());
     }
@@ -1075,8 +1083,9 @@ bool Schema::InternalStorage::ResolveReferences(
 }
 
 void Schema::InternalStorage::FindSensitiveChildren() {
-  if (schema_nodes_.empty())
+  if (schema_nodes_.empty()) {
     return;
+  }
 
   std::set<int> handled_schema_nodes;
   FindSensitiveChildrenRecursive(0, &handled_schema_nodes);
@@ -1087,8 +1096,9 @@ bool Schema::InternalStorage::FindSensitiveChildrenRecursive(
     std::set<int>* handled_schema_nodes) {
   DCHECK(static_cast<unsigned long>(index) < schema_nodes_.size());
   SchemaNode& schema_node = schema_nodes_[index];
-  if (handled_schema_nodes->find(index) != handled_schema_nodes->end())
+  if (handled_schema_nodes->find(index) != handled_schema_nodes->end()) {
     return schema_node.has_sensitive_children || schema_node.is_sensitive_value;
+  }
 
   handled_schema_nodes->insert(index);
   bool has_sensitive_children = false;
@@ -1145,7 +1155,7 @@ bool Schema::Iterator::IsAtEnd() const {
 
 void Schema::Iterator::Advance() {
   DCHECK(it_);
-  ++it_;
+  UNSAFE_TODO(++it_);  // Should be UNSAFE_BUFFER_USAGE.
 }
 
 const char* Schema::Iterator::key() const {
@@ -1214,8 +1224,9 @@ bool Schema::Validate(const base::Value& value,
           SchemaErrorFound(out_error_path, out_error,
                            "Unknown property: " + dict_item.first);
         }
-        if (!StrategyAllowUnknown(strategy))
+        if (!StrategyAllowUnknown(strategy)) {
           return false;
+        }
       } else {
         for (const auto& subschema : schema_list) {
           std::string new_error;
@@ -1223,8 +1234,9 @@ bool Schema::Validate(const base::Value& value,
               dict_item.second, strategy, out_error_path, &new_error);
           if (!new_error.empty()) {
             AddDictKeyPrefixToPath(dict_item.first, out_error_path);
-            if (out_error)
+            if (out_error) {
               *out_error = std::move(new_error);
+            }
           }
           if (!validation_result) {
             // Invalid property was detected.
@@ -1236,8 +1248,9 @@ bool Schema::Validate(const base::Value& value,
     }
 
     for (const auto& required_property : GetRequiredProperties()) {
-      if (base::Contains(present_properties, required_property))
+      if (base::Contains(present_properties, required_property)) {
         continue;
+      }
 
       SchemaErrorFound(
           out_error_path, out_error,
@@ -1252,11 +1265,13 @@ bool Schema::Validate(const base::Value& value,
           GetItems().Validate(list_item, strategy, out_error_path, &new_error);
       if (!new_error.empty()) {
         AddListIndexPrefixToPath(index, out_error_path);
-        if (out_error)
+        if (out_error) {
           *out_error = std::move(new_error);
+        }
       }
-      if (!validation_result && !StrategyAllowInvalidListEntry(strategy))
+      if (!validation_result && !StrategyAllowInvalidListEntry(strategy)) {
         return false;  // Invalid list item was detected.
+      }
     }
   } else if (value.is_int()) {
     if (node_->extra != kInvalid &&
@@ -1312,8 +1327,9 @@ bool Schema::Normalize(base::Value* value,
           SchemaErrorFound(out_error_path, out_error,
                            "Unknown property: " + dict_item.first);
         }
-        if (!StrategyAllowUnknown(strategy))
+        if (!StrategyAllowUnknown(strategy)) {
           return false;
+        }
         if (!StrategyAllowUnknownWithoutWarning(strategy)) {
           drop_list.push_back(dict_item.first);
         }
@@ -1325,8 +1341,9 @@ bool Schema::Normalize(base::Value* value,
                                   &new_error, out_changed);
           if (!new_error.empty()) {
             AddDictKeyPrefixToPath(dict_item.first, out_error_path);
-            if (out_error)
+            if (out_error) {
               *out_error = std::move(new_error);
+            }
           }
           if (!normalization_result) {
             // Invalid property was detected.
@@ -1338,8 +1355,9 @@ bool Schema::Normalize(base::Value* value,
     }
 
     for (const auto& required_property : GetRequiredProperties()) {
-      if (base::Contains(present_properties, required_property))
+      if (base::Contains(present_properties, required_property)) {
         continue;
+      }
 
       SchemaErrorFound(
           out_error_path, out_error,
@@ -1347,10 +1365,12 @@ bool Schema::Normalize(base::Value* value,
       return false;
     }
 
-    if (out_changed && !drop_list.empty())
+    if (out_changed && !drop_list.empty()) {
       *out_changed = true;
-    for (const auto& drop_key : drop_list)
+    }
+    for (const auto& drop_key : drop_list) {
       value->GetDict().Remove(drop_key);
+    }
     return true;
   } else if (value->is_list()) {
     base::Value::List& list = value->GetList();
@@ -1367,21 +1387,25 @@ bool Schema::Normalize(base::Value* value,
           &list_item, strategy, out_error_path, &new_error, out_changed);
       if (!new_error.empty()) {
         AddListIndexPrefixToPath(index, out_error_path);
-        if (out_error)
+        if (out_error) {
           *out_error = new_error;
+        }
       }
       if (!normalization_result) {
         // Invalid list item was detected.
-        if (!StrategyAllowInvalidListEntry(strategy))
+        if (!StrategyAllowInvalidListEntry(strategy)) {
           return false;
+        }
       } else {
-        if (write_index != index)
+        if (write_index != index) {
           list[write_index] = std::move(list_item);
+        }
         ++write_index;
       }
     }
-    if (out_changed && write_index < list.size())
+    if (out_changed && write_index < list.size()) {
       *out_changed = true;
+    }
     while (write_index < list.size()) {
       list.erase(list.end() - 1);
     }
@@ -1392,8 +1416,9 @@ bool Schema::Normalize(base::Value* value,
 }
 
 void Schema::MaskSensitiveValues(base::Value* value) const {
-  if (!valid())
+  if (!valid()) {
     return;
+  }
 
   MaskSensitiveValuesRecursive(value);
 }
@@ -1467,13 +1492,15 @@ Schema Schema::GetKnownProperty(const std::string& key) const {
   CHECK(valid());
   CHECK_EQ(base::Value::Type::DICT, type());
   const PropertiesNode* node = storage_->properties(node_->extra);
-  if (node->begin == kInvalid || node->end == kInvalid)
+  if (node->begin == kInvalid || node->end == kInvalid) {
     return Schema();
+  }
   const PropertyNode* begin = storage_->property(node->begin);
   const PropertyNode* end = storage_->property(node->end);
   const PropertyNode* it = std::lower_bound(begin, end, key, CompareKeys);
-  if (it != end && it->key == key)
+  if (it != end && it->key == key) {
     return Schema(storage_, storage_->schema(it->schema));
+  }
   return Schema();
 }
 
@@ -1481,8 +1508,9 @@ Schema Schema::GetAdditionalProperties() const {
   CHECK(valid());
   CHECK_EQ(base::Value::Type::DICT, type());
   const PropertiesNode* node = storage_->properties(node_->extra);
-  if (node->additional == kInvalid)
+  if (node->additional == kInvalid) {
     return Schema();
+  }
   return Schema(storage_, storage_->schema(node->additional));
 }
 
@@ -1490,12 +1518,13 @@ SchemaList Schema::GetPatternProperties(const std::string& key) const {
   CHECK(valid());
   CHECK_EQ(base::Value::Type::DICT, type());
   const PropertiesNode* node = storage_->properties(node_->extra);
-  if (node->end == kInvalid || node->pattern_end == kInvalid)
+  if (node->end == kInvalid || node->pattern_end == kInvalid) {
     return {};
+  }
   const PropertyNode* begin = storage_->property(node->end);
   const PropertyNode* end = storage_->property(node->pattern_end);
   SchemaList matching_properties;
-  for (const PropertyNode* it = begin; it != end; ++it) {
+  for (const PropertyNode* it = begin; it != end; UNSAFE_TODO(++it)) {
     if (re2::RE2::PartialMatch(key, *storage_->CompileRegex(it->key))) {
       matching_properties.push_back(
           Schema(storage_, storage_->schema(it->schema)));
@@ -1508,8 +1537,9 @@ std::vector<std::string> Schema::GetRequiredProperties() const {
   CHECK(valid());
   CHECK_EQ(base::Value::Type::DICT, type());
   const PropertiesNode* node = storage_->properties(node_->extra);
-  if (node->required_begin == kInvalid || node->required_end == kInvalid)
+  if (node->required_begin == kInvalid || node->required_end == kInvalid) {
     return {};
+  }
   const size_t begin = node->required_begin;
   const size_t end = node->required_end;
 
@@ -1519,8 +1549,9 @@ std::vector<std::string> Schema::GetRequiredProperties() const {
 
 Schema Schema::GetProperty(const std::string& key) const {
   Schema schema = GetKnownProperty(key);
-  if (schema.valid())
+  if (schema.valid()) {
     return schema;
+  }
   return GetAdditionalProperties();
 }
 
@@ -1528,8 +1559,9 @@ SchemaList Schema::GetMatchingProperties(const std::string& key) const {
   SchemaList schema_list;
 
   Schema known_property = GetKnownProperty(key);
-  if (known_property.valid())
+  if (known_property.valid()) {
     schema_list.push_back(known_property);
+  }
 
   SchemaList pattern_properties = GetPatternProperties(key);
   schema_list.insert(schema_list.end(), pattern_properties.begin(),
@@ -1537,8 +1569,9 @@ SchemaList Schema::GetMatchingProperties(const std::string& key) const {
 
   if (schema_list.empty()) {
     Schema additional_property = GetAdditionalProperties();
-    if (additional_property.valid())
+    if (additional_property.valid()) {
       schema_list.push_back(additional_property);
+    }
   }
 
   return schema_list;
@@ -1547,8 +1580,9 @@ SchemaList Schema::GetMatchingProperties(const std::string& key) const {
 Schema Schema::GetItems() const {
   CHECK(valid());
   CHECK_EQ(base::Value::Type::LIST, type());
-  if (node_->extra == kInvalid)
+  if (node_->extra == kInvalid) {
     return Schema();
+  }
   return Schema(storage_, storage_->schema(node_->extra));
 }
 
@@ -1561,8 +1595,9 @@ bool Schema::ValidateIntegerRestriction(int index, int value) const {
   } else {
     for (int i = rnode->enumeration_restriction.offset_begin;
          i < rnode->enumeration_restriction.offset_end; ++i) {
-      if (*storage_->int_enums(i) == value)
+      if (*storage_->int_enums(i) == value) {
         return true;
+      }
     }
     return false;
   }
@@ -1574,8 +1609,9 @@ bool Schema::ValidateStringRestriction(int index, const char* str) const {
       rnode->enumeration_restriction.offset_end) {
     for (int i = rnode->enumeration_restriction.offset_begin;
          i < rnode->enumeration_restriction.offset_end; ++i) {
-      if (strcmp(*storage_->string_enums(i), str) == 0)
+      if (UNSAFE_TODO(strcmp(*storage_->string_enums(i), str)) == 0) {
         return true;
+      }
     }
     return false;
   } else {
@@ -1593,20 +1629,24 @@ void Schema::MaskSensitiveValuesRecursive(base::Value* value) const {
     *value = base::Value(kSensitiveValueMask);
     return;
   }
-  if (!HasSensitiveChildren())
+  if (!HasSensitiveChildren()) {
     return;
-  if (value->type() != type())
+  }
+  if (value->type() != type()) {
     return;
+  }
 
   if (value->is_dict()) {
     for (auto [key, sub_value] : value->GetDict()) {
       SchemaList schema_list = GetMatchingProperties(key);
-      for (const auto& schema_item : schema_list)
+      for (const auto& schema_item : schema_list) {
         schema_item.MaskSensitiveValuesRecursive(&sub_value);
+      }
     }
   } else if (value->is_list()) {
-    for (auto& list_elem : value->GetList())
+    for (auto& list_elem : value->GetList()) {
       GetItems().MaskSensitiveValuesRecursive(&list_elem);
+    }
   }
 }
 
@@ -1614,8 +1654,9 @@ Schema Schema::GetValidationSchema() const {
   CHECK(valid());
   const SchemaNode* validation_schema_root_node =
       storage_->validation_schema_root_node();
-  if (!validation_schema_root_node)
+  if (!validation_schema_root_node) {
     return Schema();
+  }
   return Schema(storage_, validation_schema_root_node);
 }
 
@@ -1627,8 +1668,9 @@ bool Schema::IsSensitiveValue() const {
   // with index 0.
   int index = node_ - storage_->root_node();
   const SchemaNode* schema_node = storage_->schema(index);
-  if (!schema_node)
+  if (!schema_node) {
     return false;
+  }
   return schema_node->is_sensitive_value;
 }
 
@@ -1640,8 +1682,9 @@ bool Schema::HasSensitiveChildren() const {
   // with index 0.
   int index = node_ - storage_->root_node();
   const SchemaNode* schema_node = storage_->schema(index);
-  if (!schema_node)
+  if (!schema_node) {
     return false;
+  }
   return schema_node->has_sensitive_children;
 }
 

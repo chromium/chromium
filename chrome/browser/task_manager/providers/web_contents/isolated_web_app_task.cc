@@ -13,8 +13,8 @@
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/providers/web_contents/renderer_task.h"
 #include "chrome/browser/ui/url_identity.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -38,7 +38,7 @@ std::u16string GetTitleOrAppNameFromWebContents(
   DCHECK(web_contents);
   std::u16string title = web_contents->GetTitle();
   // Empty title falls back to navigation URL.
-  if (base::StartsWith(title, chrome::kIsolatedAppSchemeUtf16,
+  if (base::StartsWith(title, webapps::kIsolatedAppSchemeUtf16,
                        base::CompareCase::SENSITIVE)) {
     const GURL& url = web_contents->GetLastCommittedURL();
     Profile* profile =
@@ -60,7 +60,7 @@ namespace task_manager {
 IsolatedWebAppTask::IsolatedWebAppTask(content::WebContents* web_contents)
     : RendererTask(
           PrefixTaskTitle(RendererTask::GetTitleFromWebContents(web_contents)),
-          RendererTask::GetFaviconFromWebContents(web_contents),
+          RendererTask::GetFaviconFromWebContents(web_contents).get(),
           web_contents) {}
 
 IsolatedWebAppTask::~IsolatedWebAppTask() = default;

@@ -22,7 +22,6 @@
 #import "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #import "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
-#import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -30,8 +29,9 @@
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
 #import "components/infobars/core/infobar_manager.h"
-#import "components/plus_addresses/plus_address_types.h"
+#import "components/plus_addresses/core/browser/plus_address_types.h"
 #import "components/prefs/pref_service.h"
+#import "components/strike_database/strike_database.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
@@ -61,7 +61,6 @@ enum class SuggestionType;
 class ChromeAutofillClientIOS : public AutofillClientIOS {
  public:
   ChromeAutofillClientIOS(
-      FromWebStateImpl from_web_state_impl,
       ProfileIOS* profile,
       web::WebState* web_state,
       infobars::InfoBarManager* infobar_manager,
@@ -106,7 +105,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   FormDataImporter* GetFormDataImporter() override;
   payments::IOSChromePaymentsAutofillClient* GetPaymentsAutofillClient()
       override;
-  StrikeDatabase* GetStrikeDatabase() override;
+  strike_database::StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   AddressNormalizer* GetAddressNormalizer() override;
   const GURL& GetLastCommittedPrimaryMainFrameURL() const override;
@@ -119,7 +118,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      AutofillClient::SaveAddressBubbleType save_address_bubble_type,
       AddressProfileSavePromptCallback callback) override;
   SuggestionUiSessionId ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
@@ -132,11 +131,9 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   void HideAutofillSuggestions(SuggestionHidingReason reason) override;
   bool IsAutofillEnabled() const override;
   bool IsAutofillProfileEnabled() const override;
-  bool IsAutofillPaymentMethodsEnabled() const override;
+  bool IsWalletStorageEnabled() const override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() const override;
-  void DidFillForm(AutofillTriggerSource trigger_source,
-                   bool is_refill) override;
   bool IsContextSecure() const override;
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   LogManager* GetCurrentLogManager() override;
@@ -146,9 +143,6 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   bool IsLastQueriedField(FieldGlobalId field_id) override;
   bool ShouldFormatForLargeKeyboardAccessory() const override;
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
-  void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
-                                bool is_manual_fallback,
-                                PlusAddressCallback callback) override;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
   PasswordFormClassification ClassifyAsPasswordForm(
@@ -165,23 +159,26 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   // Removes the save card infobar if it exists.
   virtual void RemoveAutofillSaveCardInfoBar();
 
+  void ConsiderAsSecureForTesting() { consider_as_secure_for_testing_ = true; }
+
  private:
   // Returns the account email of the signed-in user, or nullopt if there is no
   // signed-in user.
   std::optional<std::u16string> GetUserEmail();
 
-  raw_ptr<PrefService> pref_service_;
-  raw_ptr<syncer::SyncService> sync_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
+  raw_ptr<syncer::SyncService, DanglingUntriaged> sync_service_;
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   VotesUploader votes_uploader_{this};
-  raw_ptr<PersonalDataManager> personal_data_manager_;
-  raw_ptr<AutocompleteHistoryManager> autocomplete_history_manager_;
+  raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_;
+  raw_ptr<AutocompleteHistoryManager, DanglingUntriaged>
+      autocomplete_history_manager_;
   raw_ptr<ProfileIOS> profile_;
   __weak id<AutofillClientIOSBridge> bridge_;
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   scoped_refptr<AutofillWebDataService> autofill_web_data_service_;
-  raw_ptr<infobars::InfoBarManager> infobar_manager_;
+  raw_ptr<infobars::InfoBarManager, DanglingUntriaged> infobar_manager_;
   const raw_ptr<LogRouter> log_router_;
   std::unique_ptr<LogManager> log_manager_;
   autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
@@ -201,6 +198,10 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   __weak UIViewController* base_view_controller_;
 
   __weak id<AutofillCommands> commands_handler_;
+
+  // If this is true, we consider the form to be secure.
+  // Only use this for testing purposes!
+  bool consider_as_secure_for_testing_ = false;
 
   base::WeakPtrFactory<ChromeAutofillClientIOS> weak_ptr_factory_{this};
 };

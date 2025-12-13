@@ -44,8 +44,7 @@ TEST(InputFileParsersTest, ParseJSON) {
       "  \"pinsets\": [{"
       "      \"name\": \"test\","
       "      \"static_spki_hashes\": [\"TestSPKI\"],"
-      "      \"bad_static_spki_hashes\": [\"BadTestSPKI\"],"
-      "      \"report_uri\": \"https://hpkp-log.example.com\""
+      "      \"bad_static_spki_hashes\": [\"BadTestSPKI\"]"
       "  }],"
       "  \"entries\": ["
       "    {"
@@ -73,7 +72,6 @@ TEST(InputFileParsersTest, ParseJSON) {
   auto pinset = pinsets.pinsets().find("test");
   ASSERT_NE(pinset, pinsets.pinsets().cend());
   EXPECT_EQ("test", pinset->second->name());
-  EXPECT_EQ("https://hpkp-log.example.com", pinset->second->report_uri());
 
   ASSERT_EQ(1U, pinset->second->static_spki_hashes().size());
   EXPECT_EQ("TestSPKI", pinset->second->static_spki_hashes()[0]);
@@ -172,7 +170,6 @@ TEST(InputFileParsersTest, ParseJSONInvalidPinset) {
       "  \"pinsets\": [{"
       "      \"static_spki_hashes\": [\"TestSPKI\"],"
       "      \"bad_static_spki_hashes\": [\"BadTestSPKI\"],"
-      "      \"report_uri\": \"https://hpkp-log.example.com\""
       "  }],"
       "  \"entries\": []"
       "}";

@@ -25,6 +25,7 @@ static_library("help_app") {
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/experiences/system_web_apps/types",
+    "//components/variations/service",
     "//content/public/browser",
     "//ui/gfx/geometry",
   ]
@@ -43,7 +44,6 @@ static_library("help_app") {
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
-    "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/child_accounts/on_device_controls",
     "//chrome/browser/ash/input_method",
@@ -57,12 +57,10 @@ static_library("help_app") {
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
-    "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/browser_context_helper",
-    "//chromeos/ash/components/scalable_iph",
-    "//chromeos/ash/components/scalable_iph:constants",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/system",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/constants",
@@ -150,6 +148,7 @@ source_set("unit_tests") {
   sources = [
     "help_app_notification_controller_unittest.cc",
     "help_app_ui_delegate_unittest.cc",
+    "help_app_untrusted_ui_config_unittest.cc",
   ]
 
   deps = [
@@ -169,6 +168,7 @@ source_set("unit_tests") {
     "//components/language/core/browser",
     "//components/pref_registry",
     "//components/prefs:test_support",
+    "//components/variations/service",
     "//components/version_info",
     "//content/test:test_support",
     "//testing/gtest",

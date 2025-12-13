@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -91,13 +92,8 @@ void UndoWindow::OnThemeChanged() {
   undo_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
-          kAutocorrectUndoIcon,
-          ash::ColorProvider::Get()->GetContentLayerColor(
-              ash::ColorProvider::ContentLayerType::kIconColorPrimary),
-          kIconSize));
-  undo_button_->SetEnabledTextColors(
-      ash::ColorProvider::Get()->GetContentLayerColor(
-          ash::ColorProvider::ContentLayerType::kTextColorSecondary));
+          kAutocorrectUndoIcon, cros_tokens::kIconColorPrimary, kIconSize));
+  undo_button_->SetEnabledTextColors(cros_tokens::kTextColorSecondary);
 
   const auto* const color_provider = GetColorProvider();
   learn_more_button_->SetBorder(views::CreatePaddedBorder(

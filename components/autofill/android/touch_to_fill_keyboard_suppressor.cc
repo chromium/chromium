@@ -23,7 +23,9 @@ TouchToFillKeyboardSuppressor::TouchToFillKeyboardSuppressor(
       timeout_(timeout) {
   // The keyboard suppressor behaves properly only if no AutofillDrivers (and no
   // AutofillManagers) have been created yet.
-  CHECK_EQ(autofill_client->GetAutofillDriverFactory().num_drivers(), 0u);
+  CHECK_EQ(
+      autofill_client->GetAutofillDriverFactory().GetExistingDrivers().size(),
+      0u);
   driver_factory_observation_.Observe(
       &autofill_client->GetAutofillDriverFactory());
 }

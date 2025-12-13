@@ -92,12 +92,12 @@ if (!is_android && !is_ios) {
       "//components/soda:constants",
       "//components/sync_preferences",
       "//content/public/browser",
-      "//google_apis:google_apis",
+      "//google_apis",
       "//media",
       "//media/mojo/mojom",
       "//net",
-      "//services/data_decoder/public/cpp:cpp",
-      "//services/data_decoder/public/mojom:mojom",
+      "//services/data_decoder/public/cpp",
+      "//services/data_decoder/public/mojom",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//ui/native_theme",
@@ -109,23 +109,29 @@ if (!is_android && !is_ios) {
 
     sources = [
       "caption_controller_base_unittest.cc",
+      "caption_util_unittest.cc",
       "greedy_text_stabilizer_unittest.cc",
       "live_caption_bubble_settings_unittest.cc",
+      "translation_util_unittest.cc",
     ]
 
     deps = [
       ":live_caption",
       ":live_translate",
+      ":utils",
       "//base",
       "//base/test:test_support",
       "//components/live_caption:constants",
       "//components/prefs",
       "//components/prefs:test_support",
+      "//components/sync_preferences:test_support",
+      "//media",
       "//media/mojo/mojom:speech_recognition",
-      "//mojo/public/cpp/bindings:bindings",
+      "//mojo/public/cpp/bindings",
       "//testing/gmock",
       "//testing/gtest",
-      "//ui/gfx/geometry:geometry",
+      "//ui/base",
+      "//ui/gfx/geometry",
     ]
 
     if (is_chromeos) {
@@ -135,6 +141,7 @@ if (!is_android && !is_ios) {
         # This test verifies behavior of the controller
         # in an ash environment and requires ash dependencies.
         "live_caption_controller_unittest.cc",
+        "live_translate_controller_unittest.cc",
       ]
 
       deps += [
@@ -182,7 +189,7 @@ source_set("utils") {
     "//components/prefs",
     "//media",
     "//third_party/icu",
-    "//third_party/re2:re2",
+    "//third_party/re2",
     "//ui/base",
     "//ui/native_theme",
   ]

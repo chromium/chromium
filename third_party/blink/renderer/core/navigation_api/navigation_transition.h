@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -22,13 +23,15 @@ class CORE_EXPORT NavigationTransition final : public ScriptWrappable {
  public:
   NavigationTransition(ExecutionContext*,
                        V8NavigationType::Enum navigation_type,
-                       NavigationHistoryEntry* from);
+                       NavigationHistoryEntry* from,
+                       NavigationDestination*);
   ~NavigationTransition() final = default;
 
   V8NavigationType navigationType() const {
     return V8NavigationType(navigation_type_);
   }
   NavigationHistoryEntry* from() { return from_.Get(); }
+  NavigationDestination* to() { return destination_.Get(); }
   ScriptPromise<IDLUndefined> committed(ScriptState* script_state);
   ScriptPromise<IDLUndefined> finished(ScriptState* script_state);
 
@@ -43,6 +46,7 @@ class CORE_EXPORT NavigationTransition final : public ScriptWrappable {
 
   V8NavigationType::Enum navigation_type_;
   Member<NavigationHistoryEntry> from_;
+  Member<NavigationDestination> destination_;
   Member<TransitionPromise> committed_;
   Member<TransitionPromise> finished_;
 };

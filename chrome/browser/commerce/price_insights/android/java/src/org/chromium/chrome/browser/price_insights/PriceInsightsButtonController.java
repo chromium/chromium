@@ -12,7 +12,6 @@ import android.view.View;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -34,6 +33,8 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 
+import java.util.function.Supplier;
+
 /**
  * Responsible for providing UI resources for showing price insights action on optional toolbar
  * button.
@@ -51,7 +52,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
     private @Nullable PriceInsightsBottomSheetCoordinator mBottomSheetCoordinator;
     private @Nullable PriceInsightsBottomSheetCoordinator mBottomSheetCoordinatorForTesting;
 
-    Supplier<CommerceBottomSheetContentController> mCommerceBottomSheetContentController;
+    Supplier<@Nullable CommerceBottomSheetContentController> mCommerceBottomSheetContentController;
 
     public PriceInsightsButtonController(
             Context context,
@@ -63,7 +64,8 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
             SnackbarManager snackbarManager,
             PriceInsightsDelegate priceInsightsDelegate,
             Drawable buttonDrawable,
-            Supplier<CommerceBottomSheetContentController> commerceBottomSheetContentController) {
+            Supplier<@Nullable CommerceBottomSheetContentController>
+                    commerceBottomSheetContentController) {
         super(
                 tabSupplier,
                 modalDialogManager,

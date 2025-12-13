@@ -315,10 +315,9 @@ std::vector<uint8_t> SOCKSClientSocket::BuildHandshakeWriteBuffer() const {
   request.command = kSOCKSStreamRequest;
   request.nw_port = base::HostToNet16(destination_.port());
 
-  DCHECK(resolve_host_request_->GetAddressResults() &&
-         !resolve_host_request_->GetAddressResults()->empty());
+  DCHECK(!resolve_host_request_->GetAddressResults().empty());
   const IPEndPoint& endpoint =
-      resolve_host_request_->GetAddressResults()->front();
+      resolve_host_request_->GetAddressResults().front();
 
   // We disabled IPv6 results when resolving the hostname, so none of the
   // results in the list will be IPv6.

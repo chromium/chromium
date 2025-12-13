@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
 
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
@@ -35,8 +31,7 @@ void SyncEventWatcher::AllowWokenUpBySyncWatchOnSameThread() {
   IncrementRegisterCount();
 }
 
-bool SyncEventWatcher::SyncWatch(const bool** stop_flags,
-                                 size_t num_stop_flags) {
+bool SyncEventWatcher::SyncWatch(base::span<const bool*> stop_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IncrementRegisterCount();
 
@@ -47,10 +42,9 @@ bool SyncEventWatcher::SyncWatch(const bool** stop_flags,
   constexpr size_t kFlagStackCapacity = 4;
   absl::InlinedVector<const bool*, kFlagStackCapacity> should_stop_array;
   should_stop_array.push_back(&destroyed->data);
-  std::copy(stop_flags, stop_flags + num_stop_flags,
+  std::copy(stop_flags.begin(), stop_flags.end(),
             std::back_inserter(should_stop_array));
-  bool result =
-      registry_->Wait(should_stop_array.data(), should_stop_array.size());
+  bool result = registry_->Wait(should_stop_array);
 
   // This object has been destroyed.
   if (destroyed->data)

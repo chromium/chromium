@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/types/pass_key.h"
 #include "sql/sqlite_result_code.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -28,16 +27,20 @@ StreamingBlobHandle::StreamingBlobHandle(
 }
 
 StreamingBlobHandle::~StreamingBlobHandle() {
-  if (blob_handle_) {
-    int result = sqlite3_blob_close(blob_handle_.ExtractAsDangling());
-    std::move(done_callback_)
-        .Run(ToSqliteResultCode(result), "-- sqlite3_blob_close()");
-  }
+  Close();
 }
 
 StreamingBlobHandle::StreamingBlobHandle(StreamingBlobHandle&& other)
     : blob_handle_(std::exchange(other.blob_handle_, nullptr)),
       done_callback_(std::move(other.done_callback_)) {}
+
+StreamingBlobHandle& StreamingBlobHandle::operator=(
+    StreamingBlobHandle&& other) {
+  Close();
+  blob_handle_ = std::exchange(other.blob_handle_, nullptr);
+  done_callback_ = std::move(other.done_callback_);
+  return *this;
+}
 
 bool StreamingBlobHandle::Read(int offset, base::span<uint8_t> into) {
   CHECK(blob_handle_);
@@ -65,6 +68,19 @@ bool StreamingBlobHandle::Write(int offset, base::span<const uint8_t> from) {
     return false;
   }
   return true;
+}
+
+int StreamingBlobHandle::GetSize() {
+  CHECK(blob_handle_);
+  return sqlite3_blob_bytes(blob_handle_);
+}
+
+void StreamingBlobHandle::Close() {
+  if (blob_handle_) {
+    int result = sqlite3_blob_close(blob_handle_.ExtractAsDangling());
+    std::move(done_callback_)
+        .Run(ToSqliteResultCode(result), "-- sqlite3_blob_close()");
+  }
 }
 
 }  // namespace sql

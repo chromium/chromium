@@ -21,6 +21,8 @@ public interface ToolbarDataProvider {
     /** Observer interface for consumers who wish to subscribe to updates of ToolbarData. */
     interface Observer {
         default void onIncognitoStateChanged() {}
+
+        default void onPrimaryColorChanged() {}
     }
 
     /** Adds an observer of changes to ToolbarDataProvider's data. */

@@ -11,7 +11,7 @@ source_set("model") {
     "//base",
     "//components/application_locale_storage",
     "//components/autofill/core/browser",
-    "//components/plus_addresses/webdata",
+    "//components/plus_addresses/core/browser/webdata",
     "//components/search_engines",
     "//components/signin/public/webdata",
     "//components/webdata_services",

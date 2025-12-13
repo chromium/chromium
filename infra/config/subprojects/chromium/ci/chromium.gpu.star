@@ -3,28 +3,34 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.gpu builder group."""
 
-load("//lib/args.star", "args")
-load("//lib/branches.star", "branches")
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "cpu", "gardener_rotations", "siso")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
-load("//lib/gn_args.star", "gn_args")
-load("//lib/targets.star", "targets")
+load("@chromium-luci//args.star", "args")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builder_health_indicators.star", "health_spec")
+load("@chromium-luci//ci.star", "ci")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//targets.star", "targets")
+load("//lib/ci_constants.star", "ci_constants")
+load("//lib/gardener_rotations.star", "gardener_rotations")
+load("//lib/gpu.star", "gpu")
+load("//lib/siso.star", "siso")
 
 ci.defaults.set(
-    executable = ci.DEFAULT_EXECUTABLE,
+    executable = ci_constants.DEFAULT_EXECUTABLE,
     builder_group = "chromium.gpu",
-    pool = ci.gpu.POOL,
+    pool = gpu.ci.POOL,
     gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     tree_closing = True,
-    tree_closing_notifiers = ci.gpu.TREE_CLOSING_NOTIFIERS,
+    tree_closing_notifiers = gpu.ci.TREE_CLOSING_NOTIFIERS,
     contact_team_email = "chrome-gpu-infra@google.com",
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    health_spec = health_spec.DEFAULT,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+    execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
+    health_spec = health_spec.default(),
+    service_account = ci_constants.DEFAULT_SERVICE_ACCOUNT,
+    shadow_service_account = ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
     thin_tester_cores = 2,
@@ -57,7 +63,7 @@ consoles.console_view(
     },
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "Android Release (Pixel 2)",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Runs a subset of release GPU tests on stable Pixel 2 configs",
@@ -82,7 +88,6 @@ ci.gpu.linux_builder(
         android_config = builder_config.android_config(
             config = "base_config",
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -116,7 +121,7 @@ ci.gpu.linux_builder(
     cq_mirrors_console_view = "mirrors",
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "GPU Linux Builder",
     branch_selector = branches.selector.LINUX_BRANCHES,
     description_html = "Builds release Linux x64 binaries for GPU testing",
@@ -140,7 +145,6 @@ ci.gpu.linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -159,7 +163,7 @@ ci.gpu.linux_builder(
     cq_mirrors_console_view = "mirrors",
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "GPU Linux Builder (dbg)",
     description_html = "Builds debug Linux x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
@@ -175,7 +179,6 @@ ci.gpu.linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -194,7 +197,7 @@ ci.gpu.linux_builder(
     ),
 )
 
-ci.gpu.mac_builder(
+gpu.ci.mac_builder(
     name = "GPU Mac Builder",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Builds release Mac x64 binaries for GPU testing",
@@ -219,7 +222,6 @@ ci.gpu.mac_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -232,15 +234,13 @@ ci.gpu.mac_builder(
         ],
     ),
     targets = targets.bundle(),
-    cores = None,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
     cq_mirrors_console_view = "mirrors",
 )
 
-ci.gpu.mac_builder(
+gpu.ci.mac_builder(
     name = "GPU Mac Builder (dbg)",
     description_html = "Builds debug Mac x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
@@ -256,7 +256,6 @@ ci.gpu.mac_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -268,15 +267,13 @@ ci.gpu.mac_builder(
         ],
     ),
     targets = targets.bundle(),
-    cores = None,
-    cpu = cpu.ARM64,
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
 )
 
-ci.gpu.windows_builder(
+gpu.ci.windows_builder(
     name = "GPU Win x64 Builder",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Builds release x64 Windows binaries for GPU testing",
@@ -300,7 +297,6 @@ ci.gpu.windows_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -319,7 +315,7 @@ ci.gpu.windows_builder(
     cq_mirrors_console_view = "mirrors",
 )
 
-ci.gpu.windows_builder(
+gpu.ci.windows_builder(
     name = "GPU Win x64 Builder (dbg)",
     description_html = "Builds debug Windows x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
@@ -335,7 +331,6 @@ ci.gpu.windows_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -373,7 +368,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -424,7 +418,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -470,7 +463,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -482,6 +474,11 @@ ci.thin_tester(
             "puppet_production",
         ],
         per_test_modifications = {
+            "pixel_skia_gold_metal_passthrough_graphite_test": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
             "tab_capture_end2end_tests": targets.remove(
                 reason = "Run these only on Release bots.",
             ),
@@ -517,7 +514,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -557,7 +553,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -610,7 +605,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -650,7 +644,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -675,6 +668,12 @@ ci.thin_tester(
                         # now since we are manually applying the number of jobs above.
                         targets.magic_args.GPU_PARALLEL_JOBS: None,
                     },
+                ),
+            ),
+            "trace_test": targets.mixin(
+                # TODO(crbug.com/453961754): fix slowdown in trace_test and remove this sharding
+                swarming = targets.swarming(
+                    shards = 2,
                 ),
             ),
         },
@@ -711,7 +710,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-gpu-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -721,6 +719,7 @@ ci.thin_tester(
         mixins = [
             "win10_nvidia_gtx_1660_stable",
             "puppet_production",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             "pixel_skia_gold_passthrough_test": targets.per_test_modification(

@@ -12,6 +12,7 @@
 
 // Container view controller for the Credential Provider Extension promo. Can be
 // configured to display the half-sheet or full-screen promo.
+// TODO(crbug.com/433794412): Subclass from AnimatedPromoViewController.
 @interface CredentialProviderPromoViewController
     : UIViewController <CredentialProviderPromoConsumer>
 

@@ -12,8 +12,7 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/grit/generated_resources.h"
-#include "chrome/grit/theme_resources.h"
+#include "chrome/grit/browser_resources.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -42,7 +41,7 @@ const int kMaxNicknameChars = 25;
 
 }  // namespace
 
-SaveIbanBubbleView::SaveIbanBubbleView(views::View* anchor_view,
+SaveIbanBubbleView::SaveIbanBubbleView(views::BubbleAnchor anchor_view,
                                        content::WebContents* web_contents,
                                        IbanBubbleController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),
@@ -79,13 +78,11 @@ void SaveIbanBubbleView::Hide() {
 
 void SaveIbanBubbleView::AddedToWidget() {
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto image_view = std::make_unique<views::ImageView>(
+      bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_SAVE_CARD_LOCAL_LOTTIE));
+  image_view->GetViewAccessibility().SetIsInvisible(true);
 
-  GetBubbleFrameView()->SetHeaderView(
-      std::make_unique<ThemeTrackingNonAccessibleImageView>(
-          *bundle.GetImageSkiaNamed(IDR_SAVE_CARD),
-          *bundle.GetImageSkiaNamed(IDR_SAVE_CARD_DARK),
-          base::BindRepeating(&views::BubbleDialogDelegate::background_color,
-                              base::Unretained(this))));
+  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 
   if (controller_->IsUploadSave()) {
     GetBubbleFrameView()->SetTitleView(
@@ -273,17 +270,17 @@ void SaveIbanBubbleView::Init() {
   CreateMainContentView();
 
   if (controller_ &&
-      (controller_->GetBubbleType() == IbanBubbleType::kUploadSave ||
-       controller_->GetBubbleType() == IbanBubbleType::kUploadInProgress)) {
+      (controller_->GetIbanBubbleType() == IbanBubbleType::kUploadSave ||
+       controller_->GetIbanBubbleType() == IbanBubbleType::kUploadInProgress)) {
     loading_row_ = AddChildView(CreateLoadingRow());
-    if (controller_->GetBubbleType() == IbanBubbleType::kUploadInProgress) {
+    if (controller_->GetIbanBubbleType() == IbanBubbleType::kUploadInProgress) {
       ShowThrobber();
     }
   }
 }
 
 bool SaveIbanBubbleView::Accept() {
-  bool show_throbber = controller_ && controller_->GetBubbleType() ==
+  bool show_throbber = controller_ && controller_->GetIbanBubbleType() ==
                                           IbanBubbleType::kUploadSave;
 
   if (show_throbber) {

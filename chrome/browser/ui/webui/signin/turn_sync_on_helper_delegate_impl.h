@@ -74,7 +74,7 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
   void OnProfileSigninRestrictionsFetched(
       const AccountInfo& account_info,
       signin::SigninChoiceCallback callback,
-      const policy::ProfileSeparationPolicies& profile_separation_policies);
+      policy::ProfileSeparationPolicies profile_separation_policies);
 
   void OnProfileCheckComplete(const AccountInfo& account_info,
                               signin::SigninChoiceCallback callback,

@@ -74,7 +74,7 @@ interface ChromeRenderFrame {
       => (array<uint8> image_data,
           gfx.mojom.Size original_size,
           gfx.mojom.Size downscaled_size,
-          string encoded_extension,
+          string mime_type,
           array<lens.mojom.LatencyLog> log_data);
 
   // For WebUI testing, this message requests JavaScript to be executed at a
@@ -93,19 +93,32 @@ interface ChromeRenderFrame {
   // identifier (empty string matches all).
   LoadBlockedPlugins(string identifier);
 
-  // Indicates that the frame should collect draggable regions set using the
-  // app-region CSS property.
-  SetSupportsDraggableRegions(bool supports_draggable_regions);
-
   // Sets whether the frame needs to defer media loading when it is in
   // background.
   SetShouldDeferMediaLoad(bool should_defer);
 
   // Requests invoking of a tool from the actor automation framework. See
   // chrome/browser/actor
+  //
+  // Issuing InvokeTool() when a prior InvokeTool() request is outstanding will
+  // result in kExecutorBusy.
   [EnableIfNot=is_android]
   InvokeTool(actor.mojom.ToolInvocation request) =>
       (actor.mojom.ActionResult result);
+
+  // Cancels an in-progress tool invocation, if it exists -- while there's no
+  // callback to notify cancelation completion (so the browser process doesn't
+  // need to wait on a stuck renderer), the cancelation itself should run
+  // synchronously in the renderer, so it will be completed before the next
+  // InvokeTool() invocation starts running.
+  //
+  // InvokeTool() will still produce a result, although this result can be
+  // ignored in favor of the browser process completion result (such as timeout
+  // or paused). (CancelTool() causes in-progress InvokeTool() calls to end with
+  // kInvokeCanceled status -- it's also possible the tool finished right as
+  // CancelTool() is invoked).
+  [EnableIfNot=is_android]
+  CancelTool(actor.mojom.TaskId task_id);
 
   // Requests actor automation framework journaling. Journaling can be
   // stopped by disconnecting the passed in remote. We use an associated
@@ -113,4 +126,20 @@ interface ChromeRenderFrame {
   // journal will record the last committed URL in the logs.
   [EnableIfNot=is_android] StartActorJournal(
     pending_associated_remote<actor.mojom.JournalClient> client);
+
+  // Creates page stability monitor in the renderer to monitor for page
+  // stability. Multiple calls will clobber a PageStabilityMonitor previously
+  // created and it's the caller's responsibility to ensure the monitor is
+  // unneeded before creating a new one. This interface may be disconnected
+  // when the browser-side `ObservationDelayController` that owns the remote is
+  // destroyed. This could happen when the tool invocation failed and therefore
+  // there's no need to wait.
+  //
+  // `task_id` identifies the ID of the active actor tool.
+  // `supports_paint_stability` indicates whether to include paint stability in
+  // page stability heuristics.
+  [EnableIfNot=is_android]
+  CreatePageStabilityMonitor(
+    pending_receiver<actor.mojom.PageStabilityMonitor> monitor,
+    actor.mojom.TaskId task_id, bool supports_paint_stability);
 };

@@ -8,6 +8,8 @@
 #include <optional>
 #include <string>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/unguessable_token.h"
@@ -22,10 +24,6 @@
 namespace net {
 
 namespace {
-
-std::string GetSiteDebugString(const std::optional<SchemefulSite>& site) {
-  return site ? site->GetDebugString() : "null";
-}
 
 std::string GetNetworkIsolationPartitionStringForCacheKey(
     NetworkIsolationPartition network_isolation_partition) {
@@ -50,20 +48,26 @@ NetworkIsolationKey::NetworkIsolationKey(
     SchemefulSite&& frame_site,
     std::optional<base::UnguessableToken>&& nonce,
     NetworkIsolationPartition network_isolation_partition)
-    : top_frame_site_(std::move(top_frame_site)),
-      frame_site_(std::make_optional(std::move(frame_site))),
-      nonce_(std::move(nonce)),
-      network_isolation_partition_(network_isolation_partition) {
-  DCHECK(!nonce_ || !nonce_->is_empty());
-}
+    : NetworkIsolationKey(
+          base::MakeRefCounted<Data>(std::move(top_frame_site),
+                                     std::move(frame_site),
+                                     std::move(nonce),
+                                     network_isolation_partition)) {}
 
-NetworkIsolationKey::NetworkIsolationKey() = default;
+NetworkIsolationKey::NetworkIsolationKey()
+    : NetworkIsolationKey(Data::GetEmptyData()) {}
 
 NetworkIsolationKey::NetworkIsolationKey(
     const NetworkIsolationKey& network_isolation_key) = default;
 
 NetworkIsolationKey::NetworkIsolationKey(
     NetworkIsolationKey&& network_isolation_key) = default;
+
+NetworkIsolationKey::NetworkIsolationKey(const scoped_refptr<const Data>& data)
+    : data_(data) {
+  CHECK(data_);
+  CHECK(!data_->nonce() || !data_->nonce()->is_empty());
+}
 
 NetworkIsolationKey::~NetworkIsolationKey() = default;
 
@@ -80,10 +84,12 @@ NetworkIsolationKey NetworkIsolationKey::CreateTransientForTesting() {
 
 NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameSite(
     const SchemefulSite& new_frame_site) const {
-  if (!top_frame_site_)
+  if (data_->is_empty()) {
     return NetworkIsolationKey();
-  return NetworkIsolationKey(top_frame_site_.value(), new_frame_site, nonce_,
-                             network_isolation_partition_);
+  }
+  return NetworkIsolationKey(data_->top_frame_site().value(), new_frame_site,
+                             data_->nonce(),
+                             data_->network_isolation_partition());
 }
 
 std::optional<std::string> NetworkIsolationKey::ToCacheKeyString() const {
@@ -91,28 +97,31 @@ std::optional<std::string> NetworkIsolationKey::ToCacheKeyString() const {
     return std::nullopt;
 
   std::string network_isolation_partition_string =
-      network_isolation_partition_ == NetworkIsolationPartition::kGeneral
+      GetNetworkIsolationPartition() == NetworkIsolationPartition::kGeneral
           ? ""
           : " " + GetNetworkIsolationPartitionStringForCacheKey(
-                      network_isolation_partition_);
-  return top_frame_site_->Serialize() + " " + frame_site_->Serialize() +
+                      GetNetworkIsolationPartition());
+  return GetTopFrameSite()->Serialize() + " " + GetFrameSite()->Serialize() +
          network_isolation_partition_string;
 }
 
 std::string NetworkIsolationKey::ToDebugString() const {
+  if (data_->is_empty()) {
+    return "null null";
+  }
   // The space-separated serialization of |top_frame_site_| and
   // |frame_site_|.
-  std::string return_string = GetSiteDebugString(top_frame_site_);
-  return_string += " " + GetSiteDebugString(frame_site_);
+  std::string return_string = GetTopFrameSite()->GetDebugString();
+  return_string += " " + GetFrameSite()->GetDebugString();
 
-  if (nonce_.has_value()) {
-    return_string += " (with nonce " + nonce_->ToString() + ")";
+  if (GetNonce().has_value()) {
+    return_string += " (with nonce " + GetNonce()->ToString() + ")";
   }
 
-  if (network_isolation_partition_ != NetworkIsolationPartition::kGeneral) {
+  if (GetNetworkIsolationPartition() != NetworkIsolationPartition::kGeneral) {
     return_string +=
         " (" +
-        NetworkIsolationPartitionToDebugString(network_isolation_partition_) +
+        NetworkIsolationPartitionToDebugString(GetNetworkIsolationPartition()) +
         ")";
   }
 
@@ -120,13 +129,7 @@ std::string NetworkIsolationKey::ToDebugString() const {
 }
 
 bool NetworkIsolationKey::IsFullyPopulated() const {
-  if (!top_frame_site_.has_value()) {
-    return false;
-  }
-  if (!frame_site_.has_value()) {
-    return false;
-  }
-  return true;
+  return !IsEmpty();
 }
 
 bool NetworkIsolationKey::IsTransient() const {
@@ -136,17 +139,17 @@ bool NetworkIsolationKey::IsTransient() const {
 }
 
 bool NetworkIsolationKey::IsEmpty() const {
-  return !top_frame_site_.has_value() && !frame_site_.has_value();
+  return data_->is_empty();
 }
 
 bool NetworkIsolationKey::IsOpaque() const {
-  if (top_frame_site_->opaque()) {
+  if (GetTopFrameSite()->opaque()) {
     return true;
   }
-  if (frame_site_->opaque()) {
+  if (GetFrameSite()->opaque()) {
     return true;
   }
-  if (nonce_.has_value()) {
+  if (GetNonce().has_value()) {
     return true;
   }
   return false;
@@ -157,5 +160,34 @@ NET_EXPORT std::ostream& operator<<(std::ostream& os,
   os << nik.ToDebugString();
   return os;
 }
+
+// static
+scoped_refptr<NetworkIsolationKey::Data>
+NetworkIsolationKey::Data::GetEmptyData() {
+  static base::NoDestructor<scoped_refptr<NetworkIsolationKey::Data>>
+      empty_data(base::MakeRefCounted<Data>(base::PassKey<Data>()));
+  return *empty_data;
+}
+
+NetworkIsolationKey::Data::Data(base::PassKey<Data>)
+    : network_isolation_partition_(NetworkIsolationPartition::kGeneral) {
+  CHECK(is_empty());
+}
+
+NetworkIsolationKey::Data::Data(
+    SchemefulSite&& top_frame_site,
+    SchemefulSite&& frame_site,
+    std::optional<base::UnguessableToken>&& nonce,
+    NetworkIsolationPartition network_isolation_partition)
+    : top_frame_site_(std::move(top_frame_site)),
+      frame_site_(std::move(frame_site)),
+      nonce_(std::move(nonce)),
+      network_isolation_partition_(network_isolation_partition) {
+  CHECK(top_frame_site_.has_value());
+  CHECK(frame_site_.has_value());
+  CHECK(!is_empty());
+}
+
+NetworkIsolationKey::Data::~Data() = default;
 
 }  // namespace net

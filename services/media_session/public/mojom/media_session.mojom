@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 24
+// Next MinVersion: 25
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -64,7 +64,6 @@ enum MediaPictureInPictureState {
 enum MediaAudioVideoState {
   // Unused as of version 10, see |audio_video_states|.
   kDeprecatedUnknown,
-
   kAudioOnly,
   kAudioVideo,
   [MinVersion=10] kVideoOnly,
@@ -134,14 +133,14 @@ struct MediaPosition {
 
 [Stable, Extensible]
 enum MicrophoneState {
-  kUnknown,
+  [Default] kUnknown,
   kMuted,
   kUnmuted,
 };
 
 [Stable, Extensible]
 enum CameraState {
-  kUnknown,
+  [Default] kUnknown,
   kTurnedOn,
   kTurnedOff,
 };
@@ -242,6 +241,10 @@ struct MediaSessionInfo {
   // threshold defined by |HTMLVideoElement| (kVisibilityThreshold) and tracked
   // by the |MediaVideoVisibilityTracker|.
   [MinVersion=21] bool meets_visibility_threshold;
+
+  // Indicates if this MediaSession can enter browser-initiated automatic
+  // picture-in-picture.
+  [MinVersion=24] bool can_enter_browser_initiated_autopip;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed

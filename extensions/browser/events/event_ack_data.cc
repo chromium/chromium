@@ -24,6 +24,8 @@ namespace extensions {
 EventAckData::EventInfo::EventInfo(
     const base::Uuid& request_uuid,
     int render_process_id,
+    int64_t version_id,
+    int worker_thread_id,
     bool start_ok,
     content::ServiceWorkerExternalRequestResult external_request_result,
     base::TimeTicks dispatch_start_time,
@@ -32,6 +34,8 @@ EventAckData::EventInfo::EventInfo(
     const events::HistogramValue histogram_value)
     : request_uuid(request_uuid),
       render_process_id(render_process_id),
+      version_id(version_id),
+      worker_thread_id(worker_thread_id),
       start_ok(start_ok),
       external_request_result(external_request_result),
       dispatch_start_time(dispatch_start_time),
@@ -49,6 +53,7 @@ void EventAckData::IncrementInflightEvent(
     content::ServiceWorkerContext* context,
     int render_process_id,
     int64_t version_id,
+    int worker_thread_id,
     int event_id,
     base::TimeTicks dispatch_start_time,
     EventDispatchSource dispatch_source,
@@ -75,10 +80,10 @@ void EventAckData::IncrementInflightEvent(
   }
 
   auto insert_result = unacked_events_.try_emplace(
-      event_id,
-      EventInfo{request_uuid, render_process_id, start_ok,
-                external_request_result, dispatch_start_time, dispatch_source,
-                lazy_background_active_on_dispatch, histogram_value});
+      event_id, EventInfo{request_uuid, render_process_id, version_id,
+                          worker_thread_id, start_ok, external_request_result,
+                          dispatch_start_time, dispatch_source,
+                          lazy_background_active_on_dispatch, histogram_value});
   DCHECK(insert_result.second) << "EventAckData: Duplicate event_id.";
 
   if (dispatch_source == EventDispatchSource::kDispatchEventToProcess) {
@@ -170,19 +175,35 @@ void EventAckData::DecrementInflightEvent(
     content::ServiceWorkerContext* context,
     int render_process_id,
     int64_t version_id,
+    int worker_thread_id,
     int event_id,
     bool worker_stopped,
     base::OnceClosure failure_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // Event not found.
   auto request_info_iter = unacked_events_.find(event_id);
-  if (request_info_iter == unacked_events_.end() ||
-      request_info_iter->second.render_process_id != render_process_id) {
+  if (request_info_iter == unacked_events_.end()) {
+    if (worker_stopped) {
+      // If the worker has stopped, it's possible the event was already cleaned
+      // up by `ClearUnackedEventsForWorker` just before the ack arrived.
+      return;
+    }
+    // Event missing from a running worker. Bad ack.
     std::move(failure_callback).Run();
     return;
   }
 
+  // Event found.
   EventInfo& event_info = request_info_iter->second;
+  if (event_info.render_process_id != render_process_id ||
+      event_info.version_id != version_id ||
+      event_info.worker_thread_id != worker_thread_id) {
+    // Mismatched worker. This is always a bad ack, regardless of whether
+    // the sender is stopped or running.
+    std::move(failure_callback).Run();
+    return;
+  }
 
   EmitDispatchTimeMetrics(event_info);
 
@@ -239,6 +260,33 @@ void EventAckData::ClearUnackedEventsForRenderProcess(int render_process_id) {
   std::erase_if(unacked_events_, [render_process_id](const auto& entry) {
     return entry.second.render_process_id == render_process_id;
   });
+}
+
+void EventAckData::ClearUnackedEventsForWorker(
+    content::ServiceWorkerContext* context,
+    int render_process_id,
+    int64_t version_id,
+    int worker_thread_id) {
+  // Iterate manually because we need to access the EventInfo (to retrieve
+  // `request_uuid`) before erasing the element.
+  for (auto it = unacked_events_.begin(); it != unacked_events_.end();) {
+    const EventInfo& event_info = it->second;
+    if (event_info.render_process_id != render_process_id ||
+        event_info.version_id != version_id ||
+        event_info.worker_thread_id != worker_thread_id) {
+      it++;
+      continue;
+    }
+
+    // The worker stopped before acking the event. Notify SWContext that the
+    // external request finished. This balances the `StartingExternalRequest`
+    // call in `IncrementInflightEvent`.
+    if (context && event_info.start_ok) {
+      context->FinishedExternalRequest(event_info.version_id,
+                                       event_info.request_uuid);
+    }
+    it = unacked_events_.erase(it);
+  }
 }
 
 bool EventAckData::HasUnackedEventForTesting(int event_id) {

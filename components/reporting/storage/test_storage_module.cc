@@ -25,9 +25,9 @@ TestStorageModuleStrict::TestStorageModuleStrict() {
           Invoke(this, &TestStorageModuleStrict::AddRecordSuccessfully));
   ON_CALL(*this, Flush)
       .WillByDefault(
-          WithArg<1>(Invoke([](StorageModuleInterface::FlushCallback callback) {
+          WithArg<1>([](StorageModuleInterface::FlushCallback callback) {
             std::move(callback).Run(Status::StatusOK());
-          })));
+          }));
 }
 
 TestStorageModuleStrict::~TestStorageModuleStrict() = default;

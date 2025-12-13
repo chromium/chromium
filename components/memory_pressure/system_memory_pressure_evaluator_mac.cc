@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/byte_count.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -29,47 +30,43 @@ namespace {
 // treated as 'none'. This is to experiment with the idea that the 'warn'
 // level signal from the OS is not always an accurate or useful signal.
 BASE_FEATURE(kSkipModerateMemoryPressureLevelMac,
-             "SkipModerateMemoryPressureLevelMac",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature controls the critical memory pressure signal based on low disk
 // space. Disabling this feature turns off the disk space check entirely.
-BASE_FEATURE(kMacCriticalDiskSpacePressure,
-             "MacCriticalDiskSpacePressure",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMacCriticalDiskSpacePressure, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// The default threshold in megabytes for the critical disk space pressure
+// The default threshold for the critical disk space pressure
 // signal.
-constexpr int kDefaultCriticalDiskSpaceMb = 250;
-const int64_t kBytesPerMb = 1024 * 1024;
+constexpr base::ByteCount kDefaultCriticalDiskSpace = base::MiB(250);
 
-// Defines the threshold in megabytes for the critical disk space pressure
+// Defines the threshold for the critical disk space pressure
 // signal. This is a parameter for the kMacCriticalDiskSpacePressure feature.
 BASE_FEATURE_PARAM(int,
                    kMacCriticalDiskSpacePressureThresholdMB,
                    &kMacCriticalDiskSpacePressure,
                    "MacCriticalDiskSpacePressureThresholdMB",
-                   kDefaultCriticalDiskSpaceMb);
+                   kDefaultCriticalDiskSpace.InMiB());
 
 // How often to check for free disk space.
 constexpr base::TimeDelta kDiskSpaceCheckPeriod = base::Seconds(5);
 }  // namespace
 
-base::MemoryPressureListener::MemoryPressureLevel
+base::MemoryPressureLevel
 SystemMemoryPressureEvaluator::MemoryPressureLevelForMacMemoryPressureLevel(
     int mac_memory_pressure_level) {
   switch (mac_memory_pressure_level) {
     case DISPATCH_MEMORYPRESSURE_NORMAL:
-      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+      return base::MEMORY_PRESSURE_LEVEL_NONE;
     case DISPATCH_MEMORYPRESSURE_WARN:
       if (base::FeatureList::IsEnabled(kSkipModerateMemoryPressureLevelMac)) {
-        return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+        return base::MEMORY_PRESSURE_LEVEL_NONE;
       }
-      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+      return base::MEMORY_PRESSURE_LEVEL_MODERATE;
     case DISPATCH_MEMORYPRESSURE_CRITICAL:
-      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+      return base::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
-  return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  return base::MEMORY_PRESSURE_LEVEL_NONE;
 }
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
@@ -128,6 +125,10 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     // Perform an initial check on startup.
     CheckDiskSpace();
   }
+
+  // Only update initialization vote, without triggering notifications, to
+  // prevent unexpected results from event listeners during initialization
+  UpdatePressureLevel();
 }
 
 SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() {
@@ -179,19 +180,17 @@ void SystemMemoryPressureEvaluator::CheckDiskSpace() {
 }
 
 void SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete(
-    int64_t free_bytes) {
+    std::optional<int64_t> free_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::MemoryPressureListener::MemoryPressureLevel new_disk_vote =
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  base::MemoryPressureLevel new_disk_vote = base::MEMORY_PRESSURE_LEVEL_NONE;
 
-  const int64_t threshold_mb = kMacCriticalDiskSpacePressureThresholdMB.Get();
-  // The minimum free disk space in MB before dispatching a critical memory
-  // pressure signal.
-  const int64_t critical_disk_space_bytes = threshold_mb * kBytesPerMb;
+  // The minimum free disk space before dispatching a critical memory pressure
+  // signal.
+  const base::ByteCount threshold =
+      base::MiB(kMacCriticalDiskSpacePressureThresholdMB.Get());
 
-  if (free_bytes != -1 && free_bytes < critical_disk_space_bytes) {
-    new_disk_vote =
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+  if (free_bytes.has_value() && base::ByteCount(*free_bytes) < threshold) {
+    new_disk_vote = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
 
   if (disk_pressure_vote_ != new_disk_vote) {
@@ -201,22 +200,22 @@ void SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete(
 }
 
 void SystemMemoryPressureEvaluator::UpdatePressureAndManageNotifications() {
+  base::MemoryPressureLevel old_vote = current_vote();
+
   // The OS has sent a notification that the memory pressure level has changed.
   // Go through the normal memory pressure level checking mechanism so that
   // |current_vote_| and UMA get updated to the current value.
   UpdatePressureLevel();
 
   // Run the callback that's waiting on memory pressure change notifications.
-  // The convention is to not send notifiations on memory pressure returning to
-  // normal.
-  bool notify = current_vote() !=
-                base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
-  SendCurrentVote(notify);
+  if (current_vote() != old_vote) {
+    SendCurrentVote(true);
 
-  if (notify) {
-    renotify_current_vote_timer_.Reset();
-  } else {
-    renotify_current_vote_timer_.Stop();
+    if (current_vote() != base::MEMORY_PRESSURE_LEVEL_NONE) {
+      renotify_current_vote_timer_.Reset();
+    } else {
+      renotify_current_vote_timer_.Stop();
+    }
   }
 }
 

@@ -297,6 +297,8 @@ class CompositorFrameBuilder {
   CompositorFrameBuilder& AddOffsetTagDefinition(
       const OffsetTagDefinition& definition);
 
+  CompositorFrameBuilder& SetValidTreesInVizTimestamps(base::TimeTicks now);
+
  private:
   CompositorFrame MakeInitCompositorFrame() const;
 

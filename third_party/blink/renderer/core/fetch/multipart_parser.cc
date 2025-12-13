@@ -255,13 +255,12 @@ void MultipartParser::ParseDataAndDelimiter(base::span<const char>& bytes) {
   if (found_delimiter.begin() != bytes.end()) {
     // A complete delimiter was found. The bytes before that are octet
     // bytes.
-    auto delimiter_and_rest = bytes.subspan(
-        static_cast<size_t>(found_delimiter.begin() - bytes.begin()));
-    auto [delimiter, rest] = delimiter_and_rest.split_at(delimiter_.size());
-    const bool matched = matcher_.Match(delimiter);
+    const size_t octet_bytes_before_delimiter =
+        static_cast<size_t>(found_delimiter.begin() - bytes.begin());
+    bytes.take_first(octet_bytes_before_delimiter);
+    const bool matched = matcher_.Match(bytes.take_first(delimiter_.size()));
     DCHECK(matched);
     DCHECK(matcher_.IsMatchComplete());
-    bytes = rest;
   } else {
     // Search for a partial delimiter in the end of the bytes.
     auto maybe_delimiter_span = bytes.last(

@@ -11,13 +11,10 @@ source_set("session") {
     "//ios/web/public",
     "//ios/web/public/security",
     "//ios/web/public/session",
-    "//ios/web/public/session/proto:proto_util",
+    "//ios/web/public/session/proto",
     "//net",
   ]
   sources = [
-    "crw_session_certificate_policy_cache_storage.mm",
-    "crw_session_storage.mm",
-    "crw_session_user_data.mm",
     "session_certificate.cc",
     "session_certificate.h",
     "session_certificate_policy_cache_impl.cc",
@@ -39,7 +36,6 @@ source_set("unittests") {
   deps = [
     "//ios/web/public",
     "//ios/web/public/security",
-    "//ios/web/public/session",
     "//ios/web/public/session/proto",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
@@ -48,9 +44,5 @@ source_set("unittests") {
     "//net:test_support",
     "//testing/gtest",
   ]
-  sources = [
-    "crw_session_certificate_policy_cache_storage_unittest.mm",
-    "serializable_user_data_manager_unittest.mm",
-    "session_certificate_policy_cache_impl_unittest.mm",
-  ]
+  sources = [ "session_certificate_policy_cache_impl_unittest.mm" ]
 }

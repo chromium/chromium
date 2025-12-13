@@ -15,12 +15,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/settings/pages",
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/settings",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
 ]
-specific_include_rules = {
-  "fast_pair_saved_devices_handler_unittest.cc": [
-    "+skia/rusty_png_feature.h",
-  ]
-}

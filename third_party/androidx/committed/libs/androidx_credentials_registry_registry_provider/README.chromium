@@ -1,6 +1,6 @@
 Name: androidx.credentials.registry:registry-provider
 Short Name: registry-provider
-URL: https://developer.android.com/jetpack/androidx/releases/credentials-registry#1.0.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14586925/artifacts/repository/androidx/credentials/registry/registry-provider/1.0.0-SNAPSHOT/registry-provider-1.0.0-20251213.041943-1.aar
 Version: 1.0.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 register digital credentials with CredentialManager to support smooth sign-in, verification, and other user experience
+
+See also: https://developer.android.com/jetpack/androidx/releases/credentials-registry#1.0.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

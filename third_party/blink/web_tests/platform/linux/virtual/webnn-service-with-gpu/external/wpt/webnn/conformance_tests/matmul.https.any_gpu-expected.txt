@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] [required] matmul float32 3D and 3D (broadcast) tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float32 actual 0 should be close enough to expected 13553.013671875 by ULP distance: expected a number less than or equal to 8n but got 1179894798n
+[FAIL] [required] matmul float32 3D and 2D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float32 actual 0 should be close enough to expected 13553.013671875 by ULP distance: expected a number less than or equal to 8n but got 1179894798n
+[FAIL] [required] matmul float32 4D and 4D (broadcast) tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float32 actual 0 should be close enough to expected 3733.946533203125 by ULP distance: expected a number less than or equal to 8n but got 1164533541n
+[FAIL] [required] matmul float32 4D and 3D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float32 actual 0 should be close enough to expected 7885.7978515625 by ULP distance: expected a number less than or equal to 8n but got 1173778018n
+[FAIL] [required] matmul float16 3D and 3D (broadcast) tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float16 actual 0 should be close enough to expected 13552 by ULP distance: expected a number less than or equal to 8 but got 29342
+[FAIL] [required] matmul float16 3D and 2D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float16 actual 0 should be close enough to expected 13552 by ULP distance: expected a number less than or equal to 8 but got 29342
+[FAIL] [required] matmul float16 4D and 4D (broadcast) tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float16 actual 0 should be close enough to expected 3734 by ULP distance: expected a number less than or equal to 8 but got 27467
+[FAIL] [required] matmul float16 4D and 3D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float16 actual 0 should be close enough to expected 7888 by ULP distance: expected a number less than or equal to 8 but got 28596
+Harness: the test ran to completion.
+

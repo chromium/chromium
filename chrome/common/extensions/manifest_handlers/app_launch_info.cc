@@ -149,7 +149,7 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
     }
 
     URLPattern pattern(Extension::kValidWebExtentSchemes);
-    if (!pattern.IsValidScheme(url.scheme())) {
+    if (!pattern.IsValidScheme(url.GetScheme())) {
       set_launch_web_url_error();
       return false;
     }
@@ -175,7 +175,7 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
           keys::kLaunchWebURL);
       return false;
     }
-    pattern.SetHost(launch_web_url_.host());
+    pattern.SetHost(launch_web_url_.GetHost());
     pattern.SetPath("/*");
     extension->AddWebExtentPattern(pattern);
   }

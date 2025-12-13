@@ -4,7 +4,7 @@
 
 #include "ui/linux/linux_ui_delegate.h"
 
-#include "base/functional/callback.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 
 namespace ui {
@@ -25,14 +25,6 @@ LinuxUiDelegate::LinuxUiDelegate() {
 LinuxUiDelegate::~LinuxUiDelegate() {
   DCHECK_EQ(instance_, this);
   instance_ = nullptr;
-}
-
-bool LinuxUiDelegate::ExportWindowHandle(
-    uint32_t parent_widget,
-    base::OnceCallback<void(const std::string&)> callback) {
-  // This function should not be called when using a platform that doesn't
-  // implement it.
-  NOTREACHED();
 }
 
 void LinuxUiDelegate::SetTransientWindowForParent(

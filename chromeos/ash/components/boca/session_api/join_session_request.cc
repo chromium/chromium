@@ -69,7 +69,7 @@ bool JoinSessionRequest::GetContentData(std::string* upload_content_type,
   device.Set(kDeviceId, device_id_);
   root.Set(kDeviceInfo, std::move(device));
 
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
   return true;
 }
 

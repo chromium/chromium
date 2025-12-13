@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
 
 #include <memory>
@@ -16,6 +11,7 @@
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/projector_app/test/mock_xhr_sender.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -101,10 +97,7 @@ class ScreencastsPendingStatusChangedObserver
 
 class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
  public:
-  PendingScreencastMangerBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kProjectorUpdateIndexableText}, {});
-  }
+  PendingScreencastMangerBrowserTest() = default;
   PendingScreencastMangerBrowserTest(
       const PendingScreencastMangerBrowserTest&) = delete;
   PendingScreencastMangerBrowserTest& operator=(
@@ -180,9 +173,9 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
 
     base::File file(folder_path.Append(relative_file_path.BaseName()),
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    EXPECT_EQ(static_cast<int>(file_content.size()),
-              file.Write(/*offset=*/0, file_content.data(),
-                         /*size=*/file_content.size()));
+    UNSAFE_TODO(EXPECT_EQ(static_cast<int>(file_content.size()),
+                          file.Write(/*offset=*/0, file_content.data(),
+                                     /*size=*/file_content.size())));
     EXPECT_TRUE(file.IsValid());
     file.Close();
   }

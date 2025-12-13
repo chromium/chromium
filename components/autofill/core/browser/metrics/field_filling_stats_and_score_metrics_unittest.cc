@@ -89,7 +89,7 @@ class AutofillFieldFillingStatsAndScoreMetricsTest
         {.description_for_logging = "FieldFillingStats",
          .fields = fields,
          .renderer_id = test::MakeFormRendererId(),
-         .main_frame_origin = url::Origin::Create(autofill_driver_->url())});
+         .main_frame_origin = url::Origin::Create(autofill_driver().url())});
     return form_data_;
   }
 

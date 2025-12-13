@@ -15,6 +15,28 @@ struct Config;
 // model and metadata for the cross device user optimization target.
 class CrossDeviceUserSegment : public DefaultModelProvider {
  public:
+  enum Label {
+    kLabelUnknown = 0,
+    kLabelNoCrossDeviceUsage = 1,
+    kLabelCrossDeviceMobile = 2,
+    kLabelCrossDeviceDesktop = 3,
+    kLabelCrossDeviceTablet = 4,
+    kLabelCrossDeviceMobileAndDesktop = 5,
+    kLabelCrossDeviceMobileAndTablet = 6,
+    kLabelCrossDeviceDesktopAndTablet = 7,
+    kLabelCrossDeviceAllDeviceTypes = 8,
+    kLabelCrossDeviceOther = 9,
+    kLabelCount
+  };
+
+  enum Feature {
+    kFeatureDeviceCount,
+    kFeatureDeviceCountPhone,
+    kFeatureDeviceCountDesktop,
+    kFeatureDeviceCountTablet,
+    kFeatureCount
+  };
+
   CrossDeviceUserSegment();
   ~CrossDeviceUserSegment() override = default;
 

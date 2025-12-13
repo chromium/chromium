@@ -23,6 +23,11 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace policy {
 
 namespace {
@@ -195,6 +200,18 @@ Availability GetMostRestrictiveAvailability(Availability availability_1,
   return Availability::kAllowed;
 }
 
+const PrefService* GetPrimaryUserPrefs() {
+  auto* user_manager = user_manager::UserManager::Get();
+  if (!user_manager) {
+    return nullptr;
+  }
+  const user_manager::User* primary_user = user_manager->GetPrimaryUser();
+  if (!primary_user) {
+    return nullptr;
+  }
+  return primary_user->GetProfilePrefs();
+}
+
 #endif
 
 }  // namespace
@@ -272,19 +289,6 @@ void DeveloperToolsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   }
 }
 
-// static
-void DeveloperToolsPolicyHandler::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  // The default for this pref is |kDisallowedForForceInstalledExtensions|, both
-  // for managed and for unmanaged users. This is fine for unmanaged users too,
-  // because even if they have force-installed extensions (which could happen
-  // e.g. through GPO for Chrome on Windows), developer tools should be disabled
-  // for these by default.
-  registry->RegisterIntegerPref(
-      prefs::kDevToolsAvailability,
-      static_cast<int>(Availability::kDisallowedForForceInstalledExtensions));
-}
-
 policy::DeveloperToolsPolicyHandler::Availability
 DeveloperToolsPolicyHandler::GetEffectiveAvailability(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -296,12 +300,12 @@ DeveloperToolsPolicyHandler::GetEffectiveAvailability(Profile* profile) {
 
   Availability availability = GetDevToolsAvailability(profile->GetPrefs());
 #if BUILDFLAG(IS_CHROMEOS)
-  // Do not create DevTools if it's disabled for primary profile.
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  if (primary_profile &&
-      IsDevToolsAvailabilitySetByPolicy(primary_profile->GetPrefs())) {
+  // Do not create DevTools if it's disabled for primary user.
+  const PrefService* primary_user_prefs = GetPrimaryUserPrefs();
+  if (primary_user_prefs &&
+      IsDevToolsAvailabilitySetByPolicy(primary_user_prefs)) {
     availability = GetMostRestrictiveAvailability(
-        availability, GetDevToolsAvailability(primary_profile->GetPrefs()));
+        availability, GetDevToolsAvailability(primary_user_prefs));
   }
 #endif
   return availability;

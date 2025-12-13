@@ -21,7 +21,7 @@
 #include "base/win/scoped_select_object.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "ui/gfx/gdi_util.h"
+#include "ui/gfx/win/gdi_util.h"
 #include "ui/gl/direct_composition_support.h"
 #endif
 
@@ -98,7 +98,7 @@ SkBitmap GLTestHelper::ReadBackWindow(HWND window, const gfx::Size& size) {
   }
 
   base::win::ScopedCreateDC mem_hdc(::CreateCompatibleDC(nullptr));
-  DCHECK(mem_hdc.IsValid());
+  DCHECK(mem_hdc.is_valid());
 
   BITMAPV4HEADER hdr;
   gfx::CreateBitmapV4HeaderForARGB888(size.width(), size.height(), &hdr);

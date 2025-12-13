@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/tools/convert_dict/aff_reader.h"
 
 #include <stddef.h>
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/logging.h"
@@ -29,12 +25,13 @@ namespace {
 // NULL-terminated ASCII string.
 bool StringBeginsWith(const std::string& str, const char* with) {
   size_t cur = 0;
-  while (cur < str.size() && with[cur] != 0) {
-    if (str[cur] != with[cur])
+  while (cur < str.size() && UNSAFE_TODO(with[cur]) != 0) {
+    if (str[cur] != UNSAFE_TODO(with[cur])) {
       return false;
+    }
     cur++;
   }
-  return with[cur] == 0;
+  return UNSAFE_TODO(with[cur]) == 0;
 }
 
 // Collapses runs of spaces to only one space.

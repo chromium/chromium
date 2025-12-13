@@ -5,9 +5,12 @@
 #ifndef CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
 #define CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
 
-#include "ipc/ipc_message_macros.h"
-#include "ipc/ipc_message_protobuf_utils.h"
 #include "chrome/common/safe_browsing/ipc_protobuf_message_macros.h"
+#include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_protobuf_utils.h"
+
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
 
 IPC_PROTOBUF_MESSAGE_TRAITS_BEGIN(SubMessage)
   IPC_PROTOBUF_MESSAGE_TRAITS_OPTIONAL_FUNDAMENTAL_MEMBER(foo)

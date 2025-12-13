@@ -3,6 +3,7 @@ Short Name: SPIRV-Tools
 URL: https://github.com/KhronosGroup/SPIRV-Tools.git
 Version: N/A
 Revision: DEPS
+Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
 License: Apache-2.0

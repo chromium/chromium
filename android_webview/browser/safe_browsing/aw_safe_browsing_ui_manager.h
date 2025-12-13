@@ -12,8 +12,6 @@
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 namespace network {

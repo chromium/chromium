@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/ax_platform_relation_win.h"
 
 #include <wrl/client.h>
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
@@ -281,7 +277,7 @@ IFACEMETHODIMP AXPlatformRelationWin::get_targets(LONG max_targets,
     return S_FALSE;
 
   for (LONG i = 0; i < count; ++i) {
-    HRESULT result = get_target(i, &targets[i]);
+    HRESULT result = get_target(i, &UNSAFE_TODO(targets[i]));
     if (result != S_OK)
       return result;
   }

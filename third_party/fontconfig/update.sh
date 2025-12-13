@@ -6,8 +6,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$SCRIPT_DIR/../.."
 
 cd "$SCRIPT_DIR/src"
-git fetch origin main
-REVISION="$(git rev-parse origin/main)"
+git fetch origin upstream/main
+REVISION="$(git rev-parse origin/upstream/main)"
 
 cd "$SRC_DIR"
 roll-dep src/third_party/fontconfig/src --roll-to "$REVISION" "$@"
@@ -19,7 +19,11 @@ find build -name '*.h' -printf '%P\n' |
   rsync -R --files-from=- build/ ../include/
 # config.h has "#define _GNU_SOURCE" which would conflict with
 # our "#define _GNU_SOURCE 1".
-sed -i 's/_GNU_SOURCE$/_GNU_SOURCE 1/' ../include/config.h
+sed -i 's/_GNU_SOURCE$/_GNU_SOURCE 1/' ../include/meson-config.h
+# Remove ENABLE_FREETYPE and related FreeType define from upstream,
+# as locally we build without FreeType.
+sed -i '/#define ENABLE_FREETYPE 1/{N;d}' ../include/meson-config.h
+sed -i '/#define FREETYPE_PCF_LONG_FAMILY_NAMES/{N;d}' ../include/meson-config.h
 # Use libxml2 instead of libexpat.  Currently, there's no way
 # to configure this with meson options.
 echo '#define ENABLE_LIBXML2 1' >>../include/config.h

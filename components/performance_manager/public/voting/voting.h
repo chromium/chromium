@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_VOTING_VOTING_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_VOTING_VOTING_H_
 
@@ -42,11 +37,11 @@
 // single sequence. In practice this will be the PM sequence.
 
 #include <cstring>
-#include <map>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
@@ -240,7 +235,8 @@ bool Vote<ContextType, VoteType, DefaultVote>::operator==(
     const Vote<ContextType, VoteType, DefaultVote>& vote) const {
   DCHECK(reason_);
   DCHECK(vote.reason_);
-  return vote_ == vote.vote_ && ::strcmp(reason_, vote.reason_) == 0;
+  return vote_ == vote.vote_ &&
+         UNSAFE_TODO(::strcmp(reason_, vote.reason_)) == 0;
 }
 
 template <typename ContextType, typename VoteType, VoteType DefaultVote>

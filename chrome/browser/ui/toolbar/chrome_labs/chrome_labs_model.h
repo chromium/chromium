@@ -38,6 +38,8 @@ class ChromeLabsModel {
   ChromeLabsModel();
   ~ChromeLabsModel();
 
+  static ChromeLabsModel* GetInstance();
+
   const std::vector<LabInfo>& GetLabInfo() const;
 
  private:

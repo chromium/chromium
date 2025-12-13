@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 #include <memory>
 #include <unordered_set>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
@@ -98,7 +94,7 @@ base::MappedReadOnlyRegion GetMappedReadOnlyRegionWithData(std::string data) {
   base::MappedReadOnlyRegion mapped_region =
       base::ReadOnlySharedMemoryRegion::Create(data.length());
   EXPECT_TRUE(mapped_region.IsValid());
-  memcpy(mapped_region.mapping.memory(), data.data(), data.length());
+  mapped_region.mapping.GetMemoryAsSpan<char>().copy_from(data);
   return mapped_region;
 }
 

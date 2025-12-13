@@ -14,8 +14,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "components/enterprise/data_controls/core/browser/verdict.h"
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 class PrefService;
 
@@ -97,17 +102,6 @@ class EventReportValidatorBase {
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier);
 
-  // TODO(crbug.com/396437371):  Delete this method once proto migration is
-  // complete.
-  void ExpectSecurityInterstitialEvent(
-      const std::string& expected_url,
-      const std::string& expected_reason,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier,
-      const std::string& result,
-      const bool expected_click_through,
-      int expected_net_error_code);
-
   void ExpectSecurityInterstitialEvent(
       chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent
           expected_interstitial_event);
@@ -123,6 +117,25 @@ class EventReportValidatorBase {
       const bool expected_click_through,
       int expected_net_error_code,
       const ::chrome::cros::reporting::proto::UrlInfo& expected_referrers);
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  void ExpectDataControlsSensitiveDataEvent(
+      const std::string& expected_url,
+      const std::string& expected_tab_url,
+      const std::string& expected_source,
+      const std::string& expected_destination,
+      const std::set<std::string>* expected_mimetypes,
+      const std::string& expected_trigger,
+      const data_controls::Verdict::TriggeredRules& triggered_rules,
+      const std::string& expected_result,
+      const std::string& expected_profile_username,
+      const std::string& expected_profile_identifier,
+      int64_t expected_content_size);
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
+  void ExpectSensitiveDataEvent(
+      chrome::cros::reporting::proto::DlpSensitiveDataEvent
+          expected_sensitive_data_event);
 
   // Closure to run once all expected events are validated.
   void SetDoneClosure(base::RepeatingClosure closure);
@@ -143,6 +156,9 @@ class EventReportValidatorBase {
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      bool expected_value);
+  void ValidateField(const base::Value::Dict* value,
+                     const std::string& field_key,
+                     int64_t expected_value);
   void ValidateThreatInfo(
       const base::Value::Dict* value,
       const chrome::cros::reporting::proto::TriggeredRuleInfo
@@ -156,6 +172,14 @@ class EventReportValidatorBase {
       const base::Value::Dict* value,
       const std::vector<std::pair<std::string, std::u16string>>&
           expected_identities);
+  void ValidateMimeType(const base::Value::Dict* value,
+                        const std::set<std::string>* expected_mimetypes);
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  void ValidateDataControlsTriggerdRules(
+      const base::Value::Dict* value,
+      const data_controls::Verdict::TriggeredRules& expected_triggered_rules);
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
   raw_ptr<policy::MockCloudPolicyClient> client_;
   base::RepeatingClosure done_closure_;

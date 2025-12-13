@@ -56,6 +56,58 @@ def KCamelToShouty(s):
   return s.upper()
 
 
+def PreprocessIfBlocks(lines):
+  """Strips C++ preprocessor blocks that are not for Android."""
+  if_buildflag_re = re.compile(
+      r'^#if !?BUILDFLAG\((\w+)\)(?: \|\| !?BUILDFLAG\((\w+)\))*$')
+  android_os = r'ANDROID|POSIX'
+  non_android_os = r'AIX|ASMJS|CHROMEOS|FREEBSD|FUCHSIA|IOS|IOS_MACCATALYST|IOS_TVOS|LINUX|MAC|NETBSD|OPENBSD|QNX|SOLARIS|WATCHOS|WIN|APPLE|BSD'
+  any_os = android_os + r'|' + non_android_os
+  includes_android_buildflag_re = re.compile(
+      rf'(?<!!)BUILDFLAG\(IS_(?:{android_os})\)|!BUILDFLAG\(IS_(?:{non_android_os})'
+  )
+  pos_or_neg_os_buildflag_re = re.compile(rf'BUILDFLAG\(IS_(?:{any_os})\)')
+  else_re = re.compile(r'^#else.*$')
+  endif_re = re.compile(r'^#endif.*$')
+
+  processed_lines = []
+  # Stack to keep track of whether we are in an android-only block.
+  if_stack = []
+
+  for line in lines:
+    if if_buildflag_re.match(line):
+      is_os = pos_or_neg_os_buildflag_re.search(line)
+      if (not is_os) or includes_android_buildflag_re.search(line):
+        if_stack.append({'is_android': True, 'else_seen': False})
+        continue
+      if_stack.append({'is_android': False, 'else_seen': False})
+      continue
+    if else_re.match(line):
+      if if_stack:
+        if_stack[-1]['else_seen'] = True
+      continue
+    if endif_re.match(line):
+      if if_stack:
+        if_stack.pop()
+      continue
+
+    include_line = True
+    for s in if_stack:
+      if s['is_android']:
+        if s['else_seen']:
+          include_line = False
+          break
+      else:  # not is_android
+        if not s['else_seen']:
+          include_line = False
+          break
+
+    if include_line:
+      processed_lines.append(line)
+
+  return processed_lines
+
+
 class JavaString:
   def __init__(self, name, value, comments):
     self.name = KCamelToShouty(name)
@@ -76,8 +128,6 @@ def ParseTemplateFile(data):
   raise Exception('Could not find java package.')
 
 
-# TODO(crbug.com/40616187): Work will be needed if we want to annotate specific
-# constants in the file to be parsed.
 class CppConstantParser:
   """Parses C++ constants, retaining their comments.
 
@@ -112,9 +162,13 @@ class CppConstantParser:
       """
       raise NotImplementedError()
 
+    def RequiresMultilineValueParsing(self):
+      """Whether the parser should look for values across multiple lines."""
+      return False
+
   def __init__(self, delegate, lines):
     self._delegate = delegate
-    self._lines = lines
+    self._lines = PreprocessIfBlocks(lines)
     self._in_variable = False
     self._in_comment = False
     self._package = ''
@@ -142,7 +196,7 @@ class CppConstantParser:
     if current_value is not None:
       self._current_value = current_value
       self._AppendConstant()
-    else:
+    elif not self._delegate.RequiresMultilineValueParsing():
       self._Reset()
 
   def _ParseComment(self, line):

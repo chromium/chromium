@@ -1195,7 +1195,6 @@ const KNOWN_SCREENS: ScreenDefType[] = [
     kind: ScreenKind.NORMAL,
     handledSteps:
         'loaded,loading,play-load-error,google-eula,cros-eula,arc,privacy',
-    // TODO(b/260014420): Use localized URLs for eulaUrl and additionalTosUrl.
     states: [
       {
         id: 'regular-owner',
@@ -1387,7 +1386,6 @@ const KNOWN_SCREENS: ScreenDefType[] = [
     id: 'guest-tos',
     kind: ScreenKind.NORMAL,
     handledSteps: 'loading,overview,google-eula,cros-eula',
-    // TODO(b/260014420): Use localized URLs for googleEulaURL and crosEulaURL.
     states: [
       {
         id: 'overview',

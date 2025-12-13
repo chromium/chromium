@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "net/base/net_errors.h"

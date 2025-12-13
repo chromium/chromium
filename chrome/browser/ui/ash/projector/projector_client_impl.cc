@@ -32,7 +32,6 @@
 #include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"

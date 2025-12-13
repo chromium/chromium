@@ -56,3 +56,5 @@ void UsbDeviceHandleAndroid::CloseConnection() {
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeUsbConnection)

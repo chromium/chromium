@@ -1,0 +1,23 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("regional_capabilities_internals") {
+  sources = [
+    "regional_capabilities_internals_ui.h",
+    "regional_capabilities_internals_ui.mm",
+  ]
+
+  public_deps = [ "//ios/web/public/webui" ]
+
+  deps = [
+    "//components/regional_capabilities",
+    "//components/regional_capabilities:country_access_reason",
+    "//components/resources",
+    "//components/webui/regional_capabilities_internals:constants",
+    "//ios/chrome/browser/regional_capabilities/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+  ]
+}

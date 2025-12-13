@@ -17,10 +17,18 @@ using ProtoPriority = perfetto::protos::pbzero::SequenceManagerTask::Priority;
 
 ProtoPriority ToProtoPriority(NetworkServiceTaskPriority priority) {
   switch (priority) {
-    case NetworkServiceTaskPriority::kHighPriority:
+    case NetworkServiceTaskPriority::kHighestPriority:
       return ProtoPriority::HIGHEST_PRIORITY;
-    case NetworkServiceTaskPriority::kNormalPriority:
-      return ProtoPriority::NORMAL_PRIORITY;
+    case NetworkServiceTaskPriority::kMediumPriority:
+      return ProtoPriority::MEDIUM_PRIORITY;
+    case NetworkServiceTaskPriority::kLowPriority:
+      return ProtoPriority::LOW_PRIORITY;
+    case NetworkServiceTaskPriority::kLowestPriority:
+      return ProtoPriority::LOWEST_PRIORITY;
+    case NetworkServiceTaskPriority::kIdlePriority:
+      return ProtoPriority::IDLE_PRIORITY;
+    case NetworkServiceTaskPriority::kThrottledPriority:
+      return ProtoPriority::THROTTLED_PRIORITY;
     case NetworkServiceTaskPriority::kPriorityCount:
       NOTREACHED();
   }
@@ -40,7 +48,7 @@ base::sequence_manager::SequenceManager::PrioritySettings
 CreateNetworkServiceTaskPrioritySettings() {
   base::sequence_manager::SequenceManager::PrioritySettings settings(
       NetworkServiceTaskPriority::kPriorityCount,
-      NetworkServiceTaskPriority::kNormalPriority);
+      NetworkServiceTaskPriority::kDefaultPriority);
   settings.SetProtoPriorityConverter(&TaskPriorityToProto);
   return settings;
 }

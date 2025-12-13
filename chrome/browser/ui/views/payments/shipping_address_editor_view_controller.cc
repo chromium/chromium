@@ -146,9 +146,9 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
       const variations::VariationsService* variations_service =
           g_browser_process->variations_service();
       model->SetCountries(
-          GeoIpCountryCode(variations_service
-                               ? variations_service->GetLatestCountry()
-                               : std::string()),
+          autofill::GeoIpCountryCode(
+              variations_service ? variations_service->GetLatestCountry()
+                                 : std::string()),
           state()->GetApplicationLocale());
       if (model->countries().size() != countries_.size()) {
         UpdateCountries(model.get());
@@ -402,9 +402,9 @@ void ShippingAddressEditorViewController::UpdateCountries(
     const variations::VariationsService* variations_service =
         g_browser_process->variations_service();
     local_model.SetCountries(
-        GeoIpCountryCode(variations_service
-                             ? variations_service->GetLatestCountry()
-                             : std::string()),
+        autofill::GeoIpCountryCode(variations_service
+                                       ? variations_service->GetLatestCountry()
+                                       : std::string()),
         state()->GetApplicationLocale());
     model = &local_model;
   }

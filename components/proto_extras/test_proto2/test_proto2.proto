@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package proto_extras;
 
+message EmptyProto2EmbeddedMessage {}
+
 message EmbeddedMessage {
   optional string str_field = 1;
 }
@@ -54,4 +56,5 @@ message TestMessageProto2 {
 
   map<int32, string> primitive_map_field = 18;
   map<string, EmbeddedMessage> message_map_field = 19;
+  optional EmptyProto2EmbeddedMessage empty_embedded_message = 20;
 }

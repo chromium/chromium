@@ -4,22 +4,23 @@
 
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 
+#include "base/byte_count.h"
 #include "base/process/kill.h"
 #include "build/build_config.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
@@ -30,6 +31,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -74,21 +76,21 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
       !security_interstitial_tab_helper ||
       !security_interstitial_tab_helper->IsDisplayingInterstitial() ||
       security_interstitial_tab_helper->ShouldDisplayURL();
+
   TabRendererData data;
 
-  tabs::TabFeatures* const features = tab->GetTabFeatures();
-  TabUIHelper* const tab_ui_helper = features->tab_ui_helper();
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab);
   data.favicon = tab_ui_helper->GetFavicon();
   data.title = tab_ui_helper->GetTitle();
+  auto* const bwi = tab->GetBrowserWindowInterface();
+  Browser* browser = bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
 
-  // Tabbed web apps should use the app icon on the home tab.
-  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
-
-  if (browser && browser->GetAppBrowserController() &&
-      browser->GetAppBrowserController()->ShouldShowAppIconOnTab(index)) {
-    web_app::WebAppBrowserController* app_controller =
-        browser->GetAppBrowserController()->AsWebAppBrowserController();
-    if (app_controller) {
+  // Note that in unit tests, this may be null.
+  if (bwi) {
+    // Tabbed web apps should use the app icon on the home tab.
+    if (auto* const app_controller =
+            web_app::WebAppBrowserController::From(bwi);
+        app_controller && app_controller->ShouldShowAppIconOnTab(index)) {
       gfx::ImageSkia home_tab_icon = app_controller->GetHomeTabIcon();
       if (!home_tab_icon.isNull()) {
         data.is_monochrome_favicon = true;
@@ -111,7 +113,15 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
 
   data.collaboration_messaging = GetCollaborationMessage(tab);
   data.network_state = TabNetworkStateForWebContents(contents);
-  data.visible_url = contents->GetVisibleURL();
+
+  // In the case of reverted uncommitted navigations, there might not be a valid
+  // NavigationEntry. In that case, show about:blank to match the omnibox.
+  content::NavigationEntry* entry =
+      contents->GetController().GetLastCommittedEntry();
+  const bool missing_navigation_entry = !entry || entry->IsInitialEntry();
+  data.visible_url = missing_navigation_entry ? GURL(url::kAboutBlankURL)
+                                              : contents->GetVisibleURL();
+
   // Allow empty title for chrome-untrusted:// URLs.
   if (data.title.empty() &&
       data.visible_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
@@ -120,16 +130,13 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   data.last_committed_url = contents->GetLastCommittedURL();
   data.should_display_url = should_display_url;
   data.crashed_status = contents->GetCrashedStatus();
-  data.incognito = contents->GetBrowserContext()->IsOffTheRecord();
   data.pinned = tab->IsPinned();
   data.show_icon =
-      data.pinned || model->delegate()->ShouldDisplayFavicon(contents);
-  data.blocked = model->IsTabBlocked(index);
+      data.pinned || (browser && browser->ShouldDisplayFavicon(contents));
+  data.blocked = tab->IsBlocked();
   data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
-  data.alert_state = GetTabAlertStatesForTab(tab);
+  data.alert_state = tabs::TabAlertController::From(tab)->GetAllActiveAlerts();
 
-  content::NavigationEntry* entry =
-      contents->GetController().GetLastCommittedEntry();
   data.should_themify_favicon =
       entry && favicon::ShouldThemifyFaviconForEntry(entry);
 
@@ -147,12 +154,12 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
        discard_reason.value() == mojom::LifecycleUnitDiscardReason::SUGGESTED);
 
   if (contents->WasDiscarded()) {
-    data.discarded_memory_savings_in_bytes =
-        memory_saver::GetDiscardedMemorySavingsInBytes(contents);
+    data.discarded_memory_savings =
+        base::ByteCount(memory_saver::GetDiscardedMemorySavings(contents));
   }
 
   if (const auto* const resource_tab_helper =
-          tab->GetTabFeatures()->resource_usage_helper()) {
+          TabResourceUsageTabHelper::From(tab)) {
     data.tab_resource_usage = resource_tab_helper->resource_usage();
   }
 
@@ -179,14 +186,12 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
          last_committed_url == other.last_committed_url &&
          should_display_url == other.should_display_url &&
          crashed_status == other.crashed_status &&
-         incognito == other.incognito && show_icon == other.show_icon &&
-         pinned == other.pinned && blocked == other.blocked &&
-         alert_state == other.alert_state &&
+         show_icon == other.show_icon && pinned == other.pinned &&
+         blocked == other.blocked && alert_state == other.alert_state &&
          should_hide_throbber == other.should_hide_throbber &&
          is_tab_discarded == other.is_tab_discarded &&
          should_show_discard_status == other.should_show_discard_status &&
-         discarded_memory_savings_in_bytes ==
-             other.discarded_memory_savings_in_bytes &&
+         discarded_memory_savings == other.discarded_memory_savings &&
          tab_resource_usage == other.tab_resource_usage &&
          is_monochrome_favicon == other.is_monochrome_favicon &&
          tab_interface.get() == other.tab_interface.get();

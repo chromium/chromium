@@ -43,10 +43,10 @@ static_assert(IsReturnTypeCompatible<IDLSequence<DOMRectReadOnly>,
 
 // IDLString has a null value, so the return type must NOT use
 // std::optional<>.
-static_assert(IsReturnTypeCompatible<IDLNullable<IDLString>, WTF::String>);
+static_assert(IsReturnTypeCompatible<IDLNullable<IDLString>, String>);
 static_assert(IsReturnTypeCompatible<IDLNullable<IDLString>, AtomicString>);
-static_assert(!IsReturnTypeCompatible<IDLNullable<IDLString>,
-                                      std::optional<WTF::String>>);
+static_assert(
+    !IsReturnTypeCompatible<IDLNullable<IDLString>, std::optional<String>>);
 static_assert(!IsReturnTypeCompatible<IDLNullable<IDLString>,
                                       std::optional<AtomicString>>);
 

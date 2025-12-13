@@ -12,9 +12,11 @@ void AddClientHintsHeadersToPrefetchNavigation(
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
-    bool is_ua_override_on) {
+    bool is_ua_override_on,
+    FrameTreeNode* ftn_for_devtools_override) {
   AddPrefetchNavigationRequestClientHintsHeaders(origin, headers, context,
-                                                 delegate, is_ua_override_on);
+                                                 delegate, is_ua_override_on,
+                                                 ftn_for_devtools_override);
 }
 
 }  // namespace content

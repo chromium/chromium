@@ -1,0 +1,6 @@
+Tests popup window document.visibilityState.
+Popup document.visibilityState: visible
+Popup document.visibilityState: visible
+Popup document.visibilityState: visible
+Popup document.visibilityState: visible
+Popup document.visibilityState: visible

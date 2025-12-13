@@ -45,7 +45,6 @@
 #include "ui/compositor/test/direct_layer_tree_frame_sink.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/switches.h"
@@ -78,7 +77,6 @@ class StandaloneBeginFrameObserver : public viz::BeginFrameObserverBase {
     return true;
   }
   void OnBeginFrameSourcePausedChanged(bool paused) override {}
-  bool IsRoot() const override { return true; }
 
   void SetBeginFrameSource(viz::BeginFrameSource* begin_frame_source) {
     TearDownObservation();
@@ -291,7 +289,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
   if (!shared_worker_context_provider_ || shared_worker_context_provider_lost) {
     shared_worker_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            viz::TestContextType::kGpuRaster, /*support_locking=*/true);
+            viz::TestContextType::kRaster, /*support_locking=*/true);
     auto result = shared_worker_context_provider_->BindToCurrentSequence();
     if (result != gpu::ContextResult::kSuccess) {
       shared_worker_context_provider_ = nullptr;
@@ -367,7 +365,7 @@ InProcessContextFactory::SharedMainThreadRasterContextProvider() {
 
   shared_main_thread_contexts_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          viz::TestContextType::kSoftwareRaster, /*support_locking=*/false);
+          viz::TestContextType::kRaster, /*support_locking=*/false);
 
   auto result = shared_main_thread_contexts_->BindToCurrentSequence();
   if (result != gpu::ContextResult::kSuccess) {

@@ -1,0 +1,222 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_MENU_VIEW_MODEL_H_
+#define CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_MENU_VIEW_MODEL_H_
+
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/extensions/extensions_menu_view_platform_delegate.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "extensions/browser/permissions_manager.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+class BrowserWindowInterface;
+class ExtensionsMenuViewPlatformDelegate;
+
+// The platform agnostic model for the extensions menu.
+class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
+                                public ToolbarActionsModel::Observer,
+                                public TabListInterfaceObserver,
+                                public content::WebContentsObserver {
+ public:
+  // The type of optional section to display in the menu.
+  enum class OptionalSection {
+    // A section alerting the user that a page reload is required for changes to
+    // take effect.
+    kReloadPage,
+    // A section listing extensions that have host access requests to the
+    // current
+    // site.
+    kHostAccessRequests,
+    // No optional section should be displayed.
+    kNone
+  };
+
+  // A generic structure for UI controls (buttons, toggles, radio buttons).
+  struct ControlState {
+    // Represents the availability and interactivity the control.
+    enum class Status {
+      // The control is not displayed.
+      kHidden,
+      // The control is displayed but cannot be interacted with.
+      kDisabled,
+      // The control is displayed and interactive.
+      kEnabled
+    };
+
+    ControlState();
+    ControlState(const ControlState&);
+    ControlState& operator=(const ControlState&);
+    ~ControlState();
+
+    // The interactivity status of the control.
+    Status status = Status::kHidden;
+    // The text label to display. Empty if not applicable.
+    std::u16string text;
+    // The accessible name. Empty if not applicable.
+    std::u16string accessible_name;
+    // The tooltip text label. Empty if not applicable.
+    std::u16string tooltip_text;
+    // The checked/toggled state. False for buttons with no on/off state.
+    bool is_on = false;
+  };
+
+  // Holds the information for an extension's site access in the extension's
+  // menu. This will be used by the platform delegate as needed.
+  struct ExtensionSiteAccessOptionsState {
+    // The state for the 'on click' site access option.
+    ControlState on_click_option;
+    // The state for the 'on site' site access option.
+    ControlState on_site_option;
+    // The state for the 'on all sites' site access option.
+    ControlState on_all_sites_option;
+  };
+
+  // Holds the information for the site settings in the extension's menu. This
+  // will be used by the platform delegate as needed.
+  struct SiteSettingsState {
+    // The resource ID for the text label.
+    std::u16string label;
+    // Whether to show a tooltip explaining why the setting is in its current
+    // state (e.g. if controlled by enterprise policy).
+    bool has_tooltip;
+    // The state of the site settings toggle.
+    ControlState toggle;
+  };
+
+  // Holds the information about how the extension's menu item should look like.
+  // This will be used by the platform delegate as needed.
+  struct MenuItemState {
+    // The state for the site access toggle.
+    ControlState site_access_toggle;
+    // The state for the site permissions button.
+    ControlState site_permissions_button;
+    // Whether the extension is installed from an enterprise policy.
+    bool is_enterprise;
+  };
+
+  ExtensionsMenuViewModel(
+      BrowserWindowInterface* browser,
+      std::unique_ptr<ExtensionsMenuViewPlatformDelegate> platform_delegate);
+  ExtensionsMenuViewModel(const ExtensionsMenuViewModel&) = delete;
+  const ExtensionsMenuViewModel& operator=(const ExtensionsMenuViewModel&) =
+      delete;
+  ~ExtensionsMenuViewModel() override;
+
+  // Updates the extension's site access for the current site.
+  void UpdateSiteAccess(
+      const extensions::ExtensionId& extension_id,
+      extensions::PermissionsManager::UserSiteAccess site_access);
+
+  // Allows the extension's host access request to the current site.
+  void AllowHostAccessRequest(const extensions::ExtensionId& extension_id);
+
+  // Dismisses the extension's host access request to the current site.
+  void DismissHostAccessRequest(const extensions::ExtensionId& extension_id);
+
+  // Sets whether the extension can show host access requests in the toolbar.
+  void ShowHostAccessRequestsInToolbar(
+      const extensions::ExtensionId& extension_id,
+      bool show);
+
+  // Grants the extension site access to the current site.
+  void GrantSiteAccess(const extensions::ExtensionId& extension_id);
+
+  // Revokes the extension's site access from the current site.
+  void RevokeSiteAccess(const extensions::ExtensionId& extension_id);
+
+  // Update the site setting's for the current site.
+  void UpdateSiteSetting(
+      extensions::PermissionsManager::UserSiteSetting site_setting);
+
+  // Reloads the current web contents.
+  void ReloadWebContents();
+
+  // Returns the site access options state for an extension. This will crash if
+  // called when the user cannot modify the extension site permissions, as this
+  // method would compute invalid values.
+  ExtensionSiteAccessOptionsState GetExtensionSiteAccessOptionsState(
+      const extensions::ExtensionId& extension_id);
+
+  // Returns the show requests toggle state for an extension.
+  ControlState GetExtensionShowRequestsToggleState(
+      const extensions::ExtensionId& extension_id);
+
+  // Returns the menu item state for an extension.
+  MenuItemState GetMenuItemState(const extensions::ExtensionId& extension_id);
+
+  // Returns the optional section to display in the menu.
+  OptionalSection GetOptionalSection();
+
+  // Returns the site settings for the current web contents.
+  SiteSettingsState GetSiteSettingsState();
+
+  // PermissionsManager::Observer:
+  void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
+                                int tab_id) override;
+  void OnHostAccessRequestUpdated(const extensions::ExtensionId& extension_id,
+                                  int tab_id) override;
+  void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
+                                  int tab_id) override;
+  void OnHostAccessRequestsCleared(int tab_id) override;
+  void OnHostAccessRequestDismissedByUser(
+      const extensions::ExtensionId& extension_id,
+      const url::Origin& origin) override;
+  void OnShowAccessRequestsInToolbarChanged(
+      const extensions::ExtensionId& extension_id,
+      bool can_show_requests) override;
+  void OnUserPermissionsSettingsChanged(
+      const extensions::PermissionsManager::UserPermissionsSettings& settings)
+      override;
+
+  // ToolbarActionsModel::Observer:
+  void OnToolbarActionAdded(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarActionRemoved(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarActionUpdated(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarModelInitialized() override;
+  void OnToolbarPinnedActionsChanged() override;
+
+  // TabListInterfaceObserver:
+  // Sometimes, menu can stay open when tab changes (e.g keyboard shortcuts) or
+  // due to the extension (e.g extension switching the active tab). Thus, we
+  // listen for active tab changes to properly update the menu content.
+  void OnActiveTabChanged(tabs::TabInterface* tab) override;
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(content::NavigationHandle* handle) override;
+
+ private:
+  content::WebContents* GetActiveWebContents();
+
+  // The browser window that the extensions menu is in.
+  raw_ptr<BrowserWindowInterface> browser_;
+
+  // The delegate that handles platform-specific UI.
+  std::unique_ptr<ExtensionsMenuViewPlatformDelegate> platform_delegate_;
+
+  base::ScopedObservation<extensions::PermissionsManager,
+                          extensions::PermissionsManager::Observer>
+      permissions_manager_observation_{this};
+
+  const raw_ptr<ToolbarActionsModel> toolbar_model_;
+  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
+      toolbar_model_observation_{this};
+
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      tab_list_interface_observation_{this};
+};
+
+#endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_MENU_VIEW_MODEL_H_

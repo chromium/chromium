@@ -16,7 +16,11 @@ namespace remoting {
 // Represents an address of a Chromoting endpoint and its routing channel.
 class SignalingAddress {
  public:
-  enum class Channel { XMPP, FTL };
+  enum class Channel {
+    XMPP,
+    FTL,
+    CORP,
+  };
   enum Direction { TO, FROM };
   // Creates an empty SignalingAddress.
   SignalingAddress();
@@ -32,6 +36,8 @@ class SignalingAddress {
       const std::string& username,
       const std::string& registration_id);
 
+  static SignalingAddress CreateSystemAddress(const std::string& id);
+
   static SignalingAddress Parse(const jingle_xmpp::XmlElement* iq,
                                 Direction direction,
                                 std::string* error);
@@ -40,12 +46,17 @@ class SignalingAddress {
                     Direction direction) const;
 
   // Writes FTL info to |username| and |registration_id|. Returns true if the
-  // SIgnalingAddress is a valid FTL address and info is successfully written.
+  // SignalingAddress is a valid FTL address and info is successfully written.
   // If this returns false then none of the parameters will be touched.
   bool GetFtlInfo(std::string* username, std::string* registration_id) const;
+  // Writes the sender's email to |email|. Returns true if the SignalingAddress
+  // is a valid FTL address and info was successfully written. |email| is not
+  // modified on failure.
+  bool GetFtlSenderEmail(std::string* email) const;
 
   Channel channel() const { return channel_; }
   const std::string& id() const { return id_; }
+  bool is_system() const { return is_system_; }
 
   bool empty() const { return id_.empty(); }
 
@@ -57,6 +68,7 @@ class SignalingAddress {
   std::string id_;
 
   Channel channel_ = Channel::XMPP;
+  bool is_system_ = false;
 };
 
 }  // namespace remoting

@@ -173,7 +173,8 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
       V8String(isolate_, profiler_id),
       v8::CpuProfilingOptions(
           v8::kLeafNodeLineNumbers, init_options.maxBufferSize(),
-          static_cast<int>(sample_interval_us), script_state->GetContext()),
+          static_cast<int>(sample_interval_us), script_state->GetContext(),
+          v8::CpuProfileSource::kSelfProfiling),
       std::make_unique<DiscardedSamplesDelegate>(this, profiler_id));
 
   switch (status) {
@@ -319,8 +320,8 @@ void ProfilerGroup::CancelProfilerAsync(ScriptState* script_state,
   // associated context, dispatch a task to cleanup context-independent isolate
   // resources (rather than use the context's task runner).
   ThreadScheduler::Current()->V8TaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&ProfilerGroup::StopDetachedProfiler,
-                               WrapPersistent(this), profiler->ProfilerId()));
+      FROM_HERE, BindOnce(&ProfilerGroup::StopDetachedProfiler,
+                          WrapPersistent(this), profiler->ProfilerId()));
 }
 
 void ProfilerGroup::StopDetachedProfiler(String profiler_id) {

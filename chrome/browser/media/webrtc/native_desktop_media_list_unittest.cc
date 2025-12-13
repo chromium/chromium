@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -154,8 +150,8 @@ class FakeScreenCapturer : public ThumbnailCapturer {
 
   void CaptureFrame() override {
     DCHECK(consumer_);
-    std::unique_ptr<webrtc::DesktopFrame> frame(
-        new webrtc::BasicDesktopFrame(webrtc::DesktopSize(10, 10)));
+    auto frame = std::make_unique<webrtc::BasicDesktopFrame>(
+        webrtc::DesktopSize(10, 10), webrtc::FOURCC_ARGB);
     consumer_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,
                                std::move(frame));
   }
@@ -211,9 +207,10 @@ class FakeWindowCapturer : public ThumbnailCapturer {
 
     auto it = frame_values_.find(selected_window_id_);
     int8_t value = (it != frame_values_.end()) ? it->second : 0;
-    std::unique_ptr<webrtc::DesktopFrame> frame(
-        new webrtc::BasicDesktopFrame(webrtc::DesktopSize(10, 10)));
-    memset(frame->data(), value, frame->stride() * frame->size().height());
+    auto frame = std::make_unique<webrtc::BasicDesktopFrame>(
+        webrtc::DesktopSize(10, 10), webrtc::FOURCC_ARGB);
+    UNSAFE_TODO(
+        memset(frame->data(), value, frame->stride() * frame->size().height()));
     consumer_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,
                                std::move(frame));
   }

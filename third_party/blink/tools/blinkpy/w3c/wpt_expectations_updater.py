@@ -15,7 +15,7 @@ from collections import defaultdict
 from typing import Collection, List, Optional, Set, Tuple
 
 from blinkpy.common.memoized import memoized
-from blinkpy.common.net.git_cl import BuildStatuses, GitCL
+from blinkpy.common.net.git_cl import BuildStatuses, CLRevisionID, GitCL
 from blinkpy.common.net.rpc import Build
 from blinkpy.common.net.web_test_results import (
     WebTestResult,
@@ -43,6 +43,17 @@ _log = logging.getLogger(__name__)
 
 class WPTExpectationsUpdater:
     MARKER_COMMENT = '# ====== New tests from wpt-importer added here ======'
+    DEFAULT_BUILDERS: list[str] = [
+        # TODO(crbug.com/433830466): Rebaseline with macOS and Windows on ARM.
+        # Architecture can sometimes affect results: crbug.com/450592015
+        'mac-rel',
+        'win-rel',
+        # Use these `*-blink-rel` builders instead of `android-*-rel` and
+        # `linux-rel`, respectively, to update `*webdriver_wpt_tests`
+        # expectations.
+        'android-15-chrome-blink-rel',
+        'linux-blink-rel',
+    ]
 
     def __init__(self, host, args=None, wpt_manifests=None):
         self.host = host
@@ -59,6 +70,7 @@ class WPTExpectationsUpdater:
         parser = argparse.ArgumentParser(description=__doc__)
         self.add_arguments(parser)
         self.options = parser.parse_args(args or [])
+        self.options.builders = self.options.builders or self.DEFAULT_BUILDERS
         if not (self.options.clean_up_test_expectations or
                 self.options.clean_up_test_expectations_only):
             assert not self.options.clean_up_affected_tests_only, (
@@ -134,6 +146,12 @@ class WPTExpectationsUpdater:
             help='Adds Pass to tests with failure expectations. '
                  'This command line argument can be used to mark tests '
                  'as flaky.')
+        parser.add_argument(
+            '--builder',
+            dest='builders',
+            action='append',
+            help=('Builder name to use for updating expectations. May provide '
+                  'multiple times.'))
 
     def suites_for_builder(self, builder: str) -> Set[str]:
         # TODO(crbug.com/1502294): Make everything a suite name (i.e., without
@@ -163,9 +181,12 @@ class WPTExpectationsUpdater:
         resolver = BuildResolver(self.host.web,
                                  self.git_cl,
                                  can_trigger_jobs=False)
-        builds = [Build(builder) for builder in self._get_try_bots()]
+        builds = [Build(builder) for builder in self.options.builders]
         try:
-            build_to_status = resolver.resolve_builds(builds, self.patchset)
+            issue = self.git_cl.get_issue_number()
+            assert issue is not None
+            cl = CLRevisionID(issue, self.patchset)
+            build_to_status = resolver.resolve_builds(builds, cl)
             _log.debug('Latest try jobs: %r', build_to_status)
         except UnresolvedBuildException as error:
             raise ScriptError(
@@ -701,8 +722,14 @@ class WPTExpectationsUpdater:
         for test in tests_to_rebaseline:
             _log.info('  %s', test)
 
-        # The importer should have already updated the manifests.
-        args = ['--no-trigger-jobs', '--no-manifest-update']
+        builders = ','.join(self.options.builders)
+        args = [
+            '--no-trigger-jobs',
+            # The importer should have already updated the manifests.
+            '--no-manifest-update',
+            '--clobber-os-version',
+            f'--builders={builders}'
+        ]
         if self.options.verbose:
             args.append('--verbose')
         if self.patchset:
@@ -711,13 +738,15 @@ class WPTExpectationsUpdater:
         self._run_blink_tool('rebaseline-cl', args)
 
     def _run_blink_tool(self, subcommand: str, args: List[str]):
-        output = self.host.executive.run_command([
+        command = [
             self.host.executable,
             self.finder.path_from_blink_tools('blink_tool.py'),
             subcommand,
             *args,
-        ])
-        _log.info('Output of %s:', subcommand)
+        ]
+        output = self.host.executive.run_command(command)
+        _log.info('Output of %s:',
+                  self.host.executive.command_for_printing(command))
         for line in output.splitlines():
             _log.info('  %s: %s', subcommand, line)
         _log.info('-- end of %s output --', subcommand)
@@ -735,10 +764,3 @@ class WPTExpectationsUpdater:
     def is_reference_test(self, test_name: str) -> bool:
         """Checks whether a given test is a reference test."""
         return bool(self.port.reference_files(test_name))
-
-    @memoized
-    def _get_try_bots(self):
-        builders = self.host.builders.filter_builders(is_try=True)
-        # Exclude CQ builders like `win-rel`.
-        return sorted(
-            set(builders) & self.host.builders.builders_for_rebaselining())

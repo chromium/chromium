@@ -17,8 +17,8 @@ namespace blink {
 // BoxedV8Module wraps a handle to a v8::Module for use on heap.
 //
 // Hash of Member<BoxedV8Module> overrides HashTraits.
-// Therefore, BoxedV8Module can be a key/value type of WTF::HashMap,
-// HashSet,HashTable by using BoxedV8ModuleHash.
+// Therefore, BoxedV8Module can be a key/value type of blink::HashMap and
+// blink::HashSet by using BoxedV8ModuleHash.
 class CORE_EXPORT BoxedV8Module final : public GarbageCollected<BoxedV8Module> {
  public:
   BoxedV8Module(v8::Isolate* isolate, v8::Local<v8::Module> module)

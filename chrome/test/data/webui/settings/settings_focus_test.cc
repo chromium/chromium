@@ -9,14 +9,14 @@
 #include "components/content_settings/core/common/features.h"
 #include "content/public/test/browser_test.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#endif
+
 class SettingsFocusTest : public WebUIMochaFocusTest {
  protected:
   SettingsFocusTest() { set_test_loader_host(chrome::kChromeUISettingsHost); }
 };
-
-IN_PROC_BROWSER_TEST_F(SettingsFocusTest, AnimatedPages) {
-  RunTest("settings/settings_animated_pages_test.js", "mocha.run()");
-}
 
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, AutofillSectionFocus) {
   RunTest("settings/autofill_section_focus_test.js", "mocha.run()");
@@ -70,13 +70,10 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, Menu) {
 #if BUILDFLAG(ENABLE_GLIC)
 class SettingsGlicSubpageFocusTest : public SettingsFocusTest {
  public:
-  SettingsGlicSubpageFocusTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
-  }
+  SettingsGlicSubpageFocusTest() = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  glic::GlicTestEnvironment glic_test_env_;
 };
 
 // TODO(crbug.com/424864547): Investigate flakiness and enable on Mac64 and

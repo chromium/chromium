@@ -12,16 +12,17 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/data_manager/addresses/account_name_email_strike_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/form_filler_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -51,8 +52,9 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         .form_interactions_flow_id_for_test();
   }
 
-  autofill_metrics::CreditCardFormEventLogger* credit_card_form_event_logger() {
-    return &manager_->metrics_->credit_card_form_event_logger;
+  FormInteractionsFlowId otp_form_interactions_flow_id() const {
+    return manager_->metrics_->otp_form_event_logger
+        .form_interactions_flow_id_for_test();
   }
 
   void set_credit_card_access_manager(
@@ -69,11 +71,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->bnpl_manager_ = std::move(bnpl_manager);
   }
 
-  payments::AmountExtractionManager&
-  get_amount_extraction_manager_for_testing() {
-    return *manager_->amount_extraction_manager_;
-  }
-
   void OnFormProcessed(const FormData& form,
                        const FormStructure& form_structure) {
     manager_->OnFormProcessed(form, form_structure);
@@ -82,12 +79,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   void SetFourDigitCombinationsInDOM(
       const std::vector<std::string>& combinations) {
     manager_->four_digit_combinations_in_dom_ = combinations;
-  }
-
-  void SetConsiderFormAsSecureForTesting(
-      std::optional<bool> consider_form_as_secure_for_testing) {
-    manager_->consider_form_as_secure_for_testing_ =
-        consider_form_as_secure_for_testing;
   }
 
   FormFiller& form_filler() { return *manager_->form_filler_; }
@@ -107,6 +98,20 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     return manager_->GetProfileSuggestions(form, CHECK_DEREF(form_structure),
                                            field, CHECK_DEREF(autofill_field),
                                            std::move(plus_address_override));
+  }
+
+  OtpManager* set_otp_manager(std::unique_ptr<OtpManager> otp_manager) {
+    manager_->otp_manager_ = std::move(otp_manager);
+    return manager_->otp_manager_.get();
+  }
+
+  bool ShouldShowScanCreditCard(const FormStructure& form,
+                                const AutofillField& trigger_field) {
+    return manager_->ShouldShowScanCreditCard(form, trigger_field);
+  }
+
+  AccountNameEmailStrikeManager* account_name_email_strike_manager() {
+    return manager_->account_name_email_strike_manager_.get();
   }
 
  private:

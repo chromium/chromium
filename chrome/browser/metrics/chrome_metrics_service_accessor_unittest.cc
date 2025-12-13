@@ -7,17 +7,15 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class ChromeMetricsServiceAccessorTest : public testing::Test {
  public:
-  ChromeMetricsServiceAccessorTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {
-  }
+  ChromeMetricsServiceAccessorTest() = default;
 
   ChromeMetricsServiceAccessorTest(const ChromeMetricsServiceAccessorTest&) =
       delete;
@@ -25,12 +23,11 @@ class ChromeMetricsServiceAccessorTest : public testing::Test {
       const ChromeMetricsServiceAccessorTest&) = delete;
 
   PrefService* GetLocalState() {
-    return testing_local_state_.Get();
+    return TestingBrowserProcess::GetGlobal()->local_state();
   }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState testing_local_state_;
 };
 
 TEST_F(ChromeMetricsServiceAccessorTest, MetricsReportingEnabled) {

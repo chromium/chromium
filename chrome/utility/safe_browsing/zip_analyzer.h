@@ -9,7 +9,6 @@
 #define CHROME_UTILITY_SAFE_BROWSING_ZIP_ANALYZER_H_
 
 #include "base/files/file.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/utility/safe_browsing/archive_analyzer.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
@@ -33,6 +32,9 @@ class ZipAnalyzer : public ArchiveAnalyzer {
   void OnGetTempFile(base::File temp_file);
 
   base::File temp_file_;
+  // reader_delegate_ is held by ZipReader, but ZipReader doesn't own it.
+  // We need to keep the delegate alive while the reader is using it.
+  std::unique_ptr<zip::ReaderDelegate> reader_delegate_;
   zip::ZipReader reader_;
 
   bool has_encrypted_ = false;

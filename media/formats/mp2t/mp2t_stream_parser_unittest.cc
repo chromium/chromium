@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp2t/mp2t_stream_parser.h"
 
 #include <openssl/aes.h>
@@ -19,11 +14,15 @@
 #include <string>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "crypto/openssl_util.h"
@@ -79,11 +78,9 @@ class ScopedCipherCTX {
 
 std::string DecryptSampleAES(const std::string& key,
                              const std::string& iv,
-                             const uint8_t* input,
-                             int input_size,
+                             base::span<const uint8_t> input,
                              bool has_pattern) {
-  DCHECK(input);
-  EXPECT_EQ(input_size % 16, 0);
+  EXPECT_EQ(input.size() % 16, 0u);
   std::string result;
   const EVP_CIPHER* cipher = EVP_aes_128_cbc();
   ScopedCipherCTX ctx;
@@ -92,29 +89,26 @@ std::string DecryptSampleAES(const std::string& key,
                               reinterpret_cast<const uint8_t*>(iv.data()), 0),
             1);
   EVP_CIPHER_CTX_set_padding(ctx.get(), 0);
-  auto output = base::HeapArray<char>::Uninit(input_size);
-  uint8_t* in_ptr = const_cast<uint8_t*>(input);
-  uint8_t* out_ptr = reinterpret_cast<uint8_t*>(output.data());
-  size_t bytes_remaining = output.size();
+  auto output = base::HeapArray<char>::Uninit(input.size());
 
-  while (bytes_remaining) {
+  base::SpanReader input_reader(input);
+  base::SpanWriter output_writer(base::as_writable_byte_span(output));
+  while (input_reader.remaining()) {
     int unused;
-    size_t amount_to_decrypt = has_pattern ? 16UL : bytes_remaining;
+    size_t amount_to_decrypt = has_pattern ? 16UL : output_writer.remaining();
     EXPECT_EQ(amount_to_decrypt % 16UL, 0UL);
-    EXPECT_EQ(EVP_CipherUpdate(ctx.get(), out_ptr, &unused, in_ptr,
+    EXPECT_EQ(EVP_CipherUpdate(ctx.get(), output_writer.remaining_span().data(),
+                               &unused, input_reader.remaining_span().data(),
                                amount_to_decrypt),
               1);
-    bytes_remaining -= amount_to_decrypt;
-    if (bytes_remaining) {
-      out_ptr += amount_to_decrypt;
-      in_ptr += amount_to_decrypt;
+    input_reader.Skip(amount_to_decrypt);
+    if (input_reader.remaining()) {
+      output_writer.Skip(amount_to_decrypt);
       size_t amount_to_skip = 144UL;  // Skip 9 blocks.
-      if (amount_to_skip > bytes_remaining)
-        amount_to_skip = bytes_remaining;
-      memcpy(out_ptr, in_ptr, amount_to_skip);
-      out_ptr += amount_to_skip;
-      in_ptr += amount_to_skip;
-      bytes_remaining -= amount_to_skip;
+      if (amount_to_skip > input_reader.remaining()) {
+        amount_to_skip = input_reader.remaining();
+      }
+      output_writer.Write(input_reader.Read(amount_to_skip).value());
     }
   }
 
@@ -142,15 +136,14 @@ std::string DecryptBuffer(const StreamParserBuffer& buffer,
   EXPECT_EQ(key.size(), 16UL);
   EXPECT_EQ(iv.size(), 16UL);
   std::string result;
-  uint8_t* in_ptr = const_cast<uint8_t*>(base::span(buffer).data());
   const DecryptConfig* decrypt_config = buffer.decrypt_config();
+  base::SpanReader input_reader(base::as_byte_span(buffer));
   for (const auto& subsample : decrypt_config->subsamples()) {
-    std::string clear(reinterpret_cast<char*>(in_ptr), subsample.clear_bytes);
-    result += clear;
-    in_ptr += subsample.clear_bytes;
     result +=
-        DecryptSampleAES(key, iv, in_ptr, subsample.cypher_bytes, has_pattern);
-    in_ptr += subsample.cypher_bytes;
+        base::as_string_view(input_reader.Read(subsample.clear_bytes).value());
+    result += DecryptSampleAES(
+        key, iv, input_reader.Read(subsample.cypher_bytes).value(),
+        has_pattern);
   }
   return result;
 }

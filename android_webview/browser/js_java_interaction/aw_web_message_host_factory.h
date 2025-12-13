@@ -22,7 +22,7 @@ namespace android_webview {
 class AwWebMessageHostFactory : public js_injection::WebMessageHostFactory {
  public:
   explicit AwWebMessageHostFactory(
-      const base::android::JavaParamRef<jobject>& listener);
+      const base::android::JavaRef<jobject>& listener);
   AwWebMessageHostFactory(const AwWebMessageHostFactory&) = delete;
   AwWebMessageHostFactory& operator=(const AwWebMessageHostFactory&) = delete;
   ~AwWebMessageHostFactory() override;

@@ -17,17 +17,6 @@
 
 class GURL;
 
-// LINT.IfChange(FamilyLinkUserReauthenticationInterstitialState)
-// State of the re-authentication interstitial indicating if the user
-// has interacted with the sign-in flow.
-enum class FamilyLinkUserReauthenticationInterstitialState : int {
-  kInterstitialShown = 0,
-  kReauthenticationStarted = 1,
-  kReauthenticationCompleted = 2,
-  kMaxValue = kReauthenticationCompleted,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserReauthenticationInterstitialState)
-
 // This class provides common functionalities for the supervised user
 // re-authentication interstitials, such as opening the re-auth url in a new tab
 // and closing this tab automatically on successful re-auth .
@@ -35,15 +24,11 @@ class SupervisedUserVerificationPage
     : public security_interstitials::SecurityInterstitialPage {
  public:
   // The status of the interstitial used for metrics recording purposes.
-  enum class Status { SHOWN, REAUTH_STARTED, REAUTH_COMPLETED };
+  enum class Status { kShown, kReauthStarted, kReauthCompleted };
 
   // Whether the user is in a suitable auth state for this page to be shown.
   static bool ShouldShowPage(
       const supervised_user::ChildAccountService& child_account_service);
-
-  // Helper method for getting the right histogram bucket from a given status.
-  static FamilyLinkUserReauthenticationInterstitialState
-  GetReauthenticationInterstitialStateFromStatus(Status status);
 
   // `request_url` is the URL which triggered the interstitial page. It can be
   // a main frame or a subresource URL.
@@ -69,7 +54,6 @@ class SupervisedUserVerificationPage
   void CommandReceived(const std::string& command) override;
   void OnInterstitialClosing() override;
   int GetHTMLTemplateId() override;
-  virtual void RecordReauthStatusMetrics(Status status) = 0;
   void PopulateCommonStrings(base::Value::Dict& load_time_data);
   bool IsReauthCompleted();
 

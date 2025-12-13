@@ -69,7 +69,7 @@ TEST_F(H265BuilderTest, BuildVUIParametersInSPS) {
   builder.Flush();
 
   // Parse the generated bitstream
-  parser_->SetStream(builder.data().data(), builder.BytesInBuffer());
+  parser_->SetStream(builder.data());
   H265NALU nalu;
   ASSERT_EQ(H265Parser::kOk, parser_->AdvanceToNextNALU(&nalu));
   EXPECT_EQ(H265NALU::SPS_NUT, nalu.nal_unit_type);
@@ -145,7 +145,7 @@ TEST_F(H265BuilderTest, BuildSPSWithoutVUIParameters) {
   builder.Flush();
 
   // Parse the generated bitstream
-  parser_->SetStream(builder.data().data(), builder.BytesInBuffer());
+  parser_->SetStream(builder.data());
   H265NALU nalu;
   ASSERT_EQ(H265Parser::kOk, parser_->AdvanceToNextNALU(&nalu));
   EXPECT_EQ(H265NALU::SPS_NUT, nalu.nal_unit_type);

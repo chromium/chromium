@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import '/strings.m.js';
 import '../tab_search_item.js';
+import '../selectable_lazy_list.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {CrLazyListElement} from 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {normalizeURL, TabData, TabItemType} from '../tab_data.js';
+import type {SelectableLazyListElement} from '../selectable_lazy_list.js';
+import {getDisplayHostnameForUrl, normalizeURL, TabData, TabItemType} from '../tab_data.js';
 import type {ProfileData, Tab, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from '../tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
@@ -25,7 +25,7 @@ import {getHtml} from './app.html.js';
 export interface SplitNewTabPageAppElement {
   $: {
     header: HTMLElement,
-    splitTabsList: CrLazyListElement,
+    splitTabsList: SelectableLazyListElement,
   };
 }
 
@@ -45,17 +45,11 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   static override get properties() {
     return {
       allEligibleTabs_: {type: Array},
-      scrollTarget_: {type: Object},
-      focusedIndex_: {type: Number},
-      focusedItem_: {type: Object},
       minViewportHeight_: {type: Number},
     };
   }
 
   protected accessor allEligibleTabs_: TabData[] = [];
-  protected accessor scrollTarget_: HTMLElement|null = null;
-  protected accessor focusedIndex_: number = -1;
-  protected accessor focusedItem_: HTMLElement|null = null;
   protected accessor minViewportHeight_: number = 0;
   protected title_: string = '';
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
@@ -78,15 +72,11 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    if (loadTimeData.getBoolean('splitViewEnabled')) {
-      this.apiProxy_.getIsSplit().then(({isSplit}) => {
-        if (!isSplit) {
-          this.redirectToNtp_();
-        }
-      });
-    } else {
-      this.redirectToNtp_();
-    }
+    this.apiProxy_.getIsSplit().then(({isSplit}) => {
+      if (!isSplit) {
+        this.redirectToNtp_();
+      }
+    });
 
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
@@ -96,8 +86,6 @@ export class SplitNewTabPageAppElement extends CrLitElement {
         callbackRouter.tabUnsplit.addListener(this.redirectToNtp_.bind(this)),
         callbackRouter.hostWindowChanged.addListener(
             this.hostWindowChanged_.bind(this)));
-
-    this.scrollTarget_ = this.$.splitTabsList;
 
     this.apiProxy_.getProfileData().then(({profileData}) => {
       this.onTabsChanged_(profileData);
@@ -118,17 +106,6 @@ export class SplitNewTabPageAppElement extends CrLitElement {
         'visibilitychange', this.visibilityChangedListener_);
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedPrivateProperties.has('focusedIndex_')) {
-      this.updateFocusedItem_();
-    }
-  }
-
   protected onClose_() {
     this.apiProxy_.closeWebUiTab();
   }
@@ -138,19 +115,35 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     this.apiProxy_.replaceActiveSplitTab((target.data.tab as Tab).tabId);
   }
 
-  protected updateFocusedItem_() {
-    this.focusedItem_ = this.focusedIndex_ === -1 ?
-        null :
-        this.querySelector<HTMLElement>(
-            `cr-lazy-list > *:nth-child(${this.focusedIndex_ + 1})`);
+  protected onTabFocus_(e: Event) {
+    // Ensure that when a TabSearchItem receives focus, it becomes the selected
+    // item in the list.
+    const target = e.currentTarget as TabSearchItemElement;
+    const index = Number(target.dataset['index']);
+    this.$.splitTabsList.setSelected(index);
+  }
+
+  protected onTabFocusOut_(_: Event) {
+    // Ensure that when a TabSearchItem loses focus, it resets the selected
+    // item.
+    this.$.splitTabsList.resetSelected();
+  }
+
+  protected onTabKeyDown_(e: KeyboardEvent) {
+    if (e.key !== 'Enter' && e.key !== ' ') {
+      return;
+    }
+
+    this.onTabClick_(e);
   }
 
   private onTabsChanged_(profileData: ProfileData) {
     const hostWindow =
         profileData.windows.find(({isHostWindow}) => isHostWindow)!;
     this.allEligibleTabs_ =
-        hostWindow.tabs.filter(tab => !tab.visible && !tab.split)
-            .map(tab => this.getTabData_(tab, true, TabItemType.OPEN_TAB));
+        hostWindow?.tabs?.filter(tab => !tab.visible && !tab.split)
+            .map(tab => this.getTabData_(tab, true, TabItemType.OPEN_TAB)) ||
+        [];
     this.sortTabs_();
     this.updateComplete.then(() => {
       this.updateViewportHeight_(profileData);
@@ -188,6 +181,10 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   }
 
   private sortTabs_() {
+    // If no tabs are eligible for selection, redirect to the regular NTP.
+    if (this.allEligibleTabs_.length === 0) {
+      this.redirectToNtp_();
+    }
     this.allEligibleTabs_.sort((a, b) => {
       const tabA = a.tab as Tab;
       const tabB = b.tab as Tab;
@@ -211,8 +208,9 @@ export class SplitNewTabPageAppElement extends CrLitElement {
 
   private getTabData_(tab: Tab, inActiveWindow: boolean, type: TabItemType):
       TabData {
-    const tabData =
-        new TabData(tab, type, new URL(normalizeURL(tab.url.url)).hostname);
+    const displayUrl =
+        getDisplayHostnameForUrl(new URL(normalizeURL(tab.url.url)));
+    const tabData = new TabData(tab, type, displayUrl);
 
     if (type === TabItemType.OPEN_TAB) {
       tabData.inActiveWindow = inActiveWindow;

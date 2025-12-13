@@ -41,3 +41,5 @@ CctPasswordSavingMetricsRecorderBridge::CctPasswordSavingMetricsRecorderBridge(
   java_object_ = Java_CctPasswordSavingMetricsRecorderBridge_Constructor(
       base::android::AttachCurrentThread(), window_android->GetJavaObject());
 }
+
+DEFINE_JNI(CctPasswordSavingMetricsRecorderBridge)

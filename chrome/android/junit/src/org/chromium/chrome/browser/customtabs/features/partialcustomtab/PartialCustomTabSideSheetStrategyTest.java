@@ -61,9 +61,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link PartialCustomTabSideSheetStrategy}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {PartialCustomTabTestRule.ShadowSemanticColorUtils.class})
+@Config(manifest = Config.NONE)
 @LooperMode(Mode.PAUSED)
 public class PartialCustomTabSideSheetStrategyTest {
     private static final float MINIMAL_WIDTH_RATIO_EXPANDED = 0.33f;

@@ -6,13 +6,13 @@
     --cr-icon-button-margin-end: 0;
   }
 
-  #header-wrapper {
+  #headerWrapper {
     align-items: center;
     display: flex;
     flex: 1;
   }
 
-  #header-text-wrapper {
+  #headerTextWrapper {
     flex-direction: column;
     flex: 1;
     margin-inline-end: 24px;
@@ -24,10 +24,11 @@
   }
 
   #header {
+    margin: 0;
     font-weight: 500;
   }
 
-  #header-wrapper {
+  #headerWrapper {
     /* Always at least two lines tall (with 154% line-height). */
     min-height: calc(2em * 1.54);
   }
@@ -71,7 +72,7 @@
     max-width: 100%;
   }
 
-  site-favicon, #header-icon, .item-icon {
+  site-favicon, #headerIcon, .item-icon {
     padding-inline-end: 16px;
   }
 
@@ -97,7 +98,7 @@
       --animation-duration: 300ms;
     }
 
-    #header-wrapper {
+    #headerWrapper {
       /**
        * Increse the header height to 3 lines. This is because the header
        * currently isn't animated, only the rows under it are. When we animate
@@ -187,12 +188,14 @@
   </style>
 </template>
 
-<div id="header-wrapper">
-  <cr-icon id="header-icon"
-    icon="[[headerIcon]]" class$="[[headerIconColor]]">
-  </cr-icon>
-  <div id="header-text-wrapper">
-    <div id="header">[[header]]</div>
+<div id="headerWrapper">
+  <template is="dom-if" if="[[headerIcon]]">
+    <cr-icon id="headerIcon"
+      icon="[[headerIcon]]" class$="[[headerIconColor]]">
+    </cr-icon>
+  </template>
+  <div id="headerTextWrapper">
+    <h3 id="header">[[header]]</h3>
     <div id="subheader" class="cr-secondary-text">[[subheader]]</div>
   </div>
   <slot name="button-container"></slot>

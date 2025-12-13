@@ -1,12 +1,6 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/parsers/temporal_scalability_id_extractor.h"
 
 #include <bitset>
@@ -82,7 +76,7 @@ bool TemporalScalabilityIdExtractor::ParseChunk(base::span<const uint8_t> chunk,
 
 bool TemporalScalabilityIdExtractor::ParseH264(base::span<const uint8_t> chunk,
                                                BitstreamMetadata& md) {
-  h264_->SetStream(chunk.data(), chunk.size());
+  h264_->SetStream(chunk);
   H264NALU nalu;
   H264Parser::Result result;
   while ((result = h264_->AdvanceToNextNALU(&nalu)) != H264Parser::kEOStream) {
@@ -96,7 +90,7 @@ bool TemporalScalabilityIdExtractor::ParseH264(base::span<const uint8_t> chunk,
     constexpr size_t kPrefixNALLocatedBytePos = 3;
     constexpr size_t kH264SVCExtensionFlagLocatedBytePos = 1;
     if (nalu.nal_unit_type == H264NALU::kPrefix &&
-        static_cast<size_t>(nalu.size) > kPrefixNALLocatedBytePos) {
+        nalu.data.size() > kPrefixNALLocatedBytePos) {
       bool svc_extension_flag =
           (nalu.data[kH264SVCExtensionFlagLocatedBytePos] & 0b1000'0000) >> 7;
       // nal_unit_header_svc_extension exists iff svc_extension_flag is true.
@@ -113,7 +107,7 @@ bool TemporalScalabilityIdExtractor::ParseH264(base::span<const uint8_t> chunk,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 bool TemporalScalabilityIdExtractor::ParseHEVC(base::span<const uint8_t> chunk,
                                                BitstreamMetadata& md) {
-  h265_->SetStream(chunk.data(), chunk.size());
+  h265_->SetStream(chunk);
   H265NALU nalu;
   H265NaluParser::Result result;
   while ((result = h265_->AdvanceToNextNALU(&nalu)) !=
@@ -212,8 +206,8 @@ bool TemporalScalabilityIdExtractor::ParseAV1(base::span<const uint8_t> chunk,
     md.refresh_frame_flags = frame_header.refresh_frame_flags;
     md.reference_idx_flags = 0;
     if (!libgav1::IsIntraFrame(frame_header.frame_type)) {
-      for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++) {
-        md.reference_idx_flags |= 1 << frame_header.reference_frame_index[i];
+      for (int8_t index : base::span(frame_header.reference_frame_index)) {
+        md.reference_idx_flags |= 1 << index;
       }
     }
 

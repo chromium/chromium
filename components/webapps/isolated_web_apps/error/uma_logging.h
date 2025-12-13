@@ -27,15 +27,16 @@ E ToErrorEnum(E e) {
 std::string ToSuccessHistogramName(std::string_view base_name);
 std::string ToErrorHistogramName(std::string_view base_name);
 
-// UMA-logs an error wrapped in base::expected<void, ErrorType>. It creates
-// 2 histograms by appending corresponding suffixes to `base_name`.
-// One histogram logs the success/failure rate. The other histogram logs
-// the error type if any.
-// Any custom error type should provide a specialized template function that
-// converts the custom error type to error enum.
-template <class E>
+// UMA-logs an error wrapped in base::expected<SuccessType, ErrorType>. It
+// creates 2 histograms by appending corresponding suffixes to `base_name`. One
+// histogram logs the success/failure rate. The other histogram logs the error
+// type if any. Any custom error type should provide a specialized template
+// function that converts the custom error type to error enum.
+// `SuccessType` is not actually used, it is added for convenience of calling
+// this function.
+template <class T, class E>
 void UmaLogExpectedStatus(std::string_view base_name,
-                          const base::expected<void, E>& status) {
+                          const base::expected<T, E>& status) {
   base::UmaHistogramBoolean(ToSuccessHistogramName(base_name),
                             status.has_value());
 
@@ -43,6 +44,14 @@ void UmaLogExpectedStatus(std::string_view base_name,
     base::UmaHistogramEnumeration(ToErrorHistogramName(base_name),
                                   ToErrorEnum(status.error()));
   }
+}
+
+// Similar to UmaLogExpectedStatus<T, E>, but it supports
+// base::expected<void, ErrorType>.
+template <class E>
+void UmaLogExpectedStatus(std::string_view base_name,
+                          const base::expected<void, E>& status) {
+  UmaLogExpectedStatus<void, E>(base_name, status);
 }
 
 }  // namespace web_app

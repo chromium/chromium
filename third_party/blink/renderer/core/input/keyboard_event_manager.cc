@@ -490,9 +490,9 @@ void KeyboardEventManager::DefaultSpaceEventHandler(
   scrollend_event_target_.Clear();
   // TODO(bokan): enable scroll customization in this case. See
   // crbug.com/410974.
-  if (scroll_manager_->LogicalScroll(direction,
-                                     ui::ScrollGranularity::kScrollByPage,
-                                     nullptr, possible_focused_node, true)) {
+  if (scroll_manager_->LogicalScroll(
+          direction, ui::ScrollGranularity::kScrollByPage, nullptr,
+          possible_focused_node, true) == LogicalScrollResult::kScrolled) {
     UseCounter::Count(frame_->GetDocument(),
                       WebFeature::kScrollByKeyboardSpacebarKey);
     last_scrolling_keycode_ = event->keyCode();
@@ -603,6 +603,8 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
   if (IsSpatialNavigationEnabled(frame_) && !document.InDesignMode()) {
     page->GetSpatialNavigationController().HandleEscapeKeyboardEvent(event);
   }
+
+  Element::LoseInterestInAllElements(document);
 
   frame_->DomWindow()->closewatcher_stack()->EscapeKeyHandler(event);
 }

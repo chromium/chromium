@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -22,7 +23,6 @@ class SupervisedUserServiceFactoryTest : public PlatformTest {
  public:
   SupervisedUserServiceFactoryTest() {
     profile_ = TestProfileIOS::Builder().Build();
-    profile_->CreateOffTheRecordBrowserStateWithTestingFactories();
   }
 
   ProfileIOS* GetRegularProfile() { return profile_.get(); }
@@ -33,6 +33,7 @@ class SupervisedUserServiceFactoryTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 

@@ -70,34 +70,35 @@ class PerformanceScenarioObserverTest : public ::testing::Test {
 };
 
 TEST_F(PerformanceScenarioObserverTest, GetForScope) {
+  // Map kCurrentProcess memory before creating the observer list.
+  ScopedReadOnlyScenarioMemory scoped_process_memory(
+      ScenarioScope::kCurrentProcess,
+      test_helper_->GetReadOnlyScenarioRegion(ScenarioScope::kCurrentProcess));
+
   EXPECT_FALSE(PerformanceScenarioObserverList::GetForScope(
       ScenarioScope::kCurrentProcess));
   EXPECT_FALSE(
       PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
 
   {
-    ScopedReadOnlyScenarioMemory scoped_process_memory(
-        ScenarioScope::kCurrentProcess, test_helper_->GetReadOnlyScenarioRegion(
-                                            ScenarioScope::kCurrentProcess));
-    EXPECT_TRUE(PerformanceScenarioObserverList::GetForScope(
-        ScenarioScope::kCurrentProcess));
-    EXPECT_FALSE(
-        PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
+    ScopedScenarioObserverList scoped_observer_list;
+
+    auto process_list = PerformanceScenarioObserverList::GetForScope(
+        ScenarioScope::kCurrentProcess);
+    auto global_list =
+        PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal);
+    ASSERT_TRUE(process_list);
+    EXPECT_TRUE(process_list->IsInitializedForTesting());
+    ASSERT_TRUE(global_list);
+    EXPECT_FALSE(global_list->IsInitializedForTesting());
 
     {
+      // Map kGlobal memory after creating the observer list.
       ScopedReadOnlyScenarioMemory scoped_global_memory(
           ScenarioScope::kGlobal,
           test_helper_->GetReadOnlyScenarioRegion(ScenarioScope::kGlobal));
-      EXPECT_TRUE(PerformanceScenarioObserverList::GetForScope(
-          ScenarioScope::kCurrentProcess));
-      EXPECT_TRUE(
-          PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
+      EXPECT_TRUE(global_list->IsInitializedForTesting());
     }
-
-    EXPECT_TRUE(PerformanceScenarioObserverList::GetForScope(
-        ScenarioScope::kCurrentProcess));
-    EXPECT_FALSE(
-        PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
   }
 
   EXPECT_FALSE(PerformanceScenarioObserverList::GetForScope(
@@ -107,13 +108,32 @@ TEST_F(PerformanceScenarioObserverTest, GetForScope) {
 }
 
 TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
-  // Update the process scenario state before creating the ObserverList, to
+  ScopedScenarioObserverList scoped_observer_list;
+
+  // Create a PerformanceScenarioObserver and a MatchingScenarioObserver, and
+  // have them observe both scopes before mapping in any memory.
+  StrictMockPerformanceScenarioObserver mock_observer;
+  base::ScopedMultiSourceObservation<PerformanceScenarioObserverList,
+                                     PerformanceScenarioObserver>
+      scoped_observation(&mock_observer);
+
+  StrictMockMatchingScenarioObserver mock_idle_observer(kDefaultIdleScenarios);
+  base::ScopedMultiSourceObservation<PerformanceScenarioObserverList,
+                                     MatchingScenarioObserver>
+      idle_observation(&mock_idle_observer);
+
+  for (ScenarioScope scope : ScenarioScopes::All()) {
+    auto observer_list = PerformanceScenarioObserverList::GetForScope(scope);
+    EXPECT_FALSE(observer_list->IsInitializedForTesting());
+    scoped_observation.AddObservation(observer_list.get());
+    idle_observation.AddObservation(observer_list.get());
+  }
+
+  // Update the process scenario state before mapping in scenario memory, to
   // make sure the state tracking doesn't depend on the state starting at
   // kNoPageLoading.
   test_helper_->SetLoadingScenario(ScenarioScope::kCurrentProcess,
                                    LoadingScenario::kFocusedPageLoading);
-
-  // Map in scenario memory.
   ScopedReadOnlyScenarioMemory scoped_process_memory(
       ScenarioScope::kCurrentProcess,
       test_helper_->GetReadOnlyScenarioRegion(ScenarioScope::kCurrentProcess));
@@ -126,17 +146,18 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
   EXPECT_TRUE(
       CurrentScenariosMatch(ScenarioScope::kGlobal, kDefaultIdleScenarios));
 
-  // Create a PerformanceScenarioObserver and two MatchingScenarioObservers with
-  // different patterns, and have them observe both scopes.
-  StrictMockPerformanceScenarioObserver mock_observer;
+  // Create another PerformanceScenarioObserver and MatchingScenarioObserver.
+  // These should have the same state as the first two even though they're added
+  // after the state is already mapped.
+  StrictMockPerformanceScenarioObserver mock_observer2;
   base::ScopedMultiSourceObservation<PerformanceScenarioObserverList,
                                      PerformanceScenarioObserver>
-      scoped_observation(&mock_observer);
+      scoped_observation2(&mock_observer2);
 
-  StrictMockMatchingScenarioObserver mock_idle_observer(kDefaultIdleScenarios);
+  StrictMockMatchingScenarioObserver mock_idle_observer2(kDefaultIdleScenarios);
   base::ScopedMultiSourceObservation<PerformanceScenarioObserverList,
                                      MatchingScenarioObserver>
-      idle_observation(&mock_idle_observer);
+      idle_observation2(&mock_idle_observer2);
 
   // This observer won't be notified on LoadingScenario changes because it only
   // watches the InputScenario.
@@ -148,8 +169,9 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
 
   for (ScenarioScope scope : ScenarioScopes::All()) {
     auto observer_list = PerformanceScenarioObserverList::GetForScope(scope);
-    scoped_observation.AddObservation(observer_list.get());
-    idle_observation.AddObservation(observer_list.get());
+    EXPECT_TRUE(observer_list->IsInitializedForTesting());
+    scoped_observation2.AddObservation(observer_list.get());
+    idle_observation2.AddObservation(observer_list.get());
     input_only_observation.AddObservation(observer_list.get());
   }
 
@@ -161,12 +183,14 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
     task_env_.RunUntilQuit();
     EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_observer));
     EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_idle_observer));
+    EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_observer2));
+    EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_idle_observer2));
     EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_input_only_observer));
   };
 
-  // Toggle process loading scenario, then global loading scenario. 2 observers
+  // Toggle process loading scenario, then global loading scenario. 4 observers
   // will fire for each of 2 scopes.
-  auto quit_closure = base::BarrierClosure(4, task_env_.QuitClosure());
+  auto quit_closure = base::BarrierClosure(8, task_env_.QuitClosure());
 
   // kCurrentProcess scope transitions from kFocusedPageLoading (non-idle) ->
   // kBackgroundPageLoading (idle).
@@ -175,7 +199,15 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
                                        LoadingScenario::kFocusedPageLoading,
                                        LoadingScenario::kBackgroundPageLoading))
       .WillOnce(base::test::RunClosure(quit_closure));
+  EXPECT_CALL(mock_observer2,
+              OnLoadingScenarioChanged(ScenarioScope::kCurrentProcess,
+                                       LoadingScenario::kFocusedPageLoading,
+                                       LoadingScenario::kBackgroundPageLoading))
+      .WillOnce(base::test::RunClosure(quit_closure));
   EXPECT_CALL(mock_idle_observer,
+              OnScenarioMatchChanged(ScenarioScope::kCurrentProcess, true))
+      .WillOnce(base::test::RunClosure(quit_closure));
+  EXPECT_CALL(mock_idle_observer2,
               OnScenarioMatchChanged(ScenarioScope::kCurrentProcess, true))
       .WillOnce(base::test::RunClosure(quit_closure));
 
@@ -186,7 +218,15 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
                                        LoadingScenario::kNoPageLoading,
                                        LoadingScenario::kVisiblePageLoading))
       .WillOnce(base::test::RunClosure(quit_closure));
+  EXPECT_CALL(mock_observer2,
+              OnLoadingScenarioChanged(ScenarioScope::kGlobal,
+                                       LoadingScenario::kNoPageLoading,
+                                       LoadingScenario::kVisiblePageLoading))
+      .WillOnce(base::test::RunClosure(quit_closure));
   EXPECT_CALL(mock_idle_observer,
+              OnScenarioMatchChanged(ScenarioScope::kGlobal, false))
+      .WillOnce(base::test::RunClosure(quit_closure));
+  EXPECT_CALL(mock_idle_observer2,
               OnScenarioMatchChanged(ScenarioScope::kGlobal, false))
       .WillOnce(base::test::RunClosure(quit_closure));
 
@@ -198,8 +238,13 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
 
   // Toggle process scenario again without changing global scenario.
   // kBackgroundPageLoading (idle) -> kFocusedPageLoading (non-idle).
-  quit_closure = base::BarrierClosure(2, task_env_.QuitClosure());
+  quit_closure = base::BarrierClosure(4, task_env_.QuitClosure());
   EXPECT_CALL(mock_observer,
+              OnLoadingScenarioChanged(ScenarioScope::kCurrentProcess,
+                                       LoadingScenario::kBackgroundPageLoading,
+                                       LoadingScenario::kFocusedPageLoading))
+      .WillOnce(base::test::RunClosure(quit_closure));
+  EXPECT_CALL(mock_observer2,
               OnLoadingScenarioChanged(ScenarioScope::kCurrentProcess,
                                        LoadingScenario::kBackgroundPageLoading,
                                        LoadingScenario::kFocusedPageLoading))
@@ -207,10 +252,17 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
   EXPECT_CALL(mock_idle_observer,
               OnScenarioMatchChanged(ScenarioScope::kCurrentProcess, false))
       .WillOnce(base::test::RunClosure(quit_closure));
+  EXPECT_CALL(mock_idle_observer2,
+              OnScenarioMatchChanged(ScenarioScope::kCurrentProcess, false))
+      .WillOnce(base::test::RunClosure(quit_closure));
 
   test_helper_->SetLoadingScenario(ScenarioScope::kCurrentProcess,
                                    LoadingScenario::kFocusedPageLoading);
   wait_for_expectations();
+
+  // Stop testing duplicate observers now.
+  scoped_observation2.RemoveAllObservations();
+  idle_observation2.RemoveAllObservations();
 
   // Stop observing the process scenario, then toggle both scenarios again.
   //

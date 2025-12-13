@@ -45,6 +45,7 @@ impl<'a, T> ConstSlice<'a, T> {
 
     /// Gets the element at `index`, panicking if not present.
     pub const fn get_or_panic(&self, index: usize) -> &T {
+        #[allow(clippy::indexing_slicing)] // documented
         &self.full_slice[index + self.start]
     }
 
@@ -54,6 +55,7 @@ impl<'a, T> ConstSlice<'a, T> {
         if self.len() == 0 {
             None
         } else {
+            // Won't panic: we already handled an empty slice
             Some(self.get_or_panic(0))
         }
     }
@@ -63,6 +65,7 @@ impl<'a, T> ConstSlice<'a, T> {
         if self.len() == 0 {
             None
         } else {
+            // Won't panic: we already handled an empty slice
             Some(self.get_or_panic(self.len() - 1))
         }
     }
@@ -85,6 +88,7 @@ impl<'a, T> ConstSlice<'a, T> {
 
     /// Non-const function that returns this [`ConstSlice`] as a regular slice.
     #[cfg(any(test, feature = "alloc"))]
+    #[allow(clippy::indexing_slicing)] // indices in range by struct invariant
     pub fn as_slice(&self) -> &'a [T] {
         &self.full_slice[self.start..self.limit]
     }
@@ -146,7 +150,7 @@ impl<const N: usize, T> ConstArrayBuilder<N, T> {
     }
 
     /// Returns the initialized elements as a [`ConstSlice`].
-    pub const fn as_const_slice(&self) -> ConstSlice<T> {
+    pub const fn as_const_slice(&self) -> ConstSlice<'_, T> {
         ConstSlice::from_manual_slice(&self.full_array, self.start, self.limit)
     }
 
@@ -176,6 +180,7 @@ impl<const N: usize, T: Copy> ConstArrayBuilder<N, T> {
     }
 
     /// Prepends an element to the front of the builder, panicking if there is no room.
+    #[allow(clippy::indexing_slicing)] // documented
     pub const fn const_push_front_or_panic(mut self, value: T) -> Self {
         if self.start == 0 {
             panic!("Buffer too small");
@@ -186,6 +191,7 @@ impl<const N: usize, T: Copy> ConstArrayBuilder<N, T> {
     }
 
     /// Prepends multiple elements to the front of the builder, panicking if there is no room.
+    #[allow(clippy::indexing_slicing)] // documented
     pub const fn const_extend_front_or_panic(mut self, other: ConstSlice<T>) -> Self {
         if self.start < other.len() {
             panic!("Buffer too small");
@@ -202,7 +208,8 @@ impl<const N: usize, T: Copy> ConstArrayBuilder<N, T> {
 
 impl<const N: usize> ConstArrayBuilder<N, u8> {
     /// Specialized function that performs `self[index] |= bits`
-    pub const fn const_bitor_assign(mut self, index: usize, bits: u8) -> Self {
+    #[allow(clippy::indexing_slicing)] // documented
+    pub(crate) const fn const_bitor_assign_or_panic(mut self, index: usize, bits: u8) -> Self {
         self.full_array[self.start + index] |= bits;
         self
     }
@@ -226,6 +233,7 @@ macro_rules! const_for_each {
     ($safe_const_slice:expr, $item:tt, $inner:expr) => {{
         let mut i = 0;
         while i < $safe_const_slice.len() {
+            // Won't panic: in-range loop condition
             let $item = $safe_const_slice.get_or_panic(i);
             $inner;
             i += 1;
@@ -266,6 +274,7 @@ impl<const K: usize> ConstLengthsStack<K> {
 
     /// Adds a [`BranchMeta`] to the stack, panicking if there is no room.
     #[must_use]
+    #[allow(clippy::indexing_slicing)] // documented
     pub const fn push_or_panic(mut self, meta: BranchMeta) -> Self {
         if self.idx >= K {
             panic!(concat!(
@@ -289,6 +298,7 @@ impl<const K: usize> ConstLengthsStack<K> {
     }
 
     /// Returns a copy of the [`BranchMeta`] at the specified index.
+    #[allow(clippy::indexing_slicing)] // documented
     const fn get_or_panic(&self, index: usize) -> BranchMeta {
         if self.idx <= index {
             panic!("AsciiTrie Builder: Attempted to get too deep in a stack");
@@ -300,6 +310,7 @@ impl<const K: usize> ConstLengthsStack<K> {
     }
 
     /// Removes many [`BranchMeta`]s from the stack, returning them in a [`ConstArrayBuilder`].
+    #[allow(clippy::indexing_slicing)] // documented
     pub const fn pop_many_or_panic(
         mut self,
         len: usize,

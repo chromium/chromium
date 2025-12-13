@@ -1,0 +1,6 @@
+Tests that IndexedDB protocol commands work in a dedicated worker.
+Database TestDB_Dedicated found: true
+Value object properties:
+  - id: 1
+  - value: DedicatedWorkerValue
+

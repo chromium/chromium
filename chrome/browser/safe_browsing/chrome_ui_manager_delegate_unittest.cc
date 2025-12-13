@@ -39,7 +39,7 @@ TEST_F(ChromeSafeBrowsingUIManagerDelegateTest, IsHostingExtension) {
   manifest.Set(extensions::manifest_keys::kVersion, "0.0.0.0");
   manifest.SetByDottedPath(
       extensions::manifest_keys::kPlatformAppBackgroundPage, "background.html");
-  std::string error;
+  std::u16string error;
   scoped_refptr<extensions::Extension> app;
   app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kComponent,

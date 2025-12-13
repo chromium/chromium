@@ -27,13 +27,7 @@ namespace {
 
 class PasswordManagerFeaturesUtilTest : public testing::Test {
  public:
-  PasswordManagerFeaturesUtilTest() {
-#if BUILDFLAG(IS_ANDROID)
-    pref_service_.registry()->RegisterIntegerPref(
-        prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
-#endif
-  }
+  PasswordManagerFeaturesUtilTest() = default;
 
   PasswordManagerFeaturesUtilTest(const PasswordManagerFeaturesUtilTest&) =
       delete;
@@ -43,14 +37,13 @@ class PasswordManagerFeaturesUtilTest : public testing::Test {
   ~PasswordManagerFeaturesUtilTest() override = default;
 
  protected:
-  TestingPrefServiceSimple pref_service_;
   syncer::TestSyncService sync_service_;
 };
 
 TEST_F(PasswordManagerFeaturesUtilTest, IsAccountStorageEnabled_SignedOut) {
   sync_service_.SetSignedOut();
 
-  EXPECT_FALSE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsAccountStorageEnabled(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
@@ -58,7 +51,7 @@ TEST_F(PasswordManagerFeaturesUtilTest,
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.SetLocalSyncEnabled(true);
 
-  EXPECT_FALSE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsAccountStorageEnabled(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
@@ -66,7 +59,7 @@ TEST_F(PasswordManagerFeaturesUtilTest,
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.SetPersistentAuthError();
 
-  EXPECT_FALSE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsAccountStorageEnabled(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
@@ -74,7 +67,7 @@ TEST_F(PasswordManagerFeaturesUtilTest,
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.SetPassphraseRequired();
 
-  EXPECT_FALSE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsAccountStorageEnabled(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
@@ -82,7 +75,7 @@ TEST_F(PasswordManagerFeaturesUtilTest,
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.SetTrustedVaultKeyRequired(true);
 
-  EXPECT_FALSE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsAccountStorageEnabled(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
@@ -91,70 +84,21 @@ TEST_F(PasswordManagerFeaturesUtilTest,
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
 
-  EXPECT_FALSE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsAccountStorageEnabled(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
        IsAccountStorageEnabled_SignedInHealthy) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
 
-  EXPECT_TRUE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
+  EXPECT_TRUE(IsAccountStorageEnabled(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest, IsAccountStorageEnabled_Syncing) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
 
-  EXPECT_EQ(IsAccountStorageEnabled(&pref_service_, &sync_service_),
-            BUILDFLAG(IS_ANDROID));
+  EXPECT_EQ(IsAccountStorageEnabled(&sync_service_), BUILDFLAG(IS_ANDROID));
 }
-
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordManagerFeaturesUtilTest,
-       CanCreateAccountStore_LoginDbDeprecationOff) {
-  using enum prefs::UseUpmLocalAndSeparateStoresState;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kLoginDbDeprecationAndroid);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
-
-  EXPECT_TRUE(CanCreateAccountStore(&pref_service_));
-  EXPECT_TRUE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
-
-  pref_service_.SetInteger(prefs::kPasswordsUseUPMLocalAndSeparateStores,
-                           static_cast<int>(kOffAndMigrationPending));
-
-  EXPECT_TRUE(CanCreateAccountStore(&pref_service_));
-  EXPECT_TRUE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
-
-  pref_service_.SetInteger(prefs::kPasswordsUseUPMLocalAndSeparateStores,
-                           static_cast<int>(kOff));
-
-  EXPECT_FALSE(CanCreateAccountStore(&pref_service_));
-  EXPECT_FALSE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
-}
-
-TEST_F(PasswordManagerFeaturesUtilTest,
-       CanCreateAccountStore_LoginDbDeprecationOn) {
-  using enum prefs::UseUpmLocalAndSeparateStoresState;
-  base::test::ScopedFeatureList feature_list(
-      features::kLoginDbDeprecationAndroid);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
-
-  EXPECT_TRUE(CanCreateAccountStore(&pref_service_));
-  EXPECT_TRUE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
-
-  pref_service_.SetInteger(prefs::kPasswordsUseUPMLocalAndSeparateStores,
-                           static_cast<int>(kOffAndMigrationPending));
-
-  EXPECT_TRUE(CanCreateAccountStore(&pref_service_));
-  EXPECT_TRUE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
-
-  pref_service_.SetInteger(prefs::kPasswordsUseUPMLocalAndSeparateStores,
-                           static_cast<int>(kOff));
-
-  EXPECT_TRUE(CanCreateAccountStore(&pref_service_));
-  EXPECT_TRUE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
-}
-#endif
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordManagerFeaturesUtilTest,
@@ -164,8 +108,7 @@ TEST_F(PasswordManagerFeaturesUtilTest,
       syncer::kReplaceSyncPromosWithSignInPromos);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
 
-  EXPECT_TRUE(
-      ShouldShowAccountStorageSettingToggle(&pref_service_, &sync_service_));
+  EXPECT_TRUE(ShouldShowAccountStorageSettingToggle(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
@@ -174,21 +117,20 @@ TEST_F(PasswordManagerFeaturesUtilTest,
       syncer::kReplaceSyncPromosWithSignInPromos);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
 
-  EXPECT_FALSE(
-      ShouldShowAccountStorageSettingToggle(&pref_service_, &sync_service_));
+  EXPECT_FALSE(ShouldShowAccountStorageSettingToggle(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest, MigrateDefaultProfileStorePref) {
+  TestingPrefServiceSimple pref_service;
   // GetSelectedTypesForAccount may check some prefs in SignInPrefs. Ensure that
   // they are registered for this test.
-  SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
-
-  syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
-  pref_service_.registry()->RegisterDictionaryPref(
+  SigninPrefs::RegisterProfilePrefs(pref_service.registry());
+  syncer::SyncPrefs::RegisterProfilePrefs(pref_service.registry());
+  pref_service.registry()->RegisterDictionaryPref(
       prefs::kObsoleteAccountStoragePerAccountSettings);
-  pref_service_.registry()->RegisterBooleanPref(::prefs::kExplicitBrowserSignin,
-                                                false);
-  pref_service_.registry()->RegisterBooleanPref(
+  pref_service.registry()->RegisterBooleanPref(::prefs::kExplicitBrowserSignin,
+                                               false);
+  pref_service.registry()->RegisterBooleanPref(
       ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false);
 
   // Set up 2 account storage users, with default stores "profile" and
@@ -199,12 +141,12 @@ TEST_F(PasswordManagerFeaturesUtilTest, MigrateDefaultProfileStorePref) {
       signin::GaiaIdHash::FromGaiaId(profile_store_user_gaia);
   auto account_store_user_hash =
       signin::GaiaIdHash::FromGaiaId(account_store_user_gaia);
-  syncer::SyncPrefs sync_prefs(&pref_service_);
+  syncer::SyncPrefs sync_prefs(&pref_service);
   sync_prefs.SetSelectedTypeForAccount(syncer::UserSelectableType::kPasswords,
                                        true, profile_store_user_gaia);
   sync_prefs.SetSelectedTypeForAccount(syncer::UserSelectableType::kPasswords,
                                        true, account_store_user_gaia);
-  pref_service_.SetDict(
+  pref_service.SetDict(
       prefs::kObsoleteAccountStoragePerAccountSettings,
       base::Value::Dict()
           .Set(profile_store_user_hash.ToBase64(),
@@ -223,7 +165,7 @@ TEST_F(PasswordManagerFeaturesUtilTest, MigrateDefaultProfileStorePref) {
   EXPECT_TRUE(sync_prefs.GetSelectedTypesForAccount(account_store_user_gaia)
                   .Has(syncer::UserSelectableType::kPasswords));
 
-  MigrateDefaultProfileStorePref(&pref_service_);
+  MigrateDefaultProfileStorePref(&pref_service);
 
   // After the migration, account storage will be off for the user with profile
   // store as the default.

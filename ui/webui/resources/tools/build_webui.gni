@@ -35,7 +35,6 @@ if (is_chromeos) {
     "//chrome/browser/resources/ash",
     "//chrome/browser/resources/chromeos",
     "//chrome/browser/resources/dlp_internals",
-    "//chromeos/ash/components/kiosk/vision/webui",
     "//ui/file_manager",
 
     # Test folders
@@ -275,10 +274,21 @@ template("build_webui") {
     }
   }
 
-  # Determine if there is a Lit and/or Polymer dependency, and whether this
-  # corresponds to an Ash WebUI. This information is used for determining
-  # the default template for html_to_wrapper() as well as the default tsconfig
-  # file for ts_library().
+  # Determine whether the current invocation corresponds to an Ash WebUI.
+  is_ash_webui = false
+  if (is_chromeos) {
+    target_dir = get_label_info(":build_ts", "dir")
+
+    foreach(prefix, ash_folders) {
+      if (!is_ash_webui) {
+        is_ash_webui = string_replace(target_dir, prefix, "") != target_dir
+      }
+    }
+  }
+
+  # Determine if there is a Lit and/or Polymer dependency. This information is
+  # used for determining the default template for html_to_wrapper() as well as
+  # the default tsconfig file for ts_library().
   if ((defined(html_files) && !defined(invoker.html_to_wrapper_template)) ||
       (defined(invoker.ts_deps) && !defined(invoker.ts_tsconfig_base))) {
     has_polymer = false
@@ -290,22 +300,14 @@ template("build_webui") {
       has_lit = filter_include(invoker.ts_deps,
                                [ "//third_party/lit/v3_0:build_ts" ]) != []
     }
-
-    if (is_chromeos) {
-      is_ash_webui = false
-      target_dir = get_label_info(":build_ts", "dir")
-
-      foreach(prefix, ash_folders) {
-        if (!is_ash_webui) {
-          is_ash_webui = string_replace(target_dir, prefix, "") != target_dir
-        }
-      }
-    }
   }
 
   if (defined(html_files)) {
     html_to_wrapper("html_wrapper_files") {
-      visibility = [ ":build_ts" ]
+      visibility = [
+        ":build_ts",
+        ":lint",
+      ]
       deps = [ ":preprocess_html_css_files" ]
       in_folder = preprocess_dir
       out_folder = preprocess_dir
@@ -497,10 +499,24 @@ template("build_webui") {
       in_files = filter_exclude(all_ts_files, [ "*.js" ])
       tsconfig = "$target_gen_dir/tsconfig_build_ts.json"
       deps = [ ":build_ts" ]
+      if (defined(html_wrapper_files)) {
+        deps += [ ":html_wrapper_files" ]
+        in_files += html_wrapper_files
+      }
       if (enable_source_maps) {
         deps += [ ":create_source_maps" ]
       } else {
         deps += [ ":preprocess_ts_files" ]
+      }
+
+      # Enable by default on non-Ash WebUIs.
+      enable_web_component_missing_deps = true
+      if (is_ash_webui) {
+        enable_web_component_missing_deps = false
+      }
+      if (defined(invoker.eslint_enable_web_component_missing_deps)) {
+        enable_web_component_missing_deps =
+            invoker.eslint_enable_web_component_missing_deps
       }
     }
   }

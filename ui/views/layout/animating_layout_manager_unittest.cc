@@ -202,6 +202,7 @@ class AnimatingLayoutManagerTest : public testing::Test {
     // Use linear transitions to make expected values predictable.
     layout()->SetTweenType(gfx::Tween::Type::LINEAR);
     layout()->SetAnimationDuration(base::Seconds(1));
+    layout()->disable_widget_check_for_testing();
 
     if (UseContainerTestApi()) {
       container_test_api_ = std::make_unique<gfx::AnimationContainerTestApi>(
@@ -5184,6 +5185,7 @@ class AnimatingLayoutManagerSequenceTest : public ViewsTestBase {
     layout_view_->SetLayoutManager(std::make_unique<AnimatingLayoutManager>());
     layout_manager()->SetTweenType(gfx::Tween::Type::LINEAR);
     layout_manager()->SetAnimationDuration(kMinimumAnimationTime);
+    layout_manager()->disable_widget_check_for_testing();
     auto* const flex_layout = layout_manager()->SetTargetLayoutManager(
         std::make_unique<FlexLayout>());
     flex_layout->SetOrientation(LayoutOrientation::kHorizontal);

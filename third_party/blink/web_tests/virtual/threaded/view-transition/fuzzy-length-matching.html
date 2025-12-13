@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+  ::view-transition {
+    pointer-events: none;
+  }
+
+  ::view-transition-group(*) {
+    animation-duration: 2s;
+    animation-timing-function: ease;
+  }
+
+  #target {
+    view-transition-name: box;
+    z-index: 2;
+  }
+
+  .wrapper {
+    border: 1px solid black;
+    height: 200px;
+    width: 200px;
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+  }
+
+  .box {
+    aspect-ratio: 1;
+    /* Initial size does not align with a value that can be precisely expressed
+       in layout units */
+    inline-size: 97.9844px;
+    background-color: blue;
+    display: grid;
+    place-content: center;
+  }
+
+  html {
+    view-transition-name: none;
+  }
+</style>
+<body>
+  <div class="wrapper">
+    <div class="box" id="target"></div>
+  </div>
+</body>
+<script>
+  "use strict";
+
+  function raf() {
+    return new Promise(resolve => requestAnimationFrame(resolve));
+  }
+
+  promise_test(async t => {
+    await raf();
+    const vt = document.startViewTransition(() => {
+      document.querySelector('.wrapper').style.alignItems = 'end';
+      // Simulate quantization error.  Layout units are in 64th of a pixel.
+      target.style.inlineSize = '97.984375px';
+    });
+    await vt.ready;
+    await Promise.all(document.getAnimations().map(a => a.ready));
+    const anim =
+        document.getAnimations().filter(a => {
+          return a.effect.pseudoElement == '::view-transition-group(box)';
+        })[0];
+    assert_true(!internals.isMainThreadAnimation(anim));
+  }, 'A length mismatch less than the resolution limit of layout unit does ' +
+     'not force the animation onto the main thread');
+</script>
+</html>

@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_ENTERPRISE_SEARCH_AGGREGATOR_SUGGESTIONS_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -59,7 +60,7 @@ class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
   using CompletionCallback =
       base::RepeatingCallback<void(const network::SimpleURLLoader* source,
                                    int request_index,
-                                   std::unique_ptr<std::string> response_body)>;
+                                   std::optional<std::string> response_body)>;
 
   // Creates one request for each list within `suggestion_types`. Each request
   // will request types in `suggestion_types[i]`.

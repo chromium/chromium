@@ -20,6 +20,7 @@
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/x_frame_options.mojom.h"
 #include "url/origin.h"
@@ -57,7 +58,8 @@ RequestBoundSessionStatus GetRequestSingleBoundSessionStatus(
   }
 
   if (!throttler_params->path.empty() &&
-      !net::cookie_util::IsOnPath(throttler_params->path, request_url.path())) {
+      !net::cookie_util::IsOnPath(throttler_params->path,
+                                  request_url.GetPath())) {
     return RequestBoundSessionStatus::kNotCovered;
   }
 

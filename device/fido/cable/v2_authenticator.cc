@@ -28,18 +28,19 @@
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/websocket_adapter.h"
 #include "device/fido/cbor_extract.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/network_context_factory.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_params.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
@@ -382,6 +383,7 @@ class TunnelTransport : public Transport {
         net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
         url::Origin::Create(target_),
+        network::mojom::ClientSecurityState::New(),
         network::mojom::kWebSocketOptionBlockAllCookies,
         net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
         websocket_client_->BindNewHandshakeClientPipe(),

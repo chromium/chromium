@@ -22,7 +22,7 @@ class CodeCacheHost;
 
 // Handles the fetching and validation of code cache entries.
 class BLINK_PLATFORM_EXPORT CodeCacheFetcher
-    : public WTF::RefCounted<CodeCacheFetcher> {
+    : public RefCounted<CodeCacheFetcher> {
  public:
   CodeCacheFetcher() = default;
   CodeCacheFetcher(const CodeCacheFetcher&) = delete;
@@ -61,7 +61,7 @@ class BLINK_PLATFORM_EXPORT CodeCacheFetcher
   virtual void Start() = 0;
 
  protected:
-  friend class WTF::RefCounted<CodeCacheFetcher>;
+  friend class RefCounted<CodeCacheFetcher>;
   virtual ~CodeCacheFetcher() = default;
 };
 

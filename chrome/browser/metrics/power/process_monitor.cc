@@ -19,7 +19,6 @@
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/metrics/power/power_metrics_constants.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -32,6 +31,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"

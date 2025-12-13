@@ -68,7 +68,7 @@ class KioskSystemSession {
   void InitForWebKiosk(const std::optional<std::string>& app_name);
   void InitForIwaKiosk(const std::optional<std::string>& app_name);
 
-  void InitCommon(bool is_offline_enabled);
+  void InitCommon();
 
   // Initialize the Kiosk app update service. The external update will be
   // triggered if a USB stick is used.

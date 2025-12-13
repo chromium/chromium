@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/mixer/mock_redirected_audio_output.h"
 
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "media/base/audio_bus.h"
 
 using testing::_;
@@ -43,7 +39,8 @@ void MockRedirectedAudioOutput::HandleRedirectedAudio(int64_t timestamp,
   CHECK(data);
   last_buffer_ = ::media::AudioBus::Create(config_.num_output_channels, frames);
   for (int c = 0; c < config_.num_output_channels; ++c) {
-    std::copy_n(data + c * frames, frames, last_buffer_->channel(c));
+    std::copy_n(UNSAFE_TODO(data + c * frames), frames,
+                last_buffer_->channel(c).data());
   }
 
   last_output_timestamp_ = timestamp;

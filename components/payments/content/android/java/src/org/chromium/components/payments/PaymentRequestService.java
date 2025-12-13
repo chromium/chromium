@@ -16,7 +16,6 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -55,12 +54,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * {@link PaymentRequestService}, {@link MojoPaymentRequestGateKeeper} and
  * ChromePaymentRequestService together make up the PaymentRequest service defined in
  * third_party/blink/public/mojom/payments/payment_request.mojom. This class provides the parts
- * shareable between Clank and WebLayer. The Clank specific logic lives in
+ * shareable between Clank and other content embedders. The Clank specific logic lives in
  * org.chromium.chrome.browser.payments.ChromePaymentRequestService.
  *
  * <p>TODO(crbug.com/40138829): ChromePaymentRequestService is under refactoring, with the purpose
@@ -219,7 +219,7 @@ public class PaymentRequestService
          * @return A non-null string if there is an invalid SSL certificate on the currently loaded
          *     page.
          */
-        String getInvalidSslCertificateErrorMessage();
+        @Nullable String getInvalidSslCertificateErrorMessage();
 
         /**
          * @return Whether the preferences allow CAN_MAKE_PAYMENT.
@@ -1095,7 +1095,16 @@ public class PaymentRequestService
                     "PaymentRequest.CanMakePayment.CallAllowedByPref", allowedByPref);
         }
 
-        boolean response = mCanMakePayment && allowedByPref;
+        boolean response = true;
+        if (!allowedByPref) {
+            response =
+                    PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                            PaymentFeatureList.CAN_MAKE_PAYMENT_TRUE_WHEN_PRIVATE);
+            Log.i(TAG, "Can make payment API disabled by settings, returning \"%b\".", response);
+        } else {
+            response = mCanMakePayment;
+        }
+
         mBrowserPaymentRequest.maybeOverrideCanMakePaymentResponse(
                 response, this::sendCanMakePaymentResponseToRenderer);
     }
@@ -1209,6 +1218,12 @@ public class PaymentRequestService
             mRejectShowErrorMessage = errorMessage;
             mRejectShowErrorReason = errorReason;
         }
+    }
+
+    // Implements PaymentAppFactoryDelegate:
+    @Override
+    public boolean prefsCanMakePayment() {
+        return mDelegate.prefsCanMakePayment();
     }
 
     // Implements PaymentAppFactoryDelegate:

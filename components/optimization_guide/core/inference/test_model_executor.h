@@ -20,6 +20,7 @@ class TestModelExecutor
       std::optional<base::TimeDelta>,
       proto::OptimizationTarget,
       scoped_refptr<base::SequencedTaskRunner>,
+      scoped_refptr<base::SequencedTaskRunner>,
       scoped_refptr<base::SequencedTaskRunner>) override {}
 
   void UpdateModelFile(base::optional_ref<const base::FilePath>) override {}

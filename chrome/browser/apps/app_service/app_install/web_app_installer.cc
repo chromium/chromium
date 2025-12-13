@@ -5,10 +5,14 @@
 #include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <variant>
 
 #include "base/barrier_callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/install_app_from_verified_manifest_command.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
@@ -143,7 +147,7 @@ void WebAppInstaller::OnManifestRetrieved(
     AppInstallData data,
     WebAppInstalledCallback callback,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   if (url_loader->NetError() != net::OK) {
     LOG(ERROR) << "Downloading manifest failed for " << data.name
                << " with error code: " << GetResponseCode(url_loader.get());

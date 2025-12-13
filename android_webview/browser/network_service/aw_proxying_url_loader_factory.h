@@ -34,8 +34,6 @@ struct ResourceRequest;
 
 namespace android_webview {
 
-class AwContentsOriginMatcher;
-
 // URL Loader Factory for Android WebView. This is the entry point for handling
 // Android WebView callbacks (i.e. error, interception and other callbacks) and
 // loading of android specific schemes and overridden responses.
@@ -84,7 +82,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
           target_factory_remote,
       bool intercept_only,
       std::optional<SecurityOptions> security_options,
-      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
       std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
       std::optional<int64_t> navigation_id);
@@ -94,17 +91,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       delete;
 
   ~AwProxyingURLLoaderFactory() override;
-
-  // Allows telling the loader whether the XRW origin trial is enabled for a
-  // navigation URL. This is an optimization that avoids hopping to the UI
-  // thread before starting a request.
-  static void SetXrwResultForNavigation(
-      content::OriginTrialsControllerDelegate* delegate,
-      const GURL& url,
-      blink::mojom::ResourceType resource_type,
-      content::FrameTreeNodeId frame_tree_node_id,
-      int64_t navigation_id);
-  static void ClearXrwResultForNavigation(int64_t navigation_id);
 
   // static
   static void CreateProxy(
@@ -117,7 +103,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
       std::optional<SecurityOptions> security_options,
-      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
       std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
       std::optional<int64_t> navigation_id);
@@ -169,8 +154,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   bool intercept_only_;
 
   std::optional<SecurityOptions> security_options_;
-
-  scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 
   std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers_;
 

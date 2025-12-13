@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -20,7 +21,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Profile;
 

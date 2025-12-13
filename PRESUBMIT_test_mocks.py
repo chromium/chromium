@@ -10,8 +10,8 @@ import re
 import subprocess
 import sys
 
-
 _REPO_ROOT = os.path.abspath(os.path.dirname(__file__))
+
 
 # TODO(dcheng): It's kind of horrible that this is copy and pasted from
 # presubmit_canned_checks.py, but it's far easier than any of the alternatives.
@@ -21,7 +21,10 @@ def _ReportErrorFileAndLine(filename, line_num, dummy_line):
 
 
 class MockCannedChecks(object):
-    def _FindNewViolationsOfRule(self, callable_rule, input_api,
+
+    def _FindNewViolationsOfRule(self,
+                                 callable_rule,
+                                 input_api,
                                  source_file_filter=None,
                                  error_formatter=_ReportErrorFileAndLine):
         """Find all newly introduced violations of a per-line rule (a callable).
@@ -240,7 +243,7 @@ class MockOutputApi(object):
     class PresubmitPromptOrNotify(PresubmitResult):
 
         def __init__(self, *args, **kwargs):
-            MockOutputApi.PresubmitResult.__init__(self, *args,  **kwargs)
+            MockOutputApi.PresubmitResult.__init__(self, *args, **kwargs)
             self.type = 'promptOrNotify'
 
     class PresubmitResultLocation(object):
@@ -313,6 +316,10 @@ class MockFile(object):
 
     def OldContents(self):
         return self._old_contents
+
+    def Extension(self):
+        _, ext = os.path.splitext(self._local_path)
+        return ext
 
     def rfind(self, p):
         """Required when os.path.basename() is called on MockFile."""

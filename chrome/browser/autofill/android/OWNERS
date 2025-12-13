@@ -1,5 +1,1 @@
-file://components/autofill/android/OWNERS
-
-# Payments-relevant files
-per-file autofill_image_fetcher_impl.*=file://components/autofill/core/browser/payments/ANDROID_OWNERS
-per-file personal_data_manager_android.*=file://components/autofill/core/browser/payments/ANDROID_OWNERS
+ file://components/autofill/android/OWNERS

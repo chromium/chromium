@@ -16,29 +16,29 @@
 
 - (instancetype)initWithParameters:(ASPasskeyCredentialRequestParameters*)
                                        passkeyCredentialRequestParameters
-    isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled
-    API_AVAILABLE(ios(17.0));
+    isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled;
 
 - (instancetype)initWithRequest:(id<ASCredentialRequest>)credentialRequest
     isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled
-    API_AVAILABLE(ios(17.0));
+                 isConditionalCreate:(BOOL)isConditionalCreate;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Performs passkey creation and returns the new credential.
-- (ASPasskeyRegistrationCredential*)createPasskeyForGaia:(NSString*)gaia
-                                   securityDomainSecrets:
-                                       (NSArray<NSData*>*)securityDomainSecrets
-    API_AVAILABLE(ios(17.0));
+- (ASPasskeyRegistrationCredential*)
+           createPasskeyForGaia:(NSString*)gaia
+               trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
+    didCompleteUserVerification:(BOOL)didCompleteUserVerification;
 
 // Performs passkey assertion and returns the assertion response.
 - (ASPasskeyAssertionCredential*)
-    assertPasskeyCredential:(id<Credential>)credential
-      securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
-    API_AVAILABLE(ios(17.0));
+        assertPasskeyCredential:(id<Credential>)credential
+               trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
+    didCompleteUserVerification:(BOOL)didCompleteUserVerification;
 
-// Returns whether the list of credentials contains a password of the same
-// domain and username as the passkey request.
+// Returns whether the list of credentials contains a password that has eTLD+1
+// matching the relying party identifier (either equal or eTLD+1 being a suffix
+// of the RP ID) and the same username as the passkey request.
 - (BOOL)hasMatchingPassword:(NSArray<id<Credential>>*)credentials;
 
 // Returns whether a passkey from the excluded passkeys list is both in the

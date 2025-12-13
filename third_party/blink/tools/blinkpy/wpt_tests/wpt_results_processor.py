@@ -60,6 +60,7 @@ from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.test_run_results import convert_to_hierarchical_view
 from blinkpy.web_tests.models.typ_types import (
     Artifacts,
+    ModuleScheme,
     Result,
     ResultSinkReporter,
     ResultType,
@@ -167,6 +168,7 @@ class WPTResult(Result):
         self.sanitizer_mode = sanitizer_mode
         # TODO(crbug.com/41494889): Populate `self.failure_reason` like
         # `run_web_tests.py` does to help LUCI cluster failures.
+        self.bcd_counters = collections.Counter()
 
     @property
     def has_stderr(self) -> bool:
@@ -321,6 +323,73 @@ class WPTResult(Result):
                 summary += f'<p><text-artifact artifact-id="{name}"/></p>'
         return summary
 
+    def count_bcd_features(self, raw_trace):
+        binding_names = [
+            event['name'] for event in raw_trace
+            if event.get('cat') == 'blink.bindings'
+        ]
+        assert all(isinstance(name, str)
+                   for name in binding_names), binding_names
+        self.bcd_counters.update(
+            map(binding_name_to_bcd_feature, binding_names))
+
+    @property
+    def properties(self):
+        if not self.bcd_counters:
+            return None
+        # Serialize as an array of records for easier querying:
+        # https://cloud.google.com/bigquery/docs/json-data#extract_arrays_from_json
+        #
+        # Save space with single letter keys.
+        bcd_counters = [{
+            'f': feature,
+            'c': count
+        } for feature, count in sorted(self.bcd_counters.items())]
+        return {'bcd_counters': bcd_counters}
+
+
+def binding_name_to_bcd_feature(binding: str, sep: str = '.') -> str:
+    """Convert a Blink binding name to a browser compat data (BCD) API feature.
+
+    This is a best-effort conversion according to the BCD guidelines [0, 1].
+    The conversion is likely imperfect because trace events don't provide
+    enough information to count certain kinds of features:
+      * `_static` members, which look identical to nonstatic members in trace
+        events. Interfaces usually don't have a prototype and static member
+        with the same name simultaneously, so removing the `_static` suffix
+        during analysis is often good enough.
+      * `_parameter` features (not recorded in trace events)
+      * `_permission` features
+      * `toString` features
+      * Special behavioral subfeatures:
+        * `returns_promise`
+        * `secure_context_required`
+        * `worker_support`
+
+    References:
+      [0]: https://github.com/mdn/browser-compat-data/blob/main/docs/data-guidelines/README.md
+      [1]: https://github.com/mdn/browser-compat-data/blob/main/docs/data-guidelines/api.md
+    """
+    parts = binding.split(sep)
+    if parts[-1] in {'get', 'set'}:
+        # BCD features don't distinguish getters from setters for attributes.
+        parts.pop()
+    elif parts[-1] == 'constructor':
+        if len(parts) < 2:
+            raise ValueError(f'constructor binding {binding!r} must have an '
+                             'associated interface')
+        # In BCD, constructors are named the same as the parent feature.
+        parts[-1] = parts[-2]
+    # We may need to blocklist more false positives that start with `on` but
+    # aren't actually DOM events.
+    if parts and parts[-1] != 'only':
+        if event_match := _DOM_EVENT_PATTERN.fullmatch(parts[-1]):
+            parts[-1] = f"{event_match['event']}_event"
+    return sep.join(parts)
+
+
+_DOM_EVENT_PATTERN = re.compile(r'on(?P<event>[a-z]+)')
+
 
 class Event(NamedTuple):
     action: str
@@ -399,7 +468,6 @@ class WPTResultsProcessor:
                  port: Port,
                  artifacts_dir: str = '',
                  sink: Optional[ResultSinkReporter] = None,
-                 test_name_prefix: str = '',
                  failure_threshold: Optional[int] = None,
                  crash_timeout_threshold: Optional[int] = None,
                  reset_results: bool = False,
@@ -408,12 +476,8 @@ class WPTResultsProcessor:
         self.fs = fs
         self.port = port
         self.artifacts_dir = artifacts_dir
-        self.sink = sink or ResultSinkReporter(host=port.typ_host())
-        # This prefix does not actually exist on disk and only affects how the
-        # results are reported.
-        if test_name_prefix and not test_name_prefix.endswith('/'):
-            test_name_prefix += '/'
-        self.test_name_prefix = test_name_prefix
+        self.sink = sink or ResultSinkReporter(
+            host=port.typ_host(), module_scheme=ModuleScheme.WEBTEST)
         self.path_finder = path_finder.PathFinder(self.fs)
         self._test_uri_mapper = TestURIMapper(self.port)
         # Provide placeholder properties until the `suite_start` events are
@@ -452,6 +516,7 @@ class WPTResultsProcessor:
         self._num_failures_by_status = collections.defaultdict(int)
         # Results includes retries, used for computing full_results.json
         self._results_by_name = collections.defaultdict(list)
+        self._bcd_totals = collections.Counter()
 
     @functools.cached_property
     def _expectations(self):
@@ -614,6 +679,19 @@ class WPTResultsProcessor:
 
     def suite_end(self, event: Event, **_):
         self._iteration += 1
+        if not self._bcd_totals:
+            return
+        # Upload shard-level totals for debugging, not for consumption by other
+        # systems.
+        artifact_path = self.fs.join(self.artifacts_dir, 'bcd-totals.json')
+        with self.fs.open_text_file_for_writing(
+                artifact_path) as artifact_file:
+            json.dump(self._bcd_totals, artifact_file, separators=(',', ':'))
+        self.sink.report_invocation_level_artifacts({
+            self.fs.basename(artifact_path): {
+                'filePath': artifact_path,
+            },
+        })
 
     def _get_chromium_test_name(self, test: str, subsuite: str) -> str:
         test = test[1:] if test.startswith('/') else test
@@ -705,13 +783,13 @@ class WPTResultsProcessor:
             self._handle_unexpected_result(result)
         product = self.port.get_option('product', '(unknown)')
         self.sink.report_individual_test_result(
-            test_name_prefix=self.test_name_prefix,
             result=result,
             artifact_output_dir=self.fs.dirname(self.artifacts_dir),
             expectations=None,
             test_file_location=result.file_path,
             html_summary=result.summarize(product),
-            additional_tags=self._tags(result))
+            additional_tags=self._tags(result),
+            properties=result.properties)
         _log.debug(
             'Reported result for %s, iteration %d (actual: %s, '
             'expected: %s, artifacts: %s)', result.name, self._iteration,
@@ -1084,6 +1162,15 @@ class WPTResultsProcessor:
                             test_failures.FILENAME_SUFFIX_LEAK_LOG,
                             '\n'.join(leak_log) + '\n')
 
+        if trace := extra.get('trace'):
+            trace_subpath = self.port.output_filename(
+                result.name, test_failures.FILENAME_SUFFIX_TRACE, '.json')
+            # Serialize JSON compactly by trimming whitespace.
+            contents = json.dumps(trace, separators=(',', ':'))
+            artifacts.CreateArtifact('trace', trace_subpath, contents.encode())
+            result.count_bcd_features(trace)
+            self._bcd_totals += result.bcd_counters
+
         # If the browser process isn't restarted, it's possible for that process
         # to continue producing stdio that will be dumped into the log for the
         # next test that browser runs.
@@ -1137,5 +1224,16 @@ class WPTResultsProcessor:
         self.sink.report_invocation_level_artifacts({
             report_filename: {
                 'filePath': artifact_path,
+            },
+        })
+
+    def upload_wpt_screenshots(self, screenshots_path: str):
+        """Upload a `wptscreenshots.txt` file [0] for this shard.
+
+        [0]: https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/formatters/wptscreenshot.py
+        """
+        self.sink.report_invocation_level_artifacts({
+            self.fs.basename(screenshots_path): {
+                'filePath': screenshots_path,
             },
         })

@@ -51,7 +51,6 @@ struct BlinkGCPluginOptions {
   std::set<std::string> checked_namespaces;
   std::vector<std::string> checked_directories;
   std::vector<std::string> ignored_directories;
-  std::vector<clang::FileID> ignored_files;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_BLINK_GC_PLUGIN_OPTIONS_H_

@@ -26,15 +26,15 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/fake_fido_discovery.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_task.h"
 #include "device/fido/fido_test_data.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/mock_fido_device.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -108,6 +108,8 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
 
  protected:
   // FidoRequestHandlerBase::Observer:
+  void StartObserving(FidoRequestHandlerBase* request_handler) override {}
+  void StopObserving(FidoRequestHandlerBase* request_handler) override {}
   void OnTransportAvailabilityEnumerated(
       FidoRequestHandlerBase::TransportAvailabilityInfo data) override {
     transport_availability_future_.SetValue(std::move(data));
@@ -528,7 +530,7 @@ TEST_F(FidoRequestHandlerTest,
           {FidoTransportProtocol::kInternal,
            FidoTransportProtocol::kUsbHumanInterfaceDevice}),
       future());
-  request_handler->set_observer(&observer);
+  request_handler->SetObserver(&observer);
 
   auto device1 = MockFidoDevice::MakeCtapWithGetInfoExpectation();
   device1->ExpectRequestAndDoNotRespond(std::vector<uint8_t>());
@@ -593,7 +595,7 @@ TEST_F(FidoRequestHandlerTest, TestWithPlatformAuthenticator) {
       future());
   request_handler->set_has_platform_credential(
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
-  request_handler->set_observer(&observer);
+  request_handler->SetObserver(&observer);
   fake_discovery->AddDevice(std::move(device));
 
   observer.WaitForAndExpectAvailableTransportsAre(
@@ -610,7 +612,7 @@ TEST_F(FidoRequestHandlerTest, InternalTransportDisallowedIfMarkedUnavailable) {
       &fake_discovery_factory_,
       base::flat_set<FidoTransportProtocol>({FidoTransportProtocol::kInternal}),
       future());
-  request_handler->set_observer(&observer);
+  request_handler->SetObserver(&observer);
 
   observer.WaitForAndExpectAvailableTransportsAre(
       {},
@@ -624,7 +626,7 @@ TEST_F(FidoRequestHandlerTest,
   discovery()->WaitForCallToStartAndSimulateSuccess();
   task_environment_.FastForwardUntilNoTasksRemain();
 
-  request_handler->set_observer(&observer);
+  request_handler->SetObserver(&observer);
   observer.WaitForAndExpectAvailableTransportsAre(
       {FidoTransportProtocol::kUsbHumanInterfaceDevice},
       FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
@@ -657,7 +659,7 @@ TEST_F(FidoRequestHandlerTest, TestWithMultiplePlatformAuthenticators) {
       future());
   request_handler->set_has_platform_credential(
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
-  request_handler->set_observer(&observer);
+  request_handler->SetObserver(&observer);
   fake_discovery_succeeds->AddDevice(std::move(device));
   fake_discovery_fails->SimulateStarted(false);
   fake_discovery_succeeds->SimulateStarted(true);
@@ -699,7 +701,7 @@ TEST_F(FidoRequestHandlerTest, TransportAvailabilityOfWindowsAuthenticator) {
     EmptyRequestHandler request_handler(
         {FidoTransportProtocol::kUsbHumanInterfaceDevice},
         &fake_discovery_factory_);
-    request_handler.set_observer(&observer);
+    request_handler.SetObserver(&observer);
 
     // If the windows API is not enabled, the request is dispatched to the USB
     // discovery. Simulate a success to fill the transport availability info.

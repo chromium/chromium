@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.SystemClock;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -19,6 +18,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /**
  * Mediator class responsible for handling button clicks and controlling the dialog state.
@@ -119,10 +120,7 @@ class LoadingModalDialogMediator
     void show(PropertyModel model) {
         assert mState == LoadingModalDialogCoordinator.State.READY;
 
-        ModalDialogManager dialogManager = mDialogManagerSupplier.get();
-        if (dialogManager == null) return;
-
-        mDialogManager = dialogManager;
+        mDialogManager = mDialogManagerSupplier.get();
         mModel = model;
         mState = LoadingModalDialogCoordinator.State.PENDING;
         postDelayed(mShowingTask, SHOW_DELAY_TIME_MS);

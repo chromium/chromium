@@ -5,7 +5,7 @@
 #include "components/safe_browsing/content/common/file_type_policies_policy_util.h"
 
 #include "base/strings/string_util.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies_prefs.h"
 #include "components/url_matcher/url_matcher.h"
@@ -32,7 +32,7 @@ FileTypePoliciesOverrideResult ShouldOverrideFileTypePolicies(
 
   // If the download is a local file, suppress "dangerous file" warnings because
   // they are not helpful at this point; the file is already on disk.
-  if (url.SchemeIsFile() && url.host_piece().empty()) {
+  if (url.SchemeIsFile() && url.host().empty()) {
     return FileTypePoliciesOverrideResult::kOverrideAsNotDangerous;
   }
 

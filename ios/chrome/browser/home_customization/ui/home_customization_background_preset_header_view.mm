@@ -10,7 +10,7 @@
 
 namespace {
 // The minimum width the text label can have.
-CGFloat kLabelMinWidth = 105.0;
+constexpr CGFloat kLabelMinWidth = 105.0;
 }  // namespace
 
 @implementation HomeCustomizationBackgroundPresetHeaderView {
@@ -23,6 +23,8 @@ CGFloat kLabelMinWidth = 105.0;
   if (self) {
     self.layer.masksToBounds = YES;
     self.translatesAutoresizingMaskIntoConstraints = NO;
+    self.isAccessibilityElement = YES;
+    self.accessibilityTraits = UIAccessibilityTraitHeader;
     _textLabel = [self createTextLabel];
 
     [self addSubview:_textLabel];
@@ -48,6 +50,7 @@ CGFloat kLabelMinWidth = 105.0;
 - (void)setText:(NSString*)text {
   _textLabel.backgroundColor = [UIColor clearColor];
   _textLabel.text = text;
+  self.accessibilityLabel = text;
 }
 
 #pragma mark - Private

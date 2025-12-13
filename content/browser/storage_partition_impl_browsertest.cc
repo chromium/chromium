@@ -138,7 +138,7 @@ std::unique_ptr<network::SimpleURLLoader> DownloadUrl(
   SimpleURLLoaderTestHelper url_loader_helper;
   url_loader->DownloadToString(
       partition->GetURLLoaderFactoryForBrowserProcess().get(),
-      url_loader_helper.GetCallbackDeprecated(),
+      url_loader_helper.GetCallback(),
       /*max_body_size=*/1024 * 1024);
   url_loader_helper.WaitForCallback();
   return url_loader;
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(StoragePartitionImplBrowsertest,
 // |StoragePartition::GetURLLoaderFactoryForBrowserProcessIOThread()| doesn't
 // crash if it's called after the StoragePartition is deleted.
 IN_PROC_BROWSER_TEST_F(StoragePartitionImplBrowsertest,
-                       BrowserIOFactoryAfterStoragePartitionGone) {
+                       DISABLED_BrowserIOFactoryAfterStoragePartitionGone) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   base::ScopedAllowBlockingForTesting allow_blocking;

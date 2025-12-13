@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -33,7 +34,6 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecy
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.MVCListAdapter.ViewBuilder;
-import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -95,6 +95,7 @@ public class DragReorderableRecyclerViewAdapterTest {
 
                     mAdapter.enableDrag();
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @After
@@ -164,7 +165,7 @@ public class DragReorderableRecyclerViewAdapterTest {
     }
 
     private ListItem buildListItem(String title, @Type int type) {
-        return new ModelListAdapter.ListItem(type, createPropertyModel(title, type));
+        return new ListItem(type, createPropertyModel(title, type));
     }
 
     @Test
@@ -175,6 +176,8 @@ public class DragReorderableRecyclerViewAdapterTest {
                     mModelList.add(buildListItem("normal_1", Type.NORMAL));
                     mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -194,6 +197,8 @@ public class DragReorderableRecyclerViewAdapterTest {
                     mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
                     mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -215,6 +220,8 @@ public class DragReorderableRecyclerViewAdapterTest {
                             buildListItem("passively_draggable_1", Type.PASSIVELY_DRAGGABLE));
                     mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

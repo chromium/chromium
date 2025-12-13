@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/desktop_to_mobile_promos",
+  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/tips_notifications/model",
+]
+

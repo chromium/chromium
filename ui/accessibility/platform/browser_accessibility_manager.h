@@ -41,7 +41,7 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/base/buildflags.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 class AXNodeIdDelegate;
@@ -253,6 +253,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   void ScrollToPoint(const BrowserAccessibility& node, gfx::Point point);
   void SetAccessibilityFocus(const BrowserAccessibility& node);
   void Blur(const BrowserAccessibility& node);
+  void RequestLayoutBasedAction(const BrowserAccessibility& node);
   void SetFocus(const BrowserAccessibility& node);
   void SetSequentialFocusNavigationStartingPoint(
       const BrowserAccessibility& node);
@@ -545,6 +546,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   // based on which layer this code is running on, Web vs. Views.
   raw_ptr<AXPlatformTreeManagerDelegate> delegate_;
 
+  // A delegate responsible for assigning window-unique identifiers for nodes.
+  // The ordering here is important, as this member must be destroyed after
+  // the `id_wrapper_map_` below.
+  const raw_ref<AXNodeIdDelegate> node_id_delegate_;
+
   // A mapping from a node id to its wrapper of type BrowserAccessibility.
   // This is different from the map in AXTree, which does not contain extra mac
   // nodes from AXTableInfo.
@@ -636,9 +642,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   // the new focus.
   void UpdateAccessibilityFocus(BrowserAccessibilityManager* manager,
                                 const BrowserAccessibility& node);
-
-  // A delegate responsible for assigning window-unique identifiers for nodes.
-  const raw_ref<AXNodeIdDelegate> node_id_delegate_;
 
   // Only used on the root node for AXTree hit testing as an alternative to
   // ApproximateHitTest when used without a renderer.

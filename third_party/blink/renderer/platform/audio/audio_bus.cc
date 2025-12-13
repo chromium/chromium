@@ -37,6 +37,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
@@ -705,9 +706,10 @@ void AudioBus::ClearSilentFlag() {
 }
 
 scoped_refptr<AudioBus> DecodeAudioFileData(base::span<const char> data) {
-  WebAudioBus web_audio_bus;
-  if (Platform::Current()->DecodeAudioFileData(&web_audio_bus, data)) {
-    return web_audio_bus.Release();
+  std::unique_ptr<WebAudioBus> out =
+      Platform::Current()->DecodeAudioFileData(data);
+  if (out) {
+    return out->Release();
   }
   return nullptr;
 }

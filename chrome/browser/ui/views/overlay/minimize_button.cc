@@ -39,17 +39,7 @@ OverlayWindowMinimizeButton::OverlayWindowMinimizeButton(
   SetTooltipText(button_label);
 }
 
-void OverlayWindowMinimizeButton::SetPosition(
-    const gfx::Size& size,
-    VideoOverlayWindowViews::WindowQuadrant quadrant) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (quadrant == VideoOverlayWindowViews::WindowQuadrant::kBottomLeft) {
-    views::ImageButton::SetPosition(gfx::Point(kMinimizeButtonHorizontalMargin,
-                                               kMinimizeButtonVerticalMargin));
-    return;
-  }
-#endif
-
+void OverlayWindowMinimizeButton::SetPosition(const gfx::Size& size) {
   views::ImageButton::SetPosition(gfx::Point(
       size.width() - kMinimizeButtonSize - kMinimizeButtonHorizontalMargin,
       kMinimizeButtonVerticalMargin));

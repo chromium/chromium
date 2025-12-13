@@ -65,10 +65,14 @@ static_library("test_support") {
     "test_server_helpers.cc",
     "test_server_helpers.h",
   ]
-  if (is_chromeos) {
+  if (is_chromeos || (is_linux && !is_cfi)) {
     sources += [
       "fake_dmserver.cc",
       "fake_dmserver.h",
+    ]
+  }
+  if (is_chromeos) {
+    sources += [
       "request_handler_for_psm_auto_enrollment.cc",
       "request_handler_for_psm_auto_enrollment.h",
     ]
@@ -81,24 +85,24 @@ static_library("test_support") {
     "//components/policy/core/common:test_support",
     "//components/policy/proto",
     "//crypto",
-    "//google_apis:google_apis",
+    "//crypto:test_support",
+    "//google_apis",
     "//net",
     "//net:test_support",
-    "//third_party/private_membership:private_membership_proto",
-    "//third_party/re2:re2",
+    "//third_party/re2",
   ]
 
+  if (is_chromeos || (is_linux && !is_cfi)) {
+    public_deps += [ ":remote_commands_service_castcore" ]
+  }
   if (is_chromeos) {
     public_deps += [ "//third_party/private_membership" ]
-    deps += [
-      ":remote_commands_service_castcore",
-      "//chromecast/cast_core/grpc:grpc",
-    ]
     data = [
       # TODO(crbug.com/40248354): Script should create binarypb from textpb.
       # Required for policy/enrollment/psm/rlwe_test_support.cc
       "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
     ]
+    deps += [ "//third_party/private_membership:private_membership_proto" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -106,7 +110,7 @@ static_library("test_support") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-if (is_chromeos) {
+if (is_chromeos || (is_linux && !is_cfi)) {
   cast_core_grpc_library("remote_commands_service") {
     testonly = true
     sources = [ "remote_commands_service.proto" ]
@@ -175,8 +179,10 @@ source_set("unittests") {
     "signature_provider_unittest.cc",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos || (is_linux && !is_cfi)) {
     sources += [ "fake_dmserver_unittest.cc" ]
+  }
+  if (is_chromeos) {
     sources += [ "request_handler_for_psm_auto_enrollment_unittest.cc" ]
   }
 
@@ -185,6 +191,7 @@ source_set("unittests") {
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
     "//components/policy/proto",
+    "//crypto:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",

@@ -38,22 +38,21 @@
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/cable_discovery_data.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
@@ -68,7 +67,8 @@ using BleStatus = device::FidoRequestHandlerBase::BleStatus;
 
 void UpdateModelBeforeStartFlow(
     AuthenticatorRequestDialogModel* model,
-    device::FidoRequestHandlerBase::TransportAvailabilityInfo tai) {
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
+    bool is_off_the_record) {
   model->request_type = tai.request_type;
   model->resident_key_requirement = tai.resident_key_requirement;
   model->attestation_conveyance_preference =
@@ -78,7 +78,7 @@ void UpdateModelBeforeStartFlow(
   model->show_security_key_on_qr_sheet =
       base::Contains(tai.available_transports,
                      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
-  model->is_off_the_record = tai.is_off_the_record_context;
+  model->is_off_the_record = is_off_the_record;
   model->platform_has_biometrics = tai.platform_has_biometrics;
 }
 
@@ -378,7 +378,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     }
 #endif
 
-    UpdateModelBeforeStartFlow(model_.get(), transport_availability);
+    UpdateModelBeforeStartFlow(model_.get(), transport_availability,
+                               /*is_off_the_record=*/false);
     controller_->StartFlow(std::move(transport_availability), {});
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
@@ -771,7 +772,8 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
     } else {
       NOTREACHED();
     }
-    UpdateModelBeforeStartFlow(model_.get(), transport_availability);
+    UpdateModelBeforeStartFlow(model_.get(), transport_availability,
+                               /*is_off_the_record=*/false);
     controller_->StartFlow(std::move(transport_availability), {});
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
@@ -927,7 +929,6 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     command_line->AppendSwitchASCII(switches::kGaiaUrl,
                                     https_server_.base_url().spec());
     command_line->AppendSwitchASCII(
@@ -955,7 +956,7 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse> HandleNetworkRequest(
       const net::test_server::HttpRequest& request) {
     const GURL url = request.GetURL();
-    const std::string_view path = url.path_piece();
+    const std::string_view path = url.path();
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
 
     if (path == "/encryption/unlock/desktop") {
@@ -1000,8 +1001,11 @@ document.addEventListener('DOMContentLoaded', function() {
 class QuitBrowserWhenKeysStored : public EnclaveManager::Observer {
  public:
   explicit QuitBrowserWhenKeysStored(Browser* browser) : browser_(browser) {
-    EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser_->profile())
-        ->AddObserver(this);
+    EnclaveManager* const enclave_manager =
+        EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
+            browser_->profile());
+    enclave_manager->AddObserver(this);
+    store_keys_lock_ = enclave_manager->GetStoreKeysLock();
   }
 
   // EnclaveManager::Observer
@@ -1017,6 +1021,7 @@ class QuitBrowserWhenKeysStored : public EnclaveManager::Observer {
 
  private:
   raw_ptr<Browser> browser_;
+  std::unique_ptr<EnclaveManager::StoreKeysLock> store_keys_lock_;
 };
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, RecoverSecurityDomain) {

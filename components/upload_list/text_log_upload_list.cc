@@ -129,7 +129,8 @@ void TextLogUploadList::ClearUploadList(const base::Time& begin,
 
   std::ostringstream new_contents_stream;
   for (const std::string& line : log_entries) {
-    std::optional<base::Value> json = base::JSONReader::Read(line);
+    std::optional<base::Value> json =
+        base::JSONReader::Read(line, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     bool should_copy = false;
 
     if (json.has_value()) {
@@ -248,7 +249,8 @@ void TextLogUploadList::ParseLogEntries(
     std::vector<std::unique_ptr<UploadList::UploadInfo>>* uploads) {
   for (const std::string& line : base::Reversed(log_entries)) {
     std::unique_ptr<UploadList::UploadInfo> info;
-    std::optional<base::Value> json = base::JSONReader::Read(line);
+    std::optional<base::Value> json =
+        base::JSONReader::Read(line, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
     if (json.has_value() && json->is_dict())
       info = TryParseJsonLogEntry(json.value().GetDict());

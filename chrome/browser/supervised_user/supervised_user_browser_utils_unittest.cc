@@ -51,8 +51,8 @@ SupervisedUserBrowserUtilsTest::SupervisedUserBrowserUtilsTest() {
 
   AccountInfo account_info = GetIdentityTestEnv()->MakePrimaryAccountAvailable(
       kChildEmail, signin::ConsentLevel::kSignin);
-  supervised_user_test_util::PopulateAccountInfoWithName(account_info,
-                                                         kChildGivenName);
+  account_info = supervised_user_test_util::PopulateAccountInfoWithName(
+      account_info, kChildGivenName);
   GetIdentityTestEnv()->UpdateAccountInfoForAccount(account_info);
 }
 

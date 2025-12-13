@@ -82,6 +82,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   void WritePickledData(const base::Pickle& pickle,
                         const ClipboardFormatType& format);
 
+  // Writes raw bytes to clipboard.
+  void WriteRawDataForTest(const ClipboardFormatType& format,
+                           std::vector<uint8_t> data);
+
   // Data is written to the system clipboard in the same order as WriteData
   // calls are received.
   // This is only used to write custom format data.

@@ -14,6 +14,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {

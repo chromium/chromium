@@ -12,6 +12,7 @@
 #include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/example_for_testing.pb.h"
+#include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/redaction.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
@@ -118,6 +119,24 @@ proto::SubstitutedString FormatTestMessage();
 // Construct a TextSafetyModelMetadata that composes the feature configs.
 proto::TextSafetyModelMetadata SafetyMetadata(
     std::initializer_list<proto::FeatureTextSafetyConfiguration> configs);
+
+// Constructs a simple config for the Test feature.
+// Formats inputs from ExampleForTestingMessage.
+// Outputs to a ComposeResponse::output field.
+proto::OnDeviceModelExecutionFeatureConfig SimpleTestFeatureConfig();
+
+// Constructs OnDeviceBaseModelMetadata for test assets.
+inline proto::OnDeviceBaseModelMetadata CreateOnDeviceBaseModelMetadata(
+    const std::string& base_model_name,
+    const std::string& base_model_version,
+    std::vector<proto::OnDeviceModelPerformanceHint> hints) {
+  proto::OnDeviceBaseModelMetadata model_metadata;
+  model_metadata.set_base_model_name(base_model_name);
+  model_metadata.set_base_model_version(base_model_version);
+  *model_metadata.mutable_supported_performance_hints() = {hints.begin(),
+                                                           hints.end()};
+  return model_metadata;
+}
 
 }  // namespace optimization_guide
 

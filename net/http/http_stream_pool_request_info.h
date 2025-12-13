@@ -9,6 +9,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/http/alternate_protocol_usage.h"
 #include "net/http/alternative_service.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -27,6 +28,7 @@ struct NET_EXPORT_PRIVATE HttpStreamPoolRequestInfo {
                             SecureDnsPolicy secure_dns_policy,
                             bool disable_cert_network_fetches,
                             AlternativeServiceInfo alternative_service_info,
+                            AdvertisedAltSvcState advertised_alt_svc_state,
                             NextProtoSet allowed_alpns,
                             int load_flags,
                             ProxyInfo proxy_info,
@@ -50,6 +52,8 @@ struct NET_EXPORT_PRIVATE HttpStreamPoolRequestInfo {
   bool disable_cert_network_fetches = false;
 
   AlternativeServiceInfo alternative_service_info;
+  AdvertisedAltSvcState advertised_alt_svc_state =
+      AdvertisedAltSvcState::kUnknown;
 
   NextProtoSet allowed_alpns;
   int load_flags = 0;

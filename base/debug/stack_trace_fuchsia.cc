@@ -2,12 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "base/debug/stack_trace.h"
 
 #include <elf.h>
 #include <link.h>
@@ -27,9 +22,10 @@
 #include <type_traits>
 
 #include "base/atomic_sequence_num.h"
+#include "base/compiler_specific.h"
 #include "base/debug/elf_reader.h"
-#include "base/debug/stack_trace.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 namespace debug {
@@ -45,7 +41,7 @@ _Unwind_Reason_Code UnwindStore(struct _Unwind_Context* context,
                                 void* user_data) {
   BacktraceData* data = reinterpret_cast<BacktraceData*>(user_data);
   uintptr_t pc = _Unwind_GetIP(context);
-  data->trace_array[*data->count] = reinterpret_cast<void*>(pc);
+  UNSAFE_TODO(data->trace_array[*data->count]) = reinterpret_cast<void*>(pc);
   *data->count += 1;
   if (*data->count == data->max) {
     return _URC_END_OF_STACK;
@@ -60,15 +56,15 @@ const char* PermissionFlagsToString(int flags, char permission_buf[4]) {
   char* permission = permission_buf;
 
   if (flags & PF_R) {
-    (*permission++) = 'r';
+    (*UNSAFE_TODO(permission++)) = 'r';
   }
 
   if (flags & PF_W) {
-    (*permission++) = 'w';
+    (*UNSAFE_TODO(permission++)) = 'w';
   }
 
   if (flags & PF_X) {
-    (*permission++) = 'x';
+    (*UNSAFE_TODO(permission++)) = 'x';
   }
 
   *permission = '\0';
@@ -106,7 +102,7 @@ class SymbolMap {
   ~SymbolMap() = default;
 
   // Gets all entries for the symbol map.
-  span<Module> GetModules() { return {modules_.data(), count_}; }
+  span<Module> GetModules() { return UNSAFE_TODO({modules_.data(), count_}); }
 
  private:
   // Component builds of Chrome pull about 250 shared libraries (on Linux), so
@@ -171,8 +167,8 @@ void SymbolMap::Populate() {
       }
 
       Segment segment;
-      segment.addr =
-          reinterpret_cast<const char*>(next_entry.addr.get()) + phdr.p_vaddr;
+      segment.addr = UNSAFE_TODO(
+          reinterpret_cast<const char*>(next_entry.addr.get()) + phdr.p_vaddr);
       segment.relative_addr = phdr.p_vaddr;
       segment.size = phdr.p_memsz;
       segment.permission_flags = static_cast<int>(phdr.p_flags);
@@ -186,8 +182,8 @@ void SymbolMap::Populate() {
     std::optional<std::string_view> elf_library_name =
         ReadElfLibraryName(next_entry.addr);
     if (elf_library_name) {
-      strlcpy(next_entry.name, elf_library_name->data(),
-              elf_library_name->size() + 1);
+      UNSAFE_TODO(strlcpy(next_entry.name, elf_library_name->data(),
+                          elf_library_name->size() + 1));
     } else {
       std::string_view link_map_name(lmap->l_name[0] ? lmap->l_name
                                                      : "<executable>");
@@ -200,7 +196,8 @@ void SymbolMap::Populate() {
             directory_prefix_idx + 1,
             link_map_name.size() - directory_prefix_idx - 1);
       }
-      strlcpy(next_entry.name, link_map_name.data(), link_map_name.size() + 1);
+      UNSAFE_TODO(strlcpy(next_entry.name, link_map_name.data(),
+                          link_map_name.size() + 1));
     }
 
     if (!ReadElfBuildId(next_entry.addr, false, next_entry.build_id)) {
@@ -220,8 +217,8 @@ bool ModuleContainsFrameAddress(const void* address,
                                 const SymbolMap::Module& module_entry) {
   for (size_t i = 0; i < module_entry.segment_count; ++i) {
     const SymbolMap::Segment& segment = module_entry.segments[i];
-    const void* segment_end = reinterpret_cast<const void*>(
-        reinterpret_cast<const char*>(segment.addr.get()) + segment.size - 1);
+    const void* segment_end = reinterpret_cast<const void*>(UNSAFE_TODO(
+        reinterpret_cast<const char*>(segment.addr.get()) + segment.size - 1));
 
     if (address >= segment.addr && address <= segment_end) {
       return true;

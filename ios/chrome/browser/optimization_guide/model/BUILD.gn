@@ -10,8 +10,10 @@ source_set("model") {
     "chrome_profile_download_service_tracker.mm",
     "ios_chrome_hints_manager.h",
     "ios_chrome_hints_manager.mm",
-    "ios_chrome_prediction_model_store.h",
-    "ios_chrome_prediction_model_store.mm",
+    "ios_model_quality_logs_uploader_service.h",
+    "ios_model_quality_logs_uploader_service.mm",
+    "optimization_guide_global_state.h",
+    "optimization_guide_global_state.mm",
     "optimization_guide_service.h",
     "optimization_guide_service.mm",
     "optimization_guide_service_factory.h",
@@ -30,16 +32,22 @@ source_set("model") {
     "//components/component_updater",
     "//components/download/public/background_service:public",
     "//components/leveldb_proto",
+    "//components/metrics",
+    "//components/metrics_services_manager",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:model_execution",
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
     "//components/services/unzip:in_process",
     "//components/signin/public/identity_manager",
     "//components/variations",
+    "//components/variations/service",
+    "//components/version_info",
     "//ios/chrome/browser/download/model/background_service",
     "//ios/chrome/browser/metrics/model:accessor",
+    "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/paths",
@@ -47,17 +55,11 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/common",
     "//ios/web",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
   ]
-  if (build_with_internal_optimization_guide) {
-    sources += [
-      "on_device_model_service_controller_ios.h",
-      "on_device_model_service_controller_ios.mm",
-    ]
-    deps += [ "//services/on_device_model:on_device_model_service" ]
-  }
   frameworks = [ "UIKit.framework" ]
   public_deps = [
     ":download_client_header",
@@ -78,6 +80,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "chrome_profile_download_service_tracker_unittest.mm",
+    "ios_model_quality_logs_uploader_service_unittest.mm",
     "optimization_guide_service_factory_unittest.mm",
     "optimization_guide_service_unittest.mm",
     "optimization_guide_tab_helper_unittest.mm",
@@ -93,6 +96,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/component_updater",
     "//components/download/internal/background_service/ios:background_service",
+    "//components/metrics",
+    "//components/metrics:test_support",
+    "//components/metrics_services_manager",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/core:test_support",
@@ -104,7 +110,9 @@ source_set("unit_tests") {
     "//components/unified_consent",
     "//components/variations",
     "//components/variations:test_support",
+    "//components/variations/service",
     "//ios/chrome/browser/download/model/background_service",
+    "//ios/chrome/browser/profile/model:test_support",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/model/application_context",

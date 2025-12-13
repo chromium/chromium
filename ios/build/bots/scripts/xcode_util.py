@@ -428,11 +428,13 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder,
     raise test_runner_errors.RuntimeBuildNotFoundError(platform_version)
 
   # check if the desired runtime build already exists on disk
-  if iossim_util.get_simulator_runtime_info_by_build(
-      runtime_build_to_install) is None:
+  runtime_info = iossim_util.get_simulator_runtime_info_by_build(
+      runtime_build_to_install)
+  if runtime_info is None:
 
     # clean up least used runtime first to free up disk space if possible.
     iossim_util.delete_least_recently_used_simulator_runtimes()
+    iossim_util.delete_stale_simulator_runtimes()
 
     _install_runtime_dmg(mac_toolchain, runtime_cache_folder, platform_type,
                          platform_version, xcode_build_version)
@@ -448,8 +450,35 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder,
         break
       except Exception as e:
         if attempt < DMG_ADD_MAX_RETRIES and e.returncode == 5:
+          stderr_output = "Not available"
+          stdout_output = "Not available"
+
+          if isinstance(e, subprocess.CalledProcessError):
+            if e.stderr:
+              stderr_output = e.stderr.decode('utf-8', errors='replace')
+            if e.output:
+              stdout_output = e.output.decode('utf-8', errors='replace')
+
           logging.warning(
-              'Adding iOS/tvOS runtime failed with exit code 5. Retrying...')
+              f'Adding runtime failed (Attempt {attempt}).\n'
+              f'Exit Code: {e.returncode}\n'
+              f'STDERR: {stderr_output}\n'
+              f'STDOUT: {stdout_output}',
+              exc_info=True)
+
+          # TODO(crbug.com/460133386): Sometimes iOS SDK could be in a bad state
+          # which in term cause SDK to not show in the CLI output. In such case,
+          # we should attempt to delete the original SDK and re-install.
+          match = re.search(r"Duplicate of\s+([A-F0-9\-]+)", stdout_output)
+          if match:
+            duplicate_uuid = match.group(1)
+            logging.warning(
+                f"Conflict detected. Found duplicate runtime UUID: {duplicate_uuid}"
+            )
+            logging.info(
+                f"Attempting to delete duplicate runtime: {duplicate_uuid}")
+            iossim_util.delete_simulator_runtime(duplicate_uuid, True)
+            iossim_util.delete_stale_simulator_runtimes()
           time.sleep(DMG_ADD_RETRY_DELAY)
         else:
           raise
@@ -458,7 +487,7 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder,
   else:
     LOGGER.debug(
         'Runtime %s already exists, no need to install from mac_toolchain',
-        runtime_build_to_install)
+        runtime_info)
 
 
 def version():
@@ -571,30 +600,41 @@ def validate_local_runtime(xcode_build_version,
                                                   runtime_build)
 
 
-def ensure_xcode_ready_in_apps():
-  """Finds Xcode apps with names like "xcode_*.app" in the /Applications
-  directory and ensure that they are all ready for launch.
-  This is to ensure that all existing Xcodes have completed installing the
-  necessary components.
-  Otherwise, it might cause issues on launching other xcode apps.
+def check_xcode_exists_in_apps(xcode_version):
   """
+    Checks if the specified Xcode version already exists in /Applications.
+    This is mainly used when xcodes are already installed in VM images
 
-  LOGGER.info('Checking if there are xcode apps exist in /Applications, '
-              'and ensuring their installations are finished.')
+    Args:
+        xcode_version (str): The Xcode version string (e.g., "16f6").
 
-  # Use glob to find all directories ending with ".app" and starting with
-  # "xcode_" directly within the /Applications directory.
-  xcode_app_paths = glob.glob(os.path.join('/Applications', 'xcode_*.app'))
+    Returns:
+        True if the Xcode app exists, otherwise False.
+    """
+  xcode_app_name = f"xcode_{xcode_version}.app"
+  xcode_path = os.path.join("/Applications", xcode_app_name)
+  return os.path.exists(xcode_path)
 
-  if not xcode_app_paths:
-    LOGGER.info("No Xcode app bundles found matching 'xcode_*.app' "
-                "in /Applications'.")
-    return
 
-  LOGGER.info(f"Found {len(xcode_app_paths)} Xcode app bundles "
-              "in /Applications:")
-  for app_path in xcode_app_paths:
+def ensure_xcode_ready_in_apps(xcode_build_version):
+  """Ensures the specified Xcode version is ready for use.
+
+  If the specified Xcode version is found in /Applications, this function
+  selects it to ensure it has completed its initial setup. If the version
+  is not found, it logs a warning.
+  """
+  LOGGER.info(
+      'Checking for specified Xcode version in /Applications to ensure it is '
+      'ready.')
+
+  if check_xcode_exists_in_apps(xcode_build_version):
+    xcode_app_name = f"xcode_{xcode_build_version}.app"
+    app_path = os.path.join("/Applications", xcode_app_name)
+    LOGGER.info(f"Found specified Xcode version at {app_path}. Selecting it.")
     select(app_path)
+  else:
+    LOGGER.warning(f"Specified Xcode version {xcode_build_version} not found "
+                   "in /Applications.")
 
 
 def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
@@ -620,15 +660,15 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
         # If we hit this exception, a runtime was not found in CIPD. This can
         # happen when users do not have access to infra_internal, for example.
         LOGGER.warning(
-            'Unable to find the iOS/tvOS runtime build version of Xcode %s and iOS/tvOS'
-            ' %s. CIPD is possibly not installed locally or the '
+            'Unable to find the iOS/tvOS runtime build version of Xcode %s '
+            'and iOS/tvOS %s. CIPD is possibly not installed locally or the '
             'CIPD infra_internal repository cannot be accessed.',
             xcode_build_version, platform_version)
     return True
 
   # crbug.com/406819704: this is necessary when multiple versions of
   # xcodes exist in /Applications.
-  ensure_xcode_ready_in_apps()
+  ensure_xcode_ready_in_apps(xcode_build_version)
 
   try:
     if not mac_toolchain_cmd:
@@ -682,20 +722,7 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
     return True
 
 
-def check_xcode_exists_in_apps(xcode_version):
-  """
-    Checks if the specified Xcode version already exists in /Applications.
-    This is mainly used when xcodes are already installed in VM images
 
-    Args:
-        xcode_version (str): The Xcode version string (e.g., "16f6").
-
-    Returns:
-        bool: True if the path exists, False otherwise.
-    """
-  xcode_app_name = f"xcode_{xcode_version}.app"
-  xcode_path = os.path.join("/Applications", xcode_app_name)
-  return os.path.exists(xcode_path)
 
 
 def xctest_path(test_app_path: str) -> str:

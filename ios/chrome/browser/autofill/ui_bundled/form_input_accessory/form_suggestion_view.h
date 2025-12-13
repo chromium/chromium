@@ -20,11 +20,6 @@
        didAcceptSuggestion:(FormSuggestion*)suggestion
                    atIndex:(NSInteger)index;
 
-// The view received a long pull in the content direction. The delegate should
-// probably unlock the trailing view and reset to a clean state.
-- (void)formSuggestionViewShouldResetFromPull:
-    (FormSuggestionView*)formSuggestionView;
-
 @end
 
 // A scrollable view for displaying user-selectable autofill form suggestions.
@@ -56,10 +51,6 @@
 // Reset content insets back to zero and sets the delegate to nil. Used to stop
 // hearing for the pull gesture to reset and unlock the trailing view.
 - (void)resetContentInsetAndDelegateAnimated:(BOOL)animated;
-
-// Animates the content insets so the trailing view is showed as the first
-// thing.
-- (void)lockTrailingView;
 
 @end
 

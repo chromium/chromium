@@ -18,7 +18,14 @@ base::android::ScopedJavaLocalRef<jobject> MediaPosition::CreateJavaObject(
       (duration_.is_max() || duration_.is_zero()) ? -1
                                                   : duration_.InMilliseconds(),
       position_.InMilliseconds(), playback_rate_,
-      (last_updated_time_ - base::TimeTicks::UnixEpoch()).InMilliseconds());
+      // Pass raw uptime (TimeTicks) to match
+      // android.os.SystemClock.uptimeMillis(). Converting to wall clock (Epoch)
+      // here is unsafe because the offset between Uptime and Wall Time changes
+      // during deep sleep, causing the media position to jump forward
+      // incorrectly on wake.
+      last_updated_time_.since_origin().InMilliseconds());
 }
 
 }  // namespace media_session
+
+DEFINE_JNI(MediaPosition)

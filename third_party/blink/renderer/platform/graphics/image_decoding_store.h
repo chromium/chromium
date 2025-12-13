@@ -71,11 +71,6 @@ static inline bool operator==(const DecoderCacheKey& a,
          a.alpha_option_ == b.alpha_option_ && a.client_id_ == b.client_id_;
 }
 
-static inline bool operator!=(const DecoderCacheKey& a,
-                              const DecoderCacheKey& b) {
-  return !(a == b);
-}
-
 // Base class for all cache entries.
 class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
   USING_FAST_MALLOC(CacheEntry);
@@ -217,14 +212,15 @@ struct HashTraits<DecoderCacheKey> : GenericHashTraits<DecoderCacheKey> {
 //
 // All public methods can be used on any thread.
 
-class PLATFORM_EXPORT ImageDecodingStore final {
+class PLATFORM_EXPORT ImageDecodingStore final
+    : public base::MemoryPressureListener {
   USING_FAST_MALLOC(ImageDecodingStore);
 
  public:
   ImageDecodingStore();
   ImageDecodingStore(const ImageDecodingStore&) = delete;
   ImageDecodingStore& operator=(const ImageDecodingStore&) = delete;
-  ~ImageDecodingStore();
+  ~ImageDecodingStore() override;
 
   static ImageDecodingStore& Instance();
 
@@ -259,8 +255,7 @@ class PLATFORM_EXPORT ImageDecodingStore final {
   void Prune();
 
   // Called by the memory pressure listener when the memory pressure rises.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   // These helper methods are called while |lock_| is held.
   template <class T, class U, class V>
@@ -324,7 +319,8 @@ class PLATFORM_EXPORT ImageDecodingStore final {
   size_t heap_memory_usage_in_bytes_ GUARDED_BY(lock_);
 
   // A listener to global memory pressure events.
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::AsyncMemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // Also protects:
   // - the CacheEntry in |decoder_cache_map_|.

@@ -1,2 +1,0 @@
--dontwarn com.google.protobuf.**
--dontwarn com.google.android.apps.common.testing.accessibility.framework.proto.FrameworkProtos*

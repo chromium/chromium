@@ -104,7 +104,7 @@ class CheckClientDownloadRequestBase {
 
   void StartTimeout();
   void SendRequest();
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   // If we need to perform additional prompting (e.g. deep scanning, local
   // password decryption) due to the response, this method will update `result`

@@ -73,9 +73,9 @@ class AppNetWorkerTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    remote_.reset();
     test::WaitForProcess(fetcher_process_);
     fetcher_process_.Close();
-    remote_.reset();
   }
 
   base::test::TaskEnvironment environment_;
@@ -181,6 +181,59 @@ TEST_F(AppNetWorkerTest, DownloadFile) {
               })));
   run_loop.Run();
   EXPECT_TRUE(base::ContentsEqual(output.path(), payload_path));
+}
+
+TEST_F(AppNetWorkerTest, DownloadMultipleFiles) {
+  base::FilePath payload_path = updater::test::GetTestFilePath("signed.exe.gz");
+  std::optional<int64_t> payload_size = base::GetFileSize(payload_path);
+  ASSERT_TRUE(payload_size.has_value());
+  std::string payload;
+  ASSERT_TRUE(base::ReadFileToString(payload_path, &payload));
+
+  net::EmbeddedTestServer test_server;
+  test_server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto http_response =
+            std::make_unique<net::test_server::BasicHttpResponse>();
+        http_response->set_code(net::HTTP_OK);
+        if (request.relative_url == "/payload") {
+          http_response->set_content(payload);
+        }
+        http_response->set_content_type("application/octet-stream");
+        return http_response;
+      }));
+  ASSERT_TRUE(test_server.Start());
+
+  for (int i = 0; i < 2; ++i) {
+    base::ScopedTempFile output;
+    ASSERT_TRUE(output.Create());
+    base::File output_file(
+        output.path(), base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE);
+    ASSERT_TRUE(output_file.IsValid());
+    base::RunLoop loop;
+    remote_->DownloadToFile(
+        test_server.GetURL("/payload"), std::move(output_file),
+        MakeFileDownloadObserver(
+            base::BindLambdaForTesting(
+                [&](int32_t http_status_code, int64_t content_length) {
+                  EXPECT_EQ(http_status_code, net::HTTP_OK);
+                  if (content_length > 0) {
+                    EXPECT_EQ(content_length, payload_size.value());
+                  }
+                }),
+            base::BindLambdaForTesting([&](int64_t current) {
+              EXPECT_LE(current, payload_size.value());
+            }),
+            base::BindLambdaForTesting(
+                [&](int32_t net_error, int64_t content_length) {
+                  EXPECT_EQ(net_error, 0);
+                  EXPECT_EQ(content_length, payload_size.value());
+                  loop.Quit();
+                })));
+    loop.Run();
+    EXPECT_TRUE(base::ContentsEqual(output.path(), payload_path));
+  }
 }
 
 TEST_F(AppNetWorkerTest, ServerNotExist) {

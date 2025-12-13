@@ -4,11 +4,16 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.build.annotations.NullMarked;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-/** Settings for toggling back/forward cache behavior. */
+/**
+ * Settings for toggling back/forward cache behavior. This class is only needed to maintain
+ * compatibility with the first version of the API and should be removed once the API is stable.
+ */
 @JNINamespace("android_webview")
+@NullMarked
 public class AwBackForwardCacheSettings extends AwSupportLibIsomorphic {
     private final int mTimeoutInSeconds;
     private final int mMaxPagesInCache;

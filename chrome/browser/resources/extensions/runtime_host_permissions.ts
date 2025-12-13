@@ -16,7 +16,7 @@ import '/strings.m.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -156,6 +156,8 @@ export class ExtensionsRuntimeHostPermissionsElement extends CrLitElement {
           chrome.metricsPrivate.recordUserAction(
               'Extensions.Settings.Hosts.OnAllSitesSelected');
           break;
+        default:
+          assertNotReachedCase(access);
       }
     }
 

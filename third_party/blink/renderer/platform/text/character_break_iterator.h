@@ -24,6 +24,7 @@
 
 #include <unicode/brkiter.h>
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
@@ -104,7 +105,7 @@ class PLATFORM_EXPORT CharacterBreakIterator final {
 // Counts the number of grapheme clusters. A surrogate pair or a sequence
 // of a non-combining character and following combining characters is
 // counted as 1 grapheme cluster.
-PLATFORM_EXPORT unsigned NumGraphemeClusters(const String&);
+PLATFORM_EXPORT unsigned NumGraphemeClusters(const StringView&);
 
 // Returns the number of code units that the next grapheme cluster is made of.
 PLATFORM_EXPORT unsigned LengthOfGraphemeCluster(const String&, unsigned = 0);

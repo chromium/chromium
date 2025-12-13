@@ -30,7 +30,6 @@ using sync_file_system::MockRemoteFileSyncService;
 using sync_file_system::RemoteFileSyncService;
 using sync_file_system::SyncFileSystemServiceFactory;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::WithArg;
 
 namespace {
@@ -137,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChanged) {
   EXPECT_CALL(*mock_remote_service(), RegisterOrigin(_, _))
       .WillOnce(UpdateRemoteChangeQueue(&origin, mock_remote_service()));
   EXPECT_CALL(*mock_remote_service(), ProcessRemoteChange(_))
-      .WillOnce(WithArg<0>(Invoke(ReturnWithFakeFileAddedStatusFunctor(
-          &origin, mock_remote_service()))));
+      .WillOnce(WithArg<0>(ReturnWithFakeFileAddedStatusFunctor(
+          &origin, mock_remote_service())));
   ASSERT_TRUE(RunExtensionTest("sync_file_system/on_file_status_changed",
                                {.launch_as_platform_app = true}))
       << message_;
@@ -154,8 +153,8 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChangedDeleted) {
   EXPECT_CALL(*mock_remote_service(), RegisterOrigin(_, _))
       .WillOnce(UpdateRemoteChangeQueue(&origin, mock_remote_service()));
   EXPECT_CALL(*mock_remote_service(), ProcessRemoteChange(_))
-      .WillOnce(WithArg<0>(Invoke(ReturnWithFakeFileAddedStatusFunctor(
-          &origin, mock_remote_service()))));
+      .WillOnce(WithArg<0>(ReturnWithFakeFileAddedStatusFunctor(
+          &origin, mock_remote_service())));
   ASSERT_TRUE(
       RunExtensionTest("sync_file_system/on_file_status_changed_deleted",
                        {.launch_as_platform_app = true}))

@@ -18,10 +18,12 @@ import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -42,6 +44,7 @@ public class OptimizationGuideBridgeUnitTest {
     private static final String TEST_URL = "https://testurl.com/";
     private static final String TEST_URL2 = "https://testurl2.com/";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
 
     @Mock OptimizationGuideBridge.OptimizationGuideCallback mCallbackMock;
@@ -50,7 +53,6 @@ public class OptimizationGuideBridgeUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         OptimizationGuideBridgeJni.setInstanceForTesting(mOptimizationGuideBridgeJniMock);
     }
 

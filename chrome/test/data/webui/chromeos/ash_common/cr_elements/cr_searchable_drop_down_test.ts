@@ -98,9 +98,9 @@ suite('cr-searchable-drop-down', function() {
     const itemList = getList();
 
     assertEquals(3, itemList.length);
-    assertEquals('one', itemList[0]!.textContent!.trim());
-    assertEquals('two', itemList[1]!.textContent!.trim());
-    assertEquals('three', itemList[2]!.textContent!.trim());
+    assertEquals('one', itemList[0]!.textContent.trim());
+    assertEquals('two', itemList[1]!.textContent.trim());
+    assertEquals('three', itemList[2]!.textContent.trim());
   });
 
   test('filter works correctly', function() {
@@ -108,20 +108,20 @@ suite('cr-searchable-drop-down', function() {
 
     search('c');
     assertEquals(1, getList().length);
-    assertEquals('cat', getList()[0]!.textContent!.trim());
+    assertEquals('cat', getList()[0]!.textContent.trim());
     assertTrue(dropDown.invalid);
 
     search('at');
     assertEquals(3, getList().length);
-    assertEquals('cat', getList()[0]!.textContent!.trim());
-    assertEquals('hat', getList()[1]!.textContent!.trim());
-    assertEquals('rat', getList()[2]!.textContent!.trim());
+    assertEquals('cat', getList()[0]!.textContent.trim());
+    assertEquals('hat', getList()[1]!.textContent.trim());
+    assertEquals('rat', getList()[2]!.textContent.trim());
     assertTrue(dropDown.invalid);
 
     search('ra');
     assertEquals(2, getList().length);
-    assertEquals('rat', getList()[0]!.textContent!.trim());
-    assertEquals('rake', getList()[1]!.textContent!.trim());
+    assertEquals('rat', getList()[0]!.textContent.trim());
+    assertEquals('rake', getList()[1]!.textContent.trim());
     assertTrue(dropDown.invalid);
   });
 
@@ -205,22 +205,22 @@ suite('cr-searchable-drop-down', function() {
     assertEquals(null, getSelectedElement());
 
     down();
-    assertEquals('dog', getSelectedElement()!.textContent!.trim());
+    assertEquals('dog', getSelectedElement()!.textContent.trim());
     down();
-    assertEquals('cat', getSelectedElement()!.textContent!.trim());
+    assertEquals('cat', getSelectedElement()!.textContent.trim());
     down();
-    assertEquals('mouse', getSelectedElement()!.textContent!.trim());
+    assertEquals('mouse', getSelectedElement()!.textContent.trim());
     down();
-    assertEquals('dog', getSelectedElement()!.textContent!.trim());
+    assertEquals('dog', getSelectedElement()!.textContent.trim());
 
     up();
-    assertEquals('mouse', getSelectedElement()!.textContent!.trim());
+    assertEquals('mouse', getSelectedElement()!.textContent.trim());
     up();
-    assertEquals('cat', getSelectedElement()!.textContent!.trim());
+    assertEquals('cat', getSelectedElement()!.textContent.trim());
     up();
-    assertEquals('dog', getSelectedElement()!.textContent!.trim());
+    assertEquals('dog', getSelectedElement()!.textContent.trim());
     up();
-    assertEquals('mouse', getSelectedElement()!.textContent!.trim());
+    assertEquals('mouse', getSelectedElement()!.textContent.trim());
 
     enter();
     assertEquals('mouse', dropDown.value);
@@ -236,7 +236,7 @@ suite('cr-searchable-drop-down', function() {
     assertEquals(null, getSelectedElement());
 
     down();
-    assertEquals('dog', getSelectedElement()!.textContent!.trim());
+    assertEquals('dog', getSelectedElement()!.textContent.trim());
 
     enter();
     assertEquals('dog', dropDown.value);
@@ -256,7 +256,7 @@ suite('cr-searchable-drop-down', function() {
     assertEquals(null, getSelectedElement());
 
     up();
-    assertEquals('mouse', getSelectedElement()!.textContent!.trim());
+    assertEquals('mouse', getSelectedElement()!.textContent.trim());
   });
 
   test('selected follows mouse', function() {
@@ -268,17 +268,17 @@ suite('cr-searchable-drop-down', function() {
     assertEquals(null, getSelectedElement());
 
     move(getList()[1]!, {x: 0, y: 0}, {x: 0, y: 0}, 1);
-    assertEquals('cat', getSelectedElement()!.textContent!.trim());
+    assertEquals('cat', getSelectedElement()!.textContent.trim());
     move(getList()[2]!, {x: 0, y: 0}, {x: 0, y: 0}, 1);
-    assertEquals('mouse', getSelectedElement()!.textContent!.trim());
+    assertEquals('mouse', getSelectedElement()!.textContent.trim());
 
     // Interacting with the keyboard should update the selected element.
     up();
-    assertEquals('cat', getSelectedElement()!.textContent!.trim());
+    assertEquals('cat', getSelectedElement()!.textContent.trim());
 
     // When the user moves the mouse again, the selected element should change.
     move(getList()[0]!, {x: 0, y: 0}, {x: 0, y: 0}, 1);
-    assertEquals('dog', getSelectedElement()!.textContent!.trim());
+    assertEquals('dog', getSelectedElement()!.textContent.trim());
   });
 
   test('input retains focus', function() {
@@ -291,7 +291,7 @@ suite('cr-searchable-drop-down', function() {
     assertEquals(null, getSelectedElement());
 
     down();
-    assertEquals('dog', getSelectedElement()!.textContent!.trim());
+    assertEquals('dog', getSelectedElement()!.textContent.trim());
     assertEquals(searchInput, dropDown.shadowRoot!.activeElement);
   });
 
@@ -397,7 +397,7 @@ suite('cr-searchable-drop-down', function() {
 
     search('rat');
     assertEquals(1, getList().length);
-    assertEquals('rat', getList()[0]!.textContent!.trim());
+    assertEquals('rat', getList()[0]!.textContent.trim());
 
     blur();
     getList()[0]!.click();

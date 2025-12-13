@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -95,13 +96,13 @@ class AccountSelectionMediator {
     public static final long POTENTIALLY_UNINTENDED_INPUT_THRESHOLD = 500;
 
     private HeaderType mHeaderType;
-    private String mRpForDisplay;
+    private RelyingPartyData mRpData;
     private String mIdpForDisplay;
     // The icon to be displayed in the title of the dialog. Corresponds to the IDP icon when one IDP
     // is involved or the RP icon when multiple IDPs are involved.
     private Bitmap mHeaderIcon;
     // The RP brand icon provided by the IDP. Used only in active mode.
-    private Bitmap mRpBrandIcon;
+    private @Nullable Bitmap mRpBrandIcon;
     private @RpContext.EnumType int mRpContext;
     private IdentityCredentialTokenError mError;
     private UkmRecorder mUkmRecorder;
@@ -374,6 +375,7 @@ class AccountSelectionMediator {
     private PropertyModel createHeaderItem(
             HeaderType headerType,
             String rpForDisplay,
+            String iframeForDisplay,
             String idpForDisplay,
             @RpContext.EnumType int rpContext,
             Boolean isMultipleIdps) {
@@ -385,7 +387,9 @@ class AccountSelectionMediator {
                             "Blink.FedCm.CloseVerifySheet.Android",
                             mHeaderType == HeaderType.VERIFY);
                     RecordHistogram.recordEnumeratedHistogram(
-                            "Blink.FedCm.ClosedSheetType.Android", getSheetType(), SheetType.COUNT);
+                            "Blink.FedCm.ClosedSheetType.Android",
+                            getSheetType(),
+                            SheetType.MAX_VALUE);
                 };
 
         return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
@@ -394,6 +398,7 @@ class AccountSelectionMediator {
                 .with(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable)
                 .with(HeaderProperties.IDP_FOR_DISPLAY, idpForDisplay)
                 .with(HeaderProperties.RP_FOR_DISPLAY, rpForDisplay)
+                .with(HeaderProperties.IFRAME_FOR_DISPLAY, iframeForDisplay)
                 .with(HeaderProperties.TYPE, headerType)
                 .with(HeaderProperties.RP_CONTEXT, rpContext)
                 .with(HeaderProperties.RP_MODE, mRpMode)
@@ -488,7 +493,7 @@ class AccountSelectionMediator {
         if (mAccountChooserState == null) return;
 
         RecordHistogram.recordEnumeratedHistogram(
-                "Blink.FedCm.Button.AccountChooserResult", result, SheetType.COUNT);
+                "Blink.FedCm.Button.AccountChooserResult", result, SheetType.MAX_VALUE);
         if (mUkmRecorder != null) {
             mUkmRecorder.addMetric("Button.AccountChooserResult", result).record();
         }
@@ -510,7 +515,7 @@ class AccountSelectionMediator {
         if (mLoadingDialogState == null) return;
 
         RecordHistogram.recordEnumeratedHistogram(
-                "Blink.FedCm.Button.LoadingDialogResult", mLoadingDialogState, SheetType.COUNT);
+                "Blink.FedCm.Button.LoadingDialogResult", mLoadingDialogState, SheetType.MAX_VALUE);
         if (mUkmRecorder != null) {
             mUkmRecorder.addMetric("Button.LoadingDialogResult", mLoadingDialogState).record();
         }
@@ -533,7 +538,7 @@ class AccountSelectionMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 "Blink.FedCm.Button.DisclosureDialogResult",
                 mDisclosureDialogState,
-                SheetType.COUNT);
+                SheetType.MAX_VALUE);
         if (mUkmRecorder != null) {
             mUkmRecorder
                     .addMetric("Button.DisclosureDialogResult", mDisclosureDialogState)
@@ -589,14 +594,14 @@ class AccountSelectionMediator {
     }
 
     boolean showAccounts(
-            String rpForDisplay,
+            RelyingPartyData rpData,
             List<Account> accounts,
             List<IdentityProviderData> idpDataList,
             List<Account> newAccounts) {
         if (mWasDismissed) {
             return false;
         }
-        mRpForDisplay = rpForDisplay;
+        mRpData = rpData;
         mAccounts = accounts;
         mIdpDataListForShowAccounts = idpDataList;
         mIdpMetadataForLoginOrError = null;
@@ -629,11 +634,11 @@ class AccountSelectionMediator {
     }
 
     boolean showFailureDialog(
-            String rpForDisplay,
+            RelyingPartyData rpData,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext) {
-        mRpForDisplay = rpForDisplay;
+        mRpData = rpData;
         mIdpForDisplay = idpForDisplay;
         mIdpMetadataForLoginOrError = idpMetadata;
         mIdpDataListForShowAccounts = null;
@@ -654,12 +659,12 @@ class AccountSelectionMediator {
     }
 
     boolean showErrorDialog(
-            String rpForDisplay,
+            RelyingPartyData rpData,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext,
             IdentityCredentialTokenError error) {
-        mRpForDisplay = rpForDisplay;
+        mRpData = rpData;
         mIdpForDisplay = idpForDisplay;
         mIdpMetadataForLoginOrError = idpMetadata;
         mIdpDataListForShowAccounts = null;
@@ -701,7 +706,7 @@ class AccountSelectionMediator {
                         });
         ErrorProperties.Properties properties = new ErrorProperties.Properties();
         properties.mIdpForDisplay = idpForDisplay;
-        properties.mRpForDisplay = rpForDisplay;
+        properties.mRpForDisplay = mRpData.getRpForDisplay();
         properties.mError = error;
         properties.mMoreDetailsClickRunnable =
                 !error.getUrl().isEmpty() ? this::onMoreDetails : null;
@@ -734,8 +739,8 @@ class AccountSelectionMediator {
     }
 
     boolean showLoadingDialog(
-            String rpForDisplay, String idpForDisplay, @RpContext.EnumType int rpContext) {
-        mRpForDisplay = rpForDisplay;
+            RelyingPartyData rpData, String idpForDisplay, @RpContext.EnumType int rpContext) {
+        mRpData = rpData;
         mIdpForDisplay = idpForDisplay;
         mRpContext = rpContext;
         mHeaderType = HeaderProperties.HeaderType.LOADING;
@@ -749,7 +754,8 @@ class AccountSelectionMediator {
         return true;
     }
 
-    boolean showVerifyingDialog(Account account, boolean isAutoReauthn) {
+    boolean showVerifyingDialog(RelyingPartyData rpData, Account account, boolean isAutoReauthn) {
+        mRpData = rpData;
         mHeaderType = isAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.VERIFY;
         mSelectedAccount = account;
 
@@ -1010,7 +1016,7 @@ class AccountSelectionMediator {
         mModel.set(
                 ItemProperties.ERROR_TEXT,
                 mHeaderType == HeaderType.SIGN_IN_ERROR
-                        ? createErrorTextItem(mIdpForDisplay, mRpForDisplay, mError)
+                        ? createErrorTextItem(mIdpForDisplay, mError)
                         : null);
         // The add account button is added separately for active mode single account chooser.
         mModel.set(
@@ -1049,9 +1055,20 @@ class AccountSelectionMediator {
         mHeaderIcon = isValidBrandIcon(headerIcon, shouldCircleCrop) ? headerIcon : null;
         mRpBrandIcon =
                 isValidBrandIcon(rpBrandIcon, /* shouldCircleCrop= */ true) ? rpBrandIcon : null;
+        String rpForDisplay = "";
+        String iframeForDisplay = "";
+        if (!mRpData.getDisplayStringsMayChange()) {
+            rpForDisplay = mRpData.getRpForDisplay();
+            iframeForDisplay = mRpData.getIframeForDisplay();
+        }
         PropertyModel headerModel =
                 createHeaderItem(
-                        mHeaderType, mRpForDisplay, mIdpForDisplay, mRpContext, mIsMultipleIdps);
+                        mHeaderType,
+                        rpForDisplay,
+                        iframeForDisplay,
+                        mIdpForDisplay,
+                        mRpContext,
+                        mIsMultipleIdps);
         mModel.set(ItemProperties.HEADER, headerModel);
     }
 
@@ -1313,10 +1330,10 @@ class AccountSelectionMediator {
     }
 
     private PropertyModel createErrorTextItem(
-            String idpForDisplay, String rpForDisplay, IdentityCredentialTokenError error) {
+            String idpForDisplay, IdentityCredentialTokenError error) {
         ErrorProperties.Properties properties = new ErrorProperties.Properties();
         properties.mIdpForDisplay = idpForDisplay;
-        properties.mRpForDisplay = rpForDisplay;
+        properties.mRpForDisplay = mRpData.getRpForDisplay();
         properties.mError = error;
         properties.mMoreDetailsClickRunnable =
                 !error.getUrl().isEmpty() ? this::onMoreDetails : null;

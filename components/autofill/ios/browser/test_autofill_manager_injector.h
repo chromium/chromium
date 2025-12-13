@@ -27,6 +27,25 @@
 
 namespace autofill {
 
+// Asserts that at construction time, no other TestAutofillManagerInjector is
+// alive.
+class TestAutofillManagerInjectorBase {
+ public:
+  static bool some_instance_is_alive() { return num_instances_ > 0; }
+
+  TestAutofillManagerInjectorBase(const TestAutofillManagerInjectorBase&) =
+      delete;
+  TestAutofillManagerInjectorBase& operator=(
+      const TestAutofillManagerInjectorBase&) = delete;
+
+ protected:
+  TestAutofillManagerInjectorBase();
+  ~TestAutofillManagerInjectorBase();
+
+ private:
+  static size_t num_instances_;
+};
+
 // Upon construction, and in response to WebFrameBecameAvailable, installs an
 // BrowserAutofillManager of type `T` in the main frame of the given `web_state`
 // and all subsequently created frames of the `web_state`.
@@ -45,7 +64,8 @@ namespace autofill {
 //   NavigateToURL(...);
 template <typename T>
   requires(std::derived_from<T, AutofillManager>)
-class TestAutofillManagerInjector : public AutofillDriverIOSFactory::Observer {
+class TestAutofillManagerInjector : public AutofillDriverIOSFactory::Observer,
+                                    public TestAutofillManagerInjectorBase {
  public:
   explicit TestAutofillManagerInjector(web::WebState* web_state)
       : web_state_(web_state) {
@@ -95,14 +115,10 @@ class TestAutofillManagerInjector : public AutofillDriverIOSFactory::Observer {
   }
 
   void Inject(AutofillDriverIOS& driver) {
-    // The one observer that exists is the one from AutofillDriverIOS.
-    CHECK_EQ(std::ranges::distance(
-                 test_api(driver.GetAutofillManager()).observers()),
-             1u);
     test_api(driver).SetAutofillManager(std::make_unique<T>(&driver));
   }
 
-  raw_ptr<web::WebState> web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state_;
   // Non-null until OnAutofillDriverIOSFactoryDestroyed().
   raw_ptr<AutofillDriverIOSFactory> factory_;
 };

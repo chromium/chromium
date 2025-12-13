@@ -22,6 +22,9 @@ interface TestSync {
   [Sync]
   Ping() => ();
 
+  [Sync, NoInterrupt]
+  NoInterruptPing() => ();
+
   [Sync]
   Echo(int32 value) => (int32 result);
 

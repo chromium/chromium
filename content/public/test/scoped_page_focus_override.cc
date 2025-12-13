@@ -37,7 +37,7 @@ void ScopedPageFocusOverride::DispatchProtocolMessage(
   std::string_view message_str(reinterpret_cast<const char*>(message.data()),
                                message.size());
   std::optional<base::Value> parsed_message =
-      base::JSONReader::Read(message_str);
+      base::JSONReader::Read(message_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_message.has_value());
 
   std::optional<int> id = parsed_message->GetDict().FindInt("id");
@@ -57,8 +57,7 @@ void ScopedPageFocusOverride::SetFocusEmulationEnabled(bool enabled) {
           .Set("method", "Emulation.setFocusEmulationEnabled")
           .Set("params", base::Value::Dict().Set("enabled", enabled));
 
-  std::string json_command;
-  base::JSONWriter::Write(command, &json_command);
+  std::string json_command = base::WriteJson(command).value_or("");
   agent_host_->DispatchProtocolMessage(this, base::as_byte_span(json_command));
 
   base::RunLoop run_loop;

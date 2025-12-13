@@ -3,27 +3,33 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.linux builder group."""
 
-load("//lib/branches.star", "branches")
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "siso")
-load("//lib/consoles.star", "consoles")
-load("//lib/gn_args.star", "gn_args")
-load("//lib/html.star", "linkify", "linkify_builder")
-load("//lib/targets.star", "targets")
-load("//lib/try.star", "try_")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builders.star", "os")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//html.star", "linkify", "linkify_builder")
+load("@chromium-luci//targets.star", "targets")
+load("@chromium-luci//try.star", "try_")
+load("//lib/gpu.star", "gpu")
+load("//lib/siso.star", "siso")
+load("//lib/try_constants.star", "try_constants")
 load("//project.star", "settings")
 
 try_.defaults.set(
-    executable = try_.DEFAULT_EXECUTABLE,
+    executable = try_constants.DEFAULT_EXECUTABLE,
     builder_group = "tryserver.chromium.linux",
-    pool = try_.DEFAULT_POOL,
+    pool = try_constants.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
     compilator_cores = 8,
-    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     orchestrator_cores = 2,
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_linking = True,
 )
@@ -75,7 +81,7 @@ try_.builder(
         },
         # Catches a couple of CLs per week that are either actionable or
         # worthy of discussion.
-        "size_threshold_mib": 300,
+        "size_threshold_mib": 200,
     },
     tryjob = try_.job(),
 )
@@ -113,16 +119,18 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-trees-in-viz-rel",
-    mirrors = ["ci/linux-trees-in-viz-rel"],
+    name = "linux-structured-test-ids-rel-fyi",
+    mirrors = ["ci/linux-structured-test-ids-rel-fyi"],
     gn_args = gn_args.config(
         configs = [
-            "ci/linux-trees-in-viz-rel",
-            "try_builder",
-            "no_symbols",
+            "ci/linux-structured-test-ids-rel-fyi",
+            "release_try_builder",
         ],
     ),
-    contact_team_email = "chrome-compositor@google.com",
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -193,6 +201,20 @@ try_.builder(
         ],
     ),
     contact_team_email = "chrome-security-architecture@google.com",
+    cq_settings = try_.cq_settings(
+        location_filters = [
+            r"chrome/browser/renderer_host/javascript_optimizer_feature_browsertest\.cc$",
+            r"chrome/browser/policy/test/v8_optimizer_policy_browsertest\.cc$",
+            r"chrome/browser/site_protection/.*\.(cc|h)$",
+            r"content/browser/agent_cluster_key.+",
+            r"content/browser/child_process_security_policy.+",
+            r"content/browser/process_lock.+",
+            r"content/browser/renderer_host/render_frame_host_manager.+",
+            r"content/browser/site_info\.(cc|h)$",
+            r"content/browser/site_instance.*\.(cc|h)$",
+            r"content/public/browser/site_instance.*\.(cc|h)$",
+        ],
+    ),
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -214,14 +236,6 @@ try_.builder(
             "try_builder",
         ],
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "linux-blink-wpt-3pcd-fyi-rel",
-    mirrors = ["ci/linux-blink-wpt-3pcd-fyi-rel"],
-    gn_args = "ci/linux-blink-wpt-3pcd-fyi-rel",
-    contact_team_email = "potassium-engprod-team@twosync.google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -298,8 +312,6 @@ try_.builder(
         "ci/linux-gcc-rel",
     ],
     gn_args = "ci/linux-gcc-rel",
-    # Focal is needed for better C++20 support. See crbug.com/1284275.
-    os = os.LINUX_FOCAL,
 )
 
 try_.builder(
@@ -334,54 +346,6 @@ try_.builder(
     ],
     gn_args = "ci/linux-multiscreen-fyi-rel",
     contact_team_email = "web-windowing-team@google.com",
-)
-
-try_.builder(
-    name = "linux-layout-tests-edit-ng",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "remoteexec",
-            "no_symbols",
-            "dcheck_always_on",
-            "linux",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "chromium_webkit_isolated_scripts",
-        ],
-        additional_compile_targets = [
-            "blink_tests",
-        ],
-        mixins = [
-            "linux-xenial",
-        ],
-        per_test_modifications = {
-            "blink_web_tests": targets.mixin(
-                args = [
-                    "--flag-specific=enable-editing-ng",
-                ],
-            ),
-            "blink_wpt_tests": targets.mixin(
-                args = [
-                    "--flag-specific=enable-editing-ng",
-                ],
-            ),
-        },
-    ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -454,6 +418,8 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
         # crbug/940930
         "chromium.enable_cleandead": 100,
+        # TODO(crbug.com/442618066): ramp experiment and apply to more builders
+        "siso.keep_going_limited": 50,
     },
     main_list_view = "try",
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
@@ -558,7 +524,7 @@ try_.builder(
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(
         location_filters = [
-            "chrome/browser/.+(ui|browser)test.+",
+            "chrome/browser/.+uitest.+",
             "chrome/browser/ui/views/.+test.+",
             "chrome/browser/ui/views/tabs/.+",
             "testing/xvfb\\.py",
@@ -927,6 +893,9 @@ try_.orchestrator_builder(
             "minimal_symbols",
         ],
     ),
+    # TODO (crbug.com/410653528): Reenable for TSAN when fixes are appropriate.
+    check_for_flakiness = False,
+    check_for_flakiness_with_resultdb = False,
     compilator = "linux_chromium_tsan_rel_ng-compilator",
     experiments = {
         # go/nplus1shardsproposal
@@ -959,11 +928,11 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-modules-compile-fyi-rel",
+    name = "linux-no-modules-compile-rel",
     mirrors = [
-        "ci/linux-modules-compile-fyi-rel",
+        "ci/linux-no-modules-compile-rel",
     ],
-    gn_args = "ci/linux-modules-compile-fyi-rel",
+    gn_args = "ci/linux-no-modules-compile-rel",
     cores = 32,
     ssd = True,
     contact_team_email = "chrome-build-team@google.com",
@@ -1055,7 +1024,7 @@ try_.builder(
     ),
 )
 
-try_.gpu.optional_tests_builder(
+gpu.try_.optional_tests_builder(
     name = "linux_optional_gpu_tests_rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     description_html = ("Runs GPU tests on Linux machines with NVIDIA GTX 1660 and Intel UHD 630 GPUs. " +
@@ -1073,7 +1042,6 @@ try_.gpu.optional_tests_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-gpu-fyi-archive",
     ),
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
@@ -1102,6 +1070,7 @@ try_.gpu.optional_tests_builder(
     builderless = True,
     ssd = None,
     free_space = None,
+    alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     main_list_view = "try",
     max_concurrent_builds = 7,

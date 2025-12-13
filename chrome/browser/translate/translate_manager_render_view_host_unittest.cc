@@ -85,7 +85,7 @@ class MockTranslateBubbleFactory : public TranslateBubbleFactory {
     if (model_) {
       model_->SetViewState(
           TranslateBubbleModelImpl::TranslateStepToViewState(step));
-      return ShowTranslateBubbleResult::SUCCESS;
+      return ShowTranslateBubbleResult::kSuccess;
     }
 
     ChromeTranslateClient* chrome_translate_client =
@@ -97,7 +97,7 @@ class MockTranslateBubbleFactory : public TranslateBubbleFactory {
             source_language, target_language));
     model_ = std::make_unique<TranslateBubbleModelImpl>(step,
                                                         std::move(ui_delegate));
-    return ShowTranslateBubbleResult::SUCCESS;
+    return ShowTranslateBubbleResult::kSuccess;
   }
 
   bool DismissBubble() {
@@ -316,7 +316,7 @@ class TranslateManagerRenderViewHostTest
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   std::unique_ptr<MockTranslateBubbleFactory> bubble_factory_;
@@ -361,7 +361,7 @@ class TranslateManagerRenderViewHostInvalidLocaleTest
 // display names in English locale. To save space, Chrome's copy of ICU
 // does not have the display name for a language unless it's in the
 // Accept-Language list.
-auto kServerLanguageList = std::to_array<const char*>({
+constexpr auto kServerLanguageList = std::to_array<const char*>({
     "ak",
     "af",
     "en-CA",

@@ -9,24 +9,24 @@
 #include <string>
 #include <variant>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
-#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/form_autofill_history.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
 #include "components/autofill/core/common/autofill_constants.h"
 
 namespace autofill {
 
+class AutofillClient;
+class AutofillProfile;
 class BrowserAutofillManager;
+class CreditCard;
+class LogManager;
+enum class FillingProduct;
 
 // Denotes the reason for triggering a refill attempt.
 // These values are persisted to UMA logs. Entries should not be renumbered and
@@ -36,7 +36,8 @@ enum class RefillTriggerReason {
   kFormChanged = 0,
   kSelectOptionsChanged = 1,
   kExpirationDateFormatted = 2,
-  kMaxValue = kExpirationDateFormatted
+  kProgrammaticRefill = 3,
+  kMaxValue = kProgrammaticRefill
 };
 
 using VerifiedProfile = std::map<FieldType, std::u16string>;
@@ -44,7 +45,8 @@ using VerifiedProfile = std::map<FieldType, std::u16string>;
 using FillingPayload = std::variant<const AutofillProfile*,
                                     const CreditCard*,
                                     const EntityInstance*,
-                                    const VerifiedProfile*>;
+                                    const VerifiedProfile*,
+                                    const OtpFillData*>;
 
 // Helper class responsible for [re]filling forms and fields.
 //
@@ -69,12 +71,31 @@ using FillingPayload = std::variant<const AutofillProfile*,
 // It holds any state that is only relevant for [re]filling.
 class FormFiller {
  public:
+  struct ValueAndType {
+    std::u16string value;
+    FieldType type = NO_SERVER_DATA;
+  };
+
   explicit FormFiller(BrowserAutofillManager& manager);
 
   FormFiller(const FormFiller&) = delete;
   FormFiller& operator=(const FormFiller&) = delete;
 
   virtual ~FormFiller();
+
+  class RefillOptions {
+   public:
+    static RefillOptions NotRefill();
+    static RefillOptions Refill(DenseSet<FieldTypeGroup> originally_filled);
+
+    bool is_refill() const;
+    bool may_refill(const FieldTypeSet& field_type) const;
+
+   private:
+    RefillOptions();
+
+    std::optional<DenseSet<FieldTypeGroup>> originally_filled_;
+  };
 
   // Given `field`, the corresponding `autofill_field` to fill, and the
   // `trigger_field`, return the set of all reasons for that field to be skipped
@@ -93,30 +114,30 @@ class FormFiller {
       const FormFieldData& field,
       const AutofillField& autofill_field,
       const AutofillField& trigger_field,
+      const RefillOptions& refill_options,
       base::flat_map<FieldType, size_t>& type_count,
-      std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
       const base::flat_set<FieldGlobalId>& blocked_fields,
-      FillingProduct filling_product,
-      bool is_refill = false);
+      FillingProduct filling_product);
 
   // Resets states that FormFiller holds and maintains.
   void Reset();
 
-  base::TimeDelta get_limit_before_refill() { return limit_before_refill_; }
+  base::TimeDelta limit_before_automatic_refill() const {
+    return limit_before_automatic_refill_;
+  }
 
   // Given a `form`, returns a map from each field's id to the skip reason for
   // that field. See additional comments in GetFieldFillingSkipReason.
   // TODO(crbug.com/40227496): Keep only one of 'form' and 'form_structure'.
   // TODO(crbug.com/40281552): Make `type_groups_originally_filled` also a
   // FieldTypeSet.
-  base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
-  GetFieldFillingSkipReasons(
-      base::span<const FormFieldData> fields,
-      const FormStructure& form_structure,
-      const AutofillField& trigger_field,
-      std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
-      FillingProduct filling_product,
-      bool is_refill) const;
+  static base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+  GetFieldFillingSkipReasons(base::span<const FormFieldData> fields,
+                             const FormStructure& form_structure,
+                             const AutofillField& trigger_field,
+                             const RefillOptions& refill_options,
+                             FillingProduct filling_product,
+                             const AutofillClient& client);
 
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`. `renderer_action` denotes whether this is an actual
@@ -148,30 +169,48 @@ class FormFiller {
       AutofillTriggerSource trigger_source,
       std::optional<RefillTriggerReason> refill_trigger_reason = std::nullopt);
 
-  // May or may not trigger a refill operation on `form`. `field` and
-  // `old_value` are only needed when `refill_trigger_reason` is
+  // Prevents any automatic refill of the operation `fill_id`. A renderer may
+  // call this when a JavaScript observes the `autofill` event and may therefore
+  // programmatically trigger a refill.
+  void SuppressAutomaticRefills(const FillId& fill_id);
+
+  // May or may not trigger a refill of `fill_id`. Programmatic refills (unlike
+  // automatic refills) are initiated by JavaScript.
+  void MaybeScheduleProgrammaticRefill(const FillId& fill_id);
+
+  // May or may not trigger a refill operation on `form`. Automatic refills
+  // (unlike programmatic refills) are caused by dynamic changes in the DOM.
+  //
+  // `field` and `old_value` are only needed when `refill_trigger_reason` is
   // `RefillTriggerReason::kExpirationDateFormatted`, and in that case `field`
   // is the one that was reformatted and `old_value` is the value `field` had
   // before the reformatting.
-  void MaybeTriggerRefill(
+  void MaybeScheduleAutomaticRefill(
       const FormData& form,
       const FormStructure& form_structure,
       RefillTriggerReason refill_trigger_reason,
       AutofillTriggerSource trigger_source,
-      base::optional_ref<const FormFieldData> field = std::nullopt,
+      base::optional_ref<const AutofillField> field = std::nullopt,
       base::optional_ref<const std::u16string> old_value = std::nullopt);
+
+  base::WeakPtr<FormFiller> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ protected:
+  struct RefillContext;
 
  private:
   friend class FormFillerTestApi;
   friend class TestFormFiller;
 
   struct AugmentedFillingPayload;
-  struct RefillContext;
 
   void SetRefillContext(FormGlobalId form_id,
                         std::unique_ptr<RefillContext> context);
 
   RefillContext* GetRefillContext(FormGlobalId form_id);
+  RefillContext* GetRefillContext(const FillId& fill_id);
 
   // Schedules a call of TriggerRefill. Virtual for testing.
   virtual void ScheduleRefill(const FormData& form,
@@ -184,34 +223,31 @@ class FormFiller {
                      AutofillTriggerSource trigger_source,
                      RefillTriggerReason refill_trigger_reason);
 
-  // Stores the value to be filled into a field, along with its field type and
-  // if it's an override.
-  struct FieldFillingData {
-    std::u16string value_to_fill;
-    std::optional<FieldType> field_type;
-    bool value_is_an_override;
+  struct ValueAndTypeAndOverride : public ValueAndType {
+    bool value_is_an_override = false;
   };
 
   // Returns the value to fill along with the field type and if the value is an
   // override.
-  FieldFillingData GetFieldFillingData(
+  ValueAndTypeAndOverride GetFieldFillingData(
       const AutofillField& autofill_field,
       const AugmentedFillingPayload& filling_payload,
-      const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
+      const std::map<FieldGlobalId, ValueAndType>& forced_fill_values,
       const FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
 
   // Fills `field_data` and modifies `autofill_field` given all other states.
-  // Returns true if the field has been filled, false otherwise. This is
-  // independent of whether the field was filled or autofilled before.
-  // When `allow_suggestion_swapping` is true, the method still returns true if
-  // the `autofill_field` is emptied.
+  // Returns the FieldType of the value that was filled, or std::nullopt if no
+  // value was filled. If the FieldType is not known, returns UNKNOWN_TYPE. The
+  // return value is independent of whether the field was filled or autofilled
+  // before. When `allow_suggestion_swapping` is true, the method still returns
+  // the FieldType if the `autofill_field` is emptied.
   // TODO(crbug.com/40227071): Cleanup API and logic.
-  bool FillField(
+  std::optional<FieldType> FillField(
       AutofillField& autofill_field,
       const AugmentedFillingPayload& filling_payload,
-      const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
+      const std::map<FieldGlobalId, ValueAndType>& forced_fill_values,
       FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,
       bool allow_suggestion_swapping,
@@ -242,7 +278,9 @@ class FormFiller {
   // The maximum amount of time between a change in the form and the original
   // fill that triggers a refill. This value is only changed in browser tests,
   // where time cannot be mocked, to avoid flakiness.
-  base::TimeDelta limit_before_refill_ = kLimitBeforeRefill;
+  base::TimeDelta limit_before_automatic_refill_ = kLimitBeforeAutomaticRefill;
+  base::TimeDelta limit_before_programmatic_refill_ =
+      kLimitBeforeProgrammaticRefill;
 
   const raw_ref<BrowserAutofillManager> manager_;
 

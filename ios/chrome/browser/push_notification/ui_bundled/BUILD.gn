@@ -83,16 +83,27 @@ source_set("notifications_opt_in_ui") {
     "notifications_opt_in_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/image",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "push_notifications_constants.h",
+    "push_notifications_constants.mm",
   ]
 }
 
@@ -142,17 +153,16 @@ source_set("eg2_tests") {
     "push_notification_egtest.mm",
   ]
   deps = [
+    ":constants",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public:constants",
     "//ios/chrome/browser/settings/ui_bundled/notifications:constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",

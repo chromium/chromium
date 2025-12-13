@@ -50,7 +50,6 @@ class CORE_EXPORT NinePieceImageData
   NinePieceImageData(const NinePieceImageData&) = default;
 
   bool operator==(const NinePieceImageData&) const;
-  bool operator!=(const NinePieceImageData& o) const { return !(*this == o); }
 
   void Trace(Visitor* visitor) const { visitor->Trace(image); }
 
@@ -94,9 +93,6 @@ class CORE_EXPORT NinePieceImage {
 
   bool operator==(const NinePieceImage& other) const {
     return base::ValuesEquivalent(data_, other.data_);
-  }
-  bool operator!=(const NinePieceImage& other) const {
-    return !(*this == other);
   }
 
   bool HasImage() const { return data_->image; }

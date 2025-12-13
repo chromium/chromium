@@ -8,9 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,7 +35,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
@@ -59,16 +56,15 @@ import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenUrlOptions;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.WebFeedFollowUpdate;
 import org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler;
-import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.nio.charset.StandardCharsets;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link FeedStream}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -103,12 +99,10 @@ public class SingleWebFeedStreamTest {
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     private final StubSnackbarController mSnackbarController = new StubSnackbarController();
     @Mock private Runnable mMockRunnable;
-    @Mock private Callback<Boolean> mMockRefreshCallback;
     @Mock private FeedStream.ShareHelperWrapper mShareHelper;
     @Mock private Profile mProfileMock;
     @Mock private HybridListRenderer mRenderer;
     @Mock private RecyclerView.Adapter mAdapter;
-    @Mock private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
     @Mock private FeedActionDelegate mActionDelegate;
     @Mock WebFeedBridge.Natives mWebFeedBridgeJni;
 
@@ -116,8 +110,6 @@ public class SingleWebFeedStreamTest {
     @Captor private ArgumentCaptor<Callback<FollowResults>> mFollowResultsCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<UnfollowResults>> mUnfollowResultsCallbackCaptor;
     @Mock private WebFeedFollowUpdate.Callback mWebFeedFollowUpdateCallback;
-    @Mock private FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
-    @Mock private Stream.StreamsMediator mStreamsMediator;
 
     private FeedSurfaceRendererBridge.Renderer mBridgeRenderer;
 
@@ -305,7 +297,6 @@ public class SingleWebFeedStreamTest {
     @Test
     @SmallTest
     public void testLogLaunchFinishedOnOpenSuggestionUrlNewTab() {
-        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler)
@@ -313,22 +304,17 @@ public class SingleWebFeedStreamTest {
         handler.openUrl(OpenMode.NEW_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
 
         // Don't log "launch finished" if the card was opened in a new tab in the background.
-        verify(mLaunchReliabilityLogger, never())
-                .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.CARD_TAPPED.getNumber()));
     }
 
     @Test
     @SmallTest
     public void testLogLaunchFinishedOnOpenUrlNewTab() {
-        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler)
                         mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
         handler.openUrl(OpenMode.NEW_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
         // Don't log "launch finished" if the card was opened in a new tab in the background.
-        verify(mLaunchReliabilityLogger, never())
-                .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.CARD_TAPPED.getNumber()));
     }
 
     @Test

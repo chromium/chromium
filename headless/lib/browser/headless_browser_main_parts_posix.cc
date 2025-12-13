@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "headless/lib/browser/headless_browser_main_parts.h"
 
 #include <errno.h>
 #include <signal.h>
 #include <unistd.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -33,6 +29,8 @@
 #include "headless/public/switches.h"
 
 #if BUILDFLAG(USE_DBUS)
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "dbus/bus.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #endif
 
@@ -75,7 +73,7 @@ class BrowserShutdownHandler {
     // We need to handle SIGTERM, because that is how many POSIX-based distros
     // ask processes to quit gracefully at shutdown time.
     struct sigaction action;
-    memset(&action, 0, sizeof(action));
+    UNSAFE_TODO(memset(&action, 0, sizeof(action)));
     action.sa_handler = SIGTERMHandler;
     PCHECK(sigaction(SIGTERM, &action, nullptr) == 0);
 
@@ -150,7 +148,7 @@ class BrowserShutdownHandler {
     // Reinstall the default handler. We have only one shot at graceful
     // shutdown.
     struct sigaction action;
-    memset(&action, 0, sizeof(action));
+    UNSAFE_TODO(memset(&action, 0, sizeof(action)));
     action.sa_handler = SIG_DFL;
     RAW_CHECK(sigaction(signal, &action, nullptr) == 0);
 
@@ -177,7 +175,8 @@ void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
 #if BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(USE_DBUS)
-  bluez::BluezDBusManager::Initialize(/*system_bus=*/nullptr);
+  bluez::BluezDBusManager::Initialize(
+      dbus_thread_linux::GetSharedSystemBus().get());
 #endif
 
   // Set up crypt config. This needs to be done before anything starts the

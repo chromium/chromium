@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/printing/ppd_cache.h"
 
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -74,12 +70,14 @@ PpdCache::FindResult FindImpl(const base::FilePath& cache_dir,
   }
 
   std::vector<char> buf(info.size);
-  if (file.ReadAtCurrentPos(buf.data(), info.size) != info.size)
+  if (UNSAFE_TODO(file.ReadAtCurrentPos(buf.data(), info.size)) != info.size) {
     return result;
+  }
 
   std::string_view contents(buf.data(), info.size - crypto::kSHA256Length);
-  std::string_view checksum(buf.data() + info.size - crypto::kSHA256Length,
-                            crypto::kSHA256Length);
+  std::string_view checksum(
+      UNSAFE_TODO(buf.data() + info.size - crypto::kSHA256Length),
+      crypto::kSHA256Length);
   if (crypto::SHA256HashString(contents) != checksum) {
     LOG(ERROR) << "Bad checksum for cache key " << key;
     return result;

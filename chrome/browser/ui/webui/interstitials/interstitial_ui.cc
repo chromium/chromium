@@ -8,7 +8,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/atomic_sequence_num.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
@@ -62,7 +61,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "crypto/rsa_private_key.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_certificate.h"
@@ -95,23 +93,11 @@ InterstitialUIConfig::InterstitialUIConfig()
 
 namespace {
 
-// NSS requires that serial numbers be unique even for the same issuer;
-// as all fake certificates will contain the same issuer name, it's
-// necessary to ensure the serial number is unique, as otherwise
-// NSS will fail to parse.
-base::AtomicSequenceNumber g_serial_number;
-
 scoped_refptr<net::X509Certificate> CreateFakeCert() {
-  std::unique_ptr<crypto::RSAPrivateKey> unused_key;
-  std::string cert_der;
-  if (!net::x509_util::CreateKeyAndSelfSignedCert(
-          "CN=Error", static_cast<uint32_t>(g_serial_number.GetNext()),
-          base::Time::Now() - base::Minutes(5),
-          base::Time::Now() + base::Minutes(5), &unused_key, &cert_der)) {
-    return nullptr;
-  }
+  std::vector<uint8_t> cert_der =
+      net::x509_util::CreateUnusableCert("CN=Error");
 
-  return net::X509Certificate::CreateFromBytes(base::as_byte_span(cert_der));
+  return net::X509Certificate::CreateFromBytes(cert_der);
 }
 
 // Implementation of chrome://interstitials demonstration pages. This code is
@@ -342,7 +328,7 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
   resource.url = request_url;
   resource.threat_type = threat_type;
   resource.rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
-      primary_main_frame_id.child_id,
+      primary_main_frame_id.child_id.value(),
       primary_main_frame->GetFrameToken().value());
   resource.threat_source =
       g_browser_process->safe_browsing_service()
@@ -402,7 +388,7 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
   resource.threat_type =
       safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
   resource.rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
-      primary_main_frame_id.child_id,
+      primary_main_frame_id.child_id.value(),
       primary_main_frame->GetFrameToken().value());
   resource.threat_source =
       g_browser_process->safe_browsing_service()
@@ -426,7 +412,7 @@ CreateSupervisedUserVerificationPageForYouTube(
   const GURL kRequestUrl("https://supervised-user-verification.example.net");
   return std::make_unique<SupervisedUserVerificationPageForYouTube>(
       web_contents, "first.last@gmail.com", kRequestUrl,
-      /*child_account_service*/ nullptr, ukm::kInvalidSourceId,
+      /*child_account_service*/ nullptr,
       std::make_unique<SupervisedUserVerificationControllerClient>(
           web_contents,
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
@@ -491,7 +477,7 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   resource.url = request_url;
   resource.threat_type = threat_type;
   resource.rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
-      primary_main_frame_id.child_id,
+      primary_main_frame_id.child_id.value(),
       primary_main_frame->GetFrameToken().value());
   resource.threat_source =
       g_browser_process->safe_browsing_service()
@@ -614,7 +600,7 @@ void InterstitialHTMLSource::StartDataRequest(
   // query (everything after the ? character).
   GURL url =
       GURL(chrome::kChromeUIInterstitialURL).GetWithEmptyPath().Resolve(path);
-  std::string path_without_query = url.path();
+  std::string path_without_query = url.GetPath();
   if (path_without_query == "/ssl") {
     interstitial_delegate = CreateSslBlockingPage(web_contents);
   } else if (path_without_query == "/mitm-software-ssl") {

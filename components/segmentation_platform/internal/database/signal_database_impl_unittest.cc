@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/database/signal_database_impl.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"

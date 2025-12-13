@@ -25,7 +25,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -83,10 +82,12 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
+import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Manages the Contextual Search feature. This class keeps track of the status of Contextual Search
@@ -109,7 +110,7 @@ public class ContextualSearchManager
         implements ContextualSearchManagementDelegate,
                 ContextualSearchNetworkCommunicator,
                 ContextualSearchSelectionHandler,
-                ChromeAccessibilityUtil.Observer {
+                AccessibilityUtil.Observer {
     // TODO(donnd): provide an inner class that implements some of these interfaces rather than
     // having the manager itself implement the interface because that exposes all the public methods
     // of that interface at the manager level.
@@ -818,6 +819,8 @@ public class ContextualSearchManager
             doLiteralSearch = true;
         }
 
+        assert message != null;
+
         mRelatedSearches = new RelatedSearchesList(resolvedSearchTerm.relatedSearchesJson());
         mResolvedSearchTerm = resolvedSearchTerm;
         displayResolvedSearchTerm(resolvedSearchTerm, message, doLiteralSearch);
@@ -869,6 +872,8 @@ public class ContextualSearchManager
             alternateTerm = null;
             doPreventPreload = true;
         }
+
+        assert searchTerm != null;
 
         List<String> inBarRelatedSearches = buildRelatedSearches(searchTerm);
 
@@ -966,8 +971,10 @@ public class ContextualSearchManager
         assumeNonNull(mContext)
                 .prepareToResolve(
                         isExactSearch, mPolicy.getRelatedSearchesStamp(getBasePageLanguage()));
+        String selectedText = mSelectionController.getSelectedText();
+        assumeNonNull(selectedText);
         mNetworkCommunicator.startSearchTermResolutionRequest(
-                mSelectionController.getSelectedText(), isExactSearch, mContext);
+                selectedText, isExactSearch, mContext);
     }
 
     /** Resets internal state that should be reset whenever a Search ends (panel is closed). */
@@ -1185,7 +1192,6 @@ public class ContextualSearchManager
             ExternalNavigationParams params =
                     new ExternalNavigationParams.Builder(
                                     escapedUrl, false, referrerUrl, pageTransition, isRedirect)
-                            .setApplicationMustBeInForeground(true)
                             .setRedirectHandler(mRedirectHandler)
                             .setIsMainFrame(isInPrimaryMainFrame)
                             .build();
@@ -1479,7 +1485,9 @@ public class ContextualSearchManager
                 if (!TextUtils.isEmpty(adjustedSelection)) {
                     mSelectionController.setSelectedText(adjustedSelection);
                 }
-                showSelectionAsSearchInBar(mSelectionController.getSelectedText());
+                String selectedText = mSelectionController.getSelectedText();
+                assumeNonNull(selectedText);
+                showSelectionAsSearchInBar(selectedText);
                 mInternalStateController.notifyFinishedWorkOn(InternalState.START_SHOWING_TAP_UI);
             } else {
                 hideContextualSearch(StateChangeReason.UNKNOWN);

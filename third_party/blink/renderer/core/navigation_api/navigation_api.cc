@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_history_entry.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_transition.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -304,6 +305,10 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
   for (const auto& disposed_entry : disposed_entries) {
     disposed_entry->DispatchEvent(*Event::Create(event_type_names::kDispose));
   }
+
+  if (auto* routemap = RouteMap::Get(window_->document())) {
+    routemap->OnNavigationStart(old_current->url(), currentEntry()->url());
+  }
 }
 
 NavigationHistoryEntry* NavigationApi::GetEntryForRestore(
@@ -382,8 +387,8 @@ void NavigationApi::SetEntriesForRestore(
       disposed_entries->push_back(entry);
   }
   window_->GetTaskRunner(TaskType::kInternalDefault)
-      ->PostTask(FROM_HERE, WTF::BindOnce(&FireDisposeEventsAsync,
-                                          WrapPersistent(disposed_entries)));
+      ->PostTask(FROM_HERE, BindOnce(&FireDisposeEventsAsync,
+                                     WrapPersistent(disposed_entries)));
 }
 
 void NavigationApi::DisposeEntriesForSessionHistoryRemoval(
@@ -466,8 +471,13 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
                                           NavigationNavigateOptions* options) {
   KURL completed_url = KURL(window_->BaseURL(), url);
   if (!completed_url.IsValid()) {
-    return EarlyErrorResult(script_state, DOMExceptionCode::kSyntaxError,
-                            "Invalid URL '" + completed_url.GetString() + "'.");
+    return EarlyErrorResult(
+        script_state, DOMExceptionCode::kSyntaxError,
+        StrCat({"Invalid URL '", completed_url.GetString(), "'."}));
+  }
+
+  if (completed_url.ProtocolIsJavaScript()) {
+    UseCounter::Count(window_, WebFeature::kNavigationNavigateJavaScriptURL);
   }
 
   scoped_refptr<SerializedScriptValue> serialized_state = nullptr;
@@ -623,17 +633,16 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
                                                        key);
   upcoming_traverse_api_method_trackers_.insert(key, api_method_tracker);
   LocalFrame* frame = window_->GetFrame();
-  std::optional<scheduler::TaskAttributionId> soft_navigation_task_id;
+  std::optional<scheduler::TaskAttributionId> task_state_id;
   if (script_state->World().IsMainWorld() && frame->IsOutermostMainFrame()) {
-    if (SoftNavigationHeuristics* heuristics =
-            window_->GetSoftNavigationHeuristics()) {
-      soft_navigation_task_id =
-          heuristics->AsyncSameDocumentNavigationStarted();
+    if (auto* tracker = scheduler::TaskAttributionTracker::From(
+            script_state->GetIsolate())) {
+      task_state_id = tracker->AsyncSameDocumentNavigationStarted();
     }
   }
   frame->GetLocalFrameHostRemote().NavigateToNavigationApiKey(
       key, LocalFrame::HasTransientUserActivation(frame),
-      actual_navigation_start, soft_navigation_task_id);
+      actual_navigation_start, task_state_id);
   return api_method_tracker->GetNavigationResult();
 }
 
@@ -671,14 +680,14 @@ DOMException* NavigationApi::PerformSharedNavigationChecks(
   if (!window_->GetFrame()) {
     return MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
-        method_name_for_error_message +
-            " cannot be called when the Window is detached.");
+        StrCat({method_name_for_error_message,
+                " cannot be called when the Window is detached."}));
   }
   if (window_->document()->PageDismissalEventBeingDispatched()) {
     return MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
-        method_name_for_error_message +
-            " cannot be called during unload or beforeunload.");
+        StrCat({method_name_for_error_message,
+                " cannot be called during unload or beforeunload."}));
   }
   return nullptr;
 }
@@ -725,12 +734,6 @@ NavigationHistoryEntry* NavigationApi::MakeEntryFromItem(HistoryItem& item) {
 
 NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     NavigateEventDispatchParams* params) {
-  // TODO(japhet): The draft spec says to cancel any ongoing navigate event
-  // before invoking DispatchNavigateEvent(), because not all navigations will
-  // fire a navigate event, but all should abort an ongoing navigate event.
-  // The main case were that would be a problem (browser-initiated back/forward)
-  // is not implemented yet. Move this once it is implemented.
-  InformAboutCanceledNavigation(CancelNavigationReason::kNavigateEvent);
   CHECK(window_);
 
   if (HasEntriesAndEventsDisabled()) {
@@ -749,6 +752,18 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     return DispatchResult::kContinue;
   }
 
+  LocalFrame* frame = window_->GetFrame();
+  auto* script_state = ToScriptStateForMainWorld(frame);
+  ScriptState::Scope scope(script_state);
+
+  while (ongoing_navigate_event_) {
+    AbortOngoingNavigation(script_state);
+  }
+  CHECK(!ongoing_api_method_tracker_);
+  if (!window_) {
+    return DispatchResult::kAbort;
+  }
+
   const String& key = params->destination_item
                           ? params->destination_item->GetNavigationApiKey()
                           : String();
@@ -764,10 +779,6 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   }
 
   PromoteUpcomingNavigationToOngoing(key);
-
-  LocalFrame* frame = window_->GetFrame();
-  auto* script_state = ToScriptStateForMainWorld(frame);
-  ScriptState::Scope scope(script_state);
 
   auto* init = NavigateEventInit::Create();
   V8NavigationType::Enum navigation_type =
@@ -828,8 +839,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   auto* controller = AbortController::Create(script_state);
   init->setSignal(controller->signal());
   init->setDownloadRequest(params->download_filename);
-  if (params->source_element &&
-      params->source_element->GetExecutionContext() == window_) {
+  if (params->source_element) {
     init->setSourceElement(params->source_element);
   }
   init->setHasUAVisualTransition(params->has_ua_visual_transition);
@@ -846,8 +856,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       // If these conditions are met, create a SoftNavigationEventScope to
       // consider this a "user initiated click", and the dispatched event
       // handlers as potential soft navigation tasks.
-      soft_navigation_scope =
-          heuristics->MaybeCreateEventScopeForEvent(*navigate_event);
+      soft_navigation_scope = heuristics->CreateNavigationEventScope();
     }
   }
 
@@ -862,15 +871,15 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       window_->GetFrame()->ConsumeHistoryUserActivation();
     }
     if (!navigate_event->signal()->aborted()) {
-      AbortOngoingNavigation(script_state,
-                             CancelNavigationReason::kNavigateEvent);
+      AbortOngoingNavigation(script_state);
     }
     return DispatchResult::kAbort;
   }
 
   if (navigate_event->HasNavigationActions()) {
     transition_ = MakeGarbageCollected<NavigationTransition>(
-        window_, navigation_type, currentEntry());
+        window_, navigation_type, currentEntry(),
+        navigate_event->destination());
     navigate_event->MaybeCommitImmediately(script_state);
   } else if (params->event_type != NavigateEventType::kCrossDocument) {
     navigate_event->React(script_state);
@@ -901,7 +910,7 @@ void NavigationApi::InformAboutCanceledNavigation(
   if (ongoing_navigate_event_) {
     auto* script_state = ToScriptStateForMainWorld(window_->GetFrame());
     ScriptState::Scope scope(script_state);
-    AbortOngoingNavigation(script_state, reason);
+    AbortOngoingNavigation(script_state);
   }
 
   // If this function is being called as part of frame detach, also cleanup any
@@ -937,9 +946,9 @@ void NavigationApi::TraverseCancelled(
              mojom::blink::TraverseCancelledReason::kSandboxViolation) {
     exception = MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSecurityError,
-        "Navigating to key " + key +
-            " would require a navigation that "
-            "violates this frame's sandbox policy");
+        StrCat({"Navigating to key ", key,
+                " would require a navigation that violates this frame's "
+                "sandbox policy"}));
   } else if (reason ==
              mojom::blink::TraverseCancelledReason::kAbortedBeforeCommit) {
     exception = MakeGarbageCollected<DOMException>(
@@ -957,7 +966,12 @@ bool NavigationApi::HasNonDroppedOngoingNavigation() const {
   return has_ongoing_intercept && !has_dropped_navigation_;
 }
 
-void NavigationApi::DidFailOngoingNavigation(ScriptValue value) {
+void NavigationApi::DidAbort(ScriptValue value) {
+  if (ongoing_api_method_tracker_) {
+    ongoing_api_method_tracker_->RejectFinishedPromise(value);
+    ongoing_api_method_tracker_ = nullptr;
+  }
+
   auto* isolate = window_->GetIsolate();
   v8::Local<v8::Message> message =
       v8::Exception::CreateMessage(isolate, value.V8Value());
@@ -967,12 +981,10 @@ void NavigationApi::DidFailOngoingNavigation(ScriptValue value) {
       ErrorEvent::Create(ToCoreStringWithNullCheck(isolate, message->Get()),
                          location, value, &DOMWrapperWorld::MainWorld(isolate));
   event->SetType(event_type_names::kNavigateerror);
-  DispatchEvent(*event);
-
-  if (ongoing_api_method_tracker_) {
-    ongoing_api_method_tracker_->RejectFinishedPromise(value);
-    ongoing_api_method_tracker_ = nullptr;
+  if (auto* routemap = RouteMap::Get(window_->document())) {
+    routemap->OnNavigationDone();
   }
+  DispatchEvent(*event);
 
   if (transition_) {
     transition_->RejectFinishedPromise(value);
@@ -981,12 +993,15 @@ void NavigationApi::DidFailOngoingNavigation(ScriptValue value) {
 }
 
 void NavigationApi::DidFinishOngoingNavigation() {
-  DispatchEvent(*Event::Create(event_type_names::kNavigatesuccess));
-
   if (ongoing_api_method_tracker_) {
     ongoing_api_method_tracker_->ResolveFinishedPromise();
     ongoing_api_method_tracker_ = nullptr;
   }
+
+  if (auto* routemap = RouteMap::Get(window_->document())) {
+    routemap->OnNavigationDone();
+  }
+  DispatchEvent(*Event::Create(event_type_names::kNavigatesuccess));
 
   if (transition_) {
     transition_->ResolveFinishedPromise();
@@ -994,16 +1009,13 @@ void NavigationApi::DidFinishOngoingNavigation() {
   }
 }
 
-void NavigationApi::AbortOngoingNavigation(ScriptState* script_state,
-                                           CancelNavigationReason reason) {
+void NavigationApi::AbortOngoingNavigation(ScriptState* script_state) {
   CHECK(ongoing_navigate_event_);
   ScriptValue error = ScriptValue::From(
       script_state,
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                          "Navigation was aborted"));
-  ongoing_navigate_event_->Abort(script_state, error, reason);
-  ongoing_navigate_event_ = nullptr;
-  DidFailOngoingNavigation(error);
+  ongoing_navigate_event_->Abort(script_state, error);
 }
 
 int NavigationApi::GetIndexFor(NavigationHistoryEntry* entry) {

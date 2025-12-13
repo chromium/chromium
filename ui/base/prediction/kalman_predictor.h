@@ -22,16 +22,7 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_PREDICTION) KalmanPredictor
     : public InputPredictor {
  public:
-  // Heuristic option enables changing the influence of acceleration based on
-  // change of direction. Direction cut off enables discarding the prediction if
-  // the predicted direction is opposite from the current direction.
-  enum PredictionOptions {
-    kNone = 0x0,
-    kHeuristicsEnabled = 0x1,
-    kDirectionCutOffEnabled = 0x2
-  };
-
-  explicit KalmanPredictor(unsigned int prediction_options);
+  KalmanPredictor();
 
   KalmanPredictor(const KalmanPredictor&) = delete;
   KalmanPredictor& operator=(const KalmanPredictor&) = delete;
@@ -76,9 +67,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) KalmanPredictor
 
   // Maximum time interval between first and last events in last points queue.
   static constexpr base::TimeDelta kMaxTimeInQueue = base::Milliseconds(40);
-
-  // Flags to determine the enabled prediction options.
-  const unsigned int prediction_options_;
 };
 
 }  // namespace ui

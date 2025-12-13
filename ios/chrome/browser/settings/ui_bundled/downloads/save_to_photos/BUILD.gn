@@ -27,6 +27,7 @@ source_set("save_to_photos") {
     "//ios/chrome/browser/authentication/ui_bundled/views",
     "//ios/chrome/browser/photos/model",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -45,7 +46,10 @@ source_set("test_support") {
     "fake_save_to_photos_settings_mutator.h",
     "fake_save_to_photos_settings_mutator.mm",
   ]
-  deps = [ ":save_to_photos" ]
+  deps = [
+    ":save_to_photos",
+    "//google_apis",
+  ]
 }
 
 source_set("unit_tests") {

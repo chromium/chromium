@@ -38,6 +38,7 @@
 #include "base/memory/values_equivalent.h"
 #include "cc/animation/keyframe_model.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fill_mode.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_playback_direction.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
@@ -114,8 +115,6 @@ struct CORE_EXPORT Timing {
              relative_delay == other.relative_delay;
     }
 
-    bool operator!=(const Delay& other) const { return !(*this == other); }
-
     bool IsNonzeroTimeBasedDelay() const {
       return !relative_delay && !time_delay.is_zero();
     }
@@ -135,7 +134,7 @@ struct CORE_EXPORT Timing {
 
   static V8FillMode::Enum FillModeEnum(FillMode);
   static FillMode EnumToFillMode(V8FillMode::Enum);
-  static String PlaybackDirectionString(PlaybackDirection);
+  static V8PlaybackDirection::Enum PlaybackDirectionEnum(PlaybackDirection);
 
   Timing() = default;
 
@@ -163,8 +162,6 @@ struct CORE_EXPORT Timing {
            base::ValuesEquivalent(timing_function.get(),
                                   other.timing_function.get());
   }
-
-  bool operator!=(const Timing& other) const { return !(*this == other); }
 
   // Explicit changes to animation timing through the web animations API,
   // override timing changes due to CSS style.
@@ -244,7 +241,9 @@ struct CORE_EXPORT Timing {
       const NormalizedTiming& normalized_timing,
       AnimationDirection animation_direction,
       bool is_keyframe_effect,
-      std::optional<double> playback_rate) const;
+      std::optional<double> playback_rate,
+      bool paused_for_trigger,
+      bool is_endpoint_inclusive = false) const;
   ComputedEffectTiming* getComputedTiming(const CalculatedTiming& calculated,
                                           const NormalizedTiming& normalized,
                                           bool is_keyframe_effect) const;

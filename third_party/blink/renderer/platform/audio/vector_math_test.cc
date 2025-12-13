@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <numeric>
 #include <random>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -100,7 +96,7 @@ class TestVector {
     Iterator(T* p, int stride) : p_(p), stride_(stride) {}
 
     Iterator& operator++() {
-      p_ += stride_;
+      UNSAFE_TODO(p_ += stride_);
       return *this;
     }
     Iterator operator++(int) {
@@ -109,7 +105,7 @@ class TestVector {
       return iter;
     }
     Iterator& operator--() {
-      p_ -= stride_;
+      UNSAFE_TODO(p_ -= stride_);
       return *this;
     }
     Iterator operator--(int) {
@@ -118,7 +114,6 @@ class TestVector {
       return iter;
     }
     bool operator==(const Iterator& other) const { return p_ == other.p_; }
-    bool operator!=(const Iterator& other) const { return !(*this == other); }
     T& operator*() const { return *p_; }
 
    private:
@@ -144,19 +139,23 @@ class TestVector {
                    primary_vector.size()) {}
 
   Iterator begin() const { return Iterator(p_.get(), stride()); }
-  Iterator end() const { return Iterator(p_ + size() * stride(), stride()); }
+  Iterator end() const {
+    return Iterator(UNSAFE_TODO(p_ + size() * stride()), stride());
+  }
   ReverseIterator rbegin() const { return ReverseIterator(end()); }
   ReverseIterator rend() const { return ReverseIterator(begin()); }
   const MemoryLayout* memory_layout() const { return memory_layout_; }
   T* p() const { return p_; }
   size_t size() const { return size_; }
   int stride() const { return static_cast<int>(memory_layout()->stride); }
-  base::span<T> as_span() const { return base::span<T>(p_.get(), size_); }
+  base::span<T> as_span() const {
+    return UNSAFE_TODO(base::span<T>(p_.get(), size_));
+  }
 
   bool operator==(const TestVector& other) const {
     return std::ranges::equal(*this, other, Equal);
   }
-  T& operator[](size_t i) const { return p_[i * stride()]; }
+  T& operator[](size_t i) const { return UNSAFE_TODO(p_[i * stride()]); }
 
  private:
   static T* GetAligned(T* base, size_t byte_alignment) {
@@ -164,7 +163,7 @@ class TestVector {
     size_t byte_offset =
         (byte_alignment - base_byte_alignment + kMaxByteAlignment) %
         kMaxByteAlignment;
-    T* p = base + byte_offset / sizeof(T);
+    T* p = UNSAFE_TODO(base + byte_offset / sizeof(T));
     size_t p_byte_alignment = GetByteAlignment(p);
     CHECK_EQ(byte_alignment % kMaxByteAlignment, p_byte_alignment);
     return p;
@@ -241,12 +240,12 @@ class VectorMathTest : public testing::Test {
   // Get a destination buffer containing initially uninitialized floats.
   float* GetDestination(size_t i) {
     CHECK_LT(i, static_cast<size_t>(kDestinationCount));
-    return destinations_[i];
+    return UNSAFE_TODO(destinations_[i]);
   }
   // Get a source buffer containing random floats.
   const float* GetSource(size_t i) {
     CHECK_LT(i, static_cast<size_t>(kSourceCount));
-    return sources_[i];
+    return UNSAFE_TODO(sources_[i]);
   }
 
   static void SetUpTestSuite() {
@@ -262,10 +261,10 @@ class VectorMathTest : public testing::Test {
       if (i == kFullyFiniteSource || i == kFullyFiniteSource2) {
         continue;
       }
-      sources_[i][index_distribution(generator)] = INFINITY;
-      sources_[i][index_distribution(generator)] = -INFINITY;
+      UNSAFE_TODO(sources_[i][index_distribution(generator)]) = INFINITY;
+      UNSAFE_TODO(sources_[i][index_distribution(generator)]) = -INFINITY;
       if (i != kFullyNonNanSource) {
-        sources_[i][index_distribution(generator)] = NAN;
+        UNSAFE_TODO(sources_[i][index_distribution(generator)]) = NAN;
       }
     }
   }
@@ -305,7 +304,7 @@ TEST_F(VectorMathTest, Conv) {
       for (size_t i = 0u; i < frames_to_process; ++i) {
         expected_dest[i] = 0u;
         for (size_t j = 0u; j < filter_size; ++j) {
-          expected_dest[i] += source[i + j] * *(filter_p - j);
+          expected_dest[i] += source[i + j] * *(UNSAFE_TODO(filter_p - j));
         }
       }
       for (auto& dest : GetSecondaryVectors(
@@ -359,8 +358,10 @@ TEST_F(VectorMathTest, Vclip) {
   // Vclip does not accept NaNs thus let's use only sources without NaNs.
   for (const auto& source : GetPrimaryVectors(GetSource(kFullyNonNanSource))) {
     const float* thresholds = GetSource(kFullyFiniteSource);
-    const float low_threshold = std::min(thresholds[0], thresholds[1]);
-    const float high_threshold = std::max(thresholds[0], thresholds[1]);
+    const float low_threshold =
+        std::min(thresholds[0], UNSAFE_TODO(thresholds[1]));
+    const float high_threshold =
+        std::max(thresholds[0], UNSAFE_TODO(thresholds[1]));
     TestVector<float> expected_dest(GetDestination(0u), source);
     for (size_t i = 0u; i < source.size(); ++i) {
       expected_dest[i] = ClampTo(source[i], low_threshold, high_threshold);
@@ -516,7 +517,7 @@ TEST_F(VectorMathTest, Zvmul) {
       expected_dest_real[i] = real1[i] * real2[i] - imag1[i] * imag2[i];
       expected_dest_imag[i] = real1[i] * imag2[i] + imag1[i] * real2[i];
       if (&real1[i] >= &sources[0u][kFloatArraySize / 2u] &&
-          &real1[i] < &sources[0u][kFloatArraySize / 2u] + 16u) {
+          &real1[i] < UNSAFE_TODO(&sources[0u][kFloatArraySize / 2u] + 16u)) {
         // FLT_MAX products should have overflowed.
         EXPECT_TRUE(std::isinf(expected_dest_real[i]) ||
                     std::isnan(expected_dest_real[i]));

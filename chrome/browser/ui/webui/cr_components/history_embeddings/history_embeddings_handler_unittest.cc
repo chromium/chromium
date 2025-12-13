@@ -16,15 +16,18 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
@@ -96,7 +99,6 @@ std::unique_ptr<KeyedService> BuildTestOptimizationGuideKeyedService(
 class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{history_embeddings::kHistoryEmbeddings,
                                {
@@ -113,7 +115,16 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{});
-    MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState();
+
+    user_ed_override_ =
+        BrowserWindowFeatures::GetUserDataFactoryForTesting()
+            .AddOverrideForTesting(
+                base::BindRepeating([](BrowserWindowInterface& window) {
+                  return std::make_unique<MockBrowserUserEducationInterface>(
+                      &window);
+                }));
+
+    BrowserWithTestWindowTest::SetUp();
 
     TestingProfile* profile_ = profile_manager()->CreateTestingProfile(
         "History Embeddings Test User",
@@ -138,10 +149,6 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
     web_ui_.set_web_contents(web_contents_.get());
     browser()->tab_strip_model()->AppendWebContents(std::move(web_contents_),
                                                     true);
-    BrowserUserEducationInterface::From(browser())
-        ->SetFeaturePromoControllerForTesting(
-            std::make_unique<
-                user_education::test::MockFeaturePromoController>());
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile_, base::BindRepeating(&BuildMockHatsService)));
@@ -157,7 +164,6 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
     mock_hats_service_ = nullptr;
     web_contents_.reset();
     handler_.reset();
-    MockOptimizationGuideKeyedService::ResetForTesting();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -165,10 +171,9 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  user_education::test::MockFeaturePromoController* mock_promo_controller() {
-    return static_cast<user_education::test::MockFeaturePromoController*>(
-        BrowserUserEducationInterface::From(browser())
-            ->GetFeaturePromoControllerForTesting());
+  MockBrowserUserEducationInterface* user_education() {
+    return static_cast<MockBrowserUserEducationInterface*>(
+        BrowserUserEducationInterface::From(browser()));
   }
 
  protected:
@@ -180,6 +185,7 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
   testing::NiceMock<MockPage> page_;
   raw_ptr<MockHatsService> mock_hats_service_;
   base::HistogramTester histogram_tester_;
+  ui::UserDataFactory::ScopedOverride user_ed_override_;
 };
 
 TEST_F(HistoryEmbeddingsHandlerTest, Searches) {
@@ -312,9 +318,10 @@ TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {
 }
 
 TEST_F(HistoryEmbeddingsHandlerTest, ShowsPromo) {
-  EXPECT_CALL(*mock_promo_controller(),
-              MaybeShowPromo(user_education::test::MatchFeaturePromoParams(
-                  feature_engagement::kIPHHistorySearchFeature)))
+  EXPECT_CALL(
+      *user_education(),
+      MaybeShowFeaturePromo(user_education::test::MatchFeaturePromoParams(
+          feature_engagement::kIPHHistorySearchFeature)))
       .Times(1);
   handler_->MaybeShowFeaturePromo();
 }

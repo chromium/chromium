@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <vector>
 
 // Needed for the #if below it.
@@ -23,11 +24,13 @@
 
 #include "base/containers/to_vector.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/insecure_random_generator.h"
 #include "base/threading/simple_thread.h"
@@ -48,7 +51,10 @@ using enum base::File::Error;
 using ::base::test::ErrorIs;
 using ::base::test::HasValue;
 using ::base::test::ValueIs;
+using ::testing::Bool;
+using ::testing::Combine;
 using ::testing::Values;
+using ::testing::ValuesIn;
 
 constexpr size_t kBigSize = 100 * 1024 * 1024;
 
@@ -94,11 +100,15 @@ void MakeFileUnwritable(const base::FilePath& path) {
 #endif  // BUILDFLAG(IS_POSIX)
 }
 
+std::string GetTempFileName() {
+  return base::StrCat({NoVarySearchCacheStorage::kSnapshotFilename, "-new"});
+}
+
 class FileOperationsTestBase : public ::testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
-    operations_ = FileOperations::Create(dir_.GetPath());
+    operations_ = FileOperations::Create(GetNVSPath(), GetLegacyPath());
   }
 
  protected:
@@ -106,9 +116,17 @@ class FileOperationsTestBase : public ::testing::Test {
 
   base::FilePath GetBasePath() const { return dir_.GetPath(); }
 
+  base::FilePath GetLegacyPath() const {
+    return GetBasePath().AppendASCII("Cache_Data");
+  }
+
+  base::FilePath GetLegacySubdirectoryPath() const {
+    return GetLegacyPath().AppendASCII(
+        NoVarySearchCacheStorageFileOperations::kLegacyNoVarySearchDirName);
+  }
+
   base::FilePath GetNVSPath() const {
-    return GetBasePath().AppendASCII(
-        NoVarySearchCacheStorageFileOperations::kNoVarySearchDirName);
+    return GetBasePath().AppendASCII("No_Vary_Search");
   }
 
  private:
@@ -117,32 +135,7 @@ class FileOperationsTestBase : public ::testing::Test {
 };
 
 class FileOperationsInitTest : public FileOperationsTestBase {
- protected:
 };
-
-// The case where the dir already exists is implicitly tested by all the other
-// tests, so there's no explicit test for it.
-TEST_F(FileOperationsInitTest, InitCreatesDirIfMissing) {
-  // For this test we need a directory that doesn't already exist, so
-  // create a new FileOperations object for a sub-directory.
-  static constexpr std::string_view kSubDir = "subdir";
-  auto subdir_path = GetBasePath().AppendASCII(kSubDir);
-  auto operations = FileOperations::Create(GetBasePath().AppendASCII(kSubDir));
-  EXPECT_FALSE(base::PathExists(subdir_path));
-  EXPECT_TRUE(operations->Init());
-  EXPECT_TRUE(base::DirectoryExists(subdir_path));
-}
-
-TEST_F(FileOperationsInitTest, InitFailsIfDirIsFile) {
-  // For this test we need a directory that doesn't already exist, so
-  // create a new FileOperations object for a sub-directory.
-  static constexpr std::string_view kSubDir = "subdir";
-  auto subdir_path = GetBasePath().AppendASCII(kSubDir);
-  ASSERT_TRUE(base::WriteFile(subdir_path, ""));
-  auto operations = FileOperations::Create(GetBasePath().AppendASCII(kSubDir));
-  EXPECT_FALSE(operations->Init());
-  EXPECT_FALSE(base::DirectoryExists(subdir_path));
-}
 
 TEST_F(FileOperationsInitTest, InitCreateNoVarySearchDir) {
   auto nvs_path = GetNVSPath();
@@ -181,14 +174,6 @@ class FileOperationsInitWithNVSDirTest : public FileOperationsInitTest {
     EXPECT_EQ(contents, kExpected);
   }
 
-  base::FilePath GetOldPath(std::string_view filename) const {
-    return GetBasePath().AppendASCII(filename);
-  }
-
-  base::FilePath GetNewPath(std::string_view filename) const {
-    return GetNVSPath().AppendASCII(filename);
-  }
-
   // Makes a directory at `path` that won't be deleted by base::DeleteFile().
   // This is done by putting a subdirectory inside it.
   void MakeUndeletable(const base::FilePath& path) {
@@ -202,27 +187,83 @@ TEST_F(FileOperationsInitWithNVSDirTest,
   EXPECT_TRUE(Init());
 }
 
+TEST_F(FileOperationsInitWithNVSDirTest,
+       InitSucceedsWhenUnneededFilesUndeletable) {
+  const std::string temp_filename = GetTempFileName();
+  const auto filenames =
+      std::to_array<std::string_view>({kSnapshot, kJournal, temp_filename});
+  for (const base::FilePath& dir :
+       {GetLegacyPath(), GetLegacySubdirectoryPath()}) {
+    for (const std::string_view filename : filenames) {
+      MakeUndeletable(dir.AppendASCII(filename));
+    }
+  }
+  const auto nvs_file_paths =
+      base::ToVector(std::to_array<std::string_view>({kSnapshot, kJournal}),
+                     [&](std::string_view filename) {
+                       return GetNVSPath().AppendASCII(filename);
+                     });
+  for (const base::FilePath& path : nvs_file_paths) {
+    base::WriteFile(path, kExpected);
+  }
+  EXPECT_TRUE(Init());
+  for (const base::FilePath& path : nvs_file_paths) {
+    ExpectContents(path);
+  }
+}
+
+TEST_F(FileOperationsInitWithNVSDirTest, LegacySubdirectoryDeleted) {
+  base::CreateDirectory(GetLegacySubdirectoryPath());
+  EXPECT_TRUE(Init());
+  EXPECT_FALSE(base::PathExists(GetLegacySubdirectoryPath()));
+}
+
 enum class Dirs {
-  kOld,
-  kNew,
+  kLegacy,
+  kLegacySubdirectory,
+  kDedicated,
 };
 
 class FileOperationsTempDeleteTest
     : public FileOperationsInitWithNVSDirTest,
       public ::testing::WithParamInterface<Dirs> {
  protected:
+  void SetUp() override {
+    FileOperationsInitWithNVSDirTest::SetUp();
+    // All these tests request the dir to exist, so create it here.
+    ASSERT_TRUE(base::CreateDirectory(GetDir()));
+  }
+
+  base::FilePath GetDir() const {
+    switch (GetParam()) {
+      case Dirs::kLegacy:
+        return GetLegacyPath();
+      case Dirs::kLegacySubdirectory:
+        return GetLegacySubdirectoryPath();
+      case Dirs::kDedicated:
+        return GetNVSPath();
+    }
+  }
+
   base::FilePath GetTempFilePath() const {
-    const std::string filename = base::StrCat({kSnapshot, "-new"});
-    return GetParam() == Dirs::kOld ? GetOldPath(filename)
-                                    : GetNewPath(filename);
+    return GetDir().AppendASCII(GetTempFileName());
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(FileOperations,
                          FileOperationsTempDeleteTest,
-                         Values(Dirs::kOld, Dirs::kNew),
+                         Values(Dirs::kLegacy,
+                                Dirs::kLegacySubdirectory,
+                                Dirs::kDedicated),
                          [](const testing::TestParamInfo<Dirs>& info) {
-                           return info.param == Dirs::kOld ? "Old" : "New";
+                           switch (info.param) {
+                             case Dirs::kLegacy:
+                               return "Legacy";
+                             case Dirs::kLegacySubdirectory:
+                               return "LegacySubdirectory";
+                             case Dirs::kDedicated:
+                               return "Dedicated";
+                           }
                          });
 
 TEST_P(FileOperationsTempDeleteTest, TempSnapshotDeleted) {
@@ -241,60 +282,99 @@ TEST_P(FileOperationsTempDeleteTest, TempSnapshotUndeletable) {
   EXPECT_TRUE(base::PathExists(path));
 }
 
-enum class Files {
+enum class File {
   kSnapshot,
   kJournal,
 };
 
+std::string StringifyParam(File file) {
+  return file == File::kSnapshot ? "Snapshot" : "Journal";
+}
+
+struct MoveCase {
+  bool in_legacy_dir;
+  bool in_legacy_subdir;
+  bool in_dedicated;
+  std::optional<std::string_view> expected_contents;
+};
+
+std::string StringifyParam(const MoveCase& move_case) {
+  const auto& [dir, subdir, dedicated, contents] = move_case;
+  return base::StringPrintf(
+      "%c%c%c_%s", dir ? 'L' : '_', subdir ? 'S' : '_', dedicated ? 'D' : '_',
+      contents ? std::string(contents.value()).c_str() : "none");
+}
+
+constexpr auto kMoveCases = std::to_array<MoveCase>({
+    {false, false, false, std::nullopt},
+    {false, false, true, "dedicated"},
+    {false, true, false, "subdir"},
+    {false, true, true, "dedicated"},
+    {true, false, false, "legacy"},
+    {true, false, true, "dedicated"},
+    {true, true, false, "subdir"},
+    {true, true, true, "dedicated"},
+});
+
 // TODO(https://crbug.com/421927600): Remove this text fixture and tests in
 // December 2025 when removing MoveOldFilesIfNeeded() from the implementation.
-class FileOperationsMovingTest : public FileOperationsInitWithNVSDirTest,
-                                 public ::testing::WithParamInterface<Files> {
+class FileOperationsMovingTest
+    : public FileOperationsInitWithNVSDirTest,
+      public ::testing::WithParamInterface<std::tuple<File, MoveCase, bool>> {
  protected:
+  File GetFile() const { return std::get<0>(GetParam()); }
+
+  MoveCase GetMoveCase() { return std::get<1>(GetParam()); }
+
+  bool CreateEmptyDirs() { return std::get<2>(GetParam()); }
+
   std::string_view GetFilename() const {
-    return GetParam() == Files::kSnapshot ? kSnapshot : kJournal;
+    return GetFile() == File::kSnapshot ? kSnapshot : kJournal;
   }
+};
+
+constexpr auto stringify_param = [](const auto& info) {
+  auto [file, move_case, create_empty_dirs] = info.param;
+  return StringifyParam(file) + StringifyParam(move_case) +
+         (create_empty_dirs ? "_create" : "_nocreate");
 };
 
 INSTANTIATE_TEST_SUITE_P(FileOperations,
                          FileOperationsMovingTest,
-                         Values(Files::kSnapshot, Files::kJournal),
-                         [](const testing::TestParamInfo<Files>& info) {
-                           return info.param == Files::kSnapshot ? "Snapshot"
-                                                                 : "Journal";
-                         });
+                         Combine(Values(File::kSnapshot, File::kJournal),
+                                 ValuesIn(kMoveCases),
+                                 Bool()),
+                         stringify_param);
 
-TEST_P(FileOperationsMovingTest, MovedIfOldPathExists) {
+TEST_P(FileOperationsMovingTest, Move) {
   const auto filename = GetFilename();
-  const auto old_path = GetOldPath(filename);
-  ASSERT_TRUE(base::WriteFile(old_path, kExpected));
+  const auto [in_legacy_dir, in_legacy_subdir, in_dedicated,
+              expected_contents] = GetMoveCase();
+  auto write_file_if_true = [&](bool write, const base::FilePath& path,
+                                std::string_view contents) {
+    if (write || CreateEmptyDirs()) {
+      EXPECT_TRUE(base::CreateDirectory(path));
+    }
+    return write ? base::WriteFile(path.AppendASCII(filename), contents) : true;
+  };
+  ASSERT_TRUE(write_file_if_true(in_legacy_dir, GetLegacyPath(), "legacy"));
+  ASSERT_TRUE(write_file_if_true(in_legacy_subdir, GetLegacySubdirectoryPath(),
+                                 "subdir"));
+  ASSERT_TRUE(write_file_if_true(in_dedicated, GetNVSPath(), "dedicated"));
   EXPECT_TRUE(Init());
-  EXPECT_FALSE(base::PathExists(old_path));
-  ExpectContents(GetNewPath(filename));
-}
-
-TEST_P(FileOperationsMovingTest, DeletedIfTargetExists) {
-  const auto filename = GetFilename();
-  const auto new_path = GetNewPath(filename);
-  ASSERT_TRUE(base::WriteFile(new_path, kExpected));
-  const auto old_path = GetOldPath(filename);
-  ASSERT_TRUE(base::WriteFile(old_path, kUnexpected));
-  EXPECT_TRUE(Init());
-  ExpectContents(new_path);
-  EXPECT_FALSE(base::PathExists(old_path));
-}
-
-TEST_P(FileOperationsMovingTest, NoErrorIfUndeletable) {
-  const auto filename = GetFilename();
-  const auto new_path = GetNewPath(filename);
-  ASSERT_TRUE(base::WriteFile(new_path, kExpected));
-  const auto old_path = GetOldPath(filename);
-  MakeUndeletable(old_path);
-  // This failure is considered harmless, so Init() returns true.
-  EXPECT_TRUE(Init());
-  ExpectContents(new_path);
-  // It still exists, but nothing bad happens.
-  EXPECT_TRUE(base::PathExists(old_path));
+  auto exists_in = [&](const base::FilePath& path) {
+    return base::PathExists(path.AppendASCII(filename));
+  };
+  EXPECT_FALSE(exists_in(GetLegacyPath()));
+  EXPECT_FALSE(exists_in(GetLegacySubdirectoryPath()));
+  if (expected_contents) {
+    std::string contents;
+    ASSERT_TRUE(
+        base::ReadFileToString(GetNVSPath().AppendASCII(filename), &contents));
+    EXPECT_EQ(contents, expected_contents.value());
+  } else {
+    EXPECT_FALSE(exists_in(GetNVSPath()));
+  }
 }
 
 // We need a way to make a path that can't be moved by base::ReplaceFile().
@@ -332,9 +412,10 @@ class [[nodiscard]] ScopedUnmovablePath : public ScopedUnmovablePathBase {
 
   ~ScopedUnmovablePath() {
     using enum base::FilePermissionBits;
-    EXPECT_TRUE(base::SetPosixFilePermissions(
-        path(), FILE_PERMISSION_READ_BY_USER | FILE_PERMISSION_WRITE_BY_USER |
-                    FILE_PERMISSION_EXECUTE_BY_USER));
+    // This is permitted to fail if the directory has been deleted.
+    base::SetPosixFilePermissions(path(), FILE_PERMISSION_READ_BY_USER |
+                                              FILE_PERMISSION_WRITE_BY_USER |
+                                              FILE_PERMISSION_EXECUTE_BY_USER);
   }
 };
 
@@ -383,13 +464,32 @@ TEST_P(FileOperationsMovingTest, NoErrorOnUnmovableFile) {
   }
 
   const auto filename = GetFilename();
-  const auto old_path = GetOldPath(filename);
-  ScopedUnmovablePath make_unmovable(old_path);
+  const auto [in_legacy_dir, in_legacy_subdir, in_dedicated, _] = GetMoveCase();
+  const auto emplace_if_true =
+      [&](bool emplace, const base::FilePath& in_directory,
+          std::optional<ScopedUnmovablePath>& maybe_unmovable) {
+        if (emplace) {
+          EXPECT_TRUE(base::CreateDirectory(in_directory));
+          maybe_unmovable.emplace(in_directory.AppendASCII(filename));
+        }
+      };
+  std::optional<ScopedUnmovablePath> maybe_in_legacy_dir;
+  emplace_if_true(in_legacy_dir, GetLegacyPath(), maybe_in_legacy_dir);
+  std::optional<ScopedUnmovablePath> maybe_in_legacy_subdir;
+  emplace_if_true(in_legacy_subdir, GetLegacySubdirectoryPath(),
+                  maybe_in_legacy_subdir);
+  const base::FilePath dedicated_filepath = GetNVSPath().AppendASCII(filename);
+  if (in_dedicated) {
+    EXPECT_TRUE(base::CreateDirectory(GetNVSPath()));
+    base::WriteFile(dedicated_filepath, kExpected);
+  }
   // This failure is considered harmless, so Init() returns true.
   EXPECT_TRUE(Init());
-  EXPECT_FALSE(base::PathExists(GetNewPath(filename)));
-  // It still exists, but nothing bad happens.
-  EXPECT_TRUE(base::PathExists(old_path));
+  if (in_dedicated) {
+    ExpectContents(dedicated_filepath);
+  } else {
+    EXPECT_FALSE(base::PathExists(dedicated_filepath));
+  }
 }
 
 class FileOperationsPostInitTest : public FileOperationsTestBase {

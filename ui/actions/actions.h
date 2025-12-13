@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -20,12 +19,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/actions/action_id.h"
-#include "ui/actions/action_utils.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
+
+namespace base {
+class CallbackListSubscription;
+}
 
 namespace actions {
 
@@ -508,6 +510,11 @@ class COMPONENT_EXPORT(ACTIONS) StatefulImageActionItem : public ActionItem {
   ui::ImageModel stateful_image_;
 };
 
+template <typename A>
+bool IsActionItemClass(ActionItem* action_item) {
+  return ui::metadata::IsClass<A, ActionItem>(action_item);
+}
+
 class COMPONENT_EXPORT(ACTIONS) ActionManager
     : public ui::metadata::MetaDataProvider {
  public:
@@ -610,6 +617,12 @@ class COMPONENT_EXPORT(ACTIONS) ActionIdMap {
   static std::optional<StringToActionIdMap>& GetGlobalStringToActionIdMap();
   static ActionIdToStringMap& GetActionIdToStringMap();
   static StringToActionIdMap& GetStringToActionIdMap();
+};
+
+enum class ActionPinnableState {
+  kNotPinnable = 0,
+  kPinnable = 1,
+  kEnterpriseControlled = 2,
 };
 
 COMPONENT_EXPORT(ACTIONS)

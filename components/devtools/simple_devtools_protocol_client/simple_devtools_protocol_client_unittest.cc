@@ -97,8 +97,8 @@ class SimpleDevToolsProtocolClientEventHandlerTest
     base::Value::Dict params;
     params.Set("method", event_name);
 
-    std::string json;
-    base::JSONWriter::Write(base::Value(std::move(params)), &json);
+    std::string json =
+        base::WriteJson(base::Value(std::move(params))).value_or("");
     DispatchProtocolMessage(agent_host_.get(), base::as_byte_span(json));
     RunUntilIdle();
   }

@@ -15,7 +15,6 @@ import time
 from typ import expectations_parser
 
 import gpu_path_util
-from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests.util import host_information
@@ -227,7 +226,9 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       browser_args.append(
           f'--disable-dawn-features={",".join(disable_dawn_features)}')
 
-    browser_args.extend(cba.ENABLE_WEBGPU_FOR_TESTING)
+    browser_args.append('--enable-unsafe-webgpu')
+    browser_args.append('--enable-webgpu-developer-features')
+
     if cls._use_webgpu_adapter:
       browser_args.append(f'--use-webgpu-adapter={cls._use_webgpu_adapter}')
     if cls._use_webgpu_power_preference:

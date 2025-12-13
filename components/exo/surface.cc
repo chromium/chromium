@@ -59,7 +59,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -83,9 +82,7 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(exo::Surface*)
 
 namespace exo {
 
-BASE_FEATURE(kDisableNonYUVOverlaysFromExo,
-             "DisableNonYUVOverlaysFromExo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDisableNonYUVOverlaysFromExo, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -314,12 +311,6 @@ const std::string& GetApplicationId(aura::Window* window) {
 
 int surface_id = 0;
 
-void ImmediateExplicitRelease(
-    Buffer::PerCommitExplicitReleaseCallback callback) {
-  if (callback)
-    std::move(callback).Run(/*release_fence=*/gfx::GpuFenceHandle());
-}
-
 }  // namespace
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kClientSurfaceIdKey)
@@ -372,13 +363,6 @@ Surface::~Surface() {
                                        pending_state_.presentation_callbacks);
   for (const auto& presentation_callback : state_.presentation_callbacks)
     presentation_callback.Run(gfx::PresentationFeedback());
-
-  // Call explicit release on all explicit release callbacks that have been
-  // committed.
-  ImmediateExplicitRelease(
-      std::move(state_.per_commit_explicit_release_callback_));
-  ImmediateExplicitRelease(
-      std::move(cached_state_.per_commit_explicit_release_callback_));
 
   // Do not reset the DragDropDelegate in order to handle exit upon deletion.
 }
@@ -523,7 +507,7 @@ void Surface::AddSubSurface(Surface* sub_surface) {
   // The shell might have not be added to the root yet.
   if (window_->GetRootWindow()) {
     auto display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window_.get());
+        display::Screen::Get()->GetDisplayNearestWindow(window_.get());
     sub_surface->UpdateDisplay(display::kInvalidDisplayId, display.id());
   }
 }
@@ -962,17 +946,6 @@ bool Surface::HasAcquireFence() const {
   return !!state_.acquire_fence;
 }
 
-void Surface::SetPerCommitBufferReleaseCallback(
-    Buffer::PerCommitExplicitReleaseCallback callback) {
-  TRACE_EVENT0("exo", "Surface::SetPerCommitBufferReleaseCallback");
-
-  pending_state_.per_commit_explicit_release_callback_ = std::move(callback);
-}
-
-bool Surface::HasPendingPerCommitBufferReleaseCallback() const {
-  return !!pending_state_.per_commit_explicit_release_callback_;
-}
-
 void Surface::Commit() {
   TRACE_EVENT1(
       "exo", "Surface::Commit", "buffer_id",
@@ -1012,8 +985,6 @@ void Surface::Commit() {
   cached_state_.clip_rect = pending_state_.clip_rect;
   cached_state_.surface_transform = pending_state_.surface_transform;
   cached_state_.acquire_fence = std::move(pending_state_.acquire_fence);
-  cached_state_.per_commit_explicit_release_callback_ =
-      std::move(pending_state_.per_commit_explicit_release_callback_);
   cached_state_.frame_callbacks.splice(cached_state_.frame_callbacks.end(),
                                        pending_state_.frame_callbacks);
   cached_state_.damage.Union(pending_state_.damage);
@@ -1058,7 +1029,7 @@ bool Surface::UpdateDisplay(int64_t old_display, int64_t new_display) {
 }
 
 display::Display Surface::GetDisplay() const {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window());
+  return display::Screen::Get()->GetDisplayNearestWindow(window());
 }
 
 void Surface::CommitSurfaceHierarchy(bool synchronized) {
@@ -1182,8 +1153,6 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       state_.clip_rect = cached_state_.clip_rect;
       state_.surface_transform = cached_state_.surface_transform;
       state_.acquire_fence = std::move(cached_state_.acquire_fence);
-      state_.per_commit_explicit_release_callback_ =
-          std::move(cached_state_.per_commit_explicit_release_callback_);
       if (state_.basic_state.alpha)
         needs_update_resource_ = true;
     }
@@ -1197,8 +1166,6 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
     // a new buffer, and it was already moved to state_.acquire_fence. Note that
     // it is a commit-time client error to commit a fence without a buffer.
     DCHECK(!cached_state_.acquire_fence);
-    // Similarly for the per commit buffer release callback.
-    DCHECK(!cached_state_.per_commit_explicit_release_callback_);
 
     if (needs_update_buffer_transform)
       UpdateBufferTransform(cached_invert_y);
@@ -1355,9 +1322,6 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
   // callback, since the buffer will not be used for this commit.
   if (needs_update_resource_) {
     UpdateResource(resource_manager);
-  } else {
-    ImmediateExplicitRelease(
-        std::move(state_.per_commit_explicit_release_callback_));
   }
 
   AppendContentsToFrame(parent_to_root_px, to_parent_dp, needs_full_damage,
@@ -1525,36 +1489,16 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
   needs_update_resource_ = false;
   if (state_.buffer.has_value() && state_.buffer->buffer()) {
     gfx::ColorSpace buffer_color_space = state_.basic_state.color_space;
-    // Invalid color spaces cause issues went sent to the buffer. In these cases
-    // revert to passing SRGB as before.
-    if (!buffer_color_space.IsValid()) {
-      buffer_color_space = gfx::ColorSpace::CreateSRGB();
-    }
-    if (legacy_buffer_release_skippable_ &&
-        state_.per_commit_explicit_release_callback_) {
-      state_.buffer->buffer()->SkipLegacyRelease();
-    }
-    // TODO(crbug.com/421207623): These only two fields that might be preserved
-    // across calls. Preserving synchronization type is likely bug and we should
-    // move sync token inside.
-    auto prev_sync_token =
-        current_resource_.value_or(viz::TransferableResource()).sync_token();
-    auto prev_synchronization_type =
-        current_resource_.value_or(viz::TransferableResource())
-            .synchronization_type;
 
     current_resource_ = state_.buffer->buffer()->ProduceTransferableResource(
         resource_manager, std::move(state_.acquire_fence),
         state_.basic_state.only_visible_on_secure_output, buffer_color_space,
         window_->GetToplevelWindow()->GetProperty(
-            kProtectedNativePixmapQueryDelegate),
-        std::move(state_.per_commit_explicit_release_callback_),
-        prev_sync_token, prev_synchronization_type);
+            kProtectedNativePixmapQueryDelegate));
 
     if (current_resource_) {
       current_resource_has_alpha_ =
           state_.buffer->buffer()->GetFormat().HasAlpha();
-      current_resource_->color_space = state_.basic_state.color_space;
     } else {
       SkColor4f color = state_.buffer->buffer()->GetColor();
       current_resource_has_alpha_ = !color.isOpaque();
@@ -1562,8 +1506,6 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
   } else {
     current_resource_.reset();
     current_resource_has_alpha_ = false;
-    ImmediateExplicitRelease(
-        std::move(state_.per_commit_explicit_release_callback_));
   }
 }
 
@@ -1771,26 +1713,31 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
 
   if (current_resource_) {
     CHECK(current_resource_->id);
-    gfx::RectF uv_crop(gfx::SizeF(1, 1));
+    gfx::RectF tex_coord_rect(gfx::SizeF(1, 1));
     if (!state_.basic_state.crop.IsEmpty()) {
       // The crop rectangle is a post-transformation rectangle. To get the UV
       // coordinates, we need to convert it to normalized buffer coordinates and
       // pass them through the inverse of the buffer transformation.
-      uv_crop = gfx::RectF(state_.basic_state.crop);
+      tex_coord_rect = gfx::RectF(state_.basic_state.crop);
       gfx::Size transformed_buffer_size(ToTransformedSize(
-          current_resource_->size, state_.basic_state.buffer_transform));
+          current_resource_->GetSize(), state_.basic_state.buffer_transform));
       if (!transformed_buffer_size.IsEmpty()) {
-        uv_crop.InvScale(transformed_buffer_size.width(),
-                         transformed_buffer_size.height());
+        tex_coord_rect.InvScale(transformed_buffer_size.width(),
+                                transformed_buffer_size.height());
       }
-      uv_crop = buffer_transform_.InverseMapRect(uv_crop).value_or(uv_crop);
+      tex_coord_rect = buffer_transform_.InverseMapRect(tex_coord_rect)
+                           .value_or(tex_coord_rect);
     }
 
+    const gfx::Size resource_size = current_resource_->GetSize();
+    tex_coord_rect.Scale(resource_size.width(), resource_size.height());
+
     SkColor4f background_color = SkColors::kTransparent;
-    if (state_.basic_state.background_color.has_value())
+    if (state_.basic_state.background_color.has_value()) {
       background_color = state_.basic_state.background_color.value();
-    else if (current_resource_has_alpha_ && are_contents_opaque)
+    } else if (current_resource_has_alpha_ && are_contents_opaque) {
       background_color = SkColors::kBlack;  // Avoid writing alpha < 1
+    }
 
     if (state_.basic_state.alpha != 0.0f) {
       // Our historical implementation of the wayland blending protocol is to
@@ -1808,12 +1755,14 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                          /*layer_id=*/0u, /*fast_rounded_corner=*/false);
       viz::TextureDrawQuad* texture_quad =
           render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-      texture_quad->SetNew(
-          quad_state, quad_rect, quad_rect,
-          /* needs_blending=*/!are_contents_opaque, current_resource_->id,
-          uv_crop.origin(), uv_crop.bottom_right(), background_color,
-          /* nearest*/ false, state_.basic_state.only_visible_on_secure_output,
-          gfx::ProtectedVideoType::kClear);
+      texture_quad->SetNew(quad_state, quad_rect, quad_rect,
+                           /* needs_blending=*/!are_contents_opaque,
+                           current_resource_->id, tex_coord_rect.origin(),
+                           tex_coord_rect.bottom_right(), background_color,
+                           /* nearest*/ false,
+                           state_.basic_state.only_visible_on_secure_output,
+                           gfx::ProtectedVideoType::kClear,
+                           /*is_tex_coords_normalized=*/false);
 
       if (force_rgbx_for_opaque) {
         UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.ForceRGBAForOpaque", true);

@@ -497,7 +497,7 @@ TabProperty UserActivityManager::UpdateOpenTabURL() {
   TabProperty property;
   property.source_id = source_id;
   // Domain could be empty.
-  property.domain = contents->GetLastCommittedURL().host();
+  property.domain = contents->GetLastCommittedURL().GetHost();
   // Engagement score could be -1 if engagement service is disabled.
   property.engagement_score = GetRoundedOrInvalidEngagementScore(contents);
   property.has_form_entry = FormInteractionTabHelper::FromWebContents(contents)

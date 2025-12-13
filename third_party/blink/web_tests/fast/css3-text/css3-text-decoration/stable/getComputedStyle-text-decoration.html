@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<script src="../../../../resources/js-test.js"></script>
-<div id="target" style="text-decoration: underline;">This text should be underlined</div>
-<script>
-description("Test that computed style for text-decoration is correctly represented.");
-
-var decoration = getComputedStyle(target).textDecoration;
-shouldBe("decoration", "'underline solid rgb(0, 0, 0)'");
-</script>

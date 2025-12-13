@@ -12,6 +12,7 @@
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_selector.h"
 #include "v8/include/v8-container.h"
@@ -35,7 +36,8 @@ void RunDeclarativeContentHooksDelegateHandlerCallback(
   v8::Local<v8::External> external = info.Data().As<v8::External>();
   auto* callback =
       static_cast<DeclarativeContentHooksDelegate::HandlerCallback*>(
-          external->Value());
+          external->Value(
+              gin::kDeclarativeContentHooksDelegateHandlerCallbackTag));
   callback->Run(info);
 }
 
@@ -198,7 +200,9 @@ void DeclarativeContentHooksDelegate::InitializeTemplate(
         gin::StringToSymbol(isolate, type.exposed_name),
         v8::FunctionTemplate::New(
             isolate, &RunDeclarativeContentHooksDelegateHandlerCallback,
-            v8::External::New(isolate, callbacks_.back().get())));
+            v8::External::New(
+                isolate, callbacks_.back().get(),
+                gin::kDeclarativeContentHooksDelegateHandlerCallbackTag)));
   }
 }
 

@@ -15,7 +15,7 @@ Tests DOMSnapshot.getSnapshot method with includeUserAgentShadowTree defaulted t
             layoutNodeIndex : 0
             nodeName : #document
             nodeType : 9
-            nodeValue : 
+            nodeValue :
             scrollOffsetX : 0
             scrollOffsetY : 0
         }
@@ -29,13 +29,13 @@ Tests DOMSnapshot.getSnapshot method with includeUserAgentShadowTree defaulted t
             layoutNodeIndex : 1
             nodeName : HTML
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [2] : {
             backendNodeId : <number>
             nodeName : HEAD
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [3] : {
             backendNodeId : <number>
@@ -49,7 +49,7 @@ Tests DOMSnapshot.getSnapshot method with includeUserAgentShadowTree defaulted t
             layoutNodeIndex : 2
             nodeName : BODY
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [4] : {
             backendNodeId : <number>
@@ -72,14 +72,14 @@ Tests DOMSnapshot.getSnapshot method with includeUserAgentShadowTree defaulted t
             layoutNodeIndex : 3
             nodeName : DIV
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [6] : {
             backendNodeId : <number>
             layoutNodeIndex : 4
             nodeName : TEXTAREA
             nodeType : 1
-            nodeValue : 
+            nodeValue :
             shadowRootType : open
             textValue : hello hello!
         }
@@ -94,7 +94,7 @@ Tests DOMSnapshot.getSnapshot method with includeUserAgentShadowTree defaulted t
             layoutNodeIndex : 5
             nodeName : VIDEO
             nodeType : 1
-            nodeValue : 
+            nodeValue :
             shadowRootType : open
         }
         [8] : {
@@ -111,7 +111,7 @@ Tests DOMSnapshot.getSnapshot method with includeUserAgentShadowTree defaulted t
             layoutNodeIndex : 6
             nodeName : TEXTAREA
             nodeType : 1
-            nodeValue : 
+            nodeValue :
             textValue : This textarea has a child text node!
         }
         [10] : {

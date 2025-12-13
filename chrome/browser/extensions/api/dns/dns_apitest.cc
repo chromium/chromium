@@ -17,6 +17,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/dns/dns_api.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_paths.h"
@@ -29,6 +30,8 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_dns_util.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -125,10 +128,8 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
       network::BlockingDnsLookup(network_context, host_port_pair,
                                  std::move(params), network_anonymization_key);
   EXPECT_EQ(net::OK, result1.error);
-  ASSERT_TRUE(result1.resolved_addresses.has_value());
-  ASSERT_EQ(1u, result1.resolved_addresses->size());
-  EXPECT_EQ(kAddress,
-            result1.resolved_addresses.value()[0].ToStringWithoutPort());
+  ASSERT_EQ(1u, result1.resolved_addresses.size());
+  EXPECT_EQ(kAddress, result1.resolved_addresses[0].ToStringWithoutPort());
 
   // Check that the entry isn't present in the cache with the empty
   // NetworkAnonymizationKey.

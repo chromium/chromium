@@ -41,7 +41,7 @@ class ContentHashUnittest : public ExtensionsTest {
 
   scoped_refptr<Extension> LoadExtension(
       const content_verifier_test_utils::TestExtensionBuilder& builder) {
-    std::string error;
+    std::u16string error;
     scoped_refptr<Extension> extension = file_util::LoadExtension(
         builder.extension_path(), builder.extension_id(),
         mojom::ManifestLocation::kInternal, 0 /* flags */, &error);
@@ -62,7 +62,7 @@ class ContentHashUnittest : public ExtensionsTest {
     ASSERT_TRUE(base::CopyDirectory(builder.extension_path(),
                                     temp_dir.GetPath(), /*recursive=*/true));
 
-    std::string error;
+    std::u16string error;
     auto extension = file_util::LoadExtension(
         temp_dir.GetPath().Append(builder.extension_path().BaseName()),
         override_extension_id, mojom::ManifestLocation::kInternal,

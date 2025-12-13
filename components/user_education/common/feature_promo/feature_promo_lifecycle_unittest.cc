@@ -46,7 +46,8 @@ constexpr char kAppName[] = "App1";
 constexpr char kAppName2[] = "App2";
 constexpr int kNumRotatingPromos = 3;
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
-const ui::ElementContext kTestElementContext{1};
+constexpr ui::ElementContext kTestElementContext =
+    ui::ElementContext::CreateFakeContextForTesting(1);
 
 template <typename Arg, typename... Args>
 std::string ParamToString(

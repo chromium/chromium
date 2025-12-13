@@ -20,6 +20,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/win/com_init_util.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -57,9 +58,7 @@ ProtectionLevel AddFlags(ProtectionLevel protection_level,
 }  // namespace
 
 namespace features {
-BASE_FEATURE(kAppBoundDataReencrypt,
-             "AppBoundDataReencrypt",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAppBoundDataReencrypt, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
@@ -107,6 +106,16 @@ SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
     // App-Bound binds the encryption key to the SYSTEM DPAPI key, which does
     // not roam with a roaming profile.
     if (profile_type > 0) {
+      return SupportLevel::kDisabledByRoamingWindowsProfile;
+    }
+  }
+
+  // https://learn.microsoft.com/en-us/fslogix/ is a roaming profile solution
+  // that does not use profile type. Detect it explicitly here.
+  for (const auto access_mask : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+    if (base::win::RegKey{}.Open(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FSLogix",
+                                 KEY_QUERY_VALUE | access_mask) ==
+        ERROR_SUCCESS) {
       return SupportLevel::kDisabledByRoamingWindowsProfile;
     }
   }

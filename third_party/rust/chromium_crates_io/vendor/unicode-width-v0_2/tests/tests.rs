@@ -598,9 +598,10 @@ fn ambiguous_line_break() {
 }
 
 #[test]
-fn test_vs1_vs2() {
+fn test_vs1_vs2_vs3() {
     assert_width!('\u{FE00}', Some(0), Some(0));
     assert_width!('\u{FE01}', Some(0), Some(0));
+    assert_width!('\u{FE02}', Some(0), Some(0));
     for c in '\0'..=char::MAX {
         if matches!(c, '\u{2018}' | '\u{2019}' | '\u{201C}' | '\u{201D}') {
             assert_width!(c, Some(1), Some(2));
@@ -608,6 +609,8 @@ fn test_vs1_vs2() {
             assert_width!(format!("{c}\u{FE00}\u{FE01}"), 1, 1);
             assert_width!(format!("{c}\u{FE01}"), 2, 2);
             assert_width!(format!("{c}\u{FE01}\u{FE00}"), 2, 2);
+            assert_width!(format!("{c}\u{FE02}"), 1, 1);
+            assert_width!(format!("{c}\u{FE02}\u{FE01}"), 1, 1);
         } else {
             assert_eq!(
                 format!("{c}\u{FE00}").width(),
@@ -628,6 +631,17 @@ fn test_vs1_vs2() {
             #[cfg(feature = "cjk")]
             assert_eq!(
                 format!("{c}\u{FE01}").width_cjk(),
+                c.width_cjk().unwrap_or(1),
+                "{c:?}"
+            );
+            assert_eq!(
+                format!("{c}\u{FE02}").width(),
+                c.width().unwrap_or(1),
+                "{c:?}"
+            );
+            #[cfg(feature = "cjk")]
+            assert_eq!(
+                format!("{c}\u{FE02}").width_cjk(),
                 c.width_cjk().unwrap_or(1),
                 "{c:?}"
             );

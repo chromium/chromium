@@ -94,29 +94,14 @@ const char kInstallLevel[] = "install-level";
 // If present, specify file path to write logging info.
 const char kLogFile[] = "log-file";
 
-// Register Chrome as default browser on the system. Usually this will require
-// that setup is running as admin. If running as admin we try to register
-// as default browser at system level, if running as non-admin we try to
-// register as default browser only for the current user.
-const char kMakeChromeDefault[] = "make-chrome-default";
-
 // Tells installer to expect to be run as a subsidiary to an MSI.
 const char kMsi[] = "msi";
-
-// Useful only when used with --update-setup-exe; otherwise ignored. Specifies
-// the full path where the updated setup.exe will be written. Any other files
-// created in the indicated directory may be deleted by the caller after process
-// termination.
-const char kNewSetupExe[] = "new-setup-exe";
 
 // Specifies a nonce to use with the rotate device key command.
 const char kNonce[] = "nonce";
 
 // Notify the installer that the OS has been upgraded.
 const char kOnOsUpgrade[] = "on-os-upgrade";
-
-// Provide the previous version that patch is for.
-const char kPreviousVersion[] = "previous-version";
 
 // Requests that setup attempt to reenable autoupdates for Chrome.
 const char kReenableAutoupdates[] = "reenable-autoupdates";
@@ -174,11 +159,6 @@ const char kTriggerActiveSetup[] = "trigger-active-setup";
 
 // If present, setup will uninstall chrome.
 const char kUninstall[] = "uninstall";
-
-// Also see --new-setup-exe. This command line option specifies a diff patch
-// that setup.exe will apply to itself and store the resulting binary in the
-// path given by --new-setup-exe.
-const char kUpdateSetupExe[] = "update-setup-exe";
 
 // Enable verbose logging (info level).
 const char kVerboseLogging[] = "verbose-logging";

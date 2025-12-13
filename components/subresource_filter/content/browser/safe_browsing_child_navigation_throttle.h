@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/subresource_filter/content/shared/browser/child_frame_navigation_filtering_throttle.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_filtering_throttle.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 
 class GURL;

@@ -718,6 +718,70 @@ ValuePtr value = Value::NewIntValue(42);
 LOG(INFO) << "Value is " << value->get_string_value();  // DCHECK!
 ```
 
+### Result
+
+Methods may use a special `result<T,E>` type to express that a method may either
+return a message of type T on success and a message of type E on failure. This
+type maps to `base::expected` in C++.
+
+For example, consider the following Mojom method:
+
+```mojom
+module foo.mojom;
+
+struct Success {
+  int64 elapsed_ms;
+};
+
+struct Failure {
+  string reason;
+};
+
+interface Iface {
+  DoSomething() => result<Success, Failure>;
+};
+```
+
+This would generate a C++ interface like so:
+
+```cpp
+namespace foo::mojom {
+
+class Iface {
+  virtual ~IFace() {}
+
+  virtual void DoSomething(DoSomethingCallback callback) = 0;
+};
+
+}  // namespace foo::mojom
+```
+
+`DoSomethingCallback` takes a base::expected as the single parameter. If the
+API invocation was successful, the callback can be invoked with `base::ok`
+along with the success type. If the API invocation was unsuccessful, the
+callback can be invoked with `base::unexpected` along with the error type.
+For example:
+
+```cpp
+namespace foo {
+
+class IfaceImpl : public mojom::Iface {
+  DoSomething(DoSomethingCallback callback) override {
+    if (success) {
+      auto success = mojom::Success::New();
+      success->elapsed_ms = 9001;
+      callback.Run(base::ok(std::move(success)));
+    } else {
+      auto failure = mojom::Failure::New();
+      failure->reason = "too hard!";
+      callback.Run(base::unexpected(std::move(failure)));
+    }
+  }
+};
+
+} // namespace foo
+```
+
 ### Features
 
 Mojom `feature` generates a `base::Feature` with the given `name` and

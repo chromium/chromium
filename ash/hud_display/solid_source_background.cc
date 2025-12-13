@@ -6,7 +6,7 @@
 
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
-#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view.h"
 
@@ -32,7 +32,7 @@ void SolidSourceBackground::Paint(gfx::Canvas* canvas,
     const SkScalar right_edge = view->width();
     const SkScalar bottom_edge = view->height();
 
-    SkPath path;
+    SkPathBuilder path;
     path.moveTo(0, bottom_edge);
     // |false| will draw straight line to the start of the arc.
     path.arcTo({0, 0, circle_size, circle_size}, -180, 90, false);
@@ -45,7 +45,7 @@ void SolidSourceBackground::Paint(gfx::Canvas* canvas,
     flags.setBlendMode(SkBlendMode::kSrc);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setColor(resolved_color);
-    canvas->DrawPath(path, flags);
+    canvas->DrawPath(path.detach(), flags);
   }
 }
 

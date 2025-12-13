@@ -137,7 +137,7 @@ TEST_F(AutoPipSettingViewTest, TestBubbleTitleNoElide) {
   widget->Show();
 
   // Verify that the bubble title contains the origin.
-  EXPECT_EQ(base::UTF16ToUTF8(origin_text), origin().host());
+  EXPECT_EQ(base::UTF16ToUTF8(origin_text), origin().GetHost());
 }
 
 TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForNonFileURL) {

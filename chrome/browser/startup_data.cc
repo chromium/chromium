@@ -68,11 +68,15 @@ base::FilePath GetProfilePath() {
 
 #endif
 
-StartupData::StartupData()
-    : chrome_feature_list_creator_(
-          std::make_unique<ChromeFeatureListCreator>()) {}
+StartupData::StartupData() = default;
 
 StartupData::~StartupData() = default;
+
+// TODO(martinkong): Remove this function and replace its usage with
+// ChromeFeatureListCreator::GetInstance()
+ChromeFeatureListCreator* StartupData::chrome_feature_list_creator() {
+  return ChromeFeatureListCreator::GetInstance();
+}
 
 void StartupData::RecordCoreSystemProfile() {
   metrics::SystemProfileProto system_profile;
@@ -80,7 +84,7 @@ void StartupData::RecordCoreSystemProfile() {
       metrics::GetVersionString(),
       metrics::AsProtobufChannel(chrome::GetChannel()),
       chrome::IsExtendedStableChannel(),
-      chrome_feature_list_creator_->actual_locale(),
+      chrome_feature_list_creator()->actual_locale(),
       metrics::GetAppPackageName(), &system_profile);
 
   metrics::DelegatingProvider delegating_provider;
@@ -94,7 +98,7 @@ void StartupData::RecordCoreSystemProfile() {
   // Persists low entropy source values.
   delegating_provider.RegisterMetricsProvider(
       std::make_unique<metrics::EntropyStateProvider>(
-          chrome_feature_list_creator_->local_state()));
+          chrome_feature_list_creator()->local_state()));
 
   delegating_provider.ProvideSystemProfileMetricsWithLogCreationTime(
       base::TimeTicks(), &system_profile);
@@ -211,6 +215,7 @@ void StartupData::CreateServicesInternal() {
       std::make_unique<policy::SchemaRegistry>();
   schema_registry_service_ = BuildSchemaRegistryService(
       std::move(schema_registry), browser_policy_connector->GetChromeSchema(),
+      browser_policy_connector->GetExtensionInstallPolicySchema(),
       browser_policy_connector->GetSchemaRegistry());
 
   user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
@@ -227,7 +232,7 @@ void StartupData::CreateServicesInternal() {
       true /* force_immediate_policy_load*/, nullptr /* user */);
 
   RegisterProfilePrefs(false /* is_signin_profile */,
-                       chrome_feature_list_creator_->actual_locale(),
+                       chrome_feature_list_creator()->actual_locale(),
                        pref_registry_.get());
 
   mojo::PendingRemote<prefs::mojom::TrackedPreferenceValidationDelegate>

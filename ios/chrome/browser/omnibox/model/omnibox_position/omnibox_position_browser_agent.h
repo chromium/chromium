@@ -13,7 +13,6 @@
 
 // A browser agent that stores the position of the omnibox in the given browser
 // and allows other objects to observe this.
-// TODO(crbug.com/396462415): Rename the class to include OmniboxStateProvider.
 // Note that this class is referring to the browser's omnibox, omnibox is also
 // used in lens overlay.
 class OmniboxPositionBrowserAgent

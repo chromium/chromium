@@ -12,7 +12,6 @@ AXWebArea
 ++++AXGroup
 ++AXComboBox AXLinkedUIElements=[:14]
 ++AXTable
-++++AXGroup
-++++++AXRow AXTitle='Treegrid row'
-++++++++AXStaticText AXValue='Treegrid row'
+++++AXRow AXTitle='Treegrid row'
+++++++AXStaticText AXValue='Treegrid row'
 ++++AXGroup

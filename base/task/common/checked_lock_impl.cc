@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
 #include "base/threading/platform_thread.h"
@@ -138,8 +138,10 @@ class SafeAcquisitionTracker {
   RAW_PTR_EXCLUSION ThreadLocalOwnedPointer<LockVector> tls_acquired_locks_;
 };
 
-LazyInstance<SafeAcquisitionTracker>::Leaky g_safe_acquisition_tracker =
-    LAZY_INSTANCE_INITIALIZER;
+SafeAcquisitionTracker& GetSafeAcquisitionTracker() {
+  static base::NoDestructor<SafeAcquisitionTracker> tracker;
+  return *tracker;
+}
 
 }  // namespace
 
@@ -147,7 +149,7 @@ CheckedLockImpl::CheckedLockImpl() : CheckedLockImpl(nullptr) {}
 
 CheckedLockImpl::CheckedLockImpl(const CheckedLockImpl* predecessor) {
   DCHECK(predecessor == nullptr || !predecessor->is_universal_successor_);
-  g_safe_acquisition_tracker.Get().RegisterLock(this, predecessor);
+  GetSafeAcquisitionTracker().RegisterLock(this, predecessor);
 }
 
 CheckedLockImpl::CheckedLockImpl(UniversalPredecessor)
@@ -155,25 +157,25 @@ CheckedLockImpl::CheckedLockImpl(UniversalPredecessor)
 
 CheckedLockImpl::CheckedLockImpl(UniversalSuccessor)
     : is_universal_successor_(true) {
-  g_safe_acquisition_tracker.Get().RegisterLock(this, nullptr);
+  GetSafeAcquisitionTracker().RegisterLock(this, nullptr);
 }
 
 CheckedLockImpl::~CheckedLockImpl() {
-  g_safe_acquisition_tracker.Get().UnregisterLock(this);
+  GetSafeAcquisitionTracker().UnregisterLock(this);
 }
 
 void CheckedLockImpl::AssertNoLockHeldOnCurrentThread() {
-  g_safe_acquisition_tracker.Get().AssertNoLockHeldOnCurrentThread();
+  GetSafeAcquisitionTracker().AssertNoLockHeldOnCurrentThread();
 }
 
 void CheckedLockImpl::Acquire(subtle::LockTracking tracking) {
   lock_.Acquire(tracking);
-  g_safe_acquisition_tracker.Get().RecordAcquisition(this);
+  GetSafeAcquisitionTracker().RecordAcquisition(this);
 }
 
 void CheckedLockImpl::Release() {
   lock_.Release();
-  g_safe_acquisition_tracker.Get().RecordRelease(this);
+  GetSafeAcquisitionTracker().RecordRelease(this);
 }
 
 void CheckedLockImpl::AssertAcquired() const {

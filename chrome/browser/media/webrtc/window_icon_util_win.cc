@@ -7,7 +7,7 @@
 #include <windows.h>
 
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/icon_util.h"
+#include "ui/gfx/win/icon_util.h"
 
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   DCHECK(id.type == content::DesktopMediaID::TYPE_WINDOW);

@@ -48,23 +48,6 @@ const base::Value::Dict& GetDemographicsDict(PrefService* profile_prefs) {
   return profile_prefs->GetDict(kSyncDemographicsPrefName);
 }
 
-void MigrateBirthYearOffset(PrefService* to_local_state,
-                            PrefService* from_profile_prefs) {
-  const int profile_offset = from_profile_prefs->GetInteger(
-      kDeprecatedDemographicsBirthYearOffsetPrefName);
-  if (profile_offset == kUserDemographicsBirthYearNoiseOffsetDefaultValue)
-    return;
-
-  // TODO(crbug.com/40240008): clear/remove deprecated pref after 2023/09
-
-  const int local_offset =
-      to_local_state->GetInteger(kUserDemographicsBirthYearOffsetPrefName);
-  if (local_offset == kUserDemographicsBirthYearNoiseOffsetDefaultValue) {
-    to_local_state->SetInteger(kUserDemographicsBirthYearOffsetPrefName,
-                               profile_offset);
-  }
-}
-
 // Returns the noise offset for the birth year. If not found in |local_state|,
 // the offset will be randomly generated within the offset range and cached in
 // |local_state|.
@@ -255,8 +238,9 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
 
   // Get the offset from local_state/profile_prefs and do one last check that
   // the birth year is eligible.
-  // TODO(crbug.com/40240008): remove profile_prefs after 2023/09
-  MigrateBirthYearOffset(local_state, profile_prefs);
+  // TODO(crbug.com/40240008): Remove these after 2026/12.
+  // ClearPref() call added 2025/12.
+  profile_prefs->ClearPref(kDeprecatedDemographicsBirthYearOffsetPrefName);
   int offset = GetBirthYearOffset(local_state);
   if (!HasEligibleBirthYear(now, *birth_year, offset)) {
     return UserDemographicsResult::ForStatus(

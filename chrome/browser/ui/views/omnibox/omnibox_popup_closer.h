@@ -11,13 +11,22 @@
 
 class BrowserView;
 
-namespace ui {
+namespace omnibox {
 
 class EventTarget;
 
-// Registers itself as PreTargetHandler for `BrowserView`.
-// Responsible for closing omnibox popup when user clicks somewhere instead of
-// `OmniboxViewViews`.
+enum class PopupCloseReason {
+  kBlur,
+  kBrowserWidgetMoved,
+  kEscapeKeyPressed,
+  kLocationIconDragged,
+  kMouseClickOutside,
+  kRevertAll,
+  kTextDrag,
+  kOther
+};
+
+// Closes the omnibox popup when appropriate events or user interactions occur.
 class OmniboxPopupCloser : public ui::EventHandler {
  public:
   explicit OmniboxPopupCloser(BrowserView* browser_view);
@@ -25,14 +34,18 @@ class OmniboxPopupCloser : public ui::EventHandler {
   OmniboxPopupCloser& operator=(const OmniboxPopupCloser) = delete;
   ~OmniboxPopupCloser() override;
 
+  // Closes the omnibox popup for the given reason.
+  void CloseWithReason(PopupCloseReason reason);
+
+ private:
   // ui::EventHandler
   void OnMouseEvent(ui::MouseEvent* event) override;
 
- private:
   raw_ptr<BrowserView> browser_view_;
-  base::ScopedObservation<ui::EventTarget, ui::EventHandler> observer_{this};
+  base::ScopedObservation<ui::EventTarget, ui::EventHandler>
+      browser_view_observation_{this};
 };
 
-}  // namespace ui
+}  // namespace omnibox
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_CLOSER_H_

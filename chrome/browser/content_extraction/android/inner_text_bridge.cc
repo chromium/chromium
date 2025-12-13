@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/android/callback_android.h"
-#include "base/functional/callback_forward.h"
 #include "base/types/optional_ref.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "content/public/browser/render_frame_host.h"
@@ -11,7 +10,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/content_extraction/android/jni_headers/InnerTextBridge_jni.h"
 
-using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
 
 namespace {
 void OnGotInnerText(
@@ -30,10 +29,10 @@ void OnGotInnerText(
 }
 }  // namespace
 
-void JNI_InnerTextBridge_GetInnerText(
+static void JNI_InnerTextBridge_GetInnerText(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jobject>& jcallback) {
   CHECK(jcallback);
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
@@ -51,3 +50,5 @@ void JNI_InnerTextBridge_GetInnerText(
       *render_frame_host, std::nullopt,
       base::BindOnce(&OnGotInnerText, std::move(callback)));
 }
+
+DEFINE_JNI(InnerTextBridge)

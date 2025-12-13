@@ -332,11 +332,11 @@ class MetricsStateManager final {
   static bool instance_exists_;
 
   // Weak pointer to the local state prefs store.
-  const raw_ptr<PrefService> local_state_;
+  const raw_ptr<PrefService, DanglingUntriaged> local_state_;
 
   // Weak pointer to an enabled state provider. Used to know whether the user
   // has consented to reporting, and if reporting should be done.
-  raw_ptr<EnabledStateProvider> enabled_state_provider_;
+  raw_ptr<EnabledStateProvider, DanglingUntriaged> enabled_state_provider_;
 
   // Specified options for controlling trial randomization.
   const EntropyParams entropy_params_;

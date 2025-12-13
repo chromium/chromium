@@ -625,11 +625,10 @@ void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationIntervalLayoutShift(
 void PageLoadMetricsUpdateDispatcher::
     UpdateSoftNavigationIntervalResponsivenessMetrics(
         const mojom::InputTiming& input_timing_delta) {
-  if (input_timing_delta.num_interactions) {
+  if (!page_load_metrics::IsEmpty(input_timing_delta)) {
     soft_navigation_interval_responsiveness_metrics_normalization_
         .AddNewUserInteractionLatencies(
-            input_timing_delta.num_interactions,
-            *(input_timing_delta.max_event_durations));
+            input_timing_delta.user_interaction_latencies);
   }
 }
 
@@ -758,26 +757,18 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameMetadata(
                                          main_frame_metadata_);
     MaybeUpdateMainFrameViewportRect(main_frame_metadata_);
 
-    client_->OnMainFrameImageAdRectsChanged(
-        main_frame_metadata_->main_frame_image_ad_rects);
+    client_->OnMainFrameAdRectsChanged(
+        main_frame_metadata_->main_frame_ad_rects);
   }
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming(
     const mojom::InputTiming& input_timing_delta) {
-  // On the sending side, we ensure input_timing_delta.max_event_duration and
-  // input_timing_delta.total_event_durations are not null pointers otherwise
-  // VALIDATION_ERROR_UNEXPECTED_NULL_POINTER will be triggered on the receiving
-  // side. But in some tests where the whole input_timing_delta is set as the
-  // default state, input_timing_delta.max_event_durations or
-  // input_timing_delta.total_event_durations can be null.
-  if (input_timing_delta.num_interactions) {
+  if (!page_load_metrics::IsEmpty(input_timing_delta)) {
     responsiveness_metrics_normalization_.AddNewUserInteractionLatencies(
-        input_timing_delta.num_interactions,
-        *(input_timing_delta.max_event_durations));
-  }
-  if (input_timing_delta.num_interactions) {
-    client_->OnPageInputTimingChanged(input_timing_delta.num_interactions);
+        input_timing_delta.user_interaction_latencies);
+    client_->OnPageInputTimingChanged(
+        input_timing_delta.user_interaction_latencies.size());
   }
 }
 

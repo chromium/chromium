@@ -14,12 +14,12 @@ use alloc::boxed::Box;
 use alloc::vec::Vec;
 use core::fmt;
 use litemap::LiteMap;
-use serde::de::Error;
-use serde::de::Visitor;
-use serde::Deserialize;
-use serde::Deserializer;
-use serde::Serialize;
-use serde::Serializer;
+use serde_core::de::Error;
+use serde_core::de::Visitor;
+use serde_core::Deserialize;
+use serde_core::Deserializer;
+use serde_core::Serialize;
+use serde_core::Serializer;
 
 struct ByteStrVisitor;
 impl<'de> Visitor<'de> for ByteStrVisitor {
@@ -35,7 +35,7 @@ impl<'de> Visitor<'de> for ByteStrVisitor {
     }
     fn visit_seq<A>(self, mut v: A) -> Result<Self::Value, A::Error>
     where
-        A: serde::de::SeqAccess<'de>,
+        A: serde_core::de::SeqAccess<'de>,
     {
         let mut result = Vec::with_capacity(v.size_hint().unwrap_or(0));
         while let Some(x) = v.next_element::<u8>()? {
@@ -370,6 +370,7 @@ mod testdata {
 mod tests {
     use super::*;
     use alloc::borrow::Cow;
+    use serde::{Deserialize, Serialize};
 
     #[derive(Serialize, Deserialize)]
     pub struct ZeroTrieSimpleAsciiCow<'a> {
@@ -580,6 +581,7 @@ mod tests {
 #[cfg(feature = "zerovec")]
 mod tests_zerovec {
     use super::*;
+    use serde::{Deserialize, Serialize};
     use zerovec::ZeroVec;
 
     #[derive(Serialize, Deserialize)]

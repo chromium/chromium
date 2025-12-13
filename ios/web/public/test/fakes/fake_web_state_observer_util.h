@@ -34,7 +34,7 @@ struct TestWasHiddenInfo {
 struct TestDidStartNavigationInfo {
   TestDidStartNavigationInfo();
   ~TestDidStartNavigationInfo();
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
   std::unique_ptr<web::NavigationContext> context;
 };
 
@@ -50,29 +50,29 @@ struct TestDidRedirectNavigationInfo {
 struct TestDidFinishNavigationInfo {
   TestDidFinishNavigationInfo();
   ~TestDidFinishNavigationInfo();
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
   std::unique_ptr<web::NavigationContext> context;
 };
 
 // Arguments passed to `DidStartLoading`.
 struct TestStartLoadingInfo {
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
 };
 
 // Arguments passed to `DidStopLoading`.
 struct TestStopLoadingInfo {
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
 };
 
 // Arguments passed to `PageLoaded`.
 struct TestLoadPageInfo {
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
   bool success = false;
 };
 
 // Arguments passed to `LoadProgressChanged`.
 struct TestChangeLoadingProgressInfo {
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
   double progress = 0.0;
 };
 
@@ -83,7 +83,7 @@ struct TestDidChangeBackForwardStateInfo {
 
 // Arguments passed to `TitleWasSet`.
 struct TestTitleWasSetInfo {
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
 };
 
 // Arguments passed to `DidChangeVisibleSecurityState` and SSLStatus of the
@@ -91,7 +91,7 @@ struct TestTitleWasSetInfo {
 struct TestDidChangeVisibleSecurityStateInfo {
   TestDidChangeVisibleSecurityStateInfo();
   ~TestDidChangeVisibleSecurityStateInfo();
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
 
   // SSLStatus of the visible navigation item when
   // DidChangeVisibleSecurityState was called.
@@ -102,7 +102,7 @@ struct TestDidChangeVisibleSecurityStateInfo {
 struct TestUpdateFaviconUrlCandidatesInfo {
   TestUpdateFaviconUrlCandidatesInfo();
   ~TestUpdateFaviconUrlCandidatesInfo();
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
   std::vector<web::FaviconURL> candidates;
 };
 
@@ -118,7 +118,7 @@ struct TestWebStateRealizedInfo {
 
 // Arguments passed to `WebStateDestroyed`.
 struct TestWebStateDestroyedInfo {
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
 };
 
 // Arguments passed to `PermissionStateChanged`.

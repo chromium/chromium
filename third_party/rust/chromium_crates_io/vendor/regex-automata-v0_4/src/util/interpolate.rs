@@ -321,10 +321,7 @@ fn find_cap_ref_braced(rep: &[u8], mut i: usize) -> Option<CaptureRef<'_>> {
 /// Returns true if and only if the given byte is allowed in a capture name
 /// written in non-brace form.
 fn is_valid_cap_letter(b: u8) -> bool {
-    match b {
-        b'0'..=b'9' | b'a'..=b'z' | b'A'..=b'Z' | b'_' => true,
-        _ => false,
-    }
+    matches!(b, b'0'..=b'9' | b'a'..=b'z' | b'A'..=b'Z' | b'_')
 }
 
 #[cfg(test)]

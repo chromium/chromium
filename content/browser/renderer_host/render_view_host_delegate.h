@@ -9,10 +9,8 @@
 
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "base/process/kill.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"

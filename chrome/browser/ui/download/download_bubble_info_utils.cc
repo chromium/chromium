@@ -8,6 +8,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -47,6 +48,7 @@ IconAndColor IconAndColorForInterrupted(const DownloadUIModel& model) {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return IconAndColor{&views::kInfoChromeRefreshIcon,
                           kColorDownloadItemIconDangerous};
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
       if (enterprise_connectors::ShouldPromptReviewForDownload(
@@ -174,6 +176,7 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }
@@ -293,6 +296,7 @@ std::vector<DownloadBubbleQuickAction> QuickActionsForDownload(
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }
@@ -397,6 +401,7 @@ DownloadBubbleProgressBar ProgressBarForDownload(const DownloadUIModel& model) {
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }

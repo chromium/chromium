@@ -27,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -120,10 +121,7 @@ TabDeclutterController::GetDuplicateTabs() {
   std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
   CHECK(features::IsTabstripDedupeEnabled());
 
-  for (int tab_index = 0; tab_index < tab_strip_model_->GetTabCount();
-       tab_index++) {
-    tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
-
+  for (tabs::TabInterface* tab : *tab_strip_model_) {
     if (IsTabExcluded(tab)) {
       continue;
     }
@@ -161,10 +159,7 @@ std::vector<tabs::TabInterface*> TabDeclutterController::GetStaleTabs() {
   std::vector<tabs::TabInterface*> tabs;
 
   const base::Time now = base::Time::Now();
-  for (int tab_index = 0; tab_index < tab_strip_model_->GetTabCount();
-       tab_index++) {
-    tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
-
+  for (tabs::TabInterface* tab : *tab_strip_model_) {
     if (IsTabExcluded(tab)) {
       continue;
     }
@@ -194,7 +189,7 @@ void TabDeclutterController::LogExcludedDuplicateTabMetrics() {
   int excluded_tab_count = 0;
 
   if (!excluded_urls_.empty()) {
-    for (int index = 0; index < tab_strip_model_->GetTabCount(); index++) {
+    for (int index = 0; index < tab_strip_model_->count(); index++) {
       if (excluded_urls_.contains(tab_strip_model_->GetTabAtIndex(index)
                                       ->GetContents()
                                       ->GetLastCommittedURL()
@@ -246,10 +241,7 @@ void TabDeclutterController::DeclutterTabs(
     // close all the tabs except the oldest tab.
     std::vector<std::pair<tabs::TabInterface*, base::Time>> url_matching_tabs;
 
-    for (int tab_index = 0; tab_index < tab_strip_model_->GetTabCount();
-         ++tab_index) {
-      tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
-
+    for (tabs::TabInterface* tab : *tab_strip_model_) {
       if (tab->GetContents()->GetLastCommittedURL().GetWithoutRef() != url) {
         continue;
       }
@@ -377,7 +369,7 @@ bool TabDeclutterController::DeclutterStaleTabsNudgeCriteriaMet(
     return false;
   }
 
-  const int total_tab_count = tab_strip_model_->GetTabCount();
+  const int total_tab_count = tab_strip_model_->count();
 
   if (total_tab_count < kMinTabCountForInactiveTabNudge) {
     return false;

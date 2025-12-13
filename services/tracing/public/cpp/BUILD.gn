@@ -76,8 +76,6 @@ target(tracing_lib_type, "cpp") {
       "perfetto/shared_memory.cc",
       "perfetto/shared_memory.h",
       "perfetto/system_trace_writer.h",
-      "perfetto/trace_event_metadata_source.cc",
-      "perfetto/trace_event_metadata_source.h",
       "perfetto/trace_packet_tokenizer.cc",
       "perfetto/trace_packet_tokenizer.h",
       "perfetto/trace_string_lookup.cc",
@@ -133,10 +131,11 @@ target(tracing_lib_type, "cpp") {
 
     deps += [
       ":buildflags",
+      "//base/tracing/protos:chrome_track_event_zero",
       "//build:chromecast_buildflags",
-      "//components/system_cpu:system_cpu",
+      "//components/system_cpu",
       "//third_party/perfetto/protos/perfetto/trace/chrome:minimal_complete_lite",
-      "//third_party/snappy:snappy",
+      "//third_party/snappy",
     ]
 
     if (is_win) {
@@ -149,7 +148,7 @@ target(tracing_lib_type, "cpp") {
 
     # Add the SystemProducer implementations.
     if (is_posix || is_fuchsia) {
-      deps += [ "//third_party/perfetto/include/perfetto/ext/ipc:ipc" ]
+      deps += [ "//third_party/perfetto/include/perfetto/ext/ipc" ]
 
       if (is_fuchsia) {
         sources += [

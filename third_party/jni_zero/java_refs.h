@@ -9,6 +9,7 @@
 
 #include <jni.h>
 
+#include <concepts>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -16,7 +17,17 @@
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/logging.h"
 
+#if !defined(JNI_ZERO_ENABLE_COMPAT_API)
+#define JNI_ZERO_ENABLE_COMPAT_API 0
+#endif
+
 namespace jni_zero {
+
+namespace internal {
+template <typename T>
+concept IsJobject =
+    std::derived_from<std::remove_pointer_t<T>, std::remove_pointer_t<jobject>>;
+}
 
 // Creates a new local reference frame, in which at least a given number of
 // local references can be created. Note that local references already created
@@ -38,7 +49,8 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalFrame {
 };
 
 // Forward declare the generic java reference template class.
-template <typename T>
+template <typename T = jobject>
+  requires internal::IsJobject<T>
 class JavaRef;
 
 // Template specialization of JavaRef, which acts as the base class for all
@@ -71,7 +83,15 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
   // TODO(torne): replace usage and remove this.
   bool is_null() const { return obj_ == nullptr; }
 
+  // Create a JavaRef that is not automatically released. Used for JNI
+  // parameters (which should not be released).
+  static JavaRef<jobject> CreateLeaky(JNIEnv* env, jobject obj) {
+    return JavaRef<jobject>(env, obj);
+  }
+
+#if !JNI_ZERO_ENABLE_COMPAT_API
  protected:
+#endif
 // Takes ownership of the |obj| reference passed; requires it to be a local
 // reference type.
 #if JNI_ZERO_DCHECK_IS_ON()
@@ -79,6 +99,10 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
   JavaRef(JNIEnv* env, jobject obj);
 #else
   JavaRef(JNIEnv* env, jobject obj) : obj_(obj) {}
+#endif
+
+#if JNI_ZERO_ENABLE_COMPAT_API
+ protected:
 #endif
 
   // Used for move semantics. obj_ must have been released first if non-null.
@@ -105,13 +129,14 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
 };
 
 // Forward declare the object array reader for the convenience function.
-template <typename T>
+template <typename T = jobject>
 class JavaObjectArrayReader;
 
 // Generic base class for ScopedJavaLocalRef and ScopedJavaGlobalRef. Useful
 // for allowing functions to accept a reference without having to mandate
 // whether it is a local or global type.
 template <typename T>
+  requires internal::IsJobject<T>
 class JavaRef : public JavaRef<jobject> {
  public:
   constexpr JavaRef() {}
@@ -128,42 +153,23 @@ class JavaRef : public JavaRef<jobject> {
   // Only defined for JavaRef<jobjectArray>.
   // You must pass the type of the array elements (usually jobject) as the
   // template parameter.
-  template <typename ElementType,
+  template <typename ElementType = jobject,
             typename T_ = T,
             typename = std::enable_if_t<std::is_same_v<T_, jobjectArray>>>
   JavaObjectArrayReader<ElementType> ReadElements() const {
     return JavaObjectArrayReader<ElementType>(*this);
   }
 
+  // Create a JavaRef that is not automatically released. Used for JNI
+  // parameters (which should not be released).
+  static JavaRef<T> CreateLeaky(JNIEnv* env, T obj) {
+    return JavaRef<T>(env, obj);
+  }
+
+#if !JNI_ZERO_ENABLE_COMPAT_API
  protected:
+#endif
   JavaRef(JNIEnv* env, T obj) : JavaRef<jobject>(env, obj) {}
-};
-
-// Holds a local reference to a JNI method parameter.
-// Method parameters should not be deleted, and so this class exists purely to
-// wrap them as a JavaRef<T> in the JNI binding generator. Do not use in new
-// code.
-// TODO(crbug.com/40425392): Remove all uses of JavaParamRef to use JavaRef
-// instead.
-template <typename T>
-class JavaParamRef : public JavaRef<T> {
- public:
-  // Assumes that |obj| is a parameter passed to a JNI method from Java.
-  // Does not assume ownership as parameters should not be deleted.
-  JavaParamRef(JNIEnv* env, T obj) : JavaRef<T>(env, obj) {}
-
-  // Allow nullptr to be converted to JavaParamRef. Some unit tests call JNI
-  // methods directly from C++ and pass null for objects which are not actually
-  // used by the implementation (e.g. the caller object); allow this to keep
-  // working.
-  JavaParamRef(std::nullptr_t) {}
-
-  JavaParamRef(const JavaParamRef&) = delete;
-  JavaParamRef& operator=(const JavaParamRef&) = delete;
-
-  ~JavaParamRef() {}
-
-  operator T() const { return JavaRef<T>::obj(); }
 };
 
 // Holds a local reference to a Java object. The local reference is scoped
@@ -176,7 +182,7 @@ class JavaParamRef : public JavaRef<T> {
 // single thread. If you wish to have the reference outlive the current
 // callstack (e.g. as a class member) or you wish to pass it across threads,
 // use a ScopedJavaGlobalRef instead.
-template <typename T>
+template <typename T = jobject>
 class ScopedJavaLocalRef : public JavaRef<T> {
  public:
   // Take ownership of a bare jobject. This does not create a new reference.
@@ -219,12 +225,6 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   explicit ScopedJavaLocalRef(const JavaRef<T>& other) { Reset(other); }
 
   ScopedJavaLocalRef(JNIEnv* env, const JavaRef<T>& other) { Reset(other); }
-
-  // Assumes that |obj| is a local reference to a Java object and takes
-  // ownership of this local reference.
-  // TODO(torne): make legitimate uses call Adopt() instead, and make this
-  // private.
-  ScopedJavaLocalRef(JNIEnv* env, T obj) : JavaRef<T>(env, obj), env_(env) {}
 
   ~ScopedJavaLocalRef() { Reset(); }
 
@@ -289,17 +289,17 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   // Alias for Release(). For use in templates when global refs are invalid.
   T ReleaseLocal() { return static_cast<T>(JavaRef<T>::ReleaseInternal()); }
 
+#if !JNI_ZERO_ENABLE_COMPAT_API
  private:
+#endif
+  ScopedJavaLocalRef(JNIEnv* env, T obj) : JavaRef<T>(env, obj), env_(env) {}
+#if JNI_ZERO_ENABLE_COMPAT_API
+ private:
+#endif
+
   // This class is only good for use on the thread it was created on so
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
   JNIEnv* env_ = nullptr;
-
-  // Prevent ScopedJavaLocalRef(JNIEnv*, T obj) from being used to take
-  // ownership of a JavaParamRef's underlying object - parameters are not
-  // allowed to be deleted and so should not be owned by ScopedJavaLocalRef.
-  // TODO(torne): this can be removed once JavaParamRef no longer has an
-  // implicit conversion back to T.
-  ScopedJavaLocalRef(JNIEnv* env, const JavaParamRef<T>& other);
 
   // Friend required to get env_ from conversions.
   template <typename U>
@@ -314,7 +314,7 @@ class ScopedJavaLocalRef : public JavaRef<T> {
 // to the lifetime of this object. This class does not hold onto any JNIEnv*
 // passed to it, hence it is safe to use across threads (within the constraints
 // imposed by the underlying Java object that it references).
-template <typename T>
+template <typename T = jobject>
 class ScopedJavaGlobalRef : public JavaRef<T> {
  public:
   constexpr ScopedJavaGlobalRef() {}
@@ -350,10 +350,6 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
   ScopedJavaGlobalRef(JNIEnv* env, const JavaRef<T>& other) {
     JavaRef<T>::SetNewGlobalRef(env, other.obj());
   }
-
-  // Create a new global reference to the object.
-  // Deprecated. Don't use bare jobjects; use a JavaRef as the input.
-  ScopedJavaGlobalRef(JNIEnv* env, T obj) { Reset(env, obj); }
 
   ~ScopedJavaGlobalRef() { Reset(); }
 
@@ -397,15 +393,14 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
   template <typename U,
             typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   void Reset(const ScopedJavaGlobalRef<U>& other) {
-    Reset(nullptr, other.obj());
+    Reset(nullptr, other);
   }
 
-  void Reset(const JavaRef<T>& other) { Reset(nullptr, other.obj()); }
+  void Reset(const JavaRef<T>& other) { Reset(nullptr, other); }
 
-  void Reset(JNIEnv* env, const JavaRef<T>& other) { Reset(env, other.obj()); }
-
-  // Deprecated. Don't use bare jobjects; use a JavaRef as the input.
-  void Reset(JNIEnv* env, T obj) { JavaRef<T>::SetNewGlobalRef(env, obj); }
+  void Reset(JNIEnv* env, const JavaRef<T>& other) {
+    JavaRef<T>::SetNewGlobalRef(env, other.obj());
+  }
 
   // Releases the global reference to the caller. The caller *must* delete the
   // global reference when it is done with it. Note that calling a Java method
@@ -454,7 +449,7 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaGlobalWeakRef {
 };
 
 // A global JavaRef that will never be released.
-template <typename T>
+template <typename T = jobject>
 class JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef : public JavaRef<T> {
  public:
   constexpr LeakedJavaGlobalRef() = default;
@@ -479,6 +474,12 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef : public JavaRef<T> {
         env, static_cast<T>(env->NewLocalRef(j_obj)));
   }
 };
+
+#if JNI_ZERO_ENABLE_COMPAT_API
+template <typename T>
+using JavaParamRef = JavaRef<T>;
+#endif
+
 }  // namespace jni_zero
 
 #endif  // JNI_ZERO_JAVA_REFS_H_

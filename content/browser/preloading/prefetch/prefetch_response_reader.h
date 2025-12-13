@@ -5,13 +5,11 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_RESPONSE_READER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_RESPONSE_READER_H_
 
+#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "content/browser/preloading/prefetch/prefetch_data_pipe_tee.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/http/http_cookie_indices.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -23,13 +21,8 @@ class PrefetchProxy_PrefetchedResource;
 
 namespace content {
 
-// This is necessary because `PrefetchContainerObserver` emulates a callback
-// that we will provide in the future.
-//
-// TODO(crbug.com/400761083): Remove it.
-class PrefetchContainerObserver;
-
 class PrefetchContainer;
+class PrefetchDataPipeTee;
 class PrefetchStreamingURLLoader;
 class ServiceWorkerClient;
 class ServiceWorkerMainResourceHandle;
@@ -58,7 +51,10 @@ class CONTENT_EXPORT PrefetchResponseReader final
     : public network::mojom::URLLoader,
       public base::RefCounted<PrefetchResponseReader> {
  public:
-  explicit PrefetchResponseReader();
+  PrefetchResponseReader(
+      OnPrefetchDeterminedHeadCallback on_determined_head_callback,
+      OnPrefetchResponseCompletedCallback
+          on_prefetch_response_completed_callback);
 
   void SetStreamingURLLoader(
       base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader);
@@ -239,6 +235,26 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   void SetLoadStateAndAddEventToQueue(LoadState new_load_state,
                                       EventCallback callback);
+
+  // Called when transitioned for the first time to a state other than
+  // `kStarted` nor `kRedirectHandled`.
+  //
+  // This should be always called once for the entire `PrefetchResponseReader`s
+  // for a given `PrefetchContainer`.
+  // TODO(https://crbug.com/400761083): This isn't called for:
+  // - unexpected mojo disconnection cases (See
+  //   `PrefetchStreamingURLLoaderTest.UnexpectedUrlLoaderDisconnect`).
+  OnPrefetchDeterminedHeadCallback on_determined_head_callback_;
+
+  // Called when transitioned to `kCompleted` or `kFailed`.
+  // This is called after `on_determined_head_callback_` at most once for the
+  // entire `PrefetchResponseReader`s for a given `PrefetchContainer`.
+  // TODO(https://crbug.com/400761083): This isn't called for:
+  // - `kFailedRedirect` (See
+  //   `PrefetchStreamingURLLoaderTest.IneligibleRedirect`) or
+  // - unexpected mojo disconnection cases (See
+  //   `PrefetchStreamingURLLoaderTest.UnexpectedUrlLoaderDisconnect`).
+  OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback_;
 
   // Used for UMA recording.
   // TODO(crbug.com/40064891): we might want to adapt these flags and UMA

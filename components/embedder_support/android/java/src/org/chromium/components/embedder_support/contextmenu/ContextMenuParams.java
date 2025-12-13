@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.blink_public.common.ContextMenuDataMediaFlags;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -39,6 +40,8 @@ public class ContextMenuParams {
     private final boolean mIsImage;
     private final boolean mIsVideo;
     private final boolean mCanSaveMedia;
+
+    private final @ContextMenuDataMediaFlags int mMediaFlags;
 
     private final int mTriggeringTouchXDp;
     private final int mTriggeringTouchYDp;
@@ -122,8 +125,22 @@ public class ContextMenuParams {
     }
 
     /**
+     * @return Whether the media element is eligible to enter Picture-in-Picture.
+     */
+    public boolean canPictureInPicture() {
+        return (mMediaFlags & ContextMenuDataMediaFlags.MEDIA_CAN_PICTURE_IN_PICTURE) != 0;
+    }
+
+    /**
+     * @return Whether the media element is currently in Picture-in-Picture.
+     */
+    public boolean isPictureInPicture() {
+        return (mMediaFlags & ContextMenuDataMediaFlags.MEDIA_PICTURE_IN_PICTURE) != 0;
+    }
+
+    /**
      * @return The x-coordinate of the touch that triggered the context menu in dp relative to the
-     *         render view; 0 corresponds to the left edge.
+     *     render view; 0 corresponds to the left edge.
      */
     public int getTriggeringTouchXDp() {
         return mTriggeringTouchXDp;
@@ -176,10 +193,9 @@ public class ContextMenuParams {
     }
 
     /**
-     * @return Only valid if `getOpenedFromInterestFor()` is true, and only non-zero if the
-     *     `HTMLInterestForContextMenuItemOnly` feature is enabled. With that feature enabled,
-     *     this returns the DOMNodeID for the element that should be "shown interest" in case the
-     *     "show interest" menu item is chosen by the user.
+     * @return Only valid if `getOpenedFromInterestFor()` is true. This returns the DOMNodeID
+     *     for the element that should be "shown interest" in case the "show interest" menu
+     *     item is chosen by the user.
      */
     public int getInterestForNodeID() {
         return mInterestForNodeID;
@@ -202,6 +218,7 @@ public class ContextMenuParams {
             long nativePtr,
             MenuModelBridge menuModelBridge,
             @ContextMenuDataMediaType int mediaType,
+            @ContextMenuDataMediaFlags int mediaFlags,
             GURL pageUrl,
             GURL linkUrl,
             String linkText,
@@ -238,6 +255,7 @@ public class ContextMenuParams {
         mIsImage = mediaType == ContextMenuDataMediaType.IMAGE;
         mIsVideo = mediaType == ContextMenuDataMediaType.VIDEO;
         mCanSaveMedia = canSaveMedia;
+        mMediaFlags = mediaFlags;
         mTriggeringTouchXDp = triggeringTouchXDp;
         mTriggeringTouchYDp = triggeringTouchYDp;
         mSourceType = sourceType;
@@ -252,6 +270,7 @@ public class ContextMenuParams {
             long nativePtr,
             MenuModelBridge menuModelBridge,
             @ContextMenuDataMediaType int mediaType,
+            @ContextMenuDataMediaFlags int mediaFlags,
             GURL pageUrl,
             GURL linkUrl,
             String linkText,
@@ -277,6 +296,7 @@ public class ContextMenuParams {
                 nativePtr,
                 menuModelBridge,
                 mediaType,
+                mediaFlags,
                 pageUrl,
                 linkUrl,
                 linkText,

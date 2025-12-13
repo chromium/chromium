@@ -14,7 +14,10 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace extensions {
 
@@ -30,6 +33,12 @@ constexpr struct RecordedUserAction {
     {"test.ua.1", 1},
     {"test.ua.2", 2},
 };
+
+// The tests that are run by this extension are expected to record the following
+// UKM user actions related to extension usage (cast to int), in the given
+// order. If the tests in test.js are modified, this array may need to be
+// updated.
+const int64_t g_extension_usage_ukms[] = {1, 2, 3, 4, 5, 6};
 
 // The tests that are run by this extension are expected to record the following
 // histograms.  If the tests in test.js are modified, this array may need to be
@@ -77,6 +86,19 @@ void ValidateUserActions(const base::UserActionTester& user_action_tester,
                          base::span<const RecordedUserAction> recorded) {
   for (const auto& ua : recorded) {
     EXPECT_EQ(ua.count, user_action_tester.GetActionCount(ua.name));
+  }
+}
+
+void ValidateExtensionUsageUkm(const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+                               base::span<const int64_t> expected_ukms) {
+  auto ukm_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_ExtensionUsage::kEntryName);
+  ASSERT_EQ(expected_ukms.size(), ukm_entries.size());
+
+  for (size_t i = 0; i < expected_ukms.size(); ++i) {
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entries[i], ukm::builders::Extensions_ExtensionUsage::kActionName,
+        expected_ukms[i]);
   }
 }
 
@@ -148,6 +170,8 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(ExtensionMetricsApiTest, Metrics) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   base::UserActionTester user_action_tester;
 
   base::FieldTrialList::CreateFieldTrial("apitestfieldtrial2", "group1");
@@ -159,6 +183,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionMetricsApiTest, Metrics) {
       << message_;
 
   ValidateUserActions(user_action_tester, g_user_actions);
+  ValidateExtensionUsageUkm(ukm_recorder, g_extension_usage_ukms);
   ValidateHistograms(g_histograms);
 }
 

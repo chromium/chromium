@@ -7,20 +7,24 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 class BwgService;
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildBwgService(web::BrowserState* context) {
+std::unique_ptr<KeyedService> BuildBwgService(ProfileIOS* profile) {
   if (!IsPageActionMenuEnabled()) {
     return nullptr;
   }
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<BwgService>(
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
+      profile, AuthenticationServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      OptimizationGuideServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace
@@ -39,18 +43,19 @@ BwgServiceFactory* BwgServiceFactory::GetInstance() {
 
 BwgServiceFactory::BwgServiceFactory()
     : ProfileKeyedServiceFactoryIOS("BwgService") {
+  DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
 
 BwgServiceFactory::~BwgServiceFactory() = default;
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
-BwgServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildBwgService);
+BwgServiceFactory::TestingFactory BwgServiceFactory::GetDefaultFactory() {
+  return base::BindOnce(&BuildBwgService);
 }
 
 std::unique_ptr<KeyedService> BwgServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildBwgService(context);
+    ProfileIOS* profile) const {
+  return BuildBwgService(profile);
 }

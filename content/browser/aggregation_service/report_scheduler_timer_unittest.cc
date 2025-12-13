@@ -10,9 +10,12 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,7 +27,6 @@ namespace {
 
 using testing::_;
 using testing::InSequence;
-using testing::Invoke;
 
 using Checkpoint = testing::MockFunction<void(int step)>;
 
@@ -144,13 +146,17 @@ TEST_F(ReportSchedulerTimerTest, MultipleSetTimers_FiredAtAppropriateTime) {
 }
 
 TEST_F(ReportSchedulerTimerTest, NetworkChange) {
+  base::RunLoop run_loop;
+
   Checkpoint checkpoint;
   {
     InSequence seq;
 
     EXPECT_CALL(*timer_delegate_, OnReportingTimeReached).Times(0);
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*timer_delegate_, AdjustOfflineReportTimes);
+    EXPECT_CALL(*timer_delegate_, AdjustOfflineReportTimes).WillOnce([&](auto) {
+      run_loop.Quit();
+    });
   }
 
   timer_->MaybeSet(kExampleTime);
@@ -166,9 +172,8 @@ TEST_F(ReportSchedulerTimerTest, NetworkChange) {
   // Go back online.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_WIFI);
-  // Ensure that the network connection observers have been notified before
-  // this call returns.
-  task_environment_.RunUntilIdle();
+
+  run_loop.Run();
 }
 
 // TODO(apaseltiner): Figure out how to test the case in which the network

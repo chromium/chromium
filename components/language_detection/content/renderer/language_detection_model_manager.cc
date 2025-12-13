@@ -5,7 +5,6 @@
 #include "components/language_detection/content/renderer/language_detection_model_manager.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

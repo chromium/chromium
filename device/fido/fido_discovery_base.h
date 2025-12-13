@@ -5,9 +5,8 @@
 #ifndef DEVICE_FIDO_FIDO_DISCOVERY_BASE_H_
 #define DEVICE_FIDO_FIDO_DISCOVERY_BASE_H_
 
-#include <vector>
-
 #include <ostream>
+#include <vector>
 
 #include "base/check.h"
 #include "base/component_export.h"
@@ -15,7 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 

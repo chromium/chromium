@@ -1,17 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
-<translation id="1036348656032585052">Slå av</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Opprettet for <ph name="NUM_WEEKS_ONE" /> uke siden}other{Opprettet for <ph name="NUM_WEEKS_MANY" /> uker siden}}</translation>
 <translation id="1063300264396686489">Åpne fanegrupper fra andre enheter automatisk</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> av fanene dine er ikke brukt i det siste. Vil du lukke dem?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Opprettet for <ph name="NUM_YEARS_ONE" /> år siden}other{Opprettet for <ph name="NUM_YEARS_MANY" /> år siden}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Inaktive faner og grupper lukkes etter 1 måned}other{Inaktive faner og grupper lukkes etter <ph name="MONTH_COUNT_MANY" /> måneder}}</translation>
 <translation id="1173894706177603556">Gi nytt navn</translation>
-<translation id="1197088940767939838">Oransje</translation>
+<translation id="1203747227183434426">Opptaksmedier</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Åpne <ph name="TITLE_OF_GROUP" /> med <ph name="TAB_COUNT2" /> fane}other{Åpne <ph name="TITLE_OF_GROUP" /> med <ph name="TAB_COUNT2" /> faner}}</translation>
 <translation id="1273910660700874265">Alternativer for fanegruppen <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Velg når faner og fanegrupper skal flyttes automatisk til inaktiv-delen.</translation>
+<translation id="1321004960118052490">De inaktive elementene dine hoper seg ikke opp</translation>
 <translation id="1329584516321524826">Nettopp oppdatert</translation>
 <translation id="1340839264183302272">Forlat gruppen</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Vis den delte fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> fane, fargen <ph name="COLOR_NAME" /> og etiketten <ph name="CARD_LABEL" />.}other{Vis den delte fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner, fargen <ph name="COLOR_NAME" /> og etiketten <ph name="CARD_LABEL" />.}}</translation>
@@ -20,23 +20,25 @@
 <translation id="1499635324672558517">Vil du lukke alle inkognitofaner?</translation>
 <translation id="1501480321619201731">Slett gruppen</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inaktivt element}other{<ph name="TABS_COUNT_MANY" /> inaktive elementer}}</translation>
-<translation id="1555130319947370107">Blå</translation>
-<translation id="161042844686301425">Cyan</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> faner er gruppert</translation>
 <translation id="1657719826150349398">Flytt fanen nedover</translation>
+<translation id="1670942869417022142">Dempet lyd</translation>
 <translation id="1697284962337958118">Legg til i</translation>
 <translation id="1713541401465507417">Lukk alle faner og grupper</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> fanegruppe er ikke tilgjengelig lenger}other{<ph name="TAB_GROUPS_COUNT_MANY" /> fanegrupper er ikke tilgjengelige lenger}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> fane er gruppert</translation>
+<translation id="1844381456014878100">Etter 7 dager med inaktivitet</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
 <translation id="1909810060368225529">Merk: Endringer i denne delte fanegruppen er synlige for alle. Alle kan gjøre endringer i de delte fanegruppene dine</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Fest fanen}other{Fest faner}}</translation>
 <translation id="1982637982196732906">Flytt til inaktiv del</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Sett <ph name="TABS_COUNT_ONE" /> valgt fane som bokmerke}other{Sett <ph name="TABS_COUNT_MANY" /> valgte faner som bokmerker}}</translation>
 <translation id="2055057176188061528">Velg en fanegruppe, eller opprett en ny fanegruppe</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome lukker automatisk elementer i den inaktive delen som du ikke har brukt på <ph name="AUTO_DELETE_DELAY_ONE" /> måned. Du kan slå dette av nå eller når som helst i innstillingene.}other{Chrome lukker automatisk elementer i den inaktive delen som du ikke har brukt på <ph name="AUTO_DELETE_DELAY_MANY" /> måneder. Du kan slå dette av nå eller når som helst i innstillingene.}}</translation>
+<translation id="2074527029802029717">Løsne fanen</translation>
 <translation id="2118649612461486615">Butikkinformasjon</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Du kan gjenåpne de lukkede fanene og gruppene dine via Nylige faner-delen og Fanegrupper-delen. Inkognitofanen din kommer ikke til å være tilgjengelig.}other{Du kan gjenåpne de lukkede fanene og gruppene dine via Nylige faner-delen og Fanegrupper-delen. De # inkognitofanene dine kommer ikke til å være tilgjengelige.}}</translation>
+<translation id="2153899164605463849">{TAB_COUNT,plural, =1{Slå på lyden for nettstedet}other{Slå på lyden for nettstedene}}</translation>
 <translation id="2162620598375156287">Nå <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Fjern fanen fra gruppen}other{Fjern fanene fra gruppen}}</translation>
 <translation id="2271452184061378400">Fanegruppene dine lagres her</translation>
@@ -61,7 +63,10 @@
 <translation id="2801787514987684416">Vil du se informasjon om butikken?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> fane er lukket}other{<ph name="MANY_CLOSED" /> faner er lukket}}</translation>
 <translation id="2894757982205307093">Ny fane i gruppen</translation>
+<translation id="2918484639460781603">Gå til Innstillinger</translation>
 <translation id="2928243913527329289">Google | Om denne butikken</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> er valgt}other{<ph name="ITEMS_COUNT_MANY" /> er valgt}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{Fest fane}other{Fest faner}}</translation>
 <translation id="3008554597174452548">Slutt å spore produktet</translation>
 <translation id="3026391124054406831">Opprett grupper for å organisere fanene dine.</translation>
 <translation id="3051031624272448591">Du kan alltid få dem tilbake via loggen</translation>
@@ -78,20 +83,24 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Lukk element}other{Lukk elementer}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatyrbilde for forhåndsvisning av delingsark</translation>
+<translation id="3776329373944672717">Tittel på fanegruppe <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Administrer</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Løsne fane}other{Løsne faner}}</translation>
 <translation id="3940195383040445971">Spor priser på faner</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ny fane, <ph name="ANY_CLOSED" /> ble lukket}other{<ph name="MANY_ADDED" /> nye faner, <ph name="ANY_CLOSED" /> ble lukket}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Grupper fanen}other{Grupper fanene}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{Løsne <ph name="TABS_COUNT_ONE" /> valgt fane}other{Løsne <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Opprettet for <ph name="NUM_DAYS_ONE" /> dag siden}other{Opprettet for <ph name="NUM_DAYS_MANY" /> dager siden}}</translation>
 <translation id="4076226664360336092">Liste over fanegrupper, åpnet i full høyde</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> faner ser ut til å være relaterte. Vil du gruppere dem?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Lukk gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" />.}other{Lukk gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" />.}}</translation>
-<translation id="4159784952369912983">Fiolett</translation>
 <translation id="4203448675570432781">Varselet om endringer i automatisk sletting av faner er lukket.</translation>
 <translation id="427987768447457592">Ny fanegruppe</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{Gjenopprett element}other{Gjenopprett elementer}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Oppdatert for <ph name="NUM_DAYS_ONE" /> dag siden}other{Oppdatert for <ph name="NUM_DAYS_MANY" /> dager siden}}</translation>
+<translation id="4496868141611329150">Flytt fanegruppen til venstre</translation>
+<translation id="4653140634010630594">{TAB_COUNT,plural, =1{Kutt lyden for nettstedet}other{Kutt lyden for nettstedene}}</translation>
 <translation id="4686942373615810936">Opprettet nå nettopp</translation>
 <translation id="4783638485675352219">Del titlene og nettadressene til åpne faner på denne enheten med operativsystemet</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> anmeldelse)}other{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelser)}}</translation>
@@ -103,17 +112,19 @@
 <translation id="4871719318659334896">Lukk gruppen</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Gjenopprett og åpne fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> fane, farge <ph name="COLOR_NAME" />.}other{Gjenopprett og åpne fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner, farge <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Åpne</translation>
+<translation id="4894777338623123366">Deler fanesiden</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Lukk fanen}other{Lukk fanene}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> grupper er lagret (faner lukkes, og grupper slettes)</translation>
 <translation id="492284538114688557">Oppdaget et avslag</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{Vis delt fanegruppe med <ph name="TABS_COUNT_ONE" /> fane, fargen <ph name="COLOR_NAME" /> og etiketten <ph name="CARD_LABEL" />.}other{Vis delt fanegruppe med <ph name="TABS_COUNT_MANY" /> faner, fargen <ph name="COLOR_NAME" /> og etiketten <ph name="CARD_LABEL" />.}}</translation>
 <translation id="5007392906805964215">Se gjennom</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Flytt faner til et nytt vindu}other{Flytt fanene til et annet vindu}}</translation>
 <translation id="5073204694187207510">Skjul fullskjermrutenett</translation>
 <translation id="5076161749301278626">Vil du se butikkanmeldelser?</translation>
 <translation id="5161254044473106830">Du må oppgi en tittel</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome lukker automatisk inaktive faner og fanegrupper etter <ph name="AUTO_DELETE_DELAY_ONE" /> måned. Du kan endre dette i innstillingene.}other{Chrome lukker automatisk inaktive faner og fanegrupper etter <ph name="AUTO_DELETE_DELAY_MANY" /> måneder. Du kan endre dette i innstillingene.}}</translation>
 <translation id="5339733443032484186">Den siste fanen du brukte</translation>
 <translation id="5380159289133845234">Arkiver duplikatfaner</translation>
-<translation id="5400836586163650660">Grå</translation>
 <translation id="5446043142172831860">Fjern fanen og forlat gruppen</translation>
 <translation id="5490235265819901748">Fanegruppen er utvidet</translation>
 <translation id="5494920125229734069">Velg alle</translation>
@@ -121,22 +132,24 @@
 <translation id="5556417849629758491">Vis butikkinformasjon – alternativet er tilgjengelig nær toppen av skjermen</translation>
 <translation id="5627941783489838464">Ingen faneoppdateringer</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link fra Chrome}other{<ph name="TABS_COUNT_MANY" /> linker fra Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Flytt fanen til venstre}other{Flytt fanene til venstre}}</translation>
 <translation id="5746204836956568669">Vil du gruppere <ph name="NUMBER_OF_TABS" /> faner for å jobbe raskere?</translation>
 <translation id="5773295109010386583">Lukk inaktive elementer automatisk</translation>
 <translation id="58326064309361797">Dra faner for å gruppere dem</translation>
-<translation id="5901630391730855834">Gul</translation>
 <translation id="5972844218283131174">Velg bort alle</translation>
-<translation id="6017514345406065928">Grønn</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6051432659151380973">Fanegruppene dine lagres automatisk</translation>
 <translation id="6054741997831917303">Prisen på denne varen falt nylig fra <ph name="PREVIOUS_PRICE" /> til <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Alle duplikatfaner blir nå også arkivert, med unntak av den sist brukte kopien.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Lukk <ph name="TABS_COUNT_ONE" /> valgt element}other{Lukk <ph name="TABS_COUNT_MANY" /> valgte elementer}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Flytt gruppen til et nytt vindu}other{Flytt gruppen til et annet vindu}}</translation>
-<translation id="6220820548421939212">Ja. Jeg er med</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Flytt fanen til høyre}other{Flytt fanene til høyre}}</translation>
 <translation id="6228793724645064692">(butikkvurdering)</translation>
+<translation id="6251046978189636310">Spiller av lyd</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Fjern fanen fra gruppe}other{Fjern faner fra gruppe}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Legg fanen til i en ny gruppe}other{Legg fanene til i en ny gruppe}}</translation>
 <translation id="6333260925957816943">Informasjon om denne butikken</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{Fest <ph name="TABS_COUNT_ONE" /> valgt fane}other{Fest <ph name="TABS_COUNT_MANY" /> valgt fane}}</translation>
 <translation id="6381032505162537930">Her finner du fanegruppene dine</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Opphev grupperingen av <ph name="TABS_COUNT_ONE" /> valgt fane}other{Opphev grupperingen av <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="6499296376514955580">Merknad om endringer i delte fanegrupper er lukket</translation>
@@ -153,6 +166,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Legg til i gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TAB_COUNT1" /> fane}other{Legg til i gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TAB_COUNT1" /> faner}}</translation>
 <translation id="6818926723028410516">Velg elementer</translation>
 <translation id="6856809498882026482">Skjul flervalgsmodus</translation>
+<translation id="6957436309971790274">Etter 21 dager med inaktivitet</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Vis den delte fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" />.}other{Vis den delte fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">Velg fanegruppe</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Del fanen}other{Del fanene}}</translation>
@@ -163,8 +177,10 @@
 <translation id="7326879924029668159">Se retningslinjer for retur med mer</translation>
 <translation id="7352298686197644113">Se hvilken vare i de åpne fanene dine som har en lavere pris</translation>
 <translation id="7369451074646620503">Fanegruppen «<ph name="TAB_GROUP_NAME" />» er ikke tilgjengelig mer</translation>
+<translation id="7402375256128852434">Legg til nylige faner</translation>
 <translation id="7452985128687107478">Fanegrupper lagres og oppdateres automatisk på alle enhetene dine</translation>
 <translation id="747459581954555080">Gjenopprett alt</translation>
+<translation id="7489558427602531799">Flytt fanegruppen til høyre</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> element}other{<ph name="TABS_COUNT_MANY" /> elementer}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Gjenopprett <ph name="TABS_COUNT_ONE" /> valgt element}other{Gjenopprett <ph name="TABS_COUNT_MANY" /> valgte elementer}}</translation>
 <translation id="753732157349120914">Fanevelger</translation>
@@ -183,9 +199,8 @@
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vurdering: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> anmeldelse}other{Vurdering: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> anmeldelser}}</translation>
 <translation id="7885132941432959125">Flytt fanen mot høyre</translation>
-<translation id="788914896430720926">Vil du holde den inaktive delen ryddig?</translation>
+<translation id="7887334752153342268">Dupliser</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> er ikke valgt</translation>
-<translation id="7942349550061667556">Rød</translation>
 <translation id="7961015016161918242">Aldri</translation>
 <translation id="7966321538264951561">Avvis forslagene.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Flytt fanen til et nytt vindu}other{Flytt fanen til et annet vindu}}</translation>
@@ -193,7 +208,9 @@
 <translation id="8029301326595421733">Informasjon om denne butikken er åpnet i full høyde</translation>
 <translation id="8053770993984522566">Liste over fanegrupper, åpnet i halv høyde</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Legg til fanen i en gruppe}other{Legg til fanene i en gruppe}}</translation>
+<translation id="8138067144082174140">Etter 14 dager med inaktivitet</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Vis fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" />.}other{Vis fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{Løsne fane}other{Løsne faner}}</translation>
 <translation id="8205266828577616993">Flytt fanen oppover</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Oppdater for <ph name="NUM_MINS_ONE" /> minutt siden}other{Oppdater for <ph name="NUM_MINS_MANY" /> minutter siden}}</translation>
 <translation id="8236097722223016103">Legg til i bokmerker</translation>
@@ -206,6 +223,7 @@
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="855081842937141170">Fest fanen</translation>
 <translation id="8633025649649592204">Nylig aktivitet</translation>
+<translation id="8635822281281406185">Legg til opptil 10 filer, faner eller bilder</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8714939927607906138">Lavere pris</translation>
 <translation id="8730621377337864115">Ferdig</translation>
@@ -221,6 +239,5 @@
 <translation id="9187834032751045001">Merknad om automatisk sletting av faner i halv høyde.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Vis fanegruppe med <ph name="TABS_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" />.}other{Vis fanegruppe med <ph name="TABS_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
-<translation id="992256792861109788">Rosa</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{Vil du lukke 1 inaktivt element?}other{Vil du lukke <ph name="TAB_COUNT_MANY" /> inaktive elementer?}}</translation>
 </translationbundle>

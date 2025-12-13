@@ -10,7 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "components/ui_devtools/views/widget_element.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/native_widget_mac.h"
 
 namespace ui_devtools {

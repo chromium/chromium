@@ -16,6 +16,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 
 namespace extensions {
 

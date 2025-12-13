@@ -32,6 +32,7 @@ enum class ManagedProfileCreationFailureReason {
   kProfileCreationFailed,
   kNewProfileWasDeleted,
   kSourceProfileDeleted,
+  kPrimaryAccountNotSet
 };
 
 using ManagedProfileCreationControllerCallback = base::OnceCallback<
@@ -91,7 +92,7 @@ class ManagedProfileCreationController : public ProfileObserver {
 
   void FetchProfileSeparationPolicies();
   void OnProfileSeparationPoliciesReceived(
-      const policy::ProfileSeparationPolicies& policies);
+      policy::ProfileSeparationPolicies policies);
 
   void ShowManagementDisclaimer();
   void OnManagementDisclaimerResult(signin::SigninChoice choice);

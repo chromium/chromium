@@ -65,6 +65,14 @@ class SecurityInterstitialPageController
 #if BUILDFLAG(IS_ANDROID)
   void OpenAdvancedProtectionSettings();
 #endif  // BUILDFLAG(IS_ANDROID)
+  void OpenHelpCenterInNewTab();
+  void OpenDiagnosticInNewTab();
+  void OpenReportingPrivacyInNewTab();
+  void OpenWhitepaperInNewTab();
+  void ReportPhishingErrorInNewTab();
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void ShowCertificateViewer();
+#endif
 
   void SendCommand(security_interstitials::SecurityInterstitialCommand command);
 

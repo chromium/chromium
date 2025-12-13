@@ -6,6 +6,7 @@
 #define BASE_MEMORY_POST_DELAYED_MEMORY_REDUCTION_TASK_H_
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 
 namespace base {
 

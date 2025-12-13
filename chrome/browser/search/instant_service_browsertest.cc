@@ -31,7 +31,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/native_theme/test_native_theme.h"
+#include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
 namespace {
@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(InstantServiceTest, GetNTPTileSuggestion) {
   instant_service_->OnURLsAvailable(false, suggestions_map);
 
   auto items = instant_service_->most_visited_info_->items;
-  ASSERT_EQ(1, (int)items.size());
+  ASSERT_EQ(1u, items.size());
   EXPECT_EQ("https://foo.com/", items[0].url);
   EXPECT_EQ(u"Foo", items[0].title);
   EXPECT_EQ("https://foo.com/favicon", items[0].favicon);
@@ -76,21 +76,6 @@ IN_PROC_BROWSER_TEST_F(InstantServiceTest, TestNoNtpTheme) {
   instant_service_->theme_ = nullptr;
   EXPECT_NE(nullptr, instant_service_->GetInitializedNtpTheme());
 }
-
-class InstantServiceThemeTest : public InstantServiceTest {
- public:
-  InstantServiceThemeTest() = default;
-
-  InstantServiceThemeTest(const InstantServiceThemeTest&) = delete;
-  InstantServiceThemeTest& operator=(const InstantServiceThemeTest&) = delete;
-
-  ~InstantServiceThemeTest() override = default;
-
-  ui::TestNativeTheme* theme() { return &theme_; }
-
- private:
-  ui::TestNativeTheme theme_;
-};
 
 IN_PROC_BROWSER_TEST_F(InstantServiceTest, SetNTPElementsNtpTheme) {
   // Check defaults when no theme and no custom backgrounds is set.

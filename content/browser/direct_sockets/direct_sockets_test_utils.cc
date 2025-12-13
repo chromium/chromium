@@ -93,6 +93,7 @@ void MockNetworkContext::CreateRestrictedUDPSocket(
     network::mojom::RestrictedUDPSocketParamsPtr params,
     mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
+    bool allow_multicast,
     CreateRestrictedUDPSocketCallback callback) {
   auto socket = CreateMockUDPSocket(std::move(listener));
   DCHECK_EQ(mode, network::mojom::RestrictedUDPSocketMode::CONNECTED);
@@ -192,7 +193,13 @@ IsolatedWebAppContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
       /*self_if_matches=*/app_origin,
       /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
 
-  return {{coi_decl, sockets_decl, sockets_pna_decl}};
+  network::ParsedPermissionsPolicyDeclaration sockets_multicast(
+      network::mojom::PermissionsPolicyFeature::kMulticastInDirectSockets,
+      /*allowed_origins=*/{},
+      /*self_if_matches=*/app_origin,
+      /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
+
+  return {{coi_decl, sockets_decl, sockets_pna_decl, sockets_multicast}};
 }
 
 // misc

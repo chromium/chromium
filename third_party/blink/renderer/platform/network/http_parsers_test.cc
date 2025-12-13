@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -38,21 +39,21 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_EQ(std::nullopt, header.max_age);
   EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
-  header = ParseCacheControlDirectives(AtomicString("no-cache no-store"),
+  header = ParseCacheControlDirectives(AtomicString("no-cache, no-store"),
                                        AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_TRUE(header.contains_no_cache);
-  EXPECT_FALSE(header.contains_no_store);
+  EXPECT_TRUE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
   EXPECT_EQ(std::nullopt, header.max_age);
   EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
-  header = ParseCacheControlDirectives(AtomicString("no-store must-revalidate"),
-                                       AtomicString());
+  header = ParseCacheControlDirectives(
+      AtomicString("no-store, must-revalidate"), AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_TRUE(header.contains_no_store);
-  EXPECT_FALSE(header.contains_must_revalidate);
+  EXPECT_TRUE(header.contains_must_revalidate);
   EXPECT_EQ(std::nullopt, header.max_age);
   EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
@@ -73,10 +74,10 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_EQ(std::nullopt, header.max_age);
   EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
-  header = ParseCacheControlDirectives(AtomicString("max-age=0 no-cache"),
+  header = ParseCacheControlDirectives(AtomicString("max-age=0, no-cache"),
                                        AtomicString());
   EXPECT_TRUE(header.parsed);
-  EXPECT_FALSE(header.contains_no_cache);
+  EXPECT_TRUE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
   EXPECT_EQ(base::TimeDelta(), header.max_age.value());
@@ -136,6 +137,139 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_FALSE(header.contains_must_revalidate);
   EXPECT_EQ(std::nullopt, header.max_age);
   EXPECT_EQ(2.0, header.stale_while_revalidate.value().InSecondsF());
+
+  // Test that space-separated directives are NOT parsed as separate directives
+  // (per RFC 7234, directives must be comma-separated).
+  // Instead, the space terminates the first directive name, and everything
+  // after is discarded as trailing garbage.
+  header = ParseCacheControlDirectives(AtomicString("no-cache no-store"),
+                                       AtomicString());
+  EXPECT_TRUE(header.parsed);
+  EXPECT_TRUE(header.contains_no_cache);  // "no-cache" is extracted, "
+                                          // no-store" is trailing garbage
+  EXPECT_FALSE(
+      header.contains_no_store);  // "no-store" is NOT a separate directive
+  EXPECT_FALSE(header.contains_must_revalidate);
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
+
+  header = ParseCacheControlDirectives(AtomicString("no-store must-revalidate"),
+                                       AtomicString());
+  EXPECT_TRUE(header.parsed);
+  EXPECT_FALSE(header.contains_no_cache);
+  EXPECT_TRUE(
+      header.contains_no_store);  // "no-store" is extracted, " must-revalidate"
+                                  // is trailing garbage
+  EXPECT_FALSE(header.contains_must_revalidate);  // "must-revalidate" is NOT a
+                                                  // separate directive
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
+
+  header = ParseCacheControlDirectives(AtomicString("max-age=0 no-cache"),
+                                       AtomicString());
+  EXPECT_TRUE(header.parsed);
+  EXPECT_FALSE(
+      header.contains_no_cache);  // Space-separated "no-cache" is part of
+                                  // max-age value, not a separate directive
+  EXPECT_FALSE(header.contains_no_store);
+  EXPECT_FALSE(header.contains_must_revalidate);
+  // TrimToNextSeparator extracts "0" from "0 no-cache", which successfully
+  // parses as max-age=0
+  EXPECT_EQ(base::TimeDelta(), header.max_age.value());
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
+}
+
+TEST(HTTPParsersTest, CacheControlRFC7234ParsingBothFlagsOff) {
+  // Test header with RFC 2616 separator (semicolon) that should parse
+  // differently between legacy (RFC 2616) and new (RFC 7234) parsing.
+  const AtomicString test_header("max-age=3600;no-cache");
+
+  ScopedCacheControlRFC7234ParsingForTest parsing_feature(false);
+  ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(false);
+
+  CacheControlHeader header =
+      ParseCacheControlDirectives(test_header, AtomicString());
+  // Legacy parsing: semicolon affects parsing
+  EXPECT_TRUE(header.parsed);
+}
+
+TEST(HTTPParsersTest, CacheControlRFC7234ParsingMetricsOnParsingOff) {
+  const AtomicString test_header("max-age=3600;no-cache");
+
+  ScopedCacheControlRFC7234ParsingForTest parsing_feature(false);
+  ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(true);
+
+  CacheControlHeader header =
+      ParseCacheControlDirectives(test_header, AtomicString());
+  // Should use legacy parsing (same as both flags off)
+  EXPECT_TRUE(header.parsed);
+}
+
+TEST(HTTPParsersTest, CacheControlRFC7234ParsingParsingOnMetricsOff) {
+  const AtomicString test_header("max-age=3600;no-cache");
+
+  ScopedCacheControlRFC7234ParsingForTest parsing_feature(true);
+  ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(false);
+
+  CacheControlHeader header =
+      ParseCacheControlDirectives(test_header, AtomicString());
+  // New parsing: semicolon is not a valid separator
+  EXPECT_TRUE(header.parsed);
+}
+
+TEST(HTTPParsersTest, CacheControlRFC7234ParsingBothFlagsOn) {
+  const AtomicString test_header("max-age=3600;no-cache");
+
+  ScopedCacheControlRFC7234ParsingForTest parsing_feature(true);
+  ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(true);
+
+  CacheControlHeader header =
+      ParseCacheControlDirectives(test_header, AtomicString());
+  // Should use new RFC 7234 parsing
+  EXPECT_TRUE(header.parsed);
+}
+
+TEST(HTTPParsersTest, CacheControlRFC7234ParsingMetricsEmitted) {
+  // Test that UMA histogram is emitted when metrics flag is enabled
+
+  // Test with header that DIFFERS between old and new parsing
+  {
+    base::HistogramTester histogram;
+    ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(true);
+
+    // Parse header with parentheses - RFC 2616 separator but not RFC 7234
+    // In legacy: parentheses will trim the directive name
+    // In new: parentheses are not separators, so directive name differs
+    ParseCacheControlDirectives(AtomicString("no-cache(test)"), AtomicString());
+
+    // Verify UMA was emitted with value true (1) indicating difference
+    histogram.ExpectBucketCount("Blink.CacheControl.ParsingDifference", 1, 1);
+  }
+
+  // Test with header that DOESN'T differ between old and new
+  {
+    base::HistogramTester histogram;
+    ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(true);
+
+    // Parse header without RFC 2616-specific separators
+    ParseCacheControlDirectives(AtomicString("no-cache, no-store"),
+                                AtomicString());
+
+    // Verify UMA was emitted with value false (0) indicating no difference
+    histogram.ExpectBucketCount("Blink.CacheControl.ParsingDifference", 0, 1);
+  }
+
+  // Test that NO metrics are emitted when flag is OFF
+  {
+    base::HistogramTester histogram;
+    ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(false);
+
+    // Parse header that would differ (but metrics disabled)
+    ParseCacheControlDirectives(AtomicString("no-cache(test)"), AtomicString());
+
+    // Verify NO UMA was emitted
+    histogram.ExpectTotalCount("Blink.CacheControl.ParsingDifference", 0);
+  }
 }
 
 TEST(HTTPParsersTest, CommaDelimitedHeaderSet) {
@@ -933,7 +1067,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {
       "Set-Cookie: a\r\n"
       "Set-Cookie: b\r\n\r\n";
   const auto parsed_headers =
-      ParseHeaders(WTF::String::FromUTF8(headers), KURL("https://a.com"));
+      ParseHeaders(String::FromUTF8(headers), KURL("https://a.com"));
 
   ASSERT_TRUE(parsed_headers);
   ASSERT_TRUE(parsed_headers->no_vary_search_with_parse_error);

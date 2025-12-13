@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/display/win/base_window_finder_win.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace display::win {
 

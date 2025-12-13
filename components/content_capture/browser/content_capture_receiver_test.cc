@@ -515,7 +515,8 @@ TEST_P(ContentCaptureReceiverTest, ConvertFaviconURLToJSON) {
       blink::mojom::FaviconIconType::kTouchPrecomposedIcon,
       std::vector<gfx::Size>{}, /*is_default_icon=*/false));
   std::string actual_json = ContentCaptureReceiver::ToJSON(favicon_urls);
-  std::optional<base::Value> actual = base::JSONReader::Read(actual_json);
+  std::optional<base::Value> actual =
+      base::JSONReader::Read(actual_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   std::string expected_json =
       R"JSON(
       [
@@ -536,7 +537,8 @@ TEST_P(ContentCaptureReceiverTest, ConvertFaviconURLToJSON) {
         }
       ]
       )JSON";
-  std::optional<base::Value> expected = base::JSONReader::Read(expected_json);
+  std::optional<base::Value> expected = base::JSONReader::Read(
+      expected_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(actual);
   EXPECT_EQ(expected, actual);
 }

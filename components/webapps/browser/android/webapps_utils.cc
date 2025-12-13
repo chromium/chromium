@@ -8,7 +8,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
@@ -66,4 +68,15 @@ void WebappsUtils::ShowWebApkInstallResultToast(
       base::android::AttachCurrentThread(), (int)result);
 }
 
+// static
+bool WebappsUtils::IsAutoMintedTwaEnabled() {
+  if (!base::FeatureList::IsEnabled(webapps::features::kAndroidAutoMintedTWA)) {
+    return false;
+  }
+  return Java_WebappsUtils_isWebAppServiceEnabled(
+      base::android::AttachCurrentThread());
+}
+
 }  // namespace webapps
+
+DEFINE_JNI(WebappsUtils)

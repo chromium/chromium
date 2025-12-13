@@ -2,7 +2,47 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview 'passwords-importer' is a component for importing passwords
+ * from a .csv file. It is a state machine that transitions through several
+ * states, managed by the `dialogState_` property.
+ *
+ * The user initiates the import process, but the initial interaction differs
+ * based on their account type:
+ *
+ * - For "Account Store" users: The user
+ *   clicks on the entire "Import passwords" row. This action transitions the
+ *   state to `STORE_PICKER`, where they can choose to save passwords to their
+ *   account or the local device. After making a selection, they click the
+ *   "Select file" button to continue.
+ * - For other users: A "Select file" button is displayed directly on the
+ *   row. Clicking this button bypasses the store picker and immediately
+ *   transitions the state to `IN_PROGRESS`, starting the file selection
+ *   process.
+ *
+ * The rest of the flow is as follows:
+ *
+ * 1.  File Processing (`IN_PROGRESS`): The user is prompted to select a
+ *     `.csv` file. While the file is being read and processed, a spinner is
+ *     shown.
+ *
+ * 2.  Resolution: After processing, the machine transitions to one of the
+ *     following terminal states:
+ *     - `SUCCESS`: The passwords were imported successfully.
+ *     - `CONFLICTS`: The file contained passwords that already exist. The
+ *       user is prompted to select which ones to overwrite.
+ *     - `ERROR`: An error occurred (e.g., bad file format, file too
+ *       large).
+ *     - `ALREADY_ACTIVE`: Another import process was already in progress in
+ *       another window.
+ *
+ * 3.  Completion (`NO_DIALOG`): From any of the resolution states, closing
+ *     the dialog resets the state machine back to `NO_DIALOG`.
+ */
+
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
@@ -10,6 +50,7 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import './site_favicon.js';
 import './dialogs/password_preview_item.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -26,9 +67,42 @@ import {Page, Router} from './router.js';
 export interface PasswordsImporterElement {
   $: {
     linkRow: CrLinkRowElement,
+    selectFileButtonLinkRow: CrButtonElement,
   };
 }
 
+/**
+ * The states of the importer. See the file-level comment for more details on
+ * the state machine.
+ *
+ *                 +------------------+
+ *                 |    NO_DIALOG     |
+ *                 +------------------+
+ *                        |
+ *                        v
+ *                 +------------------+
+ *                 |   STORE_PICKER   | (If isAccountStoreUser)
+ *                 +------------------+
+ *                        |
+ *                        v (file selection)
+ *                 +------------------+
+ *                 |   IN_PROGRESS    |
+ *                 +------------------+
+ *                        |
+ *     +------------------+------------------+------------------+
+ *     |                  |                  |                  |
+ *     v                  v                  v                  v
+ * +-------+      +-----------+      +-----------+      +----------------+
+ * | ERROR |      | CONFLICTS |      |  SUCCESS  |      | ALREADY_ACTIVE |
+ * +-------+      +-----------+      +-----------+      +----------------+
+ *     |                  |                  |                  |
+ *     +------------------+------------------+------------------+
+ *                        |
+ *                        v
+ *                 +------------------+
+ *                 |    NO_DIALOG     |
+ *                 +------------------+
+ */
 enum DialogState {
   NO_DIALOG,
   IN_PROGRESS,
@@ -224,8 +298,17 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   private closeDialog_() {
     this.dialogState_ = DialogState.NO_DIALOG;
-    // TODO(crbug.com/40264206): Make sure that focus behaves correctly when the
-    // dialog is closed.
+    // When the dialog closes, restore focus to the element that opened it.
+    // For account-store users, this is the entire link-row. For other users,
+    // it's the "Select file" button. A timeout is needed to ensure that focus
+    // is restored only after the dialog has completely closed.
+    setTimeout(() => {
+      if (this.shouldHideSelectFileButton_()) {
+        this.$.linkRow.focus();
+      } else {
+        this.$.selectFileButtonLinkRow.focus();
+      }
+    });
   }
 
   private async resetImporter() {
@@ -467,8 +550,8 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     return !this.isAccountStoreUser || this.isState_(DialogState.IN_PROGRESS);
   }
 
-  private shouldShowSelectFileButton_(): boolean {
-    return !this.isAccountStoreUser && !this.isState_(DialogState.IN_PROGRESS);
+  private shouldHideSelectFileButton_(): boolean {
+    return this.isAccountStoreUser || this.isState_(DialogState.IN_PROGRESS);
   }
 
   private shouldHideDeleteFileOption_(): boolean {

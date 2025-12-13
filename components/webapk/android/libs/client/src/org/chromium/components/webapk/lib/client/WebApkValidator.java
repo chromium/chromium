@@ -43,8 +43,8 @@ import java.nio.channels.FileChannel;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -233,7 +233,7 @@ public class WebApkValidator {
     private static List<ResolveInfo> resolveInfosForUrlAndOptionalPackage(
             Context context, String url, @Nullable String applicationPackage) {
         Intent intent = createWebApkIntentForUrlAndOptionalPackage(url, applicationPackage);
-        if (intent == null) return new LinkedList<>();
+        if (intent == null) return new ArrayList<>();
 
         // StrictMode is relaxed due to https://crbug.com/843092.
         StrictMode.ThreadPolicy policy = StrictMode.allowThreadDiskReads();
@@ -246,7 +246,7 @@ public class WebApkValidator {
             // We used to catch only java.util.MissingResourceException, but we need to catch
             // more exceptions to handle "Package manager has died" exception.
             // http://crbug.com/794363
-            return new LinkedList<>();
+            return new ArrayList<>();
         } finally {
             StrictMode.setThreadPolicy(policy);
         }

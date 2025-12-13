@@ -42,9 +42,8 @@ class WTF_EXPORT AtomicStringTable final {
   // convert the string to save memory if possible.
   scoped_refptr<StringImpl> Add(StringImpl*);
   scoped_refptr<StringImpl> Add(scoped_refptr<StringImpl>&&);
-  scoped_refptr<StringImpl> Add(const LChar* chars, unsigned length);
-  scoped_refptr<StringImpl> Add(const UChar* chars,
-                                unsigned length,
+  scoped_refptr<StringImpl> Add(base::span<const LChar> chars);
+  scoped_refptr<StringImpl> Add(base::span<const UChar> chars,
                                 AtomicStringUCharEncoding encoding);
   scoped_refptr<StringImpl> Add(const StringView& string_view);
 

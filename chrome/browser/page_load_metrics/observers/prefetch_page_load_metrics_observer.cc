@@ -11,6 +11,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -117,8 +118,13 @@ PrefetchPageLoadMetricsObserver::OnCommit(
 
   for (const GURL& url : navigation_handle->GetRedirectChain()) {
     history_service->GetLastVisitToOrigin(
-        url::Origin::Create(url), base::Time() /* before_time */,
-        navigation_start_ /* end_time */,
+        url::Origin::Create(url), /*begin_time=*/base::Time(),
+        /*end_time=*/navigation_start_,
+        // Exclude 404s for metric continuity, since the UKMs and histograms
+        // that consume the result of this call (via
+        // `min_days_since_last_visit_to_origin_`) were added before 404s were
+        // saved to History.
+        history::VisitQuery404sPolicy::kExclude404s,
         base::BindOnce(
             &PrefetchPageLoadMetricsObserver::OnOriginLastVisitResult,
             weak_factory_.GetWeakPtr(), base::Time::Now()),

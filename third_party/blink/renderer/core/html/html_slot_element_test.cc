@@ -45,7 +45,7 @@ Vector<char> HTMLSlotElementTest::LongestCommonSubsequence(const Seq& seq1,
     }
     std::tie(r, c) = backtrack;
   }
-  std::reverse(lcs.begin(), lcs.end());
+  std::ranges::reverse(lcs);
   EXPECT_EQ(lcs_table_[seq1.size()][seq2.size()], lcs.size());
   return lcs;
 }

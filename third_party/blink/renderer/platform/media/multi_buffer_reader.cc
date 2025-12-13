@@ -8,7 +8,6 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -88,12 +87,13 @@ int64_t MultiBufferReader::AvailableAt(int64_t pos) const {
   return std::max<int64_t>(0, unavailable_byte_pos - pos);
 }
 
-int64_t MultiBufferReader::TryReadAt(int64_t pos, uint8_t* data, int64_t len) {
-  DCHECK_GT(len, 0);
+int64_t MultiBufferReader::TryReadAt(int64_t pos, base::span<uint8_t> data) {
+  DCHECK(!data.empty());
   std::vector<scoped_refptr<media::DataBuffer>> buffers;
-  multibuffer_->GetBlocksThreadsafe(block(pos), block_ceil(pos + len),
-                                    &buffers);
-  int64_t bytes_read = 0;
+  multibuffer_->GetBlocksThreadsafe(
+      block(pos), block_ceil(pos + base::checked_cast<int64_t>(data.size())),
+      &buffers);
+  const size_t initial_buffer_size = data.size();
   for (auto& buffer : buffers) {
     if (buffer->end_of_stream()) {
       break;
@@ -102,12 +102,10 @@ int64_t MultiBufferReader::TryReadAt(int64_t pos, uint8_t* data, int64_t len) {
     if (offset > buffer->size()) {
       break;
     }
-    const auto tocopy =
-        std::min<size_t>(len - bytes_read, buffer->size() - offset);
-    UNSAFE_TODO(memcpy(data, buffer->data().data() + offset, tocopy));
-    UNSAFE_TODO(data += tocopy);
-    bytes_read += tocopy;
-    if (bytes_read == len) {
+    auto offset_read_buffer = buffer->data().subspan(offset);
+    const size_t tocopy = std::min(data.size(), offset_read_buffer.size());
+    data.take_first(tocopy).copy_from(offset_read_buffer.first(tocopy));
+    if (data.empty()) {
       break;
     }
     if (block(pos + tocopy) != block(pos) + 1) {
@@ -115,11 +113,11 @@ int64_t MultiBufferReader::TryReadAt(int64_t pos, uint8_t* data, int64_t len) {
     }
     pos += tocopy;
   }
-  return bytes_read;
+  return base::checked_cast<int64_t>(initial_buffer_size - data.size());
 }
 
-int64_t MultiBufferReader::TryRead(uint8_t* data, int64_t len) {
-  int64_t bytes_read = TryReadAt(pos_, data, len);
+int64_t MultiBufferReader::TryRead(base::span<uint8_t> data) {
+  int64_t bytes_read = TryReadAt(pos_, data);
   Seek(pos_ + bytes_read);
   return bytes_read;
 }
@@ -161,8 +159,8 @@ void MultiBufferReader::CheckWait() {
     // there are no callbacks from us after we've been destroyed.
     current_wait_size_ = 0;
     task_runner_->PostTask(
-        FROM_HERE, WTF::BindOnce(&MultiBufferReader::Call,
-                                 weak_factory_.GetWeakPtr(), std::move(cb_)));
+        FROM_HERE, blink::BindOnce(&MultiBufferReader::Call,
+                                   weak_factory_.GetWeakPtr(), std::move(cb_)));
   }
 }
 
@@ -171,13 +169,15 @@ void MultiBufferReader::Call(base::OnceClosure cb) const {
 }
 
 void MultiBufferReader::UpdateEnd(MultiBufferBlockId p) {
-  auto i = multibuffer_->map().find(p - 1);
-  if (i != multibuffer_->map().end() && i->second->end_of_stream()) {
-    // This is an upper limit because the last-to-one block is allowed
-    // to be smaller than the rest of the blocks.
-    int64_t size_upper_limit = static_cast<int64_t>(p)
-                               << multibuffer_->block_size_shift();
-    end_ = std::min(end_, size_upper_limit);
+  if (p > 0) {
+    auto i = multibuffer_->map().find(p - 1);
+    if (i != multibuffer_->map().end() && i->value->end_of_stream()) {
+      // This is an upper limit because the last-to-one block is allowed
+      // to be smaller than the rest of the blocks.
+      int64_t size_upper_limit = static_cast<int64_t>(p)
+                                 << multibuffer_->block_size_shift();
+      end_ = std::min(end_, size_upper_limit);
+    }
   }
 }
 
@@ -191,12 +191,12 @@ void MultiBufferReader::NotifyAvailableRange(
   if (!progress_callback_.is_null()) {
     task_runner_->PostTask(
         FROM_HERE,
-        WTF::BindOnce(progress_callback_,
-                      static_cast<int64_t>(range.begin)
-                          << multibuffer_->block_size_shift(),
-                      (static_cast<int64_t>(range.end)
-                       << multibuffer_->block_size_shift()) +
-                          multibuffer_->UncommittedBytesAt(range.end)));
+        blink::BindOnce(progress_callback_,
+                        static_cast<int64_t>(range.begin)
+                            << multibuffer_->block_size_shift(),
+                        (static_cast<int64_t>(range.end)
+                         << multibuffer_->block_size_shift()) +
+                            multibuffer_->UncommittedBytesAt(range.end)));
   }
 }
 

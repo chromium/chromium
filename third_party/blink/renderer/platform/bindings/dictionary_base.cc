@@ -21,7 +21,7 @@ v8::Local<v8::Value> DictionaryBase::ToV8(ScriptState* script_state) const {
   if (!maybe_template.IsEmpty()) {
     just_template = maybe_template.ToLocalChecked();
   } else {
-    WTF::Vector<std::string_view> properties;
+    Vector<std::string_view> properties;
     FillTemplateProperties(properties);
     just_template = v8::DictionaryTemplate::New(
         script_state->GetIsolate(), v8::MemorySpan<const std::string_view>(

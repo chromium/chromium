@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
@@ -10,12 +9,11 @@ import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {ICON_TYPES, ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
-import {type AndroidApp, type FileData, type MaterializedView, type NavigationRoot, NavigationSection, NavigationType, type State, type Volume} from '../../state/state.js';
+import {type AndroidApp, type FileData, NavigationSection, NavigationType, type State, type Volume} from '../../state/state.js';
 import {convertEntryToFileData} from '../ducks/all_entries.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
-import {getEmptyState, getFileData} from '../store.js';
+import {getEmptyState} from '../store.js';
 
-import {updateMaterializedViews} from './materialized_views.js';
 import {refreshNavigationRoots} from './navigation.js';
 import {convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, myFilesEntryListKey, recentRootKey, trashRootKey} from './volumes.js';
 
@@ -629,66 +627,6 @@ export async function testNavigationRootsWithFilteredVolume(done: () => void) {
     },
   ];
   await waitDeepEquals(store, want, (state) => state.navigation.roots);
-
-  done();
-}
-
-/**
- * Tests that materialized views add navigation roots.
- */
-export async function testNavigationRootsWithMaterializedViews(
-    done: () => void) {
-  const initialState = getEmptyState();
-  const store = setupStore(initialState);
-
-  // Roots and materialized views start empty.
-  assertDeepEquals(store.getState().materializedViews, []);
-  assertDeepEquals(store.getState().navigation.roots, []);
-
-  // Dispatch an action to refresh navigation roots.
-  store.dispatch(refreshNavigationRoots());
-
-  // Everything is still empty.
-  assertDeepEquals(
-      store.getState().materializedViews, [], 'expected empty views');
-  // It contains My files by default.
-  assertEquals(store.getState().navigation.roots.length, 1);
-  assertEquals(
-      getFileData(store.getState(), store.getState().navigation.roots[0]!.key)
-          ?.label,
-      'My files');
-  const myFilesRoot = store.getState().navigation.roots[0]!;
-
-  // Add a view.
-  store.dispatch(updateMaterializedViews({
-    materializedViews: [
-      {
-        viewId: 1,
-        name: 'test view',
-      },
-    ],
-  }));
-
-  const viewKey = 'materialized-view://1/';
-  const wantView: MaterializedView = {
-    id: '1',
-    key: viewKey,
-    label: 'test view',
-    icon: ICON_TYPES.STAR,
-    isRoot: true,
-  };
-  await waitDeepEquals(store, [wantView], (state) => state.materializedViews);
-
-  // Refresh to pick up the new view.
-  store.dispatch(refreshNavigationRoots());
-  const wantViewRoot: NavigationRoot = {
-    key: viewKey,
-    section: NavigationSection.TOP,
-    separator: false,
-    type: NavigationType.MATERIALIZED_VIEW,
-  };
-  await waitDeepEquals(
-      store, [wantViewRoot, myFilesRoot], (state) => state.navigation.roots);
 
   done();
 }

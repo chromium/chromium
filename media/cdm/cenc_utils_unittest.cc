@@ -47,11 +47,11 @@ constexpr auto kCommonSystemSystemId = std::to_array<uint8_t>({
 void InitializePSSHBox(std::vector<uint8_t>* box,
                        uint8_t size,
                        uint8_t version) {
-  DCHECK(box->size() == 0);
+  CHECK(box->size() == 0);
 
   box->reserve(size);
   // Add size.
-  DCHECK(size < std::numeric_limits<uint8_t>::max());
+  CHECK(size < std::numeric_limits<uint8_t>::max());
   box->push_back(0);
   box->push_back(0);
   box->push_back(0);
@@ -93,8 +93,8 @@ std::vector<uint8_t> MakePSSHBox(uint8_t version) {
 
 std::vector<uint8_t> MakePSSHBox(uint8_t version,
                                  base::span<const uint8_t> key1) {
-  DCHECK(version > 0);
-  DCHECK(key1.size() == 16);
+  CHECK(version > 0);
+  CHECK(key1.size() == 16);
 
   std::vector<uint8_t> box;
   uint8_t size = 52;
@@ -122,9 +122,9 @@ std::vector<uint8_t> MakePSSHBox(uint8_t version,
 std::vector<uint8_t> MakePSSHBox(uint8_t version,
                                  base::span<const uint8_t> key1,
                                  base::span<const uint8_t> key2) {
-  DCHECK(version > 0);
-  DCHECK(key1.size() == 16);
-  DCHECK(key2.size() == 16);
+  CHECK(version > 0);
+  CHECK(key1.size() == 16);
+  CHECK(key2.size() == 16);
 
   std::vector<uint8_t> box;
   uint8_t size = 68;
@@ -159,7 +159,7 @@ void AppendData(std::vector<uint8_t>& pssh_box,
   // This assumes that |pssh_box| has been created using the routines above,
   // and simply appends the data to the end of it. It updates the box size
   // and sets the data size.
-  DCHECK(data.size() < 100);
+  CHECK(data.size() < 100);
   pssh_box[3] += static_cast<uint8_t>(data.size());
   pssh_box.pop_back();
   pssh_box.push_back(static_cast<uint8_t>(data.size()));

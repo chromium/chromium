@@ -14,6 +14,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/policy/core/common/management/platform_management_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/core/browser/account_management_type_metrics_recorder.h"
 #import "google_apis/gaia/gaia_id.h"
@@ -85,7 +86,7 @@ ProfileNameToGaiaIds GetMappingFromProfileAttributes(
           // Note: In this case (with the feature flag disabled), the profile
           // name in the mapping isn't used - every identity is considered
           // assigned to every profile.
-          result[std::string()].insert(GaiaId(identity.gaiaID));
+          result[std::string()].insert(identity.gaiaId);
           return SystemIdentityManager::IteratorResult::kContinueIteration;
         },
         std::ref(result)));
@@ -316,7 +317,7 @@ class AccountProfileMapper::Assigner
   // and should not be attempted again until the next browser restart. (As
   // opposed to `system_identities_to_fetch_`, this stores Gaia IDs instead of
   // the actual SystemIdentity objects, to avoid retaining them.)
-  NSMutableArray<NSString*>* gaia_ids_failed_fetching_ = [NSMutableArray array];
+  base::flat_set<GaiaId> gaia_ids_failed_fetching_;
 
   // Number of time we try to fetch an identity’s hosted domain before stopping
   // all tries.
@@ -543,7 +544,7 @@ void AccountProfileMapper::Assigner::UpdateIdentityProfileMappings() {
             DeleteProfileNamed(profile_name);
           }
 
-          [gaia_ids_failed_fetching_ removeObject:gaia_id.ToNSString()];
+          gaia_ids_failed_fetching_.erase(gaia_id);
         }
       }
     }
@@ -681,7 +682,8 @@ SystemIdentityManager::IteratorResult
 AccountProfileMapper::Assigner::ProcessIdentityForAssignmentToProfile(
     std::set<GaiaId>& processed_gaia_ids,
     id<SystemIdentity> identity) {
-  processed_gaia_ids.insert(GaiaId(identity.gaiaID));
+  CHECK(identity, base::NotFatalUntil::M147);
+  processed_gaia_ids.insert(identity.gaiaId);
 
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     if (!local_pref_service_) {
@@ -705,7 +707,7 @@ AccountProfileMapper::Assigner::ProcessIdentityForAssignmentToProfile(
     // assigned to a profile yet. Query it, and assign once available.
 
     if (![system_identities_to_fetch_ containsObject:identity] &&
-        ![gaia_ids_failed_fetching_ containsObject:identity.gaiaID]) {
+        !gaia_ids_failed_fetching_.contains(identity.gaiaId)) {
       // If we have not yet planned to fetch this identity, let’s add it to the
       // list of identities to fetch and reset the total number of tries.
       [system_identities_to_fetch_ addObject:identity];
@@ -790,7 +792,7 @@ HostedDomainFetchEvent AccountProfileMapper::Assigner::HostedDomainFetchedImpl(
     // We had kMinimalNumberOfRetry consecutive fetch failures.
     // Let’s stop trying (until the next browser restart).
     for (id<SystemIdentity> identity : system_identities_to_fetch_) {
-      [gaia_ids_failed_fetching_ addObject:identity.gaiaID];
+      gaia_ids_failed_fetching_.insert(identity.gaiaId);
     }
     [system_identities_to_fetch_ removeAllObjects];
 
@@ -818,7 +820,7 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     bool is_managed_account) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
 
-  const GaiaId gaia_id(identity.gaiaID);
+  const GaiaId gaia_id(identity.gaiaId);
   const std::optional<std::string> profile_name =
       FindProfileNameForGaiaID(gaia_id);
 
@@ -967,6 +969,7 @@ AccountProfileMapper::AccountProfileMapper(
       [](SystemIdentityManager* system_identity_manager,
          size_t& num_consumer_accounts, size_t& num_managed_accounts,
          size_t& num_unknown_accounts, id<SystemIdentity> identity) {
+        CHECK(identity, base::NotFatalUntil::M147);
         NSString* hosted_domain =
             system_identity_manager->GetCachedHostedDomainForIdentity(identity);
         if (hosted_domain) {
@@ -984,13 +987,23 @@ AccountProfileMapper::AccountProfileMapper(
       system_identity_manager_, std::ref(num_consumer_accounts),
       std::ref(num_managed_accounts), std::ref(num_unknown_accounts)));
 
+  base::UmaHistogramCounts100(
+      "Signin.IOSAccountsOnDeviceCount",
+      num_consumer_accounts + num_managed_accounts + num_unknown_accounts);
+  base::UmaHistogramCounts100("Signin.IOSAccountsOnDeviceCount.Consumer",
+                              num_consumer_accounts);
+  base::UmaHistogramCounts100("Signin.IOSAccountsOnDeviceCount.Managed",
+                              num_managed_accounts);
+  base::UmaHistogramCounts100("Signin.IOSAccountsOnDeviceCount.Unknown",
+                              num_unknown_accounts);
+
   auto account_types_summary =
       signin::AccountManagementTypeMetricsRecorder::GetAccountTypesSummary(
           num_consumer_accounts, num_managed_accounts);
   base::UmaHistogramEnumeration(
       "Signin.IOSAccountsOnDeviceManagementTypesSummary",
       account_types_summary);
-  if (IsApplicationManagedByMDM()) {
+  if (policy::PlatformManagementService::GetInstance()->IsManaged()) {
     base::UmaHistogramEnumeration(
         "Signin.IOSAccountsOnDeviceManagementTypesSummary.ManagedDevice",
         account_types_summary);
@@ -1095,8 +1108,8 @@ void AccountProfileMapper::IdentitiesOnDeviceChanged() {
 
 void AccountProfileMapper::IdentityUpdated(id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NotifyIdentityUpdated(
-      identity, assigner_->FindProfileNameForGaiaID(GaiaId(identity.gaiaID)));
+  NotifyIdentityUpdated(identity,
+                        assigner_->FindProfileNameForGaiaID(identity.gaiaId));
 }
 
 void AccountProfileMapper::IdentityRefreshTokenUpdated(
@@ -1104,7 +1117,7 @@ void AccountProfileMapper::IdentityRefreshTokenUpdated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NotifyRefreshTokenUpdated(
-      identity, assigner_->FindProfileNameForGaiaID(GaiaId(identity.gaiaID)));
+      identity, assigner_->FindProfileNameForGaiaID(identity.gaiaId));
 }
 
 void AccountProfileMapper::IdentityAccessTokenRefreshFailed(
@@ -1114,8 +1127,8 @@ void AccountProfileMapper::IdentityAccessTokenRefreshFailed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NotifyAccessTokenRefreshFailed(
-      identity, error,
-      assigner_->FindProfileNameForGaiaID(GaiaId(identity.gaiaID)), scopes);
+      identity, error, assigner_->FindProfileNameForGaiaID(identity.gaiaId),
+      scopes);
 }
 
 SystemIdentityManager::IteratorResult
@@ -1129,7 +1142,7 @@ AccountProfileMapper::FilterIdentitiesForProfile(
     ProfileAttributesIOS attr =
         profile_manager_->GetProfileAttributesStorage()
             ->GetAttributesForProfileWithName(profile_name);
-    if (!attr.GetAttachedGaiaIds().contains(GaiaId(identity.gaiaID))) {
+    if (!attr.GetAttachedGaiaIds().contains(identity.gaiaId)) {
       // The identity doesn't belong to this profile; skip over it.
       return SystemIdentityManager::IteratorResult::kContinueIteration;
     }

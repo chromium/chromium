@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -204,6 +205,10 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
             .SetActionId(kActionShowTranslate)
             .Build());
 
+    // Make sure the mock browser window uses a real data host.
+    EXPECT_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
+        .WillRepeatedly(testing::ReturnRef(user_data_host_));
+
     // Create an anchor for the bubble.
     anchor_widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -212,7 +217,7 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     controller_ = std::make_unique<TranslateBubbleController>(
-        /*root_action_item=*/nullptr);
+        &mock_browser_window_interface_, /*root_action_item=*/nullptr);
 
     // Use fake Translate bubble models instead of real implementations for
     // Translate bubble view construction in tests.
@@ -226,6 +231,7 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     anchor_widget_.reset();
+    controller_.reset();
     ChromeViewsTestBase::TearDown();
   }
 
@@ -260,6 +266,8 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
   raw_ptr<FakePartialTranslateBubbleModel, DanglingUntriaged>
       fake_partial_translate_bubble_model_ = nullptr;
 
+  ui::UnownedUserDataHost user_data_host_;
+  MockBrowserWindowInterface mock_browser_window_interface_;
   std::unique_ptr<TranslateBubbleController> controller_;
 };
 

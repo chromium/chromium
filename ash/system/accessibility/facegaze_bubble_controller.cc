@@ -7,6 +7,7 @@
 #include "ash/system/accessibility/facegaze_bubble_view.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
@@ -80,7 +81,7 @@ void FaceGazeBubbleController::Update(const std::u16string& text,
   facegaze_bubble_view_->Update(text, is_warning);
 
   const gfx::Rect primary_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   const gfx::Size work_area_size = primary_work_area.size();
   const gfx::Size bubble_size = facegaze_bubble_view_->size();
 
@@ -90,6 +91,10 @@ void FaceGazeBubbleController::Update(const std::u16string& text,
   // work area.
   int center = (work_area_size.width() / 2) - (bubble_size.width() / 2) +
                primary_work_area.x();
+  // Adjust positioning for right-to-left (RTL) languages.
+  if (base::i18n::IsRTL()) {
+    center += bubble_size.width();
+  }
   int top = primary_work_area.y() + kMarginFromTopDip;
   facegaze_bubble_view_->SetAnchorRect(gfx::Rect(center, top, 0, 0));
 }
@@ -106,8 +111,7 @@ void FaceGazeBubbleController::OnCloseButtonClicked(const ui::Event& event) {
 }
 
 void FaceGazeBubbleController::OnShowTimer() {
-  gfx::Point cursor_location =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point cursor_location = display::Screen::Get()->GetCursorScreenPoint();
   // Expand the FaceGazeBubbleView bounds by 25 pixels in each direction.
   // This provides a cushion so that we don't show the UI when the user is
   // trying to click on an element that is a few pixels outside of the original

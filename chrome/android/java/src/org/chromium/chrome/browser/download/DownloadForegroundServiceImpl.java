@@ -16,18 +16,21 @@ import android.os.Build;
 import android.os.IBinder;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ServiceCompat;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Keep-alive foreground service for downloads. */
-public class DownloadForegroundServiceImpl extends DownloadForegroundService.Impl {
+@NullMarked
+public class DownloadForegroundServiceImpl extends SplitCompatService.Impl {
     private static final String TAG = "DownloadFg";
     private final IBinder mBinder = new LocalBinder();
 
@@ -66,7 +69,7 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
             int newNotificationId,
             Notification newNotification,
             int oldNotificationId,
-            Notification oldNotification,
+            @Nullable Notification oldNotification,
             boolean killOldNotification) {
         Log.w(
                 TAG,
@@ -115,7 +118,7 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
     public void stopDownloadForegroundService(
             @StopForegroundNotification int stopForegroundNotification,
             int pinnedNotificationId,
-            Notification pinnedNotification) {
+            @Nullable Notification pinnedNotification) {
         Log.w(
                 TAG,
                 "stopDownloadForegroundService status: "
@@ -141,7 +144,7 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         // In the case the service was restarted when the intent is null.
         if (intent == null) {
             DownloadNotificationUmaHelper.recordServiceStoppedHistogram(
@@ -178,9 +181,8 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
         super.onLowMemory();
     }
 
-    @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
+    public @Nullable IBinder onBind(Intent intent) {
         return mBinder;
     }
 

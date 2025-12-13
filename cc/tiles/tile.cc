@@ -14,7 +14,6 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "cc/tiles/tile_manager.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/traced_value.h"
 
 namespace cc {

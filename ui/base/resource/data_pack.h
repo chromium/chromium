@@ -18,6 +18,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
@@ -96,7 +97,7 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
 
     const ResourceData& operator*() { return *resource_data_; }
     Iterator& operator++() {
-      ++entry_;
+      UNSAFE_TODO(++entry_);  // Should be UNSAFE_BUFFER_USAGE, too.
       UpdateResourceData();
       return *this;
     }
@@ -210,10 +211,10 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
 
   // Return Entry or Alias by index of resource or alias table.
   const Entry* GetEntryByResourceTableIndex(size_t index) const {
-    return &resource_table_[index];
+    return UNSAFE_TODO(&resource_table_[index]);
   }
   const Alias* GetAliasByAliasTableIndex(size_t index) const {
-    return &alias_table_[index];
+    return UNSAFE_TODO(&alias_table_[index]);
   }
   // Return the size of the alias table.
   size_t GetAliasTableSize() const { return alias_count_; }

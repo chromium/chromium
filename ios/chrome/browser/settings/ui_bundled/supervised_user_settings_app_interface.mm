@@ -25,11 +25,11 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
-#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/ios_security_interstitial_page.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 
@@ -50,14 +50,14 @@ class StaticUrlCheckerClient : public safe_search_api::URLCheckerClient {
 
 void setUrlFilteringForUrl(const GURL& url, bool isAllowed) {
   supervised_user::SupervisedUserTestEnvironment::SetManualFilterForHost(
-      url.host(), isAllowed,
+      url.GetHost(), isAllowed,
       *SupervisedUserSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile()));
 }
 
 bool isShowingInterstitialForState(web::WebState* web_state) {
   CHECK(web_state);
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
     // If kCreateTabHelperOnlyForRealizedWebStates feature is enabled, then
     // the tab helpers are not created for unrealized WebStates. If the tab
     // helpers are not created, they cannot be presenting an interstitial,
@@ -139,7 +139,8 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile());
-  settings_service->RecordLocalWebsiteApproval(net::GURLWithNSURL(url).host());
+  settings_service->RecordLocalWebsiteApproval(
+      net::GURLWithNSURL(url).GetHost());
 }
 
 + (void)setFilteringToAllowAllSites {

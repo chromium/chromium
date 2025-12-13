@@ -8,6 +8,8 @@
 #import "base/time/time.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ui/base/device_form_factor.h"
 
 namespace {
 /// The time delta for a user to be considered as a new user.
@@ -51,6 +53,30 @@ bool IsSafariSwitcher(
                                                          excludedLabels);
   // Verify that the user hasn't used an `excluded` device recently.
   return intersection.empty();
+}
+
+bool ShouldFocusedOmniboxFollowSteadyStatePosition() {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE ||
+      IsComposeboxIOSEnabled()) {
+    return NO;
+  }
+
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kBottomOmniboxEvolution, kBottomOmniboxEvolutionParam);
+  return feature_param ==
+         kBottomOmniboxEvolutionParamEditStateFollowSteadyState;
+}
+
+bool ForceBottomOmniboxInEditState() {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE ||
+      IsComposeboxIOSEnabled()) {
+    return NO;
+  }
+
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kBottomOmniboxEvolution, kBottomOmniboxEvolutionParam);
+  return feature_param ==
+         kBottomOmniboxEvolutionParamForceBottomOmniboxEditState;
 }
 
 }  // namespace omnibox

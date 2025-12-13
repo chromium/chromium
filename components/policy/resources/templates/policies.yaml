@@ -1260,7 +1260,7 @@ policies:
   1259: ExtensibleEnterpriseSSOBlocklist
   1260: CSSCustomStateDeprecatedSyntaxEnabled
   1261: MemorySaverModeSavings
-  1262: KioskVisionTelemetryEnabled
+  1262: ''
   1263: GenAIWallpaperSettings
   1264: GenAIVcBackgroundSettings
   1265: DynamicCodeSettings
@@ -1383,6 +1383,42 @@ policies:
   1382: LegacyCookieScopeEnabled
   1383: LegacyCookieScopeEnabledForDomainList
   1384: WebRtcPostQuantumKeyAgreement
+  1385: DeviceLoginScreenSecurityKeyPermitAttestation
+  1386: RestrictCoreSharingOnRenderer
+  1387: OriginKeyedProcessesEnabled
+  1388: NTPShortcuts
+  1389: AutoSignOutEnabled
+  1390: ExtensionInstallCloudPolicyChecksEnabled
+  1391: DevToolsGoogleDeveloperProgramProfileAvailability
+  1392: IncognitoModeBlocklist
+  1393: IncognitoModeAllowlist
+  1394: PreferSlowKexAlgorithms
+  1395: ExtensionForceInstallWithNonMalwareViolationsEnabled
+  1396: CacheEncryptionEnabled
+  1397: SilentPrintingEnabled
+  1398: PreferSlowCiphers
+  1399: DeveloperToolsAvailabilityAllowlist
+  1400: DeveloperToolsAvailabilityBlocklist
+  1401: LocalNetworkAccessRestrictionsTemporaryOptOut
+  1402: GeminiActOnWebSettings
+  1403: LocalAuthFactorsComplexity
+  1404: ProxyOverrideRules
+  1405: LocalAuthFactors
+  1406: EnableProxyOverrideRulesForAllUsers
+  1407: DefaultIdleDetectionSetting
+  1408: IdleDetectionAllowedForUrls
+  1409: IdleDetectionBlockedForUrls
+  1410: PreciseGeolocationAllowedForUrls
+  1411: GeolocationBlockedForUrls
+  1412: PdfXfaFormsEnabled
+  1413: CameraSaveLocation
+  1414: DeviceLoginScreenPreferSlowKexAlgorithms
+  1415: DeviceLoginScreenPreferSlowCiphers
+  1416: SearchContentSharingSettings
+  1417: StaticStorageQuotaEnabled
+  1418: SaaSReportDomainUrlsForBrowser
+  1419: SaaSReportDomainUrlsForProfile
+
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1445,3 +1481,4 @@ atomic_groups:
   59: DeviceAttributesSettings
   60: ProtectedContent
   61: LegacyCookieScopeSettings
+  62: GeolocationSettings

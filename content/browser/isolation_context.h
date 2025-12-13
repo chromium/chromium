@@ -5,10 +5,10 @@
 #ifndef CONTENT_BROWSER_ISOLATION_CONTEXT_H_
 #define CONTENT_BROWSER_ISOLATION_CONTEXT_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/types/id_type.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/browsing_instance_id.h"
 
 namespace content {
@@ -16,9 +16,15 @@ namespace content {
 // This class is used to specify the context in which process model decisions
 // need to be made.  For example, dynamically added isolated origins only take
 // effect in future BrowsingInstances, and this class can be used to specify
-// that a process model decision is being made from a specific
-// BrowsingInstance, so that only isolated origins that are applicable to that
-// BrowsingInstance are used. This object may be used on UI or IO threads.
+// that a process model decision is being made from a specific BrowsingInstance,
+// so that only isolated origins that are applicable to that BrowsingInstance
+// are used.
+//
+// TODO(alexmos): In the past, the primary benefit of having this information in
+// a separate object was that it could be used on either UI or IO threads. Since
+// then, the IO thread use cases have been removed, and moreover, this object
+// now tracks BrowserContext directly, which may only used on the UI thread.
+// Evaluate whether this object is still needed and consider removing it.
 class CONTENT_EXPORT IsolationContext {
  public:
   // Normal use cases should create an IsolationContext associated with both a
@@ -28,11 +34,6 @@ class CONTENT_EXPORT IsolationContext {
   // version should be used instead.
   IsolationContext(BrowsingInstanceId browsing_instance_id,
                    BrowserContext* browser_context,
-                   bool is_guest,
-                   bool is_fenced,
-                   OriginAgentClusterIsolationState default_isolation_state);
-  IsolationContext(BrowsingInstanceId browsing_instance_id,
-                   BrowserOrResourceContext browser_or_resource_context,
                    bool is_guest,
                    bool is_fenced,
                    OriginAgentClusterIsolationState default_isolation_state);
@@ -62,12 +63,9 @@ class CONTENT_EXPORT IsolationContext {
     return browsing_instance_id_;
   }
 
-  // Return the BrowserOrResourceContext associated with this IsolationContext.
-  // This represents the profile associated with this IsolationContext, and can
-  // be used on both UI and IO threads.
-  const BrowserOrResourceContext& browser_or_resource_context() const {
-    return browser_or_resource_context_;
-  }
+  // Return the BrowserContext (i.e., the profile) associated with this
+  // IsolationContext.
+  BrowserContext* browser_context() const { return &*browser_context_; }
 
   // True when the BrowsingInstance associated with this context is used in a
   // <webview> guest.
@@ -90,7 +88,11 @@ class CONTENT_EXPORT IsolationContext {
   // When non-null, associates this context with a particular BrowsingInstance.
   const BrowsingInstanceId browsing_instance_id_;
 
-  const BrowserOrResourceContext browser_or_resource_context_;
+  // TODO(alexmos): Currently, some tests explicitly clean up BrowserContexts
+  // prior to cleaning up a SiteInstance that refers to that BrowserContext via
+  // its BrowsingInstance+IsolationContext. Fix those tests and remove
+  // DanglingUntriaged.
+  const raw_ref<BrowserContext, DanglingUntriaged> browser_context_;
 
   // Specifies whether the BrowsingInstance associated with this context is for
   // a <webview> guest.

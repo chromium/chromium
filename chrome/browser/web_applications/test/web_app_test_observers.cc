@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "base/run_loop.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
@@ -161,15 +162,33 @@ void WebAppTestRegistryObserverAdapter::SetWebAppWillBeUpdatedFromSyncDelegate(
   app_will_be_updated_from_sync_delegate_ = std::move(delegate);
 }
 
+void WebAppTestRegistryObserverAdapter::SetWebAppEffectiveScopeChangedDelegate(
+    WebAppEffectiveScopeChangedDelegate delegate) {
+  app_effective_scope_changed_delegate_ = std::move(delegate);
+}
+
 void WebAppTestRegistryObserverAdapter::SetWebAppLastBadgingTimeChangedDelegate(
     WebAppLastBadgingTimeChangedDelegate delegate) {
   app_last_badging_time_changed_delegate_ = std::move(delegate);
+}
+
+void WebAppTestRegistryObserverAdapter::SetWebAppPendingUpdateChangedDelegate(
+    WebAppPendingUpdateChangedDelegate delegate) {
+  app_pending_update_changed_delegate_ = std::move(delegate);
 }
 
 void WebAppTestRegistryObserverAdapter::
     SetWebAppProtocolSettingsChangedDelegate(
         WebAppProtocolSettingsChangedDelegate delegate) {
   app_protocol_settings_changed_delegate_ = std::move(delegate);
+}
+
+void WebAppTestRegistryObserverAdapter::OnWebAppEffectiveScopeChanged(
+    const webapps::AppId& app_id,
+    const WebAppScope& new_scope) {
+  if (app_effective_scope_changed_delegate_) {
+    app_effective_scope_changed_delegate_.Run(app_id, new_scope);
+  }
 }
 
 void WebAppTestRegistryObserverAdapter::OnWebAppsWillBeUpdatedFromSync(
@@ -183,6 +202,14 @@ void WebAppTestRegistryObserverAdapter::OnWebAppLastBadgingTimeChanged(
     const base::Time& time) {
   if (app_last_badging_time_changed_delegate_)
     app_last_badging_time_changed_delegate_.Run(app_id, time);
+}
+
+void WebAppTestRegistryObserverAdapter::OnWebAppPendingUpdateChanged(
+    const webapps::AppId& app_id,
+    bool has_pending_update) {
+  if (app_pending_update_changed_delegate_) {
+    app_pending_update_changed_delegate_.Run(app_id, has_pending_update);
+  }
 }
 
 void WebAppTestRegistryObserverAdapter::OnWebAppProtocolSettingsChanged(

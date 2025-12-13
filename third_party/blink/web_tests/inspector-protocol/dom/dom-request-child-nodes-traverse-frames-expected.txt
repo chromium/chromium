@@ -58,7 +58,7 @@ Tests how DOM.requestChildNodes pierces through frames.
                                                             nodeId : <number>
                                                             nodeName : HEAD
                                                             nodeType : 1
-                                                            nodeValue : 
+                                                            nodeValue :
                                                             parentId : <number>
                                                         }
                                                         [1] : {
@@ -80,7 +80,7 @@ Tests how DOM.requestChildNodes pierces through frames.
                                                                     nodeId : <number>
                                                                     nodeName : DIV
                                                                     nodeType : 1
-                                                                    nodeValue : 
+                                                                    nodeValue :
                                                                     parentId : <number>
                                                                 }
                                                             ]
@@ -88,7 +88,7 @@ Tests how DOM.requestChildNodes pierces through frames.
                                                             nodeId : <number>
                                                             nodeName : BODY
                                                             nodeType : 1
-                                                            nodeValue : 
+                                                            nodeValue :
                                                             parentId : <number>
                                                         }
                                                     ]
@@ -97,25 +97,25 @@ Tests how DOM.requestChildNodes pierces through frames.
                                                     nodeId : <number>
                                                     nodeName : HTML
                                                     nodeType : 1
-                                                    nodeValue : 
+                                                    nodeValue :
                                                     parentId : <number>
                                                 }
                                             ]
                                             compatibilityMode : QuirksMode
                                             documentURL : <string>
-                                            localName : 
+                                            localName :
                                             nodeId : <number>
                                             nodeName : #document
                                             nodeType : 9
-                                            nodeValue : 
-                                            xmlVersion : 
+                                            nodeValue :
+                                            xmlVersion :
                                         }
                                         frameId : <string>
                                         localName : iframe
                                         nodeId : <number>
                                         nodeName : IFRAME
                                         nodeType : 1
-                                        nodeValue : 
+                                        nodeValue :
                                         parentId : <number>
                                     }
                                 ]
@@ -123,7 +123,7 @@ Tests how DOM.requestChildNodes pierces through frames.
                                 nodeId : <number>
                                 nodeName : DIV
                                 nodeType : 1
-                                nodeValue : 
+                                nodeValue :
                                 parentId : <number>
                             }
                         ]
@@ -131,7 +131,7 @@ Tests how DOM.requestChildNodes pierces through frames.
                         nodeId : <number>
                         nodeName : DIV
                         nodeType : 1
-                        nodeValue : 
+                        nodeValue :
                         parentId : <number>
                     }
                 ]
@@ -139,7 +139,7 @@ Tests how DOM.requestChildNodes pierces through frames.
                 nodeId : <number>
                 nodeName : DIV
                 nodeType : 1
-                nodeValue : 
+                nodeValue :
                 parentId : <number>
             }
         ]

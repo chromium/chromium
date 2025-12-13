@@ -62,6 +62,9 @@ class AutofillDriverFactory {
     observers_.RemoveObserver(observer);
   }
 
+  // Returns raw pointers to all drivers that the factory currently owns.
+  virtual std::vector<AutofillDriver*> GetExistingDrivers() = 0;
+
  protected:
   friend class AutofillDriverFactoryTestApi;
 

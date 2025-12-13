@@ -10,6 +10,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -17,11 +18,16 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 namespace em = enterprise_management;
 
@@ -29,18 +35,24 @@ namespace policy {
 
 namespace {
 
+em::DeviceRegisterRequest::Type GetCloudPolicyRegistrationType() {
 #if BUILDFLAG(IS_ANDROID)
-const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
-    em::DeviceRegisterRequest::ANDROID_BROWSER;
+  if (base::android::device_info::is_desktop()) {
+    return em::DeviceRegisterRequest::BROWSER;
+  } else {
+    return em::DeviceRegisterRequest::ANDROID_BROWSER;
+  }
 #elif BUILDFLAG(IS_IOS)
-const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
-    em::DeviceRegisterRequest::IOS_BROWSER;
+  return em::DeviceRegisterRequest::IOS_BROWSER;
 #else
-const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
-    em::DeviceRegisterRequest::BROWSER;
+  return em::DeviceRegisterRequest::BROWSER;
 #endif
+}
 
 }  // namespace
+
+constexpr char kRegisterCloudPolicyServiceHistogramName[] =
+    "Enterprise.RegisterCloudPolicyService";
 
 UserPolicySigninServiceBase::UserPolicySigninServiceBase(
     PrefService* local_state,
@@ -62,7 +74,14 @@ UserPolicySigninServiceBase::UserPolicySigninServiceBase(
       identity_manager_(identity_manager),
       local_state_(local_state),
       device_management_service_(device_management_service),
-      system_url_loader_factory_(system_url_loader_factory) {}
+      system_url_loader_factory_(system_url_loader_factory) {
+  if (base::FeatureList::IsEnabled(
+          policy::features::kCustomPolicyRegistrationDelay)) {
+    LOG(ERROR) << "Delaying policy registration by "
+               << policy::features::kPolicyRegistrationDelay.Get().InHours()
+               << " hours";
+  }
+}
 
 UserPolicySigninServiceBase::~UserPolicySigninServiceBase() = default;
 
@@ -96,6 +115,7 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
     // `CloudPolicyManager` will initiate a policy fetch right after
     // initialization. Invoke `callback` after the policy is fetched.
     policy_fetch_callbacks().AddUnsafe(std::move(callback));
+    should_record_re_register_event = false;
     return;
   }
 
@@ -206,6 +226,8 @@ bool UserPolicySigninServiceBase::ShouldLoadPolicyForUser(
 void UserPolicySigninServiceBase::InitializeForSignedInUser(
     const AccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory) {
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << "UserPolicySigninServiceBase::InitializeForSignedInUser";
   if (user_policy_manager_) {
     DCHECK(account_id.is_valid());
     bool should_load_policies =
@@ -281,6 +303,7 @@ void UserPolicySigninServiceBase::
 void UserPolicySigninServiceBase::RegisterForPolicyWithAccountId(
     const std::string& username,
     const CoreAccountId& account_id,
+    bool is_registration_for_management_consistency_check,
     PolicyRegistrationCallback callback) {
   DCHECK(!account_id.empty());
 
@@ -310,7 +333,12 @@ void UserPolicySigninServiceBase::RegisterForPolicyWithAccountId(
   // `RegisterForPolicyWithAccountId()`, if any.
   registration_helper_for_temporary_client_ =
       std::make_unique<CloudPolicyClientRegistrationHelper>(
-          policy_client.get(), kCloudPolicyRegistrationType);
+          policy_client.get(), GetCloudPolicyRegistrationType(),
+          is_registration_for_management_consistency_check
+              ? enterprise_management::DeviceRegisterRequest::
+                    FLAVOR_USER_REGISTRATION_FOR_MANAGEMENT_CONSISTENCY_CHECK
+              : enterprise_management::DeviceRegisterRequest::
+                    FLAVOR_USER_REGISTRATION);
 
   // Using a raw pointer to |this| is okay, because the service owns
   // |registration_helper_for_temporary_client_|.
@@ -320,6 +348,7 @@ void UserPolicySigninServiceBase::RegisterForPolicyWithAccountId(
       base::Unretained(this), std::move(policy_client), std::move(callback));
   registration_helper_for_temporary_client_->StartRegistration(
       identity_manager(), account_id, std::move(registration_callback));
+  should_record_re_register_event = false;
 }
 
 void UserPolicySigninServiceBase::SetDeviceDMTokenCallbackForTesting(
@@ -328,7 +357,7 @@ void UserPolicySigninServiceBase::SetDeviceDMTokenCallbackForTesting(
 }
 
 void UserPolicySigninServiceBase::RegisterCloudPolicyService() {
-  DCHECK(identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  CHECK(identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   DCHECK(policy_manager()->core()->client());
   DCHECK(!policy_manager()->IsClientRegistered());
 
@@ -341,10 +370,20 @@ void UserPolicySigninServiceBase::RegisterCloudPolicyService() {
 
   UpdateLastPolicyCheckTime();
 
+  if (should_record_re_register_event) {
+    base::UmaHistogramEnumeration(
+        kRegisterCloudPolicyServiceHistogramName,
+        user_policy_manager_
+            ? RegisterCloudPolicyServiceEvent::kRegistrationWithGaia
+            : RegisterCloudPolicyServiceEvent::kRegistrationWithoutGaia);
+    should_record_re_register_event = false;
+  }
+
   // Start the process of registering the CloudPolicyClient. Once it completes,
   // policy fetch will automatically happen.
   registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
-      policy_manager()->core()->client(), kCloudPolicyRegistrationType);
+      policy_manager()->core()->client(), GetCloudPolicyRegistrationType(),
+      enterprise_management::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
   registration_helper_->StartRegistration(
       identity_manager(),
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
@@ -373,8 +412,15 @@ void UserPolicySigninServiceBase::
   // it means that there is no cached policy and so we need to initiate a new
   // client registration.
   if (manager->IsClientRegistered()) {
-    DVLOG_POLICY(1, POLICY_FETCHING)
+    LOG_POLICY(WARNING, POLICY_FETCHING)
         << "Client already registered - not fetching DMToken";
+    if (should_record_re_register_event) {
+      base::UmaHistogramEnumeration(
+          kRegisterCloudPolicyServiceHistogramName,
+          RegisterCloudPolicyServiceEvent::kNoRegistration);
+      should_record_re_register_event = false;
+    }
+
     return;
   }
 
@@ -382,7 +428,7 @@ void UserPolicySigninServiceBase::
     // No token yet. This can only happen on Desktop platforms which should
     // listen to OnRefreshTokenUpdatedForAccount() and will re-attempt
     // registration once the token is available.
-    DLOG_POLICY(WARNING, POLICY_AUTH)
+    LOG_POLICY(WARNING, POLICY_AUTH)
         << "No OAuth Refresh Token - delaying policy download";
     return;
   }

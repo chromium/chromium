@@ -48,6 +48,11 @@ ProfileOAuth2TokenService::ProfileOAuth2TokenService(
 }
 
 ProfileOAuth2TokenService::~ProfileOAuth2TokenService() {
+  // Reset the observation before calling Shutdown(). Shutdown() may trigger
+  // immediate delegate destruction, and the delegate's ObserverList destructor
+  // checks that all observers have been removed (DUMP_WILL_BE_CHECK in
+  // base/observer_list.h).
+  token_service_observation_.Reset();
   token_manager_.reset();
   GetDelegate()->Shutdown();
 }
@@ -236,6 +241,9 @@ void ProfileOAuth2TokenService::InvalidateAccessToken(
     const CoreAccountId& account_id,
     const OAuth2AccessTokenManager::ScopeSet& scopes,
     const std::string& access_token) {
+  CHECK(!account_id.empty(), base::NotFatalUntil::M145);
+  CHECK(!access_token.empty(), base::NotFatalUntil::M145);
+
   token_manager_->InvalidateAccessToken(account_id, scopes, access_token);
 }
 
@@ -346,6 +354,10 @@ void ProfileOAuth2TokenService::UpdateAuthErrorForTesting(
 std::vector<uint8_t> ProfileOAuth2TokenService::GetWrappedBindingKey(
     const CoreAccountId& account_id) const {
   return delegate_->GetWrappedBindingKey(account_id);
+}
+
+bool ProfileOAuth2TokenService::AllBoundTokensShareSameBindingKey() const {
+  return delegate_->AllBoundTokensShareSameBindingKey();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

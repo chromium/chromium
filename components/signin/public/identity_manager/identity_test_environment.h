@@ -28,16 +28,6 @@ class IdentityTestEnvironmentProfileAdaptor;
 class PrefService;
 class TestSigninClient;
 
-#if BUILDFLAG(IS_CHROMEOS)
-namespace account_manager {
-class AccountManagerFacade;
-}
-
-namespace ash {
-class AccountManagerFactory;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace sync_preferences {
 class TestingPrefServiceSyncable;
 }
@@ -291,6 +281,15 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
       const std::string& id_token,
       const ScopeSet& scopes);
 
+  // Similar to WaitForAccessTokenRequestIfNecessaryAndRespondWithToken above
+  // apart from the fact that it issues tokens for the scopes of a given
+  // OAuthConsumerId instead of issuing all tokens for all requests (the method
+  // variant above).
+  void WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForConsumerId(
+      const std::string& token,
+      const base::Time& expiration,
+      const OAuthConsumerId oauth_consumer_id);
+
   // Issues |error| in response to any access token request that either has (a)
   // already occurred and has not been matched by a previous call to this or
   // other WaitFor... method, or (b) will occur in the future. In the latter
@@ -416,20 +415,13 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   static std::unique_ptr<IdentityManager> BuildIdentityManagerForTests(
       SigninClient* signin_client,
       PrefService* pref_service,
-      base::FilePath user_data_dir
-#if BUILDFLAG(IS_CHROMEOS)
-      ,
-      ash::AccountManagerFactory* account_manager_factory,
-      account_manager::AccountManagerFacade* account_manager_facade
-#endif
-  );
+      base::FilePath user_data_dir);
 
   static std::unique_ptr<IdentityManager> FinishBuildIdentityManagerForTests(
       std::unique_ptr<AccountTrackerService> account_tracker_service,
       std::unique_ptr<ProfileOAuth2TokenService> token_service,
       SigninClient* signin_client,
-      PrefService* pref_service,
-      base::FilePath user_data_dir
+      PrefService* pref_service
 #if BUILDFLAG(IS_CHROMEOS)
       ,
       account_manager::AccountManagerFacade* account_manager_facade

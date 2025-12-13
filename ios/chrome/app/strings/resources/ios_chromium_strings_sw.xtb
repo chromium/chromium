@@ -4,10 +4,10 @@
 <translation id="1000436330784933699">Unaweza kufungua Lenzi hapa.</translation>
 <translation id="1042296835509784301">Hufungua Kidhibiti cha Manenosiri kwenye Chromium.</translation>
 <translation id="1047130070405668746">Chagua Chromium</translation>
-<translation id="1086486568852410168">Tafuta ukitumia Lenzi ya Google</translation>
 <translation id="1091252999271033193">Hii inamaanisha kwamba Chromium itahitaji tovuti ya kifaa cha mkononi kila wakati.</translation>
 <translation id="1115463765356382667">Kamilisha vitendo hivi vilivyopendekezwa hapa chini ili unufaike zaidi na Chromium.</translation>
 <translation id="1185134272377778587">Kuhusu Chromium</translation>
+<translation id="1211450393895337634">Fungua Chromium kwa haraka zaidi ukiwa tayari kuvinjari kwenye iPad yako.</translation>
 <translation id="1229234641991056119">Tumia manenosiri, historia, alamisho na kadi zako za mikopo za Safari kwenye Chromium</translation>
 <translation id="1257458525759135959">Ili uhifadhi picha, gusa Mipangilio ili uruhusu Chromium iweke kwenye picha zako</translation>
 <translation id="1260702988262336471">Fungua menyu ya Chromium</translation>
@@ -22,12 +22,15 @@
 <translation id="1472013873724362412">Akaunti yako haifanyi kazi kwenye Chromium. Tafadhali wasiliana na msimamizi wako wa kikoa au utumie Akaunti ya kawaida ya Google kuingia.</translation>
 <translation id="148576268809812097">Hifadhi Manenosiri Yako katika Chromium</translation>
 <translation id="1501302548410882220">Kutumia Chromium kila mahali</translation>
+<translation id="1502360822835740515">Fanya Chromium iwe kivinjari chako chaguomsingi</translation>
 <translation id="1503199973012840174">Toleo lako la Chromium limepitwa na wakati. Lisasishe ili uimarishe usalama.</translation>
 <translation id="1515748263297244785">Tumia Chromium kwa chaguomsingi kwenye iPad</translation>
+<translation id="1530961174488670696">Chromium imeshindwa kuangalia iwapo kuna masasisho. Jaribu tena baadaye.</translation>
 <translation id="1531155317299575425">Huonyesha vidokezo vya kuingia katika akaunti kwenye Chromium.</translation>
 <translation id="1553657876656159572">Mipasho maalum tuliyokuandalia. Ikiwa ni pamoja na habari, spoti na hali ya hewa.</translation>
 <translation id="1561849081734670621">Ili uzime Hali ya Kufunga katika Chromium, izime kwenye iPhone yako.</translation>
 <translation id="1569258826720962327">Tumia vitendo vya Chromium kwenye iOS</translation>
+<translation id="1573441572176948907">Hamishia Chromium kwenye sehemu yako ya kupachika</translation>
 <translation id="159029779861043703">Chromium huweka data yako nyeti salama kwa kutumia Face ID.</translation>
 <translation id="1591119736686995611">Hufungua Gridi ya Kichupo cha Chromium.</translation>
 <translation id="16001233025397167">Kipengele cha Ukaguzi wa Usalama hukulinda dhidi ya ufichuzi haramu wa data, tovuti zisizo salama na zaidi. Pokea arifa kuhusu matatizo yoyote ya faragha au ya usalama ambayo Chromium itatambua kuwa yanakuathiri.</translation>
@@ -43,6 +46,7 @@
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Ramani katika Chromium</translation>
 <translation id="1867772173333403444">4. Chagua Chromium</translation>
+<translation id="1965068424387304464">Kidokezo cha Chromium: Hifadhi Manenosiri</translation>
 <translation id="2006345422933397527">Chromium imeshindwa kukagua kama kuna masasisho. Jaribu kuangalia muunganisho wako wa Intaneti.</translation>
 <translation id="2042889939382983733">Kuangalia Historia Yako ya Chromium</translation>
 <translation id="2052320862053429062">Chromium hukagua mara kwa mara manenosiri yako ikilinganisha na orodha ambazo zimechapishwa mtandaoni. Wakati inafanya hivyo, manenosiri na majina yako ya mtumiaji huwa yamesimbwa kwa njia fiche, kwa hivyo hayawezi kusomwa na mtu mwingine, ikiwemo Google.</translation>
@@ -53,6 +57,7 @@
 <translation id="2195025571279539885">Je, ungependa Chromium ijitolee kutafsiri kurasa za <ph name="LANGUAGE_NAME" /> kwenye tovuti hii wakati ujao?</translation>
 <translation id="22313767259766852">Anwani hii kwa sasa imehifadhiwa kwenye Chromium. Ili uitumie kwenye bidhaa mbalimbali za Google, ihifadhi kwenye Akaunti yako ya Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Hii inamaanisha kwamba Chromium itahitaji tovuti ya kompyuta kila wakati.</translation>
+<translation id="2245694534483711162">Gemini inaweza kutumia eneo mahususi uliko, kulingana na ruhusa ambazo tayari umeipa Chromium</translation>
 <translation id="2270466829363945454">Kununua</translation>
 <translation id="2313870531055795960">Hukagua URL ili kuona iwapo zipo kwenye orodha ya tovuti zisizo salama zilizohifadhiwa katika Chromium. Ikiwa tovuti inajaribu kuiba nenosiri lako au unapopakua faili hatari, Chromium inaweza pia kutuma URL, ikiwa ni pamoja na sehemu za maudhui ya ukurasa, kwa kipengele cha Kuvinjari Salama.</translation>
 <translation id="2314220608288760290">Chromium hufungua kiotomatiki viungo vya Faraghani vya YouTube katika hali ya Faraghani.</translation>
@@ -64,6 +69,7 @@ Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kw
 <translation id="2340423701577464731">Weka kipengee cha orodha ya kusoma kwenye Chromium</translation>
 <translation id="2374627437126809292">Chromium hutumia Ramani za Google kukupatia maelekezo na maelezo ya eneo husika kwenye anwani zilizotambuliwa.</translation>
 <translation id="2386292341327187942">Kwenye kisanduku cha Wijeti za Utafutaji, weka Chromium</translation>
+<translation id="2389827884654658221">Fikia Chromium kwa haraka zaidi katika Skrini ya Kwanza ya iPad yako.</translation>
 <translation id="2426113998523353159">Shirika lako linahitaji uingie katika akaunti ili uweze kutumia Chromium.</translation>
 <translation id="2450140762465183767">Sasa unaweza kutumia Chromium wakati wowote unapogusa viungo katika ujumbe, hati na programu zingine.</translation>
 <translation id="2459183986985456602">Fungua kichupo changu kipya zaidi kwenye Chromium.</translation>
@@ -72,11 +78,15 @@ Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kw
 <translation id="2485774047568879945">Weka Chromium iwe kivinjari chako chaguomsingi ili utume na ufungue viungo kwa urahisi</translation>
 <translation id="2512597191798760956">Bonyeza na ushikilie aikoni ya Chromium kisha ubofye "Badilisha skrini ya kwanza"</translation>
 <translation id="2517624234762908348">Sawazisha data yako kwenye Chromium</translation>
+<translation id="2575968074225731646">Fikia Chromium kwa haraka zaidi katika Sehemu ya kupachika kwenye iPhone yako.</translation>
 <translation id="2592940277904433508">Endelea kutumia Chromium</translation>
 <translation id="2607609479243848905">Ikiwa ulisahau kauli yako ya siri au ungependa kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwenye akaunti yako<ph name="END_LINK" />.</translation>
+<translation id="2640367368802736659">Kidokezo cha Chromium: Tafuta unachokiona ukitumia Lenzi ya Google</translation>
 <translation id="2650312721222849884">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chromium, washa kipengele cha kusawazisha</translation>
 <translation id="2684230048001240293">Weka Chromium iwe kivinjari chaguomsingi cha kusawazisha vichupo, manenosiri na maelezo yako ya malipo kwenye vifaa vyako vyote</translation>
+<translation id="2729836253097154631">Ingia katika Chromium ili upate vipengee vyako</translation>
 <translation id="2730884209570016437">Chromium imeshindwa kutumia kamera yako kwa sababu inatumiwa na programu nyingine</translation>
+<translation id="2742952311155593352">Unakaribia kumaliza kuweka mipangilio ya Chromium!</translation>
 <translation id="2798503587425057129">Hufungua Orodha ya Kusoma ya Chromium.</translation>
 <translation id="28276745681323897">Unaweza <ph name="BEGIN_LINK" />kudhibiti data ya Chromium inayohifadhiwa<ph name="END_LINK" /> katika Akaunti yako ya Google.
 
@@ -88,7 +98,6 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chromium
 <translation id="2977470724722393594">Chromium imesasishwa</translation>
 <translation id="3044857325852340337">Umefuta data kwenye Chromium</translation>
 <translation id="3054480780637153380">Fungua mipangilio ya Chromium kwenye iOS, kisha uguse "Programu Chaguomsingi ya Kivinjari" na uchague Chromium.</translation>
-<translation id="3102849287235003384">Ili uondoke kwenye akaunti yako ya Google katika tovuti zote, <ph name="BEGIN_LINK" />ondoka kwenye akaunti yako katika kivinjari cha Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Je ungependa kufanya Chromium iwe kivinjari chako chaguomsingi?</translation>
 <translation id="3180939591219927904">Washa "Funga Vichupo vya Faragha unapofunga Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Sasa inaonyesha dirisha 1 la Chromium}other{Sasa inaonyesha madirisha {count} ya Chromium}}</translation>
@@ -97,6 +106,7 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chromium
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Hali hii hutokea wakati hujatumia Chromium kwa dakika {THRESHOLD}. Data hii inaweza kujumuisha historia na matukio ya kujaza kiotomatiki.}other{Hali hii hutokea wakati hujatumia Chromium kwa dakika {THRESHOLD}. Data hii inaweza kujumuisha historia na matukio ya kujaza kiotomatiki.}}</translation>
 <translation id="3410395242749598859">Baadhi ya data yako ya Chromium bado haijahifadhiwa kwenye <ph name="EMAIL" />.
 Jaribu kusubiri dakika chache kabla ya kubadilisha akaunti. Ukibadilisha akaunti sasa, data hii itafutwa.</translation>
+<translation id="3420586870838853527">Kidokezo cha Chromium: Kipengele cha kuvinjari salama kilichoboreshwa kitakusaidia</translation>
 <translation id="3440830787838130530">Tuma nakala ya nenosiri kwenye kikundi cha familia yako kwa njia salama na rahisi katika Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="3472200483164753384">Haitumiki kwenye Chromium Canary (toleo la jaribio)</translation>
 <translation id="347967311580159871">Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chromium, nenda kwenye <ph name="BEGIN_LINK" />Huduma za Google<ph name="END_LINK" />.</translation>
@@ -107,6 +117,8 @@ Jaribu kusubiri dakika chache kabla ya kubadilisha akaunti. Ukibadilisha akaunti
 <translation id="3581385059720151202">Tafuta vipengele vinavyoonekana kwenye Chromium</translation>
 <translation id="3582640969619785896">Chromium itakuomba kuhifadhi nenosiri lako</translation>
 <translation id="3594315078412605236">Kudhibiti njia za kulipa kwenye Chromium</translation>
+<translation id="3600428265489994557">Ingia katika Chromium</translation>
+<translation id="3617143087229977194">Fungua mipangilio ya Programu Chaguomsingi katika iOS, kisha uguse "Programu ya Kivinjari" na uchague Chromium.</translation>
 <translation id="3634039384458740619">Fungua Mipangilio ya Chromium</translation>
 <translation id="3639997914391704523">Chromium inaweza kukagua manenosiri yako unapoingia ukitumia Akaunti ya Google.</translation>
 <translation id="372658070733623520">Ili utumie na uhifadhi data ya Chromium katika Akaunti yako ya Google, thibitisha kuwa ni wewe.</translation>
@@ -117,6 +129,8 @@ Jaribu kusubiri dakika chache kabla ya kubadilisha akaunti. Ukibadilisha akaunti
 <translation id="3816686541346279443">Chromium itakuomba kuhifadhi nenosiri lako.</translation>
 <translation id="3827545470516145620">Unapata ulinzi wa kawaida kwenye kifaa hiki</translation>
 <translation id="3833326979834193417">Chromium hutekeleza kiotomatiki Ukaguzi wa Usalama kila siku ili kukulinda dhidi ya ufichuzi haramu wa data, tovuti zisizo salama na mengine. Unaweza kupata maelezo zaidi kuhusu Ukaguzi wa Usalama kwenye Mipangilio.</translation>
+<translation id="3837584850181228767">Kidokezo cha Chromium: Kipengele cha Kuvinjari Salama Kilichoboreshwa</translation>
+<translation id="3845223911364528001">Rudi kwenye Chromium ili upakie faili yako</translation>
 <translation id="3855938650519180865">Mapya katika Chromium</translation>
 <translation id="3886689467633467988">Ingia katika tovuti hii na Chromium ili upate alamisho zako na zaidi kwenye vifaa vyako vyote.</translation>
 <translation id="3949514465204582407">Kidokezo cha Chromium: Pata manenosiri yako kwenye programu yoyote</translation>
@@ -133,6 +147,7 @@ Data yako imesimbwa kwa njia fiche kwa kutumia kauli yako ya siri. Iweke ili utu
 <translation id="420541179527342563">Ili uzime Hali ya Kufunga katika Chromium, izime kwenye iPad yako.</translation>
 <translation id="4272892696084633551">Tusaidie kuboresha utendaji na vipengele vya Chromium</translation>
 <translation id="4302397443352897529">Mipangilio ya Chromium</translation>
+<translation id="4304713468139749426">Kidhibiti cha Manenosiri</translation>
 <translation id="4408912345039114853">Kufanya Ukaguzi wa Usalama kwenye Chromium</translation>
 <translation id="4432744876818348753">Ingia katika akaunti ili unufaike zaidi na Chromium.</translation>
 <translation id="4445228361214254027">Shirika lako limezima kipengele cha kutumia na kuhifadhi data ya Chromium kwenye Akaunti yako ya Google. Alamisho, manenosiri mapya na zaidi yatahifadhiwa tu katika kifaa hiki.</translation>
@@ -169,6 +184,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwe
 <translation id="5131565040785979529">Shirika lako, <ph name="DOMAIN" />, hudhibiti akaunti uliyotumia kuingia na jinsi Chromium inavyotumika.</translation>
 <translation id="5134464247000681876">Fungua viungo kwenye Gmail, Ramani, YouTube na programu nyingine katika Chromium</translation>
 <translation id="5203244847421322551">Hifadhi na ujaze manenosiri kiotomatiki kwenye Chromium</translation>
+<translation id="5218806323985098884">Angalia vipengele vipya kwenye Chromium</translation>
 <translation id="5224391634244552924">Hakuna manenosiri yaliyohifadhiwa. Chromium inaweza kukagua manenosiri yako ukiyahifadhi.</translation>
 <translation id="5259423875997548710">Tafuta vipengele vinavyoonekana kwenye Chromium.</translation>
 <translation id="5284913972719948193">Pakia data yako ili utumie manenosiri, historia, alamisho na kadi zako za mikopo kwenye Chromium</translation>
@@ -177,6 +193,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwe
 <translation id="5383251701169024761">Ili upate kwa urahisi manenosiri uliyohifadhi katika programu nyingine, chagua Chromium ili Ujaze Kiotomatiki.</translation>
 <translation id="538767207339317086">Ruhusu kuingia katika akaunti ya Chromium</translation>
 <translation id="5389058611415066188">Kuwa salama ukitumia Chromium</translation>
+<translation id="5414059596208264343">Kidokezo cha Chromium: Pata manenosiri yako</translation>
 <translation id="5415273218238091735">Kidokezo cha Chromium</translation>
 <translation id="5427571867875391349">Weka Chromium kuwa kivinjari chako chaguomsingi</translation>
 <translation id="5434562575369834882">Fungua Faraghani kwenye Chromium</translation>
@@ -189,12 +206,16 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwe
 <translation id="5521125884468363740">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chromium, ingia katika akaunti na uwashe kipengele cha kusawazisha</translation>
 <translation id="5534584691915394889">Hii itatumika kuunda matukio kwenye Kalenda yako ya Apple kutoka kwenye Chromium na Lenzi ya Google.</translation>
 <translation id="5571094606370987472">Hufungua Vichupo vya Hivi Karibuni kwenye Chromium.</translation>
+<translation id="5596644122344097310">Gusa hapa ili unufaike zaidi na Chromium kwenye iPhone yako.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">Washa kipengele cha kujaza kiotomatiki kwenye Chromium</translation>
 <translation id="5664395081284292058">Fungua kichupo changu kipya zaidi kwenye Chromium</translation>
 <translation id="5671188105328420281">Vidokezo vya Chromium</translation>
 <translation id="5688047395118852662">Kadi hii hukuonyesha mapendekezo ya jinsi ya kunufaika zaidi na Chromium.</translation>
 <translation id="5700709190537129682">Chromium imeshindwa kukagua manenosiri yako</translation>
+<translation id="5731004036450828399">Ili udumishe usalama wa funguo zako za siri, utahitaji kwanza kuweka PIN ya kurejesha akaunti.
+
+        Funguo za siri huhifadhiwa kwenye Kidhibiti cha Manenosiri, ambacho hukuwezesha uzitumie kwenye Chromium katika kifaa chochote.</translation>
 <translation id="584550191241316896">Umeingia katika akaunti kwenye Chromium</translation>
 <translation id="5862307444128926510">Karibu kwenye Chromium</translation>
 <translation id="5889847953983052353">Inapokuwa imewashwa:
@@ -218,7 +239,7 @@ Mambo ya kuzingatia:
 <translation id="6154098560469640583">Tumia Chromium wakati wowote unapogusa viungo kwenye ujumbe, hati na programu nyingine.</translation>
 <translation id="6157162508956739031">Ingia katika programu na tovuti kwa haraka kwa kujaza kiotomatiki funguo za siri na manenosiri yako kwenye Chromium</translation>
 <translation id="6170619162539716595">Ruhusu Chromium itumie Ramani za Google ili ikupe maelekezo na maelezo ya eneo kwenye anwani zilizotambuliwa.</translation>
-<translation id="6247557882553405851">Kidhibiti cha Manenosiri cha Google</translation>
+<translation id="6244277266078678766">Data yako itahifadhiwa kwenye Kidhibiti cha Manenosiri cha <ph name="USER_EMAIL" /></translation>
 <translation id="6268381023930128611">Ungependa kuondoka kwenye Chromium?</translation>
 <translation id="6301717043141881464">Ili upate manenosiri uliyohifadhi kwa urahisi katika programu yako nyingine, chagua Chromium ili Ujaze Kiotomatiki</translation>
 <translation id="6324041800010509197">Tembelea Gridi ya Kichupo kwenye Chromium</translation>
@@ -227,11 +248,15 @@ Mambo ya kuzingatia:
 <translation id="6424492062988593837">Chromium imekuwa bora! Toleo jipya linapatikana.</translation>
 <translation id="6433172051771630690">Vidokezo vya kunufaika zaidi kwenye Chromium.</translation>
 <translation id="65045991564554105">Angalia alamisho za Chromium</translation>
+<translation id="6519797228806907665">Fikia Chromium kwa haraka zaidi katika Skrini ya Kwanza ya iPhone yako.</translation>
 <translation id="6538713818758208754">Hufungua ukurasa wa mipangilio ya njia za kulipa kwenye Chromium.</translation>
 <translation id="6540186279384079894">Fungua kichupo kipya kwenye Chromium</translation>
 <translation id="6563921047760808519">Pata maelezo zaidi kuhusu <ph name="BEGIN_LINK" />jinsi Chromium inavyoweka data yako kuwa ya faragha<ph name="END_LINK" /></translation>
+<translation id="6564769014061914792">Gusa hapa ili unufaike zaidi na Chromium kwenye iPad yako.</translation>
+<translation id="6566303693324540692">Kidokezo cha Chromium: Hamishia Chromium kwenye skrini yako ya kwanza</translation>
 <translation id="6574750762636192517">Dhibiti manenosiri kwenye Chromium</translation>
 <translation id="6590232959690355435">Hufungua ukurasa wa Historia wa Chromium.</translation>
+<translation id="6649269674808477353">Fungua Chromium kwa haraka zaidi ukiwa tayari kuvinjari kwenye iPhone yako.</translation>
 <translation id="6674470628873622334">Hufungua Kichupo kipya cha faragha cha Chromium.</translation>
 <translation id="6680609900732453726">Weka hali yako ya kuvinjari iwe ya faragha ukitumia uthibitishaji wa kifaa unapofunga Chromium</translation>
 <translation id="6752854822223394465">Shirika lako linaweka mipangilio ya Chromium...</translation>
@@ -260,13 +285,14 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="7269362888766543920">Baadhi ya programu jalizi husababisha Chromium iache kufanya kazi. Tafadhali jaribu kuziondoa.</translation>
 <translation id="7285031092584344905">Fikia manenosiri yako ya Chromium na zaidi kwenye programu nyingine.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">Data uliyochagua imeondolewa kwenye Chromium na kwenye vifaa vilivyosawazishwa. Huenda Akaunti yako ya Google ina aina nyingine za historia ya mambo uliyovinjari kama vile mambo uliyotafuta na shughuli kutoka huduma nyingine za Google katika history.google.com.</translation>
 <translation id="7395825497086981028">Nenosiri lako litahifadhiwa kwenye Kidhibiti cha Manenosiri kwa ajili ya <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Ufunguo huu wa siri utahifadhiwa kwenye Kidhibiti cha Manenosiri cha <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Fungua Chromium</translation>
 <translation id="7531461704633548377">Kutoka Chromium</translation>
 <translation id="7554983317097061001">Kidokezo cha Chromium: Weka Chromium kwenye sehemu iliyopachikwa</translation>
 <translation id="7576863740961052505">Dhibiti mipangilio ya Chromium</translation>
 <translation id="7674213385180944843">Fungua Mipangilio &gt; Faragha &gt; Kamera &gt; Chromium na uwashe kamera.</translation>
+<translation id="7685160423563372998">Buni picha ukitumia Gemini kwenye Chromium</translation>
 <translation id="7733418656985455268">Kidokezo cha Chromium: Tafuta kwa kutumia Lenzi</translation>
 <translation id="7747820849741499258">Kutafuta kwenye Chromium</translation>
 <translation id="7753923083404296545">Viungo vimefunguliwa Faraghani kwenye Chromium</translation>
@@ -281,6 +307,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="7934404985878918282">Angalia Orodha ya Kusoma ya Chromium</translation>
 <translation id="7935734571048689933">Chromium inadhibitiwa</translation>
 <translation id="7951793218148208717">Hufungua kichupo kipya kwenye Chromium.</translation>
+<translation id="7957726318578167662">Tumia Chromium kwa urahisi wakati wowote unapogusa viungo katika ujumbe au programu nyingine.</translation>
 <translation id="7980860476903281594">Chromium hushiriki maelezo ya mahali ulipo na tovuti unazoruhusu.</translation>
 <translation id="7994322153108931467">Ili upate vidokezo muhimu vya Chromium, washa arifa kwenye mipangilio yako ya iOS.</translation>
 <translation id="7997159823054171568">Ifanye Chromium Iwe kivinjari chaguomsingi</translation>
@@ -291,10 +318,11 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="8119542592987737574">Fikia Chromium kwa haraka zaidi katika sehemu iliyopachikwa kwenye skrini ya kwanza ya iPhone yako.</translation>
 <translation id="8164086860209325020">Nenda kwenye Mipangilio ya Chromium</translation>
 <translation id="8197822717502700527">Sasa utanufaika zaidi na Chromium kwenye kifaa chako.</translation>
-<translation id="8240981428553046115">Chromium imeshindwa kukagua kama kuna masasisho. Jaribu tena baadaye.</translation>
+<translation id="8236210361418193126">Pakia kwenye Kidhibiti cha Manenosiri</translation>
 <translation id="8254729934443216898">Gundua vipengele vipya vinavyokusaidia kupata manufaa zaidi kwenye Chromium.</translation>
 <translation id="8293572045658095405">Unatumia Chromium katika hali ya Faraghani</translation>
 <translation id="830951810931292870">Hufungua URL zilizowekwa kwenye Chromium katika Hali fiche.</translation>
+<translation id="8385503371191508165">Anza kuhifadhi funguo za siri ukitumia Kidhibiti cha Manenosiri</translation>
 <translation id="8390323835464055390">Ingia katika akaunti ukitumia funguo za siri na manenosiri kwenye programu yoyote ukitumia Chromium ili Ujaze kiotomatiki</translation>
 <translation id="8409374867500149834">Una ulinzi thabiti zaidi wa Chromium dhidi ya tovuti hatari</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Hali hii hutokea wakati hujatumia Chromium kwa dakika {THRESHOLD}. Data iliyohifadhiwa kwenye kifaa hiki pekee ulipokuwa umeingia katika akaunti itafutwa. Data hii inaweza kujumuisha historia na manenosiri.}other{Hali hii hutokea wakati hujatumia Chromium kwa dakika {THRESHOLD}. Data iliyohifadhiwa kwenye kifaa hiki pekee ulipokuwa umeingia katika akaunti itafutwa. Data hii inaweza kujumuisha historia na manenosiri.}}</translation>
@@ -307,6 +335,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="8730503818204408000">Hufungua Mipangilio ya Chromium ili kuweka Chromium iwe Kivinjari Chaguomsingi.</translation>
 <translation id="8754966941001340678">Chromium inapendekeza ulinzi ulioboreshwa</translation>
 <translation id="8759037115129007407">Mwanafamilia hawezi kupokea manenosiri sasa hivi. Mwambie asasishe Chromium na asawazishe manenosiri yake. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
+<translation id="8769418653786388149">Tumia Chromium yako popote ulipo</translation>
 <translation id="8776843108004031667">Akaunti hii na data yoyote ambayo haijahifadhiwa itaondolewa kwenye Chromium.</translation>
 <translation id="8793333988063379360">Unaweza kupata mipangilio ya Chromium na zaidi hapa</translation>
 <translation id="8805148242934787134">Ifanye Chromium iwe kivinjari chaguomsingi</translation>
@@ -315,6 +344,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="8860548555286245440">Fungua URL kwenye Chromium katika Hali ya Faraghani</translation>
 <translation id="8880024619507699923">Shirika lako linahitaji uingie katika akaunti ili uweze kutumia Chromium. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Pata Usalama Thabiti Zaidi Kutoka Chromium</translation>
+<translation id="8908791447256515663">Fikia Chromium kwa haraka zaidi katika Sehemu ya kupachika kwenye iPad yako.</translation>
 <translation id="8925569192291721236">Pata arifa za taarifa za ufuatiliaji wa bei pamoja na vidokezo vya Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Hali hii hutokea wakati hujatumia Chromium kwa dakika {THRESHOLD}}other{Hali hii hutokea wakati hujatumia Chromium kwa dakika {THRESHOLD}}}</translation>
 <translation id="8963279154877372067">Ruhusu arifa za Chromium ili upate arifa kuhusu kupungua kwa bei</translation>
@@ -322,7 +352,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="900560297598578021">Umeingia katika akaunti ukitumia <ph name="EMAIL" />.
 
 Data yako ilisimbwa kwa njia fiche kwa kutumia kauli ya siri <ph name="TIME" />. Iweke ili utumie na kuhifadhi data ya Chromium kwenye Akaunti yako ya Google.</translation>
-<translation id="9022552996538154597">Ingia kwenye Chromium</translation>
 <translation id="9031260906956926157">Baadhi ya data yako ya Chromium bado haijahifadhiwa kwenye Akaunti yako ya Google.
 Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kwenye akaunti sasa, data hii itafutwa.</translation>
 <translation id="9050790730841755540">Tumia Chromium wakati wowote unapogusa viungo kwenye programu nyingine.</translation>

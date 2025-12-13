@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Тег Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Це розширення включає файл ключа "<ph name="KEY_PATH" />". Можливо, ви не хочете цього робити.</translation>
 <translation id="5486326529110362464">Має бути дійсне значення секретного ключа.</translation>
+<translation id="5707185214361380026">Не вдалося завантажити розширення з:</translation>
 <translation id="5972529113578162692">Адміністратор цього комп’ютера вимагає встановити розширення <ph name="EXTENSION_NAME" />. Його неможливо видалити.</translation>
 <translation id="6027032947578871493">Невідомий продукт <ph name="PRODUCT_ID" /> від постачальника <ph name="VENDOR_NAME" /> (серійний номер: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> від постачальника <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Не вдалося завантажити розширення</translation>
 <translation id="6322279351188361895">Не вдалося розпізнати секретний ключ.</translation>
 <translation id="6391538222494443604">Має бути каталог введення.</translation>
 <translation id="641087317769093025">Не вдалося розпакувати розширення</translation>

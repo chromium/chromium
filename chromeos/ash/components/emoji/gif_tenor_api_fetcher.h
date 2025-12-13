@@ -13,10 +13,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace endpoint_fetcher {
 class EndpointFetcher;

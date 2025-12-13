@@ -25,15 +25,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/aura/window.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -383,7 +384,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithAutoHideShelf) {
 
   // Test that the nudge updates its baseline when the shelf hides itself.
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect()));
+      CreateTestWindowInShell({.window_id = 0}));
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
@@ -947,8 +948,8 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnSessionStateChanged) {
 TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnHideAnimationComplete) {
   // Set animations to last a non-zero, faster than normal duration, since the
   // regular duration may last longer in tests and cause flakiness.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
@@ -977,8 +978,8 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnHideAnimationComplete) {
 
 TEST_F(AnchoredNudgeManagerImplTest, NudgeHideAnimationInterrupted_OnShutdown) {
   // Set animations to last their normal duration.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
@@ -1001,8 +1002,8 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeHideAnimationInterrupted_OnShutdown) {
 TEST_F(AnchoredNudgeManagerImplTest,
        NudgeHideAnimationInterrupted_OnNudgeReplaced) {
   // Set animations to last their normal duration.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
@@ -1029,8 +1030,8 @@ TEST_F(AnchoredNudgeManagerImplTest,
 TEST_F(AnchoredNudgeManagerImplTest,
        NudgeHideAnimationInterrupted_OnScopedPauseAdded) {
   // Set animations to last their normal duration.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 

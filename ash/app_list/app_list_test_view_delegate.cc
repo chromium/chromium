@@ -153,18 +153,9 @@ bool AppListTestViewDelegate::IsCategoryEnabled(
   return true;
 }
 
-ash::AssistantViewDelegate*
-AppListTestViewDelegate::GetAssistantViewDelegate() {
-  return nullptr;
-}
-
 void AppListTestViewDelegate::OnSearchResultVisibilityChanged(
     const std::string& id,
     bool visibility) {}
-
-bool AppListTestViewDelegate::IsAssistantAllowedAndEnabled() const {
-  return false;
-}
 
 void AppListTestViewDelegate::OnStateTransitionAnimationCompleted(
     AppListViewState state,

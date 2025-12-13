@@ -6,6 +6,8 @@ package org.chromium.components.autofill;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -16,6 +18,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -45,9 +48,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -55,8 +60,9 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures({
-    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT_NAME,
-    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME,
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN_NAME,
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION_NAME
 })
 public class AutofillProviderTest {
     private static final float EXPECTED_DIP_SCALE = 2;
@@ -87,9 +93,16 @@ public class AutofillProviderTest {
 
     /** AutofillManagerWrapper which keeps track of the virtual id of the field with focus. */
     private class TestAutofillManagerWrapper extends AutofillManagerWrapper {
+        private boolean mDestroyed;
 
         public TestAutofillManagerWrapper(Context context) {
             super(context);
+        }
+
+        @Override
+        public void destroy() {
+            super.destroy();
+            mDestroyed = true;
         }
 
         @Override
@@ -123,13 +136,14 @@ public class AutofillProviderTest {
         mContainerView = Mockito.mock(ViewGroup.class);
 
         AutofillProvider.setAutofillManagerWrapperFactoryForTesting(
-                (context) -> {
-                    return new TestAutofillManagerWrapper(context);
-                });
+                (context) -> new TestAutofillManagerWrapper(context));
 
         mAutofillProvider =
                 new AutofillProvider(
-                        mContext, mContainerView, mWebContents, "AutofillProviderTest") {
+                        new WeakReference(mContext),
+                        mContainerView,
+                        mWebContents,
+                        "AutofillProviderTest") {
                     @Override
                     protected void initializeNativeAutofillProvider(WebContents webContents) {
                         setNativeAutofillProvider(mMockedNativeAndroidAutofillProvider);
@@ -159,6 +173,29 @@ public class AutofillProviderTest {
         when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(0);
 
         AutofillProviderJni.setInstanceForTesting(mNativeMock);
+    }
+
+    @Test
+    public void testContextChangeReinitializesAutofillManager() {
+        TestAutofillManagerWrapper oldManager =
+                (TestAutofillManagerWrapper) mAutofillProvider.getAutofillManagerWrapper();
+        assertFalse(oldManager.mDestroyed);
+
+        // Change context
+        Context newContext = Mockito.mock(Activity.class);
+        when(newContext.getSystemService(AutofillManager.class)).thenReturn(mAutofillManager);
+        mAutofillProvider.switchToContext(new WeakReference<>(newContext));
+
+        // The old manager is destroyed and replaced with a new one.
+        assertTrue(oldManager.mDestroyed);
+        assertNotSame(oldManager, mAutofillProvider.getAutofillManagerWrapper());
+    }
+
+    @Test
+    public void testHandlesNullContextGracefully() {
+        mAutofillProvider.switchToContext(new ImmutableWeakReference(null));
+
+        assertNotNull(mAutofillProvider.getAutofillManagerWrapper());
     }
 
     @Test
@@ -408,15 +445,18 @@ public class AutofillProviderTest {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
         field1Builder.mBounds =
                 new RectF(/* left= */ 10, /* top= */ 20, /* right= */ 300, /* bottom= */ 60);
+        field1Builder.mOrigin = "https://field.host.com/";
+
         FormFieldDataBuilder field2Builder = new FormFieldDataBuilder();
         field2Builder.mBounds =
                 new RectF(/* left= */ 20, /* top= */ 100, /* right= */ 400, /* bottom= */ 200);
+        field2Builder.mOrigin = "https://field2.host.com/";
 
         FormData formData =
                 new FormData(
                         sessionId,
                         /* name= */ null,
-                        /* host= */ null,
+                        /* host= */ "https://host.com/",
                         Arrays.asList(field1Builder.build(), field2Builder.build()));
         mAutofillProvider.sendPrefillRequest(formData);
 

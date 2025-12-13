@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/oauth2/http_exchange.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"

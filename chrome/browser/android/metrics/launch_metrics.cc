@@ -21,7 +21,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/LaunchMetrics_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace metrics {
 
@@ -33,7 +33,7 @@ static void JNI_LaunchMetrics_RecordLaunch(
     std::string& jurl,
     int source,
     int display_mode,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   // Interpolate the legacy ADD_TO_HOMESCREEN source into standalone/shortcut.
   // Unfortunately, we cannot concretely determine whether a standalone add to
   // homescreen source means a full PWA (with service worker) or a site that has
@@ -89,10 +89,12 @@ static void JNI_LaunchMetrics_RecordHomePageLaunchMetrics(
     JNIEnv* env,
     jboolean show_home_button,
     jboolean homepage_is_ntp,
-    const JavaParamRef<jobject>& jhomepage_gurl) {
+    const JavaRef<jobject>& jhomepage_gurl) {
   GURL homepage_gurl = url::GURLAndroid::ToNativeGURL(env, jhomepage_gurl);
   PrefMetricsService::RecordHomePageLaunchMetrics(
       show_home_button, homepage_is_ntp, homepage_gurl);
 }
 
 }  // namespace metrics
+
+DEFINE_JNI(LaunchMetrics)

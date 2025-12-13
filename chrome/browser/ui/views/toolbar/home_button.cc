@@ -29,6 +29,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -181,13 +182,14 @@ void HomeButton::UpdateHomePage(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
-  std::optional<ui::OSExchangeData::UrlInfo> url_info =
-      event.data().GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
-  if (url_info.has_value() && url_info->url.is_valid() && prefs_) {
+  const std::vector<ui::ClipboardUrlInfo> url_infos =
+      event.data().GetURLsAndTitles(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+  if (!url_infos.empty() && prefs_) {
     GURL old_homepage(prefs_->GetString(prefs::kHomePage));
     bool old_is_ntp = prefs_->GetBoolean(prefs::kHomePageIsNewTabPage);
 
-    prefs_->SetString(prefs::kHomePage, url_info->url.spec());
+    CHECK(url_infos.front().url.is_valid());
+    prefs_->SetString(prefs::kHomePage, url_infos.front().url.spec());
     prefs_->SetBoolean(prefs::kHomePageIsNewTabPage, false);
 
     coordinator_.Show(old_homepage, old_is_ntp);

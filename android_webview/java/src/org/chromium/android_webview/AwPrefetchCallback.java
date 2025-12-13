@@ -25,7 +25,7 @@ public interface AwPrefetchCallback {
         StatusCode.PREFETCH_START_FAILED_DUPLICATE,
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface StatusCode {
+    @interface StatusCode {
         int PREFETCH_START_FAILED = 0;
         int PREFETCH_RESPONSE_COMPLETED = 1;
         int PREFETCH_RESPONSE_SERVER_ERROR = 2;
@@ -33,7 +33,7 @@ public interface AwPrefetchCallback {
         int PREFETCH_START_FAILED_DUPLICATE = 4;
     }
 
-    public static final String EXTRA_HTTP_RESPONSE_CODE = "HttpResponseCode";
+    String EXTRA_HTTP_RESPONSE_CODE = "HttpResponseCode";
 
     void onStatusUpdated(@StatusCode int statusCode, @Nullable Bundle extras);
 

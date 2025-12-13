@@ -13,15 +13,10 @@ use semver::Version;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::HashMap;
-use std::fmt::Display;
 use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
-
-#[derive(Clone, Debug, Serialize)]
-pub enum UpdateMechanism {
-    Autoroll,
-    Manual,
-}
+use strum::IntoEnumIterator;
+use strum_macros::{AsRefStr, Display, EnumIter, EnumString};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct ReadmeFile {
@@ -34,14 +29,14 @@ pub struct ReadmeFile {
     license: String,
     license_files: Vec<String>,
     revision: Option<String>,
-    update_mechanism: UpdateMechanism,
+    update_mechanism: String,
 }
 
 /// Returns a map keyed by the directory where the README file should be
 /// written. The value is the contents of the README file, which can be
 /// consumed by a handlebars template.
 pub fn readme_files_from_packages<'a>(
-    deps: impl IntoIterator<Item = PackageMetadata<'a>>,
+    deps: impl IntoIterator<Item = &'a PackageMetadata<'a>>,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
     mut find_group: impl FnMut(&'a PackageId) -> Group,
@@ -73,7 +68,7 @@ pub fn readme_files_from_packages<'a>(
 }
 
 fn readme_file_from_package<'a>(
-    package: PackageMetadata<'a>,
+    package: &'a PackageMetadata<'a>,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
     find_group: &mut dyn FnMut(&'a PackageId) -> Group,
@@ -199,9 +194,10 @@ fn readme_file_from_package<'a>(
         license,
         license_files,
         revision,
-        // TODO(crbug.com/427084604): Currently all packages are rolled manually.
-        // Set to `UpdateMechanism::Autoroll` when automatic rolls are supported.
-        update_mechanism: UpdateMechanism::Manual,
+        // All Rust dependencies are granted a shared temporary exemption for
+        // autorolling, because while they are manually rolled, they are
+        // well managed.
+        update_mechanism: "Manual (https://crbug.com/449898466)".to_string(),
     };
 
     Ok((crate_build_dir, readme))
@@ -209,125 +205,146 @@ fn readme_file_from_package<'a>(
 
 /// REVIEW REQUIREMENT: When adding a new `LicenseKind`, please consult
 /// `readme.rs-third-party-license-review.md`.
+///
+/// Note that the order of variants is significant - `Apache2` appears first
+/// and so is preferred in license expressions like `Apache-2.0 OR MIT`.
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Eq, Hash, PartialEq, Clone, Copy)]
+#[derive(Debug, Eq, Hash, PartialEq, Clone, Copy, AsRefStr, Display, EnumIter, EnumString)]
 enum LicenseKind {
     /// https://spdx.org/licenses/Apache-2.0.html
+    #[strum(serialize = "Apache-2.0")]
     Apache2,
 
     /// https://spdx.org/licenses/BSD-3-Clause.html
+    #[strum(serialize = "BSD-3-Clause")]
     BSD3,
 
     /// https://spdx.org/licenses/MIT.html
+    #[strum(serialize = "MIT")]
     MIT,
 
+    /// https://spdx.org/licenses/MPL-2.0.html
+    #[strum(serialize = "MPL-2.0")]
+    MPL2,
+
     /// https://spdx.org/licenses/ISC.html
+    #[strum(serialize = "ISC")]
     ISC,
 
     /// https://spdx.org/licenses/Zlib.html
+    #[strum(serialize = "Zlib")]
     Zlib,
 
     /// https://spdx.org/licenses/Unicode-3.0.html
+    #[strum(serialize = "Unicode-3.0")]
     Unicode3,
+
+    /// https://spdx.org/licenses/NCSA.html
+    #[strum(serialize = "NCSA")]
+    NCSA,
+
+    /// https://spdx.org/licenses/BSL-1.0.html
+    #[strum(serialize = "BSL-1.0")]
+    BSL,
 }
 
-impl Display for LicenseKind {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        // NOTE: The strings used below should match the SPDX "Short identifier"
-        // which can be found on the https://spdx.org website.  (e.g. see
-        // https://spdx.org/licenses/Apache-2.0.html).
-        match self {
-            LicenseKind::Apache2 => write!(f, "Apache-2.0"),
-            LicenseKind::BSD3 => write!(f, "BSD-3-Clause"),
-            LicenseKind::MIT => write!(f, "MIT"),
-            LicenseKind::ISC => write!(f, "ISC"),
-            LicenseKind::Zlib => write!(f, "Zlib"),
-            LicenseKind::Unicode3 => write!(f, "Unicode-3.0"),
-        }
+impl<'a> TryFrom<&'a spdx::LicenseReq> for LicenseKind {
+    type Error = anyhow::Error;
+
+    fn try_from(req: &'a spdx::LicenseReq) -> Result<LicenseKind> {
+        ensure!(
+            req.addition.is_none(),
+            "`gnrt` cannot yet handle SPDX additions (e.g. WITH clauses)",
+        );
+        Ok(match req.license {
+            spdx::LicenseItem::Spdx { id, or_later: _ } => id.name.parse()?,
+            spdx::LicenseItem::Other { .. } => bail!("`gnrt` cannot handle SPDX references"),
+        })
     }
 }
 
-/// LICENSE_STRING_TO_LICENSE_KIND, converts licenses from the format they are
-/// specified in Cargo.toml files from crates.io, to the LicenseKind that will
-/// be written to README.chromium.
-/// Each entry looks like the following:
-/// h.insert(
-///   "Cargo.toml string",
-///   vec![LicenseKind::<License for README.chromium>]
-/// );
-static LICENSE_STRING_TO_LICENSE_KIND: LazyLock<HashMap<&'static str, Vec<LicenseKind>>> =
+static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<String>>> =
     LazyLock::new(|| {
-        let mut h = HashMap::new();
-        h.insert("Apache-2.0", vec![LicenseKind::Apache2]);
-        h.insert("MIT OR Apache-2.0", vec![LicenseKind::Apache2]);
-        h.insert("MIT/Apache-2.0", vec![LicenseKind::Apache2]);
-        h.insert("MIT / Apache-2.0", vec![LicenseKind::Apache2]);
-        h.insert("Apache-2.0 / MIT", vec![LicenseKind::Apache2]);
-        h.insert("Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
-        h.insert("Apache-2.0/MIT", vec![LicenseKind::Apache2]);
-        h.insert(
-            "(Apache-2.0 OR MIT) AND BSD-3-Clause",
-            vec![LicenseKind::Apache2, LicenseKind::BSD3],
-        );
-        h.insert("MIT OR Apache-2.0 OR Zlib", vec![LicenseKind::Apache2]);
-        h.insert("MIT", vec![LicenseKind::MIT]);
-        h.insert("Unlicense OR MIT", vec![LicenseKind::MIT]);
-        h.insert("Unlicense/MIT", vec![LicenseKind::MIT]);
-        h.insert("Apache-2.0 OR BSL-1.0", vec![LicenseKind::Apache2]);
-        h.insert("BSD-3-Clause", vec![LicenseKind::BSD3]);
-        h.insert("ISC", vec![LicenseKind::ISC]);
-        h.insert("MIT OR Zlib OR Apache-2.0", vec![LicenseKind::Apache2]);
-        h.insert("Zlib OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
-        h.insert("0BSD OR MIT OR Apache-2.0", vec![LicenseKind::Apache2]);
-        h.insert(
-            "(MIT OR Apache-2.0) AND Unicode-3.0",
-            vec![LicenseKind::Apache2, LicenseKind::Unicode3],
-        );
-        h.insert("MIT AND (MIT OR Apache-2.0)", vec![LicenseKind::Apache2]);
-        h.insert("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
-        h.insert("BSD-2-Clause OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
-        h.insert("Unicode-3.0", vec![LicenseKind::Unicode3]);
-        h.insert("Zlib", vec![LicenseKind::Zlib]);
-        h
-    });
+        const PREFIXES: [&str; 2] = [
+            // Most common spelling.
+            "LICENSE",
+            // British English spelling (e.g. found in the `pad-0.1.6` crate).
+            "LICENCE",
+        ];
+        const EXTENSIONS: [&str; 3] = ["", ".md", ".txt"];
 
-static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<&'static str>>> =
-    LazyLock::new(|| {
-        let mut h = HashMap::new();
-        h.insert(
-            LicenseKind::Apache2,
-            vec![
-                "LICENSE-APACHE",
-                "LICENSE-APACHE.md",
-                "LICENSE-APACHE.txt",
-                "license-apache-2.0",
-                "LICENSE.md",
-                "LICENSE",
-            ],
-        );
-        h.insert(
-            LicenseKind::MIT,
-            vec!["LICENSE-MIT", "LICENSE-MIT.txt", "LICENSE-MIT.md", "LICENSE.md", "LICENSE"],
-        );
-        h.insert(
-            LicenseKind::BSD3,
-            vec!["LICENSE-BSD", "LICENSE-BSD.txt", "LICENSE-BSD.md", "LICENSE.md", "LICENSE"],
-        );
-        h.insert(LicenseKind::ISC, vec!["LICENSE-ISC", "LICENSE.md", "LICENSE"]);
-        h.insert(LicenseKind::Zlib, vec!["LICENSE-ZLIB", "LICENSE.md", "LICENSE"]);
-        h.insert(LicenseKind::Unicode3, vec!["LICENSE-UNICODE", "LICENSE.md", "LICENSE"]);
-        h
+        // This block generates a map with the most common license file types, in order
+        // of priority.
+        let mut map = HashMap::new();
+        for kind in LicenseKind::iter() {
+            let license_name_suffix = {
+                // `license_kind_name` is taken from the Display
+                // implementation. E.g. "Apache-2.0" becomes "-APACHE"
+                let license_kind_name = kind.as_ref().split("-").next().unwrap().to_uppercase();
+                // Prepend `-` so this can be used as an optional suffix.
+                format!("-{license_kind_name}")
+            };
+            // More specific `license_name_suffix` is prioritized and listed first.
+            let suffixes: [&str; 2] = [&license_name_suffix, ""];
+
+            let mut license_files = vec![];
+            for suffix in suffixes {
+                for prefix in PREFIXES {
+                    for extension in EXTENSIONS {
+                        license_files.push(format!("{prefix}{suffix}{extension}"));
+                    }
+                }
+            }
+
+            map.insert(kind, license_files);
+        }
+
+        // Special cases for specific license types. If your license has a case
+        // that is not covered already in the map generated above, add it here.
+        let apache = map.get_mut(&LicenseKind::Apache2).unwrap();
+        apache.insert(0, "license-apache-2.0".to_string());
+        apache.insert(0, "LICENSE-Apache".to_string());
+        map
     });
 
 /// Converts a license string from Cargo.toml into a Vec of LicenseKinds.
 fn parse_license_string(pkg_license: &str) -> Result<Vec<LicenseKind>> {
-    LICENSE_STRING_TO_LICENSE_KIND.get(pkg_license).cloned().ok_or_else(|| {
-        format_err!(
-            "License '{pkg_license}' not found in the `LICENSE_STRING_TO_LICENSE_KIND` \
-             map.  Please consider teaching `gnrt` about this license kind \
-             by editing //tools/crates/gnrt/lib/readme.rs` and adding the \
-             license to `enum LicenseKinds`, `LICENSE_STRING_TO_LICENSE_KIND`, \
-             and `LICENSE_KIND_TO_LICENSE_FILES`.  Note that this will require \
+    fn parse(pkg_license: &str) -> Result<Vec<LicenseKind>> {
+        let expr = spdx::expression::Expression::parse_mode(
+            pkg_license,
+            spdx::lexer::ParseMode {
+                allow_imprecise_license_names: false,
+                allow_postfix_plus_on_gpl: false,
+                allow_deprecated: false,
+
+                // https://spdx.dev/wp-content/uploads/sites/31/2024/12/SPDX-3.0.1-1.pdf
+                // technically requires that `License1 / License2` should be spelled as
+                // `License1 OR License2`, but in practice many `Cargo.toml` files use
+                // the former syntax.  See also
+                // https://github.com/rust-lang/cargo/issues/2039
+                allow_slash_as_or_operator: true,
+            },
+        )?;
+
+        static ALLOWED_LICENSES_IN_PRIORITY_ORDER: LazyLock<Vec<spdx::Licensee>> =
+            LazyLock::new(|| {
+                LicenseKind::iter()
+                    .map(|license_kind| spdx::Licensee::parse(license_kind.as_ref()).unwrap())
+                    .collect_vec()
+            });
+
+        expr.minimized_requirements(ALLOWED_LICENSES_IN_PRIORITY_ORDER.iter())?
+            .iter()
+            .map(LicenseKind::try_from)
+            .collect::<Result<Vec<_>>>()
+    }
+
+    parse(pkg_license).with_context(|| {
+        format!(
+            "License '{pkg_license}' could not be parsed by `gnrt`. \
+             To teach `gnrt` about a new licence kind, please consider \
+             adding a new variant to the `LicenseKind` enum in \
+             //tools/crates/gnrt/lib/readme.rs`.  Note that this will require \
              an additional review whether the new license kind can be used in \
              Chromium - for more details see \
              `//tools/crates/gnrt/lib/readme.rs-third-party-license-review.md`."
@@ -375,5 +392,108 @@ fn find_license_files_for_kinds(
 
 fn does_license_file_exist(path: &Path) -> Result<bool> {
     path.try_exists()
+        .map(|exists| {
+            // Check canonicalized filename to avoid https://crbug.com/465546463:
+            exists
+                && std::fs::canonicalize(path)
+                    .map(|canonical_path| canonical_path.file_name() == path.file_name())
+                    .unwrap_or(false)
+        })
         .with_context(|| format!("Failed to check if a license file exists at {}", path.display()))
+}
+
+#[cfg(test)]
+mod test {
+    use crate::readme::LicenseKind;
+
+    use super::{license_kinds_to_string, parse_license_string, LICENSE_KIND_TO_LICENSE_FILES};
+
+    #[test]
+    fn test_convert_license_field_from_cargo_to_chromium_format() {
+        let testcases = [
+            ("Apache-2.0", "Apache-2.0"),
+            ("MIT OR Apache-2.0", "Apache-2.0"),
+            ("MIT/Apache-2.0", "Apache-2.0"),
+            ("MIT / Apache-2.0", "Apache-2.0"),
+            ("Apache-2.0 / MIT", "Apache-2.0"),
+            ("Apache-2.0 OR MIT", "Apache-2.0"),
+            ("Apache-2.0/MIT", "Apache-2.0"),
+            ("(Apache-2.0 OR MIT) AND BSD-3-Clause", "Apache-2.0, BSD-3-Clause"),
+            ("MIT OR Apache-2.0 OR Zlib", "Apache-2.0"),
+            ("(MIT OR Apache-2.0) AND NCSA", "Apache-2.0, NCSA"),
+            ("MIT", "MIT"),
+            ("MPL-2.0", "MPL-2.0"),
+            ("Unlicense OR MIT", "MIT"),
+            ("Unlicense/MIT", "MIT"),
+            ("Apache-2.0 OR BSL-1.0", "Apache-2.0"),
+            ("BSD-3-Clause", "BSD-3-Clause"),
+            ("ISC", "ISC"),
+            ("MIT OR Zlib OR Apache-2.0", "Apache-2.0"),
+            ("Zlib OR Apache-2.0 OR MIT", "Apache-2.0"),
+            ("0BSD OR MIT OR Apache-2.0", "Apache-2.0"),
+            ("(MIT OR Apache-2.0) AND Unicode-3.0", "Apache-2.0, Unicode-3.0"),
+            ("MIT AND (MIT OR Apache-2.0)", "MIT"),
+            ("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", "Apache-2.0"),
+            ("BSD-2-Clause OR Apache-2.0 OR MIT", "Apache-2.0"),
+            ("BSD-2-Clause OR Apache-2.0 OR MIT", "Apache-2.0"),
+            ("BSD-2-Clause OR MIT OR Apache-2.0", "Apache-2.0"),
+            ("BSD-3-Clause OR MIT OR Apache-2.0", "Apache-2.0"),
+            ("Unicode-3.0", "Unicode-3.0"),
+            ("Zlib", "Zlib"),
+            ("BSL-1.0", "BSL-1.0"),
+        ];
+
+        for (input, expected_output) in testcases {
+            eprintln!("Testing input = {input:?}");
+            let licenses = parse_license_string(input).unwrap();
+            let actual_output = license_kinds_to_string(&licenses);
+            assert_eq!(&actual_output, expected_output);
+        }
+    }
+
+    #[test]
+    fn test_license_kind_to_possible_license_files() {
+        let testcases: &[(LicenseKind, &[&'static str])] = &[
+            (
+                LicenseKind::Apache2,
+                &[
+                    "LICENSE-Apache",
+                    "license-apache-2.0",
+                    "LICENSE-APACHE",
+                    "LICENSE-APACHE.md",
+                    "LICENSE-APACHE.txt",
+                    "LICENCE-APACHE",
+                    "LICENCE-APACHE.md",
+                    "LICENCE-APACHE.txt",
+                    "LICENSE",
+                    "LICENSE.md",
+                    "LICENSE.txt",
+                    "LICENCE",
+                    "LICENCE.md",
+                    "LICENCE.txt",
+                ],
+            ),
+            (
+                LicenseKind::MIT,
+                &[
+                    "LICENSE-MIT",
+                    "LICENSE-MIT.md",
+                    "LICENSE-MIT.txt",
+                    "LICENCE-MIT",
+                    "LICENCE-MIT.md",
+                    "LICENCE-MIT.txt",
+                    "LICENSE",
+                    "LICENSE.md",
+                    "LICENSE.txt",
+                    "LICENCE",
+                    "LICENCE.md",
+                    "LICENCE.txt",
+                ],
+            ),
+        ];
+        for (license, expected_filenames) in testcases {
+            let actual_filenames = &LICENSE_KIND_TO_LICENSE_FILES[license];
+            assert_eq!(actual_filenames, expected_filenames);
+        }
+    }
 }

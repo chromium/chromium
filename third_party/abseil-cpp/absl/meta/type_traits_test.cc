@@ -36,6 +36,9 @@ using IsOwnerAndNotView =
     absl::conjunction<absl::type_traits_internal::IsOwner<T>,
                       absl::negation<absl::type_traits_internal::IsView<T>>>;
 
+static_assert(
+    IsOwnerAndNotView<std::pair<std::vector<int>, std::string>>::value,
+    "pair of owners is an owner, not a view");
 static_assert(IsOwnerAndNotView<std::vector<int>>::value,
               "vector is an owner, not a view");
 static_assert(IsOwnerAndNotView<std::string>::value,
@@ -132,6 +135,17 @@ TEST(TypeTraitsTest, TestRemoveCVRef) {
                             int[2]>::value));
   EXPECT_TRUE((std::is_same<typename absl::remove_cvref<const int(&&)[2]>::type,
                             int[2]>::value));
+}
+
+TEST(TypeTraitsTest, TestTypeIdentity) {
+  EXPECT_TRUE((std::is_same_v<typename absl::type_identity<int>::type, int>));
+  EXPECT_TRUE((std::is_same_v<absl::type_identity_t<int>, int>));
+  EXPECT_TRUE((std::is_same_v<typename absl::type_identity<int&>::type, int&>));
+  EXPECT_TRUE((std::is_same_v<absl::type_identity_t<int&>, int&>));
+
+  EXPECT_FALSE(
+      (std::is_same_v<typename absl::type_identity<int64_t>::type, int32_t>));
+  EXPECT_FALSE((std::is_same_v<absl::type_identity_t<int64_t>, int32_t>));
 }
 
 struct TypeA {};

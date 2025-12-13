@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ZOOM_CHROME_ZOOM_LEVEL_PREFS_H_
 #define CHROME_BROWSER_UI_ZOOM_CHROME_ZOOM_LEVEL_PREFS_H_
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -49,6 +50,7 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
 
   void SetDefaultZoomLevelPref(double level);
   double GetDefaultZoomLevelPref() const;
+  double GetDefaultZoomFactor() const;
   base::CallbackListSubscription RegisterDefaultZoomLevelCallback(
       base::RepeatingClosure callback);
 

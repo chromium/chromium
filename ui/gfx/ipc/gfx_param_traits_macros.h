@@ -10,9 +10,9 @@
 
 #include "base/pickle.h"
 #include "build/build_config.h"
-#include "ipc/ipc_message_utils.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 #include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_utils.h"
 #include "ui/gfx/ca_layer_params.h"
 #include "ui/gfx/ipc/gfx_ipc_export.h"
 #include "ui/gfx/selection_bound.h"

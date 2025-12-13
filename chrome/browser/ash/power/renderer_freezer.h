@@ -69,7 +69,7 @@ class RendererFreezer
   void SuspendDone() override;
 
   // content::RenderProcessHostCreationObserver implementation.
-  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+  void OnRenderProcessLaunched(content::RenderProcessHost* host) override;
 
   // content::RenderProcessHostObserver overrides.
   void RenderProcessExited(

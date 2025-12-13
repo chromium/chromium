@@ -102,7 +102,7 @@ TEST_F(CWVLookalikeURLHandlerTest, ProceedToRequestURL) {
   EXPECT_TRUE(GetNavigationManager()->ReloadWasCalled());
   LookalikeUrlTabAllowList* allow_list =
       LookalikeUrlTabAllowList::FromWebState(&web_state_);
-  EXPECT_TRUE(allow_list->IsDomainAllowed(request_url.host()));
+  EXPECT_TRUE(allow_list->IsDomainAllowed(request_url.GetHost()));
 }
 
 TEST_F(CWVLookalikeURLHandlerTest, ProceedToInvalidSafeURL) {

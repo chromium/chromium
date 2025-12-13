@@ -71,8 +71,8 @@ ScriptPromise<IDLUndefined> KeyboardLock::lock(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(state);
   service_->RequestKeyboardLock(
       keycodes,
-      WTF::BindOnce(&KeyboardLock::LockRequestFinished, WrapPersistent(this),
-                    WrapPersistent(request_keylock_resolver_.Get())));
+      BindOnce(&KeyboardLock::LockRequestFinished, WrapPersistent(this),
+               WrapPersistent(request_keylock_resolver_.Get())));
   return request_keylock_resolver_->Promise();
 }
 

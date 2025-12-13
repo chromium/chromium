@@ -41,16 +41,16 @@ bool FFmpegH264ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
 
     avc_config = std::make_unique<mp4::AVCDecoderConfigurationRecord>();
 
-    if (!converter_.ParseConfiguration(stream_codec_parameters_->extradata,
-                                       stream_codec_parameters_->extradata_size,
-                                       avc_config.get())) {
+    if (!converter_.ParseConfiguration(
+            AVCodecParametersExtraDataToSpan(stream_codec_parameters_.get()),
+            avc_config.get())) {
       DVLOG(2) << __func__ << ": ParseConfiguration() failure";
       return false;
     }
   }
 
   uint32_t output_packet_size = converter_.CalculateNeededOutputBufferSize(
-      packet->data, packet->size, avc_config.get());
+      AVPacketData(*packet), avc_config.get());
 
   if (output_packet_size == 0) {
     DVLOG(2) << __func__ << ": zero |output_packet_size|";
@@ -73,9 +73,8 @@ bool FFmpegH264ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
   // for configuration in the beginning.
   uint32_t io_size = dest_packet.size;
   if (!converter_.ConvertNalUnitStreamToByteStream(
-          packet->data, packet->size,
-          avc_config.get(),
-          dest_packet.data, &io_size)) {
+          AVPacketData(*packet), avc_config.get(), AVPacketData(dest_packet),
+          &io_size)) {
     DVLOG(2) << __func__ << ": ConvertNalUnitStreamToByteStream() failure";
     return false;
   }
@@ -91,7 +90,7 @@ bool FFmpegH264ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
   av_packet_unref(packet);
 
   // Finally, replace the values in the input packet.
-  UNSAFE_TODO(memcpy(packet, &dest_packet, sizeof(*packet)));
+  *packet = dest_packet;
   return true;
 }
 

@@ -123,6 +123,24 @@
         "id": "MV2DeprecationStatus",
         "type": "string",
         "enum": ["inactive", "warning", "soft_disable", "hard_disable"]
+      },
+      {
+        "id": "PromotionType",
+        "type": "string",
+        "enum": [
+          {
+            "name": "CHROME_ENTERPRISE_CORE",
+            "description": "Show the promotion banner for Chrome Enterprise Core"
+          },
+          {
+            "name": "CHROME_ENTERPRISE_PREMIUM",
+            "description": "Show the promotion banner for Chrome Enterprise Premium"
+          },
+          {
+            "name": "PROMOTION_TYPE_UNSPECIFIED",
+            "description": "Do not show the promotion banner"
+          }
+        ]
       }
     ],
     "functions": [
@@ -394,6 +412,33 @@
             "$ref": "MV2DeprecationStatus"
           }]
         }
+      },
+      {
+        "name": "shouldShowEnterprisePromotionBanner",
+        "description": "Returns whether the enterprise promotion banner should be shown.",
+        "platforms": ["chromeos", "linux", "mac", "win"],
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "shouldShow",
+              "$ref": "PromotionType"
+            }
+          ]
+        }
+      },
+      {
+        "name": "logEnterprisePromoShown",
+        "description": "Logs number of times the enterprise promotion banner was displayed.",
+        "platforms": ["chromeos", "linux", "mac", "win"],
+        "parameters": []
+      },
+      {
+        "name": "onEnterprisePromoClick",
+        "description": "Sets the promotion preference to dismissed and records UMA histogram on promotion click.",
+        "platforms": ["chromeos", "linux", "mac", "win"],
+        "parameters": []
       }
     ]
   }

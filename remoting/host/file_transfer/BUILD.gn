@@ -25,7 +25,7 @@ source_set("file_transfer") {
       "file_chooser_win.cc",
     ]
     deps += [
-      "//ipc:ipc",
+      "//ipc",
       "//remoting/host:common",
       "//remoting/host/base",
       "//remoting/host/mojom",
@@ -70,12 +70,12 @@ source_set("common") {
 
   deps = [
     "//base",
-    "//net:net",
+    "//net",
     "//remoting/base",
     "//remoting/host/mojom",
     "//remoting/protocol",
     "//ui/base",
-    "//url:url",
+    "//url",
   ]
 
   if (is_mac) {
@@ -110,7 +110,7 @@ if (is_chromeos) {
     ]
     deps = [
       ":common",
-      "//remoting/host/chromeos:chromeos",
+      "//remoting/host/chromeos",
       "//remoting/resources",
       "//ui/display",
       "//ui/shell_dialogs",
@@ -157,7 +157,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//net:net",
+    "//net",
     "//remoting/base",
     "//remoting/host/mojom",
     "//remoting/protocol",
@@ -169,7 +169,7 @@ source_set("unit_tests") {
     sources += [ "file_chooser_chromeos_unittest.cc" ]
     deps += [
       "//content/test:test_support",
-      "//remoting/host/chromeos:chromeos",
+      "//remoting/host/chromeos",
       "//remoting/host/chromeos:unit_tests",
       "//ui/shell_dialogs",
     ]

@@ -14,19 +14,18 @@
 class HeapProfilingTestShim {
  public:
   HeapProfilingTestShim(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
+                        const base::android::JavaRef<jobject>& obj);
   void Destroy(JNIEnv* env);
 
   HeapProfilingTestShim(const HeapProfilingTestShim&) = delete;
   HeapProfilingTestShim& operator=(const HeapProfilingTestShim&) = delete;
 
-  jboolean RunTestForMode(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& mode,
-      jboolean dynamically_start_profiling,
-      const base::android::JavaParamRef<jstring>& stack_mode,
-      jboolean should_sample,
-      jboolean sample_everything);
+  jboolean RunTestForMode(JNIEnv* env,
+                          const base::android::JavaRef<jstring>& mode,
+                          jboolean dynamically_start_profiling,
+                          const base::android::JavaRef<jstring>& stack_mode,
+                          jboolean should_sample,
+                          jboolean sample_everything);
 
  private:
   ~HeapProfilingTestShim();

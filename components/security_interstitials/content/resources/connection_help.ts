@@ -39,6 +39,8 @@ function setupEvents() {
     case '#' + loadTimeData.getInteger('certExpired'):
       toggleHidden('details-clock', 'details-clock-button');
       break;
+    default:
+      break;
   }
 }
 

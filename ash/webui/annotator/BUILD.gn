@@ -52,7 +52,7 @@ source_set("test_support") {
   ]
 
   public_deps = [
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//ash/public/cpp:test_support",
     "//ash/webui/annotator/mojom:annotator_mojo_bindings",
     "//ash/webui/annotator/public/cpp",

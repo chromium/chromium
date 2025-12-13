@@ -23,7 +23,6 @@ extern const char kSharedMGSAlreadyLaunched[];
 extern const char kNoSharedMGSFound[];
 extern const char kSharedSessionIsNotActive[];
 extern const char kSharedSessionAlreadyLaunched[];
-extern const char kScryptFailure[];
 extern const char kCleanupInProgress[];
 extern const char kUnlockFailure[];
 extern const char kDeviceRestrictedManagedGuestSessionNotEnabled[];

@@ -12,11 +12,8 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "ui/gfx/native_widget_types.h"
-
-namespace views {
-class View;
-}
+#include "ui/gfx/native_ui_types.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace gfx {
 class Rect;
@@ -32,7 +29,7 @@ class PageInfoBubbleSpecification {
  public:
   class Builder final {
    public:
-    Builder(views::View* anchor_view,
+    Builder(views::BubbleAnchor anchor,
             gfx::NativeWindow parent_window,
             content::WebContents* web_contents,
             const GURL& url);
@@ -40,7 +37,7 @@ class PageInfoBubbleSpecification {
     Builder(const Builder& other) = delete;
     Builder& operator=(const Builder& other) = delete;
 
-    // Anchor rect will be used to anchor the bubble if `anchor_view` is null.
+    // Anchor rect will be used to anchor the bubble if `anchor` is null.
     Builder& AddAnchorRect(gfx::Rect rect);
 
     // `callback` will run after the page info UI initializes and is presented
@@ -70,7 +67,7 @@ class PageInfoBubbleSpecification {
   };
 
   PageInfoBubbleSpecification(base::PassKey<Builder>,
-                              views::View* anchor_view,
+                              views::BubbleAnchor anchor,
                               gfx::NativeWindow parent_window,
                               content::WebContents* web_contents,
                               const GURL& url);
@@ -83,7 +80,7 @@ class PageInfoBubbleSpecification {
   void ShowPermissionPage(ContentSettingsType type);
   void ShowMerchantTrustPage();
 
-  views::View* anchor_view();
+  views::BubbleAnchor anchor();
   gfx::NativeWindow parent_window();
   content::WebContents* web_contents();
   const GURL& url();
@@ -95,7 +92,7 @@ class PageInfoBubbleSpecification {
   bool show_merchant_trust_page();
 
  private:
-  raw_ptr<views::View> anchor_view_;
+  views::BubbleAnchor anchor_;
   gfx::NativeWindow parent_window_;
   raw_ptr<content::WebContents> web_contents_;
   GURL url_;

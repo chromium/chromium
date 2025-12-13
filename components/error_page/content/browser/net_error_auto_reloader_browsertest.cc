@@ -716,5 +716,45 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderFencedFrameBrowserTest,
   EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
 }
 
+// Check that a manual reload stops the auto-reload timer, and when the manual
+// reload fails to load again (committing a new error page, unlike auto reload,
+// which will abort the commit of a page with the same error as before), the
+// auto-reload timer starts once more, without resetting the auto-reload delay.
+IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
+                       ManualReloadNotSuppressed) {
+  // Navigate the main frame to a test URL that produces an error.
+  NetErrorUrlInterceptor interceptor(GetTestUrl(), net::ERR_CONNECTION_RESET);
+  EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
+  // Check the current auto reload delay.
+  EXPECT_EQ(GetDelayForReloadCount(0), GetCurrentAutoReloadDelay());
+
+  // Let the page auto-reload once, to increase the auto-reload delay.
+  {
+    content::TestNavigationManager navigation(web_contents(), GetTestUrl());
+    ForceScheduledAutoReloadNow();
+    ASSERT_TRUE(navigation.WaitForNavigationFinished());
+    // The reloaded page should not be committed.
+    EXPECT_FALSE(navigation.was_committed());
+    EXPECT_EQ(GetDelayForReloadCount(1), GetCurrentAutoReloadDelay());
+  }
+
+  // Manually start a reload. This should stop the auto-reload timer.
+  content::TestNavigationManager navigation(web_contents(), GetTestUrl());
+  web_contents()->GetController().Reload(content::ReloadType::NORMAL, true);
+  EXPECT_TRUE(navigation.WaitForRequestStart());
+  // Check that the page is no longer auto-reloading.
+  EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
+
+  // Wait for the navigation to complete.
+  ASSERT_TRUE(navigation.WaitForNavigationFinished());
+  EXPECT_FALSE(navigation.was_successful());
+  // Unlike the auto-reload, the manual reload should commit a new error page,
+  // displaying the same error as before.
+  EXPECT_TRUE(navigation.was_committed());
+  // Check that there is an auto-reload timer is running again, resuming with
+  // the delay from when it was interrupted by the manual reload.
+  EXPECT_EQ(GetDelayForReloadCount(1), GetCurrentAutoReloadDelay());
+}
+
 }  // namespace
 }  // namespace error_page

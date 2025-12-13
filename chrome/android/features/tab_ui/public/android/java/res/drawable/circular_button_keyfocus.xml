@@ -14,5 +14,5 @@ found in the LICENSE file.
   <solid android:color="@android:color/transparent" />
   <stroke
       android:color="@android:color/white"
-      android:width="@dimen/focused_icon_background_stroke_width" />
+      android:width="@dimen/focused_outline_stroke_width" />
 </shape>

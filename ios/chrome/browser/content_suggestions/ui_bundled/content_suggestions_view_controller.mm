@@ -4,17 +4,18 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller.h"
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_container.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public/magic_stack_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_module_container.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -26,9 +27,6 @@
     UIScrollViewAccessibilityDelegate>
 
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
-
-// StackView holding all subviews.
-@property(nonatomic, strong) UIStackView* verticalStackView;
 
 // List of all UITapGestureRecognizers created for the Most Visisted tiles.
 @property(nonatomic, strong)
@@ -57,30 +55,6 @@
                                 initWithDelegate:self.dragDropHandler]];
   self.view.backgroundColor = [UIColor clearColor];
   self.view.accessibilityIdentifier = kContentSuggestionsCollectionIdentifier;
-
-  self.verticalStackView = [[UIStackView alloc] init];
-  self.verticalStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.verticalStackView.axis = UILayoutConstraintAxisVertical;
-  // A centered alignment will ensure the views are centered.
-  self.verticalStackView.alignment = UIStackViewAlignmentCenter;
-  // A fill distribution allows for the custom spacing between elements and
-  // height/width configurations for each row.
-  self.verticalStackView.distribution = UIStackViewDistributionFill;
-  [self.view addSubview:self.verticalStackView];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [self.verticalStackView.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [self.verticalStackView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-    [self.verticalStackView.topAnchor
-        constraintEqualToAnchor:self.view.topAnchor
-                       constant:content_suggestions::HeaderBottomPadding(
-                                    self.traitCollection)],
-    [self.verticalStackView.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor]
-  ]];
-
   if (_mostVisitedTileConfig.mostVisitedItems.count > 0) {
     [self createAndInsertMostVisitedModule];
   }
@@ -118,18 +92,17 @@
   if (self.mostVisitedModuleContainer) {
     [self.mostVisitedModuleContainer removeFromSuperview];
   }
-  self.mostVisitedModuleContainer =
-      [[MagicStackModuleContainer alloc] initWithFrame:CGRectZero];
+  self.mostVisitedModuleContainer = [[MagicStackModuleContainer alloc]
+      initWithFrame:CGRectZero
+            noInset:IsContentSuggestionsCustomizable()];
   [self.mostVisitedModuleContainer configureWithConfig:_mostVisitedTileConfig];
   // If viewDidLoad has been called before the first valid Most Visited Tiles
-  // are available, construct `mostVisitedStackView`.
-  if (self.verticalStackView &&
-      _mostVisitedTileConfig.mostVisitedItems.count > 0) {
+  // are available, construct the most visited tiles.
+  if (_mostVisitedTileConfig.mostVisitedItems.count > 0) {
     [self createAndInsertMostVisitedModule];
   }
 
-  for (ContentSuggestionsMostVisitedItem* item in _mostVisitedTileConfig
-           .mostVisitedItems) {
+  for (MostVisitedItem* item in _mostVisitedTileConfig.mostVisitedItems) {
     [self.contentSuggestionsMetricsRecorder
         recordMostVisitedTileShown:item
                            atIndex:item.index];
@@ -140,21 +113,21 @@
 
 #pragma mark - Private
 
-- (void)addUIElement:(UIView*)view withCustomBottomSpacing:(CGFloat)spacing {
-  [self.verticalStackView addArrangedSubview:view];
-  if (spacing > 0) {
-    [self.verticalStackView setCustomSpacing:spacing afterView:view];
-  }
-}
-
 - (void)createAndInsertMostVisitedModule {
-  [self.verticalStackView insertArrangedSubview:self.mostVisitedModuleContainer
-                                        atIndex:0];
+  [self.view addSubview:self.mostVisitedModuleContainer];
+  self.mostVisitedModuleContainer.translatesAutoresizingMaskIntoConstraints =
+      NO;
   [NSLayoutConstraint activateConstraints:@[
-    [self.mostVisitedModuleContainer.widthAnchor
-        constraintEqualToAnchor:self.view.widthAnchor],
-    [self.mostVisitedModuleContainer.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
+    [self.mostVisitedModuleContainer.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [self.mostVisitedModuleContainer.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [self.mostVisitedModuleContainer.topAnchor
+        constraintEqualToAnchor:self.view.topAnchor
+                       constant:content_suggestions::HeaderBottomPadding(
+                                    self.traitCollection)],
+    [self.mostVisitedModuleContainer.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor]
   ]];
   [self.view layoutIfNeeded];
 }

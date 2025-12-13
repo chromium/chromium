@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.safety_hub;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
@@ -24,6 +23,8 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.Supplier;
 
 /** Utility methods for common Safety Hub related actions. */
 @NullMarked

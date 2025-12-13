@@ -236,11 +236,9 @@ void DamageTracker::ComputeSurfaceDamage(RenderSurfaceImpl* render_surface) {
   if (!damage_from_leftover_rects.IsEmpty()) {
     reasons.PutAll(damage_from_leftover_rects.reasons());
   }
-  if (render_surface->SurfacePropertyChanged() &&
-      !render_surface->AncestorPropertyChanged()) {
-    damage_for_this_update_ = DamageAccumulator();
-    damage_for_this_update_.Union(render_surface->content_rect(), {});
-  } else {
+
+  // Add damage_from_leftover_rects
+  {
     // TODO(shawnsingh): can we clamp this damage to the surface's content rect?
     // (affects performance, but not correctness)
     damage_for_this_update_.Union(damage_from_leftover_rects, {});
@@ -260,6 +258,7 @@ void DamageTracker::ComputeSurfaceDamage(RenderSurfaceImpl* render_surface) {
   // True if there is surface property change from descendant (clip_rect or
   // content_rect).
   if (render_surface->SurfacePropertyChanged()) {
+    damage_for_this_update_.Union(render_surface->content_rect(), {});
     has_damage_from_contributing_content_ |= !damage_for_this_update_.IsEmpty();
   }
 

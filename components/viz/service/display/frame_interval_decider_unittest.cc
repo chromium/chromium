@@ -99,6 +99,12 @@ class FrameIntervalDeciderTest : public testing::Test,
     return std::string_view();
   }
   void AggregatedFrameSinksChanged() override {}
+  void AddObserver(FrameSinkObserver* obs) override {}
+  void RemoveObserver(FrameSinkObserver* obs) override {}
+  bool HasViewTransitionToken(
+      const blink::ViewTransitionToken& transition_token) override {
+    return false;
+  }
 
  protected:
   base::WeakPtr<SurfaceClient> surface_client() {
@@ -112,8 +118,10 @@ class FrameIntervalDeciderTest : public testing::Test,
     SurfaceId surface_id(frame_sink_id, local_surface_id);
     SurfaceInfo surface_info(surface_id, frame_.device_scale_factor(),
                              frame_.size_in_pixels());
-    Surface* surface = surface_manager_->CreateSurface(
-        surface_client(), surface_info, SurfaceId());
+    Surface* surface =
+        surface_manager_
+            ->CreateSurface(surface_client(), surface_info, SurfaceId())
+            .value_or(nullptr);
 
     UpdateFrame(surface, std::move(frame_interval_inputs));
 
@@ -122,7 +130,7 @@ class FrameIntervalDeciderTest : public testing::Test,
 
   void UpdateFrame(Surface* surface,
                    FrameIntervalInputs frame_interval_inputs) {
-    uint64_t frame_index = surface->GetActiveFrameIndex() + 1u;
+    uint32_t frame_index = surface->GetActiveFrameIndex() + 1u;
     auto frame = MakeDefaultCompositorFrame();
     frame.metadata.frame_interval_inputs = std::move(frame_interval_inputs);
     ASSERT_TRUE(surface->QueueFrame(std::move(frame), frame_index,

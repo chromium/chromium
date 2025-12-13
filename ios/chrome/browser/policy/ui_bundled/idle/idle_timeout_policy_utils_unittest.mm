@@ -9,6 +9,7 @@
 #import "components/enterprise/idle/action_type.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -36,6 +38,7 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
     pref_service_ = profile_.get()->GetPrefs();
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
     authentication_service_ =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
   }
@@ -64,8 +67,9 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<PrefService> pref_service_;
-  raw_ptr<AuthenticationService> authentication_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
+  raw_ptr<AuthenticationService, DanglingUntriaged> authentication_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 };
 
@@ -73,7 +77,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_AllTypes_UserSignedIn) {
   SignIn();
   SetIdleTimeoutActions({ActionType::kSignOut, ActionType::kCloseTabs,
                          ActionType::kClearBrowsingHistory});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_TRUE(action_set.clear);
   EXPECT_TRUE(action_set.signout);
   EXPECT_TRUE(action_set.close);
@@ -90,7 +94,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_AllTypes_UserSignedIn) {
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_AllTypes_UserSignedOut) {
   SetIdleTimeoutActions({ActionType::kSignOut, ActionType::kCloseTabs,
                          ActionType::kClearBrowsingHistory});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_TRUE(action_set.clear);
   EXPECT_FALSE(action_set.signout);
   EXPECT_TRUE(action_set.close);
@@ -107,7 +111,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_AllTypes_UserSignedOut) {
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_Signout_UserSignedIn) {
   SignIn();
   SetIdleTimeoutActions({ActionType::kSignOut});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_FALSE(action_set.clear);
   EXPECT_TRUE(action_set.signout);
   EXPECT_FALSE(action_set.close);
@@ -123,7 +127,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_Signout_UserSignedIn) {
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_Signout_UserSignedOut) {
   SetIdleTimeoutActions({ActionType::kSignOut});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_FALSE(action_set.clear);
   EXPECT_FALSE(action_set.signout);
   EXPECT_FALSE(action_set.close);
@@ -135,7 +139,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_Signout_UserSignedOut) {
 
 TEST_F(IdleTimeoutPolicyUtilsTest, AllActionsToActionSet_CloseTabs) {
   SetIdleTimeoutActions({ActionType::kCloseTabs});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_FALSE(action_set.clear);
   EXPECT_FALSE(action_set.signout);
   EXPECT_TRUE(action_set.close);
@@ -151,7 +155,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest, AllActionsToActionSet_CloseTabs) {
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_ClearBrowsingHistory) {
   SetIdleTimeoutActions({ActionType::kClearBrowsingHistory});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_TRUE(action_set.clear);
   EXPECT_FALSE(action_set.signout);
   EXPECT_FALSE(action_set.close);
@@ -168,7 +172,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_ClearBrowsingHistory) {
 TEST_F(IdleTimeoutPolicyUtilsTest,
        ActionsToActionSet_ClearCookiesAndOtherSiteData) {
   SetIdleTimeoutActions({ActionType::kClearCookiesAndOtherSiteData});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_TRUE(action_set.clear);
   EXPECT_FALSE(action_set.signout);
   EXPECT_FALSE(action_set.close);
@@ -177,7 +181,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest,
 TEST_F(IdleTimeoutPolicyUtilsTest,
        ActionsToActionSet_ClearCachedImagesAndFiles) {
   SetIdleTimeoutActions({ActionType::kClearCookiesAndOtherSiteData});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_TRUE(action_set.clear);
   EXPECT_FALSE(action_set.signout);
   EXPECT_FALSE(action_set.close);
@@ -185,7 +189,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest,
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_ClearPasswordSignin) {
   SetIdleTimeoutActions({ActionType::kClearPasswordSignin});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_TRUE(action_set.clear);
   EXPECT_FALSE(action_set.signout);
   EXPECT_FALSE(action_set.close);
@@ -193,7 +197,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_ClearPasswordSignin) {
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_ClearAutofill) {
   SetIdleTimeoutActions({ActionType::kClearAutofill});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_TRUE(action_set.clear);
   EXPECT_FALSE(action_set.signout);
   EXPECT_FALSE(action_set.close);
@@ -203,7 +207,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_SignoutAndClearData) {
   SignIn();
   SetIdleTimeoutActions(
       {ActionType::kSignOut, ActionType::kClearBrowsingHistory});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_TRUE(action_set.clear);
   EXPECT_TRUE(action_set.signout);
   EXPECT_FALSE(action_set.close);
@@ -223,7 +227,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_SignoutAndClearData) {
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_SignoutAndCloseTabs) {
   SignIn();
   SetIdleTimeoutActions({ActionType::kSignOut, ActionType::kCloseTabs});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_FALSE(action_set.clear);
   EXPECT_TRUE(action_set.signout);
   EXPECT_TRUE(action_set.close);
@@ -245,7 +249,7 @@ TEST_F(IdleTimeoutPolicyUtilsTest,
   // true in the `GetIdleTimeoutActionsSubtitleId` method under test below.
   SignIn();
   SetIdleTimeoutActions({ActionType::kSignOut, ActionType::kCloseTabs});
-  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  ActionSet action_set = GetActionSet(pref_service_, identity_manager_);
   EXPECT_FALSE(action_set.clear);
   EXPECT_TRUE(action_set.signout);
   EXPECT_TRUE(action_set.close);

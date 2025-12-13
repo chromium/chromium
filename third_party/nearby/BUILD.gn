@@ -125,6 +125,11 @@ source_set("connections_implementation_ble_advertisement") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
+config("connections_implementation_temporary_unused_result_suppression") {
+  # TODO(crbug.com/463698813): Clean up, re-enable.
+  cflags = [ "-Wno-unused-result" ]
+}
+
 source_set("connections_implementation") {
   # TODO(crbug.com/415053888): Remove once usage of the deprecated version of
   # BluetoothUtils::ToString and BluetoothUtils::FromString have been removed.
@@ -251,6 +256,7 @@ source_set("connections_implementation") {
   configs += [
     "//build/config/compiler:unnecessary_virtual_specifier_warning",
     "//build/config/compiler:no_chromium_code",
+    ":connections_implementation_temporary_unused_result_suppression",
   ]
 }
 
@@ -539,7 +545,7 @@ source_set("nearby_crypto") {
     ":platform_base_logging",
     ":platform_public_types",
     "//third_party/abseil-cpp:absl",
-    "//third_party/boringssl:boringssl",
+    "//third_party/boringssl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -589,9 +595,9 @@ source_set("crypto_cros") {
   ]
   public_deps = [
     ":platform_base_logging",
-    "//base:base",
+    "//base",
     "//third_party/abseil-cpp:absl",
-    "//third_party/boringssl:boringssl",
+    "//third_party/boringssl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -742,7 +748,7 @@ source_set("platform_api_types") {
   public_deps = [
     ":platform_base",
     ":platform_impl_crypto",
-    "//crypto:crypto",
+    "//crypto",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -832,7 +838,7 @@ source_set("platform_base_uuid") {
   public_deps = [
     ":platform_base",
     "//third_party/abseil-cpp:absl",
-    "//third_party/boringssl:boringssl",
+    "//third_party/boringssl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -868,7 +874,7 @@ source_set("platform_base_logging") {
   public_deps = [
     ":platform_api_platform",
     ":platform_api_types",
-    "//base:base",
+    "//base",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -1007,7 +1013,7 @@ source_set("platform_public_types") {
     ":platform_base_util",
     ":platform_mutex",
     ":platform_public_logging",
-    "//crypto:crypto",
+    "//crypto",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -1218,7 +1224,7 @@ source_set("presence_internal") {
     ":presence_mediums",
     ":presence_types",
     "//third_party/abseil-cpp:absl",
-    "//third_party/boringssl:boringssl",
+    "//third_party/boringssl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]

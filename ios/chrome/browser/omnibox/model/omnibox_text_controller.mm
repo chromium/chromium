@@ -22,7 +22,9 @@
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
-#import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "net/base/apple/url_conversions.h"
@@ -36,13 +38,13 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 @implementation OmniboxTextController {
   /// Client of the omnibox.
-  raw_ptr<OmniboxClient> _omniboxClient;
+  raw_ptr<OmniboxClient, DanglingUntriaged> _omniboxClient;
   /// Whether the popup was scrolled during this omnibox interaction.
   BOOL _suggestionsListScrolled;
   /// The omnbibox text model, holding the text state.
-  raw_ptr<OmniboxTextModel> _omniboxTextModel;
-  /// Whether it's the lens overlay omnibox.
-  BOOL _inLensOverlay;
+  raw_ptr<OmniboxTextModel, DanglingUntriaged> _omniboxTextModel;
+  /// The context in which the omnibox is presented.
+  OmniboxPresentationContext _presentationContext;
   /// The previous omnibox text state.
   OmniboxTextState _stateBeforeChange;
   /// The marked text before the change.
@@ -55,12 +57,13 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 - (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
                      omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
-                        inLensOverlay:(BOOL)inLensOverlay {
+                  presentationContext:
+                      (OmniboxPresentationContext)presentationContext {
   self = [super init];
   if (self) {
     _omniboxClient = omniboxClient;
     _omniboxTextModel = omniboxTextModel;
-    _inLensOverlay = inLensOverlay;
+    _presentationContext = presentationContext;
     _currentSelection = NSMakeRange(0, 0);
     _oldSelection = NSMakeRange(0, 0);
   }
@@ -74,7 +77,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 - (void)updateAppearance {
   // If Siri is thinking, treat that as user input being in progress.  It is
-  // unsafe to modify the text field while voice entry is pending.
+  // unsafe to modify the text input while voice entry is pending.
   if ([self resetDisplayTexts]) {
     // Revert everything to the baseline look.
     [self revertAll];
@@ -85,17 +88,17 @@ const char kOmniboxFocusResultedInNavigation[] =
     NSAttributedString* as = [[NSMutableAttributedString alloc]
         initWithString:base::SysUTF16ToNSString(
                            _omniboxTextModel->url_for_editing)];
-    [self.textField setText:as userTextLength:[as length]];
+    [self.textInput setText:as userTextLength:[as length]];
   }
 }
 
 - (BOOL)isOmniboxFirstResponder {
-  return [self.textField isFirstResponder];
+  return [self.textInput.view isFirstResponder];
 }
 
 - (void)focusOmnibox {
-  UITextField* textField = self.textField;
-  if ([textField isFirstResponder]) {
+  id<OmniboxTextInput> textInput = self.textInput;
+  if ([self isOmniboxFirstResponder]) {
     return;
   }
   base::RecordAction(base::UserMetricsAction("MobileOmniboxFocused"));
@@ -106,14 +109,14 @@ const char kOmniboxFocusResultedInNavigation[] =
   // -[UITextInteractionAssistant(UITextInteractionAssistant_Internal)
   // setFirstResponderIfNecessaryActivatingSelection:]
   if (base::ios::IsMultipleScenesSupported()) {
-    [textField.window makeKeyAndVisible];
+    [textInput.view.window makeKeyAndVisible];
   }
 
-  [textField becomeFirstResponder];
-  // Ensures that the accessibility system focuses the text field instead of
+  [textInput.view becomeFirstResponder];
+  // Ensures that the accessibility system focuses the text input instead of
   // the popup crbug.com/1469173.
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
-                                  textField);
+                                  textInput);
 }
 
 - (void)endEditing {
@@ -142,28 +145,42 @@ const char kOmniboxFocusResultedInNavigation[] =
     _omniboxTextModel->KillFocus();
   }
 
-  [self.textField exitPreEditState];
+  // Skip exit pre edit here to avoid resizing the multiline omnibox on exit.
+  // Exiting pre edit also shows the selections handle when animating the
+  // defocus (crbug.com/458055336).
+  BOOL skipExitPreEdit =
+      (IsMultilineBrowserOmniboxEnabled() &&
+       _presentationContext == OmniboxPresentationContext::kLocationBar) ||
+      (IsComposeboxIOSEnabled() &&
+       _presentationContext == OmniboxPresentationContext::kComposebox);
+  ;
+  if (!skipExitPreEdit) {
+    [self.textInput exitPreEditState];
+  }
 
   // The controller looks at the current pre-edit state, so the call to
   // OnKillFocus() must come after exiting pre-edit.
   [self.focusDelegate omniboxDidResignFirstResponder];
 
-  // Blow away any in-progress edits.
-  [self revertAll];
-
-  DCHECK(![self.textField hasAutocompleteText]);
+  // Composebox is destroyed on endEditing, skip revert to avoid resizing on
+  // revert.
+  if (_presentationContext != OmniboxPresentationContext::kComposebox) {
+    // Blow away any in-progress edits.
+    [self revertAll];
+    DCHECK(![self.textInput hasAutocompleteText]);
+  }
   _suggestionsListScrolled = NO;
 }
 
 - (void)insertTextToOmnibox:(NSString*)text {
-  [self.textField insertTextWhileEditing:text];
+  [self.textInput insertTextWhileEditing:text];
   // The call to `setText` shouldn't be needed, but without it the "Go" button
   // of the keyboard is disabled.
-  [self.textField setText:text];
+  [self.textInput setText:text];
   // Notify the accessibility system to start reading the new contents of the
   // Omnibox.
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
-                                  self.textField);
+                                  self.textInput.view);
 }
 
 // Notifies the client about input changes.
@@ -179,10 +196,10 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)getSelectionBounds:(size_t*)start end:(size_t*)end {
-  if ([self.textField isFirstResponder]) {
-    NSRange selectedRange = [self.textField selectedNSRange];
+  if ([self isOmniboxFirstResponder]) {
+    NSRange selectedRange = [self.textInput selectedNSRange];
     *start = selectedRange.location;
-    *end = selectedRange.location + self.textField.autocompleteText.length;
+    *end = selectedRange.location + self.textInput.autocompleteText.length;
   } else {
     *start = *end = 0;
   }
@@ -201,7 +218,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (std::u16string)displayedText {
-  return base::SysNSStringToUTF16([self.textField displayedText]);
+  return base::SysNSStringToUTF16([self.textInput displayedText]);
 }
 
 - (void)setInputInProgress:(BOOL)inProgress {
@@ -218,6 +235,10 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)revertState {
+  if (!_omniboxTextModel) {
+    return;
+  }
+
   [self setInputInProgress:NO];
   _omniboxTextModel->input.Clear();
   _omniboxTextModel->paste_state = OmniboxPasteState::kNone;
@@ -241,6 +262,9 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 - (void)getInfoForCurrentText:(AutocompleteMatch*)match
        alternateNavigationURL:(GURL*)alternateNavigationURL {
+  if (!_omniboxTextModel || !_omniboxClient) {
+    return;
+  }
   DCHECK(match);
 
   BOOL foundMatch = [self.omniboxAutocompleteController
@@ -265,6 +289,9 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)setUserText:(const std::u16string&)text {
+  if (!_omniboxTextModel || !_omniboxClient) {
+    return;
+  }
   [self setInputInProgress:YES];
   _omniboxTextModel->UpdateUserText(text);
   [self getInfoForCurrentText:&_omniboxTextModel->current_match
@@ -273,6 +300,9 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (AutocompleteMatch)currentMatch:(GURL*)alternateNavURL {
+  if (!_omniboxTextModel) {
+    return AutocompleteMatch();
+  }
   // If we have a valid match use it. Otherwise get one for the current text.
   AutocompleteMatch match = _omniboxTextModel->current_match;
   if (!match.destination_url.is_valid()) {
@@ -286,6 +316,10 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)onTextChanged {
+  if (!_omniboxTextModel || !_omniboxClient) {
+    return;
+  }
+
   // Don't call CurrentMatch() when there's no editing, as in this case we'll
   // never actually use it.  This avoids running the autocomplete providers (and
   // any systems they then spin up) during startup.
@@ -304,6 +338,9 @@ const char kOmniboxFocusResultedInNavigation[] =
 - (void)onPopupDataChanged:(const std::u16string&)inlineAutocompletion
             additionalText:(const std::u16string&)additionalText
                   newMatch:(const AutocompleteMatch&)newMatch {
+  if (!_omniboxTextModel) {
+    return;
+  }
   _omniboxTextModel->current_match = newMatch;
   _omniboxTextModel->inline_autocompletion = inlineAutocompletion;
 
@@ -322,6 +359,9 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (bool)resetDisplayTexts {
+  if (!_omniboxTextModel) {
+    return false;
+  }
   const std::u16string old_display_text = _omniboxTextModel->url_for_editing;
   if (_omniboxClient) {
     _omniboxTextModel->url_for_editing = _omniboxClient->GetFormattedFullURL();
@@ -342,15 +382,26 @@ const char kOmniboxFocusResultedInNavigation[] =
            !_omniboxAutocompleteController.hasSuggestions));
 }
 
+- (void)removePreEditText {
+  if (self.textInput.isPreEditing) {
+    [self.textInput setText:@""];
+    [self setUserText:u""];
+    [self onTextChanged];
+    // Ensure the pre-edit state is exited after the text is cleared, preventing
+    // stale text from influencing height changes (crbug.com/466997176).
+    [self.textInput exitPreEditState];
+  }
+}
+
 #pragma mark - Autocomplete events
 
 - (void)setAdditionalText:(const std::u16string&)text {
   if (!text.length()) {
-    self.textField.additionalText = nil;
+    [self.textInput setAdditionalText:nil];
     return;
   }
 
-  [self.textField setAdditionalText:[NSString cr_fromString16:u" - " + text]];
+  [self.textInput setAdditionalText:[NSString cr_fromString16:u" - " + text]];
 }
 
 #pragma mark - Omnibox text events
@@ -373,65 +424,70 @@ const char kOmniboxFocusResultedInNavigation[] =
   // Update the popup for suggestion wrapping.
   [self.omniboxAutocompleteController setHasThumbnail:NO];
 
-  if (self.textField.userText.length) {
+  if (self.textInput.userText.length) {
     // If the omnibox is not empty, start autocomplete.
-      [self updateInput];
+    [self updateInput];
   } else {
     [self.omniboxAutocompleteController closeOmniboxPopup];
   }
 }
 
 - (void)clearText {
-  OmniboxTextFieldIOS* textField = self.textField;
+  id<OmniboxTextInput> textInput = self.textInput;
   // Ensure omnibox is first responder. This will bring up the keyboard so the
   // user can start typing a new query.
-  if (![textField isFirstResponder]) {
-    [textField becomeFirstResponder];
+  if (![self isOmniboxFirstResponder]) {
+    [textInput.view becomeFirstResponder];
   }
-  if (textField.text.length != 0) {
+  if (textInput.text.length != 0) {
     // Remove the text in the omnibox.
-    // Calling -[UITextField setText:] does not trigger
-    // -[id<UITextFieldDelegate> textDidChange] so it must be called explicitly.
-    [textField clearAutocompleteText];
-    [textField exitPreEditState];
-    [textField setText:@""];
+    // Calling `setText:` does not trigger `textDidChange:` so it must be called
+    // explicitly.
+    [textInput clearAutocompleteText];
+    textInput.clearingPreEditText = YES;
+    [textInput exitPreEditState];
+    textInput.clearingPreEditText = NO;
+    [textInput setText:@""];
     [self textDidChangeWithUserEvent:YES];
   }
   // Calling textDidChangeWithUserEvent can trigger a scroll event, which
   // removes focus from the omnibox.
-  [textField becomeFirstResponder];
+  [textInput.view becomeFirstResponder];
 }
 
 - (void)acceptInput {
   RecordAction(base::UserMetricsAction("MobileOmniboxUse"));
   RecordAction(base::UserMetricsAction("IOS.Omnibox.AcceptDefaultSuggestion"));
 
-    // The omnibox edit model doesn't support accepting input with no text.
-    // Delegate the call to the client instead.
-    if (_omniboxClient && !self.textField.text.length) {
-      _omniboxClient->OnThumbnailOnlyAccept();
-    } else {
-      [self.omniboxAutocompleteController
-          openCurrentSelectionWithDisposition:WindowOpenDisposition::CURRENT_TAB
-                                    timestamp:base::TimeTicks()];
-    }
+  // The omnibox edit model doesn't support accepting input with no text.
+  // Delegate the call to the client instead.
+  if (_omniboxClient && !self.textInput.text.length) {
+    _omniboxClient->OnThumbnailOnlyAccept();
+  } else {
+    [self.omniboxAutocompleteController
+        openCurrentSelectionWithDisposition:WindowOpenDisposition::CURRENT_TAB
+                                  timestamp:base::TimeTicks()];
+  }
 
-  [self revertAll];
+  // Composebox UI is destroyed on accept, skip revert to avoid UI resizing.
+  if (_presentationContext != OmniboxPresentationContext::kComposebox) {
+    [self revertAll];
+  }
 }
 
 - (void)prepareForScribble {
-  OmniboxTextFieldIOS* textModel = self.textField;
+  id<OmniboxTextInput> textInput = self.textInput;
 
-  if (textModel.isPreEditing) {
-    [textModel exitPreEditState];
-    [textModel setText:@""];
+  if (textInput.isPreEditing) {
+    [textInput exitPreEditState];
+    [textInput setText:@""];
   }
-  [textModel clearAutocompleteText];
+  [textInput clearAutocompleteText];
 }
 
 - (void)cleanupAfterScribble {
-  [self.textField clearAutocompleteText];
-  [self.textField setAdditionalText:nil];
+  [self.textInput clearAutocompleteText];
+  [self.textInput setAdditionalText:nil];
 }
 
 - (void)onTextInputModeChange {
@@ -445,20 +501,20 @@ const char kOmniboxFocusResultedInNavigation[] =
   // to ignore that case.
   BOOL popupOpenBeforeEdit = self.omniboxAutocompleteController.hasSuggestions;
 
-  OmniboxTextFieldIOS* textField = self.textField;
+  id<OmniboxTextInput> textInput = self.textInput;
 
   // Make sure the omnibox popup's semantic content attribute is set correctly.
   [self.omniboxAutocompleteController
-      setSemanticContentAttribute:[textField bestSemanticContentAttribute]];
+      setSemanticContentAttribute:[textInput bestSemanticContentAttribute]];
 
   [self onBeforePossibleChange];
 
   if (_omniboxTextModel) {
     _omniboxTextModel->OnSetFocus();
 
-    if (_inLensOverlay) {
-      if (textField.userText.length) {
-        [self setUserText:textField.userText.cr_UTF16String];
+    if (_presentationContext == OmniboxPresentationContext::kLensOverlay) {
+      if (textInput.userText.length) {
+        [self setUserText:textInput.userText.cr_UTF16String];
         [self startAutocompletePreventingInline:YES];
       } else if (_omniboxClient &&
                  _omniboxClient->GetPageClassification(/*is_prefetch=*/false) ==
@@ -467,26 +523,27 @@ const char kOmniboxFocusResultedInNavigation[] =
         // lens omnibox should not be in a state where the text is empty and the
         // lens result no thumbnail. (crbug.com/419482108)
         [_omniboxAutocompleteController
-            startZeroSuggestRequestWithText:textField.displayedText
+            startZeroSuggestRequestWithText:textInput.displayedText
                                                 .cr_UTF16String
                               userClobbered:NO];
       }
     } else {
       [_omniboxAutocompleteController
-          startZeroSuggestRequestWithText:textField.displayedText.cr_UTF16String
+          startZeroSuggestRequestWithText:textInput.displayedText.cr_UTF16String
                             userClobbered:NO];
     }
   }
 
   // If the omnibox is displaying a URL and the popup is not showing, set the
-  // field into pre-editing state.  If the omnibox is displaying search terms,
+  // input into pre-editing state.  If the omnibox is displaying search terms,
   // leave the default behavior of positioning the cursor at the end of the
   // text.  If the popup is already open, that means that the omnibox is
   // regaining focus after a popup scroll took focus away, so the pre-edit
   // behavior should not be invoked. When `is_lens_overlay_` is true, the
   // omnibox only display search terms.
-  if (!popupOpenBeforeEdit && !_inLensOverlay) {
-    [textField enterPreEditState];
+  if (!popupOpenBeforeEdit &&
+      _presentationContext != OmniboxPresentationContext::kLensOverlay) {
+    [textInput enterPreEditState];
   }
 
   // `location_bar_` is only forwarding the call to the BVC. This should only
@@ -501,12 +558,12 @@ const char kOmniboxFocusResultedInNavigation[] =
                     replacementString:(NSString*)newText {
   BOOL shouldChange = YES;
 
-  OmniboxTextFieldIOS* field = self.textField;
+  id<OmniboxTextInput> textInput = self.textInput;
 
-  if ([field isPreEditing]) {
-    [field setClearingPreEditText:YES];
-    [field exitPreEditState];
-    // Reset `range` to be of zero-length at location zero, as the field will be
+  if ([textInput isPreEditing]) {
+    [textInput setClearingPreEditText:YES];
+    [textInput exitPreEditState];
+    // Reset `range` to be of zero-length at location zero, as the input will be
     // now cleared.
     range = NSMakeRange(0, 0);
   }
@@ -521,9 +578,9 @@ const char kOmniboxFocusResultedInNavigation[] =
   // If the change is deleting one character from the end of the actual text,
   // disallow the change, but clear the autocomplete text and call
   // textDidChangeWithUserEvent directly. If there is autocomplete text AND a
-  // text field selection, or if the user entered multiple characters, clear the
+  // text input selection, or if the user entered multiple characters, clear the
   // autocomplete text and pretend it never existed.
-  if ([field hasAutocompleteText]) {
+  if ([textInput hasAutocompleteText]) {
     BOOL addingText = (range.length < [newText length]);
     BOOL deletingText = (range.length > [newText length]);
 
@@ -533,12 +590,13 @@ const char kOmniboxFocusResultedInNavigation[] =
       // at once, or if the user pastes some text in. Let's loosen this test to
       // allow multiple characters, as long as the "old range" ends at the end
       // of the permanent text.
-      NSString* userText = field.userText;
+      NSString* userText = textInput.userText;
       if (newText.length == 1 && range.location == userText.length) {
-        oldRange = NSMakeRange(userText.length, field.autocompleteText.length);
+        oldRange =
+            NSMakeRange(userText.length, textInput.autocompleteText.length);
       }
     } else if (deletingText) {
-      NSString* userText = field.userText;
+      NSString* userText = textInput.userText;
       if ([newText length] == 0 && range.location == [userText length] - 1) {
         shouldChange = NO;
       }
@@ -556,7 +614,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   if (!shouldChange) {
     // Force a change in the autocomplete system, since we won't get an
-    // textDidChangeWithUserEvent message from the text field.
+    // textDidChangeWithUserEvent message from the text input.
     [self textDidChangeWithUserEvent:YES];
   }
 
@@ -564,29 +622,29 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)textDidChangeWithUserEvent:(BOOL)isProcessingUserEvent {
-  OmniboxTextFieldIOS* field = self.textField;
+  id<OmniboxTextInput> textInput = self.textInput;
   // Sanitize pasted text.
   if (_omniboxTextModel &&
       _omniboxTextModel->paste_state == OmniboxPasteState::kPasting) {
-    std::u16string pastedText = base::SysNSStringToUTF16(field.text);
+    std::u16string pastedText = base::SysNSStringToUTF16(textInput.text);
     std::u16string newText = omnibox::SanitizeTextForPaste(pastedText);
     if (pastedText != newText) {
-      [field setText:base::SysUTF16ToNSString(newText)];
+      [textInput setText:base::SysUTF16ToNSString(newText)];
     }
   }
 
   // Clear the autocomplete text.
-  [field clearAutocompleteText];
-  [field setClearingPreEditText:NO];
+  [textInput clearAutocompleteText];
+  [textInput setClearingPreEditText:NO];
 
   // Determine if the change should proceed without a direct user event
   // (e.g., IME changes, Korean keyboard).
   BOOL proceedWithoutUserEvent = NO;
-  NSString* currentLanguage = [[field textInputMode] primaryLanguage];
+  NSString* currentLanguage = [[textInput.view textInputMode] primaryLanguage];
   if ([currentLanguage hasPrefix:@"ko-"]) {
     proceedWithoutUserEvent = YES;
   } else {
-    NSString* currentMarkedText = [field markedText];
+    NSString* currentMarkedText = [textInput markedText];
     proceedWithoutUserEvent =
         (_markedTextBeforeChange || currentMarkedText) &&
         ![currentMarkedText isEqualToString:_markedTextBeforeChange];
@@ -603,7 +661,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)onAcceptAutocomplete {
-  _currentSelection = [self.textField selectedNSRange];
+  _currentSelection = [self.textInput selectedNSRange];
   [self textDidChangeWithUserEvent:YES];
 }
 
@@ -612,22 +670,25 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)onCopy {
+  if (!_omniboxTextModel || !_omniboxClient) {
+    return;
+  }
   NSString* selectedText = nil;
   NSInteger startLocation = 0;
-  OmniboxTextFieldIOS* textField = self.textField;
-  if ([textField isPreEditing]) {
-    selectedText = textField.text;
+  id<OmniboxTextInput> textInput = self.textInput;
+  if ([textInput isPreEditing]) {
+    selectedText = textInput.text;
     startLocation = 0;
   } else {
-    UITextRange* selectedRange = [textField selectedTextRange];
-    selectedText = [textField textInRange:selectedRange];
-    UITextPosition* start = [textField beginningOfDocument];
+    UITextRange* selectedRange = [textInput selectedTextRange];
+    selectedText = [textInput textInRange:selectedRange];
+    UITextPosition* start = [textInput beginningOfDocument];
     // The following call to `-offsetFromPosition:toPosition:` gives the offset
     // in terms of the number of "visible characters."  The documentation does
     // not specify whether this means glyphs or UTF16 chars.  This does not
     // matter for the current implementation of AdjustTextForCopy(), but it may
     // become an issue at some point.
-    startLocation = [textField offsetFromPosition:start
+    startLocation = [textInput offsetFromPosition:start
                                        toPosition:[selectedRange start]];
   }
   std::u16string text = selectedText.cr_UTF16String;
@@ -656,7 +717,7 @@ const char kOmniboxFocusResultedInNavigation[] =
   if (writeURL && URL.is_valid()) {
     [item setObject:net::NSURLWithGURL(URL) forKey:UTTypeURL.identifier];
 
-    if ([textField isPreEditing]) {
+    if ([textInput isPreEditing]) {
       RecordOmniboxCopy(kPreEditURL);
     } else {
       RecordOmniboxCopy(kEditedURL);
@@ -674,22 +735,22 @@ const char kOmniboxFocusResultedInNavigation[] =
     _omniboxTextModel->paste_state = OmniboxPasteState::kPasting;
   }
 
-  [self.textField exitPreEditState];
+  [self.textInput exitPreEditState];
 }
 
 - (void)onDeleteBackward {
-  OmniboxTextFieldIOS* textField = self.textField;
-  if (textField.text.length == 0) {
+  id<OmniboxTextInput> textInput = self.textInput;
+  if (textInput.text.length == 0) {
     // If the user taps backspace while the pre-edit text is showing,
     // shouldChangeCharactersInRange is invoked before this method and sets the
     // text to an empty string, so use the `clearingPreEditText` to determine if
     // the chip should be cleared or not.
-    if ([textField clearingPreEditText]) {
+    if ([textInput clearingPreEditText]) {
       // In the case where backspace is tapped while in pre-edit mode,
       // shouldChangeCharactersInRange is called but textDidChangeWithUserEvent
       // is never called so ensure the clearingPreEditText flag is set to false
       // again.
-      [textField setClearingPreEditText:NO];
+      [textInput setClearingPreEditText:NO];
       // Explicitly set the input-in-progress flag. Normally this is set via
       // in model()->OnAfterPossibleChange, but in this case the text has been
       // set to the empty string by `shouldChangeCharactersInRange` so when
@@ -721,13 +782,13 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)hideKeyboard {
-  [self.textField endEditing:YES];
+  [self.textInput endEditing:YES];
 }
 
 - (void)refineWithText:(const std::u16string&)text {
-  OmniboxTextFieldIOS* textField = self.textField;
+  id<OmniboxTextInput> textInput = self.textInput;
   // Exit preedit state and append the match. Refocus if necessary.
-  [textField exitPreEditState];
+  [textInput exitPreEditState];
   [self setUserText:text];
 
   [self setWindowText:text
@@ -736,14 +797,12 @@ const char kOmniboxFocusResultedInNavigation[] =
       notifyTextChanged:true];
 
   [self onBeforePossibleChange];
-  // Calling setText: does not trigger UIControlEventEditingChanged, so
-  // trigger that manually.
-  [textField sendActionsForControlEvents:UIControlEventEditingChanged];
-  [textField becomeFirstResponder];
-  if (@available(iOS 17, *)) {
-    // Set the caret pos to the end of the text (crbug.com/331622199).
-    [self setCaretPos:text.length()];
-  }
+  // Calling setText: does not trigger `textInputDidChange`, so trigger that
+  // manually.
+  [textInput.omniboxTextInputDelegate textInputDidChange:textInput];
+  [textInput.view becomeFirstResponder];
+  // Set the caret pos to the end of the text (crbug.com/331622199).
+  [self setCaretPos:text.length()];
 }
 
 #pragma mark - Private
@@ -751,41 +810,41 @@ const char kOmniboxFocusResultedInNavigation[] =
 /// Previews `suggestion` in the Omnibox. Called when a suggestion is
 /// highlighted in the popup.
 - (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion {
-  OmniboxTextFieldIOS* textModel = self.textField;
+  id<OmniboxTextInput> textInput = self.textInput;
   NSAttributedString* previewText = suggestion.omniboxPreviewText;
 
-  [textModel exitPreEditState];
-  [textModel setAdditionalText:nil];
-  [textModel setText:previewText userTextLength:previewText.length];
+  [textInput exitPreEditState];
+  [textInput setAdditionalText:nil];
+  [textInput setText:previewText userTextLength:previewText.length];
 }
 
 /// Updates the appearance of popup to have proper text alignment.
 - (void)updatePopupLayoutDirection {
-  OmniboxTextFieldIOS* textField = self.textField;
+  id<OmniboxTextInput> textInput = self.textInput;
   [self.omniboxAutocompleteController
-      setTextAlignment:[textField bestTextAlignment]];
+      setTextAlignment:[textInput bestTextAlignment]];
   [self.omniboxAutocompleteController
-      setSemanticContentAttribute:[textField bestSemanticContentAttribute]];
+      setSemanticContentAttribute:[textInput bestSemanticContentAttribute]];
 }
 
 /// Sets the caret position. Removes any selection. Clamps the requested caret
 /// position to the length of the current text.
 - (void)setCaretPos:(NSUInteger)caretPos {
-  OmniboxTextFieldIOS* textField = self.textField;
-  DCHECK(caretPos <= textField.text.length || caretPos == 0);
-  UITextPosition* start = textField.beginningOfDocument;
-  UITextPosition* newPosition = [textField positionFromPosition:start
+  id<OmniboxTextInput> textInput = self.textInput;
+  DCHECK(caretPos <= textInput.text.length || caretPos == 0);
+  UITextPosition* start = textInput.beginningOfDocument;
+  UITextPosition* newPosition = [textInput positionFromPosition:start
                                                          offset:caretPos];
   // Position and range can be nil causing crash. crbug.com/422295565
   if (!newPosition) {
     return;
   }
-  UITextRange* textRange = [textField textRangeFromPosition:newPosition
+  UITextRange* textRange = [textInput textRangeFromPosition:newPosition
                                                  toPosition:newPosition];
   if (!textRange) {
     return;
   }
-  textField.selectedTextRange = textRange;
+  textInput.selectedTextRange = textRange;
 }
 
 /// Updates the autocomplete popup and other state after the text has been
@@ -797,19 +856,19 @@ const char kOmniboxFocusResultedInNavigation[] =
     return;
   }
 
-  OmniboxTextFieldIOS* textField = self.textField;
+  id<OmniboxTextInput> textInput = self.textInput;
   // Prevent inline-autocomplete if the IME is currently composing or if the
   // cursor is not at the end of the text.
-  const BOOL IMEComposing = [textField markedTextRange] != nil;
+  const BOOL IMEComposing = [textInput markedTextRange] != nil;
   NSRange currentSelection = [self currentSelection];
   BOOL preventInlineAutocomplete =
-      IMEComposing || NSMaxRange(currentSelection) != [textField.text length];
+      IMEComposing || NSMaxRange(currentSelection) != [textInput.text length];
   [self startAutocompletePreventingInline:preventInlineAutocomplete];
 
   [self updatePopupLayoutDirection];
 }
 
-/// Starts autocomplete with the state in `_omniboxTextModel` and the textfield
+/// Starts autocomplete with the state in `_omniboxTextModel` and the textInput
 /// selection bounds.
 - (void)startAutocompletePreventingInline:(BOOL)preventInlineAutocomplete {
   const std::u16string inputText = _omniboxTextModel->user_text;
@@ -835,14 +894,14 @@ const char kOmniboxFocusResultedInNavigation[] =
              caretPos:(size_t)caretPos
     startAutocomplete:(BOOL)startAutocomplete
     notifyTextChanged:(BOOL)notifyTextChanged {
-  OmniboxTextFieldIOS* textField = self.textField;
+  id<OmniboxTextInput> textInput = self.textInput;
   // Do not call SetUserText() here, as the user has not triggered this change.
-  // Instead, set the field's text directly.
-  [textField setText:[NSString cr_fromString16:text]];
+  // Instead, set the input's text directly.
+  [textInput setText:[NSString cr_fromString16:text]];
 
   NSAttributedString* as = [[NSMutableAttributedString alloc]
       initWithString:[NSString cr_fromString16:text]];
-  [textField setText:as userTextLength:[as length]];
+  [textInput setText:as userTextLength:[as length]];
 
   if (startAutocomplete) {
     [self startAutocompleteAfterEdit];
@@ -860,18 +919,21 @@ const char kOmniboxFocusResultedInNavigation[] =
                          autocompletion:
                              (const std::u16string&)inlineAutocomplete {
   std::u16string displayedText = userText + inlineAutocomplete;
-  if (displayedText == self.textField.displayedText.cr_UTF16String) {
+  if (displayedText == self.textInput.displayedText.cr_UTF16String) {
     return;
   }
 
   NSAttributedString* as = [[NSMutableAttributedString alloc]
       initWithString:[NSString cr_fromString16:displayedText]];
-  [self.textField setText:as userTextLength:userText.size()];
+  [self.textInput setText:as userTextLength:userText.size()];
 }
 
 /// Notifes the client and asks the autocomplete controller to start with a new
 /// updated input on user input in progress change.
 - (void)updateInput {
+  if (!_omniboxTextModel) {
+    return;
+  }
   BOOL changeToUserInputInProgress =
       _omniboxTextModel->SetInputInProgressNoNotify(true);
 
@@ -895,7 +957,7 @@ const char kOmniboxFocusResultedInNavigation[] =
     // encapsulated by the AutocompleteInput::focus_type() member. We should
     // merge these two calls soon, lest we confuse future developers.
     [_omniboxAutocompleteController
-        startZeroSuggestRequestWithText:self.textField.displayedText
+        startZeroSuggestRequestWithText:self.textInput.displayedText
                                             .cr_UTF16String
                           userClobbered:YES];
   } else {
@@ -906,16 +968,16 @@ const char kOmniboxFocusResultedInNavigation[] =
   [self notifyClientOnUserInputInProgressChange:changeToUserInputInProgress];
 }
 
-/// Gets the current text field state.
+/// Gets the current text input state.
 - (void)getState:(OmniboxTextState*)state {
-  state->text = base::SysNSStringToUTF16([self.textField displayedText]);
+  state->text = base::SysNSStringToUTF16([self.textInput displayedText]);
   [self getSelectionBounds:&state->sel_start end:&state->sel_end];
 }
 
 /// Marks the text state before future changes.
 - (void)onBeforePossibleChange {
   [self getState:&_stateBeforeChange];
-  _markedTextBeforeChange = [[self.textField markedText] copy];
+  _markedTextBeforeChange = [[self.textInput markedText] copy];
 }
 
 /// Computes state changes and inform the edit model.
@@ -939,7 +1001,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   // TODO(crbug.com/379695536): Find a different place to call this. Give the
   // omnibox a chance to update the alignment for a text direction change.
-  [self.textField updateTextDirection];
+  [self.textInput updateTextDirection];
 
   return somethingChanged;
 }

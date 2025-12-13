@@ -10,7 +10,7 @@
 
 #import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
-#import "base/memory/ref_counted.h"
+#import "base/memory/scoped_refptr.h"
 #import "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/common/local_test_policy_provider.h"
@@ -98,7 +98,7 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
 
   std::unique_ptr<policy::ChromeBrowserCloudManagementController>
       chrome_browser_cloud_management_controller_;
-  raw_ptr<policy::MachineLevelUserCloudPolicyManager>
+  raw_ptr<policy::MachineLevelUserCloudPolicyManager, DanglingUntriaged>
       machine_level_user_cloud_policy_manager_ = nullptr;
 };
 

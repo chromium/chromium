@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder_test.h"
 
+#include "base/compiler_specific.h"
 #include "cc/test/fake_layer_tree_host_client.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/scroll_node.h"
@@ -17,9 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
-#include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
@@ -1368,7 +1362,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootLocalToBorderBoxSnappingScale) {
             svg_properties->PaintOffsetTranslation()->Get2dTranslation());
   const float snapped_height = 99;
   const PhysicalSize unsnapped_size(LayoutUnit(100), LayoutUnit(99.99f));
-  EXPECT_EQ(To<LayoutSVGRoot>(svg).Size(), unsnapped_size);
+  EXPECT_EQ(To<LayoutSVGRoot>(svg).StitchedSize(), unsnapped_size);
   const float unsnapped_height = unsnapped_size.height.ToFloat();
   ASSERT_NE(svg_properties->ReplacedContentTransform(), nullptr);
   EXPECT_TRANSFORM_EQ(MakeScaleMatrix(snapped_height / unsnapped_height),
@@ -1402,7 +1396,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootLocalToBorderBoxSnappingScaleWide) {
             svg_properties->PaintOffsetTranslation()->Get2dTranslation());
   const gfx::SizeF snapped_size(211, 2);
   const PhysicalSize unsnapped_size(LayoutUnit(211.419f), LayoutUnit(2.20228f));
-  EXPECT_EQ(To<LayoutSVGRoot>(svg).Size(), unsnapped_size);
+  EXPECT_EQ(To<LayoutSVGRoot>(svg).StitchedSize(), unsnapped_size);
   ASSERT_NE(svg_properties->ReplacedContentTransform(), nullptr);
   EXPECT_TRANSFORM_EQ(
       MakeScaleMatrix(snapped_size.width() / unsnapped_size.width.ToFloat(),
@@ -1438,7 +1432,7 @@ TEST_P(PaintPropertyTreeBuilderTest,
             svg_properties->PaintOffsetTranslation()->Get2dTranslation());
   const gfx::SizeF snapped_size(2, 211);
   const PhysicalSize unsnapped_size(LayoutUnit(2.20228f), LayoutUnit(211.419f));
-  EXPECT_EQ(To<LayoutSVGRoot>(svg).Size(), unsnapped_size);
+  EXPECT_EQ(To<LayoutSVGRoot>(svg).StitchedSize(), unsnapped_size);
   ASSERT_NE(svg_properties->ReplacedContentTransform(), nullptr);
   EXPECT_TRANSFORM_EQ(
       MakeScaleMatrix(snapped_size.width() / unsnapped_size.width.ToFloat(),
@@ -3779,7 +3773,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ContainPaintOrStyleLayoutTreeState) {
     // properties effect.
     EXPECT_EQ(clip_properties->EffectIsolationNode()->Parent(),
               &clip_local_properties.Effect());
-    if (strcmp(containment, "paint") == 0) {
+    if (UNSAFE_TODO(strcmp(containment, "paint")) == 0) {
       // If we contain paint, then clip isolation node is parented to the
       // overflow clip, which is in turn parented to the local border box
       // properties clip.

@@ -6,7 +6,6 @@
 #define COMPONENTS_LANGUAGE_DETECTION_CONTENT_RENDERER_LANGUAGE_DETECTION_AGENT_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/language_detection/content/common/language_detection.mojom.h"
 #include "components/language_detection/content/renderer/language_detection_model_manager.h"
 #include "content/public/renderer/render_frame_observer.h"
 

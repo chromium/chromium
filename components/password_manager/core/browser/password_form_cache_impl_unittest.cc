@@ -18,10 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/os_crypt/sync/os_crypt_mocker.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
@@ -56,10 +52,6 @@ class MockPasswordFormManagerObserver : public PasswordFormManagerObserver {
 class PasswordFormCacheTest : public testing::Test {
  public:
   PasswordFormCacheTest() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    OSCryptMocker::SetUp();
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
     webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
         webauthn::CredManSupport::DISABLED);

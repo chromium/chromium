@@ -23,7 +23,6 @@
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -99,6 +98,16 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     // `auto_needs_begin_frame` is.
     bool auto_needs_begin_frame = false;
 
+    // If true, the client will not receive DidReceiveCompositorFrameAck() and
+    // should not wait for it before submitting another CompositorFrame.
+    bool no_compositor_frame_acks = false;
+
+    // If true, when `OnNeedsBeginFrames` is called a `ManualSourceId` will be
+    // used to generate the first `OnBeginFrame`. Rather than waiting for
+    // feedback from the `CompositorFrameSink`. To be used with
+    // `auto_needs_begin_frame`.
+    bool manual_begin_frame = false;
+
     // If it has value(n), internal begin frame source will be used when n
     // consecutive "did not produce frame" are observed. It will stop using
     // internal begin frame source when there's a submitted compositor frame.
@@ -111,7 +120,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   AsyncLayerTreeFrameSink(
       scoped_refptr<viz::RasterContextProvider> context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider,
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface,
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
       InitParams* params);
 
   AsyncLayerTreeFrameSink(const AsyncLayerTreeFrameSink&) = delete;
@@ -182,6 +191,8 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
 
   void UpdateInternalBeginFrameSource(bool use_internal_source);
 
+  void SendManualBeginFrame();
+
   const bool use_direct_client_receiver_;
   bool begin_frames_paused_ = false;
   bool needs_begin_frames_ = false;
@@ -217,6 +228,12 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   // Please see comment of `InitParams::auto_needs_begin_frame`.
   const bool auto_needs_begin_frame_;
 
+  // Please see comment of `InitParams::no_compositor_frame_acks`.
+  const bool no_compositor_frame_acks_;
+
+  // Please see comment of `InitParams::manual_begin_frame`.
+  const bool manual_begin_frame_;
+
   viz::HitTestRegionList last_hit_test_data_;
 
   viz::LocalSurfaceId last_submitted_local_surface_id_;
@@ -233,6 +250,8 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   uint64_t num_did_not_produce_frame_since_last_submit_ = 0;
   bool use_internal_begin_frame_source_ = false;
   std::unique_ptr<viz::DelayBasedBeginFrameSource> internal_begin_frame_source_;
+
+  uint64_t manual_sequence_number_ = 0;
 
   base::WeakPtrFactory<AsyncLayerTreeFrameSink> weak_factory_{this};
 };

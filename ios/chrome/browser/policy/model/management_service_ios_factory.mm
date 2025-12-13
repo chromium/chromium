@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/policy/model/management_service_ios_factory.h"
 
+#import "components/policy/core/common/management/platform_management_service.h"
 #import "ios/chrome/browser/policy/model/management_service_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -22,6 +23,11 @@ ManagementServiceIOS* ManagementServiceIOSFactory::GetForProfile(
       profile, /*create=*/true);
 }
 
+// static
+ManagementService* ManagementServiceIOSFactory::GetForPlatform() {
+  return PlatformManagementService::GetInstance();
+}
+
 ManagementServiceIOSFactory::ManagementServiceIOSFactory()
     : ProfileKeyedServiceFactoryIOS("ManagementServiceIOS",
                                     ProfileSelection::kOwnInstanceInIncognito) {
@@ -31,9 +37,8 @@ ManagementServiceIOSFactory::~ManagementServiceIOSFactory() = default;
 
 std::unique_ptr<KeyedService>
 ManagementServiceIOSFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  return std::make_unique<ManagementServiceIOS>(
-      ProfileIOS::FromBrowserState(browser_state));
+    ProfileIOS* profile) const {
+  return std::make_unique<ManagementServiceIOS>(profile);
 }
 
 }  // namespace policy

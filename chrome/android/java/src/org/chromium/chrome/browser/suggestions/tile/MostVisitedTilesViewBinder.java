@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_VISIBLE;
 
 import android.view.View;
 
@@ -31,15 +29,9 @@ final class MostVisitedTilesViewBinder {
     }
 
     public static void bind(PropertyModel model, ViewHolder viewHolder, PropertyKey propertyKey) {
-        if (IS_CONTAINER_VISIBLE == propertyKey) {
+        if (IS_VISIBLE == propertyKey) {
             viewHolder.mvContainerLayout.setVisibility(
-                    model.get(IS_CONTAINER_VISIBLE) ? View.VISIBLE : View.GONE);
-        } else if (IS_MVT_LAYOUT_VISIBLE == propertyKey) {
-            viewHolder.mvTilesLayout.setVisibility(
-                    model.get(IS_MVT_LAYOUT_VISIBLE) ? View.VISIBLE : View.GONE);
-            if (model.get(PLACEHOLDER_VIEW) == null) return;
-            model.get(PLACEHOLDER_VIEW)
-                    .setVisibility(model.get(IS_MVT_LAYOUT_VISIBLE) ? View.GONE : View.VISIBLE);
+                    model.get(IS_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (HORIZONTAL_INTERVAL_PADDINGS == propertyKey) {
             viewHolder.mvTilesLayout.setIntervalMargins(model.get(HORIZONTAL_INTERVAL_PADDINGS));
         } else if (HORIZONTAL_EDGE_PADDINGS == propertyKey) {

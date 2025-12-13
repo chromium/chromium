@@ -107,7 +107,8 @@ inline constexpr char kPasswordStore[] = "password-store";
 // Specifies a list of hosts for whom we bypass proxy settings and use direct
 // connections. Ignored unless --proxy-server is also specified. This is a
 // comma-separated list of bypass rules. See:
-// "net/proxy_resolution/proxy_bypass_rules.h" for the format of these rules.
+// "net/proxy_resolution/proxy_host_matching_rules.h" for the format of these
+// rules.
 inline constexpr char kProxyBypassList[] = "proxy-bypass-list";
 
 // Uses a specified proxy server, overrides system settings. This switch only

@@ -5,10 +5,6 @@
 import("//build/config/ui.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(
-    use_blink,
-    "//components/input can't be built without blink and shouldn't be included if use_blink is false")
-
 component("input") {
   defines = [ "IS_INPUT_IMPL" ]
   sources = [
@@ -96,10 +92,10 @@ component("input") {
     "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/base/cursor",
-    "//ui/events:events",
+    "//ui/events",
     "//ui/events:events_base",
     "//ui/events:gesture_detection",
-    "//ui/events/blink:blink",
+    "//ui/events/blink",
     "//ui/events/gestures/blink",
   ]
   if (use_aura) {
@@ -190,16 +186,16 @@ source_set("unit_tests") {
   ]
   deps = [
     ":input",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//ui/base:features",
+    "//ui/events",
     "//ui/events:dom_keycode_converter",
-    "//ui/events:events",
     "//ui/events:test_support",
     "//ui/events:velocity_tracker",
-    "//ui/events/blink:blink",
+    "//ui/events/blink",
   ]
   if (is_android) {
     sources += [

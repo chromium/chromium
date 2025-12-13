@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "extensions/browser/api/socket/udp_socket.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -13,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -22,7 +20,6 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/storage_partition.h"
-#include "extensions/browser/api/socket/udp_socket.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/io_buffer.h"
@@ -168,7 +165,8 @@ static void OnMulticastReadCompleted(base::OnceClosure quit_run_loop,
                                      const std::string& ip,
                                      uint16_t port) {
   EXPECT_EQ(kTestMessageLength, count);
-  EXPECT_EQ(0, strncmp(io_buffer->data(), kTestMessage, kTestMessageLength));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, strncmp(io_buffer->data(), kTestMessage, kTestMessageLength)));
   *packet_received = true;
   std::move(quit_run_loop).Run();
 }

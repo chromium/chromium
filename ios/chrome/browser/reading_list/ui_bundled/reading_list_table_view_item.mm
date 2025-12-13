@@ -10,15 +10,18 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/reading_list/ui_bundled/reading_list_constants.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_list_item_custom_action_factory.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_list_item_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/favicon_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
-#import "ios/chrome/common/ui/table_view/table_view_url_cell_favicon_badge_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/time_format.h"
@@ -35,30 +38,22 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
 
 }  // namespace
 
-@interface ReadingListTableViewItem ()
+@implementation ReadingListTableViewItem {
+  UIImage* _distillationBadgeImage;
+}
 
-// The image to supply as to the TableViewURLCell's `faviconBadgeView`.
-@property(nonatomic, strong) UIImage* distillationBadgeImage;
-
-// The color to supply as to the TableViewURLCell's `tintColor`.
-@property(nonatomic, strong) UIColor* distillationBadgeTintColor;
-
-@end
-
-@implementation ReadingListTableViewItem
 @synthesize title = _title;
 @synthesize entryURL = _entryURL;
 @synthesize faviconPageURL = _faviconPageURL;
 @synthesize distillationState = _distillationState;
 @synthesize distillationDateText = _distillationDateText;
-@synthesize estimatedReadTimeText = _estimatedReadTimeText;
 @synthesize showCloudSlashIcon = _showCloudSlashIcon;
 @synthesize customActionFactory = _customActionFactory;
 @synthesize attributes = _attributes;
 
 - (instancetype)initWithType:(NSInteger)type {
   if ((self = [super initWithType:type])) {
-    self.cellClass = [TableViewURLCell class];
+    self.cellClass = [LegacyTableViewCell class];
   }
   return self;
 }
@@ -73,51 +68,74 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
   _distillationState = distillationState;
   switch (_distillationState) {
     case ReadingListUIDistillationStatusFailure:
-      self.distillationBadgeImage = DefaultSymbolTemplateWithPointSize(
-          kErrorCircleFillSymbol, kSymbolBadgeImagePointSize);
-      self.distillationBadgeTintColor = [UIColor colorNamed:kGrey600Color];
+      _distillationBadgeImage = SymbolWithPalette(
+          DefaultSymbolTemplateWithPointSize(kErrorCircleFillSymbol,
+                                             kSymbolBadgeImagePointSize),
+          @[ [UIColor colorNamed:kGrey600Color] ]);
       break;
     case ReadingListUIDistillationStatusSuccess:
-      self.distillationBadgeImage = DefaultSymbolTemplateWithPointSize(
-          kCheckmarkCircleFillSymbol, kSymbolBadgeImagePointSize);
-      self.distillationBadgeTintColor = [UIColor colorNamed:kGreen500Color];
+      _distillationBadgeImage = SymbolWithPalette(
+          DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
+                                             kSymbolBadgeImagePointSize),
+          @[ [UIColor colorNamed:kGreen500Color] ]);
       break;
     case ReadingListUIDistillationStatusPending:
-      self.distillationBadgeImage = nil;
+      _distillationBadgeImage = nil;
       break;
   }
 }
 
 #pragma mark - ListItem
 
-- (void)configureCell:(TableViewCell*)cell
+- (void)configureCell:(LegacyTableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  TableViewURLCell* URLCell =
-      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
-  URLCell.titleLabel.text = [self titleLabelText];
-  URLCell.URLLabel.text = [self URLLabelText];
-  URLCell.cellUniqueIdentifier = base::SysUTF8ToNSString(self.entryURL.host());
-  URLCell.accessibilityTraits |= UIAccessibilityTraitButton;
-  URLCell.metadataImage.image =
-      self.showCloudSlashIcon
-          ? CustomSymbolWithPointSize(kCloudSlashSymbol,
-                                      kCloudSlashSymbolPointSize)
-          : nil;
-  URLCell.metadataImage.tintColor = CloudSlashTintColor();
-  if (styler.cellTitleColor) {
-    URLCell.titleLabel.textColor = styler.cellTitleColor;
+
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+
+  configuration.title = [self titleLabelText];
+  configuration.subtitle = [self URLLabelText];
+
+  FaviconContentConfiguration* faviconConfiguration =
+      [[FaviconContentConfiguration alloc] init];
+  faviconConfiguration.faviconAttributes = self.attributes;
+
+  faviconConfiguration.badgeImage = _distillationBadgeImage;
+  faviconConfiguration.badgeAccessibilityID = kReadingListItemBadgeID;
+
+  configuration.leadingConfiguration = faviconConfiguration;
+
+  if (self.showCloudSlashIcon) {
+    ImageContentConfiguration* imageConfiguration =
+        [[ImageContentConfiguration alloc] init];
+    imageConfiguration.image =
+        SymbolWithPalette(CustomSymbolWithPointSize(kCloudSlashSymbol,
+                                                    kCloudSlashSymbolPointSize),
+                          @[ CloudSlashTintColor() ]);
+    imageConfiguration.accessibilityID = kReadingListLocalImageID;
+
+    configuration.trailingConfiguration = imageConfiguration;
   }
-  [URLCell.faviconView configureWithAttributes:self.attributes];
-  URLCell.faviconBadgeView.image = self.distillationBadgeImage;
-  URLCell.faviconBadgeView.tintColor = self.distillationBadgeTintColor;
+
+  cell.contentConfiguration = configuration;
+
+  cell.accessibilityIdentifier = [self titleLabelText];
+
   cell.isAccessibilityElement = YES;
+  cell.accessibilityTraits |= UIAccessibilityTraitButton;
+
   cell.accessibilityLabel = GetReadingListCellAccessibilityLabel(
       self.title, [self hostname], self.distillationState,
       self.showCloudSlashIcon);
   cell.accessibilityCustomActions =
       [self.customActionFactory customActionsForItem:self];
-  [URLCell configureUILayout];
+}
+
+- (LegacyTableViewCell*)cellForTableView:(UITableView*)tableView {
+  [TableViewCellContentConfiguration legacyRegisterCellForTableView:tableView];
+  return
+      [TableViewCellContentConfiguration legacyDequeueTableViewCell:tableView];
 }
 
 #pragma mark - NSObject
@@ -133,12 +151,12 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
 
 #pragma mark Private
 
-// Returns the text to use when configuring a TableViewURLCell's title label.
+// Returns the text to use when configuring a title.
 - (NSString*)titleLabelText {
   return self.title.length ? self.title : self.hostname;
 }
 
-// Returns the text to use when configuring a TableViewURLCell's URL label.
+// Returns the text to use when configuring a URL.
 - (NSString*)URLLabelText {
   // If there's no title text, the URL is used as the cell title.  Simply
   // display the distillation date in the URL label when this occurs.

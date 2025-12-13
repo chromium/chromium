@@ -24,7 +24,6 @@
 #include "base/synchronization/lock.h"
 #include "components/ukm/bitset.h"
 #include "components/ukm/ukm_consent_state.h"
-#include "components/ukm/ukm_entry_filter.h"
 #include "services/metrics/public/cpp/ukm_decode.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -122,13 +121,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // Sets a callback for determining if an extension URL can be recorded.
   void SetIsWebstoreExtensionCallback(
       const IsWebstoreExtensionCallback& callback);
-
-  // Sets the UkmEntryFilter that will be applied to all subsequent entries
-  // reported via AddEntry(). Does not apply the filter to any entries that are
-  // already recorded.
-  //
-  // Currently only accommodates one entry filter.
-  void SetEntryFilter(std::unique_ptr<UkmEntryFilter> entry_filter);
 
   // Register an observer to be notified when a new UKM entry that comes with
   // one of the |event_hashes| is added. This method can be called on any
@@ -297,9 +289,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // Determines if an UkmEntry should be dropped and records reason if so.
   bool ShouldDropEntry(mojom::UkmEntry* entry);
 
-  // Applies UkmEntryFilter if there is one registered.
-  bool ApplyEntryFilter(mojom::UkmEntry* entry);
-
   // Loads sampling configurations from field-trial information.
   void LoadExperimentSamplingInfo();
 
@@ -339,9 +328,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
 
   // Callback for checking extension IDs.
   IsWebstoreExtensionCallback is_webstore_extension_callback_;
-
-  // Filter applied to AddEntry().
-  std::unique_ptr<UkmEntryFilter> entry_filter_;
 
   // Map from hashes to entry and metric names.
   ukm::builders::DecodeMap decode_map_;

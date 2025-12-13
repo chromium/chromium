@@ -57,6 +57,8 @@ public class VersioningMessageBanner {
 
         VersioningMessageController versioningMessageController =
                 tabGroupSyncService.getVersioningMessageController();
+        if (versioningMessageController == null) return;
+
         versioningMessageController.shouldShowMessageUiAsync(
                 MessageType.VERSION_OUT_OF_DATE_INSTANT_MESSAGE,
                 (Boolean shouldShow) -> {

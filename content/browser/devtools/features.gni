@@ -4,6 +4,5 @@
 
 import("//build/config/chrome_build.gni")
 
-# Android (non-desktop) and iOS don't support DevTools front-end.
-enable_devtools_frontend =
-    (!is_android || is_desktop_android) && !is_ios && !is_fuchsia
+# iOS and Fuchsia don't support DevTools front-end.
+enable_devtools_frontend = !is_ios && !is_fuchsia

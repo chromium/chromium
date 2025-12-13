@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/android/toolbar/jni_headers/AdaptiveToolbarBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using segmentation_platform::InputContext;
@@ -199,11 +198,11 @@ void RunJavaCallbackWithRankedButtons(
 
 }  // namespace
 
-void JNI_AdaptiveToolbarBridge_GetRankedSessionVariantButtons(
+static void JNI_AdaptiveToolbarBridge_GetRankedSessionVariantButtons(
     JNIEnv* env,
     Profile* profile,
     jboolean j_use_raw_results,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_callback) {
   bool use_raw_results = static_cast<bool>(j_use_raw_results);
   base::OnceCallback<void(bool, std::vector<int>)> wrapped_callback =
       base::BindOnce(&RunJavaCallbackWithRankedButtons,
@@ -212,10 +211,10 @@ void JNI_AdaptiveToolbarBridge_GetRankedSessionVariantButtons(
                                                    std::move(wrapped_callback));
 }
 
-void JNI_AdaptiveToolbarBridge_GetSessionVariantButton(
+static void JNI_AdaptiveToolbarBridge_GetSessionVariantButton(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_callback) {
   if (!profile) {
     RunGetClassificationSingleResultCallback(
         j_callback, segmentation_platform::ClassificationResult(
@@ -301,3 +300,5 @@ void GetRankedSessionVariantButtons(
   }
 }
 }  // namespace adaptive_toolbar
+
+DEFINE_JNI(AdaptiveToolbarBridge)

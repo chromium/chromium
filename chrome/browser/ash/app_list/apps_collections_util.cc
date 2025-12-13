@@ -47,6 +47,7 @@ AppCollectionMap GetAppCollectionsMap() {
       {ash::kGmailAppId, ash::AppCollection::kProductivity},
       {ash::kGoogleMeetAppId, ash::AppCollection::kProductivity},
       {ash::kGoogleChatAppId, ash::AppCollection::kProductivity},
+      {ash::kOldGoogleChatAppId, ash::AppCollection::kProductivity},
       {extension_misc::kGoogleDocsAppId, ash::AppCollection::kProductivity},
       {ash::kGoogleDocsAppId, ash::AppCollection::kProductivity},
       {extension_misc::kGoogleSlidesAppId, ash::AppCollection::kProductivity},
@@ -146,6 +147,7 @@ void GetSecondaryDefaultOrder(std::vector<std::string>* app_ids) {
     ash::kGoogleMeetAppId,
 
     ash::kGoogleChatAppId,
+    ash::kOldGoogleChatAppId,
 
     extension_misc::kGoogleDocsAppId,
     ash::kGoogleDocsAppId,

@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">laranjak</translation>
 <translation id="1275718070701477396">Hautatua</translation>
 <translation id="1290331692326790741">Seinale ahula</translation>
+<translation id="1292474106138697109">Klaseko tresnak bistaratzea</translation>
 <translation id="1300115153046603471">APNa <ph name="ATTACH" /> motakoa eta mota lehenetsikoa da.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Bihurtu</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> irudi</translation>
 <translation id="4300272766492248925">Ireki aplikazioa</translation>
 <translation id="430786093962686457">gaza</translation>
+<translation id="4309762678330556039">Sortu transkripzioak eta bilatu audioa automatikoki. Sortu grabaketak Internetera konektatuta ez zaudenean ere.</translation>
 <translation id="4310735698903592804">Google-ren AAk sortutako azkenaldiko horma-paperak</translation>
 <translation id="4320904097188876154">neon-arrosa koloreko</translation>
 <translation id="432961742358282111">Egin klik eskuineko botoiarekin edo eduki sakatuta definizioak, itzulpenak edo unitate-bihurketak lortzeko. Erabili ezkerrera edo eskuinera egiteko gezi-tekla eginbide hori kudeatzeko.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> probatu da</translation>
 <translation id="5606865426897221650">Fitxa</translation>
+<translation id="5612205513582918357">Klaseko tresnak zure pantaila <ph name="RECEIVER_NAME" /> aplikazioarekin partekatzen ari da</translation>
 <translation id="5613201299517339763">Amaitu egin da saioa</translation>
 <translation id="5620281292257375798">Barnekoa soilik</translation>
 <translation id="5628106863521633649">Erabilgarri dauden hizkuntzak</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Hodeien fluxua</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Ez dago eskanerrik erabilgarri</translation>
-<translation id="6231648282154119906">Fitxategi susmagarriak automatikoki aztertu egingo ditu Google-ren Arakatze segurua eginbideak, aukeratu duzun babes hobetuaren barnean</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6234024205316847054">Erakutsi eskemak</translation>
 <translation id="6243280677745499710">Ezarrita dagoena</translation>

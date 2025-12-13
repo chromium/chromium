@@ -75,12 +75,6 @@ class LocalFrameMojoHandler
   mojom::blink::BackForwardCacheControllerHost&
   BackForwardCacheControllerHostRemote();
 
-#if BUILDFLAG(IS_MAC)
-  mojom::blink::TextInputHost& TextInputHost();
-  void ResetTextInputHostForTesting();
-  void RebindTextInputHostForTesting();
-#endif
-
   mojom::blink::DevicePostureType GetDevicePosture();
   void OverrideDevicePostureForEmulation(
       mojom::blink::DevicePostureType device_posture_param);
@@ -103,16 +97,18 @@ class LocalFrameMojoHandler
   void GetTextSurroundingSelection(
       uint32_t max_length,
       GetTextSurroundingSelectionCallback callback) final;
-  void SendInterventionReport(const String& id, const String& message) final;
+  void SendInterventionReport(
+      const String& id,
+      const String& message,
+      const std::optional<FrameToken>& child_frame_token) final;
   void SetFrameOwnerProperties(
       mojom::blink::FrameOwnerPropertiesPtr properties) final;
   void NotifyUserActivation(
       mojom::blink::UserActivationNotificationType notification_type) final;
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect) final;
-  void NotifyContextMenuInsetsObservers(const gfx::Rect&) final;
   void ShowInterestInElement(int) final;
   void AddMessageToConsole(mojom::blink::ConsoleMessageLevel level,
-                           const WTF::String& message,
+                           const String& message,
                            bool discard_duplicates) final;
   void SwapInImmediately() final;
   void CheckCompleted() final;
@@ -148,8 +144,8 @@ class LocalFrameMojoHandler
   void OnFrameVisibilityChanged(mojom::blink::FrameVisibility visibility) final;
   void PostMessageEvent(
       const std::optional<RemoteFrameToken>& source_frame_token,
-      const String& source_origin,
-      const String& target_origin,
+      const scoped_refptr<const SecurityOrigin>& source_origin,
+      const scoped_refptr<const SecurityOrigin>& target_origin,
       BlinkTransferableMessage message) final;
   void JavaScriptMethodExecuteRequest(
       const String& object_name,
@@ -210,8 +206,7 @@ class LocalFrameMojoHandler
       mojom::blink::NavigationApiEntryRestoreReason) final;
   void UpdatePrerenderURL(const KURL& matched_url,
                           UpdatePrerenderURLCallback callback) final;
-  void NotifyNavigationApiOfDisposedEntries(
-      const WTF::Vector<WTF::String>&) final;
+  void NotifyNavigationApiOfDisposedEntries(const Vector<String>&) final;
   void TraverseCancelled(const String& navigation_api_key,
                          mojom::blink::TraverseCancelledReason reason) final;
   void DispatchNavigateEventForCrossDocumentTraversal(
@@ -233,13 +228,13 @@ class LocalFrameMojoHandler
       base::TimeTicks request_start,
       base::TimeTicks response_start,
       uint32_t response_code,
-      const WTF::String& mime_type,
+      const String& mime_type,
       network::mojom::blink::LoadTimingInfoPtr load_timing_info,
       net::HttpConnectionInfo connection_info,
-      const WTF::String& alpn_negotiated_protocol,
+      const String& alpn_negotiated_protocol,
       bool is_secure_transport,
       bool is_validated,
-      const WTF::String& normalized_server_timing,
+      const String& normalized_server_timing,
       const ::network::URLLoaderCompletionStatus& completion_status) final;
   void GetScrollPosition(GetScrollPositionCallback callback) final;
 
@@ -266,7 +261,8 @@ class LocalFrameMojoHandler
       bool animate,
       const std::optional<cc::BrowserControlsOffsetTagModifications>&
           offset_tag_modifications) override;
-  void Discard() final;
+  void Discard(
+      mojom::blink::LocalMainFrame::DiscardCallback completion_callback) final;
   void FinalizeNavigationConfidence(
       double randomized_trigger_rate,
       mojom::blink::ConfidenceLevel confidence) final;
@@ -277,6 +273,10 @@ class LocalFrameMojoHandler
 
   // DevicePostureClient implementation:
   void OnPostureChanged(mojom::blink::DevicePostureType posture) final;
+
+#if BUILDFLAG(IS_ANDROID)
+  void PerformSpellCheck() final;
+#endif
 
   Member<blink::LocalFrame> frame_;
 

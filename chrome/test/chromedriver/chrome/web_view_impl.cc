@@ -1039,8 +1039,7 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
   // change in the mean time. This is detected by the remote code implementing
   // Runtime.callFunctionOn.
 
-  std::string json;
-  base::JSONWriter::Write(args, &json);
+  std::string json = base::WriteJson(args).value_or("");
   std::string w3c = base::ToString(w3c_compliant_);
   // TODO(zachconrad): Second null should be array of shadow host ids.
   std::string wrapper_function = base::StringPrintf(
@@ -2197,6 +2196,10 @@ bool WebViewImpl::IsLocked() const {
 void WebViewImpl::SetDetached() {
   is_detached_ = true;
   client_->SetDetached();
+  if (frame_tracker_) {
+    frame_tracker_->ForEachTarget(base::BindRepeating(
+        [](WebView& view) { static_cast<WebViewImpl&>(view).SetDetached(); }));
+  }
 }
 
 bool WebViewImpl::IsDetached() const {

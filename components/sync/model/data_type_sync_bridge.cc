@@ -92,11 +92,6 @@ DataTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   return sync_pb::EntitySpecifics();
 }
 
-bool DataTypeSyncBridge::IsEntityDataValid(
-    const EntityData& entity_data) const {
-  return true;
-}
-
 DataTypeLocalChangeProcessor* DataTypeSyncBridge::change_processor() {
   return change_processor_.get();
 }

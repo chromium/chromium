@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
@@ -60,16 +62,13 @@
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/progress_ring_utils.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/components/kiosk/kiosk_utils.h"
-#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/fullscreen_util_mac.h"
@@ -98,16 +97,6 @@ PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer(
 ToolbarButton* GetDownloadsButton(BrowserView* browser_view) {
   auto* container = GetPinnedToolbarActionsContainer(browser_view);
   return container ? container->GetButtonFor(kActionShowDownloads) : nullptr;
-}
-
-SkColor GetIconColor(bool is_dormant,
-                     DownloadDisplay::IconActive active,
-                     const ui::ColorProvider* color_provider) {
-  ui::ColorId color_id = kColorDownloadToolbarButtonActive;
-  if (is_dormant || active != DownloadDisplay::IconActive::kActive) {
-    color_id = kColorDownloadToolbarButtonInactive;
-  }
-  return color_provider->GetColor(color_id);
 }
 
 class DownloadProgressRing : public views::View, gfx::AnimationDelegate {
@@ -448,10 +437,9 @@ DownloadToolbarUIController::DownloadToolbarUIController(
               &DownloadToolbarUIController::AutoClosePartialView,
               base::Unretained(this))) {
   Browser* const browser = browser_view_->browser();
-  action_item_ = actions::ActionManager::Get()
-                     .FindAction(kActionShowDownloads,
-                                 browser->browser_actions()->root_action_item())
-                     ->GetAsWeakPtr();
+  action_item_ = actions::ActionManager::Get().FindAction(
+      kActionShowDownloads, browser->browser_actions()->root_action_item());
+  CHECK(action_item_);
   tooltip_texts_[0] = l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON);
   action_item_->SetTooltipText(tooltip_texts_.at(0));
 
@@ -502,15 +490,11 @@ bool DownloadToolbarUIController::IsShowing() const {
 }
 
 void DownloadToolbarUIController::Enable() {
-  if (action_item_.get()) {
-    action_item_->SetEnabled(true);
-  }
+  action_item_->SetEnabled(true);
 }
 
 void DownloadToolbarUIController::Disable() {
-  if (action_item_.get()) {
-    action_item_->SetEnabled(false);
-  }
+  action_item_->SetEnabled(false);
 }
 
 void DownloadToolbarUIController::UpdateDownloadIcon(
@@ -585,9 +569,11 @@ bool DownloadToolbarUIController::IsFullscreenWithParentViewHidden() const {
 #endif
 
   // If immersive fullscreen, check if top chrome is visible.
+  auto* const controller =
+      ImmersiveModeController::From(browser_view_->browser());
   if (browser_view_ && browser_view_->GetLocationBarView() &&
-      browser_view_->IsImmersiveModeEnabled()) {
-    return !browser_view_->immersive_mode_controller()->IsRevealed();
+      controller->IsEnabled()) {
+    return !controller->IsRevealed();
   }
 
   // Handle the remaining fullscreen case.
@@ -610,13 +596,9 @@ bool DownloadToolbarUIController::ShouldShowExclusiveAccessBubble() const {
     return true;
   }
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::IsKioskSession()) {
-    return false;
-  }
-#endif
-  return !browser_view_->IsImmersiveModeEnabled() &&
-         browser_view_->CanUserExitFullscreen();
+  return !ImmersiveModeController::From(browser_view_->browser())
+              ->IsEnabled() &&
+         browser_view_->GetExclusiveAccessContext()->CanUserExitFullscreen();
 }
 
 void DownloadToolbarUIController::OpenSecuritySubpage(
@@ -650,10 +632,6 @@ bool DownloadToolbarUIController::IsShowingDetails() const {
 }
 
 void DownloadToolbarUIController::UpdateIcon() {
-  if (!action_item_.get()) {
-    return;
-  }
-
   auto* button = GetDownloadsButton(browser_view_);
   if (!button) {
     return;
@@ -677,8 +655,12 @@ void DownloadToolbarUIController::UpdateIcon() {
       button->GetColorProvider()->GetColor(kColorToolbar);
 
   const gfx::VectorIcon* new_icon;
-  SkColor icon_color =
-      GetIconColor(is_dormant_, active_, browser_view_->GetColorProvider());
+  // An active icon is indicated by the color and the presence of an underline
+  // under the icon button.
+  bool is_icon_active = !is_dormant_ && is_active;
+  SkColor icon_color = browser_view_->GetColorProvider()->GetColor(
+      is_icon_active ? kColorDownloadToolbarButtonActive
+                     : kColorDownloadToolbarButtonInactive);
   bool is_touch_mode = ui::TouchUiController::Get()->touch_ui();
   if (state_ == IconState::kProgress || state_ == IconState::kDeepScanning) {
     new_icon = is_touch_mode ? &kDownloadInProgressTouchIcon
@@ -687,8 +669,7 @@ void DownloadToolbarUIController::UpdateIcon() {
     new_icon = is_touch_mode ? &kDownloadToolbarButtonTouchIcon
                              : &kDownloadToolbarButtonChromeRefreshIcon;
   }
-  action_item_->SetProperty(kActionItemUnderlineIndicatorKey,
-                            (!is_dormant_ && (active_ == IconActive::kActive)));
+  action_item_->SetProperty(kActionItemUnderlineIndicatorKey, is_icon_active);
 
   action_item_->SetImage(ui::ImageModel::FromVectorIcon(*new_icon, icon_color));
 
@@ -702,7 +683,16 @@ void DownloadToolbarUIController::UpdateIcon() {
     tooltip_for_progress_count = l10n_util::GetPluralStringFUTF16(
         IDS_DOWNLOAD_BUBBLE_TOOLTIP_IN_PROGRESS_COUNT, progress_download_count);
   }
-  action_item_->SetTooltipText(tooltip_texts_.at(progress_download_count));
+  if (progress_download_count == 0 && is_icon_active) {
+    // If there are 0 in-progress downloads but the icon is still active, use
+    // the tooltip text to indicate to a11y users (along with the visual
+    // indications of the icon color and underline) that there is a new
+    // "unactioned" complete download.
+    action_item_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON_NEW_DOWNLOAD));
+  } else {
+    action_item_->SetTooltipText(tooltip_for_progress_count);
+  }
 
   redraw_progress_soon_ = false;
 
@@ -879,9 +869,10 @@ DownloadToolbarUIController::BubbleCloser::BubbleCloser(
     : download_display_(download_display) {
   CHECK(toolbar_button);
   if (toolbar_button->GetWidget() &&
-      toolbar_button->GetWidget()->GetNativeWindow()) {
+      toolbar_button->GetWidget()->GetTopLevelWidget()->GetNativeWindow()) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
-        this, toolbar_button->GetWidget()->GetNativeWindow(),
+        this,
+        toolbar_button->GetWidget()->GetTopLevelWidget()->GetNativeWindow(),
         {ui::EventType::kMousePressed, ui::EventType::kKeyPressed,
          ui::EventType::kTouchPressed});
   }
@@ -917,10 +908,13 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
   }
 
   // If we are in immersive fullscreen, reveal the toolbar to show the bubble.
-  if (browser_view_ && browser_view_->immersive_mode_controller()) {
-    immersive_revealed_lock_ =
-        browser_view_->immersive_mode_controller()->GetRevealedLock(
-            ImmersiveModeController::ANIMATE_REVEAL_YES);
+  if (browser_view_) {
+    auto* const controller =
+        ImmersiveModeController::From(browser_view_->browser());
+    if (controller) {
+      immersive_revealed_lock_ = controller->GetRevealedLock(
+          ImmersiveModeController::ANIMATE_REVEAL_YES);
+    }
   }
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
       button, views::BubbleBorder::TOP_RIGHT,
@@ -988,9 +982,8 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
   } else {
     bubble_delegate_->GetWidget()->Show();
   }
-  if (action_item_.get()) {
-    action_item_->SetIsShowingBubble(true);
-  }
+
+  action_item_->SetIsShowingBubble(true);
 
   // For IPH bubble. The IPH should show when the partial view is closed, either
   // manually or automatically.
@@ -1009,10 +1002,7 @@ void DownloadToolbarUIController::OnBubbleClosing() {
   bubble_contents_ = nullptr;
   bubble_closer_.reset();
   UpdateIconDormant();
-
-  if (action_item_.get()) {
-    action_item_->SetIsShowingBubble(false);
-  }
+  action_item_->SetIsShowingBubble(false);
 }
 
 void DownloadToolbarUIController::OnPartialViewClosed() {
@@ -1116,8 +1106,10 @@ bool DownloadToolbarUIController::ShouldShowScanningAnimation() const {
 }
 
 void DownloadToolbarUIController::UpdateIconDormant() {
-  // Ensure no updates are attempted once BrowserView destruction has started.
-  if (!browser_view_) {
+  // Ensure no updates are attempted once BrowserView destruction has started or
+  // if the host Widget has already been closed.
+  if (!browser_view_ || !browser_view_->GetWidget() ||
+      browser_view_->GetWidget()->IsClosed()) {
     return;
   }
 

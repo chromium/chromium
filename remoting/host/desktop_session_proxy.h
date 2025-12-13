@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -33,26 +34,20 @@
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/proto/coordinates.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/errors.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
-
 namespace IPC {
 class ChannelProxy;
 }  // namespace IPC
-
-namespace webrtc {
-class MouseCursor;
-}  // namespace webrtc
 
 namespace remoting {
 
@@ -103,7 +98,7 @@ class DesktopSessionProxy
   std::unique_ptr<InputInjector> CreateInputInjector();
   std::unique_ptr<ScreenControls> CreateScreenControls();
   std::unique_ptr<DesktopCapturer> CreateVideoCapturer(webrtc::ScreenId id);
-  std::unique_ptr<webrtc::MouseCursorMonitor> CreateMouseCursorMonitor();
+  std::unique_ptr<protocol::MouseCursorMonitor> CreateMouseCursorMonitor();
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);
   std::unique_ptr<FileOperations> CreateFileOperations();
@@ -180,6 +175,8 @@ class DesktopSessionProxy
   void OnAudioPacket(std::unique_ptr<AudioPacket> audio_packet) override;
   void OnDesktopDisplayChanged(const protocol::VideoLayout& layout) override;
   void OnMouseCursorChanged(const webrtc::MouseCursor& mouse_cursor) override;
+  void OnMouseCursorFractionalPositionChanged(
+      const protocol::FractionalCoordinate& position) override;
   void OnKeyboardLayoutChanged(const protocol::KeyboardLayout& layout) override;
   void OnLocalMouseMoveDetected(
       const webrtc::DesktopVector& new_position) override;
@@ -331,6 +328,12 @@ class DesktopSessionProxy
       set_up_url_forwarder_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
   mojom::UrlForwarderState current_url_forwarder_state_ GUARDED_BY_CONTEXT(
       sequence_checker_) = mojom::UrlForwarderState::kUnknown;
+
+  // Whether the host cursor is rendered by the client.
+  // TODO: crbug.com/455622961 - Remove this once the clientRenderedHostCursor
+  // experiment is fully rolled out, where this is always set to true.
+  bool host_cursor_rendered_by_client_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

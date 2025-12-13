@@ -10,11 +10,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/features.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/preferences/public/cpp/tracked/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -25,15 +27,17 @@ class ChromePrefServiceFactoryTestBase : public testing::Test {
       : pref_registry_(
             base::MakeRefCounted<user_prefs::PrefRegistrySyncable>()) {
     EXPECT_TRUE(data_dir_.CreateUniqueTempDir());
+    profile_ = std::make_unique<TestingProfile>(data_dir_.GetPath());
   }
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> BuildPrefService() {
     return chrome_prefs::CreateProfilePrefs(
-        data_dir_.GetPath(), /*validation_delegate=*/mojo::NullRemote(),
+        profile_->GetPath(), /*validation_delegate=*/mojo::NullRemote(),
         /*policy_service=*/
         g_browser_process->browser_policy_connector()->GetPolicyService(),
-        /*supervised_user_settings=*/nullptr, /*extension_prefs=*/nullptr,
-        pref_registry_,
+        /*supervised_user_settings=*/nullptr,
+        /*content_filters_service=*/nullptr,
+        /*extension_prefs=*/nullptr, pref_registry_,
         /*connector=*/g_browser_process->browser_policy_connector(),
         /*async=*/true, task_environment_.GetMainThreadTaskRunner().get(),
         /*os_crypt_async=*/nullptr);
@@ -47,7 +51,50 @@ class ChromePrefServiceFactoryTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
+  std::unique_ptr<TestingProfile> profile_;
 };
+
+class ChromePrefServiceFactoryTamperedPrefTest
+    : public ChromePrefServiceFactoryTestBase {
+ public:
+  ChromePrefServiceFactoryTamperedPrefTest() {
+    pref_registry_->RegisterListPref(user_prefs::kTrackedPreferencesReset);
+  }
+};
+
+TEST_F(ChromePrefServiceFactoryTamperedPrefTest,
+       GetTamperedPrefListEmptyAndPopulated) {
+  PrefService* pref_service = profile_->GetPrefs();
+
+  EXPECT_TRUE(chrome_prefs::GetTamperedPrefList(profile_.get()).empty());
+
+  base::Value::List tampered_list;
+  tampered_list.Append("pref.path.one");
+  tampered_list.Append("pref.path.two");
+  pref_service->SetList(user_prefs::kTrackedPreferencesReset,
+                        std::move(tampered_list));
+
+  const base::Value::List& retrieved_list =
+      chrome_prefs::GetTamperedPrefList(profile_.get());
+  EXPECT_EQ(2U, retrieved_list.size());
+  EXPECT_EQ("pref.path.one", retrieved_list[0].GetString());
+  EXPECT_EQ("pref.path.two", retrieved_list[1].GetString());
+}
+
+TEST_F(ChromePrefServiceFactoryTamperedPrefTest,
+       ClearTamperedPrefListClearsPref) {
+  PrefService* pref_service = profile_->GetPrefs();
+
+  base::Value::List tampered_list;
+  tampered_list.Append("pref.path.to.clear");
+  pref_service->SetList(user_prefs::kTrackedPreferencesReset,
+                        std::move(tampered_list));
+  EXPECT_FALSE(chrome_prefs::GetTamperedPrefList(profile_.get()).empty());
+
+  chrome_prefs::ClearTamperedPrefList(profile_.get());
+
+  EXPECT_TRUE(chrome_prefs::GetTamperedPrefList(profile_.get()).empty());
+}
 
 #if BUILDFLAG(IS_ANDROID)
 

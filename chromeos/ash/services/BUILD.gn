@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chromeos/ash/components/assistant/assistant.gni")
-
 assert(is_chromeos)
 
 # Use this target for adding new unit tests. To add a unit test to this target,

@@ -276,6 +276,17 @@ bool IsLogicalBinaryOperator(
   }
 }
 
+bool IsLogicalUnaryOperator(webnn::mojom::blink::ElementWiseUnary::Kind kind) {
+  switch (kind) {
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kIsNaN:
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kIsInfinite:
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot:
+      return true;
+    default:
+      return false;
+  }
+}
+
 void LogConsoleWarning(ScriptState* script_state,
                        const String& message,
                        mojom::blink::ConsoleMessageSource message_source) {

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -77,8 +76,7 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
       // Check if we allocated the backing store of the ArrayBufferContents
       // correctly.
       CHECK_EQ(contents.DataLength(), big_buffer.size());
-      UNSAFE_TODO(
-          memcpy(contents.Data(), big_buffer.data(), big_buffer.size()));
+      contents.ByteSpan().copy_from(base::span(big_buffer));
       array_buffer_contents_array.push_back(std::move(contents));
     }
     result.message->SetArrayBufferContentsArray(
@@ -143,6 +141,6 @@ scoped_refptr<StaticBitmapImage> WrapAcceleratedBitmapImage(
     AcceleratedImageInfo image) {
   return AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
       std::move(image.shared_image), image.sync_token, image.alpha_type,
-      image.color_space, std::move(image.release_callback));
+      std::move(image.release_callback));
 }
 }  // namespace blink

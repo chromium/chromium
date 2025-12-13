@@ -4,38 +4,50 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
+import android.content.Context;
+
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 final class AccountPickerBottomSheetTestUtil {
     static AccountPickerBottomSheetStrings getBottomSheetStrings(
-            @SigninAccessPoint int accessPoint) {
+            Context context, @SigninAccessPoint int accessPoint) {
         switch (accessPoint) {
             case SigninAccessPoint.SEND_TAB_TO_SELF_PROMO:
                 return new AccountPickerBottomSheetStrings.Builder(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_title_for_send_tab_to_self)
-                        .setSubtitleStringId(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self)
-                        .setDismissButtonStringId(R.string.cancel)
+                                context.getString(
+                                        R.string
+                                                .signin_account_picker_bottom_sheet_title_for_send_tab_to_self))
+                        .setSubtitleString(
+                                context.getString(
+                                        R.string
+                                                .signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self))
+                        .setDismissButtonString(context.getString(R.string.cancel))
                         .build();
             case SigninAccessPoint.WEB_SIGNIN:
                 return new AccountPickerBottomSheetStrings.Builder(
-                                R.string.signin_account_picker_bottom_sheet_title)
-                        .setSubtitleStringId(
-                                R.string.signin_account_picker_bottom_sheet_subtitle_for_web_signin)
-                        .setDismissButtonStringId(R.string.signin_account_picker_dismiss_button)
+                                context.getString(
+                                        R.string.signin_account_picker_bottom_sheet_title))
+                        .setSubtitleString(
+                                context.getString(
+                                        R.string
+                                                .signin_account_picker_bottom_sheet_subtitle_for_web_signin))
+                        .setDismissButtonString(
+                                context.getString(R.string.signin_account_picker_dismiss_button))
                         .build();
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 return new AccountPickerBottomSheetStrings.Builder(
-                                R.string.signin_account_picker_bottom_sheet_title)
+                                context.getString(
+                                        R.string.signin_account_picker_bottom_sheet_title))
                         .build();
             case SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION:
                 return new AccountPickerBottomSheetStrings.Builder(
-                                R.string.signin_account_picker_bottom_sheet_title)
-                        .setSubtitleStringId(
-                                R.string.signin_account_picker_bottom_sheet_benefits_subtitle)
+                                context.getString(
+                                        R.string.signin_account_picker_bottom_sheet_title))
+                        .setSubtitleString(
+                                context.getString(
+                                        R.string
+                                                .signin_account_picker_bottom_sheet_benefits_subtitle))
                         .build();
             default:
                 throw new IllegalArgumentException("Access point strings not handled in tests.");

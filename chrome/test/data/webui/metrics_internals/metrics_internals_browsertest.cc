@@ -72,7 +72,7 @@ class MetricsInternalsUIBrowserTestWithLog
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override {
     // Close and stage a log upon finishing loading chrome://metrics-internals.
     // This will allow us to have a log ready for the JS browsertest.
-    if (render_frame_host->GetLastCommittedURL().host() ==
+    if (render_frame_host->GetLastCommittedURL().GetHost() ==
         chrome::kChromeUIMetricsInternalsHost) {
       g_browser_process->metrics_service()->StageCurrentLogForTest();
     }
@@ -89,4 +89,8 @@ IN_PROC_BROWSER_TEST_F(MetricsInternalsUIBrowserTestWithLog, All) {
 
 IN_PROC_BROWSER_TEST_F(MetricsInternalsUIBrowserTest, FieldTrials) {
   RunTest("metrics_internals/field_trials_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(MetricsInternalsUIBrowserTest, PrivateMetrics) {
+  RunTest("metrics_internals/private_metrics_test.js", "mocha.run()");
 }

@@ -59,16 +59,18 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
       viz::OverlayCandidateList* candidate_list) override;
   void ScheduleOverlays(
       viz::DisplayResourceProvider* resource_provider) override;
-  void AdjustOutputSurfaceOverlay(
-      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override {
-  }
+  void AdjustPrimaryPlaneForDisplayTransform(
+      viz::OverlayCandidate& primary_plane) const override {}
   void CheckOverlaySupportImpl(
-      const viz::OverlayProcessorInterface::OutputSurfaceOverlayPlane*
-          primary_plane,
+      const std::optional<viz::OverlayCandidate>& primary_plane,
       viz::OverlayCandidateList* candidates) override;
 
   // OverlaysInfoProvider implenentation:
   bool IsFrameSinkOverlayed(viz::FrameSinkId frame_sink_id) override;
+
+ protected:
+  // viz::OverlayProcessorUsingStrategy overrides:
+  bool ShouldCreatePrimaryPlane() const override;
 
  private:
   class Manager;

@@ -46,7 +46,7 @@ void InitCdmHostVerification(
     base::NativeLibrary cdm_library,
     const base::FilePath& cdm_path,
     const std::vector<CdmHostFilePath>& cdm_host_file_paths) {
-  CHECK(cdm_library, base::NotFatalUntil::M140);
+  CHECK(cdm_library);
 
   CdmHostFiles cdm_host_files;
   cdm_host_files.Initialize(cdm_path, cdm_host_file_paths);
@@ -183,8 +183,8 @@ bool CdmModule::Initialize(const base::FilePath& cdm_path) {
 }
 
 void CdmModule::InitializeCdmModule() {
-  CHECK(initialized_, base::NotFatalUntil::M140);
-  CHECK(initialize_cdm_module_func_, base::NotFatalUntil::M140);
+  CHECK(initialized_);
+  CHECK(initialize_cdm_module_func_);
   TRACE_EVENT0("media", "CdmModule::InitializeCdmModule");
   initialize_cdm_module_func_();
 }

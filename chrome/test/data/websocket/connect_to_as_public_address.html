@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>test ws connection</title>
+<script type="text/javascript">
+
+var href = window.location.href;
+var queryBegin = href.indexOf('?url=');
+if (queryBegin == -1) {
+  console.log("Failed to find ?url= in URL");
+  document.title = 'FAIL';
+  throw "FAILURE";
+}
+var url = href.slice(queryBegin + 5);
+
+// Do connection test.
+var ws = new WebSocket(url);
+
+ws.onopen = function()
+{
+  // Set document title to 'PASS'. The test observer catches this title changes
+  // to know the result.
+  document.title = 'PASS';
+}
+
+ws.onclose = function()
+{
+  // Set document title to 'FAIL'.
+  document.title = 'FAIL';
+}
+
+ws.onmessage = function(evt)
+{
+  domAutomationController.send(evt.data);
+}
+
+ws.onerror = function(evt)
+{
+  console.error(`WebSocket error: '${JSON.stringify(evt, ["message", "arguments", "type", "name"])}'`);
+}
+
+</script>
+</head>
+</html>

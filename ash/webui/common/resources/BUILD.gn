@@ -621,7 +621,7 @@ js_library("cr_policy_indicator_behavior") {
 
 js_library("cr_scrollable_behavior") {
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

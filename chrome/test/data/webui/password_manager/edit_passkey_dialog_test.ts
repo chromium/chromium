@@ -50,7 +50,7 @@ suite('EditPasskeyDialogTest', function() {
     const listItemElements =
         dialog.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.site-link');
     assertEquals(listItemElements.length, 1);
-    assertEquals(listItemElements[0]!.textContent!.trim(), 'test.com');
+    assertEquals(listItemElements[0]!.textContent.trim(), 'test.com');
     assertEquals(listItemElements[0]!.href, passkey.affiliatedDomains[0]!.url);
   });
 

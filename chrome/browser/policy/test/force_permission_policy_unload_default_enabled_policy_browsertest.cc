@@ -71,7 +71,7 @@ INSTANTIATE_TEST_SUITE_P(
     &ForcePermissionPolicyUnloadDefaultEnabledPolicyBrowserTest::
         DescribeParams);
 
-// Enabled unload deprecation and the tests that unload events continue to fire
+// Enables unload deprecation and then tests that unload events continue to fire
 // if the enterprise policy requests that.
 IN_PROC_BROWSER_TEST_P(
     ForcePermissionPolicyUnloadDefaultEnabledPolicyBrowserTest,

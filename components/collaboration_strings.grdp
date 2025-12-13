@@ -7,7 +7,7 @@
   <message name ="IDS_COLLABORATION_SIGNIN_DESCRIPTION" desc="The description of the collaboration signin screen." formatter_data="android_java">
     Sign in to Chrome to share and join tab groups, and work together on ideas
   </message>
-  <message name ="IDS_COLLABORATION_SIGNIN_BOTTOM_SHEET_TITLE" desc="The title of the collaboration signin bottom sheet screen." formatter_data="android_java">
+  <message name ="IDS_COLLABORATION_SIGNIN_BOTTOM_SHEET_TITLE" meaning="Title" desc="The title of the collaboration signin bottom sheet screen." formatter_data="android_java">
     Sign in to Chrome
   </message>
   <message name ="IDS_COLLABORATION_SIGNIN_BOTTOM_SHEET_DESCRIPTION" desc="The description of the collaboration signin bottom sheet screen." formatter_data="android_java">
@@ -92,11 +92,17 @@
   <message name ="IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_BODY" desc="The body of the error dialog when entreprise signin disabled.">
     To share or join tab groups, you must be able to sign in to Chrome
   </message>
+  <message name ="IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_SYNC_HISTORY_BODY" desc="The body of the error dialog when entreprise signin disabled.">
+    To share tabs and collaborate with others, you must be able to sign in to Chrome
+  </message>
   <message name ="IDS_COLLABORATION_ENTREPRISE_SYNC_DISABLED_HEADER" desc="The header of the error dialog when entreprise sync disabled.">
     Your organization limits what you can save
   </message>
   <message name ="IDS_COLLABORATION_ENTREPRISE_SYNC_DISABLED_BODY" desc="The body of the error dialog when entreprise sync disabled.">
     When your organization limits saving to your Google Account, you can’t share or join tab groups
+  </message>
+  <message name ="IDS_COLLABORATION_ENTREPRISE_TABS_SYNC_DISABLED_BODY" desc="The body of the error dialog when entreprise sync disabled.">
+    When your organization limits saving to your Google Account, you can’t share tabs or collaborate with others
   </message>
   <message name ="IDS_COLLABORATION_ENTREPRISE_GROUP_CLOSED_HEADER" desc="The header of the error dialog when entreprise group is closed.">
     This group is closed
@@ -133,7 +139,7 @@
   <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_PANEL_OUT_OF_DATE_MESSAGE_CELL_TEXT" desc="Text for the out-of-date cell that can appear at the top of the tab groups panel when the app is out-of-date to support shared tab groups." formatter_data="android_java">
     Update Chrome to continue using your shared tab groups
   </message>
-  <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_AVAILABLE_AGAIN_IPH_MESSAGE" desc="The text that appears in the in-product help tooltip anchored on the tab groups panel when the shared tab groups are available again (typically after having updated the app).">
+  <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_AVAILABLE_AGAIN_IPH_MESSAGE" desc="The text that appears in the in-product help tooltip anchored on the tab groups panel when the shared tab groups are available again (typically after having updated the app)." formatter_data="android_java">
     Your shared tab groups are available again
   </message>
   <!-- Versioning -->
@@ -234,6 +240,9 @@
   <if expr="not is_android">
     <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE" desc="Title of the comments side panel." formatter_data="android_java">
       Comments
+    </message>
+    <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE_WITH_NAME" desc="Title of the comments side panel." formatter_data="android_java">
+      Comments - <ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>
     </message>
   </if>
   <!-- Comments -->

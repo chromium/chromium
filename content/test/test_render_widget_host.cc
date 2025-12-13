@@ -40,8 +40,7 @@ TestRenderWidgetHost::TestRenderWidgetHost(
                            std::move(site_instance_group),
                            routing_id,
                            hidden,
-                           renderer_initiated_creation,
-                           std::make_unique<FrameTokenMessageQueue>()) {
+                           renderer_initiated_creation) {
   mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
   mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
   auto blink_widget_receiver =

@@ -26,14 +26,13 @@
       "android_webview/java/strings/android_webview_strings.grd",
       "ash/ash_strings.grd",
       "ash/webui/camera_app_ui/resources/strings/camera_strings.grd",
-      "chrome/android/features/keyboard_accessory/internal/java/strings/android_keyboard_accessory_strings.grd",
+      "chrome/browser/keyboard_accessory/android/internal/java/strings/android_keyboard_accessory_strings.grd",
       "chrome/android/features/tab_ui/java/strings/android_chrome_tab_ui_strings.grd",
       "chrome/browser/tab_ui/android/java/strings/android_tab_ui_strings.grd",
       "chrome/android/webapk/strings/android_webapk_strings.grd",
       "chrome/app/chromium_strings.grd",
       "chrome/app/generated_resources.grd",
       "chrome/app/google_chrome_strings.grd",
-      "chrome/browser/password_check/android/internal/java/strings/android_password_check_strings.grd",
       "chrome/browser/readaloud/android/resources/android_readaloud_strings.grd",
       "chrome/browser/resources/accessibility/strings/extension_strings.grd",
       "chrome/browser/resources/chromeos/accessibility/strings/accessibility_strings.grd",
@@ -63,6 +62,8 @@
       "ios/chrome/app/strings/ios_strings.grd",
       "ios/chrome/browser/whats_new/ui/strings/ios_whats_new_strings.grd",
       "ios/chrome/credential_provider_extension/strings/ios_credential_provider_extension_strings.grd",
+      "ios/chrome/share_extension/strings/ios_share_extension_chromium_strings.grd",
+      "ios/chrome/share_extension/strings/ios_share_extension_google_chrome_strings.grd",
       "ios/chrome/share_extension/strings/ios_share_extension_strings.grd",
       "ios/chrome/open_extension/strings/ios_open_extension_chromium_strings.grd",
       "ios/chrome/open_extension/strings/ios_open_extension_google_chrome_strings.grd",
@@ -119,10 +120,11 @@
     "chrome/app/resources/locale_settings_mac.grd": "Not UI strings; localized separately",
     "chrome/app/resources/locale_settings_win.grd": "Not UI strings; localized separately",
     "chromecast/app/resources/chromecast_settings.grd": "Not UI strings; localized separately",
+    "chrome/browser/actor/resources/browser_resources.grd": "Not set up for translation; messages are marked as not translateable",
+    "chrome/browser/actor/resources/common_resources.grd": "Not set up for translation; messages are marked as not translateable",
     "components/components_locale_settings.grd": "Not UI strings; localized separately",
     "components/metrics/server_urls.grd": "Not UI strings; URLs of metrics endpoints",
-    "components/search_engine_descriptions_strings.grd": "The strings are already translated when provided",
-    "components/plus_addresses/resources/strings/plus_addresses_strings.grd": "UX research ongoing - strings are not yet finalized",
+    "components/plus_addresses/core/browser/resources/strings/plus_addresses_strings.grd": "UX research ongoing - strings are not yet finalized",
     "components/policy/resources/policy_templates.build.grd": "Copy of policy_templates.grd used locally for build only",
     "tools/grit/grit/testdata/allowlist_resources.grd": "Test data",
     "tools/grit/grit/testdata/allowlist_strings.grd": "Test data",
@@ -142,6 +144,7 @@
   },
   # Internal grds that contain parts not available publicly and thus should
   # not be checked by translation script.
+  # NOTE: This list does NOT itemize src-internal translations.
   "internal_grds": [
     # Test grd that contains a part file that doesn't exist.
     "tools/translation/testdata/internal.grd",

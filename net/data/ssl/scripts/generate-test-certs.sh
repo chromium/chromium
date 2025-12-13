@@ -4,6 +4,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+
+
+# *****************************************************************************
+# *****************************************************************************
+# *********** Please DO NOT add new checked-in certificate files! *************
+# *****************************************************************************
+# *****************************************************************************
+#
+# Checked-in certificate files are a maintenance burden and should be avoided,
+# see https://issues.chromium.org/issues/40802244. Alternatives exist which
+# should be preferred when possible. (If the alternatives do not work for you,
+# please ask for advice.)
+#
+# For tests using EmbeddedTestServer, prefer to use the runtime-generated
+# certificates through ServerCertificateConfig. (If the certificate DNS names
+# are the only thing that need to be configured, the SetCertHostnames helper
+# can be used.)
+#
+# For tests that need a certificate directly, CertBuilder may be used.
+#
+# Please ask net/cert/OWNERS for advice before adding new checked-in
+# certificates.
+#
+# *****************************************************************************
+# *****************************************************************************
+
+
+
 # This script generates a set of test (end-entity, intermediate, root)
 # certificates that can be used to test fetching of an intermediate via AIA.
 set -e -x
@@ -106,6 +134,14 @@ openssl req \
   -reqexts req_wildcard \
   -config ee.cnf
 
+copy_or_generate_key ../certificates/google_wildcard.pem out/google_wildcard.key
+openssl req \
+  -new \
+  -key out/google_wildcard.key \
+  -out out/google_wildcard.req \
+  -reqexts req_google_wildcard \
+  -config ee.cnf
+
 copy_or_generate_key ../certificates/localhost_cert.pem out/localhost_cert.key
 SUBJECT_NAME="req_localhost_cn" \
 openssl req \
@@ -166,6 +202,14 @@ CA_NAME="req_ca_dn" \
   openssl ca \
     -batch \
     -extensions user_cert \
+    -in out/google_wildcard.req \
+    -out out/google_wildcard.pem \
+    -config ca.cnf
+
+CA_NAME="req_ca_dn" \
+  openssl ca \
+    -batch \
+    -extensions user_cert \
     -days ${CERT_LIFETIME} \
     -in out/localhost_cert.req \
     -out out/localhost_cert.pem \
@@ -184,6 +228,8 @@ CA_NAME="req_ca_dn" \
     > ../certificates/ok_cert.pem"
 /bin/sh -c "cat out/wildcard.key out/wildcard.pem \
     > ../certificates/wildcard.pem"
+/bin/sh -c "cat out/google_wildcard.key out/google_wildcard.pem \
+    > ../certificates/google_wildcard.pem"
 /bin/sh -c "cat out/localhost_cert.key out/localhost_cert.pem \
     > ../certificates/localhost_cert.pem"
 /bin/sh -c "cat out/expired_cert.key out/expired_cert.pem \

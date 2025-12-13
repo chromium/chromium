@@ -1,5 +1,7 @@
 include_rules = [
   "+ash/constants/ash_switches.h",
+  "+components/viz/common/resources/shared_image_format_utils.h",
+  "+components/viz/common/resources/shared_image_format.h",
   "+media/media_buildflags.h",
   "-ui/ozone/platform/drm",
   "+ui/ozone/platform/drm/common",

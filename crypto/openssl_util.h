@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef CRYPTO_OPENSSL_UTIL_H_
 #define CRYPTO_OPENSSL_UTIL_H_
 
 #include <stddef.h>
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "crypto/crypto_export.h"
@@ -41,7 +37,7 @@ class ScopedOpenSSLSafeSizeBuffer {
   ~ScopedOpenSSLSafeSizeBuffer() {
     if (output_len_ < MIN_SIZE) {
       // Copy the temporary buffer out, truncating as needed.
-      memcpy(output_, min_sized_buffer_, output_len_);
+      UNSAFE_TODO(memcpy(output_, min_sized_buffer_, output_len_));
     }
     // else... any writing already happened directly into |output_|.
   }

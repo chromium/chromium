@@ -1,0 +1,368 @@
+config("libpfm4_public_config") {
+  include_dirs = [
+    "src/include",
+    "src/lib",
+  ]
+}
+
+config("libpfm4_config") {
+  if (is_clang) {
+    cflags_c = [ "-std=gnu11" ]
+  }
+}
+
+# Only includes files relevant to Chromium's supported architectures:
+#   x86, x64, arm, arm64
+#
+# Based on logic in src/lib/Makefile.
+source_set("libpfm4") {
+  testonly = true
+
+  public = [ "src/include/perfmon/pfmlib.h" ]
+  if (is_linux) {
+    public += [
+      "src/include/perfmon/perf_event.h",
+      "src/include/perfmon/pfmlib_perf_event.h",
+    ]
+  }
+
+  defines = [ "_REENTRANT" ]
+  sources = [ "src/lib/pfmlib_common.c" ]
+  inputs = [
+    "src/include/perfmon/pfmlib.h",
+    "src/lib/pfmlib_priv.h",
+  ]
+
+  if (is_linux) {
+    sources += [
+      "src/lib/pfmlib_perf_event.c",
+      "src/lib/pfmlib_perf_event_pmu.c",
+      "src/lib/pfmlib_perf_event_raw.c",
+    ]
+    inputs += [
+      "src/include/perfmon/perf_event.h",
+      "src/lib/events/perf_events.h",
+    ]
+  }
+
+  if (target_cpu == "x86" || target_cpu == "x64") {
+    defines += [ "CONFIG_PFMLIB_ARCH_X86" ]
+    if (target_cpu == "x64") {
+      defines += [ "CONFIG_PFMLIB_ARCH_X86_64" ]
+    }
+
+    if (is_linux) {
+      sources += [
+        "src/lib/pfmlib_amd64_perf_event.c",
+        "src/lib/pfmlib_intel_netburst_perf_event.c",
+        "src/lib/pfmlib_intel_snbep_unc_perf_event.c",
+        "src/lib/pfmlib_intel_x86_perf_event.c",
+      ]
+    }
+
+    sources += [
+      "src/lib/pfmlib_amd64.c",
+      "src/lib/pfmlib_amd64_fam10h.c",
+      "src/lib/pfmlib_amd64_fam11h.c",
+      "src/lib/pfmlib_amd64_fam12h.c",
+      "src/lib/pfmlib_amd64_fam14h.c",
+      "src/lib/pfmlib_amd64_fam15h.c",
+      "src/lib/pfmlib_amd64_fam16h.c",
+      "src/lib/pfmlib_amd64_fam17h.c",
+      "src/lib/pfmlib_amd64_fam19h.c",
+      "src/lib/pfmlib_amd64_fam19h_l3.c",
+      "src/lib/pfmlib_amd64_fam1ah.c",
+      "src/lib/pfmlib_amd64_fam1ah_l3.c",
+      "src/lib/pfmlib_amd64_k7.c",
+      "src/lib/pfmlib_amd64_k8.c",
+      "src/lib/pfmlib_amd64_rapl.c",
+      "src/lib/pfmlib_intel_adl.c",
+      "src/lib/pfmlib_intel_atom.c",
+      "src/lib/pfmlib_intel_bdw.c",
+      "src/lib/pfmlib_intel_bdx_unc_cbo.c",
+      "src/lib/pfmlib_intel_bdx_unc_ha.c",
+      "src/lib/pfmlib_intel_bdx_unc_imc.c",
+      "src/lib/pfmlib_intel_bdx_unc_irp.c",
+      "src/lib/pfmlib_intel_bdx_unc_pcu.c",
+      "src/lib/pfmlib_intel_bdx_unc_qpi.c",
+      "src/lib/pfmlib_intel_bdx_unc_r2pcie.c",
+      "src/lib/pfmlib_intel_bdx_unc_r3qpi.c",
+      "src/lib/pfmlib_intel_bdx_unc_sbo.c",
+      "src/lib/pfmlib_intel_bdx_unc_ubo.c",
+      "src/lib/pfmlib_intel_core.c",
+      "src/lib/pfmlib_intel_glm.c",
+      "src/lib/pfmlib_intel_gnr.c",
+      "src/lib/pfmlib_intel_gnr_unc_imc.c",
+      "src/lib/pfmlib_intel_hsw.c",
+      "src/lib/pfmlib_intel_hswep_unc_cbo.c",
+      "src/lib/pfmlib_intel_hswep_unc_ha.c",
+      "src/lib/pfmlib_intel_hswep_unc_imc.c",
+      "src/lib/pfmlib_intel_hswep_unc_irp.c",
+      "src/lib/pfmlib_intel_hswep_unc_pcu.c",
+      "src/lib/pfmlib_intel_hswep_unc_qpi.c",
+      "src/lib/pfmlib_intel_hswep_unc_r2pcie.c",
+      "src/lib/pfmlib_intel_hswep_unc_r3qpi.c",
+      "src/lib/pfmlib_intel_hswep_unc_sbo.c",
+      "src/lib/pfmlib_intel_hswep_unc_ubo.c",
+      "src/lib/pfmlib_intel_icl.c",
+      "src/lib/pfmlib_intel_icx_unc_cha.c",
+      "src/lib/pfmlib_intel_icx_unc_iio.c",
+      "src/lib/pfmlib_intel_icx_unc_imc.c",
+      "src/lib/pfmlib_intel_icx_unc_irp.c",
+      "src/lib/pfmlib_intel_icx_unc_m2m.c",
+      "src/lib/pfmlib_intel_icx_unc_m2pcie.c",
+      "src/lib/pfmlib_intel_icx_unc_m3upi.c",
+      "src/lib/pfmlib_intel_icx_unc_pcu.c",
+      "src/lib/pfmlib_intel_icx_unc_ubox.c",
+      "src/lib/pfmlib_intel_icx_unc_upi.c",
+      "src/lib/pfmlib_intel_ivb.c",
+      "src/lib/pfmlib_intel_ivb_unc.c",
+      "src/lib/pfmlib_intel_ivbep_unc_cbo.c",
+      "src/lib/pfmlib_intel_ivbep_unc_ha.c",
+      "src/lib/pfmlib_intel_ivbep_unc_imc.c",
+      "src/lib/pfmlib_intel_ivbep_unc_irp.c",
+      "src/lib/pfmlib_intel_ivbep_unc_pcu.c",
+      "src/lib/pfmlib_intel_ivbep_unc_qpi.c",
+      "src/lib/pfmlib_intel_ivbep_unc_r2pcie.c",
+      "src/lib/pfmlib_intel_ivbep_unc_r3qpi.c",
+      "src/lib/pfmlib_intel_ivbep_unc_ubo.c",
+      "src/lib/pfmlib_intel_knc.c",
+      "src/lib/pfmlib_intel_knl.c",
+      "src/lib/pfmlib_intel_knl_unc_cha.c",
+      "src/lib/pfmlib_intel_knl_unc_edc.c",
+      "src/lib/pfmlib_intel_knl_unc_imc.c",
+      "src/lib/pfmlib_intel_knl_unc_m2pcie.c",
+      "src/lib/pfmlib_intel_netburst.c",
+      "src/lib/pfmlib_intel_nhm.c",
+      "src/lib/pfmlib_intel_nhm_unc.c",
+      "src/lib/pfmlib_intel_rapl.c",
+      "src/lib/pfmlib_intel_skl.c",
+      "src/lib/pfmlib_intel_skx_unc_cha.c",
+      "src/lib/pfmlib_intel_skx_unc_iio.c",
+      "src/lib/pfmlib_intel_skx_unc_imc.c",
+      "src/lib/pfmlib_intel_skx_unc_irp.c",
+      "src/lib/pfmlib_intel_skx_unc_m2m.c",
+      "src/lib/pfmlib_intel_skx_unc_m3upi.c",
+      "src/lib/pfmlib_intel_skx_unc_pcu.c",
+      "src/lib/pfmlib_intel_skx_unc_ubo.c",
+      "src/lib/pfmlib_intel_skx_unc_upi.c",
+      "src/lib/pfmlib_intel_slm.c",
+      "src/lib/pfmlib_intel_snb.c",
+      "src/lib/pfmlib_intel_snb_unc.c",
+      "src/lib/pfmlib_intel_snbep_unc.c",
+      "src/lib/pfmlib_intel_snbep_unc_cbo.c",
+      "src/lib/pfmlib_intel_snbep_unc_ha.c",
+      "src/lib/pfmlib_intel_snbep_unc_imc.c",
+      "src/lib/pfmlib_intel_snbep_unc_pcu.c",
+      "src/lib/pfmlib_intel_snbep_unc_qpi.c",
+      "src/lib/pfmlib_intel_snbep_unc_r2pcie.c",
+      "src/lib/pfmlib_intel_snbep_unc_r3qpi.c",
+      "src/lib/pfmlib_intel_snbep_unc_ubo.c",
+      "src/lib/pfmlib_intel_spr.c",
+      "src/lib/pfmlib_intel_spr_unc_cha.c",
+      "src/lib/pfmlib_intel_spr_unc_imc.c",
+      "src/lib/pfmlib_intel_spr_unc_upi.c",
+      "src/lib/pfmlib_intel_tmt.c",
+      "src/lib/pfmlib_intel_wsm.c",
+      "src/lib/pfmlib_intel_x86.c",
+      "src/lib/pfmlib_intel_x86_arch.c",
+    ]
+
+    inputs += [
+      "src/lib/pfmlib_intel_x86_priv.h",
+      "src/lib/pfmlib_amd64_priv.h",
+      "src/lib/events/amd64_events_k7.h",
+      "src/lib/events/amd64_events_k8.h",
+      "src/lib/events/amd64_events_fam10h.h",
+      "src/lib/events/amd64_events_fam11h.h",
+      "src/lib/events/amd64_events_fam12h.h",
+      "src/lib/events/amd64_events_fam14h.h",
+      "src/lib/events/amd64_events_fam15h.h",
+      "src/lib/events/amd64_events_fam17h_zen1.h",
+      "src/lib/events/amd64_events_fam17h_zen2.h",
+      "src/lib/events/amd64_events_fam19h_zen3.h",
+      "src/lib/events/amd64_events_fam19h_zen4.h",
+      "src/lib/events/amd64_events_fam19h_zen3_l3.h",
+      "src/lib/events/amd64_events_fam16h.h",
+      "src/lib/events/amd64_events_fam1ah_zen5.h",
+      "src/lib/events/amd64_events_fam1ah_zen5_l3.h",
+      "src/lib/events/intel_p6_events.h",
+      "src/lib/events/intel_netburst_events.h",
+      "src/lib/events//intel_x86_arch_events.h",
+      "src/lib/events/intel_coreduo_events.h",
+      "src/lib/events/intel_core_events.h",
+      "src/lib/events/intel_atom_events.h",
+      "src/lib/events/intel_nhm_events.h",
+      "src/lib/events/intel_nhm_unc_events.h",
+      "src/lib/events/intel_wsm_events.h",
+      "src/lib/events/intel_wsm_unc_events.h",
+      "src/lib/events/intel_snb_events.h",
+      "src/lib/events/intel_snb_unc_events.h",
+      "src/lib/events/intel_ivb_events.h",
+      "src/lib/events/intel_hsw_events.h",
+      "src/lib/events/intel_bdw_events.h",
+      "src/lib/events/intel_skl_events.h",
+      "src/lib/events/intel_glm_events.h",
+      "src/lib/events/intel_icl_events.h",
+      "src/lib/events/intel_spr_events.h",
+      "src/lib/events/intel_gnr_events.h",
+      "src/lib/events/intel_adl_glc_events.h",
+      "src/lib/events/intel_adl_grt_events.h",
+      "src/lib/pfmlib_intel_snbep_unc_priv.h",
+      "src/lib/events/intel_snbep_unc_cbo_events.h",
+      "src/lib/events/intel_snbep_unc_ha_events.h",
+      "src/lib/events/intel_snbep_unc_imc_events.h",
+      "src/lib/events/intel_snbep_unc_pcu_events.h",
+      "src/lib/events/intel_snbep_unc_qpi_events.h",
+      "src/lib/events/intel_snbep_unc_ubo_events.h",
+      "src/lib/events/intel_snbep_unc_r2pcie_events.h",
+      "src/lib/events/intel_snbep_unc_r3qpi_events.h",
+      "src/lib/events/intel_tmt_events.h",
+      "src/lib/events/intel_knc_events.h",
+      "src/lib/events/intel_knl_events.h",
+      "src/lib/events/intel_ivbep_unc_cbo_events.h",
+      "src/lib/events/intel_ivbep_unc_ha_events.h",
+      "src/lib/events/intel_ivbep_unc_imc_events.h",
+      "src/lib/events/intel_ivbep_unc_pcu_events.h",
+      "src/lib/events/intel_ivbep_unc_qpi_events.h",
+      "src/lib/events/intel_ivbep_unc_ubo_events.h",
+      "src/lib/events/intel_ivbep_unc_r2pcie_events.h",
+      "src/lib/events/intel_ivbep_unc_r3qpi_events.h",
+      "src/lib/events/intel_ivbep_unc_irp_events.h",
+      "src/lib/events/intel_hswep_unc_cbo_events.h",
+      "src/lib/events/intel_hswep_unc_sbo_events.h",
+      "src/lib/events/intel_hswep_unc_ha_events.h",
+      "src/lib/events/intel_hswep_unc_imc_events.h",
+      "src/lib/events/intel_hswep_unc_pcu_events.h",
+      "src/lib/events/intel_hswep_unc_qpi_events.h",
+      "src/lib/events/intel_hswep_unc_ubo_events.h",
+      "src/lib/events/intel_hswep_unc_r2pcie_events.h",
+      "src/lib/events/intel_hswep_unc_r3qpi_events.h",
+      "src/lib/events/intel_hswep_unc_irp_events.h",
+      "src/lib/events/intel_bdx_unc_cbo_events.h",
+      "src/lib/events/intel_bdx_unc_ubo_events.h",
+      "src/lib/events/intel_bdx_unc_sbo_events.h",
+      "src/lib/events/intel_bdx_unc_ha_events.h",
+      "src/lib/events/intel_bdx_unc_imc_events.h",
+      "src/lib/events/intel_bdx_unc_irp_events.h",
+      "src/lib/events/intel_bdx_unc_pcu_events.h",
+      "src/lib/events/intel_bdx_unc_qpi_events.h",
+      "src/lib/events/intel_bdx_unc_r2pcie_events.h",
+      "src/lib/events/intel_bdx_unc_r3qpi_events.h",
+      "src/lib/events/intel_skx_unc_cha_events.h",
+      "src/lib/events/intel_skx_unc_iio_events.h",
+      "src/lib/events/intel_skx_unc_imc_events.h",
+      "src/lib/events/intel_skx_unc_irp_events.h",
+      "src/lib/events/intel_skx_unc_m2m_events.h",
+      "src/lib/events/intel_skx_unc_m3upi_events.h",
+      "src/lib/events/intel_skx_unc_pcu_events.h",
+      "src/lib/events/intel_skx_unc_ubo_events.h",
+      "src/lib/events/intel_skx_unc_upi_events.h",
+      "src/lib/events/intel_knl_unc_imc_events.h",
+      "src/lib/events/intel_knl_unc_edc_events.h",
+      "src/lib/events/intel_knl_unc_cha_events.h",
+      "src/lib/events/intel_knl_unc_m2pcie_events.h",
+      "src/lib/events/intel_icx_unc_cha_events.h",
+      "src/lib/events/intel_icx_unc_imc_events.h",
+      "src/lib/events/intel_icx_unc_m2m_events.h",
+      "src/lib/events/intel_icx_unc_irp_events.h",
+      "src/lib/events/intel_icx_unc_pcu_events.h",
+      "src/lib/events/intel_icx_unc_upi_events.h",
+      "src/lib/events/intel_icx_unc_m3upi_events.h",
+      "src/lib/events/intel_icx_unc_ubox_events.h",
+      "src/lib/events/intel_icx_unc_m2pcie_events.h",
+      "src/lib/events/intel_spr_unc_imc_events.h",
+      "src/lib/events/intel_spr_unc_upi_events.h",
+      "src/lib/events/intel_spr_unc_cha_events.h",
+      "src/lib/events/intel_gnr_unc_imc_events.h",
+      "src/lib/events/intel_slm_events.h",
+    ]
+  }
+
+  if (target_cpu == "arm") {
+    defines += [ "CONFIG_PFMLIB_ARCH_ARM" ]
+    if (is_linux) {
+      sources += [
+        "src/lib/pfmlib_arm_armv8_kunpeng_unc_perf_event.c",
+        "src/lib/pfmlib_arm_armv8_thunderx2_unc_perf_event.c",
+        "src/lib/pfmlib_arm_perf_event.c",
+      ]
+    }
+
+    sources += [
+      "src/lib/pfmlib_arm.c",
+      "src/lib/pfmlib_arm_armv6.c",
+      "src/lib/pfmlib_arm_armv7_pmuv1.c",
+      "src/lib/pfmlib_arm_armv8.c",
+      "src/lib/pfmlib_arm_armv8_kunpeng_unc.c",
+      "src/lib/pfmlib_arm_armv8_thunderx2_unc.c",
+      "src/lib/pfmlib_arm_armv9.c",
+    ]
+
+    inputs += [
+      "src/lib/pfmlib_arm_priv.h",
+      "src/lib/events/arm_cortex_a7_events.h",
+      "src/lib/events/arm_cortex_a8_events.h",
+      "src/lib/events/arm_cortex_a9_events.h",
+      "src/lib/events/arm_cortex_a15_events.h",
+      "src/lib/events/arm_cortex_a57_events.h",
+      "src/lib/events/arm_cortex_a53_events.h",
+      "src/lib/events/arm_xgene_events.h",
+      "src/lib/events/arm_cavium_tx2_events.h",
+      "src/lib/events/arm_marvell_tx2_unc_events.h",
+      "src/lib/events/arm_neoverse_n1_events.h",
+      "src/lib/events/arm_neoverse_n2_events.h",
+      "src/lib/events/arm_neoverse_v1_events.h",
+      "src/lib/events/arm_neoverse_v2_events.h",
+      "src/lib/events/arm_neoverse_v3_events.h",
+      "src/lib/events/arm_hisilicon_kunpeng_events.h",
+      "src/lib/events/arm_hisilicon_kunpeng_unc_events.h",
+      "src/lib/pfmlib_perf_event_priv.h",
+      "src/lib/pfmlib_arm_armv8_unc_priv.h",
+    ]
+  }
+
+  if (target_cpu == "arm64") {
+    defines += [ "CONFIG_PFMLIB_ARCH_ARM64" ]
+    if (is_linux) {
+      sources += [
+        "src/lib/pfmlib_arm_armv8_kunpeng_unc_perf_event.c",
+        "src/lib/pfmlib_arm_armv8_thunderx2_unc_perf_event.c",
+        "src/lib/pfmlib_arm_perf_event.c",
+      ]
+    }
+
+    sources += [
+      "src/lib/pfmlib_arm.c",
+      "src/lib/pfmlib_arm_armv8.c",
+      "src/lib/pfmlib_arm_armv8_kunpeng_unc.c",
+      "src/lib/pfmlib_arm_armv8_thunderx2_unc.c",
+      "src/lib/pfmlib_arm_armv9.c",
+    ]
+
+    inputs += [
+      "src/lib/pfmlib_arm_priv.h",
+      "src/lib/events/arm_cortex_a57_events.h",
+      "src/lib/events/arm_cortex_a53_events.h",
+      "src/lib/events/arm_xgene_events.h",
+      "src/lib/events/arm_cavium_tx2_events.h",
+      "src/lib/events/arm_marvell_tx2_unc_events.h",
+      "src/lib/events/arm_fujitsu_a64fx_events.h",
+      "src/lib/events/arm_fujitsu_monaka_events.h",
+      "src/lib/events/arm_neoverse_n1_events.h",
+      "src/lib/events/arm_neoverse_n2_events.h",
+      "src/lib/events/arm_neoverse_v1_events.h",
+      "src/lib/events/arm_neoverse_v2_events.h",
+      "src/lib/events/arm_neoverse_v3_events.h",
+      "src/lib/events/arm_hisilicon_kunpeng_events.h",
+      "src/lib/events/arm_hisilicon_kunpeng_unc_events.h",
+      "src/lib/pfmlib_perf_event_priv.h",
+      "src/lib/pfmlib_arm_armv8_unc_priv.h",
+    ]
+  }
+
+  public_configs = [ ":libpfm4_public_config" ]
+  configs += [ ":libpfm4_config" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}

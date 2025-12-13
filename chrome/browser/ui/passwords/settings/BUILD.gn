@@ -1,0 +1,63 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("settings") {
+  sources = [
+    "password_manager_porter.h",
+    "password_manager_porter_interface.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/export",
+    "//components/password_manager/core/browser/import:importer",
+    "//components/password_manager/core/browser/ui",
+    "//ui/shell_dialogs",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "password_manager_porter.cc" ]
+  deps = [
+    ":settings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/password_manager/core/browser/export",
+    "//components/password_manager/core/browser/import:csv",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "password_manager_porter_unittest.cc" ]
+  deps = [
+    ":settings",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/password_manager/factories:password_factory_headers",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/affiliations/core/browser:test_support",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/export",
+    "//components/password_manager/core/browser/import:csv",
+    "//components/password_manager/core/browser/import:importer",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/common:features",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/shell_dialogs",
+    "//url",
+  ]
+}

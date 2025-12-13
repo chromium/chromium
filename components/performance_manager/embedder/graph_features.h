@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "base/feature_list.h"
 #include "components/performance_manager/public/features.h"
 #include "ui/base/device_form_factor.h"
 
@@ -58,6 +57,7 @@ class GraphFeatures {
       bool site_data_recorder : 1;
       bool tab_page_decorator : 1;
       bool v8_context_tracker : 1;
+      bool tracing_observers : 1;
     };
   };
 
@@ -137,6 +137,11 @@ class GraphFeatures {
     return *this;
   }
 
+  constexpr GraphFeatures& EnableTracingObservers() {
+    flags_.tracing_observers = true;
+    return *this;
+  }
+
   // Helper to enable the minimal set of features required for a content_shell
   // browser to work.
   constexpr GraphFeatures& EnableMinimal() {
@@ -160,6 +165,7 @@ class GraphFeatures {
     EnableResourceAttributionScheduler();
     EnableTabPageDecorator();
     EnableV8ContextTracker();
+    EnableTracingObservers();
 
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
       EnableSiteDataRecorder();

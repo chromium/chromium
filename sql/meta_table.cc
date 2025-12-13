@@ -52,6 +52,8 @@ bool PrepareGetStatement(std::string_view key,
 
 MetaTable::MetaTable() = default;
 
+MetaTable::MetaTable(Database& db) : db_(&db) {}
+
 MetaTable::~MetaTable() = default;
 
 // static

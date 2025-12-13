@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -121,8 +120,6 @@ class SearchTabHelper : public content::WebContentsObserver,
   // called synchronously with accepted = true if this feature is disabled
   // (which defaults the behavior to silent deletions).
   void OnDeleteAutocompleteMatchConfirm(uint8_t line, bool accepted);
-
-  void CloseNTPCustomizeChromeFeaturePromo();
 
   SearchIPCRouter ipc_router_;
 

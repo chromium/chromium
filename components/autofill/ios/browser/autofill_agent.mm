@@ -46,6 +46,7 @@
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/autofill_constants.h"
+#import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -72,8 +73,8 @@
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/grit/components_resources.h"
-#import "components/plus_addresses/features.h"
-#import "components/plus_addresses/grit/plus_addresses_strings.h"
+#import "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -371,7 +372,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   if (suggestion.type == autofill::SuggestionType::kAddressEntry ||
       suggestion.type == autofill::SuggestionType::kCreditCardEntry ||
-      suggestion.type == autofill::SuggestionType::kCreateNewPlusAddress ||
       suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry ||
       suggestion.type ==
           autofill::SuggestionType::kAddressFieldByFieldFilling) {
@@ -537,8 +537,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 }
 
 - (void)handleParsedForms:
-            (const std::vector<
-                raw_ptr<autofill::FormStructure, VectorExperimental>>&)forms
+            (const std::vector<raw_ref<const autofill::FormStructure>>&)forms
                   inFrame:(web::WebFrame*)frame {
 }
 
@@ -546,7 +545,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
             (const std::vector<autofill::FormDataPredictions>&)forms
                         inFrame:(web::WebFrame*)frame {
   CHECK(base::FeatureList::IsEnabled(
-      autofill::features::test::kAutofillShowTypePredictions));
+      autofill::features::debug::kAutofillShowTypePredictions));
 
   base::Value::Dict predictionData;
   for (const auto& form : forms) {
@@ -632,14 +631,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       // changes
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
     } else if (popup_suggestion.type ==
-                   autofill::SuggestionType::kFillExistingPlusAddress ||
-               popup_suggestion.type ==
-                   autofill::SuggestionType::kCreateNewPlusAddress) {
+               autofill::SuggestionType::kFillExistingPlusAddress) {
       // Show any plus_address suggestions.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
       if (!popup_suggestion.labels.empty() &&
-          !popup_suggestion.labels.front().empty() &&
-          _delegate.isKeyboardAccessoryUpgradeEnabled) {
+          !popup_suggestion.labels.front().empty()) {
         displayDescription =
             SysUTF16ToNSString(popup_suggestion.labels[0][0].value);
       }
@@ -695,6 +691,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                    kIPHAutofillHomeWorkProfileSuggestionFeature) {
       suggestion.featureForIPH =
           SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion;
+    } else if (popup_suggestion.iph_metadata.feature ==
+               &feature_engagement::
+                   kIPHAutofillAccountNameEmailSuggestionFeature) {
+      suggestion.featureForIPH =
+          SuggestionFeatureForIPH::kAccountNameEmailSuggestion;
     }
 
     // Put "clear form" entry at the front of the suggestions.
@@ -874,7 +875,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 - (void)webState:(web::WebState*)webState
     didSubmitDocumentWithFormData:(const FormData&)formData
                    hasUserGesture:(BOOL)hasUserGesture
-                          inFrame:(web::WebFrame*)frame {
+                          inFrame:(web::WebFrame*)frame
+                   perfectFilling:(BOOL)perfectFilling {
   if (![self isAutofillEnabled] || !frame) {
     return;
   }

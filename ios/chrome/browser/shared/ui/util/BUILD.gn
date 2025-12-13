@@ -14,10 +14,14 @@ source_set("util") {
     "animation_util.mm",
     "attributed_string_util.h",
     "attributed_string_util.mm",
+    "custom_ui_trait_accessor.h",
+    "custom_ui_trait_accessor.mm",
+    "date_localized_util.h",
+    "date_localized_util.mm",
     "dynamic_type_util.h",
     "dynamic_type_util.mm",
-    "keyboard_observer_helper.h",
-    "keyboard_observer_helper.mm",
+    "file_size_util.h",
+    "file_size_util.mm",
     "layout_guide_names.h",
     "layout_guide_names.mm",
     "named_guide.h",
@@ -45,6 +49,7 @@ source_set("util") {
     "//base",
     "//base:i18n",
     "//components/open_from_clipboard:open_from_clipboard_impl",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
@@ -69,20 +74,6 @@ source_set("util") {
     "QuartzCore.framework",
     "UniformTypeIdentifiers.framework",
   ]
-}
-
-source_set("snackbar_util") {
-  sources = [
-    "snackbar_util.h",
-    "snackbar_util.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/shared/ui/util/identity_snackbar",
-    "//ios/third_party/material_components_ios",
-  ]
-  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("util_bridge") {
@@ -174,36 +165,10 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/third_party/material_components_ios",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
     "//url",
-  ]
-}
-
-source_set("eg_app_support+eg2") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [
-    "keyboard_observer_helper_app_interface.h",
-    "keyboard_observer_helper_app_interface.mm",
-  ]
-  deps = [
-    ":util",
-    "//base",
-    "//base/test:test_support",
-    "//ios/chrome/test/app:test_support",
-  ]
-}
-
-source_set("eg_test_support+eg2") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [ "keyboard_observer_helper_app_interface.h" ]
-  deps = [
-    ":util",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }
 
@@ -212,6 +177,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "omnibox_util_egtest.mm" ]
   deps = [
+    "//components/omnibox/browser:pref_names",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

@@ -13,17 +13,18 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleStat
 /** Interface for a helper of the {@link SafetyHubModuleMediator}. */
 @NullMarked
 interface SafetyHubModuleHelper {
-    public String getTitle();
+    String getTitle();
 
-    public @Nullable String getSummary();
+    @Nullable CharSequence getSummary();
 
-    public @Nullable String getPrimaryButtonText();
+    @Nullable String getPrimaryButtonText();
 
-    public View.@Nullable OnClickListener getPrimaryButtonListener();
+    View.@Nullable OnClickListener getPrimaryButtonListener();
 
-    public @Nullable String getSecondaryButtonText();
+    @Nullable String getSecondaryButtonText();
 
-    public View.@Nullable OnClickListener getSecondaryButtonListener();
+    View.@Nullable OnClickListener getSecondaryButtonListener();
 
-    public @ModuleState int getModuleState();
+    @ModuleState
+    int getModuleState();
 }

@@ -2,6 +2,7 @@ Name: Google Benchmark
 Short Name: benchmark
 URL: https://github.com/google/benchmark
 Version: 761305ec3b33abf30e08d50eb829e19a802581cc
+Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE
 Security Critical: no

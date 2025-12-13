@@ -1,0 +1,132 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("vertical") {
+  sources = [
+    "bottom_container_button.h",
+    "root_tab_collection_node.h",
+    "tab_collection_node.h",
+    "vertical_pinned_tab_container_view.h",
+    "vertical_split_tab_view.h",
+    "vertical_tab_group_header_view.h",
+    "vertical_tab_group_view.h",
+    "vertical_tab_strip_bottom_container.h",
+    "vertical_tab_strip_top_container.h",
+    "vertical_tab_strip_view.h",
+    "vertical_unpinned_tab_container_view.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/tabs",
+    "//ui/base/metadata",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "bottom_container_button.cc",
+    "root_tab_collection_node.cc",
+    "tab_collection_node.cc",
+    "vertical_pinned_tab_container_view.cc",
+    "vertical_split_tab_view.cc",
+    "vertical_tab_group_header_view.cc",
+    "vertical_tab_group_view.cc",
+    "vertical_tab_strip_bottom_container.cc",
+    "vertical_tab_strip_top_container.cc",
+    "vertical_tab_strip_view.cc",
+    "vertical_tab_view.cc",
+    "vertical_tab_view.h",
+    "vertical_unpinned_tab_container_view.cc",
+  ]
+
+  deps = [
+    ":vertical",
+    "//chrome/browser:primitives",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/toolbar",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/tabs/alert:tab_alert",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "tab_collection_node_browsertest.cc",
+    "vertical_split_tab_view_browsertest.cc",
+    "vertical_tab_view_browsertest.cc",
+  ]
+  deps = [
+    ":impl",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs/tab_strip_api",
+    "//chrome/browser/ui/views/tabs/vertical",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "vertical_tab_strip_top_container_unittest.cc" ]
+  deps = [
+    ":impl",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/views/tabs/vertical",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//testing/gtest",
+    "//ui/views",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "vertical_tab_strip_bottom_container_interactive_uitest.cc",
+    "vertical_tab_strip_controller_interactive_uitest.cc",
+    "vertical_tab_strip_top_container_interactive_uitest.cc",
+  ]
+  deps = [
+    ":impl",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_menu",
+    "//chrome/browser/ui/views/tabs/vertical",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/views",
+  ]
+}

@@ -17,7 +17,7 @@ class GURL;
 - (void)lensOverlayMediatorDidOpenOverlayMenu:(LensOverlayMediator*)mediator;
 
 /// Called when an URL needs to be opened in a new tab.
-- (void)lensOverlayMediatorOpenURLInNewTabRequsted:(GURL)url;
+- (void)lensOverlayMediatorOpenURLInNewTabRequested:(GURL)url;
 
 /// Called when a translation failed due to no or unprocessable text in the
 /// given image.

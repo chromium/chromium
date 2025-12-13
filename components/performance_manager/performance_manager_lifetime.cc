@@ -11,6 +11,8 @@
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
+#include "components/performance_manager/execution_context_priority/closing_page_voter.h"
+#include "components/performance_manager/execution_context_priority/extension_service_worker_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_audible_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_capturing_media_stream_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_visibility_voter.h"
@@ -61,10 +63,22 @@ void AddVoters(GraphImpl* graph) {
     priority_voting_system->AddPriorityVoter<
         execution_context_priority::InheritClientPriorityVoter>();
 
+    // Casts a USER_VISIBLE vote for each extension service worker.
+    if (base::FeatureList::IsEnabled(features::kExtensionServiceWorkerVoter)) {
+      priority_voting_system->AddPriorityVoter<
+          execution_context_priority::ExtensionServiceWorkerVoter>();
+    }
+
     // Casts a USER_VISIBLE vote for all frames in a loading page.
     if (base::FeatureList::IsEnabled(features::kPMLoadingPageVoter)) {
       priority_voting_system
           ->AddPriorityVoter<execution_context_priority::LoadingPageVoter>();
+    }
+
+    // Casts a USER_BLOCKING vote for all the closing pages.
+    if (base::FeatureList::IsEnabled(features::kBoostClosingTabs)) {
+      priority_voting_system
+          ->AddPriorityVoter<execution_context_priority::ClosingPageVoter>();
     }
 
 #if BUILDFLAG(IS_MAC)

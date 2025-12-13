@@ -32,9 +32,11 @@ public class WebViewCrashInfoCollector {
     private final CrashInfoLoader[] mCrashInfoLoaders;
 
     /** Funcational interface to implement special filters to crashes. */
-    public static interface Filter {
-        /** @return {@code true} to keep the {@link CrashInfo}, {@code false} to filter it out. */
-        public boolean test(CrashInfo c);
+    public interface Filter {
+        /**
+         * @return {@code true} to keep the {@link CrashInfo}, {@code false} to filter it out.
+         */
+        boolean test(CrashInfo c);
     }
 
     /** A class that creates the CrashInfoLoaders that the collector uses. Allows mocking in tests. */

@@ -18,13 +18,14 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_metadata.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
@@ -114,13 +115,14 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
   std::string tab_title() const override;
   std::string user_action_id() const override;
   std::string email() const override;
-  std::string url() const override;
+  const GURL& url() const override;
   const GURL& tab_url() const override;
   enterprise_connectors::ContentAnalysisRequest::Reason reason() const override;
   google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
   referrer_chain() const override;
   google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
       const override;
+  content::WebContents* web_contents() const override;
 
  private:
   // Starts the deep scanning request when there is a one-to-one mapping from
@@ -141,16 +143,17 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
 
   // Callbacks for when |binary_upload_service_| finishes uploading.
   void OnScanComplete(const base::FilePath& current_path,
-                      BinaryUploadService::Result result,
+                      enterprise_connectors::ScanRequestUploadResult result,
                       enterprise_connectors::ContentAnalysisResponse response);
   void OnConsumerScanComplete(
       const base::FilePath& current_path,
-      BinaryUploadService::Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       enterprise_connectors::ContentAnalysisResponse response);
   void OnEnterpriseScanComplete(
       const base::FilePath& current_path,
-      BinaryUploadService::Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       enterprise_connectors::ContentAnalysisResponse response);
+  void ProcessEnterpriseDownloadResult(DownloadCheckResult download_result);
 
   // Called when a single file scanning request has completed. Calls
   // FinishRequest if it was the last required one.
@@ -162,7 +165,8 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
 
   // Called to verify if `result` is considered as a failure and the scan should
   // end early.
-  bool ShouldTerminateEarly(BinaryUploadService::Result result);
+  bool ShouldTerminateEarly(
+      enterprise_connectors::ScanRequestUploadResult result);
 
   // Called to open the download. This is triggered by the timeout modal dialog.
   void OpenDownload();
@@ -181,19 +185,21 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
 
   // Callback invoked in `StartSingleFileScan` to check if `data` has been
   // successfully fetched and ready for deep scanning if needed.
-  void OnGetFileRequestData(const base::FilePath& file_path,
-                            std::unique_ptr<FileAnalysisRequest> request,
-                            BinaryUploadService::Result result,
-                            BinaryUploadService::Request::Data data);
+  void OnGetFileRequestData(
+      const base::FilePath& file_path,
+      std::unique_ptr<FileAnalysisRequest> request,
+      enterprise_connectors::ScanRequestUploadResult result,
+      enterprise_connectors::BinaryUploadRequest::Data data);
 
   // Callback invoked in `StartSavePackageScan` to check if `data` of a file in
   // package has been successfully fetched and ready for deep scanning if
   // needed.
-  void OnGetPackageFileRequestData(const base::FilePath& final_path,
-                                   const base::FilePath& current_path,
-                                   std::unique_ptr<FileAnalysisRequest> request,
-                                   BinaryUploadService::Result result,
-                                   BinaryUploadService::Request::Data data);
+  void OnGetPackageFileRequestData(
+      const base::FilePath& final_path,
+      const base::FilePath& current_path,
+      std::unique_ptr<FileAnalysisRequest> request,
+      enterprise_connectors::ScanRequestUploadResult result,
+      enterprise_connectors::BinaryUploadRequest::Data data);
 
   // Helper function to simplify checking if the report-only feature is set in
   // conjunction with the corresponding policy value.
@@ -212,6 +218,12 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
 
   // Provides scan result to `callback_` and clean up.
   void CallbackAndCleanup(DownloadCheckResult result);
+
+  // If enterprise scan finds something, update the download check result for
+  // large or encrypted files.
+  void MaybeUpdateDownloadCheckResult(
+      const enterprise_connectors::ContentAnalysisResponse& response,
+      DownloadCheckResult& result);
 
   // Metadata for the item being scanned. This is owned by `DeepScanningRequest`
   // and provides an abstraction layer over different types of scan sources
@@ -300,6 +312,10 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
 
   base::WeakPtrFactory<DeepScanningRequest> weak_ptr_factory_;
 };
+
+// Revealed for testing.
+DownloadCheckResult ResponseToDownloadCheckResult(
+    const enterprise_connectors::ContentAnalysisResponse& response);
 
 }  // namespace safe_browsing
 

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/wm/core/cursor_util.h"
 
 #include <array>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -94,13 +90,14 @@ TEST(CursorUtil, GetCursorData) {
     gfx::Point hotspot[2][2];  // indexed by cursor size and scale.
   } kCursorTestCases[] = {
       {CursorType::kPointer,
-       {gfx::Size(25, 25), gfx::Size(64, 64)},
-       {{gfx::Point(4, 4), gfx::Point(7, 7)},
-        {gfx::Point(10, 10), gfx::Point(20, 20)}}},
+       {gfx::Size(25, 25), gfx::Size(25, 25)},
+       {{gfx::Point(6, 4), gfx::Point(12, 8)},
+        {gfx::Point(6, 4), gfx::Point(12, 8)}}},
       {CursorType::kWait,
-       {gfx::Size(16, 16), gfx::Size(16, 16)},
-       {{gfx::Point(7, 7), gfx::Point(14, 14)},
-        {gfx::Point(7, 7), gfx::Point(14, 14)}}},
+       {gfx::Size(25, 25), gfx::Size(25, 25)},
+       {{gfx::Point(12, 12), gfx::Point(24, 24)},
+        {gfx::Point(12, 12), gfx::Point(24, 24)}}},
+
   };
 
   for (const float scale : {0.8f, 1.0f, 1.3f, 1.5f, 2.0f, 2.5f}) {
@@ -111,21 +108,21 @@ TEST(CursorUtil, GetCursorData) {
       for (const auto& test : kCursorTestCases) {
         SCOPED_TRACE(test.cursor);
         static constexpr auto kDefaultRotation = display::Display::ROTATE_0;
-        const auto pointer_data =
-            GetCursorData(test.cursor, size, scale, std::nullopt,
-                          kDefaultRotation, SK_ColorBLACK);
+        const auto pointer_data = GetCursorData(
+            test.cursor, scale, std::nullopt, kDefaultRotation, SK_ColorBLACK);
         ASSERT_TRUE(pointer_data);
         ASSERT_GT(pointer_data->bitmaps.size(), 0u);
         EXPECT_EQ(gfx::SkISizeToSize(pointer_data->bitmaps[0].dimensions()),
-                  gfx::ScaleToFlooredSize(
+                  gfx::ScaleToRoundedSize(
                       test.size[base::checked_cast<int>(size)], scale));
         const float resource_scale = ui::GetScaleForResourceScaleFactor(
             ui::GetSupportedResourceScaleFactorForRescale(scale));
-        EXPECT_EQ(pointer_data->hotspot,
-                  gfx::ScaleToFlooredPoint(
-                      test.hotspot[base::checked_cast<int>(size)]
-                                  [base::checked_cast<int>(resource_scale) - 1],
-                      scale / resource_scale));
+        UNSAFE_TODO(EXPECT_EQ(
+            pointer_data->hotspot,
+            gfx::ScaleToFlooredPoint(
+                test.hotspot[base::checked_cast<int>(size)]
+                            [base::checked_cast<int>(resource_scale) - 1],
+                scale / resource_scale)));
       }
     }
   }
@@ -139,11 +136,11 @@ TEST(CursorUtil, GetCursorDataWithTargetCursorSize) {
     gfx::Size size;         // large cursor size in dip
     std::array<gfx::Point, 2> hotspot;  // hotspot in px, indexed by scale.
   } kCursorTestCases[] = {{CursorType::kPointer,
-                           gfx::Size(64, 64),
-                           {gfx::Point(10, 10), gfx::Point(20, 20)}},
+                           gfx::Size(25, 25),
+                           {gfx::Point(6, 4), gfx::Point(12, 8)}},
                           {CursorType::kWait,
-                           gfx::Size(16, 16),
-                           {gfx::Point(7, 7), gfx::Point(14, 14)}}};
+                           gfx::Size(25, 25),
+                           {gfx::Point(12, 12), gfx::Point(24, 24)}}};
 
   for (const float scale : {0.8f, 1.0f, 1.3f, 1.5f, 2.0f, 2.5f}) {
     SCOPED_TRACE(testing::Message() << "scale " << scale);
@@ -154,10 +151,9 @@ TEST(CursorUtil, GetCursorDataWithTargetCursorSize) {
            {ui::kMinLargeCursorSize, ui::kMaxLargeCursorSize}) {
         const float resource_scale = ui::GetScaleForResourceScaleFactor(
             ui::GetSupportedResourceScaleFactorForRescale(scale));
-        const auto pointer_data =
-            GetCursorData(test.cursor, ui::CursorSize::kLarge, scale,
-                          std::make_optional(target_cursor_size_in_px),
-                          kDefaultRotation, SK_ColorBLACK);
+        const auto pointer_data = GetCursorData(
+            test.cursor, scale, std::make_optional(target_cursor_size_in_px),
+            kDefaultRotation, SK_ColorBLACK);
         ASSERT_TRUE(pointer_data);
         ASSERT_GT(pointer_data->bitmaps.size(), 0u);
 
@@ -189,34 +185,41 @@ TEST(CursorUtil, GetCursorDataWithColor) {
     SkColor found;         // Spot-check: This color should be in the cursor.
     CursorType cursor_type;
   } kColorTestCases[] = {
-      // Cursors should still have white.
-      {SK_ColorMAGENTA, SK_ColorBLUE, SK_ColorWHITE, CursorType::kHand},
-      {SK_ColorBLUE, SK_ColorMAGENTA, SK_ColorWHITE, CursorType::kCell},
-      {SK_ColorGREEN, SK_ColorBLUE, SK_ColorWHITE, CursorType::kNoDrop},
+      // Cursors should not have black because the black cursor body should be
+      // replaced by other colors.
+      {SK_ColorRED, SK_ColorBLACK, SK_ColorWHITE, CursorType::kPointer},
+      {SK_ColorRED, SK_ColorBLACK, SK_ColorWHITE, CursorType::kCell},
+
+      // Cursors should not have white because the white cursor body should be
+      // replaced by other colors.
+      {SK_ColorMAGENTA, SK_ColorWHITE, SK_ColorBLACK, CursorType::kHand},
+
       // Also cursors should still have transparent.
       {SK_ColorRED, SK_ColorGREEN, SK_ColorTRANSPARENT, CursorType::kPointer},
+
       // The no drop cursor has red in it, check it's still there:
-      // Most of the cursor should be colored, but the red part shouldn't be
+      // Cursor body should be colored, but the red part shouldn't be
       // re-colored.
-      {SK_ColorBLUE, SK_ColorGREEN, SkColorSetRGB(173, 8, 8),
+      {SK_ColorBLUE, SK_ColorGREEN, SkColorSetRGB(181, 70, 72),
        CursorType::kNoDrop},
-      // Similarly, the copy cursor has green in it.
-      {SK_ColorBLUE, SK_ColorRED, SkColorSetRGB(19, 137, 16),
+
+      // Similarly, the copy cursor has a green part in it which should not be
+      // re-colored.
+      {SK_ColorBLUE, SK_ColorRED, SkColorSetRGB(57, 149, 88),
        CursorType::kCopy},
   };
 
   for (const auto& test : kColorTestCases) {
-    auto pointer_data = GetCursorData(
-        test.cursor_type, ui::CursorSize::kNormal, 1.0f, std::nullopt,
-        display::Display::ROTATE_0, test.cursor_color);
+    ClearCursorAnimationCache();
+    auto pointer_data =
+        GetCursorData(test.cursor_type, 1.0f, std::nullopt,
+                      display::Display::ROTATE_0, test.cursor_color);
     const SkBitmap bitmap = pointer_data->bitmaps[0];
-    // We should find `cursor_color` pixels in the cursor, but no black or
-    // |not_found| color pixels. All black pixels are recolored.
-    // We should also find |found| color.
+    // We should find `cursor_color` and `found` color pixels in the cursor, but
+    // no |not_found| color pixels.
     bool has_color = false;
     bool has_not_found_color = false;
     bool has_found_color = false;
-    bool has_black = false;
     for (int x = 0; x < bitmap.width(); ++x) {
       for (int y = 0; y < bitmap.height(); ++y) {
         SkColor color = bitmap.getColor(x, y);
@@ -226,15 +229,12 @@ TEST(CursorUtil, GetCursorDataWithColor) {
           has_not_found_color = true;
         } else if (color == test.found) {
           has_found_color = true;
-        } else if (color == SK_ColorBLACK) {
-          has_black = true;
         }
       }
     }
     EXPECT_TRUE(has_color);
     EXPECT_TRUE(has_found_color);
     EXPECT_FALSE(has_not_found_color);
-    EXPECT_FALSE(has_black);
   }
 }
 

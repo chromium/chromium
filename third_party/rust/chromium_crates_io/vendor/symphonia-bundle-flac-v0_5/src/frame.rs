@@ -165,7 +165,7 @@ pub fn read_frame_header<B: ReadBytes>(reader: &mut B, sync: u16) -> Result<Fram
         0x9 => Some(44_100),
         0xa => Some(48_000),
         0xb => Some(96_000),
-        0xc => Some(u32::from(reader_crc8.read_u8()?)),
+        0xc => Some(u32::from(reader_crc8.read_u8()?) * 1000),
         0xd => Some(u32::from(reader_crc8.read_be_u16()?)),
         0xe => Some(u32::from(reader_crc8.read_be_u16()?) * 10),
         _ => {

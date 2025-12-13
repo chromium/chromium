@@ -27,12 +27,36 @@ void FakeUnexportableKeyService::FromWrappedSigningKeySlowlyAsync(
     base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) {
   std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
 }
+void FakeUnexportableKeyService::
+    GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+        BackgroundTaskPriority priority,
+        base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+            callback) {
+  std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
+}
+void FakeUnexportableKeyService::CopyKeyFromOtherService(
+    const UnexportableKeyService& other_service,
+    UnexportableKeyId key_id_from_other_service,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) {
+  std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
+}
 void FakeUnexportableKeyService::SignSlowlyAsync(
-    const UnexportableKeyId& key_id,
+    UnexportableKeyId key_id,
     base::span<const uint8_t> data,
     BackgroundTaskPriority priority,
-    size_t max_retries,
     base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback) {
+  std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
+}
+void FakeUnexportableKeyService::DeleteKeySlowlyAsync(
+    UnexportableKeyId key_id,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<void>)> callback) {
+  std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
+}
+void FakeUnexportableKeyService::DeleteAllKeysSlowlyAsync(
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
   std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
 }
 ServiceErrorOr<std::vector<uint8_t>>

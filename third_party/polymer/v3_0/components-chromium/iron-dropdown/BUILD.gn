@@ -8,9 +8,9 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_library("iron-dropdown") {
   deps = [
-    "../iron-a11y-keys-behavior:iron-a11y-keys-behavior",
+    "../iron-a11y-keys-behavior",
     "../iron-behaviors:iron-control-state",
-    "../iron-overlay-behavior:iron-overlay-behavior",
+    "../iron-overlay-behavior",
     "../neon-animation:neon-animation-runner-behavior",
     "../polymer:polymer_bundled",
   ]

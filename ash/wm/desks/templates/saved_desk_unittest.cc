@@ -9,8 +9,8 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/constants/ash_features.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
@@ -82,10 +82,10 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
@@ -399,7 +399,7 @@ class SavedDeskTest : public OverviewTestBase {
   }
 
   MultiUserWindowManager* multi_user_window_manager() {
-    return multi_user_window_manager_.get();
+    return Shell::Get()->multi_user_window_manager();
   }
 
   // OverviewTestBase:
@@ -418,13 +418,10 @@ class SavedDeskTest : public OverviewTestBase {
     // this would lead to flaky tests.
     saved_desk_test_helper()->WaitForDeskModels();
     account_id_test_ = AccountId::FromUserEmail("test_user");
-    multi_user_window_manager_ =
-        MultiUserWindowManager::Create(account_id_test_);
   }
 
   void TearDown() override {
     disable_app_id_check_.reset();
-    multi_user_window_manager_.reset();
     OverviewTestBase::TearDown();
   }
 
@@ -434,12 +431,11 @@ class SavedDeskTest : public OverviewTestBase {
   // Tests should normally create a local `ScopedAnimationDurationScaleMode`.
   // Create this object if a non zero scale mode needs to be used during test
   // tear down.
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> animation_scale_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> animation_scale_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
   AccountId account_id_test_;
 };
 
@@ -675,8 +671,8 @@ TEST_F(SavedDeskTest, HideMinimizedWindowOverviewItemsOnSavedDeskGridShow) {
 
   // Exit overview mode. This needs to be done with a non-zero duration so that
   // the fade-out animation happens.
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   ToggleOverview();
 }
@@ -993,8 +989,8 @@ TEST_F(SavedDeskTest, SaveDeskAsTemplateButtonShowsSavedDeskGrid) {
 // Tests that the desks bar is created before the save desk buttons are visible.
 // Regression test for https://crbug.com/1349971.
 TEST_F(SavedDeskTest, DesksBarLoadsBeforeSaveDeskButtons) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Release the window since it will be automatically destroyed when the desk
   // is saved.
@@ -2523,8 +2519,8 @@ TEST_F(SavedDeskTest, EditTemplateNameWithKeyboardNoCrash) {
 TEST_F(SavedDeskTest, EditSavedDeskNameShutdownNoCrash) {
   // The fade out animation of the saved desk grid must be enabled for this
   // crash to have happened.
-  animation_scale_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  animation_scale_ = std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   AddEntry(base::Uuid::GenerateRandomV4(), "a", base::Time::Now(),
            DeskTemplateType::kTemplate);
@@ -3070,8 +3066,8 @@ TEST_F(SavedDeskTest, ReplaceTemplateAndExitOverview) {
   // Immediately exit overview. It is important that this is done with a
   // non-zero duration. This will cause saved desk UI items to live on for
   // slightly longer as they will be briefly owned by an animation.
-  ui::ScopedAnimationDurationScaleMode animation(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   ToggleOverview();
   WaitForOverviewExitAnimation();
@@ -3191,8 +3187,8 @@ TEST_F(SavedDeskTest, WindowOpacityResetAfterImmediateExit) {
   EXPECT_EQ(0.f, test_window2->layer()->opacity());
   EXPECT_EQ(0.f, test_window3->layer()->opacity());
 
-  ui::ScopedAnimationDurationScaleMode animation(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Activate the second desk which has no windows. Test that all the windows
   // have their opacity restored.
@@ -3227,8 +3223,8 @@ TEST_F(SavedDeskTest, WindowOpacityResetAfterLeavingOverview) {
 
   // The bug did not repro with zero duration as the animation callback to
   // reshow the windows would happen immediately.
-  ui::ScopedAnimationDurationScaleMode animation(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Launch a new desk.
   LeftClickOn(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
@@ -4320,8 +4316,8 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskWithDuplicateName) {
 TEST_F(DeskSaveAndRecallTest, ExitOverviewDeskItemFocusCrash) {
   // The fade out animation of the desks templates grid must be enabled for this
   // crash to have happened.
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
@@ -4449,8 +4445,8 @@ TEST_F(SavedDeskTest, SaveDeskFilterByAccountID) {
 // Tests that if we tab while the saved desks library is fading out, there is no
 // crash. Regression test for http://b/302708219.
 TEST_F(SavedDeskTest, TabbingDuringExitAnimation) {
-  ui::ScopedAnimationDurationScaleMode scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Ensure we have a desk saved so we can go into the library.
   AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),

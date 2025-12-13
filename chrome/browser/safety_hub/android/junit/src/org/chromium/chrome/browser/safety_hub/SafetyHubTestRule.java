@@ -108,17 +108,9 @@ public class SafetyHubTestRule implements TestRule {
                                 : null);
     }
 
-    public void setPasswordManagerAvailable(
-            boolean isPasswordManagerAvailable, boolean isLoginDbDeprecationEnabled) {
-        if (isLoginDbDeprecationEnabled) {
-            when(mPasswordManagerUtilBridgeNatives.isPasswordManagerAvailable(mPrefService, true))
-                    .thenReturn(isPasswordManagerAvailable);
-        } else {
-            when(mPasswordManagerUtilBridgeNatives.shouldUseUpmWiring(mSyncService, mPrefService))
-                    .thenReturn(isPasswordManagerAvailable);
-            when(mPasswordManagerUtilBridgeNatives.areMinUpmRequirementsMet())
-                    .thenReturn(isPasswordManagerAvailable);
-        }
+    public void setPasswordManagerAvailable(boolean isPasswordManagerAvailable) {
+        when(mPasswordManagerUtilBridgeNatives.isPasswordManagerAvailable(true))
+                .thenReturn(isPasswordManagerAvailable);
     }
 
     public PendingIntent getIntentForAccountPasswordCheckup() {

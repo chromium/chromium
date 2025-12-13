@@ -23,7 +23,7 @@ bool OriginCanAccessServiceWorkers(const GURL& url) {
     return true;
   }
 
-  if (base::Contains(GetServiceWorkerSchemes(), url.scheme())) {
+  if (base::Contains(GetServiceWorkerSchemes(), url.GetScheme())) {
     return true;
   }
 

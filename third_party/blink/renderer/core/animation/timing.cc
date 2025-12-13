@@ -50,16 +50,17 @@ Timing::FillMode Timing::EnumToFillMode(V8FillMode::Enum fill_mode) {
   }
 }
 
-String Timing::PlaybackDirectionString(PlaybackDirection playback_direction) {
+V8PlaybackDirection::Enum Timing::PlaybackDirectionEnum(
+    PlaybackDirection playback_direction) {
   switch (playback_direction) {
     case PlaybackDirection::NORMAL:
-      return "normal";
+      return V8PlaybackDirection::Enum::kNormal;
     case PlaybackDirection::REVERSE:
-      return "reverse";
+      return V8PlaybackDirection::Enum::kReverse;
     case PlaybackDirection::ALTERNATE_NORMAL:
-      return "alternate";
+      return V8PlaybackDirection::Enum::kAlternate;
     case PlaybackDirection::ALTERNATE_REVERSE:
-      return "alternate-reverse";
+      return V8PlaybackDirection::Enum::kAlternateReverse;
   }
   NOTREACHED();
 }
@@ -93,7 +94,7 @@ EffectTiming* Timing::ConvertToEffectTiming() const {
         V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>("auto");
   }
   effect_timing->setDuration(duration);
-  effect_timing->setDirection(PlaybackDirectionString(direction));
+  effect_timing->setDirection(PlaybackDirectionEnum(direction));
   effect_timing->setEasing(timing_function->ToString());
 
   return effect_timing;
@@ -174,7 +175,7 @@ ComputedEffectTiming* Timing::getComputedTiming(
             computed_duration->GetAsDouble()));
   }
 
-  computed_timing->setDirection(Timing::PlaybackDirectionString(direction));
+  computed_timing->setDirection(PlaybackDirectionEnum(direction));
   computed_timing->setEasing(timing_function->ToString());
 
   return computed_timing;
@@ -186,12 +187,15 @@ Timing::CalculatedTiming Timing::CalculateTimings(
     const NormalizedTiming& normalized_timing,
     AnimationDirection animation_direction,
     bool is_keyframe_effect,
-    std::optional<double> playback_rate) const {
+    std::optional<double> playback_rate,
+    bool paused_for_trigger,
+    bool is_endpoint_inclusive) const {
   const AnimationTimeDelta active_duration = normalized_timing.active_duration;
   const AnimationTimeDelta duration = normalized_timing.iteration_duration;
 
   Timing::Phase current_phase = TimingCalculations::CalculatePhase(
-      normalized_timing, local_time, animation_direction);
+      normalized_timing, local_time, animation_direction, paused_for_trigger,
+      is_endpoint_inclusive);
 
   const std::optional<AnimationTimeDelta> active_time =
       TimingCalculations::CalculateActiveTime(

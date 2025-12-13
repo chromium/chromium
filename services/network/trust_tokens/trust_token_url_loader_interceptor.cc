@@ -10,8 +10,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
+#include "url/gurl.h"
 
 namespace network {
 

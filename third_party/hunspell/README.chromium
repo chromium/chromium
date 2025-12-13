@@ -1,6 +1,6 @@
 Name: hunspell
 URL: http://hunspell.sourceforge.net/
-Version: 6d7d19f
+Version: 96466a6
 Update Mechanism: Manual
 CPEPrefix: cpe:/a:hunspell_project:hunspell:1.7.2
 License: MPL-1.1
@@ -9,7 +9,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-This is a partial copy of Hunspell 6d7d19f with the following changes:
+This is a partial copy of Hunspell 96466a6 with the following changes:
 * Move README.md onto the README symlink.
 * Change src/hunspell/filemgr.hxx and src/hunspell/filemgr.cxx to use
   LineIterator.
@@ -36,7 +36,7 @@ steps.
 2) Checkout hunspell:
    $ git clone https://github.com/hunspell/hunspell.git
    $ cd hunspell
-   $ git checkout 6d7d19f
+   $ git checkout 96466a6
 3) Apply the existing patch:
    $ patch -p1 -i $CHROMIUM_HUNSPELL/google.patch
 4) Make your new changes inside the git hunspell directory.

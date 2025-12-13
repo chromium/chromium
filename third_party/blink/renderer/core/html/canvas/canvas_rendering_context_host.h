@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_HOST_H_
 
+#include "base/byte_count.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -63,6 +64,7 @@ class CORE_EXPORT CanvasRenderingContextHost
   void DidDraw() { DidDraw(SkIRect::MakeWH(width(), height())); }
 
   virtual void PostFinalizeFrame(FlushReason) = 0;
+  void NotifyCachesOfSwitchingFrame();
   virtual bool PushFrame(scoped_refptr<CanvasResource>&& frame,
                          const SkIRect& damage_rect) = 0;
   virtual bool OriginClean() const = 0;
@@ -75,8 +77,10 @@ class CORE_EXPORT CanvasRenderingContextHost
   virtual DispatchEventResult HostDispatchEvent(Event*) = 0;
   virtual const KURL& GetExecutionContextUrl() const = 0;
 
-  virtual void UpdateMemoryUsage() = 0;
-  virtual size_t GetMemoryUsage() const = 0;
+  void UpdateMemoryUsage();
+  base::ByteCount GetMemoryUsage() const {
+    return externally_allocated_memory_;
+  }
 
   // Initialize the indicated cc::Layer with the HTMLCanvasElement's CSS
   // properties. This is a no-op if `this` is not an HTMLCanvasElement.
@@ -104,8 +108,6 @@ class CORE_EXPORT CanvasRenderingContextHost
 
   bool IsValidImageSize() const;
   bool IsPaintable() const;
-
-  virtual bool IsHibernating() const { return false; }
 
   virtual bool LowLatencyEnabled() const { return false; }
 
@@ -145,7 +147,6 @@ class CORE_EXPORT CanvasRenderingContextHost
   ImageBitmapSourceStatus CheckUsability() const override;
 
   gfx::Size Size() const { return size_; }
-  virtual void SetSize(gfx::Size size) { size_ = size; }
 
   bool ShouldTryToUseGpuRaster() const;
   void SetPreferred2DRasterMode(RasterModeHint);
@@ -153,27 +154,26 @@ class CORE_EXPORT CanvasRenderingContextHost
   virtual void DiscardResources() = 0;
 
  protected:
-  ~CanvasRenderingContextHost() override = default;
+  ~CanvasRenderingContextHost() override;
 
   scoped_refptr<StaticBitmapImage> CreateTransparentImage() const;
 
   bool ContextHasOpenLayers(const CanvasRenderingContext*) const;
 
-  // Computes the digest that corresponds to the "input" of this canvas,
-  // including the context type, and if applicable, canvas digest, and taint
-  // bits.
-  IdentifiableToken IdentifiabilityInputDigest(
-      const CanvasRenderingContext* const context) const;
-
   Member<PlainTextPainter> plain_text_painter_;
   Member<UniqueFontSelector> unique_font_selector_;
+  gfx::Size size_;
 
  private:
 
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;
-  gfx::Size size_;
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
+
+  // GPU Memory Management
+  base::ByteCount externally_allocated_memory_;
+  // NO_UNIQUE_ADDRESS allows making this member empty in production.
+  NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };
 
 }  // namespace blink

@@ -4,6 +4,7 @@
 
 [
     Exposed=Window,
-    HTMLConstructor,
     RuntimeEnabled=MenuElements
-] interface HTMLMenuListElement : HTMLElement {};
+] interface HTMLMenuListElement : HTMLElement {
+    [HTMLConstructor] constructor();
+};

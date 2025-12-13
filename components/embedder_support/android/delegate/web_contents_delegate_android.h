@@ -73,12 +73,6 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   void RendererResponsive(
       content::WebContents* source,
       content::RenderWidgetHost* render_widget_host) override;
-  void WebContentsCreated(content::WebContents* source_contents,
-                          int opener_render_process_id,
-                          int opener_render_frame_id,
-                          const std::string& frame_name,
-                          const GURL& target_url,
-                          content::WebContents* new_contents) override;
   bool IsWebContentsCreationOverridden(
       content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
@@ -110,9 +104,14 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   void ExitFullscreenModeForTab(content::WebContents* web_contents) override;
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) override;
+  content::FullscreenState GetFullscreenState(
+      const content::WebContents* web_contents) const override;
   void RequestPointerLock(content::WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override;
+  void RequestKeyboardLock(content::WebContents* web_contents,
+                           bool esc_key_locked) override;
+  void CancelKeyboardLockRequest(content::WebContents* web_contents) override;
   void OnDidBlockNavigation(
       content::WebContents* web_contents,
       const GURL& blocked_url,
@@ -134,12 +133,16 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   // empty bitmap if the capture fails) only if this returns true.
   bool MaybeCopyContentAreaAsBitmap(
       base::OnceCallback<void(const SkBitmap&)> callback) override;
+  bool MaybeCopyContentAreaAsHardwareBuffer(
+      content::HardwareBufferResultCallback callback) override;
   SkBitmap MaybeCopyContentAreaAsBitmapSync() override;
   SkBitmap GetBackForwardTransitionFallbackUXInternalPageIcon() override;
   void DidBackForwardTransitionAnimationChange() override;
   content::BackForwardTransitionAnimationManager::FallbackUXConfig
   GetBackForwardTransitionFallbackUXConfig() override;
   void ContentsZoomChange(bool zoom_in) override;
+  content::NavigationController::UserAgentOverrideOption
+  ShouldOverrideUserAgentForPreloading(const GURL& url) override;
 
  protected:
   base::android::ScopedJavaLocalRef<jobject> GetJavaDelegate(JNIEnv* env) const;

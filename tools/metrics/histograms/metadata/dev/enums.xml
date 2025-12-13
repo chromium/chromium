@@ -838,30 +838,31 @@ Called by update_protocol_commands_enum.py.-->
   <int value="181" label="AI Assistance - Error"/>
   <int value="182"
       label="Performance Insight agent opened from Insights sidebar"/>
+  <int value="183" label="AI Assistance - Opened from Performance full button"/>
+  <int value="184" label="AI Code Completion - Response served from cache"/>
+  <int value="185" label="AI Code Completion - Request triggered"/>
+  <int value="186" label="AI Code Completion - Suggestion displayed"/>
+  <int value="187" label="AI Code Completion - Suggestion accepted"/>
+  <int value="188" label="AI Code Completion - Error"/>
+  <int value="189" label="Attribute-link clicked"/>
+  <int value="190" label="Console Insight requested via Teaser"/>
+  <int value="191" label="Teaser for Console Insight - Generation started"/>
+  <int value="192" label="Teaser for Console Insight - Generation completed"/>
+  <int value="193" label="Teaser for Console Insight - Generation aborted"/>
+  <int value="194" label="Teaser for Console Insight - Generation errored"/>
 </enum>
 
-<enum name="DevToolsAnimationPlaybackRateChanged">
-  <int value="0" label="100%"/>
-  <int value="1" label="25%"/>
-  <int value="2" label="10%"/>
-  <int value="3" label="Other"/>
-</enum>
-
-<enum name="DevToolsCSSHintShown">
-  <int value="0" label="Other"/>
-  <int value="1" label="AlignContent"/>
-  <int value="2" label="FlexItem"/>
-  <int value="3" label="FlexContainer"/>
-  <int value="4" label="GridContainer"/>
-  <int value="5" label="GridItem"/>
-  <int value="6" label="FlexGrid"/>
-  <int value="7" label="MulticolFlexGrid"/>
-  <int value="8" label="Padding"/>
-  <int value="9" label="Position"/>
-  <int value="10" label="ZIndex"/>
-  <int value="11" label="Sizing"/>
-  <int value="12" label="FlexOrGridItem"/>
-  <int value="13" label="FontVariationSettings"/>
+<enum name="DevToolsBuiltInAiAvailability">
+  <int value="0" label="LanguageModel unavailable, has GPU"/>
+  <int value="1" label="LanguageModel downloadable, has GPU"/>
+  <int value="2" label="LanguageModel downloading, has GPU"/>
+  <int value="3" label="LanguageModel available, has GPU"/>
+  <int value="4" label="LanguageModel disabled, has GPU"/>
+  <int value="5" label="LanguageModel unavailable, no GPU"/>
+  <int value="6" label="LanguageModel downloadable, no GPU"/>
+  <int value="7" label="LanguageModel downloading, no GPU"/>
+  <int value="8" label="LanguageModel available, no GPU"/>
+  <int value="9" label="LanguageModel disabled, no GPU"/>
 </enum>
 
 <enum name="DevToolsDebuggingUserDataDirStatus">
@@ -1088,10 +1089,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="68" label="GenericIssue::FormAutocompleteAttributeEmptyError"/>
   <int value="69"
       label="GenericIssue::FormEmptyIdAndNameAttributesForInputError"/>
-  <int value="70" label="GenericIssue::FormAriaLabelledByToNonExistingId"/>
+  <int value="70" label="GenericIssue::FormAriaLabelledByToNonExistingIdError"/>
   <int value="71"
       label="GenericIssue::FormInputAssignedAutocompleteValueToIdOrNameAttributeError"/>
-  <int value="72" label="GenericIssue::FormLabelHasNeitherForNorNestedInput"/>
+  <int value="72"
+      label="GenericIssue::FormLabelHasNeitherForNorNestedInputError"/>
   <int value="73" label="GenericIssue::FormLabelForMatchesNonExistingIdError"/>
   <int value="74"
       label="GenericIssue::FormHasPasswordFieldWithoutUsernameFieldError"/>
@@ -1158,6 +1160,10 @@ Called by update_protocol_commands_enum.py.-->
       label="SRIMessageSignatureIssue::ValidationFailedIntegrityMismatch"/>
   <int value="113"
       label="ElementAccessibilityIssue::InteractiveContentSummaryDescendant"/>
+  <int value="114"
+      label="GenericIssue::AutofillAndManualTextPolicyControlledFeaturesInfo"/>
+  <int value="115" label="GenericIssue::AutofillPolicyControlledFeatureInfo"/>
+  <int value="116" label="GenericIssue::ManualTextPolicyControlledFeatureInfo"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">
@@ -1614,6 +1620,9 @@ Called by update_protocol_commands_enum.py.-->
   <int value="7" label="Angle"/>
   <int value="8" label="Length"/>
   <int value="9" label="Position fallback link"/>
+  <int value="10" label="Position try link"/>
+  <int value="11" label="Attribute link"/>
+  <int value="12" label="Masonry editor"/>
 </enum>
 
 <enum name="DevToolsSyncSetting">

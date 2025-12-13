@@ -45,6 +45,9 @@ class TestEventRouterObserver : public EventRouter::TestObserver {
   // Waits until `events()` contains an event with `name`.
   void WaitForEventWithName(const std::string& name);
 
+  // Waits until `dispatched_events()` contains an event with `name`.
+  void WaitForDispatchedEventWithName(const std::string& name);
+
  private:
   // EventRouter::TestObserver:
   void OnWillDispatchEvent(const Event& event) override;

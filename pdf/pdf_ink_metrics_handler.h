@@ -66,7 +66,8 @@ enum class StrokeMetricInputDeviceType {
   kMouse = 0,
   kTouch = 1,
   kPen = 2,
-  kMaxValue = 2,
+  kKeyboard = 3,
+  kMaxValue = 3,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2StrokeInputDeviceType)
 
@@ -119,6 +120,8 @@ void ReportEraseStroke(ink::StrokeInput::ToolType tool_type);
 
 void ReportTextHighlight(const ink::Brush& brush,
                          ink::StrokeInput::ToolType tool_type);
+
+void ReportKeyboardTextHighlight(const ink::Brush& brush);
 
 void RecordPdfLoadedWithV2InkAnnotations(
     PDFLoadedWithV2InkAnnotations loaded_with_annotations);

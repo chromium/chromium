@@ -18,16 +18,6 @@ const sandbox.mojom.Sandbox kStorageSandbox = sandbox.mojom.Sandbox.kUtility;
 [EnableIfNot=is_chromeos|is_linux]
 const sandbox.mojom.Sandbox kStorageSandbox = sandbox.mojom.Sandbox.kService;
 
-// Enum used as a crash key to help investigate Storage process crashes on
-// various platforms.
-// TODO(crbug.com/396030877): Fix the bug and remove this enum.
-enum StorageLifecycle {
-  kInitializing,
-  kInitializingWithUnboundStorageService,
-  kRecovering,
-  kRecoveringWithUnboundStorageService,
-};
-
 // The main interface into the Storage Service. The browser maintains a single
 // global connection to this interface.
 [ServiceSandbox=kStorageSandbox]
@@ -58,11 +48,7 @@ interface StorageService {
   // directory within the user data directory. If `path` is null, the storage
   // will be in-memory and all data will be discarded when the client
   // disconnects.
-  // Includes a `lifecycle` param which is used as a crash key to help root
-  // cause a Storage process crash in LocalStorage code.
-  // TODO(crbug.com/396030877): Fix the bug and remove the `lifecycle` param.
   BindSessionStorageControl(mojo_base.mojom.FilePath? path,
-                            StorageLifecycle lifecycle,
                             pending_receiver<SessionStorageControl> receiver);
 
   // Binds the main control interface for Local Storage associated with the
@@ -72,11 +58,7 @@ interface StorageService {
   // directory within the user data directory. If `path` is null, the storage
   // will be in-memory and all data will be discarded when the client
   // disconnects.
-  // Includes a `lifecycle` param which is used as a crash key to help root
-  // cause a Storage process crash in LocalStorage code.
-  // TODO(crbug.com/396030877): Fix the bug and remove the `lifecycle` param.
   BindLocalStorageControl(mojo_base.mojom.FilePath? path,
-                          StorageLifecycle lifecycle,
                           pending_receiver<LocalStorageControl> receiver);
 
   // Binds a receiving endpoint for the TestApi interface defined in

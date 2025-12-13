@@ -9,10 +9,11 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,6 +37,7 @@
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -43,6 +45,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "crypto/obsolete/md5.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
@@ -67,6 +70,11 @@ using testing::UnorderedPointwise;
 namespace safe_browsing {
 
 namespace {
+
+std::string ComputeMd5(std::string_view data) {
+  return base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(base::as_byte_span(data)));
+}
 
 // Mixture of HTTP and HTTPS.  No special treatment for HTTPS.
 static const char* kOriginalLandingURL =
@@ -302,7 +310,7 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     resource->threat_type = threat_type;
     resource->threat_source = threat_source;
     resource->rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
-        primary_main_frame_id.child_id,
+        primary_main_frame_id.child_id.value(),
         primary_main_frame->GetFrameToken().value());
     resource->is_async_check = is_async_check;
   }
@@ -431,9 +439,10 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     // The last item of the redirect chain has to be the final url when adding
     // to history backend.
     redirects->push_back(url);
-    history_service()->AddPage(url, base::Time::Now(), 1, 0, GURL(), *redirects,
-                               ui::PAGE_TRANSITION_TYPED,
-                               history::SOURCE_BROWSED, false);
+    history_service()->AddPage(
+        url, base::Time::Now(), 1, 0, GURL(), *redirects,
+        ui::PAGE_TRANSITION_TYPED, history::SOURCE_BROWSED,
+        history::VisitResponseCodeCategory::kNot404, false);
   }
 
   void WriteCacheEntry(const std::string& url,
@@ -1786,7 +1795,7 @@ TEST_F(ThreatDetailsTest, HTTPCache) {
   pb_response->set_body(kLandingData);
   std::string landing_data(kLandingData);
   pb_response->set_bodylength(landing_data.size());
-  pb_response->set_bodydigest(base::MD5String(landing_data));
+  pb_response->set_bodydigest(ComputeMd5(landing_data));
   pb_response->set_remote_ip("1.2.3.4:80");
 
   pb_resource = expected.add_resources();
@@ -1803,7 +1812,7 @@ TEST_F(ThreatDetailsTest, HTTPCache) {
   pb_response->set_body(kThreatData);
   std::string threat_data(kThreatData);
   pb_response->set_bodylength(threat_data.size());
-  pb_response->set_bodydigest(base::MD5String(threat_data));
+  pb_response->set_bodydigest(ComputeMd5(threat_data));
   pb_response->set_remote_ip("1.2.3.4:80");
   expected.set_complete(true);
 
@@ -1871,7 +1880,7 @@ TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
   pb_response->set_body(kLandingData);
   std::string landing_data(kLandingData);
   pb_response->set_bodylength(landing_data.size());
-  pb_response->set_bodydigest(base::MD5String(landing_data));
+  pb_response->set_bodydigest(ComputeMd5(landing_data));
   pb_response->set_remote_ip("1.2.3.4:80");
 
   // The threat URL is HTTP so the request and response are cleared (except for
@@ -1886,7 +1895,7 @@ TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
   pb_header->set_value("image/jpeg");
   std::string threat_data(kThreatData);
   pb_response->set_bodylength(threat_data.size());
-  pb_response->set_bodydigest(base::MD5String(threat_data));
+  pb_response->set_bodydigest(ComputeMd5(threat_data));
   pb_response->set_remote_ip("1.2.3.4:80");
   expected.set_complete(true);
 

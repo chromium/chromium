@@ -397,6 +397,19 @@ struct SkRectToString {
   return EqFailure(lhs_expr, rhs_expr, lhs, rhs);
 }
 
+::testing::AssertionResult AssertSizeFloatNear(const char* lhs_expr,
+                                               const char* rhs_expr,
+                                               const char* abs_error_expr,
+                                               const SizeF& lhs,
+                                               const SizeF& rhs,
+                                               float abs_error) {
+  if (FloatNear(lhs.width(), rhs.width(), abs_error) &&
+      FloatNear(lhs.height(), rhs.height(), abs_error)) {
+    return ::testing::AssertionSuccess();
+  }
+  return NearFailure(lhs_expr, rhs_expr, abs_error_expr, lhs, rhs, abs_error);
+}
+
 ::testing::AssertionResult AssertSkSizeFloatEqual(const char* lhs_expr,
                                                   const char* rhs_expr,
                                                   const SkSize& lhs,

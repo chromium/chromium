@@ -14,12 +14,15 @@ android_library("java") {
   ]
   deps = [
     "//base:base_java",
-    "//components/browser_ui/edge_to_edge/android:java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
+    "//ui/edge_to_edge:java",
     "//url:gurl_java",
   ]
 }

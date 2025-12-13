@@ -8,7 +8,8 @@
 
 namespace blink {
 
-OESSampleVariables::OESSampleVariables(WebGLRenderingContextBase* context)
+OESSampleVariables::OESSampleVariables(WebGLRenderingContextBase* context,
+                                       ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_OES_sample_variables");
 }

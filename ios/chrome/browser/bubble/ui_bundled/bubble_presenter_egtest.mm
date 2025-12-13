@@ -7,8 +7,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_egtest_utils.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -80,7 +82,8 @@ void ReloadFromOmnibox() {
 - (void)setUp {
   [super setUp];
   MakeFirstRunRecent();
-  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 }
 
 - (void)tearDownHelper {
@@ -98,7 +101,8 @@ void ReloadFromOmnibox() {
           isRunningTest:@selector
           (testLensOverlayEntrypointTipDismissedWhenOmniboxPositionChanged)]) {
     config.features_enabled.push_back(kEnableLensOverlay);
-    config.features_enabled.push_back(kLensOverlayEnableLocationBarEntrypoint);
+    config.features_disabled.push_back(kPageActionMenu);
+    config.iph_feature_enabled = "IPH_iOSLensOverlayEntrypointTip";
   }
 
   return config;
@@ -106,10 +110,15 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH is attempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
-- (void)testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
-  if (@available(iOS 19.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+// TODO(crbug.com/440549642): This test is flaky.
+- (void)
+    FLAKY_testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    if (@available(iOS 19.0, *)) {
+      // TODO(crbug.com/427699033): Re-enable test on iOS 26.
+      // Test uses "split screen" (multiwindow) to force compact width.
+      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+    }
   }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
@@ -166,18 +175,25 @@ void ReloadFromOmnibox() {
 }
 
 // Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
-- (void)testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
-  if (@available(iOS 19.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+// TODO(crbug.com/427699033): This is also failing on older iOS versions
+// when building with Xcode 26.
+// TODO(crbug.com/463351924): Test fails on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid \
+  testPullToRefreshIPHShouldDisappearOnEnteringTabGrid
+#else
+#define MAYBE_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid \
+  DISABLED_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid
+#endif
+- (void)MAYBE_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // TODO(crbug.com/427699033): Re-enable test when fixed with Xcode 26.
+    // Test uses "split screen" (multiwindow) to force compact width.
+    EARL_GREY_TEST_DISABLED(@"Test disabled when building with Xcode 26.");
   }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
   if ([ChromeEarlGrey isIPadIdiom]) {
-    if (@available(iOS 19.0, *)) {
-      // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-    }
     OpenSplitScreen();
   }
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
@@ -202,8 +218,9 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
 - (void)testPullToRefreshIPHShouldNotShowOnPageLoadFail {
-  if (@available(iOS 19.0, *)) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     // TODO(crbug.com/427699033): Re-enable test on iOS 26.
+    // Test uses "split screen" (multiwindow) to force compact width.
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
@@ -226,7 +243,8 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH is atttempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
-- (void)testPullToRefreshIPHShouldNotShowOnRegularXRegular {
+// TODO(crbug.com/459498160): This test is flaky.
+- (void)FLAKY_testPullToRefreshIPHShouldNotShowOnRegularXRegular {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPhone.");
   }
@@ -267,10 +285,13 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH would be dismissed with the reason
 // `kSwipedAsInstructedByGestureIPH` when the user pulls down on the IPH.
-- (void)testPullToRefreshPerformAction {
-  if (@available(iOS 19.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+- (void)DISABLED_testPullToRefreshPerformAction {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    if (@available(iOS 19.0, *)) {
+      // TODO(crbug.com/427699033): Re-enable test on iOS 26.
+      // Test uses "split screen" (multiwindow) to force compact width.
+      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+    }
   }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
@@ -463,6 +484,9 @@ void ReloadFromOmnibox() {
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       performAction:grey_tap()];
+  // This is needed because of a race condition with animating the closure of
+  // the tab grid.
+  WaitForTabGridDisappearance();
   AssertGestureIPHVisibleWithDismissAction(
       @"Toolbar swipe IPH should be visible when the user switches to an "
       @"adjacent tab.",
@@ -611,9 +635,6 @@ void ReloadFromOmnibox() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  RelaunchConfigurationWithIPHFeature([self appConfigurationForTestCase],
-                                      @"IPH_iOSLensOverlayEntrypointTip",
-                                      /*safari_switcher=*/NO);
 
   // Load a random page.
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -621,23 +642,19 @@ void ReloadFromOmnibox() {
   [ChromeEarlGrey loadURL:destinationUrl1];
 
   // Verify Lens overlay entrypoint tip is shown.
-  GREYAssertTrue(
-      [ChromeEarlGrey
-          testUIElementAppearanceWithMatcher:grey_accessibilityID(
-                                                 kBubbleViewArrowViewIdentifier)
-                                     timeout:base::Seconds(1)],
-      @"Lens overlay entrypoint tip is not shown");
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              kBubbleViewArrowViewIdentifier)];
 
   // Move Omnibox to the bottom.
-  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 
   // Verify Lens overlay entrypoint tip is hidden after Omnibox position
   // changed.
-  GREYAssertFalse(
-      [ChromeEarlGrey testUIElementAppearanceWithMatcher:
-                          grey_accessibilityID(kBubbleViewArrowViewIdentifier)],
-      @"Lens overlay entrypoint tip is still shown");
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kBubbleViewArrowViewIdentifier)];
 }
 
 @end

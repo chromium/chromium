@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "google_apis/gaia/gaia_id.h"
-#include "skia/rusty_png_feature.h"
 
 namespace ash {
 
@@ -77,19 +76,11 @@ TEST_F(InputDeviceSettingsMetadataManagerTest, DeviceImageForSettingsIsCached) {
   EXPECT_TRUE(data_url.has_value());
 
   // Based on the default ImageSkia produced by `TestImageDownloader`.
-  const char* kExpectedDataUri = nullptr;
-  if (skia::IsRustyPngEnabled()) {
-    kExpectedDataUri =
-        "data:image/png;base64,"
-        "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAUCAIAAAA7jDsBAAAAH0lE"
-        "QVR4nOzJIQEAAADCsAv6V4YGKCSzE6YQvN+bDgAAAP//NgNJQQAA"
-        "AAZJREFUAwDP2AFQaaaRAwAAAABJRU5ErkJggg==";
-  } else {
-    kExpectedDataUri =
-        "data:image/"
-        "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAUCAIAAAA7jDsBAAAAF0lEQ"
-        "VQokWNk+M+ABzDhkxyVHpUmRRoAmpABJ+eiyP8AAAAASUVORK5CYII=";
-  }
+  const char* kExpectedDataUri =
+      "data:image/png;base64,"
+      "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAUCAIAAAA7jDsBAAAAH0lE"
+      "QVR4nOzJIQEAAADCsAv6V4YGKCSzE6YQvN+bDgAAAP//NgNJQQAA"
+      "AAZJREFUAwDP2AFQaaaRAwAAAABJRU5ErkJggg==";
   EXPECT_EQ(kExpectedDataUri, data_url.value());
 }
 

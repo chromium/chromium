@@ -40,8 +40,8 @@ static_library("oauth2") {
   deps = [
     "//chrome/browser:browser_process",
     "//chrome/browser/sync:factories",
-    "//chrome/common:channel_info",
     "//chrome/common:constants",
+    "//chromeos/ash/components/channel",
     "//chromeos/printing",
     "//components/device_event_log",
     "//components/prefs",

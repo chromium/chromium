@@ -39,7 +39,7 @@ bool LogOutputStream::Write(const uint8_t* data, size_t size) {
   DCHECK(!flushed_);
 
   static constexpr char kBeginMessage[] = "-----BEGIN CRASHPAD MINIDUMP-----";
-  if (output_count_ == 0 && WriteToLog(kBeginMessage) < 0) {
+  if (output_count_ == 0 && !WriteToLog(kBeginMessage)) {
     return false;
   }
 
@@ -69,11 +69,7 @@ bool LogOutputStream::WriteBuffer() {
     return false;
   }
 
-  int result = WriteToLog(buffer_.c_str());
-  if (result < 0) {
-    if (result == -EAGAIN) {
-      WriteToLog(kAbortMessage);
-    }
+  if (!WriteToLog(buffer_.c_str())) {
     flush_needed_ = false;
     return false;
   }
@@ -93,7 +89,7 @@ bool LogOutputStream::Flush() {
     flushed_ = true;
 
     static constexpr char kEndMessage[] = "-----END CRASHPAD MINIDUMP-----";
-    if (!WriteBuffer() || WriteToLog(kEndMessage) < 0) {
+    if (!WriteBuffer() || !WriteToLog(kEndMessage)) {
       result = false;
     }
   }

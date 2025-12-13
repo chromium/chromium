@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
@@ -23,6 +22,8 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace arc {
 
@@ -51,22 +52,20 @@ class ArcManagementTransitionNotificationTest
       const ArcManagementTransitionNotificationTest&) = delete;
 
   void SetUp() override {
+    message_center::MessageCenter::Initialize();
+    arc_app_test_.PreProfileSetUp();
     profile_ = std::make_unique<TestingProfile>();
-    display_service_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile());
-    arc_app_test_.SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
   }
 
   void TearDown() override {
-    arc_app_test_.TearDown();
-    display_service_.reset();
+    arc_app_test_.PreProfileTearDown();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
+    message_center::MessageCenter::Shutdown();
   }
 
   Profile* profile() { return profile_.get(); }
-  NotificationDisplayServiceTester* display_service() {
-    return display_service_.get();
-  }
   ArcAppTest* arc_app_test() { return &arc_app_test_; }
 
   const gfx::VectorIcon* expected_notification_icon() {
@@ -77,7 +76,6 @@ class ArcManagementTransitionNotificationTest
 
  private:
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   ArcAppTest arc_app_test_;
 
   content::BrowserTaskEnvironment task_environment_;
@@ -118,16 +116,18 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
   // In case no management transition in progress notification is not
   // triggered.
   if (arc_transition() == ArcManagementTransition::NO_TRANSITION) {
-    EXPECT_FALSE(display_service()->GetNotification(
-        kManagementTransitionNotificationId));
+    EXPECT_FALSE(
+        message_center::MessageCenter::Get()->FindVisibleNotificationById(
+            kManagementTransitionNotificationId));
     // Last launch is set, indicating that launch attempt was not blocked.
     EXPECT_FALSE(app_info->last_launch_time.is_null());
     return;
   }
 
   {
-    auto notification =
-        display_service()->GetNotification(kManagementTransitionNotificationId);
+    const message_center::Notification* notification =
+        message_center::MessageCenter::Get()->FindVisibleNotificationById(
+            kManagementTransitionNotificationId);
 
     // Notification is shown.
     ASSERT_TRUE(notification);
@@ -144,18 +144,20 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
       prefs::kArcManagementTransition,
       static_cast<int>(ArcManagementTransition::NO_TRANSITION));
   EXPECT_FALSE(
-      display_service()->GetNotification(kManagementTransitionNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kManagementTransitionNotificationId));
 
   // Re-activate notification and check opt out. On opt-out notification is also
   // automatically dismissed.
   profile()->GetPrefs()->SetInteger(prefs::kArcManagementTransition,
                                     static_cast<int>(arc_transition()));
   ShowManagementTransitionNotification(profile());
-  EXPECT_TRUE(
-      display_service()->GetNotification(kManagementTransitionNotificationId));
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kManagementTransitionNotificationId));
   profile()->GetPrefs()->SetBoolean(prefs::kArcEnabled, false);
   EXPECT_FALSE(
-      display_service()->GetNotification(kManagementTransitionNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kManagementTransitionNotificationId));
 }
 
 }  // namespace arc

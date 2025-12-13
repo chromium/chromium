@@ -32,7 +32,7 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
         mPdfGenerator = pdfGenerator;
     }
 
-    public static interface PdfGenerator {
+    public interface PdfGenerator {
         void onStart();
 
         void onLayout(
@@ -51,7 +51,7 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
         void onFinish();
     }
 
-    public static interface LayoutResultCallbackWrapper {
+    public interface LayoutResultCallbackWrapper {
         void onLayoutFinished(PrintDocumentInfo info, boolean changed);
 
         void onLayoutFailed(@Nullable CharSequence error);
@@ -59,7 +59,7 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
         void onLayoutCancelled();
     }
 
-    public static interface WriteResultCallbackWrapper {
+    public interface WriteResultCallbackWrapper {
         void onWriteFinished(PageRange[] pages);
 
         void onWriteFailed(@Nullable CharSequence error);

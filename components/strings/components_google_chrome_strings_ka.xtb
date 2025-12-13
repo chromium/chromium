@@ -32,16 +32,16 @@
         და მოხსენით მონიშვნა ელემენტიდან „<ph name="NO_PREFETCH_DESCRIPTION" />“-დან.
         თუ პრობლემა ვერ გადაწყდა, გირჩევთ ხელახლა აირჩიოთ ეს პარამეტრი
         გაუმჯობესებული ეფექტურობისთვის.</translation>
-<translation id="6855094794438142393">შედით
-          Chrome მენიუში &gt;
+<translation id="6581867098636731226">გახსენით:
+          Chrome-ის მენიუ &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          LAN-ის პარამეტრები
-          და მოხსენით მონიშვნა მოსანიშნი უჯრიდან „პროქსი სერვერის გამოყენება თქვენი LAN-ისთვის“.</translation>
+          ქსელი და ინტერნეტი &gt; პროქსი-სერვერი
+          და გააუქმეთ არჩევა „პარამეტრების ავტომატური ამოცნობა“.</translation>
 <translation id="7230956101631259640">თქვენ ათვალიერებთ დაცულ გვერდს Chrome-ში</translation>
 <translation id="8232971017369963250">Chrome არსებობს <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-ის ღია კოდის პროექტის წყალობით.</translation>
 <translation id="8279509328145658601">Chrome, ასევე, მუშაობს <ph name="BEGIN_LINK_OSS" />ღია კოდის სხვა პროგრამული უზრუნველყოფის<ph name="END_LINK_OSS" /> დამსახურებით.</translation>

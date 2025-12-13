@@ -96,7 +96,9 @@ class TracingHandlerTest : public testing::Test {
 
 TEST_F(TracingHandlerTest, GetTraceConfigFromDevToolsConfig) {
   base::Value devtools_config =
-      base::JSONReader::Read(kCustomTraceConfigStringDevToolsStyle).value();
+      base::JSONReader::Read(kCustomTraceConfigStringDevToolsStyle,
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          .value();
 
   base::trace_event::TraceConfig trace_config =
       TracingHandler::GetTraceConfigFromDevToolsConfig(devtools_config);

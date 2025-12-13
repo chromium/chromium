@@ -46,7 +46,7 @@ component("core") {
   deps = [
     "//components/pref_registry",
     "//components/prefs",
-    "//services/tracing/public/cpp:cpp",
+    "//services/tracing/public/cpp",
   ]
 }
 

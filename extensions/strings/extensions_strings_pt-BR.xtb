@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Visualização do app: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Esta extensão inclui o arquivo de chave '<ph name="KEY_PATH" />'. Você provavelmente não quer fazer isso.</translation>
 <translation id="5486326529110362464">O valor inserido para a chave privada deve existir.</translation>
+<translation id="5707185214361380026">Falha ao carregar a extensão a partir de:</translation>
 <translation id="5972529113578162692">O administrador desta máquina requer a instalação da extensão <ph name="EXTENSION_NAME" />. Ela não pode ser desinstalada.</translation>
 <translation id="6027032947578871493">Produto <ph name="PRODUCT_ID" /> desconhecido de <ph name="VENDOR_NAME" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> do fornecedor <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Erro ao carregar extensão</translation>
 <translation id="6322279351188361895">Falha ao ler a chave privada.</translation>
 <translation id="6391538222494443604">O diretório de entrada deve existir.</translation>
 <translation id="641087317769093025">Não foi possível descompactar a extensão</translation>

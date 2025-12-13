@@ -18,8 +18,8 @@
 #include "components/apdu/apdu_response.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

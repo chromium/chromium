@@ -10,7 +10,21 @@
 namespace blink {
 
 namespace {
-const CalculationExpressionNode* BuildLengthBoundExpr(
+
+const CalculationExpressionNode* BuildFitContentExpr(float factor) {
+  const auto* constant_expr =
+      MakeGarbageCollected<CalculationExpressionNumberNode>(factor);
+  const auto* size_expr =
+      MakeGarbageCollected<CalculationExpressionSizingKeywordNode>(
+          CalculationExpressionSizingKeywordNode::Keyword::kSize);
+  return CalculationExpressionOperationNode::CreateSimplified(
+      CalculationExpressionOperationNode::Children({constant_expr, size_expr}),
+      CalculationOperator::kMultiply);
+}
+}  // namespace
+
+const CalculationExpressionNode*
+HTMLPermissionElementUtils::BuildLengthBoundExpr(
     const Length& length,
     const CalculationExpressionNode* lower_bound_expr,
     const CalculationExpressionNode* upper_bound_expr) {
@@ -41,18 +55,6 @@ const CalculationExpressionNode* BuildLengthBoundExpr(
 
   NOTREACHED();
 }
-
-const CalculationExpressionNode* BuildFitContentExpr(float factor) {
-  const auto* constant_expr =
-      MakeGarbageCollected<CalculationExpressionNumberNode>(factor);
-  const auto* size_expr =
-      MakeGarbageCollected<CalculationExpressionSizingKeywordNode>(
-          CalculationExpressionSizingKeywordNode::Keyword::kSize);
-  return CalculationExpressionOperationNode::CreateSimplified(
-      CalculationExpressionOperationNode::Children({constant_expr, size_expr}),
-      CalculationOperator::kMultiply);
-}
-}  // namespace
 
 // static
 Length HTMLPermissionElementUtils::AdjustedBoundedLength(

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "android_webview/test/shell/src/draw_fn/context_manager.h"
 
 #include <EGL/egl.h>
@@ -15,6 +10,8 @@
 #include "android_webview/public/browser/draw_fn.h"
 #include "android_webview/test/shell/src/draw_fn/allocator.h"
 #include "base/android/jni_array.h"
+#include "base/compiler_specific.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/native_library.h"
@@ -176,8 +173,8 @@ class ContextManagerGL : public ContextManager {
   }
 
   int rgbaToArgb(GLubyte* bytes) {
-    return (bytes[3] & 0xff) << 24 | (bytes[0] & 0xff) << 16 |
-           (bytes[1] & 0xff) << 8 | (bytes[2] & 0xff);
+    return (UNSAFE_TODO(bytes[3]) & 0xff) << 24 | (bytes[0] & 0xff) << 16 |
+           (UNSAFE_TODO(bytes[1]) & 0xff) << 8 | (UNSAFE_TODO(bytes[2]) & 0xff);
   }
 
   EGLConfig GetConfig(bool* out_use_es3) {
@@ -840,3 +837,5 @@ static jlong JNI_ContextManager_Init(JNIEnv* env, jboolean use_vulkan) {
 }
 
 }  // namespace draw_fn
+
+DEFINE_JNI(ContextManager)

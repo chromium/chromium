@@ -145,8 +145,6 @@ class ProfileResetterTest : public extensions::ExtensionServiceTestBase,
  protected:
   void SetUp() override;
 
-  TestingProfile* profile() { return profile_.get(); }
-
  private:
 #if BUILDFLAG(IS_WIN)
   base::ScopedPathOverride user_desktop_override_;
@@ -372,7 +370,7 @@ scoped_refptr<Extension> CreateExtension(const std::u16string& name,
       NOTREACHED();
   }
   manifest.SetByDottedPath(extensions::manifest_keys::kOmniboxKeyword, name);
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension = Extension::Create(
       path,
       location,
@@ -520,7 +518,7 @@ TEST_F(ProfileResetterTest, ResetContentSettings) {
 }
 
 TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {
-  service_->Init();
+  service()->Init();
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -531,7 +529,7 @@ TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {
   scoped_refptr<Extension> theme = CreateExtension(
       u"example1", temp_dir.GetPath(), ManifestLocation::kUnpacked,
       extensions::Manifest::TYPE_THEME, false);
-  service_->FinishInstallationForTest(theme.get());
+  service()->FinishInstallationForTest(theme.get());
   waiter.WaitForThemeChanged();
 
   EXPECT_FALSE(theme_service->UsingDefaultTheme());
@@ -596,7 +594,7 @@ TEST_F(ProfileResetterTest, ResetExtensionsByDisablingNonOrganic) {
 }
 
 TEST_F(ProfileResetterTest, ResetExtensionsAndDefaultApps) {
-  service_->Init();
+  service()->Init();
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -607,7 +605,7 @@ TEST_F(ProfileResetterTest, ResetExtensionsAndDefaultApps) {
   scoped_refptr<Extension> ext1 = CreateExtension(
       u"example1", temp_dir.GetPath(), ManifestLocation::kUnpacked,
       extensions::Manifest::TYPE_THEME, false);
-  service_->FinishInstallationForTest(ext1.get());
+  service()->FinishInstallationForTest(ext1.get());
   waiter.WaitForThemeChanged();
 
   EXPECT_FALSE(theme_service->UsingDefaultTheme());
@@ -633,7 +631,7 @@ TEST_F(ProfileResetterTest, ResetExtensionsAndDefaultApps) {
 }
 
 TEST_F(ProfileResetterTest, ResetExtensionsByReenablingExternalComponents) {
-  service_->Init();
+  service()->Init();
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());

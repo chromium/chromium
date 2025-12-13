@@ -189,9 +189,6 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   // The initiator frame host may be deleted by this point. In that case, ignore
   // this navigation and drop the impression associated with it.
 
-  UMA_HISTOGRAM_BOOLEAN("Conversions.ImpressionNavigationHasDeadInitiator",
-                        initiator_frame_host == nullptr);
-
   // Look up the initiator root's origin which will be used as the impression
   // origin. This works because we won't update the origin for the initiator RFH
   // until we receive confirmation from the renderer that it has committed.
@@ -215,7 +212,8 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
       // The devtools_navigation_token is going to be used as the
       // navigation's request devtools inspector ID if there is an enabled
       // agent host.
-      navigation_request->devtools_navigation_token().ToString());
+      navigation_request->devtools_navigation_token().ToString(),
+      navigation_handle->WasStartedFromContextMenu());
   auto [_, inserted] = ongoing_registration_eligible_navigations_.emplace(
       navigation_handle->GetNavigationId());
   CHECK(inserted);
@@ -231,10 +229,6 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
       AttributionManager::FromWebContents(web_contents());
 
   base::Time now = base::Time::Now();
-
-  if (attribution_manager && navigation_handle->GetNetErrorCode() == net::OK) {
-    attribution_manager->UpdateLastNavigationTime(now);
-  }
 
   if (navigation_handle->IsInPrimaryMainFrame()) {
     if (!navigation_handle->IsSameDocument()) {

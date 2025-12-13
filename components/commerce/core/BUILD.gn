@@ -35,8 +35,8 @@ source_set("feature_list") {
     "//components/prefs",
     "//components/search",
     "//components/webui/flags",
-    "//third_party/re2:re2",
-    "//url:url",
+    "//third_party/re2",
+    "//url",
   ]
 }
 
@@ -68,7 +68,7 @@ source_set("feature_list_unittests") {
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//testing/gtest",
-    "//third_party/re2:re2",
+    "//third_party/re2",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -172,7 +172,7 @@ source_set("commerce_heuristics_data") {
 
   deps = [
     "//base",
-    "//third_party/re2:re2",
+    "//third_party/re2",
   ]
 }
 
@@ -184,7 +184,7 @@ source_set("commerce_heuristics_data_unittests") {
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
-    "//third_party/re2:re2",
+    "//third_party/re2",
   ]
 }
 
@@ -200,9 +200,9 @@ source_set("heuristics_provider") {
     "//base",
     "//components/resources:components_resources_grit",
     "//net",
-    "//third_party/re2:re2",
+    "//third_party/re2",
     "//ui/base",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -244,7 +244,7 @@ static_library("shopping_service") {
     "//base",
     "//components/bookmarks/browser",
     "//components/commerce/core/compare",
-    "//components/commerce/core/product_specifications:product_specifications",
+    "//components/commerce/core/product_specifications",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
@@ -252,26 +252,26 @@ static_library("shopping_service") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/power_bookmarks/core",
     "//components/power_bookmarks/core:proto",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/resources:components_resources_grit",
-    "//components/search:search",
+    "//components/search",
     "//components/session_proto_db:core",
     "//components/sessions",
-    "//components/signin/public/identity_manager:identity_manager",
+    "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
     "//components/sync/service",
     "//components/unified_consent",
     "//services/metrics/public/cpp:metrics_cpp",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//ui/base",
-    "//url:url",
+    "//url",
   ]
 
   public_deps = [
     ":account_checker",
     ":commerce_types",
     ":feature_utils",
-    "//components/commerce/core/subscriptions:subscriptions",
+    "//components/commerce/core/subscriptions",
     "//services/data_decoder/public/cpp",
   ]
 
@@ -315,7 +315,7 @@ source_set("shopping_service_test_support") {
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/commerce/core:proto",
-    "//components/commerce/core/compare:compare",
+    "//components/commerce/core/compare",
     "//components/commerce/core/product_specifications:test_support",
     "//components/commerce/core/subscriptions",
     "//components/optimization_guide/core",
@@ -327,14 +327,14 @@ source_set("shopping_service_test_support") {
     "//components/sessions:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
-    "//components/unified_consent:unified_consent",
+    "//components/unified_consent",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:network_service",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -364,6 +364,7 @@ source_set("shopping_service_unit_tests") {
     ":feature_utils",
     ":metrics",
     ":pref_names",
+    ":prefs",
     ":shopping_service_test_support",
     "compare:unit_tests",
     "product_specifications",
@@ -383,12 +384,17 @@ source_set("shopping_service_unit_tests") {
 }
 
 source_set("pref_names") {
+  sources = [ "pref_names.h" ]
+}
+
+source_set("prefs") {
   sources = [
-    "pref_names.cc",
-    "pref_names.h",
+    "prefs.cc",
+    "prefs.h",
   ]
 
   deps = [
+    ":pref_names",
     "//base",
     "//components/pref_registry",
     "//components/prefs",
@@ -407,16 +413,16 @@ source_set("account_checker") {
     ":pref_names",
     ":utils",
     "//base",
-    "//components/endpoint_fetcher:endpoint_fetcher",
-    "//components/prefs:prefs",
-    "//components/signin/public/identity_manager:identity_manager",
+    "//components/endpoint_fetcher",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//components/sync/base",
     "//components/sync/service",
     "//components/unified_consent",
-    "//net/traffic_annotation:traffic_annotation",
-    "//services/network/public/cpp:cpp",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
     "//ui/base",
-    "//url:url",
+    "//url",
   ]
 
   public_deps = [ "//services/data_decoder/public/cpp" ]
@@ -433,12 +439,13 @@ source_set("account_checker_test_support") {
   deps = [
     ":account_checker",
     ":pref_names",
+    ":prefs",
     "//base",
     "//components/optimization_guide/core:features",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync/base",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gmock",
   ]
 }
@@ -451,6 +458,7 @@ source_set("account_checker_unittests") {
     ":commerce_constants",
     ":feature_list",
     ":pref_names",
+    ":prefs",
     "//base",
     "//base/test:test_support",
     "//components/endpoint_fetcher:test_support",
@@ -460,10 +468,10 @@ source_set("account_checker_unittests") {
     "//net/traffic_annotation:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -494,9 +502,9 @@ source_set("utils") {
     ":commerce_types",
     ":feature_list",
     "//components/commerce/core:proto",
-    "//components/endpoint_fetcher:endpoint_fetcher",
-    "//components/optimization_guide/core:core",
-    "//net:net",
+    "//components/endpoint_fetcher",
+    "//components/optimization_guide/core",
+    "//net",
   ]
 }
 
@@ -512,7 +520,7 @@ source_set("utils_unit_tests") {
     ":utils",
     "//base",
     "//base/test:test_support",
-    "//components/endpoint_fetcher:endpoint_fetcher",
+    "//components/endpoint_fetcher",
     "//net/traffic_annotation:test_support",
     "//url",
   ]

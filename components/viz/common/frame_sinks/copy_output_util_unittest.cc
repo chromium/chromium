@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -72,62 +68,86 @@ constexpr gfx::Vector2d kHalvingYVectors[4][2] = {
 
 TEST(CopyOutputUtil, ComputesValidResultRects) {
   for (const gfx::Vector2d* v : kNonScalingVectors) {
-    SCOPED_TRACE(::testing::Message()
-                 << "v[0]=" << v[0].ToString() << ", v[1]=" << v[1].ToString());
-    EXPECT_EQ(gfx::Rect(1, 2, 3, 4),
-              ComputeResultRect(gfx::Rect(1, 2, 3, 4), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(-1, 2, 3, 4),
-              ComputeResultRect(gfx::Rect(-1, 2, 3, 4), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(1, -2, 3, 4),
-              ComputeResultRect(gfx::Rect(1, -2, 3, 4), v[0], v[1]));
+    UNSAFE_TODO(SCOPED_TRACE(::testing::Message()
+                             << "v[0]=" << v[0].ToString()
+                             << ", v[1]=" << v[1].ToString()));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(1, 2, 3, 4),
+                  ComputeResultRect(gfx::Rect(1, 2, 3, 4), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(-1, 2, 3, 4),
+                  ComputeResultRect(gfx::Rect(-1, 2, 3, 4), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(1, -2, 3, 4),
+                  ComputeResultRect(gfx::Rect(1, -2, 3, 4), v[0], v[1])));
   }
   for (const gfx::Vector2d* v : kDoublingXVectors) {
-    SCOPED_TRACE(::testing::Message()
-                 << "v[0]=" << v[0].ToString() << ", v[1]=" << v[1].ToString());
-    EXPECT_EQ(gfx::Rect(2, 2, 6, 4),
-              ComputeResultRect(gfx::Rect(1, 2, 3, 4), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(-2, 2, 6, 4),
-              ComputeResultRect(gfx::Rect(-1, 2, 3, 4), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(2, -2, 6, 4),
-              ComputeResultRect(gfx::Rect(1, -2, 3, 4), v[0], v[1]));
+    UNSAFE_TODO(SCOPED_TRACE(::testing::Message()
+                             << "v[0]=" << v[0].ToString()
+                             << ", v[1]=" << v[1].ToString()));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(2, 2, 6, 4),
+                  ComputeResultRect(gfx::Rect(1, 2, 3, 4), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(-2, 2, 6, 4),
+                  ComputeResultRect(gfx::Rect(-1, 2, 3, 4), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(2, -2, 6, 4),
+                  ComputeResultRect(gfx::Rect(1, -2, 3, 4), v[0], v[1])));
   }
   for (const gfx::Vector2d* v : kDoublingYVectors) {
-    SCOPED_TRACE(::testing::Message()
-                 << "v[0]=" << v[0].ToString() << ", v[1]=" << v[1].ToString());
-    EXPECT_EQ(gfx::Rect(1, 4, 3, 8),
-              ComputeResultRect(gfx::Rect(1, 2, 3, 4), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(-1, 4, 3, 8),
-              ComputeResultRect(gfx::Rect(-1, 2, 3, 4), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(1, -4, 3, 8),
-              ComputeResultRect(gfx::Rect(1, -2, 3, 4), v[0], v[1]));
+    UNSAFE_TODO(SCOPED_TRACE(::testing::Message()
+                             << "v[0]=" << v[0].ToString()
+                             << ", v[1]=" << v[1].ToString()));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(1, 4, 3, 8),
+                  ComputeResultRect(gfx::Rect(1, 2, 3, 4), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(-1, 4, 3, 8),
+                  ComputeResultRect(gfx::Rect(-1, 2, 3, 4), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(1, -4, 3, 8),
+                  ComputeResultRect(gfx::Rect(1, -2, 3, 4), v[0], v[1])));
   }
   for (const gfx::Vector2d* v : kHalvingXVectors) {
-    SCOPED_TRACE(::testing::Message()
-                 << "v[0]=" << v[0].ToString() << ", v[1]=" << v[1].ToString());
-    EXPECT_EQ(gfx::Rect(1, 2, 3, 4),
-              ComputeResultRect(gfx::Rect(2, 2, 6, 4), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(1, 2, 4, 4),
-              ComputeResultRect(gfx::Rect(3, 2, 6, 4), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(0, 2, 4, 4),
-              ComputeResultRect(gfx::Rect(1, 2, 6, 4), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(1, 2, 4, 4),
-              ComputeResultRect(gfx::Rect(2, 2, 7, 4), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(1, 2, 3, 4),
-              ComputeResultRect(gfx::Rect(2, 2, 5, 4), v[0], v[1]));
+    UNSAFE_TODO(SCOPED_TRACE(::testing::Message()
+                             << "v[0]=" << v[0].ToString()
+                             << ", v[1]=" << v[1].ToString()));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(1, 2, 3, 4),
+                  ComputeResultRect(gfx::Rect(2, 2, 6, 4), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(1, 2, 4, 4),
+                  ComputeResultRect(gfx::Rect(3, 2, 6, 4), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(0, 2, 4, 4),
+                  ComputeResultRect(gfx::Rect(1, 2, 6, 4), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(1, 2, 4, 4),
+                  ComputeResultRect(gfx::Rect(2, 2, 7, 4), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(1, 2, 3, 4),
+                  ComputeResultRect(gfx::Rect(2, 2, 5, 4), v[0], v[1])));
   }
   for (const gfx::Vector2d* v : kHalvingYVectors) {
-    SCOPED_TRACE(::testing::Message()
-                 << "v[0]=" << v[0].ToString() << ", v[1]=" << v[1].ToString());
-    EXPECT_EQ(gfx::Rect(2, 1, 4, 3),
-              ComputeResultRect(gfx::Rect(2, 2, 4, 6), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(2, 1, 4, 4),
-              ComputeResultRect(gfx::Rect(2, 3, 4, 6), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(2, 0, 4, 4),
-              ComputeResultRect(gfx::Rect(2, 1, 4, 6), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(2, 1, 4, 4),
-              ComputeResultRect(gfx::Rect(2, 2, 4, 7), v[0], v[1]));
-    EXPECT_EQ(gfx::Rect(2, 1, 4, 3),
-              ComputeResultRect(gfx::Rect(2, 2, 4, 5), v[0], v[1]));
+    UNSAFE_TODO(SCOPED_TRACE(::testing::Message()
+                             << "v[0]=" << v[0].ToString()
+                             << ", v[1]=" << v[1].ToString()));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(2, 1, 4, 3),
+                  ComputeResultRect(gfx::Rect(2, 2, 4, 6), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(2, 1, 4, 4),
+                  ComputeResultRect(gfx::Rect(2, 3, 4, 6), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(2, 0, 4, 4),
+                  ComputeResultRect(gfx::Rect(2, 1, 4, 6), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(2, 1, 4, 4),
+                  ComputeResultRect(gfx::Rect(2, 2, 4, 7), v[0], v[1])));
+    UNSAFE_TODO(
+        EXPECT_EQ(gfx::Rect(2, 1, 4, 3),
+                  ComputeResultRect(gfx::Rect(2, 2, 4, 5), v[0], v[1])));
   }
 
   // Scale 3:2 in the X direction and 7:3 in the Y direction.

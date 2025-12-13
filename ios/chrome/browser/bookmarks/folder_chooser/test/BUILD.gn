@@ -1,0 +1,57 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bookmarks_folder_chooser_mediator_unittest.mm",
+    "bookmarks_folder_chooser_sub_data_source_impl_unittest.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/sync:test_support",
+    "//components/sync/base:features",
+    "//ios/chrome/browser/bookmarks/folder_chooser/coordinator",
+    "//ios/chrome/browser/bookmarks/folder_chooser/ui",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/model:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "bookmarks_folder_chooser_egtest.mm" ]
+  deps = [
+    "//components/strings",
+    "//components/sync/base:features",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
+    "//ios/chrome/browser/bookmarks/public:constants",
+    "//ios/chrome/browser/bookmarks/test:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

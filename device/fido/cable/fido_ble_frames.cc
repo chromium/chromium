@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/cable/fido_ble_frames.h"
 
 #include <algorithm>
@@ -14,10 +9,11 @@
 #include <tuple>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 
@@ -68,8 +64,8 @@ FidoBleFrame::ToFragments(size_t max_fragment_size) const {
   DCHECK_GE(max_fragment_size, 3u);
 
   // Cast is necessary to ignore too high bits.
-  auto data_view =
-      base::span(data_.data(), static_cast<uint16_t>(data_.size()));
+  auto data_view = UNSAFE_TODO(
+      base::span(data_.data(), static_cast<uint16_t>(data_.size())));
 
   // Subtract 3 to account for CMD, HLEN and LLEN bytes.
   const size_t init_fragment_size =

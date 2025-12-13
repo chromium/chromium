@@ -102,7 +102,6 @@ def ProcessResults(options, is_unittest=False):
           max_num_values=options.max_values_per_test_case,
           test_path_format=options.test_path_format,
           trace_processor_path=options.trace_processor_path,
-          enable_tbmv3=options.experimental_tbmv3_metrics,
           fetch_power_profile=options.fetch_power_profile),
       test_results,
       on_failure=util.SetUnexpectedFailure,
@@ -165,21 +164,19 @@ def _AddExtraMetrics(test_results, extra_metrics):
 
 def ProcessTestResult(test_result, upload_bucket, results_label, run_identifier,
                       test_suite_start, should_compute_metrics, max_num_values,
-                      test_path_format, trace_processor_path, enable_tbmv3,
+                      test_path_format, trace_processor_path,
                       fetch_power_profile):
   ConvertProtoTraces(test_result, trace_processor_path)
   AggregateTBMv2Traces(test_result)
-  if enable_tbmv3:
-    AggregateTBMv3Traces(test_result)
+  AggregateTBMv3Traces(test_result)
   if upload_bucket is not None:
     UploadArtifacts(test_result, upload_bucket, run_identifier)
 
   if should_compute_metrics:
     test_result['_histograms'] = histogram_set.HistogramSet()
     compute_metrics.ComputeTBMv2Metrics(test_result)
-    if enable_tbmv3:
-      compute_metrics.ComputeTBMv3Metrics(test_result, trace_processor_path,
-                                          fetch_power_profile)
+    compute_metrics.ComputeTBMv3Metrics(test_result, trace_processor_path,
+                                        fetch_power_profile)
     ExtractMeasurements(test_result)
     num_values = len(test_result['_histograms'])
     if max_num_values is not None and num_values > max_num_values:
@@ -367,7 +364,7 @@ def UploadArtifacts(test_result, upload_bucket, run_identifier):
 
 def GetTraceUrl(test_result):
   artifacts = test_result.get('outputArtifacts', {})
-  trace_artifact = artifacts.get(compute_metrics.HTML_TRACE_NAME, {})
+  trace_artifact = artifacts.get(compute_metrics.CONCATENATED_PROTO_NAME, {})
   if 'viewUrl' in trace_artifact:
     return trace_artifact['viewUrl']
   if 'filePath' in trace_artifact:

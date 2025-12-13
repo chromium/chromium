@@ -19,6 +19,8 @@
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
+#import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -47,7 +49,7 @@ enum class InfobarTearDownMoment {
 
 // Records Presentation Metrics for the Infobar Delegate.
 // `current_password_saved` is true if the Infobar is on read-only mode after a
-// Save/Update action has occured.
+// Save/Update action has occurred.
 // `update_infobar` is YES if presenting an Update Infobar, NO if presenting a
 // Save Infobar.
 // `automatic` is YES the Infobar was presented automatically(e.g. The banner
@@ -174,8 +176,10 @@ IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
     password_manager::features_util::PasswordAccountStorageUserState
         account_storage_user_state,
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
-    CommandDispatcher* dispatcher)
-    : dispatcher_(dispatcher),
+    CommandDispatcher* dispatcher,
+    ukm::SourceId ukm_source_id)
+    : ukm_source_id_(ukm_source_id),
+      dispatcher_(dispatcher),
       form_to_save_(std::move(form_to_save)),
       infobar_type_(password_update
                         ? PasswordInfobarType::kPasswordInfobarTypeUpdate
@@ -216,7 +220,7 @@ NSString* IOSChromeSavePasswordInfoBarDelegate::GetPasswordText() const {
 }
 
 NSString* IOSChromeSavePasswordInfoBarDelegate::GetURLHostText() const {
-  return base::SysUTF8ToNSString(form_to_save_->GetURL().host());
+  return base::SysUTF8ToNSString(form_to_save_->GetURL().GetHost());
 }
 
 std::optional<std::string>
@@ -262,6 +266,20 @@ std::u16string IOSChromeSavePasswordInfoBarDelegate::GetButtonLabel(
 
 bool IOSChromeSavePasswordInfoBarDelegate::Accept() {
   DCHECK(form_to_save_);
+  if (IsPasswordUpdate()) {
+    if (const password_manager::PasswordForm*
+            changed_password_form_with_backup =
+                password_manager_util::FindChangedPasswordLoginWithBackup(
+                    *form_to_save_)) {
+      const password_manager::PasswordForm& pending_credentials =
+          form_to_save_->GetPendingCredentials();
+      if (changed_password_form_with_backup->GetPasswordBackup().value() ==
+          pending_credentials.password_value) {
+        password_manager::metrics_util::LogPrimaryPasswordUpdatedWithBackup(
+            ukm_source_id_);
+      }
+    }
+  }
   form_to_save_->Save();
   infobar_response_ = password_manager::metrics_util::CLICKED_ACCEPT;
   password_update_ = true;

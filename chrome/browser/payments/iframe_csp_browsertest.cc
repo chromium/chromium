@@ -37,7 +37,8 @@ IN_PROC_BROWSER_TEST_F(IframeCspTest, Show) {
   // Filter for console messages related to the CSP failure. There should be
   // none.
   console_observer.SetPattern(
-      "Refused to load the image 'https://kylepay.test:*/icon.png *");
+      "Loading the image 'https://kylepay.test:*/icon.png * violates the "
+      "following Content Security Policy directive *");
 
   GURL iframe_url =
       https_server()->GetURL("other.example", "/csp_test_iframe.html");

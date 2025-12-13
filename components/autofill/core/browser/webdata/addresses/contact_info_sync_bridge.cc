@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -78,7 +79,7 @@ ContactInfoSyncBridge::~ContactInfoSyncBridge() = default;
 void ContactInfoSyncBridge::CreateForWebDataServiceAndBackend(
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
-  web_data_service->GetDBUserData()->SetUserData(
+  web_data_service->GetDBUserData().SetUserData(
       &kContactInfoSyncBridgeUserDataKey,
       std::make_unique<ContactInfoSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -91,7 +92,7 @@ void ContactInfoSyncBridge::CreateForWebDataServiceAndBackend(
 syncer::DataTypeSyncBridge* ContactInfoSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<ContactInfoSyncBridge*>(
-      web_data_service->GetDBUserData()->GetUserData(
+      web_data_service->GetDBUserData().GetUserData(
           &kContactInfoSyncBridgeUserDataKey));
 }
 
@@ -237,6 +238,9 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
     case AutofillProfile::RecordType::kAccountWork:
       // Home and work record types are read-only on the client side. Changes
       // are only persisted locally, but not uploaded.
+      return;
+    case AutofillProfile::RecordType::kAccountNameEmail:
+      // Name and email record type should not be synced.
       return;
     case AutofillProfile::RecordType::kLocalOrSyncable:
       // kLocalOrSyncable addresses are synced through AUTOFILL_PROFILE.

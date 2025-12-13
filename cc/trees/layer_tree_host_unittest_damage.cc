@@ -50,7 +50,7 @@ class LayerTreeHostDamageTestSetNeedsRedraw
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   FrameData* frame_data,
                                    DrawResult draw_result) override {
     EXPECT_EQ(DrawResult::kSuccess, draw_result);
 
@@ -112,7 +112,7 @@ class LayerTreeHostDamageTestSetViewportRectAndScale
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   FrameData* frame_data,
                                    DrawResult draw_result) override {
     EXPECT_EQ(DrawResult::kSuccess, draw_result);
 
@@ -169,7 +169,7 @@ class LayerTreeHostDamageTestNoDamageDoesNotSwap
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   FrameData* frame_data,
                                    DrawResult draw_result) override {
     EXPECT_EQ(DrawResult::kSuccess, draw_result);
 
@@ -254,7 +254,7 @@ class LayerTreeHostDamageTestForcedFullDamage : public LayerTreeHostDamageTest {
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   FrameData* frame_data,
                                    DrawResult draw_result) override {
     EXPECT_EQ(DrawResult::kSuccess, draw_result);
 
@@ -386,7 +386,7 @@ class LayerTreeHostDamageTestScrollbarDoesDamage
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   FrameData* frame_data,
                                    DrawResult draw_result) override {
     EXPECT_EQ(DrawResult::kSuccess, draw_result);
     RenderSurfaceImpl* root_surface =
@@ -473,7 +473,7 @@ class LayerTreeHostDamageTestScrollbarCommitDoesNoDamage
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   FrameData* frame_data,
                                    DrawResult draw_result) override {
     EXPECT_EQ(DrawResult::kSuccess, draw_result);
     RenderSurfaceImpl* root_surface =

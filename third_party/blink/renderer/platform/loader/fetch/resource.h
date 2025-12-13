@@ -30,7 +30,8 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -107,7 +109,9 @@ enum class ResourceType : uint8_t {
 // requested data has arrived. This class also does the actual communication
 // with the loader to obtain the resource from the network.
 class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
-                                 public MemoryPressureListener {
+                                 public base::MemoryPressureListener {
+  USING_PRE_FINALIZER(Resource, Dispose);
+
  public:
   // An enum representing whether a resource match with another resource.
   // There are three kinds of status.
@@ -157,7 +161,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   Resource& operator=(const Resource&) = delete;
   ~Resource() override;
 
-  void Trace(Visitor*) const override;
+  virtual void Trace(Visitor*) const;
+
+  void Dispose();
 
   virtual TextEncoding Encoding() const { return TextEncoding(); }
   // If a BackgroundResponseProcessor consumed the body data on the background
@@ -207,11 +213,13 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // - `first` is the priority with the fix of https://crbug.com/1369823.
   // - `second` is the priority without the fix, ignoring the priority from
   //   ImageLoader.
-  virtual std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers()
-      const {
-    return std::make_pair(ResourcePriority(), ResourcePriority());
+  virtual std::pair<std::optional<ResourcePriority>,
+                    std::optional<ResourcePriority>>
+  PriorityFromObservers() const {
+    return std::make_pair(std::nullopt, std::nullopt);
   }
 
+  virtual bool HasNonDegenerateContentSize() const { return false; }
   virtual bool IsAboveSpeculativeDecodeSizeThreshold() const { return false; }
 
   // If this Resource is already finished when AddClient is called, the
@@ -310,12 +318,11 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // Returns true if |this| resource is matched with the given parameters.
   virtual void MatchPreload(const FetchParameters&);
 
-  bool CanReuseRedirectChain(UseCounter& use_counter) const;
-  bool MustRevalidateDueToCacheHeaders(bool allow_stale,
-                                       UseCounter& use_counter) const;
-  bool ShouldRevalidateStaleResponse(UseCounter& use_counter) const;
+  bool CanReuseRedirectChain() const;
+  bool MustRevalidateDueToCacheHeaders(bool allow_stale) const;
+  bool ShouldRevalidateStaleResponse() const;
   virtual bool CanUseCacheValidator() const;
-  base::TimeDelta FreshnessLifetime(UseCounter& use_counter) const;
+  base::TimeDelta FreshnessLifetime() const;
   bool IsCacheValidator() const {
     return revalidation_status_ == RevalidationStatus::kRevalidating;
   }
@@ -530,6 +537,10 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   virtual void SetEncoding(const String&) {}
 
+  // Call this when the resource is successfully retrieved from MemoryCache.
+  void IncrementMemoryCacheHitCount() { ++memory_cache_hit_count_; }
+  uint32_t MemoryCacheHitCount() const { return memory_cache_hit_count_; }
+
  private:
   friend class ResourceLoader;
   friend class MemoryCache;
@@ -543,7 +554,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   String ReasonNotDeletable() const;
 
   // MemoryPressureListener overrides:
-  void OnPurgeMemory() override;
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   void CheckResourceIntegrity();
   void TriggerNotificationForFinishObservers(base::SingleThreadTaskRunner*);
@@ -575,6 +586,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   bool is_unused_preload_ = false;
   bool stale_revalidation_started_ = false;
   bool is_preloaded_by_early_hints_ = false;
+
+  uint32_t memory_cache_hit_count_ = 0;
 
   enum class RevalidationStatus {
     kNoRevalidatingOrFailed,  // not in revalidate procedure or
@@ -618,6 +631,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   scoped_refptr<SharedBuffer> data_;
 
   WebScopedVirtualTimePauser virtual_time_pauser_;
+
+  MemoryPressureListenerRegistration memory_pressure_listener_registration_;
 };
 
 class ResourceFactory {

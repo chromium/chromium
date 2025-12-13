@@ -364,6 +364,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     response_callback_ = std::move(callback);
   }
 
+  bool response_callback_is_null() { return response_callback_.is_null(); }
+
   void set_source_context_type(extensions::mojom::ContextType type) {
     source_context_type_ = type;
   }

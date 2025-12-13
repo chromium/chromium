@@ -113,6 +113,7 @@
 [ Mac ] fast/events/context-menu-key-shift-f10-modifiers.html [ Skip ]
 [ Mac ] fast/events/context-menu-key-shift-f10-prevent-default.html [ Skip ]
 [ Mac ] fast/events/contextmenu-follows-focus.html [ Skip ]
+[ Mac ] fast/events/contextmenu-prevent-use-counter.html [ Skip ]
 [ Mac ] fast/events/menu-key-context-menu-document.html [ Skip ]
 [ Mac ] fast/events/menu-key-context-menu-position.html [ Skip ]
 [ Mac ] fast/events/menu-key-context-menu-reveal-focus.html [ Skip ]
@@ -403,7 +404,6 @@ external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-005.xht [ Skip ]
 external/wpt/css/css-text/letter-spacing/letter-spacing-nesting-003.xht [ Skip ]
 
 # CSS Text features that are not planned to implement.
-external/wpt/css/css-text/text-justify/text-justify-006.html [ Skip ]
 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-trim-all-001.html?class=chws,htb [ Skip ]
 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-trim-all-001.html?class=chws,vrl [ Skip ]
 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-trim-all-001.html?class=halt,htb [ Skip ]
@@ -415,8 +415,6 @@ external/wpt/css/css-text/text-transform/text-transform-full-size-kana-004.html 
 external/wpt/css/css-text/text-transform/text-transform-full-size-kana-005.html [ Skip ]
 external/wpt/css/css-text/text-transform/text-transform-full-size-kana-006.html [ Skip ]
 external/wpt/css/css-text/text-transform/text-transform-full-size-kana-007.html [ Skip ]
-external/wpt/css/css-text/text-transform/text-transform-fullwidth-008.html [ Skip ]
-external/wpt/css/css-text/text-transform/text-transform-fullwidth-009.html [ Skip ]
 external/wpt/css/css-text/word-boundary/* [ Skip ]
 external/wpt/css/css-text/writing-system/writing-system-line-break-001.html [ Skip ]
 external/wpt/css/css-text/writing-system/writing-system-line-break-002.html [ Skip ]
@@ -444,9 +442,6 @@ external/wpt/css/css-text/white-space/seg-break-transformation-019.tentative.htm
 external/wpt/css/css-text/white-space/trailing-ogham-001.html [ Skip ]
 external/wpt/css/css-text/white-space/trailing-ogham-002.html [ Skip ]
 external/wpt/css/css-text/white-space/trailing-ogham-003.html [ Skip ]
-
-# This test conflicts with UAX#24.
-crbug.com/378692756 external/wpt/css/css-text/shaping/shaping-arabic-diacritics-002.html [ Skip ]
 
 # 1px pixel differences that are not relevant to the tests.
 external/wpt/css/CSS2/text/text-transform-bicameral-007.xht [ Skip ]
@@ -809,91 +804,13 @@ external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-po
 external/wpt/css/css-backgrounds/background-repeat/background-repeat-round-roundup.xht [ Skip ]
 external/wpt/css/css-backgrounds/background-repeat/background-repeat-round.xht [ Skip ]
 external/wpt/css/css-backgrounds/background-size/background-size-contain.xht [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-003.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-005.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-007.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-009.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-011.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-013.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-015.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-017.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-021.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-023.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-025.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-027.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-029.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--auto--percent-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--auto--percent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--auto--percent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--auto-32px--nonpercent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--auto-32px--nonpercent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--auto-32px--omitted-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--auto-32px--omitted-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--auto-32px--omitted-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--auto-32px--percent-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--auto-32px--percent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--auto-32px--percent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--contain--height.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--contain--nonpercent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--contain--nonpercent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--contain--omitted-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--contain--omitted-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--contain--omitted-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--contain--percent-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--contain--percent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--contain--percent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--contain--width.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--cover--nonpercent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--cover--nonpercent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--cover--omitted-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--cover--omitted-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--cover--omitted-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--cover--percent-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--cover--percent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/tall--cover--percent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--12px-auto--nonpercent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--12px-auto--nonpercent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--12px-auto--omitted-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--12px-auto--omitted-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--12px-auto--omitted-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--12px-auto--percent-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--12px-auto--percent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--12px-auto--percent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto--nonpercent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto--nonpercent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto--omitted-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto--omitted-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto--omitted-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto--percent-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto--percent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto--percent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto-32px--nonpercent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto-32px--nonpercent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto-32px--omitted-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto-32px--omitted-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto-32px--omitted-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto-32px--percent-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto-32px--percent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--auto-32px--percent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--contain--height.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--contain--nonpercent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--contain--nonpercent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--contain--omitted-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--contain--omitted-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--contain--omitted-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--contain--percent-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--contain--percent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--contain--percent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--contain--width.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--cover--nonpercent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--cover--nonpercent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--cover--omitted-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--cover--omitted-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--cover--omitted-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--cover--percent-width-nonpercent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--cover--percent-width-omitted-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size/vector/wide--cover--percent-width-percent-height-viewbox.html [ Skip ]
 external/wpt/css/css-backgrounds/first-letter-space-not-selected.html [ Skip ]
+
+# These tests set extreme viewBox values and fail because of small differences.
+external/wpt/css/css-backgrounds/background-size/vector/tall--contain--height.html [ Skip ]
+external/wpt/css/css-backgrounds/background-size/vector/tall--contain--width.html [ Skip ]
+external/wpt/css/css-backgrounds/background-size/vector/wide--contain--height.html [ Skip ]
+external/wpt/css/css-backgrounds/background-size/vector/wide--contain--width.html [ Skip ]
 
 # Failures on the initial import of css-color. Test suite had many other bugs,
 # so these may also be incorrect tests, but probably some real issues too.
@@ -1750,9 +1667,12 @@ crbug.com/1197087 [ Debug ] external/wpt/web-animations/interfaces/Animation/fin
 [ Mac ] external/wpt/webdriver/tests/* [ Skip ]
 [ Win ] external/wpt/webdriver/tests/* [ Skip ]
 
-# WebNN GPU backend is only supported on Win11/Intel by default.
+# WebNN DirectML GPU backend is only supported on Win11/Intel by default.
 crbug.com/40288082 [ Win10.20h2 ] virtual/webnn-service-with-gpu/* [ Skip ]
 crbug.com/323752584 [ Win11-arm64 ] virtual/webnn-service-with-gpu/* [ Skip ]
+
+# WebNN TFLite GPU backend is only supported on official builds.
+[ Linux ] virtual/webnn-service-with-gpu/* [ Skip ]
 
 # WebNN is only supported on macOS 14 and newer versions.
 [ Mac12 ] external/wpt/webnn/* [ Skip ]
@@ -1800,6 +1720,10 @@ crbug.com/40241779 virtual/view-transition-mpa-serialization/external/wpt/css/cs
 crbug.com/40241779 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/navigation/* [ Skip ]
 # Scoped view transitions are incompatible with mpa serialization.
 crbug.com/40267386 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/scoped/* [ Skip ]
+
+# waitUntil() should be tested separately for the navigation serialization.
+crbug.com/346976175 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/view-transition-waituntil-animation-manipulation.html [ Skip ]
+crbug.com/346976175 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/view-transition-waituntil-finished-promise.html [ Skip ]
 
 # This test requests a screenshot capture inside the updateDOMCallback assuming
 # this will end the test. The ViewTransition API suppresses rendering while this
@@ -1906,11 +1830,25 @@ crbug.com/41442253 [ Mac ] external/wpt/clipboard-apis/async-navigator-clipboard
 crbug.com/41442253 [ iOS26-simulator ] external/wpt/clipboard-apis/async-navigator-clipboard-change-event.tentative.https.html [ Skip ]
 
 # These tests are run exclusively in the prefetch-proxy VirtualTestSuite.
-virtual/prefetch/external/wpt/speculation-rules/prefetch/anonymous-client.https.html [ Skip ]
-virtual/prefetch/external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip-duplicate.https.html [ Skip ]
-virtual/prefetch-sw/external/wpt/speculation-rules/prefetch/anonymous-client.https.html [ Skip ]
-virtual/prefetch-sw/external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip-duplicate.https.html [ Skip ]
+external/wpt/speculation-rules/prefetch/anonymous-client.https.html [ Skip ]
+external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip-duplicate.https.html [ Skip ]
 
-# These tests test origin trial behavior that is only enabled on windows
+# These tests test origin trial behavior that is only enabled on windows.
 [ Mac ] http/tests/origin_trials/webexposed/incoming-call-notifications-origin-trial-interfaces.html [ Skip ]
 [ Linux ] http/tests/origin_trials/webexposed/incoming-call-notifications-origin-trial-interfaces.html [ Skip ]
+
+# restrictOwnAudio is supported only on recent versions of Windows and Mac.
+[ Linux ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
+[ Win10.20h2 ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
+[ Mac12 ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
+[ Mac13 ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
+[ Android ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
+[ Fuchsia ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
+
+# EchoCancellation mode "all" is not supported on Linux
+[ Linux ] external/wpt/mediacapture-streams/GUM-echoCancellation-all.https.html [ Skip ]
+
+# Tests below expects SVG1.1 <use> cascade behavior, which is different from SVG2
+crbug.com/40550039 svg/css/use-replicates-changes-class.html [ Skip ]
+crbug.com/40550039 svg/css/use-replicates-changes-pseudo.html [ Skip ]
+crbug.com/40550039 svg/W3C-SVG-1.1-SE/struct-use-11-f.svg [ Skip ]

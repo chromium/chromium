@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_holder.h"
 #include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -22,6 +23,8 @@ class Value;
 
 namespace web_app {
 
+class AllAppsLock;
+class AllAppsLockDescription;
 class AppLock;
 class AppLockDescription;
 class LockDescription;
@@ -92,8 +95,9 @@ class WebAppLockManager {
   // and/or internal locks are released. `on_lock_acquired` is called when the
   // lock is granted. Any access of the `lock` before `on_lock_acquired` is
   // called will CHECK-fail.
-  // TODO(crbug.com/371221610): Move the lock description to be owned by the
-  // lock.
+  //
+  // Note: This should NOT be called by anything other than
+  // internal::CommandWithLock. Please use the command system to get a lock.
   template <class LockType>
   void AcquireLock(const LockType::LockDescription& lock_description,
                    LockType& lock,
@@ -102,6 +106,8 @@ class WebAppLockManager {
 
   // Upgrades the given lock to a new one, and will call `on_lock_acquired` on
   // when the new lock has been acquired.
+  // Note: Other operations may be run in between requesting and granting
+  // this lock if the lock is already held or has a queue.
   std::unique_ptr<SharedWebContentsWithAppLockDescription>
   UpgradeAndAcquireLock(std::unique_ptr<SharedWebContentsLock> old_lock,
                         SharedWebContentsWithAppLock& new_lock,
@@ -111,10 +117,22 @@ class WebAppLockManager {
 
   // Upgrades the given lock to a new one, and will call `on_lock_acquired` on
   // when the new lock has been acquired.
+  // Note: Other operations may be run in between requesting and granting
+  // this lock if the lock is already held or has a queue.
   std::unique_ptr<AppLockDescription> UpgradeAndAcquireLock(
       std::unique_ptr<NoopLock> old_lock,
       AppLock& new_lock,
       const base::flat_set<webapps::AppId>& app_ids,
+      base::OnceClosure on_lock_acquired,
+      const base::Location& location = FROM_HERE);
+
+  // Upgrades the given lock to a new one, and will call `on_lock_acquired` on
+  // when the new lock has been acquired.
+  // Note: Other operations may be run in between requesting and granting
+  // this lock if the lock is already held or has a queue.
+  std::unique_ptr<AllAppsLockDescription> UpgradeAndAcquireLock(
+      std::unique_ptr<SharedWebContentsWithAppLock> old_lock,
+      AllAppsLock& new_lock,
       base::OnceClosure on_lock_acquired,
       const base::Location& location = FROM_HERE);
 

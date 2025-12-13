@@ -81,24 +81,28 @@ int GetSyncTransportOptInBitFieldForAccount(const PrefService* prefs,
 }  // namespace
 
 // The list of countries for which the credit card upload save feature is fully
-// launched. Last updated M129.
+// launched. Last updated M143.
 const char* const kAutofillUpstreamLaunchedCountries[] = {
-    "AD", "AE", "AF", "AG", "AI", "AL", "AO", "AR", "AS", "AT", "AU", "AW",
-    "AZ", "BA", "BB", "BE", "BF", "BG", "BH", "BJ", "BM", "BN", "BR", "BS",
-    "BT", "BW", "BZ", "CA", "CD", "CF", "CG", "CH", "CI", "CK", "CL", "CM",
-    "CO", "CR", "CV", "CX", "CY", "CZ", "DE", "DJ", "DK", "DM", "DO", "EC",
-    "EE", "EH", "ER", "ES", "FI", "FJ", "FK", "FM", "FO", "FR", "GA", "GB",
-    "GD", "GE", "GF", "GH", "GI", "GL", "GM", "GN", "GP", "GQ", "GR", "GT",
-    "GU", "GW", "GY", "HK", "HN", "HR", "HT", "HU", "IE", "IL", "IO", "IS",
-    "IT", "JP", "KE", "KH", "KI", "KM", "KN", "KW", "KY", "KZ", "LA", "LC",
-    "LI", "LK", "LR", "LS", "LT", "LU", "LV", "MC", "MD", "ME", "MG", "MH",
-    "MK", "ML", "MN", "MO", "MP", "MQ", "MR", "MS", "MT", "MU", "MW", "MX",
-    "MY", "MZ", "NA", "NC", "NE", "NF", "NG", "NI", "NL", "NO", "NR", "NZ",
-    "OM", "PA", "PE", "PF", "PG", "PH", "PL", "PM", "PR", "PT", "PW", "PY",
-    "QA", "RE", "RO", "SB", "SC", "SE", "SG", "SI", "SJ", "SK", "SL", "SM",
-    "SN", "SR", "ST", "SV", "SZ", "TC", "TD", "TG", "TH", "TL", "TM", "TO",
-    "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "US", "UY", "VC", "VE", "VG",
-    "VI", "VN", "VU", "WS", "YT", "ZA", "ZM", "ZW"};
+    "AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS", "AT",
+    "AU", "AW", "AZ", "BA", "BB", "BD", "BE", "BF", "BG", "BH", "BI", "BJ",
+    "BL", "BM", "BN", "BQ", "BR", "BS", "BT", "BW", "BY", "BZ", "CA", "CC",
+    "CD", "CF", "CG", "CH", "CI", "CK", "CL", "CM", "CO", "CR", "CV", "CW",
+    "CX", "CY", "CZ", "DE", "DJ", "DK", "DM", "DO", "DZ", "EC", "EE", "EG",
+    "EH", "ER", "ES", "FI", "FJ", "FK", "FM", "FO", "FR", "GA", "GB", "GD",
+    "GE", "GF", "GG", "GH", "GI", "GL", "GM", "GN", "GP", "GQ", "GR", "GT",
+    "GU", "GW", "GY", "HK", "HN", "HR", "HT", "HU", "ID", "IE", "IL", "IM",
+    "IO", "IS", "IT", "JM", "JO", "JP", "KE", "KG", "KH", "KI", "KM", "KN",
+    "KW", "KY", "KZ", "LA", "LB", "LC", "LI", "LK", "LR", "LS", "LT", "LU",
+    "LV", "LY", "MA", "MC", "MD", "ME", "MF", "MG", "MH", "MK", "ML", "MM",
+    "MN", "MO", "MP", "MQ", "MR", "MS", "MT", "MU", "MV", "MW", "MX", "MY",
+    "MZ", "NA", "NC", "NE", "NF", "NG", "NI", "NL", "NO", "NP", "NR", "NU",
+    "NZ", "OM", "PA", "PE", "PF", "PG", "PH", "PK", "PL", "PM", "PN", "PR",
+    "PS", "PT", "PW", "PY", "QA", "RE", "RO", "RW", "SA", "SB", "SC", "SE",
+    "SG", "SH", "SI", "SJ", "SK", "SL", "SM", "SN", "SO", "SR", "SS", "ST",
+    "SV", "SX", "SZ", "TC", "TD", "TG", "TH", "TJ", "TK", "TL", "TM", "TO",
+    "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "US", "UY", "UZ", "VA", "VC",
+    "VE", "VG", "VI", "VN", "VU", "WF", "WS", "XK", "YE", "YT", "ZA", "ZM",
+    "ZW"};
 
 bool IsCreditCardUploadEnabled(
     const syncer::SyncService* sync_service,
@@ -270,6 +274,9 @@ bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
 
 bool IsDeviceAuthAvailable(
     device_reauth::DeviceAuthenticator* device_authenticator) {
+  // TODO(crbug.com/467173735): Check with ChromeOS team on the implementation
+  // details. It is still in active discussion with the ChromeOS team on how to
+  // implement this.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   CHECK(device_authenticator);
   return device_authenticator->CanAuthenticateWithBiometricOrScreenLock();
@@ -277,6 +284,7 @@ bool IsDeviceAuthAvailable(
   return false;
 #endif
 }
+
 bool IsTouchToFillPaymentMethodSupported() {
 #if BUILDFLAG(IS_ANDROID)
   // Touch To Fill is only supported on Android.

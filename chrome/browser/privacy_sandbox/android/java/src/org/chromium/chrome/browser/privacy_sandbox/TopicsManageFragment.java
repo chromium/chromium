@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
@@ -13,11 +14,13 @@ import androidx.preference.PreferenceCategory;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -28,15 +31,17 @@ import org.chromium.ui.text.SpanApplier;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Fragment for managing all the topics. */
 @NullMarked
 public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
     private static final String MANAGE_TOPICS_PREFERENCE = "topics_list";
+    private static final String TOPICS_PREF_PREFIX = "topic_";
 
     private PreferenceCategory mTopicsCategory;
 
-    private @Nullable Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private @Nullable Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -70,7 +75,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
      * AutofillDeleteCreditCardConfirmationDialog}.
      */
     public void setModalDialogManagerSupplier(
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
@@ -80,6 +85,10 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
         var blockedTopics = new HashSet<Topic>(getPrivacySandboxBridge().getBlockedTopics());
         for (Topic topic : firstLevelTopics) {
             var preference = new TopicSwitchPreference(getContext(), topic);
+            // LINT.IfChange(TopicsKey)
+            String key = TOPICS_PREF_PREFIX + topic.getTopicId();
+            // LINT.ThenChange(:DynamicTopicsKey)
+            preference.setKey(key);
             preference.setChecked(!blockedTopics.contains(topic));
             preference.setOnPreferenceChangeListener(this::onToggleChange);
             mTopicsCategory.addPreference(preference);
@@ -162,4 +171,38 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
     }
+
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    TopicsManageFragment.class.getName(), R.xml.topics_manage_preference) {
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    PrivacySandboxBridge bridge = new PrivacySandboxBridge(profile);
+
+                    List<Topic> topics = bridge.getFirstLevelTopics();
+
+                    for (Topic topic : topics) {
+                        String title = topic.getName();
+                        String summary = topic.getDescription();
+
+                        // LINT.IfChange(DynamicTopicsKey)
+                        String key = TOPICS_PREF_PREFIX + topic.getTopicId();
+                        // LINT.ThenChange(:TopicsKey)
+
+                        String uniqueId = getUniqueId(key);
+
+                        SettingsIndexData.Entry entry =
+                                new SettingsIndexData.Entry.Builder(
+                                                uniqueId,
+                                                key,
+                                                title,
+                                                TopicsManageFragment.class.getName())
+                                        .setSummary(summary)
+                                        .build();
+
+                        indexData.updateEntry(uniqueId, entry);
+                    }
+                }
+            };
 }

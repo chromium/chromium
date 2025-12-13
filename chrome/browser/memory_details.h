@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_MEMORY_DETAILS_H_
 #define CHROME_BROWSER_MEMORY_DETAILS_H_
 
-#include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,6 +14,7 @@
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
 #include "content/public/common/process_type.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 
 namespace memory_instrumentation {
 class GlobalMemoryDump;
@@ -159,8 +160,10 @@ class MemoryDetails : public base::RefCountedThreadSafe<MemoryDetails> {
   // renderer processes is only available there.
   void CollectChildInfoOnUIThread();
 
+  // `outcome` is the outcome of requesting the memory dump, or nullopt if the
+  // memory instrumentation service is not available.
   void DidReceiveMemoryDump(
-      bool success,
+      std::optional<memory_instrumentation::mojom::RequestOutcome> outcome,
       std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump);
 
   std::vector<ProcessData> process_data_;

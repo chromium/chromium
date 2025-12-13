@@ -13,7 +13,6 @@
 #include "ash/constants/ash_paths.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -139,6 +138,7 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
       core_(dm_protocol::kChromePublicAccountPolicyType,
             store_->account_id(),
             store_.get(),
+            /*extension_install_store=*/nullptr,
             task_runner,
             base::BindRepeating(&content::GetNetworkConnectionTracker)),
       policy_update_callback_(policy_update_callback),
@@ -168,10 +168,6 @@ DeviceLocalAccountPolicyBroker::~DeviceLocalAccountPolicyBroker() {
   store_->RemoveObserver(this);
   external_data_manager_->SetPolicyStore(nullptr);
   external_data_manager_->Disconnect();
-
-  if (invalidator_) {
-    invalidator_->Shutdown();
-  }
 }
 
 void DeviceLocalAccountPolicyBroker::Initialize() {
@@ -211,11 +207,9 @@ void DeviceLocalAccountPolicyBroker::ConnectIfPossible(
   core_.StartRefreshScheduler();
   UpdateRefreshDelay();
   invalidator_ = std::make_unique<CloudPolicyInvalidator>(
-      PolicyInvalidationScope::kDeviceLocalAccount, &core_,
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
-      base::DefaultClock::GetInstance(),
-      /*highest_handled_invalidation_version=*/0, account_id_);
-  invalidator_->Initialize(invalidation_listener_);
+      PolicyInvalidationScope::kDeviceLocalAccount, invalidation_listener_,
+      &core_, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::DefaultClock::GetInstance(), account_id_);
 }
 
 void DeviceLocalAccountPolicyBroker::UpdateRefreshDelay() {

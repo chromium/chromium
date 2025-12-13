@@ -6,8 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_AUTOFILL_CROWDSOURCING_MANAGER_H_
 
 #include <stddef.h>
+
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -23,10 +25,13 @@
 #include "components/version_info/channel.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/isolation_info.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
 class PrefService;
+
+namespace network {
+class SimpleURLLoader;
+}
 
 namespace autofill {
 
@@ -153,7 +158,7 @@ class AutofillCrowdsourcingManager {
       std::list<std::unique_ptr<network::SimpleURLLoader>>::iterator it,
       FormRequestData request_data,
       base::TimeTicks request_start,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   // Records the number of requests of a given `request_type` in the last minute
   static void RecordRequestsInLastMinute(CrowdsourcingRequestType request_type);

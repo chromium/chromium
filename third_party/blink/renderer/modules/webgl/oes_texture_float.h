@@ -30,6 +30,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class OESTextureFloat final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -39,7 +41,7 @@ class OESTextureFloat final : public WebGLExtension {
 
   WebGLExtensionName GetName() const override;
 
-  explicit OESTextureFloat(WebGLRenderingContextBase*);
+  OESTextureFloat(WebGLRenderingContextBase*, ExecutionContext*);
 };
 
 }  // namespace blink

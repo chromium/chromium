@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Koneksi internet langsung</translation>
 <translation id="1272293450992660632">Nilai PIN tidak cocok.</translation>
+<translation id="1279040297980392566">Menunggu pemindaian selesai, coba lagi nanti</translation>
 <translation id="1280820357415527819">Menelusuri jaringan seluler</translation>
 <translation id="1293556467332435079">File</translation>
 <translation id="1297922636971898492">Saat ini Google Drive tidak tersedia. Upload akan dimulai ulang secara otomatis setelah Google Drive aktif kembali.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 file dipilih</translation>
 <translation id="3817579325494460411">Tidak dicantumkan</translation>
 <translation id="3819448694985509187">PIN salah. Tersisa 1 upaya lagi.</translation>
-<translation id="3822559385185038546">Proxy ini diberlakukan oleh administrator Anda</translation>
 <translation id="3830674330436234648">Pemutaran tidak tersedia</translation>
 <translation id="383652340667548381">Serb</translation>
 <translation id="3839045880592694915">Modem tidak diizinkan untuk terhubung oleh operator Anda. Hubungi operator untuk mengetahui detail selengkapnya.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="5602622065581044566">Bulgaria dengan keyboard Fonetik</translation>
 <translation id="5605830556594064952">Dvorak AS</translation>
+<translation id="560739212255190568">Admin Anda menetapkan aturan penggantian proxy selain menerapkan proxy berikut</translation>
 <translation id="5618330573454123917">File ini dirancang untuk komputer yang menggunakan software Macintosh. File ini tidak kompatibel dengan perangkat Anda yang menjalankan ChromeOS. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di ChromeOS.</translation>
 <translation id="5625294776298156701">Tamil dengan keyboard Tamil99</translation>
 <translation id="5633226425545095130">Memindahkan item ini akan membagikannya ke siapa saja yang dapat melihat folder bersama '<ph name="DESTINATION_NAME" />'.</translation>
@@ -787,7 +788,7 @@
 <translation id="7075931588889865715">Thai dengan keyboard TIS 820-2531</translation>
 <translation id="708278670402572152">Putuskan hubungan untuk mengaktifkan pemindaian</translation>
 <translation id="7086590977277044826">Tamil dengan keyboard InScript</translation>
-<translation id="7088615885725309056">Lawas</translation>
+<translation id="7088615885725309056">Lebih lama</translation>
 <translation id="7103992300314999525">Makedonia</translation>
 <translation id="7104338189998813914">Terjadi masalah saat mengakses akun OneDrive Anda</translation>
 <translation id="7106346894903675391">Beli penyimpanan lagi...</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="8545476925160229291">Inggris (AS)</translation>
 <translation id="854655314928502177">URL Penemuan Otomatis Proxy Web:</translation>
+<translation id="8547747809824590510">Admin Anda menetapkan aturan penggantian proxy</translation>
 <translation id="8549186985808798022">Italia</translation>
 <translation id="8551494947769799688">Latvia</translation>
 <translation id="8560515948038859357">Kanton</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">File bernama "<ph name="FILE_NAME" />" sudah ada. Harap pilih nama lain.</translation>
 <translation id="9046895021617826162">Gagal menyambung</translation>
 <translation id="9065512565307033593">Jika gagal memverifikasi, akses jaringan Anda akan dinonaktifkan.</translation>
+<translation id="9079844694307518094">Admin Anda menerapkan proxy berikut</translation>
 <translation id="908378762078012445">Rusia dengan keyboard AATSEEL Fonetik</translation>
 <translation id="9086302186042011942">Menyinkronkan</translation>
 <translation id="9099674669267916096">Hitungan halaman</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Penginstalan berhasil dimulai.</translation>
 <translation id="9219103736887031265">Gambar</translation>
 <translation id="9219908252191632183">Lunar</translation>
+<translation id="931652069802536959">Jaringan diblokir oleh kebijakan</translation>
 <translation id="938470336146445890">Instal sertifikat pengguna.</translation>
 <translation id="939736085109172342">Folder baru</translation>
 <translation id="943972244133411984">Diubah oleh</translation>

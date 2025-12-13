@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 
@@ -20,6 +22,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
  * For heavier Activities that show web content, use ChromeActivity instead to get asynchronous
  * loading of the native libraries.
  */
+@NullMarked
 public abstract class SnackbarActivity extends SynchronousInitializationActivity
         implements SnackbarManageable {
 
@@ -27,7 +30,7 @@ public abstract class SnackbarActivity extends SynchronousInitializationActivity
 
     @CallSuper
     @Override
-    protected void onCreateInternal(Bundle savedInstanceState) {
+    protected void onCreateInternal(@Nullable Bundle savedInstanceState) {
         super.onCreateInternal(savedInstanceState);
         // TODO(crbug.com/399495650): Add render tests for snackbar padding in edge-to-edge mode.
         mSnackbarManager = new SnackbarManager(this, getContentView(), null);

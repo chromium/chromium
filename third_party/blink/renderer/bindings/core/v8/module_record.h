@@ -86,7 +86,6 @@ class CORE_EXPORT ModuleRecord final {
   // expects [key1, value1, key2, value2, ...] encoding used in the
   // |HostImportModuleDynamically| callback.
   static Vector<ImportAttribute> ToBlinkImportAttributes(
-      v8::Local<v8::Context> context,
       v8::Local<v8::Module> record,
       v8::Local<v8::FixedArray> v8_import_attributes,
       bool v8_import_attributes_has_positions);

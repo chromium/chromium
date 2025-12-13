@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/image/image_skia.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {

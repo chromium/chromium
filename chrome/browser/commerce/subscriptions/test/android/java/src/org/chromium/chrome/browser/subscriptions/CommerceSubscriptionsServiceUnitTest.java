@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerIm
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
@@ -71,7 +70,6 @@ public class CommerceSubscriptionsServiceUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
-    @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private UserPrefs.Natives mUserPrefsJni;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;

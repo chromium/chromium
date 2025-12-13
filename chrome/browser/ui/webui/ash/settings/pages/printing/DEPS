@@ -10,19 +10,18 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/ash/browser_delegate/browser_controller.h",
+  "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/printing",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/download",
   "+chrome/browser/local_discovery",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/browser_finder.h",
-  "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/chrome_select_file_policy.h",
   "+chrome/browser/ui/webui/ash/settings/pages",
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/settings",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test",

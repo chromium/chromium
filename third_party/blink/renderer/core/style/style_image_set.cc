@@ -88,10 +88,6 @@ bool StyleImageSet::IsAccessAllowed(String& failing_url) const {
   return !best_fit_image_ || best_fit_image_->IsAccessAllowed(failing_url);
 }
 
-bool StyleImageSet::IsFromOriginCleanStyleSheet() const {
-  return !best_fit_image_ || best_fit_image_->IsFromOriginCleanStyleSheet();
-}
-
 NaturalSizingInfo StyleImageSet::GetNaturalSizingInfo(
     float multiplier,
     RespectImageOrientationEnum respect_orientation) const {

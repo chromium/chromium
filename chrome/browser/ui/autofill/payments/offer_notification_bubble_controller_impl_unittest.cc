@@ -5,12 +5,15 @@
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
@@ -45,10 +48,13 @@ class TestOfferNotificationBubbleControllerImpl
 // the tests and the production code.
 
 class OfferNotificationBubbleControllerImplTest
-    : public BrowserWithTestWindowTest {
+    : public base::test::WithFeatureOverride,
+      public BrowserWithTestWindowTest {
  public:
   OfferNotificationBubbleControllerImplTest()
-      : BrowserWithTestWindowTest(
+      : base::test::WithFeatureOverride(
+            features::kAutofillShowBubblesBasedOnPriorities),
+        BrowserWithTestWindowTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   OfferNotificationBubbleControllerImplTest(
       const OfferNotificationBubbleControllerImplTest&) = delete;
@@ -124,7 +130,7 @@ class OfferNotificationBubbleControllerImplTest
   CreditCard card_ = test::GetCreditCard();
 };
 
-TEST_F(OfferNotificationBubbleControllerImplTest, BubbleShown) {
+TEST_P(OfferNotificationBubbleControllerImplTest, BubbleShown) {
   // Check that bubble is visible.
   AutofillOfferData offer = CreateTestCardLinkedOffer(
       /*merchant_origins=*/{GURL("https://www.example.com")},
@@ -135,7 +141,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest, BubbleShown) {
 
 // Ensures the bubble does not stick around after it has been shown for longer
 // than kAutofillBubbleSurviveNavigationTime (5 seconds).
-TEST_F(OfferNotificationBubbleControllerImplTest,
+TEST_P(OfferNotificationBubbleControllerImplTest,
        OfferBubbleDismissesOnNavigation) {
   AutofillOfferData offer = CreateTestCardLinkedOffer(
       /*merchant_origins=*/{GURL("https://www.example.com")},
@@ -157,7 +163,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
   EXPECT_EQ(nullptr, controller()->GetOfferNotificationBubbleView());
 }
 
-TEST_F(OfferNotificationBubbleControllerImplTest,
+TEST_P(OfferNotificationBubbleControllerImplTest,
        ShownOfferIsRetrievableFromController) {
   AutofillOfferData offer = CreateTestCardLinkedOffer(
       /*merchant_origins=*/{GURL("https://www.example.com")},
@@ -169,7 +175,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
 
 // Tests that the offer notification bubble will be shown, and coupon service
 // will not be called for a GPay promo code offer.
-TEST_F(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
+TEST_P(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
   AutofillOfferData offer = CreateTestGPayPromoCodeOffer(
       /*merchant_origins=*/{GURL("https://www.example.com")},
       /*promo_code=*/"FREEFALL5678");
@@ -180,5 +186,8 @@ TEST_F(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE));
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    OfferNotificationBubbleControllerImplTest);
 
 }  // namespace autofill

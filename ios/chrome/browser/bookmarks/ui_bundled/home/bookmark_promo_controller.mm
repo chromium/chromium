@@ -23,11 +23,13 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
-@interface BookmarkPromoController () <IdentityManagerObserverBridgeDelegate,
+@interface BookmarkPromoController () <AuthenticationServiceObserving,
+                                       IdentityManagerObserverBridgeDelegate,
                                        SigninPromoViewConsumer>
 
 @end
@@ -38,6 +40,11 @@
       _identityManagerObserverBridge;
   // Mediator to use for the sign-in promo view displayed in the bookmark view.
   SigninPromoViewMediator* _signinPromoViewMediator;
+  // Authentication Service to retrieve the user's signed-in state.
+  raw_ptr<AuthenticationService> _authService;
+  // Observer for auth service status changes.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -48,7 +55,8 @@
         (id<SigninPromoViewMediatorDelegate>)signinPromoViewMediatorDelegate
            accountSettingsPresenter:
                (id<AccountSettingsPresenter>)accountSettingsPresenter {
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M145);
+  CHECK(syncService, base::NotFatalUntil::M145);
   self = [super init];
   if (self) {
     _delegate = delegate;
@@ -75,6 +83,10 @@
           return CreateChangeProfileBookmarksContinuation();
         })];
     _signinPromoViewMediator.consumer = self;
+    _authService = AuthenticationServiceFactory::GetForProfile(profile);
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(_authService,
+                                                              self);
     _signinPromoViewMediator.dataTypeToWaitForInitialSync =
         syncer::DataType::BOOKMARKS;
     [self updateShouldShowSigninPromo];
@@ -82,11 +94,16 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
+}
+
 - (void)shutdown {
   [_signinPromoViewMediator disconnect];
   _signinPromoViewMediator = nil;
   _browser = nullptr;
   _identityManagerObserverBridge.reset();
+  _authServiceObserverBridge.reset();
 }
 
 - (void)setShouldShowSigninPromo:(BOOL)shouldShowSigninPromo {
@@ -97,7 +114,7 @@
 }
 
 - (void)updateShouldShowSigninPromo {
-  DCHECK(_browser);
+  CHECK(_browser, base::NotFatalUntil::M152);
   ProfileIOS* profile = _browser->GetProfile()->GetOriginalProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
@@ -149,8 +166,14 @@
 
 #pragma mark - Property
 
-- (BOOL)signinInProgress {
+- (signin::Tribool)signinInProgress {
   return _signinPromoViewMediator.signinInProgress;
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  [self updateShouldShowSigninPromo];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

@@ -65,7 +65,11 @@ document.body.onload = async () => {
           encodeURIComponent(self.origin)}`,
       get_host_info().HTTPS_NOTSAMESITE_ORIGIN + self.location.pathname);
   const popup = window.open(crossSiteUrl);
-  fetch_tests_from_window(popup);
+  await fetch_tests_from_window(popup);
+
+  for (const cookieName of cookieNames) {
+    erase_cookie_from_js(cookieName, "Secure; Path=/; SameSite=None; Partitioned");
+  }
 };
 
 </script>

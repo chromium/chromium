@@ -17,8 +17,8 @@ interface SubresourceFilterAgent {
   // subresource filter root frame, `ad_evidence` should be null as only child
   // frames can be tagged.
   //
-  // Must be called just before mojom::FrameNavigationControl::CommitNavigation,
-  // at ReadyToCommitNavigation time. If not called, the default behavior is
+  // Must be called just before RenderFrameHost::CommitNavigation, at
+  // ReadyToCommitNavigation time. If not called, the default behavior is
   // mojom::ActivationLevel::kDisabled and unchanged ad evidence.
   ActivateForNextCommittedLoad(ActivationState activation_state,
                                blink.mojom.FrameAdEvidence? ad_evidence);
@@ -72,4 +72,3 @@ interface SubresourceFilterHost {
   // ads violations within the ads intervention manager.
   OnAdsViolationTriggered(AdsViolation violation);
 };
-

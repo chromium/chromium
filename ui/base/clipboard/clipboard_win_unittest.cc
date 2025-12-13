@@ -4,10 +4,13 @@
 
 #include "ui/base/clipboard/clipboard_win.h"
 
+#include <windows.h>
+
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/win/scoped_hglobal.h"
 #include "testing/platform_test.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
@@ -33,6 +36,14 @@ class ClipboardWinTest : public PlatformTest, public ClipboardObserver {
 
   int data_changed_count() const { return data_changed_count_; }
 
+  // Helper method to wait for data_changed_count to reach expected value
+  void WaitForDataChangedCount(int expected_count) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return data_changed_count() == expected_count;
+    })) << "Timeout waiting for data_changed_count to reach "
+        << expected_count << ", actual count: " << data_changed_count();
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
@@ -46,29 +57,29 @@ TEST_F(ClipboardWinTest, DataChangedNotificationOnWrite) {
     ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
     writer.WriteText(u"text");
   }
-  ASSERT_EQ(data_changed_count(), 1);
+  WaitForDataChangedCount(1);
 
   {
     ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
     writer.WriteHTML(u"html", "https://source.com/");
     writer.WriteSvg(u"svg");
   }
-  ASSERT_EQ(data_changed_count(), 2);
+  WaitForDataChangedCount(2);
 
   {
     ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
     writer.WriteRTF("rtf");
   }
-  ASSERT_EQ(data_changed_count(), 3);
+  WaitForDataChangedCount(3);
 
   {
     ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
     writer.WriteImage(gfx::test::CreateBitmap(2, 3));
   }
-  ASSERT_EQ(data_changed_count(), 4);
+  WaitForDataChangedCount(4);
 
   Clipboard::GetForCurrentThread()->Clear(ClipboardBuffer::kCopyPaste);
-  ASSERT_EQ(data_changed_count(), 5);
+  WaitForDataChangedCount(5);
 }
 
 TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
@@ -130,21 +141,56 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
 }
 
 // Test that the ClipboardMonitor sends a notification when data is written to
-// the clipboard when ClipboardChangeEvent API is enabled. With the API enabled,
-// the ClipboardMonitor gets notified of clipboard changes via the OS's
+// the clipboard when platform clipboard monitoring is enabled. With the API
+// enabled, the ClipboardMonitor gets notified of clipboard changes via the OS's
 // clipboard change notification mechanism. (On Windows, this is done via the
 // WM_CLIPBOARDUPDATE message.)
 TEST_F(ClipboardWinTest, DataChangedNotificationOnWriteWithClipboardChangeAPI) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(features::kClipboardChangeEvent);
   {
     ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
     writer.WriteText(u"text");
   }
   // Since the WM_CLIPBOARDUPDATE message is sent on the same thread, we
   // need to wait for the thread to process the message.
-  ASSERT_TRUE(base::test::RunUntil([&]() { return data_changed_count() == 1; }))
-      << "Timeout waiting for the clipboardMonitor to be notified";
+  WaitForDataChangedCount(1);
+}
+
+TEST_F(ClipboardWinTest, InvalidBitmapDoesNotCrash) {
+  const int kWidth = 1;
+  const int kHeight = 1;
+  const size_t kHeaderSize = sizeof(BITMAPINFOHEADER);
+  const size_t kPixelBytes = 4;
+
+  BITMAPINFOHEADER hdr = {};
+  hdr.biSize = sizeof(BITMAPINFOHEADER);
+  hdr.biWidth = kWidth;
+  hdr.biHeight = kHeight;
+  hdr.biPlanes = 1;
+  hdr.biBitCount = 0;  // Abnormal value under test.
+  hdr.biCompression = BI_RGB;
+
+  std::vector<uint8_t> invalid_bitmap_data(kHeaderSize + kPixelBytes, 0);
+  base::as_writable_byte_span(invalid_bitmap_data)
+      .first(sizeof(BITMAPINFOHEADER))
+      .copy_from(base::byte_span_from_ref(hdr));
+
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    // Writing an invalid bitmap to the clipboard.
+    writer.WriteRawDataForTest(ClipboardFormatType(CF_DIB),
+                               std::move(invalid_bitmap_data));
+  }
+
+  // Reading PNG should not crash.
+  base::test::TestFuture<const std::vector<uint8_t>&> png_future;
+  Clipboard::GetForCurrentThread()->ReadPng(ClipboardBuffer::kCopyPaste,
+                                            nullptr, png_future.GetCallback());
+  ASSERT_TRUE(png_future.Wait());
+  const auto& png = png_future.Get();
+  ASSERT_GE(png.size(), 0u);
+
+  // Clear invalid data in clipboard.
+  Clipboard::GetForCurrentThread()->Clear(ClipboardBuffer::kCopyPaste);
 }
 
 }  // namespace ui

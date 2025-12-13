@@ -63,7 +63,7 @@ public class CustomTabAuthUrlHeuristics {
      *
      * @param url The url to extract query params from.
      */
-    public static void recordUrlParamsHistogram(String url) {
+    public static void recordUrlParamsHistogram(@Nullable String url) {
         if (TextUtils.isEmpty(url)) return;
         Uri uri = Uri.parse(url);
 

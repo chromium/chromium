@@ -15,8 +15,8 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 
 namespace enterprise_connectors::test {
 
@@ -27,8 +27,7 @@ base::TimeDelta response_delay = base::Seconds(0);
 class FakePagePrintRequestHandler : public PagePrintRequestHandler {
  public:
   static std::unique_ptr<PagePrintRequestHandler> Create(
-      base::OnceCallback<
-          void(std::unique_ptr<safe_browsing::BinaryUploadService::Request>)>
+      base::OnceCallback<void(std::unique_ptr<BinaryUploadRequest>)>
           upload_callback,
       ContentAnalysisInfo* content_analysis_info,
       safe_browsing::BinaryUploadService* upload_service,
@@ -54,16 +53,14 @@ class FakePagePrintRequestHandler : public PagePrintRequestHandler {
   }
 
  private:
-  base::OnceCallback<void(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request>)>
+  base::OnceCallback<void(std::unique_ptr<BinaryUploadRequest>)>
       upload_callback_;
 };
 
 }  // namespace
 
-safe_browsing::BinaryUploadService::Result
-    FakeContentAnalysisDelegate::result_ =
-        safe_browsing::BinaryUploadService::Result::SUCCESS;
+ScanRequestUploadResult FakeContentAnalysisDelegate::result_ =
+    ScanRequestUploadResult::kSuccess;
 bool FakeContentAnalysisDelegate::dialog_shown_ = false;
 bool FakeContentAnalysisDelegate::dialog_canceled_ = false;
 int64_t FakeContentAnalysisDelegate::total_analysis_requests_count_ = 0;
@@ -91,7 +88,7 @@ FakeContentAnalysisDelegate::~FakeContentAnalysisDelegate() {
 
 // static
 void FakeContentAnalysisDelegate::SetResponseResult(
-    safe_browsing::BinaryUploadService::Result result) {
+    ScanRequestUploadResult result) {
   result_ = result;
 }
 
@@ -228,15 +225,14 @@ ContentAnalysisResponse FakeContentAnalysisDelegate::GetStatus(
 void FakeContentAnalysisDelegate::Response(
     std::string contents,
     base::FilePath path,
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    std::unique_ptr<BinaryUploadRequest> request,
     std::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
         file_request_callback,
     bool is_image_request) {
-  auto response =
-      (status_callback_.is_null() ||
-       result_ != safe_browsing::BinaryUploadService::Result::SUCCESS)
-          ? ContentAnalysisResponse()
-          : status_callback_.Run(contents, path);
+  auto response = (status_callback_.is_null() ||
+                   result_ != ScanRequestUploadResult::kSuccess)
+                      ? ContentAnalysisResponse()
+                      : status_callback_.Run(contents, path);
   if (request->IsAuthRequest()) {
     TextRequestCallback(CalculateRequestHandlerResult(
         GetDataForTesting().settings, result_, response));
@@ -269,9 +265,9 @@ void FakeContentAnalysisDelegate::Response(
 }
 
 void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
-    safe_browsing::BinaryUploadService::Result result,
+    ScanRequestUploadResult result,
     const base::FilePath& path,
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    std::unique_ptr<BinaryUploadRequest> request,
     FakeFilesRequestHandler::FakeFileRequestCallback callback) {
   DCHECK(!path.empty());
   if (GetDataForTesting()
@@ -292,7 +288,7 @@ void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
 }
 
 void FakeContentAnalysisDelegate::FakeUploadPageForDeepScanning(
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+    std::unique_ptr<BinaryUploadRequest> request) {
   if (GetDataForTesting()
           .settings.cloud_or_local_settings.is_cloud_analysis()) {
     DCHECK_EQ(dm_token_, request->device_token());
@@ -312,17 +308,16 @@ void FakeContentAnalysisDelegate::FakeUploadPageForDeepScanning(
 
 void FakeContentAnalysisDelegate::FakeUploadClipboardDataForDeepScanning(
     ClipboardRequestHandler::Type type,
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+    std::unique_ptr<BinaryUploadRequest> request) {
   if (GetDataForTesting()
           .settings.cloud_or_local_settings.is_cloud_analysis()) {
     DCHECK_EQ(dm_token_, request->device_token());
   }
 
   // For text/image requests, GetRequestData() is synchronous.
-  safe_browsing::BinaryUploadService::Request::Data data;
+  BinaryUploadRequest::Data data;
   request->GetRequestData(base::BindLambdaForTesting(
-      [&data](safe_browsing::BinaryUploadService::Result,
-              safe_browsing::BinaryUploadService::Request::Data data_arg) {
+      [&data](ScanRequestUploadResult, BinaryUploadRequest::Data data_arg) {
         data = std::move(data_arg);
       }));
 

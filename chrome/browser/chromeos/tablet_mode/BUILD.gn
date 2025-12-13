@@ -19,15 +19,16 @@ static_library("tablet_mode") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
   ]
 
   deps = [
     "//base",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",

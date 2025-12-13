@@ -1,6 +1,6 @@
 Name: VersionedParcelable
 Short Name: versionedparcelable
-URL: https://developer.android.com/jetpack/androidx/releases/versionedparcelable#1.2.1
+URL: https://dl.google.com/dl/android/maven2/androidx/versionedparcelable/versionedparcelable/1.2.1/versionedparcelable-1.2.1.aar
 Version: 1.2.1
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Provides a stable but relatively compact binary serialization format that can be passed across processes or persisted safely.
+
+See also: https://developer.android.com/jetpack/androidx/releases/versionedparcelable#1.2.1
+
 
 Local Modifications:
 No modifications.

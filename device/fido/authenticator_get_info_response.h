@@ -15,9 +15,9 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "device/fido/authenticator_supported_options.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 
 namespace device {
 

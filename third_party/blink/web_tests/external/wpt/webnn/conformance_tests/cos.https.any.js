@@ -15,7 +15,9 @@
 
 
 const getCosPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 1 / 1024, float16: 1 / 512};
+  // Use the float accuracy for WGSL for float16:
+  // https://gpuweb.github.io/gpuweb/wgsl/#concrete-float-accuracy
+  const toleranceValueDict = {float32: 2 ** -10, float16: 2 ** -7};
   const expectedDataType =
       getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
   return {metricType: 'ATOL', value: toleranceValueDict[expectedDataType]};
@@ -526,11 +528,5 @@ const cosTests = [
   }
 ];
 
-if (navigator.ml) {
-  cosTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getCosPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    cosTests, buildAndExecuteGraph, getCosPrecisionTolerance);

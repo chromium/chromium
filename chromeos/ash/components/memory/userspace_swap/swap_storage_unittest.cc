@@ -92,14 +92,13 @@ TEST_P(SwapStorageTest, SimpleWriteRead) {
   ASSERT_NE(swap_region.length, 0u);
 
   // Read the region from swap in [swap_pos, swap_pos + swap_len]
-  char read_buf[buffer_len];
-  UNSAFE_TODO(memset(read_buf, 0, sizeof(read_buf)));
+  char read_buf[buffer_len] = {};
   ASSERT_EQ(
       swap_->ReadFromSwap(swap_region, Region(read_buf, sizeof(read_buf))),
       static_cast<ssize_t>(sizeof(read_buf)));
 
   // We should have correctly read back what we wrote.
-  ASSERT_EQ(UNSAFE_TODO(memcmp(read_buf, buffer.c_str(), sizeof(read_buf))), 0);
+  ASSERT_EQ(base::span(read_buf), base::span(buffer));
 }
 
 TEST_P(SwapStorageTest, ManyWriteRead) {
@@ -141,9 +140,7 @@ TEST_P(SwapStorageTest, ManyWriteRead) {
               static_cast<ssize_t>(read_buf.memsize()));
 
     // We should have correctly read back what we wrote.
-    ASSERT_EQ(UNSAFE_TODO(memcmp(read_buf.data(), buf.first.c_str(),
-                                 read_buf.memsize())),
-              0);
+    ASSERT_EQ(base::span(read_buf), base::span(buf.first));
 
     // Now drop it from the swap.
     ASSERT_TRUE(swap_->DropFromSwap(/* Region */ buf.second));
@@ -180,9 +177,7 @@ TEST_P(SwapStorageTest, DropFromSwap) {
             static_cast<ssize_t>(read_buf.memsize()));
 
   // We should have correctly read back what we wrote.
-  ASSERT_EQ(
-      UNSAFE_TODO(memcmp(read_buf.data(), buffer.c_str(), read_buf.memsize())),
-      0);
+  ASSERT_EQ(base::span(read_buf), base::span(buffer));
 
   // Now we will drop it.
   ASSERT_TRUE(swap_->DropFromSwap(swap_region));

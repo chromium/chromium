@@ -3,6 +3,7 @@
     "ninja": {
       "gn_args": {
         "android_static_analysis": "off",
+        "enable_r8_tracerefs": true,
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 2,
@@ -16,11 +17,27 @@
     "siso_native": {
       "gn_args": {
         "android_static_analysis": "off",
+        "enable_r8_tracerefs": true,
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 2,
         "target_cpu": "arm64",
         "target_os": "android",
+        "use_reclient": false,
+        "use_remoteexec": true,
+        "use_siso": true
+      }
+    },
+    "siso_no_clang_modules": {
+      "gn_args": {
+        "android_static_analysis": "off",
+        "enable_r8_tracerefs": true,
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "target_cpu": "arm64",
+        "target_os": "android",
+        "use_clang_modules": false,
         "use_reclient": false,
         "use_remoteexec": true,
         "use_siso": true

@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">arance</translation>
 <translation id="1275718070701477396">Selezionato</translation>
 <translation id="1290331692326790741">Segnale debole</translation>
+<translation id="1292474106138697109">Display Strumenti del corso</translation>
 <translation id="1300115153046603471">APN è di tipo predefinito e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Converti</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">Contenuti Help principali</translation>
 <translation id="2277631741861284101">Registra e condividi facilmente il tuo audio</translation>
 <translation id="2279051792571591988">Ripristina predefinite</translation>
-<translation id="2286454467119466181">Semplice</translation>
+<translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">Nessuna immagine disponibile. Per aggiungere foto, visita la pagina <ph name="LINK" />.</translation>
 <translation id="2294577623958216786">La programmazione corrente è impostata su <ph name="SUNRISE" />-<ph name="SUNSET" />. Per aggiornare automaticamente la programmazione del tramonto e dell'alba, attiva l'accesso alla posizione del sistema.</translation>
 <translation id="2305172810646967500">nero</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> immagini</translation>
 <translation id="4300272766492248925">Apri app</translation>
 <translation id="430786093962686457">chiffon</translation>
+<translation id="4309762678330556039">Crea automaticamente trascrizioni e cerca l'audio. Puoi creare registrazioni anche quando non disponi di una connessione a internet.</translation>
 <translation id="4310735698903592804">Sfondi recenti IA di Google integrata</translation>
 <translation id="4320904097188876154">rosa neon</translation>
 <translation id="432961742358282111">Fai clic con il tasto destro del mouse o tieni premuto per ottenere definizioni, traduzioni o conversioni di unità. Utilizza i tasti Freccia destra o Freccia sinistra per gestire la funzionalità.</translation>
@@ -950,7 +952,7 @@
 <translation id="5145331109270917438">Data modifica</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5160857336552977725">Accedi al tuo dispositivo <ph name="DEVICE_TYPE" /></translation>
-<translation id="5168185087976003268">Condizioni batteria</translation>
+<translation id="5168185087976003268">Stato della batteria</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="517075088756846356">Scollega e ricollega il cavo di alimentazione di <ph name="DEVICE_NAME" /> per continuare il processo di aggiornamento</translation>
 <translation id="5180108905184566358">baobab</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5600027863942488546">Tasto <ph name="KEY_NAME" /> testato</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Strumenti del corso sta condividendo il tuo schermo con <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Account disconnesso</translation>
 <translation id="5620281292257375798">Solo per uso interno</translation>
 <translation id="5628106863521633649">Lingue disponibili</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Flusso cloud</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nessuno scanner disponibile</translation>
-<translation id="6231648282154119906">I file sospetti verranno analizzati automaticamente da Google Navigazione sicura nell'ambito della Protezione avanzata che hai scelto</translation>
 <translation id="6232017090690406397">Batteria</translation>
 <translation id="6234024205316847054">Mostra contorni</translation>
 <translation id="6243280677745499710">Attualmente impostato</translation>

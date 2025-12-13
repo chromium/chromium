@@ -54,7 +54,7 @@ enum MediaStreamType {
 };
 
 // Elements in this enum should not be deleted or rearranged; the only
-// permitted operation is to add new elements before NUM_MEDIA_REQUEST_RESULTS.
+// permitted operation is to add new elements at the end of the enum.
 //
 // This enum is used by GenerateStreams(), which is a critical part
 // of such Web API calls as getDisplayMedia() and getUserMedia().
@@ -94,7 +94,26 @@ enum MediaStreamRequestResult {
   REQUEST_CANCELLED,
   START_TIMEOUT,
   PERMISSION_DENIED_BY_USER,
-  NUM_MEDIA_REQUEST_RESULTS,
+  AUDIO_DEVICE_SOCKET_ERROR,
+  NO_TRANSIENT_ACTIVATION,
+  CAPTURE_NOT_ALLOWED_BY_POLICY,
+  INVALID_DISPLAY_CAPTURE_CONSTRAINTS,
+  INVALID_GUM_TAB_CAPTURE_CONSTRAINTS,
+  INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS,
+  INVALID_VIDEO_DEVICE_ID,
+  STREAM_NOT_FOUND_IN_REGISTRY,
+  ANDROID_CANT_REQUEST_PERMISSION,
+  MULTI_CAPTURE_NOT_SUPPORTED,
+  PERMISSION_DENIED_BY_EMBEDDER_CONTEXT,
+  DLP_PERMISSION_DENIED,
+  REGISTRY_REQUEST_UNVERIFIED,
+  INVALID_DEVICE_TYPE_REQUEST,
+  INVALID_EXTENSION_TYPE_REQUEST,
+  CAPTURED_TAB_DESTROYED,
+  CAPTURE_NOT_ENABLED,
+  SAFE_BROWSING_OBSERVER,
+  CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC,
+  CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS,
 };
 
 // Type of state change for the corresponding requests.
@@ -349,7 +368,6 @@ interface MediaStreamDispatcherHost {
   // a higher version.)
   //
   // The callback reports success/failure.
-  [EnableIfNot=is_android|is_ios]
   ApplySubCaptureTarget(mojo_base.mojom.UnguessableToken session_id,
                         media.mojom.SubCaptureTargetType type,
                         mojo_base.mojom.Token sub_capture_target,

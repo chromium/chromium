@@ -8,9 +8,106 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/trace_event/trace_event.h"
+#include "components/performance_manager/graph/tracing_observer.h"
 #include "components/performance_manager/public/graph/node_state.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
+
+perfetto::StaticString YesNoStateToString(const bool& is_yes);
+
+template <typename PropertyType>
+class TracedWrapper : public TracingObserver {
+ public:
+  using ConverterFuncPtr = perfetto::StaticString (*)(const PropertyType&);
+
+  TracedWrapper(perfetto::NamedTrack track, ConverterFuncPtr converter_func)
+      : track_(track), converter_func_(converter_func) {
+    Trace();
+    if (auto* observer_list = TracingObserverList::GetFromGraph()) {
+      observer_list->AddObserver(this);
+    }
+  }
+
+  template <typename U = PropertyType>
+  TracedWrapper(U&& initial_value,
+                perfetto::NamedTrack track,
+                ConverterFuncPtr converter_func)
+      : value_(std::forward<U>(initial_value)),
+        track_(track),
+        converter_func_(converter_func) {
+    Trace();
+    if (auto* observer_list = TracingObserverList::GetFromGraph()) {
+      observer_list->AddObserver(this);
+    }
+  }
+
+  ~TracedWrapper() override {
+    if (auto* observer_list = TracingObserverList::GetFromGraph()) {
+      observer_list->RemoveObserver(this);
+    }
+    if (slice_is_open_) {
+      TRACE_EVENT_END("performance_manager.graph", track_);
+    }
+  }
+
+  template <typename U = PropertyType>
+  void Set(U&& value) {
+    value_ = std::forward<U>(value);
+    Trace();
+  }
+
+  void OnTraceSessionStart() override { Trace(); }
+
+  // Ref-Qualifier is specified explicitly to allow std::move(wrapper).value().
+  const PropertyType& value() const& { return value_; }
+  PropertyType&& value() && { return std::move(value_); }
+
+  perfetto::StaticString ToString() const { return converter_func_(value_); }
+
+ private:
+  void Trace() {
+    if (!TRACE_EVENT_CATEGORY_ENABLED("performance_manager.graph")) {
+      return;
+    }
+    if (slice_is_open_) {
+      TRACE_EVENT_END("performance_manager.graph", track_);
+      slice_is_open_ = false;
+    }
+    perfetto::StaticString value_str = converter_func_(value_);
+    if (value_str) {
+      TRACE_EVENT_BEGIN("performance_manager.graph", value_str, track_);
+      slice_is_open_ = true;
+    }
+  }
+
+  PropertyType value_;
+  perfetto::NamedTrack track_;
+  ConverterFuncPtr converter_func_;
+  bool slice_is_open_ = false;
+};
+
+template <typename PropertyType>
+class TrivialWrapper {
+ public:
+  TrivialWrapper() = default;
+
+  template <typename U = PropertyType>
+  explicit TrivialWrapper(U&& initial_value)
+      : value_(std::forward<U>(initial_value)) {}
+
+  template <typename U = PropertyType>
+  void Set(U&& value) {
+    value_ = std::forward<U>(value);
+  }
+
+  const PropertyType& value() const& { return value_; }
+  PropertyType&& value() && { return std::move(value_); }
+
+ private:
+  PropertyType value_;
+};
 
 // Helper classes for setting properties and invoking observer callbacks based
 // on the value change. This is templated on the observer type to allow
@@ -36,14 +133,15 @@ class ObservedPropertyImpl {
   // periodically, and for which a notification should be sent every time a
   // new sample is recorded, even if identical in value to the last.
   template <typename PropertyType,
-            void (ObserverType::*NotifyFunctionPtr)(const NodeType*)>
+            void (ObserverType::*NotifyFunctionPtr)(const NodeType*),
+            class Wrapper = TrivialWrapper<PropertyType>>
   class NotifiesAlways {
    public:
     NotifiesAlways() = default;
 
-    template <typename U = PropertyType>
-    explicit NotifiesAlways(U&& initial_value)
-        : value_(std::forward<U>(initial_value)) {}
+    template <typename... Args>
+    explicit NotifiesAlways(Args&&... args)
+        : value_(std::forward<Args>(args)...) {}
 
     ~NotifiesAlways() = default;
 
@@ -52,7 +150,7 @@ class ObservedPropertyImpl {
     void SetAndNotify(NodeImplType* node, U&& value) {
       // If your code is blowing up here see the class comment!
       DCHECK(node->CanSetAndNotifyProperty());
-      value_ = std::forward<U>(value);
+      value_.Set(std::forward<U>(value));
       for (auto& observer : node->GetObservers()) {
         (observer.*NotifyFunctionPtr)(node);
       }
@@ -63,13 +161,13 @@ class ObservedPropertyImpl {
     void Set(NodeImplType* node, U&& value) {
       // If your code is blowing up here see the class comment!
       DCHECK(node->CanSetProperty());
-      value_ = std::forward<U>(value);
+      value_.Set(std::forward<U>(value));
     }
 
-    const PropertyType& value() const { return value_; }
+    const PropertyType& value() const { return value_.value(); }
 
    private:
-    PropertyType value_;
+    Wrapper value_;
   };
 
   // Helper class for node properties that represent states, for which
@@ -77,14 +175,15 @@ class ObservedPropertyImpl {
   // changes. Calls to SetAndMaybeNotify do not notify if the provided value is
   // the same as the current value.
   template <typename PropertyType,
-            void (ObserverType::*NotifyFunctionPtr)(const NodeType*)>
+            void (ObserverType::*NotifyFunctionPtr)(const NodeType*),
+            class Wrapper = TrivialWrapper<PropertyType>>
   class NotifiesOnlyOnChanges {
    public:
     NotifiesOnlyOnChanges() = default;
 
-    template <typename U = PropertyType>
-    explicit NotifiesOnlyOnChanges(U&& initial_value)
-        : value_(std::forward<U>(initial_value)) {}
+    template <typename... Args>
+    explicit NotifiesOnlyOnChanges(Args&&... args)
+        : value_(std::forward<Args>(args)...) {}
 
     ~NotifiesOnlyOnChanges() = default;
 
@@ -94,9 +193,10 @@ class ObservedPropertyImpl {
     bool SetAndMaybeNotify(NodeImplType* node, U&& value) {
       // If your code is blowing up here see the class comment!
       DCHECK(node->CanSetAndNotifyProperty());
-      if (value_ == value)
+      if (value_.value() == value) {
         return false;
-      value_ = std::forward<U>(value);
+      }
+      value_.Set(std::forward<U>(value));
       for (auto& observer : node->GetObservers()) {
         (observer.*NotifyFunctionPtr)(node);
       }
@@ -108,31 +208,27 @@ class ObservedPropertyImpl {
     void Set(NodeImplType* node, U&& value) {
       // If your code is blowing up here see the class comment!
       DCHECK(node->CanSetProperty());
-      value_ = std::forward<U>(value);
+      value_.Set(std::forward<U>(value));
     }
 
-    const PropertyType& value() const { return value_; }
+    const PropertyType& value() const { return value_.value(); }
 
    private:
-    PropertyType value_;
+    Wrapper value_;
   };
 
   // Same as NotifiesOnlyOnChanges, but provides the previous value when
   // notifying observers.
-  // TODO(chrisha): When C++17 is available, deduce PreviousValueType via use of
-  // an 'auto' placeholder non-type template parameter helper.
   template <typename PropertyType,
-            typename PreviousValueType,
-            void (ObserverType::*NotifyFunctionPtr)(
-                const NodeType* node,
-                PreviousValueType previous_value)>
+            auto NotifyFunctionPtr,
+            class Wrapper = TrivialWrapper<PropertyType>>
   class NotifiesOnlyOnChangesWithPreviousValue {
    public:
     NotifiesOnlyOnChangesWithPreviousValue() = default;
 
-    template <typename U = PropertyType>
-    explicit NotifiesOnlyOnChangesWithPreviousValue(U&& initial_value)
-        : value_(std::forward<U>(initial_value)) {}
+    template <typename... Args>
+    explicit NotifiesOnlyOnChangesWithPreviousValue(Args&&... args)
+        : value_(std::forward<Args>(args)...) {}
 
     ~NotifiesOnlyOnChangesWithPreviousValue() = default;
 
@@ -142,10 +238,11 @@ class ObservedPropertyImpl {
     bool SetAndMaybeNotify(NodeImplType* node, U&& value) {
       // If your code is blowing up here see the class comment!
       DCHECK(node->CanSetAndNotifyProperty());
-      if (value_ == value)
+      if (value_.value() == value) {
         return false;
-      PropertyType previous_value = std::move(value_);
-      value_ = std::forward<U>(value);
+      }
+      PropertyType previous_value = std::move(value_).value();
+      value_.Set(std::forward<U>(value));
       for (auto& observer : node->GetObservers()) {
         (observer.*NotifyFunctionPtr)(node, previous_value);
       }
@@ -157,13 +254,14 @@ class ObservedPropertyImpl {
     void Set(NodeImplType* node, U&& value) {
       // If your code is blowing up here see the class comment!
       DCHECK(node->CanSetProperty());
-      value_ = std::forward<U>(value);
+      value_.Set(std::forward<U>(value));
     }
 
-    const PropertyType& value() const { return value_; }
+    const PropertyType& value() const { return value_.value(); }
+    const Wrapper* operator->() const { return &value_; }
 
    private:
-    PropertyType value_;
+    Wrapper value_;
   };
 };
 

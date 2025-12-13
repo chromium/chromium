@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -28,8 +29,8 @@ public final class InstanceInfo {
     }
 
     /**
-     * ID of ChromeTabbedActivity instance. This is compatible with the index used for
-     * persistent tab state disk file, appended at the end of the file name (such as tab_state0).
+     * ID of ChromeTabbedActivity instance. This is compatible with the index used for persistent
+     * tab state disk file, appended at the end of the file name (such as tab_state0).
      */
     public final int instanceId;
 
@@ -42,8 +43,11 @@ public final class InstanceInfo {
     /** URL of the currently visible tab of an instance. */
     public final String url;
 
-    /** Title for the entry shown on UI for an instance . */
+    /** Default title for the entry shown on UI for an instance, if custom title does not exist. */
     public final String title;
+
+    /** Custom title for the entry shown on UI for an instance . */
+    @Nullable public final String customTitle;
 
     /** The number of normal tabs of an instance. */
     public final int tabCount;
@@ -60,25 +64,35 @@ public final class InstanceInfo {
      */
     public final long lastAccessedTime;
 
+    /**
+     * Whether this instance is marked for permanent deletion. This is relevant only for a
+     * non-active instance.
+     */
+    public final boolean markedForDeletion;
+
     public InstanceInfo(
             int instanceId,
             int taskId,
             @Type int type,
             String url,
             String title,
+            @Nullable String customTitle,
             int tabCount,
             int incognitoTabCount,
             boolean isIncognitoSelected,
-            long lastAccessedTime) {
+            long lastAccessedTime,
+            boolean markedForDeletion) {
         this.instanceId = instanceId;
         this.taskId = taskId;
         this.type = type;
         this.url = url;
         this.title = title;
+        this.customTitle = customTitle;
         this.tabCount = tabCount;
         this.incognitoTabCount = incognitoTabCount;
         this.isIncognitoSelected = isIncognitoSelected;
         this.lastAccessedTime = lastAccessedTime;
+        this.markedForDeletion = markedForDeletion;
     }
 
     @Override

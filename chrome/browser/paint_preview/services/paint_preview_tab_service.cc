@@ -18,6 +18,8 @@
 #include "chrome/browser/paint_preview/services/paint_preview_tab_service_file_mixin.h"
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/browser/warm_compositor.h"
+#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
+#include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/geometry/rect.h"
@@ -132,9 +134,11 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
   // If the system is under memory pressure don't try to capture.
   auto* memory_monitor = base::MemoryPressureMonitor::Get();
   if (memory_monitor &&
-      memory_monitor->GetCurrentPressureLevel() >=
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE)
+      memory_monitor->GetCurrentPressureLevel(
+          base::MemoryPressureMonitorTag::kPaintPreviewTabService) >=
+          base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     return;
+  }
 
   // Mark |contents| as being captured so that the renderer doesn't go away
   // until the capture is finished. This is done even before a file is created
@@ -219,12 +223,12 @@ void PaintPreviewTabService::AuditArtifacts(
 void PaintPreviewTabService::CaptureTabAndroid(
     JNIEnv* env,
     jint j_tab_id,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jobject>& j_web_contents,
     jboolean j_accessibility_enabled,
     jfloat j_page_scale_factor,
     jint j_x,
     jint j_y,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   CaptureTab(static_cast<int>(j_tab_id), web_contents,
@@ -249,7 +253,7 @@ jboolean PaintPreviewTabService::HasCaptureForTabAndroid(JNIEnv* env,
 
 void PaintPreviewTabService::AuditArtifactsAndroid(
     JNIEnv* env,
-    const base::android::JavaParamRef<jintArray>& j_tab_ids) {
+    const base::android::JavaRef<jintArray>& j_tab_ids) {
   std::vector<int> tab_ids;
   base::android::JavaIntArrayToIntVector(env, j_tab_ids, &tab_ids);
   AuditArtifacts(tab_ids);
@@ -315,8 +319,14 @@ void PaintPreviewTabService::CaptureTabInternal(
   capture_params.render_frame_host = rfh;
   capture_params.root_dir = &file_path.value();
   capture_params.persistence = RecordingPersistence::kFileSystem;
+  // Note that the clip_rect's origin is ignored, due to
+  // `clip_x_coord_override` and `clip_y_coord_override`.
   capture_params.clip_rect =
-      gfx::Rect(-1, -1, kMaxCaptureSizePixels, kMaxCaptureSizePixels);
+      gfx::Rect(0, 0, kMaxCaptureSizePixels, kMaxCaptureSizePixels);
+  capture_params.clip_x_coord_override =
+      paint_preview::mojom::ClipCoordOverride::kCenterOnScrollOffset;
+  capture_params.clip_y_coord_override =
+      paint_preview::mojom::ClipCoordOverride::kCenterOnScrollOffset;
   capture_params.capture_links = true;
   capture_params.max_per_capture_size = kMaxPerCaptureSizeBytes;
   capture_params.max_decoded_image_size_bytes = kMaxDecodedImageSizeBytes;
@@ -411,3 +421,7 @@ void PaintPreviewTabService::RunAudit(
 }
 
 }  // namespace paint_preview
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(PaintPreviewTabService)
+#endif

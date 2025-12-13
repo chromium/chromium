@@ -120,8 +120,9 @@ function startTest() {
     function removePluginAtDocumentEnd() {
       if (maybeSkipPluginTest())
         return;
-      testRemoveSelf(
-          'plugin_frame.html?end', /background-color: rgb\(40, 40, 40\)/);
+      // TODO(crbug.com/40268279): Add a way to identify that the frame is for a
+      // PDF.
+      testRemoveSelf('plugin_frame.html?end');
     },
 
     // Plain text

@@ -4,16 +4,16 @@
 # Read more about `vpython` and how to modify this file here:
 #   https://chromium.googlesource.com/infra/infra/+/main/doc/users/vpython.md
 
-python_version: "3.8"
+python_version: "3.11"
 
 wheel: <
   name: "infra/python/wheels/colorama-py2_py3"
-  version: "version:0.4.1"
+  version: "version:0.4.6"
 >
 
 wheel: <
   name: "infra/python/wheels/typing-extensions-py3"
-  version: "version:4.0.1"
+  version: "version:4.15.0"
 >
 
 wheel: <
@@ -23,21 +23,17 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/markdown-it-py-py3"
-  version: "version:2.1.0"
+  version: "version:2.2.0"
 >
 
 wheel: <
   name: "infra/python/wheels/pygments-py3"
-  version: "version:2.14.0"
+  version: "version:2.19.2"
 >
 
 wheel: <
   name: "infra/python/wheels/rich-py3"
   version: "version:13.2.0"
->
-wheel: <
-  name: "infra/python/wheels/typing-extensions-py3"
-  version: "version:4.0.1"
 >
 
 wheel: <
@@ -82,5 +78,5 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/googleapis-common-protos-py2_py3"
-  version: "version:1.61.0"
+  version: "version:1.69.2"
 >

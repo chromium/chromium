@@ -50,12 +50,21 @@ template("chrome_app") {
       output_name = "${_target_name}_framework"
       transparent = use_blink
 
+      # When variants are present, the ios_app_bundle rule has logic to copy
+      # bundle_deps from the first variant. Replicate that logic here as well.
+      if (!transparent) {
+        if (defined(invoker.variants) && invoker.variants != []) {
+          _variants = invoker.variants
+          _default_variant = _variants[0]
+          bundle_deps += _default_variant.bundle_deps
+        }
+      }
+
       info_plist = "//ios/chrome/app/resources/EarlyPAFrameworkInfo.plist"
     }
   }
 
   if (use_blink) {
-    assert(ios_partition_alloc_enabled)
     template("browserkit_extension") {
       _process_target = target_name
       _outer_target = _target_name
@@ -157,9 +166,9 @@ template("chrome_app") {
         ":${target_name}_network_process_bundle",
         "//ios/chrome/app:app_trampoline",
         "//ios/chrome/app:early_partition_alloc_framework+bundle",
+        "//ios/chrome/app:early_partition_alloc_framework+link",
       ]
 
-      frameworks = [ "EarlyMallocZoneRegistration.framework" ]
       bundle_deps += [
         ":${_target_name}_framework+bundle",
         "//ios/chrome/app:early_partition_alloc_framework+bundle",
@@ -169,12 +178,12 @@ template("chrome_app") {
     ios_app_bundle(_target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      deps += [ "//ios/chrome/app:app_trampoline" ]
-      if (ios_partition_alloc_enabled) {
-        frameworks = [ "EarlyMallocZoneRegistration.framework" ]
-        bundle_deps +=
-            [ "//ios/chrome/app:early_partition_alloc_framework+bundle" ]
-      }
+      deps += [
+        "//ios/chrome/app:app_trampoline",
+        "//ios/chrome/app:early_partition_alloc_framework+link",
+      ]
+      bundle_deps +=
+          [ "//ios/chrome/app:early_partition_alloc_framework+bundle" ]
     }
   }
 }

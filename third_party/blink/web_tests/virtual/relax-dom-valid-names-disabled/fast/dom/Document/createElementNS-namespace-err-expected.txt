@@ -21,15 +21,15 @@ PASS createElementNS("http://example.com/", "0div"); threw InvalidCharacterError
 FAIL createElementNS("http://example.com/", "di<v"); expected expected no exception, threw INVALID_CHARACTER_ERR
 PASS createElementNS("http://example.com/", "-div"); threw InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('-div') contains the invalid name-start character '-'.
 PASS createElementNS("http://example.com/", ".div"); threw InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('.div') contains the invalid name-start character '.'.
-FAIL createElementNS(null, ":div"); expected expected no exception, threw INVALID_CHARACTER_ERR
+PASS createElementNS(null, ":div"); threw InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided (':div') has an empty namespace prefix.
 PASS createElementNS(null, "div:"); threw InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('div:') has an empty local name.
-FAIL createElementNS("http://example.com/", ":div"); expected expected no exception, threw INVALID_CHARACTER_ERR
+PASS createElementNS("http://example.com/", ":div"); threw InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided (':div') has an empty namespace prefix.
 PASS createElementNS("http://example.com/", "div:"); threw InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('div:') has an empty local name.
 PASS createElementNS(null, "d:iv"); threw NamespaceError: Failed to execute 'createElementNS' on 'Document': The namespace URI provided ('') is not valid for the qualified name provided ('d:iv').
 FAIL createElementNS(null, "a:b:c"); expected NAMESPACE_ERR, threw INVALID_CHARACTER_ERR
 FAIL createElementNS("http://example.com/", "a:b:c"); expected expected no exception, threw INVALID_CHARACTER_ERR
-FAIL createElementNS(null, "a::c"); expected NAMESPACE_ERR, threw INVALID_CHARACTER_ERR
-FAIL createElementNS("http://example.com/", "a::c"); expected expected no exception, threw INVALID_CHARACTER_ERR
+PASS createElementNS(null, "a::c"); threw InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a::c') contains multiple colons.
+PASS createElementNS("http://example.com/", "a::c"); threw InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a::c') contains multiple colons.
 PASS createElementNS("http://example.com/", "a:0"); valid XML name, not a valid QName; threw InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:0') contains the invalid name-start character '0'.
 FAIL createElementNS("http://example.com/", "0:a"); expected expected no exception, threw INVALID_CHARACTER_ERR
 PASS createElementNS("http://example.com/", "a:_")

@@ -23,9 +23,8 @@
 
 using ::base::android::AttachCurrentThread;
 using ::base::android::ConvertJavaStringToUTF8;
-using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
-using ::jni_zero::JavaRef;
 
 namespace {
 
@@ -43,9 +42,9 @@ void RunGetClassificationResultCallback(
 static void JNI_HomeModulesRankingHelper_GetClassificationResult(
     JNIEnv* env,
     Profile* profile,
-    const jni_zero::JavaParamRef<jobject>& prediction_options,
-    const jni_zero::JavaParamRef<jobject>& input_context,
-    const jni_zero::JavaParamRef<jobject>& callback) {
+    const jni_zero::JavaRef<jobject>& prediction_options,
+    const jni_zero::JavaRef<jobject>& input_context,
+    const jni_zero::JavaRef<jobject>& callback) {
   segmentation_platform::SegmentationPlatformService* service =
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           profile);
@@ -68,7 +67,7 @@ static void JNI_HomeModulesRankingHelper_GetClassificationResult(
 static void JNI_HomeModulesRankingHelper_NotifyCardShown(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jstring>& card_label) {
+    const JavaRef<jstring>& card_label) {
   DCHECK(profile);
   segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
       segmentation_platform::SegmentationPlatformServiceFactory::
@@ -80,7 +79,7 @@ static void JNI_HomeModulesRankingHelper_NotifyCardShown(
 static void JNI_HomeModulesRankingHelper_NotifyCardInteracted(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jstring>& card_label) {
+    const JavaRef<jstring>& card_label) {
   DCHECK(profile);
   segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
       segmentation_platform::SegmentationPlatformServiceFactory::
@@ -88,3 +87,5 @@ static void JNI_HomeModulesRankingHelper_NotifyCardInteracted(
   std::string native_card_label = ConvertJavaStringToUTF8(env, card_label);
   registry->NotifyCardInteracted(native_card_label.c_str());
 }
+
+DEFINE_JNI(HomeModulesRankingHelper)

@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"

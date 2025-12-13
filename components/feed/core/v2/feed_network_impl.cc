@@ -5,6 +5,8 @@
 #include "components/feed/core/v2/feed_network_impl.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -59,14 +61,9 @@ constexpr char kApplicationXProtobuf[] = "application/x-protobuf";
 constexpr base::TimeDelta kNetworkTimeout = base::Seconds(30);
 constexpr char kDiscoverHost[] = "https://discover-pa.googleapis.com/";
 
-signin::ScopeSet GetAuthScopes() {
-  return {GaiaConstants::kFeedOAuth2Scope};
-}
-
 int EstimateFeedQueryRequestSize(const network::ResourceRequest& request) {
   int total_size = 14 +  // GET <path> HTTP/1.1
-                   request.url.path_piece().size() +
-                   request.url.query_piece().size();
+                   request.url.path().size() + request.url.query().size();
   for (const net::HttpRequestHeaders::HeaderKeyValuePair& header :
        request.headers.GetHeaderVector()) {
     total_size += header.key.size() + header.value.size() + 2;
@@ -174,9 +171,9 @@ int PopulateRequestBody(const std::string& request_body,
 GURL OverrideUrlSchemeHostPort(const GURL& url,
                                const GURL& override_scheme_host_port) {
   GURL::Replacements replacements;
-  replacements.SetSchemeStr(override_scheme_host_port.scheme_piece());
-  replacements.SetHostStr(override_scheme_host_port.host_piece());
-  replacements.SetPortStr(override_scheme_host_port.port_piece());
+  replacements.SetSchemeStr(override_scheme_host_port.scheme());
+  replacements.SetHostStr(override_scheme_host_port.host());
+  replacements.SetPortStr(override_scheme_host_port.port());
   return url.ReplaceComponents(replacements);
 }
 
@@ -236,7 +233,7 @@ class FeedNetworkImpl::NetworkFetch {
   void StartAccessTokenFetch() {
     DVLOG(1) << "Feed access token fetch started.";
     token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-        "feed", identity_manager_, GetAuthScopes(),
+        signin::OAuthConsumerId::kFeedNetwork, identity_manager_,
         base::BindOnce(&NetworkFetch::AccessTokenFetchFinished, GetWeakPtr(),
                        base::TimeTicks::Now()),
         signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
@@ -419,7 +416,7 @@ class FeedNetworkImpl::NetworkFetch {
                                        signed_in_status, &request);
   }
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response) {
+  void OnSimpleLoaderComplete(std::optional<std::string> response) {
     const network::mojom::URLResponseHead* loader_response_info =
         simple_loader_->ResponseInfo();
     std::optional<network::URLLoaderCompletionStatus> completion_status =
@@ -469,14 +466,14 @@ class FeedNetworkImpl::NetworkFetch {
           loader_response_info->headers->response_code();
       response_info.response_body_bytes = response->size();
 
-      response_body = std::move(*response);
+      response_body = std::move(response).value();
 
       if (response_info.status_code == net::HTTP_UNAUTHORIZED) {
         CoreAccountId account_id = identity_manager_->GetPrimaryAccountId(
             signin::ConsentLevel::kSignin);
         if (!account_id.empty()) {
           identity_manager_->RemoveAccessTokenFromCache(
-              account_id, GetAuthScopes(), access_token_);
+              account_id, signin::OAuthConsumerId::kFeedNetwork, access_token_);
         }
       }
     }
@@ -577,16 +574,16 @@ void FeedNetworkImpl::SendQueryRequest(
     GURL override_host_url(host_override);
     if (override_host_url.is_valid()) {
       GURL::Replacements replacements;
-      replacements.SetSchemeStr(override_host_url.scheme_piece());
-      replacements.SetHostStr(override_host_url.host_piece());
-      replacements.SetPortStr(override_host_url.port_piece());
+      replacements.SetSchemeStr(override_host_url.scheme());
+      replacements.SetHostStr(override_host_url.host());
+      replacements.SetPortStr(override_host_url.port());
       // Allow the host override to also add a prefix for the path. Ignore
       // trailing slashes if they are provided, as the path part of |url| will
       // always include "/".
-      std::string_view trimmed_path_prefix = base::TrimString(
-          override_host_url.path_piece(), "/", base::TRIM_TRAILING);
+      std::string_view trimmed_path_prefix =
+          base::TrimString(override_host_url.path(), "/", base::TRIM_TRAILING);
       std::string replacement_path =
-          base::StrCat({trimmed_path_prefix, url.path_piece()});
+          base::StrCat({trimmed_path_prefix, url.path()});
 
       replacements.SetPathStr(replacement_path);
 

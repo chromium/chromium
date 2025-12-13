@@ -11,12 +11,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -76,18 +74,18 @@ BrowserDesktopWindowTreeHostLinux::BrowserDesktopWindowTreeHostLinux(
     views::internal::NativeWidgetDelegate* native_widget_delegate,
     views::DesktopNativeWidgetAura* desktop_native_widget_aura,
     BrowserView* browser_view,
-    BrowserFrame* browser_frame)
+    BrowserWidget* browser_widget)
     : DesktopWindowTreeHostLinux(native_widget_delegate,
                                  desktop_native_widget_aura),
       browser_view_(browser_view),
-      browser_frame_(browser_frame) {
-  native_frame_ = static_cast<DesktopBrowserFrameAuraLinux*>(
-      browser_frame->native_browser_frame());
-  native_frame_->set_host(this);
+      browser_widget_(browser_widget) {
+  native_widget_ = static_cast<BrowserNativeWidgetAuraLinux*>(
+      browser_widget->browser_native_widget());
+  native_widget_->set_host(this);
 
-  browser_frame->set_frame_type(browser_frame->UseCustomFrame()
-                                    ? views::Widget::FrameType::kForceCustom
-                                    : views::Widget::FrameType::kForceNative);
+  browser_widget->set_frame_type(native_widget_->UseCustomFrame()
+                                     ? views::Widget::FrameType::kForceCustom
+                                     : views::Widget::FrameType::kForceNative);
 
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   if (auto* linux_ui = ui::LinuxUi::instance()) {
@@ -96,7 +94,7 @@ BrowserDesktopWindowTreeHostLinux::BrowserDesktopWindowTreeHostLinux(
 }
 
 BrowserDesktopWindowTreeHostLinux::~BrowserDesktopWindowTreeHostLinux() {
-  native_frame_->set_host(nullptr);
+  native_widget_->set_host(nullptr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -117,10 +115,6 @@ void BrowserDesktopWindowTreeHostLinux::AddAdditionalInitProperties(
 views::DesktopWindowTreeHost*
 BrowserDesktopWindowTreeHostLinux::AsDesktopWindowTreeHost() {
   return this;
-}
-
-int BrowserDesktopWindowTreeHostLinux::GetMinimizeButtonOffset() const {
-  return 0;
 }
 
 bool BrowserDesktopWindowTreeHostLinux::UsesNativeSystemMenu() const {
@@ -163,11 +157,11 @@ void BrowserDesktopWindowTreeHostLinux::UnlockMouse(aura::Window* window) {
 
 void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
     TabDragKind tab_drag_kind) {
-  CHECK(browser_frame_);
+  CHECK(browser_widget_);
   CHECK(browser_view_);
   // If there's no tabs left, the browser window is about to close, so don't
   // call SetOverrideRedirect() to prevent the window from flashing.
-  if (!browser_view_->tabstrip()->GetModelCount()) {
+  if (!browser_view_->browser()->tab_strip_model()->count()) {
     return;
   }
 
@@ -175,7 +169,7 @@ void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
   if (x11_extension && x11_extension->IsWmTiling() &&
       x11_extension->CanResetOverrideRedirect()) {
     bool was_dragging_window =
-        browser_frame_->tab_drag_kind() == TabDragKind::kAllTabs;
+        browser_widget_->tab_drag_kind() == TabDragKind::kAllTabs;
     bool is_dragging_window = tab_drag_kind == TabDragKind::kAllTabs;
     if (is_dragging_window != was_dragging_window) {
       x11_extension->SetOverrideRedirect(is_dragging_window);
@@ -186,10 +180,8 @@ void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
           ui::GetWaylandToplevelExtension(*platform_window())) {
     if (tab_drag_kind != TabDragKind::kNone) {
       if (auto event_source = GetCurrentTabDragEventSource()) {
-        const auto allow_system_drag = base::FeatureList::IsEnabled(
-            features::kAllowWindowDragUsingSystemDragDrop);
         wayland_extension->StartWindowDraggingSessionIfNeeded(
-            *event_source, allow_system_drag);
+            *event_source, /*allow_system_drag=*/true);
       }
     }
   }
@@ -201,15 +193,14 @@ bool BrowserDesktopWindowTreeHostLinux::SupportsClientFrameShadow() const {
 }
 
 void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
-  if (!browser_frame_) {
+  if (!browser_widget_) {
     return;
   }
 
   auto* window = platform_window();
   auto window_state = window->GetPlatformWindowState();
   float scale = device_scale_factor();
-  auto* view =
-      static_cast<BrowserNonClientFrameView*>(browser_frame_->GetFrameView());
+  auto* view = static_cast<BrowserFrameView*>(browser_widget_->GetFrameView());
   const gfx::Size widget_size =
       view->GetWidget()->GetWindowBoundsInScreen().size();
 
@@ -229,8 +220,7 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
   if (ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported()) {
     // Set the opaque region.
     std::vector<gfx::Rect> opaque_region;
-    if (IsShowingFrame(browser_frame_->native_browser_frame()->UseCustomFrame(),
-                       window_state)) {
+    if (IsShowingFrame(native_widget_->UseCustomFrame(), window_state)) {
       // The opaque region is a list of rectangles that contain only fully
       // opaque pixels of the window.  We need to convert the clipping
       // rounded-rect into this format.
@@ -295,7 +285,7 @@ void BrowserDesktopWindowTreeHostLinux::ClientDestroyedWidget() {
 #if BUILDFLAG(USE_DBUS)
   dbus_appmenu_.reset();
 #endif
-  browser_frame_ = nullptr;
+  browser_widget_ = nullptr;
   browser_view_ = nullptr;
   DesktopWindowTreeHostLinux::ClientDestroyedWidget();
 }
@@ -347,21 +337,20 @@ void BrowserDesktopWindowTreeHostLinux::Show(
 
 bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect(
     const ui::X11Extension& x11_extension) const {
-  return (browser_frame_ &&
-          browser_frame_->tab_drag_kind() == TabDragKind::kAllTabs) &&
+  return (browser_widget_ &&
+          browser_widget_->tab_drag_kind() == TabDragKind::kAllTabs) &&
          x11_extension.IsWmTiling() && x11_extension.CanResetOverrideRedirect();
 }
 
 gfx::Insets BrowserDesktopWindowTreeHostLinux::CalculateInsetsInDIP(
     ui::PlatformWindowState window_state) const {
   // If we are not showing frame, the insets should be zero.
-  if (!browser_frame_ ||
-      !IsShowingFrame(browser_frame_->native_browser_frame()->UseCustomFrame(),
-                      window_state)) {
+  if (!browser_widget_ ||
+      !IsShowingFrame(native_widget_->UseCustomFrame(), window_state)) {
     return gfx::Insets();
   }
 
-  return static_cast<BrowserNonClientFrameView*>(browser_frame_->GetFrameView())
+  return static_cast<BrowserFrameView*>(browser_widget_->GetFrameView())
       ->RestoredMirroredFrameBorderInsets();
 }
 
@@ -394,15 +383,12 @@ void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
 
 void BrowserDesktopWindowTreeHostLinux::OnWindowTiledStateChanged(
     ui::WindowTiledEdges new_tiled_edges) {
-  if (!browser_frame_) {
+  if (!browser_widget_) {
     return;
   }
 
-  bool maximized = new_tiled_edges.top && new_tiled_edges.left &&
-                   new_tiled_edges.bottom && new_tiled_edges.right;
-  bool tiled = new_tiled_edges.top || new_tiled_edges.left ||
-               new_tiled_edges.bottom || new_tiled_edges.right;
-  browser_frame_->set_tiled(tiled && !maximized);
+  browser_widget_->set_tiled(new_tiled_edges.top || new_tiled_edges.left ||
+                             new_tiled_edges.bottom || new_tiled_edges.right);
   UpdateFrameHints();
   if (SupportsClientFrameShadow()) {
     // Trigger a re-layout as the insets will change even if the bounds don't.
@@ -432,8 +418,8 @@ BrowserDesktopWindowTreeHost::CreateBrowserDesktopWindowTreeHost(
     views::internal::NativeWidgetDelegate* native_widget_delegate,
     views::DesktopNativeWidgetAura* desktop_native_widget_aura,
     BrowserView* browser_view,
-    BrowserFrame* browser_frame) {
+    BrowserWidget* browser_widget) {
   return new BrowserDesktopWindowTreeHostLinux(native_widget_delegate,
                                                desktop_native_widget_aura,
-                                               browser_view, browser_frame);
+                                               browser_view, browser_widget);
 }

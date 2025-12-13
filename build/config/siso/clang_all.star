@@ -59,30 +59,6 @@ def __filegroups(ctx):
                 "clang_rt.profile*.lib",
             ],
         },
-        "third_party/cronet_android_mainline_clang/linux-amd64:headers": {
-            "type": "glob",
-            "includes": [
-                "*.h",
-                "*.modulemap",
-                "bin/clang*",
-            ],
-        },
-        "third_party/cronet_android_mainline_clang/linux-amd64:link": {
-            "type": "glob",
-            "includes": [
-                "bin/clang*",
-                "bin/ld.lld",
-                "bin/lld",
-                "bin/llvm-nm",
-                "bin/llvm-objcopy",
-                "bin/llvm-readelf",
-                "bin/llvm-readobj",
-                "bin/llvm-strip",
-                "*.so",
-                "*.so.*",
-                "*.a",
-            ],
-        },
     }
     if win_sdk.enabled(ctx):
         fg.update(win_sdk.filegroups(ctx))
@@ -90,71 +66,82 @@ def __filegroups(ctx):
         fg.update(mac_sdk.filegroups(ctx))
     return fg
 
-__input_deps = {
-    # need this because we use
-    # third_party/libc++/src/include:headers,
-    # but scandeps doesn't scan `__config` file, which uses
-    # `#include <__config_site>`
-    # also need `__assertion_handler`. b/321171148
-    "third_party/libc++/src/include": [
-        "buildtools/third_party/libc++:headers",
-    ],
-    "third_party/llvm-build/Release+Asserts/bin/clang": __clang_plugin_configs,
-    "third_party/llvm-build/Release+Asserts/bin/clang++": __clang_plugin_configs,
-    "third_party/llvm-build/Release+Asserts/bin/clang-cl": __clang_plugin_configs,
-    "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe": __clang_plugin_configs,
-    "third_party/llvm-build/Release+Asserts/bin/lld-link": [
-        "build/config/c++/libc++.natvis",
-        "build/win/as_invoker.manifest",
-        "build/win/common_controls.manifest",
-        "build/win/compatibility.manifest",
-        "build/win/require_administrator.manifest",
-        "build/win/segment_heap.manifest",
-        "remoting/host/win/dpi_aware.manifest",
-        "third_party/llvm-build/Release+Asserts/bin/lld",
-        "tools/win/DebugVisualizers/blink.natvis",
-        "tools/win/DebugVisualizers/chrome.natvis",
-    ],
-    "third_party/llvm-build/Release+Asserts/bin/lld-link.exe": [
-        "build/config/c++/libc++.natvis",
-        "build/win/as_invoker.manifest",
-        "build/win/common_controls.manifest",
-        "build/win/compatibility.manifest",
-        "build/win/require_administrator.manifest",
-        "build/win/segment_heap.manifest",
-        "remoting/host/win/dpi_aware.manifest",
-        "third_party/llvm-build/Release+Asserts/bin/lld.exe",
-        "tools/win/DebugVisualizers/blink.natvis",
-        "tools/win/DebugVisualizers/chrome.natvis",
-    ],
-    "build/toolchain/gcc_solink_wrapper.py": [
-        "build/toolchain/whole_archive.py",
-        "build/toolchain/wrapper_utils.py",
-    ],
-    "build/toolchain/gcc_solink_wrapper.py:link": [
-        "build/toolchain/gcc_solink_wrapper.py",
-        "build/toolchain/whole_archive.py",
-        "build/toolchain/wrapper_utils.py",
-    ],
-    "build/toolchain/gcc_link_wrapper.py": [
-        "build/toolchain/whole_archive.py",
-        "build/toolchain/wrapper_utils.py",
-    ],
-    "build/toolchain/gcc_link_wrapper.py:link": [
-        "build/toolchain/gcc_link_wrapper.py",
-        "build/toolchain/whole_archive.py",
-        "build/toolchain/wrapper_utils.py",
-    ],
-    "build/toolchain/apple/linker_driver.py:link": [
-        "build/toolchain/apple/linker_driver.py",
-        "build/toolchain/whole_archive.py",
-    ],
-    "build/toolchain/apple/solink_driver.py:link": [
-        "build/toolchain/apple/linker_driver.py",
-        "build/toolchain/apple/solink_driver.py",
-        "build/toolchain/whole_archive.py",
-    ],
-}
+def __input_deps(ctx):
+    build_dir = ctx.fs.canonpath(".")
+
+    return {
+        # need this because we use
+        # third_party/libc++/src/include:headers,
+        # but scandeps doesn't scan `__config` file, which uses
+        # `#include <__config_site>`
+        # also need `__assertion_handler`. b/321171148
+        "third_party/libc++/src/include": [
+            "buildtools/third_party/libc++:headers",
+        ],
+        # This is necessary for modules build where libc++ headers are copied to build directory.
+        path.join(build_dir, "gen/third_party/libc++/src/include") + ":headers": [
+            path.join(build_dir, "gen/third_party/libc++/src/include/module.modulemap"),
+            path.join(build_dir, "phony/buildtools/third_party/libc++/copy_custom_headers") + ":inputs",
+            path.join(build_dir, "phony/buildtools/third_party/libc++/copy_libcxx_headers") + ":inputs",
+        ],
+        "third_party/llvm-build/Release+Asserts/bin/clang": __clang_plugin_configs,
+        "third_party/llvm-build/Release+Asserts/bin/clang++": __clang_plugin_configs,
+        "third_party/llvm-build/Release+Asserts/bin/clang-cl": __clang_plugin_configs,
+        "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe": __clang_plugin_configs,
+        "third_party/llvm-build/Release+Asserts/bin/lld-link": [
+            "build/config/c++/libc++.natvis",
+            "build/win/as_invoker.manifest",
+            "build/win/common_controls.manifest",
+            "build/win/compatibility.manifest",
+            "build/win/require_administrator.manifest",
+            "build/win/segment_heap.manifest",
+            "remoting/host/win/dpi_aware.manifest",
+            "third_party/llvm-build/Release+Asserts/bin/lld",
+            "tools/win/DebugVisualizers/absl.natvis",
+            "tools/win/DebugVisualizers/blink.natvis",
+            "tools/win/DebugVisualizers/chrome.natvis",
+        ],
+        "third_party/llvm-build/Release+Asserts/bin/lld-link.exe": [
+            "build/config/c++/libc++.natvis",
+            "build/win/as_invoker.manifest",
+            "build/win/common_controls.manifest",
+            "build/win/compatibility.manifest",
+            "build/win/require_administrator.manifest",
+            "build/win/segment_heap.manifest",
+            "remoting/host/win/dpi_aware.manifest",
+            "third_party/llvm-build/Release+Asserts/bin/lld.exe",
+            "tools/win/DebugVisualizers/absl.natvis",
+            "tools/win/DebugVisualizers/blink.natvis",
+            "tools/win/DebugVisualizers/chrome.natvis",
+        ],
+        "build/toolchain/gcc_solink_wrapper.py": [
+            "build/toolchain/whole_archive.py",
+            "build/toolchain/wrapper_utils.py",
+        ],
+        "build/toolchain/gcc_solink_wrapper.py:link": [
+            "build/toolchain/gcc_solink_wrapper.py",
+            "build/toolchain/whole_archive.py",
+            "build/toolchain/wrapper_utils.py",
+        ],
+        "build/toolchain/gcc_link_wrapper.py": [
+            "build/toolchain/whole_archive.py",
+            "build/toolchain/wrapper_utils.py",
+        ],
+        "build/toolchain/gcc_link_wrapper.py:link": [
+            "build/toolchain/gcc_link_wrapper.py",
+            "build/toolchain/whole_archive.py",
+            "build/toolchain/wrapper_utils.py",
+        ],
+        "build/toolchain/apple/linker_driver.py:link": [
+            "build/toolchain/apple/linker_driver.py",
+            "build/toolchain/whole_archive.py",
+        ],
+        "build/toolchain/apple/solink_driver.py:link": [
+            "build/toolchain/apple/linker_driver.py",
+            "build/toolchain/apple/solink_driver.py",
+            "build/toolchain/whole_archive.py",
+        ],
+    }
 
 def __lld_link(ctx, cmd):
     # Replace thin archives with /start-lib ... /end-lib in rsp file.

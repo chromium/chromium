@@ -125,19 +125,6 @@ TEST(SharedImageUsage, GlobalOperatorSetUnion) {
                                      SHARED_IMAGE_USAGE_WEBGPU_READ));
 }
 
-TEST(SharedImageUsage, ImplicitCasting) {
-  SharedImageUsageSet as_usage_set =
-      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_WEBGPU_READ;
-  // TODO(crbug.com/343347288): Remove after all usage has been converted to
-  // `SharedImageUsageSet`.
-  // Temporary exception to allow for existing, non type safe, conversions.
-  uint32_t as_uint32_t = as_usage_set;
-
-  EXPECT_EQ(static_cast<uint32_t>(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY) |
-                static_cast<uint32_t>(SHARED_IMAGE_USAGE_WEBGPU_READ),
-            as_uint32_t);
-}
-
 TEST(SharedImageUsage, EqualityTest) {
   SharedImageUsageSet usage_a =
       SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_WEBGPU_READ;
@@ -163,13 +150,17 @@ TEST(SharedImageUsage, ExplicitCasting) {
 }
 
 TEST(SharedImageUsage, Combinations) {
-  for (uint32_t i = 0; (1 << i) <= LAST_SHARED_IMAGE_USAGE; i++) {
-    SharedImageUsageSet set_combine_two = static_cast<SharedImageUsage>(1 << i);
-    for (uint32_t j = 0; (1 << j) <= LAST_SHARED_IMAGE_USAGE; j++) {
-      set_combine_two.PutAll(static_cast<SharedImageUsage>(1 << j));
+  // usage_i != 0 ensures we don't overflow past the last valid bit (1u << 31).
+  for (uint32_t usage_i = 1u;
+       usage_i != 0 && usage_i <= LAST_SHARED_IMAGE_USAGE; usage_i <<= 1) {
+    SharedImageUsageSet set_combine_two =
+        static_cast<SharedImageUsage>(usage_i);
+    for (uint32_t usage_j = 1u;
+         usage_j != 0 && usage_j <= LAST_SHARED_IMAGE_USAGE; usage_j <<= 1) {
+      set_combine_two.PutAll(static_cast<SharedImageUsage>(usage_j));
       EXPECT_TRUE(
-          set_combine_two.HasAll(static_cast<SharedImageUsage>(1 << j) |
-                                 static_cast<SharedImageUsage>(1 << i)));
+          set_combine_two.HasAll(static_cast<SharedImageUsage>(usage_j) |
+                                 static_cast<SharedImageUsage>(usage_i)));
     }
   }
 }

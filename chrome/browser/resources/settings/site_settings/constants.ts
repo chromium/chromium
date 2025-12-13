@@ -8,7 +8,7 @@
  * individual permissions under Site Details should appear here.
  * This should be kept in sync with the |kContentSettingsTypeGroupNames| array
  * in chrome/browser/ui/webui/settings/site_settings_helper.cc. See
- * chrome/browser/resources/settings/site_settings_page/site_settings_page_util
+ * chrome/browser/resources/settings/site_settings/site_settings_page_util
  * for translations.
  */
 
@@ -81,7 +81,6 @@ export enum ContentSetting {
   BLOCK = 'block',
   ASK = 'ask',
   SESSION_ONLY = 'session_only',
-  IMPORTANT_CONTENT = 'detect_important_content',
 }
 
 /**
@@ -146,6 +145,19 @@ export enum SettingsState {
 }
 
 /**
+ * Enumeration of states for the Javascript optimizer default setting generated
+ * pref. Must be kept in sync with the JavascriptOptimizerSetting enum in:
+ * chrome/browser/content_settings/generated_javascript_optimizer_pref.h
+ */
+// LINT.IfChange(JavascriptOptimizerSetting)
+export enum JavascriptOptimizerSetting {
+  BLOCKED = 0,
+  ALLOWED = 1,
+  BLOCKED_FOR_UNFAMILIAR_SITES = 2,
+}
+// LINT.ThenChange(//chrome/browser/content_settings/generated_javascript_optimizer_pref.h:JavascriptOptimizerSetting)
+
+/**
  * An invalid subtype value.
  */
 export const INVALID_CATEGORY_SUBTYPE: string = '';
@@ -193,14 +205,6 @@ export enum AllSitesDialog {
  * match for SiteExceptions.
  */
 export const SITE_EXCEPTION_WILDCARD: string = '*';
-
-/**
- * Corresponds to the animation-duration CSS parameter defined in
- * chrome/browser/resources/settings/site_settings_page/site_review_shared.css.
- * Set to be slightly higher, as we want to ensure that the animation is
- * finished before updating the model for the right visual effect.
- */
-export const MODEL_UPDATE_DELAY_MS = 300;
 
 /**
  * Types of cookies exceptions based on the use of wildcard in the patterns:

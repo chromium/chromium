@@ -18,6 +18,8 @@ export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
       'getIsContextualSearchbox',
       'onScrollToMessage',
       'requestSendFeedback',
+      'onAimMessage',
+      'onImageQueryWithEmptyText',
     ]);
   }
 
@@ -38,8 +40,16 @@ export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
     );
   }
 
+  onAimMessage(message: number[]) {
+    this.methodCalled('onAimMessage', message);
+  }
+
   requestSendFeedback() {
     this.methodCalled('requestSendFeedback');
+  }
+
+  onImageQueryWithEmptyText() {
+    this.methodCalled('onImageQueryWithEmptyText');
   }
 }
 

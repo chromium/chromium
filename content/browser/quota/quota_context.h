@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -47,7 +48,8 @@ class QuotaContext : public base::RefCountedDeleteOnSequence<QuotaContext> {
       bool is_incognito,
       const base::FilePath& profile_path,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-      storage::GetQuotaSettingsFunc get_settings_function);
+      storage::GetQuotaSettingsFunc get_settings_function,
+      bool report_static_storage_quota = false);
 
   QuotaContext(const QuotaContext&) = delete;
   QuotaContext& operator=(const QuotaContext&) = delete;

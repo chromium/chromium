@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
-#include "build/buildflag.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
@@ -37,29 +36,26 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/application_status_listener.h"
-#endif
-
 namespace content {
 
 namespace {
 
-template <typename T>
 void NetworkHistogram(std::string_view suffix,
-                      void (*hist_func)(std::string_view, T value),
                       bool is_debug_report,
                       std::optional<bool> has_trigger_context_id,
-                      T value) {
+                      int value) {
   if (is_debug_report) {
-    hist_func(base::StrCat({"Conversions.DebugReport.", suffix}), value);
+    base::UmaHistogramSparse(base::StrCat({"Conversions.DebugReport.", suffix}),
+                             value);
   } else {
-    hist_func(base::StrCat({"Conversions.", suffix}), value);
+    base::UmaHistogramSparse(base::StrCat({"Conversions.", suffix}), value);
     if (has_trigger_context_id.has_value()) {
       if (*has_trigger_context_id) {
-        hist_func(base::StrCat({"Conversions.ContextID.", suffix}), value);
+        base::UmaHistogramSparse(
+            base::StrCat({"Conversions.ContextID.", suffix}), value);
       } else {
-        hist_func(base::StrCat({"Conversions.NoContextID.", suffix}), value);
+        base::UmaHistogramSparse(
+            base::StrCat({"Conversions.NoContextID.", suffix}), value);
       }
     }
   }
@@ -69,35 +65,11 @@ void NetworkHistogram(std::string_view suffix,
 
 AttributionReportNetworkSender::AttributionReportNetworkSender(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory))
-#if BUILDFLAG(IS_ANDROID)
-      ,
-      application_status_listener_(
-          base::android::ApplicationStatusListener::New(base::BindRepeating(
-              &AttributionReportNetworkSender::OnApplicationStateChanged,
-              // Listener is destroyed at destructor, and
-              // object will be alive for any callback.
-              base::Unretained(this)))) {
-  CHECK(url_loader_factory_);
-  OnApplicationStateChanged(
-      base::android::ApplicationStatusListener::GetState());
-}
-
-void AttributionReportNetworkSender::OnApplicationStateChanged(
-    base::android::ApplicationState state) {
-  app_state_ = state;
-}
-#else
-{
+    : url_loader_factory_(std::move(url_loader_factory)) {
   CHECK(url_loader_factory_);
 }
-#endif
 
 AttributionReportNetworkSender::~AttributionReportNetworkSender() = default;
-
-void AttributionReportNetworkSender::SetInFirstBatch(bool in_first_batch) {
-  in_first_batch_ = in_first_batch;
-}
 
 void AttributionReportNetworkSender::SendReport(
     AttributionReport report,
@@ -105,20 +77,6 @@ void AttributionReportNetworkSender::SendReport(
     ReportSentCallback sent_callback) {
   GURL url = report.ReportURL(is_debug_report);
   std::string body = SerializeAttributionJson(report.ReportBody());
-
-  if (!is_debug_report) {
-    switch (report.GetReportType()) {
-      case AttributionReport::Type::kEventLevel:
-        base::UmaHistogramCounts1000(
-            "Conversions.EventLevelReport.ReportBodySize", body.size());
-        break;
-      case AttributionReport::Type::kAggregatableAttribution:
-      case AttributionReport::Type::kNullAggregatable:
-        base::UmaHistogramCounts10000(
-            "Conversions.AggregatableReport.ReportBodySize", body.size());
-        break;
-    }
-  }
 
   url::Origin origin(report.reporting_origin());
   SendReport(std::move(url), std::move(origin), std::move(body),
@@ -254,54 +212,12 @@ void AttributionReportNetworkSender::OnReportSent(
   // it is fine to combine these in a single histogram.
   const int response_or_net_error = net_ok ? response_code : net_error;
 
-  std::optional<bool> retry_succeed =
-      loader->GetNumRetries() > 0 ? std::make_optional<bool>(net_ok_and_http_ok)
-                                  : std::nullopt;
-
-  if (in_first_batch_) {
-    base::UmaHistogramSparse(
-        "Conversions.FirstBatch.HttpResponseOrNetErrorCode",
-        response_or_net_error);
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  std::string_view suffix;
-  switch (app_state_) {
-    case base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
-      suffix = "AppRunning";
-      break;
-    case base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:
-      suffix = "AppPaused";
-      break;
-    case base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES:
-      suffix = "AppBackgrounded";
-      break;
-    case base::android::APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:
-      suffix = "AppDestroyed";
-      break;
-    case base::android::APPLICATION_STATE_UNKNOWN:
-      suffix = "AppStateUnknown";
-      break;
-  }
-  base::UmaHistogramSparse(
-      base::StrCat({"Conversions.HttpResponseOrNetErrorCode.", suffix}),
-      response_or_net_error);
-#endif
-
   std::visit(
       absl::Overload{
           [&](const AttributionReport::EventLevelData&) {
-            NetworkHistogram("HttpResponseOrNetErrorCodeEventLevel",
-                             &base::UmaHistogramSparse, is_debug_report,
-                             /*has_trigger_context_id=*/std::nullopt,
-                             response_or_net_error);
-
-            if (retry_succeed.has_value()) {
-              NetworkHistogram("ReportRetrySucceedEventLevel",
-                               &base::UmaHistogramBoolean, is_debug_report,
-                               /*has_trigger_context_id=*/std::nullopt,
-                               *retry_succeed);
-            }
+            NetworkHistogram(
+                "HttpResponseOrNetErrorCodeEventLevel", is_debug_report,
+                /*has_trigger_context_id=*/std::nullopt, response_or_net_error);
           },
           [&](const AttributionReport::AggregatableData& data) {
             const bool has_trigger_context_id =
@@ -310,14 +226,8 @@ void AttributionReportNetworkSender::OnReportSent(
                     .has_value();
 
             NetworkHistogram("HttpResponseOrNetErrorCodeAggregatable2",
-                             &base::UmaHistogramSparse, is_debug_report,
-                             has_trigger_context_id, response_or_net_error);
-
-            if (retry_succeed.has_value()) {
-              NetworkHistogram("ReportRetrySucceedAggregatable2",
-                               &base::UmaHistogramBoolean, is_debug_report,
-                               has_trigger_context_id, *retry_succeed);
-            }
+                             is_debug_report, has_trigger_context_id,
+                             response_or_net_error);
           },
       },
       report.data());

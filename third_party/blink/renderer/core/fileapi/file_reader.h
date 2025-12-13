@@ -45,6 +45,9 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
+namespace scheduler {
+class TaskAttributionInfo;
+}  // namespace scheduler
 
 class Blob;
 class ExceptionState;
@@ -110,7 +113,12 @@ class CORE_EXPORT FileReader final : public EventTarget,
 
   void Terminate();
   void ReadInternal(Blob*, FileReadType, ExceptionState&);
-  void FireEvent(const AtomicString& type);
+  // Dispatching an event can trigger another read, which would override
+  // `task_state_`. Pass `task_state` here rather than using `task_state_`
+  // directly so it can be cleared beforehand, since clearing it after dispatch
+  // risks overwriting state for the such reads.
+  void FireEvent(const AtomicString& type,
+                 scheduler::TaskAttributionInfo* task_state);
 
   void ExecutePendingRead();
 
@@ -136,6 +144,7 @@ class CORE_EXPORT FileReader final : public EventTarget,
   Member<FileReaderLoader> loader_;
   Member<V8UnionArrayBufferOrString> result_ = nullptr;
   Member<DOMException> error_;
+  Member<scheduler::TaskAttributionInfo> task_state_;
   std::optional<base::ElapsedTimer> last_progress_notification_time_;
 };
 

@@ -53,7 +53,7 @@ public interface FeedActionsHandler {
     default void discardDismissal(int changeId) {}
 
     /** Interface for handling snackbar exit conditions. */
-    public interface SnackbarController {
+    interface SnackbarController {
         @Deprecated
         default void onAction() {}
 
@@ -81,7 +81,7 @@ public interface FeedActionsHandler {
     /** Snackbar dismissal timeout. */
     @IntDef({SnackbarDuration.SHORT, SnackbarDuration.LONG})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface SnackbarDuration {
+    @interface SnackbarDuration {
         /** SHORT should be used with simple one-line snackbars. */
         int SHORT = 0;
 
@@ -161,7 +161,7 @@ public interface FeedActionsHandler {
         FeedIdentifier.CHANNEL_FEED
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface FeedIdentifier {
+    @interface FeedIdentifier {
         int UNSPECIFIED = 0;
         int MAIN_FEED = 1;
         int FOLLOWING_FEED = 2;

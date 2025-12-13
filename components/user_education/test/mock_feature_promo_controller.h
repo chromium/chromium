@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,13 +24,19 @@ class MockFeaturePromoController : public FeaturePromoController {
   // FeaturePromoController:
   MOCK_METHOD(FeaturePromoResult,
               CanShowPromo,
-              (const FeaturePromoParams&),
+              (const FeaturePromoParams&, const UserEducationContextPtr&),
               (const, override));
-  MOCK_METHOD(void, MaybeShowPromo, (FeaturePromoParams), (override));
-  MOCK_METHOD(void, MaybeShowStartupPromo, (FeaturePromoParams), (override));
+  MOCK_METHOD(void,
+              MaybeShowPromo,
+              (FeaturePromoParams, UserEducationContextPtr),
+              (override));
+  MOCK_METHOD(void,
+              MaybeShowStartupPromo,
+              (FeaturePromoParams, UserEducationContextPtr),
+              (override));
   MOCK_METHOD(void,
               MaybeShowPromoForDemoPage,
-              (FeaturePromoParams),
+              (FeaturePromoParams, UserEducationContextPtr),
               (override));
   MOCK_METHOD(FeaturePromoStatus,
               GetPromoStatus,

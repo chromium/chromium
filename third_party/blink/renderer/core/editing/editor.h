@@ -43,6 +43,7 @@
 namespace blink {
 
 class CompositeEditCommand;
+class DataTransfer;
 class DragData;
 class EditingBehavior;
 class EditorCommand;
@@ -128,7 +129,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
       const String&,
       bool select_inserted_text,
       TextEvent* triggering_event,
-      InputEvent::InputType = InputEvent::InputType::kInsertText);
+      InputEvent::InputType = InputEvent::InputType::kInsertText,
+      DataTransfer* = nullptr);
   bool InsertLineBreak();
   bool InsertParagraphSeparator();
 
@@ -194,7 +196,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
                                     bool select_replacement,
                                     bool smart_replace,
                                     bool match_style,
-                                    InputEvent::InputType);
+                                    InputEvent::InputType,
+                                    DataTransfer* = nullptr);
   void ReplaceSelectionWithText(const String&,
                                 bool select_replacement,
                                 bool smart_replace,
@@ -206,7 +209,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
 
   void ReplaceSelectionAfterDragging(DocumentFragment*,
                                      InsertMode,
-                                     DragSourceType);
+                                     DragSourceType,
+                                     DataTransfer* = nullptr);
 
   // Return false if frame was destroyed by event handler, should stop executing
   // remaining actions.

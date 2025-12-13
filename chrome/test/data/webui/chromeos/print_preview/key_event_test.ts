@@ -12,9 +12,7 @@ import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interaction
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-// <if expr="is_chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplateWithAdvancedSettings, getDefaultInitialSettings, toggleMoreSettings} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
@@ -35,9 +33,7 @@ suite('KeyEventTest', function() {
         getCddTemplateWithAdvancedSettings(1, initialSettings.printerName));
     nativeLayer.setPageCount(3);
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
     setNativeLayerCrosInstance();
-    // </if>
     const pluginProxy = new TestPluginProxy();
     PluginProxyImpl.setInstance(pluginProxy);
 

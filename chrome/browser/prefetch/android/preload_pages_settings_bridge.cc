@@ -35,3 +35,5 @@ static void JNI_PreloadPagesSettingsBridge_SetState(JNIEnv* env,
 }
 
 }  // namespace prefetch
+
+DEFINE_JNI(PreloadPagesSettingsBridge)

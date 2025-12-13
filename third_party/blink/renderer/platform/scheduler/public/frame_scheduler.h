@@ -158,10 +158,7 @@ class FrameScheduler : public FrameOrWorkerScheduler {
 
   // Tells the scheduler that the first meaningful paint has occurred for this
   // frame.
-  virtual void OnFirstMeaningfulPaint(base::TimeTicks timestamp) = 0;
-
-  // Tells the scheduler that the load event has been dispatched for this frame.
-  virtual void OnDispatchLoadEvent() = 0;
+  virtual void OnFirstMeaningfulPaint() = 0;
 
   // Tells the scheduler that a new document has been installed for this frame.
   virtual void OnDidInstallNewDocument() = 0;
@@ -182,7 +179,7 @@ class FrameScheduler : public FrameOrWorkerScheduler {
 
   // Returns the list of active features which currently tracked by the
   // scheduler for back-forward cache metrics.
-  virtual WTF::HashSet<SchedulingPolicy::Feature>
+  virtual HashSet<SchedulingPolicy::Feature>
   GetActiveFeaturesTrackedForBackForwardCacheMetrics() = 0;
 
   // TODO(altimin): Move FrameScheduler object to oilpan.

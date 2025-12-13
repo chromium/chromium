@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_icon_image.h"
 
@@ -43,7 +44,8 @@ class Extension;
 // contextual extension side panels given the difference in behavior betweeen
 // these two panel types.
 class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
-                                      public SidePanelService::Observer {
+                                      public SidePanelService::Observer,
+                                      public SidePanelEntryObserver {
  public:
   explicit ExtensionSidePanelCoordinator(Profile* profile,
                                          BrowserWindowInterface* browser,
@@ -56,6 +58,8 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
       const ExtensionSidePanelCoordinator&) = delete;
   ~ExtensionSidePanelCoordinator() override;
 
+  static SidePanelEntry::PanelType GetPanelType();
+
   // Returns the WebContents managed by `host_`.
   content::WebContents* GetHostWebContentsForTesting() const;
 
@@ -64,6 +68,18 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   void DeregisterEntry();
 
  private:
+  // SidePanelEntryObserver:
+  void OnEntryShown(SidePanelEntry* entry) override;
+  void OnEntryWillHide(SidePanelEntry* entry,
+                       SidePanelEntryHideReason reason) override;
+
+  // Dispatch the onOpened event when the panel is opened.
+  void OnOpened();
+
+  // Dispatches the onClosed event when the panel is closed or its WebContents
+  // is destroyed.
+  void OnClosed();
+
   SidePanelEntry::Key GetEntryKey() const;
 
   SidePanelEntry* GetEntry() const;
@@ -149,6 +165,12 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // The extension's own icon for its side panel entry.
   std::unique_ptr<IconImage> extension_icon_;
 
+  // Track whether the side panel is currently active for this entry.
+  bool is_panel_active_ = false;
+
+  // The ID of the browser window in which the panel is shown.
+  std::optional<int> window_id_;
+
   // Whether this coordinator is tab-scoped or window-scoped.
   const bool for_tab_;
 
@@ -159,6 +181,8 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
       scoped_view_observation_{this};
   base::ScopedObservation<SidePanelService, SidePanelService::Observer>
       scoped_service_observation_{this};
+  base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
+      scoped_entry_observation_{this};
 
   // Must be the last member.
   base::WeakPtrFactory<ExtensionSidePanelCoordinator> weak_factory_{this};

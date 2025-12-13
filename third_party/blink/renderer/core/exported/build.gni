@@ -33,6 +33,7 @@ blink_core_sources_exported = [
   "web_input_element.cc",
   "web_input_method_controller_impl.cc",
   "web_input_method_controller_impl.h",
+  "web_interaction_effects_monitor.cc",
   "web_isolated_world_info.cc",
   "web_label_element.cc",
   "web_language_detection_details.cc",

@@ -19,9 +19,9 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect.h"
@@ -58,7 +58,7 @@ class PreferenceServiceTest : public InProcessBrowserTest {
     base::FilePath user_data_directory;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
 
-    original_pref_file_ = ui_test_utils::GetTestFilePath(
+    original_pref_file_ = chrome_test_utils::GetTestFilePath(
         base::FilePath()
             .AppendASCII("profiles")
             .AppendASCII("window_placement")

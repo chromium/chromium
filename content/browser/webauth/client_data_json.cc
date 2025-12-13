@@ -4,203 +4,110 @@
 
 #include "content/browser/webauth/client_data_json.h"
 
-#include <string_view>
-
-#include "base/base64url.h"
 #include "base/check.h"
-#include "base/containers/span.h"
-#include "base/rand_util.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversion_utils.h"
-#include "content/browser/webauth/common_utils.h"
-#include "content/public/common/content_features.h"
+#include "components/webauthn/core/browser/common_utils.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+
+using webauthn::ToJSONString;
 
 namespace content {
-namespace {
 
-// ToJSONString encodes |in| as a JSON string, using the specific escaping rules
-// required by https://github.com/w3c/webauthn/pull/1375.
-std::string ToJSONString(std::string_view in) {
-  std::string ret;
-  ret.reserve(in.size() + 2);
-  ret.push_back('"');
-
-  base::span<const char> in_bytes = base::span(in);
-  const size_t length = in.size();
-  size_t offset = 0;
-
-  while (offset < length) {
-    const size_t prior_offset = offset;
-    // Input strings must be valid UTF-8.
-    base_icu::UChar32 codepoint;
-    CHECK(base::ReadUnicodeCharacter(in_bytes.data(), length, &offset,
-                                     &codepoint));
-    // offset is updated by |ReadUnicodeCharacter| to index the last byte of the
-    // codepoint. Increment it to index the first byte of the next codepoint for
-    // the subsequent iteration.
-    offset++;
-
-    if (codepoint == 0x20 || codepoint == 0x21 ||
-        (codepoint >= 0x23 && codepoint <= 0x5b) || codepoint >= 0x5d) {
-      ret.append(&in_bytes[prior_offset], offset - prior_offset);
-    } else if (codepoint == 0x22) {
-      ret.append("\\\"");
-    } else if (codepoint == 0x5c) {
-      ret.append("\\\\");
-    } else {
-      ret.append("\\u00");
-      base::AppendHexEncodedByte(static_cast<uint8_t>(codepoint), ret, false);
-    }
-  }
-
-  ret.push_back('"');
-  return ret;
+std::string BuildClientDataJson(webauthn::ClientDataJsonParams params) {
+  return webauthn::BuildClientDataJson(std::move(params), std::nullopt);
 }
 
-}  // namespace
+std::string BuildClientDataJsonWithPayment(
+    webauthn::ClientDataJsonParams params,
+    blink::mojom::PaymentOptionsPtr payment_options,
+    std::string_view payment_rp) {
+  std::string payment_json;
+  payment_json.reserve(128);
 
-ClientDataJsonParams::ClientDataJsonParams(
-    ClientDataRequestType type,
-    url::Origin origin,
-    url::Origin top_origin,
-    std::optional<std::vector<uint8_t>> challenge,
-    bool is_cross_origin_iframe)
-    : type(type),
-      origin(std::move(origin)),
-      top_origin(std::move(top_origin)),
-      challenge(std::move(challenge)),
-      is_cross_origin_iframe(is_cross_origin_iframe) {}
-ClientDataJsonParams::ClientDataJsonParams(ClientDataJsonParams&&) = default;
-ClientDataJsonParams& ClientDataJsonParams::operator=(ClientDataJsonParams&&) =
-    default;
-ClientDataJsonParams::~ClientDataJsonParams() = default;
+  if (payment_options &&
+      params.type == webauthn::ClientDataRequestType::kPaymentGet) {
+    payment_json.append(R"(,"payment":{)");
 
-std::string BuildClientDataJson(ClientDataJsonParams params) {
-  CHECK(params.challenge.has_value());
+    payment_json.append(R"("rpId":)");
+    payment_json.append(ToJSONString(payment_rp));
 
-  std::string ret;
-  ret.reserve(128);
+    payment_json.append(R"(,"topOrigin":)");
+    payment_json.append(ToJSONString(params.top_origin.Serialize()));
 
-  switch (params.type) {
-    case ClientDataRequestType::kWebAuthnCreate:
-      ret.append(R"({"type":"webauthn.create")");
-      break;
-    case ClientDataRequestType::kWebAuthnGet:
-      ret.append(R"({"type":"webauthn.get")");
-      break;
-    case ClientDataRequestType::kPaymentGet:
-      ret.append(R"({"type":"payment.get")");
-      break;
-  }
-
-  ret.append(R"(,"challenge":)");
-  ret.append(ToJSONString(Base64UrlEncodeOmitPadding(*params.challenge)));
-
-  ret.append(R"(,"origin":)");
-  ret.append(ToJSONString(params.origin.Serialize()));
-
-  std::string serialized_top_origin =
-      ToJSONString(params.top_origin.Serialize());
-  if (params.is_cross_origin_iframe) {
-    ret.append(R"(,"crossOrigin":true)");
-    ret.append(R"(,"topOrigin":)");
-    ret.append(serialized_top_origin);
-  } else {
-    ret.append(R"(,"crossOrigin":false)");
-  }
-
-  if (params.payment_options &&
-      params.type == ClientDataRequestType::kPaymentGet) {
-    ret.append(R"(,"payment":{)");
-
-    ret.append(R"("rpId":)");
-    ret.append(ToJSONString(params.payment_rp));
-
-    ret.append(R"(,"topOrigin":)");
-    ret.append(serialized_top_origin);
-
-    if (params.payment_options->payee_name.has_value()) {
-      ret.append(R"(,"payeeName":)");
-      ret.append(ToJSONString(params.payment_options->payee_name.value()));
+    if (payment_options->payee_name.has_value()) {
+      payment_json.append(R"(,"payeeName":)");
+      payment_json.append(ToJSONString(payment_options->payee_name.value()));
     }
-    if (params.payment_options->payee_origin.has_value()) {
-      ret.append(R"(,"payeeOrigin":)");
-      ret.append(
-          ToJSONString(params.payment_options->payee_origin->Serialize()));
+    if (payment_options->payee_origin.has_value()) {
+      payment_json.append(R"(,"payeeOrigin":)");
+      payment_json.append(
+          ToJSONString(payment_options->payee_origin->Serialize()));
     }
 
-    if (params.payment_options->payment_entities_logos.has_value()) {
+    if (payment_options->payment_entities_logos.has_value()) {
       const std::vector<blink::mojom::ShownPaymentEntityLogoPtr>& logos =
-          *params.payment_options->payment_entities_logos;
-      ret.append(R"(,"paymentEntitiesLogos":[)");
+          *payment_options->payment_entities_logos;
+      payment_json.append(R"(,"paymentEntitiesLogos":[)");
       for (auto logo_iterator = logos.begin(); logo_iterator != logos.end();
            ++logo_iterator) {
-        ret.append(R"({"url":)");
-        ret.append(ToJSONString((*logo_iterator)->url.spec()));
-        ret.append(R"(,"label":)");
-        ret.append(ToJSONString((*logo_iterator)->label));
-        ret.append("}");
+        payment_json.append(R"({"url":)");
+        if ((*logo_iterator)->url.is_empty()) {
+          payment_json.append(R"("")");
+        } else {
+          payment_json.append(ToJSONString((*logo_iterator)->url.spec()));
+        }
+        payment_json.append(R"(,"label":)");
+        payment_json.append(ToJSONString((*logo_iterator)->label));
+        payment_json.append("}");
         if ((logo_iterator + 1) != logos.end()) {
-          ret.append(",");
+          payment_json.append(",");
         }
       }
-      ret.append("]");
+      payment_json.append("]");
     }
 
-    ret.append(R"(,"total":{)");
+    payment_json.append(R"(,"total":{)");
 
-    ret.append(R"("value":)");
-    ret.append(ToJSONString(params.payment_options->total->value));
+    payment_json.append(R"("value":)");
+    payment_json.append(ToJSONString(payment_options->total->value));
 
-    ret.append(R"(,"currency":)");
-    ret.append(ToJSONString(params.payment_options->total->currency));
+    payment_json.append(R"(,"currency":)");
+    payment_json.append(ToJSONString(payment_options->total->currency));
 
-    ret.append(R"(},"instrument":{)");
+    payment_json.append(R"(},"instrument":{)");
 
-    ret.append(R"("icon":)");
-    ret.append(ToJSONString(params.payment_options->instrument->icon.spec()));
+    payment_json.append(R"("icon":)");
+    payment_json.append(ToJSONString(payment_options->instrument->icon.spec()));
 
-    ret.append(R"(,"displayName":)");
-    ret.append(ToJSONString(params.payment_options->instrument->display_name));
+    payment_json.append(R"(,"displayName":)");
+    payment_json.append(
+        ToJSONString(payment_options->instrument->display_name));
 
-    if (params.payment_options->instrument->details.has_value()) {
+    if (payment_options->instrument->details.has_value()) {
       // SPC calls should have been rejected if the details field was present
       // but empty.
-      CHECK(!params.payment_options->instrument->details->empty());
+      CHECK(!payment_options->instrument->details->empty());
 
-      ret.append(R"(,"details":)");
-      ret.append(ToJSONString(*params.payment_options->instrument->details));
+      payment_json.append(R"(,"details":)");
+      payment_json.append(ToJSONString(*payment_options->instrument->details));
     }
 
-    ret.append("}");
-    if (params.payment_options->browser_bound_public_key.has_value()) {
-      ret.append(R"(,"browserBoundPublicKey":)");
-      ret.append(ToJSONString(Base64UrlEncodeOmitPadding(
-          *params.payment_options->browser_bound_public_key)));
+    payment_json.append("}");
+    if (payment_options->browser_bound_public_key.has_value()) {
+      payment_json.append(R"(,"browserBoundPublicKey":)");
+      payment_json.append(ToJSONString(webauthn::Base64UrlEncodeOmitPadding(
+          *payment_options->browser_bound_public_key)));
     }
-    ret.append("}");
-  } else if (params.payment_options &&
-             params.payment_options->browser_bound_public_key.has_value() &&
-             params.type == ClientDataRequestType::kWebAuthnCreate) {
-    ret.append(R"(,"payment":{"browserBoundPublicKey":)");
-    ret.append(ToJSONString(Base64UrlEncodeOmitPadding(
-        *params.payment_options->browser_bound_public_key)));
-    ret.append("}");
+    payment_json.append("}");
+  } else if (payment_options &&
+             payment_options->browser_bound_public_key.has_value() &&
+             params.type == webauthn::ClientDataRequestType::kWebAuthnCreate) {
+    payment_json.append(R"(,"payment":{"browserBoundPublicKey":)");
+    payment_json.append(ToJSONString(webauthn::Base64UrlEncodeOmitPadding(
+        *payment_options->browser_bound_public_key)));
+    payment_json.append("}");
   }
 
-  if (base::RandDouble() < 0.2) {
-    // An extra key is sometimes added to ensure that RPs do not make
-    // unreasonably specific assumptions about the clientData JSON. This is
-    // done in the fashion of
-    // https://tools.ietf.org/html/draft-ietf-tls-grease
-    ret.append(R"(,"other_keys_can_be_added_here":")");
-    ret.append(
-        "do not compare clientDataJSON against a template. See "
-        "https://goo.gl/yabPex\"");
-  }
-
-  ret.append("}");
-  return ret;
+  return webauthn::BuildClientDataJson(std::move(params), payment_json);
 }
 
 }  // namespace content

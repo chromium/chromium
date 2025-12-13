@@ -206,7 +206,7 @@ class EncryptionMigrationTestBase
 
  private:
   // EncryptionMigrationScreen::EncryptionMigrationScreenTestDelegate
-  int64_t GetFreeSpace() const override { return free_space_; }
+  std::optional<int64_t> GetFreeSpace() const override { return free_space_; }
 
   // Encryption migration requires at least 50 MB - set the default reported
   // free space to an arbitrary amount above that limit.

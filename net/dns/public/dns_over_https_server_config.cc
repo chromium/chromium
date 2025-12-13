@@ -29,16 +29,18 @@ std::optional<std::string> GetHttpsHost(const std::string& url) {
   url::StdStringCanonOutput output(&canonical);
   url::Parsed canonical_parsed;
   bool is_valid =
-      url::CanonicalizeStandardURL(url.data(), url::ParseStandardURL(url),
+      url::CanonicalizeStandardUrl(url, url::ParseStandardUrl(url),
                                    url::SchemeType::SCHEME_WITH_HOST_AND_PORT,
                                    nullptr, &output, &canonical_parsed);
-  if (!is_valid)
+  if (!is_valid) {
     return std::nullopt;
+  }
   const url::Component& scheme_range = canonical_parsed.scheme;
   std::string_view scheme =
       std::string_view(canonical).substr(scheme_range.begin, scheme_range.len);
-  if (scheme != url::kHttpsScheme)
+  if (scheme != url::kHttpsScheme) {
     return std::nullopt;
+  }
   const url::Component& host_range = canonical_parsed.host;
   return canonical.substr(host_range.begin, host_range.len);
 }
@@ -100,8 +102,9 @@ std::optional<DnsOverHttpsServerConfig> DnsOverHttpsServerConfig::FromString(
     std::string doh_template,
     Endpoints bindings) {
   bool use_post;
-  if (!IsValidDohTemplate(doh_template, &use_post))
+  if (!IsValidDohTemplate(doh_template, &use_post)) {
     return std::nullopt;
+  }
   return DnsOverHttpsServerConfig(std::move(doh_template), use_post,
                                   std::move(bindings));
 }
@@ -165,36 +168,43 @@ base::Value::Dict DnsOverHttpsServerConfig::ToValue() const {
 std::optional<DnsOverHttpsServerConfig> DnsOverHttpsServerConfig::FromValue(
     base::Value::Dict value) {
   std::string* server_template = value.FindString(kJsonKeyTemplate);
-  if (!server_template)
+  if (!server_template) {
     return std::nullopt;
+  }
   bool use_post;
-  if (!IsValidDohTemplate(*server_template, &use_post))
+  if (!IsValidDohTemplate(*server_template, &use_post)) {
     return std::nullopt;
+  }
   Endpoints endpoints;
   const base::Value* endpoints_json = value.Find(kJsonKeyEndpoints);
   if (endpoints_json) {
-    if (!endpoints_json->is_list())
+    if (!endpoints_json->is_list()) {
       return std::nullopt;
+    }
     const base::Value::List& json_list = endpoints_json->GetList();
     endpoints.reserve(json_list.size());
     for (const base::Value& endpoint : json_list) {
       const base::Value::Dict* dict = endpoint.GetIfDict();
-      if (!dict)
+      if (!dict) {
         return std::nullopt;
+      }
       IPAddressList parsed_ips;
       const base::Value* ips = dict->Find(kJsonKeyIps);
       if (ips) {
         const base::Value::List* ip_list = ips->GetIfList();
-        if (!ip_list)
+        if (!ip_list) {
           return std::nullopt;
+        }
         parsed_ips.reserve(ip_list->size());
         for (const base::Value& ip : *ip_list) {
           const std::string* ip_str = ip.GetIfString();
-          if (!ip_str)
+          if (!ip_str) {
             return std::nullopt;
+          }
           IPAddress parsed;
-          if (!parsed.AssignFromIPLiteral(*ip_str))
+          if (!parsed.AssignFromIPLiteral(*ip_str)) {
             return std::nullopt;
+          }
           parsed_ips.push_back(std::move(parsed));
         }
       }

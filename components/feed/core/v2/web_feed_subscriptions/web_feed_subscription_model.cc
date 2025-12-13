@@ -4,6 +4,7 @@
 
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_subscription_model.h"
 
+#include "base/functional/callback_helpers.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/feedstore_util.h"

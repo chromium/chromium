@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/win/scoped_bstr.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
 #include "base/strings/string_util.h"
@@ -89,7 +85,7 @@ BSTR ScopedBstr::AllocateBytes(size_t bytes) {
 void ScopedBstr::SetByteLen(size_t bytes) {
   DCHECK(bstr_);
   uint32_t* data = reinterpret_cast<uint32_t*>(bstr_);
-  data[-1] = checked_cast<uint32_t>(bytes);
+  UNSAFE_TODO(data[-1]) = checked_cast<uint32_t>(bytes);
 }
 
 size_t ScopedBstr::Length() const {

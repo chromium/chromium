@@ -127,12 +127,12 @@ testing::AssertionResult RequestContentScriptAPITest::RunTest(
       kInjectionSucceeded);
   injection_succeeded_listener.set_extension_id(extension_->id());
 
-  EXPECT_TRUE(NavigateToURL(
-      embedded_test_server()->GetURL("/extensions/test_file.html")));
-
   content::WebContents* web_contents = GetActiveWebContents();
   if (!web_contents)
     return testing::AssertionFailure() << "No web contents.";
+
+  EXPECT_TRUE(NavigateToURL(web_contents, embedded_test_server()->GetURL(
+                                              "/extensions/test_file.html")));
 
   // Give the extension plenty of time to inject.
   if (!RunAllPendingInRenderer(web_contents))

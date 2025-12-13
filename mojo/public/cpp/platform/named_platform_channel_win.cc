@@ -10,8 +10,10 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/utf_string_conversions.h"
@@ -88,14 +90,16 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
   const DWORD kPipeMode =
       PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_REJECT_REMOTE_CLIENTS;
 
+  CHECK(options.max_clients > 0 &&
+        options.max_clients <= PIPE_UNLIMITED_INSTANCES);
   std::wstring pipe_name = GetPipeNameFromServerName(name);
-  PlatformHandle handle(base::win::ScopedHandle(::CreateNamedPipeW(
-      pipe_name.c_str(), kOpenMode, kPipeMode,
-      options.enforce_uniqueness ? 1 : 255,  // Max instances.
-      4096,                                  // Out buffer size.
-      4096,                                  // In buffer size.
-      5000,                                  // Timeout in milliseconds.
-      &security_attributes)));
+  PlatformHandle handle(base::win::ScopedHandle(
+      ::CreateNamedPipeW(pipe_name.c_str(), kOpenMode, kPipeMode,
+                         options.max_clients,  // Max instances.
+                         4096,                 // Out buffer size.
+                         4096,                 // In buffer size.
+                         5000,                 // Timeout in milliseconds.
+                         &security_attributes)));
 
   *server_name = name;
   return PlatformChannelServerEndpoint(std::move(handle));
@@ -113,8 +117,10 @@ PlatformChannelEndpoint NamedPlatformChannel::CreateClientEndpoint(
   const DWORD kDesiredAccess = GENERIC_READ | GENERIC_WRITE;
   // The SECURITY_ANONYMOUS flag means that the server side cannot impersonate
   // the client.
-  const DWORD kFlags =
-      SECURITY_SQOS_PRESENT | SECURITY_ANONYMOUS | FILE_FLAG_OVERLAPPED;
+  const DWORD kFlags = SECURITY_SQOS_PRESENT |
+                       (options.allow_impersonation ? SECURITY_IMPERSONATION
+                                                    : SECURITY_ANONYMOUS) |
+                       FILE_FLAG_OVERLAPPED;
   PlatformHandle handle(base::win::ScopedHandle(
       ::CreateFileW(pipe_name.c_str(), kDesiredAccess, 0, nullptr,
                     OPEN_EXISTING, kFlags, nullptr)));

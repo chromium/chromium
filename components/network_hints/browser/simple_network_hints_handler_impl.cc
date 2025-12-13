@@ -68,8 +68,8 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     if (!render_frame_host) {
       OnComplete(net::ERR_NAME_NOT_RESOLVED,
                  net::ResolveErrorInfo(net::ERR_FAILED),
-                 /*resolved_addresses=*/std::nullopt,
-                 /*endpoint_results_with_metadata=*/std::nullopt);
+                 /*resolved_addresses=*/{},
+                 /*alternative_endpoints=*/{});
       return;
     }
 
@@ -93,17 +93,16 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     receiver_.set_disconnect_handler(base::BindOnce(
         &DnsLookupRequest::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt));
+        net::AddressList(), net::HostResolverEndpointResults()));
   }
 
  private:
   // network::mojom::ResolveHostClient:
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+  void OnComplete(
+      int result,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override {
     VLOG(2) << __FUNCTION__ << ": " << url_.Serialize()
             << ", result=" << resolve_error_info.error;
     request_.reset();

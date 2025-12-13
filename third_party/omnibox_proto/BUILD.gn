@@ -9,6 +9,8 @@ if (is_android) {
 }
 
 _proto_files = [
+  "aim_eligibility_response.proto",
+  "aim_tools_and_models.proto",
   "answer_data.proto",
   "answer_type.proto",
   "chrome_aim_entry_point.proto",
@@ -27,7 +29,6 @@ _proto_files = [
 proto_library("omnibox_proto") {
   sources = _proto_files
   proto_in_dir = "."
-  generate_py_runtime = true
 }
 
 if (is_android) {

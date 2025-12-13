@@ -5,11 +5,11 @@
 #ifndef MEDIA_GPU_WINDOWS_VP9_VIDEO_RATE_CONTROL_WRAPPER_H_
 #define MEDIA_GPU_WINDOWS_VP9_VIDEO_RATE_CONTROL_WRAPPER_H_
 
+#include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 #include "video_rate_control_wrapper.h"
 
 namespace libvpx {
 struct VP9FrameParamsQpRTC;
-class VP9RateControlRTC;
 struct VP9RateControlRtcConfig;
 }  // namespace libvpx
 

@@ -5,7 +5,6 @@
 #include "components/page_content_annotations/core/edu_classifier_model_handler.h"
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -25,6 +24,7 @@ class EduClassifierModelProvider
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
       const std::optional<optimization_guide::proto::Any>& any,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       optimization_guide::OptimizationTargetModelObserver* observer) override {
     if (optimization_target ==
         optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER) {

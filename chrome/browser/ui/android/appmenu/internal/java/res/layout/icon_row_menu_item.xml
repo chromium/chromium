@@ -10,7 +10,8 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:layout_gravity="top|start"
     android:orientation="horizontal"
-    android:baselineAligned="false" >
+    android:baselineAligned="false"
+    android:padding="?attr/appMenuIconRowPadding">
 
     <!-- Using weight = 1, evenly distribute the buttons along the width of the
     space.  -->
@@ -21,8 +22,9 @@ found in the LICENSE file.
         android:layout_weight="1">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_one"
-            android:layout_width="?android:attr/listPreferredItemHeightSmall"
-            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            android:layout_width="?attr/minInteractTargetSize"
+            android:layout_height="?attr/minInteractTargetSize"
+            android:layout_gravity="center"
             style="?attr/overflowMenuButtonStyle"/>
     </FrameLayout>
 
@@ -33,8 +35,9 @@ found in the LICENSE file.
         android:layout_weight="1">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_two"
-            android:layout_width="?android:attr/listPreferredItemHeightSmall"
-            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            android:layout_width="?attr/minInteractTargetSize"
+            android:layout_height="?attr/minInteractTargetSize"
+            android:layout_gravity="center"
             style="?attr/overflowMenuButtonStyle"/>
     </FrameLayout>
 
@@ -45,8 +48,9 @@ found in the LICENSE file.
         android:layout_weight="1">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_three"
-            android:layout_width="?android:attr/listPreferredItemHeightSmall"
-            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            android:layout_width="?attr/minInteractTargetSize"
+            android:layout_height="?attr/minInteractTargetSize"
+            android:layout_gravity="center"
             style="?attr/overflowMenuButtonStyle"/>
     </FrameLayout>
 
@@ -57,8 +61,9 @@ found in the LICENSE file.
         android:layout_weight="1">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_four"
-            android:layout_width="?android:attr/listPreferredItemHeightSmall"
-            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            android:layout_width="?attr/minInteractTargetSize"
+            android:layout_height="?attr/minInteractTargetSize"
+            android:layout_gravity="center"
             style="?attr/overflowMenuButtonStyle"/>
     </FrameLayout>
 
@@ -69,8 +74,9 @@ found in the LICENSE file.
         android:layout_weight="1">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_five"
-            android:layout_width="?android:attr/listPreferredItemHeightSmall"
-            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            android:layout_width="?attr/minInteractTargetSize"
+            android:layout_height="?attr/minInteractTargetSize"
+            android:layout_gravity="center"
             style="?attr/overflowMenuButtonStyle"/>
     </FrameLayout>
 </LinearLayout>

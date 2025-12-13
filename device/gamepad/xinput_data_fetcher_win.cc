@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/xinput_data_fetcher_win.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -85,11 +81,12 @@ void XInputDataFetcherWin::EnumerateDevices() {
       // Check to see if the xinput device is connected
       XINPUT_CAPABILITIES caps;
       DWORD res = xinput_get_capabilities_(i, XINPUT_FLAG_GAMEPAD, &caps);
-      xinput_connected_[i] = (res == ERROR_SUCCESS);
-      if (!xinput_connected_[i]) {
-        if (haptics_[i])
-          haptics_[i]->Shutdown();
-        haptics_[i] = nullptr;
+      UNSAFE_TODO(xinput_connected_[i]) = (res == ERROR_SUCCESS);
+      if (!UNSAFE_TODO(xinput_connected_[i])) {
+        if (UNSAFE_TODO(haptics_[i])) {
+          UNSAFE_TODO(haptics_[i]->Shutdown());
+        }
+        UNSAFE_TODO(haptics_[i]) = nullptr;
         continue;
       }
 
@@ -101,8 +98,8 @@ void XInputDataFetcherWin::EnumerateDevices() {
 
       if (!state->is_initialized) {
         state->is_initialized = true;
-        if (!haptics_[i]) {
-          haptics_[i] =
+        if (!UNSAFE_TODO(haptics_[i])) {
+          UNSAFE_TODO(haptics_[i]) =
               std::make_unique<XInputHapticGamepadWin>(i, xinput_set_state_);
         }
 
@@ -155,8 +152,9 @@ void XInputDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
     EnumerateDevices();
 
   for (size_t i = 0; i < XUSER_MAX_COUNT; ++i) {
-    if (xinput_connected_[i])
+    if (UNSAFE_TODO(xinput_connected_[i])) {
       GetXInputPadData(i);
+    }
   }
 }
 
@@ -172,7 +170,7 @@ void XInputDataFetcherWin::GetXInputPadData(int i) {
   // has identical layout to XINPUT_STATE except for an extra padding member at
   // the end.
   XInputStateEx state;
-  memset(&state, 0, sizeof(XInputStateEx));
+  UNSAFE_TODO(memset(&state, 0, sizeof(XInputStateEx)));
   TRACE_EVENT_BEGIN1("GAMEPAD", "XInputGetState", "id", i);
   DWORD dwResult;
   if (xinput_get_state_ex_)
@@ -247,16 +245,17 @@ void XInputDataFetcherWin::PlayEffect(
     return;
   }
 
-  if (!xinput_available_ || !xinput_connected_[pad_id] ||
-      haptics_[pad_id] == nullptr) {
+  if (!xinput_available_ || !UNSAFE_TODO(xinput_connected_[pad_id]) ||
+      UNSAFE_TODO(haptics_[pad_id]) == nullptr) {
     RunVibrationCallback(
         std::move(callback), std::move(callback_runner),
         mojom::GamepadHapticsResult::GamepadHapticsResultNotSupported);
     return;
   }
 
-  haptics_[pad_id]->PlayEffect(type, std::move(params), std::move(callback),
-                               std::move(callback_runner));
+  UNSAFE_TODO(haptics_[pad_id]->PlayEffect(type, std::move(params),
+                                           std::move(callback),
+                                           std::move(callback_runner)));
 }
 
 void XInputDataFetcherWin::ResetVibration(
@@ -270,16 +269,16 @@ void XInputDataFetcherWin::ResetVibration(
     return;
   }
 
-  if (!xinput_available_ || !xinput_connected_[pad_id] ||
-      haptics_[pad_id] == nullptr) {
+  if (!xinput_available_ || !UNSAFE_TODO(xinput_connected_[pad_id]) ||
+      UNSAFE_TODO(haptics_[pad_id]) == nullptr) {
     RunVibrationCallback(
         std::move(callback), std::move(callback_runner),
         mojom::GamepadHapticsResult::GamepadHapticsResultNotSupported);
     return;
   }
 
-  haptics_[pad_id]->ResetVibration(std::move(callback),
-                                   std::move(callback_runner));
+  UNSAFE_TODO(haptics_[pad_id]->ResetVibration(std::move(callback),
+                                               std::move(callback_runner)));
 }
 
 bool XInputDataFetcherWin::GetXInputDllFunctions() {
@@ -380,7 +379,7 @@ bool XInputDataFetcherWin::IsAnyMetaButtonPressed() {
       continue;
 
     XInputStateEx xinput_state;
-    memset(&xinput_state, 0, sizeof(XInputStateEx));
+    UNSAFE_TODO(memset(&xinput_state, 0, sizeof(XInputStateEx)));
     DWORD dwResult;
     dwResult = xinput_get_state_ex_(i, &xinput_state);
 

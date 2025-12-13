@@ -173,4 +173,36 @@ TEST_F(HTMLTextAreaElementTest, PlaceholderBreakAfterUndo) {
   GetFrame().SetHadUserInteraction(false);
 }
 
+// crbug.com/442551790
+TEST_F(HTMLTextAreaElementTest, ClearWithInsertText) {
+  SetBodyInnerHTML("<textarea id=test>some text\n</textarea>");
+  auto& textarea = TestElement();
+  textarea.Focus();
+  textarea.select();
+  const auto* inner_editor =
+      To<LayoutBlockFlow>(textarea.GetLayoutBox()->FirstChildBox());
+  ASSERT_TRUE(inner_editor);
+
+  GetDocument().execCommand("insertText", false, "", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_GT(inner_editor->StitchedSize().height, LayoutUnit());
+}
+
+// crbug.com/442600643
+TEST_F(HTMLTextAreaElementTest, RemoveLastLineWithInsertText) {
+  SetBodyInnerHTML(
+      "<textarea id=test style='line-height:20px;'>a\nb</textarea>");
+  auto& textarea = TestElement();
+  textarea.Focus();
+  textarea.SetSelectionRange(2, 3);
+  const auto* inner_editor =
+      To<LayoutBlockFlow>(textarea.GetLayoutBox()->FirstChildBox());
+  ASSERT_TRUE(inner_editor);
+
+  GetDocument().execCommand("insertText", false, "", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  // The box should have two lines high.
+  EXPECT_EQ(inner_editor->StitchedSize().height, LayoutUnit(20 * 2));
+}
+
 }  // namespace blink

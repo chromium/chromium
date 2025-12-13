@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/browser/application_media_capabilities.h"
 #include "chromecast/browser/cast_content_window.h"
@@ -158,8 +159,10 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   // displayed.
   CastWebView::Scoped cast_web_view_;
 
+  std::unique_ptr<cast_receiver::RuntimeApplication> const runtime_application_;
+
   // Controls for window, as a wrapper around a CastContentWindow instance.
-  // NOTE: Must be declared after |cast_web_view_|.
+  // NOTE: Must be declared after |cast_web_view_| and |runtime_application_|.
   std::unique_ptr<cast_receiver::ContentWindowControls>
       content_window_controls_;
 
@@ -179,8 +182,6 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   std::optional<std::string> cast_media_service_grpc_endpoint_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  std::unique_ptr<cast_receiver::RuntimeApplication> const runtime_application_;
 
   base::WeakPtrFactory<RuntimeApplicationServiceImpl> weak_factory_{this};
 };

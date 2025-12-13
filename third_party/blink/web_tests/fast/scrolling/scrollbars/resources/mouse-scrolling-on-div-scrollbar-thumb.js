@@ -59,10 +59,8 @@ async function testThumbScrolls(params) {
   let x = rtl ? scrollRect.left + 2 : scrollRect.right - 2;
   let y = scrollRect.top + params.BUTTON_WIDTH + 2;
   let asc_increments = [15, 10, 7, 6, 2];
-  let asc_offsets = { linux: [549, 915, 915, 915, 915], win: [361, 601, 770, 915, 915], mac: [211, 351, 450, 534, 563] }[params.platform];
   let desc_increments = [3, 2, 5, 9, 21];
-  let desc_offsets = { linux: [915, 915, 915, 768, 0], win: [890, 842, 722, 505, 0], mac: [520, 492, 422, 295, 0] }[params.platform];
-  // Fluent scrollbars have different minimum length thumbs which changes how
+  // Different platforms have different minimum length thumbs which changes how
   // far dragging the thumb scrolls the content.
   let asc_offsets_fluent = {
     linux: [361, 601, 770, 915, 915],
@@ -88,9 +86,7 @@ async function testThumbScrolls(params) {
     log("mouseMoveTo(" + x + "," + y + ")");
     // TODO(crbug.com/1009892): Sometimes there is 1px difference in threaded scrollbar scrolling mode.
     // Change assert_approx_equals(..., 1, ...) to assert_equals(...) when the bug is fixed.
-    let expected_offset = internals.runtimeFlags.fluentScrollbarsEnabled ?
-        asc_offsets_fluent[i] :
-        asc_offsets[i];
+    let expected_offset = asc_offsets_fluent[i];
     assert_approx_equals(
         params.scroller.scrollTop, expected_offset, 1,
         'Vertical thumb drag downwards did not scroll as expected at ' +
@@ -103,9 +99,7 @@ async function testThumbScrolls(params) {
     await mouseMoveTo(x, y, Buttons.LEFT);
     log("mouseMoveTo(" + x + "," + y + ")");
     // TODO(crbug.com/1009892): Ditto.
-    let expected_offset = internals.runtimeFlags.fluentScrollbarsEnabled ?
-        desc_offsets_fluent[i] :
-        desc_offsets[i];
+    let expected_offset = desc_offsets_fluent[i];
     assert_approx_equals(
         params.scroller.scrollTop, expected_offset, 1,
         'Vertical thumb drag upwards did not scroll as expected at ' +

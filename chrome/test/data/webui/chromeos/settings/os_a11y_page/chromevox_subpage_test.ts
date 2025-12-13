@@ -11,7 +11,7 @@ import 'chrome://os-settings/lazy_load.js';
 import type {SettingsChromeVoxSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import type {SettingsDropdownMenuElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {ChromeVoxSubpageBrowserProxyImpl, CrSettingsPrefs} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -187,7 +187,6 @@ suite('<settings-chromevox-subpage>', () => {
           // Click toggle control to attempt updating to secondary value.
           control.click();
           break;
-
         case ControlType.DROPDOWN:
           // Make sure dropdown is set to the default value.
           await waitAfterNextRender(control);
@@ -199,7 +198,6 @@ suite('<settings-chromevox-subpage>', () => {
           selectElement.dispatchEvent(
               new CustomEvent('change', {bubbles: true, composed: true}));
           break;
-
         case ControlType.INPUT:
           // Make sure input is set to the default value.
           await waitAfterNextRender(control);
@@ -222,6 +220,8 @@ suite('<settings-chromevox-subpage>', () => {
           inputElement.dispatchEvent(
               new CustomEvent('input', {bubbles: true, composed: true}));
           break;
+        default:
+          assertNotReachedCase(type);
       }
 
       // Make sure pref is set to secondary value.

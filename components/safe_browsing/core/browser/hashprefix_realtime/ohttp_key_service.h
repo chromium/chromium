@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_OHTTP_KEY_SERVICE_H_
 
 #include <optional>
+#include <string>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -114,7 +115,7 @@ class OhttpKeyService : public KeyedService {
   // Called when the response from the Safe Browsing key hosting endpoint is
   // received.
   void OnURLLoaderComplete(base::TimeTicks request_start_time,
-                           std::unique_ptr<std::string> response_body);
+                           std::optional<std::string> response_body);
 
   // Async workflow:
   // Starts to fetch a new key if the current key is close to expiration.

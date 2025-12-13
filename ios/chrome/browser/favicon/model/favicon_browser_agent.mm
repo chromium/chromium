@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
@@ -58,7 +58,7 @@ void FaviconBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  CHECK(web::features::CreateTabHelperOnlyForRealizedWebStates());
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
       // Nothing to do.
@@ -101,18 +101,18 @@ void FaviconBrowserAgent::WebStateListDidChange(
 }
 
 void FaviconBrowserAgent::WebStateRealized(web::WebState* web_state) {
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  CHECK(web::features::CreateTabHelperOnlyForRealizedWebStates());
   FetchFaviconForWebState(web_state);
   StopObservingWebState(web_state);
 }
 
 void FaviconBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  CHECK(web::features::CreateTabHelperOnlyForRealizedWebStates());
   StopObservingWebState(web_state);
 }
 
 void FaviconBrowserAgent::StartObservingWebState(web::WebState* web_state) {
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  CHECK(web::features::CreateTabHelperOnlyForRealizedWebStates());
   if (!web_state_observations_.IsObservingAnySource()) {
     web_state_list_observation_.Observe(browser_->GetWebStateList());
   }
@@ -120,7 +120,7 @@ void FaviconBrowserAgent::StartObservingWebState(web::WebState* web_state) {
 }
 
 void FaviconBrowserAgent::StopObservingWebState(web::WebState* web_state) {
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  CHECK(web::features::CreateTabHelperOnlyForRealizedWebStates());
   if (web_state_observations_.IsObservingSource(web_state)) {
     web_state_observations_.RemoveObservation(web_state);
     if (!web_state_observations_.IsObservingAnySource()) {
@@ -130,7 +130,7 @@ void FaviconBrowserAgent::StopObservingWebState(web::WebState* web_state) {
 }
 
 void FaviconBrowserAgent::FetchFaviconForWebState(web::WebState* web_state) {
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
     if (!web_state->IsRealized()) {
       StartObservingWebState(web_state);
       return;

@@ -1,0 +1,1067 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/coordinator/magic_stack_ranking_model.h"
+
+#import <optional>
+
+#import "base/check.h"
+#import "base/containers/contains.h"
+#import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
+#import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/price_tracking_utils.h"
+#import "components/commerce/core/shopping_service.h"
+#import "components/ntp_tiles/pref_names.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/power_bookmarks/core/power_bookmark_utils.h"
+#import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
+#import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/search/search.h"
+#import "components/search_engines/template_url_service.h"
+#import "components/segmentation_platform/embedder/home_modules/address_bar_position_ephemeral_module.h"
+#import "components/segmentation_platform/embedder/home_modules/autofill_passwords_ephemeral_module.h"
+#import "components/segmentation_platform/embedder/home_modules/constants.h"
+#import "components/segmentation_platform/embedder/home_modules/enhanced_safe_browsing_ephemeral_module.h"
+#import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
+#import "components/segmentation_platform/embedder/home_modules/lens_ephemeral_module.h"
+#import "components/segmentation_platform/embedder/home_modules/save_passwords_ephemeral_module.h"
+#import "components/segmentation_platform/embedder/home_modules/send_tab_notification_promo.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
+#import "components/segmentation_platform/public/constants.h"
+#import "components/segmentation_platform/public/features.h"
+#import "components/segmentation_platform/public/segmentation_platform_service.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/send_tab_to_self/pref_names.h"
+#import "ios/chrome/browser/app_store_bundle/model/app_store_bundle_service.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/coordinator/app_bundle_promo_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_config.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/coordinator/default_browser_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/public/features.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/ui/default_browser_config.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/coordinator/magic_stack_ranking_model_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public/magic_stack_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_config.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/coordinator/price_tracking_promo_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/coordinator/price_tracking_promo_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/ui/price_tracking_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/coordinator/safety_check_magic_stack_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/coordinator/safety_check_magic_stack_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model/safety_check_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_state.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/coordinator/send_tab_promo_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/coordinator/send_tab_promo_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/ui/send_tab_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/coordinator/set_up_list_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/ui/set_up_list_config.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/ui/set_up_list_item_view_data.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/coordinator/shop_card_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/coordinator/shop_card_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/coordinator/shortcuts_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/coordinator/shortcuts_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_config.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/coordinator/tab_resumption_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/coordinator/tab_resumption_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/coordinator/tips_magic_stack_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
+#import "ios/chrome/browser/ntp/ui_bundled/home_start_data_source.h"
+#import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ui/base/device_form_factor.h"
+
+namespace {
+
+// Move ShopCard to front of Magic Stack. Not used in production, only
+// for testing impression limiits. ShopCards are only shown for a maximum
+// of 3 impressions and an impression only counts if the card is at the
+// front of the Magic Stack.
+BOOL PromoteShopCardToFrontOfStack() {
+  return commerce::kShopCardPosition.Get() == commerce::kShopCardFrontPosition;
+}
+
+BOOL PromoteTabResumptionShopCardToFrontOfStack() {
+  return (base::Contains(commerce::kShopCardVariation.Get(),
+                         commerce::kShopCardArm3) ||
+          commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 ||
+          commerce::kShopCardVariation.Get() == commerce::kShopCardArm5 ||
+          commerce::kShopCardVariation.Get() == commerce::kShopCardArm6) &&
+         commerce::kShopCardPosition.Get() == commerce::kShopCardFrontPosition;
+}
+
+}  // namespace
+
+using segmentation_platform::TipIdentifier;
+using segmentation_platform::TipIdentifierForOutputLabel;
+using segmentation_platform::home_modules::AddressBarPositionEphemeralModule;
+using segmentation_platform::home_modules::AutofillPasswordsEphemeralModule;
+using segmentation_platform::home_modules::EnhancedSafeBrowsingEphemeralModule;
+using segmentation_platform::home_modules::LensEphemeralModule;
+using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
+
+@interface MagicStackRankingModel () <AppBundlePromoMediatorDelegate,
+                                      DefaultBrowserDelegate,
+                                      PriceTrackingPromoMediatorDelegate,
+                                      SafetyCheckMagicStackMediatorDelegate,
+                                      SendTabPromoMediatorDelegate,
+                                      ShopCardMediatorDelegate,
+                                      SetUpListMediatorAudience,
+                                      ShortcutsMediatorDelegate,
+                                      TabResumptionMediatorDelegate,
+                                      TipsMagicStackMediatorDelegate>
+// For testing-only
+@property(nonatomic, assign) BOOL hasReceivedMagicStackResponse;
+@property(nonatomic, assign) BOOL hasReceivedEphemericalCardResponse;
+@end
+
+@implementation MagicStackRankingModel {
+  raw_ptr<segmentation_platform::SegmentationPlatformService, DanglingUntriaged>
+      _segmentationService;
+  raw_ptr<commerce::ShoppingService, DanglingUntriaged> _shoppingService;
+  raw_ptr<AppStoreBundleService, DanglingUntriaged> _appStoreBundleService;
+  raw_ptr<AuthenticationService, DanglingUntriaged> _authService;
+  raw_ptr<PrefService, DanglingUntriaged> _prefService;
+  raw_ptr<PrefService, DanglingUntriaged> _localState;
+  // The latest module ranking returned from the SegmentationService.
+  NSArray<NSNumber*>* _magicStackOrderFromSegmentation;
+  // YES if the module ranking has been received from the SegmentationService.
+  BOOL _magicStackOrderFromSegmentationReceived;
+  // The latest Magic Stack module order sent up to the consumer. This includes
+  // any omissions due to filtering from `_magicStackOrderFromSegmentation` and
+  // any additions beyond `_magicStackOrderFromSegmentation` (e.g. Set Up List).
+  NSArray<MagicStackModule*>* _latestMagicStackConfigOrder;
+  // Module mediators.
+  MostVisitedTilesMediator* _mostVisitedTilesMediator;
+  SetUpListMediator* _setUpListMediator;
+  TabResumptionMediator* _tabResumptionMediator;
+  PriceTrackingPromoMediator* _priceTrackingPromoMediator;
+  ShopCardMediator* _shopCardMediator;
+  ShortcutsMediator* _shortcutsMediator;
+  SafetyCheckMagicStackMediator* _safetyCheckMediator;
+  SendTabPromoMediator* _sendTabPromoMediator;
+  TipsMagicStackMediator* _tipsMediator;
+  AppBundlePromoMediator* _appBundlePromoMediator;
+  DefaultBrowserMediator* _defaultBrowserMediator;
+  raw_ptr<TipsManagerIOS, DanglingUntriaged> _tipsManager;
+  base::TimeTicks ranking_fetch_start_time_;
+  ContentSuggestionsModuleType _ephemeralCardToShow;
+  raw_ptr<TemplateURLService, DanglingUntriaged> _templateURLService;
+  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> _bookmarkModel;
+}
+
+- (instancetype)
+    initWithSegmentationService:
+        (segmentation_platform::SegmentationPlatformService*)segmentationService
+                shoppingService:(commerce::ShoppingService*)shoppingService
+                    authService:(AuthenticationService*)authenticationService
+                    prefService:(PrefService*)prefService
+                     localState:(PrefService*)localState
+                moduleMediators:(NSArray*)moduleMediators
+                    tipsManager:(TipsManagerIOS*)tipsManager
+             templateURLService:(TemplateURLService*)templateURLService
+          appStoreBundleService:(AppStoreBundleService*)appStoreBundleService
+                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
+  self = [super init];
+  if (self) {
+    _segmentationService = segmentationService;
+    _shoppingService = shoppingService;
+    _appStoreBundleService = appStoreBundleService;
+    _authService = authenticationService;
+    _prefService = prefService;
+    _localState = localState;
+    _ephemeralCardToShow = ContentSuggestionsModuleType::kInvalid;
+    _templateURLService = templateURLService;
+    _bookmarkModel = bookmarkModel;
+
+    if (IsTipsMagicStackEnabled()) {
+      CHECK(tipsManager);
+      _tipsManager = tipsManager;
+    }
+
+    for (id mediator in moduleMediators) {
+      if ([mediator isKindOfClass:[MostVisitedTilesMediator class]]) {
+        _mostVisitedTilesMediator =
+            static_cast<MostVisitedTilesMediator*>(mediator);
+      } else if ([mediator isKindOfClass:[SetUpListMediator class]]) {
+        _setUpListMediator = static_cast<SetUpListMediator*>(mediator);
+        _setUpListMediator.audience = self;
+      } else if ([mediator isKindOfClass:[TabResumptionMediator class]]) {
+        _tabResumptionMediator = static_cast<TabResumptionMediator*>(mediator);
+        _tabResumptionMediator.delegate = self;
+      } else if ([mediator isKindOfClass:[ShopCardMediator class]]) {
+        _shopCardMediator = static_cast<ShopCardMediator*>(mediator);
+        _shopCardMediator.delegate = self;
+      } else if ([mediator isKindOfClass:[ShortcutsMediator class]]) {
+        _shortcutsMediator = static_cast<ShortcutsMediator*>(mediator);
+        _shortcutsMediator.delegate = self;
+      } else if ([mediator isKindOfClass:[PriceTrackingPromoMediator class]]) {
+        _priceTrackingPromoMediator =
+            static_cast<PriceTrackingPromoMediator*>(mediator);
+        _priceTrackingPromoMediator.delegate = self;
+      } else if ([mediator
+                     isKindOfClass:[SafetyCheckMagicStackMediator class]]) {
+        _safetyCheckMediator =
+            static_cast<SafetyCheckMagicStackMediator*>(mediator);
+        _safetyCheckMediator.delegate = self;
+      } else if ([mediator isKindOfClass:[TipsMagicStackMediator class]]) {
+        _tipsMediator = static_cast<TipsMagicStackMediator*>(mediator);
+        _tipsMediator.delegate = self;
+      } else if ([mediator isKindOfClass:[SendTabPromoMediator class]]) {
+        _sendTabPromoMediator = static_cast<SendTabPromoMediator*>(mediator);
+        _sendTabPromoMediator.delegate = self;
+      } else if ([mediator isKindOfClass:[AppBundlePromoMediator class]]) {
+        _appBundlePromoMediator =
+            static_cast<AppBundlePromoMediator*>(mediator);
+        _appBundlePromoMediator.delegate = self;
+      } else if ([mediator isKindOfClass:[DefaultBrowserMediator class]]) {
+        _defaultBrowserMediator =
+            static_cast<DefaultBrowserMediator*>(mediator);
+        _defaultBrowserMediator.delegate = self;
+      } else {
+        // Known module mediators need to be handled.
+        NOTREACHED();
+      }
+    }
+  }
+  return self;
+}
+
+- (void)disconnect {
+  _mostVisitedTilesMediator = nil;
+  _setUpListMediator = nil;
+  _tabResumptionMediator = nil;
+  _priceTrackingPromoMediator = nil;
+  _shortcutsMediator = nil;
+  _safetyCheckMediator = nil;
+  _sendTabPromoMediator = nil;
+  _shopCardMediator = nil;
+  _tipsMediator = nil;
+  _tipsManager = nil;
+  _appBundlePromoMediator = nil;
+}
+
+#pragma mark - Public
+
+- (void)fetchLatestMagicStackRanking {
+  _magicStackOrderFromSegmentationReceived = NO;
+  _magicStackOrderFromSegmentation = nil;
+  _latestMagicStackConfigOrder = nil;
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::
+              kSegmentationPlatformEphemeralCardRanker)) {
+    _ephemeralCardToShow = ContentSuggestionsModuleType::kInvalid;
+    [self fetchEphemeralCardFromSegmentationPlatform];
+  }
+  [self fetchMagicStackModuleRankingFromSegmentationPlatform];
+}
+
+- (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type {
+  [self.contentSuggestionsMetricsRecorder
+      recordMagicStackModuleEngagementForType:type
+                                      atIndex:
+                                          [self indexForMagicStackModule:type]];
+}
+
+#pragma mark - SetUpListMediatorAudience
+
+- (void)removeSetUpList {
+  base::UmaHistogramEnumeration(
+      kMagicStackModuleDisabledHistogram,
+      ContentSuggestionsModuleType::kCompactedSetUpList);
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_setUpListMediator.setUpListConfigs[0]
+                                animate:YES
+                         withCompletion:nil];
+}
+
+- (void)replaceSetUpListWithAllSet:(SetUpListConfig*)allSetConfig {
+  [self.delegate magicStackRankingModel:self
+                         didReplaceItem:_setUpListMediator.setUpListConfigs[0]
+                               withItem:allSetConfig];
+}
+
+#pragma mark - SafetyCheckMagicStackMediatorDelegate
+
+- (void)removeSafetyCheckModule {
+  if (![self isMagicStackOrderReady]) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
+                                ContentSuggestionsModuleType::kSafetyCheck);
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_safetyCheckMediator.safetyCheckState
+                                animate:YES
+                         withCompletion:nil];
+}
+
+#pragma mark - SendTabPromoMediatorDelegate
+
+- (void)sentTabReceived {
+  MagicStackModule* item = _sendTabPromoMediator.sendTabPromoItemToShow;
+  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
+  NSUInteger index = [rank indexOfObject:item];
+  if (index == NSNotFound) {
+    return;
+  }
+  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
+}
+
+- (void)removeSendTabPromoModule {
+  base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
+                                ContentSuggestionsModuleType::kSendTabPromo);
+  [self.delegate
+      magicStackRankingModel:self
+               didRemoveItem:_sendTabPromoMediator.sendTabPromoItemToShow
+                     animate:YES
+              withCompletion:nil];
+}
+
+#pragma mark - TipsMagicStackMediatorDelegate
+
+- (void)removeTipsModuleWithCompletion:(ProceduralBlock)completion {
+  if (![self isMagicStackOrderReady]) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
+                                ContentSuggestionsModuleType::kTips);
+
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_tipsMediator.state
+                                animate:YES
+                         withCompletion:completion];
+}
+
+#pragma mark - AppBundlePromoMediatorDelegate
+
+- (void)removeAppBundlePromoModuleWithCompletion:(ProceduralBlock)completion {
+  if (![self isMagicStackOrderReady]) {
+    return;
+  }
+
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_appBundlePromoMediator.config
+                                animate:YES
+                         withCompletion:completion];
+}
+
+#pragma mark - DefaultBrowserDelegate
+
+- (void)removeDefaultBrowserPromoModuleWithCompletion:
+    (ProceduralBlock)completion {
+  if (![self isMagicStackOrderReady]) {
+    return;
+  }
+
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_defaultBrowserMediator.config
+                                animate:YES
+                         withCompletion:completion];
+}
+
+#pragma mark - TabResumptionMediatorDelegate
+
+- (void)tabResumptionMediatorDidReceiveItem {
+  if (tab_resumption_prefs::IsTabResumptionDisabled(_prefService)) {
+    return;
+  }
+
+  [self showTabResumptionWithItem:_tabResumptionMediator.itemConfig];
+}
+
+- (void)tabResumptionMediatorDidReconfigureItem {
+  if (tab_resumption_prefs::IsTabResumptionDisabled(_prefService)) {
+    return;
+  }
+  TabResumptionItem* item = _tabResumptionMediator.itemConfig;
+  [self.delegate magicStackRankingModel:self didReconfigureItem:item];
+}
+
+- (void)removeTabResumptionModule {
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_tabResumptionMediator.itemConfig
+                                animate:NO
+                         withCompletion:nil];
+}
+
+- (NSUInteger)indexForMagicStackModule:
+    (ContentSuggestionsModuleType)moduleType {
+  return [_latestMagicStackConfigOrder
+      indexOfObjectPassingTest:^BOOL(MagicStackModule* config, NSUInteger idx,
+                                     BOOL* stop) {
+        return config.type == moduleType;
+      }];
+}
+
+#pragma mark - PriceTrackingPromoMediatorDelegate
+
+- (void)promoWasTapped {
+  [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                           kPriceTrackingPromo];
+}
+
+#pragma mark - Private
+
+// Adds the correct Set Up List module type to the Magic Stack `order`.
+- (void)addSetUpListToMagicStackOrder:(NSMutableArray*)order {
+  if ([_setUpListMediator allItemsComplete]) {
+    [order addObject:@(int(ContentSuggestionsModuleType::kSetUpListAllSet))];
+  } else if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
+    [order addObject:@(int(ContentSuggestionsModuleType::kCompactedSetUpList))];
+  } else {
+    for (SetUpListItemViewData* model in _setUpListMediator.setUpListItems) {
+      [order addObject:@(int(SetUpListModuleTypeForSetUpListType(model.type)))];
+    }
+  }
+}
+
+// Adds the Safety Check module to `order` based on the current Safety Check
+// state.
+- (void)addSafetyCheckToMagicStackOrder:(NSMutableArray*)order {
+  [order addObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))];
+}
+
+// New subscription observed for user (from another platform). This
+// has the potential to boost the ranking of the price trackiing promo.
+- (void)newSubscriptionAvailable {
+  MagicStackModule* item =
+      _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
+  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
+  NSUInteger index = [rank indexOfObject:item];
+  if (index == NSNotFound) {
+    return;
+  }
+  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
+}
+
+// Starts a fetch of the ephemeral card to show from Segmentation.
+- (void)fetchEphemeralCardFromSegmentationPlatform {
+  segmentation_platform::PredictionOptions options;
+  options.on_demand_execution = true;
+  auto inputContext =
+      base::MakeRefCounted<segmentation_platform::InputContext>();
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kIsNewUser,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          IsFirstRunRecent(
+              set_up_list_utils::SetUpListDurationPastFirstRun())));
+
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kIsSynced,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          _shoppingService->IsShoppingListEligible()));
+
+  if (send_tab_to_self::
+          IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kSendTabInfobarReceivedInLastSession,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            !_prefService
+                 ->GetString(send_tab_to_self::prefs::
+                                 kIOSSendTabToSelfLastReceivedTabURLPref)
+                 .empty()));
+  }
+
+  if (IsTipsMagicStackEnabled() && _tipsManager) {
+    // Profile signals
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kLensNotUsedRecently,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            !_tipsManager->WasSignalFiredWithin(
+                segmentation_platform::tips_manager::signals::kLensUsed,
+                base::Days(30))));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::tips_manager::signals::kOpenedShoppingWebsite,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _tipsManager->WasSignalFired(segmentation_platform::tips_manager::
+                                             signals::kOpenedShoppingWebsite)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::tips_manager::signals::
+            kOpenedWebsiteInAnotherLanguage,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _tipsManager->WasSignalFired(
+                segmentation_platform::tips_manager::signals::
+                    kOpenedWebsiteInAnotherLanguage)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kNoSavedPasswords,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            !_tipsManager->WasSignalFired(segmentation_platform::tips_manager::
+                                              signals::kSavedPasswords)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::tips_manager::signals::kUsedGoogleTranslation,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _tipsManager->WasSignalFired(segmentation_platform::tips_manager::
+                                             signals::kUsedGoogleTranslation)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kDidNotUsePasswordAutofill,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            !_tipsManager->WasSignalFired(segmentation_platform::tips_manager::
+                                              signals::kUsedPasswordAutofill)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kLacksEnhancedSafeBrowsing,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            !_prefService->GetBoolean(prefs::kSafeBrowsingEnhanced)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _prefService->GetBoolean(
+                password_manager::prefs::kCredentialsEnableService)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kEnhancedSafeBrowsingAllowedByEnterprisePolicy,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _prefService->GetBoolean(prefs::kAdvancedProtectionAllowed)));
+
+    // Local signals
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kDidNotSeeAddressBarPositionChoiceScreen,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            !_tipsManager->WasSignalFired(
+                segmentation_platform::tips_manager::signals::
+                    kAddressBarPositionChoiceScreenDisplayed)));
+
+    // Miscellaneous signals
+    BOOL isPhone = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kIsPhoneFormFactor,
+        segmentation_platform::processing::ProcessedValue::FromFloat(isPhone));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kLensAllowedByEnterprisePolicy,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            [self isLensEnabled]));
+
+    if (segmentation_platform::features::
+            IsAppBundlePromoEphemeralCardEnabled()) {
+      CHECK(_appStoreBundleService);
+      inputContext->metadata_args.emplace(
+          segmentation_platform::kAppBundleAppsInstalledCount,
+          segmentation_platform::processing::ProcessedValue::FromFloat(
+              static_cast<float>(
+                  _appStoreBundleService->GetInstalledAppCount())));
+    }
+    if (segmentation_platform::features::IsDefaultBrowserMagicStackEnabled()) {
+      inputContext->metadata_args.emplace(
+          segmentation_platform::kIsDefaultBrowserChromeIos,
+          segmentation_platform::processing::ProcessedValue::FromFloat(
+              IsChromeLikelyDefaultBrowser()));
+    }
+  }
+
+  __weak MagicStackRankingModel* weakSelf = self;
+  _segmentationService->GetClassificationResult(
+      segmentation_platform::kEphemeralHomeModuleBackendKey, options,
+      inputContext,
+      base::BindOnce(
+          ^(const segmentation_platform::ClassificationResult& result) {
+            weakSelf.hasReceivedEphemericalCardResponse = YES;
+            [weakSelf didReceiveEphemeralCardSegmentationResult:result];
+          }));
+}
+
+// Handles the ephemeral card Segmentation response and adds a card if there is
+// one to show.
+- (void)didReceiveEphemeralCardSegmentationResult:
+    (const segmentation_platform::ClassificationResult&)result {
+  // If an ephemeral card has already been selected for this ranking cycle,
+  // do not process another result. This prevents duplicate insertions if the
+  // segmentation callback fires multiple times (race condition).
+  if (_ephemeralCardToShow != ContentSuggestionsModuleType::kInvalid) {
+    return;
+  }
+
+  if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
+    return;
+  }
+
+  MagicStackModule* card;
+
+  BOOL areTipsCardsEnabled =
+      _prefService->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled);
+
+  for (const std::string& label : result.ordered_labels) {
+    if (label == segmentation_platform::kPriceTrackingNotificationPromo) {
+      if (IsPriceTrackingPromoCardEnabled(_shoppingService, _authService,
+                                          _prefService)) {
+        _ephemeralCardToShow =
+            ContentSuggestionsModuleType::kPriceTrackingPromo;
+        card = _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
+        break;
+      }
+    } else if (segmentation_platform::home_modules::HomeModulesCardRegistry::
+                   IsEphemeralTipsModuleLabel(label) &&
+               IsTipsMagicStackEnabled() && areTipsCardsEnabled) {
+      TipIdentifier tipIdentifier = TipIdentifierForOutputLabel(label);
+
+      if (tipIdentifier != TipIdentifier::kUnknown) {
+        BOOL shouldShowTipsWithProductImage =
+            tipIdentifier == TipIdentifier::kLensShop &&
+            TipsLensShopExperimentTypeEnabled() ==
+                TipsLensShopExperimentType::kWithProductImage &&
+            _tipsMediator.state.productImageData.length > 0;
+
+        _ephemeralCardToShow =
+            shouldShowTipsWithProductImage
+                ? ContentSuggestionsModuleType::kTipsWithProductImage
+                : ContentSuggestionsModuleType::kTips;
+
+        [_tipsMediator reconfigureWithTipIdentifier:tipIdentifier];
+
+        card = _tipsMediator.state;
+
+        break;
+      }
+    } else if (label == segmentation_platform::kSendTabNotificationPromo) {
+      if (send_tab_to_self::
+              IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
+        _ephemeralCardToShow = ContentSuggestionsModuleType::kSendTabPromo;
+        card = _sendTabPromoMediator.sendTabPromoItemToShow;
+        break;
+      }
+    } else if (label == segmentation_platform::kAppBundlePromoEphemeralModule) {
+      if (segmentation_platform::features::
+              IsAppBundlePromoEphemeralCardEnabled() &&
+          areTipsCardsEnabled) {
+        _ephemeralCardToShow = ContentSuggestionsModuleType::kAppBundlePromo;
+        card = _appBundlePromoMediator.config;
+        break;
+      }
+    } else if (label ==
+               segmentation_platform::kDefaultBrowserPromoEphemeralModule) {
+      if (segmentation_platform::features::
+              IsDefaultBrowserMagicStackEnabled() &&
+          areTipsCardsEnabled) {
+        _ephemeralCardToShow = ContentSuggestionsModuleType::kDefaultBrowser;
+        card = _defaultBrowserMediator.config;
+        break;
+      }
+    }
+  }
+  if (_ephemeralCardToShow != ContentSuggestionsModuleType::kInvalid && card) {
+    [self addEphemeralCardToMagicStack:card];
+  }
+}
+
+// Re-calculates the Magic Stack order and inserts the new ephemeral `card` if
+// the Magic Stack ranking has been received.
+- (void)addEphemeralCardToMagicStack:(MagicStackModule*)card {
+  if (!_magicStackOrderFromSegmentationReceived) {
+    return;
+  }
+
+  _latestMagicStackConfigOrder = [self latestMagicStackConfigRank];
+  [self.delegate magicStackRankingModel:self didInsertItem:card atIndex:0];
+}
+
+- (void)removePriceTrackingPromo {
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_priceTrackingPromoMediator
+                                            .priceTrackingPromoItemToShow
+                                animate:YES
+                         withCompletion:nil];
+}
+
+- (void)removeShopCard {
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_shopCardMediator.shopCardItemToShow
+                                animate:YES
+                         withCompletion:nil];
+}
+
+- (void)insertShopCard {
+  if (!_shopCardMediator.shopCardItemToShow || ![self isMagicStackOrderReady]) {
+    return;
+  }
+
+  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
+  NSUInteger index = [rank indexOfObject:_shopCardMediator.shopCardItemToShow];
+  if (index == NSNotFound) {
+    return;
+  }
+  [self.delegate magicStackRankingModel:self
+                          didInsertItem:_shopCardMediator.shopCardItemToShow
+                                atIndex:index];
+}
+
+// Starts a fetch of the Segmentation module ranking.
+- (void)fetchMagicStackModuleRankingFromSegmentationPlatform {
+  if (!base::FeatureList::IsEnabled(segmentation_platform::features::
+                                        kSegmentationPlatformIosModuleRanker)) {
+    segmentation_platform::ClassificationResult result(
+        segmentation_platform::PredictionStatus::kNotReady);
+    self.hasReceivedMagicStackResponse = YES;
+    [self didReceiveSegmentationServiceResult:result];
+    return;
+  }
+  auto inputContext =
+      base::MakeRefCounted<segmentation_platform::InputContext>();
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::
+              kSegmentationPlatformIosModuleRankerSplitBySurface)) {
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kIsShowingStartSurface,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            [self.homeStartDataSource isStartSurface]));
+  }
+  int mvtFreshnessImpressionCount = _prefService->GetInteger(
+      prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness);
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kMostVisitedTilesFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          mvtFreshnessImpressionCount));
+  int shortcutsFreshnessImpressionCount = _prefService->GetInteger(
+      prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness);
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kShortcutsFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          shortcutsFreshnessImpressionCount));
+  int safetyCheckFreshnessImpressionCount = _prefService->GetInteger(
+      prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness);
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kSafetyCheckFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          safetyCheckFreshnessImpressionCount));
+  int tabResumptionFreshnessImpressionCount = _prefService->GetInteger(
+      prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness);
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kTabResumptionFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          tabResumptionFreshnessImpressionCount));
+  // TODO(crbug.com/398880309): This pref is deprecated and will always have its
+  // default value - remove its usage here.
+  int parcelTrackingFreshnessImpressionCount = _localState->GetInteger(
+      prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kParcelTrackingFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          parcelTrackingFreshnessImpressionCount));
+  int shopCardFreshnessImpressionCount = _prefService->GetInteger(
+      prefs::kIosMagicStackSegmentationShopCardImpressionsSinceFreshness);
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kShopCardFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          shopCardFreshnessImpressionCount));
+  segmentation_platform::PredictionOptions options;
+
+  if (base::FeatureList::IsEnabled(
+          kSegmentationPlatformIosModuleRankerCaching)) {
+    // Ignores tab resumption freshness since local tab always logs a freshness
+    // signal for Start.
+    BOOL hasNoFreshnessSignal = shortcutsFreshnessImpressionCount != 0 &&
+                                parcelTrackingFreshnessImpressionCount != 0;
+    hasNoFreshnessSignal =
+        hasNoFreshnessSignal && safetyCheckFreshnessImpressionCount != 0;
+    if (hasNoFreshnessSignal && [self.homeStartDataSource isStartSurface]) {
+      options = segmentation_platform::PredictionOptions::ForCached(true);
+    } else {
+      options = segmentation_platform::PredictionOptions::ForOnDemand(true);
+    }
+    options.can_update_cache_for_future_requests = true;
+  } else {
+    options.on_demand_execution = true;
+  }
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kNumPriceDropsInShoppingList,
+      segmentation_platform::processing::ProcessedValue::FromFloat(-1.0f));
+  // Only users that are eligible for ShoppingList are eligible for the
+  // ShopCard.
+  if (_shoppingService->IsShoppingListEligible()) {
+    __weak MagicStackRankingModel* weakSelf = self;
+    GetAllPriceTrackedBookmarks(
+        _shoppingService, _bookmarkModel,
+        base::BindOnce(^(
+            std::vector<const bookmarks::BookmarkNode*> subscriptions) {
+          inputContext->metadata_args.insert_or_assign(
+              segmentation_platform::kNumPriceDropsInShoppingList,
+              segmentation_platform::processing::ProcessedValue::FromFloat(
+                  [weakSelf getNumPriceDrops:subscriptions]));
+          [weakSelf getClassificationResult:options inputContext:inputContext];
+        }));
+  } else {
+    [self getClassificationResult:options inputContext:inputContext];
+  }
+}
+
+- (int)getNumPriceDrops:
+    (std::vector<const bookmarks::BookmarkNode*>)subscriptions {
+  int num_price_drops = 0;
+  for (const bookmarks::BookmarkNode* bookmark : subscriptions) {
+    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+        power_bookmarks::GetNodePowerBookmarkMeta(_bookmarkModel, bookmark);
+    if (!meta || !meta->has_shopping_specifics()) {
+      continue;
+    }
+    const power_bookmarks::ShoppingSpecifics& specifics =
+        meta->shopping_specifics();
+
+    if (specifics.previous_price().has_amount_micros() &&
+        specifics.previous_price().amount_micros() >= 0) {
+      num_price_drops++;
+    }
+  }
+  return num_price_drops;
+}
+
+- (void)getClassificationResult:
+            (const segmentation_platform::PredictionOptions&)options
+                   inputContext:
+                       (scoped_refptr<segmentation_platform::InputContext>)
+                           inputContext {
+  ranking_fetch_start_time_ = base::TimeTicks::Now();
+  __weak MagicStackRankingModel* weakSelf = self;
+  _segmentationService->GetClassificationResult(
+      segmentation_platform::kIosModuleRankerKey, options, inputContext,
+      base::BindOnce(
+          ^(const segmentation_platform::ClassificationResult& result) {
+            weakSelf.hasReceivedMagicStackResponse = YES;
+            [weakSelf didReceiveSegmentationServiceResult:result];
+          }));
+}
+
+- (void)didReceiveSegmentationServiceResult:
+    (const segmentation_platform::ClassificationResult&)result {
+  if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
+    return;
+  }
+
+  if ([self.homeStartDataSource isStartSurface]) {
+    base::UmaHistogramMediumTimes(
+        kMagicStackStartSegmentationRankingFetchTimeHistogram,
+        base::TimeTicks::Now() - ranking_fetch_start_time_);
+  } else {
+    base::UmaHistogramMediumTimes(
+        kMagicStackNTPSegmentationRankingFetchTimeHistogram,
+        base::TimeTicks::Now() - ranking_fetch_start_time_);
+  }
+
+  NSMutableArray* magicStackOrder = [NSMutableArray array];
+  for (const std::string& label : result.ordered_labels) {
+    if (label == segmentation_platform::kMostVisitedTiles) {
+      [magicStackOrder
+          addObject:@(int(ContentSuggestionsModuleType::kMostVisited))];
+    } else if (label == segmentation_platform::kShortcuts) {
+      [magicStackOrder
+          addObject:@(int(ContentSuggestionsModuleType::kShortcuts))];
+    } else if (label == segmentation_platform::kSafetyCheck) {
+      [magicStackOrder
+          addObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))];
+    } else if (label == segmentation_platform::kTabResumption) {
+      [magicStackOrder
+          addObject:@(int(ContentSuggestionsModuleType::kTabResumption))];
+    } else if (label == segmentation_platform::kParcelTracking) {
+      // TODO(crbug.com/391002352): Remove kParcelTracking entirely.
+    } else if (label == segmentation_platform::kShopCard) {
+      [magicStackOrder
+          addObject:@(int(ContentSuggestionsModuleType::kShopCard))];
+    }
+  }
+
+  _magicStackOrderFromSegmentationReceived = YES;
+  _magicStackOrderFromSegmentation = magicStackOrder;
+  _latestMagicStackConfigOrder = [self latestMagicStackConfigRank];
+  [self.delegate magicStackRankingModel:self
+               didGetLatestRankingOrder:_latestMagicStackConfigOrder];
+}
+
+- (NSArray<MagicStackModule*>*)latestMagicStackConfigRank {
+  NSMutableArray<MagicStackModule*>* magicStackOrder = [NSMutableArray array];
+  if (PromoteShopCardToFrontOfStack() && _shopCardMediator &&
+      _shopCardMediator.shopCardItemToShow) {
+    [magicStackOrder addObject:_shopCardMediator.shopCardItemToShow];
+  }
+
+  // Always add Set Up List at the front.
+  if ([_setUpListMediator shouldShowSetUpList]) {
+    [magicStackOrder addObjectsFromArray:[_setUpListMediator setUpListConfigs]];
+  }
+  // Currently assume ephemeral cards are always added to the front of the Magic
+  // Stack when it can show.
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::
+              kSegmentationPlatformEphemeralCardRanker)) {
+    switch (_ephemeralCardToShow) {
+      case ContentSuggestionsModuleType::kPriceTrackingPromo:
+        if (_priceTrackingPromoMediator &&
+            _priceTrackingPromoMediator.priceTrackingPromoItemToShow) {
+          [magicStackOrder addObject:_priceTrackingPromoMediator
+                                         .priceTrackingPromoItemToShow];
+        }
+        break;
+      case ContentSuggestionsModuleType::kSendTabPromo:
+        if (send_tab_to_self::
+                IsSendTabIOSPushNotificationsEnabledWithMagicStackCard() &&
+            _sendTabPromoMediator &&
+            _sendTabPromoMediator.sendTabPromoItemToShow) {
+          [magicStackOrder
+              addObject:_sendTabPromoMediator.sendTabPromoItemToShow];
+        }
+        break;
+      case ContentSuggestionsModuleType::kTips:
+      case ContentSuggestionsModuleType::kTipsWithProductImage: {
+        if (IsTipsMagicStackEnabled() && _tipsMediator && _tipsMediator.state) {
+          [magicStackOrder addObject:_tipsMediator.state];
+        }
+        break;
+      }
+      case ContentSuggestionsModuleType::kAppBundlePromo:
+        if (segmentation_platform::features::
+                IsAppBundlePromoEphemeralCardEnabled() &&
+            _appBundlePromoMediator && _appBundlePromoMediator.config) {
+          [magicStackOrder addObject:_appBundlePromoMediator.config];
+        }
+        break;
+      case ContentSuggestionsModuleType::kDefaultBrowser:
+        if (segmentation_platform::features::
+                IsDefaultBrowserMagicStackEnabled() &&
+            _defaultBrowserMediator) {
+          [magicStackOrder addObject:_defaultBrowserMediator.config];
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  for (NSNumber* moduleNumber in _magicStackOrderFromSegmentation) {
+    ContentSuggestionsModuleType moduleType =
+        (ContentSuggestionsModuleType)[moduleNumber intValue];
+    switch (moduleType) {
+      case ContentSuggestionsModuleType::kMostVisited: {
+        break;
+      }
+      case ContentSuggestionsModuleType::kTabResumption:
+        if (![self shouldShowTabResumption]) {
+          break;
+        }
+        if (PromoteTabResumptionShopCardToFrontOfStack()) {
+          [magicStackOrder insertObject:_tabResumptionMediator.itemConfig
+                                atIndex:0];
+        } else {
+          [magicStackOrder addObject:_tabResumptionMediator.itemConfig];
+        }
+        break;
+      case ContentSuggestionsModuleType::kSafetyCheck: {
+        // Handles adding Safety Check to Magic Stack. Disables/hides if:
+        // - Manually disabled or disabled via preferences.
+        // - No current or previous issues, to avoid consistently displaying the
+        // "All Safe" state and taking up carousel space for other modules.
+        // - Irrelevant modules are hidden and it's not the first ranked module.
+        if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
+                _prefService)) {
+          base::UmaHistogramEnumeration(
+              kIOSSafetyCheckMagicStackHiddenReason,
+              IOSSafetyCheckHiddenReason::kManuallyDisabled);
+          break;
+        }
+
+        int previousIssuesCount = _prefService->GetInteger(
+            prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount);
+
+        int issuesCount =
+            [_safetyCheckMediator.safetyCheckState numberOfIssues];
+
+        BOOL hidden = ShouldHideSafetyCheckModuleIfNoIssues() &&
+                      (previousIssuesCount == 0) &&
+                      (previousIssuesCount == issuesCount);
+
+        if (hidden) {
+          base::UmaHistogramEnumeration(kIOSSafetyCheckMagicStackHiddenReason,
+                                        IOSSafetyCheckHiddenReason::kNoIssues);
+          break;
+        }
+
+        [magicStackOrder addObject:_safetyCheckMediator.safetyCheckState];
+
+        break;
+      }
+      case ContentSuggestionsModuleType::kShortcuts:
+        [magicStackOrder addObject:_shortcutsMediator.shortcutsConfig];
+        break;
+      case ContentSuggestionsModuleType::kShopCard:
+        if (!PromoteShopCardToFrontOfStack() && _shopCardMediator &&
+            _shopCardMediator.shopCardItemToShow) {
+          [magicStackOrder addObject:_shopCardMediator.shopCardItemToShow];
+        }
+        break;
+      default:
+        // These module types should not have been added by the logic
+        // receiving the order list from Segmentation.
+        NOTREACHED();
+    }
+  }
+  return magicStackOrder;
+}
+
+// Returns NO if client is expecting the order from Segmentation and it has not
+// returned yet.
+- (BOOL)isMagicStackOrderReady {
+  return _magicStackOrderFromSegmentationReceived;
+}
+
+// Shows the tab resumption tile with the given `item` configuration.
+- (void)showTabResumptionWithItem:(TabResumptionItem*)item {
+  if (tab_resumption_prefs::IsLastOpenedURL(item.tabURL, _prefService)) {
+    return;
+  }
+
+  if (![self isMagicStackOrderReady]) {
+    return;
+  }
+  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
+  NSUInteger index = [rank indexOfObject:item];
+  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
+}
+
+// Returns YES if the tab resumption module should added into the Magic Stack.
+- (BOOL)shouldShowTabResumption {
+  return !tab_resumption_prefs::IsTabResumptionDisabled(_prefService) &&
+         _tabResumptionMediator.itemConfig;
+}
+
+// Returns `YES` if Lens is enabled.
+- (BOOL)isLensEnabled {
+  bool isGoogleDefaultSearchProvider =
+      search::DefaultSearchProviderIsGoogle(_templateURLService);
+
+  return lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+      LensEntrypoint::NewTabPage, isGoogleDefaultSearchProvider);
+}
+
+#pragma mark - Testing category methods
+- (int)getNumPriceDropsForTesting:
+    (std::vector<const bookmarks::BookmarkNode*>)subscriptions {
+  return [self getNumPriceDrops:subscriptions];
+}
+
+@end

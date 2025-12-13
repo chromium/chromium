@@ -255,8 +255,8 @@ test(function() {
   assert_equals(textFormats.length, 1);
   assert_equals(textFormats[0].rangeStart, 0);
   assert_equals(textFormats[0].rangeEnd, 3);
-  assert_equals(textFormats[0].underlineStyle, "Solid");
-  assert_equals(textFormats[0].underlineThickness, "Thin");
+  assert_equals(textFormats[0].underlineStyle, "solid");
+  assert_equals(textFormats[0].underlineThickness, "thin");
 
   textInputController.setComposition("");
   assert_equals(textFormats.length, 0);
@@ -388,7 +388,7 @@ test(function() {
   textInputController.setComposition("foo");
   assert_equals(test.innerHTML, "FOO");
   editContext.updateText(0, 1, "h");
-  assert_equals(editContext.text, "hoo");
+  assert_equals(editContext.text, "h");
   editContext.updateText(0, 3, "bar");
   assert_equals(editContext.text, "bar");
 }, 'Testing EditContext TextChange');
@@ -455,18 +455,18 @@ test(function() {
   textInputController.setComposition("foo");
   assert_equals(test.innerHTML, "FOO");
   editContext.updateText(0, 1, "h");
-  assert_equals(editContext.text, "hoo");
+  assert_equals(editContext.text, "h");
   editContext.updateText(0, 3, "bar");
   assert_equals(editContext.text, "bar");
   textInputController.insertText("bar");
-  assert_equals(editContext.text, "bar");
+  assert_equals(editContext.text, "barbar");
   editContext.updateSelection(0, 0);
   assert_equals(editContext.selectionStart, 0);
   assert_equals(editContext.selectionEnd, 0);
   textInputController.setComposition("foo");
-  assert_equals(editContext.text, "foobar");
+  assert_equals(editContext.text, "foobarbar");
   textInputController.insertText("foo");
-  assert_equals(editContext.text, "foobar");
+  assert_equals(editContext.text, "foobarbar");
 }, 'Testing EditContext Text And Selection Change');
 
 test(function() {
@@ -752,8 +752,8 @@ test(function(){
   assert_false(internals.isUseCounted(document, kEditContextTextFormatUnderlineThickness));
 
   assert_equals(textFormats.length, 1);
-  assert_equals(textFormats[0].underlineStyle, "Solid");
-  assert_equals(textFormats[0].underlineThickness, "Thin");
+  assert_equals(textFormats[0].underlineStyle, "solid");
+  assert_equals(textFormats[0].underlineThickness, "thin");
   assert_true(internals.isUseCounted(document, kEditContextTextFormatUnderlineStyle));
   assert_true(internals.isUseCounted(document, kEditContextTextFormatUnderlineThickness));
 
@@ -836,6 +836,106 @@ test(function(){
 
   test.remove();
 }, 'Testing UseCounter for updateSelection during an active composition.');
+
+test(function () {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+
+  let compositionStartData = [];
+  let compositionEndData = [];
+  editContext.addEventListener("compositionstart", e => {
+    compositionStartData.push(e.data);
+  });
+  editContext.addEventListener("compositionend", e => {
+    compositionEndData.push(e.data);
+  });
+
+  test.editContext = editContext;
+  test.focus();
+  editContext.updateText(0, editContext.text.length, "abcd");
+  editContext.updateSelection(2, 2);
+  textInputController.setComposition("foo");
+  assert_equals(editContext.text, "abfoocd");
+  assert_array_equals(compositionStartData, ["foo"], "Should get compositionstart after setting non-empty composition");
+
+  editContext.updateSelection(1, 1);
+  assert_equals(editContext.text, "abcd");
+  assert_array_equals(compositionEndData, [""], "Should get compositionend when setting empty composition");
+  assert_equals(editContext.selectionStart, 1);
+  assert_equals(editContext.selectionEnd, 1);
+}, 'Calling selectionUpdate during active composition should abort the composition.');
+
+test(function () {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+
+  let compositionStartData = [];
+  let compositionEndData = [];
+  editContext.addEventListener("compositionstart", e => {
+    compositionStartData.push(e.data);
+  });
+  editContext.addEventListener("compositionend", e => {
+    compositionEndData.push(e.data);
+  });
+
+  test.editContext = editContext;
+  test.focus();
+
+  // Case 1: When composition is not active
+  editContext.updateText(0, editContext.text.length, "abcd");
+  editContext.updateSelection(1, 2);
+  assert_array_equals(compositionStartData, [], "Composition should not start");
+
+  // Case 1.1: Update text range after current selection range
+  editContext.updateText(3, 4, "EF");
+  assert_equals(editContext.text, "abcEF");
+  assert_equals(editContext.selectionStart, 1);
+  assert_equals(editContext.selectionEnd, 2);
+
+  // Case 1.2: Update text range before current selection range
+  editContext.updateText(0, 1, "GH");
+  assert_equals(editContext.text, "GHbcEF");
+  assert_equals(editContext.selectionStart, 2);
+  assert_equals(editContext.selectionEnd, 3);
+
+  // Case 1.3: Update text range overlaps current selection range
+  editContext.updateText(2, 4, "IJKL");
+  assert_equals(editContext.text, "GHIJKLEF");
+  assert_equals(editContext.selectionStart, 2);
+  assert_equals(editContext.selectionEnd, 6);
+
+  // Case 2: When composition is active
+  editContext.updateText(0, editContext.text.length, "abcd");
+  editContext.updateSelection(2, 2);
+  textInputController.setComposition("foo");
+  assert_equals(editContext.text, "abfoocd");
+  assert_equals(editContext.selectionStart, 5);
+  assert_equals(editContext.selectionEnd, 5);
+  assert_array_equals(compositionStartData, ["foo"], "Should get compositionstart after setting non-empty composition");
+
+  // Case 2.1: Update text range after current composition range
+  editContext.updateText(5, 5, "PQR");
+  assert_equals(editContext.text, "abfooPQRcd");
+  assert_equals(editContext.selectionStart, 5);
+  assert_equals(editContext.selectionEnd, 5);
+  assert_array_equals(compositionEndData, [], "Composition should not end");
+
+  // Case 2.2: Update text range before current composition range
+  editContext.updateText(1, 1, "STU");
+  assert_equals(editContext.text, "aSTUbfooPQRcd");
+  assert_equals(editContext.selectionStart, 8);
+  assert_equals(editContext.selectionEnd, 8);
+  assert_array_equals(compositionEndData, [], "Composition should not end");
+
+  // Case 2.3: Update text range overlaps with composition range
+  editContext.updateText(6, 6, "WXYZ");
+  assert_equals(editContext.text, "aSTUbPWXYZQRcd");
+  assert_equals(editContext.selectionStart, 10);
+  assert_equals(editContext.selectionEnd, 10);
+  assert_array_equals(compositionEndData, [""], "Should get compositionend when setting empty composition");
+}, 'Tests composition state on calling updateText during active composition.');
 </script>
 </body>
 </html>

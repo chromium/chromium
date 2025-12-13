@@ -28,7 +28,7 @@ base::TimeTicks MotionEvent::GetLatestEventTime() const {
   return GetEventTime();
 }
 
-base::TimeTicks MotionEvent::GetDownTime() const {
+base::TimeTicks MotionEvent::GetRawDownTime() const {
   NOTREACHED();
 }
 
@@ -36,6 +36,13 @@ float MotionEvent::GetHistoricalTouchMajor(size_t pointer_index,
                                            size_t historical_index) const {
   NOTIMPLEMENTED();
   return 0.f;
+}
+
+bool MotionEvent::GetHistoricalHasNativeTouchMajor(
+    size_t pointer_index,
+    size_t historical_index) const {
+  NOTIMPLEMENTED();
+  return true;
 }
 
 float MotionEvent::GetHistoricalX(size_t pointer_index,
@@ -73,8 +80,8 @@ bool MotionEvent::IsLatestEventTimeResampled() const {
   return false;
 }
 
-std::unique_ptr<MotionEvent> MotionEvent::Clone() const {
-  return MotionEventGeneric::CloneEvent(*this);
+std::unique_ptr<MotionEvent> MotionEvent::Clone(bool with_history) const {
+  return MotionEventGeneric::CloneEvent(*this, with_history);
 }
 
 std::unique_ptr<MotionEvent> MotionEvent::Cancel() const {

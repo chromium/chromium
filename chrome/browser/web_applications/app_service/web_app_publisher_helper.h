@@ -36,7 +36,7 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/webapps/common/web_app_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_notifications.h"

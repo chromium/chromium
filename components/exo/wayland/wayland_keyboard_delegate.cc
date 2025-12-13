@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/wayland/wayland_keyboard_delegate.h"
 
 #include <wayland-server-core.h>
@@ -15,6 +10,7 @@
 #include <cstring>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
@@ -120,8 +116,10 @@ void WaylandKeyboardDelegate::OnKeyboardLayoutUpdated(std::string_view keymap) {
           std::move(shared_keymap_region));
   DCHECK(shared_keymap.IsValid());
 
-  std::memcpy(shared_keymap.memory(), keymap.data(), keymap.size());
-  static_cast<uint8_t*>(shared_keymap.memory())[keymap.size()] = '\0';
+  UNSAFE_TODO(
+      std::memcpy(shared_keymap.memory(), keymap.data(), keymap.size()));
+  UNSAFE_TODO(static_cast<uint8_t*>(shared_keymap.memory())[keymap.size()]) =
+      '\0';
   wl_keyboard_send_keymap(keyboard_resource_, WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
                           platform_shared_keymap.GetPlatformHandle().fd,
                           keymap.size() + 1);

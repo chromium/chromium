@@ -60,19 +60,19 @@ enum RTCIceTcpCandidateType {
     Exposed=Window
 ] interface RTCIceCandidate {
     [CallWith=ExecutionContext, RaisesException] constructor(optional RTCIceCandidateInit candidateInitDict = {});
-    [HighEntropy=Direct, MeasureAs=RTCIceCandidateCandidate] readonly attribute DOMString candidate;
+    [MeasureAs=RTCIceCandidateCandidate] readonly attribute DOMString candidate;
     readonly attribute DOMString? sdpMid;
     readonly attribute unsigned short? sdpMLineIndex;
     readonly attribute DOMString? foundation;
     readonly attribute RTCIceComponent? component;
     readonly attribute unsigned long? priority;
-    [HighEntropy=Direct, MeasureAs=RTCIceCandidateAddress] readonly attribute DOMString? address;
+    [MeasureAs=RTCIceCandidateAddress] readonly attribute DOMString? address;
     readonly attribute RTCIceProtocol? protocol;
-    [HighEntropy=Direct, MeasureAs=RTCIceCandidatePort] readonly attribute unsigned short? port;
+    [MeasureAs=RTCIceCandidatePort] readonly attribute unsigned short? port;
     readonly attribute RTCIceCandidateType? type;
     readonly attribute RTCIceTcpCandidateType? tcpType;
-    [HighEntropy=Direct, MeasureAs=RTCIceCandidateRelatedAddress] readonly attribute DOMString? relatedAddress;
-    [HighEntropy=Direct, MeasureAs=RTCIceCandidateRelatedPort] readonly attribute unsigned short? relatedPort;
+    [MeasureAs=RTCIceCandidateRelatedAddress] readonly attribute DOMString? relatedAddress;
+    [MeasureAs=RTCIceCandidateRelatedPort] readonly attribute unsigned short? relatedPort;
     readonly attribute DOMString? usernameFragment;
     readonly attribute RTCIceServerTransportProtocol? relayProtocol;
     readonly attribute DOMString? url;

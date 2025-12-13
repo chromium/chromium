@@ -10,13 +10,14 @@
 #include <bit>
 #include <tuple>
 
+#include "base/containers/flat_set.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
+#include "flatland_sysmem_buffer_collection.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/ozone/platform/flatland/flatland_surface_factory.h"
 #include "ui/ozone/platform/flatland/flatland_sysmem_native_pixmap.h"
 
@@ -28,52 +29,33 @@ size_t RoundUp(size_t value, size_t alignment) {
   return ((value + alignment - 1) / alignment) * alignment;
 }
 
-VkFormat VkFormatForBufferFormat(gfx::BufferFormat buffer_format) {
-  switch (buffer_format) {
-    case gfx::BufferFormat::YVU_420:
-      return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
-
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
-
-    case gfx::BufferFormat::R_8:
-      return VK_FORMAT_R8_UNORM;
-
-    case gfx::BufferFormat::RG_88:
-      return VK_FORMAT_R8G8_UNORM;
-
-    case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_8888:
-      return VK_FORMAT_B8G8R8A8_UNORM;
-
-    case gfx::BufferFormat::RGBA_8888:
-    case gfx::BufferFormat::RGBX_8888:
-      return VK_FORMAT_R8G8B8A8_UNORM;
-
-    default:
-      NOTREACHED();
+VkFormat ToTextureVkFormat(viz::SharedImageFormat format) {
+  if (format == viz::MultiPlaneFormat::kYV12) {
+    return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
+    return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kR_8) {
+    return VK_FORMAT_R8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRG_88) {
+    return VK_FORMAT_R8G8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888 ||
+             format == viz::SinglePlaneFormat::kBGRX_8888) {
+    return VK_FORMAT_B8G8R8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+             format == viz::SinglePlaneFormat::kRGBX_8888) {
+    return VK_FORMAT_R8G8B8A8_UNORM;
+  } else {
+    NOTREACHED();
   }
 }
 
-size_t GetBytesPerPixel(gfx::BufferFormat buffer_format) {
-  switch (buffer_format) {
-    case gfx::BufferFormat::YVU_420:
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-    case gfx::BufferFormat::R_8:
-      return 1U;
-
-    case gfx::BufferFormat::RG_88:
-      return 2U;
-
-    case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_8888:
-    case gfx::BufferFormat::RGBA_8888:
-    case gfx::BufferFormat::RGBX_8888:
-      return 4U;
-
-    default:
-      NOTREACHED();
+size_t GetBytesPerPixel(viz::SharedImageFormat format) {
+  if (format.is_multi_plane()) {
+    CHECK(format == viz::MultiPlaneFormat::kNV12 ||
+          format == viz::MultiPlaneFormat::kYV12);
+    return 1U;
   }
+  return format.BytesPerPixel();
 }
 
 bool IsYuvVkFormat(VkFormat format) {
@@ -225,8 +207,6 @@ bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
   switch (usage) {
     case gfx::BufferUsage::SCANOUT:
     case gfx::BufferUsage::GPU_READ:
-      break;
-
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
       break;
@@ -237,7 +217,33 @@ bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
   return true;
 }
 
-FlatlandSysmemBufferCollection::FlatlandSysmemBufferCollection() = default;
+// static
+bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
+    viz::SharedImageFormat format,
+    NativePixmapUsageSet usage) {
+  base::flat_set<viz::SharedImageFormat> kSupportedFormats =
+      base::MakeFlatSet<viz::SharedImageFormat>(std::vector(
+          {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
+           viz::SinglePlaneFormat::kRGBA_8888,
+           viz::SinglePlaneFormat::kBGRA_8888,
+           viz::SinglePlaneFormat::kRGBX_8888,
+           viz::SinglePlaneFormat::kBGRX_8888, viz::MultiPlaneFormat::kNV12}));
+  if (!kSupportedFormats.contains(format)) {
+    return false;
+  }
+  // Only supported native pixmap usages.
+  if (usage == NativePixmapBufferUsage::kScanout ||
+      usage == NativePixmapBufferUsage::kGpuRead ||
+      usage == NativePixmapBufferUsage::kScanoutCpuReadWrite ||
+      usage == NativePixmapBufferUsage::kGpuReadCpuReadWrite) {
+    return true;
+  }
+  return false;
+}
+
+FlatlandSysmemBufferCollection::FlatlandSysmemBufferCollection()
+    : base::RefCountedDeleteOnSequence<FlatlandSysmemBufferCollection>(
+          base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 bool FlatlandSysmemBufferCollection::Initialize(
     fuchsia::sysmem2::Allocator_Sync* sysmem_allocator,
@@ -246,8 +252,8 @@ bool FlatlandSysmemBufferCollection::Initialize(
     zx::eventpair handle,
     zx::channel sysmem_token,
     gfx::Size size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
+    viz::SharedImageFormat format,
+    NativePixmapUsageSet usage,
     VkDevice vk_device,
     size_t min_buffer_count,
     bool register_with_flatland_allocator) {
@@ -307,11 +313,11 @@ bool FlatlandSysmemBufferCollection::Initialize(
 
 void FlatlandSysmemBufferCollection::InitializeForTesting(
     zx::eventpair handle,
-    gfx::BufferUsage usage) {
+    NativePixmapUsageSet usage) {
   handle_ = std::move(handle);
   id_ = base::GetKoid(handle_).value();
 
-  if (usage == gfx::BufferUsage::SCANOUT) {
+  if (usage == NativePixmapBufferUsage::kScanout) {
     // Scanout buffers need to be registered with flatland.
     fuchsia::ui::composition::BufferCollectionExportToken export_token;
     zx::eventpair::create(0, &export_token.value,
@@ -360,7 +366,7 @@ FlatlandSysmemBufferCollection::CreateNativePixmap(
                              std::move(main_plane_vmo));
 
   // For YUV images add a second plane.
-  if (format_ == gfx::BufferFormat::YUV_420_BIPLANAR) {
+  if (format_ == viz::MultiPlaneFormat::kNV12) {
     size_t uv_plane_offset = plane_offset + plane_size;
     size_t uv_plane_size = plane_size / 2;
 
@@ -568,9 +574,7 @@ bool FlatlandSysmemBufferCollection::InitializeInternal(
 
     fuchsia::ui::composition::RegisterBufferCollectionArgs args;
     args.set_export_token(std::move(export_token));
-    args.set_buffer_collection_token(
-        fuchsia::sysmem::BufferCollectionTokenHandle(
-            collection_token_for_flatland.TakeChannel()));
+    args.set_buffer_collection_token2(std::move(collection_token_for_flatland));
     args.set_usage(
         fuchsia::ui::composition::RegisterBufferCollectionUsage::DEFAULT);
     flatland_allocator->RegisterBufferCollection(
@@ -671,7 +675,7 @@ void FlatlandSysmemBufferCollection::InitializeImageCreateInfo(
   *vk_image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
   vk_image_info->flags = is_protected_ ? VK_IMAGE_CREATE_PROTECTED_BIT : 0u;
   vk_image_info->imageType = VK_IMAGE_TYPE_2D;
-  vk_image_info->format = VkFormatForBufferFormat(format_);
+  vk_image_info->format = ToTextureVkFormat(format_);
   vk_image_info->extent = VkExtent3D{static_cast<uint32_t>(size.width()),
                                      static_cast<uint32_t>(size.height()), 1};
   vk_image_info->mipLevels = 1;
@@ -683,7 +687,7 @@ void FlatlandSysmemBufferCollection::InitializeImageCreateInfo(
   vk_image_info->usage = VK_IMAGE_USAGE_SAMPLED_BIT |
                          VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                          VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-  if (usage_ == gfx::BufferUsage::SCANOUT) {
+  if (usage_.Has(NativePixmapUsage::kRendering)) {
     vk_image_info->usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
   }
 

@@ -21,7 +21,6 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -38,11 +37,9 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -52,10 +49,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
@@ -70,6 +67,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.DataType;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
@@ -78,6 +76,7 @@ import java.util.Set;
 /** Test for ManageSyncSettings with FakeSyncServiceImpl. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -98,16 +97,6 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
             new SettingsActivityTestRule<>(ManageSyncSettings.class);
 
     private SettingsActivity mSettingsActivity;
-
-    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
-
-    @Before
-    public void setUp() {
-        // Prevent "GmsCore outdated" error from being exposed in bots with old version.
-        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
-                .thenReturn(false);
-    }
 
     /** Test that triggering OnPassphraseAccepted dismisses PassphraseDialogFragment. */
     @Test
@@ -326,6 +315,45 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
 
     @Test
     @LargeTest
+    public void testIdentityErrorCardActionForBookmarksLimitExceededError() throws Exception {
+        final FakeSyncServiceImpl fakeSyncService =
+                (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
+        fakeSyncService.setBookmarksLimitExceeded(true);
+
+        // Sign in and open settings.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+
+        // The error card exists.
+        onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
+
+        Intents.init();
+        // Stub all external intents.
+        intending(IntentMatchers.anyIntent())
+                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+        // Mimic the user tapping on the error card's button.
+        onView(withId(R.id.signin_settings_card_button)).perform(click());
+
+        intended(
+                IntentMatchers.hasDataString(
+                        startsWith("https://support.google.com/chrome/answer/165139")));
+
+        // The error card should be gone now.
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            UserActionableError.NONE, fakeSyncService.getUserActionableError());
+                });
+
+        Intents.release();
+    }
+
+    @Test
+    @LargeTest
     @Feature({"Sync"})
     public void testTrustedVaultKeyRetrievalForSignedInUsers() {
         // TODO(crbug.com/334124078): Simplify the test using FakeTrustedVaultClientBackend once the
@@ -359,6 +387,8 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
+    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testSignOutUnsavedDataDialogShown() {
         final FakeSyncServiceImpl fakeSyncService =
                 (FakeSyncServiceImpl) mSyncTestRule.getSyncService();

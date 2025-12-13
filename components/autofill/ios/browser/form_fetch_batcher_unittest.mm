@@ -80,8 +80,7 @@ class Section;
                       inFrame:(web::WebFrame*)frame {
 }
 - (void)handleParsedForms:
-            (const std::vector<
-                raw_ptr<autofill::FormStructure, VectorExperimental>>&)forms
+            (const std::vector<raw_ref<const autofill::FormStructure>>&)forms
                   inFrame:(web::WebFrame*)frame {
 }
 - (void)fillFormDataPredictions:

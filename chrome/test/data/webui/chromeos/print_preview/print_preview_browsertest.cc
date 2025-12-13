@@ -455,6 +455,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, ScalingPdf) {
   RunTestCase("ScalingPdf");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest,
+                       ScalingPdfAlignPdfDefaultPrintSettingsWithHTML) {
+  RunTestCase("ScalingPdfAlignPdfDefaultPrintSettingsWithHTML");
+}
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, Rasterize) {
   RunTestCase("Rasterize");
 }
@@ -1338,4 +1343,8 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
 IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
                        DestinationPolicyAllowsSingleSettingValue) {
   RunTestCase("DestinationPolicyAllowsSingleSettingValue");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest, DuplexSetting) {
+  RunTestCase("DuplexSetting");
 }

@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/sessions/model/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
@@ -72,6 +73,9 @@ class TabsClosureUtilTest : public PlatformTest {
                               FakeTabRestoreService::GetTestingFactory());
     builder.AddTestingFactory(TipsManagerIOSFactory::GetInstance(),
                               TipsManagerIOSFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
 
     scene_state_ = OCMClassMock([SceneState class]);
@@ -152,8 +156,8 @@ class TabsClosureUtilTest : public PlatformTest {
   __strong SceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
 
-  raw_ptr<web::WebState> web_state0_;
-  raw_ptr<web::WebState> web_state1_;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state0_;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state1_;
 };
 
 // Tests `GetTabsInfoForCache` with several time ranges.

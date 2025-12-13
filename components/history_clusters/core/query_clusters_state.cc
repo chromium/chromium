@@ -150,6 +150,8 @@ void QueryClustersState::GetUngroupedVisits(
   history::QueryOptions options;
   options.end_time = continuation_params_.continuation_time;
   options.begin_time = new_continuation_params.continuation_time;
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
+  options.include_actor_visits = true;
 
   // No need to use BrowsingHistoryService, because history is now fully synced.
   history_service_->GetAnnotatedVisits(

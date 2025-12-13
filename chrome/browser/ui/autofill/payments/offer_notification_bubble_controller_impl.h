@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/actions/action_id.h"
 
 namespace tabs {
 class TabInterface;
@@ -70,14 +71,23 @@ class OfferNotificationBubbleControllerImpl
   // Removes any visible bubble and the omnibox icon.
   void DismissNotification();
 
+  // BubbleControllerBase:
+  void OnBubbleDiscarded() override {}
+  BubbleType GetBubbleType() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
+
  protected:
   explicit OfferNotificationBubbleControllerImpl(
       content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase:
   void OnVisibilityChanged(content::Visibility visibility) override;
-  PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
+  void UpdatePageActionIcon() override;
+#if !BUILDFLAG(IS_ANDROID)
+  std::optional<actions::ActionId> GetActionIdForPageAction() override;
+  bool ShouldShowPageAction() override;
+#endif  //! BUILDFLAG(IS_ANDROID)
 
   // Returns whether the web content associated with this controller is active.
   virtual bool IsWebContentsActive();
@@ -88,6 +98,10 @@ class OfferNotificationBubbleControllerImpl
   friend class OfferNotificationBubbleControllerImplTest;
   friend class OfferNotificationBubbleViewsTestBase;
 
+  // Configures the controller's state for displaying an offer notification.
+  // This includes setting the offer data and the linked card, if any.
+  void SetupOfferNotification(AutofillOfferData offer, const CreditCard* card);
+
   // Hides the bubble if it is visible and resets the bubble shown timestamp.
   // `should_show_icon` decides whether the icon should be visible after the
   // bubble is dismissed.
@@ -97,14 +111,6 @@ class OfferNotificationBubbleControllerImpl
   void SetEventObserverForTesting(ObserverForTest* observer) {
     observer_for_testing_ = observer;
   }
-
-  // This is a helper method for controlling the page action on the new
-  // page actions framework, if the migration is enabled.
-  // Currently, `AutofillBubbleControllerBase::UpdatePageActionIcon` only
-  // updates to the legacy icon.
-  // TODO(crbug.com/402820548): Move this to `AutofillBubbleControllerBase`
-  // once per-PageAction migration feature flags are added.
-  void UpdatePageAction();
 
   // The timestamp that the bubble has been shown. Used to check if the bubble
   // has been shown for longer than kAutofillBubbleSurviveNavigationTime.
@@ -132,6 +138,9 @@ class OfferNotificationBubbleControllerImpl
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
   const raw_ref<tabs::TabInterface> tab_interface_;
+
+  base::WeakPtrFactory<OfferNotificationBubbleControllerImpl> weak_ptr_factory_{
+      this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

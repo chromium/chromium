@@ -73,9 +73,7 @@ constexpr web::ContentWorld kContentWorlds[] = {
 
 // Returns a `FakeTabGroupSyncService`.
 std::unique_ptr<KeyedService> CreateFakeTabGroupSyncService(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) {
   std::unique_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service =
       std::make_unique<tab_groups::FakeTabGroupSyncService>();
 
@@ -83,7 +81,8 @@ std::unique_ptr<KeyedService> CreateFakeTabGroupSyncService(
   std::unique_ptr<tab_groups::TabGroupLocalUpdateObserver>
       local_update_observer =
           std::make_unique<tab_groups::TabGroupLocalUpdateObserver>(
-              browser_list, tab_group_sync_service.get());
+              browser_list, tab_group_sync_service.get(),
+              SessionRestorationServiceFactory::GetForProfile(profile));
 
   std::unique_ptr<tab_groups::IOSTabGroupSyncDelegate> delegate =
       std::make_unique<tab_groups::IOSTabGroupSyncDelegate>(
@@ -120,7 +119,7 @@ void GridMediatorTestClass::SetUp() {
                             TestSessionRestorationService::GetTestingFactory());
   builder.AddTestingFactory(
       tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-      base::BindRepeating(&CreateFakeTabGroupSyncService));
+      base::BindOnce(&CreateFakeTabGroupSyncService));
   builder.AddTestingFactory(TipsManagerIOSFactory::GetInstance(),
                             TipsManagerIOSFactory::GetDefaultFactory());
   profile_ = std::move(builder).Build();

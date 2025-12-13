@@ -52,6 +52,14 @@
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 #include "url/gurl.h"
 
+@interface NSPasteboard (SPI)
+// Sets the pasteboard to expire at the specified date. Tested to exist and work
+// from macOS 12+. This must be called immediately after clearing the pasteboard
+// or else it will not work and will log an error. This is used by WebKit; see
+// https://github.com/WebKit/WebKit/commit/978bbafb7a3ab151703ba7e9694b78e2d63c3fe1
+- (BOOL)_setExpirationDate:(NSDate*)date;
+@end
+
 namespace ui {
 
 namespace {
@@ -117,7 +125,7 @@ Clipboard* Clipboard::Create() {
 // ClipboardMac implementation.
 ClipboardMac::ClipboardMac() {
   DCHECK(CalledOnValidThread());
-  if (base::FeatureList::IsEnabled(features::kClipboardChangeEvent)) {
+  if (base::FeatureList::IsEnabled(features::kPlatformClipboardMonitor)) {
     ClipboardMonitor::GetInstance()->SetNotifier(this);
   }
 }
@@ -487,11 +495,35 @@ void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
+  NSPasteboardContentsOptions pasteboard_options = 0;
   if (privacy_types & Clipboard::PrivacyTypes::kNoCloudClipboard) {
-    WriteUploadCloudClipboard();
+    pasteboard_options |= NSPasteboardContentsCurrentHostOnly;
+  }
+  [pasteboard prepareForNewContentsWithOptions:pasteboard_options];
+
+  if (privacy_types & Clipboard::PrivacyTypes::kNoLocalClipboardHistory) {
+    // One way to not add the pasteboard to the history is to give it an
+    // expiration. For data that has "no history" specified, give it a
+    // restricted lifetime so that the user has time to take action with it.
+    //
+    // WebKit uses this mechanism to implement privacy for data copied from
+    // their ephemeral sessions. They use a lifetime of 8 minutes, derived from
+    // their private browser lock time. The use of 5 minutes here is arbitrary,
+    // but inspired by the rough lifetime that they chose.
+    //
+    // Note that another possible approach is also SPI; in macOS 26+ there
+    // exists a method -[NSPasteboard _setShouldExcludeFromHistory:] which is
+    // more explicitly an "exclude from history" method than the "set an
+    // expiration" method used here. However, it is not available on all macOS
+    // releases that Chromium supports. When Chromium requires macOS 26+, it
+    // might be worthwhile looking into whether that is a better choice.
+    [GetPasteboard()
+        _setExpirationDate:[NSDate dateWithTimeIntervalSinceNow:5 * 60]];
   }
 
-  [pasteboard declareTypes:@[] owner:nil];
+  if (privacy_types & Clipboard::PrivacyTypes::kNoDisplay) {
+    [GetPasteboard() setData:nil forType:kUTTypeConfidentialData];
+  }
 
   DispatchPlatformRepresentations(std::move(platform_representations));
   for (const auto& object : objects) {
@@ -505,9 +537,7 @@ void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
     [pasteboard setString:base::SysUTF8ToNSString(data_src->GetURL()->spec())
                   forType:kUTTypeChromiumSourceUrl];
   }
-  if (privacy_types & Clipboard::PrivacyTypes::kNoDisplay) {
-    WriteConfidentialDataForPassword();
-  }
+
   // If not actively monitoring, notify immediately. Otherwise, when monitoring,
   // the change to the pasteboard's `changeCount` will be detected by
   // `CheckClipboardForChanges` (called by `clipboard_polling_timer_`),
@@ -566,22 +596,6 @@ void ClipboardMac::WriteData(const ClipboardFormatType& format,
                              base::span<const uint8_t> data) {
   [GetPasteboard() setData:[NSData dataWithBytes:data.data() length:data.size()]
                    forType:format.ToNSString()];
-}
-
-void ClipboardMac::WriteClipboardHistory() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
-void ClipboardMac::WriteUploadCloudClipboard() {
-  // Make the pasteboard content current host only.
-  [GetPasteboard()
-      prepareForNewContentsWithOptions:NSPasteboardContentsCurrentHostOnly];
-}
-
-void ClipboardMac::WriteConfidentialDataForPassword() {
-  DCHECK(CalledOnValidThread());
-
-  [GetPasteboard() setData:nil forType:kUTTypeConfidentialData];
 }
 
 // Write an extra flavor that signifies WebKit was the last to modify the

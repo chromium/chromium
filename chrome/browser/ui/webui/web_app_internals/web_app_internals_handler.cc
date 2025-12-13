@@ -22,20 +22,22 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
@@ -62,8 +64,8 @@ constexpr char kShouldGarbageCollectStoragePartitions[] =
     "ShouldGarbageCollectStoragePartitions";
 constexpr char kLockManager[] = "LockManager";
 constexpr char kCommandManager[] = "CommandManager";
+constexpr char kDatabaseLog[] = "DatabaseLog";
 constexpr char kIconErrorLog[] = "IconErrorLog";
-constexpr char kInstallationProcessErrorLog[] = "InstallationProcessErrorLog";
 #if BUILDFLAG(IS_MAC)
 constexpr char kAppShimRegistryLocalStorage[] = "AppShimRegistryLocalStorage";
 #endif
@@ -84,28 +86,33 @@ constexpr char kNeedsRecordWebAppDebugInfo[] =
 base::Value::Dict BuildIndexJson() {
   return base::Value::Dict().Set(
       "Index", base::Value::List()
+                   // App state
                    .Append(kInstalledWebApps)
+#if BUILDFLAG(IS_MAC)
+                   .Append(kAppShimRegistryLocalStorage)
+#endif
+                   // Core component logs.
+                   .Append(kLockManager)
+                   .Append(kCommandManager)
+                   .Append(kDatabaseLog)
+                   .Append(kNavigationCapturing)
+                   .Append(kIconErrorLog)
+                   // Preferences.
                    .Append(kPreinstalledWebAppConfigs)
                    .Append(kUserUninstalledPreinstalledWebAppPrefs)
                    .Append(kWebAppPreferences)
                    .Append(kWebAppIphPreferences)
                    .Append(kWebAppMlPreferences)
                    .Append(kWebAppIphLcPreferences)
+                   // Isolated Web App Systems.
                    .Append(kShouldGarbageCollectStoragePartitions)
-                   .Append(kLockManager)
-                   .Append(kNavigationCapturing)
-                   .Append(kCommandManager)
-                   .Append(kIconErrorLog)
-                   .Append(kInstallationProcessErrorLog)
-#if BUILDFLAG(IS_MAC)
-                   .Append(kAppShimRegistryLocalStorage)
-#endif
                    .Append(kIsolatedWebAppUpdateManager)
                    .Append(kIsolatedWebAppPolicyManager)
                    .Append(kIwaKeyDistributionInfoProvider)
 #if BUILDFLAG(IS_CHROMEOS)
                    .Append(kIwaBundleCacheManager)
 #endif  //  BUILDFLAG(IS_CHROMEOS)
+        // Disk state is at the end because it is populated asynchronously.
                    .Append(kWebAppDirectoryDiskState));
 }
 
@@ -219,6 +226,15 @@ base::Value::Dict BuildCommandManagerJson(web_app::WebAppProvider& provider) {
                                  provider.command_manager().ToDebugValue());
 }
 
+base::Value::Dict BuildDatabaseLogJson(web_app::WebAppProvider& provider) {
+  const web_app::PersistableLog* log =
+      provider.sync_bridge_unsafe().database_log();
+  if (!log) {
+    return base::Value::Dict();
+  }
+  return base::DictValue().Set(kDatabaseLog, log->CloneToList());
+}
+
 base::Value::Dict BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
   base::Value::Dict root;
 
@@ -231,24 +247,6 @@ base::Value::Dict BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
   }
 
   root.Set(kIconErrorLog, base::ToValueList(*error_log));
-
-  return root;
-}
-
-base::Value::Dict BuildInstallProcessErrorLogJson(
-    web_app::WebAppProvider& provider) {
-  base::Value::Dict root;
-
-  const web_app::WebAppInstallManager::ErrorLog* error_log =
-      provider.install_manager().error_log();
-
-  if (!error_log) {
-    root.Set(kInstallationProcessErrorLog, kNeedsRecordWebAppDebugInfo);
-    return root;
-  }
-
-  root.Set(kInstallationProcessErrorLog,
-           base::ToValueList(*error_log, &base::Value::Clone));
 
   return root;
 }
@@ -341,28 +339,33 @@ void WebAppInternalsHandler::BuildDebugInfo(
   base::Value::List root =
       base::Value::List()
           .Append(BuildIndexJson())
+          // App state
           .Append(BuildInstalledWebAppsJson(*provider))
+#if BUILDFLAG(IS_MAC)
+          .Append(BuildAppShimRegistryLocalStorageJson())
+#endif
+          // Core components
+          .Append(BuildLockManagerJson(*provider))
+          .Append(BuildNavigationCapturingLog(*provider))
+          .Append(BuildCommandManagerJson(*provider))
+          .Append(BuildDatabaseLogJson(*provider))
+          .Append(BuildIconErrorLogJson(*provider))
+          // Preferences
           .Append(BuildPreinstalledWebAppConfigsJson(*provider))
           .Append(BuildUserUninstalledPreinstalledWebAppPrefsJson(profile))
           .Append(BuildWebAppsPrefsJson(profile))
           .Append(BuildWebAppIphPrefsJson(profile))
           .Append(BuildWebAppMlPrefsJson(profile))
           .Append(BuildWebAppLinkCapturingIphPrefsJson(profile))
+          // Isolated Web App Systems.
           .Append(BuildShouldGarbageCollectStoragePartitionsPrefsJson(profile))
-          .Append(BuildLockManagerJson(*provider))
-          .Append(BuildNavigationCapturingLog(*provider))
-          .Append(BuildCommandManagerJson(*provider))
-          .Append(BuildIconErrorLogJson(*provider))
-          .Append(BuildInstallProcessErrorLogJson(*provider))
-#if BUILDFLAG(IS_MAC)
-          .Append(BuildAppShimRegistryLocalStorageJson())
-#endif
           .Append(BuildIsolatedWebAppUpdaterManagerJson(*provider))
           .Append(BuildIsolatedWebAppPolicyManagerJson(*provider))
 #if BUILDFLAG(IS_CHROMEOS)
           .Append(BuildIwaCacheManagerJson(*provider))
 #endif  //  BUILDFLAG(IS_CHROMEOS)
           .Append(BuildIwaKeyDistributionInfoProviderJson());
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson,
@@ -377,8 +380,11 @@ WebAppInternalsHandler::WebAppInternalsHandler(
     : web_ui_(raw_ref<content::WebUI>::from_ptr(web_ui)),
       profile_(raw_ref<Profile>::from_ptr(Profile::FromBrowserContext(
           web_ui_->GetWebContents()->GetBrowserContext()))),
-      receiver_(this, std::move(receiver)),
-      iwa_handler_(*web_ui_, *profile_) {}
+      receiver_(this, std::move(receiver)) {
+  if (content::AreIsolatedWebAppsEnabled(&*profile_)) {
+    iwa_handler_.emplace(*web_ui_, *profile_);
+  }
+}
 
 WebAppInternalsHandler::~WebAppInternalsHandler() = default;
 
@@ -402,88 +408,124 @@ void WebAppInternalsHandler::GetDebugInfoAsJsonString(
 void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
     const GURL& url,
     InstallIsolatedWebAppFromDevProxyCallback callback) {
-  iwa_handler_.InstallIsolatedWebAppFromDevProxy(url, std::move(callback));
+  if (iwa_handler_) {
+    iwa_handler_->InstallIsolatedWebAppFromDevProxy(url, std::move(callback));
+  }
 }
 
 void WebAppInternalsHandler::ParseUpdateManifestFromUrl(
     const GURL& update_manifest_url,
     ParseUpdateManifestFromUrlCallback callback) {
-  iwa_handler_.ParseUpdateManifestFromUrl(update_manifest_url,
-                                          std::move(callback));
+  if (iwa_handler_) {
+    iwa_handler_->ParseUpdateManifestFromUrl(update_manifest_url,
+                                             std::move(callback));
+  }
 }
 
 void WebAppInternalsHandler::InstallIsolatedWebAppFromBundleUrl(
     mojom::InstallFromBundleUrlParamsPtr params,
     InstallIsolatedWebAppFromBundleUrlCallback callback) {
-  iwa_handler_.InstallIsolatedWebAppFromBundleUrl(std::move(params),
-                                                  std::move(callback));
+  if (iwa_handler_) {
+    iwa_handler_->InstallIsolatedWebAppFromBundleUrl(std::move(params),
+                                                     std::move(callback));
+  }
 }
 
 void WebAppInternalsHandler::SelectFileAndInstallIsolatedWebAppFromDevBundle(
     SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback) {
-  iwa_handler_.SelectFileAndInstallIsolatedWebAppFromDevBundle(
-      std::move(callback));
+  if (iwa_handler_) {
+    iwa_handler_->SelectFileAndInstallIsolatedWebAppFromDevBundle(
+        std::move(callback));
+  }
 }
 
 void WebAppInternalsHandler::SelectFileAndUpdateIsolatedWebAppFromDevBundle(
     const webapps::AppId& app_id,
     SelectFileAndUpdateIsolatedWebAppFromDevBundleCallback callback) {
-  iwa_handler_.SelectFileAndUpdateIsolatedWebAppFromDevBundle(
-      app_id, std::move(callback));
+  if (iwa_handler_) {
+    iwa_handler_->SelectFileAndUpdateIsolatedWebAppFromDevBundle(
+        app_id, std::move(callback));
+  }
 }
 
 void WebAppInternalsHandler::SearchForIsolatedWebAppUpdates(
     SearchForIsolatedWebAppUpdatesCallback callback) {
-  iwa_handler_.SearchForIsolatedWebAppUpdates(std::move(callback));
+  if (iwa_handler_) {
+    iwa_handler_->SearchForIsolatedWebAppUpdates(std::move(callback));
+  }
 }
 
 void WebAppInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
     GetIsolatedWebAppDevModeAppInfoCallback callback) {
-  iwa_handler_.GetIsolatedWebAppDevModeAppInfo(std::move(callback));
+  if (iwa_handler_) {
+    iwa_handler_->GetIsolatedWebAppDevModeAppInfo(std::move(callback));
+  }
 }
 
 void WebAppInternalsHandler::UpdateDevProxyIsolatedWebApp(
     const webapps::AppId& app_id,
     UpdateDevProxyIsolatedWebAppCallback callback) {
-  iwa_handler_.UpdateDevProxyIsolatedWebApp(app_id, std::move(callback));
+  if (iwa_handler_) {
+    iwa_handler_->UpdateDevProxyIsolatedWebApp(app_id, std::move(callback));
+  }
 }
 
 void WebAppInternalsHandler::RotateKey(
     const std::string& web_bundle_id,
     const std::optional<std::vector<uint8_t>>& public_key) {
-  iwa_handler_.RotateKey(web_bundle_id, public_key);
+  if (iwa_handler_) {
+    iwa_handler_->RotateKey(web_bundle_id, public_key);
+  }
 }
 
 void WebAppInternalsHandler::UpdateManifestInstalledIsolatedWebApp(
     const webapps::AppId& app_id,
     UpdateManifestInstalledIsolatedWebAppCallback callback) {
-  iwa_handler_.UpdateManifestInstalledIsolatedWebApp(app_id,
-                                                     std::move(callback));
+  if (iwa_handler_) {
+    iwa_handler_->UpdateManifestInstalledIsolatedWebApp(app_id,
+                                                        std::move(callback));
+  }
 }
 
 void WebAppInternalsHandler::SetUpdateChannelForIsolatedWebApp(
     const webapps::AppId& app_id,
     const std::string& update_channel,
     SetUpdateChannelForIsolatedWebAppCallback callback) {
-  iwa_handler_.SetUpdateChannelForIsolatedWebApp(app_id, update_channel,
-                                                 std::move(callback));
+  if (iwa_handler_) {
+    iwa_handler_->SetUpdateChannelForIsolatedWebApp(app_id, update_channel,
+                                                    std::move(callback));
+  }
 }
 
 void WebAppInternalsHandler::SetPinnedVersionForIsolatedWebApp(
     const webapps::AppId& app_id,
     const std::string& pinned_version,
     SetPinnedVersionForIsolatedWebAppCallback callback) {
-  iwa_handler_.SetPinnedVersionForIsolatedWebApp(app_id, pinned_version,
-                                                 std::move(callback));
+  if (iwa_handler_) {
+    iwa_handler_->SetPinnedVersionForIsolatedWebApp(app_id, pinned_version,
+                                                    std::move(callback));
+  }
 }
 
 void WebAppInternalsHandler::ResetPinnedVersionForIsolatedWebApp(
     const webapps::AppId& app_id) {
-  iwa_handler_.ResetPinnedVersionForIsolatedWebApp(app_id);
+  if (iwa_handler_) {
+    iwa_handler_->ResetPinnedVersionForIsolatedWebApp(app_id);
+  }
 }
 
 void WebAppInternalsHandler::SetAllowDowngradesForIsolatedWebApp(
     bool allow_downgrades,
     const webapps::AppId& app_id) {
-  iwa_handler_.SetAllowDowngradesForIsolatedWebApp(allow_downgrades, app_id);
+  if (iwa_handler_) {
+    iwa_handler_->SetAllowDowngradesForIsolatedWebApp(allow_downgrades, app_id);
+  }
+}
+
+void WebAppInternalsHandler::DeleteIsolatedWebApp(
+    const webapps::AppId& app_id,
+    DeleteIsolatedWebAppCallback callback) {
+  if (iwa_handler_) {
+    iwa_handler_->DeleteIsolatedWebApp(app_id, std::move(callback));
+  }
 }

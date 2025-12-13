@@ -9,12 +9,14 @@ source_set("safe_browsing") {
 
   if (safe_browsing_mode == 1) {
     sources = [
+      "archive_analysis_delegate.h",
       "archive_analyzer.cc",
       "archive_analyzer.h",
       "seven_zip_analyzer.cc",
       "seven_zip_analyzer.h",
       "zip_analyzer.cc",
       "zip_analyzer.h",
+      "zip_writer_delegate.h",
     ]
 
     if (is_mac) {

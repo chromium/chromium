@@ -169,7 +169,7 @@ SharesheetBubbleView::~SharesheetBubbleView() {
     std::move(close_callback_).Run(views::Widget::ClosedReason::kUnspecified);
   }
 
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display::Screen::Get()->RemoveObserver(this);
 }
 
 void SharesheetBubbleView::ShowBubble(
@@ -521,15 +521,14 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
   return true;
 }
 
-std::unique_ptr<views::NonClientFrameView>
-SharesheetBubbleView::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> SharesheetBubbleView::CreateFrameView(
+    views::Widget* widget) {
   // TODO(crbug.com/40136695) Replace this with layer->SetRoundedCornerRadius.
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
   bubble_border->SetColor(background_color());
   bubble_border->set_rounded_corners(gfx::RoundedCornersF(kCornerRadius));
-  auto frame =
-      views::BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  auto frame = views::BubbleDialogDelegateView::CreateFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())
       ->SetBubbleBorder(std::move(bubble_border));
   return frame;
@@ -642,7 +641,7 @@ void SharesheetBubbleView::SetUpAndShowBubble() {
       window, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
 
   OnAnchorBoundsChanged();
-  display::Screen::GetScreen()->AddObserver(this);
+  display::Screen::Get()->AddObserver(this);
 }
 
 gfx::Rect SharesheetBubbleView::GetDesiredBubbleBounds() {

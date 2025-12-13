@@ -173,8 +173,16 @@ IOSPasswordManagerDriver::GetPasswordAutofillManager() {
   return nullptr;
 }
 
+bool IOSPasswordManagerDriver::IsDirectChildOfPrimaryMainFrame() const {
+  NOTREACHED();
+}
+
 bool IOSPasswordManagerDriver::IsInPrimaryMainFrame() const {
   return is_in_main_frame_;
+}
+
+bool IOSPasswordManagerDriver::IsNestedWithinFencedFrame() const {
+  NOTREACHED();
 }
 
 bool IOSPasswordManagerDriver::CanShowAutofillUi() const {
@@ -189,10 +197,25 @@ const GURL& IOSPasswordManagerDriver::GetLastCommittedURL() const {
   return bridge_.lastCommittedURL;
 }
 
+const url::Origin& IOSPasswordManagerDriver::GetLastCommittedOrigin() const {
+  NOTREACHED();
+}
+
 gfx::RectF IOSPasswordManagerDriver::TransformToRootCoordinates(
     const gfx::RectF& bounds_in_frame_coordinates) {
   NOTIMPLEMENTED();
   return bounds_in_frame_coordinates;
+}
+
+void IOSPasswordManagerDriver::CheckViewAreaVisible(
+    autofill::FieldRendererId field_id,
+    base::OnceCallback<void(bool)>) {
+  NOTREACHED();
+}
+
+autofill::AutofillDriver* IOSPasswordManagerDriver::GetAutofillDriver() const {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 base::WeakPtr<password_manager::PasswordManagerDriver>

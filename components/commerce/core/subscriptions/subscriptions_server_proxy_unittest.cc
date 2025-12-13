@@ -177,7 +177,7 @@ TEST_F(SubscriptionsServerProxyTest, TestCreate) {
           [](base::RunLoop* run_loop, SubscriptionsRequestStatus status,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
             ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
-            ASSERT_EQ(1, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(1u, subscriptions->size());
             auto subscription = (*subscriptions)[0];
             ASSERT_EQ(SubscriptionType::kPriceTrack, subscription.type);
             ASSERT_EQ(IdentifierType::kProductClusterId, subscription.id_type);
@@ -219,7 +219,7 @@ TEST_F(SubscriptionsServerProxyTest, TestCreate_ServerFailed) {
           [](base::RunLoop* run_loop, SubscriptionsRequestStatus status,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
             ASSERT_EQ(SubscriptionsRequestStatus::kServerInternalError, status);
-            ASSERT_EQ(0, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(0u, subscriptions->size());
             run_loop->Quit();
           },
           &run_loop));
@@ -241,7 +241,7 @@ TEST_F(SubscriptionsServerProxyTest, TestCreate_WrongHttpCode) {
           [](base::RunLoop* run_loop, SubscriptionsRequestStatus status,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
             ASSERT_EQ(SubscriptionsRequestStatus::kServerParseError, status);
-            ASSERT_EQ(0, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(0u, subscriptions->size());
             run_loop->Quit();
           },
           &run_loop));
@@ -263,7 +263,7 @@ TEST_F(SubscriptionsServerProxyTest, TestCreate_EmptyResponse) {
           [](base::RunLoop* run_loop, SubscriptionsRequestStatus status,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
             ASSERT_EQ(SubscriptionsRequestStatus::kServerInternalError, status);
-            ASSERT_EQ(0, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(0u, subscriptions->size());
             run_loop->Quit();
           },
           &run_loop));
@@ -285,7 +285,7 @@ TEST_F(SubscriptionsServerProxyTest, TestDelete) {
           [](base::RunLoop* run_loop, SubscriptionsRequestStatus status,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
             ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
-            ASSERT_EQ(1, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(1u, subscriptions->size());
             auto subscription = (*subscriptions)[0];
             ASSERT_EQ(SubscriptionType::kPriceTrack, subscription.type);
             ASSERT_EQ(IdentifierType::kProductClusterId, subscription.id_type);
@@ -327,7 +327,7 @@ TEST_F(SubscriptionsServerProxyTest, TestDelete_ServerFailed) {
           [](base::RunLoop* run_loop, SubscriptionsRequestStatus status,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
             ASSERT_EQ(SubscriptionsRequestStatus::kServerInternalError, status);
-            ASSERT_EQ(0, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(0u, subscriptions->size());
             run_loop->Quit();
           },
           &run_loop));
@@ -349,7 +349,7 @@ TEST_F(SubscriptionsServerProxyTest, TestGet) {
           [](base::RunLoop* run_loop, SubscriptionsRequestStatus status,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
             ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
-            ASSERT_EQ(1, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(1u, subscriptions->size());
             auto subscription = (*subscriptions)[0];
             ASSERT_EQ(SubscriptionType::kPriceTrack, subscription.type);
             ASSERT_EQ(IdentifierType::kProductClusterId, subscription.id_type);
@@ -375,7 +375,7 @@ TEST_F(SubscriptionsServerProxyTest, TestGet_WrongType) {
           [](base::RunLoop* run_loop, SubscriptionsRequestStatus status,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
             ASSERT_EQ(SubscriptionsRequestStatus::kInvalidArgument, status);
-            ASSERT_EQ(0, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(0u, subscriptions->size());
             run_loop->Quit();
           },
           &run_loop));
@@ -397,7 +397,7 @@ TEST_F(SubscriptionsServerProxyTest, TestGet_WrongHttpCode) {
           [](base::RunLoop* run_loop, SubscriptionsRequestStatus status,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
             ASSERT_EQ(SubscriptionsRequestStatus::kServerParseError, status);
-            ASSERT_EQ(0, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(0u, subscriptions->size());
             run_loop->Quit();
           },
           &run_loop));
@@ -421,7 +421,7 @@ TEST_F(SubscriptionsServerProxyTest, TestGet_FetchError) {
           [](base::RunLoop* run_loop, SubscriptionsRequestStatus status,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
             ASSERT_EQ(SubscriptionsRequestStatus::kServerParseError, status);
-            ASSERT_EQ(0, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(0u, subscriptions->size());
             run_loop->Quit();
           },
           &run_loop));
@@ -443,7 +443,7 @@ TEST_F(SubscriptionsServerProxyTest, TestGet_NoSubscriptions) {
           [](base::RunLoop* run_loop, SubscriptionsRequestStatus status,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
             ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
-            ASSERT_EQ(0, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(0u, subscriptions->size());
             run_loop->Quit();
           },
           &run_loop));

@@ -1,0 +1,85 @@
+<!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@AURALINUX-DENY:PARENT-CHANGED*
+@UIA-WIN-DENY:*StructureChanged*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@WIN-DENY:EVENT_OBJECT_SHOW*
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Material Web Tabs Events</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-tabs",
+            "md-primary-tab"
+        ];
+
+        setupEventTestRunner();
+        window.waitForStable = waitForStable;
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+
+            const tabs = document.createElement("md-tabs");
+            tabs.id = "test-tabs";
+
+            const tab1 = document.createElement("md-primary-tab");
+            tab1.id = "test-tab1";
+            tab1.textContent = "Tab 1";
+            tab1.setAttribute("aria-label", "Tab 1");
+            tabs.appendChild(tab1);
+
+            const tab2 = document.createElement("md-primary-tab");
+            tab2.id = "test-tab2";
+            tab2.textContent = "Tab 2";
+            tab2.setAttribute("aria-label", "Tab 2");
+            tabs.appendChild(tab2);
+
+            const tab3 = document.createElement("md-primary-tab");
+            tab3.id = "test-tab3";
+            tab3.textContent = "Tab 3";
+            tab3.setAttribute("aria-label", "Tab 3");
+            tabs.appendChild(tab3);
+
+            statusDiv.appendChild(tabs);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    window.go_passes = [
+        async () => {
+            const tab1 = document.getElementById("test-tab1");
+            if (tab1) {
+                tab1.click();
+                await waitForStable(tab1);
+            }
+        },
+        async () => {
+            const tab2 = document.getElementById("test-tab2");
+            if (tab2) {
+                tab2.click();
+                await waitForStable(tab2);
+            }
+        },
+        async () => {
+            const tab3 = document.getElementById("test-tab3");
+            if (tab3) {
+                tab3.click();
+                await waitForStable(tab3);
+            }
+        }
+    ];
+</script>
+</html>

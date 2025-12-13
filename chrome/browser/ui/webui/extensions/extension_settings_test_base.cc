@@ -14,10 +14,13 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::Extension;
 
@@ -28,13 +31,10 @@ ExtensionSettingsTestBase::ExtensionSettingsTestBase()
 ExtensionSettingsTestBase::~ExtensionSettingsTestBase() = default;
 
 void ExtensionSettingsTestBase::InstallGoodExtension() {
-  EXPECT_TRUE(InstallExtension(test_data_dir_.AppendASCII("good.crx")));
+  EXPECT_TRUE(InstallExtension(test_data_dir_.AppendASCII("good_mv3")));
 }
 
 void ExtensionSettingsTestBase::InstallErrorsExtension() {
-  EXPECT_TRUE(
-      InstallExtension(test_data_dir_.AppendASCII("error_console")
-                           .AppendASCII("runtime_and_manifest_errors")));
   EXPECT_TRUE(InstallExtension(test_data_dir_.AppendASCII("error_console")
                                    .AppendASCII("deep_stack_trace")));
 }

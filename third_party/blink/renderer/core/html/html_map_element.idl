@@ -20,9 +20,9 @@
 
 // https://html.spec.whatwg.org/C/#the-map-element
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLMapElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, Reflect] attribute DOMString name;
     readonly attribute HTMLCollection areas;
 };

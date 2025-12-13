@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/keyboard_layout_monitor.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -128,7 +124,7 @@ void Core::QueryLayout() {
     for (int shift_level = 0; shift_level < shift_levels; shift_level++) {
       ui::DomKey key;
       ui::KeyboardCode key_code;
-      int event_flags = kShiftLevelFlags[shift_level];
+      int event_flags = UNSAFE_TODO(kShiftLevelFlags[shift_level]);
       if (!keyboard_layout_engine->Lookup(code, event_flags, &key, &key_code)) {
         continue;
       }

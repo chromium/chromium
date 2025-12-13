@@ -29,7 +29,7 @@
 namespace customtabs {
 
 using autofill::AutofillManager;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
@@ -59,8 +59,8 @@ AutofillObserverImpl::~AutofillObserverImpl() {
   Invalidate();
 }
 
-void AutofillObserverImpl::OnFormSubmitted(autofill::AutofillManager&,
-                                           const autofill::FormData&) {
+void AutofillObserverImpl::OnBeforeFormSubmitted(autofill::AutofillManager&,
+                                                 const autofill::FormData&) {
   OnFormInteraction();
 }
 
@@ -282,12 +282,12 @@ void TabInteractionRecorderAndroid::Reset(JNIEnv* env) {
   ResetImpl();
 }
 
-ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_GetFromTab(
+static ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_GetFromTab(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jtab) {
+    const JavaRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   if (!tab || !tab->web_contents() || tab->web_contents()->IsBeingDestroyed()) {
-    return ScopedJavaLocalRef<jobject>(env, nullptr);
+    return ScopedJavaLocalRef<jobject>::Adopt(env, nullptr);
   }
 
   auto* recorder =
@@ -296,12 +296,12 @@ ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_GetFromTab(
       env, reinterpret_cast<int64_t>(recorder));
 }
 
-ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_CreateForTab(
+static ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_CreateForTab(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jtab) {
+    const JavaRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   if (!tab || !tab->web_contents() || tab->web_contents()->IsBeingDestroyed()) {
-    return ScopedJavaLocalRef<jobject>(env, nullptr);
+    return ScopedJavaLocalRef<jobject>::Adopt(env, nullptr);
   }
 
   TabInteractionRecorderAndroid::CreateForWebContents(tab->web_contents());
@@ -313,3 +313,5 @@ ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_CreateForTab(
 }
 
 }  // namespace customtabs
+
+DEFINE_JNI(TabInteractionRecorder)

@@ -80,20 +80,6 @@ enum CorsError {
   // response header.
   kPreflightInvalidAllowCredentials,
 
-  // The Access-Control-Allow-Private-Network header was missing from the
-  // response to a preflight request with the
-  // Access-Control-Request-Private-Network header set.
-  //
-  // Spec: https://wicg.github.io/private-network-access/#headers
-  kPreflightMissingAllowPrivateNetwork,
-
-  // The Access-Control-Allow-Private-Network header on a preflight response
-  // had a invalid value. This error is only raised when the preflight request
-  // had the Access-Control-Request-Private-Network header set.
-  //
-  // Spec: https://wicg.github.io/private-network-access/#headers
-  kPreflightInvalidAllowPrivateNetwork,
-
   // Failed to parse Access-Control-Allow-Methods response header field in
   // CORS-preflight response.
   kInvalidAllowMethodsPreflightResponse,
@@ -120,40 +106,8 @@ enum CorsError {
   // See: https://wicg.github.io/private-network-access/#request-target-ip-address-space
   kInvalidPrivateNetworkAccess,
 
-  // The request did not carry a `target_ip_address_space` yet turned out to be
-  // a private network request.
-  // See: https://wicg.github.io/private-network-access/#request-target-ip-address-space
-  kUnexpectedPrivateNetworkAccess,
-
-  // Could not request permission to access the private network from the user,
-  // because the Private-Network-Access-Id header was missing from the preflight
-  // response.
-  // See: https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
-  // TODO(crbug.com/40272644): link to the spec.
-  kPreflightMissingPrivateNetworkAccessId,
-
-  // Could not request permission to access the private network from the user,
-  // because the Private-Network-Access-Name header was missing from the
-  // preflight response.
-  // See: https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
-  // TODO(crbug.com/40272644): link to the spec.
-  kPreflightMissingPrivateNetworkAccessName,
-
-  // Could not request permission to access the private network from the user.
-  // See: https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
-  // TODO(crbug.com/40272644): link to the spec.
-  kPrivateNetworkAccessPermissionUnavailable,
-
-  // User did not grant permission to access the private network.
-  //
-  // Permission is only required for requests that bypass mixed content
-  // using the `targetAddressSpace` fetch option.
-  // See: https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
-  // TODO(crbug.com/40272644): link to the spec.
-  kPrivateNetworkAccessPermissionDenied,
-
   // User did not grant permission to access the local network.
-  // See: https://github.com/explainers-by-googlers/local-network-access
+  // See: https://wicg.github.io/local-network-access/
   kLocalNetworkAccessPermissionDenied,
 };
 
@@ -168,24 +122,30 @@ struct CorsErrorStatus {
   // Contains request method name, or header name that didn't pass a CORS check.
   string failed_parameter;
 
-  // The target IP address space set on the URL request.
-  // See `ResourceRequest::target_ip_address_space`.
-  // Set if (but not only if) `cors_error` is one of:
-  //
-  // - `kInvalidPrivateNetworkAccess`
-  // - `kPreflightMissingAllowPrivateNetwork`
-  // - `kPreflightInvalidAllowPrivateNetwork`
-  //
-  IPAddressSpace target_address_space = IPAddressSpace.kUnknown;
-
   // The address space of the requested resource.
-  // Set iff `cors_error` is one of:
+  // This defaults to kUnknown, and is overridden iff `cors_error` is one of:
   //
   // - `kInsecurePrivateNetwork`
   // - `kInvalidPrivateNetworkAccess`
-  // - `kUnexpectedPrivateNetworkAccess`
-  //
+  // - `kLocalNetworkAccessPermissionDenied`
   IPAddressSpace resource_address_space = IPAddressSpace.kUnknown;
+
+  // The other IP address space set on the URL request.
+  // This defaults to kUnknown, and is overridden iff `cors_error` is
+  // `kInvalidPrivateNetworkAccess`, which happens in 2 situations:
+  //
+  //   * The request had a `required_address_space` set but the
+  //     `resource_address_space` did not match. In this case, this will be set
+  //     to the `required_address_space`.
+  // or
+  //
+  //   * The request connects to two different IP address spaces. See the
+  //     comment in services/network/private_network_access_checker.cc.
+  //     In this case, this will be set to the second IP address space.
+  //
+  // TODO(crbug.com/394636065): consider using 2 separate fields for the two
+  // separate situations listed above.
+  IPAddressSpace inconsistent_address_space = IPAddressSpace.kUnknown;
 
   // True when there is an "authorization" header on the request and it is
   // covered by the wildcard in the preflight response.
@@ -193,20 +153,4 @@ struct CorsErrorStatus {
   bool has_authorization_covered_by_wildcard_on_preflight = false;
 
   mojo_base.mojom.UnguessableToken issue_id;
-};
-
-// Describes what happened wrt PNA preflights during a request.
-// TODO(crbug.com/40204695): Remove this once preflights are enforced.
-enum PrivateNetworkAccessPreflightResult {
-  // No preflight was sent.
-  kNone,
-
-  // A preflight was sent and succeeded.
-  kSuccess,
-
-  // A preflight was sent in warning-only mode and failed.
-  kWarning,
-
-  // A preflight was sent and failed.
-  kError,
 };

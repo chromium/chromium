@@ -65,9 +65,6 @@ class CORE_EXPORT ClipRect {
   bool operator==(const ClipRect& other) const {
     return Rect() == other.Rect() && HasRadius() == other.HasRadius();
   }
-  bool operator!=(const ClipRect& other) const {
-    return Rect() != other.Rect() || HasRadius() != other.HasRadius();
-  }
   bool operator!=(const PhysicalRect& other_rect) const {
     return Rect() != other_rect;
   }
@@ -82,7 +79,7 @@ class CORE_EXPORT ClipRect {
 
   void Reset();
 
-  WTF::String ToString() const;
+  String ToString() const;
 
  private:
   void SetRectInternal(const FloatClipRect&);

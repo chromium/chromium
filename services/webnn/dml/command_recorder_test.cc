@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "services/webnn/dml/command_recorder.h"
 
 #include <wrl.h>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/command_queue.h"
-#include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/dml/error.h"
 #include "services/webnn/dml/tensor_desc.h"
 #include "services/webnn/dml/test_base.h"
 #include "services/webnn/dml/utils.h"
+#include "services/webnn/webnn_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webnn::dml {
@@ -62,7 +60,7 @@ void WebNNCommandRecorderTest::Upload(CommandRecorder* command_recorder,
       adapter_->d3d12_device(), buffer_size, L"Upload_Buffer", upload_buffer));
   void* upload_buffer_data = nullptr;
   ASSERT_HRESULT_SUCCEEDED(upload_buffer->Map(0, nullptr, &upload_buffer_data));
-  memcpy(upload_buffer_data, src_buffer, buffer_size);
+  UNSAFE_TODO(memcpy(upload_buffer_data, src_buffer, buffer_size));
   upload_buffer->Unmap(0, nullptr);
 
   // Copy the input data from upload buffer to input buffer.
@@ -93,7 +91,7 @@ void WebNNCommandRecorderTest::Download(CommandRecorder* command_recorder,
   void* readback_buffer_data = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       readback_buffer->Map(0, nullptr, &readback_buffer_data));
-  memcpy(dst_buffer, readback_buffer_data, buffer_size);
+  UNSAFE_TODO(memcpy(dst_buffer, readback_buffer_data, buffer_size));
   readback_buffer->Unmap(0, nullptr);
 }
 
@@ -459,7 +457,7 @@ TEST_F(WebNNCommandRecorderTest,
   std::vector<float> input_data({-2.0, -1.0, 1.0, 2.0});
   void* mapped_input_buffer = nullptr;
   ASSERT_HRESULT_SUCCEEDED(input_buffer->Map(0, nullptr, &mapped_input_buffer));
-  memcpy(mapped_input_buffer, input_data.data(), buffer_size);
+  UNSAFE_TODO(memcpy(mapped_input_buffer, input_data.data(), buffer_size));
   input_buffer->Unmap(0, nullptr);
 
   // Bind the custom upload and readback buffers for operator execution.
@@ -491,7 +489,7 @@ TEST_F(WebNNCommandRecorderTest,
   void* mapped_output_buffer = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       output_buffer->Map(0, nullptr, &mapped_output_buffer));
-  memcpy(result.data(), mapped_output_buffer, buffer_size);
+  UNSAFE_TODO(memcpy(result.data(), mapped_output_buffer, buffer_size));
   output_buffer->Unmap(0, nullptr);
 
   // Compare the result against expected.
@@ -604,7 +602,7 @@ TEST_F(WebNNCommandRecorderTest,
   std::vector<float> input_data({-2.0, -1.0, 1.0, 2.0});
   void* upload_buffer_data = nullptr;
   ASSERT_HRESULT_SUCCEEDED(upload_buffer->Map(0, nullptr, &upload_buffer_data));
-  memcpy(upload_buffer_data, input_data.data(), buffer_size);
+  UNSAFE_TODO(memcpy(upload_buffer_data, input_data.data(), buffer_size));
   upload_buffer->Unmap(0, nullptr);
 
   ASSERT_HRESULT_SUCCEEDED(command_recorder->Execute());
@@ -617,7 +615,7 @@ TEST_F(WebNNCommandRecorderTest,
   void* readback_buffer_data = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       readback_buffer->Map(0, nullptr, &readback_buffer_data));
-  memcpy(result.data(), readback_buffer_data, buffer_size);
+  UNSAFE_TODO(memcpy(result.data(), readback_buffer_data, buffer_size));
   readback_buffer->Unmap(0, nullptr);
   // Compare the result against expected.
   EXPECT_EQ(result, std::vector<float>({0.0, 0.0, 1.0, 2.0}));
@@ -627,7 +625,7 @@ TEST_F(WebNNCommandRecorderTest,
   // Upload new input data to execute.
   input_data = {2.0, 1.0, -1.0, -2.0};
   ASSERT_HRESULT_SUCCEEDED(upload_buffer->Map(0, nullptr, &upload_buffer_data));
-  memcpy(upload_buffer_data, input_data.data(), buffer_size);
+  UNSAFE_TODO(memcpy(upload_buffer_data, input_data.data(), buffer_size));
   upload_buffer->Unmap(0, nullptr);
   ASSERT_HRESULT_SUCCEEDED(command_recorder->Execute());
   ASSERT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSync());
@@ -638,7 +636,7 @@ TEST_F(WebNNCommandRecorderTest,
   // Copy the contents from readback buffer to destination buffer.
   ASSERT_HRESULT_SUCCEEDED(
       readback_buffer->Map(0, nullptr, &readback_buffer_data));
-  memcpy(result.data(), readback_buffer_data, buffer_size);
+  UNSAFE_TODO(memcpy(result.data(), readback_buffer_data, buffer_size));
   readback_buffer->Unmap(0, nullptr);
   // Compare the result against expected.
   EXPECT_EQ(result, std::vector<float>({2.0, 1.0, 0.0, 0.0}));
@@ -804,14 +802,14 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
   void* readback_buffer_data = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       readback_buffers[0]->Map(0, nullptr, &readback_buffer_data));
-  memcpy(result.data(), readback_buffer_data, buffer_size);
+  UNSAFE_TODO(memcpy(result.data(), readback_buffer_data, buffer_size));
   readback_buffers[0]->Unmap(0, nullptr);
   EXPECT_EQ(result, std::vector<float>({0.0, 0.0, 1.0, 2.0}));
 
   // Verify the result of the 2nd execution.
   ASSERT_HRESULT_SUCCEEDED(
       readback_buffers[1]->Map(0, nullptr, &readback_buffer_data));
-  memcpy(result.data(), readback_buffer_data, buffer_size);
+  UNSAFE_TODO(memcpy(result.data(), readback_buffer_data, buffer_size));
   readback_buffers[1]->Unmap(0, nullptr);
   EXPECT_EQ(result, std::vector<float>({2.0, 1.0, 0.0, 0.0}));
 }
@@ -1062,7 +1060,7 @@ TEST_F(WebNNCommandRecorderTest,
   void* mapped_filter_buffer = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       filter_buffer->Map(0, nullptr, &mapped_filter_buffer));
-  memcpy(mapped_filter_buffer, weights.data(), filter_buffer_size);
+  UNSAFE_TODO(memcpy(mapped_filter_buffer, weights.data(), filter_buffer_size));
   filter_buffer->Unmap(0, nullptr);
 
   ASSERT_HRESULT_SUCCEEDED(command_recorder->Open());
@@ -1146,7 +1144,8 @@ TEST_F(WebNNCommandRecorderTest,
   std::vector<float> input_data({1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
   void* mapped_input_buffer = nullptr;
   ASSERT_HRESULT_SUCCEEDED(input_buffer->Map(0, nullptr, &mapped_input_buffer));
-  memcpy(mapped_input_buffer, input_data.data(), input_buffer_size);
+  UNSAFE_TODO(
+      memcpy(mapped_input_buffer, input_data.data(), input_buffer_size));
   input_buffer->Unmap(0, nullptr);
 
   // Create the input and output resources binding for operator execution.
@@ -1186,7 +1185,7 @@ TEST_F(WebNNCommandRecorderTest,
   void* mapped_output_buffer = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       output_buffer->Map(0, nullptr, &mapped_output_buffer));
-  memcpy(result.data(), mapped_output_buffer, output_buffer_size);
+  UNSAFE_TODO(memcpy(result.data(), mapped_output_buffer, output_buffer_size));
   output_buffer->Unmap(0, nullptr);
 
   // Compare the result against expected.

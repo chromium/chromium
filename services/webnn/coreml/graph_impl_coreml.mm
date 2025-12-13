@@ -83,15 +83,16 @@ API_AVAILABLE(macos(12.3))
 base::flat_map<std::string,
                scoped_refptr<QueueableResourceState<BufferContent>>>
 ToNamedBufferStateMap(
-    const base::flat_map<std::string, WebNNTensorImpl*>& named_tensors) {
+    const base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>&
+        named_tensors) {
   base::flat_map<std::string,
                  scoped_refptr<QueueableResourceState<BufferContent>>>
       buffer_states;
   buffer_states.reserve(named_tensors.size());
 
   for (const auto& [name, tensor] : named_tensors) {
-    buffer_states.emplace(
-        name, static_cast<TensorImplCoreml*>(tensor)->GetBufferState());
+    auto* coreml_tensor = static_cast<TensorImplCoreml*>(tensor.get());
+    buffer_states.emplace(name, coreml_tensor->GetBufferState());
   }
 
   return buffer_states;
@@ -291,6 +292,24 @@ class GraphImplCoreml::ComputeResources
 
   const base::flat_map<std::string, std::string> coreml_name_to_operand_name_;
   const MLModel* __strong ml_model_;
+};
+
+// Parameters needed to construct a `GraphImplCoreml`. Used for shuttling
+// these objects between the background thread where the model is compiled and
+// the originating thread.
+struct GraphImplCoreml::Params {
+  Params(ComputeResourceInfo compute_resource_info,
+         base::flat_map<std::string, std::string> coreml_name_to_operand_name);
+  ~Params();
+
+  ComputeResourceInfo compute_resource_info;
+  base::flat_map<std::string, std::string> coreml_name_to_operand_name;
+
+  // Represents the compiled and configured Core ML model. This member must be
+  // set before these params are used to construct a new `GraphImplCoreml`.
+  MLModel* __strong ml_model;
+
+  std::vector<mojom::Device> devices;
 };
 
 // static
@@ -560,13 +579,8 @@ void GraphImplCoreml::DidCreateAndBuild(
     return;
   }
 
-#if DCHECK_IS_ON()
-  context->AssertCalledOnValidSequence();
-#endif
-
-  std::move(callback).Run(base::WrapUnique(new GraphImplCoreml(
-      std::move(receiver), static_cast<ContextImplCoreml*>(context.get()),
-      *std::move(result))));
+  std::move(callback).Run(base::MakeRefCounted<GraphImplCoreml>(
+      std::move(receiver), std::move(context), *std::move(result)));
 }
 
 GraphImplCoreml::ScopedModelPath::ScopedModelPath(base::ScopedTempDir file_dir)
@@ -601,10 +615,10 @@ GraphImplCoreml::ScopedModelPath::~ScopedModelPath() {
 
 GraphImplCoreml::GraphImplCoreml(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-    ContextImplCoreml* context,
+    base::WeakPtr<WebNNContextImpl> context,
     std::unique_ptr<Params> params)
     : WebNNGraphImpl(std::move(receiver),
-                     context,
+                     std::move(context),
                      std::move(params->compute_resource_info),
                      std::move(params->devices)),
       compute_resources_(base::MakeRefCounted<ComputeResources>(
@@ -614,8 +628,8 @@ GraphImplCoreml::GraphImplCoreml(
 GraphImplCoreml::~GraphImplCoreml() = default;
 
 void GraphImplCoreml::DispatchImpl(
-    base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
-    base::flat_map<std::string, WebNNTensorImpl*> named_outputs) {
+    base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
+    base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_outputs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedTrace scoped_trace("GraphImplCoreml::DispatchImpl");

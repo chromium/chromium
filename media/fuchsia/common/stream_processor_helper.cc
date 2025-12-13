@@ -329,8 +329,7 @@ void StreamProcessorHelper::SetInputBufferCollectionToken(
   fuchsia::media::StreamBufferPartialSettings settings;
   settings.set_buffer_lifetime_ordinal(kInputBufferLifetimeOrdinal);
   settings.set_buffer_constraints_version_ordinal(0);
-  settings.set_sysmem_token(fuchsia::sysmem::BufferCollectionTokenHandle(
-      sysmem_token.Unbind().TakeChannel()));
+  settings.set_sysmem2_token(std::move(sysmem_token));
   processor_->SetInputBufferPartialSettings(std::move(settings));
 }
 
@@ -344,8 +343,7 @@ void StreamProcessorHelper::CompleteOutputBuffersAllocation(
   settings.set_buffer_lifetime_ordinal(output_buffer_lifetime_ordinal_);
   settings.set_buffer_constraints_version_ordinal(
       output_buffer_constraints_.buffer_constraints_version_ordinal());
-  settings.set_sysmem_token(fuchsia::sysmem::BufferCollectionTokenHandle(
-      collection_token.Unbind().TakeChannel()));
+  settings.set_sysmem2_token(std::move(collection_token));
   processor_->SetOutputBufferPartialSettings(std::move(settings));
   processor_->CompleteOutputBufferPartialSettings(
       output_buffer_lifetime_ordinal_);

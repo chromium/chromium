@@ -20,6 +20,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/cpu.h"
@@ -266,20 +267,20 @@ ProcessMetrics::ProcessMetrics(ProcessHandle process) : process_(process) {}
 #endif
 
 size_t GetSystemCommitCharge() {
-  SystemMemoryInfoKB meminfo;
+  SystemMemoryInfo meminfo;
   if (!GetSystemMemoryInfo(&meminfo)) {
     return 0;
   }
   return GetSystemCommitChargeFromMeminfo(meminfo);
 }
 
-size_t GetSystemCommitChargeFromMeminfo(const SystemMemoryInfoKB& meminfo) {
-  // TODO(crbug.com/315988925): This math is incorrect: `cached` can be very
+size_t GetSystemCommitChargeFromMeminfo(const SystemMemoryInfo& meminfo) {
+  // TODO(http://b/315988925): This math is incorrect: `cached` can be very
   // large so that `free` + `buffers` + `cached` > `total`. Replace this with a
   // more meaningful metric or remove it. In the meantime, convert underflows to
   // 0 instead of crashing.
-  return ClampedNumeric<size_t>(meminfo.total) - meminfo.free -
-         meminfo.buffers - meminfo.cached;
+  return ClampedNumeric<size_t>(meminfo.total.InKiB()) - meminfo.free.InKiB() -
+         meminfo.buffers.InKiB() - meminfo.cached.InKiB();
 }
 
 int ParseProcStatCPU(std::string_view input) {
@@ -379,32 +380,8 @@ const size_t kDiskWeightedIOTime = 13;
 
 }  // namespace
 
-Value::Dict SystemMemoryInfoKB::ToDict() const {
-  Value::Dict res;
-  res.Set("total", total);
-  res.Set("free", free);
-  res.Set("available", available);
-  res.Set("buffers", buffers);
-  res.Set("cached", cached);
-  res.Set("active_anon", active_anon);
-  res.Set("inactive_anon", inactive_anon);
-  res.Set("active_file", active_file);
-  res.Set("inactive_file", inactive_file);
-  res.Set("swap_total", swap_total);
-  res.Set("swap_free", swap_free);
-  res.Set("swap_used", swap_total - swap_free);
-  res.Set("dirty", dirty);
-  res.Set("reclaimable", reclaimable);
-#if BUILDFLAG(IS_CHROMEOS)
-  res.Set("shmem", shmem);
-  res.Set("slab", slab);
-#endif
-
-  return res;
-}
-
 bool ParseProcMeminfo(std::string_view meminfo_data,
-                      SystemMemoryInfoKB* meminfo) {
+                      SystemMemoryInfo* meminfo) {
   // The format of /proc/meminfo is:
   //
   // MemTotal:      8235324 kB
@@ -417,7 +394,7 @@ bool ParseProcMeminfo(std::string_view meminfo_data,
 
   // As a basic sanity check at the end, make sure the MemTotal value will be at
   // least non-zero. So start off with a zero total.
-  meminfo->total = 0;
+  meminfo->total = ByteSize(0);
 
   for (std::string_view line : SplitStringPiece(
            meminfo_data, "\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY)) {
@@ -431,7 +408,7 @@ bool ParseProcMeminfo(std::string_view meminfo_data,
       continue;
     }
 
-    int* target = nullptr;
+    ByteSize* target = nullptr;
     if (tokens[0] == "MemTotal:") {
       target = &meminfo->total;
     } else if (tokens[0] == "MemFree:") {
@@ -469,12 +446,15 @@ bool ParseProcMeminfo(std::string_view meminfo_data,
     }
 #endif
     if (target) {
-      StringToInt(tokens[1], target);
+      uint64_t value;
+      if (StringToUint64(tokens[1], &value)) {
+        *target = KiBU(value);
+      }
     }
   }
 
   // Make sure the MemTotal is valid.
-  return meminfo->total > 0;
+  return meminfo->total > ByteSize(0);
 }
 
 bool ParseProcVmstat(std::string_view vmstat_data, VmStatInfo* vmstat) {
@@ -534,7 +514,7 @@ bool ParseProcVmstat(std::string_view vmstat_data, VmStatInfo* vmstat) {
   return has_pswpin && has_pswpout && has_pgmajfault;
 }
 
-bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
+bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
   // Used memory is: total - free - buffers - caches
   // ReadFileToStringNonBlocking doesn't require ScopedAllowIO, and reading
   // /proc/meminfo is fast. See crbug.com/1160988 for details.
@@ -551,16 +531,6 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   }
 
   return true;
-}
-
-Value::Dict VmStatInfo::ToDict() const {
-  Value::Dict res;
-  // TODO(crbug.com/40228085): Make base::Value able to hold uint64_t and remove
-  // casts below.
-  res.Set("pswpin", static_cast<int>(pswpin));
-  res.Set("pswpout", static_cast<int>(pswpout));
-  res.Set("pgmajfault", static_cast<int>(pgmajfault));
-  return res;
 }
 
 bool GetVmStatInfo(VmStatInfo* vmstat) {
@@ -597,26 +567,6 @@ SystemDiskInfo::SystemDiskInfo() {
 SystemDiskInfo::SystemDiskInfo(const SystemDiskInfo&) = default;
 
 SystemDiskInfo& SystemDiskInfo::operator=(const SystemDiskInfo&) = default;
-
-Value::Dict SystemDiskInfo::ToDict() const {
-  Value::Dict res;
-
-  // Write out uint64_t variables as doubles.
-  // Note: this may discard some precision, but for JS there's no other option.
-  res.Set("reads", static_cast<double>(reads));
-  res.Set("reads_merged", static_cast<double>(reads_merged));
-  res.Set("sectors_read", static_cast<double>(sectors_read));
-  res.Set("read_time", static_cast<double>(read_time));
-  res.Set("writes", static_cast<double>(writes));
-  res.Set("writes_merged", static_cast<double>(writes_merged));
-  res.Set("sectors_written", static_cast<double>(sectors_written));
-  res.Set("write_time", static_cast<double>(write_time));
-  res.Set("io", static_cast<double>(io));
-  res.Set("io_time", static_cast<double>(io_time));
-  res.Set("weighted_io_time", static_cast<double>(weighted_io_time));
-
-  return res;
-}
 
 bool IsValidDiskName(std::string_view candidate) {
   if (candidate.length() < 3) {
@@ -732,32 +682,6 @@ TimeDelta GetUserCpuTimeSinceBoot() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-Value::Dict SwapInfo::ToDict() const {
-  Value::Dict res;
-
-  // Write out uint64_t variables as doubles.
-  // Note: this may discard some precision, but for JS there's no other option.
-  res.Set("num_reads", static_cast<double>(num_reads));
-  res.Set("num_writes", static_cast<double>(num_writes));
-  res.Set("orig_data_size", static_cast<double>(orig_data_size));
-  res.Set("compr_data_size", static_cast<double>(compr_data_size));
-  res.Set("mem_used_total", static_cast<double>(mem_used_total));
-  double ratio = compr_data_size ? static_cast<double>(orig_data_size) /
-                                       static_cast<double>(compr_data_size)
-                                 : 0;
-  res.Set("compression_ratio", ratio);
-
-  return res;
-}
-
-Value::Dict GraphicsMemoryInfoKB::ToDict() const {
-  Value::Dict res;
-
-  res.Set("gpu_objects", gpu_objects);
-  res.Set("gpu_memory_size", static_cast<double>(gpu_memory_size));
-
-  return res;
-}
 
 bool ParseZramMmStat(std::string_view mm_stat_data, SwapInfo* swap_info) {
   // There are 7 columns in /sys/block/zram0/mm_stat,
@@ -1095,8 +1019,8 @@ bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
   std::string mali_memory_data;
   if (ReadFileToStringNonBlocking(mali_memory_file, &mali_memory_data)) {
     int64_t mali_size = -1;
-    int num_res =
-        sscanf(mali_memory_data.c_str(), "%" SCNd64 " bytes", &mali_size);
+    int num_res = UNSAFE_TODO(
+        sscanf(mali_memory_data.c_str(), "%" SCNd64 " bytes", &mali_size));
     if (num_res == 1) {
       gpu_meminfo->gpu_memory_size += mali_size;
     }
@@ -1118,5 +1042,11 @@ int ProcessMetrics::GetIdleWakeupsPerSecond() {
              : 0;
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
+
+ByteSize SystemMemoryInfo::GetAvailablePhysicalMemory() const {
+  // Use MemAvailable from /proc/meminfo if available (Linux 3.14+), otherwise
+  // fall back to MemFree.
+  return available.is_positive() ? available : free;
+}
 
 }  // namespace base

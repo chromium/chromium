@@ -24,6 +24,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -69,12 +70,12 @@ class SecurePaymentConfirmationHeaderIconView : public NonAccessibleImageView {
   // NonAccessibleImageView:
   void OnThemeChanged() override {
     NonAccessibleImageView::OnThemeChanged();
-    SetImage(use_cart_image_
-                 ? GetHeaderImageSkia(GetNativeTheme()->ShouldUseDarkColors())
-                 : ui::ImageModel::FromVectorIcon(
-                       GetPlatformVectorIcon(
-                           GetNativeTheme()->ShouldUseDarkColors()),
-                       gfx::kPlaceholderColor));
+    const bool dark_mode = GetNativeTheme()->preferred_color_scheme() ==
+                           ui::NativeTheme::PreferredColorScheme::kDark;
+    SetImage(use_cart_image_ ? GetHeaderImageSkia(dark_mode)
+                             : ui::ImageModel::FromVectorIcon(
+                                   GetPlatformVectorIcon(dark_mode),
+                                   gfx::kPlaceholderColor));
   }
 
  private:

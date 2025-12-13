@@ -75,9 +75,6 @@ class ShapeInterval {
   bool operator==(const ShapeInterval<T>& other) const {
     return X1() == other.X1() && X2() == other.X2();
   }
-  bool operator!=(const ShapeInterval<T>& other) const {
-    return !operator==(other);
-  }
 
   void Unite(const ShapeInterval<T>& interval) {
     if (interval.IsUndefined())

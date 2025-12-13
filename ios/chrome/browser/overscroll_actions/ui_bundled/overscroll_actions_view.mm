@@ -14,6 +14,9 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -256,7 +259,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _addTabActionImageView = [[UIImageView alloc] init];
     _addTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
         kPlusSymbol, kOverScrollSymbolPointSize);
-    _addTabActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     if (!IsHomeMemoryImprovementsEnabled()) {
       [_addTabActionImageView sizeToFit];
     }
@@ -268,7 +270,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _reloadActionImageView = [[UIImageView alloc] init];
     _reloadActionImageView.image = CustomSymbolTemplateWithPointSize(
         kArrowClockWiseSymbol, kOverScrollSymbolPointSize);
-    _reloadActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     if (!IsHomeMemoryImprovementsEnabled()) {
       [_reloadActionImageView sizeToFit];
     }
@@ -280,7 +281,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _closeTabActionImageView = [[UIImageView alloc] init];
     _closeTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
         kXMarkSymbol, kOverScrollSymbolPointSize);
-    _closeTabActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     if (!IsHomeMemoryImprovementsEnabled()) {
       [_closeTabActionImageView sizeToFit];
     }
@@ -297,7 +297,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _addTabLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     _addTabLabel.adjustsFontForContentSizeCategory = NO;
-    _addTabLabel.textColor = [UIColor colorNamed:kToolbarButtonColor];
     _addTabLabel.text =
         l10n_util::GetNSString(IDS_IOS_OVERSCROLL_NEW_TAB_LABEL);
     [self addSubview:_addTabLabel];
@@ -310,7 +309,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _reloadLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     _reloadLabel.adjustsFontForContentSizeCategory = NO;
-    _reloadLabel.textColor = [UIColor colorNamed:kToolbarButtonColor];
     _reloadLabel.text = l10n_util::GetNSString(IDS_IOS_OVERSCROLL_RELOAD_LABEL);
     [self addSubview:_reloadLabel];
 
@@ -322,7 +320,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _closeTabLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     _closeTabLabel.adjustsFontForContentSizeCategory = NO;
-    _closeTabLabel.textColor = [UIColor colorNamed:kToolbarButtonColor];
     _closeTabLabel.text =
         l10n_util::GetNSString(IDS_IOS_OVERSCROLL_CLOSE_TAB_LABEL);
     [self addSubview:_closeTabLabel];
@@ -345,13 +342,17 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
                                                 action:@selector(tapGesture:)];
     [_tapGesture setDelegate:self];
     [self addGestureRecognizer:_tapGesture];
-
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits =
-          TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-      [self registerForTraitChanges:traits
-                         withAction:@selector(updateLayerColors)];
-    }
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class,
+      UITraitUserInterfaceStyle.class
+    ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateLayerColors)];
+    [self registerForTraitChanges:
+              @[ NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class ]
+                       withAction:@selector(updateViewColors)];
+    [self updateLayerColors];
+    [self updateViewColors];
   }
   return self;
 }
@@ -494,17 +495,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     [CATransaction commit];
   }
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateLayerColors];
-}
-#endif
 
 #pragma mark - Private
 
@@ -956,12 +946,55 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   [self updateLayerColors];
 }
 
+// Update the view colors based on the current theme. For non-regular NTP pages,
+// the 2 custom UITraits won't be set, so the default will always be used.
+- (void)updateViewColors {
+  UIColor* imageViewColor;
+  UIColor* labelColor;
+
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+  if ([self.traitCollection boolForNewTabPageImageBackgroundTrait]) {
+    imageViewColor = [UIColor colorNamed:kTextPrimaryColor];
+    labelColor = [UIColor colorNamed:kTextPrimaryColor];
+  } else if (colorPalette) {
+    imageViewColor = colorPalette.tintColor;
+    labelColor = colorPalette.tintColor;
+  } else {
+    imageViewColor = [UIColor colorNamed:kTextPrimaryColor];
+    labelColor = [UIColor colorNamed:kToolbarButtonColor];
+  }
+
+  _addTabActionImageView.tintColor = imageViewColor;
+  _reloadActionImageView.tintColor = imageViewColor;
+  _closeTabActionImageView.tintColor = imageViewColor;
+  _addTabLabel.textColor = labelColor;
+  _reloadLabel.textColor = labelColor;
+  _closeTabLabel.textColor = labelColor;
+}
+
 // Updates the colors based on the current trait collection. CGColor doesn't
-// support iOS 13 dynamic colors, so those must be resolved more often.
+// support dynamic colors, so those must be resolved manually when the interface
+// style changes.
 - (void)updateLayerColors {
   [self.traitCollection performAsCurrentTraitCollection:^{
     BOOL darkModeEnabled =
         (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+
+    if ([self.traitCollection boolForNewTabPageImageBackgroundTrait]) {
+      _selectionCircleLayer.fillColor =
+          darkModeEnabled ? [UIColor colorWithWhite:0 alpha:0.4].CGColor
+                          : [UIColor colorWithWhite:1 alpha:0.4].CGColor;
+      return;
+    }
+
+    NewTabPageColorPalette* colorPalette =
+        [self.traitCollection objectForNewTabPageTrait];
+    if (colorPalette) {
+      _selectionCircleLayer.fillColor = colorPalette.headerButtonColor.CGColor;
+      return;
+    }
+
     _selectionCircleLayer.fillColor =
         darkModeEnabled ? [UIColor colorWithWhite:0.7 alpha:0.2].CGColor
                         : [UIColor colorWithWhite:0.3 alpha:0.125].CGColor;

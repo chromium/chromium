@@ -86,6 +86,7 @@ suite('Deep linking in old sync page', () => {
       extensionsManaged: false,
       extensionsRegistered: false,
       extensionsSynced: false,
+      localSyncEnabled: false,
       passwordsManaged: false,
       passwordsRegistered: false,
       passwordsSynced: false,

@@ -5,8 +5,6 @@
 #ifndef MEDIA_GPU_GPU_VIDEO_DECODE_ACCELERATOR_HELPERS_H_
 #define MEDIA_GPU_GPU_VIDEO_DECODE_ACCELERATOR_HELPERS_H_
 
-#include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_decode_accelerator.h"

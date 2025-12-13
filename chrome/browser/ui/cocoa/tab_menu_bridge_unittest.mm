@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/test_renderer_host.h"
@@ -88,8 +90,12 @@ class TabMenuBridgeTest : public ::testing::Test {
         std::make_unique<tabs::TabModel>(CreateWebContents(name),
                                          tab_strip_model);
     tabs::TabFeatures* const tab_features = tab_model->GetTabFeatures();
-    tab_features->SetTabUIHelperForTesting(
-        std::make_unique<TabUIHelper>(*tab_model));
+
+    std::unique_ptr<TabUIHelper> tab_ui_helper =
+        tabs::TabFeatures::GetUserDataFactoryForTesting()
+            .CreateInstance<TabUIHelper>(*tab_model, *tab_model);
+
+    tab_features->SetTabUIHelperForTesting(std::move(tab_ui_helper));
     tab_strip_model->AppendTab(std::move(tab_model), true);
   }
 
@@ -174,6 +180,17 @@ class TabMenuBridgeTest : public ::testing::Test {
     EXPECT_EQ(name, active_items[0]);
   }
 
+  NSMenuItem* GetActiveMenuItem() {
+    for (int i = 0; i < menu().numberOfItems; ++i) {
+      NSMenuItem* item = [menu() itemAtIndex:i];
+      if (item.state == NSControlStateValueOn) {
+        return item;
+      }
+    }
+
+    return nullptr;
+  }
+
   TestingProfile* profile() { return profile_.get(); }
 
  private:
@@ -194,6 +211,9 @@ class TabMenuBridgeTest : public ::testing::Test {
   NSMenuItem* __strong menu_root_;
   NSMenu* __strong menu_;
   tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
+
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kShowTabGroupsMacSystemMenu};
 };
 
 TEST_F(TabMenuBridgeTest, CreatesBlankMenu) {
@@ -323,4 +343,26 @@ TEST_F(TabMenuBridgeTest, ActiveItemTracksChanges) {
 
   RemoveModelTabNamed("Tab 1");
   ExpectActiveMenuItemNameIs("Tab 3");
+}
+
+TEST_F(TabMenuBridgeTest, TabGroupIndicator) {
+  TabStripModel* const tab_strip_model = model();
+  TabMenuBridge bridge(tab_strip_model, menu_root());
+  bridge.BuildMenu();
+
+  AddModelTabNamed("Tab 1", tab_strip_model);
+
+  ActivateModelTabNamed("Tab 1");
+
+  // Group indicator is not shown.
+  EXPECT_EQ(1, tab_strip_model->count());
+  EXPECT_EQ(nil, GetActiveMenuItem().attributedTitle);
+
+  // Add to new group. Group indicator is shown.
+  tab_strip_model->AddToNewGroup({0});
+  EXPECT_NE(nil, GetActiveMenuItem().attributedTitle);
+
+  // Remove from group. Group indicator is not shown.
+  tab_strip_model->RemoveFromGroup({0});
+  EXPECT_EQ(nil, GetActiveMenuItem().attributedTitle);
 }

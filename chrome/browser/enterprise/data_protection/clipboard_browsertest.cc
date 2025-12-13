@@ -11,6 +11,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
+#include "chrome/browser/printing/print_preview_dialog_controller.h"
+#include "chrome/browser/printing/print_test_utils.h"
+#include "chrome/browser/printing/test_print_preview_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -22,6 +25,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/permissions_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -41,6 +45,7 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
 
     ui::TestClipboard::CreateForCurrentThread();
@@ -63,26 +68,31 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
         "/enterprise/data_protection/clipboard_test_page.html");
   }
 
-  void FocusWebContents() {
+  void FocusWebContents(content::WebContents* web_contents = nullptr) {
 #if BUILDFLAG(IS_MAC)
     content::HandleMissingKeyWindow();
 #endif
-    browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+    if (!web_contents) {
+      web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    }
+    web_contents->Focus();
     views::test::WaitForWidgetActive(
         BrowserView::GetBrowserViewForBrowser(browser())->GetWidget(), true);
   }
 
-  void WriteTextToClipboard(const std::string& text) {
+  void WriteTextToClipboard(const std::string& text,
+                            content::WebContents* web_contents = nullptr) {
     // Clear the clipboard before writing so that test cases where the write is
     // blocked don't read whatever data happened to have been in the system
     // clipboard at the time of the test running.
     ui::Clipboard::GetForCurrentThread()->Clear(
         ui::ClipboardBuffer::kCopyPaste);
 
-    FocusWebContents();
+    FocusWebContents(web_contents);
     ASSERT_TRUE(content::ExecJs(
-        rfh(), base::StringPrintf("navigator.clipboard.writeText(\"%s\");",
-                                  text.c_str())));
+        web_contents ? web_contents->GetPrimaryMainFrame() : rfh(),
+        base::StringPrintf("navigator.clipboard.writeText(\"%s\");",
+                           text.c_str())));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -96,10 +106,10 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
     // This permission is required to use `readText()` without user input.
     content::PermissionController* permission_controller =
         rfh()->GetBrowserContext()->GetPermissionController();
-    SetPermissionControllerOverrideForDevTools(
-        permission_controller, url::Origin::Create(url()),
-        blink::PermissionType::CLIPBOARD_READ_WRITE,
-        blink::mojom::PermissionStatus::GRANTED);
+    url::Origin origin = url::Origin::Create(url());
+    SetPermissionControllerOverride(permission_controller, origin, origin,
+                                    blink::PermissionType::CLIPBOARD_READ_WRITE,
+                                    blink::mojom::PermissionStatus::GRANTED);
     base::RunLoop().RunUntilIdle();
   }
 };
@@ -353,5 +363,91 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   ASSERT_FALSE(helper.dialog());
   EXPECT_EQ(content::EvalJs(rfh(), "pasted_text"), "Allowed");
 }
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/452329561) fix flaky focus on macOS.
+#define MAYBE_ChromePrintReportsInitiator DISABLED_ChromePrintReportsInitiator
+#else
+#define MAYBE_ChromePrintReportsInitiator ChromePrintReportsInitiator
+#endif  // BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
+                       MAYBE_ChromePrintReportsInitiator) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "sources": { "urls": ["http://127.0.0.1"] },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
+
+  printing::TestPrintPreviewObserver print_preview_observer(
+      /*wait_for_loaded=*/true);
+  printing::test::StartPrint(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  content::WebContents* preview_web_contents =
+      print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
+
+  WriteTextToClipboard("Blocked", preview_web_contents);
+
+  // Verify that nothing was written to the clipboard.
+  base::test::TestFuture<std::u16string> future;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/452329561) fix flaky focus on macOS.
+#define MAYBE_ChromePrintReportsPrimaryMainFrameURLWithinSubframe \
+  DISABLED_ChromePrintReportsPrimaryMainFrameURLWithinSubframe
+#else
+#define MAYBE_ChromePrintReportsPrimaryMainFrameURLWithinSubframe \
+  ChromePrintReportsPrimaryMainFrameURLWithinSubframe
+#endif  // BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(
+    DataProtectionClipboardBrowserTest,
+    MAYBE_ChromePrintReportsPrimaryMainFrameURLWithinSubframe) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "sources": { "urls": ["a.com"] },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "a.com", "/cross_site_iframe_factory.html?a(b)")));
+  content::WebContents* original_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  content::RenderFrameHost* main_frame =
+      original_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* sub_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_EQ(sub_frame->GetLastCommittedOrigin().host(), "b.com");
+
+  printing::TestPrintPreviewObserver print_preview_observer(
+      /*wait_for_loaded=*/true);
+  content::ExecuteScriptAsync(sub_frame, R"(window.print();)");
+  content::WebContents* preview_web_contents =
+      print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
+
+  WriteTextToClipboard("Blocked", preview_web_contents);
+
+  // Verify that nothing was written to the clipboard. Only consider the
+  // primary main frame when matching Data Control rules.
+  base::test::TestFuture<std::u16string> future;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get().empty());
+}
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 }  // namespace enterprise_data_protection

@@ -14,8 +14,8 @@
 #include "device/fido/cable/fido_ble_frames.h"
 #include "device/fido/cable/fido_ble_uuids.h"
 #include "device/fido/cable/v2_handshake.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

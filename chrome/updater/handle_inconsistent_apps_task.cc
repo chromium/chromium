@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -101,7 +100,8 @@ void HandleInconsistentAppsTask::FindUnregisteredApps(
                   [](scoped_refptr<PersistedData> persisted_data,
                      const RegistrationRequest& req) {
                     if (!base::Contains(persisted_data->GetAppIds(),
-                                        base::ToLowerASCII(req.app_id))) {
+                                        base::ToLowerASCII(req.app_id)) &&
+                        !req.app_id.empty()) {
                       VLOG(1) << "Registering app from legacy updater: "
                               << req.app_id;
                       persisted_data->RegisterApp(req);

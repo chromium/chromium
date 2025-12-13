@@ -8,7 +8,9 @@
 // TODO(thiabaud): remove this include once we have separated the locks
 // between these two classes.
 #include "base/android/pre_freeze_background_memory_trimmer.h"
+#include "base/byte_count.h"
 #include "base/debug/proc_maps_linux.h"
+#include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
 #include "base/profiler/sample_metadata.h"
 
@@ -31,6 +33,7 @@ class BASE_EXPORT SelfCompactionManager {
   using CompactCancellationReason = CompactCancellationReason;
   static void OnSelfFreeze();
   static void OnRunningCompact();
+  static void RequestRunningCompactWithDelay(const TimeDelta delay);
 
   // If we are currently doing self compaction, cancel it. If it was running,
   // record a metric with the reason for the cancellation.
@@ -68,14 +71,14 @@ class BASE_EXPORT SelfCompactionManager {
                               std::string_view suffix) const;
     void RecordCompactionMetrics(const debug::SmapsRollup& value,
                                  std::string_view suffix);
-    void RecordCompactionMetric(size_t value_bytes,
+    void RecordCompactionMetric(ByteCount value_bytes,
                                 std::string_view metric_name,
                                 std::string_view suffix);
     void RecordCompactionDiffMetrics(const debug::SmapsRollup& before,
                                      const debug::SmapsRollup& after,
                                      std::string_view suffix);
-    void RecordCompactionDiffMetric(size_t before_value_bytes,
-                                    size_t after_value_bytes,
+    void RecordCompactionDiffMetric(ByteCount before_value_bytes,
+                                    ByteCount after_value_bytes,
                                     std::string_view name,
                                     std::string_view suffix);
 
@@ -158,6 +161,8 @@ class BASE_EXPORT SelfCompactionManager {
   void OnTriggerCompact(scoped_refptr<SequencedTaskRunner> task_runner);
   void OnTriggerCompact(std::unique_ptr<CompactionState> state)
       EXCLUSIVE_LOCKS_REQUIRED(lock());
+  static void OnTriggerRunningCompact(std::unique_ptr<CompactionState> state)
+      LOCKS_EXCLUDED(lock());
   void StartCompaction(std::unique_ptr<CompactionState> state)
       LOCKS_EXCLUDED(lock());
   void MaybePostCompactionTask(std::unique_ptr<CompactionState> state,

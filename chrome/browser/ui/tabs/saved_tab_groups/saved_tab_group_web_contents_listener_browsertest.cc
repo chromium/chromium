@@ -5,10 +5,9 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/data_sharing/public/features.h"
@@ -36,10 +35,8 @@ constexpr char kThirdURL[] = "https://url3.com";
 class ListenerDeferredTest : public InProcessBrowserTest {
  public:
   ListenerDeferredTest() {
-    features_.InitWithFeatures(
-        {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {});
+    features_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
+                               {});
   }
 
   void SetUpOnMainThread() override {
@@ -159,7 +156,7 @@ class ListenerDeferredTest : public InProcessBrowserTest {
   Profile* profile() { return browser()->profile(); }
   tab_groups::SavedTabGroupModel* saved_tab_group_model() {
     tab_groups::TabGroupSyncService* service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
     EXPECT_TRUE(service);
 
     auto* service_impl =

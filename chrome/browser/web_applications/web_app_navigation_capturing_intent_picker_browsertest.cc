@@ -162,10 +162,9 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
                        VerifyWindowControlsOverlayReappears) {
   auto ensure_app_browser =
       [&](base::FunctionRef<webapps::AppId()> app_browser_launcher) {
-        ui_test_utils::BrowserChangeObserver add_observer(
-            nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+        ui_test_utils::BrowserCreatedObserver browser_created_observer;
         webapps::AppId app_id = app_browser_launcher();
-        Browser* app_browser = add_observer.Wait();
+        Browser* app_browser = browser_created_observer.Wait();
         EXPECT_NE(app_browser, browser());
         EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
         return std::make_pair(app_browser, app_id);

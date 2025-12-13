@@ -11,12 +11,10 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -45,7 +43,6 @@ using extensions::ExternalInstallInfoUpdateUrl;
 using extensions::mojom::ManifestLocation;
 using ::testing::_;
 using ::testing::Exactly;
-using ::testing::Invoke;
 using ::testing::Mock;
 
 namespace {
@@ -207,17 +204,11 @@ class ServicesCustomizationDocumentTest : public testing::Test {
     std::string default_network_path =
         default_network ? default_network->path() : "";
 
-    network_portal_detector::InitializeForTesting(&network_portal_detector_);
-    std::string guid =
-        default_network ? default_network->guid() : std::string();
-    network_portal_detector_.SetDefaultNetworkForTesting(guid);
-
     interceptor_ =
         std::make_unique<TestURLLoaderFactoryInterceptor>(&loader_factory_);
   }
 
   void TearDown() override {
-    network_portal_detector::InitializeForTesting(nullptr);
     loader_factory_.ClearResponses();
     interceptor_.reset();
 
@@ -276,14 +267,11 @@ class ServicesCustomizationDocumentTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
   NetworkHandlerTestHelper network_handler_test_helper_;
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
   network::TestURLLoaderFactory loader_factory_;
   std::unique_ptr<TestURLLoaderFactoryInterceptor> interceptor_;
-  NetworkPortalDetectorTestImpl network_portal_detector_;
 };
 
 TEST_F(ServicesCustomizationDocumentTest, Basic) {

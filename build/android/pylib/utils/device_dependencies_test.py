@@ -9,7 +9,9 @@ Example usage:
 """
 
 import os
+import tempfile
 import unittest
+from unittest import mock
 
 from pathlib import Path
 import sys
@@ -57,6 +59,32 @@ class DevicePathComponentsForTest(unittest.TestCase):
     self.assertEqual([None, 'paks', 'foo.pak'],
                      device_dependencies.DevicePathComponentsFor(
                          test_path, output_directory))
+
+
+@mock.patch('pylib.constants.GetOutDirectory')
+class GetDataDependenciesTest(unittest.TestCase):
+
+  def testSimple(self, mock_get_out_dir):
+    with tempfile.TemporaryDirectory() as out_dir:
+      runtime_deps_file_path = os.path.join(out_dir, 'runtime_deps_file')
+      mock_get_out_dir.return_value = out_dir
+      with open(runtime_deps_file_path, 'w') as f:
+        f.write('foo.pak\n')
+        f.write('foo/bar.py\n')
+        f.write('bin/run_some_test\n')
+      deps = device_dependencies.GetDataDependencies(runtime_deps_file_path)
+      self.assertEqual(1, len(deps))
+      self.assertEqual([None, 'paks', 'foo.pak'], deps[0][1])
+
+  def testWeirdBuildDirName(self, mock_get_out_dir):
+    with tempfile.TemporaryDirectory(suffix='Android32_(more/') as out_dir:
+      runtime_deps_file_path = os.path.join(out_dir, 'runtime_deps_file')
+      mock_get_out_dir.return_value = out_dir
+      with open(runtime_deps_file_path, 'w') as f:
+        f.write('foo/bar.txt\n')
+      deps = device_dependencies.GetDataDependencies(runtime_deps_file_path)
+      self.assertEqual(1, len(deps))
+      self.assertEqual([None, 'foo', 'bar.txt'], deps[0][1])
 
 
 class SubstituteDeviceRootTest(unittest.TestCase):

@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/omnibox/debugger/remote_suggestions_service_observer_bridge.h"
 
+#import <string>
+
+#import "base/types/optional_ref.h"
+
 RemoteSuggestionsServiceObserverBridge::RemoteSuggestionsServiceObserverBridge(
     id<RemoteSuggestionsServiceObserver> observer,
     RemoteSuggestionsService* remote_suggestions_service)
@@ -32,10 +36,10 @@ void RemoteSuggestionsServiceObserverBridge::OnRequestStarted(
 void RemoteSuggestionsServiceObserverBridge::OnRequestCompleted(
     const base::UnguessableToken& request_id,
     const int response_code,
-    const std::unique_ptr<std::string>& response_body) {
+    base::optional_ref<std::string> response_body) {
   NSString* responseBody = nil;
   if (response_code == 200 && response_body) {
-    responseBody = base::SysUTF8ToNSString(*response_body.get());
+    responseBody = base::SysUTF8ToNSString(*response_body);
   }
   [observer_ remoteSuggestionsService:remote_suggestions_service_
        completedRequestWithIdentifier:request_id

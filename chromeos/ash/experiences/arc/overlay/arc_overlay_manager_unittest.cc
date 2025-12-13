@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h"
 
-#include "ash/test/test_widget_builder.h"
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/app_types.h"
@@ -14,6 +13,7 @@
 #include "components/exo/test/shell_surface_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/views/test/test_widget_builder.h"
 
 namespace ash {
 namespace {
@@ -28,7 +28,7 @@ class ArcOverlayManagerTest : public exo::test::ExoTestBase {
 
     manager_ = std::make_unique<ArcOverlayManager>();
 
-    host_widget_ = TestWidgetBuilder().BuildOwnsNativeWidget();
+    host_widget_ = views::test::TestWidgetBuilder().BuildOwnsNativeWidget();
 
     exo::test::ShellSurfaceBuilder builder(gfx::Size(100, 100));
     overlay_shell_surface_ = builder.BuildShellSurface();

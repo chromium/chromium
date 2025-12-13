@@ -8,9 +8,9 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SettingsPrefs} from '../common.js';
-import {ReadAnythingSettingsChange} from '../metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../read_anything_logger.js';
+import type {SettingsPrefs} from '../content/read_anything_types.js';
+import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
+import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './line_spacing_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';

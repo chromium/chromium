@@ -54,15 +54,13 @@ class SVGListPropertyHelper : public SVGListPropertyBase {
     explicit const_iterator(SVGListPropertyBase::const_iterator wrapped)
         : wrapped_(wrapped) {}
 
-    const_iterator& operator++() {
-      UNSAFE_TODO(++wrapped_);
+    UNSAFE_BUFFER_USAGE const_iterator& operator++() {
+      // SAFETY: This function exposes this unsafety.
+      UNSAFE_BUFFERS(++wrapped_);
       return *this;
     }
     bool operator==(const const_iterator& other) const {
       return wrapped_ == other.wrapped_;
-    }
-    bool operator!=(const const_iterator& other) const {
-      return !operator==(other);
     }
     const ItemPropertyType* operator->() const {
       return To<ItemPropertyType>(wrapped_->Get());

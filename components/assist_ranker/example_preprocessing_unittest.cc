@@ -91,63 +91,90 @@ TEST_F(ExamplePreprocessorTest, AddMissingFeatures) {
 
 TEST_F(ExamplePreprocessorTest, AddBucketizeFeatures) {
   RankerExample expected = example_;
-  ExamplePreprocessorConfig config;
-  Map<std::string, ExamplePreprocessorConfig::Boundaries>& bucketizers =
-      *config.mutable_bucketizers();
 
-  // Adding bucketized feature to non-existing feature returns the same example.
-  const std::string foo = "foo";
-  bucketizers[foo].add_boundaries(0.5);
-  EXPECT_EQ(ExamplePreprocessor::Process(config, &example_),
-            ExamplePreprocessor::kSuccess);
-  EXPECT_EQUALS_EXAMPLE(example_, expected);
-  config.Clear();
+  {
+    // Adding bucketized feature to non-existing feature returns the same example.
+    auto config = std::make_unique<ExamplePreprocessorConfig>();
+    Map<std::string, ExamplePreprocessorConfig::Boundaries>& bucketizers =
+        *(config->mutable_bucketizers());
+    const std::string foo = "foo";
+    bucketizers[foo].add_boundaries(0.5);
+    EXPECT_EQ(ExamplePreprocessor::Process(*config, &example_),
+              ExamplePreprocessor::kSuccess);
+    EXPECT_EQUALS_EXAMPLE(example_, expected);
+    config.reset();
+  }
 
+  {
   // Bucketizing a bool feature returns same proto.
+  auto config = std::make_unique<ExamplePreprocessorConfig>();
+  Map<std::string, ExamplePreprocessorConfig::Boundaries>& bucketizers =
+      *(config->mutable_bucketizers());
   bucketizers[bool_name_].add_boundaries(0.5);
-  EXPECT_EQ(ExamplePreprocessor::Process(config, &example_),
+  EXPECT_EQ(ExamplePreprocessor::Process(*config, &example_),
             ExamplePreprocessor::kNonbucketizableFeatureType);
   EXPECT_EQUALS_EXAMPLE(example_, expected);
-  config.Clear();
+  config.reset();
+}
 
+{
   // Bucketizing a string feature returns same proto.
+  auto config = std::make_unique<ExamplePreprocessorConfig>();
+  Map<std::string, ExamplePreprocessorConfig::Boundaries>& bucketizers =
+      *(config->mutable_bucketizers());
   bucketizers[one_hot_name_].add_boundaries(0.5);
-  EXPECT_EQ(ExamplePreprocessor::Process(config, &example_),
+  EXPECT_EQ(ExamplePreprocessor::Process(*config, &example_),
             ExamplePreprocessor::kNonbucketizableFeatureType);
   EXPECT_EQUALS_EXAMPLE(example_, expected);
-  config.Clear();
+  config.reset();
+}
 
+{
   // Bucketizing an int32 feature with 3 boundary.
+  auto config = std::make_unique<ExamplePreprocessorConfig>();
+  Map<std::string, ExamplePreprocessorConfig::Boundaries>& bucketizers =
+      *(config->mutable_bucketizers());
   bucketizers[int32_name_].add_boundaries(int32_value_ - 2);
   bucketizers[int32_name_].add_boundaries(int32_value_ - 1);
   bucketizers[int32_name_].add_boundaries(int32_value_ + 1);
-  EXPECT_EQ(ExamplePreprocessor::Process(config, &example_),
+  EXPECT_EQ(ExamplePreprocessor::Process(*config, &example_),
             ExamplePreprocessor::kSuccess);
   (*expected.mutable_features())[int32_name_].set_string_value("2");
   EXPECT_EQUALS_EXAMPLE(example_, expected);
-  config.Clear();
+  config.reset();
+}
 
+{
   // Bucketizing a float feature with 3 boundary.
+  auto config = std::make_unique<ExamplePreprocessorConfig>();
+  Map<std::string, ExamplePreprocessorConfig::Boundaries>& bucketizers =
+      *(config->mutable_bucketizers());
   bucketizers[float_name_].add_boundaries(float_value_ - 0.2);
   bucketizers[float_name_].add_boundaries(float_value_ - 0.1);
   bucketizers[float_name_].add_boundaries(float_value_ + 0.1);
-  EXPECT_EQ(ExamplePreprocessor::Process(config, &example_),
+  EXPECT_EQ(ExamplePreprocessor::Process(*config, &example_),
             ExamplePreprocessor::kSuccess);
   (*expected.mutable_features())[float_name_].set_string_value("2");
   EXPECT_EQUALS_EXAMPLE(example_, expected);
-  config.Clear();
+  config.reset();
+}
 
+{
   // Bucketizing a float feature with value equal to a boundary.
+  auto config = std::make_unique<ExamplePreprocessorConfig>();
+  Map<std::string, ExamplePreprocessorConfig::Boundaries>& bucketizers =
+      *(config->mutable_bucketizers());
   (*example_.mutable_features())[float_name_].set_float_value(float_value_);
   bucketizers[float_name_].add_boundaries(float_value_ - 0.2);
   bucketizers[float_name_].add_boundaries(float_value_ - 0.1);
   bucketizers[float_name_].add_boundaries(float_value_);
   bucketizers[float_name_].add_boundaries(float_value_ + 0.1);
-  EXPECT_EQ(ExamplePreprocessor::Process(config, &example_),
+  EXPECT_EQ(ExamplePreprocessor::Process(*config, &example_),
             ExamplePreprocessor::kSuccess);
   (*expected.mutable_features())[float_name_].set_string_value("3");
   EXPECT_EQUALS_EXAMPLE(example_, expected);
-  config.Clear();
+  config.reset();
+}
 }
 
 // Tests normalization of float and int32 features.

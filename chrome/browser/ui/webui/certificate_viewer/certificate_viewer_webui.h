@@ -16,7 +16,7 @@
 #include "components/server_certificate_database/server_certificate_database.h"
 #include "components/server_certificate_database/server_certificate_database.pb.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 namespace content {
@@ -55,6 +55,11 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
       CertMetadataModificationsCallback modifications_callback,
       content::WebContents* web_contents,
       gfx::NativeWindow parent);
+
+  using MockShowCallback = base::RepeatingCallback<void(
+      std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
+      content::WebContents* web_contents)>;
+  static void MockForTesting(MockShowCallback callback);
 
   CertificateViewerDialog(const CertificateViewerDialog&) = delete;
   CertificateViewerDialog& operator=(const CertificateViewerDialog&) = delete;

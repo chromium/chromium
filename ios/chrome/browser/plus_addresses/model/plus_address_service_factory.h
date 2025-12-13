@@ -29,9 +29,9 @@ class PlusAddressServiceFactory : public ProfileKeyedServiceFactoryIOS {
   PlusAddressServiceFactory();
   ~PlusAddressServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_MODEL_PLUS_ADDRESS_SERVICE_FACTORY_H_

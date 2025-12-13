@@ -8,7 +8,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
-#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -35,7 +34,6 @@ ScopedWebFrame::ScopedWebFrame()
           /*page_base_background_color=*/std::nullopt,
           /*browsing_context_group_token=*/base::UnguessableToken::Create(),
           /*color_provider_colors=*/nullptr,
-          /*partitioned_popin_params=*/nullptr,
           /*history_index=*/-1,
           /*history_length=*/0)),
       frame_(blink::WebLocalFrame::CreateMainFrame(view_,

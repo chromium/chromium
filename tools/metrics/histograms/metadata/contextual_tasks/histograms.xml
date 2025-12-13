@@ -1,0 +1,272 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of
+content_extraction histograms along with a detailed description for each
+histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="ContextualTasks.ActiveTab.UserAction.LinkClicked"
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a user clicks on a link embedded in the active tab shown
+    alongside the contextual tasks panel. Always recorded as true.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.ActiveTasksCount" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Records the number of active tasks (tasks that are open in a full tab or in
+    the side panel). This is recorded every time a task is created on the local
+    device.
+  </summary>
+</histogram>
+
+<histogram
+    name="ContextualTasks.AiResponse.UserAction.LinkClicked.{ContextualTasksUiSurface}"
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a user clicks on a link embedded in the AI response on
+    the contextual tasks page. Split out by the contextual tasks form factor
+    (panel or tab) that the link was clicked on.Always recorded as true.
+  </summary>
+  <token key="ContextualTasksUiSurface">
+    <variant name="Panel"
+        summary="The link was clicked when the contextual tasks panel was
+                 open."/>
+    <variant name="Tab"
+        summary="The link was clicked when the contextual tasks UI was
+                 displayed in full tab."/>
+  </token>
+</histogram>
+
+<histogram name="ContextualTasks.Context.ContextCalculationLatency" units="ms"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is made in the contextual tasks framework and
+    context was calculated successfully. Records the duration it took to
+    calculate context for the query.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.ContextDeterminationStatus"
+    enum="ContextualTasksContextDeterminationStatus" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is entered by the user (before being sent) in
+    the contextual tasks framework. Records the status of context determination
+    (success or failure reason).
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.DurationSinceLastActive"
+    units="seconds" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks.
+    Records seconds (upto 3600) since each of the tab was active.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.EmbeddingSimilarityScore"
+    units="count" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks.
+    Records 100*best_similarity_score between query embeddings and passage
+    embeddings for the page.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.ExplicitTabsCount" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework and context was calculated successfully. Records the number of
+    tabs that were explicitly chosen to be uploaded by the user. Note that tabs
+    with the same URL are only counted once.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.MatchingWordsCount" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework and context was calculated successfully. Records the number of
+    words that were in common between the query and the tab title.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.RelevantTabsCount" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework and context was calculated successfully. Records the number of
+    tabs that were determined to be relevant to the query.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.TabExcessCount" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework and context was calculated successfully. Records the number of
+    tabs with unique URLs that were predicted by the model but were not in the
+    explicitly chosen set.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.TabOverlapCount" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework and context was calculated successfully. Records the number of
+    tabs with unique URLsthat were in both the explicitly chosen set and the set
+    that was predicted by the model.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.TabOverlapPercentage" units="%"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework and context was calculated successfully. Records the percentage of
+    tabs with unique URLs that were in both the explicitly chosen set and the
+    set that was predicted by the model. This is calculated by dividing the
+    number of tabs that were in both sets by the number of tabs in the
+    explicitly chosen set.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.TabScore" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework when using multi-signal scoring. Records the final computed score
+    for each tab, multiplied by 100.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.TabAffiliationCount" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a tab is affiliated with a task. Records the number of
+    tabs that are affiliated with the task that has the new affilation.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.TabChange.UserAction{ActionType}"
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a tab change occurs and affects the contextual tasks
+    panel state. {ActionType} Always recorded as true.
+  </summary>
+  <token key="ActionType">
+    <variant name=".ChangedThreads"
+        summary="The user changed tabs which resulted in the side panel
+                 changing threads."/>
+    <variant name=".CloseSidePanel"
+        summary="The user changed tabs which resulted in the side panel
+                 closing."/>
+    <variant name=".OpenSidePanel"
+        summary="The user changed tabs which resulted in the side panel
+                 opening."/>
+    <variant name=".StayedOnThread"
+        summary="The user changed tabs which resulted in staying on the
+                 existing thread."/>
+  </token>
+</histogram>
+
+<histogram name="ContextualTasks.WebUI.UserAction{ActionType}" enum="Boolean"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time the user interacted with the contextual tasks web UI
+    directly. {ActionType} Always recorded as true.
+  </summary>
+  <token key="ActionType">
+    <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
+    <variant name=".OpenHelp" summary="The user opened the help page."/>
+    <variant name=".OpenInNewTab"
+        summary="The user opened the task in a new tab."/>
+    <variant name=".OpenMyActivity"
+        summary="The user opened the My Activity page."/>
+    <variant name=".OpenNewThread" summary="The user opened a new thread."/>
+    <variant name=".OpenThreadHistory"
+        summary="The user opened the thread history."/>
+    <variant name=".TabFromSourcesMenuClicked"
+        summary="The user clicked on a tab from the sources menu."/>
+  </token>
+</histogram>
+
+<histogram name="ContextualTasks.{EntrypointType}.UserAction{ActionType}"
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time the user interacted with the {EntrypointType}.
+    {ActionType} Always recorded as true.
+  </summary>
+  <token key="ActionType">
+    <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
+    <variant name=".OpenSidePanel" summary="The user opened the side panel."/>
+  </token>
+  <token key="EntrypointType">
+    <variant name="AppMenu" summary="the app menu"/>
+    <variant name="ToolbarButton"
+        summary="the contextual tasks toolbar button"/>
+  </token>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

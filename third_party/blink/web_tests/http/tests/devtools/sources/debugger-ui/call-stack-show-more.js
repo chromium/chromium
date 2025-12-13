@@ -27,15 +27,13 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
   await SourcesTestRunner.startDebuggerTestPromise(/* quiet */ true);
   await SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise();
-  await TestRunner.addSnifferPromise(
-      SourcesModule.CallStackSidebarPane.CallStackSidebarPane.prototype, 'updatedForTest');
+  const pane = SourcesModule.CallStackSidebarPane.CallStackSidebarPane.instance();
+  await pane.updateComplete;
   dumpCallStackSidebarPane();
 
   TestRunner.addResult('\n---------------\nClicks show more..');
-  const pane = SourcesModule.CallStackSidebarPane.CallStackSidebarPane.instance();
   pane.contentElement.querySelector('.show-more-message > .link').click();
-  await TestRunner.addSnifferPromise(
-      SourcesModule.CallStackSidebarPane.CallStackSidebarPane.prototype, 'updatedForTest');
+  await pane.updateComplete;
   dumpCallStackSidebarPane();
   SourcesTestRunner.completeDebuggerTest();
 

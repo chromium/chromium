@@ -48,12 +48,24 @@ void ZeroStatePromoPageHandler::LaunchWebStoreLink(
       break;
   }
 
-  std::string_view utm_source =
-      (feature_engagement::IPHExtensionsZeroStatePromoVariant::
-           kCustomUiChipIph ==
-       feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.Get())
-          ? extension_urls::kCustomUiChipIphUtmSource
-          : extension_urls::kCustomUiPlainLinkIphUtmSource;
+  std::string_view utm_source;
+  switch (feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.Get()) {
+    case feature_engagement::IPHExtensionsZeroStatePromoVariant::
+        kCustomUiChipIphV1:
+      utm_source = extension_urls::kCustomUiChipIphV1UtmSource;
+      break;
+    case feature_engagement::IPHExtensionsZeroStatePromoVariant::
+        kCustomUiChipIphV2:
+      utm_source = extension_urls::kCustomUiChipIphV2UtmSource;
+      break;
+    case feature_engagement::IPHExtensionsZeroStatePromoVariant::
+        kCustomUiChipIphV3:
+      utm_source = extension_urls::kCustomUiChipIphV3UtmSource;
+      break;
+    default:
+      utm_source = extension_urls::kCustomUiPlainLinkIphUtmSource;
+      break;
+  }
   GURL url_with_utm = extension_urls::AppendUtmSource(url, utm_source);
 
   NavigateParams params(profile_, url_with_utm,

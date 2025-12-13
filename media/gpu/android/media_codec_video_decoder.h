@@ -11,9 +11,9 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
-#include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/android/media_crypto_context.h"
 #include "media/base/android_overlay_mojo_factory.h"
@@ -78,7 +78,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
 
   static std::unique_ptr<VideoDecoder> Create(
       const gpu::GpuPreferences& gpu_preferences,
-      const gpu::GpuFeatureInfo& gpu_feature_info,
+      bool is_surface_control_enabled,
       std::unique_ptr<MediaLog> media_log,
       DeviceInfo* device_info,
       CodecAllocator* codec_allocator,
@@ -108,7 +108,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
 
   MediaCodecVideoDecoder(
       const gpu::GpuPreferences& gpu_preferences,
-      const gpu::GpuFeatureInfo& gpu_feature_info,
+      bool is_surface_control_enabled,
       std::unique_ptr<MediaLog> media_log,
       DeviceInfo* device_info,
       CodecAllocator* codec_allocator,
@@ -125,9 +125,10 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
 
   // Called when the Cdm provides |media_crypto|.  Will signal |init_cb| based
   // on the result, and set the codec config properly.
-  void OnMediaCryptoReady(InitCB init_cb,
-                          JavaObjectPtr media_crypto,
-                          bool requires_secure_video_codec);
+  void OnMediaCryptoReady(
+      InitCB init_cb,
+      base::android::ScopedJavaGlobalRef<jobject> media_crypto,
+      bool requires_secure_video_codec);
 
   enum class State {
     // Initializing resources required to create a codec.
@@ -270,6 +271,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   OutputCB output_cb_;
   WaitingCB waiting_cb_;
   VideoDecoderConfig decoder_config_;
+  bool low_delay_ = false;
 
   // Codec specific data (SPS and PPS for H264). Some MediaCodecs initialize
   // more reliably if we explicitly pass these (http://crbug.com/649185).
@@ -345,11 +347,6 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
 
   // Optional crypto object from the Cdm.
   base::android::ScopedJavaGlobalRef<jobject> media_crypto_;
-
-  // For A/B power testing, this causes all non-L1 content to avoid overlays.
-  // This is only for A/B power testing, and can be removed after that.
-  // See https://crbug.com/1081346 .
-  bool allow_nonsecure_overlays_ = true;
 
   // If set, then the next call to `CodecConfig()` will be allowed to retry if
   // it fails to get a codec.  This is to work around b/191966399.

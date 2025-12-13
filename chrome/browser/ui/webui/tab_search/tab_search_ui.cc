@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_sync_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -29,11 +30,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -78,10 +79,12 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
        IDS_TAB_SEARCH_A11Y_RECENTLY_CLOSED_TAB_GROUP},
       {"audioMuting", IDS_TAB_AX_LABEL_AUDIO_MUTING_FORMAT},
       {"audioPlaying", IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT},
+      {"blobUrlSource", IDS_HOVER_CARD_BLOB_URL_SOURCE},
       {"clearSearch", IDS_CLEAR_SEARCH},
       {"closeTab", IDS_TAB_SEARCH_CLOSE_TAB},
       {"collapseRecentlyClosed", IDS_TAB_SEARCH_COLLAPSE_RECENTLY_CLOSED},
       {"expandRecentlyClosed", IDS_TAB_SEARCH_EXPAND_RECENTLY_CLOSED},
+      {"fileUrlSource", IDS_HOVER_CARD_FILE_URL_SOURCE},
       {"mediaRecording", IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT},
       {"audioRecording", IDS_TAB_AX_LABEL_AUDIO_RECORDING_FORMAT},
       {"videoRecording", IDS_TAB_AX_LABEL_VIDEO_RECORDING_FORMAT},
@@ -182,6 +185,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"splitViewEmptyTitle", IDS_SPLIT_VIEW_NTP_EMPTY_TITLE},
       {"splitViewTabTitle", IDS_SPLIT_VIEW_NTP_TAB_TITLE},
       {"splitViewTitle", IDS_SPLIT_VIEW_NTP_TITLE},
+      {"splitViewCloseButtonAriaLabel",
+       IDS_SPLIT_VIEW_NTP_CLOSE_BUTTON_ARIA_LABEL},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
@@ -213,8 +218,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       features::IsTabstripDeclutterEnabled() && !profile->IsIncognitoProfile());
   source->AddBoolean("dedupeEnabled", features::IsTabstripDedupeEnabled() &&
                                           !profile->IsIncognitoProfile());
-  source->AddBoolean("splitViewEnabled",
-                     base::FeatureList::IsEnabled(features::kSideBySide));
 
 #if BUILDFLAG(ENABLE_GLIC)
   source->AddResourcePath("alert_indicators/tab_media_glic_active.svg",
@@ -250,20 +253,13 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<TabSearchSyncHandler>(profile));
 
   page_handler_timer_ = base::ElapsedTimer();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "browser", "TabSearchPageHandlerConstructionDelay", this);
+  TRACE_EVENT_BEGIN("browser", "TabSearchPageHandlerConstructionDelay",
+                    perfetto::Track::FromPointer(this));
 }
 
 TabSearchUI::~TabSearchUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TabSearchUI)
-
-void TabSearchUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
-}
 
 void TabSearchUI::BindInterface(
     mojo::PendingReceiver<tab_search::mojom::PageHandlerFactory> receiver) {
@@ -281,8 +277,7 @@ void TabSearchUI::CreatePageHandler(
   // reuse TabSearchUI. Check to make sure |page_handler_timer_| is valid before
   // logging metrics.
   if (page_handler_timer_.has_value()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "browser", "TabSearchPageHandlerConstructionDelay", this);
+    TRACE_EVENT_END("browser", perfetto::Track::FromPointer(this));
     UmaHistogramMediumTimes("Tabs.TabSearch.PageHandlerConstructionDelay",
                             page_handler_timer_->Elapsed());
     page_handler_timer_.reset();

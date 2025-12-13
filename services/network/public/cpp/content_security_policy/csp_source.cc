@@ -68,7 +68,7 @@ SchemeMatchingResult SourceAllowScheme(const mojom::CSPSource& source,
   const std::string& allowed_scheme =
       source.scheme.empty() ? self_source.scheme : source.scheme;
 
-  return MatchScheme(allowed_scheme, url.scheme());
+  return MatchScheme(allowed_scheme, url.GetScheme());
 }
 
 bool SourceAllowHost(const mojom::CSPSource& source, const std::string& host) {
@@ -96,7 +96,7 @@ bool SourceAllowHost(const mojom::CSPSource& source, const GURL& url) {
   // For now, we check `url.IsStandard()` to maintain consistent behavior
   // regardless of the url::StandardCompliantNonSpecialSchemeURLParsing feature
   // state.
-  return SourceAllowHost(source, url.IsStandard() ? url.host() : "");
+  return SourceAllowHost(source, url.IsStandard() ? url.GetHost() : "");
 }
 
 PortMatchingResult SourceAllowPort(const mojom::CSPSource& source,
@@ -136,7 +136,7 @@ PortMatchingResult SourceAllowPort(const mojom::CSPSource& source,
 
 PortMatchingResult SourceAllowPort(const mojom::CSPSource& source,
                                    const GURL& url) {
-  return SourceAllowPort(source, url.EffectiveIntPort(), url.scheme());
+  return SourceAllowPort(source, url.EffectiveIntPort(), url.GetScheme());
 }
 
 bool SourceAllowPath(const mojom::CSPSource& source, const std::string& path) {
@@ -166,7 +166,7 @@ bool SourceAllowPath(const mojom::CSPSource& source,
   if (has_followed_redirect)
     return true;
 
-  return SourceAllowPath(source, url.path());
+  return SourceAllowPath(source, url.GetPath());
 }
 
 bool requiresUpgrade(PortMatchingResult result) {
@@ -204,7 +204,7 @@ bool CheckCSPSource(const mojom::CSPSource& source,
   // TODO(crbug.com/40195488): Update the DCHECK and the return condition below
   // if opaque fenced frames can map to non-https potentially trustworthy urls.
   if (is_opaque_fenced_frame)
-    DCHECK_EQ(url.scheme(), url::kHttpsScheme);
+    DCHECK_EQ(url.GetScheme(), url::kHttpsScheme);
 
   if (CSPSourceIsSchemeOnly(source)) {
     // Opaque fenced frames only match 'https:' scheme source. Returns true for

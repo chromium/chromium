@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.browserservices.ui;
 
-import androidx.annotation.Nullable;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.controller.TrustedWebActivityBrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -22,7 +22,10 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesTh
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 
+import java.util.function.Supplier;
+
 /** Coordinator for shared functionality between Trusted Web Activities and webapps. */
+@NullMarked
 public class SharedActivityCoordinator implements InflationObserver {
     private final CurrentPageVerifier mCurrentPageVerifier;
     private final TrustedWebActivityBrowserControlsVisibilityManager
@@ -32,7 +35,7 @@ public class SharedActivityCoordinator implements InflationObserver {
     private final CustomTabOrientationController mCustomTabOrientationController;
     private final BrowserServicesThemeColorProvider mBrowserServicesThemeColorProvider;
 
-    @Nullable private final ImmersiveMode mImmersiveDisplayMode;
+    private final @Nullable ImmersiveMode mImmersiveDisplayMode;
 
     private boolean mUseAppModeUi = true;
 
@@ -115,7 +118,7 @@ public class SharedActivityCoordinator implements InflationObserver {
         }
     }
 
-    private ImmersiveMode computeImmersiveMode(
+    private @Nullable ImmersiveMode computeImmersiveMode(
             BrowserServicesIntentDataProvider intentDataProvider) {
         TrustedWebActivityDisplayMode displayMode = intentDataProvider.getProvidedTwaDisplayMode();
         return (displayMode instanceof ImmersiveMode) ? (ImmersiveMode) displayMode : null;

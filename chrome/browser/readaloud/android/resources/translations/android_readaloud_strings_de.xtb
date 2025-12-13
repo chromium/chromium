@@ -30,7 +30,7 @@
 <translation id="4525525184005340968">Tal</translation>
 <translation id="4710974520964166851">Entspannt</translation>
 <translation id="4773921449011281499">Friedlich</translation>
-<translation id="4867493576811701175">Schaltfläche „Mag ich“ – über diese Schaltfläche kannst du positives Feedback zu dieser Funktion geben</translation>
+<translation id="4867493576811701175">Button „Mag ich“ – über diesen Button kannst du positives Feedback zu dieser Funktion geben</translation>
 <translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> Sekunden zurückspulen</translation>
 <translation id="4967513477347430212">Küste</translation>
 <translation id="5026371835667036198">Hell</translation>
@@ -57,16 +57,18 @@
 <translation id="7221920857098237570">Sanft</translation>
 <translation id="7237590978482584900">Lebhaft</translation>
 <translation id="7282547042039404307">Gleichmäßig</translation>
+<translation id="7514257690823355037">Nächster Artikel</translation>
 <translation id="8004767876552422827">Feld</translation>
 <translation id="8136852699834914183">Die Wiedergabefunktion ist für diese Seite nicht verfügbar.</translation>
 <translation id="8198036737896977997">Luft</translation>
 <translation id="8264989794233974275">Geschwindigkeit um das <ph name="PLAYBACK_SPEED" />-Fache erhöhen oder verringern.</translation>
-<translation id="837054959055425654">Schaltfläche „Mag ich nicht“ – über diese Schaltfläche wird ein Formular geöffnet, über das du detailliertes Feedback zu einem Problem mit dieser Funktion geben kannst</translation>
+<translation id="837054959055425654">Button „Mag ich nicht“ – über diesen Button wird ein Formular geöffnet, über das du detailliertes Feedback zu einem Problem mit dieser Funktion geben kannst</translation>
 <translation id="8407011429883244666">Player schließen</translation>
 <translation id="8462210863277153423">Zur Verbesserung der Qualität und für Forschungszwecke wird deine URL zusammen mit dem Feedback hochgeladen.</translation>
 <translation id="8481839122437406573">Ruhig</translation>
 <translation id="8756370108715456837">Faktisch nicht korrekt</translation>
 <translation id="8953618380150219653">Der Player „Diese Seite anhören“ ist vollständig geöffnet.</translation>
 <translation id="9087782179025630211">Steuerleiste. <ph name="ELAPSED" /> von <ph name="TOTAL" /> verstrichen.</translation>
+<translation id="9193673272519126093">Vorheriger Artikel</translation>
 <translation id="978117257931832348">Tiefe Stimmlage</translation>
 </translationbundle>

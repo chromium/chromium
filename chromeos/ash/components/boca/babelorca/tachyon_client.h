@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -27,7 +28,7 @@ class TachyonClient {
       std::unique_ptr<network::SimpleURLLoader> url_loader,
       std::unique_ptr<RequestDataWrapper> request_data,
       AuthFailureCallback auth_failure_cb,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   static void MaybeRecordUma(const network::SimpleURLLoader* url_loader,
                              const RequestDataWrapper* request_data);

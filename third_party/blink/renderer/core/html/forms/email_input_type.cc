@@ -275,12 +275,10 @@ String EmailInputType::SanitizeValue(const String& proposed_value) const {
     return StripLeadingAndTrailingHTMLSpaces(no_line_break_value);
   Vector<String> addresses = ParseMultipleValues(no_line_break_value);
   StringBuilder stripped_value;
-  for (wtf_size_t i = 0; i < addresses.size(); ++i) {
-    if (i > 0)
-      stripped_value.Append(',');
-    stripped_value.Append(StripLeadingAndTrailingHTMLSpaces(addresses[i]));
-  }
-  return stripped_value.ToString();
+  stripped_value.AppendRange(addresses, ",", [](const auto& address) {
+    return StripLeadingAndTrailingHTMLSpaces(address);
+  });
+  return stripped_value.ReleaseString();
 }
 
 String EmailInputType::ConvertFromVisibleValue(
@@ -293,13 +291,11 @@ String EmailInputType::ConvertFromVisibleValue(
   Vector<String> addresses = ParseMultipleValues(sanitized_value);
   StringBuilder builder;
   builder.ReserveCapacity(sanitized_value.length());
-  for (wtf_size_t i = 0; i < addresses.size(); ++i) {
-    if (i > 0)
-      builder.Append(',');
-    builder.Append(ConvertEmailAddressToASCII(
-        GetElement().GetDocument().EnsureEmailRegexp(), addresses[i]));
-  }
-  return builder.ToString();
+  builder.AppendRange(addresses, ",", [&](const auto& address) {
+    return ConvertEmailAddressToASCII(
+        GetElement().GetDocument().EnsureEmailRegexp(), address);
+  });
+  return builder.ReleaseString();
 }
 
 String EmailInputType::VisibleValue() const {
@@ -310,12 +306,10 @@ String EmailInputType::VisibleValue() const {
   Vector<String> addresses = ParseMultipleValues(value);
   StringBuilder builder;
   builder.ReserveCapacity(value.length());
-  for (wtf_size_t i = 0; i < addresses.size(); ++i) {
-    if (i > 0)
-      builder.Append(',');
-    builder.Append(ConvertEmailAddressToUnicode(addresses[i]));
-  }
-  return builder.ToString();
+  builder.AppendRange(addresses, ",", [&](const auto& address) {
+    return ConvertEmailAddressToUnicode(address);
+  });
+  return builder.ReleaseString();
 }
 
 void EmailInputType::MultipleAttributeChanged() {

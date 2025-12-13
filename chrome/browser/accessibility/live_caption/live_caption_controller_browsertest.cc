@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
@@ -241,9 +240,8 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnSodaInstalled) {
   EXPECT_FALSE(HasBubbleController());
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                true);
-  EXPECT_FALSE(HasBubbleController());
 
-  // The UI is only created after SODA is installed.
+  // The UI must be created once SODA is installed, but possibly earlier.
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   EXPECT_TRUE(HasBubbleController());

@@ -12,7 +12,9 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Provides semantic color values, typically in place of <macro>s which currently cannot be used in
@@ -22,6 +24,11 @@ import org.chromium.build.annotations.NullMarked;
 public class SemanticColorUtils {
     private static final String TAG = "SemanticColorUtils";
 
+    private static @ColorInt @Nullable Integer sDefaultIconColorSecondaryForTesting;
+    private static @ColorInt @Nullable Integer sDefaultBgColorForTesting;
+    private static @ColorInt @Nullable Integer sDividerLineBgColorForTesting;
+    private static @ColorInt @Nullable Integer sBottomSystemNavDividerColorForTesting;
+
     private static @ColorInt int resolve(@AttrRes int attrRes, Context context) {
         return MaterialColors.getColor(context, attrRes, TAG);
     }
@@ -30,6 +37,9 @@ public class SemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to default_bg_color. */
     public static @ColorInt int getDefaultBgColor(Context context) {
+        if (sDefaultBgColorForTesting != null) {
+            return sDefaultBgColorForTesting;
+        }
         return resolve(R.attr.colorSurface, context);
     }
 
@@ -87,12 +97,18 @@ public class SemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to default_icon_color_secondary. */
     public static @ColorInt int getDefaultIconColorSecondary(Context context) {
+        if (sDefaultIconColorSecondaryForTesting != null) {
+            return sDefaultIconColorSecondaryForTesting;
+        }
         return resolve(R.attr.colorOnSurfaceVariant, context);
     }
 
-    /** Returns the semantic color value that corresponds to divider_line_bg_color. */
-    public static @ColorInt int getDividerLineBgColor(Context context) {
-        return ContextCompat.getColor(context, R.color.drag_handlebar_color_list);
+    /** Returns the semantic color value that corresponds to divider_color. */
+    public static @ColorInt int getDividerColor(Context context) {
+        if (sDividerLineBgColorForTesting != null) {
+            return sDividerLineBgColorForTesting;
+        }
+        return ContextCompat.getColor(context, R.color.divider_color);
     }
 
     /** Returns the semantic color value that corresponds to bottom_system_nav_color. */
@@ -102,17 +118,20 @@ public class SemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to bottom_system_nav_divider_color. */
     public static @ColorInt int getBottomSystemNavDividerColor(Context context) {
-        return getDividerLineBgColor(context);
+        if (sBottomSystemNavDividerColorForTesting != null) {
+            return sBottomSystemNavDividerColorForTesting;
+        }
+        return getDividerColor(context);
     }
 
     /** Returns the semantic color value that corresponds to overlay_panel_separator_line_color. */
     public static @ColorInt int getOverlayPanelSeparatorLineColor(Context context) {
-        return getDividerLineBgColor(context);
+        return getDividerColor(context);
     }
 
     /** Returns the semantic color value that corresponds to tab_grid_card_divider_tint_color. */
     public static @ColorInt int getTabGridCardDividerTintColor(Context context) {
-        return getDividerLineBgColor(context);
+        return getDividerColor(context);
     }
 
     /** Returns the semantic color value that corresponds to default_control_color_active. */
@@ -130,6 +149,16 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorSecondaryContainer, context);
     }
 
+    /** Returns the semantic color value that corresponds to settings_bg_color. */
+    public static @ColorInt int getSettingsBackgroundColor(Context context) {
+        return resolve(R.attr.colorSurfaceContainerHigh, context);
+    }
+
+    /** Returns the semantic color value that corresponds to settings_container_background_color. */
+    public static @ColorInt int getSettingsContainerBackgroundColor(Context context) {
+        return getColorSurfaceBright(context);
+    }
+
     /** Returns the surface color value of the conceptual toolbar_background_primary. */
     public static @ColorInt int getToolbarBackgroundPrimary(Context context) {
         return getDefaultBgColor(context);
@@ -140,9 +169,9 @@ public class SemanticColorUtils {
         return getColorSurfaceContainer(context);
     }
 
-    /** Returns the semantic color value that corresponds to drag_handlebar_color. */
-    public static @ColorInt int getDragHandlebarColor(Context context) {
-        return ContextCompat.getColor(context, R.color.drag_handlebar_color_list);
+    /** Returns the semantic color value that corresponds to drag_handle_color. */
+    public static @ColorInt int getDragHandleColor(Context context) {
+        return ContextCompat.getColor(context, R.color.divider_color);
     }
 
     /** Returns the surface color value of the conceptual dialog_bg_color. */
@@ -168,7 +197,7 @@ public class SemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to menu_bg_color. */
     public static @ColorInt int getMenuBgColor(Context context) {
-        return ContextCompat.getColor(context, R.color.menu_bg_color);
+        return resolve(R.attr.colorSurfaceBright, context);
     }
 
     /** Returns the background color for a CardView matching default_card_bg_color */
@@ -233,6 +262,11 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorSurfaceContainerLow, context);
     }
 
+    /** Returns the semantic color values that correspond to colorSurfaceContainerLowest. */
+    public static @ColorInt int getColorSurfaceContainerLowest(Context context) {
+        return resolve(R.attr.colorSurfaceContainerLowest, context);
+    }
+
     /** Returns the semantic color values that correspond to colorSurfaceContainer. */
     public static @ColorInt int getColorSurfaceContainer(Context context) {
         return resolve(R.attr.colorSurfaceContainer, context);
@@ -256,5 +290,30 @@ public class SemanticColorUtils {
     /** Returns the surface color value of the conceptual floating snackbar background color. */
     public static @ColorInt int getFloatingSnackbarBackgroundColor(Context context) {
         return resolve(R.attr.colorSurfaceContainerHigh, context);
+    }
+
+    /** Returns teh semantic color values for selected items in the settings main menu. */
+    public static @ColorInt int getSettingsMainMenuSelectedBackgroundColor(Context context) {
+        return resolve(R.attr.colorSecondaryContainer, context);
+    }
+
+    public static void setBottomSystemNavDividerColorForTesting(@ColorInt int value) {
+        sBottomSystemNavDividerColorForTesting = value;
+        ResettersForTesting.register(() -> sBottomSystemNavDividerColorForTesting = null);
+    }
+
+    public static void setDividerLineBgColorForTesting(@ColorInt int value) {
+        sDividerLineBgColorForTesting = value;
+        ResettersForTesting.register(() -> sDividerLineBgColorForTesting = null);
+    }
+
+    public static void setDefaultIconColorSecondaryForTesting(@ColorInt int value) {
+        sDefaultIconColorSecondaryForTesting = value;
+        ResettersForTesting.register(() -> sDefaultIconColorSecondaryForTesting = null);
+    }
+
+    public static void setDefaultBgColorForTesting(@ColorInt int value) {
+        sDefaultBgColorForTesting = value;
+        ResettersForTesting.register(() -> sDefaultBgColorForTesting = null);
     }
 }

@@ -51,18 +51,6 @@ void DeleteQueriesEXTImmediate(GLsizei n, const GLuint* queries) {
   }
 }
 
-void QueryCounterEXT(GLuint id,
-                     GLenum target,
-                     uint32_t sync_data_shm_id,
-                     uint32_t sync_data_shm_offset,
-                     GLuint submit_count) {
-  raster::cmds::QueryCounterEXT* c =
-      GetCmdSpace<raster::cmds::QueryCounterEXT>();
-  if (c) {
-    c->Init(id, target, sync_data_shm_id, sync_data_shm_offset, submit_count);
-  }
-}
-
 void BeginQueryEXT(GLenum target,
                    GLuint id,
                    uint32_t sync_data_shm_id,
@@ -216,8 +204,10 @@ void CopySharedImageINTERNALImmediate(GLint xoffset,
                                       GLint yoffset,
                                       GLint x,
                                       GLint y,
-                                      GLsizei width,
-                                      GLsizei height,
+                                      GLsizei src_width,
+                                      GLsizei src_height,
+                                      GLsizei dest_width,
+                                      GLsizei dest_height,
                                       const GLbyte* mailboxes) {
   const uint32_t size =
       raster::cmds::CopySharedImageINTERNALImmediate::ComputeSize();
@@ -225,7 +215,8 @@ void CopySharedImageINTERNALImmediate(GLint xoffset,
       GetImmediateCmdSpaceTotalSize<
           raster::cmds::CopySharedImageINTERNALImmediate>(size);
   if (c) {
-    c->Init(xoffset, yoffset, x, y, width, height, mailboxes);
+    c->Init(xoffset, yoffset, x, y, src_width, src_height, dest_width,
+            dest_height, mailboxes);
   }
 }
 

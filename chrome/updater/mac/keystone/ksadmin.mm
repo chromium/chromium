@@ -294,13 +294,13 @@ class KSAdminApp : public App {
 
 KSTicket* KSAdminApp::TicketFromAppState(
     const updater::UpdateService::AppState& state) {
-  return [[KSTicket alloc]
-      initWithAppId:base::SysUTF8ToNSString(state.app_id)
-            version:base::SysUTF8ToNSString(state.version.GetString())
-                ecp:state.ecp
-                tag:base::SysUTF8ToNSString(state.ap)
-          brandCode:base::SysUTF8ToNSString(state.brand_code)
-          brandPath:state.brand_path];
+  return
+      [[KSTicket alloc] initWithAppId:base::SysUTF8ToNSString(state.app_id)
+                              version:base::SysUTF8ToNSString(state.version)
+                                  ecp:state.ecp
+                                  tag:base::SysUTF8ToNSString(state.ap)
+                            brandCode:base::SysUTF8ToNSString(state.brand_code)
+                            brandPath:state.brand_path];
 }
 
 scoped_refptr<UpdateService> KSAdminApp::ServiceProxy(
@@ -504,7 +504,7 @@ void KSAdminApp::Register() {
   registration.app_id = SwitchValue(kCommandProductId);
   registration.ap = SwitchValue(kCommandTag);
   registration.brand_path = base::FilePath(SwitchValue(kCommandBrandPath));
-  registration.version = base::Version(SwitchValue(kCommandVersion));
+  registration.version = SwitchValue(kCommandVersion);
   registration.existence_checker_path =
       base::FilePath(SwitchValue(kCommandXCPath));
   const std::string brand_key = SwitchValue(kCommandBrandKey);
@@ -612,8 +612,7 @@ void KSAdminApp::DoListAppUpdate(UpdaterScope scope) {
              const UpdateService::UpdateState& update_state) {
             if (update_state.state ==
                 UpdateService::UpdateState::State::kUpdateAvailable) {
-              update_check_result->set_next_version(
-                  update_state.next_version.GetString());
+              update_check_result->set_next_version(update_state.next_version);
             }
           },
           update_check_result),
@@ -869,7 +868,8 @@ int KSAdminAppMain(int argc, const char* argv[]) {
   InitializeThreadPool("keystone");
   const base::ScopedClosureRunner shutdown_thread_pool(
       base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+  base::SingleThreadTaskExecutor main_task_executor(
+      base::MessagePumpType::DEFAULT, true);
 
   // base::CommandLine may reorder arguments and switches, this is not the exact
   // command line.

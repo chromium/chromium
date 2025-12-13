@@ -352,9 +352,8 @@ TEST_F(ImeControllerImplTest, ShowModeIndicator) {
   EXPECT_EQ(bounds1.width(), bounds2.width());
   EXPECT_EQ(bounds1.height(), bounds2.height());
 
-  const gfx::Rect screen_bounds = display::Screen::GetScreen()
-                                      ->GetDisplayMatching(cursor1_bounds)
-                                      .work_area();
+  const gfx::Rect screen_bounds =
+      display::Screen::Get()->GetDisplayMatching(cursor1_bounds).work_area();
   const gfx::Rect cursor3_bounds(100, screen_bounds.bottom() - 25, 1, 20);
   controller->ShowModeIndicator(cursor3_bounds, text);
 

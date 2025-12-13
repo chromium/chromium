@@ -6,7 +6,7 @@ import("//media/gpu/args.gni")
 
 assert(is_chromeos)
 
-if (use_v4l2_codec || use_vaapi) {
+if (use_linux_video_acceleration) {
   static_library("video_accelerator") {
     sources = [
       "gpu_arc_video_decode_accelerator.cc",
@@ -30,7 +30,7 @@ if (use_v4l2_codec || use_vaapi) {
       "//chromeos/ash/experiences/arc:arc_features",
       "//chromeos/ash/experiences/arc/mojom:media",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu",
-      "//gpu/ipc/common:common",
+      "//gpu/ipc/common",
       "//media",
       "//media/gpu:buffer_validation",
       "//media/gpu/chromeos:common",
@@ -49,15 +49,15 @@ source_set("common") {
 
   deps = [
     "//media",
+    "//media/gpu",
     "//media/gpu:buffer_validation",
-    "//media/gpu:gpu",
-    "//mojo/public/cpp/system:system",
+    "//mojo/public/cpp/system",
     "//ui/gfx:memory_buffer",
     "//ui/ozone",
   ]
 
-  if (use_v4l2_codec || use_vaapi) {
-    deps += [ "//media/gpu/chromeos:chromeos" ]
+  if (use_linux_video_acceleration) {
+    deps += [ "//media/gpu/chromeos" ]
   }
 }
 
@@ -70,6 +70,6 @@ source_set("protected_native_pixmap_query_client") {
   deps = [
     "//chromeos/ash/experiences/arc/mojom:media",
     "//components/exo",
-    "//content/public/browser:browser",
+    "//content/public/browser",
   ]
 }

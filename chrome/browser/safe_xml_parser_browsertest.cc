@@ -49,7 +49,8 @@ class SafeXmlParserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     std::optional<base::Value> expected_value;
     if (!expected_json.empty()) {
-      expected_value = base::JSONReader::Read(expected_json);
+      expected_value = base::JSONReader::Read(
+          expected_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       DCHECK(expected_value) << "Bad test, incorrect JSON: " << expected_json;
     }
 

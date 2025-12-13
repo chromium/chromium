@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryAshNssTest,
   EXPECT_EQ(tokens_waiter.Get(), base::flat_set<Token>({}));
 }
 
-// Test that device Kcer has correct tokens in Ash and Lacros.
+// Test that device Kcer has correct tokens.
 IN_PROC_BROWSER_TEST_F(KcerFactoryAshNssTest, DeviceKcerHasCorrectTokens) {
   base::WeakPtr<Kcer> kcer = ExtraInstances::GetDeviceKcer();
 

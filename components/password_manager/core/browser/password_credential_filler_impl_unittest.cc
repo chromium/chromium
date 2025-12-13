@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"

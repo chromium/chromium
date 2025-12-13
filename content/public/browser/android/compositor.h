@@ -18,16 +18,12 @@
 #include "ui/android/resources/ui_resource_provider.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace cc::slim {
 class Layer;
 }
-
-namespace gpu {
-struct SharedMemoryLimits;
-}  // namespace gpu
 
 namespace ui {
 class ResourceManager;
@@ -54,7 +50,6 @@ class CONTENT_EXPORT Compositor {
   using ContextProviderCallback =
       base::OnceCallback<void(scoped_refptr<viz::ContextProvider>)>;
   static void CreateContextProvider(
-      gpu::SharedMemoryLimits shared_memory_limits,
       ContextProviderCallback callback);
 
   // Creates and returns a compositor instance.  |root_window| needs to outlive

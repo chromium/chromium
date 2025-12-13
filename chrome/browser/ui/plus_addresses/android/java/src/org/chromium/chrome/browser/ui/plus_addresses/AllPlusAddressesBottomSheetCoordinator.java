@@ -38,7 +38,7 @@ class AllPlusAddressesBottomSheetCoordinator {
      * This delegate is called when the AllPlusAddressesBottomSheet is interacted with (e.g.
      * dismissed or a suggestion was selected).
      */
-    static interface Delegate {
+    interface Delegate {
         /**
          * Called when the user taps on one of the plus addresses chips.
          *

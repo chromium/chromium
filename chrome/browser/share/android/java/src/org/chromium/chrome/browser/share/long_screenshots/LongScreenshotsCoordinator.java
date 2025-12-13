@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.share.long_screenshots;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
@@ -18,11 +19,14 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.widget.Toast;
 
 /** Handles the long screenshot action in the Sharing Hub and launches the screenshot editor. */
+@NullMarked
 public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
+    @SuppressWarnings("HidingField")
     private final Activity mActivity;
+
     private final EntryManager mEntryManager;
     private final Tab mTab;
-    private LongScreenshotsMediator mMediator;
+    private @MonotonicNonNull LongScreenshotsMediator mMediator;
 
     /**
      * Private internal method to construct a LongScreenshotsCoordinator. Other users of this class
@@ -34,8 +38,6 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
      * @param manager The {@link EntryManager} to retrieve bitmaps of the current tab.
-     * @param mediator The {@link LongScreenshotsMediator} The mediator that controls the long
-     * screenshots dialog behavior.
      * @param shouldWarmupCompositor If the PaintPreview compositor should be warmed up.
      */
     private LongScreenshotsCoordinator(
@@ -44,8 +46,7 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
-            EntryManager manager,
-            @Nullable LongScreenshotsMediator mediator,
+            @Nullable EntryManager manager,
             boolean shouldWarmupCompositor) {
         super(
                 activity,
@@ -59,7 +60,6 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
                 manager == null
                         ? new EntryManager(mActivity, mTab, /* inMemory= */ false)
                         : manager;
-        mMediator = mediator;
 
         if (shouldWarmupCompositor) {
             PaintPreviewCompositorUtils.warmupCompositor();
@@ -74,14 +74,7 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController) {
         return new LongScreenshotsCoordinator(
-                activity,
-                tab,
-                shareUrl,
-                chromeOptionShareCallback,
-                sheetController,
-                null,
-                null,
-                true);
+                activity, tab, shareUrl, chromeOptionShareCallback, sheetController, null, true);
     }
 
     /** Called by tests to create a {@link LongScreenshotsCoordinator}. */
@@ -93,15 +86,17 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             BottomSheetController sheetController,
             EntryManager manager,
             LongScreenshotsMediator mediator) {
-        return new LongScreenshotsCoordinator(
-                activity,
-                tab,
-                shareUrl,
-                chromeOptionShareCallback,
-                sheetController,
-                manager,
-                mediator,
-                false);
+        LongScreenshotsCoordinator result =
+                new LongScreenshotsCoordinator(
+                        activity,
+                        tab,
+                        shareUrl,
+                        chromeOptionShareCallback,
+                        sheetController,
+                        manager,
+                        false);
+        result.mMediator = mediator;
+        return result;
     }
 
     /**

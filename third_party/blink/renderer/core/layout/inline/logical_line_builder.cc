@@ -25,6 +25,72 @@
 
 namespace blink {
 
+namespace {
+
+bool CanUseItemForNeedsPaint(const InlineItem& item) {
+  switch (item.Type()) {
+    case InlineItem::kBlockInInline:
+    case InlineItem::kCloseTag:
+    case InlineItem::kFloating:
+    case InlineItem::kOutOfFlowPositioned:
+    case InlineItem::kListMarker:
+    case InlineItem::kBidiControl:
+    case InlineItem::kOpenRubyColumn:
+    case InlineItem::kCloseRubyColumn:
+    case InlineItem::kRubyLinePlaceholder:
+      return false;
+
+    case InlineItem::kControl:
+    case InlineItem::kText:
+      if (!item.Length()) {
+        return false;
+      }
+      break;
+
+    case InlineItem::kAtomicInline:
+    case InlineItem::kOpenTag:
+    case InlineItem::kInitialLetterBox:
+      break;
+  }
+  return item.TextType() == TextItemType::kNormal && item.GetLayoutObject();
+}
+
+const LayoutObject& LayoutObjectForLineClampEllipsis(
+    const InlineNode& node,
+    const InlineItemResults& line_items,
+    const InlineItemTextIndex& line_start) {
+  for (const auto& item_result : base::Reversed(line_items)) {
+    const auto& item = *item_result.item;
+    if (!CanUseItemForNeedsPaint(item)) {
+      continue;
+    }
+    if ((item.Type() == InlineItem::kText ||
+         item.Type() == InlineItem::kControl) &&
+        !item_result.Length()) {
+      continue;
+    }
+    return *item.GetLayoutObject();
+  }
+
+  // If we haven't found any useful layout object in the line's previous
+  // results (for example, because the ellipsis displaced this entire line),
+  // we try to find layout objects in previous lines. This is needed so, if
+  // the height of previous lines change, the ellipsis gets repainted.
+  auto items_prefix =
+      base::span<const Member<InlineItem>>(node.ItemsData(false).items)
+          .first(line_start.item_index);
+  for (const auto& item : base::Reversed(items_prefix)) {
+    if (CanUseItemForNeedsPaint(*item)) {
+      return *item->GetLayoutObject();
+    }
+  }
+
+  // If we weren't able to find anything, we fallback to the inline root.
+  return *node.GetLayoutBlockFlow();
+}
+
+}  // namespace
+
 LogicalLineBuilder::LogicalLineBuilder(InlineNode node,
                                        const ConstraintSpace& constraint_space,
                                        const InlineBreakToken* break_token,
@@ -88,8 +154,11 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
       const ShapeResultView* shape_result_view =
           ShapeResultView::Create(ellipsis_data->shape_result);
       FontHeight text_metrics = ellipsis_data->text_metrics;
+      const LayoutObject& corresponding_layout_object =
+          LayoutObjectForLineClampEllipsis(node_, *line_items,
+                                           line_info->Start());
 
-      line_box->AddChild(*node_.GetLayoutBlockFlow(),
+      line_box->AddChild(corresponding_layout_object,
                          StyleVariant::kStandardEllipsis, shape_result_view,
                          ellipsis_data->text,
                          LogicalRect(LayoutUnit(), -text_metrics.ascent,

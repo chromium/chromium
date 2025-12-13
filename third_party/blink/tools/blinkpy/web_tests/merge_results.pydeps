@@ -58,7 +58,6 @@ builder_list.py
 controllers/__init__.py
 controllers/repaint_overlay.py
 layout_package/__init__.py
-layout_package/bot_test_expectations.py
 layout_package/json_results_generator.py
 merge_results.py
 models/__init__.py

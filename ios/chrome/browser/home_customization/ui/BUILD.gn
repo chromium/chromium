@@ -4,23 +4,25 @@
 
 source_set("ui") {
   sources = [
+    "background_collection_configuration.h",
+    "background_collection_configuration.mm",
+    "background_customization_configuration.h",
+    "centered_flow_layout.h",
+    "centered_flow_layout.mm",
     "home_customization_background_cell.h",
     "home_customization_background_cell.mm",
-    "home_customization_background_color_picker_consumer.h",
-    "home_customization_background_color_picker_mutator.h",
     "home_customization_background_color_picker_view_controller.h",
     "home_customization_background_color_picker_view_controller.mm",
+    "home_customization_background_configuration_consumer.h",
+    "home_customization_background_configuration_mutator.h",
+    "home_customization_background_photo_framing_mutator.h",
     "home_customization_background_photo_framing_view_controller.h",
     "home_customization_background_photo_framing_view_controller.mm",
     "home_customization_background_photo_library_picker_view_controller.h",
     "home_customization_background_photo_library_picker_view_controller.mm",
-    "home_customization_background_picker_action_sheet_mutator.h",
-    "home_customization_background_picker_action_sheet_presentation_delegate.h",
     "home_customization_background_picker_cell.h",
     "home_customization_background_picker_cell.mm",
     "home_customization_background_picker_presentation_delegate.h",
-    "home_customization_background_preset_gallery_picker_consumer.h",
-    "home_customization_background_preset_gallery_picker_mutator.h",
     "home_customization_background_preset_gallery_picker_view_controller.h",
     "home_customization_background_preset_gallery_picker_view_controller.mm",
     "home_customization_background_preset_header_view.h",
@@ -29,15 +31,21 @@ source_set("ui") {
     "home_customization_background_skeleton_cell.mm",
     "home_customization_collection_configurator.h",
     "home_customization_collection_configurator.mm",
-    "home_customization_color_palette_provider.h",
+    "home_customization_custom_color_cell.h",
+    "home_customization_custom_color_cell.mm",
     "home_customization_discover_consumer.h",
     "home_customization_discover_view_controller.h",
     "home_customization_discover_view_controller.mm",
+    "home_customization_enterprise_policy_cell.h",
+    "home_customization_enterprise_policy_cell.mm",
+    "home_customization_framing_coordinates.h",
+    "home_customization_framing_coordinates.mm",
     "home_customization_header_view.h",
     "home_customization_header_view.mm",
+    "home_customization_image_view.h",
+    "home_customization_image_view.mm",
     "home_customization_link_cell.h",
     "home_customization_link_cell.mm",
-    "home_customization_logo_vendor_provider.h",
     "home_customization_magic_stack_consumer.h",
     "home_customization_magic_stack_view_controller.h",
     "home_customization_magic_stack_view_controller.mm",
@@ -45,27 +53,40 @@ source_set("ui") {
     "home_customization_main_view_controller.h",
     "home_customization_main_view_controller.mm",
     "home_customization_mutator.h",
+    "home_customization_search_engine_logo_mediator_provider.h",
     "home_customization_toggle_cell.h",
     "home_customization_toggle_cell.mm",
     "home_customization_view_controller_protocol.h",
     "home_cutomization_color_palette_cell.h",
     "home_cutomization_color_palette_cell.mm",
+    "rainbow_slider.h",
+    "rainbow_slider.mm",
   ]
   deps = [
+    ":constants",
+    "//base",
     "//ios/chrome/app/strings:ios_strings",
-    "//ios/chrome/browser/home_customization/model",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:ui_util",
     "//ios/chrome/browser/home_customization/utils",
-    "//ios/chrome/browser/ntp/ui_bundled:color",
-    "//ios/chrome/browser/ntp/ui_bundled:logo",
+    "//ios/chrome/browser/ntp/search_engine_logo/mediator",
+    "//ios/chrome/browser/ntp/search_engine_logo/ui",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/snackbar/ui_bundled/ui",
+    "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
-    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//skia",
     "//third_party/material_color_utilities",
     "//ui/base",
@@ -73,4 +94,32 @@ source_set("ui") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "home_customization_accessibility_identifiers.h",
+    "home_customization_accessibility_identifiers.mm",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "home_customization_background_cell_unittest.mm",
+    "home_customization_image_view_unittest.mm",
+  ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/browser/home_customization/coordinator",
+    "//ios/chrome/browser/ntp/search_engine_logo/mediator",
+    "//ios/chrome/browser/price_insights/ui:price_insights_ui",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//url",
+  ]
 }

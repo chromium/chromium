@@ -9,6 +9,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "crypto/sha2.h"
 #include "net/cert/cert_net_fetcher.h"
@@ -32,7 +33,7 @@ namespace {
 
 bool AddPemEncodedCert(const bssl::ParsedCertificate* cert,
                        std::vector<std::string>* pem_encoded_chain) {
-  std::string der_cert(cert->der_cert().AsStringView());
+  std::string der_cert(base::as_string_view(cert->der_cert()));
   std::string pem;
   if (!net::X509Certificate::GetPEMEncodedFromDER(der_cert, &pem)) {
     std::cerr << "ERROR: GetPEMEncodedFromDER failed\n";
@@ -56,8 +57,7 @@ bool DumpParsedCertificateChain(const base::FilePath& file_path,
 
 // Returns a hex-encoded sha256 of the DER-encoding of |cert|.
 std::string FingerPrintParsedCertificate(const bssl::ParsedCertificate* cert) {
-  std::string hash = crypto::SHA256HashString(cert->der_cert().AsStringView());
-  return base::HexEncode(hash);
+  return base::HexEncode(crypto::SHA256Hash(cert->der_cert()));
 }
 
 std::string SubjectToString(const bssl::RDNSequence& parsed_subject) {

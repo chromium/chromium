@@ -34,7 +34,6 @@ import "third_party/blink/public/mojom/navigation/navigation_initiator_activatio
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom";
 import "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom";
-import "third_party/blink/public/mojom/navigation/system_entropy.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/permissions/permission.mojom";
@@ -341,10 +340,6 @@ struct NavigationTiming {
   mojo_base.mojom.TimeTicks redirect_end;
   mojo_base.mojom.TimeTicks fetch_start;
 
-  // Indicates the entropy state of the user agent at the time the navigation
-  // begins.
-  SystemEntropy system_entropy_at_navigation_start = kEmpty;
-
   ParentResourceTimingAccess parent_resource_timing_access =
       ParentResourceTimingAccess.kDoNotReport;
 };
@@ -641,9 +636,6 @@ struct CommitNavigationParams {
   // ContentSettingsType for more details.
   RendererContentSettings content_settings;
 
-  // The cookie deprecation label for cookie deprecation facilitated testing.
-  string? cookie_deprecation_label;
-
   // The :visited link hashtable is stored in shared memory and contains salted
   // hashes for all visits. Each salt corresponds to a unique origin, and
   // renderer processes are only informed of salts that correspond to their
@@ -689,6 +681,14 @@ struct CommitNavigationParams {
   // A token used for associated various events/IPCs together to a particular
   // navigation, for the purposes of tracing and metrics collection.
   mojo_base.mojom.UnguessableToken navigation_metrics_token;
+
+  // Only set when reusing a request NavigationClient to commit a navigation
+  // that does a local RenderFrame swap. The reused NavigationClient is owned
+  // by the old RenderFrame, and this token points to the new RenderFrame,
+  // where the NavigationClient ownership will be transferred to, and where
+  // the navigation commit will actually occur. For more details, see
+  // `NavigationRequest::ReuseRequestNavigationClientForCommitIfNeeded()`.
+  blink.mojom.LocalFrameToken? commit_target_frame_token;
 };
 
 // Parameters used to dispatch the `pageswap` event on the old Document for

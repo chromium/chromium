@@ -23,9 +23,9 @@ class PromosManagerFactory : public ProfileKeyedServiceFactoryIOS {
   PromosManagerFactory();
   ~PromosManagerFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_PROMOS_MANAGER_FACTORY_H_

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CustomizeColorSchemeModeClientRemote, SettingsAppearancePageElement, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
-import {AppearanceBrowserProxyImpl, ColorSchemeMode, CustomizeColorSchemeModeBrowserProxy, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerRemote, SystemTheme} from 'chrome://settings/settings.js';
+import type {CustomizeColorSchemeModeClientRemote, SettingsAppearancePageElement, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {AppearanceBrowserProxyImpl, ColorSchemeMode, CustomizeColorSchemeModeBrowserProxy, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerRemote, loadTimeData, SystemTheme} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -65,6 +64,12 @@ function createAppearancePage() {
     },
     tab_search: {
       is_right_aligned: {
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+    },
+    vertical_tabs: {
+      enabled: {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
@@ -292,7 +297,7 @@ suite('AppearanceHandler', function() {
   test('default zoom handling', async function() {
     function getDefaultZoomText() {
       const zoomLevel = appearancePage.$.zoomLevel;
-      return zoomLevel.options[zoomLevel.selectedIndex]!.textContent!.trim();
+      return zoomLevel.options[zoomLevel.selectedIndex]!.textContent.trim();
     }
 
     await appearanceBrowserProxy.whenCalled('getDefaultZoom');
@@ -339,147 +344,88 @@ suite('AppearanceHandler', function() {
         !!appearancePage.shadowRoot!.querySelector('#sidePanelPosition'));
   });
 
-  test('show tab search options', async function() {
+
+
+  test('show split view drag and drop options', async function() {
     loadTimeData.overrideValues({
-      showTabSearchPositionSettings: true,
+      showSplitViewDragAndDropSetting: true,
     });
     createAppearancePage();
     await microtasksFinished();
     assertTrue(
-        !!appearancePage.shadowRoot!.querySelector('#tabSearchPositionRow'));
+        !!appearancePage.shadowRoot!.querySelector('#splitViewDragAndDrop'));
+    assertFalse(!!appearancePage.shadowRoot!
+                      .querySelector<SettingsToggleButtonElement>(
+                          '#splitViewDragAndDrop')!.hidden);
   });
 
-  test('hide tab search options', async function() {
+  test('split view drag and drop toggle updates pref', async function() {
     loadTimeData.overrideValues({
-      showTabSearchPositionSettings: false,
+      showSplitViewDragAndDropSetting: true,
     });
     createAppearancePage();
+    appearancePage.set('prefs.browser.split_view_drag_and_drop_enabled', {
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    });
     await microtasksFinished();
-    assertTrue(
-        !appearancePage.shadowRoot!.querySelector('#tabSearchPositionRow'));
+
+    const toggle =
+        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#splitViewDragAndDrop');
+    assertTrue(!!toggle);
+    assertTrue(toggle.checked);
+
+    toggle.click();
+    await microtasksFinished();
+    assertFalse(appearancePage.get(
+        'prefs.browser.split_view_drag_and_drop_enabled.value'));
   });
 });
 
-suite('TabSearchPositionSettings', () => {
-  const TAB_SEARCH_IS_RIGHT_ALIGNED_PREF_PATH = 'tab_search.is_right_aligned';
-  const DEFAULT_TAB_SEARCH_IS_RIGHT_ALIGNED = false;
-  const UI_FEATURE_ALIGN_LEFT = 'foo';
-  const UI_FEATURE_ALIGN_RIGHT = 'bar';
-  const FALSEY_STRING = 'false';
-  const TRUTHY_STRING = 'true';
-
-  async function buildPage(startupPref: boolean, currentPref: boolean) {
+suite('TabStripPositionSettings', () => {
+  setup(async () => {
     loadTimeData.overrideValues({
-      uiFeatureAlignLeft: UI_FEATURE_ALIGN_LEFT,
-      uiFeatureAlignRight: UI_FEATURE_ALIGN_RIGHT,
-      showTabSearchPositionSettings: true,
-      tabSearchIsRightAlignedAtStartup: startupPref,
+      showVerticalTabsEnabled: true,
     });
+
+    appearanceBrowserProxy = new TestAppearanceBrowserProxy();
+    AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
 
     createAppearancePage();
 
-    appearancePage.setPrefValue(
-        TAB_SEARCH_IS_RIGHT_ALIGNED_PREF_PATH, currentPref);
-    flush();
     await microtasksFinished();
-  }
-
-  function getTabSearchDropdown(): SettingsDropdownMenuElement|null {
-    return appearancePage.shadowRoot!
-        .querySelector<SettingsDropdownMenuElement>(
-            '#tabSearchPositionDropdown');
-  }
-
-  function getTabSearchRestartButton(): HTMLElement|null {
-    return appearancePage.shadowRoot!.querySelector(
-        '#tabSearchPositionRestart');
-  }
-
-  async function userClicksDropdownForOption(userChoice: boolean) {
-    const dropdown: SettingsDropdownMenuElement|null = getTabSearchDropdown();
-    if (dropdown === null) {
-      return;
-    }
-
-    dropdown.$.dropdownMenu.value = userChoice ? TRUTHY_STRING : FALSEY_STRING;
-    dropdown.dispatchEvent(new CustomEvent('change'));
-
-    // simulate the pref changing in the backend, This doesnt get triggered
-    // because the prefs are hardcoded.
-    appearancePage.setPrefValue(
-        TAB_SEARCH_IS_RIGHT_ALIGNED_PREF_PATH, userChoice);
-    flush();
-    await microtasksFinished();
-  }
-
-  setup(async () => {
-    await buildPage(
-        DEFAULT_TAB_SEARCH_IS_RIGHT_ALIGNED,
-        DEFAULT_TAB_SEARCH_IS_RIGHT_ALIGNED);
   });
 
-  test('shows when showTabSearchPositionSettings is true', () => {
-    assertTrue(!!getTabSearchDropdown());
+  teardown(function() {
+    appearancePage.remove();
   });
 
-  test('dropdown has expected options', () => {
-    const dropdown: SettingsDropdownMenuElement|null = getTabSearchDropdown();
+  test('Dropdown menu updates vertical_tabs.enabled.value', async function() {
+    assertFalse(appearancePage.get('prefs.vertical_tabs.enabled.value'));
 
+    const dropdown =
+        appearancePage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#tabStripPosition');
     assertTrue(!!dropdown);
-    assertEquals(2, dropdown?.menuOptions.length);
-    assertTrue(!!dropdown?.menuOptions.some(
-        option => option.name === UI_FEATURE_ALIGN_LEFT &&
-            option.value === FALSEY_STRING));
-    assertTrue(!!dropdown?.menuOptions.some(
-        option => option.name === UI_FEATURE_ALIGN_RIGHT &&
-            option.value === TRUTHY_STRING));
-  });
 
-  test('dropdown sets the value', async () => {
-    const dropdown: SettingsDropdownMenuElement|null = getTabSearchDropdown();
+    const selectElement = dropdown.$.dropdownMenu;
+    assertTrue(!!selectElement);
 
-    // Should be set to initial option of "False" based on pref.
-    assertEquals(FALSEY_STRING, dropdown?.getSelectedValue());
+    assertEquals('false', selectElement.value);
 
-    // on user click of true, the dropdown should now show truthy
-    await userClicksDropdownForOption(/*userChoice=*/ true);
-    assertEquals(TRUTHY_STRING, dropdown?.getSelectedValue());
+    selectElement.value = 'true';
+    selectElement.dispatchEvent(new Event('change'));
+    await microtasksFinished();
 
-    // on user click of false, the dropdown should now show falsey
-    await userClicksDropdownForOption(/*userChoice=*/ false);
-    assertEquals(FALSEY_STRING, dropdown?.getSelectedValue());
-  });
+    assertTrue(appearancePage.get('prefs.vertical_tabs.enabled.value'));
+    assertEquals('true', selectElement.value);
 
-  test('restart button A11y', async () => {
-    await buildPage(/*startupPref=*/ false, /*currentPref=*/ true);
-    const button = getTabSearchRestartButton();
-    assertTrue(!!button);
+    selectElement.value = 'false';
+    selectElement.dispatchEvent(new Event('change'));
+    await microtasksFinished();
 
-    // The restart button needs to have the "alert" aria attribute.
-    assertEquals('alert', button.role);
-  });
-
-  test('restart button steady state', async () => {
-    await buildPage(/*startupPref=*/ false, /*currentPref=*/ false);
-    assertFalse(!!getTabSearchRestartButton());
-
-    await buildPage(/*startupPref=*/ false, /*currentPref=*/ true);
-    assertTrue(!!getTabSearchRestartButton());
-
-    await buildPage(/*startupPref=*/ true, /*currentPref=*/ false);
-    assertTrue(!!getTabSearchRestartButton());
-
-    await buildPage(/*startupPref=*/ true, /*currentPref=*/ true);
-    assertFalse(!!getTabSearchRestartButton());
-  });
-
-  test('restart button shows on change', async () => {
-    assertFalse(!!getTabSearchRestartButton());
-
-    await userClicksDropdownForOption(/*userChoice=*/ true);
-    assertTrue(!!getTabSearchRestartButton());
-
-    await userClicksDropdownForOption(/*userChoice=*/ false);
-    assertFalse(!!getTabSearchRestartButton());
+    assertFalse(appearancePage.get('prefs.vertical_tabs.enabled.value'));
+    assertEquals('false', selectElement.value);
   });
 });

@@ -12,7 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/drm/common/tile_property.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"

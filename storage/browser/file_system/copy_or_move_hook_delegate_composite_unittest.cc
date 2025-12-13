@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "storage/browser/file_system/copy_or_move_hook_delegate_composite.h"
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -12,12 +14,10 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
-#include "storage/browser/file_system/copy_or_move_hook_delegate_composite.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/mock_copy_or_move_hook_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"

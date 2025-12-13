@@ -14,7 +14,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "mojo/public/java/system/system_impl_java_jni_headers/BaseRunLoop_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace mojo {
 namespace android {
@@ -39,11 +39,10 @@ static void RunJavaRunnable(
                                runnable_ref);
 }
 
-static void JNI_BaseRunLoop_PostDelayedTask(
-    JNIEnv* env,
-    jlong runLoopID,
-    const JavaParamRef<jobject>& runnable,
-    jlong delay) {
+static void JNI_BaseRunLoop_PostDelayedTask(JNIEnv* env,
+                                            jlong runLoopID,
+                                            const JavaRef<jobject>& runnable,
+                                            jlong delay) {
   base::android::ScopedJavaGlobalRef<jobject> runnable_ref;
   // ScopedJavaGlobalRef do not hold onto the env reference, so it is safe to
   // use it across threads. |RunJavaRunnable| will acquire a new JNIEnv before
@@ -64,3 +63,5 @@ static void JNI_BaseRunLoop_DeleteMessageLoop(JNIEnv* env, jlong runLoopID) {
 
 }  // namespace android
 }  // namespace mojo
+
+DEFINE_JNI(BaseRunLoop)

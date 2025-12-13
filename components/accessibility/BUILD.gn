@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
-
 # TODO(b/358211208): Re-enable when shared_library is properly used.
 # allow_internal = is_chrome_branded
 allow_internal = false
@@ -36,7 +34,7 @@ source_set("penguin") {
 
   deps = [
     "//base",
-    "//content/public/browser:browser",
+    "//content/public/browser",
   ]
 
   if (is_android) {

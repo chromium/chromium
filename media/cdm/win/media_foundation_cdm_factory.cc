@@ -30,16 +30,18 @@ using Microsoft::WRL::ComPtr;
 
 const char kMediaFoundationCdmUmaPrefix[] = "Media.EME.MediaFoundationCdm.";
 
-bool IsTypeSupportedInternal(
+IsTypeSupportedValueOrError IsTypeSupportedInternal(
     ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
     const std::string& key_system,
     const std::string& content_type) {
-  return cdm_factory->IsTypeSupported(base::UTF8ToWide(key_system).c_str(),
-                                      base::UTF8ToWide(content_type).c_str());
+  return base::ok(
+      cdm_factory->IsTypeSupported(base::UTF8ToWide(key_system).c_str(),
+                                   base::UTF8ToWide(content_type).c_str()));
 }
 
-bool IsTypeSupportedInternalEx(const std::string& key_system,
-                               const std::string& content_type) {
+IsTypeSupportedValueOrError IsTypeSupportedInternalEx(
+    const std::string& key_system,
+    const std::string& content_type) {
   ComPtr<IMFExtendedDRMTypeSupport> mf_type_support;
   HRESULT hr =
       CoCreateInstance(CLSID_MFMediaEngineClassFactory, nullptr,
@@ -48,7 +50,7 @@ bool IsTypeSupportedInternalEx(const std::string& key_system,
     DLOG(ERROR) << __func__
                 << ": Failed to create class factory for IsTypeSupportedEx. hr="
                 << hr;
-    return false;
+    return base::unexpected(hr);
   }
 
   return IsMediaFoundationContentTypeSupported(mf_type_support, key_system,
@@ -88,8 +90,8 @@ void MediaFoundationCdmFactory::Create(
   // IMFContentDecryptionModule CDMs typically require persistent storage and
   // distinctive identifier and this should be guaranteed by key system support
   // code. Update this if there are new CDMs that doesn't require these.
-  CHECK(cdm_config.allow_persistent_state, base::NotFatalUntil::M140);
-  CHECK(cdm_config.allow_distinctive_identifier, base::NotFatalUntil::M140);
+  CHECK(cdm_config.allow_persistent_state);
+  CHECK(cdm_config.allow_distinctive_identifier);
 
   // Don't cache `cdm_origin_id` in this class since user can clear it any time.
   helper_->GetMediaFoundationCdmData(
@@ -171,7 +173,7 @@ HRESULT MediaFoundationCdmFactory::GetCdmFactory(
   auto itr = create_cdm_factory_cbs_for_testing_.find(key_system);
   if (itr != create_cdm_factory_cbs_for_testing_.end()) {
     auto& create_cdm_factory_cb = itr->second;
-    CHECK(create_cdm_factory_cb, base::NotFatalUntil::M140);
+    CHECK(create_cdm_factory_cb);
     RETURN_IF_FAILED(create_cdm_factory_cb.Run(cdm_factory));
     return S_OK;
   }
@@ -200,7 +202,7 @@ void MediaFoundationCdmFactory::IsTypeSupported(
   HRESULT hr = GetCdmFactory(key_system, cdm_factory);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to GetCdmFactory. hr=" << hr;
-    std::move(is_type_supported_result_cb).Run(false);
+    std::move(is_type_supported_result_cb).Run(base::unexpected(hr));
     return;
   }
 

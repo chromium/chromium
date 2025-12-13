@@ -4,15 +4,13 @@
 
 source_set("watermarking") {
   sources = [
-    "features.cc",
-    "features.h",
     "watermark.cc",
     "watermark.h",
   ]
 
   public_deps = [
     "//skia",
-    "//ui/gfx:gfx",
+    "//ui/gfx",
   ]
 }
 

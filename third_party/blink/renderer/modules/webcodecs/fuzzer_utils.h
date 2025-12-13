@@ -5,10 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_FUZZER_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_FUZZER_UTILS_H_
 
+#include <string>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_aac_bitstream_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_opus_application.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_opus_signal.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
@@ -22,8 +29,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8-forward.h"
-
-#include <string>
 
 namespace base {
 class ScopedClosureRunner;
@@ -97,29 +102,36 @@ AudioDataCopyToOptions* MakeAudioDataCopyToOptions(
 VideoEncoderEncodeOptions* MakeEncodeOptions(
     const wc_fuzzer::EncodeVideo_EncodeOptions& proto);
 
-String ToBitrateMode(
+V8VideoEncoderBitrateMode::Enum ToBitrateMode(
     wc_fuzzer::ConfigureVideoEncoder_VideoEncoderBitrateMode mode);
 
 String ToScalabilityMode(wc_fuzzer::ConfigureVideoEncoder_ScalabilityMode mode);
 
-String ToLatencyMode(wc_fuzzer::ConfigureVideoEncoder_LatencyMode mode);
+V8LatencyMode::Enum ToLatencyMode(
+    wc_fuzzer::ConfigureVideoEncoder_LatencyMode mode);
 
 String ToContentHint(wc_fuzzer::ConfigureVideoEncoder_ContentHint hint);
 
-String ToAlphaOption(wc_fuzzer::ConfigureVideoEncoder_AlphaOption option);
+V8AlphaOption::Enum ToAlphaOption(
+    wc_fuzzer::ConfigureVideoEncoder_AlphaOption option);
 
-String ToAacFormat(wc_fuzzer::AacFormat format);
+V8BitrateMode::Enum ToBitrateMode(wc_fuzzer::BitrateMode bitrate_mode);
 
-String ToBitrateMode(wc_fuzzer::BitrateMode bitrate_mode);
+V8OpusSignal::Enum ToOpusSignal(wc_fuzzer::OpusSignal opus_signal);
 
-String ToOpusSignal(wc_fuzzer::OpusSignal opus_signal);
+V8OpusApplication::Enum ToOpusApplication(
+    wc_fuzzer::OpusApplication opus_application);
 
-String ToOpusApplication(wc_fuzzer::OpusApplication opus_application);
+V8AacBitstreamFormat::Enum ToAacFormat(wc_fuzzer::AacFormat format);
 
-String ToAccelerationType(
+V8HardwarePreference::Enum ToAccelerationType(
     wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference type);
 
-String ToChunkType(wc_fuzzer::EncodedChunkType type);
+V8EncodedAudioChunkType::Enum ToAudioChunkType(
+    wc_fuzzer::EncodedChunkType type);
+
+V8EncodedVideoChunkType::Enum ToVideoChunkType(
+    wc_fuzzer::EncodedChunkType type);
 
 }  // namespace blink
 

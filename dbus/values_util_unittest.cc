@@ -355,8 +355,7 @@ TEST(ValuesUtilTest, PopDoubleToIntDictionary) {
   // Create the expected value.
   base::Value::Dict dictionary_value;
   for (size_t i = 0; i != values.size(); ++i) {
-    std::string key_string;
-    base::JSONWriter::Write(base::Value(keys[i]), &key_string);
+    std::string key_string = base::WriteJson(base::Value(keys[i])).value_or("");
     dictionary_value.Set(key_string, values[i]);
   }
 

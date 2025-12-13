@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "printing/units.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
@@ -25,15 +26,13 @@
 namespace chrome_pdf {
 
 gfx::SizeF GetImageSize(FPDF_PAGEOBJECT page_object) {
-  float left;
-  float bottom;
-  float right;
-  float top;
-  if (!FPDFPageObj_GetBounds(page_object, &left, &bottom, &right, &top)) {
+  const std::optional<PdfRect> maybe_bounds = GetPageObjectBounds(page_object);
+  if (!maybe_bounds.has_value()) {
     return gfx::SizeF();
   }
 
-  return gfx::SizeF(right - left, top - bottom);
+  const auto& bounds = maybe_bounds.value();
+  return gfx::SizeF(bounds.width(), bounds.height());
 }
 
 SkBitmap GetImageForOcr(FPDF_DOCUMENT doc,

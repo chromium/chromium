@@ -4,7 +4,6 @@
 
 #include "components/metrics/structured/test/test_event_storage.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/task/current_thread.h"
 #include "components/metrics/structured/histogram_util.h"
 

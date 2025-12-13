@@ -666,40 +666,6 @@ chromium-metrics-reviews@google.com.
       label="Secure download initiated by insecure non-unique source"/>
 </enum>
 
-<enum name="InterruptReason">
-  <int value="0" label="NONE"/>
-  <int value="1" label="FILE_FAILED"/>
-  <int value="2" label="FILE_ACCESS_DENIED"/>
-  <int value="3" label="FILE_NO_SPACE"/>
-  <int value="5" label="FILE_NAME_TOO_LONG"/>
-  <int value="6" label="FILE_TOO_LARGE"/>
-  <int value="7" label="FILE_VIRUS_INFECTED"/>
-  <int value="10" label="FILE_TRANSIENT_ERROR"/>
-  <int value="11" label="FILE_BLOCKED"/>
-  <int value="12" label="FILE_SECURITY_CHECK_FAILED"/>
-  <int value="13" label="FILE_TOO_SHORT"/>
-  <int value="14" label="FILE_HASH_MISMATCH"/>
-  <int value="15" label="FILE_SAME_AS_SOURCE"/>
-  <int value="20" label="NETWORK_FAILED"/>
-  <int value="21" label="NETWORK_TIMEOUT"/>
-  <int value="22" label="NETWORK_DISCONNECTED"/>
-  <int value="23" label="NETWORK_SERVER_DOWN"/>
-  <int value="24" label="NETWORK_INVALID_REQUEST"/>
-  <int value="30" label="SERVER_FAILED"/>
-  <int value="31" label="SERVER_NO_RANGE"/>
-  <int value="32" label="SERVER_PRECONDITION (Deprecated)"/>
-  <int value="33" label="SERVER_BAD_CONTENT"/>
-  <int value="34" label="SERVER_UNAUTHORIZED"/>
-  <int value="35" label="SERVER_CERT_PROBLEM"/>
-  <int value="36" label="SERVER_FORBIDDEN"/>
-  <int value="37" label="SERVER_UNREACHABLE"/>
-  <int value="38" label="SERVER_CONTENT_LENGTH_MISMATCH"/>
-  <int value="39" label="SERVER_CROSS_ORIGIN_REDIRECT"/>
-  <int value="40" label="USER_CANCELED"/>
-  <int value="41" label="USER_SHUTDOWN"/>
-  <int value="50" label="CRASH"/>
-</enum>
-
 <enum name="MediaMetadataEvent">
   <int value="0" label="Metadata request started"/>
   <int value="1" label="Metadata request failed"/>
@@ -730,6 +696,13 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Open file"/>
   <int value="1" label="Download progress message"/>
   <int value="2" label="App menu"/>
+</enum>
+
+<enum name="PolicyWarningDialogEvent">
+  <int value="0" label="dialog shown"/>
+  <int value="1" label="Dialog confirmed"/>
+  <int value="2" label="Dialog canceled"/>
+  <int value="3" label="Dialog dismissed"/>
 </enum>
 
 <enum name="PresentAddPassesDialogResult">

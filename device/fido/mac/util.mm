@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "device/fido/mac/util.h"
 
 #import <Foundation/Foundation.h>
@@ -20,10 +19,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/cbor/writer.h"
-#include "crypto/apple_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
 #include "crypto/hash.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/p256_public_key.h"
+#include "device/fido/public/fido_constants.h"
 #include "device/fido/public_key.h"
 
 namespace device::fido::mac {
@@ -126,7 +125,7 @@ std::optional<std::vector<uint8_t>> GenerateSignature(
                     client_data_hash.size());
   ScopedCFTypeRef<CFErrorRef> err;
   ScopedCFTypeRef<CFDataRef> sig_data(
-      crypto::AppleKeychainV2::GetInstance().KeyCreateSignature(
+      crypto::apple::KeychainV2::GetInstance().KeyCreateSignature(
           private_key, kSecKeyAlgorithmECDSASignatureMessageX962SHA256,
           sig_input.get(), err.InitializeInto()));
   if (!sig_data) {
@@ -225,7 +224,7 @@ bool DeviceHasBiometricsAvailable() {
     return *flag;
   }
 
-  return crypto::AppleKeychainV2::GetInstance().LAContextCanEvaluatePolicy(
+  return crypto::apple::KeychainV2::GetInstance().LAContextCanEvaluatePolicy(
       LAPolicyDeviceOwnerAuthenticationWithBiometrics, /*error=*/nil);
 }
 

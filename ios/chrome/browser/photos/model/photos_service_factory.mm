@@ -16,11 +16,10 @@
 namespace {
 
 // Build a PhotosService instance.
-std::unique_ptr<KeyedService> BuildPhotosService(web::BrowserState* context) {
+std::unique_ptr<KeyedService> BuildPhotosService(ProfileIOS* profile) {
   PhotosServiceConfiguration* configuration =
       [[PhotosServiceConfiguration alloc] init];
   ApplicationContext* application_context = GetApplicationContext();
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   configuration.singleSignOnService =
       application_context->GetSingleSignOnService();
   configuration.prefService = profile->GetPrefs();
@@ -46,8 +45,7 @@ PhotosServiceFactory* PhotosServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
-PhotosServiceFactory::GetDefaultFactory() {
+PhotosServiceFactory::TestingFactory PhotosServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPhotosService);
 }
 
@@ -63,6 +61,6 @@ PhotosServiceFactory::PhotosServiceFactory()
 PhotosServiceFactory::~PhotosServiceFactory() = default;
 
 std::unique_ptr<KeyedService> PhotosServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildPhotosService(context);
+    ProfileIOS* profile) const {
+  return BuildPhotosService(profile);
 }

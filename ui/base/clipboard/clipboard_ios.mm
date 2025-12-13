@@ -468,18 +468,6 @@ void ClipboardIOS::WriteData(const ClipboardFormatType& format,
   [GetPasteboard() addItems:@[ data_item ]];
 }
 
-void ClipboardIOS::WriteClipboardHistory() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
-void ClipboardIOS::WriteUploadCloudClipboard() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
-void ClipboardIOS::WriteConfidentialDataForPassword() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
 std::vector<uint8_t> ClipboardIOS::ReadPngInternal(
     ClipboardBuffer buffer,
     UIPasteboard* pasteboard) const {

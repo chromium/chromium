@@ -108,31 +108,31 @@ class DeviceOperationHandlerImplTest : public testing::Test {
             address, /*paired=*/false, /*connected=*/false);
 
     ON_CALL(*mock_device, ConnectClassic(testing::_, testing::_))
-        .WillByDefault(testing::Invoke(
+        .WillByDefault(
             [this](device::BluetoothDevice::PairingDelegate* pairing_delegate,
                    device::BluetoothDevice::ConnectCallback callback) {
               EXPECT_FALSE(connect_callback_);
               connect_callback_ = std::move(callback);
-            }));
+            });
     ON_CALL(*mock_device, Disconnect(testing::_, testing::_))
-        .WillByDefault(testing::Invoke(
+        .WillByDefault(
             [this](base::OnceClosure callback,
                    device::BluetoothDevice::ErrorCallback error_callback) {
               EXPECT_FALSE(disconnect_callbacks_.has_value());
               disconnect_callbacks_ = std::make_pair(std::move(callback),
                                                      std::move(error_callback));
-            }));
+            });
     ON_CALL(*mock_device, Forget(testing::_, testing::_))
-        .WillByDefault(testing::Invoke(
+        .WillByDefault(
             [this](base::OnceClosure callback,
                    device::BluetoothDevice::ErrorCallback error_callback) {
               EXPECT_FALSE(forget_callbacks_.has_value());
               forget_callbacks_ = std::make_pair(std::move(callback),
                                                  std::move(error_callback));
-            }));
-    ON_CALL(*mock_device, GetType()).WillByDefault(testing::Invoke([]() {
+            });
+    ON_CALL(*mock_device, GetType()).WillByDefault([]() {
       return device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC;
-    }));
+    });
 
     mock_devices_.push_back(std::move(mock_device));
   }

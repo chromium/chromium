@@ -133,12 +133,11 @@ include_rules = [
   # //ash can use resources from the internal ash resources repo.
   "+chromeos/ash/resources/internal",
   # //ash can use the public interfaces of various services.
-  "+chromeos/ash/services/assistant/public/cpp" ,
+  "+chromeos/ash/services/assistant/public/cpp",
   "+chromeos/ash/services/assistant/test_support",
   "+chromeos/ash/services/bluetooth_config",
   "+chromeos/ash/services/coral/public",
   "+chromeos/ash/services/hotspot_config",
-  "+chromeos/ash/services/libassistant/public",
   "+chromeos/ash/services/nearby/public",
   "+chromeos/ash/services/multidevice_setup/public",
   "+chromeos/ash/services/secure_channel/public",

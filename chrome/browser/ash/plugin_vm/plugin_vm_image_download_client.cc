@@ -57,7 +57,9 @@ void PluginVmImageDownloadClient::OnDownloadStarted(
     return;
   }
 
-  content_length_ = headers ? headers->GetContentLength() : -1;
+  std::optional<base::ByteCount> content_length =
+      headers ? headers->GetContentLength() : std::nullopt;
+  content_length_ = content_length ? content_length->InBytes() : -1;
   response_code_ = headers ? headers->response_code() : -1;
 
   GetInstaller()->OnDownloadStarted();

@@ -12,18 +12,18 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol PromosManagerUIHandler;
-@class PromoStatistics;
 
 @interface DefaultBrowserGenericPromoCoordinator : ChromeCoordinator
-
-// Sets promo statistics object for testing.
-- (void)setPromoStatisticsForTesting:(PromoStatistics*)testPromoStats;
 
 // Handler for all actions of this coordinator.
 @property(nonatomic, weak) id<DefaultBrowserGenericPromoCommands> handler;
 
 // Whether or not the current showing came from a past Remind Me Later.
 @property(nonatomic, assign) BOOL promoWasFromRemindMeLater;
+
+// Whether or not this showing is from the off-cycle promo. If so, the promo
+// will use the Default Apps iOS Settings page, if available (iOS 18.3+).
+@property(nonatomic, assign) BOOL promoWasFromOffCycleTrigger;
 
 // The promos manager ui handler to alert for promo UI changes. Should only be
 // set if this coordinator was a promo presented by the PromosManager.

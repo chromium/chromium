@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARING_MANAGER_IMPL_H_
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARING_MANAGER_IMPL_H_
 
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
@@ -14,6 +17,7 @@
 namespace glic {
 
 class GlicMetrics;
+class GlicStablePinningDelegatingSharingManager;
 
 // Implements GlicSharingManager and provides additional functionality needed
 // by chrome/browser/glic. It also provides some common sharing-related
@@ -21,13 +25,23 @@ class GlicMetrics;
 class GlicSharingManagerImpl : public GlicSharingManager {
  public:
   GlicSharingManagerImpl(Profile* profile,
-                         GlicWindowController* window_controller,
-                         Host* host,
+                         GlicWindowControllerInterface* window_controller,
                          GlicMetrics* metrics);
+  GlicSharingManagerImpl(
+      std::unique_ptr<GlicFocusedTabManagerInterface> focused_tab_manager,
+      std::unique_ptr<GlicFocusedBrowserManagerInterface>
+          focused_browser_manager,
+      GlicPinnedTabManager* pinned_tab_manager,
+      Profile* profile,
+      GlicMetrics* metrics);
   ~GlicSharingManagerImpl() override;
 
   GlicSharingManagerImpl(const GlicSharingManagerImpl&) = delete;
   GlicSharingManagerImpl& operator=(const GlicSharingManagerImpl&) = delete;
+
+  // Grants special access to internals for enforcing invariants,
+  // without exposing generally.
+  friend class GlicStablePinningDelegatingSharingManager;
 
   // GlicSharingManager implementation.
 
@@ -36,18 +50,49 @@ class GlicSharingManagerImpl : public GlicSharingManager {
   base::CallbackListSubscription AddFocusedTabChangedCallback(
       FocusedTabChangedCallback callback) override;
 
+  using FocusedTabDataChangedCallback =
+      base::RepeatingCallback<void(const mojom::TabData*)>;
+  base::CallbackListSubscription AddFocusedTabDataChangedCallback(
+      FocusedTabDataChangedCallback callback) override;
   FocusedTabData GetFocusedTabData() override;
+
+  using FocusedBrowserChangedCallback =
+      base::RepeatingCallback<void(BrowserWindowInterface*)>;
+  base::CallbackListSubscription AddFocusedBrowserChangedCallback(
+      FocusedBrowserChangedCallback callback) override;
+  BrowserWindowInterface* GetFocusedBrowser() const override;
 
   using TabPinningStatusChangedCallback =
       base::RepeatingCallback<void(tabs::TabInterface*, bool)>;
   base::CallbackListSubscription AddTabPinningStatusChangedCallback(
       TabPinningStatusChangedCallback callback) override;
 
-  bool PinTabs(base::span<const tabs::TabHandle> tab_handles) override;
+  using PinnedTabsChangedCallback =
+      base::RepeatingCallback<void(const std::vector<content::WebContents*>&)>;
+  base::CallbackListSubscription AddPinnedTabsChangedCallback(
+      PinnedTabsChangedCallback callback) override;
 
-  bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles) override;
+  using PinnedTabDataChangedCallback =
+      base::RepeatingCallback<void(const TabDataChange&)>;
+  base::CallbackListSubscription AddPinnedTabDataChangedCallback(
+      PinnedTabDataChangedCallback callback) override;
 
-  void UnpinAllTabs() override;
+  using TabPinningStatusEventCallback =
+      base::RepeatingCallback<void(tabs::TabInterface*,
+                                   GlicPinningStatusEvent)>;
+  base::CallbackListSubscription AddTabPinningStatusEventCallback(
+      TabPinningStatusEventCallback callback) override;
+
+  bool PinTabs(base::span<const tabs::TabHandle> tab_handles,
+               GlicPinTrigger trigger) override;
+
+  bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles,
+                 GlicUnpinTrigger trigger) override;
+
+  void UnpinAllTabs(GlicUnpinTrigger trigger) override;
+
+  std::optional<GlicPinnedTabUsage> GetPinnedTabUsage(
+      tabs::TabHandle tab_handle) override;
 
   int32_t GetMaxPinnedTabs() const override;
 
@@ -55,72 +100,51 @@ class GlicSharingManagerImpl : public GlicSharingManager {
 
   bool IsTabPinned(tabs::TabHandle tab_handle) const override;
 
-  // Functionality provided for (and only used within) chrome/browser/glic.
+  int32_t SetMaxPinnedTabs(uint32_t max_pinned_tabs) override;
 
-  // Callback for changes to the tab data representation of the focused tab.
-  // This includes any event that changes tab data -- e.g. favicon/title change
-  // events (where the container does not change), as well as container changed
-  // events.
-  using FocusedTabDataChangedCallback =
-      base::RepeatingCallback<void(const mojom::TabData*)>;
-  base::CallbackListSubscription AddFocusedTabDataChangedCallback(
-      FocusedTabDataChangedCallback callback);
-
-  // Registers a callback to be invoked when the collection of pinned tabs
-  // changes.
-  using PinnedTabsChangedCallback =
-      base::RepeatingCallback<void(const std::vector<content::WebContents*>&)>;
-  base::CallbackListSubscription AddPinnedTabsChangedCallback(
-      PinnedTabsChangedCallback callback);
-
-  // Registers a callback to be invoked when the TabData for a pinned tab
-  // changes.
-  using PinnedTabDataChangedCallback =
-      base::RepeatingCallback<void(const mojom::TabData*)>;
-  base::CallbackListSubscription AddPinnedTabDataChangedCallback(
-      PinnedTabDataChangedCallback callback);
-
-  // Sets the limit on the number of pinned tabs. Returns the effective number
-  // of pinned tabs. Can differ due to supporting fewer tabs than requested or
-  // having more tabs currently pinned than requested.
-  int32_t SetMaxPinnedTabs(uint32_t max_pinned_tabs);
+  std::vector<content::WebContents*> GetPinnedTabs() const override;
 
   void GetContextFromTab(
       tabs::TabHandle tab_handle,
       const mojom::GetTabContextOptions& options,
-      base::OnceCallback<void(mojom::GetContextResultPtr)> callback);
+      base::OnceCallback<void(GlicGetContextResult)> callback) override;
 
-  // True if the immutable attributes of `browser` are valid for Glic focus.
-  // or pinning. Invalid browsers are never observed.
-  bool IsBrowserValidForSharing(
-      BrowserWindowInterface* browser_interface) override;
+  void GetContextForActorFromTab(
+      tabs::TabHandle tab_handle,
+      const mojom::GetTabContextOptions& options,
+      base::OnceCallback<void(GlicGetContextResult)> callback) override;
 
-  // True if the given contents are a candidate for sharing. Performs a number
-  // of checks, but sharing may still fail for other reasons.
-  bool IsValidCandidateForSharing(content::WebContents* contents);
-
-  // Fetches the current list of pinned tabs.
-  std::vector<content::WebContents*> GetPinnedTabs() const;
-
-  // Subscribes to changes in pin candidates.
   void SubscribeToPinCandidates(
       mojom::GetPinCandidatesOptionsPtr options,
-      mojo::PendingRemote<mojom::PinCandidatesObserver> observer);
+      mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override;
+
+  void OnConversationTurnSubmitted() override;
+
+  GlicFocusedBrowserManagerInterface& focused_browser_manager() override;
+
+  base::WeakPtr<GlicSharingManager> GetWeakPtr() override;
 
  private:
-  GlicFocusedTabManager focused_tab_manager_;
-  GlicPinnedTabManager pinned_tab_manager_;
+  void GetContextFromTabImpl(
+      tabs::TabInterface* tab,
+      const mojom::GetTabContextOptions& options,
+      base::OnceCallback<void(GlicGetContextResult)> callback);
+
+  GlicPinnedTabManager* pinned_tab_manager() const;
+
+  std::unique_ptr<GlicFocusedBrowserManagerInterface> focused_browser_manager_;
+  std::unique_ptr<GlicFocusedTabManagerInterface> focused_tab_manager_;
+  std::variant<std::unique_ptr<GlicPinnedTabManager>,
+               raw_ptr<GlicPinnedTabManager>>
+      pinned_tab_manager_;
 
   // The profile for which to manage sharing.
   raw_ptr<Profile> profile_;
 
-  // The Glic window controller.
-  raw_ref<GlicWindowController> window_controller_;
-
-  base::flat_set<GURL> url_allow_list_;
-
-  // Enables providing sharing-related-related input to metrics.
+  // Enables providing sharing-related input to metrics.
   raw_ptr<GlicMetrics> metrics_;
+
+  base::WeakPtrFactory<GlicSharingManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

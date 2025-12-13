@@ -91,7 +91,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertRegex(
         results[0].message,
         '.*histograms.xml contains histogram.* using <variants> not defined in'
-        ' the file, please run validate_token.py .*histograms.xml to fix.')
+        ' the file, please run .*validate_token.py .*histograms.xml to fix.')
 
     # validate_format.py also reports errors when the variants are not defined
     # in the file, hence there is a second error from the same check.

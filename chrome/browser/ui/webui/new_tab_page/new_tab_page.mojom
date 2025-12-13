@@ -4,35 +4,11 @@
 
 module new_tab_page.mojom;
 
+import "components/ntp_tiles/tile_type.mojom";
 import "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_shared_ui.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "ui/webui/resources/cr_components/most_visited/most_visited.mojom";
 import "url/mojom/url.mojom";
-
-// A collection of background images.
-struct BackgroundCollection {
-  // Collection identifier.
-  string id;
-  // Localized string of the collection name.
-  string label;
-  // URL to a preview image for the collection. Can point to untrusted content.
-  url.mojom.Url preview_image_url;
-};
-
-// A background image in a collection.
-struct CollectionImage {
-  // Human readable attributions of the background image.
-  string attribution_1;
-  string attribution_2;
-  // URL associated with the background image. Used for href.
-  url.mojom.Url attribution_url;
-  // URL of image. Can point to untrusted content.
-  url.mojom.Url image_url;
-  // URL to a preview of the image. Can point to untrusted content.
-  url.mojom.Url preview_image_url;
-  // Collection id of the image;
-  string collection_id;
-};
 
 /**
  * New Tab Page image sources. This enum must match the numbering for
@@ -47,12 +23,6 @@ struct CollectionImage {
   kUploadedImage,
   kWallpaperSearch,
   kWallpaperSearchInspiration,
-};
-
-// Enum representing the in product help promo to trigger.
-enum IphFeature {
-  kCustomizeChrome,
-  kCustomizeModules,
 };
 
 // The background image URL and styling.
@@ -237,28 +207,14 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Sets the background image and notifies all NTPs of the change.
-  SetBackgroundImage(string attribution_1, string attribution_2,
-      url.mojom.Url attribution_url, url.mojom.Url image_url,
-      url.mojom.Url thumbnail_url, string collection_id);
-  // Sets collection id for daily refresh. When |collection_id| is empty, the
-  // daily refresh is turned off.
-  SetDailyRefreshCollectionId(string collection_id);
-  // Clears the background and daily refresh settings.
-  SetNoBackgroundImage();
-  // Sets the visibility of NTP tiles and whether custom links are enabled.
-  SetMostVisitedSettings(bool custom_links_enabled, bool shortcuts_visible);
-  // Returns the visibility of NTP tiles and whether custom links are enabled.
-  GetMostVisitedSettings() => (bool custom_links_enabled,
-                               bool shortcuts_visible);
-  // Returns the collections of background images.
-  GetBackgroundCollections() => (array<BackgroundCollection> collections);
-  // Returns the images of a collection identified by |collection_id|.
-  GetBackgroundImages(string collection_id) => (array<CollectionImage> images);
+  // Sets the visibility of NTP tiles and the shortcuts type.
+  SetMostVisitedSettings(ntp_tiles.mojom.TileType shortcuts_type,
+    bool shortcuts_visible);
+  // Returns the visibility of NTP tiles and the shortcuts type.
+  GetMostVisitedSettings() => (ntp_tiles.mojom.TileType shortcuts_type,
+    bool shortcuts_visible);
   // Gets current doodle if there is one.
   GetDoodle() => (Doodle? doodle);
-  // Choose custom background from local file system.
-  ChooseLocalCustomBackground() => (bool success);
   // Updates middle slot promo data. Triggers a call to |SetPromo|.
   UpdatePromoData();
   // Marks a promo as blocked.
@@ -291,12 +247,14 @@ interface PageHandler {
   GetModulesOrder() => (array<string> module_ids);
   // Triggers a call to |SetModulesLoadable|.
   UpdateModulesLoadable();
+  // Updates the visibility of the action chips in the NTP on any pref changes.
+  UpdateActionChipsVisibility();
   // Triggers a call to |FooterVisibilityUpdated|.
   UpdateFooterVisibility();
-  // Attempts to trigger the specified in product help promo.
-  MaybeShowFeaturePromo(IphFeature iph_feature);
   // Increments count of times the compose button was shown.
   IncrementComposeButtonShownCount();
+  // Opens Customize Chrome if eligibility conditions are met.
+  MaybeTriggerAutomaticCustomizeChromePromo();
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
@@ -341,6 +299,8 @@ interface Page {
   // Allows modules to load on NTP when the UI has postponed module loading for
   // some reason.
   SetModulesLoadable();
+  // Sets the action chips visibility.
+  SetActionChipsVisibility(bool visible);
   // Sets NTP homepage promo.
   SetPromo(Promo? promo);
   // Shows a toast with information about Chrome Webstore themes.

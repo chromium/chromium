@@ -8,10 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/icons/extension_icon_variant.h"
 #include "extensions/common/icons/extension_icon_variants.h"
 #include "extensions/common/manifest_handler.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

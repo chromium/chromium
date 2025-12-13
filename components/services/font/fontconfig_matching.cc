@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/font/fontconfig_matching.h"
 
 #include <fontconfig/fontconfig.h>
+
+#include <memory>
+
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_util.h"
-
-#include <memory>
 
 namespace font_service {
 
@@ -86,11 +83,11 @@ FontConfigLocalMatching::FindFontBySpecifiedName(
   static const char kSFNTExtensions[][5] = {".ttf", ".otc", ".TTF", ".ttc",
                                             ".otf", ".OTF", ""};
   for (size_t j = 0;; j++) {
-    if (kSFNTExtensions[j][0] == 0) {
+    if (UNSAFE_TODO(kSFNTExtensions[j])[0] == 0) {
       // None of the extensions matched.
       break;
     }
-    if (base::EndsWith(filename, kSFNTExtensions[j],
+    if (base::EndsWith(filename, UNSAFE_TODO(kSFNTExtensions[j]),
                        base::CompareCase::SENSITIVE)) {
       is_sfnt = true;
       break;

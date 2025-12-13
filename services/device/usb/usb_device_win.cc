@@ -59,7 +59,7 @@ void UsbDeviceWin::ReadDescriptors(
   base::win::ScopedHandle handle(
       CreateFile(hub_path_.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, nullptr,
                  OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr));
-  if (handle.IsValid()) {
+  if (handle.is_valid()) {
     device_handle = new UsbDeviceHandleWin(this, std::move(handle),
                                            std::move(blocking_task_runner));
   } else {

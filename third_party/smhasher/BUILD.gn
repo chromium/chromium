@@ -13,7 +13,7 @@ static_library("murmurhash2") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
   visibility = [
     "//chrome/browser/android/webapk:webapk_sources",
-    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/apps/webapk",
     "//components/language_detection/core:internals",
     "//components/translate/core/language_detection",
     "//components/webapps/browser",

@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -20,16 +21,15 @@
 - (void)viewDidLoad {
   self.image = [UIImage imageNamed:@"password_sharing_family_promo"];
   self.customSpacingAfterImage = 32;
-  self.customSpacingBeforeImageIfNoNavigationBar = 24;
-  self.showDismissBarButton = NO;
+  self.customSpacingBeforeImage = 24;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;
   self.titleString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FIRST_RUN_TITLE);
   self.subtitleString = [self subtitleStringWithTag].string;
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_SHARE_BUTTON);
-  self.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
+  self.configuration.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
 
   [super viewDidLoad];
 }
@@ -55,19 +55,9 @@
 
 #pragma mark - UITextViewDelegate
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  [self.actionHandler learnMoreLinkWasTapped];
-  return NO;
-}
-#endif
-
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   __weak __typeof(self) weakSelf = self;
   return [UIAction actionWithHandler:^(UIAction* action) {
     [weakSelf.actionHandler learnMoreLinkWasTapped];

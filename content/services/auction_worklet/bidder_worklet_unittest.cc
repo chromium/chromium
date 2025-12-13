@@ -22,6 +22,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_view_util.h"
@@ -340,8 +341,12 @@ class BidderWorkletTest : public testing::Test {
                         TaskEnvironment::TimeSource::SYSTEM_TIME)
       : task_environment_(time_source) {
     SetDefaultParameters();
-    feature_list_.InitAndEnableFeature(
-        features::kInterestGroupUpdateIfOlderThan);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kInterestGroupUpdateIfOlderThan,
+                              features::kFledgeTextConversionHelpers,
+                              blink::features::
+                                  kFledgeTrustedSignalsKVv1CreativeScanning},
+        /*disabled_features=*/{});
   }
 
   ~BidderWorkletTest() override = default;
@@ -1293,10 +1298,10 @@ class BidderWorkletMultiBidDisabledTest : public BidderWorkletTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class BidderWorkletTextConversionsTest : public BidderWorkletTest {
+class BidderWorkletNoTextConversionsTest : public BidderWorkletTest {
  public:
-  BidderWorkletTextConversionsTest() {
-    feature_list_.InitAndEnableFeature(features::kFledgeTextConversionHelpers);
+  BidderWorkletNoTextConversionsTest() {
+    feature_list_.InitAndDisableFeature(features::kFledgeTextConversionHelpers);
   }
 
  protected:
@@ -4986,7 +4991,19 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupUserBiddingSignals) {
       TestBidBuilder().SetAd("true").Build());
 }
 
-TEST_F(BidderWorkletTest, GenerateBidInterestGroupCreativeScanningMetadata) {
+class BidderWorkletNoCreativeScanningTest : public BidderWorkletTest {
+ public:
+  BidderWorkletNoCreativeScanningTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kFledgeTrustedSignalsKVv1CreativeScanning);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BidderWorkletNoCreativeScanningTest,
+       GenerateBidInterestGroupCreativeScanningMetadata) {
   RunGenerateBidExpectingExpressionIsTrue(
       R"(!('creativeScanningMetadata' in interestGroup.ads[0]))");
   RunGenerateBidExpectingExpressionIsTrue(
@@ -5001,12 +5018,12 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupCreativeScanningMetadata) {
       R"(!('creativeScanningMetadata' in interestGroup.adComponents[0]))");
 }
 
-TEST_F(BidderWorkletTest, GenerateBidTextConversions) {
+TEST_F(BidderWorkletNoTextConversionsTest, GenerateBidTextConversions) {
   RunGenerateBidExpectingExpressionIsTrue(
       R"(!('protectedAudience' in globalThis))");
 }
 
-TEST_F(BidderWorkletTextConversionsTest, GenerateBidTextConversions) {
+TEST_F(BidderWorkletTest, GenerateBidTextConversions) {
   RunGenerateBidExpectingExpressionIsTrue(
       R"('encodeUtf8' in protectedAudience)");
   RunGenerateBidExpectingExpressionIsTrue(
@@ -5019,7 +5036,7 @@ TEST_F(BidderWorkletTextConversionsTest, GenerateBidTextConversions) {
 }
 
 // Make sure we don't stomp over an existing user protectedAudience
-TEST_F(BidderWorkletTextConversionsTest, GenerateBidNoGlobalStomp) {
+TEST_F(BidderWorkletTest, GenerateBidNoGlobalStomp) {
   const char kScript[] = R"(
     function protectedAudience() {
       return {bid: 1, render:"https://response.test/"};
@@ -5034,19 +5051,7 @@ TEST_F(BidderWorkletTextConversionsTest, GenerateBidNoGlobalStomp) {
                                               TestBidBuilder().Build());
 }
 
-class BidderWorkletCreativeScanningTest : public BidderWorkletTest {
- public:
-  BidderWorkletCreativeScanningTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kFledgeTrustedSignalsKVv1CreativeScanning);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(BidderWorkletCreativeScanningTest,
-       GenerateBidInterestGroupCreativeScanningMetadata) {
+TEST_F(BidderWorkletTest, GenerateBidInterestGroupCreativeScanningMetadata) {
   RunGenerateBidExpectingExpressionIsTrue(
       R"(!('creativeScanningMetadata' in interestGroup.ads[0]))");
   RunGenerateBidExpectingExpressionIsTrue(
@@ -5319,8 +5324,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
   }
   base::Value::Dict signals_dict;
   signals_dict.Set("keys", std::move(keys_dict));
-  std::string signals_json;
-  base::JSONWriter::Write(signals_dict, &signals_json);
+  std::string signals_json = base::WriteJson(signals_dict).value_or("");
 
   ASSERT_EQ(url_loader_factory_.NumPending(), 1);
   GURL url = url_loader_factory_.GetPendingRequest(0)->request.url;
@@ -5437,8 +5441,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
   }
   base::Value::Dict signals_dict;
   signals_dict.Set("keys", std::move(keys_dict));
-  std::string signals_json;
-  base::JSONWriter::Write(signals_dict, &signals_json);
+  std::string signals_json = base::WriteJson(signals_dict).value_or("");
 
   // Find the trusted signals fetch, and provide data to it.
   ASSERT_EQ(url_loader_factory_.NumPending(), 2);
@@ -5575,8 +5578,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
   }
   base::Value::Dict signals_dict;
   signals_dict.Set("keys", std::move(keys_dict));
-  std::string signals_json;
-  base::JSONWriter::Write(signals_dict, &signals_json);
+  std::string signals_json = base::WriteJson(signals_dict).value_or("");
 
   ASSERT_EQ(url_loader_factory_.NumPending(), 1);
   GURL url = url_loader_factory_.GetPendingRequest(0)->request.url;
@@ -8072,13 +8074,13 @@ TEST_F(BidderWorkletTest, ReportWinTopLevelTimeout) {
       {"https://url.test/ top-level execution timed out."});
 }
 
-TEST_F(BidderWorkletTest, ReportWinTextConversions) {
+TEST_F(BidderWorkletNoTextConversionsTest, ReportWinTextConversions) {
   RunReportWinWithFunctionBodyExpectingResult(
       "sendReportTo('https://foo.test?' + ('protectedAudience' in globalThis))",
       GURL("https://foo.test/?false"));
 }
 
-TEST_F(BidderWorkletTextConversionsTest, ReportWinTextConversions) {
+TEST_F(BidderWorkletTest, ReportWinTextConversions) {
   RunReportWinWithFunctionBodyExpectingResult(
       "sendReportTo('https://foo.test?' + ('encodeUtf8' in protectedAudience))",
       GURL("https://foo.test/?true"));
@@ -8088,7 +8090,7 @@ TEST_F(BidderWorkletTextConversionsTest, ReportWinTextConversions) {
 }
 
 // Make sure we don't stomp over an existing user protectedAudience object.
-TEST_F(BidderWorkletTextConversionsTest, ReportWinNoGlobalStomp) {
+TEST_F(BidderWorkletTest, ReportWinNoGlobalStomp) {
   const char kScript[] = R"(
     function protectedAudience() {
       sendReportTo("https://foo.test");

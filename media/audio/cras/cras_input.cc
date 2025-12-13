@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <ctime>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,6 +20,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 #include "media/audio/cras/cras_util.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/media_switches.h"
@@ -143,7 +145,7 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
     DLOG(WARNING) << "Couldn't create CRAS client.\n";
     ReportStreamOpenResult(
         StreamOpenResult::kCallbackOpenCrasClientCreationFailed);
-    client_ = NULL;
+    client_ = nullptr;
     return OpenOutcome::kFailed;
   }
 
@@ -151,8 +153,8 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
     DLOG(WARNING) << "Couldn't connect CRAS client.\n";
     ReportStreamOpenResult(
         StreamOpenResult::kCallbackOpenCannotConnectToCrasClient);
-    libcras_client_destroy(client_);
-    client_ = NULL;
+    libcras_client_destroy(client_.ExtractAsDangling());
+    client_ = nullptr;
     return OpenOutcome::kFailed;
   }
 
@@ -160,8 +162,8 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
   if (libcras_client_run_thread(client_)) {
     DLOG(WARNING) << "Couldn't run CRAS client.\n";
     ReportStreamOpenResult(StreamOpenResult::kCallbackOpenCannotRunCrasClient);
-    libcras_client_destroy(client_);
-    client_ = NULL;
+    libcras_client_destroy(client_.ExtractAsDangling());
+    client_ = nullptr;
     return OpenOutcome::kFailed;
   }
 
@@ -172,8 +174,8 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
       // cleanup code.
       ReportStreamOpenResult(
           StreamOpenResult::kCallbackOpenCannotSynchronizeData);
-      libcras_client_destroy(client_);
-      client_ = NULL;
+      libcras_client_destroy(client_.ExtractAsDangling());
+      client_ = nullptr;
       return OpenOutcome::kFailed;
     }
 
@@ -200,8 +202,8 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
                             : " for full loopback.");
       ReportStreamOpenResult(
           StreamOpenResult::kCallbackOpenCannotFindLoopbackDevice);
-      libcras_client_destroy(client_);
-      client_ = NULL;
+      libcras_client_destroy(client_.ExtractAsDangling());
+      client_ = nullptr;
       return OpenOutcome::kFailed;
     }
   }
@@ -215,8 +217,8 @@ void CrasInputStream::Close() {
 
   if (client_) {
     libcras_client_stop(client_);
-    libcras_client_destroy(client_);
-    client_ = NULL;
+    libcras_client_destroy(client_.ExtractAsDangling());
+    client_ = nullptr;
   }
 
   // Signal to the manager that we're closed and can be removed.
@@ -295,7 +297,7 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
     ReportStreamStartResult(
         StreamStartResult::kCallbackStartErrorCreatingStreamParameters);
     callback_->OnError();
-    callback_ = NULL;
+    callback_ = nullptr;
     return;
   }
 
@@ -310,7 +312,7 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
     ReportStreamStartResult(
         StreamStartResult::kCallbackStartErrorSettingUpStreamParameters);
     callback_->OnError();
-    callback_ = NULL;
+    callback_ = nullptr;
     libcras_stream_params_destroy(stream_params);
     return;
   }
@@ -319,13 +321,13 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
   // the channels is set in the layout.
   int8_t layout[CRAS_CH_MAX];
   for (size_t i = 0; i < std::size(layout); ++i) {
-    layout[i] = -1;
+    UNSAFE_TODO(layout[i]) = -1;
   }
 
   // Converts to CRAS defined channels. ChannelOrder will return -1
   // for channels that are not present in params_.channel_layout().
   for (size_t i = 0; i < std::size(kChannelMap); ++i) {
-    layout[kChannelMap[i]] =
+    UNSAFE_TODO(layout[kChannelMap[i]]) =
         ChannelOrder(params_.channel_layout(), static_cast<Channels>(i));
   }
 
@@ -336,7 +338,7 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
     ReportStreamStartResult(
         StreamStartResult::kCallbackStartErrorSettingUpChannelLayout);
     callback_->OnError();
-    callback_ = NULL;
+    callback_ = nullptr;
     libcras_stream_params_destroy(stream_params);
     return;
   }
@@ -390,7 +392,7 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
     ReportStreamStartResult(
         StreamStartResult::kCallbackStartFailedAddingStream);
     callback_->OnError();
-    callback_ = NULL;
+    callback_ = nullptr;
   }
 
   // Mute system audio if requested.
@@ -437,7 +439,7 @@ void CrasInputStream::Stop() {
   ReportAndResetStats();
 
   started_ = false;
-  callback_ = NULL;
+  callback_ = nullptr;
 }
 
 // Static callback asking for samples.  Run on high priority thread.

@@ -22,7 +22,7 @@ static_library("access_code_cast_feature") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/profiles:profile",
     "//chrome/common:channel_info",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/user_prefs",
     "//components/version_info:channel",
@@ -59,7 +59,7 @@ if (!is_android) {
     deps = [
       ":access_code_cast_feature",
       ":discovery_resources_proto",
-      "//chrome/browser/media/router:router",
+      "//chrome/browser/media/router",
       "//chrome/browser/media/router/discovery",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
@@ -67,8 +67,8 @@ if (!is_android) {
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//components/access_code_cast/common:metrics",
       "//components/endpoint_fetcher",
-      "//components/keyed_service/content:content",
-      "//components/leveldb_proto:leveldb_proto",
+      "//components/keyed_service/content",
+      "//components/leveldb_proto",
       "//components/media_router/common/providers/cast/channel",
       "//components/pref_registry",
       "//components/prefs",
@@ -76,6 +76,7 @@ if (!is_android) {
       "//components/signin/public/identity_manager",
       "//components/user_manager",
       "//content/public/browser",
+      "//google_apis",
       "//services/preferences/public/cpp",
     ]
     configs += [ "//build/config/compiler:wexit_time_destructors" ]

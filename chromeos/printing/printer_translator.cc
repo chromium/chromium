@@ -64,22 +64,26 @@ bool DictionaryToPrinter(const base::Value::Dict& value, Printer* printer) {
 
   // Optional fields
   const std::string* description = value.FindString(kDescription);
-  if (description)
+  if (description) {
     printer->set_description(*description);
+  }
 
   const std::string* manufacturer = value.FindString(kManufacturer);
   const std::string* model = value.FindString(kModel);
 
   std::string make_and_model = manufacturer ? *manufacturer : std::string();
-  if (!make_and_model.empty() && model && !model->empty())
+  if (!make_and_model.empty() && model && !model->empty()) {
     make_and_model.append(" ");
-  if (model)
+  }
+  if (model) {
     make_and_model.append(*model);
+  }
   printer->set_make_and_model(make_and_model);
 
   const std::string* uuid = value.FindString(kUUID);
-  if (uuid)
+  if (uuid) {
     printer->set_uuid(*uuid);
+  }
 
   return true;
 }
@@ -114,6 +118,17 @@ std::string PrinterAddress(const Uri& uri) {
   return uri.GetHostEncoded();
 }
 
+std::string PrinterQueue(const Uri& uri) {
+  std::string printer_queue = uri.GetPathEncodedAsString();
+  if (!printer_queue.empty()) {
+    printer_queue = printer_queue.substr(1);  // removes the leading '/'
+  }
+  if (!uri.GetQueryEncodedAsString().empty()) {
+    printer_queue += "?" + uri.GetQueryEncodedAsString();
+  }
+  return printer_queue;
+}
+
 }  // namespace
 
 const char kPrinterId[] = "id";
@@ -145,11 +160,13 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
   if (ppd) {
     Printer::PpdReference* ppd_reference = printer->mutable_ppd_reference();
     const std::string* make_and_model = ppd->FindString(kEffectiveModel);
-    if (make_and_model)
+    if (make_and_model) {
       ppd_reference->effective_make_and_model = *make_and_model;
+    }
     std::optional<bool> autoconf = ppd->FindBool(kAutoconf);
-    if (autoconf.has_value())
+    if (autoconf.has_value()) {
       ppd_reference->autoconf = *autoconf;
+    }
   }
   if (!printer->ppd_reference().autoconf &&
       printer->ppd_reference().effective_make_and_model.empty()) {
@@ -197,16 +214,12 @@ base::Value::Dict GetCupsPrinterInfo(const Printer& printer) {
     return printer_info;
   }
 
-  if (printer.IsUsbProtocol())
+  if (printer.IsUsbProtocol()) {
     printer_info.Set("ppdManufacturer", printer.usb_printer_manufacturer());
+  }
   printer_info.Set("printerProtocol", printer.uri().GetScheme());
   printer_info.Set("printerAddress", PrinterAddress(printer.uri()));
-  std::string printer_queue = printer.uri().GetPathEncodedAsString();
-  if (!printer_queue.empty())
-    printer_queue = printer_queue.substr(1);  // removes the leading '/'
-  if (!printer.uri().GetQueryEncodedAsString().empty())
-    printer_queue += "?" + printer.uri().GetQueryEncodedAsString();
-  printer_info.Set("printerQueue", printer_queue);
+  printer_info.Set("printerQueue", PrinterQueue(printer.uri()));
 
   return printer_info;
 }

@@ -19,7 +19,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
-#include "chrome/browser/media_galleries/media_galleries_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -94,8 +93,6 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
   }
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
-    ensure_media_directories_exists_ =
-        std::make_unique<EnsureMediaDirectoriesExists>();
     extension_ = LoadExtension(test_data_dir_.AppendASCII(kTestExtensionPath));
     GetBackgroundHostForTestExtension();
     CreateTestGallery();
@@ -104,7 +101,6 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
   void TearDownOnMainThread() override {
     extension_ = nullptr;
     background_main_frame_ = nullptr;
-    ensure_media_directories_exists_.reset();
     extensions::ExtensionApiTest::TearDownOnMainThread();
   }
 
@@ -177,9 +173,6 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
     EXPECT_TRUE(get_media_systems_finished.WaitUntilSatisfied());
   }
 
-  std::unique_ptr<EnsureMediaDirectoriesExists>
-      ensure_media_directories_exists_;
-
   base::ScopedTempDir test_gallery_;
 
   raw_ptr<const extensions::Extension> extension_ = nullptr;
@@ -187,14 +180,7 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
   raw_ptr<content::RenderFrameHost> background_main_frame_ = nullptr;
 };
 
-// TODO(crbug.com/40748275): Re-enable. Flaky on Linux and Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_BasicGalleryWatch DISABLED_BasicGalleryWatch
-#else
-#define MAYBE_BasicGalleryWatch BasicGalleryWatch
-#endif
-IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
-                       MAYBE_BasicGalleryWatch) {
+IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest, BasicGalleryWatch) {
   // Add gallery watch listener.
   ExecuteCmdAndCheckReply(kAddGalleryChangedListenerCmd,
                           kAddGalleryChangedListenerOK);
@@ -218,16 +204,8 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
     ExecuteCmdAndCheckReply(kRemoveGalleryWatchCmd, kRemoveGalleryWatchOK);
 }
 
-// TODO(crbug.com/40671492): Flaky on Linux and Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_CorrectResponseOnModifyingWatchedGallery \
-  DISABLED_CorrectResponseOnModifyingWatchedGallery
-#else
-#define MAYBE_CorrectResponseOnModifyingWatchedGallery \
-  CorrectResponseOnModifyingWatchedGallery
-#endif
 IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
-                       MAYBE_CorrectResponseOnModifyingWatchedGallery) {
+                       CorrectResponseOnModifyingWatchedGallery) {
   if (!GalleryWatchesSupported())
     return;
 
@@ -242,15 +220,8 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
   EXPECT_TRUE(got_correct_details.WaitUntilSatisfied());
 }
 
-// Test is flaky on windows and linux: crbug.com/1150017.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-#define MAYBE_RemoveListenerAndModifyGallery \
-  DISABLED_RemoveListenerAndModifyGallery
-#else
-#define MAYBE_RemoveListenerAndModifyGallery RemoveListenerAndModifyGallery
-#endif
 IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
-                       MAYBE_RemoveListenerAndModifyGallery) {
+                       RemoveListenerAndModifyGallery) {
   if (!GalleryWatchesSupported())
     return;
 

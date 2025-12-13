@@ -145,7 +145,7 @@ void FloatingAccessibilityController::SetMenuPosition(
 
   gfx::Rect resting_bounds =
       CollisionDetectionUtils::AdjustToFitMovementAreaByGravity(
-          display::Screen::GetScreen()->GetDisplayNearestWindow(
+          display::Screen::Get()->GetDisplayNearestWindow(
               bubble_widget_->GetNativeWindow()),
           new_bounds);
   // Un-inset the bounds to get the widget's bounds, which includes the drop

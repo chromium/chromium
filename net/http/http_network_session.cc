@@ -85,12 +85,8 @@ spdy::SettingsMap AddDefaultHttp2Settings(spdy::SettingsMap http2_settings) {
 
 bool OriginToForceQuicOnInternal(const QuicParams& quic_params,
                                  const url::SchemeHostPort& destination) {
-  // TODO(crbug.com/40181080): Consider converting `origins_to_force_quic_on` to
-  // use url::SchemeHostPort.
-  return (
-      base::Contains(quic_params.origins_to_force_quic_on, HostPortPair()) ||
-      base::Contains(quic_params.origins_to_force_quic_on,
-                     HostPortPair::FromSchemeHostPort(destination)));
+  return (quic_params.force_quic_everywhere ||
+          base::Contains(quic_params.origins_to_force_quic_on, destination));
 }
 
 }  // unnamed namespace
@@ -230,9 +226,10 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
       context.quic_context->params()->exponential_backoff_on_initial_delay);
 
   if (!params_.disable_idle_sockets_close_on_memory_pressure) {
-    memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-        FROM_HERE, base::BindRepeating(&HttpNetworkSession::OnMemoryPressure,
-                                       base::Unretained(this)));
+    memory_pressure_listener_registration_ =
+        std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
+            FROM_HERE, base::MemoryPressureListenerTag::kHttpNetworkSession,
+            this);
   }
 
   http_stream_pool_ = std::make_unique<HttpStreamPool>(
@@ -308,8 +305,12 @@ base::Value HttpNetworkSession::QuicInfoToValue() const {
   dict.Set("supported_versions", std::move(supported_versions));
 
   base::Value::List origins_to_force_quic_on;
-  for (const auto& origin : quic_params->origins_to_force_quic_on) {
-    origins_to_force_quic_on.Append(origin.ToString());
+  if (quic_params->force_quic_everywhere) {
+    origins_to_force_quic_on.Append("<everywhere>");
+  } else {
+    for (const auto& origin : quic_params->origins_to_force_quic_on) {
+      origins_to_force_quic_on.Append(origin.Serialize());
+    }
   }
   dict.Set("origins_to_force_quic_on", std::move(origins_to_force_quic_on));
 
@@ -461,15 +462,15 @@ ClientSocketPoolManager* HttpNetworkSession::GetSocketPoolManager(
 }
 
 void HttpNetworkSession::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   DCHECK(!params_.disable_idle_sockets_close_on_memory_pressure);
 
   switch (memory_pressure_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
       break;
 
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       CloseIdleConnections("Low memory");
       break;
   }

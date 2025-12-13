@@ -2,11 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
+// Add type extensions needed for other scripts defining the fill namespace.
+declare global {
+  // Defines an additional property, `angular`, on the Window object.
+  // The code below assumes that this property exists within the object.
+  interface Window {
+    angular: any;
+  }
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+  // Extends the Document object to add the ability to access its
+  // properties via the [] notation and defines a property that is
+  // assumed to exist within the object.
+  interface Document {
+    [key: symbol]: number;
+    __gCrElementMap: Map<any, any>;
+    __gCrWebURLNormalizer: HTMLAnchorElement;
+  }
+}
 
-declare type FormControlElement =
+export declare type FormControlElement =
     HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
 /**
@@ -15,7 +29,7 @@ declare type FormControlElement =
  * This variable is from AutofillTable::kMaxDataLength in
  * chromium/src/components/autofill/core/browser/webdata/autofill_table.h
  */
-const MAX_DATA_LENGTH = 1024;
+export const MAX_DATA_LENGTH = 1024;
 
 /**
  * The maximum string length supported by Autofill.
@@ -23,7 +37,7 @@ const MAX_DATA_LENGTH = 1024;
  * This variable is from kMaxStringLength in
  * chromium/src/components/autofill/core/common/autofill_constant.h
  */
-const MAX_STRING_LENGTH = 1024;
+export const MAX_STRING_LENGTH = 1024;
 
 /**
  * The maximum number of form fields we are willing to parse, due to
@@ -35,11 +49,11 @@ const MAX_STRING_LENGTH = 1024;
  * This variable is `kMaxExtractableFields` from
  * chromium/src/components/autofill/core/common/autofill_constants.h
  */
-const MAX_EXTRACTABLE_FIELDS = 200;
+export const MAX_EXTRACTABLE_FIELDS = 200;
 
 // The maximum number of frames we are willing to extract, due to computational
 // costs.
-const MAX_EXTRACTABLE_FRAMES = 20;
+export const MAX_EXTRACTABLE_FRAMES = 20;
 
 /**
  * A value for the "presentation" role.
@@ -47,40 +61,27 @@ const MAX_EXTRACTABLE_FRAMES = 20;
  * This variable is from enum RoleAttribute in
  * chromium/src/components/autofill/core/common/form_field_data.h
  */
-const ROLE_ATTRIBUTE_PRESENTATION = 0;
+export const ROLE_ATTRIBUTE_PRESENTATION = 0;
 
 /**
  * The value for a unique form or field ID not set or missing.
  */
-const RENDERER_ID_NOT_SET = '0';
+export const RENDERER_ID_NOT_SET = '0';
 
 /**
  Name of the html attribute used for storing stable unique form and field IDs.
  */
-const UNIQUE_ID_ATTRIBUTE = '__gChrome_uniqueID';
+export const UNIQUE_ID_ATTRIBUTE = '__gChrome_uniqueID';
 
 /**
  * The JS Symbol object used to set stable unique form and field IDs.
  */
-const ID_SYMBOL = window.Symbol.for(UNIQUE_ID_ATTRIBUTE);
+export const ID_SYMBOL = window.Symbol.for(UNIQUE_ID_ATTRIBUTE);
 
 /**
  Name of the html attribute used for storing the remote frame token assigned to
  a child frame. Stored as an attribute of the iframe html element hosting the
  child frame.
  */
-const CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE = '__gChrome_childFrameRemoteToken';
-
-export {
-  CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE,
-  FormControlElement,
-  MAX_DATA_LENGTH,
-  MAX_STRING_LENGTH,
-  MAX_EXTRACTABLE_FIELDS,
-  MAX_EXTRACTABLE_FRAMES,
-  ROLE_ATTRIBUTE_PRESENTATION,
-  RENDERER_ID_NOT_SET,
-  UNIQUE_ID_ATTRIBUTE,
-};
-
-gCrWebLegacy.fill.ID_SYMBOL = ID_SYMBOL;
+export const CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE =
+    '__gChrome_childFrameRemoteToken';

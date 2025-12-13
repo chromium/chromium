@@ -12,10 +12,13 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/types/id_type.h"
 #include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 #include "media/base/media_track.h"
+#include "media/base/sequence.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/rendition.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
@@ -23,13 +26,13 @@
 namespace media::hls {
 
 class MultivariantPlaylist;
-class Rendition;
 
 class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
-  explicit RenditionGroup(base::PassKey<MultivariantPlaylist>, std::string id);
+  RenditionGroup(base::PassKey<MultivariantPlaylist>,
+                 std::optional<std::string> id);
 
   RenditionGroup(const RenditionGroup&) = delete;
   RenditionGroup(RenditionGroup&&) = delete;
@@ -37,6 +40,48 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
   RenditionGroup& operator=(RenditionGroup&&) = delete;
 
   using RenditionTrack = std::tuple<MediaTrack, raw_ptr<const Rendition>>;
+  using RenditionTrackId = base::IdType<class RenditionTrackIdTag, uint64_t, 0>;
+
+  // A view allows a VariantStream to combine all the contents of a
+  // RenditionGroup with its variant-specific default renditions.
+  class MEDIA_EXPORT View {
+   public:
+    ~View();
+    View(scoped_refptr<RenditionGroup>, Rendition, MediaTrack);
+
+    // Given a rendition track, try to find the track in this group which best
+    // matches it's characteristics. If the provided rendition is a member of
+    // this group, it will be returned. If nullopt is provided, then return any
+    // "most preferential" rendition.
+    const std::optional<RenditionTrack> MostSimilar(
+        const std::optional<RenditionTrack>&) const;
+    const std::optional<RenditionTrack> GetRenditionById(
+        const MediaTrack::Id&) const;
+
+    sequence::Sequence<MediaTrack> auto GetTracks() const {
+      if (group_->default_rendition_.has_value()) {
+        return sequence::Concat(sequence::EmptySinglet<const MediaTrack&>(),
+                                std::as_const(group_->tracks_));
+      }
+      return sequence::Concat(sequence::Singlet(std::get<0>(track_)),
+                              std::as_const(group_->tracks_));
+    }
+    bool HasSharedTracks() const { return group_->HasTracks(); }
+
+    const scoped_refptr<RenditionGroup>& GetGroupForTesting() const {
+      return group_;
+    }
+
+    void UpdateImplicitRenditionMediaTrackName(std::string name);
+
+   private:
+    const RenditionTrack& GetImplicitRenditionTrack() const { return track_; }
+
+    friend class RenditionGroup;
+    scoped_refptr<RenditionGroup> group_;
+    Rendition rendition_;
+    RenditionTrack track_;
+  };
 
   // Adds a rendition specified by the given `XMediaTag` to this group. The
   // caller is responsible for ensuring that the rendition passed in is
@@ -47,36 +92,25 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
       base::PassKey<MultivariantPlaylist>,
       XMediaTag tag,
       const GURL& playlist_uri,
-      uint64_t rendition_unique_id);
+      RenditionTrackId unique_id);
 
-  // Adds the "virtual" rendition created from the required default URL in a
-  // VariantStream. The label, ID, and name are all "default".
-  RenditionTrack MakeImplicitRendition(base::PassKey<MultivariantPlaylist>,
-                                       const GURL& default_rendition_uri,
-                                       uint64_t rendition_unique_id);
+  std::unique_ptr<View> MakeImplicitView(base::PassKey<MultivariantPlaylist>,
+                                         MediaType type,
+                                         const GURL& default_rendition_uri,
+                                         RenditionTrackId rendition_unique_id);
 
-  // Given a rendition track, try to find the track in this group which best
-  // matches it's characteristics. If the provided rendition is a member of
-  // this group, it will be returned. If nullopt is provided, then return any
-  // "most preferential" rendition.
-  const std::optional<RenditionTrack> MostSimilar(
-      const std::optional<RenditionTrack>& to) const;
-
-  // Look up a rendition with a matching track id.
-  const std::optional<RenditionTrack> GetRenditionById(
-      const MediaTrack::Id& id) const;
-
-  // Returns the id of this rendition group.
-  const std::string& GetId() const { return id_; }
+  const std::optional<std::string>& GetIdForTesting() const { return id_; }
 
   // Returns the set of renditions that belong to this group, in the order they
   // appeared in the manifest.
-  const std::list<Rendition>& GetRenditions() const { return renditions_; }
+  const std::list<Rendition>& GetRenditionsForTesting() const {
+    return renditions_;
+  }
 
-  const std::vector<MediaTrack>& GetTracks() const { return tracks_; }
+  bool HasTracks() const { return !tracks_.empty(); }
 
   // Returns the rendition which was specified with the DEFAULT=YES attribute.
-  const std::optional<RenditionTrack> GetDefaultRendition() const {
+  const std::optional<RenditionTrack> GetDefaultRenditionForTesting() const {
     return default_rendition_;
   }
 
@@ -84,7 +118,7 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
   friend base::RefCounted<RenditionGroup>;
   ~RenditionGroup();
 
-  std::string id_;
+  std::optional<std::string> id_;
 
   // Set of renditions within this group, in the order they appeared in the
   // manifest. Using a `std::list` as opposed to a `std::vector` to ensure

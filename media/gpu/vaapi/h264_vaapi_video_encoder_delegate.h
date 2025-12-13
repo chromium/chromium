@@ -135,7 +135,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   bool SubmitPackedHeaders(const H26xAnnexBBitstreamBuilder& packed_sps,
                            const H26xAnnexBBitstreamBuilder& packed_pps);
-
+  bool SubmitPackedPrefixNALU(const H264Picture& pic);
   bool SubmitFrameParameters(
       EncodeJob& job,
       const H264VaapiVideoEncoderDelegate::EncodeParams& encode_params,
@@ -158,6 +158,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   H264PPS current_pps_;
   std::optional<H26xAnnexBBitstreamBuilder> packed_pps_;
   bool submit_packed_headers_;
+  bool submit_packed_prefix_nalu_;
 
   // Current encoding parameters being used.
   EncodeParams curr_params_;
@@ -178,8 +179,8 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   // The number of encoded frames. Resets to 0 on IDR frame.
   unsigned int num_encoded_frames_ = 0;
-  // frame_num (spec section 7.4.3).
-  unsigned int frame_num_ = 0;
+  // PrevRefFrameNum (spec section 7.4.3).
+  unsigned int prev_ref_frame_num_ = 0;
 
   // idr_pic_id (spec section 7.4.3) to be used for the next frame.
   unsigned int idr_pic_id_ = 0;

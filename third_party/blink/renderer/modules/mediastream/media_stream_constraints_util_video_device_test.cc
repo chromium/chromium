@@ -210,7 +210,7 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
         MediaStreamVideoSource::kDefaultFrameRate);
   }
 
-  static WTF::Vector<BooleanConstraint MediaTrackConstraintSetPlatform::*>
+  static Vector<BooleanConstraint MediaTrackConstraintSetPlatform::*>
   BooleanImageCaptureConstraints() {
     return {
         &MediaTrackConstraintSetPlatform::torch,
@@ -221,7 +221,7 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     };
   }
 
-  static WTF::Vector<DoubleConstraint MediaTrackConstraintSetPlatform::*>
+  static Vector<DoubleConstraint MediaTrackConstraintSetPlatform::*>
   DoubleImageCaptureConstraints() {
     return {
         &MediaTrackConstraintSetPlatform::exposure_compensation,
@@ -236,8 +236,7 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     };
   }
 
-  static WTF::Vector<
-      DoubleOrBooleanConstraint MediaTrackConstraintSetPlatform::*>
+  static Vector<DoubleOrBooleanConstraint MediaTrackConstraintSetPlatform::*>
   PanTiltZoomConstraints() {
     return {
         &MediaTrackConstraintSetPlatform::pan,

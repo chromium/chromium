@@ -277,7 +277,9 @@ void MediaPipelineImpl::Flush(base::OnceClosure flush_cb) {
 
   media_time_interpolator_.StopInterpolating();
 
-  buffering_controller_->Reset();
+  if (buffering_controller_) {
+    buffering_controller_->Reset();
+  }
 
   // Flush both audio and video pipeline. This will flush the frame
   // provider and stop feeding buffers to the backend.

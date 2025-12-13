@@ -49,7 +49,7 @@ class FakeProfileSessionDurationsService
 
 // Create a fake IOSProfileSessionDurationsService.
 std::unique_ptr<KeyedService> CreateFakeProfileSessionDurationsService(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   return std::make_unique<FakeProfileSessionDurationsService>();
 }
 
@@ -68,6 +68,10 @@ class SessionMetricsProfileAgentTest : public PlatformTest {
     profile_state_.profile = profile_.get();
 
     [profile_state_ addAgent:[[SessionMetricsProfileAgent alloc] init]];
+  }
+
+  ~SessionMetricsProfileAgentTest() override {
+    profile_state_.profile = nullptr;
   }
 
   FakeProfileSessionDurationsService* GetProfileSessionDurationsService() {

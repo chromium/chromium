@@ -188,7 +188,7 @@ class TestSandboxedProcessLauncherDelegate
 };
 
 // A test-specific type of process host. Self-owned.
-class TestProcessHost : public BrowserChildProcessHostDelegate {
+class TestProcessHost final : public BrowserChildProcessHostDelegate {
  public:
   static base::WeakPtr<TestProcessHost> Create() {
     auto* instance = new TestProcessHost();
@@ -243,10 +243,9 @@ class TestProcessHost : public BrowserChildProcessHostDelegate {
     process_->SetName(u"Test utility process");
 
     auto command_line = GetChildCommandLine();
-    bool terminate_on_shutdown = true;
 
     process_->Launch(std::move(sandboxed_process_launcher_delegate),
-                     std::move(command_line), terminate_on_shutdown);
+                     std::move(command_line));
 
     test_service_ = BindTestService();
   }
@@ -435,7 +434,8 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
 // Tests that launching and then causing a crash the host results in a crashed
 // notification.
 // TODO(crbug.com/40868150): Times out on Android tests.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_WIN) && !defined(NDEBUG))
 #define MAYBE_LaunchAndCrash DISABLED_LaunchAndCrash
 #else
 #define MAYBE_LaunchAndCrash LaunchAndCrash

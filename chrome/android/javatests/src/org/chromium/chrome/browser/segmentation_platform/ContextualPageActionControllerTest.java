@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -69,6 +70,7 @@ public class ContextualPageActionControllerTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE) // Reader mode is only available on phones.
+    @DisabledTest(message = "crbug.com/448846307")
     public void testContextualPageModelExecution_OnReaderModePage() {
         LibraryLoader.getInstance().ensureInitialized();
         WebPageStation page = mActivityTestRule.startOnBlankPage();

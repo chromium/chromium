@@ -17,7 +17,7 @@ static_library("lobster") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui/views/bubble:bubble",
+    "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/webui/ash/mako:mako_bubble",
     "//chrome/browser/ui/webui/top_chrome",
   ]
@@ -36,7 +36,7 @@ source_set("unit_tests") {
 
   deps = [
     ":lobster",
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chrome/test:test_support",
@@ -73,7 +73,7 @@ mojom("lobster_mojom") {
       ]
 
       traits_headers = [ "lobster_mojom_traits.h" ]
-      traits_public_deps = [ "//ash/public/cpp:cpp" ]
+      traits_public_deps = [ "//ash/public/cpp" ]
     },
   ]
 }

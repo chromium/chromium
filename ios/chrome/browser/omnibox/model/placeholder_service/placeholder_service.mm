@@ -6,6 +6,7 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
@@ -16,6 +17,11 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+// Cooldown period before re-fetching a failed icon.
+const base::TimeDelta kFetchCooldown = base::Seconds(2);
+}  // namespace
 
 PlaceholderService::PlaceholderService(FaviconLoader* favicon_loader,
                                        TemplateURLService* template_url_service)
@@ -158,6 +164,7 @@ void PlaceholderService::OnTemplateURLServiceChanged() {
   current_dse_ = template_url_service_->GetDefaultSearchProvider();
   [icon_cache_ removeAllObjects];
   icon_callbacks_.clear();
+  fetch_cooldowns_.clear();
   for (auto& observer : model_observers_) {
     observer.OnPlaceholderTextChanged();
     observer.OnPlaceholderImageChanged();
@@ -175,7 +182,7 @@ UIImage* PlaceholderService::GetBundledIconForTemplateURL(
   // Google bundled icon.
   if (template_url->GetEngineType(template_url_service_->search_terms_data()) ==
       SEARCH_ENGINE_GOOGLE) {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     return MakeSymbolMulticolor(
         CustomSymbolWithPointSize(kGoogleIconSymbol, icon_point_size));
 #endif
@@ -216,11 +223,20 @@ void PlaceholderService::PerformIconFetch(const TemplateURL* template_url,
     return;
   }
 
+  // Do not fetch if the cooldown is still active.
+  auto it = fetch_cooldowns_.find(icon_point_size);
+  if (it != fetch_cooldowns_.end() && base::TimeTicks::Now() < it->second) {
+    return;
+  }
+
+  // Set a cooldown to prevent rapid refetching.
+  fetch_cooldowns_[icon_point_size] = base::TimeTicks::Now() + kFetchCooldown;
+
   auto favicon_completion = base::CallbackToBlock(base::BindRepeating(
       [](base::WeakPtr<PlaceholderService> weak_self,
          TemplateURLID template_url_id, CGFloat icon_point_size,
-         FaviconAttributes* favicon_result) {
-        if (!favicon_result.faviconImage || favicon_result.usesDefaultImage) {
+         FaviconAttributes* favicon_result, bool cached) {
+        if (!favicon_result.faviconImage) {
           return;
         }
         UIImage* favicon = favicon_result.faviconImage;

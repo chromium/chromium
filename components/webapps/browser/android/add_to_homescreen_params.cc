@@ -5,6 +5,7 @@
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/browser/android/webapps_utils.h"
 
 namespace webapps {
 
@@ -19,7 +20,7 @@ AddToHomescreenParams::AddToHomescreenParams(
       shortcut_info(std::move(info)),
       install_source(source),
       installable_status(status_code) {
-  CHECK(IsWebApk() || app_type == AppType::SHORTCUT);
+  CHECK(app_type != AppType::NATIVE);
 }
 
 AddToHomescreenParams::AddToHomescreenParams(
@@ -46,6 +47,18 @@ bool AddToHomescreenParams::IsWebApk() const {
 // static
 bool AddToHomescreenParams::IsWebApk(AppType type) {
   return type == AppType::WEBAPK || type == AppType::WEBAPK_DIY;
+}
+
+// static
+AddToHomescreenParams::AppType AddToHomescreenParams::GetWebAppInstallType(
+    bool has_manifest) {
+  if (!has_manifest) {
+    return AppType::WEBAPK_DIY;
+  }
+  if (WebappsUtils::IsAutoMintedTwaEnabled()) {
+    return AppType::TWA;
+  }
+  return AppType::WEBAPK;
 }
 
 }  // namespace webapps

@@ -98,8 +98,6 @@ class ManagementUIHandlerChromeOS : public BitmapFetcherDelegate,
   void HandleGetDeviceReportingInfo(const base::Value::List& args);
   void HandleGetPluginVmDataCollectionStatus(const base::Value::List& args);
 
-  void CheckGetAllScreensMediaAllowedForAnyOriginResultReceived(
-      bool is_allowed);
   bool device_managed_ = false;
 
   GURL logo_url_;

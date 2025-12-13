@@ -65,6 +65,11 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
     }
 
     @Override
+    public @Nullable View getCurrentSubpageView() {
+        return mActiveView;
+    }
+
+    @Override
     public void onSubpageRemoved() {
         mActiveView = null;
     }
@@ -131,6 +136,9 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
 
     @Override
     public void updateRowIfNeeded() {}
+
+    @Override
+    public void updateSubpageIfNeeded() {}
 
     public void resetCertDecision() {
         PageInfoConnectionSecurityControllerJni.get()

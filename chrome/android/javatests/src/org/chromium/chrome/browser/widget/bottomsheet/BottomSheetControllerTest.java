@@ -47,13 +47,13 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.edge_to_edge.TestEdgeToEdgeController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -62,7 +62,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -172,10 +171,7 @@ public class BottomSheetControllerTest {
                 () -> keyboardDelegate.showKeyboard(mActivity.getTabsView()));
         requestContentInSheet(mLowPriorityContent, true);
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        assertFalse(
-                                keyboardDelegate.isKeyboardShowing(
-                                        mActivity, mActivity.getTabsView())));
+                () -> assertFalse(keyboardDelegate.isKeyboardShowing(mActivity.getTabsView())));
         BottomSheetTestSupport.waitForContentChange(mSheetController, mLowPriorityContent);
         BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);
     }
@@ -532,7 +528,7 @@ public class BottomSheetControllerTest {
                 mActivity
                         .getTabModelSelector()
                         .getCurrentModel()
-                        .indexOf(mActivity.getActivityTab());
+                        .indexOf(mActivityTestRule.getActivityTab());
         requestContentInSheet(mLowPriorityContent, true);
 
         assertEquals(
@@ -587,7 +583,7 @@ public class BottomSheetControllerTest {
 
         // Change URL and wait for PageLoadStarted event.
         CallbackHelper pageLoadStartedHelper = new CallbackHelper();
-        Tab tab = mActivity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(
@@ -1105,49 +1101,5 @@ public class BottomSheetControllerTest {
                 .getBottomSheetBackPressHandler()
                 .getHandleBackPressChangedSupplier()
                 .get();
-    }
-
-    private static class TestEdgeToEdgeController implements EdgeToEdgeController {
-        public int bottomInset;
-
-        @Override
-        public void destroy() {}
-
-        @Override
-        public int getBottomInset() {
-            return bottomInset;
-        }
-
-        @Override
-        public int getBottomInsetPx() {
-            return bottomInset;
-        }
-
-        @Override
-        public int getSystemBottomInsetPx() {
-            return bottomInset;
-        }
-
-        @Override
-        public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {}
-
-        @Override
-        public void unregisterAdjuster(EdgeToEdgePadAdjuster adjuster) {}
-
-        @Override
-        public void registerObserver(ChangeObserver changeObserver) {}
-
-        @Override
-        public void unregisterObserver(ChangeObserver changeObserver) {}
-
-        @Override
-        public boolean isPageOptedIntoEdgeToEdge() {
-            return bottomInset != 0;
-        }
-
-        @Override
-        public boolean isDrawingToEdge() {
-            return bottomInset != 0;
-        }
     }
 }

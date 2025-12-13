@@ -31,8 +31,7 @@ scoped_refptr<ShortcutsBackend> CreateShortcutsBackend(ProfileIOS* profile,
 }
 
 scoped_refptr<RefcountedKeyedService> BuildShortcutsBackend(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) {
   return CreateShortcutsBackend(profile, /*suppress_db=*/false);
 }
 
@@ -61,7 +60,7 @@ ShortcutsBackendFactory* ShortcutsBackendFactory::GetInstance() {
 // static
 ShortcutsBackendFactory::TestingFactory
 ShortcutsBackendFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildShortcutsBackend);
+  return base::BindOnce(&BuildShortcutsBackend);
 }
 
 ShortcutsBackendFactory::ShortcutsBackendFactory()
@@ -75,9 +74,8 @@ ShortcutsBackendFactory::ShortcutsBackendFactory()
 ShortcutsBackendFactory::~ShortcutsBackendFactory() {}
 
 scoped_refptr<RefcountedKeyedService>
-ShortcutsBackendFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildShortcutsBackend(context);
+ShortcutsBackendFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+  return BuildShortcutsBackend(profile);
 }
 
 }  // namespace ios

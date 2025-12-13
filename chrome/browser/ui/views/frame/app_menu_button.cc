@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
@@ -55,7 +54,6 @@ void AppMenuButton::CloseMenu() {
 }
 
 void AppMenuButton::OnMenuClosed() {
-  promo_handle_.Release();
   observer_list_.Notify(&AppMenuButtonObserver::AppMenuClosed);
 }
 
@@ -70,25 +68,7 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
   // in the class declaration.
   menu_.reset();
   menu_model_ = std::move(menu_model);
-  if (auto* const user_education =
-          BrowserUserEducationInterface::From(browser)) {
-    if (auto* controller = user_education->GetFeaturePromoController(
-            base::PassKey<AppMenuButton>())) {
-      if (auto* promo_specification =
-              controller->GetCurrentPromoSpecificationForAnchor(
-                  GetProperty(views::kElementIdentifierKey))) {
-        if (auto highlighted_identifier =
-                promo_specification->highlighted_menu_identifier()) {
-          promo_handle_ = user_education->CloseFeaturePromoAndContinue(
-              *controller->GetCurrentPromoFeature());
-
-          if (promo_handle_.is_valid()) {
-            menu_model_->SetHighlightedIdentifier(highlighted_identifier);
-          }
-        }
-      }
-    }
-  }
+  highlighter_.MaybeHighlight(browser, this, menu_model_.get());
   menu_model_->Init();
 
   menu_ = std::make_unique<AppMenu>(browser, menu_model_.get(), run_flags);

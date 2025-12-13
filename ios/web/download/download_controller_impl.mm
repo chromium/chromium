@@ -62,8 +62,9 @@ void DownloadControllerImpl::CreateWebStateDownloadTask(WebState* web_state,
   }
   OnDownloadCreated(std::make_unique<WebStateContentDownloadTask>(
       web_state, web_state->GetLastCommittedURL(),
-      base::SysUTF8ToNSString(web_state->GetLastCommittedURL().host()), @"", "",
-      total_bytes, web_state->GetContentsMimeType(), identifier, task_runner_));
+      base::SysUTF8ToNSString(web_state->GetLastCommittedURL().GetHost()), @"",
+      "", total_bytes, web_state->GetContentsMimeType(), identifier,
+      task_runner_));
 }
 
 void DownloadControllerImpl::CreateNativeDownloadTask(

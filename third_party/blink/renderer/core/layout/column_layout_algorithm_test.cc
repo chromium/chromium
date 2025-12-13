@@ -6473,7 +6473,7 @@ TEST_F(ColumnLayoutAlgorithmTest, TallReplacedContent) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(ColumnLayoutAlgorithmTest, GapDecorationIntersectionsBasic) {
+TEST_F(ColumnLayoutAlgorithmTest, GapDecorationBasic) {
   ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -6523,33 +6523,195 @@ TEST_F(ColumnLayoutAlgorithmTest, GapDecorationIntersectionsBasic) {
 
   ASSERT_TRUE(gap_geometry);
 
-  const Vector<GapIntersectionList> expected_row_intersections = {};
-  const Vector<GapIntersectionList> expected_column_intersections = {
-      {GapIntersection(LayoutUnit(67), LayoutUnit(2)),
-       GapIntersection(LayoutUnit(67), LayoutUnit(202))},
-      {GapIntersection(LayoutUnit(137), LayoutUnit(2)),
-       GapIntersection(LayoutUnit(137), LayoutUnit(202))},
-  };
+  const Vector<MainGap> expected_row_gaps = {};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kBoth),
+      CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kBoth)};
 
-  const Vector<GapIntersectionList> row_intersections =
-      gap_geometry->GetGapIntersections(kForRows);
-  const Vector<GapIntersectionList> column_intersections =
-      gap_geometry->GetGapIntersections(kForColumns);
-  EXPECT_EQ(row_intersections.size(), 0);
-  EXPECT_EQ(column_intersections.size(), 2);
+  const Vector<CrossGapRange> expected_cross_gap_ranges_for_main_gaps = {};
 
-  VerifyGapIntersections(expected_row_intersections, row_intersections);
-  VerifyGapIntersections(expected_column_intersections, column_intersections);
+  ASSERT_EQ(expected_cross_gap_ranges_for_main_gaps.size(),
+            expected_row_gaps.size());
 
-  // Check that the edge gap intersections are marked as being on the edge of
-  // the container.
-  for (const auto& column_intersection : column_intersections) {
-    EXPECT_TRUE(column_intersection.front().is_at_edge_of_container);
-    EXPECT_TRUE(column_intersection.back().is_at_edge_of_container);
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 0);
+  EXPECT_EQ(column_gaps.size(), 2);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(202));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(202));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(ColumnLayoutAlgorithmTest,
+       GapDecorationContentEndPastContainer) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+ body {
+  margin: 0px;
+ }
+
+ #container {
+  border: 2px solid rgb(96 139 168);
+  width: 200px;
+  column-count: 3;
+  column-width: 60px;
+  column-gap: 10px;
+  column-rule-width: 10px;
+  column-rule-style: solid;
+  column-rule-color: purple;
+   height: 200px;
+ }
+
+ p {
+    background: rgb(96 139 168 / 0.2);
+    height: 200px;
+    margin: 0px;
+ }
+
+</style>
+
+  <body>
+  <div id="container">
+    <p>One</p>
+    <p>Two</p>
+    <p>Three</p>
+    <p> Four </p>
+    <p> Five </p>
+
+  </div>
+</body>
+  )HTML");
+
+  BlockNode container(GetLayoutBoxByElementId("container"));
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize), true, true);
+  FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+      space, container, /* break_token */ nullptr);
+  ColumnLayoutAlgorithm algorithm({container, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  ASSERT_TRUE(gap_geometry);
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 0);
+  EXPECT_EQ(column_gaps.size(), 4);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  // The elements overflow, so the content end should be past the container end.
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(277));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(202));
+}
+
+TEST_F(ColumnLayoutAlgorithmTest,
+       GapDecorationColumnWrapOneColumn) {
+  ScopedMulticolColumnWrappingForTest multicol_column_wrapping(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+ <style>
+  body {
+    margin: 0px;
+  }
+
+  #container {
+    border: 2px solid rgb(96 139 168);
+    width: 200px;
+    height: 220px;
+    column-height: 60px;
+    column-gap: 10px;
+    row-gap: 10px;
+    column-rule-width: 10px;
+    column-rule-style: solid;
+    column-rule-color: blue;
+    row-rule-width: 10px;
+    row-rule-style: solid;
+    row-rule-color: gold;
+    column-wrap: wrap;
+    column-width: 60px;
+    column-count: 1;
+    column-fill: auto;
+  }
+
+  p {
+    background: rgb(96 139 168 / 0.2);
+    height: 60px;
+    margin: 0px;
+  }
+
+  h2 {
+    column-span: all;
+    background-color: #4d4e53;
+    color: #fff;
+    margin: 0px;
+    opacity: 0.5;
+  }
+</style>
+
+<body>
+  <div id="container">
+    <p>One</p>
+    <p>Two</p>
+    <h2>Spanner</h2>
+
+    <p>Three</p>
+  </div>
+</body>
+  )HTML");
+
+  BlockNode container(GetLayoutBoxByElementId("container"));
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize), true, true);
+  FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+      space, container, /* break_token */ nullptr);
+  ColumnLayoutAlgorithm algorithm({container, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  ASSERT_TRUE(gap_geometry);
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(62)),
+                                             MainGap(LayoutUnit(132)),
+                                             MainGap(LayoutUnit(202))};
+  const Vector<CrossGap> expected_column_gaps = {};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 3);
+  EXPECT_EQ(column_gaps.size(), 0);
+
+  EXPECT_FALSE(row_gaps[0].IsSpannerMainGap());
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(202));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(222));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+
+  for (size_t i = 0; i < row_gaps.size(); ++i) {
+    MainGap row_gap = row_gaps[i];
+    EXPECT_FALSE(row_gap.RangeOfCrossGapsBefore().IsValid());
   }
 }
 
-TEST_F(ColumnLayoutAlgorithmTest, GapDecorationIntersectionsColumnWrapBasic) {
+TEST_F(ColumnLayoutAlgorithmTest, GapDecorationColumnWrapBasic) {
   ScopedMulticolColumnWrappingForTest multicol_column_wrapping(true);
   ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
@@ -6610,68 +6772,62 @@ TEST_F(ColumnLayoutAlgorithmTest, GapDecorationIntersectionsColumnWrapBasic) {
 
   ASSERT_TRUE(gap_geometry);
 
-  const Vector<GapIntersectionList> expected_row_intersections = {
-      {GapIntersection(LayoutUnit(2), LayoutUnit(67)),
-       GapIntersection(LayoutUnit(67), LayoutUnit(67)),
-       GapIntersection(LayoutUnit(137), LayoutUnit(67)),
-       GapIntersection(LayoutUnit(202), LayoutUnit(67))},
-  };
-  const Vector<GapIntersectionList> expected_column_intersections = {
-      {GapIntersection(LayoutUnit(67), LayoutUnit(2)),
-       GapIntersection(LayoutUnit(67), LayoutUnit(67)),
-       GapIntersection(LayoutUnit(67), LayoutUnit(132))},
-      {GapIntersection(LayoutUnit(137), LayoutUnit(2)),
-       GapIntersection(LayoutUnit(137), LayoutUnit(67)),
-       GapIntersection(LayoutUnit(137), LayoutUnit(132))},
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(62))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(72)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(72)),
+               CrossGap::EdgeIntersectionState::kEnd),
   };
 
-  const Vector<GapIntersectionList> row_intersections =
-      gap_geometry->GetGapIntersections(kForRows);
-  const Vector<GapIntersectionList> column_intersections =
-      gap_geometry->GetGapIntersections(kForColumns);
-  EXPECT_EQ(row_intersections.size(), 1);
-  EXPECT_EQ(column_intersections.size(), 2);
+  const Vector<CrossGapRange> expected_cross_gap_ranges_for_main_gaps = {
+      CrossGapRange(0, 1)};
 
-  VerifyGapIntersections(expected_row_intersections, row_intersections);
-  VerifyGapIntersections(expected_column_intersections, column_intersections);
+  ASSERT_EQ(expected_cross_gap_ranges_for_main_gaps.size(),
+            expected_row_gaps.size());
 
-  // Check that the edge gap intersections are marked as being on the edge of
-  // the container.
-  for (const auto& row_intersection_list : row_intersections) {
-    EXPECT_TRUE(row_intersection_list.front().is_at_edge_of_container);
-    EXPECT_TRUE(row_intersection_list.back().is_at_edge_of_container);
-    // Now we check that all the other intersections are not on the edge of the
-    // container.
-    for (size_t i = 1; i < row_intersection_list.size() - 1; ++i) {
-      EXPECT_FALSE(row_intersection_list[i].is_at_edge_of_container);
-    }
-  }
-  for (const auto& column_intersection : column_intersections) {
-    EXPECT_TRUE(column_intersection.front().is_at_edge_of_container);
-    EXPECT_TRUE(column_intersection.back().is_at_edge_of_container);
-    // Now we check that all the other intersections are not on the edge of the
-    // container.
-    for (size_t i = 1; i < column_intersection.size() - 1; ++i) {
-      EXPECT_FALSE(column_intersection[i].is_at_edge_of_container);
-    }
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 1);
+  EXPECT_EQ(column_gaps.size(), 4);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(202));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(132));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+
+  EXPECT_FALSE(row_gaps.back().IsSpannerMainGap());
+
+  for (size_t i = 0; i < row_gaps.size(); ++i) {
+    MainGap row_gap = row_gaps[i];
+    CrossGapRange expected_cross_gap_range =
+        expected_cross_gap_ranges_for_main_gaps[i];
+    EXPECT_EQ(row_gap.RangeOfCrossGapsBefore(), expected_cross_gap_range)
+        << "for main gap index: " << i
+        << " got: " << row_gap.RangeOfCrossGapsBefore().ToString()
+        << " expected: " << expected_cross_gap_range.ToString();
   }
 }
 
 TEST_F(ColumnLayoutAlgorithmTest,
-       GapDecorationIntersectionsColumnWrapAndSpanner) {
+       GapDecorationColumnWrapAndSpanner) {
   ScopedMulticolColumnWrappingForTest multicol_column_wrapping(true);
   ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
-      <style>
-  body {
-    margin: 0px;
-  }
-
+<style>
   #container {
+    line-height: 20px;
     border: 2px solid rgb(96 139 168);
     width: 200px;
     height: 200px;
-    column-height: 60px;
+    column-height: 80px;
     column-gap: 10px;
     row-gap: 10px;
     column-rule-width: 10px;
@@ -6683,7 +6839,6 @@ TEST_F(ColumnLayoutAlgorithmTest,
     column-wrap: wrap;
     column-width: 60px;
     column-count: 3;
-    column-fill: auto;
   }
 
   p {
@@ -6698,6 +6853,7 @@ TEST_F(ColumnLayoutAlgorithmTest,
     color: #fff;
     margin: 0px;
     opacity: 0.5;
+    height: 10px;
   }
 </style>
 
@@ -6705,17 +6861,13 @@ TEST_F(ColumnLayoutAlgorithmTest,
   <div id="container">
     <p>One</p>
     <p>Two</p>
-    <h2>Spanner</h2>
-
+    <h2></h2>
     <p>Three</p>
     <p>Four</p>
     <p>Five</p>
     <p>Six</p>
-    <p>Seven</p>
-    <p>Eight</p>
   </div>
 </body>
-
   )HTML");
 
   BlockNode container(GetLayoutBoxByElementId("container"));
@@ -6732,74 +6884,62 @@ TEST_F(ColumnLayoutAlgorithmTest,
 
   ASSERT_TRUE(gap_geometry);
 
-  const Vector<GapIntersectionList> expected_row_intersections = {
-      {GapIntersection(LayoutUnit(2), LayoutUnit(108)),
-       GapIntersection(LayoutUnit(67), LayoutUnit(108)),
-       GapIntersection(LayoutUnit(137), LayoutUnit(108)),
-       GapIntersection(LayoutUnit(202), LayoutUnit(108))}};
-  const Vector<GapIntersectionList> expected_column_intersections = {
-      {GapIntersection(LayoutUnit(67), LayoutUnit(2)),
-       GapIntersection(LayoutUnit(67), LayoutUnit(42)),
-       GapIntersection(LayoutUnit(67), LayoutUnit(43)),
-       GapIntersection(LayoutUnit(67), LayoutUnit(108)),
-       GapIntersection(LayoutUnit(67), LayoutUnit(202))},
-      {GapIntersection(LayoutUnit(137), LayoutUnit(2)),
-       GapIntersection(LayoutUnit(137), LayoutUnit(42)),
-       GapIntersection(LayoutUnit(137), LayoutUnit(43)),
-       GapIntersection(LayoutUnit(137), LayoutUnit(108)),
-       GapIntersection(LayoutUnit(137), LayoutUnit(202))},
-  };
+  const Vector<MainGap> expected_main_gaps = {MainGap(LayoutUnit(42)),
+                                              MainGap(LayoutUnit(52)),
+                                              MainGap(LayoutUnit(82))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kBoth),
+      CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kBoth),
+      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(52)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(52)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(92)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(92)),
+               CrossGap::EdgeIntersectionState::kEnd)};
 
-  const Vector<GapIntersectionList> row_intersections =
-      gap_geometry->GetGapIntersections(kForRows);
-  const Vector<GapIntersectionList> column_intersections =
-      gap_geometry->GetGapIntersections(kForColumns);
-  EXPECT_EQ(row_intersections.size(), 1);
-  EXPECT_EQ(column_intersections.size(), 2);
+  const Vector<CrossGapRange> expected_cross_gap_ranges_for_main_gaps = {
+      CrossGapRange(0, 1), CrossGapRange(2, 3)};
 
-  VerifyGapIntersections(expected_row_intersections, row_intersections);
-  VerifyGapIntersections(expected_column_intersections, column_intersections);
+  const Vector<MainGap>& main_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  ASSERT_EQ(main_gaps.size(), 3);
+  ASSERT_EQ(column_gaps.size(), 6);
 
-  // Check that the edge gap intersections are marked as being on the edge of
-  // the container.
-  for (const auto& row_intersection_list : row_intersections) {
-    EXPECT_TRUE(row_intersection_list.front().is_at_edge_of_container);
-    EXPECT_TRUE(row_intersection_list.back().is_at_edge_of_container);
-    // Now we check that all the other intersections are not on the edge of the
-    // container.
-    for (size_t i = 1; i < row_intersection_list.size() - 1; ++i) {
-      EXPECT_FALSE(row_intersection_list[i].is_at_edge_of_container);
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(202));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(202));
+
+  EXPECT_TRUE(main_gaps[0].IsSpannerMainGap());
+  EXPECT_TRUE(main_gaps[0].IsStartSpannerMainGap());
+  EXPECT_TRUE(main_gaps[1].IsEndSpannerMainGap());
+  EXPECT_FALSE(main_gaps[2].IsSpannerMainGap());
+
+  VerifyMainGaps(expected_main_gaps, main_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+
+  wtf_size_t range_index = 0;
+  for (wtf_size_t i = 0; i < main_gaps.size() - 1; ++i) {
+    MainGap main_gap = main_gaps[i];
+    if (main_gap.IsSpannerMainGap()) {
+      continue;
     }
+    CrossGapRange expected_cross_gap_range =
+        expected_cross_gap_ranges_for_main_gaps[range_index];
+    EXPECT_EQ(main_gap.RangeOfCrossGapsBefore(), expected_cross_gap_range)
+        << "for main gap index: " << i
+        << " got: " << main_gap.RangeOfCrossGapsBefore().ToString()
+        << " expected: " << expected_cross_gap_range.ToString();
+    ++range_index;
   }
-  for (const auto& column_intersection : column_intersections) {
-    EXPECT_TRUE(column_intersection.front().is_at_edge_of_container);
-    EXPECT_TRUE(column_intersection.back().is_at_edge_of_container);
-    // The intersections before and after the spanner should also be marked as
-    // at the end of container:
-    EXPECT_TRUE(column_intersection[1].is_at_edge_of_container);
-    EXPECT_TRUE(column_intersection[2].is_at_edge_of_container);
-    // Now we check that all the other intersections are not on the edge of the
-    // container.
-    for (size_t i = 1; i < column_intersection.size() - 1; ++i) {
-      // This is needed because for now we mark the intersections adjacent to
-      // spanners as `is_at_edge_of_container`.
-      if (i == 1 || i == 2) {
-        continue;
-      }
-      EXPECT_FALSE(column_intersection[i].is_at_edge_of_container);
-    }
-  }
-
-  // Check that the column intersections before/after the spanner are marked
-  // accordingly.
-  EXPECT_TRUE(column_intersections[0][1].is_blocked_after);
-  EXPECT_TRUE(column_intersections[0][2].is_blocked_before);
-  EXPECT_TRUE(column_intersections[1][1].is_blocked_after);
-  EXPECT_TRUE(column_intersections[1][2].is_blocked_before);
 }
 
 TEST_F(ColumnLayoutAlgorithmTest,
-       GapDecorationIntersectionsColumnWrapLastRowNotFilled) {
+       GapDecorationColumnWrapLastRowNotFilled) {
   ScopedMulticolColumnWrappingForTest multicol_column_wrapping(true);
   ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
@@ -6836,72 +6976,172 @@ TEST_F(ColumnLayoutAlgorithmTest,
 
   ASSERT_TRUE(gap_geometry);
 
-  const Vector<GapIntersectionList> expected_row_intersections = {
-      {GapIntersection(LayoutUnit(0), LayoutUnit(110)),
-       GapIntersection(LayoutUnit(110), LayoutUnit(110)),
-       GapIntersection(LayoutUnit(230), LayoutUnit(110)),
-       GapIntersection(LayoutUnit(350), LayoutUnit(110)),
-       GapIntersection(LayoutUnit(460), LayoutUnit(110))},
-      {GapIntersection(LayoutUnit(0), LayoutUnit(230)),
-       GapIntersection(LayoutUnit(110), LayoutUnit(230)),
-       GapIntersection(LayoutUnit(230), LayoutUnit(230)),
-       GapIntersection(LayoutUnit(350), LayoutUnit(230)),
-       GapIntersection(LayoutUnit(460), LayoutUnit(230))},
-      {GapIntersection(LayoutUnit(0), LayoutUnit(350)),
-       GapIntersection(LayoutUnit(110), LayoutUnit(350)),
-       GapIntersection(LayoutUnit(230), LayoutUnit(350)),
-       GapIntersection(LayoutUnit(350), LayoutUnit(350)),
-       GapIntersection(LayoutUnit(460), LayoutUnit(350))},
-  };
-  const Vector<GapIntersectionList> expected_column_intersections = {
-      {GapIntersection(LayoutUnit(110), LayoutUnit(0)),
-       GapIntersection(LayoutUnit(110), LayoutUnit(110)),
-       GapIntersection(LayoutUnit(110), LayoutUnit(230)),
-       GapIntersection(LayoutUnit(110), LayoutUnit(350)),
-       GapIntersection(LayoutUnit(110), LayoutUnit(460))},
-      {GapIntersection(LayoutUnit(230), LayoutUnit(0)),
-       GapIntersection(LayoutUnit(230), LayoutUnit(110)),
-       GapIntersection(LayoutUnit(230), LayoutUnit(230)),
-       GapIntersection(LayoutUnit(230), LayoutUnit(350)),
-       GapIntersection(LayoutUnit(230), LayoutUnit(460))},
-      {GapIntersection(LayoutUnit(350), LayoutUnit(0)),
-       GapIntersection(LayoutUnit(350), LayoutUnit(110)),
-       GapIntersection(LayoutUnit(350), LayoutUnit(230)),
-       GapIntersection(LayoutUnit(350), LayoutUnit(350)),
-       GapIntersection(LayoutUnit(350), LayoutUnit(460))},
-  };
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(100)),
+                                             MainGap(LayoutUnit(220)),
+                                             MainGap(LayoutUnit(340))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(110), LayoutUnit(0)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(230), LayoutUnit(0)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(350), LayoutUnit(0)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(110), LayoutUnit(120)),
+               CrossGap::EdgeIntersectionState::kNone),
+      CrossGap(LogicalOffset(LayoutUnit(230), LayoutUnit(120)),
+               CrossGap::EdgeIntersectionState::kNone),
+      CrossGap(LogicalOffset(LayoutUnit(350), LayoutUnit(120)),
+               CrossGap::EdgeIntersectionState::kNone),
+      CrossGap(LogicalOffset(LayoutUnit(110), LayoutUnit(240)),
+               CrossGap::EdgeIntersectionState::kNone),
+      CrossGap(LogicalOffset(LayoutUnit(230), LayoutUnit(240)),
+               CrossGap::EdgeIntersectionState::kNone),
+      CrossGap(LogicalOffset(LayoutUnit(350), LayoutUnit(240)),
+               CrossGap::EdgeIntersectionState::kNone)};
 
-  const Vector<GapIntersectionList> row_intersections =
-      gap_geometry->GetGapIntersections(kForRows);
-  const Vector<GapIntersectionList> column_intersections =
-      gap_geometry->GetGapIntersections(kForColumns);
-  EXPECT_EQ(row_intersections.size(), 3);
-  EXPECT_EQ(column_intersections.size(), 3);
+  const Vector<CrossGapRange> expected_cross_gap_ranges_for_main_gaps = {
+      CrossGapRange(0, 2), CrossGapRange(3, 5), CrossGapRange(6, 8)};
 
-  VerifyGapIntersections(expected_row_intersections, row_intersections);
-  VerifyGapIntersections(expected_column_intersections, column_intersections);
+  ASSERT_EQ(expected_cross_gap_ranges_for_main_gaps.size(), 3);
 
-  // Check that the edge gap intersections are marked as being on the edge of
-  // the container.
-  for (const auto& row_intersection_list : row_intersections) {
-    EXPECT_TRUE(row_intersection_list.front().is_at_edge_of_container);
-    EXPECT_TRUE(row_intersection_list.back().is_at_edge_of_container);
-    // Now we check that all the other intersections are not on the edge of the
-    // container.
-    for (size_t i = 1; i < row_intersection_list.size() - 1; ++i) {
-      EXPECT_FALSE(row_intersection_list[i].is_at_edge_of_container);
-    }
-  }
-  for (const auto& column_intersection : column_intersections) {
-    EXPECT_TRUE(column_intersection.front().is_at_edge_of_container);
-    EXPECT_TRUE(column_intersection.back().is_at_edge_of_container);
-    // Now we check that all the other intersections are not on the edge of the
-    // container.
-    for (size_t i = 1; i < column_intersection.size() - 1; ++i) {
-      EXPECT_FALSE(column_intersection[i].is_at_edge_of_container);
-    }
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 3);
+  EXPECT_EQ(column_gaps.size(), 9);
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+
+  for (wtf_size_t i = 0; i < row_gaps.size(); ++i) {
+    MainGap row_gap = row_gaps[i];
+    EXPECT_FALSE(row_gap.IsSpannerMainGap());
+    CrossGapRange expected_cross_gap_range =
+        expected_cross_gap_ranges_for_main_gaps[i];
+    EXPECT_EQ(row_gap.RangeOfCrossGapsBefore(), expected_cross_gap_range)
+        << "for main gap index: " << i
+        << " got: " << row_gap.RangeOfCrossGapsBefore().ToString()
+        << " expected: " << expected_cross_gap_range.ToString();
   }
 }
+
+TEST_F(ColumnLayoutAlgorithmTest, GapDecorationTwoSpanners) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+ <style>
+  body {
+    margin: 0px;
+  }
+
+  #container {
+    border: 2px solid rgb(96 139 168);
+    width: 200px;
+    height: 200px;
+    column-gap: 10px;
+    row-gap: 10px;
+    column-rule-width: 10px;
+    column-rule-style: solid;
+    column-rule-color: blue;
+    row-rule-width: 10px;
+    row-rule-style: solid;
+    row-rule-color: gold;
+    column-width: 60px;
+    column-count: 3;
+    column-fill: auto;
+  }
+
+  p {
+    background: rgb(96 139 168 / 0.2);
+    height: 50px;
+    margin: 0px;
+  }
+
+  h2 {
+    column-span: all;
+    background-color: #4d4e53;
+    color: #fff;
+    margin: 0px;
+    opacity: 0.5;
+  }
+
+</style>
+
+<body>
+  <div id="container">
+    <p>One</p>
+    <p>Two</p>
+    <h2>Spanner</h2>
+
+    <p>Three</p>
+    <p>Four</p>
+    <p>Five</p>
+    <h2>Spanner</h2>
+    <p>Six</p>
+    <p>Seven</p>
+    <p>Eight</p>
+  </div>
+</body>
+
+)HTML");
+
+  BlockNode container(GetLayoutBoxByElementId("container"));
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize), true, true);
+  FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+      space, container, /* break_token */ nullptr);
+  ColumnLayoutAlgorithm algorithm({container, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  ASSERT_TRUE(gap_geometry);
+
+  const Vector<MainGap> expected_row_gaps = {
+      MainGap(LayoutUnit(35.34375)), MainGap(LayoutUnit(36.34375)),
+      MainGap(LayoutUnit(86.34375)), MainGap(LayoutUnit(87.34375))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kBoth),
+      CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kBoth),
+      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(36.34375)),
+               CrossGap::EdgeIntersectionState::kBoth),
+      CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(36.34375)),
+               CrossGap::EdgeIntersectionState::kBoth),
+      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(87.34375)),
+               CrossGap::EdgeIntersectionState::kBoth)};
+
+  const Vector<CrossGapRange> expected_cross_gap_ranges_for_main_gaps = {
+      CrossGapRange(0, 1), CrossGapRange(2, 3)};
+
+  ASSERT_EQ(expected_cross_gap_ranges_for_main_gaps.size(), 2);
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 4);
+  EXPECT_EQ(column_gaps.size(), 5);
+
+  EXPECT_TRUE(row_gaps[0].IsStartSpannerMainGap());
+  EXPECT_TRUE(row_gaps[1].IsEndSpannerMainGap());
+  EXPECT_TRUE(row_gaps[2].IsStartSpannerMainGap());
+  EXPECT_TRUE(row_gaps[3].IsEndSpannerMainGap());
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+
+  CrossGapRange expected_cross_gap_range =
+      expected_cross_gap_ranges_for_main_gaps[0];
+  EXPECT_EQ(row_gaps[0].RangeOfCrossGapsBefore(), expected_cross_gap_range)
+      << "for range index: " << 0
+      << " got: " << row_gaps[0].RangeOfCrossGapsBefore().ToString()
+      << " expected: " << expected_cross_gap_range.ToString();
+  expected_cross_gap_range = expected_cross_gap_ranges_for_main_gaps[1];
+  EXPECT_EQ(row_gaps[2].RangeOfCrossGapsBefore(), expected_cross_gap_range)
+      << "for range index: " << 1
+      << " got: " << row_gaps[2].RangeOfCrossGapsBefore().ToString()
+      << " expected: " << expected_cross_gap_range.ToString();
+  }
 
 }  // anonymous namespace
 }  // namespace blink

@@ -6,7 +6,9 @@
 
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "crypto/sha2.h"
 
 namespace {
@@ -52,7 +54,6 @@ base::Value::Dict AvProductToDict(
       break;
   }
   antivirus_dict.Set("display_name", av_product.display_name());
-  antivirus_dict.Set("product_id", av_product.product_id());
 
   return antivirus_dict;
 }
@@ -143,7 +144,6 @@ std::unique_ptr<em::AntiVirusProduct> TranslateAvProduct(
   }
 
   av_product_in_report->set_display_name(av_product.display_name);
-  av_product_in_report->set_product_id(av_product.product_id);
 
   return av_product_in_report;
 }
@@ -199,7 +199,19 @@ std::string GetSecuritySignalsInReport(
     signals_dict.Set("antivirus_info", std::move(anti_virus_list));
 
     signals_dict.Set("hotfixes", RepeatedFieldptrToList(os_report.hotfixes()));
-#endif  // BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_LINUX)
+    if (os_report.has_distribution_version()) {
+      signals_dict.Set("distribution_version",
+                       os_report.distribution_version());
+    }
+#elif BUILDFLAG(IS_ANDROID)
+    signals_dict.Set("has_potentially_harmful_apps",
+                     os_report.has_potentially_harmful_apps());
+    signals_dict.Set("verified_apps_enabled",
+                     os_report.verified_apps_enabled());
+    signals_dict.Set("security_patch_ms",
+                     base::NumberToString(os_report.security_patch_ms()));
+#endif
   }
 
   if (!chrome_profile_report_request.has_browser_report()) {
@@ -260,6 +272,18 @@ std::string GetSecuritySignalsInReport(
     signals_dict.Set("security_event_providers",
                      RepeatedFieldptrToList(
                          profile_signals_report.security_event_providers()));
+
+    if (chrome_profile_report_request.has_attestation_payload()) {
+      auto attestation_payload =
+          chrome_profile_report_request.attestation_payload();
+      signals_dict.Set("attestation timestamp",
+                       attestation_payload.timestamp());
+      signals_dict.Set("attestation nonce", attestation_payload.nonce());
+      // Do not print the attestation blob itself as it's too large to display
+      // in logs.
+      signals_dict.Set("attestation generation error",
+                       attestation_payload.attestation_error());
+    }
   }
 
   base::JSONWriter::WriteWithOptions(

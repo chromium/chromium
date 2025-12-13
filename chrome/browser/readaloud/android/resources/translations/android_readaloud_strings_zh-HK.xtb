@@ -57,6 +57,7 @@
 <translation id="7221920857098237570">柔和</translation>
 <translation id="7237590978482584900">輕快</translation>
 <translation id="7282547042039404307">流暢</translation>
+<translation id="7514257690823355037">跳去下一個</translation>
 <translation id="8004767876552422827">原野</translation>
 <translation id="8136852699834914183">無法播放此頁面的內容。</translation>
 <translation id="8198036737896977997">空氣</translation>
@@ -68,5 +69,6 @@
 <translation id="8756370108715456837">與事實不符</translation>
 <translation id="8953618380150219653">「朗讀此頁面內容」播放器宜家顯示喺成個畫面。</translation>
 <translation id="9087782179025630211">控制滑桿。總長度係 <ph name="TOTAL" />，播咗 <ph name="ELAPSED" />。</translation>
+<translation id="9193673272519126093">跳去上一個</translation>
 <translation id="978117257931832348">低音</translation>
 </translationbundle>

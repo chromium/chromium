@@ -65,8 +65,7 @@ final class FakeUrlRequest extends ExperimentalUrlRequest {
     private final FakeCronetEngine mFakeCronetEngine;
 
     // Source of thread safety for this class.
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    final Object mLock = new Object();
+    @VisibleForTesting final Object mLock = new Object();
 
     // True if direct execution is allowed for this request.
     private final boolean mAllowDirectExecutor;
@@ -699,7 +698,7 @@ final class FakeUrlRequest extends ExperimentalUrlRequest {
      * {@link ByteArrayOutputStream} and transfers it to the {@code mRequestBody} when the response
      * has been fully acquired.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     final class FakeDataSink extends JavaUploadDataSinkBase {
         private final ByteArrayOutputStream mBodyStream = new ByteArrayOutputStream();
         private final WritableByteChannel mBodyChannel = Channels.newChannel(mBodyStream);

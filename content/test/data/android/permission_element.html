@@ -23,11 +23,11 @@
       });
     }
 
-    document.getElementById('parent').addEventListener('resolve', (event) => {
-      window.document.title = 'resolve';
+    document.getElementById('parent').addEventListener('promptaction', (event) => {
+      window.document.title = 'promptaction';
     });
-    document.getElementById('parent').addEventListener('dismiss', (event) => {
-      window.document.title = 'dismiss';
+    document.getElementById('parent').addEventListener('promptdismiss', (event) => {
+      window.document.title = 'promptdismiss';
     });
   </script>
 </body>

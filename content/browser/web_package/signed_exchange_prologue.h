@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_PROLOGUE_H_
 
 #include "base/containers/span.h"
-#include "base/gtest_prod_util.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/common/content_export.h"
 

@@ -5,12 +5,16 @@
 #include "pdf/pdfium/pdfium_range.h"
 
 #include <string>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/debug/alias.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "third_party/pdfium/public/fpdf_searchex.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -23,22 +27,27 @@ namespace {
 void AdjustForBackwardsRange(int& index, int& count) {
   if (count < 0) {
     count *= -1;
-    index -= count - 1;
+    index -= count;
   }
 }
 
-// Struct with only the text run info needed for PDFiumRange::GetScreenRects().
-struct ScreenRectTextRunInfo {
-  gfx::Rect screen_rect;
+// Struct with only the text run info needed for PDFiumRange::GetRects().
+struct PdfRectTextRunInfo {
+  // Default loose bounds.
+  PdfRect pdf_rect;
+
+  // Tight bounds. Only used with certain `PdfBoundsTightness` values.
+  PdfRect tight_pdf_rect;
+
   size_t char_count;
 };
 
 // Returns a ratio between [0, 1].
-float GetVerticalOverlap(const gfx::Rect& rect1, const gfx::Rect& rect2) {
+float GetVerticalOverlap(const PdfRect& rect1, const PdfRect& rect2) {
   CHECK(!rect1.IsEmpty());
   CHECK(!rect2.IsEmpty());
 
-  gfx::Rect union_rect = rect1;
+  PdfRect union_rect = rect1;
   union_rect.Union(rect2);
 
   if (union_rect.height() == rect1.height() ||
@@ -46,17 +55,19 @@ float GetVerticalOverlap(const gfx::Rect& rect1, const gfx::Rect& rect2) {
     return 1.0f;
   }
 
-  gfx::Rect intersect_rect = rect1;
+  PdfRect intersect_rect = rect1;
   intersect_rect.Intersect(rect2);
-  return static_cast<float>(intersect_rect.height()) / union_rect.height();
+  return intersect_rect.height() / union_rect.height();
 }
 
 // Returns true if there is sufficient horizontal and vertical overlap.
-bool ShouldMergeHorizontalRects(const ScreenRectTextRunInfo& text_run1,
-                                const ScreenRectTextRunInfo& text_run2) {
+// Only considers `PdfRectTextRunInfo::pdf_rect`, so the merging decision is
+// consistent, regardless of the `PDFiumRange::PdfBoundsTightness` value.
+bool ShouldMergeHorizontalRects(const PdfRectTextRunInfo& text_run1,
+                                const PdfRectTextRunInfo& text_run2) {
   static constexpr float kVerticalOverlapThreshold = 0.8f;
-  const gfx::Rect& rect1 = text_run1.screen_rect;
-  const gfx::Rect& rect2 = text_run2.screen_rect;
+  const PdfRect& rect1 = text_run1.pdf_rect;
+  const PdfRect& rect2 = text_run2.pdf_rect;
   if (GetVerticalOverlap(rect1, rect2) < kVerticalOverlapThreshold) {
     return false;
   }
@@ -66,40 +77,46 @@ bool ShouldMergeHorizontalRects(const ScreenRectTextRunInfo& text_run1,
       kHorizontalWidthFactor * rect1.width() / text_run1.char_count;
   const float average_width2 =
       kHorizontalWidthFactor * rect2.width() / text_run2.char_count;
-  const float rect1_left = rect1.x() - average_width1;
+  const float rect1_left = rect1.left() - average_width1;
   const float rect1_right = rect1.right() + average_width1;
-  const float rect2_left = rect2.x() - average_width2;
+  const float rect2_left = rect2.left() - average_width2;
   const float rect2_right = rect2.right() + average_width2;
   return rect1_left < rect2_right && rect1_right > rect2_left;
 }
 
 // Since PDFiumPage::GetTextRunInfo() can end a text run for a variety of
 // reasons, post-process the collected text run data and merge rectangles.
-std::vector<gfx::Rect> MergeAdjacentRects(
-    base::span<ScreenRectTextRunInfo> text_runs) {
-  std::vector<gfx::Rect> results;
-  const ScreenRectTextRunInfo* previous_text_run = nullptr;
-  gfx::Rect current_screen_rect;
+std::vector<PdfRect> MergeAdjacentRects(
+    base::span<PdfRectTextRunInfo> text_runs,
+    PDFiumRange::PdfBoundsTightness tightness) {
+  std::vector<PdfRect> results;
+  const PdfRectTextRunInfo* previous_text_run = nullptr;
+  PdfRect current_pdf_rect;
   for (const auto& text_run : text_runs) {
+    PdfRect effective_rect = text_run.pdf_rect;
+    if (tightness == PDFiumRange::PdfBoundsTightness::kTightVertical) {
+      *effective_rect.writable_bottom() = text_run.tight_pdf_rect.bottom();
+      *effective_rect.writable_top() = text_run.tight_pdf_rect.top();
+    }
     if (previous_text_run) {
       // TODO(crbug.com/40448046): Improve vertical text handling.
       // For now, treat all text as horizontal, as that is the majority of the
       // text. Also, PDFiumPage::GetTextPage() has bugs in its heuristics where
       // it mistakenly reports horizontal text as vertical.
       if (ShouldMergeHorizontalRects(*previous_text_run, text_run)) {
-        current_screen_rect.Union(text_run.screen_rect);
+        current_pdf_rect.Union(effective_rect);
       } else {
-        results.push_back(current_screen_rect);
-        current_screen_rect = text_run.screen_rect;
+        results.push_back(current_pdf_rect);
+        current_pdf_rect = effective_rect;
       }
     } else {
-      current_screen_rect = text_run.screen_rect;
+      current_pdf_rect = effective_rect;
     }
     previous_text_run = &text_run;
   }
 
-  if (!current_screen_rect.IsEmpty()) {
-    results.push_back(current_screen_rect);
+  if (!current_pdf_rect.IsEmpty()) {
+    results.push_back(current_pdf_rect);
   }
   return results;
 }
@@ -113,6 +130,19 @@ bool IsIgnorableCharacter(char16_t c) {
 // static
 PDFiumRange PDFiumRange::AllTextOnPage(PDFiumPage* page) {
   return PDFiumRange(page, 0, page->GetCharCount());
+}
+
+// static
+PDFiumRange PDFiumRange::CreateBackwards(PDFiumPage* page,
+                                         int char_index,
+                                         int char_count) {
+  CHECK_GE(char_count, 0);
+  PDFiumRange range(page, char_index, char_count);
+  if (char_count > 0) {
+    range.char_index_ += char_count;
+    range.char_count_ *= -1;
+  }
+  return range;
 }
 
 PDFiumRange::PDFiumRange(PDFiumPage* page, int char_index, int char_count)
@@ -170,37 +200,62 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
   cached_screen_rects_point_ = point;
   cached_screen_rects_zoom_ = zoom;
 
+  std::vector<PdfRect> rects = GetRects();
+  cached_screen_rects_.reserve(rects.size());
+  for (const auto& rect : rects) {
+    cached_screen_rects_.push_back(
+        page_->PageToScreen(point, zoom, rect, orientation));
+  }
+  return cached_screen_rects_;
+}
+
+std::vector<PdfRect> PDFiumRange::GetRects() const {
+  return GetRectsWithTightness(PdfBoundsTightness::kLoose);
+}
+
+std::vector<PdfRect> PDFiumRange::GetRectsWithTightness(
+    PdfBoundsTightness tightness) const {
   if (char_count_ == 0) {
-    return cached_screen_rects_;
+    return {};
   }
 
   FPDF_TEXTPAGE text_page = page_->GetTextPage();
   if (!text_page) {
-    return cached_screen_rects_;
+    return {};
   }
+
+  // TODO(crbug.com/458015240): Remove debugging data after fixing the bug.
+  const int char_index_debug = char_index_;
+  const int char_count_debug = char_count_;
+  base::debug::Alias(&char_index_debug);
+  base::debug::Alias(&char_count_debug);
 
   int char_index = char_index_;
   int char_count = char_count_;
 
   AdjustForBackwardsRange(char_index, char_count);
-  DCHECK_GE(char_index, 0) << " start: " << char_index_
-                           << " count: " << char_count_;
-  DCHECK_LT(char_index, FPDFText_CountChars(text_page))
+  CHECK_GE(char_index, 0) << " start: " << char_index_
+                          << " count: " << char_count_;
+  CHECK_LT(char_index, FPDFText_CountChars(text_page))
       << " start: " << char_index_ << " count: " << char_count_;
 
-  std::vector<ScreenRectTextRunInfo> text_runs;
+  std::vector<PdfRectTextRunInfo> text_runs;
   const int end_char_index = char_index + char_count;
   bool reached_end = false;
   while (!reached_end) {
     // Should not fail because `text_page` is non-null and `char_index` is
     // always in range.
     std::optional<AccessibilityTextRunInfo> text_run_info =
-        page_->GetTextRunInfo(char_index);
+        page_->GetTextRunInfoAt(char_index);
     CHECK(text_run_info.has_value());
 
     // Figure out how many characters to process in the for-loop below, and
     // determine if this while-loop iteration reached the end of the range.
-    int next_char_index = char_index + text_run_info.value().len;
+    base::CheckedNumeric<uint32_t> safe_next_char_index =
+        text_run_info.value().start_index;
+    safe_next_char_index += text_run_info.value().len;
+    int next_char_index;
+    CHECK(safe_next_char_index.AssignIfValid(&next_char_index));
     reached_end = next_char_index >= end_char_index;
     if (reached_end) {
       next_char_index = end_char_index;
@@ -208,7 +263,8 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
 
     // Do not use the bounds from `text_run_info`, as those are in the wrong
     // coordinate system. Calculate it here instead.
-    gfx::Rect text_run_rect;
+    PdfRect text_run_rect;
+    PdfRect tight_text_run_rect;
     for (int i = char_index; i < next_char_index; ++i) {
       // Use the loose rectangle, which gives the selection a bit more padding.
       // In comparison, the rectangle from FPDFText_GetCharBox() surrounds the
@@ -216,42 +272,42 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
       //
       // Should not fail because `text_page` is non-null, `i` is always in
       // range, and the out-parameter is non-null.
-      FS_RECTF rect;
-      bool got_rect = FPDFText_GetLooseCharBox(text_page, i, &rect);
+      PdfRect rect;
+      bool got_rect =
+          FPDFText_GetLooseCharBox(text_page, i, &FsRectFFromPdfRect(rect));
       CHECK(got_rect);
+      text_run_rect.Union(rect);
 
-      // Check for empty `rect` and skip. PDFiumPage::PageToScreen() may round
-      // an empty `rect` to a 1x1 `screen_rect`, which is hard to distinguish
-      // from an actual 1x1 `rect`.
-      if (rect.left == rect.right || rect.top == rect.bottom) {
-        continue;
+      if (tightness == PdfBoundsTightness::kTightVertical) {
+        // GetTextRunInfo() should not fail for the same reason as the
+        // FPDFText_GetLooseCharBox() call above.
+        tight_text_run_rect.Union(GetTextCharBox(text_page, i).value());
       }
-
-      gfx::Rect screen_rect =
-          page_->PageToScreen(point, zoom, rect.left, rect.top, rect.right,
-                              rect.bottom, orientation);
-      text_run_rect.Union(screen_rect);
     }
     if (!text_run_rect.IsEmpty()) {
-      text_runs.emplace_back(text_run_rect, next_char_index - char_index);
+      text_runs.emplace_back(/*pdf_rect=*/text_run_rect,
+                             /*tight_pdf_rect=*/tight_text_run_rect,
+                             /*char_count=*/next_char_index - char_index);
     }
 
     char_index = next_char_index;
   }
 
-  cached_screen_rects_ = MergeAdjacentRects(text_runs);
-  return cached_screen_rects_;
+  return MergeAdjacentRects(text_runs, tightness);
 }
 
 std::u16string PDFiumRange::GetText() const {
+  if (char_count_ == 0) {
+    return std::u16string();
+  }
+
   int index = char_index_;
   int count = char_count_;
-  std::u16string result;
-  if (count == 0)
-    return result;
-
   AdjustForBackwardsRange(index, count);
-  if (count > 0) {
+  CHECK_GT(count, 0);
+
+  std::u16string result;
+  {
     // Note that the `expected_size` value includes the NUL terminator.
     //
     // Cannot set `check_expected_size` to true here because the fix to
@@ -269,35 +325,38 @@ std::u16string PDFiumRange::GetText() const {
     // FPDFText_GetText() returns 0 on failure. Never negative value.
     DCHECK_GE(written, 0);
     api_string_adapter.Close(written);
-
-    const gfx::RectF page_bounds = page_->GetCroppedRect();
-    std::u16string in_bound_text;
-    in_bound_text.reserve(result.size());
-
-    // If FPDFText_GetText() trimmed off characters, figure out how many were
-    // trimmed from the front. Store the result in `index_offset`, so the
-    // IsCharInPageBounds() calls below can have the correct index.
-    CHECK_GE(static_cast<size_t>(count), result.size());
-    size_t trimmed_count = static_cast<size_t>(count) - result.size();
-    int index_offset = 0;
-    while (trimmed_count) {
-      if (FPDFText_GetTextIndexFromCharIndex(page_->GetTextPage(),
-                                             index + index_offset) >= 0) {
-        break;
-      }
-      --trimmed_count;
-      ++index_offset;
-    }
-
-    for (size_t i = 0; i < result.size(); ++i) {
-      // Filter out characters outside the page bounds, which are semantically
-      // not part of the page.
-      if (page_->IsCharInPageBounds(index + index_offset + i, page_bounds))
-        in_bound_text += result[i];
-    }
-    result = in_bound_text;
-    std::erase_if(result, IsIgnorableCharacter);
+    // Let `api_string_adapter` go out of scope to avoid having a potentially
+    // dangling pointer to `result`.
   }
+
+  const gfx::RectF page_bounds = page_->GetCroppedRect();
+  std::u16string in_bound_text;
+  in_bound_text.reserve(result.size());
+
+  // If FPDFText_GetText() trimmed off characters, figure out how many were
+  // trimmed from the front. Store the result in `index_offset`, so the
+  // IsCharInPageBounds() calls below can have the correct index.
+  CHECK_GE(static_cast<size_t>(count), result.size());
+  size_t trimmed_count = static_cast<size_t>(count) - result.size();
+  int index_offset = index;
+  while (trimmed_count) {
+    if (FPDFText_GetTextIndexFromCharIndex(page_->GetTextPage(),
+                                           index_offset) >= 0) {
+      break;
+    }
+    --trimmed_count;
+    ++index_offset;
+  }
+
+  for (size_t i = 0; i < result.size(); ++i) {
+    // Filter out characters outside the page bounds, which are semantically
+    // not part of the page.
+    if (page_->IsCharInPageBounds(index_offset + i, page_bounds)) {
+      in_bound_text += result[i];
+    }
+  }
+  result = std::move(in_bound_text);
+  std::erase_if(result, IsIgnorableCharacter);
 
   return result;
 }

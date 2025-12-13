@@ -15,6 +15,8 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -69,50 +71,50 @@ SkPath DrawCrossPath(SkScalar overall_length,
                      SkScalar corner_radius,
                      SkScalar out_stroke_thickness,
                      SkPoint center) {
-  SkPath path;
   SkScalar short_length = (overall_length - mid_length) / 2;
+  SkPathBuilder path;
   path.moveTo(center.x() - mid_length / 2, center.y() - mid_length / 2);
   // #0
   path.rLineTo(0, -(short_length - corner_radius));
-  path.rArcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, corner_radius, -corner_radius);
+  path.rArcTo({corner_radius, corner_radius}, 0, SkPathBuilder::kSmall_ArcSize,
+              SkPathDirection::kCW, {corner_radius, -corner_radius});
   // #1
   path.rLineTo(mid_length - 2 * corner_radius, 0);
-  path.rArcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, corner_radius, corner_radius);
+  path.rArcTo({corner_radius, corner_radius}, 0, SkPathBuilder::kSmall_ArcSize,
+              SkPathDirection::kCW, {corner_radius, corner_radius});
   // #2
   path.rLineTo(0, short_length - corner_radius);
   // #3
   path.rLineTo(short_length - corner_radius, 0);
-  path.rArcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, corner_radius, corner_radius);
+  path.rArcTo({corner_radius, corner_radius}, 0, SkPathBuilder::kSmall_ArcSize,
+              SkPathDirection::kCW, {corner_radius, corner_radius});
   // #4
   path.rLineTo(0, mid_length - 2 * corner_radius);
-  path.rArcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -corner_radius, +corner_radius);
+  path.rArcTo({corner_radius, corner_radius}, 0, SkPathBuilder::kSmall_ArcSize,
+              SkPathDirection::kCW, {-corner_radius, +corner_radius});
   // #5
   path.rLineTo(-(short_length - corner_radius), 0);
   // #6
   path.rLineTo(0, short_length - corner_radius);
-  path.rArcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -corner_radius, corner_radius);
+  path.rArcTo({corner_radius, corner_radius}, 0, SkPathBuilder::kSmall_ArcSize,
+              SkPathDirection::kCW, {-corner_radius, corner_radius});
   // #7
   path.rLineTo(-(mid_length - 2 * corner_radius), 0);
-  path.rArcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -corner_radius, -corner_radius);
+  path.rArcTo({corner_radius, corner_radius}, 0, SkPathBuilder::kSmall_ArcSize,
+              SkPathDirection::kCW, {-corner_radius, -corner_radius});
   // #8
   path.rLineTo(0, -(short_length - corner_radius));
   // #9
   path.rLineTo(-(short_length - corner_radius), 0);
-  path.rArcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -corner_radius, -corner_radius);
+  path.rArcTo({corner_radius, corner_radius}, 0, SkPathBuilder::kSmall_ArcSize,
+              SkPathDirection::kCW, {-corner_radius, -corner_radius});
   // #10
   path.rLineTo(0, -(mid_length - 2 * corner_radius));
-  path.rArcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, corner_radius, -corner_radius);
+  path.rArcTo({corner_radius, corner_radius}, 0, SkPathBuilder::kSmall_ArcSize,
+              SkPathDirection::kCW, {corner_radius, -corner_radius});
   // #11
   path.close();
-  return path;
+  return path.detach();
 }
 
 SkPath DrawCrossCenter(const gfx::Point& center) {

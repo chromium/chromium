@@ -24,7 +24,7 @@ namespace {
 class FullNameField : public NameFieldParser {
  public:
   static std::unique_ptr<FullNameField> Parse(ParsingContext& context,
-                                              AutofillScanner* scanner);
+                                              AutofillScanner& scanner);
   explicit FullNameField(FieldAndMatchInfo match);
 
   FullNameField(const FullNameField&) = delete;
@@ -43,10 +43,10 @@ class FirstTwoLastNamesField : public NameFieldParser {
  public:
   static std::unique_ptr<FirstTwoLastNamesField> ParseComponentNames(
       ParsingContext& context,
-      AutofillScanner* scanner);
+      AutofillScanner& scanner);
   static std::unique_ptr<FirstTwoLastNamesField> Parse(
       ParsingContext& context,
-      AutofillScanner* scanner);
+      AutofillScanner& scanner);
 
   FirstTwoLastNamesField(const FirstTwoLastNamesField&) = delete;
   FirstTwoLastNamesField& operator=(const FirstTwoLastNamesField&) = delete;
@@ -74,26 +74,32 @@ class FirstLastNameField : public NameFieldParser {
   // Surname".
   static std::unique_ptr<FirstLastNameField> ParseNameSurnameLabelSequence(
       ParsingContext& context,
-      AutofillScanner* scanner);
+      AutofillScanner& scanner);
+
+  // Tries to match a series of name fields that follows the pattern "Surname,
+  // Name".
+  static std::unique_ptr<FirstLastNameField> ParseSurnameNameLabelSequence(
+      ParsingContext& context,
+      AutofillScanner& scanner);
 
   // Tries to match a series of fields with a shared label: The first field
   // needs to have a unspecific name label followed by up to two fields without
   // a label.
   static std::unique_ptr<FirstLastNameField> ParseSharedNameLabelSequence(
       ParsingContext& context,
-      AutofillScanner* scanner);
+      AutofillScanner& scanner);
 
   // Tries to match a series of fields with patterns that are specific to the
   // individual components of a name. Note that the order of the components does
   // not matter.
   static std::unique_ptr<FirstLastNameField> ParseSpecificComponentSequence(
       ParsingContext& context,
-      AutofillScanner* scanner);
+      AutofillScanner& scanner);
 
   // Probes the matching strategies defined above. Returns the result of the
   // first successful match. Returns a nullptr if no matches can be found.
   static std::unique_ptr<FirstLastNameField> Parse(ParsingContext& context,
-                                                   AutofillScanner* scanner);
+                                                   AutofillScanner& scanner);
 
   FirstLastNameField(const FirstLastNameField&) = delete;
   FirstLastNameField& operator=(const FirstLastNameField&) = delete;
@@ -118,8 +124,8 @@ class FirstLastNameField : public NameFieldParser {
 // static
 std::unique_ptr<FormFieldParser> NameFieldParser::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
-  if (scanner->IsEnd()) {
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return nullptr;
   }
 
@@ -144,12 +150,12 @@ void NameFieldParser::AddClassifications(
 
 // static
 std::unique_ptr<FullNameField> FullNameField::Parse(ParsingContext& context,
-                                                    AutofillScanner* scanner) {
+                                                    AutofillScanner& scanner) {
   // Exclude e.g. "username" or "nickname" fields.
-  scanner->SaveCursor();
+  const AutofillScanner::Position position = scanner.GetPosition();
   bool should_ignore = ParseField(context, scanner, "NAME_IGNORED") ||
                        ParseField(context, scanner, "ADDRESS_NAME_IGNORED");
-  scanner->Rewind();
+  scanner.Restore(position);
   if (should_ignore) {
     return nullptr;
   }
@@ -179,19 +185,19 @@ FirstTwoLastNamesField::FirstTwoLastNamesField() = default;
 // static
 std::unique_ptr<FirstTwoLastNamesField> FirstTwoLastNamesField::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   return ParseComponentNames(context, scanner);
 }
 
 // static
 std::unique_ptr<FirstTwoLastNamesField>
 FirstTwoLastNamesField::ParseComponentNames(ParsingContext& context,
-                                            AutofillScanner* scanner) {
+                                            AutofillScanner& scanner) {
   auto v = base::WrapUnique(new FirstTwoLastNamesField());
-  scanner->SaveCursor();
+  const AutofillScanner::Position position = scanner.GetPosition();
 
   // Allow name fields to appear in any order.
-  while (!scanner->IsEnd()) {
+  while (!scanner.IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
     if (ParseField(context, scanner, "ADDRESS_NAME_IGNORED")) {
@@ -254,7 +260,7 @@ FirstTwoLastNamesField::ParseComponentNames(ParsingContext& context,
     return v;
   }
 
-  scanner->Rewind();
+  scanner.Restore(position);
   return nullptr;
 }
 
@@ -276,19 +282,19 @@ void FirstTwoLastNamesField::AddClassifications(
 
 std::unique_ptr<FirstLastNameField>
 FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
-                                                  AutofillScanner* scanner) {
+                                                  AutofillScanner& scanner) {
   // Some pages have a generic name label that corresponds to a first name
   // followed by a last name label.
   // Example: Name [      ] Last Name [      ]
   auto v = base::WrapUnique(new FirstLastNameField());
 
-  scanner->SaveCursor();
+  AutofillScanner::Position position = scanner.GetPosition();
 
   bool should_ignore = ParseField(context, scanner, "NAME_IGNORED") ||
                        ParseField(context, scanner, "ADDRESS_NAME_IGNORED");
-  scanner->Rewind();
+  scanner.Restore(position);
 
-  scanner->SaveCursor();
+  position = scanner.GetPosition();
 
   if (should_ignore) {
     return nullptr;
@@ -308,17 +314,83 @@ FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
     }
   }
 
-  scanner->Rewind();
+  scanner.Restore(position);
+  return nullptr;
+}
+
+std::unique_ptr<FirstLastNameField>
+FirstLastNameField::ParseSurnameNameLabelSequence(ParsingContext& context,
+                                                  AutofillScanner& scanner) {
+  // Some pages have a label that corresponds to a last name followed by a first
+  // name label.
+  // Example: Last Name [      ] First Name [      ]
+  auto v = base::WrapUnique(new FirstLastNameField());
+  AutofillScanner::Position position = scanner.GetPosition();
+
+  bool should_ignore = ParseField(context, scanner, "NAME_IGNORED") ||
+                       ParseField(context, scanner, "ADDRESS_NAME_IGNORED");
+  scanner.Restore(position);
+
+  if (should_ignore) {
+    return nullptr;
+  }
+
+  ParseField(context, scanner, "LAST_NAME", &v->last_name_);
+
+  bool classified_as_name_generic = false;
+  if (!v->last_name_ &&
+      ParseField(context, scanner, "NAME_GENERIC", &v->last_name_)) {
+    classified_as_name_generic = true;
+  }
+
+  if (!v->last_name_) {
+    scanner.Restore(position);
+    return nullptr;
+  }
+
+  if (classified_as_name_generic) {
+    AutofillScanner::Position peek_position = scanner.GetPosition();
+    // Peek ahead to see what follows NAME_GENERIC match.
+    // If a full name or first and last name sequence comes next, this often
+    // means that the NAME_GENERIC match was associated with a
+    // CREDIT_CARD_NAME_FULL field of a preceding credit card form, and the
+    // FULL_NAME or FIRST_NAME, LAST_NAME belongs to a shipping or billing
+    // address that follows the credit card form.
+    //
+    // E.g. the "NAME_GENERIC, FIRST_NAME, LAST_NAME" sequence can match cases
+    // where first field has a 'Name on card' label, where name will match
+    // NAME_GENERIC and the following two fields are "FIRST_NAME, LAST_NAME".
+    bool is_followed_by_full_name = ParseField(context, scanner, "FULL_NAME");
+    scanner.Restore(peek_position);
+
+    bool is_followed_by_first_and_last_name =
+        ParseField(context, scanner, "FIRST_NAME") &&
+        ParseField(context, scanner, "LAST_NAME");
+    scanner.Restore(peek_position);
+
+    if (is_followed_by_full_name || is_followed_by_first_and_last_name) {
+      scanner.Restore(position);
+      return nullptr;
+    }
+  }
+
+  // If followed by first name, it means parser has matched a last name and
+  // first name sequence.
+  if (ParseField(context, scanner, "FIRST_NAME", &v->first_name_)) {
+    return v;
+  }
+
+  scanner.Restore(position);
   return nullptr;
 }
 
 std::unique_ptr<FirstLastNameField>
 FirstLastNameField::ParseSharedNameLabelSequence(ParsingContext& context,
-                                                 AutofillScanner* scanner) {
+                                                 AutofillScanner& scanner) {
   // Some pages (e.g. Overstock_comBilling.html, SmithsonianCheckout.html)
   // have the label "Name" followed by two or three text fields.
   auto v = base::WrapUnique(new FirstLastNameField());
-  scanner->SaveCursor();
+  const AutofillScanner::Position position = scanner.GetPosition();
 
   std::optional<FieldAndMatchInfo> next;
   if (ParseField(context, scanner, "NAME_GENERIC", &v->first_name_) &&
@@ -335,16 +407,16 @@ FirstLastNameField::ParseSharedNameLabelSequence(ParsingContext& context,
     return v;
   }
 
-  scanner->Rewind();
+  scanner.Restore(position);
   return nullptr;
 }
 
 // static
 std::unique_ptr<FirstLastNameField>
 FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
-                                                   AutofillScanner* scanner) {
+                                                   AutofillScanner& scanner) {
   auto v = base::WrapUnique(new FirstLastNameField());
-  scanner->SaveCursor();
+  const AutofillScanner::Position position = scanner.GetPosition();
 
   // A fair number of pages use the names "fname" and "lname" for naming
   // first and last name fields (examples from the test suite:
@@ -358,7 +430,7 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
 
   // Allow name fields to appear in any order.
 
-  while (!scanner->IsEnd()) {
+  while (!scanner.IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
     if (ParseField(context, scanner, "ADDRESS_NAME_IGNORED")) {
@@ -424,14 +496,14 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
     return v;
   }
 
-  scanner->Rewind();
+  scanner.Restore(position);
   return nullptr;
 }
 
 // static
 std::unique_ptr<FirstLastNameField> FirstLastNameField::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   std::unique_ptr<FirstLastNameField> field =
       ParseSharedNameLabelSequence(context, scanner);
 
@@ -440,6 +512,10 @@ std::unique_ptr<FirstLastNameField> FirstLastNameField::Parse(
   }
   if (!field) {
     field = ParseSpecificComponentSequence(context, scanner);
+  }
+  if (!field && base::FeatureList::IsEnabled(
+                    features::kAutofillAddressParseSurnameNameSequence)) {
+    field = ParseSurnameNameLabelSequence(context, scanner);
   }
   return field;
 }

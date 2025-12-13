@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -307,10 +308,17 @@ TEST_F(ScaledBorderTest, SolidSidedBorder) {
   ASSERT_EQ(1u, mock->draw_paint_calls().size());
   EXPECT_EQ(kBorderColor, mock->draw_paint_calls().front().getColor());
 
-  gfx::RectF scaled_bounds = gfx::RectF(bounds);
-  scaled_bounds.Scale(ScaledBorderTest::kScaleFactor);
-  EXPECT_EQ(gfx::RectF(ToEnclosedRect(scaled_bounds)),
-            gfx::SkRectToRectF(mock->last_clip_bounds()));
+  if (features::IsPixelCanvasRecordingEnabled()) {
+    // Bounds scaling is done on the compositor side with pixel canvas, so these
+    // bounds should not be manually scaled.
+    EXPECT_EQ(gfx::RectF(ToEnclosedRect(gfx::RectF(bounds))),
+              gfx::SkRectToRectF(mock->last_clip_bounds()));
+  } else {
+    gfx::RectF scaled_bounds = gfx::RectF(bounds);
+    scaled_bounds.Scale(ScaledBorderTest::kScaleFactor);
+    EXPECT_EQ(gfx::RectF(ToEnclosedRect(scaled_bounds)),
+              gfx::SkRectToRectF(mock->last_clip_bounds()));
+  }
 }
 
 TEST_F(BorderTest, BorderPainter) {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/file_util/single_file_tar_xz_file_extractor.h"
 
 #include <stddef.h>
@@ -17,10 +12,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/services/file_util/public/mojom/constants.mojom.h"
 #include "chrome/services/file_util/single_file_tar_reader.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/lzma_sdk/C/7zCrc.h"
 #include "third_party/lzma_sdk/C/Xz.h"
 #include "third_party/lzma_sdk/C/XzCrc64.h"
@@ -50,11 +47,9 @@ class ExtractorInner {
   chrome::file_util::mojom::ExtractionResult Extract() {
     std::vector<uint8_t> xz_buffer(kXzBufferSize);
     while (true) {
-      const int bytes_read = src_file_.ReadAtCurrentPos(
-          reinterpret_cast<char*>(xz_buffer.data()), xz_buffer.size());
-      if (bytes_read < 0)
-        return chrome::file_util::mojom::ExtractionResult::kGenericError;
-      if (bytes_read == 0) {
+      const std::optional<size_t> bytes_read =
+          src_file_.ReadAtCurrentPos(xz_buffer);
+      if (bytes_read.value_or(0) == 0) {
         // After reading the last chunk of file content, it is expected that the
         // ExtractChunk() below populates `result` with kSuccess and the .tar.xz
         // file extraction ends.
@@ -62,11 +57,10 @@ class ExtractorInner {
       }
 
       std::optional<chrome::file_util::mojom::ExtractionResult> result;
-      ExtractChunk(
-          base::span(xz_buffer).first(base::checked_cast<size_t>(bytes_read)),
-          &result);
-      if (result.has_value())
+      ExtractChunk(base::span(xz_buffer).first(*bytes_read), &result);
+      if (result.has_value()) {
         return result.value();
+      }
 
       // TODO(sahok): This value can be 100% when ExtractChunk didn't return
       // kSuccess because only footer is left. This can be confusing and not
@@ -123,8 +117,9 @@ class ExtractorInner {
         (status == CODER_STATUS_FINISHED_WITH_MARK ||
          (status == CODER_STATUS_NEEDS_MORE_INPUT &&
           XzUnpacker_IsStreamWasFinished(&state_)));
-    if (tar_reader_.IsComplete() && xz_extraction_finished)
+    if (tar_reader_.IsComplete() && xz_extraction_finished) {
       *result = chrome::file_util::mojom::ExtractionResult::kSuccess;
+    }
   }
 
   const mojo::Remote<chrome::mojom::SingleFileExtractorListener> listener_;

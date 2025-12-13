@@ -33,33 +33,31 @@
 #include "components/search_engines/util.h"
 #include "components/search_provider_logos/switches.h"
 #include "net/base/url_util.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/search_engines/android/jni_headers/TemplateUrlService_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
-// ANDROID_CHROME_NTP_FAKE_OMNIBOX_ENTRY_POINT = 43;
-const char kAdditionalAepFakeBoxValue[] = "43";
-
 TemplateURLData CreatePlayAPITemplateURLData(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jname,
-    const base::android::JavaParamRef<jstring>& jkeyword,
-    const base::android::JavaParamRef<jstring>& jsearch_url,
-    const base::android::JavaParamRef<jstring>& jsuggest_url,
-    const base::android::JavaParamRef<jstring>& jfavicon_url,
-    const base::android::JavaParamRef<jstring>& jnew_tab_url,
-    const base::android::JavaParamRef<jstring>& jimage_url,
-    const base::android::JavaParamRef<jstring>& jimage_url_post_params,
-    const base::android::JavaParamRef<jstring>& jimage_translate_url,
-    const base::android::JavaParamRef<jstring>&
+    const base::android::JavaRef<jstring>& jname,
+    const base::android::JavaRef<jstring>& jkeyword,
+    const base::android::JavaRef<jstring>& jsearch_url,
+    const base::android::JavaRef<jstring>& jsuggest_url,
+    const base::android::JavaRef<jstring>& jfavicon_url,
+    const base::android::JavaRef<jstring>& jnew_tab_url,
+    const base::android::JavaRef<jstring>& jimage_url,
+    const base::android::JavaRef<jstring>& jimage_url_post_params,
+    const base::android::JavaRef<jstring>& jimage_translate_url,
+    const base::android::JavaRef<jstring>&
         jimage_translate_source_language_param_key,
-    const base::android::JavaParamRef<jstring>&
+    const base::android::JavaRef<jstring>&
         jimage_translate_target_language_param_key) {
   std::u16string keyword =
       base::android::ConvertJavaStringToUTF16(env, jkeyword);
@@ -147,7 +145,7 @@ void TemplateUrlServiceAndroid::Load(JNIEnv* env) {
 
 void TemplateUrlServiceAndroid::SetUserSelectedDefaultSearchProvider(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jkeyword,
+    const JavaRef<jstring>& jkeyword,
     jint choice_made_location) {
   std::u16string keyword(
       base::android::ConvertJavaStringToUTF16(env, jkeyword));
@@ -209,7 +207,7 @@ jboolean TemplateUrlServiceAndroid::IsDefaultSearchEngineGoogle(JNIEnv* env) {
 jboolean
 TemplateUrlServiceAndroid::IsSearchResultsPageFromDefaultSearchProvider(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jurl) {
+    const base::android::JavaRef<jobject>& jurl) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
   return template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
       url);
@@ -241,8 +239,8 @@ void TemplateUrlServiceAndroid::OnTemplateURLServiceChanged() {
 base::android::ScopedJavaLocalRef<jstring>
 TemplateUrlServiceAndroid::GetUrlForSearchQuery(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jquery,
-    const JavaParamRef<jobjectArray>& jsearch_params) {
+    const JavaRef<jstring>& jquery,
+    const JavaRef<jobjectArray>& jsearch_params) {
   const TemplateURL* default_provider =
       template_url_service_->GetDefaultSearchProvider();
 
@@ -270,9 +268,8 @@ TemplateUrlServiceAndroid::GetUrlForSearchQuery(
 }
 
 base::android::ScopedJavaLocalRef<jstring>
-TemplateUrlServiceAndroid::GetSearchQueryForUrl(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jurl) {
+TemplateUrlServiceAndroid::GetSearchQueryForUrl(JNIEnv* env,
+                                                const JavaRef<jobject>& jurl) {
   const TemplateURL* default_provider =
       template_url_service_->GetDefaultSearchProvider();
 
@@ -295,7 +292,7 @@ TemplateUrlServiceAndroid::GetSearchQueryForUrl(
 base::android::ScopedJavaLocalRef<jobject>
 TemplateUrlServiceAndroid::GetUrlForVoiceSearchQuery(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jquery) {
+    const JavaRef<jstring>& jquery) {
   std::u16string query(base::android::ConvertJavaStringToUTF16(env, jquery));
 
   if (!query.empty()) {
@@ -309,25 +306,25 @@ TemplateUrlServiceAndroid::GetUrlForVoiceSearchQuery(
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-TemplateUrlServiceAndroid::GetComposeplateUrl(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+TemplateUrlServiceAndroid::GetComposeplateUrl(JNIEnv* env,
+                                              const JavaRef<jobject>& obj) {
   if (!IsDefaultSearchEngineGoogle()) {
     return nullptr;
   }
 
   return url::GURLAndroid::FromNativeGURL(
-    env, GetUrlForAim(template_url_service_, kAdditionalAepFakeBoxValue,
-                      /*query_start_time=*/base::Time::Now()));
+      env, GetUrlForAim(template_url_service_,
+                        omnibox::ANDROID_CHROME_NTP_FAKE_OMNIBOX_ENTRY_POINT,
+                        /*query_start_time=*/base::Time::Now()));
 }
 
 base::android::ScopedJavaLocalRef<jobject>
 TemplateUrlServiceAndroid::GetUrlForContextualSearchQuery(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jquery,
-    const JavaParamRef<jstring>& jalternate_term,
+    const JavaRef<jstring>& jquery,
+    const JavaRef<jstring>& jalternate_term,
     jboolean jshould_prefetch,
-    const JavaParamRef<jstring>& jprotocol_version) {
+    const JavaRef<jstring>& jprotocol_version) {
   std::u16string query(base::android::ConvertJavaStringToUTF16(env, jquery));
 
   if (!query.empty()) {
@@ -359,13 +356,13 @@ TemplateUrlServiceAndroid::GetUrlForContextualSearchQuery(
 base::android::ScopedJavaLocalRef<jstring>
 TemplateUrlServiceAndroid::GetSearchEngineUrlFromTemplateUrl(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jkeyword) {
+    const JavaRef<jstring>& jkeyword) {
   std::u16string keyword =
       base::android::ConvertJavaStringToUTF16(env, jkeyword);
   TemplateURL* template_url =
       template_url_service_->GetTemplateURLForKeyword(keyword);
   if (!template_url)
-    return base::android::ScopedJavaLocalRef<jstring>(env, nullptr);
+    return base::android::ScopedJavaLocalRef<jstring>::Adopt(env, nullptr);
   std::string url(template_url->url_ref().ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(u"query"),
       template_url_service_->search_terms_data()));
@@ -374,7 +371,7 @@ TemplateUrlServiceAndroid::GetSearchEngineUrlFromTemplateUrl(
 
 int TemplateUrlServiceAndroid::GetSearchEngineTypeFromTemplateUrl(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jkeyword) {
+    const JavaRef<jstring>& jkeyword) {
   std::u16string keyword =
       base::android::ConvertJavaStringToUTF16(env, jkeyword);
   TemplateURL* template_url =
@@ -388,18 +385,18 @@ int TemplateUrlServiceAndroid::GetSearchEngineTypeFromTemplateUrl(
 
 jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jname,
-    const base::android::JavaParamRef<jstring>& jkeyword,
-    const base::android::JavaParamRef<jstring>& jsearch_url,
-    const base::android::JavaParamRef<jstring>& jsuggest_url,
-    const base::android::JavaParamRef<jstring>& jfavicon_url,
-    const base::android::JavaParamRef<jstring>& jnew_tab_url,
-    const base::android::JavaParamRef<jstring>& jimage_url,
-    const base::android::JavaParamRef<jstring>& jimage_url_post_params,
-    const base::android::JavaParamRef<jstring>& jimage_translate_url,
-    const base::android::JavaParamRef<jstring>&
+    const base::android::JavaRef<jstring>& jname,
+    const base::android::JavaRef<jstring>& jkeyword,
+    const base::android::JavaRef<jstring>& jsearch_url,
+    const base::android::JavaRef<jstring>& jsuggest_url,
+    const base::android::JavaRef<jstring>& jfavicon_url,
+    const base::android::JavaRef<jstring>& jnew_tab_url,
+    const base::android::JavaRef<jstring>& jimage_url,
+    const base::android::JavaRef<jstring>& jimage_url_post_params,
+    const base::android::JavaRef<jstring>& jimage_translate_url,
+    const base::android::JavaRef<jstring>&
         jimage_translate_source_language_param_key,
-    const base::android::JavaParamRef<jstring>&
+    const base::android::JavaRef<jstring>&
         jimage_translate_target_language_param_key) {
   // The function is scheduled to run only when the service is loaded, see
   // `TemplateUrlService#runWhenLoaded()`.
@@ -436,7 +433,7 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
 base::android::ScopedJavaLocalRef<jstring>
 TemplateUrlServiceAndroid::AddSearchEngineForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jkeyword,
+    const base::android::JavaRef<jstring>& jkeyword,
     jint age_in_days) {
   TemplateURLData data;
   std::u16string keyword =
@@ -494,7 +491,7 @@ TemplateUrlServiceAndroid::FilterUserSelectableTemplateUrls(
 
 void TemplateUrlServiceAndroid::GetTemplateUrls(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& template_url_list_obj) {
+    const base::android::JavaRef<jobject>& template_url_list_obj) {
   auto template_urls = FilterUserSelectableTemplateUrls(
       template_url_service_->GetTemplateURLs());
 
@@ -510,7 +507,7 @@ TemplateUrlServiceAndroid::GetDefaultSearchEngine(JNIEnv* env) {
   const TemplateURL* default_search_provider =
       template_url_service_->GetDefaultSearchProvider();
   if (default_search_provider == nullptr) {
-    return base::android::ScopedJavaLocalRef<jobject>(env, nullptr);
+    return base::android::ScopedJavaLocalRef<jobject>::Adopt(env, nullptr);
   }
   return CreateTemplateUrlAndroid(env, default_search_provider);
 }
@@ -530,3 +527,5 @@ TemplateUrlServiceAndroid::GetImageUrlAndPostContent(JNIEnv* env) {
   output.push_back(post_content.first);
   return base::android::ToJavaArrayOfStrings(env, output);
 }
+
+DEFINE_JNI(TemplateUrlService)

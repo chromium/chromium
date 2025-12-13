@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -23,6 +24,7 @@
 #include "extensions/browser/api/messaging/native_message_port.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
+#include "extensions/common/api/messaging/messaging_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "url/gurl.h"
@@ -104,9 +106,14 @@ void VmSKForwardingNativeMessageHost::DeliverMessageToExtensionByID(
     const std::string& extension_id,
     const std::string& json_message,
     base::OnceCallback<void(const std::string& response)> response_callback) {
+  auto* extension =
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          extension_id);
   const extensions::PortId port_id(
-      base::UnguessableToken::Create(), 1 /* port_number */,
-      true /* is_opener */, extensions::mojom::SerializationFormat::kJson);
+      base::UnguessableToken::Create(), /*port_number=*/1,
+      /*is_opener=*/true,
+      extensions::messaging_util::GetSerializationFormat(
+          extension, extensions::mojom::ChannelType::kNative));
 
   extensions::MessageService* const message_service =
       extensions::MessageService::Get(profile);
@@ -140,7 +147,7 @@ void VmSKForwardingNativeMessageHost::DeliverMessageToSKForwardingExtension(
     if (extensions::ExtensionRegistry::Get(profile)
             ->enabled_extensions()
             .GetExtensionOrAppByURL(url)) {
-      DeliverMessageToExtensionByID(profile, url.host(), json_message,
+      DeliverMessageToExtensionByID(profile, url.GetHost(), json_message,
                                     std::move(response_callback));
       return;
     }

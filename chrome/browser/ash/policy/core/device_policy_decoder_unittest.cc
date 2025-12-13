@@ -1021,4 +1021,57 @@ TEST_F(DevicePolicyDecoderTest,
       device_policy, key::kDeviceBluetoothJustWorksPairingEnabled,
       std::move(device_bluetooth_just_works_pairing_enabled_value));
 }
+
+TEST_F(DevicePolicyDecoderTest, DeviceLoginScreenSecurityKeyPermitAttestation) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenSecurityKeyPermitAttestation);
+
+  em::StringList* list =
+      device_policy.mutable_deviceloginscreensecuritykeypermitattestation()
+          ->mutable_value();
+
+  auto list_items = base::Value::List().Append("example.com").Append("foo.com");
+
+  for (auto& item : list_items) {
+    list->add_entries(item.GetString());
+  }
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenSecurityKeyPermitAttestation,
+      base::Value(std::move(list_items)));
+}
+
+TEST_F(DevicePolicyDecoderTest,
+       DecodeDeviceLoginScreenPreferSlowKexAlgorithms) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenPreferSlowKexAlgorithms);
+
+  base::Value deviceloginscreenpreferslowkexalgorithms("cnsa2");
+  device_policy.mutable_deviceloginscreenpreferslowkexalgorithms()->set_value(
+      deviceloginscreenpreferslowkexalgorithms.GetString());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenPreferSlowKexAlgorithms,
+      std::move(deviceloginscreenpreferslowkexalgorithms));
+}
+
+TEST_F(DevicePolicyDecoderTest, DecodeDeviceLoginScreenPreferSlowCiphers) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceLoginScreenPreferSlowCiphers);
+
+  base::Value deviceloginscreenpreferslowciphers("cnsa");
+  device_policy.mutable_deviceloginscreenpreferslowciphers()->set_value(
+      deviceloginscreenpreferslowciphers.GetString());
+
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDeviceLoginScreenPreferSlowCiphers,
+                               std::move(deviceloginscreenpreferslowciphers));
+}
+
 }  // namespace policy

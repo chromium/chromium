@@ -18,6 +18,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -41,6 +42,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {

@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -58,7 +59,8 @@ const sync_pb::PreferenceSpecifics& GetSpecifics(const syncer::SyncData& pref) {
 std::optional<base::Value> ReadPreferenceSpecifics(
     const sync_pb::PreferenceSpecifics& preference) {
   base::JSONReader::Result parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(preference.value());
+      base::JSONReader::ReadAndReturnValueWithError(
+          preference.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     LOG(ERROR) << "Failed to deserialize preference value: "
                << parsed_json.error().message;
@@ -146,7 +148,8 @@ void PrefModelAssociator::InitPrefAndAssociate(
     CHECK_EQ(pref_name, preference.name());
     ASSIGN_OR_RETURN(
         base::Value sync_value,
-        base::JSONReader::ReadAndReturnValueWithError(preference.value()),
+        base::JSONReader::ReadAndReturnValueWithError(
+            preference.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS),
         [&](base::JSONReader::Error error) {
           LOG(ERROR) << "Failed to deserialize value of preference '"
                      << pref_name << "': " << std::move(error).message;
@@ -502,10 +505,14 @@ void PrefModelAssociator::OnPrefValueChanged(std::string_view name) {
   if (client_ &&
       // Only log if there's actually something to sync.
       !changes.empty()) {
-    base::UmaHistogramSparse("Sync.SyncablePrefValueChanged",
-                             client_->GetSyncablePrefsDatabase()
-                                 .GetSyncablePrefMetadata(name)
-                                 ->syncable_pref_id());
+    std::optional<SyncablePrefMetadata> pref_metadata =
+        client_->GetSyncablePrefsDatabase().GetSyncablePrefMetadata(name);
+    int id = pref_metadata->syncable_pref_id();
+    base::UmaHistogramSparse("Sync.SyncablePrefValueChanged", id);
+    base::UmaHistogramSparse(
+        base::StrCat({"Sync.SyncablePrefValueChanged.",
+                      syncer::DataTypeToHistogramSuffix(type_)}),
+        id);
   }
 
   sync_processor_->ProcessSyncChanges(FROM_HERE, changes);

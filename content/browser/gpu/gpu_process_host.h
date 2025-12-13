@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -54,8 +53,13 @@ class BrowserChildProcessBackgroundedBridge;
 class CATransactionGPUCoordinator;
 #endif
 
-class GpuProcessHost : public BrowserChildProcessHostDelegate,
-                       public viz::GpuHostImpl::Delegate {
+class GpuProcessHost final : public BrowserChildProcessHostDelegate,
+                             public viz::GpuHostImpl::Delegate
+#if !BUILDFLAG(IS_ANDROID)
+    ,
+                             public base::MemoryPressureListener
+#endif
+{
  public:
   static int GetGpuCrashCount();
 
@@ -213,9 +217,8 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
   void RunServiceImpl(mojo::GenericPendingReceiver receiver);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Memory pressure handler, called by |memory_pressure_listener_|.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  // base::MemoryPressureListener:
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 #endif
 
   // The serial number of the GpuProcessHost.
@@ -237,6 +240,9 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
 
   // Whether we actually launched a GPU process.
   bool process_launched_;
+
+  // When the process was successfully launched.
+  base::TimeTicks process_start_time_;
 
   GpuTerminationOrigin termination_origin_ =
       GpuTerminationOrigin::kUnknownOrigin;
@@ -279,7 +285,8 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
 #if !BUILDFLAG(IS_ANDROID)
   // Responsible for forwarding the memory pressure notifications from the
   // browser process to the GPU process.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 #endif
 
   std::unique_ptr<viz::GpuHostImpl> gpu_host_;

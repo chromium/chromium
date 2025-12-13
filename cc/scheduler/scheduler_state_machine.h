@@ -117,6 +117,11 @@ class CC_EXPORT SchedulerStateMachine {
       ForcedRedrawOnTimeoutStateToProtozeroEnum(
           ForcedRedrawOnTimeoutState state);
 
+  // Public for testing.
+  // Semi-arbitrary delay, chosen to be similar to Android's platform behavior.
+  static constexpr base::TimeDelta kUrgentBoostDuration =
+      base::Milliseconds(1500);
+
   BeginMainFrameState begin_main_frame_state() const {
     return begin_main_frame_state_;
   }
@@ -392,6 +397,9 @@ class CC_EXPORT SchedulerStateMachine {
 
   void SetShouldThrottleFrameRate(bool flag);
 
+  // Virtual for testing.
+  virtual base::TimeTicks Now() const;
+
  protected:
   bool BeginFrameRequiredForAction() const;
   bool BeginFrameNeededForVideo() const;
@@ -460,6 +468,7 @@ class CC_EXPORT SchedulerStateMachine {
   base::TimeTicks last_sent_begin_main_frame_time_;
   base::TimeDelta main_frame_throttled_interval_;
   base::TimeDelta unthrottled_frame_interval_;
+  base::TimeTicks last_urgent_main_frame_request_;
 
   // Inputs from the last impl frame that are required for decisions made in
   // this impl frame. The values from the last frame are cached before being

@@ -9,25 +9,28 @@ source_set("searchbox") {
     "lens_searchbox_client.h",
     "lens_searchbox_handler.cc",
     "lens_searchbox_handler.h",
+    "omnibox_composebox_handler.cc",
+    "omnibox_composebox_handler.h",
     "realbox_handler.cc",
     "realbox_handler.h",
-    "searchbox_handler.cc",
-    "searchbox_handler.h",
+    "webui_omnibox_handler.cc",
+    "webui_omnibox_handler.h",
   ]
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui/webui/new_tab_page/composebox",
+    "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+    "//chrome/browser/ui/webui/top_chrome",
     "//components/lens/proto/server:proto",
     "//components/omnibox/browser",
     "//components/omnibox/browser:mojo_bindings",
+    "//components/omnibox/composebox:mojo_bindings",
     "//components/sessions:session_id",
     "//components/url_formatter",
     "//mojo/public/cpp/bindings",
     "//third_party/metrics_proto",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//ui/webui/resources/cr_components/searchbox:mojo_bindings",
     "//url",
   ]
   deps = [
@@ -35,17 +38,33 @@ source_set("searchbox") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/autocomplete",
+    "//chrome/browser/contextual_search",
     "//chrome/browser/omnibox",
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/new_tab_page:resources",
     "//chrome/browser/resources/new_tab_page:resources_grit",
+    "//chrome/browser/safe_browsing",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/search",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/cr_components/composebox",
+    "//chrome/browser/ui/webui/cr_components/searchbox",
+    "//chrome/browser/ui/webui/metrics_reporter",
+    "//chrome/browser/ui/webui/omnibox_popup/mojom",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//components/application_locale_storage",
     "//components/bookmarks/browser",
+    "//components/contextual_search:public",
+    "//components/lens",
+    "//components/lens/proto/server:proto",
     "//components/navigation_metrics",
     "//components/omnibox/browser",
     "//components/omnibox/browser:location_bar",
@@ -59,10 +78,58 @@ source_set("searchbox") {
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
     "//components/variations",
+    "//components/variations/service",
     "//components/vector_icons",
     "//content/public/browser",
     "//net",
     "//third_party/omnibox_proto",
     "//ui/base",
+    "//ui/webui/resources/cr_components/composebox:mojo_bindings",
+  ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/contextual_tasks" ]
+  }
+}
+
+source_set("searchbox_test_utils") {
+  testonly = true
+  sources = [
+    "searchbox_test_utils.cc",
+    "searchbox_test_utils.h",
+  ]
+  public_deps = [
+    ":searchbox",
+    "//base",
+    "//chrome/browser/ui/omnibox:test_support",
+    "//chrome/browser/ui/webui/cr_components/searchbox",
+    "//components/lens",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  deps = [
+    "//chrome/browser/ui/omnibox",
+    "//components/omnibox/browser:vector_icons",
+    "//components/search",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "contextual_searchbox_handler_browsertest.cc" ]
+  deps = [
+    ":searchbox",
+    ":searchbox_test_utils",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/webui/cr_components/searchbox",
+    "//chrome/test:test_support_ui",
+    "//components/lens",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//ui/display",
   ]
 }

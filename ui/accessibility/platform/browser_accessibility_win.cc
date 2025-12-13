@@ -36,7 +36,8 @@ BrowserAccessibilityWin::BrowserAccessibilityWin(
 BrowserAccessibilityWin::~BrowserAccessibilityWin() = default;
 
 void BrowserAccessibilityWin::UpdatePlatformAttributes() {
-  GetCOM()->UpdateStep1ComputeWinAttributes();
+  BrowserAccessibilityComWin::UpdateState update_state;
+  GetCOM()->UpdateStep1ComputeWinAttributes(&update_state);
   GetCOM()->UpdateStep2ComputeHypertext();
   GetCOM()->UpdateStep3FireEvents();
 }

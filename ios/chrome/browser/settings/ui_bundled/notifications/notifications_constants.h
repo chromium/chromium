@@ -13,6 +13,15 @@ extern NSString* const kSettingsNotificationsPriceTrackingCellId;
 // The accessibility identifier of the Notifications Content cell.
 extern NSString* const kSettingsNotificationsContentCellId;
 
+// The accessibility identifier of the Tips cell.
+extern NSString* const kSettingsNotificationsTipsCellId;
+
+// The accessibility identifier of the Safety Check cell.
+extern NSString* const kSettingsNotificationsSafetyCheckCellId;
+
+// The accessibility identifier of the Send Tab cell.
+extern NSString* const kSettingsNotificationsSendTabCellId;
+
 // The reference to the newspaper SF Symbol from the default SF Symbol library.
 // (SF Symbols are Apple's system symbols that can be used as text or logos).
 extern NSString* const kNewspaperSFSymbol;

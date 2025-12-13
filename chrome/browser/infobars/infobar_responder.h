@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_INFOBARS_INFOBAR_RESPONDER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 
 namespace infobars {
@@ -41,7 +42,11 @@ class InfoBarResponder : public infobars::InfoBarManager::Observer {
  private:
   void Respond(ConfirmInfoBarDelegate* delegate);
 
-  raw_ptr<infobars::ContentInfoBarManager> infobar_manager_;
+  // Scoped observer that facilitates observing an InfoBarManager.
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      infobar_scoped_observation_{this};
+
   AutoResponseType response_;
 };
 

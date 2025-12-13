@@ -5,6 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_EVERYTHING_MENU_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_EVERYTHING_MENU_H_
 
+#include <map>
+#include <memory>
+#include <optional>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/browser.h"
@@ -31,8 +36,12 @@ class STGEverythingMenu : public views::MenuDelegate,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateNewTabGroup);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabGroup);
 
+  // Enumrates the different ways the everything menu can be shown.
+  enum class MenuContext { kAppMenu, kSavedTabGroupBar, kVerticalTabStrip };
+
   STGEverythingMenu(views::MenuButtonController* menu_button_controller,
-                    Browser* browser);
+                    Browser* browser,
+                    MenuContext menu_context);
 
   STGEverythingMenu(const STGEverythingMenu&) = delete;
   STGEverythingMenu& operator=(const STGEverythingMenu&) = delete;
@@ -56,7 +65,9 @@ class STGEverythingMenu : public views::MenuDelegate,
 
   bool IsShowing() { return menu_runner_ && menu_runner_->IsRunning(); }
 
-  void SetShowSubmenu(bool show_submenu) { show_submenu_ = show_submenu; }
+  // Whether or not a saved tab group item in the Everything menu should have
+  // submenu. True for 3-dot menu.
+  bool ShouldShowSubmenu();
 
   // override views::MenuDelegate:
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -65,6 +76,7 @@ class STGEverythingMenu : public views::MenuDelegate,
                        const gfx::Point& p,
                        ui::mojom::MenuSourceType source_type) override;
   bool GetAccelerator(int id, ui::Accelerator* accelerator) const override;
+  void WillShowMenu(views::MenuItemView* menu) override;
 
  private:
   class AppMenuSubMenuModelDelegate;
@@ -73,11 +85,6 @@ class STGEverythingMenu : public views::MenuDelegate,
   base::Uuid GetTabGroupIdFromCommandId(int command_id);
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel(
       TabGroupSyncService* tab_group_service);
-
-  // Returns sorted saved tab groups with the most recently created as the
-  // first, filtering out empty groups.
-  std::vector<base::Uuid> GetGroupsForDisplaySortedByCreationTime(
-      TabGroupSyncService* wrapper_service);
 
   // Because all the menu items (i.e. tab group items in the Everything menu -
   // primary menu and their submenus - secondary menu) need to be recognized and
@@ -112,11 +119,7 @@ class STGEverythingMenu : public views::MenuDelegate,
   std::vector<base::Uuid> sorted_non_empty_tab_groups_;
 
   // Owned by the Everything button.
-  raw_ptr<views::MenuButtonController> menu_button_controller_;
-
-  // Whether or not a saved tab group item in the Everything menu should have
-  // submenu. True for 3-dot menu.
-  bool show_submenu_ = false;
+  raw_ptr<views::MenuButtonController> const menu_button_controller_;
 
   // The command id that gets updated and assigned to tab groups and their
   // submenu items.
@@ -130,8 +133,10 @@ class STGEverythingMenu : public views::MenuDelegate,
   std::unique_ptr<AppMenuSubMenuModelDelegate> submenu_delegate_;
   std::optional<base::Uuid> latest_group_id_;
 
-  raw_ptr<Browser> browser_;
-  raw_ptr<views::Widget> widget_;
+  raw_ptr<Browser> const browser_;
+  raw_ptr<views::Widget> const widget_;
+
+  MenuContext menu_context_;
 };
 
 }  // namespace tab_groups

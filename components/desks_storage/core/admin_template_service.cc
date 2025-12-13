@@ -5,7 +5,6 @@
 #include "components/desks_storage/core/admin_template_service.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"

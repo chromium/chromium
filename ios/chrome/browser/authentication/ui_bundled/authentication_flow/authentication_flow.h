@@ -30,8 +30,8 @@ class Browser;
 @property(nonatomic, weak) id<AuthenticationFlowDelegate> delegate;
 
 // Designated initializer.
-// * `browser` is the current browser where the authentication flow is being
-//   presented.
+// * `browser` is the current regular browser where the authentication flow is
+// being presented.
 // * `accessPoint` is the sign-in access point.
 // * `precedingHistorySync` specifies whether the History Sync Opt-In screen
 //   follows after the flow completes with success.

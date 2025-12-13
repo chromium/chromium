@@ -18,7 +18,7 @@
 namespace mojo {
 namespace android {
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace {
 
@@ -35,7 +35,7 @@ class WatcherImpl {
   ~WatcherImpl() = default;
 
   jint Start(JNIEnv* env,
-             const JavaParamRef<jobject>& obj,
+             const JavaRef<jobject>& obj,
              jlong mojo_handle,
              jint signals) {
     java_watcher_.Reset(env, obj);
@@ -82,7 +82,7 @@ static jlong JNI_WatcherImpl_CreateWatcher(JNIEnv* env) {
 }
 
 static jint JNI_WatcherImpl_Start(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj,
+                                  const JavaRef<jobject>& obj,
                                   jlong watcher_ptr,
                                   jlong mojo_handle,
                                   jint signals) {
@@ -102,3 +102,5 @@ static void JNI_WatcherImpl_Delete(JNIEnv* env,
 
 }  // namespace android
 }  // namespace mojo
+
+DEFINE_JNI(WatcherImpl)

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/browser/web_test_browser_main_platform_support.h"
 
 #include <windows.h>
@@ -19,7 +14,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -64,13 +58,15 @@ bool WebTestBrowserCheckLayoutSystemDeps() {
   bool success = !!::SystemParametersInfo(SPI_GETNONCLIENTMETRICS,
                                           metrics.cbSize, &metrics, 0);
   PCHECK(success);
-  LOGFONTW* system_fonts[] = {&metrics.lfStatusFont, &metrics.lfMenuFont,
-                              &metrics.lfSmCaptionFont};
-  const wchar_t required_font[] = L"Segoe UI";
+  const std::wstring_view required_font = L"Segoe UI";
   int required_font_size = -12;
-  for (size_t i = 0; i < std::size(system_fonts); ++i) {
-    if (system_fonts[i]->lfHeight != required_font_size ||
-        wcscmp(required_font, system_fonts[i]->lfFaceName)) {
+  for (const LOGFONTW* font : {
+           &metrics.lfStatusFont,
+           &metrics.lfMenuFont,
+           &metrics.lfSmCaptionFont,
+       }) {
+    if (font->lfHeight != required_font_size ||
+        font->lfFaceName != required_font) {
       errors.push_back(
           "Must use either the Aero or Basic theme. Or change display language "
           "to English.");

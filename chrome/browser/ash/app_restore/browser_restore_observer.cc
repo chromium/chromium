@@ -121,7 +121,6 @@ void BrowserRestoreObserver::OnBrowserAdded(Browser* browser) {
   // browser, skip opening the same browser.
   if (browser->creation_source() ==
       Browser::CreationSource::kLastAndUrlsStartupPref) {
-    CHECK(on_session_restored_callback_subscription_);
     on_session_restored_callback_subscription_ = {};
   }
 }
@@ -160,7 +159,7 @@ void BrowserRestoreObserver::RestoreUrls(Browser* browser) {
     // asking us to open such a URL should really ask the handler directly.
     bool handled_by_chrome =
         ProfileIOData::IsHandledURL(url) ||
-        (registry && registry->IsHandledProtocol(url.scheme()));
+        (registry && registry->IsHandledProtocol(url.GetScheme()));
     if (!handled_by_chrome) {
       continue;
     }

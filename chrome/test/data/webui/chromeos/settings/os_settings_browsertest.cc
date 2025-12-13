@@ -133,12 +133,6 @@ class OSSettingsMochaTestMouseKeysEnabled : public OSSettingsMochaTest {
       ::features::kAccessibilityMouseKeys};
 };
 
-class OSSettingsMochaTestFaceGazeEnabled : public OSSettingsMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kAccessibilityFaceGaze};
-};
-
 class OSSettingsMochaTestGraduationEnabled : public OSSettingsMochaTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kGraduation};
@@ -365,10 +359,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, SettingsToggleV2) {
 
 IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTest, CrostiniPageBruschettaSubpage) {
   RunSettingsTest("crostini_page/bruschetta_subpage_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTest, CrostiniPageCrostiniArcAdb) {
-  RunSettingsTest("crostini_page/crostini_arc_adb_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTest,
@@ -694,7 +684,15 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageNetworkSummary) {
   RunSettingsTest("internet_page/network_summary_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageNetworkSummaryItem) {
+// TODO(crbug.com/452098595): Test is flaky on linux-chromeos-dbg.
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_InternetPageNetworkSummaryItem \
+  DISABLED_InternetPageNetworkSummaryItem
+#else
+#define MAYBE_InternetPageNetworkSummaryItem InternetPageNetworkSummaryItem
+#endif
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       MAYBE_InternetPageNetworkSummaryItem) {
   RunSettingsTest("internet_page/network_summary_item_test.js");
 }
 
@@ -878,22 +876,19 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMouseKeysEnabled,
   RunSettingsTest("os_a11y_page/mouse_keys_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestFaceGazeEnabled,
-                       OsA11yPageFaceGazeSubpage) {
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageFaceGazeSubpage) {
   RunSettingsTest("os_a11y_page/facegaze_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestFaceGazeEnabled,
-                       OsA11yPageFaceGazeCursorCard) {
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageFaceGazeCursorCard) {
   RunSettingsTest("os_a11y_page/facegaze_cursor_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestFaceGazeEnabled,
-                       OsA11yPageFaceGazeActionsCard) {
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageFaceGazeActionsCard) {
   RunSettingsTest("os_a11y_page/facegaze_actions_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestFaceGazeEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsA11yPageFaceGazeActionsAddDialog) {
   RunSettingsTest("os_a11y_page/facegaze_actions_add_dialog_test.js");
 }
@@ -1407,11 +1402,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsResetTestSanitizeEnabled,
 IN_PROC_BROWSER_TEST_F(OSSettingsResetTestSanitizeDisabled,
                        OsResetPageResetSettingsCardWithoutSanitize) {
   RunSettingsTest("os_reset_page/reset_settings_card_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
-                       OsSearchPageGoogleAssistantSubpage) {
-  RunSettingsTest("os_search_page/google_assistant_subpage_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSearchPageSearchEngine) {

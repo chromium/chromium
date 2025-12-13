@@ -34,6 +34,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -82,10 +83,40 @@ class CORE_EXPORT DocumentAnimations final
   // reattached if needed.
   void DetachCompositorTimelines();
 
+  // Detach animation triggers on the compositor.
+  void DetachCompositorTriggers();
+
   const HeapHashSet<WeakMember<AnimationTimeline>>& GetTimelinesForTesting()
       const {
     return timelines_;
   }
+
+  static void UpdateTriggerAttachment(
+      CSSAnimation& animation,
+      base::FunctionRef<void(AnimationTrigger& trigger,
+                             const StyleTriggerAttachment& attachment)>
+          function);
+
+  void AddAnimationTrigger(AnimationTrigger& trigger);
+
+  // This attaches CSS Animations to AnimationTriggers declared by
+  // trigger-instantiating properties like timeline-trigger or event-trigger.
+  // It matches the CSS Animations to the AnimationTriggers by matching the
+  // names declared in the trigger-instantiating property with the names
+  // declared in the animation-trigger property.
+  void UpdateAnimationTriggerAttachments();
+  // These two functions serve the same purpose as
+  // UpdateAnimationTriggerAttachments above but restricts the updates to
+  // animations with animation-trigger declarations, which is more efficient.
+  // They are only used behind a flag while the renderer hang in
+  // crbug.com/447174988 is investigated.
+  // TODO(crbug.com/447174988): Remove UpdateAnimationTriggerAttachments when
+  // the bug is resolved.
+  void ExecutePendingTriggerAttachmentUpdates();
+  void AddPendingTriggerAttachmentUpdate(CSSAnimation* animation);
+  void RemovePendingTriggerAttachmentUpdate(CSSAnimation* animation);
+
+  void UpdateCompositorAnimationTriggers();
 
   uint64_t current_transition_generation_;
   void Trace(Visitor*) const;
@@ -101,6 +132,10 @@ class CORE_EXPORT DocumentAnimations final
 
   Member<Document> document_;
   HeapHashSet<WeakMember<AnimationTimeline>> timelines_;
+  HeapHashSet<WeakMember<AnimationTrigger>> triggers_;
+  // Animations which should be attached to triggers after style and layout
+  // updates.
+  HeapHashSet<WeakMember<CSSAnimation>> pending_trigger_attachment_updates_;
 };
 
 }  // namespace blink

@@ -244,7 +244,8 @@ INSTANTIATE_TEST_SUITE_P(
                     FocusEnumValue::kNoFocusChange));
 
 // TODO(crbug.com/40913269): Flaky on a TSan bot.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER))
 #define MAYBE_CapturedTabNotFocusedIfExplicitlyCallingNoFocus \
   DISABLED_CapturedTabNotFocusedIfExplicitlyCallingNoFocus
 #else
@@ -263,8 +264,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
-// TODO(crbug.com/40913269): Flaky on a TSan bot.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+// TODO(crbug.com/40913269): Flaky on a TSan and MSan bot.
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER))
 #define MAYBE_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus \
   DISABLED_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus
 #else
@@ -333,8 +335,10 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest, FocusBeforeCapture) {
   EXPECT_TRUE(WaitForFocusSwitchToCapturedTab());
 }
 
-// TODO(crbug.com/40913269): Flaky on a TSan and mac bots.
-#if (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40913269): Flaky on TSan, MSan, and mac bots.
+#if (BUILDFLAG(IS_LINUX) &&                                       \
+     (defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER))) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_NoFocusBeforeCapture DISABLED_NoFocusBeforeCapture
 #else
 #define MAYBE_NoFocusBeforeCapture NoFocusBeforeCapture
@@ -352,8 +356,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
-// TODO(crbug.com/40913269): Flaky on a TSan bot.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+// TODO(crbug.com/40913269): Flaky on TSan and MSan bots.
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER))
 #define MAYBE_NoFocusAfterCaptureOverrideFocusBeforeCapture \
   DISABLED_NoFocusAfterCaptureOverrideFocusBeforeCapture
 #else

@@ -1,0 +1,32 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "data_controls.rules",
+      "default_value": [],
+      "values_to_test": [
+        [
+          {
+            "description": "testing rule",
+            "name": "rule name",
+            "restrictions": [
+              {
+                "class": "CLIPBOARD",
+                "level": "BLOCK"
+              }
+            ],
+            "rule_id": "rule001",
+            "sources": {
+              "urls": [
+                "salesforce.com",
+                "gmail.com"
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  }
+]

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import <memory>
+#import <optional>
+#import <string>
 
 #import "base/run_loop.h"
 #import "base/test/bind.h"
@@ -45,13 +47,12 @@ TEST_F(URLLoaderTest, Basic) {
   base::RunLoop run_loop;
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       GetBrowserState()->GetURLLoaderFactory(),
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<std::string> response_body) {
-            if (response_body) {
-              result = *response_body;
-            }
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](std::optional<std::string> response_body) {
+        if (response_body) {
+          result = std::move(response_body).value();
+        }
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   EXPECT_EQ(0, loader->NetError());

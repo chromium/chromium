@@ -8,37 +8,25 @@
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
-using ModelExecutionError = optimization_guide::
-    OptimizationGuideModelExecutionError::ModelExecutionError;
+using optimization_guide::OnDeviceError;
 
-blink::mojom::ModelStreamingResponseStatus AIUtils::ConvertModelExecutionError(
-    ModelExecutionError error) {
+blink::mojom::ModelStreamingResponseStatus AIUtils::ConvertOnDeviceError(
+    OnDeviceError error) {
   switch (error) {
-    case ModelExecutionError::kUnknown:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorUnknown;
-    case ModelExecutionError::kInvalidRequest:
+    case OnDeviceError::kInvalidRequest:
       return blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest;
-    case ModelExecutionError::kRequestThrottled:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorRequestThrottled;
-    case ModelExecutionError::kPermissionDenied:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied;
-    case ModelExecutionError::kGenericFailure:
+    case OnDeviceError::kGenericFailure:
       return blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure;
-    case ModelExecutionError::kRetryableError:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorRetryableError;
-    case ModelExecutionError::kNonRetryableError:
-      return blink::mojom::ModelStreamingResponseStatus::
-          kErrorNonRetryableError;
-    case ModelExecutionError::kUnsupportedLanguage:
+    case OnDeviceError::kUnsupportedLanguage:
       return blink::mojom::ModelStreamingResponseStatus::
           kErrorUnsupportedLanguage;
-    case ModelExecutionError::kFiltered:
+    case OnDeviceError::kFiltered:
       return blink::mojom::ModelStreamingResponseStatus::kErrorFiltered;
-    case ModelExecutionError::kDisabled:
+    case OnDeviceError::kDisabled:
       return blink::mojom::ModelStreamingResponseStatus::kErrorDisabled;
-    case ModelExecutionError::kCancelled:
+    case OnDeviceError::kCancelled:
       return blink::mojom::ModelStreamingResponseStatus::kErrorCancelled;
-    case ModelExecutionError::kResponseLowQuality:
+    case OnDeviceError::kResponseLowQuality:
       return blink::mojom::ModelStreamingResponseStatus::
           kErrorResponseLowQuality;
   }
@@ -47,6 +35,14 @@ blink::mojom::ModelStreamingResponseStatus AIUtils::ConvertModelExecutionError(
 // static
 int64_t AIUtils::NormalizeModelDownloadProgress(int64_t bytes_so_far,
                                                 int64_t total_bytes) {
+  // If `bytes_so_far` is zero, we should have downloaded zero bytes
+  // out of zero meaning we're at 100%. So set it to
+  // `kNormalizedDownloadProgressMax` to avoid dividing by zero.
+  if (total_bytes == 0) {
+    CHECK_EQ(bytes_so_far, 0);
+    return AIUtils::kNormalizedDownloadProgressMax;
+  }
+
   double raw_progress_fraction =
       bytes_so_far / static_cast<double>(total_bytes);
 

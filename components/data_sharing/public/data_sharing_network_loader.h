@@ -74,18 +74,7 @@ class DataSharingNetworkLoader {
   // Called to fetch data from the network. Callback will be invoked once the
   // fetch completes. If an error occurs, a nullptr will be passed to the
   // callback.
-  // TODO(ssid): Deprecate this function, use the one with `request_type`.
   virtual void LoadUrl(const GURL& gurl,
-                       const std::vector<std::string>& scopes,
-                       const std::string& post_data,
-                       const net::NetworkTrafficAnnotationTag& annotation_tag,
-                       NetworkLoaderCallback callback) = 0;
-
-  // Called to fetch data from the network. Callback will be invoked once the
-  // fetch completes. If an error occurs, a nullptr will be passed to the
-  // callback.
-  virtual void LoadUrl(const GURL& gurl,
-                       const std::vector<std::string>& scopes,
                        const std::string& post_data,
                        DataSharingRequestType requestType,
                        NetworkLoaderCallback callback) = 0;

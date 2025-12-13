@@ -2,6 +2,7 @@ Name: JNI Zero
 Short Name: jni_zero
 URL: This is the canonical repository
 Version: N/A
+Update Mechanism: Static (crbug.com/422059065)
 License: BSD-3-Clause
 License File: LICENSE
 Security Critical: yes

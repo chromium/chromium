@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
+#include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -20,7 +21,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
-class FrameTokenMessageQueue;
 
 // Observes RenderFrameMetadata associated with the submission of a frame for a
 // given RenderWidgetHost. The renderer will notify this when sumitting a
@@ -36,7 +36,7 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
  public:
   RenderFrameMetadataProviderImpl(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      FrameTokenMessageQueue* frame_token_message_queue);
+      FrameTokenMessageQueue::Client* client);
 
   RenderFrameMetadataProviderImpl(const RenderFrameMetadataProviderImpl&) =
       delete;
@@ -71,6 +71,11 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   // purpose.
   void SetLastRenderFrameMetadataForTest(cc::RenderFrameMetadata metadata);
 
+  void DidProcessFrame(uint32_t frame_token, base::TimeTicks activation_time);
+  void ResetFrameTokenMessageQueue();
+
+  base::WeakPtr<RenderFrameMetadataProviderImpl> GetWeakPtr();
+
  private:
   friend class FakeRenderWidgetHostViewAura;
   friend class DelegatedInkPointTest;
@@ -103,8 +108,7 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  // Not owned.
-  const raw_ptr<FrameTokenMessageQueue> frame_token_message_queue_;
+  FrameTokenMessageQueue frame_token_message_queue_;
 
   mojo::Receiver<cc::mojom::RenderFrameMetadataObserverClient>
       render_frame_metadata_observer_client_receiver_{this};

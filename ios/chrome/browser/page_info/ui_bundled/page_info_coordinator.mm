@@ -116,11 +116,9 @@
 
   const bool isIncognito = self.profile->IsOffTheRecord();
 
-  // Create the PageInfoHistoryMediator only if kPageInfoLastVisitedIOS is
-  // enabled, the browser is not in incognito mode and the page is neither
-  // offline nor a chrome page.
-  if (IsPageInfoLastVisitedIOSEnabled() && !isIncognito &&
-      !_siteSecurityDescription.isEmpty) {
+  // Create the PageInfoHistoryMediator only if the browser is not in incognito
+  // mode and the page is neither offline nor a chrome page.
+  if (!isIncognito && !_siteSecurityDescription.isEmpty) {
     history::HistoryService* historyService =
         ios::HistoryServiceFactory::GetForProfile(
             self.profile, ServiceAccessType::EXPLICIT_ACCESS);
@@ -152,10 +150,8 @@
   self.navigationController = nil;
   self.viewController = nil;
 
-  if (IsPageInfoLastVisitedIOSEnabled()) {
-    [_pageInfoHistoryMediator disconnect];
-    _pageInfoHistoryMediator = nil;
-  }
+  [_pageInfoHistoryMediator disconnect];
+  _pageInfoHistoryMediator = nil;
 
   [_securityCoordinator stop];
   _securityCoordinator.pageInfoPresentationHandler = nil;
@@ -229,7 +225,6 @@
 }
 
 - (void)showLastVisitedPage {
-  CHECK(IsPageInfoLastVisitedIOSEnabled());
   base::RecordAction(base::UserMetricsAction("PageInfo.History.Opened"));
   base::UmaHistogramEnumeration(page_info::kWebsiteSettingsActionHistogram,
                                 page_info::PAGE_INFO_HISTORY_OPENED);

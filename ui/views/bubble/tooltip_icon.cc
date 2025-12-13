@@ -20,6 +20,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/mouse_watcher_view_host.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/style/platform_style.h"
 
 namespace views {
@@ -50,7 +51,7 @@ TooltipIcon::~TooltipIcon() {
 
 void TooltipIcon::SetBubbleWidth(int preferred_width) {
   preferred_width_ = preferred_width;
-  OnPropertyChanged(&preferred_width_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&preferred_width_, PropertyEffects::kPreferredSizeChanged);
 }
 
 int TooltipIcon::GetBubbleWidth() const {
@@ -59,7 +60,7 @@ int TooltipIcon::GetBubbleWidth() const {
 
 void TooltipIcon::SetAnchorPointArrow(BubbleBorder::Arrow arrow) {
   anchor_point_arrow_ = arrow;
-  OnPropertyChanged(&anchor_point_arrow_, kPropertyEffectsPaint);
+  OnPropertyChanged(&anchor_point_arrow_, PropertyEffects::kPaint);
 }
 
 BubbleBorder::Arrow TooltipIcon::GetAnchorPointArrow() const {

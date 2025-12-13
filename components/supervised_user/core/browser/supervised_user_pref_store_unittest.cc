@@ -12,6 +12,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/safe_search_api/safe_search_util.h"
+#include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -22,12 +23,15 @@
 
 namespace {
 
+using ::testing::Eq;
 using ::testing::Optional;
 
 class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
  public:
   explicit SupervisedUserPrefStoreFixture(
-      supervised_user::SupervisedUserSettingsService* settings_service);
+      supervised_user::SupervisedUserSettingsService* settings_service,
+      supervised_user::SupervisedUserContentFiltersService*
+          content_filters_service);
   ~SupervisedUserPrefStoreFixture() override;
 
   base::Value::Dict* changed_prefs() { return &changed_prefs_; }
@@ -45,8 +49,11 @@ class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
 };
 
 SupervisedUserPrefStoreFixture::SupervisedUserPrefStoreFixture(
-    supervised_user::SupervisedUserSettingsService* settings_service)
-    : pref_store_(new SupervisedUserPrefStore(settings_service)),
+    supervised_user::SupervisedUserSettingsService* settings_service,
+    supervised_user::SupervisedUserContentFiltersService*
+        content_filters_service)
+    : pref_store_(new SupervisedUserPrefStore(settings_service,
+                                              content_filters_service)),
       initialization_completed_(pref_store_->IsInitializationComplete()) {
   pref_store_->AddObserver(this);
 }
@@ -81,6 +88,7 @@ class SupervisedUserPrefStoreTest : public ::testing::Test {
 
  protected:
   supervised_user::SupervisedUserSettingsService service_;
+  supervised_user::SupervisedUserContentFiltersService content_filters_service_;
   scoped_refptr<TestingPrefStore> pref_store_;
 };
 
@@ -94,7 +102,7 @@ void SupervisedUserPrefStoreTest::TearDown() {
 }
 
 TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
-  SupervisedUserPrefStoreFixture fixture(&service_);
+  SupervisedUserPrefStoreFixture fixture(&service_, &content_filters_service_);
   EXPECT_FALSE(fixture.initialization_completed());
 
   // Prefs should not change yet when the service is ready, but not
@@ -191,7 +199,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
 }
 
 TEST_F(SupervisedUserPrefStoreTest, IsEmptyAfterDeactivation) {
-  SupervisedUserPrefStoreFixture fixture(&service_);
+  SupervisedUserPrefStoreFixture fixture(&service_, &content_filters_service_);
   EXPECT_FALSE(fixture.initialization_completed());
 
   // Prefs should not change yet when the service is ready, but not
@@ -210,7 +218,7 @@ TEST_F(SupervisedUserPrefStoreTest, IsEmptyAfterDeactivation) {
 }
 
 TEST_F(SupervisedUserPrefStoreTest, LocalOverridesAreClearedAfterDeactivation) {
-  SupervisedUserPrefStoreFixture fixture(&service_);
+  SupervisedUserPrefStoreFixture fixture(&service_, &content_filters_service_);
   EXPECT_FALSE(fixture.initialization_completed());
 
   // Prefs should not change yet when the service is ready, but not
@@ -234,7 +242,7 @@ TEST_F(SupervisedUserPrefStoreTest, LocalOverridesAreClearedAfterDeactivation) {
 }
 
 TEST_F(SupervisedUserPrefStoreTest, ActivateSettingsBeforeInitialization) {
-  SupervisedUserPrefStoreFixture fixture(&service_);
+  SupervisedUserPrefStoreFixture fixture(&service_, &content_filters_service_);
   EXPECT_FALSE(fixture.initialization_completed());
 
   service_.SetActive(true);
@@ -250,7 +258,95 @@ TEST_F(SupervisedUserPrefStoreTest, CreatePrefStoreAfterInitialization) {
   pref_store_->SetInitializationCompleted();
   service_.SetActive(true);
 
-  SupervisedUserPrefStoreFixture fixture(&service_);
+  SupervisedUserPrefStoreFixture fixture(&service_, &content_filters_service_);
   EXPECT_TRUE(fixture.initialization_completed());
   EXPECT_EQ(0u, fixture.changed_prefs()->size());
+}
+
+TEST_F(SupervisedUserPrefStoreTest, ContentFiltersDontChangePrefsOnStartup) {
+  SupervisedUserPrefStoreFixture fixture(&service_, &content_filters_service_);
+  EXPECT_FALSE(fixture.initialization_completed());
+
+  pref_store_->SetInitializationCompleted();
+  EXPECT_TRUE(fixture.initialization_completed());
+  EXPECT_EQ(0u, fixture.changed_prefs()->size());
+}
+
+TEST_F(SupervisedUserPrefStoreTest,
+       ContentFiltersServiceEnablesBrowserFilters) {
+  SupervisedUserPrefStoreFixture fixture(&service_, &content_filters_service_);
+  EXPECT_FALSE(fixture.initialization_completed());
+
+  pref_store_->SetInitializationCompleted();
+  EXPECT_TRUE(fixture.initialization_completed());
+
+  content_filters_service_.SetBrowserFiltersEnabled(true);
+  EXPECT_THAT(
+      fixture.changed_prefs()->FindIntByDottedPath(
+          policy::policy_prefs::kIncognitoModeAvailability),
+      Optional(static_cast<int>(policy::IncognitoModeAvailability::kDisabled)));
+  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
+                  prefs::kSupervisedUserSafeSites),
+              Optional(true));
+
+  // The other filter is not affecting incognito mode.
+  content_filters_service_.SetSearchFiltersEnabled(false);
+  EXPECT_THAT(
+      fixture.changed_prefs()->FindIntByDottedPath(
+          policy::policy_prefs::kIncognitoModeAvailability),
+      Optional(static_cast<int>(policy::IncognitoModeAvailability::kDisabled)));
+}
+
+TEST_F(SupervisedUserPrefStoreTest, ContentFiltersServiceEnablesSearchFilters) {
+  SupervisedUserPrefStoreFixture fixture(&service_, &content_filters_service_);
+  EXPECT_FALSE(fixture.initialization_completed());
+
+  pref_store_->SetInitializationCompleted();
+  EXPECT_TRUE(fixture.initialization_completed());
+
+  content_filters_service_.SetSearchFiltersEnabled(true);
+
+  EXPECT_THAT(
+      fixture.changed_prefs()->FindIntByDottedPath(
+          policy::policy_prefs::kIncognitoModeAvailability),
+      Optional(static_cast<int>(policy::IncognitoModeAvailability::kDisabled)));
+  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
+                  policy::policy_prefs::kForceGoogleSafeSearch),
+              Optional(true));
+
+  // The other filter is not affecting incognito mode.
+  content_filters_service_.SetBrowserFiltersEnabled(false);
+  EXPECT_THAT(
+      fixture.changed_prefs()->FindIntByDottedPath(
+          policy::policy_prefs::kIncognitoModeAvailability),
+      Optional(static_cast<int>(policy::IncognitoModeAvailability::kDisabled)));
+}
+
+TEST_F(SupervisedUserPrefStoreTest, SuspendedSettingsServiceCannotAlterContentFilters) {
+  SupervisedUserPrefStoreFixture fixture(&service_, &content_filters_service_);
+  EXPECT_FALSE(fixture.initialization_completed());
+
+  pref_store_->SetInitializationCompleted();
+  EXPECT_TRUE(fixture.initialization_completed());
+
+  service_.SetActive(false);
+  service_.SetSuspended(true);
+  content_filters_service_.SetSearchFiltersEnabled(true);
+
+  // ==2, which is incognito mode and search setting.
+  unsigned int size = fixture.changed_prefs()->size();
+  EXPECT_EQ(2u, size);
+
+  service_.SetActive(false);
+  // the value is still unchanged
+  EXPECT_EQ(size, fixture.changed_prefs()->size());
+
+  // The following demonstrates what would happen if the service was
+  // unsuspended after the content filters were set. This is not a valid
+  // sequence of calls, but we test it anyway.
+  service_.SetSuspended(false);
+  service_.SetActive(true);
+  // And now we expect more changes, because the service is active again and is
+  // sending notifications.
+  EXPECT_LT(size, fixture.changed_prefs()->size());
 }

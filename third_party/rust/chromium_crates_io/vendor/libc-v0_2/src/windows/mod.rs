@@ -29,14 +29,11 @@ cfg_if! {
 pub type off_t = i32;
 pub type dev_t = u32;
 pub type ino_t = u16;
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
-pub enum timezone {}
-impl Copy for timezone {}
-impl Clone for timezone {
-    fn clone(&self) -> timezone {
-        *self
-    }
+
+extern_ty! {
+    pub enum timezone {}
 }
+
 pub type time64_t = i64;
 
 pub type SOCKET = crate::uintptr_t;
@@ -243,6 +240,9 @@ pub const SIG_GET: crate::sighandler_t = 2;
 pub const SIG_SGE: crate::sighandler_t = 3;
 pub const SIG_ACK: crate::sighandler_t = 4;
 
+pub const L_tmpnam: c_uint = 260;
+pub const TMP_MAX: c_uint = 0x7fff_ffff;
+
 // DIFF(main): removed in 458c58f409
 // FIXME(msrv): done by `std` starting in 1.79.0
 // inline comment below appeases style checker
@@ -251,21 +251,9 @@ pub const SIG_ACK: crate::sighandler_t = 4;
 #[link(name = "libcmt", cfg(target_feature = "crt-static"))]
 extern "C" {}
 
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
-pub enum FILE {}
-impl Copy for FILE {}
-impl Clone for FILE {
-    fn clone(&self) -> FILE {
-        *self
-    }
-}
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
-pub enum fpos_t {} // FIXME(windows): fill this out with a struct
-impl Copy for fpos_t {}
-impl Clone for fpos_t {
-    fn clone(&self) -> fpos_t {
-        *self
-    }
+extern_ty! {
+    pub enum FILE {}
+    pub enum fpos_t {} // FIXME(windows): fill this out with a struct
 }
 
 // Special handling for all print and scan type functions because of https://github.com/rust-lang/libc/issues/2860
@@ -297,6 +285,19 @@ extern "C" {
     pub fn isblank(c: c_int) -> c_int;
     pub fn tolower(c: c_int) -> c_int;
     pub fn toupper(c: c_int) -> c_int;
+    pub fn qsort(
+        base: *mut c_void,
+        num: size_t,
+        size: size_t,
+        compar: Option<unsafe extern "C" fn(*const c_void, *const c_void) -> c_int>,
+    );
+    pub fn qsort_s(
+        base: *mut c_void,
+        num: size_t,
+        size: size_t,
+        compar: Option<unsafe extern "C" fn(*mut c_void, *const c_void, *const c_void) -> c_int>,
+        arg: *mut c_void,
+    );
     pub fn fopen(filename: *const c_char, mode: *const c_char) -> *mut FILE;
     pub fn freopen(filename: *const c_char, mode: *const c_char, file: *mut FILE) -> *mut FILE;
     pub fn fflush(file: *mut FILE) -> c_int;
@@ -366,6 +367,7 @@ extern "C" {
     pub fn strtok(s: *mut c_char, t: *const c_char) -> *mut c_char;
     pub fn strxfrm(s: *mut c_char, ct: *const c_char, n: size_t) -> size_t;
     pub fn wcslen(buf: *const wchar_t) -> size_t;
+    pub fn wcsnlen(str: *const wchar_t, numberOfElements: size_t) -> size_t;
     pub fn wcstombs(dest: *mut c_char, src: *const wchar_t, n: size_t) -> size_t;
 
     pub fn memchr(cx: *const c_void, c: c_int, n: size_t) -> *mut c_void;

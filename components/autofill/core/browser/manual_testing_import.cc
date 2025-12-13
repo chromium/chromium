@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -21,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -48,7 +50,10 @@ constexpr std::string_view kKeyNickname = "nickname";
 constexpr auto kRecordTypeMapping =
     base::MakeFixedFlatMap<std::string_view, AutofillProfile::RecordType>(
         {{"account", AutofillProfile::RecordType::kAccount},
-         {"localOrSyncable", AutofillProfile::RecordType::kLocalOrSyncable}});
+         {"accountHome", AutofillProfile::RecordType::kAccountHome},
+         {"accountWork", AutofillProfile::RecordType::kAccountWork},
+         {"localOrSyncable", AutofillProfile::RecordType::kLocalOrSyncable},
+         {"accountNameEmail", AutofillProfile::RecordType::kAccountNameEmail}});
 constexpr std::string_view kKeyInitialCreatorId = "initial_creator_id";
 
 // Checks if the `profile` is changed by `FinalizeAfterImport()`. See
@@ -116,8 +121,12 @@ std::optional<AutofillProfile> MakeProfile(const base::Value::Dict& dict) {
       }
     }
     const FieldType type = TypeNameToFieldType(key);
-    if (type == UNKNOWN_TYPE || !IsAddressType(type)) {
-      LOG(ERROR) << "Unknown or non-address type " << key << ".";
+    // For phone numbers, only the PHONE_HOME_WHOLE_NUMBER is stored internally
+    // and as a result, setting partial phone number is prohibited.
+    if (!IsAddressType(type) ||
+        (GroupTypeOfFieldType(type) == FieldTypeGroup::kPhone &&
+         type != PHONE_HOME_WHOLE_NUMBER)) {
+      LOG(ERROR) << "Invalid address type " << key << ".";
       return std::nullopt;
     }
     profile.SetRawInfoWithVerificationStatus(
@@ -140,9 +149,8 @@ std::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
       continue;
     }
     const FieldType type = TypeNameToFieldType(key);
-    if (type == UNKNOWN_TYPE ||
-        GroupTypeOfFieldType(type) != FieldTypeGroup::kCreditCard) {
-      LOG(ERROR) << "Unknown or non-credit card type " << key << ".";
+    if (GroupTypeOfFieldType(type) != FieldTypeGroup::kCreditCard) {
+      LOG(ERROR) << "Non-credit card type " << key << ".";
       return std::nullopt;
     }
     card.SetRawInfo(type, base::UTF8ToUTF16(value.GetString()));
@@ -158,9 +166,8 @@ std::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
 // invalidates the pointers returned by `ADM::GetProfiles()`, this is done by
 // collecting all GUIDs to remove first.
 void RemoveAllExistingProfiles(AddressDataManager& adm) {
-  std::vector<std::string> existing_guids;
-  std::ranges::transform(adm.GetProfiles(), std::back_inserter(existing_guids),
-                         &AutofillProfile::guid);
+  std::vector<std::string> existing_guids =
+      base::ToVector(adm.GetProfiles(), &AutofillProfile::guid);
   for (const std::string& guid : existing_guids) {
     adm.RemoveProfile(guid);
   }
@@ -171,12 +178,12 @@ void RemoveAllExistingProfiles(AddressDataManager& adm) {
 void SetData(
     base::WeakPtr<PersonalDataManager> pdm,
     std::optional<AutofillProfilesAndCreditCards> profiles_or_credit_cards) {
-  // This check intentionally crashes when the data is malformed, to prevent
-  // testing with incorrect data.
-  LOG_IF(FATAL, !profiles_or_credit_cards.has_value() ||
-                    !profiles_or_credit_cards->profiles.has_value() ||
-                    !profiles_or_credit_cards->credit_cards.has_value())
-      << "Intentional crash, the provided JSON import data is incorrect.";
+  if (!profiles_or_credit_cards.has_value() ||
+      !profiles_or_credit_cards->profiles.has_value() ||
+      !profiles_or_credit_cards->credit_cards.has_value()) {
+    LOG(ERROR) << "The provided JSON import data is incorrect.";
+    return;
+  }
   if (pdm == nullptr) {
     return;
   }
@@ -224,8 +231,8 @@ std::optional<std::vector<T>> DataModelsFromJSON(
 // If parsing fails the error is logged and std::nullopt is returned.
 std::optional<AutofillProfilesAndCreditCards> LoadDataFromJSONContent(
     const std::string& file_content) {
-  std::optional<base::Value::Dict> json =
-      base::JSONReader::ReadDict(file_content);
+  std::optional<base::Value::Dict> json = base::JSONReader::ReadDict(
+      file_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json) {
     LOG(ERROR) << "Failed to parse JSON file.";
     return std::nullopt;

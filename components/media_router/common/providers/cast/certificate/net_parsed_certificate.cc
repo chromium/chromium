@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/media_router/common/providers/cast/certificate/net_parsed_certificate.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/evp.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
@@ -27,8 +24,8 @@ ErrorOr<std::unique_ptr<ParsedCertificate>> ParsedCertificate::ParseFromDER(
     openscreen::ByteView der_cert) {
   std::shared_ptr<const bssl::ParsedCertificate> cert =
       bssl::ParsedCertificate::Create(
-          net::x509_util::CreateCryptoBuffer(
-              base::span<const uint8_t>(der_cert.cbegin(), der_cert.cend())),
+          net::x509_util::CreateCryptoBuffer(UNSAFE_TODO(
+              base::span<const uint8_t>(der_cert.cbegin(), der_cert.cend()))),
           cast_certificate::GetCertParsingOptions(), nullptr);
   if (!cert) {
     return Error::Code::kErrCertsParse;
@@ -139,7 +136,7 @@ std::string NetParsedCertificate::GetCommonName() const {
 }
 
 std::string NetParsedCertificate::GetSpkiTlv() const {
-  return cert_->tbs().spki_tlv.AsString();
+  return std::string(base::as_string_view(cert_->tbs().spki_tlv));
 }
 
 ErrorOr<uint64_t> NetParsedCertificate::GetSerialNumber() const {

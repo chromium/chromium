@@ -9,12 +9,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "google_apis/gcm/base/gcm_export.h"
@@ -140,7 +141,7 @@ class GCM_EXPORT RegistrationRequest {
 
   // Invoked from SimpleURLLoader.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
-                         std::unique_ptr<std::string> body);
+                         std::optional<std::string> body);
 
  private:
   // Schedules a retry attempt with a backoff.
@@ -152,7 +153,7 @@ class GCM_EXPORT RegistrationRequest {
   // Parse the response returned by the URL loader into token, and returns the
   // status.
   Status ParseResponse(const network::SimpleURLLoader* source,
-                       std::unique_ptr<std::string> body,
+                       std::optional<std::string> body,
                        std::string* token);
 
   RegistrationCallback callback_;

@@ -26,6 +26,7 @@ class TemplateURLService;
 namespace autofill {
 class AddressDataManager;
 class AutofillWebDataService;
+class AccountSettingService;
 }  // namespace autofill
 
 namespace bookmarks {
@@ -48,6 +49,10 @@ namespace data_sharing {
 class DataSharingService;
 }  // namespace data_sharing
 
+namespace data_sharing::personal_collaboration_data {
+class PersonalCollaborationDataService;
+}  // namespace data_sharing::personal_collaboration_data
+
 namespace favicon {
 class FaviconService;
 }  // namespace favicon
@@ -66,10 +71,6 @@ namespace plus_addresses {
 class PlusAddressSettingService;
 class PlusAddressWebDataService;
 }  // namespace plus_addresses
-
-namespace power_bookmarks {
-class PowerBookmarkService;
-}  // namespace power_bookmarks
 
 namespace reading_list {
 class DualReadingListModel;
@@ -134,6 +135,8 @@ class CommonControllerBuilder {
 
   // Setters to inject dependencies. Each of these setters must be invoked
   // before invoking `Build()`. In some cases it is allowed to inject nullptr.
+  void SetAccountSettingService(
+      autofill::AccountSettingService* account_setting_service);
   void SetAddressDataManagerGetter(
       base::RepeatingCallback<autofill::AddressDataManager*()>
           address_data_manager_getter);
@@ -151,6 +154,10 @@ class CommonControllerBuilder {
   void SetConsentAuditor(consent_auditor::ConsentAuditor* consent_auditor);
   void SetCollaborationService(
       collaboration::CollaborationService* collaboration_service);
+  void SetPersonalCollaborationDataService(
+      data_sharing::personal_collaboration_data::
+          PersonalCollaborationDataService*
+              personal_collaboration_data_service);
   void SetDataSharingService(
       data_sharing::DataSharingService* data_sharing_service);
   void SetDeviceInfoSyncService(
@@ -179,8 +186,6 @@ class CommonControllerBuilder {
       plus_addresses::PlusAddressSettingService* plus_address_setting_service,
       const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
           plus_address_webdata_service);
-  void SetPowerBookmarkService(
-      power_bookmarks::PowerBookmarkService* power_bookmark_service);
   void SetPrefService(PrefService* pref_service);
   void SetPrefServiceSyncable(
       sync_preferences::PrefServiceSyncable* pref_service_syncable);
@@ -252,6 +257,8 @@ class CommonControllerBuilder {
 
   // For all above, nullopt indicates the corresponding setter wasn't invoked.
   // nullptr indicates the setter was invoked with nullptr.
+  SafeOptional<raw_ptr<autofill::AccountSettingService>>
+      account_setting_service_;
   base::RepeatingCallback<autofill::AddressDataManager*()>
       address_data_manager_getter_;
   SafeOptional<raw_ptr<signin::IdentityManager>> identity_manager_;
@@ -292,8 +299,6 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<sync_bookmarks::BookmarkSyncService>>
       account_bookmark_sync_service_;
   SafeOptional<raw_ptr<bookmarks::BookmarkModel>> bookmark_model_;
-  SafeOptional<raw_ptr<power_bookmarks::PowerBookmarkService>>
-      power_bookmark_service_;
   SafeOptional<raw_ptr<supervised_user::SupervisedUserSettingsService>>
       supervised_user_settings_service_;
   SafeOptional<raw_ptr<plus_addresses::PlusAddressSettingService>>
@@ -304,6 +309,9 @@ class CommonControllerBuilder {
       product_specifications_service_;
   SafeOptional<raw_ptr<collaboration::CollaborationService>>
       collaboration_service_;
+  SafeOptional<raw_ptr<data_sharing::personal_collaboration_data::
+                           PersonalCollaborationDataService>>
+      personal_collaboration_data_service_;
   SafeOptional<raw_ptr<data_sharing::DataSharingService>> data_sharing_service_;
   SafeOptional<raw_ptr<SharingMessageBridge>> sharing_message_bridge_;
   SafeOptional<raw_ptr<tab_groups::TabGroupSyncService>>

@@ -114,9 +114,11 @@ TEST(TransformOperationsTest, AbsoluteAnimatedTranslatedBoundsTest) {
 }
 
 TEST(TransformOperationsTest, EmpiricalAnimatedTranslatedBoundsTest) {
-  float test_transforms[][2][3] = {{{0, 0, 0}, {10, 10, 0}},
-                                   {{-100, 202.5, -32.6}, {43.2, 56.1, 89.75}},
-                                   {{43.2, 56.1, 89.75}, {-100, 202.5, -32.6}}};
+  std::array<std::array<std::array<float, 3>, 2>, 3> test_transforms = {{
+      {{{0, 0, 0}, {10, 10, 0}}},
+      {{{-100, 202.5, -32.6}, {43.2, 56.1, 89.75}}},
+      {{{43.2, 56.1, 89.75}, {-100, 202.5, -32.6}}},
+  }};
 
   // All progressions for animations start and end at 0, 1 respectively,
   // we can go outside of these bounds, but will always at least contain
@@ -129,15 +131,13 @@ TEST(TransformOperationsTest, EmpiricalAnimatedTranslatedBoundsTest) {
       TransformOperations to_ops;
       from_ops.Operations().push_back(
           MakeGarbageCollected<TranslateTransformOperation>(
-              Length::Fixed(UNSAFE_TODO(test_transforms[i])[0][0]),
-              Length::Fixed(UNSAFE_TODO(test_transforms[i])[0][1]),
-              UNSAFE_TODO(test_transforms[i])[0][2],
+              Length::Fixed(test_transforms[i][0][0]),
+              Length::Fixed(test_transforms[i][0][1]), test_transforms[i][0][2],
               TransformOperation::kTranslate3D));
       to_ops.Operations().push_back(
           MakeGarbageCollected<TranslateTransformOperation>(
-              Length::Fixed(UNSAFE_TODO(test_transforms[i])[1][0]),
-              Length::Fixed(UNSAFE_TODO(test_transforms[i])[1][1]),
-              UNSAFE_TODO(test_transforms[i])[1][2],
+              Length::Fixed(test_transforms[i][1][0]),
+              Length::Fixed(test_transforms[i][1][1]), test_transforms[i][1][2],
               TransformOperation::kTranslate3D));
       EmpiricallyTestBounds(from_ops, to_ops, progress[j][0], progress[j][1]);
     }
@@ -175,10 +175,12 @@ TEST(TransformOperationsTest, AbsoluteAnimatedScaleBoundsTest) {
 }
 
 TEST(TransformOperationsTest, EmpiricalAnimatedScaleBoundsTest) {
-  float test_transforms[][2][3] = {{{1, 1, 1}, {10, 10, -32}},
-                                   {{1, 2, 5}, {-1, -2, -4}},
-                                   {{0, 0, 0}, {1, 2, 3}},
-                                   {{0, 0, 0}, {0, 0, 0}}};
+  std::array<std::array<std::array<float, 3>, 2>, 4> test_transforms = {{
+      {{{1, 1, 1}, {10, 10, -32}}},
+      {{{1, 2, 5}, {-1, -2, -4}}},
+      {{{0, 0, 0}, {1, 2, 3}}},
+      {{{0, 0, 0}, {0, 0, 0}}},
+  }};
 
   // All progressions for animations start and end at 0, 1 respectively,
   // we can go outside of these bounds, but will always at least contain
@@ -191,15 +193,13 @@ TEST(TransformOperationsTest, EmpiricalAnimatedScaleBoundsTest) {
       TransformOperations to_ops;
       from_ops.Operations().push_back(
           MakeGarbageCollected<TranslateTransformOperation>(
-              Length::Fixed(UNSAFE_TODO(test_transforms[i])[0][0]),
-              Length::Fixed(UNSAFE_TODO(test_transforms[i])[0][1]),
-              UNSAFE_TODO(test_transforms[i])[0][2],
+              Length::Fixed(test_transforms[i][0][0]),
+              Length::Fixed(test_transforms[i][0][1]), test_transforms[i][0][2],
               TransformOperation::kTranslate3D));
       to_ops.Operations().push_back(
           MakeGarbageCollected<TranslateTransformOperation>(
-              Length::Fixed(UNSAFE_TODO(test_transforms[i])[1][0]),
-              Length::Fixed(UNSAFE_TODO(test_transforms[i])[1][1]),
-              UNSAFE_TODO(test_transforms[i])[1][2],
+              Length::Fixed(test_transforms[i][1][0]),
+              Length::Fixed(test_transforms[i][1][1]), test_transforms[i][1][2],
               TransformOperation::kTranslate3D));
       EmpiricallyTestBounds(from_ops, to_ops, progress[j][0], progress[j][1]);
     }

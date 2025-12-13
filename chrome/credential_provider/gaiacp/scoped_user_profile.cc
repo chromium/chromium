@@ -24,6 +24,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -281,7 +282,7 @@ HRESULT UpdateProfilePictures(const std::wstring& sid,
   // FOLDERID_PublicUserTiles\\{user sid}
 
   std::wstring picture_url_path =
-      base::UTF8ToWide(GURL(base::AsStringPiece16(picture_url)).path());
+      base::UTF8ToWide(GURL(base::AsStringPiece16(picture_url)).GetPath());
   if (picture_url_path.size() <= 1) {
     LOGFN(ERROR) << "Invalid picture url=" << picture_url;
     return E_FAIL;
@@ -433,7 +434,7 @@ ScopedUserProfile::ScopedUserProfile(const std::wstring& sid,
 ScopedUserProfile::~ScopedUserProfile() = default;
 
 bool ScopedUserProfile::IsValid() {
-  return token_.IsValid();
+  return token_.is_valid();
 }
 
 HRESULT ScopedUserProfile::ExtractAssociationInformation(

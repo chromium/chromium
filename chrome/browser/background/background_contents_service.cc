@@ -576,8 +576,6 @@ void BackgroundContentsService::RegisterBackgroundContents(
 
   // We store the first URL we receive for a given application. If there's
   // already an entry for this application, no need to do anything.
-  // TODO(atwilson): Verify that this is the desired behavior based on developer
-  // feedback (http://crbug.com/47118).
   ScopedDictPrefUpdate update(prefs_, prefs::kRegisteredBackgroundContents);
   base::Value::Dict& pref = update.Get();
   const std::string& appid = GetParentApplicationId(background_contents);

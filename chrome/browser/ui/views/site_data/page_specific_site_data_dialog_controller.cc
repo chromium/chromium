@@ -67,6 +67,9 @@ PageSpecificSiteDataDialogController::PageSpecificSiteDataDialogController(
   tracker_.SetView(widget->GetRootView());
 }
 
+PageSpecificSiteDataDialogController::~PageSpecificSiteDataDialogController() =
+    default;
+
 views::View* PageSpecificSiteDataDialogController::GetDialogView() {
   // TODO(crbug.com/40231917): Revisit this after the new dialog is launched.
   // Consider not using the view tracker here but using instead a flag to

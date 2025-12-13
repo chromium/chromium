@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_constants.h"
 
 namespace infobars {
@@ -45,7 +44,7 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // InfoBarDelegate:
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
   void InfoBarDismissed() override;
-  ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate() override;
+  const ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate() const override;
 
   // Returns the title string to be displayed for the InfoBar.
   // Defaults to having not title. Currently only used on iOS.
@@ -76,6 +75,14 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // Returns the tooltip for the specified button. The default implementation
   // returns an empty tooltip.
   virtual std::u16string GetButtonTooltip(InfoBarButton button) const;
+
+  // Returns true if this specific infobar instance should use the
+  // custom layout to show the link text before the button.
+  virtual bool ShouldShowLinkBeforeButton() const;
+
+  // Returns spacing which is to be used when the link shows before the button
+  // on the infobar.
+  virtual int GetLinkSpacingWhenPositionedBeforeButton() const;
 
 #if BUILDFLAG(IS_IOS)
   // Returns whether or not a tint should be applied to the icon background.

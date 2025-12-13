@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_constants.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -179,26 +178,6 @@ IncognitoLockState StateWithItemIdentifier(ItemIdentifier item_identifier) {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  ItemIdentifier itemIdentifier = static_cast<ItemIdentifier>(
-      [self.tableViewModel itemTypeForIndexPath:indexPath]);
-
-  if (itemIdentifier == kHideWithReauthDisabled) {
-    TableViewInfoButtonCell* managedCell =
-        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-    [managedCell.trailingButton
-               addTarget:self
-                  action:@selector(didTapHideWithReauthDisabledInfoButton:)
-        forControlEvents:UIControlEventTouchUpInside];
-  }
-  return cell;
-}
-
 #pragma mark - IncognitoLockConsumer
 
 - (void)setIncognitoLockState:(IncognitoLockState)state {
@@ -275,6 +254,8 @@ IncognitoLockState StateWithItemIdentifier(ItemIdentifier item_identifier) {
   item.text = l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME);
   item.iconTintColor = [UIColor colorNamed:kGrey300Color];
   item.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  item.target = self;
+  item.selector = @selector(didTapHideWithReauthDisabledInfoButton:);
   return item;
 }
 

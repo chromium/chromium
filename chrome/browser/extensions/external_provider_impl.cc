@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/external_pref_loader.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/initial_external_extension_loader.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -49,6 +51,7 @@
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
@@ -64,15 +67,17 @@
 #include "ash/constants/ash_switches.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/customization/customization_document.h"
-#include "chrome/browser/ash/extensions/signin_screen_extensions_external_loader.h"
+#include "chrome/browser/ash/extensions/authentication_screen_extensions_external_loader.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
 #include "chrome/browser/chromeos/extensions/external_loader/device_local_account_external_policy_loader.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #else
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #endif
@@ -80,6 +85,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/extensions/external_registry_loader_win.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 using extensions::mojom::ManifestLocation;
@@ -666,14 +673,16 @@ void ExternalProviderImpl::CreateExternalProviders(
       ManifestLocation::kInvalidLocation;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (ash::ProfileHelper::IsSigninProfile(profile)) {
-    // Download extensions/apps installed by policy in the login profile.
-    // Extensions (not apps) installed through this path will have type
-    // |TYPE_LOGIN_SCREEN_EXTENSION| with limited API capabilities.
+  const bool install_on_lock_screen =
+      chromeos::features::IsLockScreenBadgeAuthEnabled() &&
+      ash::IsLockScreenBrowserContext(profile);
+  if (ash::IsSigninBrowserContext(profile) || install_on_lock_screen) {
+    // Download extensions/apps installed by policy in the login and lock screen
+    // profiles. Extensions (not apps) installed through this path will have
+    // type |TYPE_LOGIN_SCREEN_EXTENSION| with limited API capabilities.
     crx_location = ManifestLocation::kExternalPolicyDownload;
-    external_loader =
-        base::MakeRefCounted<chromeos::SigninScreenExtensionsExternalLoader>(
-            profile);
+    external_loader = base::MakeRefCounted<
+        chromeos::AuthenticationScreenExtensionsExternalLoader>(profile);
     auto signin_profile_provider = std::make_unique<ExternalProviderImpl>(
         service, external_loader, profile, crx_location,
         ManifestLocation::kExternalPolicyDownload, Extension::FOR_LOGIN_SCREEN);
@@ -895,6 +904,21 @@ void ExternalProviderImpl::CreateExternalProviders(
       service, base::MakeRefCounted<ExternalComponentLoader>(profile), profile,
       ManifestLocation::kInvalidLocation, ManifestLocation::kExternalComponent,
       Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (base::FeatureList::IsEnabled(features::kInitialExternalExtensions)) {
+    auto initial_external_extensions_provider =
+        std::make_unique<ExternalProviderImpl>(
+            service,
+            base::MakeRefCounted<InitialExternalExtensionLoader>(
+                *profile->GetPrefs()),
+            profile, ManifestLocation::kExternalPref,
+            ManifestLocation::kExternalPrefDownload, Extension::FROM_WEBSTORE);
+    initial_external_extensions_provider->set_allow_updates(true);
+    initial_external_extensions_provider->set_auto_acknowledge(false);
+    provider_list->push_back(std::move(initial_external_extensions_provider));
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace extensions

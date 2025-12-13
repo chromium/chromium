@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/web/modules/credentialmanagement/throttle_helper.h"
 #include "third_party/blink/public/web/web_frame.h"

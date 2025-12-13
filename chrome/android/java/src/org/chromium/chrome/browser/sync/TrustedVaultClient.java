@@ -18,8 +18,9 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
+import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -192,10 +193,24 @@ public class TrustedVaultClient {
     /**
      * Notifies all registered native clients (in practice, exactly one) that keys in the backend
      * may have changed, which usually leads to refetching the keys from the backend.
+     *
+     * <p>Deprecated, use the version that takes a `trigger` parameter below. This method will be
+     * removed once all callers are migrated.
      */
+    @Deprecated
     public void notifyKeysChanged() {
+        notifyKeysChanged(null);
+    }
+
+    /**
+     * Notifies all registered native clients (in practice, exactly one) that keys in the backend
+     * may have changed, which usually leads to refetching the keys from the backend.
+     *
+     * @param trigger The UI surface that triggered this notification, if any.
+     */
+    public void notifyKeysChanged(@Nullable @TrustedVaultUserActionTriggerForUMA Integer trigger) {
         for (long nativeTrustedVaultClientAndroid : mNativeTrustedVaultClientAndroidSet) {
-            TrustedVaultClientJni.get().notifyKeysChanged(nativeTrustedVaultClientAndroid);
+            TrustedVaultClientJni.get().notifyKeysChanged(nativeTrustedVaultClientAndroid, trigger);
         }
     }
 
@@ -405,7 +420,10 @@ public class TrustedVaultClient {
 
         void addTrustedRecoveryMethodCompleted(long nativeTrustedVaultClientAndroid, int requestId);
 
-        void notifyKeysChanged(long nativeTrustedVaultClientAndroid);
+        void notifyKeysChanged(
+                long nativeTrustedVaultClientAndroid,
+                @JniType("std::optional<jint>") @Nullable @TrustedVaultUserActionTriggerForUMA
+                        Integer trigger);
 
         void notifyRecoverabilityChanged(long nativeTrustedVaultClientAndroid);
 

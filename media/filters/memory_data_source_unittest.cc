@@ -28,20 +28,19 @@ class MemoryDataSourceTest : public ::testing::Test {
   void Initialize(size_t size) {
     data_.assign(size, 0u);
     base::RandBytes(data_);
-    memory_data_source_ =
-        std::make_unique<MemoryDataSource>(data_.data(), data_.size());
+    memory_data_source_ = std::make_unique<MemoryDataSource>(data_);
     EXPECT_EQ(size, GetSize());
   }
 
   // Reads |size| bytes starting from |position|, expects |expected_read_size|
   // bytes to be read and checks the read data. Expects error when
   // |expected_read_size| is DataSource::kReadError.
-  void ReadAndExpect(int64_t position, int size, int expected_read_size) {
-    std::vector<uint8_t> data(size < 0 ? 0 : size, 0);
+  void ReadAndExpect(int64_t position, size_t size, int expected_read_size) {
+    std::vector<uint8_t> data(size);
 
     EXPECT_CALL(*this, ReadCB(expected_read_size));
     memory_data_source_->Read(
-        position, size, data.data(),
+        position, data,
         base::BindOnce(&MemoryDataSourceTest::ReadCB, base::Unretained(this)));
 
     if (expected_read_size != DataSource::kReadError) {
@@ -87,11 +86,6 @@ TEST_F(MemoryDataSourceTest, ReadData_InvalidPosition) {
   Initialize(128);
   ReadAndExpect(-7, 64, DataSource::kReadError);
   ReadAndExpect(129, 64, DataSource::kReadError);
-}
-
-TEST_F(MemoryDataSourceTest, ReadData_InvalidSize) {
-  Initialize(128);
-  ReadAndExpect(0, -12, DataSource::kReadError);
 }
 
 TEST_F(MemoryDataSourceTest, ReadData_PartialRead) {

@@ -74,6 +74,7 @@ enum class MethodResult {
   kInvalidPatchFile = 9,
   kInstallFailedTimeout = 10,
   kFailedToGetFirmwareFilename = 11,
+  kUnknownDeviceId = 12,
 
   // All Install Errors returned by fwupd dbus signal
   // These errors are consistent with

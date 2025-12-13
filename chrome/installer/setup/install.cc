@@ -21,6 +21,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -85,8 +86,6 @@ void LogShortcutOperation(ShellUtil::ShortcutLocation location,
     case ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT:
       message.append("Start menu ");
       break;
-    case ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED:
-      NOTREACHED();
     case ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR:
       message.append(
           "Start menu/" +
@@ -452,33 +451,12 @@ void CreateOrUpdateShortcuts(const base::FilePath& target,
   if (toast_activator_clsid != CLSID_NULL)
     start_menu_properties.set_toast_activator_clsid(toast_activator_clsid);
 
-  // The attempt below to update the stortcut will fail if it does not already
-  // exist at the expected location on disk.  First check if it exists in the
-  // previous location (under a subdirectory) and, if so, move it to the new
-  // location.
-  base::FilePath old_shortcut_path;
-  if (!ShellUtil::GetShortcutPath(
-          ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,
-          shortcut_level, &old_shortcut_path)) {
-    return;
-  }
-  if (base::PathExists(old_shortcut_path)) {
-    ShellUtil::MoveExistingShortcut(
-        ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,
-        ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT, start_menu_properties);
-  }
-
   ExecuteAndLogShortcutOperation(ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT,
                                  start_menu_properties, shortcut_operation);
 }
 
-// Registers Chrome on this machine.
-// If |make_chrome_default|, also attempts to make Chrome default where doing so
-// requires no more user interaction than a UAC prompt. In practice, this means
-// on versions of Windows prior to Windows 8.
-// |version| the current version of this install.
+// Registers Chrome on the system.
 void RegisterChromeOnMachine(const InstallerState& installer_state,
-                             bool make_chrome_default,
                              const base::Version& version) {
   // Try to add Chrome to Media Player shim inclusion list. We don't do any
   // error checking here because this operation will fail if user doesn't
@@ -490,20 +468,11 @@ void RegisterChromeOnMachine(const InstallerState& installer_state,
   if (installer_state.system_install())
     RegisterEventLogProvider(installer_state.target_path(), version);
 
-  // Make Chrome the default browser if desired when possible. Otherwise, only
-  // register it with Windows.
+  // Register Chrome as a browser with Windows.
   const base::FilePath chrome_exe(
       installer_state.target_path().Append(kChromeExe));
   VLOG(1) << "Registering Chrome as browser: " << chrome_exe.value();
-  if (make_chrome_default && install_static::SupportsSetAsDefaultBrowser() &&
-      ShellUtil::CanMakeChromeDefaultUnattended()) {
-    int level = ShellUtil::CURRENT_USER;
-    if (installer_state.system_install())
-      level = level | ShellUtil::SYSTEM_LEVEL;
-    ShellUtil::MakeChromeDefault(level, chrome_exe, true);
-  } else {
-    ShellUtil::RegisterChromeBrowserBestEffort(chrome_exe);
-  }
+  ShellUtil::RegisterChromeBrowserBestEffort(chrome_exe);
 }
 
 // Run a child process that will create/update a shortcut for an
@@ -610,27 +579,10 @@ InstallStatus InstallOrUpdateProduct(const InstallParams& install_params,
                           : std::nullopt,
         install_level, install_operation);
 
-    // Register Chrome and, if requested, make Chrome the default browser.
+    // Register Chrome on the system.
     installer_state.SetStage(REGISTERING_CHROME);
 
-    bool make_chrome_default = false;
-    prefs.GetBool(initial_preferences::kMakeChromeDefault,
-                  &make_chrome_default);
-
-    // If this is not the user's first Chrome install, but they have chosen
-    // Chrome to become their default browser on the download page, we must
-    // force it here because the initial preferences file will not get copied
-    // into the build.
-    bool force_chrome_default_for_user = false;
-    if (result == NEW_VERSION_UPDATED || result == INSTALL_REPAIRED ||
-        result == OLD_VERSION_DOWNGRADE || result == IN_USE_DOWNGRADE) {
-      prefs.GetBool(initial_preferences::kMakeChromeDefaultForUser,
-                    &force_chrome_default_for_user);
-    }
-
-    RegisterChromeOnMachine(
-        installer_state, make_chrome_default || force_chrome_default_for_user,
-        new_version);
+    RegisterChromeOnMachine(installer_state, new_version);
 
     if (!installer_state.system_install()) {
       UpdateDefaultBrowserBeaconForPath(
@@ -697,7 +649,7 @@ void HandleOsUpgradeForBrowser(const InstallerState& installer_state,
       INSTALL_SHORTCUT_REPLACE_EXISTING);
 
   // Adapt Chrome registrations to this new OS.
-  RegisterChromeOnMachine(installer_state, false, installed_version);
+  RegisterChromeOnMachine(installer_state, installed_version);
 
   // Active Setup registrations are sometimes lost across OS update, make sure
   // they're back in place. Note: when Active Setup registrations in HKLM are

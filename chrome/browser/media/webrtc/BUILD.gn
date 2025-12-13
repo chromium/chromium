@@ -32,6 +32,8 @@ source_set("webrtc") {
     "desktop_media_list_observer.h",
     "desktop_media_picker.cc",
     "desktop_media_picker.h",
+    "desktop_media_picker_controller.cc",
+    "desktop_media_picker_controller.h",
     "desktop_media_picker_factory.cc",
     "desktop_media_picker_factory.h",
     "desktop_media_picker_manager.cc",
@@ -126,13 +128,14 @@ source_set("webrtc") {
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/content_settings:content_settings_util",
+    "//chrome/browser/media:access_handler",
     "//chrome/browser/media/prefs",
     "//chrome/browser/permissions/system",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/policy:policy_util",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/safe_browsing",
-    "//chrome/browser/status_icons:status_icons",
+    "//chrome/browser/status_icons",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//chrome/common:channel_info",
@@ -171,20 +174,23 @@ source_set("webrtc") {
     "//ui/snapshot",
   ]
 
+  if (enable_extensions_core) {
+    sources += [
+      "desktop_capture_access_handler.cc",
+      "desktop_capture_access_handler.h",
+      "tab_capture_access_handler.cc",
+      "tab_capture_access_handler.h",
+    ]
+  }
+
   if (!is_android) {
     sources += [
       "current_tab_desktop_media_list.cc",
       "current_tab_desktop_media_list.h",
-      "desktop_capture_access_handler.cc",
-      "desktop_capture_access_handler.h",
-      "desktop_media_picker_controller.cc",
-      "desktop_media_picker_controller.h",
       "desktop_media_picker_utils.cc",
       "desktop_media_picker_utils.h",
       "media_stream_focus_delegate.cc",
       "media_stream_focus_delegate.h",
-      "tab_capture_access_handler.cc",
-      "tab_capture_access_handler.h",
       "tab_desktop_media_list.cc",
       "tab_desktop_media_list.h",
     ]
@@ -193,6 +199,7 @@ source_set("webrtc") {
       "//extensions/buildflags",
     ]
     deps += [
+      "//chrome/browser/controlled_frame:media_access_handler",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/web_applications",
@@ -214,6 +221,13 @@ source_set("webrtc") {
     deps += [ "//chrome/browser/ui:url_identity" ]
     if (enable_glic) {
       deps += [ "//chrome/browser/glic" ]
+    }
+
+    if (is_win) {
+      sources += [
+        "desktop_capture_devices_util_win.cc",
+        "desktop_capture_devices_util_win.h",
+      ]
     }
   }
 
@@ -239,6 +253,10 @@ source_set("webrtc") {
     sources += [
       "desktop_media_list_ash.cc",
       "desktop_media_list_ash.h",
+      "multi_capture/multi_capture_data_service.cc",
+      "multi_capture/multi_capture_data_service.h",
+      "multi_capture/multi_capture_data_service_factory.cc",
+      "multi_capture/multi_capture_data_service_factory.h",
       "multi_capture/multi_capture_usage_indicator_service.cc",
       "multi_capture/multi_capture_usage_indicator_service.h",
       "multi_capture/multi_capture_usage_indicator_service_factory.cc",
@@ -251,7 +269,6 @@ source_set("webrtc") {
       "//chrome/browser/ash/arc/screen_capture",
       "//chrome/browser/ash/notifications",
       "//chrome/browser/ash/policy/handlers",
-      "//chrome/browser/ash/policy/multi_screen_capture",
       "//chrome/browser/ash/policy/uploading",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
@@ -259,7 +276,7 @@ source_set("webrtc") {
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/ui/ash/keyboard",
       "//chrome/browser/ui/ash/media_client",
-      "//chrome/browser/web_applications:web_applications",
+      "//chrome/browser/web_applications",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/system",
       "//components/user_manager",
@@ -270,7 +287,6 @@ source_set("webrtc") {
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/notifications",
       "//chrome/browser/ash/arc/screen_capture",
-      "//chrome/browser/ash/policy/multi_screen_capture",
       "//chrome/browser/ash/policy/uploading",
       "//chrome/browser/ui/ash/keyboard",
       "//chrome/browser/ui/ash/media_client",
@@ -306,4 +322,12 @@ source_set("test_support") {
     ":webrtc",
     "//testing/gmock",
   ]
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  java_cpp_enum("java_enums") {
+    sources = [ "capture_policy_utils.h" ]
+  }
 }

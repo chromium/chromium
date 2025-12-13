@@ -4,11 +4,13 @@
 
 #include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 
+#include "base/byte_count.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/power_monitor/cpu_frequency_utils.h"
 #include "base/process/process_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
@@ -34,8 +37,6 @@ namespace performance_manager {
 namespace {
 
 MetricsProviderDesktop* g_metrics_provider = nullptr;
-
-uint64_t kBytesPerMb = 1024 * 1024;
 
 #if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 enum class CpuThroughputEstimatedStatus {
@@ -80,7 +81,8 @@ CpuThroughputEstimatedStatus EstimateCpuThroughputStatus(
   return CpuThroughputEstimatedStatus::kNormal;
 }
 
-constexpr char kCpuEstimationEventCategory[] = "power";
+constexpr char kCpuEstimationEventCategory[] =
+    "performance_manager.cpu_metrics";
 constexpr char kCpuEstimationEvent[] = "CpuStatusSampling";
 
 constexpr char kCpuEstimationStatusNormalEvent[] =
@@ -136,12 +138,10 @@ void EmitCpuStatusSamplingTraceEvents(base::TimeTicks posted_at_time,
 
   base::TimeTicks end_time = started_running_time + wall_time;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationEvent, TRACE_ID_LOCAL(id),
-      posted_at_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(kCpuEstimationEventCategory,
-                                                 kCpuEstimationEvent,
-                                                 TRACE_ID_LOCAL(id), end_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationEvent,
+                    perfetto::Track::FromPointer(id), posted_at_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  end_time);
 
   const char* selected;
   switch (status) {
@@ -166,41 +166,34 @@ void EmitCpuStatusSamplingTraceEvents(base::TimeTicks posted_at_time,
       break;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(kCpuEstimationEventCategory,
-                                                   selected, TRACE_ID_LOCAL(id),
-                                                   posted_at_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, selected, TRACE_ID_LOCAL(id), end_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory,
+                    perfetto::StaticString(selected),
+                    perfetto::Track::FromPointer(id), posted_at_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  end_time);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationQueuedEvent,
-      TRACE_ID_LOCAL(id), posted_at_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationQueuedEvent,
-      TRACE_ID_LOCAL(id), started_running_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationQueuedEvent,
+                    perfetto::Track::FromPointer(id), posted_at_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  started_running_time);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationRunningEvent,
-      TRACE_ID_LOCAL(id), started_running_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(kCpuEstimationEventCategory,
-                                                 kCpuEstimationRunningEvent,
-                                                 TRACE_ID_LOCAL(id), end_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationRunningEvent,
+                    perfetto::Track::FromPointer(id), started_running_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  end_time);
 
   // Emit a block for the running thread time
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationThreadTimeEvent,
-      TRACE_ID_LOCAL(id), started_running_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationThreadTimeEvent,
-      TRACE_ID_LOCAL(id), started_running_time + thread_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationThreadTimeEvent,
+                    perfetto::Track::FromPointer(id), started_running_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  started_running_time + thread_time);
 
   // And then one of the wall time spent descheduled
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
-      TRACE_ID_LOCAL(id), started_running_time + thread_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
-      TRACE_ID_LOCAL(id), started_running_time + wall_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
+                    perfetto::Track::FromPointer(id),
+                    started_running_time + thread_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  started_running_time + wall_time);
 }
 #endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 
@@ -610,22 +603,22 @@ void MetricsProviderDesktop::RecordDiskMetrics() {
     return;
   }
 
-  if (pending_disk_metrics_->free_bytes == -1 ||
-      pending_disk_metrics_->total_bytes == -1) {
+  if (pending_disk_metrics_->free_bytes.is_negative() ||
+      !pending_disk_metrics_->total_bytes.is_positive()) {
     return;
   }
 
   base::UmaHistogramCustomCounts(
       "PerformanceManager.DiskStats.UserDataDirFreeSpaceMb",
-      pending_disk_metrics_->free_bytes /
-          kBytesPerMb,  // space_info is bytes, convert to Mb
-      0, 10240,  // It's fine to bucket everything >10Gb as "large enough"
+      pending_disk_metrics_->free_bytes.InMiB(), 0,
+      base::GiB(10)
+          .InMiB(),  // It's fine to bucket everything >10Gb as "large enough"
       100);
   // Also report as a percentage of capacity
   base::UmaHistogramPercentage(
       "PerformanceManager.DiskStats.UserDataDirFreeSpacePercent",
-      pending_disk_metrics_->free_bytes * 100 /
-          pending_disk_metrics_->total_bytes);
+      pending_disk_metrics_->free_bytes.InBytes() * 100 /
+          pending_disk_metrics_->total_bytes.InBytes());
 
   pending_disk_metrics_ = std::nullopt;
 }
@@ -649,16 +642,27 @@ void MetricsProviderDesktop::PostDiskMetricsTask() {
                            base::Unretained(this)));
 }
 
+void MetricsProviderDesktop::SetDiskMetricsForTesting(
+    std::optional<DiskMetrics> metrics) {
+  disk_metrics_for_testing_ = metrics;
+}
+
 MetricsProviderDesktop::DiskMetrics
 MetricsProviderDesktop::DiskMetricsThreadPoolGetter::ComputeDiskMetrics(
     const base::FilePath& user_data_dir) {
   return {
-      .free_bytes = base::SysInfo::AmountOfFreeDiskSpace(user_data_dir),
-      .total_bytes = base::SysInfo::AmountOfTotalDiskSpace(user_data_dir),
+      .free_bytes = base::ByteCount(
+          base::SysInfo::AmountOfFreeDiskSpace(user_data_dir).value_or(-1)),
+      .total_bytes = base::ByteCount(
+          base::SysInfo::AmountOfTotalDiskSpace(user_data_dir).value_or(-1)),
   };
 }
 
 void MetricsProviderDesktop::SavePendingDiskMetrics(DiskMetrics metrics) {
+  if (disk_metrics_for_testing_) {
+    pending_disk_metrics_ = *disk_metrics_for_testing_;
+    return;
+  }
   pending_disk_metrics_ = metrics;
 }
 

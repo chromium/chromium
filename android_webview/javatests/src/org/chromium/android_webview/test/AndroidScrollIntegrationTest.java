@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 
 import android.annotation.SuppressLint;
@@ -82,12 +84,12 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         int mDeltaY;
 
         public int getDeltaX() {
-            assert getCallCount() > 0;
+            assertThat(getCallCount()).isGreaterThan(0);
             return mDeltaX;
         }
 
         public int getDeltaY() {
-            assert getCallCount() > 0;
+            assertThat(getCallCount()).isGreaterThan(0);
             return mDeltaY;
         }
 

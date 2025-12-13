@@ -137,11 +137,11 @@ std::optional<std::string> Intent::GetIntentConditionValueByType(
       return action;
     }
     case ConditionType::kScheme: {
-      return url.has_value() ? std::optional<std::string>(url->scheme())
+      return url.has_value() ? std::optional<std::string>(url->GetScheme())
                              : std::nullopt;
     }
     case ConditionType::kPath: {
-      return url.has_value() ? std::optional<std::string>(url->path())
+      return url.has_value() ? std::optional<std::string>(url->GetPath())
                              : std::nullopt;
     }
     case ConditionType::kMimeType: {
@@ -170,7 +170,7 @@ bool Intent::MatchAuthorityCondition(const ConditionPtr& condition) {
       [this, &port](const ConditionValuePtr& condition_value) {
         apps_util::AuthorityView match_authority =
             apps_util::AuthorityView::Decode(condition_value->value);
-        if (!apps_util::PatternMatchValue(url->host(),
+        if (!apps_util::PatternMatchValue(url->GetHost(),
                                           condition_value->match_type,
                                           match_authority.host)) {
           return false;

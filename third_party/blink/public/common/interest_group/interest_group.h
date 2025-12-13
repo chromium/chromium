@@ -138,7 +138,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   std::vector<std::string> GetAllKAnonKeys() const;
 
   // Parses string representation of a TrustedBiddingSignalsSlotSizeMode. A
-  // template so it works on wtf::Strings and std::strings. Returns kNone when
+  // template so it works on blink::Strings and std::strings. Returns kNone when
   // passed an unrecognized mode, for forward compatibility.
   template <class StringType>
   static TrustedBiddingSignalsSlotSizeMode

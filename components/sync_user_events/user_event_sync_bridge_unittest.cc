@@ -81,7 +81,7 @@ class TestGlobalIdMapper : public GlobalIdMapper {
     callback_ = std::move(callback);
   }
 
-  int64_t GetLatestGlobalId(int64_t global_id) override {
+  int64_t GetLatestGlobalId(int64_t global_id) const override {
     auto iter = id_map_.find(global_id);
     return iter == id_map_.end() ? global_id : iter->second;
   }
@@ -137,7 +137,7 @@ class UserEventSyncBridgeTest : public testing::Test {
   TestGlobalIdMapper* mapper() { return &test_global_id_mapper_; }
 
   std::map<std::string, sync_pb::EntitySpecifics> GetAllDataForDebugging() {
-    std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
+    const std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
     EXPECT_NE(nullptr, batch);
 
     std::map<std::string, sync_pb::EntitySpecifics> storage_key_to_specifics;
@@ -152,7 +152,8 @@ class UserEventSyncBridgeTest : public testing::Test {
 
   std::unique_ptr<sync_pb::EntitySpecifics> GetDataForCommit(
       const std::string& storage_key) {
-    std::unique_ptr<DataBatch> batch = bridge_->GetDataForCommit({storage_key});
+    const std::unique_ptr<DataBatch> batch =
+        bridge_->GetDataForCommit({storage_key});
     EXPECT_NE(nullptr, batch);
 
     std::unique_ptr<sync_pb::EntitySpecifics> specifics;
@@ -252,7 +253,7 @@ TEST_F(UserEventSyncBridgeTest, ApplyIncrementalSyncChanges) {
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(
       EntityChange::CreateDelete(storage_key1, syncer::EntityData()));
-  auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
+  const auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error_on_delete);
   EXPECT_THAT(GetAllDataForDebugging(), SizeIs(1));
@@ -263,10 +264,10 @@ TEST_F(UserEventSyncBridgeTest, ApplyIncrementalSyncChanges) {
 TEST_F(UserEventSyncBridgeTest, HandleGlobalIdChange) {
   WaitUntilModelReadyToSync();
 
-  int64_t first_id = 11;
-  int64_t second_id = 12;
-  int64_t third_id = 13;
-  int64_t fourth_id = 14;
+  constexpr int64_t first_id = 11;
+  constexpr int64_t second_id = 12;
+  constexpr int64_t third_id = 13;
+  constexpr int64_t fourth_id = 14;
 
   std::string storage_key;
   EXPECT_CALL(*processor(), Put).WillOnce(WithArg<0>(SaveArg<0>(&storage_key)));
@@ -289,7 +290,7 @@ TEST_F(UserEventSyncBridgeTest, HandleGlobalIdChange) {
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(
       EntityChange::CreateDelete(storage_key, syncer::EntityData()));
-  auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
+  const auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error_on_delete);
   EXPECT_THAT(GetAllDataForDebugging(), IsEmpty());
@@ -304,10 +305,10 @@ TEST_F(UserEventSyncBridgeTest, HandleGlobalIdChange) {
 TEST_F(UserEventSyncBridgeTest, MulipleEventsChanging) {
   WaitUntilModelReadyToSync();
 
-  int64_t first_id = 11;
-  int64_t second_id = 12;
-  int64_t third_id = 13;
-  int64_t fourth_id = 14;
+  constexpr int64_t first_id = 11;
+  constexpr int64_t second_id = 12;
+  constexpr int64_t third_id = 13;
+  constexpr int64_t fourth_id = 14;
   const UserEventSpecifics specifics1 = CreateSpecifics(101u, first_id, 2u);
   const UserEventSpecifics specifics2 = CreateSpecifics(102u, second_id, 4u);
   const UserEventSpecifics specifics3 = CreateSpecifics(103u, third_id, 6u);

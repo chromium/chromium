@@ -20,15 +20,15 @@ FAIL element.setAttributeNS("http://example.com/", "0div", 'value'); expected ex
 FAIL element.setAttributeNS("http://example.com/", "di<v", 'value'); expected expected no exception, threw INVALID_CHARACTER_ERR
 FAIL element.setAttributeNS("http://example.com/", "-div", 'value'); expected expected no exception, threw INVALID_CHARACTER_ERR
 FAIL element.setAttributeNS("http://example.com/", ".div", 'value'); expected expected no exception, threw INVALID_CHARACTER_ERR
-FAIL element.setAttributeNS(null, ":div", 'value'); expected expected no exception, threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS(null, ":div", 'value'); threw INVALID_CHARACTER_ERR
 PASS element.setAttributeNS(null, "div:", 'value'); threw INVALID_CHARACTER_ERR
-FAIL element.setAttributeNS("http://example.com/", ":div", 'value'); expected expected no exception, threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", ":div", 'value'); threw INVALID_CHARACTER_ERR
 PASS element.setAttributeNS("http://example.com/", "div:", 'value'); threw INVALID_CHARACTER_ERR
 PASS element.setAttributeNS(null, "d:iv", 'value'); threw NAMESPACE_ERR
 FAIL element.setAttributeNS(null, "a:b:c", 'value'); expected NAMESPACE_ERR, threw INVALID_CHARACTER_ERR
 FAIL element.setAttributeNS("http://example.com/", "a:b:c", 'value'); expected expected no exception, threw INVALID_CHARACTER_ERR
-FAIL element.setAttributeNS(null, "a::c", 'value'); expected NAMESPACE_ERR, threw INVALID_CHARACTER_ERR
-FAIL element.setAttributeNS("http://example.com/", "a::c", 'value'); expected expected no exception, threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS(null, "a::c", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "a::c", 'value'); threw INVALID_CHARACTER_ERR
 FAIL element.setAttributeNS("http://example.com/", "a:0", 'value'); expected expected no exception, threw INVALID_CHARACTER_ERR
 FAIL element.setAttributeNS("http://example.com/", "0:a", 'value'); expected expected no exception, threw INVALID_CHARACTER_ERR
 PASS element.setAttributeNS("http://example.com/", "a:_", 'value')

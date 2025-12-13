@@ -18,9 +18,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "crypto/secure_hash.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -35,9 +35,11 @@
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
+#include "services/network/shared_dictionary/shared_dictionary_document_request_metadata_result.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
+#include "services/network/shared_dictionary/shared_dictionary_storage_result.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -254,7 +256,6 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
     std::unique_ptr<sql::Database> db =
         std::make_unique<sql::Database>(sql::test::kTestTag);
     ASSERT_TRUE(db->Open(database_path_));
-
     sql::MetaTable meta_table;
     ASSERT_TRUE(meta_table.Init(db.get(), kCurrentVersionNumber,
                                 kCurrentVersionNumber));
@@ -262,6 +263,13 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
       ASSERT_TRUE(db->Execute(query));
     }
     db->Close();
+  }
+
+  void WaitForMetadataReady(SharedDictionaryManager* manager) {
+    base::test::TestFuture<const std::vector<net::SharedDictionaryUsageInfo>&>
+        future;
+    manager->GetUsageInfo(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -273,8 +281,139 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
   base::FilePath cache_directory_path_;
   // `file_permissions_restorer_` must be below `tmp_directory_` to restore the
   // file permission correctly.
+
   std::unique_ptr<base::FilePermissionRestorer> file_permissions_restorer_;
 };
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       DocumentRequestMetadataResult_MetadataReady) {
+  base::HistogramTester histogram_tester;
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict"), "test*",
+                    kTestData1);
+    FlushCacheTasks();
+  }
+
+  // Re-create manager to simulate new session.
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  // Wait for metadata to load.
+  WaitForMetadataReady(manager.get());
+  // GetDictionarySync for a document request.
+  scoped_refptr<net::SharedDictionary> dictionary = storage->GetDictionarySync(
+      GURL("https://origin.test/test"), mojom::RequestDestination::kDocument);
+  ASSERT_TRUE(dictionary);
+
+  histogram_tester.ExpectUniqueSample(
+      "Network.SharedDictionary.DocumentRequestMetadataResult",
+      SharedDictionaryDocumentRequestMetadataResult::kMetadataReady, 1);
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       DocumentRequestMetadataResult_MetadataPending) {
+  base::HistogramTester histogram_tester;
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict"), "test*",
+                    kTestData1);
+    FlushCacheTasks();
+  }
+
+  // Re-create manager to simulate new session.
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  // Call GetDictionarySync immediately (before WaitForMetadataReady).
+  // Metadata is not ready, so it should return nullptr.
+  scoped_refptr<net::SharedDictionary> dictionary = storage->GetDictionarySync(
+      GURL("https://origin.test/test"), mojom::RequestDestination::kDocument);
+  ASSERT_FALSE(dictionary);
+
+  // Wait for tasks to complete (metadata loading + pending check task).
+  WaitForMetadataReady(manager.get());
+  histogram_tester.ExpectUniqueSample(
+      "Network.SharedDictionary.DocumentRequestMetadataResult",
+      SharedDictionaryDocumentRequestMetadataResult::kMetadataPending, 1);
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       DocumentRequestMetadataResult_NoDictionary) {
+  base::HistogramTester histogram_tester;
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  WaitForMetadataReady(manager.get());
+
+  // No dictionary written.
+  scoped_refptr<net::SharedDictionary> dictionary = storage->GetDictionarySync(
+      GURL("https://origin.test/test"), mojom::RequestDestination::kDocument);
+  ASSERT_FALSE(dictionary);
+  histogram_tester.ExpectTotalCount(
+      "Network.SharedDictionary.DocumentRequestMetadataResult", 0);
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       DocumentRequestMetadataResult_NotDocument) {
+  base::HistogramTester histogram_tester;
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict"), "test*",
+                    kTestData1);
+    FlushCacheTasks();
+  }
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  WaitForMetadataReady(manager.get());
+
+  // Request destination is kFrame, not kDocument.
+  scoped_refptr<net::SharedDictionary> dictionary = storage->GetDictionarySync(
+      GURL("https://origin.test/test"), mojom::RequestDestination::kFrame);
+  ASSERT_TRUE(dictionary);
+
+  histogram_tester.ExpectTotalCount(
+      "Network.SharedDictionary.DocumentRequestMetadataResult", 0);
+}
 
 TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
   base::test::ScopedFeatureList feature_list;
@@ -353,6 +492,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
                   kTestData1);
   WriteDictionary(storage.get(), GURL("https://origin.test/dict"),
                   "othertestfile*", kTestData1);
+  WriteDictionary(storage.get(), GURL("https://origin.test/dict"),
+                  "thirdtestfile*", kTestData1);
 
   FlushCacheTasks();
 
@@ -370,10 +511,13 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
               })));
     run_loop.Run();
   }
-  // Request a second dictionary to push the first one out of the LRU cache
-  // so it will fall back to the ref-counted cache.
+  // Request a second and third dictionary to push the first one out of the
+  // 2-entry LRU cache so it will fall back to the ref-counted cache.
   scoped_refptr<net::SharedDictionary> unused_dict =
       storage->GetDictionarySync(GURL("https://origin.test/othertestfile?1"),
+                                 mojom::RequestDestination::kDocument);
+  scoped_refptr<net::SharedDictionary> unused_dict2 =
+      storage->GetDictionarySync(GURL("https://origin.test/thirdtestfile?1"),
                                  mojom::RequestDestination::kDocument);
   scoped_refptr<net::SharedDictionary> dict2 =
       storage->GetDictionarySync(GURL("https://origin.test/testfile?2"),
@@ -397,7 +541,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
           base::Bucket(
               static_cast<int>(
                   SharedDictionaryStorageOnDisk::CacheResult::kCacheMiss),
-              2),
+              3),
           base::Bucket(
               static_cast<int>(
                   SharedDictionaryStorageOnDisk::CacheResult::kCacheHitActive),
@@ -2336,6 +2480,410 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   histogram_tester.ExpectUniqueSample(
       "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
       0, 1);
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest, MetadataNotReadyOnFirstUse_Evicted) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  {
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+
+    // Ensure the storage is initialized.
+    task_environment_.RunUntilIdle();
+  }
+
+  // The cache size is 10 (kCachedStorageMaxSize). We need to add 11 more
+  // storages to evict the first one.
+  for (int i = 0; i < 11; ++i) {
+    manager->GetStorage(net::SharedDictionaryIsolationKey(
+        url::Origin::Create(GURL(base::StringPrintf("https://test%d.com", i))),
+        net::SchemefulSite(GURL(base::StringPrintf("https://test%d.com", i)))));
+  }
+
+  // The storage for `isolation_key` should have been evicted.
+  // Re-requesting it should create a new storage instance.
+  scoped_refptr<SharedDictionaryStorage> new_storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(new_storage);
+
+  // Immediately call GetDictionarySync on the new storage. Metadata loading
+  // is asynchronous, so it shouldn't be ready yet.
+  // We expect GetDictionarySync to return nullptr because metadata isn't
+  // loaded.
+  scoped_refptr<net::SharedDictionary> dict =
+      new_storage->GetDictionarySync(GURL("https://origin.test/testfile"),
+                                     mojom::RequestDestination::kDocument);
+  EXPECT_FALSE(dict);
+
+  // Verify the metrics.
+  // IsMetadataReadyOnFirstUse should be false.
+  // IsMetadataReadyOnFirstUse.PreviouslyEvicted should be false.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+      "PreviouslyEvicted",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.MemoryCache.PreviousEvictionReason",
+      static_cast<int>(SharedDictionaryStorageEvictionReason::kCacheFull), 1);
+  // PreviouslyEvictedByMemoryPressure should NOT be logged.
+  histogram_tester.ExpectTotalCount(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+      "PreviouslyEvictedByMemoryPressure",
+      0);
+
+  // Run tasks to let metadata loading finish.
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       MetadataNotReadyOnFirstUse_PreviouslyEvictedByMemoryPressure) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  {
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+
+    // Ensure the storage is initialized.
+    task_environment_.RunUntilIdle();
+  }
+
+  // Trigger memory pressure to evict all cached storages.
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  task_environment_.RunUntilIdle();
+
+  // The storage for `isolation_key` should have been evicted.
+  // Re-requesting it should create a new storage instance.
+  scoped_refptr<SharedDictionaryStorage> new_storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(new_storage);
+
+  // Immediately call GetDictionarySync.
+  scoped_refptr<net::SharedDictionary> dict =
+      new_storage->GetDictionarySync(GURL("https://origin.test/testfile"),
+                                     mojom::RequestDestination::kDocument);
+  EXPECT_FALSE(dict);
+
+  // Verify the metrics.
+  // IsMetadataReadyOnFirstUse should be false.
+  // IsMetadataReadyOnFirstUse.PreviouslyEvicted should be false.
+  // IsMetadataReadyOnFirstUse.PreviouslyEvictedByMemoryPressure
+  // should be false.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+      "PreviouslyEvicted",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.MemoryCache.PreviousEvictionReason",
+      static_cast<int>(
+          SharedDictionaryStorageEvictionReason::kMemoryPressureCritical),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+      "PreviouslyEvictedByMemoryPressure",
+      false, 1);
+
+  // Run tasks to let metadata loading finish.
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest, MetadataReadyOnFirstUse_Evicted) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  {
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+
+    // Ensure the storage is initialized.
+    task_environment_.RunUntilIdle();
+  }
+
+  // Force eviction of the storage from the manager's cache.
+  // The cache size is 10 (kCachedStorageMaxSize). We need to add 11 more
+  // storages to evict the first one.
+  for (int i = 0; i < 11; ++i) {
+    manager->GetStorage(net::SharedDictionaryIsolationKey(
+        url::Origin::Create(GURL(base::StringPrintf("https://test%d.com", i))),
+        net::SchemefulSite(GURL(base::StringPrintf("https://test%d.com", i)))));
+  }
+
+  // The storage for `isolation_key` should have been evicted.
+  // Re-requesting it should create a new storage instance.
+  scoped_refptr<SharedDictionaryStorage> new_storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(new_storage);
+
+  // Run tasks to let metadata loading finish.
+  task_environment_.RunUntilIdle();
+
+  // Call GetDictionarySync on the new storage. Metadata loading should be
+  // finished.
+  scoped_refptr<net::SharedDictionary> dict =
+      new_storage->GetDictionarySync(GURL("https://origin.test/testfile"),
+                                     mojom::RequestDestination::kDocument);
+
+  // Verify the metrics.
+  // IsMetadataReadyOnFirstUse should be true.
+  // IsMetadataReadyOnFirstUse.PreviouslyEvicted should be true.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+      "PreviouslyEvicted",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.MemoryCache.PreviousEvictionReason",
+      static_cast<int>(SharedDictionaryStorageEvictionReason::kCacheFull), 1);
+  // PreviouslyEvictedByMemoryPressure should NOT be logged.
+  histogram_tester.ExpectTotalCount(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+      "PreviouslyEvictedByMemoryPressure",
+      0);
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       MetadataReadyOnFirstUse_PreviouslyEvictedByMemoryPressure) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  {
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+
+    // Ensure the storage is initialized.
+    task_environment_.RunUntilIdle();
+  }
+
+  // Trigger memory pressure to evict all cached storages.
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  task_environment_.RunUntilIdle();
+
+  // The storage for `isolation_key` should have been evicted.
+  // Re-requesting it should create a new storage instance.
+  scoped_refptr<SharedDictionaryStorage> new_storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(new_storage);
+
+  // Run tasks to let metadata loading finish.
+  task_environment_.RunUntilIdle();
+
+  // Call GetDictionarySync. Metadata loading should be finished.
+  scoped_refptr<net::SharedDictionary> dict =
+      new_storage->GetDictionarySync(GURL("https://origin.test/testfile"),
+                                     mojom::RequestDestination::kDocument);
+
+  // Verify the metrics.
+  // IsMetadataReadyOnFirstUse should be true.
+  // IsMetadataReadyOnFirstUse.PreviouslyEvicted should be true.
+  // IsMetadataReadyOnFirstUse.PreviouslyEvictedByMemoryPressure
+  // should be true.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+      "PreviouslyEvicted",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.MemoryCache.PreviousEvictionReason",
+      static_cast<int>(
+          SharedDictionaryStorageEvictionReason::kMemoryPressureCritical),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+      "PreviouslyEvictedByMemoryPressure",
+      true, 1);
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       MetadataNotReadyOnFirstUse_EvictedByMemoryPressureModerate) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  {
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+
+    // Ensure the storage is initialized.
+    task_environment_.RunUntilIdle();
+  }
+
+  // Trigger memory pressure to evict all cached storages.
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  task_environment_.RunUntilIdle();
+
+  // The storage for `isolation_key` should have been evicted.
+  // Re-requesting it should create a new storage instance.
+  scoped_refptr<SharedDictionaryStorage> new_storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(new_storage);
+
+  // Immediately call GetDictionarySync.
+  scoped_refptr<net::SharedDictionary> dict =
+      new_storage->GetDictionarySync(GURL("https://origin.test/testfile"),
+                                     mojom::RequestDestination::kDocument);
+  EXPECT_FALSE(dict);
+
+  // Verify the metrics.
+  // IsMetadataReadyOnFirstUse should be false.
+  // IsMetadataReadyOnFirstUse.PreviouslyEvicted should be false.
+  // IsMetadataReadyOnFirstUse.PreviouslyEvictedByMemoryPressure should be
+  // false.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+      "PreviouslyEvicted",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.MemoryCache.PreviousEvictionReason",
+      static_cast<int>(
+          SharedDictionaryStorageEvictionReason::kMemoryPressureModerate),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+      "PreviouslyEvictedByMemoryPressure",
+      false, 1);
+
+  // Run tasks to let metadata loading finish.
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       MetadataReadyOnFirstUse_EvictedByMemoryPressureModerate) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  {
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+
+    // Ensure the storage is initialized.
+    task_environment_.RunUntilIdle();
+  }
+
+  // Trigger memory pressure to evict all cached storages.
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  task_environment_.RunUntilIdle();
+
+  // The storage for `isolation_key` should have been evicted.
+  // Re-requesting it should create a new storage instance.
+  scoped_refptr<SharedDictionaryStorage> new_storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(new_storage);
+
+  // Run tasks to let metadata loading finish.
+  task_environment_.RunUntilIdle();
+
+  // Call GetDictionarySync. Metadata loading should be finished.
+  scoped_refptr<net::SharedDictionary> dict =
+      new_storage->GetDictionarySync(GURL("https://origin.test/testfile"),
+                                     mojom::RequestDestination::kDocument);
+
+  // Verify the metrics.
+  // IsMetadataReadyOnFirstUse should be true.
+  // IsMetadataReadyOnFirstUse.PreviouslyEvicted should be true.
+  // IsMetadataReadyOnFirstUse.PreviouslyEvictedByMemoryPressure should be true.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+      "PreviouslyEvicted",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.MemoryCache.PreviousEvictionReason",
+      static_cast<int>(
+          SharedDictionaryStorageEvictionReason::kMemoryPressureModerate),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+      "PreviouslyEvictedByMemoryPressure",
+      true, 1);
+}
+TEST_F(SharedDictionaryManagerOnDiskTest, StorageResultSuccess) {
+  base::HistogramTester histogram_tester;
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  WriteDictionary(storage.get(), GURL("https://origin.test/dict"), "testfile*",
+                  kTestData1);
+  FlushCacheTasks();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kSuccess, 1);
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest, StorageResultDatabaseFailure) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  // Create a manager and write a dictionary to initialize the database.
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict_init"),
+                    "testfile_init*", kTestData1);
+    FlushCacheTasks();
+  }
+
+  // Now corrupt the database.
+  CorruptDatabase();
+
+  base::HistogramTester histogram_tester;
+
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    FlushCacheTasks();
+
+    // WriteDictionary will try to write to the corrupted database.
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict"),
+                    "testfile*", kTestData1);
+    FlushCacheTasks();
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kErrorDatabaseWriteFailed, 1);
 }
 
 }  // namespace network

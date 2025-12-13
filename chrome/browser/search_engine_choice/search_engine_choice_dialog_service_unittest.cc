@@ -34,7 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "third_party/search_engines_data/resources/definitions/regional_settings.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 using ::country_codes::CountryId;
 using ::search_engines::SearchEngineChoiceScreenConditions;
@@ -257,6 +257,10 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyLearnMoreLinkClicked) {
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kLearnMoreWasDisplayed,
       1);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kPumaSearchChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kLearnMoreWasDisplayed,
+      1);
 
   search_engine_choice_dialog_service->NotifyLearnMoreLinkClicked(
       SearchEngineChoiceDialogService::EntryPoint::kFirstRunExperience);
@@ -264,11 +268,20 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyLearnMoreLinkClicked) {
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kFreLearnMoreWasDisplayed,
       1);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kPumaSearchChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kFreLearnMoreWasDisplayed,
+      1);
 
   search_engine_choice_dialog_service->NotifyLearnMoreLinkClicked(
       SearchEngineChoiceDialogService::EntryPoint::kProfileCreation);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::
+          kProfileCreationLearnMoreDisplayed,
+      1);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kPumaSearchChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::
           kProfileCreationLearnMoreDisplayed,
       1);
@@ -284,16 +297,29 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyMoreButtonClicked) {
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kMoreButtonClicked, 1);
 
+  histogram_tester().ExpectBucketCount(
+      search_engines::kPumaSearchChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kMoreButtonClicked, 1);
+
   search_engine_choice_dialog_service->NotifyMoreButtonClicked(
       SearchEngineChoiceDialogService::EntryPoint::kFirstRunExperience);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kFreMoreButtonClicked, 1);
 
+  histogram_tester().ExpectBucketCount(
+      search_engines::kPumaSearchChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kFreMoreButtonClicked, 1);
+
   search_engine_choice_dialog_service->NotifyMoreButtonClicked(
       SearchEngineChoiceDialogService::EntryPoint::kProfileCreation);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::
+          kProfileCreationMoreButtonClicked,
+      1);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kPumaSearchChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::
           kProfileCreationMoreButtonClicked,
       1);
@@ -324,6 +350,10 @@ TEST_F(SearchEngineChoiceDialogServiceTest, RegisterDialog) {
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed,
       1);
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kPumaSearchChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed,
+      1);
 
   EXPECT_EQ(
       user_action_tester().GetActionCount("SearchEngineChoiceScreenShown"), 1);
@@ -339,6 +369,9 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade_Dialog) {
       SearchEngineChoiceDialogService::EntryPoint::kDialog);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet, 1);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kPumaSearchChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet, 1);
   // Recorded when we call `SetUserSelectedDefaultSearchProvider()`.
   histogram_tester().ExpectUniqueSample(
@@ -357,6 +390,9 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade_Fre) {
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kPumaSearchChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
@@ -372,6 +408,11 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade_ProfileCreation) {
       SearchEngineChoiceDialogService::EntryPoint::kProfileCreation);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::
+          kProfileCreationDefaultWasSet,
+      1);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kPumaSearchChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::
           kProfileCreationDefaultWasSet,
       1);

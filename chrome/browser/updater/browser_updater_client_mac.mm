@@ -13,7 +13,10 @@
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/updater/registration_data.h"
 #include "components/version_info/version_info.h"
+
+namespace updater {
 
 std::string BrowserUpdaterClient::GetAppId() {
   return std::string(base::apple::BaseBundleID());
@@ -23,12 +26,12 @@ base::FilePath BrowserUpdaterClient::GetExpectedEcp() {
   return base::apple::OuterBundlePath();
 }
 
-updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
+RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
   base::FilePath bundle = base::apple::OuterBundlePath();
-  updater::RegistrationRequest req;
+  RegistrationRequest req;
   req.app_id = GetAppId();
   google_brand::GetBrand(&req.brand_code);
-  req.version = base::Version(version_info::GetVersionNumber());
+  req.version = version_info::GetVersionNumber();
   req.version_path = bundle.AppendASCII("Contents").AppendASCII("Info.plist");
   req.version_key = "KSVersion";
   req.ap = chrome::GetChannelName(chrome::WithExtendedStable(true));
@@ -36,8 +39,9 @@ updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
   return req;
 }
 
-bool BrowserUpdaterClient::AppMatches(
-    const updater::UpdateService::AppState& app) {
+bool BrowserUpdaterClient::AppMatches(const UpdateService::AppState& app) {
   return base::EqualsCaseInsensitiveASCII(app.app_id, GetAppId()) &&
          app.ecp == GetExpectedEcp();
 }
+
+}  // namespace updater

@@ -26,7 +26,7 @@ import java.util.concurrent.Callable;
 public class XrTestRuleUtils {
     /** Essentially a Runnable that can throw exceptions. */
     public interface ChromeLaunchMethod {
-        public void launch() throws Throwable;
+        void launch() throws Throwable;
     }
 
     /**

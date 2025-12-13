@@ -17,6 +17,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -148,7 +149,8 @@ class NotificationPlatformBridgeWinUITest : public InProcessBrowserTest {
                        const std::string& notification_id,
                        const std::optional<int>& action_index,
                        const std::optional<std::u16string>& reply,
-                       const std::optional<bool>& by_user) {
+                       const std::optional<bool>& by_user,
+                       const std::optional<bool>& is_suspicious) {
     last_operation_ = operation;
     last_notification_type_ = notification_type;
     last_origin_ = origin;

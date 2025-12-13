@@ -123,16 +123,13 @@ ink::AffineTransform GetInkThumbnailTransform(
     const gfx::Rect& page_content_rect,
     float scale_factor);
 
-// Converts `ink::Envelope` to screen coordinates as needed for invalidation.
-// Uses the same `orientation`, `page_content_rect`, and `scale_factor`
-// parameters as used in `GetEventToCanonicalTransform()`.  This function
-// uses them in reverse, to convert canonical coordinates back to screen
-// coordinates.  The caller must provide a non-empty `envelope`.
+// Converts `ink::Envelope` to screen coordinates as needed for invalidation
+// using `transform`.
+// - The caller must provide a non-empty `envelope`.
+// - `transform` should be the inverse of GetEventToCanonicalTransform().
 gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
     const ink::Envelope& envelope,
-    PageOrientation orientation,
-    const gfx::Rect& page_content_rect,
-    float scale_factor);
+    const gfx::Transform& transform);
 
 // Returns a transform that converts from canonical coordinates (which has a
 // top-left origin and a different DPI), to PDF coordinates (which has a

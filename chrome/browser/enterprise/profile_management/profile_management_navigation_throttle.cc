@@ -78,7 +78,8 @@ base::flat_map<std::string, SAMLProfileAttributes>& GetAttributeMap() {
   }
 
   std::optional<base::Value> switch_value = base::JSONReader::Read(
-      command_line.GetSwitchValueASCII(switches::kProfileManagementAttributes));
+      command_line.GetSwitchValueASCII(switches::kProfileManagementAttributes),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!switch_value || !switch_value->is_dict()) {
     VLOG(1) << "[Profile management] Failed to parse attributes JSON.";
     return *profile_attributes;
@@ -193,7 +194,7 @@ ProfileManagementNavigationThrottle::~ProfileManagementNavigationThrottle() =
 content::NavigationThrottle::ThrottleCheckResult
 ProfileManagementNavigationThrottle::WillProcessResponse() {
   if (!base::Contains(GetAttributeMap(),
-                      navigation_handle()->GetURL().host())) {
+                      navigation_handle()->GetURL().GetHost())) {
     return PROCEED;
   }
 
@@ -223,7 +224,7 @@ void ProfileManagementNavigationThrottle::OnResponseBodyReady(
   // TODO(crbug.com/40267996): As a fallback, check more attributes that may
   // contain the user's email address.
   const auto profile_attributes =
-      GetAttributeMap().at(navigation_handle()->GetURL().host());
+      GetAttributeMap().at(navigation_handle()->GetURL().GetHost());
   saml_response_parser_ = std::make_unique<SAMLResponseParser>(
       std::vector<std::string>{profile_attributes.name,
                                profile_attributes.domain,
@@ -236,7 +237,7 @@ void ProfileManagementNavigationThrottle::OnResponseBodyReady(
 
 void ProfileManagementNavigationThrottle::OnManagementDataReceived(
     const base::flat_map<std::string, std::string>& attributes) {
-  const std::string navigation_host = navigation_handle()->GetURL().host();
+  const std::string navigation_host = navigation_handle()->GetURL().GetHost();
   DCHECK(base::Contains(GetAttributeMap(), navigation_host));
   const auto profile_attributes = GetAttributeMap().at(navigation_host);
 

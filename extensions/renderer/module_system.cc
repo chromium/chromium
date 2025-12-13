@@ -20,6 +20,7 @@
 #include "extensions/renderer/source_map.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "gin/converter.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_v8_features.h"
 #include "v8/include/v8-exception.h"
@@ -189,7 +190,8 @@ ModuleSystem::ModuleSystem(ScriptContext* context, const SourceMap* source_map)
   // Note: Ensure setting private succeeds with CHECK.
   // TODO(crbug.com/40058107): remove checks once investigation finished.
   CHECK(SetPrivate(global, kModulesField, v8::Object::New(isolate)));
-  CHECK(SetPrivate(global, kModuleSystem, v8::External::New(isolate, this)));
+  CHECK(SetPrivate(global, kModuleSystem,
+                   v8::External::New(isolate, this, gin::kModuleSystemTag)));
   {
     // Note: Ensure privates that were set above can be read immediately.
     // TODO(crbug.com/40058107): remove checks once investigation finished.
@@ -420,7 +422,8 @@ void ModuleSystem::LazyFieldGetter(
   }
 
   ModuleSystem* module_system = static_cast<ModuleSystem*>(
-      v8::Local<v8::External>::Cast(module_system_value)->Value());
+      v8::Local<v8::External>::Cast(module_system_value)
+          ->Value(gin::kModuleSystemTag));
 
   v8::Local<v8::Value> v8_module_name;
   if (!GetPrivateProperty(context, parameters, kModuleName, &v8_module_name)) {

@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "base/hash/md5.h"
 #include "base/json/json_reader.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
+#include "crypto/obsolete/md5.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/macros.h"
 
@@ -95,9 +97,9 @@ bool Image::Load() {
   }
 
   // Verify that the image's checksum matches the checksum in the metadata.
-  base::MD5Digest digest;
-  base::MD5Sum(mapped_file_.bytes(), &digest);
-  if (base::MD5DigestToBase16(digest) != checksum_) {
+  const std::string actual_checksum = base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(mapped_file_.bytes()));
+  if (actual_checksum != checksum_) {
     LOG(ERROR) << "Image checksum not matching metadata";
     return false;
   }
@@ -133,8 +135,8 @@ bool Image::LoadMetadata() {
     return false;
   }
 
-  auto metadata_result =
-      base::JSONReader::ReadAndReturnValueWithError(json_data);
+  auto metadata_result = base::JSONReader::ReadAndReturnValueWithError(
+      json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!metadata_result.has_value()) {
     VLOGF(1) << "Failed to parse image metadata: " << json_path << ": "
              << metadata_result.error().message;
@@ -225,6 +227,10 @@ bool Image::LoadMetadata() {
 
 bool Image::IsMetadataLoaded() const {
   return pixel_format_ != PIXEL_FORMAT_UNKNOWN;
+}
+
+base::span<const uint8_t> Image::DataSpan() const {
+  return mapped_file_.bytes();
 }
 
 uint8_t* Image::Data() const {

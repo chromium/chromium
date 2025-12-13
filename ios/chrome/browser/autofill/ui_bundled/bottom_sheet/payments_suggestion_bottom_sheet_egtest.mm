@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -64,11 +63,18 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
 }  // namespace
 
 @interface PaymentsSuggestionBottomSheetEGTest : ChromeTestCase
+
+- (bool)shouldUseNewBlur;
+
 @end
 
 @implementation PaymentsSuggestionBottomSheetEGTest {
   // Last digits of the credit card
   NSString* _lastDigits;
+}
+
+- (bool)shouldUseNewBlur {
+  return NO;
 }
 
 - (void)setUp {
@@ -104,30 +110,22 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
+  config.features_enabled.push_back(
+      autofill::features::kAutofillEnableCvcStorageAndFilling);
   if ([self isRunningTest:@selector
-            (testOpenPaymentsBottomSheetShowDetailsEditNickname)] ||
-      [self
-          isRunningTest:@selector(testOpenPaymentsBottomSheetAfterLongPress)]) {
-    // Disable V2 for that test case as it doesn't support the flow tested by
-    // that test case.
-    config.features_disabled.push_back(kAutofillPaymentsSheetV2Ios);
-  } else if ([self isRunningTest:@selector
                    (testOpenPaymentsBottomSheetUseCreditCardOnV3)] ||
              [self
                  isRunningTest:@selector
                  (testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3)]) {
     config.features_enabled.push_back(kAutofillPaymentsSheetV3Ios);
-    config.features_enabled.push_back(kStatelessFormSuggestionController);
-  } else if ([self
-                 isRunningTest:@selector(testFillingFromKeyboardOnAutofocus)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillEnableFpanRiskBasedAuthentication);
-  } else if ([self isRunningTest:@selector
-                   (testUpdateBottomSheetOnAddServerCreditCard)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillEnableFpanRiskBasedAuthentication);
   }
+
+  if ([self shouldUseNewBlur]) {
+    config.features_enabled.push_back(kAutofillBottomSheetNewBlur);
+  } else {
+    config.features_disabled.push_back(kAutofillBottomSheetNewBlur);
+  }
+
   return config;
 }
 
@@ -272,7 +270,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
 // Tests that the Payments Bottom Sheet appears when tapping on a credit card
 // related field.
-- (void)testOpenPaymentsBottomSheetUseCreditCard {
+// TODO(crbug.com/444085918): Test is flaky.
+- (void)FLAKY_testOpenPaymentsBottomSheetUseCreditCard {
   [self loadPaymentsPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -308,6 +307,31 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
           expectTotalCount:1
               forHistogram:@"IOS.PaymentsBottomSheet.TimeToSelection"],
       @"IOS.PaymentsBottomSheet.TimeToSelection wasn't recorded");
+
+  // Verify that the page is filled properly.
+  [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
+}
+
+// Tests that the Payments Bottom Sheet appears when tapping on a credit card
+// related field with the new blur logic.
+// TODO(crbug.com/444033658): Fix test and re-enable.
+- (void)DISABLED_testOpenPaymentsBottomSheetUseCreditCardWithNewBlur {
+  [self loadPaymentsPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
+
+  // Verify that the credit card is visible to the user.
+  [[EarlGrey selectElementWithMatcher:grey_text(_lastDigits)]
+      assertWithMatcher:grey_notNil()];
+
+  // Make sure the user is seeing 1 card on the bottom sheet.
+  GREYAssertEqual(1, [AutofillAppInterface localCreditCount],
+                  @"Wrong number of stored credit cards.");
+
+  [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
 
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
@@ -432,7 +456,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
 // Tests that the expected metric is logged when accepting a suggestion from
 // the bottom sheet that is not the first one in the list.
-- (void)testAcceptedSuggestionIndexLogged {
+// TODO(crbug.com/415030578): Fix test and re-enable.
+- (void)DISABLED_testAcceptedSuggestionIndexLogged {
   // Add a credit card to the Personal Data Manager.
   [AutofillAppInterface saveMaskedCreditCard];
 
@@ -533,49 +558,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
       @"index");
 }
 
-// Tests that accessing a long press menu does not disable the bottom sheet.
-- (void)testOpenPaymentsBottomSheetAfterLongPress {
-  [self loadPaymentsPage];
-
-  // Open the Payments Bottom Sheet.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
-
-  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
-
-  // Long press to open context menu.
-  id<GREYMatcher> creditCardEntry = grey_text(_lastDigits);
-
-  [[EarlGrey selectElementWithMatcher:creditCardEntry]
-      performAction:grey_longPress()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithAccessibilityLabel(
-                  l10n_util::GetNSString(
-                      IDS_IOS_PAYMENT_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS)),
-              grey_interactable(), nullptr)] performAction:grey_tap()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Close the context menu.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
-      performAction:grey_tap()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Try to open the Payments Bottom Sheet again.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
-
-  // Make sure the bottom sheet re-opens.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
-}
-
 // Verify that the Payments Bottom Sheet works in incognito mode.
 - (void)testOpenPaymentsBottomSheetIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
@@ -616,59 +598,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
       performAction:grey_tap()];
 
   [ChromeEarlGrey waitForKeyboardToAppear];
-}
-
-// Verify that the Payments Bottom Sheet "Show Details" button opens the proper
-// menu and allows the nickname to be edited.
-- (void)testOpenPaymentsBottomSheetShowDetailsEditNickname {
-  [self loadPaymentsPage];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
-
-  WaitOnResponsiveContinueButton();
-
-  // Long press to open context menu.
-  id<GREYMatcher> creditCardEntry = grey_text(_lastDigits);
-
-  [[EarlGrey selectElementWithMatcher:creditCardEntry]
-      performAction:grey_longPress()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                         IDS_IOS_PAYMENT_BOTTOM_SHEET_SHOW_DETAILS),
-                     grey_interactable(), nullptr)] performAction:grey_tap()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Edit the card's nickname.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
-      performAction:grey_tap()];
-
-  NSString* nickname = @"Card Nickname";
-  [[EarlGrey selectElementWithMatcher:NicknameTextField()]
-      performAction:grey_replaceText(nickname)];
-
-  [[EarlGrey selectElementWithMatcher:SettingToolbarDoneButton()]
-      performAction:grey_tap()];
-
-  // Close the context menu.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
-      performAction:grey_tap()];
-
-  // Reopen the bottom sheet.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
-
-  // Make sure the nickname is active.
-  NSString* nicknameAndCardNumber =
-      [nickname stringByAppendingString:[_lastDigits substringFromIndex:4]];
-  id<GREYMatcher> nicknamedCreditCard = grey_text(nicknameAndCardNumber);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:nicknamedCreditCard];
 }
 
 // Verify that the Payments Bottom Sheet "Show Details" button opens the proper
@@ -754,7 +683,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
   // Close the context menu.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
 
   // Try to reopen the bottom sheet.
@@ -819,6 +748,11 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 // Tests that the payment sheet doesn't spam after filling from the KA on an
 // autofocused field This ensures that crbug.com/389077460 doesn't happen.
 - (void)testFillingFromKeyboardOnAutofocus {
+  // TODO(crbug.com/443234028): Test is flaky on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+  }
+
   // Clear the credit cards to remove the default local cards that aren't needed
   // for this test case.
   [AutofillAppInterface clearCreditCardStore];
@@ -865,6 +799,24 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // autofocused field. Use the continue button of the sheet as a proxy.
   [[EarlGrey selectElementWithMatcher:ContinueButton()]
       assertWithMatcher:grey_nil()];
+}
+
+@end
+
+// Test suite for testing the new blur approach.
+@interface PaymentsSuggestionBottomSheetWithNewBlurEGTest : PaymentsSuggestionBottomSheetEGTest
+
+@end
+
+
+@implementation  PaymentsSuggestionBottomSheetWithNewBlurEGTest
+
+- (bool)shouldUseNewBlur {
+  return YES;
+}
+
+// No op test to have the test fixture visible.
+- (void)testVoid {
 }
 
 @end

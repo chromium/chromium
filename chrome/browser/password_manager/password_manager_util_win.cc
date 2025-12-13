@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <objbase.h>
 
 #include <windows.h>
@@ -14,6 +9,8 @@
 #include <LM.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#include "base/compiler_specific.h"
 
 // SECURITY_WIN32 must be defined in order to get
 // EXTENDED_NAME_FORMAT enumeration.
@@ -135,7 +132,8 @@ DWORD CredentialBufferValidator::IsValid(ULONG auth_package,
   LUID luid;
   HANDLE token = INVALID_HANDLE_VALUE;
 
-  strcpy_s(source.SourceName, std::size(source.SourceName), "Chrome");
+  UNSAFE_TODO(
+      strcpy_s(source.SourceName, std::size(source.SourceName), "Chrome"));
   if (!AllocateLocallyUniqueId(&source.SourceIdentifier)) {
     return GetLastError();
   }
@@ -222,9 +220,9 @@ bool CheckBlankPasswordWithPrefs(const WCHAR* username,
   // If the user name has a backslash, then it is of the form DOMAIN\username.
   // NetUserGetInfo() (called from GetPasswordLastChanged()) as well as
   // LogonUser() below only wants the username portion.
-  LPCWSTR backslash = wcschr(username, L'\\');
+  LPCWSTR backslash = UNSAFE_TODO(wcschr(username, L'\\'));
   if (backslash) {
-    username = backslash + 1;
+    username = UNSAFE_TODO(backslash + 1);
   }
 
   int64_t last_changed = GetPasswordLastChanged(username);

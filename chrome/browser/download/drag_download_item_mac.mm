@@ -9,7 +9,7 @@
 #include "base/apple/foundation_util.h"
 #include "components/download/public/common/download_item.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 // Cocoa intends a smart dragging source, while `DragDownloadItem()` is a simple

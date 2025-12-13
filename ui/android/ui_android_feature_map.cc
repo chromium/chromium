@@ -18,14 +18,17 @@ namespace {
 // Array of features exposed through the Java UiAndroidFeatureMap API.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kAndroidUseCorrectDisplayWorkArea,
-    &ui::kAndroidWindowManagementWebApi,
+    &ui::kAndroidUseCorrectWindowBounds,
+    &ui::kAndroidUseDisplayTopology,
     &ui::kAndroidWindowOcclusion,
     &ui::kCheckIntentCallerPermission,
     &ui::kDeprecatedExternalPickerFunction,
     &ui::kDisablePhotoPickerForVideoCapture,
-    &ui::kMirrorBackForwardGesturesInRTL,
+    &ui::kRefactorMinWidthContextOverride,
+    &ui::kReportBottomOverscrolls,
     &ui::kRequireLeadingInTextViewWithLeading,
     &ui::kSelectFileOpenDocument,
+    &ui::kAndroidTouchpadOverscrollHistoryNavigation,
 };
 
 // static
@@ -42,3 +45,5 @@ static jlong JNI_UiAndroidFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(UiAndroidFeatureMap)

@@ -165,9 +165,6 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   unsigned NumberOfInputs() const { return inputs_.size(); }
   unsigned NumberOfOutputs() const { return outputs_.size(); }
 
-  // Number of output channels.  This only matters for ScriptProcessorNodes.
-  virtual unsigned NumberOfOutputChannels() const;
-
   // The argument must be less than numberOfInputs().
   AudioNodeInput& Input(unsigned);
   // The argument must be less than numberOfOutputs().
@@ -329,7 +326,7 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
 
 #if DEBUG_AUDIONODE_REFERENCES
   static bool is_node_count_initialized_;
-  static int node_count_[kNodeTypeEnd];
+  static int node_count_[static_cast<int>(NodeType::kNodeTypeEnd)];
 #endif
 
   V8ChannelCountMode::Enum channel_count_mode_;

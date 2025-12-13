@@ -11,7 +11,6 @@
 #include "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
-#include "ios/web/public/browser_state.h"
 
 namespace {
 
@@ -50,7 +49,12 @@ void CountProfileInformation(const ProfileAttributesStorageIOS& storage,
 }  // namespace
 
 void LogNumberOfProfiles(ProfileManagerIOS* manager) {
+  const ProfileAttributesStorageIOS& storage =
+      *manager->GetProfileAttributesStorage();
+  profile_metrics::LogTotalNumberOfProfiles(storage.GetNumberOfProfiles());
+
   profile_metrics::Counts counts;
-  CountProfileInformation(*manager->GetProfileAttributesStorage(), &counts);
-  profile_metrics::LogProfileMetricsCounts(counts);
+  CountProfileInformation(storage, &counts);
+  profile_metrics::LogProfileMetricsCounts(
+      counts, profile_metrics::ProfileActivityThreshold::kDuration28Days);
 }

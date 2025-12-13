@@ -26,7 +26,6 @@ namespace favicon {
 // BEST_EFFORT to USER_VISIBLE. If this potentially expensive change causes any
 // issues, enable the kill switch below.
 BASE_FEATURE(kLargeIconWorkerTaskPriorityKillSwitch,
-             "LargeIconWorkerTaskPriorityKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 using NoBigEnoughIconBehavior = LargeIconService::NoBigEnoughIconBehavior;

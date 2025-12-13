@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "skia/ext/event_tracer_impl.h"
+#include "skia/ext/font_utils.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 
@@ -23,7 +24,7 @@ namespace {
 // require pre-scaling. Skia will fallback to a filter that doesn't
 // require pre-scaling if the default filter would require an
 // allocation that exceeds this limit.
-const size_t kImageCacheSingleAllocationByteLimit = 64 * 1024 * 1024;
+constexpr size_t kImageCacheSingleAllocationByteLimit = 64 * 1024 * 1024;
 
 }  // namespace
 
@@ -35,11 +36,12 @@ void InitializeSkia() {
     SkGraphics::Init();
   }
 
-  const int kMB = 1024 * 1024;
+  constexpr int kMB = 1024 * 1024;
 
   // Could also reduce the maximum number of cached strikes, but the intent
   // being to reduce memory usage, only control cache memory usage.
   SkGraphics::SetFontCacheLimit(kMB);
+  skia::InitializeFontRendering();
 
 #if !BUILDFLAG(IS_ANDROID)
   size_t font_cache_limit;

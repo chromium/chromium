@@ -11,7 +11,6 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer_impl.h"
@@ -220,7 +219,7 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
   learn_more_url_ = bruschetta::GetLearnMoreUrl(profile_);
   link_label_->SetCallback(base::BindRepeating(
       [](GURL url) {
-        ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+        ash::NewWindowDelegate::GetInstance()->OpenUrl(
             url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
             ash::NewWindowDelegate::Disposition::kNewForegroundTab);
       },

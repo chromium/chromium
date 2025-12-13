@@ -40,7 +40,8 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
         .base_app_id = L"Chrome",                 // A distinct base_app_id.
         .browser_prog_id_prefix = L"ChromeHTML",  // Browser ProgID prefix.
         .browser_prog_id_description =
-            L"Chrome HTML Document",         // Browser ProgID description.
+            L"Chrome HTML Document",  // Browser ProgID description.
+        .direct_launch_url_scheme = "google-chrome",
         .pdf_prog_id_prefix = L"ChromePDF",  // PDF ProgID prefix.
         .pdf_prog_id_description =
             L"Chrome PDF Document",  // PDF ProgID description.
@@ -60,12 +61,12 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                            0x4611,
                            {0x88, 0x95, 0x7D, 0x86, 0x7D, 0xD3, 0x67,
                             0x5B}},  // Elevator CLSID.
-        .elevator_iid = {0x463abecf,
-                         0x410d,
-                         0x407f,
-                         {0x8a, 0xf5, 0xd, 0xf3, 0x5a, 0x0, 0x5c,
-                          0xc8}},  // IElevator IID and TypeLib
-        // {463ABECF-410D-407F-8AF5-0DF35A005CC8}.
+        .elevator_iid = {0x1bf5208b,
+                         0x295f,
+                         0x4992,
+                         {0xb5, 0xf4, 0x3a, 0x9b, 0xb6, 0x49, 0x48,
+                          0x38}},  // IElevator IID and TypeLib
+        // {1BF5208B-295F-4992-B5F4-3A9BB6494838}.
         .tracing_service_clsid = {0x70457024,
                                   0xd309,
                                   0x462c,
@@ -107,7 +108,8 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
         .base_app_id = L"ChromeBeta",              // A distinct base_app_id.
         .browser_prog_id_prefix = L"ChromeBHTML",  // Browser ProgID prefix.
         .browser_prog_id_description =
-            L"Chrome Beta HTML Document",     // Browser ProgID description.
+            L"Chrome Beta HTML Document",  // Browser ProgID description.
+        .direct_launch_url_scheme = "google-chrome-beta",
         .pdf_prog_id_prefix = L"ChromeBPDF",  // PDF ProgID prefix.
         .pdf_prog_id_description =
             L"Chrome Beta PDF Document",  // PDF ProgID description.
@@ -125,12 +127,12 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                            0x4BF8,
                            {0xB9, 0xA7, 0x3, 0x86, 0x91, 0xA6, 0x8F,
                             0xC2}},  // Elevator CLSID.
-        .elevator_iid = {0xa2721d66,
-                         0x376e,
-                         0x4d2f,
-                         {0x9f, 0xf, 0x90, 0x70, 0xe9, 0xa4, 0x2b,
-                          0x5f}},  // IElevator IID and TypeLib
-        // {A2721D66-376E-4D2F-9F0F-9070E9A42B5F}.
+        .elevator_iid = {0xb96a14b8,
+                         0xd0b0,
+                         0x44d8,
+                         {0xba, 0x68, 0x23, 0x85, 0xb2, 0xa0, 0x32,
+                          0x54}},  // IElevator IID and TypeLib
+        // {B96A14B8-D0B0-44D8-BA68-2385B2A03254}.
         .tracing_service_clsid = {0xe64e8e46,
                                   0x6756,
                                   0x467e,
@@ -179,7 +181,8 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
         .base_app_id = L"ChromeDev",               // A distinct base_app_id.
         .browser_prog_id_prefix = L"ChromeDHTML",  // ProgID prefix.
         .browser_prog_id_description =
-            L"Chrome Dev HTML Document",      // Browser ProgID description.
+            L"Chrome Dev HTML Document",  // Browser ProgID description.
+        .direct_launch_url_scheme = "google-chrome-dev",
         .pdf_prog_id_prefix = L"ChromeDPDF",  // PDF ProgID prefix.
         .pdf_prog_id_description =
             L"Chrome Dev PDF Document",  // PDF ProgID description.
@@ -197,12 +200,12 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                            0x4637,
                            {0xAA, 0x17, 0x7, 0x40, 0x58, 0x4D, 0xE7,
                             0xDA}},  // Elevator CLSID.
-        .elevator_iid = {0xbb2aa26b,
-                         0x343a,
-                         0x4072,
-                         {0x8b, 0x6f, 0x80, 0x55, 0x7b, 0x8c, 0xe5,
-                          0x71}},  // IElevator IID and TypeLib
-        // {BB2AA26B-343A-4072-8B6F-80557B8CE571}.
+        .elevator_iid = {0x3fefa48e,
+                         0xc8bf,
+                         0x461f,
+                         {0xae, 0xd6, 0x63, 0xf6, 0x58, 0xcc, 0x85,
+                          0xa}},  // IElevator IID and TypeLib
+                                  // {3FEFA48E-C8BF-461F-AED6-63F658CC850A}.
         .tracing_service_clsid = {0x48c5c553,
                                   0x20f9,
                                   0x4cdc,
@@ -250,7 +253,8 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
         .base_app_id = L"ChromeCanary",            // A distinct base_app_id.
         .browser_prog_id_prefix = L"ChromeSSHTM",  // ProgID prefix.
         .browser_prog_id_description =
-            L"Chrome Canary HTML Document",    // Browser ProgID description.
+            L"Chrome Canary HTML Document",  // Browser ProgID description.
+        .direct_launch_url_scheme = "google-chrome-canary",
         .pdf_prog_id_prefix = L"ChromeSSPDF",  // PDF ProgID prefix.
         .pdf_prog_id_description =
             L"Chrome Canary PDF Document",  // PDF ProgID description.
@@ -270,12 +274,12 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                            0x435E,
                            {0xA4, 0x69, 0xA, 0x53, 0x43, 0x13, 0xC4,
                             0x2B}},  // Elevator CLSID.
-        .elevator_iid = {0x4f7ce041,
-                         0x28e9,
-                         0x484f,
-                         {0x9d, 0xd0, 0x61, 0xa8, 0xca, 0xce, 0xfe,
-                          0xe4}},  // IElevator IID and TypeLib
-        // {4F7CE041-28E9-484F-9DD0-61A8CACEFEE4}.
+        .elevator_iid = {0xff672e9f,
+                         0x994,
+                         0x4322,
+                         {0x81, 0xe5, 0x3a, 0x5a, 0x97, 0x46, 0x14,
+                          0xa}},  // IElevator IID and TypeLib
+        // {FF672E9F-0994-4322-81E5-3A5A9746140A}.
         .tracing_service_clsid = {0x48c5c553,
                                   0x20f9,
                                   0x4cdc,

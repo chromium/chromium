@@ -94,7 +94,7 @@ void SessionStorageDataMap::RemoveBindingReference() {
   storage_area()->ScheduleImmediateCommit();
 }
 
-void SessionStorageDataMap::OnMapLoaded(DbStatus) {
+void SessionStorageDataMap::OnMapLoaded() {
   clone_from_data_map_.reset();
 }
 

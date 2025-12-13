@@ -4,30 +4,23 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
-import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContactsFetcher;
 
 /** Holds on to a {@link ContactView} that displays information about a contact. */
 @NullMarked
-public class ContactViewHolder extends ViewHolder
-        implements FetchIconWorkerTask.IconRetrievedCallback {
+public class ContactViewHolder extends ViewHolder implements ContactsFetcher.IconRetrievedCallback {
     // Our parent category.
     private final PickerCategoryView mCategoryView;
-
-    // The Content Resolver to use for the lookup.
-    private final ContentResolver mContentResolver;
 
     // The contact view we are holding on to.
     private final ContactView mItemView;
@@ -36,32 +29,32 @@ public class ContactViewHolder extends ViewHolder
     private ContactDetails mContact;
 
     // A worker task for asynchronously retrieving icons off the main thread.
-    private @Nullable FetchIconWorkerTask mWorkerTask;
+    private @Nullable AsyncTask mWorkerTask;
 
     // The size the contact icon will be displayed at (one side of a square).
     private final int mIconSize;
 
-    // The icon to use when testing.
-    private static @Nullable Bitmap sIconForTest;
+    // An instance of {@link ContactsFetcher} to query data.
+    private final ContactsFetcher mContactsFetcher;
 
     /**
      * The PickerBitmapViewHolder.
      *
      * @param itemView The {@link ContactView} for the contact.
      * @param categoryView The {@link PickerCategoryView} showing the contacts.
-     * @param contentResolver The {@link ContentResolver} to use for the lookup.
      * @param iconSize The size the contact icon will be displayed at (one side of a square).
+     * @param contactsFetcher An instance of {@link ContactsFetcher} to query data.
      */
     public ContactViewHolder(
             ContactView itemView,
             PickerCategoryView categoryView,
-            ContentResolver contentResolver,
-            int iconSize) {
+            int iconSize,
+            ContactsFetcher contactsFetcher) {
         super(itemView);
         mCategoryView = categoryView;
-        mContentResolver = contentResolver;
         mItemView = itemView;
         mIconSize = iconSize;
+        mContactsFetcher = contactsFetcher;
     }
 
     /**
@@ -74,11 +67,6 @@ public class ContactViewHolder extends ViewHolder
     public void setContactDetails(ContactDetails contact) {
         mContact = contact;
 
-        if (sIconForTest != null) {
-            mItemView.initialize(contact, sIconForTest);
-            return;
-        }
-
         Drawable drawable = contact.getSelfIcon();
         if (drawable != null) {
             assert drawable instanceof BitmapDrawable;
@@ -87,9 +75,7 @@ public class ContactViewHolder extends ViewHolder
         } else {
             Bitmap icon = mCategoryView.getIconCache().getBitmap(mContact.getId());
             if (icon == null && !contact.getId().equals(ContactDetails.SELF_CONTACT_ID)) {
-                mWorkerTask = new FetchIconWorkerTask(mContact.getId(), mContentResolver, this);
-                mWorkerTask.setDesiredIconSize(mIconSize);
-                mWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                mWorkerTask = mContactsFetcher.fetchIcon(mContact.getId(), mIconSize, this);
             }
             mItemView.initialize(contact, icon);
         }
@@ -97,9 +83,10 @@ public class ContactViewHolder extends ViewHolder
 
     /** Cancels the worker task to retrieve the icon. */
     public void cancelIconRetrieval() {
-        assumeNonNull(mWorkerTask);
-        mWorkerTask.cancel(true);
-        mWorkerTask = null;
+        if (mWorkerTask != null) {
+            mWorkerTask.cancel(true);
+            mWorkerTask = null;
+        }
     }
 
     // FetchIconWorkerTask.IconRetrievedCallback:
@@ -113,11 +100,5 @@ public class ContactViewHolder extends ViewHolder
         if (icon != null && contactId.equals(mContact.getId())) {
             mItemView.setIconBitmap(icon);
         }
-    }
-
-    /** Sets the icon to use when testing. */
-    public static void setIconForTesting(Bitmap icon) {
-        sIconForTest = icon;
-        ResettersForTesting.register(() -> sIconForTest = null);
     }
 }

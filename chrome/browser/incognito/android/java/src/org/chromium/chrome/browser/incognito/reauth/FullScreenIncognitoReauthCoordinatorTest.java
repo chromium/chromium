@@ -19,10 +19,12 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
@@ -40,6 +42,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @LooperMode(LooperMode.Mode.PAUSED)
 @Batch(UNIT_TESTS)
 public class FullScreenIncognitoReauthCoordinatorTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContextMock;
     @Mock private IncognitoReauthManager mIncognitoReauthManagerMock;
     @Mock private IncognitoReauthManager.IncognitoReauthCallback mIncognitoReauthCallbackMock;
@@ -64,7 +67,6 @@ public class FullScreenIncognitoReauthCoordinatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mFullScreenIncognitoReauthCoordinator =
                 new FullScreenIncognitoReauthCoordinator(
                         mContextMock,

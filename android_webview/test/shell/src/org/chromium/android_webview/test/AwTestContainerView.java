@@ -20,6 +20,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowInsets;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -376,6 +377,11 @@ public class AwTestContainerView extends FrameLayout {
     public void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
         mAwContents.getViewMethods().onWindowVisibilityChanged(visibility);
+    }
+
+    @Override
+    public WindowInsets onApplyWindowInsets(WindowInsets insets) {
+        return mAwContents.onApplyWindowInsets(insets);
     }
 
     @Override

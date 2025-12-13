@@ -9,7 +9,6 @@
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "components/printing/common/print.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos::printing {

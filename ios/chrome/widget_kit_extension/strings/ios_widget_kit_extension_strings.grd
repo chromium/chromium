@@ -182,6 +182,9 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_AVATAR_A11Y_LABEL" desc="Accessibility label for the avatar image in the widget." meaning="Accessibility label for the avatar image in the widget. [iOS only]">
+            Gooogle account
+      </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_DEFAULT_ACCOUNT_LABEL" desc="String used as possible value for the change account action on configurable widgets [iOS only]" meaning="String that appears as value in the Edit widget ui, used to let the user know that default account is used on the widget [iOS only]">
             Default
       </message>
@@ -275,7 +278,7 @@
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_A11Y_LABEL" desc="Accessibility label for the search widget. [iOS only]" meaning="Accessibility label for the search widget. Sentence-cased.">
         Search passwords on Google Password Manager
       </message>
-    <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DESCRIPTION" desc="Description for the Search Passwords widget. [CHAR_LIMIT=150][iOS only]">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DESCRIPTION" desc="Description for the Search Passwords widget. [CHAR_LIMIT=150][iOS only]">
         Safely search for your saved passwords on Google Password Manager
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DISPLAY_NAME" desc="Name for the Search Passwords widget. [CHAR_LIMIT=30][iOS only]" meaning="String that appears as title in the installation window for the Search Passwords widget. Title-cased.">

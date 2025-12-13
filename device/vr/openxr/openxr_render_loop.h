@@ -6,6 +6,7 @@
 #define DEVICE_VR_OPENXR_OPENXR_RENDER_LOOP_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/functional/callback.h"
@@ -20,7 +21,10 @@
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_platform_helper.h"
+#include "device/vr/public/mojom/anchor_id.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
+#include "device/vr/public/mojom/layer_id.h"
+#include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/util/fps_meter.h"
@@ -28,8 +32,6 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -78,6 +80,7 @@ class OpenXrRenderLoop : public XRThread,
                          public mojom::XRFrameDataProvider,
                          public mojom::ImmersiveOverlay,
                          public mojom::XREnvironmentIntegrationProvider,
+                         public mojom::XRLayerManager,
                          public viz::ContextLostObserver {
  public:
   using RequestSessionCallback =
@@ -132,7 +135,7 @@ class OpenXrRenderLoop : public XRThread,
   // overlays), or SetOverlayAndWebXRVisibility (for WebXR and overlays).
   // Finally, if we exit presentation while waiting for outstanding submits, we
   // will clean up our pending-frame state.
-  void MaybeCompositeAndSubmit();
+  void MaybeCompositeAndSubmit(const std::vector<LayerId>& updated_layers = {});
 
   // Sets all relevant internal state to mark that we have successfully received
   // a frame. Will return whether or not the given frame index was expected.
@@ -150,6 +153,7 @@ class OpenXrRenderLoop : public XRThread,
                    const gpu::MailboxHolder& mailbox,
                    base::TimeDelta time_waited) final;
   void SubmitFrameDrawnIntoTexture(int16_t frame_index,
+                                   const std::vector<LayerId>& layer_ids,
                                    const gpu::SyncToken&,
                                    base::TimeDelta time_waited) override;
   void UpdateLayerBounds(int16_t frame_id,
@@ -237,17 +241,24 @@ class OpenXrRenderLoop : public XRThread,
       mojom::XRRayPtr ray,
       mojom::XREnvironmentIntegrationProvider::
           SubscribeToHitTestForTransientInputCallback callback) override;
-  void UnsubscribeFromHitTest(uint64_t subscription_id) override;
+  void UnsubscribeFromHitTest(
+      const HitTestSubscriptionId& subscription_id) override;
+
+  // XRLayerManager
+  void CreateCompositionLayer(mojom::XRCompositionLayerDataPtr layer_data,
+                              CreateCompositionLayerCallback callback) override;
+  void UpdateCompositionLayer(const LayerId& layer_id,
+                              mojom::XRLayerMutableDataPtr layer_data) override;
+  void DestroyCompositionLayer(const LayerId& layer_id) override;
+  void SetEnabledCompositionLayers(
+      const std::vector<LayerId>& layer_ids) override;
+
   void CreateAnchor(
       mojom::XRNativeOriginInformationPtr native_origin_information,
       const device::Pose& native_origin_from_anchor,
+      const std::optional<PlaneId>& plane_id,
       CreateAnchorCallback callback) override;
-  void CreatePlaneAnchor(
-      mojom::XRNativeOriginInformationPtr native_origin_information,
-      const device::Pose& native_origin_from_anchor,
-      uint64_t plane_id,
-      CreatePlaneAnchorCallback callback) override;
-  void DetachAnchor(uint64_t anchor_id) override;
+  void DetachAnchor(const AnchorId& anchor_id) override;
 
   void ProcessCreateAnchorRequests(
       OpenXrAnchorManager* anchor_manager,
@@ -261,6 +272,7 @@ class OpenXrRenderLoop : public XRThread,
       scoped_refptr<viz::ContextProvider> context_provider);
 
   void OnWebXrTokenSignaled(int16_t frame_index,
+                            std::vector<LayerId> updated_layers,
                             GLuint id,
                             std::unique_ptr<gfx::GpuFence> gpu_fence);
 
@@ -271,7 +283,6 @@ class OpenXrRenderLoop : public XRThread,
     return gfx::Transform();
   }
 
-  bool IsFeatureEnabled(device::mojom::XRSessionFeature feature) const;
   int16_t next_frame_id_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
@@ -307,6 +318,7 @@ class OpenXrRenderLoop : public XRThread,
       on_visibility_state_changed_;
   mojo::Receiver<mojom::XRPresentationProvider> presentation_receiver_{this};
   mojo::Receiver<mojom::XRFrameDataProvider> frame_data_receiver_{this};
+  mojo::Receiver<mojom::XRLayerManager> layer_manager_receiver_{this};
   mojo::Receiver<mojom::ImmersiveOverlay> overlay_receiver_{this};
   mojom::XRVisibilityState visibility_state_ =
       mojom::XRVisibilityState::VISIBLE;

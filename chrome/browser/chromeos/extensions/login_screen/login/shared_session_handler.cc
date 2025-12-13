@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_ash.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/errors.h"
@@ -22,21 +23,22 @@
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "crypto/kdf.h"
 #include "crypto/random.h"
 #include "crypto/secure_util.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
+#include "crypto/subtle_passkey.h"
 
 namespace chromeos {
+
+crypto::SubtlePassKey MakeCryptoPassKeyForSharedSessionHandler() {
+  return {};
+}
 
 namespace {
 
 constexpr size_t kSessionSecretLength = 64;
 constexpr size_t kUserSaltLength = 16;
 constexpr size_t kHashKeyLength = 32;
-constexpr uint64_t kScryptCost = 1 << 12;
-constexpr uint64_t kScryptBlockSize = 8;
-constexpr uint64_t kScryptParallelization = 1;
-constexpr size_t kScryptMaxMemory = 1024 * 1024 * 32;
 
 const user_manager::User* GetManagedGuestSessionUser() {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
@@ -96,8 +98,7 @@ SharedSessionHandler::LaunchSharedManagedGuestSession(
   if (user == nullptr)
     return extensions::login_api_errors::kNoManagedGuestSessionAccounts;
 
-  if (!CreateAndSetUserSecretHashAndSalt(password))
-    return extensions::login_api_errors::kScryptFailure;
+  CreateAndSetUserSecretHashAndSalt(password);
 
   session_secret_ = GenerateRandomString(kSessionSecretLength);
 
@@ -149,10 +150,7 @@ void SharedSessionHandler::EnterSharedSession(
     return;
   }
 
-  if (!CreateAndSetUserSecretHashAndSalt(password)) {
-    std::move(callback).Run(extensions::login_api_errors::kScryptFailure);
-    return;
-  }
+  CreateAndSetUserSecretHashAndSalt(password);
 
   UnlockWithSessionSecret(
       base::BindOnce(&SharedSessionHandler::OnAuthenticateDone,
@@ -192,15 +190,9 @@ void SharedSessionHandler::UnlockSharedSession(
     return;
   }
 
-  std::optional<std::string> scrypt_result =
-      GetHashFromScrypt(password, user_secret_salt_);
+  std::string scrypt_result = GetHashFromScrypt(password, user_secret_salt_);
 
-  if (!scrypt_result) {
-    std::move(callback).Run(extensions::login_api_errors::kScryptFailure);
-    return;
-  }
-
-  if (!crypto::SecureMemEqual(base::as_byte_span(*scrypt_result),
+  if (!crypto::SecureMemEqual(base::as_byte_span(scrypt_result),
                               base::as_byte_span(user_secret_hash_))) {
     std::move(callback).Run(
         extensions::login_api_errors::kAuthenticationFailed);
@@ -267,23 +259,19 @@ void SharedSessionHandler::ResetStateForTesting() {
   user_secret_salt_.clear();
 }
 
-// TODO(https://issues.chromium.org/issues/372283556): migrate to the new
-// //crypto KDF API and make this infallible.
-std::optional<std::string> SharedSessionHandler::GetHashFromScrypt(
-    const std::string& password,
-    const std::string& salt) {
-  std::string hash_key;
-  uint8_t* key_data = reinterpret_cast<uint8_t*>(
-      base::WriteInto(&hash_key, kHashKeyLength + 1));
-  int scrypt_ok =
-      EVP_PBE_scrypt(password.data(), password.size(),
-                     reinterpret_cast<const uint8_t*>(salt.data()), salt.size(),
-                     kScryptCost, kScryptBlockSize, kScryptParallelization,
-                     kScryptMaxMemory, key_data, kHashKeyLength);
-
-  if (!scrypt_ok)
-    return std::nullopt;
-  return hash_key;
+std::string SharedSessionHandler::GetHashFromScrypt(const std::string& password,
+                                                    const std::string& salt) {
+  constexpr crypto::kdf::ScryptParams kScryptParams = {
+      .cost = 1 << 12,
+      .block_size = 8,
+      .parallelization = 1,
+      .max_memory_bytes = 1024 * 1024 * 32,
+  };
+  std::array<uint8_t, kHashKeyLength> result;
+  crypto::kdf::DeriveKeyScrypt(kScryptParams, base::as_byte_span(password),
+                               base::as_byte_span(salt), result,
+                               MakeCryptoPassKeyForSharedSessionHandler());
+  return std::string(base::as_string_view(result));
 }
 
 void SharedSessionHandler::UnlockWithSessionSecret(
@@ -297,18 +285,13 @@ void SharedSessionHandler::UnlockWithSessionSecret(
   LoginApiLockHandler::Get()->Authenticate(user_context, std::move(callback));
 }
 
-bool SharedSessionHandler::CreateAndSetUserSecretHashAndSalt(
+void SharedSessionHandler::CreateAndSetUserSecretHashAndSalt(
     const std::string& password) {
   std::string salt = GenerateRandomString(kUserSaltLength);
-  std::optional<std::string> scrypt_result = GetHashFromScrypt(password, salt);
+  std::string scrypt_result = GetHashFromScrypt(password, salt);
 
-  if (!scrypt_result)
-    return false;
-
-  user_secret_hash_ = std::move(*scrypt_result);
+  user_secret_hash_ = std::move(scrypt_result);
   user_secret_salt_ = std::move(salt);
-
-  return true;
 }
 
 void SharedSessionHandler::OnAuthenticateDone(

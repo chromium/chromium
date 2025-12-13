@@ -1,0 +1,4 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.
+Tests a crash resulting from a string literal in a nested XSL stylesheet. If you reached here without crashing, the test passed. See https://bugs.webkit.org/show_bug.cgi?id=15715 .
+
+SUCCESS

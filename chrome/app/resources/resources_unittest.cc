@@ -5,13 +5,11 @@
 #include <string>
 
 #include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
-
+#include "build/build_config.h"
 #include "chrome/grit/branded_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
@@ -34,7 +32,14 @@ TEST_F(ResourcesTest, CriticalMessagesContainNoExtraWhitespaces) {
   const int messages_to_check[] = {IDS_APP_SHORTCUTS_SUBDIR_NAME};
 
   base::FilePath locales_dir;
-  ASSERT_TRUE(base::PathService::Get(ui::DIR_LOCALES, &locales_dir));
+  if (!base::PathService::Get(ui::DIR_LOCALES, &locales_dir)) {
+#if BUILDFLAG(IS_MAC)
+    // On macOS, the test does not have the locale resources.
+    GTEST_SKIP() << "Locale pak files absent.";
+#else
+    FAIL() << "Locale pak files directory missing.";
+#endif
+  }
 
   // Enumerate through the existing locale (.pak) files.
   base::FileEnumerator file_enumerator(locales_dir, false,

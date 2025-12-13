@@ -9,11 +9,14 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/time/time.h"
 #include "cc/animation/animation_export.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/paint_worklet_input.h"
 #include "ui/gfx/animation/keyframe/keyframe_model.h"
+
+namespace base {
+class TimeTicks;
+}  // namespace base
 
 namespace cc {
 

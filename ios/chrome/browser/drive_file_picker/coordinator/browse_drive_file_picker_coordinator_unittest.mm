@@ -6,6 +6,8 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_collection.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_image_fetcher.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_helper.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/fake_drive_file_picker_handler.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -18,10 +20,18 @@
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/test/test_url_loader_factory.h"
 #import "testing/platform_test.h"
 
 // Test fixture for testing `BrowseDriveFilePickerCoordinator` class.
 class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
+ public:
+  BrowseDriveFilePickerCoordinatorTest()
+      : shared_factory_(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_)) {}
+
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
@@ -36,25 +46,21 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
     [dispatcher startDispatchingToTarget:handler_
                              forProtocol:@protocol(DriveFilePickerCommands)];
     fake_web_state_ = std::make_unique<web::FakeWebState>();
-    images_pending_ = [NSMutableSet set];
-    image_cache_ = [[NSCache alloc] init];
+    ChooseFileTabHelper::CreateForWebState(fake_web_state_.get());
     metrics_helper_ = [[DriveFilePickerMetricsHelper alloc] init];
+    image_fetcher_ =
+        std::make_unique<DriveFilePickerImageFetcher>(shared_factory_);
+    id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
+    std::unique_ptr<DriveFilePickerCollection> collection =
+        DriveFilePickerCollection::GetRoot(identity)->GetFolder(
+            @"Collection title", nil);
     coordinator_ = [[BrowseDriveFilePickerCoordinator alloc]
         initWithBaseNavigationViewController:navigation_controller_
                                      browser:browser_.get()
                                     webState:fake_web_state_->GetWeakPtr()
-                                       title:@"Collection title"
-                               imagesPending:images_pending_
-                                  imageCache:image_cache_
-                              collectionType:DriveFilePickerCollectionType::
-                                                 kFolder
-                            folderIdentifier:nil
-                                      filter:DriveFilePickerFilter::
-                                                 kShowAllFiles
-                         ignoreAcceptedTypes:NO
-                             sortingCriteria:DriveItemsSortingType::kName
-                            sortingDirection:DriveItemsSortingOrder::kAscending
-                                    identity:[FakeSystemIdentity fakeIdentity1]
+                                  collection:std::move(collection)
+                                imageFetcher:image_fetcher_.get()
+                                     options:DriveFilePickerOptions::Default()
                                metricsHelper:metrics_helper_];
     StartChoosingFiles();
   }
@@ -62,11 +68,13 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
   // Starts file selection in the WebState.
   void StartChoosingFiles() {
     ChooseFileTabHelper* tab_helper =
-        ChooseFileTabHelper::GetOrCreateForWebState(fake_web_state_.get());
+        ChooseFileTabHelper::FromWebState(fake_web_state_.get());
     auto controller = std::make_unique<FakeChooseFileController>(
-        ChooseFileEvent(false /*allow_multiple_files*/,
-                        false /*has_selected_file*/, std::vector<std::string>{},
-                        std::vector<std::string>{}, fake_web_state_.get()));
+        ChooseFileEvent::Builder()
+            .SetAllowMultipleFiles(false)
+            .SetHasSelectedFile(false)
+            .SetWebState(fake_web_state_.get())
+            .Build());
     tab_helper->StartChoosingFiles(std::move(controller));
   }
 
@@ -84,9 +92,10 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   FakeDriveFilePickerHandler* handler_;
-  NSMutableSet<NSString*>* images_pending_;
-  NSCache<NSString*, UIImage*>* image_cache_;
   DriveFilePickerMetricsHelper* metrics_helper_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
+  std::unique_ptr<DriveFilePickerImageFetcher> image_fetcher_;
   BrowseDriveFilePickerCoordinator* coordinator_;
 };
 

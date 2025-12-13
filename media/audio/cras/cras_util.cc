@@ -4,6 +4,7 @@
 
 #include "media/audio/cras/cras_util.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -80,6 +81,10 @@ void CrasDisconnect(libcras_client** client) {
 }  // namespace
 
 CrasDevice::CrasDevice() = default;
+
+CrasDevice::CrasDevice(const CrasDevice&) = default;
+
+CrasDevice::~CrasDevice() = default;
 
 CrasDevice::CrasDevice(struct libcras_node_info* node, DeviceType type)
     : type(type) {
@@ -254,7 +259,7 @@ std::vector<CrasDevice> CrasUtil::CrasGetAudioDevices(DeviceType type) {
   }
 
   for (size_t i = 0; i < num_nodes; i++) {
-    auto new_dev = CrasDevice(nodes[i], type);
+    auto new_dev = CrasDevice(UNSAFE_TODO(nodes[i]), type);
     if (!new_dev.plugged || !IsForSimpleUsage(new_dev.node_type)) {
       continue;
     }

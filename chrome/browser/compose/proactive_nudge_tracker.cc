@@ -15,11 +15,13 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -178,17 +180,16 @@ float ProactiveNudgeTracker::Delegate::SegmentationForceShowResult() {
 ProactiveNudgeTracker::ProactiveNudgeTracker(
     segmentation_platform::SegmentationPlatformService* segmentation_service,
     Delegate* delegate)
-    : segmentation_service_(segmentation_service), delegate_(delegate) {}
+    : segmentation_service_(segmentation_service), delegate_(delegate) {
+  CHECK(segmentation_service_);
+  CHECK(delegate_);
+}
 
 void ProactiveNudgeTracker::StartObserving(content::WebContents* web_contents) {
-  if (!SegmentationStateIsValid()) {
-    // Unable to show proactive nudge if configuration is not consistent.
-    // Todo(b/343281445): Use fallback strategy if state is invalid.
-    return;
-  }
   autofill_managers_observation_.Observe(
-      web_contents, autofill::ScopedAutofillManagersObservation::
-                        InitializationPolicy::kObservePreexistingManagers);
+      autofill::ContentAutofillClient::FromWebContents(web_contents),
+      autofill::ScopedAutofillManagersObservation::InitializationPolicy::
+          kObservePreexistingManagers);
 }
 
 ProactiveNudgeTracker::~ProactiveNudgeTracker() {
@@ -286,11 +287,6 @@ void ProactiveNudgeTracker::OnAfterCaretMovedInFormField(
   UpdateStateForCurrentFormField();
 }
 
-bool ProactiveNudgeTracker::SegmentationStateIsValid() {
-  return !compose::GetComposeConfig().proactive_nudge_segmentation ||
-         segmentation_service_ != nullptr;
-}
-
 void ProactiveNudgeTracker::ResetState() {
   DVLOG(2) << "ProactiveNudgeTracker: ResetState";
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -322,8 +318,7 @@ ProactiveNudgeTracker::CheckForStateTransition() {
         return ShowState::kTimerCanceled;
       }
       if (!IsTimerRunning()) {
-        return SegmentationStateIsValid() ? ShowState::kWaitingForSegmentation
-                                          : ShowState::kBlockedBySegmentation;
+        return ShowState::kWaitingForSegmentation;
       }
       // Continue to wait if the timer is running or not canceled.
       return std::nullopt;

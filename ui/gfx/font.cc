@@ -81,6 +81,10 @@ std::string Font::GetActualFontName() const {
   return platform_font_->GetActualFontName();
 }
 
+std::vector<std::string> Font::GetActualFontNames() const {
+  return platform_font_->GetActualFontNames();
+}
+
 int Font::GetFontSize() const {
   return platform_font_->GetFontSize();
 }

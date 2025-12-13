@@ -64,7 +64,7 @@ void GeometryChangeHandler::SetSbPlayer(void* sb_player) {
   } else {
     // Default to fullscreen.
     const gfx::Size display_size =
-        display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
+        display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel();
     SetPlayerBounds(
         gfx::RectF(0, 0, display_size.width(), display_size.height()),
         starboard_, sb_player_);

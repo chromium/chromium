@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "extensions/common/csp_validator.h"
 
 #include <stddef.h>
@@ -629,7 +624,7 @@ bool ContentSecurityPolicyIsSandboxed(
         return false;
 
       // Platform apps don't allow navigation.
-      if (type == Manifest::TYPE_PLATFORM_APP &&
+      if (type == Manifest::Type::kPlatformApp &&
           token_lower_case == kAllowTopNavigation) {
         return false;
       }

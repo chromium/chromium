@@ -107,8 +107,8 @@ class PageSwitcherButton : public IconButton {
   // Paints a button based on the |info|.
   void PaintButton(gfx::Canvas* canvas, PaintButtonInfo info) {
     gfx::Rect rect(GetContentsBounds());
-    SkPath path;
-    path.addCircle(rect.CenterPoint().x(), rect.CenterPoint().y(), info.radius);
+    const SkPath path = SkPath::Circle(rect.CenterPoint().x(),
+                                       rect.CenterPoint().y(), info.radius);
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);

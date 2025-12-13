@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferen
 @NullMarked
 public class QuickActionSearchWidgetProviderDelegate {
     /** Class describing widget variant characteristics. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static class WidgetVariant {
         /** LayoutRes that describes this widget. */
         public final @LayoutRes int layout;
@@ -72,7 +72,7 @@ public class QuickActionSearchWidgetProviderDelegate {
          * @param marginDimenRes Margin dimension resource id (optional, may be 0).
          * @return Element size measured in DP.
          */
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        @VisibleForTesting
         static int getElementSizeInDP(
                 Resources res, @DimenRes int mainDimenRes, @DimenRes int marginDimenRes) {
             if (mainDimenRes == 0) return 0;
@@ -97,7 +97,7 @@ public class QuickActionSearchWidgetProviderDelegate {
          * @return Number of buttons that have to be hidden so that this widget fits correctly in
          *     the target area.
          */
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        @VisibleForTesting
         int computeNumberOfButtonsToHide(int areaWidthDp) {
             // We compute the number of buttons to hide by subtracting the area width from
             // the reference width (to check how much less space we have at our disposal), and
@@ -110,7 +110,7 @@ public class QuickActionSearchWidgetProviderDelegate {
     }
 
     /** Class describing the widget button offerings. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static class WidgetButtonSettings {
         /** Whether Voice Search button should be visible. */
         public boolean voiceSearchVisible;
@@ -125,7 +125,7 @@ public class QuickActionSearchWidgetProviderDelegate {
         public boolean dinoGameVisible;
 
         /** Default constructor, accessible only for tests. */
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        @VisibleForTesting
         WidgetButtonSettings() {}
 
         /** Construct an instance of this class from the SearchActivityPreferences. */
@@ -263,7 +263,7 @@ public class QuickActionSearchWidgetProviderDelegate {
      * @param variant Target widget variant.
      * @param targetWidthDp The width of the space for the widget, as offered by the Launcher.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void applyRemoteViewsButtonVisibilityToFitWidth(
             RemoteViews views,
             SearchActivityPreferences prefs,
@@ -296,7 +296,7 @@ public class QuickActionSearchWidgetProviderDelegate {
      * @return Size object, describing required horizontal and vertical padding, expressed in
      *     pixels.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     Size computeWidgetAreaPaddingForDinoWidgetPx(
             int cellAreaWidthDp, int cellAreaHeightDp, float density) {
         int edgeLengthDp = Math.min(cellAreaWidthDp, cellAreaHeightDp);
@@ -316,7 +316,7 @@ public class QuickActionSearchWidgetProviderDelegate {
      * @return Scale factor that should be applied to relevant dimensions to resize the widget
      *     proportionately.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     float computeScaleFactorForDinoWidget(int cellAreaWidthDp, int cellAreaHeightDp) {
         // Compute the paddings to better visually arrange the views inside the widget.
         // First, compute the scale factor. The scale factor is based on the reference dimensions
@@ -332,12 +332,12 @@ public class QuickActionSearchWidgetProviderDelegate {
      * @param resources Current resources.
      * @return Whether widget layout direction is RTL.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     boolean isLayoutDirectionRTL(Resources resources) {
         return resources.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void resizeDinoWidgetToFillTargetCellArea(
             Resources resources, RemoteViews views, int areaWidthDp, int areaHeightDp) {
         float density = resources.getDisplayMetrics().density;
@@ -451,7 +451,7 @@ public class QuickActionSearchWidgetProviderDelegate {
      * @param heightDp Are height in distance points.
      * @return Widget LayoutRes appropriate for the supplied height.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     WidgetVariant getSearchWidgetVariantForHeight(int heightDp) {
         if (heightDp < mSmallWidgetVariant.widgetHeightDp) {
             return mExtraSmallWidgetVariant;

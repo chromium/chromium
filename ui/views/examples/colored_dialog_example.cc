@@ -15,9 +15,10 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -47,12 +48,15 @@ class ThemeTrackingCheckbox : public views::Checkbox {
   // views::Checkbox
   void OnThemeChanged() override {
     views::Checkbox::OnThemeChanged();
-    SetChecked(GetNativeTheme()->ShouldUseDarkColors());
+    SetChecked(GetNativeTheme()->preferred_color_scheme() ==
+               ui::NativeTheme::PreferredColorScheme::kDark);
   }
 
   void ButtonPressed() {
-    GetNativeTheme()->set_use_dark_colors(GetChecked());
-    GetWidget()->ThemeChanged();
+    GetNativeTheme()->set_preferred_color_scheme(
+        GetChecked() ? ui::NativeTheme::PreferredColorScheme::kDark
+                     : ui::NativeTheme::PreferredColorScheme::kLight);
+    GetNativeTheme()->NotifyOnNativeThemeUpdated();
   }
 };
 

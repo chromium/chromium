@@ -101,13 +101,16 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
                                   const SkBitmap& to_filter,
                                   bool offset_expanded_bounds,
                                   SkIRect* auto_bounds) const;
-  gfx::Rect GetBackdropBoundingBoxForRenderPassQuad(
-      const AggregatedRenderPassDrawQuad* quad,
-      const cc::FilterOperations* backdrop_filters,
-      gfx::Transform contents_device_transform,
-      gfx::Transform* backdrop_filter_bounds_transform,
-      gfx::Rect* unclipped_rect) const;
-
+  // Applies filter to backdrop_bitmap. Available_backdrop is a rectangle
+  // representing the captured backdrop area, while output_rect represents the
+  // required paint area. Rects must be in content space, or passed crop
+  // filters will not function properly.
+  sk_sp<SkImage> ApplyBackdropFilterWithExactOutputSize(
+      sk_sp<SkImageFilter> filter,
+      const SkBitmap& backdrop_bitmap,
+      const SkMatrix local_matrix,
+      const SkRect available_backdrop,
+      const SkIRect output_rect) const;
   SkBitmap GetBackdropBitmap(const gfx::Rect& bounding_rect) const;
   sk_sp<SkShader> GetBackdropFilterShader(
       const AggregatedRenderPassDrawQuad* quad,

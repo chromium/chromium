@@ -62,7 +62,8 @@
     [self showOverlay];
   }
 
-  if (level >= SceneActivationLevelForegroundInactive) {
+  if (level >= SceneActivationLevelForegroundInactive ||
+      level == SceneActivationLevelDisconnected) {
     [self hideOverlay];
   }
 }
@@ -101,11 +102,10 @@
 
 - (UIViewController*)loadLaunchScreenControllerFromBundle {
   NSBundle* mainBundle = base::apple::FrameworkBundle();
-  NSArray* topObjects = [mainBundle loadNibNamed:@"LaunchScreen"
-                                           owner:self
-                                         options:nil];
+  UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"LaunchScreen"
+                                                       bundle:mainBundle];
   UIViewController* launchScreenController =
-      base::apple::ObjCCastStrict<UIViewController>([topObjects lastObject]);
+      [storyboard instantiateInitialViewController];
   launchScreenController.view.autoresizingMask =
       UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
   return launchScreenController;

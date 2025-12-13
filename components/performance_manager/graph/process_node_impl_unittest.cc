@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -77,11 +78,11 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
   // Resurrection should clear the exit status.
   EXPECT_FALSE(process_node->GetExitStatus());
 
-  EXPECT_EQ(0U, process_node->GetPrivateFootprintKb());
-  EXPECT_EQ(0U, process_node->GetResidentSetKb());
+  EXPECT_TRUE(process_node->GetPrivateFootprint().is_zero());
+  EXPECT_TRUE(process_node->GetResidentSet().is_zero());
 
-  process_node->set_private_footprint_kb(10u);
-  process_node->set_resident_set_kb(20u);
+  process_node->set_private_footprint(base::KiB(10));
+  process_node->set_resident_set(base::KiB(20));
 
   // Kill it again.
   // Verify that the process is cleared, but the properties stick around.
@@ -90,8 +91,8 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
   EXPECT_EQ(self.Pid(), process_node->GetProcessId());
 
   EXPECT_EQ(launch_time, process_node->GetLaunchTime());
-  EXPECT_EQ(10u, process_node->GetPrivateFootprintKb());
-  EXPECT_EQ(20u, process_node->GetResidentSetKb());
+  EXPECT_EQ(base::KiB(10), process_node->GetPrivateFootprint());
+  EXPECT_EQ(base::KiB(20), process_node->GetResidentSet());
 
   // Resurrect again and verify the launch time and measurements
   // are cleared.
@@ -99,8 +100,8 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
   process_node->SetProcess(self.Duplicate(), launch2_time);
 
   EXPECT_EQ(launch2_time, process_node->GetLaunchTime());
-  EXPECT_EQ(0U, process_node->GetPrivateFootprintKb());
-  EXPECT_EQ(0U, process_node->GetResidentSetKb());
+  EXPECT_TRUE(process_node->GetPrivateFootprint().is_zero());
+  EXPECT_TRUE(process_node->GetResidentSet().is_zero());
 }
 
 namespace {
@@ -293,25 +294,25 @@ TEST_F(ProcessNodeImplTest, InitializeChildProcessCoordination) {
   // No global memory mapped. ProcessNodeImpl automatically creates a process
   // memory region on request.
   process_node->InitializeChildProcessCoordination(
-      0u, base::BindLambdaForTesting(
-              [&](base::ReadOnlySharedMemoryRegion global_region,
-                  base::ReadOnlySharedMemoryRegion process_region) {
-                EXPECT_FALSE(global_region.IsValid());
-                EXPECT_TRUE(process_region.IsValid());
-              })
-              .Then(task_env().QuitClosure()));
+      base::BindLambdaForTesting(
+          [&](base::ReadOnlySharedMemoryRegion global_region,
+              base::ReadOnlySharedMemoryRegion process_region) {
+            EXPECT_FALSE(global_region.IsValid());
+            EXPECT_TRUE(process_region.IsValid());
+          })
+          .Then(task_env().QuitClosure()));
   task_env().RunUntilQuit();
 
   // Map global memory.
   ScopedGlobalScenarioMemory global_shared_memory;
   process_node->InitializeChildProcessCoordination(
-      0u, base::BindLambdaForTesting(
-              [&](base::ReadOnlySharedMemoryRegion global_region,
-                  base::ReadOnlySharedMemoryRegion process_region) {
-                EXPECT_TRUE(global_region.IsValid());
-                EXPECT_TRUE(process_region.IsValid());
-              })
-              .Then(task_env().QuitClosure()));
+      base::BindLambdaForTesting(
+          [&](base::ReadOnlySharedMemoryRegion global_region,
+              base::ReadOnlySharedMemoryRegion process_region) {
+            EXPECT_TRUE(global_region.IsValid());
+            EXPECT_TRUE(process_region.IsValid());
+          })
+          .Then(task_env().QuitClosure()));
   task_env().RunUntilQuit();
 
   // In single process mode, memory shouldn't be shared even if it's mapped,
@@ -320,13 +321,13 @@ TEST_F(ProcessNodeImplTest, InitializeChildProcessCoordination) {
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kSingleProcess);
   process_node->InitializeChildProcessCoordination(
-      0u, base::BindLambdaForTesting(
-              [&](base::ReadOnlySharedMemoryRegion global_region,
-                  base::ReadOnlySharedMemoryRegion process_region) {
-                EXPECT_FALSE(global_region.IsValid());
-                EXPECT_FALSE(process_region.IsValid());
-              })
-              .Then(task_env().QuitClosure()));
+      base::BindLambdaForTesting(
+          [&](base::ReadOnlySharedMemoryRegion global_region,
+              base::ReadOnlySharedMemoryRegion process_region) {
+            EXPECT_FALSE(global_region.IsValid());
+            EXPECT_FALSE(process_region.IsValid());
+          })
+          .Then(task_env().QuitClosure()));
   task_env().RunUntilQuit();
 }
 

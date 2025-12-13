@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/mirroring/service/fake_video_capture_host.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
@@ -56,12 +52,14 @@ void FakeVideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
 
 void FakeVideoCaptureHost::Pause(const base::UnguessableToken& device_id) {
   paused_ = true;
+  OnPaused();
 }
 
 void FakeVideoCaptureHost::Resume(const base::UnguessableToken& device_id,
                                   const base::UnguessableToken& session_id,
                                   const media::VideoCaptureParams& params) {
   paused_ = false;
+  OnResumed();
 }
 
 void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
@@ -74,7 +72,7 @@ void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
   if (!shmem.IsValid()) {
     return;
   }
-  memset(shmem.mapping.memory(), 125, 5000);
+  UNSAFE_TODO(memset(shmem.mapping.memory(), 125, 5000));
   observer_->OnNewBuffer(
       0, media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
              std::move(shmem.region)));

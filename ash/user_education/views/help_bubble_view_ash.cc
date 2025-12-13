@@ -704,9 +704,9 @@ void HelpBubbleViewAsh::OnTimeout() {
   GetWidget()->Close();
 }
 
-std::unique_ptr<views::NonClientFrameView>
-HelpBubbleViewAsh::CreateNonClientFrameView(views::Widget* widget) {
-  auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+std::unique_ptr<views::FrameView> HelpBubbleViewAsh::CreateFrameView(
+    views::Widget* widget) {
+  auto frame = BubbleDialogDelegateView::CreateFrameView(widget);
   auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
   frame_ptr->bubble_border()->set_md_shadow_elevation(kBubbleShadowElevation);
   frame_ptr->set_use_anchor_window_bounds(false);
@@ -830,7 +830,7 @@ gfx::Rect HelpBubbleViewAsh::GetAnchorRect() const {
 }
 
 void HelpBubbleViewAsh::GetWidgetHitTestMask(SkPath* mask) const {
-  mask->addRect(gfx::RectToSkRect(GetHitRect()));
+  *mask = SkPath::Rect(gfx::RectToSkRect(GetHitRect()));
 }
 
 bool HelpBubbleViewAsh::WidgetHasHitTestMask() const {

@@ -55,7 +55,7 @@
   switch (decision) {
     case CWVLookalikeURLHandlerDecisionProceedToRequestURL: {
       LookalikeUrlTabAllowList::FromWebState(_webState.get())
-          ->AllowDomain(_lookalikeURLInfo->request_url.host());
+          ->AllowDomain(_lookalikeURLInfo->request_url.GetHost());
       _webState->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
                                                 /*check_for_repost=*/true);
       return YES;

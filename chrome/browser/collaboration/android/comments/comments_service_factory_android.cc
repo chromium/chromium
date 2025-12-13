@@ -24,3 +24,5 @@ JNI_CommentsServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
 }
 
 }  // namespace collaboration::comments::android
+
+DEFINE_JNI(CommentsServiceFactory)

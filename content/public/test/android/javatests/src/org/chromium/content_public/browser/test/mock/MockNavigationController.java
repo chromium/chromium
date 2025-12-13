@@ -86,7 +86,8 @@ public class MockNavigationController implements NavigationController {
     }
 
     @Override
-    public void setUseDesktopUserAgent(boolean override, boolean reloadOnChange, int caller) {}
+    public void setUseDesktopUserAgent(
+            boolean override, boolean reloadOnChange, boolean skipOnInitialNavigation) {}
 
     @Override
     public NavigationEntry getEntryAtIndex(int index) {
@@ -114,6 +115,11 @@ public class MockNavigationController implements NavigationController {
     @Override
     public int getLastCommittedEntryIndex() {
         return -1;
+    }
+
+    @Override
+    public boolean canViewSource() {
+        return false;
     }
 
     @Override

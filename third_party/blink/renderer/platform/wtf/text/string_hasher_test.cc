@@ -48,6 +48,14 @@ const UChar kTestBUChars[5] = {0x41, 0x95, 0xFFFF, 0x1080, 0x01};
 const uint64_t kTestAHash = 0xE9422771E0A5DDE6;
 const uint64_t kTestBHash = 0x4A2DA770EEA75C1E;
 
+bool EqualCaseFoldingHash(StringView a, StringView b) {
+  unsigned hash_a = a.Is8Bit() ? CaseFoldingHash::GetHash(a.Span8())
+                               : CaseFoldingHash::GetHash(a.Span16());
+  unsigned hash_b = b.Is8Bit() ? CaseFoldingHash::GetHash(b.Span8())
+                               : CaseFoldingHash::GetHash(b.Span16());
+  return hash_a == hash_b;
+}
+
 }  // anonymous namespace
 
 TEST(StringHasherTest, StringHasher_ComputeHashAndMaskTop8Bits) {
@@ -95,7 +103,10 @@ TEST(StringHasherTest, StringHasher_ComputeHashAndMaskTop8Bits) {
 }
 
 TEST(StringHasherTest, StringHasher_HashMemory) {
-  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory({}));
+  EXPECT_EQ(kEmptyStringHash,
+            StringHasher::HashMemory(base::span<const uint8_t>()));
+  EXPECT_EQ(kEmptyStringHash,
+            StringHasher::HashMemory(base::span<const uint8_t, 0>()));
   EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory(
                                   base::as_byte_span(kNullUChars).first(0u)));
 
@@ -109,13 +120,12 @@ TEST(StringHasherTest, StringHasher_HashMemory) {
 }
 
 TEST(StringHasherTest, CaseFoldingHash) {
-  EXPECT_NE(CaseFoldingHash::GetHash("foo"), CaseFoldingHash::GetHash("bar"));
-  EXPECT_EQ(CaseFoldingHash::GetHash("foo"), CaseFoldingHash::GetHash("FOO"));
-  EXPECT_EQ(CaseFoldingHash::GetHash("foo"), CaseFoldingHash::GetHash("Foo"));
-  EXPECT_EQ(CaseFoldingHash::GetHash("Longer string 123"),
-            CaseFoldingHash::GetHash("longEr String 123"));
-  EXPECT_EQ(CaseFoldingHash::GetHash(String::FromUTF8("Ünicode")),
-            CaseFoldingHash::GetHash(String::FromUTF8("ünicode")));
+  EXPECT_FALSE(EqualCaseFoldingHash("foo", "bar"));
+  EXPECT_TRUE(EqualCaseFoldingHash("foo", "FOO"));
+  EXPECT_TRUE(EqualCaseFoldingHash("foo", "Foo"));
+  EXPECT_TRUE(EqualCaseFoldingHash("Longer string 123", "longEr String 123"));
+  EXPECT_TRUE(EqualCaseFoldingHash(String::FromUTF8("Ünicode"),
+                                   String::FromUTF8("ünicode")));
 }
 
 TEST(StringHasherTest, ContractionAndExpansion) {

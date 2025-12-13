@@ -41,10 +41,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_utils.h"
@@ -159,8 +159,8 @@ class MagicBoostBrowserTest
     auto result =
         content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                         "getTextfieldBound();");
-    ASSERT_TRUE(result.error.empty());
-    const base::Value::List bounds_as_list = result.ExtractList();
+    ASSERT_TRUE(result.is_ok());
+    const base::Value::List& bounds_as_list = result.ExtractList();
     ASSERT_EQ(bounds_as_list.size(), 4u);
     const double left = bounds_as_list[0].GetDouble();
     const double top = bounds_as_list[1].GetDouble();
@@ -1147,8 +1147,8 @@ IN_PROC_BROWSER_TEST_P(MahiUiWithOptInCardBrowserTest, Basics) {
   EXPECT_FALSE(
       FindWidgetWithName(chromeos::MagicBoostOptInCard::GetWidgetName()));
 
-  ui::ScopedAnimationDurationScaleMode zero_duration(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // Open the opt-in card by mouse right click on the web contents.
   event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
@@ -1233,8 +1233,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Verifies Mahi UI features by accepting or declining the disclaimer view.
 IN_PROC_BROWSER_TEST_P(MahiUiWithMagicBoostRevampBrowserTest, Basics) {
-  ui::ScopedAnimationDurationScaleMode zero_duration(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // Open the opt-in card by mouse right click on the web contents.
   event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)

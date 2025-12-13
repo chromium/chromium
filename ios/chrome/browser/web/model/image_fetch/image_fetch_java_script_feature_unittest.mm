@@ -52,14 +52,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   std::string image_binary;
   EXPECT_TRUE(base::Base64Decode(kImageBase64, &image_binary));
 
-  if (request.GetURL().path() == "/image") {
+  if (request.GetURL().GetPath() == "/image") {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_content_type("image/png");
     result->set_content(image_binary);
     result->AddCustomHeader("Access-Control-Allow-Origin", "*");
     return std::move(result);
   }
-  if (request.GetURL().path() == "/image_delayed") {
+  if (request.GetURL().GetPath() == "/image_delayed") {
     auto result = std::make_unique<net::test_server::DelayedHttpResponse>(
         base::Milliseconds(kImageDelayInMs));
     result->set_content_type("image/png");
@@ -146,8 +146,7 @@ class ImageFetchJavaScriptFeatureTest
   std::string message_decoded_data_;
 };
 
-// Tests that __gCrWeb.imageFetch.getImageData works when the image is
-// same-domain.
+// Tests that `getImageData` works when the image is same-domain.
 TEST_F(ImageFetchJavaScriptFeatureTest, TestGetSameDomainImageData) {
   const GURL image_url = server_.GetURL("/image");
   const GURL page_url = server_.GetURL("/");
@@ -170,8 +169,7 @@ TEST_F(ImageFetchJavaScriptFeatureTest, TestGetSameDomainImageData) {
   EXPECT_EQ("canvas", message_from_);
 }
 
-// Tests that __gCrWeb.imageFetch.getImageData works when the image is
-// cross-domain.
+// Tests that `getImageData` works when the image is cross-domain.
 TEST_F(ImageFetchJavaScriptFeatureTest, TestGetCrossDomainImageData) {
   const GURL image_url = server_.GetURL("/image");
   // web::test::LoadHtml uses an HTTPS url for webpage as default. Use
@@ -194,9 +192,10 @@ TEST_F(ImageFetchJavaScriptFeatureTest, TestGetCrossDomainImageData) {
   EXPECT_EQ("xhr", message_from_);
 }
 
-// Tests that __gCrWeb.imageFetch.getImageData fails for timeout when the image
-// response is delayed. In this test the image must be cross-domain, otherwise
-// image data will be fetched from <img> by <canvas> directly.
+// Tests that `getImageData` fails for timeout when the image
+// response is delayed. In this test the image must be cross-domain,
+// otherwise image data will be fetched from <img> by <canvas>
+// directly.
 TEST_F(ImageFetchJavaScriptFeatureTest, TestGetDelayedImageData) {
   const GURL image_url = server_.GetURL("/image_delayed");
   const GURL page_url("http://chrooooome.com");

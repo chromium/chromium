@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -146,9 +144,8 @@ ScriptPromise<IDLBoolean> BackgroundFetchRegistration::abort(
   DCHECK(registration_);
   DCHECK(registration_service_);
 
-  registration_service_->Abort(
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          &BackgroundFetchRegistration::DidAbort, WrapPersistent(this))));
+  registration_service_->Abort(resolver->WrapCallbackInScriptScope(
+      BindOnce(&BackgroundFetchRegistration::DidAbort, WrapPersistent(this))));
 
   return promise;
 }
@@ -235,8 +232,8 @@ void BackgroundFetchRegistration::MatchImpl(
   DCHECK(registration_service_);
   registration_service_->MatchRequests(
       std::move(request_to_match), std::move(cache_query_options), match_all,
-      WTF::BindOnce(&BackgroundFetchRegistration::DidGetMatchingRequests,
-                    WrapPersistent(this), WrapPersistent(resolver), match_all));
+      BindOnce(&BackgroundFetchRegistration::DidGetMatchingRequests,
+               WrapPersistent(this), WrapPersistent(resolver), match_all));
 }
 
 void BackgroundFetchRegistration::DidGetMatchingRequests(
@@ -357,15 +354,6 @@ V8BackgroundFetchResult BackgroundFetchRegistration::result() const {
 
 V8BackgroundFetchFailureReason BackgroundFetchRegistration::failureReason()
     const {
-  blink::IdentifiabilityMetricBuilder(GetExecutionContext()->UkmSourceID())
-      .Add(
-          blink::IdentifiableSurface::FromTypeAndToken(
-              blink::IdentifiableSurface::Type::kWebFeature,
-              WebFeature::
-                  kV8BackgroundFetchRegistration_FailureReason_AttributeGetter),
-          failure_reason_ ==
-              mojom::BackgroundFetchFailureReason::QUOTA_EXCEEDED)
-      .Record(GetExecutionContext()->UkmRecorder());
   switch (failure_reason_) {
     case mojom::BackgroundFetchFailureReason::NONE:
       return V8BackgroundFetchFailureReason(

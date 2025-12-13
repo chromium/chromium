@@ -103,7 +103,7 @@ suite('reimagingCalibrationRunPageTest', function() {
 
     assertEquals(
         loadTimeData.getString('runCalibrationTitleText'),
-        calibrationTitle.textContent!.trim());
+        calibrationTitle.textContent.trim());
     assertFalse(progressSpinner.hidden);
     assertTrue(completeIllustration.hidden);
 
@@ -116,7 +116,7 @@ suite('reimagingCalibrationRunPageTest', function() {
     // The UI should update to be in calibration complete mode.
     assertEquals(
         loadTimeData.getString('runCalibrationCompleteTitleText'),
-        calibrationTitle.textContent!.trim());
+        calibrationTitle.textContent.trim());
     assertTrue(progressSpinner.hidden);
     assertFalse(completeIllustration.hidden);
   });

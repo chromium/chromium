@@ -8,6 +8,7 @@
 
 #import <string>
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"

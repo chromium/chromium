@@ -218,10 +218,11 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourcePermissionDenied) {
   blink::mojom::StreamDevices stream_devices;
   ProcessDeviceUpdateRequest(
       base::unexpected(
-          blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED),
+          blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED),
       &result, &stream_devices, blink::MEDIA_DEVICE_UPDATE,
       false /*request audio*/);
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED,
+            result);
   EXPECT_EQ(0u, blink::CountDevices(stream_devices));
 }
 
@@ -443,7 +444,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpRestricted) {
                                extensionBuilder.Build().get(), &result,
                                &devices);
 
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED,
+            result);
   EXPECT_FALSE(devices.video_device.has_value());
 }
 
@@ -549,7 +551,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
   ProcessGenerateStreamRequest({id}, GURL(kOrigin), /*extension=*/nullptr,
                                &result, &devices);
 
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED,
+            result);
   EXPECT_FALSE(devices.video_device.has_value());
 }
 
@@ -609,7 +612,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceDlpRestricted) {
                               content::DesktopMediaID::kFakeId),
       &result, &stream_devices, blink::MEDIA_DEVICE_UPDATE,
       /*request audio=*/false);
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED,
+            result);
   EXPECT_EQ(0u, blink::CountDevices(stream_devices));
 }
 

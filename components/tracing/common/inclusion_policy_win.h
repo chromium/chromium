@@ -21,6 +21,10 @@ class TRACING_EXPORT InclusionPolicy {
   // the given thread.
   bool ShouldIncludeThreadId(uint32_t thread_id) const;
 
+  // Returns true if file I/O events should be recorded for the given
+  // `thread_id`.
+  bool ShouldRecordFileIoEvents(uint32_t thread_id) const;
+
  private:
   const raw_ref<const ActiveProcesses> active_processes_;
 };

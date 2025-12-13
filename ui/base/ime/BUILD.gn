@@ -50,8 +50,8 @@ component("ime_types") {
       "character_composer.h",
     ]
     deps += [
+      "//ui/events",
       "//ui/events:dom_keycode_converter",
-      "//ui/events:events",
       "//ui/events:events_base",
     ]
   }
@@ -60,7 +60,6 @@ component("ime_types") {
 component("ime") {
   output_name = "ui_base_ime"
   sources = [
-    "constants.cc",
     "constants.h",
     "events.cc",
     "events.h",
@@ -94,8 +93,8 @@ component("ime") {
     "//third_party/icu",
     "//ui/base/ime/mojom",
     "//ui/events",
+    "//ui/events",
     "//ui/events:dom_keycode_converter",
-    "//ui/events:events",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gfx/range",

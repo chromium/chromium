@@ -23,8 +23,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {ChooserType, ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
 import {getTemplate} from './site_details_permission.html.js';
+import type {ChooserException, RawChooserException, RawSiteException} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {ChooserException, RawChooserException, RawSiteException} from './site_settings_prefs_browser_proxy.js';
 
 export interface SiteDetailsPermissionElement {
   $: {
@@ -56,6 +56,12 @@ export class SiteDetailsPermissionElement extends
        * allow label.
        */
       useAutomaticLabel: {type: Boolean, value: false},
+
+      /**
+       * Controls whether the content setting should use "Block if site is
+       * unfamiliar" as the default setting label.
+       */
+      useBlockIfUnfamiliarLabelForDefault: {type: Boolean, value: false},
 
       /**
        * The site that this widget is showing details for, or null if this
@@ -120,6 +126,7 @@ export class SiteDetailsPermissionElement extends
   }
 
   declare useAutomaticLabel: boolean;
+  declare useBlockIfUnfamiliarLabelForDefault: boolean;
   declare site: RawSiteException;
   declare private chooserExceptions_: ChooserException[];
   declare chooserType: ChooserType;
@@ -287,14 +294,17 @@ export class SiteDetailsPermissionElement extends
    */
   private defaultSettingString_(
       defaultSetting: ContentSetting, category: ContentSettingsTypes,
-      useAutomaticLabel: boolean): string {
+      useAutomaticLabel: boolean, useBlockIfUnfamiliarLabel: boolean): string {
     if (defaultSetting === undefined || category === undefined ||
         useAutomaticLabel === undefined) {
       return '';
     }
 
-    if (defaultSetting === ContentSetting.ASK ||
-        defaultSetting === ContentSetting.IMPORTANT_CONTENT) {
+    if (useBlockIfUnfamiliarLabel) {
+      return this.i18n('siteSettingsActionBlockOnUnfamiliarSitesDefaultMenu');
+    }
+
+    if (defaultSetting === ContentSetting.ASK) {
       return this.i18n('siteSettingsActionAskDefault');
     } else if (defaultSetting === ContentSetting.ALLOW) {
       if (this.useCustomSoundLabels_(category) && useAutomaticLabel) {

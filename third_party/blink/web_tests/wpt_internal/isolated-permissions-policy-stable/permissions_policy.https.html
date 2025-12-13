@@ -13,6 +13,7 @@
 
 const non_isolated_policies = [
   'accelerometer',
+  'aria-notify',
   'attribution-reporting',
   'autoplay',
   'browsing-topics',
@@ -33,6 +34,7 @@ const non_isolated_policies = [
   'ch-ua-form-factors',
   'ch-ua-full-version',
   'ch-ua-full-version-list',
+  'ch-ua-high-entropy-values',
   'ch-ua-mobile',
   'ch-ua-model',
   'ch-ua-platform',
@@ -47,6 +49,7 @@ const non_isolated_policies = [
   'cross-origin-isolated',
   'deferred-fetch',
   'deferred-fetch-minimal',
+  'digital-credentials-get',
   'display-capture',
   'encrypted-media',
   'fullscreen',
@@ -61,6 +64,7 @@ const non_isolated_policies = [
   'keyboard-map',
   'language-detector',
   'local-fonts',
+  'local-network-access',
   'magnetometer',
   'microphone',
   'midi',
@@ -89,8 +93,10 @@ const non_isolated_policies = [
 ]
 
 const isolated_policies = [
+  'controlled-frame',
   'direct-sockets',
   'direct-sockets-private',
+  'direct-sockets-multicast',
   'usb-unrestricted',
 ]
 

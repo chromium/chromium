@@ -57,7 +57,7 @@ DataTransferItemFileSystemAccess::getAsFileSystemHandle(
   FileSystemAccessManager::From(execution_context)
       ->GetEntryFromDataTransferToken(
           std::move(token_remote),
-          WTF::BindOnce(
+          BindOnce(
               [](ScriptPromiseResolver<IDLNullable<FileSystemHandle>>* resolver,
                  mojom::blink::FileSystemAccessErrorPtr result,
                  mojom::blink::FileSystemAccessEntryPtr entry) {

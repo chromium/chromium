@@ -25,6 +25,7 @@ include_rules = [
   "+components/enterprise",
   "+components/error_page/common",
   "+components/favicon/core",
+  "+components/fingerprinting_protection_filter/browser",
   "+components/fingerprinting_protection_filter/common",
   "+components/fingerprinting_protection_filter/ios",
   "+components/shared_highlighting/core/common",
@@ -49,7 +50,6 @@ include_rules = [
   "+components/infobars/core",
   "+components/invalidation",
   "+components/keyed_service/core",
-  "+components/keyed_service/ios",
   "+components/language",
   "+components/language_detection/core",
   "+components/lens",
@@ -74,7 +74,8 @@ include_rules = [
   "+components/password_manager/ios",
   "+components/payments/core",
   "+components/payments/mojom",
-  "+components/plus_addresses",
+  "+components/plus_addresses/core/browser",
+  "+components/plus_addresses/core/common",
   "+components/policy/core/browser",
   "+components/policy/core/common",
   "+components/policy/policy_constants.h",
@@ -112,6 +113,7 @@ include_rules = [
   "+components/signin/public/base",
   "+components/signin/ios/browser",
   "+components/ssl_errors",
+  "+components/strike_database",
   "+components/suggestions",
   "+components/supervised_user",
   "+components/sync",
@@ -130,6 +132,7 @@ include_rules = [
   "+components/unified_consent",
   "+components/update_client",
   "+components/upload_list",
+  "+components/user_data_importer",
   "+components/url_formatter",
   "+components/variations",
   "+components/variations/net",
@@ -163,6 +166,7 @@ include_rules = [
   "+services/network/public/mojom",
   "+services/network/public/cpp",
   "+third_party/crashpad/crashpad/client",
+  "+third_party/re2/src/re2",
   "+third_party/breakpad/breakpad/src/client/ios",
   "+third_party/breakpad/breakpad/src/common",
   "+third_party/libaddressinput",
@@ -177,12 +181,18 @@ include_rules = [
 
   # Features should add explicit dependencies.
   "-ios/chrome/browser",
+  "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/profile/model",
+  "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/push_notification",
   "+ios/chrome/browser/google/model",
   "+ios/chrome/browser/metrics/model",
+  "+ios/chrome/browser/ntp/search_engine_logo/mediator",
+  "+ios/chrome/browser/ntp/search_engine_logo/ui",
+  "+ios/chrome/browser/regional_capabilities",
+  "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/url_loading/model",
 
   # Shared dependencies.
@@ -212,8 +222,8 @@ specific_include_rules = {
   ".*test\.mm": [
     "+components/signin/internal/identity_manager/account_capabilities_constants.h",
     "+components/previous_session_info/previous_session_info_private.h",
-    # Use ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h instead
-    "-ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h",
+    # Use ios/chrome/browser/authentication/test/signin_earl_grey.h instead
+    "-ios/chrome/browser/authentication/test/signin_earl_grey_app_interface.h",
     # use ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h instead
     "-ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_app_interface.h",
     # Blanket exception for tests to be allowed to depend on everything.

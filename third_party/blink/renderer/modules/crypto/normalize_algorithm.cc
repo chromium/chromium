@@ -94,6 +94,12 @@ constexpr AlgorithmNameMappingArray kAlgorithmNameMappings = {{
     {"AES-CTR", 7, kWebCryptoAlgorithmIdAesCtr},
     {"RSA-PSS", 7, kWebCryptoAlgorithmIdRsaPss},
     {"RSA-OAEP", 8, kWebCryptoAlgorithmIdRsaOaep},
+    {"ML-DSA-44", 9, kWebCryptoAlgorithmIdMlDsa44},
+    {"ML-DSA-65", 9, kWebCryptoAlgorithmIdMlDsa65},
+    {"ML-DSA-87", 9, kWebCryptoAlgorithmIdMlDsa87},
+    {"ML-KEM-768", 10, kWebCryptoAlgorithmIdMlKem768},
+    {"ML-KEM-1024", 11, kWebCryptoAlgorithmIdMlKem1024},
+    {"CHACHA20-POLY1305", 17, kWebCryptoAlgorithmIdChaCha20Poly1305},
     {"RSASSA-PKCS1-V1_5", 17, kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5},
 }};
 
@@ -200,6 +206,16 @@ std::optional<WebCryptoAlgorithmId> LookupAlgorithmIdByName(
     return std::nullopt;
 
   WebCryptoAlgorithmId id = it->algorithm_id;
+
+  if ((id == kWebCryptoAlgorithmIdChaCha20Poly1305 ||
+       id == kWebCryptoAlgorithmIdMlDsa44 ||
+       id == kWebCryptoAlgorithmIdMlDsa65 ||
+       id == kWebCryptoAlgorithmIdMlDsa87 ||
+       id == kWebCryptoAlgorithmIdMlKem768 ||
+       id == kWebCryptoAlgorithmIdMlKem1024) &&
+      !RuntimeEnabledFeatures::WebCryptoPQCEnabled()) {
+    return std::nullopt;
+  }
   return id;
 }
 
@@ -717,15 +733,15 @@ bool ParseAesCtrParams(const Dictionary& raw,
 
 // Defined by the WebCrypto spec as:
 //
-//     dictionary AesGcmParams : Algorithm {
+//     dictionary AeadParams : Algorithm {
 //       required BufferSource iv;
 //       BufferSource additionalData;
 //       [EnforceRange] octet tagLength;
 //     }
-bool ParseAesGcmParams(const Dictionary& raw,
-                       std::unique_ptr<WebCryptoAlgorithmParams>& params,
-                       const ErrorContext& context,
-                       ExceptionState& exception_state) {
+bool ParseAeadParams(const Dictionary& raw,
+                     std::unique_ptr<WebCryptoAlgorithmParams>& params,
+                     const ErrorContext& context,
+                     ExceptionState& exception_state) {
   std::vector<uint8_t> iv;
   if (!GetBufferSource(raw, "iv", iv, context, exception_state))
     return false;
@@ -742,7 +758,7 @@ bool ParseAesGcmParams(const Dictionary& raw,
                         exception_state))
     return false;
 
-  params = std::make_unique<WebCryptoAesGcmParams>(
+  params = std::make_unique<WebCryptoAeadParams>(
       std::move(iv), has_additional_data, std::move(additional_data),
       has_tag_length, tag_length);
   return true;
@@ -1026,9 +1042,9 @@ bool ParseAlgorithmParams(v8::Isolate* isolate,
     case kWebCryptoAlgorithmParamsTypeAesCtrParams:
       context.Add("AesCtrParams");
       return ParseAesCtrParams(raw, params, context, exception_state);
-    case kWebCryptoAlgorithmParamsTypeAesGcmParams:
-      context.Add("AesGcmParams");
-      return ParseAesGcmParams(raw, params, context, exception_state);
+    case kWebCryptoAlgorithmParamsTypeAeadParams:
+      context.Add("AeadParams");
+      return ParseAeadParams(raw, params, context, exception_state);
     case kWebCryptoAlgorithmParamsTypeRsaOaepParams:
       context.Add("RsaOaepParams");
       return ParseRsaOaepParams(raw, params, context, exception_state);

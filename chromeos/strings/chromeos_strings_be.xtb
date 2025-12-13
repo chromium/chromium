@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">апельсіны</translation>
 <translation id="1275718070701477396">Выбрана</translation>
 <translation id="1290331692326790741">Слабы сігнал</translation>
+<translation id="1292474106138697109">Дысплэй інструментаў для ўрокаў</translation>
 <translation id="1300115153046603471">Тып APN: "Стандартны" і "<ph name="ATTACH" />".</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Пераўтварыць</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989">Відарысаў: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4300272766492248925">Адкрыць праграму</translation>
 <translation id="430786093962686457">шыфон</translation>
+<translation id="4309762678330556039">Вы можаце аўтаматычна ствараць расшыфроўкі і выконваць пошук запісаных аўдыя. Запісы можна ствараць нават без падключэння да інтэрнэту.</translation>
 <translation id="4310735698903592804">Нядаўнія шпалеры на аснове штучнага інтэлекту ад Google</translation>
 <translation id="4320904097188876154">неонава-ружовы</translation>
 <translation id="432961742358282111">Націсніце правую кнопку мышы або націсніце і ўтрымлівайце, каб атрымаць азначэнне, пераклад або выканаць перавод адзінак вымярэння. Каб кіраваць гэтай функцыяй, выкарыстоўвайце клавішы са стрэлкамі ўлева і ўправа.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
 <translation id="5600027863942488546">Клавіша "<ph name="KEY_NAME" />" праверана</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Праграма "Інструменты для ўрокаў" абагульвае ваш экран з дысплэем "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="5613201299517339763">Вы выйшлі з уліковага запісу</translation>
 <translation id="5620281292257375798">Для ўнутранага карыстання</translation>
 <translation id="5628106863521633649">Даступныя мовы</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Рух аблокаў</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Няма даступных сканераў</translation>
-<translation id="6231648282154119906">Падазроныя файлы будуць аўтаматычна сканіравацца сэрвісам "Google Бяспечны прагляд" у рамках выбранай вамі палепшанай абароны</translation>
 <translation id="6232017090690406397">Акумулятар</translation>
 <translation id="6234024205316847054">Паказаць асноўныя палажэнні</translation>
 <translation id="6243280677745499710">Цяпер зададзеныя</translation>

@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -171,7 +172,8 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
 
     EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
               provider().registrar_unsafe().GetInstallState(parent_app_id_));
-    EXPECT_TRUE(provider().registrar_unsafe().IsIsolated(parent_app_id_));
+    EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+        parent_app_id_, WebAppFilter::IsIsolatedApp()));
     EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 
     return parent_app;
@@ -1101,7 +1103,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   // Check List results for the main app contains 3 sub-apps.
   auto list_result_1 = ListSubAppsJS(iwa_frame_1);
 
-  auto dict_1 = list_result_1.ExtractDict();
+  const auto& dict_1 = list_result_1.ExtractDict();
   EXPECT_EQ(3ul, dict_1.size());
   EXPECT_TRUE(dict_1.contains(kSubAppPath));
   EXPECT_TRUE(dict_1.contains(kSubAppPath2));
@@ -1109,7 +1111,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
 
   // Check List results for the second app is empty.
   auto list_result_2 = ListSubAppsJS(iwa_frame_2);
-  EXPECT_TRUE(list_result_2.error.empty());
+  EXPECT_TRUE(list_result_2.is_ok());
   EXPECT_EQ(0ul, list_result_2.ExtractDict().size());
 }
 

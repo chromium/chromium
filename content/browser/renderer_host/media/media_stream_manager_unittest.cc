@@ -35,6 +35,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/media_observer.h"
 #include "content/public/browser/media_request_state.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -53,7 +54,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -75,7 +76,6 @@ using ::blink::mojom::StreamSelectionInfo;
 using ::blink::mojom::StreamSelectionInfoPtr;
 using ::testing::_;
 using testing::ElementsAre;
-using ::testing::Invoke;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 using ::blink::mojom::CapturedWheelAction;
@@ -83,7 +83,7 @@ using ::blink::mojom::CapturedWheelActionPtr;
 using ::blink::mojom::ZoomLevelAction;
 using CapturedSurfaceControllerFactoryCallback =
     ::content::MediaStreamManager::CapturedSurfaceControllerFactoryCallback;
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 using DeviceStoppedCallback =
     ::content::MediaStreamManager::DeviceStoppedCallback;
@@ -346,12 +346,15 @@ class TestMediaStreamDispatcherHost
       const base::UnguessableToken& device_id,
       RequestCapturedSurfaceControlPermissionCallback callback) override {}
   void FocusCapturedSurface(const std::string& label, bool focus) override {}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
   void ApplySubCaptureTarget(const base::UnguessableToken& device_id,
                              media::mojom::SubCaptureTargetType type,
                              const base::Token& target,
                              uint32_t sub_capture_target_version,
                              ApplySubCaptureTargetCallback callback) override {}
-#endif
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
   void GetOpenDevice(int32_t page_request_id,
                      const base::UnguessableToken& session_id,
@@ -717,13 +720,13 @@ class MediaStreamManagerTest : public ::testing::Test {
   void SetVideoCaptureDevices(
       const std::vector<media::VideoCaptureDeviceInfo>& devices) {
     ON_CALL(*video_capture_provider_, GetDeviceInfosAsync(_))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [devices](
                 VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
               std::move(result_callback)
                   .Run(media::mojom::DeviceEnumerationResult::kSuccess,
                        devices);
-            }));
+            });
   }
 
   std::unique_ptr<MockAudioManager> audio_manager_;
@@ -1086,14 +1089,12 @@ TEST_F(MediaStreamManagerTest, GetDisplayMediaRequestCallsUIProxy) {
       [](base::RunLoop* run_loop) {
         auto mock_ui = std::make_unique<MockMediaStreamUIProxy>();
         EXPECT_CALL(*mock_ui, MockRequestAccess(_, _))
-            .WillOnce(testing::Invoke(
-                [run_loop](std::unique_ptr<MediaStreamRequest>& request,
-                           testing::Unused) {
-                  EXPECT_EQ(
-                      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-                      request->video_type);
-                  run_loop->Quit();
-                }));
+            .WillOnce([run_loop](std::unique_ptr<MediaStreamRequest>& request,
+                                 testing::Unused) {
+              EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                        request->video_type);
+              run_loop->Quit();
+            });
         return std::unique_ptr<FakeMediaStreamUIProxy>(std::move(mock_ui));
       },
       &run_loop_));

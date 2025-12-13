@@ -1,6 +1,5 @@
 # accessibility
 evliu@google.com
-mschillaci@google.com
 # account_manager
 sinhak@chromium.org
 # android
@@ -14,6 +13,7 @@ jinsukkim@chromium.org
 wenyufu@chromium.org
 peter@chromium.org
 ashleynewson@chromium.org
+mklw@google.com
 # apps
 nancylingwang@chromium.org
 tby@chromium.org
@@ -75,6 +75,7 @@ emshack@chromium.org
 ckitagawa@chromium.org
 joenotcharles@google.com
 gjc@google.com
+koretadaniel@chromium.org
 # browsing_topics
 # chromeos_hps
 chadduffin@chromium.org
@@ -116,6 +117,10 @@ harrisonsean@chromium.org
 jeffreycohen@chromium.org
 tbansal@chromium.org
 guiperez@google.com
+# contextual_tasks
+nyquist@chromium.org
+qinmin@chromium.org
+sophiechang@chromium.org
 # cookie
 cfredric@chromium.org
 # cras
@@ -132,6 +137,7 @@ julietlevesque@google.com
 bhartmire@google.com
 # crostini
 drmasquatch@google.com
+uekawa@chromium.org
 # cryptohome
 jorgelo@chromium.org
 hcyang@google.com
@@ -195,6 +201,7 @@ andreaxg@google.com
 iwells@google.com
 bryantchandler@chromium.org
 sanaakbani@google.com
+birnie@google.com
 # gpu
 jonross@chromium.org
 # hang_watcher
@@ -291,6 +298,9 @@ jdonnelly@chromium.org
 mahmadi@chromium.org
 manukh@chromium.org
 toyoshim@chromium.org
+# on_device_model
+cduvall@chromium.org
+xinghuilu@chromium.org
 # oobe
 bohdanty@google.com
 ziegltrum@google.com
@@ -322,7 +332,6 @@ drubery@chromium.org
 thefrog@chromium.org
 xinghuilu@chromium.org
 # payment
-rouslan@chromium.org
 smcgruer@chromium.org
 # performance_controls
 agale@chromium.org
@@ -372,6 +381,10 @@ svend@chromium.org
 # profile
 alexilin@chromium.org
 rsult@google.com
+# private_metrics
+kjarosz@google.com
+# puma
+kjarosz@google.com
 # quick_answers
 xiaohuic@chromium.org
 # quota
@@ -465,6 +478,8 @@ perrier@chromium.org
 curranmax@chromium.org
 tbansal@chromium.org
 toyoshim@chromium.org
+# ui
+koretadaniel@chromium.org
 # update_engine
 poromov@chromium.org
 # user_education
@@ -489,10 +504,10 @@ kenrb@chromium.org
 hcyang@google.com
 # web_core
 schenney@chromium.org
-# weblayer
-cduvall@chromium.org
 # web_rtc
 kron@chromium.org
+# windows
+koretadaniel@chromium.org
 # xr
 alcooper@chromium.org
 # Custom: not in any subdirectory

@@ -73,6 +73,12 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
                                    int sample_rate,
                                    bool is_input);
 
+// Returns the default input or output audio device ID, or an empty optional
+// if no default device is found or an error occurs.
+// `input` specifies the device type to return. True for the default input
+// device, false for the default output device.
+std::optional<AudioDeviceID> GetDefaultDevice(bool input);
+
 }  // namespace core_audio_mac
 }  // namespace media
 

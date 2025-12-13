@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] initialize() of global registry should throw for nodes from another document
+  assert_throws_dom: function "() => customElements.initialize(contentDocument)" threw object "TypeError: customElements.initialize is not a function" that is not a DOMException NotSupportedError: property "code" is equal to undefined, expected 9
+[FAIL] createElement() should throw with global registry from another document
+  assert_throws_dom: function "() => contentDocument.createElement("div", { customElementRegistry: customElements })" did not throw
+[FAIL] createElementNS() should throw with global registry from another document
+  assert_throws_dom: function "() => contentDocument.createElementNS("x", "div", { customElementRegistry: customElements })" did not throw
+[FAIL] attachShadow() should throw with global registry from another document
+  assert_throws_dom: function "() => element.attachShadow({ mode: "closed", customElementRegistry: customElements })" did not throw
+[FAIL] importNode() should throw with global registry from another document
+  assert_throws_dom: function "() => contentDocument.importNode(element, { customElementRegistry: customElements })" did not throw
+Harness: the test ran to completion.
+

@@ -124,7 +124,7 @@ class WebBluetoothTest : public InProcessBrowserTest {
     url_loader_interceptor_ =
         std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
             [](content::URLLoaderInterceptor::RequestParams* params) {
-              if (params->url_request.url.host() == "example.com") {
+              if (params->url_request.url.GetHost() == "example.com") {
                 content::URLLoaderInterceptor::WriteResponse(
                     "content/test/data/simple_page.html", params->client.get());
                 return true;
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NotificationStartValueChangeRead) {
       return Promise.all([readPromise, notifyPromise]);
     })())");
 
-  const base::Value::List promise_values = js_values.ExtractList();
+  const base::Value::List& promise_values = js_values.ExtractList();
   EXPECT_EQ(2U, promise_values.size());
   EXPECT_EQ(content::ListValueOf(1, 1), js_values);
 }
@@ -1139,7 +1139,8 @@ IN_PROC_BROWSER_TEST_F(
       navigator.bluetooth.requestDevice({
           filters: [{name: 'Test Device', services: ['heart_rate']}]}))",
                       content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(result.error, ::testing::HasSubstr(kUserGestureError));
+  EXPECT_THAT(result, content::EvalJsResult::ErrorIs(
+                          ::testing::HasSubstr(kUserGestureError)));
 
   // In the prerendering, the connection of Web Bluetooth is deferred and
   // `observer` doesn't have any update.

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//chromeos/ash/components/assistant/assistant.gni")
 import("//rlz/buildflags/buildflags.gni")
 
 assert(is_chromeos)
@@ -81,9 +80,9 @@ static_library("app_list") {
     "//chrome/app/vector_icons",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/arc:arc_util",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/search_engines",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/app_icon_color_cache",
     "//chrome/browser/ui/webui/ash/settings/app_management",
@@ -91,7 +90,6 @@ static_library("app_list") {
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/file_manager:constants",
-    "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/experiences/arc:arc_app_constants",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/constants",
@@ -303,6 +301,7 @@ source_set("browser_tests") {
     "//ui/display:display_manager_test_api",
     "//ui/events:test_support",
     "//ui/gfx",
+    "//ui/message_center:test_support",
     "//ui/views",
     "//ui/views:test_support",
     "//ui/wm",

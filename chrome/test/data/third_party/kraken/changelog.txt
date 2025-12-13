@@ -1,7 +1,0 @@
-Kraken 1.1
-==========
-Fix Bug 599914 - Kraken: audio-beat-detection and audio-fft computes on NaN and undefined.
-
-Kraken 1.0
-==========
-Initial import.

@@ -1,17 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
-<translation id="1036348656032585052">ປິດ</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_WEEKS_ONE" /> ອາທິດກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_WEEKS_MANY" /> ອາທິດກ່ອນ}}</translation>
 <translation id="1063300264396686489">ເປີດກຸ່ມແຖບຈາກອຸປະກອນອື່ນໆໂດຍອັດຕະໂນມັດ</translation>
 <translation id="1075622780330595106">ທ່ານບໍ່ໄດ້ໃຊ້ແຖບ <ph name="NUMBER_OF_TABS" /> ແຖບມາໄລຍະໜຶ່ງແລ້ວ. ປິດພວກມັນບໍ?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_YEARS_ONE" /> ປີກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_YEARS_MANY" /> ປີກ່ອນ}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{ແຖບ ແລະ ກຸ່ມທີ່ບໍ່ເຄື່ອນໄຫວຈະຖືກປິດຫຼັງຈາກ 1 ເດືອນ}other{ແຖບ ແລະ ກຸ່ມທີ່ບໍ່ເຄື່ອນໄຫວຈະຖືກປິດຫຼັງຈາກ <ph name="MONTH_COUNT_MANY" /> ເດືອນ}}</translation>
 <translation id="1173894706177603556">ໃສ່ຊື່ໃໝ່</translation>
-<translation id="1197088940767939838">ສີໝາກກ້ຽງ</translation>
+<translation id="1203747227183434426">ກຳລັງບັນທຶກສື່</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{ເປີດ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TAB_COUNT2" /> ແຖບ}other{ເປີດ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TAB_COUNT2" /> ແຖບ}}</translation>
 <translation id="1273910660700874265">ຕົວເລືອກກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">ເລືອກເວລາທີ່ແຖບ ແລະ ກຸ່ມແຖບຖືກຍ້າຍໄປໃສ່ພາກສ່ວນທີ່ບໍ່ເຄື່ອນໄຫວໂດຍອັດຕະໂນມັດ.</translation>
+<translation id="1321004960118052490">ລາຍການທີ່ບໍ່ໄດ້ນຳໃຊ້ຂອງທ່ານຈະບໍ່ສະສົມ</translation>
 <translation id="1329584516321524826">ຫາກໍອັບເດດເມື່ອກີ້ນີ້</translation>
 <translation id="1340839264183302272">ອອກຈາກກຸ່ມ</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ແບ່ງປັນເຊິ່ງມີ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />, ພ້ອມກັບປ້າຍກຳກັບ <ph name="CARD_LABEL" />.}other{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ແບ່ງປັນເຊິ່ງມີ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />, ພ້ອມກັບປ້າຍກຳກັບ <ph name="CARD_LABEL" />.}}</translation>
@@ -20,23 +20,25 @@
 <translation id="1499635324672558517">ປິດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດບໍ?</translation>
 <translation id="1501480321619201731">ລຶບກຸ່ມ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ລາຍການທີ່ບໍ່ໄດ້ນຳໃຊ້}other{<ph name="TABS_COUNT_MANY" /> ລາຍການທີ່ບໍ່ໄດ້ນຳໃຊ້}}</translation>
-<translation id="1555130319947370107">ສີ​ຟ້າ</translation>
-<translation id="161042844686301425">ສີຟ້າຂຽວ</translation>
 <translation id="1645759014353344461">ຈັດກຸ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບແລ້ວ</translation>
 <translation id="1657719826150349398">ຍ້າຍແຖບລົງ</translation>
+<translation id="1670942869417022142">ປິດສຽງແລ້ວ</translation>
 <translation id="1697284962337958118">ເພີ່ມໃສ່</translation>
 <translation id="1713541401465507417">ປິດແຖບ ແລະ ກຸ່ມທັງໝົດ</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{ກຸ່ມແຖບ <ph name="TAB_GROUPS_COUNT_ONE" /> ລາຍການບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ}other{ກຸ່ມແຖບ <ph name="TAB_GROUPS_COUNT_MANY" /> ລາຍການບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">ຈັດກຸ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບແລ້ວ</translation>
+<translation id="1844381456014878100">ຫຼັງຈາກບໍ່ເຄື່ອນໄຫວ 7 ມື້</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="1909810060368225529">ແຈ້ງການ: ການປ່ຽນແປງຕໍ່ກັບກຸ່ມແຖບທີ່ແບ່ງປັນແລ້ວນີ້ແມ່ນເຫັນໄດ້ໂດຍທຸກຄົນ. ທຸກຄົນສາມາດປ່ຽນແປງກຸ່ມແຖບທີ່ແບ່ງປັນຂອງທ່ານໄດ້</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{ປັກໝຸດແຖບ}other{ປັກໝຸດແຖບ}}</translation>
 <translation id="1982637982196732906">ຍ້າຍໄປໃສ່ພາກສ່ວນທີ່ບໍ່ເຄື່ອນໄຫວ</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ບຸກມາກແຖບທີ່ເລືອກໄວ້ <ph name="TABS_COUNT_ONE" /> ແຖບ}other{ບຸກມາກແຖບທີ່ເລືອກໄວ້ <ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="2055057176188061528">ເລືອກກຸ່ມແຖບ ຫຼື ສ້າງກຸ່ມແຖບໃໝ່</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome ຈະປິດລາຍການໃນພາກສ່ວນທີ່ທ່ານບໍ່ໄດ້ນຳໃຊ້ເປັນເວລາ <ph name="AUTO_DELETE_DELAY_ONE" /> ເດືອນໂດຍອັດຕະໂນມັດ. ທ່ານສາມາດປິດຄຸນສົມບັດນີ້ໄດ້ໃນຕອນນີ້ ຫຼື ໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ.}other{Chrome ຈະປິດລາຍການໃນພາກສ່ວນທີ່ທ່ານບໍ່ໄດ້ນຳໃຊ້ເປັນເວລາ <ph name="AUTO_DELETE_DELAY_MANY" /> ເດືອນໂດຍອັດຕະໂນມັດ. ທ່ານສາມາດປິດຄຸນສົມບັດນີ້ໄດ້ໃນຕອນນີ້ ຫຼື ໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ.}}</translation>
+<translation id="2074527029802029717">ຖອນໝຸດແຖບ</translation>
 <translation id="2118649612461486615">ຂໍ້​ມູນ​ຮ້ານ​ຄ້າ</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ແຖບ ແລະ ກຸ່ມທີ່ປິດແລ້ວຂອງທ່ານແມ່ນສາມາດເປີດຄືນໃໝ່ໄດ້ຈາກພາກສ່ວນແຖບຫຼ້າສຸດ ແລະ ພາກສ່ວນກຸ່ມແຖບ. ແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານຈະໃຊ້ບໍ່ໄດ້.}other{ແຖບ ແລະ ກຸ່ມທີ່ປິດແລ້ວຂອງທ່ານແມ່ນສາມາດເປີດຄືນໃໝ່ໄດ້ຈາກພາກສ່ວນແຖບຫຼ້າສຸດ ແລະ ພາກສ່ວນກຸ່ມແຖບ. ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ # ແຖບຂອງທ່ານຈະໃຊ້ບໍ່ໄດ້.}}</translation>
+<translation id="2153899164605463849">{TAB_COUNT,plural, =1{ເຊົາປິດສຽງເວັບໄຊ}other{ເຊົາປິດສຽງເວັບໄຊ}}</translation>
 <translation id="2162620598375156287">ຕອນນີ້ <ph name="CURRENT_PRICE" /> ຢູ່ <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ຍົກເລີກການຈັດກຸ່ມແຖບ}other{ຍົກເລີກການຈັດກຸ່ມແຖບ}}</translation>
 <translation id="2271452184061378400">ລະບົບຈະບັນທຶກກຸ່ມແຖບຂອງທ່ານໄວ້ບ່ອນນີ້</translation>
@@ -61,7 +63,10 @@
 <translation id="2801787514987684416">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າບໍ?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{ປິດ <ph name="ONE_CLOSED" /> ແຖບແລ້ວ}other{ປິດ <ph name="MANY_CLOSED" /> ແຖບແລ້ວ}}</translation>
 <translation id="2894757982205307093">ແຖບໃໝ່ໃນກຸ່ມ</translation>
+<translation id="2918484639460781603">ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="2928243913527329289">Google | ກ່ຽວກັບຮ້ານຄ້ານີ້</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{ເລືອກແລ້ວ <ph name="ITEMS_COUNT_ONE" /> ລາຍການ}other{ເລືອກແລ້ວ <ph name="ITEMS_COUNT_MANY" /> ລາຍການ}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{ປັກໝຸດແຖບ}other{ປັກໝຸດແຖບ}}</translation>
 <translation id="3008554597174452548">ຢຸດການຕິດຕາມສິນຄ້າ</translation>
 <translation id="3026391124054406831">ສ້າງກຸ່ມເພື່ອຈັດລະບຽບແຖບຂອງທ່ານ.</translation>
 <translation id="3051031624272448591">ທ່ານສາມາດກູ້ຄືນແຖບເຫຼົ່ານີ້ໄດ້ສະເໝີໃນປະຫວັດ</translation>
@@ -78,20 +83,24 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ປິດລາຍການ}other{ປິດລາຍການ}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ຮູບຫຍໍ້ຕົວຢ່າງຊີດທີ່ແບ່ງປັນ.</translation>
+<translation id="3776329373944672717">ຊື່ກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">ຈັດການ</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{ຖອນປັກໝຸດແຖບ}other{ຖອນປັກໝຸດແຖບ}}</translation>
 <translation id="3940195383040445971">ຕິດຕາມລາຄາໃນແຖບ</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ແຖບໃໝ່, ປິດແລ້ວ <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> ແຖບໃໝ່, ປິດແລ້ວ <ph name="ANY_CLOSED" />}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ຈັດກຸ່ມແຖບ}other{ຈັດກຸ່ມແຖບ}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{ຖອນໝຸດແຖບທີ່ເລືອກ <ph name="TABS_COUNT_ONE" /> ແຖບ}other{ຖອນໝຸດແຖບທີ່ເລືອກ <ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_DAYS_ONE" /> ມື້ກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_DAYS_MANY" /> ມື້ກ່ອນ}}</translation>
 <translation id="4076226664360336092">ລາຍຊື່ກຸ່ມແຖບທີ່ເປີດຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ</translation>
 <translation id="4133493477912226187">ເບິ່ງຄືວ່າມີ <ph name="NUMBER_OF_TABS" /> ແຖບກ່ຽວຂ້ອງກັນ. ຈັດກຸ່ມພວກມັນບໍ?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{ປິດກຸ່ມ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ປິດກຸ່ມ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
-<translation id="4159784952369912983">ສີມ່ວງ</translation>
 <translation id="4203448675570432781">ປິດປະກາດກ່ຽວກັບການປ່ຽນແປງການລຶບແຖບອັດຕະໂນມັດແລ້ວ.</translation>
 <translation id="427987768447457592">ກຸ່ມແຖບໃໝ່</translation>
 <translation id="4371591986692297148">ບໍ່ໄດ້ນຳໃຊ້</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{ກູ້ຄືນລາຍການ}other{ກູ້ຄືນລາຍການ}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{ອັບເດດເມື່ອ <ph name="NUM_DAYS_ONE" /> ມື້ກ່ອນ}other{ອັບເດດເມື່ອ <ph name="NUM_DAYS_MANY" /> ມື້ກ່ອນ}}</translation>
+<translation id="4496868141611329150">ຍ້າຍກຸ່ມແຖບໄປທາງຊ້າຍ</translation>
+<translation id="4653140634010630594">{TAB_COUNT,plural, =1{ປິດສຽງເວັບໄຊ}other{ປິດສຽງເວັບໄຊ}}</translation>
 <translation id="4686942373615810936">ຫາກໍສ້າງຕອນນີ້</translation>
 <translation id="4783638485675352219">ແບ່ງປັນຊື່ ແລະ URL ຂອງແຖບທີ່ເປີດຢູ່ຈາກອຸປະກອນນີ້ດ້ວຍລະບົບປະຕິບັດການ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ຄຳຕິຊົມ)}other{(<ph name="REVIEWS_COUNT_MANY" /> ຄຳຕິຊົມ)}}</translation>
@@ -103,17 +112,19 @@
 <translation id="4871719318659334896">ປິດກຸ່ມ</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{ກູ້ຄືນ ແລະ ເປີດກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ກູ້ຄືນ ແລະ ເປີດກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">ເປີດ</translation>
+<translation id="4894777338623123366">ກຳລັງແບ່ງປັນໜ້າຈໍແຖບ</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ປິດແຖບ}other{ປິດແຖບ}}</translation>
 <translation id="4908147833782857886">ບັນທຶກແລ້ວ <ph name="USER_EMAIL" /> ກຸ່ມ (ຈະປິດແຖບ ແລະ ລຶບກຸ່ມ)</translation>
 <translation id="492284538114688557">ພົບເຫັນການຫຼຸດລາຄາ</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບທີ່ແບ່ງປັນເຊິ່ງມີ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />, ພ້ອມກັບປ້າຍກຳກັບ <ph name="CARD_LABEL" />.}other{ຂະຫຍາຍກຸ່ມແຖບທີ່ແບ່ງປັນເຊິ່ງມີ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />, ພ້ອມກັບປ້າຍກຳກັບ <ph name="CARD_LABEL" />.}}</translation>
 <translation id="5007392906805964215">ກວດສອບ</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{ຍ້າຍແຖບໄປໃສ່ໜ້າຈໍໃໝ່}other{ຍ້າຍແຖບໄປໃສ່ໜ້າຈໍອື່ນ}}</translation>
 <translation id="5073204694187207510">ເຊື່ອງຕາໜ່າງແບບເຕັມຈໍ</translation>
 <translation id="5076161749301278626">ເບິ່ງຄຳຕິຊົມຮ້ານຄ້າບໍ?</translation>
 <translation id="5161254044473106830">ຈຳ​ເປັນ​ຕ້ອງ​ມີ​ຫົວ​ຂໍ້</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ຈະປິດແຖບ ແລະ ກຸ່ມແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ໂດຍອັດຕະໂນມັດຫຼັງຈາກຜ່ານໄປ <ph name="AUTO_DELETE_DELAY_ONE" /> ເດືອນ. ທ່ານສາມາດປ່ຽນຄ່ານີ້ໄດ້ໃນການຕັ້ງຄ່າ.}other{Chrome ຈະປິດແຖບ ແລະ ກຸ່ມແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ໂດຍອັດຕະໂນມັດຫຼັງຈາກຜ່ານໄປ <ph name="AUTO_DELETE_DELAY_MANY" /> ເດືອນ. ທ່ານສາມາດປ່ຽນຄ່ານີ້ໄດ້ໃນການຕັ້ງຄ່າ.}}</translation>
 <translation id="5339733443032484186">ແຖບສຸດທ້າຍຂອງທ່ານ</translation>
 <translation id="5380159289133845234">ເກັບແຖບທີ່ຊ້ຳກັນໄວ້ໃນແຟ້ມ</translation>
-<translation id="5400836586163650660">ສີເທົາ</translation>
 <translation id="5446043142172831860">ລຶບແຖບອອກ ແລະ ອອກຈາກກຸ່ມ</translation>
 <translation id="5490235265819901748">ຂະຫຍາຍກຸ່ມແຖບແລ້ວ</translation>
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
@@ -121,22 +132,24 @@
 <translation id="5556417849629758491">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ, ມີຕົວເລືອກຢູ່ເທິງສຸດຂອງໜ້າຈໍ</translation>
 <translation id="5627941783489838464">ບໍ່ມີການອັບເດດແຖບ</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ລິ້ງຈາກ Chrome}other{<ph name="TABS_COUNT_MANY" /> ລິ້ງຈາກ Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{ຍ້າຍແຖບໄປທາງຊ້າຍ}other{ຍ້າຍແຖບໄປທາງຊ້າຍ}}</translation>
 <translation id="5746204836956568669">ຈັດກຸ່ມແຖບ <ph name="NUMBER_OF_TABS" /> ແຖບເພື່ອໃຫ້ເຮັດວຽກໄດ້ໄວຂຶ້ນບໍ?</translation>
 <translation id="5773295109010386583">ປິດລາຍການທີ່ບໍ່ເຄື່ອນໄຫວໂດຍອັດຕະໂນມັດ</translation>
 <translation id="58326064309361797">ລາກແຖບເພື່ອຈັດກຸ່ມພວກມັນ</translation>
-<translation id="5901630391730855834">ສີ​ເຫຼືອງ</translation>
 <translation id="5972844218283131174">ເຊົາເລືອກທັງໝົດ</translation>
-<translation id="6017514345406065928">ສີ​ຂຽວ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6051432659151380973">ກຸ່ມແຖບຂອງທ່ານຈະບັນທຶກໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6054741997831917303">ລາຄາຂອງສິນຄ້ານນີ້ຫຼຸດລົງຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="NEW_PRICE" /> ເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="6109251075362363230">ຕອນນີ້ລະບົບຍັງຈະເກັບແຖບທີ່ຊ້ຳກັນທັງໝົດໄວ້ໃນແຟ້ມນຳ, ຍົກເວັ້ນສຳເນົາທີ່ໃຊ້ຫຼ້າສຸດ.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{ປິດລາຍການທີ່ເລືອກ <ph name="TABS_COUNT_ONE" /> ລາຍການ}other{ປິດລາຍການທີ່ເລືອກ <ph name="TABS_COUNT_MANY" /> ລາຍການ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ຍ້າຍກຸ່ມໄປໃສ່ໜ້າຈໍໃໝ່}other{ຍ້າຍກຸ່ມໄປໃສ່ໜ້າຈໍອື່ນ}}</translation>
-<translation id="6220820548421939212">ໄດ້. ຕົກລົງ</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{ຍ້າຍແຖບໄປທາງຂວາ}other{ຍ້າຍແຖບໄປທາງຂວາ}}</translation>
 <translation id="6228793724645064692">(ຄະແນນຮ້ານຄ້າ)</translation>
+<translation id="6251046978189636310">ກຳລັງຫຼິ້ນສຽງ</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{ລຶບແຖບອອກຈາກກຸ່ມ}other{ລຶບແຖບອອກຈາກກຸ່ມ}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}other{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}}</translation>
 <translation id="6333260925957816943">ຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{ປັກໝຸດແຖບທີ່ເລືອກ <ph name="TABS_COUNT_ONE" /> ແຖບ}other{ປັກໝຸດແຖບທີ່ເລືອກ <ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="6381032505162537930">ທ່ານຈະເຫັນກຸ່ມແຖບຂອງທ່ານບ່ອນນີ້</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ເຊົາຈັດກຸ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກໄວ້}other{ເຊົາຈັດກຸ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກໄວ້}}</translation>
 <translation id="6499296376514955580">ແຈ້ງການກ່ຽວກັບການປ່ຽນແປງກຸ່ມແຖບທີ່ແບ່ງປັນແລ້ວທີ່ປິດຢູ່</translation>
@@ -153,6 +166,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{ເພີ່ມໃສ່ກຸ່ມທີ່ມີຊື່ວ່າ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TAB_COUNT1" /> ແຖບ}other{ເພີ່ມໃສ່ກຸ່ມທີ່ມີຊື່ວ່າ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TAB_COUNT1" /> ແຖບ}}</translation>
 <translation id="6818926723028410516">ເລືອກລາຍການ</translation>
 <translation id="6856809498882026482">ເຊື່ອງໂໝດເລືອກຫຼາຍລາຍການ</translation>
+<translation id="6957436309971790274">ຫຼັງຈາກບໍ່ເຄື່ອນໄຫວ 21 ມື້</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ແບ່ງປັນເຊິ່ງມີ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ແບ່ງປັນເຊິ່ງມີ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">ເລືອກກຸ່ມແຖບ</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ແບ່ງປັນແຖບ}other{ແບ່ງປັນແຖບ}}</translation>
@@ -163,8 +177,10 @@
 <translation id="7326879924029668159">ເບິ່ງນະໂຍບາຍການສົ່ງຄືນ ແລະ ອື່ນໆ</translation>
 <translation id="7352298686197644113">ເບິ່ງວ່າລາຍການໃດໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານມີລາຄາຕໍ່າກວ່າ</translation>
 <translation id="7369451074646620503">ກຸ່ມແຖບ "<ph name="TAB_GROUP_NAME" />" ບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ</translation>
+<translation id="7402375256128852434">ເພີ່ມແຖບຫຼ້າສຸດ</translation>
 <translation id="7452985128687107478">ກຸ່ມແຖບຈະບັນທຶກ ແລະ ອັບເດດໃນທຸກອຸປະກອນຂອງທ່ານໂດຍອັດຕະໂນມັດ</translation>
 <translation id="747459581954555080">ກູ້ຄືນທັງໝົດ</translation>
+<translation id="7489558427602531799">ຍ້າຍກຸ່ມແຖບໄປທາງຂວາ</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ລາຍການ}other{<ph name="TABS_COUNT_MANY" /> ລາຍການ}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{ກູ້ຄືນລາຍການທີ່ເລືອກ <ph name="TABS_COUNT_ONE" /> ລາຍການ}other{ກູ້ຄືນລາຍການທີ່ເລືອກ <ph name="TABS_COUNT_MANY" /> ລາຍການ}}</translation>
 <translation id="753732157349120914">ຕົວປ່ຽນແຖບ</translation>
@@ -183,9 +199,8 @@
 <translation id="7853202427316060426">ການເຄື່ອນໄຫວ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ຄຳຕິຊົມ}other{ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ຄຳຕິຊົມ}}</translation>
 <translation id="7885132941432959125">ຍ້າຍແຖບໄປເບື້ອງຂວາ</translation>
-<translation id="788914896430720926">ເກັບຮັກສາພາກສ່ວນທີ່ບໍ່ໄດ້ນຳໃຊ້ໃຫ້ເປັນລະບຽບບໍ?</translation>
+<translation id="7887334752153342268">ຈໍາລອງ</translation>
 <translation id="7939917283308035850">ບໍ່ໄດ້ເລືອກ <ph name="COLOR_NAME" /></translation>
-<translation id="7942349550061667556">ສີ​ແດງ</translation>
 <translation id="7961015016161918242">ບໍ່​ເລີຍ</translation>
 <translation id="7966321538264951561">ປິດການແນະນຳໄວ້.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{ຍ້າຍແຖບໄປຫາໜ້າຈໍໃໝ່}other{ຍ້າຍແຖບໄປຫາໜ້າຈໍອື່ນ}}</translation>
@@ -193,7 +208,9 @@
 <translation id="8029301326595421733">ເປີດຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້ແບບຄວາມສູງເຕັມແລ້ວ</translation>
 <translation id="8053770993984522566">ລາຍຊື່ກຸ່ມແຖບທີ່ເປີດຢູ່ລະດັບຄວາມສູງເຄິ່ງໜ້າ</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມ}other{ເພີ່ມແຖບໃສ່ກຸ່ມ}}</translation>
+<translation id="8138067144082174140">ຫຼັງຈາກບໍ່ເຄື່ອນໄຫວ 14 ມື້</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{ຖອນໝຸດແຖບ}other{ຖອນໝຸດແຖບ}}</translation>
 <translation id="8205266828577616993">ຍ້າຍແຖບຂຶ້ນເທິງ</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{ອັບເດດເມື່ອ <ph name="NUM_MINS_ONE" /> ນາທີກ່ອນ}other{ອັບເດດເມື່ອ <ph name="NUM_MINS_MANY" /> ນາທີກ່ອນ}}</translation>
 <translation id="8236097722223016103">ເພີ່ມໃສ່ບຸກມາກ</translation>
@@ -206,6 +223,7 @@
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
 <translation id="855081842937141170">ປັກໝຸດແຖບ</translation>
 <translation id="8633025649649592204">ການເຄື່ອນໄຫວຫຼ້າສຸດ</translation>
+<translation id="8635822281281406185">ເພີ່ມໄຟລ໌, ແຖບ ຫຼື ຮູບໄດ້ສູງສຸດ 10 ລາຍການ</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8714939927607906138">ລາຄາຕໍ່າກວ່າ</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
@@ -221,6 +239,5 @@
 <translation id="9187834032751045001">ປະກາດກ່ຽວກັບການລຶບແຖບອັດຕະໂນມັດຢູ່ລະດັບຄວາມສູງເຄິ່ງໜ້າຈໍ.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ຂະຫຍາຍກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
-<translation id="992256792861109788">ສີບົວ</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{ປິດ 1 ລາຍການທີ່ບໍ່ໄດ້ນຳໃຊ້ບໍ?}other{ປິດ <ph name="TAB_COUNT_MANY" /> ລາຍການທີ່ບໍ່ໄດ້ນຳໃຊ້ບໍ?}}</translation>
 </translationbundle>

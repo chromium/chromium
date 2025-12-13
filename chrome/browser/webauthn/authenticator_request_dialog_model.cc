@@ -30,7 +30,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -52,6 +52,7 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
     case AuthenticatorRequestDialogModel::Step::kPasskeyAutofill:
     case AuthenticatorRequestDialogModel::Step::kPasskeyUpgrade:
     case AuthenticatorRequestDialogModel::Step::kPasswordOsAuth:
+    case AuthenticatorRequestDialogModel::Step::kPlatformAuthenticator:
       return StepUIType::NONE;
 
     case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
@@ -315,8 +316,9 @@ std::ostream& operator<<(std::ostream& os,
       {Step::kGPMLockedPin, "kGPMLockedPin"},
       {Step::kErrorFetchingChallenge, "kErrorFetchingChallenge"},
       {Step::kPasswordOsAuth, "kPasswordAuth"},
+      {Step::kPlatformAuthenticator, "kPlatformAuthenticator"},
   });
-  static_assert(Step::kMaxValue == Step::kPasswordOsAuth &&
+  static_assert(Step::kMaxValue == Step::kPlatformAuthenticator &&
                     kStepNames.size() - 1 == static_cast<int>(Step::kMaxValue),
                 "implement operator<< overload when adding new Step values");
   return os << kStepNames.at(step);
@@ -325,13 +327,11 @@ std::ostream& operator<<(std::ostream& os,
 AuthenticatorRequestDialogModel::Mechanism::Mechanism(
     AuthenticatorRequestDialogModel::Mechanism::Type in_type,
     std::u16string in_name,
-    std::u16string in_short_name,
     const gfx::VectorIcon& in_icon,
     base::RepeatingClosure in_callback,
     std::u16string in_display_name)
     : type(std::move(in_type)),
       name(std::move(in_name)),
-      short_name(std::move(in_short_name)),
       display_name(std::move(in_display_name)),
       icon(in_icon),
       callback(std::move(in_callback)) {}

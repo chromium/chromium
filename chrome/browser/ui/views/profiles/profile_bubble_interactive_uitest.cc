@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/check.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -100,8 +99,11 @@ class ProfileBubbleInteractiveUiTest : public InProcessBrowserTest {
   }
 };
 
+// Flaky. See crbug.com/464411959.
+//
+// TODO(crbug.com/464411959): Reenable it.
 IN_PROC_BROWSER_TEST_F(ProfileBubbleInteractiveUiTest,
-                       InterceptionBubbleFocus) {
+                       DISABLED_InterceptionBubbleFocus) {
   // Create the inteerception bubble, owned by the view hierarchy.
   DiceWebSigninInterceptionBubbleView* bubble =
       new DiceWebSigninInterceptionBubbleView(browser(), GetAvatarButton(),

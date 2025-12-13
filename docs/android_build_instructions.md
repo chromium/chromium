@@ -124,7 +124,7 @@ development and testing purposes.
 
 ## Setting up the build
 
-Chromium uses [Siso](https://pkg.go.dev/go.chromium.org/infra/build/siso#section-readme)
+Chromium uses [Siso](https://pkg.go.dev/go.chromium.org/build/siso#section-readme)
 as its main build tool along with
 a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
 to generate `.ninja` files. You can create any number of *build directories*
@@ -169,8 +169,7 @@ ro.product.cpu.abi`:
 
 *** promo
 `arm` and `x86` may optionally be used instead of `arm64` and `x64` for
-non-WebView targets. This is also allowed for Monochrome, but only when not set
-as the WebView provider.
+non-WebView targets.
 ***
 
 ## Build Chromium
@@ -195,17 +194,14 @@ The Google Play Store allows apps to send customized bundles (`.aab` files)
 depending on the version of Android running on a device. Chrome uses this
 feature to package optimized versions for different OS versions.
 
-1. `monochrome_public_bundle` (`MonochromePublic.aab`)
-   * `minSdkVersion=26` (Oreo). [Deprecated]
-   * Contains both Chrome and WebView (to save disk space).
+1. `chrome_public_bundle` & `chrome_public_apk` (`ChromePublic.aab`, `ChromePublic.apk`)
+   * `minSdkVersion=29` (Android 10).
+   * Used for local development.
+   * WebView packaged independently (`system_webview_bundle` / `system_webview_apk`).
 2. `trichrome_chrome_bundle` (`TrichromeChrome.aab`)
    * `minSdkVersion=29` (Android 10).
    * Native code shared with WebView through a "Static Shared Library APK": `trichrome_library_apk`
    * Corresponding WebView target: `trichrome_webview_bundle`
-3. `chrome_public_bundle` & `chrome_public_apk` (`ChromePublic.aab`, `ChromePublic.apk`)
-   * `minSdkVersion=29` (Android 10).
-   * Used for local development (to avoid building WebView).
-   * WebView packaged independently (`system_webview_bundle` / `system_webview_apk`).
 
 *** note
 **Notes:**

@@ -21,7 +21,24 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  /* Take up the entire window height, so that the buttons appear
+      at the bottom of the page. */
+  min-height: 100vh;
+}
+
+:host([is-modal_]) #contentContainer {
+  min-height: auto;
   padding: 20px;
+}
+
+#textContainer  {
+  /* Pushes the buttons at the bottom of the contentContainer.*/
+  margin-bottom: auto;
+  text-align: center;
+}
+
+:host([is-modal_]) #textContainer {
+  text-align: start;
 }
 
 #avatar {
@@ -45,6 +62,35 @@
   width: 100%;
 }
 
+.window-left-banner-illustration {
+  content: url(./images/window_left_illustration.svg);
+  left: 0;
+}
+
+.window-right-banner-illustration {
+  content: url(./images/window_right_illustration.svg);
+  right: 0;
+}
+
+.window-right-banner-illustration,
+.window-left-banner-illustration {
+  max-width: 320px;
+  position: absolute;
+  top: 0;
+  width: 174px;
+}
+
+:host([is-modal_]) #illustrationContainer {
+  margin-top: auto;
+}
+
+#illustrationContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 0;
+  position: relative;
+}
+
 #imageContainer {
   align-self: center;
   display: flex;
@@ -52,14 +98,31 @@
   container is taken into account in the height calculator of the entire screen. */
   height: 162px;
   justify-content: center;
+  /* Margin for the window case. */
+  margin-top: 142px;
   /* Establishes a positioning context for absolute children. */
   position: relative;
+}
+
+:host([is-modal_]) #imageContainer {
+  margin-top: auto;
 }
 
 #buttonRow {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+
+  /* Window case style. */
+  box-sizing: border-box;
+  padding: 20px;
+  width: 100%;
+}
+
+:host([is-modal_]) #buttonRow {
+  box-sizing: content-box;
+  padding: 0;
+  width: auto;
 }
 
 #modalDescription {
@@ -74,12 +137,50 @@
 }
 
 h1 {
-  font-size: 16px;
+  font-size: 36px;
   font-weight: 500;
+  margin-top: 24px;
+}
+
+:host([is-modal_]) h1 {
+  font-size: 16px;
+  margin-top: 0;
+}
+
+#subtitle {
+  font-size: 20px;
+  margin-top: 16px;
+}
+
+:host([is-modal_]) #subtitle {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+#description {
+  font-size: 12px;
+  margin-top: 24px;
+}
+
+:host([is-modal_]) #description {
+  font-size: inherit;
+  margin-top: inherit;
+}
+
+.visibility-hidden {
+  visibility: hidden;
 }
 
 @media (prefers-color-scheme: dark) {
   .dialog-illustration {
    content: url(./images/avatar_surrounding_illustration_dark.svg);
+  }
+
+  .window-left-banner-illustration {
+   content: url(./images/window_left_illustration_dark.svg);
+  }
+
+  .window-right-banner-illustration {
+   content: url(./images/window_right_illustration_dark.svg);
   }
 }

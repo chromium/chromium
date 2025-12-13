@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,13 +31,13 @@ std::string ToDBusKeySym(ui::KeyboardCode code) {
   return base::UTF16ToUTF8(std::u16string(1, c));
 }
 
-std::vector<DbusString> GetDbusMenuShortcut(ui::Accelerator accelerator) {
+std::vector<std::string> GetDbusMenuShortcut(ui::Accelerator accelerator) {
   auto dbus_key_sym = ToDBusKeySym(accelerator.key_code());
   if (dbus_key_sym.empty()) {
     return {};
   }
 
-  std::vector<DbusString> parts;
+  std::vector<std::string> parts;
   if (accelerator.IsCtrlDown()) {
     parts.emplace_back("Control");
   }
@@ -65,29 +66,31 @@ MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu,
   // merge them with the regular label and icon.
   std::u16string label = menu->GetLabelAt(i);
   if (!label.empty()) {
-    properties["label"] = MakeDbusVariant(DbusString(
-        ui::ConvertAcceleratorsFromWindowsStyle(base::UTF16ToUTF8(label))));
+    properties["label"] = dbus_utils::Variant::Wrap<"s">(
+        ui::ConvertAcceleratorsFromWindowsStyle(base::UTF16ToUTF8(label)));
   }
 
   if (!menu->IsEnabledAt(i)) {
-    properties["enabled"] = MakeDbusVariant(DbusBoolean(false));
+    properties["enabled"] = dbus_utils::Variant::Wrap<"b">(false);
   }
   if (!menu->IsVisibleAt(i)) {
-    properties["visible"] = MakeDbusVariant(DbusBoolean(false));
+    properties["visible"] = dbus_utils::Variant::Wrap<"b">(false);
   }
 
   ui::ImageModel icon = menu->GetIconAt(i);
   if (icon.IsImage()) {
-    properties["icon-data"] =
-        MakeDbusVariant(DbusByteArray(icon.GetImage().As1xPNGBytes()));
+    auto png_bytes = icon.GetImage().As1xPNGBytes();
+    auto span = base::as_byte_span(*png_bytes);
+    properties["icon-data"] = dbus_utils::Variant::Wrap<"ay">(
+        std::vector<uint8_t>(span.begin(), span.end()));
   }
 
   ui::Accelerator accelerator;
   if (menu->GetAcceleratorAt(i, &accelerator)) {
     auto parts = GetDbusMenuShortcut(accelerator);
     if (!parts.empty()) {
-      properties["shortcut"] = MakeDbusVariant(
-          MakeDbusArray(DbusArray<DbusString>(std::move(parts))));
+      properties["shortcut"] = dbus_utils::Variant::Wrap<"aas">(
+          std::vector<std::vector<std::string>>{std::move(parts)});
     }
   }
 
@@ -99,16 +102,16 @@ MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu,
       break;
     case ui::MenuModel::TYPE_CHECK:
     case ui::MenuModel::TYPE_RADIO:
-      properties["toggle-type"] = MakeDbusVariant(DbusString(
+      properties["toggle-type"] = dbus_utils::Variant::Wrap<"s">(
           menu->GetTypeAt(i) == ui::MenuModel::TYPE_CHECK ? "checkmark"
-                                                          : "radio"));
+                                                          : "radio");
       properties["toggle-state"] =
-          MakeDbusVariant(DbusInt32(menu->IsItemCheckedAt(i) ? 1 : 0));
+          dbus_utils::Variant::Wrap<"i">(menu->IsItemCheckedAt(i) ? 1 : 0);
       break;
     case ui::MenuModel::TYPE_SEPARATOR:
       // The dbusmenu interface doesn't have multiple types of separators like
       // MenuModel.  Just use a regular separator in all cases.
-      properties["type"] = MakeDbusVariant(DbusString("separator"));
+      properties["type"] = dbus_utils::Variant::Wrap<"s">("separator");
       break;
     case ui::MenuModel::TYPE_BUTTON_ITEM:
       // This type of menu represents a row of buttons, but the dbusmenu
@@ -120,7 +123,8 @@ MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu,
       break;
     case ui::MenuModel::TYPE_SUBMENU:
     case ui::MenuModel::TYPE_ACTIONABLE_SUBMENU:
-      properties["children-display"] = MakeDbusVariant(DbusString("submenu"));
+      properties["children-display"] =
+          dbus_utils::Variant::Wrap<"s">("submenu");
       break;
   }
 

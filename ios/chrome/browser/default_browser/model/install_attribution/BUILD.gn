@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("install_attribution") {
+  sources = [
+    "install_attribution_acceptance_data.h",
+    "install_attribution_acceptance_data.mm",
+    "install_attribution_helper.h",
+    "install_attribution_helper.mm",
+  ]
+  deps = []
+  public_deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/app_group",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "install_attribution_helper_unittest.mm" ]
+  deps = [
+    ":install_attribution",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/test:test_support",
+  ]
+}

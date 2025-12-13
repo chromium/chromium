@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -18,6 +19,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/switches.h"
@@ -26,6 +28,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/net/chrome_network_delegate.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -321,9 +325,6 @@ class PermissionsApiHostAccessRequestsTest : public PermissionsApiTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/371432404): Port to desktop Android once
-// the webNavigation API and permission are supported.
 IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
                        InvalidAddHostAccessRequests) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -331,7 +332,6 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
   ASSERT_TRUE(RunExtensionTest("permissions/add_host_access_request"))
       << message_;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
                        InvalidRemoveHostAccessRequests) {

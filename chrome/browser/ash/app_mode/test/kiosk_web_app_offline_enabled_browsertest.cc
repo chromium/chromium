@@ -14,9 +14,8 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -25,6 +24,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/key_pair.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -79,7 +79,7 @@ class KioskWebAppOfflineEnabledTest
       public testing::WithParamInterface<TestAppType> {
  public:
   KioskWebAppOfflineEnabledTest() {
-    iwa_server_mixin_.AddBundle(
+    iwa_test_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
             .BuildBundle(kTestKeyPair));
   }
@@ -120,12 +120,12 @@ class KioskWebAppOfflineEnabledTest
                     /*account_id=*/"simple-iwa@localhost",
                     /*web_bundle_id=*/kTestWebBundleId,
                     /*update_manifest_url=*/
-                    iwa_server_mixin_.GetUpdateManifestUrl(kTestWebBundleId))}};
+                    iwa_test_server_.GetUpdateManifestUrl(kTestWebBundleId))}};
     }
   }
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-  web_app::IsolatedWebAppUpdateServerMixin iwa_server_mixin_{&mixin_host_};
+  web_app::IsolatedWebAppTestUpdateServer iwa_test_server_;
   NetworkStateMixin network_state_{&mixin_host_};
   KioskMixin kiosk_{&mixin_host_, /*cached_configuration=*/GetConfig()};
 };

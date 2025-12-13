@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "defaults", "siso")
-load("//lib/consoles.star", "consoles")
-load("//lib/swarming.star", swarming_lib = "swarming")
+load("@chromium-luci//builders.star", "builder", "defaults")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//swarming.star", swarming_lib = "swarming")
+load("//lib/siso.star", "siso")
 
 luci.bucket(
     name = "findit",
@@ -65,6 +66,9 @@ defaults.set(
     auto_builder_dimension = False,
     build_numbers = True,
     execution_timeout = 8 * time.hour,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     service_account = "findit-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 

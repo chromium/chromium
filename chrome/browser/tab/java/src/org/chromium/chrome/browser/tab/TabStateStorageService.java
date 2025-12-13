@@ -10,16 +10,13 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
-import java.nio.ByteBuffer;
 
 /** Java counterpart to keyed service in native that writes tab data to disk. */
 @JNINamespace("tabs")
 @NullMarked
 public class TabStateStorageService {
+
     private final long mNativeTabStateStorageService;
 
     private TabStateStorageService(long nativeTabStateStorageService) {
@@ -32,125 +29,63 @@ public class TabStateStorageService {
     }
 
     /**
-     * Saves the tab state to persistent storage. This approach takes raw fields instead of an
-     * object.
-     *
-     * @param id The id of the tab.
-     * @param parentCollectionId The id of the parent.
-     * @param position A sortable field to decide the order of tabs in a given parent.
-     * @param parentTabId The tab id of the tab that spawned this tab, optional.
-     * @param rootId If the tab is part of a tab group, the owner tab id.
-     * @param timestampMillis The last time it was shown.
-     * @param webContentsStateBuffer Holds serialized web contents data.
-     * @param openerAppId If associated with another app, its id. Optional.
-     * @param themeColor The toolbar color specified by the page. Optional.
-     * @param launchTypeAtCreation How the tab was created.
-     * @param userAgent What user agent should be passed in the HTTP requests.
-     * @param lastNavigationCommittedTimestampMillis The time the last navigation was made.
-     * @param tabGroupId The group id if the tab is in a group. Optional.
-     * @param tabHasSensitiveContent If there is sensitive content.
-     * @param isPinned Whether the tab is pinned.
+     * Boosts the priority of the database operations to USER_BLOCKING until all current pending
+     * operations are complete. This should be used when it is critical to save user data.
      */
-    public void saveTabData(
-            int id,
-            int parentCollectionId,
-            String position,
-            int parentTabId,
-            int rootId,
-            long timestampMillis,
-            @Nullable ByteBuffer webContentsStateBuffer,
-            String openerAppId,
-            int themeColor,
-            int launchTypeAtCreation,
-            @TabUserAgent int userAgent,
-            long lastNavigationCommittedTimestampMillis,
-            @Nullable Token tabGroupId,
-            boolean tabHasSensitiveContent,
-            boolean isPinned) {
-        TabStateStorageServiceJni.get()
-                .saveTab(
-                        mNativeTabStateStorageService,
-                        id,
-                        parentCollectionId,
-                        position,
-                        parentTabId,
-                        rootId,
-                        timestampMillis,
-                        webContentsStateBuffer,
-                        openerAppId,
-                        themeColor,
-                        launchTypeAtCreation,
-                        userAgent,
-                        lastNavigationCommittedTimestampMillis,
-                        tabGroupId,
-                        tabHasSensitiveContent,
-                        isPinned);
+    public void boostPriority() {
+        TabStateStorageServiceJni.get().boostPriority(mNativeTabStateStorageService);
     }
 
     /**
-     * Loads all the tabs into TabState objects and asynchronously runs the given callback.
-     * TODO(https://crbug.com/427254267): Add tab id/sort order to this.
-     * TODO(https://crbug.com/430996004): Scope to a given window.
+     * Saves the tab state to persistent storage.
      *
-     * @param callback Run with loaded tab data.
+     * @param tab The tab to save to storage.
      */
-    public void loadAllTabs(Callback<TabState[]> callback) {
-        TabStateStorageServiceJni.get().loadAllTabs(mNativeTabStateStorageService, callback);
+    public void saveTabData(Tab tab) {
+        TabStateStorageServiceJni.get().save(mNativeTabStateStorageService, tab);
     }
 
-    @CalledByNative
-    public static TabState createTabState(
-            int parentTabId,
-            int rootId,
-            long timestampMillis,
-            @Nullable ByteBuffer webContentsStateBuffer,
-            @Nullable @JniType("std::string") String openerAppId,
-            int themeColor,
-            int launchTypeAtCreation,
-            int userAgent,
-            long lastNavigationCommittedTimestampMillis,
-            @Nullable Token tabGroupId,
-            boolean tabHasSensitiveContent,
-            boolean isPinned) {
-        // TODO(skym): Handle id, parent_collection_id, position somehow.
-        TabState tabState = new TabState();
-        tabState.parentId = parentTabId;
-        tabState.rootId = rootId;
-        tabState.timestampMillis = timestampMillis;
-        if (webContentsStateBuffer != null) {
-            tabState.contentsState = new WebContentsState(webContentsStateBuffer);
-        }
-        tabState.openerAppId = openerAppId;
-        tabState.themeColor = themeColor;
-        tabState.tabLaunchTypeAtCreation = launchTypeAtCreation;
-        tabState.userAgent = userAgent;
-        tabState.lastNavigationCommittedTimestampMillis = lastNavigationCommittedTimestampMillis;
-        tabState.tabGroupId = tabGroupId;
-        tabState.tabHasSensitiveContent = tabHasSensitiveContent;
-        tabState.isPinned = isPinned;
-        return tabState;
+    /**
+     * Loads all data from persistent storage and returns it.
+     *
+     * <p>TODO(https://crbug.com/427254267): Add tab id/sort order to this.
+     *
+     * @param windowTag The window tag to load data for.
+     * @param isOffTheRecord Whether to load incognito data.
+     * @param callback Run with loaded data.
+     */
+    public void loadAllData(
+            String windowTag, boolean isOffTheRecord, Callback<StorageLoadedData> callback) {
+        assert !windowTag.isEmpty();
+        TabStateStorageServiceJni.get()
+                .loadAllData(mNativeTabStateStorageService, windowTag, isOffTheRecord, callback);
+    }
+
+    /** Clears all the tabs from persistent storage. */
+    public void clearState() {
+        TabStateStorageServiceJni.get().clearState(mNativeTabStateStorageService);
+    }
+
+    /** Clears all the tabs for a given window from persistent storage. */
+    public void clearWindow(String windowTag) {
+        TabStateStorageServiceJni.get().clearWindow(mNativeTabStateStorageService, windowTag);
     }
 
     @NativeMethods
     interface Natives {
-        void saveTab(
-                long nativeTabStateStorageService,
-                int id,
-                int parentCollectionId,
-                @JniType("std::string") String position,
-                int parentTabId,
-                int rootId,
-                long timestampMillis,
-                @Nullable ByteBuffer webContentsStateBuffer,
-                @Nullable @JniType("std::string") String openerAppId,
-                int themeColor,
-                int launchTypeAtCreation,
-                int userAgent,
-                long lastNavigationCommittedTimestampMillis,
-                @Nullable Token tabGroupId,
-                boolean tabHasSensitiveContent,
-                boolean isPinned);
+        void boostPriority(long nativeTabStateStorageServiceAndroid);
 
-        void loadAllTabs(long nativeTabStateStorageService, Callback<TabState[]> callback);
+        void save(long nativeTabStateStorageServiceAndroid, @JniType("TabAndroid*") Tab tab);
+
+        void loadAllData(
+                long nativeTabStateStorageServiceAndroid,
+                @JniType("std::string") String windowTag,
+                boolean isOffTheRecord,
+                Callback<StorageLoadedData> loadedDataCallback);
+
+        void clearState(long nativeTabStateStorageServiceAndroid);
+
+        void clearWindow(
+                long nativeTabStateStorageServiceAndroid, @JniType("std::string") String windowTag);
     }
 }

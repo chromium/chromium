@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
@@ -102,7 +103,7 @@ void ChromeOsAppsIntentPickerDelegate::FindAllAppsForUrl(
   }
   // Reverse to keep old behavior of ordering (even though it was arbitrary, it
   // was at least deterministic).
-  std::reverse(apps.begin(), apps.end());
+  std::ranges::reverse(apps);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(apps_callback), std::move(apps)));

@@ -1,4 +1,13 @@
-  <style include="cr-shared-style settings-shared"></style>
+  <style include="cr-shared-style settings-shared">
+    .proxy-multisource-padding {
+      margin-inline-start: 36px;
+    }
+
+    #proxy-single-source-container {
+      display: flex;
+      flex: 1;
+    }
+  </style>
   <settings-section page-title="$i18n{systemPageTitle}"
       class="cr-centered-card-container">
 <if expr="not is_macosx">
@@ -32,36 +41,66 @@
 
     <div id="proxy" class="cr-row" on-click="onProxyClick_"
         actionable$="[[isProxyDefault_]]">
-      <div class="flex cr-row-text" hidden$="[[!isProxyDefault_]]">
-        $i18n{proxySettingsLabel}
+      <div id="proxy-single-source-container"
+          hidden$="[[isProxyEnforcedByMultipleSources_]]">
+        <div class="flex cr-row-text" hidden$="[[!isProxyDefault_]]">
+          $i18n{proxySettingsLabel}
+        </div>
+        <div class="flex cr-row-text"
+            hidden$="[[!prefs.proxy.extensionId]]">
+          $i18n{proxySettingsExtensionLabel}
+        </div>
+        <div class="flex cr-row-text"
+            hidden$="[[!isProxyEnforcedByPolicy_]]">
+          $i18n{proxySettingsPolicyLabel}
+        </div>
+        <cr-icon-button class="icon-external"
+            hidden$="[[!isProxyDefault_]]"
+            aria-label="$i18n{proxySettingsLabel}"></cr-icon-button>
+        <template is="dom-if" if="[[isProxyEnforcedByPolicy_]]">
+          <cr-policy-pref-indicator pref="[[prefs.proxy]]"
+              icon-aria-label="$i18n{proxySettingsLabel}">
+          </cr-policy-pref-indicator>
+        </template>
       </div>
-      <div class="flex cr-row-text"
-          hidden$="[[!prefs.proxy.extensionId]]">
-        $i18n{proxySettingsExtensionLabel}
+      <div id="proxyMultipleSourcesLabel"
+          hidden$="[[!isProxyEnforcedByMultipleSources_]]">
+        $i18n{proxySettingsMultipleSourcesLabel}
       </div>
-      <div class="flex cr-row-text"
-          hidden$="[[!isProxyEnforcedByPolicy_]]">
-        $i18n{proxySettingsPolicyLabel}
+    </div>
+    <div id="proxyMultipleSources"
+        hidden$="[[!isProxyEnforcedByMultipleSources_]]">
+      <div id="proxyDeviceSettings" class="cr-row continuation"
+          hidden$="[[!isProxyDefault_]]" on-click="onProxyClick_"
+          actionable$="[[isProxyDefault_]]">
+        <div class="flex cr-row-text proxy-multisource-padding">
+          $i18n{proxySettingsYourDevice}
+        </div>
+        <cr-icon-button class="icon-external"
+            hidden$="[[!isProxyDefault_]]"
+            aria-label="$i18n{proxySettingsLabel}"></cr-icon-button>
       </div>
-      <cr-icon-button class="icon-external"
-          hidden$="[[!isProxyDefault_]]"
-          aria-label="$i18n{proxySettingsLabel}"></cr-icon-button>
-      <template is="dom-if" if="[[isProxyEnforcedByPolicy_]]">
-        <cr-policy-pref-indicator pref="[[prefs.proxy]]"
+      <div class="cr-row continuation">
+        <div class="flex cr-row-text proxy-multisource-padding">
+          $i18n{proxySettingsYourOrganization}
+        </div>
+        <cr-policy-pref-indicator pref="[[prefs.proxy_override_rules]]"
             icon-aria-label="$i18n{proxySettingsLabel}">
         </cr-policy-pref-indicator>
-      </template>
+      </div>
     </div>
     <template is="dom-if" if="[[prefs.proxy.extensionId]]">
       <div class="cr-row continuation">
         <extension-controlled-indicator class="flex"
             extension-id="[[prefs.proxy.extensionId]]"
             extension-name="[[prefs.proxy.controlledByName]]"
+            extension-name-only-in-label="[[isProxyEnforcedByMultipleSources_]]"
             extension-can-be-disabled="[[prefs.proxy.extensionCanBeDisabled]]"
             on-extension-disable="onExtensionDisable_">
         </extension-controlled-indicator>
       </div>
     </template>
+
     <template is="dom-if" if="[[shouldShowRelaunchDialog]]" restamp>
       <relaunch-confirmation-dialog restart-type="[[restartTypeEnum.RESTART]]"
           on-close="onRelaunchDialogClose"></relaunch-confirmation-dialog>

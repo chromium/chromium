@@ -39,7 +39,10 @@ if (!is_android) {
       sources += [ "battery_status_manager_chromeos.cc" ]
     } else if (is_linux && use_dbus) {
       configs += [ "//build/config/linux/dbus" ]
-      deps += [ "//dbus" ]
+      deps += [
+        "//components/dbus",
+        "//dbus",
+      ]
       sources += [
         "battery_status_manager_linux-inl.h",
         "battery_status_manager_linux.cc",
@@ -52,7 +55,7 @@ if (!is_android) {
         "IOKit.framework",
       ]
     } else if (is_win) {
-      deps += [ "//ui/gfx:gfx" ]
+      deps += [ "//ui/gfx" ]
       sources += [
         "battery_status_manager_win.cc",
         "battery_status_manager_win.h",

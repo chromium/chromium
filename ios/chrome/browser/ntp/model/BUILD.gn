@@ -2,20 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("model") {
   sources = [
     "browser_policy_new_tab_page_rewriter.h",
     "browser_policy_new_tab_page_rewriter.mm",
-    "new_tab_page_state.h",
-    "new_tab_page_state.mm",
     "new_tab_page_tab_helper.h",
     "new_tab_page_tab_helper.mm",
     "new_tab_page_tab_helper_delegate.h",
@@ -49,7 +39,9 @@ source_set("util") {
     "//components/regional_capabilities",
     "//components/search",
     "//components/search_engines",
+    "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/web/common:features",
     "//ios/web/public",
   ]
 }
@@ -63,24 +55,21 @@ source_set("set_up_list") {
     "set_up_list_item.mm",
   ]
   deps = [
-    ":features",
     ":set_up_list_item_type",
     ":set_up_list_metrics",
     ":set_up_list_prefs",
     "//base",
+    "//components/ntp_tiles:pref_names",
     "//components/password_manager/core/browser",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/sync/base",
-    "//components/sync/service",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/push_notification/model:constants",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/push_notification/model:push_notification_util",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/model/utils",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/sync/model",
   ]
@@ -110,9 +99,8 @@ source_set("set_up_list_prefs") {
     ":set_up_list_item_type",
     ":set_up_list_metrics",
     "//base",
-    "//components/pref_registry",
+    "//components/ntp_tiles:pref_names",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
   ]
 }
@@ -125,11 +113,12 @@ source_set("unit_tests") {
     "set_up_list_unittest.mm",
   ]
   deps = [
-    ":features",
     ":set_up_list",
     ":set_up_list_item_type",
     ":set_up_list_prefs",
+    ":util",
     "//base/test:test_support",
+    "//components/ntp_tiles:pref_names",
     "//components/password_manager/core/browser",
     "//components/prefs",
     "//components/strings",
@@ -150,6 +139,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:fake_system_identity",

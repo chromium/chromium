@@ -7,7 +7,7 @@ found in the LICENSE file.
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
   android:shape="rectangle"
-    android:tint="?attr/colorSurfaceBright">
+    android:tint="?attr/colorSurfaceContainer">
   <solid android:color="@android:color/white"/>
   <corners android:topLeftRadius="@dimen/tab_group_list_item_large_radius"
     android:topRightRadius="@dimen/tab_group_list_item_large_radius"

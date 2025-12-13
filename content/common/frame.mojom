@@ -48,7 +48,6 @@ import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/page/prerender_page_param.mojom";
-import "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom";
 import "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
@@ -170,10 +169,6 @@ struct CreateViewParams {
   // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md
   network.mojom.AttributionSupport attribution_support;
 
-  // This must be null unless the view being created is a partitioned popin.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  blink.mojom.PartitionedPopinParams? partitioned_popin_params;
-
   // Identifies the navigation that triggered this view creation, if any. Used
   // for collecting metrics.
   mojo_base.mojom.UnguessableToken? navigation_metrics_token;
@@ -264,10 +259,6 @@ struct CreateFrameWidgetParams {
 
   // The initial visual properties of the widget.
   blink.mojom.VisualProperties visual_properties;
-
-  // If true, reuse the compositor by taking it from the current local root's
-  // frame widget when this frame widget's frame commits and is swapped in.
-  bool reuse_compositor;
 };
 
 // Used for recreating child frames after a crash (does this still happen?) and
@@ -718,10 +709,6 @@ struct CreateNewWindowReply {
 
   // The ColorProviderColorMaps for this view.
   blink.mojom.ColorProviderColorMaps color_provider_colors;
-
-  // This must be null unless the view being created is a partitioned popin.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  blink.mojom.PartitionedPopinParams? partitioned_popin_params;
 
   // Initial window geometry.
   gfx.mojom.Rect? widget_screen_rect;

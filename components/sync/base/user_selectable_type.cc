@@ -6,9 +6,12 @@
 
 #include <optional>
 #include <ostream>
+#include <string_view>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 
@@ -45,7 +48,13 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
     // TODO(crbug.com/412602018): Remove this parameter once the feature is
     // launched.
     bool skip_feature_checks_if_early = false) {
-  static_assert(55 == syncer::GetNumDataTypes(),
+  // TODO(crbug.com/445841720): In CL #3, map AI_THREAD to an existing
+  // selectable type or to a new one. The first option should be trivial, the
+  // second requires touching UI code across platforms.
+  // TODO(crbug.com/445840788): In CL #3, map CONTEXTUAL_TASK to an existing
+  // selectable type or to a new one. The first option should be trivial, the
+  // second requires touching UI code across platforms.
+  static_assert(59 == syncer::GetNumDataTypes(),
                 "Almost always when adding a new Data, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
@@ -55,7 +64,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
   // changed without updating js part.
   switch (type) {
     case UserSelectableType::kBookmarks:
-      return {kBookmarksTypeName, BOOKMARKS, {BOOKMARKS, POWER_BOOKMARK}};
+      return {kBookmarksTypeName, BOOKMARKS, {BOOKMARKS}};
     case UserSelectableType::kPreferences: {
       DataTypeSet types = {PREFERENCES, DICTIONARY, SEARCH_ENGINES};
       // `skip_feature_checks_if_early` is used to avoid checking the feature
@@ -68,6 +77,11 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
           !base::FeatureList::IsEnabled(
               kSyncSupportAlwaysSyncingPriorityPreferences)) {
         types.Put(PRIORITY_PREFERENCES);
+      }
+      if ((!skip_feature_checks_if_early || base::FeatureList::GetInstance()) &&
+          base::FeatureList::IsEnabled(
+              kSpellcheckSeparateLocalAndAccountDictionaries)) {
+        types.Remove(DICTIONARY);
       }
       return {kPreferencesTypeName, PREFERENCES, types};
     }
@@ -83,10 +97,17 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
               {AUTOFILL, AUTOFILL_PROFILE, CONTACT_INFO}};
     case UserSelectableType::kThemes:
       return {kThemesTypeName, THEMES, {THEMES}};
-    case UserSelectableType::kHistory:
-      return {kHistoryTypeName,
-              HISTORY,
-              {HISTORY, HISTORY_DELETE_DIRECTIVES, USER_EVENTS}};
+    case UserSelectableType::kHistory: {
+      DataTypeSet types = {HISTORY, HISTORY_DELETE_DIRECTIVES, USER_EVENTS};
+      // With `kSpellcheckSeparateLocalAndAccountDictionaries` enabled,
+      // `DICTIONARY` is controlled by the History opt-in.
+      if ((!skip_feature_checks_if_early || base::FeatureList::GetInstance()) &&
+          base::FeatureList::IsEnabled(
+              kSpellcheckSeparateLocalAndAccountDictionaries)) {
+        types.Put(DICTIONARY);
+      }
+      return {kHistoryTypeName, HISTORY, types};
+    }
     case UserSelectableType::kExtensions:
       return {
           kExtensionsTypeName, EXTENSIONS, {EXTENSIONS, EXTENSION_SETTINGS}};
@@ -104,7 +125,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
       return {
           kTabsTypeName,
           SESSIONS,
-          {SESSIONS, SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA,
+          {SESSIONS, SAVED_TAB_GROUP, SHARED_COMMENT, SHARED_TAB_GROUP_DATA,
            COLLABORATION_GROUP, SHARED_TAB_GROUP_ACCOUNT_DATA, WORKSPACE_DESK}};
 #else
       return {kTabsTypeName, SESSIONS, {SESSIONS, WORKSPACE_DESK}};
@@ -116,14 +137,15 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
       // together with open tabs same as mobile.
       return {kSavedTabGroupsTypeName,
               SAVED_TAB_GROUP,
-              {SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA, COLLABORATION_GROUP,
-               SHARED_TAB_GROUP_ACCOUNT_DATA}};
+              {SAVED_TAB_GROUP, SHARED_COMMENT, SHARED_TAB_GROUP_DATA,
+               COLLABORATION_GROUP, SHARED_TAB_GROUP_ACCOUNT_DATA}};
     case UserSelectableType::kPayments:
       return {kPaymentsTypeName,
               AUTOFILL_WALLET_DATA,
               {AUTOFILL_WALLET_CREDENTIAL, AUTOFILL_WALLET_DATA,
                AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
-               AUTOFILL_WALLET_USAGE, AUTOFILL_VALUABLE}};
+               AUTOFILL_WALLET_USAGE, AUTOFILL_VALUABLE,
+               AUTOFILL_VALUABLE_METADATA}};
     case UserSelectableType::kProductComparison:
       return {
           kProductComparisonTypeName, PRODUCT_COMPARISON, {PRODUCT_COMPARISON}};
@@ -169,57 +191,35 @@ const char* GetUserSelectableTypeName(UserSelectableType type) {
 
 std::optional<UserSelectableType> GetUserSelectableTypeFromString(
     const std::string& type) {
-  if (type == kBookmarksTypeName) {
-    return UserSelectableType::kBookmarks;
-  }
-  if (type == kPreferencesTypeName) {
-    return UserSelectableType::kPreferences;
-  }
-  if (type == kPasswordsTypeName) {
-    return UserSelectableType::kPasswords;
-  }
-  if (type == kAutofillTypeName) {
-    return UserSelectableType::kAutofill;
-  }
-  if (type == kThemesTypeName) {
-    return UserSelectableType::kThemes;
-  }
-  if (type == kHistoryTypeName) {
-    return UserSelectableType::kHistory;
-  }
-  if (type == kExtensionsTypeName) {
-    return UserSelectableType::kExtensions;
-  }
-  if (type == kAppsTypeName) {
-    return UserSelectableType::kApps;
-  }
-  if (type == kReadingListTypeName) {
-    return UserSelectableType::kReadingList;
-  }
-  if (type == kTabsTypeName) {
-    return UserSelectableType::kTabs;
-  }
-  if (type == kSavedTabGroupsTypeName) {
-    return UserSelectableType::kSavedTabGroups;
-  }
-  if (type == kProductComparisonTypeName) {
-    return UserSelectableType::kProductComparison;
-  }
-  if (type == kCookiesTypeName) {
-    return UserSelectableType::kCookies;
+  constexpr auto kTypeMap =
+      base::MakeFixedFlatMap<std::string_view, UserSelectableType>({
+          {kBookmarksTypeName, UserSelectableType::kBookmarks},
+          {kPreferencesTypeName, UserSelectableType::kPreferences},
+          {kPasswordsTypeName, UserSelectableType::kPasswords},
+          {kAutofillTypeName, UserSelectableType::kAutofill},
+          {kThemesTypeName, UserSelectableType::kThemes},
+          {kHistoryTypeName, UserSelectableType::kHistory},
+          {kExtensionsTypeName, UserSelectableType::kExtensions},
+          {kAppsTypeName, UserSelectableType::kApps},
+          {kReadingListTypeName, UserSelectableType::kReadingList},
+          {kTabsTypeName, UserSelectableType::kTabs},
+          {kSavedTabGroupsTypeName, UserSelectableType::kSavedTabGroups},
+          {kProductComparisonTypeName, UserSelectableType::kProductComparison},
+          {kCookiesTypeName, UserSelectableType::kCookies},
+      });
+  if (auto it = kTypeMap.find(type); it != kTypeMap.end()) {
+    return it->second;
   }
   return std::nullopt;
 }
 
 std::string UserSelectableTypeSetToString(UserSelectableTypeSet types) {
-  std::string result;
+  std::vector<std::string> type_names;
+  type_names.reserve(types.size());
   for (UserSelectableType type : types) {
-    if (!result.empty()) {
-      result += ", ";
-    }
-    result += GetUserSelectableTypeName(type);
+    type_names.push_back(GetUserSelectableTypeName(type));
   }
-  return result;
+  return base::JoinString(type_names, ", ");
 }
 
 DataTypeSet UserSelectableTypeToAllDataTypes(UserSelectableType type) {
@@ -278,42 +278,35 @@ const char* GetUserSelectableOsTypeName(UserSelectableOsType type) {
 }
 
 std::string UserSelectableOsTypeSetToString(UserSelectableOsTypeSet types) {
-  std::string result;
+  std::vector<std::string> type_names;
+  type_names.reserve(types.size());
   for (UserSelectableOsType type : types) {
-    if (!result.empty()) {
-      result += ", ";
-    }
-    result += GetUserSelectableOsTypeName(type);
+    type_names.push_back(GetUserSelectableOsTypeName(type));
   }
-  return result;
+  return base::JoinString(type_names, ", ");
 }
 
 std::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
     const std::string& type) {
-  if (type == kOsAppsTypeName) {
-    return UserSelectableOsType::kOsApps;
-  }
-  if (type == kOsPreferencesTypeName) {
-    return UserSelectableOsType::kOsPreferences;
-  }
-  if (type == kOsWifiConfigurationsTypeName) {
-    return UserSelectableOsType::kOsWifiConfigurations;
-  }
-
-  // Some pref types migrated from browser prefs to OS prefs. Map the browser
-  // type name to the OS type so that enterprise policy SyncTypesListDisabled
-  // still applies to the migrated names.
-  // TODO(crbug.com/40678410): Rename "osApps" to "apps" and
-  // "osWifiConfigurations" to "wifiConfigurations", and remove the mapping for
-  // "preferences".
-  if (type == kAppsTypeName) {
-    return UserSelectableOsType::kOsApps;
-  }
-  if (type == kWifiConfigurationsTypeName) {
-    return UserSelectableOsType::kOsWifiConfigurations;
-  }
-  if (type == kPreferencesTypeName) {
-    return UserSelectableOsType::kOsPreferences;
+  constexpr auto kTypeMap =
+      base::MakeFixedFlatMap<std::string_view, UserSelectableOsType>({
+          {kOsAppsTypeName, UserSelectableOsType::kOsApps},
+          {kOsPreferencesTypeName, UserSelectableOsType::kOsPreferences},
+          {kOsWifiConfigurationsTypeName,
+           UserSelectableOsType::kOsWifiConfigurations},
+          // Some pref types migrated from browser prefs to OS prefs. Map the
+          // browser type name to the OS type so that enterprise policy
+          // SyncTypesListDisabled still applies to the migrated names.
+          // TODO(crbug.com/40678410): Rename "osApps" to "apps" and
+          // "osWifiConfigurations" to "wifiConfigurations", and remove the
+          // mapping for "preferences".
+          {kAppsTypeName, UserSelectableOsType::kOsApps},
+          {kWifiConfigurationsTypeName,
+           UserSelectableOsType::kOsWifiConfigurations},
+          {kPreferencesTypeName, UserSelectableOsType::kOsPreferences},
+      });
+  if (auto it = kTypeMap.find(type); it != kTypeMap.end()) {
+    return it->second;
   }
   return std::nullopt;
 }

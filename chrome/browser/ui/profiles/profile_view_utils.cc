@@ -12,10 +12,12 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/common/url_constants.h"
@@ -23,6 +25,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/service/sync_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "net/base/url_util.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
@@ -47,7 +50,15 @@ void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {
 }
 
 bool IsSyncPaused(Profile* profile) {
-  return GetAvatarSyncErrorType(profile) == AvatarSyncErrorType::kSyncPaused;
+  const syncer::SyncService* service =
+      SyncServiceFactory::GetForProfile(profile);
+  // Avoid returning true in case of no sync consent, as kSignInPending should
+  // be handled differently.
+  return service &&
+         service->GetUserActionableError() ==
+             syncer::SyncService::UserActionableError::kSignInNeedsUpdate &&
+         IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
+             signin::ConsentLevel::kSync);
 }
 
 bool HasUnconstentedProfile(Profile* profile) {

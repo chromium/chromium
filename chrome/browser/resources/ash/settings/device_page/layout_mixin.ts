@@ -15,14 +15,13 @@ import type {Constructor} from '../common/types.js';
 
 import {getDisplayApi} from './device_page_browser_proxy.js';
 import type {DragMixinInterface} from './drag_mixin.js';
-import {DragMixin, Position} from './drag_mixin.js';
+import {DragMixin} from './drag_mixin.js';
+import type {Position} from './drag_mixin.js';
 
 import Bounds = chrome.system.display.Bounds;
 import DisplayLayout = chrome.system.display.DisplayLayout;
 import DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
 import LayoutPosition = chrome.system.display.LayoutPosition;
-
-export {Position};
 
 export interface LayoutMixinInterface extends DragMixinInterface {
   /**
@@ -381,6 +380,8 @@ export const LayoutMixin = dedupingMixin(
               case LayoutPosition.LEFT:
                 left -= width;
                 top += layout.offset;
+                break;
+              default:
                 break;
             }
           }

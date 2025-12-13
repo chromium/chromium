@@ -20,9 +20,9 @@ const char kAndroidWebViewVideoPosterScheme[] = "android-webview-video-poster";
 bool IsAndroidSpecialFileUrl(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsFile() || !url.has_path())
     return false;
-  return base::StartsWith(url.path(), kAndroidAssetPath,
+  return base::StartsWith(url.GetPath(), kAndroidAssetPath,
                           base::CompareCase::SENSITIVE) ||
-         base::StartsWith(url.path(), kAndroidResourcePath,
+         base::StartsWith(url.GetPath(), kAndroidResourcePath,
                           base::CompareCase::SENSITIVE);
 }
 

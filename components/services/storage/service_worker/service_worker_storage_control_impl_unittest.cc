@@ -2,25 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/services/storage/service_worker/service_worker_database.pb.h"
 #include "components/services/storage/service_worker/service_worker_storage_test_utils.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/disk_cache/disk_cache.h"
@@ -632,6 +631,10 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
     return return_value;
   }
 
+  void PerformStorageCleanup(base::OnceClosure callback) {
+    storage()->PerformStorageCleanup(std::move(callback));
+  }
+
   GetUsageForStorageKeyResult GetUsageForStorageKey(
       const blink::StorageKey& key) {
     GetUsageForStorageKeyResult result;
@@ -870,7 +873,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndDeleteRegistration) {
   // Obtains all StorageKeys. This operation should succeed.
   {
     std::vector<blink::StorageKey> storage_keys = GetRegisteredStorageKeys();
-    EXPECT_EQ(storage_keys.size(), 1UL);
+    ASSERT_EQ(storage_keys.size(), 1UL);
     EXPECT_EQ(storage_keys[0], kKey);
     // The obtained keys must be the same as the keys from TakeRegisteredKeys().
     EXPECT_EQ(storage_keys, storage_shared_buffer().TakeRegisteredKeys());
@@ -902,7 +905,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndDeleteRegistration) {
     std::map<blink::StorageKey, std::vector<GURL>> registration_scopes =
         storage_shared_buffer().TakeRegistrationScopes();
     EXPECT_EQ(registration_scopes.size(), 1UL);
-    EXPECT_TRUE(registration_scopes.contains(kKey));
+    ASSERT_TRUE(registration_scopes.contains(kKey));
     EXPECT_EQ(registration_scopes[kKey], std::vector<GURL>({kScope}));
     // The 2nd call of TakeRegistrationScopes() returns an empty map.
     EXPECT_TRUE(storage_shared_buffer().TakeRegistrationScopes().empty());
@@ -947,7 +950,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndDeleteRegistration) {
     std::map<blink::StorageKey, std::vector<GURL>> registration_scopes =
         storage_shared_buffer().TakeRegistrationScopes();
     EXPECT_EQ(registration_scopes.size(), 1UL);
-    EXPECT_TRUE(registration_scopes.contains(kKey));
+    ASSERT_TRUE(registration_scopes.contains(kKey));
     EXPECT_TRUE(registration_scopes[kKey].empty());
     // The 2nd call of TakeRegistrationScopes() returns an empty map.
     EXPECT_TRUE(storage_shared_buffer().TakeRegistrationScopes().empty());
@@ -1117,6 +1120,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, UpdateResourceSha256Checksums) {
   // Resources written in the storage don't have |sha256_checksum|
   FindRegistrationResult result = FindRegistrationForId(registration_id, kKey);
   ASSERT_EQ(result.status, DatabaseStatus::kOk);
+  ASSERT_EQ(result.entry->resources.size(), 2UL);
   ASSERT_FALSE(result.entry->resources[0]->sha256_checksum.has_value());
   ASSERT_FALSE(result.entry->resources[1]->sha256_checksum.has_value());
 
@@ -1326,8 +1330,9 @@ TEST_F(ServiceWorkerStorageControlImplTest, WriteAndReadResource) {
     ASSERT_GT(result.status, 0);
     ASSERT_TRUE(result.metadata.has_value());
     EXPECT_EQ(result.metadata->size(), kMetadata.size());
-    EXPECT_EQ(
-        memcmp(result.metadata->data(), kMetadata.data(), kMetadata.size()), 0);
+    UNSAFE_TODO(EXPECT_EQ(
+        memcmp(result.metadata->data(), kMetadata.data(), kMetadata.size()),
+        0));
   }
 }
 
@@ -1447,7 +1452,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndGetUserData) {
     std::vector<std::string> keys = {"key1", "key2"};
     GetUserDataResult result = GetUserData(registration_id, keys);
     ASSERT_EQ(result.status, DatabaseStatus::kOk);
-    EXPECT_EQ(result.values.size(), 2UL);
+    ASSERT_EQ(result.values.size(), 2UL);
     EXPECT_EQ("value1", result.values[0]);
     EXPECT_EQ("value2", result.values[1]);
   }
@@ -1475,7 +1480,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndGetUserData) {
     std::vector<std::string> keys = {"key2"};
     GetUserDataResult result = GetUserData(registration_id, keys);
     ASSERT_EQ(result.status, DatabaseStatus::kOk);
-    EXPECT_EQ(result.values.size(), 1UL);
+    ASSERT_EQ(result.values.size(), 1UL);
     EXPECT_EQ("value2", result.values[0]);
   }
 
@@ -1538,7 +1543,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndGetUserDataByKeyPrefix) {
     GetUserDataByKeyPrefixResult result =
         GetUserDataByKeyPrefix(registration_id, "prefix");
     ASSERT_EQ(result.status, DatabaseStatus::kOk);
-    EXPECT_EQ(result.values.size(), 4UL);
+    ASSERT_EQ(result.values.size(), 4UL);
     EXPECT_EQ(result.values[0], "value1");
     EXPECT_EQ(result.values[1], "value2");
     EXPECT_EQ(result.values[2], "value3");
@@ -1780,6 +1785,43 @@ TEST_F(ServiceWorkerStorageControlImplTest, GetUsageForStorageKey) {
   }
 }
 
+TEST_F(ServiceWorkerStorageControlImplTest, PerformStorageCleanup) {
+  const GURL kScope("https://www.example.com/scope/");
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
+  const GURL kScriptUrl("https://www.example.com/scope/sw.js");
+  const GURL kClientUrl("https://www.example.com/scope/document.html");
+  const int64_t kScriptSize = 10;
+
+  LazyInitializeForTest();
+
+  const int64_t kResourceId = GetNewResourceId();
+  const int64_t kVersionId = GetNewVersionId().version_id;
+  const int64_t kRegistrationId = GetNewRegistrationId();
+
+  // Create and store a registration, and a resource.
+  DatabaseStatus status =
+      CreateAndStoreRegistration(kRegistrationId, kVersionId, kResourceId,
+                                  kScope, kKey, kScriptUrl, kScriptSize);
+  ASSERT_EQ(status, DatabaseStatus::kOk);
+
+  // Delete the registration. This should make the resource purgeable.
+  DeleteRegistrationResult delete_result =
+      DeleteRegistration(kRegistrationId, kKey);
+  ASSERT_EQ(delete_result.status, DatabaseStatus::kOk);
+
+  // Call PerformStorageCleanup. This is async.
+  base::RunLoop loop;
+  PerformStorageCleanup(loop.QuitClosure());
+  loop.Run();
+
+  // The resource should be purged.
+  ReadDataResult read_resource_result =
+      ReadResource(kResourceId, kScriptSize);
+  ASSERT_EQ(read_resource_result.status, net::ERR_CACHE_MISS);
+  ASSERT_EQ(read_resource_result.data, "");
+}
+
 // Tests that apply policy updates work.
 TEST_F(ServiceWorkerStorageControlImplTest, ApplyPolicyUpdates) {
   const GURL kScope1("https://foo.example.com/");
@@ -1961,6 +2003,101 @@ TEST_F(ServiceWorkerStorageControlImplTest, TrackRunningVersion) {
         ReadResource(resource_id2, resource_data2.size());
     ASSERT_EQ(read_resource_result2.status, net::ERR_CACHE_MISS);
     EXPECT_EQ(read_resource_result2.data, "");
+  }
+}
+
+TEST_F(ServiceWorkerStorageControlImplTest, Checksum) {
+  const GURL kScope("https://www.example.com/");
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
+  const GURL kScriptUrl("https://www.example.com/sw.js");
+  const std::string kTestData = "Here is some data.";
+  const std::string kChecksum =
+      base::HexEncode(crypto::hash::Sha256(kTestData));
+  const int64_t kRegistrationId = GetNewRegistrationId();
+  const int64_t kVersionId = GetNewVersionId().version_id;
+  const int64_t kResourceId = GetNewResourceId();
+
+  // 1. Store a registration.
+  ASSERT_EQ(
+      CreateAndStoreRegistration(kRegistrationId, kVersionId, kResourceId,
+                                 kScope, kKey, kScriptUrl, kTestData.size()),
+      DatabaseStatus::kOk);
+
+  // 2. Write the resource with a valid checksum.
+  {
+    mojo::Remote<mojom::ServiceWorkerResourceWriter> writer =
+        CreateResourceWriter(kResourceId);
+    auto response_head = network::mojom::URLResponseHead::New();
+    response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders("HTTP/1.1 200 OK\n"));
+    ASSERT_GE(WriteResponseHead(writer.get(), std::move(response_head)), 0);
+    mojo_base::BigBuffer data(base::as_bytes(base::span(kTestData)));
+    ASSERT_EQ(WriteResponseData(writer.get(), std::move(data)),
+              static_cast<int>(kTestData.size()));
+
+    mojo::Remote<mojom::ServiceWorkerResourceMetadataWriter> metadata_writer =
+        CreateResourceMetadataWriter(kResourceId);
+    ServiceWorkerResourceRecord record;
+    record.set_resource_id(kResourceId);
+    record.set_url(kScriptUrl.spec());
+    record.set_sha256_checksum(kChecksum);
+    std::string metadata;
+    record.SerializeToString(&metadata);
+    mojo_base::BigBuffer metadata_buffer(base::as_bytes(base::span(metadata)));
+    ASSERT_EQ(WriteResponseMetadata(metadata_writer.get(),
+                                    std::move(metadata_buffer)),
+              static_cast<int>(metadata.size()));
+  }
+
+  // 3. Read the resource and verify the checksum.
+  {
+    base::HistogramTester histogram_tester;
+    mojo::Remote<mojom::ServiceWorkerResourceReader> reader =
+        CreateResourceReader(kResourceId);
+
+    ReadResponseHeadResult head_result = ReadResponseHead(reader.get());
+    ASSERT_GT(head_result.status, 0);
+    ReadDataResult result = ReadResponseData(reader.get(), kTestData.size());
+    ASSERT_EQ(result.status, static_cast<int>(kTestData.size()));
+    EXPECT_EQ(result.data, kTestData);
+
+    histogram_tester.ExpectUniqueSample("ServiceWorker.ResourceChecksumMatch",
+                                        true, 1);
+    task_environment().RunUntilIdle();
+  }
+
+  // 4. Write the resource with an invalid checksum.
+  {
+    mojo::Remote<mojom::ServiceWorkerResourceMetadataWriter> metadata_writer =
+        CreateResourceMetadataWriter(kResourceId);
+    ServiceWorkerResourceRecord record;
+    record.set_resource_id(kResourceId);
+    record.set_url(kScriptUrl.spec());
+    record.set_sha256_checksum("invalid_checksum");
+    std::string metadata;
+    record.SerializeToString(&metadata);
+    mojo_base::BigBuffer metadata_buffer(base::as_bytes(base::span(metadata)));
+    ASSERT_EQ(WriteResponseMetadata(metadata_writer.get(),
+                                    std::move(metadata_buffer)),
+              static_cast<int>(metadata.size()));
+  }
+
+  // 5. Read the resource and verify the checksum mismatch.
+  {
+    base::HistogramTester histogram_tester;
+    mojo::Remote<mojom::ServiceWorkerResourceReader> reader =
+        CreateResourceReader(kResourceId);
+
+    ReadResponseHeadResult head_result = ReadResponseHead(reader.get());
+    ASSERT_GT(head_result.status, 0);
+    ReadDataResult result = ReadResponseData(reader.get(), kTestData.size());
+    ASSERT_EQ(result.status, static_cast<int>(kTestData.size()));
+    EXPECT_EQ(result.data, kTestData);
+
+    histogram_tester.ExpectUniqueSample("ServiceWorker.ResourceChecksumMatch",
+                                        false, 1);
+    task_environment().RunUntilIdle();
   }
 }
 

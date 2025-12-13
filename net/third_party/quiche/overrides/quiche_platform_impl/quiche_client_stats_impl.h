@@ -5,6 +5,8 @@
 #ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_CLIENT_STATS_IMPL_H_
 #define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_CLIENT_STATS_IMPL_H_
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 
@@ -32,8 +34,7 @@ namespace quiche {
   UMA_HISTOGRAM_CUSTOM_COUNTS(QUICHE_HISTOGRAM_NAME(name), sample, min, max, \
                               bucket_count)
 
-inline void QuicheClientSparseHistogramImpl(const std::string& name,
-                                            int sample) {
+inline void QuicheClientSparseHistogramImpl(std::string_view name, int sample) {
   base::UmaHistogramSparse(name, sample);
 }
 

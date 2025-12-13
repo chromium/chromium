@@ -23,7 +23,7 @@ static_library("echo_private") {
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/common",
     "//chrome/common:constants",
-    "//chrome/common/extensions/api:api",
+    "//chrome/common/extensions/api",
     "//chromeos/ash/components/report:utils",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",

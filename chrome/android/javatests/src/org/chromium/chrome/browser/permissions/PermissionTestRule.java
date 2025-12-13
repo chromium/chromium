@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
@@ -37,6 +36,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.ViewUtils;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * TestRule for permissions UI testing on Android.
@@ -64,6 +66,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         PromptDecision.DENY,
         PromptDecision.NONE
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface PromptDecision {
         int ALLOW = 0;
         int ALLOW_ONCE = 1;
@@ -89,8 +92,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
 
         @Override
         public void onTitleUpdated(Tab tab) {
-            if (ChromeTabUtils.getTitleOnUiThread(mActivity.getActivityTab())
-                    .equals(mExpectedTitle)) {
+            if (getTitle().equals(mExpectedTitle)) {
                 mCallbackHelper.notifyCalled();
             }
         }
@@ -109,12 +111,15 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
             // Update might have already happened, check before waiting for title udpdates.
             mExpectedTitle = mPrefix;
             if (numUpdates != 0) mExpectedTitle += numUpdates;
-            if (ChromeTabUtils.getTitleOnUiThread(mActivity.getActivityTab())
-                    .equals(mExpectedTitle)) {
+            if (getTitle().equals(mExpectedTitle)) {
                 return;
             }
 
             mCallbackHelper.waitForCallback(callbackCountBefore);
+        }
+
+        private String getTitle() {
+            return ThreadUtils.runOnUiThreadBlocking(() -> mActivity.getActivityTab().getTitle());
         }
     }
 
@@ -293,7 +298,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     public void runJavaScriptCodeInCurrentTabWithGesture(String javascript)
             throws java.util.concurrent.TimeoutException {
         runJavaScriptCodeInCurrentTab("functionToRun = '" + javascript + "'");
-        TouchCommon.singleClickView(getActivity().getActivityTab().getView());
+        TouchCommon.singleClickView(getActivityTab().getView());
     }
 
     /**

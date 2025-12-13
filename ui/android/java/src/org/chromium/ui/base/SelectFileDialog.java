@@ -975,7 +975,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * @param results The results of the requested intent.
      */
     @Override
-    public void onIntentCompleted(int resultCode, Intent results) {
+    public void onIntentCompleted(int resultCode, @Nullable Intent results) {
         if (sPhotoPicker != null) {
             sPhotoPicker.onExternalIntentCompleted();
         }
@@ -1445,7 +1445,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
     private void recordImageCountHistograms(String[] filesSelected) {
         if (isSupportedPhotoPickerTypes(mMimeTypes)) {
-            // Record the total number of images selected via the Chrome Media Picker.
+            // Record the total number of images selected via the Media Picker.
             RecordHistogram.recordCount100Histogram(
                     "Android.SelectFileDialogImgCount", filesSelected.length);
         }

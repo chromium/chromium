@@ -73,7 +73,7 @@ public class SelectionPopupBackPressTest {
                         .getHandlersForTesting()[BackPressHandler.Type.SELECTION_POPUP];
         Assert.assertNotNull(
                 "Back press handler should be initialized and registered.", selectionPopupHandler);
-        Tab tab1 = activity.getActivityTab();
+        Tab tab1 = mActivityTestRule.getActivityTab();
         var observers = ThreadUtils.runOnUiThreadBlocking(() -> TabTestUtils.getTabObservers(tab1));
         boolean found = find(observers, selectionPopupHandler);
         Assert.assertTrue("Tab should be observed.", found);
@@ -84,7 +84,7 @@ public class SelectionPopupBackPressTest {
         found = find(observers, selectionPopupHandler);
         Assert.assertFalse("Observer should be removed.", found);
 
-        Tab currentTab = activity.getActivityTab();
+        Tab currentTab = mActivityTestRule.getActivityTab();
         observers =
                 ThreadUtils.runOnUiThreadBlocking(() -> TabTestUtils.getTabObservers(currentTab));
         found = find(observers, selectionPopupHandler);
@@ -103,7 +103,7 @@ public class SelectionPopupBackPressTest {
                                 .getHandlersForTesting()[BackPressHandler.Type.SELECTION_POPUP];
         Assert.assertNotNull(
                 "Back press handler should be initialized and registered.", selectionPopupHandler);
-        Tab tab1 = activity.getActivityTab();
+        Tab tab1 = mActivityTestRule.getActivityTab();
         var observers = ThreadUtils.runOnUiThreadBlocking(() -> TabTestUtils.getTabObservers(tab1));
         boolean found = find(observers, selectionPopupHandler);
         Assert.assertTrue("Tab should be observed.", found);

@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -75,6 +76,9 @@ class FindBarController : public content::WebContentsObserver,
 
   FindBar* find_bar() const { return find_bar_.get(); }
 
+  // Updates the page action, which the find bar appears anchored to.
+  void UpdatePageAction();
+
  private:
   // Sends an update to the find bar with the tab contents' current result. The
   // `web_contents()` must be non-NULL before this call. This handles
@@ -103,6 +107,10 @@ class FindBarController : public content::WebContentsObserver,
   // If the user has changed the text in the find bar. Used to avoid
   // replacing user-entered text with selection.
   bool has_user_modified_text_ = false;
+
+  // Manages the highlight on the page action.
+  std::optional<page_actions::ScopedPageActionActivity>
+      find_bar_page_action_activity_ = std::nullopt;
 
   base::ScopedObservation<find_in_page::FindTabHelper,
                           find_in_page::FindResultObserver>

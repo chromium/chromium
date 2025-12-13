@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_POLICY_POLICY_UI_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -60,6 +61,7 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
  private:
   // UserCloudPolicyStatusProvider::Delegate.
   base::flat_set<std::string> GetDeviceAffiliationIds() override;
+  std::optional<std::string> GetProfileId() override;
 
   // Returns a dictionary containing the policies supported by Chrome.
   base::Value::Dict GetPolicyNames() const;

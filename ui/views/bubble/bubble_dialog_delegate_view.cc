@@ -27,6 +27,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/class_property.h"
 #include "ui/base/default_style.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -42,6 +43,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -49,6 +51,7 @@
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble_histograms_variant.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
@@ -435,7 +438,7 @@ BubbleDialogDelegate::CloseOnDeactivatePin::~CloseOnDeactivatePin() {
   }
 }
 
-BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
+BubbleDialogDelegate::BubbleDialogDelegate(BubbleAnchor anchor,
                                            BubbleBorder::Arrow arrow,
                                            BubbleBorder::Shadow shadow,
                                            bool autosize)
@@ -445,16 +448,16 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
       close_on_deactivate_pins_(std::make_unique<CloseOnDeactivatePin::Pins>()),
       bubble_created_time_(base::TimeTicks::Now()) {
   bubble_uma_logger().set_delegate(this);
-  SetAnchorView(anchor_view);
+  SetAnchor(anchor);
   SetArrow(arrow);
   SetShowCloseButton(false);
 
   LayoutProvider* const layout_provider = LayoutProvider::Get();
-  set_margins(layout_provider->GetDialogInsetsForContentType(
-      DialogContentType::kText, DialogContentType::kText));
-  set_title_margins(layout_provider->GetInsetsMetric(INSETS_DIALOG_TITLE));
-  set_footnote_margins(
-      layout_provider->GetInsetsMetric(INSETS_DIALOG_FOOTNOTE));
+  set_frame_margins(
+      {.contents = layout_provider->GetDialogInsetsForContentType(
+           DialogContentType::kText, DialogContentType::kText),
+       .title = layout_provider->GetInsetsMetric(INSETS_DIALOG_TITLE),
+       .footnote = layout_provider->GetInsetsMetric(INSETS_DIALOG_FOOTNOTE)});
 
   set_desired_bounds_delegate(base::BindRepeating(
       &BubbleDialogDelegate::GetDesiredBubbleBounds, base::Unretained(this)));
@@ -540,11 +543,11 @@ Widget* BubbleDialogDelegateView::CreateBubble(
   return CreateBubble(base::WrapUnique(delegate_view), ownership);
 }
 
-BubbleDialogDelegateView::BubbleDialogDelegateView(View* anchor_view,
+BubbleDialogDelegateView::BubbleDialogDelegateView(BubbleAnchor anchor,
                                                    BubbleBorder::Arrow arrow,
                                                    BubbleBorder::Shadow shadow,
                                                    bool autosize)
-    : BubbleDialogDelegate(anchor_view, arrow, shadow, autosize) {
+    : BubbleDialogDelegate(anchor, arrow, shadow, autosize) {
   bubble_uma_logger().set_bubble_view(this);
 }
 
@@ -567,11 +570,12 @@ BubbleDialogDelegate* BubbleDialogDelegate::AsBubbleDialogDelegate() {
   return this;
 }
 
-std::unique_ptr<NonClientFrameView>
-BubbleDialogDelegate::CreateNonClientFrameView(Widget* widget) {
-  auto frame = std::make_unique<BubbleDialogFrameView>(title_margins_);
+std::unique_ptr<FrameView> BubbleDialogDelegate::CreateFrameView(
+    Widget* widget) {
+  const FrameMargins& margin = frame_margins();
+  auto frame = std::make_unique<BubbleDialogFrameView>(margin.title.value());
 
-  frame->SetFootnoteMargins(footnote_margins_);
+  frame->SetFootnoteMargins(margin.footnote.value());
   frame->SetFootnoteView(DisownFootnoteView());
 
   std::unique_ptr<BubbleBorder> border =
@@ -587,18 +591,18 @@ BubbleDialogDelegate::CreateNonClientFrameView(Widget* widget) {
 }
 
 ClientView* BubbleDialogDelegate::CreateClientView(Widget* widget) {
-  client_view_ = DialogDelegate::CreateClientView(widget);
+  auto* client_view = DialogDelegate::CreateClientView(widget);
 
   // In order for the `client_view`'s content view hierarchy to respect its
   // rounded corner clip we must paint the client view to a layer. This is
   // necessary because layers do not respect the clip of a non-layer backed
   // parent.
-  client_view_->SetPaintToLayer(layer_type());
-  client_view_->layer()->SetRoundedCornerRadius(
+  client_view->SetPaintToLayer(layer_type());
+  client_view->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(GetCornerRadius()));
-  client_view_->layer()->SetIsFastRoundedCorner(true);
+  client_view->layer()->SetIsFastRoundedCorner(true);
 
-  return client_view_;
+  return client_view;
 }
 
 Widget* BubbleDialogDelegateView::GetWidget() {
@@ -755,11 +759,13 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
   // TODO(tluk) eliminate the need for GetAnchorRect() to return an empty rect
   // if neither an |anchor_rect_| or an anchor view have been set.
   View* anchor_view = GetAnchorView();
-  if (!anchor_view) {
+  if (anchor_view) {
+    anchor_rect_ = anchor_view->GetAnchorBoundsInScreen();
+  } else if (anchor_tracked_element_) {
+    anchor_rect_ = anchor_tracked_element_->GetScreenBounds();
+  } else {
     return anchor_rect_.value_or(gfx::Rect());
   }
-
-  anchor_rect_ = anchor_view->GetAnchorBoundsInScreen();
 
 #if !BUILDFLAG(IS_MAC)
   // GetAnchorBoundsInScreen returns values that take anchor widget's
@@ -779,7 +785,7 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
   // Remove additional whitespace padding that was added to the view
   // so that anchor_rect centers on the anchor and not skewed by the whitespace
   BubbleFrameView* frame_view = GetBubbleFrameView();
-  if (frame_view && frame_view->GetDisplayVisibleArrow()) {
+  if (anchor_view && frame_view && frame_view->GetDisplayVisibleArrow()) {
     gfx::Insets* padding = anchor_view->GetProperty(kInternalPaddingKey);
     if (padding != nullptr) {
       anchor_rect_->Inset(*padding);
@@ -790,12 +796,12 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
 }
 
 void BubbleDialogDelegate::UseCompactMargins() {
-  set_margins(gfx::Insets(6));
+  set_frame_margins({.contents = gfx::Insets(6)});
 }
 
 // static
 gfx::Size BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
-    View* anchor_view,
+    BubbleAnchor anchor,
     BubbleBorder::Arrow arrow,
     bool adjust_if_offscreen,
     BubbleFrameView::PreferredArrowAdjustment arrow_adjustment) {
@@ -814,9 +820,14 @@ gfx::Size BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
              .supports_global_screen_coordinates);
 #endif
 
-  gfx::Rect anchor_rect = anchor_view->GetAnchorBoundsInScreen();
+  gfx::Rect anchor_rect;
+  if (std::holds_alternative<View*>(anchor)) {
+    anchor_rect = std::get<View*>(anchor)->GetAnchorBoundsInScreen();
+  } else {
+    anchor_rect = std::get<ui::TrackedElement*>(anchor)->GetScreenBounds();
+  }
   gfx::Rect screen_rect =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestPoint(anchor_rect.CenterPoint())
           .work_area();
 
@@ -910,6 +921,9 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
     void (*uma_func)(std::string_view, Value),
     std::string_view histogram_name,
     Value value) const {
+  if (!base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
+    return;
+  }
   // Record histogram for all BDDV subclasses under a generic name
   uma_func(base::StrCat({"Bubble.All.", histogram_name}), value);
   // Record histograms for specific BDDV subclasses
@@ -1005,7 +1019,7 @@ gfx::Rect BubbleDialogDelegate::GetDesiredBubbleBounds() {
 
 gfx::Size BubbleDialogDelegateView::GetMinimumSize() const {
   // Note that although BubbleDialogFrameView will never invoke this, a subclass
-  // may override CreateNonClientFrameView() to provide a NonClientFrameView
+  // may override CreateFrameView() to provide a FrameView
   // that does. See http://crbug.com/844359.
   return gfx::Size();
 }
@@ -1084,6 +1098,42 @@ void BubbleDialogDelegate::SetAnchorRect(const gfx::Rect& rect) {
   if (GetWidget()) {
     OnAnchorBoundsChanged();
   }
+}
+
+void BubbleDialogDelegate::SetAnchor(BubbleAnchor anchor) {
+  if (std::holds_alternative<View*>(anchor)) {
+    SetAnchorView(std::get<View*>(anchor));
+  } else if (std::holds_alternative<ui::TrackedElement*>(anchor)) {
+    auto* tracked_element = std::get<ui::TrackedElement*>(anchor);
+    CHECK(tracked_element);
+    if (auto* element_views = tracked_element->AsA<TrackedElementViews>()) {
+      SetAnchorView(element_views->view());
+    } else {
+      anchor_tracked_element_ = tracked_element;
+      SetAnchorView(nullptr);
+      SetAnchorRect(tracked_element->GetScreenBounds());
+
+      Widget* widget =
+          Widget::GetWidgetForNativeView(tracked_element->GetNativeView());
+      CHECK(widget) << "BubbleAnchor only supports TrackedElement backed by a "
+                    << "Widget.";
+      SetAnchorWidget(widget);
+    }
+  } else {
+    CHECK(std::holds_alternative<std::nullptr_t>(anchor));
+    SetAnchorView(nullptr);
+    SetAnchorRect(gfx::Rect());
+  }
+}
+
+BubbleAnchor BubbleDialogDelegate::GetAnchor() const {
+  if (GetAnchorView()) {
+    return GetAnchorView();
+  }
+  if (anchor_tracked_element_) {
+    return anchor_tracked_element_;
+  }
+  return nullptr;
 }
 
 void BubbleDialogDelegate::SizeToContents() {

@@ -17,11 +17,21 @@ namespace {
 using policy::PolicyMap;
 using testing::NiceMock;
 
-class SingleClientPasswordSharingPolicyTest : public SyncTest {
+class SingleClientPasswordSharingPolicyTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientPasswordSharingPolicyTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
   }
   ~SingleClientPasswordSharingPolicyTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     SyncTest::SetUpInProcessBrowserTestFixture();
@@ -41,10 +51,16 @@ class SingleClientPasswordSharingPolicyTest : public SyncTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientPasswordSharingPolicyTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientPasswordSharingPolicyTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientPasswordSharingPolicyTest,
                        ShouldDisablePasswordSharingDataTypes) {
   ASSERT_TRUE(SetupSync());
 
@@ -61,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordSharingPolicyTest,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
   UpdateProviderPolicy(policies);
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // Verify that both sharing data types are still enabled when the policy is
   // enabled.
@@ -75,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordSharingPolicyTest,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   UpdateProviderPolicy(policies);
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // With the policy is disabled, both data types should be deactivated.
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(

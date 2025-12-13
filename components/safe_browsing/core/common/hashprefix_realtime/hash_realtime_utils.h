@@ -33,7 +33,8 @@ enum class HashRealTimeSelection {
   kDatabaseManager = 2,
   // Only background lookups can be performed, and they should use the native
   // HashRealTimeService.
-  // This is relevant to Desktop and iOS.
+  // This is only relevant to Desktop. This is NOT relevant for iOS because that
+  // platform does not send CSBRRs anyway.
   kHashRealTimeServiceBackgroundOnly = 3,
   // Only background lookups can be performed, and they should use the
   // database manager.

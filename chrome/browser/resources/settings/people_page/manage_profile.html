@@ -17,7 +17,7 @@
     padding-top: 4px;
   }
 
-  #name {
+  #nameInput {
     width: 288px;
   }
 
@@ -70,12 +70,14 @@
   }
 </style>
 
+<settings-subpage page-title="$i18n{editPerson}"
+    route-path$="[[routePath]]">
 <div class="cr-row first manage-profile-section">
   <h1 class="cr-title-text">$i18n{nameYourProfile}</h1>
   <div class="content">
-    <cr-input id="name" value="[[profileName]]" pattern="[[pattern_]]"
-        on-change="onProfileNameChanged_"
-        on-keydown="onProfileNameKeydown_"
+    <cr-input id="nameInput" value="[[profileName_]]" pattern="[[pattern_]]"
+        on-change="onNameInputChange_"
+        on-keydown="onNameInputKeydown_"
         maxlength="500"
         aria-label="$i18n{nameInputLabel}" auto-validate required
         spellcheck="false" disabled="[[hasEnterpriseLabel_]]">
@@ -118,3 +120,4 @@
   </div>
   <div class="hr"></div>
 </template>
+</settings-subpage>

@@ -139,7 +139,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
     // guaranteed to have run.
     ASSERT_TRUE(
         EvalJsAfterLifecycleUpdate(iframe_node->current_frame_host(), "", "")
-            .error.empty());
+            .is_ok());
 
     WaitForHitTestData(iframe_node->current_frame_host());
     ASSERT_EQ(
@@ -388,6 +388,8 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
 // TODO(crbug.com/40857753): Re-enable on Linux MSAN once not flaky.
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_TouchscreenFlingInOOPIF DISABLED_TouchscreenFlingInOOPIF
+#elif BUILDFLAG(IS_ANDROID)
+#define MAYBE_TouchscreenFlingInOOPIF DISABLED_TouchscreenFlingInOOPIF
 #else
 #define MAYBE_TouchscreenFlingInOOPIF TouchscreenFlingInOOPIF
 #endif
@@ -585,8 +587,16 @@ class PhysicsBasedFlingCurveBrowserTest : public BrowserSideFlingBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/40737075): Re-enable on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_TargetScrollOffsetForFlingAnimation \
+  DISABLED_TargetScrollOffsetForFlingAnimation
+#else
+#define MAYBE_TargetScrollOffsetForFlingAnimation \
+  TargetScrollOffsetForFlingAnimation
+#endif
 IN_PROC_BROWSER_TEST_F(PhysicsBasedFlingCurveBrowserTest,
-                       TargetScrollOffsetForFlingAnimation) {
+                       MAYBE_TargetScrollOffsetForFlingAnimation) {
   LoadPageWithOOPIF();
 
   // Higher value of fling velocity will make sure that the scroll distance

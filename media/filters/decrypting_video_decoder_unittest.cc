@@ -487,9 +487,9 @@ TEST_F(DecryptingVideoDecoderTest, Destroy_DuringPendingDecoderInit) {
     return std::make_unique<CallbackRegistration>();
   });
   EXPECT_CALL(*decryptor_, InitializeVideoDecoder(_, _))
-      .WillOnce(WithArg<1>(Invoke([&](Decryptor::DecoderInitCB init_cb) {
+      .WillOnce(WithArg<1>([&](Decryptor::DecoderInitCB init_cb) {
         pending_init_cb_ = std::move(init_cb);
-      })));
+      }));
 
   InitializeAndExpectResult(TestVideoConfig::NormalEncrypted(), false);
   EXPECT_FALSE(!pending_init_cb_);
@@ -570,7 +570,7 @@ TEST_F(DecryptingVideoDecoderTest, ColorSpace) {
   EnterNormalDecodingState();
   EXPECT_TRUE(decoded_video_frame_->ColorSpace().IsValid());
   EXPECT_FALSE(decoded_video_frame_->ColorSpace().IsHDR());
-  EXPECT_FALSE(decoded_video_frame_->hdr_metadata());
+  EXPECT_TRUE(decoded_video_frame_->hdr_metadata().IsEmpty());
 }
 
 // Test the case where ColorSpace and HDRMetadata in the config are set in the
@@ -580,8 +580,8 @@ TEST_F(DecryptingVideoDecoderTest, HDRMetadata) {
   EnterNormalDecodingState();
   EXPECT_TRUE(decoded_video_frame_->ColorSpace().IsValid());
   EXPECT_TRUE(decoded_video_frame_->ColorSpace().IsHDR());
-  EXPECT_TRUE(decoded_video_frame_->hdr_metadata());
-  EXPECT_TRUE(decoded_video_frame_->hdr_metadata()->IsValid());
+  EXPECT_FALSE(decoded_video_frame_->hdr_metadata().IsEmpty());
+  EXPECT_TRUE(decoded_video_frame_->hdr_metadata().IsValid());
 }
 
 }  // namespace media

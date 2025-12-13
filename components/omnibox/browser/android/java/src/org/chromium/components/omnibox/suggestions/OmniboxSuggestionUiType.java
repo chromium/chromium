@@ -30,6 +30,7 @@ import java.lang.annotation.RetentionPolicy;
     OmniboxSuggestionUiType.TILE_NAVSUGGEST,
     OmniboxSuggestionUiType.GROUP_SEPARATOR,
     OmniboxSuggestionUiType.OBSOLETE_QUERY_TILES,
+    OmniboxSuggestionUiType.TAB_GROUP_SUGGESTION,
     OmniboxSuggestionUiType.COUNT
 })
 @Retention(RetentionPolicy.SOURCE)
@@ -45,7 +46,8 @@ public @interface OmniboxSuggestionUiType {
     int TILE_NAVSUGGEST = 7;
     int GROUP_SEPARATOR = 8;
     int OBSOLETE_QUERY_TILES = 9;
+    int TAB_GROUP_SUGGESTION = 10;
 
-    int COUNT = 10;
+    int COUNT = 11;
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:OmniboxSuggestionUiType)

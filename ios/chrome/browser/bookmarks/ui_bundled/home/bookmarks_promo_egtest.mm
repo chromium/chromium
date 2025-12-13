@@ -12,21 +12,22 @@
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "ios/chrome/browser/authentication/test/expected_signin_histograms.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -251,7 +252,11 @@ using chrome_test_util::SettingsDoneButton;
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(kSigninSnackbarUndo),
+                                   grey_accessibilityID(
+                                       kSnackbarButtonAccessibilityId),
+                                   grey_accessibilityLabel(
+                                       l10n_util::GetNSString(
+                                           IDS_IOS_SIGNIN_SNACKBAR_UNDO)),
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedOut];
@@ -487,8 +492,9 @@ using chrome_test_util::SettingsDoneButton;
 
   // Tap the "Sign out" button.
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM)),
+                            grey_userInteractionEnabled(), nil)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey verifySignedOut];
@@ -500,11 +506,7 @@ using chrome_test_util::SettingsDoneButton;
       assertWithMatcher:grey_notVisible()];
 
   // Dismiss sign out snackbar.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityLabel(l10n_util::GetNSString(
-              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE))]
-      performAction:grey_tap()];
+  [SigninEarlGreyUI dismissSignoutSnackbar];
 
   // Sign in promo shows and try to sign in succeeds.
   [SigninEarlGreyUI
@@ -591,7 +593,11 @@ using chrome_test_util::SettingsDoneButton;
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(kSigninSnackbarUndo),
+                                   grey_accessibilityID(
+                                       kSnackbarButtonAccessibilityId),
+                                   grey_accessibilityLabel(
+                                       l10n_util::GetNSString(
+                                           IDS_IOS_SIGNIN_SNACKBAR_UNDO)),
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedOut];
@@ -638,7 +644,11 @@ using chrome_test_util::SettingsDoneButton;
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(kSigninSnackbarUndo),
+                                   grey_accessibilityID(
+                                       kSnackbarButtonAccessibilityId),
+                                   grey_accessibilityLabel(
+                                       l10n_util::GetNSString(
+                                           IDS_IOS_SIGNIN_SNACKBAR_UNDO)),
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedOut];

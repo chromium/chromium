@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -85,8 +86,9 @@ void CryptohomeWebUIHandler::OnPageLoaded(const base::Value::List& args) {
       base::BindOnce(&CryptohomeWebUIHandler::OnPkcs11IsTpmTokenReady,
                      weak_ptr_factory_.GetWeakPtr()));
 
+  // Add 1 to compensate for the first recovery ID, which is not displayed.
   user_data_auth::GetAuthFactorExtendedInfoRequest req =
-      GenerateAuthFactorExtendedInfoRequest(kRecoveryIdHistoryDepth);
+      GenerateAuthFactorExtendedInfoRequest(kRecoveryIdHistoryDepth + 1);
   userdataauth_client->GetAuthFactorExtendedInfo(
       req, base::BindOnce(&CryptohomeWebUIHandler::OnGetAuthFactorExtendedInfo,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -128,13 +130,12 @@ void CryptohomeWebUIHandler::OnGetAuthFactorExtendedInfo(
     std::optional<user_data_auth::GetAuthFactorExtendedInfoReply> reply) {
   std::string recovery_ids = "<empty>";
   if (reply.has_value() &&
-      !reply->recovery_info_reply().recovery_ids().empty()) {
-    recovery_ids =
-        std::accumulate(reply->recovery_info_reply().recovery_ids().begin(),
-                        reply->recovery_info_reply().recovery_ids().end(),
-                        std::string(), [](std::string ss, std::string s) {
-                          return ss.empty() ? s : ss + " " + s;
-                        });
+      reply->recovery_info_reply().recovery_ids().size() > 1) {
+    // The first recovery id is the most recent one and should not be
+    // displayed as it has not yet been used for a recovery attempt.
+    const auto& ids = reply->recovery_info_reply().recovery_ids();
+    recovery_ids = base::JoinString(
+        std::vector<std::string>(std::next(ids.begin()), ids.end()), " ");
   }
 
   std::string recovery_seed = "<empty>";

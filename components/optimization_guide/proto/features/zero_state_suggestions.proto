@@ -64,6 +64,9 @@ message ZeroStatePageContextList {
 message ZeroStatePageContext {
   // The page context for the shared tab.
   PageContext page_context = 1 [features = { field_presence: EXPLICIT }];
+
+  // Whether the page context is focused.
+  bool is_focused = 2 [features = { field_presence: EXPLICIT }];
 }
 
 message ZeroStateSuggestionsResponse {

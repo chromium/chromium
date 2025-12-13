@@ -9,9 +9,13 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
+#include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
@@ -35,7 +39,8 @@ class CreditCard;
                                    UploadSaveCardPromptCallback)callback;
 
 // Bridge for AutofillClient's method |CreditCardUploadCompleted|.
-- (void)handleCreditCardUploadCompleted:(BOOL)cardSaved;
+- (void)handleCreditCardUploadCompleted:(BOOL)cardSaved
+                               callback:(base::OnceClosure)callback;
 
 // Bridge for AutofillClient's method |ShowUnmaskPrompt|.
 - (void)showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
@@ -57,6 +62,51 @@ class CreditCard;
               originalProfile:(const autofill::AutofillProfile*)originalProfile
                      callback:(autofill::AutofillClient ::
                                    AddressProfileSavePromptCallback)callback;
+
+// Bridge for PaymentsAutofillClient's method `ShowAutofillProgressDialog`.
+- (void)showAutofillProgressDialogOfType:
+            (autofill::AutofillProgressDialogType)type
+                          cancelCallback:(base::OnceClosure)cancelCallback;
+
+// Bridge for PaymentsAutofillClient's method `CloseAutofillProgressDialog`.
+- (void)closeAutofillProgressDialogWithConfirmation:(BOOL)showConfirmation
+                                 completionCallback:(base::OnceClosure)callback;
+
+// Bridge for PaymentsAutofillClient's method
+// `ShowUnmaskAuthenticatorSelectionDialog`.
+- (void)showUnmaskAuthenticatorSelectorWithOptions:
+            (const std::vector<autofill::CardUnmaskChallengeOption>&)options
+                                    acceptCallback:
+                                        (base::OnceCallback<void(
+                                             const std::string&)>)acceptCallback
+                                    cancelCallback:
+                                        (base::OnceClosure)cancelCallback;
+
+// Bridge for PaymentsAutofillClient's method `ShowVirtualCardEnrollDialog`.
+- (void)showVirtualCardEnrollmentWithEnrollmentFields:
+            (const autofill::VirtualCardEnrollmentFields&)enrollmentFields
+                                       acceptCallback:
+                                           (base::OnceClosure)acceptCallback
+                                      declineCallback:
+                                          (base::OnceClosure)declineCallback;
+
+// Bridge for PaymentsAutofillClient's method `VirtualCardEnrollCompleted`.
+- (void)handleVirtualCardEnrollmentResult:(BOOL)cardEnrolled;
+
+// Bridge for PaymentsAutofillClient's method `ShowCardUnmaskOtpInputDialog`.
+- (void)showCardUnmaskOtpInputDialogForCardType:
+            (autofill::CreditCard::RecordType)cardType
+                                challengeOption:
+                                    (const autofill::CardUnmaskChallengeOption&)
+                                        challengeOption
+                                       delegate:
+                                           (base::WeakPtr<
+                                               autofill::OtpUnmaskDelegate>)
+                                               delegate;
+
+// Bridge for PaymentsAutofillClient's method `OnUnmaskOtpVerificationResult`.
+- (void)didReceiveUnmaskOtpVerificationResult:
+    (autofill::OtpUnmaskResult)unmaskResult;
 
 @end
 

@@ -452,11 +452,10 @@ void ProjectorCaptureModeIntegrationHelper::SetUp() {
   annotator_helper_.SetUp();
   auto* projector_controller = ProjectorController::Get();
   projector_controller->SetClient(&projector_client_);
-  ON_CALL(projector_client_, StopSpeechRecognition)
-      .WillByDefault(testing::Invoke([]() {
-        ProjectorController::Get()->OnSpeechRecognitionStopped(
-            /*forced=*/false);
-      }));
+  ON_CALL(projector_client_, StopSpeechRecognition).WillByDefault([]() {
+    ProjectorController::Get()->OnSpeechRecognitionStopped(
+        /*forced=*/false);
+  });
 
   // Simulate the availability of speech recognition.
   SpeechRecognitionAvailability availability;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/base/list_container_helper.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr_exclusion.h"
 
@@ -63,7 +59,7 @@ class ListContainerHelper::CharAllocator {
       // allocation, it doesn't handle desctrution before deallocation.
       DCHECK_LE(position, LastElement());
       DCHECK_GE(position, Begin());
-      char* start = position + step;
+      char* start = UNSAFE_TODO(position + step);
       std::copy(start, End(), position);
 
       --size;
@@ -72,7 +68,7 @@ class ListContainerHelper::CharAllocator {
     }
 
     void InsertBefore(size_t alignment, char** position, size_t count) {
-      DCHECK_LE(*position, LastElement() + step);
+      UNSAFE_TODO(DCHECK_LE(*position, LastElement() + step));
       DCHECK_GE(*position, Begin());
 
       // Adjust the size and capacity
@@ -84,13 +80,14 @@ class ListContainerHelper::CharAllocator {
       std::unique_ptr<char[], base::AlignedFreeDeleter> new_data(
           static_cast<char*>(base::AlignedAlloc(size * step, alignment)));
       size_t position_offset = *position - Begin();
-      *position = new_data.get() + position_offset;
+      *position = UNSAFE_TODO(new_data.get() + position_offset);
 
       // Copy the data before the inserted segment
-      memcpy(new_data.get(), data.get(), position_offset);
+      UNSAFE_TODO(memcpy(new_data.get(), data.get(), position_offset));
       // Copy the data after the inserted segment.
-      memcpy(new_data.get() + position_offset + count * step,
-             data.get() + position_offset, old_size * step - position_offset);
+      UNSAFE_TODO(memcpy(new_data.get() + position_offset + count * step,
+                         data.get() + position_offset,
+                         old_size * step - position_offset));
       data = std::move(new_data);
     }
 
@@ -110,9 +107,13 @@ class ListContainerHelper::CharAllocator {
     }
 
     char* Begin() const { return data.get(); }
-    char* End() const { return data.get() + size * step; }
-    char* LastElement() const { return data.get() + (size - 1) * step; }
-    char* ElementAt(size_t index) const { return data.get() + index * step; }
+    char* End() const { return UNSAFE_TODO(data.get() + size * step); }
+    char* LastElement() const {
+      return UNSAFE_TODO(data.get() + (size - 1) * step);
+    }
+    char* ElementAt(size_t index) const {
+      return UNSAFE_TODO(data.get() + index * step);
+    }
   };
 
   CharAllocator(size_t alignment, size_t element_size, size_t element_count)
@@ -318,7 +319,7 @@ ListContainerHelper::PositionInCharAllocator::Increment() {
     else
       item_iterator = nullptr;
   } else {
-    item_iterator += list.step;
+    UNSAFE_TODO(item_iterator += list.step);
   }
   return *this;
 }
@@ -343,7 +344,7 @@ ListContainerHelper::PositionInCharAllocator::ReverseIncrement() {
       item_iterator = nullptr;
     }
   } else {
-    item_iterator -= list.step;
+    UNSAFE_TODO(item_iterator -= list.step);
   }
   return *this;
 }

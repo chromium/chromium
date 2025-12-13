@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/webui/ui_bundled/chrome_urls/chrome_urls_handler.h"
 
 #import <vector>
@@ -26,7 +21,7 @@
 namespace chrome_urls {
 
 namespace {
-bool IsWebUIInternal(const std::string& host) {
+bool IsWebUIInternal(std::string_view host) {
   return host == commerce::kChromeUICommerceInternalsHost ||
          host == optimization_guide_internals::
                      kChromeUIOptimizationGuideInternalsHost ||
@@ -47,10 +42,8 @@ ChromeUrlsHandler::~ChromeUrlsHandler() = default;
 
 void ChromeUrlsHandler::GetUrls(GetUrlsCallback callback) {
   std::vector<chrome_urls::mojom::WebuiUrlInfoPtr> webui_urls;
-  std::vector<std::string> hosts(kChromeHostURLs,
-                                 kChromeHostURLs + kNumberOfChromeHostURLs);
-  webui_urls.reserve(kNumberOfChromeHostURLs);
-  for (std::string host : hosts) {
+  webui_urls.reserve(kChromeHostURLs.size());
+  for (const std::string_view host : kChromeHostURLs) {
     GURL url(
         base::StrCat({kChromeUIScheme, url::kStandardSchemeSeparator, host}));
     chrome_urls::mojom::WebuiUrlInfoPtr url_info(

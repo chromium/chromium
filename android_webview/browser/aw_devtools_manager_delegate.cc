@@ -40,9 +40,7 @@ std::string AwDevToolsManagerDelegate::GetTargetDescription(
     description.Set("width", screen_rect.width());
     description.Set("height", screen_rect.height());
   }
-  std::string json;
-  base::JSONWriter::Write(description, &json);
-  return json;
+  return base::WriteJson(description).value_or("");
 }
 
 std::string AwDevToolsManagerDelegate::GetDiscoveryPageHTML() {

@@ -5,6 +5,77 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+source_set("access_handler") {
+  sources = [ "media_access_handler.h" ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
+source_set("access_handler_impl") {
+  sources = [ "media_access_handler.cc" ]
+  deps = [
+    ":access_handler",
+    "//chrome/browser/media/webrtc",
+    "//third_party/blink/public/common",
+  ]
+}
+
+source_set("audio_process_ml_model_forwarder") {
+  sources = [
+    "audio_process_ml_model_forwarder.cc",
+    "audio_process_ml_model_forwarder.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/optimization_guide/core:prediction",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//mojo/public/cpp/bindings",
+    "//services/audio/public/mojom",
+  ]
+  deps = [ "//content/public/browser" ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [ "audio_process_ml_model_forwarder_unittest.cc" ]
+  deps = [
+    ":audio_process_ml_model_forwarder",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//services/audio/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "audio_process_ml_model_forwarder_browsertest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":audio_process_ml_model_forwarder",
+    "//base/test:test_support",
+    "//chrome/browser:global_features",
+    "//chrome/browser/optimization_guide",
+    "//chrome/test:test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/public/browser",
+    "//content/test:browsertest_support",
+    "//media",
+    "//testing/gtest",
+  ]
+}
+
 mojom("mojo_bindings") {
   sources = [ "media_engagement_score_details.mojom" ]
 

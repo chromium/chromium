@@ -14,11 +14,7 @@ enum class CookieControlsState {
   kBlocked3pc = 1,
   // Third-party cookies UI with toggle on.
   kAllowed3pc = 2,
-  // Tracking protections UI with button to pause protections.
-  kActiveTp = 3,
-  // Tracking protections UI with button to resume protections.
-  kPausedTp = 4,
-  kMaxValue = kPausedTp,
+  kMaxValue = kAllowed3pc,
 };
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_COOKIE_CONTROLS_STATE_H_

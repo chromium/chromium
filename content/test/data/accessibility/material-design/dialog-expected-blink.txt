@@ -1,0 +1,74 @@
+rootWebArea htmlTag='#document' name='Material Web Dialogs'
+++genericContainer ignored invisible
+++++genericContainer ignored invisible
+++++dialog className='has-headline has-actions scrollable show-top-divider show-bottom-divider' htmlTag='dialog' name='Basic Dialog'
+++++++genericContainer className='container' htmlTag='div'
+++++++++genericContainer className='headline' htmlTag='div'
+++++++++++heading htmlTag='h2' name='Basic Dialog'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Basic Dialog'
+++++++++++++++++++inlineTextBox name='Basic Dialog'
+++++++++++none ignored
+++++++++genericContainer className='scroller' htmlTag='div'
+++++++++++genericContainer className='content' htmlTag='div'
+++++++++++++genericContainer className='top anchor' htmlTag='div'
+++++++++++++sectionWithoutName htmlTag='form'
+++++++++++++++paragraph htmlTag='p'
+++++++++++++++++staticText name='This is line 1 to ensure overflow.'
+++++++++++++++++++inlineTextBox name='This is line 1 to ensure overflow.'
+++++++++++++++paragraph htmlTag='p'
+++++++++++++++++staticText name='This is line 2 to ensure overflow.'
+++++++++++++++++++inlineTextBox name='This is line 2 to ensure overflow.'
+++++++++++++++paragraph htmlTag='p'
+++++++++++++++++staticText name='This is line 3 to ensure overflow.'
+++++++++++++++++++inlineTextBox name='This is line 3 to ensure overflow.'
+++++++++++++++paragraph htmlTag='p'
+++++++++++++++++staticText name='This is line 4 to ensure overflow.'
+++++++++++++++++++inlineTextBox name='This is line 4 to ensure overflow.'
+++++++++++++++paragraph htmlTag='p'
+++++++++++++++++staticText name='This is line 5 to ensure overflow.'
+++++++++++++++++++inlineTextBox name='This is line 5 to ensure overflow.'
+++++++++++++++paragraph htmlTag='p'
+++++++++++++++++staticText name='This is line 6 to ensure overflow.'
+++++++++++++++++++inlineTextBox name='This is line 6 to ensure overflow.'
+++++++++++++++paragraph htmlTag='p'
+++++++++++++++++staticText name='This is line 7 to ensure overflow.'
+++++++++++++++++++inlineTextBox name='This is line 7 to ensure overflow.'
+++++++++++++++paragraph htmlTag='p'
+++++++++++++++++staticText name='This is line 8 to ensure overflow.'
+++++++++++++++++++inlineTextBox name='This is line 8 to ensure overflow.'
+++++++++++++++paragraph htmlTag='p'
+++++++++++++++++staticText name='This is line 9 to ensure overflow.'
+++++++++++++++++++inlineTextBox name='This is line 9 to ensure overflow.'
+++++++++++++++paragraph htmlTag='p'
+++++++++++++++++staticText name='This is line 10 to ensure overflow.'
+++++++++++++++++++inlineTextBox name='This is line 10 to ensure overflow.'
+++++++++++++++staticText name='Dialog Ready'
+++++++++++++++++inlineTextBox name='Dialog Ready'
+++++++++++++genericContainer className='bottom anchor' htmlTag='div'
+++++++++genericContainer className='actions' htmlTag='div'
+++++++++++none ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-text-button'
+++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++none ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++button className='button' htmlTag='button' name='Cancel'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Cancel'
+++++++++++++++++++++++inlineTextBox name='Cancel'
+++++++++++++genericContainer htmlTag='md-text-button'
+++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++none ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++button className='button' htmlTag='button' name='OK'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='OK'
+++++++++++++++++++++++inlineTextBox name='OK'

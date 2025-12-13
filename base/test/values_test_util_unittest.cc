@@ -7,11 +7,72 @@
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::test {
 
 using testing::Not;
+
+TEST(ValuesTestUtilTest, DictionaryHasValue) {
+  // Identical field value is ok.
+  EXPECT_THAT(
+      ParseJson(R"json({"foo": {"bar": "baz"}})json"),
+      DictionaryHasValue("foo", ParseJson(R"json({"bar": "baz"})json")));
+  EXPECT_THAT(
+      ParseJson(R"json({"foo": ["bar", "baz"]})json"),
+      DictionaryHasValue("foo", ParseJson(R"json(["bar", "baz"])json")));
+
+  // Other top-level keys are ignored.
+  EXPECT_THAT(
+      ParseJson(R"json({"foo": {"bar": "baz"}, "unused": 123})json"),
+      DictionaryHasValue("foo", ParseJson(R"json({"bar": "baz"})json")));
+
+  // Extra nested dict fields are not ok.
+  EXPECT_THAT(
+      ParseJson(R"json({"foo": {"bar": "baz", "unused": 123}})json"),
+      Not(DictionaryHasValue("foo", ParseJson(R"json({"bar": "baz"})json"))));
+  // Extra nested list elements are not ok.
+  EXPECT_THAT(
+      ParseJson(R"json({"foo": ["bar", "baz", "unused", 123]})json"),
+      Not(DictionaryHasValue("foo", ParseJson(R"json(["bar", "baz"])json"))));
+
+  // Dict argument also works.
+  EXPECT_THAT(
+      ParseJsonDict(R"json({"foo": {"bar": "baz"}})json"),
+      DictionaryHasValue("foo", ParseJson(R"json({"bar": "baz"})json")));
+
+  // Wrong types.
+  EXPECT_THAT(
+      ParseJson(R"json("foo")json"),
+      Not(DictionaryHasValue("foo", ParseJson(R"json({"bar": "baz"})json"))));
+  EXPECT_THAT(
+      ParseJson(R"json(["foo"])json"),
+      Not(DictionaryHasValue("foo", ParseJson(R"json({"bar": "baz"})json"))));
+}
+
+TEST(ValuesTestUtilTest, DictionaryHasValues) {
+  // Identical value is ok.
+  const Value::Dict template_dict =
+      ParseJsonDict(R"json({"foo": {"bar": "baz"}})json");
+  EXPECT_THAT(template_dict, DictionaryHasValues(template_dict));
+
+  // Value argument also works.
+  EXPECT_THAT(Value(template_dict.Clone()), DictionaryHasValues(template_dict));
+
+  // Non-dict values are not ok.
+  EXPECT_THAT(Value(Value::List()), Not(DictionaryHasValues(template_dict)));
+
+  // Extra top-level dict fields are ok.
+  EXPECT_THAT(ParseJson(R"json({"foo": {"bar": "baz"}, "unused": 2})json"),
+              DictionaryHasValues(template_dict));
+  // Extra nested dict fields are not ok.
+  EXPECT_THAT(ParseJson(R"json({"foo": {"bar": "baz", "blah": true}})json"),
+              Not(DictionaryHasValues(template_dict)));
+
+  // Wrong type.
+  EXPECT_THAT(ParseJson("3"), Not(DictionaryHasValues(Value::Dict())));
+}
 
 TEST(ValuesTestUtilTest, IsSupersetOfValue_Supersets) {
   // Identical value is ok.
@@ -85,6 +146,84 @@ TEST(ValuesTestUtilTest, IsSupersetOfValue_TypeMismatch) {
   EXPECT_THAT(ParseJsonDict("{}"), Not(IsSupersetOfValue(ParseJsonList("[]"))));
   EXPECT_THAT(ParseJsonList("[2]"),
               Not(IsSupersetOfValue(ParseJsonList("[1, 2, true]"))));
+}
+
+TEST(ValuesTestUtilTest, IsJson) {
+  // Positive tests: Value literals and serialized JSON strings.
+  EXPECT_THAT(Value(3), IsJson(Value(3)));
+  EXPECT_THAT(Value(3), IsJson("3"));
+
+  EXPECT_THAT(Value("foo"), IsJson(Value("foo")));
+  EXPECT_THAT(Value("foo"), IsJson("\"foo\""));
+
+  EXPECT_THAT(Value::Dict().Set("foo", "bar"),
+              IsJson(Value::Dict().Set("foo", "bar")));
+  EXPECT_THAT(Value::Dict().Set("foo", "bar"),
+              IsJson(R"json({"foo": "bar"})json"));
+
+  EXPECT_THAT(Value::List().Append("foo").Append("bar"),
+              IsJson(Value::List().Append("foo").Append("bar")));
+  EXPECT_THAT(Value::List().Append("foo").Append("bar"),
+              IsJson(R"json(["foo", "bar"])json"));
+
+  // Negative tests: value mismatches.
+  EXPECT_THAT(Value(4), Not(IsJson("3")));
+  EXPECT_THAT(Value("bar"), Not(IsJson("\"foo\"")));
+  EXPECT_THAT(Value::Dict().Set("baz", "quux"),
+              Not(IsJson(R"json({"foo": "bar"})json")));
+  EXPECT_THAT(Value::List().Append("foo").Append("quux"),
+              Not(IsJson(R"json(["foo", "bar"])json")));
+
+  // Negative tests: type mismatches.
+  EXPECT_THAT(Value::Dict(), Not(IsJson("3")));
+  EXPECT_THAT(Value::Dict(), Not(IsJson("\"foo\"")));
+  EXPECT_THAT(Value::List(), Not(IsJson(R"json({"foo": "bar"})json")));
+  EXPECT_THAT(Value::Dict(), Not(IsJson(R"json(["foo", "bar"])json")));
+}
+
+TEST(ValuesTestUtilTest, ParseJson) {
+  EXPECT_EQ(ParseJson("3"), base::Value(3));
+  EXPECT_NE(ParseJson("4"), base::Value(3));
+
+  EXPECT_EQ(ParseJson("\"foo\""), base::Value("foo"));
+  EXPECT_NE(ParseJson("\"bar\""), base::Value("foo"));
+
+  EXPECT_EQ(ParseJson(R"json({"foo": "bar"})json"),
+            base::Value::Dict().Set("foo", "bar"));
+  EXPECT_NE(ParseJson(R"json({"bar": "baz"})json"),
+            base::Value::Dict().Set("foo", "bar"));
+
+  EXPECT_EQ(ParseJson(R"json(["foo", "bar"])json"),
+            base::Value::List().Append("foo").Append("bar"));
+  EXPECT_NE(ParseJson(R"json(["bar", "baz"])json"),
+            base::Value::List().Append("foo").Append("bar"));
+
+  EXPECT_NONFATAL_FAILURE(ParseJson("not json"),
+                          R"(Failed to parse "not json")");
+}
+
+TEST(ValuesTestUtilTest, ParseJsonDict) {
+  EXPECT_EQ(ParseJsonDict(R"json({"foo": "bar"})json"),
+            base::Value::Dict().Set("foo", "bar"));
+  EXPECT_NE(ParseJsonDict(R"json({"bar": "baz"})json"),
+            base::Value::Dict().Set("foo", "bar"));
+
+  EXPECT_NONFATAL_FAILURE(ParseJsonDict(R"json(["foo", "bar"])json"),
+                          R"(JSON is of wrong type: ["foo", "bar"])");
+  EXPECT_NONFATAL_FAILURE(ParseJsonDict("not json"),
+                          R"(Failed to parse "not json")");
+}
+
+TEST(ValuesTestUtilTest, ParseJsonList) {
+  EXPECT_EQ(ParseJsonList(R"json(["foo", "bar"])json"),
+            base::Value::List().Append("foo").Append("bar"));
+  EXPECT_NE(ParseJsonList(R"json(["bar", "baz"])json"),
+            base::Value::List().Append("foo").Append("bar"));
+
+  EXPECT_NONFATAL_FAILURE(ParseJsonList(R"json({"foo": "bar"})json"),
+                          R"(JSON is of wrong type: {"foo": "bar"})");
+  EXPECT_NONFATAL_FAILURE(ParseJsonDict("not json"),
+                          R"(Failed to parse "not json")");
 }
 
 }  // namespace base::test

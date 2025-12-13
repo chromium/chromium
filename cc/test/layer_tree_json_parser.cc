@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/test/layer_tree_json_parser.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "cc/layers/layer.h"
@@ -176,7 +172,7 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
       return nullptr;
     }
 
-    transform[i] = (*transform_list)[i].GetDouble();
+    UNSAFE_TODO(transform[i]) = (*transform_list)[i].GetDouble();
   }
 
   new_layer->SetTransform(gfx::Transform::ColMajorF(transform));

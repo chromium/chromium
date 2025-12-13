@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/test/chromedriver/capabilities.h"
 
 #include <map>
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
@@ -628,8 +624,8 @@ Status ParseProxy(bool w3c_compliant,
       // Example: "http=localhost:9000;ftp=localhost:8000".
       if (!proxy_servers.empty())
         proxy_servers += ";";
-      proxy_servers +=
-          base::StringPrintf("%s=%s", proxy_servers_option[1], value.c_str());
+      proxy_servers += base::StringPrintf(
+          "%s=%s", UNSAFE_TODO(proxy_servers_option[1]), value.c_str());
     }
 
     std::string proxy_bypass_list;
@@ -999,13 +995,6 @@ void Switches::SetMultivaluedSwitch(const std::string& name,
   switch_value += native_value;
 }
 
-void Switches::SetFromSwitches(const Switches& switches) {
-  for (auto iter = switches.switch_map_.begin();
-       iter != switches.switch_map_.end(); ++iter) {
-    switch_map_[iter->first] = iter->second;
-  }
-}
-
 namespace {
 
 constexpr auto kMultivaluedSwitches =
@@ -1018,6 +1007,26 @@ constexpr auto kMultivaluedSwitches =
     });
 
 }  // namespace
+
+void Switches::SetFromSwitches(const Switches& switches) {
+  for (const auto& switch_iter : switches.switch_map_) {
+    // The value in `switch_iter.second` is `NativeString`.
+    // `SetSwitch` and `SetMultivaluedSwitch` expect `std::string` (UTF8).
+    // Convert `NativeString` to `std::string` before passing.
+#if BUILDFLAG(IS_WIN)
+    auto native_value = base::WideToUTF8(switch_iter.second);
+#else
+    const auto& native_value = switch_iter.second;
+#endif
+    const auto multivalued_iter = kMultivaluedSwitches.find(switch_iter.first);
+    if (multivalued_iter != kMultivaluedSwitches.end()) {
+      SetMultivaluedSwitch(switch_iter.first, native_value,
+                           multivalued_iter->second);
+    } else {
+      SetSwitch(switch_iter.first, native_value);
+    }
+  }
+}
 
 void Switches::SetUnparsedSwitch(const std::string& unparsed_switch) {
   std::string value;

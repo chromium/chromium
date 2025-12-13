@@ -197,6 +197,11 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
   group.SetIsHidden(is_hidden);
   group.SetArchivalTime(archival_time);
 
+  if (specific.group().has_bookmark_node_id()) {
+    group.SetBookmarkNodeId(
+        base::Uuid::ParseLowercase(specific.group().bookmark_node_id()));
+  }
+
   return group;
 }
 
@@ -256,6 +261,13 @@ proto::SavedTabGroupData SavedTabGroupToData(
     pb_group->set_pinned_position(group.position().value());
   } else {
     pb_group->clear_pinned_position();
+  }
+
+  if (group.bookmark_node_id().has_value()) {
+    pb_group->set_bookmark_node_id(
+        group.bookmark_node_id().value().AsLowercaseString());
+  } else {
+    pb_group->clear_bookmark_node_id();
   }
 
   // Local only fields.

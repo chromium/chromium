@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,7 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 const char kEmail[] = "alice@example.com";
-const char kScope[] = "bar";
 
 class AidaClientTest : public testing::Test {
  public:
@@ -45,7 +45,7 @@ class AidaClientTest : public testing::Test {
     profile_->GetPrefs()->SetInteger(prefs::kDevToolsGenAiSettings, 0);
 
     auto account_info = identity_test_env_->MakePrimaryAccountAvailable(
-        kEmail, signin::ConsentLevel::kSync);
+        kEmail, signin::ConsentLevel::kSignin);
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_use_devtools_generative_ai_features(true);
     signin::UpdateAccountInfoForAccount(identity_test_env_->identity_manager(),
@@ -103,7 +103,6 @@ TEST_F(AidaClientTest, FailsIfNotAuthorized) {
   Delegate delegate;
 
   AidaClient aida_client(profile_.get());
-  aida_client.OverrideAidaScopeForTesting(kScope);
   aida_client.PrepareRequestOrFail(base::BindOnce(
       &Delegate::FinishCallback, base::Unretained(&delegate), &run_loop));
   identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
@@ -254,13 +253,12 @@ TEST_F(AidaClientTest, Succeeds) {
   Delegate delegate;
 
   AidaClient aida_client(profile_.get());
-  aida_client.OverrideAidaScopeForTesting(kScope);
   aida_client.PrepareRequestOrFail(base::BindOnce(
       &Delegate::FinishCallback, base::Unretained(&delegate), &run_loop));
   identity_test_env_
-      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForConsumerId(
           kOAuthToken, base::Time::Now() + base::Seconds(10),
-          std::string() /*id_token*/, signin::ScopeSet{kScope});
+          signin::OAuthConsumerId::kDevtoolsAida);
   run_loop.Run();
 
   EXPECT_TRUE(delegate.succeed_);
@@ -271,13 +269,12 @@ TEST_F(AidaClientTest, ReusesOAuthToken) {
   Delegate delegate;
 
   AidaClient aida_client(profile_.get());
-  aida_client.OverrideAidaScopeForTesting(kScope);
   aida_client.PrepareRequestOrFail(base::BindOnce(
       &Delegate::FinishCallback, base::Unretained(&delegate), &run_loop));
   identity_test_env_
-      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForConsumerId(
           kOAuthToken, base::Time::Now() + base::Seconds(10),
-          std::string() /*id_token*/, signin::ScopeSet{kScope});
+          signin::OAuthConsumerId::kDevtoolsAida);
   run_loop.Run();
 
   EXPECT_TRUE(delegate.succeed_);
@@ -298,13 +295,12 @@ TEST_F(AidaClientTest, RefetchesTokenWhenExpired) {
   Delegate delegate;
 
   AidaClient aida_client(profile_.get());
-  aida_client.OverrideAidaScopeForTesting(kScope);
   aida_client.PrepareRequestOrFail(base::BindOnce(
       &Delegate::FinishCallback, base::Unretained(&delegate), &run_loop));
   identity_test_env_
-      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForConsumerId(
           kOAuthToken, base::Time::Now() - base::Seconds(10),
-          std::string() /*id_token*/, signin::ScopeSet{kScope});
+          signin::OAuthConsumerId::kDevtoolsAida);
   run_loop.Run();
 
   EXPECT_TRUE(
@@ -317,9 +313,9 @@ TEST_F(AidaClientTest, RefetchesTokenWhenExpired) {
   aida_client.PrepareRequestOrFail(base::BindOnce(
       &Delegate::FinishCallback, base::Unretained(&delegate), &run_loop2));
   identity_test_env_
-      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForConsumerId(
           kAnotherOAuthToken, base::Time::Now() + base::Seconds(10),
-          std::string() /*id_token*/, signin::ScopeSet{kScope});
+          signin::OAuthConsumerId::kDevtoolsAida);
 
   run_loop2.Run();
   EXPECT_TRUE(delegate.succeed_);

@@ -14,6 +14,8 @@ import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndr
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
+import java.util.List;
+
 /** A basic {@link WebContentsDelegateAndroid} that proxies methods into Tab. */
 @NullMarked
 public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateAndroid
@@ -30,6 +32,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      *
      * @param sourceWebContents Source WebContents from which the new one is created.
      * @param webContents Newly created WebContents object.
+     * @param targetUrl URL that was used to create the new WebContents object.
      * @param disposition WindowOpenDisposition indicating how the tab should be created.
      * @param windowFeatures Initial window features to be used for the new tab.
      * @param userGesture {@code true} if opened by user gesture.
@@ -38,6 +41,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
     protected abstract boolean addNewContents(
             WebContents sourceWebContents,
             WebContents webContents,
+            GURL targetUrl,
             int disposition,
             WindowFeatures windowFeatures,
             boolean userGesture);
@@ -156,4 +160,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
     protected boolean openInAppOrChromeFromCct(GURL gurl) {
         return false;
     }
+
+    /** Called when WebContents reports a change to the non-draggable regions in header content. */
+    protected void nonDraggableRegionsChanged(List<Rect> regions) {}
 }

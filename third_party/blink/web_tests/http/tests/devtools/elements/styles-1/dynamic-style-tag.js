@@ -19,7 +19,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     for (const header of styleSheets) {
       styleSheetsWithContent.push({
         header,
-        content: await TestRunner.CSSAgent.getStyleSheetText(header.id),
+        content: (await TestRunner.CSSAgent.invoke_getStyleSheetText({styleSheetId: header.id})).text,
       });
     }
     styleSheetsWithContent.sort((a, b) => a.content.localeCompare(b.content));

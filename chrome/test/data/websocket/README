@@ -1,0 +1,36 @@
+This directory contains resources used by WebSocket server for testing.
+Multiple tests may share one resource, or URI handler.
+
+- check-origin.html : A page which checks the origin header of the WebSocket
+     opening handshake. The page is expected to be accessed via a file:// URL.
+
+- close_observer.html : A page that creates a WebSocket connection to
+     close-observer_wsh.py with role=observer and checks the contents of the
+     message that is returned.
+     Used by the SendCloseFrameWhenTabIsClosed browser test.
+
+- connect_and_be_observed.html : A page that creates a WebSocket connection to
+     close-observer_wsh.py with role=observed.
+     This file does NOT close the established connection.
+     Used by the SendCloseFrameWhenTabIsClosed browser test.
+
+- connect_check.html : A page provides simple WebSocket connectivity check.
+     This page changes page title to "PASS" to notify content::TitleWatcher.
+     Used by ProxyBrowserTest.BasicAuthWSConnect,
+     SSLUITest.TestWSSInvalidCertAndGoForward, SSLUITest.TestWSSClientCert,
+     and SSLUITestIgnoreCertErrors.TestWSS.
+
+- connect_to.html : A page which makes a connection to the WebSocket server
+     specified in the "url" parameter,
+     eg. connect_to.html?url=ws://localhost/echo Sets the title to "PASS" if
+     connection succeeds and "FAIL" otherwise.
+
+- multiple-connections.html : Verify that HTTP connection limits are not applied
+     to WebSockets. Used by WebSocketBrowserTest.SSLConnectionLimit.
+
+- split_packet_check.html : A page for testing split packet handling. Here,
+     packets mean TCP segments for WebSocket, or SSL records for secure
+     WebSocket. This page changes the title to "PASS" to notify
+     content::TitleWatcher.
+     Used by WebSocketBrowserTest.WebSocketSplitSegments and
+     WebSocketBrowserTest.SecureWebSocketSplitRecords.

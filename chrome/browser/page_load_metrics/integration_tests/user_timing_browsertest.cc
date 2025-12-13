@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, UserTiming) {
 
   // Check web perf API.
   const base::Value::List eval_result =
-      EvalJs(web_contents(), "runtest()").ExtractList();
+      EvalJs(web_contents(), "runtest()").TakeValue().TakeList();
   const double fully_loaded = eval_result[0].GetDouble();
   EXPECT_GT(fully_loaded, 0.0);
   const double fully_visible = eval_result[1].GetDouble();

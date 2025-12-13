@@ -44,7 +44,7 @@ component("global_media_controls") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos/constants:constants" ]
+    deps += [ "//chromeos/constants" ]
     public += [ "public/views/chapter_item_view.h" ]
   }
 

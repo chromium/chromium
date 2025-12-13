@@ -88,8 +88,7 @@ class StorageAccessBrowserTest : public ContentBrowserTest,
 
     // We need access to the interface broker to test bad messages, so must
     // unbind the existing one and bind our own.
-    EXPECT_TRUE(
-        host()->browser_interface_broker_receiver_for_testing().Unbind());
+    EXPECT_TRUE(host()->ResetBrowserInterfaceBrokerReceiverForTesting());
     mojo::Remote<blink::mojom::BrowserInterfaceBroker> broker_remote;
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         broker_receiver = broker_remote.BindNewPipeAndPassReceiver();

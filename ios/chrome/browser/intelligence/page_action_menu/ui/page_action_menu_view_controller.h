@@ -7,23 +7,29 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
+#import "ios/chrome/browser/reader_mode/ui/reader_mode_options_consumer.h"
+
 @protocol BWGCommands;
 @protocol LensOverlayCommands;
 @protocol PageActionMenuCommands;
+@protocol PageActionMenuMutator;
+@protocol PageActionMenuViewControllerDelegate;
 @protocol ReaderModeCommands;
 
 // The view controller representing the presented page action menu UI.
-@interface PageActionMenuViewController : UIViewController
+@interface PageActionMenuViewController
+    : UIViewController <PageActionMenuConsumer, ReaderModeOptionsConsumer>
 
-// Initializes the view controller adapted to whether Reader Mode is currently
-// active.
-- (instancetype)initWithReaderModeActive:(BOOL)readerModeActive
-    NS_DESIGNATED_INITIALIZER;
+// The delegate for this view controller.
+@property(nonatomic, weak) id<PageActionMenuViewControllerDelegate> delegate;
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
-- (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+// Returns the appropriate detent value for a sheet presentation in `context`.
+- (CGFloat)resolveDetentValueForSheetPresentation:
+    (id<UISheetPresentationControllerDetentResolutionContext>)context;
+
+// The mutator for communicating with the mediator.
+@property(nonatomic, weak) id<PageActionMenuMutator> mutator;
 
 // The handler for sending BWG commands.
 @property(nonatomic, weak) id<BWGCommands> BWGHandler;

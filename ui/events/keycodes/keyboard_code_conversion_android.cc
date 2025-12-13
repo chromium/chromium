@@ -545,6 +545,7 @@ KeyboardCode KeyboardCodeFromAndroidKeyCode(int keycode) {
       return VKEY_CLEAR;
     case AKEYCODE_DPAD_CENTER:
     case AKEYCODE_ENTER:
+    case AKEYCODE_NUMPAD_ENTER:
       return VKEY_RETURN;
     case AKEYCODE_SHIFT_LEFT:
       return VKEY_LSHIFT;

@@ -65,6 +65,15 @@ class VIEWS_EXPORT TextfieldController {
   // Called after performing a Cut or Copy operation.
   virtual void OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {}
 
+  // Called before performing a paste operation, allowing the controller to
+  // intercept and provide paste contents. Implementations can populate
+  // `paste_contents` and return true to override the default clipboard read;
+  // returning false will cause the textfield to use its standard clipboard
+  // handling.
+  // NOTE: This hook runs before OnAfterPaste() and only affects the paste
+  // content source; it does not change how the content is inserted.
+  virtual bool OnBeforePaste(Textfield* sender, std::u16string* paste_contents);
+
   // Called after performing a Paste operation.
   virtual void OnAfterPaste() {}
 
@@ -93,6 +102,15 @@ class VIEWS_EXPORT TextfieldController {
 
   // Gives the controller a chance to modify the context menu contents.
   virtual void UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {}
+
+  // Called before write to clipboard buffer
+  // If false, the controller does not override default clipboard write.
+  // If true, the controller overrides the clipboard write.
+  virtual bool HandleWriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
+                                          const std::u16string_view& text);
+
+  // Returns whether textfield content can be dragged, to drop elsewhere.
+  virtual bool AllowStartDragEvent(const std::u16string_view& selected_text);
 
  protected:
   virtual ~TextfieldController() = default;

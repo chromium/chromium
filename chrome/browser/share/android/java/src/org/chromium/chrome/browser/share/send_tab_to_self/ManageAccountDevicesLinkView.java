@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -19,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -33,6 +36,7 @@ import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** View containing the sharing account's avatar, email and a link to manage its target devices. */
+@NullMarked
 class ManageAccountDevicesLinkView extends LinearLayout {
     private static final int ACCOUNT_AVATAR_SIZE_DP = 24;
 
@@ -70,8 +74,6 @@ class ManageAccountDevicesLinkView extends LinearLayout {
     }
 
     private void onAccountInfoAvailable(AccountInfo account) {
-        assert account != null;
-
         // The avatar can be null in tests.
         if (account.getAccountImage() != null) {
             RoundedCornerImageView avatarView = findViewById(R.id.account_avatar);
@@ -129,8 +131,10 @@ class ManageAccountDevicesLinkView extends LinearLayout {
 
     private static AccountInfo getSharingAccountInfo(Profile profile) {
         IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
-        return identityManager.findExtendedAccountInfoByEmailAddress(
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN).getEmail());
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
+        var accountInfo = assumeNonNull(identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+        var account = identityManager.findExtendedAccountInfoByEmailAddress(accountInfo.getEmail());
+        assert account != null : "Account info should be non-null.";
+        return account;
     }
 }

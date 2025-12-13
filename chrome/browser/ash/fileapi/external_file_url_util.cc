@@ -45,10 +45,11 @@ GURL FileSystemURLToExternalFileURL(
 }
 
 base::FilePath ExternalFileURLToVirtualPath(const GURL& url) {
-  if (!url.is_valid() || url.scheme() != content::kExternalFileScheme)
+  if (!url.is_valid() || url.GetScheme() != content::kExternalFileScheme) {
     return base::FilePath();
+  }
   return base::FilePath::FromUTF8Unsafe(
-      base::UnescapeBinaryURLComponent(url.path_piece()));
+      base::UnescapeBinaryURLComponent(url.path()));
 }
 
 GURL VirtualPathToExternalFileURL(const base::FilePath& virtual_path) {

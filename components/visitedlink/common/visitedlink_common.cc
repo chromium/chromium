@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/visitedlink/common/visitedlink_common.h"
 
 #include <string.h>  // for memset()
@@ -16,6 +11,7 @@
 
 #include "base/bit_cast.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "components/visitedlink/core/visited_link.h"
@@ -41,9 +37,7 @@ crypto::obsolete::Md5 MakeMd5HasherForVisitedLink() {
 const VisitedLinkCommon::Fingerprint VisitedLinkCommon::null_fingerprint_ = 0;
 const VisitedLinkCommon::Hash VisitedLinkCommon::null_hash_ = -1;
 
-VisitedLinkCommon::VisitedLinkCommon() {
-  memset(salt_, 0, sizeof(salt_));
-}
+VisitedLinkCommon::VisitedLinkCommon() = default;
 
 VisitedLinkCommon::~VisitedLinkCommon() = default;
 

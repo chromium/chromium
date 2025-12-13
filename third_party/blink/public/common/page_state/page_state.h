@@ -46,6 +46,10 @@ class BLINK_COMMON_EXPORT PageState {
       int64_t document_sequence_number);
 
   PageState();
+  PageState(const PageState&) = default;
+  PageState(PageState&&) = default;
+  PageState& operator=(const PageState&) = default;
+  PageState& operator=(PageState&&) = default;
 
   bool IsValid() const;
   bool Equals(const PageState& page_state) const;
@@ -58,9 +62,6 @@ class BLINK_COMMON_EXPORT PageState {
 
   // Support DCHECK_EQ(a, b), etc.
   bool operator==(const PageState& other) const { return this->Equals(other); }
-  bool operator!=(const PageState& other) const {
-    return !(this->Equals(other));
-  }
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 

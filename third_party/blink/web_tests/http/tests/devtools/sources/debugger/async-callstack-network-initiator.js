@@ -44,13 +44,14 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   SourcesTestRunner.startDebuggerTest(step1);
 
   function step1() {
-    TestRunner.DebuggerAgent.setPauseOnExceptions(SDK.DebuggerModel.PauseOnExceptionsState.DontPauseOnExceptions);
-    TestRunner.DebuggerAgent.setAsyncCallStackDepth(0);
+    TestRunner.DebuggerAgent.invoke_setPauseOnExceptions(
+        {state: SDK.DebuggerModel.PauseOnExceptionsState.DontPauseOnExceptions});
+    TestRunner.DebuggerAgent.invoke_setAsyncCallStackDepth({maxDepth: 0});
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(step2);
   }
 
   async function step2() {
-    await TestRunner.DebuggerAgent.setAsyncCallStackDepth(maxAsyncCallStackDepth);
+    await TestRunner.DebuggerAgent.invoke_setAsyncCallStackDepth({maxDepth: maxAsyncCallStackDepth});
     ConsoleTestRunner.waitUntilNthMessageReceived(numberOfConsoleMessages, expandAndDumpConsoleMessages);
     SourcesTestRunner.resumeExecution();
   }

@@ -69,6 +69,7 @@ interface Blob
     getter size
     getter type
     method arrayBuffer
+    method bytes
     method constructor
     method slice
     method stream
@@ -1005,6 +1006,7 @@ interface IDBIndex
     method get
     method getAll
     method getAllKeys
+    method getAllRecords
     method getKey
     method openCursor
     method openKeyCursor
@@ -1038,6 +1040,7 @@ interface IDBObjectStore
     method get
     method getAll
     method getAllKeys
+    method getAllRecords
     method getKey
     method index
     method openCursor
@@ -1051,6 +1054,12 @@ interface IDBOpenDBRequest : IDBRequest
     method constructor
     setter onblocked
     setter onupgradeneeded
+interface IDBRecord
+    attribute @@toStringTag
+    getter key
+    getter primaryKey
+    getter value
+    method constructor
 interface IDBRequest : EventTarget
     attribute @@toStringTag
     getter error
@@ -1347,6 +1356,13 @@ interface OffscreenCanvasRenderingContext2D
     setter textBaseline
     setter textRendering
     setter wordSpacing
+interface Origin
+    static method from
+    attribute @@toStringTag
+    getter opaque
+    method constructor
+    method isSameOrigin
+    method isSameSite
 interface Path2D
     attribute @@toStringTag
     method addPath
@@ -1428,6 +1444,7 @@ interface PerformanceResourceTiming : PerformanceEntry
     attribute @@toStringTag
     getter connectEnd
     getter connectStart
+    getter contentEncoding
     getter decodedBodySize
     getter deliveryType
     getter domainLookupEnd
@@ -1448,6 +1465,10 @@ interface PerformanceResourceTiming : PerformanceEntry
     getter secureConnectionStart
     getter serverTiming
     getter transferSize
+    getter workerCacheLookupStart
+    getter workerFinalSourceType
+    getter workerMatchedSourceType
+    getter workerRouterEvaluationStart
     getter workerStart
     method constructor
     method toJSON
@@ -1601,6 +1622,7 @@ interface Request
     getter referrer
     getter referrerPolicy
     getter signal
+    getter targetAddressSpace
     getter url
     method arrayBuffer
     method blob
@@ -1837,7 +1859,7 @@ interface TrustedTypePolicy
     method createHTML
     method createScript
     method createScriptURL
-interface TrustedTypePolicyFactory : EventTarget
+interface TrustedTypePolicyFactory
     attribute @@toStringTag
     getter defaultPolicy
     getter emptyHTML
@@ -3265,6 +3287,7 @@ interface WebTransport
     getter datagrams
     getter incomingBidirectionalStreams
     getter incomingUnidirectionalStreams
+    getter protocol
     getter ready
     method close
     method constructor
@@ -3435,6 +3458,17 @@ namespace GPUTextureUsage
     attribute RENDER_ATTACHMENT
     attribute STORAGE_BINDING
     attribute TEXTURE_BINDING
+namespace Temporal
+    attribute @@toStringTag
+    attribute Now
+    method Duration
+    method Instant
+    method PlainDate
+    method PlainDateTime
+    method PlainMonthDay
+    method PlainTime
+    method PlainYearMonth
+    method ZonedDateTime
 namespace console
     attribute @@toStringTag
     method assert

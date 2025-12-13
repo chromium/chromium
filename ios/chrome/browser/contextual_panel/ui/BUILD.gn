@@ -48,6 +48,9 @@ source_set("eg2_tests") {
   sources = [ "contextual_panel_egtest.mm" ]
   deps = [
     "//components/feature_engagement/public",
+    "//components/omnibox/browser:pref_names",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/location_bar/badge/ui:constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

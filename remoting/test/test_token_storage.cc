@@ -135,8 +135,8 @@ std::string TestTokenStorageOnDisk::FetchTokenFromKey(const std::string& key) {
     return std::string();
   }
 
-  std::optional<base::Value::Dict> token_data =
-      base::JSONReader::ReadDict(file_contents);
+  std::optional<base::Value::Dict> token_data = base::JSONReader::ReadDict(
+      file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!token_data) {
     LOG(ERROR) << "File contents were not valid JSON, "
                << "could not retrieve token.";
@@ -175,21 +175,22 @@ bool TestTokenStorageOnDisk::StoreTokenForKey(const std::string& key,
     }
   }
 
-  std::optional<base::Value::Dict> token_data =
-      base::JSONReader::ReadDict(file_contents);
+  std::optional<base::Value::Dict> token_data = base::JSONReader::ReadDict(
+      file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!token_data) {
     LOG(ERROR) << "Invalid token file format, could not store token.";
     return false;
   }
 
-  std::string json_string;
   token_data->SetByDottedPath(user_name_ + '.' + key, value);
-  if (!base::JSONWriter::Write(*token_data, &json_string)) {
+  std::optional<std::string> json_string = base::WriteJson(*token_data);
+  if (!json_string.has_value()) {
     LOG(ERROR) << "Couldn't convert JSON data to string";
     return false;
   }
 
-  if (!base::ImportantFileWriter::WriteFileAtomically(file_path, json_string)) {
+  if (!base::ImportantFileWriter::WriteFileAtomically(file_path,
+                                                      json_string.value())) {
     LOG(ERROR) << "Failed to save token to the file on disk.";
     return false;
   }

@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">buah oren</translation>
 <translation id="1275718070701477396">Dipilih</translation>
 <translation id="1290331692326790741">Isyarat lemah</translation>
+<translation id="1292474106138697109">Paparan Alatan Pembelajaran</translation>
 <translation id="1300115153046603471">APN merupakan jenis lalai dan <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Tukar</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imej</translation>
 <translation id="4300272766492248925">Buka apl</translation>
 <translation id="430786093962686457">sifon</translation>
+<translation id="4309762678330556039">Buat transkripsi secara automatik dan cari audio. Anda boleh membuat rakaman walaupun semasa anda tidak disambungkan kepada Internet.</translation>
 <translation id="4310735698903592804">Hiasan latar terbaharu dikuasakan oleh Google AI</translation>
 <translation id="4320904097188876154">merah jambu neon</translation>
 <translation id="432961742358282111">Klik kanan atau tekan dan tahan untuk mendapatkan takrifan, terjemahan atau penukaran unit. Gunakan kekunci Anak panah ke kiri atau Anak panah ke kanan untuk mengurus ciri ini.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Lagi pilihan</translation>
 <translation id="5600027863942488546">Kekunci <ph name="KEY_NAME" /> diuji</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Alatan Pembelajaran berkongsi skrin anda dengan <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Anda telah dilog keluar</translation>
 <translation id="5620281292257375798">Dalaman sahaja</translation>
 <translation id="5628106863521633649">Bahasa yang tersedia</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Aliran Awan</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Tiada pengimbas tersedia</translation>
-<translation id="6231648282154119906">Fail yang mencurigakan akan diimbas secara automatik oleh Penyemakan Imbas Selamat Google sebagai sebahagian daripada perlindungan dipertingkat yang anda pilih</translation>
 <translation id="6232017090690406397">Bateri</translation>
 <translation id="6234024205316847054">Tunjukkan rangka</translation>
 <translation id="6243280677745499710">Ditetapkan pada masa ini</translation>

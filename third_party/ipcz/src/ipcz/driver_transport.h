@@ -48,8 +48,8 @@ class DriverTransport
     // Indicates that some unrecoverable error has occurred with the transport.
     virtual void OnTransportError() = 0;
 
-    // Indicates that dectivation has been completed by the driver, meaning that
-    // no further methods will be invoked on this Listener.
+    // Indicates that deactivation has been completed by the driver, meaning
+    // that no further methods will be invoked on this Listener.
     virtual void OnTransportDeactivated() {}
 
    protected:

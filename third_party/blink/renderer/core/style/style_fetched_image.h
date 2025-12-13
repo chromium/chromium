@@ -66,7 +66,6 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
   bool IsLoading() const override;
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String&) const override;
-  bool IsFromOriginCleanStyleSheet() const override;
 
   NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,

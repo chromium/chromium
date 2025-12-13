@@ -8,7 +8,12 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_resource.h"
 #include "extensions/common/manifest_handler_helpers.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -40,9 +45,15 @@ ExtensionIconVariant::ExtensionIconVariant(ExtensionIconVariant&& other) =
 ExtensionIconVariant::ExtensionIconVariant(const ExtensionIconVariant& other) =
     default;
 
-bool ExtensionIconVariant::ValidateIconPath(std::string_view path) {
-  if (!manifest_handler_helpers::IsIconMimeTypeValid(
-          base::FilePath::FromUTF8Unsafe(path))) {
+bool ExtensionIconVariant::ValidateIconPath(const ExtensionResource& path) {
+  if (path.empty()) {
+    diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
+        diagnostics::icon_variants::Feature::kIconVariants,
+        diagnostics::icon_variants::Id::kIconVariantPathInvalid));
+    return false;
+  }
+
+  if (!manifest_handler_helpers::IsIconMimeTypeValid(path.relative_path())) {
     diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
         diagnostics::icon_variants::Feature::kIconVariants,
         diagnostics::icon_variants::Id::kIconVariantsInvalidMimeType));
@@ -86,6 +97,7 @@ void ExtensionIconVariant::MaybeAddColorSchemes(const base::Value& value) {
 }
 
 void ExtensionIconVariant::MaybeAddSizeEntry(
+    const Extension& extension,
     const std::pair<const std::string&, const base::Value&>& entry) {
   // Get <number> keys if they exist.
   std::optional<int> size =
@@ -99,15 +111,16 @@ void ExtensionIconVariant::MaybeAddSizeEntry(
     return;
   }
 
-  const auto& file_path = entry.second.GetString();
-  if (!ValidateIconPath(file_path)) {
+  ExtensionResource icon_path = extension.GetResource(entry.second.GetString());
+  if (!ValidateIconPath(icon_path)) {
     return;
   }
 
-  sizes_[size.value()] = file_path;
+  sizes_[size.value()] = std::move(icon_path);
 }
 
 std::unique_ptr<ExtensionIconVariant> ExtensionIconVariant::Parse(
+    const Extension& extension,
     const base::Value& value) {
   if (!value.is_dict()) {
     return nullptr;
@@ -119,9 +132,10 @@ std::unique_ptr<ExtensionIconVariant> ExtensionIconVariant::Parse(
   for (const auto entry : dict) {
     // `any`. Optional string.
     if (entry.first == "any") {
-      if (const auto& file_path = entry.second.GetString();
-          icon_variant->ValidateIconPath(file_path)) {
-        icon_variant->any_ = std::make_optional(file_path);
+      ExtensionResource icon_path =
+          extension.GetResource(entry.second.GetString());
+      if (icon_variant->ValidateIconPath(icon_path)) {
+        icon_variant->any_ = std::make_optional(std::move(icon_path));
       }
       continue;
     }
@@ -133,7 +147,7 @@ std::unique_ptr<ExtensionIconVariant> ExtensionIconVariant::Parse(
     }
 
     // Assume that `entry.first` is an `int` from this point.
-    icon_variant->MaybeAddSizeEntry(entry);
+    icon_variant->MaybeAddSizeEntry(extension, entry);
   }
 
   if (!icon_variant->IsValid()) {

@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_FAVICON_CORE_FAVICON_DATABASE_H_
 #define COMPONENTS_FAVICON_CORE_FAVICON_DATABASE_H_
 
+#include <map>
 #include <optional>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "components/favicon/core/favicon_types.h"
@@ -212,15 +212,15 @@ class FaviconDatabase {
   bool GetIconMappingsForPageURL(const GURL& page_url,
                                  std::vector<IconMapping>* mapping_data);
 
-  // Given `url`, returns the `page_url` page mapped to an icon with
-  // `required_icon_types`, where `page_url` has host = url.host(). The search
-  // prioritizes `PageUrlType::kRegular` over `PageUrlType::kRedirect` on the
-  // assumption that `url` is not a cross-host redirect. This enables icons
-  // to be retrieved when a full URL is not available. For example,
-  // `url` = http://www.google.com would match
+  // Given `url`, returns the `page_url` page and its `PageUrlType` mapped to an
+  // icon with `required_icon_types`, where `page_url` has host = url.host().
+  // The search prioritizes `PageUrlType::kRegular` over
+  // `PageUrlType::kRedirect` on the assumption that `url` is not a cross-host
+  // redirect. This enables icons to be retrieved when a full URL is not
+  // available. For example, `url` = http://www.google.com would match
   // `page_url` = https://www.google.com/search.
   // The returned optional will be empty if no such `page_url` exists.
-  std::optional<GURL> FindBestPageURLForHost(
+  std::optional<std::pair<GURL, PageUrlType>> FindBestPageURLForHost(
       const GURL& url,
       const favicon_base::IconTypeSet& required_icon_types);
 

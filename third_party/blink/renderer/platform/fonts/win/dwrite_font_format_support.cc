@@ -22,7 +22,7 @@ bool DWriteVersionSupportsVariationsImpl() {
     return false;
   }
   int variation_design_position_result =
-      probe_typeface->getVariationDesignPosition(nullptr, 0);
+      probe_typeface->getVariationDesignPosition({});
   return variation_design_position_result > -1;
 }
 

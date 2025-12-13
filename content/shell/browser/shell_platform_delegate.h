@@ -15,7 +15,7 @@
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "components/input/native_web_keyboard_event.h"
@@ -86,7 +86,11 @@ class ShellPlatformDelegate {
   // Called when the main frame is created in the renderer process; forwarded
   // from WebContentsObserver. If navigation creates a new main frame, this may
   // occur more than once.
-  virtual void MainFrameCreated(Shell* shell);
+  // |main_frame| points to the new frame that was created. This is different
+  // than |shell|'s primary main frame, because |main_frame|'s document hasn't
+  // committed at this point and hasn't been swapped with the old |shell|'s
+  // primary main frame.
+  virtual void MainFrameCreated(Shell* shell, RenderFrameHost* main_frame);
 
   // Allows platforms to override the JavascriptDialogManager. By default
   // returns null, which signals that the Shell should use its own instance.

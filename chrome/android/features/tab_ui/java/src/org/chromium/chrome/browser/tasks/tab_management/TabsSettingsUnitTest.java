@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -70,6 +72,7 @@ public class TabsSettingsUnitTest {
     @Mock private PrefService mPrefServiceMock;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
+    @Mock private SettingsIndexData mSearchIndexDataMock;
 
     @Before
     public void setUp() {
@@ -286,5 +289,69 @@ public class TabsSettingsUnitTest {
         View view = Mockito.mock(View.class);
         tabsSettings.onLearnMoreClicked(view);
         verify(mCustomTabLauncher).openUrlInCct(eq(mActivity), eq(TabsSettings.LEARN_MORE_URL));
+    }
+
+    @Test
+    public void testSearchableIndex_isTabGroupSyncAutoOpenConfigurable_True() {
+        doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfileMock);
+        var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
+        indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
+        verify(mSearchIndexDataMock, times(0))
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                TabsSettings.PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH));
+    }
+
+    @Test
+    public void testSearchableIndex_isTabGroupSyncAutoOpenConfigurable_False() {
+        doReturn(false).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfileMock);
+        var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
+        indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                TabsSettings.PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH));
+    }
+
+    @Test
+    public void testSearchableIndex_isShareTitlesAndUrlsEnabled_True() {
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
+        AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(hooksMock);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, true);
+
+        var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
+        indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
+        verify(mSearchIndexDataMock, times(0))
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH));
+        // Learn more is always removed.
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE));
+    }
+
+    @Test
+    public void testSearchableIndex_isShareTitlesAndUrlsEnabled_False() {
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
+        AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(hooksMock);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, false);
+
+        var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
+        indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH));
+        // Learn more is always removed.
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE));
     }
 }

@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "chrome/common/url_constants.h"
 #include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
@@ -99,12 +98,6 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   bool account_managed() const { return account_managed_; }
   virtual bool managed() const;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void set_is_get_all_screens_media_allowed_for_any_origin(bool allowed) {
-    is_get_all_screens_media_allowed_for_any_origin_ = allowed;
-  }
-#endif
-
   virtual void RegisterPrefChange(PrefChangeRegistrar& pref_registrar);
   virtual void UpdateManagedState();
 
@@ -172,10 +165,6 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
       promotion_eligibility_observers_;
 
   bool has_checked_promotion_eligibility_ = false;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  bool is_get_all_screens_media_allowed_for_any_origin_ = false;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::WeakPtrFactory<ManagementUIHandler> weak_factory_{this};
 };

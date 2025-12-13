@@ -239,8 +239,10 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'test_name_file': None,
             'verbose': False,
             'builders': [],
+            'issue': None,
             'patchset': None,
             'manifest_update': False,
+            'clobber_os_version': False,
         }
         options.update(kwargs)
         return optparse.Values(options)
@@ -285,6 +287,68 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             "INFO: Downloaded baselines for 'one/missing.html' (2/4)\n",
             "INFO: Downloaded baselines for 'one/slow-fail.html' (3/4)\n",
             "INFO: Downloaded baselines for 'one/text-fail.html' (4/4)\n",
+            'INFO: Staging 0 baselines with git.\n',
+        ])
+
+    def test_execute_without_git(self):
+        with mock.patch.object(self.tool, 'git', return_value=None):
+            exit_code = self.command.execute(self.command_options(), [],
+                                             self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: All builds finished.\n',
+            'INFO: Fetching test results for 4 suites.\n',
+            'INFO: Rebaselining 5 tests.\n',
+            "INFO: Copied baselines for 'one/flaky-fail.html' (wav) (1/5)\n",
+            "INFO: Copied baselines for 'one/missing.html' (png) (2/5)\n",
+            "INFO: Copied baselines for 'one/slow-fail.html' (txt) (3/5)\n",
+            "INFO: Copied baselines for 'one/text-fail.html' (txt) (4/5)\n",
+            "INFO: Copied baselines for 'two/image-fail.html' (png) (5/5)\n",
+            "INFO: Downloaded baselines for 'one/flaky-fail.html' (1/5)\n",
+            "INFO: Downloaded baselines for 'one/missing.html' (2/5)\n",
+            "INFO: Downloaded baselines for 'one/slow-fail.html' (3/5)\n",
+            "INFO: Downloaded baselines for 'one/text-fail.html' (4/5)\n",
+            "INFO: Downloaded baselines for 'two/image-fail.html' (5/5)\n",
+        ])
+
+    def test_execute_with_explicit_cl(self):
+        exit_code = self.command.execute(
+            self.command_options(issue=9999, patchset=88), [], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/9999/88.\n',
+            'INFO: All builds finished.\n',
+            'INFO: Fetching test results for 4 suites.\n',
+            'INFO: Rebaselining 5 tests.\n',
+            "INFO: Copied baselines for 'one/flaky-fail.html' (wav) (1/5)\n",
+            "INFO: Copied baselines for 'one/missing.html' (png) (2/5)\n",
+            "INFO: Copied baselines for 'one/slow-fail.html' (txt) (3/5)\n",
+            "INFO: Copied baselines for 'one/text-fail.html' (txt) (4/5)\n",
+            "INFO: Copied baselines for 'two/image-fail.html' (png) (5/5)\n",
+            "INFO: Downloaded baselines for 'one/flaky-fail.html' (1/5)\n",
+            "INFO: Downloaded baselines for 'one/missing.html' (2/5)\n",
+            "INFO: Downloaded baselines for 'one/slow-fail.html' (3/5)\n",
+            "INFO: Downloaded baselines for 'one/text-fail.html' (4/5)\n",
+            "INFO: Downloaded baselines for 'two/image-fail.html' (5/5)\n",
+            'INFO: Staging 0 baselines with git.\n',
+        ])
+
+    def test_execute_with_clobber_os_version(self):
+        exit_code = self.command.execute(
+            self.command_options(clobber_os_version=True), [], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: All builds finished.\n',
+            'INFO: Fetching test results for 4 suites.\n',
+            'INFO: Rebaselining 5 tests.\n',
+            # No copy steps.
+            "INFO: Downloaded baselines for 'one/flaky-fail.html' (1/5)\n",
+            "INFO: Downloaded baselines for 'one/missing.html' (2/5)\n",
+            "INFO: Downloaded baselines for 'one/slow-fail.html' (3/5)\n",
+            "INFO: Downloaded baselines for 'one/text-fail.html' (4/5)\n",
+            "INFO: Downloaded baselines for 'two/image-fail.html' (5/5)\n",
             'INFO: Staging 0 baselines with git.\n',
         ])
 
@@ -364,10 +428,13 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     def test_execute_with_no_issue_number_aborts(self):
         # If the user hasn't uploaded a CL, an error message is printed.
-        self.command.git_cl = MockGitCL(self.tool, issue_number='None')
+        self.command.git_cl = MockGitCL(self.tool, issue_number=None)
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 1)
-        self.assertLog(['ERROR: No issue number for current branch.\n'])
+        self.assertLog([
+            'ERROR: No CL detected for current branch.\n',
+            'ERROR: For Cider-G, you must specify `--issue`.\n',
+        ])
 
     def test_execute_with_unstaged_baselines_aborts(self):
         git = self.tool.git()

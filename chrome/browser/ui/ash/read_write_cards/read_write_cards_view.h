@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_READ_WRITE_CARDS_READ_WRITE_CARDS_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ref.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -41,6 +42,10 @@ class ReadWriteCardsView : public views::View {
   const gfx::Rect& context_menu_bounds_for_test() const {
     return context_menu_bounds_;
   }
+
+  // Override this function to specify minimum width of a card. Default
+  // implementation is no minimum width specified.
+  virtual std::optional<int> GetMinWidth() const;
 
  protected:
   // Updates bounds according to the new bounds of context menu.

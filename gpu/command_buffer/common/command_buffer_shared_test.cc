@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file contains the tests for the CommandBufferSharedState class.
 
 #include "gpu/command_buffer/common/command_buffer_shared.h"
@@ -15,6 +10,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -57,7 +53,7 @@ void WriteToState(int32_t* buffer, CommandBufferSharedState* shared_state) {
         static_cast<gpu::error::Error>((i + 3) % (gpu::error::kErrorLast + 1));
     // Ensure that the producer doesn't update the buffer until after the
     // consumer reads from it.
-    EXPECT_EQ(buffer[i], 0);
+    UNSAFE_TODO(EXPECT_EQ(buffer[i], 0));
 
     shared_state->Write(state);
   }
@@ -68,7 +64,7 @@ TEST_F(CommandBufferSharedTest, TestConsistency) {
   buffer.reset(new int32_t[kSize]);
   base::Thread consumer("Reader Thread");
 
-  memset(buffer.get(), 0, kSize * sizeof(int32_t));
+  UNSAFE_TODO(memset(buffer.get(), 0, kSize * sizeof(int32_t)));
 
   consumer.Start();
   consumer.task_runner()->PostTask(
@@ -85,7 +81,7 @@ TEST_F(CommandBufferSharedTest, TestConsistency) {
       continue;
 
     if (state.get_offset >= 1) {
-      buffer[state.get_offset - 1] = 1;
+      UNSAFE_TODO(buffer[state.get_offset - 1]) = 1;
       // Check that the state is consistent
       EXPECT_LE(last_state.token, state.token);
       EXPECT_LE(last_state.generation, state.generation);

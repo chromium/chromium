@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 
 #include <xf86drm.h>
@@ -15,6 +10,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -35,7 +31,7 @@ namespace {
 std::vector<drmModeModeInfo> GetDrmModeVector(drmModeConnector* connector) {
   std::vector<drmModeModeInfo> modes;
   for (int i = 0; i < connector->count_modes; ++i)
-    modes.push_back(connector->modes[i]);
+    modes.push_back(UNSAFE_TODO(connector->modes[i]));
 
   return modes;
 }
@@ -196,7 +192,6 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
 
   SkColorSpacePrimaries output_primaries =
       display_snapshot.color_info().edid_primaries;
-#if BUILDFLAG(IS_CHROMEOS)
   // Do not allow display_snapshot and connector property state to go out of
   // sync. HDR capability is determined in
   // gfx::DisplayUtil::GetColorSpaceFromEdid
@@ -208,7 +203,6 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
     SetColorspaceProperty(gfx::ColorSpace::CreateSRGB());
     ClearHdrOutputMetadata();
   }
-#endif
   for (const auto& crtc_connector_pair : crtc_connector_pairs_) {
     drm_->plane_manager()->SetOutputColorSpace(crtc_connector_pair.crtc_id,
                                                output_primaries);

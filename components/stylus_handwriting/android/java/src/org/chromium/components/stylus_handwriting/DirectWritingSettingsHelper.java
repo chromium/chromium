@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Build;
 import android.provider.Settings;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -24,14 +25,21 @@ public class DirectWritingSettingsHelper {
     private static final int DIRECT_WRITING_DISABLED = 0;
 
     private static @Nullable Boolean sDirectWritingServiceCallbackAvailable;
+    private static @Nullable Boolean sIsEnabledForTesting;
 
     // Samsung keyboard package names.
     private static final String HONEYBOARD_SERVICE_PKG_NAME =
             DirectWritingConstants.SERVICE_PKG_NAME + "/.service.HoneyBoardService";
 
     public static boolean isEnabled(Context context) {
+        if (sIsEnabledForTesting != null) {
+            return sIsEnabledForTesting;
+        }
+
         // Samsung keyboard supports handwriting in Chrome and Webview from Android S onwards.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false;
+        // Samsung switched to Android handwriting APIs from Android U onwards.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return false;
         // Check to see if we are able to instantiate the DirectWritingServiceCallback.
         if (!isDirectWritingServiceCallbackAvailable()) return false;
         return isHoneyboardDefault(context) && isFeatureEnabled(context);
@@ -112,5 +120,10 @@ public class DirectWritingSettingsHelper {
     private static void logDwServiceCallbackFailed(boolean didFail) {
         RecordHistogram.recordBooleanHistogram(
                 "InputMethod.VirtualKeyboard.Handwriting.DWServiceCallbackFailed", didFail);
+    }
+
+    public static void setIsEnabledForTesting(boolean isEnabled) {
+        sIsEnabledForTesting = isEnabled;
+        ResettersForTesting.register(() -> sIsEnabledForTesting = null);
     }
 }

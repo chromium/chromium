@@ -3,6 +3,7 @@
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
 use super::vecs::{MutableZeroVecLike, ZeroVecLike};
+use crate::ule::vartuple::VarTupleULE;
 use crate::ule::*;
 use crate::vecs::{VarZeroSlice, VarZeroVec};
 use crate::zerovec::{ZeroSlice, ZeroVec};
@@ -14,7 +15,6 @@ use alloc::boxed::Box;
 /// implementing your own [`AsULE`] or [`VarULE`] type you may wish to implement
 /// this trait.
 // this lifetime should be a GAT on Container once that is possible
-#[allow(clippy::upper_case_acronyms)] // KV is not an acronym
 pub trait ZeroMapKV<'a> {
     /// The container that can be used with this type: [`ZeroVec`] or [`VarZeroVec`].
     type Container: MutableZeroVecLike<
@@ -86,6 +86,17 @@ where
     type Slice = VarZeroSlice<OptionVarULE<T>>;
     type GetType = OptionVarULE<T>;
     type OwnedType = Box<OptionVarULE<T>>;
+}
+
+impl<'a, A, B> ZeroMapKV<'a> for VarTupleULE<A, B>
+where
+    A: AsULE + 'static,
+    B: VarULE + ?Sized,
+{
+    type Container = VarZeroVec<'a, VarTupleULE<A, B>>;
+    type Slice = VarZeroSlice<VarTupleULE<A, B>>;
+    type GetType = VarTupleULE<A, B>;
+    type OwnedType = Box<VarTupleULE<A, B>>;
 }
 
 impl<'a> ZeroMapKV<'a> for str {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/message_decoder.h"
 
 #include <stdint.h>
@@ -15,6 +10,9 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/internal.pb.h"
@@ -33,7 +31,7 @@ static void AppendMessage(const EventMessage& msg, std::string* buffer) {
 }
 
 // Construct and prepare data in the |output_stream|.
-static void PrepareData(uint8_t** buffer, int* size) {
+static base::HeapArray<uint8_t> PrepareData(int* size) {
   // Contains all encoded messages.
   std::string encoded_data;
 
@@ -47,16 +45,15 @@ static void PrepareData(uint8_t** buffer, int* size) {
   }
 
   *size = encoded_data.length();
-  *buffer = new uint8_t[*size];
-  memcpy(*buffer, encoded_data.c_str(), *size);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(*size);
+  UNSAFE_TODO(memcpy(buffer.data(), encoded_data.c_str(), *size));
+  return buffer;
 }
 
-void SimulateReadSequence(const int read_sequence[], int sequence_size) {
+void SimulateReadSequence(base::span<const int> read_sequence) {
   // Prepare encoded data for testing.
   int size;
-  uint8_t* test_data;
-  PrepareData(&test_data, &size);
-  std::unique_ptr<uint8_t[]> memory_deleter(test_data);
+  auto test_data = PrepareData(&size);
 
   // Then simulate using MessageDecoder to decode variable
   // size of encoded data.
@@ -71,11 +68,11 @@ void SimulateReadSequence(const int read_sequence[], int sequence_size) {
     SCOPED_TRACE("Input position: " + base::NumberToString(pos));
 
     // First generate the amount to feed the decoder.
-    int read = std::min(size - pos, read_sequence[pos % sequence_size]);
+    int read = std::min(size - pos, read_sequence[pos % read_sequence.size()]);
 
     // And then prepare an IOBuffer for feeding it.
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(read);
-    memcpy(buffer->data(), test_data + pos, read);
+    UNSAFE_TODO(memcpy(buffer->data(), test_data.data() + pos, read));
     decoder.AddData(buffer, read);
     while (true) {
       std::unique_ptr<CompoundBuffer> message(decoder.GetNextMessage());
@@ -111,17 +108,17 @@ void SimulateReadSequence(const int read_sequence[], int sequence_size) {
 
 TEST(MessageDecoderTest, SmallReads) {
   const int kReads[] = {1, 2, 3, 1};
-  SimulateReadSequence(kReads, std::size(kReads));
+  SimulateReadSequence(kReads);
 }
 
 TEST(MessageDecoderTest, LargeReads) {
   const int kReads[] = {50, 50, 5};
-  SimulateReadSequence(kReads, std::size(kReads));
+  SimulateReadSequence(kReads);
 }
 
 TEST(MessageDecoderTest, EmptyReads) {
   const int kReads[] = {4, 0, 50, 0};
-  SimulateReadSequence(kReads, std::size(kReads));
+  SimulateReadSequence(kReads);
 }
 
 }  // namespace remoting::protocol

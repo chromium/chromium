@@ -77,8 +77,9 @@ const CGFloat kFaviconIconSize = 16;
 
   _faviconLoader->FaviconForPageUrl(
       pageURL, kFaviconIconSize, kFaviconIconSize,
-      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
-        if (attributes.faviconImage && !attributes.usesDefaultImage) {
+      /*fallback_to_google_server=*/false,
+      ^(FaviconAttributes* attributes, bool cached) {
+        if (attributes.faviconImage) {
           completion(attributes.faviconImage);
         }
       });

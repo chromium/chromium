@@ -7,7 +7,7 @@
     <img alt="" src="./images/privacy_guide/history_sync_graphic_v2.svg">
   </picture>
   <h2 class="settings-fragment-header-label">
-    $i18n{privacyGuideHistorySyncCardHeader}
+    [[historySyncCardHeader_]]
   </h2>
 </div>
 <div class="fragment-content">
@@ -15,7 +15,7 @@
     <settings-toggle-button id="historyToggle"
         pref="{{historySyncVirtualPref_}}"
         on-change="onToggleClick_"
-        label="$i18n{privacyGuideHistorySyncSettingLabel}">
+        label="[[historySyncToggleLabel_]]">
     </settings-toggle-button>
   </div>
   <div class="settings-columned-section">
@@ -27,7 +27,7 @@
         <li>
           <cr-icon icon="settings20:history" aria-hidden="true"></cr-icon>
           <div class="secondary">
-            $i18n{privacyGuideHistorySyncFeatureDescription1}
+            [[historySyncFeatureDescription1_]]
           </div>
         </li>
         <li>

@@ -248,16 +248,17 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
     @Override
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
-        boolean superResult = super.onTouchEvent(event);
+        if (touchIntersectsAnyClickableSpans(event)) {
+            return super.onTouchEvent(event);
+        }
 
         if (event.getAction() != MotionEvent.ACTION_UP
-                && AccessibilityState.isTouchExplorationEnabled()
-                && !touchIntersectsAnyClickableSpans(event)) {
+                && AccessibilityState.isTouchExplorationEnabled()) {
             handleAccessibilityClick();
             return true;
         }
 
-        return superResult;
+        return false;
     }
 
     /**

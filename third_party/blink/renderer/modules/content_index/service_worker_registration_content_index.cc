@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/content_index/service_worker_registration_content_index.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/content_index/content_index.h"
 
 namespace blink {

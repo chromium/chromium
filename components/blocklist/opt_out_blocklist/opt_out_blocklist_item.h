@@ -7,12 +7,10 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <queue>
 
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 
 namespace blocklist {

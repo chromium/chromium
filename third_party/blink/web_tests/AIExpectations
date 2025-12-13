@@ -20,3 +20,18 @@ crbug.com/407988949 external/wpt/ai/rewriter/rewriter-iframe.tentative.https.htm
 crbug.com/407988949 external/wpt/ai/summarizer/summarizer-iframe.tentative.https.html [ Failure Pass ]
 crbug.com/407988949 external/wpt/ai/writer/writer-iframe.tentative.https.html [ Failure Pass ]
 crbug.com/407988949 wpt_internal/ai/language-model-api-iframe.tentative.https.html [ Failure Pass ]
+
+# Temporarily disable this test because it is currently flaky (timing out or failing with ChromeML GPU Validation error).
+crbug.com/446717936 external/wpt/ai/proofreader/proofreader-proofread.tentative.https.window.html [ Skip ]
+
+# These tests fail audio input availability preconditions on Mac x64 bots.
+# Disables tests on all platforms, since disabling these tests on Mac x64 only is not supported.
+crbug.com/460555196 external/wpt/ai/language-model/language-model-availability-available-multimodal.tentative.https.window.html [ Failure Pass ]
+crbug.com/460555196 external/wpt/ai/language-model/language-model-create-multimodal.tentative.https.window.html [ Failure Pass ]
+
+# These tests frequently time out on Mac platforms.
+# Disables tests on all platforms, since disabling these tests on Mac only is not supported.
+crbug.com/460555196 external/wpt/ai/language-model/language-model-prompt-multimodal.tentative.https.window.html [ Timeout Failure Pass ]
+crbug.com/460799715 external/wpt/ai/language-model/language-model-prompt.tentative.https.window.html [ Timeout ]
+
+

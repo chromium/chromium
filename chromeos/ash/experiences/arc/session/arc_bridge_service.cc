@@ -30,6 +30,7 @@
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/keymaster.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/keymint.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/kiosk.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/media_session.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/metrics.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/midis.mojom.h"

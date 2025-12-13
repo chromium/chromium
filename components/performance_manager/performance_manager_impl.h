@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -71,7 +70,8 @@ class PerformanceManagerImpl : public PerformanceManager {
       const blink::LocalFrameToken& frame_token,
       content::BrowsingInstanceId browsing_instance_id,
       content::SiteInstanceGroupId site_instance_group_id,
-      bool is_current);
+      bool is_current,
+      bool is_active);
   static std::unique_ptr<PageNodeImpl> CreatePageNode(
       base::WeakPtr<content::WebContents> web_contents,
       const std::string& browser_context_id,

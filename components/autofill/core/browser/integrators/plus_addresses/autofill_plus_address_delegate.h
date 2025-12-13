@@ -23,7 +23,8 @@ class Origin;
 
 namespace autofill {
 
-class FormData;
+class AutofillField;
+class PlusAddressSuggestionGenerator;
 struct Suggestion;
 
 // The interface for communication from //components/autofill to
@@ -90,21 +91,13 @@ class AutofillPlusAddressDelegate {
       const url::Origin& origin,
       base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
 
-  // Returns the suggestions to show for the given list of
-  // `plus_addresses`, `origin` and the `focused_field_id` in `focused_form`.
-  // If `trigger_source` indicates that this is a manual fallback (e.g. the
-  // suggestions were triggered from the context menu on Desktop), then
-  // information about the focused form and field is ignored. Otherwise, only
-  // suggestions whose prefix matches the value in the focused field are shown.
+  // Returns the suggestions to show for the given list of `plus_addresses`.
+  // Note that this method does not do any filtering and always returns
+  // suggestions for all plus addresses in `plus_addresses`.
+  // Note that this method shouldn't be called from sources other than
+  // `PlusAddressSuggestionGenerator`.
   virtual std::vector<Suggestion> GetSuggestionsFromPlusAddresses(
-      const std::vector<std::string>& plus_addresses,
-      const url::Origin& origin,
-      bool is_off_the_record,
-      const FormData& focused_form,
-      const FormFieldData& focused_field,
-      const base::flat_map<FieldGlobalId, FieldTypeGroup>& form_field_types,
-      const PasswordFormClassification& focused_form_classification,
-      AutofillSuggestionTriggerSource trigger_source) = 0;
+      const std::vector<std::string>& plus_addresses) = 0;
 
   // Returns the "Manage plus addresses..." suggestion which redirects the user
   // to the plus address management page.
@@ -135,8 +128,6 @@ class AutofillPlusAddressDelegate {
   // Starts a session for logging a form submission UKM specific to plus
   // addresses. `suggestion_type` is the type of the first shown plus address
   // suggestion.
-  // TODO(crbug.com/362445807): Investigate whether this can be moved into AED
-  // as well and be combined with OnShowedInlineSuggestion.
   virtual void OnPlusAddressSuggestionShown(
       AutofillManager& manager,
       FormGlobalId form,
@@ -151,50 +142,6 @@ class AutofillPlusAddressDelegate {
   // Returns the number of the plus addresses created by the user for the
   // current profile.
   virtual size_t GetPlusAddressesCount() = 0;
-
-  using UpdateSuggestionsCallback =
-      base::OnceCallback<void(std::vector<Suggestion>,
-                              AutofillSuggestionTriggerSource)>;
-
-  // Calls `update_suggestions_callback` with updated suggestions. The updated
-  // suggestions may either contain a "loading new proposed plus address"
-  // suggestion, or the new proposed plus address if one is cached.
-  virtual void OnClickedRefreshInlineSuggestion(
-      const url::Origin& last_committed_primary_main_frame_origin,
-      base::span<const Suggestion> current_suggestions,
-      size_t current_suggestion_index,
-      UpdateSuggestionsCallback update_suggestions_callback) = 0;
-
-  // Checks whether any of the suggestions still require a suggested plus
-  // address and, if so, trigger a network request for one. On completion of
-  // that request, it runs `update_suggestions_callback`.
-  virtual void OnShowedInlineSuggestion(
-      const url::Origin& primary_main_frame_origin,
-      base::span<const Suggestion> current_suggestions,
-      UpdateSuggestionsCallback update_suggestions_callback) = 0;
-
-  using HideSuggestionsCallback =
-      base::OnceCallback<void(SuggestionHidingReason)>;
-  using PlusAddressErrorDialogType = AutofillClient::PlusAddressErrorDialogType;
-  using ShowErrorDialogCallback =
-      base::OnceCallback<void(PlusAddressErrorDialogType, base::OnceClosure)>;
-  // A callback to inform the user that there is an affiliated domain (first
-  // parameter) with an existing plus address (second parameter).
-  using ShowAffiliationErrorDialogCallback =
-      base::OnceCallback<void(std::u16string, std::u16string)>;
-  // Attempts to create the plus address in
-  // `current_suggestions[current_suggestion_index]` for
-  // `primary_main_frame_origin`.
-  virtual void OnAcceptedInlineSuggestion(
-      const url::Origin& primary_main_frame_origin,
-      base::span<const Suggestion> current_suggestions,
-      size_t current_suggestion_index,
-      UpdateSuggestionsCallback update_suggestions_callback,
-      HideSuggestionsCallback hide_suggestions_callback,
-      PlusAddressCallback fill_field_callback,
-      ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
-      ShowErrorDialogCallback show_error_dialog,
-      base::OnceClosure reshow_suggestions) = 0;
 
   // Returns survey specific data for plus address HaTS surveys. Subsequent
   // calls can return different data.

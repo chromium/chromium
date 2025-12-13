@@ -169,10 +169,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   // The chain of URLs seen during navigation redirects.  This should only
   // contain values if the mode is `RedirectMode::kNavigate`.
-  const WTF::Vector<KURL>& NavigationRedirectChain() const {
+  const Vector<KURL>& NavigationRedirectChain() const {
     return navigation_redirect_chain_;
   }
-  void SetNavigationRedirectChain(const WTF::Vector<KURL>& value) {
+  void SetNavigationRedirectChain(const Vector<KURL>& value) {
     navigation_redirect_chain_ = value;
   }
 
@@ -420,7 +420,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   // This is also called as a side-effect of `SetFetchIntegrity()`.
   void SetExpectedPublicKeys(const IntegrityMetadataSet&);
-  const WTF::Vector<Vector<uint8_t>>& GetExpectedPublicKeys() const {
+  const Vector<Vector<uint8_t>>& GetExpectedPublicKeys() const {
     return expected_public_keys_;
   }
 
@@ -708,7 +708,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   scoped_refptr<const SecurityOrigin> top_frame_origin_;
 
   scoped_refptr<const SecurityOrigin> requestor_origin_;
-  WTF::Vector<KURL> navigation_redirect_chain_;
+  Vector<KURL> navigation_redirect_chain_;
   scoped_refptr<const SecurityOrigin> isolated_world_origin_;
 
   AtomicString http_method_;
@@ -747,8 +747,9 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool prefetch_maybe_for_top_level_navigation_ : 1;
   // Indicate the state of CompressionDictionaryTransport feature. When it is
   // true, `use-as-dictionary` response HTTP header may be processed.
-  // TODO(crbug.com/1413922): Remove this flag when we launch
-  // CompressionDictionaryTransport feature.
+  // TODO(crbug.com/40255884): Remove this flag when the
+  // CompressionDictionaryTransport feature can no longer be disabled by
+  // feature flag or enterprise policy.
   bool shared_dictionary_writer_enabled_ : 1;
   bool requires_upgrade_for_loader_ : 1;
   mojom::blink::FetchCacheMode cache_mode_;
@@ -765,7 +766,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // Exposed as Request.integrity in Service Workers
   String fetch_integrity_;
   // Public key expectations extracted from `integrity_`
-  WTF::Vector<Vector<uint8_t>> expected_public_keys_;
+  Vector<Vector<uint8_t>> expected_public_keys_;
   String referrer_string_;
   network::mojom::ReferrerPolicy referrer_policy_;
   network::mojom::CorsPreflightPolicy cors_preflight_policy_;

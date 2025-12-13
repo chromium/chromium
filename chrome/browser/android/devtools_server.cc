@@ -40,7 +40,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/DevToolsServer_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using content::DevToolsAgentHost;
 using content::RenderViewHost;
 using content::WebContents;
@@ -60,7 +60,7 @@ const char kDevToolsChannelNameFormat[] = "%s_devtools_remote";
 
 const char kTetheringSocketName[] = "chrome_devtools_tethering_%d_%d";
 
-const int kBackLog = 10;
+const int kBackLog = 4096;
 
 bool AuthorizeSocketAccessWithDebugPermission(
     const net::UnixDomainServerSocket::Credentials& credentials) {
@@ -194,3 +194,5 @@ static void JNI_DevToolsServer_SetRemoteDebuggingEnabled(
     devtools_server->Stop();
   }
 }
+
+DEFINE_JNI(DevToolsServer)

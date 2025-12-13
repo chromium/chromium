@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_input_watcher.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
@@ -22,8 +21,6 @@
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #error "Should not be included when extensions are disabled"
 #endif
-
-namespace omnibox_api = extensions::api::omnibox;
 
 class UnscopedExtensionProvider;
 class Profile;

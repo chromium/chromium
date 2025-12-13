@@ -76,127 +76,195 @@ class AXPlatformNodeCocoaTest
     root_data.role = ax::mojom::Role::kGenericContainer;
 
     // Set up the AXTree with separate nodes for each string.
-    root_data.child_ids = {2, 3, 4, 5, 6, 7, 8, 9};
+    root_data.child_ids = {2, 4, 6, 8, 10, 12, 14, 16};
+
+    const int spelling_marker_type =
+        static_cast<int>(ax::mojom::MarkerType::kSpelling);
+    const int custom_highlight_marker_type =
+        static_cast<int>(ax::mojom::MarkerType::kHighlight);
+    const int highlight_type_none =
+        static_cast<int>(ax::mojom::HighlightType::kNone);
+    const int highlight_type_highlight =
+        static_cast<int>(ax::mojom::HighlightType::kHighlight);
+    const int highlight_type_spelling =
+        static_cast<int>(ax::mojom::HighlightType::kSpellingError);
 
     // Node for "This ".
     ui::AXNodeData node1_data;
     node1_data.id = 2;
     node1_data.role = ax::mojom::Role::kStaticText;
-    node1_data.SetName("This ");
+    std::string node1_text_content = "This ";
+    node1_data.SetName(node1_text_content);
+    // Add a custom highlight to "This".
+    node1_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
+                                   {custom_highlight_marker_type});
+    node1_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
+                                   {0});
+    node1_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                   {4});
+    node1_data.AddIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes,
+                                   {highlight_type_highlight});
+    node1_data.child_ids = {3};
 
-    // Node for "is ".
     ui::AXNodeData node2_data;
     node2_data.id = 3;
-    node2_data.role = ax::mojom::Role::kStaticText;
-    std::string node2_text_content = "iz ";
-    node2_data.SetName(node2_text_content);
-    node2_data.AddIntListAttribute(
-        ax::mojom::IntListAttribute::kMarkerTypes,
-        {static_cast<int>(ax::mojom::MarkerType::kSpelling)});
-    node2_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
-                                   {0});
-    node2_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
-                                   {2});
+    node2_data.role = ax::mojom::Role::kInlineTextBox;
+    node2_data.SetName(node1_text_content);
 
-    // Node for "a ".
+    // Node for "is ".
     ui::AXNodeData node3_data;
     node3_data.id = 4;
     node3_data.role = ax::mojom::Role::kStaticText;
-    std::string node3_text_content = "a ";
+    std::string node3_text_content = "iz ";
     node3_data.SetName(node3_text_content);
-    node3_data.AddTextStyle(ax::mojom::TextStyle::kBold);
-    node3_data.AddTextStyle(ax::mojom::TextStyle::kItalic);
+    node3_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
+                                   {spelling_marker_type});
+    node3_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
+                                   {0});
+    node3_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                   {2});
+    node3_data.AddIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes,
+                                   {highlight_type_none});
+    node3_data.child_ids = {5};
 
-    // Node for "teast of wills ".
     ui::AXNodeData node4_data;
     node4_data.id = 5;
-    node4_data.role = ax::mojom::Role::kStaticText;
-    std::string node4_text_content = "teast of wills ";
-    node4_data.SetName(node4_text_content);
+    node4_data.role = ax::mojom::Role::kInlineTextBox;
+    node4_data.SetName(node3_text_content);
 
-    node4_data.AddIntListAttribute(
-        ax::mojom::IntListAttribute::kMarkerTypes,
-        {static_cast<int>(ax::mojom::MarkerType::kSpelling),
-         static_cast<int>(ax::mojom::MarkerType::kSpelling)});
-    node4_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
-                                   {0, 9});
-    node4_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
-                                   {5, 14});
-
-    // Node for "that ".
+    // Node for "a ".
     ui::AXNodeData node5_data;
     node5_data.id = 6;
     node5_data.role = ax::mojom::Role::kStaticText;
-    std::string node5_text_content = "that ";
+    std::string node5_text_content = "a ";
     node5_data.SetName(node5_text_content);
-    SkColor foreground_color =
-        SkColorSetARGB(255, 255, 0, 0);  // Red with full opacity
-    node5_data.AddIntAttribute(ax::mojom::IntAttribute::kColor,
-                               static_cast<int>(foreground_color));
+    node5_data.AddTextStyle(ax::mojom::TextStyle::kBold);
+    node5_data.AddTextStyle(ax::mojom::TextStyle::kItalic);
+    node5_data.child_ids = {7};
 
-    // Node for "will ".
     ui::AXNodeData node6_data;
     node6_data.id = 7;
-    node6_data.role = ax::mojom::Role::kStaticText;
-    std::string node6_text_content = "will ";
-    node6_data.SetName(node6_text_content);
-    SkColor background_color =
-        SkColorSetARGB(0, 0, 0, 0);  // Black with full opacity
-    node6_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                               static_cast<int>(background_color));
+    node6_data.role = ax::mojom::Role::kInlineTextBox;
+    node6_data.SetName(node5_text_content);
 
-    // Node for "not ".
+    // Node for "teast of wills ".
     ui::AXNodeData node7_data;
     node7_data.id = 8;
     node7_data.role = ax::mojom::Role::kStaticText;
-    std::string node7_text_content = "not ";
+    std::string node7_text_content = "teast og wills ";
     node7_data.SetName(node7_text_content);
-    node7_data.AddIntAttribute(
-        ax::mojom::IntAttribute::kTextUnderlineStyle,
-        static_cast<int32_t>(ax::mojom::TextDecorationStyle::kDotted));
+    // Add two spelling markers and a custom highlight spelling marker to the
+    // node text.
+    node7_data.AddIntListAttribute(
+        ax::mojom::IntListAttribute::kMarkerTypes,
+        {spelling_marker_type, custom_highlight_marker_type,
+         spelling_marker_type});
+    node7_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
+                                   {0, 6, 9});
+    node7_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                   {5, 8, 14});
+    node7_data.AddIntListAttribute(
+        ax::mojom::IntListAttribute::kHighlightTypes,
+        {highlight_type_none, highlight_type_spelling, highlight_type_none});
+    node7_data.child_ids = {9};
 
-    // Node for "be denied."
     ui::AXNodeData node8_data;
     node8_data.id = 9;
-    node8_data.role = ax::mojom::Role::kStaticText;
-    std::string node8_text_content = "be denied.";
-    node8_data.SetName(node8_text_content);
-    node8_data.AddIntAttribute(
+    node8_data.role = ax::mojom::Role::kInlineTextBox;
+    node8_data.SetName(node7_text_content);
+
+    // Node for "that ".
+    ui::AXNodeData node9_data;
+    node9_data.id = 10;
+    node9_data.role = ax::mojom::Role::kStaticText;
+    std::string node9_text_content = "that ";
+    node9_data.SetName(node9_text_content);
+    SkColor foreground_color =
+        SkColorSetARGB(255, 255, 0, 0);  // Red with full opacity
+    node9_data.AddIntAttribute(ax::mojom::IntAttribute::kColor,
+                               static_cast<int>(foreground_color));
+    node9_data.child_ids = {11};
+
+    ui::AXNodeData node10_data;
+    node10_data.id = 11;
+    node10_data.role = ax::mojom::Role::kInlineTextBox;
+    node10_data.SetName(node9_text_content);
+
+    // Node for "will ".
+    ui::AXNodeData node11_data;
+    node11_data.id = 12;
+    node11_data.role = ax::mojom::Role::kStaticText;
+    std::string node11_text_content = "will ";
+    node11_data.SetName(node11_text_content);
+    SkColor background_color =
+        SkColorSetARGB(0, 0, 0, 0);  // Black with full opacity
+    node11_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
+                                static_cast<int>(background_color));
+    node11_data.child_ids = {13};
+
+    ui::AXNodeData node12_data;
+    node12_data.id = 13;
+    node12_data.role = ax::mojom::Role::kInlineTextBox;
+    node12_data.SetName(node11_text_content);
+
+    // Node for "not ".
+    ui::AXNodeData node13_data;
+    node13_data.id = 14;
+    node13_data.role = ax::mojom::Role::kStaticText;
+    std::string node13_text_content = "not ";
+    node13_data.SetName(node13_text_content);
+    node13_data.AddIntAttribute(
+        ax::mojom::IntAttribute::kTextUnderlineStyle,
+        static_cast<int32_t>(ax::mojom::TextDecorationStyle::kDotted));
+    node13_data.child_ids = {15};
+
+    ui::AXNodeData node14_data;
+    node14_data.id = 15;
+    node14_data.role = ax::mojom::Role::kInlineTextBox;
+    node14_data.SetName(node13_text_content);
+
+    // Node for "be denied."
+    ui::AXNodeData node15_data;
+    node15_data.id = 16;
+    node15_data.role = ax::mojom::Role::kStaticText;
+    std::string node15_text_content = "be denied.";
+    node15_data.SetName(node15_text_content);
+    node15_data.AddIntAttribute(
         ax::mojom::IntAttribute::kTextStrikethroughStyle,
         static_cast<int>(ax::mojom::TextDecorationStyle::kWavy));
     const float kFontSize = 1001.5;
-    node8_data.AddFloatAttribute(ax::mojom::FloatAttribute::kFontSize,
-                                 kFontSize);
+    node15_data.AddFloatAttribute(ax::mojom::FloatAttribute::kFontSize,
+                                  kFontSize);
+    node15_data.child_ids = {17};
+
+    ui::AXNodeData node16_data;
+    node16_data.id = 17;
+    node16_data.role = ax::mojom::Role::kInlineTextBox;
+    node16_data.SetName(node15_text_content);
 
     // Build the tree.
     ui::AXTreeUpdate update;
     update.root_id = root_data.id;
-    update.nodes.push_back(root_data);
-    update.nodes.push_back(node1_data);
-    update.nodes.push_back(node2_data);
-    update.nodes.push_back(node3_data);
-    update.nodes.push_back(node4_data);
-    update.nodes.push_back(node5_data);
-    update.nodes.push_back(node6_data);
-    update.nodes.push_back(node7_data);
-    update.nodes.push_back(node8_data);
-
+    update.nodes = {root_data,   node1_data,  node2_data,  node3_data,
+                    node4_data,  node5_data,  node6_data,  node7_data,
+                    node8_data,  node9_data,  node10_data, node11_data,
+                    node12_data, node13_data, node14_data, node15_data,
+                    node16_data};
     Init(update);
 
     ui::AXTree& tree = *GetTree();
 
     // Create an AXRange that spans all the nodes.
     ui::AXNode* start_node =
-        tree.GetFromId(node1_data.id);  // Node with "This "
+        tree.GetFromId(node2_data.id);  // Node with "This "
     ui::AXNode* end_node =
-        tree.GetFromId(node8_data.id);  // Node with "be denied."
+        tree.GetFromId(node16_data.id);  // Node with "be denied."
 
     // Create start and end positions.
     auto start_position = ui::AXNodePosition::CreateTextPosition(
         *start_node, /* offset = */ 0, ax::mojom::TextAffinity::kDownstream);
-
     auto end_position = ui::AXNodePosition::CreateTextPosition(
-        *end_node, /* offset = */ node8_text_content.length(),
+        *end_node, /* offset = */ node15_text_content.length(),
         ax::mojom::TextAffinity::kDownstream);
 
     // Create the AXRange.
@@ -210,9 +278,9 @@ class AXPlatformNodeCocoaTest
       // that doesn't include text from all the nodes. This allows us to test
       // how -addTextAnnotationsIn:to: handles an extra leaf node in the middle
       // of the string and extra nodes past the end.
-      if (skip_nodes && (leaf_text_range.anchor()->anchor_id() == 3 ||
-                         leaf_text_range.anchor()->anchor_id() == 8 ||
-                         leaf_text_range.anchor()->anchor_id() == 9)) {
+      if (skip_nodes && (leaf_text_range.anchor()->anchor_id() == 5 ||
+                         leaf_text_range.anchor()->anchor_id() == 15 ||
+                         leaf_text_range.anchor()->anchor_id() == 17)) {
         continue;
       }
       full_text_utf16 += leaf_text_range.GetText();
@@ -228,41 +296,48 @@ class AXPlatformNodeCocoaTest
     [platform_node addTextAnnotationsIn:&ax_range to:attributed_string];
 
     // Set up the ranges that match the attributes we've set on the nodes.
+    NSRange custom_highlight_range = [attributed_string.string
+        rangeOfString:[NSString
+                          stringWithUTF8String:node1_text_content.c_str()]];
+    // The string includes a space that's not part of the custom highlight.
+    custom_highlight_range.length -= 1;
+
     NSRange mispelled_range1 = NSMakeRange(0, NSNotFound);
     if (!skip_nodes) {
       mispelled_range1 = [attributed_string.string
           rangeOfString:[NSString
-                            stringWithUTF8String:node2_text_content.c_str()]];
+                            stringWithUTF8String:node3_text_content.c_str()]];
       // The string includes a space that's not part of the misspelling.
       mispelled_range1.length -= 1;
     }
 
-    NSRange node4_range = [attributed_string.string
+    NSRange node7_range = [attributed_string.string
         rangeOfString:[NSString
-                          stringWithUTF8String:node4_text_content.c_str()]];
-    NSRange mispelled_range2 = NSMakeRange(node4_range.location, 5);
-    NSRange mispelled_range3 = NSMakeRange(node4_range.location + 9, 5);
-
+                          stringWithUTF8String:node7_text_content.c_str()]];
+    NSRange mispelled_range2 = NSMakeRange(node7_range.location, 5);
+    NSRange mispelled_range3 = NSMakeRange(node7_range.location + 6, 2);
+    NSRange mispelled_range4 = NSMakeRange(node7_range.location + 9, 5);
     NSRange bold_and_italic_range = [attributed_string.string
         rangeOfString:[NSString
-                          stringWithUTF8String:node3_text_content.c_str()]];
+                          stringWithUTF8String:node5_text_content.c_str()]];
 
     NSRange foreground_color_range = [attributed_string.string
         rangeOfString:[NSString
-                          stringWithUTF8String:node5_text_content.c_str()]];
+                          stringWithUTF8String:node9_text_content.c_str()]];
     NSRange background_color_range = [attributed_string.string
         rangeOfString:[NSString
-                          stringWithUTF8String:node6_text_content.c_str()]];
+                          stringWithUTF8String:node11_text_content.c_str()]];
 
     NSRange underline_range = [attributed_string.string
         rangeOfString:[NSString
-                          stringWithUTF8String:node7_text_content.c_str()]];
+                          stringWithUTF8String:node13_text_content.c_str()]];
     NSRange strikethrough_range = [attributed_string.string
         rangeOfString:[NSString
-                          stringWithUTF8String:node8_text_content.c_str()]];
+                          stringWithUTF8String:node15_text_content.c_str()]];
 
     // Iterate over the entire attributed string and check attributes.
     __block int misspelled_attribute_count = 0;
+    __block int custom_highlight_attribute_count = 0;
     __block int bold_count = 0;
     __block int italic_count = 0;
     __block int foreground_color_count = 0;
@@ -314,9 +389,15 @@ class AXPlatformNodeCocoaTest
                                 floatValue];
                           } else if (NSEqualRanges(range, mispelled_range1) ||
                                      NSEqualRanges(range, mispelled_range2) ||
-                                     NSEqualRanges(range, mispelled_range3)) {
+                                     NSEqualRanges(range, mispelled_range3) ||
+                                     NSEqualRanges(range, mispelled_range4)) {
                             if (attributes[@"AXMarkedMisspelled"]) {
                               misspelled_attribute_count++;
+                            }
+                          } else if (NSEqualRanges(range,
+                                                   custom_highlight_range)) {
+                            if (attributes[@"AXHighlight"]) {
+                              custom_highlight_attribute_count++;
                             }
                           } else {
                             // Ensure other parts don't have attributes.
@@ -327,7 +408,8 @@ class AXPlatformNodeCocoaTest
                           }
                         }];
 
-    int expected_misspelled = 3;
+    int expected_misspelled = 4;
+    int expected_custom_highlight = 1;
     int expected_underline = 1;
     int expected_strikethrough = 1;
     float expected_font_size = kFontSize;
@@ -338,6 +420,7 @@ class AXPlatformNodeCocoaTest
       expected_font_size = 0;
     }
     EXPECT_EQ(misspelled_attribute_count, expected_misspelled);
+    EXPECT_EQ(custom_highlight_attribute_count, expected_custom_highlight);
     EXPECT_EQ(bold_count, 1);
     EXPECT_EQ(italic_count, 1);
     EXPECT_EQ(foreground_color_count, 1);
@@ -482,6 +565,159 @@ TEST_P(AXPlatformNodeCocoaTest, AddTextAnnotations) {
 // exist in the attributed string it's passed.
 TEST_P(AXPlatformNodeCocoaTest, AddTextAnnotationsWithSkippedNodes) {
   TestAddTextAnnotationsTo(/* skip_nodes = */ true);
+}
+
+TEST_P(AXPlatformNodeCocoaTest,
+       AddTextAnnotations_InlineTextBox_SubrangeWithinMisspelling) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  AXNodeData st;
+  st.id = 2;
+  st.role = ax::mojom::Role::kStaticText;
+  const std::string kWord = "worlld";
+  st.SetName(kWord);
+  st.child_ids = {3};
+  st.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
+                         {static_cast<int>(ax::mojom::MarkerType::kSpelling)});
+  st.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts, {0});
+  st.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds, {6});
+  st.AddIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes,
+                         {static_cast<int>(ax::mojom::HighlightType::kNone)});
+
+  AXNodeData itb;
+  itb.id = 3;
+  itb.role = ax::mojom::Role::kInlineTextBox;
+  itb.SetName(kWord);
+
+  ui::AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes = {root, st, itb};
+  Init(update);
+
+  // Subrange inside a misspelled word should still be annotated as
+  // misspelled. AXRange over offsets [3,4).
+  AXNode* itb_node = GetTree()->GetFromId(itb.id);
+  auto start = ui::AXNodePosition::CreateTextPosition(
+      *itb_node, /*offset=*/3, ax::mojom::TextAffinity::kDownstream);
+  auto end = ui::AXNodePosition::CreateTextPosition(
+      *itb_node, /*offset=*/4, ax::mojom::TextAffinity::kDownstream);
+  AXRange ax_range(start->Clone(), end->Clone());
+
+  std::u16string text_utf16;
+  for (const ui::AXPlatformNodeDelegate::AXRange& leaf_text_range : ax_range) {
+    text_utf16 += leaf_text_range.GetText();
+  }
+
+  NSMutableAttributedString* attributed = [[NSMutableAttributedString alloc]
+      initWithString:base::SysUTF16ToNSString(text_utf16)];
+
+  AXPlatformNodeCocoa* platform_node =
+      [[AXPlatformNodeCocoa alloc] initWithNode:nil];
+  [platform_node addTextAnnotationsIn:&ax_range to:attributed];
+
+  // Expect the whole (single-char) range to be marked misspelled.
+  __block int misspelled_spans = 0;
+  [attributed
+      enumerateAttributesInRange:NSMakeRange(0, attributed.length)
+                         options:0
+                      usingBlock:^(
+                          NSDictionary<NSAttributedStringKey, id>* attrs,
+                          NSRange range, BOOL*) {
+                        if (NSEqualRanges(range,
+                                          NSMakeRange(0, attributed.length)) &&
+                            attrs[@"AXMarkedMisspelled"]) {
+                          misspelled_spans++;
+                        }
+                      }];
+  EXPECT_EQ(attributed.length, 1U);
+  EXPECT_EQ(misspelled_spans, 1);
+}
+
+TEST_P(AXPlatformNodeCocoaTest,
+       AddTextAnnotations_InlineTextBox_FullTextOnlyMisspelledWord) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  const std::string kText = "hello worlld goodbye";
+  const std::string kMisspelled = "worlld";
+  const size_t misspelled_start = 6;
+  const size_t misspelled_end = misspelled_start + kMisspelled.size();
+
+  AXNodeData st;
+  st.id = 2;
+  st.role = ax::mojom::Role::kStaticText;
+  st.SetName(kText);
+  st.child_ids = {3};
+  st.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
+                         {static_cast<int>(ax::mojom::MarkerType::kSpelling)});
+  st.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
+                         {static_cast<int>(misspelled_start)});
+  st.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                         {static_cast<int>(misspelled_end)});
+  st.AddIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes,
+                         {static_cast<int>(ax::mojom::HighlightType::kNone)});
+
+  AXNodeData itb;
+  itb.id = 3;
+  itb.role = ax::mojom::Role::kInlineTextBox;
+  itb.SetName(kText);
+
+  ui::AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes = {root, st, itb};
+  Init(update);
+
+  // When annotating the full string, only the misspelled word is marked.
+  // AXRange over the entire text.
+  AXNode* itb_node = GetTree()->GetFromId(itb.id);
+  auto start = ui::AXNodePosition::CreateTextPosition(
+      *itb_node, /*offset=*/0, ax::mojom::TextAffinity::kDownstream);
+  auto end = ui::AXNodePosition::CreateTextPosition(
+      *itb_node, /*offset=*/static_cast<int>(kText.size()),
+      ax::mojom::TextAffinity::kDownstream);
+  AXRange ax_range(start->Clone(), end->Clone());
+
+  std::u16string text_utf16;
+  for (const ui::AXPlatformNodeDelegate::AXRange& leaf_text_range : ax_range) {
+    text_utf16 += leaf_text_range.GetText();
+  }
+
+  NSMutableAttributedString* attributed = [[NSMutableAttributedString alloc]
+      initWithString:base::SysUTF16ToNSString(text_utf16)];
+
+  AXPlatformNodeCocoa* platform_node =
+      [[AXPlatformNodeCocoa alloc] initWithNode:nil];
+  [platform_node addTextAnnotationsIn:&ax_range to:attributed];
+
+  NSRange misspelled_ns = [attributed.string
+      rangeOfString:[NSString stringWithUTF8String:kMisspelled.c_str()]];
+  ASSERT_NE(misspelled_ns.location, (NSUInteger)NSNotFound);
+  ASSERT_EQ(misspelled_ns.length, kMisspelled.size());
+
+  __block int misspelled_spans = 0;
+  __block int other_marked = 0;
+  [attributed
+      enumerateAttributesInRange:NSMakeRange(0, attributed.length)
+                         options:0
+                      usingBlock:^(
+                          NSDictionary<NSAttributedStringKey, id>* attrs,
+                          NSRange range, BOOL*) {
+                        if (attrs[@"AXMarkedMisspelled"]) {
+                          if (NSEqualRanges(range, misspelled_ns)) {
+                            misspelled_spans++;
+                          } else {
+                            other_marked++;
+                          }
+                        }
+                      }];
+
+  EXPECT_EQ(misspelled_spans, 1);
+  EXPECT_EQ(other_marked, 0);
 }
 
 // Tests the actions contained in the old API action list.
@@ -740,8 +976,8 @@ TEST_P(AXPlatformNodeCocoaTest,
   TestUIElements([table accessibilityRowHeaderUIElements], { 3, 4, 7, 8 });
 }
 
-// accessibilityRowHeaderUIElements on a cell of a table with two header rows in
-// a row.
+// accessibilityRowHeaderUIElements on a cell of a table with two header rows
+// in a row.
 TEST_P(AXPlatformNodeCocoaTest,
        AccessibilityRowHeaderUIElementsOnMultipleHeaderRowsTableCell) {
   ui::TestAXTreeUpdate update(std::string(R"HTML(
@@ -906,7 +1142,8 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilitySortDirectionOnCell) {
             NSAccessibilitySortDirectionUnknown);
 }
 
-// A row header whose AXNodeData lacks a sort order has an "unknown" sort order.
+// A row header whose AXNodeData lacks a sort order has an "unknown" sort
+// order.
 TEST_P(AXPlatformNodeCocoaTest,
        AccessibilitySortDirectionUnspecifiedOnRowHeader) {
   AXNodeData root = AXNodeData();
@@ -1009,8 +1246,8 @@ TEST_P(AXPlatformNodeCocoaTest,
             NSAccessibilitySortDirectionDescending);
 }
 
-// A row header whose AXNodeData contains an "other" sort order has an "unknown"
-// sort order.
+// A row header whose AXNodeData contains an "other" sort order has an
+// "unknown" sort order.
 TEST_P(AXPlatformNodeCocoaTest, AccessibilitySortDirectionOtherOnRowHeader) {
   AXNodeData root = AXNodeData();
   root.id = 1;

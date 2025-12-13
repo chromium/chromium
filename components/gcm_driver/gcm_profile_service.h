@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/gcm_driver/gcm_buildflags.h"
@@ -34,6 +34,10 @@ class IdentityManager;
 namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
+}
+
+namespace os_crypt_async {
+class OSCryptAsync;
 }
 
 namespace gcm {
@@ -68,7 +72,8 @@ class GCMProfileService : public KeyedService {
       std::unique_ptr<GCMClientFactory> gcm_client_factory,
       const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
       const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
-      scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
+      scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
+      os_crypt_async::OSCryptAsync* os_crypt_async);
 #endif
 
   GCMProfileService(const GCMProfileService&) = delete;

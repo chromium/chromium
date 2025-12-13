@@ -27,6 +27,8 @@ void CreateSimpleAlertInfoBar(
     const std::u16string& message,
     bool auto_expire = true,
     bool should_animate = true,
-    bool closeable = true);
+    bool closeable = true,
+    infobars::InfoBarDelegate::InfobarPriority infobar_priority =
+        infobars::InfoBarDelegate::InfobarPriority::kDefault);
 
 #endif  // CHROME_BROWSER_INFOBARS_SIMPLE_ALERT_INFOBAR_CREATOR_H_

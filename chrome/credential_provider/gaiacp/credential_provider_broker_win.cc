@@ -41,7 +41,7 @@ base::win::ScopedHandle OpenHidDevice(const std::wstring& device_path) {
       CreateFile(device_path.c_str(), GENERIC_WRITE | GENERIC_READ,
                  FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING,
                  FILE_FLAG_OVERLAPPED, nullptr));
-  if (!file.IsValid() && GetLastError() == ERROR_ACCESS_DENIED) {
+  if (!file.is_valid() && GetLastError() == ERROR_ACCESS_DENIED) {
     file.Set(CreateFile(device_path.c_str(), GENERIC_READ, FILE_SHARE_READ,
                         nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr));
   }
@@ -129,8 +129,9 @@ void CredentialProviderBrokerWin::OpenDevice(
 
       base::win::ScopedHandle device_handle =
           OpenHidDevice(device_path.value());
-      if (!device_handle.IsValid())
+      if (!device_handle.is_valid()) {
         break;
+      }
 
       std::optional<uint16_t> usage_page = GetUsagePage(device_handle.Get());
 

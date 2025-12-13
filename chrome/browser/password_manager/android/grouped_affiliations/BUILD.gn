@@ -16,9 +16,9 @@ static_library("public") {
   deps = [
     ":jni_headers",
     "//base",
-    "//components/password_manager/core/browser:browser",
+    "//components/password_manager/core/browser",
     "//content/public/browser",
-    "//ui/android:android",
+    "//ui/android",
   ]
 }
 
@@ -74,7 +74,7 @@ source_set("test_utils") {
   deps = [
     ":public",
     "//base/test:test_support",
-    "//ui/android:android",
+    "//ui/android",
   ]
 }
 
@@ -84,7 +84,7 @@ source_set("unit_tests") {
   deps = [
     ":public",
     "//base/test:test_support",
-    "//ui/android:android",
+    "//ui/android",
   ]
 }
 
@@ -104,9 +104,10 @@ robolectric_library("junit") {
     "//components/browser_ui/bottomsheet/android:factory_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/bottomsheet/android/internal:java",
     "//components/browser_ui/theme/android:java_resources",
     "//third_party/jni_zero:jni_zero_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
@@ -126,12 +127,13 @@ android_library("javatests") {
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:java_resources",
     "//components/browser_ui/bottomsheet/android:manager_java",
     "//components/browser_ui/bottomsheet/android/test:java",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",

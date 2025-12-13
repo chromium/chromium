@@ -4,6 +4,4 @@
 
 #import "components/safe_browsing/ios/browser/web_ui/features.h"
 
-BASE_FEATURE(kSafeBrowsingTrustedURL,
-             "SafeBrowsingTrustedURL",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSafeBrowsingTrustedURL, base::FEATURE_DISABLED_BY_DEFAULT);

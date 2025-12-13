@@ -20,6 +20,7 @@ static_library("report_controller_initializer") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/settings",
     "//chrome/common",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/report",
     "//chromeos/ash/components/report:fresnel_service_proto",
     "//chromeos/ash/components/report:utils",

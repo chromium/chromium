@@ -57,13 +57,13 @@ class WithCollections : public GarbageCollected<WithCollections> {
   std::array<Member<Base>, 4> array_;
 
   // Bad WTF collections:
-  WTF::HashSet<Member<Base>> wtf_hash_set_;
-  WTF::Deque<WeakMember<Base>> wtf_deque_;
-  WTF::Vector<Member<Base>> wtf_vector_;
-  WTF::LinkedHashSet<Member<Base>*> wtf_linked_hash_set_;
-  WTF::HashCountedSet<WeakMember<Base>&> wtf_hash_counted_set_;
-  WTF::HashMap<Member<Base>, bool> wtf_hash_map_key_;
-  WTF::HashMap<double, const Member<Base>> wtf_hash_map_value_;
+  HashSet<Member<Base>> wtf_hash_set_;
+  Deque<WeakMember<Base>> wtf_deque_;
+  Vector<Member<Base>> wtf_vector_;
+  LinkedHashSet<Member<Base>*> wtf_linked_hash_set_;
+  HashCountedSet<WeakMember<Base>&> wtf_hash_counted_set_;
+  HashMap<Member<Base>, bool> wtf_hash_map_key_;
+  HashMap<double, const Member<Base>> wtf_hash_map_value_;
 
   // Good collections:
   blink::HeapHashSet<Member<Base>> heap_hash_set_;
@@ -112,13 +112,13 @@ void DisallowedUseOfCollections() {
   (void)vector_pair;
 
   // Bad WTF collections:
-  WTF::HashSet<Member<Base>> wtf_hash_set;
-  WTF::Deque<WeakMember<Base>> wtf_deque;
-  WTF::Vector<Member<Base>> wtf_vector;
-  WTF::LinkedHashSet<Member<Base>*> wtf_linked_hash_set;
-  WTF::HashCountedSet<WeakMember<Base>&> wtf_hash_counted_set;
-  WTF::HashMap<Member<Base>, bool> wtf_hash_map_key;
-  WTF::HashMap<double, const Member<Base>> wtf_hash_map_value;
+  HashSet<Member<Base>> wtf_hash_set;
+  Deque<WeakMember<Base>> wtf_deque;
+  Vector<Member<Base>> wtf_vector;
+  LinkedHashSet<Member<Base>*> wtf_linked_hash_set;
+  HashCountedSet<WeakMember<Base>&> wtf_hash_counted_set;
+  HashMap<Member<Base>, bool> wtf_hash_map_key;
+  HashMap<double, const Member<Base>> wtf_hash_map_value;
 
   // Good collections:
   blink::HeapHashSet<Member<Base>> heap_hash_set;

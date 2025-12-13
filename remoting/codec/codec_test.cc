@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/codec/codec_test.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -68,20 +64,23 @@ class VideoDecoderTester {
   VideoDecoderTester(VideoDecoder* decoder, const DesktopSize& screen_size)
       : strict_(false),
         decoder_(decoder),
-        frame_(new BasicDesktopFrame(screen_size)),
+        frame_(std::make_unique<BasicDesktopFrame>(screen_size,
+                                                   webrtc::FOURCC_ARGB)),
         expected_frame_(nullptr) {}
 
   VideoDecoderTester(const VideoDecoderTester&) = delete;
   VideoDecoderTester& operator=(const VideoDecoderTester&) = delete;
 
   void Reset() {
-    frame_ = std::make_unique<BasicDesktopFrame>(frame_->size());
+    frame_ = std::make_unique<BasicDesktopFrame>(frame_->size(),
+                                                 webrtc::FOURCC_ARGB);
     expected_region_.Clear();
   }
 
   void ResetRenderedData() {
-    memset(frame_->data(), 0,
-           frame_->size().width() * frame_->size().height() * kBytesPerPixel);
+    UNSAFE_TODO(memset(
+        frame_->data(), 0,
+        frame_->size().width() * frame_->size().height() * kBytesPerPixel));
   }
 
   void ReceivedPacket(std::unique_ptr<VideoPacket> packet) {
@@ -113,10 +112,10 @@ class VideoDecoderTester {
       const uint8_t* decoded = frame_->GetFrameDataAtPos(i.rect().top_left());
       const int row_size = kBytesPerPixel * i.rect().width();
       for (int y = 0; y < i.rect().height(); ++y) {
-        EXPECT_EQ(0, memcmp(original, decoded, row_size))
+        UNSAFE_TODO(EXPECT_EQ(0, memcmp(original, decoded, row_size)))
             << "Row " << y << " is different";
-        original += expected_frame_->stride();
-        decoded += frame_->stride();
+        UNSAFE_TODO(original += expected_frame_->stride());
+        UNSAFE_TODO(decoded += frame_->stride());
       }
     }
   }
@@ -135,14 +134,15 @@ class VideoDecoderTester {
       const uint8_t* actual = frame_->GetFrameDataAtPos(i.rect().top_left());
       for (int y = 0; y < i.rect().height(); ++y) {
         for (int x = 0; x < i.rect().width(); ++x) {
-          double error = CalculateError(expected + x * kBytesPerPixel,
-                                        actual + x * kBytesPerPixel);
+          double error =
+              CalculateError(UNSAFE_TODO(expected + x * kBytesPerPixel),
+                             UNSAFE_TODO(actual + x * kBytesPerPixel));
           max_error = std::max(max_error, error);
           sum_error += error;
           ++error_num;
         }
-        expected += expected_frame_->stride();
-        actual += frame_->stride();
+        UNSAFE_TODO(expected += expected_frame_->stride());
+        UNSAFE_TODO(actual += frame_->stride());
       }
     }
     EXPECT_LE(max_error, max_error_limit);
@@ -155,13 +155,13 @@ class VideoDecoderTester {
   double CalculateError(const uint8_t* original, const uint8_t* decoded) {
     double error_sum_squares = 0.0;
     for (int i = 0; i < 3; i++) {
-      double error =
-          static_cast<double>(*original++) - static_cast<double>(*decoded++);
+      double error = static_cast<double>(*UNSAFE_TODO(original++)) -
+                     static_cast<double>(*UNSAFE_TODO(decoded++));
       error /= 255.0;
       error_sum_squares += error * error;
     }
-    original++;
-    decoded++;
+    UNSAFE_TODO(original++);
+    UNSAFE_TODO(decoded++);
     return sqrt(error_sum_squares / 3.0);
   }
 
@@ -199,12 +199,12 @@ class VideoEncoderTester {
 };
 
 std::unique_ptr<DesktopFrame> PrepareFrame(const DesktopSize& size) {
-  std::unique_ptr<DesktopFrame> frame(new BasicDesktopFrame(size));
+  auto frame = std::make_unique<BasicDesktopFrame>(size, webrtc::FOURCC_ARGB);
 
   srand(0);
   int memory_size = size.width() * size.height() * kBytesPerPixel;
   for (int i = 0; i < memory_size; ++i) {
-    frame->data()[i] = rand() % 256;
+    UNSAFE_TODO(frame->data()[i]) = rand() % 256;
   }
 
   return frame;
@@ -275,13 +275,14 @@ static void TestEncodeDecodeRects(VideoEncoder* encoder,
   srand(0);
   for (DesktopRegion::Iterator i(region); !i.IsAtEnd(); i.Advance()) {
     const int row_size = DesktopFrame::kBytesPerPixel * i.rect().width();
-    uint8_t* memory = frame->data() + frame->stride() * i.rect().top() +
-                      DesktopFrame::kBytesPerPixel * i.rect().left();
+    uint8_t* memory =
+        UNSAFE_TODO(frame->data() + frame->stride() * i.rect().top() +
+                    DesktopFrame::kBytesPerPixel * i.rect().left());
     for (int y = 0; y < i.rect().height(); ++y) {
       for (int x = 0; x < row_size; ++x) {
-        memory[x] = rand() % 256;
+        UNSAFE_TODO(memory[x]) = rand() % 256;
       }
-      memory += frame->stride();
+      UNSAFE_TODO(memory += frame->stride());
     }
   }
 
@@ -309,13 +310,13 @@ void TestVideoEncoderDecoder(VideoEncoder* encoder,
 
 static void FillWithGradient(DesktopFrame* frame) {
   for (int j = 0; j < frame->size().height(); ++j) {
-    uint8_t* p = frame->data() + j * frame->stride();
+    uint8_t* p = UNSAFE_TODO(frame->data() + j * frame->stride());
     for (int i = 0; i < frame->size().width(); ++i) {
-      *p++ = (255.0 * i) / frame->size().width();
-      *p++ = (164.0 * j) / frame->size().height();
-      *p++ =
+      *UNSAFE_TODO(p++) = (255.0 * i) / frame->size().width();
+      *UNSAFE_TODO(p++) = (164.0 * j) / frame->size().height();
+      *UNSAFE_TODO(p++) =
           (82.0 * (i + j)) / (frame->size().width() + frame->size().height());
-      *p++ = 0;
+      *UNSAFE_TODO(p++) = 0;
     }
   }
 }
@@ -325,7 +326,8 @@ void TestVideoEncoderDecoderGradient(VideoEncoder* encoder,
                                      const DesktopSize& screen_size,
                                      double max_error_limit,
                                      double mean_error_limit) {
-  std::unique_ptr<BasicDesktopFrame> frame(new BasicDesktopFrame(screen_size));
+  auto frame =
+      std::make_unique<BasicDesktopFrame>(screen_size, webrtc::FOURCC_ARGB);
   FillWithGradient(frame.get());
   frame->mutable_updated_region()->SetRect(DesktopRect::MakeSize(screen_size));
 

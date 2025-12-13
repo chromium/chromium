@@ -16,7 +16,7 @@
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 namespace extensions {
-class ExtensionMenuDelegate;
+class ExtensionMenuModel;
 }
 #endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
@@ -54,7 +54,7 @@ class ContextMenuHelper
   content::ContextMenuParams context_menu_params_;
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  std::unique_ptr<extensions::ExtensionMenuDelegate> extension_delegate_;
+  std::unique_ptr<extensions::ExtensionMenuModel> extension_menu_model_;
 #endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

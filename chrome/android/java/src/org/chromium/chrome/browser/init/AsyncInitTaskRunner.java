@@ -15,6 +15,9 @@ import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
@@ -22,15 +25,14 @@ import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import java.util.concurrent.Executor;
 
 /**
- * Runs asynchronous startup task that need to be run before the native side is
- * started. Currently it runs two tasks:
- * - Native library loading
- * - Fetching the variations seed on first run
+ * Runs asynchronous startup task that need to be run before the native side is started. Currently
+ * it runs two tasks: - Native library loading - Fetching the variations seed on first run
  */
+@NullMarked
 public abstract class AsyncInitTaskRunner {
     private boolean mAllocateChildConnection;
 
-    private FetchSeedTask mFetchSeedTask;
+    private @MonotonicNonNull FetchSeedTask mFetchSeedTask;
 
     // Barrier counter to determine when all tasks have completed and are
     // successful. -1 indicates "terminal state".
@@ -139,7 +141,7 @@ public abstract class AsyncInitTaskRunner {
      *
      * @return null if loading succeeds, or ProcessInitException if loading fails.
      */
-    private ProcessInitException loadNativeLibrary() {
+    private @Nullable ProcessInitException loadNativeLibrary() {
         try {
             LibraryLoader.getInstance().getMediator().ensureInitializedInMainProcess();
             LibraryLoader.getInstance().ensureInitialized();
@@ -149,7 +151,7 @@ public abstract class AsyncInitTaskRunner {
         return null;
     }
 
-    private void tasksPossiblyComplete(Exception failureCause) {
+    private void tasksPossiblyComplete(@Nullable Exception failureCause) {
         ThreadUtils.assertOnUiThread();
 
         if (mNumPendingSuccesses < 0) {

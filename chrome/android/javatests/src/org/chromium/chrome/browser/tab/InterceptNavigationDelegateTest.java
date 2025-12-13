@@ -23,6 +23,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
@@ -88,7 +89,7 @@ public class InterceptNavigationDelegateTest {
 
     class TestExternalNavigationHandler extends ExternalNavigationHandler {
         public TestExternalNavigationHandler() {
-            super(new ExternalNavigationDelegateImpl(mActivity.getActivityTab()));
+            super(new ExternalNavigationDelegateImpl(mActivityTestRule.getActivityTab()));
         }
 
         @Override
@@ -111,7 +112,7 @@ public class InterceptNavigationDelegateTest {
     public void setUp() throws Exception {
         mInitialPage = mActivityTestRule.startOnBlankPage();
         mActivity = mInitialPage.getActivity();
-        final Tab tab = mInitialPage.loadedTabElement.get();
+        final Tab tab = mInitialPage.loadedTabElement.value();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InterceptNavigationDelegateClientImpl client =
@@ -179,7 +180,7 @@ public class InterceptNavigationDelegateTest {
                         mTestServer.getURL(NAVIGATION_FROM_USER_GESTURE_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
-        TouchCommon.singleClickView(mActivity.getActivityTab().getView());
+        TouchCommon.singleClickView(mActivityTestRule.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
         Assert.assertTrue(mNavParamHistory.get(1).hasUserGesture());
     }
@@ -192,7 +193,7 @@ public class InterceptNavigationDelegateTest {
                         mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
-        TouchCommon.singleClickView(mActivity.getActivityTab().getView());
+        TouchCommon.singleClickView(mActivityTestRule.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
 
         Assert.assertTrue(mNavParamHistory.get(1).hasUserGesture());
@@ -206,7 +207,7 @@ public class InterceptNavigationDelegateTest {
                         mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_SHORT_TIMEOUT_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
-        TouchCommon.singleClickView(mActivity.getActivityTab().getView());
+        TouchCommon.singleClickView(mActivityTestRule.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
 
         Assert.assertTrue(mNavParamHistory.get(1).hasUserGesture());
@@ -220,7 +221,7 @@ public class InterceptNavigationDelegateTest {
                         mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_LONG_TIMEOUT_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
-        TouchCommon.singleClickView(mActivity.getActivityTab().getView());
+        TouchCommon.singleClickView(mActivityTestRule.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, LONG_MAX_TIME_TO_WAIT_IN_MS);
         Assert.assertFalse(mNavParamHistory.get(1).hasUserGesture());
     }
@@ -233,7 +234,7 @@ public class InterceptNavigationDelegateTest {
                         mTestServer.getURL(NAVIGATION_FROM_IMAGE_ONLOAD_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
-        TouchCommon.singleClickView(mActivity.getActivityTab().getView());
+        TouchCommon.singleClickView(mActivityTestRule.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
 
         Assert.assertTrue(mNavParamHistory.get(1).hasUserGesture());
@@ -247,7 +248,7 @@ public class InterceptNavigationDelegateTest {
                         mTestServer.getURL(NAVIGATION_FROM_USER_GESTURE_IFRAME_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
-        TouchCommon.singleClickView(mActivity.getActivityTab().getView());
+        TouchCommon.singleClickView(mActivityTestRule.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
 
         mSubframeExternalProtocolCalled.waitForOnly();
@@ -256,6 +257,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.PRERENDER2)
+    @DisabledTest(message = "flaky, see crbug.com/454050513")
     public void testExternalAppPrerenderingNavigation() {
         // Ensure that a prerendering main frame doesn't call into the delegate.
         mLoadedTestPage =
@@ -266,7 +268,7 @@ public class InterceptNavigationDelegateTest {
         // The click will reload the page with a user gesture. The delegate
         // should still only hear about the navigation in the primary main
         // frame, not the prerendering one.
-        TouchCommon.singleClickView(mActivity.getActivityTab().getView());
+        TouchCommon.singleClickView(mActivityTestRule.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
         Assert.assertEquals(2, mNavParamHistory.size());
         Assert.assertEquals(2, mExternalNavParamHistory.size());

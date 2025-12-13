@@ -1,9 +1,40 @@
 Tests emulation of the user agent.
+
+Checking page navigator.userAgent
+...overriding userAgent to "Test UA"
 navigator.userAgent == Test UA
-User-Agent: Test UA
+Header User-Agent: Test UA
+...overriding userAgent again to "Another Test UA"
+navigator.userAgent == Another Test UA
+Header User-Agent: Another Test UA
+
+Checking page navigator.language
+...overriding acceptLanguage to "ko, en, zh-CN, zh-HK, en-US, en-GB"
 navigator.language == ko
+navigator.languages == ko,en,zh-CN,zh-HK,en-US,en-GB
+...overriding acceptLanguage to "en, zh-CN, zh-HK, en-US, en-GB"
+navigator.language == en
+navigator.languages == en,zh-CN,zh-HK,en-US,en-GB
+
+Checking worker navigator.language
+...overriding acceptLanguage to "ko, en, zh-CN, zh-HK, en-US, en-GB"
 workerNavigator.language == ko
-Accept-Language: ko, en;q=0.9, zh-CN;q=0.8, zh-HK;q=0.7, en-US;q=0.6, en-GB;q=0.5
-accept-language: ko
+workerNavigator.languages == ko,en,zh-CN,zh-HK,en-US,en-GB
+...overriding acceptLanguage to "en, zh-CN, zh-HK, en-US, en-GB"
+workerNavigator.language == en
+workerNavigator.languages == en,zh-CN,zh-HK,en-US,en-GB
+
+Checking Accept-Language header
+...overriding acceptLanguage to "ko, en, zh-CN, zh-HK, en-US, en-GB"
+Header Accept-Language: en, zh-CN;q=0.9, zh-HK;q=0.8, en-US;q=0.7, en-GB;q=0.6
+Fetch with custom header accept-language: zh-CN
+...overriding acceptLanguage to "en, zh-CN, zh-HK, en-US, en-GB"
+Header Accept-Language: en, zh-CN;q=0.9, zh-HK;q=0.8, en-US;q=0.7, en-GB;q=0.6
+Fetch with custom header accept-language: zh-CN
+
+Checking page navigator.platform
+...setting platform to "new_platform"
 navigator.platform == new_platform
+...setting platform again to "another_platform"
+navigator.platform == another_platform
 

@@ -32,7 +32,7 @@ class DocumentPictureInPictureNavigationThrottle : public NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
-  ThrottleCheckResult ClosePiPWindowAndCancelNavigation();
+  ThrottleCheckResult CancelNavigationAndMayClosePiPWindow();
 };
 
 }  // namespace content

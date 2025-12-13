@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_BATCH_UPLOAD_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_BATCH_UPLOAD_DIALOG_VIEW_H_
 
+#include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
@@ -17,6 +19,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;
+class BrowserWindowInterface;
 
 class BatchUploadDialogViewBrowserTest;
 
@@ -102,6 +105,9 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   // destructor.
   void CloseWithReason(BatchUploadDialogCloseReason reason);
 
+  // Invoked when the host Browser is closed.
+  void BrowserDidClose(BrowserWindowInterface* browser);
+
   // content::WebContentsDelegate:
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
@@ -121,6 +127,9 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   BatchUploadService::EntryPoint entry_point_;
 
   raw_ptr<views::WebView> web_view_;
+
+  // Subscription to the Browser close event of the host Browser.
+  base::CallbackListSubscription browser_close_subscription_;
 
   // Count of items per data type. To be used for metrics purposes.
   std::map<syncer::DataType, int> data_item_count_map_;

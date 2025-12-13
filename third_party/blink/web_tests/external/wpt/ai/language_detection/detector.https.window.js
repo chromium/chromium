@@ -8,22 +8,22 @@
 
 'use strict';
 
+// TODO(crbug.com/390246212): Support model state controls for WPTs.
 promise_test(async t => {
-  // Creating the language detector without user activation rejects with
-  // NotAllowedError.
-  const createPromise = LanguageDetector.create();
-  await promise_rejects_dom(t, 'NotAllowedError', createPromise);
+  // Create requires user activation when availability is 'downloadable'.
+  assert_implements_optional(await LanguageDetector.availability() == 'downloadable');
+  assert_false(navigator.userActivation.isActive);
+  await promise_rejects_dom(t, 'NotAllowedError', LanguageDetector.create());
+  await test_driver.bless('LanguageDetector.create', LanguageDetector.create);
+  // User activation is not consumed by the create call.
+  assert_true(navigator.userActivation.isActive);
+  consumeTransientUserActivation();
 
-  // Creating the translator with user activation succeeds.
-  await createLanguageDetector();
-
-  // Creating it should have switched it to available.
-  const availability = await LanguageDetector.availability();
-  assert_equals(availability, 'available');
-
-  // Now that it is available, we should no longer need user activation.
+  // Create does not require transient user activation.
+  assert_equals(await LanguageDetector.availability(), 'available');
+  assert_false(navigator.userActivation.isActive);
   await LanguageDetector.create();
-}, 'LanguageDetector.create() requires user activation when availability is "downloadable.');
+}, 'Create requires sticky user activation when availability is "downloadable"');
 
 promise_test(async t => {
   const detector = await createLanguageDetector();
@@ -133,7 +133,7 @@ promise_test(async t => {
   const detectPromise = detector.detect(text);
 
   if (inputUsage >= detector.inputQuota) {
-    await promise_rejects_dom(t, 'QuotaExceededError', detectPromise);
+    await promise_rejects_quotaexceedederror(t, detectPromise, requested => requested !== null, detector.inputQuota);
   } else {
     await detectPromise;
   }

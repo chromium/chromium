@@ -1,8 +1,5 @@
 dpapad@chromium.org
 
-# Happiness Tracking Surveys (HaTS)
-per-file hats_browser_proxy.ts=fjacky@google.com
-
 # Metrics browser proxy
 per-file metrics_browser_proxy.ts=rainhard@chromium.org,msramek@chromium.org
 

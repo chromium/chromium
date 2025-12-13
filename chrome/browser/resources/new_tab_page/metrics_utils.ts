@@ -87,17 +87,6 @@ export function recordEnumeration(
   chrome.metricsPrivate.recordEnumerationValue(metricName, value, enumSize);
 }
 
-export function recordValue(
-    metric: chrome.metricsPrivate.MetricType, value: number) {
-  // In rare cases, chrome.metricsPrivate is not available.
-  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
-  if (!chrome.metricsPrivate) {
-    return;
-  }
-
-  chrome.metricsPrivate.recordValue(metric, value);
-}
-
 export function recordBoolean(metricName: string, value: boolean) {
   // In rare cases, chrome.metricsPrivate is not available.
   // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
@@ -127,4 +116,52 @@ export function recordSmallCount(metricName: string, value: number) {
   }
 
   chrome.metricsPrivate.recordSmallCount(metricName, value);
+}
+
+export function recordLogValue(
+    metricName: string,
+    min: number,
+    max: number,
+    buckets: number,
+    value: number,
+) {
+  // In rare cases, chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+
+  chrome.metricsPrivate.recordValue(
+      {
+        metricName,
+        type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+        min,
+        max,
+        buckets,
+      },
+      value);
+}
+
+export function recordLinearValue(
+    metricName: string,
+    min: number,
+    max: number,
+    buckets: number,
+    value: number,
+) {
+  // In rare cases, chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+
+  chrome.metricsPrivate.recordValue(
+      {
+        metricName,
+        type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
+        min,
+        max,
+        buckets,
+      },
+      value);
 }

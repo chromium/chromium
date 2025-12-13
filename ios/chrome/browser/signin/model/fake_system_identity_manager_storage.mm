@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager_storage.h"
 
+#import <iterator>
+#import <ranges>
+
 #import "base/check.h"
+#import "base/containers/span.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_details.h"
 
 @implementation FakeSystemIdentityManagerStorage {
   // Stores the key in insertion order.
-  __strong NSMutableArray<NSString*>* _orderedKeys;
+  std::vector<GaiaId> _orderedKeys;
 
   // Stores details about the identities, keyed by gaia id.
-  __strong NSMutableDictionary<NSString*, FakeSystemIdentityDetails*>* _details;
+  base::flat_map<GaiaId, FakeSystemIdentityDetails*> _details;
 
   // Counter incremented when the structure is mutated. Used to detect that
   // the storage has been mutated during iteration by NSFastEnumeration.
@@ -27,44 +27,46 @@
 
 - (instancetype)init {
   if ((self = [super init])) {
-    _orderedKeys = [[NSMutableArray alloc] init];
-    _details = [[NSMutableDictionary alloc] init];
     _mutations = 0;
   }
   return self;
 }
 
-- (BOOL)containsIdentityWithGaiaID:(NSString*)gaiaID {
+- (BOOL)containsIdentityWithGaiaID:(const GaiaId&)gaiaID {
   return [self detailsForGaiaID:gaiaID] != nil;
 }
 
-- (FakeSystemIdentityDetails*)detailsForGaiaID:(NSString*)gaiaID {
-  return [_details objectForKey:gaiaID];
+- (FakeSystemIdentityDetails*)detailsForGaiaID:(const GaiaId&)gaiaID {
+  return _details[gaiaID];
 }
 
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
-  NSString* key = fakeIdentity.gaiaID;
-  if ([_details objectForKey:key]) {
+  GaiaId key = fakeIdentity.gaiaId;
+  if (_details[key]) {
     return;
   }
 
-  DCHECK(![_orderedKeys containsObject:key]);
+  // Key is not found in _orderedKeys.
+  DCHECK(std::find(_orderedKeys.begin(), _orderedKeys.end(), key) ==
+         _orderedKeys.end());
+
   _details[key] =
       [[FakeSystemIdentityDetails alloc] initWithFakeIdentity:fakeIdentity];
-  [_orderedKeys addObject:key];
+  _orderedKeys.push_back(key);
 
   // Storage has changed, invalidate current iterations.
   ++_mutations;
 }
 
-- (void)removeIdentityWithGaiaID:(NSString*)gaiaID {
-  if (![_details objectForKey:gaiaID]) {
+- (void)removeIdentityWithGaiaID:(const GaiaId&)gaiaID {
+  if (!_details.contains(gaiaID)) {
     return;
   }
 
-  DCHECK([_orderedKeys containsObject:gaiaID]);
-  [_details removeObjectForKey:gaiaID];
-  [_orderedKeys removeObject:gaiaID];
+  _details.erase(gaiaID);
+
+  int number_of_erasure = std::erase(_orderedKeys, gaiaID);
+  DCHECK(number_of_erasure);
 
   // Storage has changed, invalidate current iterations.
   ++_mutations;
@@ -82,21 +84,30 @@
     state->mutationsPtr = &_mutations;  // Detect mutations.
   }
 
+  // SAFETY: -countByEnumaratingWithState:objects:count: is called by the
+  // Objective-C runtime to implement fast enumeration (i.e. the "for in"
+  // loop of Objective-C) and guarantee that `buffer` can store at least
+  // `len` values.
+  base::span<id __unsafe_unretained> output =
+      UNSAFE_BUFFERS(base::span(buffer, len));
+
   // Iterate over as many object as possible, starting from
   // previously recorded position.
-  NSUInteger index;
+  NSUInteger count = 0;
   NSUInteger start = state->extra[0];
-  NSUInteger count = _orderedKeys.count;
-  for (index = 0; index < len && start + index < count; ++index) {
-    NSString* key = [_orderedKeys objectAtIndex:(start + index)];
-    buffer[index] = [_details objectForKey:key];
+  if (start < _orderedKeys.size()) {
+    count = std::min(len, _orderedKeys.size() - start);
+
+    base::span<GaiaId> view = base::span(_orderedKeys).subspan(start, count);
+    std::ranges::transform(view, output.begin(),
+                           [&](GaiaId key) { return _details[key]; });
   }
 
   // Update iteration state.
-  state->extra[0] = start + index;
+  state->extra[0] = start + count;
   state->itemsPtr = buffer;
 
-  return index;
+  return count;
 }
 
 @end

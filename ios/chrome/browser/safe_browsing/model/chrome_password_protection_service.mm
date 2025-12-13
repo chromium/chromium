@@ -466,7 +466,7 @@ bool ChromePasswordProtectionService::IsPrimaryAccountSyncingHistory() const {
 
 bool ChromePasswordProtectionService::IsPrimaryAccountSignedIn() const {
   return !GetAccountInfo().account_id.empty() &&
-         !GetAccountInfo().hosted_domain.empty();
+         GetAccountInfo().GetHostedDomain().has_value();
 }
 
 bool ChromePasswordProtectionService::IsAccountConsumer(
@@ -477,8 +477,7 @@ bool ChromePasswordProtectionService::IsAccountConsumer(
   return (username.find("@") != std::string::npos &&
           !signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
               username)) ||
-         GetAccountInfoForUsername(username).hosted_domain ==
-             kNoHostedDomainFound;
+         GetAccountInfoForUsername(username).GetHostedDomain() == std::string();
 }
 
 bool ChromePasswordProtectionService::IsInExcludedCountry() {

@@ -89,6 +89,7 @@ class DefaultSearchManager
   static const char kEnforcedByPolicy[];
 
   static const char kDefaultSearchEngineMirroredMetric[];
+  static const char kDefaultSearchEngineMirrorCheckOutcomeMetric[];
 
   enum Source {
     // Default search engine chosen either from prepopulated engines set for
@@ -104,6 +105,20 @@ class DefaultSearchManager
     // Search engine recommended externally through enterprise configuration
     // management but allows for user modification.
     FROM_POLICY_RECOMMENDED,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // For the Search.DefaultSearchEngineMirrorCheckOutcome histogram.
+  // Keep in sync with enums.xml.
+  enum class DefaultSearchEngineMirrorCheckOutcomeType {
+    kNoTamperingDetected = 0,
+    kResetSkippedForEnterpriseDevice = 1,
+    kMirrorCheckReset = 2,
+    kRecentHmacReset = 3,
+    kStaleHmacReset = 4,
+    kMaxValue = kStaleHmacReset,
   };
 
   using ObserverCallback =
@@ -156,6 +171,29 @@ class DefaultSearchManager
   // engine will be defined by policy, extensions, or pre-populated data.
   void ClearUserSelectedDefaultSearchEngine();
 
+  // Returns whether an unacknowledged default search engine reset has occurred.
+  bool GetUnacknowledgedDefaultSearchEngineReset() const;
+
+  // Sets whether an unacknowledged default search engine reset has occurred.
+  void SetUnacknowledgedDefaultSearchEngineReset(bool unacknowledged_reset);
+
+  // Returns the time of the last mirror check based default search engine
+  // reset.
+  base::Time GetDefaultSearchEngineMirrorCheckResetTimeStamp() const;
+
+  // Sets the time of the last mirror check based default search engine reset.
+  // Only for testing.
+  void SetDefaultSearchEngineMirrorCheckResetTimeStampForTesting(
+      base::Time time);
+
+  // Returns the time of the default search engine reset for which a
+  // reset notification was last shown.
+  base::Time GetResetTimeForLastShownNotification() const;
+
+  // Sets the time of the default search engine reset for which a
+  // reset notification was last shown.
+  void SetResetTimeForLastShownNotification(base::Time time);
+
  private:
   // Handles changes to kDefaultSearchProviderData pref. This includes sync and
   // policy changes. Calls LoadDefaultSearchEngineFromPrefs() and
@@ -187,6 +225,18 @@ class DefaultSearchManager
 
   // search_engines::SearchEngineChoiceService::Observer
   void OnSavedGuestSearchChanged() override;
+
+  // Detects DSE tampering by comparing the DSE pref to
+  // a mirrored copy and resets the DSE pref if needed.
+  void HandleDefaultSearchEngineTampering(
+      const base::Value::Dict& url_dict,
+      const base::Value::Dict& mirrored_dict);
+
+  // Determines if there has been a recent pref reset (i.e., within the last
+  // hour).
+  // TODO: crbug.com/449238321 - add a check that DSE is in the list of reset
+  // prefs when the list is available
+  bool HasRecentPrefReset();
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<search_engines::SearchEngineChoiceService>

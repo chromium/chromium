@@ -20,8 +20,13 @@ def trim_cmd(cmd):
   """Removes internal flags from cmd since they're just used to communicate from
   the host machine to this script running on the swarm slaves."""
   sanitizers = [
-      'asan', 'lsan', 'msan', 'tsan', 'coverage-continuous-mode',
-      'skip-set-lpac-acls'
+      'asan',
+      'lsan',
+      'msan',
+      'tsan',
+      'coverage-continuous-mode',
+      'skip-set-lpac-acls',
+      'skip-symbolization-script',
   ]
   internal_flags = frozenset('--%s=%d' % (name, value) for name in sanitizers
                              for value in [0, 1])
@@ -38,7 +43,8 @@ def fix_python_path(cmd):
   return out
 
 
-def get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag):
+def get_sanitizer_env(asan: bool, lsan: bool, msan: bool, tsan: bool,
+                      cfi_diag: bool, detect_odr_violation: bool):
   """Returns the environment flags needed for sanitizer tools."""
 
   extra_env = {}
@@ -82,6 +88,9 @@ def get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag):
       # See https://github.com/google/sanitizers/issues/1322
       if 'linux' in sys.platform:
         asan_options.append('intercept_tls_get_addr=0')
+
+    if not detect_odr_violation:
+      asan_options.append('detect_odr_violation=0')
 
     if asan_options:
       extra_env['ASAN_OPTIONS'] = ' '.join(asan_options)
@@ -366,9 +375,12 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
   msan = '--msan=1' in cmd
   tsan = '--tsan=1' in cmd
   cfi_diag = '--cfi-diag=1' in cmd
+  detect_odr_violation = not '--asan-detect-odr-violation=0' in cmd
   # Treat sanitizer warnings as test case failures.
   use_sanitizer_warnings_script = '--fail-san=1' in cmd
-  if stdoutfile or sys.platform in ['win32', 'cygwin']:
+  if '--skip-symbolization-script=1' in cmd:
+    use_symbolization_script = False
+  elif stdoutfile or sys.platform in ['win32', 'cygwin']:
     # Symbolization works in-process on Windows even when sandboxed.
     use_symbolization_script = False
   else:
@@ -377,7 +389,9 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
     use_symbolization_script = (asan or msan or cfi_diag or lsan or tsan)
 
   if asan or lsan or msan or tsan or cfi_diag:
-    extra_env.update(get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag))
+    extra_env.update(
+        get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag,
+                          detect_odr_violation))
 
   if lsan or tsan:
     # LSan and TSan are not sandbox-friendly.

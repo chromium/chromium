@@ -14,6 +14,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"

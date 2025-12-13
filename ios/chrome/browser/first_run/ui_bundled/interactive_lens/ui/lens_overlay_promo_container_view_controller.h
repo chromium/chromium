@@ -12,8 +12,12 @@
 // Delegate for the LensOverlayPromoContainerViewController.
 @protocol LensOverlayPromoContainerViewControllerDelegate <NSObject>
 
-// Called when the user interacts with the Lens view.
-- (void)lensOverlayPromoContainerViewControllerDidReceiveInteraction:
+// Called when the user begins interacting with the Lens view.
+- (void)lensOverlayPromoContainerViewControllerDidBeginInteraction:
+    (LensOverlayPromoContainerViewController*)viewController;
+
+// Called when the user finishes interacting with the Lens view.
+- (void)lensOverlayPromoContainerViewControllerDidEndInteraction:
     (LensOverlayPromoContainerViewController*)viewController;
 
 @end

@@ -173,7 +173,7 @@ class ObjectIsGoneObjectDelegate : public NullObjectDelegate {
         base::android::MethodID::Get<base::android::MethodID::TYPE_INSTANCE>(
             env, clazz.obj(), "hashCode", "()I");
     EXPECT_TRUE(method_id);
-    base::android::ScopedJavaLocalRef<jobject> method_obj(
+    auto method_obj = base::android::ScopedJavaLocalRef<jobject>::Adopt(
         env, env->ToReflectedMethod(clazz.obj(), method_id, false));
     EXPECT_TRUE(method_obj.obj());
     method_ = std::make_unique<JavaMethod>(method_obj);
@@ -239,7 +239,7 @@ class MethodNotFoundObjectDelegate : public NullObjectDelegate {
   ~MethodNotFoundObjectDelegate() override = default;
 
   base::android::ScopedJavaLocalRef<jobject> GetLocalRef(JNIEnv* env) override {
-    return base::android::ScopedJavaLocalRef<jobject>(
+    return base::android::ScopedJavaLocalRef<jobject>::Adopt(
         env, static_cast<jobject>(env->FindClass("java/lang/String")));
   }
 

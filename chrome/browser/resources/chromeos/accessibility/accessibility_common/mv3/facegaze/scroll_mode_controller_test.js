@@ -52,7 +52,8 @@ FaceGazeScrollModeControllerTest = class extends FaceGazeTestBase {
   }
 };
 
-AX_TEST_F('FaceGazeScrollModeControllerTest', 'Active', function() {
+// TODO(crbug.com/440243409): Flaky.
+AX_TEST_F('FaceGazeScrollModeControllerTest', 'DISABLED_Active', function() {
   const controller = this.getScrollModeController();
   assertNotNullNorUndefined(controller);
   assertNullOrUndefined(controller.scrollLocation_);

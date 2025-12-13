@@ -9,91 +9,10 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Android WebView O (dbg)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
-              "builder_group": "chromium.android",
-              "execution_mode": "TEST",
-              "legacy_android_config": {
-                "apply_configs": [
-                  "remove_all_system_webviews"
-                ],
-                "config": "base_config"
-              },
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb",
-                  "download_xr_test_apks"
-                ],
-                "build_config": "Debug",
-                "config": "main_builder",
-                "target_arch": "arm",
-                "target_bits": 64,
-                "target_platform": "android"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "android"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
-              }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Android WebView P (dbg)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
-              "builder_group": "chromium.android",
-              "execution_mode": "TEST",
-              "legacy_android_config": {
-                "apply_configs": [
-                  "remove_all_system_webviews"
-                ],
-                "config": "base_config"
-              },
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb",
-                  "download_xr_test_apks"
-                ],
-                "build_config": "Debug",
-                "config": "main_builder",
-                "target_arch": "arm",
-                "target_bits": 64,
-                "target_platform": "android"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "android"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
-              }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
               "builder": "Android arm64 Builder (dbg)",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
@@ -127,18 +46,6 @@
           "project": "chromium"
         }
       ],
-      "builder_ids_in_scope_for_testing": [
-        {
-          "bucket": "ci",
-          "builder": "Android WebView O (dbg)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Android WebView P (dbg)",
-          "project": "chromium"
-        }
-      ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "android-arm64-compile-dbg",
@@ -147,7 +54,8 @@
       ],
       "retry_failed_shards": true,
       "retry_invalid_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Android arm64 Builder (dbg)/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Android arm64 Builder (dbg)/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

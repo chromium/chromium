@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -17,7 +18,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/factories/password_counter_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -34,13 +37,14 @@
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
+#include "components/password_manager/core/browser/password_counter.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/plus_addresses/features.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/variations/service/variations_service.h"
@@ -50,7 +54,7 @@
 #include "ui/base/models/image_model.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "components/plus_addresses/resources/vector_icons.h"
+#include "components/plus_addresses/core/browser/resources/vector_icons.h"
 #endif
 
 namespace autofill {
@@ -161,19 +165,6 @@ bool IsPasswordFormField(ContentPasswordManagerDriver& password_manager_driver,
       ->GetPasswordForm(&password_manager_driver, current_field_renderer_id);
 }
 
-// Returns true if the user has autofillable passwords saved.
-bool UserHasPasswordsSaved(
-    ContentPasswordManagerDriver& password_manager_driver) {
-  password_manager::PasswordManagerClient* client =
-      password_manager_driver.GetPasswordManager()->GetClient();
-  return client->GetPrefs()->GetBoolean(
-             password_manager::prefs::
-                 kAutofillableCredentialsProfileStoreLoginDatabase) ||
-         client->GetPrefs()->GetBoolean(
-             password_manager::prefs::
-                 kAutofillableCredentialsAccountStoreLoginDatabase);
-}
-
 base::Value::Dict LoadTriggerFormAndFieldLogs(
     AutofillManager& manager,
     const LocalFrameToken& frame_token,
@@ -186,19 +177,15 @@ base::Value::Dict LoadTriggerFormAndFieldLogs(
                                  FormRendererId(params.form_renderer_id)};
 
   base::Value::Dict trigger_form_logs;
-  if (FormStructure* form = manager.FindCachedFormById(form_global_id)) {
+  if (const FormStructure* form = manager.FindCachedFormById(form_global_id)) {
     trigger_form_logs.Set("triggerFormSignature", form->FormSignatureAsStr());
 
     if (params.form_control_type) {
       FieldGlobalId field_global_id = {
           frame_token, FieldRendererId(params.field_renderer_id)};
-      auto field =
-          std::ranges::find_if(*form, [&field_global_id](const auto& field) {
-            return field->global_id() == field_global_id;
-          });
-      if (field != form->end()) {
+      if (const AutofillField* field = form->GetFieldById(field_global_id)) {
         trigger_form_logs.Set("triggerFieldSignature",
-                              (*field)->FieldSignatureAsStr());
+                              field->FieldSignatureAsStr());
       }
     }
   }
@@ -355,10 +342,14 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
   }
 
   if (add_passwords_fallback) {
-    AddPasswordsManualFallbackItems(*password_manager_driver);
-
+    Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+    password_manager::PasswordCounter* counter =
+        PasswordCounterFactory::GetForProfile(profile);
     const bool select_passwords_option_shown =
-        UserHasPasswordsSaved(*password_manager_driver);
+        counter && counter->autofillable_passwords() > 0;
+    AddPasswordsManualFallbackItems(*password_manager_driver,
+                                    select_passwords_option_shown);
+
     if (select_passwords_option_shown) {
       LogSelectPasswordManualFallbackContextMenuEntryShown(
           CHECK_DEREF(password_manager_driver));
@@ -415,9 +406,8 @@ bool AutofillContextMenuManager::ShouldAddPasswordsManualFallbackItem(
 }
 
 void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
-    ContentPasswordManagerDriver& password_manager_driver) {
-  const bool add_select_password_option =
-      UserHasPasswordsSaved(password_manager_driver);
+    ContentPasswordManagerDriver& password_manager_driver,
+    bool add_select_password_option) {
   const bool add_password_generation_option =
       password_manager_util::ManualPasswordGenerationEnabled(
           &password_manager_driver) &&

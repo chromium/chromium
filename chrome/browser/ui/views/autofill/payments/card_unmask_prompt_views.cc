@@ -42,6 +42,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -177,7 +178,7 @@ void CardUnmaskPromptViews::SetRetriableErrorMessage(
         GetWidget(), web_modal::WebContentsModalDialogManager::FromWebContents(
                          web_contents_.get())
                          ->delegate()
-                         ->GetWebContentsModalDialogHost());
+                         ->GetWebContentsModalDialogHost(web_contents_.get()));
   }
 
   DeprecatedLayoutImmediately();

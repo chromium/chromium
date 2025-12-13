@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -46,8 +46,8 @@ namespace chrome {
 
 std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (view && view->tabstrip()) {
-    return view->tabstrip()->GetFocusedTabIndex();
+  if (view && view->tab_strip_view()) {
+    return view->tab_strip_view()->GetFocusedTabIndex();
   }
   return std::nullopt;
 }

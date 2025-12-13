@@ -7,18 +7,21 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "components/tabs/public/supports_handles.h"
+#include "components/tabs/public/tab_handle_factory.h"
 
 namespace ui {
 class UnownedUserDataHost;
 }
+
+namespace base {
+class CallbackListSubscription;
+}  // namespace base
 
 namespace content {
 class WebContents;
@@ -46,8 +49,6 @@ class ScopedTabModalUI {
   virtual ~ScopedTabModalUI() = default;
 };
 
-DECLARE_HANDLE_FACTORY(TabInterface);
-
 // TODO(crbug.com/404889112): This interface will be reused for Android as part
 // of the effort to share tab collections between desktop and Android. Some
 // features of TabInterface are unsupported on Android. A buildflag is used to
@@ -59,7 +60,7 @@ DECLARE_HANDLE_FACTORY(TabInterface);
 // Ping erikchen for assistance if this class does not have the functionality
 // your feature needs. This comment will be deleted after there are 10+ features
 // in TabFeatures.
-class TabInterface : public SupportsHandles<TabInterfaceHandleFactory> {
+class TabInterface : public SupportsTabHandles {
  public:
   // This method exists to ease the transition from WebContents to TabInterface.
   // This method should only be called on instances of WebContents that are
@@ -246,6 +247,9 @@ class TabInterface : public SupportsHandles<TabInterfaceHandleFactory> {
 
   // Return true if the tab is pinned in its tabstrip, or false otherwise.
   virtual bool IsPinned() const = 0;
+
+  // Whether the tab is blocked by a modal dialog.
+  virtual bool IsBlocked() const = 0;
 
   // Return true if the tab is part of a split view, or false otherwise.
   virtual bool IsSplit() const = 0;

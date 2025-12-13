@@ -26,6 +26,10 @@ message ProofreaderApiLoggingData {
 message ProofreaderApiRequest {
   string text = 1 [features = { field_presence: EXPLICIT }];
 
+  string corrected_text = 3 [features = { field_presence: EXPLICIT }];
+
+  string correction = 4 [features = { field_presence: EXPLICIT }];
+
   ProofreadOptions options = 2 [features = { field_presence: EXPLICIT }];
 }
 

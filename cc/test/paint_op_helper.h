@@ -242,7 +242,8 @@ class PaintOpHelper {
       case PaintOpType::kSaveLayerFilters: {
         const auto& op = static_cast<const SaveLayerFiltersOp&>(base_op);
         str << "flags=" << ToString(op.flags)
-            << ", filters=" << ToString(op.filters);
+            << ", filters=" << ToString(op.filters)
+            << ", backdrop_filter=" << ToString(op.backdrop_filter);
         break;
       }
       case PaintOpType::kScale: {

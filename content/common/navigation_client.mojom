@@ -76,8 +76,10 @@ struct DidCommitProvisionalLoadParams {
   // [Native] enums are by default initialized to 0 (i.e. PAGE_TRANSITION_LINK)
   PageTransition transition;
 
-  // Set to false if we want to update the session history but not update
-  // the browser history.  E.g., on unreachable urls.
+  // Set to false if we want to update the session history but not update the
+  // browser history (e.g., on unreachable URLs). If the URL was reachable and
+  // `blink::features::kVisitedLinksOnErrorNavigation` is enabled, this param is
+  // set to `true` even if the navigation resulted in a 404 response code.
   bool should_update_history = false;
 
   // Contents MIME type of main frame.
@@ -214,6 +216,18 @@ struct DidCommitSameDocumentNavigationParams {
   // screenshot sent by Viz to the corresponding navigation entry.
   blink.mojom.SameDocNavigationScreenshotDestinationToken?
     navigation_entry_screenshot_destination;
+
+  // Uniquely identifies a committed same-document navigation.
+  // This is used for attributing soft navigation metrics to the
+  // correct UKM Source ID.
+  mojo_base.mojom.UnguessableToken same_document_metrics_token;
+
+  // For ad-related aspects of the history manipulation intervention, this
+  // indicates whether this same-document navigation was caused by an ad. More
+  // specifically, this is whether an ad script was in the JavaScript stack at
+  // the time of the navigation, or whether the frame is an ad frame, as
+  // determined by Ad Tagging.
+  bool caused_by_ad;
 };
 
 struct CookieManagerInfo {

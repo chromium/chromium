@@ -49,7 +49,6 @@ class CONTENT_EXPORT AttributionSuitableContext {
           {ContentBrowserClient::AttributionReportingOsRegistrar::kWeb,
            ContentBrowserClient::AttributionReportingOsRegistrar::kWeb},
       AttributionDataHostManager* attribution_data_host_manager = nullptr,
-      bool is_context_google_amp_viewer = false,
       ukm::SourceId ukm_source_id = ukm::kInvalidSourceId);
 
   bool operator==(const AttributionSuitableContext& other) const;
@@ -77,10 +76,6 @@ class CONTENT_EXPORT AttributionSuitableContext {
     return os_registrars_;
   }
 
-  bool is_context_google_amp_viewer() const {
-    return is_context_google_amp_viewer_;
-  }
-
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
 
   AttributionDataHostManager* data_host_manager() const {
@@ -95,7 +90,6 @@ class CONTENT_EXPORT AttributionSuitableContext {
       int64_t last_navigation_id,
       AttributionInputEvent last_input_event,
       ContentBrowserClient::AttributionReportingOsRegistrars,
-      bool is_context_google_amp_viewer,
       ukm::SourceId,
       base::WeakPtr<AttributionDataHostManager>);
 
@@ -105,7 +99,6 @@ class CONTENT_EXPORT AttributionSuitableContext {
   int64_t last_navigation_id_;
   AttributionInputEvent last_input_event_;
   ContentBrowserClient::AttributionReportingOsRegistrars os_registrars_;
-  bool is_context_google_amp_viewer_ = false;
   ukm::SourceId ukm_source_id_;
 
   base::WeakPtr<AttributionDataHostManager> attribution_data_host_manager_;

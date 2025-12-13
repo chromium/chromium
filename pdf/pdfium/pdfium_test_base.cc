@@ -160,14 +160,13 @@ void PDFiumTestBase::InitializePDFiumSDK() {
   FPDF_InitLibraryWithConfig(&config);
 }
 
-const PDFiumPage& PDFiumTestBase::GetPDFiumPageForTest(
-    const PDFiumEngine& engine,
-    size_t page_index) {
-  return GetPDFiumPageForTest(const_cast<PDFiumEngine&>(engine), page_index);
+const PDFiumPage& PDFiumTestBase::GetPDFiumPage(const PDFiumEngine& engine,
+                                                size_t page_index) {
+  return GetPDFiumPage(const_cast<PDFiumEngine&>(engine), page_index);
 }
 
-PDFiumPage& PDFiumTestBase::GetPDFiumPageForTest(PDFiumEngine& engine,
-                                                 size_t page_index) {
+PDFiumPage& PDFiumTestBase::GetPDFiumPage(PDFiumEngine& engine,
+                                          size_t page_index) {
   DCHECK_LT(page_index, engine.pages_.size());
   PDFiumPage* page = engine.pages_[page_index].get();
   DCHECK(page);

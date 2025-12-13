@@ -23,6 +23,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './add_languages_dialog.js';
 import '../icons.html.js';
 import '../relaunch_confirmation_dialog.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
@@ -236,8 +237,15 @@ export class SettingsLanguagesPageElement extends
    */
   private isRestartRequired_(
       languageCode: string, prospectiveUILanguage: string): boolean {
+    if (!this.isConnected) {
+      // Mysteriously happens in SettingsLanguagePageTest.LanguageMenu.
+      return false;
+    }
+
+    // Using getLanguageHelperInstance() directly for the same reason as in
+    // `canEnableSomeSupportedLanguage_` (see comment there).
     return prospectiveUILanguage === languageCode &&
-        this.languageHelper_.requiresRestart();
+        getLanguageHelperInstance().requiresRestart();
   }
 
   private onCloseMenu_() {

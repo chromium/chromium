@@ -9,11 +9,16 @@
 #include <vector>
 
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/icons/extension_icon_variant.h"
 #include "extensions/common/icons/extension_icon_variants_diagnostics.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
+
+class Extension;
 
 // Representation of the `icon_variants` key defined in manifest.json. It could
 // be a top level key or a subkey of `action`.
@@ -27,7 +32,7 @@ class ExtensionIconVariants {
   ExtensionIconVariants& operator=(const ExtensionIconVariants& other) = delete;
 
   // Parse the provided list from manifest.json and set `list_` with the result.
-  void Parse(const base::Value::List* list);
+  void Parse(const Extension& extension, const base::Value::List* list);
 
   // Determine whether `list_` has at least one icon variant after parsing.
   bool IsEmpty() const;

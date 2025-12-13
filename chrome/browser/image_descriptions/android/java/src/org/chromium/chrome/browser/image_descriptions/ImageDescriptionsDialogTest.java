@@ -36,7 +36,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -61,6 +62,8 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Unit tests for {@link ImageDescriptionsDialog} */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ImageDescriptionsDialogTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -85,8 +88,6 @@ public class ImageDescriptionsDialogTest {
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.launchActivity(null);
-
-        MockitoAnnotations.initMocks(this);
 
         ProfileJni.setInstanceForTesting(mProfileJniMock);
         when(mProfileJniMock.fromWebContents(mWebContents)).thenReturn(mProfile);

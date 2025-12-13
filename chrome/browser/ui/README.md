@@ -14,6 +14,8 @@ Important subdirectories:
             //chrome/browser/android.
 * webui - the WebUI parts of the browser UI. This includes things like the
           chrome://settings page and other WebUI pages.
+* webui_browser - an experimental browser UI written in WebUI. It still uses
+          views for windowing management and secondary UIs.
 
 Historically, the goal of this directory was to be platform agnostic, with
 platform-specific logic in the above sub-directories. This didn't work and

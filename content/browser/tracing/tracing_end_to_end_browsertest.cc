@@ -15,6 +15,8 @@
 #include "base/test/trace_test_utils.h"
 #include "build/build_config.h"
 #include "components/variations/active_field_trials.h"
+#include "content/public/browser/browser_child_process_host_iterator.h"
+#include "content/public/browser/child_process_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -477,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
 #if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
                        PackageNameRecordedTraceLogSet) {
-  tracing::TrackNameRecorder::GetInstance()->SetRecordHostAppPackageName(true);
+  tracing::TrackNameRecorder::SetRecordHostAppPackageName(true);
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace(base::test::DefaultTraceConfig("foo", false),
                  perfetto::kCustomBackend);
@@ -509,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
                        PackageNameNotRecordedTraceLogNotSet) {
-  tracing::TrackNameRecorder::GetInstance()->SetRecordHostAppPackageName(false);
+  tracing::TrackNameRecorder::SetRecordHostAppPackageName(false);
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace(base::test::DefaultTraceConfig("foo", false),
                  perfetto::kCustomBackend);
@@ -813,6 +815,67 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TwoSessionsMetadata) {
                                   std::vector<std::string>{"has_version_code"},
                                   std::vector<std::string>{"1"}));
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, AddTraceEventWithProcessId) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace(base::test::DefaultTraceConfig("memory", false));
+
+  const base::ProcessId browser_pid = base::GetCurrentProcId();
+
+  std::vector<base::ProcessId> child_pids;
+  content::BrowserChildProcessHostIterator iterator;
+  while (!iterator.Done()) {
+    const content::ChildProcessData& data = iterator.GetData();
+    if (data.GetProcess().IsValid()) {
+      child_pids.push_back(data.GetProcess().Pid());
+    }
+    ++iterator;
+  }
+
+  const unsigned char* category_group_enabled =
+      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("memory");
+
+  TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_PROCESS_ID(
+      TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "foo_memory_event", 0,
+      browser_pid, nullptr, TRACE_EVENT_FLAG_HAS_ID);
+
+  for (base::ProcessId child_pid : child_pids) {
+    TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_PROCESS_ID(
+        TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "foo_memory_event",
+        0, child_pid, nullptr, TRACE_EVENT_FLAG_HAS_ID);
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  std::string query = R"(
+    SELECT
+      slice.name AS event_name,
+      process.pid AS pid
+    FROM slice
+    JOIN thread_track ON slice.track_id = thread_track.id
+    JOIN thread ON thread_track.utid = thread.utid
+    JOIN process ON thread.upid = process.upid
+    WHERE slice.name = 'foo_memory_event'
+    )";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+
+  size_t expected_row_count = 2 + child_pids.size();
+  const auto& rows = result.value();
+  EXPECT_EQ(rows.size(), expected_row_count);
+
+  EXPECT_THAT(rows[0], ::testing::ElementsAre("event_name", "pid"));
+  EXPECT_THAT(rows[1],
+              ::testing::ElementsAre("foo_memory_event",
+                                     base::NumberToString(browser_pid)));
+
+  for (size_t i = 0; i < child_pids.size(); ++i) {
+    EXPECT_THAT(rows[i + 2],
+                ::testing::ElementsAre("foo_memory_event",
+                                       base::NumberToString(child_pids[i])));
+  }
 }
 
 #if BUILDFLAG(IS_POSIX)

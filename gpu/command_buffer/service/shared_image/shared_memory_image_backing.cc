@@ -9,7 +9,6 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/trace_event/process_memory_dump.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -25,7 +24,6 @@
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -112,12 +110,12 @@ SharedImageBackingType SharedMemoryImageBacking::GetType() const {
 }
 
 gfx::Rect SharedMemoryImageBacking::ClearedRect() const {
-  NOTREACHED();
+  // SharedMemoryImageBacking is always considered as fully cleared since we
+  // create it only when we need a mappable backing.
+  return gfx::Rect(size());
 }
 
-void SharedMemoryImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
-  NOTREACHED();
-}
+void SharedMemoryImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {}
 
 gfx::GpuMemoryBufferHandle
 SharedMemoryImageBacking::GetGpuMemoryBufferHandle() {

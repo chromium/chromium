@@ -6,7 +6,7 @@
 function base64toBlob(dataBase64: string): Blob {
   const sliceSize = 512;
   const byteCharacters = atob(dataBase64);
-  const byteArrays: Uint8Array[] = [];
+  const byteArrays: Array<Uint8Array<ArrayBuffer>> = [];
   for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
     const slice = byteCharacters.slice(offset, offset + sliceSize);
     const byteNumbers = new Array(slice.length);

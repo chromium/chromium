@@ -66,14 +66,18 @@ FakeBrowserContextHelperDelegate::DeprecatedGetBrowserContext(
 }
 
 content::BrowserContext*
-FakeBrowserContextHelperDelegate::GetOrCreatePrimaryOTRBrowserContext(
-    content::BrowserContext* browser_context) {
+FakeBrowserContextHelperDelegate::GetPrimaryOTRBrowserContext(
+    content::BrowserContext* browser_context,
+    bool create_if_needed) {
   const auto& path = browser_context->GetPath();
   for (auto& candidate : browser_context_list_) {
     if (candidate.get() != browser_context && candidate->GetPath() == path &&
         candidate->IsOffTheRecord()) {
       return candidate.get();
     }
+  }
+  if (!create_if_needed) {
+    return nullptr;
   }
   return CreateBrowserContext(path, /*is_off_the_record=*/true);
 }

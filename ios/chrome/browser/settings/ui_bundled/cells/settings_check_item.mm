@@ -4,9 +4,14 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
 
-#import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_cell.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/activity_indicator_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/info_button_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 
 namespace {
 
@@ -20,42 +25,74 @@ constexpr NSInteger kTrailingSymbolImagePointSize = 22;
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
   if (self) {
-    self.cellClass = [SettingsCheckCell class];
+    self.cellClass = [LegacyTableViewCell class];
   }
   return self;
 }
 
 #pragma mark - TableViewItem
 
-- (void)configureCell:(SettingsCheckCell*)cell
+- (void)configureCell:(LegacyTableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  cell.textLabel.text = self.text;
-  cell.detailTextLabel.text = self.detailText;
-  [cell setInfoButtonHidden:self.infoButtonHidden];
-  [cell setInfoButtonEnabled:self.enabled];
-  self.indicatorHidden ? [cell hideActivityIndicator]
-                       : [cell showActivityIndicator];
+
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = self.text;
+  configuration.titleNumberOfLines = 1;
+  configuration.subtitle = self.detailText;
+  configuration.textDisabled = !self.enabled;
+
+  if (self.leadingIcon) {
+    ColorfulSymbolContentConfiguration* symbolConfiguration =
+        [[ColorfulSymbolContentConfiguration alloc] init];
+    symbolConfiguration.symbolImage = self.leadingIcon;
+    symbolConfiguration.symbolTintColor =
+        self.enabled ? self.leadingIconTintColor
+                     : [UIColor colorNamed:kTextSecondaryColor];
+    symbolConfiguration.symbolBackgroundColor = self.leadingIconBackgroundColor;
+
+    configuration.leadingConfiguration = symbolConfiguration;
+  }
+
+  if (!self.indicatorHidden) {
+    ActivityIndicatorContentConfiguration* activityConfiguration =
+        [[ActivityIndicatorContentConfiguration alloc] init];
+
+    configuration.trailingConfiguration = activityConfiguration;
+  } else if (self.trailingImage) {
+    ImageContentConfiguration* imageConfiguration =
+        [[ImageContentConfiguration alloc] init];
+    imageConfiguration.image = self.trailingImage;
+    imageConfiguration.imageTintColor =
+        self.enabled ? self.trailingImageTintColor
+                     : [UIColor colorNamed:kTextSecondaryColor];
+    imageConfiguration.imageSize =
+        CGSizeMake(kTableViewIconImageSize, kTableViewIconImageSize);
+
+    configuration.trailingConfiguration = imageConfiguration;
+  } else if (!self.infoButtonHidden && self.infoButtonTarget) {
+    InfoButtonContentConfiguration* infoButtonConfiguration =
+        [[InfoButtonContentConfiguration alloc] init];
+    infoButtonConfiguration.target = self.infoButtonTarget;
+    infoButtonConfiguration.selector = self.infoButtonSelector;
+    infoButtonConfiguration.tag = self.infoButtonTag;
+    infoButtonConfiguration.enabled = self.enabled;
+
+    infoButtonConfiguration.selectedForVoiceOver = NO;
+
+    configuration.trailingConfiguration = infoButtonConfiguration;
+  }
+
+  cell.contentConfiguration = configuration;
+
+  cell.isAccessibilityElement = YES;
+
   if (self.enabled) {
-    [cell setLeadingIconImage:self.leadingIcon
-                    tintColor:self.leadingIconTintColor
-              backgroundColor:self.leadingIconBackgroundColor
-                 cornerRadius:self.leadingIconCornerRadius];
-    [cell setTrailingImage:self.trailingImage
-             withTintColor:self.trailingImageTintColor];
-    cell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     cell.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
   } else {
-    [cell setLeadingIconImage:self.leadingIcon
-                    tintColor:[UIColor colorNamed:kTextSecondaryColor]
-              backgroundColor:self.leadingIconBackgroundColor
-                 cornerRadius:self.leadingIconCornerRadius];
-    [cell setTrailingImage:self.trailingImage
-             withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
-    cell.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     cell.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
   }
-  cell.isAccessibilityElement = YES;
 
   if (self.detailText) {
     cell.accessibilityLabel =
@@ -63,6 +100,12 @@ constexpr NSInteger kTrailingSymbolImagePointSize = 22;
   } else {
     cell.accessibilityLabel = self.text;
   }
+}
+
+- (LegacyTableViewCell*)cellForTableView:(UITableView*)tableView {
+  [TableViewCellContentConfiguration legacyRegisterCellForTableView:tableView];
+  return
+      [TableViewCellContentConfiguration legacyDequeueTableViewCell:tableView];
 }
 
 #pragma mark - Setters

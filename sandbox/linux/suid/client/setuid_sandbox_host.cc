@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/suid/client/setuid_sandbox_host.h"
 
 #include <fcntl.h>
@@ -22,6 +17,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -86,8 +82,9 @@ std::string* CreateSavedVariableName(base::cstring_view env_var) {
 // different names here so that the SUID sandbox can resolve them for the
 // renderer.
 void SaveSUIDUnsafeEnvironmentVariables(base::Environment* env) {
-  for (unsigned i = 0; kSUIDUnsafeEnvironmentVariables[i]; ++i) {
-    const base::cstring_view env_var(kSUIDUnsafeEnvironmentVariables[i]);
+  for (unsigned i = 0; UNSAFE_TODO(kSUIDUnsafeEnvironmentVariables[i]); ++i) {
+    const base::cstring_view UNSAFE_TODO(
+        env_var(kSUIDUnsafeEnvironmentVariables[i]));
     // Get the saved environment variable corresponding to envvar.
     std::unique_ptr<std::string> saved_env_var(
         CreateSavedVariableName(env_var));

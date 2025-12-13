@@ -6,7 +6,6 @@
 #define CHROME_TEST_INTERACTION_WEBCONTENTS_INTERACTION_TEST_UTIL_H_
 
 #include <initializer_list>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -31,12 +30,11 @@ namespace views {
 class WebView;
 }
 
-class Browser;
-
+class BrowserWindowInterface;
 class TrackedElementWebContents;
 
 // This is a test-only utility class that wraps a specific WebContents in a
-// Browser for use with InteractionSequence. It allows tests to:
+// browser window for use with InteractionSequence. It allows tests to:
 //  - Treat pages loaded into a specific WebContents as individual
 //    ui::TrackedElement instances, including responding to pages loads and
 //    unloads as show and hide events that can be used in a sequence.
@@ -194,7 +192,7 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
 
   ~WebContentsInteractionTestUtil() override;
 
-  // Creates an object associated with a WebContents in the Browser associated
+  // Creates an object associated with a WebContents in the browser associated
   // with `context`. The TrackedElementWebContents associated with loaded pages
   // will be created with identifier `page_identifier` but you can later change
   // this by calling set_page_identifier(). If `tab_index` is specified, a
@@ -205,9 +203,9 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
                           ui::ElementIdentifier page_identifier,
                           std::optional<int> tab_index = std::nullopt);
 
-  // As above, but you may directly specify the Browser to use.
+  // As above, but you may directly specify the browser window to use.
   static std::unique_ptr<WebContentsInteractionTestUtil>
-  ForExistingTabInBrowser(Browser* browser,
+  ForExistingTabInBrowser(BrowserWindowInterface* browser,
                           ui::ElementIdentifier page_identifier,
                           std::optional<int> tab_index = std::nullopt);
 
@@ -226,7 +224,7 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
       ui::ElementIdentifier page_identifier);
 
   // Creates a util object that becomes valid (and creates an element with
-  // identifier `page_identifier`) when the next tab is created in the Browser
+  // identifier `page_identifier`) when the next tab is created in the browser
   // associated with `context` and references that new WebContents.
   static std::unique_ptr<WebContentsInteractionTestUtil> ForNextTabInContext(
       ui::ElementContext context,
@@ -236,7 +234,7 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
   // identifier `page_identifier`) when the next tab is created in `browser`
   // and references that new WebContents.
   static std::unique_ptr<WebContentsInteractionTestUtil> ForNextTabInBrowser(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       ui::ElementIdentifier page_identifier);
 
   // Creates a util object that becomes valid (and creates an element with
@@ -304,7 +302,7 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
   // actually loaded. The command must succeed or an error will be generated.
   //
   // Can also be used if you are waiting for a tab to open, but only if you
-  // have specified a valid Browser or ElementContext.
+  // have specified a valid browser or ElementContext.
   virtual void LoadPageInNewTab(const GURL& url, bool activate_tab);
 
   // Direct Javascript Evaluation //////////////////////////////////////////////
@@ -358,7 +356,7 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
   // Returns true if there is an element at `query`, false otherwise. If
   // `not_found` is not null, it will receive the value of the element not
   // found, or an empty string if the function returns true.
-  bool Exists(const DeepQuery& query, std::string* not_found = nullptr);
+  bool Exists(const DeepQuery& query, std::string* not_found = nullptr) const;
 
   // Evaluates `function` on the element returned by finding the element at
   // `where`; throw an error if `where` doesn't exist or capture with a second

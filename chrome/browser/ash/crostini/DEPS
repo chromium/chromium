@@ -28,7 +28,6 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/chrome_browser_main_extra_parts.h",
   "+chrome/browser/chrome_browser_main.h",
-  "+chrome/browser/component_updater",
   "+chrome/browser/extensions/api/terminal",
   "+chrome/browser/notifications",
   "+chrome/browser/platform_util.h",

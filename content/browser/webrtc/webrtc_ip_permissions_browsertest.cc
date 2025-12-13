@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -35,6 +34,17 @@ const char kPeerConnectionHtml[] = "/media/peerconnection-call.html";
 #define MAYBE_WebRtcIPPolicyPublicInterfaceOnlyTest \
   DISABLED_WebRtcIPPolicyPublicInterfaceOnlyTest
 #define MAYBE_WebRtcIPPolicyDisableUdpTest DISABLED_WebRtcIPPolicyDisableUdpTest
+#elif BUILDFLAG(IS_FUCHSIA)
+// This test is mysteriously failing on Fuchsia starting from
+// https://ci.chromium.org/b/8700182931583028385
+#define MAYBE_WebRtcIPPermissionDeniedTest DISABLED_WebRtcIPPermissionDeniedTest
+
+#define MAYBE_WebRtcIPPermissionGrantedTest WebRtcIPPermissionGrantedTest
+#define MAYBE_WebRtcIPPolicyPublicAndPrivateInterfacesTest \
+  WebRtcIPPolicyPublicAndPrivateInterfacesTest
+#define MAYBE_WebRtcIPPolicyPublicInterfaceOnlyTest \
+  WebRtcIPPolicyPublicInterfaceOnlyTest
+#define MAYBE_WebRtcIPPolicyDisableUdpTest WebRtcIPPolicyDisableUdpTest
 #else
 #define MAYBE_WebRtcIPPermissionGrantedTest WebRtcIPPermissionGrantedTest
 #define MAYBE_WebRtcIPPermissionDeniedTest WebRtcIPPermissionDeniedTest

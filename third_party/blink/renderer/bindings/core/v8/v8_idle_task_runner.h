@@ -51,10 +51,11 @@ class V8IdleTaskRunner : public gin::V8IdleTaskRunner {
   V8IdleTaskRunner& operator=(const V8IdleTaskRunner&) = delete;
 
   ~V8IdleTaskRunner() override = default;
-  void PostIdleTask(std::unique_ptr<v8::IdleTask> task) override {
+  void PostIdleTask(const base::Location& location,
+                    std::unique_ptr<v8::IdleTask> task) override {
     DCHECK(RuntimeEnabledFeatures::V8IdleTasksEnabled());
     scheduler_->PostIdleTask(
-        FROM_HERE,
+        location,
         ConvertToBaseOnceCallback(CrossThreadBindOnce(
             [](std::unique_ptr<v8::IdleTask> task, base::TimeTicks deadline) {
               task->Run(deadline.since_origin().InSecondsF());

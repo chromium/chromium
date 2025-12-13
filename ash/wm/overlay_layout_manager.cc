@@ -26,7 +26,7 @@ void OverlayLayoutManager::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
   if (display.id() !=
-      Screen::GetScreen()->GetDisplayNearestWindow(overlay_container_).id()) {
+      Screen::Get()->GetDisplayNearestWindow(overlay_container_).id()) {
     // The update wasn't for this container's display.
     return;
   }

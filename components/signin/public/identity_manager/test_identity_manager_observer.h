@@ -43,6 +43,8 @@ class TestIdentityManagerObserver : IdentityManager::Observer {
   const CoreAccountInfo& AccountFromErrorStateOfRefreshTokenUpdatedCallback();
   const GoogleServiceAuthError&
   ErrorFromErrorStateOfRefreshTokenUpdatedCallback() const;
+  signin_metrics::SourceForRefreshTokenOperation
+  TokenOperationSourceFromErrorStateOfRefreshTokenUpdatedCallback() const;
 
   void SetOnRefreshTokenRemovedCallback(base::OnceClosure callback);
   const CoreAccountId& AccountIdFromRefreshTokenRemovedCallback();
@@ -111,6 +113,8 @@ class TestIdentityManagerObserver : IdentityManager::Observer {
   CoreAccountInfo account_from_error_state_of_refresh_token_updated_callback_;
   GoogleServiceAuthError
       error_from_error_state_of_refresh_token_updated_callback_;
+  signin_metrics::SourceForRefreshTokenOperation
+      token_operation_source_from_error_state_of_refresh_token_updated_callback_;
 
   base::OnceClosure on_refresh_token_removed_callback_;
   CoreAccountId account_from_refresh_token_removed_callback_;

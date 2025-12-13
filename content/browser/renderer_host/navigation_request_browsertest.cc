@@ -17,10 +17,12 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "components/history/core/browser/features.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
+#include "content/browser/renderer_host/process_selection_deferring_condition_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -57,6 +59,7 @@
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_commit_deferring_condition.h"
+#include "content/test/mock_process_selection_deferring_condition_tester.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -2493,7 +2496,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ErrorPageNetworkError) {
   GURL start_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   GURL error_url(embedded_test_server()->GetURL("/close-socket"));
-  EXPECT_NE(start_url.host(), error_url.host());
+  EXPECT_NE(start_url.GetHost(), error_url.GetHost());
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&net::URLRequestFailedJob::AddUrlHandler));
 
@@ -2662,6 +2665,319 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   EXPECT_FALSE(installer2.condition().WasInvoked());
 }
 
+// A test ContentBrowserClient that allows injecting
+// ProcessSelectionDeferringConditions into a NavigationRequest.
+class ProcessSelectionDeferringBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  ProcessSelectionDeferringBrowserClient() = default;
+
+  ~ProcessSelectionDeferringBrowserClient() override = default;
+
+  std::vector<std::unique_ptr<ProcessSelectionDeferringCondition>>
+  CreateProcessSelectionDeferringConditionsForNavigation(
+      NavigationHandle& navigation_handle) override {
+    std::vector<std::unique_ptr<ProcessSelectionDeferringCondition>> conditions;
+    create_process_conditions_call_count_++;
+    for (auto result : condition_results_to_create_) {
+      auto condition =
+          std::make_unique<MockProcessSelectionDeferringConditionTester>(
+              navigation_handle, result);
+      conditions.push_back(condition->Release());
+      owned_conditions_.push_back(std::move(condition));
+    }
+    return conditions;
+  }
+
+  // Add a condition type to create on each navigation. If the test involves
+  // multiple navigations, all condition types will be created for each
+  // navigation.
+  void AddConditionToCreate(ProcessSelectionDeferringCondition::Result result) {
+    condition_results_to_create_.push_back(result);
+  }
+
+  // Returns the currently created process selection deferring conditions to the
+  // caller. The returned vector will contain all conditions created since the
+  // last time that GetCreatedConditions() was called, which may include
+  // conditions from multiple navigations.
+  std::vector<std::unique_ptr<MockProcessSelectionDeferringConditionTester>>
+  GetCreatedConditions() {
+    return std::move(owned_conditions_);
+  }
+
+  int create_process_conditions_call_count() {
+    return create_process_conditions_call_count_;
+  }
+
+ private:
+  std::vector<ProcessSelectionDeferringCondition::Result>
+      condition_results_to_create_;
+  std::vector<std::unique_ptr<MockProcessSelectionDeferringConditionTester>>
+      owned_conditions_;
+  int create_process_conditions_call_count_ = 0;
+};
+
+class ProcessSelectionDeferralTest : public NavigationRequestBrowserTest {
+ public:
+  ProcessSelectionDeferralTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kProcessSelectionDeferringConditions);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Ensure a navigation runs process selection deferring conditions.
+IN_PROC_BROWSER_TEST_F(
+    ProcessSelectionDeferralTest,
+    ProcessSelectionDeferringConditionsAreCalledOnNavigation) {
+  GURL simple_url(embedded_test_server()->GetURL("/simple_page.html"));
+
+  TestNavigationManager manager(shell()->web_contents(), simple_url);
+
+  ProcessSelectionDeferringBrowserClient browser_client;
+  browser_client.AddConditionToCreate(
+      ProcessSelectionDeferringCondition::Result::kProceed);
+
+  shell()->LoadURL(simple_url);
+  ASSERT_TRUE(manager.WaitForResponse());
+  manager.ResumeNavigation();
+
+  NavigationRequest* request =
+      static_cast<NavigationRequest*>(manager.GetNavigationHandle());
+
+  EXPECT_EQ(request->state(), NavigationRequest::READY_TO_COMMIT);
+  auto conditions = browser_client.GetCreatedConditions();
+  ASSERT_EQ(1u, conditions.size());
+  MockProcessSelectionDeferringConditionTester* condition = conditions[0].get();
+  ASSERT_TRUE(condition);
+  EXPECT_EQ(condition->GetOnRequestRedirectedCallCount(), 0);
+  EXPECT_TRUE(condition->WasOnWillSelectFinalProcessCalled());
+}
+
+// Ensure a navigation runs process selection deferring conditions when a
+// request is redirected.
+IN_PROC_BROWSER_TEST_F(ProcessSelectionDeferralTest,
+                       ProcessSelectionDeferringConditionsAreCalledOnRedirect) {
+  GURL final_url = embedded_test_server()->GetURL("/defaultresponse");
+  GURL first_url =
+      embedded_test_server()->GetURL("/server-redirect?" + final_url.spec());
+
+  TestNavigationManager manager(shell()->web_contents(), first_url);
+
+  ProcessSelectionDeferringBrowserClient browser_client;
+  browser_client.AddConditionToCreate(
+      ProcessSelectionDeferringCondition::Result::kProceed);
+
+  shell()->LoadURL(first_url);
+  ASSERT_TRUE(manager.WaitForResponse());
+  manager.ResumeNavigation();
+
+  NavigationRequest* request =
+      static_cast<NavigationRequest*>(manager.GetNavigationHandle());
+
+  EXPECT_EQ(request->state(), NavigationRequest::READY_TO_COMMIT);
+  auto conditions = browser_client.GetCreatedConditions();
+  ASSERT_EQ(1u, conditions.size());
+  MockProcessSelectionDeferringConditionTester* condition = conditions[0].get();
+  ASSERT_TRUE(condition);
+  EXPECT_EQ(condition->GetOnRequestRedirectedCallCount(), 1);
+}
+
+// Ensure a navigation can be deferred by a
+// ProcessSelectionDeferringCondition.
+IN_PROC_BROWSER_TEST_F(ProcessSelectionDeferralTest,
+                       ProcessSelectionCanBeDeferred) {
+  GURL simple_url(embedded_test_server()->GetURL("/simple_page.html"));
+
+  TestNavigationObserver navigation_observer(shell()->web_contents());
+
+  ProcessSelectionDeferringBrowserClient browser_client;
+  browser_client.AddConditionToCreate(
+      ProcessSelectionDeferringCondition::Result::kDefer);
+
+  shell()->LoadURL(simple_url);
+
+  auto conditions = browser_client.GetCreatedConditions();
+  ASSERT_EQ(1u, conditions.size());
+  MockProcessSelectionDeferringConditionTester* condition = conditions[0].get();
+  ASSERT_TRUE(condition);
+
+  condition->WaitUntilOnWillSelectFinalProcessIsCalled();
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  NavigationRequest* request = root->navigation_request();
+  ASSERT_TRUE(request);
+
+  // The navigation should not have proceeded through to ReadyToCommit.
+  EXPECT_LT(request->state(), NavigationRequest::READY_TO_COMMIT);
+  EXPECT_TRUE(condition->WasOnWillSelectFinalProcessCalled());
+
+  // Resume the deferral.
+  condition->CallResumeClosure();
+
+  // The navigation should now be able to commit.
+  navigation_observer.Wait();
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+}
+
+// Ensure a subframe navigation can be deferred by a
+// ProcessSelectionDeferringCondition.
+IN_PROC_BROWSER_TEST_F(ProcessSelectionDeferralTest,
+                       ProcessSelectionForSubframeCanBeDeferred) {
+  GURL main_frame_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b())"));
+  GURL subframe_url(embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b()"));
+
+  TestNavigationManager main_frame_manager(shell()->web_contents(),
+                                           main_frame_url);
+  TestNavigationManager subframe_manager(shell()->web_contents(), subframe_url);
+
+  ProcessSelectionDeferringBrowserClient browser_client;
+  // Since there are two navigations, two conditions will be created.
+  browser_client.AddConditionToCreate(
+      ProcessSelectionDeferringCondition::Result::kDefer);
+
+  shell()->LoadURL(main_frame_url);
+
+  EXPECT_TRUE(main_frame_manager.WaitForRequestStart());
+  auto conditions = browser_client.GetCreatedConditions();
+  ASSERT_EQ(1u, conditions.size());
+  MockProcessSelectionDeferringConditionTester* main_frame_condition =
+      conditions[0].get();
+
+  // Allow the navigation to proceed until it is deferred by the condition.
+  main_frame_manager.ResumeNavigation();
+  main_frame_condition->WaitUntilOnWillSelectFinalProcessIsCalled();
+
+  // Main frame should be deferred.
+  EXPECT_FALSE(main_frame_manager.was_committed());
+
+  // After the main frame's process selection is resumed, it will commit and
+  // the subframe navigation will start.
+  main_frame_condition->CallResumeClosure();
+  ASSERT_TRUE(main_frame_manager.WaitForNavigationFinished());
+
+  // Main frame should commit, but we need to wait until the subframe navigation
+  // starts.
+  EXPECT_TRUE(subframe_manager.WaitForRequestStart());
+  EXPECT_TRUE(main_frame_manager.was_committed());
+  EXPECT_FALSE(subframe_manager.was_committed());
+
+  EXPECT_EQ(2, browser_client.create_process_conditions_call_count());
+  conditions = browser_client.GetCreatedConditions();
+  ASSERT_EQ(1u, conditions.size());
+  MockProcessSelectionDeferringConditionTester* subframe_condition =
+      conditions[0].get();
+
+  // Allow the subframe navigation to proceed until it is deferred by the
+  // condition.
+  subframe_manager.ResumeNavigation();
+  subframe_condition->WaitUntilOnWillSelectFinalProcessIsCalled();
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  ASSERT_EQ(1u, root->child_count());
+  FrameTreeNode* child = root->child_at(0u);
+  NavigationRequest* request = child->navigation_request();
+  ASSERT_TRUE(request);
+  EXPECT_LT(request->state(), NavigationRequest::READY_TO_COMMIT);
+  EXPECT_FALSE(subframe_manager.was_committed());
+
+  subframe_condition->CallResumeClosure();
+  ASSERT_TRUE(subframe_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(subframe_manager.was_committed());
+}
+
+// Ensure a navigation can be cancelled while process selection is deferring.
+IN_PROC_BROWSER_TEST_F(ProcessSelectionDeferralTest,
+                       CanCancelWhileProcessSelectionIsDeferring) {
+  GURL simple_url(embedded_test_server()->GetURL("/simple_page.html"));
+
+  TestNavigationObserver navigation_observer(shell()->web_contents());
+
+  ProcessSelectionDeferringBrowserClient browser_client;
+  browser_client.AddConditionToCreate(
+      ProcessSelectionDeferringCondition::Result::kDefer);
+
+  shell()->LoadURL(simple_url);
+
+  auto conditions = browser_client.GetCreatedConditions();
+  ASSERT_EQ(1u, conditions.size());
+  MockProcessSelectionDeferringConditionTester* condition = conditions[0].get();
+  ASSERT_TRUE(condition);
+
+  // This will run until the condition's `OnWillSelectFinalProcess` is called.
+  condition->WaitUntilOnWillSelectFinalProcessIsCalled();
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  NavigationRequest* request = root->navigation_request();
+  ASSERT_TRUE(request);
+
+  EXPECT_TRUE(condition->WasOnWillSelectFinalProcessCalled());
+
+  // The navigation should not have proceeded through to ReadyToCommit.
+  EXPECT_LT(request->state(), NavigationRequest::READY_TO_COMMIT);
+
+  EXPECT_FALSE(condition->IsDestroyed());
+  base::OnceClosure resume_closure = condition->GetResumeClosure();
+  // While the process selection is deferred, cancel the navigation.
+  shell()->web_contents()->Stop();
+
+  // The navigation should complete, but fail.
+  navigation_observer.Wait();
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_TRUE(condition->IsDestroyed());
+
+  // Run the resume closure that was passed to the condition. This simulates
+  // what could happen when an asynchronous task completes after the navigation
+  // is stopped. Running the closure now tests that the browser doesn't crash
+  // when this happens.
+  std::move(resume_closure).Run();
+}
+
+class ProcessSelectionDeferralDisabledTest
+    : public NavigationRequestBrowserTest {
+ public:
+  ProcessSelectionDeferralDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kProcessSelectionDeferringConditions);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// `ProcessSelectionDeferringConditions` are not created or processed when the
+// feature is disabled.
+IN_PROC_BROWSER_TEST_F(
+    ProcessSelectionDeferralDisabledTest,
+    ProcessSelectionDeferringConditionsDoNotRunWhenDisabled) {
+  GURL simple_url(embedded_test_server()->GetURL("/simple_page.html"));
+
+  TestNavigationManager manager(shell()->web_contents(), simple_url);
+
+  ProcessSelectionDeferringBrowserClient browser_client;
+  browser_client.AddConditionToCreate(
+      ProcessSelectionDeferringCondition::Result::kProceed);
+
+  shell()->LoadURL(simple_url);
+  ASSERT_TRUE(manager.WaitForResponse());
+  manager.ResumeNavigation();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
+
+  ASSERT_TRUE(manager.was_successful());
+  auto conditions = browser_client.GetCreatedConditions();
+  EXPECT_EQ(0u, conditions.size());
+}
+
 // Ensure throttles registered by tests using RegisterThrottleForTesting() are
 // executed after those registered by the WebContents' browser client (i.e. how
 // non-test throttles are normally registered).
@@ -2702,7 +3018,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   shell()->LoadURL(simple_url);
   auto* handle = manager.GetNavigationHandle();
   auto* registry = NavigationRequest::From(handle)
-                     ->GetNavigationThrottleRegistryForTesting();
+                       ->GetNavigationThrottleRegistryForTesting();
 
   // The navigation should have been deferred by one of our throttles. Ensure
   // it's the client throttle since we explicitly want test throttles to
@@ -2911,6 +3227,50 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     }
   }
 }
+
+class NavigationRequestUpdateHistoryBrowserTest
+    : public NavigationRequestBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  NavigationRequestUpdateHistoryBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(history::kVisitedLinksOn404,
+                                              GetParam());
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NavigationRequestUpdateHistoryBrowserTest,
+                       Reachable404) {
+  base::RunLoop did_finish_navigation_run_loop;
+  DidFinishNavigationObserver observer(
+      shell()->web_contents(),
+      base::BindLambdaForTesting([&did_finish_navigation_run_loop](
+                                     NavigationHandle* navigation_handle) {
+        ASSERT_EQ(navigation_handle->GetNavigatingFrameType(),
+                  FrameType::kPrimaryMainFrame);
+        ASSERT_TRUE(navigation_handle->GetResponseHeaders());
+        ASSERT_EQ(navigation_handle->GetResponseHeaders()->response_code(),
+                  404);
+        // If `history::kVisitedLinksOn404` is enabled, history should be
+        // updated even for 404 navigations. If disabled, history should not be
+        // updated for navigations resulting in a 404.
+        EXPECT_EQ(navigation_handle->ShouldUpdateHistory(),
+                  base::FeatureList::IsEnabled(history::kVisitedLinksOn404));
+        did_finish_navigation_run_loop.Quit();
+      }));
+
+  // Navigate to a reachable URL that 404s.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/page404.html")));
+
+  did_finish_navigation_run_loop.Run();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NavigationRequestUpdateHistoryBrowserTest,
+                         ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest_IsolateAllSites,
                        StartToCommitMetrics) {
@@ -3754,12 +4114,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     TestNavigationManager navigation_manager(web_contents, same_doc_url);
     testing::NiceMock<MockWebContentsObserver> observer(web_contents);
     EXPECT_CALL(observer, DidFinishNavigation(testing::_))
-        .WillOnce(testing::Invoke([](NavigationHandle* navigation_handle) {
+        .WillOnce([](NavigationHandle* navigation_handle) {
           NavigationRequest* request =
               NavigationRequest::From(navigation_handle);
           EXPECT_TRUE(request->is_synchronous_renderer_commit());
           EXPECT_TRUE(navigation_handle->GetRenderFrameHost());
-        }));
+        });
     EXPECT_TRUE(ExecJs(web_contents, "location.href = '#foo';"));
     ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   }
@@ -3777,12 +4137,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   {
     testing::NiceMock<MockWebContentsObserver> observer(popup);
     EXPECT_CALL(observer, DidFinishNavigation(testing::_))
-        .WillOnce(testing::Invoke([](NavigationHandle* navigation_handle) {
+        .WillOnce([](NavigationHandle* navigation_handle) {
           NavigationRequest* request =
               NavigationRequest::From(navigation_handle);
           EXPECT_TRUE(request->is_synchronous_renderer_commit());
           EXPECT_TRUE(navigation_handle->GetRenderFrameHost());
-        }));
+        });
     TestNavigationManager navigation_manager(popup, GURL("about:blank#foo"));
     EXPECT_TRUE(
         ExecJs(web_contents, "w.history.replaceState({}, '', '#foo');"));
@@ -3804,12 +4164,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   {
     testing::NiceMock<MockWebContentsObserver> observer(web_contents);
     EXPECT_CALL(observer, DidFinishNavigation(testing::_))
-        .WillOnce(testing::Invoke([](NavigationHandle* navigation_handle) {
+        .WillOnce([](NavigationHandle* navigation_handle) {
           NavigationRequest* request =
               NavigationRequest::From(navigation_handle);
           EXPECT_TRUE(request->is_synchronous_renderer_commit());
           EXPECT_TRUE(navigation_handle->GetRenderFrameHost());
-        }));
+        });
     CreateSubframe(web_contents, "subframe", GURL(),
                    /*wait_for_navigation*/ true);
   }
@@ -3826,7 +4186,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   {
     testing::NiceMock<MockWebContentsObserver> observer(popup);
     EXPECT_CALL(observer, DidFinishNavigation(testing::_))
-        .WillOnce(testing::Invoke([](NavigationHandle* navigation_handle) {
+        .WillOnce([](NavigationHandle* navigation_handle) {
           NavigationRequest* request =
               NavigationRequest::From(navigation_handle);
           EXPECT_TRUE(request->is_synchronous_renderer_commit());
@@ -3835,7 +4195,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
           // Ensure that response_should_be_rendered() is true even for pages
           // that do not require a URLLoader.
           EXPECT_TRUE(request->response_should_be_rendered());
-        }));
+        });
     CreateSubframe(popup, "popup_subframe", GURL(),
                    /*wait_for_navigation*/ true);
   }
@@ -4065,10 +4425,10 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   EXPECT_FALSE(rfh->GetProcess()->IsUnused());
   if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ("http://a.com/", rfh->GetSiteInstance()->GetSiteURL());
-    EXPECT_TRUE(rfh->GetProcess()->GetProcessLock().is_locked_to_site());
+    EXPECT_TRUE(rfh->GetProcess()->GetProcessLock().IsLockedToSite());
     EXPECT_EQ("http://a.com/", rfh->GetProcess()->GetProcessLock().site_url());
   } else {
-    EXPECT_TRUE(rfh->GetProcess()->GetProcessLock().allows_any_site());
+    EXPECT_TRUE(rfh->GetProcess()->GetProcessLock().AllowsAnySite());
   }
 }
 

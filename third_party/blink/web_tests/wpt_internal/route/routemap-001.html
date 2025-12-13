@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<title>Simple routemap with one matching and one non-matching route</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
+<!-- Assuming here that "route" is part of the test path. -->
+<script type="routemap">
+  {
+    "routes": [
+      {
+        "name": "r1",
+        "pattern": [ "*route*" ]
+      },
+      {
+        "name": "r2",
+        "pattern": [ "should-not-match" ]
+      }
+    ]
+  }
+</script>
+<style>
+  #target {
+    display: none;
+  }
+  @navigation (r1) {
+    #target {
+      display: block;
+      width: 100px;
+      height: 100px;
+      background: green;
+    }
+  }
+  @navigation (r2) {
+    #target {
+      border: 10px solid red;
+    }
+  }
+</style>
+<div id="target"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    assert_equals(target.offsetWidth, 100);
+    assert_equals(target.offsetHeight, 100);
+    assert_equals(getComputedStyle(target).borderStyle, "none");
+  }, "Only route r1 should match");
+</script>

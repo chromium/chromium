@@ -154,12 +154,9 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                     forceApplicationMode:(BOOL)forceApplicationMode {
   GURL parsedURL = net::GURLWithNSURL(completeURL);
 
-  if (!parsedURL.is_valid() || parsedURL.scheme().length() == 0) {
+  if (!parsedURL.is_valid() || parsedURL.GetScheme().length() == 0) {
     return nil;
   }
-
-  // Log browser started indirectly for default browser promo experiment stats.
-  LogBrowserIndirectlylaunched();
 
   if ([completeURL.scheme isEqualToString:kWidgetKitSchemeChrome]) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
@@ -333,7 +330,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
       // Replace the scheme with https or http depending on whether the input
       // `url` scheme ends with an 's'.
       BOOL useHttps =
-          parsedURL.scheme()[parsedURL.scheme().length() - 1] == 's';
+          parsedURL.GetScheme()[parsedURL.GetScheme().length() - 1] == 's';
       action = useHttps ? START_ACTION_OPEN_HTTPS : START_ACTION_OPEN_HTTP;
       base::UmaHistogramEnumeration(kAppLaunchSource,
                                     AppLaunchSource::LINK_OPENED_FROM_APP);
@@ -634,7 +631,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         forceApplicationMode:forceApplicationMode];
 
     params.textQuery = externalText;
-
+    params.openedViaShareExtensionScheme = YES;
     action = ACTION_SEARCH_TEXT;
   }
 
@@ -653,7 +650,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         forceApplicationMode:forceApplicationMode];
 
     params.textQuery = externalText;
-
+    params.openedViaShareExtensionScheme = YES;
     action = ACTION_SEARCH_TEXT;
   }
 
@@ -673,6 +670,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         forceApplicationMode:forceApplicationMode];
 
     params.imageSearchData = externalData;
+    params.openedViaShareExtensionScheme = YES;
 
     action = ACTION_SEARCH_IMAGE;
   }
@@ -692,7 +690,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         forceApplicationMode:forceApplicationMode];
 
     params.imageSearchData = externalData;
-
+    params.openedViaShareExtensionScheme = YES;
     action = ACTION_SEARCH_IMAGE;
   }
 
@@ -894,7 +892,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     return first_run::LAUNCH_BY_OTHERS;
   }
 
-  NSString* query = base::SysUTF8ToNSString(self.completeURL.query());
+  NSString* query = base::SysUTF8ToNSString(self.completeURL.GetQuery());
   // Takes care of degenerated case of no QUERY_STRING.
   if (![query length]) {
     return first_run::LAUNCH_BY_MOBILESAFARI;

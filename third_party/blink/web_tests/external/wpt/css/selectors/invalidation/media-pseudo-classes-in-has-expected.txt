@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Test :playing pseudo-class
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(0, 0, 0)"
+[FAIL] Test :seeking pseudo-class
+  assert_implements: :seeking is not supported undefined
+[FAIL] Test :muted pseudo-class
+  assert_implements: :muted is not supported undefined
+Harness: the test ran to completion.
+

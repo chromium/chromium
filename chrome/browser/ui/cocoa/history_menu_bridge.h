@@ -21,6 +21,7 @@
 #import "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
@@ -80,6 +81,8 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
     GURL url;
     // Favicon for the URL.
     NSImage* __strong icon;
+
+    std::optional<tab_groups::TabGroupColorId> tab_group_color_id;
 
     // If the icon is being requested from the FaviconService, |icon_requested|
     // will be true and |icon_task_id| will be valid. If this is false, then
@@ -228,7 +231,8 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   // Creates a HistoryItem* for the given tab entry.
   std::unique_ptr<HistoryItem> HistoryItemForTab(
-      const sessions::tab_restore::Tab& entry);
+      const sessions::tab_restore::Tab& entry,
+      bool attach_group_icon);
 
   // Helper function that sends an async request to the FaviconService to get
   // an icon. The callback will update the NSMenuItem directly.
@@ -254,8 +258,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
-                    const history::URLRow& url_row,
-                    const history::VisitRow& new_visit) override;
+                    const history::VisitedURLInfo& visited_url_info) override;
   void OnURLsModified(history::HistoryService* history_service,
                       const history::URLRows& changed_urls) override;
   void OnHistoryDeletions(history::HistoryService* history_service,

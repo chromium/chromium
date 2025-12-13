@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_buffer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -133,10 +134,10 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
   // 4, which is a requirement for all mappings.
   if (dawn_desc.mappedAtCreation && buffer_size % 4 != 0) {
     exception_state.ThrowRangeError(
-        WTF::String::Format("createBuffer failed, size (%" PRIu64
-                            ") is not a multiple of 4 when "
-                            "mappedAtCreation == true",
-                            buffer_size));
+        String::Format("createBuffer failed, size (%" PRIu64
+                       ") is not a multiple of 4 when "
+                       "mappedAtCreation == true",
+                       buffer_size));
     return nullptr;
   }
 
@@ -156,11 +157,11 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
   if (wgpuBuffer == nullptr) {
     DCHECK(dawn_desc.mappedAtCreation);
     exception_state.ThrowRangeError(
-        WTF::String::Format("createBuffer failed, size (%" PRIu64
-                            ") is too large for "
-                            "the implementation when "
-                            "mappedAtCreation == true",
-                            buffer_size));
+        String::Format("createBuffer failed, size (%" PRIu64
+                       ") is too large for "
+                       "the implementation when "
+                       "mappedAtCreation == true",
+                       buffer_size));
     return nullptr;
   }
 
@@ -183,10 +184,23 @@ GPUBuffer::GPUBuffer(GPUDevice* device,
                      const String& label)
     : DawnObject<wgpu::Buffer>(device, std::move(buffer), label), size_(size) {}
 
+GPUBuffer::GPUBuffer(GPUDevice* device,
+                     uint64_t size,
+                     scoped_refptr<WebGPUMailboxBuffer> mailbox_buffer,
+                     const String& label)
+    : DawnObject<wgpu::Buffer>(device, mailbox_buffer->GetBuffer(), label),
+      size_(size),
+      mailbox_buffer_(std::move(mailbox_buffer)) {
+  if (mailbox_buffer_) {
+    device_->TrackBufferWithMailbox(this);
+  }
+}
+
 GPUBuffer::~GPUBuffer() {
   if (mappable_buffer_handles_) {
     mappable_buffer_handles_->erase(GetHandle());
   }
+  DissociateMailbox();
 }
 
 void GPUBuffer::Trace(Visitor* visitor) const {
@@ -233,6 +247,12 @@ void GPUBuffer::unmap(v8::Isolate* isolate) {
 
 void GPUBuffer::destroy(v8::Isolate* isolate) {
   ResetMappingState(isolate);
+
+  if (mailbox_buffer_) {
+    DissociateMailbox();
+    device_->UntrackBufferWithMailbox(this);
+  }
+
   GetHandle().Destroy();
   // Destroyed, so it can never be mapped again. Stop tracking.
   device_->adapter()->gpu()->UntrackMappableBuffer(this);
@@ -252,6 +272,13 @@ uint32_t GPUBuffer::usage() const {
 
 V8GPUBufferMapState GPUBuffer::mapState() const {
   return FromDawnEnum(GetHandle().GetMapState());
+}
+
+void GPUBuffer::DissociateMailbox() {
+  if (mailbox_buffer_) {
+    mailbox_buffer_->Dissociate();
+    mailbox_buffer_ = nullptr;
+  }
 }
 
 ScriptPromise<IDLUndefined> GPUBuffer::MapAsyncImpl(
@@ -284,7 +311,7 @@ ScriptPromise<IDLUndefined> GPUBuffer::MapAsyncImpl(
 
   // And send the command, leaving remaining validation to Dawn.
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this))));
+      BindOnce(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this))));
 
   GetHandle().MapAsync(static_cast<wgpu::MapMode>(mode), map_offset, map_size,
                        wgpu::CallbackMode::AllowSpontaneous,
@@ -321,7 +348,7 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
   if (range_size > std::numeric_limits<size_t>::max() - range_offset) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
-        WTF::String::Format(
+        String::Format(
             "getMappedRange failed, offset(%zu) + size(%zu) overflows size_t",
             range_offset, range_size));
     return nullptr;
@@ -338,10 +365,10 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
     if (range_end > candidate_start && range_offset < candidate_end) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kOperationError,
-          WTF::String::Format("getMappedRange [%zu, %zu) overlaps with "
-                              "previously returned range [%zu, %zu).",
-                              range_offset, range_end, candidate_start,
-                              candidate_end));
+          String::Format("getMappedRange [%zu, %zu) overlaps with "
+                         "previously returned range [%zu, %zu).",
+                         range_offset, range_end, candidate_start,
+                         candidate_end));
       return nullptr;
     }
   }
@@ -369,9 +396,9 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
   // be done before the creation of ArrayBuffer.
   if (range_size > v8::TypedArray::kMaxByteLength) {
     exception_state.ThrowRangeError(
-        WTF::String::Format("getMappedRange failed, size (%zu) is too large "
-                            "for the implementation. max size = %zu",
-                            range_size, v8::TypedArray::kMaxByteLength));
+        String::Format("getMappedRange failed, size (%zu) is too large "
+                       "for the implementation. max size = %zu",
+                       range_size, v8::TypedArray::kMaxByteLength));
     return nullptr;
   }
 

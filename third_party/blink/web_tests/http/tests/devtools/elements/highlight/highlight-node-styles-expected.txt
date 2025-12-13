@@ -34,9 +34,9 @@ div-with-text{
 }
 section-with-wide-gamut-colors{
   "color-unclamped-rgba": [
-    1.905670166015625,
-    -0.4917716979980469,
-    1.0208816528320312,
+    1.9055674076080322,
+    -0.49176037311553955,
+    1.0208687782287598,
     1
   ],
   "color-css-text": "color(xyz-d50 2 0.9 0.79)",
@@ -47,9 +47,9 @@ section-with-wide-gamut-colors{
   "padding": "0px",
   "margin": "0px",
   "background-color-unclamped-rgba": [
-    1.0207748413085938,
-    0.7739334106445312,
-    0.8761367797851562,
+    1.02077317237854,
+    0.7738876938819885,
+    0.8761119842529297,
     1
   ],
   "background-color-css-text": "lab(86 26 -3.8)",

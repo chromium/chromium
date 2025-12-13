@@ -20,7 +20,7 @@ import '../settings_shared.css.js';
 import './multidevice_screen_lock_subpage.js';
 
 import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -462,6 +462,10 @@ export class SettingsMultidevicePermissionsSetupDialogElement extends
           .SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
         this.setupState_ = combinedSetupResult;
         return;
+      case PermissionsSetupStatus.CONNECTION_ESTABLISHED:
+        break;
+      default:
+        assertNotReachedCase(combinedSetupResult);
     }
 
     // Note: we can only update this.setupState_ after assigning
@@ -667,6 +671,8 @@ export class SettingsMultidevicePermissionsSetupDialogElement extends
         }
         this.propagatePinNumberSelected_(false);
         this.isPasswordDialogShowing = false;
+        break;
+      default:
         break;
     }
 

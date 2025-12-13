@@ -18,9 +18,8 @@ void MockClipboardPermissionService::BindRequest(
   DCHECK(!receiver_.is_bound());
   receiver_.Bind(mojo::PendingReceiver<mojom::blink::PermissionService>(
       std::move(handle)));
-  receiver_.set_disconnect_handler(
-      WTF::BindOnce(&MockClipboardPermissionService::OnConnectionError,
-                    WTF::Unretained(this)));
+  receiver_.set_disconnect_handler(BindOnce(
+      &MockClipboardPermissionService::OnConnectionError, Unretained(this)));
 }
 
 void MockClipboardPermissionService::OnConnectionError() {

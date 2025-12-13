@@ -15,6 +15,17 @@
 
 namespace enterprise_connectors {
 
+ConnectorsServiceBase::ConnectorsServiceBase(
+    std::unique_ptr<ConnectorsManagerBase> manager)
+    : connectors_manager_base_(std::move(manager)) {
+  DCHECK(connectors_manager_base_);
+}
+
+ConnectorsServiceBase::ConnectorsServiceBase(ConnectorsServiceBase&&) = default;
+ConnectorsServiceBase& ConnectorsServiceBase::operator=(
+    ConnectorsServiceBase&&) = default;
+ConnectorsServiceBase::~ConnectorsServiceBase() = default;
+
 ConnectorsServiceBase::DmToken::DmToken(const std::string& value,
                                         policy::PolicyScope scope)
     : value(value), scope(scope) {}
@@ -80,7 +91,7 @@ ConnectorsServiceBase::GetReportingServiceProviderNames() {
     return {};
   }
 
-  return GetConnectorsManagerBase()->GetReportingServiceProviderNames();
+  return connectors_manager_base_->GetReportingServiceProviderNames();
 }
 
 std::optional<ReportingSettings> ConnectorsServiceBase::GetReportingSettings() {
@@ -89,7 +100,7 @@ std::optional<ReportingSettings> ConnectorsServiceBase::GetReportingSettings() {
   }
 
   std::optional<ReportingSettings> settings =
-      GetConnectorsManagerBase()->GetReportingSettings();
+      connectors_manager_base_->GetReportingSettings();
   if (!settings.has_value()) {
     return std::nullopt;
   }
@@ -150,6 +161,92 @@ void ConnectorsServiceBase::PopulateDeviceMetadata(
     device_proto->set_device_fqdn(policy::GetDeviceFqdn());
     device_proto->set_network_name(policy::GetNetworkName());
   }
+}
+
+bool ConnectorsServiceBase::HasExtraUiToDisplay(AnalysisConnector connector,
+                                                const std::string& tag) {
+  return GetCustomMessage(connector, tag) || GetLearnMoreUrl(connector, tag) ||
+         GetBypassJustificationRequired(connector, tag);
+}
+
+bool ConnectorsServiceBase::IsConnectorEnabled(
+    AnalysisConnector connector) const {
+  if (!ConnectorsEnabled()) {
+    return false;
+  }
+
+  return connectors_manager_base_->IsAnalysisConnectorEnabled(connector);
+}
+
+std::vector<const AnalysisConfig*>
+ConnectorsServiceBase::GetAnalysisServiceConfigs(AnalysisConnector connector) {
+  if (!ConnectorsEnabled()) {
+    return {};
+  }
+
+  return connectors_manager_base_->GetAnalysisServiceConfigs(connector);
+}
+
+bool ConnectorsServiceBase::DelayUntilVerdict(AnalysisConnector connector) {
+  if (!ConnectorsEnabled()) {
+    return false;
+  }
+
+  return connectors_manager_base_->DelayUntilVerdict(connector);
+}
+
+std::optional<std::u16string> ConnectorsServiceBase::GetCustomMessage(
+    AnalysisConnector connector,
+    const std::string& tag) {
+  if (!ConnectorsEnabled()) {
+    return std::nullopt;
+  }
+
+  return connectors_manager_base_->GetCustomMessage(connector, tag);
+}
+
+std::optional<GURL> ConnectorsServiceBase::GetLearnMoreUrl(
+    AnalysisConnector connector,
+    const std::string& tag) {
+  if (!ConnectorsEnabled()) {
+    return std::nullopt;
+  }
+
+  return connectors_manager_base_->GetLearnMoreUrl(connector, tag);
+}
+
+bool ConnectorsServiceBase::GetBypassJustificationRequired(
+    AnalysisConnector connector,
+    const std::string& tag) {
+  if (!ConnectorsEnabled()) {
+    return false;
+  }
+
+  return connectors_manager_base_->GetBypassJustificationRequired(connector,
+                                                                  tag);
+}
+
+void ConnectorsServiceBase::ObserveTelemetryReporting(
+    base::RepeatingCallback<void()> callback) {
+  connectors_manager_base_->SetTelemetryObserverCallback(callback);
+}
+
+std::vector<std::string> ConnectorsServiceBase::GetAnalysisServiceProviderNames(
+    AnalysisConnector connector) {
+  if (!ConnectorsEnabled()) {
+    return {};
+  }
+
+  if (!GetDmToken(AnalysisConnectorScopePref(connector)).has_value()) {
+    return {};
+  }
+
+  return connectors_manager_base_->GetAnalysisServiceProviderNames(connector);
+}
+
+ConnectorsManagerBase*
+ConnectorsServiceBase::ConnectorsManagerBaseForTesting() {
+  return connectors_manager_base_.get();
 }
 
 }  // namespace enterprise_connectors

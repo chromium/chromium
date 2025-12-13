@@ -4,32 +4,25 @@
 
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 
-#include "base/android/build_info.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 
 namespace password_manager {
 
-PasswordStoreAndroidLocalBackend::PasswordStoreAndroidLocalBackend(
-    PrefService* prefs)
+PasswordStoreAndroidLocalBackend::PasswordStoreAndroidLocalBackend()
     : PasswordStoreAndroidLocalBackend(
           // The local android backend can only be created for the profile
           // store.
           PasswordStoreAndroidBackendBridgeHelper::Create(
               password_manager::kProfileStore),
-          std::make_unique<PasswordManagerLifecycleHelperImpl>(),
-          prefs) {}
+          std::make_unique<PasswordManagerLifecycleHelperImpl>()) {}
 
 PasswordStoreAndroidLocalBackend::PasswordStoreAndroidLocalBackend(
     std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
-    std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
-    PrefService* prefs)
+    std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper)
     : PasswordStoreAndroidBackend(std::move(bridge_helper),
-                                  std::move(lifecycle_helper),
-                                  prefs) {}
+                                  std::move(lifecycle_helper)) {}
 
 PasswordStoreAndroidLocalBackend::~PasswordStoreAndroidLocalBackend() = default;
 

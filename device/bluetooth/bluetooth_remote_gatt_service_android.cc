@@ -18,7 +18,6 @@
 #include "device/bluetooth/jni_headers/ChromeBluetoothRemoteGattService_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace device {
@@ -170,10 +169,10 @@ void BluetoothRemoteGattServiceAndroid::SetDiscoveryComplete(bool complete) {
 
 void BluetoothRemoteGattServiceAndroid::CreateGattRemoteCharacteristic(
     JNIEnv* env,
-    const JavaParamRef<jstring>& instance_id,
-    const JavaParamRef<jobject>& /* BluetoothGattCharacteristicWrapper */
+    const JavaRef<jstring>& instance_id,
+    const JavaRef<jobject>& /* BluetoothGattCharacteristicWrapper */
         bluetooth_gatt_characteristic_wrapper,
-    const JavaParamRef<jobject>& /* ChromeBluetoothDevice */
+    const JavaRef<jobject>& /* ChromeBluetoothDevice */
         chrome_bluetooth_device) {
   std::string instance_id_string =
       base::android::ConvertJavaStringToUTF8(env, instance_id);
@@ -200,3 +199,5 @@ void BluetoothRemoteGattServiceAndroid::EnsureCharacteristicsCreated() const {
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeBluetoothRemoteGattService)

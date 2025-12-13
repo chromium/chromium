@@ -26,6 +26,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -186,17 +187,17 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
 
   static void RetrieveActions_LogAndFetchActions0(
       std::unique_ptr<std::vector<scoped_refptr<Action>>> i) {
-    ASSERT_EQ(0, static_cast<int>(i->size()));
+    ASSERT_EQ(0u, i->size());
   }
 
   static void RetrieveActions_LogAndFetchActions1(
       std::unique_ptr<std::vector<scoped_refptr<Action>>> i) {
-    ASSERT_EQ(1, static_cast<int>(i->size()));
+    ASSERT_EQ(1u, i->size());
   }
 
   static void RetrieveActions_LogAndFetchActions2(
       std::unique_ptr<std::vector<scoped_refptr<Action>>> i) {
-    ASSERT_EQ(2, static_cast<int>(i->size()));
+    ASSERT_EQ(2u, i->size());
   }
 
   void SetPolicy(bool log_arguments) {

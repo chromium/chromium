@@ -15,7 +15,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/is_callback.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -105,7 +105,7 @@ RepeatingCallback<void(T)> BarrierCallback(
     CallbackType<void(DoneArg)> done_callback) {
   if (num_callbacks == 0) {
     std::move(done_callback).Run({});
-    return BindRepeating(&internal::ShouldNeverRun<T>);
+    return base::BindRepeating(&internal::ShouldNeverRun<T>);
   }
 
   return base::BindRepeating(

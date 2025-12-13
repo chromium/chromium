@@ -9,11 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/remote_cocoa/common/menu.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "ui/views/controls/menu/menu_runner_impl_interface.h"
 

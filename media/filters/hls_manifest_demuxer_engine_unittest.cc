@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
@@ -312,13 +313,13 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
     BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
         "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
     BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-        "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
+        "http://example.com/low.m3u8", kSimpleMediaPlaylist);
     EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
     InitializeEngine();
     task_environment_.RunUntilIdle();
 
     auto rendition = std::make_unique<StrictMock<MockHlsRendition>>(
-        GURL("http://example.com/hi.m3u8"));
+        GURL("http://example.com/low.m3u8"));
     EXPECT_CALL(*rendition, GetDuration()).WillOnce(Return(base::Seconds(30)));
     auto* rendition_ptr = rendition.get();
     engine_->AddRenditionForTesting("primary", std::move(rendition));
@@ -406,8 +407,8 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
  public:
   MOCK_METHOD(void, MockInitComplete, (PipelineStatus status), ());
   MOCK_METHOD(void, SeekFinished, (), ());
-  MOCK_METHOD(void, AddMediaTrack, (const MediaTrack&), ());
-  MOCK_METHOD(void, RemoveMediaTrack, (const MediaTrack&), ());
+  MOCK_METHOD(void, AddTrack, (const MediaTrack&), ());
+  MOCK_METHOD(void, RemoveTrack, (const MediaTrack&), ());
 
   HlsManifestDemuxerEngineTest()
       : media_log_(std::make_unique<NiceMock<media::MockMediaLog>>()),
@@ -424,9 +425,9 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
 
     engine_ = std::make_unique<HlsManifestDemuxerEngine>(
         std::move(dsp), base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::BindRepeating(&HlsManifestDemuxerEngineTest::AddMediaTrack,
+        base::BindRepeating(&HlsManifestDemuxerEngineTest::AddTrack,
                             base::Unretained(this)),
-        base::BindRepeating(&HlsManifestDemuxerEngineTest::RemoveMediaTrack,
+        base::BindRepeating(&HlsManifestDemuxerEngineTest::RemoveTrack,
                             base::Unretained(this)),
         false, GURL("http://media.example.com/manifest.m3u8"),
         media_log_.get());
@@ -499,12 +500,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestLivePlaybackManifestUpdates) {
   EXPECT_CALL(*mock_mdeh_, AppendAndParseData("primary", _, _, _))
       .WillRepeatedly(Return(true));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://media.example.com/a.ts", "Cheese in a cstring is string cheese.");
+      "http://media.example.com/b.ts", "Cheese in a cstring is string cheese.");
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://media.example.com/b.ts",
+      "http://media.example.com/c.ts",
       "Tomatoes are a fruit. Ketchup is a jam.");
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://media.example.com/c.ts", "You've never been in an empty room.");
+      "http://media.example.com/d.ts", "You've never been in an empty room.");
 
   Ranges<base::TimeDelta> after_seg_a;
   after_seg_a.Add(base::Seconds(0), base::Seconds(9));
@@ -517,15 +518,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestLivePlaybackManifestUpdates) {
 
   EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
       .WillOnce(Return(Ranges<base::TimeDelta>()))  // First CheckState
-      .WillOnce(Return(Ranges<base::TimeDelta>()))  // Before appending A
       .WillOnce(Return(after_seg_a))                // After appending segment A
       .WillOnce(Return(after_seg_a))                // Second CheckState
-      .WillOnce(Return(after_seg_a))                // Before appending B
       .WillOnce(Return(after_seg_b))                // After appending segment B
       .WillOnce(Return(after_seg_b))                // MediaLog
       .WillOnce(Return(after_seg_b))                // Third CheckState
       .WillOnce(Return(after_seg_b))                // Fourth CheckState
-      .WillOnce(Return(after_seg_b))                // Before appending C
       .WillOnce(Return(after_seg_c))                // After appending segment C
       .WillOnce(Return(after_seg_c))                // MediaLog
       .WillOnce(Return(after_seg_c))                // Fifth CheckState
@@ -583,7 +581,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistNoAlternates) {
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
+      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -609,7 +607,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithAlternates) {
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/eng-audio.m3u8", kSingleInfoMediaPlaylist);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://media.example.com/hi/video-only.m3u8", kSimpleMediaPlaylist);
+      "http://media.example.com/low/video-only.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -766,12 +764,12 @@ TEST_F(HlsManifestDemuxerEngineTest, SeekAfterErrorFails) {
 TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringAdaptation) {
   auto* rendition_ptr = SetUpInterruptTest();
   EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
-            GURL("http://example.com/hi.m3u8"));
+            GURL("http://example.com/low.m3u8"));
 
   // Start the adaptation and hold it from finishing.
   base::OnceClosure continue_adaptation = StartAndCaptureNetworkAdaptation(
-      rendition_ptr, "http://example.com/low.m3u8", kSimpleMediaPlaylist,
-      1380000);
+      rendition_ptr, "http://example.com/hi.m3u8", kSimpleMediaPlaylist,
+      45600001);
 
   // Start a seek. It should wait while the adaptation is pending.
   EXPECT_CALL(*this, SeekFinished()).Times(0);
@@ -798,7 +796,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringAdaptation) {
   std::move(continue_adaptation).Run();
   task_environment_.RunUntilIdle();
   EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
-            GURL("http://example.com/low.m3u8"));
+            GURL("http://example.com/hi.m3u8"));
   task_environment_.RunUntilIdle();
 }
 
@@ -833,7 +831,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringTimeUpdate) {
   // Finish the update, seek should complete.
   std::move(continue_update).Run();
   EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
-            GURL("http://example.com/hi.m3u8"));
+            GURL("http://example.com/low.m3u8"));
   task_environment_.RunUntilIdle();
 }
 
@@ -846,12 +844,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestAdaptDuringTimeUpdate) {
 
   // Start an adaptation. It should wait while the update is pending.
   ExpectNoNetworkRequests();
-  engine_->UpdateNetworkSpeed(1380000);
+  engine_->UpdateNetworkSpeed(45600001);
   task_environment_.RunUntilIdle();
 
   // When the update finishes, the adaptation requests the low quality stream.
   BindUrlAssignmentThunk<StringHlsDataSourceStreamFactory>(
-      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
+      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
   std::move(continue_update).Run();
   task_environment_.RunUntilIdle();
 }
@@ -864,12 +862,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestAdaptDuringSeek) {
 
   // Start an adaptation. It should wait while the seek is pending.
   ExpectNoNetworkRequests();
-  engine_->UpdateNetworkSpeed(1380000);
+  engine_->UpdateNetworkSpeed(45600001);
   task_environment_.RunUntilIdle();
 
-  // When the seek finishes, the adaptation requests the low quality stream.
+  // When the seek finishes, the adaptation requests the high quality stream.
   BindUrlAssignmentThunk<StringHlsDataSourceStreamFactory>(
-      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
+      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, SeekFinished());
   std::move(continue_seek).Run();
   task_environment_.RunUntilIdle();
@@ -880,8 +878,8 @@ TEST_F(HlsManifestDemuxerEngineTest, TestTimeUpdateDuringAdaptation) {
 
   // Start the adaptation and hold it from finishing.
   base::OnceClosure continue_adaptation = StartAndCaptureNetworkAdaptation(
-      rendition_ptr, "http://example.com/low.m3u8", kSimpleMediaPlaylist,
-      1380000);
+      rendition_ptr, "http://example.com/hi.m3u8", kSimpleMediaPlaylist,
+      55600001);
 
   // Start the time update
   EXPECT_CALL(*rendition_ptr, CheckState(_, _, _)).Times(0);
@@ -955,12 +953,11 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
 
   // `GetBufferedRanges` gets called many times during this process:
   // - HlsVodRendition::CheckState (1) => empty ranges, nothing loaded.
-  // - HlsVodRendition::OnSegmentData (2) => populated by AppendAndParseData
+  // - HlsVodRendition::OnSegmentData (1) => populated by AppendAndParseData
   // - HlsVodRendition::CheckState (2) => still has data
   Ranges<base::TimeDelta> populated_ranges;
   populated_ranges.Add(base::Seconds(0), base::Seconds(5));
   EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
-      .WillOnce(Return(Ranges<base::TimeDelta>()))
       .WillOnce(Return(Ranges<base::TimeDelta>()))
       .WillOnce(Return(populated_ranges))
       .WillOnce(Return(populated_ranges));
@@ -1056,7 +1053,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestOriginTainting) {
       "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist,
       /*taint_origin=*/true);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
+      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();

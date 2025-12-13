@@ -5,6 +5,8 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "content/public/browser/browser_context.h"
 
 namespace actor {
 
@@ -13,7 +15,7 @@ ActorKeyedService* ActorKeyedServiceFactory::GetActorKeyedService(
     content::BrowserContext* browser_context) {
   return static_cast<ActorKeyedService*>(
       GetInstance()->GetServiceForBrowserContext(browser_context,
-                                                 /*create=*/false));
+                                                 /*create=*/true));
 }
 
 // static
@@ -26,7 +28,9 @@ ActorKeyedServiceFactory* ActorKeyedServiceFactory::GetInstance() {
 ActorKeyedServiceFactory::ActorKeyedServiceFactory(
     base::PassKey<ActorKeyedServiceFactory>)
     : ProfileKeyedServiceFactory("ActorKeyedService",
-                                 ProfileSelections::BuildForRegularProfile()) {}
+                                 ProfileSelections::BuildForRegularProfile()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 ActorKeyedServiceFactory::~ActorKeyedServiceFactory() = default;
 

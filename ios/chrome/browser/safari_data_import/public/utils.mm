@@ -4,20 +4,6 @@
 
 #import "ios/chrome/browser/safari_data_import/public/utils.h"
 
-namespace {
-/// Accessibility identifier the table.
-NSString* const kSafariDataItemTableViewAXidPrefix =
-    @"kSafariDataItemTableView";
-}  // namespace
-
-NSString* GetSafariDataItemTableViewAccessibilityIdentifier() {
-  return [NSString stringWithFormat:@"%@%@", kSafariDataItemTableViewAXidPrefix,
-                                    @"AccessibilityIdentifier"];
-}
-
-NSString* GetSafariDataItemTableViewCellAccessibilityIdentifier(
-    NSUInteger cell_index) {
-  return
-      [NSString stringWithFormat:@"%@-%ld", kSafariDataItemTableViewAXidPrefix,
-                                 cell_index];
+NSString* GetSafariDataEntryPointAccessibilityIdentifier() {
+  return @"SafariDataEntryPointAccessibilityIdentifier";
 }

@@ -114,16 +114,16 @@ std::vector<RegistrationRequest> AppRecover::RecordRegisteredApps() const {
       found_browser_registration = true;
     }
     if (app == browser_app_id_ && browser_version_.IsValid()) {
-      registration.version = browser_version_;
+      registration.version = browser_version_.GetString();
     } else {
-      registration.version = data->GetProductVersion(app);
+      registration.version = data->GetProductVersion(app).GetString();
     }
     apps.push_back(registration);
   }
   if (!found_browser_registration) {
     RegistrationRequest registration;
     registration.app_id = browser_app_id_;
-    registration.version = browser_version_;
+    registration.version = browser_version_.GetString();
     apps.emplace_back(registration);
   }
   return apps;

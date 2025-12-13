@@ -13,9 +13,9 @@ static_library("plugin_vm") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//ash/public/cpp",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser/ash/plugin_vm",
-    "//chrome/browser/ui:browser_navigator_params_headers",
     "//ui/chromeos",
     "//ui/strings:ui_strings",
   ]

@@ -7,11 +7,14 @@
 #import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
@@ -68,7 +71,7 @@
     return;
   }
   TableViewIdentityItem* previousSelectedItem =
-      [self.consumer tableViewIdentityItemWithGaiaID:_selectedIdentity.gaiaID];
+      [self.consumer tableViewIdentityItemWithGaiaID:_selectedIdentity.gaiaId];
   if (previousSelectedItem) {
     previousSelectedItem.selected = NO;
     [self.consumer itemHasChanged:previousSelectedItem];
@@ -78,22 +81,22 @@
     return;
   }
   TableViewIdentityItem* selectedItem =
-      [self.consumer tableViewIdentityItemWithGaiaID:_selectedIdentity.gaiaID];
+      [self.consumer tableViewIdentityItemWithGaiaID:_selectedIdentity.gaiaId];
   DCHECK(selectedItem);
   selectedItem.selected = YES;
   [self.consumer itemHasChanged:selectedItem];
 }
 
-- (void)selectIdentityWithGaiaID:(NSString*)gaiaID {
+- (void)selectIdentityWithGaiaID:(const GaiaId&)gaiaID {
   self.selectedIdentity =
-      _accountManagerService->GetIdentityOnDeviceWithGaiaID(GaiaId(gaiaID));
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(gaiaID);
 }
 
 #pragma mark - Private
 
 - (bool)selectedIdentityIsValid {
   if (self.selectedIdentity) {
-    GaiaId gaia(self.selectedIdentity.gaiaID);
+    GaiaId gaia(self.selectedIdentity.gaiaId);
     return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
                           [](const AccountInfo& info) { return info.gaia; });
   }
@@ -125,13 +128,14 @@
 // Updates an TableViewIdentityItem based on a SystemIdentity.
 - (void)updateTableViewIdentityItem:(TableViewIdentityItem*)item
                        withIdentity:(id<SystemIdentity>)identity {
-  item.gaiaID = identity.gaiaID;
+  CHECK(identity, base::NotFatalUntil::M147);
+  item.gaiaID = identity.gaiaId;
   item.name = identity.userFullName;
   item.email = identity.userEmail;
-  item.selected =
-      [self.selectedIdentity.gaiaID isEqualToString:identity.gaiaID];
-  item.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-      identity, IdentityAvatarSize::Regular);
+  item.selected = self.selectedIdentity.gaiaId == identity.gaiaId;
+  item.avatar =
+      GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
+          identity, IdentityAvatarSize::Regular);
 
   if (std::optional<BOOL> isManaged = IsIdentityManaged(identity);
       isManaged.has_value()) {
@@ -141,6 +145,7 @@
     FetchManagedStatusForIdentity(
         identity, base::BindOnce(^(bool managed) {
           if (managed) {
+            CHECK(identity, base::NotFatalUntil::M147);
             [weakSelf updateTableViewIdentityItem:item withIdentity:identity];
           }
         }));
@@ -154,8 +159,9 @@
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+  CHECK(identity, base::NotFatalUntil::M147);
   TableViewIdentityItem* item =
-      [self.consumer tableViewIdentityItemWithGaiaID:identity.gaiaID];
+      [self.consumer tableViewIdentityItemWithGaiaID:identity.gaiaId];
   [self updateTableViewIdentityItem:item withIdentity:identity];
 }
 

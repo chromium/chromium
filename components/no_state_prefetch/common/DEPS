@@ -9,3 +9,9 @@ include_rules = [
   "+services/network/public",
   "+third_party/blink/public",
 ]
+
+specific_include_rules = {
+  "no_state_prefetch_url_loader_throttle.cc": [
+    "+net/http/http_response_headers.h",
+  ],
+}

@@ -419,14 +419,11 @@ void SMILTimeContainer::WakeupTimerFired(TimerBase*) {
   TimingUpdate update(*this, Elapsed(), TimingUpdate::kNormal);
   if (previous_frame_scheduling_state == kFutureAnimationFrame) {
     DCHECK(IsTimelineRunning());
-    if (RuntimeEnabledFeatures::SmilAutoSuspendOnLagEnabled()) {
-      // Advance time to just before the next event.
-      const SMILTime next_event_time =
-          !priority_queue_.IsEmpty()
-              ? priority_queue_.Min() - SMILTime::Epsilon()
-              : SMILTime::Unresolved();
-      update.TryAdvanceTime(next_event_time);
-    }
+    // Advance time to just before the next event.
+    const SMILTime next_event_time =
+        !priority_queue_.IsEmpty() ? priority_queue_.Min() - SMILTime::Epsilon()
+                                   : SMILTime::Unresolved();
+    update.TryAdvanceTime(next_event_time);
     ServiceOnNextFrame();
   } else {
     UpdateAnimationsAndScheduleFrameIfNeeded(update);
@@ -486,25 +483,23 @@ bool SMILTimeContainer::ServiceAnimations() {
   if (!GetDocument().IsActive())
     return false;
   SMILTime elapsed = Elapsed();
-  if (RuntimeEnabledFeatures::SmilAutoSuspendOnLagEnabled()) {
-    // If an unexpectedly long amount of time has passed since we last
-    // ticked animations, behave as if we paused the timeline after
-    // |kMaxAnimationLag| and now automatically resume the animation.
-    constexpr SMILTime kMaxAnimationLag = SMILTime::FromSecondsD(60);
-    const SMILTime elapsed_limit = latest_update_time_ + kMaxAnimationLag;
-    if (previous_frame_scheduling_state == kAnimationFrame &&
-        elapsed > elapsed_limit) {
-      // We've passed the lag limit. Compute the excess lag and then
-      // rewind/adjust the timeline by that amount to make it appear as if only
-      // kMaxAnimationLag has passed.
-      const SMILTime excess_lag = elapsed - elapsed_limit;
-      // Since Elapsed() is clamped, the limit should fall within the clamped
-      // time range as well.
-      DCHECK_EQ(ClampPresentationTime(presentation_time_ - excess_lag),
-                presentation_time_ - excess_lag);
-      presentation_time_ = presentation_time_ - excess_lag;
-      elapsed = Elapsed();
-    }
+  // If an unexpectedly long amount of time has passed since we last
+  // ticked animations, behave as if we paused the timeline after
+  // |kMaxAnimationLag| and now automatically resume the animation.
+  constexpr SMILTime kMaxAnimationLag = SMILTime::FromSecondsD(60);
+  const SMILTime elapsed_limit = latest_update_time_ + kMaxAnimationLag;
+  if (previous_frame_scheduling_state == kAnimationFrame &&
+      elapsed > elapsed_limit) {
+    // We've passed the lag limit. Compute the excess lag and then
+    // rewind/adjust the timeline by that amount to make it appear as if only
+    // kMaxAnimationLag has passed.
+    const SMILTime excess_lag = elapsed - elapsed_limit;
+    // Since Elapsed() is clamped, the limit should fall within the clamped
+    // time range as well.
+    DCHECK_EQ(ClampPresentationTime(presentation_time_ - excess_lag),
+              presentation_time_ - excess_lag);
+    presentation_time_ = presentation_time_ - excess_lag;
+    elapsed = Elapsed();
   }
   TimingUpdate update(*this, elapsed, TimingUpdate::kNormal);
   return UpdateAnimationsAndScheduleFrameIfNeeded(update);

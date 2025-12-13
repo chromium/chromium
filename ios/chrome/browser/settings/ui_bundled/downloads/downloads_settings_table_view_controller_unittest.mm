@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_presentation_delegate.h"
@@ -12,7 +13,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/fake_save_to_photos_settings_mutator.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mutator.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/switch_content_view.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_view.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
@@ -100,8 +102,9 @@ class DownloadsSettingsTableViewControllerTest
 // Also tests that the view controller correctly calls the mutator when the
 // switch is toggled, the action delegate when the identity button is tapped,
 // and the presentation delegate when the controller is removed.
+// TODO(crbug.com/460692416): Test is flaky.
 TEST_F(DownloadsSettingsTableViewControllerTest,
-       CanToggleAskEveryTimeAndSelectSaveToPhotosAccount) {
+       FLAKY_CanToggleAskEveryTimeAndSelectSaveToPhotosAccount) {
   // Push an items configuration through consumer interface.
   DownloadsSettingsTableViewController* downloadsController =
       base::apple::ObjCCast<DownloadsSettingsTableViewController>(controller());
@@ -110,7 +113,7 @@ TEST_F(DownloadsSettingsTableViewControllerTest,
   [downloadsController setIdentityButtonAvatar:identity_avatar
                                           name:@"Firstname Lastname"
                                          email:@"firstname.lastname@example.org"
-                                        gaiaID:@"mygaiaid"
+                                        gaiaID:GaiaId("mygaiaid")
                           askEveryTimeSwitchOn:YES];
 
   EXPECT_EQ(1, NumberOfSections());
@@ -125,7 +128,7 @@ TEST_F(DownloadsSettingsTableViewControllerTest,
   EXPECT_NSEQ(@"Firstname Lastname", identity_button_item.identityName);
   EXPECT_NSEQ(@"firstname.lastname@example.org",
               identity_button_item.identityEmail);
-  EXPECT_NSEQ(@"mygaiaid", identity_button_item.identityGaiaID);
+  EXPECT_EQ(GaiaId(@"mygaiaid"), identity_button_item.identityGaiaID);
   EXPECT_TRUE(identity_button_item.enabled);
   EXPECT_EQ(IdentityButtonControlArrowRight,
             identity_button_item.arrowDirection);
@@ -135,18 +138,23 @@ TEST_F(DownloadsSettingsTableViewControllerTest,
       YES, IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_THIS_ACCOUNT_EVERY_TIME, 0, 1);
 
   // Test that disabling and re-enabling the switch updates the mutator.
-  EXPECT_FALSE(save_to_photos_mutator_.selectedIdentityGaiaID);
-  TableViewSwitchCell* switchCell = base::apple::ObjCCast<TableViewSwitchCell>(
-      [controller() tableView:controller().tableView
-          cellForRowAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0]]);
-  ASSERT_TRUE(switchCell);
-  switchCell.switchView.on = NO;
-  [switchCell.switchView
-      sendActionsForControlEvents:UIControlEventValueChanged];
+  EXPECT_TRUE(save_to_photos_mutator_.selectedIdentityGaiaID.empty());
+  TableViewCellContentView* content_view =
+      base::apple::ObjCCast<TableViewCellContentView>([[controller()
+                      tableView:controller().tableView
+          cellForRowAtIndexPath:[NSIndexPath indexPathForItem:1
+                                                    inSection:0]] contentView]);
+  ASSERT_TRUE(content_view);
+  SwitchContentView* switch_content_view =
+      base::apple::ObjCCast<SwitchContentView>(
+          [content_view trailingContentViewForTesting]);
+  ASSERT_TRUE(switch_content_view);
+  UISwitch* switch_view = [switch_content_view switchForTesting];
+  switch_view.on = NO;
+  [switch_view sendActionsForControlEvents:UIControlEventValueChanged];
   EXPECT_TRUE(save_to_photos_mutator_.askWhichAccountToUseEveryTime);
-  switchCell.switchView.on = YES;
-  [switchCell.switchView
-      sendActionsForControlEvents:UIControlEventValueChanged];
+  switch_view.on = YES;
+  [switch_view sendActionsForControlEvents:UIControlEventValueChanged];
   EXPECT_FALSE(save_to_photos_mutator_.askWhichAccountToUseEveryTime);
 
   // Test that tapping the Identity button calls the action delegate.

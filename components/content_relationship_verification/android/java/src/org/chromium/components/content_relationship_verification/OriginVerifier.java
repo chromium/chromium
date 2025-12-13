@@ -67,7 +67,7 @@ public abstract class OriginVerifier {
 
     public @Nullable WebContents mWebContents;
 
-    public static enum VerifierResult {
+    public enum VerifierResult {
         ONLINE_SUCCESS,
         ONLINE_FAILURE,
         OFFLINE_SUCCESS,

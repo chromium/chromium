@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/surface.h"
 
 #include <optional>
@@ -32,6 +27,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -168,7 +164,8 @@ class SurfaceTest : public test::ExoTestBase,
       ShellSurface* shell_surface,
       Transform transform,
       const gfx::RectF& expected_rect,
-      bool has_viewport);
+      bool has_viewport,
+      const gfx::Size& buffer_size);
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -570,7 +567,7 @@ TEST_P(SurfaceTest, MAYBE_SetOpaqueRegion) {
   }
 
   auto buffer_without_alpha = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBX_8888);
+      buffer_size, viz::SinglePlaneFormat::kRGBX_8888);
 
   // Attaching a buffer without an alpha channel doesn't require draw with
   // blending.
@@ -889,18 +886,19 @@ TEST_P(SurfaceTest, SubpixelCoordinate) {
   child_surface->Attach(child_buffer.get());
 
   // These rects are in pixel coordinates with some having subpixel coordinates.
-  gfx::RectF kTestRects[] = {
+  constexpr std::array<gfx::RectF, 8> kTestRects = {{
       gfx::RectF(10, 20, 30, 40),     gfx::RectF(11, 22, 33, 44),
       gfx::RectF(10.5, 20, 30, 40),   gfx::RectF(10, 20.5, 30, 40),
       gfx::RectF(10, 20, 30.5, 40),   gfx::RectF(10, 20, 30, 40.5),
-      gfx::RectF(10.5, 20, 30, 40.5), gfx::RectF(10.5, 20.5, 30, 40)};
-  bool kExpectedAligned[] = {true,  true,  false, false,
-                             false, false, false, false};
-  static_assert(std::size(kTestRects) == std::size(kExpectedAligned),
+      gfx::RectF(10.5, 20, 30, 40.5), gfx::RectF(10.5, 20.5, 30, 40),
+  }};
+  constexpr std::array<bool, 8> kExpectedAligned = {true,  true,  false, false,
+                                                    false, false, false, false};
+  static_assert(kTestRects.size() == kExpectedAligned.size(),
                 "Number of elements in each list should be the identical.");
   for (int j = 0; j < 2; j++) {
     const bool kTestCaseRotation = (j == 1);
-    for (size_t i = 0; i < std::size(kTestRects); i++) {
+    for (size_t i = 0; i < kTestRects.size(); i++) {
       auto rect_in_dip = device_scale_transform.MapRect(kTestRects[i]);
       sub_surface->SetPosition(rect_in_dip.origin());
       child_surface->SetViewport(rect_in_dip.size());
@@ -928,10 +926,12 @@ TEST_P(SurfaceTest, SubpixelCoordinate) {
         // a uv rect.
         auto* tex_draw_quad =
             viz::TextureDrawQuad::MaterialCast(quad_list.front());
-        EXPECT_POINTF_NEAR(tex_draw_quad->uv_top_left, gfx::PointF(0, 0),
+        const gfx::RectF tex_draw_quad_tex_coords(
+            tex_draw_quad->GetNormalizedTexCoords(child_buffer_size));
+        EXPECT_POINTF_NEAR(tex_draw_quad_tex_coords.origin(), gfx::PointF(0, 0),
                            0.001f);
-        EXPECT_POINTF_NEAR(tex_draw_quad->uv_bottom_right, gfx::PointF(1, 1),
-                           0.001f);
+        EXPECT_POINTF_NEAR(tex_draw_quad_tex_coords.bottom_right(),
+                           gfx::PointF(1, 1), 0.001f);
         EXPECT_EQ(gfx::Transform(), transform);
         EXPECT_EQ(kTestRects[i], rect);
       } else {
@@ -979,7 +979,8 @@ void SurfaceTest::SetCropAndBufferTransformHelperTransformAndTest(
     ShellSurface* shell_surface,
     Transform transform,
     const gfx::RectF& expected_rect,
-    bool has_viewport) {
+    bool has_viewport,
+    const gfx::Size& buffer_size) {
   const gfx::Rect target_with_no_viewport(ToPixel(gfx::Rect(gfx::Size(52, 4))));
   const gfx::Rect target_with_viewport(ToPixel(gfx::Rect(gfx::Size(128, 64))));
 
@@ -1002,8 +1003,7 @@ void SurfaceTest::SetCropAndBufferTransformHelperTransformAndTest(
     ASSERT_EQ(1u, quad_list.size());
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(quad_list.front());
-    EXPECT_EQ(expected_rect.origin(), quad->uv_top_left);
-    EXPECT_EQ(expected_rect.bottom_right(), quad->uv_bottom_right);
+    EXPECT_EQ(expected_rect, quad->GetNormalizedTexCoords(buffer_size));
     EXPECT_EQ(
         (has_viewport) ? target_with_viewport : target_with_no_viewport,
         cc::MathUtil::MapEnclosingClippedRect(
@@ -1072,7 +1072,7 @@ TEST_P(SurfaceTest, MAYBE_SetCropAndBufferTransform) {
   for (const auto& tc : testcases) {
     SetCropAndBufferTransformHelperTransformAndTest(
         surface.get(), shell_surface.get(), tc.transform,
-        gfx::SkRectToRectF(*tc.expected_rect), false);
+        gfx::SkRectToRectF(*tc.expected_rect), false, buffer_size);
   }
 
   surface->SetViewport(gfx::SizeF(128, 64));
@@ -1080,7 +1080,7 @@ TEST_P(SurfaceTest, MAYBE_SetCropAndBufferTransform) {
   for (const auto& tc : testcases) {
     SetCropAndBufferTransformHelperTransformAndTest(
         surface.get(), shell_surface.get(), tc.transform,
-        gfx::SkRectToRectF(*tc.expected_rect), true);
+        gfx::SkRectToRectF(*tc.expected_rect), true, buffer_size);
   }
 }
 
@@ -1106,7 +1106,7 @@ TEST_P(SurfaceTest, SetBlendMode) {
 TEST_P(SurfaceTest, OverlayCandidate) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888,
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
@@ -1125,7 +1125,7 @@ TEST_P(SurfaceTest, OverlayCandidate) {
 TEST_P(SurfaceTest, SetAlpha) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888,
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
@@ -1182,7 +1182,8 @@ TEST_P(SurfaceTest, SetAlpha) {
 TEST_P(SurfaceTest, DisableNonYUVOverlays) {
   gfx::Size buffer_size(2, 2);
   auto buffer_non_yuv = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888, /*is_overlay_candidate=*/true);
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
+      /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
 
@@ -1209,7 +1210,7 @@ TEST_P(SurfaceTest, DisableNonYUVOverlays) {
 TEST_P(SurfaceTest, ForceRgbxTest) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888,
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
@@ -1238,7 +1239,7 @@ TEST_P(SurfaceTest, ForceRgbxTest) {
 TEST_P(SurfaceTest, ForceRgbxTestNoBufferAlpha) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBX_8888,
+      buffer_size, viz::SinglePlaneFormat::kRGBX_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
@@ -1266,10 +1267,11 @@ TEST_P(SurfaceTest, ForceRgbxTestNoBufferAlpha) {
 
 TEST_P(SurfaceTest, ColorBufferAlpha) {
   gfx::Size buffer_size(1, 1);
-  constexpr SkColor4f kBuffColorExpected[] = {{1.f, 128.0f / 255.0f, 0.f, 1.f},
-                                              {0.f, 128.0f / 255.0f, 1.f, 0.f}};
-  constexpr bool kExpectedOpaque[] = {true, false};
-  for (size_t i = 0; i < std::size(kBuffColorExpected); i++) {
+  constexpr std::array<SkColor4f, 2> kBuffColorExpected = {
+      {{1.f, 128.0f / 255.0f, 0.f, 1.f},
+       {0.f, 128.0f / 255.0f, 1.f, 0.f}}};
+  constexpr std::array<bool, 2> kExpectedOpaque = {{true, false}};
+  for (size_t i = 0; i < kBuffColorExpected.size(); i++) {
     auto buffer =
         std::make_unique<SolidColorBuffer>(kBuffColorExpected[i], buffer_size);
     auto surface = std::make_unique<Surface>();
@@ -1449,132 +1451,6 @@ TEST_P(SurfaceTest, OcclusionNotRecomputedOnWidgetCommit) {
   surface->Commit();
   EXPECT_EQ(num_times_occlusion_recomputed + 1,
             window_occlusion_tracker_test_api.GetNumTimesOcclusionRecomputed());
-}
-
-TEST_P(SurfaceTest, HasPendingPerCommitBufferReleaseCallback) {
-  auto buffer = test::ExoTestHelper::CreateBuffer(gfx::Size(1, 1));
-  auto surface = std::make_unique<Surface>();
-
-  // We can only commit a buffer release callback if a buffer is attached.
-  surface->Attach(buffer.get());
-
-  EXPECT_FALSE(surface->HasPendingPerCommitBufferReleaseCallback());
-  surface->SetPerCommitBufferReleaseCallback(
-      base::BindOnce([](gfx::GpuFenceHandle) {}));
-  EXPECT_TRUE(surface->HasPendingPerCommitBufferReleaseCallback());
-  surface->Commit();
-  EXPECT_FALSE(surface->HasPendingPerCommitBufferReleaseCallback());
-}
-
-TEST_P(SurfaceTest, PerCommitBufferReleaseCallbackForSameSurface) {
-  gfx::Size buffer_size(64, 64);
-  auto buffer1 = test::ExoTestHelper::CreateBuffer(buffer_size);
-  auto buffer2 = test::ExoTestHelper::CreateBuffer(buffer_size);
-  auto surface = std::make_unique<Surface>();
-  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
-  int per_commit_release_count = 0;
-
-  // Set the release callback that will be run when buffer is no longer in use.
-  int buffer_release_count = 0;
-  base::RunLoop run_loop1;
-  buffer1->set_release_callback(test::CreateReleaseBufferClosure(
-      &buffer_release_count, run_loop1.QuitClosure()));
-
-  base::RunLoop run_loop2;
-  surface->SetPerCommitBufferReleaseCallback(
-      test::CreateExplicitReleaseCallback(&per_commit_release_count,
-                                          run_loop2.QuitClosure()));
-  surface->Attach(buffer1.get());
-  surface->Damage(gfx::Rect(buffer_size));
-  surface->Commit();
-  test::WaitForLastFramePresentation(shell_surface.get());
-  EXPECT_EQ(per_commit_release_count, 0);
-  EXPECT_EQ(buffer_release_count, 0);
-
-  // Attaching the same buffer causes the per-commit callback to be emitted.
-  surface->SetPerCommitBufferReleaseCallback(
-      test::CreateExplicitReleaseCallback(&per_commit_release_count,
-                                          base::DoNothing()));
-  surface->Attach(buffer1.get());
-  surface->Damage(gfx::Rect(buffer_size));
-  surface->Commit();
-  test::WaitForLastFramePresentation(shell_surface.get());
-
-  run_loop2.Run();
-  EXPECT_EQ(per_commit_release_count, 1);
-  EXPECT_EQ(buffer_release_count, 0);
-
-  // Attaching a different buffer causes the per-commit callback to be emitted.
-  surface->Attach(buffer2.get());
-  surface->Damage(gfx::Rect(buffer_size));
-  surface->Commit();
-  test::WaitForLastFramePresentation(shell_surface.get());
-
-  run_loop1.Run();
-  EXPECT_EQ(per_commit_release_count, 2);
-  // The buffer should now be completely released.
-  EXPECT_EQ(buffer_release_count, 1);
-}
-
-TEST_P(SurfaceTest, PerCommitBufferReleaseCallbackForDifferentSurfaces) {
-  gfx::Size buffer_size(64, 64);
-  auto buffer1 = test::ExoTestHelper::CreateBuffer(buffer_size);
-  auto buffer2 = test::ExoTestHelper::CreateBuffer(buffer_size);
-  auto surface1 = std::make_unique<Surface>();
-  auto shell_surface1 = std::make_unique<ShellSurface>(surface1.get());
-  auto surface2 = std::make_unique<Surface>();
-  auto shell_surface2 = std::make_unique<ShellSurface>(surface2.get());
-  int per_commit_release_count1 = 0;
-  int per_commit_release_count2 = 0;
-
-  // Set the release callback that will be run when buffer is no longer in use.
-  int buffer_release_count = 0;
-  base::RunLoop run_loop1;
-  buffer1->set_release_callback(test::CreateReleaseBufferClosure(
-      &buffer_release_count, run_loop1.QuitClosure()));
-
-  // Attach buffer1 to both surface1 and surface2.
-  base::RunLoop run_loop2;
-  surface1->SetPerCommitBufferReleaseCallback(
-      test::CreateExplicitReleaseCallback(&per_commit_release_count1,
-                                          run_loop2.QuitClosure()));
-  surface1->Attach(buffer1.get());
-  surface1->Damage(gfx::Rect(buffer_size));
-  surface1->Commit();
-  surface2->SetPerCommitBufferReleaseCallback(
-      test::CreateExplicitReleaseCallback(&per_commit_release_count2,
-                                          base::DoNothing()));
-  surface2->Attach(buffer1.get());
-  surface2->Damage(gfx::Rect(buffer_size));
-  surface2->Commit();
-  test::WaitForLastFramePresentation(shell_surface2.get());
-
-  EXPECT_EQ(per_commit_release_count1, 0);
-  EXPECT_EQ(per_commit_release_count2, 0);
-  EXPECT_EQ(buffer_release_count, 0);
-
-  // Attach buffer2 to surface1, only the surface1 callback should be emitted.
-  surface1->Attach(buffer2.get());
-  surface1->Damage(gfx::Rect(buffer_size));
-  surface1->Commit();
-  test::WaitForLastFramePresentation(shell_surface1.get());
-
-  run_loop2.Run();
-  EXPECT_EQ(per_commit_release_count1, 1);
-  EXPECT_EQ(per_commit_release_count2, 0);
-  EXPECT_EQ(buffer_release_count, 0);
-
-  // Attach buffer2 to surface2, only the surface2 callback should be emitted.
-  surface2->Attach(buffer2.get());
-  surface2->Damage(gfx::Rect(buffer_size));
-  surface2->Commit();
-  test::WaitForLastFramePresentation(shell_surface2.get());
-
-  run_loop1.Run();
-  EXPECT_EQ(per_commit_release_count1, 1);
-  EXPECT_EQ(per_commit_release_count2, 1);
-  // The buffer should now be completely released.
-  EXPECT_EQ(buffer_release_count, 1);
 }
 
 TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {

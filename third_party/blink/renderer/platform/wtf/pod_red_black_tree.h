@@ -798,6 +798,6 @@ class PodRedBlackTree {
 #endif
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_RED_BLACK_TREE_H_

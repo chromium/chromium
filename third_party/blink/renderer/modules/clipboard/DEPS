@@ -1,5 +1,4 @@
 include_rules = [
-    "+base/containers/fixed_flat_set.h",
     "+mojo/public/cpp/base/big_buffer.h",
     "+net/base/mime_util.h",
     "+third_party/blink/renderer/core/clipboard",

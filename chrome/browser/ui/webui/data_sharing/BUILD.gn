@@ -8,7 +8,7 @@ mojom("mojo_bindings") {
   sources = [ "data_sharing.mojom" ]
   public_deps = [
     "//components/data_sharing/public/protocol:mojo_bindings",
-    "//mojo/public/mojom/base:base",
+    "//mojo/public/mojom/base",
   ]
   webui_module_path = "/"
 }

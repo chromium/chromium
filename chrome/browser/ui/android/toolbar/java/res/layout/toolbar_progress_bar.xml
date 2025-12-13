@@ -11,7 +11,8 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.toolbar.ToolbarProgressBar
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/toolbar_progress_bar"/>
+    android:id="@+id/toolbar_progress_bar"
+    android:visibility="invisible"/>
   <org.chromium.chrome.browser.toolbar.ToolbarProgressBarAnimatingView
       android:layout_width="match_parent"
       android:layout_height="match_parent"

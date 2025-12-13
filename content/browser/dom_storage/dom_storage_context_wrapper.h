@@ -15,10 +15,8 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/session_storage_control.mojom.h"
-#include "components/services/storage/public/mojom/storage_service.mojom-forward.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/common/content_export.h"
@@ -50,7 +48,8 @@ class StoragePartitionImpl;
 // RemoveNamespace methods.
 class CONTENT_EXPORT DOMStorageContextWrapper
     : public DOMStorageContext,
-      public base::RefCountedThreadSafe<DOMStorageContextWrapper> {
+      public base::RefCountedThreadSafe<DOMStorageContextWrapper>,
+      public base::MemoryPressureListener {
  public:
   // Option for PurgeMemory.
   enum PurgeOption {
@@ -139,9 +138,8 @@ class CONTENT_EXPORT DOMStorageContextWrapper
 
   ~DOMStorageContextWrapper() override;
 
-  void MaybeBindSessionStorageControl(
-      storage::mojom::StorageLifecycle lifecycle);
-  void MaybeBindLocalStorageControl(storage::mojom::StorageLifecycle lifecycle);
+  void MaybeBindSessionStorageControl();
+  void MaybeBindLocalStorageControl();
   scoped_refptr<SessionStorageNamespaceImpl> MaybeGetExistingNamespace(
       const std::string& namespace_id) const;
 
@@ -154,7 +152,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
 
   // Called on UI thread when the system is under memory pressure.
   void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   void PurgeMemory(PurgeOption purge_option);
 
@@ -194,7 +192,8 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   raw_ptr<StoragePartitionImpl> partition_;
 
   // To receive memory pressure signals.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   // Connections to the partition's Session and Local Storage control interfaces
   // within the Storage Service.

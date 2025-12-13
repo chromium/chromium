@@ -12,11 +12,11 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/scenario_api/performance_scenario_memory.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace performance_scenarios {
 
@@ -68,39 +68,9 @@ LockedObserverListPtr& GetLockedObserverListPtrForScope(ScenarioScope scope) {
 }  // namespace
 
 MatchingScenarioObserver::MatchingScenarioObserver(ScenarioPattern pattern)
-    : pattern_(pattern) {
-  for (ScenarioScope scope : ScenarioScopes::All()) {
-    LastMatchNotification(scope) = CurrentScenariosMatch(scope, pattern_);
-  }
-
-  // NotifyIfScenarioMatchChanged must always run on the sequence that called
-  // PerformanceScenarioObserverList::AddMatchingObserver, but that might not be
-  // the constructor sequence.
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+    : pattern_(pattern) {}
 
 MatchingScenarioObserver::~MatchingScenarioObserver() = default;
-
-void MatchingScenarioObserver::NotifyIfScenarioMatchChanged(
-    ScenarioScope scope,
-    LoadingScenario loading_scenario,
-    InputScenario input_scenario) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool matches_pattern =
-      ScenariosMatch(loading_scenario, input_scenario, pattern_);
-  bool last_matches_pattern =
-      std::exchange(LastMatchNotification(scope), matches_pattern);
-  if (last_matches_pattern != matches_pattern) {
-    OnScenarioMatchChanged(scope, matches_pattern);
-  }
-}
-
-bool& MatchingScenarioObserver::LastMatchNotification(ScenarioScope scope) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static_assert(static_cast<size_t>(ScenarioScopes::kMinValue) == 0,
-                "index will be wrong if enum doesn't start at 0");
-  return last_match_notifications_.at(static_cast<size_t>(scope));
-}
 
 // static
 scoped_refptr<PerformanceScenarioObserverList>
@@ -120,17 +90,36 @@ void PerformanceScenarioObserverList::RemoveObserver(
 
 void PerformanceScenarioObserverList::AddMatchingObserver(
     MatchingScenarioObserver* matching_observer) {
-  matching_observers_->AddObserver(matching_observer);
+  base::AutoLock lock(lock_);
+  auto [it, inserted] = matching_observers_by_pattern_.try_emplace(
+      matching_observer->scenario_pattern());
+  if (inserted && is_initialized_) {
+    // Initialize the scenario state for the new pattern.
+    it->second.last_matches_pattern =
+        CurrentScenariosMatch(scope_, matching_observer->scenario_pattern());
+  }
+  it->second.observer_list->AddObserver(matching_observer);
 }
 
 void PerformanceScenarioObserverList::RemoveMatchingObserver(
     MatchingScenarioObserver* matching_observer) {
-  matching_observers_->RemoveObserver(matching_observer);
+  base::AutoLock lock(lock_);
+  auto it = matching_observers_by_pattern_.find(
+      matching_observer->scenario_pattern());
+  CHECK(it != matching_observers_by_pattern_.end());
+  if (it->second.observer_list->RemoveObserver(matching_observer) ==
+      ObserverList<
+          MatchingScenarioObserver>::RemoveObserverResult::kWasOrBecameEmpty) {
+    matching_observers_by_pattern_.erase(it);
+  }
 }
 
 void PerformanceScenarioObserverList::NotifyIfScenarioChanged(
-    base::Location location) {
+    const base::Location& location) {
   base::AutoLock lock(lock_);
+  if (!is_initialized_) {
+    return;
+  }
   LoadingScenario loading_scenario =
       GetLoadingScenario(scope_)->load(std::memory_order_relaxed);
   if (loading_scenario != last_loading_scenario_) {
@@ -147,13 +136,22 @@ void PerformanceScenarioObserverList::NotifyIfScenarioChanged(
                        scope_, last_input_scenario_, input_scenario);
     last_input_scenario_ = input_scenario;
   }
-  matching_observers_->Notify(
-      location, &MatchingScenarioObserver::NotifyIfScenarioMatchChanged, scope_,
-      loading_scenario, input_scenario);
+  for (auto& [pattern, matching_observers] : matching_observers_by_pattern_) {
+    bool matches_pattern =
+        ScenariosMatch(loading_scenario, input_scenario, pattern);
+    bool last_matches_pattern =
+        std::exchange(matching_observers.last_matches_pattern, matches_pattern);
+    if (last_matches_pattern != matches_pattern) {
+      matching_observers.observer_list->Notify(
+          location, &MatchingScenarioObserver::OnScenarioMatchChanged, scope_,
+          matches_pattern);
+    }
+  }
 }
 
 // static
-void PerformanceScenarioObserverList::NotifyAllScopes(base::Location location) {
+void PerformanceScenarioObserverList::NotifyAllScopes(
+    const base::Location& location) {
   if (auto current_process_observers =
           GetForScope(ScenarioScope::kCurrentProcess)) {
     current_process_observers->NotifyIfScenarioChanged(location);
@@ -165,7 +163,7 @@ void PerformanceScenarioObserverList::NotifyAllScopes(base::Location location) {
 
 // static
 void PerformanceScenarioObserverList::CreateForScope(
-    base::PassKey<ScopedReadOnlyScenarioMemory>,
+    base::PassKey<ScopedScenarioObserverList>,
     ScenarioScope scope) {
   auto old_ptr = GetLockedObserverListPtrForScope(scope).Exchange(
       base::WrapRefCounted(new PerformanceScenarioObserverList(scope)));
@@ -174,7 +172,7 @@ void PerformanceScenarioObserverList::CreateForScope(
 
 // static
 void PerformanceScenarioObserverList::DestroyForScope(
-    base::PassKey<ScopedReadOnlyScenarioMemory>,
+    base::PassKey<ScopedScenarioObserverList>,
     ScenarioScope scope) {
   // Drop the main owning reference. Callers of GetForScope() might still have
   // references, but no new caller can obtain a reference.
@@ -182,14 +180,50 @@ void PerformanceScenarioObserverList::DestroyForScope(
   CHECK(old_ptr);
 }
 
+void PerformanceScenarioObserverList::SetInitialScenarioState(
+    base::PassKey<ScopedReadOnlyScenarioMemory>,
+    scoped_refptr<RefCountedScenarioMapping> initial_mapping) {
+  base::AutoLock lock(lock_);
+  CHECK(!is_initialized_);
+  // Read the scenario state directly from `initial_mapping`, because the public
+  // GetLoadingScenario() and GetInputScenario() accessors will deadlock here.
+  // This is called with a lock held while initializing the global
+  // RefCountedScenarioMapping pointer, and the public accessors take the same
+  // lock to read the pointer.
+  last_loading_scenario_ = initial_mapping->data.ReadOnlyRef().loading.load(
+      std::memory_order_relaxed);
+  last_input_scenario_ =
+      initial_mapping->data.ReadOnlyRef().input.load(std::memory_order_relaxed);
+  // Initialize any MatchingObservers that were already added.
+  for (auto& [pattern, matching_observers] : matching_observers_by_pattern_) {
+    matching_observers.last_matches_pattern =
+        ScenariosMatch(last_loading_scenario_, last_input_scenario_, pattern);
+  }
+  is_initialized_ = true;
+}
+
+bool PerformanceScenarioObserverList::IsInitializedForTesting() {
+  base::AutoLock lock(lock_);
+  return is_initialized_;
+}
+
 PerformanceScenarioObserverList::PerformanceScenarioObserverList(
     ScenarioScope scope)
-    : scope_(scope),
-      last_loading_scenario_(
-          GetLoadingScenario(scope)->load(std::memory_order_relaxed)),
-      last_input_scenario_(
-          GetInputScenario(scope)->load(std::memory_order_relaxed)) {}
+    : scope_(scope) {}
 
 PerformanceScenarioObserverList::~PerformanceScenarioObserverList() = default;
+
+PerformanceScenarioObserverList::MatchingScenarioObservers::
+    MatchingScenarioObservers() = default;
+
+PerformanceScenarioObserverList::MatchingScenarioObservers::
+    ~MatchingScenarioObservers() = default;
+
+PerformanceScenarioObserverList::MatchingScenarioObservers::
+    MatchingScenarioObservers(MatchingScenarioObservers&&) = default;
+
+PerformanceScenarioObserverList::MatchingScenarioObservers&
+PerformanceScenarioObserverList::MatchingScenarioObservers::operator=(
+    MatchingScenarioObservers&&) = default;
 
 }  // namespace performance_scenarios

@@ -46,13 +46,13 @@ public interface PrintingController {
     /**
      * @return If the controller is busy.
      */
-    public boolean isBusy();
+    boolean isBusy();
 
     /**
      * Initiates the printing process for the Android API.
      *
-     * @param printable An object capable of starting native side PDF generation, i.e. typically
-     *                  a Tab.
+     * @param printable An object capable of starting native side PDF generation, i.e. typically a
+     *     Tab.
      * @param printManager The print manager that manages the print job.
      */
     void startPrint(final Printable printable, PrintManagerDelegate printManager);

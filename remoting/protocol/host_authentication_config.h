@@ -9,7 +9,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "remoting/base/authentication_method.h"
@@ -27,7 +26,7 @@ struct HostAuthenticationConfig {
                            scoped_refptr<RsaKeyPair> key_pair);
 
   HostAuthenticationConfig(const HostAuthenticationConfig&);
-  HostAuthenticationConfig(HostAuthenticationConfig&&);
+  HostAuthenticationConfig& operator=(const HostAuthenticationConfig&);
 
   ~HostAuthenticationConfig();
 

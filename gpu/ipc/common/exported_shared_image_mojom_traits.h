@@ -46,6 +46,10 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
     return shared_image.texture_target_;
   }
 
+  static bool is_software(const gpu::ExportedSharedImage& shared_image) {
+    return shared_image.is_software_;
+  }
+
   static std::optional<gfx::GpuMemoryBufferHandle>& buffer_handle(
       gpu::ExportedSharedImage& shared_image) {
     return shared_image.buffer_handle_;
@@ -71,6 +75,7 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
       return false;
     }
     out->texture_target_ = data.texture_target();
+    out->is_software_ = data.is_software();
     return true;
   }
 };

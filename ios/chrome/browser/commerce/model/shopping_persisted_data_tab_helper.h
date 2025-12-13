@@ -11,9 +11,10 @@
 #include <optional>
 
 #import "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
+#import "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
-#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/payments/core/currency_formatter.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -63,7 +64,15 @@ class ShoppingPersistedDataTabHelper
 
   // Return PriceDrop for the web::WebState corresponding to the
   // ShoppingPersistedDataTabHelper.
-  const PriceDrop* GetPriceDrop();
+  void GetPriceDrop(
+      base::OnceCallback<void(std::optional<PriceDrop>)> callback);
+
+  // Callback when ProductInfo is re-fetched for reasons such as the
+  // WebState's URL changing.
+  void OnFetchProductInfo(
+      base::OnceCallback<void(std::optional<PriceDrop>)> callback,
+      const GURL& url,
+      const std::optional<const commerce::ProductInfo>& info);
 
   // Log metrics for a given `price_drop_log_id`
   void LogMetrics(PriceDropLogId price_drop_log_id);
@@ -88,27 +97,30 @@ class ShoppingPersistedDataTabHelper
       payments::CurrencyFormatter* currency_formatter,
       long price_micros);
 
+  // True if price drop is greater than $2 and the relative
+  // drop is greater than 10%.
+  static bool HasQualifiedPriceDrop(
+      const std::optional<const commerce::ProductInfo>& info);
+
+  // Create a PriceDrop object using the data returned from ShoppingService
+  static std::unique_ptr<ShoppingPersistedDataTabHelper::PriceDrop>
+  CreatePriceDrop(const commerce::ProductInfo& info,
+                  const GURL& url,
+                  payments::CurrencyFormatter* currencyFormatter);
+
   // web::WebStateObserver overrides:
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // Callback from OptimizationGuide with PriceTrackingData proto.
-  void OnOptimizationGuideResultReceived(
+  void OnProductInfoReceived(
       const GURL& url,
-      optimization_guide::OptimizationGuideDecision decision,
-      const optimization_guide::OptimizationMetadata& metadata);
+      const std::optional<const commerce::ProductInfo>& info);
 
   // Acquires payments::CurrencyFormatter from `currency_formatter_map_`
   payments::CurrencyFormatter* GetCurrencyFormatter(
       const std::string& currency_code,
       const std::string& locale_name);
-
-  // Parses the proto acquired from OptimizationGuide and stores in
-  // `price_drop_`.
-  void ParseProto(
-      const GURL& url,
-      const std::optional<commerce::PriceTrackingData>& price_metadata);
 
   // Resets `price_drop_` when it is determined to no longer be valid.
   void ResetPriceDrop();

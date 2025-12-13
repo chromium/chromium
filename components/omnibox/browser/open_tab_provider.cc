@@ -39,13 +39,13 @@ constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 int Score(const AutocompleteInput& input,
           const query_parser::QueryNodeVector& input_query_nodes,
           const TabMatcher::TabWrapper tab) {
-// For Hub Search, remove both ZPS and search suggestions that involve open
-// chrome prefixed tabs.
 #if BUILDFLAG(IS_ANDROID)
+  // For Hub Search, remove both ZPS and search suggestions that involve open
+  // chrome prefixed tabs. This is done by returning a score of 0 for all such
+  // tabs.
   if (input.current_page_classification() ==
           ::metrics::OmniboxEventProto::ANDROID_HUB &&
-      (tab.url.SchemeIs(browser_ui::kChromeUINativeScheme) ||
-       tab.url.SchemeIs(content::kChromeUIScheme))) {
+      tab.url.GetScheme().starts_with(content::kChromeUIScheme)) {
     return 0;
   }
 #endif
@@ -55,10 +55,9 @@ int Score(const AutocompleteInput& input,
            tab.last_shown_time.InSecondsFSinceUnixEpoch();
   }
   // TODO(crbug.com/40211187): The bookmark provider also uses on `query_parser`
-  // and
-  //  `ScoringFunctor` to compute its scores. However, it uses normalized match
-  //  titles. (see `Normalize()` in
-  //  components/bookmarks/browser/titled_url_index.cc) IDK its purpose, but we
+  // and `ScoringFunctor` to compute its scores. However, it uses normalized match
+  //  titles (see `Normalize()` in
+  //  components/bookmarks/browser/titled_url_index.cc). IDK its purpose, but we
   //  should either verify it's unnecessary here, or do likewise here.
 
   // Extract query words from the title.

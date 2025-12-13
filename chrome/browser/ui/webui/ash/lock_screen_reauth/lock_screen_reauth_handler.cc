@@ -239,14 +239,14 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
 
   // Path without the leading slash, as expected by authenticator.js.
   const std::string default_gaia_path =
-      gaia_urls.embedded_setup_chromeos_url().path().substr(1);
+      gaia_urls.embedded_setup_chromeos_url().GetPath().substr(1);
   params.Set("fallbackGaiaPath", default_gaia_path);
   if (do_saml_redirect) {
     params.Set("gaiaPath",
-               gaia_urls.saml_redirect_chromeos_url().path().substr(1));
+               gaia_urls.saml_redirect_chromeos_url().GetPath().substr(1));
   } else if (!context.email.empty()) {
     params.Set("gaiaPath",
-               gaia_urls.embedded_reauth_chromeos_url().path().substr(1));
+               gaia_urls.embedded_reauth_chromeos_url().GetPath().substr(1));
   } else {
     params.Set("gaiaPath", default_gaia_path);
   }
@@ -287,7 +287,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
 }
 
 void LockScreenReauthHandler::UpdateOrientationAndWidth() {
-  gfx::Size display = display::Screen::GetScreen()->GetPrimaryDisplay().size();
+  gfx::Size display = display::Screen::Get()->GetPrimaryDisplay().size();
   bool is_horizontal = display.width() >= display.height();
   CallJavascript("setOrientation", is_horizontal);
   const LockScreenStartReauthDialog* lock_screen_online_reauth_dialog =

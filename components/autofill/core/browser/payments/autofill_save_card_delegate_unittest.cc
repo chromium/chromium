@@ -221,13 +221,14 @@ TEST_P(AutofillSaveCardDelegateTest, OnUiUpdatedAndAcceptedRunsUploadCallback) {
     return;
   }
 
-  CreateDelegate().OnUiUpdatedAndAccepted(
-      /*user_provided_details=*/{.cardholder_name = u"Test"});
+  payments::PaymentsAutofillClient::UserProvidedCardDetails details;
+  details.cardholder_name = u"Test";
+  CreateDelegate().OnUiUpdatedAndAccepted(details);
 
-  EXPECT_THAT(
-      upload_offer_decisions_,
-      testing::Contains(EqualToUploadCallbackArgs(
-          SaveCardOfferUserDecision::kAccepted, {.cardholder_name = u"Test"})));
+  ASSERT_EQ(upload_offer_decisions_.size(), 1u);
+  const auto& [decision, received_details] = upload_offer_decisions_[0];
+  EXPECT_EQ(decision, SaveCardOfferUserDecision::kAccepted);
+  EXPECT_EQ(received_details.cardholder_name, u"Test");
 }
 
 TEST_P(AutofillSaveCardDelegateTest, OnUiUpdatedAndAcceptedLogsUserAction) {
@@ -238,7 +239,8 @@ TEST_P(AutofillSaveCardDelegateTest, OnUiUpdatedAndAcceptedLogsUserAction) {
 
   base::HistogramTester histogram_tester;
 
-  CreateDelegate().OnUiUpdatedAndAccepted(/*user_provided_details=*/{});
+  payments::PaymentsAutofillClient::UserProvidedCardDetails details;
+  CreateDelegate().OnUiUpdatedAndAccepted(details);
 
   histogram_tester.ExpectUniqueSample(kUserActionMetricNameServer,
                                       InfoBarMetric::INFOBAR_ACCEPTED, 1);

@@ -41,6 +41,8 @@ static_library("content") {
     "secure_payment_confirmation_app.h",
     "secure_payment_confirmation_app_factory.cc",
     "secure_payment_confirmation_app_factory.h",
+    "secure_payment_confirmation_credential_finder.cc",
+    "secure_payment_confirmation_credential_finder.h",
     "secure_payment_confirmation_model.cc",
     "secure_payment_confirmation_model.h",
     "secure_payment_confirmation_no_creds.cc",
@@ -78,9 +80,10 @@ static_library("content") {
     "//components/strings:components_strings_grit",
     "//components/ukm/content",
     "//components/url_formatter",
+    "//components/webauthn/content/browser",
     "//components/webauthn/core/browser",
     "//components/webdata/common",
-    "//components/webdata_services:webdata_services",
+    "//components/webdata_services",
     "//content/public/browser",
     "//crypto",
     "//device/fido",
@@ -154,16 +157,16 @@ static_library("utils") {
     "installable_payment_app_crawler.h",
     "manifest_verifier.cc",
     "manifest_verifier.h",
-    "payment_manifest_web_data_service.cc",
-    "payment_manifest_web_data_service.h",
-    "payment_method_manifest_table.cc",
-    "payment_method_manifest_table.h",
     "service_worker_payment_app_finder.cc",
     "service_worker_payment_app_finder.h",
     "ssl_validity_checker.cc",
     "ssl_validity_checker.h",
     "web_app_manifest_section_table.cc",
     "web_app_manifest_section_table.h",
+    "web_payments_table.cc",
+    "web_payments_table.h",
+    "web_payments_web_data_service.cc",
+    "web_payments_web_data_service.h",
   ]
 
   deps = [
@@ -197,9 +200,10 @@ static_library("utils") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "mock_payment_manifest_web_data_service.cc",
-    "mock_payment_manifest_web_data_service.h",
+    "mock_web_payments_web_data_service.cc",
+    "mock_web_payments_web_data_service.h",
   ]
+  public_deps = [ "//components/payments/content/browser_binding:test_support" ]
   deps = [
     ":utils",
     "//base/test:test_support",
@@ -211,10 +215,6 @@ static_library("test_support") {
     "//testing/gtest",
     "//third_party/blink/public:blink_headers",
   ]
-  if (is_android) {
-    public_deps =
-        [ "//components/payments/content/browser_binding:test_support" ]
-  }
 }
 
 group("unit_tests") {
@@ -226,6 +226,10 @@ group("unit_tests") {
   if (is_android) {
     deps +=
         [ "//components/payments/content/browser_binding:android_unittests" ]
+  }
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps +=
+        [ "//components/payments/content/browser_binding:desktop_unittests" ]
   }
 }
 
@@ -240,16 +244,19 @@ source_set("payment_content_unit_tests") {
     "mock_android_app_communication.h",
     "mock_payment_app_factory_delegate.cc",
     "mock_payment_app_factory_delegate.h",
+    "mock_secure_payment_confirmation_credential_finder.cc",
+    "mock_secure_payment_confirmation_credential_finder.h",
     "payment_event_response_util_unittest.cc",
-    "payment_manifest_web_data_service_unittest.cc",
-    "payment_method_manifest_table_unittest.cc",
     "secure_payment_confirmation_app_factory_unittest.cc",
     "secure_payment_confirmation_app_unittest.cc",
+    "secure_payment_confirmation_credential_finder_unittest.cc",
     "secure_payment_confirmation_model_unittest.cc",
     "secure_payment_confirmation_no_creds_model_unittest.cc",
     "secure_payment_confirmation_service_unittest.cc",
     "service_worker_payment_app_finder_unittest.cc",
     "web_app_manifest_section_table_unittest.cc",
+    "web_payments_table_unittest.cc",
+    "web_payments_web_data_service_unittest.cc",
   ]
 
   if (!is_android) {
@@ -262,6 +269,8 @@ source_set("payment_content_unit_tests") {
       "payment_request_state_unittest.cc",
       "payment_request_web_contents_manager_unittest.cc",
       "payment_response_helper_unittest.cc",
+      "secure_payment_confirmation_controller_unittest.cc",
+      "secure_payment_confirmation_view_stub.cc",
       "service_worker_payment_app_unittest.cc",
       "test_content_payment_request_delegate.cc",
       "test_content_payment_request_delegate.h",
@@ -290,6 +299,7 @@ source_set("payment_content_unit_tests") {
     "//components/webauthn/core/browser:test_support",
     "//components/webdata/common",
     "//content/test:test_support",
+    "//crypto:test_support",
     "//net:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network:test_support",

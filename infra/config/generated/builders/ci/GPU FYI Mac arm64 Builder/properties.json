@@ -238,7 +238,8 @@
           "group": "tryserver.chromium.mac"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Mac arm64 Builder/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Mac arm64 Builder/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

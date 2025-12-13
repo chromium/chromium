@@ -31,7 +31,7 @@ namespace {
 // out of the header file.
 class PageLiveStateDataImpl
     : public PageLiveStateDecorator::Data,
-      public ExternalNodeAttachedDataImpl<PageLiveStateDataImpl> {
+      public NodeAttachedDataImpl<PageLiveStateDataImpl> {
  public:
   explicit PageLiveStateDataImpl(const PageNodeImpl* page_node)
       : page_node_(page_node) {}

@@ -6,7 +6,6 @@
 
 #include <jni.h>
 
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/system/sys_info.h"
@@ -26,3 +25,5 @@ std::string AndroidAboutAppInfo::GetOsInfo() {
              embedder_support::IncludeAndroidBuildNumber::Include,
              embedder_support::IncludeAndroidModel::Include);
 }
+
+DEFINE_JNI(PlayServicesVersionInfo)

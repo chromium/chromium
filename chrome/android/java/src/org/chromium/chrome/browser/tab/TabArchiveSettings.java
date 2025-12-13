@@ -16,8 +16,8 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +38,7 @@ public class TabArchiveSettings {
     private static final int DEFAULT_ALLOWED_IPH_SHOWS = 3;
     // The default max simultaneous archives to allow in a single pass.
     static final int DEFAULT_MAX_SIMULTANEOUS_ARCHIVES = 150;
+    static final int DEFAULT_AUTODELETE_TIME_HOURS = 90 * 24; // 90 days.
     private static boolean sIphShownThisSession;
 
     /** Sets whether the iph was shown this session. */
@@ -150,7 +151,6 @@ public class TabArchiveSettings {
     /** Returns whether auto-deletion of archived tabs is enabled. */
     public boolean isAutoDeleteEnabled() {
         return getArchiveEnabled()
-                && ChromeFeatureList.sAndroidTabDeclutterAutoDeleteKillSwitch.isEnabled()
                 && mPrefsManager.readBoolean(
                         ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED, false);
     }
@@ -162,9 +162,14 @@ public class TabArchiveSettings {
 
     /** Returns whether archiving of duplicate tabs is enabled. */
     public boolean isArchiveDuplicateTabsEnabled() {
+        // Default to true for phones, false for tablets and desktop.
+        boolean defaultValue =
+                !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                        ContextUtils.getApplicationContext());
         return getArchiveEnabled()
                 && mPrefsManager.readBoolean(
-                        ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS_ENABLED, true);
+                        ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS_ENABLED,
+                        defaultValue);
     }
 
     /** Sets whether archiving duplicate tabs is enabled in settings. */
@@ -179,7 +184,7 @@ public class TabArchiveSettings {
     public int getAutoDeleteTimeDeltaHours() {
         return mPrefsManager.readInt(
                 ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,
-                ChromeFeatureList.sAndroidTabDeclutterAutoDeleteTimeDeltaHours.getValue());
+                DEFAULT_AUTODELETE_TIME_HOURS);
     }
 
     /** Similar to above, but the return value is in days. */

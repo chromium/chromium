@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "ui/linux/window_frame_provider.h"
 
-class BrowserFrame;
+class BrowserWidget;
 class BrowserView;
 
 namespace views {
@@ -22,7 +22,7 @@ class PictureInPictureBrowserFrameViewLinux
   // shadows are not drawn.
   static gfx::ShadowValues GetShadowValues();
 
-  PictureInPictureBrowserFrameViewLinux(BrowserFrame* frame,
+  PictureInPictureBrowserFrameViewLinux(BrowserWidget* widget,
                                         BrowserView* browser_view);
 
   PictureInPictureBrowserFrameViewLinux(
@@ -32,7 +32,7 @@ class PictureInPictureBrowserFrameViewLinux
 
   ~PictureInPictureBrowserFrameViewLinux() override;
 
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
   gfx::Insets RestoredMirroredFrameBorderInsets() const override;
   gfx::Insets GetInputInsets() const override;
   SkRRect GetRestoredClipRegion() const override;

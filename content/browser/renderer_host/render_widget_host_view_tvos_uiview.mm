@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_tvos_uiview.h"
 
+#include "base/apple/owned_objc.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -18,11 +19,13 @@ static void* kObservingContext = &kObservingContext;
 
 namespace {
 
-typedef NS_ENUM(NSInteger, NavigationDirection) {
+typedef NS_ENUM(NSInteger, RemoteButton) {
   kUp,
   kDown,
   kLeft,
   kRight,
+  kMediaPlayPause,
+  kMenu,
   kNone
 };
 
@@ -48,6 +51,33 @@ UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
     default:
       return UIKeyboardTypeASCIICapable;
   }
+}
+
+RemoteButton remoteButtonFromPressType(UIPressType type) {
+  RemoteButton button = kNone;
+  switch (type) {
+    case UIPressTypeUpArrow:
+      button = kUp;
+      break;
+    case UIPressTypeDownArrow:
+      button = kDown;
+      break;
+    case UIPressTypeLeftArrow:
+      button = kLeft;
+      break;
+    case UIPressTypeRightArrow:
+      button = kRight;
+      break;
+    case UIPressTypePlayPause:
+      button = kMediaPlayPause;
+      break;
+    case UIPressTypeMenu:
+      button = kMenu;
+      break;
+    default:
+      break;
+  }
+  return button;
 }
 
 }  // namespace
@@ -206,22 +236,28 @@ UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
     return;
   }
 
-  NavigationDirection direction = kNone;
+  RemoteButton button = kNone;
   switch (gestureRecognizer.direction) {
     case UISwipeGestureRecognizerDirectionLeft:
-      direction = kLeft;
+      button = kLeft;
       break;
     case UISwipeGestureRecognizerDirectionRight:
-      direction = kRight;
+      button = kRight;
       break;
     case UISwipeGestureRecognizerDirectionUp:
-      direction = kUp;
+      button = kUp;
       break;
     case UISwipeGestureRecognizerDirectionDown:
-      direction = kDown;
+      button = kDown;
       break;
   }
-  [self sendKeyEventWithDirection:direction];
+  // Because a swipe is a discrete gesture, the system sends the associated
+  // action message just once per gesture. So, kKeyDown and kKeyUp are sent to
+  // blink in this method.
+  [self sendKeyEventWithRemoteButton:button
+                           eventType:blink::WebInputEvent::Type::kKeyDown];
+  [self sendKeyEventWithRemoteButton:button
+                           eventType:blink::WebInputEvent::Type::kKeyUp];
 }
 
 - (void)handlePan:(UIPanGestureRecognizer*)gesture {
@@ -231,48 +267,88 @@ UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
   if (gesture.state == UIGestureRecognizerStateEnded ||
       gesture.state == UIGestureRecognizerStateChanged) {
     // Use `kMinVelocity` to avoid excessive events.
+    RemoteButton button = kNone;
     if (velocity.x > kMinVelocity) {
-      [self sendKeyEventWithDirection:kRight];
+      button = kRight;
     } else if (velocity.x < -kMinVelocity) {
-      [self sendKeyEventWithDirection:kLeft];
+      button = kLeft;
     }
+    [self sendKeyEventWithRemoteButton:button
+                             eventType:blink::WebInputEvent::Type::kKeyDown];
+    [self sendKeyEventWithRemoteButton:button
+                             eventType:blink::WebInputEvent::Type::kKeyUp];
   }
 }
 
-// Generates four-directional events when buttons on the clickpad ring are
-// pressed.
+// Returns the set of unhanlded UIPress events to propagate to `super`.
+- (NSSet<UIPress*>*)handlePresses:(NSSet<UIPress*>*)presses
+                         withType:(blink::WebInputEvent::Type)type {
+  NSMutableSet<UIPress*>* unhandled = [NSMutableSet set];
+  for (UIPress* press in presses) {
+    RemoteButton button = remoteButtonFromPressType(press.type);
+    if (button == kNone) {
+      // Since UIPress has key information from the physical keyboard,
+      // NativeWebKeyboardEvent is built with it in `sendKeyboardEvent`.
+      // If `press` is not handled in `sendKeyboardEvent`, it's
+      // added in `unhandled`.
+      if (![self sendKeyboardEvent:press eventType:type]) {
+        [unhandled addObject:press];
+      }
+      continue;
+    }
+    if (![self sendKeyEventWithRemoteButton:button eventType:type]) {
+      [unhandled addObject:press];
+      continue;
+    }
+    if (press.type == UIPressTypeMenu) {
+      // Pass `UIPressTypeMenu` to the framework to manage app suspension.
+      [unhandled addObject:press];
+    }
+  }
+  return unhandled;
+}
+
+- (void)pressesBegan:(NSSet<UIPress*>*)presses
+           withEvent:(UIPressesEvent*)event {
+  NSSet<UIPress*>* unhandled =
+      [self handlePresses:presses
+                 withType:blink::WebInputEvent::Type::kKeyDown];
+  if (unhandled.count > 0) {
+    [super pressesBegan:unhandled withEvent:event];
+  }
+}
+
 - (void)pressesEnded:(NSSet<UIPress*>*)presses
            withEvent:(UIPressesEvent*)event {
-  for (UIPress* press in presses) {
-    NavigationDirection direction = kNone;
-    switch (press.type) {
-      case UIPressTypeUpArrow:
-        direction = kUp;
-        break;
-      case UIPressTypeDownArrow:
-        direction = kDown;
-        break;
-      case UIPressTypeLeftArrow:
-        direction = kLeft;
-        break;
-      case UIPressTypeRightArrow:
-        direction = kRight;
-        break;
-      default:
-        [super pressesEnded:presses withEvent:event];
-        break;
-    }
-    [self sendKeyEventWithDirection:direction];
+  NSSet<UIPress*>* unhandled =
+      [self handlePresses:presses withType:blink::WebInputEvent::Type::kKeyUp];
+  if (unhandled.count > 0) {
+    [super pressesEnded:presses withEvent:event];
   }
 }
 
-// Helper method to generate WebKeyboardEvent with `direction`.
-- (void)sendKeyEventWithDirection:(NavigationDirection)direction {
-  blink::WebKeyboardEvent event(blink::WebInputEvent::Type::kKeyDown,
-                                blink::WebInputEvent::kNoModifiers,
+// Helper method to send the keyboard event.
+- (BOOL)sendKeyboardEvent:(UIPress*)press
+                eventType:(blink::WebInputEvent::Type)type {
+  input::NativeWebKeyboardEvent native_event =
+      input::NativeWebKeyboardEvent(base::apple::OwnedUIPress(press));
+  if (!blink::WebInputEvent::IsKeyboardEventType(native_event.GetType())) {
+    return NO;
+  }
+  if (native_event.dom_code == static_cast<uint32_t>(ui::DomCode::NONE)) {
+    return NO;
+  }
+  _view->SendKeyEvent(native_event);
+  return YES;
+}
+
+// Helper method to generate WebKeyboardEvent with RemoteButton.
+- (BOOL)sendKeyEventWithRemoteButton:(RemoteButton)remoteButton
+                           eventType:(blink::WebInputEvent::Type)type {
+  blink::WebKeyboardEvent event(type, blink::WebInputEvent::kNoModifiers,
                                 ui::EventTimeForNow());
 
-  switch (direction) {
+  switch (remoteButton) {
     case kLeft:
       event.native_key_code = UIKeyboardHIDUsageKeyboardLeftArrow;
       event.dom_code = static_cast<int>(ui::DomCode::ARROW_LEFT);
@@ -297,12 +373,27 @@ UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
       event.dom_key = ui::DomKey::ARROW_DOWN;
       event.windows_key_code = ui::VKEY_DOWN;
       break;
+    case kMediaPlayPause:
+      event.native_key_code = UIKeyboardHIDUsageKeyboardPause;
+      event.dom_code = static_cast<int>(ui::DomCode::MEDIA_PLAY_PAUSE);
+      event.dom_key = ui::DomKey::MEDIA_PLAY_PAUSE;
+      event.windows_key_code = ui::VKEY_MEDIA_PLAY_PAUSE;
+      break;
+    case kMenu:
+      // Refer to https://support.apple.com/en-us/102337.
+      // The menu button works to return to the previous screen.
+      event.native_key_code = UIKeyboardHIDUsageKeyboardEscape;
+      event.dom_code = static_cast<int>(ui::DomCode::ESCAPE);
+      event.dom_key = ui::DomKey::ESCAPE;
+      event.windows_key_code = ui::VKEY_ESCAPE;
+      break;
     case kNone:
-      return;
+      return NO;
   }
 
   _view->SendKeyEvent(
       input::NativeWebKeyboardEvent(event, _view->GetNativeView()));
+  return YES;
 }
 
 - (void)showKeyboard:(const ui::mojom::TextInputState&)state {

@@ -220,7 +220,8 @@ To actually debug the GPU process:
 
 On Linux, gdb can be automatically attached via the `--gpu-launcher` argument:
 
-*   `out/Debug/chromium --no-sandbox --gpu-launcher="xterm -e gdb --args"
+*   `out/Debug/chromium --no-sandbox --no-zygote
+    --gpu-launcher="xterm -e gdb --args"
     http://localhost:8000/page-to-repro.html`
 
 Similarly, gdb can be attached with the same argument on OSX:

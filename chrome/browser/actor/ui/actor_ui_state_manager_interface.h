@@ -6,38 +6,21 @@
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_STATE_MANAGER_INTERFACE_H_
 
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/widget/glic_window_controller.h"
-#endif
 
 namespace actor::ui {
-using UiCompleteCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+using UiCompleteCallback =
+    base::OnceCallback<void(::actor::mojom::ActionResultPtr)>;
 
-// ExpiryPeriod from when the user completes a task and when it should no longer
-// show on the ui
-// TODO(crbug.com/428014205): This is a placeholder value atm.
-static constexpr base::TimeDelta kCompletedTaskExpiryDelay = base::Minutes(3);
 static constexpr base::TimeDelta kProfileScopedUiUpdateDebounceDelay =
     base::Milliseconds(500);
 
 class ActorUiStateManagerInterface {
  public:
-  // TODO(crbug.com/428014205): Once UX is determined for multiple tasks, states
-  // here may change.
-  enum class UiState {
-    // There are no active agent tasks on this profile.
-    kInactive,
-    // There are active agent tasks on this profile.
-    kActive,
-    // There are agent tasks that need attention, this includes agent pause &
-    // completed tasks within the kCompletedTaskExpiryDelay.
-    kCheckTasks,
-  };
   virtual ~ActorUiStateManagerInterface() = default;
 
   // Handles a UiEvent that may be processed asynchronously.
@@ -45,16 +28,23 @@ class ActorUiStateManagerInterface {
   // Handles a UiEvent that must be processed synchronously.
   virtual void OnUiEvent(SyncUiEvent event) = 0;
 
-  // Gets the relevant UiTabController if the `tab`
-  // exists. Can be stubbed out to do nothing in tests.
-  virtual ActorUiTabControllerInterface* GetUiTabController(
-      tabs::TabInterface* tab) = 0;
+  // Shows toast that notifies user the Actor is working in the background.
+  // Shows a maximum of kToastShownMax per profile.
+  virtual void MaybeShowToast(BrowserWindowInterface* bwi) = 0;
 
-#if BUILDFLAG(ENABLE_GLIC)
-  // Called on glic window (floaty) state change.
-  virtual void OnGlicUpdateFloatyState(
-      glic::GlicWindowController::State floaty_state) = 0;
-#endif
+  // Register for this callback to be notified whenever the actor task state
+  // changes. This callback may be debounced by a delay.
+  using ActorTaskStateChangeCallback = base::RepeatingCallback<void(TaskId)>;
+  virtual base::CallbackListSubscription RegisterActorTaskStateChange(
+      ActorTaskStateChangeCallback callback) = 0;
+
+  // Register for this callback to be notified whenever the actor task is
+  // stopped. This callback will occur immediately once the task enters
+  // a stopped state.
+  using ActorTaskStoppedCallback = base::RepeatingCallback<
+      void(TaskId, ActorTask::State, std::string /*title*/)>;
+  virtual base::CallbackListSubscription RegisterActorTaskStopped(
+      ActorTaskStoppedCallback callback) = 0;
 };
 
 }  // namespace actor::ui

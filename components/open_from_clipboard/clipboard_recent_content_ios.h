@@ -6,6 +6,7 @@
 #define COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_IOS_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
@@ -29,7 +30,7 @@ class ClipboardRecentContentIOS : public ClipboardRecentContent {
   // |group_user_defaults| is the NSUserDefaults used to store information on
   // pasteboard entry expiration. This information will be shared with other
   // application in the application group.
-  ClipboardRecentContentIOS(const std::string& application_scheme,
+  ClipboardRecentContentIOS(std::string_view application_scheme,
                             NSUserDefaults* group_user_defaults,
                             bool only_use_clipboard_async);
 

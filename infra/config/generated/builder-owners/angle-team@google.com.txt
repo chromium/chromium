@@ -14,3 +14,8 @@ ci/win-angle-chromium-x86-builder
 ci/win10-angle-chromium-x64-intel
 ci/win10-angle-chromium-x64-nvidia
 try/android-angle-chromium-try
+try/fuchsia-angle-try
+try/linux-angle-chromium-try
+try/mac-angle-chromium-try
+try/win-angle-chromium-x64-try
+try/win-angle-chromium-x86-try

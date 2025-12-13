@@ -336,7 +336,7 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
   }
 
   if (group.ads) {
-    std::optional<WTF::wtf_size_t>
+    std::optional<wtf_size_t>
         selectable_buyer_and_seller_reporting_ids_hard_limit;
     if (base::FeatureList::IsEnabled(
             features::kFledgeLimitSelectableBuyerAndSellerReportingIds) &&
@@ -346,7 +346,7 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
           features::kFledgeSelectableBuyerAndSellerReportingIdsHardLimit.Get();
     }
 
-    for (WTF::wtf_size_t i = 0; i < group.ads.value().size(); ++i) {
+    for (wtf_size_t i = 0; i < group.ads.value().size(); ++i) {
       const KURL& render_url = KURL(group.ads.value()[i]->render_url);
       if (!IsUrlAllowedForRenderUrls(render_url)) {
         error_field_name = String::Format("ads[%u].renderURL", i);
@@ -354,7 +354,7 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         error = "renderURLs must be HTTPS and have no embedded credentials.";
         return false;
       }
-      const WTF::String& ad_size_group = group.ads.value()[i]->size_group;
+      const String& ad_size_group = group.ads.value()[i]->size_group;
       if (!ad_size_group.IsNull()) {
         if (ad_size_group.empty()) {
           error_field_name = String::Format("ads[%u].sizeGroup", i);
@@ -402,8 +402,7 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
               mojom::blink::kMaxAllowedReportingOrigins);
           return false;
         }
-        for (WTF::wtf_size_t j = 0; j < allowed_reporting_origins->size();
-             ++j) {
+        for (wtf_size_t j = 0; j < allowed_reporting_origins->size(); ++j) {
           if (allowed_reporting_origins.value()[j]->Protocol() !=
               url::kHttpsScheme) {
             error_field_name =
@@ -419,7 +418,7 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
   }
 
   if (group.ad_components) {
-    for (WTF::wtf_size_t i = 0; i < group.ad_components.value().size(); ++i) {
+    for (wtf_size_t i = 0; i < group.ad_components.value().size(); ++i) {
       const KURL& render_url = KURL(group.ad_components.value()[i]->render_url);
       if (!IsUrlAllowedForRenderUrls(render_url)) {
         error_field_name = String::Format("adComponents[%u].renderURL", i);
@@ -427,7 +426,7 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         error = "renderURLs must be HTTPS and have no embedded credentials.";
         return false;
       }
-      const WTF::String& ad_component_size_group =
+      const String& ad_component_size_group =
           group.ad_components.value()[i]->size_group;
       if (!ad_component_size_group.IsNull()) {
         if (ad_component_size_group.empty()) {
@@ -583,9 +582,9 @@ bool PerformAdditionalJoinAndUpdateTimeValidations(
           0) {
     return true;
   }
-  WTF::wtf_size_t selectable_buyer_and_seller_reporting_ids_soft_limit =
+  wtf_size_t selectable_buyer_and_seller_reporting_ids_soft_limit =
       features::kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit.Get();
-  for (WTF::wtf_size_t i = 0; i < group.ads.value().size(); ++i) {
+  for (wtf_size_t i = 0; i < group.ads.value().size(); ++i) {
     if (group.ads.value()[i]->selectable_buyer_and_seller_reporting_ids &&
         group.ads.value()[i]
                 ->selectable_buyer_and_seller_reporting_ids->size() >

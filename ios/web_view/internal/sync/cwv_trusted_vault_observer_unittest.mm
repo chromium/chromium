@@ -15,7 +15,9 @@ namespace ios_web_view {
 // Concrete observer just for testing.
 class TrustedVaultObserver
     : public trusted_vault::TrustedVaultClient::Observer {
-  void OnTrustedVaultKeysChanged() override {}
+  void OnTrustedVaultKeysChanged(
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger)
+      override {}
   void OnTrustedVaultRecoverabilityChanged() override {}
 };
 

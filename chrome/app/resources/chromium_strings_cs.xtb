@@ -17,9 +17,13 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1131805035311359397">Chcete-li zkontrolovat, zda jsou hesla v bezpečí před porušením zabezpečení údajů a ostatními bezpečnostními hrozbami, <ph name="BEGIN_LINK" />přihlaste se do prohlížeče Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Klikněte na nabídku Chromium</translation>
 <translation id="1157985233335035034">Poslední jazyky</translation>
+<translation id="1171831736360285680">Partner <ph name="PARTNER_NAME" /> přidal rozšíření, které může změnit fungování prohlížeče Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Instalace se nezdařila, protože vaše verze systému Windows není podporována.</translation>
 <translation id="1185134272377778587">O prohlížeči Chromium</translation>
 <translation id="1203500561924088507">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je potřeba restartovat prohlížeč.</translation>
+<translation id="123265588161106468">Když jste přihlášeni, můžete v prohlížeči Chromium používat hesla a další položky ze svého účtu Google. Pokud to chcete změnit, přejděte do sekce Váš účet v prohlížeči Chromium.</translation>
 <translation id="1262876892872089030">Když tato karta nebyla aktivní, byla uvolněna paměť, aby byl prohlížeč Chromium rychlý. Můžete zvolit, že tento web nikdy nemá být považován za neaktivní.</translation>
 <translation id="1265577313130862557">Prohlížeč Chromium toto stahování zablokoval, protože soubor je nebezpečný</translation>
 <translation id="126567311906253476">Když se pomocí účtu <ph name="USER_EMAIL" /> přihlásíte do služeb Google, jako je Gmail nebo YouTube, můžete se pomocí něj automaticky přihlásit i do prohlížeče Chromium</translation>
@@ -31,13 +35,16 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1345251407431278948">Připnuto! Vyhledávání obrázků můžete znovu otevřít pomocí nového tlačítka na panelu nástrojů</translation>
 <translation id="1356661055722410047">Novinka! Můžete překládat text i obrázky na obrazovce</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
+<translation id="1397530502368084401">&amp;Spravovat profily prohlížeče Chromium</translation>
 <translation id="1414495520565016063">Jste přihlášeni do prohlížeče Chromium.</translation>
 <translation id="141901961143729572">Podělte se o svůj názor</translation>
 <translation id="1465192221147974788">Pokud chcete sdílet okno, v Nastavení systému povolte pro Chromium nahrávání obrazovky.</translation>
 <translation id="1478370723027452770">Nápověda k Chrome for Testing</translation>
+<translation id="1496875977627931224">Hezký den, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />na co dnes myslíte?</translation>
 <translation id="1497802159252041924">Chyba instalace: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Tahle stránka je chráněna</translation>
 <translation id="1524282610922162960">Sdílet kartu prohlížeče Chromium</translation>
+<translation id="154404805518949443">Přihlásit se do Chromia</translation>
 <translation id="1547469039832541117">Ukončí zvýrazněnou úlohu</translation>
 <translation id="1553461853655228091">Prohlížeč Chromium potřebuje oprávnění k přístupu k fotoaparátu, aby mohl vytvořit 3D mapu vašeho okolí</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Toto rozšíření už není podporováno. Chromium vám doporučuje odstranit ho.}few{Tato rozšíření už nejsou podporována. Chromium vám doporučuje odstranit je}many{Tato rozšíření už nejsou podporována. Chromium vám doporučuje odstranit je}other{Tato rozšíření už nejsou podporována. Chromium vám doporučuje odstranit je}}</translation>
@@ -47,6 +54,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1607715478322902680">{COUNT,plural, =0{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali}=1{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="1625909126243026060">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení v prohlížeči Chromium</translation>
 <translation id="1640672724030957280">Stahování...</translation>
+<translation id="1680687534629375545">Zeptat se Vyhledávání obrázků na tuto stránku</translation>
 <translation id="1709772298389099340">Poskytuje zvýšená oprávnění prohlížeči <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Za účelem zlepšení těchto funkcí odesílá Chromium vaše interakce do Googlu. Tato data mohou číst, zpracovávat a opatřovat poznámkami kontroloři.</translation>
 <translation id="1722488837206509557">Budete moci vybírat z dostupných zařízení a zobrazovat na nich obsah.</translation>
@@ -59,17 +67,17 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1779356040007214683">Aby bylo Chromium bezpečnější, deaktivovali jsme některá rozšíření, která nejsou uvedena na webu <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohla být přidána bez vašeho vědomí.</translation>
 <translation id="1808667845054772817">Přeinstalovat Chromium</translation>
 <translation id="1820835682567584003">Chromium se pokouší <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="183031085822326697">Až příště na zařízení <ph name="DEVICE_TYPE" /> otevřete Chromium, zobrazí se výzva k použití Správce hesel Google.</translation>
 <translation id="1838374766361614909">Vymazat vyhledávání</translation>
 <translation id="18552579716432081">Pokud chcete údaje o prohlížení vymazat jen z tohoto zařízení, ale v účtu Google je ponechat, <ph name="BEGIN_LINK" />odhlaste se z prohlížeče Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Můžete spravovat účty Google, ke kterým jste přihlášeni. Účty Google jsou používány v prohlížeči Chromium, Obchodu Play, Gmailu a dalších službách. Pokud chcete přidat účet někoho jiného, například člena rodiny, přidejte nového uživatele do zařízení <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Vyhledávání pomocí vyhledávání obrázků</translation>
-<translation id="1863308913976887472">Weby mohou v prohlížeči Chromium ukládat informace o vašich zájmech. Např. když navštívíte web, kde se prodávají boty na maraton, web může definovat váš zájem jako běhání maratonů. Když později navštívíte jiný web s registrací na závod, může se vám na něm na základě vašich zájmů zobrazit reklama na boty na běhání.</translation>
 <translation id="1880677175115548835">Vybrat text</translation>
 <translation id="1881322772814446296">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem prohlížeče Chromium. Vaše údaje prohlížeče Chromium, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí stránky Dashboard služby Účty Google, ale nebudete je moci přidružit k jinému účtu. Pokud chcete uchovat existující údaje prohlížeče Chromium odděleně, můžete vytvořit nový profil. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium šetří baterii tím, že omezuje aktivitu na pozadí a vizuální efekty, jako jsou plynulé posouvání a snímková frekvence videí. <ph name="BEGIN_LINK" />Další informace o Spořiči energie<ph name="END_LINK" /></translation>
+<translation id="1898804291554630487">Zeptejte se na tuhle stránku</translation>
 <translation id="1900969832270057921">Aktualizační služba prohlížeče Chromium</translation>
 <translation id="1911763535808217981">Pokud tuto možnost vypnete, budete se moci přihlásit k většině webů Google, jako je Gmail, aniž byste se přihlásili do prohlížeče Chromium</translation>
-<translation id="1916451563296275579">Odstranit z prohlížeče Chromium data těchto aplikací</translation>
 <translation id="1929939181775079593">Prohlížeč Chromium neodpovídá. Chcete jej znovu načíst?</translation>
 <translation id="1933341829955786215">Vaše organizace, <ph name="MANAGER" />, vyžaduje, abyste se do prohlížeče Chromium přihlásili</translation>
 <translation id="193439633299369377">Aktualizace se použije po restartování systému ChromiumOS.</translation>
@@ -81,9 +89,12 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2008474315282236005">Z tohoto zařízení bude smazána 1 položka. Budete-li chtít své údaje později načíst, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Instalace se nezdařila. Zkuste to znovu.</translation>
 <translation id="2020032459870799438">Chcete-li zkontrolovat, zda jsou ostatní hesla v bezpečí před porušením zabezpečení údajů a ostatními bezpečnostními hrozbami, <ph name="BEGIN_LINK" />přihlaste se do prohlížeče Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Nastavení.</translation>
 <translation id="2049376729098081731">Zvolte, zda pro lépe personalizované prostředí ve službách Google chcete zahrnout historii prohlížeče Chromium</translation>
 <translation id="2054039611381840095">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém macOS 12 nebo novější. Tento počítač používá systém macOS 11.</translation>
+<translation id="2064856577282482477">Kliknutím na tlačítko Přizpůsobit Chromium na stránce Nová karta můžete dát prohlížeči Chromium nový vzhled</translation>
 <translation id="2086476982681781442">Prohlížeč Chromium toto stahování zablokoval, protože soubor je klamavý a může ve vašem zařízení provést neočekávané změny</translation>
+<translation id="208726765006323911">Až příště otevřete Chromium pro iOS, zobrazí se výzva k vyzkoušení funkce <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Vaše hesla a další data prohlížeče Chromium, která jste si uložili do účtu Google, budou z tohoto zařízení odstraněna. Pokud je budete chtít v prohlížeči Chromium zase použít, znovu se přihlaste.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Když Chromium 1 minutu nebudete používat, vaše organizace automaticky vymaže údaje o prohlížení. Může to zahrnovat historii, automatické vyplňování a stažené soubory. Vaše karty zůstanou otevřené.}few{Když Chromium # minuty nebudete používat, vaše organizace automaticky vymaže údaje o prohlížení. Může to zahrnovat historii, automatické vyplňování a stažené soubory. Vaše karty zůstanou otevřené.}many{Když Chromium # minuty nebudete používat, vaše organizace automaticky vymaže údaje o prohlížení. Může to zahrnovat historii, automatické vyplňování a stažené soubory. Vaše karty zůstanou otevřené.}other{Když Chromium # minut nebudete používat, vaše organizace automaticky vymaže údaje o prohlížení. Může to zahrnovat historii, automatické vyplňování a stažené soubory. Vaše karty zůstanou otevřené.}}</translation>
 <translation id="2126108037660393668">Stažený soubor nelze ověřit.</translation>
@@ -94,15 +105,26 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2185166961232948079">Chromium – přihlášení k síti – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Chyba kontroly aktualizace: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Odstranit účet z prohlížeče Chromium</translation>
+<translation id="2210502920229141283">Buďte na cestách v bezpečí s Vylepšeným Bezpečným prohlížením v Chromiu pro iOS</translation>
 <translation id="2210682093923538346">Nebezpečný web. Prohlížeč Chromium odebral oprávnění zobrazovat oznámení.</translation>
 <translation id="2236949375853147973">Moje aktivita</translation>
 <translation id="2238130810669087193">Pokud své adresy a další položky chcete mít na všech svých zařízeních, přihlaste se do prohlížeče Chromium Tato adresa se po přihlášení uloží do vašeho účtu Google.</translation>
-<translation id="2240214816234246077">V poslední době jste nenavštívili. Prohlížeč Chromium odebral tato oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Pokud počítač sdílíte s kamarády a členy rodiny, každý může web procházet samostatně a nastavit si Chromium podle svých požadavků.</translation>
+<translation id="2283803047247799269">Vyhledat tuto kartu pomocí Vyhledávání obrázků</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium doporučuje pozastavit kartu, která ho zpomaluje}few{Chromium doporučuje pozastavit karty, které ho zpomalují}many{Chromium doporučuje pozastavit karty, které ho zpomalují}other{Chromium doporučuje pozastavit karty, které ho zpomalují}}</translation>
+<translation id="2307973900865360088">Přidat do Docku</translation>
 <translation id="2313870531055795960">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v prohlížeči Chromium. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chromium Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
-<translation id="232860113504534383">Váš prohlížeč Chromium, všude</translation>
+<translation id="2332076562712130931">Provedou se tyto akce:
+        <ph name="LINE_BREAKS" />
+          • Resetují se některá nastavení a zkratky prohlížeče Chromium.
+          <ph name="LINE_BREAK" />
+          • Deaktivují se rozšíření.
+          <ph name="LINE_BREAK" />
+          • Smažou se soubory cookie a jiná dočasná data webů.
+          <ph name="LINE_BREAKS" />
+          Záložky, historie ani uložená hesla nebudou dotčeny.</translation>
 <translation id="2343156876103232566">Pokud odtud chcete odeslat číslo do telefonu Android, v obou zařízeních se přihlaste do prohlížeče Chromium.</translation>
+<translation id="2356070529366658676">Zeptat se</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2361918034042471035">Rozšíření <ph name="EXTENSION_NAME" /> chce, abyste se do prohlížeče Chromium přihlásili</translation>
 <translation id="236943522426971115">Zakázat Chromium na pozadí pro aplikace</translation>
@@ -128,19 +150,20 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2629740064077610681">Vaše organizace může zobrazit a spravovat údaje o prohlížení (například vaše záložky, historii a hesla). Údaje o prohlížení v ostatních profilech prohlížeče Chromium nevidí.</translation>
 <translation id="2635452620547538388">Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu <ph name="ACCOUNT_EMAIL" />, ověřte svou totožnost</translation>
-<translation id="264613044588233783">Chromium běží rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy (doporučeno)</translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci.}=1{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci. Anonymní okno se neotevře znovu.}few{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci. # anonymní okna se neotevřou znovu.}many{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci. # anonymního okna se neotevře znovu.}other{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="2648074677641340862">Během instalace došlo k chybě operačního systému. Stáhněte prosím Chromium znovu.</translation>
 <translation id="2661879430930417727">Pokud zařízení sdílíte s přáteli a členy rodiny, každý může procházet internet samostatně a nastavit si Chromium tak, jak potřebuje</translation>
 <translation id="2711502716910134313">Karta prohlížeče Chromium</translation>
 <translation id="2718390899429598676">V zájmu lepšího zabezpečení bude Chromium šifrovat vaše data.</translation>
 <translation id="2721354645805494590">Pokud z prohlížeče Chromium chcete odebrat svůj účet Google, odhlaste se</translation>
+<translation id="2722636413143664436">Pokud svá hesla, záložky a další položky chcete mít na všech svých zařízeních, přihlaste se do prohlížeče Chromium</translation>
 <translation id="2738871930057338499">Nelze se připojit k internetu. HTTP 403 (Zakázáno). Zkontrolujte konfiguraci proxy.</translation>
 <translation id="2753623023919742414">Kliknutím spustíte hledání</translation>
 <translation id="2768103863314748511">Nastavte Chromium jako výchozí prohlížeč PDF</translation>
-<translation id="2770231113462710648">Změnit výchozí prohlížeč na:</translation>
 <translation id="2785438272836277133">Toto rozšíření obsahuje malware a není bezpečné. Odstraňte ho z prohlížeče Chromium, aby již nemohlo číst a měnit data (včetně osobních údajů) na webech, které navštěvujete.</translation>
 <translation id="2799223571221894425">Restartovat</translation>
 <translation id="2803971713792056305">Váš prohlížeč Chromium</translation>
+<translation id="2816462166102338036">Vyhledat toto video pomocí Vyhledávání obrázků</translation>
 <translation id="2841525013647267359">Přeložit z jazyka</translation>
 <translation id="2846251086934905009">Chyba instalace: Instalační program nebyl dokončen. Instalace byla zrušena.</translation>
 <translation id="2847479871509788944">Odstranit z prohlížeče Chromium...</translation>
@@ -151,68 +174,84 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2928420929544864228">Instalace byla dokončena.</translation>
 <translation id="2933336679234709858">Vaše data se šifrují heslovou frází. Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu Google, zadejte ji.</translation>
 <translation id="2945997411976714835">Chyba instalace: Instalační proces se nepodařilo spustit.</translation>
+<translation id="2948852018303413228">Přihlašujte se na weby rychleji pomocí uložených hesel pro Chromium v systému iOS</translation>
+<translation id="2966959524256557996">Přidejte nový profil prohlížeče Chromium, abyste měli záložky, hesla a nastavení oddělené.</translation>
 <translation id="2970426615109535079">Chromium spravuje vaše organizace</translation>
 <translation id="2977470724722393594">Chromium je aktuální</translation>
 <translation id="2977506796191543575">Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chromium Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky</translation>
 <translation id="2981563588585023386">Pokud na internetu chceš být víc v bezpečí s nastavením od rodičů, přihlas se do Chromia</translation>
 <translation id="3003694935412297923">Všechny úkoly</translation>
+<translation id="3012615494352020668">{count,plural, =1{Před uložením některých dat do vašeho účtu Google k použití na všech vašich zařízeních potřebuje Chromium ověřit, že jste to vy. Pokud se teď odhlásíte, tato data (1 položka) se smažou.}few{Před uložením některých dat do vašeho účtu Google k použití na všech vašich zařízeních potřebuje Chromium ověřit, že jste to vy. Pokud se teď odhlásíte, tato data ({count} položky) se smažou.}many{Před uložením některých dat do vašeho účtu Google k použití na všech vašich zařízeních potřebuje Chromium ověřit, že jste to vy. Pokud se teď odhlásíte, tato data ({count} položky) se smažou.}other{Před uložením některých dat do vašeho účtu Google k použití na všech vašich zařízeních potřebuje Chromium ověřit, že jste to vy. Pokud se teď odhlásíte, tato data ({count} položek) se smažou.}}</translation>
 <translation id="3013473503895162900">Otevřít adresu <ph name="URL" /> na nové kartě prohlížeče Chromium.</translation>
 <translation id="3032706164202344641">Chromium nemůže zkontrolovat hesla. Zkuste to později.</translation>
 <translation id="3032787606318309379">Přidávání do prohlížeče Chromium...</translation>
 <translation id="3038232873781883849">Čekání na instalaci…</translation>
 <translation id="3045032126857188731">Přeložený jazyk: <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">Zavřít dialogové okno zpětné vazby</translation>
 <translation id="3068187312562070417">Ostatní profily Chromium</translation>
 <translation id="3068515742935458733">Pomozte aplikaci Chromium zlepšovat tím, že budete společnosti Google zasílat zprávy o selhání a <ph name="UMA_LINK" />.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 zařízení USB bylo používáno jedním nebo více rozšířeními prohlížeče Chromium}=1{1 zařízení USB je používáno jedním nebo více rozšířeními prohlížeče Chromium}few{# zařízení USB jsou používána jedním nebo více rozšířeními prohlížeče Chromium}many{# zařízení USB je používáno jedním nebo více rozšířeními prohlížeče Chromium}other{# zařízení USB je používáno jedním nebo více rozšířeními prohlížeče Chromium}}</translation>
-<translation id="3101560983689755071">Vaše historie prohlížení ovlivňuje zobrazované reklamy a odhadované zájmy uvedené níže. Aby Chromium chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže. Zájmy se mohou obnovovat, dokud je neodstraníte.</translation>
+<translation id="3095811995836568724">Historie prohlížeče Chromium</translation>
 <translation id="3103660991484857065">Instalačnímu programu se nepodařilo rozbalit archiv. Stáhněte prosím Chromium znovu.</translation>
 <translation id="310459126943037700">Úlohy se nepodařilo ukončit.</translation>
 <translation id="3130323860337406239">Chromium používá váš mikrofon.</translation>
+<translation id="3130333203120345554">Nové vyhledávání</translation>
 <translation id="3137969841538672700">Přetažením vyhledáte</translation>
 <translation id="3144188012276422546">Tato karta využívá další zdroje. Ke zlepšení výkonu ji nechte Chromium deaktivovat.</translation>
 <translation id="3149163023759831301">Pokud chcete sdílet obrazovku, v Nastavení systému povolte pro Chromium nahrávání obrazovky</translation>
 <translation id="3155163173539279776">Restartovat Chromium</translation>
 <translation id="3161522574479303604">Všechny jazyky</translation>
 <translation id="3179665906251668410">Otevřít odkaz v &amp;anonymním okně prohlížeče Chromium</translation>
+<translation id="3183357154200327217">Jiný program na počítači přidal motiv, který může měnit funkce Chromu.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Přizpůsobte si svůj nový profil Chromium</translation>
 <translation id="3224847870593914902">Pokud z prohlížeče Chromium chcete odebrat svůj účet Google, odhlaste se z prohlížeče Chromium na stránce Nastavení</translation>
 <translation id="3234316605225071811">Později vám může Chromium nabízet automatické vyplnění formulářů uloženými údaji</translation>
 <translation id="3258596308407688501">Chromium nemůže číst ani zapisovat do svého datového adresáře:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 je modul prohlížeče Chromium pro JavaScript a WebAssembly používaný ke zlepšení výkonu webů</translation>
 <translation id="3286538390144397061">Restartovat</translation>
 <translation id="328888136576916638">Chybí klíče rozhraní Google API. Některé funkce Chromium nebudou k dispozici.</translation>
 <translation id="3296368748942286671">Po ukončení prohlížeče Chromium nechat aplikace na pozadí spuštěné</translation>
 <translation id="3313189106987092621">Před načtením jakéhokoli webu pomocí nezabezpečeného připojení vás Chromium upozorní</translation>
 <translation id="3316771292331273802">Po zavření všech oken prohlížeče Chromium budete odhlášeni z většiny webů (s výjimkou účtu Google, pokud jste do prohlížeče Chromium přihlášeni). Pokud webům chcete umožnit pamatovat si vás, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Mimo Chromium byl změněn váš výchozí vyhledávač. Prohlížeč Chromium ho kvůli vaší ochraně resetoval.</translation>
 <translation id="3352986031709923790">pravý horní roh oblasti hledání: vpravo <ph name="RIGHT" /> %, nahoře <ph name="TOP" /> %</translation>
+<translation id="3366305173356742781">Data prohlížeče Chromium ve vašem účtu</translation>
+<translation id="3369405342922656244">Vyhledat tuto stránku pomocí Vyhledávání obrázků</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Přepnout na stávající profil Chromium?</translation>
 <translation id="3412460710772753638">Ve Správci hesel na tomto zařízení</translation>
+<translation id="3461644266919055473">Přizpůsobení Chromia…</translation>
 <translation id="347328004046849135">Pokud se přihlásíte pomocí prolomeného hesla, Chromium vám to oznámí</translation>
 <translation id="3474745554856756813">Z tohoto zařízení bude smazán následující počet položek: <ph name="ITEMS_COUNT" />. Budete-li chtít své údaje později načíst, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Zkratkou <ph name="SHORTCUT" /> lze přepínat mezi profily Chromium</translation>
 <translation id="3509308970982693815">Zavřete prosím všechna okna prohlížeče Chromium a zkuste to znovu.</translation>
 <translation id="3522404737534491619">Pokud chcete sdílet okno, v Nastavení systému povolte pro Chromium nahrávání obrazovky</translation>
 <translation id="3530103706039034513">Už je přihlášen uživatel <ph name="EXISTING_USER" />.  Pokud své procházení chcete oddělit, přihlaste se do prohlížeče Chromium ve svém vlastním profilu jako <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="3533435340678213462">Abychom chránili vaše soukromí, vaše zájmy starší než 4 měsíce automaticky mažeme. Jak budete pracovat s internetem, zájmy se mohou na seznamu znovu objevit. Pokud se zájmy nemají zohledňovat, můžete je z Chromia odstranit.</translation>
 <translation id="3561853857681580870">Pokud chcete sdílet obrazovku, v Nastavení systému povolte pro Chromium nahrávání obrazovky.</translation>
-<translation id="3567254597502212821">Vaši historii prohlížení, což je seznam webů, které jste navštívili v Chromiu na tomto zařízení.</translation>
 <translation id="3597003331831379823">Spuštění instalace se zvýšenými oprávněními se nezdařilo. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Přihlášení do Chromia</translation>
 <translation id="3639635944603682591">Ze zařízení budou smazány údaje této osoby o prohlížení. Budete-li je chtít znovu získat, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování.}=1{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. Anonymní okno se neotevře znovu.}few{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. # anonymní okna se neotevřou znovu.}many{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. # anonymního okna se neotevře znovu.}other{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="3651803019964686660">Chcete-li poslat číslo z webu <ph name="ORIGIN" /> na svůj telefon Android, v obou zařízeních se přihlaste do prohlížeče Chromium.</translation>
 <translation id="3667616615096815454">Aplikaci nelze nainstalovat, protože ji server nezná.</translation>
+<translation id="3675854891107786059">Veškerá data prohlížeče Chromium ve vašem účtu Google šifrovat pomocí vaší <ph name="BEGIN_LINK" />vlastní heslové fráze<ph name="END_LINK" />. Platební metody a adresy z Google Pay se šifrovat nebudou. Historie prohlížení v prohlížeči Chromium se nebude synchronizovat.</translation>
 <translation id="3685209450716071127">Chromium nemůže zkontrolovat hesla. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali}=1{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="3713809861844741608">Otevřít odkaz na nové kar&amp;tě prohlížeče Chromium</translation>
 <translation id="3728124580182886854">Propojte Chromium a další služby Google pro personalizaci a další účely</translation>
+<translation id="3729187154190517324">Prohloubit vyhledávání přidáním několika karet, souborů a nástrojů pomocí tlačítka Přidat kartu a další položky.</translation>
 <translation id="3788675262216168505">Spravovat profily Chromium</translation>
 <translation id="3790262771324122253">Přečtěte si, proč Chromium blokuje některá stahování</translation>
 <translation id="379589255253486813">Pokud něco bude vyžadovat vaši pozornost, Chromium vám dá vědět</translation>
+<translation id="3798048725356732506">Profily prohlížeče Chromium vám pomůžou oddělit různé části vašeho života. Přidejte nový profil.</translation>
 <translation id="3802055581630249637">Chromium předběžně načítá stránky, které byste pravděpodobně mohli navštívit. Když je navštívíte, načtou se tak rychleji</translation>
 <translation id="3810973564298564668">Spravovat</translation>
+<translation id="3846683726093018685">**Shrň obsah:** V jedné větě do 30 slov popiš hlavní téma a účel obsahu na snímku obrazovky.
+
+          **Navrhni otázky:** Vygeneruj seznam 3–5 otázek, které by uživatelé mohli položit s cílem lépe snímku obrazovky porozumět. Alespoň jedna z otázek by se měla týkat konkrétního vizuálního objektu, jeho designu nebo umístění.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="3885770153807205175">Výběr jazyka</translation>
 <translation id="388648406173476553">Přizpůsobte si prohlížeč Chromium a ovládejte jej. Něco vyžaduje vaši pozornost – podrobnosti zobrazíte kliknutím.</translation>
@@ -220,6 +259,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3892148308691398805">Kopírovat text</translation>
 <translation id="390528597099634151">Uživatel <ph name="EXISTING_USER" /> už je k tomuto profilu Chromium přihlášen. Chcete-li své procházení oddělit, Chromium vám může vytvořit vlastní profil.</translation>
 <translation id="3909353120217047026">Toto rozšíření porušuje zásady Internetového obchodu Chrome a může být nebezpečné. Odstraňte ho z prohlížeče Chromium, aby již nemohlo číst a měnit data (včetně osobních údajů) na webech, které navštěvujete.</translation>
+<translation id="3937491663738985329">&amp;Přizpůsobit Chromium</translation>
 <translation id="3941890832296813527">Chyba instalace: Název souboru instalačního programu je neplatný nebo není podporován.</translation>
 <translation id="3945058413678539331">Chromium se pokouší zkopírovat hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="3954172517175569325">Vaše hesla, platební metody a adresy, které jste si uložili do účtu Google, budou z tohoto zařízení odstraněny. Pokud je budete chtít v prohlížeči Chromium zase použít, znovu se přihlaste.</translation>
@@ -233,11 +273,16 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4023601594785368013">Původní jazyk: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Otevírejte v prohlížeči Chromium odkazy ze všech aplikací. Navíc se pro snadný přístup připne na hlavní panel.</translation>
 <translation id="4036079820698952681">Pomozte s vylepšováním prohlížeče Chromium tím, že nahlásíte <ph name="BEGIN_LINK" />aktuální nastavení<ph name="END_LINK" /></translation>
+<translation id="4039097928859803404">Vždy zobrazovat zkratky režimu AI</translation>
 <translation id="4050175100176540509">V nejnovější verzi jsou k dispozici důležitá vylepšení zabezpečení a nové funkce.</translation>
 <translation id="4055805654398742145">&amp;Správce hesel</translation>
+<translation id="4061696872429826774">Jiný program na počítači přidal rozšíření, které může měnit funkce prohlížeče Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Vaše organizace prohlížeč Chromium po 1 minutě nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}few{Vaše organizace prohlížeč Chromium po # minutách nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}many{Vaše organizace prohlížeč Chromium po # minuty nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}other{Vaše organizace prohlížeč Chromium po # minutách nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}}</translation>
 <translation id="4118474109249235144">Anonymní režim prohlížeče Chromium</translation>
 <translation id="4122186850977583290">Přejít na stránku O prohlížeči Chromium</translation>
+<translation id="4147856324248078748">&amp;Přizpůsobit Chromium</translation>
 <translation id="4148957013307229264">Instalace...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – přihlášení k síti – Chromium</translation>
 <translation id="421369550622382712">Objevte skvělé aplikace, hry, rozšíření a motivy prohlížeče Chromium.</translation>
@@ -251,6 +296,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4271805377592243930">Pomoc s prohlížečem Chromium</translation>
 <translation id="4281844954008187215">Smluvní podmínky</translation>
 <translation id="4285930937574705105">Došlo k nespecifikované chybě, instalace se nezdařila. Pokud je prohlížeč Chromium právě spuštěný, zavřete jej prosím a zkuste to znovu.</translation>
+<translation id="4298125729853015961">Export hesel z prohlížeče Chromium</translation>
 <translation id="4304713468139749426">Správce hesel</translation>
 <translation id="4334241893986177674">Vyhledat na tomto snímku obrazovky</translation>
 <translation id="4334294535648607276">Stahování bylo dokončeno.</translation>
@@ -281,6 +327,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4598116752460667024">Vyhledejte libovolný proces ze seznamu.</translation>
 <translation id="4613863813562375431">Verze systému ChromiumOS</translation>
 <translation id="4621240073146040695">Aktualizace je téměř hotova. Dokončíte ji restartováním prohlížeče Chromium.</translation>
+<translation id="4625064703209785397">Zrychluje weby pomocí modulu V8 prohlížeče Chromium, ale trochu snižuje odolnost prohlížeče Chromium vůči útokům</translation>
 <translation id="4654936675281451226">Chromium lépe rozumí formulářům a může je automaticky vyplňovat rychleji. Toto nastavení je zapnuté.</translation>
 <translation id="4665829708273112819">Upozornění: Chromium nemůže rozšířením zabránit v zaznamenávání vaší historie prohlížení. Pokud toto rozšíření chcete v anonymním režimu deaktivovat, zrušte výběr této možnosti.</translation>
 <translation id="4673151026126227699">Pokud také sdílíte přehledy využití prohlížeče Chromium, budou zahrnovat navštívené adresy URL</translation>
@@ -292,6 +339,8 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4724676981607797757">Instalace se nezdařila kvůli chybě nepodporovaného protokolu.</translation>
 <translation id="4746050847053251315">Přesto Chromium ukončit?</translation>
 <translation id="4748217263233248895">Právě byla nainstalována mimořádná bezpečnostní aktualizace prohlížeče Chromium. Restartujte jej, vaše karty budou obnoveny.</translation>
+<translation id="4759645701210484457">Zeptat se Chromia</translation>
+<translation id="4771701986670315895">V poslední době jste nenavštívili. Prohlížeč Chromium odebral tato oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a ještě <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">Chromium nemůže zkontrolovat hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Tato funkce využívá stejnou službu kontroly pravopisu, jaká se používá ve vyhledávání Google. Text, který v prohlížeči zadáte, se odešle do Googlu. Toto chování můžete kdykoliv změnit v nastavení.</translation>
 <translation id="4814736265800133385">Použít Chromium bez účtu</translation>
@@ -302,18 +351,23 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="494490797786467921">Kliknutím zavřete přihlašovací dialogové okno prohlížeče Chromium</translation>
 <translation id="4950660488495335294">Pomocí profilů Chromium můžete všechny své údaje v prohlížeči Chromium uchovávat odděleně. Vytvořte profily pro přátele a rodinu nebo rozdělte činnosti mezi práci a zábavu.</translation>
 <translation id="4987820182225656817">Hosté mohou Chromium používat, aniž by po nich zůstaly jakékoliv stopy.</translation>
+<translation id="4992938037305302429">Váš účet v prohlížeči Chromium</translation>
 <translation id="4994636714258228724">Přidejte do prohlížeče Chromium svůj účet</translation>
 <translation id="5123973130450702873">Chromium potřebuje oprávnění ke sledování vašich rukou</translation>
+<translation id="5141988424377517949">V poslední době jste nenavštívili. Prohlížeč Chromium odebral tato oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">Na co dnes myslíte?</translation>
 <translation id="5174969993834422967">Obvykle oznámení blokujete. Pokud tomuto webu chcete zobrazování oznámení povolit, klikněte na ikonu oznámení v pravém rohu adresního řádku.</translation>
+<translation id="5174983315706567306">Na disku není dost místa.</translation>
 <translation id="5187123684706427865">Účet v prohlížeči Chromium vyžaduje opětovné ověření</translation>
 <translation id="5224391634244552924">Nemáte žádná uložená hesla. Chromium může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="5231355151045086930">Odhlášení z prohlížeče Chromium</translation>
 <translation id="5234764350956374838">Zavřít</translation>
+<translation id="5254739261293693943">Zeptat se na toto video</translation>
 <translation id="5277894862589591112">Chcete-li změny použít, restartujte Chromium</translation>
 <translation id="5286907366254680517">Rozpoznáno</translation>
 <translation id="5294316920224716406">Při procházení v anonymním režimu vás Chromium před načtením webu pomocí nezabezpečeného připojení upozorní</translation>
-<translation id="5296845517486664001">Když jsou zapnuté zkušební verze a Chromium vás do nějaké náhodně umístí, vaše historie prohlížení bude mít vliv na zobrazované reklamy a zájmy, jak je odhadnuto níže. Aby Chromium chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže.</translation>
 <translation id="5313228254328109263">Interní aktualizační služba prohlížeče Chromium</translation>
+<translation id="5346389065299425353">Prohlubte své vyhledávání přidáním karet, souborů a nástrojů</translation>
 <translation id="5352264705793813212">Prohlížeč Chromium našel několik bezpečnostních doporučení, která byste si měli projít</translation>
 <translation id="5352361688875342522">Ostatní profily Chromium</translation>
 <translation id="5358375970380395591">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem prohlížeče Chromium. Vaše údaje prohlížeče Chromium, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu v Účtech Google, ale nebudete je moci přidružit k jinému účtu. <ph name="LEARN_MORE" /></translation>
@@ -323,17 +377,18 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="5386450000063123300">Aktualizace prohlížeče Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Povolit přihlášení do prohlížeče Chromium</translation>
 <translation id="5405650547142096840">Odstranit z prohlížeče Chromium</translation>
+<translation id="5424544524441439284">Snižuje výkon, ale zvyšuje odolnost prohlížeče Chromium proti útokům</translation>
 <translation id="5427571867875391349">Nastavit Chromium jako výchozí prohlížeč</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium doporučuje pozastavit kartu, která ho zpomaluje}few{Chromium doporučuje pozastavit karty, které ho zpomalují}many{Chromium doporučuje pozastavit karty, které ho zpomalují}other{Chromium doporučuje pozastavit karty, které ho zpomalují}}</translation>
 <translation id="5473971139929175403">Prohlížeč Chromium nemusí fungovat správně, protože v této distribuci Linuxu už není podporován</translation>
 <translation id="5475924890392386523">Prohlížeč Chromium toto stahování zablokoval, protože tento soubor může poškodit vaše osobní účty a účty na sociálních sítích</translation>
 <translation id="5480860683791598150">Prohlížeč Chromium potřebuje přístup k vaší poloze, aby ji mohl sdílet s tímto webem</translation>
-<translation id="5487574057737591516">Abychom chránili vaše soukromí, vaše zájmy starší než 4 měsíce automaticky mažeme. Jak budete pracovat s internetem, zájmy se mohou na seznamu znovu objevit. Pokud Chromium zájem neodhadne správně nebo pokud některé reklamy nechcete vídat, můžete zájem odstranit.</translation>
 <translation id="549669000822060376">Počkejte prosím, než Chromium nainstaluje nejnovější aktualizace systému.</translation>
 <translation id="5496810170689441661">Chromium se pokouší upravit hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="5524890928877629608">levý horní roh oblasti hledání: vlevo <ph name="LEFT" /> %, nahoře <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Otevírat soubory PDF v Chromiu</translation>
+<translation id="5536164441519929134">Zeptejte se<ph name="LINE_BREAK" />na tuhle kartu</translation>
 <translation id="5579324208890605088">Chyba při spuštění: Spusťte instalační program jako běžný uživatel, nikoli jako administrátor.</translation>
 <translation id="5580770360767802657">Používejte prohlížeč Chromium jako výchozí a připněte si ho</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
@@ -345,7 +400,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Zobrazit Chromium v tomto jazyce</translation>
 <translation id="569897634095159764">Nelze se připojit k internetu. Proxy server vyžaduje ověření.</translation>
-<translation id="5761096224651992291">V poslední době jste nenavštívili. Prohlížeč Chromium odebral tato oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
+<translation id="5713518899297503106">Pomocí profilů prohlížeče Chromium si můžete oddělit osobní prohlížení od pracovního. Přidejte nový profil.</translation>
 <translation id="5768371961535086509">Chromium uvolňuje paměť obsazenou neaktivními kartami. Aktivní karty a jiné aplikace tak mají k dispozici více výpočetních zdrojů a prohlížeč Chromium zůstává rychlý. Když se k neaktivním kartám vrátíte, automaticky se aktivují. <ph name="BEGIN_LINK" />Další informace o Spořiči paměti<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="SETTINGS_LINK" /> data prohlížeče Chromium ve svém účtu.</translation>
 <translation id="5800158606660203929">Přizpůsobte si prohlížeč Chromium a ovládejte ho. Nastavte si Chromium jako výchozí prohlížeč.</translation>
@@ -362,11 +417,13 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="5924017743176219022">Připojování k internetu…</translation>
 <translation id="5941711191222866238">Minimalizovat</translation>
 <translation id="5949225980829865667">Pokud tuhle záložku a další položky chcete mít na všech svých zařízeních, přihlaste se do prohlížeče Chromium</translation>
-<translation id="5972142260211327093">Pokud vás Chromium náhodně umístí do zkušební verze, vaše historie prohlížení bude mít vliv na zobrazované reklamy a zájmy, jak je odhadnuto níže. Aby Chromium chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže. Zájmy se budou obnovovat, dokud je neodstraníte.</translation>
+<translation id="5953657885167112863">Přizpůsobte si Chromium</translation>
+<translation id="5960071705175224773">Neznámá aplikace vám změnila nastavení</translation>
+<translation id="5968400720580217226">Režim AI</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Vaše organizace prohlížeč Chromium po 1 minutě nečinnosti automaticky zavře.}few{Vaše organizace prohlížeč Chromium po # minutách nečinnosti automaticky zavře.}many{Vaše organizace prohlížeč Chromium po # minuty nečinnosti automaticky zavře.}other{Vaše organizace prohlížeč Chromium po # minutách nečinnosti automaticky zavře.}}</translation>
 <translation id="5987687638152509985">Chcete-li zahájit synchronizaci, aktualizujte Chromium</translation>
-<translation id="5988505247484123880">Je běžné, že si navštívené weby pamatují, co vás zajímá, aby pro vás personalizovaly svůj obsah. Weby mohou v prohlížeči Chromium ukládat také informace o vašich zájmech.</translation>
 <translation id="6003112304606738118">Stahování… Zbývající čas: <ph name="HOURS" /> h.</translation>
+<translation id="6009821354356307391">Položit doplňující otázku</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6058380562449900225">Chraňte svá data tím, že prohlížeči Chromium povolíte odebírat oprávnění webům, které jste v poslední době nenavštívili. Nevypne oznámení.</translation>
 <translation id="6063093106622310249">&amp;Otevřít v prohlížeči Chromium</translation>
@@ -375,6 +432,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="6072463441809498330">Zrychlete si Chromium</translation>
 <translation id="6096348254544841612">Přizpůsobte si prohlížeč Chromium a ovládejte jej. Je k dispozici aktualizace.</translation>
 <translation id="6107893135096467929">Zapnuto • Chromium nedokáže ověřit, odkud toto rozšíření pochází</translation>
+<translation id="611228897408671387">Váš účet v prohlížeči Chromium</translation>
 <translation id="6119438414301547735">Povolit rozšíření zobrazovat na liště prohlížeče Chromium žádosti o přístup</translation>
 <translation id="6129621093834146363">Soubor <ph name="FILE_NAME" /> je nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
 <translation id="6132897690380286411">Chromium se brzy zavře a smaže data</translation>
@@ -385,8 +443,12 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="6174920971222007286">Tento soubor může být nebezpečný.<ph name="LINE_BREAK" />Pokud zadáte heslo, může vám Chromium tento stažený soubor zkontrolovat. Informace o souboru budou odeslány do Bezpečného prohlížení Google, ale obsah souboru a heslo zůstanou ve vašem zařízení.</translation>
 <translation id="6182736845697986886">Instalace se nezdařila kvůli interní chybě serveru s aktualizací.</translation>
 <translation id="6183079672144801177">Zkontrolujte, zda jste v zařízení <ph name="TARGET_DEVICE_NAME" /> přihlášeni do prohlížeče Chromium, a potom zkuste číslo odeslat znovu.</translation>
+<translation id="6204922163963157461">Jiný program na počítači přidal aplikaci, která může měnit funkce prohlížeče Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">V tomto počítači je již nainstalována novější verze prohlížeče Chromium. Jestliže tento software nefunguje, odinstalujte Chromium a zkuste to znovu.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se nyní restartuje}=1{Chromium se za 1 sekundu restartuje}few{Chromium se za # sekundy restartuje}many{Chromium se za # sekundy restartuje}other{Chromium se za # sekund restartuje}}</translation>
+<translation id="6239161312595354541">Zeptat se Vyhledávání obrázků na toto video</translation>
 <translation id="6241367896540709610">Ke stahování souborů potřebuje Chromium přístup k úložišti</translation>
 <translation id="6245734527075554892">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v prohlížeči Chromium</translation>
 <translation id="6248213926982192922">Nastavit Chromium jako výchozí prohlížeč</translation>
@@ -404,9 +466,11 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="6366160072964553914">Prohlížeč Chromium toto stahování zablokoval, protože tento soubor se běžně nestahuje a může být nebezpečný</translation>
 <translation id="6373523479360886564">Jste si jisti, že chcete Chromium odinstalovat?</translation>
 <translation id="6375219077595103062">Přidejte si někam zástupce Správce hesel</translation>
+<translation id="6388799252195623474">pomoz mi s tímhle</translation>
 <translation id="6390800440335263989">Pokud chcete pokračovat, přihlaste se do prohlížeče Chromium jako <ph name="EMAIL" />. Použijí se tak zásady vaší organizace.</translation>
 <translation id="6400112897226594999">Logo Chromium na obrazovce počítače.</translation>
 <translation id="6403826409255603130">Chromium je webový prohlížeč, který spouští webové stránky a aplikace rychlostí blesku. Je rychlý a snadno se používá. Prohlížejte web bezpečněji díky ochraně proti malwaru a phishingu integrované v prohlížeči Chromium.</translation>
+<translation id="642132557830635295">Chromium běží rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy</translation>
 <translation id="6436260184216827876">Vyhledávání obrázků není k dispozici. Zkuste to později.</translation>
 <translation id="6442900851116057561">Restartujte ChromiumOS</translation>
 <translation id="6443470774889161065">Chromium předběžně načítá ještě více stránek, které byste pravděpodobně mohli navštívit. Když je navštívíte, načtou se tak rychleji</translation>
@@ -417,7 +481,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="648319183876919572">Vylepšené Bezpečné prohlížení vás chrání před nebezpečnými weby a soubory ke stažení</translation>
 <translation id="6510925080656968729">Odinstalovat Chromium</translation>
 <translation id="651535675648445253">Zástupci se otevírají v prohlížeči Chromium</translation>
-<translation id="6524389414524528185">Když jste přihlášeni, můžete v prohlížeči Chromium používat hesla a další položky ze svého účtu Google. V nastavení to můžete kdykoli změnit.</translation>
 <translation id="6539122709674868420">Když prohlížeč Chromium <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře. Údaje o prohlížení byly smazány. To může zahrnovat historii, automatické vyplňování a stažené soubory.</translation>
 <translation id="6542839706527980775">V každém profilu jsou uloženy soukromé údaje z Chromia, například záložky, historie, hesla a další</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Další informace o tom, jak prohlížeč Chromium uchovává vaše data v soukromí<ph name="END_LINK" /></translation>
@@ -427,10 +490,12 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="6598877126913850652">Přejít na nastavení oznámení prohlížeče Chromium</translation>
 <translation id="6600016381025017075">Vyhledat cokoliv na této stránce</translation>
 <translation id="6613594504749178791">Změny se projeví po příštím restartu prohlížeče Chromium.</translation>
+<translation id="6648212540664651655">Pokračujte od stavu, ve kterém jste skončili: Prohlížeč Chromium obnovil karty z poslední relace. Tuto funkci můžete vypnout v</translation>
 <translation id="665732753414869868">K vytvoření 3D mapy vašeho okolí potřebuje Chromium přístup k fotoaparátu</translation>
 <translation id="6669284030132180248">Pokud si záložky uložíte také do účtu Google, můžete v prohlížeči Chromium sledovat ceny produktů a dostávat upozornění, když cena klesne</translation>
 <translation id="6676384891291319759">Přístup k internetu</translation>
 <translation id="668175097507315160">ChromiumOS vaše data nemohl synchronizovat, protože při přihlašování došlo k chybě.</translation>
+<translation id="6691132793308828750">Odstranit z prohlížeče Chromium data této aplikace</translation>
 <translation id="6692797197837897398">Chromium vám dává větší kontrolu nad reklamami, které se vám zobrazují, a omezuje, co se o vás weby mohou dozvědět, když vám zobrazují personalizované reklamy</translation>
 <translation id="6709350901466051922">Chromium pro tento web potřebuje přístup k mikrofonu</translation>
 <translation id="6712881677154121168">Chyba stahování: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -439,20 +504,23 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu, nebo používejte novější verzi prohlížeče Chromium.</translation>
 <translation id="6729124504294600478">Pokud chcete získat personalizaci a další funkce, zahrňte Chromium do Aktivity na webu a v aplikacích a do propojených služeb Google</translation>
 <translation id="6734291798041940871">Prohlížeč Chromium je na tomto počítači již nainstalován pro všechny uživatele.</translation>
-<translation id="674245979920622322">V poslední době jste nenavštívili. Prohlížeč Chromium odebral tato oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a ještě <ph name="COUNT" /></translation>
+<translation id="6742093177587589736">Pokud svá hesla, záložky a další položky chcete mít na všech svých zařízeních, přihlaste se do prohlížeče Chromium Tato záložka se po přihlášení uloží do vašeho účtu Google.</translation>
 <translation id="6751374565094704799">Zrychluje weby pomocí modulu V8 prohlížeče Chromium, ale trochu snižuje odolnost prohlížeče Chromium vůči útokům. Toto nastavení je zapnuté.</translation>
+<translation id="6754665438209053659">{count,plural, =1{Některá data prohlížeče Chromium ještě nebyla uložena do vašeho účtu Google. Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data (1 položka) se smažou.}few{Některá data prohlížeče Chromium ještě nebyla uložena do vašeho účtu Google. Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data ({count} položky) se smažou.}many{Některá data prohlížeče Chromium ještě nebyla uložena do vašeho účtu Google. Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data ({count} položky) se smažou.}other{Některá data prohlížeče Chromium ještě nebyla uložena do vašeho účtu Google. Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data ({count} položek) se smažou.}}</translation>
 <translation id="67706546131546258">Chromium doporučuje zkontrolovat tento soubor, protože může být nebezpečný.</translation>
 <translation id="6779406956731413166">Systém ChromiumOS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Přeložit</translation>
 <translation id="6847869444787758381">Pokud vaše hesla někdo prolomí, Chromium vás o tom bude informovat</translation>
 <translation id="684888714667046800">Nelze se připojit k internetu. Pokud používáte firewall, přidejte program <ph name="PRODUCT_EXE_NAME" /> na seznam povolených.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
+<translation id="6859580922007887573">Pokračujte stisknutím tabulátoru</translation>
+<translation id="6862030660799253820">Vyhledat tento obrázek pomocí Vyhledávání obrázků</translation>
 <translation id="6873893289264747459">Prohlížeč Chromium zjistil, že rozšíření <ph name="EXTENSION_NAME" /> obsahuje malware</translation>
 <translation id="6877155553248388166">pravý dolní roh oblasti hledání: vpravo <ph name="RIGHT" /> %, dole <ph name="BOTTOM" /> %</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6901631050894301805">Nastavte si Chromium jako výchozí prohlížeč a připněte ho na hlavní panel</translation>
-<translation id="6929417474050522668">Když jsou zapnuté zkušební verze, měření reklam umožňuje navštíveným webům žádat Chromium o informace, na základě kterých mohou měřit výkonnost svých reklam. Měření reklam zabraňuje sledování mezi weby, protože se při něm mezi weby přenáší co možná nejméně informací.</translation>
-<translation id="6940431691900807093">Později může navštívený web požádat Chromium o sdělení vašich zájmů, aby vám mohl přizpůsobit zobrazované reklamy. Chromium může sdílet až 3 zájmy.</translation>
+<translation id="6909503629704372277">&amp;Spravovat profily prohlížeče Chromium</translation>
+<translation id="6934579572334859869">Zeptat se Vyhledávání obrázků na tento obrázek</translation>
 <translation id="6964305034639999644">Otevřít odkaz v &amp;anonymním okně prohlížeče Chromium</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Slabá hesla lze snadno uhodnout. Chromium vám může <ph name="BEGIN_LINK" />vytvářet a ukládat silná hesla<ph name="END_LINK" />.</translation>
@@ -463,20 +531,24 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="7024536598735240744">Chyba rozbalení: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalace byla zastavena.</translation>
 <translation id="7045244423563602563">Přizpůsobení prohlížeče Chromium</translation>
+<translation id="7047386856539490735">Jsou tyto výsledky užitečné?</translation>
 <translation id="705851970750939768">Aktualizovat Chromium</translation>
 <translation id="7067091210845072982">Pokud obrázek nemá užitečný popis, Chromium se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu.</translation>
 <translation id="7141270731789036260">Přizpůsobit Chrome for Testing</translation>
+<translation id="7147227333672430807">Chromium můžete použít pokaždé, když kliknete na odkazy ve zprávách, dokumentech a dalších aplikacích</translation>
 <translation id="7163519456498498587">Odstranit z prohlížeče Chromium rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="7173822816570314652">Když prohlížeč Chromium <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace smaže jeho data. To může zahrnovat historii, automatické vyplňování a stažené soubory.</translation>
 <translation id="718435575166326686">Chromium pro tento web potřebuje přístup k fotoaparátu</translation>
 <translation id="7196312274710523067">Chromium nelze spustit. Zkuste to znovu.</translation>
 <translation id="7197677400338048821">Chromium nemůže zkontrolovat hesla. Zkuste to znovu za 24 hodin.</translation>
+<translation id="7213008767289637091">Přidejte si prohlížeč Chromium do Docku, ať ho máte kdykoli rychle k dispozici</translation>
 <translation id="7213407614656404070">Použít Chromium pokaždé, když kliknete na odkazy ve zprávách, dokumentech a dalších aplikacích</translation>
 <translation id="7223968959479464213">Správce úloh – Chromium</translation>
 <translation id="7246575524853130370">Vaše zájmy podle odhadu Chromium</translation>
 <translation id="7274695763216404502">Připnuto! Příště vyhledávání obrázků použijte z lišty</translation>
 <translation id="7288567540154601580">Karty a rozšíření</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium vám doporučuje odstranit ho}few{Chromium vám doporučuje odstranit je}many{Chromium vám doporučuje odstranit je}other{Chromium vám doporučuje odstranit je}}</translation>
+<translation id="7296334833518879294">Pokud chcete sdílet systémový zvuk, otevřete Nastavení systému a povolte pro Chromium možnost Pouze nahrávání systémového zvuku. Chromium bude potřeba restartovat.</translation>
 <translation id="7309928523159922338">Měření reklam umožňuje navštíveným webům žádat Chromium o informace, na základě kterých mohou měřit výkonnost svých reklam. Měření reklam zabraňuje sledování mezi weby, protože se při něm mezi weby přenáší co možná nejméně informací.</translation>
 <translation id="731795002583552498">Aktualizace prohlížeče Chromium</translation>
 <translation id="7318036098707714271">Soubor nastavení je poškozený nebo neplatný.
@@ -484,9 +556,13 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="734373864078049451">Zde jsou k dispozici vaše weby, záložky a další obsah prohlížeče Chromium.</translation>
+<translation id="7347827960336370838">Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, budete muset <ph name="BEGIN_LINK" />vymazat data prohlížeče Chromium ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Administrátor systému nakonfiguroval prohlížeč Chromium tak, aby pro přístup k adrese <ph name="TARGET_URL_HOSTNAME" /> otevřel prohlížeč <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
+<translation id="7376384068949534168">V poslední době jste nenavštívili. Prohlížeč Chromium odebral tato oprávnění: <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Toto rozšíření už není podporováno. Chromium vám doporučuje odstranit ho.</translation>
+<translation id="7413153308467572558">Pokračujte od stavu, ve kterém jste skončili: Chromium při restartech obnovuje karty. Tuto funkci můžete vypnout v</translation>
+<translation id="7427879960656355200">Import hesel do prohlížeče Chromium</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Text byl zkopírován</translation>
 <translation id="7451052299415159299">Chromium pro tento web potřebuje oprávnění k přístupu k fotoaparátu</translation>
@@ -494,12 +570,11 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7461356015007898716">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 7.</translation>
 <translation id="7467949745582939695">Restartovat Chromium?</translation>
 <translation id="7483335560992089831">Nelze nainstalovat verzi prohlížeče Chromium, která je právě spuštěná. Ukončete prohlížeč Chromium a zkuste to znovu.</translation>
+<translation id="7517403744065880907">Když se do prohlížeče Chromium přihlásíte, budete moct ukládat a používat hesla a další data ve svém účtu Google. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Weby budou pravděpodobně fungovat podle očekávání. Po zavření všech oken prohlížeče Chromium budete odhlášeni z většiny webů (s výjimkou účtu Google, pokud jste do prohlížeče Chromium přihlášeni).</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium se za 1 minutu restartuje}few{Chromium se za # minuty restartuje}many{Chromium se za # minuty restartuje}other{Chromium se za # minut restartuje}}</translation>
 <translation id="7565444033145385702">Chraňte svá data tím, že prohlížeči Chromium povolíte odebírat oprávnění webům, které jste v poslední době nenavštívili.</translation>
-<translation id="7582945390259497898">Chromium dokáže odhadovat vaše zájmy. Později může navštívený web požádat Chromium o sdělení vašich zájmů, aby vám mohl přizpůsobit zobrazované reklamy.</translation>
 <translation id="7583399374488819119">instalační program prohlížeče <ph name="COMPANY_NAME" /></translation>
-<translation id="7585391435984513350">V poslední době jste nenavštívili. Prohlížeč Chromium odebral toto oprávnění: <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">Chromium používá vaši kameru a mikrofon.</translation>
 <translation id="7617377681829253106">Prohlížeč Chromium je opět o něco lepší</translation>
 <translation id="7622753900276619808">V Chromiu teď máte k dispozici víc funkcí</translation>
@@ -518,13 +593,17 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7810005234485217901">Vyhledávání obrázků si můžete pro snadný přístup připnout</translation>
 <translation id="7828947555739565424">Profil Chromium s tímto účtem už v tomto zařízení existuje</translation>
 <translation id="7845233973568007926">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je třeba restartovat počítač.</translation>
+<translation id="7853661403199074278">Přizpůsobte si Chromium a dodejte mu nový vzhled</translation>
 <translation id="7859018312476869945">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chromium zadaný obsah do výchozího vyhledávače, aby vám mohl nabízet lepší návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
-<translation id="786097294490253281">Po kliknutí na Rozumím budete moct používat hesla a další položky ze svého účtu Google a také je do něj ukládat, kdykoli budete do Chromia přihlášeni. <ph name="LEARN_MORE" /></translation>
 <translation id="7867198900892795913">Chromium nebylo možné aktualizovat na nejnovější verzi. Nemáte proto k dispozici nové funkce a opravy zabezpečení.</translation>
 <translation id="7872446069773932638">Stahování… Zbývající čas: <ph name="SECONDS" /> s</translation>
+<translation id="7873537467422636035">Pokud si heslovou frázi nepamatujete nebo toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chromium ve svém účtu<ph name="END_LINK" /></translation>
+<translation id="7877212753140190672">Zeptat se na tento obrázek</translation>
+<translation id="7887929410013642057">Vždy zobrazovat zkratky režimu AI</translation>
 <translation id="7888981273428720788">Nastavte si Chromium jako výchozí prohlížeč</translation>
 <translation id="7934340546140346950">Pokud je to možné, Chromium nezabezpečená připojení automaticky upgraduje na HTTPS</translation>
 <translation id="7937630085815544518">K prohlížeči Chromium jste byli přihlášeni s účtem <ph name="USER_EMAIL_ADDRESS" />. Přihlaste se prosím znovu pomocí stejného účtu.</translation>
+<translation id="7953047982688951904">Stáhněte si Chromium do telefonu, ať máte na cestách další vrstvu ochrany</translation>
 <translation id="7975919845073681630">Toto je druhá instalace prohlížeče Chromium. Tuto instalaci nelze nastavit jako výchozí prohlížeč.</translation>
 <translation id="7997934263947464652">Rozšíření, aplikace a motivy z neznámých zdrojů mohou poškodit vaše zařízení. Chromium doporučuje instalovat je pouze z tohoto zdroje: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Prohlížeč</translation>
@@ -550,6 +629,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8248265253516264921">Pokud obrázek nemá užitečný popis, Chromium se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu. Tuto funkci můžete kdykoliv vypnout v nastavení.</translation>
 <translation id="8254601181414348851">Přihlásit se do prohlížeče Chromium v novém profilu?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vás varuje<ph name="END_LINK" /> před nebezpečnými weby a soubory ke stažení</translation>
+<translation id="8295827201165805317">V poslední době jste nenavštívili. Prohlížeč Chromium odebral toto oprávnění: <ph name="PERMISSION" />.</translation>
 <translation id="8313851650939857356">Chyba při spuštění: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Když prohlížeč Chromium <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře.</translation>
 <translation id="8321888067342493336">Uložit jako obrázek</translation>
@@ -558,6 +638,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8359544530202147897">Pokud chcete i nadále používat data prohlížeče Chromium ve svém účtu Google <ph name="ACCOUNT_EMAIL" />, aktualizujte Chromium</translation>
 <translation id="8360718212975266891">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 8.</translation>
 <translation id="8362914115861174987">Přeložit do jazyka</translation>
+<translation id="8367705492654390392">Zeptejte se na cokoli</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="8372327902843331129">Pokud svá hesla a další položky chcete mít na všech svých zařízeních, přihlaste se do prohlížeče Chromium. Toto heslo se po přihlášení uloží do vašeho účtu Google.</translation>
 <translation id="837460953767177950">Budete prohlížeč Chromium muset restartovat.</translation>
@@ -566,12 +647,16 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8416884904046428725">Před uložením některých dat do vašeho účtu Google k použití na všech vašich zařízeních potřebuje Chromium ověřit, že jste to vy. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Do jednoho dne Chromium restartujte}few{Do # dní Chromium restartujte}many{Do # dne Chromium restartujte}other{Do # dní Chromium restartujte}}</translation>
 <translation id="8438543370129609977">Když použijete Vyhledávání obrázků, název stránky, adresa URL a obsah, včetně souborů PDF, se odešlou na server. <ph name="LEARN_MORE" /></translation>
+<translation id="8447525028100794994">Další informace o vyhledávání pomocí Vyhledávání obrázků v prohlížeči Chromium</translation>
 <translation id="8453117565092476964">Archiv instalačního programu je poškozený nebo neplatný. Stáhněte prosím Chromium znovu.</translation>
 <translation id="8458614432758743027">Chromium vyžaduje systém Windows 10 nebo vyšší.</translation>
 <translation id="8463672209299734063">Volitelné: Pomozte se zlepšováním funkcí a výkonu operačního systému ChromiumOS tím, že budete do Googlu automaticky odesílat diagnostické údaje a údaje o využití.</translation>
 <translation id="8471947159125090285">Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu Google, ověřte svou totožnost</translation>
+<translation id="8482493977473846331">Zobrazuje výzvy k přihlášení do Chromia</translation>
 <translation id="8493179195440786826">Prohlížeč Chromium je zastaralý</translation>
+<translation id="850264194101621529">Děkujeme, že jste si Chromium vybrali jako výchozí prohlížeč.</translation>
 <translation id="8522801943730206384">Chromium může hesla zkontrolovat, pouze když si je uložíte</translation>
+<translation id="8548787790260785208">Nechte se upozornit, pokud Chromium některé z vašich hesel najde ve veřejném seznamu dat prozrazených při porušení zabezpečení údajů</translation>
 <translation id="8555465886620020932">Chyba služby: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Vyhledávání obrázků si můžete pro snadný přístup připnout. Stačí v horní části postranního panelu kliknout na tlačítko Připnout.</translation>
 <translation id="856656450041460113">Vyhledat v seznamu jazyků</translation>
@@ -580,17 +665,18 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
 <translation id="8601359445272098721">Novinka! Pomocí tlačítka Přeložit obrazovku můžete přeložit text i obrázky na obrazovce</translation>
 <translation id="8619360774459241877">Spouštění prohlížeče Chromium...</translation>
-<translation id="8621669128220841554">Instalace se z neznámého důvodu nezdařila. Stáhněte prosím Chromium znovu.</translation>
+<translation id="8624541899164515475">Nastavení, otevře se na nové kartě.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nelze nastavit jako výchozí prohlížeč.</translation>
 <translation id="8697124171261953979">Také řídí, která stránka se zobrazí po spuštění prohlížeče Chromium nebo při vyhledávání v omniboxu.</translation>
 <translation id="8704119203788522458">Toto je váš prohlížeč Chromium</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8719993436687031146">Přihlásit se do prohlížeče Chromium?</translation>
+<translation id="8745263398357414606">Mějte všechno v Chromiu</translation>
 <translation id="8747073452963259673">levý dolní roh oblasti hledání: vlevo <ph name="LEFT" /> %, dole <ph name="BOTTOM" /> %</translation>
-<translation id="8768722695577490596">Hesla lze smazat jen mimo Chromium</translation>
 <translation id="878572486461146056">Chyba instalace: Správce sítě použil zásady skupiny, které brání instalaci: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium pro tento web potřebuje oprávnění k přístupu k fotoaparátu a mikrofonu</translation>
 <translation id="8818550178040858407">Přihlásit se do prohlížeče Chromium?</translation>
+<translation id="8823401858233292222">Nastavit Chromium jako výchozí prohlížeč a připnout ho na hlavní panel</translation>
 <translation id="8826492472752484139">Klikněte na Správce hesel</translation>
 <translation id="8833697763442816810">Systém ChromiumOS</translation>
 <translation id="8852026904190808918">Tento jazyk se používá k zobrazení nabídek, nastavení, upozornění a dalšího textu v prohlížeči Chromium</translation>
@@ -599,12 +685,10 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8880203542552872219">Pokud ano, upravte uložené heslo v prohlížeči Chromium tak, aby odpovídalo novému heslu.</translation>
 <translation id="8891709362986793894">Vaše organizace vyžaduje, abyste se do prohlížeče Chromium přihlásili</translation>
 <translation id="8907580949721785412">Aplikace Chromium se pokouší zobrazit hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
-<translation id="8931379085695076764">Chromium dokáže odhadovat vaše zájmy podle historie prohlížení za posledních několik týdnů. Tyto údaje zůstávají v zařízení.</translation>
 <translation id="8941642502866065432">Chromium nelze aktualizovat</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8988036198400390003">Spravovat profily Chromium</translation>
 <translation id="9019929317751753759">Aby byl prohlížeč Chromium bezpečnější, deaktivovali jsme následující rozšíření, které není uvedeno na webu <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a pravděpodobně bylo přidáno bez vašeho vědomí.</translation>
-<translation id="9022552996538154597">Přihlásit se do prohlížeče Chromium</translation>
 <translation id="904366664621834601">Prohlížeč Chromium toto stahování zablokoval, protože tento soubor archivu obsahuje další soubory, které mohou skrývat malware</translation>
 <translation id="9062666675513499497">Přihlášení do prohlížeče Chromium při přihlášení do jiných služeb Google</translation>
 <translation id="9078733879136747090">Prohlížeč Chromium byl automaticky ukončen</translation>
@@ -616,9 +700,11 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="911206726377975832">Vymazat také všechna data procházení?</translation>
 <translation id="9134482777260927479">Pomoc s domácími úkoly</translation>
 <translation id="9148058034647219655">Ukončit</translation>
+<translation id="9155105544013854680">Pokračujte od stavu, ve kterém jste skončili: Chromium může při každém restartu obnovit karty. Tuto funkci můžete zapnout v</translation>
 <translation id="9158494823179993217">Administrátor systému nakonfiguroval prohlížeč Chromium tak, aby pro přístup k adrese <ph name="TARGET_URL_HOSTNAME" /> otevřel alternativní prohlížeč.</translation>
 <translation id="9185526690718004400">Znovu spustit a aktualizovat &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="9206863043651638213">Přihlášením do prohlížeče Chromium získáte další funkce</translation>
 <translation id="924957577793602335">Přizpůsobte si Chromium</translation>
 <translation id="93478295209880648">Prohlížeč Chromium nemusí fungovat správně, protože v systémech Windows XP a Windows Vista již není podporován</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>

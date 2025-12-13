@@ -25,6 +25,7 @@ static_library("login_state") {
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/common:non_code_constants",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/session_manager:base",
     "//components/session_manager/core",
     "//content/public/browser",
@@ -43,7 +44,11 @@ source_set("browser_tests") {
 
   deps = [
     ":login_state",
+    "//chrome/browser/ash/extensions",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/session_manager:base",
     "//components/session_manager/core",
     "//content/test:test_support",
@@ -66,9 +71,11 @@ source_set("unit_tests") {
     "//chrome/common:non_code_constants",
     "//chrome/common/extensions/api",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/login/login_state",
     "//components/session_manager:base",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//extensions:test_support",
     "//extensions/browser",

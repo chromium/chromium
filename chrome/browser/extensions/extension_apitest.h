@@ -13,6 +13,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class FilePath;
@@ -122,6 +125,13 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   // Returns the test WebSocket EmbeddedTestServer. Can be used to configure
   // the server before it has started.
   net::test_server::EmbeddedTestServer& GetWebSocketServer();
+
+  // Initializes web_socket that is returned by `GetWebSocketServer` function
+  // to serve endpoints via secure wss protocol.
+  void InitWebSocketHttpsServer(
+      net::test_server::EmbeddedTestServer::ServerCertificate
+          server_certificate =
+              net::test_server::EmbeddedTestServer::ServerCertificate::CERT_OK);
 
   // Start the test WebSocket server, and store details of its state. Those
   // details will be available to javascript tests using

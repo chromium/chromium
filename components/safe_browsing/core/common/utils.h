@@ -12,7 +12,6 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace policy {

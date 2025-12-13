@@ -37,6 +37,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(HAS_SPELLCHECK_PANEL)
 #include "chrome/browser/spellchecker/test/spellcheck_panel_browsertest_helper.h"
@@ -133,26 +134,21 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
 #if BUILDFLAG(IS_WIN)
   void InitializeDictionaries(
       InitializeDictionariesCallback callback) override {
-    if (base::FeatureList::IsEnabled(
-            spellcheck::kWinDelaySpellcheckServiceInit)) {
-      SpellcheckService* spellcheck = SpellcheckServiceFactory::GetForContext(
-          process_host()->GetBrowserContext());
+    SpellcheckService* spellcheck = SpellcheckServiceFactory::GetForContext(
+        process_host()->GetBrowserContext());
 
-      if (!spellcheck) {  // Teardown.
-        std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
-                                /*enable=*/false);
-        return;
-      }
-
-      dictionaries_loaded_callback_ = std::move(callback);
-
-      spellcheck->InitializeDictionaries(
-          base::BindOnce(&MockSpellCheckHost::OnDictionariesInitialized,
-                         base::Unretained(this)));
+    if (!spellcheck) {  // Teardown.
+      std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
+                              /*enable=*/false);
       return;
     }
 
-    NOTREACHED();
+    dictionaries_loaded_callback_ = std::move(callback);
+
+    spellcheck->InitializeDictionaries(
+        base::BindOnce(&MockSpellCheckHost::OnDictionariesInitialized,
+                       base::Unretained(this)));
+    return;
   }
 
   void OnDictionariesInitialized() {
@@ -262,19 +258,12 @@ class SpellCheckBrowserTestHelper {
 
 class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
  public:
-  ChromeSitePerProcessSpellCheckTest() = default;
-
-  void SetUp() override {
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-    // When delayed initialization of the spellcheck service is enabled by
-    // default, want to maintain test coverage for the older code path that
-    // initializes spellcheck on browser startup.
+  ChromeSitePerProcessSpellCheckTest() {
     feature_list_.InitAndDisableFeature(
-        spellcheck::kWinDelaySpellcheckServiceInit);
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-
-    ChromeSitePerProcessTest::SetUp();
+        blink::features::kRestrictSpellingAndGrammarHighlights);
   }
+
+  void SetUp() override { ChromeSitePerProcessTest::SetUp(); }
 
  protected:
   // Tests that spelling in out-of-process subframes is checked.
@@ -381,29 +370,3 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTest,
   EXPECT_TRUE(host->SpellingPanelVisible());
 }
 #endif  // BUILDFLAG(HAS_SPELLCHECK_PANEL)
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-class ChromeSitePerProcessSpellCheckTestDelayInit
-    : public ChromeSitePerProcessSpellCheckTest {
- public:
-  ChromeSitePerProcessSpellCheckTestDelayInit() = default;
-
-  void SetUp() override {
-    // Don't initialize the SpellcheckService on browser launch.
-    feature_list_.InitAndEnableFeature(
-        spellcheck::kWinDelaySpellcheckServiceInit);
-
-    ChromeSitePerProcessTest::SetUp();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTestDelayInit,
-                       OOPIFSpellCheckTest) {
-  RunOOPIFSpellCheckTest();
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTestDelayInit,
-                       OOPIFDisabledSpellCheckTest) {
-  RunOOPIFDisabledSpellCheckTest();
-}
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)

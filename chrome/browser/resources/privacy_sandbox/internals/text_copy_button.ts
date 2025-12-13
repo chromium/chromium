@@ -6,12 +6,16 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {getTemplate} from './text_copy_button.html.js';
 
 export class TextCopyButton extends CustomElement {
-  textToCopy: string = '';
   private revertIconTimeoutId_: number|null = null;
   readonly revertIconWaitDuration = 3000;
+  private textToCopy: string = '';
 
   static override get template() {
     return getTemplate();
+  }
+
+  static get observedAttributes() {
+    return ['text-to-copy'];
   }
 
   constructor() {
@@ -21,10 +25,18 @@ export class TextCopyButton extends CustomElement {
 
   connectedCallback() {
     this.addEventListener('click', this.onClickHandler);
+    this.textToCopy = this.getAttribute('text-to-copy') || '';
   }
 
   disconnectedCallback() {
     this.removeEventListener('click', this.onClickHandler);
+  }
+
+  attributeChangedCallback(
+      name: string, oldValue: string|null, newValue: string|null) {
+    if (name === 'text-to-copy' && newValue !== oldValue) {
+      this.textToCopy = newValue || '';
+    }
   }
 
   async onClickHandler() {

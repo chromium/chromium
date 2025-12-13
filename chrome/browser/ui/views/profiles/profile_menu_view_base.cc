@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
@@ -68,11 +67,13 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -270,17 +271,54 @@ ProfileMenuViewBase::IdentitySectionParams::operator=(IdentitySectionParams&&) =
 
 // ProfileMenuViewBase ---------------------------------------------------------
 
-ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
+// Despite ProfileMenuViewBase being a dialog, we are enforcing it to behave
+// like a menu from the accessibility POV because it fits better with a menu UX.
+// The dialog exposes the kMenuBar role, and the top-level container is kMenu.
+// This class is responsible for emitting menu accessible events when the dialog
+// is activated or deactivated.
+class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
+ public:
+  AXMenuWidgetObserver(ProfileMenuViewBase* owner, views::Widget* widget)
+      : owner_(owner) {
+    observation_.Observe(widget);
+  }
+  ~AXMenuWidgetObserver() override = default;
+
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (active) {
+      owner_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuStart,
+                                                 true);
+      owner_->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kMenuPopupStart, true);
+    } else {
+      owner_->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kMenuPopupEnd, true);
+      owner_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuEnd,
+                                                 true);
+    }
+  }
+
+ private:
+  raw_ptr<ProfileMenuViewBase> owner_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+};
+
+ProfileMenuViewBase::ProfileMenuViewBase(ui::TrackedElement* anchor_element,
                                          Browser* browser)
-    : BubbleDialogDelegateView(anchor_button, views::BubbleBorder::TOP_RIGHT),
+    : BubbleDialogDelegateView(anchor_element, views::BubbleBorder::TOP_RIGHT),
       profile_(raw_ref<Profile>::from_ptr(browser->profile())),
-      anchor_button_(anchor_button),
       close_bubble_helper_(this, browser->tab_strip_model()) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_margins(gfx::Insets(0));
-  DCHECK(anchor_button);
-  views::InkDrop::Get(anchor_button)
-      ->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
+  DCHECK(anchor_element);
+
+  if (anchor_element->IsA<views::TrackedElementViews>()) {
+    anchor_view_.SetView(
+        anchor_element->AsA<views::TrackedElementViews>()->view());
+    views::InkDrop::Get(anchor_view_.view())
+        ->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
+  }
 
   SetEnableArrowKeyTraversal(true);
 
@@ -307,7 +345,8 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   constexpr int kAvatarTopMargin = 24;
   constexpr int kTitleTopMargin = 8;
   constexpr int kBottomMarginWhenNoButton = 24;
-  constexpr int kSubtitleBottomMarginWithButton = 12;
+  constexpr int kSubtitleBottomMarginInfoBelow = 4;
+  constexpr int kSubtitleBottomMarginButtonBelow = 12;
   constexpr int kButtonBottomMargin = 28;
 
   // Vertical view structure when all elements are present. Square brackets []
@@ -321,8 +360,10 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // [kTitleTopMargin]
   // Label: Title
   // Optional:
+  //     Label: Email Subtitle (optional)
+  //     [kSubtitleBottomMarginInfoBelow] or [kSubtitleBottomMarginButtonBelow]
   //     Label: Subtitle (optional)
-  //     [kSubtitleBottomMarginWithButton] (or [kBottomMarginWhenNoButton])
+  //     [kSubtitleBottomMarginButtonBelow] or [kBottomMarginWhenNoButton]
   // Optional:
   //     Button: maybe with an image inside
   //     [kButtonBottomMargin]
@@ -397,9 +438,11 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
           .Build());
 
   // Title.
-  const bool has_subtitle = !params.subtitle.empty();
+  const bool has_any_subtitle =
+      !params.subtitle.empty() || !params.email_subtitle.empty();
   const bool has_button = !params.button_text.empty();
-  const int title_bottom_margin = has_subtitle ? 0 : kBottomMarginWhenNoButton;
+  const int title_bottom_margin =
+      has_any_subtitle ? 0 : kBottomMarginWhenNoButton;
   identity_info_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(params.title)
@@ -413,7 +456,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
                                          kIdentityContainerHorizontalPadding))
           .SetEnabledColor(kColorProfileMenuIdentityInfoTitle)
           .Build());
-  if (!has_subtitle) {
+  if (!has_any_subtitle) {
     CHECK(!has_button);
     return;
   }
@@ -426,23 +469,49 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   identity_info_container_->GetViewAccessibility().SetRole(
       ax::mojom::Role::kGroup);
   identity_info_container_->GetViewAccessibility().SetName(
-      params.subtitle, ax::mojom::NameFrom::kAttribute);
+      !params.subtitle.empty() ? params.subtitle : params.email_subtitle,
+      ax::mojom::NameFrom::kAttribute);
 
-  const int subtitle_bottom_margin =
-      has_button ? kSubtitleBottomMarginWithButton : kBottomMarginWhenNoButton;
-  identity_info_container_->AddChildView(
-      views::Builder<views::Label>()
-          .SetText(params.subtitle)
-          .SetTextContext(views::style::CONTEXT_LABEL)
-          .SetTextStyle(views::style::STYLE_BODY_4)
-          .SetMultiLine(true)
-          .SetHandlesTooltips(false)
-          .SetProperty(views::kMarginsKey,
-                       gfx::Insets::TLBR(0, kIdentityContainerHorizontalPadding,
-                                         subtitle_bottom_margin,
-                                         kIdentityContainerHorizontalPadding))
-          .SetEnabledColor(kColorProfileMenuIdentityInfoSubtitle)
-          .Build());
+  const bool has_subtitle = !params.subtitle.empty();
+  if (!params.email_subtitle.empty()) {
+    const int email_subtitle_bottom_margin =
+        has_subtitle ? kSubtitleBottomMarginInfoBelow
+                     : (has_button ? kSubtitleBottomMarginButtonBelow
+                                   : kBottomMarginWhenNoButton);
+    identity_info_container_->AddChildView(
+        views::Builder<views::Label>()
+            .SetText(params.email_subtitle)
+            .SetTextContext(views::style::CONTEXT_LABEL)
+            .SetTextStyle(views::style::STYLE_BODY_4)
+            .SetHandlesTooltips(false)
+            .SetProperty(
+                views::kMarginsKey,
+                gfx::Insets::TLBR(0, kIdentityContainerHorizontalPadding,
+                                  email_subtitle_bottom_margin,
+                                  kIdentityContainerHorizontalPadding))
+            .SetEnabledColor(kColorProfileMenuIdentityInfoSubtitle)
+            .Build());
+  }
+
+  if (has_subtitle) {
+    const int subtitle_bottom_margin = has_button
+                                           ? kSubtitleBottomMarginButtonBelow
+                                           : kBottomMarginWhenNoButton;
+    identity_info_container_->AddChildView(
+        views::Builder<views::Label>()
+            .SetText(params.subtitle)
+            .SetTextContext(views::style::CONTEXT_LABEL)
+            .SetTextStyle(views::style::STYLE_BODY_4)
+            .SetMultiLine(true)
+            .SetHandlesTooltips(false)
+            .SetProperty(
+                views::kMarginsKey,
+                gfx::Insets::TLBR(0, kIdentityContainerHorizontalPadding,
+                                  subtitle_bottom_margin,
+                                  kIdentityContainerHorizontalPadding))
+            .SetEnabledColor(kColorProfileMenuIdentityInfoSubtitle)
+            .Build());
+  }
 
   if (!has_button) {
     return;
@@ -460,82 +529,6 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
                        gfx::Insets().set_bottom(kButtonBottomMargin))
           .SetImageModel(views::Button::STATE_NORMAL, params.button_image)
           .Build());
-}
-
-void ProfileMenuViewBase::AddPromoButton(const std::u16string& text,
-                                         base::RepeatingClosure action,
-                                         const gfx::VectorIcon& icon) {
-  // Initialize layout if this is the first time a button is added.
-  if (!promo_container_->GetLayoutManager()) {
-    promo_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical));
-  }
-
-  // Do not allow more than 2 promos to be shown at the same time in the Profile
-  // Menu. Currently there only exist two types of promos - if we ever need to
-  // support more, a more complex logic to decide which promo to be shown is
-  // needed.
-  if (promo_container_->children().size() == 2u) {
-    return;
-  }
-
-  // Only first and last buttons should have the rounded corners.
-  bool is_first_button_being_added = promo_container_->children().empty();
-
-  // Reset the last button bottom corners since it will not be the last one
-  // anymore.
-  if (!is_first_button_being_added) {
-    HoverButton* last_child =
-        views::AsViewClass<HoverButton>(promo_container_->children().back());
-    std::optional<gfx::RoundedCornersF> current_rounded_corners =
-        last_child->background()->GetRoundedCornerRadii();
-    CHECK(current_rounded_corners.has_value());
-    current_rounded_corners->set_lower_left(0.f);
-    current_rounded_corners->set_lower_right(0.f);
-    // Override the background with the updated corners.
-    last_child->SetBackground(views::CreateRoundedRectBackground(
-        kColorProfileMenuPromoButtonsBackground,
-        current_rounded_corners.value(),
-        gfx::Insets::VH(0, kIdentityContainerMargin)));
-  }
-
-  // Add background color for promos.
-  constexpr int kBackgroundCornerSize = 8;
-  constexpr int kButtonBackgroundVerticalSize = 40;
-  constexpr int kPromoSeparation = 2;
-
-  std::unique_ptr<HoverButton> button = CreateMenuRowButton(
-      std::move(action), std::make_unique<FeatureButtonIconView>(icon, 1.0f),
-      text);
-
-  // The current button being added to the end, we can already set the bottom
-  // corners.
-  gfx::RoundedCornersF rounded_corners(0.f, 0.f, kBackgroundCornerSize,
-                                       kBackgroundCornerSize);
-  // First element should have upper corners rounded.
-  if (is_first_button_being_added) {
-    rounded_corners.set_upper_left(kBackgroundCornerSize);
-    rounded_corners.set_upper_right(kBackgroundCornerSize);
-  }
-  button->SetBackground(views::CreateRoundedRectBackground(
-      kColorProfileMenuPromoButtonsBackground, rounded_corners,
-      gfx::Insets::VH(0, kIdentityContainerMargin)));
-  // Button with a background should have a larger size to fit the background.
-  button->SetPreferredSize(
-      gfx::Size(kMenuWidth, kButtonBackgroundVerticalSize));
-
-  // When adding the first element in the promo container, ensure a separation
-  // between the promo container and the next container. Otherwise, add a top
-  // margin to the button to add a separatation with the previous promos.
-  if (is_first_button_being_added) {
-    promo_container_->SetProperty(views::kMarginsKey,
-                                  gfx::Insets().set_bottom(kDefaultMargin));
-  } else {
-    button->SetProperty(views::kMarginsKey,
-                        gfx::Insets().set_top(kPromoSeparation));
-  }
-
-  promo_container_->AddChildView(std::move(button));
 }
 
 void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
@@ -650,7 +643,9 @@ void ProfileMenuViewBase::AddBottomMargin() {
   }
 }
 
-void ProfileMenuViewBase::RecordClick(ActionableItem item) {
+void ProfileMenuViewBase::OnActionableItemClicked(ActionableItem item) {
+  actionable_item_clicked_ = true;
+
   // TODO(tangltom): Separate metrics for incognito and guest menu.
   base::UmaHistogramEnumeration(kProfileMenuClickedActionableItemHistogram,
                                 item);
@@ -669,7 +664,7 @@ void ProfileMenuViewBase::RecordClick(ActionableItem item) {
 int ProfileMenuViewBase::GetMaxHeight() const {
   gfx::Rect anchor_rect = GetAnchorRect();
   gfx::Rect screen_space =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestPoint(anchor_rect.CenterPoint())
           .work_area();
   int available_space = screen_space.bottom() - anchor_rect.bottom();
@@ -692,7 +687,6 @@ void ProfileMenuViewBase::Reset() {
   // First, add the parts of the current profile.
   identity_info_container_ =
       components->AddChildView(std::make_unique<views::View>());
-  promo_container_ = components->AddChildView(std::make_unique<views::View>());
   features_container_ =
       components->AddChildView(std::make_unique<views::View>());
   profile_mgmt_separator_container_ =
@@ -749,11 +743,11 @@ void ProfileMenuViewBase::Init() {
 }
 
 void ProfileMenuViewBase::OnWindowClosing() {
-  if (!anchor_button_) {
+  if (!anchor_view_) {
     return;
   }
 
-  views::InkDrop::Get(anchor_button_.view())
+  views::InkDrop::Get(anchor_view_.view())
       ->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
 }
 
@@ -788,39 +782,6 @@ std::unique_ptr<HoverButton> ProfileMenuViewBase::CreateMenuRowButton(
   button->SetIconHorizontalMargins(kMenuItemLeftInternalPadding, /*right=*/0);
   return button;
 }
-
-// Despite ProfileMenuViewBase being a dialog, we are enforcing it to behave
-// like a menu from the accessibility POV because it fits better with a menu UX.
-// The dialog exposes the kMenuBar role, and the top-level container is kMenu.
-// This class is responsible for emitting menu accessible events when the dialog
-// is activated or deactivated.
-class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
- public:
-  AXMenuWidgetObserver(ProfileMenuViewBase* owner, views::Widget* widget)
-      : owner_(owner) {
-    observation_.Observe(widget);
-  }
-  ~AXMenuWidgetObserver() override = default;
-
-  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
-    if (active) {
-      owner_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuStart,
-                                                 true);
-      owner_->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kMenuPopupStart, true);
-    } else {
-      owner_->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kMenuPopupEnd, true);
-      owner_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuEnd,
-                                                 true);
-    }
-  }
-
- private:
-  raw_ptr<ProfileMenuViewBase> owner_;
-  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
-      this};
-};
 
 BEGIN_METADATA(ProfileMenuViewBase)
 END_METADATA

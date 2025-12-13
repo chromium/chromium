@@ -35,9 +35,9 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
 
   static OverlayWindowAndroid* OnActivityStart(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& token,
+      const base::android::JavaRef<jobject>& token,
 
-      const base::android::JavaParamRef<jobject>& jwindow_android);
+      const base::android::JavaRef<jobject>& jwindow_android);
   void DestroyStartedByJava(JNIEnv* env);
   void TogglePlayPause(JNIEnv* env, bool toggleOn);
   void NextTrack(JNIEnv* env);
@@ -47,11 +47,13 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void ToggleMicrophone(JNIEnv* env, bool toggleOn);
   void ToggleCamera(JNIEnv* env, bool toggleOn);
   void HangUp(JNIEnv* env);
+  void Hide(JNIEnv* env);
   void CompositorViewCreated(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& compositor_view);
+      const base::android::JavaRef<jobject>& compositor_view);
   void OnViewSizeChanged(JNIEnv* env, jint width, jint height);
   void OnBackToTab(JNIEnv* env);
+  void OnDismissal(JNIEnv* env);
 
   // ui::WindowAndroidObserver implementation.
   void OnRootWindowVisibilityChanged(bool visible) override {}
@@ -76,6 +78,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetPreviousTrackButtonVisibility(bool is_visible) override;
   void SetMicrophoneMuted(bool muted) override;
   void SetCameraState(bool turned_on) override;
+  void SetHidePictureInPictureButtonVisibility(bool is_visible) override;
   void SetToggleMicrophoneButtonVisibility(bool is_visible) override;
   void SetToggleCameraButtonVisibility(bool is_visible) override;
   void SetHangUpButtonVisibility(bool is_visible) override;
@@ -88,8 +91,8 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
 
   void Initialize(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& self,
-                  const base::android::JavaParamRef<jobject>& jwindow_android);
+                  const base::android::JavaRef<jobject>& self,
+                  const base::android::JavaRef<jobject>& jwindow_android);
 
  private:
   // Notify PictureInPictureActivity that visible actions have changed.
@@ -100,6 +103,8 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
       const media_session::mojom::MediaSessionAction& action,
       bool is_visible);
   void CloseInternal();
+
+  bool IsInAutoPictureInPicture() const;
 
   base::UnguessableToken token_{base::UnguessableToken::Create()};
 

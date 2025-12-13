@@ -4,6 +4,7 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 
+#include "base/time/time.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -67,6 +68,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(prefs::kPrivacySandboxActivityTypeRecord2);
 #endif
+  // TODO: b/462419925 - Deprecate this pref post-Mode B rollback.
+  registry->RegisterBooleanPref(prefs::kShowRollbackUiModeB, false);
   // Register prefs for tracking protection.
   tracking_protection::RegisterProfilePrefs(registry);
 }

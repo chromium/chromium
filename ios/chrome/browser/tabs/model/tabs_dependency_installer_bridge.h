@@ -42,14 +42,15 @@ class TabsDependencyInstallerBridge final : public TabsDependencyInstaller {
   TabsDependencyInstallerBridge();
   ~TabsDependencyInstallerBridge() final;
 
-  // Starts observing the WebStateList and installing the dependencies.
+  // Starts observing the Browser's WebStateList and installing the
+  // dependencies.
   void StartObserving(id<TabsDependencyInstalling> installing,
-                      WebStateList* web_state_list,
+                      Browser* browser,
                       Policy policy);
 
-  // Stops observing the WebStateList (and if there are still WebStates
-  // with installed dependencies, uninstall them). Must be called before
-  // the destructor of DependencyInstaller is called.
+  // Stops observing the Browser's WebStateList (and if there are still
+  // WebStates with installed dependencies, uninstall them). Must be called
+  // before the destructor of DependencyInstaller is called.
   void StopObserving();
 
   // TabsDependencyInstaller:

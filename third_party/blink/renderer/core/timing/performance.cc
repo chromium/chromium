@@ -101,7 +101,6 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "v8/include/v8-metrics.h"
 
 namespace blink {
@@ -423,12 +422,10 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
 }
 
 PerformanceEntryVector Performance::getBufferedEntriesByType(
-    const AtomicString& entry_type,
-    bool include_soft_navigation_observations) {
+    const AtomicString& entry_type) {
   PerformanceEntry::EntryType type =
       PerformanceEntry::ToEntryTypeEnum(entry_type);
-  return getEntriesByTypeInternal(type, /*maybe_name=*/g_null_atom,
-                                  include_soft_navigation_observations);
+  return getEntriesByTypeInternal(type, /*maybe_name=*/g_null_atom);
 }
 
 PerformanceEntryVector Performance::getEntriesByType(
@@ -456,8 +453,7 @@ PerformanceEntryVector Performance::GetEntriesByTypeForCurrentFrame(
 
 PerformanceEntryVector Performance::getEntriesByTypeInternal(
     PerformanceEntry::EntryType type,
-    const AtomicString& maybe_name,
-    bool include_soft_navigation_observations) {
+    const AtomicString& maybe_name) {
   // This vector may be used by any cases below which require local storage.
   // Cases which refer to pre-existing vectors may simply set `entries` instead.
   PerformanceEntryVector entries_storage;
@@ -546,11 +542,7 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       break;
 
     case PerformanceEntry::kInteractionContentfulPaint:
-      // TODO(crbug.com/424433918): Change to expose this without
-      // soft-navigation requirement.
-      if (include_soft_navigation_observations) {
-        entries = &interaction_contentful_paint_buffer_;
-      }
+      entries = &interaction_contentful_paint_buffer_;
       break;
 
     case PerformanceEntry::kVisibilityState:
@@ -943,8 +935,7 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
             CHECK(!parser_yield_task_handle_.IsActive());
             parser_yield_task_handle_ = PostDelayedCancellableTask(
                 *document->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
-                WTF::BindOnce(&NotifyParserResume, WrapPersistent(document),
-                              false),
+                BindOnce(&NotifyParserResume, WrapPersistent(document), false),
                 base::Milliseconds(timeout));
           }
         } else if (mark_name == mark_parser_restart) {
@@ -956,9 +947,8 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
           // new task to ensure that the script is not running to resume the
           // parser.
           document->GetTaskRunner(TaskType::kInternalLoading)
-              ->PostTask(FROM_HERE,
-                         WTF::BindOnce(&NotifyParserResume,
-                                       WrapPersistent(document), true));
+              ->PostTask(FROM_HERE, BindOnce(&NotifyParserResume,
+                                             WrapPersistent(document), true));
           parser_yield_task_handle_.Cancel();
         }
       }
@@ -1171,8 +1161,6 @@ void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
   bool observer_found = false;
   for (auto& observer : observers_) {
     if (observer->FilterOptions() & entry.EntryTypeEnum() &&
-        (!entry.IsTriggeredBySoftNavigation() ||
-         observer->IncludeSoftNavigationObservations()) &&
         observer->CanObserve(entry)) {
       observer->EnqueuePerformanceEntry(entry);
       observer_found = true;
@@ -1184,12 +1172,18 @@ void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
 
 void Performance::NotifyObserversOfContainerEntry(
     PerformanceEntry& entry) const {
+  bool observer_found = false;
   CHECK(entry.EntryTypeEnum() == PerformanceEntry::kContainer);
   for (auto& observer : observers_) {
     if (observer->FilterOptions() & entry.EntryTypeEnum() &&
         observer->CanObserve(entry)) {
       observer->EnqueuePerformanceEntry(entry);
+      observer_found = true;
     }
+  }
+  if (observer_found) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kContainerTimingObserverReportedEntries);
   }
 }
 
@@ -1250,7 +1244,7 @@ int Performance::GetDroppedEntriesForTypes(PerformanceEntryTypeMask types) {
 DOMHighResTimeStamp Performance::ClampTimeResolution(
     base::TimeDelta time,
     bool cross_origin_isolated_capability) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(TimeClamper, clamper, ());
+  static TimeClamper clamper;
   return clamper.ClampTimeResolution(time, cross_origin_isolated_capability)
       .InMillisecondsF();
 }

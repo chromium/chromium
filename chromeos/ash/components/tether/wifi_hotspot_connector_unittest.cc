@@ -8,7 +8,6 @@
 #include <sstream>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -412,13 +411,16 @@ class WifiHotspotConnectorTest : public testing::Test,
   void HandleConnect() {}
 
   // NetworkConnectionObserver:
-  void ConnectToNetworkRequested(const std::string& service_path) override {
+  ConnectToNetworkRequestVerdict ConnectToNetworkRequested(
+      const std::string& service_path) override {
     if (requested_failure_count_ > 0) {
       helper_.service_test()->SetErrorForNextConnectionAttempt("Failure");
     }
 
     requested_connection_service_paths_.push_back(service_path);
+    return ConnectToNetworkRequestVerdict::kProceed;
   }
+
   void ConnectSucceeded(const std::string& service_path) override {
     successful_connection_service_paths_.push_back(service_path);
   }

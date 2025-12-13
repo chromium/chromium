@@ -239,8 +239,10 @@ static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
     case kSelectOptions:
       return To<HTMLOptionsCollection>(html_collection).ElementMatches(element);
     case kSelectedOptions: {
-      auto* option_element = DynamicTo<HTMLOptionElement>(element);
-      return option_element && option_element->Selected();
+      if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
+        return option->Selected() && option->OwnerSelectElement() == html_collection.ownerNode();
+      }
+      return false;
     }
     case kDataListOptions:
       return To<HTMLDataListOptionsCollection>(html_collection)

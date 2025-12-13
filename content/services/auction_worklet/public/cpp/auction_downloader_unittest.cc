@@ -210,7 +210,7 @@ class AuctionDownloaderTest
   // `trusted_params` may only be non-null if
   // ConstructorChoice::kStartLoadInBrowser is used, since only the constructor
   // that takes an initiator takes a TrustedParams argument.
-  std::unique_ptr<std::string> RunRequest(
+  std::optional<std::string> RunRequest(
       std::optional<std::string> post_body = std::nullopt,
       std::optional<std::string> content_type = std::nullopt) {
     DCHECK(!run_loop_);
@@ -263,7 +263,10 @@ class AuctionDownloaderTest
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     run_loop_.reset();
-    return std::move(body_);
+
+    std::optional<std::string> ret = std::move(body_);
+    body_ = std::nullopt;
+    return ret;
   }
 
   std::string EmptyIfSimulated(std::string in) {
@@ -278,7 +281,7 @@ class AuctionDownloaderTest
     return error_.value_or("Not an error.");
   }
 
-  void DownloadCompleteCallback(std::unique_ptr<std::string> body,
+  void DownloadCompleteCallback(std::optional<std::string> body,
                                 scoped_refptr<net::HttpResponseHeaders> headers,
                                 std::optional<std::string> error) {
     DCHECK(!body_);
@@ -300,7 +303,7 @@ class AuctionDownloaderTest
       AuctionDownloader::MimeType::kJavascript;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  std::unique_ptr<std::string> body_;
+  std::optional<std::string> body_;
   scoped_refptr<net::HttpResponseHeaders> headers_;
   std::optional<std::string> error_;
 
@@ -580,7 +583,7 @@ TEST_P(AuctionDownloaderTest, Redirect) {
 TEST_P(AuctionDownloaderTest, Success) {
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody);
-  std::unique_ptr<std::string> body = RunRequest();
+  std::optional<std::string> body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(EmptyIfSimulated(kAsciiResponseBody), *body);
 }
@@ -590,8 +593,7 @@ TEST_P(AuctionDownloaderTest, SuccessWithPostBody) {
               kAsciiResponseBody);
   const std::string kPostBody = "TEST BODY";
   const std::string kContentType = "text/javascript";
-  std::unique_ptr<std::string> body =
-      RunRequest(std::move(kPostBody), std::move(kContentType));
+  std::optional<std::string> body = RunRequest(kPostBody, kContentType);
   ASSERT_TRUE(body);
   ASSERT_TRUE(observed_request_post_body_);
   ASSERT_EQ(1u, observed_request_post_body_->elements()->size());
@@ -683,7 +685,7 @@ TEST_P(AuctionDownloaderTest, MimeType) {
   mime_type_ = AuctionDownloader::MimeType::kJson;
   AddResponse(&url_loader_factory_, url_, kJsonMimeType, kUtf8Charset,
               kAsciiResponseBody);
-  std::unique_ptr<std::string> body = RunRequest();
+  std::optional<std::string> body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(EmptyIfSimulated(kAsciiResponseBody), *body);
 }
@@ -721,7 +723,7 @@ TEST_P(AuctionDownloaderTest, MimeTypeWasm) {
   // WASM request, WASM response type.
   AddResponse(&url_loader_factory_, url_, kWasmMimeType,
               /*charset=*/std::nullopt, kNonUtf8ResponseBody);
-  std::unique_ptr<std::string> body = RunRequest();
+  std::optional<std::string> body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(EmptyIfSimulated(kNonUtf8ResponseBody), *body);
 
@@ -785,7 +787,7 @@ TEST_P(AuctionDownloaderTest, MimeTypeTrustedSignals) {
   // AdAuctionTrustedSignals request, AdAuctionTrustedSignals response type.
   AddResponse(&url_loader_factory_, url_, kAdAuctionTrustedSignalsMimeType,
               /*charset=*/std::nullopt, kUtf8ResponseBody);
-  std::unique_ptr<std::string> body = RunRequest();
+  std::optional<std::string> body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(EmptyIfSimulated(kUtf8ResponseBody), *body);
 }
@@ -823,7 +825,7 @@ TEST_P(AuctionDownloaderTest, MimeTypeVariants) {
     mime_type_ = AuctionDownloader::MimeType::kJavascript;
     AddResponse(&url_loader_factory_, url_, javascript_type, kUtf8Charset,
                 kAsciiResponseBody);
-    std::unique_ptr<std::string> body = RunRequest();
+    std::optional<std::string> body = RunRequest();
     ASSERT_TRUE(body);
     EXPECT_EQ(EmptyIfSimulated(kAsciiResponseBody), *body);
 
@@ -850,7 +852,7 @@ TEST_P(AuctionDownloaderTest, MimeTypeVariants) {
     mime_type_ = AuctionDownloader::MimeType::kJson;
     AddResponse(&url_loader_factory_, url_, json_type, kUtf8Charset,
                 kAsciiResponseBody);
-    std::unique_ptr<std::string> body = RunRequest();
+    std::optional<std::string> body = RunRequest();
     ASSERT_TRUE(body);
     EXPECT_EQ(EmptyIfSimulated(kAsciiResponseBody), *body);
   }
@@ -888,7 +890,7 @@ TEST_P(AuctionDownloaderTest, Charset) {
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kAsciiCharset,
               kAsciiResponseBody);
-  std::unique_ptr<std::string> body = RunRequest();
+  std::optional<std::string> body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(EmptyIfSimulated(kAsciiResponseBody), *body);
 
@@ -995,7 +997,7 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_Cached) {
   response_head->original_response_time = base::Time::Now() - base::Minutes(2);
   url_loader_factory_.AddResponse(url_, std::move(response_head),
                                   kAsciiResponseBody, status);
-  std::unique_ptr<std::string> body = RunRequest();
+  std::optional<std::string> body = RunRequest();
   histogram_tester.ExpectUniqueSample(kCachedTrustedBiddingSignalsAge,
                                       base::Minutes(2).InMilliseconds(), 1);
   histogram_tester.ExpectTotalCount(kBiddingSignalsResponseDownloadTime, 1);
@@ -1018,7 +1020,7 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotCached) {
   auto response_head = CreateResponseHead();
   url_loader_factory_.AddResponse(url_, std::move(response_head),
                                   kAsciiResponseBody, status);
-  std::unique_ptr<std::string> body = RunRequest();
+  std::optional<std::string> body = RunRequest();
   histogram_tester.ExpectTotalCount(kCachedTrustedBiddingSignalsAge, 0);
   histogram_tester.ExpectTotalCount(kBiddingSignalsResponseDownloadTime, 1);
   histogram_tester.ExpectTotalCount(kBiddingSignalsResponseDownloadTimePerIG,
@@ -1037,7 +1039,7 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotKVV1) {
   response_head->original_response_time = base::Time::Now() - base::Minutes(2);
   url_loader_factory_.AddResponse(url_, std::move(response_head),
                                   kAsciiResponseBody, status);
-  std::unique_ptr<std::string> body = RunRequest();
+  std::optional<std::string> body = RunRequest();
   histogram_tester.ExpectTotalCount(kCachedTrustedBiddingSignalsAge, 0);
   histogram_tester.ExpectTotalCount(kBiddingSignalsResponseDownloadTime, 0);
   histogram_tester.ExpectTotalCount(kBiddingSignalsResponseDownloadTimePerIG,

@@ -11,7 +11,6 @@
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace audio {

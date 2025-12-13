@@ -6,6 +6,7 @@ assert(!is_android, "Page actions are for desktop platforms only")
 
 source_set("page_action") {
   friend = [
+    ":impl",
     ":unit_tests",
     ":interactive_ui_tests",
     ":test_support",
@@ -13,48 +14,119 @@ source_set("page_action") {
 
   public = [
     "action_ids.h",
+    "collaboration_messaging_page_action_icon_view.h",
     "page_action_container_view.h",
     "page_action_controller.h",
+    "page_action_icon_container.h",
+    "page_action_icon_controller.h",
+    "page_action_icon_loading_indicator_view.h",
+    "page_action_icon_params.h",
+    "page_action_icon_view.h",
+    "page_action_icon_view_observer.h",
     "page_action_observer.h",
     "page_action_properties_provider.h",
     "page_action_triggers.h",
     "page_action_view.h",
     "page_action_view_params.h",
+    "pwa_install_view.h",
+    "zoom_view.h",
   ]
 
   sources = [
-    "page_action_container_view.cc",
-    "page_action_controller.cc",
     "page_action_enums.h",
-    "page_action_metrics_recorder.cc",
     "page_action_metrics_recorder.h",
     "page_action_metrics_recorder_interface.h",
-    "page_action_model.cc",
     "page_action_model.h",
     "page_action_model_observer.h",
-    "page_action_observer.cc",
-    "page_action_page_metrics_recorder.cc",
     "page_action_page_metrics_recorder.h",
-    "page_action_properties_provider.cc",
-    "page_action_triggers.cc",
-    "page_action_view.cc",
   ]
 
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/page_action:icon_type",
+    "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
+    "//chrome/browser/ui/views/location_bar:icon_label_bubble",
     "//components/metrics/structured:structured_events",
+    "//components/prefs",
+    "//components/saved_tab_groups/public",
+    "//components/tabs",
+    "//components/user_education/common",
+    "//components/zoom",
+    "//content/public/browser",
+    "//skia:skia_core_public_headers",
     "//ui/actions:actions_headers",
     "//ui/base/metadata",
+    "//ui/gfx",
     "//ui/views",
   ]
+}
 
-  deps = [ "//ui/gfx" ]
+source_set("impl") {
+  sources = [
+    "collaboration_messaging_page_action_icon_view.cc",
+    "page_action_container_view.cc",
+    "page_action_controller.cc",
+    "page_action_icon_container.cc",
+    "page_action_icon_controller.cc",
+    "page_action_icon_loading_indicator_view.cc",
+    "page_action_icon_params.cc",
+    "page_action_icon_view.cc",
+    "page_action_metrics_recorder.cc",
+    "page_action_model.cc",
+    "page_action_observer.cc",
+    "page_action_page_metrics_recorder.cc",
+    "page_action_properties_provider.cc",
+    "page_action_triggers.cc",
+    "page_action_view.cc",
+    "pwa_install_view.cc",
+    "zoom_view.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":page_action",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:primitives",
+    "//chrome/browser/lens/region_search",
+    "//chrome/browser/profiles",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/lens",
+    "//chrome/browser/ui/search",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/interaction",
+    "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/location_bar/cookie_controls",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/user_education",
+    "//components/feature_engagement/public",
+    "//components/lens",
+    "//components/omnibox/browser:vector_icons",
+    "//components/prefs",
+    "//components/search",
+    "//components/site_engagement/content",
+    "//components/tabs:public",
+    "//components/web_modal",
+    "//components/webapps/browser",
+    "//components/zoom",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
@@ -81,7 +153,7 @@ source_set("test_support") {
     ":page_action",
     "//chrome/test:test_support",
     "//components/tabs:test_support",
-    "//testing/gmock:gmock",
+    "//testing/gmock",
     "//ui/actions:actions_headers",
   ]
 }
@@ -105,6 +177,7 @@ source_set("unit_tests") {
     ":test_support",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
+    "//chrome/browser/ui/views/location_bar",
     "//chrome/test:test_support",
     "//components/tabs:test_support",
     "//ui/events:test_support",

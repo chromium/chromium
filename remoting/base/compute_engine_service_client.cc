@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/logging.h"

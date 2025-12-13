@@ -9,7 +9,6 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -19,6 +18,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/test_blocklist.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -704,7 +704,7 @@ TEST_F(ExtensionAllowlistUnitTest, NoEnforcementOnPolicyForceInstall) {
   registrar()->AddExtension(extension.get());
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.SetIndividualExtensionAutoInstalled(
         extension->id(), "http://example.com/update_url", true);
   }
@@ -770,7 +770,7 @@ TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
   registrar()->AddExtension(extension.get());
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.SetIndividualExtensionAutoInstalled(
         extension->id(), "http://example.com/update_url", false);
   }
@@ -804,7 +804,7 @@ TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
   registrar()->AddExtension(extension.get());
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.SetIndividualExtensionInstallationAllowed(extension->id(), true);
   }
 

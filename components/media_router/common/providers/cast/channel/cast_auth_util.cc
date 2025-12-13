@@ -24,23 +24,6 @@
 
 namespace cast_channel {
 
-// Enforce nonce checking when enabled.
-// If disabled, the nonce value returned from the device is not checked against
-// the one sent to the device. As a result, the nonce can be empty and omitted
-// from the signature. This allows backwards compatibility with legacy Cast
-// receivers.
-BASE_FEATURE(kEnforceNonceChecking,
-             "CastNonceEnforced",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enforce the use of SHA256 digest for signatures.
-// If disabled, the device may respond with a signature with SHA1 digest even
-// though a signature with SHA256 digest was requested in the challenge. This
-// allows for backwards compatibility with legacy Cast receivers.
-BASE_FEATURE(kEnforceSHA256Checking,
-             "CastSHA256Enforced",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 
 const char kParseErrorPrefix[] = "Failed to parse auth message: ";
@@ -268,12 +251,6 @@ AuthResult AuthContext::VerifySenderNonce(
       RecordNonceStatus(CastNonceStatus::kMismatch);
       success.set_flag(CastChannelFlag::kSenderNonceMismatch);
     }
-    if (base::FeatureList::IsEnabled(kEnforceNonceChecking)) {
-      AuthResult failure = AuthResult("Sender nonce mismatched.",
-                                      AuthResult::ERROR_SENDER_NONCE_MISMATCH);
-      failure.CopyFlagsFrom(success);
-      return failure;
-    }
   } else {
     RecordNonceStatus(CastNonceStatus::kMatch);
   }
@@ -288,13 +265,7 @@ AuthResult VerifyAndMapDigestAlgorithm(
     case openscreen::cast::proto::SHA1:
       RecordSignatureStatus(CastSignatureStatus::kAlgorithmUnsupported);
       *digest_algorithm = cast_certificate::CastDigestAlgorithm::SHA1;
-      if (base::FeatureList::IsEnabled(kEnforceSHA256Checking)) {
-        return AuthResult("Unsupported digest algorithm.",
-                          AuthResult::ERROR_DIGEST_UNSUPPORTED,
-                          CastChannelFlag::kSha1DigestAlgorithm);
-      } else {
-        success.set_flag(CastChannelFlag::kSha1DigestAlgorithm);
-      }
+      success.set_flag(CastChannelFlag::kSha1DigestAlgorithm);
       break;
     case openscreen::cast::proto::SHA256:
       *digest_algorithm = cast_certificate::CastDigestAlgorithm::SHA256;

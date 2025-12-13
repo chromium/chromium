@@ -13,7 +13,8 @@
         CallWith=ScriptState,
         RaisesException,
         SecureContext,
-        MeasureAs=TopicsAPI_BrowsingTopics_Method
+        MeasureAs=TopicsAPI_BrowsingTopics_Method,
+        DeprecateAs=TopicsAPIAll
     ]
     Promise<sequence<BrowsingTopic>> browsingTopics(optional BrowsingTopicsOptions options);
 };

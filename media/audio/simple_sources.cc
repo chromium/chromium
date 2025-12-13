@@ -138,14 +138,14 @@ int SineWaveAudioSource::OnMoreData(base::TimeDelta /* delay */,
     }
 
     if (max_frames > 0) {
-      auto first_channel_frames = dest->channel_span(0).first(max_frames);
+      auto first_channel_frames = dest->channel(0).first(max_frames);
 
       for (float& sample : first_channel_frames) {
         sample = sin(2.0 * std::numbers::pi * f_ * pos_samples_++);
       }
 
       for (int ch = 1; ch < dest->channels(); ++ch) {
-        dest->channel_span(ch)
+        dest->channel(ch)
             .first(max_frames)
             .copy_from_nonoverlapping(first_channel_frames);
       }

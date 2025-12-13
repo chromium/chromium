@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/memory/weak_ptr.h"
@@ -18,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"

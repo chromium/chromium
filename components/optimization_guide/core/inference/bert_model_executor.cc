@@ -29,9 +29,9 @@ BertModelExecutor::Execute(ModelExecutionTask* execution_task,
     *out_status = ExecutionStatus::kErrorEmptyOrInvalidInput;
     return std::nullopt;
   }
-  TRACE_EVENT2("browser", "BertModelExecutor::Execute", "optimization_target",
-               GetStringNameForOptimizationTarget(optimization_target_),
-               "input_length", input.size());
+  TRACE_EVENT("optimization_guide", "BertModelExecutor::Execute", "target",
+              GetStringNameForOptimizationTarget(optimization_target_),
+              "input_length", input.size());
 
   auto status_or_result =
       static_cast<tflite::task::text::BertNLClassifier*>(execution_task)

@@ -150,7 +150,7 @@ ScriptPromise<IDLUndefined> InternalsSensor::createVirtualSensor(
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->CreateVirtualSensor(
       ToMojoSensorType(type.AsEnum()), ToMojoSensorMetadata(options),
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -198,7 +198,7 @@ ScriptPromise<IDLUndefined> InternalsSensor::updateVirtualSensor(
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->UpdateVirtualSensor(
       ToMojoSensorType(type.AsEnum()), std::move(mojo_reading.value()),
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -238,7 +238,7 @@ ScriptPromise<IDLUndefined> InternalsSensor::removeVirtualSensor(
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->RemoveVirtualSensor(
       ToMojoSensorType(type.AsEnum()),
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -268,7 +268,7 @@ InternalsSensor::getVirtualSensorInformation(ScriptState* script_state,
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->GetVirtualSensorInformation(
       ToMojoSensorType(type.AsEnum()),
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<VirtualSensorInformation>* resolver,

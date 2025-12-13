@@ -474,9 +474,7 @@ std::string ShortcutIdForSSH(const std::string& profileId) {
   base::Value::Dict dict;
   dict.Set(kShortcutKey, base::Value(kShortcutValueSSH));
   dict.Set(kProfileIdKey, base::Value(profileId));
-  std::string shortcut_id;
-  base::JSONWriter::Write(dict, &shortcut_id);
-  return shortcut_id;
+  return base::WriteJson(dict).value_or("");
 }
 
 std::string ShortcutIdFromContainerId(Profile* profile,
@@ -506,9 +504,7 @@ std::string ShortcutIdFromContainerId(Profile* profile,
     }
   }
 
-  std::string shortcut_id;
-  base::JSONWriter::Write(dict, &shortcut_id);
-  return shortcut_id;
+  return base::WriteJson(dict).value_or("");
 }
 
 base::flat_map<std::string, std::string> ExtrasFromShortcutId(
@@ -602,8 +598,8 @@ void AddTerminalMenuShortcuts(
 bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
                                         const std::string& shortcut_id,
                                         int64_t display_id) {
-  std::optional<base::Value::Dict> shortcut =
-      base::JSONReader::ReadDict(shortcut_id);
+  std::optional<base::Value::Dict> shortcut = base::JSONReader::ReadDict(
+      shortcut_id, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!shortcut) {
     return false;
   }

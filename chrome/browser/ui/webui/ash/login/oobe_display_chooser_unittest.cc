@@ -91,7 +91,7 @@ class OobeDisplayChooserTest : public ChromeAshTestBase {
   OobeDisplayChooserTest& operator=(const OobeDisplayChooserTest&) = delete;
 
   int64_t GetPrimaryDisplay() {
-    return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    return display::Screen::Get()->GetPrimaryDisplay().id();
   }
 
   // ChromeAshTestBase:

@@ -59,7 +59,6 @@ enum class HashValidationStatus {
 
 // Keys used in the meta table.
 constexpr char kBuiltinKeywordDataVersion[] = "Builtin Keyword Version";
-constexpr char kBuiltinKeywordMilestone[] = "Builtin Keyword Milestone";
 constexpr char kBuiltinKeywordCountry[] = "Builtin Keyword Country";
 constexpr char kStarterPackKeywordVersion[] = "Starter Pack Keyword Version";
 
@@ -303,10 +302,6 @@ int KeywordTable::GetBuiltinKeywordDataVersion() {
   int version = 0;
   return meta_table()->GetValue(kBuiltinKeywordDataVersion, &version) ? version
                                                                       : 0;
-}
-
-bool KeywordTable::ClearBuiltinKeywordMilestone() {
-  return meta_table()->DeleteKey(kBuiltinKeywordMilestone);
 }
 
 bool KeywordTable::SetBuiltinKeywordCountry(CountryId country_id) {
@@ -599,8 +594,8 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
   data.enforced_by_policy = s.ColumnBool(25);
   data.featured_by_policy = s.ColumnBool(26);
 
-  std::optional<base::Value> value(
-      base::JSONReader::Read(s.ColumnStringView(15)));
+  std::optional<base::Value> value(base::JSONReader::Read(
+      s.ColumnStringView(15), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   if (value && value->is_list()) {
     for (const base::Value& alternate_url : value->GetList()) {
       if (alternate_url.is_string()) {
@@ -667,8 +662,8 @@ void KeywordTable::BindURLToStatement(const TemplateURLData& data,
   for (const auto& alternate_url : data.alternate_urls) {
     alternate_urls_value.Append(alternate_url);
   }
-  std::string alternate_urls;
-  base::JSONWriter::Write(alternate_urls_value, &alternate_urls);
+  std::string alternate_urls =
+      base::WriteJson(alternate_urls_value).value_or("");
 
   s->BindInt64(id_column, data.id);
   s->BindString16(starting_column, data.short_name());

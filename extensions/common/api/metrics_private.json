@@ -49,6 +49,19 @@
             }
           }
         }
+      },
+      {
+        "id": "ExtensionUsageAction",
+        "type": "string",
+        "enum": [
+          "kPinned",
+          "kUnpinned",
+          "kContextMenuInit",
+          "kActionClicked",
+          "kEnabled",
+          "kDisabled"
+        ],
+        "description": "The type of extension usage action triggered by user UI actions."
       }
     ],
     "functions": [
@@ -122,6 +135,15 @@
         "description": "Records an action performed by the user.",
         "parameters": [
           {"name": "name", "type": "string"}
+        ]
+      },
+      {
+        "name": "recordExtensionUsageUkm",
+        "type": "function",
+        "description": "Records an extension usage UKM event triggered by user UI actions.",
+        "parameters": [
+          {"name": "url", "type": "string"},
+          {"name": "action", "$ref": "ExtensionUsageAction"}
         ]
       },
       {

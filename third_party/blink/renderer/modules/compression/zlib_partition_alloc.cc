@@ -10,11 +10,11 @@ void ZlibPartitionAlloc::Configure(z_stream* stream) {
 
 void* ZlibPartitionAlloc::Alloc(void*, uint32_t items, uint32_t size) {
   // BufferMalloc is safer than FastMalloc when handling untrusted data.
-  return WTF::Partitions::BufferMalloc(items * size, "zlib");
+  return Partitions::BufferMalloc(items * size, "zlib");
 }
 
 void ZlibPartitionAlloc::Free(void*, void* address) {
-  WTF::Partitions::BufferFree(address);
+  Partitions::BufferFree(address);
 }
 
 }  // namespace blink

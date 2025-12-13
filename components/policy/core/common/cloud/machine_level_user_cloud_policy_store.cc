@@ -23,14 +23,14 @@ namespace em = enterprise_management;
 namespace policy {
 namespace {
 
-BASE_FEATURE(kAlwaysVerifyPolicyKey,
-             "AlwaysVerifyPolicyKey",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAlwaysVerifyPolicyKey, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FilePath::CharType kPolicyCache[] =
     FILE_PATH_LITERAL("Machine Level User Cloud Policy");
 const base::FilePath::CharType kKeyCache[] =
     FILE_PATH_LITERAL("Machine Level User Cloud Policy Signing Key");
+const base::FilePath::CharType kExtensionInstallPolicyCacheFile[] =
+    FILE_PATH_LITERAL("Machine Level Extension Install Policy");
 constexpr base::FilePath::StringViewType kExternalPolicyCache =
     FILE_PATH_LITERAL("PolicyFetchResponse");
 constexpr base::FilePath::StringViewType kExternalPolicyInfo =
@@ -83,6 +83,23 @@ MachineLevelUserCloudPolicyStore::Create(
       machine_dm_token, machine_client_id, external_policy_path,
       external_policy_info_path, policy_cache_file, key_cache_file,
       background_task_runner);
+}
+
+// static
+std::unique_ptr<MachineLevelUserCloudPolicyStore>
+MachineLevelUserCloudPolicyStore::CreateForExtensionInstall(
+    const DMToken& machine_dm_token,
+    const std::string& machine_client_id,
+    const base::FilePath& policy_dir,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
+  base::FilePath policy_cache_file =
+      policy_dir.Append(kExtensionInstallPolicyCacheFile);
+  base::FilePath key_cache_file = policy_dir.Append(kKeyCache);
+  return std::make_unique<MachineLevelUserCloudPolicyStore>(
+      machine_dm_token, machine_client_id,
+      /*external_policy_path=*/base::FilePath(),
+      /*external_policy_info_path=*/base::FilePath(), policy_cache_file,
+      key_cache_file, background_task_runner);
 }
 
 bool IsResultKeyEqual(const PolicyLoadResult& default_result,

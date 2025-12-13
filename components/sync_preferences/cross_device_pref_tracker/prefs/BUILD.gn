@@ -1,0 +1,16 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("prefs") {
+  sources = [
+    "cross_device_pref_names.h",
+    "cross_device_pref_registry.cc",
+    "cross_device_pref_registry.h",
+  ]
+
+  deps = [
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
+}

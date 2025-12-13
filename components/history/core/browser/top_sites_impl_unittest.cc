@@ -118,7 +118,7 @@ class TopSitesImplTest : public HistoryUnitTestBase {
     TopSitesImpl::RegisterPrefs(
         search_engines_test_environment_.pref_service().registry());
     history_service_ = std::make_unique<HistoryService>(
-        nullptr, std::unique_ptr<VisitDelegate>());
+        nullptr, std::unique_ptr<VisitDelegate>(), nullptr, nullptr);
     ASSERT_TRUE(history_service_->Init(
         TestHistoryDatabaseParamsForPath(scoped_temp_dir_.GetPath())));
 
@@ -189,9 +189,10 @@ class TopSitesImplTest : public HistoryUnitTestBase {
                         RedirectList redirects = RedirectList()) {
     if (redirects.empty())
       redirects.emplace_back(url);
-    history_service()->AddPage(url, time, 1, 0, GURL(), redirects,
-                               ui::PAGE_TRANSITION_TYPED,
-                               history::SOURCE_BROWSED, false);
+    history_service()->AddPage(
+        url, time, 1, 0, GURL(), redirects, ui::PAGE_TRANSITION_TYPED,
+        history::SOURCE_BROWSED, history::VisitResponseCodeCategory::kNot404,
+        false);
     if (!title.empty())
       history_service()->SetPageTitle(url, title);
   }

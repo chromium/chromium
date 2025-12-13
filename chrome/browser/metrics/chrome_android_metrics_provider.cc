@@ -112,8 +112,9 @@ void ChromeAndroidMetricsProvider::ProvidePreviousSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   auto activity_type =
       chrome::android::GetActivityTypeFromLocalState(local_state_);
-  if (activity_type.has_value())
+  if (activity_type.has_value()) {
     chrome::android::EmitActivityTypeHistograms(activity_type.value());
+  }
 
   // Save whether multiple user profiles are present in Android. This is
   // unlikely to change across sessions.
@@ -152,13 +153,20 @@ void ChromeAndroidMetricsProvider::ResetGlobalStateForTesting() {
   metrics::AndroidMetricsHelper::ResetGlobalStateForTesting();
 }
 
+const std::string& ChromeAndroidMetricsProvider::GetHardwareClass() const {
+  return hardware_class_;
+}
+
 void ChromeAndroidMetricsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
-  if (hardware_class_.empty()) {
+  if (GetHardwareClass().empty()) {
     return;
   }
 
   metrics::SystemProfileProto::Hardware* hardware =
       system_profile_proto->mutable_hardware();
-  hardware->set_full_hardware_class(hardware_class_);
+  hardware->set_full_hardware_class(GetHardwareClass());
 }
+
+DEFINE_JNI(AppUpdateInfoUtils)
+DEFINE_JNI(NotificationSystemStatusUtil)

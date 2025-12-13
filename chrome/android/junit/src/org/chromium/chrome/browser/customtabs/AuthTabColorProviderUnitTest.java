@@ -28,7 +28,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -52,8 +52,7 @@ public class AuthTabColorProviderUnitTest {
         Intent intent = new AuthTabIntent.Builder().build().intent;
         AuthTabColorProvider provider =
                 new AuthTabColorProvider(intent, mActivity, COLOR_SCHEME_LIGHT);
-        int color =
-                SurfaceColorUpdateUtils.getDefaultThemeColor(mActivity, /* isIncognito= */ false);
+        int color = ChromeColors.getDefaultThemeColor(mActivity, /* isIncognito= */ false);
         assertEquals("Wrong toolbar color", color, provider.getToolbarColor());
         assertEquals("Wrong bottom bar color", color, provider.getBottomBarColor());
         assertEquals(

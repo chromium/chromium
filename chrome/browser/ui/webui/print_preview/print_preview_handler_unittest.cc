@@ -169,9 +169,7 @@ base::Value::List ConstructPreviewArgs(std::string_view callback_id,
                                        const base::Value::Dict& print_ticket) {
   base::Value::List args;
   args.Append(callback_id);
-  std::string json;
-  base::JSONWriter::Write(base::Value(print_ticket.Clone()), &json);
-  args.Append(json);
+  args.Append(base::WriteJson(print_ticket).value_or(""));
   return args;
 }
 
@@ -280,10 +278,9 @@ class FakePrintPreviewUI : public PrintPreviewUI {
   FakePrintPreviewUI& operator=(const FakePrintPreviewUI&) = delete;
   ~FakePrintPreviewUI() override = default;
 
-  void GetPrintPreviewDataForIndex(
-      int index,
-      scoped_refptr<base::RefCountedMemory>* data) const override {
-    *data = base::MakeRefCounted<base::RefCountedStaticMemory>(
+  scoped_refptr<base::RefCountedMemory> GetPrintPreviewDataForIndex(
+      int index) const override {
+    return base::MakeRefCounted<base::RefCountedStaticMemory>(
         base::byte_span_from_cstring(kTestData));
   }
 
@@ -495,9 +492,11 @@ class PrintPreviewHandlerTest : public testing::Test {
                                                      web_contents);
   }
 
-  void Initialize() { InitializeWithLocale("en"); }
+  void Initialize() { InitializeWithLocaleAndSilentPrintingPref("en", false); }
 
-  void InitializeWithLocale(const std::string& locale) {
+  void InitializeWithLocaleAndSilentPrintingPref(
+      const std::string& locale,
+      bool enable_silent_printing_pref) {
     // Sending this message will enable javascript, so it must always be called
     // before any other messages are sent.
     base::Value::List args;
@@ -505,6 +504,12 @@ class PrintPreviewHandlerTest : public testing::Test {
 
     auto* browser_process = TestingBrowserProcess::GetGlobal();
     std::string original_locale = browser_process->GetApplicationLocale();
+    std::optional<bool> orig_enable_silent_printing;
+    if (const auto* pref = browser_process->local_state()->FindPreference(
+            prefs::kSilentPrintingEnabled);
+        pref) {
+      orig_enable_silent_printing = pref->GetValue()->GetBool();
+    }
     {
       // Set locale since the delimiters checked in VerifyInitialSettings()
       // depend on it. This has to be done in several ways to make various
@@ -512,11 +517,21 @@ class PrintPreviewHandlerTest : public testing::Test {
       browser_process->SetApplicationLocale(locale);
       base::test::ScopedRestoreICUDefaultLocale scoped_locale(locale);
       base::ResetFormattersForTesting();
+      if (enable_silent_printing_pref) {
+        browser_process->local_state()->SetBoolean(
+            prefs::kSilentPrintingEnabled, true);
+      }
       handler()->HandleGetInitialSettings(args);
     }
     // Reset again now that |scoped_locale| has been destroyed.
     browser_process->SetApplicationLocale(original_locale);
     base::ResetFormattersForTesting();
+    if (orig_enable_silent_printing.has_value()) {
+      browser_process->local_state()->SetBoolean(
+          prefs::kSilentPrintingEnabled, orig_enable_silent_printing.value());
+    } else {
+      browser_process->local_state()->ClearPref(prefs::kSilentPrintingEnabled);
+    }
 
     // In response to get initial settings, the initial settings are sent back.
     ASSERT_EQ(1u, web_ui()->call_data().size());
@@ -542,8 +557,9 @@ class PrintPreviewHandlerTest : public testing::Test {
   void ValidateInitialSettings(const content::TestWebUI::CallData& data,
                                const std::string& default_printer_name,
                                const std::string& initiator_title) {
-    ValidateInitialSettingsForLocale(data, default_printer_name,
-                                     initiator_title, "en", ",", ".");
+    ValidateInitialSettingsForLocaleAndKioskAutoPrintMode(
+        data, default_printer_name, initiator_title, "en", ",", ".",
+        /*kiosk_auto_print_mode=*/false);
   }
 
   // Validates the initial settings structure in the response matches the
@@ -551,20 +567,25 @@ class PrintPreviewHandlerTest : public testing::Test {
   // chrome/browser/resources/print_preview/native_layer.js. Checks that:
   //   - |default_printer_name| is the printer name returned
   //   - |initiator_title| is the initiator title returned
+  //   - |kiosk_auto_print_mode| matches the kiosk auto print mode returned
   // Also validates that delimiters are correct for |locale| (set in
   // InitializeWithLocale()) with the associated |thousands_delimiter| and
   // |decimal_delimiter|.
   // Assumes "test-callback-id-0" was used as the callback id.
-  void ValidateInitialSettingsForLocale(
+  void ValidateInitialSettingsForLocaleAndKioskAutoPrintMode(
       const content::TestWebUI::CallData& data,
       const std::string& default_printer_name,
       const std::string& initiator_title,
       const std::string& locale,
       const std::string& thousands_delimiter,
-      const std::string& decimal_delimiter) {
+      const std::string& decimal_delimiter,
+      bool kiosk_auto_print_mode) {
     CheckWebUIResponse(data, "test-callback-id-0", true);
     const base::Value::Dict& settings = data.arg3()->GetDict();
-    ASSERT_TRUE(settings.FindBool("isInKioskAutoPrintMode").has_value());
+    auto actual_kiosk_auto_print_mode =
+        settings.FindBool("isInKioskAutoPrintMode");
+    ASSERT_TRUE(actual_kiosk_auto_print_mode.has_value());
+    ASSERT_EQ(kiosk_auto_print_mode, actual_kiosk_auto_print_mode.value());
     ASSERT_TRUE(settings.FindBool("isInAppKioskMode").has_value());
 
     const std::string* actual_locale = settings.FindString("uiLocale");
@@ -762,21 +783,25 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsSimple) {
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsHiLocale) {
-  InitializeWithLocale("hi");
+  InitializeWithLocaleAndSilentPrintingPref(
+      "hi",
+      /*enable_silent_printing_pref=*/false);
 
   // Verify initial settings were sent for Hindi.
-  ValidateInitialSettingsForLocale(*web_ui()->call_data().back(),
-                                   test::kPrinterName, kDummyInitiatorName,
-                                   "hi", ",", ".");
+  ValidateInitialSettingsForLocaleAndKioskAutoPrintMode(
+      *web_ui()->call_data().back(), test::kPrinterName, kDummyInitiatorName,
+      "hi", ",", ".", false);
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsRuLocale) {
-  InitializeWithLocale("ru");
+  InitializeWithLocaleAndSilentPrintingPref(
+      "ru",
+      /*enable_silent_printing_pref=*/false);
 
   // Verify initial settings were sent for Russian.
-  ValidateInitialSettingsForLocale(*web_ui()->call_data().back(),
-                                   test::kPrinterName, kDummyInitiatorName,
-                                   "ru", "\xC2\xA0", ",");
+  ValidateInitialSettingsForLocaleAndKioskAutoPrintMode(
+      *web_ui()->call_data().back(), test::kPrinterName, kDummyInitiatorName,
+      "ru", "\xC2\xA0", ",", false);
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsNoPolicies) {
@@ -791,6 +816,16 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsNoPolicies) {
       *web_ui()->call_data().back(), "mediaSize", std::nullopt, std::nullopt);
   ValidateInitialSettingsValuePolicy(*web_ui()->call_data().back(), "sheets",
                                      std::nullopt);
+}
+
+TEST_F(PrintPreviewHandlerTest, InitialSettingsSilentPrinting) {
+  InitializeWithLocaleAndSilentPrintingPref(
+      /*locale=*/"en",
+      /*enable_silent_printing_pref=*/true);
+  ValidateInitialSettingsForLocaleAndKioskAutoPrintMode(
+      *web_ui()->call_data().back(), test::kPrinterName, kDummyInitiatorName,
+      "en", ",", ".",
+      /*kiosk_auto_print_mode=*/true);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1219,9 +1254,7 @@ TEST_F(PrintPreviewHandlerTest, Print) {
         "test-callback-id-" + base::NumberToString(2 * (i + 1));
     print_args.Append(print_callback_id);
     base::Value print_ticket(test::GetPrintTicket(type));
-    std::string json;
-    base::JSONWriter::Write(print_ticket, &json);
-    print_args.Append(json);
+    print_args.Append(base::WriteJson(print_ticket).value_or(""));
     handler()->HandleDoPrint(print_args);
 
     CheckHistograms(histograms, type);
@@ -1493,9 +1526,7 @@ TEST_P(ContentAnalysisPrintPreviewHandlerTest, LocalScanBeforePrinting) {
   base::Value::List print_args;
   print_args.Append(kCallbackId);
   base::Value print_ticket(test::GetPrintTicket(kAllTypes[0]));
-  std::string json;
-  base::JSONWriter::Write(print_ticket, &json);
-  print_args.Append(json);
+  print_args.Append(base::WriteJson(print_ticket).value_or(""));
 
   handler()->HandleDoPrint(print_args);
   WaitForScan();

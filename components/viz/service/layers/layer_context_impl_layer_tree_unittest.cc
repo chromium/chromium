@@ -253,7 +253,7 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayColorSpaces) {
 
   // Update to new color spaces.
   gfx::DisplayColorSpaces color_spaces1(gfx::ColorSpace::CreateSRGB(),
-                                        gfx::BufferFormat::RGBA_8888);
+                                        SinglePlaneFormat::kRGBA_8888);
   auto update2 = CreateDefaultUpdate();
   update2->display_color_spaces = color_spaces1;
   EXPECT_TRUE(
@@ -269,7 +269,7 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayColorSpaces) {
 
   // Update to different color spaces (e.g., P3).
   gfx::DisplayColorSpaces color_spaces2(gfx::ColorSpace::CreateDisplayP3D65(),
-                                        gfx::BufferFormat::BGRA_8888);
+                                        SinglePlaneFormat::kBGRA_8888);
   auto update4 = CreateDefaultUpdate();
   update4->display_color_spaces = color_spaces2;
   EXPECT_TRUE(
@@ -281,7 +281,7 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayColorSpaces) {
       gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::TransferID::PQ,
       gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL);
   gfx::DisplayColorSpaces color_spaces_hdr(hdr_color_space_object,
-                                           gfx::BufferFormat::RGBA_F16);
+                                           SinglePlaneFormat::kRGBA_F16);
   auto update5 = CreateDefaultUpdate();
   update5->display_color_spaces = color_spaces_hdr;
   EXPECT_TRUE(
@@ -289,10 +289,9 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayColorSpaces) {
   EXPECT_EQ(active_tree->display_color_spaces(), color_spaces_hdr);
 }
 
-TEST_F(LayerContextImplLayerTreePropertiesTest,
-       UpdateLocalSurfaceIdFromParent) {
-  cc::LayerTreeImpl* active_tree =
-      layer_context_impl_->host_impl()->active_tree();
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateLocalSurfaceId) {
+  cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
+  cc::LayerTreeImpl* active_tree = host_impl->active_tree();
 
   // Initial update.
   auto update1 = CreateDefaultUpdate();
@@ -301,46 +300,61 @@ TEST_F(LayerContextImplLayerTreePropertiesTest,
   // Default is kDefaultLocalSurfaceId as per CreateDefaultUpdate.
   EXPECT_EQ(active_tree->local_surface_id_from_parent(),
             kDefaultLocalSurfaceId);
+  EXPECT_EQ(host_impl->GetCurrentLocalSurfaceId(), kDefaultLocalSurfaceId);
 
   // Update to a new LocalSurfaceId.
-  const LocalSurfaceId kNewLsi(
+  const LocalSurfaceId kNewLsi0(
       4, base::UnguessableToken::CreateForTesting(5u, 6u));
+  const LocalSurfaceId kNewLsi1(
+      7, base::UnguessableToken::CreateForTesting(8u, 9u));
   auto update2 = CreateDefaultUpdate();
-  update2->local_surface_id_from_parent = kNewLsi;
+  update2->local_surface_id_from_parent = kNewLsi0;
+  update2->current_local_surface_id = kNewLsi1;
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
-  EXPECT_EQ(active_tree->local_surface_id_from_parent(), kNewLsi);
+  EXPECT_EQ(active_tree->local_surface_id_from_parent(), kNewLsi0);
+  EXPECT_EQ(host_impl->GetCurrentLocalSurfaceId(), kNewLsi1);
 
   // Update back to default.
   auto update_default_lsi = CreateDefaultUpdate();
   update_default_lsi->local_surface_id_from_parent = kDefaultLocalSurfaceId;
+  update_default_lsi->current_local_surface_id = kDefaultLocalSurfaceId;
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update_default_lsi))
           .has_value());
   EXPECT_EQ(active_tree->local_surface_id_from_parent(),
             kDefaultLocalSurfaceId);
+  EXPECT_EQ(host_impl->GetCurrentLocalSurfaceId(), kDefaultLocalSurfaceId);
 
   // Update to an invalid LocalSurfaceId (default constructed).
   // LayerTreeImpl stores it as is.
   const LocalSurfaceId kInvalidLsi;
   auto update_invalid_lsi = CreateDefaultUpdate();
   update_invalid_lsi->local_surface_id_from_parent = kInvalidLsi;
+  update_invalid_lsi->current_local_surface_id = kInvalidLsi;
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update_invalid_lsi))
           .has_value());
   EXPECT_EQ(active_tree->local_surface_id_from_parent(), kInvalidLsi);
+  EXPECT_EQ(host_impl->GetCurrentLocalSurfaceId(), kInvalidLsi);
 
   // Update with a different valid LocalSurfaceId.
-  const LocalSurfaceId kAnotherValidLsi(
+  const LocalSurfaceId kAnotherValidLsi0(
       kDefaultLocalSurfaceId.parent_sequence_number() + 1,
       kDefaultLocalSurfaceId.child_sequence_number() + 1,
       base::UnguessableToken::CreateForTesting(10u, 11u));
+  const LocalSurfaceId kAnotherValidLsi1(
+      kDefaultLocalSurfaceId.parent_sequence_number() + 2,
+      kDefaultLocalSurfaceId.child_sequence_number() + 2,
+      base::UnguessableToken::CreateForTesting(12u, 13u));
   auto update_another_lsi = CreateDefaultUpdate();
-  update_another_lsi->local_surface_id_from_parent = kAnotherValidLsi;
+  update_another_lsi->local_surface_id_from_parent = kAnotherValidLsi0;
+  update_another_lsi->current_local_surface_id = kAnotherValidLsi1;
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update_another_lsi))
           .has_value());
-  EXPECT_EQ(active_tree->local_surface_id_from_parent(), kAnotherValidLsi);
+  EXPECT_EQ(active_tree->local_surface_id_from_parent(), kAnotherValidLsi0);
+  EXPECT_EQ(host_impl->GetCurrentLocalSurfaceId(), kAnotherValidLsi1);
 }
 
 TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateBeginFrameArgs) {
@@ -378,60 +392,6 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateBeginFrameArgs) {
       layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
 }
 
-TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateElasticOverscroll) {
-  cc::LayerTreeImpl* active_tree =
-      layer_context_impl_->host_impl()->active_tree();
-  const gfx::Vector2dF kDefaultOverscroll;  // (0,0)
-
-  // Initial update with default (zero) overscroll.
-  auto update1 = CreateDefaultUpdate();
-  update1->elastic_overscroll = kDefaultOverscroll;
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
-  EXPECT_EQ(active_tree->current_elastic_overscroll(), kDefaultOverscroll);
-  // The first update will need to update draw properties due to other
-  // unrelated properties being set for the first time.
-  EXPECT_TRUE(active_tree->needs_update_draw_properties());
-  active_tree->clear_needs_update_draw_properties_for_testing();
-
-  // Update with default (zero) overscroll again.
-  auto update2 = CreateDefaultUpdate();
-  update2->elastic_overscroll = kDefaultOverscroll;
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
-  EXPECT_EQ(active_tree->current_elastic_overscroll(), kDefaultOverscroll);
-  // Using the same elastic overscroll again, should result in no change.
-  EXPECT_FALSE(active_tree->needs_update_draw_properties());
-
-  // Update to a new non-zero overscroll.
-  const gfx::Vector2dF kOverscroll1(10.f, 20.f);
-  auto update3 = CreateDefaultUpdate();
-  update3->elastic_overscroll = kOverscroll1;
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
-  EXPECT_EQ(active_tree->current_elastic_overscroll(), kOverscroll1);
-  EXPECT_TRUE(active_tree->needs_update_draw_properties());
-  active_tree->clear_needs_update_draw_properties_for_testing();
-
-  // Update to a different non-zero overscroll.
-  const gfx::Vector2dF kOverscroll2(-5.f, 15.f);
-  auto update4 = CreateDefaultUpdate();
-  update4->elastic_overscroll = kOverscroll2;
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
-  EXPECT_EQ(active_tree->current_elastic_overscroll(), kOverscroll2);
-  EXPECT_TRUE(active_tree->needs_update_draw_properties());
-  active_tree->clear_needs_update_draw_properties_for_testing();
-
-  // Update back to zero overscroll.
-  auto update5 = CreateDefaultUpdate();
-  update5->elastic_overscroll = kDefaultOverscroll;
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update5)).has_value());
-  EXPECT_EQ(active_tree->current_elastic_overscroll(), kDefaultOverscroll);
-  EXPECT_TRUE(active_tree->needs_update_draw_properties());
-}
-
 TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayTransformHint) {
   cc::LayerTreeImpl* active_tree =
       layer_context_impl_->host_impl()->active_tree();
@@ -457,6 +417,9 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayTransformHint) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
   EXPECT_EQ(active_tree->display_transform_hint(), kTransform2);
+  // Updating the display transform hint does not affect property trees, so
+  // MoveChangeTrackingToLayers is not called and draw properties do not need
+  // an update.
   EXPECT_FALSE(active_tree->needs_update_draw_properties());
 
   // Update to another transform.
@@ -467,6 +430,9 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayTransformHint) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
   EXPECT_EQ(active_tree->display_transform_hint(), kTransform3);
+  // Updating the display transform hint does not affect property trees, so
+  // MoveChangeTrackingToLayers is not called and draw properties do not need
+  // an update.
   EXPECT_FALSE(active_tree->needs_update_draw_properties());
 
   // Note: No need to test invalid enum values as mojom handles that.
@@ -495,6 +461,9 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateMaxSafeAreaInsetBottom) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
   EXPECT_EQ(active_tree->max_safe_area_inset_bottom(), kInset1);
+  // Updating the max safe area inset does not affect property trees, so
+  // MoveChangeTrackingToLayers is not called and draw properties do not need
+  // an update.
   EXPECT_FALSE(active_tree->needs_update_draw_properties());
 
   // Update to a different non-zero inset (e.g. smaller).
@@ -504,6 +473,9 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateMaxSafeAreaInsetBottom) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
   EXPECT_EQ(active_tree->max_safe_area_inset_bottom(), kInset2);
+  // Updating the max safe area inset does not affect property trees, so
+  // MoveChangeTrackingToLayers is not called and draw properties do not need
+  // an update.
   EXPECT_FALSE(active_tree->needs_update_draw_properties());
 }
 TEST_F(LayerContextImplLayerTreePropertiesTest,
@@ -616,23 +588,23 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateTopControlsShownRatio) {
       layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
   EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), kRatio3);
 
-  // Update with invalid ratio < 0 should fail.
+  // Update with invalid ratio < 0 should succeeed.
   const float kRatio5 = -0.1;
   auto update5 = CreateDefaultUpdate();
   update5->top_controls_shown_ratio = kRatio5;
   auto result5 = layer_context_impl_->DoUpdateDisplayTree(std::move(update5));
-  ASSERT_FALSE(result5.has_value());
-  EXPECT_EQ(result5.error(), "Invalid top/bottom controls shown ratios");
-  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), kRatio3);
+  ASSERT_TRUE(result5.has_value());
+  // Value gets clamped.
+  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), 0.f);
 
-  // Update with invalid ratio > 1 should fail.
+  // Update with invalid ratio > 1 should succeed.
   const float kRatio6 = 1.1;
   auto update6 = CreateDefaultUpdate();
   update6->top_controls_shown_ratio = kRatio6;
   auto result6 = layer_context_impl_->DoUpdateDisplayTree(std::move(update6));
-  ASSERT_FALSE(result6.has_value());
-  EXPECT_EQ(result6.error(), "Invalid top/bottom controls shown ratios");
-  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), kRatio3);
+  ASSERT_TRUE(result6.has_value());
+  // Value gets clamped.
+  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), 1.f);
 }
 
 TEST_F(LayerContextImplLayerTreePropertiesTest,
@@ -662,23 +634,59 @@ TEST_F(LayerContextImplLayerTreePropertiesTest,
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
   EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kRatio2);
 
-  // Update with invalid ratio < 0 should fail.
+  // Update with invalid ratio < 0 should succeed.
   const float kRatio4 = -0.1;
   auto update4 = CreateDefaultUpdate();
   update4->bottom_controls_shown_ratio = kRatio4;
   auto result4 = layer_context_impl_->DoUpdateDisplayTree(std::move(update4));
-  ASSERT_FALSE(result4.has_value());
-  EXPECT_EQ(result4.error(), "Invalid top/bottom controls shown ratios");
-  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kRatio2);
+  ASSERT_TRUE(result4.has_value());
+  // Value gets clamped.
+  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), 0.f);
 
-  // Update with invalid ratio > 1 should fail.
+  // Update with invalid ratio > 1 should succeed.
   const float kRatio5 = 1.1;
   auto update5 = CreateDefaultUpdate();
   update5->bottom_controls_shown_ratio = kRatio5;
   auto result5 = layer_context_impl_->DoUpdateDisplayTree(std::move(update5));
-  ASSERT_FALSE(result5.has_value());
-  EXPECT_EQ(result5.error(), "Invalid top/bottom controls shown ratios");
-  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kRatio2);
+  ASSERT_TRUE(result5.has_value());
+  // Balue gets clamped.
+  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), 1.f);
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateSelection) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(active_tree->selection(), cc::LayerSelection());
+
+  // Update to a new selection.
+  cc::LayerSelection selection2;
+  selection2.start.type = gfx::SelectionBound::Type::RIGHT;
+  selection2.start.edge_start = gfx::Point(1, 3);
+  selection2.start.edge_end = gfx::Point(2, 4);
+  selection2.start.layer_id = 8;
+  selection2.start.hidden = true;
+  selection2.end.type = gfx::SelectionBound::Type::CENTER;
+  selection2.end.edge_start = gfx::Point(7, 9);
+  selection2.end.edge_end = gfx::Point(6, 11);
+  selection2.end.layer_id = 12;
+  selection2.end.hidden = false;
+  auto update2 = CreateDefaultUpdate();
+  update2->selection = selection2;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(active_tree->selection(), selection2);
+
+  // Update back to an empty selection.
+  auto update3 = CreateDefaultUpdate();
+  update3->selection = cc::LayerSelection();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(active_tree->selection(), cc::LayerSelection());
 }
 
 class LayerContextImplBrowserControlsOffsetTagTest
@@ -747,7 +755,6 @@ TEST_F(LayerContextImplDebugStateTest, UpdateDebugState) {
   debug_state2.show_layer_animation_bounds_rects = true;
   debug_state2.slow_down_raster_scale_factor = 2;
   debug_state2.rasterize_only_visible_content = true;
-  debug_state2.highlight_non_lcd_text_layers = true;
   debug_state2.SetRecordRenderingStats(true);
   update2->debug_state = debug_state2;
   EXPECT_TRUE(

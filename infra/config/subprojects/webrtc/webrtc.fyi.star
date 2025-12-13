@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builder", "cpu", "defaults", "os", "siso")
-load("//lib/gn_args.star", "gn_args")
-load("//lib/targets.star", "targets")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builders.star", "builder", "cpu", "defaults", "os")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//targets.star", "targets")
+load("//lib/siso.star", "siso")
 load("//lib/xcode.star", "xcode")
 
 luci.bucket(
@@ -93,7 +94,10 @@ defaults.set(
     cpu = cpu.X86_64,
     build_numbers = True,
     contact_team_email = "webrtc-infra@google.com",
-    execution_timeout = 2 * time.hour,
+    execution_timeout = 3 * time.hour,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
@@ -131,7 +135,6 @@ builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -167,7 +170,6 @@ builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -211,7 +213,6 @@ builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-webrtc",
     ),
     targets = targets.bundle(
         targets = [
@@ -251,7 +252,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -279,7 +279,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -317,7 +316,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     targets = targets.bundle(
         targets = [
@@ -348,7 +346,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -377,7 +374,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -416,7 +412,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     targets = targets.bundle(
         targets = [
@@ -447,7 +442,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -460,7 +454,7 @@ builder(
             "x64",
         ],
     ),
-    os = os.WINDOWS_DEFAULT,
+    os = os.WINDOWS_ANY,
 )
 
 builder(
@@ -478,7 +472,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -499,11 +492,11 @@ builder(
             "remoting_unittests",
         ],
     ),
-    os = os.WINDOWS_DEFAULT,
+    os = os.WINDOWS_ANY,
 )
 
 builder(
-    name = "WebRTC Chromium FYI Win10 Tester",
+    name = "WebRTC Chromium FYI Win Tester",
     description_html = "Testing WebRTC inside Chromium at each WebRTC commit",
     parent = "WebRTC Chromium FYI Win Builder",
     builder_spec = builder_config.builder_spec(
@@ -519,7 +512,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     targets = targets.bundle(
         targets = [
@@ -527,10 +519,10 @@ builder(
         ],
         mixins = [
             "x86-64",
-            "win10",
+            "win11-any",
         ],
     ),
-    os = os.WINDOWS_DEFAULT,
+    os = os.WINDOWS_ANY,
 )
 
 # Builders run on the default Mac OS version offered
@@ -552,7 +544,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -586,7 +577,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -604,7 +594,7 @@ builder(
             "mac_default_x64",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_16_main",
+            "xcode_26_main",
             "xctest",
         ],
     ),

@@ -49,8 +49,6 @@ class MockGpuChannel : public mojom::GpuChannel {
   MOCK_METHOD1(DestroyCommandBuffer, bool(int32_t));
   MOCK_METHOD2(DestroyCommandBuffer,
                void(int32_t, DestroyCommandBufferCallback));
-  MOCK_METHOD2(ScheduleImageDecode,
-               void(mojom::ScheduleImageDecodeParamsPtr, uint64_t));
   MOCK_METHOD2(FlushDeferredRequests,
                void(std::vector<mojom::DeferredRequestPtr>, uint32_t));
   MOCK_METHOD4(CreateGpuMemoryBuffer,
@@ -72,11 +70,13 @@ class MockGpuChannel : public mojom::GpuChannel {
                     const std::vector<SyncToken>&,
                     uint64_t,
                     CopyToGpuMemoryBufferAsyncCallback));
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   MOCK_METHOD3(CopyNativeGmbToSharedMemoryAsync,
                void(gfx::GpuMemoryBufferHandle,
                     base::UnsafeSharedMemoryRegion,
                     CopyNativeGmbToSharedMemoryAsyncCallback));
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   MOCK_METHOD4(WaitForTokenInRange,
                void(int32_t, int32_t, int32_t, WaitForTokenInRangeCallback));
   MOCK_METHOD5(WaitForGetOffsetInRange,

@@ -5,11 +5,14 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -18,6 +21,7 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_test_util.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +55,43 @@ constexpr uint8_t kWebp_animation[] = {
     0x52, 0x49, 0x46, 0x46, 0xa6, 0x2f, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50,
     0x56, 0x50, 0x38, 0x58, 0x0a, 0x00, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00};
 
+// LINT.IfChange(MaxBatchCount)
+constexpr int kMaxBatchCount = 10;
+// LINT.ThenChange(//chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.cc:MaxBatchCount)
+
+class MockOpticalCharacterRecognizer
+    : public screen_ai::OpticalCharacterRecognizer {
+ public:
+  static scoped_refptr<MockOpticalCharacterRecognizer> Create() {
+    return base::MakeRefCounted<MockOpticalCharacterRecognizer>();
+  }
+
+  MockOpticalCharacterRecognizer()
+      : OpticalCharacterRecognizer(/*profile=*/nullptr,
+                                   screen_ai::mojom::OcrClientType::kTest) {
+    ready_ = true;
+  }
+
+  MOCK_METHOD(void,
+              PerformOCR,
+              (const SkBitmap&,
+               base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>),
+              (override));
+  MOCK_METHOD(void,
+              IsOCRBusy,
+              (screen_ai::mojom::ScreenAIAnnotator::IsOCRBusyCallback),
+              (override));
+  MOCK_METHOD(void, SetOCRLightMode, (bool), (override));
+
+ protected:
+  ~MockOpticalCharacterRecognizer() override = default;
+
+ private:
+  friend class base::RefCounted<MockOpticalCharacterRecognizer>;
+};
+
+}  // namespace
+
 class ImageAnnotationWorkerTest : public testing::Test {
  protected:
   // testing::Test overrides:
@@ -74,9 +115,13 @@ class ImageAnnotationWorkerTest : public testing::Test {
     storage_ =
         std::make_unique<AnnotationStorage>(std::move(test_db),
                                             /*annotation_worker=*/nullptr);
+    quit_closure_ = task_environment_.QuitClosure();
   }
 
-  base::test::TaskEnvironment task_environment_{
+  void CallProcessItem() { annotation_worker_->ProcessItems(); }
+
+  base::RepeatingClosure quit_closure_;
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<ImageAnnotationWorker> annotation_worker_;
   std::unique_ptr<AnnotationStorage> storage_;
@@ -364,5 +409,245 @@ TEST_F(ImageAnnotationWorkerTest, IgnoreWhenLimitReachedTest) {
   task_environment_.RunUntilIdle();
 }
 
-}  // namespace
+// Test the scenario that when processing images for less than a full batch
+// (`kMaxBatchCount` images)
+TEST_F(ImageAnnotationWorkerTest, IsOCRBusyResponse_NOT_CALLED) {
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  scoped_refptr<MockOpticalCharacterRecognizer> mock_ocr =
+      MockOpticalCharacterRecognizer::Create();
+  annotation_worker_->set_optical_character_recognizer_for_testing(mock_ocr);
+
+  // Expect SetOCRLightMode to be called only once in a single batch
+  EXPECT_CALL(*mock_ocr, SetOCRLightMode(true)).Times(1);
+
+  // Expect performOCR to be called for each image.
+  int num_calls = 0;
+  EXPECT_CALL(*mock_ocr, PerformOCR)
+      .Times(kMaxBatchCount - 1)
+      .WillRepeatedly(
+          [&num_calls, this](
+              const SkBitmap& bitmap,
+              base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
+                  callback) {
+            std::move(callback).Run(screen_ai::mojom::VisualAnnotation::New());
+            num_calls++;
+            if (num_calls == kMaxBatchCount - 1) {
+              quit_closure_.Run();
+            }
+          });
+
+  // Expect IsOCRBusy not to be called.
+  EXPECT_CALL(*mock_ocr, IsOCRBusy).Times(0);
+
+  // Create fake images, and we don't care about the contents.
+  for (int i = 0; i < kMaxBatchCount - 1; i++) {
+    auto jpg_path = test_directory_.AppendASCII(
+        base::StrCat({"bar", base::NumberToString(i), ".jpg"}));
+    base::WriteFile(jpg_path, kJpeg_image);
+  }
+  annotation_worker_->TriggerOnFileChangeForTests(test_directory_,
+                                                  /*error=*/false);
+  task_environment_.RunUntilQuit();
+}
+
+// Test the scenario that when processing images for just a full batch
+// (`kMaxBatchCount` images)
+TEST_F(ImageAnnotationWorkerTest, OnIsOCRBusyResponse_Full_Batch) {
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  scoped_refptr<MockOpticalCharacterRecognizer> mock_ocr =
+      MockOpticalCharacterRecognizer::Create();
+  annotation_worker_->set_optical_character_recognizer_for_testing(mock_ocr);
+
+  // Expect SetOCRLightMode to be called only once in a single batch
+  EXPECT_CALL(*mock_ocr, SetOCRLightMode(true)).Times(1);
+
+  // Expect performOCR to be called for each image.
+  EXPECT_CALL(*mock_ocr, PerformOCR)
+      .Times(kMaxBatchCount)
+      .WillRepeatedly(
+          [](const SkBitmap& bitmap,
+             base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
+                 callback) {
+            std::move(callback).Run(screen_ai::mojom::VisualAnnotation::New());
+          });
+
+  // Expect IsOCRBusy to be called once if we run a full batch.
+  EXPECT_CALL(*mock_ocr, IsOCRBusy)
+      .WillOnce(
+          [](screen_ai::mojom::ScreenAIAnnotator::IsOCRBusyCallback callback) {
+            std::move(callback).Run(/*is_busy=*/false);
+          });
+
+  // Create fake images, and we don't care about the contents.
+  for (int i = 0; i < kMaxBatchCount; i++) {
+    auto jpg_path = test_directory_.AppendASCII(
+        base::StrCat({"bar", base::NumberToString(i), ".jpg"}));
+    base::WriteFile(jpg_path, kJpeg_image);
+  }
+  annotation_worker_->TriggerOnFileChangeForTests(test_directory_,
+                                                  /*error=*/false);
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+// Test the scenario that when processing images for over a full batch
+// (`kMaxBatchCount` images) and the OCR service is not busy.
+TEST_F(ImageAnnotationWorkerTest, OnIsOCRBusyResponse_OCR_Not_Busy) {
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  scoped_refptr<MockOpticalCharacterRecognizer> mock_ocr =
+      MockOpticalCharacterRecognizer::Create();
+  annotation_worker_->set_optical_character_recognizer_for_testing(mock_ocr);
+
+  // Expect SetOCRLightMode to be called only once for each batch
+  EXPECT_CALL(*mock_ocr, SetOCRLightMode(true)).Times(2);
+
+  // Expect performOCR to be called for each image.
+  int num_calls = 0;
+  EXPECT_CALL(*mock_ocr, PerformOCR)
+      .Times(kMaxBatchCount + 1)
+      .WillRepeatedly(
+          [&num_calls, this](
+              const SkBitmap& bitmap,
+              base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
+                  callback) {
+            std::move(callback).Run(screen_ai::mojom::VisualAnnotation::New());
+            num_calls++;
+            if (num_calls == kMaxBatchCount + 1) {
+              quit_closure_.Run();
+            }
+          });
+
+  // Expect IsOCRBusy to be called once if we run a full batch.
+  EXPECT_CALL(*mock_ocr, IsOCRBusy)
+      .Times(1)
+      .WillOnce(
+          [](screen_ai::mojom::ScreenAIAnnotator::IsOCRBusyCallback callback) {
+            std::move(callback).Run(/*is_busy=*/false);
+          });
+
+  // Create fake images, and we don't care about the contents.
+  for (int i = 0; i < kMaxBatchCount + 1; i++) {
+    auto jpg_path = test_directory_.AppendASCII(
+        base::StrCat({"bar", base::NumberToString(i), ".jpg"}));
+    base::WriteFile(jpg_path, kJpeg_image);
+  }
+  annotation_worker_->TriggerOnFileChangeForTests(test_directory_,
+                                                  /*error=*/false);
+  task_environment_.RunUntilQuit();
+}
+
+// Test the scenario that when processing images for over a full batch
+// (`kMaxBatchCount` images) and the OCR service is busy.
+TEST_F(ImageAnnotationWorkerTest, OnIsOCRBusyResponse_OCR_Busy) {
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  scoped_refptr<MockOpticalCharacterRecognizer> mock_ocr =
+      MockOpticalCharacterRecognizer::Create();
+  annotation_worker_->set_optical_character_recognizer_for_testing(mock_ocr);
+
+  // Expect SetOCRLightMode to be called only once and pause.
+  EXPECT_CALL(*mock_ocr, SetOCRLightMode(true)).Times(1);
+
+  // Expect performOCR to be called for a full batch and pause.
+  EXPECT_CALL(*mock_ocr, PerformOCR)
+      .Times(kMaxBatchCount)
+      .WillRepeatedly(
+          [](const SkBitmap& bitmap,
+             base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
+                 callback) {
+            std::move(callback).Run(screen_ai::mojom::VisualAnnotation::New());
+          });
+
+  // Expect IsOCRBusy to be called once if we run a full batch.
+  EXPECT_CALL(*mock_ocr, IsOCRBusy)
+      .Times(2)
+      .WillOnce(
+          [](screen_ai::mojom::ScreenAIAnnotator::IsOCRBusyCallback callback) {
+            std::move(callback).Run(/*is_busy=*/true);
+          })
+      .WillOnce(
+          [this](
+              screen_ai::mojom::ScreenAIAnnotator::IsOCRBusyCallback callback) {
+            std::move(callback).Run(/*is_busy=*/true);
+            quit_closure_.Run();
+          });
+
+  // Create fake images, and we don't care about the contents.
+  for (int i = 0; i < kMaxBatchCount + 1; i++) {
+    auto jpg_path = test_directory_.AppendASCII(
+        base::StrCat({"bar", base::NumberToString(i), ".jpg"}));
+    base::WriteFile(jpg_path, kJpeg_image);
+  }
+  annotation_worker_->TriggerOnFileChangeForTests(test_directory_,
+                                                  /*error=*/false);
+  task_environment_.RunUntilQuit();
+}
+
+// Test the scenario that when processing images for over a full batch
+// (`kMaxBatchCount` images) and the OCR service is busy. The processing queue
+// to resume after the pause.
+TEST_F(ImageAnnotationWorkerTest,
+       OnIsOCRBusyResponse_OCR_Busy_Resume_after_Pause) {
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  scoped_refptr<MockOpticalCharacterRecognizer> mock_ocr =
+      MockOpticalCharacterRecognizer::Create();
+  annotation_worker_->set_optical_character_recognizer_for_testing(mock_ocr);
+
+  // Expect SetOCRLightMode to be called only once for each batch
+  EXPECT_CALL(*mock_ocr, SetOCRLightMode(true)).Times(2);
+
+  // Expect performOCR to be called for each image.
+  int num_calls = 0;
+  EXPECT_CALL(*mock_ocr, PerformOCR)
+      .Times(kMaxBatchCount + 1)
+      .WillRepeatedly(
+          [&num_calls, this](
+              const SkBitmap& bitmap,
+              base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
+                  callback) {
+            std::move(callback).Run(screen_ai::mojom::VisualAnnotation::New());
+            num_calls++;
+            if (num_calls == kMaxBatchCount + 1) {
+              quit_closure_.Run();
+            }
+          });
+
+  // Expect IsOCRBusy to be called once if we run a full batch.
+  EXPECT_CALL(*mock_ocr, IsOCRBusy)
+      .Times(2)
+      .WillOnce(
+          [](screen_ai::mojom::ScreenAIAnnotator::IsOCRBusyCallback callback) {
+            std::move(callback).Run(/*is_busy=*/true);
+          })
+      .WillOnce(
+          [](screen_ai::mojom::ScreenAIAnnotator::IsOCRBusyCallback callback) {
+            std::move(callback).Run(/*is_busy=*/false);
+          });
+
+  // Create fake images, and we don't care about the contents.
+  for (int i = 0; i < kMaxBatchCount + 1; i++) {
+    auto jpg_path = test_directory_.AppendASCII(
+        base::StrCat({"bar", base::NumberToString(i), ".jpg"}));
+    base::WriteFile(jpg_path, kJpeg_image);
+  }
+  annotation_worker_->TriggerOnFileChangeForTests(test_directory_,
+                                                  /*error=*/false);
+
+  // check the process resumes after the pause
+  task_environment_.RunUntilQuit();
+}
+
 }  // namespace app_list

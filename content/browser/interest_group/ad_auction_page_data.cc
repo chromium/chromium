@@ -21,6 +21,7 @@
 #include "base/uuid.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/origin.h"

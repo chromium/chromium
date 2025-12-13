@@ -33,6 +33,11 @@ AutomationInfoBarDelegate::GetIdentifier() const {
   return AUTOMATION_INFOBAR_DELEGATE;
 }
 
+infobars::InfoBarDelegate::InfobarPriority
+AutomationInfoBarDelegate::GetPriority() const {
+  return infobars::InfoBarDelegate::InfobarPriority::kCriticalSecurity;
+}
+
 bool AutomationInfoBarDelegate::ShouldExpire(
     const NavigationDetails& details) const {
   return false;

@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import com.google.android.material.button.MaterialButton;
@@ -117,6 +118,8 @@ public class TabGroupColorPickerTest {
                     mRootView = new FrameLayout(activity);
                     activity.setContentView(mRootView);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @Test
@@ -127,6 +130,8 @@ public class TabGroupColorPickerTest {
                     mContainerView.setColorPickerLayoutType(ColorPickerLayoutType.SINGLE_ROW);
                     mRootView.addView(mContainerView);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Change the width of the parent view to restrict for a double row
         ThreadUtils.runOnUiThreadBlocking(
@@ -181,6 +186,8 @@ public class TabGroupColorPickerTest {
                     mContainerView.setColorPickerLayoutType(ColorPickerLayoutType.DOUBLE_ROW);
                     mRootView.addView(mContainerView);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Change the width of the parent view to allow for a single row
         ThreadUtils.runOnUiThreadBlocking(
@@ -241,6 +248,8 @@ public class TabGroupColorPickerTest {
                     mRootView.addView(mContainerView);
                 });
 
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     int selectedIndex = 1;
@@ -275,6 +284,8 @@ public class TabGroupColorPickerTest {
                 () -> {
                     mRootView.addView(mContainerView);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -313,6 +324,8 @@ public class TabGroupColorPickerTest {
                     mRootView.addView(mContainerView);
                 });
 
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LinearLayout firstRow =
@@ -339,6 +352,8 @@ public class TabGroupColorPickerTest {
                 () -> {
                     mRootView.addView(mContainerView);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Change the width of the parent view to enact a row split on the colors
         ThreadUtils.runOnUiThreadBlocking(
@@ -429,6 +444,8 @@ public class TabGroupColorPickerTest {
                     mRootView.addView(mContainerView);
                 });
 
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
         mRenderTestRule.render(mRootView, "tab_group_color_picker_single_row");
     }
 
@@ -440,6 +457,8 @@ public class TabGroupColorPickerTest {
                 () -> {
                     mRootView.addView(mContainerView);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Change the width of the parent view to enact a row split on the colors
         ThreadUtils.runOnUiThreadBlocking(

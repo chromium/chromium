@@ -635,130 +635,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kInstallationFailed"/>
 </enum>
 
-<enum name="IpProtectionEligibility">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Ineligible"/>
-  <int value="2" label="Eligible"/>
-</enum>
-
-<!-- LINT.IfChange(IpProtectionGetAuthTokenResultForGeo) -->
-
-<enum name="IpProtectionGetAuthTokenResultForGeo">
-  <int value="0" label="Auth token unavailable and cache is empty"/>
-  <int value="1" label="Auth token unavailable but cache contains tokens"/>
-  <int value="2" label="Auth token available for current geo"/>
-  <int value="3" label="Auth token available for other geo"/>
-</enum>
-
-<!-- LINT.ThenChange(//services/network/ip_protection/ip_protection_token_cache_manager_impl.h:AuthTokenResultForGeo) -->
-
-<enum name="IpProtectionGetProxyListResult">
-  <int value="0" label="Failed to acquire a list"/>
-  <int value="1" label="Got a list without any valid entries"/>
-  <int value="2" label="Got a list with at least one valid entry"/>
-</enum>
-
-<enum name="IpProtectionProxyChainId">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Chain 1"/>
-  <int value="2" label="Chain 2"/>
-  <int value="3" label="Chain 3"/>
-</enum>
-
-<enum name="IpProtectionProxyLayer">
-  <int value="0" label="Proxy A"/>
-  <int value="1" label="Proxy B"/>
-</enum>
-
-<enum name="IpProtectionProxyResolutionResult">
-  <int value="0"
-      label="The MDL is not populated, so an eligility decision could not be
-             made"/>
-  <int value="1" label="The request did not match the MDL"/>
-  <int value="2"
-      label="DEPRECATED: The EnableIpProtectionProxy feature is not enabled"/>
-  <int value="3" label="The IP Protection setting is disabled"/>
-  <int value="4" label="Proxy List is unavailable"/>
-  <int value="5"
-      label="Proxy List is available but tokens have never been available"/>
-  <int value="6"
-      label="Proxy List is available but tokens in the cache have been
-             exhausted"/>
-  <int value="7" label="The request was resolved to the IP Protection proxies"/>
-  <int value="8"
-      label="A site exception created by User Bypass disables protections"/>
-</enum>
-
-<enum name="IpProtectionTokenBatchRequestError">
-  <int value="58877100" label="Failed to read timestamp"/>
-  <int value="159430335" label="GetInitialDataRequest failed: 499 (CANCELLED)"/>
-  <int value="354921842" label="At least one extension is required"/>
-  <int value="774920404" label="GetInitialDataRequest failed: 5xx (INTERNAL)"/>
-  <int value="788650824" label="GetInitialDataRequest failed: 409 (ABORTED)"/>
-  <int value="882579398" label="AuthAndSign failed: 504 (DEADLINE_EXCEEDED)"/>
-  <int value="1218093704" label="Failed to read extensions"/>
-  <int value="1324062375" label="AuthAndSign failed: 403 (PERMISSION_DENIED)"/>
-  <int value="1359797045" label="AuthAndSign failed: 416 (OUT_OF_RANGE)"/>
-  <int value="1392994811"
-      label="GetInitialDataRequest failed: 4xx (FAILED_PRECONDITION)"/>
-  <int value="1560305329"
-      label="GetInitialDataRequest failed: invalid response"/>
-  <int value="1570178381"
-      label="GetInitialDataRequest failed: 429 (RESOURCE_EXHAUSTED)"/>
-  <int value="1632191523"
-      label="GetInitialDataRequest failed: 1xx/3xx (UNKNOWN)"/>
-  <int value="1632242186" label="AuthAndSign failed: 429 (RESOURCE_EXHAUSTED)"/>
-  <int value="1637757426"
-      label="GetInitialDataRequest failed: 401 (UNAUTHENTICATED)"/>
-  <int value="1741288262" label="AuthAndSign failed: 499 (CANCELLED)"/>
-  <int value="1782033339" label="AuthAndSign failed: invalid response"/>
-  <int value="1916829389"
-      label="GetInitialDataRequest failed: 404 (NOT_FOUND)"/>
-  <int value="2040698924" label="AuthAndSign failed: 404 (NOT_FOUND)"/>
-  <int value="2073947853" label="AuthAndSign failed: 401 (UNAUTHENTICATED)"/>
-  <int value="2141269466" label="Failed to validate extensions"/>
-  <int value="2339897637"
-      label="GetInitialDataRequest failed: 503 (UNAVAILABLE)"/>
-  <int value="2408268044" label="AuthAndSign failed"/>
-  <int value="2528366448" label="Failed to parse GetInitialDataResponse"/>
-  <int value="2528411010"
-      label="GetInitialDataRequest failed: 416 (OUT_OF_RANGE)"/>
-  <int value="2594877687"
-      label="GetInitialDataRequest failed: 504 (DEADLINE_EXCEEDED)"/>
-  <int value="2766613933" label="AuthAndSign failed: 503 (UNAVAILABLE)"/>
-  <int value="2867080750" label="Failed to read timestamp_precision"/>
-  <int value="2906092890"
-      label="GetInitialDataRequest failed: 501 (UNIMPLEMENTED)"/>
-  <int value="3024523150" label="AuthAndSign failed: 5xx (INTERNAL)"/>
-  <int value="3118017018" label="AuthAndSign failed: 501 (UNIMPLEMENTED)"/>
-  <int value="3172166369" label="AuthAndSign failed: 1xx/3xx (UNKNOWN)"/>
-  <int value="3336018440"
-      label="Non-Privacy Pass tokens are no longer supported"/>
-  <int value="3359657202"
-      label="GetInitialDataRequest failed: 400 (INVALID_ARGUMENT)"/>
-  <int value="3506031840" label="AuthAndSign failed: 400 (INVALID_ARGUMENT)"/>
-  <int value="3831429430" label="AuthAndSign failed: 409 (ABORTED)"/>
-  <int value="4053847635" label="GetInitialDataRequest failed"/>
-  <int value="4107556447"
-      label="AuthAndSign failed: 4xx (FAILED_PRECONDITION)"/>
-  <int value="4198175771"
-      label="GetInitialDataRequest failed: 403 (PERMISSION_DENIED)"/>
-</enum>
-
-<enum name="IpProtectionTokenBatchRequestResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failed - No Account"/>
-  <int value="2" label="Failed - Not Eligible"/>
-  <int value="3" label="Deprecated"/>
-  <int value="4" label="Failed - BSA Error 400"/>
-  <int value="5" label="Failed - BSA Error 401"/>
-  <int value="6" label="Failed - BSA Error 403"/>
-  <int value="7" label="Failed - BSA Error Other"/>
-  <int value="8" label="Transient OAuth Token Failure"/>
-  <int value="9" label="Persistent OAuth Token Failure"/>
-  <int value="10" label="Disabled by User"/>
-</enum>
-
 <enum name="ManagedApnMigrationType">
   <int value="0" label="Matches selected APN"/>
   <int value="1" label="Does not match selected APN"/>
@@ -1586,7 +1462,7 @@ chromium-metrics-reviews@google.com.
   <int value="53" label="devtools_accepted_stream_types"/>
   <int value="54" label="net_log_create_info"/>
   <int value="55" label="net_log_reference_info"/>
-  <int value="56" label="target_ip_address_space"/>
+  <int value="56" label="target_ip_address_space (deprecated)"/>
   <int value="57" label="storage_access_api_status"/>
   <int value="58" label="attribution_reporting_support"/>
   <int value="59" label="attribution_reporting_eligibility"/>
@@ -1600,29 +1476,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//services/network/prefetch_matches.cc:FieldsForUma) -->
-
-<!-- LINT.IfChange(ProbabilisticRevealTokensResult) -->
-
-<enum name="ProbabilisticRevealTokensResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Net Not Ok"/>
-  <int value="2" label="Net Ok Null Response"/>
-  <int value="3" label="Null Response"/>
-  <int value="4" label="Response Parsing Failed"/>
-  <int value="5" label="Invalid Token Version"/>
-  <int value="6" label="Invalid Token Size"/>
-  <int value="7" label="Too Few Tokens"/>
-  <int value="8" label="Too Many Tokens"/>
-  <int value="9" label="Expiration Too Soon"/>
-  <int value="10" label="Expiration Too Late"/>
-  <int value="11" label="Invalid Public Key"/>
-  <int value="12" label="Invalid Num Tokens With Signal"/>
-  <int value="13" label="Request Backed Off"/>
-  <int value="14" label="No Google Chrome Branding"/>
-  <int value="15" label="Invalid Epoch ID Size"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/ip_protection/common/ip_protection_data_types.h:TryGetProbabilisticRevealTokensStatus) -->
 
 <enum name="PSimSetupFlowResult">
   <int value="0" label="SUCCESS"/>
@@ -2320,11 +2173,91 @@ chromium-metrics-reviews@google.com.
   <int value="681" label="97"/>
 </enum>
 
+<!-- LINT.IfChange(RequestHeader) -->
+
+<enum name="RequestHeader">
+  <int value="0" label="Other request header"/>
+  <int value="1" label="accept"/>
+  <int value="2" label="accept-encoding"/>
+  <int value="3" label="accept-language"/>
+  <int value="4" label="authorization"/>
+  <int value="5" label="cache-control"/>
+  <int value="6" label="client-version"/>
+  <int value="7" label="content-encoding"/>
+  <int value="8" label="content-type"/>
+  <int value="9" label="device-memory"/>
+  <int value="10" label="downlink"/>
+  <int value="11" label="dpr"/>
+  <int value="12" label="ect"/>
+  <int value="13" label="google-translate-element-mode"/>
+  <int value="14" label="if-modified-since"/>
+  <int value="15" label="if-none-match"/>
+  <int value="16" label="origin"/>
+  <int value="17" label="ping-from"/>
+  <int value="18" label="ping-to"/>
+  <int value="19" label="pragma"/>
+  <int value="20" label="range"/>
+  <int value="21" label="request-id"/>
+  <int value="22" label="rtt"/>
+  <int value="23" label="sec-browsing-topics"/>
+  <int value="24" label="sec-ch-device-memory"/>
+  <int value="25" label="sec-ch-dpr"/>
+  <int value="26" label="sec-ch-prefers-color-scheme"/>
+  <int value="27" label="sec-ch-ua"/>
+  <int value="28" label="sec-ch-ua-arch"/>
+  <int value="29" label="sec-ch-ua-bitness"/>
+  <int value="30" label="sec-ch-ua-form-factors"/>
+  <int value="31" label="sec-ch-ua-full-version"/>
+  <int value="32" label="sec-ch-ua-full-version-list"/>
+  <int value="33" label="sec-ch-ua-mobile"/>
+  <int value="34" label="sec-ch-ua-model"/>
+  <int value="35" label="sec-ch-ua-platform"/>
+  <int value="36" label="sec-ch-ua-platform-version"/>
+  <int value="37" label="sec-ch-ua-wow64"/>
+  <int value="38" label="sec-ch-viewport-height"/>
+  <int value="39" label="sec-ch-viewport-width"/>
+  <int value="40" label="sec-purpose"/>
+  <int value="41" label="service-worker"/>
+  <int value="42" label="service-worker-navigation-preload"/>
+  <int value="43" label="sid"/>
+  <int value="44" label="traceparent"/>
+  <int value="45" label="upgrade-insecure-requests"/>
+  <int value="46" label="user-agent"/>
+  <int value="47" label="viewport-width"/>
+  <int value="48" label="x-chrome-connected"/>
+  <int value="49" label="x-chrome-id-consistency-request"/>
+  <int value="50" label="x-client-data"/>
+  <int value="51" label="x-developer-key"/>
+  <int value="52" label="x-goog-api-key"/>
+  <int value="53" label="x-goog-encode-response-if-executable"/>
+  <int value="54" label="x-goog-ext-174067345-bin"/>
+  <int value="55" label="x-goog-update-appid"/>
+  <int value="56" label="x-goog-update-interactivity"/>
+  <int value="57" label="x-goog-update-updater"/>
+  <int value="58" label="x-http-method-override"/>
+  <int value="59" label="x-oauth-client-id"/>
+  <int value="60" label="x-requested-with"/>
+  <int value="61" label="x-server-timeout"/>
+  <int value="62" label="x-use-alt-service"/>
+  <int value="63" label="x-webchannel-content-type"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/request_header_to_enum.h:RequestHeader) -->
+
 <enum name="SharedDictionaryDocumentRequestCacheResult">
   <int value="0" label="Cache Miss"/>
   <int value="1" label="Hit from LRU Cache"/>
   <int value="2" label="Hit from Active Dictionary List"/>
 </enum>
+
+<!-- LINT.IfChange(SharedDictionaryDocumentRequestMetadataResult) -->
+
+<enum name="SharedDictionaryDocumentRequestMetadataResult">
+  <int value="0" label="Metadata was ready in memory"/>
+  <int value="1" label="Metadata was pending load from disk"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/shared_dictionary/shared_dictionary_document_request_metadata_result.h:SharedDictionaryDocumentRequestMetadataResult) -->
 
 <enum name="SharedDictionaryEncodingType">
   <int value="0" label="Not Used"/>
@@ -2445,6 +2378,17 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Error Unknown"/>
   <int value="10" label="Error Wrong State"/>
 </enum>
+
+<!-- LINT.IfChange(SlopBucketChunkAllocationFailedReason) -->
+
+<enum name="SlopBucketChunkAllocationFailedReason">
+  <int value="0" label="OK"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="MaxChunksPerRequest"/>
+  <int value="3" label="MaxChunksGlobal"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/slop_bucket.h:ChunkAllocationFailedReason) -->
 
 <enum name="SlopBucketDisabledReason">
   <int value="0" label="Enabled"/>

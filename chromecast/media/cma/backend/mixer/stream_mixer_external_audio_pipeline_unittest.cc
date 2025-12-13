@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -73,7 +69,7 @@ class MockLoopbackAudioObserver
     // Save received data to local.
     float* float_data = reinterpret_cast<float*>(const_cast<uint8_t*>(data));
     const size_t size = length / sizeof(float);
-    data_.insert(data_.end(), float_data, float_data + size);
+    data_.insert(data_.end(), float_data, UNSAFE_TODO(float_data + size));
   }
 
   std::vector<float> data_;
@@ -134,10 +130,10 @@ void CompareAudioData(const ::media::AudioBus& expected,
   ASSERT_EQ(expected.channels(), actual.channels());
   ASSERT_EQ(expected.frames(), actual.frames());
   for (int c = 0; c < expected.channels(); ++c) {
-    const float* expected_data = expected.channel(c);
-    const float* actual_data = actual.channel(c);
+    auto expected_data = expected.channel(c);
+    auto actual_data = actual.channel(c);
     for (int f = 0; f < expected.frames(); ++f) {
-      EXPECT_FLOAT_EQ(*expected_data++, *actual_data++) << c << " " << f;
+      EXPECT_FLOAT_EQ(expected_data[f], actual_data[f]) << c << " " << f;
     }
   }
 }
@@ -197,7 +193,7 @@ TEST_F(ExternalAudioPipelineTest, ExternalAudioPipelineLoopbackData) {
   const size_t kSampleSize = 64;
   uint8_t test_data[kSampleSize];
   for (size_t i = 0; i < kSampleSize; ++i)
-    test_data[i] = i;
+    UNSAFE_TODO(test_data[i]) = i;
 
   // Set test data in AudioBus.
   const auto kNumFrames = kSampleSize / kNumChannels;

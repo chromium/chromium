@@ -5,7 +5,6 @@
 #ifndef UI_DISPLAY_DISPLAY_SWITCHES_H_
 #define UI_DISPLAY_DISPLAY_SWITCHES_H_
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "ui/display/display_export.h"
 

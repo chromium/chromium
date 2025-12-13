@@ -52,8 +52,8 @@ TEST(BlinkAXEventIntentTest, EqualityWithEmptyValue) {
 TEST(BlinkAXEventIntentTest, EqualityWithDeletedValue) {
   BlinkAXEventIntent intent1(ax::mojom::blink::Command::kInsert,
                              ax::mojom::blink::InputEventType::kInsertText);
-  BlinkAXEventIntent intent2(WTF::kHashTableDeletedValue);
-  BlinkAXEventIntent intent3(WTF::kHashTableDeletedValue);
+  BlinkAXEventIntent intent2(kHashTableDeletedValue);
+  BlinkAXEventIntent intent3(kHashTableDeletedValue);
 
   EXPECT_NE(BlinkAXEventIntentHashTraits::GetHash(intent1),
             BlinkAXEventIntentHashTraits::GetHash(intent2));

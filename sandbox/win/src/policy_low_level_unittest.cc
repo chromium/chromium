@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/policy_low_level.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "sandbox/win/src/policy_engine_params.h"
 #include "sandbox/win/src/policy_engine_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +39,7 @@ TEST(PolicyEngineTest, StringPatternsBAD) {
 PolicyGlobal* MakePolicyMemory() {
   const size_t kTotalPolicySz = 4096 * 8;
   char* mem = new char[kTotalPolicySz];
-  memset(mem, 0, kTotalPolicySz);
+  UNSAFE_TODO(memset(mem, 0, kTotalPolicySz));
   PolicyGlobal* policy = reinterpret_cast<PolicyGlobal*>(mem);
   policy->data_size = kTotalPolicySz - sizeof(PolicyGlobal);
   return policy;
@@ -62,7 +58,7 @@ TEST(PolicyEngineTest, SimpleStrMatch) {
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* filename = L"Z:\\Directory\\domo.txt";
+  std::wstring_view filename = L"Z:\\Directory\\domo.txt";
 
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(filename)  // Argument 0
@@ -93,7 +89,7 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatch) {
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* filename = nullptr;
+  std::wstring_view filename;
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(filename)  // Argument 0
   POLPARAMS_END;
@@ -129,7 +125,7 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatchWild1) {
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* filename = nullptr;
+  std::wstring_view filename;
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(filename)  // Argument 0
   POLPARAMS_END;
@@ -160,7 +156,7 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatchWild2) {
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* filename = nullptr;
+  std::wstring_view filename;
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(filename)  // Argument 0
   POLPARAMS_END;
@@ -197,7 +193,7 @@ TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild1) {
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* filename = nullptr;
+  std::wstring_view filename;
   uint32_t access = 0;
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(filename)  // Argument 0
@@ -247,7 +243,8 @@ TEST(PolicyEngineTest, OneRuleTest) {
   EXPECT_TRUE(policyGen.AddRule(kNtFakeCreateFile, &pr));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* filename = L"c:\\Documents and Settings\\Microsoft\\BLAH.txt";
+  std::wstring_view filename =
+      L"c:\\Documents and Settings\\Microsoft\\BLAH.txt";
   uint32_t creation_mode = OPEN_EXISTING;
   uint32_t flags = FILE_ATTRIBUTE_NORMAL;
   void* security_descriptor = nullptr;
@@ -383,26 +380,29 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
   EXPECT_EQ(
       OP_NUMBER_AND_MATCH,
       policy->entry[static_cast<size_t>(kNtFakeNone)]->opcodes[0].GetID());
-  EXPECT_EQ(OP_ACTION, policy->entry[static_cast<size_t>(kNtFakeNone)]
-                           ->opcodes[tc1 - 1]
-                           .GetID());
+  EXPECT_EQ(OP_ACTION,
+            UNSAFE_TODO(policy->entry[static_cast<size_t>(kNtFakeNone)])
+                ->opcodes[tc1 - 1]
+                .GetID());
   EXPECT_EQ(OP_WSTRING_MATCH,
             policy->entry[static_cast<size_t>(kNtFakeCreateFile)]
                 ->opcodes[0]
                 .GetID());
-  EXPECT_EQ(OP_ACTION, policy->entry[static_cast<size_t>(kNtFakeCreateFile)]
-                           ->opcodes[tc2 - 1]
-                           .GetID());
+  EXPECT_EQ(OP_ACTION,
+            UNSAFE_TODO(policy->entry[static_cast<size_t>(kNtFakeCreateFile)])
+                ->opcodes[tc2 - 1]
+                .GetID());
   EXPECT_EQ(
       OP_WSTRING_MATCH,
       policy->entry[static_cast<size_t>(kNtFakeOpenFile)]->opcodes[0].GetID());
-  EXPECT_EQ(OP_ACTION, policy->entry[static_cast<size_t>(kNtFakeOpenFile)]
-                           ->opcodes[tc3 - 1]
-                           .GetID());
+  EXPECT_EQ(OP_ACTION,
+            UNSAFE_TODO(policy->entry[static_cast<size_t>(kNtFakeOpenFile)])
+                ->opcodes[tc3 - 1]
+                .GetID());
 
   // Test the policy evaluation.
 
-  const wchar_t* filename = L"";
+  std::wstring_view filename = L"";
   uint32_t creation_mode = OPEN_EXISTING;
   uint32_t flags = FILE_ATTRIBUTE_NORMAL;
   void* security_descriptor = nullptr;
@@ -494,7 +494,7 @@ TEST(PolicyEngineTest, PolicyRuleCopyConstructorTwoStrings) {
   EXPECT_TRUE(policyGen.AddRule(IpcTag::PING2, &pr_copy));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* name = nullptr;
+  std::wstring_view name;
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(name)
   POLPARAMS_END;
@@ -552,7 +552,7 @@ TEST(PolicyEngineTest, PolicyGenDoneCalledTwice) {
             policy->entry[static_cast<size_t>(IpcTag::PING2)]->opcode_count);
 
   // Confirm the rules work as before.
-  const wchar_t* name = nullptr;
+  std::wstring_view name;
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(name)
   POLPARAMS_END;

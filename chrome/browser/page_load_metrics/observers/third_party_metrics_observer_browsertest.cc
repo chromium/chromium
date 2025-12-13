@@ -10,7 +10,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -92,8 +91,7 @@ blink::mojom::WebFeature MetricForTestCase(blink::mojom::WebFeature test_case) {
 
 class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
  protected:
-  ThirdPartyMetricsObserverBrowserTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+  ThirdPartyMetricsObserverBrowserTest() = default;
 
   ThirdPartyMetricsObserverBrowserTest(
       const ThirdPartyMetricsObserverBrowserTest&) = delete;
@@ -106,12 +104,6 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server()->Start());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // HTTPS server only serves a valid cert for 127.0.0.1 or localhost, so this
-    // is needed to load pages from other hosts (b.com, c.com) without an error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   void NavigateToUntrackedUrl() {
@@ -192,11 +184,9 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-
-  // This is needed because third party cookies must be marked SameSite=None and
-  // Secure, so they must be accessed over HTTPS.
-  net::EmbeddedTestServer https_server_;
+  net::EmbeddedTestServer* https_server() {
+    return &embedded_https_test_server();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
@@ -369,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
       net::registry_controlled_domains::GetDomainAndRegistry(
           url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
   NavigateFrameToUrl(url);           // 3p cookie write
-  NavigateFrameTo(url.host(), "/");  // 3p cookie read
+  NavigateFrameTo(url.GetHost(), "/");  // 3p cookie read
   observer.Wait();
   NavigateToUntrackedUrl();
 

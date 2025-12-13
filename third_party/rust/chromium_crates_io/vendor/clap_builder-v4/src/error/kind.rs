@@ -224,7 +224,7 @@ pub enum ErrorKind {
     /// Occurs when the user provides a value containing invalid UTF-8.
     ///
     /// To allow arbitrary data
-    /// - Set [`Arg::value_parser(value_parser!(OsString))`] for argument values
+    /// - Set [`Arg::value_parser(value_parser!(OsString))`][crate::Arg::value_parser] for argument values
     /// - Set [`Command::external_subcommand_value_parser`] for external-subcommand
     ///   values
     ///

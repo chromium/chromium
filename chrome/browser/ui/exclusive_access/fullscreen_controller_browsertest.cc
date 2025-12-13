@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -77,7 +78,7 @@ void WaitForDisplayed(Browser* browser) {
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, MAYBE_FullscreenOnFileURL) {
   static const base::FilePath::CharType* kEmptyFile =
       FILE_PATH_LITERAL("empty.html");
-  GURL file_url(ui_test_utils::GetTestUrl(
+  GURL file_url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kEmptyFile)));
   ASSERT_TRUE(AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED));
@@ -119,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
                        KeyboardLockOnFileURLWithEscLocked) {
   static const base::FilePath::CharType* kEmptyFile =
       FILE_PATH_LITERAL("empty.html");
-  GURL file_url(ui_test_utils::GetTestUrl(
+  GURL file_url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kEmptyFile)));
   ASSERT_TRUE(AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED));
@@ -136,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
                        KeyboardLockOnFileURLWithEscUnlocked) {
   static const base::FilePath::CharType* kEmptyFile =
       FILE_PATH_LITERAL("empty.html");
-  GURL file_url(ui_test_utils::GetTestUrl(
+  GURL file_url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kEmptyFile)));
   ASSERT_TRUE(AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED));
@@ -562,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
 IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
                        NotExitBrowserLockedFullscreenOnPressEsc) {
   // Enter browser locked fullscreen.
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 
   // Short-press Esc key won't exit browser locked fullscreen.
@@ -574,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
 IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
                        NotExitBrowserLockedFullscreenOnPressAndHoldEsc) {
   // Enter browser locked fullscreen.
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 
   // Press-and-hold Esc will not exit browser locked fullscreen.

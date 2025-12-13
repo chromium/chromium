@@ -33,14 +33,13 @@
 #include "base/containers/span.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
-#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
-#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8-callbacks.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-isolate.h"
@@ -249,6 +248,18 @@ class PLATFORM_EXPORT V8PerIsolateData final {
     return omit_exception_context_information_;
   }
 
+  void EnterWrapperConstructor() {
+    DCHECK(!is_in_wrapper_constructor_);
+    is_in_wrapper_constructor_ = true;
+  }
+
+  void LeaveWrapperConstructor() {
+    DCHECK(is_in_wrapper_constructor_);
+    is_in_wrapper_constructor_ = false;
+  }
+
+  bool InWrapperConstructor() const { return is_in_wrapper_constructor_; }
+
  private:
   V8PerIsolateData(scoped_refptr<base::SingleThreadTaskRunner>,
                    scoped_refptr<base::SingleThreadTaskRunner>,
@@ -311,8 +322,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   std::unique_ptr<V8PrivateProperty> private_property_;
   Persistent<ScriptState> script_regexp_script_state_;
 
-  bool constructor_mode_;
-  friend class ConstructorMode;
+  bool is_in_wrapper_constructor_ = false;
 
   bool use_counter_disabled_ = false;
   friend class UseCounterDisabledScope;

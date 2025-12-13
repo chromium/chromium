@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -34,7 +35,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
-#include "chrome/browser/apps/app_service/promise_apps/promise_app_web_apps_utils.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -203,8 +203,14 @@ void WebApps::GetMenuModel(const std::string& app_id,
   } else if (can_close) {
     // Isolated web apps can only be launched in new window.
     if (web_app->isolation_data().has_value()) {
-      apps::AddCommandItem(ash::LAUNCH_NEW,
-                           IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
+      // Isolated Web Apps with focus-existing or navigate-existing do not need
+      // a new window button.
+      if (!web_app->launch_handler()
+               .value_or(LaunchHandler{})
+               .TargetsExistingClients()) {
+        apps::AddCommandItem(ash::LAUNCH_NEW,
+                             IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
+      }
     } else {
       apps::CreateOpenNewSubmenu(
           publisher_helper().GetWindowMode(app_id) == apps::WindowMode::kBrowser
@@ -264,18 +270,6 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
   if (apps.empty()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  // This is for prototyping and testing only. It is to provide an easy way to
-  // simulate web app promise icon behaviour for the UI/ client development of
-  // web app promise icons.
-  // TODO(b/261907269): Remove this code snippet and use real listeners for web
-  // app installation events.
-  if (ash::features::ArePromiseIconsForWebAppsEnabled()) {
-    for (auto& app : apps) {
-      apps::MaybeSimulatePromiseAppInstallationEvents(proxy(), app.get());
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   apps::AppPublisher::Publish(std::move(apps), apps::AppType::kWeb,
                               /*should_notify_initialized=*/false);
@@ -293,15 +287,9 @@ void WebApps::PublishWebApp(apps::AppPtr app) {
   if (!is_ready_) {
     return;
   }
+
 #if BUILDFLAG(IS_CHROMEOS)
   bool is_projector = app->app_id == ash::kChromeUIUntrustedProjectorSwaAppId;
-
-  // This is for prototyping and testing only.
-  // TODO(b/261907269): Remove this code snippet and use real listeners for web
-  // app installation events.
-  if (ash::features::ArePromiseIconsForWebAppsEnabled()) {
-    apps::MaybeSimulatePromiseAppInstallationEvents(proxy(), app.get());
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   apps::AppPublisher::Publish(std::move(app));

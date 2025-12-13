@@ -99,7 +99,7 @@ bool RemoteEventLoggingAllowed(
 
   bool manages_additional_apps =
       std::ranges::any_of(installed_app_ids, [&](const std::string& app_id) {
-        return !IsUpdaterOrCompanionApp(app_id) &&
+        return !IsRemoteEventLoggingPermissionExempt(app_id) &&
                !base::EqualsCaseInsensitiveASCII(
                    app_id, event_logging_permission_provider->app_id);
       });

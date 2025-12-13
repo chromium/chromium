@@ -484,9 +484,6 @@ HoverHighlightView* AccessibilityDetailedView::AddDictationView(
 
 HoverHighlightView* AccessibilityDetailedView::AddFaceGazeView(
     views::View* container) {
-  if (!base::FeatureList::IsEnabled(::features::kAccessibilityFaceGaze)) {
-    return nullptr;
-  }
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->face_gaze().enabled();
   return AddScrollListFeatureItem(

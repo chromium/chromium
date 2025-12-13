@@ -32,8 +32,14 @@ specific_include_rules = {
     # For using DisabledReasonId.
     "+components/back_forward_cache/disabled_reason_id.h",
   ],
+  "frame_token_message_queue.cc": [
+    "+components/viz/common/quads/compositor_frame_metadata.h",
+  ],
   "embedded_frame_sink_provider_impl_unittest\.cc": [
     "+components/viz/service",
+  ],
+  "navigation_transitions/navigation_transition_utils\.cc": [
+    "+gpu/command_buffer/client/client_shared_image.h",
   ],
   "render_process_host_impl(_receiver_bindings)?\.cc": [
     "+google_apis/gaia/gaia_config.h",

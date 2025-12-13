@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -117,13 +116,10 @@ class ArcWallpaperServiceTest : public testing::Test {
 
  private:
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   arc::ArcServiceManager arc_service_manager_;
-  // testing_profile_ needs to be deleted before arc_service_manager_ and
-  // scoped_testing_local_state_.
+  // testing_profile_ needs to be deleted before arc_service_manager_.
   TestingProfile testing_profile_;
 };
 

@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">ส้ม</translation>
 <translation id="1275718070701477396">เลือกแล้ว</translation>
 <translation id="1290331692326790741">สัญญาณไม่ดี</translation>
+<translation id="1292474106138697109">จอแสดงผลเครื่องมือสำหรับชั้นเรียน</translation>
 <translation id="1300115153046603471">APN เป็นแบบ Default และ <ph name="ATTACH" /></translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">แปลง</translation>
@@ -142,7 +143,7 @@
           เลือก "ขอแรงบันดาลใจหน่อย" เพื่อรับตัวเลือกรูปภาพ AI ที่เป็นเอกลักษณ์และหลากหลายยิ่งขึ้น
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          เมื่อสร้างด้วย AI ระบบจะส่งพรอมต์ไปยังเซิร์ฟเวอร์ AI ของ Google เพื่อสร้างรูปภาพและปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />นโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />
+          เมื่อสร้างด้วย AI ระบบจะส่งพรอมต์ไปยังเซิร์ฟเวอร์ Google AI เพื่อสร้างรูปภาพและปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />นโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Generative AI เป็นเวอร์ชันทดลองที่อยู่ในช่วงการพัฒนาขั้นต้น และมีให้บริการจํากัดในขณะนี้</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">เนื้อหาช่วยเหลือยอดนิยม</translation>
 <translation id="2277631741861284101">บันทึกและแชร์เสียงได้ง่ายๆ</translation>
 <translation id="2279051792571591988">คืนค่าเริ่มต้น</translation>
-<translation id="2286454467119466181">ง่าย</translation>
+<translation id="2286454467119466181">เรียบง่าย</translation>
 <translation id="2287186687001756809">ไม่มีรูปภาพ ไปที่ <ph name="LINK" /> เพื่อเพิ่มรูปภาพ</translation>
 <translation id="2294577623958216786">กำหนดเวลาปัจจุบันคือ <ph name="SUNRISE" /> - <ph name="SUNSET" /> หากต้องการอัปเดตกำหนดเวลาพระอาทิตย์ตกและพระอาทิตย์ขึ้นโดยอัตโนมัติ ให้เปิดการเข้าถึงตำแหน่งของระบบ</translation>
 <translation id="2305172810646967500">ดำ</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ภาพ</translation>
 <translation id="4300272766492248925">เปิดแอป</translation>
 <translation id="430786093962686457">ชีฟอง</translation>
+<translation id="4309762678330556039">สร้างการถอดเสียงเป็นคำโดยอัตโนมัติและค้นหาเสียง คุณสามารถสร้างการบันทึกได้แม้ไม่ได้เชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="4310735698903592804">วอลเปเปอร์ล่าสุดที่ทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="4320904097188876154">ชมพูนีออน</translation>
 <translation id="432961742358282111">คลิกขวาหรือกดค้างไว้เพื่อรับคำจำกัดความ คำแปล หรือการแปลงหน่วย ใช้แป้นลูกศรซ้ายหรือขวาเพื่อจัดการฟีเจอร์นี้</translation>
@@ -933,7 +935,7 @@
 <translation id="5078983345702708852">ล้ำสมัย</translation>
 <translation id="5087864757604726239">กลับ</translation>
 <translation id="5088172560898466307">ชื่อโฮสต์ของเซิร์ฟเวอร์</translation>
-<translation id="5089810972385038852">รัฐ</translation>
+<translation id="5089810972385038852">จังหวัด/รัฐ</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">ถอดสาย USB ของ <ph name="DEVICE_NAME" /> แล้วเสียบใหม่เพื่ออัปเดตต่อ</translation>
 <translation id="5099354524039520280">ขึ้น</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="5600027863942488546">ทดสอบปุ่ม <ph name="KEY_NAME" /> อยู่</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">เครื่องมือสำหรับชั้นเรียนกำลังแชร์หน้าจอของคุณกับ <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">คุณออกจากระบบแล้ว</translation>
 <translation id="5620281292257375798">ภายในเท่านั้น</translation>
 <translation id="5628106863521633649">ภาษาที่พร้อมให้บริการ</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">การเคลื่อนตัวของเมฆ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ไม่มีเครื่องสแกนที่ใช้ได้</translation>
-<translation id="6231648282154119906">Google Safe Browsing จะสแกนไฟล์ที่น่าสงสัยโดยอัตโนมัติ ซึ่งเป็นส่วนหนึ่งของการปกป้องที่ดียิ่งขึ้นที่คุณเลือกไว้</translation>
 <translation id="6232017090690406397">แบตเตอรี่</translation>
 <translation id="6234024205316847054">แสดงโครงร่าง</translation>
 <translation id="6243280677745499710">วอลเปเปอร์ปัจจุบัน</translation>
@@ -1420,7 +1422,7 @@
 <translation id="7221869452894271364">โหลดหน้านี้ใหม่</translation>
 <translation id="7223952304612664117">การตั้งค่านี้จะช่วยให้บริการของระบบใช้ความแม่นยำของตำแหน่งเพื่อระบุตำแหน่งของคุณได้ ความแม่นยำของตำแหน่งจะใช้ข้อมูลเกี่ยวกับสัญญาณไร้สายและเซ็นเซอร์เพื่อประมาณตำแหน่งของอุปกรณ์</translation>
 <translation id="7233782086689993269">คืนค่าแป้นพิมพ์ลัดแล้ว</translation>
-<translation id="723419678599947502">สร้างชื่อโดยใช้ AI ของ Google</translation>
+<translation id="723419678599947502">สร้างชื่อโดยใช้ Google AI</translation>
 <translation id="725133483556299729">เลือกอีเมล</translation>
 <translation id="7255187042098209569">ชมพูและม่วง</translation>
 <translation id="7267918995585557751">รีเซ็ตเพื่อให้หน้าเริ่มต้นใช้งานเริ่มต้นไม่ใช่เว็บไซต์ฟิชชิง โปรดใช้เฉพาะเว็บไซต์ที่คุณเชื่อถือเท่านั้น</translation>
@@ -1866,7 +1868,7 @@
 <translation id="921080052717160800">ตั้งรูปภาพเป็นพื้นหลังของกล้องแล้ว</translation>
 <translation id="9211490828691860325">เดสก์ทั้งหมด</translation>
 <translation id="9218016617214286986">แสดง APN ที่รู้จัก</translation>
-<translation id="932327136139879170">หน้าแรก</translation>
+<translation id="932327136139879170">บ้าน</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="950520315903467048">ไม่มีคีย์สำหรับ <ph name="DIRECTION" /> <ph name="ASSIGN_INSTRUCTION" /></translation>

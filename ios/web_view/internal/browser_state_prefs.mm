@@ -20,6 +20,7 @@
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
+#import "ios/web_view/internal/autofill/cwv_password_affiliation.h"
 
 namespace ios_web_view {
 
@@ -41,6 +42,7 @@ void RegisterBrowserStatePrefs(
   safe_browsing::RegisterProfilePrefs(pref_registry);
   unified_consent::UnifiedConsentService::RegisterPrefs(pref_registry);
   ios_web_view::RegisterCWVAutofillPrefs(pref_registry);
+  ios_web_view::RegisterCWVPasswordAffiliationPrefs(pref_registry);
 
   BrowserStateDependencyManager::GetInstance()
       ->RegisterBrowserStatePrefsForServices(pref_registry);

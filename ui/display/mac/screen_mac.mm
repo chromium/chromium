@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/screen.h"
 
 #import <AppKit/AppKit.h>
@@ -33,6 +28,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/display.h"
 #include "ui/display/display_change_notifier.h"
 #include "ui/display/mac/screen_mac_headless.h"
@@ -40,7 +36,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/switches.h"
 
 extern "C" {
@@ -92,13 +88,13 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   CGDirectDisplayID display_id =
       [screen.deviceDescription[@"NSScreenNumber"] unsignedIntValue];
 
-  Display display(display_id, gfx::Rect(NSRectToCGRect(frame)));
+  Display display(display_id, gfx::Rect(frame));
   NSRect visible_frame = screen.visibleFrame;
   NSScreen* primary = NSScreen.screens.firstObject;
 
   // Convert work area's coordinate systems.
   if ([screen isEqual:primary]) {
-    gfx::Rect work_area = gfx::Rect(NSRectToCGRect(visible_frame));
+    gfx::Rect work_area(visible_frame);
     work_area.set_y(frame.size.height - visible_frame.origin.y -
                     visible_frame.size.height);
     display.set_work_area(work_area);
@@ -150,8 +146,8 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
       }
     }
   }
-  gfx::DisplayColorSpaces display_color_spaces(icc_profile.GetColorSpace(),
-                                               gfx::BufferFormat::BGRA_8888);
+  gfx::DisplayColorSpaces display_color_spaces(
+      icc_profile.GetColorSpace(), viz::SinglePlaneFormat::kBGRA_8888);
   if (HasForceDisplayColorProfile()) {
     if (Display::HasEnsureForcedColorProfile()) {
       if (display_color_spaces != display.GetColorSpaces()) {
@@ -164,9 +160,10 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
     if (enable_hdr) {
       bool needs_alpha_values[] = {true, false};
       for (const auto& needs_alpha : needs_alpha_values) {
-        display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+        display_color_spaces.SetOutputColorSpaceAndFormat(
             gfx::ContentColorUsage::kHDR, needs_alpha,
-            gfx::ColorSpace::CreateExtendedSRGB(), gfx::BufferFormat::RGBA_F16);
+            gfx::ColorSpace::CreateExtendedSRGB(),
+            viz::SinglePlaneFormat::kRGBA_F16);
       }
       display_color_spaces.SetHDRMaxLuminanceRelative(hdr_max_lum_relative);
     }
@@ -185,8 +182,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   display.set_is_monochrome(CGDisplayUsesForceToGray());
 
   // Query the display's refresh rate.
-  double refresh_rate = 1.0 / screen.minimumRefreshInterval;
-  display.set_display_frequency(refresh_rate);
+  display.set_display_frequency(screen.maximumFramesPerSecond);
 
   // CGDisplayRotation returns a double. Display::SetRotationAsDegree will
   // handle the unexpected situations were the angle is not a multiple of 90.
@@ -218,9 +214,9 @@ std::vector<DisplayMac> BuildDisplaysFromQuartz() {
   // It would be ridiculous to have this many displays connected, but
   // CGDirectDisplayID is just an integer, so supporting up to this many
   // doesn't hurt.
-  CGDirectDisplayID online_displays[1024];
+  std::array<CGDirectDisplayID, 1024> online_displays;
   CGDisplayCount online_display_count = 0;
-  if (CGGetOnlineDisplayList(std::size(online_displays), online_displays,
+  if (CGGetOnlineDisplayList(online_displays.size(), online_displays.data(),
                              &online_display_count) != kCGErrorSuccess) {
     return std::vector<DisplayMac>(1, BuildPrimaryDisplay());
   }
@@ -235,9 +231,9 @@ std::vector<DisplayMac> BuildDisplaysFromQuartz() {
   }
 
   std::vector<DisplayMac> displays_mac;
-  for (CGDisplayCount online_display_index = 0;
-       online_display_index < online_display_count; ++online_display_index) {
-    CGDirectDisplayID online_display = online_displays[online_display_index];
+
+  auto online_span = base::span(online_displays).first(online_display_count);
+  for (CGDirectDisplayID online_display : online_span) {
     if (CGDisplayMirrorsDisplay(online_display) == kCGNullDirectDisplay) {
       // If this display doesn't mirror any other, include it in the list.
       // The primary display in a mirrored set will be counted, but those that
@@ -392,7 +388,7 @@ class ScreenMac : public Screen {
       return GetPrimaryDisplay();
     }
 
-    NSPoint ns_point = NSPointFromCGPoint(point.ToCGPoint());
+    NSPoint ns_point = point.ToCGPoint();
     NSScreen* primary = screens[0];
     ns_point.y = NSMaxY(primary.frame) - ns_point.y;
     for (NSScreen* screen in screens) {

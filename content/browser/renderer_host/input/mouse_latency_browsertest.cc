@@ -93,8 +93,7 @@ class TracingRenderWidgetHost : public RenderWidgetHostImpl {
                              std::move(site_instance_group),
                              routing_id,
                              hidden,
-                             renderer_initiated_creation,
-                             std::make_unique<FrameTokenMessageQueue>()) {}
+                             renderer_initiated_creation) {}
 
   void OnMouseEventAck(
       const input::MouseEventWithLatencyInfo& event,

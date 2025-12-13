@@ -40,18 +40,18 @@ using ::testing::FieldsAre;
 
 namespace {
 // Test data.
-const char* kUrl = "http://example.com/";
-const char* kFormNames[] = {"form_name1", "form_name2"};
-const uint32_t kFormUniqueIDs[] = {0, 3};
-const char* kUsernameElements[] = {"username1", "username2"};
-const uint32_t kUsernameUniqueIDs[] = {1, 4};
-const char* kUsernames[] = {"user0", "u_s_e_r"};
-const char* kPasswordElements[] = {"password1", "password2"};
-const uint32_t kPasswordUniqueIDs[] = {2, 5};
-const char* kPasswords[] = {"password0", "secret"};
-const char16_t* kBackupPassword = u"backup_password";
-const char* kAdditionalUsernames[] = {"u$er2", nullptr};
-const char* kAdditionalPasswords[] = {"secret", nullptr};
+constexpr char kUrl[] = "http://example.com/";
+constexpr const char* kFormNames[] = {"form_name1", "form_name2"};
+constexpr uint32_t kFormUniqueIDs[] = {0, 3};
+constexpr const char* kUsernameElements[] = {"username1", "username2"};
+constexpr uint32_t kUsernameUniqueIDs[] = {1, 4};
+constexpr const char* kUsernames[] = {"user0", "u_s_e_r"};
+constexpr const char* kPasswordElements[] = {"password1", "password2"};
+constexpr uint32_t kPasswordUniqueIDs[] = {2, 5};
+constexpr const char* kPasswords[] = {"password0", "secret"};
+constexpr char16_t kBackupPassword[] = u"backup_password";
+constexpr const char* kAdditionalUsernames[] = {"u$er2", nullptr};
+constexpr const char* kAdditionalPasswords[] = {"secret", nullptr};
 
 // Returns a field renderer ID that isn't used in any testing data, which
 // represents an unexisting field renderer ID.
@@ -415,11 +415,7 @@ TEST_F(AccountSelectFillDataTest, GetFillDataOldCredentials) {
 
 // Tests that the right status will be returned when there is no form with fill
 // data matching the queried form.
-TEST_F(AccountSelectFillDataTest,
-       GetFillData_WhenStateless_NoResult_BecauseNoForm) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kIOSStatelessFillDataFlow};
-
+TEST_F(AccountSelectFillDataTest, GetFillData_NoResult_BecauseNoForm) {
   AccountSelectFillData account_select_fill_data;
 
   // GetFillData() when in stateless mode doesn't need to call
@@ -436,11 +432,7 @@ TEST_F(AccountSelectFillDataTest,
 
 // Tests that the right status will be returned when there is no field matching
 // the queried field.
-TEST_F(AccountSelectFillDataTest,
-       GetFillData_WhenStateless_NoResult_BecauseNoField) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kIOSStatelessFillDataFlow};
-
+TEST_F(AccountSelectFillDataTest, GetFillData_NoResult_BecauseNoField) {
   AccountSelectFillData account_select_fill_data;
   account_select_fill_data.Add(form_data_[0], /*always_populate_realm=*/false);
 
@@ -562,7 +554,11 @@ TEST_P(AccountSelectFillDataFieldTypeTest, RetrieveSuggestionsOneForm) {
                         Field(&UsernameAndRealm::realm, std::string()))));
 }
 
-TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData) {
+TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData_WhenNotStateless) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kIOSStatelessFillDataFlow);
+
   AccountSelectFillData account_select_fill_data;
   account_select_fill_data.Add(form_data_[0],
                                /*always_populate_realm=*/false);
@@ -603,10 +599,7 @@ TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData) {
 
 // Tests that the GetFillData() interface to be used when in stateless mode
 // works correctly.
-TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData_WhenStateless) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kIOSStatelessFillDataFlow};
-
+TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData) {
   AccountSelectFillData account_select_fill_data;
   account_select_fill_data.Add(form_data_[0],
                                /*always_populate_realm=*/false);

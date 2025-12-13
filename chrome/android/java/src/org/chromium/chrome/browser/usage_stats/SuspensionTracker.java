@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.usage_stats;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.NotificationSuspender;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
@@ -16,11 +18,12 @@ import java.util.List;
 import java.util.function.Function;
 
 /** Class that tracks which sites are currently suspended. */
+@NullMarked
 public class SuspensionTracker {
     private final UsageStatsBridge mBridge;
     private final NotificationSuspender mNotificationSuspender;
     private final Promise<List<String>> mRootPromise;
-    private Promise<Void> mWritePromise;
+    private Promise<@Nullable Void> mWritePromise;
 
     public SuspensionTracker(UsageStatsBridge bridge, Profile profile) {
         mBridge = bridge;
@@ -34,12 +37,11 @@ public class SuspensionTracker {
     }
 
     /**
-     * Sets the status of <c>fqdns</c> to match <c>suspended</c>.
-     * The returned promise will be fulfilled once persistence succeeds, and rejected if persistence
-     * fails.
+     * Sets the status of <c>fqdns</c> to match <c>suspended</c>. The returned promise will be
+     * fulfilled once persistence succeeds, and rejected if persistence fails.
      */
-    public Promise<Void> setWebsitesSuspended(List<String> fqdns, boolean suspended) {
-        Promise<Void> newWritePromise = new Promise<>();
+    public Promise<@Nullable Void> setWebsitesSuspended(List<String> fqdns, boolean suspended) {
+        Promise<@Nullable Void> newWritePromise = new Promise<>();
         mWritePromise.then(
                 (placeholderResult) -> {
                     mRootPromise.then(
@@ -82,7 +84,7 @@ public class SuspensionTracker {
                                 // on the returned promise, so they expect
                                 // there to be one on the root promise.
                             },
-                            CallbackUtils.emptyCallback());
+                            CallbackUtils.<@Nullable Exception>emptyCallback());
                 });
 
         mWritePromise = newWritePromise;

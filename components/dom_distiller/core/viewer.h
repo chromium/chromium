@@ -88,8 +88,21 @@ const std::string GetDistilledPageFontFamilyJs(mojom::FontFamily font);
 // Returns JavaScript corresponding to setting a specific theme.
 const std::string GetDistilledPageThemeJs(mojom::Theme theme);
 
-// Returns JavaScript corresponding to setting the font scaling.
-const std::string GetDistilledPageFontScalingJs(float scaling);
+/**
+ * Generates a JavaScript snippet to apply font scaling.
+ *
+ * @param scaling The desired font scaling factor.
+ * @param restoreCenter If true, the generated JavaScript will attempt to keep
+ * the same content in the center of the viewport after scaling to prevent the
+ * user from losing their place. We do not want this to be true on initial page
+ * load, since it will give the illusion of partial scrolling.
+ * @return JavaScript corresponding to setting the font scaling.
+ */
+const std::string GetDistilledPageFontScalingJs(float scaling,
+                                                bool restoreCenter);
+
+// Returns JavaScript corresponding to setting the base font size.
+const std::string SetDistilledPageBaseFontSize(float baseFontSize);
 
 }  // namespace viewer
 }  // namespace dom_distiller

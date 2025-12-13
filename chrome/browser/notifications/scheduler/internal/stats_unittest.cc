@@ -72,6 +72,26 @@ TEST(NotificationSchedulerStatsTest, LogNotificationShow) {
   }
 }
 
+TEST(NotificationSchedulerStatsTest, LogTipsNotificationFeatureTypeAction) {
+  base::HistogramTester histograms;
+  LogTipsNotificationFeatureTypeAction(
+      UserActionType::kClick,
+      TipsNotificationsFeatureType::kEnhancedSafeBrowsing);
+  histograms.ExpectBucketCount("Notifications.Scheduler.Tips.FeatureTypeAction",
+                               UserActionType::kClick, 1);
+  histograms.ExpectBucketCount(
+      "Notifications.Scheduler.Tips.FeatureTypeAction.EnhancedSafeBrowsing",
+      UserActionType::kClick, 1);
+}
+
+TEST(NotificationSchedulerStatsTest, LogTipsNotificationFeatureTypeShown) {
+  base::HistogramTester histograms;
+  LogTipsNotificationFeatureTypeShown(
+      TipsNotificationsFeatureType::kQuickDelete);
+  histograms.ExpectBucketCount("Notifications.Scheduler.Tips.FeatureTypeShown",
+                               TipsNotificationsFeatureType::kQuickDelete, 1);
+}
+
 }  // namespace
 }  // namespace stats
 }  // namespace notifications

@@ -57,18 +57,3 @@ void ChromeBrowserMainExtraPartsLinux::PostBrowserStart() {
   RecordDisplayServerProtocolSupport();
   ChromeBrowserMainExtraPartsOzone::PostBrowserStart();
 }
-
-// static
-void ChromeBrowserMainExtraPartsLinux::InitOzonePlatformHint() {
-#if BUILDFLAG(IS_LINUX)
-  base::CommandLine* const command_line =
-      base::CommandLine::ForCurrentProcess();
-  std::unique_ptr<base::Environment> env = base::Environment::Create();
-  std::optional<std::string> desktop_startup_id =
-      env->GetVar("DESKTOP_STARTUP_ID");
-  if (desktop_startup_id.has_value()) {
-    command_line->AppendSwitchASCII("desktop-startup-id",
-                                    *desktop_startup_id);
-  }
-#endif  // BUILDFLAG(IS_LINUX)
-}

@@ -43,7 +43,12 @@ class TouchSelectionControllerInputObserver
     controller_ = controller;
   }
 
+  bool HasSeenScrollBeginAckForTesting() const {
+    return has_seen_scroll_begin_ack_;
+  }
+
  private:
+  bool has_seen_scroll_begin_ack_ = false;
   raw_ptr<ui::TouchSelectionController> controller_;
   raw_ptr<TouchSelectionControllerClientManager> manager_;
 };

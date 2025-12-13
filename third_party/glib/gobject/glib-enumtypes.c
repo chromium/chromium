@@ -6,7 +6,7 @@
 #include <glib-object.h>
 
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-/* enumerations from "gobject/../glib/gunicode.h" */
+/* enumerations from "gunicode.h" */
 GType
 g_unicode_type_get_type (void)
 {
@@ -294,6 +294,13 @@ g_unicode_script_get_type (void)
         { G_UNICODE_SCRIPT_MATH, "G_UNICODE_SCRIPT_MATH", "math" },
         { G_UNICODE_SCRIPT_KAWI, "G_UNICODE_SCRIPT_KAWI", "kawi" },
         { G_UNICODE_SCRIPT_NAG_MUNDARI, "G_UNICODE_SCRIPT_NAG_MUNDARI", "nag-mundari" },
+        { G_UNICODE_SCRIPT_TODHRI, "G_UNICODE_SCRIPT_TODHRI", "todhri" },
+        { G_UNICODE_SCRIPT_GARAY, "G_UNICODE_SCRIPT_GARAY", "garay" },
+        { G_UNICODE_SCRIPT_TULU_TIGALARI, "G_UNICODE_SCRIPT_TULU_TIGALARI", "tulu-tigalari" },
+        { G_UNICODE_SCRIPT_SUNUWAR, "G_UNICODE_SCRIPT_SUNUWAR", "sunuwar" },
+        { G_UNICODE_SCRIPT_GURUNG_KHEMA, "G_UNICODE_SCRIPT_GURUNG_KHEMA", "gurung-khema" },
+        { G_UNICODE_SCRIPT_KIRAT_RAI, "G_UNICODE_SCRIPT_KIRAT_RAI", "kirat-rai" },
+        { G_UNICODE_SCRIPT_OL_ONAL, "G_UNICODE_SCRIPT_OL_ONAL", "ol-onal" },
         { 0, NULL, NULL }
       };
       GType g_define_type_id =

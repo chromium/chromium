@@ -96,7 +96,7 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
     field->set_heuristic_type(HeuristicSource::kAutofillMachineLearning,
                               ml_type);
   }
-  autofill_manager().AddSeenFormStructure(std::move(form_structure));
+  test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
 
   // Add a field and re-arrange the remaining form fields before submitting. The
   // five submitted fields are filled with
@@ -446,7 +446,8 @@ TEST_F(PredictionQualityMetricsTest,
 
   AutofillField field;
   field.set_possible_types({NAME_FIRST});
-  field.SetTypeTo(NAME_FIRST, AutofillPredictionSource::kRationalization);
+  field.SetTypeTo(AutofillType(NAME_FIRST),
+                  AutofillPredictionSource::kRationalization);
   LogFieldPredictionOverlapMetrics(field);
 
   histogram_tester.ExpectTotalCount(

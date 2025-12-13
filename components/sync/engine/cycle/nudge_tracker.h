@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 
@@ -16,6 +15,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/data_type_tracker.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace sync_pb {
 class GetUpdateTriggers;
@@ -151,7 +151,8 @@ class NudgeTracker {
       std::optional<base::TimeDelta> depleted_quota_nudge_delay);
 
  private:
-  using TypeTrackerMap = std::map<DataType, std::unique_ptr<DataTypeTracker>>;
+  using TypeTrackerMap =
+      absl::flat_hash_map<DataType, std::unique_ptr<DataTypeTracker>>;
 
   friend class SyncSchedulerImplTest;
 

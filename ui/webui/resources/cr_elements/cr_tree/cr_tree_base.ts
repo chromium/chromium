@@ -12,7 +12,7 @@ export const EXPANDED_ATTR: string = 'expanded';
 // facilitates writing methods navigating the full tree structure (cr-tree and
 // all cr-tree-item descendants), without introducing circular dependencies.
 export abstract class CrTreeBaseElement extends CustomElement {
-  static override get template() {
+  static override get template(): string|TrustedHTML {
     return window.trustedTypes ? window.trustedTypes.emptyHTML : ('' as string);
   }
 

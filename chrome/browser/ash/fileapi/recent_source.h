@@ -10,7 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/i18n/string_search.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "storage/browser/file_system/file_system_context.h"

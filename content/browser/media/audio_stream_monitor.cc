@@ -68,7 +68,7 @@ bool AudioStreamMonitor::IsCurrentlyAudible() const {
   return is_audible_;
 }
 
-void AudioStreamMonitor::RenderProcessGone(int render_process_id) {
+void AudioStreamMonitor::RenderProcessGone(ChildProcessId render_process_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // Note: It's possible for the RenderProcessHost and WebContents (and thus

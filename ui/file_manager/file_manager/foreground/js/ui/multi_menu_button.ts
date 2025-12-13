@@ -238,6 +238,8 @@ export class MultiMenuButton extends CrButtonElement {
         e.preventDefault();
         e.stopPropagation();
         break;
+      default:
+        break;
     }
   }
 
@@ -408,6 +410,8 @@ export class MultiMenuButton extends CrButtonElement {
       case 'Tab':
         this.hideMenu();
         break;
+      default:
+        break;
     }
   }
 
@@ -422,7 +426,8 @@ export class MultiMenuButton extends CrButtonElement {
       case 'Escape':
       case 'Tab':
         return true;
+      default:
+        return false;
     }
-    return false;
   }
 }

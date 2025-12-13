@@ -45,6 +45,12 @@ public interface InterceptNavigationDelegateClient {
     void closeTab();
 
     /**
+     * Called when a tab should be closed and handles cases where a tab was launched from an
+     * external app.
+     */
+    void handleShouldCloseTab();
+
+    /**
      * Loads a URL as specified by |loadUrlParams| if possible. May fail in exceptional conditions
      * (e.g., if there is no valid tab).
      *

@@ -12,7 +12,7 @@
 
 static void JNI_HistoryClustersTabHelper_OnCurrentTabUrlCopied(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
+    const base::android::JavaRef<jobject>& j_web_contents) {
   if (auto* clusters_helper = HistoryClustersTabHelper::FromWebContents(
           content::WebContents::FromJavaWebContents(j_web_contents))) {
     clusters_helper->OnOmniboxUrlCopied();
@@ -21,9 +21,11 @@ static void JNI_HistoryClustersTabHelper_OnCurrentTabUrlCopied(
 
 static void JNI_HistoryClustersTabHelper_OnCurrentTabUrlShared(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
+    const base::android::JavaRef<jobject>& j_web_contents) {
   if (auto* clusters_helper = HistoryClustersTabHelper::FromWebContents(
           content::WebContents::FromJavaWebContents(j_web_contents))) {
     clusters_helper->OnOmniboxUrlShared();
   }
 }
+
+DEFINE_JNI(HistoryClustersTabHelper)

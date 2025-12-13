@@ -71,7 +71,6 @@ using testing::DeleteArg;
 using testing::DoAll;
 using testing::Expectation;
 using testing::InSequence;
-using testing::Invoke;
 using testing::InvokeArgument;
 using testing::InvokeWithoutArgs;
 using testing::Return;
@@ -101,6 +100,7 @@ class ChromotingHostTest : public testing::Test {
     host_ = std::make_unique<ChromotingHost>(
         desktop_environment_factory_.get(),
         base::WrapUnique(session_manager_.get()),
+        /* secondary_session_manager */ nullptr,
         protocol::TransportContext::ForTests(protocol::TransportRole::SERVER),
         task_runner_,  // Audio
         task_runner_,  // Video encode
@@ -424,6 +424,42 @@ TEST_F(ChromotingHostTest, ConnectWhenAnotherClientIsConnected) {
 }
 
 TEST_F(ChromotingHostTest, IncomingSessionAccepted) {
+  StartHost();
+
+  MockSession* session = session_unowned1_.get();
+  protocol::SessionManager::IncomingSessionResponse response =
+      protocol::SessionManager::DECLINE;
+  std::string rejection_reason;
+  base::Location rejection_location;
+  host_->OnIncomingSession(session_unowned1_.release(), &response,
+                           &rejection_reason, &rejection_location);
+  EXPECT_EQ(protocol::SessionManager::ACCEPT, response);
+  EXPECT_TRUE(rejection_reason.empty());
+  EXPECT_EQ(nullptr, rejection_location.program_counter());
+
+  EXPECT_CALL(*session, Close(_, _, _))
+      .WillOnce(InvokeWithoutArgs(
+          this, &ChromotingHostTest::NotifyConnectionClosed1));
+  ShutdownHost();
+}
+
+TEST_F(ChromotingHostTest, SessionAcceptedWhenSecondarySessionManagerExists) {
+  // Create a new `session_manager_` to prevent dangling rawptr issues when
+  // creating a new `host_` instance.
+  session_manager_ = new protocol::MockSessionManager();
+  auto secondary_session_manager =
+      std::make_unique<protocol::MockSessionManager>();
+  host_ = std::make_unique<ChromotingHost>(
+      desktop_environment_factory_.get(),
+      base::WrapUnique(session_manager_.get()),
+      std::move(secondary_session_manager),
+      protocol::TransportContext::ForTests(protocol::TransportRole::SERVER),
+      task_runner_,  // Audio
+      task_runner_,  // Video encode
+      DesktopEnvironmentOptions::CreateDefault(), base::NullCallback(),
+      &local_session_policies_provider_);
+  host_->status_monitor()->AddStatusObserver(&host_status_observer_);
+
   StartHost();
 
   MockSession* session = session_unowned1_.get();

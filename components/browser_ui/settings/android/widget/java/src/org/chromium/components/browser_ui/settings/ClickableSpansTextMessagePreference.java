@@ -17,8 +17,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
- * A preference wrapper for {@link TextViewWithClickableSpans}, which makes the
- * {@link TextMessagePreference} with one or more ClickableSpans accessible.
+ * A preference wrapper for {@link TextViewWithClickableSpans}, which makes the {@link
+ * TextMessagePreference} with one or more ClickableSpans accessible.
  */
 @NullMarked
 public class ClickableSpansTextMessagePreference extends ChromeBasePreference {
@@ -86,5 +86,10 @@ public class ClickableSpansTextMessagePreference extends ChromeBasePreference {
     @Override
     public void setSummary(int summaryResId) {
         setSummary(getContext().getString(summaryResId));
+    }
+
+    @Override
+    public int getCustomBackgroundStyle() {
+        return BackgroundStyle.NONE;
     }
 }

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_WEBSOCKET_MESSAGE_CHUNK_ACCUMULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_WEBSOCKET_MESSAGE_CHUNK_ACCUMULATOR_H_
 
-#include <memory>
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -37,7 +37,7 @@ class MODULES_EXPORT WebSocketMessageChunkAccumulator final
   ~WebSocketMessageChunkAccumulator();
 
   // Appends |data| to this instance.
-  void Append(base::span<const char> data);
+  void Append(base::span<const uint8_t> data);
 
   // Returns the number of bytes stored in this instance.
   size_t GetSize() const { return size_; }
@@ -52,7 +52,7 @@ class MODULES_EXPORT WebSocketMessageChunkAccumulator final
   void Trace(Visitor*) const;
 
   // The regions will be available until Clear() is called.
-  Vector<base::span<const char>> GetView() const;
+  Vector<base::span<const uint8_t>> GetView() const;
 
   wtf_size_t GetPoolSizeForTesting() const { return pool_.size(); }
   bool IsTimerActiveForTesting() const { return timer_.IsActive(); }
@@ -66,12 +66,16 @@ class MODULES_EXPORT WebSocketMessageChunkAccumulator final
 
  private:
   struct SegmentDeleter {
-    void operator()(char* p) const { WTF::Partitions::FastFree(p); }
+    void operator()(uint8_t* p) const { Partitions::FastFree(p); }
   };
-  using SegmentPtr = std::unique_ptr<char[], SegmentDeleter>;
+  using SegmentPtr = base::HeapArray<uint8_t, SegmentDeleter>;
   static SegmentPtr CreateSegment() {
-    return SegmentPtr(static_cast<char*>(WTF::Partitions::FastMalloc(
-        kSegmentSize, "blink::WebSocketMessageChunkAccumulator::Segment")));
+    // SAFETY: `Partitions::FastMalloc` returns a pointer to
+    // `kSegmentSize` bytes.
+    return UNSAFE_BUFFERS(SegmentPtr::FromOwningPointer(
+        static_cast<uint8_t*>(Partitions::FastMalloc(
+            kSegmentSize, "blink::WebSocketMessageChunkAccumulator::Segment")),
+        kSegmentSize));
   }
 
   void OnTimerFired(TimerBase*);

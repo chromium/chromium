@@ -9,12 +9,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.OptionalInt;
 
 /** Helper class allowing advancing forward/backward while saturating outside the valid range. */
 @NullMarked
@@ -88,7 +88,8 @@ public abstract class SelectionController {
         if (mPosition == Integer.MAX_VALUE) return false;
 
         // If parked at lower sentinel, resume from 0.
-        int newPosition = getPosition().orElse(-1) + 1;
+        Integer position = getPosition();
+        int newPosition = (position == null ? -1 : position) + 1;
         int itemCount = getItemCount();
         while (newPosition < itemCount) {
             if (isSelectableItem(newPosition)) {
@@ -115,7 +116,8 @@ public abstract class SelectionController {
         if (mPosition == Integer.MIN_VALUE) return false;
 
         // If parked at upper sentinel, resume from getItemCount() - 1.
-        int newPosition = getPosition().orElse(getItemCount()) - 1;
+        Integer position = getPosition();
+        int newPosition = (position == null ? getItemCount() : position) - 1;
         while (newPosition >= 0) {
             if (isSelectableItem(newPosition)) {
                 return setPosition(newPosition);
@@ -141,9 +143,9 @@ public abstract class SelectionController {
     }
 
     /** Returns current counter value (unless saturated). */
-    public OptionalInt getPosition() {
-        if (isParkedAtSentinel()) return OptionalInt.empty();
-        return OptionalInt.of(mPosition);
+    public @Nullable Integer getPosition() {
+        if (isParkedAtSentinel()) return null;
+        return mPosition;
     }
 
     /**

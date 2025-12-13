@@ -10,7 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_stats_recorder_android.h"
 
@@ -37,20 +37,20 @@ class GCMDriverAndroid : public GCMDriver,
   // Methods called from Java via JNI:
   void OnRegisterFinished(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& app_id,
-      const base::android::JavaParamRef<jstring>& registration_id,
+      const base::android::JavaRef<jstring>& app_id,
+      const base::android::JavaRef<jstring>& registration_id,
       jboolean success);
   void OnUnregisterFinished(JNIEnv* env,
-                            const base::android::JavaParamRef<jstring>& app_id,
+                            const base::android::JavaRef<jstring>& app_id,
                             jboolean success);
   void OnMessageReceived(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& app_id,
-      const base::android::JavaParamRef<jstring>& sender_id,
-      const base::android::JavaParamRef<jstring>& j_message_id,
-      const base::android::JavaParamRef<jstring>& collapse_key,
-      const base::android::JavaParamRef<jbyteArray>& raw_data,
-      const base::android::JavaParamRef<jobjectArray>& data_keys_and_values);
+      const base::android::JavaRef<jstring>& app_id,
+      const base::android::JavaRef<jstring>& sender_id,
+      const base::android::JavaRef<jstring>& j_message_id,
+      const base::android::JavaRef<jstring>& collapse_key,
+      const base::android::JavaRef<jbyteArray>& raw_data,
+      const base::android::JavaRef<jobjectArray>& data_keys_and_values);
 
   // GCMDriver implementation:
   void ValidateRegistration(const std::string& app_id,

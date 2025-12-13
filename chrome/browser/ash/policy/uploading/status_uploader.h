@@ -11,7 +11,7 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"

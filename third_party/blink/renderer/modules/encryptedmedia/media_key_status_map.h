@@ -14,7 +14,6 @@
 
 namespace blink {
 
-class ExceptionState;
 class ScriptState;
 class V8UnionMediaKeyStatusOrUndefined;
 class WebData;
@@ -52,8 +51,7 @@ class MediaKeyStatusMap final : public ScriptWrappable,
 
  private:
   // PairSyncIterable<> implementation.
-  IterationSource* CreateIterationSource(ScriptState*,
-                                         ExceptionState&) override;
+  IterationSource* CreateIterationSource(ScriptState*) override;
 
   uint32_t IndexOf(const DOMArrayPiece& key_id) const;
 

@@ -31,6 +31,8 @@ std::string FillingProductToString(FillingProduct filling_product) {
       return "Iban";
     case FillingProduct::kAutocomplete:
       return "Autocomplete";
+    case FillingProduct::kPasskey:
+      return "Passkey";
     case FillingProduct::kPassword:
       return "Password";
     case FillingProduct::kCompose:
@@ -86,8 +88,6 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kFreeformFooter:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kViewPasswordDetails:
-    case SuggestionType::kWebauthnCredential:
-    case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPendingStateSignin:
       return FillingProduct::kPassword;
     case SuggestionType::kComposeDisable:
@@ -97,11 +97,8 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification:
       return FillingProduct::kCompose;
-    case SuggestionType::kCreateNewPlusAddress:
-    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kPlusAddressError:
       return FillingProduct::kPlusAddresses;
     case SuggestionType::kDatalistEntry:
       return FillingProduct::kDataList;
@@ -123,6 +120,9 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
       return FillingProduct::kIdentityCredential;
     case SuggestionType::kOneTimePasswordEntry:
       return FillingProduct::kOneTimePassword;
+    case SuggestionType::kWebauthnCredential:
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+      return FillingProduct::kPasskey;
   }
   NOTREACHED();
 }
@@ -170,3 +170,7 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
 }
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(FillingProductBridge)
+#endif

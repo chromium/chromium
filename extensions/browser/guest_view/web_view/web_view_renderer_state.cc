@@ -100,7 +100,8 @@ bool WebViewRendererState::GetOwnerInfo(int guest_process_id,
   // TODO(fsamuel): Store per-process info in WebViewPartitionInfo instead of in
   // WebViewInfo.
   for (const auto& info : web_view_info_map_) {
-    if (info.first.child_id == guest_process_id) {
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+    if (info.first.child_id.GetUnsafeValue() == guest_process_id) {
       if (owner_process_id) {
         *owner_process_id = info.second.embedder_process_id.value();
       }

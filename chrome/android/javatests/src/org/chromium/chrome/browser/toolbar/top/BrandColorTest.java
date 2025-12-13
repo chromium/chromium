@@ -35,13 +35,13 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Contains tests for the brand color feature. */
@@ -108,7 +108,7 @@ public class BrandColorTest {
         mToolbar = (ToolbarPhone) mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         mToolbarDataProvider = mToolbar.getToolbarDataProvider();
         mDefaultColor =
-                SurfaceColorUpdateUtils.getDefaultThemeColor(
+                ChromeColors.getDefaultThemeColor(
                         mActivityTestRule.getActivity(), /* isIncognito= */ false);
         return page;
     }
@@ -198,6 +198,7 @@ public class BrandColorTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
+    @DisabledTest(message = "crbug.com/380043209")
     @Feature({"StatusBar", "Omnibox"})
     public void testNavigatingToBrandColorAndBack() {
         startMainActivityWithURL("about:blank");

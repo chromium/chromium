@@ -22,9 +22,9 @@
 #include "net/net_jni_headers/HttpNegotiateAuthenticator_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::ConvertUTF8ToJavaString;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace net::android {
@@ -39,7 +39,7 @@ JavaNegotiateResultWrapper::~JavaNegotiateResultWrapper() = default;
 
 void JavaNegotiateResultWrapper::SetResult(JNIEnv* env,
                                            int result,
-                                           const JavaParamRef<jstring>& token) {
+                                           const JavaRef<jstring>& token) {
   // This will be called on the UI thread, so we have to post a task back to the
   // correct thread to actually save the result
   std::string raw_token;
@@ -168,3 +168,5 @@ void HttpAuthNegotiateAndroid::SetResultInternal(int result,
 }
 
 }  // namespace net::android
+
+DEFINE_JNI(HttpNegotiateAuthenticator)

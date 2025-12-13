@@ -22,51 +22,37 @@ namespace page_load_metrics {
 
 // Tracks the ad density of a page through the page's lifecycle.
 // It has the following usage:
-//    1. Set subframe, mainframe, and viewport rects using operations (AddRect,
-//       RemoveRect, UpdateMainFrameRect, UpdateMainFrameViewportRect).
+//    1. Set subframe, mainframe, and viewport rects using operations
+//       (UpdateMainFrameAdRects, UpdateMainFrameRect,
+//       UpdateMainFrameViewportRect).
 //    2. When the main frame rect or a subframe rect is updated, get current
 //       page ad density using CalculatePageAdDensity.
 //    3. When the main frame viewport rect or a subframe rect is updated, get
 //       current viewport ad density using CalculateViewportAdDensity.
 class PageAdDensityTracker {
  public:
-  enum class RectType { kIFrame, kElement };
-
-  struct RectId {
-    RectId(RectType rect_type, int id);
-    RectId(const RectId& other);
-
-    friend bool operator==(const RectId&, const RectId&) = default;
-    friend auto operator<=>(const RectId&, const RectId&) = default;
-
-    RectType rect_type;
-
-    // For iframe, the id comes from the frame tree node id. For other elements
-    // (e.g. main frame ad rectangles), the id comes from the node id from the
-    // renderer.
-    int id;
-  };
+  using RectId = int;
 
   struct AdDensityCalculationResult {
     std::optional<int> ad_density_by_height;
     std::optional<int> ad_density_by_area;
   };
 
-  explicit PageAdDensityTracker(base::TickClock* clock = nullptr);
+  PageAdDensityTracker(bool is_in_foreground,
+                       const base::TickClock* clock = nullptr);
   ~PageAdDensityTracker();
 
   PageAdDensityTracker(const PageAdDensityTracker&) = delete;
   PageAdDensityTracker& operator=(const PageAdDensityTracker&) = delete;
 
-  // Operations to track sub frame rects in the page density calcluation. If
-  // `recalculate_density` is true, the max page ad density and the viewport ad
-  // density will be recalculated in the end.
-  void AddRect(RectId rect_id, const gfx::Rect& rect, bool recalculate_density);
+  // Accumulates the last-measured viewport ad density and pauses further
+  // tracking. Called when the page becomes hidden from view
+  // (e.g., tab is backgrounded).
+  void OnHidden();
 
-  // Removes a rect from the tracker if it is currently being tracked.
-  // Otherwise RemoveRect is a no op. If `recalculate_viewport_density` is true,
-  // the viewport ad density will be recalculated in the end.
-  void RemoveRect(RectId rect_id, bool recalculate_viewport_density);
+  // Starts or resumes ad density tracking. Called when the page becomes visible
+  // (e.g., tab is foregrounded).
+  void OnShown();
 
   // Operations to track the main frame dimensions. The main frame rect has to
   // be set to calculate the page ad density.
@@ -77,8 +63,8 @@ class PageAdDensityTracker {
   void UpdateMainFrameViewportRect(const gfx::Rect& rect);
 
   // Operations to track the main frame ad rectangles' position and dimensions.
-  void UpdateMainFrameImageAdRects(
-      const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects);
+  void UpdateMainFrameAdRects(
+      const base::flat_map<int, gfx::Rect>& main_frame_ad_rects);
 
   // Returns the density by height, as a value from 0-100. If the density
   // calculation fails (i.e. no main frame size), this returns -1. Percentage
@@ -134,10 +120,21 @@ class PageAdDensityTracker {
     std::set<RectEvent>::const_iterator bottom_it;
   };
 
+  // Adds the rect to the internal bookkeeping.
+  void AddRect(RectId rect_id, const gfx::Rect& rect);
+
+  // Removes the rect from the internal bookkeeping. No-op if it isn't currently
+  // being tracked.
+  void RemoveRect(RectId rect_id);
+
   // Accumulate `last_viewport_ad_density_by_area_` and its weight (i.e. the
   // elapsed time since `last_viewport_density_accumulate_time_`) into
-  // `viewport_ad_density_by_area_stats_`. This can be invoked either when a
-  // new density is calculated, or during `Finalize()`.
+  // `viewport_ad_density_by_area_stats_`.
+  //
+  // This is only called when the page is in the foreground, immediately before:
+  // 1. Calculating a new density.
+  // 2. The page becomes hidden (`OnHidden`).
+  // 3. Finalizing tracking (`Finalize`).
   void AccumulateOutstandingViewportAdDensity();
 
   void CalculatePageAdDensity();
@@ -180,6 +177,9 @@ class PageAdDensityTracker {
   UnivariateStats viewport_ad_density_by_area_stats_;
 
   bool finalize_called_ = false;
+
+  // Whether the page is in foreground.
+  bool is_in_foreground_ = false;
 
   // The tick clock used to get the current time. Can be replaced by tests.
   raw_ptr<const base::TickClock> clock_;

@@ -11,12 +11,13 @@
 #import "components/policy/policy_constants.h"
 #import "components/sync/service/sync_prefs.h"
 #import "components/unified_consent/pref_names.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -55,6 +56,7 @@
 
   [[[EarlGrey selectElementWithMatcher:bestFeaturesButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  DismissSafariDataImportEntryPoint(/*verify_visibility=*/false);
 }
 
 #pragma mark - XCTestCase
@@ -128,12 +130,16 @@
                  grey_accessibilityID(
                      first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
-  NSString* title = nil;
+  id<GREYMatcher> titleMatcher = nil;
   NSString* subtitle = nil;
   NSArray* disclaimerStrings = nil;
   switch (FRESigninIntent) {
     case FRESigninIntentRegular:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      titleMatcher = grey_anyOf(
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_1)),
+          nil);
       subtitle = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
       disclaimerStrings = @[
@@ -144,8 +150,8 @@
       ];
       break;
     case FRESigninIntentSigninForcedByPolicy:
-      title =
-          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED);
+      titleMatcher = grey_text(
+          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED));
       subtitle = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SIGNIN_FORCED);
       disclaimerStrings = @[
@@ -159,11 +165,11 @@
       break;
     case FRESigninIntentSigninDisabledByPolicy:
       if ([ChromeEarlGrey isIPadIdiom]) {
-        title =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD);
+        titleMatcher = grey_text(l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD));
       } else {
-        title = l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE);
+        titleMatcher = grey_text(l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE));
       }
       subtitle =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE);
@@ -177,7 +183,11 @@
       ];
       break;
     case FRESigninIntentSigninWithSyncDisabledPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      titleMatcher = grey_anyOf(
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_1)),
+          nil);
       // Note: With SyncDisabled, the "benefits" string is not used.
       subtitle =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
@@ -191,7 +201,11 @@
       ];
       break;
     case FRESigninIntentSigninWithPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      titleMatcher = grey_anyOf(
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_1)),
+          nil);
       subtitle = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
       disclaimerStrings = @[
@@ -204,7 +218,11 @@
       ];
       break;
     case FRESigninIntentSigninWithUMAReportingDisabledPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      titleMatcher = grey_anyOf(
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_1)),
+          nil);
       subtitle = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
       disclaimerStrings = @[
@@ -217,7 +235,7 @@
   }
   // Validate the Title text.
   [[self elementInteractionWithGreyMatcher:grey_allOf(
-                                               grey_text(title),
+                                               titleMatcher,
                                                grey_sufficientlyVisible(), nil)
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
@@ -264,8 +282,8 @@
 }
 
 - (void)acceptSyncOrHistory {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          PromoScreenPrimaryButtonMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       performAction:grey_tap()];
 }
 
@@ -324,6 +342,14 @@
           grey_accessibilityID(
               first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)verifyDefaultBrowserNotDisplayed {
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

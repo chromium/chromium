@@ -28,8 +28,113 @@ const VIDEO_FRAME_DIMENSIONS = 192;
 
 /** The wasm loader JS is checked in under this path. */
 const WASM_LOADER_PATH =
-    'accessibility_common/third_party/mediapipe_task_vision/' +
+    'accessibility_common/mv3/third_party/mediapipe_task_vision/' +
     'vision_wasm_internal.js';
+
+/** A helper class to support test. */
+class TestSupport {
+  private owner_: OffscreenWebCam;
+  private timeoutCallbacks_: {[key: number]: VoidFunction} = {};
+  private nextTimeoutId_ = 1;
+
+  constructor(owner: OffscreenWebCam) {
+    this.owner_ = owner;
+
+    Messenger.registerHandler(
+        OffscreenCommandType.FACEGAZE_CREATE_FACE_LANDMARKER_FOR_TEST,
+        () => this.createFaceLandmarker());
+    Messenger.registerHandler(
+        OffscreenCommandType.FACEGAZE_MOCK_NO_CAMERA_FOR_TEST,
+        () => this.mockNoCamera_());
+    Messenger.registerHandler(
+        OffscreenCommandType.FACEGAZE_MOCK_TIMEOUT_FOR_TEST,
+        () => this.mockTimeout());
+    Messenger.registerHandler(
+        OffscreenCommandType.FACEGAZE_MOCK_RUN_LATEST_TIMEOUT_FOR_TEST,
+        () => this.runLatestTimeout());
+    Messenger.registerHandler(
+        OffscreenCommandType.FACEGAZE_CONNECT_TO_WEB_CAM_FOR_TEST,
+        () => this.connectToWebCam());
+    Messenger.registerHandler(
+        OffscreenCommandType.FACEGAZE_GET_CAMERA_RETRIES_FOR_TEST,
+        () => Promise.resolve(this.getWebCamRetriesRemaining()));
+    Messenger.registerHandler(
+        OffscreenCommandType.FACEGAZE_SET_CAMERA_RETRIES_FOR_TEST,
+        (message: {retries: number}) =>
+            this.setWebCamRetriesRemaining(message));
+    Messenger.registerHandler(
+        OffscreenCommandType.FACEGAZE_HAS_FACE_LANDMARKER_FOR_TEST,
+        () => Promise.resolve(this.hasFaceLandmarker()));
+    Messenger.registerHandler(
+        OffscreenCommandType.FACEGAZE_WEBCAM_STOP_FOR_TEST,
+        () => this.stopForTest());
+  }
+
+  mockNoCamera_(): void {
+    // Pretend that there is no available camera.
+    Object.defineProperty(navigator, 'mediaDevices', {
+      value: {
+        getUserMedia: () => {
+          return Promise.reject(new Error('Requested device not found'));
+        },
+      },
+      writable: true,
+    });
+  }
+
+  mockTimeout(): void {
+    globalThis.setTimeout =
+        (handler: TimerHandler, _timeout?: number, ...args: any[]): number => {
+          const id = this.nextTimeoutId_;
+          ++this.nextTimeoutId_;
+          this.timeoutCallbacks_[id] = () => (handler as Function)(...args);
+          return id;
+        };
+    globalThis.clearTimeout = (id: number|undefined): void => {
+      if (id !== undefined) {
+        delete this.timeoutCallbacks_[id];
+      }
+    };
+  }
+
+  runLatestTimeout(): void {
+    const latestId = this.nextTimeoutId_ - 1;
+    if (this.timeoutCallbacks_[latestId]) {
+      this.timeoutCallbacks_[latestId]();
+      delete this.timeoutCallbacks_[latestId];
+    }
+  }
+
+  async connectToWebCam(): Promise<void> {
+    // @ts-ignore Private member access.
+    await this.owner_.connectToWebCam_();
+  }
+
+  getWebCamRetriesRemaining(): number {
+    // @ts-ignore Private member access.
+    return this.owner_.connectToWebCamRetriesRemaining_;
+  }
+
+  setWebCamRetriesRemaining(message: {retries: number}): void {
+    // @ts-ignore Private member access.
+    this.owner_.connectToWebCamRetriesRemaining_ = message.retries;
+  }
+
+  async createFaceLandmarker(): Promise<void> {
+    // @ts-ignore Private member access.
+    return this.owner_.createFaceLandmarker_();
+  }
+
+  hasFaceLandmarker(): boolean {
+    // @ts-ignore Private member access.
+    return !!this.owner_.faceLandmarker_;
+  }
+
+  stopForTest(): void {
+    // @ts-ignore Private member access.
+    return this.owner_.stopImageCaptureTrack_();
+  }
+}
 
 /**
  * Offscreen way to manage the web cam and detect landmarkers.
@@ -54,6 +159,8 @@ class OffscreenWebCam {
   private onTrackMutedHandler_: VoidFunction;
   private onTrackUnmutedHandler_: VoidFunction;
 
+  declare private testSupport_: TestSupport;
+
   constructor() {
     // Create handlers that run the above callbacks.
     this.onTrackEndedHandler_ = () => this.onTrackEnded_();
@@ -70,6 +177,8 @@ class OffscreenWebCam {
         () => this.initialize_());
     Messenger.registerHandler(
         OffscreenCommandType.FACEGAZE_WEBCAM_STOP, () => this.stop_());
+
+    this.testSupport_ = new TestSupport(this);
   }
 
   private async initialize_(): Promise<void> {
@@ -132,7 +241,7 @@ class OffscreenWebCam {
     } catch (error) {
       if (this.connectToWebCamRetriesRemaining_ > 0) {
         Messenger.send(
-            OffscreenCommandType.FACEGAZE_SW_UPDATE_BUBLE_REMAINING_RETRIES,
+            OffscreenCommandType.FACEGAZE_SW_UPDATE_BUBBLE_REMAINING_RETRIES,
             {'remaining': this.connectToWebCamRetriesRemaining_});
 
         this.connectToWebCamRetriesRemaining_ -= 1;
@@ -168,7 +277,7 @@ class OffscreenWebCam {
   }
 
   private async detectFaceLandmarks_(): Promise<FaceLandmarkerResult|null> {
-    if (!this.faceLandmarker_) {
+    if (!this.faceLandmarker_ || !this.imageCapture_) {
       return null;
     }
 
@@ -187,22 +296,22 @@ class OffscreenWebCam {
 
   private stop_(): void {
     this.stopped_ = true;
+    this.stopImageCaptureTrack_();
+    this.faceLandmarker_ = null;
+  }
+
+  private onTrackEnded_(): void {
+    this.stopImageCaptureTrack_();
+    this.connectToWebCam_();
+  }
+
+  private stopImageCaptureTrack_(): void {
+    // Disconnect from the webcam by resetting `imageCapture_`.
     if (this.imageCapture_) {
       this.removeEventListeners_();
       this.imageCapture_.track.stop();
       this.imageCapture_ = undefined;
     }
-    this.faceLandmarker_ = null;
-  }
-
-  private onTrackEnded_(): void {
-    if (this.imageCapture_) {
-      // Tell MediaStreamTrack that we are no longer using this ended track.
-      this.imageCapture_.track.stop();
-      this.removeEventListeners_();
-    }
-    this.imageCapture_ = undefined;
-    this.connectToWebCam_();
   }
 
   private removeEventListeners_(): void {

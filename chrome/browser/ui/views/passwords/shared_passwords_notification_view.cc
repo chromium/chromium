@@ -18,11 +18,12 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 SharedPasswordsNotificationView::SharedPasswordsNotificationView(
     content::WebContents* web_contents,
-    views::View* anchor_view)
+    views::BubbleAnchor anchor_view)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
                              /*easily_dismissable=*/false),

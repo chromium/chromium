@@ -76,16 +76,16 @@ PaymentOptions* ToPaymentOptions(
   payment_options->setRequestPayerPhone(options->request_payer_phone);
   payment_options->setRequestShipping(options->request_shipping);
 
-  String shipping_type = "";
+  V8PaymentShippingType::Enum shipping_type;
   switch (options->shipping_type) {
     case payments::mojom::PaymentShippingType::SHIPPING:
-      shipping_type = "shipping";
+      shipping_type = V8PaymentShippingType::Enum::kShipping;
       break;
     case payments::mojom::PaymentShippingType::DELIVERY:
-      shipping_type = "delivery";
+      shipping_type = V8PaymentShippingType::Enum::kDelivery;
       break;
     case payments::mojom::PaymentShippingType::PICKUP:
-      shipping_type = "pickup";
+      shipping_type = V8PaymentShippingType::Enum::kPickup;
       break;
   }
   payment_options->setShippingType(shipping_type);

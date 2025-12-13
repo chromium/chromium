@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "ash/shell.h"
 #include "base/run_loop.h"
@@ -15,8 +16,11 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/task_manager_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -31,6 +35,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "url/gurl.h"
 
 using policy::DeveloperToolsPolicyHandler::Availability::kAllowed;
 using policy::DeveloperToolsPolicyHandler::Availability::kDisallowed;
@@ -41,6 +46,7 @@ using kiosk::test::CreatePopupBrowser;
 using kiosk::test::CreateRegularBrowser;
 using kiosk::test::CurrentProfile;
 using kiosk::test::DidKioskCloseNewWindow;
+using kiosk::test::DidKioskHideNewWindow;
 using kiosk::test::WaitKioskLaunched;
 
 namespace {
@@ -64,8 +70,9 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         ash::Shell::Get()->GetPrimaryRootWindow());
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ASSERT_TRUE(WaitKioskLaunched());
-    SelectFirstBrowser();
+    SetBrowser(browser_created_observer.Wait());
     ExpectOnlyKioskAppOpen();
   }
 
@@ -80,7 +87,7 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
   }
 
   void ExpectOpenBrowser(chromeos::KioskBrowserWindowType window_type) const {
-    EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+    EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
     histogram.ExpectBucketCount(chromeos::kKioskNewBrowserWindowHistogram,
                                 window_type, 1);
     histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 1);
@@ -88,11 +95,11 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
 
   void ExpectOnlyKioskAppOpen() const {
     // The initial browser should exist in the web kiosk session.
-    ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-    Browser* kiosk_browser = BrowserList::GetInstance()->get(0);
-    ASSERT_EQ(kiosk_browser->tab_strip_model()->count(), 1);
-    content::WebContents* contents =
-        kiosk_browser->tab_strip_model()->GetActiveWebContents();
+    ASSERT_EQ(chrome::GetTotalBrowserCount(), 1u);
+    BrowserWindowInterface* const kiosk_browser = browser();
+    ASSERT_EQ(kiosk_browser->GetTabStripModel()->count(), 1);
+    content::WebContents* const contents =
+        kiosk_browser->GetTabStripModel()->GetActiveWebContents();
     ASSERT_TRUE(contents);
     if (contents->IsLoading()) {
       content::WaitForLoadStop(contents);
@@ -109,10 +116,11 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
         /*alt=*/false, /*command=*/false);
   }
 
-  Browser* EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser() const {
+  BrowserWindowInterface*
+  EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser() const {
     EmulateOpenNewWindowShortcutPressed();
     EXPECT_FALSE(DidKioskCloseNewWindow());
-    return BrowserList::GetInstance()->GetLastActive();
+    return GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   }
 
   void EmulateOpenTaskManagerShortcutPressed() const {
@@ -143,16 +151,16 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
     CurrentProfile().GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed,
                                             true);
     Browser& popup_browser =
-        CreatePopupBrowser(CurrentProfile(), browser()->app_name());
+        CreatePopupBrowser(CurrentProfile(), browser()->app_name(), GURL());
     EXPECT_FALSE(DidKioskCloseNewWindow());
     return popup_browser;
   }
 
-  bool IsLactActiveBrowserResizable() {
-    BrowserWindow* lact_active_window =
-        BrowserList::GetInstance()->GetLastActive()->window();
-    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-        lact_active_window->GetNativeWindow());
+  bool IsLastActiveBrowserResizable() {
+    views::Widget* const widget = views::Widget::GetWidgetForNativeWindow(
+        GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+            ->GetWindow()
+            ->GetNativeWindow());
     return widget->widget_delegate()->CanResize();
   }
 
@@ -238,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   EmulateOpenNewWindowShortcutPressed();
   EXPECT_FALSE(DidKioskCloseNewWindow());
 
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 3u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 3u);
   histogram.ExpectBucketCount(
       chromeos::kKioskNewBrowserWindowHistogram,
       chromeos::KioskBrowserWindowType::kOpenedDevToolsBrowser, 1);
@@ -254,27 +262,15 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   EnableDevTools();
 
   // The main browser should not be resizable.
-  EXPECT_FALSE(IsLactActiveBrowserResizable());
+  EXPECT_FALSE(IsLastActiveBrowserResizable());
 
   DevToolsWindowTesting::OpenDevToolsWindowSync(browser(),
                                                 /*is_docked=*/false);
-  EXPECT_TRUE(IsLactActiveBrowserResizable());
+  EXPECT_TRUE(IsLastActiveBrowserResizable());
 
   EmulateOpenNewWindowShortcutPressed();
   EXPECT_FALSE(DidKioskCloseNewWindow());
-  EXPECT_TRUE(IsLactActiveBrowserResizable());
-}
-
-IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
-                       NewWindowDisallowedNoShow) {
-  // Explicitly open a new window to make sure it will be closed.
-  CreateRegularBrowser(CurrentProfile());
-  EXPECT_TRUE(DidKioskCloseNewWindow());
-
-  histogram.ExpectBucketCount(
-      chromeos::kKioskNewBrowserWindowHistogram,
-      chromeos::KioskBrowserWindowType::kClosedRegularBrowser, 1);
-  histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 1);
+  EXPECT_TRUE(IsLastActiveBrowserResizable());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
@@ -294,37 +290,40 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, NewWindowAddTab) {
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
-  Browser* newly_opened_browser =
+  BrowserWindowInterface* const newly_opened_browser =
       EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser();
+  TabStripModel* const tab_strip_model =
+      newly_opened_browser->GetTabStripModel();
 
   ExpectOpenBrowser(
       chromeos::KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser);
-  int initial_number_of_tabs = newly_opened_browser->tab_strip_model()->count();
+  const int initial_number_of_tabs = tab_strip_model->count();
 
   ui_test_utils::NavigateToURLWithDisposition(
       newly_opened_browser, GURL("https://www.google.com/"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  EXPECT_EQ(newly_opened_browser->tab_strip_model()->count(),
-            initial_number_of_tabs + 1);
+  EXPECT_EQ(tab_strip_model->count(), initial_number_of_tabs + 1);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsForward) {
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
-  EXPECT_TRUE(browser()->window()->IsActive());
-  Browser* newly_opened_browser =
-      EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser();
+  ui::BaseWindow* const original_window = browser()->GetWindow();
+  EXPECT_TRUE(original_window->IsActive());
+
+  ui::BaseWindow* const newly_opened_window =
+      EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser()->GetWindow();
 
   // When new window is opened, it becomes active.
-  EXPECT_TRUE(newly_opened_browser->window()->IsActive());
-  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_TRUE(newly_opened_window->IsActive());
+  EXPECT_FALSE(original_window->IsActive());
 
   EmulateSwitchWindowsForwardShortcutPressed();
 
   // The main window should be active again.
-  EXPECT_TRUE(browser()->window()->IsActive());
-  EXPECT_FALSE(newly_opened_browser->window()->IsActive());
+  EXPECT_TRUE(original_window->IsActive());
+  EXPECT_FALSE(newly_opened_window->IsActive());
 }
 
 // TODO(crbug.com/1481017): Re-enable this test
@@ -336,19 +335,22 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsForward) {
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
                        MAYBE_SwitchWindowsBackward) {
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
-  EXPECT_TRUE(browser()->window()->IsActive());
-  Browser* newly_opened_browser =
-      EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser();
+
+  ui::BaseWindow* const original_window = browser()->GetWindow();
+  EXPECT_TRUE(original_window->IsActive());
+
+  ui::BaseWindow* const newly_opened_window =
+      EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser()->GetWindow();
 
   // When new window is opened, it becomes active.
-  EXPECT_TRUE(newly_opened_browser->window()->IsActive());
-  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_TRUE(newly_opened_window->IsActive());
+  EXPECT_FALSE(original_window->IsActive());
 
   EmulateSwitchWindowsBackwardShortcutPressed();
 
   // The main window should be active again.
-  EXPECT_TRUE(browser()->window()->IsActive());
-  EXPECT_FALSE(newly_opened_browser->window()->IsActive());
+  EXPECT_TRUE(original_window->IsActive());
+  EXPECT_FALSE(newly_opened_window->IsActive());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsDisallowed) {
@@ -394,6 +396,27 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   EXPECT_NE(nullptr, GetTaskManagerView());
+}
+
+IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
+                       NewDisallowedWindowShouldBeClosedIfNavigationHappens) {
+  // Explicitly open a new window to make sure it will be closed.
+  CreateRegularBrowser(CurrentProfile(), GURL("https://www.test.com"));
+  EXPECT_TRUE(DidKioskCloseNewWindow());
+
+  histogram.ExpectBucketCount(
+      chromeos::kKioskNewBrowserWindowHistogram,
+      chromeos::KioskBrowserWindowType::kClosedRegularBrowser, 1);
+  histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
+                       NewDisallowedWindowShouldBeHiddenIfNoNavigationHappens) {
+  // Explicitly open a new window to make sure it will be hidden.
+  Browser& browser = CreateRegularBrowser(CurrentProfile(), GURL());
+  EXPECT_TRUE(DidKioskHideNewWindow(&browser));
+
+  histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 0);
 }
 
 }  // namespace ash

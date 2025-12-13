@@ -11,10 +11,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequence_bound.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -24,10 +24,6 @@
 namespace bookmarks {
 class BookmarkModel;
 }  // namespace bookmarks
-
-namespace syncer {
-class DataTypeControllerDelegate;
-}  // namespace syncer
 
 namespace power_bookmarks {
 
@@ -67,11 +63,6 @@ class PowerBookmarkService : public KeyedService,
   PowerBookmarkService& operator=(const PowerBookmarkService&) = delete;
 
   ~PowerBookmarkService() override;
-
-  // For sync codebase only: instantiates a controller delegate to interact with
-  // PowerBookmarkSyncBridge. Must be called from the UI thread.
-  std::unique_ptr<syncer::DataTypeControllerDelegate>
-  CreateSyncControllerDelegate();
 
   // Returns a vector of Powers for the given `url` through the given
   // `callback`. Use `power_type` to restrict which type is returned or use

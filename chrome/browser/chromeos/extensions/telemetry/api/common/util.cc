@@ -7,12 +7,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/shimless_rma/backend/external_app_dialog.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/url_constants.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/url_pattern_set.h"
@@ -28,7 +28,7 @@ namespace {
 bool IsWebContentsSecure(content::WebContents* contents) {
   // TODO(b/290909386): Remove this line once we reach a conclusion on
   // how we should perform security check on IWA.
-  if (contents->GetLastCommittedURL().SchemeIs(chrome::kIsolatedAppScheme)) {
+  if (contents->GetLastCommittedURL().SchemeIs(webapps::kIsolatedAppScheme)) {
     return true;
   }
   // Ensure the URL connection is secure (e.g. valid certificate).
@@ -68,10 +68,11 @@ content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
   // A focused UI must be:
   // 1. In a browser that is front-most;
   // 2. In a tab that is active.
-  Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
-  if (last_active_browser && last_active_browser->profile() == profile) {
-    content::WebContents* contents =
-        last_active_browser->tab_strip_model()->GetActiveWebContents();
+  BrowserWindowInterface* const last_active_bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (last_active_bwi && last_active_bwi->GetProfile() == profile) {
+    content::WebContents* const contents =
+        last_active_bwi->GetTabStripModel()->GetActiveWebContents();
     if (contents && IsWebContentsSecureAppUi(pattern_set, contents)) {
       return contents;
     }
@@ -80,20 +81,25 @@ content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
     return nullptr;
   }
 
-  for (Browser* target_browser : *BrowserList::GetInstance()) {
-    if (target_browser->profile() != profile) {
-      continue;
-    }
+  content::WebContents* found_contents = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* target_bwi) {
+        if (target_bwi->GetProfile() != profile) {
+          return true;  // Continue iteration
+        }
 
-    TabStripModel* target_tab_strip = target_browser->tab_strip_model();
-    for (int i = 0; i < target_tab_strip->count(); ++i) {
-      content::WebContents* contents = target_tab_strip->GetWebContentsAt(i);
-      if (IsWebContentsSecureAppUi(pattern_set, contents)) {
-        return contents;
-      }
-    }
-  }
-  return nullptr;
+        TabStripModel* const target_tab_strip = target_bwi->GetTabStripModel();
+        for (int i = 0; i < target_tab_strip->count(); ++i) {
+          content::WebContents* const contents =
+              target_tab_strip->GetWebContentsAt(i);
+          if (IsWebContentsSecureAppUi(pattern_set, contents)) {
+            found_contents = contents;
+            return false;  // Stop iteration
+          }
+        }
+        return true;  // Continue iteration
+      });
+  return found_contents;
 }
 
 bool IsTelemetryExtensionAppUiOpenAndSecure(

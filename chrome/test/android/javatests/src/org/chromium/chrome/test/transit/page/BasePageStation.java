@@ -9,7 +9,6 @@ import static org.chromium.base.test.transit.Condition.whether;
 import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
@@ -19,6 +18,9 @@ import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
@@ -28,10 +30,12 @@ import org.chromium.ui.base.PageTransition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
- * Base class for the screen that shows a web or native page in ChromeActivity. {@link PageStation}
- * subclasses this for ChromeTabbedActivity and {@link CctPageStation} for CustomTabActivity.
+ * Base class for the screen that shows a web or native page in ChromeActivity. {@link
+ * CtaPageStation} subclasses this for ChromeTabbedActivity and {@link CctPageStation} for
+ * CustomTabActivity.
  *
  * <p>Contains extra configurable Conditions such as waiting for a tab to be created, selected, have
  * the expected title, etc.
@@ -272,7 +276,7 @@ public class BasePageStation<HostActivity extends ChromeActivity>
 
     /** Convenience method for |loadedTabElement.get()|. */
     public Tab getTab() {
-        return loadedTabElement.get();
+        return loadedTabElement.value();
     }
 
     /** Loads a |url| in the same tab and waits to transition to the Station built by |builder|. */
@@ -289,11 +293,13 @@ public class BasePageStation<HostActivity extends ChromeActivity>
                             @PageTransition
                             int transitionType =
                                     PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
-                            loadedTabElement.get().loadUrl(new LoadUrlParams(url, transitionType));
+                            loadedTabElement
+                                    .value()
+                                    .loadUrl(new LoadUrlParams(url, transitionType));
                         })
                 .withTimeout(10000)
                 .withPossiblyAlreadyFulfilled()
-                .waitForAnd(new PageLoadCallbackCondition(loadedTabElement.get()));
+                .waitForAnd(new PageLoadCallbackCondition(loadedTabElement.value()));
     }
 
     /** Condition to check the page url contains a certain substring. */
@@ -352,7 +358,11 @@ public class BasePageStation<HostActivity extends ChromeActivity>
         }
 
         @Override
-        public void didAddTab(Tab tab, int type, int creationState, boolean markedForSelection) {
+        public void didAddTab(
+                Tab tab,
+                @TabLaunchType int type,
+                @TabCreationState int creationState,
+                boolean markedForSelection) {
             notifyCalled();
         }
 
@@ -389,7 +399,7 @@ public class BasePageStation<HostActivity extends ChromeActivity>
         }
 
         @Override
-        public void didSelectTab(Tab tab, int type, int lastId) {
+        public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
             if (mTabsSelected.contains(tab)) {
                 // We get multiple (2-3 depending on the case) didSelectTab when selecting a Tab, so
                 // filter out redundant callbacks to make sure we wait for different Tabs.
@@ -425,11 +435,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
             }
             return mTabsSelected.get(mTabsSelected.size() - 1);
         }
-
-        @Override
-        public boolean hasValue() {
-            return !mTabsSelected.isEmpty();
-        }
     }
 
     private static class CorrectActivityTabCondition<ActivityT extends ChromeActivity>
@@ -440,7 +445,7 @@ public class BasePageStation<HostActivity extends ChromeActivity>
 
         private CorrectActivityTabCondition(
                 Supplier<ActivityT> activitySupplier, Supplier<Tab> expectedTabSupplier) {
-            super(/* isRunOnUiThread= */ false);
+            super(/* isRunOnUiThread= */ true);
             mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeActivity");
             mExpectedTab = dependOnSupplier(expectedTabSupplier, "ExpectedTab");
         }

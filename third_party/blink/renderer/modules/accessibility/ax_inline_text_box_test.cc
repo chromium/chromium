@@ -8,10 +8,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/abstract_range.h"
+#include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/core/highlight/highlight.h"
+#include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
@@ -22,6 +27,7 @@
 
 using AXIntListAttribute = ax::mojom::blink::IntListAttribute;
 using AXMarkerType = ax::mojom::blink::MarkerType;
+using AXHighlightType = ax::mojom::blink::HighlightType;
 
 namespace blink {
 namespace test {
@@ -171,6 +177,115 @@ TEST_P(AXInlineTextBoxTest, GetDocumentMarkers) {
     EXPECT_EQ(std::vector<int32_t>{0},
               node_data.GetIntListAttribute(AXIntListAttribute::kMarkerStarts));
     EXPECT_EQ(std::vector<int32_t>{5},
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerEnds));
+  }
+}
+
+TEST_P(AXInlineTextBoxTest, AriaInvalidAndHighlightMarkers) {
+  // There should be four inline text boxes in the following paragraph.
+  SetBodyInnerHTML(
+      R"HTML(<p id="paragraph"><span aria-invalid="spelling" id="span1">Misspelled</span> text with a <span aria-invalid="grammar" id="span2">grammar error</span>.</p>)HTML");
+
+  Node* paragraph = GetElementById("paragraph");
+  ASSERT_NE(nullptr, paragraph);
+  Node* text = GetElementById("span1")->firstChild();
+  ASSERT_NE(nullptr, text);
+  ASSERT_TRUE(text->IsTextNode());
+
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  HeapVector<Member<AbstractRange>> range_vector;
+  auto* range1 = MakeGarbageCollected<Range>(GetDocument(), text, 0, text, 10);
+  range_vector.push_back(range1);
+
+  text = GetElementById("span2")->firstChild();
+  ASSERT_NE(nullptr, text);
+  ASSERT_TRUE(text->IsTextNode());
+  auto* range2 = MakeGarbageCollected<Range>(GetDocument(), text, 0, text, 13);
+  range_vector.push_back(range2);
+
+  Highlight* highlight = Highlight::Create(range_vector);
+  AtomicString name("highlight-name");
+  registry->SetForTesting(name, highlight);
+  registry->ScheduleRepaint();
+  registry->ValidateHighlightMarkers();
+
+  AXObject* ax_paragraph = GetAXObjectByElementId("paragraph");
+  ASSERT_NE(nullptr, ax_paragraph);
+  ASSERT_EQ(ax::mojom::Role::kParagraph, ax_paragraph->RoleValue());
+  ax_paragraph->LoadInlineTextBoxes();
+
+  AXObject* ax_container = ax_paragraph->ChildAtIncludingIgnored(0);
+  AXObject* ax_text = ax_container->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_text);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, ax_text->RoleValue());
+  ASSERT_EQ(1, ax_text->ChildCountIncludingIgnored());
+
+  // For each inline text box, angle brackets indicate where the marker starts
+  // and ends respectively.
+  // kInlineTextBox: "<Misspelled>".
+  AXObject* ax_inline_text_box = ax_text->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_inline_text_box);
+  {
+    ScopedFreezeAXCache freeze(ax_inline_text_box->AXObjectCache());
+    ui::AXNodeData node_data;
+    ax_inline_text_box->Serialize(&node_data, ui::kAXModeComplete);
+    EXPECT_EQ(std::vector<int32_t>({int32_t(AXMarkerType::kSpelling),
+                                    int32_t(AXMarkerType::kHighlight)}),
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerTypes));
+    EXPECT_EQ(
+        std::vector<int32_t>({int32_t(AXHighlightType::kNone),
+                              int32_t(AXHighlightType::kHighlight)}),
+        node_data.GetIntListAttribute(AXIntListAttribute::kHighlightTypes));
+    EXPECT_EQ(std::vector<int32_t>({0, 0}),
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerStarts));
+    EXPECT_EQ(std::vector<int32_t>({10, 10}),
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerEnds));
+  }
+
+  // kInlineTextBox: " text with a ".
+  ax_text = ax_paragraph->ChildAtIncludingIgnored(1);
+  ASSERT_NE(nullptr, ax_text);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, ax_text->RoleValue());
+  ASSERT_EQ(1, ax_text->ChildCountIncludingIgnored());
+  ax_inline_text_box = ax_text->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_inline_text_box);
+  {
+    ScopedFreezeAXCache freeze(ax_inline_text_box->AXObjectCache());
+    ui::AXNodeData node_data;
+    ax_inline_text_box->Serialize(&node_data, ui::kAXModeComplete);
+    EXPECT_EQ(std::vector<int32_t>(),
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerTypes));
+    EXPECT_EQ(std::vector<int32_t>(), node_data.GetIntListAttribute(
+                                          AXIntListAttribute::kHighlightTypes));
+    EXPECT_EQ(std::vector<int32_t>(),
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerStarts));
+    EXPECT_EQ(std::vector<int32_t>(),
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerEnds));
+  }
+
+  // kInlineTextBox: "<grammar error>".
+  ax_container = ax_paragraph->ChildAtIncludingIgnored(2);
+  ax_text = ax_container->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_text);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, ax_text->RoleValue());
+  ASSERT_EQ(1, ax_text->ChildCountIncludingIgnored());
+  ax_inline_text_box = ax_text->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_inline_text_box);
+  {
+    ScopedFreezeAXCache freeze(ax_inline_text_box->AXObjectCache());
+    ui::AXNodeData node_data;
+    ax_inline_text_box->Serialize(&node_data, ui::kAXModeComplete);
+    EXPECT_EQ(std::vector<int32_t>({int32_t(AXMarkerType::kGrammar),
+                                    int32_t(AXMarkerType::kHighlight)}),
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerTypes));
+    EXPECT_EQ(
+        std::vector<int32_t>({int32_t(AXHighlightType::kNone),
+                              int32_t(AXHighlightType::kHighlight)}),
+        node_data.GetIntListAttribute(AXIntListAttribute::kHighlightTypes));
+    EXPECT_EQ(std::vector<int32_t>({0, 0}),
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerStarts));
+    EXPECT_EQ(std::vector<int32_t>({13, 13}),
               node_data.GetIntListAttribute(AXIntListAttribute::kMarkerEnds));
   }
 }
@@ -777,5 +892,27 @@ TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_CharacterWidths_Ligature) {
 }
 
 }  // namespace test
+
+TEST_F(AccessibilityTest, LoadInlineTextBoxesCrashsOnAndroid) {
+  SetBodyInnerHTML(R"HTML(
+    <p id="paragraph"></p>
+      )HTML");
+
+  AXObject* ax_paragraph = GetAXObjectByElementId("paragraph");
+  ASSERT_NE(nullptr, ax_paragraph);
+
+  // In lieu of a repro snippet, we force this paragraph, which has a
+  // LayoutBlock, to be a static text role.
+  ax_paragraph->role_ = ax::mojom::Role::kStaticText;
+
+  // Then, force a life cycle change.
+  ax_paragraph->AXObjectCache().CommitAXUpdates(*(ax_paragraph->GetDocument()),
+                                                true);
+
+  // Finally, this enables us to request a load of inline text boxes and trigger
+  // the CHECK for the node to be a LayoutText. This once crashed because
+  // Android had a slightly different codepath.
+  ax_paragraph->LoadInlineTextBoxes();
+}
 
 }  // namespace blink

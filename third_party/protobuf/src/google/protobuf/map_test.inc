@@ -16,45 +16,55 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
+#include <limits>
 #include <memory>
-#include <random>
+#include <ostream>
 #include <sstream>
+#include <string>
+#include <utility>
 #include <vector>
 
-#include "google/protobuf/testing/file.h"
+#include "google/protobuf/testing/file.h"  // IWYU pragma: keep
 #include "google/protobuf/descriptor.pb.h"
 #include <gmock/gmock.h>
-#include "google/protobuf/testing/googletest.h"
+#include "google/protobuf/testing/googletest.h"  // IWYU pragma: keep
 #include <gtest/gtest.h>
 #include "absl/base/casts.h"
+#include "absl/base/log_severity.h"
 #include "absl/cleanup/cleanup.h"
 #include "absl/container/btree_set.h"
 #include "absl/container/flat_hash_map.h"
-#include "absl/container/flat_hash_set.h"
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
-#include "absl/strings/substitute.h"
-#include "absl/time/time.h"
-#include "google/protobuf/arena_test_util.h"
+#include "absl/log/globals.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
+#include "absl/strings/string_view.h"
+#include "google/protobuf/arena.h"
+#include "google/protobuf/arena_test_util.h"  // IWYU pragma: keep
 #include "google/protobuf/descriptor.h"
-#include "google/protobuf/descriptor_database.h"
 #include "google/protobuf/dynamic_message.h"
 #include "google/protobuf/io/coded_stream.h"
-#include "google/protobuf/io/tokenizer.h"
-#include "google/protobuf/io/zero_copy_stream_impl.h"
+#include "google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "google/protobuf/map.h"
+#include "google/protobuf/map_entry.h"
 #include "google/protobuf/map_proto2_unittest.pb.h"
 #include "google/protobuf/map_proto3_unittest.pb.h"
+#include "google/protobuf/map_test_util.h"
 #include "google/protobuf/message.h"
+#include "google/protobuf/message_lite.h"
 #include "google/protobuf/port.h"
 #include "google/protobuf/reflection.h"
 #include "google/protobuf/reflection_ops.h"
+#include "google/protobuf/reflection_tester.h"
 #include "google/protobuf/test_textproto.h"
 #include "google/protobuf/test_util.h"
 #include "google/protobuf/test_util2.h"
 #include "google/protobuf/text_format.h"
 #include "google/protobuf/util/message_differencer.h"
 #include "google/protobuf/wire_format.h"
+#include "google/protobuf/wire_format_lite.h"
 
 
 // Must be included last.
@@ -234,21 +244,25 @@ namespace {
 TEST_F(MapImplTest, OperatorBracketRValue) {
   Arena arena;
   for (Arena* arena_to_use : {&arena, static_cast<Arena*>(nullptr)}) {
-    Map<std::string, int> map(arena_to_use);
+    auto* map = Arena::Create<Map<std::string, int32_t>>(arena_to_use);
     {
       std::string key(10000, 'a');
       const char* const data = key.data();
-      map[key] = 0;
+      (*map)[key] = 0;
       EXPECT_EQ(data, key.data());
-      EXPECT_NE(data, map.find(std::string(10000, 'a'))->first.data());
+      EXPECT_NE(data, map->find(std::string(10000, 'a'))->first.data());
     }
 
     {
       std::string key(10000, 'b');
       const char* const data = key.data();
-      map[std::move(key)] = 0;
+      (*map)[std::move(key)] = 0;
       EXPECT_NE(data, key.data());  // NOLINT
-      EXPECT_EQ(data, map.find(std::string(10000, 'b'))->first.data());
+      EXPECT_EQ(data, map->find(std::string(10000, 'b'))->first.data());
+    }
+
+    if (arena_to_use == nullptr) {
+      delete map;
     }
   }
 }
@@ -1022,8 +1036,10 @@ TEST_F(MapImplTest, SwapBasic) {
 
 TEST_F(MapImplTest, SwapArena) {
   Arena arena1, arena2;
-  Map<int32_t, int32_t> m1(&arena1);
-  Map<int32_t, int32_t> m2(&arena2);
+  auto* m1_ptr = Arena::Create<Map<int32_t, int32_t>>(&arena1);
+  auto* m2_ptr = Arena::Create<Map<int32_t, int32_t>>(&arena2);
+  auto& m1 = *m1_ptr;
+  auto& m2 = *m2_ptr;
   map_[9398] = 41999;
   m1[9398] = 41999;
   m1[8070] = 42056;
@@ -1110,8 +1126,10 @@ TEST_F(MapImplTest, DeleteMapValues) {
       auto* field = descriptor->field(i);
       if (!field->is_map()) continue;
 
-      MapIterator it = reflection_tester.MapBegin(message, field->name());
-      MapIterator end = reflection_tester.MapEnd(message, field->name());
+      ConstMapIterator it =
+          reflection_tester.ConstMapBegin(message, field->name());
+      ConstMapIterator end =
+          reflection_tester.ConstMapEnd(message, field->name());
       // It's unordered, so search for it.
       if (it == end) continue;
       auto next = it;
@@ -1160,8 +1178,10 @@ TEST_F(MapImplTest, DeleteMapValues) {
       auto* field = descriptor->field(i);
       if (!field->is_map()) continue;
 
-      MapIterator it = reflection_tester.MapBegin(message, field->name());
-      MapIterator end = reflection_tester.MapEnd(message, field->name());
+      ConstMapIterator it =
+          reflection_tester.ConstMapBegin(message, field->name());
+      ConstMapIterator end =
+          reflection_tester.ConstMapEnd(message, field->name());
 
       while (it != end) {
         auto next = it;
@@ -1179,8 +1199,10 @@ TEST_F(MapImplTest, CopyAssignMapIterator) {
   TestMap message;
   MapReflectionTester reflection_tester(UNITTEST::TestMap::descriptor());
   reflection_tester.SetMapFieldsViaMapReflection(&message);
-  MapIterator it1 = reflection_tester.MapBegin(&message, "map_int32_int32");
-  MapIterator it2 = reflection_tester.MapEnd(&message, "map_int32_int32");
+  ConstMapIterator it1 =
+      reflection_tester.ConstMapBegin(&message, "map_int32_int32");
+  ConstMapIterator it2 =
+      reflection_tester.ConstMapEnd(&message, "map_int32_int32");
   it2 = it1;
   EXPECT_EQ(it1.GetKey().GetInt32Value(), it2.GetKey().GetInt32Value());
 }
@@ -2766,20 +2788,20 @@ TEST(GeneratedMapFieldTest, Proto2UnknownEnum) {
 
   UNITTEST::TestEnumMap to;
   EXPECT_TRUE(to.ParseFromString(data));
-  EXPECT_EQ(0, to.unknown_map_field().size());
-  EXPECT_EQ(1, to.GetReflection()->GetUnknownFields(to).field_count());
-  EXPECT_EQ(1, to.known_map_field().size());
-  EXPECT_EQ(UNITTEST::PROTO2_MAP_ENUM_FOO, to.known_map_field().at(0));
+  EXPECT_EQ(to.GetReflection()->GetUnknownFields(to).field_count(), 1);
+  EXPECT_THAT(to.known_map_field(),
+              ElementsAre(Pair(0, UNITTEST::PROTO2_MAP_ENUM_FOO)));
+  EXPECT_THAT(to.unknown_map_field(), IsEmpty());
 
   data.clear();
   from.Clear();
   to.SerializeToString(&data);
   EXPECT_TRUE(from.ParseFromString(data));
-  EXPECT_EQ(0, from.GetReflection()->GetUnknownFields(from).field_count());
-  EXPECT_EQ(1, from.known_map_field().size());
-  EXPECT_EQ(UNITTEST::E_PROTO2_MAP_ENUM_FOO, from.known_map_field().at(0));
-  EXPECT_EQ(1, from.unknown_map_field().size());
-  EXPECT_EQ(UNITTEST::E_PROTO2_MAP_ENUM_EXTRA, from.unknown_map_field().at(0));
+  EXPECT_EQ(from.GetReflection()->GetUnknownFields(from).field_count(), 0);
+  EXPECT_THAT(from.known_map_field(),
+              ElementsAre(Pair(0, UNITTEST::E_PROTO2_MAP_ENUM_FOO)));
+  EXPECT_THAT(from.unknown_map_field(),
+              ElementsAre(Pair(0, UNITTEST::E_PROTO2_MAP_ENUM_EXTRA)));
 
   // Test the same behavior with the reflection based parser.
   to.Clear();
@@ -2790,10 +2812,10 @@ TEST(GeneratedMapFieldTest, Proto2UnknownEnum) {
   ASSERT_TRUE(ptr);
   ASSERT_TRUE(ctx.EndedAtLimit());
 
-  EXPECT_EQ(0, to.unknown_map_field().size());
-  EXPECT_EQ(1, to.GetReflection()->GetUnknownFields(to).field_count());
-  EXPECT_EQ(1, to.known_map_field().size());
-  EXPECT_EQ(UNITTEST::PROTO2_MAP_ENUM_FOO, to.known_map_field().at(0));
+  EXPECT_EQ(to.GetReflection()->GetUnknownFields(to).field_count(), 1);
+  EXPECT_THAT(to.known_map_field(),
+              ElementsAre(Pair(0, UNITTEST::PROTO2_MAP_ENUM_FOO)));
+  EXPECT_THAT(to.unknown_map_field(), IsEmpty());
 }
 
 TEST(GeneratedMapFieldTest, Proto2UnknownEnumThrowsAwayUnknownData) {
@@ -4344,7 +4366,6 @@ TEST(NonUtf8Test, StringValuePassesInProto2) {
   (*message.mutable_map_string())[1] = "\xFF";
 
   auto serialized = message.SerializeAsString();
-  // Parsing passes, but a failure is logged in debug mode.
   ASSERT_TRUE(message.ParseFromString(serialized));
   EXPECT_EQ((*message.mutable_map_string())[1], "\xFF");
 }

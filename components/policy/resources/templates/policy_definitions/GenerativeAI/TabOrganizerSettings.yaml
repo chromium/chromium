@@ -1,6 +1,8 @@
 caption: Settings for Tab Organizer
 deprecated: true
 desc: |-
+  This policy is deprecated since tab organizer has been sunset as a feature.
+
   Tab Organizer is an AI-based tool that automatically creates tab groups based on a user's open tabs. Suggestions are based on open tabs (but not page content).
 
   0 = Allow the feature to be used, while allowing Google to use relevant data to improve its AI models. Relevant data may include prompts, inputs, outputs, source materials, and written feedback, depending on the feature. It may also be reviewed by humans to improve AI models. 0 is the default value, except when noted below.

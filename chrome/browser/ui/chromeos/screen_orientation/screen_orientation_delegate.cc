@@ -60,7 +60,7 @@ void ScreenOrientationDelegateChromeos::Lock(
 
 bool ScreenOrientationDelegateChromeos::ScreenOrientationProviderSupported(
     content::WebContents* web_contents) {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 void ScreenOrientationDelegateChromeos::Unlock(

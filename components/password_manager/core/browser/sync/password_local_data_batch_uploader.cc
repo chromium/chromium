@@ -158,7 +158,7 @@ void PasswordLocalDataBatchUploader::OnGotLocalPasswordsForDescription(
   for (auto& result : request->TakeResults()) {
     syncer::LocalDataItemModel item;
     item.id = PasswordFormKey(PasswordFormUniqueKey(*result.get()));
-    item.title = result->url.host();
+    item.title = result->url.GetHost();
     item.subtitle = base::UTF16ToUTF8(result->username_value);
     item.icon = syncer::LocalDataItemModel::PageUrlIcon(result->url);
     local_data_models.push_back(std::move(item));

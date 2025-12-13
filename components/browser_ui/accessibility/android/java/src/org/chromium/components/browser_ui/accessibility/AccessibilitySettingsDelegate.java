@@ -66,8 +66,32 @@ public interface AccessibilitySettingsDelegate {
 
     /**
      * @return the BooleanPreferenceDelegate instance that should be used for reading and setting
+     *     the touchpad overscroll history navigation value for accessibility settings. Return null
+     *     to omit the preference.
+     */
+    BooleanPreferenceDelegate getTouchpadOverscrollHistoryNavigationAccessibilityDelegate();
+
+    /**
+     * @return the BooleanPreferenceDelegate instance that should be used for reading and setting
      *     the reader (simplified view) value for accessibility settings. Return null to omit the
      *     preference.
      */
     BooleanPreferenceDelegate getReaderAccessibilityDelegate();
+
+    /**
+     * Returns whether the material slider should be used for the page zoom preference.
+     *
+     * @return True if the slider should be used, false otherwise.
+     */
+    boolean shouldUseSlider();
+
+    /**
+     * Returns whether caret browsing is enabled.
+     *
+     * @return boolean - Whether caret browsing is enabled.
+     */
+    boolean isCaretBrowsingEnabled();
+
+    /** Sets whether caret browsing is enabled. */
+    void setCaretBrowsingEnabled(boolean enabled);
 }

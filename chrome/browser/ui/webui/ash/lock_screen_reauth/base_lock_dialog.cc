@@ -14,8 +14,7 @@ namespace ash {
 namespace {
 
 gfx::Size FitSizeToDisplay(const gfx::Size& desired) {
-  const display::Display display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display display = display::Screen::Get()->GetPrimaryDisplay();
 
   gfx::Size display_size = display.size();
   display_size.SetToMin(desired);

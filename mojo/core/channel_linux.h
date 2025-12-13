@@ -7,13 +7,13 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/channel_posix.h"
 
-namespace mojo {
-namespace core {
+namespace mojo::core {
 
 class DataAvailableNotifier;
 
@@ -42,11 +42,8 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
   // enabled.
   static bool UpgradesEnabled();
 
-  // SetSharedMemParams will control whether shared memory is used for this
-  // channel.
-  static void SetSharedMemParameters(bool enabled,
-                                     uint32_t num_pages,
-                                     bool use_zero_on_wake);
+  // Controls whether shared memory is used for this channel.
+  static void SetSharedMemParameters(bool enabled, uint32_t num_pages);
 
   // ChannelPosix impl:
   void Write(MessagePtr message) override;
@@ -57,6 +54,9 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
                         std::vector<PlatformHandle> handles) override;
   void OnWriteError(Error error) override;
 
+  void RejectUpgradeOffer();
+  void AcceptUpgradeOffer();
+
   void StartOnIOThread() override;
   void ShutDownOnIOThread() override;
 
@@ -65,22 +65,25 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
 
   class SharedBuffer;
 
+  std::optional<std::vector<PlatformHandle>> SetupMemFdForWrite();
   void OfferSharedMemUpgradeInternal();
   void SharedMemReadReady();
 
   // We only offer once, we use an atomic flag to guarantee no races to offer.
   std::atomic_flag offered_{false};
 
-  // This flag keeps track of whether or not we've established a shared memory
-  // channel with the remote. If false we always fall back to the PosixChannel
-  // (socket).
+  // True iff the outgoing communication over shared memory (and memfd) is
+  // established. When |shared_mem_writer_| is false, sending messages falls
+  // back to ChannelPosix (socket).
   std::atomic_bool shared_mem_writer_{false};
 
-  std::unique_ptr<DataAvailableNotifier> write_notifier_;
-  std::unique_ptr<SharedBuffer> write_buffer_;
+  base::Lock memfd_write_lock_;
+  std::unique_ptr<DataAvailableNotifier> write_notifier_
+      GUARDED_BY(memfd_write_lock_);
+  std::unique_ptr<SharedBuffer> write_buffer_ GUARDED_BY(memfd_write_lock_);
 
   std::unique_ptr<DataAvailableNotifier> read_notifier_;
-  std::unique_ptr<SharedBuffer> read_buffer_;
+  std::unique_ptr<SharedBuffer> shared_read_buffer_;
 
   uint32_t num_pages_ = 0;
 
@@ -91,7 +94,6 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
   std::vector<uint8_t> read_buf_;
 };
 
-}  // namespace core
-}  // namespace mojo
+}  // namespace mojo::core
 
 #endif  // MOJO_CORE_CHANNEL_LINUX_H_

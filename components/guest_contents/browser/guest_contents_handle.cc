@@ -53,12 +53,17 @@ GuestContentsHandle::~GuestContentsHandle() {
 
 void GuestContentsHandle::AttachToOuterWebContents(
     content::RenderFrameHost* outer_delegate_frame) {
+  CHECK(!web_contents()->GetOuterWebContents())
+      << "This WebContents is already attached to an outer WebContents. Hint: "
+         "use GuestContentsHandle::DetachFromOuterWebContents() before "
+         "re-attaching.";
   content::WebContents* outer_web_contents =
       content::WebContents::FromRenderFrameHost(outer_delegate_frame);
   CHECK(outer_web_contents);
   outer_web_contents->AttachUnownedInnerWebContents(
       content::UnownedInnerWebContentsClient::GetPassKey(), web_contents(),
       outer_delegate_frame);
+  CHECK_EQ(web_contents()->GetOuterWebContents(), outer_web_contents);
 }
 
 void GuestContentsHandle::DetachFromOuterWebContents() {

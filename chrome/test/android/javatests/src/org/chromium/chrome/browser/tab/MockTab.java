@@ -52,7 +52,7 @@ public class MockTab extends TabImpl {
     }
 
     public MockTab(int id, Profile profile, @TabLaunchType int tabLaunchType) {
-        super(id, profile, tabLaunchType);
+        super(id, profile, tabLaunchType, /* isArchived= */ false);
     }
 
     @Override
@@ -116,6 +116,11 @@ public class MockTab extends TabImpl {
     @Override
     public boolean isDestroyed() {
         return mIsDestroyed;
+    }
+
+    @Override
+    public void show(@TabSelectionType int type, @TabLoadIfNeededCaller int caller) {
+        // Intentionally do nothing.
     }
 
     public void setIsInitialized(boolean isInitialized) {

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.preference.PreferenceViewHolder;
@@ -28,7 +29,7 @@ import org.chromium.url.GURL;
 @NullMarked
 public class SafetyHubNotificationsPreference extends ChromeBasePreference
         implements ListMenu.Delegate {
-    static interface MenuClickListener {
+    interface MenuClickListener {
         void onAllowClicked(SafetyHubNotificationsPreference preference);
 
         void onResetClicked(SafetyHubNotificationsPreference preference);
@@ -87,7 +88,7 @@ public class SafetyHubNotificationsPreference extends ChromeBasePreference
     }
 
     @Override
-    public void onItemSelected(PropertyModel item) {
+    public void onItemSelected(PropertyModel item, View view) {
         if (mMenuClickListener == null) {
             return;
         }

@@ -25,7 +25,6 @@
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -45,6 +44,7 @@
 #include "components/crx_file/crx_verifier.h"
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
@@ -53,17 +53,22 @@
 #include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/load_error_reporter.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/extensions/install_limiter.h"
-#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/user_manager_impl.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -247,14 +252,10 @@ ExtensionServiceTestBase::ExtensionServiceTestBase()
 ExtensionServiceTestBase::ExtensionServiceTestBase(
     std::unique_ptr<content::BrowserTaskEnvironment> task_environment)
     : task_environment_(std::move(task_environment)),
-      service_(nullptr),
-      testing_local_state_(TestingBrowserProcess::GetGlobal()),
-      registry_(nullptr),
 #if BUILDFLAG(IS_CHROMEOS)
       user_manager_(std::make_unique<user_manager::UserManagerImpl>(
-          std::make_unique<ash::UserManagerDelegateImpl>(),
-          testing_local_state_.Get(),
-          ash::CrosSettings::Get())),
+          std::make_unique<user_manager::FakeUserManagerDelegate>(),
+          TestingBrowserProcess::GetGlobal()->local_state())),
 #endif
       verifier_format_override_(crx_file::VerifierFormat::CRX3) {
   base::FilePath test_data_dir;
@@ -273,13 +274,7 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
       extensions_features::kExtensionDisableUnsupportedDeveloper);
 }
 
-ExtensionServiceTestBase::~ExtensionServiceTestBase() {
-  // Why? Because |profile_| has to be destroyed before |at_exit_manager_|, but
-  // is declared above it in the class definition since it's protected.
-  // TODO(crbug.com/40205142): Since we're getting rid of at_exit_manager_,
-  // perhaps we don't need this call?
-  profile_.reset();
-}
+ExtensionServiceTestBase::~ExtensionServiceTestBase() = default;
 
 void ExtensionServiceTestBase::InitializeExtensionService(
     ExtensionServiceTestBase::ExtensionServiceInitParams params) {
@@ -422,7 +417,12 @@ void ExtensionServiceTestBase::SetUp() {
   // TODO(b/308107135) own KioskController instead of KioskAppManager.
   // A test might have initialized a `KioskAppManager` already.
   if (!ash::KioskChromeAppManager::IsInitialized()) {
-    kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
+    kiosk_cryptohome_remover_ = std::make_unique<ash::KioskCryptohomeRemover>(
+        TestingBrowserProcess::GetGlobal()->local_state());
+    kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        kiosk_cryptohome_remover_.get());
   }
 #endif
 
@@ -466,6 +466,19 @@ content::BrowserContext* ExtensionServiceTestBase::browser_context() {
 
 Profile* ExtensionServiceTestBase::profile() {
   return profile_.get();
+}
+
+TestingProfile* ExtensionServiceTestBase::testing_profile() {
+  return profile_.get();
+}
+
+void ExtensionServiceTestBase::DeleteProfile() {
+  registrar_ = nullptr;
+  registry_ = nullptr;
+  service_ = nullptr;
+  extensions_install_dir_ = base::FilePath();
+  unpacked_install_dir_ = base::FilePath();
+  profile_.reset();
 }
 
 void ExtensionServiceTestBase::SetGuestSessionOnProfile(bool guest_session) {

@@ -22,10 +22,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -225,8 +225,8 @@ TEST_F(TrayBackgroundViewTest, InitiallyHidden) {
 }
 
 TEST_F(TrayBackgroundViewTest, ShowingAnimationAbortedByHideAnimation) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Starts showing up animation.
   test_tray_background_view()->SetVisiblePreferred(true);
@@ -264,8 +264,8 @@ TEST_F(TrayBackgroundViewTest, EventsDisabledForHideAnimation) {
   test_tray_background_view()->SetVisiblePreferred(true);
 
   // Ensure animations don't complete immediately for the rest of the test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Start the tray's hide animation and verify that it can't process events.
   test_tray_background_view()->SetVisiblePreferred(false);
@@ -288,8 +288,8 @@ class NoSessionTrayBackgroundViewTest : public TrayBackgroundViewTest {
 }  // namespace
 
 TEST_F(NoSessionTrayBackgroundViewTest, HandleSessionChange) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Not showing animation after logging in.
   GetSessionControllerClient()->SetSessionState(
@@ -408,8 +408,8 @@ TEST_F(TrayBackgroundViewTest, NonPersistentBubbleClosedWhenLockStateChanges) {
 }
 
 TEST_F(TrayBackgroundViewTest, SecondaryDisplay) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Add secondary screen.
   UpdateDisplay("800x600,800x600");
@@ -511,7 +511,7 @@ TEST_F(TrayBackgroundViewTest, AutoHideShelfWithContextMenu) {
   // Move mouse to display the shelf.
   ui::test::EventGenerator* generator = GetEventGenerator();
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   generator->MoveMouseTo(display_bounds.bottom_center());
   ASSERT_TRUE(TriggerAutoHideTimeout(layout_manager));
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());

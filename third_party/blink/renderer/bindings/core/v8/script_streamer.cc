@@ -28,6 +28,7 @@
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/wait.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
@@ -743,10 +744,9 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   // TODO(leszeks): Decrease the priority of these tasks where possible.
   worker_pool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      CrossThreadBindOnce(RunScriptStreamingTask,
-                          std::move(script_streaming_task),
-                          WrapCrossThreadPersistent(this),
-                          WTF::CrossThreadUnretained(stream_)));
+      CrossThreadBindOnce(
+          RunScriptStreamingTask, std::move(script_streaming_task),
+          WrapCrossThreadPersistent(this), CrossThreadUnretained(stream_)));
 
   return true;
 }
@@ -778,11 +778,10 @@ ResourceScriptStreamer::ResourceScriptStreamer(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
       loading_task_runner);
 
-  watcher_->Watch(
-      data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&ResourceScriptStreamer::OnDataPipeReadable,
-                         WrapWeakPersistent(this)));
+  watcher_->Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+                  MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                  BindRepeating(&ResourceScriptStreamer::OnDataPipeReadable,
+                                WrapWeakPersistent(this)));
 
   MojoResult ready_result;
   mojo::HandleSignalsState ready_state;
@@ -1094,11 +1093,9 @@ enum class BackgroundProcessorState {
   kFinished,
 };
 
-#if DCHECK_IS_ON()
 std::ostream& operator<<(std::ostream& o, const BackgroundProcessorState& s) {
   return o << static_cast<unsigned>(s);
 }
-#endif  // DCHECK_IS_ON()
 
 std::unique_ptr<v8_compile_hints::CompileHintsForStreaming>
 BuildCompileHintsForStreaming(
@@ -1336,7 +1333,6 @@ BackgroundResourceScriptStreamer::BackgroundProcessor::~BackgroundProcessor() {
 void BackgroundResourceScriptStreamer::BackgroundProcessor::SetState(
     BackgroundProcessorState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
-#if DCHECK_IS_ON()
   using S = BackgroundProcessorState;
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       base::StateTransitions<S>, transitions,
@@ -1386,8 +1382,7 @@ void BackgroundResourceScriptStreamer::BackgroundProcessor::SetState(
            {// Received the result from the script decoder.
             S::kFinished}},
       }));
-  DCHECK_STATE_TRANSITION(&transitions, state_, state);
-#endif  // DCHECK_IS_ON()
+  CHECK_STATE_TRANSITION(&transitions, state_, state);
   state_ = state;
 }
 
@@ -1496,8 +1491,8 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
   watcher_->Watch(body_.get(), MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE,
                   MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                  WTF::BindRepeating(&BackgroundProcessor::OnDataPipeReadable,
-                                     weak_factory_.GetWeakPtr()));
+                  blink::BindRepeating(&BackgroundProcessor::OnDataPipeReadable,
+                                       weak_factory_.GetWeakPtr()));
   MojoResult ready_result;
   mojo::HandleSignalsState ready_state;
   MojoResult rv = watcher_->Arm(&ready_result, &ready_state);

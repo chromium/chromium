@@ -8,9 +8,9 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SettingsPrefs} from '../common.js';
-import {ReadAnythingSettingsChange} from '../metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../read_anything_logger.js';
+import type {SettingsPrefs} from '../content/read_anything_types.js';
+import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
+import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './color_menu.html.js';
 import type {MenuStateItem} from './menu_util.js';
@@ -72,6 +72,26 @@ export class ColorMenuElement extends ColorMenuElementBase {
       title: loadTimeData.getString('blueColorTitle'),
       icon: 'read-anything-20:blue-theme',
       data: chrome.readingMode.blueTheme,
+    },
+    {
+      title: loadTimeData.getString('highContrastColorTitle'),
+      icon: 'read-anything-20:high-contrast-theme',
+      data: chrome.readingMode.highContrastTheme,
+    },
+    {
+      title: loadTimeData.getString('lowContrastColorTitle'),
+      icon: 'read-anything-20:low-contrast-theme',
+      data: chrome.readingMode.lowContrastTheme,
+    },
+    {
+      title: loadTimeData.getString('sepiaLightColorTitle'),
+      icon: 'read-anything-20:sepia-light-theme',
+      data: chrome.readingMode.sepiaLightTheme,
+    },
+    {
+      title: loadTimeData.getString('sepiaDarkColorTitle'),
+      icon: 'read-anything-20:sepia-dark-theme',
+      data: chrome.readingMode.sepiaDarkTheme,
     },
   ];
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();

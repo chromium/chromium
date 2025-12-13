@@ -25,6 +25,7 @@ class WaitableEvent;
 
 namespace content::indexed_db {
 
+struct IndexedDBDataLossInfo;
 struct IndexedDBValue;
 
 // NB: This interface is a WIP and is expected to experience heavy churn in the
@@ -54,7 +55,7 @@ class BackingStore {
     // ignore them.
     // SQLite: a row id. LevelDB: a version.
     int64_t number;
-    // SQLite: unused. LevelDB: the *encoded* primary key bytes.
+    // SQLite and LevelDB: the *encoded* primary key bytes.
     std::string data;
   };
 
@@ -68,7 +69,11 @@ class BackingStore {
     virtual ~Database() = default;
 
     // Memory-cached metadata for this database.
-    virtual const blink::IndexedDBDatabaseMetadata& GetMetadata() = 0;
+    virtual const blink::IndexedDBDatabaseMetadata& GetMetadata() const = 0;
+
+    // Returns info relating to any lost/corrupted data when this database was
+    // opened.
+    virtual const IndexedDBDataLossInfo& GetDataLossInfo() const = 0;
 
     // Generates the lock ID key for the given object store. Not called on
     // SQLite backing stores.
@@ -97,10 +102,21 @@ class BackingStore {
    public:
     virtual ~Transaction() = default;
 
-    // For now, refer to comments in level_db::BackingStore::Transaction for
-    // documentation.
-    virtual void Begin(std::vector<PartitionedLock> locks) = 0;
-    virtual Status CommitPhaseOne(BlobWriteCallback callback) = 0;
+    virtual Status Begin(std::vector<PartitionedLock> locks) = 0;
+    // CommitPhaseOne determines what blobs (if any) need to be written to disk
+    // and updates the primary blob journal, and kicks off the async writing
+    // of the blob files. In case of crash/rollback, the journal indicates what
+    // files should be cleaned up.
+    // The blob write callback will be called eventually on success or failure,
+    // or immediately if phase one is complete due to lack of any blobs to
+    // write.
+    virtual Status CommitPhaseOne(
+        BlobWriteCallback blob_write_callback,
+        SerializeFsaCallback serialize_fsa_handle) = 0;
+    // CommitPhaseTwo is called once the blob files (if any) have been written
+    // to disk, and commits the actual transaction to the backing store,
+    // including blob journal updates, then deletes any blob files deleted
+    // by the transaction and not referenced by running scripts.
     virtual Status CommitPhaseTwo() = 0;
     virtual void Rollback() = 0;
 
@@ -197,7 +213,12 @@ class BackingStore {
         int64_t index_id,
         const blink::IndexedDBKeyRange& key_range,
         blink::mojom::IDBCursorDirection) = 0;
-    virtual blink::mojom::IDBValuePtr BuildMojoValue(IndexedDBValue value) = 0;
+    // Builds a complete value to be passed to the renderer by creating external
+    // objects for `value`. `deserialize_handle` can be used to help create FSA
+    // handle external objects out of their serialized representations.
+    virtual blink::mojom::IDBValuePtr BuildMojoValue(
+        IndexedDBValue value,
+        DeserializeFsaCallback deserialize_handle) = 0;
   };
 
   // Another interface to be implemented by a backend implementation.
@@ -222,8 +243,10 @@ class BackingStore {
     // Saves the current position of the cursor.
     virtual void SavePosition() = 0;
     // Attempts to reset the cursor to the last saved position. The cursor
-    // may not be in a valid state if this returns false.
-    virtual bool TryResetToLastSavedPosition() = 0;
+    // instance is no longer usable if the returned `Status` is not `ok()`. A
+    // status of type `kInvalidArgument` indicates that the position was not
+    // saved prior to this call.
+    virtual Status TryResetToLastSavedPosition() = 0;
   };
 
   virtual ~BackingStore() = default;

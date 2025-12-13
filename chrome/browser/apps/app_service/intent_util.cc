@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/apps/app_service/intent_util.h"
 
 #include <algorithm>
@@ -20,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
@@ -480,18 +476,21 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
   auto extras = base::flat_map<std::string, std::string>();
   if (intent->share_text.has_value()) {
     // Slice off the "S." prefix for the key.
-    extras.insert(std::make_pair(kIntentExtraText + kIntentPrefixLength,
-                                 intent->share_text.value()));
+    extras.insert(
+        std::make_pair(UNSAFE_TODO(kIntentExtraText + kIntentPrefixLength),
+                       intent->share_text.value()));
   }
   if (intent->share_title.has_value()) {
     // Slice off the "S." prefix for the key.
-    extras.insert(std::make_pair(kIntentExtraSubject + kIntentPrefixLength,
-                                 intent->share_title.value()));
+    extras.insert(
+        std::make_pair(UNSAFE_TODO(kIntentExtraSubject + kIntentPrefixLength),
+                       intent->share_title.value()));
   }
   if (intent->start_type.has_value()) {
     // Slice off the "S." prefix for the key.
-    extras.insert(std::make_pair(kIntentExtraStartType + kIntentPrefixLength,
-                                 intent->start_type.value()));
+    extras.insert(
+        std::make_pair(UNSAFE_TODO(kIntentExtraStartType + kIntentPrefixLength),
+                       intent->start_type.value()));
   }
   if (!intent->extras.empty()) {
     extras.insert(intent->extras.begin(), intent->extras.end());
@@ -578,7 +577,7 @@ std::string CreateLaunchIntent(const std::string& package_name,
     const std::string& activity = intent->activity_name.value();
     const char* activity_compact_name =
         activity.find(package_name.c_str()) == 0
-            ? activity.c_str() + package_name.length()
+            ? UNSAFE_TODO(activity.c_str() + package_name.length())
             : activity.c_str();
     ret += base::StringPrintf("%s=%s/%s;", arc::kComponent,
                               package_name.c_str(), activity_compact_name);

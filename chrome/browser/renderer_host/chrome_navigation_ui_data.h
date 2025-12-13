@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "chrome/common/actor/task_id.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/offline_pages/core/request_header/offline_page_navigation_ui_data.h"
 #include "content/public/browser/navigation_ui_data.h"
@@ -81,6 +82,8 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   std::optional<int64_t> bookmark_id() { return bookmark_id_; }
   void set_bookmark_id(std::optional<int64_t> id) { bookmark_id_ = id; }
 
+  actor::TaskId actor_task_id() { return actor_task_id_; }
+
   bool navigation_initiated_from_sync() {
     return navigation_initiated_from_sync_;
   }
@@ -125,6 +128,10 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   // ping-pong issue. They will still be allowed to load locally like a normal
   // navigation.
   bool navigation_initiated_from_sync_ = false;
+
+  // Id of the actor task active during this navigation. Set only if actor was
+  // acting on the tab when the navigation started.
+  actor::TaskId actor_task_id_;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_HOST_CHROME_NAVIGATION_UI_DATA_H_

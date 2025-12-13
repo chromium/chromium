@@ -42,11 +42,11 @@ namespace autofill {
 
 namespace {
 
-const char kDocumentationUrl[] = "https://goo.gl/9p2vKq";
-const char* kTypeAttributes[] = {"text", "email", "tel", "password"};
-const char* kTypeTextAttributes[] = {"text", "email", "tel"};
-char kTextFieldSignature = 'T';
-char kPasswordFieldSignature = 'P';
+constexpr const char kDocumentationUrl[] = "https://goo.gl/9p2vKq";
+constexpr const char* kTypeAttributes[] = {"text", "email", "tel", "password"};
+constexpr const char* kTypeTextAttributes[] = {"text", "email", "tel"};
+constexpr char kTextFieldSignature = 'T';
+constexpr char kPasswordFieldSignature = 'P';
 
 // Produce a relevant link to developer documentation regarding the warning or
 // error. If no particular reference is given, the default URL will be provided.
@@ -255,20 +255,6 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
     TrackElementByRendererIdIfUntracked(
         text_input, form_util::GetFieldRendererId(input_element),
         skip_control_ids, &nodes_for_id);
-  }
-  // Warn against elements sharing an id attribute. Duplicate id attributes both
-  // are against the HTML specification and can cause issues with password
-  // saving/filling, as the Password Manager makes the assumption that ids may
-  // be used as a unique identifier for nodes.
-  for (const auto& pair : nodes_for_id) {
-    const std::string& id_attr = pair.first;
-    const std::vector<WebNode>& nodes = pair.second;
-    if (nodes.size() <= 1)
-      continue;
-    logger->Send(LinkDocumentation(base::StringPrintf(
-                     "Found %zu elements with non-unique id #%s:", nodes.size(),
-                     id_attr.c_str())),
-                 PageFormAnalyserLogger::kWarning, nodes);
   }
 
   return form_input_collections;

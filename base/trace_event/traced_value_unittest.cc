@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <memory>
 #include <string_view>
 #include <utility>
 
@@ -54,7 +55,7 @@ TEST(TraceEventArgumentTest, InitializerListCreatedFlatDictionary) {
 }
 
 TEST(TraceEventArgumentTest, ArrayAndDictionaryScope) {
-  std::unique_ptr<TracedValue> value(new TracedValue());
+  auto value = std::make_unique<TracedValue>();
   {
     auto dictionary = value->BeginDictionaryScoped("dictionary_name");
     value->SetInteger("my_int", 1);
@@ -147,7 +148,7 @@ TEST(TraceEventArgumentTest, StringAndPointerConstructors) {
 }
 
 TEST(TraceEventArgumentTest, FlatDictionary) {
-  std::unique_ptr<TracedValue> value(new TracedValue());
+  auto value = std::make_unique<TracedValue>();
   value->SetBoolean("bool", true);
   value->SetDouble("double", 0.0);
   value->SetInteger("int", 2014);
@@ -162,7 +163,7 @@ TEST(TraceEventArgumentTest, FlatDictionary) {
 }
 
 TEST(TraceEventArgumentTest, NoDotPathExpansion) {
-  std::unique_ptr<TracedValue> value(new TracedValue());
+  auto value = std::make_unique<TracedValue>();
   value->SetBoolean("bo.ol", true);
   value->SetDouble("doub.le", 0.0);
   value->SetInteger("in.t", 2014);
@@ -175,7 +176,7 @@ TEST(TraceEventArgumentTest, NoDotPathExpansion) {
 }
 
 TEST(TraceEventArgumentTest, Hierarchy) {
-  std::unique_ptr<TracedValue> value(new TracedValue());
+  auto value = std::make_unique<TracedValue>();
   value->BeginArray("a1");
   value->AppendInteger(1);
   value->AppendBoolean(true);
@@ -212,7 +213,7 @@ TEST(TraceEventArgumentTest, LongStrings) {
   }
   kLongString3.back() = '\0';
 
-  std::unique_ptr<TracedValue> value(new TracedValue());
+  auto value = std::make_unique<TracedValue>();
   value->SetString("a", "short");
   value->SetString("b", kLongString);
   value->BeginArray("c");

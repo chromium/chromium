@@ -222,7 +222,7 @@ static std::unique_ptr<protocol::LayerTree::Layer> BuildObjectForLayer(
 
   if (!transform.IsIdentity()) {
     auto transform_array = std::make_unique<protocol::Array<double>>(16);
-    transform.GetColMajor(transform_array->data());
+    transform.GetColMajor(base::span(*transform_array).first<16>());
     layer_object->setTransform(std::move(transform_array));
     // FIXME: rename these to setTransformOrigin*
     // TODO(pdr): Now that BlinkGenPropertyTrees has launched, we can remove

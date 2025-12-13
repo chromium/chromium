@@ -42,7 +42,7 @@ TEST_F(ExclusiveAccessBubbleTypeTest, GetBubbleTextEmptyURL) {
   bool notify_overridden = false;
   std::u16string actual_text = GetInstructionTextForType(
       EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION, accelerator,
-      url::Origin(), has_download, notify_overridden);
+      std::nullopt, has_download, notify_overridden);
 
   EXPECT_TRUE(base::Contains(actual_text, accelerator));
   EXPECT_TRUE(base::Contains(actual_text, kExitFullscreenString));
@@ -56,7 +56,8 @@ TEST_F(ExclusiveAccessBubbleTypeTest, GetBubbleTextNonEmptyURL) {
   bool notify_overridden = false;
   std::u16string actual_text = GetInstructionTextForType(
       EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION, accelerator,
-      origin, has_download, notify_overridden);
+      std::make_optional<std::u16string>(base::UTF8ToUTF16(origin.Serialize())),
+      has_download, notify_overridden);
 
   EXPECT_TRUE(base::Contains(actual_text, accelerator));
   EXPECT_TRUE(base::Contains(actual_text, u"example.com"));
@@ -70,7 +71,7 @@ TEST_F(ExclusiveAccessBubbleTypeTest, GetBubbleTextWithDownloadNoOverride) {
   bool notify_overridden = false;
   std::u16string actual_text = GetInstructionTextForType(
       EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION, accelerator,
-      url::Origin(), has_download, notify_overridden);
+      std::nullopt, has_download, notify_overridden);
 
   EXPECT_TRUE(base::Contains(actual_text, accelerator));
   EXPECT_TRUE(base::Contains(actual_text, kDownloadString));
@@ -85,7 +86,8 @@ TEST_F(ExclusiveAccessBubbleTypeTest,
   bool notify_overridden = false;
   std::u16string actual_text = GetInstructionTextForType(
       EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION, accelerator,
-      origin, has_download, notify_overridden);
+      std::make_optional<std::u16string>(base::UTF8ToUTF16(origin.Serialize())),
+      has_download, notify_overridden);
 
   EXPECT_TRUE(base::Contains(actual_text, accelerator));
   EXPECT_TRUE(base::Contains(actual_text, u"example.com"));
@@ -101,7 +103,8 @@ TEST_F(ExclusiveAccessBubbleTypeTest,
   bool notify_overridden = false;
   std::u16string actual_text = GetInstructionTextForType(
       EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION, accelerator,
-      origin, has_download, notify_overridden);
+      std::make_optional<std::u16string>(base::UTF8ToUTF16(origin.Serialize())),
+      has_download, notify_overridden);
 
   EXPECT_TRUE(base::Contains(actual_text, accelerator));
   EXPECT_TRUE(base::Contains(actual_text, u"example.com"));

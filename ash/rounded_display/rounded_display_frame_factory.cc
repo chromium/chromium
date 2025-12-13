@@ -104,37 +104,27 @@ viz::TextureDrawQuad::RoundedDisplayMasksInfo MapToRoundedDisplayMasksInfo(
 }  // namespace
 
 // -----------------------------------------------------------------------------
-// RoundedDisplayUiResource:
-
-RoundedDisplayUiResource::RoundedDisplayUiResource() = default;
-RoundedDisplayUiResource::~RoundedDisplayUiResource() = default;
-
-// -----------------------------------------------------------------------------
 // RoundedDisplayFrameFactory:
 
 // static
-std::unique_ptr<RoundedDisplayUiResource>
-RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
-                                             viz::SharedImageFormat format,
-                                             UiSourceId ui_source_id,
-                                             bool is_overlay) {
+std::unique_ptr<UiResource> RoundedDisplayFrameFactory::CreateUiResource(
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    UiSourceId ui_source_id,
+    bool is_overlay) {
   DCHECK(!size.IsEmpty());
   DCHECK(ui_source_id > 0);
 
-  auto resource = std::make_unique<RoundedDisplayUiResource>();
-
-  if (!resource->context_provider) {
-    resource->context_provider = aura::Env::GetInstance()
-                                     ->context_factory()
-                                     ->SharedMainThreadRasterContextProvider();
-    if (!resource->context_provider) {
-      LOG(ERROR) << "Failed to acquire a context provider";
-      return nullptr;
-    }
+  auto context_provider = aura::Env::GetInstance()
+                              ->context_factory()
+                              ->SharedMainThreadRasterContextProvider();
+  if (!context_provider) {
+    LOG(ERROR) << "Failed to acquire a context provider";
+    return nullptr;
   }
 
-  gpu::SharedImageInterface* sii =
-      resource->context_provider->SharedImageInterface();
+  scoped_refptr<gpu::SharedImageInterface> sii =
+      context_provider->SharedImageInterface();
 
   gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
@@ -142,41 +132,35 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  auto client_shared_image = sii->CreateSharedImage({
-      format, size, gfx::ColorSpace(), usage, "RoundedDisplayFrameUi"},
+  auto client_shared_image = sii->CreateSharedImage(
+      {format, size, gfx::ColorSpace(), usage, "RoundedDisplayFrameUi"},
       gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
   if (!client_shared_image) {
     LOG(ERROR) << "Failed to create MappableSharedImage";
     return nullptr;
   }
-  resource->SetClientSharedImage(std::move(client_shared_image));
 
-  resource->sync_token = sii->GenVerifiedSyncToken();
+  auto resource = std::make_unique<UiResource>(std::move(sii),
+                                               std::move(client_shared_image));
+
+  resource->sync_token =
+      resource->shared_image_interface->GenVerifiedSyncToken();
   resource->damaged = true;
   resource->ui_source_id = ui_source_id;
   resource->is_overlay_candidate = is_overlay;
-  resource->format = format;
-  resource->resource_size = size;
 
   return resource;
 }
 
-std::unique_ptr<RoundedDisplayUiResource>
-RoundedDisplayFrameFactory::AcquireUiResource(
+std::unique_ptr<UiResource> RoundedDisplayFrameFactory::AcquireUiResource(
     const RoundedDisplayGutter& gutter,
     UiResourceManager& resource_manager) const {
   gfx::Size resource_size = gutter.bounds().size();
 
-  viz::ResourceId reusable_resource_id = resource_manager.FindResourceToReuse(
+  std::unique_ptr<UiResource> resource = resource_manager.GetResourceToReuse(
       resource_size, kSharedImageFormat, gutter.ui_source_id());
 
-  std::unique_ptr<RoundedDisplayUiResource> resource;
-
-  if (reusable_resource_id != viz::kInvalidResourceId) {
-    resource = base::WrapUnique(static_cast<RoundedDisplayUiResource*>(
-        resource_manager.ReleaseAvailableResource(reusable_resource_id)
-            .release()));
-  } else {
+  if (!resource) {
     resource = CreateUiResource(resource_size, kSharedImageFormat,
                                 gutter.ui_source_id(), gutter.NeedsOverlays());
   }
@@ -203,7 +187,7 @@ RoundedDisplayFrameFactory::CreateCompositorFrame(
                                         /*quad_list_size=*/6u);
 
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(&host_window);
+      display::Screen::Get()->GetDisplayNearestWindow(&host_window);
 
   gfx::Rect output_rect(display.GetSizeInPixel());
   render_pass->SetNew(viz::CompositorRenderPassId{1}, output_rect, output_rect,
@@ -226,10 +210,8 @@ RoundedDisplayFrameFactory::CreateCompositorFrame(
     // requirements of using hardware overlays.
     const gfx::Transform& buffer_to_target_transform = root_rotation_inverse;
 
-    viz::ResourceId resource_id =
-        resource_manager.OfferResource(std::move(resource));
     viz::TransferableResource transferable_resource =
-        resource_manager.PrepareResourceForExport(resource_id);
+        resource_manager.OfferAndPrepareResourceForExport(std::move(resource));
 
     AppendQuad(transferable_resource, buffer_to_target_transform, *gutter,
                *render_pass);
@@ -242,10 +224,10 @@ RoundedDisplayFrameFactory::CreateCompositorFrame(
   return frame;
 }
 
-std::unique_ptr<RoundedDisplayUiResource> RoundedDisplayFrameFactory::Draw(
+std::unique_ptr<UiResource> RoundedDisplayFrameFactory::Draw(
     const RoundedDisplayGutter& gutter,
     UiResourceManager& resource_manager) const {
-  std::unique_ptr<RoundedDisplayUiResource> resource =
+  std::unique_ptr<UiResource> resource =
       AcquireUiResource(gutter, resource_manager);
 
   if (!resource) {
@@ -255,22 +237,18 @@ std::unique_ptr<RoundedDisplayUiResource> RoundedDisplayFrameFactory::Draw(
   Paint(gutter, resource.get());
 
   if (resource->damaged) {
-    DCHECK(resource->context_provider);
-    gpu::SharedImageInterface* sii =
-        resource->context_provider->SharedImageInterface();
-
-    sii->UpdateSharedImage(resource->sync_token, resource->mailbox());
-
-    resource->sync_token = sii->GenVerifiedSyncToken();
+    resource->shared_image_interface->UpdateSharedImage(
+        resource->sync_token, resource->client_shared_image()->mailbox());
+    resource->sync_token =
+        resource->shared_image_interface->GenVerifiedSyncToken();
     resource->damaged = false;
   }
 
   return resource;
 }
 
-void RoundedDisplayFrameFactory::Paint(
-    const RoundedDisplayGutter& gutter,
-    RoundedDisplayUiResource* resource) const {
+void RoundedDisplayFrameFactory::Paint(const RoundedDisplayGutter& gutter,
+                                       UiResource* resource) const {
   gfx::Canvas canvas(gutter.bounds().size(), 1.0, true);
   gutter.Paint(&canvas);
 
@@ -319,14 +297,17 @@ void RoundedDisplayFrameFactory::AppendQuad(
   // Since the gutter texture is drawn into a buffer of exact size, therefore
   // we do not need to scale uv coordinates (zoom in or out on texture) to fit
   // the buffer size.
-  texture_quad->SetNew(quad_state, quad_rect, quad_rect,
-                       /*needs_blending=*/true, resource.id,
-                       /*uv_top_left=*/gfx::PointF(0, 0),
-                       /*uv_bottom_right=*/gfx::PointF(1, 1),
-                       /*background=*/SkColors::kTransparent,
-                       /*nearest=*/false,
-                       /*secure_output=*/false,
-                       gfx::ProtectedVideoType::kClear);
+  const auto resource_size = resource.GetSize();
+  texture_quad->SetNew(
+      quad_state, quad_rect, quad_rect,
+      /*needs_blending=*/true, resource.id,
+      /*top_left=*/gfx::PointF(0, 0),
+      /*bottom_right=*/
+      gfx::PointF(resource_size.width(), resource_size.height()),
+      /*background=*/SkColors::kTransparent,
+      /*nearest=*/false,
+      /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+      /*is_tex_coords_normalized=*/false);
 
   texture_quad->rounded_display_masks_info =
       MapToRoundedDisplayMasksInfo(gutter.GetGutterCorners());

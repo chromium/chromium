@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/syncer_error.h"

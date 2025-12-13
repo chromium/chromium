@@ -53,7 +53,7 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
   void RemoveRAILModeObserver(RAILModeObserver const*) override;
 
   void ForEachMainThreadIsolate(
-      base::RepeatingCallback<void(v8::Isolate* isolate)> callback) override;
+      base::FunctionRef<void(v8::Isolate* isolate)>) override;
 
   // Return the thread task runner (there's no separate task runner for them).
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;

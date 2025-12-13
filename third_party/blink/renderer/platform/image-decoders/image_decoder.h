@@ -52,13 +52,10 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/modules/skcms/skcms.h"
+#include "ui/gfx/hdr_metadata.h"
 
 class SkColorSpace;
 class SkData;
-
-namespace gfx {
-struct HDRMetadata;
-}  // namespace gfx
 
 namespace blink {
 
@@ -85,23 +82,36 @@ class PLATFORM_EXPORT ImagePlanes final {
   // |color_type| is kGray_8_SkColorType if GetYUVBitDepth() == 8 and either
   // kA16_float_SkColorType or kA16_unorm_SkColorType if GetYUVBitDepth() > 8.
   //
+  // If `hbd_output_type` is `kUnscaled`, the decoder will output unscaled
+  // high-bit-depth YUV values into the kA16_unorm_SkColorType planes. E.g.,
+  // 10-bit content will result in 10-bit range values in each 16-bit field.
+  // Otherwise values will be scaled to 16-bit extents.
+  //
   // TODO(crbug/910276): To support YUVA, ImagePlanes needs to support a
   // variable number of planes.
+  enum class HighBitDepthOutputType { kScaledTo16Bits, kUnscaled };
   ImagePlanes(base::span<void*, cc::kNumYUVPlanes> planes,
               base::span<const wtf_size_t, cc::kNumYUVPlanes> row_bytes,
-              SkColorType color_type);
+              SkColorType color_type,
+              HighBitDepthOutputType hbd_output_type =
+                  HighBitDepthOutputType::kScaledTo16Bits);
 
   void* Plane(cc::YUVIndex);
   wtf_size_t RowBytes(cc::YUVIndex) const;
   SkColorType color_type() const { return color_type_; }
   void SetHasCompleteScan() { has_complete_scan_ = true; }
   bool HasCompleteScan() const { return has_complete_scan_; }
+  bool SupportsUnscaledOutput() const {
+    return hbd_output_type_ == HighBitDepthOutputType::kUnscaled;
+  }
 
  private:
   std::array<void*, cc::kNumYUVPlanes> planes_;
   std::array<wtf_size_t, cc::kNumYUVPlanes> row_bytes_;
   SkColorType color_type_ = kUnknown_SkColorType;
   bool has_complete_scan_ = false;
+  HighBitDepthOutputType hbd_output_type_ =
+      HighBitDepthOutputType::kScaledTo16Bits;
 };
 
 class PLATFORM_EXPORT ColorProfile final {
@@ -318,9 +328,6 @@ class PLATFORM_EXPORT ImageDecoder {
   // kA16_unorm_SkColorType and kA16_float_SkColorType ImagePlanes.
   virtual uint8_t GetYUVBitDepth() const;
 
-  // Image decoders that support HDR metadata can override this.
-  virtual std::optional<gfx::HDRMetadata> GetHDRMetadata() const;
-
   // Image decoders that support C2PA manifest embedding can override this.
   virtual bool HasC2PAManifest() const;
 
@@ -401,6 +408,9 @@ class PLATFORM_EXPORT ImageDecoder {
   // transform has been baked into the pixel values.
   bool HasEmbeddedColorProfile() const { return embedded_color_profile_.get(); }
 
+  // Return the HDR metadata from the image and its color profile.
+  const gfx::HDRMetadata& GetHDRMetadata() const { return hdr_metadata_; }
+
   void SetEmbeddedColorProfile(std::unique_ptr<ColorProfile> profile);
 
   // Transformation from embedded color space to target color space.
@@ -425,7 +435,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // Clears decoded pixel data from all frames except the provided frame. If
   // subsequent frames depend on this frame's required previous frame, then that
   // frame is also kept in cache to prevent re-decoding from the beginning.
-  // Callers may pass WTF::kNotFound to clear all frames.
+  // Callers may pass kNotFound to clear all frames.
   // Note: If |frame_buffer_cache_| contains only one frame, it won't be
   // cleared. Returns the number of bytes of frame data actually cleared.
   virtual wtf_size_t ClearCacheExceptFrame(wtf_size_t);
@@ -461,7 +471,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // order to decode frame |frame_index|, based on frame disposal methods
   // and |frame_rect_is_opaque|, where |frame_rect_is_opaque| signifies whether
   // the rectangle of frame at |frame_index| is known to be opaque.
-  // If no previous frame's data is required, returns WTF::kNotFound.
+  // If no previous frame's data is required, returns kNotFound.
   //
   // This function requires that the previous frame's
   // |required_previous_frame_index_| member has been set correctly. The
@@ -549,6 +559,9 @@ class PLATFORM_EXPORT ImageDecoder {
   const cc::AuxImage aux_image_;
   ImageOrientationEnum orientation_ = ImageOrientationEnum::kDefault;
   gfx::Size density_corrected_size_;
+
+  // The HDR metadata that was read from the codec.
+  gfx::HDRMetadata hdr_metadata_;
 
   // The maximum amount of memory a decoded image should require. Ideally,
   // image decoders should downsample large images to fit under this limit

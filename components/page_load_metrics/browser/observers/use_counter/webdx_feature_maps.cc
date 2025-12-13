@@ -443,6 +443,29 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kV8WasmTypedFuncRef, WebDXFeature::kWasmTypedFunRefs},
           {WebFeature::kV8WasmMemory64, WebDXFeature::kWasmMemory64},
           {WebFeature::kV8WasmExnRef, WebDXFeature::kWasmExnrefExceptions},
+          {WebFeature::kCreateJSONModuleScript, WebDXFeature::kJsonModules},
+          {WebFeature::kV8WasmCustomDescriptors,
+           WebDXFeature::kDRAFT_WasmCustomDescriptors},
+          {WebFeature::kFetchUploadStreaming,
+           WebDXFeature::kFetchRequestStreams},
+          {WebFeature::kReadableStreamWithByteSource,
+           WebDXFeature::kReadableByteStreams},
+          {WebFeature::kDevicePostureMediaFeature,
+           WebDXFeature::kDevicePosture},
+          {WebFeature::kDevicePosture, WebDXFeature::kDevicePosture},
+          {WebFeature::kXRDepthSensing, WebDXFeature::kWebxrDepthSensing},
+          {WebFeature::kXRDOMOverlay, WebDXFeature::kWebxrDomOverlays},
+          {WebFeature::kReportingObserver, WebDXFeature::kReporting},
+          {WebFeature::kReportingEndpointsHeader, WebDXFeature::kReporting},
+          {WebFeature::kV8MLContext_Dispatch_Method, WebDXFeature::kWebnn},
+          {WebFeature::kTextDetectorDetect, WebDXFeature::kTextDetect},
+          {WebFeature::kSummarizer_Summarize, WebDXFeature::kSummarizer},
+          {WebFeature::kSummarizer_SummarizeStreaming,
+           WebDXFeature::kSummarizer},
+          {WebFeature::kTranslator_Translate, WebDXFeature::kTranslationApi},
+          {WebFeature::kTranslator_TranslateStreaming,
+           WebDXFeature::kTranslationApi},
+          {WebFeature::kLanguageDetector_Detect, WebDXFeature::kTranslationApi},
           // Add new features above this line.
       }};
 
@@ -587,6 +610,9 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kReadingFlow, WebDXFeature::kReadingFlow},
           {CSSSampleId::kPrintColorAdjust, WebDXFeature::kPrintColorAdjust},
           {CSSSampleId::kLineBreak, WebDXFeature::kLineBreak},
+          {CSSSampleId::kFontLanguageOverride,
+           WebDXFeature::kFontLanguageOverride},
+          {CSSSampleId::kTextJustify, WebDXFeature::kTextJustify},
           // Add new features above this line.
       }};
 
@@ -598,10 +624,7 @@ UseCounterMetricsRecorder::GetAnimatedCSSProperties2WebDXFeatureMap() {
   static const base::NoDestructor<
       const base::flat_map<CSSSampleId, WebDXFeature>>
       kMap{{
-          // TODO(jstenback): This animated kFontPalette is being investigated.
-          // Uncomment this once that's resolved, or replace this with something
-          // else that matches the resolution of the investigation
-          // {CSSSampleId::kFontPalette, WebDXFeature::kFontPaletteAnimation}
+          {CSSSampleId::kFontPalette, WebDXFeature::kFontPaletteAnimation},
           {CSSSampleId::kDisplay, WebDXFeature::kDisplayAnimation},
           // Add new features above this line.
       }};

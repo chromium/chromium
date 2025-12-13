@@ -69,6 +69,16 @@ avifenc -r l -d 8 -y 444 -s 0 four-colors.png four-colors-limited-range-444-8bpc
 avifenc -r f -d 10 -y 444 -s 0 --nclx 9/16/9 four-colors.png four-colors-full-range-bt2020-pq-444-10bpc.avif
 ```
 
+### four-colors-full-range-(420|422|444)-hlg-(10|12)bpc.avif
+```
+avifenc -r f -d 10 -y 420 -s 0 --nclx 9/18/9 four-colors.png four-colors-full-range-hlg-420-10bpc.avif
+avifenc -r f -d 10 -y 422 -s 0 --nclx 9/18/9 four-colors.png four-colors-full-range-hlg-422-10bpc.avif
+avifenc -r f -d 10 -y 444 -s 0 --nclx 9/18/9 four-colors.png four-colors-full-range-hlg-444-10bpc.avif
+avifenc -r f -d 12 -y 420 -s 0 --nclx 9/18/9 four-colors.png four-colors-full-range-hlg-420-12bpc.avif
+avifenc -r f -d 12 -y 422 -s 0 --nclx 9/18/9 four-colors.png four-colors-full-range-hlg-422-12bpc.avif
+avifenc -r f -d 12 -y 444 -s 0 --nclx 9/18/9 four-colors.png four-colors-full-range-hlg-444-12bpc.avif
+```
+
 ### four-colors.jpg
 Used [Sqoosh.app](https://squoosh.app/) with MozJPEG compression and RGB
 channels. exiftool was then used to add an orientation marker.
@@ -91,9 +101,26 @@ Used a [custom tool](https://storage.googleapis.com/dalecurtis/avif2mp4.html) to
 ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec h264 -tune zerolatency h264.mp4
 ```
 
+### h264_interlaced.mp4
+```
+ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -vcodec h264 -vf "setfield=tff,format=yuv420p" -flags +ilme+ildct -top 1 h264_interlaced.mp4
+```
+
+### h264_sei.mp4
+Similar to the construction of `h264.mp4`, but produces a file where the 5th
+frame is an SEI recovery point with a `recovery_frame_cnt=0`.
+```
+ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec h264 -tune zerolatency -x264-params "open-gop=1:keyint=5:bframes=3" h264_sei.mp4
+```
+
 ### h264.annexb
 ```
-ffmpeg -i h264.mp4 -codec copy -bsf:v h264_mp4toannexb -f h264 h264.annexb
+ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec h264 -tune zerolatency -f h264 h264.annexb
+```
+
+### h264_sei.annexb
+```
+ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec h264 -tune zerolatency -x264-params "open-gop=1:keyint=5:bframes=3" -f h264 h264_sei.annexb
 ```
 
 ### h265.mp4
@@ -103,7 +130,7 @@ ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec hevc -tag:v
 
 ### h265.annexb
 ```
-ffmpeg -i h265.mp4 -codec copy -bsf:v hevc_mp4toannexb -f hevc h265.annexb
+ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec hevc -tag:v hvc1 -tune zerolatency -f hevc h265.annexb
 ```
 
 ### sfx.adts

@@ -10,7 +10,6 @@
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/app_list/test/app_list_test_helper.h"
-#include "ash/assistant/assistant_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_controller_test_api.h"
@@ -41,6 +40,7 @@
 #include "ash/wm/desks/templates/saved_desk_test_helper.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
@@ -52,11 +52,16 @@
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
+#include "chromeos/ash/components/geolocation/cached_location_provider.h"
+#include "chromeos/ash/components/geolocation/live_location_provider.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
@@ -124,9 +129,12 @@ class AshTestHelper::PowerPolicyControllerInitializer {
 AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
     : AuraTestHelper(context_factory),
       system_monitor_(std::make_unique<base::SystemMonitor>()),
-      session_manager_(!session_manager::SessionManager::Get()
-                           ? std::make_unique<session_manager::SessionManager>()
-                           : nullptr) {
+      session_manager_(
+          !session_manager::SessionManager::Get()
+              ? std::make_unique<session_manager::SessionManager>(
+                    std::make_unique<
+                        session_manager::FakeSessionManagerDelegate>())
+              : nullptr) {
   views::ViewsTestHelperAura::SetFallbackTestViewsDelegateFactory(
       &MakeTestViewsDelegate);
 
@@ -154,10 +162,17 @@ AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
   // default state.
   shell::ToplevelWindow::ClearSavedStateForTest();
 
-  // SimpleGeolocationProvider has to be initialized before
+  // SystemLocationProvider has to be initialized before
   // GeolocationController, which is constructed during Shell::Init().
-  SimpleGeolocationProvider::Initialize(
-      base::MakeRefCounted<TestGeolocationUrlLoaderFactory>());
+  if (::chromeos::features::IsCachedLocationProviderEnabled()) {
+    SystemLocationProvider::Initialize(std::make_unique<CachedLocationProvider>(
+        std::make_unique<LocationFetcher>(
+            base::MakeRefCounted<TestGeolocationUrlLoaderFactory>())));
+  } else {
+    SystemLocationProvider::Initialize(std::make_unique<LiveLocationProvider>(
+        std::make_unique<LocationFetcher>(
+            base::MakeRefCounted<TestGeolocationUrlLoaderFactory>())));
+  }
 }
 
 AshTestHelper::~AshTestHelper() {
@@ -165,7 +180,7 @@ AshTestHelper::~AshTestHelper() {
     TearDown();
   }
 
-  SimpleGeolocationProvider::DestroyForTesting();
+  SystemLocationProvider::DestroyForTesting();
 
   if (destroy_screen_) {
     // Ensure the next test starts with a null display::Screen.  This must be
@@ -478,6 +493,24 @@ AccountId AshTestHelper::SimulateUserLogin(
     std::unique_ptr<PrefService> pref_service) {
   AccountId account_id = session_controller_client_->AddUserSession(
       login_info, opt_account_id, std::move(pref_service));
+
+  // Taken some concept from User::CanLock(). Kiosk/Guest accounts are
+  // disallowed to lock screen here. Other accounts are allowed by default.
+  // We may need to consider the pref following the production behavior.
+  switch (login_info.user_type) {
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+    case user_manager::UserType::kPublicAccount:
+      break;
+    case user_manager::UserType::kKioskChromeApp:
+    case user_manager::UserType::kKioskWebApp:
+    case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kKioskArcvmApp:
+      session_controller_client_->SetCanLockScreen(false);
+      break;
+  }
+
   session_controller_client_->SwitchActiveUser(account_id);
 
   if (login_info.activate_session) {

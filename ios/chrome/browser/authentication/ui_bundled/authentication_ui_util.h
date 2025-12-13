@@ -16,7 +16,9 @@
 @class AlertCoordinator;
 class AuthenticationService;
 class Browser;
+class GaiaId;
 class PrefService;
+class ProfileIOS;
 
 namespace signin {
 class IdentityManager;
@@ -107,7 +109,7 @@ AlertCoordinator* ManagedConfirmationDialogContentForHostedDomain(
 BOOL ShouldShowManagedConfirmationForHostedDomain(
     NSString* hosted_domain,
     signin_metrics::AccessPoint access_point,
-    NSString* gaia_ID,
+    const GaiaId& gaia_ID,
     PrefService* prefs);
 
 // Returns the current sign-in&sync state.
@@ -121,7 +123,7 @@ SignedInUserState GetSignedInUserState(
 // there is no unsynced data.
 bool ForceLeavingPrimaryAccountConfirmationDialog(
     SignedInUserState signed_in_user_state,
-    std::string_view profile_name);
+    ProfileIOS* profile);
 
 // Returns a dialog for the user to confirm to sign out, switch account.
 // `anchorView` and `anchorRect` is the position that triggered sign-in.

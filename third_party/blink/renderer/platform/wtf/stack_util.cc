@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
 
 #include "build/build_config.h"
@@ -127,7 +122,7 @@ void* GetStackStartImpl() {
     error = pthread_attr_getstack(&attr, &base, &size);
     CHECK(!error);
     pthread_attr_destroy(&attr);
-    return reinterpret_cast<uint8_t*>(base) + size;
+    return UNSAFE_TODO(reinterpret_cast<uint8_t*>(base) + size);
   }
 #if BUILDFLAG(IS_FREEBSD)
   pthread_attr_destroy(&attr);
@@ -228,7 +223,7 @@ size_t ThreadStackSize() {
   // tracks the end of the committed range. We're after the end of the reserved
   // stack area (most of which will be uncommitted, most times.)
   MEMORY_BASIC_INFORMATION stack_info;
-  memset(&stack_info, 0, sizeof(MEMORY_BASIC_INFORMATION));
+  UNSAFE_TODO(memset(&stack_info, 0, sizeof(MEMORY_BASIC_INFORMATION)));
   size_t result_size =
       VirtualQuery(&stack_info, &stack_info, sizeof(MEMORY_BASIC_INFORMATION));
   DCHECK_GE(result_size, sizeof(MEMORY_BASIC_INFORMATION));

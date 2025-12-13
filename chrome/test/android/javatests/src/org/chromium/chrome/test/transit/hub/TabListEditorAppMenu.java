@@ -15,7 +15,6 @@ import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewSpec;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
@@ -40,6 +39,7 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
     private final TabSwitcherListEditorFacility<HostStationT> mListEditor;
     private Item mCloseMenuItem;
     private Item mGroupOrAddTabsMenuItem;
+    private Item mPinMenuItem;
 
     public TabListEditorAppMenu(TabSwitcherListEditorFacility<HostStationT> listEditor) {
         mListEditor = listEditor;
@@ -60,20 +60,20 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
         // "Group tab(s)" or "Add tab(s) to new group"
         ViewSpec<View> groupTabsViewSpec;
         Matcher<MVCListAdapter.ListItem> groupTabsDataMatcher;
-        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
-            groupTabsViewSpec =
-                    itemViewSpec(withText(String.format("Add %s to new group", tabOrTabs)));
-            groupTabsDataMatcher = itemDataMatcher(R.id.tab_list_editor_add_tab_to_group_menu_item);
-        } else {
-            groupTabsViewSpec = itemViewSpec(withText("Group " + tabOrTabs));
-            groupTabsDataMatcher = itemDataMatcher(R.id.tab_list_editor_group_menu_item);
-        }
+        groupTabsViewSpec = itemViewSpec(withText(String.format("Add %s to new group", tabOrTabs)));
+        groupTabsDataMatcher = itemDataMatcher(R.id.tab_list_editor_add_tab_to_group_menu_item);
+
         mGroupOrAddTabsMenuItem = items.declareItem(groupTabsViewSpec, groupTabsDataMatcher);
 
         ViewSpec<? extends View> onScreenViewSpec1 =
                 itemViewSpec(withText("Bookmark " + tabOrTabs));
         items.declareItem(
                 onScreenViewSpec1, itemDataMatcher(R.id.tab_list_editor_bookmark_menu_item));
+
+        ViewSpec<? extends View> onScreenViewSpec3 = itemViewSpec(withText("Pin " + tabOrTabs));
+        mPinMenuItem =
+                items.declareItem(
+                        onScreenViewSpec3, itemDataMatcher(R.id.tab_list_editor_pin_menu_item));
 
         ViewSpec<? extends View> onScreenViewSpec = itemViewSpec(withText("Share " + tabOrTabs));
         items.declareItem(onScreenViewSpec, itemDataMatcher(R.id.tab_list_editor_share_menu_item));
@@ -107,11 +107,6 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
             groupTabsWithoutDialog() {
         assert mListEditor.isAnyGroupSelected();
 
-        boolean isTabGroupParityBottomSheetEnabled =
-                ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled();
-        assert !isTabGroupParityBottomSheetEnabled
-                : "Bottom sheet tab group merging not supported yet";
-
         List<Integer> tabIdsSelected = mListEditor.getAllTabIdsSelected();
         String title = TabGroupUtil.getNumberOfTabsString(tabIdsSelected.size());
         String snackbarMessage =
@@ -127,9 +122,14 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
         return Pair.create(card, undoSnackbar);
     }
 
+    /** Select "Pin tabs". */
+    public void pinTabs() {
+        mPinMenuItem.scrollToAndSelectTo().exitFacility(mListEditor);
+    }
+
     /** Select "Close tabs" to close all selected tabs. */
     public void closeTabs() {
-        TabModel tabModel = mHostStation.tabModelElement.get();
+        TabModel tabModel = mHostStation.tabModelElement.value();
         Condition tabCountDecreased =
                 new TabCountChangedCondition(tabModel, -mListEditor.getNumTabsSelected());
         mCloseMenuItem

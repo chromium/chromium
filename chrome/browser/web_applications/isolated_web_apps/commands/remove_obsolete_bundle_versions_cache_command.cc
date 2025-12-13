@@ -13,6 +13,8 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/isolated_web_apps/error/uma_logging.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 
 namespace web_app {
 
@@ -20,9 +22,12 @@ namespace {
 
 using SessionType = IwaCacheClient::SessionType;
 
+constexpr char kRemoveObsoleteBundleVersionsMetric[] =
+    "WebApp.Isolated.RemoveObsoleteBundleVersions";
+
 RemoveObsoleteBundleVersionsResult RemoveObsoleteBundleVersionsCacheCommandImpl(
     const web_package::SignedWebBundleId& web_bundle_id,
-    base::Version installed_version,
+    IwaVersion installed_version,
     SessionType session_type) {
   const base::FilePath cache_base_dir =
       IwaCacheClient::GetCacheBaseDirectoryForSessionType(session_type);
@@ -66,7 +71,7 @@ RemoveObsoleteBundleVersionsResult RemoveObsoleteBundleVersionsCacheCommandImpl(
       failed_to_remove_versions});
 }
 
-base::expected<base::Version, RemoveObsoleteBundleVersionsError> GetIwaVersion(
+base::expected<IwaVersion, RemoveObsoleteBundleVersionsError> GetIwaVersion(
     WebAppRegistrar& registrar,
     const webapps::AppId& app_id) {
   const WebApp* app = registrar.GetAppById(app_id);
@@ -75,8 +80,15 @@ base::expected<base::Version, RemoveObsoleteBundleVersionsError> GetIwaVersion(
         RemoveObsoleteBundleVersionsError::Type::kAppNotInstalled});
   }
 
-  CHECK(app->isolation_data());
-  return app->isolation_data()->version();
+  return app->isolation_data().value().version();
+}
+
+RemoveObsoleteBundleVersionsResult RecordMetric(
+    RemoveObsoleteBundleVersionsResult result) {
+  web_app::UmaLogExpectedStatus(
+      kRemoveObsoleteBundleVersionsMetric,
+      result.transform_error(&RemoveObsoleteBundleVersionsError::type));
+  return result;
 }
 
 }  // namespace
@@ -117,7 +129,7 @@ RemoveObsoleteBundleVersionsCacheCommand::
     : WebAppCommand<AppLock, RemoveObsoleteBundleVersionsResult>(
           "RemoveObsoleteBundleVersionsCacheCommand",
           AppLockDescription(url_info.app_id()),
-          std::move(callback),
+          base::BindOnce(&RecordMetric).Then(std::move(callback)),
           /*args_for_shutdown=*/
           base::unexpected(RemoveObsoleteBundleVersionsError{
               RemoveObsoleteBundleVersionsError::Type::kSystemShutdown})),
@@ -132,7 +144,7 @@ void RemoveObsoleteBundleVersionsCacheCommand::StartWithLock(
   CHECK(lock);
   lock_ = std::move(lock);
 
-  ASSIGN_OR_RETURN(const base::Version installed_version,
+  ASSIGN_OR_RETURN(const IwaVersion installed_version,
                    GetIwaVersion(lock_->registrar(), url_info_.app_id()),
                    [&](const RemoveObsoleteBundleVersionsError& error) {
                      CommandComplete(base::unexpected(error));

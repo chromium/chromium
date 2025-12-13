@@ -7,8 +7,6 @@ import datetime
 import json
 import logging
 
-import six
-
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.servers import server_base
 
@@ -129,7 +127,7 @@ class WPTServe(server_base.ServerBase):
     def _prepare_config(self):
         fs = self._filesystem
         finder = PathFinder(fs)
-        template_path = finder.path_from_wpt_tests('.config.json')
+        template_path = finder.path_from_wpt_tests('config.tmpl.json')
         config = json.loads(fs.read_text_file(template_path))
         for alias in config['aliases']:
             if alias['url-path'] == "/resources/testdriver-vendor.js":

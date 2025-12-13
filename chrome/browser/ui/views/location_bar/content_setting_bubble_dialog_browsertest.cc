@@ -28,6 +28,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
@@ -206,7 +207,7 @@ void ContentSettingBubbleDialogTest::TriggerQuietNotificationPermissionRequest(
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   permission_request_manager->set_permission_ui_selector_for_testing(
       std::make_unique<MockPermissionUiSelector>(
-          Decision(simulated_reason_for_quiet_ui, std::nullopt)));
+          Decision::UseQuietUi(simulated_reason_for_quiet_ui, std::nullopt)));
 
   permission_request_manager->AddRequest(
       web_contents->GetPrimaryMainFrame(),
@@ -221,23 +222,26 @@ void ContentSettingBubbleDialogTest::OverrideContentSettingsProvider(
   auto provider = std::make_unique<content_settings::MockProvider>();
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+
+  // All settings should have a default value defined.
+  if (GetParam() == content_settings::ProviderType::kDefaultProvider) {
+    for (auto* info :
+         *content_settings::WebsiteSettingsRegistry::GetInstance()) {
+      provider->SetWebsiteSetting(ContentSettingsPattern::Wildcard(),
+                                  ContentSettingsPattern::Wildcard(),
+                                  info->type(),
+                                  info->initial_default_value().Clone(),
+                                  /*constraints=*/{});
+    }
+  }
+
+  // Override specified types.
   for (ContentSettingsType type : types) {
     provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
         type, base::Value(ContentSetting::CONTENT_SETTING_BLOCK),
-        /*constraints=*/{},
-        content_settings::PartitionKey::GetDefaultForTesting());
+        /*constraints=*/{});
   }
-
-  // WINDOW_MANAGEMENT is observed fairly early on, so we need to make sure it's
-  // set to a reasonable value regardless of the |types| passed in.
-  provider->SetWebsiteSetting(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::WINDOW_MANAGEMENT,
-      base::Value(ContentSetting::CONTENT_SETTING_BLOCK),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
-
   content_settings::TestUtils::OverrideProvider(map, std::move(provider),
                                                 GetParam());
 }

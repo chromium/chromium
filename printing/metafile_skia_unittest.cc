@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -259,8 +259,7 @@ TEST(MetafileSkiaTest, SerializeUnencodedRasterImageAsPNG) {
     ImageSerializationContext images;
     SkSerialProcs procs = SerializationProcs(&subframes, nullptr, &images);
 
-    sk_sp<SkData> encoded_data =
-        (*procs.fImageProc)(image.get(), procs.fImageCtx);
+    auto encoded_data = procs.fImageProc(image.get(), procs.fImageCtx);
     ASSERT_TRUE(encoded_data);
     EXPECT_GT(encoded_data->size(), sizeof(uint32_t));
 
@@ -274,7 +273,7 @@ TEST(MetafileSkiaTest, SerializeUnencodedRasterImageAsPNG) {
     // We expect unencoded images to be encoded as PNG.
     auto encoded_image = reader.remaining_span();
     ASSERT_TRUE(
-        SkPngDecoder::IsPng(encoded_image.data(), encoded_image.size()));
+        SkPngRustDecoder::IsPng(encoded_image.data(), encoded_image.size()));
 }
 
 TEST(MetafileSkiaTest, SkipEncodingAsPngWhenImageIsAlreadyEncoded) {
@@ -304,8 +303,7 @@ TEST(MetafileSkiaTest, SkipEncodingAsPngWhenImageIsAlreadyEncoded) {
     PictureSerializationContext subframes;
     ImageSerializationContext images;
     SkSerialProcs procs = SerializationProcs(&subframes, nullptr, &images);
-    sk_sp<SkData> encoded_data =
-        (*procs.fImageProc)(jpeg_img.get(), procs.fImageCtx);
+    auto encoded_data = procs.fImageProc(jpeg_img.get(), procs.fImageCtx);
     ASSERT_TRUE(encoded_data);
     EXPECT_GT(encoded_data->size(), sizeof(uint32_t));
 
@@ -343,8 +341,7 @@ TEST(MetafileSkiaTest, SerializeUniqueImages) {
   ImageSerializationContext images;
   SkSerialProcs procs = SerializationProcs(&subframes, nullptr, &images);
 
-  sk_sp<SkData> encoded_data1 =
-      (*procs.fImageProc)(unencoded_img.get(), procs.fImageCtx);
+  auto encoded_data1 = procs.fImageProc(unencoded_img.get(), procs.fImageCtx);
   ASSERT_TRUE(encoded_data1);
   EXPECT_GT(encoded_data1->size(), sizeof(uint32_t));
 
@@ -359,12 +356,11 @@ TEST(MetafileSkiaTest, SerializeUniqueImages) {
     auto encoded_image = reader.remaining_span();
     ASSERT_FALSE(encoded_image.empty());
     ASSERT_TRUE(
-        SkPngDecoder::IsPng(encoded_image.data(), encoded_image.size()));
+        SkPngRustDecoder::IsPng(encoded_image.data(), encoded_image.size()));
   }
 
   // Call the serialization proc on the image for the second time.
-  sk_sp<SkData> encoded_data2 =
-      (*procs.fImageProc)(unencoded_img.get(), procs.fImageCtx);
+  auto encoded_data2 = procs.fImageProc(unencoded_img.get(), procs.fImageCtx);
   ASSERT_TRUE(encoded_data2);
   EXPECT_EQ(encoded_data2->size(), sizeof(uint32_t));
 
@@ -378,7 +374,7 @@ TEST(MetafileSkiaTest, SerializeUniqueImages) {
   }
 
   // Deserialization.
-  SkCodecs::Register(SkPngDecoder::Decoder());
+  SkCodecs::Register(SkPngRustDecoder::Decoder());
   PictureDeserializationContext d_subframes;
   ImageDeserializationContext d_images;
   SkDeserialProcs d_procs =

@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_add_account_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_header_item.h"
@@ -118,7 +119,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self reconfigureCellsForItems:@[ changedItem ]];
 }
 
-- (TableViewIdentityItem*)tableViewIdentityItemWithGaiaID:(NSString*)gaiaID {
+- (TableViewIdentityItem*)tableViewIdentityItemWithGaiaID:
+    (const GaiaId&)gaiaID {
   for (TableViewIdentityItem* item in [self.tableViewModel
            itemsInSectionWithIdentifier:IdentitiesSectionIdentifier]) {
     if (item.type != IdentityItemType) {
@@ -126,7 +128,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     TableViewIdentityItem* identityItem =
         base::apple::ObjCCastStrict<TableViewIdentityItem>(item);
-    if ([identityItem.gaiaID isEqualToString:gaiaID]) {
+    if (identityItem.gaiaID == gaiaID) {
       return identityItem;
     }
   }

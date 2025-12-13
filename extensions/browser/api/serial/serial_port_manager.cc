@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/serial/serial_port_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -144,9 +145,9 @@ void SerialPortManager::DispatchReceiveEvent(const ReceiveParams& params,
     error_info.connection_id = params.connection_id;
     error_info.error = error;
     auto args = serial::OnReceiveError::Create(error_info);
-    std::unique_ptr<extensions::Event> event(new extensions::Event(
+    auto event = std::make_unique<extensions::Event>(
         extensions::events::SERIAL_ON_RECEIVE_ERROR,
-        serial::OnReceiveError::kEventName, std::move(args)));
+        serial::OnReceiveError::kEventName, std::move(args));
     DispatchEvent(params, std::move(event));
   }
 }

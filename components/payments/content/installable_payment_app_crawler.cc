@@ -44,7 +44,7 @@ InstallablePaymentAppCrawler::InstallablePaymentAppCrawler(
     content::RenderFrameHost* initiator_render_frame_host,
     PaymentManifestDownloader* downloader,
     PaymentManifestParser* parser,
-    PaymentManifestWebDataService* cache)
+    WebPaymentsWebDataService* cache)
     : log_(content::WebContents::FromRenderFrameHost(
           initiator_render_frame_host)),
       merchant_origin_(merchant_origin),

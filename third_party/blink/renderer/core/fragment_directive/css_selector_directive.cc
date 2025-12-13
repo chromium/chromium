@@ -69,8 +69,8 @@ CssSelectorDirective::CssSelectorDirective(const String& value)
     : Directive(Directive::kSelector), value_(value) {}
 
 String CssSelectorDirective::ToStringImpl() const {
-  return "selector(type=CssSelector,value=" +
-         EncodeWithURLEscapeSequences(value_) + ")";
+  return StrCat({"selector(type=CssSelector,value=",
+                 EncodeWithURLEscapeSequences(value_), ")"});
 }
 
 }  // namespace blink

@@ -83,12 +83,15 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     return nullptr;
   }
 
-  CanvasResourceProvider* resource_provider =
+  CanvasResourceProviderSharedImage* resource_provider =
       recyclable_canvas_resource->resource_provider();
   DCHECK(resource_provider);
 
-  // Skip copy if constructing dummy mailbox texture.
-  if (!is_dummy_mailbox_texture) {
+  // Skip copy if constructing dummy mailbox texture, but still ensure waiting
+  // on the underlying canvas resource.
+  if (is_dummy_mailbox_texture) {
+    resource_provider->PrepareForWebGPUDummyMailbox();
+  } else {
     if (!image->CopyToResourceProvider(resource_provider, image_sub_rect)) {
       return nullptr;
     }
@@ -106,8 +109,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
     wgpu::TextureUsage usage,
     std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource) {
   scoped_refptr<CanvasResource> canvas_resource =
-      recyclable_canvas_resource->resource_provider()->ProduceCanvasResource(
-          FlushReason::kWebGPUTexture);
+      recyclable_canvas_resource->resource_provider()->ProduceCanvasResource();
 
   if (!canvas_resource) {
     return nullptr;
@@ -116,7 +118,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
 
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       canvas_resource->GetClientSharedImage();
-  gpu::SyncToken sync_token = canvas_resource->GetSyncToken();
+  gpu::SyncToken sync_token = canvas_resource->sync_token();
   gfx::Size size = shared_image->size();
 
   wgpu::TextureDescriptor tex_desc = {
@@ -199,26 +201,14 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
       shared_image_(std::move(shared_image)),
       finished_access_callback_(std::move(finished_access_callback)),
       recyclable_canvas_resource_(std::move(recyclable_canvas_resource)) {
+  dawn_control_client_->TrackMailboxTexture(weak_ptr_factory_.GetWeakPtr());
+#if BUILDFLAG(USE_DAWN)
   DCHECK(dawn_control_client_->GetContextProviderWeakPtr());
 
   gpu::webgpu::WebGPUInterface* webgpu =
       dawn_control_client_->GetContextProviderWeakPtr()
           ->ContextProvider()
           .WebGPUInterface();
-
-  // Wait on any work using the image.
-  webgpu->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-
-  // Produce and inject image to WebGPU texture
-  gpu::webgpu::ReservedTexture reservation = webgpu->ReserveTexture(
-      device_.Get(), &static_cast<const WGPUTextureDescriptor&>(desc));
-  DCHECK(reservation.texture);
-
-  wire_device_id_ = reservation.deviceId;
-  wire_device_generation_ = reservation.deviceGeneration;
-  wire_texture_id_ = reservation.id;
-  wire_texture_generation_ = reservation.generation;
-  texture_ = wgpu::Texture::Acquire(reservation.texture);
 
   const wgpu::DawnTextureInternalUsageDescriptor* internal_usage_desc = nullptr;
   if (const wgpu::ChainedStruct* next_in_chain = desc.nextInChain) {
@@ -233,15 +223,18 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
                                             : wgpu::TextureUsage::None;
   internal_usage |= additional_internal_usage;
 
-  // This may fail because gl_backing resource cannot produce dawn
-  // representation.
-  webgpu->AssociateMailbox(
-      wire_device_id_, wire_device_generation_, wire_texture_id_,
-      wire_texture_generation_, static_cast<uint64_t>(desc.usage),
-      static_cast<uint64_t>(internal_usage),
-      reinterpret_cast<const WGPUTextureFormat*>(desc.viewFormats),
-      base::checked_cast<GLuint>(desc.viewFormatCount), mailbox_flags,
-      shared_image_->mailbox());
+  scoped_access_ = shared_image_->BeginWebGPUTextureAccess(
+      webgpu, sync_token, device_, desc, static_cast<uint64_t>(internal_usage),
+      mailbox_flags);
+#else
+  NOTREACHED();
+#endif
+}
+
+void WebGPUMailboxTexture::SetNeedsPresent(bool needs_present) {
+  if (scoped_access_) {
+    scoped_access_->SetNeedsPresent(needs_present);
+  }
 }
 
 void WebGPUMailboxTexture::SetAlphaClearer(
@@ -249,47 +242,48 @@ void WebGPUMailboxTexture::SetAlphaClearer(
   alpha_clearer_ = std::move(alpha_clearer);
 }
 
-void WebGPUMailboxTexture::UnsetAlphaClearer() {
-  alpha_clearer_ = nullptr;
-}
-
 gpu::SyncToken WebGPUMailboxTexture::Dissociate() {
+#if BUILDFLAG(USE_DAWN)
   gpu::SyncToken finished_access_token;
-  if (wire_texture_id_ != 0) {
+  if (scoped_access_) {
     if (base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider =
             dawn_control_client_->GetContextProviderWeakPtr()) {
-      gpu::webgpu::WebGPUInterface* webgpu =
-          context_provider->ContextProvider().WebGPUInterface();
       if (alpha_clearer_) {
-        alpha_clearer_->ClearAlpha(texture_);
+        alpha_clearer_->ClearAlpha(scoped_access_->texture());
         alpha_clearer_ = nullptr;
       }
-      if (needs_present_) {
-        webgpu->DissociateMailboxForPresent(
-            wire_device_id_, wire_device_generation_, wire_texture_id_,
-            wire_texture_generation_);
-      } else {
-        webgpu->DissociateMailbox(wire_texture_id_, wire_texture_generation_);
-      }
-      wire_texture_id_ = 0;
 
-      webgpu->GenUnverifiedSyncTokenCHROMIUM(finished_access_token.GetData());
+      finished_access_token =
+          gpu::WebGPUTextureScopedAccess::EndAccess(std::move(scoped_access_));
+
       if (recyclable_canvas_resource_) {
         recyclable_canvas_resource_->SetCompletionSyncToken(
             finished_access_token);
       }
-      if (finished_access_callback_) {
-        std::move(finished_access_callback_).Run(finished_access_token);
-      }
+    } else {
+      // The context is lost, which means that WebGPUInterface may be already
+      // destroyed. So, set WebGPUTextureScopedAccess' raw_ptr reference to
+      // null to avoid its automatic dangling pointer check on destruction.
+      scoped_access_->ClearContext();
+    }
+    // Run the finished access callback even if the context provider is lost.
+    // The callback could be holding on to refs that need to be released.
+    if (finished_access_callback_) {
+      std::move(finished_access_callback_).Run(finished_access_token);
     }
   }
+  recyclable_canvas_resource_.reset();
+  scoped_access_.reset();
   shared_image_.reset();
   return finished_access_token;
+#else
+  NOTREACHED();
+#endif
 }
 
 void WebGPUMailboxTexture::SetCompletionSyncToken(const gpu::SyncToken& token) {
   // This should only be called after Dissociate().
-  CHECK_EQ(wire_texture_id_, 0u);
+  CHECK_EQ(scoped_access_, nullptr);
 
   // This is only allowed if we have an associated recyclable canvas resource.
   CHECK(recyclable_canvas_resource_);
@@ -297,7 +291,16 @@ void WebGPUMailboxTexture::SetCompletionSyncToken(const gpu::SyncToken& token) {
 }
 
 WebGPUMailboxTexture::~WebGPUMailboxTexture() {
+  dawn_control_client_->UntrackMailboxTexture(weak_ptr_factory_.GetWeakPtr());
   Dissociate();
+}
+
+const wgpu::Texture& WebGPUMailboxTexture::GetTexture() {
+#if BUILDFLAG(USE_DAWN)
+  return scoped_access_->texture();
+#else
+  NOTREACHED();
+#endif
 }
 
 }  // namespace blink

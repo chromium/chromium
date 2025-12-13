@@ -26,6 +26,18 @@ declare global {
         message: string;
       }
 
+      export interface KeyboardEvent {
+        id: number;
+        altKey: boolean;
+        code: string;
+        ctrlKey: boolean;
+        key: string;
+        keyCode: number;
+        metaKey: boolean;
+        repeat: boolean;
+        shiftKey: boolean;
+      }
+
       export interface ScreenRect {
         left: number;
         top: number;
@@ -214,7 +226,6 @@ declare global {
       export enum AccessibilityFeature {
         GOOGLE_TTS_LANGUAGE_PACKS = 'googleTtsLanguagePacks',
         DICTATION_CONTEXT_CHECKING = 'dictationContextChecking',
-        FACE_GAZE = 'faceGaze',
         GOOGLE_TTS_HIGH_QUALITY_VOICES = 'googleTtsHighQualityVoices',
         CAPTIONS_ON_BRAILLE_DISPLAY = 'captionsOnBrailleDisplay',
       }
@@ -490,6 +501,11 @@ declare global {
 
       export function enableDragEventRewriter(enabled: boolean): void;
 
+      export function processPendingSpokenFeedbackEvent(
+          id: number, propagate: boolean): void;
+
+      export function enableSpokenFeedbackMv3KeyHandling(): void;
+
       export const onIntroduceChromeVox: ChromeEvent<() => void>;
 
       export const onChromeVoxFocusChanged:
@@ -540,6 +556,10 @@ declare global {
 
       export const onToggleGestureInfoForSettings:
           ChromeEvent<(enabled: boolean) => void>;
+
+      export const onKeyDown: ChromeEvent<(event: KeyboardEvent) => void>;
+
+      export const onKeyUp: ChromeEvent<(event: KeyboardEvent) => void>;
     }
   }
 }

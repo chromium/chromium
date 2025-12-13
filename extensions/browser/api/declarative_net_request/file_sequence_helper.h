@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/token.h"
 #include "base/version.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
@@ -94,6 +95,8 @@ class RulesetInfo {
 
 // Helper to pass information related to the ruleset being loaded.
 struct LoadRequestData {
+  LoadRequestData() = delete;
+
   LoadRequestData(ExtensionId extension_id,
                   base::Version extension_version,
                   LoadRulesetRequestSource request_source);
@@ -116,6 +119,10 @@ struct LoadRequestData {
 
   // The rulesets that are being loaded.
   std::vector<RulesetInfo> rulesets;
+
+  // A randomly generated ID for this load request. If this is invalid, then the
+  // load is no longer valid.
+  base::Token load_request_id;
 };
 
 //  Helper class for file sequence operations for the declarative net request

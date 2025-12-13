@@ -575,13 +575,13 @@ class Generator(generator.Generator):
       return "%s" % self._GetNameForKind(
           kind, add_same_module_namespaces=add_same_module_namespaces)
     if mojom.IsArrayKind(kind):
-      pattern = "WTF::Vector<%s>" if self.for_blink else "std::vector<%s>"
+      pattern = "blink::Vector<%s>" if self.for_blink else "std::vector<%s>"
       if mojom.IsNullableKind(kind):
         pattern = _AddOptional(pattern)
       return pattern % self._GetCppWrapperType(
           kind.kind, add_same_module_namespaces=add_same_module_namespaces)
     if mojom.IsMapKind(kind):
-      pattern = ("WTF::HashMap<%s, %s>"
+      pattern = ("blink::HashMap<%s, %s>"
                  if self.for_blink else "std::unordered_map<%s, %s>")
       if mojom.IsNullableKind(kind):
         pattern = _AddOptional(pattern)
@@ -606,7 +606,7 @@ class Generator(generator.Generator):
           kind.kind, add_same_module_namespaces=add_same_module_namespaces)
     if mojom.IsStringKind(kind):
       if self.for_blink:
-        return "WTF::String"
+        return "blink::String"
       type_name = "std::string"
       return (_AddOptional(type_name)
               if mojom.IsNullableKind(kind) else type_name)

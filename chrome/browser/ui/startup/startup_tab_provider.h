@@ -142,10 +142,6 @@ class StartupTabProviderImpl : public StartupTabProvider {
       const StartupTabs& other_startup_tabs);
 #endif
 
-  // In branded Windows builds, adds the URL for the Incompatible Applications
-  // subpage of the Chrome settings.
-  static void AddIncompatibleApplicationsUrl(StartupTabs* tabs);
-
   // Gets the URL for the page which offers to reset the user's profile
   // settings.
   static GURL GetTriggeredResetSettingsUrl();

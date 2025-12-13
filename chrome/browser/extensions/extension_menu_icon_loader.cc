@@ -5,8 +5,11 @@
 #include "chrome/browser/extensions/extension_menu_icon_loader.h"
 
 #include "content/public/browser/browser_context.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "ui/gfx/image/image.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

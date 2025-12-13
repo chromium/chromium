@@ -21,7 +21,6 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -41,6 +40,7 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathTypes.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -805,7 +805,7 @@ class CC_PAINT_EXPORT DrawPathOp final : public PaintOpWithFlagsBaseInternal {
              UsePaintCache use_paint_cache = UsePaintCache::kEnabled)
       : PaintOpWithFlagsBaseInternal(kType, flags),
         path(path),
-        sk_path_fill_type(static_cast<uint8_t>(path.getFillType())),
+        sk_path_fill_type(path.getFillType()),
         use_cache(use_paint_cache) {}
   static void RasterWithFlags(const DrawPathOp* op,
                               const PaintFlags* flags,
@@ -822,7 +822,7 @@ class CC_PAINT_EXPORT DrawPathOp final : public PaintOpWithFlagsBaseInternal {
   // generation id. This can lead to caching issues so we explicitly
   // serialize/deserialize this value and set it on the SkPath before handing it
   // to Skia.
-  uint8_t sk_path_fill_type;
+  SkPathFillType sk_path_fill_type;
   UsePaintCache use_cache = UsePaintCache::kDisabled;
 
  private:
@@ -1196,7 +1196,13 @@ class CC_PAINT_EXPORT SaveLayerFiltersOp final
     : public PaintOpWithFlagsBaseInternal {
  public:
   static constexpr PaintOpType kType = PaintOpType::kSaveLayerFilters;
+  static constexpr int kMaxFiltersPerLayer = SkCanvas::kMaxFiltersPerLayer;
   explicit SaveLayerFiltersOp(base::span<const sk_sp<PaintFilter>> filters,
+                              const sk_sp<PaintFilter> backdrop_filter,
+                              const PaintFlags& flags);
+  explicit SaveLayerFiltersOp(const SkRect& bounds,
+                              base::span<const sk_sp<PaintFilter>> filters,
+                              const sk_sp<PaintFilter> backdrop_filter,
                               const PaintFlags& flags);
   ~SaveLayerFiltersOp();
   static void RasterWithFlags(const SaveLayerFiltersOp* op,
@@ -1204,13 +1210,16 @@ class CC_PAINT_EXPORT SaveLayerFiltersOp final
                               SkCanvas* canvas,
                               const PlaybackParams& params);
   bool IsValid() const {
-    return flags.IsValid() && (!flags.getImageFilter() || filters.empty());
+    return flags.IsValid() && (!flags.getImageFilter() || filters.empty()) &&
+           filters.size() <= kMaxFiltersPerLayer;
   }
   bool EqualsForTesting(const SaveLayerFiltersOp& other) const;
   bool HasSaveLayerOps() const { return true; }
   HAS_SERIALIZATION_FUNCTIONS();
 
+  SkRect bounds;
   std::vector<sk_sp<PaintFilter>> filters;
+  sk_sp<PaintFilter> backdrop_filter;
 
  private:
   SaveLayerFiltersOp();

@@ -47,6 +47,8 @@
   }
 </style>
 
+<settings-subpage class="multi-card" page-title="$i18n{safetyHub}"
+    learn-more-url="$i18n{safetyHubHelpCenterURL}" route-path$="[[routePath]]">
 <h2 class="section-header cr-secondary-text first">
   $i18n{safetyHubPageCardSectionHeader}
 </h2>
@@ -75,8 +77,8 @@
   </settings-safety-hub-notification-permissions-module>
 </template>
 <template is="dom-if" if="[[showUnusedSitePermissions_]]">
-  <settings-safety-hub-unused-site-permissions class="module box">
-  </settings-safety-hub-unused-site-permissions>
+  <settings-safety-hub-unused-site-permissions-module class="module box">
+  </settings-safety-hub-unused-site-permissions-module>
 </template>
 <template is="dom-if" if="[[showExtensions_]]">
   <settings-safety-hub-extensions-module class="module box">
@@ -104,3 +106,4 @@
     </relaunch-confirmation-dialog>
   </template>
 </if>
+</settings-supage>

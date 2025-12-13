@@ -25,7 +25,7 @@
 #include "printing/backend/print_backend.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/print_settings.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
@@ -411,10 +411,11 @@ void PrinterQuery::GetSettingsWithUI(uint32_t document_page_count,
     if (tab) {
       auto* printing_context_delegate = static_cast<PrintingContextDelegate*>(
           printing_context_delegate_.get());
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
       PrintingContextAndroid::SetPendingPrint(
           web_contents->GetTopLevelNativeWindow(),
           GetPrintableForTab(tab->GetJavaObject()),
-          printing_context_delegate->rfh_id().child_id,
+          printing_context_delegate->rfh_id().child_id.GetUnsafeValue(),
           printing_context_delegate->rfh_id().frame_routing_id);
     }
   }

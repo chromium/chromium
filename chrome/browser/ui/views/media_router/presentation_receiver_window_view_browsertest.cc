@@ -29,7 +29,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #endif
 

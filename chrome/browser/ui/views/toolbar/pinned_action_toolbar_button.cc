@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/action_id.h"
-#include "ui/actions/action_utils.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -63,7 +63,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(
 PinnedActionToolbarButton::PinnedActionToolbarButton(
     Browser* browser,
     actions::ActionId action_id,
-    PinnedToolbarActionsContainer* container)
+    base::WeakPtr<PinnedToolbarActionsContainer> container)
     : ToolbarButton(
           PressedCallback(),
           std::make_unique<PinnedActionToolbarButtonMenuModel>(browser,
@@ -81,7 +81,7 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
   SetProperty(views::kMarginsKey,
               gfx::Insets::TLBR(
                   0, 0, 0, GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
-  set_drag_controller(container);
+  set_drag_controller(container_.get());
   GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
@@ -181,12 +181,11 @@ gfx::Size PinnedActionToolbarButton::CalculatePreferredSize(
   // This makes sure the buttons are at least the toolbar button sized width.
   // The preferred size might be smaller when the button's icon is removed
   // during drag/drop.
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser_);
-  const gfx::Size toolbar_button_size =
-      browser_view
-          ? browser_view->toolbar_button_provider()->GetToolbarButtonSize()
-          : gfx::Size();
+  if (!container_) {
+    // Want to avoid this ever getting called during teardown.
+    return gfx::Size();
+  }
+  const gfx::Size toolbar_button_size = container_->GetDefaultButtonSize();
   const gfx::Size preferred_size =
       ToolbarButton::CalculatePreferredSize(available_size);
   return std::max(preferred_size, toolbar_button_size,
@@ -340,11 +339,26 @@ void PinnedActionToolbarButtonActionViewInterface::ActionItemChangedImpl(
   action_view_->SetActionEngaged(
       action_item->GetProperty(kActionItemUnderlineIndicatorKey));
 
+  bool is_pinnable = true;
+  switch (static_cast<actions::ActionPinnableState>(
+      action_item->GetProperty(actions::kActionItemPinnableKey))) {
+    case actions::ActionPinnableState::kNotPinnable:
+      is_pinnable = false;
+      break;
+    case actions::ActionPinnableState::kPinnable:
+    case actions::ActionPinnableState::kEnterpriseControlled:
+      is_pinnable = true;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  if (!is_pinnable && action_view_->IsPinned()) {
+    action_view_->SetVisible(false);
+  }
+
   OnViewChangedImpl(action_item);
-  action_view_->SetIsPinnable(
-      action_item->GetProperty(actions::kActionItemPinnableKey) ==
-      std::underlying_type_t<actions::ActionPinnableState>(
-          actions::ActionPinnableState::kPinnable));
+
   action_view_->SetIsActionShowingBubble(action_item->GetIsShowingBubble());
 }
 
@@ -381,7 +395,8 @@ void PinnedActionToolbarButtonActionViewInterface::OnViewChangedImpl(
   // item, use the stateful image. Otherwise, use the action item's image.
   ui::ImageModel image_model;
 
-  if (IsActionItemClass<actions::StatefulImageActionItem>(action_item)) {
+  if (actions::IsActionItemClass<actions::StatefulImageActionItem>(
+          action_item)) {
     image_model = static_cast<actions::StatefulImageActionItem*>(action_item)
                       ->GetStatefulImage();
   } else {

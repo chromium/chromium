@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/cws_info_service.h"
 
+#include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,6 +21,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
@@ -28,6 +30,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -205,13 +209,13 @@ TEST_F(CWSInfoServiceTest, QueriesCWSExtensions) {
   scoped_refptr<const Extension> test1 =
       AddExtension("test1", /* updates_from_cws= */ true);
   cws_info_service_->CheckAndMaybeFetchInfo();
-  ASSERT_EQ(1u, test_url_loader_factory_.pending_requests()->size());
-  std::string request_body(test_url_loader_factory_.pending_requests()
-                               ->at(0)
-                               .request.request_body->elements()
-                               ->at(0)
-                               .As<network::DataElementBytes>()
-                               .AsStringPiece());
+  const auto& pending_requests = *test_url_loader_factory_.pending_requests();
+  ASSERT_EQ(1u, pending_requests.size());
+  std::string_view request_body = pending_requests[0]
+                                      .request.request_body->elements()
+                                      ->at(0)
+                                      .As<network::DataElementBytes>()
+                                      .AsStringView();
   EXPECT_TRUE(VerifyStats(/*requests=*/1, 0, 0, 0));
   BatchGetStoreMetadatasRequest request_proto;
   ASSERT_TRUE(request_proto.ParseFromString(request_body));
@@ -243,7 +247,7 @@ TEST_F(CWSInfoServiceTest, HandlesNetworkErrorAndBadServerResponse) {
       net::HTTP_NOT_FOUND, 1);
   histogram_tester.ExpectBucketCount("Extensions.CWSInfoService.FetchSuccess",
                                      false, 1);
-  EXPECT_TRUE(cws_info_service_->GetCWSInfo(*test1) == std::nullopt);
+  EXPECT_FALSE(cws_info_service_->GetCWSInfo(*test1).has_value());
   // Verify that the fetch error timestamp was recorded.
   EXPECT_EQ(base::Time::Now(),
             cws_info_service_->GetCWSInfoFetchErrorTimestampForTesting());
@@ -262,7 +266,7 @@ TEST_F(CWSInfoServiceTest, HandlesNetworkErrorAndBadServerResponse) {
       "Extensions.CWSInfoService.NetworkResponseCodeOrError", net::HTTP_OK, 1);
   histogram_tester.ExpectBucketCount("Extensions.CWSInfoService.FetchSuccess",
                                      false, 2);
-  EXPECT_TRUE(cws_info_service_->GetCWSInfo(*test1) == std::nullopt);
+  EXPECT_FALSE(cws_info_service_->GetCWSInfo(*test1).has_value());
 }
 
 TEST_F(CWSInfoServiceTest, SavesGoodResponse) {
@@ -274,7 +278,7 @@ TEST_F(CWSInfoServiceTest, SavesGoodResponse) {
   *response_proto.add_store_metadatas() =
       BuildStoreMetadata(test1->id(), last_update_time);
   std::string response_str = response_proto.SerializeAsString();
-  ASSERT_TRUE(!response_str.empty());
+  ASSERT_FALSE(response_str.empty());
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
                         response_str);
   cws_info_service_->AddObserver(this);
@@ -339,7 +343,7 @@ TEST_F(CWSInfoServiceTest, HandlesMultipleRequestsPerInfoCheck) {
   *response.add_store_metadatas() = test1_metadata;
   *response.add_store_metadatas() = test2_metadata;
   std::string response_str = response.SerializeAsString();
-  ASSERT_TRUE(!response_str.empty());
+  ASSERT_FALSE(response_str.empty());
 
   // Set up server response for requests and start the info check.
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
@@ -410,7 +414,7 @@ TEST_F(CWSInfoServiceTest, SchedulesStartupAndPeriodicInfoChecks) {
   *response_proto.add_store_metadatas() =
       BuildStoreMetadata(test1->id(), last_update_time);
   std::string response_str = response_proto.SerializeAsString();
-  ASSERT_TRUE(!response_str.empty());
+  ASSERT_FALSE(response_str.empty());
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
                         response_str);
   // Forward time by the fetch interval since CWSInfoService will wait that
@@ -440,7 +444,7 @@ TEST_F(CWSInfoServiceTest, UpdatesExistingInfoAtUpdateIntervals) {
   *response_proto.add_store_metadatas() =
       BuildStoreMetadata(test1->id(), last_update_time);
   std::string response_str = response_proto.SerializeAsString();
-  ASSERT_TRUE(!response_str.empty());
+  ASSERT_FALSE(response_str.empty());
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
                         response_str);
   task_environment_.FastForwardBy(

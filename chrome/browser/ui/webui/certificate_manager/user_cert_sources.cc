@@ -119,25 +119,18 @@ void ViewCertificateAsync(
     }
     if (hash == crypto::SHA256Hash(cert_info.der_cert)) {
       // Found the cert, open cert viewer dialog if able and return.
-      if (base::FeatureList::IsEnabled(
-              ::features::kEnableCertManagementUIV2EditCerts)) {
-        if (IsCACertificateManagementAllowed(*profile->GetPrefs())) {
-          ShowCertificateDialog(
-              std::move(web_contents),
-              net::x509_util::CreateCryptoBuffer(cert_info.der_cert),
-              cert_info.cert_metadata,
-              base::BindRepeating(&UpdateCertificateAsync, profile,
-                                  user_cert_source));
-        } else {
-          ShowCertificateDialog(
-              std::move(web_contents),
-              net::x509_util::CreateCryptoBuffer(cert_info.der_cert),
-              cert_info.cert_metadata, base::NullCallback());
-        }
+      if (IsCACertificateManagementAllowed(*profile->GetPrefs())) {
+        ShowCertificateDialog(
+            std::move(web_contents),
+            net::x509_util::CreateCryptoBuffer(cert_info.der_cert),
+            cert_info.cert_metadata,
+            base::BindRepeating(&UpdateCertificateAsync, profile,
+                                user_cert_source));
       } else {
         ShowCertificateDialog(
             std::move(web_contents),
-            net::x509_util::CreateCryptoBuffer(cert_info.der_cert));
+            net::x509_util::CreateCryptoBuffer(cert_info.der_cert),
+            cert_info.cert_metadata, base::NullCallback());
       }
       return;
     }
@@ -195,9 +188,7 @@ void UserCertSource::GetCertificateInfos(
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
-  if (!base::FeatureList::IsEnabled(
-          ::features::kEnableCertManagementUIV2Write) ||
-      !server_cert_service) {
+  if (!server_cert_service) {
     std::vector<certificate_manager::mojom::SummaryCertInfoPtr> cert_infos;
     std::move(callback).Run(std::move(cert_infos));
     return;

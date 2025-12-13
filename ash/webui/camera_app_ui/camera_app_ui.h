@@ -14,15 +14,10 @@
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace media {
 class CameraAppDeviceProviderImpl;
 }  // namespace media
-
-namespace ui {
-class ColorChangeHandler;
-}  // namespace ui
 
 namespace ash {
 
@@ -59,12 +54,6 @@ class CameraAppUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<camera_app::mojom::CameraAppHelper> receiver);
 
-  // Instantiates implementor of the mojom::PageHandler mojo interface passing
-  // the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
   CameraAppUIDelegate* delegate() { return delegate_.get(); }
 
   aura::Window* window();
@@ -86,8 +75,6 @@ class CameraAppUI : public ui::MojoWebUIController,
   std::unique_ptr<media::CameraAppDeviceProviderImpl> provider_;
 
   std::unique_ptr<CameraAppHelperImpl> helper_;
-
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
@@ -176,7 +177,7 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    const std::string request_path = request.GetURL().path();
+    const std::string request_path = request.GetURL().GetPath();
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         new net::test_server::BasicHttpResponse);
     http_response->set_code(net::HTTP_OK);
@@ -242,7 +243,7 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
     return Steps(
         Do([]() {
           ASSERT_FALSE(BrowserList::GetInstance()->empty());
-          chrome::Reload(BrowserList::GetInstance()->GetLastActive(),
+          chrome::Reload(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
                          WindowOpenDisposition::CURRENT_TAB);
         }),
         WaitForHide(kSettingsWebContentsId),

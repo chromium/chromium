@@ -9,11 +9,16 @@
 
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 
+class PrefService;
+
 /// Provider for first run actions that should be performed sequentially after
 /// the FRE screens are dismissed.
 @interface FirstRunPostActionProvider : ScreenProvider
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPrefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

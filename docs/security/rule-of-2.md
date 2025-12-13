@@ -364,10 +364,13 @@ use at high privilege with untrusted data.
 
 ## Existing Code That Violates The Rule
 
-We still have code that violates this rule.  For example, Chrome's Omnibox
-[still parses JSON in the browser
-process](https://bugs.chromium.org/p/chromium/issues/detail?id=863193&q=%22rule%20of%202%22%20omnibox&can=1).
-Additionally, the networking process on Windows is (at present) unsandboxed by
-default, though there is [ongoing
-work](https://bugs.chromium.org/p/chromium/issues/detail?id=841001)
-to change that default.
+We know there is code in Chromium that violates the Rule of 2. For example, the
+networking process on Windows is written in C++ and handles plenty of
+untrustworthy data, yet it is not (at present) sandboxed by default. There is
+[ongoing work](https://bugs.chromium.org/p/chromium/issues/detail?id=841001) to
+change that.
+
+Our top priority is avoiding any *new* violations of the Rule of 2. We also try
+to keep track of existing violations and mitigate them over time: for example,
+some less-safe uses of JSON parsing in the privileged browser process were
+defanged when we swapped out our C++ JSON parser for one written in Rust.

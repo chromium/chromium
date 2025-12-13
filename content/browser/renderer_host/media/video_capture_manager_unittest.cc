@@ -39,14 +39,9 @@
 #include "media/base/media_switches.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/video_capture_system_impl.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#endif
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -202,9 +197,8 @@ class MockFrameObserver : public VideoCaptureControllerEventHandler {
                      const ReadyBuffer& buffer) override {}
   void OnFrameDropped(const VideoCaptureControllerID& id,
                       media::VideoCaptureFrameDropReason reason) override {}
-  void OnNewSubCaptureTargetVersion(
-      const VideoCaptureControllerID& id,
-      uint32_t sub_capture_target_version) override {}
+  void OnNewCaptureVersion(const VideoCaptureControllerID& id,
+                           media::CaptureVersion capture_version) override {}
   void OnFrameWithEmptyRegionCapture(const VideoCaptureControllerID&) override {
   }
   void OnEnded(const VideoCaptureControllerID& id) override {}
@@ -235,28 +229,6 @@ class ScreenlockMonitorTestSource : public ScreenlockMonitorSource {
     base::RunLoop().RunUntilIdle();
   }
 };
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-class MockBrowserClient : public content::ContentBrowserClient {
- public:
-  MOCK_METHOD(void,
-              BindReadonlyVideoEffectsManager,
-              (const std::string& device_id,
-               content::BrowserContext* browser_context,
-               mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
-                   video_effects_manager),
-              (override));
-
-  MOCK_METHOD(
-      void,
-      BindVideoEffectsProcessor,
-      (const std::string& device_id,
-       content::BrowserContext* browser_context,
-       mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
-           video_effects_processor),
-      (override));
-};
-#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 }  // namespace
 
@@ -301,9 +273,6 @@ class VideoCaptureManagerTest : public testing::Test {
 
  protected:
   void SetUp() override {
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-    content::SetBrowserClientForTesting(&browser_client_);
-#endif
     listener_ = std::make_unique<MockMediaStreamProviderListener>();
     auto video_capture_device_factory =
         std::make_unique<WrappedDeviceFactory>();
@@ -364,10 +333,10 @@ class VideoCaptureManagerTest : public testing::Test {
 
     VideoCaptureControllerID client_id = base::UnguessableToken::Create();
     vcm_->ConnectClient(
-        session_id, params, client_id, frame_observer_.get(), std::nullopt,
+        session_id, params, client_id, render_frame_host_id_,
+        frame_observer_.get(), std::nullopt,
         base::BindOnce(&VideoCaptureManagerTest::OnGotControllerCallback,
-                       base::Unretained(this), client_id, expect_success),
-        /*browser_context=*/&browser_context_);
+                       base::Unretained(this), client_id, expect_success));
     base::RunLoop().RunUntilIdle();
     return client_id;
   }
@@ -418,19 +387,13 @@ class VideoCaptureManagerTest : public testing::Test {
   raw_ptr<WrappedDeviceFactory> video_capture_device_factory_;
   blink::MediaStreamDevices devices_;
   content::TestBrowserContext browser_context_;
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  MockBrowserClient browser_client_;
-#endif
+  GlobalRenderFrameHostId render_frame_host_id_ = GlobalRenderFrameHostId(1, 1);
 };
 
 // Test cases
 
 // Try to open, start, stop and close a device.
 TEST_F(VideoCaptureManagerTest, CreateAndClose) {
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  EXPECT_CALL(browser_client_, BindReadonlyVideoEffectsManager(_, _, _))
-      .Times(0);
-#endif
   InSequence s;
   EXPECT_CALL(*listener_,
               Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
@@ -448,22 +411,6 @@ TEST_F(VideoCaptureManagerTest, CreateAndClose) {
   base::RunLoop().RunUntilIdle();
   vcm_->UnregisterListener(listener_.get());
 }
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-// Try to start and stop a device with an effects processor
-TEST_F(VideoCaptureManagerTest, CreateWithVideoEffectsProcessor) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(media::kCameraMicEffects);
-  mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager> receiver;
-  EXPECT_CALL(browser_client_, BindVideoEffectsProcessor(devices_.front().id,
-                                                         &browser_context_, _))
-      .Times(1);
-
-  base::UnguessableToken video_session_id = vcm_->Open(devices_.front());
-  auto client_id = StartClient(video_session_id, true);
-  StopClient(client_id);
-}
-#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 TEST_F(VideoCaptureManagerTest, CreateAndCloseMultipleTimes) {
   InSequence s;

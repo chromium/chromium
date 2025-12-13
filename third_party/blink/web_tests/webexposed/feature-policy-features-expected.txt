@@ -5,6 +5,7 @@ accelerometer
 ambient-light-sensor
 aria-notify
 attribution-reporting
+autofill
 autoplay
 browsing-topics
 camera
@@ -40,6 +41,7 @@ cross-origin-isolated
 deferred-fetch
 deferred-fetch-minimal
 device-attributes
+digital-credentials-create
 digital-credentials-get
 display-capture
 encrypted-media
@@ -61,6 +63,7 @@ language-model
 local-fonts
 local-network-access
 magnetometer
+manual-text
 media-playback-while-not-visible
 microphone
 midi
@@ -68,7 +71,6 @@ on-device-speech-recognition
 otp-credentials
 payment
 picture-in-picture
-popins
 private-aggregation
 private-state-token-issuance
 private-state-token-redemption
@@ -79,7 +81,6 @@ rewriter
 run-ad-auction
 screen-wake-lock
 serial
-shared-autofill
 shared-storage
 shared-storage-select-url
 speaker-selection

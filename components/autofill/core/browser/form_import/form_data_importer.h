@@ -5,14 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -21,6 +20,7 @@
 #include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace history {
 class HistoryService;
@@ -58,6 +58,27 @@ class FormDataImporter : public AddressDataManager::Observer,
     kVirtualCard,
     // The extracted card is known to be a duplicate local and server card.
     kDuplicateLocalServerCard,
+  };
+
+  // Context for most recently fetched payment method.
+  struct FetchedPaymentsDataContext {
+    // The instrument id of the card that has been most recently retrieved via
+    // Autofill Downstream (card retrieval from server). This can be used to
+    // decide whether the card submitted is the same card retrieved. This field
+    // is optional and is set when an Autofill credit card Downstream has
+    // happened.
+    std::optional<int64_t> fetched_card_instrument_id;
+
+    // Whether the last unmasked card (note: it may or may not be the extracted
+    // card) is fetched from the local cache (instead of going through a server
+    // retrieval process). This field is optional and is set when an Autofill
+    // credit card Downstream has happened.
+    std::optional<bool> card_was_fetched_from_cache;
+
+    // Whether Save and Fill suggestion was clicked on for the last fetched
+    // card. If so, no other payments post-checkout flow should be offered
+    // again.
+    bool card_submitted_through_save_and_fill = false;
   };
 
   // The parameters should outlive the FormDataImporter.
@@ -109,15 +130,16 @@ class FormDataImporter : public AddressDataManager::Observer,
                                                     is_imported);
   }
 
-  // See comment for |fetched_card_instrument_id_|.
-  void SetFetchedCardInstrumentId(int64_t instrument_id);
-
   // AddressDataManager::Observer
   void OnAddressDataChanged() override;
 
   // history::HistoryServiceObserver
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
+
+  FetchedPaymentsDataContext& fetched_payments_data_context() {
+    return fetched_payments_data_context_;
+  }
 
   // See `FormAssociator::GetFormAssociations()`.
   FormStructure::FormAssociations GetFormAssociations(
@@ -132,10 +154,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   void SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
       std::optional<NonInteractivePaymentMethodType>
           payment_method_type_if_non_interactive_authentication_flow_completed);
-
-  void set_card_was_fetched_from_cache(bool card_was_fetched_from_cache) {
-    card_was_fetched_from_cache_ = card_was_fetched_from_cache;
-  }
 
  private:
   // Defines an extracted address profile, which is a candidate for address
@@ -266,6 +284,11 @@ class FormDataImporter : public AddressDataManager::Observer,
       bool is_credit_card_upstream_enabled,
       ukm::SourceId ukm_source_id);
 
+  // If the mandatory re-auth opt-in bubble can be shown for a credit card, this
+  // function will start the flow and return true. Otherwise, it will return
+  // false.
+  bool ProceedWithCardMandatoryReauthOptInIfApplicable();
+
   // Processes the extracted address profiles. `extracted_address_profiles`
   // contains the addresses extracted from the form. |allow_prompt| denotes if a
   // prompt can be shown. Returns true if the import of a complete profile is
@@ -277,6 +300,11 @@ class FormDataImporter : public AddressDataManager::Observer,
 
   // Helper function which extracts the IBAN from the form structure.
   Iban ExtractIbanFromForm(const FormStructure& form);
+
+  // Extracts the GUIDs of profiles used to autofill `submitted_form`, returning
+  // an empty set if any field was manually edited.
+  base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(
+      const FormStructure& submitted_form) const;
 
   // If the `profile`'s country is not empty, complements it with
   // `AddressDataManager::GetDefaultCountryCodeForNewAddress()`, while logging
@@ -343,18 +371,9 @@ class FormDataImporter : public AddressDataManager::Observer,
   std::optional<NonInteractivePaymentMethodType>
       payment_method_type_if_non_interactive_authentication_flow_completed_;
 
-  // The instrument id of the card that has been most recently retrieved via
-  // Autofill Downstream (card retrieval from server). This can be used to
-  // decide whether the card submitted is the same card retrieved. This field is
-  // optional and is set when an Autofill Downstream has happened.
-  std::optional<int64_t> fetched_card_instrument_id_;
-
-  // TODO(crbug.com/403617982): Combine all last fetched card related
-  // information into a struct.
-  // Whether the last unmasked card (note: it may or may not be the extracted
-  // card) is fetched from the local cache (instead of going through a server
-  // retrieval process).
-  std::optional<bool> card_was_fetched_from_cache_;
+  // Struct to record contexts for the last payments data fetch. Should be reset
+  // when a new fetch starts.
+  FetchedPaymentsDataContext fetched_payments_data_context_;
 
   friend class FormDataImporterTestApi;
 };

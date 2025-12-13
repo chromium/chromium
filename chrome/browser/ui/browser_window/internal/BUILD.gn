@@ -7,11 +7,13 @@ import("//chrome/common/features.gni")
 assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
 
 source_set("internal") {
-  sources = []
+  sources = [ "create_browser_window.cc" ]
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window:create_browser_window",
+    "//components/sessions:session_id",
     "//ui/base/unowned_user_data",
   ]
 
@@ -19,56 +21,95 @@ source_set("internal") {
     sources += [
       "android/android_base_window.cc",
       "android/android_browser_window.cc",
+      "android/android_browser_window_enumerator.cc",
+      "android/android_browser_window_enumerator.h",
       "android/browser_window_interface_iterator_android.cc",
+      "android/create_browser_window_android.cc",
+    ]
+    deps += [
+      ":jni",
+      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//ui/android",
     ]
   } else {
     sources += [
+      "browser_collection.cc",
       "browser_window_features.cc",
       "browser_window_interface_iterator_non_android.cc",
+      "create_browser_window_non_android.cc",
       "desktop_browser_window_capabilities.cc",
+      "embedder_browser_window_features.cc",
+      "global_browser_collection.cc",
+      "profile_browser_collection.cc",
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     deps += [
+      "//chrome/browser:global_features",
       "//chrome/browser/actor/ui",
+      "//chrome/browser/actor/ui/task_list_bubble:controller",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
+      "//chrome/browser/contextual_tasks:ui",
+      "//chrome/browser/devtools",
       "//chrome/browser/extensions",
-      "//chrome/browser/lens/region_search:region_search",
+      "//chrome/browser/lens/region_search",
       "//chrome/browser/media/router:media_router_feature",
+      "//chrome/browser/prefs",
+      "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui:ui_features",
-      "//chrome/browser/ui/bookmarks:bookmarks",
+      "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/extensions",
-      "//chrome/browser/ui/find_bar:find_bar",
+      "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/promos:controller",
       "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/sync",
+      "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs:tab_list_bridge",
+      "//chrome/browser/ui/tabs/organization",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/tabs/tab_strip_api",
+      "//chrome/browser/ui/tabs/tab_strip_api:impl_header",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toolbar/chrome_labs",
+      "//chrome/browser/ui/views/contextual_tasks",
       "//chrome/browser/ui/views/download",
+      "//chrome/browser/ui/views/interaction:impl",
+      "//chrome/browser/ui/views/location_bar/cookie_controls",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/web_applications:launch_utils",
+      "//chrome/browser/ui/webui_browser",
       "//components/breadcrumbs/core:status",
-      "//components/collaboration/public:public",
+      "//components/collaboration/public",
       "//components/commerce/core:feature_list",
-      "//components/data_sharing/public:public",
+      "//components/data_sharing/public",
+      "//components/desktop_to_mobile_promos",
       "//components/lens:features",
       "//components/profile_metrics",
       "//components/saved_tab_groups/public",
       "//components/search",
     ]
 
-    if (is_win) {
-      deps +=
-          [ "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar" ]
+    if (is_win || is_mac) {
+      deps += [
+        "//chrome/browser/ui/pdf/infobar",
+        "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar",
+      ]
     }
 
-    if (is_win || is_mac) {
-      deps += [ "//chrome/browser/ui/pdf/infobar" ]
+    if (is_win || is_mac || is_linux) {
+      deps += [ "//chrome/browser/ui/views/session_restore_infobar" ]
+    }
+
+    if (is_chromeos) {
+      deps += [ "//components/session_manager/core" ]
     }
 
     if (enable_glic) {
@@ -81,27 +122,193 @@ source_set("internal") {
   }
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = [
+    ":internal",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/android_base_window_unittest.cc",
+      "android/android_browser_window_enumerator_unittest.cc",
+      "android/android_browser_window_unittest.cc",
+      "android/browser_window_interface_iterator_android_unittest.cc",
+    ]
+    deps += [
+      "//base",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
+      "//chrome/browser/ui/browser_window/test:native_unit_test_support_jni",
+      "//chrome/test:test_support",
+      "//components/sessions:session_id",
+      "//content/test:test_support",
+      "//ui/base",
+    ]
+  } else {
+    sources += [ "browser_collection_unittest.cc" ]
+    deps += [
+      "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui/browser_window",
+    ]
+  }
+}
+
 # Android targets need to be guarded by is_android because:
 # (1) Android GNI files may assert is_android, and
 # (2) The rest of this file can be included in non-Android builds.
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 
   android_library("java") {
     visibility = [
       ":*",
       "//chrome/android:chrome_all_java",
+      "//chrome/browser/ui/android/extensions/windowing/internal:javatests",
+      "//chrome/browser/ui/browser_window/test:junit_test_support",
+      "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
     ]
     sources = [
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindow.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindow.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowCreateParamsImpl.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowEnumerator.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowCreatorBridge.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroid.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskBoundsConstraints.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskImpl.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerImpl.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/IdSequencer.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/PendingActionManager.java",
     ]
     deps = [
+      "//base:base_java",
+      "//base:flagged_apis_java",
+      "//base:log_java",
+      "//base:tasks_java",
+      "//base:time_utils_java",
       "//build/android:build_java",
-      "//chrome/browser/ui/browser_window:java",
+      "//chrome/browser/android/customtabs:java",
+      "//chrome/browser/android/lifecycle:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tabmodel:java",
+      "//chrome/browser/ui/android/multiwindow:java",
+      "//chrome/browser/ui/browser_window/public/android:java",
+      "//chrome/browser/util:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//ui/base/mojom:ui_base_types_java",
+    ]
+    srcjar_deps = [ ":jni" ]
+  }
+
+  generate_jni("jni") {
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindow.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindow.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowCreateParamsImpl.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowEnumerator.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowCreatorBridge.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroid.java",
+    ]
+  }
+
+  robolectric_library("junit") {
+    testonly = true
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowCreateParamsImplUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskBoundsConstraintsUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskImplUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerImplUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/PendingActionManagerUnitTest.java",
+    ]
+    deps = [
+      ":java",
+      "//base:activity_state_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_java_test_support_uncommon",
+      "//base:base_junit_test_support",
+      "//base:flagged_apis_java",
+      "//base:tasks_java",
+      "//base:time_utils_java",
+      "//build/android:build_java",
+      "//chrome/browser/android/browserservices/intents:java",
+      "//chrome/browser/android/customtabs:java",
+      "//chrome/browser/android/lifecycle:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tabmodel:java",
+      "//chrome/browser/ui/android/multiwindow:java",
+      "//chrome/browser/ui/browser_window/public/android:java",
+      "//chrome/browser/ui/browser_window/test:junit_test_support",
+      "//chrome/browser/util:java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//ui/base/mojom:ui_base_types_java",
+    ]
+  }
+
+  android_library("javatests") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskIntegrationTest.java" ]
+    deps = [
+      ":java",
+      "//base:base_java_test_support",
+      "//base/test:public_transit_java",
+      "//chrome/android/javatests:chrome_test_java_helper",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tabmodel:java",
+      "//chrome/browser/ui/browser_window/public/android:java",
+      "//chrome/test/android:chrome_java_integration_test_support",
+      "//chrome/test/android:chrome_java_test_support_common",
+      "//chrome/test/android:chrome_java_transit",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/hamcrest:hamcrest_core_java",
+      "//third_party/hamcrest:hamcrest_library_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//ui/base/mojom:ui_base_types_java",
+    ]
+    data = [ "//chrome/test/data/android/about.html" ]
+  }
+
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "android/android_base_window_browsertest.cc",
+      "android/android_browser_window_browsertest.cc",
+      "android/create_browser_window_android_browsertest.cc",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/profiles",
+      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/tabs:tab_list_interface",
+      "//chrome/test:test_support_ui_android",
+      "//components/feed:feature_list",
+      "//net:test_support",
+      "//testing/gtest",
+      "//ui/android",
     ]
   }
 }

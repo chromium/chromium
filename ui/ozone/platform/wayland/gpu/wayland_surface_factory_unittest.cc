@@ -241,6 +241,8 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
             gfx::ColorSpace::CreateSRGB(), std::nullopt));
   }
 
+  SurfaceFactoryOzone* surface_factory() { return surface_factory_.get(); }
+
   uint32_t surface_id_ = 0;
 };
 
@@ -277,8 +279,8 @@ TEST_P(WaylandSurfaceFactoryTest,
   std::vector<scoped_refptr<OverlayImageHolder>> fake_overlay_image;
   for (int i = 0; i < 4; ++i) {
     auto size_px = window_->applied_state().size_px;
-    auto native_pixmap = surface_factory_->CreateNativePixmap(
-        widget_, nullptr, size_px, gfx::BufferFormat::BGRA_8888,
+    auto native_pixmap = surface_factory()->CreateNativePixmap(
+        widget_, nullptr, size_px, viz::SinglePlaneFormat::kBGRA_8888,
         gfx::BufferUsage::SCANOUT);
     fake_overlay_image.push_back(
         base::MakeRefCounted<OverlayImageHolder>(native_pixmap, size_px));
@@ -629,8 +631,8 @@ TEST_P(WaylandSurfaceFactoryTest,
   std::vector<scoped_refptr<OverlayImageHolder>> fake_overlay_image;
   for (int i = 0; i < 5; ++i) {
     auto size_px = window_->applied_state().size_px;
-    auto native_pixmap = surface_factory_->CreateNativePixmap(
-        widget_, nullptr, size_px, gfx::BufferFormat::BGRA_8888,
+    auto native_pixmap = surface_factory()->CreateNativePixmap(
+        widget_, nullptr, size_px, viz::SinglePlaneFormat::kBGRA_8888,
         gfx::BufferUsage::SCANOUT);
     fake_overlay_image.push_back(
         base::MakeRefCounted<OverlayImageHolder>(native_pixmap, size_px));
@@ -1355,8 +1357,8 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
 
   // Create buffer and FakeGlImageNativePixmap.
   std::vector<scoped_refptr<OverlayImageHolder>> fake_overlay_image;
-  auto native_pixmap = surface_factory_->CreateNativePixmap(
-      widget_, nullptr, test_buffer_size, gfx::BufferFormat::BGRA_8888,
+  auto native_pixmap = surface_factory()->CreateNativePixmap(
+      widget_, nullptr, test_buffer_size, viz::SinglePlaneFormat::kBGRA_8888,
       gfx::BufferUsage::SCANOUT);
   ASSERT_TRUE(native_pixmap);
   fake_overlay_image.push_back(base::MakeRefCounted<OverlayImageHolder>(

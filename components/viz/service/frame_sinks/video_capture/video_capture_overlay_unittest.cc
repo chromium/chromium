@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/frame_sinks/video_capture/video_capture_overlay.h"
 
 #include <array>
@@ -15,6 +10,9 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -459,9 +457,11 @@ class VideoCaptureOverlayRenderTest
     if (is_argb_test()) {
       uint8_t* dst = frame->GetWritableVisibleData(VideoFrame::Plane::kARGB);
       const int stride = frame->stride(VideoFrame::Plane::kARGB);
-      for (int row = 0; row < size.height(); ++row, dst += stride) {
+      for (int row = 0; row < size.height();
+           ++row, UNSAFE_TODO(dst += stride)) {
         uint32_t* const begin = reinterpret_cast<uint32_t*>(dst);
-        std::fill(begin, begin + size.width(), UINT32_C(0xff000000));
+        std::fill(begin, UNSAFE_TODO(begin + size.width()),
+                  UINT32_C(0xff000000));
       }
     } else /* if (!is_argb_test()) */ {
       media::FillYUV(frame.get(), 0x00, 0x80, 0x80);
@@ -504,19 +504,23 @@ class VideoCaptureOverlayRenderTest
         // Map from I420 planar [0,255] (of which only [16,235] is used) values
         // to interleaved [0.0,1.0] values.
         const gfx::Size& size = frame.visible_rect().size();
-        std::unique_ptr<gfx::ColorTransform::TriStim[]> colors(
-            new gfx::ColorTransform::TriStim[size.GetArea()]);
+        auto colors = base::HeapArray<gfx::ColorTransform::TriStim>::WithSize(
+            size.GetArea());
         int pos = 0;
         for (int row = 0; row < size.height(); ++row) {
-          const uint8_t* y = frame.visible_data(VideoFrame::Plane::kY) +
-                             (row * frame.stride(VideoFrame::Plane::kY));
-          const uint8_t* u = frame.visible_data(VideoFrame::Plane::kU) +
-                             ((row / 2) * frame.stride(VideoFrame::Plane::kU));
-          const uint8_t* v = frame.visible_data(VideoFrame::Plane::kV) +
-                             ((row / 2) * frame.stride(VideoFrame::Plane::kV));
+          const uint8_t* y =
+              UNSAFE_TODO(frame.visible_data(VideoFrame::Plane::kY) +
+                          (row * frame.stride(VideoFrame::Plane::kY)));
+          const uint8_t* u =
+              UNSAFE_TODO(frame.visible_data(VideoFrame::Plane::kU) +
+                          ((row / 2) * frame.stride(VideoFrame::Plane::kU)));
+          const uint8_t* v =
+              UNSAFE_TODO(frame.visible_data(VideoFrame::Plane::kV) +
+                          ((row / 2) * frame.stride(VideoFrame::Plane::kV)));
           for (int col = 0; col < size.width(); ++col) {
-            colors[pos].SetPoint(y[col] / 255.0f, u[col / 2] / 255.0f,
-                                 v[col / 2] / 255.0f);
+            colors[pos].SetPoint(UNSAFE_TODO(y[col]) / 255.0f,
+                                 UNSAFE_TODO(u[col / 2]) / 255.0f,
+                                 UNSAFE_TODO(v[col / 2]) / 255.0f);
             ++pos;
           }
         }
@@ -524,7 +528,7 @@ class VideoCaptureOverlayRenderTest
         // Execute the YUV→RGB conversion.
         gfx::ColorTransform::NewColorTransform(frame.ColorSpace(),
                                                png_color_space)
-            ->Transform(colors.get(), size.GetArea());
+            ->Transform(colors.data(), size.GetArea());
 
         // Map back from interleaved [0.0,1.0] values to intervealed ARGB,
         // setting alpha=100%.
@@ -534,7 +538,8 @@ class VideoCaptureOverlayRenderTest
         };
         pos = 0;
         for (int row = 0; row < size.height(); ++row) {
-          uint32_t* out = canonical_bitmap.getAddr32(0, row);
+          base::span<uint32_t> out =
+              UNSAFE_SKBITMAP_GETADDR32(canonical_bitmap, 0, row);
           for (int col = 0; col < size.width(); ++col) {
             out[col] = ((UINT32_C(255) << SK_A32_SHIFT) |
                         (ToClamped255(colors[pos].x()) << SK_R32_SHIFT) |
@@ -595,10 +600,10 @@ class VideoCaptureOverlayRenderTest
   }
 
   void ExpectRendersAs(base::span<VideoCaptureOverlay::OnceRenderer> renderers,
-                       const char* const* expected_files,
-                       const std::size_t count,
+                       base::span<const char* const> expected_files,
                        const gfx::Size& video_frame_size) {
-    for (std::size_t i = 0; i < count; ++i) {
+    ASSERT_EQ(renderers.size(), expected_files.size());
+    for (std::size_t i = 0; i < renderers.size(); ++i) {
       auto frame = CreateVideoFrame(video_frame_size);
       CHECK(renderers[i]);
       std::move(renderers[i]).Run(frame.get());
@@ -731,8 +736,7 @@ TEST_P(VideoCaptureOverlayRenderTest, MovesAround) {
       "overlay_moves_2_1.png", "overlay_moves_2_2.png", "overlay_moves_lr.png",
   };
 
-  ExpectRendersAs(renderers, kGoldenFiles.data(), kGoldenFiles.size(),
-                  video_frame_size);
+  ExpectRendersAs(renderers, kGoldenFiles, video_frame_size);
 }
 
 // Tests that the overlay will be partially rendered (clipped) when any part of
@@ -800,8 +804,7 @@ TEST_P(VideoCaptureOverlayRenderTest, ClipsToContentBounds) {
       "overlay_clips_ll.png",
   };
 
-  ExpectRendersAs(renderers, kGoldenFiles.data(), kGoldenFiles.size(),
-                  video_frame_size);
+  ExpectRendersAs(renderers, kGoldenFiles, video_frame_size);
 }
 
 TEST_P(VideoCaptureOverlayRenderTest, HandlesEmptySubRegion) {
@@ -877,8 +880,7 @@ TEST_P(VideoCaptureOverlayRenderTest, ClipsToSubregionBounds) {
       "overlay_clips_ll_subregion.png",
   };
 
-  ExpectRendersAs(renderers, kGoldenFiles.data(), kGoldenFiles.size(),
-                  compositor_frame_subrect.size());
+  ExpectRendersAs(renderers, kGoldenFiles, compositor_frame_subrect.size());
 }
 
 TEST_P(VideoCaptureOverlayRenderTest, ScalesToContentRegion) {
@@ -931,7 +933,7 @@ TEST_P(VideoCaptureOverlayRenderTest, ScalesToContentRegion) {
       "overlay_clips_ll_contentscaled.png",
   };
 
-  ExpectRendersAs(renderers, kGoldenFiles.data(), kGoldenFiles.size(),
+  ExpectRendersAs(renderers, kGoldenFiles,
                   gfx::Size(content_rect.right(), content_rect.bottom()));
 }
 

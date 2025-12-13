@@ -8,7 +8,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -39,7 +38,7 @@ enum ManualFallbackItemType : NSInteger {
                            cards.count);
 
   self.noRegularDataItemsToShowHeaderItem = nil;
-  if (!cards.count && IsKeyboardAccessoryUpgradeEnabled()) {
+  if (!cards.count) {
     TableViewTextHeaderFooterItem* textHeaderFooterItem =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:manual_fill::ManualFallbackItemType::kNoCardsMessage];

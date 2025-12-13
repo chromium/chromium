@@ -59,7 +59,7 @@ class NET_EXPORT CookieBase {
   // Returns true if the given |url_path| path-matches this cookie's cookie-path
   // as described in section 5.1.4 in RFC 6265. This returns true if |path_| and
   // |url_path| are identical, or if |url_path| is a subdirectory of |path_|.
-  bool IsOnPath(const std::string& url_path) const;
+  bool IsOnPath(const std::string_view url_path) const;
 
   // This returns true if this cookie's |domain_| indicates that it can be
   // accessed by |host|.
@@ -78,7 +78,7 @@ class NET_EXPORT CookieBase {
   // is identical (which reflects the intended behavior when the cookie has a
   // host-only-flag), whereas the RFC also treats them as domain-matching if
   // |domain_| is a subdomain of |host|.
-  bool IsDomainMatch(const std::string& host) const;
+  bool IsDomainMatch(const std::string_view host) const;
 
   const std::string& Name() const { return name_; }
   // We represent the cookie's host-only-flag as the absence of a leading dot in

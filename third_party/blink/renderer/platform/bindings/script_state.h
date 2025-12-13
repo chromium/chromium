@@ -153,7 +153,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
     DCHECK(!object.IsEmpty());
     ScriptState* script_state = static_cast<ScriptState*>(
         object->GetAlignedPointerFromEmbedderDataInCreationContext(
-            isolate, kV8ContextPerContextDataIndex));
+            isolate, kV8ContextPerContextDataIndex, gin::kBlinkScriptState));
     // ScriptState::ForRelevantRealm() must be called only for objects having a
     // creation context while the context must have a valid embedder data in
     // the embedder field.
@@ -166,7 +166,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
     DCHECK(!context.IsEmpty());
     ScriptState* script_state =
         static_cast<ScriptState*>(context->GetAlignedPointerFromEmbedderData(
-            isolate, kV8ContextPerContextDataIndex));
+            isolate, kV8ContextPerContextDataIndex, gin::kBlinkScriptState));
     // ScriptState::From() must not be called for a context that does not have
     // valid embedder data in the embedder field.
     DCHECK(script_state);
@@ -190,11 +190,11 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
     }
     ScriptState* script_state =
         static_cast<ScriptState*>(context->GetAlignedPointerFromEmbedderData(
-            isolate, kV8ContextPerContextDataIndex));
+            isolate, kV8ContextPerContextDataIndex, gin::kBlinkScriptState));
     SECURITY_CHECK(!script_state || script_state->context_ == context);
     return script_state;
   }
-
+  // Isolate is never null.
   v8::Isolate* GetIsolate() const { return isolate_; }
   DOMWrapperWorld& World() const { return *world_; }
   const V8ContextToken& GetToken() const { return token_; }
@@ -235,7 +235,10 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   static void OnV8ContextCollectedCallback(
       const v8::WeakCallbackInfo<ScriptState>&);
 
-  raw_ptr<v8::Isolate, DanglingUntriaged> isolate_;
+  // This is de-facto a `raw_ref`, but actually using `raw_ref` here
+  // leads to considerable bloat in bindings, so we just CHECK() it
+  // upon construction.
+  const raw_ptr<v8::Isolate, DanglingUntriaged> isolate_;
   // This persistent handle is weak.
   ScopedPersistent<v8::Context> context_;
 

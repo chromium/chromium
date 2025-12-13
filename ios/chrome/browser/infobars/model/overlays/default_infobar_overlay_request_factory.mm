@@ -23,6 +23,7 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
     case InfobarType::kInfobarTypePasswordUpdate:
     case InfobarType::kInfobarTypePermissions:
     case InfobarType::kInfobarTypeSaveCard:
+    case InfobarType::kInfobarTypeSaveCvc:
     case InfobarType::kInfobarTypeSyncError:
     case InfobarType::kInfobarTypeTranslate:
     case InfobarType::kInfobarTypeEnhancedSafeBrowsing:

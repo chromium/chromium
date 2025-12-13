@@ -14,22 +14,22 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
+#include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
@@ -167,18 +167,17 @@ void ExtensionsMenuMainPageViewUnitTest::ClickSiteAccessToggle(
 }
 
 ExtensionsMenuMainPageView* ExtensionsMenuMainPageViewUnitTest::main_page() {
-  ExtensionsMenuViewController* menu_controller =
-      menu_coordinator()->GetControllerForTesting();
-  return menu_controller ? menu_controller->GetMainPageViewForTesting()
-                         : nullptr;
+  ExtensionsMenuViewPlatformDelegateViews* menu_delegate =
+      menu_coordinator()->GetDelegateForTesting();
+  return menu_delegate ? menu_delegate->GetMainPageViewForTesting() : nullptr;
 }
 
 ExtensionsMenuSitePermissionsPageView*
 ExtensionsMenuMainPageViewUnitTest::site_permissions_page() {
-  ExtensionsMenuViewController* menu_controller =
-      menu_coordinator()->GetControllerForTesting();
-  return menu_controller ? menu_controller->GetSitePermissionsPageForTesting()
-                         : nullptr;
+  ExtensionsMenuViewPlatformDelegateViews* menu_delegate =
+      menu_coordinator()->GetDelegateForTesting();
+  return menu_delegate ? menu_delegate->GetSitePermissionsPageForTesting()
+                       : nullptr;
 }
 
 std::vector<ExtensionMenuItemView*>
@@ -195,6 +194,10 @@ void ExtensionsMenuMainPageViewUnitTest::SetUp() {
 }
 
 void ExtensionsMenuMainPageViewUnitTest::TearDown() {
+  if (views::Widget* menu_widget =
+          menu_coordinator()->GetExtensionsMenuWidget()) {
+    menu_widget->CloseNow();
+  }
   web_contents_tester_ = nullptr;
   ExtensionsToolbarUnitTest::TearDown();
 }
@@ -717,10 +720,11 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
+  auto reload_page_dialog_reset =
+      extensions::ReloadPageDialogController::AcceptDialogForTesting(false);
   auto* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(action_runner);
-  action_runner->accept_bubble_for_testing(false);
 
   // When extension is granted tab permissions it has:
   //   - site interaction is "granted".

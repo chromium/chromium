@@ -6,21 +6,19 @@
 
 #include <vector>
 
-#include "base/functional/callback.h"
-#include "base/memory/ptr_util.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/viewport_intersection.h"
-#include "components/performance_manager/test_support/graph/mock_frame_node_observer.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
@@ -32,7 +30,6 @@
 
 namespace performance_manager {
 
-using testing::_;
 using testing::AllOf;
 using testing::Not;
 using testing::UnorderedElementsAre;
@@ -47,15 +44,30 @@ MATCHER_P(HasViewportIntersection, viewport_intersection, "") {
 
 namespace {
 
-// Sends a 'p' key press to the page, simulating a user edit if a text field is
-// focused.
-void SimulateKeyPress(content::WebContents* web_contents) {
-  content::SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('p'),
-                            ui::DomCode::US_P, ui::VKEY_P, /*control=*/false,
-                            /*shift=*/false, /*alt=*/false, /*command=*/false);
+// Returns true if the mojom::DocumentCoordinationUnit connection associated
+// with `render_frame_host` is bound.
+bool IsDocumentCoordinatorUnitBound(
+    content::RenderFrameHost* render_frame_host) {
+  base::WeakPtr<FrameNode> frame_node =
+      PerformanceManager::GetFrameNodeForRenderFrameHost(render_frame_host);
+  if (!frame_node) {
+    return false;
+  }
+
+  FrameNodeImpl* frame_node_impl = FrameNodeImpl::FromNode(frame_node.get());
+  return frame_node_impl->IsDocumentCoordinationUnitBoundForTesting();
 }
 
-using FrameNodeImplBrowserTest = InProcessBrowserTest;
+class FrameNodeImplBrowserTest : public InProcessBrowserTest {
+ public:
+  ~FrameNodeImplBrowserTest() override = default;
+
+ private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+};
 
 class ParameterizedFrameNodeImplBrowserTest
     : public FrameNodeImplBrowserTest,
@@ -200,14 +212,11 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Rotated) {
                 HasViewportIntersection(ViewportIntersection::kIntersecting))));
 }
 
-// TODO(https://crbug.com/376315752): Deflake and re-enable.
-IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
-                       DISABLED_Bind_SimpleNavigation) {
+IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, Bind_SimpleNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
-  const GURL kTestUrl =
-      embedded_test_server()->GetURL("/form_interaction.html");
+  const GURL kTestUrl = embedded_test_server()->GetURL("/title1.html");
 
   content::RenderFrameHost* rfh =
       ui_test_utils::NavigateToURL(browser(), kTestUrl);
@@ -215,25 +224,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   EXPECT_EQ(rfh->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kActive);
 
-  Graph* graph = PerformanceManager::GetGraph();
-
-  // Get the frame's node.
-
-  // Check that a form interaction notification is received through the bound
-  // receiver.
-  MockFrameNodeObserver obs;
-  graph->AddFrameNodeObserver(&obs);
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(obs, OnHadFormInteractionChanged(_)).WillOnce([&]() {
-    run_loop.Quit();
-  });
-
-  SimulateKeyPress(browser()->tab_strip_model()->GetActiveWebContents());
-  run_loop.Run();
-
-  // Clean up.
-  graph->RemoveFrameNodeObserver(&obs);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsDocumentCoordinatorUnitBound(rfh); }));
 }
 
 class FrameNodeImplBackForwardCacheBrowserTest
@@ -253,9 +245,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBackForwardCacheBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
-  const GURL kTestUrl =
-      embedded_test_server()->GetURL("/form_interaction.html");
-  const GURL kOtherUrl = embedded_test_server()->GetURL("/title1.html");
+  const GURL kTestUrl = embedded_test_server()->GetURL("/title1.html");
+  const GURL kOtherUrl = embedded_test_server()->GetURL("/title2.html");
 
   // Navigation to the test URL.
   content::RenderFrameHost* rfh =
@@ -275,26 +266,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBackForwardCacheBrowserTest,
   EXPECT_EQ(rfh->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kActive);
 
-  Graph* graph = PerformanceManager::GetGraph();
-
-  // Check that a form interaction notification is received through the bound
-  // receiver.
-  LenientMockFrameNodeObserver obs;
-  graph->AddFrameNodeObserver(&obs);
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(obs, OnHadFormInteractionChanged(_)).WillOnce([&]() {
-    run_loop.Quit();
-  });
-
-  // After HistoryGoBack(), the text field is no longer focused so we explicly
-  // re-focus it.
-  EXPECT_TRUE(ExecJs(rfh, "FocusTextField();"));
-  SimulateKeyPress(browser()->tab_strip_model()->GetActiveWebContents());
-  run_loop.Run();
-
-  // Clean up.
-  graph->RemoveFrameNodeObserver(&obs);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsDocumentCoordinatorUnitBound(rfh); }));
 }
 
 class FrameNodeImplPrerenderBrowserTest : public FrameNodeImplBrowserTest {
@@ -313,15 +286,13 @@ class FrameNodeImplPrerenderBrowserTest : public FrameNodeImplBrowserTest {
   content::test::PrerenderTestHelper prerender_test_helper_;
 };
 
-// TODO(362360274): Fix this flaky test.
 IN_PROC_BROWSER_TEST_F(FrameNodeImplPrerenderBrowserTest,
-                       DISABLED_Bind_PrerenderNavigation) {
+                       Bind_PrerenderNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
-  const GURL kPrerenderUrl =
-      embedded_test_server()->GetURL("/form_interaction.html");
+  const GURL kPrerenderUrl = embedded_test_server()->GetURL("/title1.html");
 
   // Initial navigation. Needed so we can add prerendered frames.
   content::RenderFrameHost* rfh =
@@ -344,26 +315,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplPrerenderBrowserTest,
   EXPECT_EQ(prerender_rfh->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kActive);
 
-  Graph* graph = PerformanceManager::GetGraph();
-
-  // Check that a form interaction notification is received through the bound
-  // receiver.
-  MockFrameNodeObserver obs;
-  graph->AddFrameNodeObserver(&obs);
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(obs, OnHadFormInteractionChanged(_)).WillOnce([&]() {
-    run_loop.Quit();
-  });
-
-  // After activating the prerender, the text field is no longer focused so we
-  // explicly re-focus it.
-  EXPECT_TRUE(ExecJs(prerender_rfh, "FocusTextField();"));
-  SimulateKeyPress(browser()->tab_strip_model()->GetActiveWebContents());
-  run_loop.Run();
-
-  // Clean up.
-  graph->RemoveFrameNodeObserver(&obs);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsDocumentCoordinatorUnitBound(prerender_rfh); }));
 }
 
 }  // namespace performance_manager

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_education/webui/whats_new_storage_service.h"

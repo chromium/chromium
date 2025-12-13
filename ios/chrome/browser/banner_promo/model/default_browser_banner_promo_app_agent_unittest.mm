@@ -32,7 +32,7 @@ namespace {
 
 // Creates the Feature Engagement Mock Tracker.
 std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    web::BrowserState* browser_state) {
+    ProfileIOS* profile) {
   return std::make_unique<feature_engagement::test::MockTracker>();
 }
 
@@ -87,7 +87,9 @@ class DefaultBrowserBannerPromoAppAgentTest : public PlatformTest {
         feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
   }
 
-  ~DefaultBrowserBannerPromoAppAgentTest() override = default;
+  ~DefaultBrowserBannerPromoAppAgentTest() override {
+    profile_state_.profile = nullptr;
+  }
 
   // Returns the WebStateList for the given SceneState.
   WebStateList* GetWebStateList(SceneState* scene_state) {

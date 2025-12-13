@@ -143,9 +143,9 @@ class CORE_EXPORT AnchorElementViewportPositionTracker
     auto operator<=>(const AnchorObservation&) const = default;
   };
   std::set<AnchorObservation> observed_anchors_
-      ALLOW_DISCOURAGED_TYPE("WTF::HashSet lacks key sorting.");
+      ALLOW_DISCOURAGED_TYPE("blink::HashSet lacks key sorting.");
   std::set<AnchorObservation> not_observed_anchors_
-      ALLOW_DISCOURAGED_TYPE("WTF::HashSet lacks key sorting.");
+      ALLOW_DISCOURAGED_TYPE("blink::HashSet lacks key sorting.");
 
   // Observed anchors that are currently in the viewport.
   HeapHashSet<WeakMember<const HTMLAnchorElementBase>> anchors_in_viewport_;

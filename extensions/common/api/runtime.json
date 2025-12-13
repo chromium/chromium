@@ -85,8 +85,7 @@
             {"name": "android", "description": "Specifies the Android operating system."},
             {"name": "cros", "description": "Specifies the Chrome operating system."},
             {"name": "linux", "description": "Specifies the Linux operating system."},
-            {"name": "openbsd", "description": "Specifies the OpenBSD operating system."},
-            {"name": "fuchsia", "description": "Specifies the Fuchsia operating system."}
+            {"name": "openbsd", "description": "Specifies the OpenBSD operating system."}
         ]
       },
       {
@@ -339,6 +338,17 @@
           "properties": {},
           "additionalProperties": { "type": "any" },
           "description": "The manifest details."
+        }
+      },
+      {
+        "name": "getVersion",
+        "description": "Returns the extension's version as declared in the manifest.",
+        "type": "function",
+        "nocompile": true,
+        "parameters": [],
+        "returns": {
+          "type": "string",
+          "description": "The extension's version."
         }
       },
       {

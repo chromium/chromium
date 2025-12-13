@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.safety_check;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
@@ -36,12 +37,6 @@ class SafetyCheckViewBinder {
                 return "";
             case PasswordsState.NO_PASSWORDS:
                 return context.getString(R.string.safety_check_passwords_no_passwords);
-            case PasswordsState.SIGNED_OUT:
-                return context.getString(R.string.safety_check_passwords_error_signed_out);
-            case PasswordsState.QUOTA_LIMIT:
-                return context.getString(R.string.safety_check_passwords_error_quota_limit);
-            case PasswordsState.OFFLINE:
-                return context.getString(R.string.safety_check_passwords_error_offline);
             case PasswordsState.ERROR:
                 return context.getString(R.string.safety_check_passwords_error);
             case PasswordsState.SAFE:
@@ -54,8 +49,6 @@ class SafetyCheckViewBinder {
                                 R.plurals.safety_check_passwords_compromised_exist,
                                 compromised,
                                 compromised);
-            case PasswordsState.BACKEND_VERSION_NOT_SUPPORTED:
-                return context.getString(R.string.safety_check_passwords_update_play_services);
             default:
                 assert false : "Unknown PasswordsState value.";
         }
@@ -73,11 +66,7 @@ class SafetyCheckViewBinder {
             case PasswordsState.COMPROMISED_EXIST:
                 return R.drawable.ic_warning_red_24dp;
             case PasswordsState.NO_PASSWORDS:
-            case PasswordsState.SIGNED_OUT:
-            case PasswordsState.QUOTA_LIMIT:
-            case PasswordsState.OFFLINE:
             case PasswordsState.ERROR:
-            case PasswordsState.BACKEND_VERSION_NOT_SUPPORTED:
                 return R.drawable.ic_info_outline_grey_24dp;
             default:
                 assert false : "Unknown PasswordsState value.";
@@ -208,7 +197,9 @@ class SafetyCheckViewBinder {
                 getLastRunTimestampText(fragment.getContext(), lastRunTime, currentTime);
         if (!TextUtils.equals(fragment.getTimestampTextView().getText(), timestampText)) {
             fragment.getTimestampTextView().setText(timestampText);
-            fragment.getTimestampTextView().announceForAccessibility(timestampText);
+            fragment.getTimestampTextView()
+                    .sendAccessibilityEvent(
+                            AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION);
         }
     }
 

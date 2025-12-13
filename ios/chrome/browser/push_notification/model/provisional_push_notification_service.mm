@@ -11,6 +11,8 @@
 #import "base/functional/callback_helpers.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
@@ -48,14 +50,13 @@ void OnPermissionSettingsFetched(base::OnceClosure success_closure,
 }  // namespace
 
 ProvisionalPushNotificationService::ProvisionalPushNotificationService(
-    AuthenticationService* authentication_service,
+    signin::IdentityManager* identity_manager,
     syncer::DeviceInfoSyncService* device_info_sync_service,
     PushNotificationService* push_notification_service)
-    : authentication_service_(authentication_service),
-
+    : identity_manager_(identity_manager),
       device_info_sync_service_(device_info_sync_service),
       push_notification_service_(push_notification_service) {
-  CHECK(authentication_service);
+  CHECK(identity_manager_);
   CHECK(push_notification_service_);
   CHECK(device_info_sync_service_);
 }
@@ -67,8 +68,7 @@ void ProvisionalPushNotificationService::EnrollUserToProvisionalNotifications(
     ClientIdState client_id_state,
     std::vector<PushNotificationClientId> client_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!authentication_service_->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
   }
 
@@ -92,15 +92,15 @@ void ProvisionalPushNotificationService::OnProvisionalPushNotificationEnrolled(
     ClientIdState client_id_state,
     std::vector<PushNotificationClientId> client_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  id<SystemIdentity> identity = authentication_service_->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
-  if (!identity) {
+  CoreAccountInfo account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (account.IsEmpty()) {
     return;
   }
 
   for (PushNotificationClientId client_id : client_ids) {
     push_notification_service_->SetPreference(
-        identity.gaiaID, client_id, client_id_state == ClientIdState::kEnabled);
+        account.gaia, client_id, client_id_state == ClientIdState::kEnabled);
     if (client_id == PushNotificationClientId::kSendTab) {
       device_info_sync_service_->RefreshLocalDeviceInfo();
     }

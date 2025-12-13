@@ -6,6 +6,7 @@
 
 #import <utility>
 
+#import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/time/time.h"
@@ -13,12 +14,13 @@
 #import "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/browser_sync/common_controller_builder.h"
+#import "components/sync/base/features.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #import "components/password_manager/core/browser/sharing/password_sender_service.h"
-#import "components/plus_addresses/settings/plus_address_setting_service.h"
-#import "components/plus_addresses/webdata/plus_address_webdata_service.h"
+#import "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
+#import "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/engine/net/http_bridge.h"
@@ -105,7 +107,6 @@ syncer::DataTypeController::TypeVector CreateControllers(
   controller_builder.SetPasswordReceiverService(nullptr);
   controller_builder.SetPasswordSenderService(nullptr);
   controller_builder.SetPlusAddressServices(nullptr, nullptr);
-  controller_builder.SetPowerBookmarkService(nullptr);
   controller_builder.SetPrefServiceSyncable(nullptr);
   // TODO(crbug.com/330201909) implement for iOS.
   controller_builder.SetProductSpecificationsService(nullptr);
@@ -184,6 +185,10 @@ WebViewSyncServiceFactory::BuildServiceInstanceFor(
   init_params.network_connection_tracker =
       ApplicationContext::GetInstance()->GetNetworkConnectionTracker();
   init_params.channel = version_info::Channel::STABLE;
+  if (base::FeatureList::IsEnabled(syncer::kSyncUseOsCryptAsync)) {
+    init_params.os_crypt_async =
+        ApplicationContext::GetInstance()->GetOSCryptAsync();
+  }
 
   auto sync_service =
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));

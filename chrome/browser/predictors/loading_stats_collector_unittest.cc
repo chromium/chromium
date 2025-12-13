@@ -9,9 +9,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/predictors/loading_test_util.h"
-#include "chrome/browser/predictors/preconnect_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/preconnect_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/network_isolation_key.h"
@@ -68,7 +68,7 @@ TEST_F(LoadingStatsCollectorTest, TestPreconnectPrecisionRecallMetrics) {
 
   // Predicts 4 origins: 2 useful, 2 useless.
   PreconnectPrediction prediction = CreatePreconnectPrediction(
-      GURL(main_frame_url).host(), false,
+      GURL(main_frame_url).GetHost(), false,
       {{url::Origin::Create(GURL(main_frame_url)), 1,
         network_anonymization_key_},
        {url::Origin::Create(GURL(gen(1))), 1, network_anonymization_key_},
@@ -176,7 +176,7 @@ TEST_F(LoadingStatsCollectorTest,
       now + base::Milliseconds(3);
   optimization_guide_prediction->preconnect_prediction =
       CreatePreconnectPrediction(
-          GURL(main_frame_url).host(), false,
+          GURL(main_frame_url).GetHost(), false,
           {{url::Origin::Create(GURL(main_frame_url)), 1,
             network_anonymization_key_},
            {url::Origin::Create(GURL(gen(1))), 1, network_anonymization_key_},
@@ -319,7 +319,7 @@ TEST_F(LoadingStatsCollectorTest,
       now + base::Milliseconds(3);
   optimization_guide_prediction->preconnect_prediction =
       CreatePreconnectPrediction(
-          GURL(main_frame_url).host(), false,
+          GURL(main_frame_url).GetHost(), false,
           {{url::Origin::Create(GURL(main_frame_url)), 1,
             network_anonymization_key_},
            {url::Origin::Create(GURL(gen(1))), 1, network_anonymization_key_},
@@ -445,7 +445,7 @@ TEST_F(LoadingStatsCollectorTest, TestNoMetricsRecordedBeforeLoadComplete) {
   optimization_guide_prediction->optimization_guide_prediction_arrived =
       now + base::Milliseconds(3);
   optimization_guide_prediction->preconnect_prediction =
-      CreatePreconnectPrediction(GURL(main_frame_url).host(), false, {});
+      CreatePreconnectPrediction(GURL(main_frame_url).GetHost(), false, {});
   optimization_guide_prediction->predicted_subresources = {GURL(gen(1))};
 
   std::vector<blink::mojom::ResourceLoadInfoPtr> resources;

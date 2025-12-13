@@ -17,6 +17,7 @@
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,6 +27,8 @@
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace net {
 class IPEndPoint;
@@ -50,6 +53,7 @@ class WebRequestProxyingWebSocket
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client,
       bool has_extra_headers,
+      bool has_security_info,
       int process_id,
       int render_frame_id,
       content::BrowserContext* browser_context,
@@ -86,6 +90,7 @@ class WebRequestProxyingWebSocket
                            OnBeforeSendHeadersCallback callback) override;
   void OnHeadersReceived(const std::string& headers,
                          const net::IPEndPoint& endpoint,
+                         const std::optional<net::SSLInfo>& ssl_info,
                          OnHeadersReceivedCallback callback) override;
 
   // WebRequestAPI::Proxy:
@@ -99,6 +104,7 @@ class WebRequestProxyingWebSocket
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client,
       bool has_extra_headers,
+      bool has_security_info,
       int process_id,
       int render_frame_id,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
@@ -156,6 +162,7 @@ class WebRequestProxyingWebSocket
   GURL redirect_url_;
   bool is_done_ = false;
   bool has_extra_headers_;
+  bool has_security_info_;
   mojo::PendingRemote<network::mojom::WebSocket> websocket_;
   mojo::PendingReceiver<network::mojom::WebSocketClient> client_receiver_;
   network::mojom::WebSocketHandshakeResponsePtr handshake_response_ = nullptr;

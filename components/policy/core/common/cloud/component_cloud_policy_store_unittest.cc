@@ -25,7 +25,6 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/rsa_private_key.h"
 #include "crypto/sha2.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -240,7 +239,8 @@ TEST_F(ComponentCloudPolicyStoreTest, ValidatePolicyWrongDeviceId) {
 }
 
 TEST_F(ComponentCloudPolicyStoreTest, ValidatePolicyBadType) {
-  builder_.policy_data().set_policy_type(dm_protocol::kChromeUserPolicyType);
+  builder_.policy_data().set_policy_type(
+      dm_protocol::GetChromeUserPolicyType());
   std::string error;
   EXPECT_FALSE(store_->ValidatePolicy(kTestPolicyNS, CreateResponse(),
                                       nullptr /* policy_data */,
@@ -287,7 +287,7 @@ TEST_F(ComponentCloudPolicyStoreTest, ValidatePolicyEmptyComponentId) {
 
 TEST_F(ComponentCloudPolicyStoreTest, ValidatePolicyWrongPublicKey) {
   // Test against a policy signed with a wrong key.
-  builder_.SetSigningKey(*PolicyBuilder::CreateTestOtherSigningKey());
+  builder_.SetSigningKey(PolicyBuilder::CreateTestOtherSigningKey());
   std::string error;
   EXPECT_FALSE(store_->ValidatePolicy(kTestPolicyNS, CreateResponse(),
                                       nullptr /* policy_data */,
@@ -309,7 +309,7 @@ TEST_F(ComponentCloudPolicyStoreTest, ValidatePolicyWrongPublicKeyVersion) {
 TEST_F(ComponentCloudPolicyStoreTest, ValidatePolicyDifferentPublicKey) {
   // Test against a policy signed with a different key and containing a new
   // public key version.
-  builder_.SetSigningKey(*PolicyBuilder::CreateTestOtherSigningKey());
+  builder_.SetSigningKey(PolicyBuilder::CreateTestOtherSigningKey());
   builder_.policy_data().set_public_key_version(
       PolicyBuilder::kFakePublicKeyVersion + 1);
   std::string error;
@@ -518,7 +518,8 @@ TEST_F(ComponentCloudPolicyStoreTest, StoreAndLoad) {
   EXPECT_TRUE(IsStoreEmpty(*store_));
 
   // Store policy for an unsupported domain.
-  builder_.policy_data().set_policy_type(dm_protocol::kChromeUserPolicyType);
+  builder_.policy_data().set_policy_type(
+      dm_protocol::GetChromeUserPolicyType());
   EXPECT_FALSE(
       store_->Store(PolicyNamespace(POLICY_DOMAIN_CHROME, kTestExtension),
                     CreateSerializedResponse(), CreatePolicyData().get(),

@@ -7,19 +7,24 @@
 
 #import <UIKit/UIKit.h>
 
+#import <utility>
+
 #import "base/functional/callback.h"
 #import "base/ios/block_types.h"
+#import "base/time/time.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/data_type.h"
+#import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
 class Browser;
+enum class ChangeProfileReason;
 class ChromeAccountManagerService;
-@class MDCSnackbarMessage;
 class ProfileIOS;
 @class SceneState;
+@class SnackbarMessage;
 
 namespace signin_metrics {
 enum class ProfileSignout;
@@ -34,12 +39,18 @@ namespace syncer {
 class SyncService;
 }
 
+@protocol BuggyAuthenticationViewOwner;
+
 namespace signin {
 
 class IdentityManager;
 
 using UnsyncedDataForSignoutOrProfileSwitchingCallback =
     base::OnceCallback<void(syncer::DataTypeSet data_type_set)>;
+
+inline constexpr std::pair<base::TimeDelta, base::TimeDelta> kPromoTriggerRange(
+    base::Days(53),
+    base::Days(68));
 
 // Represents a request to sign-out.
 class ProfileSignoutRequest {
@@ -61,7 +72,7 @@ class ProfileSignoutRequest {
   // Configures the snackbar message to display and whether it should be
   // forced over the toolbar or not.
   ProfileSignoutRequest&& SetSnackbarMessage(
-      MDCSnackbarMessage* snackbar_message,
+      SnackbarMessage* snackbar_message,
       bool force_snackbar_over_toolbar) &&;
 
   // Configures the callback invoked before starting the request.
@@ -84,14 +95,11 @@ class ProfileSignoutRequest {
   const signin_metrics::ProfileSignout source_;
   PrepareCallback prepare_callback_;
   CompletionCallback completion_callback_;
-  MDCSnackbarMessage* snackbar_message_;
+  SnackbarMessage* snackbar_message_;
   bool force_snackbar_over_toolbar_ = false;
   bool should_record_metrics_ = true;
   bool run_has_been_called_ = false;
 };
-
-// Returns the maximum allowed waiting time for the Account Capabilities API.
-base::TimeDelta GetWaitThresholdForCapabilities();
 
 // Returns true if this user sign-in upgrade should be shown for `profile`.
 bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
@@ -101,13 +109,13 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
 // actions is recorded to track why the sign-in dialog was not presented.
 bool ShouldPresentWebSignin(ProfileIOS* profile);
 
-// This method should be called when sign-in starts from the upgrade promo.
-// It records in user defaults:
+// This method should be called when sign-in starts from the fullscreen signin
+// promo. It records in user defaults:
 //   + the Chromium current version.
 //   + increases the sign-in promo display count.
 //   + Gaia ids list.
 // Separated out into a discrete function to allow overriding when testing.
-void RecordUpgradePromoSigninStarted(
+void RecordFullscreenSigninPromoStarted(
     signin::IdentityManager* identity_manager,
     ChromeAccountManagerService* account_manager_service,
     const base::Version& current_version);
@@ -115,10 +123,8 @@ void RecordUpgradePromoSigninStarted(
 // Converts a SystemIdentityCapabilityResult to a Tribool.
 Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result);
 
-// Returns the list of all accounts on the device, including the ones that are
-// assigned to other profiles, in the order provided by the system, from
-// (depending on feature flags) IdentityManager and/or
-// ChromeAccountManagerService.
+// Returns the list of all accounts on the device, in the order provided by the
+// system, including the ones that are assigned to other profiles.
 NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(
     signin::IdentityManager* identityManager,
     ChromeAccountManagerService* accountManagerService);
@@ -150,10 +156,24 @@ bool IsFullscreenSigninPromoManagerMigrationDone();
 void LogFullscreenSigninPromoManagerMigrationDone();
 
 // Fetches asynchronously the unsynced data types for a sign-out or a profile
-// switching. And calls `callback`.
+// switching. And calls `callback` with the set of data type from
+// `TypesRequiringUnsyncedDataCheckOnSignout` containing unsynced data.
 void FetchUnsyncedDataForSignOutOrProfileSwitching(
     syncer::SyncService* sync_service,
     UnsyncedDataForSignoutOrProfileSwitchingCallback callback);
+
+// Post an asynchronous request to switch from a managed profile to the
+// personal profile, running `continuation` when the change completes.
+void SwitchToPersonalProfile(SceneState* scene_state,
+                             ChangeProfileReason reason,
+                             ChangeProfileContinuation continuation);
+
+// Whether there exists a scene with a profile different from the one of this
+// scene where the user is signed-in.
+bool DifferentUserIsSignedInInAnotherScene(SceneState* scene_state);
+
+// Returns the regular browser.
+Browser* GetRegularBrowser(Browser* browser);
 
 }  // namespace signin
 

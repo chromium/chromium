@@ -5,19 +5,25 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-WebGLMultiDraw::WebGLMultiDraw(WebGLRenderingContextBase* context)
+WebGLMultiDraw::WebGLMultiDraw(WebGLRenderingContextBase* context,
+                               ExecutionContext* execution_context)
     : WebGLExtension(context) {
+  UseCounter::CountWebDXFeature(execution_context,
+                                WebDXFeature::kWebglMultiDraw);
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_WEBGL_multi_draw");
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_ANGLE_multi_draw");
 
   // Spec requires ANGLE_instanced_arrays to be implicitly turned on
   // here in WebGL 1.0 contexts.
   if (!context->IsWebGL2()) {
-    context->EnableExtensionIfSupported("ANGLE_instanced_arrays");
+    context->EnableExtensionIfSupported("ANGLE_instanced_arrays",
+                                        execution_context);
   }
 }
 

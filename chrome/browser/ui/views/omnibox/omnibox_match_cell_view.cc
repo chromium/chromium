@@ -60,9 +60,11 @@ static constexpr int kUniformRowHeightIconSize = 28;
 // since the text will have to be further right to accommodate the icons.
 static constexpr int kIphTextIndent = 14;
 
-// The gap between the left|right edge of the toolbelt background to the
-// left|right edge of the text bounds.
-static constexpr int kToolbeltTextIndent = 14;
+// The extra space added to the left-side inset of the toolbelt suggestion.
+static constexpr int kToolbeltTextInsetLeft = 12;
+
+// The right-side inset of the toolbelt suggestion.
+static constexpr int kToolbeltTextInsetRight = 8;
 
 // The radius of the rounded square backgrounds of icons, answers, and entities.
 static constexpr int kIconAndImageCornerRadius = 4;
@@ -353,8 +355,18 @@ void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image,
       match.type == AutocompleteMatchType::HISTORY_CLUSTER;
   const bool is_instant_keyword_row =
       AutocompleteMatch::IsFeaturedSearchType(match.type);
-  if (is_pedal_suggestion_row || is_journeys_suggestion_row ||
-      is_instant_keyword_row) {
+  bool should_draw_icon_background = is_pedal_suggestion_row ||
+                                     is_journeys_suggestion_row ||
+                                     is_instant_keyword_row;
+
+  // Do not apply the distinctive background color to the open lens action when
+  // the UI tweaks are enabled.
+  if (match.HasTakeoverAction(OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS) &&
+      omnibox_feature_configs::ContextualSearch::Get().open_lens_action_ui_tweaks) {
+    should_draw_icon_background = false;
+  }
+
+  if (should_draw_icon_background) {
     // When a PEDAL suggestion has been split out to its own row, apply a square
     // background with a distinctive color to the respective icon. Journeys
     // suggestion rows should also receive the same treatment.
@@ -436,11 +448,12 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
 
 gfx::Insets OmniboxMatchCellView::GetInsets() const {
   const int vertical_margin = 0;
-  // IPH text bounds should be centered within the IPH background when there's
-  // no IPH icon. So make their `right_margin` equal to their text's x position.
+  // Toolbelt text bounds are set to match the UX spec. IPH text bounds should
+  // be centered within the IPH background when there's no IPH icon. So make
+  // their `right_margin` equal to their text's x position.
   const int right_margin =
       layout_style_ == LayoutStyle::TOOLBELT
-          ? OmniboxMatchCellView::kMarginLeft + kToolbeltTextIndent
+          ? kToolbeltTextInsetRight
       : layout_style_ == LayoutStyle::IPH_SUGGESTION
           ? OmniboxMatchCellView::kMarginLeft + kIphTextIndent
           : 7;
@@ -586,6 +599,10 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
   return gfx::Size(width, height);
 }
 
+gfx::Size OmniboxMatchCellView::GetMinimumSize() const {
+  return gfx::Size(GetTextIndent(), GetPreferredSize().height());
+}
+
 int OmniboxMatchCellView::GetImageIndent() const {
   // Image indent ignores the `OmniboxMatchCellView::GetInsets()`.
 
@@ -620,7 +637,7 @@ int OmniboxMatchCellView::GetTextIndent() const {
 
   // Toolbelt layout is similar to IPH and has a custom indent.
   if (layout_style_ == LayoutStyle::TOOLBELT) {
-    return kToolbeltTextIndent;
+    return kToolbeltTextInsetLeft;
   }
 
   // Some IPH matches have no icons. They should be moved further left so the

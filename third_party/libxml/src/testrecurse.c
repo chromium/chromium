@@ -7,7 +7,7 @@
  *
  * See Copyright for the status of this software.
  *
- * daniel@veillard.com
+ * Author: Daniel Veillard
  */
 
 #define XML_DEPRECATED_MEMBER
@@ -99,13 +99,13 @@ static int glob(const char *pattern, ATTRIBUTE_UNUSED int flags,
     if (hFind == INVALID_HANDLE_VALUE)
         return(0);
     nb_paths = 20;
-    ret->gl_pathv = (char **) malloc(nb_paths * sizeof(char *));
+    ret->gl_pathv = (char **) xmlMalloc(nb_paths * sizeof(char *));
     if (ret->gl_pathv == NULL) {
 	FindClose(hFind);
         return(-1);
     }
     strncpy(directory + len, FindFileData.cFileName, 499 - len);
-    ret->gl_pathv[ret->gl_pathc] = strdup(directory);
+    ret->gl_pathv[ret->gl_pathc] = xmlMemStrdup(directory);
     if (ret->gl_pathv[ret->gl_pathc] == NULL)
         goto done;
     ret->gl_pathc++;
@@ -113,14 +113,14 @@ static int glob(const char *pattern, ATTRIBUTE_UNUSED int flags,
         if (FindFileData.cFileName[0] == '.')
 	    continue;
         if (ret->gl_pathc + 2 > nb_paths) {
-            char **tmp = realloc(ret->gl_pathv, nb_paths * 2 * sizeof(char *));
+            char **tmp = xmlRealloc(ret->gl_pathv, nb_paths * 2 * sizeof(char *));
             if (tmp == NULL)
                 break;
             ret->gl_pathv = tmp;
             nb_paths *= 2;
 	}
 	strncpy(directory + len, FindFileData.cFileName, 499 - len);
-	ret->gl_pathv[ret->gl_pathc] = strdup(directory);
+	ret->gl_pathv[ret->gl_pathc] = xmlMemStrdup(directory);
         if (ret->gl_pathv[ret->gl_pathc] == NULL)
             break;
         ret->gl_pathc++;
@@ -141,7 +141,7 @@ static void globfree(glob_t *pglob) {
 
     for (i = 0;i < pglob->gl_pathc;i++) {
          if (pglob->gl_pathv[i] != NULL)
-             free(pglob->gl_pathv[i]);
+             xmlFree(pglob->gl_pathv[i]);
     }
 }
 
@@ -244,12 +244,10 @@ static const char *current;
 static int rlen;
 
 /**
- * hugeMatch:
- * @URI: an URI to test
- *
  * Check for a huge query
  *
- * Returns 1 if yes and 0 if another Input module should be used
+ * @param URI  an URI to test
+ * @returns 1 if yes and 0 if another Input module should be used
  */
 static int
 hugeMatch(const char * URI) {
@@ -267,13 +265,11 @@ hugeMatch(const char * URI) {
 }
 
 /**
- * hugeOpen:
- * @URI: an URI to test
- *
- * Return a pointer to the huge query handler, in this example simply
+ * Returns a pointer to the huge query handler, in this example simply
  * the current pointer...
  *
- * Returns an Input context or NULL in case or error
+ * @param URI  an URI to test
+ * @returns an Input context or NULL in case or error
  */
 static void *
 hugeOpen(const char * URI) {
@@ -296,12 +292,10 @@ hugeOpen(const char * URI) {
 }
 
 /**
- * hugeClose:
- * @context: the read context
- *
  * Close the huge query handler
  *
- * Returns 0 or -1 in case of error
+ * @param context  the read context
+ * @returns 0 or -1 in case of error
  */
 static int
 hugeClose(void * context) {
@@ -312,14 +306,12 @@ hugeClose(void * context) {
 #define MAX_NODES 1000
 
 /**
- * hugeRead:
- * @context: the read context
- * @buffer: where to store data
- * @len: number of bytes to read
- *
  * Implement an huge query read.
  *
- * Returns the number of bytes read or -1 in case of error
+ * @param context  the read context
+ * @param buffer  where to store data
+ * @param len  number of bytes to read
+ * @returns the number of bytes read or -1 in case of error
  */
 static int
 hugeRead(void *context, char *buffer, int len)
@@ -438,7 +430,7 @@ static char *resultFilename(const char *filename, const char *out,
 
     if (snprintf(res, 499, "%s%s%s", out, base, suffixbuff) >= 499)
         res[499] = 0;
-    return(strdup(res));
+    return(xmlMemStrdup(res));
 }
 
 static int checkTestFile(const char *filename) {
@@ -466,15 +458,13 @@ static int checkTestFile(const char *filename) {
  *									*
  ************************************************************************/
 /**
- * recursiveDetectTest:
- * @filename: the file to parse
- * @result: the file with expected result
- * @err: the file with error messages: unused
- *
  * Parse a file loading DTD and replacing entities check it fails for
  * lol cases
  *
- * Returns 0 in case of success, an error code otherwise
+ * @param filename  the file to parse
+ * @param result  the file with expected result
+ * @param err  the file with error messages: unused
+ * @returns 0 in case of success, an error code otherwise
  */
 static int
 recursiveDetectTest(const char *filename,
@@ -514,15 +504,13 @@ recursiveDetectTest(const char *filename,
 }
 
 /**
- * notRecursiveDetectTest:
- * @filename: the file to parse
- * @result: the file with expected result
- * @err: the file with error messages: unused
- *
  * Parse a file loading DTD and replacing entities check it works for
  * good cases
  *
- * Returns 0 in case of success, an error code otherwise
+ * @param filename  the file to parse
+ * @param result  the file with expected result
+ * @param err  the file with error messages: unused
+ * @returns 0 in case of success, an error code otherwise
  */
 static int
 notRecursiveDetectTest(const char *filename,
@@ -557,15 +545,13 @@ notRecursiveDetectTest(const char *filename,
 }
 
 /**
- * notRecursiveHugeTest:
- * @filename: the file to parse
- * @result: the file with expected result
- * @err: the file with error messages: unused
- *
  * Parse a memory generated file
  * good cases
  *
- * Returns 0 in case of success, an error code otherwise
+ * @param filename  the file to parse
+ * @param result  the file with expected result
+ * @param err  the file with error messages: unused
+ * @returns 0 in case of success, an error code otherwise
  */
 static int
 notRecursiveHugeTest(const char *filename ATTRIBUTE_UNUSED,
@@ -659,15 +645,13 @@ notRecursiveHugeTest(const char *filename ATTRIBUTE_UNUSED,
 }
 
 /**
- * notRecursiveHugeTest:
- * @filename: the file to parse
- * @result: the file with expected result
- * @err: the file with error messages: unused
- *
  * Parse a memory generated file
  * good cases
  *
- * Returns 0 in case of success, an error code otherwise
+ * @param filename  the file to parse
+ * @param result  the file with expected result
+ * @param err  the file with error messages: unused
+ * @returns 0 in case of success, an error code otherwise
  */
 static int
 hugeDtdTest(const char *filename ATTRIBUTE_UNUSED,
@@ -862,9 +846,9 @@ launchTests(testDescPtr tst) {
 		}
 	    }
 	    if (result)
-		free(result);
+		xmlFree(result);
 	    if (error)
-		free(error);
+		xmlFree(error);
 	}
 	globfree(&globbuf);
     } else {

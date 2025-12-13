@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/location.h"
+#include "base/feature_list.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -11,18 +11,20 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <tuple>
 
 #include "base/base_switches.h"
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/feature_visitor.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -583,7 +585,7 @@ bool FeatureList::InitInstance(
     instance_existed_before = true;
   }
 
-  std::unique_ptr<FeatureList> feature_list(new FeatureList);
+  auto feature_list = std::make_unique<FeatureList>();
   feature_list->InitFromCommandLine(enable_features, disable_features);
   feature_list->RegisterExtraFeatureOverrides(extra_overrides);
   FeatureList::SetInstance(std::move(feature_list));

@@ -254,18 +254,17 @@ class TabScrubberTest : public InProcessBrowserTest,
   }
 
   void AddTabs(Browser* browser, int num_tabs) {
-    TabStrip* tab_strip = GetTabStrip(browser);
     for (int i = 0; i < num_tabs; ++i) {
       AddBlankTabAndShow(browser);
     }
     ASSERT_EQ(num_tabs + 1, browser->tab_strip_model()->count());
     ASSERT_EQ(num_tabs, browser->tab_strip_model()->active_index());
-    tab_strip->StopAnimating(true);
-    ASSERT_FALSE(tab_strip->IsAnimating());
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    CHECK(browser_view);
+    browser_view->tab_strip_view()->StopAnimating();
+    ASSERT_FALSE(browser_view->tab_strip_view()->IsAnimating());
     // Perform any scheduled layouts so the tabstrip is in a steady state.
-    BrowserView::GetBrowserViewForBrowser(browser)
-        ->GetWidget()
-        ->LayoutRootViewIfNecessary();
+    browser_view->GetWidget()->LayoutRootViewIfNecessary();
   }
 
   // TabStripModelObserver overrides.
@@ -393,10 +392,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, FullScreenBrowser) {
   browser()->tab_strip_model()->ActivateTabAt(4);
 
   chrome::ToggleFullscreenMode(browser());
-  BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
-      browser()->window()->GetNativeWindow());
-  ImmersiveModeController* immersive_controller =
-      browser_view->immersive_mode_controller();
+  auto* const immersive_controller = ImmersiveModeController::From(browser());
   EXPECT_TRUE(immersive_controller->IsEnabled());
 
   ImmersiveRevealEndedWaiter waiter(immersive_controller);

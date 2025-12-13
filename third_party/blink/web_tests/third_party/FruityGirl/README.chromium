@@ -2,6 +2,7 @@ Name: FruityGirl
 Short Name: FruityGirl
 URL: https://code.google.com/p/color-emoji/
 Version: 1.000
+Update Mechanism: Static (https://crbug.com/422923647)
 License: Apache-2.0
 License File: LICENSE.txt
 Security Critical: no
@@ -16,7 +17,7 @@ Google's Font team:
 	For license information, see the LICENSE.txt file
 
 3. Reason:
-Font file included as a real-world example for testing fonts with color-table  
+Font file included as a real-world example for testing fonts with color-table
 with LayoutTests/fast/text/emoji-web-font.html test case
 
 color-emoji contains scripts to build PNG file into test fonts: FruityGirl

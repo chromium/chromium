@@ -192,7 +192,7 @@ class ExternalSVGResourceImageContent final : public SVGResource,
 
   // ImageResourceObserver overrides
   void ImageNotifyFinished(ImageResourceContent*) override;
-  WTF::String DebugName() const override;
+  String DebugName() const override;
 
   Member<ImageResourceContent> image_content_;
   AtomicString fragment_;

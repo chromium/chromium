@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inl.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -46,18 +45,7 @@ LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
   }
 
   if (IsColumnSpanAll()) {
-    if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
-      return ContainerForColumnSpanner(skip_info);
-    }
-    LayoutObject* multicol_container = SpannerPlaceholder()->Container();
-    if (skip_info) {
-      // We jumped directly from the spanner to the multicol container. Need to
-      // check if we skipped |ancestor| or filter/reflection on the way.
-      for (LayoutObject* walker = Parent();
-           walker && walker != multicol_container; walker = walker->Parent())
-        skip_info->Update(*walker);
-    }
-    return multicol_container;
+    return ContainerForColumnSpanner(skip_info);
   }
 
   return Parent();
@@ -66,15 +54,6 @@ LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
 void LayoutObject::SetNeedsOverflowRecalc(
     OverflowRecalcType overflow_recalc_type) {
   NOT_DESTROYED();
-  if (IsLayoutFlowThread()) [[unlikely]] {
-    // If we're a flow thread inside an NG multicol container, just redirect to
-    // the multicol container, since the overflow recalculation walks down the
-    // NG fragment tree, and the flow thread isn't represented there.
-    if (auto* multicol_container = DynamicTo<LayoutBlockFlow>(Parent())) {
-      multicol_container->SetNeedsOverflowRecalc(overflow_recalc_type);
-      return;
-    }
-  }
   bool mark_container_chain_scrollable_overflow_recalc =
       !SelfNeedsScrollableOverflowRecalc();
 
@@ -120,12 +99,14 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
             StyleRef(), child->StyleRef().Display());
 
     if (IsA<LayoutTextCombine>(child)) [[unlikely]] {
-      if (blink::IsHorizontalWritingMode(new_style_builder.GetWritingMode())) {
+      if (!LayoutTextCombine::IsSupportedMode(
+              new_style_builder.GetWritingMode())) {
         // |LayoutTextCombine| will be removed when recalculating style for
         // <br> or <wbr>.
         // See StyleToHorizontalWritingModeWithWordBreak
         DCHECK(child->SlowFirstChild()->IsBR() ||
                To<LayoutText>(child->SlowFirstChild())->IsWordBreak() ||
+               !child->SlowFirstChild()->GetNode() ||
                child->SlowFirstChild()->GetNode()->NeedsReattachLayoutTree());
       } else {
         // "text-combine-width-after-style-change.html" reaches here.
@@ -227,11 +208,7 @@ LayoutBlock* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
   }
   LayoutObject* object;
   if (IsColumnSpanAll()) {
-    if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
-      object = ContainerForColumnSpanner(skip_info);
-    } else {
-      object = SpannerPlaceholder()->ContainingBlock();
-    }
+    object = ContainerForColumnSpanner(skip_info);
   } else {
     object = Parent();
     if (!object && IsLayoutCustomScrollbarPart()) {

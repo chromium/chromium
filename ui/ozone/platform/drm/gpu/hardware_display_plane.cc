@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 
 #include <drm_fourcc.h>
@@ -15,6 +10,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -36,16 +32,16 @@ void ParseSupportedFormatsAndModifiers(
     std::vector<drm_format_modifier>* supported_format_modifiers) {
   auto* data = static_cast<const uint8_t*>(blob->data);
   auto* header = reinterpret_cast<const drm_format_modifier_blob*>(data);
-  auto* formats =
-      reinterpret_cast<const uint32_t*>(data + header->formats_offset);
+  auto* formats = reinterpret_cast<const uint32_t*>(
+      UNSAFE_TODO(data + header->formats_offset));
   auto* modifiers = reinterpret_cast<const drm_format_modifier*>(
-      data + header->modifiers_offset);
+      UNSAFE_TODO(data + header->modifiers_offset));
 
   for (uint32_t k = 0; k < header->count_formats; k++)
-    supported_formats->push_back(formats[k]);
+    supported_formats->push_back(UNSAFE_TODO(formats[k]));
 
   for (uint32_t k = 0; k < header->count_modifiers; k++)
-    supported_format_modifiers->push_back(modifiers[k]);
+    supported_format_modifiers->push_back(UNSAFE_TODO(modifiers[k]));
 }
 
 std::vector<gfx::Size> ParseSupportedCursorSizes(drmModePropertyBlobPtr blob) {
@@ -57,7 +53,8 @@ std::vector<gfx::Size> ParseSupportedCursorSizes(drmModePropertyBlobPtr blob) {
   std::vector<gfx::Size> supported_cursor_sizes;
   for (int i = 0; i < num_of_size_hints; i++) {
     supported_cursor_sizes.push_back(
-        gfx::Size(size_hints_ptr[i].width, size_hints_ptr[i].height));
+        gfx::Size(UNSAFE_TODO(size_hints_ptr[i]).width,
+                  UNSAFE_TODO(size_hints_ptr[i]).height));
   }
   return supported_cursor_sizes;
 }
@@ -229,7 +226,7 @@ bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
 
   if (supported_formats_.empty()) {
     for (uint32_t i = 0; i < drm_plane->count_formats; ++i)
-      supported_formats_.push_back(drm_plane->formats[i]);
+      supported_formats_.push_back(UNSAFE_TODO(drm_plane->formats[i]));
   }
 
   if (properties_.type.id)

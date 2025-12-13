@@ -15,6 +15,10 @@
 // This class also sets up code coverage by default.
 @interface BaseEarlGreyTestCase : XCTestCase
 
+// When enabled, the app starts without loading its normal UI, and each
+// test can present the UI that will be tested.
++ (BOOL)loadMinimalAppUI;
+
 // When enabled, restart the test host between each test, and wipe the host
 // home directory to mimic a new install.
 + (BOOL)forceRestartAndWipe;

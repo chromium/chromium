@@ -94,11 +94,13 @@ void WatchTimeComponent<T>::RecordWatchTime(base::TimeDelta current_timestamp) {
   }
 
   // A conversion callback has been specified, so only report elapsed to the
-  // key provided by the callback.
+  // keys provided by the callback.
   //
   // Record watch time using |current_value_| and not |pending_value_| since
   // that transition should not happen until Finalize().
-  recorder_->RecordWatchTime(value_to_key_cb_.Run(current_value_), elapsed);
+  for (auto key : value_to_key_cb_.Run(current_value_)) {
+    recorder_->RecordWatchTime(key, elapsed);
+  }
 }
 
 template <typename T>

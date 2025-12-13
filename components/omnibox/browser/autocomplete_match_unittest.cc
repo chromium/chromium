@@ -10,9 +10,9 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
-#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -21,8 +21,10 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -139,6 +141,9 @@ class AutocompleteMatchTest : public testing::Test {
   void TearDown() override {
     RichAutocompletionParams::ClearParamsForTesting();
   }
+
+  base::test::TaskEnvironment task_environment_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };
 
 }  // namespace
@@ -599,23 +604,6 @@ TEST_F(AutocompleteMatchTest, UpgradeMatchWithPropertiesFrom) {
   EXPECT_EQ(history_match.type, AutocompleteMatchType::HISTORY_TITLE);
   EXPECT_EQ(history_match.contents, u"propagate");
   EXPECT_EQ(history_match.inline_autocompletion, u"preserve");
-
-  omnibox::RichAnswerTemplate answer_template;
-  omnibox::SuggestionEnhancement* enhancement =
-      answer_template.mutable_enhancements()->add_enhancements();
-  enhancement->set_display_text("Similar and opposite words");
-  AutocompleteMatch match_with_answer_actions(
-      search_provider.get(), 400, true, AutocompleteMatchType::SEARCH_SUGGEST);
-  match_with_answer_actions.actions.push_back(
-      base::MakeRefCounted<OmniboxAnswerAction>(
-          std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
-          omnibox::ANSWER_TYPE_DICTIONARY));
-  AutocompleteMatch match_with_no_answer_actions(
-      search_provider.get(), 400, true,
-      AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
-  match_with_no_answer_actions.UpgradeMatchWithPropertiesFrom(
-      match_with_answer_actions);
-  EXPECT_EQ(0u, match_with_no_answer_actions.actions.size());
 }
 
 TEST_F(AutocompleteMatchTest, MergeScoringSignals) {
@@ -1041,10 +1029,15 @@ TEST_F(AutocompleteMatchTest, RearrangeActionsInSuggest) {
       new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
   const OmniboxAction::LabelStrings dummy_labels(u"", u"", u"", u"");
 
-  using ActionType = omnibox::ActionInfo::ActionType;
-  constexpr auto CALL = omnibox::ActionInfo_ActionType_CALL;
-  constexpr auto NAV = omnibox::ActionInfo_ActionType_DIRECTIONS;
-  constexpr auto REVS = omnibox::ActionInfo_ActionType_REVIEWS;
+  using ActionType = omnibox::SuggestTemplateInfo::TemplateAction::ActionType;
+  constexpr auto CALL =
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL;
+  constexpr auto NAV =
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS;
+  constexpr auto REVS =
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS;
+  constexpr auto TSW =
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH;
 
   struct FilterOmniboxActionsTestData {
     std::string test_name;
@@ -1061,9 +1054,9 @@ TEST_F(AutocompleteMatchTest, RearrangeActionsInSuggest) {
       {"retain all - have reviews",
        {CALL, CALL, REVS}, {CALL, CALL, REVS}},
       {"retain all - have all types",
-       {CALL, NAV, REVS}, {CALL, NAV, REVS}},
+       {CALL, NAV, REVS, TSW}, {CALL, NAV, REVS, TSW}},
       {"retain all - have all types, sort",
-       {REVS, CALL, NAV}, {CALL, NAV, REVS}},
+       {REVS, CALL, TSW, NAV}, {CALL, NAV, REVS, TSW}},
       {"retain all - have multiple reviews, sort",
        {REVS, NAV, REVS}, {NAV, REVS, REVS}},
 
@@ -1076,10 +1069,10 @@ TEST_F(AutocompleteMatchTest, RearrangeActionsInSuggest) {
 
     // Populate match with requested actions.
     for (auto& action_type : test_case.types_to_add) {
-      omnibox::ActionInfo info;
-      info.set_action_type(action_type);
+      omnibox::SuggestTemplateInfo::TemplateAction action;
+      action.set_action_type(action_type);
       match.actions.push_back(base::MakeRefCounted<OmniboxActionInSuggest>(
-          std::move(info), std::nullopt));
+          std::move(action), std::nullopt));
     }
 
     match.FilterAndSortActionsInSuggest();
@@ -1158,4 +1151,66 @@ TEST_F(AutocompleteMatchTest, IsClipboardType) {
         AutocompleteMatch::IsClipboardType((AutocompleteMatchType::Type)type),
         clipboard_types.contains(type));
   }
+}
+
+TEST_F(AutocompleteMatchTest, HasLensSearchAction) {
+  AutocompleteMatch match;
+  EXPECT_FALSE(match.HasLensSearchAction());
+
+  match.suggest_template = omnibox::SuggestTemplateInfo();
+  EXPECT_FALSE(match.HasLensSearchAction());
+
+  auto* action = match.suggest_template->add_action_suggestions();
+  action->set_action_type(
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS);
+  EXPECT_FALSE(match.HasLensSearchAction());
+
+  action = match.suggest_template->add_action_suggestions();
+  action->set_action_type(
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS);
+  EXPECT_TRUE(match.HasLensSearchAction());
+}
+
+TEST_F(AutocompleteMatchTest, ShouldHideBasedOnStarterPack) {
+  auto* template_url_service =
+      search_engines_test_environment_.template_url_service();
+  // Set up `TemplateURL` for Gemini starter pack.
+  TemplateURLData gemini_turl_data;
+  gemini_turl_data.SetKeyword(u"@gemini");
+  gemini_turl_data.starter_pack_id = template_url_starter_pack_data::kGemini;
+  template_url_service->Add(std::make_unique<TemplateURL>(gemini_turl_data));
+
+  // Set up `TemplateURL` for a different starter pack.
+  TemplateURLData history_turl_data;
+  history_turl_data.SetKeyword(u"@history");
+  history_turl_data.starter_pack_id = template_url_starter_pack_data::kHistory;
+  template_url_service->Add(std::make_unique<TemplateURL>(history_turl_data));
+
+  // Set up `TemplateURL` with no starter pack ID.
+  TemplateURLData search_turl_data;
+  search_turl_data.SetKeyword(u"@keyword");
+  template_url_service->Add(std::make_unique<TemplateURL>(search_turl_data));
+
+  AutocompleteMatch match;
+  // Only @gemini starter pack matches with `from_keyword` set to `true` should
+  // be hidden.
+  match.from_keyword = true;
+  match.keyword = u"@gemini";
+  EXPECT_TRUE(match.ShouldHideBasedOnStarterPack(template_url_service));
+
+  match.from_keyword = false;
+  match.keyword = u"@gemini";
+  EXPECT_FALSE(match.ShouldHideBasedOnStarterPack(template_url_service));
+
+  match.from_keyword = true;
+  match.keyword = u"@history";
+  EXPECT_FALSE(match.ShouldHideBasedOnStarterPack(template_url_service));
+
+  match.from_keyword = true;
+  match.keyword = u"@search";
+  EXPECT_FALSE(match.ShouldHideBasedOnStarterPack(template_url_service));
+
+  match.from_keyword = true;
+  match.keyword = u"@unknown";
+  EXPECT_FALSE(match.ShouldHideBasedOnStarterPack(template_url_service));
 }

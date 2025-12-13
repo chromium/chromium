@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -30,6 +31,18 @@
 
 namespace disk_cache_sql_queries {
 
+// Defines the set of queries that are used for schema and index creation. These
+// queries are not suitable for checking plans against an already-initialized
+// database.
+constexpr auto kSchemaAndIndexQueries = base::MakeFixedFlatSet<Query>({
+    Query::kInitSchema_CreateTableResources,
+    Query::kInitSchema_CreateTableBlobs,
+    Query::kIndex_ResourcesCacheKeyHashDoomed,
+    Query::kIndex_LiveResourcesLastUsed,
+    Query::kIndex_LiveResourcesHints,
+    Query::kIndex_BlobsResIdStart,
+});
+
 class SqlPersistentStoreQueriesTest : public testing::Test {
  protected:
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
@@ -45,9 +58,10 @@ class SqlPersistentStoreQueriesTest : public testing::Test {
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 
     // Create and initialize a store to create the DB file with schema.
-    auto store = disk_cache::SqlPersistentStore::Create(
+    auto store = std::make_unique<disk_cache::SqlPersistentStore>(
         path, kDefaultMaxBytes, net::CacheType::DISK_CACHE,
-        background_task_runner);
+        std::vector<scoped_refptr<base::SequencedTaskRunner>>(
+            {background_task_runner}));
 
     base::test::TestFuture<disk_cache::SqlPersistentStore::Error> future;
     store->Initialize(future.GetCallback());
@@ -67,8 +81,8 @@ class SqlPersistentStoreQueriesTest : public testing::Test {
   // using the expected indexes, which is critical for performance.
   std::string GetQueryPlan(base::cstring_view query) {
     base::CommandLine command_line(GetExecSqlShellPath());
-    command_line.AppendArgPath(
-        temp_dir_.GetPath().Append(disk_cache::kSqlBackendDatabaseFileName));
+    command_line.AppendArgPath(temp_dir_.GetPath().Append(
+        disk_cache::kSqlBackendDatabaseShard0FileName));
 
     std::string explain_query = base::StrCat({"EXPLAIN QUERY PLAN ", query});
     command_line.AppendArg(explain_query);
@@ -101,25 +115,6 @@ class SqlPersistentStoreQueriesTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-// This test verifies that all SQL query strings defined in
-// `sql_persistent_store_queries.h` are syntactically valid. This acts as a
-// basic sanity check to catch typos and other errors at test time rather than
-// at runtime.
-TEST_F(SqlPersistentStoreQueriesTest, AllQueriesAreValid) {
-  CreateDatabaseInTemDir();
-  std::unique_ptr<sql::Database> db = std::make_unique<sql::Database>(
-      sql::DatabaseOptions(), sql::Database::Tag("HttpCacheDiskCache"));
-  ASSERT_TRUE(db->Open(
-      temp_dir_.GetPath().Append(disk_cache::kSqlBackendDatabaseFileName)));
-
-  for (int i = 0; i <= static_cast<int>(Query::kMaxValue); ++i) {
-    const Query query_id = static_cast<Query>(i);
-    const base::cstring_view query = GetQuery(query_id);
-    SCOPED_TRACE(query);
-    EXPECT_TRUE(db->IsSQLValid(query));
-  }
-}
-
 // This test verifies that critical SQL queries use the intended indexes by
 // checking their query plans. This is essential for ensuring the performance of
 // database operations. A query that performs a full table scan instead of using
@@ -132,113 +127,102 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
   // the query is a schema-related query that cannot be explained.
   constexpr auto kAllQueriesAndPlans =
       base::MakeFixedFlatMap<Query, std::string_view>(
-          {{Query::kInitSchema_CreateTableResources, ""},
-           {Query::kInitSchema_CreateTableBlobs, ""},
-           {Query::kIndex_ResourcesToken, ""},
-           {Query::kIndex_ResourcesCacheKeyDoomed, ""},
-           {Query::kIndex_ResourcesDoomedLastUsed, ""},
-           {Query::kIndex_ResourcesDoomedResId, ""},
-           {Query::kIndex_BlobsTokenStart, ""},
-           {Query::kOpenEntry_SelectResources,
+          {{Query::kOpenEntry_SelectLiveResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_cache_key_doomed "
-            "(cache_key=? AND doomed=?)"},
+            "INDEX index_resources_cache_key_hash_doomed "
+            "(cache_key_hash=? AND doomed=?)"},
            {Query::kCreateEntry_InsertIntoResources, ""},
            {Query::kDoomEntry_MarkDoomedResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_token "
-            "(token_high=? AND token_low=?)"},
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kDeleteDoomedEntry_DeleteFromResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_token "
-            "(token_high=? AND token_low=?)"},
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kDeleteLiveEntry_DeleteFromResources,
             "`--SEARCH resources USING "
-            "COVERING INDEX index_resources_cache_key_doomed "
-            "(cache_key=? AND doomed=?)"},
+            "INDEX index_resources_cache_key_hash_doomed "
+            "(cache_key_hash=? AND doomed=?)"},
            {Query::kDeleteAllEntries_DeleteFromResources, ""},
            {Query::kDeleteAllEntries_DeleteFromBlobs, ""},
-           {Query::kDeleteLiveEntriesBetween_SelectResourcesForEviction,
+           {Query::kDeleteLiveEntriesBetween_SelectLiveResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_doomed_last_used "
-            "(doomed=? AND last_used>? AND last_used<?)"},
-           {Query::kDeleteLiveEntriesBetween_DeleteFromResources,
+            "COVERING INDEX index_live_resources_last_used_bytes_usage "
+            "(last_used>? AND last_used<?)"},
+           {Query::kDeleteResourceByResIds_DeleteFromResources,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
-           {Query::kUpdateEntryLastUsed_UpdateResourceLastUsed,
+           {Query::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed,
             "`--SEARCH resources USING "
-            "INDEX index_resources_cache_key_doomed "
-            "(cache_key=? AND doomed=?)"},
+            "INDEX index_resources_cache_key_hash_doomed "
+            "(cache_key_hash=? AND doomed=?)"},
+           {Query::kUpdateEntryLastUsedByResId_UpdateResourceLastUsed,
+            "`--SEARCH resources USING "
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kUpdateEntryHeaderAndLastUsed_UpdateResource,
-            "`--SEARCH resources USING INDEX "
-            "index_resources_token "
-            "(token_high=? AND token_low=?)"},
+            "`--SEARCH resources USING "
+            "INTEGER PRIMARY KEY (rowid=?)"},
+           {Query::kUpdateEntryHeaderAndLastUsed_UpdateResourceAndHints,
+            "`--SEARCH resources USING "
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kWriteEntryData_UpdateResource,
             "`--SEARCH resources USING "
-            "INDEX index_resources_token "
-            "(token_high=? AND token_low=?)"},
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kTrimOverlappingBlobs_DeleteContained,
             "`--SEARCH blobs USING "
-            "INDEX index_blobs_token_start "
-            "(token_high=? AND token_low=? AND start>?)"},
+            "INDEX index_blobs_res_id_start "
+            "(res_id=? AND start>?)"},
            {Query::kTrimOverlappingBlobs_SelectOverlapping,
             "`--SEARCH blobs USING "
-            "INDEX index_blobs_token_start "
-            "(token_high=? AND token_low=? AND start<?)"},
+            "INDEX index_blobs_res_id_start "
+            "(res_id=? AND start<?)"},
            {Query::kTruncateBlobsAfter_DeleteAfter,
             "`--SEARCH blobs USING "
-            "COVERING INDEX index_blobs_token_start "
-            "(token_high=? AND token_low=? AND start>?)"},
+            "COVERING INDEX index_blobs_res_id_start "
+            "(res_id=? AND start>?)"},
            {Query::kInsertNewBlob_InsertIntoBlobs, ""},
            {Query::kDeleteBlobById_DeleteFromBlobs,
             "`--SEARCH blobs USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
-           {Query::kDeleteBlobsByToken_DeleteFromBlobs,
+           {Query::kDeleteBlobsByResId_DeleteFromBlobs,
             "`--SEARCH blobs USING "
-            "INDEX index_blobs_token_start "
-            "(token_high=? AND token_low=?)"},
+            "INDEX index_blobs_res_id_start "
+            "(res_id=?)"},
            {Query::kReadEntryData_SelectOverlapping,
             "`--SEARCH blobs USING "
-            "INDEX index_blobs_token_start "
-            "(token_high=? AND token_low=? AND start<?)"},
+            "INDEX index_blobs_res_id_start "
+            "(res_id=? AND start<?)"},
            {Query::kGetEntryAvailableRange_SelectOverlapping,
             "`--SEARCH blobs USING "
-            "INDEX index_blobs_token_start "
-            "(token_high=? AND token_low=? AND start<?)"},
-           {Query::kCalculateSizeOfEntriesBetween_SelectFromResources,
+            "INDEX index_blobs_res_id_start "
+            "(res_id=? AND start<?)"},
+           {Query::kCalculateSizeOfEntriesBetween_SelectLiveResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_doomed_last_used "
-            "(doomed=? AND last_used>? AND last_used<?)"},
-           {Query::kOpenLatestEntryBeforeResId_SelectResources,
+            "COVERING INDEX index_live_resources_last_used_bytes_usage "
+            "(last_used>? AND last_used<?)"},
+           {Query::kOpenNextEntry_SelectLiveResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_doomed_res_id "
-            "(doomed=? AND res_id<?)"},
-           {Query::kRunEviction_SelectResourcesForEviction,
-            "`--SEARCH resources USING "
-            "INDEX index_resources_doomed_last_used "
-            "(doomed=?)"},
-           {Query::kRunEviction_DeleteFromResources,
-            "`--SEARCH resources USING "
-            "INDEX index_resources_token "
-            "(token_high=? AND token_low=?)"},
-           {Query::kCalculateResourceEntryCount_SelectCountFromResources,
-            "`--SEARCH resources USING "
-            "COVERING INDEX index_resources_doomed_res_id "
-            "(doomed=?)"},
-           {Query::kCalculateTotalSize_SelectTotalSizeFromResources,
-            "`--SEARCH resources USING "
-            "INDEX index_resources_doomed_res_id "
-            "(doomed=?)"}});
-  static_assert(kAllQueriesAndPlans.size() ==
+            "INTEGER PRIMARY KEY (rowid<?)"},
+           {Query::kStartEviction_SelectLiveResources,
+            "`--SCAN resources USING "
+            "COVERING INDEX index_live_resources_last_used_bytes_usage"},
+           {Query::kCalculateResourceEntryCount_SelectCountFromLiveResources,
+            "`--SCAN resources USING "
+            "COVERING INDEX index_live_resources_last_used_bytes_usage"},
+           {Query::kCalculateTotalSize_SelectTotalSizeFromLiveResources,
+            "`--SCAN resources USING "
+            "COVERING INDEX index_live_resources_last_used_bytes_usage"},
+           {Query::kLoadInMemoryIndex_SelectCacheKeyHashFromLiveResources,
+            "`--SCAN resources USING COVERING INDEX "
+            "index_resources_cache_key_hash_doomed"},
+           {Query::kLoadInMemoryIndex_SelectHintsFromLiveResources,
+            "`--SCAN resources USING COVERING INDEX "
+            "index_live_resources_hints"}});
+  static_assert(kAllQueriesAndPlans.size() + kSchemaAndIndexQueries.size() ==
                 static_cast<int>(Query::kMaxValue) + 1);
-
-  for (int i = 0; i <= static_cast<int>(Query::kMaxValue); ++i) {
-    const Query query_id = static_cast<Query>(i);
-    const base::cstring_view query_string = GetQuery(query_id);
+  for (const auto& it : kAllQueriesAndPlans) {
+    const base::cstring_view query_string = GetQuery(it.first);
     SCOPED_TRACE(query_string);
-    auto it = kAllQueriesAndPlans.find(query_id);
-    ASSERT_NE(it, kAllQueriesAndPlans.end());
-    EXPECT_EQ(GetQueryPlan(query_string), it->second);
+    EXPECT_EQ(GetQueryPlan(query_string), it.second);
   }
 }
 

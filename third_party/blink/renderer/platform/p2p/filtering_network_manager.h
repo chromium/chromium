@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/p2p/network_manager_uma.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/rtc_base/network.h"
-#include "third_party/webrtc/rtc_base/third_party/sigslot/sigslot.h"
 
 namespace media {
 class MediaPermission;
@@ -36,8 +35,7 @@ class IpcNetworkManager;
 // webrtc::NetworkManagerBase to have the same implementation of
 // GetAnyAddressNetworks(). We can't mark the whole class PLATFORM_EXPORT
 // as it requires all super classes to be PLATFORM_EXPORT as well.
-class FilteringNetworkManager : public webrtc::NetworkManagerBase,
-                                public sigslot::has_slots<> {
+class FilteringNetworkManager : public webrtc::NetworkManagerBase {
  public:
   // This class is created by WebRTC's main thread but used by WebRTC's
   // worker thread |task_runner|.

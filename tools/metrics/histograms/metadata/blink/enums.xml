@@ -81,6 +81,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Slow getImageData on GPU canvases"/>
 </enum>
 
+<!-- LINT.IfChange(CanvasHibernationEvent) -->
+
 <enum name="CanvasHibernationEvent">
   <int value="0" label="Scheduled"/>
   <int value="1"
@@ -89,13 +91,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Aborted due to visibility change"/>
   <int value="4" label="Aborted due to GPU Context loss"/>
   <int value="5" label="Aborted due to switch to unaccelerated rendering"/>
-  <int value="6" label="Aborted due to allocation failure"/>
-  <int value="7" label="Ended normally"/>
-  <int value="8" label="Ended with switch to background rendering"/>
-  <int value="9" label="Ended with fallback to software"/>
-  <int value="10" label="Ended with teardown"/>
-  <int value="11" label="Aborted because there was no surface"/>
+  <int value="6" label="Aborted due to allocation failure (obsolete)"/>
+  <int value="7" label="Aborted due to snapshot failure"/>
+  <int value="8" label="Ended normally"/>
+  <int value="9" label="Ended with switch to background rendering"/>
+  <int value="10" label="Ended with fallback to software"/>
+  <int value="11" label="Ended with teardown"/>
+  <int value="12" label="Aborted because there was no surface"/>
+  <int value="13" label="Ended on canvas reset"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h:CanvasHibernationEvent) -->
 
 <enum name="CanvasOverdrawOp">
   <int value="0" label="None (should have 0 counts)"/>
@@ -118,39 +124,6 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Has transform and clip"/>
 </enum>
 
-<enum name="CanvasResourceProviderFlushReason">
-  <int value="0" label="None (should never happen)"/>
-  <int value="1" label="Testing (should never happen in prod)"/>
-  <int value="2" label="Non 2D Canvas"/>
-  <int value="3" label="Clear"/>
-  <int value="4" label="Hibernating"/>
-  <int value="5" label="OffscreenCanvas commit"/>
-  <int value="6" label="OffscreenCanvas push frame"/>
-  <int value="7" label="CreateImageBitmap"/>
-  <int value="8" label="GetImageData"/>
-  <int value="9" label="Volatile source image"/>
-  <int value="10" label="Canvas push frame"/>
-  <int value="11" label="Canvas push frame while printing"/>
-  <int value="12" label="Write pixels"/>
-  <int value="13" label="ToBlob"/>
-  <int value="14" label="CreateVideoFrame"/>
-  <int value="15" label="DrawImage"/>
-  <int value="16" label="DrawListener"/>
-  <int value="17" label="Paint"/>
-  <int value="18" label="Transfer"/>
-  <int value="19" label="Printing"/>
-  <int value="20" label="WebGPU external image"/>
-  <int value="21" label="Copy to SkBitmap"/>
-  <int value="22" label="WebGL texture upload"/>
-  <int value="23" label="CreatePattern"/>
-  <int value="24" label="Copy to clipboard"/>
-  <int value="25" label="Source image will change"/>
-  <int value="26" label="WebGPU texture upload"/>
-  <int value="27" label="ToDataURL"/>
-  <int value="28" label="GPU/CPU switch"/>
-  <int value="29" label="RecordingLimitExceeded"/>
-</enum>
-
 <enum name="CanvasResourceProviderType">
   <int value="0" label="Texture"/>
   <int value="1" label="Bitmap"/>
@@ -161,6 +134,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Direct Gpu Memory Buffer"/>
   <int value="7" label="Passthrough"/>
   <int value="8" label="Swap Chain"/>
+  <int value="9" label="Deprecated"/>
+  <int value="10" label="External Bitmap"/>
 </enum>
 
 <enum name="CanvasResourceProviderUsage">
@@ -202,6 +177,8 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="Animation affects an !important property"/>
   <int value="20"
       label="Target SVG element uses an individual transform property"/>
+  <int value="21"
+      label="Effect has an iteration composite mode other than 'replace'"/>
 </enum>
 
 <enum name="CompressionStreamsFormat">
@@ -274,6 +251,7 @@ Called by update_document_policy_enum.py.-->
   <int value="13" label="DocumentDomain"/>
   <int value="14" label="IncludeJSCallStacksInCrashReports"/>
   <int value="15" label="ExpectNoLinkedResources"/>
+  <int value="16" label="NetworkEfficiencyGuardrails"/>
 </enum>
 
 <!-- LINT.IfChange(FeatureObserver) -->
@@ -847,8 +825,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="568" label="SVGPathSegDOM"/>
   <int value="569" label="SVGTransformListConsolidate"/>
   <int value="570" label="SVGAnimatedTransformListBaseVal"/>
-  <int value="571" label="QuotedAnimationName"/>
-  <int value="572" label="QuotedKeyframesRule"/>
+  <int value="571" label="OBSOLETE_QuotedAnimationName"/>
+  <int value="572" label="OBSOLETE_QuotedKeyframesRule"/>
   <int value="573" label="SrcsetDroppedCandidate"/>
   <int value="574" label="WindowPostMessage"/>
   <int value="575" label="WindowPostMessageWithLegacyTargetOriginArgument"/>
@@ -1739,8 +1717,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1425" label="TextAreaMinLength"/>
   <int value="1426" label="TopNavigationFromSubFrame"/>
   <int value="1427" label="PrefixedElementRequestFullscreenInShadow"/>
-  <int value="1428" label="MediaSourceAbortRemove"/>
-  <int value="1429" label="MediaSourceDurationTruncatingBuffered"/>
+  <int value="1428" label="OBSOLETE_MediaSourceAbortRemove"/>
+  <int value="1429" label="OBSOLETE_MediaSourceDurationTruncatingBuffered"/>
   <int value="1430" label="AudioContextCrossOriginIframe"/>
   <int value="1431" label="OBSOLETE_PointerEventSetCapture"/>
   <int value="1432" label="OBSOLETE_PointerEventDispatch"/>
@@ -2305,8 +2283,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1971" label="AnchorClickDispatchForNonConnectedNode"/>
   <int value="1972" label="HTMLParseErrorNestedForm"/>
   <int value="1973" label="FontShapingNotDefGlyphObserved"/>
-  <int value="1974" label="PostMessageOutgoingWouldBeBlockedByConnectSrc"/>
-  <int value="1975" label="PostMessageIncomingWouldBeBlockedByConnectSrc"/>
+  <int value="1974"
+      label="OBSOLETE_PostMessageOutgoingWouldBeBlockedByConnectSrc"/>
+  <int value="1975"
+      label="OBSOLETE_PostMessageIncomingWouldBeBlockedByConnectSrc"/>
   <int value="1977" label="CrossOriginPropertyAccess"/>
   <int value="1978" label="CrossOriginPropertyAccessFromOpener"/>
   <int value="1979" label="CredentialManagerCreate"/>
@@ -3323,7 +3303,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2911" label="V8XRSession_End_Method"/>
   <int value="2912" label="V8XRWebGLLayer_Constructor"/>
   <int value="2913" label="FetchKeepalive"/>
-  <int value="2914" label="CSSTransitionCancelledByRemovingStyle"/>
+  <int value="2914" label="OBSOLETE_CSSTransitionCancelledByRemovingStyle"/>
   <int value="2915" label="V8RTCRtpSender_SetStreams_Method"/>
   <int value="2916" label="CookieNoSameSite"/>
   <int value="2917" label="CookieInsecureAndSameSiteNone"/>
@@ -3621,7 +3601,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3193" label="ThirdPartyCacheStorage"/>
   <int value="3194" label="ThirdPartyLocalStorage"/>
   <int value="3195" label="ThirdPartySessionStorage"/>
-  <int value="3196" label="DeclarativeShadowRoot"/>
+  <int value="3196" label="OBSOLETE_DeclarativeShadowRoot"/>
   <int value="3197" label="CrossOriginOpenerPolicySameOrigin"/>
   <int value="3198" label="CrossOriginOpenerPolicySameOriginAllowPopups"/>
   <int value="3199" label="CrossOriginEmbedderPolicyRequireCorp"/>
@@ -4418,7 +4398,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3956" label="SameSiteNoneIncludedBySameSiteLax"/>
   <int value="3957" label="SameSiteNoneIncludedBySameSiteStrict"/>
   <int value="3958"
-      label="PrivateNetworkAccessNonSecureContextsAllowedDeprecationTrial"/>
+      label="OBSOLETE_PrivateNetworkAccessNonSecureContextsAllowedDeprecationTrial"/>
   <int value="3959" label="V8URLPattern_Constructor"/>
   <int value="3960" label="V8URLPattern_Test_Method"/>
   <int value="3961" label="V8URLPattern_Exec_Method"/>
@@ -4748,7 +4728,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4269" label="SharedStorageAPI_SelectURL_Method"/>
   <int value="4270" label="SharedStorageAPI_Run_Method"/>
   <int value="4271" label="ViewTimelineConstructor"/>
-  <int value="4272" label="H1UserAgentFontSizeInSectionApplied"/>
+  <int value="4272" label="OBSOLETE_H1UserAgentFontSizeInSectionApplied"/>
   <int value="4273" label="OBSOLETE_kV8PendingBeacon_Constructor"/>
   <int value="4274" label="OBSOLETE_kV8PendingBeacon_Url_AttributeGetter"/>
   <int value="4275" label="OBSOLETE_kV8PendingBeacon_Url_AttributeSetter"/>
@@ -4771,7 +4751,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4290" label="DeviceOrientationUsedWithoutPermissionRequest"/>
   <int value="4291" label="DeviceMotionPermissionRequested"/>
   <int value="4292" label="DeviceMotionUsedWithoutPermissionRequest"/>
-  <int value="4293" label="PrivateNetworkAccessPermissionPrompt"/>
+  <int value="4293" label="OBSOLETE_PrivateNetworkAccessPermissionPrompt"/>
   <int value="4294" label="PseudoBeforeAfterForDateTimeInputElement"/>
   <int value="4295"
       label="OBSOLETE_kV8PendingBeacon_IsPending_AttributeGetter"/>
@@ -4792,7 +4772,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4309" label="SendBeaconWithURLSearchParams"/>
   <int value="4310" label="SendBeaconWithUSVString"/>
   <int value="4311" label="ReplacedElementPaintedWithOverflow"/>
-  <int value="4312" label="ImageAd"/>
+  <int value="4312" label="OBSOLETE_kImageAd"/>
   <int value="4313" label="LinkRelPrefetchAsDocumentSameOrigin"/>
   <int value="4314" label="LinkRelPrefetchAsDocumentCrossOrigin"/>
   <int value="4315" label="PersistentQuotaType"/>
@@ -4828,7 +4808,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4342" label="OBSOLETE_DeferredShaping2ReshapedByInspector"/>
   <int value="4343" label="OBSOLETE_DeferredShaping2ReshapedByPrinting"/>
   <int value="4344" label="OBSOLETE_DeferredShaping2ReshapedByScrolling"/>
-  <int value="4345" label="LCPCandidateImageFromOriginDirtyStyle"/>
+  <int value="4345" label="OBSOLETE_LCPCandidateImageFromOriginDirtyStyle"/>
   <int value="4346" label="V8TurboFanOsrCompileStarted"/>
   <int value="4347" label="V8Document_HasRedemptionRecord_Method"/>
   <int value="4348" label="OBSOLETE_DeferredShaping2ReshapedByLastResort"/>
@@ -4836,7 +4816,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4350" label="AudioContextSetSinkId"/>
   <int value="4351" label="ViewportDependentLazyLoadedImageWithSizesAttribute"/>
   <int value="4352" label="XRWebGLBindingGetCameraImage"/>
-  <int value="4353" label="SelectiveInOrderScript"/>
+  <int value="4353" label="OBSOLETE_SelectiveInOrderScript"/>
   <int value="4354" label="V8AsyncStackTaggingCreateTaskCall"/>
   <int value="4355" label="WebkitBoxWithoutWebkitLineClamp"/>
   <int value="4356" label="DataUrlInSvgUse"/>
@@ -4905,7 +4885,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4413" label="ImageSet"/>
   <int value="4414" label="WindowCloseHistoryLengthOne"/>
   <int value="4415" label="OBSOLETE_CreateNSResolverWithNonElements"/>
-  <int value="4416" label="CSSValueAppearanceNonStandard"/>
+  <int value="4416" label="OBSOLETE_CSSValueAppearanceNonStandard"/>
   <int value="4417" label="OBSOLETE_CSSGetComputedAnimationDelayZero"/>
   <int value="4418" label="GetEffectTimingDelayZero"/>
   <int value="4419" label="Scrollend"/>
@@ -5033,9 +5013,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4527" label="OBSOLETE_AttributeValueContainsLtOrGt"/>
   <int value="4528" label="OBSOLETE_V8ImportAssertionDeprecatedSyntax"/>
   <int value="4529" label="ImageCaptureBackgroundBlur"/>
-  <int value="4530" label="PrivateNetworkAccessPreflightError"/>
-  <int value="4531" label="PrivateNetworkAccessPreflightSuccess"/>
-  <int value="4532" label="PrivateNetworkAccessPreflightWarning"/>
+  <int value="4530" label="OBSOLETE_PrivateNetworkAccessPreflightError"/>
+  <int value="4531" label="OBSOLETE_PrivateNetworkAccessPreflightSuccess"/>
+  <int value="4532" label="OBSOLETE_PrivateNetworkAccessPreflightWarning"/>
   <int value="4533" label="CSSGetComputedAnimationDurationZero"/>
   <int value="4534"
       label="CSSGetComputedWebkitFontSmoothingAnimationDurationZero"/>
@@ -5079,7 +5059,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4569" label="V8FileSystemFileHandle_GetFile_Method"/>
   <int value="4570" label="V8FileSystemHandle_GetUniqueId_Method"/>
   <int value="4571" label="V8FileSystemHandle_Remove_Method"/>
-  <int value="4572" label="PerformanceNavigateSystemEntropy"/>
+  <int value="4572" label="OBSOLETE_PerformanceNavigateSystemEntropy"/>
   <int value="4573" label="V8InvalidatedNumberStringNotRegexpLikeProtector"/>
   <int value="4574" label="CriticalCHRestartNavigationTiming"/>
   <int value="4575" label="TopLevelDocumentWithEmbeddedCredentials"/>
@@ -5106,7 +5086,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4596" label="ContainerQueryEvalUnknown"/>
   <int value="4597"
       label="OBSOLETE_EventTimingPresentationPromiseResolvedAfterReport"/>
-  <int value="4598" label="GetCoalescedEventsInInsecureContext"/>
+  <int value="4598" label="OBSOLETE_GetCoalescedEventsInInsecureContext"/>
   <int value="4599" label="CSPEESameOriginBlanketEnforcement"/>
   <int value="4601" label="SharedDictionaryUsed"/>
   <int value="4602" label="SharedDictionaryUsedForNavigation"/>
@@ -5232,7 +5212,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use"/>
   <int value="4708" label="OBSOLETE_RubyElementWithDisplayBlockAndRt"/>
   <int value="4709" label="OBSOLETE_CSSDeclarationAfterNestedRule"/>
-  <int value="4710" label="ThirdPartyCookieAdAccessBlockByExperiment"/>
+  <int value="4710" label="OBSOLETE_ThirdPartyCookieAdAccessBlockByExperiment"/>
   <int value="4711" label="ServiceWorkerStaticRouter_AddRoutes"/>
   <int value="4712"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_caches"/>
@@ -5265,14 +5245,19 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel"/>
   <int value="4730"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use"/>
-  <int value="4731" label="ThirdPartyCookieDeprecation_AllowByExplicitSetting"/>
-  <int value="4732" label="ThirdPartyCookieDeprecation_AllowByGlobalSetting"/>
-  <int value="4733" label="ThirdPartyCookieDeprecation_AllowBy3PCDMetadata"/>
-  <int value="4734" label="ThirdPartyCookieDeprecation_AllowBy3PCD"/>
-  <int value="4735" label="ThirdPartyCookieDeprecation_AllowBy3PCDHeuristics"/>
-  <int value="4736" label="ThirdPartyCookieDeprecation_AllowByStorageAccess"/>
+  <int value="4731"
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowByExplicitSetting"/>
+  <int value="4732"
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowByGlobalSetting"/>
+  <int value="4733"
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowBy3PCDMetadata"/>
+  <int value="4734" label="OBSOLETE_ThirdPartyCookieDeprecation_AllowBy3PCD"/>
+  <int value="4735"
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowBy3PCDHeuristics"/>
+  <int value="4736"
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowByStorageAccess"/>
   <int value="4737"
-      label="ThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess"/>
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess"/>
   <int value="4738" label="IframeAdAuctionHeadersAttribute"/>
   <int value="4739" label="AutoSpeculationRulesOptedOut"/>
   <int value="4740" label="OverrideFlashEmbedwithHTML"/>
@@ -5313,7 +5298,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4775" label="UserFeatureNgOptimizedImage"/>
   <int value="4776" label="CSSAtRulePageMargin"/>
   <int value="4777"
-      label="ThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls"/>
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls"/>
   <int value="4778" label="UserFeatureNgAfterRender"/>
   <int value="4779" label="UserFeatureNgHydration"/>
   <int value="4780" label="CapturedSurfaceControl"/>
@@ -5436,7 +5421,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4873" label="DOMClobberedNotShadowedDocumentPropertyAccessed"/>
   <int value="4874" label="DOMClobberedShadowedFormPropertyAccessed"/>
   <int value="4875" label="DOMClobberedNotShadowedFormPropertyAccessed"/>
-  <int value="4876" label="TpcdCookieReadBlockedByAdHeuristics"/>
+  <int value="4876" label="OBSOLETE_TpcdCookieReadBlockedByAdHeuristics"/>
   <int value="4877" label="UsedColorSchemeRootScrollbarsDark"/>
   <int value="4878" label="SerialPortConnected"/>
   <int value="4879" label="DevicePostureMediaFeature"/>
@@ -5607,7 +5592,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5033" label="ButtonTypeAttrEmptyString"/>
   <int value="5034" label="ProtectedAudienceDirectFromSellerSignals"/>
   <int value="5035" label="OBSOLETE_WebGPUSubgroupsFeatures"/>
-  <int value="5036" label="AudioContextOnError"/>
+  <int value="5036" label="OBSOLETE_AudioContextOnError"/>
   <int value="5037" label="NoVarySearchPrerender"/>
   <int value="5038" label="OBSOLETE_V8AITextSession_Clone_Method"/>
   <int value="5039" label="GamepadHapticActuatorType"/>
@@ -5646,8 +5631,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5072" label="FencedFrameCanLoadOpaqueURL"/>
   <int value="5073"
       label="V8Performance_Memory_AttributeGetter_NotLockedToSite"/>
-  <int value="5074" label="PartitionedPopin_OpenAttempt"/>
-  <int value="5075" label="PartitionedPopin_Opened"/>
+  <int value="5074" label="OBSOLETE_PartitionedPopin_OpenAttempt"/>
+  <int value="5075" label="OBSOLETE_PartitionedPopin_Opened"/>
   <int value="5076"
       label="OBSOLETE_V8AISummarizer_SharedContext_AttributeGetter"/>
   <int value="5077" label="OBSOLETE_V8AISummarizer_Type_AttributeGetter"/>
@@ -5673,8 +5658,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5093" label="OBSOLETE_V8AIAssistant_Destroy_Method"/>
   <int value="5094" label="OBSOLETE_V8AIAssistant_Prompt_Method"/>
   <int value="5095" label="OBSOLETE_V8AIAssistant_PromptStreaming_Method"/>
-  <int value="5096" label="V8Window_PopinContextTypesSupported_Method"/>
-  <int value="5097" label="V8Window_PopinContextType_Method"/>
+  <int value="5096"
+      label="OBSOLETE_V8Window_PopinContextTypesSupported_Method"/>
+  <int value="5097" label="OBSOLETE_V8Window_PopinContextType_Method"/>
   <int value="5098" label="WebAuthentication_AttestationFormats"/>
   <int value="5099" label="CssDisplayPropertyMultipleValues"/>
   <int value="5100" label="DocumentPolicyExpectNoLinkedResources"/>
@@ -5696,7 +5682,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="OBSOLETE_MaxInterStageShaderComponentsRequiredLimit"/>
   <int value="5112" label="ShowPickerSelect"/>
   <int value="5113" label="AudioContextPlayoutStats"/>
-  <int value="5114" label="ThirdPartyCookieBlocked"/>
+  <int value="5114" label="OBSOLETE_ThirdPartyCookieBlocked"/>
   <int value="5115"
       label="V8PerformanceResourceTiming_WorkerRouterEvaluationStart_AttributeGetter"/>
   <int value="5116"
@@ -5715,8 +5701,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5125" label="V8PaymentManager_UserHint_AttributeGetter"/>
   <int value="5126" label="V8PaymentManager_UserHint_AttributeSetter"/>
   <int value="5127" label="PerformanceNavigationTimingConfidence"/>
-  <int value="5128" label="HttpParsersParseDateFromUTCStringDifferent"/>
-  <int value="5129" label="HttpParsersParseDateFromStringDifferent"/>
+  <int value="5128"
+      label="OBSOLETE_HttpParsersParseDateFromUTCStringDifferent"/>
+  <int value="5129" label="OBSOLETE_HttpParsersParseDateFromStringDifferent"/>
   <int value="5130" label="MediaQueryRangeSyntax"/>
   <int value="5131" label="ParseHTMLSafe"/>
   <int value="5132" label="SetHTMLSafe"/>
@@ -5804,7 +5791,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5202" label="GeolocationSucceededWithoutInjectionMitigation"/>
   <int value="5203" label="SharedWorkerScriptUnderServiceWorkerControlIsBlob"/>
   <int value="5204" label="OBSOLETE_DisableThirdPartyStoragePartitioning3"/>
-  <int value="5205" label="ControlledFrameElement"/>
+  <int value="5205" label="OBSOLETE_ControlledFrameElement"/>
   <int value="5206" label="Canvas2DIsPointInPath"/>
   <int value="5207" label="Canvas2DIsPointInStroke"/>
   <int value="5208" label="Canvas2DGetImageData"/>
@@ -5817,7 +5804,8 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8AuthenticatorAttestationResponse_GetPublicKey_Method"/>
   <int value="5215" label="CloseWatcherScriptConstructor"/>
   <int value="5216" label="Canvas2DImageSmoothingQuality2"/>
-  <int value="5217" label="NonNoneTouchActionWouldLoseEditableHandwriting"/>
+  <int value="5217"
+      label="OBSOLETENonNoneTouchActionWouldLoseEditableHandwriting"/>
   <int value="5218"
       label="CSSEnvironmentVariable_SafeAreaInsetBottom_FastPath"/>
   <int value="5219" label="SrcSetUsedHigherDensityImageFromCache"/>
@@ -5832,7 +5820,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5228" label="ClipboardCustomFormatWrite"/>
   <int value="5229" label="ClipboardSvgRead"/>
   <int value="5230" label="ClipboardSvgWrite"/>
-  <int value="5231" label="VarFallbackValidation"/>
+  <int value="5231" label="OBSOLETE_VarFallbackValidation"/>
   <int value="5232" label="LocaleInfoObsoletedGetters"/>
   <int value="5233" label="InjectionMitigatedContextSubFrame"/>
   <int value="5234" label="InjectionMitigatedContextMainFrame"/>
@@ -5953,8 +5941,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5331" label="WebAppManifestUpdate"/>
   <int value="5332" label="CSSEnvironmentVariable_PreferredTextScale"/>
   <int value="5333" label="ButtonTypeAttrInvalidWithCommandOrCommandfor"/>
-  <int value="5334" label="CSSVarFallbackCycle"/>
-  <int value="5335" label="CSSAttrFallbackCycle"/>
+  <int value="5334" label="OBSOLETE_CSSVarFallbackCycle"/>
+  <int value="5335" label="OBSOLETE_CSSAttrFallbackCycle"/>
   <int value="5336" label="CSSRainbowGradientPattern"/>
   <int value="5337" label="WebAppManifestStartUrl"/>
   <int value="5338" label="WebAppManifestDisplay"/>
@@ -5996,7 +5984,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5373" label="InterestFor"/>
   <int value="5374" label="TextAutoSizingDisabledOnFlexbox"/>
   <int value="5375" label="AriaLabeledByAlternativeSpelling"/>
-  <int value="5376" label="CanvasTextNg"/>
+  <int value="5376" label="OBSOLETE_CanvasTextNg"/>
   <int value="5377" label="DOMWindowOpenPopup"/>
   <int value="5378" label="FencedFrameDisableUntrustedNetwork"/>
   <int value="5379" label="FencedFrameNotifyEvent"/>
@@ -6016,7 +6004,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5390"
       label="CredentialsGetImmediateMediationWithWebAuthnAndPasswords"/>
   <int value="5391"
-      label="NonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller"/>
+      label="OBSOLETENonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller"/>
   <int value="5392" label="Translator_Create"/>
   <int value="5393" label="Translator_Availability"/>
   <int value="5394" label="Translator_SourceLanguage"/>
@@ -6084,7 +6072,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5456" label="Summarizer_OutputLanguage"/>
   <int value="5457" label="Summarizer_SharedContext"/>
   <int value="5458" label="Summarizer_Type"/>
-  <int value="5459" label="CrossOriginSameSiteCookieAccessViaStorageAccessAPI"/>
+  <int value="5459"
+      label="OBSOLETE_CrossOriginSameSiteCookieAccessViaStorageAccessAPI"/>
   <int value="5460"
       label="OBSOLETE_V8GPUAdapter_IsFallbackAdapter_AttributeGetter"/>
   <int value="5461" label="LanguageDetector_ExpectedInputLanguages"/>
@@ -6242,6 +6231,174 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5609" label="CanvasFallbackElementContent"/>
   <int value="5610" label="AutofillMaybeSyntheticSelect"/>
   <int value="5611" label="AutofillSyntheticSelect"/>
+  <int value="5612" label="FetchRetry"/>
+  <int value="5613" label="MessageEventDataBeforeSameOrigin"/>
+  <int value="5614" label="MessageEventDataBeforeSameSiteOrigin"/>
+  <int value="5615" label="MessageEventDataBeforeCrossSiteOrigin"/>
+  <int value="5616" label="MessageEventDataBeforeOpaqueOrigin"/>
+  <int value="5617"
+      label="LocalNetworkAccessNonSecureContextAllowedDeprecationTrial"/>
+  <int value="5618" label="CSPUrlHashes"/>
+  <int value="5619" label="CSPEvalHashes"/>
+  <int value="5620" label="WebAppManifestNameLocalized"/>
+  <int value="5621" label="WebAppManifestShortNameLocalized"/>
+  <int value="5622" label="WebAppManifestDescriptionLocalized"/>
+  <int value="5623" label="WebAppManifestIconsLocalized"/>
+  <int value="5624" label="HTMLControlledFrameElement"/>
+  <int value="5625" label="SlowDeserialization"/>
+  <int value="5626" label="SharedWorkerStartOnAndroid"/>
+  <int value="5627" label="LocalNetworkAccessWithinSharedWorker"/>
+  <int value="5628" label="LocalNetworkAccessWithinDedicatedWorker"/>
+  <int value="5629" label="CSSPseudoParentInScope"/>
+  <int value="5630" label="InterestHintPseudoElement"/>
+  <int value="5631" label="CookieStoreEmptyPath"/>
+  <int value="5632" label="V8CookieListItem_Domain_AttributeGetter"/>
+  <int value="5633" label="V8CookieListItem_Path_AttributeGetter"/>
+  <int value="5634" label="V8CookieListItem_Expires_AttributeGetter"/>
+  <int value="5635" label="V8CookieListItem_Secure_AttributeGetter"/>
+  <int value="5636" label="V8CookieListItem_SameSite_AttributeGetter"/>
+  <int value="5637" label="V8CookieListItem_Partitioned_AttributeGetter"/>
+  <int value="5638" label="WebkitLineClampWithHeight"/>
+  <int value="5639" label="LineClampAuto"/>
+  <int value="5640" label="LineClampByLinesAndHeight"/>
+  <int value="5641" label="V8RegExpStaticPropertiesWithLastMatch"/>
+  <int value="5642" label="GetStatusForPolicyCrossOriginIframe"/>
+  <int value="5643" label="ComputedBorderTopWidthWithNoneOrHiddenStyle"/>
+  <int value="5644" label="ComputedBorderRightWidthWithNoneOrHiddenStyle"/>
+  <int value="5645" label="ComputedBorderBottomWidthWithNoneOrHiddenStyle"/>
+  <int value="5646" label="ComputedBorderLeftWidthWithNoneOrHiddenStyle"/>
+  <int value="5647" label="ComputedBorderWidthWithNoneOrHiddenStyle"/>
+  <int value="5648" label="ComputedColumnRuleWidthWithNoneOrHiddenStyle"/>
+  <int value="5649" label="ComputedOutlineWidthWithNoneOrHiddenStyle"/>
+  <int value="5650" label="NavigationNavigateJavaScriptURL"/>
+  <int value="5651" label="V8WasmCustomDescriptors"/>
+  <int value="5652" label="SRIIntegrityAttributeOnInlineScript"/>
+  <int value="5653" label="CredentialsGetImmediateMediationWithPasswordsOnly"/>
+  <int value="5654" label="CSSAtRuleRoute"/>
+  <int value="5655" label="AbsposPositionTryFallbacksChange"/>
+  <int value="5656" label="MulticastControllerJoinGroupFunction"/>
+  <int value="5657" label="MulticastControllerLeaveGroupFunction"/>
+  <int value="5658" label="MulticastControllerJoinedGroupsAttribute"/>
+  <int value="5659" label="ContainerNameQueryFailedTreeScope"/>
+  <int value="5660" label="LocalNetworkAccessWebSocketResourceNotKnownPrivate"/>
+  <int value="5661" label="CSSPseudoElementUsesImplicitAnchor"/>
+  <int value="5662" label="LineClampByLinesOverflows"/>
+  <int value="5663" label="PointerRawUpdateEventsInInsecureContext"/>
+  <int value="5664" label="ReportToHeader"/>
+  <int value="5665" label="ReportingEndpointsHeader"/>
+  <int value="5666" label="OverscrollBehaviorWithOverflowHidden"/>
+  <int value="5667" label="WebCodecsAv1EncodingWithQP"/>
+  <int value="5668" label="ExternalSVGDocumentResources"/>
+  <int value="5669" label="IndexedDBGetAllRecords"/>
+  <int value="5670" label="ResolvedColumnRuleWidthWithNoneOrHiddenStyle"/>
+  <int value="5671" label="ResolvedOutlineWidthWithNoneOrHiddenStyle"/>
+  <int value="5672" label="ContextMenuEventDefaultPrevented"/>
+  <int value="5673" label="SmartCardEstablishContext"/>
+  <int value="5674" label="SmartCardConnect"/>
+  <int value="5675" label="NavigatorCPUPerformance"/>
+  <int value="5676" label="SelectionRemoveRangeNotFoundWouldThrow"/>
+  <int value="5677" label="NestedSvgCssSizingProperties"/>
+  <int value="5678" label="CryptoAlgorithmChaCha20Poly1305"/>
+  <int value="5679" label="CryptoAlgorithmMlDsa44"/>
+  <int value="5680" label="CryptoAlgorithmMlDsa65"/>
+  <int value="5681" label="CryptoAlgorithmMlDsa87"/>
+  <int value="5682" label="CryptoAlgorithmMlKem768"/>
+  <int value="5683" label="CryptoAlgorithmMlKem1024"/>
+  <int value="5684" label="ClipboardChangedBetweenReadAndGetType"/>
+  <int value="5685" label="ClipboardChangedBetweenGetTypes"/>
+  <int value="5686"
+      label="ClipboardReadAndGetTypeTimeDiffIsBetween5SecAnd1Min"/>
+  <int value="5687"
+      label="ClipboardReadAndGetTypeTimeDiffIsBetween1MinAnd10Min"/>
+  <int value="5688" label="ClipboardReadAndGetTypeTimeDiffIsMoreThan10Min"/>
+  <int value="5689"
+      label="ClipboardGetTypeTimeDiffOfSameTypeIsBetween5SecAnd1Min"/>
+  <int value="5690"
+      label="ClipboardGetTypeTimeDiffOfSameTypeIsBetween1MinAnd10Min"/>
+  <int value="5691" label="ClipboardGetTypeTimeDiffOfSameTypeIsMoreThan10Min"/>
+  <int value="5692" label="ClipboardGetTypeWindowNotInFocus"/>
+  <int value="5693" label="ReportBodyToJSON"/>
+  <int value="5694" label="CSPViolationReportBodyToJSON"/>
+  <int value="5695" label="DeprecationReportBodyToJSON"/>
+  <int value="5696" label="InterventionReportBodyToJSON"/>
+  <int value="5697" label="DocumentPolicyViolationReportBodyToJSON"/>
+  <int value="5698" label="IntegrityViolationReportBodyToJSON"/>
+  <int value="5699" label="PermissionsPolicyViolationReportBodyToJSON"/>
+  <int value="5700" label="CoopAccessViolationReportBodyToJSON"/>
+  <int value="5701" label="TestReportBodyToJSON"/>
+  <int value="5702" label="SpeculationRulesPrerenderUntilScript"/>
+  <int value="5703" label="ClipboardChangeEventChangeIdAttribute"/>
+  <int value="5704" label="WebRTCLocalNetworkAccessCheck"/>
+  <int value="5705" label="WebRTCLocalNetworkAccessPublicToLocal"/>
+  <int value="5706" label="WebRTCLocalNetworkAccessPublicToLoopback"/>
+  <int value="5707" label="WebRTCLocalNetworkAccessLocalToLoopback"/>
+  <int value="5708" label="IdentityDigitalCredentialsCreation"/>
+  <int value="5709" label="IdentityDigitalCredentialsCreationSuccess"/>
+  <int value="5710" label="FedCmErrorCodeAttribute"/>
+  <int value="5711" label="FedCmErrorErrorAttribute"/>
+  <int value="5712" label="AnimationAllTypes"/>
+  <int value="5713" label="AnimationSvgTypes"/>
+  <int value="5714" label="AnimationNonCompositedTypes"/>
+  <int value="5715" label="AnimationCompositedTypes"/>
+  <int value="5716" label="AnimationSvgNonCompositedTypes"/>
+  <int value="5717" label="AnimationSvgCompositedTypes"/>
+  <int value="5718" label="AttributionReportingXhr"/>
+  <int value="5719" label="DidUseServerHttpAuthOnCrossPartitionRequest"/>
+  <int value="5720" label="LcpCandidateRemovedWhilePaintTimePending"/>
+  <int value="5721" label="GetBBoxForElementWithZeroWidthOrHeight"/>
+  <int value="5722" label="GetBBoxForNestedSVGElementWithZeroWidthOrHeight"/>
+  <int value="5723" label="XMLExternalResourceLoadEntitiesOnly"/>
+  <int value="5724" label="V8Origin_IsSameOrigin_Method"/>
+  <int value="5725" label="V8Origin_IsSameSite_Method"/>
+  <int value="5726" label="V8Origin_From_Method"/>
+  <int value="5727" label="V8Origin_FromURL_Method"/>
+  <int value="5728" label="V8Origin_Parse_Method"/>
+  <int value="5729" label="ExtendedTextMetrics"/>
+  <int value="5730" label="UseCssSizingProperties"/>
+  <int value="5731" label="SharedStorageAPIAll"/>
+  <int value="5732" label="GamepadRawInputChangeEventListener"/>
+  <int value="5733" label="LetterSpacingWithMargin"/>
+  <int value="5734"
+      label="V8PerformanceContainerTiming_IntersectionRect_AttributeGetter"/>
+  <int value="5735" label="V8PerformanceContainerTiming_Size_AttributeGetter"/>
+  <int value="5736"
+      label="V8PerformanceContainerTiming_RootElement_AttributeGetter"/>
+  <int value="5737"
+      label="V8PerformanceContainerTiming_Identifier_AttributeGetter"/>
+  <int value="5738"
+      label="V8PerformanceContainerTiming_LastPaintedElement_AttributeGetter"/>
+  <int value="5739"
+      label="V8PerformanceContainerTiming_FirstRenderTime_AttributeGetter"/>
+  <int value="5740" label="V8Element_ContainerTiming_AttributeGetter"/>
+  <int value="5741" label="V8Element_ContainerTiming_AttributeSetter"/>
+  <int value="5742" label="V8Element_ContainerTimingIgnore_AttributeGetter"/>
+  <int value="5743" label="V8Element_ContainerTimingIgnore_AttributeSetter"/>
+  <int value="5744" label="ContainerTimingObserverRegistered"/>
+  <int value="5745" label="ContainerTimingObserverReportedEntries"/>
+  <int value="5746" label="CookieStoreMaxAge"/>
+  <int value="5747" label="SVGFEBlendElement"/>
+  <int value="5748" label="SVGFEColorMatrixElement"/>
+  <int value="5749" label="SVGFEComponentTransferElement"/>
+  <int value="5750" label="SVGFECompositeElement"/>
+  <int value="5751" label="SVGFEConvolveMatrixElement"/>
+  <int value="5752" label="SVGFEDiffuseLightingElement"/>
+  <int value="5753" label="SVGFEDisplacementMapElement"/>
+  <int value="5754" label="SVGFEDropShadowElement"/>
+  <int value="5755" label="SVGFEFloodElement"/>
+  <int value="5756" label="SVGFEGaussianBlurElement"/>
+  <int value="5757" label="SVGFEImageElement"/>
+  <int value="5758" label="SVGFEMergeElement"/>
+  <int value="5759" label="SVGFEMorphologyElement"/>
+  <int value="5760" label="SVGFEOffsetElement"/>
+  <int value="5761" label="SVGFESpecularLightingElement"/>
+  <int value="5762" label="SVGFETileElement"/>
+  <int value="5763" label="SVGFETurbulenceElement"/>
+  <int value="5764" label="UnframedIwa"/>
+  <int value="5765" label="DigitalCredentialsProtocolOpenId4VpUnsigned"/>
+  <int value="5766" label="DigitalCredentialsProtocolOpenId4VpSigned"/>
+  <int value="5767" label="DigitalCredentialsProtocolOpenId4VpMultisigned"/>
+  <int value="5768" label="DigitalCredentialsProtocolOrgIsoMdoc"/>
+  <int value="5769" label="DigitalCredentialsProtocolOpenId4Vci"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -6335,7 +6492,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="80" label="OTPCredentials"/>
   <int value="81" label="DisplayCapture"/>
   <int value="82" label="Deprecated: InterestCohort"/>
-  <int value="83" label="SharedAutofill"/>
+  <int value="83" label="Autofill"/>
   <int value="84" label="DirectSockets"/>
   <int value="85" label="ClientHintPrefersColorScheme"/>
   <int value="86" label="WindowManagement"/>
@@ -6375,7 +6532,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="120" label="DigitalCredentialsGet"/>
   <int value="121" label="MediaPlaybackWhileNotVisible"/>
   <int value="122" label="AllScreensCapture"/>
-  <int value="123" label="PartitionedPopins"/>
+  <int value="123" label="Deprecated: PartitionedPopins"/>
   <int value="124" label="WebAppInstallation"/>
   <int value="125" label="ControlledFrame"/>
   <int value="126" label="DirectSocketsPrivate"/>
@@ -6393,7 +6550,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="138" label="OnDeviceSpeechRecognition"/>
   <int value="139" label="LanguageModel"/>
   <int value="140" label="AriaNotify"/>
+  <int value="141" label="DigitalCredentialsCreate"/>
+  <int value="142" label="MulticastInDirectSockets"/>
+  <int value="143" label="ManualText"/>
 </enum>
+
+<!-- LINT.IfChange(FedCmAccountChooserResult) -->
 
 <enum name="FedCmAccountChooserResult">
   <int value="0" label="Account row clicked"/>
@@ -6405,6 +6567,22 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="Tap scrim on Android"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_ui_utils.h:AccountChooserResult) -->
+
+<!-- LINT.IfChange(FedCmAccountFieldsType) -->
+
+<enum name="FedCmAccountFieldsType">
+  <int value="0" label="Name and email, but not phone or username"/>
+  <int value="1" label="Only one of name and email, no phone or username"/>
+  <int value="2"
+      label="Name or email (or both) and phone number or username (or both)"/>
+  <int value="3" label="Only phone number or username, no name or email"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:AccountFieldsType) -->
+
+<!-- LINT.IfChange(FedCmAccountsResponseInvalidReason) -->
+
 <enum name="FedCmAccountsResponseInvalidReason">
   <int value="0" label="Response is not JSON or dict"/>
   <int value="1" label="No accounts key"/>
@@ -6413,6 +6591,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Account misses required field"/>
   <int value="5" label="Accounts share the same id"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/idp_network_request_manager.h:AccountsResponseInvalidReason) -->
+
+<!-- LINT.IfChange(FedCmCancelReason) -->
 
 <enum name="FedCmCancelReason">
   <int value="0" label="Other"/>
@@ -6423,18 +6605,31 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="More details button"/>
   <int value="6" label="Android back button"/>
   <int value="7" label="Tap scrim on Android"/>
+  <int value="8" label="Segmentation platform (obsolete)"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/public/browser/webid/identity_request_dialog_controller.h:DismissReason) -->
+
+<!-- LINT.IfChange(FedCmClosePopupWindowReason) -->
 
 <enum name="FedCmClosePopupWindowReason">
   <int value="0" label="IDP initiated close"/>
   <int value="1" label="Pop-up window destroyed"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h:ClosePopupWindowReason) -->
+
+<!-- LINT.IfChange(FedCmContinueOnPopupResult) -->
+
 <enum name="FedCmContinueOnPopupResult">
   <int value="0" label="TokenReceived"/>
   <int value="1" label="WindowClosed"/>
   <int value="2" label="ClosedByIdentityProviderClose"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:ContinueOnPopupResult) -->
+
+<!-- LINT.IfChange(FedCmContinueOnPopupStatus) -->
 
 <enum name="FedCmContinueOnPopupStatus">
   <int value="0" label="PopupOpened"/>
@@ -6443,11 +6638,29 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="UrlNotSameOriginAndPopupNotAllowed"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:ContinueOnPopupStatus) -->
+
+<!-- LINT.IfChange(FedCmCrossSiteIframeType) -->
+
+<enum name="FedCmCrossSiteIframeType">
+  <int value="0" label="No value received"/>
+  <int value="1" label="Iframe is third party"/>
+  <int value="2" label="Iframe is same party"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:CrossSiteIframeType) -->
+
+<!-- LINT.IfChange(FedCmCspStatus) -->
+
 <enum name="FedCmCspStatus">
   <int value="0" label="Success"/>
   <int value="1" label="FailedPathButPassedOrigin"/>
   <int value="2" label="FailedOrigin"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/credentialmanagement/identity_credential.cc:FedCmCspStatus) -->
+
+<!-- LINT.IfChange(FedCmDialogType) -->
 
 <enum name="FedCmDialogType">
   <int value="0" label="None"/>
@@ -6460,6 +6673,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7" label="ErrorUrlPopup"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/federated_auth_request_impl.h:DialogType) -->
+
+<!-- LINT.IfChange(FedCmDisclosureDialogResult) -->
+
 <enum name="FedCmDisclosureDialogResult">
   <int value="0" label="Account row clicked"/>
   <int value="1" label="Cancel button clicked"/>
@@ -6469,6 +6686,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Bottom sheet swiped back on Android"/>
   <int value="6" label="Tap scrim on Android"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_ui_utils.h:DisclosureDialogResult) -->
+
+<!-- LINT.IfChange(FedCmDisconnectStatus) -->
 
 <enum name="FedCmDisconnectStatus">
   <int value="0" label="Success"/>
@@ -6493,6 +6714,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="19" label="IdpNotPotentiallyTrustworthy"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:DisconnectStatus) -->
+
+<!-- LINT.IfChange(FedCmErrorDialogResult) -->
+
 <enum name="FedCmErrorDialogResult">
   <int value="0" label="More details clicked"/>
   <int value="1" label="Got it clicked without more details available"/>
@@ -6504,6 +6729,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7" label="Other dismiss reason without more details available"/>
   <int value="8" label="Other dismiss reason with more details available"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:ErrorDialogResult) -->
+
+<!-- LINT.IfChange(FedCmErrorDialogType) -->
 
 <enum name="FedCmErrorDialogType">
   <int value="0" label="Generic empty string without URL"/>
@@ -6522,11 +6751,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="13" label="Server error with URL"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/idp_network_request_manager.h:FedCmErrorDialogType) -->
+
+<!-- LINT.IfChange(FedCmErrorUrlType) -->
+
 <enum name="FedCmErrorUrlType">
   <int value="0" label="Same-origin with config URL"/>
   <int value="1" label="Cross-origin same-site with config URL"/>
   <int value="2" label="Cross-site with config URL"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/idp_network_request_manager.h:FedCmErrorUrlType) -->
+
+<!-- LINT.IfChange(FedCmIdpSigninMatchStatus) -->
 
 <enum name="FedCmIdpSigninMatchStatus">
   <int value="0"
@@ -6555,6 +6792,10 @@ Called by update_permissions_policy_enum.py.-->
              accounts."/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:IdpSigninMatchStatus) -->
+
+<!-- LINT.IfChange(FedCmJavaObjectCreationOutcome) -->
+
 <enum name="FedCmJavaObjectCreationOutcome">
   <int value="0" label="New Java object created"/>
   <int value="1" label="Existing Java object reused"/>
@@ -6562,6 +6803,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="No native view"/>
   <int value="4" label="No window"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/webid/account_selection_view_android.cc:FedCmJavaObjectCreationOutcome) -->
+
+<!-- LINT.IfChange(FedCmLifecycleStateFailureReason) -->
 
 <enum name="FedCmLifecycleStateFailureReason">
   <int value="0" label="Other state"/>
@@ -6572,6 +6817,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Running Unload Handlers"/>
   <int value="6" label="Ready to be deleted"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:LifecycleStateFailureReason) -->
+
+<!-- LINT.IfChange(FedCmLoadingDialogResult) -->
 
 <enum name="FedCmLoadingDialogResult">
   <int value="0" label="Proceeds with existing accounts"/>
@@ -6584,11 +6833,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="Tap scrim on Android"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_ui_utils.h:LoadingDialogResult) -->
+
+<!-- LINT.IfChange(FedCmMismatchDialogResult) -->
+
 <enum name="FedCmMismatchDialogResult">
   <int value="0" label="Continue button clicked"/>
   <int value="1" label="Dismissed by user through clicking close icon"/>
   <int value="2" label="Dialog unhandled by user"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h:MismatchDialogResult) -->
+
+<!-- LINT.IfChange(FedCmMismatchDialogType) -->
 
 <enum name="FedCmMismatchDialogType">
   <int value="0" label="First mismatch of the request, without hints"/>
@@ -6596,6 +6853,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Repeated mismatch in a request, without hints"/>
   <int value="3" label="Repeated mismatch in a request, with hints"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:MismatchDialogType) -->
+
+<!-- LINT.IfChange(FedCmMultipleRequestsRpMode) -->
 
 <enum name="FedCmMultipleRequestsRpMode">
   <int value="0"
@@ -6608,11 +6869,19 @@ Called by update_permissions_policy_enum.py.-->
       label="An active flow is invoked while an active flow is pending"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:MultipleRequestsRpMode) -->
+
+<!-- LINT.IfChange(FedCmNumAccounts) -->
+
 <enum name="FedCmNumAccounts">
   <int value="0" label="Zero accounts"/>
   <int value="1" label="One account"/>
   <int value="2" label="Multiple accounts"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:NumAccounts) -->
+
+<!-- LINT.IfChange(FedCmPopupInteraction) -->
 
 <enum name="FedCmPopupInteraction">
   <int value="0" label="User loses focus of pop-up and pop-up closed by IDP"/>
@@ -6624,6 +6893,10 @@ Called by update_permissions_policy_enum.py.-->
       label="User never loses focus of pop-up and pop-up not closed by IDP"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h:PopupInteraction) -->
+
+<!-- LINT.IfChange(FedCmPopupWindowResult) -->
+
 <enum name="FedCmPopupWindowResult">
   <int value="0" label="Accounts received and pop-up closed by IDP"/>
   <int value="1" label="Accounts received but pop-up not closed by IDP"/>
@@ -6631,11 +6904,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Accounts not received and pop-up not closed by IDP"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h:PopupWindowResult) -->
+
+<!-- LINT.IfChange(FedCmRequesterFrameType) -->
+
 <enum name="FedCmRequesterFrameType">
   <int value="0" label="Main frame"/>
   <int value="1" label="Iframe which is same-site as main frame"/>
   <int value="2" label="Iframe which is cross-site as main frame"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:RequesterFrameType) -->
+
+<!-- LINT.IfChange(FedCmRequestIdTokenStatus) -->
 
 <enum name="FedCmRequestIdTokenStatus">
   <int value="0" label="SuccessUsingTokenInHttpResponse"/>
@@ -6693,6 +6974,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="52" label="SuppressedBySegmentationPlatform"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:RequestIdTokenStatus) -->
+
+<!-- LINT.IfChange(FedCmRpContext) -->
+
 <enum name="FedCmRpContext">
   <int value="0" label="Sign in"/>
   <int value="1" label="Sign up"/>
@@ -6700,10 +6985,18 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Continue"/>
 </enum>
 
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/webid/federated_auth_request.mojom:RpContext) -->
+
+<!-- LINT.IfChange(FedCmRpMode) -->
+
 <enum name="FedCmRpMode">
   <int value="0" label="Passive"/>
   <int value="1" label="Active"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/webid/federated_auth_request.mojom:RpMode) -->
+
+<!-- LINT.IfChange(FedCmRpParameters) -->
 
 <enum name="FedCmRpParameters">
   <int value="0" label="Has parameters"/>
@@ -6711,11 +7004,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Has parameters and non-default scope"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:RpParameters) -->
+
+<!-- LINT.IfChange(FedCmSetLoginStatusIgnoredReason) -->
+
 <enum name="FedCmSetLoginStatusIgnoredReason">
   <int value="0" label="Looking up the FrameTreeNode by ID failed"/>
   <int value="1" label="Request came from within a fenced frame tree"/>
   <int value="2" label="Request came from a cross-origin context"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:SetLoginStatusIgnoredReason) -->
+
+<!-- LINT.IfChange(FedCmSheetType) -->
 
 <enum name="FedCmSheetType">
   <int value="0" label="Account selection"/>
@@ -6723,7 +7024,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Auto re-authn"/>
   <int value="3" label="Sign in to IDP static"/>
   <int value="4" label="Sign in error"/>
+  <int value="5" label="Loading"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_ui_utils.h:SheetType) -->
+
+<!-- LINT.IfChange(FedCmShowPopupWindowResult) -->
 
 <enum name="FedCmShowPopupWindowResult">
   <int value="0" label="Successfully opened"/>
@@ -6731,11 +7037,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Failed for other reasons"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h:ShowPopupWindowResult) -->
+
+<!-- LINT.IfChange(FedCmSignInStateMatchStatus) -->
+
 <enum name="FedCmSignInStateMatchStatus">
   <int value="0" label="Success"/>
   <int value="1" label="IdpClaimedSignIn"/>
   <int value="2" label="BrowserObservedSignIn"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:SignInStateMatchStatus) -->
+
+<!-- LINT.IfChange(FedCmTokenResponseType) -->
 
 <enum name="FedCmTokenResponseType">
   <int value="0"
@@ -6760,11 +7074,19 @@ Called by update_permissions_policy_enum.py.-->
       label="Token not received and error received and continue_on received"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/idp_network_request_manager.h:FedCmTokenResponseType) -->
+
+<!-- LINT.IfChange(FedCmUseOtherAccountResult) -->
+
 <enum name="FedCmUseOtherAccountResult">
   <int value="0" label="User signs in with a new account"/>
   <int value="1" label="User signs in with existing account"/>
   <int value="2" label="User does not sign in"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:UseOtherAccountResult) -->
+
+<!-- LINT.IfChange(FedCmUserAction) -->
 
 <enum name="FedCmUserAction">
   <int value="0" label="Deprecated: User signed in"/>
@@ -6772,6 +7094,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="User closed the UI"/>
   <int value="3" label="User signed in"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_dialog_controller.h:UserAction) -->
+
+<!-- LINT.IfChange(FedCmUserInfoStatus) -->
 
 <enum name="FedCmUserInfoStatus">
   <int value="0" label="Success"/>
@@ -6787,6 +7113,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="10" label="Request is destroyed"/>
 </enum>
 
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/devtools/inspector_issue.mojom:FederatedAuthUserInfoRequestResult) -->
+
+<!-- LINT.IfChange(FedCmVerifyingDialogResult) -->
+
 <enum name="FedCmVerifyingDialogResult">
   <int value="0" label="User waits for success/failure, explicit sign-in"/>
   <int value="1" label="User waits for success/failure, auto re-authn"/>
@@ -6798,6 +7128,8 @@ Called by update_permissions_policy_enum.py.-->
       label="Tab or window is closed or refreshed, explicit sign-in"/>
   <int value="5" label="Tab or window is closed or refreshed, auto re-authn"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:VerifyingDialogResult) -->
 
 <enum name="FencedFrameBeaconReportingResult">
   <int value="0" label="Unknown result"/>
@@ -7728,11 +8060,11 @@ Called by update_use_counter_css.py.-->
   <int value="749" label="white-space-collapse"/>
   <int value="750" label="scroll-timeline-attachment"/>
   <int value="751" label="view-timeline-attachment"/>
-  <int value="752" label="scroll-start-block"/>
-  <int value="753" label="scroll-start-inline"/>
-  <int value="754" label="scroll-start-x"/>
-  <int value="755" label="scroll-start-y"/>
-  <int value="756" label="scroll-start"/>
+  <int value="752" label="scroll-start-block (obsolete)"/>
+  <int value="753" label="scroll-start-inline (obsolete)"/>
+  <int value="754" label="scroll-start-x (obsolete)"/>
+  <int value="755" label="scroll-start-y (obsolete)"/>
+  <int value="756" label="scroll-start (obsolete)"/>
   <int value="757" label="scroll-start-target-block (obsolete)"/>
   <int value="758" label="scroll-start-target-inline (obsolete)"/>
   <int value="759" label="scroll-start-target-x (obsolete)"/>
@@ -7788,9 +8120,9 @@ Called by update_use_counter_css.py.-->
   <int value="809" label="caret-animation"/>
   <int value="810" label="view-transition-capture-mode (obsolete)"/>
   <int value="811" label="interactivity"/>
-  <int value="812" label="masonry-fill"/>
-  <int value="813" label="masonry-direction"/>
-  <int value="814" label="masonry-flow"/>
+  <int value="812" label="grid-lanes-fill"/>
+  <int value="813" label="grid-lanes-direction"/>
+  <int value="814" label="grid-lanes-flow"/>
   <int value="815" label="masonry-auto-tracks (obsolete)"/>
   <int value="816" label="result"/>
   <int value="817" label="animation-trigger-type (obsolete)"/>
@@ -7799,8 +8131,8 @@ Called by update_use_counter_css.py.-->
   <int value="820" label="animation-trigger-range-end (obsolete)"/>
   <int value="821" label="animation-trigger-exit-range-start (obsolete)"/>
   <int value="822" label="animation-trigger-exit-range-end (obsolete)"/>
-  <int value="823" label="interest-show-delay"/>
-  <int value="824" label="interest-hide-delay"/>
+  <int value="823" label="interest-delay-start"/>
+  <int value="824" label="interest-delay-end"/>
   <int value="825" label="animation-trigger-range"/>
   <int value="826" label="animation-trigger-exit-range"/>
   <int value="827" label="interest-delay"/>
@@ -7816,12 +8148,12 @@ Called by update_use_counter_css.py.-->
   <int value="837" label="corner-end-start-shape"/>
   <int value="838" label="corner-end-end-shape"/>
   <int value="839" label="reading-order"/>
-  <int value="840" label="column-rule-outset"/>
-  <int value="841" label="row-rule-outset"/>
+  <int value="840" label="column-rule-inset"/>
+  <int value="841" label="row-rule-inset"/>
   <int value="842" label="corner-shape"/>
   <int value="843" label="scroll-target-group"/>
   <int value="844" label="row-rule-style"/>
-  <int value="845" label="gap-rule-paint-order"/>
+  <int value="845" label="gap-rule-overlap"/>
   <int value="846" label="row-rule-width"/>
   <int value="847" label="row-rule-color"/>
   <int value="848" label="print-color-adjust"/>
@@ -7853,9 +8185,31 @@ Called by update_use_counter_css.py.-->
   <int value="874" label="timeline-trigger-range-end"/>
   <int value="875" label="timeline-trigger-exit-range-start"/>
   <int value="876" label="timeline-trigger-exit-range-end"/>
-  <int value="877" label="timeline-trigger-timeline"/>
+  <int value="877" label="timeline-trigger-source"/>
   <int value="878" label="timeline-trigger"/>
-  <int value="879" label="masonry"/>
+  <int value="879" label="grid-lanes"/>
+  <int value="880" label="continue"/>
+  <int value="881" label="max-lines"/>
+  <int value="882" label="block-ellipsis"/>
+  <int value="883" label="overscroll-area"/>
+  <int value="884" label="overscroll-position"/>
+  <int value="885" label="font-language-override"/>
+  <int value="886" label="ruby-overhang"/>
+  <int value="887" label="rule-break"/>
+  <int value="888" label="rule-inset"/>
+  <int value="889" label="column-rule-visibility-items"/>
+  <int value="890" label="row-rule-visibility-items"/>
+  <int value="891" label="column-rule-edge-start-inset"/>
+  <int value="892" label="column-rule-edge-end-inset"/>
+  <int value="893" label="column-rule-interior-start-inset"/>
+  <int value="894" label="column-rule-interior-end-inset"/>
+  <int value="895" label="row-rule-edge-start-inset"/>
+  <int value="896" label="row-rule-edge-end-inset"/>
+  <int value="897" label="row-rule-interior-start-inset"/>
+  <int value="898" label="row-rule-interior-end-inset"/>
+  <int value="899" label="timeline-trigger-range"/>
+  <int value="900" label="timeline-trigger-exit-range"/>
+  <int value="901" label="trigger-scope"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
@@ -7898,6 +8252,7 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="Intersection with viewport changed"/>
   <int value="7" label="Intersection visiblity out of viewport or clipped"/>
   <int value="8" label="Intersection visiblity occluded or distorted"/>
+  <int value="9" label="An attribute changed"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_permission_element.h:UserInteractionDeniedReason) -->
@@ -7937,6 +8292,15 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="Immediate"/>
   <int value="7" label="ForceDefer (Deprecated 2023)"/>
 </enum>
+
+<!-- LINT.IfChange(SharedDictionaryHintType)-->
+
+<enum name="SharedDictionaryHintType">
+  <int value="0" label="HTML Link Tag"/>
+  <int value="1" label="HTTP Header"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/loader/shared_dictionary_hint_type.h:SharedDictionaryHintType) -->
 
 <!-- LINT.IfChange(SharedStorageGetInFencedFrameOutcome) -->
 
@@ -8287,7 +8651,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="305" label="AppShortcuts"/>
   <int value="306" label="Fetchlater"/>
   <int value="307" label="DRAFT_WasmBranchHinting"/>
-  <int value="308" label="DRAFT_ExplicitResourceManagement"/>
+  <int value="308" label="ExplicitResourceManagement"/>
   <int value="309" label="AppLaunchHandler"/>
   <int value="310" label="Function"/>
   <int value="311" label="If"/>
@@ -8354,6 +8718,48 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="372" label="WasmSignExtensionOperators"/>
   <int value="373" label="DRAFT_IncomingCallNotifications"/>
   <int value="374" label="Popover"/>
+  <int value="375" label="DRAFT_WebInstallAPI"/>
+  <int value="376" label="TopLevelAwait"/>
+  <int value="377" label="AtomicsPause"/>
+  <int value="378" label="LogicalAssignments"/>
+  <int value="379" label="NullishCoalescing"/>
+  <int value="380" label="DRAFT_CrashReportStorageAPIInitialize"/>
+  <int value="381" label="ExtTextureCompressionBptc"/>
+  <int value="382" label="ExtTextureCompressionRgtc"/>
+  <int value="383" label="ExtTextureNorm16"/>
+  <int value="384" label="OesFboRenderMipmap"/>
+  <int value="385" label="WebglColorManagement"/>
+  <int value="386" label="WebglCompressedTexturePvrtc"/>
+  <int value="387" label="WebglDesynchronized"/>
+  <int value="388" label="WebglMultiDraw"/>
+  <int value="389" label="WebglOesDrawBuffersIndexed"/>
+  <int value="390" label="Webgl2ColorManagement"/>
+  <int value="391" label="Webgl2Desynchronized"/>
+  <int value="392" label="RegexpCompile"/>
+  <int value="393" label="With"/>
+  <int value="394" label="HtmlWrapperMethods"/>
+  <int value="395" label="RegexpStaticProperties"/>
+  <int value="396" label="JsonModules"/>
+  <int value="397" label="DRAFT_WasmCustomDescriptors"/>
+  <int value="398" label="FetchRequestStreams"/>
+  <int value="399" label="TransferableStreams"/>
+  <int value="400" label="ReadableByteStreams"/>
+  <int value="401" label="DevicePosture"/>
+  <int value="402" label="WebxrAnchors"/>
+  <int value="403" label="WebxrAr"/>
+  <int value="404" label="WebxrCamera"/>
+  <int value="405" label="WebxrDepthSensing"/>
+  <int value="406" label="WebxrDomOverlays"/>
+  <int value="407" label="WebxrHandInput"/>
+  <int value="408" label="WebxrHitTest"/>
+  <int value="409" label="WebxrLightingEstimation"/>
+  <int value="410" label="Reporting"/>
+  <int value="411" label="FontLanguageOverride"/>
+  <int value="412" label="Webnn"/>
+  <int value="413" label="TextDetect"/>
+  <int value="414" label="TextJustify"/>
+  <int value="415" label="Summarizer"/>
+  <int value="416" label="TranslationApi"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

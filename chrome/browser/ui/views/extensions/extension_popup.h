@@ -53,7 +53,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   static constexpr gfx::Size kMaxSize = {800, 600};
 
   // Creates and shows a popup with the given |host| positioned adjacent to
-  // |anchor_view|.
+  // |anchor|.
   // The positioning of the pop-up is determined by |arrow| according to the
   // following logic: The popup is anchored so that the corner indicated by the
   // value of |arrow| remains fixed during popup resizes.  If |arrow| is
@@ -62,7 +62,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   // finish loading in order to minimize UI flashing and resizing.
   static void ShowPopup(Browser* browser,
                         std::unique_ptr<extensions::ExtensionViewHost> host,
-                        views::View* anchor_view,
+                        views::BubbleAnchor anchor,
                         views::BubbleBorder::Arrow arrow,
                         PopupShowAction show_action,
                         ShowPopupCallback callback);
@@ -121,7 +121,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
 
   ExtensionPopup(Browser* browser,
                  std::unique_ptr<extensions::ExtensionViewHost> host,
-                 views::View* anchor_view,
+                 views::BubbleAnchor anchor,
                  views::BubbleBorder::Arrow arrow,
                  PopupShowAction show_action,
                  ShowPopupCallback callback);

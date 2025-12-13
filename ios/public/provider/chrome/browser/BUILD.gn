@@ -9,6 +9,7 @@ group("provider_api") {
     # The individual APIs.
     "//ios/public/provider/chrome/browser/add_to_calendar:add_to_calendar_api",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
+    "//ios/public/provider/chrome/browser/app_store_bundle:app_store_bundle_api",
     "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ios/public/provider/chrome/browser/context_menu:context_menu_api",
@@ -16,6 +17,7 @@ group("provider_api") {
     "//ios/public/provider/chrome/browser/drive:drive_api",
     "//ios/public/provider/chrome/browser/font:font_api",
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
+    "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
     "//ios/public/provider/chrome/browser/keyboard:keyboard_api",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
@@ -30,6 +32,7 @@ group("provider_api") {
     "//ios/public/provider/chrome/browser/push_notification:push_notification_api",
     "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
     "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
+    "//ios/public/provider/chrome/browser/safari_data_import:safari_data_import_api",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
     "//ios/public/provider/chrome/browser/signin:signin_identity_api",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",

@@ -71,10 +71,8 @@ constexpr CGFloat kColoredDotSize = 20;
       [NSLayoutConstraint activateConstraints:_compactWidthConstraints];
     }
 
-    if (@available(iOS 17, *)) {
-      [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
-                         withAction:@selector(horizontalSizeClassDidChange)];
-    }
+    [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
+                       withAction:@selector(horizontalSizeClassDidChange)];
   }
   return self;
 }

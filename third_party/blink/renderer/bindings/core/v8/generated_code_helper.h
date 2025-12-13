@@ -150,7 +150,7 @@ CORE_EXPORT std::optional<size_t> FindIndexInEnumStringTable(
 CORE_EXPORT void ReportInvalidEnumSetToAttribute(
     v8::Isolate* isolate,
     const String& value,
-    const String& enum_type_name,
+    const char* enum_type_name,
     ExceptionState& exception_state);
 
 CORE_EXPORT bool IsEsIterableObject(v8::Isolate* isolate,

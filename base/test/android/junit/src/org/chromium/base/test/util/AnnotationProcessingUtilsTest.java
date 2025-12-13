@@ -4,12 +4,11 @@
 
 package org.chromium.base.test.util;
 
-import static org.hamcrest.Matchers.contains;
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.junit.runner.Description.createTestDescription;
 
 import org.junit.Ignore;
@@ -244,10 +243,12 @@ public class AnnotationProcessingUtilsTest {
         List<Class<? extends Annotation>> testList =
                 Arrays.asList(Rule.class, Test.class, Override.class, Target.class, Rule.class);
         testList.sort(comparator);
-        assertThat(
-                "Unknown annotations should not be reordered and come before the known ones.",
-                testList,
-                contains(Rule.class, Test.class, Override.class, Rule.class, Target.class));
+        assertWithMessage(
+                        "Unknown annotations should not be reordered and come before the known"
+                                + " ones.")
+                .that(testList)
+                .containsExactly(Rule.class, Test.class, Override.class, Rule.class, Target.class)
+                .inOrder();
     }
 
     @SuppressWarnings("unchecked")
@@ -260,24 +261,28 @@ public class AnnotationProcessingUtilsTest {
         List<Class<? extends Annotation>> testList =
                 Arrays.asList(Rule.class, Test.class, Override.class, Target.class, Rule.class);
         testList.sort(comparator);
-        assertThat(
-                "Known annotations should be sorted in the same order as provided to the extractor",
-                testList,
-                contains(Override.class, Test.class, Target.class, Rule.class, Rule.class));
+        assertWithMessage(
+                        "Known annotations should be sorted in the same order as provided to the"
+                                + " extractor")
+                .that(testList)
+                .containsExactly(Override.class, Test.class, Target.class, Rule.class, Rule.class)
+                .inOrder();
     }
 
     private static Description getTest(Class<?> klass, String testName) {
-        Description description = null;
         try {
-            description = new DummyTestRunner(klass).describe(testName);
+            Description description = new DummyTestRunner(klass).describe(testName);
+            if (description == null) {
+                throw new AssertionError(
+                        "No test named '" + testName + "' in class " + klass.getSimpleName());
+            }
+            return description;
         } catch (InitializationError initializationError) {
             initializationError.printStackTrace();
-            fail("DummyTestRunner initialization failed:" + initializationError.getMessage());
+            throw new AssertionError(
+                    "DummyTestRunner initialization failed:" + initializationError.getMessage(),
+                    initializationError);
         }
-        if (description == null) {
-            fail("Not test named '" + testName + "' in class" + klass.getSimpleName());
-        }
-        return description;
     }
 
     // region Test Data: Annotations and dummy test classes

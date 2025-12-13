@@ -7,11 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_timeouts.h"
-#import "ios/chrome/browser/credential_provider/model/features.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_consumer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -106,17 +103,19 @@ TEST_F(PasswordSettingsViewControllerTest, OrdersSectionsCorrectly) {
   [controller() setCanChangeGPMPin:YES];
   [controller() setOnDeviceEncryptionState:
                     PasswordSettingsOnDeviceEncryptionStateOptedIn];
-  [controller() setCanExportPasswords:YES];
+  [controller() setCanExportCredentials:YES];
   [controller() setCanDeleteAllCredentials:YES];
 
   // Verify the order.
   EXPECT_EQ(GetSectionIndex(SectionIdentifierSavePasswordsSwitch), 0);
   EXPECT_EQ(GetSectionIndex(SectionIdentifierBulkMovePasswordsToAccount), 1);
   EXPECT_EQ(GetSectionIndex(SectionIdentifierPasswordsInOtherApps), 2);
-  EXPECT_EQ(GetSectionIndex(SectionIdentifierGooglePasswordManagerPin), 3);
-  EXPECT_EQ(GetSectionIndex(SectionIdentifierOnDeviceEncryption), 4);
-  EXPECT_EQ(GetSectionIndex(SectionIdentifierExportPasswordsButton), 5);
-  EXPECT_EQ(GetSectionIndex(SectionIdentifierDeleteCredentialsButton), 6);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierAutomaticPasskeyUpgradesSwitch),
+            3);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierGooglePasswordManagerPin), 4);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierOnDeviceEncryption), 5);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierExportPasswordsButton), 6);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierDeleteCredentialsButton), 7);
 }
 
 TEST_F(PasswordSettingsViewControllerTest, DisplaysOfferToSavePasswords) {
@@ -246,13 +245,7 @@ TEST_F(PasswordSettingsViewControllerTest, TurnOnAutoFillButtonMetric) {
 }
 
 TEST_F(PasswordSettingsViewControllerTest,
-       DisplaysAutomaticPasskeyUpgradesSwitchWithFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kCredentialProviderAutomaticPasskeyUpgrade);
-
-  // Re-create the controller so that the enabled flag is picked up.
-  CreateController();
+       DisplaysAutomaticPasskeyUpgradesSwitch) {
   [controller() setSavingPasswordsEnabled:YES managedByPolicy:NO];
   [controller() setSavingPasskeysEnabled:YES];
 
@@ -355,7 +348,8 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        ExportButtonDisabledWhenUserNotEligible) {
-  [controller() setCanExportPasswords:NO];
+  [controller() setCanExportCredentials:NO];
+
   EXPECT_TRUE(GetTableViewItem(SectionIdentifierExportPasswordsButton,
                                /*item=*/0)
                   .accessibilityTraits &
@@ -364,7 +358,8 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        ExportButtonEnabledWhenUserEligible) {
-  [controller() setCanExportPasswords:YES];
+  [controller() setCanExportCredentials:YES];
+
   EXPECT_FALSE(GetTableViewItem(SectionIdentifierExportPasswordsButton,
                                 /*item=*/0)
                    .accessibilityTraits &
@@ -373,8 +368,6 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        DeleteAllDataDisabledWhenUserNotEligible) {
-  // Re-create the controller so that the enabled flag is picked up.
-  CreateController();
   [controller() setCanDeleteAllCredentials:NO];
   EXPECT_TRUE(GetTableViewItem(SectionIdentifierDeleteCredentialsButton,
                                /*item=*/0)
@@ -384,8 +377,6 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        DeleteAllDataButtonEnabledWhenUserEligible) {
-  // Re-create the controller so that the enabled flag is picked up.
-  CreateController();
   [controller() setCanDeleteAllCredentials:YES];
   EXPECT_FALSE(GetTableViewItem(SectionIdentifierDeleteCredentialsButton,
                                 /*item=*/0)

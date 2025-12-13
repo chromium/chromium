@@ -19,15 +19,15 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
 JavascriptInjector::JavascriptInjector(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& retained_objects,
+    const base::android::JavaRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& retained_objects,
     WebContents* web_contents)
     : WebContentsUserData<JavascriptInjector>(*web_contents),
       java_ref_(env, obj) {
@@ -52,9 +52,9 @@ void JavascriptInjector::SetAllowInspection(JNIEnv* env,
 
 void JavascriptInjector::AddInterface(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
-    const JavaParamRef<jstring>& name,
-    const JavaParamRef<jclass>& safe_annotation_clazz,
+    const JavaRef<jobject>& object,
+    const JavaRef<jstring>& name,
+    const JavaRef<jclass>& safe_annotation_clazz,
     origin_matcher::OriginMatcher matcher) {
   DCHECK(java_bridge_dispatcher_host_);
 
@@ -76,7 +76,7 @@ void JavascriptInjector::AddInterface(
 }
 
 void JavascriptInjector::RemoveInterface(JNIEnv* env,
-                                         const JavaParamRef<jstring>& name) {
+                                         const JavaRef<jstring>& name) {
   DCHECK(java_bridge_dispatcher_host_);
 
   GetWebContents().GetController().GetBackForwardCache().Flush(
@@ -93,11 +93,11 @@ WebContentsImpl& JavascriptInjector::GetWebContentsImpl() {
   return static_cast<WebContentsImpl&>(GetWebContents());
 }
 
-jlong JNI_JavascriptInjectorImpl_Init(
+static jlong JNI_JavascriptInjectorImpl_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jobject>& retained_objects) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& retained_objects) {
   auto* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents) << "Should be created with a valid WebContents.";
   DCHECK(!JavascriptInjector::FromWebContents(web_contents));
@@ -111,3 +111,5 @@ jlong JNI_JavascriptInjectorImpl_Init(
 WEB_CONTENTS_USER_DATA_KEY_IMPL(JavascriptInjector);
 
 }  // namespace content
+
+DEFINE_JNI(JavascriptInjectorImpl)

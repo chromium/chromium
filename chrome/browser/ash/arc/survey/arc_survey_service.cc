@@ -93,14 +93,16 @@ ArcSurveyService::~ArcSurveyService() {
 }
 
 bool ArcSurveyService::LoadSurveyData(std::string survey_data) {
-  std::optional<base::Value> root = base::JSONReader::Read(survey_data);
+  std::optional<base::Value> root =
+      base::JSONReader::Read(survey_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     LOG(ERROR) << "Unable to find JSON root. Trying char substitutions.";
     base::ReplaceSubstringsAfterOffset(&survey_data, 0, R"(\{@})", ":");
     base::ReplaceSubstringsAfterOffset(&survey_data, 0, R"(\{~})", ",");
     base::ReplaceSubstringsAfterOffset(&survey_data, 0, R"(\{%})", ".");
     DVLOG(1) << "Data after substitution: " << survey_data;
-    root = base::JSONReader::Read(survey_data);
+    root = base::JSONReader::Read(survey_data,
+                                  base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!root) {
       LOG(ERROR) << "Unable to find JSON root after substitution";
       return false;

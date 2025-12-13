@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
 
@@ -31,8 +30,7 @@ public class ChromeAutocompleteProviderClient {
         for (TabModel tabModel : tabModels) {
             if (tabModel == null) continue;
 
-            for (int i = 0; i < tabModel.getCount(); i++) {
-                Tab tab = assumeNonNull(tabModel.getTabAt(i));
+            for (Tab tab : tabModel) {
                 if (tab.isHidden() || pageClassification == PageClassification.ANDROID_HUB_VALUE) {
                     tabList.add(tab);
                 }

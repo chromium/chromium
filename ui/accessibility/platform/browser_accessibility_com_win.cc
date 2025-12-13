@@ -43,20 +43,15 @@ namespace ui {
 // BrowserAccessibilityComWin::WinAttributes
 //
 
-BrowserAccessibilityComWin::WinAttributes::WinAttributes()
-    : ignored(false), ia_role(0), ia_state(0), ia2_role(0), ia2_state(0) {}
+BrowserAccessibilityComWin::WinAttributes::WinAttributes() = default;
 
-BrowserAccessibilityComWin::WinAttributes::~WinAttributes() {}
+BrowserAccessibilityComWin::WinAttributes::~WinAttributes() = default;
 
 //
 // BrowserAccessibilityComWin::UpdateState
 //
 
-BrowserAccessibilityComWin::UpdateState::UpdateState(
-    std::unique_ptr<WinAttributes> old_win_attributes,
-    AXLegacyHypertext old_hypertext)
-    : old_win_attributes(std::move(old_win_attributes)),
-      old_hypertext(std::move(old_hypertext)) {}
+BrowserAccessibilityComWin::UpdateState::UpdateState() = default;
 
 BrowserAccessibilityComWin::UpdateState::~UpdateState() = default;
 
@@ -387,6 +382,9 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollSubstringTo(
     IA2ScrollType scroll_type) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("scrollSubstringTo");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_SCROLL_SUBSTRING_TO);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   // This is a sign that a screen reader is active, so treat it like inline
   // text box usage.
   OnInlineTextBoxesUsed();
@@ -691,6 +689,9 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_startIndex(LONG* index) {
 IFACEMETHODIMP BrowserAccessibilityComWin::get_endIndex(LONG* index) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_endIndex");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_END_INDEX);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   OnExtendedPropertiesUsed();
   LONG start_index;
   // TODO(grt): Call an impl fn rather than the COM method.
@@ -774,6 +775,9 @@ BrowserAccessibilityComWin::get_description(LONG action_index,
                                             BSTR* description) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_description");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_IAACTION_GET_DESCRIPTION);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   OnExtendedPropertiesUsed();
   return E_NOTIMPL;
 }
@@ -1054,6 +1058,9 @@ BrowserAccessibilityComWin::get_nameSpaceURIForID(SHORT name_space_id,
                                                   BSTR* name_space_uri) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nameSpaceURIForID");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_NAMESPACE_URI_FOR_ID);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   OnExtendedPropertiesUsed();
   return E_NOTIMPL;
 }
@@ -1063,6 +1070,9 @@ BrowserAccessibilityComWin::put_alternateViewMediaTypes(
     BSTR* comma_separated_media_types) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("put_alternateViewMediaTypes");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_PUT_ALTERNATE_VIEW_MEDIA_TYPES);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   OnExtendedPropertiesUsed();
   return E_NOTIMPL;
 }
@@ -1467,6 +1477,9 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_clippedSubstringBounds(
     int* out_height) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_clippedSubstringBounds");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_CLIPPED_SUBSTRING_BOUNDS);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   OnInlineTextBoxesUsed();
   // TODO(dmazzoni): fully support this API by intersecting the
   // rect with the container's rect.
@@ -1665,17 +1678,23 @@ void BrowserAccessibilityComWin::ComputeStylesIfNeeded() {
 // Private methods.
 //
 
-void BrowserAccessibilityComWin::UpdateStep1ComputeWinAttributes() {
+void BrowserAccessibilityComWin::UpdateStep1ComputeWinAttributes(
+    UpdateState* update_state) {
   DCHECK(!update_state_);
   DCHECK(win_attributes_);
 
   BrowserAccessibilityWin* const owner = GetOwner();
 
-  // Move win_attributes_ and hypertext_ into update_state_, allowing us to see
-  // exactly what changed and fire appropriate events. Note that update_state_
-  // is destroyed at the end of UpdateStep3FireEvents.
-  update_state_ = std::make_unique<UpdateState>(std::move(win_attributes_),
-                                                std::move(hypertext_));
+  // Move win_attributes_ and hypertext_ into update_state, allowing us to see
+  // exactly what changed and fire appropriate events. Note that update_state is
+  // destroyed after UpdateStep3FireEvents.
+  update_state->old_win_attributes = std::move(win_attributes_);
+  update_state->old_hypertext = std::move(hypertext_);
+
+  // Hold a pointer to this node's update state (which the caller of this
+  // function shall keep valid) until the end of UpdateStep3FireEvents.
+  update_state_ = update_state;
+
   hypertext_ = AXLegacyHypertext();
 
   win_attributes_ = std::make_unique<WinAttributes>();
@@ -1715,7 +1734,7 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
   if (ignored || (old_win_attributes.ignored != ignored &&
                   !owner->GetData().IsContainedInActiveLiveRegion() &&
                   !owner->GetData().IsActiveLiveRegionRoot())) {
-    update_state_.reset();
+    update_state_ = nullptr;
     return;
   }
 
@@ -1760,7 +1779,7 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
     }
   }
 
-  update_state_.reset();
+  update_state_ = nullptr;
 }
 
 BrowserAccessibilityWin* BrowserAccessibilityComWin::GetOwner() const {

@@ -17,7 +17,6 @@
 #include "base/content_uri_utils_jni/ContentUriUtils_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -35,11 +34,16 @@ std::optional<std::string> TranslateOpenFlagsToJavaMode(uint32_t open_flags) {
   // ("r", "w", "wt", "wa", "rw", "rwt"), we disallow "w" which has been the
   // source of android security issues.
 
-  // Ignore async.
-  open_flags &= ~File::FLAG_ASYNC;
+  // Filter out unsupported or irrelevant flags, not explicitly supported by
+  // Content UI in the switch statement below.
+  open_flags &= (File::FLAG_OPEN | File::FLAG_CREATE | File::FLAG_OPEN_ALWAYS |
+                 File::FLAG_CREATE_ALWAYS | File::FLAG_OPEN_TRUNCATED |
+                 File::FLAG_READ | File::FLAG_WRITE | File::FLAG_APPEND);
 
   switch (open_flags) {
     case File::FLAG_OPEN | File::FLAG_READ:
+    case File::FLAG_OPEN_ALWAYS | File::FLAG_READ:
+    case File::FLAG_CREATE | File::FLAG_READ:
       return "r";
     case File::FLAG_OPEN_ALWAYS | File::FLAG_READ | File::FLAG_WRITE:
       return "rw";
@@ -97,10 +101,11 @@ bool ContentUriGetFileInfo(const FilePath& content_uri,
 }
 
 std::vector<FileEnumerator::FileInfo> ListContentUriDirectory(
-    const FilePath& content_uri) {
+    const FilePath& content_uri,
+    int file_type) {
   JNIEnv* env = android::AttachCurrentThread();
   std::vector<FileEnumerator::FileInfo> result;
-  Java_ContentUriUtils_listDirectory(env, content_uri.value(),
+  Java_ContentUriUtils_listDirectory(env, content_uri.value(), file_type,
                                      reinterpret_cast<jlong>(&result));
   // Java will call back sync to AddFileInfoToVector(&result).
   return result;
@@ -120,13 +125,13 @@ bool IsDocumentUri(const FilePath& content_uri) {
 
 }  // namespace internal
 
-void JNI_ContentUriUtils_AddFileInfoToVector(JNIEnv* env,
-                                             jlong vector_pointer,
-                                             std::string& uri,
-                                             std::string& display_name,
-                                             jboolean is_directory,
-                                             jlong size,
-                                             jlong last_modified) {
+static void JNI_ContentUriUtils_AddFileInfoToVector(JNIEnv* env,
+                                                    jlong vector_pointer,
+                                                    std::string& uri,
+                                                    std::string& display_name,
+                                                    jboolean is_directory,
+                                                    jlong size,
+                                                    jlong last_modified) {
   auto* result =
       reinterpret_cast<std::vector<FileEnumerator::FileInfo>*>(vector_pointer);
   result->emplace_back(FilePath(uri), FilePath(display_name), is_directory,
@@ -194,3 +199,5 @@ FilePath ContentUriGetDocumentFromQuery(const FilePath& content_uri,
 }
 
 }  // namespace base
+
+DEFINE_JNI(ContentUriUtils)

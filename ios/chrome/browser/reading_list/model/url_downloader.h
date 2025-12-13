@@ -41,7 +41,7 @@ class ReadingListDistillerPageFactory;
 // folders within an offline folder, using md5 hashing to create unique file
 // names. When a deletion is requested, all previous downloads for that URL are
 // cancelled as they would be deleted.
-class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
+class URLDownloader : public reading_list::ReadingListDistillerPageDelegate {
   friend class MockURLDownloader;
 
  public:
@@ -166,9 +166,9 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   // directly save `distilled_url_`.
   virtual void FetchPDFFile();
 
-  raw_ptr<reading_list::ReadingListDistillerPageFactory>
+  raw_ptr<reading_list::ReadingListDistillerPageFactory, DanglingUntriaged>
       distiller_page_factory_;
-  raw_ptr<DistillerService> distiller_service_;
+  raw_ptr<DistillerService, DanglingUntriaged> distiller_service_;
   const DownloadCompletion download_completion_;
   const SuccessCompletion delete_completion_;
 

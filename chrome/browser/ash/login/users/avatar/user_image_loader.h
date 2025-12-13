@@ -9,7 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "url/gurl.h"
 

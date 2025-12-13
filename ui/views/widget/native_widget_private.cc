@@ -19,7 +19,7 @@ gfx::Rect NativeWidgetPrivate::ConstrainBoundsToDisplayWorkArea(
     const gfx::Rect& bounds) {
   gfx::Rect new_bounds(bounds);
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds).work_area();
+      display::Screen::Get()->GetDisplayMatching(bounds).work_area();
   if (!work_area.IsEmpty()) {
     new_bounds.AdjustToFit(work_area);
   }

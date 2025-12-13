@@ -56,8 +56,7 @@ void AuthenticatorSelectionDialogViewAndroid::UpdateContent() {}
 
 void AuthenticatorSelectionDialogViewAndroid::OnOptionSelected(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>&
-        authenticator_option_identifier) {
+    const base::android::JavaRef<jstring>& authenticator_option_identifier) {
   std::string card_unmask_challenge_option_id =
       base::android::ConvertJavaStringToUTF8(env,
                                              authenticator_option_identifier);
@@ -146,3 +145,5 @@ CreateAndShowCardUnmaskAuthenticationSelectionDialog(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AuthenticatorSelectionDialogBridge)

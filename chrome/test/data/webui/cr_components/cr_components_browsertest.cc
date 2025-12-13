@@ -100,6 +100,16 @@ IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxLensTest) {
   RunTest("cr_components/searchbox/searchbox_lens_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxDropdownTest) {
+  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  RunTest("cr_components/searchbox/searchbox_dropdown_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxIconTest) {
+  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  RunTest("cr_components/searchbox/searchbox_icon_test.js", "mocha.run()");
+}
+
 class CrComponentsHistoryClustersTest : public WebUIMochaBrowserTest {
  protected:
   CrComponentsHistoryClustersTest() {
@@ -138,7 +148,13 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, General) {
   RunTest("cr_components/most_visited_test.js", "runMochaSuite('General');");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, Layouts) {
+// TODO(https://crbug.com/449760234): Times out on linux debug builds.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_Layouts DISABLED_Layouts
+#else
+#define MAYBE_Layouts Layouts
+#endif
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, MAYBE_Layouts) {
   RunTest("cr_components/most_visited_test.js", "runMochaSuite('Layouts');");
 }
 
@@ -168,8 +184,28 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, DragAndDrop) {
           "runMochaSuite('DragAndDrop');");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, EnterpriseShortcuts) {
+  RunTest("cr_components/most_visited_test.js",
+          "runMochaSuite('EnterpriseShortcuts');");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, Theming) {
   RunTest("cr_components/most_visited_test.js", "runMochaSuite('Theming');");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ShowAddButton) {
+  RunTest("cr_components/most_visited_test.js",
+          "runMochaSuite('ShowAddButton');");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ExpandableTiles) {
+  RunTest("cr_components/most_visited_test.js",
+          "runMochaSuite('ExpandableTiles');");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ShortcutsAutoRemovalToast) {
+  RunTest("cr_components/most_visited_test.js",
+          "runMochaSuite('ShortcutsAutoRemovalToast');");
 }
 
 typedef WebUIMochaBrowserTest CrComponentsThemeColorPickerTest;
@@ -197,23 +233,54 @@ IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, ThemeHueSliderDialog) {
           "mocha.run()");
 }
 
-class CrComponentsPrerenderTest : public CrComponentsMostVisitedTest {
+class CrComponentsPreloadingTest : public CrComponentsMostVisitedTest {
  protected:
-  CrComponentsPrerenderTest() {
-    const std::map<std::string, std::string> params = {
-        {"prerender_start_delay_on_mouse_hover_ms", "0"},
-        {"preconnect_start_delay_on_mouse_hover_ms", "0"},
-        {"prerender_new_tab_page_on_mouse_pressed_trigger", "true"},
-        {"prerender_new_tab_page_on_mouse_hover_trigger", "true"}};
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kNewTabPageTriggerForPrerender2, params);
+  CrComponentsPreloadingTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {base::test::FeatureRefAndParams(
+             features::kNewTabPageTriggerForPrerender2,
+             {{"preconnect_start_delay_on_mouse_hover_ms", "0"}}),
+         base::test::FeatureRefAndParams(
+             features::kNewTabPageTriggerForPrefetch,
+             {{"prefetch_start_delay_on_mouse_hover_ms", "0"}})},
+        {});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CrComponentsPrerenderTest, Prerendering) {
-  RunTest("cr_components/most_visited_test.js",
-          "runMochaSuite('Prerendering');");
+IN_PROC_BROWSER_TEST_F(CrComponentsPreloadingTest, Preloading) {
+  RunTest("cr_components/most_visited_test.js", "runMochaSuite('Preloading');");
+}
+
+class CrComponentsComposeboxTest : public WebUIMochaBrowserTest {
+ protected:
+  CrComponentsComposeboxTest() {
+    set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextMenuEntrypoint) {
+  RunTest("cr_components/composebox/context_menu_entrypoint_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, LensSearch) {
+  RunTest("cr_components/composebox/composebox_lens_search_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, RecentTabChip) {
+  RunTest("cr_components/composebox/recent_tab_chip_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxVoiceSearch) {
+  RunTest("cr_components/composebox/composebox_voice_search_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxDragAndDrop) {
+  RunTest("cr_components/composebox/composebox_drag_drop_test.js",
+          "mocha.run()");
 }

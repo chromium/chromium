@@ -8,6 +8,7 @@
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/xr_gpu_frame_transport_delegate.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -30,7 +31,9 @@ class XRProjectionLayer;
 class XRGPUProjectionLayerInit;
 class XRGPUSubImage;
 
-class XRGPUBinding final : public ScriptWrappable, public XRGraphicsBinding {
+class XRGPUBinding final : public ScriptWrappable,
+                           public XRGraphicsBinding,
+                           public XRGpuFrameTransportContext {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -55,6 +58,9 @@ class XRGPUBinding final : public ScriptWrappable, public XRGraphicsBinding {
   gfx::Rect GetViewportForView(XRProjectionLayer* layer,
                                XRViewData* view) override;
 
+  scoped_refptr<DawnControlClientHolder> GetDawnControlClient() const override;
+  XrGpuFrameTransportDelegate* GetTransportDelegate() override;
+
   void Trace(Visitor*) const override;
 
  private:
@@ -63,6 +69,7 @@ class XRGPUBinding final : public ScriptWrappable, public XRGraphicsBinding {
                        ExceptionState& exception_state);
 
   Member<GPUDevice> device_;
+  Member<XrGpuFrameTransportDelegate> transport_delegate_;
 };
 
 }  // namespace blink

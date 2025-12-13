@@ -24,6 +24,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
+import org.chromium.build.BuildConfig;
 import org.chromium.net.NetLogCaptureMode;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.RegistrationPolicyAlwaysRegister;
@@ -41,7 +42,9 @@ public class CronetLibraryLoader {
     @GuardedBy("sLoadLock")
     private static boolean sInitialized;
 
-    private static final String LIBRARY_NAME = "cronet." + ImplVersion.getCronetVersion();
+    private static final String LIBRARY_NAME =
+            (BuildConfig.CRONET_FOR_AOSP_BUILD ? "mainlinecronet." : "cronet.")
+                    + ImplVersion.getCronetVersion();
     private static final String TESTING_LIBRARY_NAME = LIBRARY_NAME + "_for_testing";
     private static boolean sSwitchToTestLibrary;
     @VisibleForTesting public static final String TAG = CronetLibraryLoader.class.getSimpleName();
@@ -82,6 +85,10 @@ public class CronetLibraryLoader {
     public static void loadLibrary() {
         if (sSwitchToTestLibrary) {
             System.loadLibrary(TESTING_LIBRARY_NAME);
+            // Enable VLOG(2) unconditionally, as we want to get as much logging as possible when
+            // running tests. Also, do this as early as possible so that early logs are not dropped.
+            // See also https://crbug.com/433957945.
+            CronetLibraryLoaderJni.get().setMinLogLevel(-2);
         } else {
             System.loadLibrary(LIBRARY_NAME);
         }
@@ -166,6 +173,11 @@ public class CronetLibraryLoader {
     }
 
     private static void setNativeLoggingLevel() {
+        if (sSwitchToTestLibrary) {
+            // We already set the native log level in loadLibrary().
+            return;
+        }
+
         // The constants used here should be kept in sync with logging::LogMessage::~LogMessage().
         final String nativeLogTag = "chromium";
         int loggingLevel;
@@ -319,7 +331,10 @@ public class CronetLibraryLoader {
      */
     @CalledByNative
     private static String getDefaultUserAgent() {
-        return UserAgent.from(ContextUtils.getApplicationContext());
+        return UserAgent.from(
+                ContextUtils.getApplicationContext(),
+                NativeCronetEngineBuilderImpl.getCronetSource(),
+                ImplVersion.getCronetVersion());
     }
 
     /**

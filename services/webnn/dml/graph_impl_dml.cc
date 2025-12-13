@@ -65,9 +65,7 @@ namespace {
 
 // The feature flag allows us to disable the graph fusion if it causes
 // something wrong.
-BASE_FEATURE(kApplyGraphFusion,
-             "ApplyGraphFusion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kApplyGraphFusion, base::FEATURE_ENABLED_BY_DEFAULT);
 
 using Microsoft::WRL::ComPtr;
 using mojom::Operand;
@@ -82,30 +80,29 @@ static constexpr auto kDmlFloatDataTypes =
     base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
         {DML_TENSOR_DATA_TYPE_FLOAT32, DML_TENSOR_DATA_TYPE_FLOAT16});
 
-// TODO(crbug.com/335909582): Take an MLNumber rather than a float, and replace
-// all these saturated_casts with conversions handled by MLNumber.
-DML_SCALAR_UNION ToScalarUnion(float value, DML_TENSOR_DATA_TYPE type) {
+DML_SCALAR_UNION ToScalarUnion(const MLNumber& value,
+                               DML_TENSOR_DATA_TYPE type) {
   switch (type) {
     case DML_TENSOR_DATA_TYPE_FLOAT32:
-      return DML_SCALAR_UNION{.Float32 = value};
+      return DML_SCALAR_UNION{.Float32 = value.AsFloat32()};
     case DML_TENSOR_DATA_TYPE_FLOAT16:
       // Use UInt16 since DML_SCALAR_UNION does not have a float16 variant. The
       // bits in this value will correctly be interpreted as float16 by
       // functions which allow passing a DML_SCALAR_UNION paired with a
       // corresponding DML_TENSOR_DATA_TYPE of DML_TENSOR_DATA_TYPE_FLOAT16.
-      return DML_SCALAR_UNION{.UInt16 = fp16_ieee_from_fp32_value(value)};
+      return DML_SCALAR_UNION{.UInt16 = value.AsFloat16()};
     case DML_TENSOR_DATA_TYPE_INT8:
-      return DML_SCALAR_UNION{.Int8 = base::saturated_cast<int8_t>(value)};
+      return DML_SCALAR_UNION{.Int8 = value.AsInt8()};
     case DML_TENSOR_DATA_TYPE_UINT8:
-      return DML_SCALAR_UNION{.UInt8 = base::saturated_cast<uint8_t>(value)};
+      return DML_SCALAR_UNION{.UInt8 = value.AsUint8()};
     case DML_TENSOR_DATA_TYPE_INT64:
-      return DML_SCALAR_UNION{.Int64 = base::saturated_cast<int64_t>(value)};
+      return DML_SCALAR_UNION{.Int64 = value.AsInt64()};
     case DML_TENSOR_DATA_TYPE_UINT64:
-      return DML_SCALAR_UNION{.UInt64 = base::saturated_cast<uint64_t>(value)};
+      return DML_SCALAR_UNION{.UInt64 = value.AsUint64()};
     case DML_TENSOR_DATA_TYPE_INT32:
-      return DML_SCALAR_UNION{.Int32 = base::saturated_cast<int32_t>(value)};
+      return DML_SCALAR_UNION{.Int32 = value.AsInt32()};
     case DML_TENSOR_DATA_TYPE_UINT32:
-      return DML_SCALAR_UNION{.UInt32 = base::saturated_cast<uint32_t>(value)};
+      return DML_SCALAR_UNION{.UInt32 = value.AsUint32()};
     default:
       NOTREACHED() << "[WebNN] This data type is not supported.";
   }
@@ -1663,13 +1660,38 @@ void CreateOperatorNodeForClamp(Adapter* adapter,
         DML_OPERATOR_ELEMENT_WISE_CLIP1, &clamp_operator_desc, inputs,
         clamp->label);
   } else {
-    DML_ELEMENT_WISE_CLIP_OPERATOR_DESC clamp_operator_desc{
-        .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
-        .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
-        // No scale or bias applies to the input.
-        .ScaleBias = nullptr,
-        .Min = clamp->min_value,
-        .Max = clamp->max_value};
+    DML_ELEMENT_WISE_CLIP_OPERATOR_DESC clamp_operator_desc = {};
+    clamp_operator_desc.InputTensor = &input_tensor_desc.GetDMLTensorDesc();
+    clamp_operator_desc.OutputTensor = &output_tensor_desc.GetDMLTensorDesc();
+    clamp_operator_desc.ScaleBias = nullptr;
+    switch (output_tensor_desc.GetDataType()) {
+      case DML_TENSOR_DATA_TYPE_FLOAT32:
+        clamp_operator_desc.Min = clamp->min_value.AsFloat32();
+        clamp_operator_desc.Max = clamp->max_value.AsFloat32();
+        break;
+      case DML_TENSOR_DATA_TYPE_FLOAT16:
+        clamp_operator_desc.Min = clamp->min_value.AsFloat16();
+        clamp_operator_desc.Max = clamp->max_value.AsFloat16();
+        break;
+      case DML_TENSOR_DATA_TYPE_INT8:
+        clamp_operator_desc.Min = clamp->min_value.AsInt8();
+        clamp_operator_desc.Max = clamp->max_value.AsInt8();
+        break;
+      case DML_TENSOR_DATA_TYPE_UINT8:
+        clamp_operator_desc.Min = clamp->min_value.AsUint8();
+        clamp_operator_desc.Max = clamp->max_value.AsUint8();
+        break;
+      case DML_TENSOR_DATA_TYPE_INT32:
+        clamp_operator_desc.Min = clamp->min_value.AsInt32();
+        clamp_operator_desc.Max = clamp->max_value.AsInt32();
+        break;
+      case DML_TENSOR_DATA_TYPE_UINT32:
+        clamp_operator_desc.Min = clamp->min_value.AsUint32();
+        clamp_operator_desc.Max = clamp->max_value.AsUint32();
+        break;
+      default:
+        NOTREACHED() << "[WebNN] This data type is not supported.";
+    }
     clamp_node = graph_builder.CreateOperatorNode(
         DML_OPERATOR_ELEMENT_WISE_CLIP, &clamp_operator_desc, inputs,
         clamp->label);
@@ -2097,14 +2119,8 @@ CreateOperatorNodeForDequantizeOrQuantizeLinear(
                 std::is_same_v<DML_OPERATOR_DESC,
                                DML_DEQUANTIZE_OPERATOR_DESC>) {
     const auto input_rank = input_tensor_desc.GetDimensions().size();
-    // DML_QUANTIZE_OPERATOR_DESC and DML_DEQUANTIZE_OPERATOR_DESC constraint
-    // scale and zeroPoint must have the same dimension rank with input.
-    if (scale_tensor_desc.GetDimensions().size() < input_rank) {
-      scale_tensor_desc.EnsureMinimumRank(input_rank,
-                                          TensorDesc::Alignment::kTrailing);
-      zero_point_tensor_desc.EnsureMinimumRank(
-          input_rank, TensorDesc::Alignment::kTrailing);
-    }
+    const auto scale_rank = scale_tensor_desc.GetDimensions().size();
+    CHECK_EQ(scale_rank, input_rank);
 
     // A invalid parameter error will be reported from DirectML when a
     // dequantize is followed by a matmul and the input rank of the dequantize
@@ -2124,20 +2140,17 @@ CreateOperatorNodeForDequantizeOrQuantizeLinear(
   } else {
     const auto input_dimensions = input_tensor_desc.GetDimensions();
     auto scale_dimensions = scale_tensor_desc.GetDimensions();
+    CHECK_EQ(input_dimensions.size(), scale_dimensions.size());
     // When FL < 6.3, DML_ELEMENT_WISE_DEQUANTIZE_LINEAR and
     // DML_ELEMENT_WISE_QUANTIZE_LINEAR can't support block-wise.
     // For each dimension where we need to do expansion of block_size which is
     // calculated by input_dimensions[i] / scale_dimensions[i], we use reshape
     // and broadcast to emulate.
     for (size_t index = 0; index < scale_dimensions.size(); index++) {
-      if (input_dimensions[input_dimensions.size() - index - 1] !=
-              scale_dimensions[scale_dimensions.size() - index - 1] &&
-          input_dimensions[input_dimensions.size() - index - 1] != 1 &&
-          scale_dimensions[scale_dimensions.size() - index - 1] != 1) {
-        uint32_t block_size =
-            input_dimensions[input_dimensions.size() - index - 1] /
-            scale_dimensions[scale_dimensions.size() - index - 1];
-        uint32_t axis = scale_dimensions.size() - index - 1;
+      if (input_dimensions[index] != scale_dimensions[index] &&
+          input_dimensions[index] != 1 && scale_dimensions[index] != 1) {
+        uint32_t block_size = input_dimensions[index] / scale_dimensions[index];
+        uint32_t axis = index;
 
         ASSIGN_OR_RETURN(scale,
                          BlockwiseExpandAlongAxis(scale, graph_builder, axis,
@@ -2497,7 +2510,7 @@ void CreateOperatorNodeForPad(const ContextProperties& context_properties,
   switch (pad->mode->which()) {
     case mojom::PaddingMode::Tag::kConstant:
       padding_mode = DML_PADDING_MODE::DML_PADDING_MODE_CONSTANT;
-      padding_value = pad->mode->get_constant()->value;
+      padding_value = pad->mode->get_constant()->value.AsFloat32();
       break;
     case mojom::PaddingMode::Tag::kEdge:
       padding_mode = DML_PADDING_MODE::DML_PADDING_MODE_EDGE;
@@ -2936,6 +2949,34 @@ void CreateOperatorNodeForNeg(const std::vector<OperandPtr>& operands,
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
+void CreateOperatorNodeForRoundEven(const std::vector<OperandPtr>& operands,
+                                    const mojom::ElementWiseUnaryPtr& operation,
+                                    GraphBuilderDml& graph_builder,
+                                    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, operation->input_operand_id);
+  const TensorDesc& input_tensor_desc = input->GetTensorDesc();
+
+  const OperandId output_id = operation->output_operand_id;
+  const auto output_tensor_desc = CreateOutputTensorDesc(operands, output_id);
+
+  DML_ELEMENT_WISE_ROUND_OPERATOR_DESC round_even_operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .RoundingMode =
+          DML_ROUNDING_MODE::DML_ROUNDING_MODE_HALVES_TO_NEAREST_EVEN};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const GraphNode* round_even_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ELEMENT_WISE_ROUND, &round_even_operator_desc, inputs,
+      operation->label);
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      round_even_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+}
+
 void CreateOperatorNodeForElementWiseUnary(
     const ContextProperties& context_properties,
     const std::vector<OperandPtr>& operands,
@@ -3011,6 +3052,22 @@ void CreateOperatorNodeForElementWiseUnary(
                                         DML_OPERATOR_ELEMENT_WISE_LOG>(
           operands, operation, graph_builder, id_to_node_output_map);
     }
+    case mojom::ElementWiseUnary::Kind::kIsNaN: {
+      CHECK(context_properties.data_type_limits.is_nan_input.data_types.Has(
+          input_data_type));
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_IS_NAN_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_IS_NAN>(
+          operands, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kIsInfinite: {
+      CHECK(
+          context_properties.data_type_limits.is_infinite_input.data_types.Has(
+              input_data_type));
+      return CreateOperatorNodeForUnary<
+          DML_ELEMENT_WISE_IS_INFINITY_OPERATOR_DESC,
+          DML_OPERATOR_ELEMENT_WISE_IS_INFINITY>(
+          operands, operation, graph_builder, id_to_node_output_map);
+    }
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
       CHECK(
           context_properties.data_type_limits.logical_not_input.data_types.Has(
@@ -3036,6 +3093,12 @@ void CreateOperatorNodeForElementWiseUnary(
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_RECIP_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_RECIP>(
           operands, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kRoundEven: {
+      CHECK(context_properties.data_type_limits.round_even_input.data_types.Has(
+          input_data_type));
+      return CreateOperatorNodeForRoundEven(operands, operation, graph_builder,
+                                            id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kSign: {
       CHECK(context_properties.data_type_limits.sign_input.data_types.Has(
@@ -5764,7 +5827,8 @@ void HandleGraphCreationFailure(
 }
 
 bool IsDispatchBindingValid(
-    const base::flat_map<std::string, WebNNTensorImpl*>& named_tensors,
+    const base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>&
+        named_tensors,
     const base::flat_map<std::string, base::WeakPtr<const WebNNTensorImpl>>&
         prev_named_tensors) {
   return std::ranges::equal(
@@ -5777,6 +5841,58 @@ bool IsDispatchBindingValid(
 }
 
 }  // namespace
+
+// Contains the persistent resource for the graph initialization and execution
+// if the graph needs it. The resource should be kept alive until the GPU has
+// completed the execution.
+class GraphImplDml::PersistentResource final
+    : public base::RefCountedThreadSafe<PersistentResource> {
+ public:
+  static scoped_refptr<PersistentResource> Create(
+      uint64_t persistent_buffer_byte_length,
+      Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer);
+
+  PersistentResource(const PersistentResource&) = delete;
+  PersistentResource& operator=(const PersistentResource&) = delete;
+
+  DML_BINDING_DESC persistent_buffer_binding_desc() const {
+    return persistent_buffer_binding_desc_;
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<PersistentResource>;
+  PersistentResource(uint64_t persistent_buffer_byte_length,
+                     Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer);
+  ~PersistentResource();
+
+  Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer_;
+  DML_BUFFER_BINDING persistent_buffer_binding_;
+  DML_BINDING_DESC persistent_buffer_binding_desc_;
+};
+
+// Contains the GPU descriptor heap and temporary buffer for graph
+// execution. These resources should be kept alive until the GPU has completed
+// the execution. After that, the resources could be reused for next graph
+// execution or be released.
+struct GraphImplDml::GraphResources {
+  GraphResources(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap,
+                 uint64_t temporary_buffer_byte_length,
+                 Microsoft::WRL::ComPtr<ID3D12Resource> temporary_resource);
+  ~GraphResources();
+  GraphResources(const GraphResources&) = delete;
+  GraphResources& operator=(const GraphResources&) = delete;
+  GraphResources(GraphResources&&) = delete;
+  GraphResources& operator=(GraphResources&&) = delete;
+
+  Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap;
+
+  // Temporary buffers can be reused between DML dispatches. However,
+  // they cannot be used between multiple queues at a time.
+  // https://learn.microsoft.com/en-us/windows/ai/directml/dml-binding
+  Microsoft::WRL::ComPtr<ID3D12Resource> temporary_buffer;
+  std::optional<DML_BUFFER_BINDING> temporary_buffer_binding;
+  std::optional<DML_BINDING_DESC> temporary_buffer_binding_desc;
+};
 
 GraphImplDml::GraphBufferBindingInfo::GraphBufferBindingInfo() = default;
 GraphImplDml::GraphBufferBindingInfo::~GraphBufferBindingInfo() = default;
@@ -5870,7 +5986,7 @@ GraphImplDml::AllocateGraphResources(Adapter* adapter,
 GraphImplDml::GraphImplDml(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     scoped_refptr<Adapter> adapter,
-    ContextImplDml* context,
+    base::WeakPtr<WebNNContextImpl> context,
     std::unique_ptr<CommandRecorder> command_recorder,
     scoped_refptr<PersistentResource> persistent_resource,
     ComPtr<IDMLCompiledOperator> compiled_operator,
@@ -5879,12 +5995,11 @@ GraphImplDml::GraphImplDml(
     std::unique_ptr<GraphResources> graph_resources,
     std::vector<mojom::Device> devices)
     : WebNNGraphImpl(std::move(receiver),
-                     context,
+                     std::move(context),
                      std::move(compute_resource_info),
                      std::move(devices)),
       persistent_resource_(std::move(persistent_resource)),
       adapter_(std::move(adapter)),
-      context_(context),
       command_recorder_(std::move(command_recorder)),
       compiled_operator_(std::move(compiled_operator)),
       graph_buffer_binding_info_(std::move(graph_buffer_binding_info)),
@@ -6234,12 +6349,13 @@ void GraphImplDml::CreateWebNNGraphImpl(
   }
 
   // The receiver bound to GraphImplDml.
-  std::move(callback).Run(base::WrapUnique(new GraphImplDml(
-      std::move(receiver), std::move(adapter), context.get(),
+  std::move(callback).Run(base::MakeRefCounted<GraphImplDml>(
+      std::move(receiver), std::move(adapter), context->AsWeakPtr(),
       std::move(command_recorder_for_dispatch), std::move(persistent_resource),
       std::move(compiled_operator), std::move(compute_resource_info),
       std::move(graph_buffer_binding_info), std::move(graph_resources),
-      {adapter->IsNPU() ? mojom::Device::kNpu : mojom::Device::kGpu})));
+      std::vector<mojom::Device>(
+          {adapter->IsNPU() ? mojom::Device::kNpu : mojom::Device::kGpu})));
 }
 
 // static
@@ -6811,7 +6927,13 @@ void GraphImplDml::HandleDispatchFailure(std::string_view error_message,
   // skip recording on failure.
   previous_input_tensors_.clear();
   previous_output_tensors_.clear();
-  context_->HandleContextLostOrCrash(error_message, hr);
+  // For GraphImplDml, the context owns the graph and OnDispatchComplete() is
+  // only invoked while the context is alive. A CHECK is appropriate here
+  // because DML does not currently support background tasks that outlive the
+  // context.
+  CHECK(context_);
+  static_cast<ContextImplDml*>(context_.get())
+      ->HandleContextLostOrCrash(error_message, hr);
 }
 
 GraphImplDml::IoBindings::IoBindings(
@@ -6822,7 +6944,8 @@ GraphImplDml::IoBindings::IoBindings(
 GraphImplDml::IoBindings::~IoBindings() = default;
 
 GraphImplDml::IoBindings GraphImplDml::CreateAndCacheInputBindings(
-    const base::flat_map<std::string, WebNNTensorImpl*>& named_inputs) {
+    const base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>&
+        named_inputs) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndCacheInputBindings");
   // Create the MLTensor input bindings needed for graph execution.
   std::vector<DML_BUFFER_BINDING> graph_input_buffer_bindings(
@@ -6839,7 +6962,7 @@ GraphImplDml::IoBindings GraphImplDml::CreateAndCacheInputBindings(
 
   for (auto& [name, input_tensor] : named_inputs) {
     TensorImplDml* input_tensor_impl =
-        static_cast<TensorImplDml*>(input_tensor);
+        static_cast<TensorImplDml*>(input_tensor.get());
     // Get the graph input index for the name.
     const size_t graph_input_index =
         graph_buffer_binding_info_.graph_input_name_to_index_map.at(
@@ -6859,7 +6982,8 @@ GraphImplDml::IoBindings GraphImplDml::CreateAndCacheInputBindings(
 }
 
 GraphImplDml::IoBindings GraphImplDml::CreateAndCacheOutputBindings(
-    const base::flat_map<std::string, WebNNTensorImpl*>& named_outputs) {
+    const base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>&
+        named_outputs) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndCacheOutputBindings");
   // TODO(crbug.com/40278771): consider pre-computing the output binding
   // count.
@@ -6881,7 +7005,7 @@ GraphImplDml::IoBindings GraphImplDml::CreateAndCacheOutputBindings(
 
   for (auto& [name, output_tensor] : named_outputs) {
     TensorImplDml* output_tensor_impl =
-        static_cast<TensorImplDml*>(output_tensor);
+        static_cast<TensorImplDml*>(output_tensor.get());
     // Get the graph output index with the name.
     const size_t graph_output_index =
         graph_buffer_binding_info_.graph_output_name_to_index_map.at(
@@ -6901,8 +7025,8 @@ GraphImplDml::IoBindings GraphImplDml::CreateAndCacheOutputBindings(
 }
 
 void GraphImplDml::DispatchImpl(
-    base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
-    base::flat_map<std::string, WebNNTensorImpl*> named_outputs) {
+    base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
+    base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_outputs) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::DispatchImpl");
 
   // It indicates whether we need to record commands and bind resources again.
@@ -7015,16 +7139,14 @@ void GraphImplDml::DispatchImpl(
   CommandQueue* command_queue = command_recorder_->command_queue();
   uint64_t last_submitted_fence_value = command_queue->GetLastFenceValue();
   for (auto& [name, input_tensor] : named_inputs) {
-    TensorImplDml* input_tensor_impl =
-        static_cast<TensorImplDml*>(input_tensor);
-    input_tensor_impl->SetLastSubmissionFenceValue(last_submitted_fence_value);
-    command_queue->ReferenceUntilCompleted(input_tensor_impl->buffer());
+    auto* dml_input_tensor = static_cast<TensorImplDml*>(input_tensor.get());
+    dml_input_tensor->SetLastSubmissionFenceValue(last_submitted_fence_value);
+    command_queue->ReferenceUntilCompleted(dml_input_tensor->buffer());
   }
   for (auto& [name, output_tensor] : named_outputs) {
-    TensorImplDml* output_tensor_impl =
-        static_cast<TensorImplDml*>(output_tensor);
-    output_tensor_impl->SetLastSubmissionFenceValue(last_submitted_fence_value);
-    command_queue->ReferenceUntilCompleted(output_tensor_impl->buffer());
+    auto* dml_output_tensor = static_cast<TensorImplDml*>(output_tensor.get());
+    dml_output_tensor->SetLastSubmissionFenceValue(last_submitted_fence_value);
+    command_queue->ReferenceUntilCompleted(dml_output_tensor->buffer());
   }
 
   // Prepare for the next dispatch.

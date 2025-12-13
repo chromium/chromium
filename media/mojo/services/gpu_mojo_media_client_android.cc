@@ -4,7 +4,7 @@
 
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -70,12 +70,13 @@ class GpuMojoMediaClientAndroid final : public GpuMojoMediaClient {
     auto frame_info_helper = FrameInfoHelper::Create(
         gpu_task_runner_, traits.get_command_buffer_stub_cb, ref_counted_lock);
 
+    bool is_surface_control_enabled =
+        features::IsAndroidSurfaceControlEnabled();
     return MediaCodecVideoDecoder::Create(
-        gpu_preferences_, gpu_feature_info_, traits.media_log->Clone(),
+        gpu_preferences_, is_surface_control_enabled, traits.media_log->Clone(),
         DeviceInfo::GetInstance(),
         CodecAllocator::GetInstance(gpu_task_runner_),
-        std::make_unique<AndroidVideoSurfaceChooserImpl>(
-            DeviceInfo::GetInstance()->IsSetOutputSurfaceSupported()),
+        std::make_unique<AndroidVideoSurfaceChooserImpl>(),
         android_overlay_factory_cb_, std::move(traits.request_overlay_info_cb),
         std::make_unique<VideoFrameFactoryImpl>(
             gpu_task_runner_, gpu_preferences_, std::move(image_provider),
@@ -87,8 +88,8 @@ class GpuMojoMediaClientAndroid final : public GpuMojoMediaClient {
   std::optional<SupportedAudioDecoderConfigs>
   GetPlatformSupportedAudioDecoderConfigs() final {
     SupportedAudioDecoderConfigs audio_configs;
-    if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-        base::android::SDK_VERSION_P) {
+    if (base::android::android_info::sdk_int() >=
+        base::android::android_info::SDK_VERSION_P) {
       audio_configs.emplace_back(AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC);
     }
     return audio_configs;

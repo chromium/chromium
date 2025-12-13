@@ -21,8 +21,7 @@ class VulkanInProcessContextProviderTest : public testing::Test {
   void TearDown() override { context_provider_.reset(); }
 
   void SendCriticalMemoryPressureSignal() {
-    context_provider_->OnMemoryPressure(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    context_provider_->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }
 
  protected:

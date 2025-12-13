@@ -1,0 +1,10 @@
+{
+  "name": "test-landmines",
+  "version": "1.0.0",
+  "contextFileName": "GEMINI.md",
+  "excludeTools": [
+    "upload_change_list",
+    "run_shell_command(git cl upload)",
+    "run_shell_command(git push)"
+  ]
+}

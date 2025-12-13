@@ -34,12 +34,11 @@ constexpr int64_t kSearchUserMinSignalCollectionLength = 7;
 constexpr std::array<int32_t, 1> kOnlySearch{1};
 
 // InputFeatures.
-constexpr std::array<MetadataWriter::UMAFeature, 1> kSearchUserUMAFeatures = {
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "Omnibox.SuggestionUsed.ClientSummarizedResultType",
-        28,
-        kOnlySearch.data(),
-        kOnlySearch.size()),
+constexpr FeaturePair<SearchUserModel::Feature> kFeatures[] = {
+    {SearchUserModel::kFeatureOmniboxSuggestionUsed,
+     features::UMAEnum("Omnibox.SuggestionUsed.ClientSummarizedResultType",
+                       28,
+                       kOnlySearch)},
 };
 
 #if BUILDFLAG(IS_IOS)
@@ -92,8 +91,7 @@ SearchUserModel::GetModelConfig() {
   search_user_metadata.set_upload_tensors(true);
 
   // Set features.
-  writer.AddUmaFeatures(kSearchUserUMAFeatures.data(),
-                        kSearchUserUMAFeatures.size());
+  writer.AddFeatures<Feature>(kFeatures);
 
 // Segmentation Ukm Engine is disabled on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -132,12 +130,12 @@ void SearchUserModel::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() < kSearchUserUMAFeatures.size()) {
+  if (inputs.size() < std::size(kFeatures)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
-  auto search_count = inputs[0];
+  auto search_count = inputs[kFeatureOmniboxSuggestionUsed];
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),

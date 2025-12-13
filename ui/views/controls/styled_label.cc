@@ -29,6 +29,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/link_fragment.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
@@ -107,7 +108,7 @@ void StyledLabel::SetText(std::u16string text) {
   GetViewAccessibility().SetName(text_);
   style_ranges_.clear();
   RemoveOrDeleteAllChildViews();
-  OnPropertyChanged(&text_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&text_, PropertyEffects::kPreferredSizeChanged);
 }
 
 gfx::FontList StyledLabel::GetFontList(const RangeStyleInfo& style_info) const {
@@ -148,7 +149,7 @@ void StyledLabel::SetTextContext(int text_context) {
   GetViewAccessibility().SetRole(text_context_ == style::CONTEXT_DIALOG_TITLE
                                      ? ax::mojom::Role::kTitleBar
                                      : ax::mojom::Role::kStaticText);
-  OnPropertyChanged(&text_context_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&text_context_, PropertyEffects::kPreferredSizeChanged);
 }
 
 int StyledLabel::GetDefaultTextStyle() const {
@@ -161,7 +162,8 @@ void StyledLabel::SetDefaultTextStyle(int text_style) {
   }
 
   default_text_style_ = text_style;
-  OnPropertyChanged(&default_text_style_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&default_text_style_,
+                    PropertyEffects::kPreferredSizeChanged);
 }
 
 std::optional<ui::ColorId> StyledLabel::GetDefaultEnabledColorId() const {
@@ -175,7 +177,7 @@ void StyledLabel::SetDefaultEnabledColorId(
   }
 
   default_enabled_color_id_ = enabled_color_id;
-  OnPropertyChanged(&default_enabled_color_id_, kPropertyEffectsPaint);
+  OnPropertyChanged(&default_enabled_color_id_, PropertyEffects::kPaint);
 }
 
 int StyledLabel::GetLineHeight() const {
@@ -189,7 +191,7 @@ void StyledLabel::SetLineHeight(int line_height) {
   }
 
   line_height_ = line_height;
-  OnPropertyChanged(&line_height_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&line_height_, PropertyEffects::kPreferredSizeChanged);
 }
 
 std::optional<ui::ColorVariant> StyledLabel::GetDisplayedOnBackgroundColor()
@@ -208,7 +210,7 @@ void StyledLabel::SetDisplayedOnBackgroundColor(ui::ColorVariant color) {
     UpdateLabelBackgroundColor();
   }
 
-  OnPropertyChanged(&displayed_on_background_color_, kPropertyEffectsPaint);
+  OnPropertyChanged(&displayed_on_background_color_, PropertyEffects::kPaint);
 }
 
 bool StyledLabel::GetAutoColorReadabilityEnabled() const {
@@ -221,7 +223,7 @@ void StyledLabel::SetAutoColorReadabilityEnabled(bool auto_color_readability) {
   }
 
   auto_color_readability_enabled_ = auto_color_readability;
-  OnPropertyChanged(&auto_color_readability_enabled_, kPropertyEffectsPaint);
+  OnPropertyChanged(&auto_color_readability_enabled_, PropertyEffects::kPaint);
 }
 
 bool StyledLabel::GetSubpixelRenderingEnabled() const {
@@ -234,7 +236,7 @@ void StyledLabel::SetSubpixelRenderingEnabled(bool subpixel_rendering_enabled) {
   }
 
   subpixel_rendering_enabled_ = subpixel_rendering_enabled;
-  OnPropertyChanged(&subpixel_rendering_enabled_, kPropertyEffectsPaint);
+  OnPropertyChanged(&subpixel_rendering_enabled_, PropertyEffects::kPaint);
 }
 
 const StyledLabel::LayoutSizeInfo& StyledLabel::GetLayoutSizeInfoForWidth(

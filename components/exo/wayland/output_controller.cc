@@ -171,7 +171,7 @@ bool OutputController::ProcessDisplayChangesForAuraOutputManager(
 
 void OutputController::UpdateActivatedDisplayIfNecessary() {
   const int64_t current_active_display_id =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+      display::Screen::Get()->GetDisplayForNewWindows().id();
   if (dispatched_activated_display_id_ == current_active_display_id) {
     return;
   }

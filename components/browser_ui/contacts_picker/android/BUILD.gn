@@ -19,6 +19,8 @@ source_set("android") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/browser_ui/contacts_picker/AndroidContactsFetcherImpl.java",
+    "java/src/org/chromium/components/browser_ui/contacts_picker/AndroidContactsPermissionProviderImpl.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/CompressContactIconsWorkerTask.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactDetails.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactView.java",
@@ -90,6 +92,7 @@ android_library("unit_device_javatests") {
 
   sources = [
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactDetailsTest.java",
+    "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsFetcherTestImpl.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerDialogTest.java",
   ]
   deps = [

@@ -88,14 +88,14 @@ struct SurfaceQuadState {
 
 struct TextureQuadState {
   ResourceId resource_id;
-  gfx.mojom.PointF uv_top_left;
-  gfx.mojom.PointF uv_bottom_right;
+  gfx.mojom.RectF tex_coord_rect;
   skia.mojom.SkColor4f background_color;
   cc.mojom.DynamicRangeLimit dynamic_range_limit;
   bool nearest_neighbor;
   bool secure_output_only;
   bool is_video_frame;
   bool force_rgbx;
+  bool is_normalized_coords;
   ProtectedVideoState protected_video_type;
   gfx.mojom.Rect? damage_rect;
   OverlayPriority overlay_priority_hint;

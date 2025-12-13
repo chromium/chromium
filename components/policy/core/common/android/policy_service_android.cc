@@ -68,3 +68,5 @@ PolicyServiceAndroid::GetJavaObject() {
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(PolicyService)

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/internal/test/event_util.h"

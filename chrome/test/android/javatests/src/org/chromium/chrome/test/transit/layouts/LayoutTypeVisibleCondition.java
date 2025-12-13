@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.test.transit.layouts;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.layouts.LayoutType;
+
+import java.util.function.Supplier;
 
 /** Check that the current LayoutType is the expected one. */
 public class LayoutTypeVisibleCondition extends Condition {

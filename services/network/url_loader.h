@@ -38,6 +38,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/network/ad_auction/event_record_request_helper.h"
+#include "services/network/devtools_durable_msg.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
 #include "services/network/observer_wrapper.h"
@@ -56,6 +57,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
@@ -182,7 +184,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
       bool shared_storage_writable_eligible,
-      SharedResourceChecker& shared_resource_checker);
+      SharedResourceChecker& shared_resource_checker,
+      std::vector<base::WeakPtr<DevtoolsDurableMessage>>
+          devtools_durable_messages);
 
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
@@ -226,7 +230,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const net::HttpResponseHeaders* original_response_headers,
       scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
       const net::IPEndPoint& endpoint,
-      std::optional<GURL>* preserve_fragment_on_redirect_url);
+      std::optional<GURL>* preserve_fragment_on_redirect_url,
+      const std::optional<net::SSLInfo>& ssl_info);
 
   mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
       const {
@@ -540,6 +545,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // starting another network transaction (such as following a redirect).
   void ResetRawHeadersForRedirect();
 
+  // If Devtools Durable Message collection is enabled, copies the response
+  // chunks into `devtools_durable_message_`. If `num_bytes` <= 0, marks the
+  // message as complete.
+  void MaybeCollectDurableMessage(size_t new_data_offset, int num_bytes);
+
   const raw_ptr<net::URLRequestContext> url_request_context_;
 
   const raw_ptr<mojom::NetworkContextClient> network_context_client_;
@@ -755,6 +765,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Internal counters to record UMA for SlopBucket.
   int mojo_begin_write_count_for_uma_ = 0;
   int mojo_blocked_write_count_for_uma_ = 0;
+  bool was_slop_bucket_enabled_ = false;
 
   // For decoding a small part of the response body to check its type (for ORB
   // and MIME sniffing) when the response might be compressed and client-side
@@ -772,6 +783,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Permissions policy of the request.
   const std::optional<network::PermissionsPolicy> permissions_policy_;
+
+  // DevTools Durable Message instances, if enabled.
+  std::vector<base::WeakPtr<DevtoolsDurableMessage>> devtools_durable_messages_;
+
+  // Keeps track of raw body sizes transmitted to DevTools.
+  int64_t devtools_durable_message_raw_size_ = 0;
 
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };

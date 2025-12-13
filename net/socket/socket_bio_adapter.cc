@@ -294,33 +294,14 @@ int SocketBIOAdapter::BIOWrite(base::span<const uint8_t> in) {
 void SocketBIOAdapter::SocketWrite() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while (write_error_ == OK && write_buffer_used_ > 0) {
-    const size_t write_buffer_used_old = write_buffer_used_;
     const auto write_size = static_cast<int>(std::min(
         write_buffer_used_,
         base::checked_cast<size_t>(write_buffer_->RemainingCapacity())));
-
-    // TODO(crbug.com/40064248): Remove this once the crash is resolved.
-    char debug[128];
-    snprintf(debug, sizeof(debug),
-             "offset=%d;remaining=%d;used=%zu;write_size=%d",
-             write_buffer_->offset(), write_buffer_->RemainingCapacity(),
-             write_buffer_used_, write_size);
-    base::debug::Alias(debug);
 
     write_error_ = ERR_IO_PENDING;
     int result = socket_->Write(write_buffer_.get(), write_size,
                                 write_callback_, kTrafficAnnotation);
 
-    // TODO(crbug.com/40064248): Remove this once the crash is resolved.
-    char debug2[32];
-    snprintf(debug2, sizeof(debug2), "result=%d", result);
-    base::debug::Alias(debug2);
-
-    // If `write_buffer_used_` changed across a call to the underlying socket,
-    // something went very wrong.
-    //
-    // TODO(crbug.com/40064248): Remove this once the crash is resolved.
-    CHECK_EQ(write_buffer_used_old, write_buffer_used_);
     if (result != ERR_IO_PENDING) {
       // `HandleSocketWriteResult` will update `write_error_` based on `result.
       HandleSocketWriteResult(result);

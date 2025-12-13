@@ -100,8 +100,7 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {tab_groups::kTabGroupSyncServiceDesktopMigration,
-         data_sharing::features::kDataSharingFeature,
+        {data_sharing::features::kDataSharingFeature,
          collaboration::features::kCollaborationMessaging},
         {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -125,7 +124,7 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
-    if (absolute_url.path() != avatar_url_) {
+    if (absolute_url.GetPath() != avatar_url_) {
       return nullptr;
     }
 
@@ -192,7 +191,7 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
   // the page action, which is driven by live data.
   auto TriggerDialog(std::vector<ActivityLogItem> activity_log) {
     return WithView(kTabStripElementId, [&, activity_log](TabStrip* tab_strip) {
-      bubble_coordinator_.Show(
+      BubbleCoordinator()->Show(
           tab_strip, browser()->tab_strip_model()->GetWebContentsAt(0),
           activity_log, browser()->profile());
     });
@@ -201,7 +200,7 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
   // Same as above, but for current tab version of the dialog.
   auto TriggerCurrentTabDialog(std::vector<ActivityLogItem> activity_log) {
     return WithView(kTabStripElementId, [&, activity_log](TabStrip* tab_strip) {
-      bubble_coordinator_.ShowForCurrentTab(
+      BubbleCoordinator()->ShowForCurrentTab(
           tab_strip, browser()->tab_strip_model()->GetWebContentsAt(0), {},
           activity_log, browser()->profile());
     });
@@ -240,14 +239,17 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
   }
 
   RecentActivityBubbleDialogView* bubble() {
-    return bubble_coordinator_.GetBubble();
+    return BubbleCoordinator()->GetBubble();
+  }
+
+  RecentActivityBubbleCoordinator* BubbleCoordinator() {
+    return RecentActivityBubbleCoordinator::From(browser());
   }
 
  private:
   const std::string avatar_url_ =
       base::StringPrintf("/avatar=s%d-cc-rp-ns", kAvatarSize);
   base::test::ScopedFeatureList scoped_feature_list_;
-  RecentActivityBubbleCoordinator bubble_coordinator_;
 };
 
 // Take a screenshot of the recent activity dialog.

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/debugger/viz_debugger.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -260,7 +256,8 @@ void VizDebugger::ApplyFilters(VizDebugger::StaticSource* src) {
     if (filter_match.empty() || source_str == nullptr) {
       return true;
     }
-    return std::strstr(source_str, filter_match.c_str()) != nullptr;
+    return UNSAFE_TODO(std::strstr(source_str, filter_match.c_str())) !=
+           nullptr;
   };
 
   for (const auto& filter_block : cached_filters_) {

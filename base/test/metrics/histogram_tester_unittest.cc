@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/metrics/puma_histogram_functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -206,6 +207,28 @@ TEST(HistogramTesterTest, TestGetTotalSum) {
   EXPECT_EQ(7, tester.GetTotalSum(kHistogram4));
 }
 
+TEST(HistogramTesterTest, TestGetTotalSumWithoutName) {
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 2);
+
+  HistogramTester tester;
+  UMA_HISTOGRAM_COUNTS_100(kHistogram3, 4);
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 3);
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 4);
+
+  EXPECT_EQ(11, tester.GetTotalSum());
+}
+
+TEST(HistogramTesterTest, TestGetTotalSumForPrefix) {
+  HistogramTester tester;
+  UMA_HISTOGRAM_COUNTS_100("Prefix1.foo", 4);
+  UMA_HISTOGRAM_COUNTS_100("Prefix1.foo", 4);
+  UMA_HISTOGRAM_COUNTS_100("Prefix2.foo", 4);
+
+  EXPECT_EQ(8, tester.GetTotalSumForPrefix("Prefix1"));
+  EXPECT_EQ(4, tester.GetTotalSumForPrefix("Prefix2"));
+  EXPECT_EQ(0, tester.GetTotalSumForPrefix("SomePrefix"));
+}
+
 TEST(HistogramTesterTest, TestGetTotalCountsForPrefix) {
   HistogramTester tester;
   UMA_HISTOGRAM_ENUMERATION("Test1.Test2.Test3", 2, 5);
@@ -333,6 +356,48 @@ TEST(HistogramTesterTest, BucketsInclude) {
   EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsInclude(b(0, 0), b(1, 0))));
   EXPECT_THAT(a({b(1, 1), b(2, 2)}),
               Not(BucketsInclude(b(0, 0), b(1, 0), b(2, 0))));
+}
+
+TEST(HistogramTesterTest, PumaScope) {
+  // Record a PUMA histogram before the creation of the recorder.
+  base::PumaHistogramBoolean(base::PumaType::kRc, kHistogram1, true);
+
+  HistogramTester tester;
+
+  // Verify that no PUMA histogram is recorded.
+  tester.ExpectTotalCount(kHistogram1, 0);
+
+  // Record a PUMA histogram after the creation of the recorder.
+  base::PumaHistogramBoolean(base::PumaType::kRc, kHistogram1, true);
+
+  // Verify that one PUMA histogram is recorded.
+  std::unique_ptr<HistogramSamples> samples(
+      tester.GetHistogramSamplesSinceCreation(kHistogram1));
+  EXPECT_TRUE(samples);
+  EXPECT_EQ(1, samples->TotalCount());
+}
+
+TEST(HistogramTesterTest, PumaTestUniqueSample) {
+  HistogramTester tester;
+
+  // Emit '2' three times.
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram2, 2, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram2, 2, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram2, 2, 5);
+
+  tester.ExpectUniqueSample(kHistogram2, 2, 3);
+  tester.ExpectUniqueTimeSample(kHistogram2, base::Milliseconds(2), 3);
+}
+
+TEST(HistogramTesterTest, PumaTestGetAllSamples) {
+  HistogramTester tester;
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram5, 2, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram5, 3, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram5, 3, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram5, 5, 5);
+
+  EXPECT_THAT(tester.GetAllSamples(kHistogram5),
+              ElementsAre(Bucket(2, 1), Bucket(3, 2), Bucket(5, 1)));
 }
 
 }  // namespace

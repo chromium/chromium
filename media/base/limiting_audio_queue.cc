@@ -5,6 +5,7 @@
 #include "media/base/limiting_audio_queue.h"
 
 #include "base/logging.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 
 

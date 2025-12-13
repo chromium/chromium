@@ -67,8 +67,8 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
         final AwContents awContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
-        class Test {
-            Test(int value) {
+        class Foo {
+            Foo(int value) {
                 mValue = value;
             }
 
@@ -84,26 +84,26 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
         Assert.assertEquals(
                 AwActivityTestRule.addJavascriptInterfaceOnUiThread(
                         awContents,
-                        new Test(1),
+                        new Foo(1),
                         "testNotAllowed",
                         List.of("http://notallowed.test")),
                 Collections.emptyList());
         Assert.assertEquals(
                 AwActivityTestRule.addJavascriptInterfaceOnUiThread(
-                        awContents, new Test(2), "testAllowed", List.of(firstPartyOrigin)),
+                        awContents, new Foo(2), "testAllowed", List.of(firstPartyOrigin)),
                 Collections.emptyList());
         Assert.assertEquals(
                 AwActivityTestRule.addJavascriptInterfaceOnUiThread(
-                        awContents, new Test(3), "testAllowed3p", List.of(thirdPartyOrigin)),
+                        awContents, new Foo(3), "testAllowed3p", List.of(thirdPartyOrigin)),
                 Collections.emptyList());
         Assert.assertEquals(
                 AwActivityTestRule.addJavascriptInterfaceOnUiThread(
-                        awContents, new Test(4), "testUniversal", List.of("*")),
+                        awContents, new Foo(4), "testUniversal", List.of("*")),
                 Collections.emptyList());
         Assert.assertEquals(
                 AwActivityTestRule.addJavascriptInterfaceOnUiThread(
                         awContents,
-                        new Test(1),
+                        new Foo(1),
                         "testIllformed",
                         List.of(firstPartyOrigin, thirdPartyOrigin, "://ill_formed.test")),
                 List.of("://ill_formed.test"));
@@ -165,7 +165,7 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(client2);
         final AwContents awContents = mTestContainerView.getAwContents();
 
-        class Test {
+        class Foo {
             @JavascriptInterface
             public void destroy() {
                 try {
@@ -183,7 +183,7 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
         }
 
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents, new Test(), "test");
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents, new Foo(), "test");
 
         mActivityTestRule.loadDataSync(
                 awContents, mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
@@ -213,8 +213,8 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents1);
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents2);
 
-        class Test {
-            Test(int value) {
+        class Foo {
+            Foo(int value) {
                 mValue = value;
             }
 
@@ -226,8 +226,8 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
             private final int mValue;
         }
 
-        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents1, new Test(1), "test");
-        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents2, new Test(2), "test");
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents1, new Foo(1), "test");
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents2, new Foo(2), "test");
         final String html = "<html>Hello World</html>";
         mActivityTestRule.loadDataSync(
                 awContents1, mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
@@ -251,8 +251,8 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
         final AwContents awContents1 = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents1);
 
-        class Test {
-            Test(int value) {
+        class Foo {
+            Foo(int value) {
                 mValue = value;
             }
 
@@ -264,7 +264,7 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
             private final int mValue;
         }
 
-        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents1, new Test(1), "test");
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents1, new Foo(1), "test");
         final String html = "<html>Hello World</html>";
         mActivityTestRule.loadDataSync(
                 awContents1, mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
@@ -279,7 +279,7 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
         final AwContents awContents2 = view2.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents2);
 
-        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents2, new Test(2), "test");
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents2, new Foo(2), "test");
         mActivityTestRule.loadDataSync(
                 awContents2, client2.getOnPageFinishedHelper(), html, "text/html", false);
 

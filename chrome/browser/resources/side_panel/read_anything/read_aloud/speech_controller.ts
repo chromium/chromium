@@ -4,15 +4,21 @@
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import {getCurrentSpeechRate, playFromSelectionTimeout} from '../common.js';
-import {NodeStore} from '../node_store.js';
-import {ReadAnythingLogger} from '../read_anything_logger.js';
-import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
-import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
+import {NodeStore} from '../content/node_store.js';
+import {SelectionController} from '../content/selection_controller.js';
+import {getWordCount, playFromSelectionTimeout} from '../shared/common.js';
+import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {ReadAloudHighlighter} from './highlighter.js';
+import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';
+import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
+import {ReadAloudNode} from './read_aloud_types.js';
+import type {Segment} from './read_aloud_types.js';
+import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
+import {SpeechBrowserProxyImpl} from './speech_browser_proxy.js';
 import {PauseActionSource, SpeechEngineState, SpeechModel} from './speech_model.js';
 import type {SpeechPlayingState} from './speech_model.js';
+import {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting} from './speech_presentation_rules.js';
 import {VoiceLanguageController} from './voice_language_controller.js';
 import {WordBoundaries} from './word_boundaries.js';
 
@@ -25,6 +31,7 @@ export interface SpeechListener {
   onIsAudioCurrentlyPlayingChange(): void;
   onEngineStateChange(): void;
   onPreviewVoicePlaying(): void;
+  onPlayingFromSelection(): void;
 }
 
 export class SpeechController {
@@ -37,12 +44,24 @@ export class SpeechController {
   private wordBoundaries_: WordBoundaries = WordBoundaries.getInstance();
   private highlighter_: ReadAloudHighlighter =
       ReadAloudHighlighter.getInstance();
+  private selectionController_: SelectionController =
+      SelectionController.getInstance();
   private listeners_: SpeechListener[] = [];
+  private readAloudModel_: ReadAloudModelBrowserProxy = getReadAloudModel();
 
   constructor() {
     // Send over the initial state.
     this.clearReadAloudState();
     this.isSpeechActiveChanged_(this.isSpeechActive());
+  }
+
+  resetForNewContent() {
+    if (chrome.readingMode.isTsTextSegmentationEnabled) {
+      // Reset the read aloud model because there's new content.
+      this.readAloudModel_.resetModel?.();
+    }
+
+    this.clearReadAloudState();
   }
 
   addListener(listener: SpeechListener) {
@@ -118,7 +137,7 @@ export class SpeechController {
   }
 
   isSpeechTreeInitialized(): boolean {
-    return chrome.readingMode.isSpeechTreeInitialized;
+    return this.readAloudModel_.isInitialized();
   }
 
   isPausedFromButton(): boolean {
@@ -131,58 +150,37 @@ export class SpeechController {
         (source === PauseActionSource.VOICE_SETTINGS_CHANGE);
   }
 
-  getSelectionAdjustedForHighlights(
-      anchorNode: Node, anchorOffset: number, focusNode: Node,
-      focusOffset: number): {
-    anchorNodeId: number|undefined,
-    anchorOffset: number,
-    focusNodeId: number|undefined,
-    focusOffset: number,
-  } {
-    let anchorNodeId = this.nodeStore_.getAxId(anchorNode);
-    let focusNodeId = this.nodeStore_.getAxId(focusNode);
-    let adjustedAnchorOffset = anchorOffset;
-    let adjustedFocusOffset = focusOffset;
-    if (!anchorNodeId) {
-      anchorNodeId = this.highlighter_.getAncestorId(anchorNode);
-      adjustedAnchorOffset += this.highlighter_.getOffsetInAncestor(anchorNode);
-    }
-    if (!focusNodeId) {
-      focusNodeId = this.highlighter_.getAncestorId(focusNode);
-      adjustedFocusOffset += this.highlighter_.getOffsetInAncestor(focusNode);
-    }
-    return {
-      anchorNodeId: anchorNodeId,
-      anchorOffset: adjustedAnchorOffset,
-      focusNodeId: focusNodeId,
-      focusOffset: adjustedFocusOffset,
-    };
-  }
-
-  initializeSpeechTree(startingNodeId?: number) {
-    if (startingNodeId && !this.model_.getFirstTextNode()) {
-      this.model_.setFirstTextNode(startingNodeId);
+  initializeSpeechTree(context?: Node) {
+    if (context && !this.model_.getContextNode()) {
+      this.model_.setContextNode(context);
     }
 
-    const firstTextNode = this.model_.getFirstTextNode();
-    if (!firstTextNode || this.isSpeechTreeInitialized()) {
+    const contextNode = this.model_.getContextNode();
+    if (!contextNode || this.isSpeechTreeInitialized()) {
       return;
     }
 
-    // TODO: crbug.com/40927698 - There should be a way to use AXPosition so
-    // that this step can be skipped.
-    chrome.readingMode.initAxPositionWithNode(firstTextNode);
+    // TODO: crbug.com/40927698 - This step should be skipped on migrating to
+    // a non-AXPosition-based text segmentation strategy.
+    this.readAloudModel_.init(contextNode);
   }
 
   onSelectionChange() {
-    // If speech is resumed, this won't be restored.
-    // TODO: crbug.com/40927698 - Restore the previous highlight after
-    // speech is resumed after a selection.
     this.highlighter_.clearHighlightFormatting();
   }
 
   // If the screen is locked during speech, we should stop speaking.
   onLockScreen() {
+    if (this.isSpeechActive()) {
+      this.stopSpeech_(PauseActionSource.DEFAULT);
+    }
+  }
+
+  // When the view is hidden with Immersive Reading Mode enabled, we should
+  // stop speaking.
+  onReadingModeWillClose() {
+    // TODO: crbug.com/466967616 - Ensure Read Aloud resume honors word
+    // boundaries after ReadingModeWillClose is called
     if (this.isSpeechActive()) {
       this.stopSpeech_(PauseActionSource.DEFAULT);
     }
@@ -200,8 +198,7 @@ export class SpeechController {
     // If the locales are identical, the voices are likely from the same
     // TTS engine, therefore, we don't need to reset the word boundary state.
     if (currentVoice?.lang.toLowerCase() !== selectedVoice.lang.toLowerCase()) {
-      this.wordBoundaries_.resetToDefaultState(
-          /*possibleWordBoundarySupportChange=*/ true);
+      this.wordBoundaries_.setNotSupported();
     }
   }
 
@@ -217,64 +214,65 @@ export class SpeechController {
     // Cancel the queued up Utterance using the old speech settings
     this.stopSpeech_(PauseActionSource.VOICE_SETTINGS_CHANGE);
     if (resumeSpeechOnChange) {
-      this.resumeSpeech_(null);
+      this.resumeSpeech_();
     }
   }
 
   onHighlightGranularityChange(newGranularity: number) {
-    chrome.readingMode.onHighlightGranularityChanged(newGranularity);
-
     // Rehighlight the new granularity.
     if (newGranularity !== chrome.readingMode.noHighlighting) {
-      this.highlightCurrentGranularity_(chrome.readingMode.getCurrentText());
-    }
-
-    this.logger_.logHighlightGranularity(newGranularity);
-  }
-
-  onLinksToggled() {
-    // Rehighlight the current granularity text after links have been
-    // toggled on or off to ensure the entire granularity segment is
-    // highlighted.
-    if (this.highlighter_.hasCurrentHighlights()) {
-      this.highlightCurrentGranularity_(chrome.readingMode.getCurrentText());
+      this.highlightCurrentGranularity_(
+          this.readAloudModel_.getCurrentTextSegments());
     }
   }
 
-  onPlayPauseToggle(selection: Selection|null, textContent: string|null) {
+  onPlayPauseKeyPress(context: HTMLElement|null) {
+    if (this.isSpeechActive()) {
+      this.logger_.logSpeechStopSource(
+          chrome.readingMode.keyboardShortcutStopSource);
+    }
+    this.onPlayPauseToggle(context);
+  }
+
+  onPlayPauseToggle(context: HTMLElement|null) {
     if (this.isSpeechActive()) {
       this.stopSpeech_(PauseActionSource.BUTTON_CLICK);
     } else {
-      this.playSpeech_(selection, textContent);
+      this.playSpeech_(context);
       this.model_.setPlaySessionStartTime(Date.now());
     }
   }
 
-  private playSpeech_(selection: Selection|null, textContent: string|null) {
+  private playSpeech_(context: HTMLElement|null) {
     if (this.hasSpeechBeenTriggered() && !this.isSpeechActive()) {
-      this.resumeSpeech_(selection);
+      this.resumeSpeech_();
     } else {
-      this.playSpeechForTheFirstTime_(selection, textContent);
+      this.playSpeechForTheFirstTime_(context);
     }
   }
 
   onNextGranularityClick() {
-    this.moveGranularity_();
-    chrome.readingMode.movePositionToNextGranularity();
-
+    this.model_.setIsSpeechBeingRepositioned(true);
+    this.moveToNextGranularity_();
+    // Reset the word boundary index whenever we move the granularity position.
+    this.wordBoundaries_.resetToDefaultState();
     if (!this.highlightAndPlayMessage_()) {
       this.onSpeechFinished_();
     }
   }
 
-  onPreviousGranularityClick() {
-    // This must be called BEFORE calling
-    // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
-    // determine what's currently being highlighted.
-    this.highlighter_.removeCurrentHighlight();
-    this.moveGranularity_();
-    chrome.readingMode.movePositionToPreviousGranularity();
+  // Prefer calling this rather than moveSpeechForward directly so
+  // that the highlighter is always informed of the change.
+  private moveToNextGranularity_() {
+    this.highlighter_.onWillMoveToNextGranularity(
+        this.readAloudModel_.getCurrentTextSegments());
+    this.readAloudModel_.moveSpeechForward();
+  }
 
+  onPreviousGranularityClick() {
+    this.model_.setIsSpeechBeingRepositioned(true);
+    this.moveToPreviousGranularity_();
+    this.wordBoundaries_.resetToDefaultState();
     if (!this.highlightAndPlayMessage_(
             /*isInterrupted=*/ false,
             /*isMovingBackward=*/ true)) {
@@ -282,19 +280,21 @@ export class SpeechController {
     }
   }
 
-  private moveGranularity_() {
-    this.model_.setIsSpeechBeingRepositioned(true);
-    this.highlighter_.resetPreviousHighlight();
-
-    // Reset the word boundary index whenever we move the granularity position.
-    this.wordBoundaries_.resetToDefaultState();
+  // Prefer calling this rather than moveSpeechBackward directly so
+  // that the highlighter is always informed of the change.
+  private moveToPreviousGranularity_() {
+    // This must be called BEFORE calling
+    // moveSpeechBackwards so we can accurately
+    // determine what's currently being highlighted.
+    this.highlighter_.onWillMoveToPreviousGranularity();
+    this.readAloudModel_.moveSpeechBackwards();
   }
 
-  private resumeSpeech_(selection: Selection|null) {
+  private resumeSpeech_() {
     let playedFromSelection = false;
-    if (this.hasSelection_(selection)) {
+    if (this.selectionController_.hasSelection()) {
       this.wordBoundaries_.resetToDefaultState();
-      playedFromSelection = this.playFromSelection_(selection);
+      playedFromSelection = this.playFromSelection_();
     }
 
     if (!playedFromSelection) {
@@ -304,10 +304,16 @@ export class SpeechController {
         // restarting the current message.
         this.speech_.resume();
       } else {
+        this.highlighter_.restorePreviousHighlighting();
         if (!this.highlightAndPlayInterruptedMessage_()) {
           // Ensure we're updating Read Aloud state if there's no text to
           // speak.
           this.onSpeechFinished_();
+
+          // Return to avoid speech getting stuck in an indeterminate state.
+          // It is preferable to end speech immediately after a play button
+          // press than a playback state with a spinner that never terminates.
+          return;
         }
       }
     }
@@ -319,13 +325,13 @@ export class SpeechController {
     // updateContent, such as via a preference change, rehighlight the nodes
     // after a pause.
     if (!playedFromSelection) {
-      this.highlightCurrentGranularity_(chrome.readingMode.getCurrentText());
+      this.highlightCurrentGranularity_(
+          this.readAloudModel_.getCurrentTextSegments());
     }
   }
 
-  private playSpeechForTheFirstTime_(
-      selection: Selection|null, textContent: string|null) {
-    if (!textContent) {
+  private playSpeechForTheFirstTime_(context: HTMLElement|null) {
+    if (!context || !context.textContent) {
       return;
     }
 
@@ -338,70 +344,69 @@ export class SpeechController {
     this.setHasSpeechBeenTriggered(true);
     this.model_.setIsSpeechBeingRepositioned(false);
 
-    const playedFromSelection = this.playFromSelection_(selection);
-    if (playedFromSelection) {
-      return;
+    // When the TS segmentation flag is enabled, playFromSelection_ needs to
+    // called after initializeSpeechTree. While this change is probably okay
+    // to introduce for the non-TS segmentation flag case, the original
+    // order is maintained when the flag is disabled to reduce the risk of
+    // introducing unexpected bugs to the V8 segmentation method.
+    if (!chrome.readingMode.isTsTextSegmentationEnabled) {
+      const playedFromSelection = this.playFromSelection_();
+      if (playedFromSelection) {
+        return;
+      }
     }
 
-    this.initializeSpeechTree();
+    if (chrome.readingMode.isTsTextSegmentationEnabled) {
+      // TODO: crbug.com/440400392- The speech tree should also be initialized
+      // before the play button is pressed.
+      this.initializeSpeechTree(context);
+    } else {
+      this.initializeSpeechTree();
+    }
+
+    if (chrome.readingMode.isTsTextSegmentationEnabled) {
+      const playedFromSelection = this.playFromSelection_();
+      if (playedFromSelection) {
+        return;
+      }
+    }
     if (this.isSpeechTreeInitialized() && !this.highlightAndPlayMessage_()) {
       // Ensure we're updating Read Aloud state if there's no text to speak.
       this.onSpeechFinished_();
     }
   }
 
-  private hasSelection_(selection: Selection|null): boolean {
-    return (selection !== null) &&
-        (selection.anchorNode !== selection.focusNode ||
-         selection.anchorOffset !== selection.focusOffset);
-  }
-
-  private playFromSelection_(selection: Selection|null): boolean {
-    if (!this.isSpeechTreeInitialized() || !selection ||
-        !this.hasSelection_(selection)) {
+  private playFromSelection_(): boolean {
+    if (!this.isSpeechTreeInitialized() ||
+        !this.selectionController_.hasSelection()) {
       return false;
     }
 
-    const anchorNodeId = chrome.readingMode.startNodeId;
-    const anchorOffset = chrome.readingMode.startOffset;
-    const focusNodeId = chrome.readingMode.endNodeId;
-    const focusOffset = chrome.readingMode.endOffset;
-
-    // If only one of the ids is present, use that one.
-    let startingNodeId: number|undefined =
-        anchorNodeId ? anchorNodeId : focusNodeId;
-    let startingOffset = anchorNodeId ? anchorOffset : focusOffset;
-    // If both are present, start with the node that is sooner in the page.
-    if (anchorNodeId && focusNodeId) {
-      if (anchorNodeId === focusNodeId) {
-        startingOffset = Math.min(anchorOffset, focusOffset);
-      } else if (selection.anchorNode && selection.focusNode) {
-        const pos =
-            selection.anchorNode.compareDocumentPosition(selection.focusNode);
-        const focusIsFirst = pos === Node.DOCUMENT_POSITION_PRECEDING;
-        startingNodeId = focusIsFirst ? focusNodeId : anchorNodeId;
-        startingOffset = focusIsFirst ? focusOffset : anchorOffset;
-      }
-    }
-
+    const selectionStart = this.selectionController_.getCurrentSelectionStart();
+    const startingNodeId = selectionStart.nodeId;
     if (!startingNodeId) {
       return false;
     }
 
-    // Clear the selection so we don't keep trying to play from the same
-    // selection every time they press play.
-    selection.removeAllRanges();
+    this.listeners_.forEach(l => l.onPlayingFromSelection());
     // Iterate through the page from the beginning until we get to the
     // selection. This is so clicking previous works before the selection and
     // so the previous highlights are properly set.
-    chrome.readingMode.resetGranularityIndex();
+    this.readAloudModel_.resetSpeechToBeginning();
+    this.highlighter_.reset();
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.
     setTimeout(() => {
-      this.movePlaybackToNode_(startingNodeId, startingOffset);
-      // Set everything to previous and then play the next granularity, which
-      // includes the selection.
-      this.highlighter_.resetPreviousHighlight();
+      const domNode = this.nodeStore_.getDomNode(startingNodeId);
+      if (!domNode) {
+        return;
+      }
+      const readAloudNode = ReadAloudNode.create(domNode);
+      if (!readAloudNode) {
+        return;
+      }
+      this.movePlaybackToNode_(readAloudNode, selectionStart.offset);
+      // Play the next granularity, which includes the selection.
       if (!this.highlightAndPlayMessage_()) {
         this.onSpeechFinished_();
       }
@@ -420,21 +425,14 @@ export class SpeechController {
   private highlightAndPlayMessage_(
       isInterrupted: boolean = false,
       isMovingBackward: boolean = false): boolean {
-    // getCurrentText gets the AX Node IDs of text that should be spoken and
-    // highlighted.
-    const axNodeIds: number[] = chrome.readingMode.getCurrentText();
+    const segments: Segment[] = this.readAloudModel_.getCurrentTextSegments();
 
     // If there aren't any valid ax node ids returned by getCurrentText,
     // speech should stop.
-    if (axNodeIds.length === 0) {
+    if (segments.length === 0) {
       return false;
     }
 
-    if (this.nodeStore_.areNodesAllHidden(axNodeIds)) {
-      return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
-    }
-
-    const utteranceText = this.extractTextOf_(axNodeIds);
     // If node ids were returned but they don't exist in the Reading Mode panel,
     // there's been a mismatch between Reading Mode and Read Aloud. In this
     // case, we should move to the next Read Aloud node and attempt to continue
@@ -442,6 +440,13 @@ export class SpeechController {
     // needed, but it is. Investigate root cause of Read Aloud / Reading Mode
     // mismatch. Additionally, the TTS engine may not like attempts to speak
     // whitespace, so move to the next utterance in that case.
+    const nodes: ReadAloudNode[] = segments.map(segment => segment.node);
+    if (!this.nodeStore_.hasAnyNode(nodes) ||
+        this.nodeStore_.areNodesAllHidden(nodes)) {
+      return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
+    }
+
+    const utteranceText = this.readAloudModel_.getCurrentTextContent();
     if (!utteranceText || utteranceText.trim().length === 0) {
       return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
     }
@@ -454,10 +459,23 @@ export class SpeechController {
           utteranceText.substring(this.wordBoundaries_.getResumeBoundary());
       // If we paused right at the end of the sentence, no need to speak the
       // ending punctuation.
-      if (this.highlighter_.isInvalidHighlightForWordHighlighting(
+      if (isInvalidHighlightForWordHighlighting(
               utteranceTextForWordBoundary.trim())) {
         this.wordBoundaries_.resetToDefaultState();
-        return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
+        const skippedPosition =
+            this.skipCurrentPosition_(isInterrupted, isMovingBackward);
+        // If we paused at the end of a sentence that is the end of the
+        // available text, resume speech from the beginning. Otherwise, speech
+        // will abruptly end immediately after a play button press with nothing
+        // being spoken.
+        if (!skippedPosition &&
+            getReadAloudModel().getCurrentTextSegments().length === 0) {
+          getReadAloudModel().resetSpeechToBeginning();
+          return this.highlightAndPlayMessage_(isInterrupted, isMovingBackward);
+        }
+
+        return skippedPosition;
+
       } else {
         this.playText_(utteranceTextForWordBoundary);
       }
@@ -465,16 +483,16 @@ export class SpeechController {
       this.playText_(utteranceText);
     }
 
-    this.highlightCurrentGranularity_(axNodeIds);
+    this.highlightCurrentGranularity_(segments);
     return true;
   }
 
   private skipCurrentPosition_(
       isInterrupted: boolean, isMovingBackward: boolean): boolean {
     if (isMovingBackward) {
-      chrome.readingMode.movePositionToPreviousGranularity();
+      this.moveToPreviousGranularity_();
     } else {
-      chrome.readingMode.movePositionToNextGranularity();
+      this.moveToNextGranularity_();
     }
     return this.highlightAndPlayMessage_(isInterrupted, isMovingBackward);
   }
@@ -487,15 +505,14 @@ export class SpeechController {
     // attempt to speak text that's too long, this will be able to be handled
     // by listening for a text-too-long error in message.onerror.
     const isTextTooLong = this.isTextTooLong_(utteranceText);
-    const endBoundary =
-        this.getUtteranceEndBoundary_(utteranceText, isTextTooLong);
-    this.playTextWithBoundaries_(utteranceText, isTextTooLong, endBoundary);
+    const textToPlay = this.getUtteranceText_(utteranceText, isTextTooLong);
+    this.playTextWithBoundaries_(utteranceText, isTextTooLong, textToPlay);
   }
 
   private playTextWithBoundaries_(
-      utteranceText: string, isTextTooLong: boolean, endBoundary: number) {
-    const message =
-        new SpeechSynthesisUtterance(utteranceText.substring(0, endBoundary));
+      utteranceText: string, isUtteranceTextTooLong: boolean,
+      textToPlay: string) {
+    const message = new SpeechSynthesisUtterance(textToPlay);
 
     message.onerror = (error) => {
       this.handleSpeechSynthesisError_(error, utteranceText);
@@ -504,21 +521,24 @@ export class SpeechController {
     this.setOnBoundary_(message);
     this.setOnSpeechSynthesisUtteranceStart_(message);
 
+    const text = message.text;
     message.onend = () => {
-      if (isTextTooLong) {
+      if (isUtteranceTextTooLong) {
         // Since our previous utterance was too long, continue speaking pieces
         // of the current utterance until the utterance is complete. The
         // entire utterance is highlighted, so there's no need to update
         // highlighting until the utterance substring is an acceptable size.
-        this.playText_(utteranceText.substring(endBoundary));
+        const remainingText = utteranceText.substring(textToPlay.length);
+        this.playText_(remainingText);
         return;
       }
 
+      this.countWordsHeardIfNeeded(text);
       // Now that we've finiished reading this utterance, update the
-      // Granularity state to point to the next one Reset the word boundary
-      // index whenever we move the granularity position.
+      // Granularity state to point to the next one Reset the word
+      // boundary index whenever we move the granularity position.
       this.wordBoundaries_.resetToDefaultState();
-      chrome.readingMode.movePositionToNextGranularity();
+      this.moveToNextGranularity_();
       // Continue speaking with the next block of text.
       if (!this.highlightAndPlayMessage_()) {
         this.onSpeechFinished_();
@@ -526,6 +546,16 @@ export class SpeechController {
     };
 
     this.speakMessage_(message);
+  }
+
+  // If word boundaries are not supported, use string parsing to determine how
+  // many words were heard.
+  private countWordsHeardIfNeeded(text: string) {
+    if (this.wordBoundaries_.notSupported()) {
+      const wordCount = getWordCount(text);
+      this.model_.setWordsHeard(this.model_.getWordsHeard() + wordCount);
+      chrome.readingMode.updateWordsHeard(this.model_.getWordsHeard());
+    }
   }
 
   private handleSpeechSynthesisError_(
@@ -553,8 +583,7 @@ export class SpeechController {
       // if this gives a much smaller sentence than TTS would have supported,
       // this is still preferable to no speech.
       this.playTextWithBoundaries_(
-          utteranceText, true,
-          this.getUtteranceEndBoundary_(utteranceText, true));
+          utteranceText, true, this.getUtteranceText_(utteranceText, true));
       return;
     }
     if (error.error === 'invalid-argument') {
@@ -586,30 +615,14 @@ export class SpeechController {
     }
   }
 
-  private extractTextOf_(axNodeIds: number[]): string {
-    let utteranceText: string = '';
-    for (const nodeId of axNodeIds) {
-      const startIndex = chrome.readingMode.getCurrentTextStartIndex(nodeId);
-      const endIndex = chrome.readingMode.getCurrentTextEndIndex(nodeId);
-      const element = this.nodeStore_.getDomNode(nodeId);
-      if (!element || startIndex < 0 || endIndex < 0) {
-        continue;
-      }
-      const content = chrome.readingMode.getTextContent(nodeId).substring(
-          startIndex, endIndex);
-      if (content) {
-        // Add all of the text from the current nodes into a single utterance.
-        utteranceText += content;
-      }
-    }
-    return utteranceText;
-  }
-
   private stopSpeech_(pauseSource: PauseActionSource) {
     // Pause source needs to be set before updating isSpeechActive so that
     // listeners get the correct source when listening for isSpeechActive
-    // changes.
-    this.model_.setPauseSource(pauseSource);
+    // changes. Only update the pause source to the one that actually stopped
+    // speech.
+    if (this.isSpeechActive()) {
+      this.model_.setPauseSource(pauseSource);
+    }
     this.setIsSpeechActive_(false);
     this.setIsAudioCurrentlyPlaying_(false);
 
@@ -655,6 +668,19 @@ export class SpeechController {
       // the sentence granularity level, so we'll retrieve these boundaries in
       // message.onEnd instead.
       if (event.name === 'word') {
+        const text = message.text;
+        const end = event.charIndex + (event.charLength || text.length);
+        const possibleWord = text.substring(event.charIndex, end).trim();
+        if (!isInvalidHighlightForWordHighlighting(possibleWord)) {
+          // TODO(crbug.com/c/372890165): Consider adding a heuristic to ensure
+          // we aren't counting the same word multiple times, if the TTS engine
+          // word boundaries are inaccurate.
+          this.model_.incrementWordsHeard();
+          // TODO(crbug.com/c/372890165): Consider using words heard to better
+          // estimate words seen.
+          chrome.readingMode.updateWordsHeard(this.model_.getWordsHeard());
+        }
+
         this.wordBoundaries_.updateBoundary(event.charIndex, event.charLength);
 
         // No need to update the highlight on word boundary events if
@@ -735,7 +761,7 @@ export class SpeechController {
     // the user presses play/pause button.
     if (!this.isSpeechActive() &&
         this.model_.getResumeSpeechOnVoiceMenuClose()) {
-      this.resumeSpeech_(null);
+      this.resumeSpeech_();
     }
   }
 
@@ -761,7 +787,7 @@ export class SpeechController {
 
   private onSpeechFinished_() {
     this.clearReadAloudState();
-    chrome.readingMode.resetGranularityIndex();
+    this.readAloudModel_.resetSpeechToBeginning();
 
     this.model_.setPauseSource(PauseActionSource.SPEECH_FINISHED);
     this.logger_.logSpeechStopSource(
@@ -781,7 +807,7 @@ export class SpeechController {
 
   clearReadAloudState() {
     this.speech_.cancel();
-    this.highlighter_.clearHighlightFormatting();
+    this.highlighter_.reset();
     this.wordBoundaries_.resetToDefaultState();
 
     const speechPlayingState = {
@@ -793,8 +819,9 @@ export class SpeechController {
     };
     this.setState_(speechPlayingState);
     this.setPreviewVoicePlaying_(null);
-    this.model_.setFirstTextNode(null);
+    this.model_.setContextNode(null);
     this.model_.setResumeSpeechOnVoiceMenuClose(false);
+    this.model_.setWordsHeard(0);
   }
 
   saveReadAloudState() {
@@ -813,14 +840,16 @@ export class SpeechController {
       return false;
     }
 
-    if (this.nodeStore_.getDomNode(lastPosition.nodeId)) {
-      this.movePlaybackToNode_(lastPosition.nodeId, lastPosition.offset);
+    const lastNode = lastPosition.node;
+    if (lastNode.domNode()) {
+      this.movePlaybackToNode_(lastNode, lastPosition.offset);
       this.setState_(savedSpeechPlayingState);
       this.wordBoundaries_.state = savedWordBoundaryState;
       // Since we're setting the reading position after a content update when
       // we're paused, redraw the highlight after moving the traversal state to
       // the right spot above.
-      this.highlightCurrentGranularity_(chrome.readingMode.getCurrentText());
+      this.highlightCurrentGranularity_(
+          this.readAloudModel_.getCurrentTextSegments());
       return true;
     } else {
       this.model_.setLastPosition(null);
@@ -828,40 +857,75 @@ export class SpeechController {
     }
   }
 
-  private movePlaybackToNode_(nodeId: number, offset: number): void {
-    let currentTextIds = chrome.readingMode.getCurrentText();
-    let hasCurrentText = currentTextIds.length > 0;
+  private movePlaybackToNode_(node: ReadAloudNode, offset: number): void {
+    let currentSegments: Segment[] =
+        this.readAloudModel_.getCurrentTextSegments();
+    let hasCurrentText = currentSegments.length > 0;
     // Since a node could spread across multiple granularities, we use the
     // offset to determine if the selected text is in this granularity or if
     // we have to move to the next one.
-    let startOfSelectionIsInCurrentText = currentTextIds.includes(nodeId) &&
-        chrome.readingMode.getCurrentTextEndIndex(nodeId) > offset;
-    while (hasCurrentText && !startOfSelectionIsInCurrentText) {
+    let foundSegment = this.findSegment_(currentSegments, node, offset);
+    while (hasCurrentText && !foundSegment) {
       this.highlightCurrentGranularity_(
-          currentTextIds, /*scrollIntoView=*/ false,
+          currentSegments, /*scrollIntoView=*/ false,
           /*shouldUpdateSentenceHighlight=*/ true,
           /*shouldSetLastReadingPos=*/ false);
-      chrome.readingMode.movePositionToNextGranularity();
-      currentTextIds = chrome.readingMode.getCurrentText();
-      hasCurrentText = currentTextIds.length > 0;
-      startOfSelectionIsInCurrentText = currentTextIds.includes(nodeId) &&
-          chrome.readingMode.getCurrentTextEndIndex(nodeId) > offset;
+      this.moveToNextGranularity_();
+
+      currentSegments = this.readAloudModel_.getCurrentTextSegments();
+      hasCurrentText = currentSegments.length > 0;
+      foundSegment = this.findSegment_(currentSegments, node, offset);
     }
+  }
+
+  private findSegment_(
+      segments: Segment[], node: ReadAloudNode, offset: number): Segment
+      |undefined {
+    // When the TsTextSegmentation flag is enabled, findSegment_ should count a
+    // match if the selection node contains the read aloud node (i.e. the read
+    // aloud node is a child of the selection node) - otherwise there
+    // won't be a match on the first run of playFromSelection()
+    if (!chrome.readingMode.isTsTextSegmentationEnabled) {
+      return segments.find(
+          segment => segment.node.equals(node) &&
+              (segment.start + segment.length > offset));
+    }
+
+    const selectedDomNode = node.domNode();
+    if (!selectedDomNode) {
+      return undefined;
+    }
+    return segments.find(segment => {
+      const segmentDomNode = segment.node.domNode();
+      if (!segmentDomNode) {
+        return false;
+      }
+
+      if (segment.node.equals(node)) {
+        return (segment.start + segment.length > offset);
+      }
+
+      if (selectedDomNode.contains(segmentDomNode)) {
+        return true;
+      }
+
+      return false;
+    });
   }
 
   // Highlights or rehighlights the current granularity, sentence or word.
   private highlightCurrentGranularity_(
-      axNodeIds: number[], scrollIntoView: boolean = true,
+      segments: Segment[], scrollIntoView: boolean = true,
       shouldUpdateSentenceHighlight: boolean = true,
       shouldSetLastReadingPos: boolean = true) {
-    if (shouldSetLastReadingPos && axNodeIds.length && axNodeIds[0]) {
+    if (shouldSetLastReadingPos && segments.length && segments[0]) {
       this.model_.setLastPosition({
-        nodeId: axNodeIds[0],
-        offset: chrome.readingMode.getCurrentTextStartIndex(axNodeIds[0]),
+        node: segments[0].node,
+        offset: segments[0].start,
       });
     }
     this.highlighter_.highlightCurrentGranularity(
-        axNodeIds, scrollIntoView, shouldUpdateSentenceHighlight);
+        segments, scrollIntoView, shouldUpdateSentenceHighlight);
   }
 
   private isTextTooLong_(text: string): boolean {
@@ -869,13 +933,14 @@ export class SpeechController {
         text.length > MAX_SPEECH_LENGTH;
   }
 
-  private getUtteranceEndBoundary_(text: string, isTextTooLong: boolean):
-      number {
-    return isTextTooLong ? this.getAccessibleTextLength_(text) : text.length;
+  private getUtteranceText_(text: string, isTextTooLong: boolean): string {
+    // If the text is not considered too long, don't get its accessible
+    // utterance to avoid shortening the utterance unnecessarily.
+    return isTextTooLong ? this.getAccessibleUtterance_(text) : text;
   }
 
-  // Gets the accessible text boundary for the given string.
-  private getAccessibleTextLength_(text: string): number {
+  // Gets the accessible utterance for the given string.
+  private getAccessibleUtterance_(text: string): string {
     // Splicing on commas won't work for all locales, but since this is a
     // simple strategy for splicing text in languages that do use commas
     // that reduces the need for calling getAccessibleBoundary.
@@ -888,14 +953,14 @@ export class SpeechController {
     // first character. Otherwise, use getAccessibleBoundary to prevent
     // repeatedly splicing on the first comma of the same substring.
     if (lastCommaIndex > 0) {
-      return lastCommaIndex;
+      return text.substring(0, lastCommaIndex);
     }
 
     // TODO: crbug.com/40927698 - getAccessibleBoundary breaks on the nearest
     // word boundary, but if there's some type of punctuation (such as a comma),
     // it would be preferable to break on the punctuation so the pause in
     // speech sounds more natural.
-    return chrome.readingMode.getAccessibleBoundary(text, MAX_SPEECH_LENGTH);
+    return this.readAloudModel_.getAccessibleText(text, MAX_SPEECH_LENGTH);
   }
 
   private isSpeechActiveChanged_(isSpeechActive: boolean) {

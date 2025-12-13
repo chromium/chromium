@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -84,8 +85,7 @@ public class IncognitoHistoryLeakageTest {
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
+        mChromeActivityTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
     }
 
     /**
@@ -127,10 +127,12 @@ public class IncognitoHistoryLeakageTest {
     @Test
     @LargeTest
     public void testBrowsingHistoryDoNotLeakFromIncognitoTabbedActivity() throws TimeoutException {
-        mChromeActivityTestRule.startOnBlankPage();
-        mChromeActivityTestRule.loadUrlInNewTab(mTestPage1, /* incognito= */ true);
-        List<HistoryItem> historyEntriesOfIncognitoMode =
-                getBrowsingHistory(mChromeActivityTestRule.getActivity().getActivityTab());
+        WebPageStation testPage =
+                mChromeActivityTestRule
+                        .startOnBlankPage()
+                        .openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(mTestPage1);
+        List<HistoryItem> historyEntriesOfIncognitoMode = getBrowsingHistory(testPage.getTab());
         assertTrue(historyEntriesOfIncognitoMode.isEmpty());
     }
 
@@ -143,7 +145,7 @@ public class IncognitoHistoryLeakageTest {
                         ApplicationProvider.getApplicationContext(), mTestPage1);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         List<HistoryItem> historyEntriesOfIncognitoMode =
-                getBrowsingHistory(mCustomTabActivityTestRule.getActivity().getActivityTab());
+                getBrowsingHistory(mCustomTabActivityTestRule.getActivityTab());
         assertTrue(historyEntriesOfIncognitoMode.isEmpty());
     }
 
@@ -171,13 +173,46 @@ public class IncognitoHistoryLeakageTest {
         NavigationHistory navigationHistory2 =
                 tab2.getWebContents().getNavigationController().getNavigationHistory();
 
-        assertEquals(1, navigationHistory1.getEntryCount());
-        assertEquals(1, navigationHistory2.getEntryCount());
+        // With separated Regular profile and Incognito profile windows, the current testing
+        // framework requires first loading a new tab or blank page.
+        assertEquals(1, getRealEntryCount(navigationHistory1));
+        assertEquals(1, getRealEntryCount(navigationHistory2));
 
-        NavigationEntry entry1 = navigationHistory1.getEntryAtIndex(0);
-        NavigationEntry entry2 = navigationHistory2.getEntryAtIndex(0);
+        NavigationEntry entry1 = getFirstRealEntry(navigationHistory1);
+        NavigationEntry entry2 = getFirstRealEntry(navigationHistory2);
 
         assertEquals(mTestPage1, entry1.getOriginalUrl().getSpec());
         assertEquals(mTestPage2, entry2.getOriginalUrl().getSpec());
+    }
+
+    private static boolean isNtpOrAboutBlank(String url) {
+        return url.equals("chrome-native://newtab/") || url.equals("about:blank");
+    }
+
+    /**
+     * Returns the number of entries in the history that are not the new tab page or about:blank.
+     */
+    private static int getRealEntryCount(NavigationHistory history) {
+        int count = 0;
+        for (int i = 0; i < history.getEntryCount(); ++i) {
+            if (!isNtpOrAboutBlank(history.getEntryAtIndex(i).getOriginalUrl().getSpec())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Returns the first navigation entry in the history that is not the new tab page or
+     * about:blank.
+     */
+    private static NavigationEntry getFirstRealEntry(NavigationHistory history) {
+        for (int i = 0; i < history.getEntryCount(); ++i) {
+            NavigationEntry entry = history.getEntryAtIndex(i);
+            if (!isNtpOrAboutBlank(entry.getOriginalUrl().getSpec())) {
+                return entry;
+            }
+        }
+        return null;
     }
 }

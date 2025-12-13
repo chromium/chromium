@@ -1,0 +1,19 @@
+Name: Shark for Android heaps
+Short Name: shark-android
+URL: https://repo.maven.apache.org/maven2/com/squareup/leakcanary/shark-android/3.0-alpha-8/shark-android-3.0-alpha-8.jar
+Version: 3.0-alpha-8
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+LeakCanary
+
+See also: https://github.com/square/leakcanary/
+
+
+Local Modifications:
+No modifications.

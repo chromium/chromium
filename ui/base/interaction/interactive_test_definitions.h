@@ -10,15 +10,13 @@
 #include <variant>
 
 #include "base/functional/callback_helpers.h"
+#include "base/functional/is_callback.h"
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
 namespace ui::test::internal {
-
-// Specifies an element either by ID or by name.
-using ElementSpecifier = std::variant<ElementIdentifier, std::string_view>;
 
 // Specifies a sequence of steps.
 using MultiStep = std::vector<InteractionSequence::StepBuilder>;
@@ -64,7 +62,7 @@ auto MaybeBind(F&& function) {
     // base::DoNothing() is compatible with callbacks, so return it as-is.
     return function;
   } else {
-    static_assert(base::AlwaysFalse<F>, "Can only bind callable objects.");
+    static_assert(false, "Can only bind callable objects.");
   }
 }
 
@@ -212,11 +210,6 @@ concept IsCheckCallback =
     internal::HasCompatibleSignature<F,
                                      R(const InteractionSequence*,
                                        const TrackedElement*)>;
-
-// Converts an ElementSpecifier to an element ID or name and sets it onto
-// `builder`.
-void SpecifyElement(ui::InteractionSequence::StepBuilder& builder,
-                    ElementSpecifier element);
 
 std::string DescribeElement(ElementSpecifier spec);
 

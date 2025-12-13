@@ -1,0 +1,88 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  border: solid 1px var(--color-searchbox-results-action-chip);
+  border-radius: 8px;
+  display: flex;
+  height: var(--cr-searchbox-results-action-chip-height, 28px);
+  min-width: 0;
+  outline: none;
+  padding-inline-end: 8px;
+  padding-inline-start: 8px;
+  position: relative;
+  transition: background-color 0.25s;
+}
+
+:host(:hover) {
+  background-color: var(--color-searchbox-results-button-hover);
+}
+
+:host(:focus),
+:host(.selected) {
+  margin: 2px;
+  box-shadow: none;
+}
+
+:host(.selected:hover) {
+  background-color: var(--color-searchbox-results-button-selected-hover);
+}
+
+:host(:active) #overlay {
+  background-color:
+      var(--color-omnibox-results-button-ink-drop-selected-row-hovered);
+}
+
+:host(.selected:active) #overlay {
+  background-color:
+      var(--color-omnibox-results-button-ink-drop-selected-row-selected);
+}
+
+#overlay {
+  --overlay-inset: calc(var(--border-width) * -1);
+  border-radius: inherit;
+  display: inherit;
+  position: absolute;
+  top: var(--overlay-inset);
+  left: var(--overlay-inset);
+  right: var(--overlay-inset);
+  bottom: var(--overlay-inset);
+}
+
+.contents {
+  align-items: center;
+  display: flex;
+  min-width: 0;
+}
+
+#action-icon {
+  flex-shrink: 0;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 15px;
+  background-color: var(--color-searchbox-results-action-chip-icon);
+  background-position: center center;
+  background-repeat: no-repeat;
+  height: 16px;
+  width: 16px;
+}
+
+:host-context(:is(:focus, [selected])) #action-icon {
+  background-color: var(--color-searchbox-results-action-chip-icon-selected,
+      var(--color-searchbox-results-action-chip-icon));
+}
+
+#text {
+  overflow: hidden;
+  padding-inline-start: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

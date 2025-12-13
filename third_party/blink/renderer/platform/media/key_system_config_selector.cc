@@ -27,6 +27,7 @@
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/media_player_util.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -155,7 +156,7 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
   // playback or when using ClearKey. Remove the DV codec strings to avoid
   // asking IsSupported*MediaFormat() about DV. EME support for DV is described
   // via KeySystemInfo::GetSupportedCodecs().
-  // TODO(crbug.com/1156282): Decouple the rest of clear vs EME codec support.
+  // TODO(crbug.com/40160292): Decouple the rest of clear vs EME codec support.
   if (base::FeatureList::IsEnabled(media::kPlatformEncryptedDolbyVision) &&
       !use_aes_decryptor &&
       base::ToLowerASCII(container_mime_type) == "video/mp4" &&
@@ -190,7 +191,8 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
 
 struct KeySystemConfigSelector::SelectionRequest {
   std::string key_system;
-  std::vector<WebMediaKeySystemConfiguration> candidate_configurations;
+  std::vector<WebMediaKeySystemConfiguration> candidate_configurations
+      ALLOW_DISCOURAGED_TYPE("Avoids conversion in media code");
   SelectConfigCB cb;
   bool was_permission_requested = false;
   bool is_permission_granted = false;
@@ -379,7 +381,7 @@ KeySystemConfigSelector::KeySystemConfigSelector(
     : key_systems_(key_systems),
       media_permission_(media_permission),
       web_frame_delegate_(std::move(web_frame_delegate)),
-      is_supported_media_type_cb_(WTF::BindRepeating(&IsSupportedMediaType)) {
+      is_supported_media_type_cb_(BindRepeating(&IsSupportedMediaType)) {
   DCHECK(key_systems_);
   DCHECK(media_permission_);
   DCHECK(web_frame_delegate_);
@@ -388,7 +390,8 @@ KeySystemConfigSelector::KeySystemConfigSelector(
 KeySystemConfigSelector::~KeySystemConfigSelector() = default;
 
 // TODO(sandersd): Move contentType parsing from Blink to here so that invalid
-// parameters can be rejected. http://crbug.com/449690, http://crbug.com/690131
+// parameters can be rejected. http://crbug.com/40401587,
+// http://crbug.com/40505574.
 bool KeySystemConfigSelector::IsSupportedContentType(
     const std::string& key_system,
     EmeMediaType media_type,
@@ -723,8 +726,9 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   // If preferences disallow storage access, then indicate persistent state is
   // not supported. A quota managed storage type is used in lieu of a dedicated
   // StorageType, as Media Licenses are a quota managed managed type.
-  // TODO(crbug.com/1465299): Simplify the WebContentSettingsClient::StorageType
-  // to remove unnecessary distinctions between storage types.
+  // TODO(crbug.com/40275947): Simplify the
+  // WebContentSettingsClient::StorageType to remove unnecessary distinctions
+  // between storage types.
   if (!web_frame_delegate_->AllowStorageAccessSync(
           WebContentSettingsClient::StorageType::kIndexedDB)) {
     if (persistent_state_support == EmeFeatureSupport::ALWAYS_ENABLED)
@@ -1086,8 +1090,8 @@ void KeySystemConfigSelector::SelectConfigInternal(
         DVLOG(3) << "Request permission.";
         media_permission_->RequestPermission(
             media::MediaPermission::Type::kProtectedMediaIdentifier,
-            WTF::BindOnce(&KeySystemConfigSelector::OnPermissionResult,
-                          weak_factory_.GetWeakPtr(), std::move(request)));
+            blink::BindOnce(&KeySystemConfigSelector::OnPermissionResult,
+                            weak_factory_.GetWeakPtr(), std::move(request)));
         return;
       case CONFIGURATION_SUPPORTED:
         std::string key_system = request->key_system;
@@ -1112,9 +1116,10 @@ void KeySystemConfigSelector::SelectConfigInternal(
             media::kHardwareSecureDecryptionFallbackPerSite.Get()) {
           if (!request->was_hardware_secure_decryption_preferences_requested) {
             media_permission_->IsHardwareSecureDecryptionAllowed(
-                WTF::BindOnce(&KeySystemConfigSelector::
-                                  OnHardwareSecureDecryptionAllowedResult,
-                              weak_factory_.GetWeakPtr(), std::move(request)));
+                blink::BindOnce(&KeySystemConfigSelector::
+                                    OnHardwareSecureDecryptionAllowedResult,
+                                weak_factory_.GetWeakPtr(),
+                                std::move(request)));
             return;
           }
 

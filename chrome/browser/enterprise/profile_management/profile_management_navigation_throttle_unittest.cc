@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"

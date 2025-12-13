@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -259,9 +258,13 @@ class MojoJSInterfaceBrokerBrowserTest : public InProcessBrowserTest {
         delete;
     ~TestContentBrowserClient() override = default;
 
-    void RegisterWebUIInterfaceBrokers(
+    void RegisterTrustedWebUIInterfaceBrokers(
         content::WebUIBrowserInterfaceBrokerRegistry& registry) override {
       registry.ForWebUI<FooUI>().Add<::test::mojom::Foo>();
+    }
+
+    void RegisterUntrustedWebUIInterfaceBrokers(
+        content::WebUIBrowserInterfaceBrokerRegistry& registry) override {
       registry.ForWebUI<BarUI>().Add<::test::mojom::Bar>();
     }
   };
@@ -285,8 +288,6 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, FooWorks) {
                                  "  return resp.value;"
                                  "})()"));
 
-  auto* broker1 =
-      web_contents->GetWebUI()->GetController()->broker_for_testing();
   // Refresh to trigger a RenderFrame reuse.
   content::TestNavigationObserver observer(web_contents, 1);
   // TODO(crbug.com/40160974): migrate to ExecJs.
@@ -294,9 +295,6 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, FooWorks) {
   observer.Wait();
 
   // Verify a new broker is created, and Foo still works.
-  auto* broker2 =
-      web_contents->GetWebUI()->GetController()->broker_for_testing();
-  EXPECT_NE(broker1, broker2);
   EXPECT_EQ("foo", EvalStatement("(async () => {"
                                  "  let fooRemote = window.Foo.getRemote();"
                                  "  let resp = await fooRemote.getFoo();"
@@ -306,9 +304,6 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, FooWorks) {
   // Perform a same-document navigation, verify the current broker persists, and
   // Foo still works.
   ASSERT_TRUE(NavigateToURL(web_contents, GURL(kFooURL).Resolve("#fragment")));
-  auto* broker3 =
-      web_contents->GetWebUI()->GetController()->broker_for_testing();
-  EXPECT_EQ(broker2, broker3);
   EXPECT_EQ("foo", EvalStatement("(async () => {"
                                  "  let fooRemote = window.Foo.getRemote();"
                                  "  let resp = await fooRemote.getFoo();"

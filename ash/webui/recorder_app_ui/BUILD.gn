@@ -24,7 +24,7 @@ static_library("recorder_app_ui") {
     "//ash/webui/metrics:structured_metrics_service_wrapper",
     "//ash/webui/recorder_app_ui/mojom",
     "//ash/webui/system_apps/public:system_web_app_config",
-    "//chromeos/ash/components/audio:audio",
+    "//chromeos/ash/components/audio",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/constants",
     "//chromeos/services/machine_learning/public/cpp",

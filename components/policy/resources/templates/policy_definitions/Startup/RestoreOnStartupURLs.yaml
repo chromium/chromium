@@ -21,6 +21,7 @@ schema:
   items:
     type: string
   type: array
+sensitive: true
 supported_on:
 - chrome.*:8-
 - chrome_os:11-

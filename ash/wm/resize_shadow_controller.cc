@@ -12,6 +12,7 @@
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -20,13 +21,6 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace ash {
-namespace {
-
-// If window rounded corners are larger than the threshold, use resize shadow
-// designed for larger rounded corners.
-constexpr int kLargeRoundedCornerThreshold = 2;
-
-}  // namespace
 
 ResizeShadowController::ResizeShadowController() = default;
 
@@ -163,7 +157,7 @@ void ResizeShadowController::RecreateShadowIfNeeded(aura::Window* window) {
       ash::WindowState::Get(window)->GetWindowRoundedCorners();
   const int corner_radius = window_radii.upper_left();
   const bool has_large_rounded_corners =
-      corner_radius > kLargeRoundedCornerThreshold;
+      corner_radius > chromeos::kRoundedWindowSmallCornerRadius;
 
   // If the `window` has a resize shadow with the requested type and the shadow
   // is configured for small/large rounded corners, no need to recreate it.

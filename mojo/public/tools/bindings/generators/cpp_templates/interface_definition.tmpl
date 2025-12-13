@@ -147,10 +147,10 @@ const char* {{interface.name}}::MessageToMethodName_(mojo::Message& message) {
 #if !BUILDFLAG(IS_FUCHSIA)
 {%-   for method in interface.methods %}
 uint32_t {{interface.name}}::{{method.name}}_Sym::IPCStableHash() {
-  // This method's address is used for identifiying the mojo method name after
+  // This method's address is used for identifying the mojo method name after
   // symbolization. So each IPCStableHash should have a unique address.
   // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
-  // __LINE__ value, which is not unique accross different mojo modules.
+  // __LINE__ value, which is not unique across different mojo modules.
   // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
   // hash instead of __LINE__.
 {%-     set message_name = "%s::%s::%s"|format(namespace_as_string, interface.name, method.name) %}
@@ -236,15 +236,13 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
 {{proxy_name}}::{{proxy_name}}(mojo::MessageReceiverWithResponder* receiver)
     : receiver_(receiver) {
 {%- if interface|has_estimate_size_methods %}
-  if (base::FeatureList::IsEnabled(mojo::features::kMojoPredictiveAllocation)) {
 {%-   for method in interface.methods %}
 {%-     if method.estimate_message_size %}
 {%-       set message_name =
               "base::to_underlying(messages::%s::k%s)"|format(interface.name, method.name) %}
-    size_estimator_.EnablePredictiveAllocation({{message_name}});
+  size_estimator_.EnablePredictiveAllocation({{message_name}});
 {%-     endif %}
 {%-   endfor %}
-  }
 {%- endif %}
 }
 

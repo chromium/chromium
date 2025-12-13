@@ -20,29 +20,29 @@ class CheckPseudoHasArgumentContext;
 // To determine whether a :has() pseudo-class matches an element or not, we need
 // to check the :has() argument selector on the descendants, next siblings or
 // next sibling descendants. While checking the :has() argument selector in
-// reversed DOM tree traversal order, we can get the :has() pseudo-class
-// checking result on the elements in the subtree. By caching these results, we
-// can prevent unnecessary :has() pseudo-class checking operations. (Please
-// refer the comments of CheckPseudoHasArgumentTraversalIterator)
+// reversed DOM tree traversal order, we find the :has() pseudo-class check
+// result for each the element in the subtree. By caching these results, we can
+// prevent unnecessary :has() tests. (Please refer the comments on
+// CheckPseudoHasArgumentTraversalIterator.)
 //
-// Caching the results on all elements in the subtree is a very memory consuming
-// approach. To prevent the large and inefficient cache memory consumption,
-// ElementCheckPseudoHasResultMap stores following flags for an element.
+// Caching the results on all elements in the subtree is a very memory-consuming
+// approach. To prevent using large amounts of memory for the cache,
+// the ElementCheckPseudoHasResultMap stores following flags for an element.
 //
-// - flag1 (Checked) : Indicates that the :has() pseudo-class was already
+// - flag1 (Checked): Indicates that the :has() pseudo-class was already
 //     checked on the element.
 //
-// - flag2 (Matched) : Indicates that the :has() pseudo-class was already
+// - flag2 (Matched): Indicates that the :has() pseudo-class was already
 //     checked on the element and it matched.
 //
-// - flag3 (AllDescendantsOrNextSiblingsChecked) : Indicates that all the
+// - flag3 (AllDescendantsOrNextSiblingsChecked): Indicates that all the
 //     not-cached descendant elements (or all the not-cached next sibling
 //     elements) of the element were already checked as not-matched.
 //     When the :has() argument checking traversal is stopped, this flag is set
 //     on the stopped element and the next sibling element of its ancestors to
 //     mark already traversed subtree.
 //
-// - flag4 (SomeChildrenChecked) : Indicates that some children of the element
+// - flag4 (SomeChildrenChecked): Indicates that some children of the element
 //     were already checked. This flag is set on the parent of the
 //     kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked element.
 //     If the parent of an not-cached element has this flag set, we can
@@ -127,48 +127,48 @@ constexpr CheckPseudoHasResult
 constexpr CheckPseudoHasResult kCheckPseudoHasResultSomeChildrenChecked = 1
                                                                           << 3;
 
-// The :has() result cache keeps the :has() pseudo-class checking result
+// The :has() result cache keeps the :has() pseudo-class check result
 // regardless of the :has() pseudo-class location (whether it is for subject or
 // not).
 // (e.g. '.a:has(.b) .c', '.a .b:has(.c)', ':is(.a:has(.b) .c) .d', ...)
 //
-// It stores the checking result of a :has() pseudo-class. For example, when we
-// have the selector '.a:has(.b) .c', during the selector checking sequence,
-// checking result for ':has(.b)' will be inserted into the cache.
+// It stores the check result of a :has() pseudo-class. For example, when we
+// have the selector '.a:has(.b) .c', during the selector check sequence,
+// check result for ':has(.b)' will be inserted into the cache.
 //
 // To differentiate multiple :has() pseudo-classes, the argument selector
-// text is selected as a cache key. For example, if we already have the result
+// text is used as a cache key. For example, if we already have the result
 // of ':has(.a)' in the cache with cache key '.a', and we have the selectors
-// '.b:has(.a) .c' and '.b .c:has(a)' to be checked, then the selector checking
-// overhead of those 2 selectors will be similar with the overhead of '.a .c'
+// '.b:has(.a) .c' and '.b .c:has(.a)' to be checked, then the selector check
+// overhead of those two selectors will be similar with the overhead of '.a .c',
 // because we can get the result of ':has(.a)' from the cache with the cache
 // key '.a'.
 //
-// The :has() checking result cache uses a 2 dimensional hash map to store the
+// The :has() check result cache uses a two-dimensional hash map to store the
 // result.
 // - hashmap[<argument-selector>][<element>] = <result>
 //
 // ElementCheckPseudoHasResultMap is a hash map that stores the
-// :has(<argument-selector>) checking result on each element.
+// :has(<argument-selector>) check result on each element.
 // - hashmap[<element>] = <result>
 using ElementCheckPseudoHasResultMap =
     GCedHeapHashMap<Member<const Element>, CheckPseudoHasResult>;
 using CheckPseudoHasResultCache =
     HeapHashMap<String, Member<ElementCheckPseudoHasResultMap>>;
 
-// The :has() result cache keeps a bloom filter for rejecting :has() argument
+// The :has() result cache keeps a Bloom filter for rejecting :has() argument
 // selector checking.
 //
-// The element identifier hashes in the bloom filter depend on the relationship
+// The element identifier hashes in the Bloom filter depend on the relationship
 // between the :has() anchor element and the :has() argument subject element.
 // The relationship can be categorized by this information in
 // CheckPseudoHasArgumentContext.
 // - traversal scope
 // - adjacent limit
 // - depth limit
-// (Please refer the comment of CheckPseudoHasArgumentTraversalType)
+// (Please refer the comment on CheckPseudoHasArgumentTraversalType.)
 //
-// The CheckPseudoHasFastRejectFilterCache uses a 2 dimensional hash map to
+// The CheckPseudoHasFastRejectFilterCache uses a two-dimensional hash map to
 // store the filter.
 // - hashmap[<traversal type>][<element>] = <filter>
 //
@@ -183,14 +183,14 @@ using CheckPseudoHasFastRejectFilterCache =
                 Member<ElementCheckPseudoHasFastRejectFilterMap>>;
 
 // CheckPseudoHasCacheScope is the stack-allocated scoping class for :has()
-// pseudo-class checking result cache and :has() pseudo-class checking fast
-// reject filter cache. It also manages checking for recursive :has().
+// pseudo-class result cache and :has() pseudo-class fast reject filter cache.
+// It also manages checking for recursive :has().
 //
-// This class has hashmap to hold the checking result and filter, so the
+// This class has a hash map to hold the check result and a Bloom filter, so the
 // lifecycle of the caches follow the lifecycle of the CheckPseudoHasCacheScope
-// instance. (The hashmap for caching will be created at the construction of a
+// instance. (The hash map for caching will be created at the construction of a
 // CheckPseudoHasCacheScope instance, and removed at the destruction of the
-// instance)
+// instance.)
 //
 // void SomeFunction() {
 //   CheckPseudoHasCacheScope cache_scope; // A cache will be created here.
@@ -216,11 +216,11 @@ using CheckPseudoHasFastRejectFilterCache =
 // To make this simple, the first allocated instance on the call stack will
 // be held in the Document instance. (The instance registers itself in the
 // constructor and deregisters itself in the destructor) This is based on
-// the restriction : The CheckPseudoHasCacheScope is allowed to use only in the
-// sequences on the blink main thread.
+// the restriction that the CheckPseudoHasCacheScope can be used only in the
+// sequences on the Blink main thread.
 //
-// The cached results are valid until the DOM doesn't mutate, so any DOM
-// mutations inside the cache scope is not allowed for the consistency.
+// The cached results are invalidated if the DOM is mutated, so any DOM
+// mutations inside the cache scope are not allowed.
 class CORE_EXPORT CheckPseudoHasCacheScope {
   STACK_ALLOCATED();
 

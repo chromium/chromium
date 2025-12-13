@@ -1,0 +1,7 @@
+error: Option::expect_or_abort() test
+ --> tests/ui/option_ext.rs:3:1
+  |
+3 | option_ext!(one, two);
+  | ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `option_ext` (in Nightly builds, run with -Z macro-backtrace for more info)

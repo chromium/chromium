@@ -18,5 +18,5 @@
   readonly attribute unsigned short statusCode;
   readonly attribute unsigned long? lineNumber;
   readonly attribute unsigned long? columnNumber;
-  [CallWith=ScriptState] object toJSON();
+  [CallWith=ScriptState] object toJSON(optional DOMString key);
 };

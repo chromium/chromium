@@ -13,6 +13,19 @@ export const peerConnectionDataStore = {};
 window.userMediaRequests = userMediaRequests;
 window.peerConnectionDataStore = peerConnectionDataStore;
 
+// RTCStats events. Used to create a dump in the file format
+// specified at
+// https://github.com/rtcstats/rtcstats/tree/main/packages/rtcstats-server#rtcstats-dump-file-format
+const rtcStatsEvents = [];
+let lastRtcStatsTimestamp = 0;
+export function addRtcStatsEvent(event_name, connection_id,
+                                 value, ...extra) {
+  const timestamp = extra.pop();
+  const delta = timestamp - lastRtcStatsTimestamp;
+  lastRtcStatsTimestamp = timestamp;
+  rtcStatsEvents.push([event_name, connection_id, value, ...extra, delta]);
+}
+
 /**
  * Provides the UI for dump creation.
  */
@@ -28,7 +41,9 @@ export class DumpCreator {
      * @private
      */
     document.getElementById('dump-click-target').addEventListener(
-        'click', this.onDownloadData_.bind(this));
+        'click', this.onDownloadInternals_.bind(this));
+    document.getElementById('dump-click-target-rtcstats').addEventListener(
+        'click', this.onDownloadRtcStats_.bind(this));
     document.getElementById('audio-recording-click-target').addEventListener(
         'click', this.onAudioDebugRecordingsChanged_.bind(this));
     document.getElementById('packet-recording-click-target').addEventListener(
@@ -82,37 +97,53 @@ export class DumpCreator {
    *
    * @private
    */
-  async onDownloadData_(event) {
-    const useCompression = document.getElementById('dump-checkbox').checked;
+  async download(name, blob, useCompression) {
+    if (useCompression) {
+      const compressionStream = new CompressionStream('gzip');
+      const binaryStream = blob.stream().pipeThrough(compressionStream);
+      const binaryBlob = await new Response(binaryStream).blob();
+      // Since this is async we can't use the default event and need to click
+      // again (while avoiding an infinite loop).
+      const anchor = document.createElement('a');
+      anchor.download = name + '.gz';
+      anchor.href = URL.createObjectURL(binaryBlob);
+      anchor.click();
+      return;
+    }
+    const anchor = document.createElement('a');
+    anchor.download = name + '.txt';
+    anchor.href = URL.createObjectURL(blob);
+    anchor.click();
+  }
+  async onDownloadInternals_() {
+    const useCompression =
+        document.getElementById('dump-checkbox').checked;
+    // Preferably we get the full version information.
     const uaData = await navigator.userAgentData
         .getHighEntropyValues(['fullVersionList']);
     const dumpObject = {
       'getUserMedia': userMediaRequests,
       'PeerConnections': peerConnectionDataStore,
       'UserAgent': navigator.userAgent,
-      'UserAgentData': uaData.fullVersionList,
+      'UserAgentData': uaData,
     };
     const textBlob =
-      new Blob([JSON.stringify(dumpObject, null, 1)], {type: 'octet/stream'});
-    let url;
-    if (useCompression) {
-      const compressionStream = new CompressionStream('gzip');
-      const binaryStream = textBlob.stream().pipeThrough(compressionStream);
-      const binaryBlob = await new Response(binaryStream).blob();
-      url = URL.createObjectURL(binaryBlob);
-      // Since this is async we can't use the default event and need to click
-      // again (while avoiding an infinite loop).
-      const anchor = document.createElement('a');
-      anchor.download = 'webrtc_internals_dump.gz'
-      anchor.href = url;
-      anchor.click();
-      return;
+        new Blob([JSON.stringify(dumpObject, null, 1)],
+                 {type: 'octet/stream'});
+    await this.download('webrtc_internals_dump',
+                        textBlob, useCompression);
+  }
+  async onDownloadRtcStats_() {
+    const serializedRtcStats = [
+      'RTCStatsDump',
+      JSON.stringify({fileFormat: 3}),
+    ];
+    for (const ev of rtcStatsEvents) {
+      serializedRtcStats.push(JSON.stringify(ev));
     }
-    url = URL.createObjectURL(textBlob);
-    const anchor = document.createElement('a');
-    anchor.download = 'webrtc_internals_dump.txt'
-    anchor.href = url;
-    anchor.click();
+    const rtcStatsBlob = new Blob([serializedRtcStats.join('\n')],
+        {type: 'octet/stream'});
+    await this.download('rtcstats_dump', rtcStatsBlob, true);
   }
 
   /**

@@ -11,11 +11,28 @@
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "components/google/core/common/google_util.h"
+#include "google_apis/gaia/register_bound_session_payload.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_util.h"
 #include "url/gurl.h"
 
 namespace bound_session_credentials {
+namespace {
+
+bound_session_credentials::Credential CreateCookieCredential(
+    std::string_view name,
+    std::string_view domain,
+    std::string_view path) {
+  bound_session_credentials::Credential credential;
+  bound_session_credentials::CookieCredential* cookie_credential =
+      credential.mutable_cookie_credential();
+  cookie_credential->set_name(name);
+  cookie_credential->set_domain(domain);
+  cookie_credential->set_path(path);
+  return credential;
+}
+
+}  // namespace
 
 Timestamp TimeToTimestamp(base::Time time) {
   Timestamp timestamp = Timestamp();
@@ -107,7 +124,7 @@ GURL GetBoundSessionScope(const BoundSessionParams& bound_session_params) {
     // components (like scheme and port) from `site`.
     GURL credential_scope = site.ReplaceComponents(replacements);
     if (!credential_scope.is_valid() ||
-        !credential_scope.DomainIs(site.host_piece())) {
+        !credential_scope.DomainIs(site.host())) {
       return GURL();
     }
 
@@ -139,6 +156,51 @@ GURL ResolveEndpointPath(const GURL& request_url,
   }
 
   return GURL();
+}
+
+BoundSessionParams CreateBoundSessionsParamsFromRegistrationPayload(
+    const RegisterBoundSessionPayload& payload,
+    const GURL& request_url,
+    const GURL& site,
+    std::string_view wrapped_key,
+    SessionOrigin session_origin) {
+  CHECK(!payload.parsed_for_dbsc_standard);
+  CHECK_NE(session_origin, SessionOrigin::SESSION_ORIGIN_UNSPECIFIED);
+  BoundSessionParams params;
+  if (!site.is_valid()) {
+    return BoundSessionParams();
+  }
+  const GURL refresh_url =
+      ResolveEndpointPath(request_url, payload.refresh_url);
+  if (!refresh_url.is_valid()) {
+    return BoundSessionParams();
+  }
+  params.set_refresh_url(refresh_url.spec());
+  params.set_site(site.spec());
+  params.set_session_id(payload.session_id);
+  params.set_wrapped_key(wrapped_key);
+  params.set_session_origin(session_origin);
+  for (const RegisterBoundSessionPayload::Credential& credential :
+       payload.credentials) {
+    *params.add_credentials() = CreateCookieCredential(
+        credential.name, credential.scope.domain, credential.scope.path);
+  }
+  *params.mutable_creation_time() = TimeToTimestamp(base::Time::Now());
+  return params;
+}
+
+std::optional<std::string_view> GetSessionOriginHistogramSuffix(
+    SessionOrigin session_origin) {
+  // LINT.IfChange(GetSessionOriginHistogramSuffix)
+  switch (session_origin) {
+    case SessionOrigin::SESSION_ORIGIN_REGISTRATION:
+      return ".FromRegistration";
+    case SessionOrigin::SESSION_ORIGIN_OAML:
+      return ".FromOAuthMultiLogin";
+    case SessionOrigin::SESSION_ORIGIN_UNSPECIFIED:
+      return std::nullopt;
+  }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:BoundSessionOrigin)
 }
 
 }  // namespace bound_session_credentials

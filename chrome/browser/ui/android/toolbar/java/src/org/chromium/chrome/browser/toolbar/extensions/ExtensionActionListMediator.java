@@ -11,21 +11,24 @@ import android.view.View;
 import org.chromium.base.Log;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
+import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.extensions.ShowAction;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @NullMarked
@@ -35,6 +38,7 @@ class ExtensionActionListMediator implements Destroyable {
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final ModelList mModels;
+    private final ChromeAndroidTask mTask;
     private final ExtensionActionsUpdateHelper mExtensionActionsUpdateHelper;
 
     private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
@@ -47,15 +51,16 @@ class ExtensionActionListMediator implements Destroyable {
             Context context,
             WindowAndroid windowAndroid,
             ModelList models,
-            ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> currentTabSupplier) {
+            ChromeAndroidTask task,
+            NullableObservableSupplier<Tab> currentTabSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mModels = models;
+        mTask = task;
 
         mExtensionActionsUpdateHelper =
                 new ExtensionActionsUpdateHelper(
-                        mModels, profileSupplier, currentTabSupplier, mActionsUpdateDelegate);
+                        mModels, task, currentTabSupplier, mActionsUpdateDelegate);
     }
 
     @Override
@@ -101,20 +106,37 @@ class ExtensionActionListMediator implements Destroyable {
         closePopup();
 
         Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
-        Profile profile = mExtensionActionsUpdateHelper.getProfile();
-
-        if (profile == null || currentTab == null) {
+        if (currentTab == null) {
             return;
         }
         int tabId = currentTab.getId();
 
         ExtensionActionPopupContents contents =
-                ExtensionActionPopupContents.create(profile, actionId, tabId);
+                ExtensionActionPopupContents.create(mTask, actionId, tabId);
         assert mCurrentPopup == null;
         mCurrentPopup =
                 new ExtensionActionPopup(mContext, mWindowAndroid, buttonView, actionId, contents);
         mCurrentPopup.loadInitialPage();
         mCurrentPopup.addOnDismissListener(this::closePopup);
+    }
+
+    private void onContextClick(ListMenuButton buttonView, String actionId) {
+        Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
+        if (currentTab == null) {
+            return;
+        }
+
+        WebContents webContents = currentTab.getWebContents();
+        if (webContents == null) {
+            return;
+        }
+
+        ExtensionActionContextMenuBridge bridge =
+                new ExtensionActionContextMenuBridge(
+                        mTask, actionId, webContents, ContextMenuSource.TOOLBAR_ACTION);
+
+        ExtensionActionContextMenuUtils.showContextMenu(
+                mContext, buttonView, bridge, MenuBuilderHelper.getRectProvider(buttonView), null);
     }
 
     private void closePopup() {
@@ -142,10 +164,16 @@ class ExtensionActionListMediator implements Destroyable {
                 ExtensionActionsBridge extensionActionsBridge, int tabId, String actionId) {
             ExtensionAction action = extensionActionsBridge.getAction(actionId, tabId);
             assert action != null;
-            Bitmap icon = extensionActionsBridge.getActionIcon(actionId, tabId);
+
+            Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
+            WebContents webContents = currentTab == null ? null : currentTab.getWebContents();
+
+            Bitmap icon =
+                    ExtensionActionIconUtil.getActionIcon(
+                            mContext, extensionActionsBridge, actionId, tabId, webContents);
             assert icon != null;
 
-            return new ModelListAdapter.ListItem(
+            return new ListItem(
                     ListItemType.EXTENSION_ACTION,
                     new PropertyModel.Builder(ExtensionActionButtonProperties.ALL_KEYS)
                             .with(ExtensionActionButtonProperties.ICON, icon)
@@ -153,6 +181,12 @@ class ExtensionActionListMediator implements Destroyable {
                             .with(
                                     ExtensionActionButtonProperties.ON_CLICK_LISTENER,
                                     (view) -> onPrimaryClick(view, actionId))
+                            .with(
+                                    ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER,
+                                    (view) -> {
+                                        onContextClick((ListMenuButton) view, actionId);
+                                        return false;
+                                    })
                             .with(ExtensionActionButtonProperties.TITLE, action.getTitle())
                             .build());
         }

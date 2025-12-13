@@ -12,12 +12,14 @@
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -39,42 +41,48 @@
 class AutocompleteResultWrapperTest : public PlatformTest {
  public:
   AutocompleteResultWrapperTest() {
-    _fake_autocomplete_wrapper_delegate =
-        [[FakeAutocompleteResultWrapperDelegate alloc] init];
-    omnibox_client_ = std::make_unique<TestOmniboxClient>();
-    wrapper_ = [[AutocompleteResultWrapper alloc]
-        initWithOmniboxClient:omnibox_client_.get()];
-    wrapper_.incognito = NO;
-    wrapper_.templateURLService =
-        search_engines_test_environment_.template_url_service();
-    wrapper_.delegate = _fake_autocomplete_wrapper_delegate;
-    wrapper_.pedalAnnotator = [[OmniboxPedalAnnotator alloc] init];
-
     TestProfileIOS::Builder builder;
 
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
+
+    _fake_autocomplete_wrapper_delegate =
+        [[FakeAutocompleteResultWrapperDelegate alloc] init];
+    omnibox_client_ = std::make_unique<TestOmniboxClient>();
+    autocomplete_provider_client_ =
+        std::make_unique<AutocompleteProviderClientImpl>(profile_.get());
+
+    wrapper_ = [[AutocompleteResultWrapper alloc]
+             initWithOmniboxClient:omnibox_client_.get()
+        autocompleteProviderClient:autocomplete_provider_client_.get()];
+    wrapper_.incognito = NO;
+    wrapper_.templateURLService =
+        search_engines_test_environment_.template_url_service();
+    wrapper_.delegate = _fake_autocomplete_wrapper_delegate;
+    wrapper_.pedalAnnotator = [[OmniboxPedalAnnotator alloc] init];
   }
 
   ~AutocompleteResultWrapperTest() override { [wrapper_ disconnect]; }
 
   web::WebTaskEnvironment task_environment_;
-
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   AutocompleteResultWrapper* wrapper_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   FakeAutocompleteResultWrapperDelegate* _fake_autocomplete_wrapper_delegate;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
+  std::unique_ptr<AutocompleteProviderClientImpl> autocomplete_provider_client_;
 };
 
 // Tests wrapping an autocomplete result with 2 non-pedal starred matches.
 TEST_F(AutocompleteResultWrapperTest,
        testWrapMatchesFromResultWithStarredMatch) {
   AutocompleteMatch match1 = CreateActionInSuggestMatch(
-      u"Action", {omnibox::ActionInfo_ActionType_REVIEWS,
-                  omnibox::ActionInfo_ActionType_DIRECTIONS});
+      u"Action",
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
+       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS});
   AutocompleteMatch match2 = CreateSearchMatch(u"search");
 
   AutocompleteResult result;
@@ -126,8 +134,9 @@ TEST_F(AutocompleteResultWrapperTest, testChangeSearchEngine) {
   AutocompleteResult result;
 
   AutocompleteMatch match1 = CreateActionInSuggestMatch(
-      u"Action", {omnibox::ActionInfo_ActionType_REVIEWS,
-                  omnibox::ActionInfo_ActionType_DIRECTIONS});
+      u"Action",
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
+       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS});
   AutocompleteMatch match2 = CreateSearchMatch(u"search");
 
   result.AppendMatches({match1, match2});

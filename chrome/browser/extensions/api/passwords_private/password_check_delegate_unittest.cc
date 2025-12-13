@@ -62,6 +62,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/test_event_router.h"
 #include "extensions/browser/test_event_router_observer.h"
+#include "net/base/net_errors.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1058,7 +1059,7 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl) {
   RunUntilIdle();
   GURL change_password_url(
       *delegate().GetInsecureCredentials().at(0).change_password_url);
-  EXPECT_EQ(change_password_url.path(),
+  EXPECT_EQ(change_password_url.GetPath(),
             password_manager::kWellKnownChangePasswordPath);
 }
 
@@ -1077,7 +1078,7 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
 
   EXPECT_FALSE(delegate().GetInsecureCredentials().at(0).change_password_url);
   EXPECT_EQ(GURL(*delegate().GetInsecureCredentials().at(1).change_password_url)
-                .path(),
+                .GetPath(),
             password_manager::kWellKnownChangePasswordPath);
 }
 

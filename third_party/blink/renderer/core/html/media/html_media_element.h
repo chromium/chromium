@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
+#include "third_party/blink/renderer/core/html/track/track_base.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/speech/speech_synthesis_base.h"
@@ -283,10 +284,10 @@ class CORE_EXPORT HTMLMediaElement
   void TogglePlayState();
 
   AudioTrackList& audioTracks();
-  void AudioTrackChanged(AudioTrack*);
+  void AudioTrackChanged(AudioTrack*, TrackBase::ChangeSource);
 
   VideoTrackList& videoTracks();
-  void SelectedVideoTrackChanged(VideoTrack*);
+  void SelectedVideoTrackChanged(VideoTrack*, TrackBase::ChangeSource);
 
   TextTrack* addTextTrack(const V8TextTrackKind& kind,
                           const AtomicString& label,
@@ -384,7 +385,11 @@ class CORE_EXPORT HTMLMediaElement
   void DidAudioOutputSinkChanged(const String& hashed_device_id);
 
   void SetCcLayerForTesting(cc::Layer* layer) { SetCcLayer(layer); }
-  void AddMediaTrackForTesting(const media::MediaTrack& t) { AddMediaTrack(t); }
+  void AddTrackForTesting(const media::MediaTrack& t) { AddTrack(t); }
+  void SetTrackStateForTesting(const media::MediaTrack& t,
+                               media::MediaTrack::State s) {
+    SetTrackState(t, s);
+  }
 
   // This should be called directly after creation.
   void SetMediaPlayerHostForTesting(
@@ -517,7 +522,6 @@ class CORE_EXPORT HTMLMediaElement
   void ResetMediaPlayerAndMediaSource();
 
   bool AlwaysCreateUserAgentShadowRoot() const final { return true; }
-  bool AreAuthorShadowsAllowed() const final { return false; }
 
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const final;
   FocusableState IsFocusableState(UpdateBehavior update_behavior) const final;
@@ -566,8 +570,9 @@ class CORE_EXPORT HTMLMediaElement
 
   void SetCcLayer(cc::Layer*) override;
 
-  void AddMediaTrack(const media::MediaTrack&) final;
-  void RemoveMediaTrack(const media::MediaTrack&) final;
+  void AddTrack(const media::MediaTrack&) final;
+  void RemoveTrack(const media::MediaTrack&) final;
+  void SetTrackState(const media::MediaTrack&, media::MediaTrack::State) final;
 
   void MediaSourceOpened(std::unique_ptr<WebMediaSource>) final;
   void RemotePlaybackCompatibilityChanged(const KURL&,
@@ -708,7 +713,6 @@ class CORE_EXPORT HTMLMediaElement
   void SetOfficialPlaybackPosition(double) const;
   void RequireOfficialPlaybackPositionUpdate() const;
 
-  void EnsureMediaControls();
   void UpdateControlsVisibility();
 
   TextTrackContainer& EnsureTextTrackContainer();

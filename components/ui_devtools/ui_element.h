@@ -15,7 +15,7 @@
 #include "components/ui_devtools/dom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui_devtools {
 

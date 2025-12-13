@@ -10,8 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
-import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
+import org.chromium.chrome.browser.touch_to_fill.data.CredentialBase;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
@@ -60,20 +59,16 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
     public void showCredentials(
             GURL url,
             boolean isOriginSecure,
-            List<WebauthnCredential> webAuthnCredentials,
-            List<Credential> credentials,
+            List<CredentialBase> credentials,
             boolean triggerSubmission,
-            boolean managePasskeysHidesPasswords,
             boolean showHybridPasskeyOption,
             boolean showCredManEntry) {
         mMediator.showCredentials(
                 url,
                 isOriginSecure,
-                webAuthnCredentials,
                 credentials,
                 showCredManEntry,
                 triggerSubmission,
-                managePasskeysHidesPasswords,
                 showHybridPasskeyOption);
     }
 

@@ -5,11 +5,15 @@
 #include "cc/metrics/events_metrics_manager.h"
 
 #include <array>
+#include <memory>
+#include <optional>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,15 +40,12 @@ EventsMetricsManager::ScopedMonitor::DoneCallback CreateSimpleDoneCallback(
 
 }  // namespace
 
-#define EXPECT_SCOPED(statements) \
-  {                               \
-    SCOPED_TRACE("");             \
-    statements;                   \
-  }
-
+using ::testing::Each;
 using ::testing::IsEmpty;
 using ::testing::Message;
-using ::testing::UnorderedPointwise;
+using ::testing::Pointee;
+using ::testing::Pointwise;
+using ::testing::Property;
 
 class EventsMetricsManagerTest : public testing::Test {
  public:
@@ -53,15 +54,45 @@ class EventsMetricsManagerTest : public testing::Test {
 
  protected:
   std::unique_ptr<EventMetrics> CreateEventMetrics(ui::EventType type) {
+    auto [event_time, arrived_in_browser_main_timestamp] =
+        NextEventTimestamps();
+    return EventMetrics::CreateForTesting(type, event_time,
+                                          arrived_in_browser_main_timestamp,
+                                          &test_tick_clock_, std::nullopt);
+  }
+
+  std::unique_ptr<ScrollEventMetrics> CreateScrollEventMetrics(
+      ui::EventType type,
+      bool is_inertial) {
+    auto [event_time, arrived_in_browser_main_timestamp] =
+        NextEventTimestamps();
+    return ScrollEventMetrics::CreateForTesting(
+        type, ui::ScrollInputType::kTouchscreen, is_inertial, event_time,
+        arrived_in_browser_main_timestamp, &test_tick_clock_);
+  }
+
+  std::unique_ptr<ScrollEventMetrics> CreateScrollUpdateEventMetrics(
+      ui::EventType type,
+      bool is_inertial,
+      ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type) {
+    auto [event_time, arrived_in_browser_main_timestamp] =
+        NextEventTimestamps();
+    return ScrollUpdateEventMetrics::CreateForTesting(
+        type, ui::ScrollInputType::kTouchscreen, is_inertial,
+        scroll_update_type,
+        /* delta= */ 4.2f, event_time, arrived_in_browser_main_timestamp,
+        &test_tick_clock_,
+        /* trace_id= */ std::nullopt);
+  }
+
+  std::tuple<base::TimeTicks, base::TimeTicks> NextEventTimestamps() {
     test_tick_clock_.Advance(base::Microseconds(10));
     base::TimeTicks event_time = test_tick_clock_.NowTicks();
     test_tick_clock_.Advance(base::Microseconds(5));
     base::TimeTicks arrived_in_browser_main_timestamp =
         test_tick_clock_.NowTicks();
     test_tick_clock_.Advance(base::Microseconds(10));
-    return EventMetrics::CreateForTesting(type, event_time,
-                                          arrived_in_browser_main_timestamp,
-                                          &test_tick_clock_, std::nullopt);
+    return {event_time, arrived_in_browser_main_timestamp};
   }
 
   EventsMetricsManager manager_;
@@ -125,11 +156,50 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
 
   // Check saved event metrics are as expected.
   EXPECT_THAT(manager_.TakeSavedEventsMetrics(),
-              UnorderedPointwise(UniquePtrMatches(), expected_saved_events));
+              Pointwise(UniquePtrMatches(), expected_saved_events));
 
   // The first call to TakeSavedEventsMetrics() should remove events metrics
   // from the manager, so the second call should return empty list.
   EXPECT_THAT(manager_.TakeSavedEventsMetrics(), IsEmpty());
+}
+
+// Tests that the manager will save `kGestureScrollUpdate` and
+// `kGestureScrollEnd` events even if there are no `SaveActiveEventsMetrics()`
+// calls.
+TEST_F(EventsMetricsManagerTest, ScrollUpdateAndEndSavedEvenWithoutCall) {
+  auto events = std::to_array<std::unique_ptr<EventMetrics>>(
+      {CreateScrollUpdateEventMetrics(
+           ui::EventType::kGestureScrollUpdate,
+           /* is_inertial= */ false,
+           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
+       CreateScrollEventMetrics(ui::EventType::kGestureScrollEnd,
+                                /* is_inertial= */ false)});
+  EXPECT_EQ(events[0]->type(), EventMetrics::EventType::kGestureScrollUpdate);
+  EXPECT_EQ(events[1]->type(), EventMetrics::EventType::kGestureScrollEnd);
+
+  const EventMetrics* expected_saved_events[] = {events[0].get(),
+                                                 events[1].get()};
+
+  for (auto& metrics : events) {
+    metrics->set_caused_frame_update(true);
+    {
+      auto monitor = manager_.GetScopedMonitor(
+          // A `DoneCallback` which ignores `handled` and always returns
+          // `metrics`.
+          base::BindOnce([](std::unique_ptr<EventMetrics> metrics,
+                            bool handled) { return metrics; },
+                         std::move(metrics)));
+    }
+  }
+
+  // Check saved event metrics are as expected and that they were marked as not
+  // having caused a frame update.
+  auto saved_events_metrics = manager_.TakeSavedEventsMetrics();
+  EXPECT_THAT(saved_events_metrics,
+              Pointwise(UniquePtrMatches(), expected_saved_events));
+  EXPECT_THAT(
+      saved_events_metrics,
+      Each(Pointee(Property(&EventMetrics::caused_frame_update, false))));
 }
 
 // Tests that metrics for nested event loops are handled properly in a few
@@ -206,10 +276,11 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
 
     {  // Start outer scope.
       std::unique_ptr<EventMetrics> outer_metrics;
+      std::optional<const EventMetrics*> expected_saved_outer_metrics;
       if (config.outer_event_type != ui::EventType::kUnknown) {
         outer_metrics = CreateEventMetrics(config.outer_event_type);
         DCHECK_NE(outer_metrics, nullptr);
-        expected_saved_metrics.push_back(outer_metrics.get());
+        expected_saved_outer_metrics = outer_metrics.get();
       }
       auto outer_monitor = manager_.GetScopedMonitor(
           CreateSimpleDoneCallback(std::move(outer_metrics)));
@@ -229,14 +300,58 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
           manager_.SaveActiveEventMetrics();
       }  // End inner scope
 
+      if (expected_saved_outer_metrics) {
+        expected_saved_metrics.push_back(*expected_saved_outer_metrics);
+      }
+
       if (config.save_outer_metrics_after_inner)
         manager_.SaveActiveEventMetrics();
     }  // End outer scope.
 
     SCOPED_TRACE(Message() << "Config #" << i);
     EXPECT_THAT(manager_.TakeSavedEventsMetrics(),
-                UnorderedPointwise(UniquePtrMatches(), expected_saved_metrics));
+                Pointwise(UniquePtrMatches(), expected_saved_metrics));
   }
+}
+
+TEST_F(EventsMetricsManagerTest,
+       DropSavedEventMetricsForNoFrameUpdatePreservesScrollUpdateAndEnd) {
+  auto events = std::to_array<std::unique_ptr<EventMetrics>>(
+      {CreateEventMetrics(ui::EventType::kTouchMoved),
+       CreateScrollUpdateEventMetrics(
+           ui::EventType::kGestureScrollUpdate,
+           /* is_inertial= */ false,
+           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
+       CreateEventMetrics(ui::EventType::kTouchReleased),
+       CreateScrollEventMetrics(ui::EventType::kGestureScrollEnd,
+                                /* is_inertial= */ false)});
+  EXPECT_EQ(events[0]->type(), EventMetrics::EventType::kTouchMoved);
+  EXPECT_EQ(events[1]->type(), EventMetrics::EventType::kGestureScrollUpdate);
+  EXPECT_EQ(events[2]->type(), EventMetrics::EventType::kTouchReleased);
+  EXPECT_EQ(events[3]->type(), EventMetrics::EventType::kGestureScrollEnd);
+
+  // Out of the above events, only `kGestureScrollUpdate` and
+  // `kGestureScrollEnd` should be preserved.
+  const EventMetrics* expected_saved_events[] = {events[1].get(),
+                                                 events[3].get()};
+
+  for (auto& event : events) {
+    event->set_caused_frame_update(true);
+    auto monitor =
+        manager_.GetScopedMonitor(CreateSimpleDoneCallback(std::move(event)));
+    manager_.SaveActiveEventMetrics();
+  }
+
+  manager_.DropSavedEventMetricsForNoFrameUpdate();
+
+  // Check that only `kGestureScrollUpdate` and `kGestureScrollEnd` were
+  // preserved and that they were marked as not having caused a frame update.
+  auto preserved_metrics = manager_.TakeSavedEventsMetrics();
+  EXPECT_THAT(preserved_metrics,
+              Pointwise(UniquePtrMatches(), expected_saved_events));
+  EXPECT_THAT(
+      preserved_metrics,
+      Each(Pointee(Property(&EventMetrics::caused_frame_update, false))));
 }
 
 }  // namespace cc

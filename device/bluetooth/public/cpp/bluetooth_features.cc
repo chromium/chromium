@@ -9,7 +9,6 @@ namespace features {
 // When enabled, calling navigator.bluetooth.getAvailability() does not prevent
 // the frame from entering the back forward cache.
 BASE_FEATURE(kWebBluetoothAllowGetAvailabilityWithBfcache,
-             "WebBluetoothAllowGetAvailabilityWithBfcache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -7,21 +7,27 @@
 #include <algorithm>
 
 #include "base/containers/span.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/version_info/channel.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "extensions/browser/content_hash_reader.h"
 #include "extensions/browser/content_verifier/content_hash.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 
 namespace extensions {
 
@@ -29,31 +35,11 @@ namespace {
 
 bool g_ignore_verification_for_tests = false;
 
-base::LazyInstance<scoped_refptr<ContentVerifyJob::TestObserver>>::Leaky
-    g_content_verify_job_test_observer = LAZY_INSTANCE_INITIALIZER;
-
-scoped_refptr<ContentVerifyJob::TestObserver> GetTestObserver() {
-  if (!g_content_verify_job_test_observer.IsCreated())
-    return nullptr;
-  return g_content_verify_job_test_observer.Get();
+scoped_refptr<ContentVerifyJob::TestObserver>& GetTestObserver() {
+  static base::NoDestructor<scoped_refptr<ContentVerifyJob::TestObserver>>
+      instance;
+  return *instance;
 }
-
-class ScopedElapsedTimer {
- public:
-  explicit ScopedElapsedTimer(base::TimeDelta* total) : total_(total) {
-    DCHECK(total_);
-  }
-
-  ~ScopedElapsedTimer() { *total_ += timer.Elapsed(); }
-
- private:
-  // Some total amount of time we should add our elapsed time to at
-  // destruction.
-  raw_ptr<base::TimeDelta> total_;
-
-  // A timer for how long this object has been alive.
-  base::ElapsedTimer timer;
-};
 
 bool IsIgnorableReadError(MojoResult read_result) {
   // Extension reload, for example, can cause benign MOJO_RESULT_ABORTED error.
@@ -62,29 +48,151 @@ bool IsIgnorableReadError(MojoResult read_result) {
   return read_result == MOJO_RESULT_ABORTED;
 }
 
+base::debug::CrashKeyString* GetContentHashExtensionVersionFromRootCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_content_hash_root_version", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString*
+GetContentVerifyJobExtensionVersionFromRootCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_verify_job_root_version", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetContentHashExtensionIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_content_hash_id", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetContentVerifyJobExtensionIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_verify_job_id", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetContentHashExtensionVersionCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_content_hash_ext_version", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetContentVerifyJobExtensionVersionCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_verify_job_ext_version", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+// Returns the last path component of the extension root filepath, which should
+// be the extension version.
+std::string GetExtensionVersionFromExtensionRoot(
+    const base::FilePath& extension_root) {
+  return extension_root.BaseName().MaybeAsASCII();
+}
+
 }  // namespace
 
+namespace debug {
+
+// Helper for adding a crash keys when extension roots don't match during
+// content verification.
+//
+// It is only created at the start of the verification process when the process
+// is provided content verification hashes *and* the extension roots for the
+// content verification hash and the verification job don't match.
+//
+// All keys are logged every time this class is instantiated.
+class ScopedContentVerifyJobCrashKey {
+ public:
+  explicit ScopedContentVerifyJobCrashKey(
+      const base::FilePath& content_hash_extension_root,
+      const base::FilePath& verify_job_extension_root,
+      const ExtensionId& content_hash_extension_id,
+      const ExtensionId& verify_job_extension_id,
+      const base::Version& content_hash_extension_version,
+      const base::Version& verify_job_extension_version)
+      : content_hash_ext_root_version_crash_key_(
+            GetContentHashExtensionVersionFromRootCrashKey(),
+            GetExtensionVersionFromExtensionRoot(content_hash_extension_root)),
+        verify_job_ext_root_version_crash_key_(
+            GetContentVerifyJobExtensionVersionFromRootCrashKey(),
+            GetExtensionVersionFromExtensionRoot(verify_job_extension_root)),
+        content_hash_ext_id_crash_key_(GetContentHashExtensionIdCrashKey(),
+                                       content_hash_extension_id),
+        verify_job_ext_id_crash_key_(GetContentVerifyJobExtensionIdCrashKey(),
+                                     verify_job_extension_id),
+        content_hash_ext_version_crash_key_(
+            GetContentHashExtensionVersionCrashKey(),
+            content_hash_extension_version.GetString()),
+        verify_job_ext_version_crash_key_(
+            GetContentVerifyJobExtensionVersionCrashKey(),
+            verify_job_extension_version.GetString())
+
+  {}
+  ~ScopedContentVerifyJobCrashKey() = default;
+
+ private:
+  // These record the extension's version from the extension root of ContentHash
+  // and ContentVerify Job. E.g. from:
+  //   "/path/to/chromium/<profile_name>/Extensions/<ext_id>/<ext_version>/""
+  //
+  // We record <ext_version>.
+  base::debug::ScopedCrashKeyString content_hash_ext_root_version_crash_key_;
+  base::debug::ScopedCrashKeyString verify_job_ext_root_version_crash_key_;
+
+  // The ExtensionId for ContentHash and ContentVerify Job.
+  base::debug::ScopedCrashKeyString content_hash_ext_id_crash_key_;
+  base::debug::ScopedCrashKeyString verify_job_ext_id_crash_key_;
+
+  // These extension version recorded when the content hash was created and when
+  // the verification job was created.
+  base::debug::ScopedCrashKeyString content_hash_ext_version_crash_key_;
+  base::debug::ScopedCrashKeyString verify_job_ext_version_crash_key_;
+};
+
+}  // namespace debug
+
 ContentVerifyJob::ContentVerifyJob(const ExtensionId& extension_id,
+                                   const base::Version& extension_version,
                                    const base::FilePath& extension_root,
                                    const base::FilePath& relative_path)
     : extension_id_(extension_id),
       extension_root_(extension_root),
-      relative_path_(relative_path) {}
+      relative_path_(relative_path),
+      extension_version_(extension_version) {}
 
 ContentVerifyJob::~ContentVerifyJob() = default;
 
 void ContentVerifyJob::Start(ContentVerifier* verifier,
-                             const base::Version& extension_version,
+                             const base::Version& current_extension_version,
                              int manifest_version,
                              FailureCallback failure_callback) {
+  TRACE_EVENT("extensions.content_verifier.debug", "ContentVerifyJob::Start",
+              "job_extension_version", extension_version_.GetString(),
+              "current_extension_version",
+              current_extension_version.GetString(), "job_root",
+              extension_root_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kContentVerifyJobUseJobVersionForHashing) &&
+      current_extension_version != extension_version_) {
+    // The version should have been checked in ContentVerifier::StartJob(), so
+    // we should never reach here.
+    NOTREACHED() << "Content verification job was started for an extension "
+                    "version other than the currently loaded extension. "
+                    "Hashing errors could occur if the job continued.";
+  }
+
   base::AutoLock auto_lock(lock_);
   manifest_version_ = manifest_version;
   failure_callback_ = std::move(failure_callback);
 
   // The content verification hashes are most likely already cached.
   auto content_hash = verifier->GetCachedContentHash(
-      extension_id_, extension_version,
+      extension_id_, extension_version_,
       /*force_missing_computed_hashes_creation=*/true);
   if (content_hash) {
     StartWithContentHash(std::move(content_hash));
@@ -92,13 +200,17 @@ void ContentVerifyJob::Start(ContentVerifier* verifier,
   }
 
   verifier->CreateContentHash(
-      extension_id_, extension_root_, extension_version,
+      extension_id_, extension_root_, extension_version_,
       /*force_missing_computed_hashes_creation=*/true,
       base::BindOnce(&ContentVerifyJob::DidCreateContentHashOnIO, this));
 }
 
 void ContentVerifyJob::DidCreateContentHashOnIO(
     scoped_refptr<const ContentHash> content_hash) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifyJob::DidCreateContentHashOnIO", "hash_extension_id",
+              content_hash->extension_id(), "hash_extension_root",
+              content_hash->extension_root());
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   base::AutoLock auto_lock(lock_);
   StartWithContentHash(std::move(content_hash));
@@ -106,16 +218,47 @@ void ContentVerifyJob::DidCreateContentHashOnIO(
 
 void ContentVerifyJob::StartWithContentHash(
     scoped_refptr<const ContentHash> content_hash) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifyJob::StartWithContentHash", "job_root",
+              extension_root_, "hash_root", content_hash->extension_root());
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  scoped_refptr<TestObserver> test_observer = GetTestObserver();
-  if (test_observer)
-    test_observer->JobStarted(extension_id_, relative_path_);
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kContentVerifyJobUseJobVersionForHashing) &&
+      content_hash->extension_version() != extension_version_) {
+    // TODO(crbug.com/416484593): Remove crash keys once we're confident the
+    // issue is fixed.
+    debug::ScopedContentVerifyJobCrashKey crash_keys(
+        content_hash->extension_root(), extension_root_,
+        content_hash->extension_id(), extension_id_,
+        content_hash->extension_version(), extension_version_);
+    // The version should have been checked in ContentVerifierJob::Start(), so
+    // we should never reach here.
+    NOTREACHED() << "Content verification job was started with a hash for a "
+                    "different extension version. Hashing errors could occur "
+                    "if the job continued.";
+  }
+
+  // If the hash and the verify jobs' roots don't match then the hash comparison
+  // done later will match against the wrong files.
+  if ((GetCurrentChannel() == version_info::Channel::CANARY ||
+       GetCurrentChannel() == version_info::Channel::DEV) &&
+      content_hash->extension_root() != extension_root_) {
+    debug::ScopedContentVerifyJobCrashKey crash_keys(
+        content_hash->extension_root(), extension_root_,
+        content_hash->extension_id(), extension_id_,
+        content_hash->extension_version(), extension_version_);
+    base::debug::DumpWithoutCrashing();
+  }
+
   // Build |hash_reader_|.
   hash_reader_ = ContentHashReader::Create(relative_path_, content_hash);
 
   if (g_ignore_verification_for_tests) {
     return;
   }
+
+  scoped_refptr<TestObserver> test_observer = GetTestObserver();
   if (test_observer) {
     test_observer->OnHashesReady(extension_id_, relative_path_, *hash_reader_);
   }
@@ -139,6 +282,9 @@ void ContentVerifyJob::StartWithContentHash(
     }
   }
 
+  // Verification can't actually happen until hashes_ready_, so this object
+  // can't enter a failed state before that point, and the only way for
+  // hashes_ready_ to become true is right below this.
   DCHECK(!failed_);
 
   hashes_ready_ = true;
@@ -152,7 +298,6 @@ void ContentVerifyJob::StartWithContentHash(
     }
   }
   if (done_reading_) {
-    ScopedElapsedTimer timer(&time_spent_);
     OnDoneReadingAndHashesReady();
   }
 }
@@ -166,7 +311,6 @@ void ContentVerifyJob::BytesRead(base::span<const char> data,
 
 void ContentVerifyJob::DoneReading() {
   base::AutoLock auto_lock(lock_);
-  ScopedElapsedTimer timer(&time_spent_);
   if (failed_)
     return;
   if (g_ignore_verification_for_tests)
@@ -229,7 +373,6 @@ void ContentVerifyJob::OnHashMismatch() {
 
 void ContentVerifyJob::BytesReadImpl(base::span<const char> data,
                                      MojoResult read_result) {
-  ScopedElapsedTimer timer(&time_spent_);
   if (failed_)
     return;
   if (g_ignore_verification_for_tests)
@@ -260,14 +403,19 @@ void ContentVerifyJob::BytesReadImpl(base::span<const char> data,
 
     if (!current_hash_) {
       current_hash_byte_count_ = 0;
-      current_hash_ = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+      current_hash_ = crypto::hash::Hasher(crypto::hash::kSha256);
     }
     // Compute how many bytes we should hash, and add them to the current hash.
     int bytes_to_hash =
         std::min(hash_reader_->block_size() - current_hash_byte_count_,
                  count - bytes_added);
     DCHECK_GT(bytes_to_hash, 0);
-    current_hash_->Update(&data[bytes_added], bytes_to_hash);
+    auto bytes_span = base::as_byte_span(data).subspan(
+        // TODO(https://crbug.com/434977723): get rid of these checked casts
+        // when this code uses size_t throughout.
+        base::checked_cast<size_t>(bytes_added),
+        base::checked_cast<size_t>(bytes_to_hash));
+    current_hash_->Update(bytes_span);
     bytes_added += bytes_to_hash;
     current_hash_byte_count_ += bytes_to_hash;
     total_bytes_read_ += bytes_to_hash;
@@ -294,10 +442,10 @@ bool ContentVerifyJob::FinishBlock() {
   if (!current_hash_) {
     // This happens when we fail to read the resource. Compute empty content's
     // hash in this case.
-    current_hash_ = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+    current_hash_ = crypto::hash::Hasher(crypto::hash::kSha256);
   }
-  std::string final(crypto::kSHA256Length, 0);
-  current_hash_->Finish(std::data(final), final.size());
+  std::string final(crypto::hash::kSha256Size, 0);
+  current_hash_->Finish(base::as_writable_byte_span(final));
   current_hash_.reset();
   current_hash_byte_count_ = 0;
 
@@ -321,11 +469,10 @@ void ContentVerifyJob::SetIgnoreVerificationForTests(bool value) {
 // static
 void ContentVerifyJob::SetObserverForTests(
     scoped_refptr<TestObserver> observer) {
-  DCHECK(observer == nullptr ||
-         g_content_verify_job_test_observer.Get() == nullptr)
+  DCHECK(observer == nullptr || GetTestObserver() == nullptr)
       << "SetObserverForTests does not support interleaving. Observers should "
       << "be set and then cleared one at a time.";
-  g_content_verify_job_test_observer.Get() = std::move(observer);
+  GetTestObserver() = std::move(observer);
 }
 
 void ContentVerifyJob::DispatchFailureCallback(FailureReason reason) {
@@ -355,14 +502,6 @@ void ContentVerifyJob::ReportJobFinished(FailureReason reason) {
 
   record_job_finished("Extensions.ContentVerification.VerifyJobResultMV2",
                       "Extensions.ContentVerification.VerifyJobResultMV3");
-
-  // TODO(crbug.com/325613709): Remove docs offline specific logging after a few
-  // milestones.
-  if (extension_id_ == extension_misc::kDocsOfflineExtensionId) {
-    record_job_finished(
-        nullptr,  // No MV2 Google Docs Offline version.
-        "Extensions.ContentVerification.VerifyJobResultMV3.GoogleDocsOffline");
-  }
 
   scoped_refptr<TestObserver> test_observer = GetTestObserver();
   if (test_observer) {

@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -81,11 +80,6 @@ class FakeURLLoaderFactory : public network::mojom::URLLoaderFactory {
 class LocalResourceURLLoaderFactoryTest : public ::testing::Test {
  public:
   void SetUp() override {
-    // Swap in mock ResourceBundle.
-    ui::ResourceBundle::InitSharedInstanceWithLocale(
-        "en-US", &resource_bundle_delegate_,
-        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
-
     source_ = blink::mojom::LocalResourceSource::New();
     source_->headers =
         net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
@@ -93,10 +87,6 @@ class LocalResourceURLLoaderFactoryTest : public ::testing::Test {
             ->raw_headers();
 
     UpdateLoaderFactory();
-  }
-
-  void TearDown() override {
-    ui::ResourceBundle::CleanupSharedInstance();
   }
 
  protected:
@@ -113,13 +103,20 @@ class LocalResourceURLLoaderFactoryTest : public ::testing::Test {
     UpdateLoaderFactory();
   }
 
+  void AddPathToResponse(const std::string& path, const std::string& content) {
+    source_->path_to_resource_map[path] =
+        blink::mojom::LocalResourceValue::NewResponseBody(content);
+    UpdateLoaderFactory();
+  }
+
   void AddReplacementString(const std::string& key, const std::string& value) {
     source_->replacement_strings[key] = value;
     UpdateLoaderFactory();
   }
 
   void AddResourceID(const std::string& path, int id) {
-    source_->path_to_resource_id_map[path] = id;
+    source_->path_to_resource_map[path] =
+        blink::mojom::LocalResourceValue::NewResourceId(id);
     UpdateLoaderFactory();
   }
 
@@ -152,9 +149,13 @@ class LocalResourceURLLoaderFactoryTest : public ::testing::Test {
   // update the loader factory state.
   blink::mojom::LocalResourceSourcePtr source_;
 
-  // Temporary storage of original ResourceBundle while we swap in the test
-  // mock.
-  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper_;
+  // A ResourceBundle that uses the test's mock delegate.
+  ui::ResourceBundle resource_bundle_with_mock_delegate_{
+      &resource_bundle_delegate_};
+
+  // Swap in the test ResourceBundle for the lifetime of the test.
+  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper_{
+      &resource_bundle_with_mock_delegate_};
 
   // For CreateLoaderAndStart, which posts a task.
   base::test::TaskEnvironment task_environment_;
@@ -268,6 +269,29 @@ TEST_P(LocalResourceURLLoaderFactoryServeTest, Serve) {
   ASSERT_TRUE(client.response_body().is_valid());
   std::string response_body = ReadAllData(client);
   EXPECT_EQ(GetParam().response_body, response_body);
+}
+
+TEST_F(LocalResourceURLLoaderFactoryTest, PathToResponseMap) {
+  AddPathToResponse("strings.m.js",
+                    "import {loadTimeData} ... \"foo\":\"bar\"");
+  // Even if replacement string is added, no replacement will be performed.
+  AddReplacementString("foo", "bar");
+
+  network::TestURLLoaderClient client;
+  network::ResourceRequest request;
+  request.url = GURL("chrome://sourcename/strings.m.js");
+  mojo::PendingRemote<network::mojom::URLLoader> loader;
+  loader_factory()->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0, 0, request,
+      client.CreateRemote(), net::MutableNetworkTrafficAnnotationTag());
+  client.RunUntilComplete();
+
+  ASSERT_EQ(net::OK, client.completion_status().error_code);
+  EXPECT_EQ("text/javascript", client.response_head()->mime_type);
+  ASSERT_TRUE(client.response_body().is_valid());
+  std::string response_body = ReadAllData(client);
+  EXPECT_THAT(response_body, testing::HasSubstr("import {loadTimeData}"));
+  EXPECT_THAT(response_body, testing::HasSubstr("\"foo\":\"bar\""));
 }
 
 INSTANTIATE_TEST_SUITE_P(

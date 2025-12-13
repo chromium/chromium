@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web/web_state/crw_data_controls_delegate.h"
 #import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 
@@ -22,12 +23,13 @@ WKWebView* BuildWKWebViewForQueries(WKWebViewConfiguration* configuration,
                             configuration:configuration];
 }
 
-WKWebView* BuildWKWebView(CGRect frame,
-                          WKWebViewConfiguration* configuration,
-                          BrowserState* browser_state,
-                          UserAgentType user_agent_type,
-                          id<CRWInputViewProvider> input_view_provider,
-                          id<CRWEditMenuBuilder> edit_menu_builder) {
+CRWWebView* BuildWKWebView(CGRect frame,
+                           WKWebViewConfiguration* configuration,
+                           BrowserState* browser_state,
+                           UserAgentType user_agent_type,
+                           id<CRWInputViewProvider> input_view_provider,
+                           id<CRWEditMenuBuilder> edit_menu_builder,
+                           id<CRWDataControlsDelegate> data_controls_delegate) {
   CHECK(browser_state);
   CHECK(configuration);
 
@@ -37,6 +39,7 @@ WKWebView* BuildWKWebView(CGRect frame,
                                              configuration:configuration];
   web_view.inputViewProvider = input_view_provider;
   web_view.editMenuBuilder = edit_menu_builder;
+  web_view.dataControlsDelegate = data_controls_delegate;
 
   // Set the user agent type.
   if (user_agent_type != web::UserAgentType::NONE) {

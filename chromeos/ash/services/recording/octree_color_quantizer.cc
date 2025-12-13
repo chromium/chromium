@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/services/recording/octree_color_quantizer.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "chromeos/ash/services/recording/gif_encoding_types.h"
 #include "chromeos/ash/services/recording/rgb_video_frame.h"
@@ -35,7 +31,7 @@ constexpr uint8_t kLevelMasks[kNumBitsPerColorChannel] = {
 // given `level`. See comment above.
 ColorIndex GetColorIndexAtLevel(const RgbColor& color, int level) {
   ColorIndex index = 0;
-  const auto mask = kLevelMasks[level];
+  const auto mask = UNSAFE_TODO(kLevelMasks[level]);
 
   if (color.r & mask) {
     //         RGB.
@@ -58,8 +54,8 @@ ColorIndex GetColorIndexAtLevel(const RgbColor& color, int level) {
 template <class Functor>
 void ForEachPixelColor(RgbVideoFrame& rgb_video_frame, Functor f) {
   auto* pixel = &rgb_video_frame.pixel_color(0, 0);
-  const auto* const end = &pixel[rgb_video_frame.num_pixels()];
-  for (; pixel < end; ++pixel) {
+  const auto* const end = &UNSAFE_TODO(pixel[rgb_video_frame.num_pixels()]);
+  for (; pixel < end; UNSAFE_TODO(++pixel)) {
     f(*pixel);
   }
 }

@@ -13,6 +13,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -47,7 +48,8 @@ class CacheStorageManagerTest;
 // TODO(jkarlin): Remove CacheStorage from memory once they're no
 // longer in active use.
 class CONTENT_EXPORT CacheStorageManager
-    : public base::RefCounted<CacheStorageManager> {
+    : public base::RefCounted<CacheStorageManager>,
+      public base::MemoryPressureListener {
  public:
   static scoped_refptr<CacheStorageManager> Create(
       const base::FilePath& path,
@@ -128,7 +130,7 @@ class CONTENT_EXPORT CacheStorageManager
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       base::WeakPtr<CacheStorageDispatcherHost> cache_storage_dispatcher_host);
-  virtual ~CacheStorageManager();
+  ~CacheStorageManager() override;
 
  private:
   friend class cache_storage_manager_unittest::CacheStorageManagerTest;
@@ -179,8 +181,7 @@ class CONTENT_EXPORT CacheStorageManager
   bool IsMemoryBacked() const { return profile_path_.empty(); }
 
   // MemoryPressureListener callback
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
 #if DCHECK_IS_ON()
   bool CacheStoragePathIsUnique(const base::FilePath& path);
@@ -208,7 +209,8 @@ class CONTENT_EXPORT CacheStorageManager
   const base::WeakPtr<CacheStorageDispatcherHost>
       cache_storage_dispatcher_host_;
 
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

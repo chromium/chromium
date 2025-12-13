@@ -13,6 +13,7 @@
 namespace blink {
 class WebView;
 class WebViewImpl;
+struct RendererPreferences;
 
 // Base class for objects that want to get notified of changes to the view.
 class BLINK_EXPORT WebViewObserver : public base::CheckedObserver {
@@ -38,6 +39,10 @@ class BLINK_EXPORT WebViewObserver : public base::CheckedObserver {
   // Called when the View's visibility changes.
   virtual void OnPageVisibilityChanged(
       blink::mojom::PageVisibilityState visibility_state) {}
+
+  // Called when render preferences have updated.
+  virtual void OnRendererPreferencesUpdated(
+      const RendererPreferences& preferences) {}
 
   // Retrieves the WebView that is being observed. Can be null.
   WebView* GetWebView() const;

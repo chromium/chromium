@@ -24,11 +24,15 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -96,9 +100,9 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
     protected void setupStripViews() {
         // [Tab1]  [Group1]([Tab2])  [Group2]([Tab3])
         mStripTab1 = buildStripTab(TAB_ID1, /* x= */ 0);
-        mGroupTitle1 = buildGroupTitle(TAB_ID2, GROUP_ID1, TAB_WIDTH);
+        mGroupTitle1 = buildGroupTitle(GROUP_ID1, TAB_WIDTH);
         mStripTab2 = buildStripTab(TAB_ID2, 2 * TAB_WIDTH);
-        mGroupTitle2 = buildGroupTitle(TAB_ID3, GROUP_ID2, 3 * TAB_WIDTH);
+        mGroupTitle2 = buildGroupTitle(GROUP_ID2, 3 * TAB_WIDTH);
         mStripTab3 = buildStripTab(TAB_ID3, 4 * TAB_WIDTH);
 
         // Construct expanded group.
@@ -227,6 +231,20 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
     }
 
     @Test
+    @Feature("Pinned Tabs")
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP)
+    public void testUpdateReorder_fail_pinnedTabs() {
+        //   <------------------
+        // [PinnedTab1]  [ExpandedGroup]  [CollapsedGroup]
+        mStripTab1.setIsPinned(true);
+        Tab tab1 = mModel.getTabAt(0);
+        tab1.setIsPinned(true);
+
+        // Drag threshold reached, but reordering across the pinned/unpinned tabs should fail.
+        testUpdateReorder_fail(mExpandedGroup, -DRAG_PAST_TAB_SUCCESS);
+    }
+
+    @Test
     public void testStopReorder() {
         startReorder(mExpandedGroup);
         mStrategy.stopReorderMode(mStripViews, mGroupTitles);
@@ -263,6 +281,7 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
     // Verification helpers
     // ============================================================================================
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void verifySuccessfulDrag(int expectedIndex, float expectedOffset) {
         @TabId
         int lastShownTabId =
@@ -275,6 +294,7 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
         }
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void verifyFailedDrag(float expectedOffset) {
         @TabId
         int lastShownTabId =

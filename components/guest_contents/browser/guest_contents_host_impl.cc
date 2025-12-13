@@ -27,7 +27,15 @@ void GuestContentsHostImpl::Create(
 
 GuestContentsHostImpl::GuestContentsHostImpl(
     content::WebContents* outer_web_contents)
-    : outer_web_contents_(outer_web_contents) {}
+    : content::WebContentsObserver(outer_web_contents),
+      outer_web_contents_(outer_web_contents) {}
+
+void GuestContentsHostImpl::WebContentsDestroyed() {
+  // This class is owned by the GuestContentsHost mojo receiver, which may or
+  // may not outlive the outer WebContents. Reset the raw_ptr on WebContents
+  // destruction to avoid dangling pointer.
+  outer_web_contents_ = nullptr;
+}
 
 void GuestContentsHostImpl::Attach(
     const blink::LocalFrameToken& token_of_frame_to_swap,
@@ -40,6 +48,7 @@ void GuestContentsHostImpl::Attach(
     return;
   }
 
+  CHECK(outer_web_contents_);
   // This code assumes that the outer delegate frame to be swapped is in the
   // same process as the main frame of the outer web contents.
   content::RenderFrameHost* frame_to_swap =

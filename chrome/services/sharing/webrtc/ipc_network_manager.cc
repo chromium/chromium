@@ -153,7 +153,7 @@ void IpcNetworkManager::NetworkListChanged(
   NetworkManager::Stats stats;
   MergeNetworkList(std::move(networks), &changed, &stats);
   if (changed)
-    SignalNetworksChanged();
+    NotifyNetworksChanged();
 }
 
 webrtc::MdnsResponderInterface* IpcNetworkManager::GetMdnsResponder() const {
@@ -161,7 +161,7 @@ webrtc::MdnsResponderInterface* IpcNetworkManager::GetMdnsResponder() const {
 }
 
 void IpcNetworkManager::SendNetworksChangedSignal() {
-  SignalNetworksChanged();
+  NotifyNetworksChanged();
 }
 
 }  // namespace sharing

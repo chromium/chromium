@@ -10,6 +10,7 @@ source_set("eg2_tests") {
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
@@ -41,6 +42,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:snapshot_source",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/tab_switcher/ui_bundled",
     "//ios/chrome/browser/tab_switcher/ui_bundled:items",

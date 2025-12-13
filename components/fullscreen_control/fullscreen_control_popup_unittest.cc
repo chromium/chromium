@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "ui/views/widget/widget.h"
+#include "components/fullscreen_control/fullscreen_control_popup.h"
 
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
-#include "components/fullscreen_control/fullscreen_control_popup.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/widget.h"
 
 class FullscreenControlPopupTest : public views::test::WidgetTest {
  public:
@@ -37,9 +38,12 @@ class FullscreenControlPopupTest : public views::test::WidgetTest {
         parent_widget_->GetNativeView(), base::DoNothing(), base::DoNothing());
     animation_api_ = std::make_unique<gfx::AnimationTestApi>(
         popup_->GetAnimationForTesting());
+    normal_duration_.emplace(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
 
   void TearDown() override {
+    normal_duration_.reset();
     parent_widget_->CloseNow();
     views::test::WidgetTest::TearDown();
   }
@@ -66,6 +70,7 @@ class FullscreenControlPopupTest : public views::test::WidgetTest {
  private:
   std::unique_ptr<gfx::AnimationTestApi> animation_api_;
   raw_ptr<views::Widget, DanglingUntriaged> parent_widget_ = nullptr;
+  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 TEST_F(FullscreenControlPopupTest, ShowPopupAnimated) {

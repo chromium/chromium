@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
+import org.chromium.base.JavaUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -100,7 +101,7 @@ public class PageInfoStoreInfoViewTest {
     // used it can cause flakiness issues for apis >= 30.
     private void openPageInfoFromStoreIcon(boolean fromStoreIcon, boolean dialogCheck) {
         ChromeActivity activity = mActivityTestRule.getActivity();
-        Tab tab = activity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new ChromePageInfo(
@@ -208,7 +209,7 @@ public class PageInfoStoreInfoViewTest {
                             try {
                                 mRenderTestRule.render(v, renderId);
                             } catch (IOException e) {
-                                assert false : "Render test failed due to " + e;
+                                JavaUtils.throwUnchecked(e);
                             }
                         });
     }

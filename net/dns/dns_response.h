@@ -60,7 +60,7 @@ struct NET_EXPORT_PRIVATE DnsResourceRecord {
   std::vector<uint8_t> owned_rdata;
   // Used to construct a DnsResponse from data. This field is empty if |rdata|
   // points to the response buffer.
-  base::raw_span<const uint8_t, DanglingUntriaged> rdata;
+  base::raw_span<const uint8_t> rdata;
 };
 
 // Iterator to walk over resource records of the DNS response packet.

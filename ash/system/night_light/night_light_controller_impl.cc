@@ -38,7 +38,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
@@ -48,6 +47,7 @@
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/vector3d_f.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/skia_color_space_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -284,8 +284,8 @@ class ColorTemperatureAnimation : public gfx::LinearAnimation,
     start_temperature_ = current_temperature_;
     target_temperature_ = std::clamp(new_target_temperature, 0.0f, 1.0f);
 
-    if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+    if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
       // Animations are disabled. Apply the target temperature directly to the
       // compositors.
       current_temperature_ = target_temperature_;

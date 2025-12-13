@@ -174,9 +174,9 @@ class PLATFORM_EXPORT DisplayItem {
 
     // The no-argument version is for operator<< which is used in DCHECK and
     // unit tests.
-    WTF::String ToString() const;
+    String ToString() const;
     // This version will output the debug name of the client.
-    WTF::String ToString(const PaintArtifact&) const;
+    String ToString(const PaintArtifact&) const;
 
     const DisplayItemClientId client_id;
     const Type type;
@@ -280,9 +280,9 @@ class PLATFORM_EXPORT DisplayItem {
   bool IsSubsequenceTombstone() const {
     return !is_not_tombstone_ && client_id_ == kInvalidDisplayItemClientId;
   }
-  static WTF::String TypeAsDebugString(DisplayItem::Type);
-  WTF::String AsDebugString(const PaintArtifact&) const;
-  WTF::String IdAsString(const PaintArtifact&) const;
+  static String TypeAsDebugString(DisplayItem::Type);
+  String AsDebugString(const PaintArtifact&) const;
+  String IdAsString(const PaintArtifact&) const;
   void PropertiesAsJSON(JSONObject&, const PaintArtifact&) const;
 #endif
 
@@ -347,10 +347,6 @@ class PLATFORM_EXPORT DisplayItem {
 inline bool operator==(const DisplayItem::Id& a, const DisplayItem::Id& b) {
   return a.client_id == b.client_id && a.type == b.type &&
          a.fragment == b.fragment;
-}
-
-inline bool operator!=(const DisplayItem::Id& a, const DisplayItem::Id& b) {
-  return !(a == b);
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, DisplayItem::Type);

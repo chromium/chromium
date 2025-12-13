@@ -33,6 +33,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 
 namespace payments {
@@ -102,6 +103,7 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
     content::WebContents* web_contents,
     base::WeakPtr<SecurePaymentConfirmationModel> model,
     VerifyCallback verify_callback,
+    AnotherWayCallback another_way_callback,
     CancelCallback cancel_callback,
     OptOutCallback opt_out_callback) {
   DCHECK(model);
@@ -163,13 +165,12 @@ void SecurePaymentConfirmationDialogView::OnDialogCancelled() {
 }
 
 void SecurePaymentConfirmationDialogView::OnDialogClosed() {
-  // We can reach OnDialogClosed either when the user cancels out of the
-  // WebAuthn dialog after clicking 'Verify', or when the user chooses to
-  // opt-out. We should only run the cancellation callback in the former case;
-  // in the latter the opt-out callback will trigger from OnOptOutClicked.
-  if (!model_->opt_out_clicked()) {
-    std::move(cancel_callback_).Run();
+  // Cancel callback may be null if OnDialogCancelled was already called.
+  if (!cancel_callback_) {
+    return;
   }
+
+  std::move(cancel_callback_).Run();
 
   if (observer_for_test_) {
     observer_for_test_->OnDialogClosed();

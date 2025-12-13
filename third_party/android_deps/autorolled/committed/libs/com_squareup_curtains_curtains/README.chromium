@@ -1,0 +1,19 @@
+Name: Curtains
+Short Name: curtains
+URL: https://repo.maven.apache.org/maven2/com/squareup/curtains/curtains/1.2.4/curtains-1.2.4.aar
+Version: 1.2.4
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Spy on your Android windows
+
+See also: https://github.com/square/curtains/
+
+
+Local Modifications:
+No modifications.

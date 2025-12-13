@@ -28,11 +28,9 @@ class WebContents;
 //
 // The saved_state_version parameter is which version of the saved state format
 // the buffer stores; the known versions are:
-//   0: Chrome <= 18
-//   1: Chrome 18 - 25
+//   0: Chrome <= 18 (Deprecated)
+//   1: Chrome 18 - 25 (Deprecated)
 //   2: Chrome 26+
-// TODO(crbug.com/41493935): Get rid of the old versions and possibly the
-// version field altogether.
 struct WebContentsStateByteBuffer {
   WebContentsStateByteBuffer(base::android::ScopedJavaLocalRef<jobject>
                                  web_contents_byte_buffer_result,
@@ -87,13 +85,13 @@ class WebContentsState {
                                         const DeletionPredicate& predicate);
 
   // Extracts display title from serialized tab data on restore.
-  static base::android::ScopedJavaLocalRef<jstring>
-  GetDisplayTitleFromByteBuffer(JNIEnv* env,
-                                base::span<const uint8_t> buffer,
-                                int saved_state_version);
+  static std::optional<std::u16string> GetDisplayTitleFromByteBuffer(
+      JNIEnv* env,
+      base::span<const uint8_t> buffer,
+      int saved_state_version);
 
   // Extracts virtual url from serialized tab data on restore.
-  static base::android::ScopedJavaLocalRef<jstring> GetVirtualUrlFromByteBuffer(
+  static std::optional<std::string> GetVirtualUrlFromByteBuffer(
       JNIEnv* env,
       base::span<const uint8_t> buffer,
       int saved_state_version);
@@ -102,12 +100,14 @@ class WebContentsState {
   static base::android::ScopedJavaLocalRef<jobject>
   RestoreContentsFromByteBuffer(JNIEnv* env,
                                 const base::android::JavaRef<jobject>& state,
-                                jint saved_state_version,
+                                content::BrowserContext* browser_context,
+                                int saved_state_version,
                                 jboolean initially_hidden,
                                 jboolean no_renderer);
 
   // Restores a WebContents from the passed in state using native parameters.
   static std::unique_ptr<content::WebContents> RestoreContentsFromByteBuffer(
+      content::BrowserContext* browser_context,
       const WebContentsStateByteBuffer* byte_buffer,
       bool initially_hidden,
       bool no_renderer);
@@ -126,37 +126,39 @@ class WebContentsState {
   static base::android::ScopedJavaLocalRef<jobject>
   CreateSingleNavigationStateAsByteBuffer(
       JNIEnv* env,
-      const base::android::JavaRef<jstring>& title,
-      const base::android::JavaRef<jstring>& url,
-      const base::android::JavaRef<jstring>& referrer_url,
-      jint referrer_policy,
-      const base::android::JavaParamRef<jobject>& initiator_origin,
-      jboolean is_off_the_record);
+      content::BrowserContext* browser_context,
+      const std::optional<std::u16string>& title,
+      const std::string& url,
+      const std::optional<std::string>& referrer_url,
+      int referrer_policy,
+      const std::optional<url::Origin>& initiator_origin);
 
-  // Creates a single navigation entry in a serilized form.
+  // Creates a single navigation entry in a serialized form.
   static base::Pickle CreateSingleNavigationStateAsPickle(
+      content::BrowserContext* browser_context,
       std::u16string title,
       const GURL& url,
       content::Referrer referrer,
-      url::Origin initiator_origin,
-      bool is_off_the_record);
+      url::Origin initiator_origin);
 
   // Appends a single-navigation state to a WebContentsState to be later loaded
   // lazily.
   static base::android::ScopedJavaLocalRef<jobject> AppendPendingNavigation(
       JNIEnv* env,
+      content::BrowserContext* browser_context,
       base::span<const uint8_t> buffer,
       int saved_state_version,
-      const base::android::JavaRef<jstring>& title,
-      const base::android::JavaRef<jstring>& url,
-      const base::android::JavaRef<jstring>& referrer_url,
-      jint referrer_policy,
-      const base::android::JavaParamRef<jobject>& initiator_origin,
-      jboolean is_off_the_record);
+      bool clobber_current_entry,
+      const std::optional<std::u16string>& title,
+      const std::string& url,
+      const std::optional<std::string>& referrer_url,
+      int referrer_policy,
+      const std::optional<url::Origin>& initiator_origin);
 
  private:
   static std::unique_ptr<content::WebContents>
-  RestoreContentsFromByteBufferImpl(base::span<const uint8_t> buffer,
+  RestoreContentsFromByteBufferImpl(content::BrowserContext* browser_context,
+                                    base::span<const uint8_t> buffer,
                                     int saved_state_version,
                                     bool initially_hidden,
                                     bool no_renderer);

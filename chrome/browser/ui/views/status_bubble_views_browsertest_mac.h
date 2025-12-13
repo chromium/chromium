@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_STATUS_BUBBLE_VIEWS_BROWSERTEST_MAC_H_
 
 #include "build/build_config.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace test {
 

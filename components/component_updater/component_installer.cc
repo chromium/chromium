@@ -142,10 +142,6 @@ void ComponentInstaller::Register(
                      std::move(callback)));
 }
 
-void ComponentInstaller::OnUpdateError(int error) {
-  VLOG(0) << "Component update error: " << error;
-}
-
 Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
                                          base::Value::Dict* manifest,
                                          base::Version* version,
@@ -345,7 +341,7 @@ ComponentInstaller::GetValidInstallationManifest(const base::FilePath& path) {
   const base::Value::List* accept_archs = manifest->FindList("accept_arch");
   if (accept_archs != nullptr &&
       std::ranges::none_of(*accept_archs, [](const base::Value& v) {
-        static const char* current_arch =
+        static const std::string_view current_arch =
             update_client::UpdateQueryParams::GetArch();
         return v.is_string() && v.GetString() == current_arch;
       })) {

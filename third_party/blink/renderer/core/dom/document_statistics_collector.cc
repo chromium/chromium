@@ -73,8 +73,8 @@ bool MatchAttributes(const Element& element, const Vector<String>& words) {
   const String& classes = element.GetClassAttribute();
   const String& id = element.GetIdAttribute();
   for (const String& word : words) {
-    if (classes.DeprecatedFindIgnoringCase(word) != WTF::kNotFound ||
-        id.DeprecatedFindIgnoringCase(word) != WTF::kNotFound) {
+    if (classes.DeprecatedFindIgnoringCase(word) != kNotFound ||
+        id.DeprecatedFindIgnoringCase(word) != kNotFound) {
       return true;
     }
   }

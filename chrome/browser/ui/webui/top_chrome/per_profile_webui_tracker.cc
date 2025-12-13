@@ -123,7 +123,7 @@ bool PerProfileWebUITrackerImpl::ProfileHasBackgroundWebUI(
   url::Origin webui_origin = url::Origin::Create(GURL(webui_url));
   for (const auto& [web_contents, _] : web_contents_observers_) {
     if (web_contents->GetBrowserContext() != profile ||
-        web_contents->GetVisibleURL().host() != webui_origin.host()) {
+        web_contents->GetVisibleURL().GetHost() != webui_origin.host()) {
       continue;
     }
     const auto* preload_state =

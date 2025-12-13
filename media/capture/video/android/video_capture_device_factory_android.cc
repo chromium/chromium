@@ -200,13 +200,6 @@ VideoCaptureFormats VideoCaptureDeviceFactoryAndroid::GetSupportedFormats(
   return capture_formats;
 }
 
-bool VideoCaptureDeviceFactoryAndroid::IsLegacyOrDeprecatedDevice(
-    const std::string& device_id) {
-  int id;
-  if (!base::StringToInt(device_id, &id))
-    return true;
-  return (Java_VideoCaptureFactory_isLegacyOrDeprecatedDevice(
-      AttachCurrentThread(), id));
-}
-
 }  // namespace media
+
+DEFINE_JNI(VideoCaptureFactory)

@@ -12,6 +12,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
+#include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 
 namespace ash {

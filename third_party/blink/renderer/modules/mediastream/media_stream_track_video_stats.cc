@@ -58,8 +58,8 @@ void MediaStreamTrackVideoStats::PopulateStatsCache(ScriptState* script_state) {
   stats_invalidated_ = false;
   ToEventLoop(script_state)
       .EnqueueMicrotask(
-          WTF::BindOnce(&MediaStreamTrackVideoStats::InvalidateStatsCache,
-                        WrapWeakPersistent(this)));
+          BindOnce(&MediaStreamTrackVideoStats::InvalidateStatsCache,
+                   WrapWeakPersistent(this)));
 }
 
 void MediaStreamTrackVideoStats::InvalidateStatsCache() {

@@ -1,0 +1,39 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("interaction") {
+  sources = [
+    "browser_elements_views.cc",
+    "browser_elements_views.h",
+  ]
+  public_deps = [
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/interaction",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "browser_elements_views_impl.cc",
+    "browser_elements_views_impl.h",
+  ]
+  public_deps = [ ":interaction" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "browser_elements_views_browsertest.cc" ]
+  deps = [
+    ":interaction",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+  ]
+}

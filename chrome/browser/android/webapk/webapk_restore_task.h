@@ -31,8 +31,7 @@ struct WebApkRestoreData {
   WebApkRestoreData() = delete;
   explicit WebApkRestoreData(
       webapps::AppId app_id,
-      std::unique_ptr<webapps::ShortcutInfo> shortcut_info,
-      base::Time);
+      std::unique_ptr<webapps::ShortcutInfo> shortcut_info);
   ~WebApkRestoreData();
   WebApkRestoreData(WebApkRestoreData&& other);
   WebApkRestoreData(const WebApkRestoreData&) = delete;
@@ -41,8 +40,6 @@ struct WebApkRestoreData {
   webapps::AppId app_id;
   // Fallback shortcut info
   std::unique_ptr<webapps::ShortcutInfo> shortcut_info;
-  // Time when this WebApk was last used or installed
-  base::Time last_used_time;
 };
 
 // Task for installing previously synced WebAPK on new devices. Each instance
@@ -53,8 +50,7 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
       base::PassKey<WebApkRestoreManager>,
       WebApkInstallService* web_apk_install_service,
       WebApkRestoreWebContentsManager* web_contents_manager,
-      std::unique_ptr<webapps::ShortcutInfo> fallback_info,
-      base::Time last_used_time);
+      std::unique_ptr<webapps::ShortcutInfo> fallback_info);
 
   WebApkRestoreTask(const WebApkRestoreTask&) = delete;
   WebApkRestoreTask& operator=(const WebApkRestoreTask&) = delete;
@@ -80,7 +76,6 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
   GURL manifest_id() const;
   std::u16string app_name() const;
   const SkBitmap& app_icon() const { return app_icon_; }
-  base::Time last_used_time() const { return last_used_time_; }
 
  private:
   void OnIconDownloaded(base::OnceClosure fetch_icon_callback,
@@ -116,7 +111,6 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
 
   std::unique_ptr<webapps::ShortcutInfo> fallback_info_;
   SkBitmap app_icon_;
-  base::Time last_used_time_;
 
   std::unique_ptr<webapps::AddToHomescreenDataFetcher> data_fetcher_;
 

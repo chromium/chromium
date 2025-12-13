@@ -8,6 +8,7 @@
  * state of Chrome.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
@@ -77,14 +78,13 @@ export class SettingsSafetyHubModuleElement extends
       // The string for the subheader label.
       subheader: String,
 
-      // The icon for the module.
+      // The icon for the module. Optional.
       headerIcon: {
         String,
-        value: 'cr:error',
         observer: 'onHeaderIconChanged_',
       },
 
-      // The color of the header-icon.
+      // The color of the header-icon. Optional.
       headerIconColor: String,
 
       // The icon for the button of the list item.
@@ -262,6 +262,18 @@ export class SettingsSafetyHubModuleElement extends
       setTimeout(callback, delayMs);
     }
     setTimeout(this.finalizeAnimation_.bind(this), delayMs);
+  }
+
+  /** Focus the main button for the given |origin|, if it exists. */
+  focusOriginMainButton(origin: string) {
+    for (const item of this.shadowRoot!.querySelectorAll<HTMLElement>(
+             '#siteList .list-item')) {
+      const siteRepresentation = item.querySelector('.site-representation');
+      if (siteRepresentation && siteRepresentation.innerHTML === origin) {
+        item.querySelector<HTMLElement>('#mainButton')!.focus();
+        return;
+      }
+    }
   }
 
   private finalizeAnimation_() {

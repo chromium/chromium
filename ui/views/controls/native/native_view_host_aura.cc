@@ -122,7 +122,11 @@ gfx::NativeViewAccessible NativeViewHostAura::GetParentAccessible() {
 }
 
 ui::Layer* NativeViewHostAura::GetUILayer() {
-  return host_->native_view()->layer();
+  if (host_->native_view()) {
+    return host_->native_view()->layer();
+  }
+
+  return nullptr;
 }
 
 void NativeViewHostAura::NativeViewDetaching(bool destroyed) {

@@ -7,17 +7,17 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,7 +43,7 @@ class TouchIdAuthenticatorTest : public testing::Test {
   fido::mac::AuthenticatorConfig config_{
       .keychain_access_group = "test-keychain-access-group",
       .metadata_secret = "TestMetadataSecret"};
-  crypto::ScopedFakeAppleKeychainV2 keychain_{config_.keychain_access_group};
+  crypto::apple::ScopedFakeKeychainV2 keychain_{config_.keychain_access_group};
   fido::mac::TouchIdCredentialStore store_{config_};
 
   std::unique_ptr<fido::mac::TouchIdAuthenticator> authenticator_ =

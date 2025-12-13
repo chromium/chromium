@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "device/fido/hid/fido_hid_device.h"
 
 #include <array>
@@ -19,6 +14,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -29,13 +25,13 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/hid/fake_hid_impl_for_testing.h"
 #include "device/fido/hid/fido_hid_message.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/cpp/hid/hid_device_filter.h"
@@ -46,7 +42,6 @@
 namespace device {
 
 using ::testing::_;
-using ::testing::Invoke;
 
 namespace {
 
@@ -175,13 +170,13 @@ CreateHidConnectionWithHidInitExpectations(
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
       // Response to HID_INIT request.
-      .WillOnce(Invoke([mock_connection = mock_connection.get()](
-                           device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([mock_connection = mock_connection.get()](
+                    device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(
             true, 0,
             CreateMockInitResponse(mock_connection->nonce(),
                                    mock_connection->connection_channel_id()));
-      }));
+      });
 
   // Add device and set mock connection to fake hid manager.
   fake_hid_manager->AddDeviceAndSetConnection(std::move(hid_device),
@@ -205,10 +200,10 @@ void SetupReadExpectation(MockFidoHidConnection* mock_connection,
   while (message->NumPackets() != 0) {
     EXPECT_CALL(*mock_connection, ReadPtr(_))
         .InSequence(sequence)
-        .WillOnce(Invoke([packet = message->PopNextPacket()](
-                             device::mojom::HidConnection::ReadCallback* cb) {
+        .WillOnce([packet = message->PopNextPacket()](
+                      device::mojom::HidConnection::ReadCallback* cb) {
           std::move(*cb).Run(true, 0, std::move(packet));
-        }));
+        });
   }
 }
 
@@ -340,28 +335,28 @@ TEST_F(FidoHidDeviceTest, TestRetryChannelAllocation) {
 
   EXPECT_CALL(mock_connection, ReadPtr(_))
       // First response to HID_INIT request with an incorrect nonce.
-      .WillOnce(Invoke([kIncorrectNonce, &mock_connection](auto* cb) {
+      .WillOnce([kIncorrectNonce, &mock_connection](auto* cb) {
         std::move(*cb).Run(
             true, 0,
             CreateMockInitResponse(kIncorrectNonce,
                                    mock_connection.connection_channel_id()));
-      }))
+      })
       // Second response to HID_INIT request with a correct nonce.
-      .WillOnce(Invoke(
+      .WillOnce(
           [&mock_connection](device::mojom::HidConnection::ReadCallback* cb) {
             std::move(*cb).Run(true, 0,
                                CreateMockInitResponse(
                                    mock_connection.nonce(),
                                    mock_connection.connection_channel_id()));
-          }))
+          })
       // Version response from the authenticator.
-      .WillOnce(Invoke(
+      .WillOnce(
           [&mock_connection](device::mojom::HidConnection::ReadCallback* cb) {
             std::move(*cb).Run(true, 0,
                                CreateMockResponseWithChannelId(
                                    mock_connection.connection_channel_id(),
                                    kU2fMockResponseMessage));
-          }));
+          });
 
   // Add device and set mock connection to fake hid manager.
   fake_hid_manager_->AddDeviceAndSetConnection(std::move(hid_device),
@@ -395,14 +390,14 @@ TEST_F(FidoHidDeviceTest, TestKeepAliveMessage) {
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
       // Keep alive message sent from the authenticator.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(
             true, 0,
             GetKeepAliveHidMessage(mock_connection->connection_channel_id()));
-      }))
+      })
       // Repeated Read() invocation due to keep alive message. Sends a dummy
       // response that corresponds to U2F version response.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         auto almost_time_out = kDeviceTimeout - base::Microseconds(1);
         task_environment_.FastForwardBy(almost_time_out);
 
@@ -410,7 +405,7 @@ TEST_F(FidoHidDeviceTest, TestKeepAliveMessage) {
                            CreateMockResponseWithChannelId(
                                mock_connection->connection_channel_id(),
                                kU2fMockResponseMessage));
-      }));
+      });
 
   FidoDeviceEnumerateFuture enumerate_future(hid_manager_.get());
   hid_manager_->GetDevices(enumerate_future.GetCallback());
@@ -437,7 +432,7 @@ TEST_F(FidoHidDeviceTest, TestKeepAliveMessage) {
 std::array<uint8_t, 4> InvertChannelID(
     const std::array<uint8_t, 4> channel_id) {
   std::array<uint8_t, 4> ret;
-  memcpy(ret.data(), channel_id.data(), ret.size());
+  UNSAFE_TODO(memcpy(ret.data(), channel_id.data(), ret.size()));
   for (size_t i = 0; i < ret.size(); i++) {
     ret[i] ^= 0xff;
   }
@@ -456,20 +451,20 @@ TEST_F(FidoHidDeviceTest, TestMessageOnOtherChannel) {
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
       // Message on wrong channel.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(
             true, 0,
             CreateMockResponseWithChannelId(
                 InvertChannelID(mock_connection->connection_channel_id()),
                 kHidUnknownCommandError));
-      }))
+      })
       // Expected message on the correct channel.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(true, 0,
                            CreateMockResponseWithChannelId(
                                mock_connection->connection_channel_id(),
                                kU2fMockResponseMessage));
-      }));
+      });
 
   FidoDeviceEnumerateFuture enumerate_future(hid_manager_.get());
   hid_manager_->GetDevices(enumerate_future.GetCallback());
@@ -517,28 +512,28 @@ TEST_F(FidoHidDeviceTest, TestContinuedMessageOnOtherChannel) {
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
       // Beginning of a message on the wrong channel.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(
             true, 0,
             CreateMockResponseWithChannelId(
                 InvertChannelID(mock_connection->connection_channel_id()),
                 kOtherChannelMsgPrefix));
-      }))
+      })
       // Continuation of the message on the wrong channel.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(
             true, 0,
             CreateMockResponseWithChannelId(
                 InvertChannelID(mock_connection->connection_channel_id()),
                 kOtherChannelMsgSuffix));
-      }))
+      })
       // Expected message on the correct channel.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(true, 0,
                            CreateMockResponseWithChannelId(
                                mock_connection->connection_channel_id(),
                                kU2fMockResponseMessage));
-      }));
+      });
 
   FidoDeviceEnumerateFuture enumerate_future(hid_manager_.get());
   hid_manager_->GetDevices(enumerate_future.GetCallback());
@@ -569,20 +564,20 @@ TEST_F(FidoHidDeviceTest, TestDeviceTimeoutAfterKeepAliveMessage) {
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
       // Keep alive message sent from the authenticator.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(
             true, 0,
             GetKeepAliveHidMessage(mock_connection->connection_channel_id()));
-      }))
+      })
       // Repeated Read() invocation due to keep alive message. The callback
       // is invoked only after 3 seconds, which should cause device to timeout.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         task_environment_.FastForwardBy(kDeviceTimeout);
         std::move(*cb).Run(true, 0,
                            CreateMockResponseWithChannelId(
                                mock_connection->connection_channel_id(),
                                kU2fMockResponseMessage));
-      }));
+      });
 
   FidoDeviceEnumerateFuture enumerate_future(hid_manager_.get());
   hid_manager_->GetDevices(enumerate_future.GetCallback());
@@ -618,7 +613,7 @@ TEST_F(FidoHidDeviceTest, TestCancel) {
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
       // Device response with a significant delay.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         auto delay = base::Seconds(2);
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
@@ -627,7 +622,7 @@ TEST_F(FidoHidDeviceTest, TestCancel) {
                                mock_connection->connection_channel_id(),
                                kU2fMockResponseMessage)),
             delay);
-      }));
+      });
 
   FidoDeviceEnumerateFuture enumerate_future(hid_manager_.get());
   hid_manager_->GetDevices(enumerate_future.GetCallback());
@@ -663,36 +658,36 @@ TEST_F(FidoHidDeviceTest, TestCancelWhileWriting) {
 
   EXPECT_CALL(*mock_connection, WritePtr(_, _, _))
       .InSequence(sequence)
-      .WillOnce(Invoke(
+      .WillOnce(
           [&token, &device](auto&&, const std::vector<uint8_t>& buffer,
                             device::mojom::HidConnection::WriteCallback* cb) {
             device->Cancel(token);
             std::move(*cb).Run(true);
-          }));
+          });
   EXPECT_CALL(*mock_connection, WritePtr(_, _, _))
       .InSequence(sequence)
-      .WillOnce(Invoke([](auto&&, const std::vector<uint8_t>& buffer,
-                          device::mojom::HidConnection::WriteCallback* cb) {
+      .WillOnce([](auto&&, const std::vector<uint8_t>& buffer,
+                   device::mojom::HidConnection::WriteCallback* cb) {
         std::move(*cb).Run(true);
-      }));
+      });
   EXPECT_CALL(*mock_connection, WritePtr(_, _, _))
       .InSequence(sequence)
-      .WillOnce(Invoke([](auto&&, const std::vector<uint8_t>& buffer,
-                          device::mojom::HidConnection::WriteCallback* cb) {
+      .WillOnce([](auto&&, const std::vector<uint8_t>& buffer,
+                   device::mojom::HidConnection::WriteCallback* cb) {
         CHECK_LE(5u, buffer.size());
         CHECK_EQ(static_cast<uint8_t>(FidoHidDeviceCommand::kCancel) | 0x80,
                  buffer[4]);
         std::move(*cb).Run(true);
-      }));
+      });
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
-      .WillOnce(Invoke(
+      .WillOnce(
           [&mock_connection](device::mojom::HidConnection::ReadCallback* cb) {
             std::move(*cb).Run(true, 0,
                                CreateMockResponseWithChannelId(
                                    mock_connection->connection_channel_id(),
                                    kMockCancelResponse));
-          }));
+          });
 
   FidoDeviceEnumerateFuture enumerate_future(hid_manager_.get());
   hid_manager_->GetDevices(enumerate_future.GetCallback());
@@ -730,14 +725,14 @@ TEST_F(FidoHidDeviceTest, TestCancelAfterWriting) {
 
   EXPECT_CALL(*mock_connection, WritePtr(_, _, _))
       .InSequence(sequence)
-      .WillOnce(Invoke([](auto&&, const std::vector<uint8_t>& buffer,
-                          device::mojom::HidConnection::WriteCallback* cb) {
+      .WillOnce([](auto&&, const std::vector<uint8_t>& buffer,
+                   device::mojom::HidConnection::WriteCallback* cb) {
         std::move(*cb).Run(true);
-      }));
+      });
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
-      .WillOnce(Invoke([&read_callback, &device, &token](
-                           device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&read_callback, &device,
+                 &token](device::mojom::HidConnection::ReadCallback* cb) {
         read_callback = std::move(*cb);
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
@@ -746,12 +741,12 @@ TEST_F(FidoHidDeviceTest, TestCancelAfterWriting) {
                   device->Cancel(token);
                 },
                 device, token));
-      }));
+      });
   EXPECT_CALL(*mock_connection, WritePtr(_, _, _))
       .InSequence(sequence)
-      .WillOnce(Invoke([&mock_connection, &read_callback](
-                           auto&&, const std::vector<uint8_t>& buffer,
-                           device::mojom::HidConnection::WriteCallback* cb) {
+      .WillOnce([&mock_connection, &read_callback](
+                    auto&&, const std::vector<uint8_t>& buffer,
+                    device::mojom::HidConnection::WriteCallback* cb) {
         CHECK_LE(5u, buffer.size());
         CHECK_EQ(static_cast<uint8_t>(FidoHidDeviceCommand::kCancel) | 0x80,
                  buffer[4]);
@@ -761,7 +756,7 @@ TEST_F(FidoHidDeviceTest, TestCancelAfterWriting) {
                  CreateMockResponseWithChannelId(
                      mock_connection->connection_channel_id(),
                      kMockCancelResponse));
-      }));
+      });
 
   FidoDeviceEnumerateFuture enumerate_future(hid_manager_.get());
   hid_manager_->GetDevices(enumerate_future.GetCallback());
@@ -798,13 +793,13 @@ TEST_F(FidoHidDeviceTest, TestCancelAfterReading) {
 
   EXPECT_CALL(*mock_connection, WritePtr(_, _, _))
       .InSequence(sequence)
-      .WillOnce(Invoke([](auto&&, const std::vector<uint8_t>& buffer,
-                          device::mojom::HidConnection::WriteCallback* cb) {
+      .WillOnce([](auto&&, const std::vector<uint8_t>& buffer,
+                   device::mojom::HidConnection::WriteCallback* cb) {
         std::move(*cb).Run(true);
-      }));
+      });
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
-      .WillOnce(Invoke(
+      .WillOnce(
           [&mock_connection](device::mojom::HidConnection::ReadCallback* cb) {
             std::vector<uint8_t> frame = {0x90, 0, 64};
             frame.resize(64, 0);
@@ -812,11 +807,11 @@ TEST_F(FidoHidDeviceTest, TestCancelAfterReading) {
                                CreateMockResponseWithChannelId(
                                    mock_connection->connection_channel_id(),
                                    std::move(frame)));
-          }));
+          });
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
-      .WillOnce(Invoke([&device, &token, &mock_connection](
-                           device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&device, &token, &mock_connection](
+                    device::mojom::HidConnection::ReadCallback* cb) {
         // This |Cancel| call should be a no-op because the response has already
         // started to be received.
         device->Cancel(token);
@@ -827,7 +822,7 @@ TEST_F(FidoHidDeviceTest, TestCancelAfterReading) {
             true, 0,
             CreateMockResponseWithChannelId(
                 mock_connection->connection_channel_id(), std::move(frame)));
-      }));
+      });
 
   FidoDeviceEnumerateFuture receiver(hid_manager_.get());
   hid_manager_->GetDevices(receiver.GetCallback());
@@ -862,7 +857,7 @@ TEST_F(FidoHidDeviceTest, TestGetInfoFailsOnDeviceError) {
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
       // Device response with a significant delay.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         auto delay = base::Seconds(2);
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
@@ -871,7 +866,7 @@ TEST_F(FidoHidDeviceTest, TestGetInfoFailsOnDeviceError) {
                                mock_connection->connection_channel_id(),
                                kHidUnknownTransportError)),
             delay);
-      }));
+      });
 
   FidoDeviceEnumerateFuture enumerate_future(hid_manager_.get());
   hid_manager_->GetDevices(enumerate_future.GetCallback());
@@ -902,7 +897,7 @@ TEST_F(FidoHidDeviceTest, TestDeviceMessageError) {
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
       // Device response with a significant delay.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         auto delay = base::Seconds(2);
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
@@ -911,7 +906,7 @@ TEST_F(FidoHidDeviceTest, TestDeviceMessageError) {
                                mock_connection->connection_channel_id(),
                                kHidUnknownCommandError)),
             delay);
-      }));
+      });
 
   FidoDeviceEnumerateFuture enumerate_future(hid_manager_.get());
   hid_manager_->GetDevices(enumerate_future.GetCallback());
@@ -950,21 +945,21 @@ TEST_F(FidoHidDeviceTest, TestWinkNotSupported) {
 
   EXPECT_CALL(mock_connection, ReadPtr(_))
       // Respond to HID_INIT indicating the device does not support winking.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(
             true, 0,
             CreateMockInitResponse(mock_connection.nonce(),
                                    mock_connection.connection_channel_id(),
                                    kWinkNotSupportedPayload));
-      }))
+      })
       // Respond to GetInfo with kHidUnknownCommandError to signal this is a
       // U2F device.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(true, 0,
                            CreateMockResponseWithChannelId(
                                mock_connection.connection_channel_id(),
                                kHidUnknownCommandError));
-      }));
+      });
 
   // Add device and set mock connection to fake hid manager.
   fake_hid_manager_->AddDeviceAndSetConnection(std::move(hid_device),
@@ -1014,13 +1009,13 @@ TEST_F(FidoHidDeviceTest, TestCtap2DeviceShouldNotBlink) {
   EXPECT_CALL(mock_connection, ReadPtr(_))
       // Respond to HID_INIT indicating the device supports winking.
       .InSequence(sequence)
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(
             true, 0,
             CreateMockInitResponse(mock_connection.nonce(),
                                    mock_connection.connection_channel_id(),
                                    kWinkSupportedPayload));
-      }));
+      });
 
   SetupReadExpectation(&mock_connection, FidoHidDeviceCommand::kCbor,
                        test_data::kTestAuthenticatorGetInfoResponse, sequence);
@@ -1069,28 +1064,28 @@ TEST_F(FidoHidDeviceTest, TestSuccessfulWink) {
 
   EXPECT_CALL(mock_connection, ReadPtr(_))
       // Respond to HID_INIT indicating the device supports winking.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(
             true, 0,
             CreateMockInitResponse(mock_connection.nonce(),
                                    mock_connection.connection_channel_id(),
                                    kWinkSupportedPayload));
-      }))
+      })
       // Respond to GetInfo with kHidUnknownCommandError to signal this is a
       // U2F device.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(true, 0,
                            CreateMockResponseWithChannelId(
                                mock_connection.connection_channel_id(),
                                kHidUnknownCommandError));
-      }))
+      })
       // Response to HID_WINK.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce([&](device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(true, 0,
                            CreateMockResponseWithChannelId(
                                mock_connection.connection_channel_id(),
                                kU2fWinkResponseMessage));
-      }));
+      });
 
   // Add device and set mock connection to fake hid manager.
   fake_hid_manager_->AddDeviceAndSetConnection(std::move(hid_device),

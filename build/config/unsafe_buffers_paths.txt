@@ -4,11 +4,13 @@
 
 # See `docs/unsafe_buffers.md`.
 
-# Checks to enable
-.buffers,libc
+# Checks to enable.
+.buffers,libc,unique_ptr
 
-# Directories to exempt from checks
--base/allocator/
+# Path to source root from the directory containing this file.
+$../../
+
+# Directories to exempt from checks, relative to source root.
 -base/third_party/
 -codelabs/  # Examples, keep simple.
 -chrome/browser/platform_experience/win/
@@ -19,12 +21,13 @@
 -components/optimization_guide/internal/
 -ios/third_party/
 -net/third_party/
+-services/shape_detection/internal/barhopper/
 -testing/iossim/
 -third_party/
 +third_party/blink/
++third_party/jni_zero/
 +third_party/ipcz/
++third_party/liburlpattern/
 -tools/
 -ui/gl/  # Unsafe generated files.
--url/third_party/
 -v8/
-

@@ -13,7 +13,6 @@
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_browser.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::cfm {
 

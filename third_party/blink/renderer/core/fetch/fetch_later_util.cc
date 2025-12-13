@@ -197,11 +197,11 @@ Frame* FetchLaterUtil::GetDeferredFetchControlFrame(Frame* frame) {
 mojom::blink::DeferredFetchPolicy
 FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
     FrameOwner* container_frame,
-    const KURL& to_url) {
+    scoped_refptr<const SecurityOrigin> to_origin) {
   CHECK(container_frame);
   // Must be called when "inherited policy" is available for container document.
   CHECK(container_frame->ContentFrame());
-  auto to_url_origin = SecurityOrigin::Create(to_url)->ToUrlOrigin();
+  const auto to_url_origin = to_origin->ToUrlOrigin();
   // At this moment, the overall "inherited policies" for `container_frame`'s
   // features are not yet calculated, which only happens in the call to
   // `PermissionsPolicy::CreateFromParentPolicy()` made by

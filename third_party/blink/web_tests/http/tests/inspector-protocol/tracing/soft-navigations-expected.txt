@@ -15,14 +15,13 @@ Tracing complete
    frame: id_0
    performanceTimelineNavigationId: id_1
 -> SoftNavigation event
-   interactionTimestamp: 2
-   ts: 3
+   timeOrigin: 2
+   ts: 2
    firstContentfulPaint: 3
    frame: id_0
    performanceTimelineNavigationId: id_2
-   initialURL: http://127.0.0.1:8000/greeting
-   mostRecentURL: http://127.0.0.1:8000/greeting
--> LCP candidate event
+   URL: http://127.0.0.1:8000/greeting
+-> LCP candidate for soft navigation event
    ts: 3
    frame: id_0
    performanceTimelineNavigationId: id_2
@@ -31,15 +30,13 @@ SoftNavigation event shape:
 Object: {
 	args: {
 		context: {
+			URL: string
 			domModifications: number
 			firstContentfulPaint: number
-			initialURL: string
-			interactionTimestamp: number
-			mostRecentURL: string
 			paintedArea: number
 			performanceTimelineNavigationId: number
-			repaintedArea: number
 			softNavContextId: number
+			timeOrigin: number
 		}
 		frame: string
 	}
@@ -63,6 +60,31 @@ Object: {
 			isOutermostMainFrame: boolean
 			navigationId: string
 			nodeId: number
+			nodeName: string
+			performanceTimelineNavigationId: number
+			size: number
+			type: string
+		}
+		frame: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+
+LCP candidate for soft navigation event shape:
+Object: {
+	args: {
+		data: {
+			candidateIndex: number
+			isMainFrame: boolean
+			isOutermostMainFrame: boolean
+			nodeId: number
+			nodeName: string
 			performanceTimelineNavigationId: number
 			size: number
 			type: string

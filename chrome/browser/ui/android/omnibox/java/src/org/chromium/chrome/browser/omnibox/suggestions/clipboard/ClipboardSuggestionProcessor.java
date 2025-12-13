@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.clipboard;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -14,10 +13,9 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
@@ -28,21 +26,15 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 /** A class that handles model and view creation for the clipboard suggestions. */
 @NullMarked
 public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
     /**
-     * @param context An Android context.
-     * @param suggestionHost A handle to the object using the suggestions.
-     * @param imageSupplier Supplier used to retrieve suggestion icons and images.
+     * @param uiContext Context object containing common UI dependencies.
      */
-    public ClipboardSuggestionProcessor(
-            Context context,
-            SuggestionHost suggestionHost,
-            Optional<OmniboxImageSupplier> imageSupplier) {
-        super(context, suggestionHost, imageSupplier);
+    public ClipboardSuggestionProcessor(AutocompleteUIContext uiContext) {
+        super(uiContext);
     }
 
     @Override
@@ -211,7 +203,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     // TODO(crbug.com/40177279): Make revealButtonClickHandler and concealButtonClickHandler
     // private.
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public void revealButtonClickHandler(AutocompleteMatch suggestion, PropertyModel model) {
         RecordUserAction.record("Omnibox.ClipboardSuggestion.Reveal");
         if (suggestion.getUrl().isEmpty()) {
@@ -228,7 +220,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param suggestion Selected suggestion.
      * @param model Model representing current suggestion.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public void concealButtonClickHandler(AutocompleteMatch suggestion, PropertyModel model) {
         RecordUserAction.record("Omnibox.ClipboardSuggestion.Conceal");
         setupContentField(suggestion, model, /* showContent= */ false);

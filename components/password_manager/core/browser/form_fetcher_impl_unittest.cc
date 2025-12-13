@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
@@ -757,7 +758,6 @@ TEST_P(FormFetcherImplTest, DoNotTryToMigrateHTTPPasswordsOnHTTPSites) {
   // migration flag.
   form_fetcher_ = std::make_unique<FormFetcherImpl>(
       form_digest_, &client_, true /* should_migrate_http_passwords */);
-  EXPECT_CALL(consumer_, OnFetchCompleted);
   form_fetcher_->AddConsumer(&consumer_);
 
   std::vector<PasswordForm> empty_forms;
@@ -811,7 +811,6 @@ TEST_P(FormFetcherImplTest, DoNotTryToMigrateHTTPPasswordsOnNonHTMLForms) {
   // migration flag.
   form_fetcher_ = std::make_unique<FormFetcherImpl>(
       form_digest_, &client_, true /* should_migrate_http_passwords */);
-  EXPECT_CALL(consumer_, OnFetchCompleted);
   form_fetcher_->AddConsumer(&consumer_);
 
   Fetch();
@@ -843,7 +842,6 @@ TEST_P(FormFetcherImplTest, TryToMigrateHTTPPasswordsOnHTTPSSites) {
   // migration flag.
   form_fetcher_ = std::make_unique<FormFetcherImpl>(
       form_digest_, &client_, true /* should_migrate_http_passwords */);
-  EXPECT_CALL(consumer_, OnFetchCompleted);
   form_fetcher_->AddConsumer(&consumer_);
 
   PasswordForm https_form = CreateNonFederated();
@@ -1018,8 +1016,10 @@ TEST_P(FormFetcherImplTest, Clone_EmptyResults) {
   EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(), IsEmpty());
   EXPECT_THAT(form_fetcher_->GetAllRelevantMatches(), IsEmpty());
   MockConsumer consumer;
-  EXPECT_CALL(consumer, OnFetchCompleted);
+  EXPECT_CALL(consumer, OnFetchCompleted)
+      .WillOnce(base::test::RunOnceClosure(task_environment_.QuitClosure()));
   clone->AddConsumer(&consumer);
+  task_environment_.RunUntilQuit();
 }
 
 // Cloning a FormFetcherImpl with non-empty results should result in an
@@ -1066,8 +1066,10 @@ TEST_P(FormFetcherImplTest, Clone_NonEmptyResults) {
               UnorderedElementsAre(federated, android_federated));
   EXPECT_THAT(clone->GetInsecureCredentials(), UnorderedElementsAre(federated));
   MockConsumer consumer;
-  EXPECT_CALL(consumer, OnFetchCompleted);
+  EXPECT_CALL(consumer, OnFetchCompleted)
+      .WillOnce(base::test::RunOnceClosure(task_environment_.QuitClosure()));
   clone->AddConsumer(&consumer);
+  task_environment_.RunUntilQuit();
 }
 
 // Cloning a FormFetcherImpl with some stats should result in an instance with
@@ -1421,7 +1423,14 @@ class NoStoreFormFetcherTest : public FormFetcherImplTestBase {
 };
 
 TEST_F(NoStoreFormFetcherTest, NoStoreTest) {
+  EXPECT_CALL(consumer_, OnFetchCompleted)
+      .WillOnce(base::test::RunOnceClosure(task_environment_.QuitClosure()));
   form_fetcher_->AddConsumer(&consumer_);
+  // Cycling the runloop to make it easy to differentiate between
+  // `OnFetchCompleted` called because of AddConsumer and the one called as a
+  // result of `Fetch`.
+  task_environment_.RunUntilQuit();
+
   EXPECT_CALL(consumer_, OnFetchCompleted);
   Fetch();
   EXPECT_EQ(FormFetcher::State::NOT_WAITING, form_fetcher_->GetState());

@@ -7,9 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_bottom_sheet.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
 
 @protocol LensOverlayDetentsManagerDelegate;
+@protocol LensOverlayBottomSheetPresenter;
 
 // Manages the detents for a given bottom sheet, adapting to different detent
 // sizes.
@@ -60,7 +62,17 @@
                    (SheetDetentPresentationStategy)presentationStrategy
     NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)initWithLensOverlayBottomSheet:
+                    (id<LensOverlayBottomSheet>)lensOverlayBottomSheet
+                                        window:(UIWindow*)window
+                          presentationStrategy:(SheetDetentPresentationStategy)
+                                                   presentationStrategy
+    NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)init NS_UNAVAILABLE;
+
+// Adjusts the detents of the given sheet based on the sheet state.
+- (void)adjustDetentsForState:(SheetDetentState)state animated:(BOOL)animated;
 
 // Adjusts the detents of the given sheet based on the sheet state.
 - (void)adjustDetentsForState:(SheetDetentState)state;

@@ -40,6 +40,15 @@ namespace blink {
 // during the animation since the value can be animated itself.
 enum AnimatedPropertyValueType { kRegularPropertyValue, kInheritValue };
 
+struct ParsedAnimationValue {
+  STACK_ALLOCATED();
+
+ public:
+  SVGPropertyBase* property;
+  AnimatedPropertyValueType property_value_type;
+  SVGParseStatus status;
+};
+
 class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -70,11 +79,11 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
 
   AnimationMode CalculateAnimationMode() override;
   void UpdateKeyframeValues(const Keyframe& keyframe) override;
-  void CalculateFromAndToValues(const String& from_string,
+  bool CalculateFromAndToValues(const String& from_string,
                                 const String& to_string) final;
-  void CalculateFromAndByValues(const String& from_string,
+  bool CalculateFromAndByValues(const String& from_string,
                                 const String& by_string) final;
-  void CalculateValues(const Vector<String>& values) final;
+  bool CalculateValues(const Vector<String>& values) final;
   wtf_size_t ValuesCount() const final {
     DCHECK_EQ(GetAnimationMode(), kValuesAnimation);
     return values_.size();
@@ -115,11 +124,13 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
   void ClearValues();
 
   virtual SVGPropertyBase* CreateUnderlyingValueForAnimation() const;
-  virtual SVGPropertyBase* ParseValue(const String&) const;
+  virtual ParsedAnimationValue ParseValue(const String&) const;
   SVGPropertyBase* CreateUnderlyingValueForAttributeAnimation() const;
-  SVGPropertyBase* CreatePropertyForAttributeAnimation(const String&) const;
+  std::pair<SVGPropertyBase*, SVGParseStatus>
+  CreatePropertyForAttributeAnimation(const String&) const;
   SVGPropertyBase* CreatePropertyForCSSAnimation(const CSSValue* value) const;
-  SVGPropertyBase* CreatePropertyForCSSAnimation(const String&) const;
+  std::pair<SVGPropertyBase*, SVGParseStatus> CreatePropertyForCSSAnimation(
+      const String&) const;
 
   SVGPropertyBase* AdjustForInheritance(SVGPropertyBase*,
                                         AnimatedPropertyValueType) const;

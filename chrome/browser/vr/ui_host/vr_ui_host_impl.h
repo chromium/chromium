@@ -20,7 +20,6 @@
 #include "content/public/browser/xr_integration_client.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace vr {
 

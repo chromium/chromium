@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
@@ -100,13 +101,6 @@ void GetZtaJwtPayload(
       .Run(json_payload, std::move(results_callback));
 }
 
-void OnStaticSignalsRetrieved(SignalsCallback callback,
-                              std::optional<SignalCollectionError> error,
-                              std::optional<CrowdStrikeSignals> signals) {
-  // Forward the unexpected `error` to make sure it is captured in the metrics.
-  std::move(callback).Run(signals, error);
-}
-
 }  // namespace
 
 class CrowdStrikeClientImpl : public CrowdStrikeClient {
@@ -129,11 +123,21 @@ class CrowdStrikeClientImpl : public CrowdStrikeClient {
                        data_decoder::DataDecoder::ValueOrError result);
 
   // Final function to be called in this flow with `signals` containing any
-  // value that was successfully found. This function will set the cache and
-  // then invoke the original caller's `callback`.
-  void OnSignalsRetrieved(SignalsCallback callback,
-                          std::optional<CrowdStrikeSignals> signals,
-                          std::optional<SignalCollectionError> error);
+  // value that was successfully found from the data file. If values were found,
+  // it will invoke `OnSignalsRetrieved`.
+  void OnSignalsRetrievedFromDataFile(
+      SignalsCallback callback,
+      std::optional<CrowdStrikeSignals> signals,
+      std::optional<SignalCollectionError> error);
+
+  // Final function to be called in this flow with `signals` containing any
+  // value that were found. This function will set the cache and
+  // then invoke the original caller's `callback`. `is_data_file_source`
+  // indicates whether the source of signals was the data file or not.
+  void OnSignalsRetrieved(bool is_data_file_source,
+                          std::optional<SignalCollectionError> error,
+                          SignalsCallback callback,
+                          std::optional<CrowdStrikeSignals> signals);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -146,11 +150,7 @@ class CrowdStrikeClientImpl : public CrowdStrikeClient {
 
 // static
 std::unique_ptr<CrowdStrikeClient> CrowdStrikeClient::Create() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return std::make_unique<CrowdStrikeClientImpl>(GetCrowdStrikeZtaFilePath());
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 std::unique_ptr<CrowdStrikeClient> CrowdStrikeClient::CreateForTesting(
@@ -167,6 +167,10 @@ CrowdStrikeClientImpl::~CrowdStrikeClientImpl() = default;
 
 void CrowdStrikeClientImpl::GetIdentifiers(SignalsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (zta_file_path_.empty()) {
+    std::move(callback).Run(/*signals=*/std::nullopt, /*error=*/std::nullopt);
+    return;
+  }
   const auto& cached_values = cached_signals_.Get();
   if (cached_values) {
     std::move(callback).Run(cached_values.value(), /*error=*/std::nullopt);
@@ -178,7 +182,7 @@ void CrowdStrikeClientImpl::GetIdentifiers(SignalsCallback callback) {
           &CrowdStrikeClientImpl::DecodeJson, weak_ptr_factory_.GetWeakPtr()));
 
   SignalsCallback result_callback = base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&CrowdStrikeClientImpl::OnSignalsRetrieved,
+      base::BindOnce(&CrowdStrikeClientImpl::OnSignalsRetrievedFromDataFile,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
   base::ThreadPool::PostTask(
@@ -232,7 +236,7 @@ void CrowdStrikeClientImpl::OnPayloadParsed(
   std::move(callback).Run(identifiers, /*error=*/std::nullopt);
 }
 
-void CrowdStrikeClientImpl::OnSignalsRetrieved(
+void CrowdStrikeClientImpl::OnSignalsRetrievedFromDataFile(
     SignalsCallback callback,
     std::optional<CrowdStrikeSignals> signals,
     std::optional<SignalCollectionError> error) {
@@ -246,12 +250,31 @@ void CrowdStrikeClientImpl::OnSignalsRetrieved(
         {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
         base::BindOnce(&GetCrowdStrikeSignals),
-        base::BindOnce(&OnStaticSignalsRetrieved, std::move(callback),
-                       std::move(error)));
+        base::BindOnce(&CrowdStrikeClientImpl::OnSignalsRetrieved,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       /*is_data_file_source=*/false, std::move(error),
+                       std::move(callback)));
     return;
   }
 
-  cached_signals_.Set(signals.value());
+  OnSignalsRetrieved(/*is_data_file_source=*/true, std::move(error),
+                     std::move(callback), std::move(signals));
+}
+
+void CrowdStrikeClientImpl::OnSignalsRetrieved(
+    bool is_data_file_source,
+    std::optional<SignalCollectionError> error,
+    SignalsCallback callback,
+    std::optional<CrowdStrikeSignals> signals) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (signals) {
+    base::UmaHistogramBoolean(
+        "Enterprise.DeviceSignals.Collection.CrowdStrike.FromDataFile",
+        is_data_file_source);
+    cached_signals_.Set(signals.value());
+  }
+
   std::move(callback).Run(std::move(signals), error);
 }
 

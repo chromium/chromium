@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EVENT_MODEL_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EVENT_MODEL_H_
 
+#include "base/functional/callback_forward.h"
 #include "components/feature_engagement/internal/event_model_reader.h"
 #include "components/feature_engagement/internal/event_model_writer.h"
 

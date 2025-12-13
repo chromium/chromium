@@ -59,6 +59,13 @@ were not completed from ClusterFuzz auto-triage or previous work on the bug.
 All this is hard, so please remember to [ask for help](#Ask-for-help).
 [Yell if you must](https://www.youtube.com/watch?v=5y_SbnPx_cE&t=37s)!
 
+### IMPORTANT! In the wild (0-day) bugs
+If you see a bug that you determine is under active exploitation in the
+wild (0-day), triage it **as soon as possible**. Often, such a bug is reported
+by Google's Threat Analysis Group (TAG) and is described as a 0-day. Even if you
+are not sure, reach out in the Shepherds chat to see if you need an Incident
+Responder (IR). See [Incident response](#Incident-response) for further details.
+
 ## TL;DR Checklist for Secondary Shepherding
 (“I’m Secondary Shepherd, what do I do???”)
 
@@ -326,14 +333,17 @@ account to move this bug into that component.
 ### Assign
 
 Security bugs are not automatically visible, so you must add people to get them
-fixed. For each bug, set:
+fixed. **Every security bug that is severity S0, S1, or S2 must have an assigned
+owner.** For each bug, set:
 
 * The **Component** – due to a limited set of auto-cc rules, this may add
   some visibility. This will "move" the bug into that component; this is the
   expected outcome. It can also be helpful to set additional **Component Tags**
   when a bug does not fall neatly into a single component.
 * An **assignee/owner**. Use `git blame` or look for similar past bugs in the
-  tracker.
+  tracker. Every security bug that is severity S0, S1, or S2 must always have an
+  assigned owner. Every security bug, regardless of severity, should initially
+  be assigned to an owner.
 * Lots of **cc**s. Copy everyone who could possibly be relevant. Use the owners
   file for a particular feature to help achieve this.
 * Add a **comment** so that recipients know what’s expected, and why you think
@@ -354,7 +364,7 @@ pass it along to / include someone who can direct it more precisely.
       memory corruption.
     * Set a provisional `Found In` of the current Extended Stable.
     * Assign it to the current [V8
-      Sheriff](https://goto.google.com/current-v8-sheriff) with
+      Shepherd](https://goto.google.com/current-v8-sheriff) with
       a comment explaining that the severity and `Found In` are provisional.
       Note that V8 CHECK failure crashes can have security implications, so
       don't triage it yourself.
@@ -370,7 +380,7 @@ pass it along to / include someone who can direct it more precisely.
     * Set a provisional severity of Medium (S2).
     * Set a provisional priority of P1.
     * Assign to the current [V8
-      Sheriff](https://goto.google.com/current-v8-sheriff).
+      Shepherd](https://goto.google.com/current-v8-sheriff).
     * Apply the `Security_Impact-None` hotlist (hotlistID:5433277).
     * If possible, please also apply the `V8 Sandbox` hotlist
       (hotlistID:4802478).

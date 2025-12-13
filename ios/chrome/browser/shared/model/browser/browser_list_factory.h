@@ -25,9 +25,9 @@ class BrowserListFactory final : public ProfileKeyedServiceFactoryIOS {
 
   BrowserListFactory();
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const final;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_FACTORY_H_

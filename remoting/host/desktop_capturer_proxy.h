@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -22,10 +23,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
 #endif
 
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
-
 namespace remoting {
 
 // DesktopCapturerProxy is responsible for calling webrtc::DesktopCapturer on
@@ -34,7 +31,7 @@ namespace remoting {
 class DesktopCapturerProxy : public DesktopCapturer {
  public:
   explicit DesktopCapturerProxy(
-      scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> capture_task_runner);
 
   DesktopCapturerProxy(const DesktopCapturerProxy&) = delete;
   DesktopCapturerProxy& operator=(const DesktopCapturerProxy&) = delete;
@@ -45,6 +42,7 @@ class DesktopCapturerProxy : public DesktopCapturer {
   // capturer thread. Otherwise, the capturer can be passed to set_capturer().
   void CreateCapturer(
       base::OnceCallback<std::unique_ptr<webrtc::DesktopCapturer>()> creator);
+  base::WeakPtr<DesktopCapturerProxy> GetWeakPtr();
   void set_capturer(std::unique_ptr<webrtc::DesktopCapturer> capturer);
 
   // webrtc::DesktopCapturer interface.
@@ -60,6 +58,12 @@ class DesktopCapturerProxy : public DesktopCapturer {
                             callback) override;
 #endif
 
+  bool SupportsFrameCallbacks() const override;
+
+  void set_supports_frame_callbacks(bool supports_frame_callbacks) {
+    supports_frame_callbacks_ = supports_frame_callbacks;
+  }
+
  private:
   class Core;
 
@@ -71,8 +75,10 @@ class DesktopCapturerProxy : public DesktopCapturer {
   void OnMetadata(webrtc::DesktopCaptureMetadata metadata);
 #endif
 
+  bool supports_frame_callbacks_ = false;
+
   std::unique_ptr<Core> core_;
-  scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> capture_task_runner_;
 
   raw_ptr<webrtc::DesktopCapturer::Callback> callback_ = nullptr;
 

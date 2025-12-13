@@ -7,6 +7,8 @@ package org.chromium.components.browser_ui.media;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
@@ -17,6 +19,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.ScreenOffBroadcastReceiver;
 import org.chromium.base.SysUtils;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -82,6 +86,19 @@ public class MediaSessionHelper implements MediaImageCallback {
     // Used to override the MediaSession object get from WebContents. This is to work around the
     // static getter {@link MediaSession#fromWebContents()}.
     @VisibleForTesting public static @Nullable MediaSession sOverriddenMediaSession;
+
+    // Used to hide the notification immediately when the screen is turned off, if we are currently
+    // waiting to hide it (e.g. because the media became uncontrollable).
+    // This is safe to do because `mHideNotificationDelayedTask` is cleared whenever we show a new
+    // notification or if the media becomes controllable again. Thus, if
+    // `mHideNotificationDelayedTask` is non-null here, we know for sure that we are still in the
+    // "waiting to hide" state for this specific session and it hasn't recovered.
+    private final ScreenOffBroadcastReceiver.ScreenOffListener mHideNotificationOnScreenOff =
+            (context, intent) -> {
+                if (mHideNotificationDelayedTask != null) {
+                    hideNotificationImmediately();
+                }
+            };
 
     private final MediaNotificationListener mControlsListener =
             new MediaNotificationListener() {
@@ -192,7 +209,11 @@ public class MediaSessionHelper implements MediaImageCallback {
             @Override
             public void mediaSessionStateChanged(boolean isControllable, boolean isPaused) {
                 if (!isControllable) {
-                    hideNotificationDelayed();
+                    if (isDeviceLocked()) {
+                        hideNotificationImmediately();
+                    } else {
+                        hideNotificationDelayed();
+                    }
                     return;
                 }
                 assumeNonNull(mWebContents);
@@ -266,18 +287,18 @@ public class MediaSessionHelper implements MediaImageCallback {
 
             /**
              * Adjust `mMediaPosition` so that it's unambiguous about what the current media time
-             * is.  Otherwise, when transitioning into the paused state, the platform won't know to
-             * adjust the time from the `getLastUpdatedTime()`.  This is especially bad since the
-             * playback rate in the MediaPosition and `isPaused` don't always agree immediately;
-             * we can find out about `isPaused` before being told of the final, playback rate = 0,
-             * MediaPosition.  To avoid this, we adjust the MediaPosition based on its current
+             * is. Otherwise, when transitioning into the paused state, the platform won't know to
+             * adjust the time from the `getLastUpdatedTime()`. This is especially bad since the
+             * playback rate in the MediaPosition and `isPaused` don't always agree immediately; we
+             * can find out about `isPaused` before being told of the final, playback rate = 0,
+             * MediaPosition. To avoid this, we adjust the MediaPosition based on its current
              * playback rate, and update the playback rate to zero so that it's unambiguous.
              */
             private void rebaseMediaPosition(boolean isPaused) {
                 if (mMediaPosition == null) return;
 
                 long now = SystemClock.elapsedRealtime();
-                long rebased_position =
+                long rebasedPosition =
                         mMediaPosition.getPosition()
                                 + (long)
                                         ((now - mMediaPosition.getLastUpdatedTime())
@@ -285,7 +306,7 @@ public class MediaSessionHelper implements MediaImageCallback {
                 mMediaPosition =
                         new MediaPosition(
                                 mMediaPosition.getDuration(),
-                                rebased_position,
+                                rebasedPosition,
                                 isPaused ? 0 : mMediaPosition.getPlaybackRate(),
                                 now);
             }
@@ -402,7 +423,7 @@ public class MediaSessionHelper implements MediaImageCallback {
          * Creates a {@link MediaNotificationInfo.Builder} with basic embedder-specific
          * initialization.
          */
-        public MediaNotificationInfo.Builder createMediaNotificationInfoBuilder();
+        MediaNotificationInfo.Builder createMediaNotificationInfoBuilder();
 
         /** Shows a notification with the given metadata. */
         void showMediaNotification(MediaNotificationInfo notificationInfo);
@@ -427,6 +448,8 @@ public class MediaSessionHelper implements MediaImageCallback {
         if (activity != null) {
             mPreviousVolumeControlStream = activity.getVolumeControlStream();
         }
+
+        ScreenOffBroadcastReceiver.addListener(mHideNotificationOnScreenOff);
     }
 
     /**
@@ -440,6 +463,7 @@ public class MediaSessionHelper implements MediaImageCallback {
         mWebContentsObserver = null;
         if (mLargeIconBridge != null) mLargeIconBridge.destroy();
         mLargeIconBridge = null;
+        ScreenOffBroadcastReceiver.removeListener(mHideNotificationOnScreenOff);
     }
 
     /**
@@ -484,6 +508,13 @@ public class MediaSessionHelper implements MediaImageCallback {
         return windowAndroid.getActivity().get();
     }
 
+    private boolean isDeviceLocked() {
+        Context context = ContextUtils.getApplicationContext();
+        KeyguardManager keyguardManager =
+                (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+        return keyguardManager != null && keyguardManager.isKeyguardLocked();
+    }
+
     /** Returns true if a large favicon might be found. */
     @RequiresNonNull("mWebContents")
     private boolean fetchLargeFaviconImage() {
@@ -515,7 +546,7 @@ public class MediaSessionHelper implements MediaImageCallback {
      * Updates the best favicon if the given icon is better and the favicon is shown in
      * notification.
      */
-    public void updateFavicon(Bitmap icon) {
+    public void updateFavicon(@Nullable Bitmap icon) {
         if (icon == null) return;
 
         mMaybeHasFavicon = true;

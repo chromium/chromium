@@ -9,8 +9,9 @@ import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,9 +44,9 @@ public class TapToSeekSelectionManager implements SelectionClient.SurroundingTex
 
     TapToSeekSelectionManager(
             ReadAloudController readAloudController,
-            ObservableSupplier<@Nullable Tab> activePlaybackTab) {
+            NullableObservableSupplier<Tab> activePlaybackTab) {
         mReadAloudController = readAloudController;
-        activePlaybackTab.addObserver(this::onActivePlaybackTabUpdated);
+        activePlaybackTab.addObserver((Callback<@Nullable Tab>) this::onActivePlaybackTabUpdated);
     }
 
     @Override

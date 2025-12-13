@@ -595,12 +595,17 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewImageClick"),
         TestCase("openQuickViewVideo"),
         TestCase("openQuickViewVideoOnDrive"),
-        TestCase("openQuickViewPdf"),
-        TestCase("openQuickViewPdfPopup"),
+#if BUILDFLAG(ENABLE_PDF)
+        TestCase("openQuickViewPdf").SetEnableOopifPdf(false),
+        TestCase("openQuickViewPdf").SetEnableOopifPdf(true),
+        TestCase("openQuickViewPdfPopup").SetEnableOopifPdf(false),
+        TestCase("openQuickViewPdfPopup").SetEnableOopifPdf(true),
 #if !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
         // TODO(http://crbug.com/1291090): Flaky on ASan non-DEBUG.
-        TestCase("openQuickViewPdfPreviewsDisabled"),
-#endif
+        TestCase("openQuickViewPdfPreviewsDisabled").SetEnableOopifPdf(false),
+        TestCase("openQuickViewPdfPreviewsDisabled").SetEnableOopifPdf(true),
+#endif  // !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+#endif  // BUILDFLAG(ENABLE_PDF)
         TestCase("openQuickViewKeyboardUpDownChangesView"),
         TestCase("openQuickViewKeyboardLeftRightChangesView"),
         TestCase("openQuickViewSniffedText"),
@@ -1287,12 +1292,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("pluginVmDirectoryNotSharedErrorDialog"),
         TestCase("pluginVmFileOnExternalDriveErrorDialog"),
         TestCase("pluginVmFileDropFailErrorDialog")));
-
-WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    MaterializedViews, /* materialized_views.ts */
-    FilesAppBrowserTest,
-    ::testing::Values(TestCase("mvDisplayInTree").EnableMaterializedViews(),
-                      TestCase("mvScanner").EnableMaterializedViews()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     MyFiles, /* my_files.ts */

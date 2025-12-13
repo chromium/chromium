@@ -7,17 +7,43 @@
 #include <cctype>
 #include <ostream>
 #include <string>
+#include <utility>
 
 #include "third_party/abseil-cpp/absl/base/macros.h"
 
 namespace liburlpattern {
 
 std::ostream& operator<<(std::ostream& o, const Part& part) {
-  o << "{ type:" << static_cast<int>(part.type) << ", name:" << part.name
+  o << "{ type:" << part.type << ", name:" << part.name
     << ", prefix:" << part.prefix << ", value:" << part.value
-    << ", suffix:" << part.suffix
-    << ", modifier:" << static_cast<int>(part.modifier) << " }";
+    << ", suffix:" << part.suffix << ", modifier:" << part.modifier << " }";
   return o;
+}
+
+std::ostream& operator<<(std::ostream& o, PartType type) {
+  switch (type) {
+    case PartType::kFullWildcard:
+      return o << "kFullWildcard";
+    case PartType::kSegmentWildcard:
+      return o << "kSegmentWildcard";
+    case PartType::kRegex:
+      return o << "kRegex";
+    case PartType::kFixed:
+      return o << "kFixed";
+  }
+}
+
+std::ostream& operator<<(std::ostream& o, Modifier modifier) {
+  switch (modifier) {
+    case Modifier::kZeroOrMore:
+      return o << "kZeroOrMore";
+    case Modifier::kOptional:
+      return o << "kOptional";
+    case Modifier::kOneOrMore:
+      return o << "kOneOrMore";
+    case Modifier::kNone:
+      return o << "kNone";
+  }
 }
 
 Part::Part(PartType t, std::string v, Modifier m)

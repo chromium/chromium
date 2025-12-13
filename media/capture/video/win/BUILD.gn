@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
@@ -44,6 +43,7 @@ source_set("win") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/viz/common/resources:shared_image_format",
     "//media",
     "//media/base/win:color_space_util_win",
     "//media/capture/mojom:image_capture",
@@ -85,7 +85,7 @@ source_set("win_unittests") {
     "//base/test:test_support",
     "//gpu/command_buffer/client",
     "//media:test_support",
-    "//media/capture:capture",
+    "//media/capture",
     "//media/capture:test_support",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:image_capture_types",
@@ -93,7 +93,7 @@ source_set("win_unittests") {
     "//services/video_capture/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/libyuv:libyuv",
+    "//third_party/libyuv",
     "//ui/gfx:test_support",
   ]
 

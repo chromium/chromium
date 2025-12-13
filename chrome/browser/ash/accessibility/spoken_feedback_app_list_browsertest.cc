@@ -32,7 +32,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/user_manager/user_names.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
@@ -41,12 +40,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 using SpokenFeedbackTestVariant = ash::SpokenFeedbackTestVariant;
 using SpokenFeedbackTestConfig = ::ash::SpokenFeedbackTestConfig;
@@ -192,18 +191,12 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
     // Do not run expand arrow hinting animation to avoid msan test crash.
     // (See https://crbug.com/926038)
     zero_duration_mode_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     // Disable the app list nudge in the spoken feedback app list test.
     AppListTestApi().DisableAppListNudge(true);
     AppListControllerImpl::SetSunfishNudgeDisabledForTest(true);
-
-    scoped_feature_list_.InitWithFeatures(
-        {features::kLauncherSearchControl,
-         features::kFeatureManagementLocalImageSearch},
-        {features::kScannerDogfood, features::kSunfishFeature,
-         ash::assistant::features::kEnableNewEntryPoint});
 
     LoggedInSpokenFeedbackTest::SetUp();
   }
@@ -214,6 +207,8 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    LoggedInSpokenFeedbackTest::SetUpCommandLine(command_line);
+
     if (variant_ == kTestAsGuestUser) {
       command_line->AppendSwitch(switches::kGuestSession);
       command_line->AppendSwitch(::switches::kIncognito);
@@ -221,6 +216,10 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
       command_line->AppendSwitchASCII(
           switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
     }
+
+    scoped_feature_list_.InitWithFeatures(
+        {features::kFeatureManagementLocalImageSearch},
+        {features::kScannerDogfood, features::kSunfishFeature});
   }
 
   void SetUpOnMainThread() override {
@@ -291,7 +290,7 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   const SpokenFeedbackTestVariant variant_;
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 };
 
 class SpokenFeedbackAppListTest : public SpokenFeedbackAppListBaseTest {
@@ -311,6 +310,18 @@ INSTANTIATE_TEST_SUITE_P(
     ManifestV2GuestUser,
     SpokenFeedbackAppListTest,
     ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsGuestUser)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3NormalUser,
+    SpokenFeedbackAppListTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsNormalUser)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3GuestUser,
+    SpokenFeedbackAppListTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
                                                kTestAsGuestUser)));
 
 class NotificationSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
@@ -334,6 +345,18 @@ INSTANTIATE_TEST_SUITE_P(
     ManifestV2GuestUser,
     NotificationSpokenFeedbackAppListTest,
     ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsGuestUser)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3NormalUser,
+    NotificationSpokenFeedbackAppListTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsNormalUser)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3GuestUser,
+    NotificationSpokenFeedbackAppListTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
                                                kTestAsGuestUser)));
 
 class SpokenFeedbackAppListSearchTest : public SpokenFeedbackAppListBaseTest {
@@ -429,6 +452,34 @@ INSTANTIATE_TEST_SUITE_P(
     ManifestV2GuestUserDesktopMode,
     SpokenFeedbackAppListSearchTest,
     ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsGuestUser,
+                                               /*tablet_mode=*/false)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3NormalUserTabletMode,
+    SpokenFeedbackAppListSearchTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsNormalUser,
+                                               /*tablet_mode=*/true)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3GuestUserTabletMode,
+    SpokenFeedbackAppListSearchTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsGuestUser,
+                                               /*tablet_mode=*/true)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3NormalUserDesktopMode,
+    SpokenFeedbackAppListSearchTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsNormalUser,
+                                               /*tablet_mode=*/false)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3GuestUserDesktopMode,
+    SpokenFeedbackAppListSearchTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
                                                kTestAsGuestUser,
                                                /*tablet_mode=*/false)));
 
@@ -1026,6 +1077,12 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, VocalizeResultCount) {
 }
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, SearchCategoryFilter) {
+  if (GetParam().manifest_version() == ManifestVersion::kThree) {
+    // TODO(https://crbug.com/433771715): This test is failing on MSAN builds
+    // when ChromeVox mv3 is enabled.
+    return;
+  }
+
   chromevox_test_utils()->EnableChromeVox();
   ShowAppList();
 

@@ -17,6 +17,7 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -231,7 +232,7 @@ public abstract class ConditionalState {
     }
 
     /** Declare as an element an Android Activity of type |activityClass|. */
-    protected <T extends Activity> ActivityElement<T> declareActivity(Class<T> activityClass) {
+    public <T extends Activity> ActivityElement<T> declareActivity(Class<T> activityClass) {
         return mElements.declareActivity(activityClass);
     }
 
@@ -266,6 +267,46 @@ public abstract class ConditionalState {
     /** Declare as an element a View that matches |viewSpec|. */
     public ViewElement<View> declareView(Matcher<View> viewMatcher) {
         return mElements.declareView(viewMatcher);
+    }
+
+    /** Declare as an element a lazily-checked View that matches |viewMatcher|. */
+    public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
+            ViewSpec<ViewT> viewSpec) {
+        return mElements.declareOptionalView(viewSpec);
+    }
+
+    /**
+     * Declare as an element a lazily-checked View that matches |viewMatcher| with extra Options.
+     */
+    public OptionalViewElement<View> declareOptionalView(
+            Matcher<View> viewMatcher, ViewElement.Options options) {
+        return mElements.declareOptionalView(viewMatcher, options);
+    }
+
+    /** Declare as an element a lazily-checked |viewClass| that matches |viewMatcher|. */
+    public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
+            Class<ViewT> viewClass, Matcher<View> viewMatcher) {
+        return mElements.declareOptionalView(viewClass, viewMatcher);
+    }
+
+    /**
+     * Declare as an element a lazily-checked |viewClass| that matches |viewMatcher| with extra
+     * Options.
+     */
+    public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
+            Class<ViewT> viewClass, Matcher<View> viewMatcher, ViewElement.Options options) {
+        return mElements.declareOptionalView(viewClass, viewMatcher, options);
+    }
+
+    /** Declare as an element a lazily-checked View that matches |viewSpec| with extra Options. */
+    public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
+            ViewSpec<ViewT> viewSpec, ViewElement.Options options) {
+        return mElements.declareOptionalView(viewSpec, options);
+    }
+
+    /** Declare as an element a lazily-checked View that matches |viewSpec|. */
+    public OptionalViewElement<View> declareOptionalView(Matcher<View> viewMatcher) {
+        return mElements.declareOptionalView(viewMatcher);
     }
 
     /** Declare as a Condition that a View is not displayed. */
@@ -334,6 +375,11 @@ public abstract class ConditionalState {
         return mElements.declareElement(element);
     }
 
+    /** Declare a custom lazily-checked Element. */
+    public <T extends Element<?>> T declareOptionalElement(T element) {
+        return mElements.declareOptionalElement(element);
+    }
+
     /**
      * Do nothing to trigger a Transition.
      *
@@ -380,4 +426,10 @@ public abstract class ConditionalState {
     public TripBuilder pressBackTo() {
         return Triggers.pressBackTo().withContext(this);
     }
+
+    /** Returns which ActivityElement any ViewElements declare should be expected to be in. */
+    abstract @Nullable ActivityElement<?> determineActivityElement();
+
+    /** Called when a {@link ActivityElement} is declared. */
+    abstract <T extends Activity> void onDeclaredActivityElement(ActivityElement<T> element);
 }

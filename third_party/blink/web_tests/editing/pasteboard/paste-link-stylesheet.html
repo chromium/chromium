@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset="utf8">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// crbug.com/464761431
+selection_test(
+  '<div contenteditable>|</div>',
+  selection => {
+    selection.setClipboardData(
+      `<link rel="stylesheet" href="https://example.com"><style></style>`);
+    selection.document.execCommand('paste');
+  },
+  '<div contenteditable>|</div>',
+  'Paste link external stylesheet');
+</script>

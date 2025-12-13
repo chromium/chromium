@@ -157,7 +157,7 @@ TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
 
 TEST(SavedTabGroupTest, RemoveTabLocallyStoresMetadata) {
   SavedTabGroup group = CreateDefaultEmptySavedTabGroup().CloneAsSharedTabGroup(
-      CollaborationId("collaboration"));
+      syncer::CollaborationId("collaboration"));
   SavedTabGroupTab tab_1 = CreateDefaultSavedTabGroupTab(group.saved_guid());
   SavedTabGroupTab tab_2 = CreateDefaultSavedTabGroupTab(group.saved_guid());
 
@@ -205,7 +205,7 @@ TEST(SavedTabGroupTest, AddTabFromSyncRespectsPositions) {
 TEST(SavedTabGroupTest, AddTabFromSyncUsesPositionAsIndexForSharedGroup) {
   // Create a shared group and 2 tabs.
   SavedTabGroup group = CreateDefaultEmptySavedTabGroup();
-  group.SetCollaborationId(CollaborationId("collaboration"));
+  group.SetCollaborationId(syncer::CollaborationId("collaboration"));
 
   SavedTabGroupTab tab_0 = CreateDefaultSavedTabGroupTab(group.saved_guid());
   tab_0.SetPosition(0);
@@ -271,7 +271,7 @@ TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
 
 TEST(SavedTabGroupTest, RemoveSharedTabFromSyncStoresMetadata) {
   SavedTabGroup group = CreateDefaultEmptySavedTabGroup().CloneAsSharedTabGroup(
-      CollaborationId("collaboration"));
+      syncer::CollaborationId("collaboration"));
   SavedTabGroupTab tab_1 = CreateDefaultSavedTabGroupTab(group.saved_guid());
   SavedTabGroupTab tab_2 = CreateDefaultSavedTabGroupTab(group.saved_guid());
 
@@ -292,7 +292,7 @@ TEST(SavedTabGroupTest, RemoveSharedTabFromSyncShouldCleanOldEntries) {
   const GaiaId kRemovedBy("user_id");
 
   SavedTabGroup group = CreateDefaultEmptySavedTabGroup().CloneAsSharedTabGroup(
-      CollaborationId("collaboration"));
+      syncer::CollaborationId("collaboration"));
   group.AddTabLocally(CreateDefaultSavedTabGroupTab(group.saved_guid()));
 
   // Add and remove tabs up to the limit.
@@ -359,8 +359,8 @@ TEST(SavedTabGroupTest, GetOriginatingTabGroupGuid) {
 
   EXPECT_EQ(saved_group.GetOriginatingTabGroupGuid(), kOriginatingTabGroupGuid);
 
-  SavedTabGroup shared_group =
-      saved_group.CloneAsSharedTabGroup(CollaborationId("collaboration"));
+  SavedTabGroup shared_group = saved_group.CloneAsSharedTabGroup(
+      syncer::CollaborationId("collaboration"));
   EXPECT_EQ(shared_group.GetOriginatingTabGroupGuid(),
             saved_group.saved_guid());
 
@@ -383,8 +383,8 @@ TEST(SavedTabGroupTest, ConvertToSharedTabGroupAndBackRetainsPosition) {
   SavedTabGroup saved_group(std::u16string(u"default_group"),
                             tab_groups::TabGroupColorId::kGrey, {}, position);
   EXPECT_EQ(position, saved_group.position());
-  SavedTabGroup shared_group =
-      saved_group.CloneAsSharedTabGroup(CollaborationId("collaboration"));
+  SavedTabGroup shared_group = saved_group.CloneAsSharedTabGroup(
+      syncer::CollaborationId("collaboration"));
   EXPECT_EQ(position, shared_group.position());
   SavedTabGroup saved_group2 = shared_group.CloneAsSavedTabGroup();
   EXPECT_EQ(position, saved_group2.position());
@@ -404,7 +404,7 @@ TEST(SavedTabGroupTest, MergeRemoteGroupPosition) {
   // Shared group should not merge position.
   SavedTabGroup shared_group =
       CreateDefaultEmptySavedTabGroup().CloneAsSharedTabGroup(
-          CollaborationId("collaboration"));
+          syncer::CollaborationId("collaboration"));
   shared_group.MergeRemoteGroupMetadata(title, color, position, std::nullopt,
                                         std::nullopt, base::Time::Now());
   EXPECT_EQ(std::nullopt, shared_group.position());

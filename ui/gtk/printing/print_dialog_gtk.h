@@ -10,7 +10,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/print_dialog_linux_interface.h"
 #include "printing/printing_context_linux.h"
@@ -18,6 +21,10 @@
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/gtk/gtk_compat.h"
+
+namespace gtk {
+class GtkUiPlatform;
+}  // namespace gtk
 
 namespace printing {
 class MetafilePlayer;
@@ -28,15 +35,13 @@ using printing::PrintingContextLinux;
 
 // Needs to be freed on the UI thread to clean up its GTK members variables.
 class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
-                       public base::RefCountedDeleteOnSequence<PrintDialogGtk>,
                        public aura::WindowObserver {
  public:
-  // Creates and returns a print dialog.
-  static printing::PrintDialogLinuxInterface* CreatePrintDialog(
-      PrintingContextLinux* context);
+  PrintDialogGtk(PrintingContextLinux* context, gtk::GtkUiPlatform* platform);
 
   PrintDialogGtk(const PrintDialogGtk&) = delete;
   PrintDialogGtk& operator=(const PrintDialogGtk&) = delete;
+  ~PrintDialogGtk() override;
 
   // printing::PrintDialogLinuxInterface implementation.
   void UseDefaultSettings() override;
@@ -51,18 +56,11 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
       PrintingContextLinux::PrintSettingsCallback callback) override;
   void PrintDocument(const printing::MetafilePlayer& metafile,
                      const std::u16string& document_name) override;
-  void ReleaseDialog() override;
 
   // Handles print job response.
   void OnJobCompleted(GtkPrintJob* print_job, const GError* error);
 
  private:
-  friend class base::RefCountedDeleteOnSequence<PrintDialogGtk>;
-  friend class base::DeleteHelper<PrintDialogGtk>;
-
-  explicit PrintDialogGtk(PrintingContextLinux* context);
-  ~PrintDialogGtk() override;
-
   // Handles dialog response.
   void OnResponse(GtkWidget* dialog, int response_id);
 
@@ -79,6 +77,7 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
   // Printing dialog callback.
   PrintingContextLinux::PrintSettingsCallback callback_;
   raw_ptr<PrintingContextLinux> context_;
+  const raw_ptr<gtk::GtkUiPlatform> platform_;
 
   // Print dialog settings. PrintDialogGtk owns |dialog_| and holds references
   // to the other objects.
@@ -91,7 +90,14 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
 
   base::FilePath path_to_pdf_;
 
+  // Task runner for the thread that created the dialog.
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   ScopedGSignal signal_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<PrintDialogGtk> weak_factory_{this};
 };
 
 #endif  // UI_GTK_PRINTING_PRINT_DIALOG_GTK_H_

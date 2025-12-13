@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/decoder_buffer.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <variant>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
@@ -103,7 +99,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion) {
   auto region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
   auto mapping = region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  memcpy(mapping.GetMemoryAs<uint8_t>(), kData, kDataSize);
+  UNSAFE_TODO(memcpy(mapping.GetMemoryAs<uint8_t>(), kData, kDataSize));
 
   scoped_refptr<DecoderBuffer> buffer(
       DecoderBuffer::FromSharedMemoryRegion(std::move(region), 0, kDataSize));
@@ -122,7 +118,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_Unaligned) {
   auto region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
   auto mapping = region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  memcpy(mapping.GetMemoryAs<uint8_t>(), kData, kDataSize);
+  UNSAFE_TODO(memcpy(mapping.GetMemoryAs<uint8_t>(), kData, kDataSize));
 
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::FromSharedMemoryRegion(
       std::move(region), kDataOffset, kDataSize - kDataOffset));
@@ -140,7 +136,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_ZeroSize) {
   auto region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
   auto mapping = region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  memcpy(mapping.memory(), kData, kDataSize);
+  UNSAFE_TODO(memcpy(mapping.memory(), kData, kDataSize));
 
   scoped_refptr<DecoderBuffer> buffer(
       DecoderBuffer::FromSharedMemoryRegion(std::move(region), 0, 0));
@@ -153,7 +149,8 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion) {
 
   auto mapping_region = base::ReadOnlySharedMemoryRegion::Create(kDataSize);
   ASSERT_TRUE(mapping_region.IsValid());
-  memcpy(mapping_region.mapping.GetMemoryAs<uint8_t>(), kData, kDataSize);
+  UNSAFE_TODO(
+      memcpy(mapping_region.mapping.GetMemoryAs<uint8_t>(), kData, kDataSize));
 
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::FromSharedMemoryRegion(
       std::move(mapping_region.region), 0, kDataSize));
@@ -171,7 +168,8 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_Unaligned) {
 
   auto mapping_region = base::ReadOnlySharedMemoryRegion::Create(kDataSize);
   ASSERT_TRUE(mapping_region.IsValid());
-  memcpy(mapping_region.mapping.GetMemoryAs<uint8_t>(), kData, kDataSize);
+  UNSAFE_TODO(
+      memcpy(mapping_region.mapping.GetMemoryAs<uint8_t>(), kData, kDataSize));
 
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::FromSharedMemoryRegion(
       std::move(mapping_region.region), kDataOffset, kDataSize - kDataOffset));
@@ -188,7 +186,8 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_ZeroSize) {
   const size_t kDataSize = std::size(kData);
 
   auto mapping_region = base::ReadOnlySharedMemoryRegion::Create(kDataSize);
-  memcpy(mapping_region.mapping.GetMemoryAs<uint8_t>(), kData, kDataSize);
+  UNSAFE_TODO(
+      memcpy(mapping_region.mapping.GetMemoryAs<uint8_t>(), kData, kDataSize));
 
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::FromSharedMemoryRegion(
       std::move(mapping_region.region), 0, 0));
@@ -201,7 +200,7 @@ TEST(DecoderBufferTest, FromExternalMemory) {
   constexpr size_t kDataSize = std::size(kData);
 
   auto external_memory = std::make_unique<ExternalMemoryAdapterForTesting>(
-      base::span(kData, kDataSize));
+      UNSAFE_TODO(base::span(kData, kDataSize)));
   auto buffer = DecoderBuffer::FromExternalMemory(std::move(external_memory));
   ASSERT_TRUE(buffer.get());
   EXPECT_EQ(buffer->size(), kDataSize);
@@ -220,7 +219,7 @@ TEST(DecoderBufferTest, ReadingWriting) {
   uint8_t* data = buffer->writable_data();
   ASSERT_TRUE(data);
   ASSERT_EQ(kDataSize, buffer->size());
-  base::span(data, buffer->size()).copy_from(kData);
+  UNSAFE_TODO(base::span(data, buffer->size())).copy_from(kData);
   const uint8_t* read_only_data = base::span(*buffer).data();
   ASSERT_EQ(data, read_only_data);
   EXPECT_EQ(base::span(*buffer), base::span(kData));
@@ -265,15 +264,20 @@ TEST(DecoderBufferTest, SideData) {
   constexpr uint64_t kSecureHandle = 42;
   const std::vector<uint32_t> kSpatialLayers = {1, 2, 3};
   const std::vector<uint8_t> kAlphaData = {9, 8, 7};
+  const std::vector<uint8_t> kItuT35Data = {5, 6, 7};
 
   buffer->WritableSideData().secure_handle = kSecureHandle;
   buffer->WritableSideData().spatial_layers = kSpatialLayers;
   buffer->WritableSideData().alpha_data =
       base::HeapArray<uint8_t>::CopiedFrom(kAlphaData);
+  buffer->WritableSideData().itu_t35_data =
+      base::HeapArray<uint8_t>::CopiedFrom(kItuT35Data);
   EXPECT_TRUE(buffer->side_data());
   EXPECT_EQ(buffer->side_data()->secure_handle, kSecureHandle);
   EXPECT_EQ(buffer->side_data()->spatial_layers, kSpatialLayers);
   EXPECT_EQ(buffer->side_data()->alpha_data.as_span(), base::span(kAlphaData));
+  EXPECT_EQ(buffer->side_data()->itu_t35_data.as_span(),
+            base::span(kItuT35Data));
 
   auto cloned_side_data = buffer->side_data()->Clone();
 
@@ -283,6 +287,8 @@ TEST(DecoderBufferTest, SideData) {
             cloned_side_data->spatial_layers);
   EXPECT_EQ(buffer->side_data()->alpha_data.as_span(),
             cloned_side_data->alpha_data.as_span());
+  EXPECT_EQ(buffer->side_data()->itu_t35_data.as_span(),
+            cloned_side_data->itu_t35_data.as_span());
 
   buffer->set_side_data(nullptr);
   EXPECT_FALSE(buffer->side_data());

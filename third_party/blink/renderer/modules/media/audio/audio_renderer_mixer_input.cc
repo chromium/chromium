@@ -12,9 +12,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_pool.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -148,7 +150,7 @@ void AudioRendererMixerInput::GetOutputDeviceInfoAsync(
   // immediately. Per the AudioRendererSink API contract, this must be posted.
   if (device_info_.has_value() && (sink_ || mixer_)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(info_cb), *device_info_));
+        FROM_HERE, blink::BindOnce(std::move(info_cb), *device_info_));
     return;
   }
 
@@ -173,8 +175,8 @@ void AudioRendererMixerInput::GetOutputDeviceInfoAsync(
   // The callback is guaranteed to execute on this thread, so there are no
   // threading issues.
   sink_->GetOutputDeviceInfoAsync(
-      base::BindOnce(&AudioRendererMixerInput::OnDeviceInfoReceived,
-                     base::RetainedRef(this), std::move(info_cb)));
+      blink::BindOnce(&AudioRendererMixerInput::OnDeviceInfoReceived,
+                      blink::RetainedRef(this), std::move(info_cb)));
 }
 
 bool AudioRendererMixerInput::IsOptimizedForHardwareParameters() {
@@ -224,8 +226,8 @@ void AudioRendererMixerInput::SwitchOutputDevice(
   // The callback is guaranteed to execute on this thread, so there are no
   // threading issues.
   new_sink->GetOutputDeviceInfoAsync(
-      base::BindOnce(&AudioRendererMixerInput::OnDeviceSwitchReady,
-                     base::RetainedRef(this), std::move(callback), new_sink));
+      blink::BindOnce(&AudioRendererMixerInput::OnDeviceSwitchReady,
+                      blink::RetainedRef(this), std::move(callback), new_sink));
 }
 
 double AudioRendererMixerInput::ProvideInput(
@@ -253,16 +255,14 @@ double AudioRendererMixerInput::ProvideInput(
 
     DCHECK_LE(remaining_fade_in_frames_, total_fade_in_frames_);
     const int start_volume = total_fade_in_frames_ - remaining_fade_in_frames_;
+    const float fade_in_step = 1.0f / total_fade_in_frames_;
     DCHECK_GE(start_volume, 0);
 
     // Apply a perfect linear fade-in. Fading-in in steps (e.g. increasing
     // volume by 10% every 1ms over 10ms) introduces high frequency distortions.
-    for (int ch = 0; ch < audio_bus->channels(); ++ch) {
-      float* data = audio_bus->channel(ch);
-
+    for (auto channel : audio_bus->AllChannels()) {
       for (int i = 0; i < frames; ++i) {
-        UNSAFE_TODO(data[i]) *=
-            static_cast<float>(start_volume + i) / total_fade_in_frames_;
+        channel[i] *= static_cast<float>(start_volume + i) * fade_in_step;
       }
     }
 

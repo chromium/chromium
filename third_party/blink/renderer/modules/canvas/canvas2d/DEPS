@@ -14,9 +14,6 @@ specific_include_rules = {
         "+components/viz/common/resources/transferable_resource.h",
         "+gpu/command_buffer/client/context_support.h",
     ],
-    "identifiability_study_helper.cc" : [
-        "+base/hash",
-    ],
     # Additional allowed includes for tests.
     ".*_test(_.*)?\.(cc|h)" : [
         "+base/metrics/histogram_base.h",

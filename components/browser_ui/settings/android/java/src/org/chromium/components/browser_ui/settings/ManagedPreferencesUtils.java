@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -25,11 +26,31 @@ import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawab
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.Toast;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /** Utilities and common methods to handle settings managed by policies. */
 @NullMarked
 public class ManagedPreferencesUtils {
+
+    /** Represents possible state of a managed boolean preference. */
+    @IntDef({
+        BooleanPolicyState.UNMANAGED,
+        BooleanPolicyState.MANAGED_BY_POLICY_ON,
+        BooleanPolicyState.MANAGED_BY_POLICY_OFF,
+        BooleanPolicyState.RECOMMENDED_IS_FOLLOWED,
+        BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BooleanPolicyState {
+        int UNMANAGED = 0;
+        int MANAGED_BY_POLICY_ON = 1;
+        int MANAGED_BY_POLICY_OFF = 2;
+        int RECOMMENDED_IS_FOLLOWED = 3;
+        int RECOMMENDED_IS_NOT_FOLLOWED = 4;
+    }
+
     private static Toast showToastWithResourceId(Context context, @StringRes int resId) {
         Toast toast = Toast.makeText(context, context.getString(resId), Toast.LENGTH_LONG);
         toast.show();
@@ -49,14 +70,24 @@ public class ManagedPreferencesUtils {
 
     /**
      * Shows a toast indicating that the previous action is managed by the parent(s) of the
-     * supervised user.
-     * This is usually used to explain to the user why a given control is disabled in the settings.
+     * supervised user. This is usually used to explain to the user why a given control is disabled
+     * in the settings.
      *
      * @param context The context where the Toast will be shown.
+     * @param delegate The delegate that controls whether the preference is managed.
      */
     public static Toast showManagedByParentToast(
             Context context, @Nullable ManagedPreferenceDelegate delegate) {
         return showToastWithResourceId(context, getManagedByParentStringRes(delegate));
+    }
+
+    /**
+     * Shows a toast indicating that a setting is recommended by the administrator.
+     *
+     * @param context The context where the Toast will be shown.
+     */
+    public static Toast showRecommendationToast(Context context) {
+        return showToastWithResourceId(context, R.string.recommended_by_your_organization);
     }
 
     /**
@@ -93,37 +124,41 @@ public class ManagedPreferencesUtils {
 
     /**
      * @return The resource ID for the managed icon to show. Returns 0 if no managed icon should be
-     *         shown.
+     *     shown.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static int getManagedIconResId(
             @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
         if (delegate == null) return 0;
 
         if (delegate.isPreferenceControlledByPolicy(preference)) {
             return getManagedByEnterpriseIconId();
-        } else if (delegate.isPreferenceControlledByCustodian(preference)) {
+        }
+        if (delegate.isPreferenceControlledByCustodian(preference)) {
             return getManagedByCustodianIconId();
         }
-
+        if (preferenceFollowsRecommendation(delegate, preference)) {
+            return getManagedByEnterpriseIconId();
+        }
         return 0;
     }
 
     /**
-     * Initializes the Preference based on the state of any policies that may affect it,
-     * e.g. by showing a managed icon or disabling clicks on the preference. If |preference| is an
-     * instance of ChromeImageViewPreference, the icon is not set since the ImageView widget will
-     * display the managed icons.
+     * Initializes the Preference based on the state of any policies that may affect it, e.g. by
+     * showing a managed icon or disabling clicks on the preference. If |preference| is an instance
+     * of ChromeImageViewPreference, the icon is not set since the ImageView widget will display the
+     * managed icons.
      *
-     * This should be called once, before the preference is displayed.
+     * <p>This should be called once, before the preference is displayed.
      *
      * @param delegate The delegate that controls whether the preference is managed. May be null,
-     *         then this method does nothing.
+     *     then this method does nothing.
      * @param preference The Preference that is being initialized.
      * @param allowManagedIcon Whether the icon view should show the managed icon when the
-     *         preference is managed.
+     *     preference is managed. Icons should only be set this way for custodian controlled
+     *     preferences or a custom layout.
      * @param hasCustomLayout Whether the preference defines its own layout or should use the
-     *         embedder's default layout.
+     *     embedder's default layout.
      */
     public static void initPreference(
             @Nullable ManagedPreferenceDelegate delegate,
@@ -132,10 +167,7 @@ public class ManagedPreferencesUtils {
             boolean hasCustomLayout) {
         if (delegate == null) return;
 
-        // Embedders may define its own default layout for preferences, which can only be applied
-        // if the preference doesn't use a custom layout and if the preference is controlled by
-        // policy.
-        if (!hasCustomLayout && delegate.isPreferenceControlledByPolicy(preference)) {
+        if (!hasCustomLayout) {
             @LayoutRes int layoutResource = delegate.defaultPreferenceLayoutResource();
             if (layoutResource != 0) {
                 preference.setLayoutResource(layoutResource);
@@ -162,41 +194,71 @@ public class ManagedPreferencesUtils {
      * Disables the Preference's views if the preference is not clickable and adds a disclaimer
      * indicating that the preference is managed.
      *
-     * This should be called from the Preference's onBindView() method.
+     * <p>This should be called from the Preference's onBindView() method.
      *
      * @param delegate The delegate that controls whether the preference is managed. May be null,
-     *         then this method does nothing.
+     *     then this method does nothing.
      * @param preference The Preference that owns the view
      * @param view The View that was bound to the Preference
      */
     public static void onBindViewToPreference(
             @Nullable ManagedPreferenceDelegate delegate, Preference preference, View view) {
+        // This early return prevents never managed preferences from being affected.
         if (delegate == null) return;
 
         if (delegate.isPreferenceClickDisabled(preference)) {
             ViewUtils.setEnabledRecursive(view, false);
         }
 
-        // Append managed information to summary if necessary.
-        TextView summaryView = view.findViewById(android.R.id.summary);
-        CharSequence descriptionText =
-                summaryView.getVisibility() == View.VISIBLE ? summaryView.getText() : null;
+        // Get summary text and managed disclaimer text.
+        @Nullable TextView summaryView = view.findViewById(android.R.id.summary);
+        @Nullable CharSequence descriptionText =
+                summaryView != null && summaryView.getVisibility() == View.VISIBLE
+                        ? summaryView.getText()
+                        : null;
+        @Nullable CharSequence managedDisclaimerText =
+                getManagedDisclaimerText(delegate, preference);
         // Fallback to the old UI if the managed disclaimer view doesn't exist, which may happen if
         // a {@link ChromeBasePreference} defines its own layout.
-        // Highlighted managed disclaimers only apply to preferences managed by policy. For
-        // preferences managed by a custodian, fallback to the legacy UI.
+        // Preferences managed by a custodian also fallback to the legacy UI.
         // TODO(crbug.com/40236420): Remove this fallback once all custom layouts for all affected
         //                          preferences include the managed disclaimer view.
         // TODO(crbug.com/40243868): Apply highlighted managed disclaimer for preferences managed
         //                          by a custodian.
+        boolean isManagedOrRecommended =
+                delegate.isPreferenceControlledByPolicy(preference)
+                        || delegate.isPreferenceRecommendation(preference) != null;
+
         if (view.findViewById(R.id.managed_disclaimer_text) != null
-                && delegate.isPreferenceControlledByPolicy(preference)) {
-            // Hide the icon since it will be shown on the highlighted managed disclaimer.
-            hideManagedIcon(view);
-            setSummaryWithHighlightedManagedInfo(descriptionText, view);
-        } else {
-            CharSequence managedDisclaimerText = getManagedDisclaimerText(delegate, preference);
+                && !preferenceHasCustodian(delegate, preference)) {
+            // This is the modern path using a "highlighted managed disclaimer" view.
+
+            // Android icon hidden if managed since it will be shown in the managed disclaimer view.
+            if (isManagedOrRecommended) {
+                hideManagedIcon(view);
+            }
+            // Set the summary.
+            if (TextUtils.isEmpty(descriptionText)) {
+                hideSummaryView(view);
+            } else {
+                showSummaryViewWithText(descriptionText, view);
+            }
+            // Managed disclaimer view is shown based on the logic in {@link
+            // getManagedDisclaimerText()}.
+            if (managedDisclaimerText != null) {
+                showManagedDisclaimerView(managedDisclaimerText, view);
+            } else {
+                hideManagedDisclaimerView(view);
+            }
+        } else if (summaryView != null) {
+            // Legacy path displays disclaimer text through preference summary. Handles custodians
+            // and custom views.
             setSummaryWithManagedInfo(descriptionText, managedDisclaimerText, view);
+        } else {
+            assert false
+                    : "Utilizing ManagedPreferencesUtils.onBindViewToPreference() requires that"
+                            + " your view contains at least one of the following ids:"
+                            + " managed_disclaimer_text, @android:id/summary";
         }
     }
 
@@ -221,22 +283,27 @@ public class ManagedPreferencesUtils {
         onBindViewToPreference(delegate, preference, view);
 
         if (!delegate.isPreferenceControlledByPolicy(preference)
-                && !delegate.isPreferenceControlledByCustodian(preference)) {
+                && !delegate.isPreferenceControlledByCustodian(preference)
+                && !preferenceFollowsRecommendation(delegate, preference)) {
             return;
         }
 
         ImageView button = view.findViewById(R.id.image_view_widget);
         button.setImageDrawable(getManagedIconDrawable(delegate, preference));
-        if (delegate.isPreferenceControlledByPolicy(preference)) {
-            button.setContentDescription(
-                    preference.getContext().getString(R.string.managed_by_your_organization));
+
+        CharSequence contentDescription = getManagedDisclaimerText(delegate, preference);
+        if (contentDescription != null) {
+            button.setContentDescription(contentDescription);
         }
+
         button.setOnClickListener(
                 (View v) -> {
                     if (delegate.isPreferenceControlledByPolicy(preference)) {
                         showManagedByAdministratorToast(preference.getContext());
                     } else if (delegate.isPreferenceControlledByCustodian(preference)) {
                         showManagedByParentToast(preference.getContext(), delegate);
+                    } else if (preferenceFollowsRecommendation(delegate, preference)) {
+                        showRecommendationToast(preference.getContext());
                     }
                 });
     }
@@ -312,25 +379,6 @@ public class ManagedPreferencesUtils {
                             Locale.getDefault(), "%s\n%s", descriptionText, managedDisclaimerText),
                     view);
         }
-
-        // Explicitly hide the disclaimer view in case it was previously visible in a {@link View}
-        // recycled by a {@link RecyclerView}.
-        hideManagedDisclaimerView(view);
-    }
-
-    /**
-     * @param descriptionText A description or a state for a given preference.
-     * @param view The view corresponding to a given preference.
-     */
-    private static void setSummaryWithHighlightedManagedInfo(
-            @Nullable CharSequence descriptionText, View view) {
-        if (TextUtils.isEmpty(descriptionText)) {
-            hideSummaryView(view);
-        } else {
-            showSummaryViewWithText(descriptionText, view);
-        }
-
-        showManagedDisclaimerView(view);
     }
 
     /**
@@ -351,20 +399,24 @@ public class ManagedPreferencesUtils {
     }
 
     /**
-     * @param delegate The delegate that controls whether the preference is managed. If null,
-     *         then the preference is not managed.
+     * @param delegate The delegate that controls whether the preference is managed. If null, then
+     *     the preference is not managed.
      * @param preference The {@link Preference} that is being shown to the user.
      * @return Text indicating that a preference is managed by an administrator or custodian, or
-     *         null if the preference is not managed.
+     *     null if the preference is not managed.
      */
     private static @Nullable CharSequence getManagedDisclaimerText(
             @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
         if (delegate == null) return null;
+
         if (delegate.isPreferenceControlledByPolicy(preference)) {
             return preference.getContext().getString(R.string.managed_by_your_organization);
         }
         if (delegate.isPreferenceControlledByCustodian(preference)) {
             return preference.getContext().getString(getManagedByParentStringRes(delegate));
+        }
+        if (preferenceFollowsRecommendation(delegate, preference)) {
+            return preference.getContext().getString(R.string.recommended_by_your_organization);
         }
         return null;
     }
@@ -386,23 +438,29 @@ public class ManagedPreferencesUtils {
 
     /**
      * Hides the summary view for a preference.
+     *
      * @param view The view corresponding to the preference.
      */
     private static void hideSummaryView(View view) {
-        TextView summaryView = view.findViewById(android.R.id.summary);
-        summaryView.setVisibility(View.GONE);
+        @Nullable TextView summaryView = view.findViewById(android.R.id.summary);
+        if (summaryView != null) {
+            summaryView.setVisibility(View.GONE);
+        }
     }
 
     /**
      * Sets the text to be shown in the summary view for a preference, and makes the summary view
      * visible.
+     *
      * @param summary The text to show in the {@code summary} view.
      * @param view The view corresponding to the preference.
      */
     private static void showSummaryViewWithText(@Nullable CharSequence summary, View view) {
-        TextView summaryView = view.findViewById(android.R.id.summary);
-        summaryView.setText(summary);
-        summaryView.setVisibility(View.VISIBLE);
+        @Nullable TextView summaryView = view.findViewById(android.R.id.summary);
+        if (summaryView != null) {
+            summaryView.setText(summary);
+            summaryView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -418,14 +476,29 @@ public class ManagedPreferencesUtils {
 
     /**
      * Sets the text to be shown in the managed disclaimer view for a preference.
+     *
+     * @param managedDisclaimerText Message displayed to indicate that preference is managed.
      * @param view The view corresponding to the preference.
      */
-    private static void showManagedDisclaimerView(View view) {
+    private static void showManagedDisclaimerView(
+            @Nullable CharSequence managedDisclaimerText, View view) {
         TextViewWithCompoundDrawables managedDisclaimerView =
                 view.findViewById(R.id.managed_disclaimer_text);
         assert managedDisclaimerView != null
                 : "Missing managed disclaimer view; custom layout for a new preference?";
         managedDisclaimerView.setVisibility(View.VISIBLE);
         managedDisclaimerView.setEnabled(true);
+        managedDisclaimerView.setText(managedDisclaimerText);
+    }
+
+    private static boolean preferenceHasCustodian(
+            ManagedPreferenceDelegate delegate, Preference preference) {
+        return delegate.isPreferenceControlledByCustodian(preference)
+                && !delegate.isPreferenceControlledByPolicy(preference);
+    }
+
+    private static boolean preferenceFollowsRecommendation(
+            ManagedPreferenceDelegate delegate, Preference preference) {
+        return Boolean.TRUE.equals(delegate.isPreferenceRecommendation(preference));
     }
 }

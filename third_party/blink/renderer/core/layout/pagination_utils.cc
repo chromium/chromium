@@ -408,7 +408,9 @@ float CalculateOverflowShrinkForPrinting(const LayoutView& view,
     const auto& page_container = To<PhysicalBoxFragment>(*link);
     for (const PhysicalFragmentLink& child : page_container.Children()) {
       if (child->GetBoxType() == PhysicalFragment::kPageBorderBox) {
-        const auto& page = *To<PhysicalBoxFragment>(child->Children()[0].get());
+        const auto& page_border_box = *To<PhysicalBoxFragment>(child.get());
+        const auto& page =
+            *To<PhysicalBoxFragment>(page_border_box.Children()[0].get());
         // Check the inline axis overflow on each individual page, to find the
         // largest relative overflow.
         float page_scale_factor;

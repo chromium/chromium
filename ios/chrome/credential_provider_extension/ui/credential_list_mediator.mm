@@ -164,7 +164,7 @@
                                                    NSDictionary* bindings) {
         BOOL isPassword = !credential.isPasskey;
         BOOL isValidPasskey =
-            credential.isPasskey &&
+            credential.isPasskey && !credential.hidden &&
             [credential.rpId isEqualToString:relyingPartyIdentifier];
 
         return (includePasswords && isPassword) ||

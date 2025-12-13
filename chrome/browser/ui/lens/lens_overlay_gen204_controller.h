@@ -9,11 +9,12 @@
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 
 class Profile;
 
 namespace lens {
+
+class LensOverlayRequestId;
 
 // Sends gen204 pings for the Lens Overlay.
 class LensOverlayGen204Controller {
@@ -117,7 +118,7 @@ class LensOverlayGen204Controller {
   // Handles the gen204 network response and removes the source from
   // gen204_loaders_.
   void OnGen204NetworkResponse(const network::SimpleURLLoader* source,
-                               std::unique_ptr<std::string> response_body);
+                               std::optional<std::string> response_body);
 
   // The invocation source that triggered the query flow.
   lens::LensOverlayInvocationSource invocation_source_;

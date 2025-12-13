@@ -27,6 +27,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -69,7 +70,7 @@ SystemToastView::SystemToastView(const std::u16string& text,
   const ui::ColorId background_color_id =
       chromeos::features::IsSystemBlurEnabled()
           ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
-          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+          : cros_tokens::kCrosSysSystemOnBaseOpaque;
   SetBackground(views::CreateSolidBackground(background_color_id));
   SetOrientation(views::LayoutOrientation::kHorizontal);
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);

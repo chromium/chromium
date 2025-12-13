@@ -225,7 +225,7 @@ class V8ContextData : public base::LinkNode<V8ContextData>,
 ////////////////////////////////////////////////////////////////////////////////
 // ProcessData declaration:
 
-class ProcessData : public ExternalNodeAttachedDataImpl<ProcessData> {
+class ProcessData : public NodeAttachedDataImpl<ProcessData> {
  public:
   using PassKey = base::PassKey<ProcessData>;
 

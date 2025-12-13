@@ -15,7 +15,6 @@
 #include "base/containers/heap_array.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 #include "media/parsers/h264_parser.h"
 #include "media/parsers/h265_nalu_parser.h"

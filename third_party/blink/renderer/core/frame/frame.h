@@ -35,7 +35,6 @@
 #include "base/i18n/rtl.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
@@ -81,7 +80,6 @@ class HTMLFrameOwnerElement;
 class LayoutEmbeddedContent;
 class LocalFrame;
 class Page;
-class Resource;
 class SecurityContext;
 class Settings;
 class WindowProxy;
@@ -446,9 +444,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // on a detached frame.
   std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
   GetDeprecatedFencedFrameMode() const;
-
-  // Returns all the resources under the frame tree of this node.
-  HeapVector<Member<Resource>> AllResourcesUnderFrame();
 
   // Iterates through the frame owner's ancestor nodes and adjusts the offset.
   void AdjustOffsetByAncestorFrames(gfx::Point* origin_point);

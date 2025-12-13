@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 
 #include <stddef.h>
 
 #include <array>
 #include <cstdlib>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -33,6 +34,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -92,9 +94,7 @@ void ResizeForNextOutput(std::string* compressed_log, z_stream* stream) {
 
 }  // namespace
 
-BASE_FEATURE(kWebRTCLogUploadSuffix,
-             "WebRTCLogUploadSuffix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebRTCLogUploadSuffix, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::string GetLogUploadProduct() {
 #if BUILDFLAG(IS_WIN)
@@ -370,7 +370,7 @@ void WebRtcLogUploader::Shutdown() {
 void WebRtcLogUploader::OnSimpleLoaderComplete(
     SimpleURLLoaderList::iterator it,
     WebRtcLogUploader::UploadDoneData upload_done_data,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(!shutdown_);
   network::SimpleURLLoader* loader = it->get();
@@ -380,9 +380,7 @@ void WebRtcLogUploader::OnSimpleLoaderComplete(
   }
   const int network_error_code = loader->NetError();
   pending_uploads_.erase(it);
-  std::string report_id;
-  if (response_body)
-    report_id = std::move(*response_body);
+  std::string report_id = std::move(response_body).value_or("");
   // The log path can be empty here if we failed getting it before. We still
   // upload the log if that's the case.
   if (!upload_done_data.paths.directory.empty()) {

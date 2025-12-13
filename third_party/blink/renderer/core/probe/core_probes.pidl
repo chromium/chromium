@@ -77,6 +77,7 @@ interface CoreProbes {
   void WillModifyDOMAttr([Keep] Element*, const AtomicString& old_value, const AtomicString& new_value);
   void DidModifyDOMAttr([Keep] Element*, const QualifiedName& name, const AtomicString& value);
   void DidRemoveDOMAttr([Keep] Element*, const QualifiedName& name);
+  void DidModifyAdoptedStyleSheets([Keep] Node*);
   void WillChangeStyleElement([Keep] Element*);
   void CharacterDataModified([Keep] CharacterData*);
   void DidInvalidateStyleAttr([Keep] Node*);
@@ -146,8 +147,8 @@ interface CoreProbes {
   void WillSendWebSocketHandshakeRequest([Keep] ExecutionContext*, uint64_t identifier, network::mojom::blink::WebSocketHandshakeRequest* request);
   void DidReceiveWebSocketHandshakeResponse([Keep] ExecutionContext*, uint64_t identifier, network::mojom::blink::WebSocketHandshakeRequest* request, network::mojom::blink::WebSocketHandshakeResponse* response);
   void DidCloseWebSocket([Keep] ExecutionContext*, uint64_t identifier);
-  void DidReceiveWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, const Vector<base::span<const char>>& data);
-  void DidSendWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, base::span<const char> payload);
+  void DidReceiveWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, const Vector<base::span<const uint8_t>>& data);
+  void DidSendWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, base::span<const uint8_t> payload);
   void DidReceiveWebSocketMessageError(ExecutionContext*, uint64_t identifier, const String& error_message);
   void WebTransportCreated([Keep] ExecutionContext*, uint64_t transport_id, const KURL& request_url);
   void WebTransportConnectionEstablished(ExecutionContext*, uint64_t transport_id);
@@ -164,6 +165,8 @@ interface CoreProbes {
   void DirectUDPSocketClosed(ExecutionContext*, uint64_t identifier);
   void DirectUDPSocketChunkSent(ScriptState&, uint64_t identifier, base::span<const uint8_t> data, std::optional<String> remote_addr, std::optional<uint16_t> remote_port);
   void DirectUDPSocketChunkReceived(ScriptState&, uint64_t identifier, base::span<const uint8_t> data, std::optional<String> remote_addr, std::optional<uint16_t> remote_port);
+  void DirectUDPSocketJoinedMulticastGroup(ExecutionContext*, uint64_t identifier, const String& ipAddress);
+  void DirectUDPSocketLeftMulticastGroup(ExecutionContext*, uint64_t identifier, const String& ipAddress);
   void WillCreateP2PSocketUdp(ExecutionContext*, std::optional<base::UnguessableToken>* devtools_token);
   /* This is for pre-BlinkGenPropertyTrees. TODO(wangxianzhu): Remove this function for BlinkGenPropertyTrees. */
   void LayerTreeDidChange(LocalFrame*);
@@ -181,7 +184,7 @@ interface CoreProbes {
   void DocumentWriteFetchScript([Keep] Document*);
   void DidChangeViewport(LocalFrame* document);
   void BreakableLocation(ExecutionContext* context, const char* name);
-  void WillHandlePromise(ExecutionContext* context, ScriptState* script_state, bool resolving, const char* class_like_name, PropertyName property_like_name, SourceLocation* location);
+  void WillHandlePromise(ExecutionContext* context, ScriptState* script_state, bool resolving, const char* class_like_name, PropertyName property_like_name, LazySourceLocation* location);
   RecalculateStyle(Document* document);
   UpdateLayout(Document* document);
 
@@ -221,7 +224,7 @@ interface CoreProbes {
   void PlayerEventsAdded(ExecutionContext* context, String player_id, const Vector<InspectorPlayerEvent>& events);
   void PlayerMessagesLogged(ExecutionContext* context, String player_id, const Vector<InspectorPlayerMessage>& messages);
   void PlayerPropertiesChanged(ExecutionContext* context, String player_id, const Vector<InspectorPlayerProperty>& properties);
-  void PlayersCreated(ExecutionContext* context, const Vector<WebString>& players);
+  void PlayerCreated(ExecutionContext* context, const MediaPlayer& player);
   void SetDevToolsIds(CoreProbeSink*, ResourceRequest& request, const FetchInitiatorInfo&);
   void DidMutateStyleSheet(Document*, CSSStyleSheet* style_sheet);
   void DidReplaceStyleSheetText(Document*, CSSStyleSheet* style_sheet, const String& text);
@@ -240,4 +243,5 @@ interface CoreProbes {
   void DidInitializeFrameWidget(LocalFrame* document);
   void UpdateScrollableFlag([Keep] Node* node, std::optional<bool>);
   void WillHidePopover([Keep] HTMLElement* element, bool* force_open);
+  void UpdateAffectedByStartingStylesFlag([Keep] Node* node, std::optional<bool> override_flag);
 }

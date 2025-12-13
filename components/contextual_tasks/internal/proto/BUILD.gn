@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [
+    "ai_thread_entity.proto",
+    "contextual_task_entity.proto",
+  ]
+  deps = [ "//components/sync/protocol" ]
+}

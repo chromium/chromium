@@ -64,14 +64,12 @@ std::string GetDetailsForPixAccountLinkingRequest::GetRequestContent() {
                        base::Value::Dict().Set(
                            "external_customer_id",
                            base::NumberToString(billing_customer_number_))))
-          // Set an empty dict for pix account linking info to indicate that the
-          // request is for pix account linking. No additional data is required
+          // Set an empty dict for Pix account linking info to indicate that the
+          // request is for Pix account linking. No additional data is required
           // within the dict.
           .Set("pix_account_linking_info", base::Value::Dict());
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
-  return request_content;
+  return base::WriteJson(request_dict).value_or("");
 }
 
 void GetDetailsForPixAccountLinkingRequest::ParseResponse(

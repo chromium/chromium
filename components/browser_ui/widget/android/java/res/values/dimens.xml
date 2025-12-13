@@ -17,7 +17,6 @@ found in the LICENSE file.
     <dimen name="dialog_corner_radius">24dp</dimen>
     <dimen name="large_icon_background_size">40dp</dimen>
     <dimen name="small_icon_background_size">32dp</dimen>
-    <dimen name="focused_icon_background_stroke_width">2dp</dimen>
     <dimen name="focused_list_item_background_radius">16dp</dimen>
     <dimen name="cpa_button_background_radius_is_checked">12dp</dimen>
     <dimen name="toolbar_progress_bar_height">2dp</dimen>
@@ -54,6 +53,17 @@ found in the LICENSE file.
     <dimen name="radio_button_with_description_and_aux_button_aux_button_length"
         tools:ignore="UnusedResources">61dp</dimen>
 
+    <!-- Settings -->
+    <dimen name="settings_item_rounded_corner_radius_default">16dp</dimen>
+    <dimen name="settings_item_rounded_corner_radius_inner">4dp</dimen>
+    <dimen name="settings_item_margin">16dp</dimen>
+    <dimen name="settings_item_container_vertical_margin">1dp</dimen>
+    <dimen name="settings_section_bottom_margin">8dp</dimen>
+    <dimen name="settings_item_default_padding">16dp</dimen>
+    <dimen name="settings_item_vertical_padding_multi_line">12dp</dimen>
+    <dimen name="settings_title_margin">32dp</dimen>
+    <dimen name="settings_toggle_item_min_height">57.5dp</dimen>
+
     <!-- Drag-Reorderable List dimensions -->
     <dimen name="list_item_dragged_elevation">6dp</dimen>
 
@@ -84,8 +94,8 @@ found in the LICENSE file.
     <!-- The offset is required for the background drawable used by the
          location bar on tablets. -->
     <dimen name="modern_toolbar_background_vertical_offset">4dp</dimen>
-    <dimen name="search_box_icon_background_width">40dp</dimen>
-    <dimen name="search_box_icon_background_height">32dp</dimen>
+    <dimen name="search_box_icon_background_width">36dp</dimen>
+    <dimen name="search_box_icon_background_height">36dp</dimen>
     <dimen name="search_box_nav_button_background_inset">12dp</dimen>
 
     <!-- Promo cards dimensions -->
@@ -200,7 +210,6 @@ found in the LICENSE file.
     <dimen name="chip_list_side_padding">16dp</dimen>
 
     <!-- Misc. app menu dimens -->
-    <dimen name="app_menu_corner_size">24dp</dimen>
     <dimen name="app_menu_shadow_length">6dp</dimen>
     <dimen name="app_menu_elevation">3dp</dimen>
     <!-- app_menu_shadow_length + padding(4dp) -->
@@ -238,16 +247,26 @@ found in the LICENSE file.
     <dimen name="popup_menu_shadow_length">6dp</dimen>
 
     <!-- Rich Radio Button dimens -->
-    <dimen name="rich_radio_button_default_padding">16dp</dimen>
+    <dimen name="rich_radio_button_default_padding">6dp</dimen>
+    <dimen name="rich_radio_button_without_icon_vertical_padding">16dp</dimen>
 
-    <dimen name="rich_radio_button_icon_container_size">80dp</dimen>
+    <dimen name="rich_radio_button_title_margin">16dp</dimen>
+
+    <dimen name="rich_radio_button_horizontal_icon_container_size">80dp</dimen>
+    <dimen name="rich_radio_button_vertical_icon_container_size">120dp</dimen>
+    <dimen name="rich_radio_button_vertical_icon_container_margin_top">14dp</dimen>
 
     <dimen name="rich_radio_button_vertical_margin_bottom">16dp</dimen>
 
     <dimen name="rich_radio_button_icon_margin_end">8dp</dimen>
+    <dimen name="rich_radio_button_radio_button_margin_end">10dp</dimen>
     <dimen name="rich_radio_button_radio_button_margin_start">16dp</dimen>
 
     <dimen name="rich_radio_button_description_margin_top">4dp</dimen>
 
-    <dimen name="rich_radio_button_list_spacing">8dp</dimen>
+    <dimen name="rich_radio_button_list_horizontal_spacing">12dp</dimen>
+    <dimen name="rich_radio_button_list_vertical_spacing">8dp</dimen>
+
+    <!-- Omnibox buttons (mic, lens, ...): rounded-corner rect background -->
+    <dimen name="search_box_button_background_corner_radius">12dp</dimen>
 </resources>

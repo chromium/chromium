@@ -26,7 +26,7 @@ struct MEDIA_EXPORT WebMColorMetadata {
 
   VideoColorSpace color_space;
 
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
 
   WebMColorMetadata();
   WebMColorMetadata(const WebMColorMetadata& rhs);

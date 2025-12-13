@@ -10,13 +10,6 @@ import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
-} else if (is_mac) {
-  import("//build/apple/tweak_info_plist.gni")
-  import("//build/config/mac/rules.gni")
-  import("//content/public/app/mac_helpers.gni")
-  import("//third_party/icu/config.gni")
-  import("//ui/gl/features.gni")
-  import("//v8/gni/v8.gni")
 }
 
 mojom("web_test_common_mojom") {
@@ -46,13 +39,12 @@ static_library("web_test_common") {
   sources = [
     "common/tracked_dictionary.cc",
     "common/tracked_dictionary.h",
-    "common/web_test_constants.cc",
     "common/web_test_constants.h",
+    "common/web_test_hash_util.cc",
     "common/web_test_runtime_flags.cc",
     "common/web_test_runtime_flags.h",
     "common/web_test_string_util.cc",
     "common/web_test_string_util.h",
-    "common/web_test_switches.cc",
     "common/web_test_switches.h",
   ]
   public_deps = [
@@ -187,7 +179,7 @@ static_library("web_test_browser") {
     "//base",
     "//cc/base",
     "//cc/paint",
-    "//components/custom_handlers:custom_handlers",
+    "//components/custom_handlers",
     "//components/custom_handlers:test_support",
     "//components/download/content/factory",
     "//components/download/public/background_service:public",
@@ -227,7 +219,7 @@ static_library("web_test_browser") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",
-    "//ui/shell_dialogs:shell_dialogs",
+    "//ui/shell_dialogs",
     "//url",
   ]
 

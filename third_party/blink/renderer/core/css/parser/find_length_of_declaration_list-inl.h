@@ -66,7 +66,7 @@ static inline __m128i LoadAndCollapseHighBytes(const UChar* ptr) {
 }
 
 // For LChar, this is trivial; just load the bytes as-is.
-static inline __m128i LoadAndCollapseHighBytes(const LChar* ptr) {
+static inline __m128i LoadAndCollapseHighBytes(const blink::LChar* ptr) {
   return _mm_loadu_si128(reinterpret_cast<const __m128i*>(ptr));
 }
 
@@ -294,7 +294,7 @@ LoadAndCollapseHighBytesAVX2(const UChar* ptr) {
 }
 
 __attribute__((target("avx2"))) static inline __m256i
-LoadAndCollapseHighBytesAVX2(const LChar* ptr) {
+LoadAndCollapseHighBytesAVX2(const blink::LChar* ptr) {
   return _mm256_loadu_si256(reinterpret_cast<const __m256i*>(ptr));
 }
 
@@ -400,7 +400,7 @@ FindLengthOfDeclarationListAVX2(base::span<const CharType> chars) {
     // about.
     const __m256i eq_newline_table =
         _mm256_setr_epi64x(0x0000000000000001, 0x00000d0c000a0000,
-                           0x0000000000000000, 0x0000000000000000);
+                           0x0000000000000001, 0x00000d0c000a0000);
     const __m256i eq_newline =
         _mm256_cmpeq_epi8(x, _mm256_shuffle_epi8(eq_newline_table, x));
     const __m256i quoted_newline = quoted_mask & eq_newline;
@@ -483,7 +483,7 @@ static inline uint8x16_t LoadAndCollapseHighBytes(const UChar* ptr) {
       vcombine_u64(vreinterpret_u64_u8(vqmovn_u16(vreinterpretq_u16_u8(x1))),
                    vreinterpret_u64_u8(vqmovn_u16(vreinterpretq_u16_u8(x2)))));
 }
-static inline uint8x16_t LoadAndCollapseHighBytes(const LChar* ptr) {
+static inline uint8x16_t LoadAndCollapseHighBytes(const blink::LChar* ptr) {
   uint8x16_t ret;
   UNSAFE_TODO(memcpy(&ret, ptr, sizeof(ret)));
   return ret;

@@ -10,7 +10,6 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/test/mock_render_input_router.h"
 #include "content/test/mock_widget_input_handler.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
@@ -21,11 +20,11 @@ namespace content {
 class MockRenderWidgetHost : public RenderWidgetHostImpl {
  public:
   // Allow poking at a few private members.
-  using RenderWidgetHostImpl::frame_token_message_queue_;
   using RenderWidgetHostImpl::GetInitialVisualProperties;
   using RenderWidgetHostImpl::GetVisualProperties;
   using RenderWidgetHostImpl::is_hidden_;
   using RenderWidgetHostImpl::old_visual_properties_;
+  using RenderWidgetHostImpl::render_frame_metadata_provider_;
   using RenderWidgetHostImpl::render_input_router_;
   using RenderWidgetHostImpl::RendererExited;
   using RenderWidgetHostImpl::visual_properties_ack_pending_;

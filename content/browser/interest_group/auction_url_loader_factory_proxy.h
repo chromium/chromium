@@ -45,9 +45,6 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key)>;
 
-  using GetCookieDeprecationLabelCallback =
-      base::RepeatingCallback<std::optional<std::string>()>;
-
   using GetDevtoolsAuctionIdsCallback =
       base::RepeatingCallback<std::vector<std::string>()>;
 
@@ -95,7 +92,6 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
       GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
       PreconnectSocketCallback preconnect_socket_callback,
-      GetCookieDeprecationLabelCallback get_cookie_deprecation_label,
       GetDevtoolsAuctionIdsCallback get_devtools_auction_ids,
       bool force_reload,
       const url::Origin& top_frame_origin,
@@ -144,7 +140,6 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
 
   const GetUrlLoaderFactoryCallback get_frame_url_loader_factory_;
   const GetUrlLoaderFactoryCallback get_trusted_url_loader_factory_;
-  const GetCookieDeprecationLabelCallback get_cookie_deprecation_label_;
   const GetDevtoolsAuctionIdsCallback get_devtools_auction_ids_;
 
   // Manages the bundle subresource URLs that may be accessed by the worklet.

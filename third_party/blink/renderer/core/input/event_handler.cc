@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
+#include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -1333,11 +1334,23 @@ WebInputEventResult EventHandler::HandleMouseReleaseEvent(
 
 static LocalFrame* LocalFrameFromTargetNode(Node* target) {
   auto* html_frame_base_element = DynamicTo<HTMLFrameElementBase>(target);
-  if (!html_frame_base_element)
-    return nullptr;
+  if (html_frame_base_element) {
+    // Cross-process drag and drop is not yet supported.
+    return DynamicTo<LocalFrame>(html_frame_base_element->ContentFrame());
+  }
 
-  // Cross-process drag and drop is not yet supported.
-  return DynamicTo<LocalFrame>(html_frame_base_element->ContentFrame());
+  if (RuntimeEnabledFeatures::DragAndDropPluginElementSupportEnabled()) {
+    auto* html_plugin_element = DynamicTo<HTMLPlugInElement>(target);
+    if (html_plugin_element) {
+      return DynamicTo<LocalFrame>(html_plugin_element->ContentFrame());
+    }
+  }
+
+  return nullptr;
+}
+
+LocalFrame* EventHandler::LocalFrameFromTargetNodeForTesting(Node* target) {
+  return LocalFrameFromTargetNode(target);
 }
 
 WebInputEventResult EventHandler::UpdateDragAndDrop(
@@ -1358,13 +1371,11 @@ WebInputEventResult EventHandler::UpdateDragAndDrop(
 
   // The drag target could be something inside a UA shadow root, in which case
   // it should be retargeted to the shadow host.
-  if (RuntimeEnabledFeatures::RetargetDragEventsEnabled()) {
-    ShadowRoot* containing_root =
-        new_target ? new_target->ContainingShadowRoot() : nullptr;
-    while (containing_root && containing_root->IsUserAgent()) {
-      new_target = &containing_root->host();
-      containing_root = new_target->ContainingShadowRoot();
-    }
+  ShadowRoot* containing_root =
+      new_target ? new_target->ContainingShadowRoot() : nullptr;
+  while (containing_root && containing_root->IsUserAgent()) {
+    new_target = &containing_root->host();
+    containing_root = new_target->ContainingShadowRoot();
   }
 
   if (AutoscrollController* controller =
@@ -1478,6 +1489,10 @@ void EventHandler::ClearDragState() {
   should_only_fire_drag_over_event_ = false;
 }
 
+void EventHandler::ReportDragEnd() {
+  mouse_event_manager_->ReportDragEnd();
+}
+
 void EventHandler::RecomputeMouseHoverStateIfNeeded() {
   mouse_event_manager_->RecomputeMouseHoverStateIfNeeded();
 }
@@ -1527,6 +1542,12 @@ bool EventHandler::RootFrameTrackedActivePointerInCurrentFrame(
   return frame_ != &frame_->LocalFrameRoot() &&
          frame_->LocalFrameRoot().GetEventHandler().IsPointerIdActiveOnFrame(
              pointer_id, frame_);
+}
+
+void EventHandler::AppendTouchIdForCanceledPointerDown(
+    uint32_t unique_touch_event_id) {
+  pointer_event_manager_->AppendTouchIdForCanceledPointerDown(
+      unique_touch_event_id);
 }
 
 bool EventHandler::IsPointerEventActive(PointerId pointer_id) {
@@ -2136,22 +2157,29 @@ WebInputEventResult EventHandler::SendContextMenuEvent(
   PhysicalOffset position_in_contents(v->ConvertFromRootFrame(
       gfx::ToFlooredPoint(event.PositionInRootFrame())));
   HitTestRequest request(HitTestRequest::kActive);
+  Document& document = *frame_->GetDocument();
   MouseEventWithHitTestResults mev =
-      frame_->GetDocument()->PerformMouseEventHitTest(
-          request, position_in_contents, event);
+      document.PerformMouseEventHitTest(request, position_in_contents, event);
   // Since |Document::performMouseEventHitTest()| modifies layout tree for
   // setting hover element, we need to update layout tree for requirement of
   // |SelectionController::sendContextMenuEvent()|.
-  frame_->GetDocument()->UpdateStyleAndLayout(
-      DocumentUpdateReason::kContextMenu);
+  document.UpdateStyleAndLayout(DocumentUpdateReason::kContextMenu);
 
   Element* target_element =
       override_target_element ? override_target_element : mev.InnerElement();
-  return mouse_event_manager_->DispatchMouseEvent(
-      EffectiveMouseEventTargetElement(target_element),
-      event_type_names::kContextmenu, event, nullptr, nullptr, false, event.id,
-      PointerEventFactory::PointerTypeNameForWebPointPointerType(
-          event.pointer_type));
+  WebInputEventResult result =
+      mouse_event_manager_
+          ->DispatchMouseEvent(
+              EffectiveMouseEventTargetElement(target_element),
+              event_type_names::kContextmenu, event, nullptr, nullptr, false,
+              event.id,
+              PointerEventFactory::PointerTypeNameForWebPointPointerType(
+                  event.pointer_type))
+          .second;
+  if (result == WebInputEventResult::kHandledApplication) {
+    UseCounter::Count(document, WebFeature::kContextMenuEventDefaultPrevented);
+  }
+  return result;
 }
 
 static bool ShouldShowContextMenuAtSelection(const FrameSelection& selection) {
@@ -2415,7 +2443,7 @@ void EventHandler::DragSourceEndedAt(
   }
 
   mouse_event_manager_->DragSourceEndedAt(event, operation);
-  gesture_manager_->HandleTouchDragEnd(event);
+  gesture_manager_->HandleTouchDragEnd(event, operation);
 }
 
 void EventHandler::UpdateDragStateAfterEditDragIfNeeded(
@@ -2442,7 +2470,7 @@ bool EventHandler::HandleTextInputEvent(const String& text,
 
   EventTarget* target;
   if (underlying_event)
-    target = underlying_event->target();
+    target = underlying_event->RawTarget();
   else
     target = EventTargetNodeForDocument(frame_->GetDocument());
   if (!target)

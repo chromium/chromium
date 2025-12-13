@@ -1,0 +1,4 @@
+# Changes to MappableBuffer and its implementations require a security review to
+# avoid introducing new sandbox escapes.
+per-file *mappable_buffer*=set noparent
+per-file *mappable_buffer*=file://ipc/SECURITY_OWNERS

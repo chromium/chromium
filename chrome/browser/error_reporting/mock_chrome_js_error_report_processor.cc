@@ -16,14 +16,9 @@
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "components/variations/variations_crash_keys.h"
 
-const char MockChromeJsErrorReportProcessor::
-    kDefaultExperimentListStringPreEscaping[] =
-        "6598898b-ac59b6dc,";  // variations::GetExperimentListInfo() always
-                               // leaves a trailing comma.
-
 const char MockChromeJsErrorReportProcessor::kDefaultExperimentListString[] =
-    "6598898b-ac59b6dc%2C";  // The URL escaping turns the comma into %2C in the
-                             // query string.
+    "6598898b-ac59b6dc,";  // variations::GetExperimentListInfo() always
+                           // leaves a trailing comma.
 
 // Tricium gets confused by the #if's and thinks we should change this to
 // "= default".
@@ -75,7 +70,7 @@ MockChromeJsErrorReportProcessor::GetExperimentListInfo() const {
   }
   variations::ExperimentListInfo result;
   result.num_experiments = 1;
-  result.experiment_list = kDefaultExperimentListStringPreEscaping;
+  result.experiment_list = kDefaultExperimentListString;
   return result;
 }
 

@@ -10,7 +10,6 @@
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "ui/gfx/range/range.h"
 
 namespace ash::input_method {
 
@@ -20,7 +19,7 @@ class EditorEventProxy {
       mojo::PendingAssociatedRemote<orca::mojom::EditorEventSink> remote);
   ~EditorEventProxy();
 
-  void OnSurroundingTextChanged(const std::u16string& text, gfx::Range range);
+  void OnSurroundingTextChanged(orca::mojom::ContextPtr context);
 
  private:
   mojo::AssociatedRemote<orca::mojom::EditorEventSink>

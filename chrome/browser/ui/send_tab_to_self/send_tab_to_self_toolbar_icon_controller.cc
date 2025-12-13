@@ -14,10 +14,12 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -31,8 +33,9 @@ SendTabToSelfToolbarIconController::SendTabToSelfToolbarIconController(
     : profile_(profile) {}
 
 // static
-bool SendTabToSelfToolbarIconController::CanShowOnBrowser(Browser* browser) {
-  return browser->is_type_normal();
+bool SendTabToSelfToolbarIconController::CanShowOnBrowser(
+    BrowserWindowInterface* bwi) {
+  return bwi->GetType() == BrowserWindowInterface::TYPE_NORMAL;
 }
 
 void SendTabToSelfToolbarIconController::DisplayNewEntries(
@@ -78,7 +81,8 @@ void SendTabToSelfToolbarIconController::StorePendingEntry(
   // window is inactive and this method is called more than once (i.e. the
   // server sends multiple entry batches).
   if (!had_entry_pending_notification) {
-    BrowserList::AddObserver(this);
+    browser_collection_observer_.Observe(
+        ProfileBrowserCollection::GetForProfile(profile_));
   }
 }
 
@@ -91,13 +95,9 @@ void SendTabToSelfToolbarIconController::DismissEntries(
   }
 }
 
-void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
-    Browser* browser) {
-  if (browser->profile() != profile_.get()) {
-    return;
-  }
-
-  BrowserList::RemoveObserver(this);
+void SendTabToSelfToolbarIconController::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
+  browser_collection_observer_.Reset();
 
   // Reset |pending_entry_| because it's used to determine if the
   // BrowserListObserver is added in `DisplayNewEntries()`.
@@ -115,17 +115,17 @@ void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
 
 void SendTabToSelfToolbarIconController::ShowToolbarButton(
     const SendTabToSelfEntry& entry,
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   CHECK(browser);
-  auto* container = BrowserView::GetBrowserViewForBrowser(browser)
-                        ->toolbar()
-                        ->pinned_toolbar_actions_container();
-  CHECK(container);
-  container->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, true);
-  auto* button = container->GetButtonFor(kActionSendTabToSelf);
+  PinnedToolbarActionsController* controller =
+      browser->GetFeatures().pinned_toolbar_actions_controller();
+  CHECK(controller);
+
+  controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, true);
+  auto* button = controller->GetButtonFor(kActionSendTabToSelf);
   CHECK(button);
-  browser->browser_window_features()
-      ->send_tab_to_self_toolbar_bubble_controller()
+  browser->GetFeatures()
+      .send_tab_to_self_toolbar_bubble_controller()
       ->ShowBubble(entry, button);
 
   send_tab_to_self::RecordNotificationShown();

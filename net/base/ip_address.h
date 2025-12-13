@@ -139,20 +139,17 @@ constexpr bool ParseIPLiteralToBytes(std::string_view ip_literal,
     host_with_brackets.push_back('[');
     host_with_brackets.append(ip_literal);
     host_with_brackets.push_back(']');
-    url::Component host_comp(0, static_cast<int>(host_with_brackets.size()));
 
     // Try parsing the hostname as an IPv6 literal.
     bytes->Resize(16);  // 128 bits.
-    return url::IPv6AddressToNumber(host_with_brackets.data(), host_comp,
-                                    bytes->data());
+    return url::IPv6AddressToNumber(host_with_brackets, bytes->span());
   }
 
   // Otherwise the string is an IPv4 address.
   bytes->Resize(4);  // 32 bits.
-  url::Component host_comp(0, static_cast<int>(ip_literal.size()));
   int num_components;
-  url::CanonHostInfo::Family family = url::IPv4AddressToNumber(
-      ip_literal.data(), host_comp, bytes->data(), &num_components);
+  url::CanonHostInfo::Family family =
+      url::IPv4AddressToNumber(ip_literal, bytes->span(), &num_components);
   return family == url::CanonHostInfo::IPV4;
 }
 

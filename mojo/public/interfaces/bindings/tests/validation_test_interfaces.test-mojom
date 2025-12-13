@@ -51,7 +51,7 @@ enum EnumA {
 
 [Extensible]
 enum EnumB {
-  ENUM_B_0,
+  [Default] ENUM_B_0,
   ENUM_B_1,
   ENUM_B_2
 };

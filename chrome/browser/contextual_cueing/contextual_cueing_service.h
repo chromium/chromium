@@ -67,6 +67,7 @@ class ContextualCueingService
   // Called when cueing nudge activity happens.
   void OnNudgeActivity(content::WebContents* web_contents,
                        base::TimeTicks document_available_time,
+                       bool is_dynamic,
                        tabs::GlicNudgeActivity activity);
 
   // Should be called when the cueing UI is shown for the tab with `url`.
@@ -101,13 +102,19 @@ class ContextualCueingService
       std::optional<std::vector<std::string>> supported_tools,
       GlicSuggestionsCallback callback);
 
-  // Returns zero state suggestions for pinned tabs as represented by
+  // Returns whether suggestions are going to be generated. Invokes `callback`
+  // with zero state suggestions for pinned tabs as represented by
   // `pinned_web_contents`. Virtual for testing.
-  virtual void GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+  virtual bool GetContextualGlicZeroStateSuggestionsForPinnedTabs(
       std::vector<content::WebContents*> pinned_web_contents,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
+      const content::WebContents* focused_tab,
       GlicSuggestionsCallback callback);
+
+  // Returns the pinned tabs that are in an outstanding request if there is one.
+  std::optional<std::vector<content::WebContents*>>
+  GetOutstandingPinnedTabsContents();
 
  private:
   // page_content_annotations::PageContentExtractionService::Observer:
@@ -128,7 +135,15 @@ class ContextualCueingService
       const std::vector<content::WebContents*>& web_contents_list,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
-      bool is_focused_tab);
+      const content::WebContents* focused_tab);
+
+  // Callback invoked when pinned tabs suggestions are received.
+  void OnPinnedTabsSuggestionsReceived(
+      bool is_fre,
+      base::TimeTicks fetch_begin_time,
+      base::WeakPtr<ZeroStateSuggestionsRequest> pinned_tabs_request,
+      GlicSuggestionsCallback callback,
+      std::vector<std::string> suggestions);
 
   // Tracker to limit the number of nudges shown over a certain duration.
   NudgeCapTracker recent_nudge_tracker_;

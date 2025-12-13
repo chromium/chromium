@@ -61,9 +61,9 @@ TEST_F(WebViewProxyTabHelperTest, WebViewProxyTabHelperDestroyed) {
   tab_helper()->AddObserver(&observer);
 
   EXPECT_CALL(observer, WebViewProxyTabHelperDestroyed(tab_helper()))
-      .WillOnce(testing::Invoke([&observer](WebViewProxyTabHelper* tab_helper) {
+      .WillOnce([&observer](WebViewProxyTabHelper* tab_helper) {
         tab_helper->RemoveObserver(&observer);
-      }));
+      });
   web_state_.reset();
 }
 

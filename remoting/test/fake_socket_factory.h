@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "remoting/test/fake_network_dispatcher.h"
+#include "third_party/webrtc/api/environment/environment.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
 
 namespace remoting {
@@ -72,16 +73,19 @@ class FakePacketSocketFactory : public webrtc::PacketSocketFactory,
   }
 
   // webrtc::PacketSocketFactory interface.
-  webrtc::AsyncPacketSocket* CreateUdpSocket(
+  std::unique_ptr<webrtc::AsyncPacketSocket> CreateUdpSocket(
+      const webrtc::Environment& env,
       const webrtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port) override;
-  webrtc::AsyncListenSocket* CreateServerTcpSocket(
+  std::unique_ptr<webrtc::AsyncListenSocket> CreateServerTcpSocket(
+      const webrtc::Environment& env,
       const webrtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port,
       int opts) override;
-  webrtc::AsyncPacketSocket* CreateClientTcpSocket(
+  std::unique_ptr<webrtc::AsyncPacketSocket> CreateClientTcpSocket(
+      const webrtc::Environment& env,
       const webrtc::SocketAddress& local_address,
       const webrtc::SocketAddress& remote_address,
       const webrtc::PacketSocketTcpOptions& opts) override;

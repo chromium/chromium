@@ -24,6 +24,7 @@
 #include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace syncer {
 
@@ -60,15 +61,21 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
   EntityChangeList entity_changes;
 
   metadata_changes->UpdateDataTypeState(data_type_state);
+
+  // Bridges that are full updates only must not reupload entities after changed
+  // encryption requirements. This should not happen normally but this depends
+  // on the persisted data type state on the disk, and it could have some
+  // `encryption_key_name` set (e.g. due to a past bug).
   const bool got_new_encryption_requirements =
+      bridge_->SupportsIncrementalUpdates() &&
       entity_tracker_->data_type_state().encryption_key_name() !=
-      data_type_state.encryption_key_name();
+          data_type_state.encryption_key_name();
   entity_tracker_->set_data_type_state(data_type_state);
 
   // If new encryption requirements come from the server, the entities that are
   // in `updates` will be recorded here so they can be ignored during the
   // re-encryption phase at the end.
-  std::unordered_set<std::string> already_updated;
+  absl::flat_hash_set<std::string> already_updated;
 
   for (syncer::UpdateResponseData& update : updates) {
     std::string storage_key_to_clear;
@@ -141,6 +148,10 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
   }
 
   if (got_new_encryption_requirements) {
+    // Full update data types are download-only and must not have unsynced
+    // entities.
+    CHECK(bridge_->SupportsIncrementalUpdates());
+
     // TODO(pavely): Currently we recommit all entities. We should instead
     // recommit only the ones whose encryption key doesn't match the one in
     // DataTypeState. Work is tracked in http://crbug.com/727874.
@@ -150,6 +161,12 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
       metadata_changes->UpdateMetadata(entity->storage_key(),
                                        entity->metadata());
     }
+  }
+
+  if (!bridge_->SupportsIncrementalUpdates()) {
+    // An additional CHECK that no entities are left unsynced for download-only
+    // data types.
+    CHECK_EQ(entity_tracker_->GetUnsyncedDataCount(), 0u);
   }
 
   // Inform the bridge of the new or updated data.
@@ -200,17 +217,17 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     return nullptr;
   }
 
-  // TODO(crbug.com/40889096): Remove the storage key check as storage keys
-  // should not be empty after IsEntityDataValid() has been implemented by all
-  // bridges.
-  if (!data.is_deleted() && (!bridge_->IsEntityDataValid(data) ||
-                             (bridge_->SupportsGetStorageKey() &&
-                              bridge_->GetStorageKey(data).empty()))) {
+  if (!data.is_deleted() && !bridge_->IsEntityDataValid(data)) {
     DLOG(WARNING) << "Received invalid remote update."
                   << " client_tag_hash: " << client_tag_hash << " for "
                   << DataTypeToDebugString(type_);
     return nullptr;
   }
+
+  // Valid entities (other than deletions) must have non-empty storage keys.
+  CHECK(data.is_deleted() || !bridge_->SupportsGetStorageKey() ||
+        !bridge_->GetStorageKey(data).empty())
+      << DataTypeToDebugString(type_);
 
   // Cache update encryption_key_name and is_deleted in case `update` will be
   // moved away into ResolveConflict().
@@ -253,8 +270,9 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
 
   // If the received entity has out of date encryption, we schedule another
   // commit to fix it. Tombstones aren't encrypted and hence shouldn't be
-  // checked.
-  if (!update_is_tombstone &&
+  // checked. Full update data types are download-only and must not have
+  // unsynced entities.
+  if (!update_is_tombstone && bridge_->SupportsIncrementalUpdates() &&
       entity_tracker_->data_type_state().encryption_key_name() !=
           update_encryption_key_name) {
     DVLOG(2) << DataTypeToDebugString(type_)
@@ -284,14 +302,14 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
     // Local tombstone vs remote update (non-deletion). Should be undeleted.
     resolution_type = ConflictResolution::kUseRemote;
   } else if (entity->MatchesOwnBaseData()) {
-    // If there is no real local change, then the entity must be unsynced due to
-    // a pending local re-encryption request. In this case, the remote data
-    // should win.
-    resolution_type = ConflictResolution::kIgnoreLocalEncryption;
+    // If there is no real local change, the remote data should win (e.g. when
+    // the entity is unsynced due to a pending local re-encryption request).
+    resolution_type = ConflictResolution::kIgnoreLocalNoOpUpdate;
   } else if (entity->MatchesBaseData(remote_data)) {
     // The remote data isn't actually changing from the last remote data that
-    // was seen, so it must have been a re-encryption and can be ignored.
-    resolution_type = ConflictResolution::kIgnoreRemoteEncryption;
+    // was seen, so it can be ignored (e.g. in case of a re-encryption, or some
+    // remote update which was reverted).
+    resolution_type = ConflictResolution::kIgnoreRemoteNoOpUpdate;
   } else {
     // There's a real data conflict here; let the bridge resolve it.
     resolution_type =
@@ -319,13 +337,13 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
       }
       break;
     case ConflictResolution::kUseLocal:
-    case ConflictResolution::kIgnoreRemoteEncryption:
+    case ConflictResolution::kIgnoreRemoteNoOpUpdate:
       // Record that we received the update from the server but leave the
       // pending commit intact.
       entity->RecordIgnoredRemoteUpdate(update);
       break;
     case ConflictResolution::kUseRemote:
-    case ConflictResolution::kIgnoreLocalEncryption:
+    case ConflictResolution::kIgnoreLocalNoOpUpdate:
       // Update client data to match server.
       if (update.entity.is_deleted()) {
         DCHECK(!entity->metadata().is_deleted());

@@ -13,7 +13,7 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
 #include "media/parsers/h264_bit_reader.h"
@@ -99,9 +99,7 @@ struct MEDIA_EXPORT H265NALU {
 
   // After (without) start code; we don't own the underlying memory
   // and a shallow copy should be made when copying this struct.
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> data = nullptr;
-  off_t size = 0;  // From after start code to start code of next NALU (or EOS).
-
+  base::raw_span<const uint8_t, DanglingUntriaged> data;
   int nal_unit_type = 0;
   int nuh_layer_id = 0;
   int nuh_temporal_id_plus1 = 1;
@@ -130,9 +128,8 @@ class MEDIA_EXPORT H265NaluParser {
   // |stream| owned by caller.
   // |subsamples| contains information about what parts of |stream| are
   // encrypted.
-  void SetStream(const uint8_t* stream, off_t stream_size);
-  void SetEncryptedStream(const uint8_t* stream,
-                          off_t stream_size,
+  void SetStream(base::span<const uint8_t> stream);
+  void SetEncryptedStream(base::span<const uint8_t> stream,
                           const std::vector<SubsampleEntry>& subsamples);
 
   // Read the stream to find the next NALU, identify it and return
@@ -160,19 +157,22 @@ class MEDIA_EXPORT H265NaluParser {
   // - its size in bytes is returned in |*nalu_size| and includes
   //   the start code as well as the trailing zero bits.
   // - the size in bytes of the start code is returned in |*start_code_size|.
-  bool LocateNALU(off_t* nalu_size, off_t* start_code_size);
+  bool LocateNALU(size_t* nalu_size, size_t* start_code_size);
 
   // Pointer to the current NALU in the stream.
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> stream_;
-
-  // Bytes left in the stream after the current NALU.
-  off_t bytes_left_;
+  base::raw_span<const uint8_t, DanglingUntriaged> stream_;
 
   // Ranges of encrypted bytes in the buffer passed to SetEncryptedStream().
+  //
+  // TODO(crbug.com/441571721): Refactor `encrypted_ranges_` to use better types
+  // to avoid unsafe_buffer_usage.
   Ranges<const uint8_t*> encrypted_ranges_;
 
   // This contains the range of the previous NALU found in
   // AdvanceToNextNalu(). Holds exactly one range.
+  //
+  // TODO(crbug.com/441571721): Refactor `previous_nalu_range_` to use better
+  // types to avoid unsafe_buffer_usage.
   Ranges<const uint8_t*> previous_nalu_range_;
 };
 

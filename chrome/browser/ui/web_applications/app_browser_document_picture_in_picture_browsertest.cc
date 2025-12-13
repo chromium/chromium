@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
@@ -209,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
 
   const BrowserWindow* const pip_browser_window = pip_browser->window();
   const gfx::NativeWindow native_window = pip_browser_window->GetNativeWindow();
-  const display::Screen* const screen = display::Screen::GetScreen();
+  const display::Screen* const screen = display::Screen::Get();
   const display::Display display =
       screen->GetDisplayNearestWindow(native_window);
 

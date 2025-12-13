@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 
 #include <windows.h>  // Must be in front of other Windows header files.
@@ -11,11 +10,13 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -28,7 +29,7 @@
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/gfx/animation/animation.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
+#include "ui/gfx/win/singleton_hwnd.h"
 
 namespace content {
 
@@ -38,7 +39,6 @@ namespace {
 // we didn't expect. This is temporary.
 // TODO(crbug.com/407891291): Remove this feature flag in Chrome 139.
 BASE_FEATURE(kDisableUiaProviderWhenJawsIsRunning,
-             "DisableUiaProviderWhenJawsIsRunning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const wchar_t kNarratorRegistryKey[] = L"Software\\Microsoft\\Narrator\\NoRoam";
@@ -324,14 +324,12 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
   void RefreshAssistiveTech() override;
   void RefreshAssistiveTechIfNecessary(ui::AXMode new_mode) override;
   ui::AXPlatform::ProductStrings GetProductStrings() override;
-  void OnUiaProviderRequested(bool uia_provider_enabled) override;
-  void OnUiaProviderDisabled() override;
 
  private:
   void OnDiscoveredAssistiveTech(
       const std::vector<AssistiveTechInfo>& discovered_ats);
 
-  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+  base::CallbackListSubscription hwnd_subscription_;
 
   // A ScopedAccessibilityMode that holds AXMode::kScreenReader when
   // an active screen reader has been detected.
@@ -344,7 +342,7 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
 
 BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
-    singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
+    hwnd_subscription_ = gfx::SingletonHwnd::GetInstance()->RegisterCallback(
         base::BindRepeating(&OnWndProc));
   }
 }
@@ -572,17 +570,6 @@ BrowserAccessibilityStateImplWin::GetProductStrings() {
   }
   return {product_components[0], product_components[1],
           CHECK_DEREF(content_client.browser()).GetUserAgent()};
-}
-
-void BrowserAccessibilityStateImplWin::OnUiaProviderRequested(
-    bool uia_provider_enabled) {
-  CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
-      .OnUiaProviderRequested(uia_provider_enabled);
-}
-
-void BrowserAccessibilityStateImplWin::OnUiaProviderDisabled() {
-  CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
-      .OnUiaProviderDisabled();
 }
 
 // static

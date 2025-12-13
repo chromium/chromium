@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Animating a custom property of type <time># with iterationComposite
-  assert_equals: expected "250s, 275s" but got "50s, 75s"
-Harness: the test ran to completion.
-

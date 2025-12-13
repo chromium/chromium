@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/media_query_list.h"
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
@@ -173,8 +174,8 @@ void StyleEngineTest::ApplyRuleSetInvalidation(TreeScope& tree_scope,
           kHTMLStandardMode, SecureContextMode::kInsecureContext));
   sheet->ParseString(css_text);
   HeapHashSet<Member<RuleSet>> rule_sets;
-  RuleSet& rule_set =
-      sheet->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()));
+  RuleSet& rule_set = sheet->EnsureRuleSet(
+      MediaQueryEvaluator(GetDocument().GetFrame()), /*mixins=*/{});
   rule_set.CompactRulesIfNeeded();
   rule_sets.insert(&rule_set);
   SelectorFilter selector_filter;
@@ -4288,13 +4289,13 @@ TEST_F(StyleEngineTest, MediaQueriesChangeDisplayState) {
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyBackgroundColor()));
 
-  WTF::Vector<std::pair<ui::mojom::blink::WindowShowState, Color>> test_cases =
-      {{ui::mojom::blink::WindowShowState::kMinimized,
-        Color::FromRGB(/*cyan*/ 0, 255, 255)},
-       {ui::mojom::blink::WindowShowState::kMaximized,
-        Color::FromRGB(/*red*/ 255, 0, 0)},
-       {ui::mojom::blink::WindowShowState::kFullscreen,
-        Color::FromRGB(/*blue*/ 0, 0, 255)}};
+  Vector<std::pair<ui::mojom::blink::WindowShowState, Color>> test_cases = {
+      {ui::mojom::blink::WindowShowState::kMinimized,
+       Color::FromRGB(/*cyan*/ 0, 255, 255)},
+      {ui::mojom::blink::WindowShowState::kMaximized,
+       Color::FromRGB(/*red*/ 255, 0, 0)},
+      {ui::mojom::blink::WindowShowState::kFullscreen,
+       Color::FromRGB(/*blue*/ 0, 0, 255)}};
 
   for (const auto& [show_state, color] : test_cases) {
     GetFrame().GetSettings()->SetWindowShowState(show_state);
@@ -4503,6 +4504,50 @@ TEST_F(StyleEngineSimTest, ColorSchemeBaseBackgroundWhileRenderBlocking) {
 
   main_resource.Finish();
   css_resource.Finish();
+}
+
+TEST_F(StyleEngineSimTest, AboutBlankPageRespectsDarkModeOnUserActionFeature) {
+  // This test refers to AboutBlankPageRespectsDarkModeOnUserAction feature
+  // flag.
+
+  ScopedAboutBlankPageRespectsDarkModeOnUserActionForTest forced_scoped_feature(
+      false);
+
+  LoadURL("about:blank");
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(Color::kWhite, GetDocument().View()->BaseBackgroundColor());
+}
+
+TEST_F(StyleEngineSimTest, AboutBlankPageRespectsUserPreferredColorScheme) {
+  // This refers to opening about:blank likely via non-programmatic means.
+  // We do this to apply DarkMode to newly opened tabs and user initiated
+  // navigations directly to about:blank.
+  // See: https://issues.chromium.org/issues/40190899.
+
+  LoadURL("about:blank");
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  // Set preferred color scheme to light.
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kLight);
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(Color::kWhite, GetDocument().View()->BaseBackgroundColor());
+
+  // Set preferred color scheme to dark.
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(Color(0x12, 0x12, 0x12),
+            GetDocument().View()->BaseBackgroundColor());
 }
 
 TEST_F(StyleEngineSimTest, IFramePreferredColorScheme) {
@@ -5485,6 +5530,95 @@ TEST_F(StyleEngineTest, NestingUseCountNotStartingWithAmpersand) {
   )HTML");
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
+}
+
+TEST_F(StyleEngineTest, UseCounter_CSSPseudoParentInScope) {
+  // & in @scope should trigger the counter.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope {
+        & { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+
+  // & in @scope with a selector should trigger the counter.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope (.foo) {
+        & { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+
+  // & not in @scope should not trigger the counter.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      div {
+        & { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+
+  // No & in @scope should not trigger the counter.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope {
+        div { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+
+  // & in a nested rule inside @scope should not trigger the counter,
+  // as it's not a direct child of the @scope rule.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope {
+        div {
+          & { color: green; }
+        }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+
+  // Complex selector with & in @scope should trigger the counter.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope {
+        .foo, &:hover { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+
+  // & in :is() should trigger the counter.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope {
+        .foo, :is(&) { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
 }
 
 TEST_F(StyleEngineTest, SystemFontsObeyDefaultFontSize) {
@@ -7292,7 +7426,8 @@ TEST_F(StyleEngineTest, CreateUnconnectedRuleSet) {
   sheet->Contents()->ClearRuleSet();
   EXPECT_FALSE(sheet->Contents()->HasRuleSet());
 
-  RuleSet* rule_set = GetStyleEngine().CreateUnconnectedRuleSet(*sheet);
+  RuleSet* rule_set =
+      GetStyleEngine().CreateUnconnectedRuleSet(*sheet, /*mixins=*/{});
   ASSERT_TRUE(rule_set);
   rule_set->AssertCompacted();
   EXPECT_EQ(2u, rule_set->ClassRules(AtomicString("a")).size());
@@ -7313,10 +7448,11 @@ TEST_F(StyleEngineTest, CreateUnconnectedRuleSetMedia) {
   CSSStyleSheet* sheet =
       To<HTMLStyleElement>(GetDocument().getElementById(AtomicString("style")))
           ->sheet();
-  EXPECT_FALSE(GetStyleEngine().CreateUnconnectedRuleSet(*sheet));
+  EXPECT_FALSE(
+      GetStyleEngine().CreateUnconnectedRuleSet(*sheet, /*mixins=*/{}));
 }
 
-TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
+TEST_F(StyleEngineTest, HasComplexSafeAreaConstraints) {
   ScopedUpdateComplexSafaAreaConstraintsForTest
       update_complex_safe_area_constraints(true);
 
@@ -7327,19 +7463,19 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
     <div style="padding-bottom: 30px" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div style="padding-bottom: env(safe-area-inset-bottom)" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div style="height: calc(env(safe-area-inset-bottom) + 30px)" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // (b) Any styles that are 'bottom' anchored, may have complex safe area
   // constraints depending on the following usages.
@@ -7350,7 +7486,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
     <div style="bottom: 5px; padding-bottom: 30px" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // When a style property other than 'bottom' uses env(safe-area-inset-bottom),
   // there are complex safe area constraints.
@@ -7358,7 +7494,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
     <div style="bottom: 5px; padding-bottom: env(safe-area-inset-bottom)" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // When the 'bottom' style property uses env(safe-area-inset-bottom)
   // as defined under 'IsBottomRelativeToSafeAreaInset' in
@@ -7368,7 +7504,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
     <div style="bottom: env(safe-area-inset-bottom)" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // When a style property other than 'bottom' uses calc() with
   // env(safe-area-inset-bottom), there are complex safe area constraints.
@@ -7376,7 +7512,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
     <div style="bottom: 5px; height: calc(env(safe-area-inset-bottom) + 30px)" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafeAreaConstraints());
 }
 
 TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
@@ -7394,7 +7530,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
     </div>
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // When a style property other than 'bottom' uses env(safe-area-inset-bottom),
   // there are complex safe area constraints.
@@ -7404,7 +7540,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
     </div>
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // When the 'bottom' style property uses env(safe-area-inset-bottom)
   // as defined under 'IsBottomRelativeToSafeAreaInset' in
@@ -7416,7 +7552,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
     </div>
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // When a style property other than 'bottom' uses calc() with
   // env(safe-area-inset-bottom), there are complex safe area constraints.
@@ -7426,7 +7562,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
     </div>
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafeAreaConstraints());
 }
 
 TEST_F(StyleEngineTest, ScrollStateUseCounter) {
@@ -7467,120 +7603,47 @@ TEST_F(StyleEngineTest, MissingVarArgument_IdentFunctionDisabled) {
   UpdateAllLifecyclePhasesForTest();
 }
 
-TEST_F(StyleEngineTest, CSSVarFallbackCycleCounter) {
-  ScopedCSSShortCircuitVarAttrForTest scoped_feature(false);
-
-  // No fallback.
-  ClearUseCounter(WebFeature::kCSSVarFallbackCycle);
+TEST_F(StyleEngineTest, UpdateRootFontRelativeUnits_NoRecalcForNonInherited) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
-      div {
-        --x: var(--invalid);
-      }
+      :root { font-family: sans-serif; font-size: 16px; }
+      div { width: 10rem; height: 100ch; }
     </style>
     <div></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSVarFallbackCycle));
-
-  // Invalid var() in a fallback that's used.
-  ClearUseCounter(WebFeature::kCSSVarFallbackCycle);
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      div {
-        --x: var(--invalid, var(--invalid2));
-      }
-    </style>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
     <div></div>
   )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSVarFallbackCycle));
 
-  // Cycle in used fallback.
-  ClearUseCounter(WebFeature::kCSSVarFallbackCycle);
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      div {
-        --x: var(--invalid, var(--x));
-      }
-    </style>
-    <div></div>
-  )HTML");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSVarFallbackCycle));
 
-  // Cycle in unused fallback.
-  ClearUseCounter(WebFeature::kCSSVarFallbackCycle);
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      div {
-        --x: var(--y, var(--x));
-        --y: 10px;
-      }
-    </style>
-    <div></div>
-  )HTML");
+  // Verify that the document is using root font-relative units (rem).
+  ASSERT_TRUE(GetStyleEngine().UsesRootFontRelativeUnits())
+      << "Document should be using root font-relative units (rem)";
+  // Also verify glyph-relative units (ch) are tracked.
+  ASSERT_TRUE(GetStyleEngine().UsesGlyphRelativeUnits())
+      << "Document should be using glyph-relative units (ch)";
+
+  unsigned before_count = GetStyleEngine().StyleForElementCount();
+
+  Element* root = GetDocument().documentElement();
+  ASSERT_TRUE(root);
+  root->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, "green");
+
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSVarFallbackCycle));
-}
 
-TEST_F(StyleEngineTest, CSSAttrFallbackCycleCounter) {
-  ScopedCSSShortCircuitVarAttrForTest scoped_feature(false);
+  unsigned after_count = GetStyleEngine().StyleForElementCount();
 
-  // No fallback.
-  ClearUseCounter(WebFeature::kCSSAttrFallbackCycle);
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      div {
-        --x: attr(data-foo type(*));
-      }
-    </style>
-    <div data-foo="attr(data-invalid type(*))"></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSAttrFallbackCycle));
-
-  // Invalid var() in a fallback that's used.
-  ClearUseCounter(WebFeature::kCSSAttrFallbackCycle);
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      div {
-        --x: attr(data-foo type(*));
-      }
-    </style>
-    <div
-      data-foo="attr(data-invalid type(*), attr(data-invalid2 type(*)))"></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSAttrFallbackCycle));
-
-  // Cycle in used fallback.
-  ClearUseCounter(WebFeature::kCSSAttrFallbackCycle);
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      div {
-        --x: attr(data-foo type(*));
-      }
-    </style>
-    <div data-foo="attr(data-invalid type(*), attr(data-foo type(*)))"></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSAttrFallbackCycle));
-
-  // Cycle in unused fallback.
-  ClearUseCounter(WebFeature::kCSSAttrFallbackCycle);
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      div {
-        --x: attr(data-foo type(*));
-      }
-    </style>
-    <div
-      data-foo="attr(data-bar type(*), attr(data-foo type(*)))"
-      data-bar="10px"></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAttrFallbackCycle));
+  // Only the root element should be restyled since background-color is
+  // non-inherited and doesn't affect font metrics (which would impact rem/ch).
+  EXPECT_EQ(1u, after_count - before_count)
+      << "Changing root background-color should not trigger recalc cascade for "
+         "descendant elements using rem/ch units";
 }
 
 }  // namespace blink

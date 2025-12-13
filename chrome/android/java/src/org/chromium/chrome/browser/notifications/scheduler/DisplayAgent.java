@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.notifications.scheduler;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,6 +19,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -36,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /** Used by notification scheduler to display the notification in Android UI. */
+@NullMarked
 public class DisplayAgent {
     private static final String TAG = "DisplayAgent";
     private static final String DISPLAY_AGENT_TAG = "NotificationSchedulerDisplayAgent";
@@ -53,7 +58,7 @@ public class DisplayAgent {
 
     /** Contains icon info on the notification. */
     private static class IconBundle {
-        public final Bitmap bitmap;
+        public final @Nullable Bitmap bitmap;
         public final int resourceId;
 
         public IconBundle() {
@@ -174,7 +179,7 @@ public class DisplayAgent {
                         intent,
                         EXTRA_INTENT_TYPE,
                         NotificationIntentInterceptor.IntentType.UNKNOWN);
-        String guid = IntentUtils.safeGetStringExtra(intent, EXTRA_GUID);
+        String guid = assertNonNull(IntentUtils.safeGetStringExtra(intent, EXTRA_GUID));
         @SchedulerClientType
         int clientType =
                 IntentUtils.safeGetIntExtra(
@@ -233,10 +238,19 @@ public class DisplayAgent {
         }
     }
 
-    private static AndroidNotificationData toAndroidNotificationData() {
-        @ChannelId String channel = ChannelId.BROWSER;
+    private static AndroidNotificationData toAndroidNotificationData(
+            @SchedulerClientType int type) {
         @SystemNotificationType int systemNotificationType = SystemNotificationType.UNKNOWN;
-        return new AndroidNotificationData(channel, systemNotificationType);
+        return new AndroidNotificationData(getNotificationChannel(type), systemNotificationType);
+    }
+
+    private static @ChannelId String getNotificationChannel(@SchedulerClientType int type) {
+        switch (type) {
+            case SchedulerClientType.TIPS:
+                return ChannelId.TIPS;
+            default:
+                return ChannelId.BROWSER;
+        }
     }
 
     private static Intent buildIntent(
@@ -252,7 +266,7 @@ public class DisplayAgent {
 
     @CalledByNative
     private static void showNotification(NotificationData notificationData, SystemData systemData) {
-        AndroidNotificationData platformData = toAndroidNotificationData();
+        AndroidNotificationData platformData = toAndroidNotificationData(systemData.type);
         // TODO(xingliu): Plumb platform specific data from native.
         // mode and provide correct notification id. Support buttons.
         Context context = ContextUtils.getApplicationContext();
@@ -267,25 +281,23 @@ public class DisplayAgent {
         builder.setContentTitle(notificationData.title);
         builder.setContentText(notificationData.message);
 
-        boolean hasSmallIcon = notificationData.icons.containsKey(IconType.SMALL_ICON);
-
-        if (hasSmallIcon && notificationData.icons.get(IconType.SMALL_ICON).bitmap != null) {
+        @Nullable IconBundle smallIconBundle = notificationData.icons.get(IconType.SMALL_ICON);
+        if (smallIconBundle != null && smallIconBundle.bitmap != null) {
             // Use bitmap as small icon.
-            Icon smallIcon =
-                    Icon.createWithBitmap(notificationData.icons.get(IconType.SMALL_ICON).bitmap);
+            Icon smallIcon = Icon.createWithBitmap(smallIconBundle.bitmap);
             builder.setSmallIcon(smallIcon);
         } else {
             // Use resource Id as small icon, if invalid, use default Chrome icon instead.
             int resourceId = R.drawable.ic_chrome;
-            if (hasSmallIcon && notificationData.icons.get(IconType.SMALL_ICON).resourceId != 0) {
-                resourceId = notificationData.icons.get(IconType.SMALL_ICON).resourceId;
+            if (smallIconBundle != null && smallIconBundle.resourceId != 0) {
+                resourceId = smallIconBundle.resourceId;
             }
             builder.setSmallIcon(resourceId);
         }
 
-        if (notificationData.icons.containsKey(IconType.LARGE_ICON)
-                && notificationData.icons.get(IconType.LARGE_ICON).bitmap != null) {
-            builder.setLargeIcon(notificationData.icons.get(IconType.LARGE_ICON).bitmap);
+        @Nullable IconBundle largeIconBundle = notificationData.icons.get(IconType.LARGE_ICON);
+        if (largeIconBundle != null && largeIconBundle.bitmap != null) {
+            builder.setLargeIcon(largeIconBundle.bitmap);
         }
 
         // Default content click behavior.
@@ -368,8 +380,8 @@ public class DisplayAgent {
         void onUserAction(
                 @SchedulerClientType int clientType,
                 @UserActionType int actionType,
-                @JniType("std::string") String guid,
+                @JniType("std::string") @Nullable String guid,
                 @ActionButtonType int type,
-                @JniType("std::string") String buttonId);
+                @JniType("std::string") @Nullable String buttonId);
     }
 }

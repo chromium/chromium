@@ -17,14 +17,14 @@ struct BlinkStorageKeyHashTraits
     std::optional<base::UnguessableToken> nonce = storage_key->GetNonce();
     size_t nonce_hash = nonce ? base::UnguessableTokenHash()(*nonce) : 0;
     unsigned hash_codes[] = {
-      WTF::GetHash(storage_key->GetSecurityOrigin()),
-      WTF::GetHash(storage_key->GetTopLevelSite()),
-      static_cast<unsigned>(storage_key->GetAncestorChainBit()),
+        blink::GetHash(storage_key->GetSecurityOrigin()),
+        blink::GetHash(storage_key->GetTopLevelSite()),
+        static_cast<unsigned>(storage_key->GetAncestorChainBit()),
 #if ARCH_CPU_32_BITS
-      nonce_hash,
+        nonce_hash,
 #elif ARCH_CPU_64_BITS
-      static_cast<unsigned>(nonce_hash),
-      static_cast<unsigned>(nonce_hash >> 32),
+        static_cast<unsigned>(nonce_hash),
+        static_cast<unsigned>(nonce_hash >> 32),
 #else
 #error "Unknown bits"
 #endif

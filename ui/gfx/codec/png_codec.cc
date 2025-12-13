@@ -12,15 +12,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "skia/rusty_png_feature.h"
-#include "third_party/skia/experimental/rust_png/decoder/SkPngRustDecoder.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
-#include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
-#include "third_party/zlib/zlib.h"
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
 #include "ui/gfx/codec/vector_wstream.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -38,11 +34,7 @@ namespace {
 
 std::unique_ptr<SkCodec> CreatePngDecoder(std::unique_ptr<SkStream> stream,
                                           SkCodec::Result* result) {
-  if (skia::IsRustyPngEnabled()) {
-    return SkPngRustDecoder::Decode(std::move(stream), result);
-  }
-
-  return SkPngDecoder::Decode(std::move(stream), result);
+  return SkPngRustDecoder::Decode(std::move(stream), result);
 }
 
 struct PreparationOutput {
@@ -178,7 +170,7 @@ SkBitmap PNGCodec::Decode(base::span<const uint8_t> input) {
 
 namespace {
 
-void AddComments(SkPngEncoder::Options& options,
+void AddComments(SkPngRustEncoder::Options& options,
                  const std::vector<PNGCodec::Comment>& comments) {
   std::vector<const char*> comment_pointers;
   std::vector<size_t> comment_sizes;
@@ -196,19 +188,14 @@ void AddComments(SkPngEncoder::Options& options,
 std::optional<std::vector<uint8_t>> EncodeSkPixmap(
     const SkPixmap& src,
     const std::vector<PNGCodec::Comment>& comments,
-    int zlib_level,
-    bool disable_filters) {
+    SkPngRustEncoder::CompressionLevel compression_level) {
   std::vector<uint8_t> output;
   VectorWStream dst(&output);
 
-  SkPngEncoder::Options options;
+  SkPngRustEncoder::Options options;
   AddComments(options, comments);
-  options.fZLibLevel = zlib_level;
-  if (disable_filters) {
-    options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
-  }
-
-  if (!skia::EncodePng(&dst, src, options)) {
+  options.fCompressionLevel = compression_level;
+  if (!SkPngRustEncoder::Encode(&dst, src, options)) {
     return std::nullopt;
   }
 
@@ -219,8 +206,7 @@ std::optional<std::vector<uint8_t>> EncodeSkPixmap(
     const SkPixmap& src,
     bool discard_transparency,
     const std::vector<PNGCodec::Comment>& comments,
-    int zlib_level,
-    bool disable_filters) {
+    SkPngRustEncoder::CompressionLevel compression_level) {
   if (discard_transparency) {
     SkImageInfo opaque_info = src.info().makeAlphaType(kOpaque_SkAlphaType);
     SkBitmap copy;
@@ -237,7 +223,7 @@ std::optional<std::vector<uint8_t>> EncodeSkPixmap(
         src.readPixels(opaque_info.makeAlphaType(kUnpremul_SkAlphaType),
                        opaque_pixmap.writable_addr(), opaque_pixmap.rowBytes());
     DCHECK(success);
-    return EncodeSkPixmap(opaque_pixmap, comments, zlib_level, disable_filters);
+    return EncodeSkPixmap(opaque_pixmap, comments, compression_level);
   }
 
   // If the image's pixels are all opaque, encode the PNG as opaque, regardless
@@ -245,24 +231,23 @@ std::optional<std::vector<uint8_t>> EncodeSkPixmap(
   if (src.info().alphaType() != kOpaque_SkAlphaType && src.computeIsOpaque()) {
     SkPixmap opaque_pixmap{src.info().makeAlphaType(kOpaque_SkAlphaType),
                            src.addr(), src.rowBytes()};
-    return EncodeSkPixmap(opaque_pixmap, comments, zlib_level, disable_filters);
+    return EncodeSkPixmap(opaque_pixmap, comments, compression_level);
   }
 
   // Encode the PNG without any conversions.
-  return EncodeSkPixmap(src, comments, zlib_level, disable_filters);
+  return EncodeSkPixmap(src, comments, compression_level);
 }
 
-std::optional<std::vector<uint8_t>> EncodeSkBitmap(const SkBitmap& input,
-                                                   bool discard_transparency,
-                                                   int zlib_level,
-                                                   bool disable_filters) {
+std::optional<std::vector<uint8_t>> EncodeSkBitmap(
+    const SkBitmap& input,
+    bool discard_transparency,
+    SkPngRustEncoder::CompressionLevel compression_level) {
   SkPixmap src;
   if (!input.peekPixels(&src)) {
     return std::nullopt;
   }
   return EncodeSkPixmap(src, discard_transparency,
-                        std::vector<PNGCodec::Comment>(), zlib_level,
-                        disable_filters);
+                        std::vector<PNGCodec::Comment>(), compression_level);
 }
 
 }  // namespace
@@ -293,21 +278,21 @@ std::optional<std::vector<uint8_t>> PNGCodec::Encode(
       SkImageInfo::Make(size.width(), size.height(), colorType, alphaType);
   SkPixmap src(info, input, row_byte_width);
   return EncodeSkPixmap(src, discard_transparency, comments,
-                        DEFAULT_ZLIB_COMPRESSION, /*disable_filters=*/false);
+                        SkPngRustEncoder::CompressionLevel::kMedium);
 }
 
 std::optional<std::vector<uint8_t>> PNGCodec::EncodeBGRASkBitmap(
     const SkBitmap& input,
     bool discard_transparency) {
-  return EncodeSkBitmap(input, discard_transparency, DEFAULT_ZLIB_COMPRESSION,
-                        /*disable_filters=*/false);
+  return EncodeSkBitmap(input, discard_transparency,
+                        SkPngRustEncoder::CompressionLevel::kMedium);
 }
 
 std::optional<std::vector<uint8_t>> PNGCodec::FastEncodeBGRASkBitmap(
     const SkBitmap& input,
     bool discard_transparency) {
-  return EncodeSkBitmap(input, discard_transparency, Z_BEST_SPEED,
-                        /*disable_filters=*/true);
+  return EncodeSkBitmap(input, discard_transparency,
+                        SkPngRustEncoder::CompressionLevel::kLow);
 }
 
 PNGCodec::Comment::Comment(const std::string& k, const std::string& t)

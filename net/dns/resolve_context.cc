@@ -456,7 +456,8 @@ size_t ResolveContext::FirstServerIndex(bool doh_server,
   if (doh_server)
     return 0u;
 
-  size_t index = classic_server_index_;
+  size_t index =
+      classic_server_index_ % current_session_->config().nameservers.size();
   if (current_session_->config().rotate) {
     classic_server_index_ = (classic_server_index_ + 1) %
                             current_session_->config().nameservers.size();

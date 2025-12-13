@@ -58,6 +58,7 @@ class AnnotationTray : public TrayBackgroundView,
   views::Widget* GetBubbleWidget() const override;
   void OnThemeChanged() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
+  std::u16string GetAccessibleNameForBubble() override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;

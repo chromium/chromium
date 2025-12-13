@@ -37,32 +37,6 @@ class MEDIA_EXPORT MediaCodecUtil {
 
   // Indicates if the vp8 decoder or encoder is available on this device.
   static bool IsVp8DecoderAvailable();
-  static bool IsVp8EncoderAvailable();
-
-  // Indicates if the vp9 decoder is available on this device.
-  static bool IsVp9DecoderAvailable();
-  static bool IsVp9Profile2DecoderAvailable();
-  static bool IsVp9Profile3DecoderAvailable();
-
-  // Indicates if the Opus decoder is available on this device.
-  static bool IsOpusDecoderAvailable();
-
-  // Indicates if the av1 decoder is available on this device.
-  static bool IsAv1DecoderAvailable();
-
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  // Indicates if the h265 decoder is available on this device.
-  static bool IsHEVCDecoderAvailable();
-#endif
-
-  // Indicates if the AAC encoder is available on this device.
-  static bool IsAACEncoderAvailable();
-
-  // Indicates if SurfaceView and MediaCodec work well together on this device.
-  static bool IsSurfaceViewOutputSupported();
-
-  // Indicates if MediaCodec.setOutputSurface() works on this device.
-  static bool IsSetOutputSurfaceSupported();
 
   // Returns a known alignment which can be used to translate visible size into
   // coded size. E.g., a size of (1, 1) means no alignment while a size of
@@ -89,26 +63,12 @@ class MEDIA_EXPORT MediaCodecUtil {
   static bool CanDecode(VideoCodec codec, bool is_secure);
   static bool CanDecode(AudioCodec codec);
 
-  // Indicates if the h264 encoder is available on this device.
-  //
-  // This can't be used from the renderer process since it attempts to
-  // access MediaCodecList (which requires permissions).
-  static bool IsH264EncoderAvailable();
-
   // Returns a vector of supported codecs profiles and levels.
   //
   // WARNING: This can't be used from the renderer process since it attempts to
   // access MediaCodecList (which requires permissions).
   static void AddSupportedCodecProfileLevels(
       std::vector<CodecProfileLevel>* out);
-
-  // Get a list of encoder supported color formats for |mime_type|.
-  // The mapping of color format name and its value refers to
-  // MediaCodecInfo.CodecCapabilities.
-  //
-  // WARNING: This can't be used from the renderer process since it attempts to
-  // access MediaCodecList (which requires permissions).
-  static std::set<int> GetEncoderColorFormats(const std::string& mime_type);
 
   // Returns true if |mime_type| is known to be unaccelerated (i.e. backed by a
   // software codec instead of a hardware one).

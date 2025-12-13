@@ -80,6 +80,48 @@ interface IElevator : IUnknown
                       [out] DWORD* last_error);
 };
 
+[
+  object,
+  oleautomation,
+  uuid(8F7B6792-784D-4047-845D-1782EFBEF205),
+  helpstring("IElevator2 Interface"),
+  pointer_default(unique)
+]
+interface IElevator2 : IElevator
+{
+  // Executes isolated Chrome for the current user.
+  //
+  // @param flags The desired behavior for the isolated Chrome.
+  // @param command_line The command line for the isolated Chrome. This might be
+  //                     filtered by the elevated service and only a limited
+  //                     number of switches are guaranteed to function correctly
+  //                     in isolated Chrome.
+  // @param log A string containing any logs of the operation which may be
+  //            supplied by the elevated service.
+  // @param proc_handle The process handle of the isolated Chrome.
+  // @param last_error The result of calling GetLastError if the operation
+  //                   failed.
+  //
+  // @return Returns an HRESULT which will indicate a success or failure. Use
+  //         FAILED or SUCCEEDED macros to determine failure or success.
+  HRESULT RunIsolatedChrome([in] DWORD flags,
+                            [in, string] const WCHAR* command_line,
+                            [out] BSTR* log,
+                            [out] ULONG_PTR* proc_handle,
+                            [out] DWORD* last_error);
+
+  // Takes a mojo invitation on `server_name` containing a single message pipe.
+  // The service will then wait for a PendingReceiver to arrive on that message
+  // pipe. Mojo connection will then be established on its arrival.
+  // `server_name` must name the server endpoint of a named channel of the
+  // client.
+  //
+  // @param server_name The server name created on the client to connect to.
+  //
+  // @return S_OK on success. Any other value on failure.
+  HRESULT AcceptInvitation([in, string] const WCHAR* server_name);
+};
+
 // The interfaces below are all IElevator with unique IIDs. IElevator is
 // registered with unique IIDs for the various flavors of Chrome and Chromium.
 // This allows the different flavors of Chrome/Chromium to co-exist without side
@@ -139,6 +181,66 @@ interface IElevatorChromeCanary : IElevator
 {
 };
 
+
+// The interfaces below are all IElevator2 with unique IIDs. IElevator2 is
+// registered with unique IIDs for the various flavors of Chrome and Chromium.
+// This allows the different flavors of Chrome/Chromium to co-exist without side
+// effects.
+[
+  object,
+  oleautomation,
+  uuid(BB19A0E5-00C6-4966-94B2-5AFEC6FED93A),
+  helpstring("IElevator2Chromium Interface"),
+  pointer_default(unique)
+]
+interface IElevator2Chromium : IElevator2
+{
+};
+
+[
+  object,
+  oleautomation,
+  uuid(1BF5208B-295F-4992-B5F4-3A9BB6494838),
+  helpstring("IElevator2Chrome Interface"),
+  pointer_default(unique)
+]
+interface IElevator2Chrome : IElevator2
+{
+};
+
+[
+  object,
+  oleautomation,
+  uuid(B96A14B8-D0B0-44D8-BA68-2385B2A03254),
+  helpstring("IElevator2ChromeBeta Interface"),
+  pointer_default(unique)
+]
+interface IElevator2ChromeBeta : IElevator2
+{
+};
+
+[
+  object,
+  oleautomation,
+  uuid(3FEFA48E-C8BF-461F-AED6-63F658CC850A),
+  helpstring("IElevator2ChromeDev Interface"),
+  pointer_default(unique)
+]
+interface IElevator2ChromeDev : IElevator2
+{
+};
+
+[
+  object,
+  oleautomation,
+  uuid(FF672E9F-0994-4322-81E5-3A5A9746140A),
+  helpstring("IElevator2ChromeCanary Interface"),
+  pointer_default(unique)
+]
+interface IElevator2ChromeCanary : IElevator2
+{
+};
+
 [
   uuid(0014D784-7012-4A79-8AB6-ADDB8193A06E),
   version(1.0),
@@ -153,4 +255,10 @@ library ElevatorLib {
   interface IElevatorChromeBeta;
   interface IElevatorChromeDev;
   interface IElevatorChromeCanary;
+  interface IElevator2;
+  interface IElevator2Chromium;
+  interface IElevator2Chrome;
+  interface IElevator2ChromeBeta;
+  interface IElevator2ChromeDev;
+  interface IElevator2ChromeCanary;
 };

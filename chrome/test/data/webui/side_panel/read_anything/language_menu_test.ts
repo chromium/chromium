@@ -405,17 +405,6 @@ suite('LanguageMenu', () => {
         assertTrue(getToast().$.toast.open);
       });
 
-      test('it does not show error toast', async () => {
-        enabledLangs = ['it-it', 'en-us'];
-        languageMenu.enabledLangs = enabledLangs;
-        notify('it', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
-        await drawLanguageMenu();
-        notify('it', VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION);
-        await microtasksFinished();
-
-        assertFalse(getToast().$.toast.open);
-      });
-
       test('it does not show downloaded toast when closed', async () => {
         enabledLangs = ['it-it', 'en-us'];
         languageMenu.enabledLangs = enabledLangs;
@@ -432,6 +421,17 @@ suite('LanguageMenu', () => {
         assertFalse(getToast().$.toast.open);
       });
       // </if>
+
+      test('it does not show error toast', async () => {
+        enabledLangs = ['it-it', 'en-us'];
+        languageMenu.enabledLangs = enabledLangs;
+        notify('it', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+        await drawLanguageMenu();
+        notify('it', VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION);
+        await microtasksFinished();
+
+        assertFalse(getToast().$.toast.open);
+      });
 
       test('it shows and hides downloading notification', async () => {
         languageMenu.localesOfLangPackVoices = new Set(['it-it']);
@@ -680,7 +680,7 @@ function isPositionedOnPage(element: HTMLElement) {
 
 function assertLanguageLineWithTextAndSwitch(
     expectedText: string, element: HTMLElement) {
-  assertEquals(expectedText, element.textContent!.trim());
+  assertEquals(expectedText, element.textContent.trim());
   assertEquals(2, element.children.length);
   assertEquals('CR-TOGGLE', element.children[1]!.tagName);
 }

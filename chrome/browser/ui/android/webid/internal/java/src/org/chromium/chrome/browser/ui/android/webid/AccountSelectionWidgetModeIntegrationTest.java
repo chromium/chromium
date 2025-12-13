@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -59,7 +60,10 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
-                            EXAMPLE_ETLD_PLUS_ONE,
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* newAccounts= */ Collections.EMPTY_LIST);
@@ -81,7 +85,10 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showErrorDialog(
-                            EXAMPLE_ETLD_PLUS_ONE,
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
                             TEST_ETLD_PLUS_ONE_2,
                             IDP_METADATA,
                             RpContext.SIGN_IN,
@@ -101,7 +108,10 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showErrorDialog(
-                            EXAMPLE_ETLD_PLUS_ONE,
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
                             TEST_ETLD_PLUS_ONE_2,
                             IDP_METADATA,
                             RpContext.SIGN_IN,

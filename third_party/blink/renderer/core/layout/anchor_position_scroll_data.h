@@ -6,10 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_POSITION_SCROLL_DATA_H_
 
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
-#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
+#include "third_party/blink/renderer/core/frame/post_layout_snapshot_client.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -47,7 +48,7 @@ class LayoutObject;
 // layout and/or paint.
 class AnchorPositionScrollData
     : public GarbageCollected<AnchorPositionScrollData>,
-      public ScrollSnapshotClient,
+      public PostLayoutSnapshotClient,
       public ElementRareDataField {
  public:
   explicit AnchorPositionScrollData(Element* anchored_element);
@@ -73,15 +74,16 @@ class AnchorPositionScrollData
   //    snapshot, the result will be from the last snapshotted result.
   // 2. Otherwise the result will be calculated on the fly, which may use stale
   //    layout data if this is called during layout.
-  // ValidateSnapshot() (called after the first layout during a lifecycle
-  // update) will reschedule layout, or ShouldScheduleNextService() (called at
-  // the end of a lifecycle update) will schedule another lifecycle update,
+  // UpdateSnapshot() (called after the first layout during a lifecycle update)
+  // will reschedule layout, or ShouldScheduleNextService() (called at the end
+  // of a lifecycle update) will schedule another lifecycle update,
   // if the final layout data may cause layout changes.
   PhysicalOffset TotalOffset(const LayoutObject* anchor_object = nullptr) const;
 
   PhysicalOffset AccumulatedAdjustment() const {
     return default_anchor_adjustment_data_.accumulated_adjustment;
   }
+  PhysicalOffset SpeculativeDefaultAnchorRememberedOffset() const;
   gfx::Vector2d AccumulatedAdjustmentScrollOrigin() const {
     return default_anchor_adjustment_data_.accumulated_adjustment_scroll_origin;
   }
@@ -101,16 +103,16 @@ class AnchorPositionScrollData
   // Physical/LogicalOffset, which only represents the location of a box within
   // a container, to represent a scroll offset. Stop using this function.
   PhysicalOffset TranslationAsPhysicalOffset() const {
-    return -AccumulatedAdjustment();
+    return -AccumulatedAdjustment() +
+           SpeculativeDefaultAnchorRememberedOffset();
   }
 
   // Returns whether `anchored_element_` is still an anchor-positioned element
   // using `this` as its AnchroScrollData.
   bool IsActive() const;
 
-  // ScrollSnapshotClient:
-  void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
+  // PostLayoutSnapshotClient:
+  bool UpdateSnapshot() override;
   bool ShouldScheduleNextService() override;
   bool IsAnchorPositionScrollData() const override { return true; }
 
@@ -128,9 +130,6 @@ class AnchorPositionScrollData
   }
 
   void Trace(Visitor*) const override;
-
- private:
-  enum class SnapshotDiff { kNone, kScrollersOrFallbackPosition, kOffsetOnly };
 
   struct AdjustmentData {
     DISALLOW_NEW();
@@ -174,12 +173,23 @@ class AnchorPositionScrollData
     void Trace(Visitor* visitor) const { visitor->Trace(anchor_element); }
 
     PhysicalOffset TotalOffset() const {
+      if (RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
+        return containers_include_viewport
+                   ? accumulated_adjustment +
+                         anchored_element_container_scroll_offset
+                   : accumulated_adjustment;
+      }
       return accumulated_adjustment + anchored_element_container_scroll_offset;
     }
   };
 
-  AdjustmentData ComputeAdjustmentContainersData(
-      const LayoutObject& anchor) const;
+  static AdjustmentData ComputeAdjustmentContainersData(
+      const Element* anchored_element,
+      const LayoutObject& anchor);
+
+ private:
+  enum class SnapshotDiff { kNone, kScrollersOrFallbackPosition, kOffsetOnly };
+
   AdjustmentData ComputeDefaultAnchorAdjustmentData() const;
   // Takes an up-to-date snapshot, and compares it with the existing one.
   // If `update` is true, also rewrites the existing snapshot.
@@ -199,7 +209,7 @@ class AnchorPositionScrollData
 
 template <>
 struct DowncastTraits<AnchorPositionScrollData> {
-  static bool AllowFrom(const ScrollSnapshotClient& client) {
+  static bool AllowFrom(const PostLayoutSnapshotClient& client) {
     return client.IsAnchorPositionScrollData();
   }
 };

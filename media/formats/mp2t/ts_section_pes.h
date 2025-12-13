@@ -44,7 +44,7 @@ class TsSectionPes : public TsSection {
   bool Emit(bool emit_for_unknown_size);
 
   // Parse a PES packet, return true if successful.
-  bool ParseInternal(const uint8_t* raw_pes, int raw_pes_size);
+  bool ParseInternal(base::span<const uint8_t> pes);
 
   void ResetPesState();
 

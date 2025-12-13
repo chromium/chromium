@@ -35,7 +35,7 @@
 #include "ui/gl/gpu_switching_manager.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 using ui::GetLastEGLErrorString;
@@ -426,8 +426,7 @@ GLDisplayEGL::EGLGpuSwitchingObserver::EGLGpuSwitchingObserver(
   DCHECK(display != EGL_NO_DISPLAY);
 }
 
-void GLDisplayEGL::EGLGpuSwitchingObserver::OnGpuSwitched(
-    GpuPreference active_gpu_heuristic) {
+void GLDisplayEGL::EGLGpuSwitchingObserver::OnGpuSwitched() {
   eglHandleGPUSwitchANGLE(display_);
 }
 
@@ -738,22 +737,26 @@ void GLDisplayEGL::InitializeCommon(bool for_testing) {
   // reported. TODO(crbug.com/40132708): Once this is fixed at the
   // Android level, update the heuristic to trust the reported extension from
   // that version onward.
+  // LINT.IfChange(AndroidSurfaceControlCondition)
   egl_android_native_fence_sync_supported_ =
       ext->b_EGL_ANDROID_native_fence_sync;
 #if BUILDFLAG(IS_ANDROID)
   if (!egl_android_native_fence_sync_supported_ &&
-      base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_NOUGAT &&
+      base::android::android_info::sdk_int() >=
+          base::android::android_info::SDK_VERSION_NOUGAT &&
       g_driver_egl.fn.eglDupNativeFenceFDANDROIDFn &&
       base::SysInfo::GetAndroidHardwareEGL() != "swiftshader" &&
       base::SysInfo::GetAndroidHardwareEGL() != "emulation") {
     egl_android_native_fence_sync_supported_ = true;
   }
+  UMA_HISTOGRAM_BOOLEAN("GPU.Android.HasEGLDupNativeFenceFunction",
+                        !!g_driver_egl.fn.eglDupNativeFenceFDANDROIDFn);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableAndroidNativeFenceSyncForTesting)) {
     egl_android_native_fence_sync_supported_ = false;
   }
+  // LINT.ThenChange(//gpu/config/gpu_finch_features.cc:AndroidSurfaceControlCondition)
 #endif  // BUILDFLAG(IS_ANDROID)
 
   if (!for_testing) {

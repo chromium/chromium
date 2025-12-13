@@ -223,15 +223,16 @@ FencedAllocator::State MappedMemoryManager::GetPointerStatusForTest(
 }
 
 void ScopedMappedMemoryPtr::Release() {
-  if (buffer_) {
-    mapped_memory_manager_->FreePendingToken(buffer_, helper_->InsertToken());
-    buffer_ = nullptr;
-    size_ = 0;
+  if (valid()) {
+    mapped_memory_manager_->FreePendingToken(buffer_.data(),
+                                             helper_->InsertToken());
+    buffer_ = {};
     shm_id_ = 0;
     shm_offset_ = 0;
 
-    if (flush_after_release_)
+    if (flush_after_release_) {
       helper_->CommandBufferHelper::Flush();
+    }
   }
 }
 
@@ -239,8 +240,11 @@ void ScopedMappedMemoryPtr::Reset(uint32_t new_size) {
   Release();
 
   if (new_size) {
-    buffer_ = mapped_memory_manager_->Alloc(new_size, &shm_id_, &shm_offset_);
-    size_ = buffer_ ? new_size : 0;
+    // TODO(crbug.com/40285824): Return the span instead of a pointer.
+    void* ptr = mapped_memory_manager_->Alloc(new_size, &shm_id_, &shm_offset_);
+    if (ptr) {
+      buffer_ = UNSAFE_TODO(base::span(static_cast<uint8_t*>(ptr), new_size));
+    }
   }
 }
 

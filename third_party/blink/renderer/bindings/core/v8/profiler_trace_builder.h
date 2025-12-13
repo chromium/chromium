@@ -53,10 +53,10 @@ struct ProfilerNodeFrameHashTraits : HashTraits<const v8::CpuProfileNode*> {
   }
 
   static unsigned GetHash(const v8::CpuProfileNode* node) {
-    return WTF::GetHash(node->GetFunctionNameStr()) ^
-           WTF::GetHash(node->GetScriptResourceNameStr()) ^
-           WTF::GetHash(node->GetLineNumber()) ^
-           WTF::GetHash(node->GetColumnNumber());
+    return blink::GetHash(node->GetFunctionNameStr()) ^
+           blink::GetHash(node->GetScriptResourceNameStr()) ^
+           blink::GetHash(node->GetLineNumber()) ^
+           blink::GetHash(node->GetColumnNumber());
   }
 
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;

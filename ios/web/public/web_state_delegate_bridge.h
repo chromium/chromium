@@ -41,6 +41,27 @@
 - (void)webState:(web::WebState*)webState
     runRepostFormDialogWithCompletionHandler:(void (^)(BOOL))handler;
 
+// Called when a copy operation is initiated. The delegate must call `handler`
+// with `YES` to allow the copy or `NO` to prevent it.
+// By default, copy is allowed.
+- (void)webState:(web::WebState*)webState
+    shouldAllowCopyWithDecisionHandler:(void (^)(BOOL))handler;
+
+// Called when a paste operation is initiated. The delegate must call `handler`
+// with `YES` to allow the paste or `NO` to prevent it.
+// By default, paste is allowed.
+- (void)webState:(web::WebState*)webState
+    shouldAllowPasteWithDecisionHandler:(void (^)(BOOL))handler;
+
+// Called when a cut operation is initiated. The delegate must call `handler`
+// with `YES` to allow the cut or `NO` to prevent it.
+// By default, cut is allowed.
+- (void)webState:(web::WebState*)webState
+    shouldAllowCutWithDecisionHandler:(void (^)(BOOL))handler;
+
+// Called after the user or a script pasted content into the page.
+- (void)webStateDidFinishClipboardRead:(web::WebState*)webState;
+
 // Returns a pointer to a service to manage dialogs. May return null in which
 // case dialogs aren't shown.
 - (web::JavaScriptDialogPresenter*)javaScriptDialogPresenterForWebState:
@@ -112,6 +133,13 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
       WebState* source,
       FormWarningType warning_type,
       base::OnceCallback<void(bool)> callback) override;
+  void ShouldAllowCopy(WebState* source,
+                       base::OnceCallback<void(bool)> callback) override;
+  void ShouldAllowPaste(WebState* source,
+                        base::OnceCallback<void(bool)> callback) override;
+  void ShouldAllowCut(WebState* source,
+                      base::OnceCallback<void(bool)> callback) override;
+  void DidFinishClipboardRead(WebState* source) override;
   JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       WebState* source) override;
   void HandlePermissionsDecisionRequest(

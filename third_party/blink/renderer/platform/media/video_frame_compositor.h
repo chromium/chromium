@@ -16,7 +16,6 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/auto_open_close_event.h"
 #include "cc/layers/surface_layer.h"
 #include "cc/layers/video_frame_provider.h"
 #include "media/base/video_renderer_sink.h"
@@ -286,9 +285,6 @@ class PLATFORM_EXPORT VideoFrameCompositor : public media::VideoRendererSink,
   base::TimeDelta last_interval_ GUARDED_BY(callback_lock_) =
       base::Seconds(1.0 / 60);
 
-  // AutoOpenCloseEvent for begin/end events.
-  std::unique_ptr<base::trace_event::AutoOpenCloseEvent<kTracingCategory>>
-      auto_open_close_;
   std::unique_ptr<WebVideoFrameSubmitter> submitter_;
 
   base::WeakPtrFactory<VideoFrameCompositor> weak_ptr_factory_{this};

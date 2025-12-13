@@ -15,6 +15,9 @@
 #include "base/json/json_reader.h"
 #include "base/values.h"
 
+// Use this class to work with code that takes `base::ValueSerializer`.
+// To just serialize a JSON string to files, use base/json/json_writer.h in
+// combination with base/files/ code.
 class BASE_EXPORT JSONFileValueSerializer : public base::ValueSerializer {
  public:
   JSONFileValueSerializer() = delete;
@@ -49,6 +52,9 @@ class BASE_EXPORT JSONFileValueSerializer : public base::ValueSerializer {
   const base::FilePath json_file_path_;
 };
 
+// Use this class to work with code that takes `base::ValueDeserializer`.
+// To just deserialize a JSON string stored in a file, use
+// base/json/json_reader.h in combination with base/files/ code.
 class BASE_EXPORT JSONFileValueDeserializer : public base::ValueDeserializer {
  public:
   JSONFileValueDeserializer() = delete;

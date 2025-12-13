@@ -45,8 +45,7 @@ std::string GetUnmaskDetailsRequest::GetRequestContent() {
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
+  std::string request_content = base::WriteJson(request_dict).value_or("");
   DVLOG(3) << "getdetailsforgetrealpan request body: " << request_content;
   return request_content;
 }

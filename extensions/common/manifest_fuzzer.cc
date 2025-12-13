@@ -84,7 +84,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     extension_id.resize(1);
 
   std::optional<base::Value> parsed_json = base::JSONReader::Read(
-      fuzzed_data_provider.ConsumeRemainingBytesAsString());
+      fuzzed_data_provider.ConsumeRemainingBytesAsString(),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json || !parsed_json->is_dict())
     return 0;
 

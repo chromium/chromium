@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 
+#include <optional>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/trace_event/typed_macros.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
@@ -208,7 +211,7 @@ class ChromeOmniboxNavigationObserver::AlternativeNavigationURLLoader {
     // |this| may be deleted at this point.
   }
 
-  void OnURLLoadComplete(std::unique_ptr<std::string> body) {
+  void OnURLLoadComplete(std::optional<std::string> body) {
     int response_code = -1;
     if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers) {
       response_code = loader_->ResponseInfo()->headers->response_code();
@@ -307,8 +310,7 @@ void ChromeOmniboxNavigationObserver::DidFinishNavigation(
 void ChromeOmniboxNavigationObserver::On404() {
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
-  const TemplateURL* template_url = match_.GetTemplateURL(
-      template_url_service, false /* allow_fallback_to_destination_host */);
+  const TemplateURL* template_url = match_.GetTemplateURL(template_url_service);
   // If the omnibox navigation was to a URL (and hence did not involve a
   // TemplateURL / search at all) or the invoked search engine has been
   // deleted or otherwise modified, doing nothing is the right thing.

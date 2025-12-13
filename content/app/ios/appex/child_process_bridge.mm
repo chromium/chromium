@@ -23,15 +23,12 @@
 #include "gpu/ipc/common/ios/be_layer_hierarchy_transport.h"
 #include "sandbox/policy/switches.h"
 
-class GPUProcessTransport;
-
 // Leaked variables for now.
 static size_t g_argc = 0;
 static const char** g_argv = nullptr;
 static pthread_t g_main_thread;
 static id<ChildProcessExtension> g_swift_process;
 static xpc_connection_t g_connection;
-static std::unique_ptr<GPUProcessTransport> g_gpu_transport;
 
 #define IOS_INIT_EXPORT __attribute__((visibility("default")))
 
@@ -55,6 +52,8 @@ class GPUProcessTransport : public gpu::BELayerHierarchyTransport {
     xpc_connection_send_message(g_connection, message);
   }
 };
+
+static std::unique_ptr<GPUProcessTransport> g_gpu_transport;
 
 extern "C" IOS_INIT_EXPORT void GpuProcessInit() {
   g_gpu_transport = std::make_unique<GPUProcessTransport>();
@@ -115,13 +114,52 @@ extern "C" IOS_INIT_EXPORT void ChildProcessHandleNewConnection(
                             relativeToURL:nil
                       bookmarkDataIsStale:&bookmarkIsStale
                                     error:&error];
+    CHECK(error == nil) << base::SysNSStringToUTF8(
+        [error localizedDescription]);
     CHECK(tmp_dir_url);
     std::string file_path = base::SysNSStringToUTF8(tmp_dir_url.path) + "/";
-    setenv("TMPDIR", file_path.c_str(), 1);
+    CHECK_EQ(setenv("TMPDIR", file_path.c_str(), 1), 0);
 
     base::FilePath assigned_path;
     CHECK(base::GetTempDir(&assigned_path));
     CHECK(assigned_path.value() == file_path);
+
+    // The gpu_cache_dir key will only be set for the GPU process extension, but
+    // this code runs for all extension types.
+    size_t gpu_cache_bookmark_length = 0;
+    const void* gpu_cache_bookmark_data = xpc_dictionary_get_data(
+        msg, "gpu_cache_dir", &gpu_cache_bookmark_length);
+    if (gpu_cache_bookmark_data) {
+      CHECK(g_gpu_transport);
+
+      // See code in child_process_launcher_helper_ios.mm about this.
+      const char* browser_container_home =
+          xpc_dictionary_get_string(msg, "browser_container_home");
+      CHECK(browser_container_home);
+      CHECK_EQ(setenv("CFFIXED_USER_HOME", browser_container_home, 1), 0);
+
+      // Per Apple, we need to set this for Metal shader cache to work properly.
+      NSString* gpu_bundle_id = [[NSBundle mainBundle] bundleIdentifier];
+      CHECK(gpu_bundle_id);
+      CHECK_EQ(setenv("DIRHELPER_USER_DIR_SUFFIX",
+                      base::SysNSStringToUTF8(gpu_bundle_id).c_str(), 1),
+               0);
+
+      // Open the bookmark for the cache directory which will ensure later
+      // accesses after the sandbox starts succeed.
+      NSData* gpu_cache_bookmark =
+          [NSData dataWithBytes:gpu_cache_bookmark_data
+                         length:gpu_cache_bookmark_length];
+      NSURL* gpu_cache_url =
+          [NSURL URLByResolvingBookmarkData:gpu_cache_bookmark
+                                    options:NSURLBookmarkResolutionWithoutUI
+                              relativeToURL:nil
+                        bookmarkDataIsStale:&bookmarkIsStale
+                                      error:&error];
+      CHECK(error == nil) << base::SysNSStringToUTF8(
+          [error localizedDescription]);
+      CHECK(gpu_cache_url);
+    }
 
     mach_port_t port = xpc_dictionary_copy_mach_send(msg, "port");
     base::apple::ScopedMachSendRight server_port(port);

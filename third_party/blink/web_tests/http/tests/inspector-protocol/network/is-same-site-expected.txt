@@ -1,5 +1,5 @@
 Verifies that same site requests are marked as such
-requests[
+requests [
     [0] : {
         isSameSite : true
         url : http://127.0.0.1:8000/inspector-protocol/network/resources/relative.png

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_INSECURE_CREDENTIALS_TABLE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_INSECURE_CREDENTIALS_TABLE_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"

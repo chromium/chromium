@@ -10,8 +10,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "services/network/public/cpp/resource_request.h"

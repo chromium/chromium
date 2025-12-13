@@ -148,9 +148,8 @@ QuadType* AddRenderPassQuadInternal(RenderPassType* to_pass,
                        /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   auto* quad = to_pass->template CreateAndAppendDrawQuad<QuadType>();
   quad->SetNew(shared_state, output_rect, output_rect, contributing_pass->id,
-               viz::kInvalidResourceId, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(), gfx::RectF(), false,
-               1.0f);
+               viz::kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::RectF(),
+               false);
   return quad;
 }
 
@@ -184,8 +183,8 @@ void AddRenderPassQuad(viz::AggregatedRenderPass* to_pass,
   gfx::Size arbitrary_nonzero_size(1, 1);
   quad->SetNew(shared_state, output_rect, output_rect, contributing_pass->id,
                mask_resource_id, gfx::RectF(output_rect),
-               arbitrary_nonzero_size, gfx::Vector2dF(), gfx::PointF(),
-               gfx::RectF(), false, 1.0f);
+               arbitrary_nonzero_size, gfx::RectF(), false);
+  quad->SetFilters(gfx::Vector2dF(), gfx::PointF(), 1.0f);
 }
 
 std::vector<viz::ResourceId> AddOneOfEveryQuadType(
@@ -233,8 +232,7 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
         to_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
     render_pass_quad->SetNew(shared_state, rect, visible_rect, child_pass_id,
                              resource5, gfx::RectF(rect), gfx::Size(73, 26),
-                             gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
-                             gfx::RectF(), false, 1.0f);
+                             gfx::RectF(), false);
   }
 
   auto* solid_color_quad =
@@ -289,150 +287,6 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
           resource5, resource6, resource8};
 }
 
-static void CollectResources(std::vector<viz::ReturnedResource>* array,
-                             std::vector<viz::ReturnedResource> returned) {}
-
-void AddOneOfEveryQuadTypeInDisplayResourceProvider(
-    viz::AggregatedRenderPass* to_pass,
-    viz::DisplayResourceProvider* resource_provider,
-    viz::ClientResourceProvider* child_resource_provider,
-    viz::RasterContextProvider* child_context_provider,
-    viz::AggregatedRenderPassId child_pass_id,
-    gpu::SyncToken* sync_token_for_mailbox_tebxture) {
-  gfx::Rect rect(0, 0, 100, 100);
-  gfx::Rect visible_rect(0, 0, 100, 100);
-  bool needs_blending = true;
-  static const gpu::SyncToken kDefaultSyncToken(
-      gpu::CommandBufferNamespace::GPU_IO,
-      gpu::CommandBufferId::FromUnsafeValue(0x111), 42);
-  static const gpu::SyncToken kSyncTokenForMailboxTextureQuad(
-      gpu::CommandBufferNamespace::GPU_IO,
-      gpu::CommandBufferId::FromUnsafeValue(0x123), 30);
-  *sync_token_for_mailbox_tebxture = kSyncTokenForMailboxTextureQuad;
-
-  viz::ResourceId resource1 =
-      CreateAndImportResource(child_resource_provider, kDefaultSyncToken);
-  viz::ResourceId resource2 =
-      CreateAndImportResource(child_resource_provider, kDefaultSyncToken);
-  viz::ResourceId resource3 =
-      CreateAndImportResource(child_resource_provider, kDefaultSyncToken);
-  viz::ResourceId resource4 =
-      CreateAndImportResource(child_resource_provider, kDefaultSyncToken);
-  viz::ResourceId resource5 =
-      CreateAndImportResource(child_resource_provider, kDefaultSyncToken);
-  viz::ResourceId resource6 = CreateAndImportResource(
-      child_resource_provider, kSyncTokenForMailboxTextureQuad);
-
-  // Transfer resource to the parent.
-  std::vector<viz::ResourceId> resource_ids_to_transfer;
-  resource_ids_to_transfer.push_back(resource1);
-  resource_ids_to_transfer.push_back(resource2);
-  resource_ids_to_transfer.push_back(resource3);
-  resource_ids_to_transfer.push_back(resource4);
-  resource_ids_to_transfer.push_back(resource5);
-  resource_ids_to_transfer.push_back(resource6);
-
-  std::vector<viz::ReturnedResource> returned_to_child;
-  int child_id = resource_provider->CreateChild(
-      base::BindRepeating(&CollectResources, &returned_to_child),
-      viz::SurfaceId());
-
-  // Transfer resource to the parent.
-  std::vector<viz::TransferableResource> list;
-  child_resource_provider->PrepareSendToParent(resource_ids_to_transfer, &list,
-                                               child_context_provider);
-  resource_provider->ReceiveFromChild(child_id, list);
-
-  // Delete them in the child so they won't be leaked, and will be released once
-  // returned from the parent. This assumes they won't need to be sent to the
-  // parent again.
-  for (viz::ResourceId id : resource_ids_to_transfer)
-    child_resource_provider->RemoveImportedResource(id);
-
-  // Before create DrawQuad in viz::DisplayResourceProvider's namespace, get the
-  // mapped resource id first.
-  std::unordered_map<viz::ResourceId, viz::ResourceId, viz::ResourceIdHasher>
-      resource_map = resource_provider->GetChildToParentMap(child_id);
-  viz::ResourceId mapped_resource1 = resource_map[resource1];
-  viz::ResourceId mapped_resource2 = resource_map[resource2];
-  viz::ResourceId mapped_resource3 = resource_map[resource3];
-  viz::ResourceId mapped_resource4 = resource_map[resource4];
-  viz::ResourceId mapped_resource5 = resource_map[resource5];
-  viz::ResourceId mapped_resource6 = resource_map[resource6];
-
-  viz::SharedQuadState* shared_state =
-      to_pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
-                       /*clip=*/std::nullopt, /*contents_opaque=*/false,
-                       /*opacity_f=*/1, SkBlendMode::kSrcOver,
-                       /*sorting_context=*/0, /*layer_id=*/0u,
-                       /*fast_rounded_corner=*/false);
-
-  viz::DebugBorderDrawQuad* debug_border_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
-  debug_border_quad->SetNew(shared_state, rect, visible_rect, SkColors::kRed,
-                            1);
-  if (child_pass_id) {
-    auto* render_pass_quad =
-        to_pass->CreateAndAppendDrawQuad<viz::AggregatedRenderPassDrawQuad>();
-    render_pass_quad->SetNew(shared_state, rect, visible_rect, child_pass_id,
-                             mapped_resource5, gfx::RectF(rect),
-                             gfx::Size(73, 26), gfx::Vector2dF(), gfx::PointF(),
-                             gfx::RectF(), false, 1.0f);
-  }
-
-  viz::SolidColorDrawQuad* solid_color_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  solid_color_quad->SetNew(shared_state, rect, visible_rect, SkColors::kRed,
-                           false);
-
-  viz::TextureDrawQuad* texture_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-  texture_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                       mapped_resource1, gfx::PointF(0.f, 0.f),
-                       gfx::PointF(1.f, 1.f), SkColors::kTransparent, false,
-                       false, gfx::ProtectedVideoType::kClear);
-
-  viz::TextureDrawQuad* external_resource_texture_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-  external_resource_texture_quad->SetNew(
-      shared_state, rect, visible_rect, needs_blending, mapped_resource6,
-      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
-      false, false, gfx::ProtectedVideoType::kClear);
-
-  viz::TileDrawQuad* scaled_tile_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-  scaled_tile_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                           mapped_resource2, gfx::RectF(0, 0, 50, 50), false,
-                           false);
-
-  viz::SharedQuadState* transformed_state =
-      to_pass->CreateAndAppendSharedQuadState();
-  *transformed_state = *shared_state;
-  gfx::Transform rotation;
-  rotation.Rotate(45);
-  transformed_state->quad_to_target_transform =
-      transformed_state->quad_to_target_transform * rotation;
-  viz::TileDrawQuad* transformed_tile_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-  transformed_tile_quad->SetNew(transformed_state, rect, visible_rect,
-                                needs_blending, mapped_resource3,
-                                gfx::RectF(0, 0, 100, 100), false, false);
-
-  viz::SharedQuadState* shared_state2 =
-      to_pass->CreateAndAppendSharedQuadState();
-  shared_state2->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
-                        /*clip=*/std::nullopt, /*contents_opaque=*/false,
-                        /*opacity_f=*/1, SkBlendMode::kSrcOver,
-                        /*sorting_context=*/0, /*layer_id=*/0u,
-                        /*fast_rounded_corner=*/false);
-
-  viz::TileDrawQuad* tile_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-  tile_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
-                    mapped_resource4, gfx::RectF(0, 0, 100, 100), false, false);
-}
-
 std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
     viz::CompositorRenderPass* from_pass,
     viz::AggregatedRenderPassId to_id,
@@ -481,7 +335,7 @@ std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
                            viz::ResourceIdHasher>
             resource_map = SendResourceAndGetChildToParentMap(
                 {quad->resource_id}, resource_provider, child_resource_provider,
-                child_context_provider);
+                child_context_provider->SharedImageInterface());
         quad->resource_id = resource_map[quad->resource_id];
       }
     }

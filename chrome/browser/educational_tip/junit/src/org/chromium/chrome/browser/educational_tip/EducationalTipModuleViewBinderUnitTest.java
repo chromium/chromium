@@ -25,10 +25,12 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -41,6 +43,7 @@ import org.chromium.ui.widget.ButtonCompat;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class EducationalTipModuleViewBinderUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private EducationalTipModuleView mEducationalTipModuleView;
     private PropertyModel mModel;
@@ -49,7 +52,6 @@ public final class EducationalTipModuleViewBinderUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mEducationalTipModuleView =
                 (EducationalTipModuleView)

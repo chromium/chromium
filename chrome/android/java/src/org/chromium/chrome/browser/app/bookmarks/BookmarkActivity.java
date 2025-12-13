@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -16,6 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
+import org.chromium.chrome.browser.back_press.BackPressHelper.OnKeyDownHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -26,6 +28,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -45,6 +48,7 @@ public class BookmarkActivity extends SnackbarActivity {
 
     private @Nullable BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
+    private @Nullable OnKeyDownHandler mOnKeyDownHandler;
 
     @Override
     protected void onProfileAvailable(Profile profile) {
@@ -67,12 +71,26 @@ public class BookmarkActivity extends SnackbarActivity {
                         mBookmarkOpener,
                         new BookmarkManagerOpenerImpl(),
                         PriceDropNotificationManagerFactory.create(profile),
-                        /* edgeToEdgePadAdjusterGenerator= */ null);
+                        /* edgeToEdgePadAdjusterGenerator= */ view ->
+                                EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                                        view, getEdgeToEdgeSupplier()),
+                        /* backPressManager= */ null);
         String url = getIntent().getDataString();
-        if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
+        if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_NATIVE_URL;
         mBookmarkManagerCoordinator.updateForUrl(url);
         setContentView(mBookmarkManagerCoordinator.getView());
-        BackPressHelper.create(this, getOnBackPressedDispatcher(), mBookmarkManagerCoordinator);
+        mOnKeyDownHandler =
+                BackPressHelper.create(
+                        this, getOnBackPressedDispatcher(), mBookmarkManagerCoordinator);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (mOnKeyDownHandler != null && mOnKeyDownHandler.onKeyDown(keyCode, event)) {
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -22,7 +21,10 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 

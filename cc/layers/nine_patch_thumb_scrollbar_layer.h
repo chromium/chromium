@@ -64,7 +64,8 @@ class CC_EXPORT NinePatchThumbScrollbarLayer : public ScrollbarLayerBase {
 
   ProtectedSequenceForbidden<scoped_refptr<Scrollbar>> scrollbar_;
 
-  ProtectedSequenceReadable<gfx::Size> thumb_size_;
+  ProtectedSequenceReadable<int32_t> minimum_thumb_length_;
+  ProtectedSequenceReadable<int32_t> thumb_thickness_;
   ProtectedSequenceReadable<gfx::Rect> track_rect_;
   ProtectedSequenceReadable<gfx::Rect> aperture_;
 

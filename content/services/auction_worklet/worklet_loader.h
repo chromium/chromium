@@ -136,7 +136,7 @@ class CONTENT_EXPORT WorkletLoaderBase {
   ~WorkletLoaderBase();
 
  private:
-  void OnDownloadComplete(std::unique_ptr<std::string> body,
+  void OnDownloadComplete(std::optional<std::string> body,
                           scoped_refptr<net::HttpResponseHeaders> headers,
                           std::optional<std::string> error_msg);
 
@@ -145,7 +145,7 @@ class CONTENT_EXPORT WorkletLoaderBase {
       AuctionDownloader::MimeType mime_type,
       scoped_refptr<AuctionV8Helper> v8_helper,
       scoped_refptr<AuctionV8Helper::DebugId> debug_id,
-      std::unique_ptr<std::string> body,
+      std::optional<std::string> body,
       std::optional<std::string> error_msg,
       const std::optional<scoped_refptr<base::RefCountedBytes>>
           cached_data_to_use,
@@ -183,7 +183,7 @@ class CONTENT_EXPORT WorkletLoaderBase {
   const std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids_;
   const base::TimeTicks start_time_;
 
-  std::unique_ptr<std::string> body_;
+  std::optional<std::string> body_;
   std::optional<std::string> error_msg_;
 
   size_t response_received_count_ = 0;

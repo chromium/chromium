@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -33,6 +34,8 @@ class DedicatedWorkerTest : public PageTestBase {
   void StartWorker(std::unique_ptr<GlobalScopeCreationParams> params = nullptr);
   void EvaluateClassicScript(const String& source_code);
   void WaitUntilWorkerIsRunning();
+
+  void RunOnWorkerThread(CrossThreadOnceFunction<void(ExecutionContext*)> task);
 
  protected:
   Event* CreateAndDispatchEvent(

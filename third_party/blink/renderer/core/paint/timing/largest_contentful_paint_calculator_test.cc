@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -29,6 +30,8 @@ constexpr const char kLCPCandidate[] = "largestContentfulPaint::Candidate";
 
 class LargestContentfulPaintCalculatorTest : public RenderingTest {
  public:
+  enum class ImageStatus { kLoaded, kPending };
+
   void SetUp() override {
     // Advance the clock so we do not assign null TimeTicks.
     simulated_clock_.Advance(base::Milliseconds(100));
@@ -61,14 +64,19 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
                 .GetTextPaintTimingDetector();
   }
 
-  void SetImage(const char* id, int width, int height, int bytes = 0) {
+  void SetImage(const char* id,
+                int width,
+                int height,
+                int bytes,
+                ImageStatus status = ImageStatus::kLoaded) {
     To<HTMLImageElement>(GetElementById(id))
-        ->SetImageForTest(CreateImageForTest(width, height, bytes));
+        ->SetImageForTest(CreateImageForTest(width, height, bytes, status));
   }
 
-  ImageResourceContent* CreateImageForTest(int width,
-                                           int height,
-                                           int bytes = 0) {
+  static ImageResourceContent* CreateImageForTest(int width,
+                                                  int height,
+                                                  int bytes,
+                                                  ImageStatus status) {
     sk_sp<SkColorSpace> src_rgb_color_space = SkColorSpace::MakeSRGB();
     SkImageInfo raster_image_info =
         SkImageInfo::MakeN32Premul(width, height, src_rgb_color_space);
@@ -82,15 +90,29 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
     if (bytes > 0) {
       scoped_refptr<SharedBuffer> shared_buffer =
           SharedBuffer::Create(Vector<char>(bytes));
-      original_image_data->SetData(shared_buffer, /*all_data_received=*/true);
+      const bool all_data_received = status == ImageStatus::kLoaded;
+      original_image_data->SetData(shared_buffer, all_data_received);
     }
-    ImageResourceContent* original_image_content =
-        ImageResourceContent::CreateLoaded(original_image_data.get());
-    return original_image_content;
+    return status == ImageStatus::kLoaded
+               ? ImageResourceContent::CreateLoaded(original_image_data.get())
+               : ImageResourceContent::CreatePendingForTest(
+                     original_image_data.get());
   }
 
   uint64_t LargestReportedSize() {
     return GetLargestContentfulPaintCalculator()->largest_reported_size_;
+  }
+
+  uint64_t LargestImagePaintSize() {
+    return GetLargestContentfulPaintCalculator()
+        ->LatestLcpDetails()
+        .largest_image_paint_size;
+  }
+
+  base::TimeTicks LargestImagePaintTime() {
+    return GetLargestContentfulPaintCalculator()
+        ->LatestLcpDetails()
+        .largest_image_paint_time;
   }
 
   double LargestContentfulPaintCandidateImageBPP() {
@@ -98,7 +120,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   }
 
   uint64_t CountCandidates() {
-    return GetLargestContentfulPaintCalculator()->count_candidates_;
+    return GetLargestContentfulPaintCalculator()->web_exposed_candidate_count_;
   }
 
   void InvokePresentationPromise(
@@ -150,6 +172,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
         .GetLargestContentfulPaintCalculator();
   }
 
+  base::test::TracingEnvironment tracing_environment_;
   base::SimpleTestTickClock simulated_clock_;
   Persistent<MockPaintTimingCallbackManager> mock_text_callback_manager_;
   Persistent<MockPaintTimingCallbackManager> mock_image_callback_manager_;
@@ -389,6 +412,94 @@ TEST_F(LargestContentfulPaintCalculatorTest,
 
   EXPECT_EQ(LargestReportedSize(), 20000u);
   EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 0.32f);
+  trace_analyzer::Stop();
+}
+
+TEST_F(LargestContentfulPaintCalculatorTest, LargestPendingImage) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <img id='small' width=3 height=3 />
+    <img id='large' width=100 height=300 />
+  )HTML");
+  // Smaller image has 16 bpp of entropy, enough to be considered for LCP.
+  // Larger image has 0.32 bpp, which is now above the 0.2bpp threshold.
+  SetImage("small", 3, 3, 18);
+  SetImage("large", 100, 300, 800, ImageStatus::kPending);
+  UpdateAllLifecyclePhasesForTest();
+  SimulateImagePresentationPromise();
+
+  // Nothing should be reported to performance timeline because the largest
+  // image is still pending, but the UKM value should correspond to the pending
+  // image.
+  EXPECT_EQ(LargestReportedSize(), 0u);
+  EXPECT_EQ(LargestImagePaintSize(), 30000u);
+  EXPECT_TRUE(LargestImagePaintTime().is_null());
+  trace_analyzer::Stop();
+}
+
+TEST_F(LargestContentfulPaintCalculatorTest, RemoveLargestPendingImage) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <img id='small' width=3 height=3 />
+    <img id='large' width=100 height=300 />
+  )HTML");
+  // Smaller image has 16 bpp of entropy, enough to be considered for LCP.
+  // Larger image has 0.32 bpp, which is now above the 0.2bpp threshold.
+  SetImage("small", 3, 3, 18);
+  SetImage("large", 100, 300, 800, ImageStatus::kPending);
+  UpdateAllLifecyclePhasesForTest();
+  SimulateImagePresentationPromise();
+
+  // Nothing should be reported to performance timeline because the largest
+  // image is still pending, but the UKM value should correspond to the pending
+  // image.
+  EXPECT_EQ(LargestReportedSize(), 0u);
+  EXPECT_EQ(LargestImagePaintSize(), 30000u);
+  EXPECT_TRUE(LargestImagePaintTime().is_null());
+
+  // Now remove the largest pending image. This should fall back to the largest
+  // painted image, but it relies on another contentful paint to trigger the
+  // LCP candidate update.
+  GetDocument().getElementById(AtomicString("large"))->remove();
+  UpdateAllLifecyclePhasesForTest();
+  UpdateLargestContentfulPaintCandidate();
+  EXPECT_EQ(LargestReportedSize(), 9u);
+  EXPECT_EQ(LargestImagePaintSize(), 9u);
+  EXPECT_FALSE(LargestImagePaintTime().is_null());
+  trace_analyzer::Stop();
+}
+
+TEST_F(LargestContentfulPaintCalculatorTest, MulitiplePendingImages) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <img id='small' width=3 height=3 />
+    <img id='large' width=100 height=300 />
+    <img id='largest' width=150 height=300 />
+  )HTML");
+  // Smaller image has 16 bpp of entropy, enough to be considered for LCP.
+  // Larger image has 0.32 bpp, which is now above the 0.2bpp threshold.
+  SetImage("small", 3, 3, 18);
+  SetImage("large", 100, 300, 800, ImageStatus::kPending);
+  SetImage("largest", 150, 300, 800, ImageStatus::kPending);
+  UpdateAllLifecyclePhasesForTest();
+  SimulateImagePresentationPromise();
+
+  // Nothing should be reported to performance timeline because the largest
+  // image is still pending, but the UKM value should correspond to the pending
+  // image.
+  EXPECT_EQ(LargestReportedSize(), 0u);
+  EXPECT_EQ(LargestImagePaintSize(), 45000u);
+  EXPECT_TRUE(LargestImagePaintTime().is_null());
+
+  // Now remove the largest pending image. After triggering a candidate update,
+  // this should fall back to the largest painted image, not the next largest
+  // pending image, which isn't supported.
+  GetDocument().getElementById(AtomicString("largest"))->remove();
+  UpdateAllLifecyclePhasesForTest();
+  UpdateLargestContentfulPaintCandidate();
+  EXPECT_EQ(LargestReportedSize(), 9u);
+  EXPECT_EQ(LargestImagePaintSize(), 9u);
+  EXPECT_FALSE(LargestImagePaintTime().is_null());
   trace_analyzer::Stop();
 }
 

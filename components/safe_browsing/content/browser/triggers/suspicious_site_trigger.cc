@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -97,7 +98,7 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
   resource.url = primary_rfh.GetLastCommittedURL();
   resource.rfh_locator =
       security_interstitials::UnsafeResourceLocator::CreateForRenderFrameToken(
-          primary_rfh_id.child_id, primary_rfh.GetFrameToken().value());
+          primary_rfh_id.child_id.value(), primary_rfh.GetFrameToken().value());
 
   TriggerManagerReason reason;
   if (!trigger_manager_->StartCollectingThreatDetailsWithReason(

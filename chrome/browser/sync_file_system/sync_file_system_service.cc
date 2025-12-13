@@ -573,6 +573,11 @@ void SyncFileSystemService::OnStateChanged(syncer::SyncService* sync) {
   UpdateSyncEnabledStatus(sync);
 }
 
+void SyncFileSystemService::OnSyncShutdown(syncer::SyncService*) {
+  // Unreachable, since this service is Shutdown() before the SyncService.
+  NOTREACHED();
+}
+
 void SyncFileSystemService::UpdateSyncEnabledStatus(
     syncer::SyncService* sync_service) {
   if (!sync_service->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {

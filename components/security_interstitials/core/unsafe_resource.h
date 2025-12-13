@@ -9,14 +9,13 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 namespace web {

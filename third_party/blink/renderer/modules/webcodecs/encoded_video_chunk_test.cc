@@ -64,12 +64,11 @@ TEST(EncodedVideoChunkTest, ConstructorWithDuration) {
 TEST(EncodedVideoChunkTest, TransferBuffer) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
-  String type = "key";
   int64_t timestamp = 1000000;
   std::string data = "test";
   auto* init = EncodedVideoChunkInit::Create();
   init->setTimestamp(timestamp);
-  init->setType(type);
+  init->setType(V8EncodedVideoChunkType::Enum::kKey);
   auto* buffer = DOMArrayBuffer::Create(base::as_byte_span(data));
   init->setData(MakeGarbageCollected<AllowSharedBufferSource>(buffer));
   HeapVector<Member<DOMArrayBuffer>> transfer;
@@ -87,7 +86,7 @@ TEST(EncodedVideoChunkTest, DecryptConfig) {
   V8TestingScope v8_scope;
   auto* init = EncodedVideoChunkInit::Create();
   init->setTimestamp(1);
-  init->setType("key");
+  init->setType(V8EncodedVideoChunkType::Enum::kKey);
   init->setData(StringToBuffer("test"));
 
   auto expected_media_decrypt_config =

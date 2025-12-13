@@ -16,10 +16,11 @@
 #include "third_party/blink/renderer/core/layout/flex/devtools_flex_info.h"
 #include "third_party/blink/renderer/core/layout/fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/frame_set_layout_data.h"
-#include "third_party/blink/renderer/core/layout/gap_fragment_data.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
@@ -29,7 +30,6 @@
 #include "third_party/blink/renderer/core/layout/table/table_borders.h"
 #include "third_party/blink/renderer/core/layout/table/table_fragment_data.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -200,6 +200,11 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     return size_.block_size;
   }
 
+  LayoutUnit FragmentInlineSize() const {
+    DCHECK(size_.inline_size != kIndefiniteSize);
+    return size_.inline_size;
+  }
+
   LogicalSize SizeForAnchorQueries() const {
     // TODO(layout-dev): This isn't great. But sometimes anchor queries are
     // evaluated in the middle of layout of an OOF container. This happens when
@@ -329,9 +334,16 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   // always be provided for regular in-flow children. For other types of
   // children it may be omitted, if the break shouldn't affect the appeal of
   // breaking inside this container.
+  //
+  // An out-of-flow positioned node may need to skip one or more fragmentainers
+  // before creating a fragment, for instance due to a large block-start inset.
+  // `oof_start_offset` is used for this. The inline offset is also needed,
+  // since it may be based on the hypothetically static position, which cannot
+  // be recomputed when in a subsequent fragmentainer.
   void AddBreakBeforeChild(LayoutInputNode child,
                            std::optional<BreakAppeal> appeal,
-                           bool is_forced_break);
+                           bool is_forced_break,
+                           LogicalOffset oof_start_offset = {});
 
   // Add a layout result and propagate info from it. This involves appending the
   // fragment and its relative offset to the builder, but also keeping track of
@@ -419,22 +431,11 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   // Set how much of the block-size we've used so far for this box. This will be
   // the sum of the block-size of all previous fragments PLUS the one we're
   // building now.
-  void SetConsumedBlockSize(LayoutUnit size) {
-    EnsureBreakTokenData()->consumed_block_size = size;
-  }
-
-  // Set how much to adjust |consumed_block_size_| for legacy write-back. See
-  // BlockBreakToken::ConsumedBlockSizeForLegacy() for more details.
-  void SetConsumedBlockSizeLegacyAdjustment(LayoutUnit adjustment) {
-    DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-    EnsureBreakTokenData()->consumed_block_size_legacy_adjustment = adjustment;
-  }
+  void SetConsumedBlockSize(LayoutUnit size) { consumed_block_size_ = size; }
 
   void ReserveSpaceForMonolithicOverflow(LayoutUnit monolithic_overflow) {
     DCHECK(GetConstraintSpace().IsPaginated());
-    auto* data = EnsureBreakTokenData();
-    data->monolithic_overflow =
-        std::max(data->monolithic_overflow, monolithic_overflow);
+    monolithic_overflow_ = std::max(monolithic_overflow_, monolithic_overflow);
   }
 
   // Set how much of the column block-size we've used so far. This will be used
@@ -448,7 +449,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   }
 
   void SetSequenceNumber(unsigned sequence_number) {
-    EnsureBreakTokenData()->sequence_number = sequence_number;
+    sequence_number_ = sequence_number;
   }
 
   // During regular layout a break token is created at the end of layout, if
@@ -498,7 +499,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
       return true;
 
     // If overflowed by monolithic overflow, we need more pages.
-    if (break_token_data_ && break_token_data_->monolithic_overflow) {
+    if (monolithic_overflow_) {
       return true;
     }
 
@@ -570,6 +571,10 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     is_inflow_bounds_explicitly_set_ = true;
 #endif
     inflow_bounds_ = inflow_bounds;
+  }
+
+  const std::optional<LogicalRect>& InflowBounds() const {
+    return inflow_bounds_;
   }
 
   void SetEarlyBreak(const EarlyBreak* breakpoint) {
@@ -703,17 +708,9 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     return *grid_layout_data_.get();
   }
 
-  bool HasBreakTokenData() const { return break_token_data_; }
+  BreakTokenAlgorithmData* GetBreakTokenData() { return break_token_data_; }
 
-  BlockBreakTokenData* EnsureBreakTokenData() {
-    if (!HasBreakTokenData())
-      break_token_data_ = MakeGarbageCollected<BlockBreakTokenData>();
-    return break_token_data_;
-  }
-
-  BlockBreakTokenData* GetBreakTokenData() { return break_token_data_; }
-
-  void SetBreakTokenData(BlockBreakTokenData* break_token_data) {
+  void SetBreakTokenData(BreakTokenAlgorithmData* break_token_data) {
     break_token_data_ = break_token_data;
   }
 
@@ -723,9 +720,10 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   void CheckNoBlockFragmentation() const;
 #endif
 
-  // Moves all the children by |offset| in the block-direction. (Ensure that
-  // any baselines, OOFs, etc, are also moved by the appropriate amount).
-  void MoveChildrenInBlockDirection(LayoutUnit offset);
+  // Moves all the children by `offset` in the block or inline direction.
+  // (Ensure that any baselines, OOFs, etc, are also moved by the appropriate
+  // amount).
+  void MoveChildrenInDirection(LayoutUnit offset, bool is_block_direction);
 
   void SetMathItalicCorrection(LayoutUnit italic_correction) {
     math_italic_correction_ = italic_correction;
@@ -806,7 +804,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   bool is_at_block_end_ = false;
   bool is_truncated_by_fragmentation_line = false;
   bool use_last_baseline_for_inline_baseline_ = false;
-  bool has_moved_children_in_block_direction_ = false;
+  bool has_moved_children_ = false;
 
   // Whether the `text-box-trim` is effective for block-start/end edges of a
   // node.
@@ -821,6 +819,9 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   LayoutUnit block_offset_for_additional_columns_;
 
   LayoutUnit block_size_for_fragmentation_;
+  LayoutUnit consumed_block_size_;
+  LayoutUnit monolithic_overflow_;
+  unsigned sequence_number_ = 0;
 
   // The break-before value on the initial child we cannot honor. There's no
   // valid class A break point before a first child, only *between* siblings.
@@ -850,7 +851,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   wtf_size_t table_section_start_row_index_;
   Vector<LayoutUnit> table_section_row_offsets_;
 
-  BlockBreakTokenData* break_token_data_ = nullptr;
+  BreakTokenAlgorithmData* break_token_data_ = nullptr;
 
   // Grid specific types.
   std::unique_ptr<GridLayoutData> grid_layout_data_;

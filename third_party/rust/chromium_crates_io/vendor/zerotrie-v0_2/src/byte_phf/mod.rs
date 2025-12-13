@@ -477,8 +477,8 @@ mod tests {
         ];
         for cas in cases {
             let computed = PerfectByteHashMap::try_new(cas.keys.as_bytes()).expect(cas.keys);
-            assert_eq!(computed.as_bytes(), cas.expected, "{:?}", cas);
-            assert_eq!(computed.keys(), cas.reordered_keys.as_bytes(), "{:?}", cas);
+            assert_eq!(computed.as_bytes(), cas.expected, "{cas:?}");
+            assert_eq!(computed.keys(), cas.reordered_keys.as_bytes(), "{cas:?}");
             computed.check().expect(cas.keys);
         }
     }

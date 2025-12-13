@@ -23,8 +23,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "hash_(map|set)_test.cc": [
+  "functional_internal\.h": [
+    "+base/functional/bind_internal.h",
+  ],
+  "hash_(map|set)_test\.cc": [
     # Refers to base containers to test compatibility.
     "+base/containers",
-  ]
+  ],
 }

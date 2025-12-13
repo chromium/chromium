@@ -35,26 +35,21 @@ class JavascriptOptimizerProviderAndroid
   // ProviderInterface:
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool off_the_record,
-      const content_settings::PartitionKey& partition_key) const override;
+      bool off_the_record) const override;
   std::unique_ptr<content_settings::Rule> GetRule(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      bool off_the_record,
-      const content_settings::PartitionKey& partition_key) const override;
+      bool off_the_record) const override;
 
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       base::Value&& value,
-      const content_settings::ContentSettingConstraints& constraints,
-      const content_settings::PartitionKey& partition_key) override;
+      const content_settings::ContentSettingConstraints& constraints) override;
 
-  void ClearAllContentSettingsRules(
-      ContentSettingsType content_type,
-      const content_settings::PartitionKey& partition_key) override;
+  void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
 
   void ShutdownOnUIThread() override;
 

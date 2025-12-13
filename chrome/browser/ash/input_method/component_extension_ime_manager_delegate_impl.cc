@@ -214,7 +214,8 @@ std::optional<base::Value::Dict>
 ComponentExtensionIMEManagerDelegateImpl::ParseManifest(
     std::string_view manifest_string) {
   base::JSONReader::Result result =
-      base::JSONReader::ReadAndReturnValueWithError(manifest_string);
+      base::JSONReader::ReadAndReturnValueWithError(
+          manifest_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!result.has_value()) {
     LOG(ERROR) << "Failed to parse manifest: " << result.error().message
                << " at line " << result.error().line << " column "
@@ -291,9 +292,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
     return false;
   }
 
-  if (*engine_id == "ko-t-i0-und" &&
-      base::FeatureList::IsEnabled(
-          features::kImeKoreanOnlyModeSwitchOnRightAlt)) {
+  if (*engine_id == "ko-t-i0-und") {
     out->layout = "kr(cros)";
   } else if (!layouts->empty() && layouts->front().is_string()) {
     out->layout = layouts->front().GetString();
@@ -303,15 +302,11 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
 
   std::string url_string;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  bool is_global_emoji_preferences_enabled = base::FeatureList::IsEnabled(
-      features::kVirtualKeyboardGlobalEmojiPreferences);
   GURL url = extensions::Extension::GetResourceURL(
       extensions::Extension::GetBaseURLFromExtensionId(component_extension.id),
       "inputview.html");
   url = net::AppendOrReplaceQueryParameter(url, "jelly", "true");
-  url = net::AppendOrReplaceQueryParameter(
-      url, "globalemojipreferences",
-      base::ToString(is_global_emoji_preferences_enabled));
+  url = net::AppendOrReplaceQueryParameter(url, "globalemojipreferences", "false");
   // Information is managed on VK extension side so just use a default value
   // here.
   url = net::AppendOrReplaceRef(url, "id=default");
@@ -338,11 +333,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   const std::string* option_page =
       dict.FindString(extensions::manifest_keys::kOptionsPage);
 
-  bool flag_allows_settings_page =
-      (*engine_id != "vkd_vi_vni" && *engine_id != "vkd_vi_telex") ||
-      base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput);
-
-  if (option_page && flag_allows_settings_page) {
+  if (option_page) {
     url_string = *option_page;
     GURL options_page_url = extensions::Extension::GetResourceURL(
         extensions::Extension::GetBaseURLFromExtensionId(
@@ -411,13 +402,6 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
         ::features::IsAccessibilityManifestV3EnabledForBrailleIme()) {
       extension.manifest_resource_id = IDR_BRAILLE_MANIFEST_MV3;
     }
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (extension.manifest_resource_id == IDR_GOOGLE_XKB_MANIFEST &&
-        base::FeatureList::IsEnabled(features::kImeManifestV3)) {
-      extension.manifest_resource_id = IDR_GOOGLE_XKB_MANIFEST_V3;
-    }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
     ComponentExtensionIME component_ime;
     component_ime.manifest =

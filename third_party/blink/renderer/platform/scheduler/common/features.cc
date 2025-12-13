@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 
 #include "base/command_line.h"
-#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 
@@ -83,19 +82,6 @@ base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod(bool loading) {
     }
   }
   return base::Seconds(seconds);
-}
-
-// TODO(crbug.com/1475915): convert this param value to TimeDelta instead of int
-// after the experiment.
-MIRACLE_PARAMETER_FOR_INT(
-    GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis,
-    features::kLoadingPhaseBufferTimeAfterFirstMeaningfulPaint,
-    "LoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis",
-    0)
-
-base::TimeDelta GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint() {
-  return base::Milliseconds(
-      GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis());
 }
 
 }  // namespace scheduler

@@ -16,8 +16,11 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.HEADER_PROPERTY_KEYS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.MEMORY_FOOTPRINT;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ICON;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ID;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_NAME;
+
+import android.graphics.Bitmap;
 
 import androidx.test.filters.SmallTest;
 
@@ -46,6 +49,7 @@ public class TaskManagerMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TaskManagerServiceBridge.Natives mBridge;
     @Mock private Callback<Boolean> mOnHasKillableSelectedTaskChanged;
+    @Mock private Bitmap mBitmap;
 
     private PropertyModel mHeader;
     private ModelList mTasks;
@@ -86,6 +90,16 @@ public class TaskManagerMediatorTest {
 
         assertEquals(RowType.TASK, mTasks.get(0).type);
         assertEquals(1, mTasks.get(0).model.get(TASK_ID));
+    }
+
+    @Test
+    @SmallTest
+    public void testIcon() {
+        when(mBridge.getIcon(1)).thenReturn(mBitmap);
+
+        mObserver.onTaskAdded(1);
+
+        assertEquals(mBitmap, mTasks.get(0).model.get(TASK_ICON));
     }
 
     @Test

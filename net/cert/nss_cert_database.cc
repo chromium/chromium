@@ -27,7 +27,6 @@
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_database.h"
-#include "net/cert/internal/trust_store_nss.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
 #include "net/third_party/mozilla_security_manager/nsNSSCertificateDB.h"
@@ -75,33 +74,7 @@ class CertNotificationForwarder : public NSSCertDatabase::Observer {
   raw_ptr<CertDatabase> cert_db_;
 };
 
-// TODO(crbug.com/40890963): once the other IsUntrusted impl is deleted,
-// rename this.
-bool IsUntrustedUsingTrustStore(const CERTCertificate* cert,
-                                bssl::CertificateTrust trust) {
-  if (trust.IsDistrusted()) {
-    return true;
-  }
-
-  // Self-signed certificates that don't have any trust bits set are untrusted.
-  // Other certificates that don't have any trust bits set may still be trusted
-  // if they chain up to a trust anchor.
-  // TODO(mattm): this is weird, but just match the behavior of the existing
-  // IsUntrusted function for now.
-  if (SECITEM_CompareItem(&cert->derIssuer, &cert->derSubject) == SECEqual) {
-    return !trust.IsTrustAnchor();
-  }
-
-  return false;
-}
-
 }  // namespace
-
-NSSCertDatabase::CertInfo::CertInfo() = default;
-NSSCertDatabase::CertInfo::CertInfo(CertInfo&& other) = default;
-NSSCertDatabase::CertInfo::~CertInfo() = default;
-NSSCertDatabase::CertInfo& NSSCertDatabase::CertInfo::operator=(
-    NSSCertDatabase::CertInfo&& other) = default;
 
 NSSCertDatabase::ImportCertFailure::ImportCertFailure(
     ScopedCERTCertificate cert,
@@ -147,17 +120,6 @@ void NSSCertDatabase::ListCertsInSlot(ListCertsCallback callback,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&NSSCertDatabase::ListCertsImpl,
                      crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot))),
-      std::move(callback));
-}
-
-void NSSCertDatabase::ListCertsInfo(ListCertsInfoCallback callback,
-                                    NSSRootsHandling nss_roots_handling) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&NSSCertDatabase::ListCertsInfoImpl,
-                     /*slot=*/nullptr,
-                     /*add_certs_info=*/true, nss_roots_handling),
       std::move(callback));
 }
 
@@ -401,80 +363,6 @@ void NSSCertDatabase::DeleteCertAndKeyAsync(ScopedCERTCertificate cert,
 }
 
 // static
-bool NSSCertDatabase::IsUntrusted(const CERTCertificate* cert) {
-  CERTCertTrust nsstrust;
-  SECStatus rv = CERT_GetCertTrust(cert, &nsstrust);
-  if (rv != SECSuccess) {
-    LOG(ERROR) << "CERT_GetCertTrust failed with error " << PORT_GetError();
-    return false;
-  }
-
-  // The CERTCertTrust structure contains three trust records:
-  // sslFlags, emailFlags, and objectSigningFlags.  The three
-  // trust records are independent of each other.
-  //
-  // If the CERTDB_TERMINAL_RECORD bit in a trust record is set,
-  // then that trust record is a terminal record.  A terminal
-  // record is used for explicit trust and distrust of an
-  // end-entity or intermediate CA cert.
-  //
-  // In a terminal record, if neither CERTDB_TRUSTED_CA nor
-  // CERTDB_TRUSTED is set, then the terminal record means
-  // explicit distrust.  On the other hand, if the terminal
-  // record has either CERTDB_TRUSTED_CA or CERTDB_TRUSTED bit
-  // set, then the terminal record means explicit trust.
-  //
-  // For a root CA, the trust record does not have
-  // the CERTDB_TERMINAL_RECORD bit set.
-
-  static const unsigned int kTrusted = CERTDB_TRUSTED_CA | CERTDB_TRUSTED;
-  if ((nsstrust.sslFlags & CERTDB_TERMINAL_RECORD) != 0 &&
-      (nsstrust.sslFlags & kTrusted) == 0) {
-    return true;
-  }
-  if ((nsstrust.emailFlags & CERTDB_TERMINAL_RECORD) != 0 &&
-      (nsstrust.emailFlags & kTrusted) == 0) {
-    return true;
-  }
-  if ((nsstrust.objectSigningFlags & CERTDB_TERMINAL_RECORD) != 0 &&
-      (nsstrust.objectSigningFlags & kTrusted) == 0) {
-    return true;
-  }
-
-  // Self-signed certificates that don't have any trust bits set are untrusted.
-  // Other certificates that don't have any trust bits set may still be trusted
-  // if they chain up to a trust anchor.
-  if (SECITEM_CompareItem(&cert->derIssuer, &cert->derSubject) == SECEqual) {
-    return (nsstrust.sslFlags & kTrusted) == 0 &&
-           (nsstrust.emailFlags & kTrusted) == 0 &&
-           (nsstrust.objectSigningFlags & kTrusted) == 0;
-  }
-
-  return false;
-}
-
-// static
-bool NSSCertDatabase::IsWebTrustAnchor(const CERTCertificate* cert) {
-  CERTCertTrust nsstrust;
-  SECStatus rv = CERT_GetCertTrust(cert, &nsstrust);
-  if (rv != SECSuccess) {
-    LOG(ERROR) << "CERT_GetCertTrust failed with error " << PORT_GetError();
-    return false;
-  }
-
-  // Note: This should return true iff a net::TrustStoreNSS instantiated with
-  // SECTrustType trustSSL would classify |cert| as a trust anchor.
-  const unsigned int ssl_trust_flags = nsstrust.sslFlags;
-
-  // Determine if the certificate is a trust anchor.
-  if ((ssl_trust_flags & CERTDB_TRUSTED_CA) == CERTDB_TRUSTED_CA) {
-    return true;
-  }
-
-  return false;
-}
-
-// static
 bool NSSCertDatabase::IsReadOnly(const CERTCertificate* cert) {
   PK11SlotInfo* slot = cert->slot;
   return slot && PK11_IsReadOnly(slot);
@@ -518,31 +406,8 @@ void NSSCertDatabase::RemoveObserver(Observer* observer) {
 }
 
 // static
-ScopedCERTCertificateList NSSCertDatabase::ExtractCertificates(
-    CertInfoList certs_info) {
-  ScopedCERTCertificateList certs;
-  certs.reserve(certs_info.size());
-
-  for (auto& cert_info : certs_info)
-    certs.push_back(std::move(cert_info.cert));
-
-  return certs;
-}
-
-// static
 ScopedCERTCertificateList NSSCertDatabase::ListCertsImpl(
     crypto::ScopedPK11Slot slot) {
-  CertInfoList certs_info = ListCertsInfoImpl(
-      std::move(slot), /*add_certs_info=*/false, NSSRootsHandling::kInclude);
-
-  return ExtractCertificates(std::move(certs_info));
-}
-
-// static
-NSSCertDatabase::CertInfoList NSSCertDatabase::ListCertsInfoImpl(
-    crypto::ScopedPK11Slot slot,
-    bool add_certs_info,
-    NSSRootsHandling nss_roots_handling) {
   // This method may acquire the NSS lock or reenter this code via extension
   // hooks (such as smart card UI). To ensure threads are not starved or
   // deadlocked, the base::ScopedBlockingCall below increments the thread pool
@@ -550,66 +415,28 @@ NSSCertDatabase::CertInfoList NSSCertDatabase::ListCertsInfoImpl(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (nss_roots_handling == NSSRootsHandling::kExclude) {
-    // This assumes that using a new TrustStoreNSS instance on each
-    // ListCertsInfo call is not expensive. If that ever changes this might
-    // need to be rethought.
-    TrustStoreNSS trust_store_nss(
-        slot ? TrustStoreNSS::UserSlotTrustSetting(
-                   crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot.get())))
-             : TrustStoreNSS::UseTrustFromAllUserSlots());
-
-    std::vector<TrustStoreNSS::ListCertsResult> cert_list(
-        trust_store_nss.ListCertsIgnoringNSSRoots());
-
-    CertInfoList certs_info;
-    for (const auto& node : cert_list) {
-      CertInfo cert_info;
-      cert_info.cert = x509_util::DupCERTCertificate(node.cert.get());
-      if (add_certs_info) {
-        cert_info.untrusted =
-            IsUntrustedUsingTrustStore(cert_info.cert.get(), node.trust);
-        cert_info.web_trust_anchor = node.trust.IsTrustAnchor();
-        cert_info.on_read_only_slot = IsReadOnly(cert_info.cert.get());
-        cert_info.hardware_backed = IsHardwareBacked(cert_info.cert.get());
-      }
-      certs_info.push_back(std::move(cert_info));
-    }
-    return certs_info;
+  ScopedCERTCertificateList certs;
+  crypto::ScopedCERTCertList cert_list = nullptr;
+  if (slot) {
+    cert_list.reset(PK11_ListCertsInSlot(slot.get()));
   } else {
-    CertInfoList certs_info;
-    crypto::ScopedCERTCertList cert_list = nullptr;
-    if (slot) {
-      cert_list.reset(PK11_ListCertsInSlot(slot.get()));
-    } else {
-      cert_list.reset(PK11_ListCerts(PK11CertListUnique, nullptr));
-    }
-    // PK11_ListCerts[InSlot] can return nullptr, e.g. because the PKCS#11 token
-    // that was backing the specified slot is not available anymore.
-    // Treat it as no certificates being present on the slot.
-    if (!cert_list) {
-      LOG(WARNING) << (slot ? "PK11_ListCertsInSlot" : "PK11_ListCerts")
-                   << " returned null";
-      return certs_info;
-    }
-
-    CERTCertListNode* node;
-    for (node = CERT_LIST_HEAD(cert_list); !CERT_LIST_END(node, cert_list);
-         node = CERT_LIST_NEXT(node)) {
-      CertInfo cert_info;
-      cert_info.cert = x509_util::DupCERTCertificate(node->cert);
-
-      if (add_certs_info) {
-        cert_info.on_read_only_slot = IsReadOnly(cert_info.cert.get());
-        cert_info.untrusted = IsUntrusted(cert_info.cert.get());
-        cert_info.web_trust_anchor = IsWebTrustAnchor(cert_info.cert.get());
-        cert_info.hardware_backed = IsHardwareBacked(cert_info.cert.get());
-      }
-
-      certs_info.push_back(std::move(cert_info));
-    }
-    return certs_info;
+    cert_list.reset(PK11_ListCerts(PK11CertListUnique, nullptr));
   }
+  // PK11_ListCerts[InSlot] can return nullptr, e.g. because the PKCS#11 token
+  // that was backing the specified slot is not available anymore.
+  // Treat it as no certificates being present on the slot.
+  if (!cert_list) {
+    LOG(WARNING) << (slot ? "PK11_ListCertsInSlot" : "PK11_ListCerts")
+                 << " returned null";
+    return certs;
+  }
+
+  CERTCertListNode* node;
+  for (node = CERT_LIST_HEAD(cert_list); !CERT_LIST_END(node, cert_list);
+       node = CERT_LIST_NEXT(node)) {
+    certs.push_back(x509_util::DupCERTCertificate(node->cert));
+  }
+  return certs;
 }
 
 void NSSCertDatabase::NotifyCertRemovalAndCallBack(

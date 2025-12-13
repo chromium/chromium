@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
@@ -22,8 +24,8 @@ class StaticBitmapImageTransformTest : public ::testing::Test {
   void SetUp() override {
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     SharedGpuContext::Reset();
-    test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    InitializeSharedGpuContextRaster(test_context_provider_.get());
   }
 
   scoped_refptr<AcceleratedStaticBitmapImage> CreateAccelerated(
@@ -33,12 +35,13 @@ class StaticBitmapImageTransformTest : public ::testing::Test {
       gfx::ColorSpace color_space) {
     auto client_si = test_sii_->CreateSharedImage(
         {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
-         gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
+         gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                  gpu::SHARED_IMAGE_USAGE_RASTER_READ),
          "CanvasResourceRaster"},
         gpu::kNullSurfaceHandle);
     return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-        std::move(client_si), test_sii_->GenUnverifiedSyncToken(), 0,
-        alpha_type, color_space, SharedGpuContext::ContextProviderWrapper(),
+        std::move(client_si), test_sii_->GenUnverifiedSyncToken(), alpha_type,
+        SharedGpuContext::ContextProviderWrapper(),
         base::PlatformThread::CurrentRef(),
         base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());
   }
@@ -56,15 +59,13 @@ TEST_F(StaticBitmapImageTransformTest, ConvertColorSpace) {
 
   // A no-op color space conversion should not create a copy.
   auto image_srgb = StaticBitmapImageTransform::ConvertToColorSpace(
-      FlushReason::kWebGLTexImage, image,
-      gfx::ColorSpace::CreateSRGB().ToSkColorSpace());
+      image, gfx::ColorSpace::CreateSRGB().ToSkColorSpace());
   EXPECT_EQ(image_srgb, image);
 
   // A non-no-op color space conversion should create a copy, and the copy
   // should have been done by the GPU.
   auto image_p3 = StaticBitmapImageTransform::ConvertToColorSpace(
-      FlushReason::kWebGLTexImage, image,
-      gfx::ColorSpace::CreateDisplayP3D65().ToSkColorSpace());
+      image, gfx::ColorSpace::CreateDisplayP3D65().ToSkColorSpace());
   EXPECT_NE(image_p3, image);
   EXPECT_TRUE(image_p3->IsTextureBacked());
 }

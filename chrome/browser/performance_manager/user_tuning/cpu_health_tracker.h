@@ -12,6 +12,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -23,7 +24,6 @@
 #include "components/performance_manager/public/resource_attribution/queries.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/system_cpu/cpu_probe.h"
-#include "content/public/browser/resource_context.h"
 
 namespace performance_manager::user_tuning {
 

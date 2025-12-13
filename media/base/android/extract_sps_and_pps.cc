@@ -17,7 +17,7 @@ void ExtractSpsAndPps(const std::vector<uint8_t>& avcc,
     return;
 
   mp4::AVCDecoderConfigurationRecord record;
-  if (!record.Parse(avcc.data(), avcc.size())) {
+  if (!record.Parse(avcc)) {
     DVLOG(1) << "Failed to extract SPS and PPS";
     return;
   }

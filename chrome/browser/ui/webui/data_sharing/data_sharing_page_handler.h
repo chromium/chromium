@@ -35,6 +35,9 @@ class DataSharingPageHandler : public data_sharing::mojom::PageHandler {
 
   ~DataSharingPageHandler() override;
 
+  // Return whether the API is initialized.
+  bool IsApiInitialized();
+
   void ShowUI() override;
 
   void CloseUI(int status_code) override;

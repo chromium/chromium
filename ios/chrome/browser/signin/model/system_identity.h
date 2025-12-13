@@ -7,13 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
+class GaiaId;
+
 // Protocol representing a single identity as known to the system.
 // A user may have multiple identities associated with a single device.
 @protocol SystemIdentity <NSObject>
 
 // The unique GAIA user identifier for this identity. Can be used as a
 // unique and stable identifier to remember a particular identity.
-@property(nonatomic, readonly) NSString* gaiaID;
+@property(nonatomic, readonly) GaiaId gaiaId;
 
 // The identity email address. This can be shown to the user, but is
 // not a unique identifier.

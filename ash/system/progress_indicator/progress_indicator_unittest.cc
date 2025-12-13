@@ -125,10 +125,8 @@ TEST_F(ProgressIndicatorTest, AddProgressChangedCallback) {
   // should be invoked on progress changes so long as the returned subscription
   // continues to exist.
   int callback_call_count = 0;
-  auto subscription =
-      std::make_unique<base::RepeatingClosureList::Subscription>(
-          progress_indicator.AddProgressChangedCallback(
-              base::BindLambdaForTesting([&]() { ++callback_call_count; })));
+  auto subscription = progress_indicator.AddProgressChangedCallback(
+      base::BindLambdaForTesting([&]() { ++callback_call_count; }));
 
   // Change the underlying progress.
   progress_indicator.SetProgress(0.75f);
@@ -139,7 +137,7 @@ TEST_F(ProgressIndicatorTest, AddProgressChangedCallback) {
   EXPECT_EQ(callback_call_count, 1);
 
   // Reset the subscription and change the underlying progress.
-  subscription.reset();
+  subscription = base::CallbackListSubscription();
   progress_indicator.SetProgress(1.f);
   EXPECT_EQ(callback_call_count, 1);
 }

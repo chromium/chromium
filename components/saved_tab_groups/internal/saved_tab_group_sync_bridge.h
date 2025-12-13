@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAVED_TAB_GROUPS_INTERNAL_SAVED_TAB_GROUP_SYNC_BRIDGE_H_
 #define COMPONENTS_SAVED_TAB_GROUPS_INTERNAL_SAVED_TAB_GROUP_SYNC_BRIDGE_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <vector>

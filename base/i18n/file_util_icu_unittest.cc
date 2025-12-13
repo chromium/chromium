@@ -11,7 +11,6 @@
 
 #include <stddef.h>
 
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"

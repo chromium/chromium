@@ -28,9 +28,7 @@ enum class ClientSummarizedResultType : int {
   kUnknown = 5,
   kMaxValue = kUnknown
 };
-// LINT.ThenChange(
-//     //tools/metrics/histograms/enums.xml:ClientSummarizedResultType
-// )
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ClientSummarizedResultType)
 
 // OmniboxMetricsProvider is responsible for filling out the |omnibox_event|
 // section of the UMA proto.

@@ -6,9 +6,11 @@
 #define ASH_METRICS_UI_METRICS_RECORDER_H_
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/containers/span.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "cc/metrics/custom_metrics_recorder.h"
@@ -19,6 +21,35 @@ namespace ash {
 // Records metrics for ash UI. Note this class is not thread-safe.
 class ASH_EXPORT UiMetricsRecorder : public cc::CustomMetricRecorder {
  public:
+  // Used to classify the frame rate when reporting event latency. These values
+  // are used to map relevant metrics to corresponding histogram indexes. Keep
+  // the list in sync with `EventLatencyFps` variant in ash/histograms.xml.
+  enum class FpsBucket {
+    k30Fps,
+    k60Fps,
+    k120Fps,
+    kOtherFps,
+    kUnset,
+    kMaxValue = kUnset,
+  };
+  static constexpr int kMaxFpsBucketIndex =
+      static_cast<int>(FpsBucket::kMaxValue) + 1;
+
+  // A subset of cc::EventMetrics::EventType that treated as core events. This
+  // is used with FpsBucket above are used to together to map to histogram
+  // indexes without wasting memory on non-core event types. Keep the list in
+  // sync with `EventLatencyCoreEventType` variant in ash/histograms.xml.
+  enum class CoreEventType {
+    kKeyPressed,
+    kKeyReleased,
+    kMousePressed,
+    kMouseReleased,
+    kMouseDragged,
+    kMaxValue = kMouseDragged,
+  };
+  static constexpr int kMaxCoreEventTypeIndex =
+      static_cast<int>(CoreEventType::kMaxValue) + 1;
+
   UiMetricsRecorder();
   ~UiMetricsRecorder() override;
 
@@ -32,7 +63,16 @@ class ASH_EXPORT UiMetricsRecorder : public cc::CustomMetricRecorder {
   // cc::CustomMetricRecorder:
   void ReportPercentDroppedFramesInOneSecondWindow2(double percent) override;
   void ReportEventLatency(
+      const viz::BeginFrameArgs& args,
       std::vector<cc::EventLatencyTracker::LatencyData> latencies) override;
+
+  // Expose the fixed table of event latency histogram names for testing.
+  static base::span<const std::string_view>
+  GetEventLatencyHistogramNamesForTest();
+
+  // Expose the fixed table of core event latency histogram names for testing.
+  static base::span<const std::string_view>
+  GetCoreEventLatencyHistogramNamesForTest();
 
  private:
   // State to split "Ash.Smoothness.PercentDroppedFrames_1sWindow".

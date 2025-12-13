@@ -27,7 +27,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
-import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {AutofillSettingsReferrer, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
 import type {Route} from '../router.js';
@@ -40,6 +40,7 @@ export interface SettingsMenuElement {
     autofill: HTMLLinkElement,
     menu: CrMenuSelector,
     people: HTMLLinkElement,
+    yourSavedInfo: HTMLLinkElement,
   };
 }
 
@@ -68,17 +69,48 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showAiPage'),
       },
+
+      enableYourSavedInfoSettingsPage_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('enableYourSavedInfoSettingsPage');
+        },
+      },
+
+      /**
+       * Icon name to be used for the autofill section.
+       */
+      autofillIcon_: {
+        type: String,
+        value: () => loadTimeData.getBoolean('enableYourSavedInfoBranding') ?
+            'settings20:person-text' :
+            'settings:assignment',
+      },
     };
   }
 
   declare private pageVisibility_?: PageVisibility;
   declare private showAiPage_: boolean;
+  declare private enableYourSavedInfoSettingsPage_: boolean;
+  declare private autofillIcon_: string;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
   private showAiPageMenuItem_(): boolean {
     return this.showAiPage_ &&
         (!this.pageVisibility_ || this.pageVisibility_.ai !== false);
+  }
+
+  private showYourSavedInfoPageMenuItem_(): boolean {
+    return this.enableYourSavedInfoSettingsPage_ &&
+        (!this.pageVisibility_ ||
+          this.pageVisibility_.yourSavedInfo !== false);
+  }
+
+  private showAutofillPageMenuItem_(): boolean {
+    return !this.enableYourSavedInfoSettingsPage_ &&
+        (!this.pageVisibility_ ||
+          this.pageVisibility_.autofill !== false);
   }
 
   override currentRouteChanged(newRoute: Route) {
@@ -137,6 +169,18 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private onExtensionsLinkClick_() {
     chrome.metricsPrivate.recordUserAction(
         'SettingsMenu_ExtensionsLinkClicked');
+  }
+
+  private onAutofillClick_() {
+    this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
+        'Autofill.AutofillAndPasswordsSettingsPage.VisitReferrer',
+        AutofillSettingsReferrer.SETTINGS_MENU);
+  }
+
+  private onYourSavedInfoClick_() {
+    this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
+        'Autofill.YourSavedInfoSettingsPage.VisitReferrer',
+        AutofillSettingsReferrer.SETTINGS_MENU);
   }
 
   private onAiPageClick_() {

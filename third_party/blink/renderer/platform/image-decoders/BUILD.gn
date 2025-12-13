@@ -32,14 +32,8 @@ component("image_decoders") {
     "image_frame.h",
     "jpeg/jpeg_image_decoder.cc",
     "jpeg/jpeg_image_decoder.h",
-    "png/png_decoder_factory.cc",
-    "png/png_decoder_factory.h",
     "png/png_image_decoder.cc",
     "png/png_image_decoder.h",
-    "png/png_image_reader.cc",
-    "png/png_image_reader.h",
-    "png/skia_png_rust_image_decoder.cc",
-    "png/skia_png_rust_image_decoder.h",
     "rw_buffer.cc",
     "rw_buffer.h",
     "segment_reader.cc",
@@ -56,13 +50,13 @@ component("image_decoders") {
       [ "//third_party/blink/renderer/platform:blink_platform_implementation" ]
 
   public_deps = [
-    "//base:base",
-    "//cc/paint:paint",
+    "//base",
+    "//cc/paint",
     "//third_party/blink/renderer/platform:allow_discouraged_type",
     "//third_party/blink/renderer/platform:image_headers",
     "//third_party/blink/renderer/platform:platform_export",
     "//third_party/blink/renderer/platform/instrumentation:histogram",
-    "//third_party/blink/renderer/platform/wtf:wtf",
+    "//third_party/blink/renderer/platform/wtf",
   ]
 
   deps = [
@@ -72,7 +66,6 @@ component("image_decoders") {
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common:buildflags",
     "//third_party/blink/public/common:headers",
-    "//third_party/libpng",
     "//third_party/libwebp",
     "//third_party/libyuv",
     "//ui/gfx/geometry:geometry_skia",
@@ -115,6 +108,7 @@ source_set("unit_tests") {
 
   deps = [
     ":image_decoders",
+    "//crypto",
     "//skia",
     "//third_party/blink/renderer/platform:test_support",
   ]

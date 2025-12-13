@@ -52,9 +52,7 @@ AutofillPopupControllerImplMac::AutofillPopupControllerImplMac(
                                   std::move(controller_common),
                                   form_control_ax_id,
                                   std::nullopt),
-      touch_bar_controller_(nil),
-      is_credit_card_popup_(delegate->GetMainFillingProduct() ==
-                            FillingProduct::kCreditCard) {}
+      touch_bar_controller_(nil) {}
 
 AutofillPopupControllerImplMac::~AutofillPopupControllerImplMac() = default;
 
@@ -63,7 +61,7 @@ void AutofillPopupControllerImplMac::Show(
     std::vector<autofill::Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
     AutoselectFirstSuggestion autoselect_first_suggestion) {
-  if (!suggestions.empty() && is_credit_card_popup_) {
+  if (!suggestions.empty() && HasCreditCardSuggestions()) {
     touch_bar_controller_ = [WebTextfieldTouchBarController
         controllerForWindow:[container_view().GetNativeNSView() window]];
     [touch_bar_controller_ showCreditCardAutofillWithController:this];

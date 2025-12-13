@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_VISIT_AGGREGATES_TRANSFORMER_H_
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_VISIT_AGGREGATES_TRANSFORMER_H_
 
-#include <map>
 #include <vector>
 
 #include "components/visited_url_ranking/public/fetch_options.h"

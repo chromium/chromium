@@ -22,11 +22,12 @@ class ReaderModeDistillerPage : public dom_distiller::DistillerPage {
   // dom_distiller::DistillerPage implementation.
   void DistillPageImpl(const GURL& url, const std::string& script) override;
   bool ShouldFetchOfflineData() override;
+  dom_distiller::DistillerType GetDistillerType() override;
 
  private:
   void HandleJavaScriptResult(const GURL& url, const base::Value* result);
 
-  raw_ptr<web::WebState> web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state_;
   base::WeakPtrFactory<ReaderModeDistillerPage> weak_ptr_factory_{this};
 };
 

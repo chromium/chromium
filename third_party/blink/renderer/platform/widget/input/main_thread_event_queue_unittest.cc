@@ -14,6 +14,7 @@
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
@@ -904,6 +905,7 @@ TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputUrgentMainFrame) {
   base::test::ScopedFeatureList feature_list{
       blink::features::kUrgentMainFrameForInput};
   SyntheticWebTouchEvent event;
+  event.PressPoint(20, 20);
   event.MovePoint(0, 20, 20);
 
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
@@ -1517,6 +1519,7 @@ TEST_F(MainThreadEventQueueTest,
 
   SyntheticWebTouchEvent touch_moves[5];
   for (auto& touch_move : touch_moves) {
+    touch_move.PressPoint(20, 30);
     touch_move.MovePoint(0, 20, 30);
     ASSERT_EQ(WebInputEvent::Type::kTouchMove, touch_move.GetType());
     ASSERT_EQ(WebInputEvent::DispatchType::kBlocking, touch_move.dispatch_type);
@@ -1560,7 +1563,7 @@ TEST_F(MainThreadEventQueueTest,
     }
 
     MainThreadEventQueueTest& test;
-    const SyntheticWebTouchEvent* touch_moves;
+    base::span<const SyntheticWebTouchEvent> touch_moves;
     bool consume_touch_start = false;
     bool consume_first_touch_move = false;
   };
@@ -1596,12 +1599,12 @@ TEST_F(MainThreadEventQueueTest,
                            false, 2),
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent, true,
                            2),
-          // These callbacks were run just after handling the second
-          // touchmove.
-          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 3),
-          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent, true,
-                           3)));
+          // These callbacks are run on the compositor thread immediately after
+          // enqueueing the touchmoves.
+          ReceivedCallback(CallbackReceivedState::kCalledWhileHandlingEvent,
+                           false, 2),
+          ReceivedCallback(CallbackReceivedState::kCalledWhileHandlingEvent,
+                           false, 2)));
   EXPECT_THAT(
       handled_tasks_,
       ::testing::ElementsAre(
@@ -1729,10 +1732,10 @@ TEST_F(MainThreadEventQueueTest,
                            false, 2),
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent, true,
                            2),
-          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 3),
-          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent, true,
-                           3)));
+          ReceivedCallback(CallbackReceivedState::kCalledWhileHandlingEvent,
+                           false, 2),
+          ReceivedCallback(CallbackReceivedState::kCalledWhileHandlingEvent,
+                           false, 2)));
   EXPECT_THAT(
       handled_tasks_,
       ::testing::ElementsAre(

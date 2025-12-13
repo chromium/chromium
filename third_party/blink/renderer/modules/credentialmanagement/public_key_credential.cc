@@ -38,13 +38,6 @@ namespace {
 // https://www.w3.org/TR/webauthn/#dom-publickeycredential-type-slot:
 constexpr char kPublicKeyCredentialType[] = "public-key";
 
-// This is the subset of client capabilities computed by the renderer. See also
-// //content/browser/webauth/authenticator_common_impl.h
-constexpr char kConditionalCreateCapability[] = "conditionalCreate";
-constexpr char kSignalAllAcceptedCredentials[] = "signalAllAcceptedCredentials";
-constexpr char kSignalCurrentUserDetails[] = "signalCurrentUserDetails";
-constexpr char kSignalUnknownCredential[] = "signalUnknownCredential";
-
 void OnIsUserVerifyingComplete(ScriptPromiseResolver<IDLBoolean>* resolver,
                                bool available) {
   resolver->Resolve(available);
@@ -69,15 +62,6 @@ void OnGetClientCapabilitiesComplete(
   for (const auto& capability : capabilities) {
     results.emplace_back(std::move(capability->name), capability->supported);
   }
-  results.emplace_back(
-      kConditionalCreateCapability,
-      RuntimeEnabledFeatures::WebAuthenticationConditionalCreateEnabled());
-
-  const bool report_enabled =
-      RuntimeEnabledFeatures::CredentialManagerReportEnabled();
-  results.emplace_back(kSignalAllAcceptedCredentials, report_enabled);
-  results.emplace_back(kSignalCurrentUserDetails, report_enabled);
-  results.emplace_back(kSignalUnknownCredential, report_enabled);
 
   // Extensions are added from the AuthenticationExtensionsClientInputs
   // dictionary defined in authentication_extensions_client_inputs.idl.
@@ -100,8 +84,7 @@ void OnGetClientCapabilitiesComplete(
   results.emplace_back(
       "extension:payment",
       RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled());
-  results.emplace_back("extension:prf",
-                       RuntimeEnabledFeatures::WebAuthenticationPRFEnabled());
+  results.emplace_back("extension:prf", true);
 
   // Results should be sorted lexicographically based on the keys.
   std::sort(
@@ -175,8 +158,8 @@ PublicKeyCredential::getClientCapabilities(ScriptState* script_state) {
 
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
-  authenticator->GetClientCapabilities(WTF::BindOnce(
-      &OnGetClientCapabilitiesComplete, WrapPersistent(resolver)));
+  authenticator->GetClientCapabilities(
+      BindOnce(&OnGetClientCapabilitiesComplete, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -205,7 +188,7 @@ PublicKeyCredential::isUserVerifyingPlatformAuthenticatorAvailable(
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(
-      WTF::BindOnce(&OnIsUserVerifyingComplete, WrapPersistent(resolver)));
+      BindOnce(&OnIsUserVerifyingComplete, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -235,9 +218,9 @@ ScriptPromise<IDLBoolean> PublicKeyCredential::isConditionalMediationAvailable(
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->IsConditionalMediationAvailable(
-      WTF::BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
-                       bool available) { resolver->Resolve(available); },
-                    WrapPersistent(resolver)));
+      BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
+                  bool available) { resolver->Resolve(available); },
+               WrapPersistent(resolver)));
   return promise;
 }
 
@@ -336,8 +319,8 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalUnknownCredential(
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->Report(
       std::move(mojo_options),
-      WTF::BindOnce(&OnSignalReportComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver)));
+      BindOnce(&OnSignalReportComplete,
+               std::make_unique<ScopedPromiseResolver>(resolver)));
   return promise;
 }
 
@@ -356,7 +339,7 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalAllAcceptedCredentials(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  for (WTF::String credential_id : options->allAcceptedCredentialIds()) {
+  for (String credential_id : options->allAcceptedCredentialIds()) {
     Vector<uint8_t> decoded_cred_id;
     if (!Base64UnpaddedURLDecode(credential_id, decoded_cred_id)) {
       resolver->RejectWithTypeError(
@@ -375,8 +358,8 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalAllAcceptedCredentials(
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->Report(
       std::move(mojo_options),
-      WTF::BindOnce(&OnSignalReportComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver)));
+      BindOnce(&OnSignalReportComplete,
+               std::make_unique<ScopedPromiseResolver>(resolver)));
   return promise;
 }
 
@@ -406,8 +389,8 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalCurrentUserDetails(
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->Report(
       std::move(mojo_options),
-      WTF::BindOnce(&OnSignalReportComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver)));
+      BindOnce(&OnSignalReportComplete,
+               std::make_unique<ScopedPromiseResolver>(resolver)));
   return promise;
 }
 

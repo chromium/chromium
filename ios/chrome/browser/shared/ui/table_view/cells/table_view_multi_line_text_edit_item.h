@@ -32,9 +32,9 @@
 
 @end
 
-// Implements a TableViewCell that displays a label in the first line and a
-// multi-line text below it.
-@interface TableViewMultiLineTextEditCell : TableViewCell
+// Implements a LegacyTableViewCell that displays a label in the first line and
+// a multi-line text below it.
+@interface TableViewMultiLineTextEditCell : LegacyTableViewCell
 
 // Label at the leading edge of the cell.
 @property(nonatomic, readonly, strong) UILabel* textLabel;

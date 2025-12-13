@@ -550,7 +550,7 @@ void AboutUIHTMLSource::FinishDataRequest(
 }
 
 std::string AboutUIHTMLSource::GetMimeType(const GURL& url) {
-  const std::string_view path = url.path_piece().substr(1);
+  const std::string_view path = url.path().substr(1);
   if (path == kCreditsJsPath || path == kStatsJsPath ||
       path == kStringsJsPath) {
     return "application/javascript";
@@ -586,5 +586,5 @@ AboutUI::AboutUI(content::WebUI* web_ui, const GURL& url)
 #endif
 
   content::URLDataSource::Add(
-      profile, std::make_unique<AboutUIHTMLSource>(url.host(), profile));
+      profile, std::make_unique<AboutUIHTMLSource>(url.GetHost(), profile));
 }

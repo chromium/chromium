@@ -298,7 +298,7 @@ void SafeTemplateURLParser::ParseURLs(
         }
       }
       if (!modified)
-        new_query = url.query();
+        new_query = url.GetQuery();
 
       // Add the extra parameters if any.
       if (!extra_params.empty()) {

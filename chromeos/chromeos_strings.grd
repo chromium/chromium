@@ -6255,16 +6255,10 @@
         <message name="IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_MESSAGE" translateable="false" desc="Message shown after user clicks on the Cross Device Feedback hyperlink">
           For cross-device issues related to features such as Phone Hub, Smart Lock, Instant Tethering, you may be prompted to file another feedback report from your phone.&#10;&#10;Access to this feedback report is restricted to the team working on this issue.
         </message>
-        <message name="IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach assistant logs from the current session.">
-        Include recent Google Assistant history and information. <ph name="BEGIN_LINK1">&lt;a id="assistantLogsLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
-        </message>
         <message name="IDS_FEEDBACK_TOOL_AUTOFILL_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach autofill logs from the current page.">
         Send <ph name="BEGIN_LINK1">&lt;a href="#" id="autofillMetadataUrl"&gt;</ph>autofill metadata<ph name="END_LINK1">&lt;/a&gt;</ph>
         <ph name="LINE_BREAK">&lt;br&gt;</ph>
         (your autofill data won't be shared)
-        </message>
-        <message name="IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_MESSAGE" translateable="false" desc="Message shown after user clicks on the assistant logs hyperlink">
-          Google Assistance captures recent history and information such as your identity and location to help us better understand your issue.&#10;&#10;The information is stored for up to 90 days and access is restricted to the team working on this issue.
         </message>
         <message name="IDS_FEEDBACK_TOOL_PRIVACY_NOTE" desc="Text for the privacy note included in the feedback app">
           Some account and system information may be sent to Google. We use this information to help address technical issues and improve our services, subject to our <ph name="BEGIN_LINK2">&lt;a id="privacyPolicyUrl"&gt;</ph>Privacy Policy<ph name="END_LINK2">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK3">&lt;a id="termsOfServiceUrl"&gt;</ph>Terms of Service<ph name="END_LINK3">&lt;/a&gt;</ph>. To request content changes, go to <ph name="BEGIN_LINK1">&lt;a id="legalHelpPageUrl"&gt;</ph>Legal Help<ph name="END_LINK1">&lt;/a&gt;</ph>.
@@ -7128,11 +7122,6 @@
           Please wait while this application is being updated
       </message>
 
-      <message name="IDS_DEEP_SCANNING_PROMPT_REMOVAL_NOTIFICATION"
-               desc="Notification text shown on Lacros indicating to the users that future suspicious downloads will scan automatically">
-        Suspicious files will be scanned automatically by Google Safe Browsing as part of the enhanced protection you chose
-      </message>
-
       <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_UPCOMING_LOGOUT_NOTIFICATION_TITLE" desc="Title of the notification telling the user they will be signed out soon.">
         You will be signed out at <ph name="TIME">$1<ex>7:30 PM</ex></ph>
       </message>
@@ -7255,6 +7244,9 @@
       <message name="IDS_BOCA_NOTIFICATION_TITLE" desc="Title of the class tools notification">
         Class Tools
       </message>
+       <message name="IDS_BOCA_SHARE_SCREEN_NOTIFICATION_MESSAGE" desc="Message of a notification that tells the user that the Class Tools app is sharing their screen to a display">
+        Class Tools is sharing your screen to <ph name="RECEIVER_NAME">$1<ex>Classroom 101</ex></ph>
+      </message>
 
       <!-- Strings for Spotlight notifications -->
       <message name="IDS_BOCA_SPOTLIGHT_NOTIFICATION_MESSAGE" desc="Message signaling the countdown before the start of a Spotlight session in the Boca app.">
@@ -7270,6 +7262,11 @@
       </message>
       <message name="IDS_BOCA_CAPTIONS_STOP_TRANSLATING_BUTTON_TEXT" desc="Text for the button to stop captions translation.">
         Stop translating
+      </message>
+
+      <!-- Strings for Class Tools remote receiver -->
+      <message name="IDS_BOCA_RECEIVER_TITLE" desc="Title of an app which runs in kiosk mode and receives incoming screen share presentations. Screen share presentations are initiated from the Class Tools app on another ChromeOS device.">
+        Class Tools display
       </message>
     </messages>
   </release>

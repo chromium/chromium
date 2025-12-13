@@ -11,8 +11,6 @@ The git repository is hosted on GNOME's GitLab server:
 
 Bugs should be reported at
 <https://gitlab.gnome.org/GNOME/libxml2/-/issues>.
-Please report *security issues* to our bug tracker as well. Make sure to
-mark the issue as *confidential*.
 
 Documentation is available at
 <https://gitlab.gnome.org/GNOME/libxml2/-/wikis>
@@ -20,6 +18,14 @@ Documentation is available at
 ## License
 
 This code is released under the MIT License, see the Copyright file.
+
+## Security
+
+This is open-source software written by hobbyists, maintained by a single
+volunteer, badly tested, written in a memory-unsafe language and full of
+security bugs. It is foolish to use this software to process untrusted data.
+As such, we treat security issues like any other bug. Each security report
+we receive will be made public immediately and won't be prioritized.
 
 ## Build instructions
 
@@ -47,25 +53,25 @@ The following options disable or enable code modules and relevant symbols:
     --with-c14n             Canonical XML 1.0 support (on)
     --with-catalog          XML Catalogs support (on)
     --with-debug            debugging module (on)
+    --with-docs             Build documentation (off)
     --with-history          history support for xmllint shell (off)
     --with-readline[=DIR]   use readline in DIR for shell (off)
     --with-html             HTML parser (on)
-    --with-http             HTTP support (off)
+    --with-http             ABI compatibility for removed HTTP support (off)
     --with-iconv[=DIR]      iconv support (on)
     --with-icu              ICU support (off)
     --with-iso8859x         ISO-8859-X support if no iconv (on)
-    --with-lzma[=DIR]       use liblzma in DIR (off)
     --with-modules          dynamic modules support (on)
     --with-output           serialization support (on)
     --with-pattern          xmlPattern selection interface (on)
     --with-push             push parser interfaces (on)
-    --with-python           Python bindings (on)
+    --with-python           Python bindings (off)
     --with-reader           xmlReader parsing interface (on)
     --with-regexps          regular expressions support (on)
     --with-relaxng          RELAX NG support (on)
     --with-sax1             older SAX1 interface (on)
     --with-schemas          XML Schemas 1.0 support (on)
-    --with-schematron       Schematron support (on)
+    --with-schematron       Schematron support (off)
     --with-threads          multithreading support (on)
     --with-thread-alloc     per-thread malloc hooks (off)
     --with-valid            DTD validation support (on)
@@ -77,6 +83,7 @@ The following options disable or enable code modules and relevant symbols:
 
 Other options:
 
+    --prefix=DIR            set installation prefix
     --with-minimum          build a minimally sized library (off)
     --with-legacy           maximum ABI compatibility (off)
 
@@ -111,10 +118,10 @@ Example commands:
 Common CMake options include:
 
     -D BUILD_SHARED_LIBS=OFF            # build static libraries
-    -D CMAKE_BUILD_TYPE=Release         # specify build type
+    -D CMAKE_BUILD_TYPE=Release         # specify build type (single-config)
+    --config Release                    # specify build type (multi-config)
     -D CMAKE_INSTALL_PREFIX=/usr/local  # specify the install path
     -D LIBXML2_WITH_ICONV=OFF           # disable iconv
-    -D LIBXML2_WITH_PYTHON=OFF          # disable Python
     -D LIBXML2_WITH_ZLIB=ON             # enable zlib
 
 You can also open the libxml source directory with its CMakeLists.txt
@@ -133,8 +140,7 @@ See the `meson_options.txt` file for options. For example:
 
     -Dprefix=$prefix
     -Dhistory=enabled
-    -Dhttp=enabled
-    -Dschematron=disabled
+    -Dschemas=disabled
     -Dzlib=enabled
 
 ## Dependencies
@@ -147,11 +153,14 @@ iconv, you need an external libiconv library, for example
 [GNU libiconv](https://www.gnu.org/software/libiconv/). Using
 [ICU](https://icu.unicode.org/) is also supported but discouraged.
 
-If enabled, libxml uses [libz](https://zlib.net/) or
-[liblzma](https://tukaani.org/xz/) to support reading compressed files.
-Use of this feature is discouraged.
-
 The xmllint executable uses libreadline and libhistory if enabled.
+
+### Build requirements
+
+Besides build system tools, only a C compiler should be required.
+Reconfiguration of the Autotools build requires the pkg.m4 macro from
+pkg-config. Building the documentation requires Doxygen, xsltproc and the
+DocBook 4 XSLT stylesheets. Building the Python bindings requires Doxygen.
 
 ## Contributing
 

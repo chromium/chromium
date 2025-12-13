@@ -52,7 +52,8 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/ASan Debug (32-bit x86 with V8-ARM)/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/ASan Debug (32-bit x86 with V8-ARM)/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

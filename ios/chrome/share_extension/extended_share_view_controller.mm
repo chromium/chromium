@@ -15,6 +15,7 @@
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/extension_open_url.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/share_extension/account_info.h"
 #import "ios/chrome/share_extension/share_extension_delegate.h"
 #import "ios/chrome/share_extension/share_extension_sheet.h"
@@ -36,7 +37,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
 }  // namespace
 
-@interface ExtendedShareViewController () <ShareExtensionDelegate>
+@interface ExtendedShareViewController () <ShareExtensionDelegate,
+                                           NSURLSessionDelegate>
 
 // The sheet to display when an item is shared.
 @property(nonatomic, strong) ShareExtensionSheet* shareSheet;
@@ -96,7 +98,9 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
 @end
 
-@implementation ExtendedShareViewController
+@implementation ExtendedShareViewController {
+  UINavigationController* _navigationController;
+}
 
 + (void)initialize {
   if (self == [ExtendedShareViewController self]) {
@@ -111,15 +115,19 @@ const NSUInteger kSearchCharacterLimit = 1000;
   self.view.backgroundColor = [UIColor clearColor];
   self.shareSheet = [[ShareExtensionSheet alloc] init];
   self.shareSheet.delegate = self;
-  self.shareSheet.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.shareSheet];
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   UISheetPresentationController* presentationController =
-      self.shareSheet.sheetPresentationController;
+      _navigationController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
     [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kShareSheetCornerRadius;
+  if (@available(iOS 26, *)) {
+    [self addChildViewController:_navigationController];
+  }
   [self loadAvailableAccounts];
   [self loadElementsFromContext];
 }
@@ -285,30 +293,67 @@ const NSUInteger kSearchCharacterLimit = 1000;
                                                   userInfo:nil]];
 }
 
+#pragma mark - NSURLSessionDelegate
+
+- (void)URLSession:(NSURLSession*)session
+              dataTask:(NSURLSessionDataTask*)dataTask
+    didReceiveResponse:(NSURLResponse*)response
+     completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))
+                           completionHandler {
+  NSHTTPURLResponse* httpResponse =
+      base::apple::ObjCCast<NSHTTPURLResponse>(response);
+  NSString* mimeType = [httpResponse MIMEType];
+  int64_t contentLength = [httpResponse expectedContentLength];
+
+  // The task must be cancelled because it was a HEAD request
+  // and its purpose (header check) is now complete.
+  completionHandler(NSURLSessionResponseCancel);
+
+  __weak ExtendedShareViewController* weakSelf = self;
+
+  if ([mimeType hasPrefix:@"image/"]) {
+    // max image size to share (20 MB).
+    int64_t maxImageSize = 20 * 1024 * 1024;
+    if (contentLength == NSURLResponseUnknownLength ||
+        contentLength < maxImageSize) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf handleSharedImage:dataTask.originalRequest.URL
+                            forItem:nil
+                          withError:nil];
+      });
+    }
+  } else {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf handleURL:dataTask.originalRequest.URL forItem:nil];
+    });
+  }
+}
+
+- (void)URLSession:(NSURLSession*)session
+                    task:(NSURLSessionTask*)task
+    didCompleteWithError:(NSError*)error {
+  if (error && error.code != NSURLErrorCancelled) {
+    // if an error has occurred consider the task's URL to not be an image.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self handleURL:task.originalRequest.URL forItem:nil];
+    });
+  }
+}
+
 #pragma mark - Private methods
 
 - (void)executeInAppWithCommand:(AppGroupCommand*)command
                          gaiaID:(NSString*)gaiaID {
-  if (app_group::MultiProfileShareExtensionEnabled()) {
-    [command executeInAppWithGaiaID:gaiaID];
-  } else {
-    [command executeInApp];
-  }
+  [command executeInAppWithGaiaID:gaiaID];
 }
 
 - (void)loadAvailableAccounts {
-  if (!app_group::MultiProfileShareExtensionEnabled()) {
-    return;
-  }
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
   NSString* primaryAccount =
       [sharedDefaults stringForKey:app_group::kPrimaryAccount];
   NSDictionary* accounts = base::apple::ObjCCast<NSDictionary>(
       [sharedDefaults dictionaryForKey:app_group::kAccountsOnDevice]);
 
-  if (!accounts) {
-    return;
-  }
   NSURL* avatarsFolderPath = app_group::WidgetsAvatarFolder();
 
   NSMutableArray* loadedAccounts = [[NSMutableArray alloc] init];
@@ -320,7 +365,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
     UIImage* avatar = [UIImage imageWithContentsOfFile:[avatarDirectory path]];
 
     AccountInfo* account = [[AccountInfo alloc] init];
-    account.gaiaID = gaiaID;
+    account.gaiaIDString = gaiaID;
     account.avatar = avatar;
     account.fullName = accounts[gaiaID][app_group::kFullName];
     account.email = accounts[gaiaID][app_group::kEmail];
@@ -331,13 +376,13 @@ const NSUInteger kSearchCharacterLimit = 1000;
     }
   }
 
-  [self.shareSheet setAccounts:loadedAccounts];
-
-  if (!primaryAccount || ![primaryAccount length]) {
+  if (!self.shareSheet.selectedAccountInfo) {
     AccountInfo* accountInfo = [[AccountInfo alloc] init];
-    accountInfo.gaiaID = @"Default";
+    accountInfo.gaiaIDString = app_group::kNoAccount;
     self.shareSheet.selectedAccountInfo = accountInfo;
+    [loadedAccounts addObject:accountInfo];
   }
+  [self.shareSheet setAccounts:loadedAccounts];
 }
 
 - (void)handleImageSharingForCommand:(AppGroupCommand*)command
@@ -369,11 +414,28 @@ const NSUInteger kSearchCharacterLimit = 1000;
   }
 
   __weak ExtendedShareViewController* weakSelf = self;
+  if (@available(iOS 26, *)) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf moveShareSheet];
+    });
+    return;
+  }
+
+  UINavigationController* navigationController = _navigationController;
+
   dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf presentViewController:weakSelf.shareSheet
+    [weakSelf presentViewController:navigationController
                            animated:YES
                          completion:nil];
   });
+}
+
+- (void)moveShareSheet {
+  [self addChildViewController:_navigationController];
+  _navigationController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_navigationController.view];
+  AddSameConstraints(self.view, _navigationController.view);
+  [_navigationController didMoveToParentViewController:self];
 }
 
 - (void)displayErrorView {
@@ -423,6 +485,50 @@ const NSUInteger kSearchCharacterLimit = 1000;
     [self displayErrorView];
     return;
   }
+
+  if ([URL isFileURL]) {
+    UTType* imageType = [UTType typeWithIdentifier:UTTypeImage.identifier];
+    NSError* attributesError = nil;
+    NSDictionary* values =
+        [URL resourceValuesForKeys:@[ NSURLTypeIdentifierKey ]
+                             error:&attributesError];
+    if (!attributesError) {
+      NSString* fileIdentifier = values[NSURLTypeIdentifierKey];
+      if (fileIdentifier) {
+        UTType* fileUTType = [UTType typeWithIdentifier:fileIdentifier];
+        if ([fileUTType conformsToType:imageType]) {
+          [self handleSharedImage:URL forItem:item withError:error];
+          return;
+        }
+      }
+    }
+  }
+
+  [self initiateHeaderCheckForURL:URL forItem:item withError:error];
+}
+
+// Initiates an asynchronous HEAD request to retrieve the URL's HTTP headers
+// determining its resource type.
+- (void)initiateHeaderCheckForURL:(NSURL*)URL
+                          forItem:(NSExtensionItem*)item
+                        withError:(NSError*)error {
+  if (![[URL scheme] isEqualToString:@"http"] &&
+      ![[URL scheme] isEqualToString:@"https"]) {
+    [self displayErrorView];
+    return;
+  }
+  NSURLSessionConfiguration* config =
+      [NSURLSessionConfiguration defaultSessionConfiguration];
+  NSURLSession* session = [NSURLSession sessionWithConfiguration:config
+                                                        delegate:self
+                                                   delegateQueue:nil];
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:URL];
+  [request setHTTPMethod:@"HEAD"];
+  NSURLSessionDataTask* task = [session dataTaskWithRequest:request];
+  [task resume];
+}
+
+- (void)handleURL:(NSURL*)URL forItem:(NSExtensionItem*)item {
   self.shareItem = item;
   self.shareURL = URL;
   self.shareTitle = [[item attributedTitle] string];
@@ -466,6 +572,12 @@ const NSUInteger kSearchCharacterLimit = 1000;
         imageWithData:[NSData
                           dataWithContentsOfURL:base::apple::ObjCCast<NSURL>(
                                                     idImage)]];
+    if (!self.shareImage) {
+      // If the data for a given URL is nil, consider the URL to no longer be an
+      // image.
+      [self handleURL:idImage forItem:item];
+      return;
+    }
   }
 
   self.shareItem = item;
@@ -564,6 +676,11 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 - (void)dismissAndReturnItem:(NSExtensionItem*)item error:(NSError*)error {
+  if (@available(iOS 26, *)) {
+    [self handleSheetDismissalForItem:item error:error];
+    return;
+  }
+
   __weak ExtendedShareViewController* weakSelf = self;
   [self.shareSheet.presentingViewController
       dismissViewControllerAnimated:YES
@@ -640,7 +757,6 @@ const NSUInteger kSearchCharacterLimit = 1000;
                     action:(app_group::ShareExtensionItemType)actionType
                     cancel:(BOOL)cancel
                 completion:(ProceduralBlock)completion {
-  CHECK(app_group::MultiProfileShareExtensionEnabled());
   CHECK(gaiaID && [gaiaID length]);
   NSURL* readingListURL = app_group::ExternalCommandsItemsFolder();
   if (![[NSFileManager defaultManager]
@@ -807,6 +923,19 @@ const NSUInteger kSearchCharacterLimit = 1000;
 - (void)handleAddingToBookmarkWithGaiaID:(NSString*)gaiaID {
   self.shareSheet.dismissedFromSheetAction = YES;
   __weak ExtendedShareViewController* weakSelf = self;
+  if (gaiaID && gaiaID.length) {
+    [self queueActionItemURL:_shareURL
+                       title:_shareTitle
+                      gaiaID:gaiaID
+                      action:app_group::BOOKMARK_ITEM
+                      cancel:NO
+                  completion:^{
+                    [weakSelf dismissAndReturnItem:weakSelf.shareItem
+                                             error:nil];
+                  }];
+    return;
+  }
+
   [self queueActionItemURL:_shareURL
                      title:_shareTitle
                     action:app_group::BOOKMARK_ITEM
@@ -819,6 +948,19 @@ const NSUInteger kSearchCharacterLimit = 1000;
 - (void)handleAddingToReadingListWithGaiaID:(NSString*)gaiaID {
   self.shareSheet.dismissedFromSheetAction = YES;
   __weak ExtendedShareViewController* weakSelf = self;
+  if (gaiaID && gaiaID.length) {
+    [self queueActionItemURL:_shareURL
+                       title:_shareTitle
+                      gaiaID:gaiaID
+                      action:app_group::READING_LIST_ITEM
+                      cancel:NO
+                  completion:^{
+                    [weakSelf dismissAndReturnItem:weakSelf.shareItem
+                                             error:nil];
+                  }];
+    return;
+  }
+
   [self queueActionItemURL:_shareURL
                      title:_shareTitle
                     action:app_group::READING_LIST_ITEM

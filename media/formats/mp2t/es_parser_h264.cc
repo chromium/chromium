@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp2t/es_parser_h264.h"
 
 #include <limits>
 #include <optional>
 
 #include "base/containers/adapters.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/encryption_pattern.h"
@@ -44,27 +43,18 @@ const int kSampleAESPatternUnit =
 // position of the EP3B, or 0 if there are none.
 // Note: the EP3B always follows two zero bytes, so the value 0 can never be a
 // valid position.
-int FindEP3B(const uint8_t* buffer, int start_pos, int end_pos) {
-  const uint8_t* data = buffer + start_pos;
-  int data_size = end_pos - start_pos;
-  DCHECK_GE(data_size, 0);
-  int bytes_left = data_size;
-
-  while (bytes_left >= 4) {
-    if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x03 &&
-        data[3] <= 0x03) {
-      return (data - buffer) + 2;
+size_t FindEP3B(base::span<const uint8_t> buffer) {
+  base::SpanReader reader(buffer);
+  while (reader.remaining() >= 4) {
+    static constexpr uint32_t kMaxValue = 0x0303;
+    static constexpr uint32_t kMinValue = 0x0300;
+    const uint32_t value = base::U32FromBigEndian(buffer.first<4u>());
+    if (kMinValue <= value && value <= kMaxValue) {
+      return reader.num_read() + 2;
     }
-    ++data;
-    --bytes_left;
+    reader.Read<1u>();
   }
   return 0;
-}
-
-// Remove the byte at |pos| in the |buffer| and close up the gap, moving all the
-// bytes from [pos + 1, end_pos) to [pos, end_pos - 1).
-void RemoveByte(uint8_t* buffer, int pos, int end_pos) {
-  memmove(&buffer[pos], &buffer[pos + 1], end_pos - pos - 1);
 }
 
 // Given an Access Unit pointed to by |au| of size |au_size|, removes emulation
@@ -72,30 +62,31 @@ void RemoveByte(uint8_t* buffer, int pos, int end_pos) {
 // the |subsamples| vector describing the resulting AU.
 // Returns the allocated buffer holding the adjusted copy, or NULL if no size
 // adjustment was necessary.
-std::unique_ptr<uint8_t[]> AdjustAUForSampleAES(
-    const uint8_t* au,
-    int* au_size,
+base::HeapArray<uint8_t> AdjustAUForSampleAES(
+    base::span<const uint8_t> au,
+    size_t au_end_pos,
     const Ranges<int>& protected_blocks,
     std::vector<SubsampleEntry>* subsamples) {
   DCHECK(subsamples);
-  DCHECK(au_size);
-  std::unique_ptr<uint8_t[]> result;
-  int& au_end_pos = *au_size;
+  base::HeapArray<uint8_t> result;
 
   // 1. Considering each protected block in turn, find any emulation prevention
   // 3 bytes (EP3B) within it, keeping track of their positions. While doing so,
   // produce a revised Ranges<int> reflecting the new protected block positions
   // that will apply after we have removed the EP3Bs.
   Ranges<int> adjusted_protected_blocks;
-  std::vector<int> epbs;
+  std::vector<size_t> epbs;
   int adjustment = 0;
   for (size_t i = 0; i < protected_blocks.size(); i++) {
     int start_pos = protected_blocks.start(i);
     int end_pos = protected_blocks.end(i);
     int search_pos = start_pos;
-    int epb_pos;
+    size_t epb_pos_in_relative;
     int block_adjustment = 0;
-    while ((epb_pos = FindEP3B(au, search_pos, end_pos))) {
+    while ((epb_pos_in_relative = FindEP3B(au.subspan(
+                base::checked_cast<size_t>(search_pos),
+                base::checked_cast<size_t>(end_pos - search_pos))))) {
+      size_t epb_pos = search_pos + epb_pos_in_relative;
       epbs.push_back(epb_pos);
       block_adjustment++;
       search_pos = epb_pos + 2;
@@ -115,14 +106,15 @@ std::unique_ptr<uint8_t[]> AdjustAUForSampleAES(
   // 2. If we actually found any EP3Bs, make a copy of the AU and then remove
   // the EP3Bs in the copy (we can't modify the original).
   if (adjustment) {
-    result.reset(new uint8_t[au_end_pos]);
-    uint8_t* temp = result.get();
-    memcpy(temp, au, au_end_pos);
-    for (const auto& epb : base::Reversed(epbs)) {
-      RemoveByte(temp, epb, au_end_pos);
-      au_end_pos--;
+    au_end_pos = au_end_pos - epbs.size();
+    result = base::HeapArray<uint8_t>::Uninit(au_end_pos);
+    base::SpanWriter writer(result.as_span());
+    size_t start = 0;
+    for (const auto& epb : epbs) {
+      writer.Write(au.subspan(start, epb - start));
+      start = epb + 1;
     }
-    au = temp;
+    writer.Write(au.subspan(start));
     VLOG(2) << "Copied AU and removed emulation prevention bytes: "
             << adjustment;
   }
@@ -236,26 +228,26 @@ void EsParserH264::ResetInternal() {
 bool EsParserH264::FindAUD(int64_t* stream_pos) {
   while (true) {
     auto eq_queue_span = es_queue_->DataAt(*stream_pos);
-    const uint8_t* es = eq_queue_span.data();
-    int size = eq_queue_span.size();
-
     // Find a start code and move the stream to the start code parser position.
-    off_t start_code_offset;
-    off_t start_code_size;
+    size_t start_code_offset = 0;
+    size_t start_code_size = 0;
     bool start_code_found = H264Parser::FindStartCode(
-        es, size, &start_code_offset, &start_code_size);
+        eq_queue_span, &start_code_offset, &start_code_size);
     *stream_pos += start_code_offset;
 
     // No H264 start code found or NALU type not available yet.
-    if (!start_code_found || start_code_offset + start_code_size >= size)
+    if (!start_code_found ||
+        start_code_offset + start_code_size >= eq_queue_span.size()) {
       return false;
+    }
 
     // Exit the parser loop when an AUD is found.
     // Note: NALU header for an AUD:
     // - nal_ref_idc must be 0
     // - nal_unit_type must be H264NALU::kAUD
-    if (es[start_code_offset + start_code_size] == H264NALU::kAUD)
+    if (eq_queue_span[start_code_offset + start_code_size] == H264NALU::kAUD) {
       break;
+    }
 
     // The current NALU is not an AUD, skip the start code
     // and continue parsing the stream.
@@ -298,13 +290,9 @@ bool EsParserH264::ParseFromEsQueue() {
   int pps_id_for_access_unit = -1;
 
   auto eq_queue_span = es_queue_->DataAt(current_access_unit_pos_);
-  const uint8_t* es = eq_queue_span.data();
-  int size = eq_queue_span.size();
-
-  int access_unit_size = base::checked_cast<int>(
+  size_t access_unit_size = base::checked_cast<size_t>(
       next_access_unit_pos_ - current_access_unit_pos_);
-  DCHECK_LE(access_unit_size, size);
-  h264_parser_->SetStream(es, access_unit_size);
+  h264_parser_->SetStream(eq_queue_span.first(access_unit_size));
 
   while (true) {
     bool is_eos = false;
@@ -364,9 +352,9 @@ bool EsParserH264::ParseFromEsQueue() {
         // With HLS SampleAES, protected blocks in H.264 consist of IDR and non-
         // IDR slices that are more than 48 bytes in length.
         if (get_decrypt_config_cb_ && get_decrypt_config_cb_.Run() &&
-            nalu.size > kSampleAESMaxUnprotectedNALULength) {
-          int64_t nal_begin = nalu.data - es;
-          protected_blocks_.Add(nal_begin, nal_begin + nalu.size);
+            nalu.data.size() > kSampleAESMaxUnprotectedNALULength) {
+          int64_t nal_begin = nalu.data.data() - eq_queue_span.data();
+          protected_blocks_.Add(nal_begin, nal_begin + nalu.data.size());
         }
         break;
       }
@@ -388,7 +376,7 @@ bool EsParserH264::ParseFromEsQueue() {
 }
 
 bool EsParserH264::EmitFrame(int64_t access_unit_pos,
-                             int access_unit_size,
+                             int access_unit_size_int,
                              bool is_key_frame,
                              int pps_id) {
   // Get the access unit timing info.
@@ -427,33 +415,33 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
 
   // Emit a frame.
   DVLOG(LOG_LEVEL_ES) << "Emit frame: stream_pos=" << current_access_unit_pos_
-                      << " size=" << access_unit_size;
+                      << " size=" << access_unit_size_int;
 
+  size_t access_unit_size = base::checked_cast<size_t>(access_unit_size_int);
   auto eq_queue_span = es_queue_->DataAt(current_access_unit_pos_);
-  const uint8_t* es = eq_queue_span.data();
-  int es_size = eq_queue_span.size();
-  CHECK_GE(es_size, access_unit_size);
+  CHECK_GE(eq_queue_span.size(), access_unit_size);
+  eq_queue_span = eq_queue_span.first(access_unit_size);
 
   const DecryptConfig* base_decrypt_config = nullptr;
   if (get_decrypt_config_cb_)
     base_decrypt_config = get_decrypt_config_cb_.Run();
 
-  std::unique_ptr<uint8_t[]> adjusted_au;
+  base::HeapArray<uint8_t> adjusted_au;
   std::vector<SubsampleEntry> subsamples;
   if (base_decrypt_config) {
-    adjusted_au = AdjustAUForSampleAES(es, &access_unit_size, protected_blocks_,
-                                       &subsamples);
+    adjusted_au = AdjustAUForSampleAES(eq_queue_span, access_unit_size,
+                                       protected_blocks_, &subsamples);
     protected_blocks_.clear();
-    if (adjusted_au)
-      es = adjusted_au.get();
+    if (!adjusted_au.empty()) {
+      eq_queue_span = adjusted_au;
+    }
   }
 
   // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
   // type and allow multiple video tracks. See https://crbug.com/341581.
-  auto es_span = base::span(es, base::checked_cast<size_t>(access_unit_size));
   scoped_refptr<StreamParserBuffer> stream_parser_buffer =
-      StreamParserBuffer::CopyFrom(es_span, is_key_frame, DemuxerStream::VIDEO,
-                                   kMp2tVideoTrackId);
+      StreamParserBuffer::CopyFrom(eq_queue_span, is_key_frame,
+                                   DemuxerStream::VIDEO, kMp2tVideoTrackId);
   stream_parser_buffer->SetDecodeTimestamp(current_timing_desc.dts);
   stream_parser_buffer->set_timestamp(current_timing_desc.pts);
   if (base_decrypt_config) {

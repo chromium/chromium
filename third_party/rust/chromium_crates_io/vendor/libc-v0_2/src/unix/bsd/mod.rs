@@ -131,9 +131,6 @@ s! {
         pub flag: *mut c_int,
         pub val: c_int,
     }
-}
-
-s_no_extra_traits! {
     pub struct sockaddr_un {
         pub sun_len: u8,
         pub sun_family: sa_family_t,
@@ -161,73 +158,6 @@ s_no_extra_traits! {
         pub machine: [c_char; 256],
         #[cfg(target_os = "dragonfly")]
         pub machine: [c_char; 32],
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for sockaddr_un {
-            fn eq(&self, other: &sockaddr_un) -> bool {
-                self.sun_len == other.sun_len
-                    && self.sun_family == other.sun_family
-                    && self
-                        .sun_path
-                        .iter()
-                        .zip(other.sun_path.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for sockaddr_un {}
-
-        impl hash::Hash for sockaddr_un {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sun_len.hash(state);
-                self.sun_family.hash(state);
-                self.sun_path.hash(state);
-            }
-        }
-
-        impl PartialEq for utsname {
-            fn eq(&self, other: &utsname) -> bool {
-                self.sysname
-                    .iter()
-                    .zip(other.sysname.iter())
-                    .all(|(a, b)| a == b)
-                    && self
-                        .nodename
-                        .iter()
-                        .zip(other.nodename.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .release
-                        .iter()
-                        .zip(other.release.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .version
-                        .iter()
-                        .zip(other.version.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .machine
-                        .iter()
-                        .zip(other.machine.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for utsname {}
-
-        impl hash::Hash for utsname {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sysname.hash(state);
-                self.nodename.hash(state);
-                self.release.hash(state);
-                self.version.hash(state);
-                self.machine.hash(state);
-            }
-        }
     }
 }
 
@@ -468,19 +398,24 @@ pub const POLLWRNORM: c_short = 0x004;
 pub const POLLRDBAND: c_short = 0x080;
 pub const POLLWRBAND: c_short = 0x100;
 
-pub const BIOCGBLEN: c_ulong = 0x40044266;
-pub const BIOCSBLEN: c_ulong = 0xc0044266;
-pub const BIOCFLUSH: c_uint = 0x20004268;
-pub const BIOCPROMISC: c_uint = 0x20004269;
-pub const BIOCGDLT: c_ulong = 0x4004426a;
-pub const BIOCGETIF: c_ulong = 0x4020426b;
-pub const BIOCSETIF: c_ulong = 0x8020426c;
-pub const BIOCGSTATS: c_ulong = 0x4008426f;
-pub const BIOCIMMEDIATE: c_ulong = 0x80044270;
-pub const BIOCVERSION: c_ulong = 0x40044271;
-pub const BIOCGHDRCMPLT: c_ulong = 0x40044274;
-pub const BIOCSHDRCMPLT: c_ulong = 0x80044275;
-pub const SIOCGIFADDR: c_ulong = 0xc0206921;
+cfg_if! {
+    // Not yet implemented on NetBSD
+    if #[cfg(not(any(target_os = "netbsd")))] {
+        pub const BIOCGBLEN: c_ulong = 0x40044266;
+        pub const BIOCSBLEN: c_ulong = 0xc0044266;
+        pub const BIOCFLUSH: c_uint = 0x20004268;
+        pub const BIOCPROMISC: c_uint = 0x20004269;
+        pub const BIOCGDLT: c_ulong = 0x4004426a;
+        pub const BIOCGETIF: c_ulong = 0x4020426b;
+        pub const BIOCSETIF: c_ulong = 0x8020426c;
+        pub const BIOCGSTATS: c_ulong = 0x4008426f;
+        pub const BIOCIMMEDIATE: c_ulong = 0x80044270;
+        pub const BIOCVERSION: c_ulong = 0x40044271;
+        pub const BIOCGHDRCMPLT: c_ulong = 0x40044274;
+        pub const BIOCSHDRCMPLT: c_ulong = 0x80044275;
+        pub const SIOCGIFADDR: c_ulong = 0xc0206921;
+    }
+}
 
 pub const REG_BASIC: c_int = 0o0000;
 pub const REG_EXTENDED: c_int = 0o0001;
@@ -573,7 +508,7 @@ pub const RTAX_BRD: c_int = 7;
 
 f! {
     pub fn CMSG_FIRSTHDR(mhdr: *const crate::msghdr) -> *mut cmsghdr {
-        if (*mhdr).msg_controllen as usize >= mem::size_of::<cmsghdr>() {
+        if (*mhdr).msg_controllen as usize >= size_of::<cmsghdr>() {
             (*mhdr).msg_control.cast::<cmsghdr>()
         } else {
             core::ptr::null_mut()
@@ -581,20 +516,20 @@ f! {
     }
 
     pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
-        let bits = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] &= !(1 << (fd % bits));
         return;
     }
 
     pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
-        let bits = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         return ((*set).fds_bits[fd / bits] & (1 << (fd % bits))) != 0;
     }
 
     pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
-        let bits = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] |= 1 << (fd % bits);
         return;
@@ -608,23 +543,23 @@ f! {
 }
 
 safe_f! {
-    pub {const} fn WTERMSIG(status: c_int) -> c_int {
+    pub const fn WTERMSIG(status: c_int) -> c_int {
         status & 0o177
     }
 
-    pub {const} fn WIFEXITED(status: c_int) -> bool {
+    pub const fn WIFEXITED(status: c_int) -> bool {
         (status & 0o177) == 0
     }
 
-    pub {const} fn WEXITSTATUS(status: c_int) -> c_int {
+    pub const fn WEXITSTATUS(status: c_int) -> c_int {
         (status >> 8) & 0x00ff
     }
 
-    pub {const} fn WCOREDUMP(status: c_int) -> bool {
+    pub const fn WCOREDUMP(status: c_int) -> bool {
         (status & 0o200) != 0
     }
 
-    pub {const} fn QCMD(cmd: c_int, type_: c_int) -> c_int {
+    pub const fn QCMD(cmd: c_int, type_: c_int) -> c_int {
         (cmd << 8) | (type_ & 0x00ff)
     }
 }
@@ -795,6 +730,7 @@ extern "C" {
     )]
     #[cfg_attr(target_os = "netbsd", link_name = "__sigaltstack14")]
     pub fn sigaltstack(ss: *const stack_t, oss: *mut stack_t) -> c_int;
+    #[cfg_attr(target_os = "netbsd", link_name = "__sigsuspend14")]
     pub fn sigsuspend(mask: *const crate::sigset_t) -> c_int;
     pub fn sem_close(sem: *mut sem_t) -> c_int;
     pub fn getdtablesize() -> c_int;
@@ -869,6 +805,7 @@ extern "C" {
         all(target_os = "freebsd", any(freebsd12, freebsd11, freebsd10)),
         link_name = "wait4@FBSD_1.0"
     )]
+    #[cfg_attr(target_os = "netbsd", link_name = "__wait450")]
     pub fn wait4(
         pid: crate::pid_t,
         status: *mut c_int,
@@ -879,11 +816,13 @@ extern "C" {
         all(target_os = "macos", target_arch = "x86"),
         link_name = "getitimer$UNIX2003"
     )]
+    #[cfg_attr(target_os = "netbsd", link_name = "__getitimer50")]
     pub fn getitimer(which: c_int, curr_value: *mut crate::itimerval) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "setitimer$UNIX2003"
     )]
+    #[cfg_attr(target_os = "netbsd", link_name = "__setitimer50")]
     pub fn setitimer(
         which: c_int,
         new_value: *const crate::itimerval,
@@ -944,7 +883,10 @@ extern "C" {
         locale: crate::locale_t,
     ) -> size_t;
 
+    #[cfg_attr(target_os = "netbsd", link_name = "__devname50")]
     pub fn devname(dev: crate::dev_t, mode_t: crate::mode_t) -> *mut c_char;
+
+    pub fn issetugid() -> c_int;
 }
 
 cfg_if! {

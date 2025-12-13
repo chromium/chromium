@@ -11,13 +11,13 @@
 
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
@@ -907,7 +907,7 @@ class IOTaskBrowserTest
     EXPECT_CALL(*files_controller_,
                 CheckIfTransferAllowed(std::make_optional(task_id), testing::_,
                                        testing::_, is_move, testing::_))
-        .WillOnce(testing::Invoke(warn_on_check));
+        .WillOnce(warn_on_check);
   }
 
   // Expects CheckIfTransferAllowed to be called. Once called, it calls
@@ -931,7 +931,7 @@ class IOTaskBrowserTest
     EXPECT_CALL(*files_controller_,
                 CheckIfTransferAllowed(std::make_optional(task_id), testing::_,
                                        testing::_, is_move, testing::_))
-        .WillOnce(testing::Invoke(block_on_check));
+        .WillOnce(block_on_check);
   }
 
   // Expects CheckIfTransferAllowed to be called. Once called, it calls
@@ -969,7 +969,7 @@ class IOTaskBrowserTest
     EXPECT_CALL(*files_controller_,
                 CheckIfTransferAllowed(std::make_optional(task_id), testing::_,
                                        testing::_, is_move, testing::_))
-        .WillOnce(testing::Invoke(warn_on_check));
+        .WillOnce(warn_on_check);
     fpnm_->ShowDlpBlockedFiles(task_id, blocked_files, action);
   }
 
@@ -1004,7 +1004,7 @@ class IOTaskBrowserTest
     EXPECT_CALL(*files_controller_,
                 CheckIfTransferAllowed(std::make_optional(task_id), testing::_,
                                        testing::_, is_move, testing::_))
-        .WillOnce(testing::Invoke(warn_on_check));
+        .WillOnce(warn_on_check);
   }
 
   base::ScopedTempDir temp_dir_;
@@ -1091,7 +1091,11 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
 
 // Tests that clicking the OK button on a warning notification shown for copy or
 // move IO task with multiple warning files shows a dialog instead of continuing
-// the action, and opens the Files App only if there's not one opened already.
+// the action.
+// In most cases, the dialog is shown once a Files App is opened - which happens
+// only if there's not one opened already. Sometimes however the Files App fails
+// to open in the allocated time limit, so we fallback to a system modal, which
+// this test also accounts for. See crbug.com/443687247.
 IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
                        MultiFileOKShowsDialogOverFilesApp_Warning) {
   auto [type, action] = GetParam();
@@ -1104,19 +1108,29 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   auto dialog_info = FilesPolicyDialog::Info::Warn(
       FilesPolicyDialog::BlockReason::kDlp, warning_files);
 
-  EXPECT_CALL(*factory_,
-              CreateWarnDialog(base::test::IsNotNullCallback(), action,
-                               testing::NotNull(), testing::Eq(std::nullopt),
-                               std::move(dialog_info)))
+  base::test::TestFuture<bool> modal_parent_present_future;
+
+  // The `modal_parent` parameter should generally be NotNull, but in some cases
+  // the Files App might fail to open within the allocated timeout, when we
+  // resort to showing a system modal. See crbug.com/443687247.
+  EXPECT_CALL(
+      *factory_,
+      CreateWarnDialog(base::test::IsNotNullCallback(), action, testing::_,
+                       testing::Eq(std::nullopt), std::move(dialog_info)))
       .Times(2)
-      .WillRepeatedly([](WarningWithJustificationCallback callback,
-                         dlp::FileAction file_action,
-                         gfx::NativeWindow modal_parent,
-                         std::optional<DlpFileDestination> destination,
-                         FilesPolicyDialog::Info dialog_info) {
+      .WillRepeatedly([&modal_parent_present_future](
+                          WarningWithJustificationCallback callback,
+                          dlp::FileAction file_action,
+                          gfx::NativeWindow modal_parent,
+                          std::optional<DlpFileDestination> destination,
+                          FilesPolicyDialog::Info dialog_info) {
         // Cancel the task so it's deleted properly.
         std::move(callback).Run(/*user_justification=*/std::nullopt,
                                 /*should_proceed=*/false);
+
+        // Signal whether Files App was opened or not.
+        modal_parent_present_future.GetRepeatingCallback().Run(modal_parent !=
+                                                               nullptr);
         return nullptr;
       });
 
@@ -1166,10 +1180,14 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
   bridge_->Click(kNotificationId1, NotificationButton::OK);
 
-  // Check that a new Files app is opened.
-  Browser* first_app = ui_test_utils::WaitForBrowserToOpen();
-  ASSERT_TRUE(first_app);
-  ASSERT_EQ(first_app, FindFilesApp());
+  Browser* first_app;
+
+  // If a modal parent was present, assert a new Files App was opened.
+  bool first_call_has_modal_parent = modal_parent_present_future.Take();
+  if (first_call_has_modal_parent) {
+    first_app = FindFilesApp();
+    ASSERT_TRUE(first_app);
+  }
 
   // The first notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
@@ -1178,21 +1196,33 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId2).has_value());
   bridge_->Click(kNotificationId2, NotificationButton::OK);
 
-  // Check that the last active Files app is the same as before.
-  ASSERT_TRUE(first_app);
-  ASSERT_EQ(first_app, FindFilesApp());
+  bool second_call_has_modal_parent = modal_parent_present_future.Take();
+  if (first_call_has_modal_parent) {
+    // Check that the last active Files app is the same as before.
+    ASSERT_TRUE(first_app);
+    ASSERT_EQ(first_app, FindFilesApp());
+  } else if (second_call_has_modal_parent) {
+    ASSERT_FALSE(first_app);
+    first_app = FindFilesApp();
+    ASSERT_TRUE(first_app);
+  }
 
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId2).has_value());
 
+  int expected_timeouts =
+      !first_call_has_modal_parent + !second_call_has_modal_parent;
+  int expected_non_timeouts =
+      first_call_has_modal_parent || second_call_has_modal_parent;
+
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kFilesAppOpenTimedOutUMA,
-      false, 1);
+      false, expected_non_timeouts);
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kFilesAppOpenTimedOutUMA,
-      true, 0);
+      true, expected_timeouts);
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 2)},
                          /*warning_count_buckets=*/{base::Bucket(2, 2)},

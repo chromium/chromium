@@ -10,14 +10,13 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/safety_config.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -30,17 +29,6 @@
 
 namespace optimization_guide {
 
-struct CreateSessionArgs final {
-  CreateSessionArgs(base::WeakPtr<OptimizationGuideLogger> logger,
-                    ExecuteRemoteFn remote_fn);
-  ~CreateSessionArgs();
-
-  CreateSessionArgs(const CreateSessionArgs&);
-
-  base::WeakPtr<OptimizationGuideLogger> logger_;
-  ExecuteRemoteFn remote_fn_;
-};
-
 class ModelClient final : public TextSafetyClient {
  public:
   ModelClient(mojo::PendingRemote<mojom::ModelSolution> remote,
@@ -48,9 +36,9 @@ class ModelClient final : public TextSafetyClient {
   ~ModelClient() override;
 
   // Construct a session for this capability.
-  std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
-      const CreateSessionArgs& args,
-      const std::optional<SessionConfigParams>& config_params);
+  std::unique_ptr<OnDeviceSession> CreateSession(
+      const SessionConfigParams& config_params,
+      base::WeakPtr<OptimizationGuideLogger> logger);
 
   // TextSafetyClient:
   void StartSession(
@@ -85,18 +73,16 @@ class ModelClient final : public TextSafetyClient {
   proto::OnDeviceModelVersions model_versions_;
   // The full combined limit for input and output tokens.
   uint32_t max_tokens_ = 0;
-  ModelBasedCapabilityKey key_;
+  mojom::OnDeviceFeature feature_;
   base::WeakPtrFactory<ModelClient> weak_ptr_factory_{this};
 };
 
-class ModelSubscriber final : public mojom::ModelSubscriber {
+class ModelSubscriberImpl : public mojom::ModelSubscriber {
  public:
-  explicit ModelSubscriber(
-      mojo::PendingReceiver<mojom::ModelSubscriber> pending);
-  ~ModelSubscriber() override;
+  ModelSubscriberImpl();
+  ~ModelSubscriberImpl() override;
 
-  using CreateSessionResult =
-      std::unique_ptr<OptimizationGuideModelExecutor::Session>;
+  using CreateSessionResult = std::unique_ptr<OnDeviceSession>;
   using CreateSessionCallback = base::OnceCallback<void(CreateSessionResult)>;
   using ClientCallback = base::OnceCallback<void(base::WeakPtr<ModelClient>)>;
 
@@ -105,17 +91,19 @@ class ModelSubscriber final : public mojom::ModelSubscriber {
     return unavailable_reason_;
   }
 
+  std::optional<ModelClient>& client() { return client_; }
+
   // Creates and returns a session via callback as soon as a model is available.
   // Calls the callback with nullptr if the state become NotSupported.
-  void CreateSession(const CreateSessionArgs& args,
-                     const std::optional<SessionConfigParams>& config_params,
-                     CreateSessionCallback callback);
+  void CreateSession(const SessionConfigParams& config_params,
+                     CreateSessionCallback callback,
+                     base::WeakPtr<OptimizationGuideLogger> logger);
 
   // Wait for the client to be available and call the callback with a reference.
   // Calls the callback with nullptr if the state become NotSupported.
   void WaitForClient(ClientCallback callback);
 
- private:
+ protected:
   // mojom::ModelSubscriber
   void Unavailable(mojom::ModelUnavailableReason) override;
   void Available(mojom::ModelSolutionConfigPtr config,
@@ -128,32 +116,44 @@ class ModelSubscriber final : public mojom::ModelSubscriber {
   std::optional<mojom::ModelUnavailableReason> unavailable_reason_ =
       mojom::ModelUnavailableReason::kUnknown;
   std::optional<ModelClient> client_;
+};
+
+class ModelSubscriber final : public ModelSubscriberImpl {
+ public:
+  explicit ModelSubscriber(
+      mojo::PendingReceiver<mojom::ModelSubscriber> pending);
+  ~ModelSubscriber() override;
+
+ private:
+  void OnDisconnect();
   mojo::Receiver<mojom::ModelSubscriber> receiver_;
 };
 
 class ModelBrokerClient final {
  public:
   explicit ModelBrokerClient(mojo::PendingRemote<mojom::ModelBroker> remote,
-                             CreateSessionArgs args);
+                             base::WeakPtr<OptimizationGuideLogger> logger);
   ~ModelBrokerClient();
 
   using CreateSessionResult = ModelSubscriber::CreateSessionResult;
   using CreateSessionCallback = ModelSubscriber::CreateSessionCallback;
 
   // Get or create the subscriber for the given key.
-  ModelSubscriber& GetSubscriber(mojom::ModelBasedCapabilityKey key);
+  ModelSubscriber& GetSubscriber(mojom::OnDeviceFeature feature);
+
+  // Whether the subscriber for this key already exists.
+  bool HasSubscriber(mojom::OnDeviceFeature feature);
 
   // Async session creation.
-  void CreateSession(mojom::ModelBasedCapabilityKey key,
-                     const std::optional<SessionConfigParams>& config_params,
+  void CreateSession(mojom::OnDeviceFeature feature,
+                     const SessionConfigParams& config_params,
                      CreateSessionCallback callback);
 
  private:
   mojo::Remote<mojom::ModelBroker> remote_;
-  CreateSessionArgs args_;
+  base::WeakPtr<OptimizationGuideLogger> logger_;
 
-  absl::flat_hash_map<mojom::ModelBasedCapabilityKey,
-                      std::unique_ptr<ModelSubscriber>>
+  absl::flat_hash_map<mojom::OnDeviceFeature, std::unique_ptr<ModelSubscriber>>
       subscribers_;
 };
 

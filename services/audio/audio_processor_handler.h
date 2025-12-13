@@ -24,6 +24,8 @@ class AudioParameters;
 }  // namespace media
 
 namespace audio {
+class MlModelHandle;
+class MlModelManager;
 
 // Encapsulates audio processing effects in the audio process, using a
 // media::AudioProcessor. Forwards capture audio, playout audio, and
@@ -74,7 +76,8 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
       ReferenceStreamErrorCallback reference_stream_error_callback,
       mojo::PendingReceiver<media::mojom::AudioProcessorControls>
           controls_receiver,
-      media::AecdumpRecordingManager* aecdump_recording_manager);
+      media::AecdumpRecordingManager* aecdump_recording_manager,
+      raw_ptr<MlModelManager> ml_model_manager);
 
   AudioProcessorHandler(const AudioProcessorHandler&) = delete;
   AudioProcessorHandler& operator=(const AudioProcessorHandler&) = delete;
@@ -126,6 +129,9 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
                              std::optional<double> new_volume);
 
   SEQUENCE_CHECKER(owning_sequence_);
+
+  // Lifetime management handle for ML models. Must outlive audio_processor_.
+  const std::unique_ptr<MlModelHandle> residual_echo_estimation_model_handle_;
 
   // The audio processor is accessed on all threads (OS capture thread, OS
   // playout thread, owning sequence) and created / destroyed on the owning

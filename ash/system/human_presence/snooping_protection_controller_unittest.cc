@@ -169,9 +169,7 @@ TEST_F(SnoopingProtectionControllerTestAbsent, PresenceChange) {
 
 // Test that daemon signals are only enabled when session and pref state means
 // they will be used.
-//
-// TODO(crbug.com/40254348): Flaky test.
-TEST_F(SnoopingProtectionControllerTestAbsent, DISABLED_ReconfigureOnPrefs) {
+TEST_F(SnoopingProtectionControllerTestAbsent, ReconfigureOnPrefs) {
   // When the service becomes available for the first time, one disable is
   // performed in case the last session ended in a crash without de-configuring
   // the daemon.
@@ -206,9 +204,7 @@ TEST_F(SnoopingProtectionControllerTestAbsent, DISABLED_ReconfigureOnPrefs) {
 
 // Test that daemon signals are correctly enabled/disabled when the daemon
 // starts and stops.
-//
-// TODO(crbug.com/40254348): Flaky test.
-TEST_F(SnoopingProtectionControllerTestAbsent, DISABLED_ReconfigureOnRestarts) {
+TEST_F(SnoopingProtectionControllerTestAbsent, ReconfigureOnRestarts) {
   SimulateLogin();
   SetEnabledPref(true);
 

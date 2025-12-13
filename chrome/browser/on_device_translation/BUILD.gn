@@ -43,16 +43,21 @@ source_set("on_device_translation") {
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
-    "//components/component_updater:component_updater",
+    "//components/component_updater",
     "//components/content_settings/core/browser",
-    "//components/crx_file:crx_file",
+    "//components/crx_file",
     "//components/keyed_service/content",
     "//components/language/core/browser",
+    "//components/on_device_translation",
+    "//components/on_device_translation/public/mojom",
     "//components/prefs",
     "//components/services/on_device_translation:on_device_translation_service",
-    "//components/update_client:update_client",
+    "//components/update_client",
     "//content/public/browser",
   ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/dbus/image_loader" ]
+  }
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
@@ -85,10 +90,10 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//components/component_updater:test_support",
     "//components/crx_file",
+    "//components/on_device_translation",
+    "//components/on_device_translation/public/mojom",
     "//components/prefs",
     "//components/services/on_device_translation/:test_support",
-    "//components/services/on_device_translation/public/cpp",
-    "//components/services/on_device_translation/public/mojom",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
   ]

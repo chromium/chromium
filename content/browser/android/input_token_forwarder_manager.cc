@@ -20,9 +20,11 @@ InputTokenForwarderManager* InputTokenForwarderManager::GetInstance() {
 
 void InputTokenForwarderManager::ForwardVizInputTransferToken(
     int surface_id,
-    base::android::ScopedJavaGlobalRef<jobject> viz_input_token) {
+    const jni_zero::JavaRef<>& viz_input_token) {
   Java_InputTokenForwarderManager_onTokenReceived(
       base::android::AttachCurrentThread(), surface_id, viz_input_token);
 }
 
 }  // namespace content
+
+DEFINE_JNI(InputTokenForwarderManager)

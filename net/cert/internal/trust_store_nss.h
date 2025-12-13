@@ -34,6 +34,10 @@ class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
   // |user_slot_trust_setting| configures the use of trust from user slots:
   //  * UseTrustFromAllUserSlots: all user slots will be allowed.
   //  * PK11Slot: the specified slot will be allowed. Must not be nullptr.
+  //
+  // TODO(crbug.com/390333881): The PK11Slot variant is no longer used except
+  // by ServerCertificateDatabaseNSSMigrator. Once the migration code is
+  // removed, remove the |user_slot_trust_setting| option.
   explicit TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting);
 
   TrustStoreNSS(const TrustStoreNSS&) = delete;
@@ -52,6 +56,7 @@ class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
   std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()
       override;
 
+ private:
   struct ListCertsResult {
     ListCertsResult(ScopedCERTCertificate cert, bssl::CertificateTrust trust);
     ~ListCertsResult();
@@ -61,9 +66,6 @@ class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
     ScopedCERTCertificate cert;
     bssl::CertificateTrust trust;
   };
-  std::vector<ListCertsResult> ListCertsIgnoringNSSRoots();
-
- private:
   std::vector<ListCertsResult> ListCertsIgnoringNSSRootsImpl(
       bool ignore_chaps_module);
 

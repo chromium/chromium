@@ -14,7 +14,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "net/base/completion_once_callback.h"
 #include "net/disk_cache/disk_cache.h"
@@ -52,7 +52,7 @@ class ServiceWorkerDiskCacheEntry {
 
  private:
   // The disk_cache::Entry is owned by this entry and closed on destruction.
-  raw_ptr<disk_cache::Entry, DanglingUntriaged> disk_cache_entry_;
+  raw_ptr<disk_cache::Entry> disk_cache_entry_;
 
   // The cache that this entry belongs to.
   const raw_ptr<ServiceWorkerDiskCache> cache_;

@@ -4,6 +4,16 @@
 
 import("//components/metrics/generate_expired_histograms_array.gni")
 
+source_set("metrics") {
+  sources = [ "ukm_background_recorder_service.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//services/metrics/public/cpp:metrics_cpp",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -11,15 +21,13 @@ source_set("test_support") {
     "testing/metrics_consent_override.h",
     "testing/metrics_reporting_pref_helper.cc",
     "testing/metrics_reporting_pref_helper.h",
-    "testing/sync_metrics_test_utils.cc",
-    "testing/sync_metrics_test_utils.h",
   ]
 
   deps = [
     "//base",
     "//chrome/browser",
     "//chrome/browser/sync",
-    "//chrome/test:sync_integration_test_support",
+    "//chrome/browser/sync/test/integration:sync_integration_test_support",
     "//components/metrics_services_manager",
     "//components/signin/public/identity_manager",
     "//components/sync:test_support",

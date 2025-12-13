@@ -39,9 +39,7 @@ class NewTabPageHeaderViewControllerUnitTest : public PlatformTest {
 };
 
 // Tests the header view when the user is signed out.
-TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOutWithoutAvatar) {
-  base::test::ScopedFeatureList feature_list(kSignInButtonNoAvatar);
-
+TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOut) {
   [view_controller_ loadViewIfNeeded];
 
   EXPECT_NE(nil, view_controller_.identityDiscButton);
@@ -58,55 +56,11 @@ TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOutWithoutAvatar) {
       nil);
 }
 
-// Tests the header view when the user is signed out.
-TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOut) {
-  [view_controller_ loadViewIfNeeded];
-
-  EXPECT_NE(nil, view_controller_.identityDiscButton);
-  EXPECT_NE(nil, view_controller_.headerView.customizationMenuButton);
-
-  // Checks that the identity disc's label is correctly set when
-  // `setSignedOutAccountImage` is called, which is triggered by the mediator
-  // after checking sign-in status.
-  [view_controller_ setSignedOutAccountImage];
-  EXPECT_NSEQ(view_controller_.identityDiscButton.accessibilityLabel,
-              l10n_util::GetNSString(
-                  IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL));
-  EXPECT_NE(nil, view_controller_.identityDiscImage);
-}
-
-// Tests the header view when the user is signed in.
-TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedIn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kIdentityDiscAccountMenu);
-  [view_controller_ loadViewIfNeeded];
-
-  EXPECT_NE(nil, view_controller_.identityDiscButton);
-  EXPECT_NE(nil, view_controller_.headerView.customizationMenuButton);
-
-  // Checks that the identity disc's label is correctly set when
-  // `updateAccountImage:name:email:` is called, which is triggered by the
-  // mediator after checking sign-in status.
-  UIImage* someIdentityImage = UIImageWithSizeAndSolidColor(
-      CGSizeMake(ntp_home::kIdentityAvatarDimension,
-                 ntp_home::kIdentityAvatarDimension),
-      [UIColor redColor]);
-  [view_controller_ updateAccountImage:someIdentityImage
-                                  name:@"Some name"
-                                 email:@"someemail"];
-  EXPECT_NSEQ(view_controller_.identityDiscButton.accessibilityLabel,
-              l10n_util::GetNSStringF(IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
-                                      base::SysNSStringToUTF16(@"Some name"),
-                                      base::SysNSStringToUTF16(@"someemail")));
-  EXPECT_NE(nil, view_controller_.identityDiscImage);
-}
-
 // Tests the header view when the user is signed in.
 TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedIn_AccountMenu) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kIdentityDiscAccountMenu, switches::kEnableErrorBadgeOnIdentityDisc},
-      {});
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kEnableErrorBadgeOnIdentityDisc);
 
   [view_controller_ loadViewIfNeeded];
 

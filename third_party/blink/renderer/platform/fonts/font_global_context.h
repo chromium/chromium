@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_GLOBAL_CONTEXT_H_
 
 #include "base/containers/lru_cache.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/types/pass_key.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -25,11 +25,12 @@ class HarfBuzzFontCache;
 // FontGlobalContext contains non-thread-safe, thread-specific data used for
 // font formatting.
 class PLATFORM_EXPORT FontGlobalContext
-    : public GarbageCollected<FontGlobalContext> {
+    : public GarbageCollected<FontGlobalContext>,
+      public base::MemoryPressureListener {
  public:
   using PassKey = base::PassKey<FontGlobalContext>;
   explicit FontGlobalContext(PassKey);
-  ~FontGlobalContext();
+  ~FontGlobalContext() override;
 
   static FontGlobalContext& Get();
   static FontGlobalContext* TryGet();
@@ -50,23 +51,19 @@ class PLATFORM_EXPORT FontGlobalContext
 
   static FontUniqueNameLookup* GetFontUniqueNameLookup();
 
-  IdentifiableToken GetOrComputeTypefaceDigest(const FontPlatformData& source);
-  IdentifiableToken GetOrComputePostScriptNameDigest(
-      const FontPlatformData& source);
-
-  // Called by MemoryPressureListenerRegistry to clear memory.
-  static void ClearMemory();
-
   // |Init()| should be called in main thread.
   static void Init();
+
+  // base::MemoryPressureListener:
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
  private:
   FontCache font_cache_;
   HarfBuzzFontCache harfbuzz_font_cache_;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
-  base::HashingLRUCache<SkTypefaceID, IdentifiableToken> typeface_digest_cache_;
-  base::HashingLRUCache<SkTypefaceID, IdentifiableToken>
-      postscript_name_digest_cache_;
+
+  base::AsyncMemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 };
 
 }  // namespace blink

@@ -66,7 +66,7 @@ import java.util.function.Supplier;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @DoNotBatch(reason = "Tests that need browser start are incompatible with @Batch")
 public class AwPrerenderTest extends AwParameterizedTest {
-    private static enum ActivationBy {
+    private enum ActivationBy {
         LOAD_URL,
         JAVASCRIPT,
     };

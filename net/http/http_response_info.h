@@ -115,8 +115,8 @@ class NET_EXPORT HttpResponseInfo {
   // `InitFromPickle()`.
   bool was_mdl_match = false;
 
-  // Whether the request use http proxy or server authentication.
-  bool did_use_http_auth = false;
+  // Whether the request uses server authentication.
+  bool did_use_server_http_auth = false;
 
   // True if the resource was originally fetched for a prefetch and has not been
   // used since.
@@ -204,6 +204,8 @@ class NET_EXPORT HttpResponseInfo {
   std::optional<int64_t> browser_run_id;
 
   // True if the response used a shared dictionary for decoding its body.
+  // This is always false for resources served from cache (where
+  // dictionary-compressed responses are stored uncompressed).
   bool did_use_shared_dictionary = false;
 };
 

@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_modification_host.mojom-blink.h"
@@ -53,11 +54,8 @@ base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Read(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_GE(offset, 0);
 
-  int size = base::checked_cast<int>(data.size());
-  int result = UNSAFE_TODO(
-      backing_file_.Read(offset, reinterpret_cast<char*>(data.data()), size));
-  if (result >= 0) {
-    return result;
+  if (std::optional<size_t> bytes_read = backing_file_.Read(offset, data)) {
+    return bytes_read.value();
   }
   return base::unexpected(base::File::GetLastFileError());
 }
@@ -83,17 +81,20 @@ base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Write(
       return base::unexpected(base::File::FILE_ERROR_NO_SPACE);
   }
 
-  int result = UNSAFE_TODO(backing_file_.Write(
-      offset, reinterpret_cast<const char*>(data.data()), write_size));
-  // The file size may not have changed after the write operation. `CheckAdd()`
-  // is not needed here since `result` is guaranteed to be no more than
-  // `write_size`.
-  int64_t new_file_size = std::max(file_size_before, offset + result);
-  capacity_tracker_->OnFileContentsModified(new_file_size);
+  std::optional<size_t> bytes_written = backing_file_.Write(offset, data);
+  if (bytes_written.has_value()) {
+    // The file size may not have changed after the write operation.
+    // `CheckAdd()` is not needed here since `result` is guaranteed to be no
+    // more than `write_size`.
+    int64_t new_file_size = std::max(
+        file_size_before, offset + base::checked_cast<int64_t>(*bytes_written));
+    capacity_tracker_->OnFileContentsModified(new_file_size);
+  }
 
   // Only return an error if no bytes were written. Partial writes should return
   // the number of bytes written.
-  return result < 0 ? base::File::GetLastFileError() : result;
+  return bytes_written.has_value() ? *bytes_written
+                                   : base::File::GetLastFileError();
 }
 
 base::FileErrorOr<int64_t> FileSystemAccessRegularFileDelegate::GetLength() {

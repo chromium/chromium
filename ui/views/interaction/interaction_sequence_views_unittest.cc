@@ -136,7 +136,7 @@ class InteractionSequenceViewsTest
 
  protected:
   ui::ElementContext context() const {
-    return ui::ElementContext(widget_.get());
+    return ElementTrackerViews::GetContextForWidget(widget_.get());
   }
 
   View* contents() { return widget_->GetContentsView(); }

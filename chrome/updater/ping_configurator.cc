@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/net/network.h"
 #include "chrome/updater/ping_persisted_data.h"
@@ -120,7 +121,7 @@ std::vector<GURL> PingConfigurator::PingUrl() const {
 
 std::string PingConfigurator::GetProdId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return "updater";
+  return kProdId;
 }
 
 base::Version PingConfigurator::GetBrowserVersion() const {

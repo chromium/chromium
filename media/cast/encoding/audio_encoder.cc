@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_sample_types.h"
 #include "media/cast/common/rtp_time.h"
@@ -35,6 +36,7 @@
 #include "media/cast/constants.h"
 #include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 #include "third_party/opus/src/include/opus.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <AudioToolbox/AudioToolbox.h>
@@ -172,10 +174,10 @@ class AudioEncoder::ImplBase
       audio_frame->capture_begin_time = frame_capture_time_;
       audio_frame->capture_end_time = frame_capture_time_;
 
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-          "cast.stream", "Audio Encode", TRACE_ID_LOCAL(audio_frame.get()),
-          "frame_id", frame_id_.lower_32_bits(), "rtp_timestamp",
-          frame_rtp_timestamp_.lower_32_bits());
+      TRACE_EVENT_BEGIN("cast.stream", "Audio Encode",
+                        perfetto::Track::FromPointer(audio_frame.get()),
+                        "frame_id", frame_id_.lower_32_bits(), "rtp_timestamp",
+                        frame_rtp_timestamp_.lower_32_bits());
 
       audio_frame->data = EncodeFromFilledBuffer();
       if (!audio_frame->data.empty()) {
@@ -183,8 +185,8 @@ class AudioEncoder::ImplBase
         // by the signal duration.
         audio_frame->encoder_utilization =
             (base::TimeTicks::Now() - start_time) / frame_duration_;
-        TRACE_EVENT_NESTABLE_ASYNC_END1(
-            "cast.stream", "Audio Encode", TRACE_ID_LOCAL(audio_frame.get()),
+        TRACE_EVENT_END(
+            "cast.stream", perfetto::Track::FromPointer(audio_frame.get()),
             "encoder_utilization", audio_frame->encoder_utilization);
 
         audio_frame->encode_completion_time = cast_environment_->NowTicks();
@@ -451,8 +453,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     in_asbd.mReserved = 0;
 
     // Request AAC-LC encoding, with no downmixing or downsampling.
-    AudioStreamBasicDescription out_asbd;
-    UNSAFE_TODO(memset(&out_asbd, 0, sizeof(AudioStreamBasicDescription)));
+    AudioStreamBasicDescription out_asbd = {};
     out_asbd.mSampleRate = sampling_rate;
     out_asbd.mFormatID = kAudioFormatMPEG4AAC;
     out_asbd.mChannelsPerFrame = num_channels_;
@@ -566,7 +567,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     }
 
     // Copy the samples into the input buffer.
-    DCHECK_EQ(input_bus_->channel(0), input_buffer_->channel(0));
+    DCHECK_EQ(input_bus_->channel(0).data(), input_buffer_->channel(0).data());
     audio_bus->CopyPartialFramesTo(source_offset, num_samples,
                                    buffer_fill_offset, input_buffer_.get());
   }
@@ -635,7 +636,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
       auto& buffer = UNSAFE_BUFFERS(io_data->mBuffers[i_buf]);
       buffer.mNumberChannels = 1;
       buffer.mDataByteSize = sizeof(float) * *io_num_packets;
-      buffer.mData = input_bus.channel(i_buf);
+      buffer.mData = input_bus.channel(i_buf).data();
     }
 
     // Reset the input bus back to the input buffer. See the comment on

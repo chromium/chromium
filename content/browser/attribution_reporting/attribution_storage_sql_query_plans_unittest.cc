@@ -156,11 +156,6 @@ TEST_F(AttributionSqlQueryPlanTest, kSetReportTimeSql) {
               ValueIs(UsesIndex("reports_by_report_time")));
 }
 
-TEST_F(AttributionSqlQueryPlanTest, kSetReportTimeOnNavigationSql) {
-  EXPECT_THAT(GetPlan(attribution_queries::kSetReportTimeOnNavigationSql),
-              ValueIs(UsesCoveringIndex("reports_by_failed_send_attempts")));
-}
-
 TEST_F(AttributionSqlQueryPlanTest, kReadSourceToAttributeSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kReadSourceToAttributeSql),
               ValueIs(UsesPrimaryKey()));
@@ -232,16 +227,6 @@ TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceReportingOriginsBySiteSql) {
       GetPlan(
           attribution_queries::kRateLimitSelectSourceReportingOriginsBySiteSql),
       ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
-}
-
-TEST_F(AttributionSqlQueryPlanTest,
-       kRateLimitCountUniqueReportingOriginsPerSiteForAttributionSql) {
-  EXPECT_THAT(
-      GetPlan(
-          attribution_queries::
-              kRateLimitCountUniqueReportingOriginsPerSiteForAttributionSql),
-      ValueIs(
-          UsesIndex("rate_limit_attribution_destination_reporting_site_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest,

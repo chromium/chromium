@@ -315,8 +315,8 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResults) {
      })",
       kSampleOriginalURL);
 
-  std::optional<base::Value> response =
-      base::JSONReader::Read(kGoodJSONResponse);
+  std::optional<base::Value> response = base::JSONReader::Read(
+      kGoodJSONResponse, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
 
@@ -401,8 +401,8 @@ TEST_F(DocumentProviderTest,
      })",
       kSampleOriginalURL);
 
-  std::optional<base::Value> response =
-      base::JSONReader::Read(kGoodJSONResponseWithMimeTypes);
+  std::optional<base::Value> response = base::JSONReader::Read(
+      kGoodJSONResponseWithMimeTypes, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
 
@@ -494,8 +494,8 @@ TEST_F(DocumentProviderTest, MatchDescriptionString) {
     })",
       kSampleOriginalURL);
 
-  std::optional<base::Value> response =
-      base::JSONReader::Read(kGoodJSONResponseWithMimeTypes);
+  std::optional<base::Value> response = base::JSONReader::Read(
+      kGoodJSONResponseWithMimeTypes, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
   provider_->input_.UpdateText(u"input", 0, {});
@@ -544,8 +544,8 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTies) {
      })",
       kSampleOriginalURL);
 
-  std::optional<base::Value> response =
-      base::JSONReader::Read(kGoodJSONResponseWithTies);
+  std::optional<base::Value> response = base::JSONReader::Read(
+      kGoodJSONResponseWithTies, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
 
@@ -600,8 +600,8 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesCascade) {
      })",
       kSampleOriginalURL);
 
-  std::optional<base::Value> response =
-      base::JSONReader::Read(kGoodJSONResponseWithTies);
+  std::optional<base::Value> response = base::JSONReader::Read(
+      kGoodJSONResponseWithTies, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
 
@@ -658,8 +658,8 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesZeroLimit) {
      })",
       kSampleOriginalURL);
 
-  std::optional<base::Value> response =
-      base::JSONReader::Read(kGoodJSONResponseWithTies);
+  std::optional<base::Value> response = base::JSONReader::Read(
+      kGoodJSONResponseWithTies, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
 
@@ -1092,7 +1092,8 @@ TEST_F(DocumentProviderTest, LowQualitySuggestions) {
   auto test = [&](const std::string& response_str,
                   const std::string& input_text,
                   const std::vector<int> expected_scores) {
-    std::optional<base::Value> response = base::JSONReader::Read(response_str);
+    std::optional<base::Value> response = base::JSONReader::Read(
+        response_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     provider_->input_.UpdateText(base::UTF8ToUTF16(input_text), 0, {});
     ACMatches matches = provider_->ParseDocumentSearchResults(*response);
 
@@ -1173,11 +1174,11 @@ TEST_F(DocumentProviderTest, Backoff) {
     EXPECT_FALSE(provider_->backoff_for_this_instance_only_);
 
     provider_->done_ = false;
-    provider_->OnURLLoadComplete(nullptr, 200, nullptr);
+    provider_->OnURLLoadComplete(nullptr, 200, std::nullopt);
     EXPECT_FALSE(provider_->backoff_for_this_instance_only_);
 
     provider_->done_ = false;
-    provider_->OnURLLoadComplete(nullptr, 400, nullptr);
+    provider_->OnURLLoadComplete(nullptr, 400, std::nullopt);
     EXPECT_TRUE(provider_->backoff_for_this_instance_only_);
   }
 
@@ -1192,11 +1193,11 @@ TEST_F(DocumentProviderTest, Backoff) {
     EXPECT_FALSE(client_->GetDocumentSuggestionsService()->should_backoff());
 
     provider_->done_ = false;
-    provider_->OnURLLoadComplete(nullptr, 200, nullptr);
+    provider_->OnURLLoadComplete(nullptr, 200, std::nullopt);
     EXPECT_FALSE(client_->GetDocumentSuggestionsService()->should_backoff());
 
     provider_->done_ = false;
-    provider_->OnURLLoadComplete(nullptr, 400, nullptr);
+    provider_->OnURLLoadComplete(nullptr, 400, std::nullopt);
     EXPECT_TRUE(client_->GetDocumentSuggestionsService()->should_backoff());
 
     // After 20 minutes, the backoff state should still be active.

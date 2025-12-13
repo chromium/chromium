@@ -21,6 +21,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
@@ -55,8 +56,7 @@ public class ThemeUtils {
         @ColorInt
         int backgroundColor = rwhv != null ? rwhv.getBackgroundColor() : Color.TRANSPARENT;
         if (backgroundColor != Color.TRANSPARENT) return backgroundColor;
-        return SurfaceColorUpdateUtils.getDefaultThemeColor(
-                tab.getContext(), /* isIncognito= */ false);
+        return ChromeColors.getDefaultThemeColor(tab.getContext(), /* isIncognito= */ false);
     }
 
     /**
@@ -94,15 +94,13 @@ public class ThemeUtils {
             Context context, @ColorInt int color, boolean isIncognito, boolean isCustomTab) {
         // Text box color on default toolbar background in incognito mode is a pre-defined color.
         if (isIncognito) {
-            return SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
-                    context, /* isIncognito= */ true);
+            return context.getColor(R.color.toolbar_text_box_background_incognito);
         }
 
         // Text box color on default toolbar background in standard mode is a pre-defined
         // color instead of a calculated color.
         if (ThemeUtils.isUsingDefaultToolbarColor(context, false, color)) {
-            return SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
-                    context, /* isIncognito= */ false);
+            return ContextCompat.getColor(context, R.color.toolbar_text_box_bg_color);
         }
 
         if (ColorUtils.shouldUseOpaqueTextboxBackground(color)) {
@@ -237,7 +235,7 @@ public class ThemeUtils {
      */
     public static boolean isUsingDefaultToolbarColor(
             Context context, boolean isIncognito, @ColorInt int color) {
-        return color == SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
+        return color == ChromeColors.getDefaultThemeColor(context, isIncognito);
     }
 
     /**
@@ -260,8 +258,8 @@ public class ThemeUtils {
 
         if (isUsingDefaultToolbarColor(context, isIncognito, toolbarColor)) {
             return isIncognito
-                    ? ContextCompat.getColor(context, R.color.divider_line_bg_color_light)
-                    : SemanticColorUtils.getDividerLineBgColor(context);
+                    ? ContextCompat.getColor(context, R.color.divider_color_light)
+                    : SemanticColorUtils.getDividerColor(context);
         }
 
         @ColorInt int hairlineColor;

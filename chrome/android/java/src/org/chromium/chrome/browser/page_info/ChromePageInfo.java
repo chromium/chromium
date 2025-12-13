@@ -8,10 +8,9 @@ import android.app.Activity;
 import android.view.Gravity;
 
 import androidx.annotation.GravityInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
@@ -27,9 +26,12 @@ import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.function.Supplier;
+
 /** Helper class showing page info dialog for Clank. */
+@NullMarked
 public class ChromePageInfo {
-    private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final @Nullable String mPublisher;
     private final @OpenedFromSource int mSource;
     private final @Nullable Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
@@ -45,7 +47,7 @@ public class ChromePageInfo {
      * @param tabCreator {@link TabCreator} to handle a new tab creation.
      */
     public ChromePageInfo(
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable String publisher,
             @OpenedFromSource int source,
             @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
@@ -61,10 +63,23 @@ public class ChromePageInfo {
 
     /**
      * Show page info dialog.
+     *
      * @param tab Tab object containing the page whose information to be displayed.
      * @param pageInfoHighlight Providing the highlight row info related to this dialog.
      */
     public void show(Tab tab, ChromePageInfoHighlight pageInfoHighlight) {
+        show(tab, pageInfoHighlight, null);
+    }
+
+    /**
+     * Show page info dialog.
+     *
+     * @param tab Tab object containing the page whose information to be displayed.
+     * @param pageInfoHighlight Providing the highlight row info related to this dialog.
+     * @param packageName The package name of the web app to show page info of.
+     */
+    public void show(
+            Tab tab, ChromePageInfoHighlight pageInfoHighlight, @Nullable String packageName) {
         WebContents webContents = tab.getWebContents();
         if (webContents == null || !ProfileManager.isInitialized()) return;
 
@@ -80,6 +95,7 @@ public class ChromePageInfo {
         }
 
         Activity activity = TabUtils.getActivity(tab);
+        assert activity != null;
         PageInfoController.show(
                 activity,
                 webContents,
@@ -93,8 +109,10 @@ public class ChromePageInfo {
                         mStoreInfoActionHandlerSupplier,
                         mEphemeralTabCoordinatorSupplier,
                         pageInfoHighlight,
-                        mTabCreator),
+                        mTabCreator,
+                        packageName),
                 pageInfoHighlight,
-                dialogPosition);
+                dialogPosition,
+                /* openPermissionsSubpage= */ false);
     }
 }

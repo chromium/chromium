@@ -22,7 +22,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/hash/md5.h"
 #include "base/i18n/string_compare.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
@@ -605,35 +604,6 @@ void DemoSession::SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
   }
 }
 
-void DemoSession::RegisterDemoModeAAExperiment() {
-  if (demo_mode::Country() == std::string("US")) {
-    // The hashing salt for the AA experiment.
-    std::string demo_mode_aa_experiment_hashing_salt = "fae448044d545f9c";
-
-    std::vector<std::string> best_buy_retailer_names = {"bby", "bestbuy",
-                                                        "bbt"};
-    std::vector<std::string>::iterator it;
-
-    it = std::find(best_buy_retailer_names.begin(),
-                   best_buy_retailer_names.end(), demo_mode::RetailerName());
-    if (it != best_buy_retailer_names.end()) {
-      std::string store_number_and_hash_salt =
-          demo_mode::StoreNumber() + demo_mode_aa_experiment_hashing_salt;
-      std::string md5_store_number =
-          base::MD5String(store_number_and_hash_salt);
-
-      char& last_char = md5_store_number.back();
-      int md5_last_char_int =
-          (last_char >= 'a') ? (last_char - 'a' + 10) : (last_char - '0');
-
-      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-          "DemoModeAAExperimentBasedOnStoreId",
-          md5_last_char_int % 2 ? "Experiment" : "Control",
-          variations::SyntheticTrialAnnotationMode::kCurrentLog);
-    }
-  }
-}
-
 void DemoSession::OnSessionStateChanged() {
   TRACE_EVENT0("login", "DemoSession::OnSessionStateChanged");
   switch (session_manager::SessionManager::Get()->session_state()) {
@@ -703,9 +673,6 @@ void DemoSession::OnSessionStateChanged() {
 
       EnsureResourcesLoaded(base::BindOnce(&DemoSession::InstallDemoResources,
                                            weak_ptr_factory_.GetWeakPtr()));
-
-      // Register the device with in the A/A experiment
-      RegisterDemoModeAAExperiment();
 
       // When the session successfully starts, we record the action
       // DemoMode.DemoSessionStarts.

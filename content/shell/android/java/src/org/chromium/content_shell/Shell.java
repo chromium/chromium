@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.ClipDrawable;
 import android.text.TextUtils;
@@ -42,6 +41,7 @@ import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
@@ -366,12 +366,8 @@ public class Shell extends LinearLayout {
             }
 
             @Override
-            public boolean onDropdownItemClicked(
-                    int groupId,
-                    int id,
-                    @Nullable Intent intent,
-                    @Nullable OnClickListener clickListener) {
-                return helper.onDropdownItemClicked(groupId, id, intent, clickListener);
+            public boolean onDropdownItemClicked(SelectionMenuItem item, boolean closeMenu) {
+                return helper.onDropdownItemClicked(item, closeMenu);
             }
 
             @Override

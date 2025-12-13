@@ -1,0 +1,29 @@
+When updating `src/net/base/registry_controlled_domains/effective_tld_names.dat`:
+
+1. Obtain the new effective_tld_names.dat, probably by downloading
+   https://publicsuffix.org/list/public_suffix_list.dat
+1. Remove whitespace from the ends of the lines.
+   You could possibly use something like:
+   ```shell
+     sed -i -e "s/\s*$//g" \
+         src/net/base/registry_controlled_domains/effective_tld_names.dat
+   ```
+1. Add the Chromium note back in just after the license at the top, and just
+   before '===BEGIN ICANN DOMAINS==='. Ensure there is an empty line above and
+   two empty lines below the note. The note should say:
+   ```
+   // Chromium note: this is based on Mozilla's file:
+   // https://publicsuffix.org/list/public_suffix_list.dat
+   ```
+1. Diff the changes and restore any changes annotated with a `// CHROMIUM`
+   comment.
+1. Build the `tld_cleanup` target.
+1. Run `tld_cleanup` (no arguments needed), typically from `src/out/Default`.
+   It will re-generate
+   `src/net/base/registry_controlled_domains/effective_tld_names.gperf`.
+1. Check in the updated `effective_tld_names.dat`, `effective_tld_names.gperf`.
+
+Note that gperf is no longer used for effective_tld_names, but when building
+Chromium, the file `effective_tld_names.gperf` will be parsed by `make_dafsa.py`
+to generate the file `effective_tld_names-inc.cc`, which is included in
+`registry_controlled_domain.cc`.

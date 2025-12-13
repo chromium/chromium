@@ -9,13 +9,14 @@
 #import <string>
 
 #import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_observer.h"
 
 class ProfileIOS;
 enum class SyncErrorInfoBarTrigger;
-@protocol SyncPresenter;
+@protocol SyncPresenterCommands;
 
 namespace infobars {
 class InfoBarManager;
@@ -30,7 +31,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
                                  public syncer::SyncServiceObserver {
  public:
   SyncErrorInfoBarDelegate(ProfileIOS* profile,
-                           id<SyncPresenter> presenter,
+                           id<SyncPresenterCommands> sync_presenter_handler,
                            SyncErrorInfoBarTrigger trigger);
 
   SyncErrorInfoBarDelegate(const SyncErrorInfoBarDelegate&) = delete;
@@ -41,7 +42,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   // Creates a sync error infobar and adds it to `infobar_manager`.
   static bool Create(infobars::InfoBarManager* infobar_manager,
                      ProfileIOS* profile,
-                     id<SyncPresenter> presenter,
+                     id<SyncPresenterCommands> sync_presenter_handler,
                      SyncErrorInfoBarTrigger trigger);
 
   // InfoBarDelegate implementation.
@@ -57,6 +58,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // Called when the infobar is dismissed through timing out.
   void InfoBarDismissedByTimeout() const;
@@ -67,12 +69,15 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
 
  private:
   const raw_ptr<ProfileIOS> profile_;
-  const id<SyncPresenter> presenter_;
+  base::ScopedObservation<syncer::SyncService, SyncErrorInfoBarDelegate>
+      sync_observation_{this};
+  const id<SyncPresenterCommands> sync_presenter_handler_;
   const SyncErrorInfoBarTrigger trigger_;
   syncer::SyncService::UserActionableError error_state_;
   std::u16string title_;
   std::u16string message_;
   std::u16string button_text_;
+  bool infobar_is_relevant_ = YES;
 };
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_MODEL_SYNC_UTILS_SYNC_ERROR_INFOBAR_DELEGATE_H_

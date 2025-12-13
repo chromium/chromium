@@ -151,4 +151,18 @@ TEST_F(SelectorFilterTest, IsAndWhere) {
   EXPECT_EQ(SubjectFilterForSelector(":is(.a,.b)"), 0u);
 }
 
+TEST_F(SelectorFilterTest, IsWithMultipleParameters) {
+  EXPECT_EQ(SubjectFilterForSelector(":is(.a, #a)"), 0);
+
+  EXPECT_EQ(SubjectFilterForSelector(":is(.a, .a)"),
+            SubjectFilterForSelector(".a"));
+
+  // Deliberately invoke a collision (with high probability),
+  // despite none of the entries actually matching.
+  EXPECT_NE(
+      SubjectFilterForSelector(":is(.a1.b1.c1.d1.e1.f1.g1.h1.i1.j1.k1.l1.m1.n1,"
+                               " .a2.b2.c2.d2.e2.f2.g2.h2.i2.j2.k2.l2.m2.n2)"),
+      0);
+}
+
 }  // namespace blink

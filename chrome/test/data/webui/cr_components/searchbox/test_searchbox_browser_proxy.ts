@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {NavigationPredictor} from 'chrome://resources/cr_components/searchbox/omnibox.mojom-webui.js';
-import type {PageHandlerInterface, PageRemote} from 'chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js';
-import {PageCallbackRouter} from 'chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js';
+import type {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
+import type {PageHandlerInterface, PageRemote, PlaceholderConfig, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {PageCallbackRouter} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import type {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
-import type {Size} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -19,9 +20,13 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  * handler remote, resolving the browser call promises with named arguments.
  */
 class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
+  private results_: Map<string, any> = new Map();
+
   constructor() {
     super([
       'deleteAutocompleteMatch',
+      'activateKeyword',
+      'showContextMenu',
       'executeAction',
       'onNavigationLikely',
       'onThumbnailRemoved',
@@ -30,8 +35,21 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'stopAutocomplete',
       'toggleSuggestionGroupIdVisibility',
       'onFocusChanged',
-      'popupElementSizeChanged',
+      'getPlaceholderConfig',
+      'getRecentTabs',
+      'getTabPreview',
+      'notifySessionStarted',
+      'notifySessionAbandoned',
+      'addFileContext',
+      'addTabContext',
+      'deleteContext',
+      'clearFiles',
+      'submitQuery',
     ]);
+  }
+
+  setResultFor(methodName: string, result: any) {
+    this.results_.set(methodName, result);
   }
 
   setPage(page: PageRemote) {
@@ -42,12 +60,23 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
     this.methodCalled('onFocusChanged', {focused});
   }
 
-  popupElementSizeChanged(size: Size) {
-    this.methodCalled('popupElementSizeChanged', {size});
-  }
-
   deleteAutocompleteMatch(line: number, url: Url) {
     this.methodCalled('deleteAutocompleteMatch', {line, url});
+  }
+
+  activateKeyword(
+      line: number, url: Url, matchSelectionTimestamp: TimeTicks,
+      isMouseEvent: boolean) {
+    this.methodCalled('activateKeyword', {
+      line,
+      url,
+      matchSelectionTimestamp,
+      isMouseEvent,
+    });
+  }
+
+  showContextMenu(point: {x: number, y: number}) {
+    this.methodCalled('showContextMenu', {point});
   }
 
   executeAction(
@@ -101,6 +130,64 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   toggleSuggestionGroupIdVisibility(suggestionGroupId: number) {
     this.methodCalled('toggleSuggestionGroupIdVisibility', {suggestionGroupId});
+  }
+
+  getPlaceholderConfig(): Promise<{config: PlaceholderConfig}> {
+    this.methodCalled('getPlaceholderConfig');
+    return Promise.resolve({
+      config: {
+        texts: [],
+        changeTextAnimationInterval: {microseconds: BigInt(4000) * 1000n},
+        fadeTextAnimationDuration: {microseconds: BigInt(250) * 1000n},
+      },
+    });
+  }
+
+  getRecentTabs() {
+    this.methodCalled('getRecentTabs');
+    if (this.results_.has('getRecentTabs')) {
+      return this.results_.get('getRecentTabs');
+    }
+    return Promise.resolve({tabs: []});
+  }
+
+  getTabPreview(tabId: number) {
+    this.methodCalled('getTabPreview', {tabId});
+    return Promise.resolve({previewDataUrl: ''});
+  }
+
+  notifySessionStarted() {
+    this.methodCalled('notifySessionStarted');
+  }
+
+  notifySessionAbandoned() {
+    this.methodCalled('notifySessionAbandoned');
+  }
+
+  addFileContext(fileInfo: SelectedFileInfo, fileBytes: BigBuffer) {
+    this.methodCalled('addFileContext', {fileInfo, fileBytes});
+    return Promise.resolve({token: ''});
+  }
+
+  addTabContext(tabId: number) {
+    this.methodCalled('addTabContext', {tabId});
+    return Promise.resolve({token: ''});
+  }
+
+  deleteContext(fileToken: UnguessableToken) {
+    this.methodCalled('deleteContext', {fileToken});
+  }
+
+  clearFiles() {
+    this.methodCalled('clearFiles');
+  }
+
+  submitQuery(
+      queryText: string, mouseButton: number, altKey: boolean, ctrlKey: boolean,
+      metaKey: boolean, shiftKey: boolean) {
+    this.methodCalled(
+        'submitQuery',
+        {queryText, mouseButton, altKey, ctrlKey, metaKey, shiftKey});
   }
 }
 

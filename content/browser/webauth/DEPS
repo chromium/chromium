@@ -1,13 +1,14 @@
 include_rules = [
+  "+components/webauthn/core/browser",
   "+device/fido",
   "+third_party/boringssl/src/pki",
 ]
 
 specific_include_rules = {
   "authenticator_impl_unittest\.cc": [
-    "+components/webauthn/content/browser/internal_authenticator_impl.h",
-    "+third_party/microsoft_webauthn/webauthn.h",
-    "+third_party/zlib/google/compression_utils.h",
+    "+third_party/microsoft_webauthn/src/webauthn.h",
+  ],
+  "authenticator_test_base\.(h|cc)": [
     "+ui/base/resource/resource_bundle.h",
   ]
 }

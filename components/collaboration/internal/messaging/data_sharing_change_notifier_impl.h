@@ -16,6 +16,7 @@
 
 namespace collaboration::messaging {
 
+// The concrete implementation of the `DataSharingChangeNotifier`.
 class DataSharingChangeNotifierImpl : public DataSharingChangeNotifier {
  public:
   explicit DataSharingChangeNotifierImpl(

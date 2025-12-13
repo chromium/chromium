@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_STATE_IMPL_ANDROID_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_STATE_IMPL_ANDROID_H_
 
+#include "base/scoped_observation.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "ui/accessibility/android/accessibility_state.h"
 
@@ -12,15 +13,13 @@ namespace content {
 
 class BrowserAccessibilityStateImplAndroid
     : public BrowserAccessibilityStateImpl,
-      public ui::AccessibilityState::AccessibilityStateDelegate {
+      public ui::AccessibilityState::AccessibilityStateObserver {
  public:
   BrowserAccessibilityStateImplAndroid();
   ~BrowserAccessibilityStateImplAndroid() override;
 
-  // ui::AccessibilityState::AccessibilityStateDelegate overrides
+  // ui::AccessibilityState::AccessibilityStateObserver:
   void OnAnimatorDurationScaleChanged() override;
-  void OnDisplayInversionEnabledChanged(bool enabled) override;
-  void OnContrastLevelChanged(bool highContrastEnabled) override;
   void RecordAccessibilityServiceInfoHistograms() override;
 
   // BrowserAccessibilityStateImpl implementation.
@@ -32,6 +31,11 @@ class BrowserAccessibilityStateImplAndroid
                                                 int flags_mask,
                                                 int capabilities_mask,
                                                 std::string histogram);
+
+ private:
+  base::ScopedObservation<ui::AccessibilityState,
+                          ui::AccessibilityState::AccessibilityStateObserver>
+      accessibility_state_observation_{this};
 };
 
 }  // namespace content

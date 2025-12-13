@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
@@ -257,7 +258,7 @@ public final class MessageWrapper implements ListMenu.Delegate {
     }
 
     @Override
-    public void onItemSelected(PropertyModel item) {
+    public void onItemSelected(PropertyModel item, View view) {
         assert item.getAllSetProperties().contains(ListMenuItemProperties.MENU_ITEM_ID);
         int itemId = item.get(ListMenuItemProperties.MENU_ITEM_ID);
         MessageWrapperJni.get().handleSecondaryMenuItemSelected(mNativeMessageWrapper, itemId);

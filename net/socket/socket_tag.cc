@@ -4,6 +4,7 @@
 
 #include "net/socket/socket_tag.h"
 
+#include <iostream>
 #include <tuple>
 
 #include "base/notreached.h"
@@ -57,6 +58,15 @@ void SocketTag::Apply(SocketDescriptor socket) const {
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+std::ostream& operator<<(std::ostream& os, const SocketTag& tag) {
+#if BUILDFLAG(IS_ANDROID)
+  os << "uid: " << tag.uid() << ", tag: " << tag.traffic_stats_tag();
+#else
+  os << "SocketTag()";
+#endif  // BUILDFLAG(IS_ANDROID)
+  return os;
 }
 
 }  // namespace net

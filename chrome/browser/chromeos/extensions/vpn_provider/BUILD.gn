@@ -23,6 +23,7 @@ source_set("vpn_provider") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
+    "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/crosapi/mojom",
     "//components/keyed_service/content",

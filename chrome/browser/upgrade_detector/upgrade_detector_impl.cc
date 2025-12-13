@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -115,7 +116,12 @@ UpgradeDetectorImpl::UpgradeDetectorImpl(const base::Clock* clock,
       is_auto_update_enabled_(true),
       simulating_outdated_(SimulatingOutdated()),
       is_testing_(simulating_outdated_ || IsTesting()),
-      build_date_(base::GetBuildTime()) {}
+      build_date_(base::GetBuildTime()) {
+  if (base::features::IsReducePPMsEnabled()) {
+    upgrade_notification_timer_.SetTaskRunner(
+        content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}));
+  }
+}
 
 UpgradeDetectorImpl::~UpgradeDetectorImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

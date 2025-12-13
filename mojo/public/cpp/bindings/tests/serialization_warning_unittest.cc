@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "mojo/public/cpp/test_support/validation_errors_test_util.h"
 #include "mojo/public/interfaces/bindings/tests/serialization_test_structs.test-mojom.h"
 #include "mojo/public/interfaces/bindings/tests/test_unions.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"

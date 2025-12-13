@@ -205,11 +205,8 @@ void DeviceLocalAccountPolicyStore::CheckKeyAndValidate(
     bool validate_in_background,
     ValidateCompletionCallback callback) {
   if (validate_in_background) {
-    // TODO(b/336629900): Remove the log when the root cause is identified.
-    SYSLOG(INFO)
-        << "Is ownership unknown: "
-        << (device_settings_service_->GetOwnershipStatus() ==
-            ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown);
+    SYSLOG(INFO) << "Device ownership status: "
+                 << device_settings_service_->GetOwnershipStatus();
     device_settings_service_->GetOwnershipStatusAsync(base::BindOnce(
         &DeviceLocalAccountPolicyStore::Validate, weak_factory_.GetWeakPtr(),
         valid_timestamp_required, std::move(policy), std::move(callback),

@@ -32,8 +32,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -51,31 +49,18 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.NavigationBarColorProvider;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.HashSet;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {TabbedNavigationBarColorControllerUnitTest.ShadowSemanticColorUtils.class},
-        sdk = 29)
-@EnableFeatures(ChromeFeatureList.NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND)
-// TODO(crbug.com/425761643): Re-enable after nav bar color animations finch experiment.
+@Config(manifest = Config.NONE, sdk = 29)
 @DisableFeatures(ChromeFeatureList.NAV_BAR_COLOR_ANIMATION)
 public class TabbedNavigationBarColorControllerUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-
-    @Implements(SemanticColorUtils.class)
-    static class ShadowSemanticColorUtils {
-        @Implementation
-        public static int getBottomSystemNavDividerColor(Context context) {
-            return NAV_DIVIDER_COLOR;
-        }
-    }
 
     private static final int NAV_DIVIDER_COLOR = Color.LTGRAY;
     private static final int NUM_UNIQUE_ANIMATION_COLORS = 5;
@@ -97,6 +82,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
 
     @Before
     public void setUp() {
+        SemanticColorUtils.setBottomSystemNavDividerColorForTesting(NAV_DIVIDER_COLOR);
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),

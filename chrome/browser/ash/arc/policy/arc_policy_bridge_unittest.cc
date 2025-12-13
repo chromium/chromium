@@ -31,10 +31,12 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
@@ -49,6 +51,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
 #include "components/policy/policy_constants.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -245,9 +248,12 @@ class ArcPolicyBridgeTestBase {
 
     // Init ArcSessionManager for testing.
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    arc_session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
-            base::BindRepeating(FakeArcSession::Create)));
+    ash::DlcserviceClient::InitializeFake();
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
+    arc_session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)),
+        arc_dlc_installer_.get());
     arc_session_manager()->SetProfile(profile());
     arc_session_manager()->Initialize();
 
@@ -270,6 +276,8 @@ class ArcPolicyBridgeTestBase {
     policy_bridge_.reset();
     arc_session_manager()->Shutdown();
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
+    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     testing_profile_manager_.reset();
   }
@@ -297,8 +305,8 @@ class ArcPolicyBridgeTestBase {
   void ReportComplianceAndVerifyObserverCallback(
       const std::string& compliance_report) {
     Mock::VerifyAndClearExpectations(&observer_);
-    std::optional<base::Value> compliance_report_value =
-        base::JSONReader::Read(compliance_report);
+    std::optional<base::Value> compliance_report_value = base::JSONReader::Read(
+        compliance_report, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (compliance_report_value && compliance_report_value->is_dict()) {
       EXPECT_CALL(observer_, OnComplianceReportReceived(
                                  ValueEquals(&*compliance_report_value)));
@@ -313,7 +321,8 @@ class ArcPolicyBridgeTestBase {
     if (compliance_report_value) {
       std::optional<base::Value> saved_compliance_report_value =
           base::JSONReader::Read(
-              policy_bridge()->get_arc_policy_compliance_report());
+              policy_bridge()->get_arc_policy_compliance_report(),
+              base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       ASSERT_TRUE(saved_compliance_report_value);
       EXPECT_EQ(*compliance_report_value, *saved_compliance_report_value);
     } else {
@@ -351,7 +360,8 @@ class ArcPolicyBridgeTestBase {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   base::RunLoop run_loop_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
@@ -359,6 +369,7 @@ class ArcPolicyBridgeTestBase {
   raw_ptr<CertStoreService, DanglingUntriaged>
       cert_store_service_;  // Not owned.
 
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcPolicyBridge> policy_bridge_;
   std::string instance_guid_;

@@ -25,7 +25,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/supervised_user/website_parent_approval_jni_headers/WebsiteParentApproval_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 // Stores the callback passed in to an ongoing RequestLocalApproval call.
 // We can only have a single local approval in progress at a time on Android
@@ -71,8 +71,8 @@ void WebsiteParentApproval::RequestLocalApproval(
       url::GURLAndroid::FromNativeGURL(env, url), profile.GetJavaObject());
 }
 
-void JNI_WebsiteParentApproval_OnCompletion(JNIEnv* env,
-                                            jint flow_outcome_value) {
+static void JNI_WebsiteParentApproval_OnCompletion(JNIEnv* env,
+                                                   jint flow_outcome_value) {
   // Check that we have a callback stored from the local approval request and
   // call it.
   auto* cb = GetOnCompletionCallback();
@@ -86,11 +86,11 @@ void JNI_WebsiteParentApproval_OnCompletion(JNIEnv* env,
 // Returns it via the provided callback.
 static void JNI_WebsiteParentApproval_FetchFavicon(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_url,
+    const JavaRef<jobject>& j_url,
     jint min_source_size_in_pixel,
     jint desired_size_in_pixel,
     Profile* profile,
-    const base::android::JavaParamRef<jobject>& on_favicon_fetched_callback) {
+    const base::android::JavaRef<jobject>& on_favicon_fetched_callback) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
 
   FaviconFetcher* faviconFetcher = new FaviconFetcher(
@@ -100,3 +100,5 @@ static void JNI_WebsiteParentApproval_FetchFavicon(
       url, true, min_source_size_in_pixel, desired_size_in_pixel,
       base::android::ScopedJavaGlobalRef<jobject>(on_favicon_fetched_callback));
 }
+
+DEFINE_JNI(WebsiteParentApproval)

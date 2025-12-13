@@ -13,7 +13,7 @@
 #include "content/browser/btm/btm_bounce_detector.h"
 #include "content/browser/btm/btm_utils.h"
 #include "content/browser/btm/cookie_access_filter.h"
-#include "content/public/browser/btm_redirect_info.h"
+#include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
@@ -27,8 +27,8 @@ BtmNavigationInfo::BtmNavigationInfo(NavigationHandle& navigation_handle)
                          navigation_handle.HasUserGesture()),
       was_renderer_initiated(navigation_handle.IsRendererInitiated()),
       page_transition(navigation_handle.GetPageTransition()),
-      destination({navigation_handle.GetURL(),
-                   navigation_handle.GetNextPageUkmSourceId()}) {
+      destination_url(navigation_handle.GetURL()),
+      destination_source_id(navigation_handle.GetNextPageUkmSourceId()) {
   CHECK(navigation_handle.HasCommitted());
 }
 BtmNavigationInfo::BtmNavigationInfo(BtmNavigationInfo&&) = default;
@@ -339,8 +339,8 @@ void BtmPageVisitObserver::FrameReceivedUserActivation(
 void BtmPageVisitObserver::WebAuthnAssertionRequestSucceeded(
     RenderFrameHost* render_frame_host) {
   if (!render_frame_host->IsInPrimaryMainFrame()) {
-    CHECK(render_frame_host->GetOutermostMainFrameOrEmbedder()
-              ->IsInPrimaryMainFrame());
+    // TODO: crbug.com/448047352 - Investigate (and handle, if applicable) late
+    //   WAA notifications.
     return;
   }
   current_page_.had_successful_web_authn_assertion = true;

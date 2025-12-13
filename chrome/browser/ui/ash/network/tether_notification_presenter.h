@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_state.h"

@@ -24,3 +24,5 @@ bool WriteJavaHeapDumpToPath(std::string_view filePath) {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(JavaHeapDumpGenerator)

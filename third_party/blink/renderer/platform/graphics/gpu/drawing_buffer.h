@@ -34,6 +34,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -123,10 +124,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     kPreserve,
     kDiscard,
   };
-  enum WebGLVersion {
-    kWebGL1,
-    kWebGL2,
-  };
 
   enum ChromiumImageUsage {
     kAllowChromiumImage,
@@ -135,8 +132,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   static scoped_refptr<DrawingBuffer> Create(
       std::unique_ptr<WebGraphicsContext3DProvider>,
-      const Platform::GraphicsInfo& graphics_info,
-      bool using_swap_chain,
+      const Platform::WebGLContextInfo&,
       Client*,
       const gfx::Size&,
       bool premultiplied_alpha,
@@ -146,9 +142,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       bool want_antialiasing,
       bool desynchronized,
       PreserveDrawingBuffer,
-      WebGLVersion,
+      Platform::WebGLContextType,
       ChromiumImageUsage,
-      PredefinedColorSpace color_space,
+      PredefinedColorSpace,
       gl::GpuPreference);
 
   DrawingBuffer(const DrawingBuffer&) = delete;
@@ -171,11 +167,11 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool HasStencilBuffer() const { return !!depth_stencil_buffer_; }
 
   bool IsUsingGpuCompositing() const {
-    return graphics_info_.using_gpu_compositing;
+    return context_info_.using_gpu_compositing;
   }
 
-  const Platform::GraphicsInfo& GetGraphicsInfo() const {
-    return graphics_info_;
+  const Platform::WebGLContextInfo& ContextInfo() const {
+    return context_info_;
   }
 
   // Given the desired buffer size, provides the largest dimensions that will
@@ -247,7 +243,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   WebGraphicsContext3DProvider* ContextProvider();
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWeakPtr();
   Client* client() { return client_; }
-  WebGLVersion webgl_version() const { return webgl_version_; }
   bool destroyed() const { return destruction_in_progress_; }
 
   // cc::TextureLayerClient implementation.
@@ -262,10 +257,21 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage();
 
   // Returns a UnacceleratedStaticBitmapImage backed by a bitmap that will have
-  // a copy of the contents of the front buffer. This is only meant to be used
-  // for unaccelerated canvases as for accelerated contexts there are better
-  // ways to get a copy of the internal contents.
-  scoped_refptr<StaticBitmapImage> GetUnacceleratedStaticBitmapImage();
+  // a copy of the contents of the `source_buffer`. Resulting image will have
+  // N32 format and will have top-left orination and alpha type that matches
+  // `requested_alpha_type` of the drawing buffer.
+  scoped_refptr<StaticBitmapImage> GetRGBAUnacceleratedStaticBitmapImage(
+      SourceDrawingBuffer source_buffer);
+
+  // Returns a UnacceleratedStaticBitmapImage backed by a bitmap that will have
+  // a copy of the contents of the `source_buffer`. This is only meant to be
+  // used for unaccelerated canvases as for accelerated contexts there are
+  // better ways to get a copy of the internal contents. If
+  scoped_refptr<StaticBitmapImage> GetUnacceleratedStaticBitmapImage(
+      SourceDrawingBuffer source_buffer,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      GrSurfaceOrigin origin);
 
   // `src_rect` is always in top-left coordinate space.
   bool CopyToPlatformTexture(gpu::gles2::GLES2Interface*,
@@ -292,9 +298,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       const gfx::ColorSpace& dst_color_space,
       WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback);
 
-  scoped_refptr<StaticBitmapImage> GetRGBAUnacceleratedStaticBitmapImage(
-      SourceDrawingBuffer source_buffer);
-
+  base::ByteCount EstimatedSizeInBytes() const;
   int SampleCount() const { return sample_count_; }
   bool ExplicitResolveOfMultisampleData() const {
     return anti_aliasing_mode_ == kAntialiasingModeMSAAExplicitResolve;
@@ -306,7 +310,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Restore all state that may have been dirtied by any call.
   void RestoreAllState();
 
-  bool UsingSwapChain() const { return using_swap_chain_; }
+  // Returns true if the drawing buffer supports direct (no-copy) export for low
+  // latency (e.g., to the display compositor).
+  bool SupportsNoCopyExportForLowLatency();
 
   // Keep track of low latency buffer status.
   bool low_latency_enabled() const { return low_latency_enabled_; }
@@ -322,8 +328,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
  protected:  // For unittests
   DrawingBuffer(std::unique_ptr<WebGraphicsContext3DProvider>,
-                const Platform::GraphicsInfo& graphics_info,
-                bool using_swap_chain,
+                const Platform::WebGLContextInfo&,
                 bool desynchronized,
                 std::unique_ptr<Extensions3DUtil>,
                 Client*,
@@ -332,12 +337,12 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 bool want_alpha_channel,
                 bool premultiplied_alpha,
                 PreserveDrawingBuffer,
-                WebGLVersion,
+                Platform::WebGLContextType,
                 bool wants_depth,
                 bool wants_stencil,
                 ChromiumImageUsage,
-                PredefinedColorSpace color_space,
-                gl::GpuPreference gpu_preference);
+                PredefinedColorSpace,
+                gl::GpuPreference);
 
   bool Initialize(const gfx::Size&, bool use_multisampling);
 
@@ -418,6 +423,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     void BeginAccess(const gpu::SyncToken& sync_token, bool readonly);
     gpu::SyncToken EndAccess();
     void ForceCleanUp();
+    base::ByteCount EstimatedSizeInBytes() const;
 
     // The thread on which the ColorBuffer is created and the DrawingBuffer is
     // bound to.
@@ -552,8 +558,10 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Helper function which does a readback from the currently-bound
   // framebuffer into a buffer of a certain size with 4-byte pixels.
   void ReadBackFramebuffer(base::span<uint8_t> pixels,
-                           SkColorType,
-                           WebGLImageConversion::AlphaOp);
+                           viz::SharedImageFormat destination_format,
+                           SkAlphaType destination_alpha_type,
+                           GrSurfaceOrigin destination_origin,
+                           SourceDrawingBuffer source_buffer);
 
   // If RGB emulation is required, then the CHROMIUM image's alpha channel
   // must be immediately cleared after it is bound to a texture. Nothing
@@ -590,9 +598,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // and GPU switch
   bool ReallocateMultisampleRenderbuffer(const gfx::Size&);
 
-  // Presents swap chain if swap chain is being used and contents have changed.
-  void ResolveAndPresentSwapChainIfNeeded();
-
   WebGraphicsSharedImageInterfaceProvider*
   GetSharedImageInterfaceProviderForBitmap();
 
@@ -600,7 +605,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   raw_ptr<Client> client_ = nullptr;
 
   const PreserveDrawingBuffer preserve_drawing_buffer_;
-  const WebGLVersion webgl_version_;
+  const Platform::WebGLContextType webgl_version_;
 
   std::unique_ptr<WebGraphicsContext3DProviderWrapper> context_provider_;
   // Lifetime is tied to the m_contextProvider.
@@ -620,7 +625,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   viz::SharedImageFormat color_buffer_format_ =
       viz::SinglePlaneFormat::kRGBA_8888;
 
-  Platform::GraphicsInfo graphics_info_;
+  Platform::WebGLContextInfo context_info_;
   const bool using_swap_chain_;
   bool low_latency_enabled_ = false;
   bool has_implicit_stencil_buffer_ = false;

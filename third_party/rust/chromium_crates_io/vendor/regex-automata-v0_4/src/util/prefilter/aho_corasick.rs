@@ -39,7 +39,7 @@ impl AhoCorasick {
             };
             // This is kind of just an arbitrary number, but basically, if we
             // have a small enough set of literals, then we try to use the VERY
-            // memory hungry DFA. Otherwise, we whimp out and use an NFA. The
+            // memory hungry DFA. Otherwise, we wimp out and use an NFA. The
             // upshot is that the NFA is quite lean and decently fast. Faster
             // than a naive Aho-Corasick NFA anyway.
             let ac_kind = if needles.len() <= 500 {
@@ -70,7 +70,7 @@ impl AhoCorasick {
             let ac = match result {
                 Ok(ac) => ac,
                 Err(_err) => {
-                    debug!("aho-corasick prefilter failed to build: {}", _err);
+                    debug!("aho-corasick prefilter failed to build: {_err}");
                     return None;
                 }
             };

@@ -20,7 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace chromecast {
@@ -124,9 +123,8 @@ TEST_F(CaptureServiceReceiverTest, SendRequest) {
   auto socket = std::make_unique<MockStreamSocket>();
   EXPECT_CALL(*socket, Connect).WillOnce(Return(net::OK));
   EXPECT_CALL(*socket, Write)
-      .WillOnce(Invoke([](net::IOBuffer* buf, int buf_len,
-                          net::CompletionOnceCallback,
-                          const net::NetworkTrafficAnnotationTag&) {
+      .WillOnce([](net::IOBuffer* buf, int buf_len, net::CompletionOnceCallback,
+                   const net::NetworkTrafficAnnotationTag&) {
         EXPECT_EQ(buf_len, static_cast<int>(sizeof(HandshakePacket)));
         auto data = base::as_bytes(buf->span());
         uint16_t size = base::U16FromBigEndian(data.first<2u>());
@@ -141,7 +139,7 @@ TEST_F(CaptureServiceReceiverTest, SendRequest) {
         EXPECT_EQ(packet.num_frames, kHandshakePacket.num_frames);
         EXPECT_EQ(packet.sample_rate, kHandshakePacket.sample_rate);
         return buf_len;
-      }));
+      });
   EXPECT_CALL(*socket, Read).WillOnce(Return(net::ERR_IO_PENDING));
 
   receiver_.StartWithSocket(std::move(socket));
@@ -158,7 +156,7 @@ TEST_F(CaptureServiceReceiverTest, ReceivePcmAudioMessage) {
   EXPECT_CALL(*socket, Write).WillOnce(Return(sizeof(HandshakePacket)));
   EXPECT_CALL(*socket, Read)
       // Ack message.
-      .WillOnce(Invoke(
+      .WillOnce(
           [](net::IOBuffer* buf, int buf_len, net::CompletionOnceCallback) {
             auto write = base::as_writable_bytes(buf->span())
                              .first(sizeof(kHandshakePacket));
@@ -167,10 +165,10 @@ TEST_F(CaptureServiceReceiverTest, ReceivePcmAudioMessage) {
             auto rem = FillBuffer(write, packet_as_bytes);
             EXPECT_TRUE(rem.empty());
             return write.size();
-          }))
+          })
       // Audio message.
-      .WillOnce(Invoke([](net::IOBuffer* buf, int buf_len,
-                          net::CompletionOnceCallback) {
+      .WillOnce([](net::IOBuffer* buf, int buf_len,
+                   net::CompletionOnceCallback) {
         auto write = base::as_writable_bytes(buf->span())
                          .first(sizeof(kPcmAudioPacketHeader) +
                                 DataSizeInBytes(kStreamInfo));
@@ -181,7 +179,7 @@ TEST_F(CaptureServiceReceiverTest, ReceivePcmAudioMessage) {
         // uninitialized memory (as it causes UB if it's read).
         std::ranges::fill(audio, uint8_t{0});
         return write.size();
-      }))
+      })
       .WillOnce(Return(net::ERR_IO_PENDING));
   EXPECT_CALL(delegate_, OnInitialStreamInfo).WillOnce(Return(true));
   EXPECT_CALL(delegate_, OnCaptureData).WillOnce(Return(true));
@@ -199,8 +197,8 @@ TEST_F(CaptureServiceReceiverTest, ReceiveMetadataMessage) {
   EXPECT_CALL(*socket, Connect).WillOnce(Return(net::OK));
   EXPECT_CALL(*socket, Write).WillOnce(Return(sizeof(HandshakePacket)));
   EXPECT_CALL(*socket, Read)
-      .WillOnce(Invoke([](net::IOBuffer* buf, int buf_len,
-                          net::CompletionOnceCallback) {
+      .WillOnce([](net::IOBuffer* buf, int buf_len,
+                   net::CompletionOnceCallback) {
         // The message contains `MessageType` (as uint8_t) and 1 byte.
         constexpr uint16_t message_size = sizeof(uint8_t) + 1u;
         constexpr size_t total_size = sizeof(uint16_t) + message_size;
@@ -212,7 +210,7 @@ TEST_F(CaptureServiceReceiverTest, ReceiveMetadataMessage) {
         // No need to fill valid metadata.
         std::ranges::fill(write_message.subspan(1u), uint8_t{0});
         return total_size;
-      }))
+      })
       .WillOnce(Return(net::ERR_IO_PENDING));
   // Neither OnCaptureError nor OnCaptureData will be called.
   EXPECT_CALL(delegate_, OnCaptureError).Times(0);

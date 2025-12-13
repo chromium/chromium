@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_IDL_TYPES_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_IDL_TYPES_BASE_H_
 
+#include <concepts>
+
 namespace blink {
 
 // This is the base type for all Web IDL types, such as the ones defined in

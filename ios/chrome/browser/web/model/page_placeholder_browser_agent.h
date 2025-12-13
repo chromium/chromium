@@ -8,37 +8,21 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
-#include "ios/chrome/browser/sessions/model/session_restoration_observer.h"
 #include "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #include "ios/web/public/web_state_observer.h"
 
-class SessionRestorationService;
-
 // Browser agent used to add or cancel a page placeholder for next navigation.
 class PagePlaceholderBrowserAgent final
     : public BrowserUserData<PagePlaceholderBrowserAgent>,
-      public SessionRestorationObserver,
       public web::WebStateObserver,
       public WebStateListObserver {
  public:
   ~PagePlaceholderBrowserAgent() final;
 
-  // Used to inform that a new foreground tab is about to be opened.
-  void ExpectNewForegroundTab();
-
-  // Adds a page placeholder.
-  void AddPagePlaceholder();
-
-  // Cancels the page placeholder.
-  void CancelPagePlaceholder();
-
-  // SessionRestorationObserver implementation.
-  void WillStartSessionRestoration(Browser* browser) final;
-  void SessionRestorationFinished(
-      Browser* browser,
-      const std::vector<web::WebState*>& restored_web_states) final;
+  // Returns whether a page placeholder will be displayed for WebState.
+  static bool IsPagePlaceholderPlannedForWebState(web::WebState* web_state);
 
   // WebStateListObserver implementation.
   void WebStateListDidChange(WebStateList* web_state_list,
@@ -54,22 +38,14 @@ class PagePlaceholderBrowserAgent final
 
   explicit PagePlaceholderBrowserAgent(Browser* browser);
 
-  // Helper called when starting to observe an unrealized WebState.
-  void StartObservingWebState(web::WebState* web_state);
+  // Helper called when a WebState is inserted in the WebStateList.
+  void WebStateInserted(web::WebState* web_state, bool force_placeholder);
 
-  // Helper called when stopping to observe WebState (either because
-  // it became realized, was detached or destroyed).
-  void StopObservingWebState(web::WebState* web_state);
+  // Helper called when a WebState is removed from the WebStateList.
+  void WebStateRemoved(web::WebState* web_state);
 
   // Adds placeholder for next navigation to WebState.
   void AddPlaceholderToWebState(web::WebState* web_state);
-
-  // Removes placeholder for next navigation from WebState.
-  void RemovePlaceholderFromWebState(web::WebState* web_state);
-
-  // Observation for SessionRestorationService events.
-  base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
-      session_restoration_service_observation_{this};
 
   // Observation of the WebStateList.
   base::ScopedObservation<WebStateList, WebStateListObserver>
@@ -78,9 +54,6 @@ class PagePlaceholderBrowserAgent final
   // Observation for unrealized WebStates.
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
       web_state_observations_{this};
-
-  // True if waiting for a foreground tab due to expectNewForegroundTab.
-  bool expecting_foreground_tab_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_PAGE_PLACEHOLDER_BROWSER_AGENT_H_

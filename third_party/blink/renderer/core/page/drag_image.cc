@@ -31,28 +31,28 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "cc/paint/skia_paint_canvas.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_theme_font_provider.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/fonts/string_truncator.h"
-#include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -155,8 +155,6 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   if (!label_font_data || !url_font_data)
     return nullptr;
 
-  FontCachePurgePreventer font_cache_purge_preventer;
-
   bool draw_url_string = true;
   bool clip_url_string = false;
   bool clip_label_string = false;
@@ -206,16 +204,18 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   // fill the background
   gfx::Size scaled_image_size =
       gfx::ScaleToFlooredSize(image_size, device_scale_factor);
-  // TODO(fserb): are we sure this should be software?
-  std::unique_ptr<CanvasResourceProvider> resource_provider(
-      CanvasResourceProvider::CreateBitmapProvider(
-          scaled_image_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
-          gfx::ColorSpace::CreateSRGB(),
-          CanvasResourceProvider::ShouldInitialize::kNo));
-  if (!resource_provider)
-    return nullptr;
 
-  resource_provider->Canvas().scale(device_scale_factor, device_scale_factor);
+  SkSurfaceProps surface_props;
+  sk_sp<SkSurface> surface =
+      SkSurfaces::Raster(SkImageInfo::MakeN32Premul(scaled_image_size.width(),
+                                                    scaled_image_size.height()),
+                         &surface_props);
+  if (!surface) {
+    return nullptr;
+  }
+
+  cc::SkiaPaintCanvas canvas(surface->getCanvas());
+  canvas.scale(device_scale_factor, device_scale_factor);
 
   const float kDragLabelRadius = 5;
 
@@ -226,7 +226,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   SkRRect rrect;
   rrect.setRectXY(SkRect::MakeWH(image_size.width(), image_size.height()),
                   kDragLabelRadius, kDragLabelRadius);
-  resource_provider->Canvas().drawRRect(rrect, background_paint);
+  canvas.drawRRect(rrect, background_paint);
 
   // Draw the text
   cc::PaintFlags text_paint;
@@ -241,8 +241,8 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
         image_size.height() -
             (kLabelBorderYOffset + url_font_data->GetFontMetrics().Descent()));
     TextRun text_run(url_string);
-    text_painter.DrawWithoutBidi(
-        text_run, *url_font, resource_provider->Canvas(), text_pos, text_paint);
+    text_painter.DrawWithoutBidi(text_run, *url_font, canvas, text_pos,
+                                 text_paint);
   }
 
   if (clip_label_string) {
@@ -260,12 +260,12 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
     text_pos.set_x(available_width - ceilf(text_width));
   }
   text_painter.DrawWithBidiReorder(text_run, 0, text_run.length(), *label_font,
-                                   Font::kDoNotPaintIfFontNotReady,
-                                   resource_provider->Canvas(),
+                                   Font::kDoNotPaintIfFontNotReady, canvas,
                                    gfx::PointF(text_pos), text_paint);
 
-  scoped_refptr<StaticBitmapImage> image =
-      resource_provider->Snapshot(FlushReason::kNon2DCanvas);
+  canvas.flush();
+  scoped_refptr<Image> image =
+      UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
   return DragImage::Create(image.get(), kRespectImageOrientation);
 }
 

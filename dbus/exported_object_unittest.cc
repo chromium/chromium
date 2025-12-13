@@ -5,6 +5,7 @@
 #include "dbus/exported_object.h"
 
 #include <string>
+#include <utility>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -88,7 +89,7 @@ class ExportedObjectTest : public testing::Test {
     Bus::Options bus_options;
     bus_options.bus_type = Bus::SESSION;
     bus_options.connection_type = Bus::PRIVATE;
-    bus_ = new Bus(bus_options);
+    bus_ = new Bus(std::move(bus_options));
   }
 
   void TearDown() override { bus_->ShutdownAndBlock(); }

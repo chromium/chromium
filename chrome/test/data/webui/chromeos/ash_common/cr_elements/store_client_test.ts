@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {makeStoreClientMixin} from 'chrome://resources/ash/common/cr_elements/store_client/store_client.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import type {Action} from 'chrome://resources/js/store.js';
 import {Store} from 'chrome://resources/js/store.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -22,6 +23,8 @@ function reducer({value}: TestState, {name}: TestActions): TestState {
       return {value: value + 1};
     case 'decrement':
       return {value: value - 1};
+    default:
+      assertNotReachedCase(name);
   }
 }
 

@@ -953,6 +953,18 @@ TEST_F(SSLErrorHandlerNameMismatchTest, OSReportsCaptivePortal) {
                                SSLErrorHandler::OS_REPORTS_CAPTIVE_PORTAL, 1);
 }
 
+// Test that SSL interstitial is shown if OS reports captive portal AND
+// multi-network CCT workflow is detected.
+TEST_F(SSLErrorHandlerNameMismatchTest,
+       OSReportsCaptivePortalAndMultiNetworkCCT) {
+  delegate()->set_os_reports_captive_portal();
+  SSLErrorHandler::SetIsMultiNetworkCCTWorkflowForTesting(true);
+  error_handler()->StartHandlingError();
+  EXPECT_FALSE(delegate()->captive_portal_checked());
+  EXPECT_TRUE(delegate()->ssl_interstitial_shown());
+  EXPECT_FALSE(delegate()->captive_portal_interstitial_shown());
+}
+
 TEST_F(SSLErrorHandlerNameMismatchTest,
        ShouldShowSSLInterstitialOnTimerExpiredWhenSuggestedUrlExists) {
   base::HistogramTester histograms;

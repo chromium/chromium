@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
@@ -24,9 +25,13 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "content/test/test_content_browser_client.h"
+#include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/views/accessibility/tree/widget_ax_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/views_test_utils.h"
@@ -212,12 +217,12 @@ class WebViewUnitTest : public views::test::WidgetTest {
   }
 
  protected:
-  Widget* top_level_widget() { return top_level_widget_; }
-  WebView* web_view() {
+  Widget* top_level_widget() const { return top_level_widget_; }
+  WebView* web_view() const {
     return static_cast<WebView*>(
         top_level_widget()->GetContentsView()->GetViewByID(kWebViewID));
   }
-  NativeViewHost* holder() { return web_view()->holder_; }
+  NativeViewHost* holder() const { return web_view()->holder_; }
 
   std::unique_ptr<content::WebContents> CreateWebContents() const {
     return content::WebContents::Create(
@@ -233,6 +238,14 @@ class WebViewUnitTest : public views::test::WidgetTest {
     view->OnAXModeAdded(mode);
   }
 
+  bool HasAXModeObservation() const {
+    return web_view()->IsObservingAXModeForTesting();
+  }
+
+  bool IsObservingWidgetAXManager() const {
+    return web_view()->IsObservingWidgetAXManagerForTesting();
+  }
+
  private:
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_enabler_;
   std::unique_ptr<content::TestBrowserContext> browser_context_;
@@ -241,6 +254,12 @@ class WebViewUnitTest : public views::test::WidgetTest {
       scoped_web_contents_creator_;
 
   raw_ptr<Widget> top_level_widget_ = nullptr;
+};
+
+class WebViewAXTreeEnabledTest : public WebViewUnitTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kAccessibilityTreeForViews};
 };
 
 // Tests that attaching and detaching a WebContents to a WebView makes the
@@ -472,6 +491,47 @@ TEST_F(WebViewUnitTest, AccessibleProperties) {
   ui::AXNodeData data;
   web_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kWebView);
+}
+
+TEST_F(WebViewAXTreeEnabledTest, ObservesManagerUntilEnableCompletes) {
+  if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    // Not all platforms support ViewsAX, e.g. ChromeOS.
+    return;
+  }
+
+  auto web_contents = CreateWebContents();
+  web_view()->SetWebContents(web_contents.get());
+
+  ASSERT_TRUE(HasAXModeObservation());
+
+  Widget* widget = top_level_widget();
+  ASSERT_TRUE(widget->ax_manager());
+  EXPECT_FALSE(widget->ax_manager()->is_enabled());
+  EXPECT_TRUE(IsObservingWidgetAXManager());
+
+  ui::AXPlatform::GetInstance().NotifyModeAdded(ui::AXMode::kNativeAPIs);
+
+  EXPECT_TRUE(widget->ax_manager()->is_enabled());
+  EXPECT_FALSE(IsObservingWidgetAXManager());
+}
+
+TEST_F(WebViewAXTreeEnabledTest, AlreadyEnabledManagerSkipsObservation) {
+  if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    // Not all platforms support ViewsAX, e.g. ChromeOS.
+    return;
+  }
+
+  Widget* widget = top_level_widget();
+  ASSERT_TRUE(widget->ax_manager());
+
+  ui::AXPlatform::GetInstance().NotifyModeAdded(ui::AXMode::kNativeAPIs);
+
+  auto web_contents = CreateWebContents();
+  web_view()->SetWebContents(web_contents.get());
+
+  EXPECT_TRUE(widget->ax_manager()->is_enabled());
+  EXPECT_TRUE(HasAXModeObservation());
+  EXPECT_FALSE(IsObservingWidgetAXManager());
 }
 
 }  // namespace views

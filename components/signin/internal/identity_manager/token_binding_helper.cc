@@ -4,26 +4,36 @@
 
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace {
@@ -32,11 +42,13 @@ constexpr std::string_view kTokenBindingNamespace = "TokenBinding";
 
 constexpr unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
     unexportable_keys::BackgroundTaskPriority::kBestEffort;
-constexpr size_t kMaxRetriesToSignAssertionToken = 3;
+
+constexpr base::TimeDelta kGarbageCollectionDelay = base::Seconds(10);
 
 base::expected<std::string, TokenBindingHelper::Error> CreateAssertionToken(
     const std::string& header_and_payload,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    const std::vector<uint8_t>& pubkey,
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> signature) {
   if (!signature.has_value()) {
     return base::unexpected(TokenBindingHelper::Error::kSignAssertionFailure);
@@ -44,7 +56,7 @@ base::expected<std::string, TokenBindingHelper::Error> CreateAssertionToken(
 
   std::optional<std::string> signed_assertion =
       signin::AppendSignatureToHeaderAndPayload(header_and_payload, algorithm,
-                                                *signature);
+                                                pubkey, *signature);
   if (!signed_assertion.has_value()) {
     return base::unexpected(TokenBindingHelper::Error::kAppendSignatureFailure);
   }
@@ -124,6 +136,15 @@ void TokenBindingHelper::GenerateBindingKeyAssertion(
       destination_url, std::move(callback)));
 }
 
+void TokenBindingHelper::StartGarbageCollection(
+    absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys_in_db) {
+  unexportable_key_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      base::BindOnce(&TokenBindingHelper::OnGetAllKeysForGarbageCollection,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(known_wrapped_keys_in_db)));
+}
+
 std::vector<uint8_t> TokenBindingHelper::GetWrappedBindingKey(
     const CoreAccountId& account_id) const {
   auto it = binding_keys_.find(account_id);
@@ -143,6 +164,20 @@ bool TokenBindingHelper::AreAllBindingKeysSame() const {
     return kv_pair.second.wrapped_key ==
            binding_keys_.begin()->second.wrapped_key;
   });
+}
+
+void TokenBindingHelper::CopyBindingKeyFromAnotherTokenService(
+    base::span<const uint8_t> wrapped_binding_key) {
+  // This will force a load of the `wrapped_binding_key` into the
+  // `unexportable_key_service_`. In stateful implementations like on macOS,
+  // this will furthermore ensure that the key representation on disk will be
+  // duplicated with metadata corresponding to `unexportable_key_service_`. This
+  // in turn will ensure that this key will not be deleted by garbage collection
+  // if the source token service no longer needs this key, but
+  // `unexportable_key_service_` still does.
+  unexportable_key_service_->FromWrappedSigningKeySlowlyAsync(
+      // TODO(crbug.com/455538352): Implement metrics.
+      wrapped_binding_key, kTokenBindingPriority, base::DoNothing());
 }
 
 TokenBindingHelper::BindingKeyData::BindingKeyData(
@@ -169,12 +204,13 @@ void TokenBindingHelper::SignAssertionToken(
 
   crypto::SignatureVerifier::SignatureAlgorithm algorithm =
       *unexportable_key_service_->GetAlgorithm(*binding_key);
+  std::vector<uint8_t> pubkey =
+      *unexportable_key_service_->GetSubjectPublicKeyInfo(*binding_key);
   std::optional<std::string> header_and_payload =
       signin::CreateKeyAssertionHeaderAndPayload(
-          algorithm,
-          *unexportable_key_service_->GetSubjectPublicKeyInfo(*binding_key),
-          GaiaUrls::GetInstance()->oauth2_chrome_client_id(), challenge,
-          destination_url, kTokenBindingNamespace, ephemeral_public_key);
+          algorithm, pubkey, GaiaUrls::GetInstance()->oauth2_chrome_client_id(),
+          challenge, destination_url, kTokenBindingNamespace,
+          ephemeral_public_key);
 
   if (!header_and_payload.has_value()) {
     RunCallbackAndRecordMetrics(
@@ -184,8 +220,62 @@ void TokenBindingHelper::SignAssertionToken(
 
   unexportable_key_service_->SignSlowlyAsync(
       *binding_key, base::as_byte_span(*header_and_payload),
-      kTokenBindingPriority, kMaxRetriesToSignAssertionToken,
-      base::BindOnce(&CreateAssertionToken, *header_and_payload, algorithm)
+      kTokenBindingPriority,
+      base::BindOnce(&CreateAssertionToken, *header_and_payload, algorithm,
+                     std::move(pubkey))
           .Then(base::BindOnce(&RunCallbackAndRecordMetrics,
                                std::move(callback))));
+}
+
+void TokenBindingHelper::OnGetAllKeysForGarbageCollection(
+    absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys_in_db,
+    unexportable_keys::ServiceErrorOr<
+        std::vector<unexportable_keys::UnexportableKeyId>>
+        all_key_ids_or_error) {
+  if (!all_key_ids_or_error.has_value() || all_key_ids_or_error->empty()) {
+    return;
+  }
+
+  // Delay the actual garbage collection to give a chance for pending key
+  // generation tasks to complete.
+  //
+  // TODO(crbug.com/455538313): Instead of adding an arbitrary delay, simply
+  // don't delete keys that were modified after the beginning of the current
+  // Chrome session once we expose that timestamp in the keys.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TokenBindingHelper::DoGarbageCollection,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(known_wrapped_keys_in_db),
+                     *std::move(all_key_ids_or_error)),
+      kGarbageCollectionDelay);
+}
+
+void TokenBindingHelper::DoGarbageCollection(
+    absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys_in_db,
+    std::vector<unexportable_keys::UnexportableKeyId> all_key_ids) {
+  // Construct a set of all wrapped keys that are still used.
+  absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys =
+      std::move(known_wrapped_keys_in_db);
+
+  for (const auto& [_, binding_key_data] : binding_keys_) {
+    known_wrapped_keys.insert(binding_key_data.wrapped_key);
+  }
+
+  // Filter out keys from the response that are still used.
+  std::erase_if(all_key_ids, [&](unexportable_keys::UnexportableKeyId key_id) {
+    unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
+        unexportable_key_service_->GetWrappedKey(key_id);
+    return !wrapped_key.has_value() ||
+           known_wrapped_keys.contains(*wrapped_key);
+  });
+
+  // TODO(crbug.com/455538313): Add metrics for the number of keys
+  // deleted.
+  std::ranges::for_each(
+      all_key_ids, [&](unexportable_keys::UnexportableKeyId key_id) {
+        unexportable_key_service_->DeleteKeySlowlyAsync(
+            key_id, unexportable_keys::BackgroundTaskPriority::kBestEffort,
+            base::DoNothing());
+      });
 }

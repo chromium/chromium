@@ -46,6 +46,7 @@ struct BundledCompositorFrame {
 
 // Controls an endpoint for aggregate communication regarding a collection of
 // related frame sinks.
+[DirectReceiver]
 interface FrameSinkBundle {
   // Corresponds to a single message of the same name on CompositorFrameSink
   // for the identified sink.

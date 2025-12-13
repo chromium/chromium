@@ -8,10 +8,11 @@ Tests that setAutoAttach honors updated waitForDebuggerOnStart.
                 attached : true
                 browserContextId : <string>
                 canAccessOpener : false
+                parentFrameId : <string>
                 targetId : <string>
-                title : 
+                title :
                 type : iframe
-                url : 
+                url :
             }
             waitingForDebugger : false
         }
@@ -25,10 +26,11 @@ Tests that setAutoAttach honors updated waitForDebuggerOnStart.
                 attached : true
                 browserContextId : <string>
                 canAccessOpener : false
+                parentFrameId : <string>
                 targetId : <string>
-                title : 
+                title :
                 type : iframe
-                url : 
+                url :
             }
             waitingForDebugger : true
         }

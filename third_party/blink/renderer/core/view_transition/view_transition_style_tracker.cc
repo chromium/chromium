@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "cc/base/features.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
@@ -71,18 +72,26 @@ namespace {
 const char* kDuplicateTagBaseError =
     "Unexpected duplicate view-transition-name: ";
 
-CSSPropertyID kPropertiesToCapture[] = {
+const CSSPropertyID kPropertiesToCapture[] = {
     CSSPropertyID::kBackdropFilter, CSSPropertyID::kColorScheme,
     CSSPropertyID::kMixBlendMode,   CSSPropertyID::kTextOrientation,
     CSSPropertyID::kWritingMode,
 };
 
-CSSPropertyID kPropertiesToCaptureOnGroupChildren[] = {
-    CSSPropertyID::kBorderWidth,
+const CSSPropertyID kPropertiesToAnimate[] = {
+    CSSPropertyID::kBackdropFilter,
 };
 
-CSSPropertyID kPropertiesToAnimate[] = {
-    CSSPropertyID::kBackdropFilter,
+const CSSPropertyID kPropertiesToCaptureOnGroupChildren[] = {
+    CSSPropertyID::kBorderRadius,
+    CSSPropertyID::kBorderWidth,
+    CSSPropertyID::kCornerShape,
+};
+
+const CSSPropertyID kPropertiesToAnimateOnGroupChildren[] = {
+    CSSPropertyID::kBorderRadius,
+    CSSPropertyID::kBorderWidth,
+    CSSPropertyID::kCornerShape,
 };
 
 template <typename K, typename V>
@@ -106,8 +115,10 @@ class FlatMapBuilder {
 
 #define FOR_EACH_CSS_PROPERTY(OP) \
   OP(BackdropFilter)              \
+  OP(BorderRadius)                \
   OP(BorderWidth)                 \
   OP(ColorScheme)                 \
+  OP(CornerShape)                 \
   OP(MixBlendMode)                \
   OP(TextOrientation)             \
   OP(WritingMode)
@@ -406,6 +417,13 @@ class ViewTransitionStyleTracker::ImageWrapperPseudoElement
 
  private:
   bool CanGeneratePseudoElement(PseudoId pseudo_id) const override {
+    // The view-transition must still be active.
+    // See(crbug.com/444889294)
+    ViewTransition* transition = ViewTransitionUtils::GetTransition(*this);
+    if (!transition || !transition->IsGeneratingPseudo(*this)) {
+      return false;
+    }
+
     if (!ViewTransitionPseudoElementBase::CanGeneratePseudoElement(pseudo_id)) {
       return false;
     }
@@ -450,7 +468,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
       state_(State::kCaptured),
       transition_token_(transition_state.transition_token),
       deserialized_(true) {
-  auto* supplement = ViewTransitionSupplement::FromIfExists(document);
+  auto* supplement = document.GetViewTransitionsIfExists();
   CHECK(supplement);
   supplement->InitializeResourceIdSequence(
       transition_state.next_element_resource_id);
@@ -646,24 +664,21 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
   Vector<AtomicString> containing_group_stack;
 
   PaintLayer* paint_layer = nullptr;
-  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
-    if (element_ && element_->parentElement()) {
-      // Element is not detached and not the root document element.
-      if (auto* layout_object = element_->GetLayoutObject()) {
-        paint_layer = layout_object->EnclosingLayer();
-      }
-    } else if (!element_ || element_ == document_->documentElement()) {
-      paint_layer = document_->GetLayoutView()->PaintingLayer();
-    }
-    if (!paint_layer) {
-      return;
-    }
-  } else {
+  TreeScope* tree_scope = nullptr;
+  if (!element_ || element_ == document_->documentElement()) {
     paint_layer = document_->GetLayoutView()->PaintingLayer();
+    tree_scope = document_.Get();
+  } else {
+    if (auto* layout_object = element_->GetLayoutObject()) {
+      paint_layer = layout_object->EnclosingLayer();
+      tree_scope = &element_->GetTreeScope();
+    }
   }
-
+  if (!paint_layer) {
+    return;
+  }
   AddTransitionElementsFromCSSRecursive(
-      paint_layer, document_.Get(), containing_group_stack,
+      paint_layer, tree_scope, containing_group_stack,
       /*nearest_group_with_contain=*/g_null_atom);
 }
 
@@ -1004,7 +1019,6 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
 void ViewTransitionStyleTracker::SetCaptureRectsFromCompositor(
     const std::unordered_map<viz::ViewTransitionElementResourceId, gfx::RectF>&
         rects) {
-
   CHECK(!HasLiveNewContent());
   for (auto& entry : element_data_map_) {
     auto& element_data = entry.value;
@@ -1082,17 +1096,18 @@ VectorOf<Element> ViewTransitionStyleTracker::GetTransitioningElements() const {
   return result;
 }
 
-const Vector<AtomicString>&
+const Vector<AtomicString>
 ViewTransitionStyleTracker::GetViewTransitionClassList(
     const AtomicString& name) const {
-  CHECK(element_data_map_.Contains(name));
+  if (!element_data_map_.Contains(name)) {
+    return Vector<AtomicString>();
+  }
   return element_data_map_.at(name)->class_list;
 }
 
-AtomicString ViewTransitionStyleTracker::GetContainingGroupName(
+const AtomicString& ViewTransitionStyleTracker::GetContainingGroupName(
     const AtomicString& name) const {
-  if (!RuntimeEnabledFeatures::NestedViewTransitionEnabled() ||
-      state_ != State::kStarted) {
+  if (state_ != State::kStarted) {
     return g_null_atom;
   }
 
@@ -1298,17 +1313,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
   bool is_generated_name = false;
   if (view_transition_name) {
     auto it = element_data_map_.find(view_transition_name);
-    if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
-      if (it == element_data_map_.end()) {
-        // TODO(crbug.com/405117185): This is only possible because view
-        // transition names are still tracked globally in StyleEngine.
-        // Once that's fixed, we should enforce that the name passed to this
-        // method exists in element_data_map_.
-        return nullptr;
-      }
-    } else {
-      DCHECK(it != element_data_map_.end());
-    }
+    CHECK(it != element_data_map_.end());
     is_generated_name = it->value->is_generated_name;
   }
 
@@ -1436,22 +1441,12 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
   bool needs_style_invalidation = false;
 
-  if (scope_tag_) {
-    // If the scope element is a participant, process it first. Updating pseudo
-    // tree intrinsic sizes may invalidate PaintLayer ancestors, including the
-    // scope, which prevents us from reading the scope element's geometry.
-    if (!RunPostPrePaintStepsForElement(
-            scope_tag_, element_data_map_.at(scope_tag_),
-            max_capture_size_in_layout, needs_style_invalidation)) {
-      return false;
-    }
-  }
-  for (auto& entry : element_data_map_) {
-    if (entry.key == scope_tag_) {
-      continue;
-    }
-    if (!RunPostPrePaintStepsForElement(entry.key, entry.value.Get(),
-                                        max_capture_size_in_layout,
+  // Iterate in the order of view transition names, since we sometimes need
+  // parent transforms to compute child transforms.
+  CHECK(!scope_tag_ || scope_tag_ == view_transition_names_.front());
+  for (auto& tag : view_transition_names_) {
+    ElementData* entry = element_data_map_.at(tag);
+    if (!RunPostPrePaintStepsForElement(tag, entry, max_capture_size_in_layout,
                                         needs_style_invalidation)) {
       return false;
     }
@@ -1469,12 +1464,67 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
   return true;
 }
 
+bool ViewTransitionStyleTracker::RemapSnapshotMatrixToNewParentSpace(
+    ElementData* element_data) const {
+  // If we're in a flat tree, then there are no parent transforms. Also we
+  // don't need to update anything until we start the transition (i.e. we have
+  // the topology from the new state).
+  if (state_ != State::kStarted ||
+      element_data->containing_group_name.IsNull()) {
+    return false;
+  }
+
+  const auto* parent_data =
+      element_data_map_.at(element_data->containing_group_name);
+  // If we don't have a new state for the parent data, then the transform
+  // can't change.
+  if (!parent_data->new_snapshot_id.IsValid()) {
+    return false;
+  }
+
+  // This should be true because of the order in which we process elements.
+  CHECK(parent_data->container_properties);
+
+  const auto& child_old_transform =
+      element_data->cached_container_properties.snapshot_matrix;
+  const auto& parent_old_transform =
+      parent_data->cached_container_properties.snapshot_matrix;
+  const auto& parent_new_transform =
+      parent_data->container_properties->snapshot_matrix;
+
+  gfx::Transform parent_old_inverse;
+  if (parent_old_transform.GetInverse(&parent_old_inverse)) {
+    // Remap `child_old_transform` to be relative to the
+    // `parent_new_transform` instead of `parent_old_transform`.
+    gfx::Transform new_child_transform = parent_new_transform;
+    new_child_transform.PreConcat(parent_old_inverse);
+    new_child_transform.PreConcat(child_old_transform);
+
+    if (element_data->container_properties->snapshot_matrix !=
+        new_child_transform) {
+      element_data->container_properties->snapshot_matrix = new_child_transform;
+      return true;
+    }
+  }
+  return false;
+}
+
 bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
     AtomicString name,
     ElementData* element_data,
     const int max_capture_size_in_layout,
     bool& needs_style_invalidation) {
   if (!element_data->target_element) {
+    // For an exiting element, there is no "new" geometry. But if it's parented
+    // to a group that has a "new" geometry, the UA stylesheet needs a
+    // transform to correctly position this element relative to the parent's
+    // new position. The desired behavior is that the element holds its
+    // position relative to the parent. This requires computing a new transform
+    // here. Note: This logic assumes that parent elements are processed before
+    // their children, which is true if iterating over
+    // `view_transition_names_` in order.
+    needs_style_invalidation |=
+        RemapSnapshotMatrixToNewParentSpace(element_data);
     return true;
   }
 
@@ -1519,7 +1569,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
             CSSProperty::Get(id).CSSValueFromComputedStyle(
                 layout_object->StyleRef(),
                 /*layout_object=*/nullptr,
-                /*allow_visited_style=*/false, CSSValuePhase::kComputedValue)) {
+                /*allow_visited_style=*/false, CSSValuePhase::kResolvedValue)) {
       builder.Insert(id, css_value->CssText());
     }
   };
@@ -1547,10 +1597,9 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
       captured_rect_in_layout_space ==
           element_data->captured_rect_in_layout_space &&
       css_properties == element_data->captured_css_properties &&
-      (state_ != State::kCapturing ||
-       (group_children_css_properties ==
-            element_data->group_children_css_properties &&
-        border_offset == element_data->border_offset))) {
+      group_children_css_properties ==
+          element_data->group_children_css_properties &&
+      border_offset == element_data->border_offset) {
     return true;
   }
 
@@ -1560,6 +1609,9 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
       visual_overflow_rect_in_layout_space;
   element_data->captured_css_properties = std::move(css_properties);
   element_data->captured_rect_in_layout_space = captured_rect_in_layout_space;
+  element_data->group_children_css_properties =
+      std::move(group_children_css_properties);
+  element_data->border_offset = border_offset;
 
   PseudoId live_content_element = HasLiveNewContent()
                                       ? kPseudoIdViewTransitionNew
@@ -1582,9 +1634,6 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
   // Ensure that the cached state stays in sync with the current state while
   // we're capturing.
   if (state_ == State::kCapturing) {
-    element_data->group_children_css_properties =
-        std::move(group_children_css_properties);
-    element_data->border_offset = border_offset;
     element_data->CacheStateForOldSnapshot();
   }
 
@@ -1695,14 +1744,12 @@ gfx::Transform ViewTransitionStyleTracker::ComputeTransformForParticipant(
       << first_fragment.PaintOffset();
   auto paint_properties = first_fragment.LocalBorderBoxProperties();
 
-  LayoutBox* scope_box = object.GetDocument().GetLayoutView();
-  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
-    auto* scope = OriginatingElement();
-    scope_box = scope->IsDocumentElement()
-                    ? scope->GetDocument().GetLayoutView()
-                    : DynamicTo<LayoutBox>(scope->GetLayoutObject());
-    CHECK(scope_box);
-  }
+  auto* scope = OriginatingElement();
+  LayoutBox* scope_box = scope->IsDocumentElement()
+                             ? scope->GetDocument().GetLayoutView()
+                             : DynamicTo<LayoutBox>(scope->GetLayoutObject());
+  CHECK(scope_box);
+
   auto& scope_fragment = scope_box->FirstFragment();
   const auto& scope_properties = scope_fragment.LocalBorderBoxProperties();
 
@@ -1719,15 +1766,15 @@ gfx::Transform ViewTransitionStyleTracker::ComputeTransformForParticipant(
         gfx::Vector2dF(layout_inline->PhysicalLinesBoundingBox().offset));
   }
 
-  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled() &&
-      !scope_box->IsLayoutView()) {
+  if (!scope_box->IsLayoutView()) {
+    DCHECK(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled());
+
     // TODO(crbug.com/394052227): Should we force compositing on the scope?
     // If we do, its paint offset will always be zero.
-    transform.Translate(-gfx::Vector2dF(scope_fragment.PaintOffset()));
 
     // Adjust for the scope element's borders and scrollbars.
-    // TODO(crbug.com/394052227): Is this correct in RTL / all writing modes?
     transform.Translate(-scope_box->ClientLeft(), -scope_box->ClientTop());
+    transform.Translate(-gfx::Vector2dF(scope_fragment.PaintOffset()));
   }
 
   if (!transform.HasPerspective()) {
@@ -1786,8 +1833,8 @@ PaintPropertyChangeType ViewTransitionStyleTracker::UpdateCaptureClip(
       element_data->clip_node =
           ClipPaintPropertyNode::Create(*current_clip, std::move(state));
 #if DCHECK_IS_ON()
-      element_data->clip_node->SetDebugName(element.DebugName() +
-                                            "ViewTransition");
+      element_data->clip_node->SetDebugName(
+          StrCat({element.DebugName(), "ViewTransition"}));
 #endif
       return PaintPropertyChangeType::kNodeAddedOrRemoved;
     }
@@ -2054,6 +2101,10 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
   // TODO(khushalsagar): Need to send offsets to retain positioning of
   // ::view-transition.
 
+  transition_state.delay_layer_tree_view_deletion_ =
+      base::FeatureList::IsEnabled(
+          blink::features::kDelayLayerTreeViewDeletionOnLocalSwap);
+
   return transition_state;
 }
 
@@ -2081,18 +2132,14 @@ bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
 void ViewTransitionStyleTracker::InvalidatePseudoStyle() {
   ua_style_sheet_ = nullptr;
 
-  auto* originating_element = OriginatingElement();
-  if (!originating_element) {
-    return;
+  if (Element* originating_element = OriginatingElement()) {
+    if (PseudoElement* pseudo_element =
+            originating_element->GetPseudoElement(kPseudoIdViewTransition)) {
+      pseudo_element->SetNeedsStyleRecalc(
+          kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
+                                   style_change_reason::kViewTransition));
+    }
   }
-
-  auto invalidate_style = [](PseudoElement* pseudo_element) {
-    pseudo_element->SetNeedsStyleRecalc(
-        kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                               style_change_reason::kViewTransition));
-  };
-  ViewTransitionUtils::ForEachTransitionPseudo(*originating_element,
-                                               invalidate_style);
 }
 
 void ViewTransitionStyleTracker::InvalidateStyleAndCompositing() {
@@ -2146,6 +2193,25 @@ void ViewTransitionStyleTracker::InvalidateStyleAndCompositing() {
       .NotifyViewTransitionPseudoTreeChanged();
 }
 
+void ViewTransitionStyleTracker::
+    InvalidateBackdropFilterCompositingProperties() {
+  for (auto& entry : element_data_map_) {
+    // Only invalidate things that have a backdrop filter.
+    if (!entry.value || !entry.value->target_element) {
+      continue;
+    }
+
+    auto* object = entry.value->target_element->GetLayoutObject();
+    auto* style = entry.value->target_element->GetComputedStyle();
+    if (entry.value->target_element->IsDocumentElement() || !style || !object ||
+        style->BackdropFilter().IsEmpty()) {
+      continue;
+    }
+
+    object->SetNeedsPaintPropertyUpdate();
+  }
+}
+
 CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
   if (ua_style_sheet_)
     return *ua_style_sheet_;
@@ -2164,7 +2230,6 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
     builder.AddUAStyle(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
                            ? AnimationUAStylesScoped()
                            : AnimationUAStyles());
-    builder.AddFlagGuardedDefaultAnimationStyles();
   }
 
   // If we started the animation then we always create the full dynamic style
@@ -2202,7 +2267,7 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
 
         old_parent_transform = compute_parent_transform(
             containing_group_data->cached_container_properties.snapshot_matrix,
-            containing_group_data->border_offset);
+            containing_group_data->cached_border_offset);
 
         if (containing_group_data->container_properties) {
           const auto& new_container_properties =
@@ -2239,6 +2304,10 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
                               element_data->cached_container_properties,
                               element_data->cached_animated_css_properties,
                               old_parent_transform);
+
+        builder.AddGroupChildrenAnimations(
+            view_transition_name,
+            element_data->cached_group_children_animated_properties);
       }
     }
   }
@@ -2337,15 +2406,27 @@ void ViewTransitionStyleTracker::ElementData::CacheStateForOldSnapshot() {
       visual_overflow_rect_in_layout_space;
   cached_captured_rect_in_layout_space = captured_rect_in_layout_space;
 
-  FlatMapBuilder<CSSPropertyID, String> builder(
-      std::size(kPropertiesToAnimate));
-  for (auto& id : kPropertiesToAnimate) {
-    auto it = captured_css_properties.find(id);
-    if (it != captured_css_properties.end()) {
-      builder.Insert(it->first, it->second);
-    }
-  }
-  cached_animated_css_properties = std::move(builder).Finish();
+  auto copy_animated_properties =
+      [](const base::span<const CSSPropertyID>& properties_to_animate,
+         const base::flat_map<CSSPropertyID, String>& captured_properties) {
+        FlatMapBuilder<CSSPropertyID, String> builder(
+            std::size(properties_to_animate));
+        for (auto id : properties_to_animate) {
+          auto it = captured_properties.find(id);
+          if (it != captured_properties.end()) {
+            builder.Insert(it->first, it->second);
+          }
+        }
+        return std::move(builder).Finish();
+      };
+
+  cached_animated_css_properties =
+      copy_animated_properties(kPropertiesToAnimate, captured_css_properties);
+
+  cached_group_children_animated_properties = copy_animated_properties(
+      kPropertiesToAnimateOnGroupChildren, group_children_css_properties);
+
+  cached_border_offset = border_offset;
 }
 
 // TODO(vmpstr): This could be optimized by caching values for individual layout
@@ -2393,7 +2474,7 @@ ViewTransitionStyleTracker::GenerateResourceId(bool for_scope_snapshot) const {
   // If we've already send the state to the incoming document, generating a new
   // ID now would collide with IDs generated by that document.
   CHECK(!state_extracted_);
-  auto* supplement = ViewTransitionSupplement::FromIfExists(*document_);
+  auto* supplement = document_->GetViewTransitionsIfExists();
   CHECK(supplement);
   return supplement->GenerateResourceId(transition_token_, for_scope_snapshot);
 }

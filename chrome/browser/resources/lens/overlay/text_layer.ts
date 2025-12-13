@@ -1218,7 +1218,7 @@ export class TextLayerElement extends PolymerElement implements TextLayerBase {
   private getBlobUrlFromImageData(imageData: BackgroundImageData): string {
     const imageBytesBuffer = imageData.backgroundImage;
     assert(imageBytesBuffer.invalidBuffer !== true);
-    let bytes: Uint8Array = new Uint8Array();
+    let bytes: Uint8Array<ArrayBuffer> = new Uint8Array();
     if (imageBytesBuffer.bytes !== undefined) {
       bytes = new Uint8Array(imageBytesBuffer.bytes);
     } else if (imageBytesBuffer.sharedMemory !== undefined) {

@@ -40,7 +40,7 @@ class AndroidAutofillProviderBridgeImpl : public AndroidAutofillProviderBridge {
   void OnFormFieldVisibilitiesDidChange(base::span<const int> indices) override;
   void OnTextFieldDidScroll(const FieldInfo& field) override;
   void OnFormSubmitted(mojom::SubmissionSource submission_source) override;
-  void OnDidFillAutofillFormData() override;
+  void OnDidAutofillForm() override;
   void CancelSession() override;
   void Reset() override;
 

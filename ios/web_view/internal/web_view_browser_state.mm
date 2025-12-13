@@ -24,14 +24,18 @@
 #import "components/sync/service/sync_prefs.h"
 #import "components/sync_device_info/device_info_prefs.h"
 #import "components/unified_consent/unified_consent_service.h"
+#import "ios/net/cookies/system_cookie_store.h"
+#import "ios/web/public/browsing_data/system_cookie_store_util.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/webui/url_data_manager_ios_backend.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/browser_state_prefs.h"
 #import "ios/web_view/internal/web_view_download_manager.h"
 #import "ios/web_view/internal/web_view_url_request_context_getter.h"
+#import "net/url_request/url_request_job_factory.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -70,9 +74,13 @@ WebViewBrowserState::WebViewBrowserState(
 
     CHECK(base::PathService::Get(base::DIR_APP_DATA, &path_));
 
+    auto pair = web::CreateSystemCookieStore(this);
+    cookie_store_handle_ = std::move(pair.second);
+
     request_context_getter_ = new WebViewURLRequestContextGetter(
-        GetStatePath(), this, ApplicationContext::GetInstance()->GetNetLog(),
-        web::GetIOThreadTaskRunner({}));
+        GetStatePath(), ApplicationContext::GetInstance()->GetNetLog(),
+        web::GetIOThreadTaskRunner({}), std::move(pair.first),
+        web::URLDataManagerIOSBackend::CreateProtocolHandler(this));
 
     // Initialize prefs.
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry =
@@ -99,7 +107,8 @@ WebViewBrowserState::~WebViewBrowserState() {
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
 
-  web::GetIOThreadTaskRunner({})->PostTask(
+  cookie_store_handle_.reset();
+  request_context_getter_->GetNetworkTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&WebViewURLRequestContextGetter::ShutDown,
                                 request_context_getter_));
 }

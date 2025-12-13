@@ -13,6 +13,7 @@
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_infobar_metrics_recorder.h"
+#import "services/metrics/public/cpp/ukm_source_id.h"
 
 @class CommandDispatcher;
 
@@ -34,7 +35,8 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
       password_manager::features_util::PasswordAccountStorageUserState
           account_storage_user_state,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-      CommandDispatcher* dispatcher);
+      CommandDispatcher* dispatcher,
+      ukm::SourceId ukm_source_id);
 
   IOSChromeSavePasswordInfoBarDelegate(
       const IOSChromeSavePasswordInfoBarDelegate&) = delete;
@@ -112,6 +114,9 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Returns true if the infobar is currently presenting.
   bool IsPresenting() const;
+
+  // The UKM source ID for the page.
+  const ukm::SourceId ukm_source_id_;
 
   // CommandDispatcher for dispatching commands.
   CommandDispatcher* dispatcher_ = nullptr;

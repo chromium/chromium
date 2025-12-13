@@ -31,6 +31,9 @@ class ScopedRule {
   ScopedRule(scoped_refptr<const MemoryMappedRuleset> ruleset,
              const url_pattern_index::flat::UrlRule* rule);
 
+  ScopedRule(ScopedRule&& other);
+  ScopedRule& operator=(ScopedRule&& other);
+
   ScopedRule(const ScopedRule& other);
   ScopedRule& operator=(const ScopedRule& other);
 

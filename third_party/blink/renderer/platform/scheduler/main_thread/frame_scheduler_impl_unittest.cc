@@ -88,7 +88,7 @@ std::unique_ptr<FrameSchedulerImpl> CreateFrameScheduler(
     bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type) {
   auto frame_scheduler = page_scheduler->CreateFrameScheduler(
-      delegate, is_in_embedded_frame_tree, frame_type);
+      delegate, LocalFrameToken(), is_in_embedded_frame_tree, frame_type);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler_impl(
       static_cast<FrameSchedulerImpl*>(frame_scheduler.release()));
   return frame_scheduler_impl;
@@ -2170,7 +2170,7 @@ TEST_F(FrameSchedulerImplTest, ReportFMPAndFCPForMainFrames) {
 
   EXPECT_CALL(mock_main_thread_scheduler, OnMainFramePaint).Times(2);
 
-  main_frame_scheduler->OnFirstMeaningfulPaint(base::TimeTicks::Now());
+  main_frame_scheduler->OnFirstMeaningfulPaint();
   main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
 
   main_frame_scheduler = nullptr;
@@ -2195,7 +2195,7 @@ TEST_F(FrameSchedulerImplTest, DontReportFMPAndFCPForSubframes) {
 
     EXPECT_CALL(mock_main_thread_scheduler, OnMainFramePaint).Times(0);
 
-    subframe_scheduler->OnFirstMeaningfulPaint(base::TimeTicks::Now());
+    subframe_scheduler->OnFirstMeaningfulPaint();
   }
 
   // Now test for embedded main frames.
@@ -2207,7 +2207,7 @@ TEST_F(FrameSchedulerImplTest, DontReportFMPAndFCPForSubframes) {
 
     EXPECT_CALL(mock_main_thread_scheduler, OnMainFramePaint).Times(0);
 
-    subframe_scheduler->OnFirstMeaningfulPaint(base::TimeTicks::Now());
+    subframe_scheduler->OnFirstMeaningfulPaint();
   }
 
   page_scheduler = nullptr;

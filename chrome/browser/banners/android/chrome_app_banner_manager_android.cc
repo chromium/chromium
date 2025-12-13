@@ -31,7 +31,7 @@
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace webapps {
 
@@ -60,10 +60,10 @@ PrefService* ChromeAppBannerManagerAndroid::GetPrefService() {
 }
 
 void ChromeAppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(
-    AddToHomescreenInstaller::Event event,
+    AddToHomescreenEvent event,
     const AddToHomescreenParams& a2hs_params) {
   if (a2hs_params.app_type == AddToHomescreenParams::AppType::WEBAPK &&
-      event == AddToHomescreenInstaller::Event::UI_CANCELLED) {
+      event == AddToHomescreenEvent::UI_CANCELLED) {
     // TODO(b/320681613): Maybe move this to components.
     webapk::TrackInstallEvent(
         webapk::ADD_TO_HOMESCREEN_DIALOG_DISMISSED_BEFORE_INSTALLATION);

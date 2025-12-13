@@ -15,6 +15,8 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
@@ -26,6 +28,7 @@ import org.chromium.components.media_router.MediaRouterClient;
 import org.chromium.content_public.browser.WebContents;
 
 /** Provides Chrome-specific behavior for Media Router. */
+@NullMarked
 @JNINamespace("media_router")
 public class ChromeMediaRouterClient extends MediaRouterClient {
     private ChromeMediaRouterClient() {}
@@ -63,7 +66,7 @@ public class ChromeMediaRouterClient extends MediaRouterClient {
     }
 
     @Override
-    public FragmentManager getSupportFragmentManager(WebContents initiator) {
+    public @Nullable FragmentManager getSupportFragmentManager(WebContents initiator) {
         FragmentActivity currentActivity =
                 (FragmentActivity) ApplicationStatus.getLastTrackedFocusedActivity();
         return currentActivity == null ? null : currentActivity.getSupportFragmentManager();

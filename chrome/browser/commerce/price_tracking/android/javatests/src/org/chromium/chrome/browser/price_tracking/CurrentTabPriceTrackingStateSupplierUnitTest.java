@@ -30,6 +30,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
@@ -44,14 +46,12 @@ import org.chromium.components.commerce.core.SubscriptionsObserver;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.Optional;
-
 /** Unit tests for {@link CurrentTabPriceTrackingStateSupplier} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private ObservableSupplierImpl<Tab> mTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     @Mock private Profile mMockProfile;
     @Mock private Tab mMockTab;
@@ -63,7 +63,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
     public void setUp() throws Exception {
         PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
 
-        mTabSupplier = new ObservableSupplierImpl<>();
+        mTabSupplier = ObservableSuppliers.createNullable();
         mProfileSupplier = new ObservableSupplierImpl<>();
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
@@ -71,14 +71,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
     private ProductInfo createProductInfoWithId(long productId) {
         return new ProductInfo(
-                "Product",
-                GURL.emptyGURL(),
-                Optional.of(productId),
-                Optional.empty(),
-                "USD",
-                1000,
-                "US",
-                Optional.empty());
+                "Product", GURL.emptyGURL(), productId, null, "USD", 1000, "US", null);
     }
 
     @Test
@@ -112,7 +105,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         Callback<Boolean> mockCallback = mock(Callback.class);
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
-        supplier.addObserver(mockCallback);
+        supplier.addSyncObserver(mockCallback);
 
         verify(mockCallback, never()).onResult(anyBoolean());
         assertFalse(supplier.get());
@@ -124,7 +117,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         when(mMockTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_CAT);
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
-        supplier.addObserver(mockCallback);
+        supplier.addSyncObserver(mockCallback);
 
         mProfileSupplier.set(mMockProfile);
         mTabSupplier.set(mMockTab);
@@ -155,7 +148,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
                 ArgumentCaptor.forClass(Callback.class);
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
-        supplier.addObserver(mockCallback);
+        supplier.addSyncObserver(mockCallback);
 
         mProfileSupplier.set(mMockProfile);
         mTabSupplier.set(mMockTab);
@@ -195,7 +188,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
                 ArgumentCaptor.forClass(Callback.class);
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
-        supplier.addObserver(mockCallback);
+        supplier.addSyncObserver(mockCallback);
 
         mProfileSupplier.set(mMockProfile);
         mTabSupplier.set(mMockTab);
@@ -232,7 +225,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
                 ArgumentCaptor.forClass(Callback.class);
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
-        supplier.addObserver(mockCallback);
+        supplier.addSyncObserver(mockCallback);
 
         mProfileSupplier.set(mMockProfile);
         mTabSupplier.set(mMockTab);
@@ -280,7 +273,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
                 ArgumentCaptor.forClass(Callback.class);
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
-        supplier.addObserver(mockCallback);
+        supplier.addSyncObserver(mockCallback);
 
         mProfileSupplier.set(mMockProfile);
         mTabSupplier.set(mMockTab);
@@ -328,7 +321,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
                 ArgumentCaptor.forClass(Callback.class);
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
-        supplier.addObserver(mockCallback);
+        supplier.addSyncObserver(mockCallback);
 
         mProfileSupplier.set(mMockProfile);
         mTabSupplier.set(mMockTab);

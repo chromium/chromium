@@ -44,6 +44,29 @@ const reduceMaxTests = [
     }
   },
   {
+    'name': 'reduceMax float32 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [32.16658401489258],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput': {
+          'data': 32.16658401489258,
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'reduceMax float32 0D constant tensor empty axes',
     'graph': {
       'inputs': {
@@ -51,6 +74,29 @@ const reduceMaxTests = [
           'data': [32.16658401489258],
           'descriptor': {shape: [], dataType: 'float32'},
           'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput': {
+          'data': 32.16658401489258,
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float32 0D tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [32.16658401489258],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': false
         }
       },
       'operators': [{
@@ -577,6 +623,27 @@ const reduceMaxTests = [
     }
   },
   {
+    'name': 'reduceMax float16 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [32.15625],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [32.15625], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
     'name': 'reduceMax float16 0D constant tensor empty axes',
     'graph': {
       'inputs': {
@@ -584,6 +651,27 @@ const reduceMaxTests = [
           'data': [32.15625],
           'descriptor': {shape: [], dataType: 'float16'},
           'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [32.15625], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 0D tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [32.15625],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': false
         }
       },
       'operators': [{
@@ -993,10 +1081,5 @@ const reduceMaxTests = [
   }
 ];
 
-if (navigator.ml) {
-  reduceMaxTests.forEach((test) => {
-    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    reduceMaxTests, buildAndExecuteGraph, getPrecisionTolerance);

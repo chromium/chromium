@@ -20,7 +20,7 @@ public interface SafetyNetApiHandler {
         SafetyNetApiState.INITIALIZED,
         SafetyNetApiState.INITIALIZED_FIRST_PARTY,
     })
-    public @interface SafetyNetApiState {
+    @interface SafetyNetApiState {
         // The API handler is not initialized. Calls to methods below will not work.
         int NOT_AVAILABLE = 0;
         // The API handler is initialized for most usages, but calls to {@link getSafetyNetId} will
@@ -37,13 +37,23 @@ public interface SafetyNetApiHandler {
     interface Observer {
         void onVerifyAppsEnabledDone(long callbackId, @VerifyAppsResult int result);
 
+        // (TODO:crbug.com/449183636) Remove this overload once internal implementation is changed.
+        void onHasHarmfulAppsDone(
+                long callbackId, @HasHarmfulAppsResultStatus int result, int numberOfApps);
+
+        void onHasHarmfulAppsDone(
+                long callbackId,
+                @HasHarmfulAppsResultStatus int result,
+                int numberOfApps,
+                int statusCode);
+
         void onGetSafetyNetIdDone(String result);
     }
 
     /**
      * Verifies that SafetyNetApiHandler can operate and initializes if feasible. Should be called
-     * on the same sequence as {@link startAllowlistLookup}, {@link isVerifyAppsEnabled}, and {@link
-     * getSafetyNetId}.
+     * on the same sequence as {@link startAllowlistLookup}, {@link isVerifyAppsEnabled}, {@link
+     * hasPotentiallyHarmfulApps}, and {@link getSafetyNetId}.
      *
      * @param observer The object on which to call the callback functions when app verification
      *     checking is complete.
@@ -82,6 +92,16 @@ public interface SafetyNetApiHandler {
      * @param callbackId The id of the callback which should be returned with the result.
      */
     void enableVerifyApps(long callbackId);
+
+    // TODO(crbug.com/446681100): Remove the default once internal implementation is complete.
+    /**
+     * Start a check to see if there is any potentially harmful apps present. The response will be
+     * provided to the observer with the onHasHarmfulAppsDone method. Requires initialized state
+     * {@code INITIALIZED} or {@code INITIALIZED_FIRST_PARTY}.
+     *
+     * @param callbackId The id of the callback which should be returned with the result.
+     */
+    default void hasPotentiallyHarmfulApps(long callbackId) {}
 
     /**
      * Get the shared UUID from the SafetyNet API. A result will be returned to {@link

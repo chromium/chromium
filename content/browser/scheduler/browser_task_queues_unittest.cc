@@ -26,7 +26,6 @@ namespace {
 using ::base::RunLoop;
 using ::base::sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump;
 using ::base::sequence_manager::SequenceManager;
-using ::testing::Invoke;
 using ::testing::Mock;
 
 using StrictMockTask =
@@ -109,12 +108,12 @@ TEST_F(BrowserTaskQueuesTest, RunAllPendingTasksForTesting) {
 
   StrictMockTask task;
   StrictMockTask followup_task;
-  EXPECT_CALL(task, Run).WillOnce(Invoke([&]() {
+  EXPECT_CALL(task, Run).WillOnce([&]() {
     for (size_t i = 0; i < BrowserTaskQueues::kNumQueueTypes; ++i) {
       handle_->GetBrowserTaskRunner(static_cast<QueueType>(i))
           ->PostTask(FROM_HERE, followup_task.Get());
     }
-  }));
+  });
 
   handle_->GetBrowserTaskRunner(QueueType::kDefault)
       ->PostTask(FROM_HERE, task.Get());
@@ -158,18 +157,18 @@ TEST_F(BrowserTaskQueuesTest, RunAllPendingTasksForTestingIsReentrant) {
   StrictMockTask task_2;
   StrictMockTask task_3;
 
-  EXPECT_CALL(task_1, Run).WillOnce(Invoke([&]() {
+  EXPECT_CALL(task_1, Run).WillOnce([&]() {
     handle_->GetBrowserTaskRunner(QueueType::kDefault)
         ->PostTask(FROM_HERE, task_2.Get());
     RunLoop run_loop(RunLoop::Type::kNestableTasksAllowed);
     handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
     run_loop.Run();
-  }));
+  });
 
-  EXPECT_CALL(task_2, Run).WillOnce(Invoke([&]() {
+  EXPECT_CALL(task_2, Run).WillOnce([&]() {
     handle_->GetBrowserTaskRunner(QueueType::kDefault)
         ->PostTask(FROM_HERE, task_3.Get());
-  }));
+  });
 
   handle_->GetBrowserTaskRunner(QueueType::kDefault)
       ->PostTask(FROM_HERE, task_1.Get());
@@ -204,13 +203,13 @@ TEST_F(BrowserTaskQueuesTest,
   StrictMockTask task_2;
   StrictMockTask task_3;
 
-  EXPECT_CALL(task_1, Run).WillOnce(Invoke([&]() {
+  EXPECT_CALL(task_1, Run).WillOnce([&]() {
     // This task should not run as it is posted after the
     // RunAllPendingTasksForTesting() call
     handle_->GetBrowserTaskRunner(QueueType::kBestEffort)
         ->PostTask(FROM_HERE, task_3.Get());
     handle_->OnStartupComplete();
-  }));
+  });
   EXPECT_CALL(task_2, Run);
 
   handle_->GetBrowserTaskRunner(QueueType::kDefault)

@@ -32,6 +32,7 @@ component("types") {
 
   deps = [
     "//base",
+    "//components/viz/common/resources:shared_image_format",
     "//skia",
     "//skia:skcms",
     "//ui/gfx:buffer_types",

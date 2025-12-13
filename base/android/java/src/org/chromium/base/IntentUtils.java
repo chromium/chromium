@@ -19,6 +19,7 @@ import android.os.Parcelable;
 import android.os.TransactionTooLargeException;
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -459,7 +460,7 @@ public class IntentUtils {
     public static int getPendingIntentMutabilityFlag(boolean mutable) {
         if (!mutable) {
             return PendingIntent.FLAG_IMMUTABLE;
-        } else if (mutable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return PendingIntent.FLAG_MUTABLE;
         }
         return 0;
@@ -473,7 +474,7 @@ public class IntentUtils {
      */
     public static boolean intentTargetsSelf(Intent intent) {
         boolean hasPackage = !TextUtils.isEmpty(intent.getPackage());
-        String appPackage = BuildInfo.getInstance().hostPackageName;
+        String appPackage = ApkInfo.getHostPackageName();
         boolean matchesPackage = hasPackage && appPackage.equals(intent.getPackage());
         ComponentName componentName = intent.getComponent();
         boolean matchesComponent =
@@ -540,6 +541,7 @@ public class IntentUtils {
      * @param intent An Intent to be checked.
      * @return Whether an intent originates from the current app.
      */
+    @Contract("null -> false")
     public static boolean isTrustedIntentFromSelf(@Nullable Intent intent) {
         if (intent == null) return false;
 

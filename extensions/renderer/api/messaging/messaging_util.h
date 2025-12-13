@@ -23,7 +23,7 @@ enum class SerializationFormat;
 }  // namespace mojom
 
 class ScriptContext;
-struct Message;
+class Message;
 struct MessagingEndpoint;
 
 namespace messaging_util {
@@ -69,11 +69,6 @@ v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
 // valid integer, but is stored in V8 as a number). This will DCHECK that
 // `value` is either an int32 or -0.
 int ExtractIntegerId(v8::Local<v8::Value> value);
-
-// Returns the preferred serialization format for the given `context`. Note
-// extension native messaging clients shouldn't call this as they should always
-// use JSON.
-mojom::SerializationFormat GetSerializationFormat(const ScriptContext& context);
 
 // Flags for ParseMessageOptions().
 enum ParseOptionsFlags {

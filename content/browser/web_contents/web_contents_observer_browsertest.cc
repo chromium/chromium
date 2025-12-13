@@ -4,6 +4,7 @@
 
 #include "content/public/browser/web_contents_observer.h"
 
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -853,8 +854,8 @@ class FocusedNodeObserver : public WebContentsObserver {
   void WaitForFocusChangedInPage() { run_loop_.Run(); }
 
   // WebContentsObserver:
-  void OnFocusChangedInPage(FocusedNodeDetails* details) override {
-    last_focus_type_ = details->focus_type;
+  void OnFocusChangedInPage(const FocusedNodeDetails& details) override {
+    last_focus_type_ = details.focus_type;
     run_loop_.Quit();
   }
 

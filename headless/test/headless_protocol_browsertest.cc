@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "components/headless/test/shared_test_util.h"
 #include "content/public/common/content_switches.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
@@ -31,8 +32,6 @@
 namespace headless {
 
 namespace switches {
-static const char kResetResults[] = "reset-results";
-static const char kDumpConsoleMessages[] = "dump-console-messages";
 static const char kDumpDevToolsProtocol[] = "dump-devtools-protocol";
 }  // namespace switches
 
@@ -124,16 +123,6 @@ void HeadlessProtocolBrowserTest::RunDevTooledTest() {
                           base::Unretained(this)));
   devtools_client_.SendCommand("Page.enable");
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDumpConsoleMessages)) {
-    // Set up Runtime domain to intercept console messages.
-    devtools_client_.AddEventHandler(
-        "Runtime.consoleAPICalled",
-        base::BindRepeating(&HeadlessProtocolBrowserTest::OnConsoleAPICalled,
-                            base::Unretained(this)));
-    devtools_client_.SendCommand("Runtime.enable");
-  }
-
   // Expose DevTools protocol to the target.
   browser_devtools_client_.SendCommand(
       "Target.exposeDevToolsProtocol", Param("targetId", agent_host->GetId()),
@@ -144,7 +133,7 @@ void HeadlessProtocolBrowserTest::RunDevTooledTest() {
 void HeadlessProtocolBrowserTest::OnceSetUp(base::Value::Dict) {
   // Navigate to test harness page
   GURL page_url = embedded_test_server()->GetURL(
-      "harness.test", "/protocol/inspector-protocol-test.html");
+      "harness.test", "/resources/inspector-protocol-test-subtarget.html");
   devtools_client_.SendCommand("Page.navigate", Param("url", page_url.spec()));
 }
 
@@ -167,8 +156,7 @@ void HeadlessProtocolBrowserTest::OnLoadEventFired(
   }
   test_params.Merge(GetPageUrlExtraParams());
 
-  std::string json_test_params;
-  base::JSONWriter::Write(test_params, &json_test_params);
+  std::string json_test_params = base::WriteJson(test_params).value_or("");
   std::string evaluate_script = "runTest(" + json_test_params + ")";
 
   base::Value::Dict evaluate_params;
@@ -192,8 +180,7 @@ void HeadlessProtocolBrowserTest::ProcessTestResult(
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath expectation_path = GetTestExpectationFilePath();
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kResetResults)) {
+  if (ShouldUpdateExpectations()) {
     LOG(INFO) << "Updating expectations at " << expectation_path;
     bool succcess = base::WriteFile(expectation_path, test_result);
     CHECK(succcess);
@@ -205,29 +192,6 @@ void HeadlessProtocolBrowserTest::ProcessTestResult(
   }
 
   EXPECT_EQ(expectation, test_result);
-}
-
-void HeadlessProtocolBrowserTest::OnConsoleAPICalled(
-    const base::Value::Dict& params) {
-  ASSERT_THAT(params, DictHasValue("method", "Runtime.consoleAPICalled"));
-
-  const base::Value::List* args = params.FindListByDottedPath("params.args");
-  if (!args || args->empty())
-    return;
-
-  const base::Value* value = args->front().GetDict().Find("value");
-  switch (value->type()) {
-    case base::Value::Type::NONE:
-    case base::Value::Type::BOOLEAN:
-    case base::Value::Type::INTEGER:
-    case base::Value::Type::DOUBLE:
-    case base::Value::Type::STRING:
-      LOG(INFO) << value->DebugString();
-      return;
-    default:
-      LOG(INFO) << "Unhandled value type: " << value->type();
-      return;
-  }
 }
 
 void HeadlessProtocolBrowserTest::FinishTest() {
@@ -357,6 +321,19 @@ HEADLESS_PROTOCOL_TEST(BrowserSetInitialProxyConfig,
 HEADLESS_PROTOCOL_TEST(BrowserUniversalNetworkAccess,
                        "sanity/universal-network-access.js")
 
+// TODO(445548057): the test actually passes on regular Linux
+// configurations that include D-Bus, however they take 25s
+// due to an unrelated problem. Once this is fixed, the tests
+// can be re-enabled on linux.
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#define MAYBE_GetClientCapabilities DISABLED_GetClientCapabilities
+#else
+#define MAYBE_GetClientCapabilities GetClientCapabilities
+#endif
+
+HEADLESS_PROTOCOL_TEST(MAYBE_GetClientCapabilities,
+                       "sanity/get-client-capabilities.js")
+
 HEADLESS_PROTOCOL_TEST(ShowDirectoryPickerNoCrash,
                        "sanity/show-directory-picker-no-crash.js")
 
@@ -372,6 +349,8 @@ HEADLESS_PROTOCOL_TEST(WindowOuterSize, "shared/window-outer-size.js")
 HEADLESS_PROTOCOL_TEST(WindowInnerSize, "shared/window-inner-size.js")
 HEADLESS_PROTOCOL_TEST(WindowInnerSizeScaled,
                        "shared/window-inner-size-scaled.js")
+HEADLESS_PROTOCOL_TEST(WindowInnerSizeLargerThanScreen,
+                       "shared/window-inner-size-larger-than-screen.js")
 
 // This is not shared because Chrome Headless Mode window.resizeTo() only works
 // under certain conditions which are note currently satisfied by the test.
@@ -610,6 +589,9 @@ HEADLESS_PROTOCOL_TEST(ScreenOrientationLockNaturalPortrait,
 HEADLESS_PROTOCOL_TEST(ScreenDetailsMultipleScreens,
                        "shared/screen-details-multiple-screens.js")
 
+HEADLESS_PROTOCOL_TEST(ScreenDetailsMultipleScreensScaled,
+                       "shared/screen-details-multiple-screens-scaled.js")
+
 HEADLESS_PROTOCOL_TEST(ScreenDetailsPixelRatio,
                        "shared/screen-details-pixel-ratio.js")
 
@@ -619,13 +601,15 @@ HEADLESS_PROTOCOL_TEST(ScreenDetailsColorDepth,
 HEADLESS_PROTOCOL_TEST(ScreenDetailsWorkArea,
                        "shared/screen-details-work-area.js")
 
+HEADLESS_PROTOCOL_TEST(ScreenDetailsWorkAreaScaled,
+                       "shared/screen-details-work-area-scaled.js")
+
 HEADLESS_PROTOCOL_TEST(RequestFullscreen, "shared/request-fullscreen.js")
 
 HEADLESS_PROTOCOL_TEST(RequestFullscreenOnSecondaryScreen,
                        "shared/request-fullscreen-on-secondary-screen.js")
 
-// Fails on all platforms, see https://crbug.com/429017383
-HEADLESS_PROTOCOL_TEST(DISABLED_MinimizeRestoreWindow,
+HEADLESS_PROTOCOL_TEST(MinimizeRestoreWindow,
                        "shared/minimize-restore-window.js")
 
 HEADLESS_PROTOCOL_TEST(MaximizeRestoreWindow,
@@ -638,6 +622,9 @@ HEADLESS_PROTOCOL_TEST(MaximizedWindowSize, "shared/maximized-window-size.js")
 
 HEADLESS_PROTOCOL_TEST(FullscreenWindowSize, "shared/fullscreen-window-size.js")
 
+HEADLESS_PROTOCOL_TEST(FullscreenWindowSizeScaled,
+                       "shared/fullscreen-window-size-scaled.js")
+
 HEADLESS_PROTOCOL_TEST(WindowOpenOnSecondaryScreen,
                        "shared/window-open-on-secondary-screen.js")
 
@@ -647,7 +634,13 @@ HEADLESS_PROTOCOL_TEST(ScreenRotationSecondaryScreen,
 HEADLESS_PROTOCOL_TEST(MoveWindowBetweenScreens,
                        "shared/move-window-between-screens.js")
 
-HEADLESS_PROTOCOL_TEST(CreateTargetSecondaryScreen,
+// This fails on Mac with RenderDocument enabled, http://crbug.com/446689489.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CreateTargetSecondaryScreen DISABLED_CreateTargetSecondaryScreen
+#else
+#define MAYBE_CreateTargetSecondaryScreen CreateTargetSecondaryScreen
+#endif
+HEADLESS_PROTOCOL_TEST(MAYBE_CreateTargetSecondaryScreen,
                        "shared/create-target-secondary-screen.js")
 
 HEADLESS_PROTOCOL_TEST(CreateTargetWindowState,
@@ -655,6 +648,9 @@ HEADLESS_PROTOCOL_TEST(CreateTargetWindowState,
 
 HEADLESS_PROTOCOL_TEST(DocumentVisibilityState,
                        "shared/document-visibility-state.js")
+
+HEADLESS_PROTOCOL_TEST(DocumentVisibilityStatePopup,
+                       "shared/document-visibility-state-popup.js")
 
 // This currently results in an unexpected screen orientation type,
 // see http://crbug.com/398150465.
@@ -686,5 +682,40 @@ HEADLESS_PROTOCOL_TEST(WindowScreenScaleFactor,
 
 HEADLESS_PROTOCOL_TEST(WindowScreenSizeOrientation,
                        "shared/window-screen-size-orientation.js")
+
+HEADLESS_PROTOCOL_TEST(GetScreenInfos, "shared/get-screen-infos.js")
+
+HEADLESS_PROTOCOL_TEST(AddScreen, "shared/add-screen.js")
+
+HEADLESS_PROTOCOL_TEST(AddScreenScaleFactor,
+                       "shared/add-screen-scale-factor.js")
+
+HEADLESS_PROTOCOL_TEST(AddScreenWorkArea, "shared/add-screen-work-area.js")
+
+HEADLESS_PROTOCOL_TEST(AddScreenGetScreenDetails,
+                       "shared/add-screen-get-screen-details.js")
+
+HEADLESS_PROTOCOL_TEST(RemoveScreen, "shared/remove-screen.js")
+
+HEADLESS_PROTOCOL_TEST(RemoveScreenGetScreenDetails,
+                       "shared/remove-screen-get-screen-details.js")
+
+HEADLESS_PROTOCOL_TEST(AddRemoveScreen, "shared/add-remove-screen.js")
+
+HEADLESS_PROTOCOL_TEST(DispatchMouseEventScreenCoordinates,
+                       "shared/dispatch-mouse-event-screen-coordinates.js")
+
+HEADLESS_PROTOCOL_TEST(DispatchTouchEventScreenCoordinates,
+                       "shared/dispatch-touch-event-screen-coordinates.js")
+
+HEADLESS_PROTOCOL_TEST(
+    EmulateTouchFromMouseEventScreenCoordinates,
+    "shared/emulate-touch-from-mouse-event-screen-coordinates.js")
+
+HEADLESS_PROTOCOL_TEST(WindowWithNewContext,
+                       "shared/window-with-new-context.js")
+
+HEADLESS_PROTOCOL_TEST(SetZoomedWindowBounds,
+                       "shared/set-zoomed-window-bounds.js")
 
 }  // namespace headless

@@ -136,7 +136,7 @@ class WellKnownChangePasswordNavigationThrottleBrowserTest
 
     auto entries = test_recorder_->GetEntriesByName(UkmBuilder::kEntryName);
     // Expect one recorded metric.
-    ASSERT_EQ(1, static_cast<int>(entries.size()));
+    ASSERT_EQ(1u, entries.size());
     test_recorder_->ExpectEntryMetric(
         entries[0], UkmBuilder::kWellKnownChangePasswordResultName,
         static_cast<int64_t>(expected));
@@ -206,8 +206,8 @@ class WellKnownChangePasswordNavigationThrottleBrowserTest
   // `path_response_map_`.
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
     GURL absolute_url = test_server_->GetURL(request.relative_url);
-    std::string path = absolute_url.path();
-    auto it = path_response_map_.find(absolute_url.path_piece());
+    std::string path = absolute_url.GetPath();
+    auto it = path_response_map_.find(absolute_url.path());
     if (it == path_response_map_.end()) {
       return nullptr;
     }
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderingChangePasswordNavigationThrottleBrowserTest,
 
         // If the non-existing-resource path is requested it means the throttle
         // is running so fail the test.
-        EXPECT_NE(params->url_request.url.path(),
+        EXPECT_NE(params->url_request.url.GetPath(),
                   kWellKnownNotExistingResourcePath);
         std::string speculation_script = base::ReplaceStringPlaceholders(
             R"(

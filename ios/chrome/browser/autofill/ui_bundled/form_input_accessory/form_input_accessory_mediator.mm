@@ -23,6 +23,7 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -56,6 +57,7 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using base::UmaHistogramEnumeration;
@@ -247,10 +249,6 @@ bool IsStateless() {
 
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self
-                      selector:@selector(applicationDidEnterBackground:)
-                          name:UIApplicationDidEnterBackgroundNotification
-                        object:nil];
-    [defaultCenter addObserver:self
                       selector:@selector(keyboardWillShow:)
                           name:UIKeyboardWillShowNotification
                         object:nil];
@@ -305,7 +303,7 @@ bool IsStateless() {
     if (IsBottomOmniboxAvailable()) {
       _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
           initWithPrefService:GetApplicationContext()->GetLocalState()
-                     prefName:prefs::kBottomOmnibox];
+                     prefName:omnibox::kIsOmniboxInBottomPosition];
       [_bottomOmniboxEnabled setObserver:self];
       // Initialize to the current value.
       [self booleanDidChange:_bottomOmniboxEnabled];
@@ -366,6 +364,25 @@ bool IsStateless() {
 - (autofill::FillingProduct)currentProviderMainFillingProduct {
   return IsStateless() ? _currentSuggestionProvider.mainFillingProduct
                        : self.currentProvider.mainFillingProduct;
+}
+
+- (void)reloadFirstResponderInputViews {
+  if (!_webState || !_webState->IsVisible()) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kFormInputAccessorySkipInputViewReloadInBackground) &&
+      UIApplication.sharedApplication.applicationState !=
+          UIApplicationStateActive) {
+    return;
+  }
+
+  // Ensure the object is valid and still in a window.
+  UIView* responder = base::apple::ObjCCast<UIView>(GetFirstResponder());
+  if (responder && responder.window) {
+    [responder reloadInputViews];
+  }
 }
 
 #pragma mark - KeyboardNotification
@@ -450,21 +467,24 @@ bool IsStateless() {
     return;
   }
 
+  BOOL isDefaultViewEnabled =
+      IsIOSKeyboardAccessoryDefaultViewEnabled() &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
+  BOOL isSelectOne = params.field_type == "select-one";
+
   // Return early and reset if element is a picker.
-  if (params.field_type == "select-one") {
+  if (isSelectOne && !isDefaultViewEnabled) {
     [self reset];
     return;
   }
 
   self.validActivityForAccessoryView = YES;
-  NSString* frameID;
-  if (frame) {
-    frameID = base::SysUTF8ToNSString(frame->GetFrameId());
-  }
-  DCHECK(frameID.length);
+  [self setLastFocusFormActivityWebFrameID:frame];
 
-  [self.formNavigationHandler setLastFocusFormActivityWebFrameID:frameID];
-  [self synchronizeNavigationControls];
+  if (isSelectOne && isDefaultViewEnabled) {
+    [self.consumer showNavigationButtons];
+    return;
+  }
 
   // Don't look for suggestions in the next events.
   if (params.type == "blur" || params.type == "change" ||
@@ -478,7 +498,7 @@ bool IsStateless() {
   if (!InputTriggersKeyboard(_lastSeenParams.field_type,
                              /*default_value=*/false) &&
       InputTriggersKeyboard(params.field_type, /*default_value=*/true)) {
-    [GetFirstResponder() reloadInputViews];
+    [self reloadFirstResponderInputViews];
   }
   _lastSeenParams = params;
   _hasLastSeenParams = YES;
@@ -639,22 +659,12 @@ bool IsStateless() {
 }
 
 - (void)updateSuggestionsIfNeeded {
+  if (!_webState || !_webState->IsVisible()) {
+    return;
+  }
   if (_hasLastSeenParams && _webState && IsSuggestionRefreshAllowed()) {
     [self retrieveSuggestionsForForm:_lastSeenParams webState:_webState];
   }
-}
-
-// Update the status of the consumer form navigation buttons to match the
-// handler state.
-- (void)synchronizeNavigationControls {
-  __weak __typeof(self) weakSelf = self;
-  [self.formNavigationHandler
-      fetchPreviousAndNextElementsPresenceWithCompletionHandler:^(
-          bool previousButtonEnabled, bool nextButtonEnabled) {
-        weakSelf.consumer.formInputNextButtonEnabled = nextButtonEnabled;
-        weakSelf.consumer.formInputPreviousButtonEnabled =
-            previousButtonEnabled;
-      }];
 }
 
 // Updates the accessory mediator with the passed web state, its JS suggestion
@@ -780,11 +790,6 @@ bool IsStateless() {
   }
 }
 
-// Handle applicationDidEnterBackground NSNotification.
-- (void)applicationDidEnterBackground:(NSNotification*)notification {
-  [self.handler resetFormInputView];
-}
-
 // Logs information about what type of suggestion the user selected.
 - (void)logReauthenticationEvent:(ReauthenticationEvent)reauthenticationEvent
                    forSuggestion:(FormSuggestion*)suggestion {
@@ -827,6 +832,13 @@ bool IsStateless() {
                                                        .featureForIPH];
   }
   [self.currentProvider didSelectSuggestion:formSuggestion atIndex:index];
+}
+
+// Sets the last focused form activity web frame ID with the given `frame`.
+- (void)setLastFocusFormActivityWebFrameID:(web::WebFrame*)frame {
+  NSString* frameID =
+      frame ? base::SysUTF8ToNSString(frame->GetFrameId()) : nil;
+  [self.formNavigationHandler setLastFocusFormActivityWebFrameID:frameID];
 }
 
 #pragma mark - Boolean Observer

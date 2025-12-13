@@ -28,6 +28,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media_galleries/media_file_system_context.h"
@@ -51,10 +52,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#endif
 
 namespace content {
 class SiteInstance;
@@ -136,8 +133,9 @@ bool TestMediaFileSystemContext::RegisterFileSystem(
 }
 
 void TestMediaFileSystemContext::RevokeFileSystem(const std::string& fs_name) {
-  if (!base::Contains(file_systems_by_name_, fs_name))
+  if (!base::Contains(file_systems_by_name_, fs_name)) {
     return;
+  }
   EXPECT_EQ(1U, file_systems_by_name_.erase(fs_name));
 }
 
@@ -276,11 +274,7 @@ class ProfileState {
 };
 
 std::u16string GetExpectedFolderName(const base::FilePath& path) {
-#if BUILDFLAG(IS_CHROMEOS)
   return path.BaseName().LossyDisplayName();
-#else
-  return path.LossyDisplayName();
-#endif
 }
 
 }  // namespace
@@ -362,19 +356,11 @@ class MediaFileSystemRegistryTest : public ChromeRenderViewHostTestHarness {
   size_t GetExtensionGalleriesHostCount(
       const MediaFileSystemRegistry* registry) const;
 
-  int num_auto_galleries() {
-    return media_directories_.num_galleries();
-  }
-
  protected:
   void SetUp() override;
   void TearDown() override;
 
  private:
-  // This makes sure that at least one default gallery exists on the file
-  // system.
-  EnsureMediaDirectoriesExists media_directories_;
-
   // Some test gallery directories.
   base::ScopedTempDir galleries_dir_;
   // An empty directory in |galleries_dir_|
@@ -388,9 +374,7 @@ class MediaFileSystemRegistryTest : public ChromeRenderViewHostTestHarness {
 
   // Needed for extension service & friends to work.
 
-#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-#endif
 
   MockProfileSharedRenderProcessHostFactory rph_factory_;
 
@@ -687,9 +671,6 @@ void MediaFileSystemRegistryTest::AssertAllAutoAddedGalleries() {
     // Make sure that we have at least one gallery and that they are all
     // auto added galleries.
     const MediaGalleriesPrefInfoMap& galleries = prefs->known_galleries();
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-    ASSERT_GT(galleries.size(), 0U);
-#endif
     for (auto it = galleries.begin(); it != galleries.end(); ++it) {
       ASSERT_EQ(MediaGalleryPrefInfo::kAutoDetected, it->second.type);
     }
@@ -705,11 +686,7 @@ void MediaFileSystemRegistryTest::InitForGalleriesInfoTest(
   ProfileState* profile_state = GetProfileState(0U);
   *galleries_info = profile_state->GetGalleriesInfo(
       profile_state->all_permission_extension());
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-  ASSERT_EQ(3U, galleries_info->size());
-#else
   ASSERT_EQ(0U, galleries_info->size());
-#endif
 }
 
 void MediaFileSystemRegistryTest::CheckNewGalleryInfo(
@@ -727,8 +704,9 @@ void MediaFileSystemRegistryTest::CheckNewGalleryInfo(
   for (FSInfoMap::const_iterator it = new_galleries_info.begin();
        it != new_galleries_info.end();
        ++it) {
-    if (base::Contains(galleries_info, it->first))
+    if (base::Contains(galleries_info, it->first)) {
       continue;
+    }
 
     ASSERT_FALSE(found_new);
     CheckGalleryInfo(it->second, test_file_system_context_, location,
@@ -921,8 +899,6 @@ TEST_F(MediaFileSystemRegistryTest, GalleryNameDefault) {
   }
 }
 
-// TODO(gbillock): Move the remaining test into the linux directory.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 TEST_F(MediaFileSystemRegistryTest, GalleryMTP) {
   FSInfoMap galleries_info;
   InitForGalleriesInfoTest(&galleries_info);
@@ -932,7 +908,6 @@ TEST_F(MediaFileSystemRegistryTest, GalleryMTP) {
   CheckNewGalleryInfo(GetProfileState(0U), galleries_info, location,
                       true /*removable*/, true /* media device */);
 }
-#endif
 
 TEST_F(MediaFileSystemRegistryTest, GalleryDCIM) {
   FSInfoMap galleries_info;
@@ -1038,21 +1013,8 @@ TEST_F(MediaFileSystemRegistryTest, TestNameConstruction) {
   profile_state->AddNameForReadCompare(empty_dir_name);
   profile_state->AddNameForAllCompare(empty_dir_name);
 
-  // This part of the test is conditional on default directories existing
-  // on the test platform. In ChromeOS, these directories do not exist.
-  base::FilePath path;
-  if (num_auto_galleries() > 0) {
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_USER_MUSIC, &path));
-    profile_state->AddNameForAllCompare(GetExpectedFolderName(path));
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_USER_PICTURES, &path));
-    profile_state->AddNameForAllCompare(GetExpectedFolderName(path));
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_USER_VIDEOS, &path));
-    profile_state->AddNameForAllCompare(GetExpectedFolderName(path));
-
-    profile_state->CheckGalleries("names-dir", one_expectation, auto_galleries);
-  } else {
-    profile_state->CheckGalleries("names", one_expectation, one_expectation);
-  }
+  // In ChromeOS, there are no default media directories.
+  profile_state->CheckGalleries("names", one_expectation, one_expectation);
 }
 
 TEST_F(MediaFileSystemRegistryTest, PreferenceListener) {

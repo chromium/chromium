@@ -153,6 +153,9 @@ inline constexpr std::array kSpanifyManualPathsToIgnore = {
     "ui/gl/gl_stub_autogen_gl.cc",
     "ui/gl/gl_stub_autogen_gl.h",
 
+    // Requested in crrev.com/c/6731996.
+    "net/websockets/websocket_frame.cc",
+
     // Exclude these generated files.
     //
     // An example of `spanify` picking them up can be seen at

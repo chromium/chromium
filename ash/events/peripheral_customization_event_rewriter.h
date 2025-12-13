@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/events/event.h"

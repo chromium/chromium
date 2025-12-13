@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
@@ -17,6 +18,11 @@
 #include "chrome/browser/safe_browsing/tailored_security/unconsented_message_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #endif
 
 class Profile;
@@ -57,9 +63,20 @@ class SafeBrowsingPrefChangeHandler {
   // settings page. Virtual for tests.
   virtual void MaybeShowEnhancedProtectionSettingChangeNotification();
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+  void SetToastControllerForTesting(ToastController* controller);
+#endif
+
  private:
   // Member variable to store the Profile*.
   raw_ptr<Profile> profile_;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+  raw_ptr<ToastController> toast_controller_for_testing_ = nullptr;
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
   // Called when the consented modal is dismissed.
   void ConsentedMessageDismissed();
@@ -79,6 +96,9 @@ class SafeBrowsingPrefChangeHandler {
                            DidAddTab_NullTab);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingPrefChangeHandlerAndroidTest,
                            OnTabModelAddedAndRemoved);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingPrefChangeHandlerAndroidTest,
+      MaybeShowEnhancedProtectionSettingChangeNotificationResetsPref);
 
   // Functions used for testing.
   // Sets the TabModel for testing purposes.

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tips_notifications/ui/tips_promo_view_controller.h"
 
+#import "base/check.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -28,52 +30,21 @@ const CGFloat kAnimationHeightPercent = 0.5;
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                           target:self.delegate
-                           action:@selector(didDismissViewController)];
-  self.navigationItem.rightBarButtonItem = dismissButton;
-  self.layoutBehindNavigationBar = YES;
-  self.shouldHideBanner = YES;
-  self.headerImageType = PromoStyleImageType::kNone;
+  [super viewDidLoad];
 
   UIStackView* contentStack = [self createContentStack];
-  [self.specificContentView addSubview:contentStack];
-  [super viewDidLoad];
+  [self.contentView addSubview:contentStack];
 
   [NSLayoutConstraint activateConstraints:@[
     [_animationViewWrapper.animationView.heightAnchor
         constraintEqualToAnchor:self.view.heightAnchor
                      multiplier:kAnimationHeightPercent],
-    [contentStack.centerXAnchor
-        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-    [contentStack.topAnchor
-        constraintEqualToAnchor:self.specificContentView.topAnchor
-                       constant:-kCustomSpacingAfterAnimation],
-    [contentStack.widthAnchor
-        constraintEqualToAnchor:self.specificContentView.widthAnchor],
-    [self.specificContentView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:contentStack.heightAnchor],
   ]];
+  AddSameConstraints(contentStack, self.contentView);
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                       withAction:@selector(updateAnimation)];
-  }
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withAction:@selector(updateAnimation)];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  if (previousTraitCollection.userInterfaceStyle !=
-      self.traitCollection.userInterfaceStyle) {
-    [self updateAnimation];
-  }
-}
-#endif
 
 #pragma mark - Private
 
@@ -82,7 +53,7 @@ const CGFloat kAnimationHeightPercent = 0.5;
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
   config.animationName = animationAssetName;
-  config.loopAnimationCount = -1;  // Always loop.
+  config.shouldLoop = YES;
   id<LottieAnimation> animationWrapper =
       ios::provider::GenerateLottieAnimation(config);
   [animationWrapper setDictionaryTextProvider:self.animationTextProvider];
@@ -92,44 +63,51 @@ const CGFloat kAnimationHeightPercent = 0.5;
 // Returns a stack view containing the animation image, the title, and the
 // subtitle.
 - (UIStackView*)createContentStack {
-  _animationViewWrapper = [self createAnimation:self.animationName];
-  UIView* animation = _animationViewWrapper.animationView;
-  animation.translatesAutoresizingMaskIntoConstraints = NO;
-  animation.contentMode = UIViewContentModeScaleAspectFit;
-  _animationViewWrapperDarkMode =
-      [self createAnimation:self.animationNameDarkMode];
-  UIView* animationDarkMode = _animationViewWrapperDarkMode.animationView;
-  animationDarkMode.translatesAutoresizingMaskIntoConstraints = NO;
-  animationDarkMode.contentMode = UIViewContentModeScaleAspectFit;
-  [self updateAnimation];
+  UIStackView* stack = [[UIStackView alloc] init];
 
-  UILabel* title = [self createLabel:self.titleText
-                                font:GetFRETitleFont(UIFontTextStyleTitle2)
-                               color:kTextPrimaryColor];
-  UILabel* subtitle =
-      [self createLabel:self.subtitleText
-                   font:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-                  color:kTextSecondaryColor];
-  // Clear `titleText` and `subtitleText` so that PromoStyleViewController does
-  // not use them to create alternate title and subtitle labels.
-  self.titleText = nil;
-  self.subtitleText = nil;
-
-  UIStackView* stack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    animation,
-    animationDarkMode,
-    title,
-    subtitle,
-  ]];
   stack.axis = UILayoutConstraintAxisVertical;
   stack.translatesAutoresizingMaskIntoConstraints = NO;
   stack.alignment = UIStackViewAlignmentFill;
   stack.distribution = UIStackViewDistributionFill;
   stack.spacing = UIStackViewSpacingUseSystem;
+
+  _animationViewWrapper = [self createAnimation:self.animationName];
+  UIView* animation = _animationViewWrapper.animationView;
+  animation.translatesAutoresizingMaskIntoConstraints = NO;
+  animation.contentMode = UIViewContentModeScaleAspectFit;
+  [stack addArrangedSubview:animation];
   [stack setCustomSpacing:kCustomSpacingAfterAnimation afterView:animation];
-  [stack setCustomSpacing:kCustomSpacingAfterAnimation
-                afterView:animationDarkMode];
-  AddSameConstraints(animation, animationDarkMode);
+  if (self.animationNameDarkMode) {
+    CHECK(!self.lightModeColorProvider && !self.darkModeColorProvider);
+    _animationViewWrapperDarkMode =
+        [self createAnimation:self.animationNameDarkMode];
+    UIView* animationDarkMode = _animationViewWrapperDarkMode.animationView;
+    animationDarkMode.translatesAutoresizingMaskIntoConstraints = NO;
+    animationDarkMode.contentMode = UIViewContentModeScaleAspectFit;
+    [stack addArrangedSubview:animationDarkMode];
+    [stack setCustomSpacing:kCustomSpacingAfterAnimation
+                  afterView:animationDarkMode];
+    AddSameConstraints(animation, animationDarkMode);
+  } else {
+    [_animationViewWrapper play];
+  }
+  [self updateAnimation];
+
+  if (self.titleText.length > 0) {
+    UILabel* title = [self createLabel:self.titleText
+                                  font:GetFRETitleFont(UIFontTextStyleTitle2)
+                                 color:kTextPrimaryColor];
+    [stack addArrangedSubview:title];
+  }
+
+  if (self.subtitleText.length > 0) {
+    UILabel* subtitle =
+        [self createLabel:self.subtitleText
+                     font:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+                    color:kTextSecondaryColor];
+    [stack addArrangedSubview:subtitle];
+  }
+
   return stack;
 }
 
@@ -151,14 +129,31 @@ const CGFloat kAnimationHeightPercent = 0.5;
 - (void)updateAnimation {
   BOOL dark =
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-  [_animationViewWrapper stop];
-  [_animationViewWrapperDarkMode stop];
-  _animationViewWrapper.animationView.hidden = dark;
-  _animationViewWrapperDarkMode.animationView.hidden = !dark;
-  if (dark) {
-    [_animationViewWrapperDarkMode play];
+  if (self.lightModeColorProvider) {
+    if (dark) {
+      [self updateAnimationWithColorProvider:self.darkModeColorProvider];
+    } else {
+      [self updateAnimationWithColorProvider:self.lightModeColorProvider];
+    }
   } else {
-    [_animationViewWrapper play];
+    [_animationViewWrapper stop];
+    [_animationViewWrapperDarkMode stop];
+    _animationViewWrapper.animationView.hidden = dark;
+    _animationViewWrapperDarkMode.animationView.hidden = !dark;
+    if (dark) {
+      [_animationViewWrapperDarkMode play];
+    } else {
+      [_animationViewWrapper play];
+    }
+  }
+}
+
+// Updates the _animationViewWrapper with the colors from `colorProvider`.
+- (void)updateAnimationWithColorProvider:
+    (NSDictionary<NSString*, UIColor*>*)colorProvider {
+  for (NSString* keypath in colorProvider.allKeys) {
+    [_animationViewWrapper setColorValue:colorProvider[keypath]
+                              forKeypath:keypath];
   }
 }
 

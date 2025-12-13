@@ -9,7 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import com.google.protobuf.ByteString;
 
 import org.chromium.android_webview.proto.AwVariationsSeedOuterClass.AwVariationsSeed;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.AndroidInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
@@ -177,7 +177,7 @@ public class VariationsUtils {
 
     // Logs an INFO message if running in a debug build of Android.
     public static void debugLog(String message) {
-        if (BuildInfo.isDebugAndroid()) {
+        if (AndroidInfo.isDebugAndroid()) {
             Log.i(TAG, message);
         }
     }

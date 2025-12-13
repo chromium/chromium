@@ -4,20 +4,18 @@
 
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 
+#import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_metrics.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace set_up_list_prefs {
 
-const char kSigninSyncItemState[] = "set_up_list.signin_sync_item.state";
 const char kDefaultBrowserItemState[] =
     "set_up_list.default_browser_item.state";
 const char kAutofillItemState[] = "set_up_list.autofill_item.state";
-const char kFollowItemState[] = "set_up_list.follow_item.state";
 const char kNotificationsItemState[] =
     "set_up_list.content_notification_item.state";
 const char kAllItemsComplete[] = "set_up_list.all_items_complete";
@@ -26,10 +24,8 @@ const char kLastInteraction[] = "set_up_list.last_interaction";
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
   int unknown = static_cast<int>(SetUpListItemState::kUnknown);
-  registry->RegisterIntegerPref(kSigninSyncItemState, unknown);
   registry->RegisterIntegerPref(kDefaultBrowserItemState, unknown);
   registry->RegisterIntegerPref(kAutofillItemState, unknown);
-  registry->RegisterIntegerPref(kFollowItemState, unknown);
   registry->RegisterIntegerPref(kNotificationsItemState, unknown);
   registry->RegisterBooleanPref(kAllItemsComplete, false);
   registry->RegisterBooleanPref(kDisabled, false);
@@ -38,14 +34,10 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 
 const char* PrefNameForItem(SetUpListItemType type) {
   switch (type) {
-    case SetUpListItemType::kSignInSync:
-      return kSigninSyncItemState;
     case SetUpListItemType::kDefaultBrowser:
       return kDefaultBrowserItemState;
     case SetUpListItemType::kAutofill:
       return kAutofillItemState;
-    case SetUpListItemType::kFollow:
-      return kFollowItemState;
     case SetUpListItemType::kNotifications:
       return kNotificationsItemState;
     case SetUpListItemType::kAllSet:
@@ -94,12 +86,7 @@ bool AllItemsComplete(PrefService* prefs) {
 }
 
 bool IsSetUpListDisabled(PrefService* prefs) {
-  return !prefs->GetBoolean(
-      prefs::kHomeCustomizationMagicStackSetUpListEnabled);
-}
-
-void DisableSetUpList(PrefService* prefs) {
-  prefs->SetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled, false);
+  return !prefs->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled);
 }
 
 void RecordInteraction(PrefService* prefs) {

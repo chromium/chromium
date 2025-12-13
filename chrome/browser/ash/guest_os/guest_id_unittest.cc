@@ -70,7 +70,8 @@ TEST_F(GuestIdTest, GetContainers) {
     {"vm_name": "vm1", "container_name": "c1"},
     {"vm_name": "vm2", "container_name": "c2"},
     {"vm_name": "vm3"}
-  ])");
+  ])",
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(pref.has_value());
   profile_.GetPrefs()->Set(prefs::kGuestOsContainers, std::move(*pref));
   std::vector<GuestId> expected = {GuestId(VmType::TERMINA, "vm1", "c1"),

@@ -85,7 +85,7 @@ Useful things to know:
 ### Anchoring your IPH
 
 More information on defining a new help bubble anchor is provided on the
-[Help Bubbles](./help_bubbles.md) page.
+[Help Bubbles](./help-bubbles.md) page.
 
 ### Toasts and accessible strings
 
@@ -202,7 +202,7 @@ Because of the sheer number of promotions that feature teams put into Chrome,
 and the potential for significant disruption for users, great care has been
 taken to limit the number and frequency of certain promotions.
 
-> We are enumerating these restrictions here because there are no exceptions. 
+> We are enumerating these restrictions here because there are no exceptions.
 If triggering logic causes an IPH to run afoul of one or more of these
 restrictions and the IPH is not shown (or is shown less than would be desired),
 it is up to the feature developer to rework the triggering logic and/or to
@@ -308,7 +308,7 @@ when you want it to.
 To test your IPH, use `InteractiveFeaturePromoTest` as your test's base class.
 If you already have a test class for your feature you want to inherit from that
 derives from `InProcessBrowserTest`, use
-`InteractiveFeaturePromoTestT<YourTestClass>` instead.
+`InteractiveFeaturePromoTestMixin<YourTestClass>` instead.
 
 Then, write a [Kombucha](https://goto.google.com/kombucha-playbook) test which
 performs the steps that would trigger your IPH, with a `WaitForPromo` to verify

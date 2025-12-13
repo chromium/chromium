@@ -21,6 +21,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/google/core/common/google_util.h"
@@ -28,6 +29,7 @@
 #include "components/manta/manta_status.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/image_annotation/image_annotation_metrics.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom-forward.h"
@@ -753,8 +755,7 @@ std::string Annotator::FormatJsonRequest(
   base::Value::Dict request;
   request.Set("imageRequests", std::move(image_request_list));
 
-  std::string json_request;
-  base::JSONWriter::Write(request, &json_request);
+  std::string json_request = base::WriteJson(request).value_or("");
 
   ReportServerRequestSizeKB(json_request.size() / 1024);
 

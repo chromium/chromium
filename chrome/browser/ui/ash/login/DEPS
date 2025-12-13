@@ -1,12 +1,4 @@
 include_rules = [
-  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
-  # details.
-  "-chrome",
-
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/ui/ash/login",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -18,6 +10,7 @@ include_rules = [
   "+chrome/browser/ash/base",
   "+chrome/browser/ash/boot_times_recorder",
   "+chrome/browser/ash/browser_delegate",
+  "+chrome/browser/ash/certificate_provider",
   "+chrome/browser/ash/child_accounts/parent_access_code",
   "+chrome/browser/ash/customization",
   "+chrome/browser/ash/extensions/login_screen_ui",
@@ -33,7 +26,6 @@ include_rules = [
   "+chrome/browser/ash/tpm",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",
-  "+chrome/browser/certificate_provider",
   "+chrome/browser/command_updater_delegate.h",
   "+chrome/browser/command_updater_impl.h",
   "+chrome/browser/lifetime",
@@ -51,10 +43,6 @@ include_rules = [
   "+chrome/browser/ui/ash/wallpaper",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_dialogs.h",
-  "+chrome/browser/ui/browser_finder.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_list_observer.h",
-  "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h",
   "+chrome/browser/ui/content_settings",
@@ -74,11 +62,20 @@ include_rules = [
   "+chrome/browser/ui/webui/chrome_web_contents_handler.h",
   "+chrome/browser/ui/webui/feedback",
   "+chrome/common",
-  "+chrome/common/channel_info.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/common/pref_names.h",
   "+chrome/grit",
-  "+chrome/test/base",
-  "+chrome/test/views",
 ]
+
+specific_include_rules = {
+  ".*_(browser|unit)test\\.cc": [
+    "+chrome/browser/ui/browser_finder.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/test/base",
+    "+chrome/test/views",
+  ],
+  "fake_.*\\.cc": [
+    "+chrome/test/base",
+  ],
+}

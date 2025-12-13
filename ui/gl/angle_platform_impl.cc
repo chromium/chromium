@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/gl/angle_platform_impl.h"
 
 #include "base/base64.h"
@@ -69,8 +64,7 @@ TraceEventHandle ANGLEPlatformImpl_addTraceEvent(
                                          arg_values);
   base::trace_event::TraceEventHandle handle =
       TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_THREAD_ID_AND_TIMESTAMP(
-          phase, category_group_enabled, name,
-          trace_event_internal::kGlobalScope, id, trace_event_internal::kNoId,
+          phase, category_group_enabled, name, id,
           base::PlatformThread::CurrentId(), timestamp_tt, &args, flags);
   TraceEventHandle result;
   memcpy(&result, &handle, sizeof(result));

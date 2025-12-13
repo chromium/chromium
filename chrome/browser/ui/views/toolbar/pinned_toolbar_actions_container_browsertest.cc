@@ -7,12 +7,17 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -103,7 +108,7 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        CustomizeToolbarCanBeCalledFromNewTabPage) {
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
-      browser(), actions::kActionCut, container());
+      browser(), actions::kActionCut, container()->GetWeakPtrForTesting());
   pinned_button->menu_model()->ActivatedAt(2);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -111,25 +116,21 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents, GURL("chrome://newtab/")));
   content::WaitForLoadStop(web_contents);
   EXPECT_EQ(web_contents->GetURL().possibly_invalid_spec(), "chrome://newtab/");
-  const std::optional<SidePanelEntryId> current_entry =
-      browser()->GetFeatures().side_panel_ui()->GetCurrentEntryId();
-  EXPECT_TRUE(current_entry.has_value());
-  EXPECT_EQ(SidePanelEntryId::kCustomizeChrome, current_entry.value());
+  EXPECT_TRUE(browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome)));
 }
 
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        CustomizeToolbarCanBeCalledFromNonNewTabPage) {
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
-      browser(), actions::kActionCut, container());
+      browser(), actions::kActionCut, container()->GetWeakPtrForTesting());
   pinned_button->menu_model()->ActivatedAt(2);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
   EXPECT_NE(web_contents->GetURL().possibly_invalid_spec(), "chrome://newtab/");
-  const std::optional<SidePanelEntryId> current_entry =
-      browser()->GetFeatures().side_panel_ui()->GetCurrentEntryId();
-  EXPECT_TRUE(current_entry.has_value());
-  EXPECT_EQ(SidePanelEntryId::kCustomizeChrome, current_entry.value());
+  EXPECT_TRUE(browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome)));
 }
 
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
@@ -139,7 +140,8 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
       true));
   AddBlankTabAndShow(incognito_browser);
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
-      incognito_browser, actions::kActionCut, container());
+      incognito_browser, actions::kActionCut,
+      container()->GetWeakPtrForTesting());
   EXPECT_FALSE(pinned_button->menu_model()->IsEnabledAt(2));
 }
 
@@ -188,6 +190,36 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   pinned_button->SetVisible(false);
   container()->InvalidateLayout();
   EXPECT_EQ(pinned_button->GetVisible(), false);
+}
+
+IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
+                       ButtonNotSeenWhenHiddenForSidePanelEntry) {
+  // Set the bookmarks side panel entry to not show an ephemeral button.
+  SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  side_panel_ui->SetNoDelaysForTesting(true);
+  SidePanelEntry* const entry =
+      SidePanelRegistry::From(browser())->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
+  SidePanelEntry::PanelType panel_type = entry->type();
+  entry->set_should_show_ephemerally_in_toolbar(false);
+
+  // Verify no toolbar button is shown when the bookmarks side panel is opened.
+  side_panel_ui->Show(SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
+  views::test::WaitForAnimatingLayoutManager(container());
+  EXPECT_FALSE(container()->IsActionPinned(kActionSidePanelShowBookmarks));
+  EXPECT_FALSE(container()->IsActionPoppedOut(kActionSidePanelShowBookmarks));
+
+  // Set the bookmarks entry back to showing the toolbar button ephemerally if
+  // shown.
+  side_panel_ui->Close(panel_type);
+  entry->set_should_show_ephemerally_in_toolbar(true);
+
+  // Verify the toolbar button is now ephemerally shown if the bookmarks side
+  // panel is opened.
+  side_panel_ui->Show(SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
+  views::test::WaitForAnimatingLayoutManager(container());
+  EXPECT_FALSE(container()->IsActionPinned(kActionSidePanelShowBookmarks));
+  EXPECT_TRUE(container()->IsActionPoppedOut(kActionSidePanelShowBookmarks));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -259,4 +291,40 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   EXPECT_EQ(web_app_container->IsActionPinned(kActionSidePanelShowBookmarks),
             false);
   EXPECT_EQ(web_app_container->IsActionPinned(kActionPrint), false);
+}
+
+IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
+                       PinnedButtonPinningAndUnpinning) {
+  PinnedToolbarActionsModel* const actions_model =
+      PinnedToolbarActionsModel::Get(browser()->profile());
+
+  actions::ActionItem* action_item =
+      actions::ActionManager::Get().FindAction(kActionShowTranslate);
+
+  // Verify button is visible when pinned.
+  action_item->SetProperty(
+      actions::kActionItemPinnableKey,
+      static_cast<int>(actions::ActionPinnableState::kPinnable));
+  actions_model->UpdatePinnedState(kActionShowTranslate, true);
+  views::test::WaitForAnimatingLayoutManager(container());
+  auto* button_before = container()->GetButtonFor(kActionShowTranslate);
+  EXPECT_EQ(button_before->GetVisible(), true);
+
+  // Verify button is no longer visible after setting to not pinnable.
+  action_item->SetProperty(
+      actions::kActionItemPinnableKey,
+      static_cast<int>(actions::ActionPinnableState::kNotPinnable));
+  views::test::WaitForAnimatingLayoutManager(container());
+  auto* button_during = container()->GetButtonFor(kActionShowTranslate);
+  views::test::WaitForAnimatingLayoutManager(container());
+  EXPECT_EQ(button_during->GetVisible(), false);
+
+  // Verify button is longer visible after setting back to pinnable.
+  action_item->SetProperty(
+      actions::kActionItemPinnableKey,
+      static_cast<int>(actions::ActionPinnableState::kPinnable));
+  views::test::WaitForAnimatingLayoutManager(container());
+  auto* button_after = container()->GetButtonFor(kActionShowTranslate);
+  views::test::WaitForAnimatingLayoutManager(container());
+  EXPECT_EQ(button_after->GetVisible(), true);
 }

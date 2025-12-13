@@ -9,6 +9,11 @@ import static androidx.test.espresso.intent.Intents.intending;
 
 import static org.hamcrest.Matchers.equalTo;
 
+import static org.chromium.android_webview.AwSettings.HyperlinkContextMenuItems.COPY_LINK_ADDRESS;
+import static org.chromium.android_webview.AwSettings.HyperlinkContextMenuItems.COPY_LINK_TEXT;
+import static org.chromium.android_webview.AwSettings.HyperlinkContextMenuItems.DISABLED;
+import static org.chromium.android_webview.AwSettings.HyperlinkContextMenuItems.OPEN_LINK;
+import static org.chromium.android_webview.contextmenu.AwContextMenuCoordinator.ListItemType.CONTEXT_MENU_ITEM;
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.getClipBoardTextOnUiThread;
 
 import android.app.Activity;
@@ -22,7 +27,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
 import android.util.Pair;
-import android.view.ViewGroup;
 
 import androidx.activity.ComponentDialog;
 import androidx.core.content.ContextCompat;
@@ -43,20 +47,16 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
-import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwContents.DependencyFactory;
-import org.chromium.android_webview.AwContents.InternalAccessDelegate;
-import org.chromium.android_webview.AwContentsClient;
-import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwSettings.HyperlinkContextMenuItems;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.contextmenu.AwContextMenuCoordinator;
 import org.chromium.android_webview.contextmenu.AwContextMenuHeaderCoordinator;
 import org.chromium.android_webview.contextmenu.AwContextMenuHeaderProperties;
 import org.chromium.android_webview.contextmenu.AwContextMenuHelper;
+import org.chromium.android_webview.contextmenu.AwContextMenuItemProperties;
 import org.chromium.android_webview.contextmenu.AwContextMenuPopulator;
-import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -65,16 +65,21 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink_public.common.ContextMenuDataMediaFlags;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.listmenu.MenuModelBridge;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** Tests for context menu methods */
@@ -91,6 +96,8 @@ public class ContextMenuTest extends AwParameterizedTest {
     private AwContextMenuHelper mHelper;
     private AwContextMenuCoordinator mCoordinator;
     private GURL mPageUrl;
+    private static final @HyperlinkContextMenuItems int HYPERLINK_MENU_ITEMS =
+            COPY_LINK_ADDRESS | COPY_LINK_TEXT | OPEN_LINK;
 
     public ContextMenuTest(AwSettingsMutation param) {
         mRule = new AwActivityTestRule(param.getMutation());
@@ -106,7 +113,7 @@ public class ContextMenuTest extends AwParameterizedTest {
 
         mAwContents = (TestAwContents) mTestContainerView.getAwContents();
         mContext = mAwContents.getWebContents().getTopLevelNativeWindow().getContext().get();
-        mHelper = new AwContextMenuHelper(mAwContents.getWebContents());
+        mHelper = new TestAwContextMenuHelper(mAwContents.getWebContents(), HYPERLINK_MENU_ITEMS);
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
     }
 
@@ -366,7 +373,8 @@ public class ContextMenuTest extends AwParameterizedTest {
                         mRule.getActivity(),
                         mAwContents.getWebContents(),
                         params,
-                        /* usePopupWindow= */ false);
+                        /* usePopupWindow= */ false,
+                        /* menuItems= */ HYPERLINK_MENU_ITEMS);
 
         List<ModelList> contextMenuState = populator.buildContextMenu();
 
@@ -378,6 +386,102 @@ public class ContextMenuTest extends AwParameterizedTest {
         }
 
         Assert.assertArrayEquals(actualItems, expectedItems);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorrectMenuItemsShown_disabled() throws Throwable {
+        doTestCorrectMenuItemsShown(DISABLED, new ArrayList<>());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorrectMenuItemsShown_linkAddress() throws Throwable {
+        doTestCorrectMenuItemsShown(
+                COPY_LINK_ADDRESS, Arrays.asList(R.id.contextmenu_copy_link_address));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorrectMenuItemsShown_linkText() throws Throwable {
+        doTestCorrectMenuItemsShown(COPY_LINK_TEXT, Arrays.asList(R.id.contextmenu_copy_link_text));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorrectMenuItemsShown_openLink() throws Throwable {
+        doTestCorrectMenuItemsShown(OPEN_LINK, Arrays.asList(R.id.contextmenu_open_link_id));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorrectMenuItemsShown_linkAddressAndLinkText() throws Throwable {
+        doTestCorrectMenuItemsShown(
+                COPY_LINK_ADDRESS | COPY_LINK_TEXT,
+                Arrays.asList(R.id.contextmenu_copy_link_address, R.id.contextmenu_copy_link_text));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorrectMenuItemsShown_linkAddressAndOpenLink() throws Throwable {
+        doTestCorrectMenuItemsShown(
+                COPY_LINK_ADDRESS | OPEN_LINK,
+                Arrays.asList(R.id.contextmenu_copy_link_address, R.id.contextmenu_open_link_id));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorrectMenuItemsShown_linkTextAndOpenLink() throws Throwable {
+        doTestCorrectMenuItemsShown(
+                COPY_LINK_TEXT | OPEN_LINK,
+                Arrays.asList(R.id.contextmenu_copy_link_text, R.id.contextmenu_open_link_id));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorrectMenuItemsShown_All() throws Throwable {
+        doTestCorrectMenuItemsShown(
+                COPY_LINK_ADDRESS | COPY_LINK_TEXT | OPEN_LINK,
+                Arrays.asList(
+                        R.id.contextmenu_copy_link_address,
+                        R.id.contextmenu_copy_link_text,
+                        R.id.contextmenu_open_link_id));
+    }
+
+    private void doTestCorrectMenuItemsShown(
+            @HyperlinkContextMenuItems Integer menuItems, List<Integer> expectedItems)
+            throws Exception {
+        mHelper = new TestAwContextMenuHelper(mAwContents.getWebContents(), menuItems);
+
+        ContextMenuParams params =
+                createContextMenuParams(
+                        ContextMenuDataMediaType.NONE,
+                        /* linkUrl= */ true,
+                        /* linkText= */ "",
+                        /* unfilteredLinkUrl= */ "http://www.test_link.html/",
+                        /* srcUrl= */ "");
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mHelper.showContextMenu(params, mTestContainerView));
+
+        mCoordinator = mHelper.getCoordinatorForTesting();
+        Assert.assertNotNull("Coordinator should be created for links", mCoordinator);
+
+        if (menuItems == DISABLED) {
+            Assert.assertTrue(
+                    "Context menu should not be shown if there are no items",
+                    mCoordinator.getDialogForTesting() == null
+                            && mCoordinator.getPopupWindowForTesting() == null);
+        } else {
+            assertMenuItemsAreEqual(mCoordinator, expectedItems);
+        }
     }
 
     @Test
@@ -501,8 +605,9 @@ public class ContextMenuTest extends AwParameterizedTest {
         final ContextMenuParams params =
                 new ContextMenuParams(
                         /* nativePtr= */ 0,
-                        new MenuModelBridge(),
+                        new MenuModelBridge(0L),
                         ContextMenuDataMediaType.NONE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         /* pageUrl= */ GURL.emptyGURL(),
                         /* linkUrl= */ GURL.emptyGURL(),
                         /* linkText= */ "Test Link Text",
@@ -519,8 +624,7 @@ public class ContextMenuTest extends AwParameterizedTest {
                         /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
-        AwContextMenuHelper helper = AwContextMenuHelper.create(mAwContents.getWebContents());
-        Assert.assertFalse(helper.showContextMenu(params, mTestContainerView));
+        Assert.assertFalse(mHelper.showContextMenu(params, mTestContainerView));
     }
 
     @Test
@@ -792,8 +896,9 @@ public class ContextMenuTest extends AwParameterizedTest {
 
         return new ContextMenuParams(
                 0,
-                new MenuModelBridge(),
+                new MenuModelBridge(0L),
                 mediaType,
+                ContextMenuDataMediaFlags.MEDIA_NONE,
                 mPageUrl,
                 linkUrl ? new GURL("http://www.example.com/other_example") : GURL.emptyGURL(),
                 linkText,
@@ -844,28 +949,57 @@ public class ContextMenuTest extends AwParameterizedTest {
         }
     }
 
-    // TODO (yaris): refactor this class into a separate file and use it here and in LoadUrlTest.
-    static class TestAwContentsClientTestDependencyFactory
-            extends AwActivityTestRule.TestDependencyFactory {
+    /**
+     * Takes all the visible items on the menu and compares them to a the list of expected items.
+     *
+     * @param menu A context menu that is displaying visible items.
+     * @param expectedItems A list of items that is expected to appear within a context menu.
+     */
+    private void assertMenuItemsAreEqual(
+            AwContextMenuCoordinator menu, List<Integer> expectedItems) {
+        List<Integer> actualItems = new ArrayList<>();
+        for (int i = 0; i < getCount(menu); i++) {
+            if (getItem(menu, i).type >= CONTEXT_MENU_ITEM) {
+                actualItems.add(getItem(menu, i).model.get(AwContextMenuItemProperties.MENU_ID));
+            }
+        }
+
+        Assert.assertEquals(
+                "Populated menu items were:" + getMenuTitles(menu), expectedItems, actualItems);
+    }
+
+    private String getMenuTitles(AwContextMenuCoordinator menu) {
+        StringBuilder items = new StringBuilder();
+        for (int i = 0; i < getCount(menu); i++) {
+            if (getItem(menu, i).type >= CONTEXT_MENU_ITEM) {
+                items.append("\n")
+                        .append(getItem(menu, i).model.get(AwContextMenuItemProperties.TEXT));
+            }
+        }
+        return items.toString();
+    }
+
+    private ListItem getItem(AwContextMenuCoordinator menu, int index) {
+        return (ListItem) menu.getListViewForTest().getAdapter().getItem(index);
+    }
+
+    private int getCount(AwContextMenuCoordinator menu) {
+        return menu.getListViewForTest().getAdapter().getCount();
+    }
+
+    private static class TestAwContextMenuHelper extends AwContextMenuHelper {
+        private final @HyperlinkContextMenuItems int mHyperlinkMenuItems;
+
+        public TestAwContextMenuHelper(
+                WebContents webContents, @HyperlinkContextMenuItems int hyperlinkMenuItems) {
+            super(webContents);
+            mHyperlinkMenuItems = hyperlinkMenuItems;
+        }
+
         @Override
-        public AwContents createAwContents(
-                AwBrowserContext browserContext,
-                ViewGroup containerView,
-                Context context,
-                InternalAccessDelegate internalAccessAdapter,
-                AwDrawFnImpl.DrawFnAccess drawFnAccess,
-                AwContentsClient contentsClient,
-                AwSettings settings,
-                DependencyFactory dependencyFactory) {
-            return new TestAwContents(
-                    browserContext,
-                    containerView,
-                    context,
-                    internalAccessAdapter,
-                    drawFnAccess,
-                    contentsClient,
-                    settings,
-                    dependencyFactory);
+        protected @HyperlinkContextMenuItems int getHyperlinkContextMenuItems(
+                AwContents awContents) {
+            return mHyperlinkMenuItems;
         }
     }
 }

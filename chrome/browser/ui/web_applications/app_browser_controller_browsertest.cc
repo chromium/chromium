@@ -4,43 +4,34 @@
 
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 
-#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/os_settings_provider.h"
 
 namespace web_app {
 
-class AppBrowserControllerBrowserTest : public WebAppBrowserTestBase {
- public:
-  AppBrowserControllerBrowserTest() = default;
-  ~AppBrowserControllerBrowserTest() override = default;
-};
+using AppBrowserControllerBrowserTest = WebAppBrowserTestBase;
 
-#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
                        HighContrastThemeColor) {
-  const GURL start_url("https://app.site.test/example/index");
-  const webapps::AppId app_id = InstallPWA(start_url);
-
-  Browser* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
-  AppBrowserController* controller = browser->app_controller();
+  const AppBrowserController* const controller =
+      AppBrowserController::From(web_app::LaunchWebAppBrowser(
+          profile(), InstallPWA(GURL("https://app.site.test/example/index"))));
 
   // Enable high contrast theme.
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  // Make sure high contrast is disabled initially.
-  EXPECT_FALSE(native_theme->InForcedColorsMode());
-  native_theme->set_forced_colors(true);
-
-  EXPECT_TRUE(native_theme->InForcedColorsMode());
-
-  EXPECT_TRUE(controller->GetThemeColor().has_value());
-  std::optional<SkColor> hc_theme_color = native_theme->GetSystemThemeColor(
-      ui::NativeTheme::SystemThemeColor::kWindow);
-  EXPECT_EQ(*controller->GetThemeColor(), hc_theme_color);
+  static constexpr SkColor kWindowColor = SK_ColorBLUE;
+  ui::MockOsSettingsProvider os_settings_provider;
+  os_settings_provider.SetColor(ui::OsSettingsProvider::ColorId::kWindow,
+                                kWindowColor);
+  os_settings_provider.SetPreferredContrast(
+      ui::NativeTheme::PreferredContrast::kMore);
+  EXPECT_EQ(controller->GetThemeColor(), kWindowColor);
 }
-#endif
 
 }  // namespace web_app

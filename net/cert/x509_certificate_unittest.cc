@@ -20,7 +20,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
-#include "crypto/rsa_private_key.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
@@ -373,7 +372,7 @@ TEST(X509CertificateTest, SerialNumbers) {
     0x01,0x2a,0x39,0x76,0x0d,0x3f,0x4f,0xc9,
     0x0b,0xe7,0xbd,0x2b,0xcf,0x95,0x2e,0x7a,
   };
-  EXPECT_EQ(google_cert->serial_number(), base::as_string_view(google_serial));
+  EXPECT_EQ(google_cert->serial_number(), google_serial);
 }
 
 TEST(X509CertificateTest, SerialNumberZeroPadded) {
@@ -386,7 +385,7 @@ TEST(X509CertificateTest, SerialNumberZeroPadded) {
   // Check a serial number where the first byte is >= 0x80, the DER returned by
   // serial() should contain the leading 0 padding byte.
   static const uint8_t expected_serial[3] = {0x00, 0x80, 0x01};
-  EXPECT_EQ(cert->serial_number(), base::as_string_view(expected_serial));
+  EXPECT_EQ(cert->serial_number(), expected_serial);
 }
 
 TEST(X509CertificateTest, SerialNumberZeroPadded21BytesLong) {
@@ -402,7 +401,7 @@ TEST(X509CertificateTest, SerialNumberZeroPadded21BytesLong) {
   static const uint8_t expected_serial[21] = {
       0x00, 0x80, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
       0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13};
-  EXPECT_EQ(cert->serial_number(), base::as_string_view(expected_serial));
+  EXPECT_EQ(cert->serial_number(), expected_serial);
 }
 
 TEST(X509CertificateTest, SerialNumberNegative) {
@@ -415,7 +414,7 @@ TEST(X509CertificateTest, SerialNumberNegative) {
   // RFC 5280 does not allow serial numbers to be negative, but serial number
   // parsing is currently permissive, so this does not cause an error.
   static const uint8_t expected_serial[2] = {0x80, 0x01};
-  EXPECT_EQ(cert->serial_number(), base::as_string_view(expected_serial));
+  EXPECT_EQ(cert->serial_number(), expected_serial);
 }
 
 TEST(X509CertificateTest, SerialNumber37BytesLong) {
@@ -432,7 +431,7 @@ TEST(X509CertificateTest, SerialNumber37BytesLong) {
       0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14,
       0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e,
       0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25};
-  EXPECT_EQ(cert->serial_number(), base::as_string_view(expected_serial));
+  EXPECT_EQ(cert->serial_number(), expected_serial);
 }
 
 TEST(X509CertificateTest, SHA256FingerprintsCorrectly) {
@@ -609,8 +608,8 @@ TEST(X509CertificateTest, ExtractExtension) {
   std::string_view contents;
   ASSERT_TRUE(asn1::ExtractExtensionFromDERCert(
       x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()),
-      bssl::der::Input(bssl::kBasicConstraintsOid).AsStringView(), &present,
-      &critical, &contents));
+      base::as_string_view(bssl::kBasicConstraintsOid), &present, &critical,
+      &contents));
   EXPECT_TRUE(present);
   EXPECT_TRUE(critical);
   ASSERT_EQ(std::string_view("\x30\x00", 2), contents);
@@ -626,8 +625,8 @@ TEST(X509CertificateTest, ExtractExtension) {
   ASSERT_TRUE(uid_cert);
   ASSERT_TRUE(asn1::ExtractExtensionFromDERCert(
       x509_util::CryptoBufferAsStringPiece(uid_cert->cert_buffer()),
-      bssl::der::Input(bssl::kBasicConstraintsOid).AsStringView(), &present,
-      &critical, &contents));
+      base::as_string_view(bssl::kBasicConstraintsOid), &present, &critical,
+      &contents));
   EXPECT_TRUE(present);
   EXPECT_FALSE(critical);
   ASSERT_EQ(std::string_view("\x30\x00", 2), contents);
@@ -776,14 +775,12 @@ TEST(X509CertificateTest, Pickle) {
   scoped_refptr<X509Certificate> cert_from_pickle =
       X509Certificate::CreateFromPickle(&iter);
   ASSERT_TRUE(cert_from_pickle);
-  EXPECT_TRUE(x509_util::CryptoBufferEqual(cert->cert_buffer(),
-                                           cert_from_pickle->cert_buffer()));
-  const auto& cert_intermediates = cert->intermediate_buffers();
-  const auto& pickle_intermediates = cert_from_pickle->intermediate_buffers();
-  ASSERT_EQ(cert_intermediates.size(), pickle_intermediates.size());
-  for (size_t i = 0; i < cert_intermediates.size(); ++i) {
-    EXPECT_TRUE(x509_util::CryptoBufferEqual(cert_intermediates[i].get(),
-                                             pickle_intermediates[i].get()));
+  const auto& cert_buffers = cert->cert_buffers();
+  const auto& pickle_buffers = cert_from_pickle->cert_buffers();
+  ASSERT_EQ(cert_buffers.size(), pickle_buffers.size());
+  for (size_t i = 0; i < cert_buffers.size(); ++i) {
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(cert_buffers[i].get(),
+                                             pickle_buffers[i].get()));
   }
 }
 

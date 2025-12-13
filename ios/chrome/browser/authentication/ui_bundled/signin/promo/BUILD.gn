@@ -4,10 +4,10 @@
 
 source_set("promo") {
   sources = [
-    "signin_fullscreen_promo_display_handler.h",
-    "signin_fullscreen_promo_display_handler.mm",
-    "signin_fullscreen_promo_scene_agent.h",
-    "signin_fullscreen_promo_scene_agent.mm",
+    "fullscreen_signin_promo_display_handler.h",
+    "fullscreen_signin_promo_display_handler.mm",
+    "fullscreen_signin_promo_scene_agent.h",
+    "fullscreen_signin_promo_scene_agent.mm",
   ]
   deps = [
     "//components/feature_engagement/public",
@@ -15,7 +15,8 @@ source_set("promo") {
     "//components/sync/service",
     "//components/version_info",
     "//ios/chrome/app/profile",
-    "//ios/chrome/browser/authentication/ui_bundled/history_sync",
+    "//ios/chrome/browser/authentication/history_sync/coordinator",
+    "//ios/chrome/browser/authentication/history_sync/model:history_sync_utils",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/promos_manager/model",
@@ -30,7 +31,7 @@ source_set("promo") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "signin_fullscreen_promo_scene_agent_unittest.mm" ]
+  sources = [ "fullscreen_signin_promo_scene_agent_unittest.mm" ]
 
   deps = [
     ":promo",

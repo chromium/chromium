@@ -95,7 +95,7 @@ void EmitSlowInteractionToNextPaintTraceEvent(
 
 // Returns the longest event in `timestamps`.
 ResponsivenessMetrics::EventTimestamps LongestEvent(
-    const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& events) {
+    const Vector<ResponsivenessMetrics::EventTimestamps>& events) {
   DCHECK(events.size());
   return *std::max_element(
       events.begin(), events.end(),
@@ -107,14 +107,14 @@ ResponsivenessMetrics::EventTimestamps LongestEvent(
 
 base::TimeDelta TotalEventDuration(
     // timestamps is sorted by the start_time of EventTimestamps.
-    const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps) {
+    const Vector<ResponsivenessMetrics::EventTimestamps>& timestamps) {
   DCHECK(timestamps.size());
   // TODO(crbug.com/1229668): Once the event timestamp bug is fixed, add a
   // DCHECK(IsSorted) here.
   base::TimeDelta total_duration =
       timestamps[0].end_time - timestamps[0].creation_time;
   base::TimeTicks current_end_time = timestamps[0].end_time;
-  for (WTF::wtf_size_t i = 1; i < timestamps.size(); ++i) {
+  for (wtf_size_t i = 1; i < timestamps.size(); ++i) {
     total_duration += timestamps[i].end_time - timestamps[i].creation_time;
     if (timestamps[i].creation_time < current_end_time) {
       total_duration -= std::min(current_end_time, timestamps[i].end_time) -
@@ -174,7 +174,7 @@ ResponsivenessMetrics::~ResponsivenessMetrics() = default;
 void ResponsivenessMetrics::RecordUserInteractionUKM(
     LocalDOMWindow* window,
     UserInteractionType interaction_type,
-    const WTF::Vector<EventTimestamps>& timestamps,
+    const Vector<EventTimestamps>& timestamps,
     uint32_t interaction_offset) {
   if (!window) {
     return;
@@ -424,7 +424,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
 
 void ResponsivenessMetrics::RecordKeyboardUKM(
     LocalDOMWindow* window,
-    const WTF::Vector<EventTimestamps>& event_timestamps,
+    const Vector<EventTimestamps>& event_timestamps,
     uint32_t interaction_offset) {
   RecordUserInteractionUKM(window, UserInteractionType::kKeyboard,
                            event_timestamps, interaction_offset);

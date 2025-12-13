@@ -512,6 +512,8 @@ class ImageBuffer {
           output += w * rowStride + 3 * y;
           dx = -rowStride;
           break;
+        default:
+          break;
       }
 
       for (let x = 0; x <= w; ++x, input += 3, output += dx) {
@@ -540,6 +542,8 @@ class ImageBuffer {
             bitmap.setUint8(output++, 0);
             bitmap.setUint8(output++, 0);
             bitmap.setUint8(output++, 0);
+            break;
+          default:
             break;
         }
 

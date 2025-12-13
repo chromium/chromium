@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Tətbiqə baxış: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Bu artırma <ph name="KEY_PATH" /> açar faylını içərir.</translation>
 <translation id="5486326529110362464">Şəxsi açar üçün daxiletmə dəyəri olmalıdır.</translation>
+<translation id="5707185214361380026">Artırma formasını yükləmək alınmadı:</translation>
 <translation id="5972529113578162692">Bu maşın administratoru <ph name="EXTENSION_NAME" /> artırmasının quraşdırılmasını tələb edir. Sistemdən silinə bilməyəcək.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> vendorundan naməlum <ph name="PRODUCT_ID" /> məhsulu  (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> vendorundan <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">Artırmanı yükləmə xətası</translation>
 <translation id="6322279351188361895">Gizli açarı oxumaq uğursuz oldu.</translation>
 <translation id="6391538222494443604">Giriş direktoriyası olmalıdır.</translation>
 <translation id="641087317769093025">Artırmanı arxivdən çıxarmaq alınmadı</translation>

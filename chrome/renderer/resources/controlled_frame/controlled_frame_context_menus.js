@@ -17,6 +17,10 @@ const $Headers = require('safeMethods').SafeMethods.$Headers;
 const WebViewContextMenusImpl =
     require('chromeWebView').WebViewContextMenusImpl;
 const ControlledFrameInternal = getInternalApi('controlledFrameInternal');
+const WebUrlPatternNatives = requireNative('WebUrlPatternNatives');
+const convertURLPatternsToMatchPatterns =
+    require('controlledFrameURLPatternsHelper')
+        .convertURLPatternsToMatchPatterns;
 
 function identity(value) {
   return value;
@@ -78,7 +82,7 @@ function getCallbackIndex(name) {
 
 ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased =
     function(handler, name) {
-  let callbackIndex = getCallbackIndex(name);
+  const callbackIndex = getCallbackIndex(name);
   // TODO(crbug.com/378956568): Verify these methods don't require an instance
   // ID check.
   function verifyEnvironment(reject) {
@@ -89,31 +93,27 @@ ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased =
         handler.bind(this), arguments, callbackIndex, verifyEnvironment,
         /*callbackAllowed=*/ true);
   };
-}
+};
 
-    // Controlled Frame has its own internal definition of Context Menus
-    // create().
-    ControlledFrameContextMenusImpl.prototype.createImpl =
-        function() {
+// Controlled Frame has its own internal definition of Context Menus
+// create().
+ControlledFrameContextMenusImpl.prototype.createImpl = function() {
   const args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
   return $Function.apply(
       ControlledFrameInternal.contextMenusCreate, null, args);
-}
+};
 
-        // Controlled Frame has its own internal definition of Context Menus
-        // update().
-        ControlledFrameContextMenusImpl.prototype.updateImpl =
-            function() {
-  let args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
+// Controlled Frame has its own internal definition of Context Menus
+// update().
+ControlledFrameContextMenusImpl.prototype.updateImpl = function() {
+  const args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
   return $Function.apply(
       ControlledFrameInternal.contextMenusUpdate, null, args);
-}
+};
 
-            ControlledFrameContextMenusImpl.prototype.create =
-                ControlledFrameContextMenusImpl.prototype
-                    .convertMethodToPromiseBased(
-                        ControlledFrameContextMenusImpl.prototype.createImpl,
-                        'create');
+ControlledFrameContextMenusImpl.prototype.create =
+    ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(
+        ControlledFrameContextMenusImpl.prototype.createImpl, 'create');
 
 ControlledFrameContextMenusImpl.prototype.remove =
     ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(
@@ -135,21 +135,48 @@ function createEventInfo(contextMenusEventName) {
 }
 
 function unwebifyContextMenusProperties(properties) {
-  renameObjectKeys(properties, {
+  const unwebifiedProperties = extractAndMapValues(properties, {
+    checked: identity,
+    contexts: identity,
+    documentURLPatterns: $Function.bind(
+      convertURLPatternsToMatchPatterns, null),
+    enabled: identity,
+    parentId: identity,
+    targetURLPatterns: $Function.bind(
+      convertURLPatternsToMatchPatterns, null),
+    title: identity,
+    type: identity,
+  });
+
+  renameObjectKeys(unwebifiedProperties, {
     __proto__: null,
     documentURLPatterns: 'documentUrlPatterns',
     targetURLPatterns: 'targetUrlPatterns',
   });
-  return properties;
+  return unwebifiedProperties;
 }
 
 function unwebifyContextMenusCreateProperties(properties) {
-  renameObjectKeys(properties, {
+  const unwebifiedProperties = extractAndMapValues(properties, {
+    id: identity,
+    checked: identity,
+    contexts: identity,
+    documentURLPatterns: $Function.bind(
+      convertURLPatternsToMatchPatterns, null),
+    enabled: identity,
+    parentId: identity,
+    targetURLPatterns: $Function.bind(
+      convertURLPatternsToMatchPatterns, null),
+    title: identity,
+    type: identity,
+  });
+
+  renameObjectKeys(unwebifiedProperties, {
     __proto__: null,
     documentURLPatterns: 'documentUrlPatterns',
     targetURLPatterns: 'targetUrlPatterns',
   });
-  return properties;
+  return unwebifiedProperties;
 }
 
 function webifyClickEventDetails(details) {
@@ -213,6 +240,7 @@ class ControlledFrameContextMenus extends EventTarget {
       return Promise.reject(
           new Error('Cannot create context menu without properties.'));
     }
+
     return this.#contextMenusImpl.create(
         unwebifyContextMenusCreateProperties(properties), ...remainingArgs);
   }
@@ -271,11 +299,13 @@ class ControlledFrameContextMenus extends EventTarget {
       case 'show':
         // No mapping needed for the show event as it is speced as a plain
         // event.
-        menuEvent = new Event('show');
+        menuEvent = new ContextMenusShowEvent(details);
         break;
       case 'click':
         menuEvent =
             new ContextMenusClickEvent(webifyClickEventDetails(details));
+        break;
+      default:
         break;
     }
 
@@ -290,6 +320,14 @@ class ControlledFrameContextMenus extends EventTarget {
 class MenuItemDetails {
   constructor(details) {
     $Object.assign(this, details);
+    $Object.freeze(this);
+  }
+}
+
+class ContextMenusShowEvent extends Event {
+  constructor(details) {
+    super('show');
+    this['preventDefault'] = $Function.bind(details.preventDefault, this);
     $Object.freeze(this);
   }
 }

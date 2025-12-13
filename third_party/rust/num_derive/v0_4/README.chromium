@@ -1,0 +1,11 @@
+Name: num-derive
+URL: https://crates.io/crates/num-derive
+Version: 0.4.2
+Revision: 7cc33515dd2ae0eb43c5795c50ce49c554e8ba02
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/num-derive-v0_4/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Numeric syntax extensions

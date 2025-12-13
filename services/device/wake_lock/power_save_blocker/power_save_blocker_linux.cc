@@ -7,18 +7,26 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/synchronization/lock.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/name_has_owner.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -30,55 +38,39 @@ namespace device {
 
 namespace {
 
-enum DBusAPI {
-  GNOME_API,                    // org.gnome.SessionManager
-  FREEDESKTOP_POWER_API,        // org.freedesktop.PowerManagement
-  FREEDESKTOP_SCREENSAVER_API,  // org.freedesktop.ScreenSaver
+enum class DBusApi {
+  kGnome,                   // org.gnome.SessionManager
+  kFreedesktopPower,        // org.freedesktop.PowerManagement
+  kFreedesktopScreensaver,  // org.freedesktop.ScreenSaver
 };
 
 // Inhibit flags defined in the org.gnome.SessionManager interface.
 // Can be OR'd together and passed as argument to the Inhibit() method
 // to specify which power management features we want to suspend.
-enum GnomeAPIInhibitFlags {
-  INHIBIT_LOGOUT = 1,
-  INHIBIT_SWITCH_USER = 2,
-  INHIBIT_SUSPEND_SESSION = 4,
-  INHIBIT_MARK_SESSION_IDLE = 8
+enum class GnomeApiInhibitFlags {
+  kLogout = 1,
+  kSwitchUser = 2,
+  kSuspendSession = 4,
+  kMarkSessionIdle = 8
 };
 
-const char kGnomeAPIServiceName[] = "org.gnome.SessionManager";
-const char kGnomeAPIInterfaceName[] = "org.gnome.SessionManager";
-const char kGnomeAPIObjectPath[] = "/org/gnome/SessionManager";
+struct DbusServiceInfo {
+  const char* service_name;
+  const char* interface_name;
+  const char* object_path;
+};
 
-const char kFreeDesktopAPIPowerServiceName[] =
-    "org.freedesktop.PowerManagement";
-const char kFreeDesktopAPIPowerInterfaceName[] =
-    "org.freedesktop.PowerManagement.Inhibit";
-const char kFreeDesktopAPIPowerObjectPath[] =
-    "/org/freedesktop/PowerManagement/Inhibit";
-
-const char kFreeDesktopAPIScreenServiceName[] = "org.freedesktop.ScreenSaver";
-const char kFreeDesktopAPIScreenInterfaceName[] = "org.freedesktop.ScreenSaver";
-const char kFreeDesktopAPIScreenObjectPath[] = "/org/freedesktop/ScreenSaver";
-
-const char kDbusMethodNameHasOwnerMethod[] = "NameHasOwner";
-
-bool ServiceNameHasOwner(dbus::Bus* bus, const char* service_name) {
-  dbus::ObjectProxy* dbus_proxy =
-      bus->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
-  dbus::MethodCall name_has_owner_call(DBUS_INTERFACE_DBUS,
-                                       kDbusMethodNameHasOwnerMethod);
-  dbus::MessageWriter writer(&name_has_owner_call);
-  writer.AppendString(service_name);
-  std::unique_ptr<dbus::Response> name_has_owner_response =
-      dbus_proxy
-          ->CallMethodAndBlock(&name_has_owner_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr);
-  dbus::MessageReader reader(name_has_owner_response.get());
-  bool owned = false;
-  return name_has_owner_response && reader.PopBool(&owned) && owned;
-}
+constexpr auto kServiceInfos = base::MakeFixedFlatMap<DBusApi, DbusServiceInfo>(
+    {{DBusApi::kGnome,
+      {"org.gnome.SessionManager", "org.gnome.SessionManager",
+       "/org/gnome/SessionManager"}},
+     {DBusApi::kFreedesktopPower,
+      {"org.freedesktop.PowerManagement",
+       "org.freedesktop.PowerManagement.Inhibit",
+       "/org/freedesktop/PowerManagement/Inhibit"}},
+     {DBusApi::kFreedesktopScreensaver,
+      {"org.freedesktop.ScreenSaver", "org.freedesktop.ScreenSaver",
+       "/org/freedesktop/ScreenSaver"}}});
 
 bool ShouldPreventDisplaySleep(mojom::WakeLockType type) {
   switch (type) {
@@ -88,95 +80,238 @@ bool ShouldPreventDisplaySleep(mojom::WakeLockType type) {
     case mojom::WakeLockType::kPreventDisplaySleepAllowDimming:
       return true;
   }
-  NOTREACHED();
 }
 
-const char* GetUninhibitMethodName(DBusAPI api) {
+const char* GetUninhibitMethodName(DBusApi api) {
   switch (api) {
-    case GNOME_API:
+    case DBusApi::kGnome:
       return "Uninhibit";
-    case FREEDESKTOP_POWER_API:
-    case FREEDESKTOP_SCREENSAVER_API:
+    case DBusApi::kFreedesktopPower:
+    case DBusApi::kFreedesktopScreensaver:
       return "UnInhibit";
   }
-  NOTREACHED();
 }
 
-void GetDbusStringsForApi(DBusAPI api,
-                          const char** service_name,
-                          const char** interface_name,
-                          const char** object_path) {
-  switch (api) {
-    case GNOME_API:
-      *service_name = kGnomeAPIServiceName;
-      *interface_name = kGnomeAPIInterfaceName;
-      *object_path = kGnomeAPIObjectPath;
-      return;
-    case FREEDESKTOP_POWER_API:
-      *service_name = kFreeDesktopAPIPowerServiceName;
-      *interface_name = kFreeDesktopAPIPowerInterfaceName;
-      *object_path = kFreeDesktopAPIPowerObjectPath;
-      return;
-    case FREEDESKTOP_SCREENSAVER_API:
-      *service_name = kFreeDesktopAPIScreenServiceName;
-      *interface_name = kFreeDesktopAPIScreenInterfaceName;
-      *object_path = kFreeDesktopAPIScreenObjectPath;
-      return;
+GnomeApiInhibitFlags WakeLockTypeToGnomeInhibitFlag(mojom::WakeLockType type) {
+  switch (type) {
+    case mojom::WakeLockType::kPreventAppSuspension:
+      return GnomeApiInhibitFlags::kSuspendSession;
+    case mojom::WakeLockType::kPreventDisplaySleep:
+    case mojom::WakeLockType::kPreventDisplaySleepAllowDimming:
+      return GnomeApiInhibitFlags::kMarkSessionIdle;
   }
-  NOTREACHED();
 }
 
 }  // namespace
 
-class PowerSaveBlocker::Delegate
-    : public base::RefCountedThreadSafe<PowerSaveBlocker::Delegate> {
+class PowerSaveBlocker::Delegate {
  public:
-  // Picks an appropriate D-Bus API to use based on the desktop environment.
-  Delegate(mojom::WakeLockType type,
-           const std::string& description,
-           scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-           scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner);
+  Delegate(mojom::WakeLockType type, const std::string& description)
+      : type_(type), description_(description) {}
 
   Delegate(const Delegate&) = delete;
   Delegate& operator=(const Delegate&) = delete;
 
-  // Post a task to initialize the delegate on the UI thread, which will itself
-  // then post a task to apply the power save block on the blocking task runner.
-  void Init();
+  ~Delegate() = default;
 
-  // Post a task to remove the power save block on the blocking task runner,
-  // unless it hasn't yet been applied, in which case we just prevent it from
-  // applying.
-  void CleanUp();
+  void Init() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    bus_ = dbus_thread_linux::GetSharedSessionBus();
+    if (ShouldBlock()) {
+      ApplyBlock();
+    }
+    SetScreenSaverSuspended(true);
+  }
+
+  void CleanUp() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // Invalidate weak pointers to cancel any pending D-Bus callbacks.
+    weak_ptr_factory_.InvalidateWeakPtrs();
+
+    if (ShouldBlock()) {
+      RemoveBlock();
+    }
+    SetScreenSaverSuspended(false);
+  }
 
  private:
-  friend class base::RefCountedThreadSafe<Delegate>;
-
   struct InhibitCookie {
-    DBusAPI api;
+    DBusApi api;
     uint32_t cookie;
   };
 
-  ~Delegate() = default;
-
   // Returns true if ApplyBlock() / RemoveBlock() should be called.
-  bool ShouldBlock() const;
+  bool ShouldBlock() const {
+    // Power saving APIs are not accessible in headless mode.
+    return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+        switches::kHeadless);
+  }
 
-  // Apply or remove the power save block, respectively. These methods should be
-  // called once each, on the same thread, per instance. They block waiting for
-  // the action to complete (with a timeout); the thread must thus allow I/O.
-  void ApplyBlock();
-  void RemoveBlock();
+  // Applies the power save block.
+  void ApplyBlock() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Makes the Inhibit method call.  Returns true and saves an entry to
-  // |inhibit_cookies_| on success.
-  bool Inhibit(DBusAPI api);
+    // First, try to inhibit using the GNOME API, since it can inhibit both the
+    // screensaver and power-saving with one method call. If this fails,
+    // the callbacks will handle falling back to the Freedesktop APIs.
+    DoInhibitCall(DBusApi::kGnome);
+  }
+
+  // Removes the power save block.
+  void RemoveBlock() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(bus_);  // RemoveBlock() should only be called once.
+
+    for (const auto& inhibit_cookie : inhibit_cookies_) {
+      Uninhibit(inhibit_cookie);
+    }
+
+    inhibit_cookies_.clear();
+  }
+
+  void FallBackToFreedesktopApis() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (ShouldPreventDisplaySleep(type_)) {
+      DoInhibitCall(DBusApi::kFreedesktopScreensaver);
+    }
+    DoInhibitCall(DBusApi::kFreedesktopPower);
+  }
+
+  // Makes the Inhibit method call after ensuring the service exists.
+  void DoInhibitCall(DBusApi api) {
+    const DbusServiceInfo& service_info = kServiceInfos.at(api);
+    if (base::Contains(api_availability_cache_, api)) {
+      OnInhibitServiceAvailable(api, api_availability_cache_[api]);
+    } else {
+      dbus_utils::NameHasOwner(
+          bus_.get(), service_info.service_name,
+          base::BindOnce(&Delegate::OnInhibitServiceHasOwner,
+                         weak_ptr_factory_.GetWeakPtr(), api));
+    }
+  }
+
+  void OnInhibitServiceHasOwner(DBusApi api, std::optional<bool> has_owner) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    const bool available = has_owner.value_or(false);
+    api_availability_cache_[api] = available;
+    OnInhibitServiceAvailable(api, available);
+  }
+
+  void OnInhibitServiceAvailable(DBusApi api, bool available) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!available) {
+      if (api == DBusApi::kGnome) {
+        // GNOME service doesn't exist, fall back to Freedesktop APIs.
+        FallBackToFreedesktopApis();
+      }
+      // If Freedesktop services don't exist, we just ignore them.
+      return;
+    }
+
+    const DbusServiceInfo& service_info = kServiceInfos.at(api);
+    dbus::ObjectProxy* object_proxy = bus_->GetObjectProxy(
+        service_info.service_name, dbus::ObjectPath(service_info.object_path));
+
+    dbus::MethodCall method_call(service_info.interface_name, "Inhibit");
+    dbus::MessageWriter writer(&method_call);
+
+    switch (api) {
+      case DBusApi::kGnome:
+        // The arguments of the method are:
+        //     app_id:        The application identifier
+        //     toplevel_xid:  The toplevel X window identifier
+        //     reason:        The reason for the inhibition
+        //     flags:         Flags that specify what should be inhibited
+        writer.AppendString(
+            base::CommandLine::ForCurrentProcess()->GetProgram().value());
+        writer.AppendUint32(0);  // toplevel_xid
+        writer.AppendString(description_);
+        writer.AppendUint32(
+            static_cast<uint32_t>(WakeLockTypeToGnomeInhibitFlag(type_)));
+        break;
+      case DBusApi::kFreedesktopPower:
+      case DBusApi::kFreedesktopScreensaver:
+        // The arguments of the method are:
+        //     app_id:        The application identifier
+        //     reason:        The reason for the inhibition
+        writer.AppendString(
+            base::CommandLine::ForCurrentProcess()->GetProgram().value());
+        writer.AppendString(description_);
+        break;
+    }
+
+    object_proxy->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&Delegate::OnInhibitResponse,
+                       weak_ptr_factory_.GetWeakPtr(), api));
+  }
+
+  void OnInhibitResponse(DBusApi api, dbus::Response* response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!response) {
+      LOG(ERROR) << "No response to Inhibit() request for "
+                 << kServiceInfos.at(api).service_name;
+      if (api == DBusApi::kGnome) {
+        // Fall back if the method call to the GNOME service failed.
+        FallBackToFreedesktopApis();
+      }
+      return;
+    }
+
+    // The method returns an inhibit_cookie, used to uniquely identify
+    // this request. It should be used as an argument to Uninhibit()
+    // in order to remove the request.
+    dbus::MessageReader reader(response);
+    uint32_t cookie;
+    if (!reader.PopUint32(&cookie)) {
+      LOG(ERROR) << "Invalid Inhibit() response: " << response->ToString();
+      if (api == DBusApi::kGnome) {
+        FallBackToFreedesktopApis();
+      }
+      return;
+    }
+
+    inhibit_cookies_.push_back({api, cookie});
+  }
 
   // Makes the Uninhibit method call given an InhibitCookie saved by a prior
   // call to Inhibit().
-  void Uninhibit(const InhibitCookie& inhibit_cookie);
+  void Uninhibit(const InhibitCookie& inhibit_cookie) {
+    const DbusServiceInfo& service_info = kServiceInfos.at(inhibit_cookie.api);
 
-  void SetScreenSaverSuspended(bool suspend);
+    dbus::ObjectProxy* object_proxy = bus_->GetObjectProxy(
+        service_info.service_name, dbus::ObjectPath(service_info.object_path));
+
+    dbus::MethodCall method_call(service_info.interface_name,
+                                 GetUninhibitMethodName(inhibit_cookie.api));
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(inhibit_cookie.cookie);
+
+    // We don't care about checking the result. We assume it works; we can't
+    // really do anything about it anyway if it fails.
+    object_proxy->CallMethod(&method_call,
+                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                             base::BindOnce(&Delegate::OnUninhibitResponse,
+                                            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnUninhibitResponse(dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "No response to Uninhibit() request!";
+    }
+  }
+
+  void SetScreenSaverSuspended(bool suspend) {
+    if (suspend) {
+      DCHECK(!screen_saver_suspender_);
+      // The screen can be nullptr in tests.
+      if (auto* const screen = display::Screen::Get()) {
+        screen_saver_suspender_ = screen->SuspendScreenSaver();
+      }
+    } else {
+      screen_saver_suspender_.reset();
+    }
+  }
 
   const mojom::WakeLockType type_;
   const std::string description_;
@@ -185,225 +320,27 @@ class PowerSaveBlocker::Delegate
 
   std::vector<InhibitCookie> inhibit_cookies_;
 
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<display::Screen::ScreenSaverSuspender>
       screen_saver_suspender_;
+
+  base::flat_map<DBusApi, bool> api_availability_cache_;
+
+  base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
 };
-
-PowerSaveBlocker::Delegate::Delegate(
-    mojom::WakeLockType type,
-    const std::string& description,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner)
-    : type_(type),
-      description_(description),
-      ui_task_runner_(ui_task_runner),
-      blocking_task_runner_(blocking_task_runner) {
-  // We're on the client's thread here, so we don't allocate the dbus::Bus
-  // object yet. We'll do it later in ApplyBlock(), on the blocking task runner.
-}
-
-void PowerSaveBlocker::Delegate::Init() {
-  if (ShouldBlock()) {
-    blocking_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&Delegate::ApplyBlock, this));
-  }
-
-  ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Delegate::SetScreenSaverSuspended, this, true));
-}
-
-void PowerSaveBlocker::Delegate::CleanUp() {
-  if (ShouldBlock()) {
-    blocking_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&Delegate::RemoveBlock, this));
-  }
-
-  ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Delegate::SetScreenSaverSuspended, this, false));
-}
-
-bool PowerSaveBlocker::Delegate::ShouldBlock() const {
-  // Power saving APIs are not accessible in headless mode.
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kHeadless);
-}
-
-void PowerSaveBlocker::Delegate::ApplyBlock() {
-  DCHECK(blocking_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!bus_);  // ApplyBlock() should only be called once.
-
-  dbus::Bus::Options options;
-  options.bus_type = dbus::Bus::SESSION;
-  options.connection_type = dbus::Bus::PRIVATE;
-  bus_ = base::MakeRefCounted<dbus::Bus>(options);
-
-  // First try to inhibit using the GNOME API, since we can inhibit both the
-  // screensaver and power with one method call.
-  if (!Inhibit(GNOME_API)) {
-    // Couldn't inhibit using GNOME, so try the Freedesktop ScreenSaver API
-    // next, if necessary.
-    if (ShouldPreventDisplaySleep(type_))
-      Inhibit(FREEDESKTOP_SCREENSAVER_API);
-    // For every WakeLockType, we want to inhibit suspend/sleep/etc.
-    Inhibit(FREEDESKTOP_POWER_API);
-  }
-}
-
-void PowerSaveBlocker::Delegate::RemoveBlock() {
-  DCHECK(blocking_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(bus_);  // RemoveBlock() should only be called once.
-
-  for (const auto& inhibit_cookie : inhibit_cookies_)
-    Uninhibit(inhibit_cookie);
-
-  inhibit_cookies_.clear();
-  bus_->ShutdownAndBlock();
-  bus_.reset();
-}
-
-bool PowerSaveBlocker::Delegate::Inhibit(DBusAPI api) {
-  const char* service_name;
-  const char* interface_name;
-  const char* object_path;
-  GetDbusStringsForApi(api, &service_name, &interface_name, &object_path);
-
-  // Check that the service name has an owner before making any calls,
-  // Otherwise if the service does not exist, we will block for the default DBus
-  // timeout, which can be large on some systems.
-  if (!ServiceNameHasOwner(bus_.get(), service_name))
-    return false;
-
-  dbus::ObjectProxy* object_proxy =
-      bus_->GetObjectProxy(service_name, dbus::ObjectPath(object_path));
-  auto method_call =
-      std::make_unique<dbus::MethodCall>(interface_name, "Inhibit");
-  auto message_writer =
-      std::make_unique<dbus::MessageWriter>(method_call.get());
-
-  switch (api) {
-    case GNOME_API:
-      // The arguments of the method are:
-      //     app_id:        The application identifier
-      //     toplevel_xid:  The toplevel X window identifier
-      //     reason:        The reason for the inhibit
-      //     flags:         Flags that spefify what should be inhibited
-      message_writer->AppendString(
-          base::CommandLine::ForCurrentProcess()->GetProgram().value());
-      message_writer->AppendUint32(0);  // should be toplevel_xid
-      message_writer->AppendString(description_);
-      {
-        uint32_t flags = 0;
-        switch (type_) {
-          case mojom::WakeLockType::kPreventDisplaySleep:
-          case mojom::WakeLockType::kPreventDisplaySleepAllowDimming:
-            flags |= INHIBIT_MARK_SESSION_IDLE;
-            flags |= INHIBIT_SUSPEND_SESSION;
-            break;
-          case mojom::WakeLockType::kPreventAppSuspension:
-            flags |= INHIBIT_SUSPEND_SESSION;
-            break;
-        }
-        message_writer->AppendUint32(flags);
-      }
-      break;
-    case FREEDESKTOP_POWER_API:
-    case FREEDESKTOP_SCREENSAVER_API:
-      // The arguments of the method are:
-      //     app_id:        The application identifier
-      //     reason:        The reason for the inhibit
-      message_writer->AppendString(
-          base::CommandLine::ForCurrentProcess()->GetProgram().value());
-      message_writer->AppendString(description_);
-      break;
-  }
-
-  std::unique_ptr<dbus::Response> response =
-      object_proxy
-          ->CallMethodAndBlock(method_call.get(),
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr);
-
-  uint32_t cookie;
-  if (response) {
-    // The method returns an inhibit_cookie, used to uniquely identify
-    // this request. It should be used as an argument to Uninhibit()
-    // in order to remove the request.
-    dbus::MessageReader message_reader(response.get());
-    if (!message_reader.PopUint32(&cookie)) {
-      LOG(ERROR) << "Invalid Inhibit() response: " << response->ToString();
-      return false;
-    }
-  } else {
-    LOG(ERROR) << "No response to Inhibit() request!";
-    return false;
-  }
-
-  inhibit_cookies_.push_back({api, cookie});
-  return true;
-}
-
-void PowerSaveBlocker::Delegate::Uninhibit(
-    const InhibitCookie& inhibit_cookie) {
-  const char* service_name;
-  const char* interface_name;
-  const char* object_path;
-  GetDbusStringsForApi(inhibit_cookie.api, &service_name, &interface_name,
-                       &object_path);
-
-  DCHECK(ServiceNameHasOwner(bus_.get(), service_name));
-
-  dbus::ObjectProxy* object_proxy =
-      bus_->GetObjectProxy(service_name, dbus::ObjectPath(object_path));
-  auto method_call = std::make_unique<dbus::MethodCall>(
-      interface_name, GetUninhibitMethodName(inhibit_cookie.api));
-  auto message_writer =
-      std::make_unique<dbus::MessageWriter>(method_call.get());
-  message_writer->AppendUint32(inhibit_cookie.cookie);
-  std::unique_ptr<dbus::Response> response =
-      object_proxy
-          ->CallMethodAndBlock(method_call.get(),
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr);
-
-  // We don't care about checking the result. We assume it works; we can't
-  // really do anything about it anyway if it fails.
-  if (!response)
-    LOG(ERROR) << "No response to Uninhibit() request!";
-}
-
-void PowerSaveBlocker::Delegate::SetScreenSaverSuspended(bool suspend) {
-  if (suspend) {
-    DCHECK(!screen_saver_suspender_);
-    // The screen can be nullptr in tests.
-    if (auto* const screen = display::Screen::GetScreen())
-      screen_saver_suspender_ = screen->SuspendScreenSaver();
-  } else {
-    screen_saver_suspender_.reset();
-  }
-}
 
 PowerSaveBlocker::PowerSaveBlocker(
     mojom::WakeLockType type,
     mojom::WakeLockReason reason,
     const std::string& description,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner)
-    : delegate_(base::MakeRefCounted<Delegate>(type,
-                                               description,
-                                               ui_task_runner,
-                                               blocking_task_runner)),
-      ui_task_runner_(ui_task_runner),
-      blocking_task_runner_(blocking_task_runner) {
-  delegate_->Init();
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : delegate_(ui_task_runner, type, description) {
+  delegate_.AsyncCall(&PowerSaveBlocker::Delegate::Init);
 }
 
 PowerSaveBlocker::~PowerSaveBlocker() {
-  delegate_->CleanUp();
+  delegate_.AsyncCall(&PowerSaveBlocker::Delegate::CleanUp);
 }
 
 }  // namespace device

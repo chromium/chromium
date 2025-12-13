@@ -6,9 +6,10 @@ import 'chrome://history/history.js';
 
 import type {HistoryEntry, HistoryItemElement, HistoryListElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl} from 'chrome://history/history.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryEntry, createSearchEntry} from './test_util.js';
@@ -85,7 +86,10 @@ suite('<history-item> integration test', function() {
     const app = document.createElement('history-app');
     document.body.appendChild(app);
     element = app.$.history;
-    return testService.handler.whenCalled('queryHistory');
+    return Promise.all([
+      testService.handler.whenCalled('queryHistory'),
+      microtasksFinished(),
+    ]);
   });
 
   function getHistoryData(): HistoryEntry[] {
@@ -114,9 +118,9 @@ suite('<history-item> integration test', function() {
     return microtasksFinished().then(function() {
       const items = element.shadowRoot.querySelectorAll('history-item');
 
-      assertTrue(items[0]!.hasTimeGap);
-      assertFalse(items[1]!.hasTimeGap);
-      assertFalse(items[2]!.hasTimeGap);
+      assertTrue(items[0]!.hasTimeGap, '0');
+      assertFalse(items[1]!.hasTimeGap, '1');
+      assertFalse(items[2]!.hasTimeGap, '2');
     });
   });
 
@@ -159,5 +163,54 @@ suite('<history-item> integration test', function() {
     // Check that all items matching this url are unstarred.
     assertEquals(getHistoryData()[1]!.starred, false);
     assertEquals(getHistoryData()[5]!.starred, false);
+  });
+
+  test('actor-initiated visit annotation enabled', async function() {
+    loadTimeData.overrideValues(
+        {enableBrowsingHistoryActorIntegrationM1: true});
+
+    const newResults = [...TEST_HISTORY_RESULTS];
+    // Actor initiated history visit.
+    newResults[1]!.isActorVisit = true;
+    // Actor initiated history visit that is also bookmarked.
+    newResults[5]!.isActorVisit = true;
+    newResults[5]!.starred = true;
+    element.addNewResults(newResults, false, true);
+    await microtasksFinished();
+
+    const items = element.shadowRoot.querySelectorAll('history-item');
+    assertEquals(TEST_HISTORY_RESULTS.length, items.length);
+    assertFalse(isVisible(
+        items[0]!.shadowRoot.querySelector<HTMLElement>('#actor-icon')));
+    assertTrue(isVisible(
+        items[1]!.shadowRoot.querySelector<HTMLElement>('#actor-icon')));
+    assertFalse(isVisible(
+        items[2]!.shadowRoot.querySelector<HTMLElement>('#actor-icon')));
+    assertFalse(isVisible(
+        items[3]!.shadowRoot.querySelector<HTMLElement>('#actor-icon')));
+    assertFalse(isVisible(
+        items[4]!.shadowRoot.querySelector<HTMLElement>('#actor-icon')));
+    assertTrue(isVisible(
+        items[5]!.shadowRoot.querySelector<HTMLElement>('#actor-icon')));
+    assertTrue(isVisible(
+        items[5]!.shadowRoot.querySelector<HTMLElement>('#bookmark-star')));
+  });
+
+  // TODO(b/441040053): Clean up once kBrowsingHistoryActorIntegrationM1 is
+  // launched.
+  test('actor-initiated visit annotation disabled', async function() {
+    loadTimeData.overrideValues(
+        {enableBrowsingHistoryActorIntegrationM1: false});
+
+    const newResults = [...TEST_HISTORY_RESULTS];
+    // Actor initiated history visit.
+    newResults[0]!.isActorVisit = true;
+    element.addNewResults(newResults, false, true);
+    await microtasksFinished();
+
+    const items = element.shadowRoot.querySelectorAll('history-item');
+    assertEquals(TEST_HISTORY_RESULTS.length, items.length);
+    assertFalse(isVisible(
+        items[0]!.shadowRoot.querySelector<HTMLElement>('#actor-icon')));
   });
 });

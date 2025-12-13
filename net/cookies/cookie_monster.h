@@ -16,6 +16,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -420,6 +421,21 @@ class NET_EXPORT CookieMonster : public CookieStore {
     kMaxValue = kYes
   };
 
+  // Indicates whether the change during cookie insertion is observable to the
+  // web platform.
+  enum class CookieChangeObservability {
+    // The cookie insertion did not result in a web-observable change. This can
+    // happen if an equivalent cookie already existed with the same properties.
+    kNotWebObservable = 0,
+    // The cookie insertion resulted in a web-observable change. This can happen
+    // if a new cookie was inserted or an existing cookie was overwritten with
+    // new properties.
+    kWebObservable = 1,
+    // The cookie insertion resulted in a web-observable change, but the cookie
+    // value is not changed.
+    kWebObservableWithoutValueChange = 2
+  };
+
   // Record statistics every kRecordStatisticsIntervalSeconds of uptime.
   static const int kRecordStatisticsIntervalSeconds = 10 * 60;
 
@@ -574,14 +590,15 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // is the iterator of the CookieMap in |partitioned_cookies_| we should search
   // for duplicates.
   //
-  // The return value is true if the new equivalent `cookie_being_set` results
-  // in a web-observable change. This can occur when inserting a new cookie or
-  // overwriting an existing cookie with new properties observable to the web
-  // platform. It is false when the new cookie does not result in any changes
-  // that are observable to the web platform.
+  // The return value indicates whether new equivalent |cookie_being_set|
+  // results in a web-observable change. It will be |kWebObservable| when
+  // inserting a new cookie or overwriting an existing cookie with new
+  // properties observable to the web platform; or |kNotWebObservable| when the
+  // new cookie does not result in any changes that are observable to the web
+  // platform.
   //
   // NOTE: There should never be more than a single matching equivalent cookie.
-  bool MaybeDeleteEquivalentCookieAndUpdateStatus(
+  CookieChangeObservability MaybeDeleteEquivalentCookieAndUpdateStatus(
       const std::string& key,
       const CanonicalCookie& cookie_being_set,
       bool allowed_to_set_secure_cookie,
@@ -591,31 +608,28 @@ class NET_EXPORT CookieMonster : public CookieStore {
       CookieInclusionStatus& status,
       std::optional<PartitionedCookieMap::iterator> cookie_partition_it);
 
-  // Inserts `cc` into cookies_. Returns an iterator that points to the inserted
-  // cookie in `cookies_`. Guarantee: all iterators to `cookies_` remain valid.
-  // Dispatches the change to `change_dispatcher_` iff `dispatch_change` is
-  // true.
-  CookieMap::iterator InternalInsertCookie(
-      const std::string& key,
-      std::unique_ptr<CanonicalCookie> cc,
-      bool sync_to_store,
-      const CookieAccessResult& access_result,
-      bool dispatch_change = true,
-      bool is_no_change_overwrite = false);
+  // Inserts `cc` into `cookies_` or `partition_cookies_` depending on whether
+  // the cookie is partitioned. Returns iterator(s) that point to the inserted
+  // cookie in `cookies_`/`partition_cookies_`. Guarantee: all iterators to
+  // `cookies_`/`partition_cookies_` remain valid.
+  // If `dispatch_change` is true, it will dispatch the change to
+  // `change_dispatcher_`.
+  // The `observability` indicates if the the insertion of the cookie will be
+  // web observable. Different `CookieChangeCause` will be dispatched based on
+  // the `observability` value.
+  std::variant<CookieMap::iterator,
+               CookieMonster::PartitionedCookieMapIterators>
+  InternalInsertCookie(const std::string& key,
+                       std::unique_ptr<CanonicalCookie> cc,
+                       bool sync_to_store,
+                       const CookieAccessResult& access_result,
+                       bool dispatch_change = true,
+                       CookieChangeObservability observability =
+                           CookieChangeObservability::kWebObservable);
 
   // Returns true if the cookie should be (or is already) synced to the store.
   // Used for cookies during insertion and deletion into the in-memory store.
   bool ShouldUpdatePersistentStore(CanonicalCookie& cc);
-
-  // Inserts `cc` into partitioned_cookies_. Should only be used when
-  // cc->IsPartitioned() is true.
-  PartitionedCookieMapIterators InternalInsertPartitionedCookie(
-      std::string key,
-      std::unique_ptr<CanonicalCookie> cc,
-      bool sync_to_store,
-      const CookieAccessResult& access_result,
-      bool dispatch_change = true,
-      bool is_no_change_overwrite = false);
 
   // Sets all cookies from |list| after deleting any equivalent cookie.
   // For data gathering purposes, this routine is treated as if it is
@@ -804,6 +818,11 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const GURL& destination,
       int source_port,
       CookieSourceScheme source_scheme);
+
+  // Helper function that maps the `CookieChangeObservability` to
+  // `CookieChangeCause`.
+  static CookieChangeCause ToCookieChangeCause(
+      CookieChangeObservability observability);
 
   // Set of keys (eTLD+1's) for which non-expired cookies have
   // been evicted for hitting the per-domain max. The size of this set is

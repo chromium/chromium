@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "printing/backend/cups_helper.h"
 
 #include "base/logging.h"
@@ -135,11 +130,11 @@ std::optional<gfx::Size> ParseResolutionString(const char* input) {
   int n = 0;  // number of chars successfully parsed by sscanf()
   int dpi_x;
   int dpi_y;
-  sscanf(input, "%ddpi%n", &dpi_x, &n);
+  UNSAFE_TODO(sscanf(input, "%ddpi%n", &dpi_x, &n));
   if (n == len) {
     dpi_y = dpi_x;
   } else {
-    sscanf(input, "%dx%ddpi%n", &dpi_x, &dpi_y, &n);
+    UNSAFE_TODO(sscanf(input, "%dx%ddpi%n", &dpi_x, &dpi_y, &n));
     if (n != len) {
       VLOG(1) << "Bad PPD resolution choice: " << input;
       return std::nullopt;
@@ -185,7 +180,7 @@ std::pair<std::vector<gfx::Size>, gfx::Size> GetResolutionSettings(
       }
 
       dpis.push_back(parsed_size.value());
-      if (!strcmp(choice_str, res->defchoice)) {
+      if (!UNSAFE_TODO(strcmp(choice_str, res->defchoice))) {
         default_dpi = dpis.back();
       }
     }
@@ -780,7 +775,7 @@ HttpConnectionCUPS::HttpConnectionCUPS(const GURL& print_server_url,
   if (port == url::PORT_UNSPECIFIED)
     port = kDefaultIPPServerPort;
 
-  http_ = HttpConnect2(print_server_url.host().c_str(), port,
+  http_ = HttpConnect2(print_server_url.GetHost().c_str(), port,
                        /*addrlist=*/nullptr, AF_UNSPEC, encryption,
                        blocking ? 1 : 0, kCupsTimeout.InMilliseconds(),
                        /*cancel=*/nullptr);

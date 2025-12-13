@@ -66,8 +66,7 @@ const int kMaximumMultiParameterValueSize = 256;
 }
 
 - (void)updateCrashReport {
-  std::string stateAsJson;
-  base::JSONWriter::Write(_dictionary, &stateAsJson);
+  std::string stateAsJson = base::WriteJson(_dictionary).value_or("");
   if (stateAsJson.length() > (kMaximumMultiParameterValueSize - 1)) {
     NOTREACHED();
   }

@@ -138,9 +138,9 @@ void WebFrameSerializer::GenerateMHTMLParts(
   Deque<SerializedResource> resources;
   FrameSerializer::SerializeFrame(
       *web_delegate, *frame,
-      WTF::BindOnce(&ContinueGenerateMHTMLParts, boundary,
-                    web_frame->GetLocalFrameToken(), encoding_policy,
-                    std::move(callback)));
+      blink::BindOnce(&ContinueGenerateMHTMLParts, boundary,
+                      web_frame->GetLocalFrameToken(), encoding_policy,
+                      std::move(callback)));
 }
 
 bool WebFrameSerializer::Serialize(
@@ -155,20 +155,15 @@ bool WebFrameSerializer::Serialize(
 
 WebString WebFrameSerializer::GenerateMetaCharsetDeclaration(
     const WebString& charset) {
-  // TODO(yosin) We should call |FrameSerializer::metaCharsetDeclarationOf()|.
-  String charset_string =
-      "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" +
-      static_cast<const String&>(charset) + "\">";
-  return charset_string;
+  return StrCat(
+      {"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=",
+       static_cast<const String&>(charset), "\">"});
 }
 
 WebString WebFrameSerializer::GenerateMarkOfTheWebDeclaration(
     const WebURL& url) {
-  StringBuilder builder;
-  builder.Append("\n<!-- ");
-  builder.Append(FrameSerializer::MarkOfTheWebDeclaration(url));
-  builder.Append(" -->\n");
-  return builder.ToString();
+  return StrCat(
+      {"\n<!-- ", FrameSerializer::MarkOfTheWebDeclaration(url), " -->\n"});
 }
 
 }  // namespace blink

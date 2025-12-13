@@ -15,7 +15,6 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 -webkit-box-reflect: none
 -webkit-font-smoothing: auto
 -webkit-line-break: auto
--webkit-line-clamp: none
 -webkit-locale: auto
 -webkit-mask-box-image: none
 -webkit-mask-box-image-outset: 0
@@ -73,6 +72,7 @@ background-repeat: repeat
 background-size: auto
 baseline-shift: 0px
 baseline-source: auto
+block-ellipsis: no-ellipsis
 block-size: 0px
 border-block-end-color: rgb(0, 0, 0)
 border-block-end-style: none
@@ -137,11 +137,15 @@ color-rendering: auto
 column-count: auto
 column-gap: normal
 column-height: auto
-column-rule-break: spanning-item
+column-rule-break: auto
 column-rule-color: rgb(0, 0, 0)
-column-rule-outset: 50%
+column-rule-edge-end-inset: 0px
+column-rule-edge-start-inset: 0px
+column-rule-interior-end-inset: -50%
+column-rule-interior-start-inset: -50%
 column-rule-style: none
-column-rule-width: 0px
+column-rule-visibility-items: all
+column-rule-width: 3px
 column-span: none
 column-width: auto
 column-wrap: auto
@@ -153,6 +157,7 @@ contain-intrinsic-width: none
 container-name: none
 container-type: normal
 content: normal
+continue: auto
 corner-bottom-left-shape: round
 corner-bottom-right-shape: round
 corner-end-end-shape: round
@@ -184,6 +189,7 @@ float: none
 flood-color: rgb(0, 0, 0)
 flood-opacity: 1
 font-kerning: auto
+font-language-override: normal
 font-optical-sizing: auto
 font-palette: normal
 font-size: 16px
@@ -202,12 +208,14 @@ font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-position: normal
 font-weight: 400
-gap-rule-paint-order: row-over-column
+gap-rule-overlap: row-over-column
 grid-auto-columns: auto
 grid-auto-flow: row
 grid-auto-rows: auto
 grid-column-end: auto
 grid-column-start: auto
+grid-lanes-direction: column
+grid-lanes-fill: normal
 grid-row-end: auto
 grid-row-start: auto
 grid-template-areas: none
@@ -226,8 +234,8 @@ inset-block-start: auto
 inset-inline-end: auto
 inset-inline-start: auto
 interactivity: auto
-interest-hide-delay: 0.5s
-interest-show-delay: 0.5s
+interest-delay-end: normal
+interest-delay-start: normal
 interpolate-size: numeric-only
 isolation: auto
 item-tolerance: normal
@@ -238,7 +246,6 @@ left: auto
 letter-spacing: normal
 lighting-color: rgb(255, 255, 255)
 line-break: auto
-line-clamp: none
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -263,14 +270,13 @@ mask-position: 0% 0%
 mask-repeat: repeat
 mask-size: auto
 mask-type: luminance
-masonry-direction: column
-masonry-fill: normal
 math-depth: 0
 math-shift: normal
 math-style: normal
 max-block-size: none
 max-height: none
 max-inline-size: none
+max-lines: none
 max-width: none
 min-block-size: 0px
 min-height: 0px
@@ -291,7 +297,7 @@ orphans: 2
 outline-color: rgb(0, 0, 0)
 outline-offset: 0px
 outline-style: none
-outline-width: 0px
+outline-width: 3px
 overflow: visible
 overflow-anchor: auto
 overflow-block: visible
@@ -301,8 +307,10 @@ overflow-wrap: normal
 overflow-x: visible
 overflow-y: visible
 overlay: none
+overscroll-area: none
 overscroll-behavior-block: auto
 overscroll-behavior-inline: auto
+overscroll-position: none
 padding-block-end: 0px
 padding-block-start: 0px
 padding-bottom: 0px
@@ -316,11 +324,11 @@ perspective: none
 perspective-origin: 384.5px 0px
 pointer-events: auto
 position: static
-position-anchor: auto
+position-anchor: none
 position-area: none
 position-try-fallbacks: none
 position-try-order: normal
-position-visibility: always
+position-visibility: anchors-visible
 print-color-adjust: economy
 r: 0px
 reading-flow: normal
@@ -329,12 +337,17 @@ resize: none
 right: auto
 rotate: none
 row-gap: normal
-row-rule-break: spanning-item
+row-rule-break: auto
 row-rule-color: rgb(0, 0, 0)
-row-rule-outset: 50%
+row-rule-edge-end-inset: 0px
+row-rule-edge-start-inset: 0px
+row-rule-interior-end-inset: -50%
+row-rule-interior-start-inset: -50%
 row-rule-style: none
+row-rule-visibility-items: all
 row-rule-width: 3px
 ruby-align: space-around
+ruby-overhang: auto
 ruby-position: over
 rx: auto
 ry: auto
@@ -350,10 +363,6 @@ scroll-padding-block-end: auto
 scroll-padding-block-start: auto
 scroll-padding-inline-end: auto
 scroll-padding-inline-start: auto
-scroll-start-block: auto
-scroll-start-inline: auto
-scroll-start-x: auto
-scroll-start-y: auto
 scroll-target-group: none
 scroll-timeline-axis: block
 scroll-timeline-name: none
@@ -383,7 +392,7 @@ text-anchor: start
 text-autospace: no-autospace
 text-box-edge: auto
 text-box-trim: none
-text-decoration: none solid rgb(0, 0, 0)
+text-decoration: none
 text-decoration-color: rgb(0, 0, 0)
 text-decoration-line: none
 text-decoration-skip-ink: auto
@@ -393,6 +402,7 @@ text-emphasis-position: auto
 text-emphasis-style: none
 text-grow: none
 text-indent: 0px
+text-justify: auto
 text-overflow: clip
 text-rendering: auto
 text-shadow: none
@@ -404,13 +414,12 @@ text-underline-position: auto
 text-wrap-mode: wrap
 text-wrap-style: auto
 timeline-scope: none
-timeline-trigger-behavior: once
 timeline-trigger-exit-range-end: auto
 timeline-trigger-exit-range-start: auto
 timeline-trigger-name: none
 timeline-trigger-range-end: normal
 timeline-trigger-range-start: normal
-timeline-trigger-timeline: auto
+timeline-trigger-source: auto
 top: auto
 touch-action: auto
 transform: none
@@ -422,6 +431,7 @@ transition-duration: 0s
 transition-property: all
 transition-timing-function: ease
 translate: none
+trigger-scope: none
 unicode-bidi: isolate
 user-select: auto
 vector-effect: none

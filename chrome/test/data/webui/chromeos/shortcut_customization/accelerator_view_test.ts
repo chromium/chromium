@@ -123,13 +123,12 @@ suite('acceleratorViewTest', function() {
     assertEquals(3, keys.length);
 
     assertEquals(
-        'ctrl',
-        keys[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        'ctrl', keys[0]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
         'shift',
-        keys[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys[1]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
-        'g', keys[2]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        'g', keys[2]!.shadowRoot!.querySelector('#key')!.textContent.trim());
   });
 
   test('EditableAccelerator', async () => {
@@ -163,7 +162,7 @@ suite('acceleratorViewTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: {data: [1]},
+      shortcutName: '1',
     };
 
     provider.setFakeReplaceAcceleratorResult(fakeResult);
@@ -282,7 +281,7 @@ suite('acceleratorViewTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: {data: [1]},
+      shortcutName: '1',
     };
 
     provider.setFakeReplaceAcceleratorResult(fakeResult);
@@ -470,7 +469,7 @@ suite('acceleratorViewTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: {data: [1]},
+      shortcutName: '1',
     };
     provider.setFakeReplaceAcceleratorResult(fakeResult);
 

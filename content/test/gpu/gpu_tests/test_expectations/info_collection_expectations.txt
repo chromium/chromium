@@ -8,12 +8,12 @@
 #         mac highsierra mojave catalina bigsur monterey ventura sonoma sequoia
 #         win win8 win10 win11 ]
 # Devices
-# tags: [ android-pixel-2 android-pixel-4 android-pixel-6
+# tags: [ android-pixel-2 android-pixel-4 android-pixel-6 android-pixel-10
 #             android-shield-android-tv android-sm-a137f android-sm-a236b
 #             android-sm-s911u1
 #         android-brya android-corsola
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
-#             chromeos-board-octopus chromeos-board-volteer
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -28,7 +28,8 @@
 #         web-engine-shell
 #         cros-chrome ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
+# tags: [ amd amd-0x150e amd-0x1900 amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821
+#             amd-0x7340 amd-0x7480
 #         apple apple-apple-m1 apple-apple-m2 apple-apple-m3
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -36,6 +37,7 @@
 #         arm
 #         google google-0xffff google-0xc0de
 #         imagination
+#         imagination-technologies
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0x3e92
 #             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
@@ -62,6 +64,7 @@
 # tags: [ mesa_lt_19.1
 #         mesa_ge_21.0
 #         mesa_ge_23.2
+#         mesa_ge_24.2
 #         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601
 #         nvidia_ge_535.183.01 nvidia_lt_535.183.01 ]
 # ASan
@@ -108,6 +111,9 @@
 # The "Skip" expectations in this section are expected to be removable at some
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
+
+# Win11/RTX 4070 Super failures after upgrading to driver 580.88
+crbug.com/438512194 [ win nvidia-0x2783 ] InfoCollection_direct_composition [ Failure ]
 
 
 #######################################################################

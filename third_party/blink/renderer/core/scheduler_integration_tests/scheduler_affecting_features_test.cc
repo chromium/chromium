@@ -221,17 +221,4 @@ TEST_F(SchedulingAffectingFeaturesTest, NonPlugins) {
   }
 }
 
-TEST_F(SchedulingAffectingFeaturesTest, WebLocks) {
-  SimRequest main_resource("https://foo.com/", "text/html");
-  LoadURL("https://foo.com/");
-  main_resource.Complete(
-      "<script>"
-      " navigator.locks.request('my_resource', async lock => {}); "
-      "</script>");
-
-  EXPECT_THAT(
-      GetNonTrivialMainFrameFeatures(),
-      testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebLocks));
-}
-
 }  // namespace blink

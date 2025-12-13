@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom-blink.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace {
 namespace mojob = ::blink::mojom::blink;
@@ -56,8 +57,8 @@ class DataElementReader {
         blob_remote->ReadAll(std::move(data_pipe_producer), mojo::NullRemote());
         async_reader_ = std::make_unique<DataPipeReader>(
             std::move(data_pipe_consumer), blob_body_bytes_,
-            base::BindOnce(&DataElementReader::OnReadBlobComplete,
-                           base::Unretained(this)));
+            BindOnce(&DataElementReader::OnReadBlobComplete,
+                     blink::Unretained(this)));
         return;
       }
     }
@@ -153,8 +154,8 @@ void FakeBlobRegistry::Register(mojo::PendingReceiver<mojom::blink::Blob> blob,
   DataElementReader* element_reader =
       new DataElementReader(std::move(blob), uuid, std::move(body_elements));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&DataElementReader::CreateFakeBlob,
-                                base::Unretained(element_reader)));
+      FROM_HERE,
+      BindOnce(&DataElementReader::CreateFakeBlob, Unretained(element_reader)));
 
   std::move(callback).Run();
 }

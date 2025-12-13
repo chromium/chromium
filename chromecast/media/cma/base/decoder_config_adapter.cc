@@ -5,6 +5,7 @@
 #include "chromecast/media/cma/base/decoder_config_adapter.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "chromecast/media/base/media_codec_support.h"
 #include "media/base/channel_layout.h"

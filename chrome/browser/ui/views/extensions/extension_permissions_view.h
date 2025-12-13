@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace extensions {
@@ -21,20 +22,21 @@ class ExtensionPermissionsView : public views::View {
   METADATA_HEADER(ExtensionPermissionsView, views::View)
 
  public:
-  ExtensionPermissionsView();
+  explicit ExtensionPermissionsView(
+      const extensions::InstallPromptPermissions& permissions);
   ExtensionPermissionsView(const ExtensionPermissionsView&) = delete;
   ExtensionPermissionsView& operator=(const ExtensionPermissionsView&) = delete;
 
-  // Adds a single pair of |permission_text| and |permission_details| to
+ private:
+  // Adds a single pair of `permission_text` and `permission_details` to
   // be rendered in the view.
   void AddItem(const std::u16string& permission_text,
                const std::u16string& permission_details);
-
-  // Adds the set of |permissions| to be rendered in the view.
-  void AddPermissions(const extensions::InstallPromptPermissions& permissions);
-
-  // views::View:
-  void ChildPreferredSizeChanged(views::View* child) override;
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, ExtensionPermissionsView, views::View)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, ExtensionPermissionsView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_PERMISSIONS_VIEW_H_

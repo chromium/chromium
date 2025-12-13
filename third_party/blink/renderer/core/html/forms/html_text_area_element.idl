@@ -21,9 +21,9 @@
 
 // https://html.spec.whatwg.org/C/#the-textarea-element
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLTextAreaElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, ImplementedAs=IDLExposedAutofillValue] attribute DOMString autocomplete;
     [CEReactions] attribute unsigned long cols;
     [CEReactions, Reflect] attribute DOMString dirName;

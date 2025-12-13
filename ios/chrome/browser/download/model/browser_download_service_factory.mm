@@ -12,10 +12,9 @@
 namespace {
 
 // Default factory.
-std::unique_ptr<KeyedService> BuildBrowserDownloadService(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> BuildBrowserDownloadService(ProfileIOS* profile) {
   return std::make_unique<BrowserDownloadService>(
-      web::DownloadController::FromBrowserState(context));
+      web::DownloadController::FromBrowserState(profile));
 }
 
 }  // namespace
@@ -34,7 +33,7 @@ BrowserDownloadServiceFactory* BrowserDownloadServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+BrowserDownloadServiceFactory::TestingFactory
 BrowserDownloadServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildBrowserDownloadService);
 }
@@ -49,6 +48,6 @@ BrowserDownloadServiceFactory::~BrowserDownloadServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 BrowserDownloadServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildBrowserDownloadService(context);
+    ProfileIOS* profile) const {
+  return BuildBrowserDownloadService(profile);
 }

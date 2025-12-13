@@ -13,6 +13,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/common/task_annotator.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "content/public/renderer/render_thread.h"
@@ -376,6 +377,7 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kDoDefault:
     case ax::mojom::Action::kExpand:
     case ax::mojom::Action::kIncrement:
+    case ax::mojom::Action::kRequestLayoutBasedAction:
     case ax::mojom::Action::kScrollToPoint:
     case ax::mojom::Action::kScrollToPositionAtRowColumn:
     case ax::mojom::Action::kFocus:

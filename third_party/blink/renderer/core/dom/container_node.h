@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"
+#include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -42,8 +43,10 @@ class ExceptionState;
 class GetHTMLOptions;
 class HTMLCollection;
 class RadioNodeList;
+class ScriptState;
 class StyleRecalcContext;
 class WhitespaceAttacher;
+class WritableStream;
 
 using StaticElementList = StaticNodeTypeList<Element>;
 
@@ -176,11 +179,15 @@ class CORE_EXPORT ContainerNode : public Node {
   void ParserFinishedBuildingDocumentFragment(ShouldNotifyInsertedNodes);
   void ParserRemoveChild(Node&);
   void ParserInsertBefore(Node* new_child, Node& ref_child);
+  void ParserRemoveAllChildren();
+  void ParserReplaceChild(Node& new_child, Node& old_child);
   void ParserTakeAllChildrenFrom(ContainerNode&);
 
   void RemoveChildren();
 
-  void CloneChildNodesFrom(const ContainerNode&, NodeCloningData&);
+  void CloneChildNodesFrom(const ContainerNode&,
+                           NodeCloningData&,
+                           CustomElementRegistry*);
 
   using Node::DetachLayoutTree;
   void AttachLayoutTree(AttachContext&) override;
@@ -469,6 +476,14 @@ class CORE_EXPORT ContainerNode : public Node {
   // IDL implementation of getHTML. This is exposed on Element and ShadowRoot
   // only.
   String getHTML(const GetHTMLOptions*, ExceptionState&) const;
+
+  WritableStream* streamAppendHTMLUnsafe(ScriptState*, ExceptionState&);
+  WritableStream* streamHTMLUnsafe(ScriptState*, ExceptionState&);
+  WritableStream* patchSelf(ScriptState*, ExceptionState&);
+  WritableStream* patchAfter(ScriptState*, Node* a, ExceptionState&);
+  WritableStream* patchBefore(ScriptState*, Node* b, ExceptionState&);
+  WritableStream* patchBetween(ScriptState*, Node* a, Node* b, ExceptionState&);
+  WritableStream* patchAll(ScriptState*);
 
   // DocumentOrElementEventHandlers:
   // These event listeners are only actually web-exposed on interfaces that

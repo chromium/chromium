@@ -203,6 +203,8 @@ void WaitForPDMToRefresh(int profile) {
   pdm->Refresh();
   WaitForCurrentTasksToComplete(
       wallet_helper::GetProfileWebDataService(profile)->GetDBTaskRunner());
+  WaitForCurrentTasksToComplete(
+      wallet_helper::GetAccountWebDataService(profile)->GetDBTaskRunner());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -271,10 +273,18 @@ scoped_refptr<AutofillWebDataService> GetAccountWebDataService(int index) {
       test()->GetProfile(index), ServiceAccessType::EXPLICIT_ACCESS);
 }
 
-void SetServerCreditCards(
-    int profile,
-    const std::vector<autofill::CreditCard>& credit_cards) {
-  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+scoped_refptr<AutofillWebDataService> GetWebDataService(int profile,
+                                                        StoreType store_type) {
+  return (store_type == StoreType::kAccountStore)
+             ? GetAccountWebDataService(profile)
+             : GetProfileWebDataService(profile);
+}
+
+void SetServerCreditCards(int profile,
+                          const std::vector<autofill::CreditCard>& credit_cards,
+                          StoreType store_type) {
+  scoped_refptr<AutofillWebDataService> wds =
+      GetWebDataService(profile, store_type);
   wds->GetDBTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&SetServerCardsOnDBSequence,
                                 base::Unretained(wds.get()), credit_cards));
@@ -283,8 +293,10 @@ void SetServerCreditCards(
 
 void SetPaymentsCustomerData(
     int profile,
-    const autofill::PaymentsCustomerData& customer_data) {
-  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+    const autofill::PaymentsCustomerData& customer_data,
+    StoreType store_type) {
+  scoped_refptr<AutofillWebDataService> wds =
+      GetWebDataService(profile, store_type);
   wds->GetDBTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&SetPaymentsCustomerDataOnDBSequence,
                                 base::Unretained(wds.get()), customer_data));
@@ -293,42 +305,56 @@ void SetPaymentsCustomerData(
 
 void SetCreditCardCloudTokenData(
     int profile,
-    const std::vector<autofill::CreditCardCloudTokenData>& cloud_token_data) {
-  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+    const std::vector<autofill::CreditCardCloudTokenData>& cloud_token_data,
+    StoreType store_type) {
+  scoped_refptr<AutofillWebDataService> wds =
+      GetWebDataService(profile, store_type);
   wds->GetDBTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&SetCreditCardCloudTokenDataOnDBSequence,
                                 base::Unretained(wds.get()), cloud_token_data));
 }
 
-void SetServerCardCredentialData(int profile, const CreditCard& credit_card) {
-  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+void SetServerCardCredentialData(int profile,
+                                 const CreditCard& credit_card,
+                                 StoreType store_type) {
+  scoped_refptr<AutofillWebDataService> wds =
+      GetWebDataService(profile, store_type);
   wds->AddServerCvc(credit_card.instrument_id(), credit_card.cvc());
   WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
 }
 
 void RemoveServerCardCredentialData(int profile,
-                                    const CreditCard& credit_card) {
-  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+                                    const CreditCard& credit_card,
+                                    StoreType store_type) {
+  scoped_refptr<AutofillWebDataService> wds =
+      GetWebDataService(profile, store_type);
   wds->RemoveServerCvc(credit_card.instrument_id());
   WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
 }
 
 void UpdateServerCardCredentialData(int profile,
-                                    const CreditCard& credit_card) {
-  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+                                    const CreditCard& credit_card,
+                                    StoreType store_type) {
+  scoped_refptr<AutofillWebDataService> wds =
+      GetWebDataService(profile, store_type);
   wds->UpdateServerCvc(credit_card.instrument_id(), credit_card.cvc());
   WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
 }
 
-void UpdateServerCardMetadata(int profile, const CreditCard& credit_card) {
-  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+void UpdateServerCardMetadata(int profile,
+                              const CreditCard& credit_card,
+                              StoreType store_type) {
+  scoped_refptr<AutofillWebDataService> wds =
+      GetWebDataService(profile, store_type);
   wds->UpdateServerCardMetadata(credit_card);
   WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
 }
 
-std::vector<PaymentsMetadata> GetServerCardsMetadata(int profile) {
+std::vector<PaymentsMetadata> GetServerCardsMetadata(int profile,
+                                                     StoreType store_type) {
   std::vector<PaymentsMetadata> cards_metadata;
-  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+  scoped_refptr<AutofillWebDataService> wds =
+      GetWebDataService(profile, store_type);
   wds->GetDBTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&GetServerCardsMetadataOnDBSequence,
                                 base::Unretained(wds.get()), &cards_metadata));
@@ -337,11 +363,13 @@ std::vector<PaymentsMetadata> GetServerCardsMetadata(int profile) {
 }
 
 sync_pb::DataTypeState GetWalletDataTypeState(syncer::DataType data_type,
-                                              int profile) {
+                                              int profile,
+                                              StoreType store_type) {
   DCHECK(data_type == syncer::AUTOFILL_WALLET_DATA ||
          data_type == syncer::AUTOFILL_WALLET_OFFER);
   sync_pb::DataTypeState result;
-  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+  scoped_refptr<AutofillWebDataService> wds =
+      GetWebDataService(profile, store_type);
   wds->GetDBTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&GetDataTypeStateOnDBSequence, data_type,
                                 base::Unretained(wds.get()), &result));
@@ -530,56 +558,6 @@ void AutofillWalletChecker::OnPaymentsDataChanged() {
   CheckExitCondition();
 }
 
-AutofillWalletMetadataSizeChecker::AutofillWalletMetadataSizeChecker(
-    int profile_a,
-    int profile_b)
-    : profile_a_(profile_a), profile_b_(profile_b) {
-  wallet_helper::GetPaymentsDataManager(profile_a_)->AddObserver(this);
-  wallet_helper::GetPaymentsDataManager(profile_b_)->AddObserver(this);
-}
-
-AutofillWalletMetadataSizeChecker::~AutofillWalletMetadataSizeChecker() {
-  wallet_helper::GetPaymentsDataManager(profile_a_)->RemoveObserver(this);
-  wallet_helper::GetPaymentsDataManager(profile_b_)->RemoveObserver(this);
-}
-
-bool AutofillWalletMetadataSizeChecker::IsExitConditionSatisfied(
-    std::ostream* os) {
-  *os << "Waiting for matching autofill wallet metadata sizes";
-  // This checker used to be flaky (crbug.com/921386) because of using RunLoops
-  // to load synchronously data from the DB in IsExitConditionSatisfiedImpl.
-  // Such a waiting RunLoop often processed another OnPersonalDataChanged() call
-  // resulting in nested RunLoops. This should be avoided now by blocking using
-  // WaitableEvent, instead. This check enforces that we do not nest it anymore.
-  DCHECK(!checking_exit_condition_in_flight_)
-      << "There should be no nested calls for "
-         "IsExitConditionSatisfied(std::ostream* os)";
-  checking_exit_condition_in_flight_ = true;
-  bool exit_condition_is_satisfied = IsExitConditionSatisfiedImpl();
-  checking_exit_condition_in_flight_ = false;
-  return exit_condition_is_satisfied;
-}
-
-void AutofillWalletMetadataSizeChecker::OnPaymentsDataChanged() {
-  CheckExitCondition();
-}
-
-bool AutofillWalletMetadataSizeChecker::IsExitConditionSatisfiedImpl() {
-  // There could be trailing metadata left on one of the clients. Check that
-  // metadata.size() is the same on both clients.
-  std::vector<PaymentsMetadata> cards_metadata_a =
-      wallet_helper::GetServerCardsMetadata(profile_a_);
-  std::vector<PaymentsMetadata> cards_metadata_b =
-      wallet_helper::GetServerCardsMetadata(profile_b_);
-  if (cards_metadata_a.size() != cards_metadata_b.size()) {
-    DVLOG(1) << "Server cards metadata mismatch, expected "
-             << cards_metadata_a.size() << ", found "
-             << cards_metadata_b.size();
-    return false;
-  }
-  return true;
-}
-
 FullUpdateTypeProgressMarkerChecker::FullUpdateTypeProgressMarkerChecker(
     base::Time min_required_progress_marker_timestamp,
     syncer::SyncService* service,
@@ -628,4 +606,9 @@ bool FullUpdateTypeProgressMarkerChecker::IsExitConditionSatisfied(
 void FullUpdateTypeProgressMarkerChecker::OnSyncCycleCompleted(
     syncer::SyncService* sync) {
   CheckExitCondition();
+}
+
+void FullUpdateTypeProgressMarkerChecker::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  NOTREACHED();
 }

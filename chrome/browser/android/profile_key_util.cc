@@ -37,8 +37,8 @@ ProfileKey* GetLastUsedRegularProfileKey() {
 }  // namespace android
 
 // static
-ScopedJavaLocalRef<jobject> JNI_ProfileKeyUtil_GetLastUsedRegularProfileKey(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jobject>
+JNI_ProfileKeyUtil_GetLastUsedRegularProfileKey(JNIEnv* env) {
   ProfileKey* key = ::android::GetLastUsedRegularProfileKey();
   if (!key) {
     NOTREACHED() << "ProfileKey not found.";
@@ -51,3 +51,5 @@ ScopedJavaLocalRef<jobject> JNI_ProfileKeyUtil_GetLastUsedRegularProfileKey(
 
   return profile_key_android->GetJavaObject();
 }
+
+DEFINE_JNI(ProfileKeyUtil)

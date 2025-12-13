@@ -23,7 +23,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="ChromeOS.AudioSelection" enum="AudioSelectionEvents"
-    expires_after="2025-12-31">
+    expires_after="2026-05-03">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -79,7 +79,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.AudioSelection.{AudioType}.SystemSwitchAudio"
-    enum="BooleanSwitched" expires_after="2025-12-31">
+    enum="BooleanSwitched" expires_after="2026-03-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -247,7 +247,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.UserOverrideSystem{SwitchDecision}Audio.BeforeAndAfterAudioDeviceSet"
-    enum="AudioSelectionBeforeAndAfterDeviceSet" expires_after="2025-12-31">
+    enum="AudioSelectionBeforeAndAfterDeviceSet" expires_after="2026-03-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -267,7 +267,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.UserOverrideSystem{SwitchDecision}TimeElapsed"
-    units="minutes" expires_after="2025-12-31">
+    units="minutes" expires_after="2026-03-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -387,7 +387,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.OutputVolumeSetTo" units="%"
-    expires_after="2025-12-30">
+    expires_after="2026-05-03">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

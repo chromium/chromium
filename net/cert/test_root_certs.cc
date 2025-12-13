@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/strings/string_view_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -19,9 +20,6 @@ namespace net {
 namespace {
 
 bool g_has_instance = false;
-
-base::LazyInstance<TestRootCerts>::Leaky
-    g_test_root_certs = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -57,7 +55,8 @@ bssl::CertificateTrust ThreadSafeTrustStoreInMemory::GetTrust(
 
 // static
 TestRootCerts* TestRootCerts::GetInstance() {
-  return g_test_root_certs.Pointer();
+  static base::NoDestructor<TestRootCerts> test_root_certs;
+  return test_root_certs.get();
 }
 
 bool TestRootCerts::HasInstance() {
@@ -108,10 +107,8 @@ bool TestRootCerts::IsEmpty() const {
 
 bool TestRootCerts::IsKnownRoot(base::span<const uint8_t> der_cert) const {
   base::AutoLock lock(lock_);
-
-  return test_known_roots_.find(
-             std::string_view(reinterpret_cast<const char*>(der_cert.data()),
-                              der_cert.size())) != test_known_roots_.end();
+  return test_known_roots_.find(base::as_string_view(der_cert)) !=
+         test_known_roots_.end();
 }
 
 TestRootCerts::TestRootCerts() {

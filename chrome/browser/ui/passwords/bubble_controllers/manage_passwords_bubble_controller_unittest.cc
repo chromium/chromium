@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -206,17 +207,25 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnPasswordSyncState) {
       controller()->GetPasswordSyncState(),
       ManagePasswordsBubbleController::SyncState::kActiveWithAccountPasswords);
 
-  sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
-  ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    sync_service()->SetIsUsingExplicitPassphrase(true);
+    EXPECT_EQ(controller()->GetPasswordSyncState(),
+              ManagePasswordsBubbleController::SyncState::
+                  kActiveWithAccountPasswords);
+  } else {
+    sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
+    ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
-  EXPECT_EQ(controller()->GetPasswordSyncState(),
-            ManagePasswordsBubbleController::SyncState::
-                kActiveWithSyncFeatureEnabled);
+    EXPECT_EQ(controller()->GetPasswordSyncState(),
+              ManagePasswordsBubbleController::SyncState::
+                  kActiveWithSyncFeatureEnabled);
 
-  sync_service()->SetIsUsingExplicitPassphrase(true);
-  EXPECT_EQ(controller()->GetPasswordSyncState(),
-            ManagePasswordsBubbleController::SyncState::
-                kActiveWithSyncFeatureEnabled);
+    sync_service()->SetIsUsingExplicitPassphrase(true);
+    EXPECT_EQ(controller()->GetPasswordSyncState(),
+              ManagePasswordsBubbleController::SyncState::
+                  kActiveWithSyncFeatureEnabled);
+  }
 }
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldGetPrimaryAccountEmail) {
@@ -225,7 +234,7 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldGetPrimaryAccountEmail) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
   signin::MakePrimaryAccountAvailable(identity_manager, "test@email.com",
-                                      signin::ConsentLevel::kSync);
+                                      signin::ConsentLevel::kSignin);
   EXPECT_EQ(controller()->GetPrimaryAccountEmail(), u"test@email.com");
 }
 
@@ -302,14 +311,14 @@ TEST_F(ManagePasswordsBubbleControllerTest,
   password_manager::PasswordForm details_bubble_form = CreateTestForm();
 
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](PasswordsModelDelegate::AvailabilityCallback callback) {
             // Waiting for kTimeToAuth seconds to simulate the time user will
             // need to authenticate
             task_environment().FastForwardBy(base::Seconds(kTimeToAuth));
             // Respond with true to simulate a successful user reauth.
             std::move(callback).Run(true);
-          })));
+          }));
   base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
   EXPECT_CALL(mock_callback, Run(true));
   controller()->AuthenticateUserAndDisplayDetailsOf(details_bubble_form,
@@ -326,11 +335,11 @@ TEST_F(ManagePasswordsBubbleControllerTest,
   password_manager::PasswordForm details_bubble_form = CreateTestForm();
 
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](PasswordsModelDelegate::AvailabilityCallback callback) {
             // Respond with false to simulate a failed user reauth.
             std::move(callback).Run(false);
-          })));
+          }));
   base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
   EXPECT_CALL(mock_callback, Run(false));
   controller()->AuthenticateUserAndDisplayDetailsOf(details_bubble_form,
@@ -352,11 +361,11 @@ TEST_F(ManagePasswordsBubbleControllerTest, OpenMoveBubble) {
   // Used to mock displaying the details view. This is needed to set the
   // selected_form value to the one that we expect.
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](PasswordsModelDelegate::AvailabilityCallback callback) {
             // Respond with true to simulate a successful user reauth.
             std::move(callback).Run(true);
-          })));
+          }));
   base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
   EXPECT_CALL(mock_callback, Run(true));
   controller()->AuthenticateUserAndDisplayDetailsOf(details_bubble_form,

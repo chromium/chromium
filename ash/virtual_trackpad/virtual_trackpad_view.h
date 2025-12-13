@@ -24,7 +24,6 @@ class TrackpadInternalSurfaceView;
 // The contents view of the widget which houses the virtual trackpad. Serves as
 // the parent for the controls to modify our fake scrolls and the virtual
 // trackpad view.
-// TODO(b/288286805): Handle 2 finger scrolls.
 class VirtualTrackpadView : public views::View {
   METADATA_HEADER(VirtualTrackpadView, views::View)
 

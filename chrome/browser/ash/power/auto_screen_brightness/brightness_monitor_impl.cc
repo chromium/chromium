@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -85,7 +84,6 @@ void BrightnessMonitorImpl::ScreenBrightnessChanged(
     // Brightness should not be outside the range of [0,100]. If it's outside
     // this range after initialization completes successfully, we clip the value
     // instead of throwing it away.
-    LogDataError(DataError::kBrightnessPercent);
     brightness_percent_received =
         std::clamp(brightness_percent_received, 0.0, 100.0);
   }
@@ -133,9 +131,6 @@ void BrightnessMonitorImpl::OnReceiveInitialBrightnessPercent(
 
 void BrightnessMonitorImpl::OnInitializationComplete() {
   DCHECK_NE(brightness_monitor_status_, Status::kInitializing);
-
-  UMA_HISTOGRAM_ENUMERATION("AutoScreenBrightness.BrightnessMonitorStatus",
-                            brightness_monitor_status_);
 
   const bool success = brightness_monitor_status_ == Status::kSuccess;
   for (auto& observer : observers_)

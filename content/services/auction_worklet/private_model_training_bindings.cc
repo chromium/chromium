@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/webidl_compat.h"
+#include "gin/public/gin_embedders.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function.h"
@@ -21,8 +22,8 @@ PrivateModelTrainingBindings::~PrivateModelTrainingBindings() = default;
 
 void PrivateModelTrainingBindings::AttachToContext(
     v8::Local<v8::Context> context) {
-  v8::Local<v8::External> v8_this =
-      v8::External::New(v8_helper_->isolate(), this);
+  v8::Local<v8::External> v8_this = v8::External::New(
+      v8_helper_->isolate(), this, gin::kPrivateModelTrainingBindingsTag);
   v8::Local<v8::Function> v8_function =
       v8::Function::New(context, &PrivateModelTrainingBindings::SendEncryptedTo,
                         v8_this)
@@ -42,7 +43,8 @@ void PrivateModelTrainingBindings::SendEncryptedTo(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   PrivateModelTrainingBindings* bindings =
       static_cast<PrivateModelTrainingBindings*>(
-          v8::External::Cast(*args.Data())->Value());
+          v8::External::Cast(*args.Data())
+              ->Value(gin::kPrivateModelTrainingBindingsTag));
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
   AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());

@@ -23,17 +23,17 @@ static inline GridTrackSizingDirection DirectionFromSide(
 
 static inline String ImplicitNamedGridLineForSide(const String& line_name,
                                                   GridPositionSide side) {
-  return line_name + ((side == kColumnStartSide || side == kRowStartSide)
-                          ? "-start"
-                          : "-end");
+  return StrCat({line_name, ((side == kColumnStartSide || side == kRowStartSide)
+                                 ? "-start"
+                                 : "-end")});
 }
 
 GridLineResolver::GridLineResolver(const ComputedStyle& parent_style,
                                    wtf_size_t auto_repetitions)
     : style_(&parent_style) {
-  DCHECK(parent_style.IsDisplayMasonryBox());
+  DCHECK(parent_style.IsDisplayGridLanesBox());
 
-  (parent_style.MasonryTrackSizingDirection() == kForColumns)
+  (parent_style.GridLanesTrackSizingDirection() == kForColumns)
       ? column_auto_repetitions_ = auto_repetitions
       : row_auto_repetitions_ = auto_repetitions;
 }

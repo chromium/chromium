@@ -1,0 +1,16 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module viz.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// See components/viz/common/quads/trees_in_viz_timing.h
+// This is set in CompositorFrameMetadata and used to calculate
+// trees in viz stage time in CompositorFrameReporter.
+struct TreesInVizTiming {
+  mojo_base.mojom.TimeTicks start_update_display_tree;
+  mojo_base.mojom.TimeTicks start_prepare_to_draw;
+  mojo_base.mojom.TimeTicks start_draw_layers;
+  mojo_base.mojom.TimeTicks submit_compositor_frame;
+};

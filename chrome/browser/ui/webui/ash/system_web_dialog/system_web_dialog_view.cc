@@ -54,9 +54,9 @@ void SystemWebDialogView::UpdateWindowRoundedCorners(
                                                : 0);
   } else {
     // If the frame kind of a dialog is FrameKind::kDialog,
-    // NonClientFrameViewAsh is used as a frame for the dialog. For windows with
-    // NonClientFrameViewAsh, there is no window border. The top corners are
-    // rounded by the header in NonClientFrameViewAsh, therefore to round the
+    // FrameViewAsh is used as a frame for the dialog. For windows with
+    // FrameViewAsh, there is no window border. The top corners are
+    // rounded by the header in FrameViewAsh, therefore to round the
     // bottom corners of the dialog, we need to round the bottom corners of the
     // webview.
     radii.set_lower_left(window_radii.lower_left());

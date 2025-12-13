@@ -83,7 +83,7 @@ GURL GetViewerUrlFromCacheUrl(const GURL& url) {
   // (&viewerURL=<URL>). net::QueryIterator only operates on the query string,
   // so we copy the fragment into the query string, then iterate over the
   // parameters below.
-  std::string_view ref = url.ref_piece();
+  std::string_view ref = url.ref();
   GURL::Replacements replacements;
   replacements.SetQueryStr(ref);
   GURL modified_url = url.ReplaceComponents(replacements);
@@ -260,12 +260,9 @@ void AMPPageLoadMetricsObserver::OnInputTimingUpdate(
   if (it == amp_subframe_info_.end())
     return;
 
-  if (input_timing_delta.num_interactions) {
-    it->second.responsiveness_metrics_normalization
-        .AddNewUserInteractionLatencies(
-            input_timing_delta.num_interactions,
-            *(input_timing_delta.max_event_durations));
-  }
+  it->second.responsiveness_metrics_normalization
+      .AddNewUserInteractionLatencies(
+          input_timing_delta.user_interaction_latencies);
 }
 
 void AMPPageLoadMetricsObserver::OnSubFrameRenderDataUpdate(

@@ -22,6 +22,7 @@
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -92,9 +93,12 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefService(
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   supervised_user::SupervisedUserSettingsService* supervised_user_settings =
       SupervisedUserSettingsServiceFactory::GetForKey(key);
+  supervised_user::SupervisedUserContentFiltersService*
+      content_filters_service =
+          SupervisedUserContentFiltersServiceFactory::GetForKey(key);
   supervised_user_settings->Init(profile_path, io_task_runner, !async_prefs);
   return chrome_prefs::CreateProfilePrefs(
       profile_path, std::move(pref_validation_delegate), policy_service,
-      supervised_user_settings, extension_pref_store, pref_registry,
+      supervised_user_settings, content_filters_service, extension_pref_store, pref_registry,
       browser_policy_connector, async_prefs, io_task_runner, os_crypt_async);
 }

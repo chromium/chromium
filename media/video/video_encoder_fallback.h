@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "media/base/media_export.h"
 #include "media/base/video_encoder.h"
 

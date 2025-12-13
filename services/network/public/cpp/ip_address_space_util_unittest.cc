@@ -221,8 +221,9 @@ TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV6LinkLocalUnicast) {
             IPAddressSpace::kLocal);
 
   // Upper bound (exclusive).
+  // fec0:: is Site Local which is mapped to kLocal (see test below).
   EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("fec0::")),
-            IPAddressSpace::kPublic);
+            IPAddressSpace::kLocal);
 }
 
 // Verifies that the address space of IPv6 localhost (::1/128) is `loopback`.
@@ -231,11 +232,94 @@ TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV6Localhost) {
             IPAddressSpace::kLoopback);
 
   // Lower bound (exclusive).
+  // ::0 is the unspecified address which is mapped to kLoopback (see test
+  // below).
   EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("::0")),
-            IPAddressSpace::kPublic);
+            IPAddressSpace::kLoopback);
 
   // Upper bound (exclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("::2")),
+            IPAddressSpace::kPublic);
+}
+
+// Verifies that the address space of IPv6 null address (::/128) is `loopback`.
+TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV6Null) {
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("::")),
+            IPAddressSpace::kLoopback);
+}
+
+// Verifies that the address space of IP addresses belonging to the
+// "Carrier Grade NAT" 100.64.0.0/10 block are `local`.
+TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV4CarrierGradeNat) {
+  // Lower bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(100, 63, 255, 255)),
+            IPAddressSpace::kPublic);
+
+  // Lower and upper bounds (inclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(100, 64, 0, 0)),
+            IPAddressSpace::kLocal);
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(100, 127, 255, 255)),
+            IPAddressSpace::kLocal);
+
+  // Upper bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(100, 128, 0, 0)),
+            IPAddressSpace::kPublic);
+}
+
+// Verifies that the address space of IPv6 addresses in the "Documentation"
+// (2001:db8::/32 and 3fff::/20) address blocks are `local`.
+TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV6Documentation) {
+  // 2001:db8::/32
+  // Lower bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("2001:db7:ffff:ffff:ffff:ffff:ffff:ffff")),
+            IPAddressSpace::kPublic);
+
+  // Lower and upper bounds (inclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("2001:db8::")),
+            IPAddressSpace::kLocal);
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("2001:db8:ffff:ffff:ffff:ffff:ffff:ffff")),
+            IPAddressSpace::kLocal);
+
+  // Upper bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("2001:db9::")),
+            IPAddressSpace::kPublic);
+
+  // 3fff::/20
+  // Lower bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("3ffe:ffff:ffff:ffff:ffff:ffff:ffff:ffff")),
+            IPAddressSpace::kPublic);
+
+  // Lower and upper bounds (inclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("3fff::")),
+            IPAddressSpace::kLocal);
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("3fff:0fff:ffff:ffff:ffff:ffff:ffff:ffff")),
+            IPAddressSpace::kLocal);
+
+  // Upper bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("3fff:ffff::")),
+            IPAddressSpace::kPublic);
+}
+
+// Verifies that the address space of IPv6 addresses in the "Site-local unicast"
+// (fec0::/10) address block is `local`.
+TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV6SiteLocalUnicast) {
+  // Lower bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("fec0:0:0:0:0:0:0:0")),
+            IPAddressSpace::kLocal);
+
+  // Lower and upper bounds (inclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("fec0::")),
+            IPAddressSpace::kLocal);
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("feff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")),
+            IPAddressSpace::kLocal);
+
+  // Upper bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("ff00::")),
             IPAddressSpace::kPublic);
 }
 
@@ -263,19 +347,6 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceNullIP) {
             IPAddressSpace::kLocal);
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(0, 255, 255, 255)),
             IPAddressSpace::kLocal);
-}
-
-// Verifies that 0.0.0.0/8 is mapped to the public address space if configured
-// via feature flag.
-TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceNullIPKillSwitch) {
-  base::test::ScopedFeatureList enable{
-      features::kTreatNullIPAsPublicAddressSpace};
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(0, 0, 0, 0)),
-            IPAddressSpace::kPublic);
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(0, 0, 0, 4)),
-            IPAddressSpace::kPublic);
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(0, 255, 255, 255)),
-            IPAddressSpace::kPublic);
 }
 
 // Verifies that the `ip-address-space-overrides` switch can be present and
@@ -719,13 +790,55 @@ TEST(IPAddressSpaceTest, ParsePrivateIpFromURL) {
             ParsePrivateIpFromUrl(GURL("http://10.168.1.10")));
 }
 
-TEST(IPAddressSpaceTest, IsRFC6762LocalDomain) {
-  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://foo.test")));
-  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://8.8.8.8")));
-  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://192.168.1.10")));
-  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://localhost")));
-  EXPECT_EQ(true, IsRFC6762LocalDomain(GURL("http://menu.local")));
-  EXPECT_EQ(true, IsRFC6762LocalDomain(GURL("http://menu.local:8000")));
+TEST(IPAddressSpaceTest, GetAddressSpaceFromUrl) {
+  EXPECT_EQ(std::nullopt, GetAddressSpaceFromUrl(GURL("http://foo.test")));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("http://8.8.8.8")));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("https://8.8.8.8")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://192.168.1.10")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://10.168.1.10")));
+  EXPECT_EQ(IPAddressSpace::kLoopback,
+            GetAddressSpaceFromUrl(GURL("http://localhost")));
+  EXPECT_EQ(IPAddressSpace::kLoopback,
+            GetAddressSpaceFromUrl(GURL("https://localhost")));
+  EXPECT_EQ(IPAddressSpace::kLoopback,
+            GetAddressSpaceFromUrl(GURL("https://localhost.")));
+  EXPECT_EQ(IPAddressSpace::kLoopback,
+            GetAddressSpaceFromUrl(GURL("http://foo.localhost")));
+  EXPECT_EQ(IPAddressSpace::kLoopback,
+            GetAddressSpaceFromUrl(GURL("http://foo.localhost.")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://local")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://local.")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://menu.local")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("https://menu.local")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("https://menu.local.")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://menu.local:8000")));
+
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                 "10.2.3.4:80=public,8.8.8.8:8888=local");
+
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("http://10.2.3.4:80")));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("http://10.2.3.4")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("https://10.2.3.4")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://8.8.8.8:8888")));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("http://8.8.8.8")));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("https://8.8.8.8")));
 }
 
 }  // namespace

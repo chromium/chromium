@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//device/vr/buildflags/buildflags.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("xr") {
@@ -25,8 +26,12 @@ blink_modules_sources("xr") {
     "xr_composition_layer.h",
     "xr_cpu_depth_information.cc",
     "xr_cpu_depth_information.h",
+    "xr_cube_layer.cc",
+    "xr_cube_layer.h",
     "xr_cube_map.cc",
     "xr_cube_map.h",
+    "xr_cylinder_layer.cc",
+    "xr_cylinder_layer.h",
     "xr_depth_information.cc",
     "xr_depth_information.h",
     "xr_depth_manager.cc",
@@ -35,6 +40,8 @@ blink_modules_sources("xr") {
     "xr_dom_overlay_state.h",
     "xr_enter_fullscreen_observer.cc",
     "xr_enter_fullscreen_observer.h",
+    "xr_equirect_layer.cc",
+    "xr_equirect_layer.h",
     "xr_exit_fullscreen_observer.cc",
     "xr_exit_fullscreen_observer.h",
     "xr_frame.cc",
@@ -45,8 +52,8 @@ blink_modules_sources("xr") {
     "xr_frame_request_callback_collection.h",
     "xr_gpu_binding.cc",
     "xr_gpu_binding.h",
-    "xr_gpu_projection_layer.cc",
-    "xr_gpu_projection_layer.h",
+    "xr_gpu_drawing_context.cc",
+    "xr_gpu_drawing_context.h",
     "xr_gpu_sub_image.h",
     "xr_gpu_swap_chain.cc",
     "xr_gpu_swap_chain.h",
@@ -62,6 +69,7 @@ blink_modules_sources("xr") {
     "xr_hit_test_result.h",
     "xr_hit_test_source.cc",
     "xr_hit_test_source.h",
+    "xr_id_hash_traits.h",
     "xr_image_tracking_result.cc",
     "xr_image_tracking_result.h",
     "xr_input_source.cc",
@@ -78,6 +86,10 @@ blink_modules_sources("xr") {
     "xr_joint_space.h",
     "xr_layer.cc",
     "xr_layer.h",
+    "xr_layer_client.h",
+    "xr_layer_drawing_context.h",
+    "xr_layer_event.cc",
+    "xr_layer_event.h",
     "xr_layer_shared_image_manager.cc",
     "xr_layer_shared_image_manager.h",
     "xr_light_estimate.cc",
@@ -95,6 +107,8 @@ blink_modules_sources("xr") {
     "xr_pose.h",
     "xr_projection_layer.cc",
     "xr_projection_layer.h",
+    "xr_quad_layer.cc",
+    "xr_quad_layer.h",
     "xr_ray.cc",
     "xr_ray.h",
     "xr_reference_space.cc",
@@ -112,6 +126,8 @@ blink_modules_sources("xr") {
     "xr_session_viewport_scaler.cc",
     "xr_session_viewport_scaler.h",
     "xr_setlike.h",
+    "xr_shaped_layer.cc",
+    "xr_shaped_layer.h",
     "xr_space.cc",
     "xr_space.h",
     "xr_sub_image.h",
@@ -133,17 +149,22 @@ blink_modules_sources("xr") {
     "xr_viewer_pose.cc",
     "xr_viewer_pose.h",
     "xr_viewport.h",
+    "xr_visibility_mask_change_event.cc",
+    "xr_visibility_mask_change_event.h",
     "xr_webgl_binding.cc",
     "xr_webgl_binding.h",
+    "xr_webgl_cubemap_swap_chain.cc",
+    "xr_webgl_cubemap_swap_chain.h",
     "xr_webgl_depth_information.cc",
     "xr_webgl_depth_information.h",
     "xr_webgl_drawing_buffer_swap_chain.cc",
     "xr_webgl_drawing_buffer_swap_chain.h",
+    "xr_webgl_drawing_context.cc",
+    "xr_webgl_drawing_context.h",
+    "xr_webgl_frame_transport_context_impl.cc",
+    "xr_webgl_frame_transport_context_impl.h",
     "xr_webgl_layer.cc",
     "xr_webgl_layer.h",
-    "xr_webgl_layer_client.h",
-    "xr_webgl_projection_layer.cc",
-    "xr_webgl_projection_layer.h",
     "xr_webgl_sub_image.cc",
     "xr_webgl_sub_image.h",
     "xr_webgl_swap_chain.cc",
@@ -153,12 +174,17 @@ blink_modules_sources("xr") {
   ]
 
   deps = [
+    "//device/vr/buildflags",
     "//device/vr/public/mojom:vr_service_blink",
     "//services/metrics/public/cpp:ukm_builders",
   ]
 
+  if (enable_vr) {
+    deps += [ "//device/vr/public/cpp:features" ]
+  }
+
   public_deps = [
-    "//third_party/blink/renderer/modules/gamepad:gamepad",
-    "//third_party/blink/renderer/modules/webgpu:webgpu",
+    "//third_party/blink/renderer/modules/gamepad",
+    "//third_party/blink/renderer/modules/webgpu",
   ]
 }

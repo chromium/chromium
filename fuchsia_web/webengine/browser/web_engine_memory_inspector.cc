@@ -149,14 +149,15 @@ WebEngineMemoryInspector::ResolveMemoryDumpPromise(fpromise::context& context) {
 void WebEngineMemoryInspector::OnMemoryDumpComplete(
     base::TimeTicks requested_at,
     fpromise::suspended_task task,
-    bool success,
+    memory_instrumentation::mojom::RequestOutcome outcome,
     memory_instrumentation::mojom::GlobalMemoryDumpPtr raw_dump) {
   DCHECK(!dump_results_);
 
   dump_results_ = std::make_unique<inspect::Inspector>();
 
   // If capture failed then there is no data to report.
-  if (!success || !raw_dump) {
+  if (outcome != memory_instrumentation::mojom::RequestOutcome::kSuccess ||
+      !raw_dump) {
     task.resume_task();
     return;
   }

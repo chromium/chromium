@@ -98,12 +98,13 @@ public class LanguageSplitInstaller {
     }
 
     /**
-     * Start the install of a language split for |languageName| and use |listener| as a callback
-     * for when the install is completed or has failed. Note: The API instantly considers the
-     * request as completed if it detects the language is already installed and the Play Store
-     * will automatically update the language split in the background.
+     * Start the install of a language split for |languageName| and use |listener| as a callback for
+     * when the install is completed or has failed. Note: The API instantly considers the request as
+     * completed if it detects the language is already installed and the Play Store will
+     * automatically update the language split in the background.
+     *
      * @param languageName String BCP-47 code for language to be installed.
-     * @param InstallListener Callback to handle install success or failure.
+     * @param listener Callback to handle install success or failure.
      */
     public void installLanguage(String languageName, InstallListener listener) {
         if (mInstallListener != null) {

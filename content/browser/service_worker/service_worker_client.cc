@@ -742,7 +742,7 @@ bool ServiceWorkerClient::IsEligibleForServiceWorkerController() const {
   std::set<std::string> schemes;
   GetContentClient()->browser()->GetSchemesBypassingSecureContextCheckAllowlist(
       &schemes);
-  return schemes.find(url_.scheme()) != schemes.end();
+  return schemes.find(url_.GetScheme()) != schemes.end();
 }
 
 bool ServiceWorkerClient::is_response_committed() const {
@@ -799,7 +799,8 @@ GlobalRenderFrameHostId ServiceWorkerClient::GetRenderFrameHostId() const {
 
 int ServiceWorkerClient::GetProcessId() const {
   if (IsContainerForWindowClient()) {
-    return GetRenderFrameHostId().child_id;
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+    return GetRenderFrameHostId().child_id.GetUnsafeValue();
   }
   DCHECK(IsContainerForWorkerClient());
   return process_id_for_worker_client_;
@@ -911,6 +912,7 @@ void ServiceWorkerClient::OnEnterBackForwardCache() {
     SCOPED_CRASH_KEY_BOOL("SWC_OnEBFC", "is_inherited", is_inherited());
     CHECK(!controller_->BFCacheContainsControllee(client_uuid()));
     controller_->MoveControlleeToBackForwardCacheMap(client_uuid());
+    was_controlled_when_entered_back_forward_cache_ = true;
   }
   is_in_back_forward_cache_ = true;
 }
@@ -928,6 +930,7 @@ void ServiceWorkerClient::OnRestoreFromBackForwardCache() {
     controller_->RestoreControlleeFromBackForwardCacheMap(client_uuid());
   }
   is_in_back_forward_cache_ = false;
+  was_controlled_when_entered_back_forward_cache_ = false;
 }
 
 void ServiceWorkerClient::SyncMatchingRegistrations() {
@@ -1058,6 +1061,7 @@ void ServiceWorkerClient::UpdateController(bool notify_controllerchange) {
 
   scoped_refptr<ServiceWorkerVersion> previous_version = controller_;
   controller_ = version;
+  was_controlled_when_entered_back_forward_cache_ = false;
   if (version) {
     // TODO(crbug.com/330928087): remove check when this issue resolved.
     SCOPED_CRASH_KEY_NUMBER("SWV_RCFBCM", "client_type",
@@ -1073,6 +1077,7 @@ void ServiceWorkerClient::UpdateController(bool notify_controllerchange) {
       // |this| was not |version|'s controllee when |OnEnterBackForwardCache|
       // was called.
       version->MoveControlleeToBackForwardCacheMap(client_uuid());
+      was_controlled_when_entered_back_forward_cache_ = true;
     }
     if (running_status_observer_) {
       version->AddObserver(running_status_observer_.get());
@@ -1257,11 +1262,16 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
 
   switch (type) {
     case CreateNetworkURLLoaderFactoryType::kNavigationPreload:
+    case CreateNetworkURLLoaderFactoryType::kSyntheticNetworkRequest:
       // Allow the embedder to intercept the URLLoader request if necessary.
       // This must be a synchronous decision by the embedder. In the future, we
       // may wish to support asynchronous decisions using
       // |URLLoaderRequestInterceptor| in the same fashion that they are used
       // for navigation requests.
+      //
+      // TODO(crbug.com/352578800): Rename
+      // `CreateURLLoaderHandlerForServiceWorkerNavigationPreload`. This is used
+      // by not only navigation preload, but also synthetic response.
       if (ContentBrowserClient::URLLoaderRequestHandler
               embedder_url_loader_handler =
                   GetContentClient()
@@ -1274,7 +1284,6 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
       }
       break;
     case CreateNetworkURLLoaderFactoryType::kRaceNetworkRequest:
-    case CreateNetworkURLLoaderFactoryType::kSyntheticNetworkRequest:
       break;
   }
 
@@ -1335,8 +1344,6 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
 
 // If a blob URL is used for a SharedWorker script's URL, a controller will be
 // inherited.
-BASE_FEATURE(kSharedWorkerBlobURLFix,
-             "SharedWorkerBlobURLFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSharedWorkerBlobURLFix, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace content

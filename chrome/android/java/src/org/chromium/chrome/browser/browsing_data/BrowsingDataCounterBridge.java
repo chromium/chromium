@@ -25,7 +25,7 @@ public class BrowsingDataCounterBridge {
          * @param result For example, a string describing how much storage space will be reclaimed
          *     by clearing this data type.
          */
-        public void onCounterFinished(String summary);
+        void onCounterFinished(String summary);
     }
 
     private long mNativeBrowsingDataCounterBridge;

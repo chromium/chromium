@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -545,9 +544,12 @@ bool VTTParser::CollectTimeStamp(VTTScanner& input, double& time_stamp) {
     return false;
 
   // Steps 18 - 19 - Calculate result.
-  time_stamp = (value1 * kMinutesPerHour * kSecondsPerMinute) +
-               (value2 * kSecondsPerMinute) + value3 +
-               (value4 * (1 / kMsPerSecond));
+  base::TimeDelta time_stamp_delta = base::Hours(value1);
+  time_stamp_delta += base::Minutes(value2);
+  time_stamp_delta += base::Seconds(value3);
+  time_stamp_delta += base::Milliseconds(value4);
+
+  time_stamp = time_stamp_delta.InSecondsF();
   return true;
 }
 

@@ -51,14 +51,6 @@ component("app_types") {
     "//ui/gfx",
     "//url",
   ]
-
-  if (is_chromeos) {
-    sources += [
-      "browser_app_instance_update.cc",
-      "browser_app_instance_update.h",
-      "browser_window_instance_update.h",
-    ]
-  }
 }
 
 # This target is separate from //components/services/app_service because not all
@@ -192,10 +184,6 @@ component("app_update") {
     "app_registry_cache.h",
     "app_registry_cache_wrapper.cc",
     "app_registry_cache_wrapper.h",
-    "app_storage/app_storage.cc",
-    "app_storage/app_storage.h",
-    "app_storage/app_storage_file_handler.cc",
-    "app_storage/app_storage_file_handler.h",
     "app_update.cc",
     "app_update.h",
     "capability_access_update.cc",
@@ -204,7 +192,7 @@ component("app_update") {
 
   defines = [ "IS_APP_UPDATE_IMPL" ]
 
-  public_deps = [ "//components/account_id:account_id" ]
+  public_deps = [ "//components/account_id" ]
 
   deps = [
     ":app_types",
@@ -228,7 +216,7 @@ source_set("icon_loader") {
 
   deps = [
     ":app_types",
-    "//ui/gfx:gfx",
+    "//ui/gfx",
   ]
 
   visibility = [ "//components/services/app_service/*" ]
@@ -342,8 +330,6 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     sources += [
-      "app_storage/app_storage_file_handler_unittest.cc",
-      "app_storage/app_storage_unittest.cc",
       "icon_types_unittest.cc",
       "instance_registry_unittest.cc",
       "instance_unittest.cc",

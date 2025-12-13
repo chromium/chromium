@@ -49,39 +49,46 @@ const char kAutomatedPasswordChangeEnterprisePolicyAllowed[] =
 const char kNotificationContentDetectionEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.notification_content_detection_"
     "enterprise_policy_allowed";
+
+const char kBlingPrototypingEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.bling_prototyping_enterprise_policy_"
+    "allowed";
+
+const char kContextualTasksContextEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.contextual_tasks_context_enterprise_"
+    "policy_allowed";
+
 }  // namespace prefs
 
 namespace features {
-BASE_FEATURE(kComposeMqlsLogging,
-             "ComposeMqlsLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kActorLoginMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabOrganizationMqlsLogging,
-             "TabOrganizationMqlsLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWallpaperSearchMqlsLogging,
-             "WallpaperSearchMqlsLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTabOrganizationMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHistorySearchMqlsLogging,
-             "HistorySearchMqlsLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWallpaperSearchMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHistorySearchMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProductSpecificationsMqlsLogging,
-             "ProductSpecificationsMqlsLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFormsClassificationsMqlsLogging,
-             "FormsClassificationsMqlsLogging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
+                     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+                 ? base::FEATURE_ENABLED_BY_DEFAULT
+                 : base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPasswordChangeSubmissionMqlsLogging,
-             "PasswordChangeSubmissionMqlsLogging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationContentDetectionMqlsLogging,
-             "NotificationContentDetectionMqlsLogging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBlingPrototypingMqlsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kContextualTasksContextMqlsLogging,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
@@ -96,8 +103,16 @@ UserFeedbackCallback FeedbackUnspecified() {
   });
 }
 
+void RegisterActorLogin() {
+  MqlsFeatureRegistry::GetInstance().Register(
+      std::make_unique<MqlsFeatureMetadata>(
+          "ActorLogin", proto::LogAiDataRequest::FeatureCase::kActorLogin,
+          /*enterprise_policy=*/std::nullopt, &features::kActorLoginMqlsLogging,
+          FeedbackUnspecified()));
+}
+
 void RegisterCompose() {
-  const char* kComposeName = "Compose";
+  const char kComposeName[] = "Compose";
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
           prefs::kComposeEnterprisePolicyAllowed);
@@ -117,7 +132,7 @@ void RegisterCompose() {
 }
 
 void RegisterTabOrganization() {
-  const char* kTabOrganizationName = "TabOrganization";
+  const char kTabOrganizationName[] = "TabOrganization";
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
           prefs::kTabOrganizationEnterprisePolicyAllowed);
@@ -134,9 +149,7 @@ void RegisterTabOrganization() {
         if (quality.user_feedback()) {
           return quality.user_feedback();
         }
-        // TODO(b/331852814): Remove this else case along with the multi tab
-        // organization flag.
-        return quality.organizations()[0].user_feedback();
+        return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
       });
   auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
       kTabOrganizationName,
@@ -151,7 +164,7 @@ void RegisterTabOrganization() {
 }
 
 void RegisterWallpaperSearch() {
-  const char* kWallpaperSearchName = "WallpaperSearch";
+  const char kWallpaperSearchName[] = "WallpaperSearch";
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
           prefs::kWallpaperSearchEnterprisePolicyAllowed);
@@ -200,7 +213,7 @@ void RegisterHistorySearch() {
 }
 
 void RegisterPasswordChangeSubmission() {
-  const char* kPasswordChangeSubmissionName = "PasswordChangeSubmission";
+  const char kPasswordChangeSubmissionName[] = "PasswordChangeSubmission";
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
           prefs::kAutomatedPasswordChangeEnterprisePolicyAllowed);
@@ -262,6 +275,27 @@ void RegisterNotificationContentDetection() {
   MqlsFeatureRegistry::GetInstance().Register(std::move(metadata));
 }
 
+void RegisterBlingPrototyping() {
+  MqlsFeatureRegistry::GetInstance().Register(
+      std::make_unique<MqlsFeatureMetadata>(
+          "BlingPrototyping",
+          proto::LogAiDataRequest::FeatureCase::kBlingPrototyping,
+          EnterprisePolicyRegistry::GetInstance().Register(
+              prefs::kBlingPrototypingEnterprisePolicyAllowed),
+          &features::kBlingPrototypingMqlsLogging, FeedbackUnspecified()));
+}
+
+void RegisterContextualTasksContext() {
+  MqlsFeatureRegistry::GetInstance().Register(
+      std::make_unique<MqlsFeatureMetadata>(
+          "ContextualTasksContext",
+          proto::LogAiDataRequest::FeatureCase::kContextualTasksContext,
+          EnterprisePolicyRegistry::GetInstance().Register(
+              prefs::kContextualTasksContextEnterprisePolicyAllowed),
+          &features::kContextualTasksContextMqlsLogging,
+          FeedbackUnspecified()));
+}
+
 }  // anonymous namespace
 
 void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
@@ -272,6 +306,7 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
   if (!features_registered) {
     // The registries are static and so should only be populated once for the
     // program (rather than once per profile).
+    RegisterActorLogin();
     RegisterCompose();
     RegisterTabOrganization();
     RegisterWallpaperSearch();
@@ -280,6 +315,8 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
     RegisterAutofillPredictions();
     RegisterPasswordChangeSubmission();
     RegisterNotificationContentDetection();
+    RegisterBlingPrototyping();
+    RegisterContextualTasksContext();
     features_registered = true;
   }
   EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(pref_registry);

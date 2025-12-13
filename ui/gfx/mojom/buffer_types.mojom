@@ -43,21 +43,6 @@ enum BufferUsage {
   SCANOUT_FRONT_RENDERING,
 };
 
-struct BufferUsageAndFormat {
-  BufferUsage usage;
-  BufferFormat format;
-};
-
-enum BufferPlane {
-  DEFAULT,
-  Y,
-  UV,
-  U,
-  V,
-  A,
-};
-
-// gfx::GpuMemoryBufferId
 [Stable]
 struct GpuMemoryBufferId {
   int32 id;

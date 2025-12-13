@@ -34,8 +34,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.IntentUtils;
@@ -64,22 +62,8 @@ import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 @Batch(Batch.UNIT_TESTS)
 @Config(
         manifest = Config.NONE,
-        shadows = {
-            ShadowUrlUtilities.class,
-            ShadowPackageManager.class,
-            ClientManagerTest.ShadowSysUtils.class
-        })
+        shadows = {ShadowUrlUtilities.class, ShadowPackageManager.class})
 public class ClientManagerTest {
-    @Implements(SysUtils.class)
-    static class ShadowSysUtils {
-        public static boolean sIsLowMemory;
-
-        @Implementation
-        public static boolean isCurrentlyLowMemory() {
-            return sIsLowMemory;
-        }
-    }
-
     private static final String URL = "https://www.android.com";
     private static final String PACKAGE_NAME = "org.chromium.chrome";
 
@@ -570,7 +554,7 @@ public class ClientManagerTest {
     @SmallTest
     public void testLogConnectionClosedCTForeground() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
-        ShadowSysUtils.sIsLowMemory = false;
+        SysUtils.setIsCurrentlyLowMemoryForTesting(false);
 
         Assert.assertTrue(
                 "A new session should have been created.",
@@ -597,7 +581,7 @@ public class ClientManagerTest {
     @SmallTest
     public void testLogConnectionClosedCTForegroundKeepAlive() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
-        ShadowSysUtils.sIsLowMemory = false;
+        SysUtils.setIsCurrentlyLowMemoryForTesting(false);
         Intent intent =
                 new Intent()
                         .setComponent(
@@ -631,7 +615,7 @@ public class ClientManagerTest {
     @SmallTest
     public void testLogConnectionClosedCTBackground() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
-        ShadowSysUtils.sIsLowMemory = false;
+        SysUtils.setIsCurrentlyLowMemoryForTesting(false);
 
         Assert.assertTrue(
                 "A new session should have been created.",
@@ -658,7 +642,7 @@ public class ClientManagerTest {
     @SmallTest
     public void testLogConnectionClosedCTBackgroundKeepAlive() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
-        ShadowSysUtils.sIsLowMemory = false;
+        SysUtils.setIsCurrentlyLowMemoryForTesting(false);
         Intent intent =
                 new Intent()
                         .setComponent(
@@ -692,7 +676,7 @@ public class ClientManagerTest {
     @SmallTest
     public void testLogConnectionClosedLowMemoryCTForeground() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
-        ShadowSysUtils.sIsLowMemory = true;
+        SysUtils.setIsCurrentlyLowMemoryForTesting(true);
 
         Assert.assertTrue(
                 "A new session should have been created.",
@@ -720,7 +704,7 @@ public class ClientManagerTest {
     @SmallTest
     public void testLogConnectionClosedLowMemoryCTForegroundKeepAlive() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
-        ShadowSysUtils.sIsLowMemory = true;
+        SysUtils.setIsCurrentlyLowMemoryForTesting(true);
         Intent intent =
                 new Intent()
                         .setComponent(
@@ -754,7 +738,7 @@ public class ClientManagerTest {
     @SmallTest
     public void testLogConnectionClosedLowMemoryCTBackground() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
-        ShadowSysUtils.sIsLowMemory = true;
+        SysUtils.setIsCurrentlyLowMemoryForTesting(true);
 
         Assert.assertTrue(
                 "A new session should have been created.",
@@ -782,7 +766,7 @@ public class ClientManagerTest {
     @SmallTest
     public void testLogConnectionClosedLowMemoryCTBackgroundKeepAlive() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
-        ShadowSysUtils.sIsLowMemory = true;
+        SysUtils.setIsCurrentlyLowMemoryForTesting(true);
         Intent intent =
                 new Intent()
                         .setComponent(
@@ -816,7 +800,7 @@ public class ClientManagerTest {
     @SmallTest
     public void testLogConnectionClosedCleanupCalledTwiceLogsOnce() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
-        ShadowSysUtils.sIsLowMemory = false;
+        SysUtils.setIsCurrentlyLowMemoryForTesting(false);
 
         Assert.assertTrue(
                 "A new session should have been created.",

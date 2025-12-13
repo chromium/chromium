@@ -1,0 +1,58 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage
+    page-title="$i18n{siteSettingsCategoryJavascriptOptimizer}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsJavascriptOptimizerDescription}
+  </div>
+  <div class="radio-group">
+    <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+    <div id="radioGroupSubLabel" class="secondary">
+      $i18n{siteSettingsDefaultBehaviorDescription}
+    </div>
+    <settings-radio-group
+        id="javascriptOptimizerRadioGroup"
+        pref="{{prefs.generated.javascript_optimizer}}"
+        selectable-elements="settings-collapse-radio-button"
+        group-aria-label="$i18n{siteSettingsDefaultBehavior}">
+      <settings-collapse-radio-button
+          id="enableForAllSites"
+          class="two-line"
+          name="[[javascriptOptimizerSettingEnum_.ALLOWED]]"
+          pref="[[prefs.generated.javascript_optimizer]]"
+          label="$i18n{siteSettingsJavascriptOptimizerAllowed}"
+          sub-label="$i18n{siteSettingsJavascriptOptimizerAllowedSubLabel}"
+          no-collapse>
+      </settings-collapse-radio-button>
+      <template is="dom-if"
+          if="[[enableBlockV8OptimizerOnUnfamiliarSites_]]">
+        <settings-collapse-radio-button
+            id="blockForUnfamiliarSites"
+            class="two-line"
+            name="[[javascriptOptimizerSettingEnum_.BLOCKED_FOR_UNFAMILIAR_SITES]]"
+            pref="[[prefs.generated.javascript_optimizer]]"
+            label="$i18n{siteSettingsJavascriptOptimizerBlockedUnfamiliarSites}"
+            sub-label="[[getBlockForUnfamiliarSitesSubLabel_(
+                prefs.generated.javascript_optimizer.value)]]"
+            no-collapse>
+        </settings-collapse-radio-button>
+      </template>
+      <settings-collapse-radio-button
+          id="blockForAllSites"
+          class="two-line"
+          name="[[javascriptOptimizerSettingEnum_.BLOCKED]]"
+          pref="[[prefs.generated.javascript_optimizer]]"
+          label="$i18n{siteSettingsJavascriptOptimizerBlocked}"
+          sub-label="$i18n{siteSettingsJavascriptOptimizerBlockedSubLabel}"
+          no-collapse>
+      </settings-collapse-radio-button>
+    </settings-radio-group>
+  </div>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.JAVASCRIPT_OPTIMIZER]]"
+      allow-header="$i18n{siteSettingsJavascriptOptimizerAllowedExceptions}"
+      block-header="$i18n{siteSettingsJavascriptOptimizerBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

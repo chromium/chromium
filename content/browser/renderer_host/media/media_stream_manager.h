@@ -21,7 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -40,6 +40,8 @@
 #include "content/public/browser/media_request_state.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
+#include "content/public/common/buildflags.h"
 #include "media/base/video_facing.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -423,7 +425,7 @@ class CONTENT_EXPORT MediaStreamManager
       const base::UnguessableToken& session_id,
       const std::optional<gfx::Rect>& region_capture_rect);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
   // Determines whether the captured surface (tab/window) should be focused.
   // This can be called at most once, and only within the first 1s of the
   // capture session being initiated. If a call with |focus=false| is not
@@ -438,7 +440,9 @@ class CONTENT_EXPORT MediaStreamManager
                                       bool focus,
                                       bool is_from_microtask,
                                       bool is_from_timer);
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Captured Surface Control APIs.
   void SendWheel(
       GlobalRenderFrameHostId capturer_rfh_id,
@@ -766,7 +770,7 @@ class CONTENT_EXPORT MediaStreamManager
       GlobalRenderFrameHostId requesting_render_frame_host_id,
       int requester_id,
       int page_request_id,
-      blink::mojom::PermissionStatus status);
+      PermissionResult permission_result);
 
   // Start tracking capture-handle changes for tab-capture.
   void MaybeStartTrackingCaptureHandleConfig(

@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -21,17 +22,12 @@ class PrefService;
 
 namespace password_manager {
 
-// Helper function to convert a dictionary value to PasswordWordHashData.
-std::optional<PasswordHashData> ConvertToPasswordHashData(
-    const base::Value& dict);
-
 // Responsible for saving, clearing, retrieving and encryption of a password
 // hash data in preferences.
 // All methods should be called on UI thread.
 class HashPasswordManager {
  public:
-  HashPasswordManager();
-  explicit HashPasswordManager(PrefService* prefs);
+  explicit HashPasswordManager(os_crypt_async::Encryptor encryptor);
 
   HashPasswordManager(const HashPasswordManager&) = delete;
   HashPasswordManager& operator=(const HashPasswordManager&) = delete;
@@ -67,7 +63,10 @@ class HashPasswordManager {
   // state storage.
   void MigrateEnterprisePasswordHashes();
 
-  void set_prefs(PrefService* prefs) { prefs_ = prefs; }
+  // Returns the old PrefService.
+  PrefService* set_prefs(PrefService* prefs) {
+    return std::exchange(prefs_, prefs);
+  }
 
   void set_local_prefs(PrefService* local_prefs) { local_prefs_ = local_prefs; }
 
@@ -75,9 +74,13 @@ class HashPasswordManager {
   // Should only be called on the UI thread. The callback is only called when
   // the sign-in isn't the first change on the |kPasswordHashDataList| and
   // saving the password hash actually succeeded.
-  virtual base::CallbackListSubscription RegisterStateCallback(
+  base::CallbackListSubscription RegisterStateCallback(
       const base::RepeatingCallback<void(const std::string& username)>&
           callback);
+
+  // Helper function to convert a dictionary value to PasswordWordHashData.
+  std::optional<PasswordHashData> ConvertToPasswordHashData(
+      const base::Value& dict) const;
 
  private:
   // Encrypts and saves |password_hash_data| to prefs. Returns true on success.
@@ -94,6 +97,20 @@ class HashPasswordManager {
 
   // CHECKs PrefServices.
   void CheckPrefs(bool is_gaia_password) const;
+
+  // Returns empty string if decryption fails.
+  std::string DecryptBase64String(
+      const std::string& encrypted_base64_string) const;
+
+  // Returns empty string if encryption fails.
+  std::string EncryptString(const std::string& plain_text) const;
+
+  std::string GetAndDecryptField(const base::Value& dict,
+                                 const std::string& field_key) const;
+
+  bool IsGaiaPassword(const base::Value& dict) const;
+
+  const os_crypt_async::Encryptor encryptor_;
 
   raw_ptr<PrefService> prefs_ = nullptr;
 

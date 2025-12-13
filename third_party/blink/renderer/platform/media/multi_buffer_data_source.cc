@@ -10,7 +10,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/media_log.h"
@@ -73,8 +73,7 @@ class MultiBufferDataSource::ReadOperation {
  public:
   ReadOperation() = delete;
   ReadOperation(int64_t position,
-                int size,
-                uint8_t* data,
+                base::span<uint8_t> data,
                 media::DataSource::ReadCB callback);
   ReadOperation(const ReadOperation&) = delete;
   ReadOperation& operator=(const ReadOperation&) = delete;
@@ -85,25 +84,19 @@ class MultiBufferDataSource::ReadOperation {
   static void Run(std::unique_ptr<ReadOperation> read_op, int result);
 
   int64_t position() { return position_; }
-  int size() { return size_; }
-  uint8_t* data() { return data_; }
+  base::span<uint8_t> data() { return data_; }
 
  private:
   const int64_t position_;
-  const int size_;
-  raw_ptr<uint8_t, DanglingUntriaged> data_;
+  base::raw_span<uint8_t, DanglingUntriaged> data_;
   media::DataSource::ReadCB callback_;
 };
 
 MultiBufferDataSource::ReadOperation::ReadOperation(
     int64_t position,
-    int size,
-    uint8_t* data,
+    base::span<uint8_t> data,
     media::DataSource::ReadCB callback)
-    : position_(position),
-      size_(size),
-      data_(data),
-      callback_(std::move(callback)) {
+    : position_(position), data_(data), callback_(std::move(callback)) {
   DCHECK(callback_);
 }
 
@@ -136,7 +129,7 @@ MultiBufferDataSource::MultiBufferDataSource(
   DCHECK(url_data_);
   url_data_->Use();
   url_data_->OnRedirect(
-      WTF::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
+      blink::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
 }
 
 MultiBufferDataSource::~MultiBufferDataSource() {
@@ -166,7 +159,7 @@ void MultiBufferDataSource::CreateResourceLoader(int64_t first_byte_position,
   SetReader(std::make_unique<MultiBufferReader>(
       url_data_->multibuffer(), first_byte_position, last_byte_position,
       is_client_audio_element_,
-      WTF::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
+      blink::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
       render_task_runner_));
   UpdateBufferSizes();
 }
@@ -180,7 +173,7 @@ void MultiBufferDataSource::CreateResourceLoader_Locked(
   reader_ = std::make_unique<MultiBufferReader>(
       url_data_->multibuffer(), first_byte_position, last_byte_position,
       is_client_audio_element_,
-      WTF::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
+      blink::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
       render_task_runner_);
   UpdateBufferSizes();
 }
@@ -210,7 +203,7 @@ void MultiBufferDataSource::Initialize(InitializeCB init_cb) {
                             weak_factory_.GetWeakPtr()));
   } else {
     reader_->Wait(
-        1, WTF::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
+        1, blink::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
   }
 }
 
@@ -239,7 +232,7 @@ void MultiBufferDataSource::OnRedirected(
   url_data_ = std::move(new_destination);
 
   url_data_->OnRedirect(
-      WTF::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
+      blink::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
 
   if (init_cb_) {
     CreateResourceLoader(0, kPositionNotSpecified);
@@ -250,7 +243,7 @@ void MultiBufferDataSource::OnRedirected(
                               weak_ptr_));
     } else {
       reader_->Wait(
-          1, WTF::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
+          1, blink::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
     }
   } else if (read_op_) {
     CreateResourceLoader(read_op_->position(), kPositionNotSpecified);
@@ -259,8 +252,8 @@ void MultiBufferDataSource::OnRedirected(
           *render_task_runner_, FROM_HERE,
           CrossThreadBindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
     } else {
-      reader_->Wait(1,
-                    WTF::BindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
+      reader_->Wait(
+          1, blink::BindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
     }
   }
 
@@ -404,10 +397,9 @@ GURL MultiBufferDataSource::GetUrlAfterRedirects() const {
 }
 
 void MultiBufferDataSource::Read(int64_t position,
-                                 int size,
-                                 uint8_t* data,
+                                 base::span<uint8_t> data,
                                  media::DataSource::ReadCB read_cb) {
-  DVLOG(1) << "Read: " << position << " offset, " << size << " bytes";
+  DVLOG(1) << "Read: " << position << " offset, " << data.size() << " bytes";
   // Reading is not allowed until after initialization.
   DCHECK(!init_cb_);
   DCHECK(read_cb);
@@ -425,7 +417,7 @@ void MultiBufferDataSource::Read(int64_t position,
     // muxing as soon as possible. This works because TryReadAt is
     // thread-safe.
     if (reader_) {
-      int64_t bytes_read = reader_->TryReadAt(position, data, size);
+      int64_t bytes_read = reader_->TryReadAt(position, data);
       if (bytes_read > 0) {
         bytes_read_ += bytes_read;
         seek_positions_.push_back(position + bytes_read);
@@ -441,8 +433,8 @@ void MultiBufferDataSource::Read(int64_t position,
         return;
       }
     }
-    read_op_ = std::make_unique<ReadOperation>(position, size, data,
-                                               std::move(read_cb));
+    read_op_ =
+        std::make_unique<ReadOperation>(position, data, std::move(read_cb));
   }
 
   PostCrossThreadTask(*render_task_runner_, FROM_HERE,
@@ -472,7 +464,7 @@ void MultiBufferDataSource::ReadTask() {
   base::AutoLock auto_lock(lock_);
   if (stop_signal_received_ || !read_op_)
     return;
-  DCHECK(read_op_->size());
+  DCHECK(!read_op_->data().empty());
 
   if (!reader_)
     CreateResourceLoader_Locked(read_op_->position(), kPositionNotSpecified);
@@ -484,9 +476,11 @@ void MultiBufferDataSource::ReadTask() {
     return;
   }
   if (available) {
-    int64_t bytes_read = std::min<int64_t>(available, read_op_->size());
-    bytes_read =
-        reader_->TryReadAt(read_op_->position(), read_op_->data(), bytes_read);
+    auto read_buffer = read_op_->data();
+    const size_t to_read =
+        std::min(base::checked_cast<size_t>(available), read_buffer.size());
+    const int64_t bytes_read =
+        reader_->TryReadAt(read_op_->position(), read_buffer.first(to_read));
 
     bytes_read_ += bytes_read;
     seek_positions_.push_back(read_op_->position() + bytes_read);
@@ -505,8 +499,8 @@ void MultiBufferDataSource::ReadTask() {
     SeekTask_Locked();
   } else {
     reader_->Seek(read_op_->position());
-    reader_->Wait(1, WTF::BindOnce(&MultiBufferDataSource::ReadTask,
-                                   weak_factory_.GetWeakPtr()));
+    reader_->Wait(1, blink::BindOnce(&MultiBufferDataSource::ReadTask,
+                                     weak_factory_.GetWeakPtr()));
     UpdateLoadingState_Locked(false);
   }
 }
@@ -597,8 +591,7 @@ void MultiBufferDataSource::SetBitrateTask(int bitrate) {
 void MultiBufferDataSource::StartCallback() {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
 
-  // TODO(scherkus): we shouldn't have to lock to signal host(), see
-  // http://crbug.com/113712 for details.
+  // TODO(crbug.com/40724615): we shouldn't have to lock to signal host().
   base::AutoLock auto_lock(lock_);
   if (stop_signal_received_) {
     return;

@@ -96,8 +96,6 @@ Atomic32 NoBarrier_AtomicExchange(volatile Atomic32* ptr, Atomic32 new_value);
 // *ptr with the increment applied.  This routine implies no memory barriers.
 Atomic32 NoBarrier_AtomicIncrement(volatile Atomic32* ptr, Atomic32 increment);
 
-Atomic32 Barrier_AtomicIncrement(volatile Atomic32* ptr, Atomic32 increment);
-
 // These following lower-level operations are typically useful only to people
 // implementing higher-level synchronization operations like spinlocks,
 // mutexes, and condition-variables.  They combine CompareAndSwap(), a load, or
@@ -123,7 +121,6 @@ Atomic32 Acquire_Load(volatile const Atomic32* ptr);
 #ifdef ARCH_CPU_64_BITS
 Atomic64 NoBarrier_AtomicExchange(volatile Atomic64* ptr, Atomic64 new_value);
 Atomic64 NoBarrier_AtomicIncrement(volatile Atomic64* ptr, Atomic64 increment);
-Atomic64 Barrier_AtomicIncrement(volatile Atomic64* ptr, Atomic64 increment);
 
 Atomic64 Acquire_CompareAndSwap(volatile Atomic64* ptr,
                                 Atomic64 old_value,
@@ -139,7 +136,7 @@ Atomic64 Acquire_Load(volatile const Atomic64* ptr);
 // Copies non-overlapping spans of the same size. Writes are done using C++
 // atomics with `std::memory_order_relaxed`.
 //
-// This is an analogue of `WTF::AtomicWriteMemcpy` and it should be used
+// This is an analogue of `blink::AtomicWriteMemcpy` and it should be used
 // for copying data into buffers that are accessible from another
 // thread while the copy is being done. The buffer will appear inconsistent,
 // but it won't trigger C++ UB and won't upset TSAN. The end of copy needs to

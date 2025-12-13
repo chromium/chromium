@@ -23,8 +23,9 @@ IOSChromePasswordSenderServiceFactory::GetInstance() {
 // static
 password_manager::PasswordSenderService*
 IOSChromePasswordSenderServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<password_manager::PasswordSenderService*>(
-      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+  return GetInstance()
+      ->GetServiceForProfileAs<password_manager::PasswordSenderService>(
+          profile, /*create=*/true);
 }
 
 IOSChromePasswordSenderServiceFactory::IOSChromePasswordSenderServiceFactory()
@@ -38,7 +39,7 @@ IOSChromePasswordSenderServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSChromePasswordSenderServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::OUTGOING_PASSWORD_SHARING_INVITATION,

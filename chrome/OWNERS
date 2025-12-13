@@ -3,6 +3,8 @@
 # Anyone can apply to join //chrome/OWNERS. We expect:
 #  * Landed >300 CLs and reviewed >500 CLs spanning many directories in //chrome
 #  * Be an OWNER of at least 3 subdirectories of //chrome.
+# You can check your current status by running this script:
+# chrome/tools/check_ownership.py your_email@chromium.org
 # Please email current OWNERS.
 
 set noparent
@@ -13,8 +15,11 @@ victorvianna@google.com
 # Reviewers in CET (GMT+1)
 alexilin@chromium.org
 blundell@chromium.org
+bsazonov@chromium.org
 droger@chromium.org
 grt@chromium.org
+jkeitel@google.com
+schwering@google.com
 treib@chromium.org
 vasilii@chromium.org
 
@@ -30,8 +35,12 @@ dpenning@chromium.org
 dtrainor@chromium.org
 erikchen@chromium.org
 nyquist@chromium.org
+ssid@chromium.org
+sophiechang@chromium.org
 tedchoc@chromium.org
 thestig@chromium.org
+tiborg@chromium.org
+tluk@chromium.org
 twellington@chromium.org
 
 # Temporary reviewers for the purposes of work on the Ash //chrome refactor
@@ -59,6 +68,7 @@ per-file chrome_branch_deps.json=chrome-official-brancher@chops-service-accounts
 per-file app/theme/default_100_percent/google_chrome=*
 per-file app/theme/default_200_percent/google_chrome=*
 per-file app/theme/google_chrome=*
+per-file browser/cpu_performance_internal=*
 per-file browser/enterprise/connectors/internal=*
 per-file browser/google/linkdoctor_internal=*
 per-file browser/internal=*

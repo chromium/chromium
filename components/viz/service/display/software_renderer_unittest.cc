@@ -62,9 +62,7 @@ SkBitmap GenerateExpectedImage(
       // `SoftwareRenderer` draws debug borders as a path with a miter join.
       paint.setStyle(SkPaint::kStroke_Style);
       paint.setStrokeJoin(SkPaint::kMiter_Join);
-      SkPath path;
-      path.addRect(gfx::RectToSkRect(filled_rect.rect));
-      canvas.drawPath(path, paint);
+      canvas.drawPath(SkPath::Rect(gfx::RectToSkRect(filled_rect.rect)), paint);
     } else {
       canvas.drawRect(gfx::RectToSkRect(filled_rect.rect), paint);
     }
@@ -247,7 +245,8 @@ TEST_F(SoftwareRendererTest, TileQuad) {
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {resource_yellow, resource_cyan}, resource_provider(),
-          child_resource_provider(), nullptr);
+          child_resource_provider(),
+          child_context_provider_->SharedImageInterface());
   ResourceId mapped_resource_yellow = resource_map[resource_yellow];
   ResourceId mapped_resource_cyan = resource_map[resource_cyan];
 
@@ -308,7 +307,7 @@ TEST_F(SoftwareRendererTest, TileQuadVisibleRect) {
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {resource_cyan}, resource_provider(), child_resource_provider(),
-          nullptr);
+          child_context_provider_->SharedImageInterface());
   ResourceId mapped_resource_cyan = resource_map[resource_cyan];
 
   gfx::Rect root_rect(tile_size);

@@ -39,6 +39,7 @@ source_set("base") {
     "//base",
     "//remoting/base",
     "//remoting/base:name_value_map",
+    "//remoting/base:session_policies",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 }

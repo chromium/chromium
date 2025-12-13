@@ -39,7 +39,7 @@ namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// LINT.IfChange(SyncToSigninMigrationDecisionOverall)
+// LINT.IfChange(SyncToSigninMigrationDecision)
 enum class SyncToSigninMigrationDecision {
   kMigrate = 0,
   kDontMigrateNotSignedIn = 1,
@@ -54,6 +54,21 @@ enum class SyncToSigninMigrationDecision {
   kMaxValue = kDontMigrateAuthError
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationDecisionOverall)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SyncSetupIncompleteMigrationDecision)
+enum class SyncSetupIncompleteMigrationDecision {
+  kMigrate = 0,
+  kDontMigrateNotSignedIn = 1,
+  kDontMigrateNotSyncing = 2,
+  kDontMigrateSyncSetupComplete = 3,
+  kDontMigrateFlagDisabled = 4,
+  kMaxValue = kDontMigrateFlagDisabled
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncSetupIncompleteMigrationDecision)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // See docs of the kFirstTimeTriedToMigrateSyncFeaturePausedToSignin pref.
 void SetFirstTimeTriedToMigrateSyncPaused(PrefService* pref_service) {
@@ -342,9 +357,9 @@ void MaybeMigrateSyncingUserToSignedInInternal(
       bookmarks_decision);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // On Android no password migration is required here, because other layers are
-  // responsible for migrating the user to the local+account model, e.g.
-  // SetUsesSplitStoresAndUPMForLocal(), PasswordStoreBackendMigrationDecorator.
+  // On Android no password migration is required here, because other layers
+  // were responsible for migrating the user to the local+account model in the
+  // past.
   const SyncToSigninMigrationDataTypeDecision passwords_decision =
       GetSyncToSigninMigrationDataTypeDecision(
           pref_service, syncer::PASSWORDS,
@@ -477,6 +492,57 @@ void MaybeMigrateSyncingUserToSignedInInternal(
                                               std::move(blocking_operations)));
 }
 
+// On ChromeOS, there exists no sync setup incomplete state.
+#if !BUILDFLAG(IS_CHROMEOS)
+SyncSetupIncompleteMigrationDecision GetSyncSetupIncompleteMigrationDecision(
+    PrefService* pref_service) {
+  if (pref_service->GetString(prefs::kGoogleServicesAccountId).empty()) {
+    // Signed-out user, nothing to migrate.
+    return SyncSetupIncompleteMigrationDecision::kDontMigrateNotSignedIn;
+  }
+
+  if (!pref_service->GetBoolean(prefs::kGoogleServicesConsentedToSync)) {
+    // Not a syncing user, nothing to migrate.
+    return SyncSetupIncompleteMigrationDecision::kDontMigrateNotSyncing;
+  }
+
+  if (pref_service->GetBoolean(
+          syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete)) {
+    // Sync setup is complete, nothing to migrate.
+    return SyncSetupIncompleteMigrationDecision::kDontMigrateSyncSetupComplete;
+  }
+
+  return base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp) &&
+                 base::FeatureList::IsEnabled(
+                     switches::kMigrateOutOfSyncSetupIncompleteState)
+             ? SyncSetupIncompleteMigrationDecision::kMigrate
+             : SyncSetupIncompleteMigrationDecision::kDontMigrateFlagDisabled;
+}
+
+void MaybeMigrateUserWithSyncSetupIncomplete(const base::FilePath& profile_path,
+                                             PrefService* pref_service) {
+  const SyncSetupIncompleteMigrationDecision decision =
+      GetSyncSetupIncompleteMigrationDecision(pref_service);
+  base::UmaHistogramEnumeration("Sync.SyncSetupIncompleteMigrationDecision",
+                                decision);
+  if (decision != SyncSetupIncompleteMigrationDecision::kMigrate) {
+    return;
+  }
+  // Remove ConsentLevel::kSync. This also ensures that the whole migration will
+  // not run a second time.
+  // Note that it's important to explicitly set this pref to false (not just
+  // clear it), since the signin code treats "unset" differently.
+  pref_service->SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
+  // Clear the "previously syncing user" prefs, to prevent accidental misuse.
+  pref_service->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
+  pref_service->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
+  // Clear the "InitialSyncFeatureSetup" pref. It's not needed post-migration,
+  // given that users should not be able to enter the sync state anymore.
+  pref_service->ClearPref(
+      syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
@@ -511,6 +577,10 @@ SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
 
 void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
                                        PrefService* pref_service) {
+  // On ChromeOS, there exists no sync setup incomplete state.
+#if !BUILDFLAG(IS_CHROMEOS)
+  MaybeMigrateUserWithSyncSetupIncomplete(profile_path, pref_service);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   MaybeMigrateSyncingUserToSignedInInternal(profile_path, pref_service, {});
 }
 

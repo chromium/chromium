@@ -1,0 +1,62 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+static_library("glic") {
+  sources = [
+    "actor_filling_observer.cc",
+    "actor_filling_observer.h",
+    "actor_form_filling_service.h",
+    "actor_form_filling_service_impl.cc",
+    "actor_form_filling_service_impl.h",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui/autofill",
+    "//components/autofill/content/browser",
+    "//components/tabs:public",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+    "//components/autofill/core/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "actor_filling_observer_unittest.cc",
+    "actor_form_filling_service_unittest.cc",
+  ]
+
+  deps = [
+    ":glic",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser:test_support",
+    "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_actor_form_filling_service.cc",
+    "mock_actor_form_filling_service.h",
+  ]
+  deps = [ "//testing/gmock" ]
+  public_deps = [
+    ":glic",
+    "//base",
+  ]
+}

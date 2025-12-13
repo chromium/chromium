@@ -259,7 +259,7 @@ HttpAuthDialog::HttpAuthDialog(
     const GURL& url,
     content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
     : callback_(std::move(auth_required_callback)),
-      web_contents_(web_contents) {
+      web_contents_(web_contents->GetWeakPtr()) {
   CHECK(!callback_.is_null());
   GetAllDialogs().push_back(this);
 
@@ -349,7 +349,11 @@ void HttpAuthDialog::Cancel() {
 }
 
 // static
-void HttpAuthDialog::NotifyShownAsync(content::WebContents* web_contents) {
+void HttpAuthDialog::NotifyShownAsync(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return;
+  }
   auto callback = base::BindOnce(
       [](base::WeakPtr<content::WebContents> web_contents) {
         for (auto& observer : GetObservers()) {
@@ -357,13 +361,17 @@ void HttpAuthDialog::NotifyShownAsync(content::WebContents* web_contents) {
                                                     : nullptr);
         }
       },
-      web_contents->GetWeakPtr());
+      web_contents);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(callback));
 }
 
 //  static
-void HttpAuthDialog::NotifySuppliedAsync(content::WebContents* web_contents) {
+void HttpAuthDialog::NotifySuppliedAsync(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return;
+  }
   auto callback = base::BindOnce(
       [](base::WeakPtr<content::WebContents> web_contents) {
         for (auto& observer : GetObservers()) {
@@ -371,13 +379,17 @@ void HttpAuthDialog::NotifySuppliedAsync(content::WebContents* web_contents) {
                                                        : nullptr);
         }
       },
-      web_contents->GetWeakPtr());
+      web_contents);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(callback));
 }
 
 //  static
-void HttpAuthDialog::NotifyCancelledAsync(content::WebContents* web_contents) {
+void HttpAuthDialog::NotifyCancelledAsync(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return;
+  }
   auto callback = base::BindOnce(
       [](base::WeakPtr<content::WebContents> web_contents) {
         for (auto& observer : GetObservers()) {
@@ -385,7 +397,7 @@ void HttpAuthDialog::NotifyCancelledAsync(content::WebContents* web_contents) {
                                                         : nullptr);
         }
       },
-      web_contents->GetWeakPtr());
+      web_contents);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(callback));
 }

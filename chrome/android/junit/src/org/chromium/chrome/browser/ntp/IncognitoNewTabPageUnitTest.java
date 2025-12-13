@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.ntp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import android.graphics.Rect;
 import android.widget.ScrollView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -25,22 +25,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.DestroyableObservableSupplier;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPageView.IncognitoNewTabPageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /** Unit test for {@link org.chromium.chrome.browser.ntp.IncognitoNewTabPage} */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
 public class IncognitoNewTabPageUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mScenarioRule =
@@ -50,7 +46,7 @@ public class IncognitoNewTabPageUnitTest {
 
     @Mock NativePageHost mHost;
     @Mock Profile mProfile;
-    @Mock DestroyableObservableSupplier<Rect> mMarginSupplier;
+    @Mock Destroyable mMarginSupplier;
     @Mock IncognitoNewTabPageManager mIncognitoNtpManager;
 
     @Mock EdgeToEdgeController mEdgeToEdgeController;
@@ -68,7 +64,7 @@ public class IncognitoNewTabPageUnitTest {
         doReturn(true).when(mProfile).isOffTheRecord();
 
         doReturn(mActivity).when(mHost).getContext();
-        doReturn(mMarginSupplier).when(mHost).createDefaultMarginSupplier();
+        doReturn(mMarginSupplier).when(mHost).createDefaultMarginAdapter(any());
 
         IncognitoNewTabPage.setIncognitoNtpManagerForTesting(mIncognitoNtpManager);
 
@@ -76,9 +72,6 @@ public class IncognitoNewTabPageUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-    })
     public void setupEdgeToEdgeWithInsets() {
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         verify(mEdgeToEdgeController).registerAdjuster(mEdgePadAdjusterCaptor.capture());
@@ -93,7 +86,6 @@ public class IncognitoNewTabPageUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void setupEdgeToEdgeWithoutInsets() {
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         verify(mEdgeToEdgeController).registerAdjuster(mEdgePadAdjusterCaptor.capture());

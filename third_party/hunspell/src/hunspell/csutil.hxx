@@ -189,7 +189,7 @@ LIBHUNSPELL_DLL_EXPORTED unsigned short unicodetolower(unsigned short c,
                                                        int langnum);
 LIBHUNSPELL_DLL_EXPORTED int unicodeisalpha(unsigned short c);
 
-LIBHUNSPELL_DLL_EXPORTED struct cs_info* get_current_cs(const std::string& es);
+LIBHUNSPELL_DLL_EXPORTED const struct cs_info* get_current_cs(const std::string& es);
 
 // get language identifiers of language codes
 LIBHUNSPELL_DLL_EXPORTED int get_lang_num(const std::string& lang);
@@ -230,7 +230,7 @@ LIBHUNSPELL_DLL_EXPORTED std::vector<w_char>&
 mkallcap_utf(std::vector<w_char>& u, int langnum);
 
 // get type of capitalization
-LIBHUNSPELL_DLL_EXPORTED int get_captype(const std::string& q, cs_info*);
+LIBHUNSPELL_DLL_EXPORTED int get_captype(const std::string& q, const cs_info*);
 
 // get type of capitalization (UTF-8)
 LIBHUNSPELL_DLL_EXPORTED int get_captype_utf8(const std::vector<w_char>& q, int langnum);

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 
 #include <cstdlib>
 #include <string_view>
+
+#include "base/compiler_specific.h"
 
 namespace cast_util {
 
@@ -28,9 +25,10 @@ const GenericEnumTableEntry* GenericEnumTableEntry::FindByString(
     std::size_t size,
     std::string_view str) {
   for (std::size_t i = 0; i < size; i++) {
-    if (data[i].length == str.length() &&
-        std::memcmp(data[i].chars, str.data(), str.length()) == 0) {
-      return &data[i];
+    if (UNSAFE_TODO(data[i]).length == str.length() &&
+        UNSAFE_TODO(std::memcmp(data[i].chars, str.data(), str.length())) ==
+            0) {
+      return &UNSAFE_TODO(data[i]);
     }
   }
   return nullptr;
@@ -42,8 +40,8 @@ std::optional<std::string_view> GenericEnumTableEntry::FindByValue(
     std::size_t size,
     int value) {
   for (std::size_t i = 0; i < size; i++) {
-    if (data[i].value == value && data[i].has_str()) {
-      return data[i].str();
+    if (UNSAFE_TODO(data[i]).value == value && UNSAFE_TODO(data[i]).has_str()) {
+      return UNSAFE_TODO(data[i]).str();
     }
   }
   return std::nullopt;

@@ -1647,7 +1647,7 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_THAT(model().supported_fonts(),
               ElementsAre("Poppins", "Sans-serif", "Serif", "Comic Neue",
                           "Lexend Deca", "EB Garamond", "STIX Two Text",
-                          "Andika", "Atkinson Hyperlegible"));
+                          "Andika", "Atkinson Hyperlegible Next"));
 }
 
 TEST_F(ReadAnythingAppModelTest,
@@ -1657,7 +1657,7 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_THAT(model().supported_fonts(),
               ElementsAre("Poppins", "Sans-serif", "Serif", "Comic Neue",
                           "Lexend Deca", "EB Garamond", "STIX Two Text",
-                          "Andika", "Atkinson Hyperlegible"));
+                          "Andika", "Atkinson Hyperlegible Next"));
 
   // Bulgarian
   model().SetBaseLanguageCode("bg");
@@ -1669,6 +1669,11 @@ TEST_F(ReadAnythingAppModelTest,
   model().SetBaseLanguageCode("hi");
   EXPECT_THAT(model().supported_fonts(),
               ElementsAre("Poppins", "Sans-serif", "Serif"));
+
+  // Welsh
+  model().SetBaseLanguageCode("cy");
+  EXPECT_THAT(model().supported_fonts(),
+              ElementsAre("Sans-serif", "Serif", "Atkinson Hyperlegible Next"));
 }
 
 TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillation) {
@@ -1955,4 +1960,99 @@ TEST_F(ReadAnythingAppModelTest, SetUkmSourceId_TreeDoesNotExistInitially) {
   // the active tree.
   AccessibilityEventReceived({std::move(update)});
   EXPECT_EQ(model().GetUkmSourceId(), source_id);
+}
+
+TEST_F(ReadAnythingAppModelTest, SelectionNodesContainedInDistilledContent) {
+  // content_node_ids = {3, 4}.
+  // display_node_ids will be computed from this, and will include ancestors,
+  // so {1, 3, 4}.
+  ProcessDisplayNodes({3, 4});
+
+  // Selection is outside content/display nodes: {2}.
+  // This will populate selection_node_ids with {1, 2}.
+  ui::AXTreeUpdate update1;
+  test::SetUpdateTreeID(&update1, tree_id_);
+  update1.tree_data.sel_anchor_object_id = 2;
+  update1.tree_data.sel_focus_object_id = 2;
+  update1.tree_data.sel_anchor_offset = 0;
+  update1.tree_data.sel_focus_offset = 1;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({std::move(update1)});
+  model().PostProcessSelection();
+
+  // selection_node_ids_ is {1, 2}. content_node_ids_ is {3, 4}. The new method
+  // should return false.
+  EXPECT_FALSE(model().SelectionNodesContainedInDistilledContent());
+
+  // Now, let's test the true case.
+  // content_node_ids = {1, 2, 3, 4}.
+  model().Reset({1, 2, 3, 4});
+
+  // Selection is {2}.
+  ui::AXTreeUpdate update2;
+  test::SetUpdateTreeID(&update2, tree_id_);
+  update2.tree_data.sel_anchor_object_id = 2;
+  update2.tree_data.sel_focus_object_id = 2;
+  update2.tree_data.sel_anchor_offset = 0;
+  update2.tree_data.sel_focus_offset = 1;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({std::move(update2)});
+  model().PostProcessSelection();
+
+  // selection_node_ids_ will be {1, 2}. content_node_ids_ is {1, 2, 3, 4}.
+  // The new method should return true.
+  EXPECT_TRUE(model().SelectionNodesContainedInDistilledContent());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       AccessibilityEventReceived_ChildTreeFound_RequiresDistillation) {
+  // Create a parent tree and a child tree.
+  ui::AXTreeID parent_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate parent_update;
+  test::SetUpdateTreeID(&parent_update, parent_tree_id);
+  ui::AXNodeData root_node;
+  root_node.id = 1;
+  ui::AXNodeData child_host_node;
+  child_host_node.id = 2;
+  root_node.child_ids = {child_host_node.id};
+
+  ui::AXTreeID child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  child_host_node.AddChildTreeId(child_tree_id);
+  parent_update.root_id = root_node.id;
+  parent_update.nodes = {root_node, child_host_node};
+
+  ui::AXNodeData child_root;
+  child_root.id = 10;
+
+  // Send an update for the child.
+  ui::AXTreeUpdate early_child_update;
+  test::SetUpdateTreeID(&early_child_update, child_tree_id);
+  early_child_update.root_id = child_root.id;
+  early_child_update.nodes = {child_root};
+  early_child_update.tree_data.parent_tree_id = parent_tree_id;
+  AccessibilityEventReceived({early_child_update});
+
+  // Send event for parent tree to create it in the model.
+  AccessibilityEventReceived({parent_update});
+
+  // Set parent tree as active tree.
+  model().SetRootTreeId(parent_tree_id);
+  EXPECT_EQ(model().active_tree_id(), parent_tree_id);
+
+  // Enable child tree usage. This will populate child_tree_ids_.
+  model().AllowChildTreeForActiveTree(true);
+
+  // Create an update for the child tree.
+  ui::AXTreeUpdate child_update;
+  test::SetUpdateTreeID(&child_update, child_tree_id);
+  child_update.root_id = child_root.id;
+  child_update.nodes = {child_root};
+  child_update.tree_data.parent_tree_id = parent_tree_id;
+
+  // Send event for child tree.
+  AccessibilityEventReceived({child_update});
+
+  // Assert requires_distillation is true and the active tree has changed.
+  EXPECT_TRUE(model().requires_distillation());
+  EXPECT_EQ(model().active_tree_id(), child_tree_id);
 }

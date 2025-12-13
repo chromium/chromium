@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/texture_manager.h"
 
 #include <stddef.h>
@@ -20,6 +15,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/format_macros.h"
@@ -37,7 +33,6 @@
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_implementation.h"
@@ -102,7 +97,7 @@ struct TextureSignature {
                    bool can_render,
                    bool can_render_to,
                    bool npot) {
-    memset(this, 0, sizeof(TextureSignature));
+    UNSAFE_TODO(memset(this, 0, sizeof(TextureSignature)));
     target_ = target;
     level_ = level;
     min_filter_ = sampler_state.min_filter;
@@ -478,10 +473,6 @@ void TextureManager::MarkContextLost() {
 }
 
 void TextureManager::Destroy() {
-  // Retreive any outstanding unlocked textures from the discardable manager so
-  // we can clean them up here.
-  discardable_manager_->OnTextureManagerDestruction(this);
-
   while (!textures_.empty()) {
     textures_.erase(textures_.begin());
     if (progress_reporter_)
@@ -494,7 +485,7 @@ void TextureManager::Destroy() {
   }
 
   if (have_context_) {
-    glDeleteTextures(std::size(black_texture_ids_), black_texture_ids_);
+    glDeleteTextures(std::size(black_texture_ids_), black_texture_ids_.data());
   }
 
   DCHECK_EQ(0u, memory_type_tracker_->GetMemRepresented());
@@ -1835,7 +1826,7 @@ scoped_refptr<TextureRef> TextureRef::Create(TextureManager* manager,
 
 TextureRef::~TextureRef() {
   manager_->StopTracking(this);
-  bool have_context = force_context_lost_ ? false : manager_->have_context_;
+  bool have_context = !force_context_lost_ && manager_->have_context_;
   texture_->RemoveTextureRef(this, have_context);
   manager_ = nullptr;
   if (!have_context && shared_image_)
@@ -1883,8 +1874,7 @@ TextureManager::TextureManager(scoped_refptr<MemoryTracker> memory_tracker,
                                GLint max_3d_texture_size,
                                GLint max_array_texture_layers,
                                bool use_default_textures,
-                               gl::ProgressReporter* progress_reporter,
-                               ServiceDiscardableManager* discardable_manager)
+                               gl::ProgressReporter* progress_reporter)
     : memory_type_tracker_(new MemoryTypeTracker(std::move(memory_tracker))),
       feature_info_(feature_info),
       max_texture_size_(max_texture_size),
@@ -1910,8 +1900,7 @@ TextureManager::TextureManager(scoped_refptr<MemoryTracker> memory_tracker,
       texture_count_(0),
       have_context_(true),
       current_service_id_generation_(0),
-      progress_reporter_(progress_reporter),
-      discardable_manager_(discardable_manager) {
+      progress_reporter_(progress_reporter) {
   for (int ii = 0; ii < kNumDefaultTextures; ++ii) {
     black_texture_ids_[ii] = 0;
   }
@@ -1991,9 +1980,9 @@ scoped_refptr<TextureRef>
       target == GL_TEXTURE_2D_ARRAY);
 
   // Make default textures and texture for replacing non-renderable textures.
-  GLuint ids[2];
+  std::array<GLuint, 2> ids;
   const int num_ids = use_default_textures_ ? 2 : 1;
-  glGenTextures(num_ids, ids);
+  glGenTextures(num_ids, ids.data());
   for (int ii = 0; ii < num_ids; ++ii) {
     glBindTexture(target, ids[ii]);
     if (needs_initialization) {
@@ -2137,8 +2126,6 @@ void TextureManager::SetLevelInfo(TextureRef* ref,
   Texture* texture = ref->texture();
   texture->SetLevelInfo(target, level, internal_format, width, height, depth,
                         border, format, type, cleared_rect);
-  discardable_manager_->OnTextureSizeChanged(ref->client_id(), this,
-                                             texture->estimated_size());
 }
 
 TextureRef* TextureManager::Consume(
@@ -2284,7 +2271,6 @@ void TextureManager::ReturnTexture(scoped_refptr<TextureRef> texture_ref) {
 void TextureManager::RemoveTexture(GLuint client_id) {
   TextureMap::iterator it = textures_.find(client_id);
   if (it != textures_.end()) {
-    discardable_manager_->OnTextureDeleted(client_id, this);
     it->second->reset_client_id();
     textures_.erase(it);
   }
@@ -2315,9 +2301,6 @@ void TextureManager::StopTracking(TextureRef* ref) {
   }
   num_uncleared_mips_ -= texture->num_uncleared_mips();
   DCHECK_GE(num_uncleared_mips_, 0);
-
-  if (ref->client_id())
-    discardable_manager_->OnTextureDeleted(ref->client_id(), this);
 }
 
 MemoryTypeTracker* TextureManager::GetMemTracker() {
@@ -3144,8 +3127,8 @@ void TextureManager::DoTexSubImageRowByRowWorkaround(
       GLsizei image_byte_offset = image * image_bytes;
       for (GLsizei row = 0; row < args.height; ++row) {
         GLsizei byte_offset = image_byte_offset + row * row_bytes;
-        const GLubyte* row_pixels =
-            reinterpret_cast<const GLubyte*>(args.pixels) + byte_offset;
+        const GLubyte* row_pixels = UNSAFE_TODO(
+            reinterpret_cast<const GLubyte*>(args.pixels) + byte_offset);
         glTexSubImage3D(args.target, args.level, args.xoffset,
                         row + args.yoffset, image + args.zoffset, args.width, 1,
                         1, format, args.type, row_pixels);
@@ -3154,8 +3137,8 @@ void TextureManager::DoTexSubImageRowByRowWorkaround(
   } else {
     for (GLsizei row = 0; row < args.height; ++row) {
       GLsizei byte_offset = row * row_bytes;
-      const GLubyte* row_pixels =
-          reinterpret_cast<const GLubyte*>(args.pixels) + byte_offset;
+      const GLubyte* row_pixels = UNSAFE_TODO(
+          reinterpret_cast<const GLubyte*>(args.pixels) + byte_offset);
       glTexSubImage2D(args.target, args.level, args.xoffset, row + args.yoffset,
                       args.width, 1, format, args.type, row_pixels);
     }
@@ -3194,7 +3177,7 @@ void TextureManager::DoTexSubImageLayerByLayerWorkaround(
                     image + args.zoffset, args.width, args.height, 1, format,
                     args.type, image_pixels);
 
-    image_pixels += image_bytes;
+    UNSAFE_TODO(image_pixels += image_bytes);
   }
 
   // Process the last image row by row
@@ -3204,7 +3187,7 @@ void TextureManager::DoTexSubImageLayerByLayerWorkaround(
     glTexSubImage3D(args.target, args.level, args.xoffset, row + args.yoffset,
                     args.depth - 1 + args.zoffset, args.width, 1, 1, format,
                     args.type, row_pixels);
-    row_pixels += row_bytes;
+    UNSAFE_TODO(row_pixels += row_bytes);
   }
   // Restore unpack state
   glPixelStorei(GL_UNPACK_ALIGNMENT, unpack_params.alignment);

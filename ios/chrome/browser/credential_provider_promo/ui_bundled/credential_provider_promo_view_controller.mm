@@ -6,6 +6,7 @@
 
 #import "base/values.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -62,24 +63,11 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   [self configureAlertScreen];
   [self layoutAlertScreen];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitVerticalSizeClass.class, UITraitUserInterfaceStyle.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateUIOnTraitChange)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitVerticalSizeClass.class, UITraitUserInterfaceStyle.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateUIOnTraitChange)];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateUIOnTraitChange];
-}
-#endif
 
 #pragma mark - CredentialProviderPromoConsumer
 
@@ -90,13 +78,18 @@ NSString* const kCredentialProviderPromoAccessibilityId =
      tertiaryActionString:(NSString*)tertiaryActionString
                     image:(UIImage*)image {
   DCHECK(!self.alertScreen);
+
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString = primaryActionString;
+  configuration.secondaryActionString = secondaryActionString;
+  configuration.tertiaryActionString = tertiaryActionString;
+
   ConfirmationAlertViewController* alertScreen =
-      [[ConfirmationAlertViewController alloc] init];
+      [[ConfirmationAlertViewController alloc]
+          initWithConfiguration:configuration];
   alertScreen.titleString = titleString;
   alertScreen.subtitleString = subtitleString;
-  alertScreen.primaryActionString = primaryActionString;
-  alertScreen.secondaryActionString = secondaryActionString;
-  alertScreen.tertiaryActionString = tertiaryActionString;
   alertScreen.image = image;
   alertScreen.actionHandler = self.actionHandler;
   self.alertScreen = alertScreen;
@@ -127,7 +120,7 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
   config.animationName = animationAssetName;
-  config.loopAnimationCount = 1000;
+  config.shouldLoop = YES;
   return ios::provider::GenerateLottieAnimation(config);
 }
 
@@ -135,12 +128,11 @@ NSString* const kCredentialProviderPromoAccessibilityId =
 - (void)configureAlertScreen {
   DCHECK(self.alertScreen);
   self.alertScreen.imageHasFixedSize = YES;
-  self.alertScreen.showDismissBarButton = NO;
   self.alertScreen.titleTextStyle = UIFontTextStyleTitle2;
   self.alertScreen.topAlignedLayout = YES;
 
   if (!self.shouldShowAnimation || !self.alertScreen.image) {
-    self.alertScreen.customSpacingBeforeImageIfNoNavigationBar =
+    self.alertScreen.customSpacingBeforeImage =
         kCustomSpacingAtTopIfNoNavigationBar;
   }
 

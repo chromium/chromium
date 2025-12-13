@@ -410,7 +410,9 @@ class ASH_EXPORT CaptureModeController
   // Called by `CaptureModeDelegate` if an error occurs while trying to perform
   // and image search or text detection. Shows a generic error message in the
   // action container if the session is active.
-  void OnLensWebError(base::WeakPtr<BaseCaptureModeSession> image_search_token);
+  void OnLensWebError(base::WeakPtr<BaseCaptureModeSession> image_search_token,
+                      CaptureModeImageSearchResult image_result,
+                      CaptureModeTextDetectionResult text_result);
 
   // Called by `SearchResultsView` when a search result is opened.
   void OnSearchResultClicked();
@@ -442,7 +444,7 @@ class ASH_EXPORT CaptureModeController
                    ReturnToAppCallback callback) override;
   void SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice device,
-      bool disabled,
+      bool enabled,
       SetSystemMediaDeviceStatusCallback callback) override;
   void StopAllScreenShare() override;
 

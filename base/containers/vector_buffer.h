@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef BASE_CONTAINERS_VECTOR_BUFFER_H_
 #define BASE_CONTAINERS_VECTOR_BUFFER_H_
 
@@ -147,7 +142,8 @@ class VectorBuffer {
       // We can't use span::copy_from() as it tries to call copy constructors,
       // and fails to compile on move-only trivially-relocatable types.
       // TODO(https://crbug.com/432507886): find a way to remove the void* cast
-      memcpy(static_cast<void*>(to.data()), from.data(), to.size_bytes());
+      UNSAFE_TODO(
+          memcpy(static_cast<void*>(to.data()), from.data(), to.size_bytes()));
       // Destructors are skipped because they are trivial or should be elided in
       // trivial relocation (https://reviews.llvm.org/D114732).
     } else {

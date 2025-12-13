@@ -15,19 +15,6 @@ namespace translate {
 
 const char kSecurityOrigin[] = "https://translate.googleapis.com/";
 
-// The feature is explicitly disabled on Webview and Weblayer.
-// TODO(crbug.com/40819484): Enable the feature on Webview.
-// TODO(crbug.com/40790180): Enable the feature on WebLayer.
-BASE_FEATURE(kTFLiteLanguageDetectionEnabled,
-             "TFLiteLanguageDetectionEnabled",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 GURL GetTranslateSecurityOrigin() {
   std::string security_origin(kSecurityOrigin);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -39,17 +26,17 @@ GURL GetTranslateSecurityOrigin() {
 }
 
 bool IsTFLiteLanguageDetectionEnabled() {
-  return base::FeatureList::IsEnabled(kTFLiteLanguageDetectionEnabled);
+// The feature is explicitly disabled on WebView.
+// TODO(crbug.com/40819484): Enable the feature on WebView.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return true;
+#else
+  return false;
+#endif
 }
 
-float GetTFLiteLanguageDetectionThreshold() {
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      kTFLiteLanguageDetectionEnabled, "reliability_threshold", .7);
-}
-
-BASE_FEATURE(kTranslateAutoSnackbars,
-             "TranslateAutoSnackbars",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTranslateAutoSnackbars, base::FEATURE_ENABLED_BY_DEFAULT);
 
 int GetAutoAlwaysThreshold() {
   static constexpr base::FeatureParam<int> auto_always_threshold{

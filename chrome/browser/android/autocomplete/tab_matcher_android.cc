@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_android_user_data.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -85,13 +86,10 @@ bool TabMatcherAndroid::IsTabOpenWithURL(const GURL& url,
   // triggering of the Switch to Tab action on plain-text suggestions for
   // open entity SRPs, or vice versa, on entity suggestions for open plain-text
   // SRPs.
-  const bool keep_search_intent_params = base::FeatureList::IsEnabled(
-      omnibox::kDisambiguateTabMatchingForEntitySuggestions);
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-      url, *input, template_url_service_, std::u16string(),
-      keep_search_intent_params);
-  const auto all_tabs =
-      GetAllHiddenAndNonCCTTabInfos(input, keep_search_intent_params);
+      url, *input, template_url_service_, /*keyword=*/std::u16string(),
+      /*keep_search_intent_params=*/true);
+  const auto all_tabs = GetAllHiddenAndNonCCTTabInfos(input);
   return all_tabs.find(stripped_url) != all_tabs.end();
 }
 
@@ -103,15 +101,13 @@ void TabMatcherAndroid::FindMatchingTabs(GURLToTabInfoMap* map,
   if (!input)
     input = &empty_input;
 
-  const bool keep_search_intent_params = base::FeatureList::IsEnabled(
-      omnibox::kDisambiguateTabMatchingForEntitySuggestions);
-  auto all_tabs =
-      GetAllHiddenAndNonCCTTabInfos(input, keep_search_intent_params);
+  auto all_tabs = GetAllHiddenAndNonCCTTabInfos(input);
 
   for (auto& gurl_to_tab_info : *map) {
     const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-        gurl_to_tab_info.first, *input, template_url_service_, std::u16string(),
-        keep_search_intent_params);
+        gurl_to_tab_info.first, *input, template_url_service_,
+        /*keyword=*/std::u16string(),
+        /*keep_search_intent_params=*/true);
     auto found_tab = all_tabs.find(stripped_url);
     if (found_tab != all_tabs.end()) {
       gurl_to_tab_info.second = found_tab->second;
@@ -171,8 +167,10 @@ TabMatcherAndroid::GetOpenAndroidTabs(const AutocompleteInput* input) const {
   // at least once start here and span until the end of this method.
   JNIEnv* env = base::android::AttachCurrentThread();
   jclass tab_model_clazz = TabModelJniBridge::GetClazz(env);
-  base::android::ScopedJavaLocalRef<jobjectArray> j_tab_model_array(
-      env, env->NewObjectArray(tab_models.size(), tab_model_clazz, nullptr));
+  auto j_tab_model_array =
+      base::android::ScopedJavaLocalRef<jobjectArray>::Adopt(
+          env,
+          env->NewObjectArray(tab_models.size(), tab_model_clazz, nullptr));
   // Get all the hidden and non CCT tabs. Filter the tabs in CCT tabmodel first.
   for (size_t i = 0; i < tab_models.size(); ++i) {
     env->SetObjectArrayElement(j_tab_model_array.obj(), i,
@@ -190,11 +188,9 @@ TabMatcherAndroid::GetOpenAndroidTabs(const AutocompleteInput* input) const {
 }
 
 TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos(
-    const AutocompleteInput* input,
-    const bool keep_search_intent_params) const {
+    const AutocompleteInput* input) const {
   using chrome::android::ActivityType;
   GURLToTabInfoMap tab_infos;
-  JNIEnv* env = base::android::AttachCurrentThread();
 
   for (TabAndroid* tab : GetOpenAndroidTabs(input)) {
     // Browser did not load the tab yet after Chrome started. To avoid
@@ -205,15 +201,17 @@ TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos(
     DCHECK(user_data);
     if (!user_data->IsInitialized()) {
       user_data->UpdateStrippedURL(tab->GetURL(), template_url_service_,
-                                   keep_search_intent_params);
+                                   /*keep_search_intent_params=*/true);
     }
 
     const GURL& tab_stripped_url = user_data->GetStrippedURL();
     TabInfo info;
     info.has_matching_tab = true;
-    info.android_tab = JavaObjectWeakGlobalRef(env, tab->GetJavaObject());
+    info.android_tab_id = tab->GetAndroidId();
     tab_infos[tab_stripped_url] = info;
   }
 
   return tab_infos;
 }
+
+DEFINE_JNI(ChromeAutocompleteProviderClient)

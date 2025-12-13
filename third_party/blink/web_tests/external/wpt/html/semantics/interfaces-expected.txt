@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Interfaces for layer: useNS
+  assert_class_string: Element layer should have HTMLUnknownElement as its primary interface. expected "[object HTMLUnknownElement]" but got "[object HTMLElement]"
+[FAIL] Interfaces for layer: useParser
+  assert_class_string: Element layer should have HTMLUnknownElement as its primary interface. expected "[object HTMLUnknownElement]" but got "[object HTMLElement]"
+[FAIL] Interfaces for LAYER: createElement
+  assert_class_string: Element LAYER should have HTMLUnknownElement as its primary interface. expected "[object HTMLUnknownElement]" but got "[object HTMLElement]"
+[FAIL] Interfaces for nolayer: useNS
+  assert_class_string: Element nolayer should have HTMLUnknownElement as its primary interface. expected "[object HTMLUnknownElement]" but got "[object HTMLElement]"
+[FAIL] Interfaces for nolayer: useParser
+  assert_class_string: Element nolayer should have HTMLUnknownElement as its primary interface. expected "[object HTMLUnknownElement]" but got "[object HTMLElement]"
+[FAIL] Interfaces for NOLAYER: createElement
+  assert_class_string: Element NOLAYER should have HTMLUnknownElement as its primary interface. expected "[object HTMLUnknownElement]" but got "[object HTMLElement]"
+Harness: the test ran to completion.
+

@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/env_observer.h"
 #include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ui {
 class EventRewriter;
@@ -51,6 +52,9 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
       std::unique_ptr<ui::Event> event) override;
   void CaptureAllKeysForSpokenFeedback(bool capture) override;
   void SetSendMouseEvents(bool value) override;
+  void ProcessPendingSpokenFeedbackEvent(unsigned int id,
+                                         bool propagate) override;
+  void SetSpokenFeedbackMv3KeyHandlingEnabled(bool enabled) override;
 
   // aura::EnvObserver:
   void OnHostInitialized(aura::WindowTreeHost* host) override;

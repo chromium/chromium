@@ -123,7 +123,7 @@ TEST_F(MoveToAccountStoreBubbleControllerTest, ProvidesProfileIcon) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
   AccountInfo info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "todd.tester@gmail.com", signin::ConsentLevel::kSync);
+      identity_manager, "todd.tester@gmail.com", signin::ConsentLevel::kSignin);
   signin::SimulateAccountImageFetch(
       identity_manager, info.account_id, "https://todd.tester.com/avatar.png",
       gfx::Image(gfx::test::CreateImageSkia(96, 96)));

@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
+
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 
 #ifndef GL_GLEXT_PROTOTYPES
 #define GL_GLEXT_PROTOTYPES
@@ -157,14 +155,14 @@ std::string GetFragmentShaderSource(GLenum target, GLenum format, bool is_es3) {
 
 void setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t* color) {
   color[0] = r;
-  color[1] = g;
-  color[2] = b;
-  color[3] = a;
+  UNSAFE_TODO(color[1]) = g;
+  UNSAFE_TODO(color[2]) = b;
+  UNSAFE_TODO(color[3]) = a;
 }
 
 void getExpectedColorAndMask(GLenum src_internal_format,
                              GLenum dest_internal_format,
-                             const uint8_t* color,
+                             base::span<const uint8_t> color,
                              uint8_t* expected_color,
                              uint8_t* expected_mask) {
   uint8_t adjusted_color[4];
@@ -322,10 +320,10 @@ void getTextureDataAndExpectedRGBAs(FormatType src_format_type,
         for (uint32_t j = 0; j < 4; ++j) {
           if (j < src_channel_count) {
             texture_data->at((width * y + x) * src_channel_count + j) =
-                (alt ? alt_color : color)[j];
+                UNSAFE_TODO((alt ? alt_color : color)[j]);
           }
           expected_rgba_pixels->at((width * y + x) * 4 + j) =
-              (alt ? alt_expected_color : expected_color)[j];
+              UNSAFE_TODO((alt ? alt_expected_color : expected_color)[j]);
         }
       }
     }
@@ -337,7 +335,7 @@ void getTextureDataAndExpectedRGBAs(FormatType src_format_type,
 
     texture_data->resize(num_pixels * src_channel_count * sizeof(uint16_t));
     uint16_t* texture_data16 =
-        reinterpret_cast<uint16_t*>(texture_data->data());
+        UNSAFE_TODO(reinterpret_cast<uint16_t*>(texture_data->data()));
     int16_t flip_sign = -1;
     for (uint32_t i = 0; i < num_pixels * src_channel_count;
          i += src_channel_count) {
@@ -346,12 +344,12 @@ void getTextureDataAndExpectedRGBAs(FormatType src_format_type,
         // the same as without the offset.
         flip_sign *= -1;
         int16_t offset = flip_sign * ((i + j) % 0x7F);
-        texture_data16[i + j] = color_16bit[j] + offset;
+        UNSAFE_TODO(texture_data16[i + j]) = color_16bit[j] + offset;
       }
     }
     for (uint32_t i = 0; i < num_pixels * 4; i += 4) {
       for (int c = 0; c < 4; ++c) {
-        expected_rgba_pixels->at(i + c) = expected_color[c];
+        expected_rgba_pixels->at(i + c) = UNSAFE_TODO(expected_color[c]);
       }
     }
 
@@ -363,10 +361,11 @@ void getTextureDataAndExpectedRGBAs(FormatType src_format_type,
                                         color[0];
     texture_data->resize(num_pixels * sizeof(uint32_t));
     uint32_t* texture_data32 =
-        reinterpret_cast<uint32_t*>(texture_data->data());
+        UNSAFE_TODO(reinterpret_cast<uint32_t*>(texture_data->data()));
     for (uint32_t p = 0; p < num_pixels; ++p) {
-      texture_data32[p] = color_rgb10_a2;
-      memcpy(expected_rgba_pixels->data() + p * 4, expected_color, 4);
+      UNSAFE_TODO(texture_data32[p]) = color_rgb10_a2;
+      UNSAFE_TODO(
+          memcpy(expected_rgba_pixels->data() + p * 4, expected_color, 4));
     }
     return;
   }

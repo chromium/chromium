@@ -12,15 +12,11 @@
 #include "build/buildflag.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/flag_descriptions.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,6 +37,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -102,8 +99,7 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view,
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT,
                                views::BubbleBorder::DIALOG_SHADOW,
-                               true),
-      browser_(browser) {
+                               true) {
   SetProperty(views::kElementIdentifierKey, kToolbarChromeLabsBubbleElementId);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
@@ -178,29 +174,9 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view,
       base::BindRepeating(&ChromeLabsBubbleView::NotifyRestartCallback,
                           base::Unretained(this))));
   restart_prompt_->SetVisible(about_flags::IsRestartNeededToCommitChanges());
-
-  CHECK(browser);
-  chrome_labs_action_item_ =
-      actions::ActionManager::Get()
-          .FindAction(kActionShowChromeLabs,
-                      browser->browser_actions()->root_action_item())
-          ->GetAsWeakPtr();
-  CHECK(chrome_labs_action_item_.get());
-  chrome_labs_action_item_.get()->SetIsShowingBubble(true);
 }
 
-ChromeLabsBubbleView::~ChromeLabsBubbleView() {
-  if (chrome_labs_action_item_.get()) {
-    chrome_labs_action_item_.get()->SetIsShowingBubble(false);
-
-    if (BrowserView* browser_view =
-            BrowserView::GetBrowserViewForBrowser(browser_)) {
-      browser_view->toolbar()
-          ->pinned_toolbar_actions_container()
-          ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, false);
-    }
-  }
-}
+ChromeLabsBubbleView::~ChromeLabsBubbleView() = default;
 
 ChromeLabsItemView* ChromeLabsBubbleView::AddLabItem(
     const LabInfo& lab,

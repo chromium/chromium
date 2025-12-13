@@ -2,36 +2,36 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="130631256467250065">Вашите промени ќе стапат на сила следниот пат кога ќе го рестартирате уредот.</translation>
+<translation id="261308610302996111">Одете во
+          менито на Chromium, па во
+          „<ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />“
+          и погрижете се вашата конфигурација да биде поставена на „без прокси“ или „директно“.</translation>
 <translation id="275588974610408078">Не е достапно пријавување падови на Chromium.</translation>
 <translation id="3064346599913645280">Гледате безбедна страница на Chromium</translation>
 <translation id="3255926992597692024">Chromium се обидува да ги измени поставките за пополнување на начините на плаќање.</translation>
 <translation id="358997566136285270">Лого на Chromium</translation>
 <translation id="4050599136622776556">Chromium се обидува да ги измени начините на плаќање.</translation>
 <translation id="4365115785552740256">Chromium е овозможен од проектот со отворен код <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> и друг <ph name="BEGIN_LINK_OSS" />софтвер со отворен код<ph name="END_LINK_OSS" />.</translation>
-<translation id="4559775032954821361">Одете во
-          менито на Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Поставки за LAN
-          и поништете го изборот на полето „Употребете прокси-сервер за LAN“.</translation>
 <translation id="4622039161600275920">Страницава е блокирана од Chromium</translation>
 <translation id="48558539577516920">Дозволете Chromium да пристапи на мрежата во поставките за
         заштитен ѕид или антивирус.</translation>
 <translation id="4949828774841497663">Одете во „Applications &gt; System Settings &gt; Network“, изберете ја
           активната мрежа, кликнете го копчето Details… и поништете го изборот на сите прокси-сервери
           што може да се избрани.</translation>
-<translation id="580822234363523061">Одете на
-          менито на Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
+<translation id="6480456350195404966">Одете во
+          менито на Chromium, па во
+          „<ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
-          и погрижете се конфигурацијата да ви е поставена на „нема прокси“ или „директно“.</translation>
+          &gt;
+          Мрежа и интернет &gt; Прокси“
+          и поништете го изборот на „Автоматско откривање поставки“.</translation>
 <translation id="648062525172759633">Странициве се наменети за да ги користат програмерите на Chromium и може да не се одржуваат или тестираат активно. За да ги овозможите, одете на <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, кликнете го копчето за да ги овозможите страниците за отстранување грешки, па одете на страницава повторно.</translation>
 <translation id="6549378540556750549">Chromium го овозможува и друг <ph name="BEGIN_LINK_OSS" />софтвер со отворен код<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Промените ќе стапат на сила следниот пат кога ќе го стартувате Chromium повторно.</translation>

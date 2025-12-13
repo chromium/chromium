@@ -53,7 +53,6 @@ using ::blink::WebElementCollection;
 using ::blink::WebFormControlElement;
 using ::blink::WebFormElement;
 using ::blink::WebInputElement;
-using ::blink::WebLocalFrame;
 using ::blink::WebNode;
 using ::blink::WebString;
 using ::testing::_;
@@ -226,21 +225,17 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
 
   WebDocument GetDocument() { return GetMainFrame()->GetDocument(); }
 
-  std::optional<FormData> ExtractFormData(
-      WebFormElement form,
-      DenseSet<ExtractOption> extract_options = {}) {
-    return form_util::ExtractFormData(
-        GetDocument(), form, field_data_manager(), kCallTimerStateDummy,
-        /*button_titles_cache=*/nullptr, extract_options);
+  std::optional<FormData> ExtractFormData(WebFormElement form) {
+    return form_util::ExtractFormData(GetDocument(), form, field_data_manager(),
+                                      kCallTimerStateDummy,
+                                      /*button_titles_cache=*/nullptr);
   }
 
   std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-  FindFormAndFieldForFormControlElement(
-      WebFormControlElement control,
-      DenseSet<ExtractOption> extract_options = {}) {
+  FindFormAndFieldForFormControlElement(WebFormControlElement control) {
     return form_util::FindFormAndFieldForFormControlElement(
         control, field_data_manager(), kCallTimerStateDummy,
-        /*button_titles_cache=*/nullptr, extract_options,
+        /*button_titles_cache=*/nullptr,
         /*form_cache=*/{});
   }
 
@@ -885,7 +880,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByFallback) {
 }
 
 // Tests that aria-describedby works: Simple case: a single id referenced.
-TEST_F(FormAutofillUtilsTest, GetAriaDescribedBySingle) {
+TEST_F(FormAutofillUtilsTest, GetAriaDescriptionBySingle) {
   LoadHTML(
       "<input id='input' type='text' aria-describedby='div1'/>"
       "<div id='div1'>aria description</div>");
@@ -896,7 +891,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedBySingle) {
 }
 
 // Tests that aria-describedby works: Complex case: multiple ids referenced.
-TEST_F(FormAutofillUtilsTest, GetAriaDescribedByMulti) {
+TEST_F(FormAutofillUtilsTest, GetAriaDescriptionByMulti) {
   LoadHTML(
       "<input id='input' type='text' aria-describedby='div1 div2'/>"
       "<div id='div2'>description</div>"
@@ -908,12 +903,35 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByMulti) {
 }
 
 // Tests that invalid aria-describedby returns the empty string.
-TEST_F(FormAutofillUtilsTest, GetAriaDescribedByInvalid) {
+TEST_F(FormAutofillUtilsTest, GetAriaDescriptionByInvalid) {
   LoadHTML("<input id='input' type='text' aria-describedby='invalid'/>");
 
   WebDocument doc = GetDocument();
   auto element = GetFormControlElementById(doc, "input");
   EXPECT_EQ(GetAriaDescriptionForTesting(doc, element), u"");
+}
+
+// Tests that aria-describedby is prioritized over aria-description.
+TEST_F(FormAutofillUtilsTest, GetAriaDescriptionPrioritization) {
+  LoadHTML(
+      "<input id='input' type='text' aria-describedby='div1'"
+      "       aria-description='aria description'/>"
+      "<div id='div1'>aria describedby</div>");
+
+  WebDocument doc = GetDocument();
+  auto element = GetFormControlElementById(doc, "input");
+  EXPECT_EQ(GetAriaDescriptionForTesting(doc, element), u"aria describedby");
+}
+
+// Tests that aria-description is used as a fallback if aria-describedby is
+// unspecified.
+TEST_F(FormAutofillUtilsTest, GetAriaDescriptionFallback) {
+  LoadHTML(
+      "<input id='input' type='text' aria-description='aria description'/>");
+
+  WebDocument doc = GetDocument();
+  auto element = GetFormControlElementById(doc, "input");
+  EXPECT_EQ(GetAriaDescriptionForTesting(doc, element), u"aria description");
 }
 
 // Tests IsOwnedByFrame().
@@ -966,27 +984,11 @@ TEST_F(FormAutofillUtilsTest,
   WebDocument doc = GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
   std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-      form_and_field = FindFormAndFieldForFormControlElement(
-          web_control, {ExtractOption::kBounds});
-
-  ASSERT_TRUE(form_and_field);
-  auto& [form, field] = *form_and_field;
-  EXPECT_FALSE(form.fields().back().bounds().IsEmpty());
-}
-
-TEST_F(FormAutofillUtilsTest,
-       FindFormAndFieldForFormControlElement_NotExtractBounds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillOptimizeFormExtraction);
-  LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
-  WebDocument doc = GetDocument();
-  auto web_control = GetFormControlElementById(doc, "i1");
-  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
       form_and_field = FindFormAndFieldForFormControlElement(web_control);
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
-  EXPECT_TRUE(form.fields().back().bounds().IsEmpty());
+  EXPECT_FALSE(form.fields().back().bounds().IsEmpty());
 }
 
 TEST_F(FormAutofillUtilsTest,
@@ -995,8 +997,7 @@ TEST_F(FormAutofillUtilsTest,
   WebDocument doc = GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
   std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-      form_and_field = FindFormAndFieldForFormControlElement(
-          web_control, {ExtractOption::kBounds});
+      form_and_field = FindFormAndFieldForFormControlElement(web_control);
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
@@ -1044,8 +1045,7 @@ TEST_F(FormAutofillUtilsTest,
   WebDocument doc = GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
   std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-      form_and_field = FindFormAndFieldForFormControlElement(
-          web_control, {ExtractOption::kDatalist});
+      form_and_field = FindFormAndFieldForFormControlElement(web_control);
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
@@ -1056,25 +1056,6 @@ TEST_F(FormAutofillUtilsTest,
   EXPECT_EQ(options[0].text, u"one");
   EXPECT_EQ(options[1].text, u"two");
   EXPECT_EQ(field->datalist_options().size(), options.size());
-}
-
-TEST_F(FormAutofillUtilsTest,
-       FindFormAndFieldForFormControlElement_NotExtractDataList) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillOptimizeFormExtraction);
-  LoadHTML(
-      "<body><input list='datalist_id' name='count' id='i1'><datalist "
-      "id='datalist_id'><option value='1'>one</option><option "
-      "value='2'>two</option></datalist></body>");
-  WebDocument doc = GetDocument();
-  auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-      form_and_field = FindFormAndFieldForFormControlElement(
-          web_control, {ExtractOption::kBounds});
-
-  ASSERT_TRUE(form_and_field);
-  auto& [form, field] = *form_and_field;
-  EXPECT_TRUE(form.fields().back().datalist_options().empty());
 }
 
 TEST_F(FormAutofillUtilsTest,
@@ -2014,7 +1995,7 @@ TEST_F(FormAutofillUtilsTest, NextWebNode_Backward) {
     </html>)");
   std::vector<WebNode> expected_elements;
   PrefixTraverseAndAppend(GetDocument(), expected_elements);
-  std::reverse(expected_elements.begin(), expected_elements.end());
+  std::ranges::reverse(expected_elements);
 
   std::vector<WebNode> found_elements;
   for (WebNode node = expected_elements[0]; node;

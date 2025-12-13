@@ -11,9 +11,11 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/to_address.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -216,8 +218,9 @@ bool H264InputBufferFragmentSplitter::AdvanceFrameFragment(const uint8_t* data,
     switch (nalu.nal_unit_type) {
       case H264NALU::kNonIDRSlice:
       case H264NALU::kIDRSlice:
-        if (nalu.size < 1)
+        if (nalu.data.size() < 1) {
           return false;
+        }
 
         has_frame_data = true;
 
@@ -226,7 +229,7 @@ bool H264InputBufferFragmentSplitter::AdvanceFrameFragment(const uint8_t* data,
         // the eighth data bit of the NAL; a zero value is encoded with a
         // leading '1' bit in the byte, which we can detect as the byte being
         // (unsigned) greater than or equal to 0x80.
-        if (nalu.data[1] >= 0x80) {
+        if (UNSAFE_TODO(nalu.data[1]) >= 0x80) {
           end_of_frame = true;
           break;
         }
@@ -264,7 +267,7 @@ bool H264InputBufferFragmentSplitter::AdvanceFrameFragment(const uint8_t* data,
         return true;
       }
     }
-    *endpos = (nalu.data + base::checked_cast<size_t>(nalu.size)) - data;
+    *endpos = base::to_address(nalu.data.end()) - data;
   }
   NOTREACHED();
 }

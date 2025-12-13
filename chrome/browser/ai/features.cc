@@ -17,4 +17,17 @@ const base::FeatureParam<int> kAILanguageModelOverrideConfigurationOutputBuffer{
     &features::kAILanguageModelOverrideConfiguration,
     "ai_language_model_output_buffer", 1024};
 
+BASE_FEATURE(kAIModelUnloadableProgress,
+             "kAIModelUnloadableProgress",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// The number of bytes that won't load when reporting downloadprogress until
+// creation is completed.
+//
+// Calculated to occupy 10% of the loading bar when the model (currently
+// 3556255776 bytes) isn't downloaded.
+const base::FeatureParam<int> kAIModelUnloadableProgressBytes{
+    &features::kAIModelUnloadableProgress, "ai_model_unloadable_progress_bytes",
+    3556255776 / 9};
+
 }  // namespace features

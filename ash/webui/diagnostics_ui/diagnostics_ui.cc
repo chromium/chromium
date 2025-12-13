@@ -46,7 +46,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
@@ -65,7 +64,7 @@ diagnostics::metrics::NavigationView GetInitialView(const GURL url) {
 
   // Note: Valid query strings map to strings in the GetUrlForPage located in
   // chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.cc.
-  const std::string& original_query = url.query();  // must outlive |query|.
+  const std::string& original_query = url.GetQuery();  // must outlive |query|.
   std::string_view query =
       base::TrimString(original_query, " \t", base::TRIM_ALL);
 
@@ -487,12 +486,6 @@ void DiagnosticsDialogUI::BindInterface(
   if (input_data_provider) {
     input_data_provider->BindInterface(std::move(receiver));
   }
-}
-
-void DiagnosticsDialogUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DiagnosticsDialogUI)

@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/decoder/external_audio_decoder_wrapper.h"
 
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -228,13 +223,14 @@ void ExternalAudioDecoderWrapper::DecodeDeferred(
     const size_t frame_size = sizeof(float) * output_config_.channel_number;
     size_t total_frames = size / frame_size;
     for (int c = 0; c < output_config_.channel_number; ++c) {
-      uint8_t* dest =
-          decoded->writable_data() + c * total_frames * sizeof(float);
+      uint8_t* dest = UNSAFE_TODO(decoded->writable_data() +
+                                  c * total_frames * sizeof(float));
       for (size_t i = 0; i < buffer_count; ++i) {
         size_t frames = buffers_[i]->data_size() / frame_size;
-        void* src = buffers_[i]->writable_data() + c * frames * sizeof(float);
-        memcpy(dest, src, frames * sizeof(float));
-        dest += frames * sizeof(float);
+        void* src = UNSAFE_TODO(buffers_[i]->writable_data() +
+                                c * frames * sizeof(float));
+        UNSAFE_TODO(memcpy(dest, src, frames * sizeof(float)));
+        UNSAFE_TODO(dest += frames * sizeof(float));
       }
     }
   }
@@ -263,7 +259,8 @@ void ExternalAudioDecoderWrapper::ConvertToS16(DecodedBuffer* buffer) {
 
   const float* src = reinterpret_cast<const float*>(buffer->data());
   for (int c = 0; c < channels; ++c) {
-    std::copy_n(src + c * frames, frames, conversion_buffer_->channel(c));
+    std::copy_n(UNSAFE_TODO(src + c * frames), frames,
+                conversion_buffer_->channel(c).data());
   }
 
   int16_t* dest = reinterpret_cast<int16_t*>(buffer->writable_data());

@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
@@ -47,8 +49,7 @@ namespace {
 bool ShouldAllowOpenInChrome(Browser* browser) {
   // Isolated Web Apps shouldn't be opened in Chrome.
   const bool is_isolated_web_app =
-      browser->app_controller() &&
-      browser->app_controller()->IsIsolatedWebApp();
+      web_app::AppBrowserController::IsIsolatedWebApp(browser);
   // Web Apps with enabled prevent close shouldn't be opened in Chrome.
   const bool prevent_close_enabled =
       browser->app_controller() &&
@@ -113,7 +114,9 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
     case IDC_WEB_APP_UPGRADE_DIALOG:
       CHECK(base::FeatureList::IsEnabled(
           features::kWebAppPredictableAppUpdating));
-      NOTIMPLEMENTED();
+      LogMenuAction(MENU_ACTION_TRIGGER_APP_UPDATE_DIALOG);
+      browser()->app_controller()->CreateMetadataAndTriggerAppUpdateDialog(
+          base::TimeTicks::Now());
       break;
     default:
       AppMenuModel::ExecuteCommand(command_id, event_flags);
@@ -153,7 +156,8 @@ void WebAppMenuModel::Build() {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  bool is_isolated_web_app = browser()->app_controller()->IsIsolatedWebApp();
+  bool is_isolated_web_app =
+      web_app::AppBrowserController::IsIsolatedWebApp(browser());
 
   if (web_contents) {
     std::u16string display_text =
@@ -179,7 +183,7 @@ void WebAppMenuModel::Build() {
       browser()->window()->GetExtensionsContainer() &&
       browser()->window()->GetExtensionsContainer()->HasAnyExtensions() &&
       // Extensions are not supported inside Isolated Web Apps.
-      !browser()->app_controller()->IsIsolatedWebApp()) {
+      !is_isolated_web_app) {
     AddItemWithStringIdAndVectorIcon(this, kExtensionsMenuCommandId,
                                      IDS_SHOW_EXTENSIONS,
                                      vector_icons::kExtensionChromeRefreshIcon);
@@ -201,8 +205,7 @@ void WebAppMenuModel::Build() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
-          browser()->window()->GetNativeWindow())) {
+  if (chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     move_to_desks_submenu_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
         std::make_unique<chromeos::MoveToDesksMenuDelegate>(

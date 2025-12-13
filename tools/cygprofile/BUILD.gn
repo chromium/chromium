@@ -30,6 +30,10 @@ template("generate_orderfile_test") {
       "-v",
     ]
 
+    if (defined(invoker.profile_webview) && invoker.profile_webview) {
+      args += [ "--profile-webview" ]
+    }
+
     deps = [ ":generate_orderfile_py" ]
 
     data_deps = [
@@ -50,11 +54,25 @@ generate_orderfile_test("generate_orderfile_android_trichrome_chrome_bundle") {
   arch = "arm"
 }
 
+generate_orderfile_test("generate_orderfile_android_webview") {
+  browser_name = "android-webview-standalone"
+  suffix = "_android_webview"
+  arch = "arm"
+  profile_webview = true
+}
+
 if (defined(android_app_secondary_abi)) {
   generate_orderfile_test(
       "generate_orderfile_android_trichrome_chrome_64_32_bundle") {
     browser_name = "android-trichrome-chrome-64-32-bundle"
     suffix = "_android_trichrome_chrome_64_32_bundle"
     arch = "arm64"
+  }
+
+  generate_orderfile_test("generate_orderfile_android_webview_64") {
+    browser_name = "android-webview-standalone"
+    suffix = "_android_webview"
+    arch = "arm64"
+    profile_webview = true
   }
 }

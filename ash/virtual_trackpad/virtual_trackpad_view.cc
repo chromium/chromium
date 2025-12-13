@@ -29,6 +29,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -255,7 +256,7 @@ VirtualTrackpadView::VirtualTrackpadView() {
   blurred_background_ = std::make_unique<BlurredBackgroundShield>(
       this, SK_ColorTRANSPARENT, ColorProvider::kBackgroundBlurSigma,
       gfx::RoundedCornersF(
-          static_cast<float>(chromeos::kTopCornerRadiusWhenRestored)));
+          static_cast<float>(chromeos::kRoundedWindowSmallCornerRadius)));
 }
 
 VirtualTrackpadView::~VirtualTrackpadView() = default;

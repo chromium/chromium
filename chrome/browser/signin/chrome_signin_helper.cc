@@ -30,6 +30,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,6 +40,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/signin/android/signin_bridge.h"
+#include "chrome/browser/signin/android/signin_bridge_factory.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/webui_url_constants.h"
@@ -52,7 +54,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -197,9 +199,6 @@ bool IsWebContentsForemost(Profile* profile,
   }
   return true;
 #elif BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(kIgnoreMirrorHeadersInBackgoundTabs)) {
-    return true;
-  }
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents);
   return tab_model && tab_model->IsActiveModel() &&
          tab_model->GetActiveWebContents() == web_contents;
@@ -321,42 +320,67 @@ void ProcessMirrorHeader(
 
   // 3. Displaying an account addition window.
   if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
-    ash::GetAccountManagerFacade(profile->GetPath().value())
+    ash::AccountManagerFactory::Get()
+        ->GetAccountManagerFacade(profile->GetPath().value())
         ->ShowAddAccountDialog(account_manager::AccountManagerFacade::
                                    AccountAdditionSource::kOgbAddAccount);
     return;
   }
 
   // 4. Displaying the Account Manager for managing accounts.
-  ash::GetAccountManagerFacade(profile->GetPath().value())
+  ash::AccountManagerFactory::Get()
+      ->GetAccountManagerFacade(profile->GetPath().value())
       ->ShowManageAccountsSettings();
   return;
 
 #elif BUILDFLAG(IS_ANDROID)
+  GURL continue_url = GURL(manage_accounts_params.continue_url.empty()
+                               ? chrome::kChromeUINativeNewTabURL
+                               : manage_accounts_params.continue_url);
+
   if (manage_accounts_params.show_consistency_promo) {
-    SigninBridge::OpenAccountPickerBottomSheet(
-        web_contents, manage_accounts_params.continue_url.empty()
-                          ? chrome::kChromeUINativeNewTabURL
-                          : manage_accounts_params.continue_url);
+    SigninBridgeFactory::GetForProfile(profile)->OpenAccountPickerBottomSheet(
+        web_contents, continue_url);
     return;
   }
+
   if (service_type == signin::GAIA_SERVICE_TYPE_INCOGNITO) {
-    GURL url(manage_accounts_params.continue_url.empty()
-                 ? chrome::kChromeUINativeNewTabURL
-                 : manage_accounts_params.continue_url);
     web_contents->OpenURL(
-        content::OpenURLParams(url, content::Referrer(),
+        content::OpenURLParams(continue_url, content::Referrer(),
                                WindowOpenDisposition::OFF_THE_RECORD,
                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false),
         /*navigation_handle_callback=*/{});
-  } else {
-    signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
-        account_reconcilor->GetState());
-    auto* window = web_contents->GetNativeView()->GetWindowAndroid();
-    if (!window)
-      return;
-    SigninBridge::OpenAccountManagementScreen(window, service_type);
+    return;
   }
+
+  auto* window = web_contents->GetNativeView()->GetWindowAndroid();
+  if (!window) {
+    return;
+  }
+
+  if (service_type == signin::GAIA_SERVICE_TYPE_ADDSESSION &&
+      base::FeatureList::IsEnabled(switches::kSupportWebSigninAddSession)) {
+    signin::IdentityManager* const identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    for (CoreAccountInfo account :
+         identity_manager->GetAccountsWithRefreshTokens()) {
+      if (gaia::AreEmailsSame(account.email, manage_accounts_params.email)) {
+        // If account is already on device don't start the add account flow.
+        // TODO(crbug.com/456445865): Consider adding a reauth flow or a wait
+        // for cookies in this scenario.
+        return;
+      }
+    }
+    SigninBridgeFactory::GetForProfile(profile)->StartAddAccountFlow(
+        TabAndroid::FromWebContents(web_contents), manage_accounts_params.email,
+        continue_url);
+    return;
+  }
+
+  signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
+      account_reconcilor->GetState());
+  SigninBridgeFactory::GetForProfile(profile)->OpenAccountManagementScreen(
+      window, service_type);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 #endif  // BUILDFLAG(ENABLE_MIRROR)

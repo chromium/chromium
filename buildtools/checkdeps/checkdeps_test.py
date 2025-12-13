@@ -258,5 +258,20 @@ class CheckDepsTest(unittest.TestCase):
       ]])
     self.assertTrue(problems)
 
+  def testCheckResolveDotDot(self):
+    # The CppChecker disallows unknown files by default, so if we don't
+    # resolve properly this will be forbidden.
+    problems = self.deps_checker.CheckAddedCppIncludes(
+      [[os.path.join(self.deps_checker.base_directory, 'buildtools/checkdeps/testdata/allowed/test.cc'),
+        ['#include "../../testdata/allowed/test.h"']]])
+    self.assertFalse(problems)
+
+    # The ProtoChecker allows unknown files by default, so if we don't
+    # resolve properly this will be allowed.
+    problems = self.deps_checker.CheckAddedProtoImports(
+      [[os.path.join(self.deps_checker.base_directory, 'buildtools/checkdeps/testdata/test.proto'),
+        ['import "../testdata/disallowed/test.proto"']]])
+    self.assertTrue(problems)
+
 if __name__ == '__main__':
   unittest.main()

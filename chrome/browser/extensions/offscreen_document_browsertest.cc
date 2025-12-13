@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/offscreen_document_host.h"
-#include "extensions/common/mojom/context_type.mojom.h"
-
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -12,7 +9,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -21,12 +17,14 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_host_registry.h"
+#include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/script_result_queue.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -165,8 +163,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
     // a tab.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), extension->GetResourceURL("other.html")));
-    content::WebContents* tab_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* tab_contents = GetActiveWebContents();
     EXPECT_EQ(tab_contents->GetPrimaryMainFrame()->GetProcess(),
               contents->GetPrimaryMainFrame()->GetProcess());
   }

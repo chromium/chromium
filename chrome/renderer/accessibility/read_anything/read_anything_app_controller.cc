@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_controller.h"
 
 #include <climits>
@@ -18,6 +13,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -77,6 +73,11 @@
 #include "v8/include/v8-typed-array.h"
 
 namespace {
+
+// The amount of time after a new page has been opened in reading mode that
+// reading mode waits before logging whether the distillation was successful,
+// the distillation failed, or the distillation is still processing.
+constexpr int kDistillationLoggingDelayMs = 5000;
 
 constexpr char kUndeterminedLocale[] = "und";
 
@@ -452,7 +453,6 @@ ReadAnythingAppController::ReadAnythingAppController(
   }
 
   model_observer_.Observe(&model_);
-
   self_ = this;
 }
 
@@ -493,29 +493,32 @@ void ReadAnythingAppController::OnNodeWillBeDeleted(ui::AXTree* tree,
 
 void ReadAnythingAppController::OnNodeDeleted(ui::AXTree* tree,
                                               ui::AXNodeID node_id) {
-  if (displayed_nodes_pending_deletion_.contains(node_id)) {
-    displayed_nodes_pending_deletion_.erase(node_id);
+  if (!displayed_nodes_pending_deletion_.contains(node_id)) {
+    return;
+  }
 
-    // Instead of redrawing everything, we inform the webui that the node is
-    // being deleted and it will adjust on that side. See OnNodeWillBeDeleted.
-    if (IsReadAloudEnabled()) {
-      return;
-    }
+  displayed_nodes_pending_deletion_.erase(node_id);
 
-    // For Google Docs, we extract text from the "annotated canvas" element
-    // nodes, which hold the currently visible text on screen. As the user
-    // scrolls, these canvas elements are dynamically updated, resulting in
-    // frequent calls to OnNodeDeleted. We found that redrawing content in the
-    // Reading Model panel after node deletion during scrolling can lead to
-    // unexpected behavior (e.g., an empty side panel). Therefore, Google Docs
-    // require special handling to ensure correct text extraction and avoid
-    // these issues.
-    if (displayed_nodes_pending_deletion_.empty() && !IsGoogleDocs()) {
-      Draw(false);
-      if (model_.has_selection()) {
-        DrawSelection();
-      }
-    }
+  // For Google Docs, we extract text from the "annotated canvas" element
+  // nodes, which hold the currently visible text on screen. As the user
+  // scrolls, these canvas elements are dynamically updated, resulting in
+  // frequent calls to OnNodeDeleted. We found that redrawing content in the
+  // Reading Model panel after node deletion during scrolling can lead to
+  // unexpected behavior (e.g., an empty side panel). Therefore, Google Docs
+  // require special handling to ensure correct text extraction and avoid
+  // these issues.
+  if (!displayed_nodes_pending_deletion_.empty() || IsGoogleDocs()) {
+    return;
+  }
+
+  // Instead of redrawing everything when Read aloud is enabled, we inform
+  // the webui that the node is being deleted and it will adjust on that
+  // side. See OnNodeWillBeDeleted.
+  if (!IsReadAloudEnabled()) {
+    Draw(false);
+  }
+  if (model_.has_selection()) {
+    DrawSelection();
   }
 }
 
@@ -535,6 +538,30 @@ void ReadAnythingAppController::OnTreeDataChanged(
     VLOG(1) << "OnTreeDataChanged populated the active tree ID: "
             << new_data.tree_id;
     Distill();
+  }
+}
+
+void ReadAnythingAppController::OnStringAttributeChanged(
+    ui::AXTree* tree,
+    ui::AXNode* node,
+    ax::mojom::StringAttribute attr,
+    const std::string& old_value,
+    const std::string& new_value) {
+  // Return early when the images flag is disabled to avoid potential crashes.
+  if (!features::IsReadAnythingImagesViaAlgorithmEnabled()) {
+    return;
+  }
+
+  ui::AXNode* rm_node = model_.GetAXNode(node->id());
+  if (!rm_node) {
+    return;
+  }
+  // When the src for an image changes (e.g if an image was lazy loaded and
+  // previously had a placeholder image), request the updated image. The info
+  // will be returned via OnImageDataDownloaded.
+  if (attr == ax::mojom::StringAttribute::kUrl &&
+      rm_node->GetRole() == ax::mojom::Role::kImage) {
+    RequestImageData(node->id());
   }
 }
 
@@ -641,6 +668,13 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   VLOG(1) << "On active tree changed with new id: " << tree_id;
   RecordNumSelections();
 
+  // If the previous tree was not unknown (e.g. this is not the first tree
+  // seen), log the words that were seen on the previous tree.
+  if (model_.active_tree_id() != ui::AXTreeIDUnknown()) {
+    RecordEstimatedWordsSeen();
+    RecordEstimatedWordsHeard();
+  }
+
   // Cancel any running draw timers.
   post_user_entry_draw_timer_->Stop();
 
@@ -663,6 +697,16 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
 
   ExecuteJavaScript("chrome.readingMode.showLoading();");
 
+  // After the active tree has changed, start a timer for logging distillation
+  // success or failures. Logging this via a timer reduces duplicate
+  // distillation / failures being logged.
+  distillationsCompleted_ = 0;
+  timer_.Stop();
+  timer_.Start(
+      FROM_HERE, base::Milliseconds(kDistillationLoggingDelayMs),
+      base::BindOnce(&ReadAnythingAppController::RecordDistillationSuccess,
+                     base::Unretained(this)));
+
   // When the UI first constructs, this function may be called before tree_id
   // has been added to the tree list in AccessibilityEventReceived. In that
   // case, do not distill.
@@ -672,11 +716,50 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   }
 }
 
+void ReadAnythingAppController::RecordDistillationSuccess() {
+  read_anything::mojom::DistillationStatus distillationStatus;
+  if (model_.distillation_in_progress()) {
+    distillationStatus =
+        distillationsCompleted_ > 0
+            ? read_anything::mojom::DistillationStatus::kRestarted
+            : read_anything::mojom::DistillationStatus::kStillRunning;
+  } else if (!model_.content_node_ids().empty()) {
+    distillationStatus = read_anything::mojom::DistillationStatus::kSuccess;
+  } else {
+    distillationStatus = read_anything::mojom::DistillationStatus::kFailure;
+  }
+
+  page_handler_->OnDistillationStatus(distillationStatus,
+                                      model_.words_distilled());
+  ukm::builders::Accessibility_ReadAnything_Distillation(
+      model_.GetUkmSourceId())
+      .SetDistillationStatus(static_cast<int>(distillationStatus))
+      .Record(ukm_recorder_.get());
+  distillationsCompleted_ = 0;
+}
+
 void ReadAnythingAppController::RecordNumSelections() {
   ukm::builders::Accessibility_ReadAnything_EmptyState(model_.GetUkmSourceId())
       .SetTotalNumSelections(model_.GetNumSelections())
       .Record(ukm_recorder_.get());
   model_.SetNumSelections(0);
+}
+
+void ReadAnythingAppController::RecordEstimatedWordsSeen() {
+  VLOG(1) << "Words seen: " << model_.words_seen();
+  base::UmaHistogramCustomCounts(kWordsSeenHistogramName, model_.words_seen(),
+                                 1, kMaxWordsConsumed, kWordsConsumedBuckets);
+  model_.set_words_seen(0);
+}
+
+void ReadAnythingAppController::RecordEstimatedWordsHeard() {
+  if (IsReadAloudEnabled()) {
+    VLOG(1) << "Words heard: " << model_.words_heard();
+    base::UmaHistogramCustomCounts(kWordsHeardHistogramName,
+                                   model_.words_heard(), 1, kMaxWordsConsumed,
+                                   kWordsConsumedBuckets);
+  }
+  model_.set_words_heard(0);
 }
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
@@ -811,6 +894,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // that call checks if the current selection is inside the currently
     // displayed nodes. Thus, we have to calculate the display nodes first.
     model_.ComputeDisplayNodeIdsForDistilledTree();
+
+    distillationsCompleted_++;
   }
 
   // If there's no distillable content on the active tree, allow child tree
@@ -929,6 +1014,14 @@ void ReadAnythingAppController::Draw(bool recompute_display_nodes) {
 }
 
 void ReadAnythingAppController::DrawSelection() {
+  // Reset read aloud state if a selection has been made in case the selected
+  // nodes weren't previously distilled. Resetting isn't necessary if the
+  // selection nodes were included in the distilled content.
+  if (IsReadAloudEnabled() && !model_.selection_node_ids().empty() &&
+      !model_.SelectionNodesContainedInDistilledContent()) {
+    read_aloud_model_.ResetReadAloudState();
+  }
+
   // This call should check that the active tree isn't in an undistilled state
   // -- that is, it is awaiting distillation or never requested distillation.
   ExecuteJavaScript("chrome.readingMode.updateSelection();");
@@ -936,6 +1029,9 @@ void ReadAnythingAppController::DrawSelection() {
 
 void ReadAnythingAppController::DrawEmptyState() {
   ExecuteJavaScript("chrome.readingMode.showEmpty();");
+}
+
+void ReadAnythingAppController::LogEmptyState() {
   base::UmaHistogramEnumeration(ReadAnythingAppModel::kEmptyStateHistogramName,
                                 ReadAnythingAppModel::EmptyState::kShown);
 }
@@ -1014,6 +1110,13 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("darkTheme", &ReadAnythingAppController::DarkTheme)
       .SetProperty("yellowTheme", &ReadAnythingAppController::YellowTheme)
       .SetProperty("blueTheme", &ReadAnythingAppController::BlueTheme)
+      .SetProperty("highContrastTheme",
+                   &ReadAnythingAppController::HighContrastTheme)
+      .SetProperty("lowContrastTheme",
+                   &ReadAnythingAppController::LowContrastTheme)
+      .SetProperty("sepiaLightTheme",
+                   &ReadAnythingAppController::SepiaLightTheme)
+      .SetProperty("sepiaDarkTheme", &ReadAnythingAppController::SepiaDarkTheme)
       .SetProperty("autoHighlighting",
                    &ReadAnythingAppController::AutoHighlighting)
       .SetProperty("wordHighlighting",
@@ -1038,10 +1141,19 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty(
           "unexpectedUpdateContentStopSource",
           &ReadAnythingAppController::UnexpectedUpdateContentStopSource)
+      .SetProperty("maxLineWidth", &ReadAnythingAppController::MaxLineWidth)
       .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isReadAloudEnabled",
                    &ReadAnythingAppController::IsReadAloudEnabled)
+      .SetProperty("isImmersiveEnabled",
+                   &ReadAnythingAppController::IsImmersiveEnabled)
+      .SetProperty("isTsTextSegmentationEnabled",
+                   &ReadAnythingAppController::IsTsTextSegmentationEnabled)
+      .SetProperty("isReadabilityEnabled",
+                   &ReadAnythingAppController::IsReadabilityEnabled)
+      .SetProperty("isLineFocusEnabled",
+                   &ReadAnythingAppController::IsLineFocusEnabled)
       .SetProperty("isChromeOsAsh", &ReadAnythingAppController::IsChromeOsAsh)
       .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
@@ -1058,6 +1170,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getHtmlTag", &ReadAnythingAppController::GetHtmlTag)
       .SetMethod("getLanguage", &ReadAnythingAppController::GetLanguage)
       .SetMethod("getTextContent", &ReadAnythingAppController::GetTextContent)
+      .SetMethod("getPrefixText", &ReadAnythingAppController::GetPrefixText)
       .SetMethod("getUrl", &ReadAnythingAppController::GetUrl)
       .SetMethod("getAltText", &ReadAnythingAppController::GetAltText)
       .SetMethod("shouldBold", &ReadAnythingAppController::ShouldBold)
@@ -1066,6 +1179,10 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
       .SetMethod("onNoTextContent", &ReadAnythingAppController::OnNoTextContent)
+      .SetMethod("updateWordsSeen", &ReadAnythingAppController::UpdateWordsSeen)
+      .SetMethod("logEmptyState", &ReadAnythingAppController::LogEmptyState)
+      .SetMethod("updateWordsHeard",
+                 &ReadAnythingAppController::UpdateWordsHeard)
       .SetMethod("onFontSizeChanged",
                  &ReadAnythingAppController::OnFontSizeChanged)
       .SetMethod("onFontSizeReset", &ReadAnythingAppController::OnFontSizeReset)
@@ -1085,6 +1202,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnSpeechRateChange)
       .SetMethod("getStoredVoice", &ReadAnythingAppController::GetStoredVoice)
       .SetMethod("onVoiceChange", &ReadAnythingAppController::OnVoiceChange)
+      .SetMethod("logExtensionState",
+                 &ReadAnythingAppController::LogExtensionState)
       .SetMethod("onLanguagePrefChange",
                  &ReadAnythingAppController::OnLanguagePrefChange)
       .SetMethod("getLanguagesEnabledInPref",
@@ -1099,6 +1218,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnSelectionChange)
       .SetMethod("onCollapseSelection",
                  &ReadAnythingAppController::OnCollapseSelection)
+      .SetMethod("onDistilled", &ReadAnythingAppController::OnDistilled)
       .SetProperty("supportedFonts",
                    &ReadAnythingAppController::GetSupportedFonts)
       .SetProperty("allFonts", &ReadAnythingAppController::GetAllFonts)
@@ -1110,11 +1230,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::InitAXPositionWithNode)
       .SetMethod("resetGranularityIndex",
                  &ReadAnythingAppController::ResetGranularityIndex)
-      .SetMethod("getCurrentTextStartIndex",
-                 &ReadAnythingAppController::GetCurrentTextStartIndex)
-      .SetMethod("getCurrentTextEndIndex",
-                 &ReadAnythingAppController::GetCurrentTextEndIndex)
-      .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
+      .SetMethod("getCurrentTextContent",
+                 &ReadAnythingAppController::GetCurrentTextContent)
       .SetMethod("shouldShowUi", &ReadAnythingAppController::ShouldShowUI)
       .SetMethod("onIsSpeechActiveChanged",
                  &ReadAnythingAppController::OnIsSpeechActiveChanged)
@@ -1127,7 +1244,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("movePositionToPreviousGranularity",
                  &ReadAnythingAppController::MovePositionToPreviousGranularity)
       .SetMethod("requestImageData",
-                 &ReadAnythingAppController::RequestImageDataUrl)
+                 &ReadAnythingAppController::RequestImageData)
       .SetMethod("getImageBitmap", &ReadAnythingAppController::GetImageBitmap)
       .SetMethod("getDisplayNameForLocale",
                  &ReadAnythingAppController::GetDisplayNameForLocale)
@@ -1140,6 +1257,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SendInstallVoicePackRequest)
       .SetMethod("sendUninstallVoiceRequest",
                  &ReadAnythingAppController::SendUninstallVoiceRequest)
+      .SetMethod("getCurrentTextSegments",
+                 &ReadAnythingAppController::GetCurrentTextSegments)
       .SetMethod("getHighlightForCurrentSegmentIndex",
                  &ReadAnythingAppController::GetHighlightForCurrentSegmentIndex)
       .SetMethod("getValidatedFontName",
@@ -1281,6 +1400,22 @@ int ReadAnythingAppController::BlueTheme() const {
   return base::to_underlying(read_anything::mojom::Colors::kBlue);
 }
 
+int ReadAnythingAppController::HighContrastTheme() const {
+  return base::to_underlying(read_anything::mojom::Colors::kHighContrast);
+}
+
+int ReadAnythingAppController::LowContrastTheme() const {
+  return base::to_underlying(read_anything::mojom::Colors::kLowContrast);
+}
+
+int ReadAnythingAppController::SepiaLightTheme() const {
+  return base::to_underlying(read_anything::mojom::Colors::kSepiaLight);
+}
+
+int ReadAnythingAppController::SepiaDarkTheme() const {
+  return base::to_underlying(read_anything::mojom::Colors::kSepiaDark);
+}
+
 bool ReadAnythingAppController::IsHighlightOn() {
   return read_aloud_model_.IsHighlightOn();
 }
@@ -1335,6 +1470,10 @@ int ReadAnythingAppController::UnexpectedUpdateContentStopSource() const {
       ReadAloudAppModel::ReadAloudStopSource::kUnexpectedUpdateContent);
 }
 
+int ReadAnythingAppController::MaxLineWidth() const {
+  return a11y::kMaxLineWidth;
+}
+
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
     ui::AXNodeID ax_node_id) const {
   std::vector<ui::AXNodeID> child_ids;
@@ -1373,7 +1512,15 @@ std::u16string ReadAnythingAppController::GetTextContent(
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   CHECK(ax_node);
 
-  return a11y::GetTextContent(ax_node, IsGoogleDocs(), model_.is_pdf());
+  return a11y::GetTextContent(ax_node, model_.is_pdf(), IsGoogleDocs());
+}
+
+std::u16string ReadAnythingAppController::GetPrefixText(
+    ui::AXNodeID ax_node_id) const {
+  ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
+  CHECK(ax_node);
+
+  return a11y::GetPrefixText(ax_node, model_.is_pdf(), IsGoogleDocs());
 }
 
 std::string ReadAnythingAppController::GetTextDirection(
@@ -1486,6 +1633,24 @@ bool ReadAnythingAppController::IsReadAloudEnabled() const {
   return features::IsReadAnythingReadAloudEnabled();
 }
 
+bool ReadAnythingAppController::IsImmersiveEnabled() const {
+  return features::IsImmersiveReadAnythingEnabled();
+}
+
+bool ReadAnythingAppController::IsTsTextSegmentationEnabled() const {
+  return features::IsReadAnythingReadAloudTSTextSegmentationEnabled();
+}
+
+// Returns true if the experimental flag allowing testing with alternative
+// distillation methods such as Readability.js is enabled.
+bool ReadAnythingAppController::IsReadabilityEnabled() const {
+  return features::IsReadAnythingWithReadabilityEnabled();
+}
+
+bool ReadAnythingAppController::IsLineFocusEnabled() const {
+  return features::IsReadAnythingLineFocusEnabled();
+}
+
 bool ReadAnythingAppController::IsChromeOsAsh() const {
 #if BUILDFLAG(IS_CHROMEOS)
   return true;
@@ -1517,9 +1682,9 @@ std::vector<std::string> ReadAnythingAppController::GetAllFonts() const {
   return ::GetSupportedFonts({});
 }
 
-void ReadAnythingAppController::RequestImageDataUrl(
-    ui::AXNodeID node_id) const {
+void ReadAnythingAppController::RequestImageData(ui::AXNodeID node_id) const {
   if (features::IsReadAnythingImagesViaAlgorithmEnabled()) {
+    DUMP_WILL_BE_CHECK(model_.GetAXNode(node_id));
     auto target_tree_id = model_.active_tree_id();
     CHECK_NE(target_tree_id, ui::AXTreeIDUnknown());
     page_handler_->OnImageDataRequested(target_tree_id, node_id);
@@ -1565,7 +1730,8 @@ v8::Local<v8::Value> ReadAnythingAppController::GetImageBitmap(
     // Create an array buffer with the image bytes.
     v8::Local<v8::ArrayBuffer> buffer = v8::ArrayBuffer::New(isolate, size);
     // Copy the memory in.
-    memcpy(buffer->GetBackingStore()->Data(), pixmap.addr(), size);
+    pixmap.readPixels(pixmap.info(), buffer->GetBackingStore()->Data(),
+                      pixmap.rowBytes());
     // Create a clamped array so we can create an ImageData object on the
     // javascript side.
     v8::Local<v8::Uint8ClampedArray> array =
@@ -1599,13 +1765,6 @@ v8::Local<v8::Value> ReadAnythingAppController::GetImageBitmap(
   }
   // If there wasn't an image, return undefined.
   return v8::Undefined(isolate);
-}
-
-std::string ReadAnythingAppController::GetImageDataUrl(
-    ui::AXNodeID node_id) const {
-  ui::AXNode* node = model_.GetAXNode(node_id);
-  CHECK(node);
-  return a11y::GetImageDataUrl(node);
 }
 
 const std::string ReadAnythingAppController::GetDisplayNameForLocale(
@@ -1677,15 +1836,20 @@ void ReadAnythingAppController::OnCopy() const {
   page_handler_->OnCopy();
 }
 
-void ReadAnythingAppController::OnNoTextContent(bool previouslyHadContent) {
-  if (previouslyHadContent) {
-    Distill();
-  } else {
-    // If updateContent was called on a page with no valid content and
-    // reading mode previously didn't have content, ensure the empty state
-    // is now showing. Otherwise, the loading screen may never terminate.
-    DrawEmptyState();
-  }
+void ReadAnythingAppController::OnNoTextContent() {
+  Distill();
+}
+
+void ReadAnythingAppController::OnDistilled(int word_count) {
+  model_.set_words_distilled(word_count);
+}
+
+void ReadAnythingAppController::UpdateWordsSeen(int words_seen) {
+  model_.set_words_seen(words_seen);
+}
+
+void ReadAnythingAppController::UpdateWordsHeard(int words_heard) {
+  model_.set_words_heard(words_heard);
 }
 
 void ReadAnythingAppController::OnFontSizeChanged(bool increase) {
@@ -1766,6 +1930,12 @@ void ReadAnythingAppController::OnVoiceChange(const std::string& voice,
   std::string base_lang = std::string(language::ExtractBaseLanguage(lang));
   page_handler_->OnVoiceChange(voice, base_lang);
   read_aloud_model_.SetVoice(voice, base_lang);
+}
+
+void ReadAnythingAppController::LogExtensionState() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  page_handler_->LogExtensionState();
+#endif
 }
 
 void ReadAnythingAppController::OnLanguagePrefChange(const std::string& lang,
@@ -1896,9 +2066,11 @@ bool ReadAnythingAppController::IsSpeechTreeInitialized() {
   return read_aloud_model_.speech_tree_initialized();
 }
 
-std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {
-  return read_aloud_model_.GetCurrentText(model_.is_pdf(), model_.IsDocs(),
-                                          model_.GetCurrentlyVisibleNodes());
+std::u16string ReadAnythingAppController::GetCurrentTextContent() {
+  return read_aloud_model_
+      .GetCurrentText(model_.is_pdf(), model_.IsDocs(),
+                      model_.GetCurrentlyVisibleNodes())
+      .text;
 }
 
 void ReadAnythingAppController::PreprocessTextForSpeech() {
@@ -1912,14 +2084,6 @@ void ReadAnythingAppController::MovePositionToNextGranularity() {
 
 void ReadAnythingAppController::MovePositionToPreviousGranularity() {
   read_aloud_model_.MovePositionToPreviousGranularity();
-}
-
-int ReadAnythingAppController::GetCurrentTextStartIndex(ui::AXNodeID node_id) {
-  return read_aloud_model_.GetCurrentTextStartIndex(node_id);
-}
-
-int ReadAnythingAppController::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
-  return read_aloud_model_.GetCurrentTextEndIndex(node_id);
 }
 
 void ReadAnythingAppController::SetLanguageForTesting(
@@ -1940,28 +2104,54 @@ void ReadAnythingAppController::SetLanguageCode(const std::string& code) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void ReadAnythingAppController::OnDeviceLocked() {
-  read_aloud_model_.LogSpeechStop(
-      ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice);
+  if (read_aloud_model_.speech_playing()) {
+    read_aloud_model_.LogSpeechStop(
+        ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice);
+  }
+  RecordEstimatedWordsSeen();
+  RecordEstimatedWordsHeard();
   // Signal to the WebUI that the device has been locked. We'll only receive
   // this callback on ChromeOS.
   ExecuteJavaScript("chrome.readingMode.onLockScreen();");
 }
 #else
 void ReadAnythingAppController::OnTtsEngineInstalled() {
+  VLOG(1) << "OnTtsEngineInstalled";
   ExecuteJavaScript("chrome.readingMode.onTtsEngineInstalled()");
 }
 #endif
 
-void ReadAnythingAppController::OnReadingModeHidden() {
+void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
   model_.set_will_hide(true);
-  read_aloud_model_.LogSpeechStop(
-      ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
+  // If the tab is not active but RM is hidden, then the tab was switched and
+  // speech was not stopped. If the tab is still active and RM is hidden, then
+  // RM was closed, so log the speech stopped.
+  if (read_aloud_model_.speech_playing() && tab_active) {
+    read_aloud_model_.LogSpeechStop(
+        ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
+    ReadingModeWillClose();
+  }
+  RecordEstimatedWordsSeen();
+  RecordEstimatedWordsHeard();
 }
 
 void ReadAnythingAppController::OnTabWillDetach() {
   model_.set_will_hide(true);
-  read_aloud_model_.LogSpeechStop(
-      ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow);
+  if (read_aloud_model_.speech_playing()) {
+    read_aloud_model_.LogSpeechStop(
+        ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow);
+    ReadingModeWillClose();
+  }
+  RecordEstimatedWordsSeen();
+  RecordEstimatedWordsHeard();
+}
+
+void ReadAnythingAppController::ReadingModeWillClose() {
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    return;
+  }
+
+  ExecuteJavaScript("chrome.readingMode.readingModeWillClose();");
 }
 
 void ReadAnythingAppController::OnTabMuteStateChange(bool muted) {
@@ -2053,6 +2243,32 @@ int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
       shorter_string.length() - 1, ax::mojom::MoveDirection::kBackward,
       ax::mojom::TextAffinity::kDefaultValue);
   return word_ends;
+}
+
+v8::Local<v8::Value> ReadAnythingAppController::GetCurrentTextSegments() {
+  v8::Isolate* isolate =
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+  auto context = isolate->GetCurrentContext();
+
+  std::vector<ReadAloudTextSegment> nodes =
+      read_aloud_model_.GetCurrentTextSegments(
+          model_.is_pdf(), model_.IsDocs(), model_.GetCurrentlyVisibleNodes());
+
+  v8::Local<v8::Array> highlight_array = v8::Array::New(isolate, nodes.size());
+  for (int i = 0; i < (int)nodes.size(); i++) {
+    v8::Local<v8::Object> obj = v8::Object::New(isolate);
+    auto checked = obj->DefineOwnProperty(
+        context, v8::String::NewFromUtf8(isolate, "nodeId").ToLocalChecked(),
+        v8::Number::New(isolate, nodes[i].id));
+    checked = obj->DefineOwnProperty(
+        context, v8::String::NewFromUtf8(isolate, "start").ToLocalChecked(),
+        v8::Number::New(isolate, nodes[i].text_start));
+    checked = obj->DefineOwnProperty(
+        context, v8::String::NewFromUtf8(isolate, "length").ToLocalChecked(),
+        v8::Number::New(isolate, (nodes[i].text_end - nodes[i].text_start)));
+    checked = highlight_array->Set(isolate->GetCurrentContext(), i, obj);
+  }
+  return highlight_array;
 }
 
 v8::Local<v8::Value>

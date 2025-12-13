@@ -20,8 +20,9 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
+#include "chrome/browser/web_applications/icons/icon_masker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -34,7 +35,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -102,14 +103,13 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
   }
 
   void operator()(const InstallabilityChecker::BundleInstallable& installable) {
-    if (!installable.metadata.icons().empty()) {
-      // Get the last icon from |any|, size doesn't matter since Shelf will
-      // rescale the icon anyway.
-      controller_->SetIcon(gfx::ImageSkia::CreateFrom1xBitmap(
-          installable.metadata.icons()
-              .GetBitmapsForPurpose(IconPurpose::ANY)
-              .rbegin()
-              ->second));
+    if (!installable.metadata.image_info().bitmaps.empty()) {
+      // Get the last icon from available trusted icon bitmaps, size doesn't
+      // matter since Shelf will rescale the icon anyway.
+      controller_->SetIcon(
+          gfx::ImageSkia::CreateFrom1xBitmap(
+              installable.metadata.image_info().bitmaps.rbegin()->second),
+          installable.metadata.image_info().is_maskable);
       controller_->AddOrUpdateWindowToShelf();
     }
     model_->SetSignedWebBundleMetadata(installable.metadata);
@@ -119,7 +119,8 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
   void operator()(const InstallabilityChecker::BundleUpdatable& updatable) {
     model_->SetDialog(
         IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
-            updatable.metadata.app_name(), updatable.installed_version});
+            updatable.metadata.app_name(),
+            updatable.installed_version.version()});
   }
 
   void operator()(const InstallabilityChecker::BundleOutdated& outdated) {
@@ -127,7 +128,8 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
     // more specific error messages for newer vs same version already installed.
     model_->SetDialog(
         IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
-            outdated.metadata.app_name(), outdated.installed_version});
+            outdated.metadata.app_name(),
+            outdated.installed_version.version()});
   }
 
   void operator()(const InstallabilityChecker::ProfileShutdown&) {
@@ -233,8 +235,16 @@ void IsolatedWebAppInstallerViewController::AddOrUpdateWindowToShelf() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void IsolatedWebAppInstallerViewController::SetIcon(gfx::ImageSkia icon) {
+void IsolatedWebAppInstallerViewController::SetIcon(gfx::ImageSkia icon,
+                                                    bool trigger_masking) {
   icon_ = icon;
+  if (trigger_masking) {
+    web_app::MaskIconOnOs(
+        *icon_.bitmap(),
+        base::BindOnce(
+            &IsolatedWebAppInstallerViewController::OnIconMaskedUpdateShelf,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void IsolatedWebAppInstallerViewController::SetViewForTesting(
@@ -316,7 +326,6 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
       web_app_provider_->scheduler().LaunchApp(
           app_id, *base::CommandLine::ForCurrentProcess(),
           /*current_directory=*/base::FilePath(),
-          /*url_handler_launch_url=*/std::nullopt,
           /*protocol_handler_launch_url=*/std::nullopt,
           /*file_launch_url=*/std::nullopt, /*launch_files=*/{},
           base::DoNothing());
@@ -400,6 +409,12 @@ void IsolatedWebAppInstallerViewController::OnInstallProgressUpdated(
   if (view_) {
     view_->UpdateInstallProgress(progress);
   }
+}
+
+void IsolatedWebAppInstallerViewController::OnIconMaskedUpdateShelf(
+    SkBitmap mask_bitmap) {
+  icon_ = gfx::ImageSkia::CreateFrom1xBitmap(std::move(mask_bitmap));
+  AddOrUpdateWindowToShelf();
 }
 
 void IsolatedWebAppInstallerViewController::OnInstallComplete(

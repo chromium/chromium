@@ -6,19 +6,20 @@
 #define DEVICE_FIDO_WIN_FAKE_WEBAUTHN_API_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "device/fido/fido_types.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/win/webauthn_api.h"
-#include "third_party/microsoft_webauthn/webauthn.h"
+#include "third_party/microsoft_webauthn/src/webauthn.h"
 
 namespace device {
 
@@ -27,13 +28,15 @@ namespace device {
 //
 // The fake supports injecting discoverable and non-discoverable credentials
 // that can be challenged via AuthenticatorGetAssertion().
-// AuthenticatorMakeCredential() returns a mock response and does not actually
-// create a credential.
 //
 // Tests can inject a FakeWinWebAuthnApi via VirtualFidoDeviceFactory.
 class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
  public:
   using RegistrationData = VirtualFidoDevice::RegistrationData;
+
+  static constexpr std::array<uint8_t, kAaguidLength> kTestWindowsAaguid = {
+      {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
+       0x0d, 0x0e, 0x0f, 0x10}};
 
   FakeWinWebAuthnApi();
   ~FakeWinWebAuthnApi() override;
@@ -83,6 +86,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
 
   void set_version(int version) { version_ = version; }
 
+  // The Windows WebaAuthn API behaves differently under RDP. This sets whether
+  // we emulate that behaviour or not.
+  // In particular, this will cause credential enumeration to always return an
+  // empty list.
+  void set_simulate_rdp(bool simulate_rdp) { simulate_rdp_ = simulate_rdp; }
+
   // Returns a pointer to a copy of the last get credentials options passed to
   // the fake.
   WEBAUTHN_GET_CREDENTIALS_OPTIONS* last_get_credentials_options() {
@@ -95,6 +104,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   last_make_credential_options() {
     return last_make_credential_options_.get();
   }
+
+  // Returns a reference to a copy of the last get assertion or make credential
+  // hints passed to the fake.
+  std::vector<std::wstring>& last_hints() { return last_hints_; }
 
   // Sets the transport to be reported by the API for cross-platform requests.
   void set_transport(int transport) { transport_ = transport; }
@@ -149,6 +162,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   struct CredentialInfoList;
   struct WebAuthnAttestation;
   struct WebAuthnAssertionEx;
+  struct GetAssertionOptions;
 
   static WEBAUTHN_CREDENTIAL_ATTESTATION FakeAttestation();
 
@@ -160,6 +174,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   int large_blob_result_ = WEBAUTHN_CRED_LARGE_BLOB_STATUS_SUCCESS;
   bool large_blob_supported_ = true;
   int preferred_attachment_ = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
+  bool simulate_rdp_ = false;
   HRESULT result_override_ = S_OK;
 
   // Owns a copy of the last get credentials options to have been passed to the
@@ -171,6 +186,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   // fake.
   std::unique_ptr<WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS>
       last_make_credential_options_;
+
+  // Owns a copy of the last get assertion or make credential hints to have been
+  // passed to the fake.
+  std::vector<std::wstring> last_hints_;
 
   // Owns the attestations returned by AuthenticatorMakeCredential().
   std::vector<std::unique_ptr<WebAuthnAttestation>> returned_attestations_;

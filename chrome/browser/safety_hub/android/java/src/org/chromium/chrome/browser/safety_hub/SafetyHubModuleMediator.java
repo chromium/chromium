@@ -33,7 +33,7 @@ interface SafetyHubModuleMediator {
         ModuleState.SAFE
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ModuleState {
+    @interface ModuleState {
         int WARNING = 0;
         int UNAVAILABLE = 1;
         int INFO = 2;
@@ -57,7 +57,7 @@ interface SafetyHubModuleMediator {
         ModuleOption.NOTIFICATION_REVIEW,
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ModuleOption {
+    @interface ModuleOption {
         int UPDATE_CHECK = 0;
         int ACCOUNT_PASSWORDS = 1;
         int LOCAL_PASSWORDS = 2;
@@ -81,32 +81,33 @@ interface SafetyHubModuleMediator {
         IndicatorState.WAITING_FOR_RESULTS
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface IndicatorState {
+    @interface IndicatorState {
         int IDLE = 0;
         int SHOWING_INDICATOR = 1;
         int WAITING_FOR_RESULTS = 2;
     }
 
-    public static final int LOADING_MIN_TIME_MS = 1000;
+    int LOADING_MIN_TIME_MS = 1000;
 
-    static final int DEFAULT_LOADING_MAX_TIME_MS = 10000;
-    static final String LOADING_MAX_TIME_PARAM_NAME =
-            "safety-hub-local-passwords-module-loading-timeout-ms";
+    int DEFAULT_LOADING_MAX_TIME_MS = 10000;
+    String LOADING_MAX_TIME_PARAM_NAME = "safety-hub-local-passwords-module-loading-timeout-ms";
 
     @Initializer
-    public void setUpModule();
+    void setUpModule();
 
-    public void updateModule();
+    void updateModule();
 
-    public @ModuleState int getModuleState();
+    @ModuleState
+    int getModuleState();
 
-    public @ModuleOption int getOption();
+    @ModuleOption
+    int getOption();
 
-    public boolean isManaged();
+    boolean isManaged();
 
-    public void destroy();
+    void destroy();
 
-    public void setExpandState(boolean expanded);
+    void setExpandState(boolean expanded);
 
     default void setModuleExpandState(boolean noOtherNonManagedWarningState) {
         switch (getModuleState()) {

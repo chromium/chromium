@@ -131,7 +131,7 @@ void InflateTransformer::Inflate(const uint8_t* start,
 
       if (err == Z_DATA_ERROR) {
         exception_state.ThrowTypeError(
-            String("The compressed data was not valid: ") + stream_.msg + ".");
+            StrCat({"The compressed data was not valid: ", stream_.msg, "."}));
       } else {
         exception_state.ThrowTypeError("The compressed data was not valid.");
       }

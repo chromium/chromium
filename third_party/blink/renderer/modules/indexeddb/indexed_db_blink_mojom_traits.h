@@ -43,6 +43,9 @@ struct MODULES_EXPORT StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
   static bool was_cold_open(const blink::IDBDatabaseMetadata& metadata) {
     return metadata.was_cold_open;
   }
+  static bool is_sqlite(const blink::IDBDatabaseMetadata& metadata) {
+    return metadata.is_sqlite;
+  }
   static bool Read(blink::mojom::IDBDatabaseMetadataDataView data,
                    blink::IDBDatabaseMetadata* out);
 };
@@ -122,7 +125,7 @@ struct MODULES_EXPORT
 template <>
 struct MODULES_EXPORT StructTraits<blink::mojom::IDBValueDataView,
                                    std::unique_ptr<blink::IDBValue>> {
-  static base::span<const uint8_t> bits(
+  static mojo_base::BigBuffer bits(
       const std::unique_ptr<blink::IDBValue>& input);
   static blink::Vector<blink::mojom::blink::IDBExternalObjectPtr>
   external_objects(const std::unique_ptr<blink::IDBValue>& input);

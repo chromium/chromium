@@ -30,7 +30,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(chromeos::FrameHeader*)
 
@@ -190,7 +190,7 @@ FrameHeader* FrameHeader::Get(views::Widget* widget) {
 
 // static
 views::View::Views FrameHeader::GetAdjustedChildrenInZOrder(
-    views::NonClientFrameView* frame_view) {
+    views::FrameView* frame_view) {
   views::View::Views paint_order = frame_view->children();
   views::ClientView* client_view = frame_view->GetWidget()
                                        ? frame_view->GetWidget()->client_view()
@@ -344,6 +344,10 @@ const chromeos::CaptionButtonModel* FrameHeader::GetCaptionButtonModel() const {
 
 void FrameHeader::SetFrameTextOverride(
     const std::u16string& frame_text_override) {
+  if (frame_text_override_ == frame_text_override) {
+    return;
+  }
+
   frame_text_override_ = frame_text_override;
   SchedulePaintForTitle();
 }

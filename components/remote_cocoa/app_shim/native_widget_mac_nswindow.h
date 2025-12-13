@@ -77,8 +77,8 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // window, so this function prevents that if the window is currently inactive.
 - (void)orderFrontKeepWindowKeyState;
 
-// Overridden to prevent headless windows to be constrained to the physical
-// screen bounds.
+// Overrides NSWindow's frame constraining to prevent AppKit's adjustments
+// so child windows aren't pushed down due to invisible collision.
 - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen;
 
 // Is the window a part of a browser window tree that is currently in an

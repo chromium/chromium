@@ -66,7 +66,7 @@ public class ArchivedTabsDialogStation
     public RegularTabSwitcherStation closeDialog() {
         return closeButtonElement
                 .clickTo()
-                .arriveAt(RegularTabSwitcherStation.from(tabModelSelectorElement.get()));
+                .arriveAt(RegularTabSwitcherStation.from(tabModelSelectorElement.value()));
     }
 
     // Private functions.

@@ -18,9 +18,6 @@
 #include "base/test/bind.h"
 #include "base/win/scoped_propvariant.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,11 +31,14 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/web_applications/extensions/launch.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
@@ -102,11 +102,12 @@ void ValidateBrowserWindowProperties(
   prop_var.Reset();
 }
 
-void ValidateHostedAppWindowProperties(const Browser* browser,
+void ValidateHostedAppWindowProperties(BrowserWindowInterface* browser,
                                        const extensions::Extension* extension) {
   content::RunAllTasksUntilIdle();
 
-  HWND hwnd = views::HWNDForNativeWindow(browser->window()->GetNativeWindow());
+  HWND hwnd =
+      views::HWNDForNativeWindow(browser->GetWindow()->GetNativeWindow());
 
   Microsoft::WRL::ComPtr<IPropertyStore> pps;
   HRESULT result = SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps));
@@ -126,7 +127,7 @@ void ValidateHostedAppWindowProperties(const Browser* browser,
   EXPECT_EQ(VT_LPWSTR, prop_var.get().vt);
   base::CommandLine cmd_line(
       base::CommandLine::FromString(prop_var.get().pwszVal));
-  EXPECT_EQ(browser->profile()->GetBaseName().value(),
+  EXPECT_EQ(browser->GetProfile()->GetBaseName().value(),
             cmd_line.GetSwitchValueNative(switches::kProfileDirectory));
   EXPECT_EQ(base::UTF8ToWide(extension->id()),
             cmd_line.GetSwitchValueNative(switches::kAppId));
@@ -135,7 +136,7 @@ void ValidateHostedAppWindowProperties(const Browser* browser,
   // The app icon should be set to the extension app icon.
   base::FilePath web_app_dir =
       web_app::GetOsIntegrationResourcesDirectoryForApp(
-          browser->profile()->GetPath(), extension->id(), GURL());
+          browser->GetProfile()->GetPath(), extension->id(), GURL());
   EXPECT_EQ(S_OK, pps->GetValue(PKEY_AppUserModel_RelaunchIconResource,
                                 prop_var.Receive()));
   EXPECT_EQ(VT_LPWSTR, prop_var.get().vt);
@@ -205,14 +206,13 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
   EXPECT_TRUE(extension);
 
   base::RunLoop done;
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(
-          apps::AppLaunchParams(extension->id(),
-                                apps::LaunchContainer::kLaunchContainerWindow,
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                apps::LaunchSource::kFromTest),
-          base::IgnoreArgs<content::WebContents*>(done.QuitClosure()));
+  web_app::LaunchExtensionOrWebApp(
+      browser()->profile(),
+      apps::AppLaunchParams(extension->id(),
+                            apps::LaunchContainer::kLaunchContainerWindow,
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            apps::LaunchSource::kFromTest),
+      base::IgnoreArgs<content::WebContents*>(done.QuitClosure()));
   done.Run();
 
   // Check that the new browser has an app name.
@@ -220,14 +220,10 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
   // Find the new browser.
-  Browser* app_browser = nullptr;
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser()) {
-      app_browser = b;
-    }
-  }
+  BrowserWindowInterface* app_browser =
+      ui_test_utils::GetBrowserNotInSet({browser()});
   ASSERT_TRUE(app_browser);
-  ASSERT_TRUE(app_browser != browser());
+  ASSERT_NE(app_browser, browser());
 
   ValidateHostedAppWindowProperties(app_browser, extension);
 }

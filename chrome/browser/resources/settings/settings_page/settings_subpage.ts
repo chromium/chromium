@@ -64,6 +64,10 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     return 'settings-subpage';
   }
 
+  static get template() {
+    return getTemplate();
+  }
+
   static get properties() {
     return {
       pageTitle: String,
@@ -79,6 +83,9 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
       /** Setting a |searchLabel| will enable search. */
       searchLabel: String,
 
+      /** Setting a |searchIcon| will override the default search icon. */
+      searchIcon: String,
+
       searchTerm: {
         type: String,
         notify: true,
@@ -91,16 +98,6 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
       hideCloseButton: {
         type: Boolean,
         value: false,
-      },
-
-      /**
-       * Indicates which element triggers this subpage. Used by the searching
-       * algorithm to show search bubbles. It is |null| for subpages that are
-       * skipped during searching.
-       */
-      associatedControl: {
-        type: Object,
-        value: null,
       },
 
       /**
@@ -124,9 +121,9 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   declare faviconSiteUrl: string;
   declare learnMoreUrl: string;
   declare searchLabel: string;
+  declare searchIcon: string;
   declare searchTerm: string;
   declare hideCloseButton: boolean;
-  declare associatedControl: HTMLElement|null;
   declare preserveSearchTerm: boolean;
   declare private active_: boolean;
   private lastActiveValue_: boolean = false;
@@ -294,10 +291,6 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   override searchInputHasFocus() {
     const field = this.shadowRoot!.querySelector('cr-search-field')!;
     return field.getSearchInput() === field.shadowRoot.activeElement;
-  }
-
-  static get template() {
-    return getTemplate();
   }
 }
 

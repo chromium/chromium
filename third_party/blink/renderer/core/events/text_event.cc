@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/events/text_event.h"
 
+#include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 
 namespace blink {
@@ -50,17 +51,19 @@ TextEvent* TextEvent::CreateForPlainTextPaste(AbstractView* view,
 TextEvent* TextEvent::CreateForFragmentPaste(AbstractView* view,
                                              DocumentFragment* data,
                                              bool should_smart_replace,
-                                             bool should_match_style) {
+                                             bool should_match_style,
+                                             DataTransfer* data_transfer) {
   return MakeGarbageCollected<TextEvent>(view, "", data, should_smart_replace,
-                                         should_match_style);
+                                         should_match_style, data_transfer);
 }
-
 TextEvent* TextEvent::CreateForDrop(AbstractView* view, const String& data) {
   return MakeGarbageCollected<TextEvent>(view, data, kTextEventInputDrop);
 }
 
 TextEvent::TextEvent()
     : input_type_(kTextEventInputKeyboard),
+      pasting_fragment_(nullptr),
+      data_transfer_(nullptr),
       should_smart_replace_(false),
       should_match_style_(false) {}
 
@@ -78,6 +81,7 @@ TextEvent::TextEvent(AbstractView* view,
       input_type_(input_type),
       data_(data),
       pasting_fragment_(nullptr),
+      data_transfer_(nullptr),
       should_smart_replace_(false),
       should_match_style_(false) {}
 
@@ -85,7 +89,8 @@ TextEvent::TextEvent(AbstractView* view,
                      const String& data,
                      DocumentFragment* pasting_fragment,
                      bool should_smart_replace,
-                     bool should_match_style)
+                     bool should_match_style,
+                     DataTransfer* data_transfer)
     : UIEvent(event_type_names::kTextInput,
               Bubbles::kYes,
               Cancelable::kYes,
@@ -97,6 +102,7 @@ TextEvent::TextEvent(AbstractView* view,
       input_type_(kTextEventInputPaste),
       data_(data),
       pasting_fragment_(pasting_fragment),
+      data_transfer_(data_transfer),
       should_smart_replace_(should_smart_replace),
       should_match_style_(should_match_style) {}
 
@@ -107,8 +113,9 @@ void TextEvent::initTextEvent(const AtomicString& type,
                               bool cancelable,
                               AbstractView* view,
                               const String& data) {
-  if (IsBeingDispatched())
+  if (IsBeingDispatched()) {
     return;
+  }
 
   initUIEvent(type, bubbles, cancelable, view, 0);
 
@@ -121,6 +128,7 @@ const AtomicString& TextEvent::InterfaceName() const {
 
 void TextEvent::Trace(Visitor* visitor) const {
   visitor->Trace(pasting_fragment_);
+  visitor->Trace(data_transfer_);
   UIEvent::Trace(visitor);
 }
 

@@ -67,11 +67,9 @@ class CONTENT_EXPORT PrefetchServiceDelegate {
   // Checks if the referring page is in the allow list to make prefetches.
   virtual bool IsDomainInPrefetchAllowList(const GURL& referring_url) = 0;
 
-  // Determines whether a referring URL or origin is reasonably trusted to
-  // proceed without delay when processing cross-site prefetches.
-  virtual bool IsContaminationExempt(const GURL& referring_url) = 0;
-  virtual bool IsContaminationExemptPerOrigin(
-      const url::Origin& referring_origin) = 0;
+  // Determines whether a referring origin is reasonably trusted to proceed
+  // without delay when processing cross-site prefetches.
+  virtual bool IsContaminationExempt(const url::Origin& referring_origin) = 0;
 
   virtual void OnPrefetchLikely(WebContents* web_contents) = 0;
 

@@ -33,8 +33,12 @@ def main_run(args):
   failures = [
       '%s: %s' % (k, v) for k, v in results['unexpected_failures'].items()
   ]
-  common.record_local_script_results('metrics_python_tests', args.output,
-                                     failures, True)
+
+  # No need to call common.record_local_script_results() since this test
+  # uploads individual results to RDB itself.
+  local_script_results = {'valid': True, 'failures': failures}
+  with open(args.output.name, 'w') as fd:
+    json.dump(local_script_results, fd)
 
   return rc
 

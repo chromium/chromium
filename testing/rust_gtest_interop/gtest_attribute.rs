@@ -87,10 +87,14 @@ impl Parse for CppPrefixArgs {
 /// test will fail when run. If the return type is a `Result`, then an `Err` is
 /// treated as a test failure.
 ///
+/// The `gtest` macro will hide the test function in an ad-hoc `mod`, so the
+/// original function name doesn't matter.  By convention, the function is
+/// just named `fn test`.
+///
 /// # Examples
 /// ```
 /// #[gtest(MathTest, Addition)]
-/// fn my_test() {
+/// fn test() {
 ///   expect_eq!(1 + 1, 2);
 /// }
 /// ```
@@ -105,7 +109,7 @@ impl Parse for CppPrefixArgs {
 /// fail if the test returns an `Err`, and print the resulting error string:
 /// ```
 /// #[gtest(ResultTest, CheckThingWithResult)]
-/// fn my_test() -> std::result::Result<(), String> {
+/// fn test() -> std::result::Result<(), String> {
 ///   call_thing_with_result()?;
 /// }
 /// ```
@@ -284,7 +288,7 @@ pub fn gtest(
             // of `run_test_fn`. We can not use `pub` to resolve this unfortunately. When `#[used]`
             // is fixed in https://github.com/rust-lang/rust/issues/47384, this may also be
             // resolved as well.
-            #[no_mangle]
+            #[unsafe(no_mangle)]
             extern "C" fn #run_test_fn(
                 suite: std::pin::Pin<&mut ::rust_gtest_interop::OpaqueTestingTest>
             ) {

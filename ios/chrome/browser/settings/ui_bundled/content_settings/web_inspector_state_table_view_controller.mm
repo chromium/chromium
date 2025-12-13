@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/web_inspector_state_table_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -82,30 +81,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   base::RecordAction(base::UserMetricsAction("MobileWebInspectorSettingsBack"));
 }
 
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-
-  switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
-    case ItemTypeSettingsWebInspectorEnabled: {
-      TableViewSwitchCell* switchCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-      [switchCell.switchView
-                 addTarget:self
-                    action:@selector(webInspectorEnabledSwitchChanged:)
-          forControlEvents:UIControlEventValueChanged];
-      break;
-    }
-  }
-  return cell;
-}
-
 #pragma mark - Actions
 
-- (void)webInspectorEnabledSwitchChanged:(UISwitch*)switchView {
+- (void)webInspectorEnabledSwitchToggled:(UISwitch*)switchView {
   [self.delegate didEnableWebInspector:switchView.on];
 }
 
@@ -118,6 +96,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
     _webInspectorEnabledItem.text =
         l10n_util::GetNSString(IDS_IOS_WEB_INSPECTOR_LABEL);
+    _webInspectorEnabledItem.target = self;
+    _webInspectorEnabledItem.selector =
+        @selector(webInspectorEnabledSwitchToggled:);
   }
 
   return _webInspectorEnabledItem;

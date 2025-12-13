@@ -42,7 +42,7 @@ class JourneyLoggerAndroid {
                                jboolean requested_name);
   void SetRequestedPaymentMethods(
       JNIEnv* env,
-      const base::android::JavaParamRef<jintArray>& jmethods);
+      const base::android::JavaRef<jintArray>& jmethods);
   void SetCompleted(JNIEnv* env);
   void SetAborted(JNIEnv* env,
                   jint jreason);

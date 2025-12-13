@@ -116,6 +116,59 @@ content::WebContents* GetWebContents(content::GlobalRenderFrameHostId rfh_id) {
 
 }  // namespace
 
+#if BUILDFLAG(IS_WIN)
+class PrintJob::PdfConversionState {
+ public:
+  PdfConversionState(const gfx::Size& page_size,
+                     const gfx::Rect& content_area,
+                     const std::optional<bool>& use_skia,
+                     const GURL& url)
+      : page_size_(page_size),
+        content_area_(content_area),
+        use_skia_(use_skia),
+        url_(url) {}
+
+  void Start(scoped_refptr<base::RefCountedMemory> data,
+             const PdfRenderSettings& conversion_settings,
+             PdfConverter::StartCallback start_callback) {
+    converter_ = PdfConverter::StartPdfConverter(
+        data, conversion_settings, use_skia_, url_, std::move(start_callback));
+  }
+
+  void GetMorePages(PdfConverter::GetPageCallback get_page_callback) {
+    const int kMaxNumberOfTempFilesPerDocument = 3;
+    while (pages_in_progress_ < kMaxNumberOfTempFilesPerDocument &&
+           current_page_index_ < page_count_) {
+      ++pages_in_progress_;
+      converter_->GetPage(current_page_index_++, get_page_callback);
+    }
+  }
+
+  void OnPageProcessed(PdfConverter::GetPageCallback get_page_callback) {
+    --pages_in_progress_;
+    GetMorePages(get_page_callback);
+    // Release converter if we don't need this any more.
+    if (!pages_in_progress_ && current_page_index_ >= page_count_) {
+      converter_.reset();
+    }
+  }
+
+  void set_page_count(uint32_t page_count) { page_count_ = page_count; }
+  const gfx::Size& page_size() const { return page_size_; }
+  const gfx::Rect& content_area() const { return content_area_; }
+
+ private:
+  uint32_t page_count_ = 0;
+  uint32_t current_page_index_ = 0;
+  int pages_in_progress_ = 0;
+  const gfx::Size page_size_;
+  const gfx::Rect content_area_;
+  const std::optional<bool> use_skia_;
+  const GURL url_;
+  std::unique_ptr<PdfConverter> converter_;
+};
+#endif  // BUILDFLAG(IS_WIN)
+
 PrintJob::PrintJob(PrintJobManager* print_job_manager)
     : print_job_manager_(print_job_manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -342,56 +395,6 @@ const std::string& PrintJob::source_id() const {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-class PrintJob::PdfConversionState {
- public:
-  PdfConversionState(const gfx::Size& page_size,
-                     const gfx::Rect& content_area,
-                     const std::optional<bool>& use_skia,
-                     const GURL& url)
-      : page_size_(page_size),
-        content_area_(content_area),
-        use_skia_(use_skia),
-        url_(url) {}
-
-  void Start(scoped_refptr<base::RefCountedMemory> data,
-             const PdfRenderSettings& conversion_settings,
-             PdfConverter::StartCallback start_callback) {
-    converter_ = PdfConverter::StartPdfConverter(
-        data, conversion_settings, use_skia_, url_, std::move(start_callback));
-  }
-
-  void GetMorePages(PdfConverter::GetPageCallback get_page_callback) {
-    const int kMaxNumberOfTempFilesPerDocument = 3;
-    while (pages_in_progress_ < kMaxNumberOfTempFilesPerDocument &&
-           current_page_index_ < page_count_) {
-      ++pages_in_progress_;
-      converter_->GetPage(current_page_index_++, get_page_callback);
-    }
-  }
-
-  void OnPageProcessed(PdfConverter::GetPageCallback get_page_callback) {
-    --pages_in_progress_;
-    GetMorePages(get_page_callback);
-    // Release converter if we don't need this any more.
-    if (!pages_in_progress_ && current_page_index_ >= page_count_)
-      converter_.reset();
-  }
-
-  void set_page_count(uint32_t page_count) { page_count_ = page_count; }
-  const gfx::Size& page_size() const { return page_size_; }
-  const gfx::Rect& content_area() const { return content_area_; }
-
- private:
-  uint32_t page_count_ = 0;
-  uint32_t current_page_index_ = 0;
-  int pages_in_progress_ = 0;
-  const gfx::Size page_size_;
-  const gfx::Rect content_area_;
-  const std::optional<bool> use_skia_;
-  const GURL url_;
-  std::unique_ptr<PdfConverter> converter_;
-};
-
 void PrintJob::StartPdfToEmfConversion(
     scoped_refptr<base::RefCountedMemory> bytes,
     const gfx::Size& page_size,

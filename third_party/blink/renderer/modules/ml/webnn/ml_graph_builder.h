@@ -9,6 +9,7 @@
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_bigint_unrestricteddouble.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
@@ -104,6 +105,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                       ExceptionState& exception_state);
   MLOperand* constant(ScriptState* script_state,
                       MLTensor* tensor,
+                      ExceptionState& exception_state);
+  MLOperand* constant(ScriptState* script_state,
+                      V8MLOperandDataType type,
+                      const V8UnionBigintOrUnrestrictedDouble* value,
                       ExceptionState& exception_state);
 
   // The order of operations declaration is the same as spec.
@@ -234,6 +239,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* neg(MLOperand* input,
                  MLOperatorOptions* options,
                  ExceptionState& exception_state);
+  MLOperand* roundEven(MLOperand* input,
+                       MLOperatorOptions* options,
+                       ExceptionState& exception_state);
   MLOperand* sign(MLOperand* input,
                   MLOperatorOptions* options,
                   ExceptionState& exception_state);
@@ -249,6 +257,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* identity(MLOperand* input,
                       MLOperatorOptions* options,
                       ExceptionState& exception_state);
+  MLOperand* isNaN(MLOperand* input,
+                   MLOperatorOptions* options,
+                   ExceptionState& exception_state);
+  MLOperand* isInfinite(MLOperand* input,
+                        MLOperatorOptions* options,
+                        ExceptionState& exception_state);
   MLOperand* logicalNot(MLOperand* input,
                         MLOperatorOptions* options,
                         ExceptionState& exception_state);
@@ -468,9 +482,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   MLOperand* softmax(MLOperand* input,
                      uint32_t axis,
-                     MLOperatorOptions* options,
-                     ExceptionState& exception_state);
-  MLOperand* softmax(MLOperand* input,
                      MLOperatorOptions* options,
                      ExceptionState& exception_state);
 

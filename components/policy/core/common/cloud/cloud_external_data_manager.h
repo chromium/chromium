@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/external_data_manager.h"
 #include "components/policy/policy_export.h"

@@ -98,6 +98,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   bool IsNewLogin() const override;
   bool IsPasswordUpdate() const override;
+  bool IsEqualToSavedMatch() const override;
   bool HasGeneratedPassword() const override;
 
   void UsernameUpdatedInBubble() override;
@@ -105,7 +106,11 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   PasswordForm::Store GetPasswordStoreForSaving(
       const PasswordForm& password_form) const override;
 
+  void UpdateDateLastFilled(const PasswordForm& parsed_form) override;
+
   std::unique_ptr<PasswordSaveManager> Clone() override;
+
+  void SetShouldStoreActorLoginPermission() override;
 
  private:
   PasswordForm BuildPendingCredentials(
@@ -127,6 +132,9 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
                               const PasswordForm* similar_saved_form,
                               FormSaver* form_saver,
                               PasswordForm::Store store_to_save);
+
+  void UpdateDateLastFilledImpl(const PasswordForm& similar_saved_form,
+                                FormSaver* form_saver);
 
   std::u16string GetOldPassword(
       const PasswordForm& parsed_submitted_form) const;
@@ -164,7 +172,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   const std::unique_ptr<FormSaver> account_store_form_saver_;
 
   // The client which implements embedder-specific PasswordManager operations.
-  raw_ptr<PasswordManagerClient> client_ = nullptr;
+  raw_ptr<PasswordManagerClient, DanglingUntriaged> client_ = nullptr;
 
   // Stores updated credentials when the form was submitted but success is still
   // unknown. This variable contains credentials that are ready to be written
@@ -189,6 +197,11 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   // True if the user edited the username field during the save prompt.
   bool username_updated_in_bubble_ = false;
+
+  // Indicates that the |pending_credentials_| should have
+  // |actor_login_approved| set to true. This is set during the actor login
+  // flow.
+  bool should_store_actor_login_permission_ = false;
 };
 
 }  // namespace password_manager

@@ -25,10 +25,6 @@ struct CORE_EXPORT MatchResultICU {
   bool operator==(const MatchResultICU& other) const {
     return start == other.start && length == other.length;
   }
-
-  bool operator!=(const MatchResultICU& other) const {
-    return !operator==(other);
-  }
 };
 
 class CORE_EXPORT TextSearcherICU {

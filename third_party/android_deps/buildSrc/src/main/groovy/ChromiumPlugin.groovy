@@ -35,28 +35,21 @@ class ChromiumPlugin implements Plugin<Project> {
         // The configurations here are going to be used in ChromiumDepGraph. Keep it up to date with the declarations
         // below.
         project.configurations {
-            /** Main type of configuration, use it for libraries that the APK depends on. */
+            /** Main type of configuration, use it for libraries that the APK depends on.
+             * requires_android set to true. */
             compile
-
-            /** Same as compile, but uses the latest versions of the deps. */
             compileLatest
 
-            /**
-             * Dedicated com_google_guava_listenablefuture configuration so that other libraries do not affect the
-             * resolved listenablefuture version.
-             */
-            compileListenableFuture
+            /** Same as compile but just supports_android.  */
+            supportsAndroidCompile
+            supportsAndroidCompileLatest
 
             /** Libraries that are for testing only. */
             testCompile
-
-            /** Same as testCompile, but uses the latest versions of the deps. */
             testCompileLatest
 
-            /** Libraries that are only used during build. These support android. */
+            /** Libraries that are only used during build. */
             buildCompile
-
-            /** Same as buildCompile, but uses the latest versions of the deps. */
             buildCompileLatest
 
             /** Libraries that are only used during build but should not automatically retrieve their dependencies. */
@@ -64,8 +57,6 @@ class ChromiumPlugin implements Plugin<Project> {
 
             /** Libraries that are used for testing only and support android. */
             androidTestCompile
-
-            /** Same as androidTestCompile, but uses the latest versions of the deps. */
             androidTestCompileLatest
         }
 

@@ -18,6 +18,38 @@ find_library(EXECINFO_LIBRARY execinfo)
 
 absl_cc_library(
   NAME
+    borrowed_fixup_buffer
+  SRCS
+    "internal/borrowed_fixup_buffer.cc"
+  HDRS
+    "internal/borrowed_fixup_buffer.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::config
+    absl::core_headers
+    absl::hash
+    absl::malloc_internal
+  PUBLIC
+)
+
+absl_cc_test(
+  NAME
+    borrowed_fixup_buffer_test
+  SRCS
+    "internal/borrowed_fixup_buffer_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::borrowed_fixup_buffer
+    absl::config
+    GTest::gmock_main
+)
+
+absl_cc_library(
+  NAME
     stacktrace
   HDRS
     "stacktrace.h"
@@ -38,10 +70,12 @@ absl_cc_library(
   LINKOPTS
     $<$<BOOL:${EXECINFO_LIBRARY}>:${EXECINFO_LIBRARY}>
   DEPS
+    absl::borrowed_fixup_buffer
     absl::debugging_internal
     absl::config
     absl::core_headers
     absl::dynamic_annotations
+    absl::malloc_internal
     absl::raw_logging_internal
   PUBLIC
 )
@@ -57,6 +91,7 @@ absl_cc_test(
     absl::stacktrace
     absl::config
     absl::core_headers
+    absl::errno_saver
     absl::span
     GTest::gmock_main
 )

@@ -15,10 +15,6 @@
 #include "net/base/net_error_details.h"
 #include "url/gurl.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace domain_reliability {
 
 // The per-request data that is uploaded to the Domain Reliability collector.

@@ -56,7 +56,7 @@ struct BASE_EXPORT MemoryDumpProviderInfo
       std::set<scoped_refptr<MemoryDumpProviderInfo>, Comparator>;
 
   MemoryDumpProviderInfo(MemoryDumpProvider* dump_provider,
-                         const char* name,
+                         MemoryDumpProvider::Name name,
                          scoped_refptr<SequencedTaskRunner> task_runner,
                          const MemoryDumpProvider::Options& options,
                          bool allowed_in_background_mode);
@@ -86,7 +86,7 @@ struct BASE_EXPORT MemoryDumpProviderInfo
 
   // Human readable name, not unique (distinct MDP instances might have the same
   // name). Used for debugging, testing and allowing for BACKGROUND mode.
-  const char* const name;
+  const MemoryDumpProvider::Name name;
 
   // The task runner on which the MDP::OnMemoryDump call should be posted onto.
   // Can be nullptr, in which case the MDP will be invoked on a background

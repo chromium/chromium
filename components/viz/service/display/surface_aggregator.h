@@ -138,9 +138,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
     bool has_pixel_moving_filter = false;
     // True if the current frame contains a unembedded render pass.
     bool has_unembedded_pass = false;
-
-    base::TimeDelta prewalk_time;
-    base::TimeDelta copy_time;
   };
 
   // SurfaceObserver implementation.

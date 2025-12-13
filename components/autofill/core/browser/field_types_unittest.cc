@@ -14,7 +14,7 @@ TEST(FieldTypesTest, TypeStringConversion) {
   EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(NO_SERVER_DATA)),
             NO_SERVER_DATA);
   for (int i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
-    if (FieldType raw_value = static_cast<FieldType>(i);
+    if (FieldType raw_value = static_cast<FieldType>(i);  // nocheck
         ToSafeFieldType(raw_value, NO_SERVER_DATA) != NO_SERVER_DATA) {
       EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(raw_value)),
                 raw_value);
@@ -66,7 +66,6 @@ TEST(FieldTypesTest, IsValidFieldType) {
       CREDIT_CARD_TYPE,
       CREDIT_CARD_VERIFICATION_CODE,
       COMPANY_NAME,
-      FIELD_WITH_DEFAULT_VALUE,
       MERCHANT_EMAIL_SIGNUP,
       MERCHANT_PROMO_CODE,
       PASSWORD,
@@ -123,7 +122,6 @@ TEST(FieldTypesTest, IsValidFieldType) {
       ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK,
       SINGLE_USERNAME_FORGOT_PASSWORD,
       SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
-      PASSPORT_NAME_TAG,
       PASSPORT_NUMBER,
       PASSPORT_ISSUING_COUNTRY,
       PASSPORT_EXPIRATION_DATE,
@@ -131,12 +129,10 @@ TEST(FieldTypesTest, IsValidFieldType) {
       LOYALTY_MEMBERSHIP_PROGRAM,
       LOYALTY_MEMBERSHIP_PROVIDER,
       LOYALTY_MEMBERSHIP_ID,
-      VEHICLE_OWNER_TAG,
       VEHICLE_LICENSE_PLATE,
       VEHICLE_VIN,
       VEHICLE_MAKE,
       VEHICLE_MODEL,
-      DRIVERS_LICENSE_NAME_TAG,
       DRIVERS_LICENSE_REGION,
       DRIVERS_LICENSE_NUMBER,
       DRIVERS_LICENSE_EXPIRATION_DATE,
@@ -148,9 +144,20 @@ TEST(FieldTypesTest, IsValidFieldType) {
       NATIONAL_ID_CARD_EXPIRATION_DATE,
       NATIONAL_ID_CARD_ISSUE_DATE,
       NATIONAL_ID_CARD_ISSUING_COUNTRY,
+      REDRESS_NUMBER,
+      KNOWN_TRAVELER_NUMBER,
+      KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE,
       ADDRESS_HOME_ZIP_PREFIX,
       ADDRESS_HOME_ZIP_SUFFIX,
+      FLIGHT_RESERVATION_FLIGHT_NUMBER,
+      FLIGHT_RESERVATION_CONFIRMATION_CODE,
+      FLIGHT_RESERVATION_TICKET_NUMBER,
+      FLIGHT_RESERVATION_DEPARTURE_AIRPORT,
+      FLIGHT_RESERVATION_ARRIVAL_AIRPORT,
+      FLIGHT_RESERVATION_DEPARTURE_DATE,
   };
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 207,
+                "New field type needs to be added to kValidFieldTypes.");
   FieldType kInvalidValue = static_cast<FieldType>(123456);
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));
   for (int i = -10; i < MAX_VALID_FIELD_TYPE + 10; ++i) {

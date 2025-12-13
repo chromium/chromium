@@ -18,11 +18,11 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
-#include "components/user_data_importer/utility/bookmark_parser.h"
 
 class GURL;
 
@@ -61,10 +61,8 @@ class FirefoxImporter : public Importer {
   ~FirefoxImporter() override;
 
   FRIEND_TEST_ALL_PREFIXES(FirefoxImporterTest, ImportBookmarksV25);
-  void ImportBookmarks();
 
-  void OnBookmarksParsed(
-      user_data_importer::BookmarkParser::BookmarkParsingResult result);
+  void ImportBookmarks();
 
 #if !BUILDFLAG(IS_MAC)
   void ImportPasswords();

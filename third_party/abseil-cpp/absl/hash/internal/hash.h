@@ -88,7 +88,8 @@
 #include "absl/types/variant.h"
 #include "absl/utility/utility.h"
 
-#if defined(__cpp_lib_filesystem) && __cpp_lib_filesystem >= 201703L
+#if defined(__cpp_lib_filesystem) && __cpp_lib_filesystem >= 201703L && \
+    !defined(__XTENSA__)
 #include <filesystem>  // NOLINT
 #endif
 
@@ -633,7 +634,8 @@ H AbslHashValue(H hash_state, std::basic_string_view<Char> str) {
     (!defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) ||        \
      __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 130000) &&       \
     (!defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) ||         \
-     __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 101500)
+     __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 101500) &&        \
+    (!defined(__XTENSA__))
 
 #define ABSL_INTERNAL_STD_FILESYSTEM_PATH_HASH_AVAILABLE 1
 
@@ -1028,11 +1030,12 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline uint64_t CombineRawImpl(uint64_t state,
 // Slow dispatch path for calls to CombineContiguousImpl with a size argument
 // larger than inlined size. Has the same effect as calling
 // CombineContiguousImpl() repeatedly with the chunk stride size.
-uint64_t CombineLargeContiguousImplOn32BitLengthGt8(const unsigned char* first,
-                                                    size_t len, uint64_t state);
-uint64_t CombineLargeContiguousImplOn64BitLengthGt32(const unsigned char* first,
-                                                     size_t len,
-                                                     uint64_t state);
+uint64_t CombineLargeContiguousImplOn32BitLengthGt8(uint64_t state,
+                                                    const unsigned char* first,
+                                                    size_t len);
+uint64_t CombineLargeContiguousImplOn64BitLengthGt32(uint64_t state,
+                                                     const unsigned char* first,
+                                                     size_t len);
 
 ABSL_ATTRIBUTE_ALWAYS_INLINE inline uint64_t CombineSmallContiguousImpl(
     uint64_t state, const unsigned char* first, size_t len) {
@@ -1090,7 +1093,7 @@ inline uint64_t CombineContiguousImpl(
     return CombineSmallContiguousImpl(PrecombineLengthMix(state, len), first,
                                       len);
   }
-  return CombineLargeContiguousImplOn32BitLengthGt8(first, len, state);
+  return CombineLargeContiguousImplOn32BitLengthGt8(state, first, len);
 }
 
 inline uint64_t CombineContiguousImpl(
@@ -1113,7 +1116,7 @@ inline uint64_t CombineContiguousImpl(
   // We must not mix length into the state here because calling
   // CombineContiguousImpl twice with PiecewiseChunkSize() must be equivalent
   // to calling CombineLargeContiguousImpl once with 2 * PiecewiseChunkSize().
-  return CombineLargeContiguousImplOn64BitLengthGt32(first, len, state);
+  return CombineLargeContiguousImplOn64BitLengthGt32(state, first, len);
 }
 
 #if defined(ABSL_INTERNAL_LEGACY_HASH_NAMESPACE) && \

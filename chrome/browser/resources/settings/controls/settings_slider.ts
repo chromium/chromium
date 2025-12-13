@@ -10,6 +10,7 @@
  */
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
+import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
 import type {CrSliderElement, SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {assert} from '//resources/js/assert.js';

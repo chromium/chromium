@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_IOS_TEST_HELPERS_H_
 #define COMPONENTS_PASSWORD_MANAGER_IOS_TEST_HELPERS_H_
 
+#include <cstdint>
 #include <string>
 
 namespace autofill {

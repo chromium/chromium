@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // NOTE: This code is a legacy utility API for partners to check whether
 //       Chrome can be installed and launched. Recent updates are being made
 //       to add new functionality. These updates use code from Chromium, the old
@@ -17,12 +12,13 @@
 
 #include <windows.h>
 
-#include <versionhelpers.h>
-
 #include <sddl.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <versionhelpers.h>
+
+#include "base/compiler_specific.h"
 #define STRSAFE_NO_DEPRECATE
 #include <objbase.h>
 
@@ -92,7 +88,7 @@ bool GetCompanyName(const wchar_t* filename, wchar_t* buffer, DWORD out_len) {
     return false;
 
   buffer_size = _countof(file_version_info);
-  memset(file_version_info, 0, buffer_size);
+  UNSAFE_TODO(memset(file_version_info, 0, buffer_size));
   if (!::GetFileVersionInfo(filename, handle, buffer_size, file_version_info))
     return false;
 
@@ -111,7 +107,7 @@ bool GetCompanyName(const wchar_t* filename, wchar_t* buffer, DWORD out_len) {
   DWORD lang = 0;
   // Formulate the string to retrieve the company name of the specific
   // language codepage.
-  memcpy(&lang, data, 4);
+  UNSAFE_TODO(memcpy(&lang, data, 4));
   ::StringCchPrintf(info_name, _countof(info_name),
                     L"\\StringFileInfo\\%02X%02X%02X%02X\\CompanyName",
                     (lang & 0xff00) >> 8, (lang & 0xff),
@@ -125,7 +121,7 @@ bool GetCompanyName(const wchar_t* filename, wchar_t* buffer, DWORD out_len) {
   if (data_len <= 0 || data_len >= (out_len / sizeof(wchar_t)))
     return false;
 
-  memset(buffer, 0, out_len);
+  UNSAFE_TODO(memset(buffer, 0, out_len));
   ::StringCchCopyN(buffer, (out_len / sizeof(wchar_t)),
                    reinterpret_cast<const wchar_t*>(data), data_len);
   return true;
@@ -452,7 +448,7 @@ BOOL __stdcall LaunchGoogleChrome() {
       if (_wcsicmp(curr_proc_sid, exp_proc_sid) == 0) {
         ScopedHandle process_handle(::OpenProcess(
             PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION, TRUE, pid));
-        if (process_handle.IsValid()) {
+        if (process_handle.is_valid()) {
           HANDLE process_token = nullptr;
           HANDLE user_token = nullptr;
           if (::OpenProcessToken(process_handle.Get(),
@@ -693,7 +689,8 @@ BOOL __stdcall CanOfferRelaunch(const wchar_t** partner_brandcode_list,
   bool valid_brandcode = false;
   if (gcapi_internals::GetBrand(&installed_brandcode)) {
     for (int i = 0; i < partner_brandcode_list_length; ++i) {
-      if (!_wcsicmp(installed_brandcode.c_str(), partner_brandcode_list[i])) {
+      if (!_wcsicmp(installed_brandcode.c_str(),
+                    UNSAFE_TODO(partner_brandcode_list[i]))) {
         valid_brandcode = true;
         break;
       }

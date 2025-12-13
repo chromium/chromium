@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 class BackForwardCachePageLoadMetricsObserverTest;
@@ -31,16 +30,7 @@ extern const char
     kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore
         [];
 extern const char
-    kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore_Incognito
-        [];
-extern const char
     kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore
-        [];
-
-extern const char
-    kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore[];
-extern const char
-    kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore_Incognito
         [];
 
 extern const char kHistogramFirstPaintAfterBackForwardCacheRestore[];
@@ -49,14 +39,8 @@ extern const char
 extern const char
     kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestore[];
 extern const char
-    kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestoreIncognito
-        [];
-extern const char
     kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore[];
 extern const char kHistogramFirstInputDelayAfterBackForwardCacheRestore[];
-extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[];
-extern const char
-    kHistogramCumulativeShiftScoreMainFrameAfterBackForwardCacheRestore[];
 extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[];
 
 }  // namespace internal
@@ -64,7 +48,7 @@ extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[];
 class BackForwardCachePageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  explicit BackForwardCachePageLoadMetricsObserver(bool is_incognito);
+  BackForwardCachePageLoadMetricsObserver();
 
   BackForwardCachePageLoadMetricsObserver(
       const BackForwardCachePageLoadMetricsObserver&) = delete;
@@ -183,9 +167,6 @@ class BackForwardCachePageLoadMetricsObserver
   // IDs for the navigations when the page is restored from the back-forward
   // cache.
   std::vector<ukm::SourceId> back_forward_cache_navigation_ids_;
-
-  // Whether the WebContents being observed is for an Incognito profile.
-  bool is_incognito_;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_BACK_FORWARD_CACHE_PAGE_LOAD_METRICS_OBSERVER_H_

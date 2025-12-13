@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.privacy_guide;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,14 +33,11 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /** JUnit tests of the class {@link HistorySyncFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -54,6 +50,7 @@ public class HistorySyncFragmentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SyncService mSyncService;
+    @Mock private HistorySyncHelper mHistorySyncHelper;
     @Mock private Profile mProfile;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
@@ -65,6 +62,7 @@ public class HistorySyncFragmentTest {
     @Before
     public void setUp() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
     }
@@ -78,7 +76,7 @@ public class HistorySyncFragmentTest {
     }
 
     private void initFragmentWithSyncState(boolean historySync) {
-        initSyncState(historySync);
+        when(mHistorySyncHelper.isHistorySyncEnabled()).thenReturn(historySync);
         setSigninState(true);
         mScenario =
                 FragmentScenario.launchInContainer(
@@ -107,14 +105,6 @@ public class HistorySyncFragmentTest {
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(isSignedIn);
     }
 
-    private void initSyncState(boolean historySync) {
-        Set<Integer> syncTypes = new HashSet<>();
-        if (historySync) {
-            syncTypes.add(UserSelectableType.HISTORY);
-        }
-        when(mSyncService.getSelectedTypes()).thenReturn(syncTypes);
-    }
-
     @Test
     public void testIsSwitchOffWhenHistorySyncOff() {
         initFragmentWithSyncState(false);
@@ -139,8 +129,7 @@ public class HistorySyncFragmentTest {
         assertFalse(mHistorySyncButton.isChecked());
 
         mHistorySyncButton.performClick();
-        verify(mSyncService, times(1)).setSelectedType(eq(UserSelectableType.HISTORY), eq(true));
-        verify(mSyncService, times(1)).setSelectedType(eq(UserSelectableType.TABS), eq(true));
+        verify(mHistorySyncHelper, times(1)).setHistoryAndTabsSync(true);
     }
 
     @Test
@@ -149,8 +138,7 @@ public class HistorySyncFragmentTest {
         assertTrue(mHistorySyncButton.isChecked());
 
         mHistorySyncButton.performClick();
-        verify(mSyncService, times(1)).setSelectedType(eq(UserSelectableType.HISTORY), eq(false));
-        verify(mSyncService, times(1)).setSelectedType(eq(UserSelectableType.TABS), eq(false));
+        verify(mHistorySyncHelper, times(1)).setHistoryAndTabsSync(false);
     }
 
     @Test
@@ -194,7 +182,7 @@ public class HistorySyncFragmentTest {
 
     @Test
     public void testStrings() throws Exception {
-        initSyncState(true);
+        when(mHistorySyncHelper.isHistorySyncEnabled()).thenReturn(true);
         mScenario =
                 FragmentScenario.launchInContainer(
                         HistorySyncFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
@@ -220,9 +208,7 @@ public class HistorySyncFragmentTest {
 
     @Test
     public void testToggleAccountsForTabsSync() throws Exception {
-        Set<Integer> syncTypes = new HashSet<>();
-        syncTypes.add(UserSelectableType.TABS);
-        when(mSyncService.getSelectedTypes()).thenReturn(syncTypes);
+        when(mHistorySyncHelper.isHistorySyncEnabled()).thenReturn(true);
         mScenario =
                 FragmentScenario.launchInContainer(
                         HistorySyncFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
@@ -242,8 +228,7 @@ public class HistorySyncFragmentTest {
         mHistorySyncButton.performClick();
 
         assertFalse(mHistorySyncButton.isChecked());
-        verify(mSyncService, times(0)).setSelectedType(eq(UserSelectableType.HISTORY), eq(false));
-        verify(mSyncService, times(0)).setSelectedType(eq(UserSelectableType.TABS), eq(false));
+        verify(mHistorySyncHelper, times(0)).setHistoryAndTabsSync(false);
     }
 
     @Test
@@ -251,26 +236,11 @@ public class HistorySyncFragmentTest {
         initFragmentWithSyncState(true);
         assertTrue(mHistorySyncButton.isChecked());
 
-        when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(true);
+        when(mHistorySyncHelper.isHistorySyncDisabledByPolicy()).thenReturn(true);
         mHistorySyncButton.performClick();
 
         assertFalse(mHistorySyncButton.isChecked());
-        verify(mSyncService, times(0)).setSelectedType(eq(UserSelectableType.HISTORY), eq(false));
-        verify(mSyncService, times(0)).setSelectedType(eq(UserSelectableType.TABS), eq(false));
-    }
-
-    @Test
-    public void testHistoryAndTabSyncManagedByPolicy() {
-        initFragmentWithSyncState(true);
-        assertTrue(mHistorySyncButton.isChecked());
-
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)).thenReturn(true);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(true);
-        mHistorySyncButton.performClick();
-
-        assertFalse(mHistorySyncButton.isChecked());
-        verify(mSyncService, times(0)).setSelectedType(eq(UserSelectableType.HISTORY), eq(false));
-        verify(mSyncService, times(0)).setSelectedType(eq(UserSelectableType.TABS), eq(false));
+        verify(mHistorySyncHelper, times(0)).setHistoryAndTabsSync(false);
     }
 
     @Test
@@ -278,12 +248,10 @@ public class HistorySyncFragmentTest {
         initFragmentWithSyncState(true);
         assertTrue(mHistorySyncButton.isChecked());
 
-        when(mSyncService.isTypeManagedByCustodian(UserSelectableType.HISTORY)).thenReturn(true);
-        when(mSyncService.isTypeManagedByCustodian(UserSelectableType.TABS)).thenReturn(true);
+        when(mHistorySyncHelper.isHistorySyncDisabledByCustodian()).thenReturn(true);
         mHistorySyncButton.performClick();
 
         assertFalse(mHistorySyncButton.isChecked());
-        verify(mSyncService, times(0)).setSelectedType(eq(UserSelectableType.HISTORY), eq(false));
-        verify(mSyncService, times(0)).setSelectedType(eq(UserSelectableType.TABS), eq(false));
+        verify(mHistorySyncHelper, times(0)).setHistoryAndTabsSync(false);
     }
 }

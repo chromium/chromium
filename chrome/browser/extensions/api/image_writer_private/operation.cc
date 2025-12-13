@@ -9,7 +9,6 @@
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -305,7 +304,7 @@ void Operation::MD5Chunk(
 
   if (read_size == 0) {
     // Nothing to read, we are done.
-    std::move(callback).Run(base::ToLowerASCII(base::HexEncode(md5.Finish())));
+    std::move(callback).Run(base::HexEncodeLower(md5.Finish()));
   } else {
     int64_t offset = base::checked_cast<int64_t>(bytes_processed);
     auto target = base::span(buffer).first(read_size);

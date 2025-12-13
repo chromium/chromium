@@ -1,0 +1,10 @@
+include_rules = [
+  # Minimize dependencies on internal code, but allow service construction.
+  "+components/contextual_tasks/internal/composite_context_decorator.h",
+  "+components/contextual_tasks/internal/contextual_tasks_service_impl.h",
+  "+components/url_deduplication/url_deduplication_helper.h",
+  "+components/visited_url_ranking/public/url_visit_util.h",
+
+  "+chrome/browser/signin/identity_manager_factory.h",
+  "+chrome/browser/sync/data_type_store_service_factory.h",
+]

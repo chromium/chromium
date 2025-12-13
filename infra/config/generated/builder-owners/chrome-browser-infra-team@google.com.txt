@@ -1,8 +1,17 @@
 ci/3pp-windows-amd64-packager
+ci/android-structured-test-ids-16-x64-rel-fyi
+ci/chromeos-structured-test-ids-amd64-generic-rel-fyi
+ci/ios-structured-test-ids-simulator-fyi
 ci/linux-archive-rel
 ci/linux-presubmit
+ci/linux-structured-test-ids-rel-fyi
 ci/win-presubmit
 try/3pp-windows-amd64-packager
+try/android-structured-test-ids-16-x64-rel-fyi
+try/chromeos-structured-test-ids-amd64-generic-rel-gtest-and-tast-fyi
 try/gn-args-verifier
+try/ios-structured-test-ids-simulator-fyi
 try/linux-clobber-rel
+try/linux-presubmit
+try/linux-structured-test-ids-rel-fyi
 try/mega-cq-launcher

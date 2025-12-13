@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_scroll_panel.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/page_info/page_info.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -38,10 +40,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/views/media_preview/media_preview_feature.h"
-#endif
 
 namespace {
 std::u16string PageInfoSubpageText(ContentSettingsType type) {
@@ -244,25 +242,30 @@ void PageInfoPermissionContentView::SetPermissionInfo(
   if (type_ == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
       base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
+    ContentSetting setting = std::get<ContentSetting>(
+        permission_.setting.value_or(CONTENT_SETTING_DEFAULT));
     if (web_contents_.MaybeValid()) {
       auto* context =
           FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
               web_contents_->GetBrowserContext());
-      remember_setting_->SetVisible(context && permission_.setting !=
-                                                   CONTENT_SETTING_BLOCK);
+      remember_setting_->SetVisible(context &&
+                                    setting != CONTENT_SETTING_BLOCK);
       remember_setting_->SetChecked(
           context && context->OriginHasExtendedPermission(url::Origin::Create(
                          web_contents_->GetLastCommittedURL())));
     }
   } else {
+    auto* info =
+        content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+            permission_.type);
     remember_setting_->SetChecked(!permission_.is_one_time &&
-                                  permission_.setting !=
-                                      CONTENT_SETTING_DEFAULT);
+                                  permission_.setting);
     remember_setting_->SetVisible(
         (permissions::PermissionUtil::IsPermission(type_) &&
          permissions::PermissionUtil::DoesSupportTemporaryGrants(
              permission_.type)) &&
-        (permission_.setting != CONTENT_SETTING_BLOCK));
+        permission_.setting &&
+        !info->delegate().IsBlocked(*permission_.setting));
   }
   PreferredSizeChanged();
 }
@@ -377,13 +380,6 @@ void PageInfoPermissionContentView::MaybeAddMediaPreview(
   if (type_ != ContentSettingsType::MEDIASTREAM_CAMERA &&
       type_ != ContentSettingsType::MEDIASTREAM_MIC &&
       type_ != ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
-    return;
-  }
-
-  const GURL& site_url = web_contents->GetLastCommittedURL();
-  if (!media_preview_feature::ShouldShowMediaPreview(
-          *web_contents->GetBrowserContext(), site_url, site_url,
-          media_preview_metrics::UiLocation::kPageInfo)) {
     return;
   }
 

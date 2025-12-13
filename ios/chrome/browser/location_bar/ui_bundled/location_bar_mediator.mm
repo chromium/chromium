@@ -5,10 +5,15 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
 
 #import "base/memory/ptr_util.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/google/core/common/google_util.h"
 #import "components/lens/lens_url_utils.h"
 #import "components/omnibox/common/omnibox_features.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
@@ -18,6 +23,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -106,9 +112,15 @@ const CGFloat kIconPointSize = 16.0;
 
 - (void)setConsumer:(id<LocationBarConsumer>)consumer {
   _consumer = consumer;
+
+  if (!_consumer) {
+    return;
+  }
+
   [consumer setSearchByImageEnabled:self.searchEngineSupportsSearchByImage];
   [consumer setLensImageEnabled:self.searchEngineSupportsLens];
   [self updatePlaceholderType];
+  [self searchEngineChanged];
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {
@@ -205,6 +217,10 @@ const CGFloat kIconPointSize = 16.0;
 
 /// Returns whether the Lens overlay is currently available for the web state.
 - (BOOL)isLensOverlayAvailable {
+  if (IsPageActionMenuEnabled() && IsDirectBWGEntryPoint()) {
+    return NO;
+  }
+
   if (_webStateList) {
     web::WebState* webState = _webStateList->GetActiveWebState();
     if (webState) {
@@ -224,9 +240,15 @@ const CGFloat kIconPointSize = 16.0;
   if (_webStateList) {
     web::WebState* webState = _webStateList->GetActiveWebState();
     if (webState) {
-      BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
-      if (BWGTabHelper) {
-        return BWGTabHelper->IsBwgAvailableForWebState();
+      ProfileIOS* profile =
+          ProfileIOS::FromBrowserState(webState->GetBrowserState());
+      BwgService* BWGService = BwgServiceFactory::GetForProfile(profile);
+      if (BWGService) {
+        if (IsDirectBWGEntryPoint()) {
+          return BWGService->IsBwgAvailableForWebState(webState);
+        }
+
+        return BWGService->IsProfileEligibleForBwg();
       }
     }
   }
@@ -247,6 +269,23 @@ const CGFloat kIconPointSize = 16.0;
   }
 
   if ([self isAIHubAvailable]) {
+    // If this is the user's first time being eligible for the AI Hub, notify
+    // the FET.
+    if (!_webStateList || !_webStateList->GetActiveWebState()) {
+      return;
+    }
+    web::WebState* webState = _webStateList->GetActiveWebState();
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(webState->GetBrowserState());
+    PrefService* prefs = profile->GetPrefs();
+    if (!prefs->GetBoolean(prefs::kAIHubEligibilityTriggered)) {
+      prefs->SetBoolean(prefs::kAIHubEligibilityTriggered, true);
+      feature_engagement::TrackerFactory::GetForProfile(profile)->NotifyEvent(
+          feature_engagement::events::kIOSGeminiEligiblity);
+    }
+
+    // Record Gemini entry point impression when AI Hub is available and shown.
+    RecordGeminiEntryPointImpression();
     [self.consumer
         setPlaceholderType:LocationBarPlaceholderType::kPageActionMenu];
     return;
@@ -264,7 +303,6 @@ const CGFloat kIconPointSize = 16.0;
 /// Whether the lens overlay entrypoint should be available.
 - (BOOL)isLensOverlayEntrypointAvailable {
   if (![self isLensOverlayAvailable] ||
-      !base::FeatureList::IsEnabled(kLensOverlayEnableLocationBarEntrypoint) ||
       _isIncognito ||
       !search_engines::SupportsSearchImageWithLens(self.templateURLService)) {
     return NO;
@@ -277,10 +315,8 @@ const CGFloat kIconPointSize = 16.0;
     }
   }
 
-  if (!base::FeatureList::IsEnabled(
-          kLensOverlayEnableLocationBarEntrypointOnSRP) &&
-      (google_util::IsGoogleSearchUrl(visibleURL) ||
-       google_util::IsGoogleHomePageUrl(visibleURL))) {
+  if (google_util::IsGoogleSearchUrl(visibleURL) ||
+      google_util::IsGoogleHomePageUrl(visibleURL)) {
     return NO;
   }
 

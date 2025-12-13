@@ -23,6 +23,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/features.h"
 #include "services/device/geolocation/fake_location_provider.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
@@ -101,10 +102,15 @@ class GeolocationProviderTest : public testing::Test {
   }
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
+ protected:
   // Called on test thread.
   void SetFakeLocationProviderManager();
   bool ProvidersStarted();
   void SendMockLocation(const mojom::GeopositionResult& result);
+
+  bool GetIsRunningPrecise() {
+    return provider()->is_running_precise_for_testing();
+  }
 
   device::mojom::GeopositionResultPtr position_result1_ =
       mojom::GeopositionResult::NewPosition(mojom::Geoposition::New());
@@ -141,6 +147,40 @@ class GeolocationProviderTest : public testing::Test {
   // True if |location_provider_manager_| is started.
   bool is_started_;
 
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class GeolocationProviderApproxGeoTest : public GeolocationProviderTest {
+ protected:
+  GeolocationProviderApproxGeoTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{content_settings::features::
+                                  kApproximateGeolocationPermission},
+        /*disabled_features=*/{});
+
+    // Create a precise position result.
+    precise_position_result_ =
+        mojom::GeopositionResult::NewPosition(mojom::Geoposition::New());
+    precise_position_result_->get_position()->latitude = 1.0;
+    precise_position_result_->get_position()->longitude = 2.0;
+    precise_position_result_->get_position()->accuracy = 10.0;
+    precise_position_result_->get_position()->is_precise = true;
+    precise_position_result_->get_position()->timestamp = base::Time::Now();
+
+    // Create an approximate position result.
+    approximate_position_result_ =
+        mojom::GeopositionResult::NewPosition(mojom::Geoposition::New());
+    approximate_position_result_->get_position()->latitude = 3.0;
+    approximate_position_result_->get_position()->longitude = 4.0;
+    approximate_position_result_->get_position()->accuracy = 100.0;
+    approximate_position_result_->get_position()->is_precise = false;
+    approximate_position_result_->get_position()->timestamp = base::Time::Now();
+  }
+
+  device::mojom::GeopositionResultPtr precise_position_result_;
+  device::mojom::GeopositionResultPtr approximate_position_result_;
+
+ private:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -419,6 +459,129 @@ TEST_F(GeolocationProviderTest, MultipleDiagnosticsObservers) {
     EXPECT_EQ(future.Get()->provider_state,
               mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy);
   }
+}
+
+TEST_F(GeolocationProviderApproxGeoTest, PreciseOnlyMode) {
+  SetFakeLocationProviderManager();
+  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
+
+  TestFuture<mojom::GeopositionResultPtr> high_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      high_accuracy_callback;
+  EXPECT_CALL(high_accuracy_callback, Run)
+      .WillOnce([&](const mojom::GeopositionResult& result) {
+        high_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription high_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(high_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/true);
+
+  EXPECT_TRUE(GetIsRunningPrecise());
+
+  SendMockLocation(*precise_position_result_);
+  EXPECT_TRUE(high_accuracy_future.Get()->is_position());
+  EXPECT_EQ(high_accuracy_future.Get()->get_position(),
+            precise_position_result_->get_position());
+}
+
+TEST_F(GeolocationProviderApproxGeoTest, ApproximateOnlyMode) {
+  SetFakeLocationProviderManager();
+  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
+
+  TestFuture<mojom::GeopositionResultPtr> low_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      low_accuracy_callback;
+  EXPECT_CALL(low_accuracy_callback, Run)
+      .WillOnce([&](const mojom::GeopositionResult& result) {
+        low_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription low_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(low_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/false);
+
+  EXPECT_FALSE(GetIsRunningPrecise());
+
+  SendMockLocation(*approximate_position_result_);
+  EXPECT_TRUE(low_accuracy_future.Get()->is_position());
+  EXPECT_EQ(low_accuracy_future.Get()->get_position(),
+            approximate_position_result_->get_position());
+}
+
+TEST_F(GeolocationProviderApproxGeoTest, ErrorBroadcast) {
+  SetFakeLocationProviderManager();
+  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
+
+  TestFuture<mojom::GeopositionResultPtr> high_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      high_accuracy_callback;
+  EXPECT_CALL(high_accuracy_callback, Run)
+      .WillOnce([&](const mojom::GeopositionResult& result) {
+        high_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription high_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(high_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/true);
+
+  TestFuture<mojom::GeopositionResultPtr> low_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      low_accuracy_callback;
+  EXPECT_CALL(low_accuracy_callback, Run)
+      .WillOnce([&](const mojom::GeopositionResult& result) {
+        low_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription low_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(low_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/false);
+
+  // When there are both high and low accuracy callbacks, it should use
+  // approximate accuracy.
+  EXPECT_FALSE(GetIsRunningPrecise());
+
+  SendMockLocation(*error_result_);
+  EXPECT_EQ(high_accuracy_future.Get()->get_error(),
+            error_result_->get_error());
+  EXPECT_EQ(low_accuracy_future.Get()->get_error(), error_result_->get_error());
+}
+
+TEST_F(GeolocationProviderApproxGeoTest, ConcurrentMode) {
+  SetFakeLocationProviderManager();
+  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
+
+  // Add a high accuracy client.
+  TestFuture<mojom::GeopositionResultPtr> high_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      high_accuracy_callback;
+  EXPECT_CALL(high_accuracy_callback, Run)
+      .WillRepeatedly([&](const mojom::GeopositionResult& result) {
+        high_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription high_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(high_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/true);
+  EXPECT_TRUE(GetIsRunningPrecise());
+
+  // Add a low accuracy client.
+  TestFuture<mojom::GeopositionResultPtr> low_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      low_accuracy_callback;
+  EXPECT_CALL(low_accuracy_callback, Run)
+      .WillRepeatedly([&](const mojom::GeopositionResult& result) {
+        low_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription low_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(low_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/false);
+
+  // Ensure that we are running approximate accuracy in concurrent mode.
+  EXPECT_FALSE(GetIsRunningPrecise());
+
+  // Send an approximate location update. Both low-accuracy and high-accuracy
+  // clients should receive it.
+  SendMockLocation(*approximate_position_result_);
+  EXPECT_EQ(low_accuracy_future.Get()->get_position()->latitude,
+            approximate_position_result_->get_position()->latitude);
+  EXPECT_EQ(high_accuracy_future.Get()->get_position()->latitude,
+            approximate_position_result_->get_position()->latitude);
 }
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)

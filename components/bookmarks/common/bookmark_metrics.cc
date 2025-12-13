@@ -5,6 +5,7 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,24 +25,26 @@ void RecordBookmarkParentFolderType(BookmarkFolderTypeForUMA parent) {
   base::UmaHistogramEnumeration("Bookmarks.ParentFolderType", parent);
 }
 
-std::string GetStorageStateSuffixForMetrics(StorageStateForUma storage_state) {
+std::string_view GetStorageStateSuffixForMetrics(
+    StorageStateForUma storage_state) {
   switch (storage_state) {
     case StorageStateForUma::kAccount:
-      return std::string(".AccountStorage");
+      return ".AccountStorage";
     case StorageStateForUma::kLocalOnly:
-      return std::string(".LocalStorage");
+      return ".LocalStorage";
     case StorageStateForUma::kSyncEnabled:
-      return std::string(".LocalStorageSyncing");
+      return ".LocalStorageSyncing";
   }
   NOTREACHED();
 }
 
-std::string GetStorageFileSuffixForMetrics(StorageFileForUma storage_file) {
+std::string_view GetStorageFileSuffixForMetrics(
+    StorageFileForUma storage_file) {
   switch (storage_file) {
     case StorageFileForUma::kLocalOrSyncable:
-      return std::string(".LocalOrSyncable");
+      return ".LocalOrSyncable";
     case StorageFileForUma::kAccount:
-      return std::string(".Account");
+      return ".Account";
   }
   NOTREACHED();
 }
@@ -184,6 +187,10 @@ void RecordUserFolderLoadStatsOnProfileLoad(const UserFolderLoadStats& stats) {
   base::UmaHistogramCustomCounts("Bookmarks.UserFolder.OnProfileLoad.Count",
                                  stats.total_folders, /*min=*/1,
                                  /*exclusive_max=*/300, /*buckets=*/100);
+
+  base::UmaHistogramCounts100(
+      "Bookmarks.UserFolder.OnProfileLoad.BookmarkBarTopLevelItems",
+      stats.bookmark_bar_top_level_items);
 }
 
 void RecordCloneBookmarkNode(int num_cloned) {
@@ -197,7 +204,7 @@ void RecordAverageNodeSizeAtStartup(size_t size_in_bytes) {
 void RecordIdsReassignedOnProfileLoad(StorageFileForUma storage_file,
                                       bool ids_reassigned) {
   base::UmaHistogramBoolean(
-      base::StrCat({"Bookmarks.IdsReassigned.OnProfileLoad",
+      base::StrCat({"Bookmarks.IdsReassigned2.OnProfileLoad",
                     GetStorageFileSuffixForMetrics(storage_file)}),
       ids_reassigned);
 }

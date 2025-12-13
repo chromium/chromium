@@ -6,26 +6,27 @@ import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '../controls/settings_toggle_button.js';
+import '../settings_page/settings_subpage.js';
 import './privacy_sandbox_interest_item.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import type {CanonicalTopic, PrivacySandboxBrowserProxy, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
@@ -37,8 +38,8 @@ export interface SettingsPrivacySandboxTopicsSubpageElement {
   };
 }
 
-const SettingsPrivacySandboxTopicsSubpageElementBase =
-    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement)));
+const SettingsPrivacySandboxTopicsSubpageElementBase = SettingsViewMixin(
+    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement))));
 
 export class SettingsPrivacySandboxTopicsSubpageElement extends
     SettingsPrivacySandboxTopicsSubpageElementBase {
@@ -84,11 +85,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         observer: 'onBlockedTopicsExpanded_',
       },
 
-      focusConfig: {
-        type: Object,
-        observer: 'focusConfigChanged_',
-      },
-
       blockTopicDialogTitle_: {
         type: String,
         value: '',
@@ -108,17 +104,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         type: Boolean,
         computed: 'computeEmptyState_(' +
             'prefs.privacy_sandbox.m1.topics_enabled.value)',
-      },
-
-      /**
-       * If true, the Ads API UX Enhancement should be shown.
-       */
-      shouldShowV2_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isPrivacySandboxAdsApiUxEnhancementsEnabled');
-        },
       },
 
       /**
@@ -145,7 +130,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   declare private blockedTopicsList_: PrivacySandboxInterest[];
   private currentChildTopics_: CanonicalTopic[];
   private currentInterest_?: PrivacySandboxInterest;
-  declare private focusConfig: FocusConfig;
 
   declare private isTopicsListLoaded_: boolean;
   declare private emptyState_: boolean;
@@ -154,7 +138,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   declare private shouldShowBlockTopicDialog_: boolean;
   declare private blockTopicDialogTitle_: string;
   declare private blockTopicDialogBody_: string;
-  declare private shouldShowV2_: boolean;
   declare private shouldShowAdTopicsContentParity_: boolean;
   declare private adTopicsToggleSubLabel_: string;
 
@@ -178,7 +161,9 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     return !this.getPref('privacy_sandbox.m1.topics_enabled').value;
   }
 
-  override currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     if (newRoute === routes.PRIVACY_SANDBOX_TOPICS) {
       // Updating the TopicsState because it can be changed by being
       // blocked/unblocked in the Manage Topics Page. Need to keep the data
@@ -329,18 +314,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_MANAGE_TOPICS);
   }
 
-  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
-    assert(!oldConfig);
-    if (routes.PRIVACY_SANDBOX_MANAGE_TOPICS) {
-      this.focusConfig.set(routes.PRIVACY_SANDBOX_MANAGE_TOPICS.path, () => {
-        const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
-            '#privacySandboxManageTopicsLinkRow');
-        assert(toFocus);
-        focusWithoutInk(toFocus);
-      });
-    }
-  }
-
   private onHideToastClick_() {
     const toast = this.shadowRoot!.querySelector('cr-toast');
     assert(toast);
@@ -356,6 +329,21 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     return this.i18n(
         this.shouldShowAdTopicsContentParity_ ? 'adTopicsPageToggleSubLabel' :
                                                 'topicsPageToggleSubLabel');
+  }
+
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    return new Map([
+      [
+        routes.PRIVACY_SANDBOX_MANAGE_TOPICS.path,
+        '#privacySandboxManageTopicsLinkRow',
+      ],
+    ]);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

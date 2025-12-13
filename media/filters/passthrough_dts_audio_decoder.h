@@ -6,6 +6,7 @@
 #define MEDIA_FILTERS_PASSTHROUGH_DTS_AUDIO_DECODER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/media_log.h"

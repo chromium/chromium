@@ -47,6 +47,11 @@ class MockCertificateStore : public CertificateStore {
       (const std::string&,
        base::OnceCallback<void(StoreErrorOr<std::optional<ClientIdentity>>)>),
       (override));
+  MOCK_METHOD(void,
+              DeleteIdentities,
+              (const std::vector<std::string>&,
+               base::OnceCallback<void(std::optional<StoreError>)>),
+              (override));
 };
 
 }  // namespace client_certificates

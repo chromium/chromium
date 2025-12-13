@@ -23,7 +23,7 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -41,7 +41,7 @@ import java.util.List;
  *
  * @param <HostStationT> the type of host {@link Station} this is scoped to.
  */
-public class MessageFacility<HostStationT extends PageStation> extends Facility<HostStationT> {
+public class MessageFacility<HostStationT extends CtaPageStation> extends Facility<HostStationT> {
     public ViewElement<View> bannerElement;
     public ViewElement<View> iconElement;
 

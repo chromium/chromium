@@ -31,6 +31,7 @@ class POLICY_EXPORT ProfileCloudPolicyManager : public CloudPolicyManager {
  public:
   ProfileCloudPolicyManager(
       std::unique_ptr<ProfileCloudPolicyStore> profile_store,
+      std::unique_ptr<ProfileCloudPolicyStore> extension_install_store,
       const base::FilePath& component_policy_cache_path,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
@@ -65,6 +66,7 @@ class POLICY_EXPORT ProfileCloudPolicyManager : public CloudPolicyManager {
 
  private:
   raw_ptr<ProfileCloudPolicyStore> profile_store_;
+  raw_ptr<ProfileCloudPolicyStore> extension_install_store_;
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
   const base::FilePath component_policy_cache_path_;
   bool is_dasherless_;

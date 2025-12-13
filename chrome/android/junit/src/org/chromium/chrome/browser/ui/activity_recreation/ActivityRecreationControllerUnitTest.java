@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ui.activity_recreation;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
@@ -41,6 +44,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -53,13 +57,14 @@ public class ActivityRecreationControllerUnitTest {
     @Mock private ToolbarManager mToolbarManager;
     @Mock private LayoutManager mLayoutManager;
     @Mock private Handler mHandler;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Tab mActivityTab;
     @Mock private WebContents mWebContents;
     @Mock private ContentView mContentView;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private Bundle mSavedInstanceState;
+    @Mock private ExclusiveAccessManager mExclusiveAccessManager;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private ActivityRecreationController mActivityRecreationController;
 
     @Before
@@ -68,11 +73,11 @@ public class ActivityRecreationControllerUnitTest {
         ViewAndroidDelegate viewAndroidDelegate =
                 ViewAndroidDelegate.createBasicDelegate(mContentView);
         KeyboardVisibilityDelegate.setInstance(mKeyboardVisibilityDelegate);
+        mActivityTabProvider.setForTesting(mActivityTab);
 
         doNothing().when(mToolbarManager).setUrlBarFocusAndText(anyBoolean(), anyInt(), any());
         doNothing().when(mLayoutManager).addObserver(any());
         doReturn(true).when(mLayoutManager).isLayoutStartingToShow(LayoutType.BROWSING);
-        doReturn(mActivityTab).when(mActivityTabProvider).get();
         doReturn(context).when(mActivityTab).getContext();
         doReturn(mWebContents).when(mActivityTab).getWebContents();
         doReturn(viewAndroidDelegate).when(mWebContents).getViewAndroidDelegate();
@@ -102,8 +107,8 @@ public class ActivityRecreationControllerUnitTest {
 
         ActivityRecreationUiState uiState = bundle.getParcelable(ACTIVITY_RECREATION_UI_STATE);
         Assert.assertNotNull("UI state should be saved", uiState);
-        Assert.assertTrue("Url bar should be focused", uiState.mIsUrlBarFocused);
-        Assert.assertEquals("Url bar edit text should match", text, uiState.mUrlBarEditText);
+        assertTrue("Url bar should be focused", uiState.mIsUrlBarFocused);
+        assertEquals("Url bar edit text should match", text, uiState.mUrlBarEditText);
     }
 
     @Test
@@ -121,24 +126,23 @@ public class ActivityRecreationControllerUnitTest {
 
         ActivityRecreationUiState uiState = bundle.getParcelable(ACTIVITY_RECREATION_UI_STATE);
         Assert.assertNotNull("UI state should be saved", uiState);
-        Assert.assertTrue("Url bar should be focused", uiState.mIsUrlBarFocused);
-        Assert.assertEquals("Url bar edit text should match", text, uiState.mUrlBarEditText);
+        assertTrue("Url bar should be focused", uiState.mIsUrlBarFocused);
+        assertEquals("Url bar edit text should match", text, uiState.mUrlBarEditText);
     }
 
     @Test
     public void testSaveUiState_keyboardVisibleOnWebContentsFocus() {
         Bundle bundle = new Bundle();
         doReturn(true).when(mWebContents).isFocusedElementEditable();
-        doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
+        doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any());
         mActivityRecreationController.prepareUiState();
         mActivityRecreationController.saveUiState(bundle);
 
         ActivityRecreationUiState uiState = bundle.getParcelable(ACTIVITY_RECREATION_UI_STATE);
         Assert.assertNotNull("UI state should be saved", uiState);
-        Assert.assertTrue("Soft keyboard should be shown", uiState.mIsKeyboardShown);
+        assertTrue("Soft keyboard should be shown", uiState.mIsKeyboardShown);
         verify(mWebContents).isFocusedElementEditable();
-        verify(mKeyboardVisibilityDelegate)
-                .isKeyboardShowing(mActivityTab.getContext(), mContentView);
+        verify(mKeyboardVisibilityDelegate).isKeyboardShowing(mContentView);
     }
 
     @Test
@@ -146,26 +150,25 @@ public class ActivityRecreationControllerUnitTest {
         Bundle bundle1 = new Bundle();
         Bundle bundle2 = new Bundle();
         doReturn(true).when(mWebContents).isFocusedElementEditable();
-        doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
+        doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any());
         mActivityRecreationController.prepareUiState();
         mActivityRecreationController.saveUiState(bundle1);
 
         ActivityRecreationUiState uiState = bundle1.getParcelable(ACTIVITY_RECREATION_UI_STATE);
         Assert.assertNotNull("UI state should be saved", uiState);
-        Assert.assertTrue("Soft keyboard should be shown", uiState.mIsKeyboardShown);
+        assertTrue("Soft keyboard should be shown", uiState.mIsKeyboardShown);
 
         // Simulate a second invocation of Activity#onSaveInstanceState.
         doReturn(true).when(mWebContents).isFocusedElementEditable();
-        doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
+        doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any());
         mActivityRecreationController.saveUiState(bundle2);
 
         uiState = bundle2.getParcelable(ACTIVITY_RECREATION_UI_STATE);
         Assert.assertNotNull("UI state should be saved", uiState);
-        Assert.assertTrue("Soft keyboard should be shown", uiState.mIsKeyboardShown);
+        assertTrue("Soft keyboard should be shown", uiState.mIsKeyboardShown);
 
         verify(mWebContents).isFocusedElementEditable();
-        verify(mKeyboardVisibilityDelegate)
-                .isKeyboardShowing(mActivityTab.getContext(), mContentView);
+        verify(mKeyboardVisibilityDelegate).isKeyboardShowing(mContentView);
     }
 
     @Test
@@ -176,7 +179,7 @@ public class ActivityRecreationControllerUnitTest {
         mActivityRecreationController.saveUiState(bundle);
         ActivityRecreationUiState uiState = bundle.getParcelable(ACTIVITY_RECREATION_UI_STATE);
         Assert.assertNotNull("UI state should be saved", uiState);
-        Assert.assertTrue("Tab switcher should be shown", uiState.mIsTabSwitcherShown);
+        assertTrue("Tab switcher should be shown", uiState.mIsTabSwitcherShown);
     }
 
     @Test
@@ -184,7 +187,7 @@ public class ActivityRecreationControllerUnitTest {
         Bundle bundle = new Bundle();
         doReturn(false).when(mToolbarManager).isUrlBarFocused();
         doReturn(false).when(mWebContents).isFocusedElementEditable();
-        doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
+        doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any());
         doReturn(false).when(mLayoutManager).isLayoutVisible(LayoutType.TAB_SWITCHER);
         mActivityRecreationController.prepareUiState();
         mActivityRecreationController.saveUiState(bundle);
@@ -199,7 +202,9 @@ public class ActivityRecreationControllerUnitTest {
                 /* urlBarFocused= */ true,
                 text,
                 /* keyboardVisible= */ false,
-                /* tabSwitcherVisible= */ false);
+                /* tabSwitcherVisible= */ false,
+                /* isPointerLock= */ false,
+                /* isKeyboardLock= */ false);
         mActivityRecreationController.restoreUiState(mSavedInstanceState);
         ArgumentCaptor<LayoutStateObserver> layoutStateObserverCaptor =
                 ArgumentCaptor.forClass(LayoutStateObserver.class);
@@ -226,7 +231,9 @@ public class ActivityRecreationControllerUnitTest {
                 /* urlBarFocused= */ true,
                 text,
                 /* keyboardVisible= */ true,
-                /* tabSwitcherVisible= */ false);
+                /* tabSwitcherVisible= */ false,
+                /* isPointerLock= */ false,
+                /* isKeyboardLock= */ false);
         mActivityRecreationController.restoreUiState(mSavedInstanceState);
         verify(mToolbarManager)
                 .setUrlBarFocusAndText(
@@ -244,7 +251,9 @@ public class ActivityRecreationControllerUnitTest {
                 /* urlBarFocused= */ false,
                 null,
                 /* keyboardVisible= */ true,
-                /* tabSwitcherVisible= */ false);
+                /* tabSwitcherVisible= */ false,
+                /* isPointerLock= */ false,
+                /* isKeyboardLock= */ false);
         mActivityRecreationController.restoreUiState(mSavedInstanceState);
 
         verify(mWebContents).scrollFocusedEditableNodeIntoView();
@@ -257,7 +266,9 @@ public class ActivityRecreationControllerUnitTest {
                 /* urlBarFocused= */ false,
                 null,
                 /* keyboardVisible= */ false,
-                /* tabSwitcherVisible= */ true);
+                /* tabSwitcherVisible= */ true,
+                /* isPointerLock= */ false,
+                /* isKeyboardLock= */ false);
         mActivityRecreationController.restoreUiState(mSavedInstanceState);
         verify(mLayoutManager).showLayout(LayoutType.TAB_SWITCHER, false);
     }
@@ -268,7 +279,9 @@ public class ActivityRecreationControllerUnitTest {
                 /* urlBarFocused= */ false,
                 null,
                 /* keyboardVisible= */ false,
-                /* tabSwitcherVisible= */ false);
+                /* tabSwitcherVisible= */ false,
+                /* isPointerLock= */ false,
+                /* isKeyboardLock= */ false);
         mActivityRecreationController.restoreUiState(mSavedInstanceState);
         verify(mLayoutManager, never()).addObserver(any());
         verify(mToolbarManager, never()).setUrlBarFocusAndText(anyBoolean(), anyInt(), any());
@@ -280,20 +293,48 @@ public class ActivityRecreationControllerUnitTest {
                 /* urlBarFocused= */ false,
                 "",
                 /* keyboardVisible= */ false,
-                /* tabSwitcherVisible= */ false);
+                /* tabSwitcherVisible= */ false,
+                /* isPointerLock= */ false,
+                /* isKeyboardLock= */ false);
         mActivityRecreationController.restoreUiState(mSavedInstanceState);
         verify(mLayoutManager, never()).addObserver(any());
         verify(mToolbarManager, never()).setUrlBarFocusAndText(anyBoolean(), anyInt(), any());
+        verify(mExclusiveAccessManager, never()).enterFullscreenModeForTab(any(), any());
+        verify(mExclusiveAccessManager, never())
+                .requestPointerLock(any(), anyBoolean(), anyBoolean());
+        verify(mExclusiveAccessManager, never()).requestKeyboardLock(any(), anyBoolean());
+    }
+
+    @Test
+    public void testRestoreUiState_LocksStateRetain() {
+        initializeSavedInstanceState(
+                /* urlBarFocused= */ false,
+                "",
+                /* keyboardVisible= */ false,
+                /* tabSwitcherVisible= */ false,
+                /* isPointerLock= */ true,
+                /* isKeyboardLock= */ true);
+        mActivityRecreationController.restoreUiState(mSavedInstanceState);
+        verify(mExclusiveAccessManager, never()).enterFullscreenModeForTab(any(), any());
+        verify(mExclusiveAccessManager).requestPointerLock(any(), eq(true), eq(true));
+        verify(mExclusiveAccessManager).requestKeyboardLock(any(), eq(false));
     }
 
     private void initializeSavedInstanceState(
             boolean urlBarFocused,
             String urlBarText,
             boolean keyboardVisible,
-            boolean tabSwitcherVisible) {
+            boolean tabSwitcherVisible,
+            boolean isPointerLock,
+            boolean isKeyboardLock) {
         ActivityRecreationUiState uiState =
                 new ActivityRecreationUiState(
-                        urlBarFocused, urlBarText, keyboardVisible, tabSwitcherVisible);
+                        urlBarFocused,
+                        urlBarText,
+                        keyboardVisible,
+                        tabSwitcherVisible,
+                        isPointerLock,
+                        isKeyboardLock);
         doReturn(uiState).when(mSavedInstanceState).getParcelable(ACTIVITY_RECREATION_UI_STATE);
     }
 
@@ -307,6 +348,7 @@ public class ActivityRecreationControllerUnitTest {
                         toolbarManagerSupplier,
                         layoutManagerSupplier,
                         mActivityTabProvider,
-                        mHandler);
+                        mHandler,
+                        mExclusiveAccessManager);
     }
 }

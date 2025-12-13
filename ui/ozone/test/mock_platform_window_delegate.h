@@ -49,7 +49,7 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_CONST_METHOD0(GetMaximumSizeForWindow, std::optional<gfx::Size>());
   MOCK_METHOD0(GetOwnedWindowAnchorAndRectInDIP,
                std::optional<OwnedWindowAnchor>());
-  MOCK_METHOD0(OnMouseEnter, void());
+  MOCK_METHOD0(OnCursorUpdate, void());
   MOCK_METHOD1(OnOcclusionStateChanged,
                void(PlatformWindowOcclusionState occlusion_state));
   MOCK_METHOD2(OnStateUpdate, int64_t(const State& old, const State& latest));

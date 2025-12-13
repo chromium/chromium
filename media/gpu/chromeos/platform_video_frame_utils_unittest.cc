@@ -100,9 +100,9 @@ TEST(PlatformVideoFrameUtilsTest, CreateNativePixmapDmaBuf) {
   constexpr VideoPixelFormat kPixelFormat = PIXEL_FORMAT_NV12;
   constexpr gfx::Size kCodedSize(320, 240);
 
-  const std::optional<gfx::BufferFormat> gfx_format =
-      VideoPixelFormatToGfxBufferFormat(kPixelFormat);
-  ASSERT_TRUE(gfx_format) << "Invalid pixel format: " << kPixelFormat;
+  const std::optional<viz::SharedImageFormat> si_format =
+      VideoPixelFormatToSharedImageFormat(kPixelFormat);
+  ASSERT_TRUE(si_format) << "Invalid pixel format: " << kPixelFormat;
 
   scoped_refptr<VideoFrame> video_frame = CreateMockDmaBufVideoFrame(
       kPixelFormat, kCodedSize, gfx::Rect(kCodedSize), kCodedSize);
@@ -112,7 +112,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateNativePixmapDmaBuf) {
   scoped_refptr<gfx::NativePixmapDmaBuf> native_pixmap =
       CreateNativePixmapDmaBuf(video_frame.get());
   ASSERT_TRUE(native_pixmap);
-  EXPECT_EQ(native_pixmap->GetBufferFormat(), *gfx_format);
+  EXPECT_EQ(native_pixmap->GetSharedImageFormat(), *si_format);
   EXPECT_EQ(native_pixmap->GetBufferFormatModifier(),
             video_frame->layout().modifier());
 
@@ -148,7 +148,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
 
   const VideoFrame::StorageType storage_types[] = {
       VideoFrame::STORAGE_DMABUFS,
-      VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+      VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
   };
   for (const auto& storage_type : storage_types) {
     scoped_refptr<VideoFrame> frame;
@@ -158,7 +158,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
             CreatePlatformVideoFrame(kPixelFormat, kCodedSize, kVisibleRect,
                                      kNaturalSize, kTimeStamp, kBufferUsage);
         break;
-      case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+      case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
         frame = CreateMappableVideoFrame(kPixelFormat, kCodedSize, kVisibleRect,
                                          kNaturalSize, kTimeStamp, kBufferUsage,
                                          test_sii.get());
@@ -179,7 +179,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
       case VideoFrame::STORAGE_DMABUFS:
         EXPECT_FALSE(frame->NumDmabufFds() == 0);
         break;
-      case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+      case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
         EXPECT_FALSE(frame->GetGpuMemoryBufferHandle().is_null());
         break;
       default:

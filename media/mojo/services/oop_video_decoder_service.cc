@@ -15,6 +15,37 @@
 
 namespace media {
 
+class InProcessVideoFrameHandleReleaser final
+    : public mojom::VideoFrameHandleReleaser {
+ public:
+  InProcessVideoFrameHandleReleaser(
+      mojo::Remote<mojom::VideoFrameHandleReleaser> dst_releaser_remote,
+      mojo::Remote<mojom::VideoDecoderTracker> tracker_remote)
+      : dst_releaser_remote_(std::move(dst_releaser_remote)),
+        tracker_remote_(std::move(tracker_remote)) {}
+
+  InProcessVideoFrameHandleReleaser(const InProcessVideoFrameHandleReleaser&) =
+      delete;
+  InProcessVideoFrameHandleReleaser& operator=(
+      const InProcessVideoFrameHandleReleaser&) = delete;
+  ~InProcessVideoFrameHandleReleaser() final = default;
+
+  // mojom::MojoVideoFrameHandleReleaser implementation.
+  void ReleaseVideoFrame(
+      const base::UnguessableToken& release_token,
+      const std::optional<gpu::SyncToken>& release_sync_token) final {
+    DVLOG(3) << __func__ << "(" << release_token.ToString() << ")";
+    // Note: we don't pass a gpu::SyncToken because it's assumed that the
+    // renderer client uses SynchronizationType::kGpuCommandsCompleted.
+    dst_releaser_remote_->ReleaseVideoFrame(
+        release_token, /*release_sync_token=*/std::nullopt);
+  }
+
+ private:
+  mojo::Remote<mojom::VideoFrameHandleReleaser> dst_releaser_remote_;
+  mojo::Remote<mojom::VideoDecoderTracker> tracker_remote_;
+};
+
 OOPVideoDecoderService::OOPVideoDecoderService(
     mojo::PendingRemote<mojom::VideoDecoderTracker> tracker_remote,
     std::unique_ptr<mojom::VideoDecoder> dst_video_decoder,
@@ -22,7 +53,6 @@ OOPVideoDecoderService::OOPVideoDecoderService(
     : tracker_remote_(std::move(tracker_remote)),
       video_decoder_client_receiver_(this),
       media_log_receiver_(this),
-      video_frame_handle_releaser_receiver_(this),
       dst_video_decoder_(std::move(dst_video_decoder)),
       dst_video_decoder_receiver_(dst_video_decoder_.get())
 #if BUILDFLAG(IS_CHROMEOS)
@@ -75,17 +105,20 @@ void OOPVideoDecoderService::Construct(
   DCHECK(!media_log_remote_.is_bound());
   media_log_remote_.Bind(std::move(media_log_remote));
 
-  DCHECK(!video_frame_handle_releaser_remote_.is_bound());
-  DCHECK(!video_frame_handle_releaser_receiver_.is_bound());
-  video_frame_handle_releaser_receiver_.Bind(
-      std::move(video_frame_handle_releaser_receiver));
+  DCHECK(!video_frame_handle_releaser_);
+  mojo::Remote<mojom::VideoFrameHandleReleaser> dst_releaser_remote;
 
   dst_video_decoder_remote_->Construct(
       video_decoder_client_receiver_.BindNewEndpointAndPassRemote(),
       media_log_receiver_.BindNewPipeAndPassRemote(),
-      video_frame_handle_releaser_remote_.BindNewPipeAndPassReceiver(),
+      dst_releaser_remote.BindNewPipeAndPassReceiver(),
       std::move(decoder_buffer_pipe), mojom::CommandBufferIdPtr(),
       target_color_space);
+
+  video_frame_handle_releaser_ = mojo::MakeSelfOwnedReceiver(
+      std::make_unique<InProcessVideoFrameHandleReleaser>(
+          std::move(dst_releaser_remote), std::move(tracker_remote_)),
+      std::move(video_frame_handle_releaser_receiver));
 }
 
 void OOPVideoDecoderService::Initialize(const VideoDecoderConfig& config,
@@ -221,19 +254,6 @@ void OOPVideoDecoderService::OnOverlayInfoChanged(
   NOTREACHED();
 }
 
-void OOPVideoDecoderService::ReleaseVideoFrame(
-    const base::UnguessableToken& release_token,
-    const std::optional<gpu::SyncToken>& release_sync_token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(video_frame_handle_releaser_remote_.is_bound());
-  // Note: we don't pass a gpu::SyncToken because it's assumed that the client
-  // (the GPU process) has already waited on the SyncToken that comes from the
-  // ultimate client (the renderer process) before calling ReleaseVideoFrame()
-  // on the out-of-process video decoder.
-  video_frame_handle_releaser_remote_->ReleaseVideoFrame(
-      release_token, /*release_sync_token=*/std::nullopt);
-}
-
 void OOPVideoDecoderService::OnVideoFrameDecoded(
     const scoped_refptr<VideoFrame>& frame,
     bool can_read_without_stalling,
@@ -246,7 +266,7 @@ void OOPVideoDecoderService::OnVideoFrameDecoded(
   CHECK(frame->metadata().allow_overlay);
   CHECK(!frame->metadata().end_of_stream);
   CHECK(frame->metadata().power_efficient);
-  CHECK(!frame->HasMappableGpuBuffer());
+  CHECK(!frame->HasMappableSharedImage());
 
   video_decoder_client_remote_->OnVideoFrameDecoded(
       std::move(frame), can_read_without_stalling, *release_token);
@@ -258,7 +278,7 @@ void OOPVideoDecoderService::OnWaiting(WaitingReason reason) {
   video_decoder_client_remote_->OnWaiting(reason);
 }
 
-void OOPVideoDecoderService::RequestOverlayInfo(bool restart_for_transitions) {
+void OOPVideoDecoderService::RequestOverlayInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED();
 }

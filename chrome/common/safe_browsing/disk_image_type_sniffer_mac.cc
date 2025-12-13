@@ -50,8 +50,7 @@ bool DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(
   const base::span<const uint8_t> subspan =
       trailer.last(kSizeKolySignatureInBytes);
 
-  return UNSAFE_TODO(memcmp(subspan.data(), kKolySignature,
-                            kSizeKolySignatureInBytes)) == 0;
+  return subspan == kKolySignature;
 }
 
 DiskImageTypeSnifferMac::~DiskImageTypeSnifferMac() = default;

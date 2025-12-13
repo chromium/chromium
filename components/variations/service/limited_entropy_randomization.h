@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_VARIATIONS_SERVICE_LIMITED_ENTROPY_RANDOMIZATION_H_
 #define COMPONENTS_VARIATIONS_SERVICE_LIMITED_ENTROPY_RANDOMIZATION_H_
 
+#include <optional>
+#include <string_view>
+
 // Provides functions to validate that the variations seed is
 // correctly configured to respect an entropy limit. See below for details.
 //
@@ -31,36 +34,78 @@
 // information about "entropy" as a mathematical concept.
 namespace variations {
 
-class VariationsLayers;
 class VariationsSeed;
+struct ClientFilterableState;
+
+// TODO(crbug.com/428216544): Unify with the other existing seed rejection
+// reasons. These values are persisted to logs. Once launched, entries should
+// not be renumbered and numeric values should not be reused.
+enum class SeedRejectionReason {
+  kHighEntropyUsage = 0,
+  kMoreThenOneLimitedLayer = 1,
+  kLayerHasInvalidSlotBounds = 2,
+  kLayerDoesNotContainSlots = 3,
+  kInvalidLayerId = 4,
+  kDuplicatedLayerId = 5,
+  kInvalidLayerReference = 6,
+  kDanglingLayerReference = 7,
+  kDanglingLayerMemberReference = 8,
+  kEmptyLayerReference = 9,
+  kInvalidLayerConfiguration = 10,
+  kActiveLowAndLimitedEntropy = 11,
+  kMaxValue = kActiveLowAndLimitedEntropy
+};
+
+// The histogram name for the seed rejection reason.
+inline constexpr std::string_view kSeedRejectionReasonHistogram =
+    "Variations.LimitedEntropy.SeedRejectionReason";
+
+// Returned from `SeedHasMisconfiguredEntropy()`.
+// TODO(crbug.com/424154785): Clean this up if low entropy source values are no
+// longer transmitted with VariationIDs.
+struct MisconfiguredEntropyResult {
+  bool is_misconfigured;
+
+  // These fields provide additional information about the seed's layers
+  // They are std::nullopt if `is_misconfigured` is true, as the conditions they
+  // represent may not have been fully evaluated. Otherwise, when
+  // `is_misconfigured` is false, these fields are set. It is an error for both
+  // `seed_has_active_limited_layer` and `seed_has_active_low_layer` to be true
+  // at the same time, that scenario should result in `is_misconfigured` being
+  // true.
+  std::optional<bool> seed_has_active_limited_layer;
+  std::optional<bool> seed_has_active_low_layer;
+};
 
 // The maximum amount of total entropy, in bits, for field trials with Google
 // web experiment ids.
 //
-// Precisely, the cumulative probability of group assignments across all such
-// field trials on the client must be at least 1 / (2 ^
-// `kGoogleWebEntropyLimitInBits`). This constant is expressed as a double so
-// that any such fraction can be represented. A limit of 1 bit means at a
-// minimum 50% of clients will have the same group assignment combinations
-// across studies referencing the limited layer. This setting is used during the
-// time when `LimitedEntropySyntheticTrial` is active to control the number of
-// studies using the limited entropy mode.
-// TODO(crbug.com/422222582): Duly update this.
-inline constexpr double kGoogleWebEntropyLimitInBits = 1.0;
+// The cumulative probability of group assignments across all such field trials
+// on the client must be at least 1 / (2 ^ GetGoogleWebEntropyLimitInBits()).
+double GetGoogleWebEntropyLimitInBits();
 
-// Returns true iff the entropy from the field trials in the seed is
-// misconfigured, or entropy cannot be computed. The caller is expected to
-// handle the return value and reject the seed if necessary.
-bool SeedHasMisconfiguredEntropy(const VariationsLayers& layers,
-                                 const VariationsSeed& seed);
-
-// A test-only accessor for a function that checks if there is enough entropy
-// for all studies constrained to the limited layer. This allows tests to
-// validate the entropy calculation logic, independently of the value of
-// `kGoogleWebEntropyLimitInBits`.
-bool IsEnoughLimitedEntropyAvailableForTesting(const VariationsLayers& layers,
-                                               const VariationsSeed& seed,
-                                               double entropy_limit);
+// Returns an object whose is_misconfigured field is true if the entropy from
+// the variations seed is misconfigured or if the entropy cannot be computed. If
+// the seed has misconfigured entropy, the caller is expected to reject the
+// seed.
+//
+// The returned object's seed_has_active_limited_layer field is true if the seed
+// contains any studies that (A) apply to the client's platform, channel, form
+// factor, and version and (B) are constrained to a limited-entropy-mode layer.
+//
+// The returned object's seed_has_active_low_layer field is true if the seed
+// contains any *web-visible* studies that (A) apply to the client's platform,
+// channel, form factor, and version and (B) are constrained to a
+// low-entropy-mode layer.
+//
+// * client_state: The client state to use for filtering studies.
+// * seed: The seed to check for misconfigured entropy.
+// * entropy_limit_in_bits: The entropy limit to use for checking. Exposed for
+//     testing. Should be set to GetGoogleWebEntropyLimitInBits() in production.
+MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
+    const ClientFilterableState& client_state,
+    const VariationsSeed& seed,
+    double entropy_limit_in_bits = GetGoogleWebEntropyLimitInBits());
 
 }  // namespace variations
 

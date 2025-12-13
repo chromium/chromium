@@ -110,6 +110,7 @@ class ProtocolPart:
 
     def __init__(self, parent):
         self.parent = parent
+        self.test_path = None
 
     @property
     def logger(self):
@@ -342,7 +343,7 @@ class WebExtensionsProtocolPart(ProtocolPart):
     name = "web_extensions"
 
     @abstractmethod
-    def install_web_extension(self, extension):
+    def install_web_extension(self, type, path, value):
         pass
 
     @abstractmethod
@@ -565,6 +566,14 @@ class BidiEventsProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
+    async def unsubscribe(self, subscriptions: List[str]) -> Mapping[str, Any]:
+        """
+        Unsubscribes from the subscriptions with the given IDs.
+        :param subscriptions: The list of subscription ids to unsubscribe from.
+        """
+        pass
+
+    @abstractmethod
     async def unsubscribe_all(self):
         """Cleans up the subscription state. Removes all the previously added subscriptions."""
         pass
@@ -589,7 +598,13 @@ class BidiPermissionsProtocolPart(ProtocolPart):
     name = "bidi_permissions"
 
     @abstractmethod
-    async def set_permission(self, descriptor, state, origin):
+    async def set_permission(
+        self,
+        descriptor: Dict[str, Any],
+        state: str,
+        origin: str,
+        embedded_origin: Optional[str] = None,
+    ) -> Any:
         pass
 
 
@@ -602,6 +617,17 @@ class BidiEmulationProtocolPart(ProtocolPart):
     async def set_geolocation_override(self,
             coordinates: Optional[Union[Mapping[str, Any], "Undefined"]],
             error: Optional[Mapping[str, Any]],
+            contexts: List[str]) -> None:
+        pass
+
+    @abstractmethod
+    async def set_locale_override(self, locale: Optional[str],
+            contexts: List[str]) -> None:
+        pass
+
+    @abstractmethod
+    async def set_screen_orientation_override(self,
+            screen_orientation: Optional[Mapping[str, Any]],
             contexts: List[str]) -> None:
         pass
 
@@ -717,6 +743,20 @@ class SetPermissionProtocolPart(ProtocolPart):
         pass
 
 
+class GlobalPrivacyControlProtocolPart(ProtocolPart):
+    """Protocol part for reading and writing the GPC signal"""
+    __metaclass__ = ABCMeta
+
+    name = "global_privacy_control"
+
+    @abstractmethod
+    def set_global_privacy_control(self, value):
+        pass
+
+    @abstractmethod
+    def get_global_privacy_control(self):
+        pass
+
 class ActionSequenceProtocolPart(ProtocolPart):
     """Protocol part for performing trusted clicks"""
     __metaclass__ = ABCMeta
@@ -740,6 +780,29 @@ class TestDriverProtocolPart(ProtocolPart):
     __metaclass__ = ABCMeta
 
     name = "testdriver"
+
+    @abstractmethod
+    def run(self, url, script_resume, test_window=None):
+        """Run a test using the testdriver protocol
+
+        :param str url: URL of the test
+        :param str script_resume: Script to run implementing the browser
+                                  side of the protocol
+        :param test_window: Optional test window handle, otherwise the
+                            current active window is used.
+        :returns: Test result data"""
+        pass
+
+    @abstractmethod
+    def get_next_message(self, url, script_resume, test_window):
+        """Get the next message from the browser
+
+        :param str url: URL of the current test
+        :param str script_resume: Script implementing the browsr
+                                  side of the protocol.
+        :param test_window: Window handle of the test window
+        :returns: Testdriver message dict"""
+        pass
 
     @abstractmethod
     def send_message(self, cmd_id, message_type, status, message=None):

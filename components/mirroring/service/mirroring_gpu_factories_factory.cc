@@ -49,19 +49,10 @@ MirroringGpuFactoriesFactory::GetInstance() {
   // Finally, create and return a new instance.
   static constexpr int32_t kStreamId = 0;
 
-  // TODO(crbug.com/282984511): experiment with creation attributes.
-  gpu::ContextCreationAttribs creation_attribs;
-  creation_attribs.gpu_preference = gl::GpuPreference::kHighPerformance,
-  creation_attribs.bind_generates_resource = false,
-  creation_attribs.enable_gles2_interface = true,
-  creation_attribs.context_type = gpu::CONTEXT_TYPE_OPENGLES3;
-
   auto gpu_channel_host = gpu_->EstablishGpuChannelSync();
-  context_provider_ = base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
+  context_provider_ = viz::ContextProviderCommandBuffer::CreateForGL(
       gpu_channel_host, kStreamId, gpu::SchedulingPriority::kHigh,
       GURL(std::string("chrome://gpu/CastStreaming")),
-      /* automatic_flushes = */ false, /* support_locking = */ false,
-      gpu::SharedMemoryLimits::ForMailboxContext(), creation_attribs,
       viz::command_buffer_metrics::ContextType::VIDEO_CAPTURE);
 
   // NOTE: this Unretained is safe because `this` is deleted on the VIDEO

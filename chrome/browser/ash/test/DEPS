@@ -26,4 +26,9 @@ specific_include_rules = {
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
   ],
+  "glic_user_session_test_helper\\.(cc|h)": [
+    "+chrome/browser/profiles/profile_manager.h",
+    "+chrome/browser/profiles/profile_manager_observer.h",
+    "+chrome/test/base",
+  ],
 }

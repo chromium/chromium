@@ -10,9 +10,6 @@
   <message name="IDS_APP_MANAGEMENT_MICROPHONE" desc="Label for the microphone permission toggle.">
     Microphone
   </message>
-  <message name="IDS_APP_MANAGEMENT_NO_APPS_FOUND" desc="Text shown when a search of apps yeilds no results.">
-    No apps found
-  </message>
   <message name="IDS_APP_MANAGEMENT_NOTIFICATIONS" desc="Label for notifications section in the app settings page.">
     Notifications
   </message>
@@ -30,32 +27,11 @@
   <message name="IDS_APP_MANAGEMENT_MORE_SETTINGS" desc="Label for a link to more settings and permissions for an app.">
     More settings and permissions
   </message>
-  <message name="IDS_APP_MANAGEMENT_PIN_TO_SHELF" desc="Label for the pin to shelf button in the app settings page.">
-    Pin to shelf
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PRESET_WINDOW_SIZES" desc="Label for the preset window sizes toggle in the app settings page.">
-    Preset window sizes
-  </message>
   <message name="IDS_APP_MANAGEMENT_WINDOW" desc="Label for changing window mode.">
     Open as window
   </message>
-  <message name="IDS_APP_MANAGEMENT_PRESET_WINDOW_SIZES_TEXT" desc="Label for the description of the window preset toggle in the app settings page.">
-    Use presets for phone, tablet, or resizable windows to prevent app from misbehaving
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PRINTING" desc="Label for the printing permission toggle.">
-    Printers
-  </message>
-  <message name="IDS_APP_MANAGEMENT_SEARCH_PROMPT" desc="Prompt in search bar of main app management page.">
-    Search apps
-  </message>
   <message name="IDS_APP_MANAGEMENT_UNINSTALL_APP" desc="Label for the uninstall button in the app settings page.">
     Uninstall
-  </message>
-  <message name="IDS_APP_MANAGEMENT_CONTACTS" desc="Label for the Android contacts (address book) permission toggle.">
-    Contacts
-  </message>
-  <message name="IDS_APP_MANAGEMENT_STORAGE" desc="Label for the Android storage permission toggle.">
-    Storage
   </message>
   <message name="IDS_APP_MANAGEMENT_RUN_ON_OS_LOGIN" desc="Label for toggling running on OS Login mode.">
     Start app when you sign in
@@ -114,93 +90,6 @@
   <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_5_OR_MORE_APPS" desc="Text to explain to the user that 5 or more overlapping apps will still open some supported links, and the text states the first 3 apps that will open links.">
     Some supported links will still open in <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph>, <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph> and <ph name="NUMBER_OF_OTHER_APPS">$4<ex>2</ex></ph> other apps.
   </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TITLE" desc="Title for App Details Section">
-    App details
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TOOLTIP_WEB_A11Y" desc="Text to be read out by ChromeVox, when highlighting an info icon for Web Apps downloaded from the Chrome browser, stating the source URL of the app">
-    From <ph name="APP_URL">$1<ex>https://google.com</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_WEB_STORE" desc="Text for Chrome Web Store installation source">
-    Chrome Web Store
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_PLAY_STORE" desc="Text for Google Play Store installation source">
-    Google Play Store
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_BROWSER" desc="Text for Chrome browser installation source for Web App">
-    Web App installed from Chrome browser
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_COMBINED" desc="Full text for installation source and app type line">
-    <ph name="APP_TYPE">$1<ex>Web App</ex></ph> installed from <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph><ph name="INSTALL_SOURCE">$2<ex>Google Play Store</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_PREINSTALLED_APP" desc="Explanation text for the installation source of an app, describing the type of the app, and that it came automatically installed with the device (preinstalled).">
-    <ph name="APP_TYPE">$1<ex>ChromeOS System App</ex></ph> preinstalled on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_VERSION" desc="Text for application version">
-    Version: <ph name="APP_VERSION">$1<ex>17.2</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_STORAGE_TITLE" desc="Text for title of storage section for storage related to the app and its associated files">
-    Storage
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_APP_SIZE" desc="Text for app size label for the amount of storage the app itself is using">
-    App size: <ph name="APP_SIZE">$1<ex>100 MB</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_DATA_SIZE" desc="Text for data size label for the amount of storage the app's associated files is using">
-    Data stored in app: <ph name="APP_SIZE">$1<ex>100 MB</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_LANGUAGE_LABEL" desc="The label for the settings row button to manage app language selection section of OS Settings which opens a dialog.">
-    App language
-  </message>
-  <message name="IDS_APP_MANAGEMENT_ARC_MANAGE_PERMISSIONS" desc="Label for a link to manage permissions for an app.">
-    Manage permissions
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ASK" desc="Label explaining that the user will be asked whether an app can access a permission (e.g. camera access) every time it is used.">
-    Ask every time
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED" desc="Label explaining that access to a permission (e.g. camera access) is allowed for an app.">
-    Allowed
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_WITH_DETAILS" desc="Label explaining that access to a permission (e.g. camera access) is allowed for an app. The placeholder after the dash provides additional details about what access is allowed.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_DENIED" desc="Label explaining that access to a permission (e.g. camera access) is denied for an app.">
-    Denied
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_TURN_ON_SYSTEM_CAMERA_ACCESS_BUTTON" desc="Label explaining that access to camera is allowed for an app followed by a button to turn on system camera access.">
-    Allowed. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system camera access<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_TURN_ON_SYSTEM_MICROPHONE_ACCESS_BUTTON" desc="Label explaining that access to microphone is allowed for an app followed by a button to turn on system microphone access.">
-    Allowed. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system microphone access<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_TURN_ON_SYSTEM_LOCATION_ACCESS_BUTTON" desc="Label explaining that access to location is allowed for an app followed by a button to turn on system location access.">
-    Allowed. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system location access<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_CAMERA_ACCESS_BUTTON" desc="Label explaining that access to camera is allowed for an app followed by a button to turn on system camera access.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system camera access<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_MICROPHONE_ACCESS_BUTTON" desc="Label explaining that access to microphone is allowed for an app followed by a button to turn on system microphone access.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system microphone access<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_LOCATION_ACCESS_BUTTON" desc="Label explaining that access to location is allowed for an app followed by a button to turn on system location access.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system location access<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_CAMERA_CONNECTED_TEXT" desc="Label explaining that access to camera is allowed for an app but no camera is connected to the device.">
-    Allowed. Connect a camera to your device.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_MICROPHONE_CONNECTED_TEXT" desc="Label explaining that access to microphone is allowed for an app but no microphone is connected to the device.">
-    Allowed. Connect a microphone to your device.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_CAMERA_CONNECTED_TEXT_WITH_DETAILS" desc="Label explaining that access to camera is allowed for an app but no camera is connected to the device with details.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Connect a camera to your device.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_MICROPHONE_CONNECTED_TEXT_WITH_DETAILS" desc="Label explaining that access to microphone is allowed for an app but no microphone is connected to the device with details.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Connect a microphone to your device.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_MICROPHONE_HW_SWITCH_ACTIVE_TEXT" desc="Label explaining that access to microphone is allowed for an app but microphone is blocked by hardware switch.">
-    Allowed. Turn on microphone using physical switch.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_MICROPHONE_HW_SWITCH_ACTIVE_TEXT_WITH_DETAILS" desc="Label explaining that access to microphone is allowed for an app but microphone is blocked by hardware switch with details.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on microphone using physical switch.
-  </message>
   <message name="IDS_APP_MANAGEMENT_APP_VERSION_TITLE" desc="Text for application version section">
     Version
   </message>
@@ -235,7 +124,7 @@
       You can open and edit supported files with this app from Finder or other apps. To control which files open this app by default, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>learn how to set default apps on your device<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
   </if>
-  <if expr="is_fuchsia or is_linux">
+  <if expr="is_linux">
     <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_SET_DEFAULTS_LINK" desc="Further explanation of the File Handling API, including text describing the purpose of the toggle (referencing a generic Linux file browser app) and a link to a learn more link for default filetype associations.">
       You can open and edit supported files with this app from your file browser or other apps. To control which files open this app by default, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>learn how to set default apps on your device<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
@@ -249,19 +138,6 @@
       =4 {Supported file types: <ph name="FILE_TYPE1">{FILE_TYPE1}<ex>TXT</ex></ph>, <ph name="FILE_TYPE2">{FILE_TYPE2}<ex>CSV</ex></ph>, <ph name="FILE_TYPE3">{FILE_TYPE3}<ex>DOC</ex></ph>, <ph name="FILE_TYPE4">{FILE_TYPE4}<ex>DOCX</ex></ph>}
       other {Supported file types: <ph name="FILE_TYPE1">{FILE_TYPE1}<ex>TXT</ex></ph>, <ph name="FILE_TYPE2">{FILE_TYPE2}<ex>CSV</ex></ph>, <ph name="FILE_TYPE3">{FILE_TYPE3}<ex>DOC</ex></ph>, <ph name="FILE_TYPE4">{FILE_TYPE4}<ex>DOCX</ex></ph> (<ph name="LINK">&lt;a href="{LINK}"&gt;</ph>and {OVERFLOW_COUNT} more<ph name="END_LINK">&lt;/a&gt;</ph>)}
     }
-  </message>
-
-  <!-- Multi Apps API -->
-  <message name="IDS_APP_MANAGEMENT_SUB_APPS_LIST_HEADING" desc="Label for the sub-app section in an app's settings page. The section lists all sub-applications that got installed by the current app. These sub-applications might be installed locally, or streamed from a remote location via the parent app.">
-    Installed and streamed applications from <ph name="APP_NAME">$1<ex>Citrix</ex></ph>
-  </message>
-
-  <message name="IDS_APP_MANAGEMENT_PARENT_APP_PERMISSION_EXPLANATION" desc="Explanation text that appears underneath the Permission header on an app's settings page. Any changes the user makes to this app's permissions also apply to any installed ('sub') apps.">
-    Permissions that you allow for <ph name="APP_NAME">$1<ex>Citrix</ex></ph> will also be allowed for its installed and streamed apps.
-  </message>
-
-  <message name="IDS_APP_MANAGEMENT_SUB_APP_PERMISSION_EXPLANATION" desc="Explanation text that appears underneath the Permission header on an app's settings page. Any changes the user makes to the app's parent app's permissions also apply to this app. The 'Manage' link takes the user to the parent app's settings page where they can change the permissions.">
-    Permissions that you allow for <ph name="APP_NAME">$1<ex>Citrix</ex></ph> will also be allowed for this app. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Manage<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
 
   <!-- App Content, Scope Extensions -->

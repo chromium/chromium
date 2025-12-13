@@ -125,7 +125,7 @@ void DynamicModuleResolverTestModulator::Trace(Visitor* visitor) const {
 // CaptureExportedStringFunction implements a javascript function
 // with a single argument of type module namespace.
 // CaptureExportedStringFunction captures the exported string value
-// from the module namespace as a WTF::String, exposed via CapturedValue().
+// from the module namespace as a blink::String, exposed via CapturedValue().
 class CaptureExportedStringFunction final
     : public ThenCallable<IDLAny, CaptureExportedStringFunction> {
  public:

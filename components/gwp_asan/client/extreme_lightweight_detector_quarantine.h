@@ -119,12 +119,10 @@ class GWP_ASAN_EXPORT ExtremeLightweightDetectorQuarantineBranch {
   // Quarantines an object. If the object is too large, this may return `false`,
   // meaning that quarantine request has failed (and freed immediately).
   // Otherwise, returns `true`.
-  bool Quarantine(
-      void* object,
-      partition_alloc::internal::SlotSpanMetadata<
-          partition_alloc::internal::MetadataKind::kReadOnly>* slot_span,
-      uintptr_t slot_start,
-      size_t usable_size);
+  bool Quarantine(void* object,
+                  partition_alloc::internal::SlotSpanMetadata* slot_span,
+                  uintptr_t slot_start,
+                  size_t usable_size);
 
   // Dequarantine all entries **held by this branch**.
   // It is possible that another branch with entries and it remains untouched.

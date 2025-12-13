@@ -100,6 +100,14 @@ struct UncheckedFreeDeleter {
   inline void operator()(void* ptr) const { UncheckedFree(ptr); }
 };
 
+#if BUILDFLAG(IS_WIN)
+// As above, but allocates/frees an aligned region of memory.
+[[nodiscard]] BASE_EXPORT bool UncheckedAlignedAlloc(size_t size,
+                                                     size_t alignment,
+                                                     void** result);
+BASE_EXPORT void UncheckedAlignedFree(void* ptr);
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace base
 
 #endif  // BASE_PROCESS_MEMORY_H_

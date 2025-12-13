@@ -86,8 +86,7 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
 
   if (InvolvedInBlockFragmentation(container_builder_)) {
     container_builder_.SetBreakTokenData(
-        MakeGarbageCollected<FieldsetBreakTokenData>(
-            container_builder_.GetBreakTokenData()));
+        MakeGarbageCollected<FieldsetBreakTokenData>());
   }
 
   BreakStatus break_status = LayoutChildren();

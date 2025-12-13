@@ -27,7 +27,16 @@ class InputDeviceCapabilities;
 class LocalFrame;
 class ScrollManager;
 
-enum class DragInitiator;
+enum class DragHandlingResult {
+  // The event was not handled and callers should try to use the mouse event for
+  // something else.
+  kNotHandled,
+  // The drag attempt event was handled, but a drag was not started. For
+  // example, if `event.preventDefault()` was called on drag start.
+  kHandledDragNotStarted,
+  // The drag attempt successfully initiated a drag.
+  kHandledDragStarted,
+};
 
 // This class takes care of dispatching all mouse events and keeps track of
 // positions and states of mouse.
@@ -39,7 +48,11 @@ class CORE_EXPORT MouseEventManager final
   MouseEventManager& operator=(const MouseEventManager&) = delete;
   void Trace(Visitor*) const;
 
-  WebInputEventResult DispatchMouseEvent(
+  // Returns the DOM event that was dispatched plus the result of dispatch.
+  // `pointer_down_target` and `pointer_up_target` are passed to the popover
+  // light dismiss and dialog light dismiss algorithms if the event is a click
+  // event.
+  std::pair<MouseEvent*, WebInputEventResult> DispatchMouseEvent(
       EventTarget*,
       const AtomicString&,
       const WebMouseEvent&,
@@ -47,19 +60,25 @@ class CORE_EXPORT MouseEventManager final
       EventTarget* related_target,
       bool check_for_listener = false,
       const PointerId& pointer_id = PointerEventFactory::kInvalidId,
-      const String& pointer_type = g_empty_string);
+      const String& pointer_type = g_empty_string,
+      PointerEventFactory::PointerTarget* pointer_down_target = nullptr,
+      PointerEventFactory::PointerTarget* pointer_up_target = nullptr);
 
   WebInputEventResult SetElementUnderMouseAndDispatchMouseEvent(
       Element* target_element,
       const AtomicString& event_type,
-      const WebMouseEvent&);
+      const WebMouseEvent&,
+      PointerEventFactory::PointerTarget* pointer_down_target = nullptr,
+      PointerEventFactory::PointerTarget* pointer_up_target = nullptr);
 
   WebInputEventResult DispatchMouseClickIfNeeded(
       Element* mouse_release_target,
       Element* captured_click_target,
       const WebMouseEvent& mouse_event,
       const PointerId& pointer_id,
-      const String& pointer_type);
+      const String& pointer_type,
+      PointerEventFactory::PointerTarget* pointer_down_target,
+      PointerEventFactory::PointerTarget* pointer_up_target);
 
   WebInputEventResult DispatchDragSrcEvent(const AtomicString& event_type,
                                            const WebMouseEvent&);
@@ -73,7 +92,7 @@ class CORE_EXPORT MouseEventManager final
   void Clear();
 
   void NodeChildrenWillBeRemoved(ContainerNode&);
-  void NodeWillBeRemoved(Node& node_to_be_removed);
+  void NodeWillBeRemoved(Node&);
 
   void SendBoundaryEvents(EventTarget* exited_target,
                           bool original_exited_target_removed,
@@ -90,8 +109,9 @@ class CORE_EXPORT MouseEventManager final
   void SetLastKnownMousePosition(const WebMouseEvent&);
   void SetLastMousePositionAsUnknown();
 
-  bool HandleDragDropIfPossible(const GestureEventWithHitTestResults&,
-                                PointerId pointer_id);
+  DragHandlingResult HandleDragDropIfPossible(
+      const GestureEventWithHitTestResults&,
+      PointerId pointer_id);
 
   WebInputEventResult HandleMouseDraggedEvent(
       const MouseEventWithHitTestResults&);
@@ -151,6 +171,7 @@ class CORE_EXPORT MouseEventManager final
   void RecomputeMouseHoverState();
 
   void MarkHoverStateDirty();
+  void ReportDragEnd();
 
  private:
   class MouseEventBoundaryEventDispatcher : public BoundaryEventDispatcher {
@@ -172,13 +193,27 @@ class CORE_EXPORT MouseEventManager final
     const WebMouseEvent* web_mouse_event_;
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(DragAndDropToolType)
+  enum class DragAndDropToolType {
+    kUnknown = 0,
+    kMouse,
+    kFinger,
+    kStylusViaGesture,
+    kStylusViaButton,
+    kMaxValue = kStylusViaButton,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/event/enums.xml:DragAndDropToolType)
+
   bool DragThresholdExceeded(const gfx::Point&) const;
-  bool HandleDrag(const MouseEventWithHitTestResults&, DragInitiator);
+  DragHandlingResult HandleDrag(const MouseEventWithHitTestResults&,
+                                DragAndDropToolType);
   bool TryStartDrag(const MouseEventWithHitTestResults&);
   void ClearDragDataTransfer();
   DataTransfer* CreateDraggingDataTransfer() const;
 
-  void HandleRemoveSubtree(Node& node, bool inclusive);
+  void HandleRemoveSubtree(Node&, bool include_root);
   void ResetDragSource();
   bool HoverStateDirty();
 
@@ -228,6 +263,7 @@ class CORE_EXPORT MouseEventManager final
   // ends, and at each begin frame, we will dispatch a fake mouse move event to
   // update hover when this is true.
   bool hover_state_dirty_ = false;
+  DragAndDropToolType drag_initiator_ = DragAndDropToolType::kUnknown;
 };
 
 }  // namespace blink

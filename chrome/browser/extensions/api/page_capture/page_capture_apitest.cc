@@ -7,12 +7,13 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/page_capture/page_capture_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/switches.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -92,9 +93,8 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionPageCaptureApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-// TODO(crbug.com/326868086, crbug.com/342254075, crbug.com/374409662,
-// crbug.com/406917890): Test is flaky across all platforms.
-IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest, DISABLED_SaveAsMHTMLWithoutFileAccess) {
+IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
+                       SaveAsMHTMLWithoutFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", "ONLY_PAGE_CAPTURE_PERMISSION"))
@@ -102,9 +102,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest, DISABLED_SaveAsMHTMLWithoutF
   WaitForFileCleanup(&delegate);
 }
 
-// TODO(crbug.com/326868086): Test is flaky.
-IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
-                       DISABLED_SaveAsMHTMLWithFileAccess) {
+IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest, SaveAsMHTMLWithFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", /*custom_arg=*/nullptr,

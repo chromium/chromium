@@ -29,7 +29,6 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // SAFETY: Just wraps the data from libFuzzer in a span.
   auto data_span = UNSAFE_BUFFERS(base::span(data, size));
 
-  FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription::VariantLigatures ligatures;
   Font* math = test::CreateTestFont(AtomicString("MathTestFont"), data_span,
                                     kFontSize, &ligatures);

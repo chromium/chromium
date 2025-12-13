@@ -33,16 +33,16 @@
         és törölje a jelet a(z) „<ph name="NO_PREFETCH_DESCRIPTION" />” jelölőnégyzetből.
         Ha ettől nem szűnik meg a probléma, javasoljuk, hogy jelölje be ismét
         ezt a lehetőséget a jobb teljesítmény érdekében.</translation>
-<translation id="6855094794438142393">Lépjen ide:
-          Chrome menü &gt;
+<translation id="6581867098636731226">Lépjen ide:
+          Chrome-menü &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          A helyi hálózat (LAN) beállításai,
-          és törölje a jelet innen: „Proxykiszolgáló használata a helyi hálózaton”.</translation>
+          Hálózat és internet &gt; Proxy
+          menüpontra, és szüntesse meg a „Beállítások automatikus észlelése” beállítás kijelölését.</translation>
 <translation id="7230956101631259640">Jelenleg biztonságos Chrome-oldalt tekint meg</translation>
 <translation id="8232971017369963250">A Chrome a <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> nyílt forráskódú projektnek köszönhetően jött létre.</translation>
 <translation id="8279509328145658601">A Chrome létrejöttéhez más <ph name="BEGIN_LINK_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_OSS" /> is hozzájárultak.</translation>

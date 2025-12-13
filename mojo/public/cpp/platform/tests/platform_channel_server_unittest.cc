@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/platform/platform_channel_server.h"
 
 #include <optional>
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
@@ -72,9 +68,9 @@ class TestChannel : public core::Channel::Delegate {
   }
 
   void SendMessage(const std::string& message) {
-    auto data = base::span(reinterpret_cast<const uint8_t*>(message.data()),
-                           message.size());
-    channel_->Write(core::Channel::Message::CreateIpczMessage(data, {}));
+    auto data = UNSAFE_TODO(base::span(
+        reinterpret_cast<const uint8_t*>(message.data()), message.size()));
+    channel_->WriteNextIpczMessage(data, {});
   }
 
   std::string WaitForSingleMessage() {
@@ -113,7 +109,13 @@ class TestChannel : public core::Channel::Delegate {
 
 class PlatformChannelServerTest : public testing::Test {
  public:
-  PlatformChannelServerTest() { CHECK(temp_dir_.CreateUniqueTempDir()); }
+  // On Mac, the maximum length of `sun_path` within the `sockaddr_un` structure
+  // has a limit of only 104 characters (including the null terminator). The
+  // default prefix of "scoped_dir" in `base::ScopedTempDir` makes the path in
+  // the unit test exceed this limit. So we use a blank prefix here.
+  PlatformChannelServerTest() {
+    CHECK(temp_dir_.CreateUniqueTempDir(/*prefix=*/FILE_PATH_LITERAL("")));
+  }
 
   ~PlatformChannelServerTest() override = default;
 

@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -193,7 +190,7 @@ void PromoService::Refresh() {
   }
 
   if (!command_id.empty()) {
-    auto fake_promo_json = std::make_unique<std::string>(base::StringPrintf(
+    auto fake_promo_json = std::make_optional<std::string>(base::StringPrintf(
         kFakePromo, kWarningSymbol, command_id.c_str(), command_id.c_str(),
         command_id.c_str(), command_id.c_str()));
     OnLoadDone(std::move(fake_promo_json));
@@ -238,7 +235,7 @@ void PromoService::Refresh() {
       1024 * 1024);
 }
 
-void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
+void PromoService::OnLoadDone(std::optional<std::string> response_body) {
   if (!response_body) {
     // This represents network errors (i.e. the server did not provide a
     // response).
@@ -247,8 +244,7 @@ void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
     return;
   }
 
-  std::string response;
-  response.swap(*response_body);
+  std::string response = std::move(response_body).value();
 
   // The response may start with )]}'. Ignore this.
   auto remainder = base::RemovePrefix(response, kXSSIResponsePreamble);
@@ -324,7 +320,6 @@ void PromoService::BlocklistPromo(const std::string& promo_id) {
     promo_data_ = PromoData();
     promo_status_ = Status::OK_BUT_BLOCKED;
     NotifyObservers();
-    // TODO(crbug.com/40098612): hide promos on existing, already-opened NTPs.
   }
 }
 

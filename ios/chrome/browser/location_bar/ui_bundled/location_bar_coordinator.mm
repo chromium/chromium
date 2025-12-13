@@ -10,15 +10,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"
-#import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/browser/omnibox_text_util.h"
-#import "components/omnibox/browser/omnibox_view.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/search_engines/util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button_factory.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_delegate.h"
@@ -28,6 +27,7 @@
 #import "ios/chrome/browser/badges/ui_bundled/incognito_badge_mediator.h"
 #import "ios/chrome/browser/badges/ui_bundled/incognito_badge_view_controller.h"
 #import "ios/chrome/browser/badges/ui_bundled/incognito_badge_view_visibility_delegate.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_availability.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
@@ -38,8 +38,15 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_coordinator.h"
+#import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_coordinator_delegate.h"
+#import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator.h"
+#import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_view_controller.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar_delegate.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar_impl.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
@@ -55,18 +62,19 @@
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator.h"
 #import "ios/chrome/browser/omnibox/coordinator/popup/omnibox_popup_coordinator.h"
 #import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_state_provider.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_factory.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_chip_coordinator.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -84,6 +92,8 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -105,11 +115,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 @interface LocationBarCoordinator () <
     ContextualPanelEntrypointCoordinatorDelegate,
     LoadQueryCommands,
+    LocationBarBadgeCoordinatorDelegate,
     LocationBarModelDelegateWebStateProvider,
     LocationBarSteadyViewConsumer,
     LocationBarViewControllerDelegate,
     WebLocationBarDelegate,
-    OmniboxStateProvider,
     URLDragDataSource> {
   // API endpoint for omnibox.
   std::unique_ptr<WebLocationBarImpl> _locationBar;
@@ -124,6 +134,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // Must outlive `_toolbarCoordinator`.
   std::unique_ptr<LocationBarModelDelegateIOS> _locationBarModelDelegate;
   std::unique_ptr<LocationBarModel> _locationBarModel;
+
+  // Service for local and profile preferences.
+  raw_ptr<PrefService> _prefService;
+  // Tracker for feature events.
+  raw_ptr<feature_engagement::Tracker, DanglingUntriaged> _tracker;
 }
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -142,6 +157,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 // Coordinator for the reader mode chip.
 @property(nonatomic, strong)
     ReaderModeChipCoordinator* readerModeChipCoordinator;
+// Coordinator for the location bar badge view.
+@property(nonatomic, strong)
+    LocationBarBadgeCoordinator* locationBarBadgeCoordinator;
 // Coordinator for the omnibox.
 @property(nonatomic, strong) OmniboxCoordinator* omniboxCoordinator;
 @property(nonatomic, strong) LocationBarMediator* mediator;
@@ -158,7 +176,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 @end
 
-@implementation LocationBarCoordinator
+@implementation LocationBarCoordinator {
+  // TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
+  SharingCoordinator* _sharingCoordinator;
+}
 
 #pragma mark - Accessors
 
@@ -195,7 +216,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
-  self.viewController.profilePrefs = self.profile->GetPrefs();
+  _prefService = self.profile->GetPrefs();
+  self.viewController.profilePrefs = _prefService;
   self.viewController.delegate = self;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
@@ -208,8 +230,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       self.browser->GetCommandDispatcher(), PageActionMenuCommands);
   self.viewController.BWGHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
-  self.viewController.tracker =
-      feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  self.viewController.tracker = _tracker;
   self.viewController.voiceSearchEnabled =
       ios::provider::IsVoiceSearchEnabled();
   self.viewController.layoutGuideCenter =
@@ -225,29 +247,53 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _locationBarModel = std::make_unique<LocationBarModelImpl>(
       _locationBarModelDelegate.get(), kMaxURLDisplayChars);
 
-  self.omniboxCoordinator = [[OmniboxCoordinator alloc]
-      initWithBaseViewController:nil
-                         browser:self.browser
-                   omniboxClient:std::make_unique<ChromeOmniboxClientIOS>(
-                                     _locationBar.get(), self.profile,
-                                     feature_engagement::TrackerFactory::
-                                         GetForProfile(self.profile))
-                   isLensOverlay:NO];
-  self.omniboxCoordinator.focusDelegate = self.delegate;
+  if (!IsComposeboxIOSEnabled()) {
+    self.omniboxCoordinator = [[OmniboxCoordinator alloc]
+        initWithBaseViewController:nil
+                           browser:self.browser
+                     omniboxClient:std::make_unique<ChromeOmniboxClientIOS>(
+                                       _locationBar.get(), self.browser,
+                                       feature_engagement::TrackerFactory::
+                                           GetForProfile(self.profile))
+               presentationContext:OmniboxPresentationContext::kLocationBar];
+    self.omniboxCoordinator.focusDelegate = self.delegate;
 
-  self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;
-  [self.omniboxCoordinator start];
+    self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;
+    [self.omniboxCoordinator start];
 
-  [self.omniboxCoordinator.managedViewController
-      willMoveToParentViewController:self.viewController];
-  [self.viewController
-      addChildViewController:self.omniboxCoordinator.managedViewController];
-  [self.viewController setEditView:self.omniboxCoordinator.editView];
-  [self.omniboxCoordinator.managedViewController
-      didMoveToParentViewController:self.viewController];
-  self.viewController.offsetProvider = [self.omniboxCoordinator offsetProvider];
+    [self.omniboxCoordinator.managedViewController
+        willMoveToParentViewController:self.viewController];
+    [self.viewController
+        addChildViewController:self.omniboxCoordinator.managedViewController];
+    [self.viewController setEditView:self.omniboxCoordinator.editView];
+    [self.omniboxCoordinator.managedViewController
+        didMoveToParentViewController:self.viewController];
+    self.viewController.offsetProvider =
+        [self.omniboxCoordinator offsetProvider];
+  }
 
-  if (!isIncognito && IsContextualPanelEnabled()) {
+  if (IsAskGeminiChipEnabled() || IsProactiveSuggestionsFrameworkEnabled() ||
+      IsLocationBarBadgeMigrationEnabled()) {
+    self.locationBarBadgeCoordinator = [[LocationBarBadgeCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    self.locationBarBadgeCoordinator.delegate = self;
+    [self.locationBarBadgeCoordinator start];
+    // TODO (crbug.com/429140788): Remove after migration when this view is
+    // permanently shown.
+    self.locationBarBadgeCoordinator.viewController.visibilityDelegate =
+        self.viewController.contextualEntrypointVisibilityDelegate;
+
+    [self.viewController
+        addChildViewController:self.locationBarBadgeCoordinator.viewController];
+    // TODO(crbug.com/450006763): After migration, refactor to
+    // setLocationBarBadgeView and set it in LocationBarSteadyView.
+    [self.viewController
+        setContextualPanelEntrypointView:self.locationBarBadgeCoordinator
+                                             .viewController.view];
+    [self.locationBarBadgeCoordinator.viewController
+        didMoveToParentViewController:self.viewController];
+  } else if (IsContextualPanelEnabled()) {
     self.contextualPanelEntrypointCoordinator =
         [[ContextualPanelEntrypointCoordinator alloc]
             initWithBaseViewController:self.viewController
@@ -270,8 +316,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     self.readerModeChipCoordinator = [[ReaderModeChipCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
-    self.readerModeChipCoordinator.visibilityDelegate =
-        self.viewController.readerModeChipVisibilityDelegate;
+    if (!IsLocationBarBadgeMigrationEnabled()) {
+      self.readerModeChipCoordinator.visibilityDelegate =
+          self.viewController.readerModeChipVisibilityDelegate;
+    }
     [self.readerModeChipCoordinator start];
     [self.viewController setReaderModeChipView:self.readerModeChipCoordinator
                                                    .viewController.view];
@@ -280,12 +328,15 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // Create button factory that wil be used by the ViewController to get
   // BadgeButtons for a BadgeType.
   BadgeButtonFactory* buttonFactory = [[BadgeButtonFactory alloc] init];
+  buttonFactory.incognito = isIncognito;
   self.badgeViewController =
       [[BadgeViewController alloc] initWithButtonFactory:buttonFactory];
   self.badgeViewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  self.badgeViewController.visibilityDelegate =
-      [self.viewController badgeViewVisibilityDelegate];
+  if (!IsLocationBarBadgeMigrationEnabled()) {
+    self.badgeViewController.visibilityDelegate =
+        [self.viewController badgeViewVisibilityDelegate];
+  }
   [self.viewController addChildViewController:self.badgeViewController];
   [self.viewController setBadgeView:self.badgeViewController.view];
   [self.badgeViewController didMoveToParentViewController:self.viewController];
@@ -298,8 +349,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.badgeMediator.consumer = self.badgeViewController;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
-  self.badgeMediator.dispatcher = static_cast<id<BrowserCoordinatorCommands>>(
-      self.browser->GetCommandDispatcher());
+  self.badgeMediator.dispatcher =
+      static_cast<id<BrowserCoordinatorCommands, LocationBarBadgeCommands>>(
+          self.browser->GetCommandDispatcher());
   buttonFactory.delegate = self.badgeMediator;
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(self.browser);
@@ -311,15 +363,19 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (isIncognito) {
     self.incognitoBadgeViewController = [[IncognitoBadgeViewController alloc]
         initWithButtonFactory:buttonFactory];
-    self.incognitoBadgeViewController.visibilityDelegate =
-        [self.viewController incognitoBadgeViewVisibilityDelegate];
-
-    [self.viewController
-        addChildViewController:self.incognitoBadgeViewController];
-    [self.viewController
-        setIncognitoBadgeView:self.incognitoBadgeViewController.view];
-    [self.incognitoBadgeViewController
-        didMoveToParentViewController:self.viewController];
+    if (!IsLocationBarBadgeMigrationEnabled()) {
+      self.incognitoBadgeViewController.visibilityDelegate =
+          [self.viewController incognitoBadgeViewVisibilityDelegate];
+      [self.viewController
+          addChildViewController:self.incognitoBadgeViewController];
+      [self.viewController
+          setIncognitoBadgeView:self.incognitoBadgeViewController.view];
+      [self.incognitoBadgeViewController
+          didMoveToParentViewController:self.viewController];
+    } else {
+      [self.locationBarBadgeCoordinator
+          addIncognitoBadgeViewController:self.incognitoBadgeViewController];
+    }
 
     self.incognitoBadgeMediator =
         [[IncognitoBadgeMediator alloc] initWithWebStateList:self.webStateList];
@@ -347,20 +403,23 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       OverlayPresenter::FromBrowser(self.browser,
                                     OverlayModality::kWebContentArea);
   self.steadyViewMediator.consumer = self;
-  self.steadyViewMediator.tracker =
-      feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  self.steadyViewMediator.tracker = _tracker;
 
   _omniboxFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       fullscreenController, self.viewController);
 
-  OmniboxPositionBrowserAgent* omniboxPositionBrowserAgent =
-      OmniboxPositionBrowserAgent::FromBrowser(self.browser);
-  /// The location bar is the OmniboxStateProvider because omnibox is used both
-  /// in browser and lens overlay.
-  if (omniboxPositionBrowserAgent) {
-    omniboxPositionBrowserAgent->SetOmniboxStateProvider(self);
+  AutocompleteBrowserAgent* autocompleteBrowserAgent =
+      AutocompleteBrowserAgent::FromBrowser(self.browser);
+  if (autocompleteBrowserAgent) {
+    __weak __typeof__(self) weakSelf = self;
+    autocompleteBrowserAgent->RegisterWebStateListForPrefetching(
+        IsComposeboxIOSEnabled() ? OmniboxPresentationContext::kComposebox
+                                 : OmniboxPresentationContext::kLocationBar,
+        self.webStateList,
+        base::BindRepeating(^metrics::OmniboxEventProto::PageClassification() {
+          return [weakSelf getPageClassification:YES];
+        }));
   }
-
   self.started = YES;
 
   [self setUpDragAndDrop];
@@ -375,6 +434,15 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       stopDispatchingToTarget:self.viewController
                                   .pageActionMenuEntryPointHandler];
 
+  [_sharingCoordinator stop];
+  _sharingCoordinator = nil;
+
+  if (IsAskGeminiChipEnabled() || IsProactiveSuggestionsFrameworkEnabled() ||
+      IsLocationBarBadgeMigrationEnabled()) {
+    [self.locationBarBadgeCoordinator stop];
+    self.locationBarBadgeCoordinator = nil;
+  }
+
   [self.contextualPanelEntrypointCoordinator stop];
   self.contextualPanelEntrypointCoordinator.delegate = nil;
   self.contextualPanelEntrypointCoordinator = nil;
@@ -384,6 +452,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   // The popup has to be destroyed before the location bar.
   [self.omniboxCoordinator stop];
+  AutocompleteBrowserAgent* autocompleteBrowserAgent =
+      AutocompleteBrowserAgent::FromBrowser(self.browser);
+  if (autocompleteBrowserAgent) {
+    autocompleteBrowserAgent->UnregisterWebStateListForPrefetching(
+        self.webStateList);
+  }
   [self.badgeMediator disconnect];
   self.badgeMediator = nil;
   _locationBar.reset();
@@ -405,6 +479,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   _locationBarModel = nullptr;
   _locationBarModelDelegate = nullptr;
+  _prefService = nullptr;
 
   _badgeFullscreenUIUpdater = nullptr;
   _incognitoBadgeFullscreenUIUpdater = nullptr;
@@ -468,6 +543,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (immediately) {
     [self loadURLForQuery:sanitizedQuery];
   } else {
+    if (MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kOther,
+                            /*query=*/query)) {
+      return;
+    }
     [self focusOmnibox];
     [self.omniboxCoordinator
         insertTextToOmnibox:base::SysUTF16ToNSString(sanitizedQuery)];
@@ -484,25 +563,16 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     destination_url_entered_without_scheme:
         (bool)destination_url_entered_without_scheme {
   if (url.SchemeIs(url::kJavaScriptScheme)) {
-    LoadJavaScriptURL(url, self.profile,
+    LoadJavaScriptURL(url, self.browser,
                       self.webStateList->GetActiveWebState());
   } else {
     // TODO(crbug.com/40550038): Is it ok to call `cancelOmniboxEdit` after
     // `loadURL|?  It doesn't seem to be causing major problems.  If we call
     // cancel before load, then any prerendered pages get destroyed before the
     // call to load.
-    web::NavigationManager::WebLoadParams web_params =
-        web_navigation_util::CreateWebLoadParams(url, transition, postContent);
-    if (destination_url_entered_without_scheme) {
-      web_params.https_upgrade_type = web::HttpsUpgradeType::kOmnibox;
-    }
-    NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
-        [web_navigation_util::VariationHeadersForURL(url, self.isOffTheRecord)
-            mutableCopy];
-    [combinedExtraHeaders addEntriesFromDictionary:web_params.extra_headers];
-    web_params.extra_headers = [combinedExtraHeaders copy];
-    UrlLoadParams params = UrlLoadParams::InCurrentTab(web_params);
-    params.disposition = disposition;
+    UrlLoadParams params = CreateOmniboxUrlLoadParams(
+        url, postContent, disposition, transition,
+        destination_url_entered_without_scheme, self.isOffTheRecord);
     UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
   }
   [self cancelOmniboxEdit];
@@ -511,10 +581,16 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 #pragma mark - OmniboxCommands
 
 - (void)focusOmniboxFromFakebox {
+  if (MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPFakebox)) {
+    return;
+  }
   [self.omniboxCoordinator focusOmnibox];
 }
 
 - (void)focusOmnibox {
+  if (MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kOther)) {
+    return;
+  }
   // When the NTP and fakebox are visible, make the fakebox animates into place
   // before focusing the omnibox.
   if (IsVisibleURLNewTabPage([self webState]) && !self.isOffTheRecord) {
@@ -533,6 +609,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)cancelOmniboxEdit {
+  if (IsComposeboxIOSEnabled()) {
+    id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    [commands hideComposeboxImmediately:NO];
+    return;
+  }
   if (self.isCancellingOmniboxEdit) {
     return;
   }
@@ -586,6 +668,25 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   StoreURLInPasteboard(self.webState->GetVisibleURL());
 }
 
+- (void)locationBarShareTapped {
+  CHECK(IsDiamondPrototypeEnabled());
+  const GURL visibleURL = self.webState->GetVisibleURL();
+  NSString* title = base::SysUTF16ToNSString(self.webState->GetTitle());
+
+  SharingScenario scenario = IsReaderModeActiveInWebState(self.webState)
+                                 ? SharingScenario::ShareInReaderMode
+                                 : SharingScenario::TabShareButton;
+  SharingParams* params = [[SharingParams alloc] initWithURL:visibleURL
+                                                       title:title
+                                                    scenario:scenario];
+  _sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                          params:params
+                      originView:self.viewController.view];
+  [_sharingCoordinator start];
+}
+
 - (void)locationBarRequestScribbleTargetFocus {
   [self.omniboxCoordinator focusOmniboxForScribble];
 }
@@ -633,16 +734,40 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       displayEntrypointView:display];
 }
 
+- (void)locationBarDidTapAIHubNewBadge {
+  _tracker->NotifyUsedEvent(feature_engagement::kIPHiOSAIHubNewBadge);
+}
+
+- (BOOL)shouldShowAIHubNewFeatureBadge {
+  if (!IsAIHubNewBadgeEnabled()) {
+    return NO;
+  }
+  return _tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSAIHubNewBadge);
+}
+
+- (void)locationBarViewController:(LocationBarViewController*)controller
+         didChangeEditStateHeight:(CGFloat)height {
+  [self.heightDelegate locationBarCoordinator:self
+                     didChangeEditStateHeight:height];
+}
+
 #pragma mark - ContextualPanelEntrypointCoordinatorDelegate
 
 - (BOOL)canShowLargeContextualPanelEntrypoint:
     (ContextualPanelEntrypointCoordinator*)coordinator {
+  if (IsDiamondPrototypeEnabled()) {
+    return NO;
+  }
   return [self.viewController canShowLargeContextualPanelEntrypoint];
 }
 
 - (void)setLocationBarLabelCenteredBetweenContent:
             (ContextualPanelEntrypointCoordinator*)coordinator
                                          centered:(BOOL)centered {
+  if (IsDiamondPrototypeEnabled()) {
+    return;
+  }
   [self.viewController setLocationBarLabelCenteredBetweenContent:centered];
 }
 
@@ -698,6 +823,14 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 #pragma mark - Private
+
+- (metrics::OmniboxEventProto::PageClassification)getPageClassification:
+    (BOOL)isPrefetch {
+  if (_locationBarModel) {
+    return _locationBarModel->GetPageClassification(isPrefetch);
+  }
+  return metrics::OmniboxEventProto::INVALID_SPEC;
+}
 
 // Navigate to `query` from omnibox.
 - (void)loadURLForQuery:(const std::u16string&)query {
@@ -770,6 +903,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   }
 
   [self cancelOmniboxEdit];
+}
+
+- (UIView*)locationBarSteadyViewVisualCopy {
+  return self.viewController.locationBarSteadyViewVisualCopy;
 }
 
 @end

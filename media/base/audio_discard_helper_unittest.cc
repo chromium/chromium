@@ -20,9 +20,9 @@ namespace media {
 static const float kDataStep = 0.01f;
 static const size_t kSampleRate = 48000;
 
-static DecoderBuffer::TimeInfo CreateTimeInfo(base::TimeDelta timestamp,
-                                              base::TimeDelta duration) {
-  DecoderBuffer::TimeInfo time_info;
+static AudioDiscardHelper::TimeInfo CreateTimeInfo(base::TimeDelta timestamp,
+                                                   base::TimeDelta duration) {
+  AudioDiscardHelper::TimeInfo time_info;
   time_info.timestamp = timestamp;
   time_info.duration = duration;
   return time_info;
@@ -39,7 +39,7 @@ static float ExtractDecodedData(const AudioBuffer& buffer, int index) {
   std::unique_ptr<AudioBus> temp_bus =
       AudioBus::Create(buffer.channel_count(), 1);
   buffer.ReadFrames(1, index, 0, temp_bus.get());
-  return temp_bus->channel_span(0)[0] * std::numeric_limits<uint16_t>::max();
+  return temp_bus->channel(0)[0] * std::numeric_limits<uint16_t>::max();
 }
 
 TEST(AudioDiscardHelperTest, TimeDeltaToFrames) {
@@ -75,7 +75,7 @@ TEST(AudioDiscardHelperTest, BasicProcessBuffers) {
   const base::TimeDelta kActualDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kActualDuration);
 
-  DecoderBuffer::TimeInfo time_info =
+  AudioDiscardHelper::TimeInfo time_info =
       CreateTimeInfo(kTimestamp, kEstimatedDuration);
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
@@ -102,7 +102,8 @@ TEST(AudioDiscardHelperTest, NegativeTimestampClampsToZero) {
   const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Verify the basic case where nothing is discarded.
@@ -125,7 +126,8 @@ TEST(AudioDiscardHelperTest, ProcessBuffersWithInitialDiscard) {
   const int kDiscardFrames = kTestFrames / 2;
   discard_helper.Reset(kDiscardFrames);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Verify half the frames end up discarded.
@@ -149,7 +151,8 @@ TEST(AudioDiscardHelperTest, ProcessBuffersWithLargeInitialDiscard) {
   // Tell the helper we want to discard 1.5 buffers worth of frames.
   discard_helper.Reset(kTestFrames * 1.5);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // The first call should fail since no output buffer remains.
@@ -178,7 +181,8 @@ TEST(AudioDiscardHelperTest, AllowNonMonotonicTimestamps) {
   const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   ASSERT_TRUE(discard_helper.ProcessBuffers(time_info, decoded_buffer.get()));
@@ -203,7 +207,8 @@ TEST(AudioDiscardHelperTest, DiscardEndPadding) {
   const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Set a discard padding equivalent to half the buffer.
@@ -224,7 +229,8 @@ TEST(AudioDiscardHelperTest, BadDiscardEndPadding) {
   const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Set a discard padding equivalent to double the buffer size.
@@ -243,7 +249,8 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardEndPadding) {
   const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Set a discard padding equivalent to a quarter of the buffer.
@@ -270,7 +277,8 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardPadding) {
   const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Set all the discard values to be different to ensure each is properly used.
@@ -298,7 +306,8 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardPaddingAndDecoderDelay) {
   const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Set a discard padding equivalent to half of the buffer.
@@ -401,7 +410,8 @@ TEST(AudioDiscardHelperTest, DelayedDiscardInitialDiscardAndDiscardPadding) {
   const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
 
   // Set all the discard values to be different to ensure each is properly used.
   const int kDiscardFrames = kTestFrames / 4;
@@ -435,7 +445,8 @@ TEST(AudioDiscardHelperTest, CompleteDiscard) {
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
   discard_helper.Reset(0);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
   time_info.discard_padding =
       std::make_pair(kInfiniteDuration, base::TimeDelta());
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
@@ -464,7 +475,8 @@ TEST(AudioDiscardHelperTest, CompleteDiscardWithDelayedDiscard) {
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
   discard_helper.Reset(0);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
   time_info.discard_padding =
       std::make_pair(kInfiniteDuration, base::TimeDelta());
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
@@ -499,7 +511,8 @@ TEST(AudioDiscardHelperTest, CompleteDiscardWithInitialDiscardDecoderDelay) {
   const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
-  DecoderBuffer::TimeInfo time_info = CreateTimeInfo(kTimestamp, kDuration);
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kTimestamp, kDuration);
   time_info.discard_padding =
       std::make_pair(kInfiniteDuration, base::TimeDelta());
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);

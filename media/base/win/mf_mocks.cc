@@ -30,4 +30,7 @@ MockMFPMPHost::~MockMFPMPHost() = default;
 MockMFPMPHostApp::MockMFPMPHostApp() = default;
 MockMFPMPHostApp::~MockMFPMPHostApp() = default;
 
+MockMFMediaSource::MockMFMediaSource() = default;
+MockMFMediaSource::~MockMFMediaSource() = default;
+
 }  // namespace media

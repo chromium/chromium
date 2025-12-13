@@ -5,20 +5,9 @@
 #include "extensions/common/extension_resource.h"
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 
 namespace extensions {
-
-namespace {
-
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kWindowsNormalizeFilePathFallbackOnError,
-             "WindowsNormalizeFilePathFallbackOnError",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-}  // namespace
 
 ExtensionResource::ExtensionResource() : follow_symlinks_anywhere_(false) {}
 
@@ -71,17 +60,20 @@ base::FilePath ExtensionResource::GetFilePath(
   base::FilePath normalized_extension_root;
   if (!base::NormalizeFilePath(extension_root, &normalized_extension_root)) {
 #if BUILDFLAG(IS_WIN)
-    // TODO(crbug.com/410059474): Remove this if-check and the Windows-specific
-    // fallback logic in M143.
-    if (!base::FeatureList::IsEnabled(
-            kWindowsNormalizeFilePathFallbackOnError)) {
-      return base::FilePath();
-    }
-
-    // On Windows, `NormalizeFilePath` fails if the path doesn't start with a
-    // drive letter (e.g. a network path) or if it exceeds `MAX_PATH` characters
-    // in length. Fall back to `MakeAbsoluteFilePath` and proceed if the path
-    // exists.
+    // On Windows, `NormalizeFilePath` is implemented via
+    // `GetFinalPathNameByHandle`, which can fail in some cases. One such case
+    // which was reported by users is with paths on a ramdisk. For example, from
+    // the author of ImDisk:
+    //
+    // > ImDisk is a rather old product. It is designed to be as small and
+    // > simple as possible and compatible with Windows versions as old as NT
+    // > 3.51. By design it lacks support for certain "modern" OS features like
+    // > plug-and-play and Volume Mount Manager. The mentioned API function,
+    // > GetFinalPathNameByHandle, uses Volume Mount Manager and is therefore
+    // > not supported for ImDisk virtual disks.
+    //
+    // Since we can't normalize the path, fall back to `MakeAbsoluteFilePath`
+    // and proceed if the file exists.
     normalized_extension_root = base::MakeAbsoluteFilePath(extension_root);
     if (normalized_extension_root.empty() ||
         !base::PathExists(normalized_extension_root)) {

@@ -16,12 +16,13 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.metrics.SyncButtonsType;
 
 import java.lang.annotation.Retention;
@@ -112,9 +113,13 @@ public class MinorModeHelper implements IdentityManager.Observer {
         }
         AccountInfo accountInfo =
                 identityManager.findExtendedAccountInfoByEmailAddress(primaryAccount.getEmail());
-        assumeNonNull(accountInfo);
 
-        if (hasCapabilities(accountInfo)) {
+        boolean skipRefreshTokenSwitch =
+                SigninFeatureMap.isEnabled(
+                        SigninFeatures.SKIP_REFRESH_TOKEN_CHECK_IN_IDENTITY_MANAGER);
+
+        if ((skipRefreshTokenSwitch || accountInfo != null)
+                && hasCapabilities(assumeNonNull(accountInfo))) {
             uiUpdater.onScreenModeReady(
                     screenModeFromCapabilities(accountInfo.getAccountCapabilities()));
             recordImmediateAvailability();
@@ -134,16 +139,6 @@ public class MinorModeHelper implements IdentityManager.Observer {
      */
     public static void recordButtonsShown(@SyncButtonsType int type) {
         SigninMetricsUtils.recordButtonsShown(type);
-    }
-
-    /**
-     * Records which buttons (accept or decline) were clicked on sync screen and history sync and
-     * whether the buttons were equally weighted.
-     *
-     * @param type See {@link SyncButtonClicked}
-     */
-    public static void recordButtonClicked(@SyncButtonClicked int type) {
-        SigninMetricsUtils.recordButtonTypeClicked(type);
     }
 
     /**

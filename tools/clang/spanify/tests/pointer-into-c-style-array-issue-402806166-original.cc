@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
+#include "base/memory/raw_ptr.h"
+
 unsigned UnsafeIndex();
 
 // Expected rewrite:
@@ -27,4 +31,38 @@ void Func() {
   // Expected rewrite:
   // UseBufferUnsafely(base::span<int>(array).subspan(1u));
   UseBufferUnsafely(&array[1]);
+}
+
+class HasFrontier {
+ public:
+  // Expected rewrite:
+  // void CopyFrom(base::span<const int> from) {
+  void CopyFrom(const int* from) {
+    // Expected rewrite:
+    // std::copy(from.data(), from.subspan(4u).data(), ints_);
+    std::copy(from, &from[4], ints_);
+  }
+
+  // Expected rewrite:
+  // void CopyFromMiraclePtr(base::raw_span<const int, AllowPtrArithmetic> from)
+  void CopyFromMiraclePtr(raw_ptr<const int, AllowPtrArithmetic> from) {
+    // Expected rewrite:
+    // std::copy(from.data(), from.subspan(4u).data(), ints_);
+    std::copy(from.get(), &from[4], ints_);
+  }
+
+ private:
+  int ints_[4];
+};
+
+void TriggerSpanificationOfHasFrontier() {
+  static constexpr int from[4] = {0, 1, 2, 3};
+  HasFrontier foo = HasFrontier();
+  foo.CopyFrom(from);
+
+  // Inappropriate use of `raw_ptr` for testing only.
+  // Expected rewrite:
+  // base::raw_span<const int, AllowPtrArithmetic> miracleptr_from(from);
+  raw_ptr<const int, AllowPtrArithmetic> miracleptr_from(from);
+  foo.CopyFromMiraclePtr(miracleptr_from);
 }

@@ -95,13 +95,11 @@ std::vector<device_signals::SettingsItem> GetSettingsItems(
       // Handle the REG_SZ type, note this does not include REG_MULTI_SZ or
       // REG_EXPAND_SZ.
       std::wstring out_value_sz;
-      std::string out_value_json;
       if (registry_settings_key.ReadValue(request_key_wide.c_str(),
                                           &out_value_sz) == ERROR_SUCCESS) {
-        base::JSONWriter::Write(
-            base::ValueView(base::SysWideToUTF8(out_value_sz)),
-            &out_value_json);
-        collected_item.setting_json_value = out_value_json;
+        collected_item.setting_json_value =
+            base::WriteJson(base::ValueView(base::SysWideToUTF8(out_value_sz)))
+                .value_or("");
       }
     }
     collected_item.presence = device_signals::PresenceValue::kFound;

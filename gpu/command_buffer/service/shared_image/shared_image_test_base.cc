@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -26,7 +27,7 @@
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -152,8 +153,8 @@ bool SharedImageTestBase::IsGraphiteDawnSupported() {
   return true;
 #elif BUILDFLAG(IS_ANDROID) && BUILDFLAG(SKIA_USE_DAWN)
   // Any Android Q+ devices where we have compiled Graphite/Dawn should work.
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         base::android::SDK_VERSION_Q;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_Q;
 #else
   return false;
 #endif
@@ -169,7 +170,7 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     dawn_context_provider_ = DawnContextProvider::CreateWithBackend(
         GetDawnBackendType(), DawnForceFallbackAdapter(), gpu_preferences_,
-        GpuFeatureInfo(), DawnContextProvider::DefaultValidateAdapterFn);
+        GpuFeatureInfo());
     ASSERT_TRUE(dawn_context_provider_);
 #else
     FAIL() << "Graphite-Dawn not available";

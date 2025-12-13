@@ -12,10 +12,9 @@
   <permission android:name="$PACKAGE.permission.CHILD_SERVICE" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.DEBUG" android:label="Debug web pages" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.READ_WRITE_BOOKMARK_FOLDERS" android:protectionLevel="signatureOrSystem"/>
-  <queries>  # DIFF-ANCHOR: e76c81ac
-    <package android:name="com.google.android.gms.policy_cast_dynamite"/>
+  <queries>  # DIFF-ANCHOR: 9588fea7
     <package android:name="com.google.ar.core"/>
-  </queries>  # DIFF-ANCHOR: e76c81ac
+  </queries>  # DIFF-ANCHOR: 9588fea7
   <uses-feature android:glEsVersion="0x00030000"/>
   <uses-feature android:name="android.hardware.camera" android:required="false"/>
   <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
@@ -35,6 +34,7 @@
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
   <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.CAPTURE_KEYBOARD"/>
   <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_QUERY_CANDIDATE_CREDENTIALS"/>
   <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_SET_ALLOWED_PROVIDERS"/>
   <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_SET_ORIGIN"/>
@@ -87,7 +87,6 @@
       android:allowBackup="false"
       android:appComponentFactory="org.chromium.chrome.browser.base.SplitCompatAppComponentFactory"
       android:enableOnBackInvokedCallback="true"
-      android:extractNativeLibs="false"
       android:icon="@drawable/ic_launcher"
       android:label="@string/app_name"
       android:largeHeap="false"
@@ -168,10 +167,6 @@
         android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: 2ea379de
-    <receiver  # DIFF-ANCHOR: 0a6f8fa5
-        android:name="com.google.android.gms.cast.framework.media.MediaIntentReceiver"
-        android:exported="false">
-    </receiver>  # DIFF-ANCHOR: 0a6f8fa5
     <receiver  # DIFF-ANCHOR: f1c9c29d
         android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
         android:exported="true"
@@ -195,10 +190,6 @@
         android:exported="false"
         android:permission="android.permission.BIND_JOB_SERVICE">
     </service>  # DIFF-ANCHOR: 9e5a002f
-    <service  # DIFF-ANCHOR: 749391ed
-        android:name="com.google.android.gms.cast.framework.ReconnectionService"
-        android:exported="false">
-    </service>  # DIFF-ANCHOR: 749391ed
     <service  # DIFF-ANCHOR: 7e26656b
         android:name="com.google.firebase.components.ComponentDiscoveryService"
         android:directBootAware="true"
@@ -207,7 +198,6 @@
       <meta-data android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
       <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
       <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
-      <meta-data android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
       <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
       <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
     </service>  # DIFF-ANCHOR: 7e26656b

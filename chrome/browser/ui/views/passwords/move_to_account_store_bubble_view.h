@@ -19,7 +19,7 @@ class MoveToAccountStoreBubbleView : public PasswordBubbleViewBase {
 
  public:
   explicit MoveToAccountStoreBubbleView(content::WebContents* web_contents,
-                                        views::View* anchor_view);
+                                        views::BubbleAnchor anchor_view);
   ~MoveToAccountStoreBubbleView() override;
 
  private:

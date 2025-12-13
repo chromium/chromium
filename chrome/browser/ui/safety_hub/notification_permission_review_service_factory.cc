@@ -55,11 +55,7 @@ std::unique_ptr<KeyedService> NotificationPermissionsReviewServiceFactory::
 
 bool NotificationPermissionsReviewServiceFactory::
     ServiceIsCreatedWithBrowserContext() const {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(features::kSafetyHub);
-#else   // BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(features::kSafetyHubServicesOnStartUp);
-#endif  // BUILDFLAG(IS_ANDROID)
+  return true;
 }
 
 bool NotificationPermissionsReviewServiceFactory::ServiceIsNULLWhileTesting()

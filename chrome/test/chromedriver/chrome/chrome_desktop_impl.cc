@@ -102,6 +102,10 @@ ChromeDesktopImpl::ChromeDesktopImpl(
       network_connection_enabled_(network_emulation_enabled),
       network_connection_(kDefaultConnectionType),
       quit_gracefully_(quit_gracefully) {
+  // The process ID of the browser may be returned in the custom
+  // capability "goog:processID".
+  browser_info_.process_id = process_.Pid();
+
   if (user_data_dir->IsValid())
     CHECK(user_data_dir_.Set(user_data_dir->Take()));
   if (extension_dir->IsValid())

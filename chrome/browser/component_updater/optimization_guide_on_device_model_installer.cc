@@ -12,8 +12,6 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -21,6 +19,7 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
+#include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,13 +40,25 @@ constexpr uint8_t kPublicKeySHA256[32] = {
     0x00, 0x26, 0x43, 0x86, 0x03, 0x36, 0xa6, 0x38, 0x86, 0x63};
 static_assert(std::size(kPublicKeySHA256) == crypto::kSHA256Length);
 
+bool IsOnDeviceModelAlreadyInstalled(ComponentUpdateService* cus) {
+  CrxUpdateItem update_item;
+  bool success =
+      cus->GetComponentDetails(OptimizationGuideOnDeviceModelInstallerPolicy::
+                                   GetOnDeviceModelExtensionId(),
+                               &update_item);
+  return success && update_item.component.has_value() &&
+         update_item.component->version.IsValid() &&
+         update_item.component->version.CompareToWildcardString("0.0.0.0") > 0;
+}
+
 }  // namespace
 
 OptimizationGuideOnDeviceModelInstallerPolicy::
     OptimizationGuideOnDeviceModelInstallerPolicy(
         base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-            state_manager)
-    : state_manager_(state_manager) {}
+            state_manager,
+        optimization_guide::OnDeviceModelRegistrationAttributes attributes)
+    : state_manager_(state_manager), attributes_(std::move(attributes)) {}
 
 OptimizationGuideOnDeviceModelInstallerPolicy::
     ~OptimizationGuideOnDeviceModelInstallerPolicy() = default;
@@ -110,8 +121,20 @@ std::string OptimizationGuideOnDeviceModelInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 OptimizationGuideOnDeviceModelInstallerPolicy::GetInstallerAttributes() const {
+  using Hint = optimization_guide::proto::OnDeviceModelPerformanceHint;
+  base::flat_set<Hint> hints{attributes_.supported_hints};
   return {
-      // TODO(b/310740288): Decide on attributes for model variant.
+      {"cpu_support", hints.contains(Hint::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU)
+                          ? "yes"
+                          : "no"},
+      {"highest_quality_support",
+       hints.contains(Hint::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY)
+           ? "yes"
+           : "no"},
+      {"fastest_inference_support",
+       hints.contains(Hint::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE)
+           ? "yes"
+           : "no"},
   };
 }
 
@@ -147,24 +170,25 @@ void OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand() {
 void RegisterOptimizationGuideOnDeviceModelComponent(
     ComponentUpdateService* cus,
     base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
-    bool is_already_installing) {
+    optimization_guide::OnDeviceModelRegistrationAttributes attributes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   auto register_callback = base::BindOnce(
       [](base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
-         bool is_already_installing) {
-        if (!is_already_installing) {
-          // Only do on-demand check when the model was
-          // not downloaded and installed before.
+         ComponentUpdateService* cus) {
+        if (!IsOnDeviceModelAlreadyInstalled(cus)) {
+          // If we don't have ANY usable model, trigger an on-demand update
+          // so that we can get one more quickly.
           OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand();
         }
         if (state_manager) {
           state_manager->InstallerRegistered();
         }
       },
-      state_manager->GetWeakPtr(), is_already_installing);
+      state_manager->GetWeakPtr(), cus);
   base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<OptimizationGuideOnDeviceModelInstallerPolicy>(
-          state_manager))
+          state_manager, std::move(attributes)))
       ->Register(cus, std::move(register_callback));
 }
 
@@ -173,7 +197,9 @@ void UninstallOptimizationGuideOnDeviceModelComponent(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<OptimizationGuideOnDeviceModelInstallerPolicy>(
-          state_manager))
+          state_manager,
+          // Attributes don't matter for uninstall.
+          optimization_guide::OnDeviceModelRegistrationAttributes({})))
       ->Uninstall();
 }
 

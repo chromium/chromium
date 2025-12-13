@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {

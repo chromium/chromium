@@ -49,6 +49,7 @@
 #include "net/log/net_log_source_type.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/socket.h"
+#include "net/socket/socket_pool_additional_capacity.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -60,7 +61,7 @@
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #define NET_TRACE(level, s) VLOG(level) << s << __FUNCTION__ << "() "
@@ -148,14 +149,28 @@ MockConnectCompleter::MockConnectCompleter() = default;
 
 MockConnectCompleter::~MockConnectCompleter() = default;
 
-void MockConnectCompleter::SetCallback(CompletionOnceCallback callback) {
-  CHECK(!callback_);
-  callback_ = std::move(callback);
+void MockConnectCompleter::WaitForConnect() {
+  // This class is single use - so either the RunLoop should already have been
+  // quit, or `connect_` is null (but not both).
+  CHECK(!callback_ || run_loop_.AnyQuitCalled());
+  CHECK(callback_ || !run_loop_.AnyQuitCalled());
+  run_loop_.Run();
 }
 
 void MockConnectCompleter::Complete(int result) {
   CHECK(callback_);
   std::move(callback_).Run(result);
+}
+
+void MockConnectCompleter::WaitForConnectAndComplete(int result) {
+  WaitForConnect();
+  Complete(result);
+}
+
+void MockConnectCompleter::SetCallback(CompletionOnceCallback callback) {
+  CHECK(!callback_);
+  callback_ = std::move(callback);
+  run_loop_.Quit();
 }
 
 MockConnect::MockConnect() : mode(ASYNC), result(OK) {
@@ -357,6 +372,13 @@ void StaticSocketDataProvider::Pause() {
 
 void StaticSocketDataProvider::Resume() {
   paused_ = false;
+}
+
+void StaticSocketDataProvider::ExpectAllReadDataConsumed() const {
+  helper_.ExpectAllReadDataConsumed(printer_.get());
+}
+void StaticSocketDataProvider::ExpectAllWriteDataConsumed() const {
+  helper_.ExpectAllWriteDataConsumed(printer_.get());
 }
 
 MockRead StaticSocketDataProvider::OnRead() {
@@ -958,6 +980,9 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
   if (next_ssl_data->expected_trust_anchor_ids) {
     EXPECT_EQ(*next_ssl_data->expected_trust_anchor_ids,
               ssl_config.trust_anchor_ids);
+  }
+  if (next_ssl_data->expect_no_trust_anchor_ids) {
+    EXPECT_EQ(std::nullopt, ssl_config.trust_anchor_ids);
   }
   return std::make_unique<MockSSLClientSocket>(
       std::move(stream_socket), host_and_port, ssl_config, next_ssl_data);
@@ -2076,6 +2101,7 @@ MockTransportClientSocketPool::MockTransportClientSocketPool(
     : TransportClientSocketPool(
           max_sockets,
           max_sockets_per_group,
+          SocketPoolAdditionalCapacity::Create(),
           base::Seconds(10) /* unused_idle_socket_timeout */,
           ProxyChain::Direct(),
           false /* is_for_websockets */,
@@ -2327,8 +2353,8 @@ bool CanGetTaggedBytes() {
   // statistics for local traffic, only mobile and WiFi traffic, so it would not
   // work in tests that spin up a local server. So for now, GetTaggedBytes is
   // only supported on Android releases older than P.
-  return base::android::BuildInfo::GetInstance()->sdk_int() <
-         base::android::SDK_VERSION_P;
+  return base::android::android_info::sdk_int() <
+         base::android::android_info::SDK_VERSION_P;
 }
 
 uint64_t GetTaggedBytes(int32_t expected_tag) {
@@ -2371,5 +2397,81 @@ uint64_t GetTaggedBytes(int32_t expected_tag) {
   return bytes;
 }
 #endif
+
+void ValidateAdditionalCapacityForSocketPool(
+    base::RepeatingCallback<SocketPoolState()> request_socket,
+    base::RepeatingCallback<void()> wait_for_socket_initialization,
+    base::RepeatingCallback<SocketPoolState()> release_socket,
+    base::RepeatingCallback<size_t()> sockets_in_use) {
+  size_t total_sockets_seen_at_capping_point = 0;
+  size_t capping_points_seen = 0;
+  size_t minimum_sockets_seen_at_capping_point = 512;
+  size_t maximum_sockets_seen_at_capping_point = 0;
+  size_t total_sockets_seen_at_uncapping_point = 0;
+  size_t uncapping_points_seen = 0;
+  size_t minimum_sockets_seen_at_uncapping_point = 512;
+  size_t maximum_sockets_seen_at_uncapping_point = 0;
+  for (size_t i = 0; i < 100; ++i) {
+    while (request_socket.Run() == SocketPoolState::kUncapped) {
+      continue;
+    }
+    wait_for_socket_initialization.Run();
+    total_sockets_seen_at_capping_point += sockets_in_use.Run();
+    ++capping_points_seen;
+    if (minimum_sockets_seen_at_capping_point > sockets_in_use.Run()) {
+      minimum_sockets_seen_at_capping_point = sockets_in_use.Run();
+    }
+    if (maximum_sockets_seen_at_capping_point < sockets_in_use.Run()) {
+      maximum_sockets_seen_at_capping_point = sockets_in_use.Run();
+    }
+    while (release_socket.Run() == SocketPoolState::kCapped) {
+      continue;
+    }
+    total_sockets_seen_at_uncapping_point += sockets_in_use.Run();
+    ++uncapping_points_seen;
+    if (minimum_sockets_seen_at_uncapping_point > sockets_in_use.Run()) {
+      minimum_sockets_seen_at_uncapping_point = sockets_in_use.Run();
+    }
+    if (maximum_sockets_seen_at_uncapping_point < sockets_in_use.Run()) {
+      maximum_sockets_seen_at_uncapping_point = sockets_in_use.Run();
+    }
+  }
+  int average_sockets_seen_at_capping_point =
+      total_sockets_seen_at_capping_point / capping_points_seen;
+  int average_sockets_seen_at_uncapping_point =
+      total_sockets_seen_at_uncapping_point / uncapping_points_seen;
+  int capping_range = maximum_sockets_seen_at_capping_point -
+                      minimum_sockets_seen_at_capping_point;
+  int uncapping_range = maximum_sockets_seen_at_uncapping_point -
+                        minimum_sockets_seen_at_uncapping_point;
+  int average_difference = average_sockets_seen_at_capping_point -
+                           average_sockets_seen_at_uncapping_point;
+
+  // The pool should always uncap between 256 and 512.
+  EXPECT_GE(minimum_sockets_seen_at_capping_point, 256u);
+  EXPECT_LE(maximum_sockets_seen_at_capping_point, 512u);
+
+  // The pool should always uncap between 255 and 511.
+  EXPECT_GE(minimum_sockets_seen_at_uncapping_point, 255u);
+  EXPECT_LE(maximum_sockets_seen_at_uncapping_point, 511u);
+
+  // We expect the capping range to start, average, and end after the uncapping.
+  EXPECT_GE(minimum_sockets_seen_at_capping_point,
+            minimum_sockets_seen_at_uncapping_point);
+  EXPECT_GE(average_sockets_seen_at_capping_point,
+            average_sockets_seen_at_uncapping_point);
+  EXPECT_GE(maximum_sockets_seen_at_capping_point,
+            maximum_sockets_seen_at_uncapping_point);
+
+  // We expect a range of 140 to 260 for both capping and uncapping ranges.
+  EXPECT_GE(capping_range, 140);
+  EXPECT_LE(capping_range, 260);
+  EXPECT_GE(uncapping_range, 140);
+  EXPECT_LE(uncapping_range, 260);
+
+  // We expect a range 20 to 80 between the average capping and uncapping.
+  EXPECT_GE(average_difference, 20);
+  EXPECT_LE(average_difference, 80);
+}
 
 }  // namespace net

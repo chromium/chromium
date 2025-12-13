@@ -6,9 +6,12 @@
 #define COMPONENTS_VARIATIONS_VARIATIONS_CRASH_KEYS_ANDROID_H_
 
 #include "base/component_export.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/variations/variations_crash_keys.h"
+
+namespace base {
+class CancelableTaskTracker;
+}
 
 namespace variations {
 

@@ -8,8 +8,8 @@
 #include "base/check_deref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -41,12 +41,12 @@ IsolatedWebAppThrottle::WillStartRequest() {
     return PROCEED;
   }
 
-  IwaKeyDistributionInfoProvider& key_distribution_info_provider =
-      IwaKeyDistributionInfoProvider::GetInstance();
+  ChromeIwaRuntimeDataProvider& key_distribution_info_provider =
+      ChromeIwaRuntimeDataProvider::GetInstance();
   WebAppProvider& provider =
       CHECK_DEREF(WebAppProvider::GetForWebApps(profile()));
   if (provider.is_registry_ready() &&
-      key_distribution_info_provider.OnMaybeDownloadedComponentDataReady()
+      key_distribution_info_provider.OnBestEffortRuntimeDataReady()
           .is_signaled()) {
     return PROCEED;
   }
@@ -55,7 +55,7 @@ IsolatedWebAppThrottle::WillStartRequest() {
       base::BarrierClosure(2u, base::BindOnce(&IsolatedWebAppThrottle::Resume,
                                               weak_ptr_factory_.GetWeakPtr()));
   provider.on_registry_ready().Post(FROM_HERE, initialized_components_barrier);
-  key_distribution_info_provider.OnMaybeDownloadedComponentDataReady().Post(
+  key_distribution_info_provider.OnBestEffortRuntimeDataReady().Post(
       FROM_HERE, initialized_components_barrier);
   return DEFER;
 }

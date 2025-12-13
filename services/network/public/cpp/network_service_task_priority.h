@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
+#include "net/base/request_priority.h"
 
 namespace network {
 
@@ -21,15 +22,28 @@ namespace internal {
 
 // Defines the set of task priorities for the Network Service. These priorities
 // are used by the `SequenceManager` to schedule tasks.
+// This reflects `net::RequestPriority`, but in a reverse order to meet a
+// requirement of `base::sequence_manager::TaskQueue::QueuePriority`.
 enum class NetworkServiceTaskPriority : base::sequence_manager::TaskQueue::
     QueuePriority {
       // Priorities are in descending order.
-      kHighPriority = 0,
-      kNormalPriority = 1,
-      kDefaultPriority = kNormalPriority,
+      kHighestPriority = 0,
+      kMediumPriority = 1,
+      kLowPriority = 2,
+      kLowestPriority = 3,
+      kIdlePriority = 4,
+      kThrottledPriority = 5,
+      kDefaultPriority = kLowestPriority,
       // Must be the last entry.
-      kPriorityCount = 2,
+      kPriorityCount = 6,
     };
+
+static_assert(net::RequestPriority::DEFAULT_PRIORITY ==
+              net::RequestPriority::LOWEST);
+static_assert(static_cast<size_t>(NetworkServiceTaskPriority::kPriorityCount) ==
+              net::NUM_PRIORITIES);
+static_assert(static_cast<size_t>(NetworkServiceTaskPriority::kPriorityCount) ==
+              net::RequestPriority::kMaxValue + 1);
 
 }  // namespace internal
 }  // namespace network

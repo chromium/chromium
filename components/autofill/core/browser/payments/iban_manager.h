@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_IBAN_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_IBAN_MANAGER_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"

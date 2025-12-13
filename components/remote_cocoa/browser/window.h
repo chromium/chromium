@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/remote_cocoa/browser/remote_cocoa_browser_export.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace remote_cocoa {
 namespace mojom {

@@ -30,6 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SUPPORTS_RULE_H_
 
 #include "third_party/blink/renderer/core/css/css_condition_rule.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {

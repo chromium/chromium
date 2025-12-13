@@ -133,7 +133,7 @@ class CORE_EXPORT ImageElementTiming final
   // background images whose paint has been observed. For background images,
   // only the |is_painted_| bit is used, as the timestamp needs to be tracked by
   // |background_image_timestamps_|.
-  WTF::HashMap<MediaRecordIdHash, ImageInfo> images_notified_;
+  HashMap<MediaRecordIdHash, ImageInfo> images_notified_;
 
   // Hashmap of background images which contain information about the load time
   // of the background image.

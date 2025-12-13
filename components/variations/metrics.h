@@ -27,6 +27,7 @@ enum class FirstRunSeedImportResult {
 // numeric values should never be reused.
 //
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.variations
+// LINT.IfChange(LoadSeedResult)
 enum class LoadSeedResult {
   kSuccess = 0,
   kEmpty = 1,
@@ -39,8 +40,13 @@ enum class LoadSeedResult {
   kLoadInterrupted = 8,
   kLoadOtherFailure = 9,
   kExceedsUncompressedSizeLimit = 10,
-  kMaxValue = kExceedsUncompressedSizeLimit,
+  kErrorReadingFile = 11,
+  kSeedInfoParseToProtoError = 12,
+  kZstdContentSizeError = 13,
+  kCorruptZstd = 14,
+  kMaxValue = kCorruptZstd,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:VariationsSeedLoadResult)
 
 // The result of attempting to store a variations seed received from the server.
 //
@@ -74,22 +80,22 @@ enum class StoreSeedResult {
 // seed.
 // Note: UMA histogram enum - don't re-order or remove entries.
 enum class UpdateSeedDateResult {
-  NO_OLD_DATE,
-  NEW_DATE_IS_OLDER,
-  SAME_DAY,
-  NEW_DAY,
-  ENUM_SIZE
+  kNoOldDate = 0,
+  kNewDateIsOlder = 1,
+  kSameDay = 2,
+  kNewDay = 3,
+  kMaxValue = kNewDay,
 };
 
 // The result of verifying a variation seed's signature.
 // Note: UMA histogram enum - don't re-order or remove entries.
 enum class VerifySignatureResult {
-  MISSING_SIGNATURE,
-  DECODE_FAILED,
-  INVALID_SIGNATURE,
-  INVALID_SEED,
-  VALID_SIGNATURE,
-  ENUM_SIZE
+  kMissingSignature = 0,
+  kDecodeFailed = 1,
+  kInvalidSignature = 2,
+  kInvalidSeed = 3,
+  kValidSignature = 4,
+  kMaxValue = kValidSignature,
 };
 
 // Describes instance manipulations applied to data.

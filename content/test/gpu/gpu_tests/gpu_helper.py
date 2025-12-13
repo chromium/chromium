@@ -21,6 +21,7 @@ _MESA_DRIVER_TAGS = frozenset([
     'mesa_lt_19.1',
     'mesa_ge_21.0',
     'mesa_ge_23.2',
+    'mesa_ge_24.2',
 ])
 # Most Android devices do not report a driver version, but some do such as
 # Android Desktop devices.

@@ -70,8 +70,10 @@ void RTCSessionDescriptionRequestImpl::RequestSucceeded(
   if (should_fire_callback && success_callback_) {
     RTCSessionDescriptionInit* description =
         RTCSessionDescriptionInit::Create();
-    if (description_platform->GetType())
-      description->setType(description_platform->GetType());
+    if (description_platform->GetType()) {
+      description->setType(
+          V8RTCSdpType::Create(description_platform->GetType()).value());
+    }
     description->setSdp(description_platform->Sdp());
 
     requester_->NoteSdpCreated(*description);

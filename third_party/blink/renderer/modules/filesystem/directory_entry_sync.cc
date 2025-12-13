@@ -54,10 +54,9 @@ FileEntrySync* DirectoryEntrySync::getFile(const String& path,
                                            ExceptionState& exception_state) {
   auto* sync_helper = MakeGarbageCollected<EntryCallbacksSyncHelper>();
 
-  auto success_callback_wrapper =
-      WTF::BindOnce(&EntryCallbacksSyncHelper::OnSuccess,
-                    WrapPersistentIfNeeded(sync_helper));
-  auto error_callback_wrapper = WTF::BindOnce(
+  auto success_callback_wrapper = BindOnce(&EntryCallbacksSyncHelper::OnSuccess,
+                                           WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = blink::BindOnce(
       &EntryCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(sync_helper));
 
   file_system_->GetFile(
@@ -73,10 +72,9 @@ DirectoryEntrySync* DirectoryEntrySync::getDirectory(
     ExceptionState& exception_state) {
   auto* sync_helper = MakeGarbageCollected<EntryCallbacksSyncHelper>();
 
-  auto success_callback_wrapper =
-      WTF::BindOnce(&EntryCallbacksSyncHelper::OnSuccess,
-                    WrapPersistentIfNeeded(sync_helper));
-  auto error_callback_wrapper = WTF::BindOnce(
+  auto success_callback_wrapper = BindOnce(&EntryCallbacksSyncHelper::OnSuccess,
+                                           WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = blink::BindOnce(
       &EntryCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(sync_helper));
 
   file_system_->GetDirectory(
@@ -90,7 +88,7 @@ DirectoryEntrySync* DirectoryEntrySync::getDirectory(
 void DirectoryEntrySync::removeRecursively(ExceptionState& exception_state) {
   auto* sync_helper = MakeGarbageCollected<VoidCallbacksSyncHelper>();
 
-  auto error_callback_wrapper = WTF::BindOnce(
+  auto error_callback_wrapper = blink::BindOnce(
       &VoidCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(sync_helper));
 
   file_system_->RemoveRecursively(this, VoidCallbacks::SuccessCallback(),

@@ -8,6 +8,7 @@
 #include "components/facilitated_payments/content/browser/security_checker.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace payments::facilitated {
@@ -81,8 +82,12 @@ void ContentFacilitatedPaymentsDriverFactory::DidFinishNavigation(
 void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
     content::RenderFrameHost* render_frame_host,
     const std::u16string& copied_text) {
-  if (render_frame_host != render_frame_host->GetOutermostMainFrame() ||
-      !render_frame_host->IsActive()) {
+  if (render_frame_host != render_frame_host->GetOutermostMainFrame()) {
+    LogPixFlowExitedReason(PixFlowExitedReason::kPixCodeInIFrame);
+    return;
+  }
+  if (!render_frame_host->IsActive()) {
+    LogPixFlowExitedReason(PixFlowExitedReason::kFrameNotActive);
     return;
   }
 

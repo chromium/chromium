@@ -5,8 +5,7 @@
       "linux",
       "mac",
       "chromeos",
-      "desktop_android",
-      "fuchsia"
+      "desktop_android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "extensions.management",

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"

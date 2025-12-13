@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">ଏହି ଏକ୍ସଟେସନ୍‌ରେ କୀ ଫାଇଲ୍ '<ph name="KEY_PATH" />' ଅନ୍ତର୍ଭୁକ୍ତ ଅଛି। ସମ୍ଭବତଃ ଆପଣ ତାହା କରିବାକୁ ଚାହାଁନ୍ତି ନାହିଁ।</translation>
 <translation id="5486326529110362464">ବ୍ୟକ୍ତିଗତ କୀ ପାଇଁ ଇନ୍‍ପୁଟ୍ ମୂଲ୍ୟ ପୂର୍ବରୁ ରହିବା ଉଚିତ।</translation>
+<translation id="5707185214361380026">ଏଠାରୁ ଏକ୍ସଟେନ୍‌ସନ୍‌ ଲୋଡ୍‌ କରିବାରେ ବିଫଳ ହେଲା:</translation>
 <translation id="5972529113578162692">ଏହି ମେସିନ୍‌ର ବ୍ୟବସ୍ଥାପକ <ph name="EXTENSION_NAME" />ର ଇନ୍‍ଷ୍ଟଲ୍‍ କରିବା ଆବଶ୍ୟକ କରୁଛନ୍ତି। ଏହାକୁ ଅନ୍‍ଇନ୍‍ଷ୍ଟଲ୍‍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> ତରଫରୁ ଅଜଣା ପ୍ରଡକ୍ଟ <ph name="PRODUCT_ID" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> ବିକ୍ରେତାଙ୍କ ତରଫରୁ <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">ଏକ୍ସଟେନ୍‌ସନ୍ ଲୋଡ୍ ହେବା ସମୟରେ ତ୍ରୁଟି</translation>
 <translation id="6322279351188361895">ବ୍ୟକ୍ତିଗତ କୀ'କୁ ପଢ଼ିବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="6391538222494443604">ଇନ୍‌ପୁଟ୍ ଡିରେକ୍ଟୋରୀ ରହିବା ଆବଶ୍ୟକ।</translation>
 <translation id="641087317769093025">ଏକ୍ସଟେନ୍‍ସନ୍‌ ଜିପ୍‌ ଖୋଲିହେଲା ନାହିଁ</translation>

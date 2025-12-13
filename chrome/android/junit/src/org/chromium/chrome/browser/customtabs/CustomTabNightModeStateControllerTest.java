@@ -36,7 +36,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
-import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 
 /** Tests for {@link CustomTabNightModeStateController}. */
@@ -45,12 +44,10 @@ import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 @Config(manifest = Config.NONE)
 public class CustomTabNightModeStateControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private PowerSavingModeMonitor mPowerSavingModeMonitor;
     @Mock private SystemNightModeMonitor mSystemNightModeMonitor;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private AppCompatDelegate mAppCompatDelegate;
     @Captor private ArgumentCaptor<SystemNightModeMonitor.Observer> mSystemNightModeObserverCaptor;
-    @Captor private ArgumentCaptor<Runnable> mPowerSavingObserverCaptor;
 
     private CustomTabNightModeStateController mNightModeController;
 
@@ -59,11 +56,8 @@ public class CustomTabNightModeStateControllerTest {
         doNothing()
                 .when(mSystemNightModeMonitor)
                 .addObserver(mSystemNightModeObserverCaptor.capture());
-        doNothing().when(mPowerSavingModeMonitor).addObserver(mPowerSavingObserverCaptor.capture());
         SystemNightModeMonitor.setInstanceForTesting(mSystemNightModeMonitor);
-        mNightModeController =
-                new CustomTabNightModeStateController(
-                        mActivityLifecycleDispatcher, mPowerSavingModeMonitor);
+        mNightModeController = new CustomTabNightModeStateController(mActivityLifecycleDispatcher);
     }
 
     @Test
@@ -100,29 +94,12 @@ public class CustomTabNightModeStateControllerTest {
     }
 
     @Test
-    public void ignoresPowerSaving_WhenSchemeForced() {
-        initializeWithColorScheme(COLOR_SCHEME_LIGHT);
-        setPowerSavingMode(true);
-        assertFalse(mNightModeController.isInNightMode());
-    }
-
-    @Test
     public void followsSystemSetting_WhenSchemeIsSystem() {
         setSystemNightMode(true);
         initializeWithColorScheme(COLOR_SCHEME_SYSTEM);
         assertTrue(mNightModeController.isInNightMode());
 
         setSystemNightMode(false);
-        assertFalse(mNightModeController.isInNightMode());
-    }
-
-    @Test
-    public void followsPowerSavingMode_WhenSchemeIsSystem() {
-        setPowerSavingMode(true);
-        initializeWithColorScheme(COLOR_SCHEME_SYSTEM);
-        assertTrue(mNightModeController.isInNightMode());
-
-        setPowerSavingMode(false);
         assertFalse(mNightModeController.isInNightMode());
     }
 
@@ -142,20 +119,12 @@ public class CustomTabNightModeStateControllerTest {
         NightModeStateProvider.Observer observer = mock(NightModeStateProvider.Observer.class);
         initializeWithColorScheme(COLOR_SCHEME_SYSTEM);
         mNightModeController.addObserver(observer);
-        setPowerSavingMode(true);
         verify(observer, never()).onNightModeStateChanged();
     }
 
     private void initializeWithColorScheme(int colorScheme) {
         Intent intent = new CustomTabsIntent.Builder().setColorScheme(colorScheme).build().intent;
         mNightModeController.initialize(mAppCompatDelegate, intent);
-    }
-
-    private void setPowerSavingMode(boolean isPowerSaving) {
-        when(mPowerSavingModeMonitor.powerSavingIsOn()).thenReturn(isPowerSaving);
-        for (Runnable observer : mPowerSavingObserverCaptor.getAllValues()) {
-            observer.run();
-        }
     }
 
     private void setSystemNightMode(boolean isInNightMode) {

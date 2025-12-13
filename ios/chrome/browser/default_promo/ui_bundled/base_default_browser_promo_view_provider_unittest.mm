@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/default_promo/ui_bundled/base_default_browser_promo_view_provider.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -152,7 +153,17 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest, TestRecordMetricsOnLearnMore) {
   EXPECT_FALSE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 
   // Notify the view provider that learn more was tapped.
-  [test_provider_ standardPromoLearnMoreAction];
+  UIViewController* view_controller =
+      [test_provider_ viewControllerWithActionHandler:nil];
+  ASSERT_TRUE([view_controller isKindOfClass:[UINavigationController class]]);
+  UINavigationController* navigation_controller =
+      base::apple::ObjCCastStrict<UINavigationController>(view_controller);
+  UIBarButtonItem* learn_more_item =
+      navigation_controller.topViewController.navigationItem.leftBarButtonItem;
+  [[UIApplication sharedApplication] sendAction:learn_more_item.action
+                                             to:learn_more_item.target
+                                           from:learn_more_item
+                                       forEvent:nil];
 
   // Check that all expected UMA histograms are recorded.
   EXPECT_EQ(1,

@@ -79,6 +79,11 @@ struct StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
     return directive.display_color_spaces();
   }
 
+  static bool delay_layer_tree_view_deletion(
+      const viz::CompositorFrameTransitionDirective& directive) {
+    return directive.delay_layer_tree_view_deletion();
+  }
+
   static bool Read(viz::mojom::CompositorFrameTransitionDirectiveDataView data,
                    viz::CompositorFrameTransitionDirective* out);
 };

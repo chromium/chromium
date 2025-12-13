@@ -9,7 +9,7 @@
 #include "ui/base/device_form_factor.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #endif
 
 namespace metrics {
@@ -27,7 +27,7 @@ FormFactorMetricsProvider::GetFormFactor() const {
 // audit of form factor usage or exposing ui_mode.
 // VariationsServiceClient::GetCurrentFormFactor() also needs to be updated.
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_foldable()) {
+  if (base::android::device_info::is_foldable()) {
     return SystemProfileProto::Hardware::FORM_FACTOR_FOLDABLE;
   }
 #endif

@@ -11,6 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "content/browser/indexed_db/indexed_db_reporting.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/net_adapters.h"
@@ -44,7 +46,7 @@ class FileStreamReaderToDataPipe {
 
   void OnDataPipeWritable(MojoResult result);
   void OnDataPipeClosed(MojoResult result);
-  void OnComplete(int result);
+  void OnComplete(net::Error result);
 
   base::File file_;
   mojo::ScopedDataPipeProducerHandle dest_;
@@ -179,7 +181,7 @@ void FileStreamReaderToDataPipe::OnDataPipeWritable(MojoResult result) {
   ReadMore();
 }
 
-void FileStreamReaderToDataPipe::OnComplete(int result) {
+void FileStreamReaderToDataPipe::OnComplete(net::Error result) {
   // Resets the watchers, pipes and the exchange handler, so that
   // we will never be called back.
   if (writable_handle_watcher_) {
@@ -193,6 +195,8 @@ void FileStreamReaderToDataPipe::OnComplete(int result) {
   } else {
     std::move(completion_callback_).Run(result);
   }
+  // `this` is only used by on-disk backing stores.
+  LogNetError("IndexedDB.BackingStore.ReadBlob", /*in_memory=*/false, result);
   delete this;
 }
 

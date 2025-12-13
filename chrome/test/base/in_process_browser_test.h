@@ -21,6 +21,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
+#if defined(TOOLKIT_VIEWS)
+// TODO(crbug.com/421758609): Remove this and forward declare
+// BrowserWindowInterface only once all clients are converted to passing
+// BrowserWindowInterface rather than Browser.
+#include "chrome/browser/ui/browser.h"
+#endif  // defined(TOOLKIT_VIEWS)
+
 #if BUILDFLAG(IS_MAC)
 #include <optional>
 
@@ -63,6 +70,7 @@ class ScopedLaunchBrowserForTesting;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Browser;
+class BrowserWindowInterface;
 class PrefService;
 class Profile;
 #if BUILDFLAG(IS_MAC)
@@ -157,7 +165,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Restores state configured in SetUp().
   void TearDown() override;
 
-  using SetUpBrowserFunction = bool(const Browser*);
+  using SetUpBrowserFunction = bool(const BrowserWindowInterface*);
 
   // Sets a function that is called from InProcessBrowserTest::SetUp() with the
   // first browser. This is intended to set up state applicable to all tests
@@ -173,17 +181,13 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // and setup functions.
   static size_t GetTestPreCount();
 
-  // Returns the browser created by BrowserMain().
-  // If no browser is created in BrowserMain(), this will return nullptr unless
-  // another browser instance is created at a later time and
-  // SelectFirstBrowser() is called.
+  // Returns the browser created by BrowserMain(). If no browser is created in
+  // BrowserMain(), this will return nullptr unless another browser instance is
+  // created at a later time and `SetBrowser()` is called.
   Browser* browser() const { return browser_; }
 
-  // Set |browser_| to the first browser on the browser list.
-  // Call this when your test subclass wants to access a non-null browser
-  // instance through browser() but browser creation is delayed until after
-  // PreRunTestOnMainThread().
-  void SelectFirstBrowser();
+  // Sets the default `browser_` instance for the fixture.
+  void SetBrowser(BrowserWindowInterface* browser);
 
   // This function is used to record a set of properties for a test case in
   // gtest result and that will be used by resultDB. The map's key value pair
@@ -201,12 +205,12 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 
  protected:
   // Closes the given browser and waits for it to release all its resources.
-  void CloseBrowserSynchronously(Browser* browser);
+  void CloseBrowserSynchronously(BrowserWindowInterface* browser);
 
   // Closes the browser without waiting for it to release all its resources.
   // WARNING: This may leave tasks posted, but not yet run, in the message
   // loops. Prefer CloseBrowserSynchronously() over this method.
-  void CloseBrowserAsynchronously(Browser* browser);
+  void CloseBrowserAsynchronously(BrowserWindowInterface* browser);
 
   // Closes all browsers. No guarantees are made about the destruction of
   // outstanding resources.
@@ -221,12 +225,12 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // navigation succeeded. |check_navigation_success| is ignored and will be
   // removed as part of check_navigation_success http://crbug.com/1014186.
   // Do not add new usages of the version with |check_navigation_success|.
-  [[nodiscard]] bool AddTabAtIndexToBrowser(Browser* browser,
+  [[nodiscard]] bool AddTabAtIndexToBrowser(BrowserWindowInterface* bwi,
                                             int index,
                                             const GURL& url,
                                             ui::PageTransition transition,
                                             bool check_navigation_success);
-  [[nodiscard]] bool AddTabAtIndexToBrowser(Browser* browser,
+  [[nodiscard]] bool AddTabAtIndexToBrowser(BrowserWindowInterface* bwi,
                                             int index,
                                             const GURL& url,
                                             ui::PageTransition transition);
@@ -362,9 +366,8 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   static SetUpBrowserFunction* global_browser_set_up_function_;
 
   // Usually references the browser created in BrowserMain().
-  // If no browser is created in BrowserMain(), then |browser_| will remain
-  // nullptr unless SelectFirstBrowser() is called after the creation of the
-  // first browser instance at a later time.
+  // If no browser is created in BrowserMain(), then `browser_` will remain
+  // nullptr unless `SetBrowser()` is called at a later time.
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_ = nullptr;
 
   // Used to run the process until the BrowserProcess signals the test to quit.

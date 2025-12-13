@@ -13,9 +13,10 @@ source_set("new_tab_footer") {
     "footer_web_view.h",
   ]
   deps = [
-    "//base:base",
+    "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/new_tab_footer:resources_grit",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui:webui_util",

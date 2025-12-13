@@ -19,7 +19,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 /** Utility class for sign-in functionalities in native Sync browser tests. */
 @JNINamespace("sync_test_utils_android")
 final class SyncTestSigninUtils {
-    private static final SigninTestRule sSigninTestRule = new SigninTestRule();
+    private static SigninTestRule sSigninTestRule;
 
     /** Sets up the test account and signs in. */
     // TODO(crbug.com/40066949): Remove param `consentLevel` once Sync-the-feature is fully removed.
@@ -41,7 +41,8 @@ final class SyncTestSigninUtils {
 
     /** Sets up the fake authentication environment. */
     @CalledByNative
-    private static void setUpFakeAuthForTesting() {
+    private static void setUpFakeAuthForTesting(boolean isNativeTest) {
+        sSigninTestRule = new SigninTestRule(isNativeTest);
         sSigninTestRule.setUpRule();
     }
 
@@ -50,6 +51,7 @@ final class SyncTestSigninUtils {
     private static void tearDownFakeAuthForTesting() {
         // The seeded account is removed automatically when user signs out
         sSigninTestRule.tearDownRule();
+        sSigninTestRule = null;
     }
 
     /** Add an account to the device and signs in for live testing. */

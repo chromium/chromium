@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("notifications_global_cache_list") {
@@ -13,6 +13,8 @@ source_set("notifications_global_cache_list") {
 
   deps = [
     "//base",
+    "//components/resources:components_resources_grit",
+    "//ui/base",
     "//url",
   ]
 }
@@ -29,14 +31,14 @@ source_set("notification_content_detection") {
 
   deps = [
     ":notifications_global_cache_list",
-    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
-    "//components/permissions:permissions",
+    "//components/permissions",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common:features",
-    "//components/site_engagement/content:content",
+    "//components/site_engagement/content",
     "//third_party/blink/public/common:headers",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -53,7 +55,7 @@ source_set("test_utils") {
 
   deps = [
     ":notification_content_detection",
-    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
     "//components/optimization_guide/core:test_support",
     "//components/safe_browsing/core/browser/db:test_database_manager",
@@ -65,23 +67,25 @@ source_set("unittests") {
   sources = [
     "notification_content_detection_model_unittest.cc",
     "notification_content_detection_service_unittest.cc",
+    "notifications_global_cache_list_unittest.cc",
   ]
 
   deps = [
     ":notification_content_detection",
     ":notifications_global_cache_list",
     ":test_utils",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/permissions:test_support",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/common:features",
-    "//components/site_engagement/content:content",
-    "//components/user_prefs:user_prefs",
+    "//components/site_engagement/content",
+    "//components/user_prefs",
     "//content/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",

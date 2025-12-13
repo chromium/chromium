@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,19 +41,13 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   // ends up being the URL) when we try to get it on startup for a11y purposes.
   web_ui->OverrideTitle(l10n_util::GetStringUTF16(title_id));
 
-  webui::LocalizedString localized_strings[] = {
-      {"pageTitle", title_id},
+  constexpr webui::LocalizedString localized_strings[] = {
       {"pageSubtitle", IDS_FRE_SIGN_IN_SUBTITLE_0},
       {"devicesCardTitle", IDS_FRE_DEVICES_CARD_TITLE},
       {"devicesCardDescription", IDS_FRE_DEVICES_CARD_DESCRIPTION},
       {"securityCardTitle", IDS_FRE_SECURITY_CARD_TITLE},
       {"securityCardDescription", IDS_FRE_SECURITY_CARD_DESCRIPTION},
       {"backupCardTitle", IDS_FRE_BACKUP_CARD_TITLE},
-      {"backupCardDescription",
-       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-           ? IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION_WITH_PASSWORDS
-           : IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION},
-      {"declineSignInButtonTitle", IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE},
       {"acceptSignInButtonTitle", IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE},
       {"productLogoAltText", IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},
       // Strings for default browser promo subpage.
@@ -64,6 +59,19 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       {"defaultBrowserSkip", IDS_FRE_DEFAULT_BROWSER_SKIP},
   };
   source->AddLocalizedStrings(localized_strings);
+
+  source->AddLocalizedString("pageTitle", title_id);
+  source->AddLocalizedString(
+      "backupCardDescription",
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION_WITH_PASSWORDS
+          : IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION);
+  source->AddLocalizedString(
+      "declineSignInButtonTitle",
+      base::FeatureList::IsEnabled(
+          switches::kProfileCreationDeclineSigninCTAExperiment)
+          ? IDS_FRE_STAY_SIGNED_OUT_BUTTON_TITLE
+          : IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE);
 
   const bool is_device_managed =
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged();

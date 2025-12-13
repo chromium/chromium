@@ -55,8 +55,6 @@ build_webui("build") {
     "controls/v2/settings_slider_v2.ts",
     "controls/v2/settings_toggle_v2.ts",
     "crostini_page/bruschetta_subpage.ts",
-    "crostini_page/crostini_arc_adb.ts",
-    "crostini_page/crostini_arc_adb_confirmation_dialog.ts",
     "crostini_page/crostini_disk_resize_confirmation_dialog.ts",
     "crostini_page/crostini_disk_resize_dialog.ts",
     "crostini_page/crostini_export_import.ts",
@@ -335,7 +333,6 @@ build_webui("build") {
     "os_reset_page/os_powerwash_dialog_esim_item.ts",
     "os_reset_page/os_sanitize_dialog.ts",
     "os_reset_page/reset_settings_card.ts",
-    "os_search_page/google_assistant_subpage.ts",
     "os_search_page/magic_boost_review_terms_banner.ts",
     "os_search_page/search_and_assistant_settings_card.ts",
     "os_search_page/search_engine.ts",
@@ -468,7 +465,6 @@ build_webui("build") {
     "os_privacy_page/privacy_hub_browser_proxy.ts",
     "os_privacy_page/privacy_hub_metrics_util.ts",
     "os_reset_page/os_reset_browser_proxy.ts",
-    "os_search_page/google_assistant_browser_proxy.ts",
     "os_search_page/magic_boost_browser_proxy.ts",
     "os_search_page/search_engines_browser_proxy.ts",
     "os_settings.ts",
@@ -562,7 +558,6 @@ build_webui("build") {
   ]
   mojo_base_path = "mojom-webui"
 
-  ts_tsconfig_base = "tsconfig_base.json"
   ts_composite = true
   ts_definitions = ts_definition_files  # Defined in os_settings.gni
   ts_deps = [

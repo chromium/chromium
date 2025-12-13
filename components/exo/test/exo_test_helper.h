@@ -15,6 +15,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace viz {
+class SharedImageFormat;
+}
+
 namespace gfx {
 class GpuMemoryBuffer;
 }
@@ -103,20 +107,20 @@ class ExoTestHelper {
   // shell surface.
   static std::unique_ptr<Buffer> CreateBuffer(
       ShellSurfaceBase* shell_surface,
-      gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888);
+      viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888);
 
   // Creates an exo::Buffer that will be backed by either GpuMemoryBuffer or
   // MappableSI if enabled.
   static std::unique_ptr<Buffer> CreateBuffer(
       gfx::Size buffer_size,
-      gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888,
+      viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888,
       bool is_overlay_candidate = false);
 
   // Creates an exo::Buffer from GMBHandle.
   static std::unique_ptr<Buffer> CreateBufferFromGMBHandle(
       gfx::GpuMemoryBufferHandle handle,
       gfx::Size buffer_size,
-      gfx::BufferFormat buffer_format);
+      viz::SharedImageFormat format);
 
   std::unique_ptr<ClientControlledShellSurface>
   CreateClientControlledShellSurface(Surface* surface,

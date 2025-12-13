@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 67
+version_id: 68
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -3711,6 +3711,16 @@ file_types {
   platform_settings {
     platform: PLATFORM_TYPE_LINUX
     danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  extension: "dng"
+  uma_value: 415
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_TYPE_ANDROID
+    danger_level: DANGEROUS
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }

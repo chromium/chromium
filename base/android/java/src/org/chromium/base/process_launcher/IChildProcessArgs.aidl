@@ -11,14 +11,15 @@ import org.chromium.base.IDeviceInfo;
 import org.chromium.base.library_loader.IRelroLibInfo;
 
 parcelable IChildProcessArgs {
-  int cpuCount;
-  long cpuFeatures;
-  String[] commandLine;
-  IFileDescriptorInfo[] fileDescriptorInfos;
-  IRelroLibInfo relroInfo;
   IApkInfo apkInfo;
   IAndroidInfo androidInfo;
-  IDeviceInfo deviceInfo;
-  int channel;
   boolean bindToCaller;
+  int channel;
+  String[] commandLine;
+  int cpuCount;
+  long cpuFeatures;
+  IDeviceInfo deviceInfo;
+  IFileDescriptorInfo[] fileDescriptorInfos;
+  @nullable IRelroLibInfo relroInfo;
+  int libraryProcessType;
 }

@@ -29,18 +29,39 @@ bool PermissionUiSelector::ShouldSuppressAnimation(
 
 PermissionUiSelector::Decision::Decision(
     std::optional<QuietUiReason> quiet_ui_reason,
-    std::optional<WarningReason> warning_reason)
-    : quiet_ui_reason(quiet_ui_reason), warning_reason(warning_reason) {}
+    std::optional<WarningReason> warning_reason,
+    GeolocationAccuracy geolocation_accuracy)
+    : quiet_ui_reason(quiet_ui_reason),
+      warning_reason(warning_reason),
+      geolocation_accuracy(geolocation_accuracy) {}
 PermissionUiSelector::Decision::~Decision() = default;
 
 PermissionUiSelector::Decision::Decision(const Decision&) = default;
 PermissionUiSelector::Decision& PermissionUiSelector::Decision::operator=(
     const Decision&) = default;
 
+bool PermissionUiSelector::Decision::operator==(const Decision&) const =
+    default;
+
 // static
 PermissionUiSelector::Decision
 PermissionUiSelector::Decision::UseNormalUiAndShowNoWarning() {
-  return Decision(UseNormalUi(), ShowNoWarning());
+  return Decision::UseNormalUi(std::nullopt);
+}
+
+// static
+PermissionUiSelector::Decision PermissionUiSelector::Decision::UseNormalUi(
+    std::optional<WarningReason> warning_reason,
+    GeolocationAccuracy geolocation_accuracy) {
+  return Decision(std::nullopt, warning_reason, geolocation_accuracy);
+}
+
+// static
+PermissionUiSelector::Decision PermissionUiSelector::Decision::UseQuietUi(
+    QuietUiReason quiet_ui_reason,
+    std::optional<WarningReason> warning_reason) {
+  return Decision(quiet_ui_reason, warning_reason,
+                  GeolocationAccuracy::kUnspecified);
 }
 
 std::optional<PermissionUiSelector::PredictionGrantLikelihood>
@@ -50,6 +71,11 @@ PermissionUiSelector::PredictedGrantLikelihoodForUKM() {
 
 std::optional<PermissionRequestRelevance>
 PermissionUiSelector::PermissionRequestRelevanceForUKM() {
+  return std::nullopt;
+}
+
+std::optional<permissions::PermissionAiRelevanceModel>
+PermissionUiSelector::PermissionAiRelevanceModelForUKM() {
   return std::nullopt;
 }
 

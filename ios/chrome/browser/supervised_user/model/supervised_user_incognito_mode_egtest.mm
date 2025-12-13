@@ -3,13 +3,16 @@
 // found in the LICENSE file.
 
 #import "base/feature_list.h"
+#import "base/strings/strcat.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_matchers.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_metrics.h"
@@ -51,6 +54,15 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 @end
 
 @implementation SupervisedUserIncognitoModeTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(kEnableNTPViewHierarchyRepair);
+  if ([self isRunningTest:@selector(testIncognitoTabsDestroyedOnSignin)]) {
+    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
+  }
+  return config;
+}
 
 - (void)setupAndRegisterHistogramTester {
   chrome_test_util::GREYAssertErrorNil(
@@ -102,14 +114,6 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 
   [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
       performAction:grey_longPress()];
-  if (@available(iOS 26, *)) {
-    // TODO(crbug.com/428928323): Investigate why the keyboard appears. Remove
-    // this workaround when it's not needed anymore.
-    // On iOS 26, the keyboard appears when the change font family button is
-    // tapped and it hides the elements behind. Close the keyboard by typing a
-    // return key.
-    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\\n" flags:0];
-  }
 
   policy::AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   policy::AssertButtonInCollectionDisabled(
@@ -123,14 +127,6 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 
   [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
       performAction:grey_longPress()];
-  if (@available(iOS 26, *)) {
-    // TODO(crbug.com/428928323): Investigate why the keyboard appears. Remove
-    // this workaround when it's not needed anymore.
-    // On iOS 26, the keyboard appears when the change font family button is
-    // tapped and it hides the elements behind. Close the keyboard by typing a
-    // return key.
-    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\\n" flags:0];
-  }
 
   policy::AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   policy::AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
@@ -171,17 +167,15 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
-  // Wait for the Family Link page to finish loading.
-  [ChromeEarlGrey waitForPageToFinishLoading];
+  // The Family Link url will load in a new tab.
+  [ChromeEarlGrey waitForMainTabCount:2];
 
-  // For testing, there will be a redirect to the main Family Link website and
-  // thus we only compare the hostnames.
-  std::string expectedHostname =
-      GURL(supervised_user::kManagedByParentUiMoreInfoUrl).host();
-  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL].host(),
-                  expectedHostname,
-                  @"Did not open the correct Learn more URL with hostname %s",
-                  expectedHostname.c_str());
+  GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
+  GURL expectedURL = GURL(supervised_user::kManagedByParentUiMoreInfoUrl);
+  GREYAssertEqual(
+      expectedURL, currentURL,
+      @"Page navigated unexpectedly to %s, instead of the Family Link website",
+      currentURL.spec().c_str());
 
   GREYAssertNil([MetricsAppInterface
                     expectTotalCount:1
@@ -301,10 +295,10 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   [[EarlGrey selectElementWithMatcher:SupervisedIncognitoMessage()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Check that the edit button is disabled.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(chrome_test_util::TabGridEditButton(),
-                                          grey_sufficientlyVisible(), nil)]
+  // Check that the overflow menu button is disabled.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::TabGridOverflowMenuButton(),
+                            grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_not(grey_enabled())];
 }
 

@@ -24,8 +24,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.Optional;
-
 /** The coordinator for the OTP Verification Dialog. Manages the sub-component objects. */
 @NullMarked
 class OtpVerificationDialogCoordinator {
@@ -120,7 +118,7 @@ class OtpVerificationDialogCoordinator {
      * @param errorMessage The string that is displayed in the error message.
      */
     void showOtpErrorMessage(String errorMessage) {
-        mMediator.showOtpErrorMessage(Optional.of(errorMessage));
+        mMediator.showOtpErrorMessage(errorMessage);
     }
 
     /** Dismiss the dialog if it is already showing. */

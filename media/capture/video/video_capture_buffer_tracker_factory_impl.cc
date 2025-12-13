@@ -69,7 +69,7 @@ std::unique_ptr<VideoCaptureBufferTracker>
 VideoCaptureBufferTrackerFactoryImpl::CreateTrackerForExternalGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle) {
 #if BUILDFLAG(IS_APPLE)
-  return std::make_unique<GpuMemoryBufferTrackerApple>(handle.io_surface);
+  return std::make_unique<GpuMemoryBufferTrackerApple>(handle.io_surface());
 #elif BUILDFLAG(IS_WIN)
   if (handle.type != gfx::DXGI_SHARED_HANDLE) {
     return nullptr;

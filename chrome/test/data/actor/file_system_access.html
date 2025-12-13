@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+  </head>
+  <body>
+    <div>
+     <button id="save" onclick="saveFile()"></button>
+    </div>
+    <script>
+      async function saveFile() {
+        let e = await self.showSaveFilePicker();
+        self.entry = e;
+        return e.name;
+      }
+    </script>
+  </body>
+</html>

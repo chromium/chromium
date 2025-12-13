@@ -66,7 +66,15 @@ bool IsFillOnAccountSelectFeatureEnabled() {
 bool ShouldNotifyAboutFillingOnPageload(
     PasswordManagerClient* client,
     const std::optional<PasswordForm>& preferred_match) {
+  // Change password url override is provided. Always notify about filling on
+  // page load.
+  if (!GetChangePasswordUrlOverrides().empty()) {
+    return true;
+  }
+  // TODO(crbug.com/392020509): Consider removing check for leak when password
+  // change is launched.
   return preferred_match && preferred_match->change_password_url.is_valid() &&
+         preferred_match->password_issues.contains(InsecureType::kLeaked) &&
          client->GetPasswordChangeService() &&
          client->GetPasswordChangeService()->IsPasswordChangeAvailable();
 }
@@ -130,6 +138,25 @@ std::string GetPreferredRealm(const PasswordForm& form) {
 bool IsSameOrigin(const Origin& frame_origin, const GURL& credential_url) {
   return frame_origin.IsSameOriginWith(Origin::Create(credential_url));
 }
+
+#if !BUILDFLAG(IS_IOS) && !defined(ANDROID)
+bool IsEligibleForPasswordChange(PasswordManagerClient* client,
+                                 const PasswordForm* preferred_match) {
+  if (!preferred_match) {
+    return false;
+  }
+
+  if (!client->GetPasswordChangeService() ||
+      !client->GetPasswordChangeService()->IsPasswordChangeAvailable()) {
+    return false;
+  }
+
+  return preferred_match && preferred_match->change_password_url.is_valid() &&
+         preferred_match->password_issues.contains(InsecureType::kLeaked) &&
+         base::FeatureList::IsEnabled(
+             features::kDisableFillingOnPageLoadForLeakedCredentials);
+}
+#endif
 
 }  // namespace
 
@@ -249,6 +276,13 @@ LikelyFormFilling SendFillInformationToRenderer(
         WaitForUsernameReason::kAcceptsWebAuthnCredentials;
   } else if (observed_form.IsSingleUsername()) {
     wait_for_username_reason = WaitForUsernameReason::kSingleUsernameForm;
+  } else if (client->IsActorTaskActive() &&
+             base::FeatureList::IsEnabled(
+                 features::kActorActiveDisablesFillingOnPageLoad)) {
+    wait_for_username_reason = WaitForUsernameReason::kActorTaskOngoing;
+  } else if (client->IsPasswordChangeOngoing() ||
+             IsEligibleForPasswordChange(client, preferred_match)) {
+    wait_for_username_reason = WaitForUsernameReason::kPasswordChangeOngoing;
   }
 
   // Record no "FirstWaitForUsernameReason" metrics for a form that is not meant
@@ -265,13 +299,9 @@ LikelyFormFilling SendFillInformationToRenderer(
 #endif  // !BUILDFLAG(IS_IOS) && !defined(ANDROID)
 
   if (wait_for_username) {
-    metrics_recorder->SetManagerAction(
-        PasswordFormMetricsRecorder::kManagerActionNone);
     metrics_recorder->RecordFillEvent(
         PasswordFormMetricsRecorder::kManagerFillEventBlockedOnInteraction);
   } else {
-    metrics_recorder->SetManagerAction(
-        PasswordFormMetricsRecorder::kManagerActionAutofilled);
     metrics_recorder->RecordFillEvent(
         PasswordFormMetricsRecorder::kManagerFillEventAutofilled);
     base::RecordAction(base::UserMetricsAction("PasswordManager_Autofilled"));

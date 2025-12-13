@@ -7,11 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_view.h"
+
+@protocol CRWWebViewProxy;
+
 // Consumer for the Reader mode UI.
 @protocol ReaderModeConsumer <NSObject>
 
-// Sets the Reader mode content view.
-- (void)setContentView:(UIView*)contentView;
+// Removes the content view.
+- (void)removeContentView;
+
+// Sets the Reader mode content view. `contentView` cannot be nil.
+- (void)setContentView:(UIView*)contentView
+          webViewProxy:(id<CRWWebViewProxy>)webViewProxy
+       overscrollStyle:(OverscrollStyle)overscrollStyle;
 
 @end
 

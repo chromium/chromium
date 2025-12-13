@@ -13,24 +13,14 @@
 namespace settings_api = extensions::api::settings_private;
 
 namespace safe_browsing {
-
 const char kGeneratedSafeBrowsingPref[] = "generated.safe_browsing";
 
 GeneratedSafeBrowsingPref::GeneratedSafeBrowsingPref(Profile* profile)
     : profile_(profile) {
   user_prefs_registrar_.Init(profile->GetPrefs());
-  user_prefs_registrar_.Add(
-      prefs::kSafeBrowsingEnabled,
-      base::BindRepeating(
-          &GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
-          base::Unretained(this)));
-  user_prefs_registrar_.Add(
-      prefs::kSafeBrowsingEnhanced,
-      base::BindRepeating(
-          &GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
-          base::Unretained(this)));
-  user_prefs_registrar_.Add(
-      prefs::kSafeBrowsingScoutReportingEnabled,
+  user_prefs_registrar_.AddMultiple(
+      {prefs::kSafeBrowsingEnabled, prefs::kSafeBrowsingEnhanced,
+       prefs::kSafeBrowsingScoutReportingEnabled},
       base::BindRepeating(
           &GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
           base::Unretained(this)));
@@ -38,15 +28,17 @@ GeneratedSafeBrowsingPref::GeneratedSafeBrowsingPref(Profile* profile)
 
 extensions::settings_private::SetPrefResult GeneratedSafeBrowsingPref::SetPref(
     const base::Value* value) {
-  if (!value->is_int())
+  if (!value->is_int()) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+  }
 
-  auto selection = static_cast<SafeBrowsingSetting>(value->GetInt());
+  auto selection = static_cast<SafeBrowsingState>(value->GetInt());
 
-  if (selection != SafeBrowsingSetting::DISABLED &&
-      selection != SafeBrowsingSetting::STANDARD &&
-      selection != SafeBrowsingSetting::ENHANCED)
+  if (selection != SafeBrowsingState::NO_SAFE_BROWSING &&
+      selection != SafeBrowsingState::STANDARD_PROTECTION &&
+      selection != SafeBrowsingState::ENHANCED_PROTECTION) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+  }
 
   // If SBER is forcefully disabled, Enhanced cannot be selected by the user.
   const PrefService::Preference* reporting_pref =
@@ -56,7 +48,7 @@ extensions::settings_private::SetPrefResult GeneratedSafeBrowsingPref::SetPref(
   const bool reporting_enforced = !reporting_pref->IsUserModifiable();
 
   if (reporting_enforced && !reporting_on &&
-      selection == SafeBrowsingSetting::ENHANCED) {
+      selection == SafeBrowsingState::ENHANCED_PROTECTION) {
     return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
   }
 
@@ -69,13 +61,15 @@ extensions::settings_private::SetPrefResult GeneratedSafeBrowsingPref::SetPref(
   }
 
   // Update both Safe Browsing preferences to match selection.
-  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                   selection != SafeBrowsingSetting::DISABLED);
-  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
-                                   selection == SafeBrowsingSetting::ENHANCED);
+  profile_->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingEnabled,
+      selection != SafeBrowsingState::NO_SAFE_BROWSING);
+  profile_->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingEnhanced,
+      selection == SafeBrowsingState::ENHANCED_PROTECTION);
 
   // Set ESB not set in sync with Account ESB through TailoredSecurity.
-  if (selection == SafeBrowsingSetting::ENHANCED) {
+  if (selection == SafeBrowsingState::ENHANCED_PROTECTION) {
     profile_->GetPrefs()->SetBoolean(
         prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
   }
@@ -85,25 +79,12 @@ extensions::settings_private::SetPrefResult GeneratedSafeBrowsingPref::SetPref(
 
 extensions::api::settings_private::PrefObject
 GeneratedSafeBrowsingPref::GetPrefObject() const {
+  SafeBrowsingState safe_browsing_state =
+      GetSafeBrowsingState(*profile_->GetPrefs());
   extensions::api::settings_private::PrefObject pref_object;
   pref_object.key = kGeneratedSafeBrowsingPref;
   pref_object.type = extensions::api::settings_private::PrefType::kNumber;
-
-  auto safe_browsing_enabled =
-      profile_->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnabled);
-  auto safe_browsing_enhanced_enabled =
-      profile_->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnhanced);
-
-  if (safe_browsing_enhanced_enabled && safe_browsing_enabled) {
-    pref_object.value =
-        base::Value(static_cast<int>(SafeBrowsingSetting::ENHANCED));
-  } else if (safe_browsing_enabled) {
-    pref_object.value =
-        base::Value(static_cast<int>(SafeBrowsingSetting::STANDARD));
-  } else {
-    pref_object.value =
-        base::Value(static_cast<int>(SafeBrowsingSetting::DISABLED));
-  }
+  pref_object.value = base::Value(static_cast<int>(safe_browsing_state));
 
   ApplySafeBrowsingManagementState(*profile_, pref_object);
 
@@ -165,13 +146,13 @@ void GeneratedSafeBrowsingPref::ApplySafeBrowsingManagementState(
     pref_object.enforcement = settings_api::Enforcement::kRecommended;
     if (enhanced_recommended_on) {
       pref_object.recommended_value =
-          base::Value(static_cast<int>(SafeBrowsingSetting::ENHANCED));
+          base::Value(static_cast<int>(SafeBrowsingState::ENHANCED_PROTECTION));
     } else if (enabled_recommended_on) {
       pref_object.recommended_value =
-          base::Value(static_cast<int>(SafeBrowsingSetting::STANDARD));
+          base::Value(static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
     } else {
       pref_object.recommended_value =
-          base::Value(static_cast<int>(SafeBrowsingSetting::DISABLED));
+          base::Value(static_cast<int>(SafeBrowsingState::NO_SAFE_BROWSING));
     }
   }
 
@@ -184,9 +165,9 @@ void GeneratedSafeBrowsingPref::ApplySafeBrowsingManagementState(
 
     pref_object.user_selectable_values.emplace();
     pref_object.user_selectable_values->Append(
-        base::to_underlying(SafeBrowsingSetting::STANDARD));
+        base::to_underlying(SafeBrowsingState::STANDARD_PROTECTION));
     pref_object.user_selectable_values->Append(
-        base::to_underlying(SafeBrowsingSetting::DISABLED));
+        base::to_underlying(SafeBrowsingState::NO_SAFE_BROWSING));
   }
 }
 

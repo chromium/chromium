@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
-
 #include "components/omnibox/browser/in_memory_url_index.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <fstream>
 #include <memory>
 #include <numeric>
@@ -34,6 +32,7 @@
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
@@ -974,6 +973,42 @@ TEST_F(InMemoryURLIndexTest, DeleteRows) {
   // Make up a URL that does not exist in the database and delete it.
   GURL url("http://www.hokeypokey.com/putyourrightfootin.html");
   EXPECT_FALSE(DeleteURL(url));
+}
+
+TEST_F(InMemoryURLIndexTest, OnURLVisited) {
+  history::URLID new_row_id = 87654321;  // Arbitrarily chosen large new row id.
+  history::URLRow new_row(GURL("http://www.404url.com/"), new_row_id++);
+  new_row.set_last_visit(base::Time::Now());
+
+  history::VisitRow visit_row;
+  visit_row.visit_time = base::Time::Now();
+  visit_row.transition = ui::PAGE_TRANSITION_TYPED;
+
+  // Confirm row is initially not in index.
+  EXPECT_TRUE(
+      HistoryItemsForTerms(u"404url", std::u16string::npos, kProviderMaxMatches)
+          .empty());
+
+  // A 404 visit should not be added to the index.
+  url_index_->OnURLVisited(
+      history_service_.get(),
+      history::VisitedURLInfo(new_row, visit_row,
+                              history::VisitResponseCodeCategory::k404));
+
+  EXPECT_TRUE(
+      HistoryItemsForTerms(u"404url", std::u16string::npos, kProviderMaxMatches)
+          .empty());
+
+  // A non 404 visit should successfully be added to the index.
+  url_index_->OnURLVisited(
+      history_service_.get(),
+      history::VisitedURLInfo(new_row, visit_row,
+                              history::VisitResponseCodeCategory::kNot404));
+
+  ScoredHistoryMatches matches = HistoryItemsForTerms(
+      u"404url", std::u16string::npos, kProviderMaxMatches);
+  ASSERT_EQ(1U, matches.size());
+  EXPECT_EQ(new_row.url(), matches[0].url_info.url());
 }
 
 TEST_F(InMemoryURLIndexTest, ExpireRow) {

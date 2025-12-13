@@ -15,9 +15,9 @@
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/test_matchers.h"
@@ -96,7 +96,7 @@ TEST_F(ExtensionLocalDataBatchUploaderTest,
   // Enable extension syncing in transport mode.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      switches::kEnableExtensionsExplicitBrowserSignin);
+      syncer::kReplaceSyncPromosWithSignInPromos);
 
   ExtensionLocalDataBatchUploader uploader(profile());
 
@@ -148,7 +148,7 @@ TEST_F(ExtensionLocalDataBatchUploaderTest,
 TEST_F(ExtensionLocalDataBatchUploaderTest, TriggerLocalDataMigration) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      switches::kEnableExtensionsExplicitBrowserSignin);
+      syncer::kReplaceSyncPromosWithSignInPromos);
 
   ExtensionLocalDataBatchUploader uploader(profile());
 
@@ -193,7 +193,7 @@ TEST_F(ExtensionLocalDataBatchUploaderTest, TriggerLocalDataMigration) {
 TEST_F(ExtensionLocalDataBatchUploaderTest, TriggerLocalDataMigrationForItems) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      switches::kEnableExtensionsExplicitBrowserSignin);
+      syncer::kReplaceSyncPromosWithSignInPromos);
 
   ExtensionLocalDataBatchUploader uploader(profile());
 

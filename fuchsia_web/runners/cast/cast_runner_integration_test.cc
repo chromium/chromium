@@ -19,7 +19,6 @@
 
 #include "base/auto_reset.h"
 #include "base/base_paths.h"
-#include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"

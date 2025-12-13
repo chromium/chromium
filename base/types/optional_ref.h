@@ -5,6 +5,7 @@
 #ifndef BASE_TYPES_OPTIONAL_REF_H_
 #define BASE_TYPES_OPTIONAL_REF_H_
 
+#include <compare>
 #include <concepts>
 #include <memory>
 #include <optional>
@@ -66,13 +67,22 @@ namespace base {
 //
 // `optional_ref<T>` is lightweight and should be passed by value. It is copy
 // constructible but not copy assignable, to reduce the risk of lifetime bugs.
-template <typename T>
+template <typename T,
+          // TODO(crbug.com/444482512): Decide how to update optional_ref and
+          // disallow optional_ref from being optionally marked as dangling.
+          base::RawPtrTraits kRawPtrTraits = base::RawPtrTraits::kEmpty>
 class optional_ref {
  private:
   // Disallowed because `std::optional` does not allow its template argument to
   // be a reference type.
   static_assert(!std::is_reference_v<T>,
                 "T must not be a reference type (use a pointer?)");
+
+  // DanglingUntriaged is really just base::RawPtrTraits::kMayDangle, but
+  // ideally no one should be intentionally dangling pointers and then disabling
+  // detection...
+  static_assert(kRawPtrTraits == base::RawPtrTraits::kEmpty ||
+                kRawPtrTraits == DanglingUntriaged);
 
   // Both checks are important here, as:
   // - optional_ref does not allow silent implicit conversions between types,
@@ -192,8 +202,7 @@ class optional_ref {
   template <typename U>
     requires std::equality_comparable_with<T, U>
   constexpr bool operator==(optional_ref<U> u) const {
-    return (!has_value() && !u.has_value()) ||
-           (has_value() && u.has_value() && value() == u.value());
+    return has_value() == u.has_value() && (!has_value() || value() == *u);
   }
 
   // Equality comparison operator against `T`.
@@ -204,18 +213,14 @@ class optional_ref {
   }
 
   // Three-way comparison (homogeneous). Mirrors that of std::optional<T>.
-  friend constexpr auto operator<=>(const optional_ref<T> x,
-                                    const optional_ref<T> y)
+  friend constexpr auto operator<=>(optional_ref<T> x, optional_ref<T> y)
     requires std::three_way_comparable<T>
   {
-    if (!x.ptr_ || !y.ptr_) {
-      return (!!x.ptr_) <=> (!!y.ptr_);
-    }
-    return *x.ptr_ <=> *y.ptr_;
+    return x && y ? *x <=> *y : x.has_value() <=> y.has_value();
   }
 
  private:
-  raw_ptr<T> const ptr_ = nullptr;
+  raw_ptr<T, kRawPtrTraits> const ptr_ = nullptr;
 };
 
 template <typename T>

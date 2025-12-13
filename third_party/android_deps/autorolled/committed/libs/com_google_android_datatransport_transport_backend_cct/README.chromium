@@ -1,6 +1,6 @@
 Name: transport-backend-cct
 Short Name: transport-backend-cct
-URL: https://developers.google.com/android/guides/setup
+URL: https://dl.google.com/dl/android/maven2/com/google/android/datatransport/transport-backend-cct/3.1.9/transport-backend-cct-3.1.9.aar
 Version: 3.1.9
 Update Mechanism: Autoroll
 License: Android Software Development Kit License

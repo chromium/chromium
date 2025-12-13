@@ -26,9 +26,9 @@
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "content/public/test/web_contents_tester.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_types.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -46,6 +46,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
+#include "components/webauthn/android/webauthn_client_android.h"
 #endif
 
 namespace {
@@ -154,11 +155,13 @@ class ChromeWebAuthnCredentialsDelegateTest
     dialog_controller()->StartFlow(std::move(tai), /*passwords=*/{});
 #else
     delegate_->OnWebAuthnRequestPending(
-        main_rfh(), creds, /*is_conditional_request=*/true,
+        main_rfh(), creds, webauthn::AssertionMediationType::kConditional,
         base::BindRepeating(
             &ChromeWebAuthnCredentialsDelegateTest::OnAccountSelected,
             base::Unretained(this)),
-        /*hybrid_callback=*/base::RepeatingClosure());
+        /*password_callback=*/base::DoNothing(),
+        /*hybrid_callback=*/base::RepeatingClosure(),
+        /*reject_immediate_callback=*/base::DoNothing());
 #endif
   }
 

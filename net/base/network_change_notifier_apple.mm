@@ -26,11 +26,31 @@
 #include "net/dns/dns_config_service.h"
 #include "net/log/net_log.h"
 
+#if BUILDFLAG(IS_MAC)
+#include <Network/Network.h>
+#include <dispatch/dispatch.h>
+#endif
+
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
 
 namespace net {
+
+#if BUILDFLAG(IS_MAC)
+struct NetworkChangeNotifierApple::NetworkPathMonitorStorage {
+  NetworkPathMonitorStorage() = default;
+  ~NetworkPathMonitorStorage() {
+    if (monitor) {
+      nw_path_monitor_cancel(monitor);
+    }
+  }
+
+  nw_path_monitor_t __strong monitor;
+  dispatch_queue_t __strong queue;
+};
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace {
 // The maximum number of seconds to wait for the connection type to be
 // determined.
@@ -173,6 +193,9 @@ NetworkChangeNotifierApple::NetworkChangeNotifierApple()
 }
 
 NetworkChangeNotifierApple::~NetworkChangeNotifierApple() {
+#if BUILDFLAG(IS_MAC)
+  StopNetworkPathMonitor();
+#endif  // BUILDFLAG(IS_MAC)
   ClearGlobalPointer();
   // Delete the ConfigWatcher to join the notifier thread, ensuring that
   // StartReachabilityNotifications() has an opportunity to run to completion.
@@ -263,7 +286,7 @@ NetworkChangeNotifierApple::CalculateConnectionType(
                               CTRadioAccessTechnologyeHRPD, nil];
     NSSet<NSString*>* technologies_4g =
         [NSSet setWithObjects:CTRadioAccessTechnologyLTE, nil];
-    // TODO: Use constants from CoreTelephony once Cronet builds with XCode 12.1
+    // TODO: Use constants from CoreTelephony once Cronet builds with Xcode 12.1
     NSSet<NSString*>* technologies_5g =
         [NSSet setWithObjects:@"CTRadioAccessTechnologyNRNSA",
                               @"CTRadioAccessTechnologyNR", nil];
@@ -336,6 +359,28 @@ void NetworkChangeNotifierApple::Forwarder::CleanUpOnNotifierThread() {
 void NetworkChangeNotifierApple::SetInitialConnectionType() {
   // Called on notifier thread.
 
+#if BUILDFLAG(IS_MAC)
+  if (EnsureNetworkPathMonitorStarted()) {
+    {
+      base::AutoLock lock(connection_type_lock_);
+      if (!connection_type_initialized_) {
+        // Mirror the legacy SCNetworkReachability behaviour: wait briefly for
+        // the asynchronous path monitor callback so GetCurrentConnectionType()
+        // observes a deterministic value during early startup.
+        base::TimeTicks end_time =
+            base::TimeTicks::Now() +
+            base::Seconds(kMaxWaitForConnectionTypeInSeconds);
+        while (!connection_type_initialized_ &&
+               base::TimeTicks::Now() < end_time) {
+          base::TimeDelta remaining = end_time - base::TimeTicks::Now();
+          initial_connection_type_cv_.TimedWait(remaining);
+        }
+      }
+    }
+    return;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   // Try to reach 0.0.0.0. This is the approach taken by Firefox:
   //
   // http://mxr.mozilla.org/mozilla2.0/source/netwerk/system/mac/nsNetworkLinkService.mm
@@ -367,6 +412,11 @@ void NetworkChangeNotifierApple::SetInitialConnectionType() {
 void NetworkChangeNotifierApple::StartReachabilityNotifications() {
   // Called on notifier thread.
   run_loop_.reset(CFRunLoopGetCurrent(), base::scoped_policy::RETAIN);
+#if BUILDFLAG(IS_MAC)
+  if (EnsureNetworkPathMonitorStarted()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   DCHECK(reachability_);
   SCNetworkReachabilityContext reachability_context = {
@@ -558,6 +608,130 @@ void NetworkChangeNotifierApple::ReachabilityCallback(
 }
 
 #if BUILDFLAG(IS_MAC)
+bool NetworkChangeNotifierApple::ShouldUseNetworkPathMonitor() const {
+  return base::FeatureList::IsEnabled(
+      features::kUseNetworkPathMonitorForNetworkChangeNotifier);
+}
+
+bool NetworkChangeNotifierApple::EnsureNetworkPathMonitorStarted() {
+  if (!ShouldUseNetworkPathMonitor()) {
+    return false;
+  }
+  if (!network_path_monitor_) {
+    network_path_monitor_ = std::make_unique<NetworkPathMonitorStorage>();
+  }
+  auto* storage = network_path_monitor_.get();
+  if (storage->monitor) {
+    return true;
+  }
+
+  storage->monitor = nw_path_monitor_create();
+  if (!storage->monitor) {
+    network_path_monitor_.reset();
+    return false;
+  }
+
+  storage->queue = dispatch_queue_create(
+      "org.chromium.net.network_path_monitor", DISPATCH_QUEUE_SERIAL);
+  if (!storage->queue) {
+    // Tear down the partially constructed monitor before releasing storage.
+    network_path_monitor_.reset();
+    return false;
+  }
+
+  nw_path_monitor_set_update_handler(storage->monitor, ^(nw_path_t path) {
+    // SAFE: StopNetworkPathMonitor() cancels the monitor and synchronously
+    // drains this queue before destruction, so the captured raw pointer cannot
+    // outlive the notifier instance.
+    NetworkChangeNotifier::ConnectionType new_type =
+        NetworkChangeNotifier::CONNECTION_NONE;
+    switch (nw_path_get_status(path)) {
+      case nw_path_status_satisfied:
+        // A fully satisfied path means we can derive the connection type from
+        // the active interfaces.
+        new_type = ConnectionTypeFromInterfaces();
+        break;
+      case nw_path_status_satisfiable:
+        // The path could become satisfied if the system performs extra work
+        // (for example, negotiating captive portals). Treat this as unknown
+        // rather than offline to avoid spurious "no connection" drops.
+        new_type = NetworkChangeNotifier::CONNECTION_UNKNOWN;
+        break;
+      case nw_path_status_unsatisfied:
+      case nw_path_status_invalid:
+      default:
+        // Treat invalid/unsatisfied as offline until better information
+        // arrives.
+        new_type = NetworkChangeNotifier::CONNECTION_NONE;
+        break;
+    }
+    OnNetworkPathConnectionTypeChanged(new_type);
+  });
+
+  nw_path_monitor_set_queue(storage->monitor, storage->queue);
+  nw_path_monitor_start(storage->monitor);
+  return true;
+}
+
+void NetworkChangeNotifierApple::StopNetworkPathMonitor() {
+  if (!network_path_monitor_) {
+    return;
+  }
+  auto* storage = network_path_monitor_.get();
+  dispatch_queue_t queue = storage->queue;
+  if (storage->monitor) {
+    nw_path_monitor_cancel(storage->monitor);
+  }
+  if (queue) {
+    // Flush pending callbacks so none outlive the notifier instance.
+    dispatch_sync(queue, ^{
+                  });
+  }
+  // Resetting the storage runs NetworkPathMonitorStorage's destructor, which
+  // clears the Network.framework monitor and dispatch queue references.
+  network_path_monitor_.reset();
+}
+
+void NetworkChangeNotifierApple::OnNetworkPathConnectionTypeChanged(
+    ConnectionType new_type) {
+  if (run_loop_) {
+    CFRunLoopPerformBlock(run_loop_.get(), kCFRunLoopCommonModes, ^{
+      ProcessConnectionTypeUpdate(new_type, /*should_notify=*/true);
+    });
+    CFRunLoopWakeUp(run_loop_.get());
+    return;
+  }
+
+  ProcessConnectionTypeUpdate(new_type, /*should_notify=*/false);
+}
+
+void NetworkChangeNotifierApple::ProcessConnectionTypeUpdate(
+    ConnectionType new_type,
+    bool should_notify) {
+  bool notify_change = false;
+  {
+    base::AutoLock lock(connection_type_lock_);
+    if (!connection_type_initialized_) {
+      connection_type_ = new_type;
+      connection_type_initialized_ = true;
+      initial_connection_type_cv_.Broadcast();
+    } else if (connection_type_ != new_type) {
+      connection_type_ = new_type;
+      notify_change = true;
+    }
+  }
+
+  if (!should_notify || !notify_change) {
+    return;
+  }
+
+  NotifyObserversOfConnectionTypeChange();
+  double max_bandwidth_mbps =
+      NetworkChangeNotifier::GetMaxBandwidthMbpsForConnectionSubtype(
+          new_type == CONNECTION_NONE ? SUBTYPE_NONE : SUBTYPE_UNKNOWN);
+  NotifyObserversOfMaxBandwidthChange(max_bandwidth_mbps, new_type);
+}
+
 void NetworkChangeNotifierApple::SetCallbacksForTest(
     base::OnceClosure initialized_callback,
     base::RepeatingCallback<bool(NetworkInterfaceList*, int)>

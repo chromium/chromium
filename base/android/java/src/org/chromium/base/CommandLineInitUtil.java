@@ -7,11 +7,11 @@ package org.chromium.base;
 import android.content.Context;
 import android.provider.Settings;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
+import java.util.function.Supplier;
 
 /** Provides implementation of command line initialization for Android. */
 @NullMarked
@@ -76,7 +76,8 @@ public final class CommandLineInitUtil {
         if (shouldUseDebugFlags != null && shouldUseDebugFlags.get()) return true;
         Context context = ContextUtils.getApplicationContext();
         // Check isDebugAndroid() last to get full code coverage when using userdebug devices.
-        return context.getPackageName().equals(getDebugApp(context)) || BuildInfo.isDebugAndroid();
+        return context.getPackageName().equals(getDebugApp(context))
+                || AndroidInfo.isDebugAndroid();
     }
 
     private static @Nullable String getDebugApp(Context context) {

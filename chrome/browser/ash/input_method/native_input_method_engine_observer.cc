@@ -59,18 +59,13 @@ namespace {
 
 namespace mojom = ::ash::ime::mojom;
 
-// Japanese Prefs should be should be set only the nacl_mozc_jp, and shared
-// across both "nacl_mozc_jp" and "nacl_mozc_us"
-constexpr char kJapanesePrefsEngineId[] = "nacl_mozc_jp";
-
 struct InputFieldContext {
   bool multiword_enabled = false;
   bool multiword_allowed = false;
 };
 
 bool ShouldRouteToFirstPartyVietnameseInput(const std::string& engine_id) {
-  return base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput) &&
-         (engine_id == "vkd_vi_vni" || engine_id == "vkd_vi_telex");
+  return engine_id == "vkd_vi_vni" || engine_id == "vkd_vi_telex";
 }
 
 bool IsRuleBasedEngine(const std::string& engine_id) {
@@ -99,16 +94,6 @@ bool IsChineseEngine(const std::string& engine_id) {
 
 bool IsJapaneseEngine(const std::string& engine_id) {
   return engine_id == "nacl_mozc_jp" || engine_id == "nacl_mozc_us";
-}
-
-bool ShouldInitializeJapanesePrefService(const std::string& engine_id,
-                                         PrefService* prefs) {
-  if (!IsJapaneseEngine(engine_id) ||
-      !base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping)) {
-    return false;
-  }
-
-  return ShouldInitializeJpPrefsFromLegacyConfig(*prefs);
 }
 
 bool IsUsEnglishEngine(const std::string& engine_id) {
@@ -719,11 +704,9 @@ bool CanRouteToNativeMojoEngine(const std::string& engine_id) {
     return false;
   }
 
-  return (base::FeatureList::IsEnabled(
-              features::kSystemJapanesePhysicalTyping) &&
-          IsJapaneseEngine(engine_id)) ||
-         IsTransliterationEngine(engine_id) || IsKoreanEngine(engine_id) ||
-         IsFstEngine(engine_id) || IsChineseEngine(engine_id);
+  return IsJapaneseEngine(engine_id) || IsTransliterationEngine(engine_id) ||
+         IsKoreanEngine(engine_id) || IsFstEngine(engine_id) ||
+         IsChineseEngine(engine_id);
 }
 
 NativeInputMethodEngineObserver::NativeInputMethodEngineObserver(
@@ -809,41 +792,13 @@ void NativeInputMethodEngineObserver::OnFocusAck(
   if (text_client_ && text_client_->context_id == context_id) {
     text_client_->state = TextClientState::kActive;
   }
-  if ((base::FeatureList::IsEnabled(features::kAutocorrectByDefault) ||
-       base::FeatureList::IsEnabled(features::kImeUsEnglishModelUpdate)) &&
-      !metadata.is_null()) {
+  if (!metadata.is_null()) {
     autocorrect_manager_->OnConnectedToSuggestionProvider(
         metadata->autocorrect_suggestion_provider);
   }
 }
 
-void NativeInputMethodEngineObserver::SetJapanesePrefsFromLegacyConfig(
-    mojom::JapaneseLegacyConfigResponsePtr response) {
-  if (!response->is_response()) {
-    return;
-  }
-
-  SetLanguageInputMethodSpecificSetting(
-      *prefs_, kJapanesePrefsEngineId,
-      CreatePrefsDictFromJapaneseLegacyConfig(
-          std::move(response->get_response())));
-
-  // Set a flag saying PrefService is now used for JP config.
-  SetJpOptionsSourceAsPrefService(*prefs_);
-}
-
 void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
-  if (ShouldInitializeJapanesePrefService(engine_id, prefs_)) {
-    if (!user_data_service_.is_bound()) {
-      auto* ime_manager = InputMethodManager::Get();
-      ime_manager->BindInputMethodUserDataService(
-          user_data_service_.BindNewPipeAndPassReceiver());
-    }
-    user_data_service_->FetchJapaneseLegacyConfig(base::BindOnce(
-        &NativeInputMethodEngineObserver::SetJapanesePrefsFromLegacyConfig,
-        weak_ptr_factory_.GetWeakPtr()));
-  }
-
   // Always hide the candidates window and clear the quick settings menu when
   // switching input methods.
   UpdateCandidatesWindowSync(nullptr);
@@ -1182,18 +1137,6 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
           chromeos::settings::mojom::kInputSubpagePath);
       break;
     case ui::ime::ButtonId::kLearnMore:
-      if (button.window_type ==
-          ash::ime::AssistiveWindowType::kEmojiSuggestion) {
-        base::RecordAction(base::UserMetricsAction(
-            "ChromeOS.Settings.SmartInputs.EmojiSuggestions.Open"));
-        // TODO(crbug.com/40138453): Add subpath for emoji suggestions
-        // settings.
-        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-            ProfileManager::GetActiveUserProfile(),
-            SettingToQueryString(
-                chromeos::settings::mojom::kInputSubpagePath,
-                chromeos::settings::mojom::Setting::kShowEmojiSuggestions));
-      }
       if (button.window_type ==
           ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion) {
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(

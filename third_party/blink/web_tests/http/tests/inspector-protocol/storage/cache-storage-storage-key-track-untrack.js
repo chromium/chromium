@@ -7,9 +7,8 @@
   await session.evaluateAsync('caches.delete("test-cache")');
 
   const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
-  const storageKey = (await dp.Storage.getStorageKeyForFrame({
-                       frameId: frameId
-                     })).result.storageKey;
+  const storageKey =
+      (await dp.Storage.getStorageKey({frameId: frameId})).result.storageKey;
   await dp.Storage.trackCacheStorageForStorageKey({storageKey});
   const listUpdatedPromise = dp.Storage.onceCacheStorageListUpdated();
   const contentUpdatedPromise = dp.Storage.onceCacheStorageContentUpdated();

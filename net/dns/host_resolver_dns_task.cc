@@ -8,8 +8,10 @@
 #include <string_view>
 #include <variant>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/time/tick_clock.h"
 #include "base/types/optional_util.h"
 #include "net/base/features.h"
@@ -25,6 +27,9 @@
 #include "net/dns/public/util.h"
 
 namespace net {
+
+// When enabled, query HTTPS RR first.
+BASE_FEATURE(kPrioritizeHttpsResourceRecord, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -78,41 +83,16 @@ base::Value::Dict NetLogResults(const HostResolverDnsTask::Results& results) {
   return dict;
 }
 
-void RecordResolveTimeDiffForBucket(const char* histogram_variant,
-                                    const char* histogram_bucket,
-                                    base::TimeDelta diff) {
-  base::UmaHistogramTimes(
-      base::StrCat({"Net.Dns.ResolveTimeDiff.", histogram_variant,
-                    ".FirstRecord", histogram_bucket}),
-      diff);
-}
-
 void RecordResolveTimeDiff(const char* histogram_variant,
                            base::TimeTicks start_time,
                            base::TimeTicks first_record_end_time,
                            base::TimeTicks second_record_end_time) {
   CHECK_LE(start_time, first_record_end_time);
   CHECK_LE(first_record_end_time, second_record_end_time);
-  base::TimeDelta first_elapsed = first_record_end_time - start_time;
   base::TimeDelta diff = second_record_end_time - first_record_end_time;
 
-  if (first_elapsed < base::Milliseconds(10)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "FasterThan10ms", diff);
-  } else if (first_elapsed < base::Milliseconds(25)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "10msTo25ms", diff);
-  } else if (first_elapsed < base::Milliseconds(50)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "25msTo50ms", diff);
-  } else if (first_elapsed < base::Milliseconds(100)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "50msTo100ms", diff);
-  } else if (first_elapsed < base::Milliseconds(250)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "100msTo250ms", diff);
-  } else if (first_elapsed < base::Milliseconds(500)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "250msTo500ms", diff);
-  } else if (first_elapsed < base::Seconds(1)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "500msTo1s", diff);
-  } else {
-    RecordResolveTimeDiffForBucket(histogram_variant, "SlowerThan1s", diff);
-  }
+  base::UmaHistogramTimes(
+      base::StrCat({"Net.Dns.ResolveTimeDiff2.", histogram_variant}), diff);
 }
 
 // Gets endpoints for sort and prepares `results` to add sorted and merged
@@ -384,6 +364,7 @@ DnsQueryTypeSet HostResolverDnsTask::MaybeDisableAdditionalQueries(
 
   if (types.Has(DnsQueryType::HTTPS)) {
     if (!secure_ && !client_->CanQueryAdditionalTypesViaInsecureDns()) {
+      https_disabled_ = true;
       types.Remove(DnsQueryType::HTTPS);
     } else {
       DCHECK(!httpssvc_metrics_);
@@ -404,25 +385,38 @@ void HostResolverDnsTask::PushTransactionsNeeded(DnsQueryTypeSet query_types) {
                                       TransactionErrorBehavior::kFatalOrEmpty);
   }
 
-  // Give AAAA/A queries a head start by pushing them to the queue first.
-  constexpr DnsQueryType kHighPriorityQueries[] = {DnsQueryType::AAAA,
-                                                   DnsQueryType::A};
-  for (DnsQueryType high_priority_query : kHighPriorityQueries) {
-    if (query_types.Has(high_priority_query)) {
-      query_types.Remove(high_priority_query);
-      transactions_needed_.emplace_back(high_priority_query);
-    }
-  }
-  for (DnsQueryType remaining_query : query_types) {
-    if (remaining_query == DnsQueryType::HTTPS) {
+  auto add_transaction = [&](DnsQueryType query) {
+    if (query == DnsQueryType::HTTPS) {
       // Ignore errors for these types. In most cases treating them normally
       // would only result in fallback to resolution without querying the
       // type. Instead, synthesize empty results.
       transactions_needed_.emplace_back(
-          remaining_query, TransactionErrorBehavior::kSynthesizeEmpty);
+          query, TransactionErrorBehavior::kSynthesizeEmpty);
     } else {
-      transactions_needed_.emplace_back(remaining_query);
+      transactions_needed_.emplace_back(query);
     }
+  };
+
+  if (query_types.Has(DnsQueryType::HTTPS) &&
+      (base::FeatureList::IsEnabled(kPrioritizeHttpsResourceRecord) ||
+       base::FeatureList::IsEnabled(features::kHappyEyeballsV3))) {
+    query_types.Remove(DnsQueryType::HTTPS);
+    add_transaction(DnsQueryType::HTTPS);
+  }
+
+  // Give AAAA/A queries a head start by pushing them to the queue first.
+  constexpr DnsQueryType kHighPriorityQueries[] = {DnsQueryType::AAAA,
+                                                   DnsQueryType::A};
+  for (DnsQueryType high_priority_query : kHighPriorityQueries) {
+    if (!query_types.Has(high_priority_query)) {
+      continue;
+    }
+    query_types.Remove(high_priority_query);
+    add_transaction(high_priority_query);
+  }
+
+  for (DnsQueryType remaining_query : query_types) {
+    add_transaction(remaining_query);
   }
 }
 
@@ -693,8 +687,10 @@ bool HostResolverDnsTask::IsFatalTransactionFailure(
     DCHECK(transaction_info.error_behavior !=
            TransactionErrorBehavior::kFatalOrEmpty);
     error = HttpsTransactionError::kInsecureError;
-  } else if (transaction_error == ERR_DNS_SERVER_FAILED && response &&
-             response->rcode() != dns_protocol::kRcodeSERVFAIL) {
+  } else if (transaction_error == ERR_DNS_FORMAT_ERROR ||
+             transaction_error == ERR_DNS_NOT_IMPLEMENTED ||
+             transaction_error == ERR_DNS_REFUSED ||
+             transaction_error == ERR_DNS_OTHER_FAILURE) {
     // For server failures, only SERVFAIL is fatal.
     error = HttpsTransactionError::kNonFatalError;
   } else if (features::kUseDnsHttpsSvcbEnforceSecureResponse.Get()) {
@@ -1086,7 +1082,7 @@ void HostResolverDnsTask::MaybeStartTimeoutTimer() {
   base::TimeDelta timeout_min;
 
   if (AnyOfTypeTransactionsRemain({DnsQueryType::HTTPS})) {
-    DCHECK(https_svcb_options_.enable);
+    DCHECK(base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb));
 
     if (secure_) {
       timeout_max = https_svcb_options_.secure_extra_time_max;

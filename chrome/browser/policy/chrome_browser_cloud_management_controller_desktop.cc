@@ -18,6 +18,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/device_identity/device_identity_provider.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_loader.h"
 #include "chrome/browser/enterprise/remote_commands/cbcm_remote_commands_factory.h"
@@ -35,9 +36,10 @@
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/invalidation_listener.h"
+#include "components/invalidation/legacy_topics_cleaner.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/remote_commands/remote_commands_constants.h"
-#include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -147,7 +149,8 @@ ChromeBrowserCloudManagementControllerDesktop::
 void ChromeBrowserCloudManagementControllerDesktop::InitializeOAuthTokenFactory(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* local_state) {
-  DeviceOAuth2TokenServiceFactory::Initialize(url_loader_factory, local_state);
+  DeviceOAuth2TokenServiceFactory::Initialize(
+      url_loader_factory, local_state, g_browser_process->os_crypt_async());
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::StartWatchingRegistration(
@@ -202,22 +205,16 @@ void ChromeBrowserCloudManagementControllerDesktop::OnServiceAccountSet(
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::ShutDown() {
-  if (policy_invalidator_) {
-    policy_invalidator_->Shutdown();
-  }
-  if (commands_invalidator_) {
-    commands_invalidator_->Shutdown();
-  }
-
   policy_invalidator_.reset();
   commands_invalidator_.reset();
   fm_registration_token_uploaders_.clear();
   invalidation_listener_per_project_.clear();
   device_instance_id_driver_.reset();
+  legacy_topics_cleaner_.reset();
 
   // In some tests, `DCHECK_CURRENTLY_ON(content::BrowserThread::UI)` fails.
-  // Such tests have not initialized device_oauth2_token_service anyway, so skip
-  // calling Shutdown() for the service.
+  // Such tests have not initialized device_oauth2_token_service anyway, so
+  // skip calling Shutdown() for the service.
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     CHECK_IS_TEST();
     return;
@@ -309,21 +306,9 @@ ChromeBrowserCloudManagementControllerDesktop::
             client_certificates::CreatePrivateKeyFactory());
   }
 
-  auto* device_management_service = GetDeviceManagementService();
-  auto url_loader_factory = GetSharedURLLoaderFactory();
-  if (!url_loader_factory || !device_management_service ||
-      !certificate_store_) {
-    return nullptr;
-  }
-
-  return client_certificates::CertificateProvisioningService::Create(
+  return client_certificates::CreateBrowserCertificateProvisioningService(
       g_browser_process->local_state(), certificate_store_.get(),
-      std::make_unique<client_certificates::BrowserContextDelegate>(),
-      client_certificates::KeyUploadClient::Create(
-          std::make_unique<
-              enterprise_attestation::BrowserCloudManagementDelegate>(
-              enterprise_attestation::DMServerClient::Create(
-                  device_management_service, std::move(url_loader_factory)))));
+      GetDeviceManagementService(), GetSharedURLLoaderFactory());
 #else
   return nullptr;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
@@ -349,25 +334,26 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
                    ->machine_level_user_cloud_policy_manager()
                    ->core();
 
+  invalidation::InvalidationListener* policy_invalidation_listener =
+      invalidation_listener_per_project_
+          [policy::kPolicyInvalidationProjectNumber]
+              .get();
   policy_invalidator_ = std::make_unique<CloudPolicyInvalidator>(
-      PolicyInvalidationScope::kCBCM, core,
+      PolicyInvalidationScope::kCBCM, policy_invalidation_listener, core,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
-      base::DefaultClock::GetInstance(),
-      0 /* highest_handled_invalidation_version */);
-  policy_invalidator_->Initialize(invalidation_listener_per_project_
-                                      [policy::kPolicyInvalidationProjectNumber]
-                                          .get());
+      base::DefaultClock::GetInstance());
 
   core->StartRemoteCommandsService(
       std::make_unique<enterprise_commands::CBCMRemoteCommandsFactory>(),
       PolicyInvalidationScope::kCBCM);
 
-  commands_invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
-      core, base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
-  commands_invalidator_->Initialize(
+  invalidation::InvalidationListener* remote_commands_invalidation_listener =
       invalidation_listener_per_project_
           [policy::kRemoteCommandsInvalidationsProjectNumber]
-              .get());
+              .get();
+  commands_invalidator_ = std::make_unique<RemoteCommandsInvalidator>(
+      remote_commands_invalidation_listener, core,
+      base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
 
   for (const auto& [project_number, invalidation_listener] :
        invalidation_listener_per_project_) {
@@ -375,6 +361,12 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
         std::make_unique<FmRegistrationTokenUploader>(
             PolicyInvalidationScope::kCBCM, invalidation_listener.get(), core));
   }
+
+  legacy_topics_cleaner_ = std::make_unique<invalidation::LegacyTopicsCleaner>(
+      g_browser_process->shared_url_loader_factory(),
+      std::make_unique<DeviceIdentityProvider>(
+          DeviceOAuth2TokenServiceFactory::Get()),
+      g_browser_process->local_state());
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

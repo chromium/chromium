@@ -32,7 +32,7 @@ class ControlKey {
 
   // Hash table deleted values, which are only constructed and never copied or
   // destroyed.
-  ControlKey(WTF::HashTableDeletedValueType) : type_(g_star_atom) {}
+  ControlKey(HashTableDeletedValueType) : type_(g_star_atom) {}
   bool IsHashTableDeletedValue() const { return type_ == g_star_atom; }
 
   friend bool operator==(const ControlKey&, const ControlKey&) = default;

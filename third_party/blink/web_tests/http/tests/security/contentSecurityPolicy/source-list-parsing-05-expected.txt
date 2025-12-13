@@ -1,24 +1,16 @@
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 127.0.0.1:*/path". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
+CONSOLE ERROR: Loading the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' violates the following Content Security Policy directive: "script-src 127.0.0.1:*/path". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
 CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains a source with an invalid path: '/path?query=string'. The query component, including the '?', will be ignored.
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 127.0.0.1:*/path?query=string". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
+CONSOLE ERROR: Loading the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' violates the following Content Security Policy directive: "script-src 127.0.0.1:*/path?query=string". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
 CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains a source with an invalid path: '/path#anchor'. The fragment identifier, including the '#', will be ignored.
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 127.0.0.1:*/path#anchor". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/path". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
+CONSOLE ERROR: Loading the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' violates the following Content Security Policy directive: "script-src 127.0.0.1:*/path#anchor". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
+CONSOLE ERROR: Loading the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/path". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
 CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains a source with an invalid path: '/path?query=string'. The query component, including the '?', will be ignored.
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/path?query=string". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
+CONSOLE ERROR: Loading the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/path?query=string". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
 CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains a source with an invalid path: '/path#anchor'. The fragment identifier, including the '#', will be ignored.
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/path#anchor". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
+CONSOLE ERROR: Loading the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/path#anchor". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
 CONSOLE ERROR: Unrecognized Content-Security-Policy directive 'pathwithasemicolon'.
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/thisisa". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/this is a path with spaces". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
+CONSOLE ERROR: Loading the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/thisisa". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
+CONSOLE ERROR: Loading the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/this is a path with spaces". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
 Paths should be ignored when evaluating sources. This test passes if FAIL does not appear in the output, and each of the tests generates a warning about the path component.
 
 --------

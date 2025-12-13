@@ -51,7 +51,7 @@ CGFloat ToolbarExpandedHeight(UIContentSizeCategory category) {
   return Interpolate(category, kToolbarOmniboxHeight, kNonDynamicToolbarHeight);
 }
 
-CGFloat LocationBarHeight(UIContentSizeCategory category) {
+CGFloat LocationBarVerticalMargins(UIContentSizeCategory category) {
   category = NormalizedCategory(category);
   CGFloat verticalMargin =
       2 * kAdaptiveLocationBarVerticalMargin - kTopToolbarUnsplitMargin;
@@ -60,5 +60,10 @@ CGFloat LocationBarHeight(UIContentSizeCategory category) {
       (kLocationBarVerticalMarginDynamicType +
        kAdaptiveLocationBarVerticalMargin);
   verticalMargin = verticalMargin + dynamicTypeVerticalAdjustment;
+  return AlignValueToPixel(verticalMargin);
+}
+
+CGFloat LocationBarHeight(UIContentSizeCategory category) {
+  CGFloat verticalMargin = LocationBarVerticalMargins(category);
   return AlignValueToPixel(ToolbarExpandedHeight(category) - verticalMargin);
 }

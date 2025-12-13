@@ -37,7 +37,6 @@
 <translation id="2311842470354187719">разделител на страници</translation>
 <translation id="2335594187091864976">инструмент за избор на дата и час</translation>
 <translation id="2393030564806080191">Шестнадесетична стойност за цвета</translation>
-<translation id="2398813069815436052">диалоговият прозорец е отворен.</translation>
 <translation id="245932805758469625">оставащи секунди до края на видеоклипа</translation>
 <translation id="248395913932153421">Ден</translation>
 <translation id="2508569020611168319">списък с раздели</translation>
@@ -58,7 +57,7 @@
 <translation id="3078740164268491126">таблица</translation>
 <translation id="3086746722712840547">забележка</translation>
 <translation id="3175736971608411871">таймер</translation>
-<translation id="3199563858620722075">разгъващ се списък</translation>
+<translation id="3199563858620722075">комбинирано поле</translation>
 <translation id="3220661731597678625">текуща стъпка</translation>
 <translation id="3329013043687509092">Насищане</translation>
 <translation id="3486220673238053218">дефиниция</translation>
@@ -223,6 +222,7 @@
 <translation id="8634971699417195529">Показване на инструмента за избор на месец</translation>
 <translation id="8711688047404765493">изход</translation>
 <translation id="8808573423886751634">глава</translation>
+<translation id="8826423933757944500">надпис</translation>
 <translation id="8851136666856101339">основен елемент</translation>
 <translation id="8861621546968757188">бутон за отваряне на изскачащ диалогов прозорец</translation>
 <translation id="8889402386540077796">Цветови тон</translation>

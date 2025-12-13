@@ -18,22 +18,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chromeos/ash/components/kcer/kcer_nss/test_utils.h"
+#include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_chromeos_user.h"
-#include "crypto/scoped_test_nss_db.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
-#include "net/base/features.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
-#include "net/ssl/client_cert_identity_test_util.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_private_key_test_util.h"
@@ -274,24 +270,9 @@ TEST_F(ClientCertStoreKcerTest, Filter) {
   }
 }
 
-class ClientCertStoreKcerMatchingTest
-    : public ClientCertStoreKcerTest,
-      public testing::WithParamInterface<bool> {
- public:
-  ClientCertStoreKcerMatchingTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        net::features::kNewClientCertPathBuilding, UseNewPathBuilding());
-  }
-
-  bool UseNewPathBuilding() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Ensure that the delegation of the request matching to the base class is
 // functional.
-TEST_P(ClientCertStoreKcerMatchingTest, CertRequestMatching) {
+TEST_F(ClientCertStoreKcerTest, CertRequestMatching) {
   user1_.FinishInit();
 
   ClientCertStoreKcer store(nullptr,  // no additional provider
@@ -325,7 +306,7 @@ TEST_P(ClientCertStoreKcerMatchingTest, CertRequestMatching) {
 
 // Tests that ClientCertStoreKcer attempts to build a certificate chain by
 // querying NSS before return a certificate.
-TEST_P(ClientCertStoreKcerMatchingTest, BuildsCertificateChain) {
+TEST_F(ClientCertStoreKcerTest, BuildsCertificateChain) {
   user1_.FinishInit();
 
   crypto::ScopedPK11Slot private_slot = crypto::GetPrivateSlotForChromeOSUser(
@@ -348,15 +329,8 @@ TEST_P(ClientCertStoreKcerMatchingTest, BuildsCertificateChain) {
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "client_1_ca.pem"));
   ASSERT_TRUE(client_1_ca.get());
 
-  crypto::ScopedTestNSSDB public_slot;
-  net::CertificateList issuers_for_new_pathbuilder;
-  if (UseNewPathBuilding()) {
-    issuers_for_new_pathbuilder.push_back(client_1_ca);
-  } else {
-    // Import client_1_ca.pem into a separate slot, that is visible to NSS in
-    // general, but not to Kcer for user1.
-    ASSERT_TRUE(net::ImportClientCertToSlot(client_1_ca, public_slot.slot()));
-  }
+  net::CertificateList issuers;
+  issuers.push_back(client_1_ca);
 
   // These test keys are RSA keys.
   std::vector<uint16_t> expected =
@@ -366,7 +340,7 @@ TEST_P(ClientCertStoreKcerMatchingTest, BuildsCertificateChain) {
   {
     ClientCertStoreKcer store(nullptr,  // no additional provider
                               kcer_holder_->GetKcer(),
-                              IssuerSourceGetter(issuers_for_new_pathbuilder));
+                              IssuerSourceGetter(issuers));
 
     // Request certificates matching B CA, |client_1|'s issuer.
     auto request = base::MakeRefCounted<net::SSLCertRequestInfo>();
@@ -403,7 +377,7 @@ TEST_P(ClientCertStoreKcerMatchingTest, BuildsCertificateChain) {
   {
     ClientCertStoreKcer store(nullptr,  // no additional provider
                               kcer_holder_->GetKcer(),
-                              IssuerSourceGetter(issuers_for_new_pathbuilder));
+                              IssuerSourceGetter(issuers));
 
     // Request certificates matching C Root CA, |client_1_ca|'s issuer.
     auto request = base::MakeRefCounted<net::SSLCertRequestInfo>();
@@ -440,7 +414,5 @@ TEST_P(ClientCertStoreKcerMatchingTest, BuildsCertificateChain) {
     TestSSLPrivateKeyMatches(ssl_private_key.get(), pkcs8_key);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(, ClientCertStoreKcerMatchingTest, testing::Bool());
 
 }  // namespace ash

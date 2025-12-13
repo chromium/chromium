@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/mojom/connection_allowlist.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/integrity_policy.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -26,6 +27,7 @@ struct SameSizeAsPolicyContainerPolicies {
   network::mojom::ReferrerPolicy referrer_policy;
   network::mojom::IPAddressSpace ip_address_space;
   bool is_web_secure_context;
+  network::ConnectionAllowlists connection_allowlists;
   std::vector<network::mojom::ContentSecurityPolicyPtr>
       content_security_policies;
   network::CrossOriginOpenerPolicy cross_origin_opener_policy;
@@ -55,6 +57,11 @@ static_assert(sizeof(PolicyContainerPolicies) ==
               "relevant methods of `PolicyContainerPolicies`.");
 
 TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
+  network::ConnectionAllowlists connection_allowlists;
+  network::ConnectionAllowlist enforced;
+  enforced.allowlist.push_back("https://site.example/");
+  connection_allowlists.enforced = enforced;
+
   std::vector<network::mojom::ContentSecurityPolicyPtr> csps;
   auto csp = network::mojom::ContentSecurityPolicy::New();
   csp->treat_as_public_address = true;
@@ -94,8 +101,10 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
   PolicyContainerPolicies policies(
       network::mojom::ReferrerPolicy::kAlways,
       network::mojom::IPAddressSpace::kUnknown,
-      /*is_web_secure_context=*/true, std::move(csps), coop, coep,
-      std::move(dip), ip, network::IntegrityPolicy(), sandbox_flags,
+      /*allow_non_secure_local_network_access=*/true,
+      /*is_web_secure_context=*/true, std::move(connection_allowlists),
+      std::move(csps), coop, coep, std::move(dip), ip,
+      network::IntegrityPolicy(), sandbox_flags,
       /*is_credentialless=*/true,
       /*can_navigate_top_without_user_gesture=*/true,
       /*cross_origin_isolation_enabled_by_dip=*/false);

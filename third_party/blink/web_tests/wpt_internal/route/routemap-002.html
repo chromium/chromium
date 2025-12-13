@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<title>Set new URL, then go back</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
+<script type="routemap">
+  {
+    "routes": [
+      {
+        "name": "r1",
+        "pattern": { "protocol": "http*" }
+      },
+      {
+        "name": "r2",
+        "pattern": { "pathname": "*match-later*" }
+      }
+    ]
+  }
+</script>
+<style>
+  #target {
+    width: 7px;
+    height: 7px;
+  }
+
+  @navigation (r1) {
+    #target {
+      width: 100px;
+    }
+  }
+
+  @navigation (r2) {
+    #target {
+      height: 100px;
+    }
+  }
+</style>
+<div id="target"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    assert_equals(getComputedStyle(target).width, "100px");
+    assert_equals(getComputedStyle(target).height, "7px");
+  }, "Initially only route r1 should match");
+
+  promise_test(async t => {
+    history.pushState(0, null, "match-later");
+    window.onpageshow = t.step_func_done(() => {
+      assert_equals(getComputedStyle(target).width, "100px");
+      assert_equals(getComputedStyle(target).height, "100px");
+    });
+  }, "Both routes should match");
+
+  promise_test(async t => {
+    window.onpopstate = t.step_func_done(() => {
+      assert_equals(getComputedStyle(target).width, "100px");
+      assert_equals(getComputedStyle(target).height, "7px");
+    });
+    history.back();
+  }, "Going back again, only route r1 should match");
+</script>

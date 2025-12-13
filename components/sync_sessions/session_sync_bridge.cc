@@ -253,8 +253,7 @@ SessionSyncBridge::ApplyIncrementalSyncChanges(
     }
   }
 
-  static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
-      ->TransferChangesTo(batch->GetMetadataChangeList());
+  metadata_change_list->TransferChangesTo(batch->GetMetadataChangeList());
 
   DoGarbageCollection(batch.get());
 

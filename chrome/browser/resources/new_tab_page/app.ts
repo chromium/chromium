@@ -2,18 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './composebox/composebox.js';
+import './action_chips/action_chips.js';
 import './iframe.js';
 import './logo.js';
 import '/strings.m.js';
 import 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import 'chrome://resources/cr_components/searchbox/searchbox.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/cr_components/composebox/composebox.js';
 
+import {GlifAnimationState} from '//resources/cr_components/composebox/context_menu_entrypoint.js';
 import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {ContextualUpload} from 'chrome://resources/cr_components/composebox/common.js';
+import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
+import {VoiceSearchAction as ComposeVoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
+import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
+import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
@@ -26,25 +35,33 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
+import {ActionChipsRetrievalState} from './action_chips/action_chips.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BackgroundManager} from './background_manager.js';
-import {ComposeboxProxyImpl} from './composebox/composebox_proxy.js';
 import type {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote} from './customize_buttons.mojom-webui.js';
-import {CustomizeChromeSection, SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
+import {SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
 import {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
+import {CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
 import type {IframeElement} from './iframe.js';
 import type {LogoElement} from './logo.js';
-import {recordBoolean, recordDuration, recordEnumeration, recordLoadDuration, recordSparseValueWithPersistentHash, recordValue} from './metrics_utils.js';
+import {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordSparseValueWithPersistentHash} from './metrics_utils.js';
 import {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
 import type {PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
-import {IphFeature, NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
+import {NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import type {MicrosoftAuthUntrustedDocumentRemote} from './ntp_microsoft_auth_shared_ui.mojom-webui.js';
+import {ShowNtpPromosResult} from './ntp_promo.mojom-webui.js';
 import {$$} from './utils.js';
 import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
 import {WindowProxy} from './window_proxy.js';
+
+enum ModuleLoadStatus {
+  MODULE_LOAD_IN_PROGRESS = 0,
+  MODULE_LOAD_NOT_ATTEMPTED = 1,
+  MODULE_LOAD_COMPLETE = 2,
+}
 
 interface ExecutePromoBrowserCommandData {
   commandId: Command;
@@ -75,7 +92,8 @@ export enum NtpElement {
   CUSTOMIZE_BUTTON = 9,
   CUSTOMIZE_DIALOG = 10,  // Obsolete
   WALLPAPER_SEARCH_BUTTON = 11,
-  MAX_VALUE = WALLPAPER_SEARCH_BUTTON,
+  ACTION_CHIPS = 12,
+  MAX_VALUE = ACTION_CHIPS,
 }
 
 /**
@@ -107,7 +125,7 @@ const OGB_IFRAME_ORIGIN = 'chrome-untrusted://new-tab-page';
 const MSAL_IFRAME_ORIGIN = 'chrome-untrusted://ntp-microsoft-auth';
 
 export const CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID =
-    'NewTabPageUI::kCustomizeChromeButtonElementId';
+    'CustomizeButtonsHandler::kCustomizeChromeButtonElementId';
 
 // 900px ~= 561px (max value for --ntp-search-box-width) * 1.5 + some margin.
 const realboxCanShowSecondarySideMediaQueryList =
@@ -131,6 +149,12 @@ function ensureLazyLoaded() {
   document.body.appendChild(script);
 }
 
+function recordShowBrowserPromosResult(result: ShowNtpPromosResult) {
+  recordEnumeration(
+      'UserEducation.NtpPromos.ShowResult', result,
+      ShowNtpPromosResult.MAX_VALUE + 1);
+}
+
 const AppElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export interface AppElement {
@@ -138,6 +162,8 @@ export interface AppElement {
     customizeButtons: CustomizeButtonsElement,
     oneGoogleBarClipPath: HTMLElement,
     logo: LogoElement,
+    searchbox: SearchboxElement,
+    composebox: ComposeboxElement,
   };
 }
 
@@ -164,6 +190,8 @@ export class AppElement extends AppElementBase {
       showCustomizeChromeText_: {type: Boolean},
 
       showWallpaperSearch_: {type: Boolean},
+
+      isActionChipsVisible_: {type: Boolean},
 
       isFooterVisible_: {type: Boolean},
 
@@ -207,7 +235,11 @@ export class AppElement extends AppElementBase {
       composeboxEnabled: {type: Boolean},
       composeButtonEnabled: {type: Boolean},
 
-      browserPromosEnabled_: {type: Boolean},
+      browserPromoType_: {type: String},
+      browserPromoLimit_: {type: Number},
+      browserPromoCompletedLimit_: {type: Number},
+      showBrowserPromo_: {type: Boolean},
+
       realboxShown_: {type: Boolean},
       logoEnabled_: {type: Boolean},
       oneGoogleBarEnabled_: {type: Boolean},
@@ -215,7 +247,10 @@ export class AppElement extends AppElementBase {
       middleSlotPromoEnabled_: {type: Boolean},
       modulesEnabled_: {type: Boolean},
       middleSlotPromoLoaded_: {type: Boolean},
-      modulesLoaded_: {type: Boolean},
+      modulesLoadedStatus_: {
+        type: Number,
+        reflect: true,
+      },
 
       modulesShownToUser: {
         type: Boolean,
@@ -225,12 +260,26 @@ export class AppElement extends AppElementBase {
       microsoftModuleEnabled_: {type: Boolean},
       microsoftAuthIframePath_: {type: String},
 
+      ntpRealboxNextEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
+
       /**
        * In order to avoid flicker, the promo and modules are hidden until both
        * are loaded. If modules are disabled, the promo is shown as soon as it
        * is loaded.
        */
       promoAndModulesLoaded_: {type: Boolean},
+
+      realboxLayoutMode_: {
+        type: String,
+        reflect: true,
+      },
+
+      searchboxCyclingPlaceholders_: {
+        type: Boolean,
+      },
 
       showComposebox_: {
         type: Boolean,
@@ -252,6 +301,23 @@ export class AppElement extends AppElementBase {
       wallpaperSearchButtonEnabled_: {type: Boolean},
 
       showWallpaperSearchButton_: {type: Boolean},
+
+      /**
+       * Whether the composebox has been opened at least once.
+       */
+      wasComposeboxOpened_: {type: Boolean},
+
+      ntpNextFeaturesEnabled_: {type: Boolean},
+      maxTilesBeforeShowMore_: {type: Number},
+
+      searchboxInputFocused_: {type: Boolean},
+      composeboxInputFocused_: {type: Boolean},
+      /**
+       * Whether the scrim is shown in Realbox Next.
+       */
+      showScrim_: {type: Boolean, reflect: true},
+
+      contextMenuGlifAnimationState_: {type: String},
     };
   }
 
@@ -274,6 +340,7 @@ export class AppElement extends AppElementBase {
   accessor realboxCanShowSecondarySide: boolean = false;
   accessor realboxHadSecondarySide: boolean = false;
   protected accessor realboxShown_: boolean = false;
+  protected accessor wasComposeboxOpened_: boolean = false;
   protected accessor showLensUploadDialog_: boolean = false;
   protected accessor showComposebox_: boolean = false;
   protected accessor logoEnabled_: boolean =
@@ -286,10 +353,16 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('middleSlotPromoEnabled');
   protected accessor modulesEnabled_: boolean =
       loadTimeData.getBoolean('modulesEnabled');
-  protected accessor browserPromosEnabled_: boolean =
-      loadTimeData.getBoolean('browserPromosEnabled');
+  protected accessor browserPromoType_: string =
+      loadTimeData.getString('browserPromoType');
+  protected accessor browserPromoLimit_: number =
+      loadTimeData.getInteger('browserPromoLimit');
+  protected accessor browserPromoCompletedLimit_: number =
+      loadTimeData.getInteger('browserPromoCompletedLimit');
+  protected accessor showBrowserPromo_: boolean = false;
   private accessor middleSlotPromoLoaded_: boolean = false;
-  private accessor modulesLoaded_: boolean = false;
+  private accessor modulesLoadedStatus_: ModuleLoadStatus =
+      ModuleLoadStatus.MODULE_LOAD_IN_PROGRESS;
   protected accessor modulesShownToUser: boolean = false;
   protected accessor microsoftModuleEnabled_: boolean =
       loadTimeData.getBoolean('microsoftModuleEnabled');
@@ -309,7 +382,28 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('composeboxCloseByClickOutside');
   accessor composeboxEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposebox');
+  protected accessor isActionChipsVisible_: boolean =
+      loadTimeData.getBoolean('actionChipsEnabled');
   protected accessor isFooterVisible_: boolean = false;
+  protected accessor ntpRealboxNextEnabled_: boolean =
+      loadTimeData.getBoolean('ntpRealboxNextEnabled');
+  protected accessor realboxLayoutMode_: string =
+      loadTimeData.getString('realboxLayoutMode');
+  protected accessor searchboxCyclingPlaceholders_: boolean =
+      loadTimeData.getBoolean('searchboxCyclingPlaceholders');
+  protected accessor ntpNextFeaturesEnabled_: boolean =
+      loadTimeData.getBoolean('ntpNextFeaturesEnabled');
+  protected accessor maxTilesBeforeShowMore_: number =
+      loadTimeData.getInteger('maxTilesBeforeShowMore');
+  protected accessor searchboxInputFocused_: boolean = false;
+  protected accessor composeboxInputFocused_: boolean = false;
+  protected accessor showScrim_: boolean = false;
+  protected accessor contextMenuGlifAnimationState_: GlifAnimationState =
+      this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_ ?
+      GlifAnimationState.SPINNER_ONLY :
+      GlifAnimationState.INELIGIBLE;
+  protected enableModalComposebox_: boolean =
+      loadTimeData.getBoolean('enableModalComposebox');
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -321,12 +415,16 @@ export class AppElement extends AppElementBase {
   private setThemeListenerId_: number|null = null;
   private setCustomizeChromeSidePanelVisibilityListener_: number|null = null;
   private setWallpaperSearchButtonVisibilityListener_: number|null = null;
+  private setActionChipsVisibilityListenerId_: number|null = null;
   private footerVisibilityUpdatedListener_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   private shouldPrintPerformance_: boolean = false;
   private backgroundImageLoadStartEpoch_: number = 0;
   private backgroundImageLoadStart_: number = 0;
   private showWebstoreToastListenerId_: number|null = null;
+  private pendingComposeboxContextFiles_: ContextualUpload[] = [];
+  private pendingComposeboxText_: string = '';
+  private pendingComposeboxMode_: ComposeboxMode = ComposeboxMode.DEFAULT;
 
   constructor() {
     performance.mark('app-creation-start');
@@ -362,24 +460,18 @@ export class AppElement extends AppElementBase {
      */
     this.backgroundImageLoadStartEpoch_ = performance.timeOrigin;
 
-    recordValue(
-        {
-          metricName: 'NewTabPage.Height',
-          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
-          min: 1,
-          max: 1000,
-          buckets: 200,
-        },
-        Math.floor(window.innerHeight));
-    recordValue(
-        {
-          metricName: 'NewTabPage.Width',
-          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
-          min: 1,
-          max: 1920,
-          buckets: 384,
-        },
-        Math.floor(window.innerWidth));
+    recordLinearValue(
+        'NewTabPage.Height',
+        /*min=*/ 1,
+        /*max=*/ 1000,
+        /*buckets=*/ 200,
+        /*value=*/ Math.floor(window.innerHeight));
+    recordLinearValue(
+        'NewTabPage.Width',
+        /*min=*/ 1,
+        /*max=*/ 1920,
+        /*buckets=*/ 384,
+        /*value=*/ Math.floor(window.innerWidth));
 
     ColorChangeUpdater.forDocument().start();
   }
@@ -436,6 +528,10 @@ export class AppElement extends AppElementBase {
                 this.wallpaperSearchButtonEnabled_ = visible;
               }
             });
+
+    this.setActionChipsVisibilityListenerId_ =
+        this.callbackRouter_.setActionChipsVisibility.addListener(
+            (isVisible: boolean) => this.isActionChipsVisible_ = isVisible);
 
     this.footerVisibilityUpdatedListener_ =
         this.callbackRouter_.footerVisibilityUpdated.addListener(
@@ -504,6 +600,8 @@ export class AppElement extends AppElementBase {
         this.setWallpaperSearchButtonVisibilityListener_!);
     this.customizeButtonsCallbackRouter_.removeListener(
         this.setCustomizeChromeSidePanelVisibilityListener_!);
+    this.callbackRouter_.removeListener(
+        this.setActionChipsVisibilityListenerId_!);
     this.callbackRouter_.removeListener(this.footerVisibilityUpdatedListener_!);
     this.eventTracker_.removeAll();
   }
@@ -517,6 +615,10 @@ export class AppElement extends AppElementBase {
     });
     this.printPerformance_();
     performance.measure('app-creation', 'app-creation-start');
+
+    if (!this.modulesEnabled_) {
+      this.recordBrowserPromoMetrics_();
+    }
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -538,15 +640,10 @@ export class AppElement extends AppElementBase {
       this.singleColoredLogo_ = this.computeSingleColoredLogo_();
     }
 
-    if (changedPrivateProperties.has('showComposebox_')) {
-      this.logoColor_ = this.computeLogoColor_();
-      this.singleColoredLogo_ = this.computeSingleColoredLogo_();
-    }
-
     // theme_, showLensUploadDialog_
     this.realboxShown_ = this.computeRealboxShown_();
 
-    // middleSlotPromoLoaded_, modulesLoaded_
+    // middleSlotPromoLoaded_, modulesLoadedStatus_
     this.promoAndModulesLoaded_ = this.computePromoAndModulesLoaded_();
 
     // wallpaperSearchButtonEnabled_, showBackgroundImage_, backgroundColor_
@@ -554,6 +651,47 @@ export class AppElement extends AppElementBase {
 
     // showWallpaperSearchButton_, showBackgroundImage_
     this.showCustomizeChromeText_ = this.computeShowCustomizeChromeText_();
+
+    // modulesEnabled_, modulesShownToUser, modulesLoadedStatus_
+    this.showBrowserPromo_ = this.computeShowBrowserPromo_();
+
+    if ((changedPrivateProperties.has('modulesLoadedStatus_') &&
+         this.modulesLoadedStatus_ !==
+             ModuleLoadStatus.MODULE_LOAD_IN_PROGRESS)) {
+      this.recordBrowserPromoMetrics_();
+    }
+
+    if (this.ntpRealboxNextEnabled_ && [
+          'showComposebox_',
+          'searchboxInputFocused_',
+          'composeboxInputFocused_',
+        ].some((prop) => changedPrivateProperties.has(prop))) {
+      /**
+       * The current requirement is that the scrim should be shown when the
+       * focus is placed on one of the input boxes and should be removed when
+       * the focus moves outside.
+       *
+       * The additional OR operation with showComposebox_ is because the logic
+       * does not close Composebox when a click outside is made while Composebox
+       * is opened. What seems to be happening when showComposebox_ is used/not
+       * used are as follows:
+       * - Without it:
+       *   1. A click outside is made.
+       *   2. The focusout event first occurs.
+       *   3. composeboxInputFocused_ is set to false.
+       *   4. The scrim is removed.
+       *   5. The click event fires.
+       *   6. Since there is no scrim, the onclick handle of the scrim is not
+       *      called.
+       * - With it:
+       *   1-3. same as above
+       *   4. The scrim is kept since showComposebox_ is still true.
+       *   5. The onclick handler of the scrim runs and sets showComposebox_ to
+       *      false, and everything works as desired.
+       */
+      this.showScrim_ = this.showComposebox_ || this.searchboxInputFocused_ ||
+          this.composeboxInputFocused_;
+    }
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -570,6 +708,10 @@ export class AppElement extends AppElementBase {
       this.onThemeChange_();
     }
 
+    if (changedPrivateProperties.has('isFooterVisible_') && this.lazyRender_) {
+      this.maybeRegisterCustomizeButtonHelpBubble_();
+    }
+
     if (changedPrivateProperties.has('logoColor_')) {
       this.style.setProperty(
           '--ntp-logo-color', this.rgbaOrInherit_(this.logoColor_));
@@ -581,6 +723,14 @@ export class AppElement extends AppElementBase {
 
     if (changedPrivateProperties.has('promoAndModulesLoaded_')) {
       this.onPromoAndModulesLoadedChange_();
+    }
+
+    if (changedPrivateProperties.has('showComposebox_') &&
+        this.showComposebox_ && this.enableModalComposebox_) {
+      const composeboxDialog =
+          this.shadowRoot.querySelector<HTMLDialogElement>('#composeboxDialog');
+      assert(composeboxDialog);
+      composeboxDialog.showModal();
     }
 
     if (changedPrivateProperties.has('oneGoogleBarLoaded_') ||
@@ -638,7 +788,8 @@ export class AppElement extends AppElementBase {
   private computePromoAndModulesLoaded_(): boolean {
     return (!loadTimeData.getBoolean('middleSlotPromoEnabled') ||
             this.middleSlotPromoLoaded_) &&
-        (!loadTimeData.getBoolean('modulesEnabled') || this.modulesLoaded_);
+        (!loadTimeData.getBoolean('modulesEnabled') ||
+         this.modulesLoadedStatus_ === ModuleLoadStatus.MODULE_LOAD_COMPLETE);
   }
 
   private onRealboxCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
@@ -649,28 +800,118 @@ export class AppElement extends AppElementBase {
     // Integration tests use this attribute to determine when lazy load has
     // completed.
     document.documentElement.setAttribute('lazy-loaded', String(true));
-    this.registerHelpBubble(
-        CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID,
-        ['ntp-customize-buttons', '#customizeButton'], {fixed: true});
-    this.pageHandler_.maybeShowFeaturePromo(IphFeature.kCustomizeChrome);
+    if (this.maybeRegisterCustomizeButtonHelpBubble_()) {
+      this.pageHandler_.maybeTriggerAutomaticCustomizeChromePromo();
+    }
     if (this.showWallpaperSearchButton_) {
       this.customizeButtonsHandler_.incrementWallpaperSearchButtonShownCount();
     }
   }
 
-  protected toggleComposebox_() {
-    this.showComposebox_ = !this.showComposebox_;
+  private maybeRegisterCustomizeButtonHelpBubble_(): boolean {
+    if (!this.isFooterVisible_) {
+      this.registerHelpBubble(
+          CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID,
+          ['ntp-customize-buttons', '#customizeButton'], {fixed: true});
+      return true;
+    }
+    return false;
   }
 
-  protected closeComposebox_() {
-    const composeboxHandler = ComposeboxProxyImpl.getInstance().handler;
-    composeboxHandler.notifySessionAbandoned();
+  protected onComposeboxInitialized_(e: CustomEvent<{
+    initializeComposeboxState:
+        (text: string, files: ContextualUpload[], mode: ComposeboxMode) => void,
+  }>) {
+    e.detail.initializeComposeboxState(
+        this.pendingComposeboxText_, this.pendingComposeboxContextFiles_,
+        this.pendingComposeboxMode_);
+    this.pendingComposeboxContextFiles_ = [];
+    this.pendingComposeboxText_ = '';
+    this.pendingComposeboxMode_ = ComposeboxMode.DEFAULT;
+  }
+
+  protected openComposebox_(e: CustomEvent<{
+    searchboxText: string,
+    contextFiles: ContextualUpload[],
+    mode: ComposeboxMode,
+  }>) {
+    if (e.detail.searchboxText) {
+      this.pendingComposeboxText_ = e.detail.searchboxText;
+    }
+    if (e.detail.contextFiles && e.detail.contextFiles.length > 0) {
+      this.pendingComposeboxContextFiles_ = e.detail.contextFiles;
+    }
+    this.pendingComposeboxMode_ = e.detail.mode;
     this.toggleComposebox_();
+  }
+
+  protected toggleComposebox_() {
+    this.showComposebox_ = !this.showComposebox_;
+    if (!this.wasComposeboxOpened_) {
+      recordLoadDuration(
+          'NewTabPage.Composebox.FromNTPLoadToSessionStart',
+          WindowProxy.getInstance().now());
+      this.wasComposeboxOpened_ = true;
+    }
+  }
+
+  protected onComposeboxClickOutside_() {
+    const composebox =
+        this.shadowRoot.querySelector<ComposeboxElement>('#composebox');
+    assert(composebox);
+    const closeComposebox = new CustomEvent('closeComposebox', {
+      detail: {composeboxText: composebox.getText()},
+      bubbles: true,
+      cancelable: true,
+    });
+
+    this.closeComposebox_(closeComposebox);
+  }
+
+  protected closeComposebox_(e: CustomEvent) {
+    if (this.enableModalComposebox_) {
+      const composeboxDialog =
+          this.shadowRoot.querySelector<HTMLDialogElement>('#composeboxDialog');
+      assert(composeboxDialog);
+      composeboxDialog.close();
+    }
+
+    const composeboxText = e.detail.composeboxText;
+
+    if (composeboxText && composeboxText.trim()) {
+      this.$.searchbox.setInputText(composeboxText);
+    }
+    const composebox =
+        this.shadowRoot.querySelector<ComposeboxElement>('#composebox');
+    assert(composebox);
+    composebox.setText('');
+    composebox.resetModes();
+    if (this.ntpRealboxNextEnabled_) {
+      composebox.closeDropdown();
+    }
+    this.toggleComposebox_();
+    this.logoColor_ = this.computeLogoColor_();
+    this.singleColoredLogo_ = this.computeSingleColoredLogo_();
+    this.updateOneGoogleBarAppearance_();
   }
 
   protected onOpenVoiceSearch_() {
     this.showVoiceSearchOverlay_ = true;
-    recordVoiceAction(VoiceAction.ACTIVATE_SEARCH_BOX);
+    recordVoiceAction(VoiceAction.ACTIVATE);
+  }
+
+  protected onComposeVoiceSearchAction_(
+      e: CustomEvent<{value: ComposeVoiceSearchAction}>) {
+    switch (e.detail.value) {
+      case ComposeVoiceSearchAction.ACTIVATE:
+        recordVoiceAction(VoiceAction.ACTIVATE);
+        break;
+      case ComposeVoiceSearchAction.QUERY_SUBMITTED:
+        recordVoiceAction(VoiceAction.QUERY_SUBMITTED);
+        break;
+      default:
+        assertNotReached();
+    }
   }
 
   protected onOpenLensSearch_() {
@@ -703,8 +944,9 @@ export class AppElement extends AppElementBase {
         return !this.showBackgroundImage_;
       case NtpWallpaperSearchButtonHideCondition.THEME_SET:
         return this.colorSourceIsBaseline && !this.showBackgroundImage_;
+      default:
+        return false;
     }
-    return false;
   }
 
   protected onWallpaperSearchClick_() {
@@ -740,6 +982,15 @@ export class AppElement extends AppElementBase {
     // <if expr="is_macosx">
     ctrlKeyPressed = ctrlKeyPressed || e.metaKey;
     // </if>
+    if (e.key === 'Escape' && this.showComposebox_) {
+      const composebox =
+          this.shadowRoot.querySelector<ComposeboxElement>('#composebox');
+      if (composebox) {
+        composebox.handleEscapeKeyLogic();
+        e.preventDefault();
+        return;
+      }
+    }
     if (ctrlKeyPressed && e.code === 'Period' && e.shiftKey) {
       this.showVoiceSearchOverlay_ = true;
       recordVoiceAction(VoiceAction.ACTIVATE_KEYBOARD);
@@ -829,18 +1080,11 @@ export class AppElement extends AppElementBase {
       return null;
     }
 
-    if (this.showComposebox_) {
-      return this.theme_.isDark ? hexColorToSkColor('#ffffff') : null;
-    }
-
     return this.theme_.logoColor ||
         (this.theme_.isDark ? hexColorToSkColor('#ffffff') : null);
   }
 
   private computeSingleColoredLogo_(): boolean {
-    if (this.showComposebox_) {
-      return !!this.theme_ && this.theme_.isDark;
-    }
     return !!this.theme_ && (!!this.theme_.logoColor || this.theme_.isDark);
   }
 
@@ -943,8 +1187,39 @@ export class AppElement extends AppElementBase {
     this.middleSlotPromoLoaded_ = true;
   }
 
-  protected onModulesLoaded_() {
-    this.modulesLoaded_ = true;
+  protected onModulesLoaded_(e: CustomEvent<number|null>) {
+    this.modulesLoadedStatus_ = e.detail ?
+        ModuleLoadStatus.MODULE_LOAD_COMPLETE :
+        ModuleLoadStatus.MODULE_LOAD_NOT_ATTEMPTED;
+  }
+
+  protected computeShowBrowserPromo_(): boolean {
+    return !this.modulesEnabled_ ||
+        (this.modulesLoadedStatus_ !==
+             ModuleLoadStatus.MODULE_LOAD_IN_PROGRESS &&
+         !this.modulesShownToUser);
+  }
+
+  protected recordBrowserPromoMetrics_() {
+    if (!this.showBrowserPromo_) {
+      recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownDueToPolicy);
+      return;
+    }
+
+    switch (this.browserPromoType_) {
+      case 'disabled':
+        recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownDueToPolicy);
+        break;
+      case 'empty':
+        recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownNoPromos);
+        break;
+      case 'simple':
+      case 'setuplist':
+        recordShowBrowserPromosResult(ShowNtpPromosResult.kShown);
+        break;
+      default:
+        break;
+    }
   }
 
   protected onCustomizeModule_() {
@@ -969,6 +1244,8 @@ export class AppElement extends AppElementBase {
         break;
       case CustomizeDialogPage.WALLPAPER_SEARCH:
         section = CustomizeChromeSection.kWallpaperSearch;
+        break;
+      default:
         break;
     }
     this.customizeButtonsHandler_.setCustomizeChromeSidePanelVisible(
@@ -1032,6 +1309,9 @@ export class AppElement extends AppElementBase {
         case $$(this, 'cr-searchbox'):
           recordClick(NtpElement.REALBOX);
           return;
+        case $$(this, 'ntp-action-chips'):
+          recordClick(NtpElement.ACTION_CHIPS);
+          return;
         case $$(this, 'cr-most-visited'):
           recordClick(NtpElement.MOST_VISITED);
           return;
@@ -1041,6 +1321,8 @@ export class AppElement extends AppElementBase {
         case $$(this, '#modules'):
           recordClick(NtpElement.MODULE);
           return;
+        default:
+          break;
       }
     }
 
@@ -1055,6 +1337,8 @@ export class AppElement extends AppElementBase {
           case $$(customizeButtonsElement, '#wallpaperSearchButton'):
             recordClick(NtpElement.WALLPAPER_SEARCH_BUTTON);
             return;
+          default:
+            break;
         }
       }
     }
@@ -1070,6 +1354,19 @@ export class AppElement extends AppElementBase {
     return !!this.theme_?.backgroundImage?.attributionUrl;
   }
 
+  protected onInputFocusChanged_(e: CustomEvent<{value: boolean}>) {
+    switch (e.type) {
+      case 'searchbox-input-focus-changed':
+        this.searchboxInputFocused_ = e.detail.value;
+        break;
+      case 'composebox-input-focus-changed':
+        this.composeboxInputFocused_ = e.detail.value;
+        break;
+      default:
+        assertNotReached();
+    }
+  }
+
   protected onRealboxHadSecondarySideChanged_(
       e: CustomEvent<{value: boolean}>) {
     this.realboxHadSecondarySide = e.detail.value;
@@ -1077,6 +1374,33 @@ export class AppElement extends AppElementBase {
 
   protected onModulesShownToUserChanged_(e: CustomEvent<{value: boolean}>) {
     this.modulesShownToUser = e.detail.value;
+  }
+
+  protected onActionChipsRetrievalStateChanged_(
+      e: CustomEvent<{state: ActionChipsRetrievalState}>) {
+    const state = e.detail.state;
+    // Mapping of ActionChipsRetrievalState => GlifAnimationState:
+    // REQUESTED => SPINNER_ONLY
+    // UPDATED => STARTED (or FINISHED if cr_context_menu_entrypoint sets it)
+    // To avoid going back (or continuing) GlifAnimationState.STARTED, we stop
+    // updating the field when the current state is STARTED or FINISHED.
+    // There are a few cases to consider:
+    // - IsActionChipsVisible_ is false (and remains so): no event from the
+    //   action chips element, and thus the animation state remains INELIGIBLE.
+    // - IsActionChipsVisible_ is false and later becomes true: the change
+    //   triggers the rendering of the action chips element, and this in turn
+    //   causes an event with ActionChipsRetrievalState.REQUESTED to be fired.
+    //   After some time, an event with ActionChipsRetrievalState.UPDATED will
+    //   fire, and this starts the animation.
+    // - IsActionChipsVisible_ is true from the beginning: Same as above.
+    if ([GlifAnimationState.STARTED, GlifAnimationState.FINISHED].every(
+            s => s !== this.contextMenuGlifAnimationState_)) {
+      if (state === ActionChipsRetrievalState.REQUESTED) {
+        this.contextMenuGlifAnimationState_ = GlifAnimationState.SPINNER_ONLY;
+      } else if (state === ActionChipsRetrievalState.UPDATED) {
+        this.contextMenuGlifAnimationState_ = GlifAnimationState.STARTED;
+      }
+    }
   }
 }
 

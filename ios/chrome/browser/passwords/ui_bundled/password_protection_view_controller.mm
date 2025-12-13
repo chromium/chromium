@@ -6,6 +6,7 @@
 
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @implementation PasswordProtectionViewController
@@ -16,7 +17,7 @@
   self.image = [UIImage imageNamed:@"legacy_password_breach_illustration"];
   self.titleString = l10n_util::GetNSString(
       IDS_PAGE_INFO_CHANGE_PASSWORD_SAVED_PASSWORD_SUMMARY);
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON);
   [super viewDidLoad];
   self.view.accessibilityIdentifier =

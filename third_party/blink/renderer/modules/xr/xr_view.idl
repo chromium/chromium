@@ -15,6 +15,7 @@ enum XREye {
     RuntimeEnabled=WebXR
 ] interface XRView {
   readonly attribute XREye eye;
+  [RuntimeEnabled=WebXRVisibilityMask] readonly attribute unsigned long index;
   readonly attribute double? recommendedViewportScale;
 
   // Added by the AR module.

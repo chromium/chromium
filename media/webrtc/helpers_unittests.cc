@@ -18,7 +18,8 @@ constexpr webrtc::AudioProcessing::Config kDefaultApmConfig{};
 
 webrtc::AudioProcessing::Config CreateApmGetConfig(
     const AudioProcessingSettings& settings) {
-  auto [apm, added_delay] = CreateWebRtcAudioProcessingModule(settings);
+  auto [apm, added_delay] = CreateWebRtcAudioProcessingModule(
+      settings, /*residual_echo_estimator_model=*/nullptr);
   DCHECK(!!apm);
   return apm->GetConfig();
 }
@@ -33,8 +34,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
 
   EXPECT_TRUE(config.pipeline.multi_channel_render);
   EXPECT_TRUE(config.pipeline.multi_channel_capture);
-  EXPECT_EQ(config.pipeline.maximum_internal_processing_rate, 48000);
-  EXPECT_FALSE(config.pre_amplifier.enabled);
   EXPECT_TRUE(config.echo_canceller.enabled);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -54,7 +53,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   EXPECT_TRUE(config.noise_suppression.enabled);
   EXPECT_EQ(config.noise_suppression.level,
             webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
-
 }
 
 TEST(CreateWebRtcAudioProcessingModuleTest,

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="./resources/consistent-rendering.css" rel="stylesheet" />
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="./resources/content-extraction-test-helpers.js"></script>
+  <script src="../resources/ahem.js"></script>
+  <style>
+    #parent {
+      transform: rotate(45deg);
+      position: relative;
+      top: 100px;
+      left: 100px;
+      width: 100px;
+      height: 100px;
+      outline: 4px dashed black;
+    }
+
+    #child {
+      transform: rotate(45deg);
+      width: 100px;
+      height: 100px;
+      outline: 4px solid red;
+    }
+  </style>
+
+  <script>
+    function runTest() {
+      finishTest(dumpContentNodeTree(document));
+    }
+  </script>
+</head>
+
+<body onload="runTest()">
+  <div id="parent">
+    <div id="child">x</div>
+  </div>
+</body>
+</html>

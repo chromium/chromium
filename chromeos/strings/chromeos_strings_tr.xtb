@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">portakallar</translation>
 <translation id="1275718070701477396">Seçildi</translation>
 <translation id="1290331692326790741">Zayıf sinyal</translation>
+<translation id="1292474106138697109">Sınıf araçları ekranı</translation>
 <translation id="1300115153046603471">APN, varsayılan ve <ph name="ATTACH" /> türünde.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Dönüştür</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Resim</translation>
 <translation id="4300272766492248925">Uygulamayı aç</translation>
 <translation id="430786093962686457">şifon</translation>
+<translation id="4309762678330556039">Transkriptleri otomatik olarak oluşturun ve ses dosyasında arama yapın. İnternete bağlı değilken bile kayıt oluşturabilirsiniz.</translation>
 <translation id="4310735698903592804">Google Yapay Zeka destekli son duvar kağıtları</translation>
 <translation id="4320904097188876154">neon pembe</translation>
 <translation id="432961742358282111">Tanımlar, çeviriler veya birim dönüştürme işlemlerini görmek için sağ tıklayın ya da basılı tutun. Bu özelliği yönetmek için sol veya sağ ok tuşlarını kullanın.</translation>
@@ -928,7 +930,7 @@
 <translation id="5050042263972837708">Grup adı</translation>
 <translation id="5051044138948155788">Bundan başka sayfa yok. Bu işlem sizi tarama başlangıç ekranına götürür.</translation>
 <translation id="5053233795640754917">Duraklat</translation>
-<translation id="5056587122125565772">Görüntü oluştur</translation>
+<translation id="5056587122125565772">Resim oluştur</translation>
 <translation id="5078711626843651677">Ses modelleri, konuşmacı etiketleme işlemi tamamlanana kadar geçici olarak cihaz üzerinde saklanır. Bu özelliği dilediğiniz zaman Ayarlar'dan kapatabilirsiniz.</translation>
 <translation id="5078983345702708852">fütüristik</translation>
 <translation id="5087864757604726239">geri</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> tuşu test edildi</translation>
 <translation id="5606865426897221650">Sekme</translation>
+<translation id="5612205513582918357">Sınıf araçları, ekranınızı <ph name="RECEIVER_NAME" /> ile paylaşıyor</translation>
 <translation id="5613201299517339763">Oturumunuz kapatıldı</translation>
 <translation id="5620281292257375798">Yalnızca dahili</translation>
 <translation id="5628106863521633649">Kullanıma sunulduğu diller</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Bulut Akışı</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Kullanılabilir tarayıcı yok</translation>
-<translation id="6231648282154119906">Şüpheli dosyalar, seçtiğiniz gelişmiş koruma kapsamında Google Güvenli Tarama tarafından otomatik olarak taranacak</translation>
 <translation id="6232017090690406397">Pil</translation>
 <translation id="6234024205316847054">Anahatları göster</translation>
 <translation id="6243280677745499710">Şu anda ayarlı</translation>
@@ -1200,7 +1202,7 @@
 <translation id="6318437367327684789">sonsuza kadar</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazındaki donanım yazılımını güncelleyin</translation>
 <translation id="6321407676395378991">Ekran koruyucuyu aç</translation>
-<translation id="6324916366299863871">Kısayolu düzenleyin</translation>
+<translation id="6324916366299863871">Kısayolu düzenle</translation>
 <translation id="6325525973963619867">Başarısız</translation>
 <translation id="6327262166342360252">Bu duvar kağıdı, "<ph name="PROMPT" />" metni kullanılarak yapay zekayla oluşturuldu.</translation>
 <translation id="6331191339300272798">Otomatik koyu tema</translation>
@@ -1451,7 +1453,7 @@
 <translation id="7343649194310845056">Ağ Cihazları</translation>
 <translation id="7344788170842919262">doğal</translation>
 <translation id="7346768383111016081">Klavyenizle oynamak için oyun işlemine kontrol ekleyin</translation>
-<translation id="7352651011704765696">Bir şeyler ters gitti</translation>
+<translation id="7352651011704765696">Bir hata oluştu</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> arama sonucu: <ph name="SEARCH_RESULT_TEXT" />. Kısayola gitmek için Enter tuşuna basın.</translation>
 <translation id="7359657277149375382">Dosya türü</translation>
 <translation id="73631062356239394">Teşhis verilerini paylaşın</translation>
@@ -1866,7 +1868,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="921080052717160800">Resim, kamera arka planı olarak ayarlandı</translation>
 <translation id="9211490828691860325">Tüm masalar</translation>
 <translation id="9218016617214286986">Bilinen APN'leri göster</translation>
-<translation id="932327136139879170">Ana Sayfa</translation>
+<translation id="932327136139879170">Ev</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> tuşu eksik. <ph name="ASSIGN_INSTRUCTION" /></translation>

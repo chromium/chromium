@@ -82,8 +82,7 @@ class CORE_EXPORT URLSearchParams final
   FRIEND_TEST_ALL_PREFIXES(URLSearchParamsTest, EncodedFormData);
 
   void RunUpdateSteps();
-  IterationSource* CreateIterationSource(ScriptState*,
-                                         ExceptionState&) override;
+  IterationSource* CreateIterationSource(ScriptState*) override;
   void EncodeAsFormData(Vector<char>&) const;
 
   void AppendWithoutUpdate(const String& name, const String& value);

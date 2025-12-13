@@ -29,7 +29,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/real_psm_client_manager.h"
 #include "chromeos/ash/components/report/proto/fresnel_service.pb.h"
 #include "chromeos/ash/components/report/utils/time_utils.h"
@@ -432,7 +432,7 @@ void ReportControllerInitializer::OnLastPowerwashTimeRead(
   // 3. CrosSettingsProvider::TRUSTED: device policies are loaded and trusted.
   report_controller_ = std::make_unique<report::ReportController>(
       ash::report::device_metrics::ChromeDeviceMetadataParameters{
-          chrome::GetChannel() /* chromeos_channel */, device_market_segment,
+          ash::GetChannel() /* chromeos_channel */, device_market_segment,
           last_powerwash_week},
       &local_state_.get(), shared_url_loader_factory_,
       std::make_unique<ash::report::device_metrics::PsmClientManager>(

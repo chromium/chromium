@@ -54,7 +54,7 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/os_crypt/async/browser:test_support",
     "//components/password_manager/core/browser",
-    "//components/plus_addresses/webdata",
+    "//components/plus_addresses/core/browser/webdata",
     "//components/search_engines",
     "//components/signin/public/webdata",
     "//sql:test_support",

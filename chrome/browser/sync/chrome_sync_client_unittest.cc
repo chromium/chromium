@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "chrome/test/base/scoped_metrics_service_for_synthetic_trials.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/metrics/metrics_service.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
@@ -61,8 +60,6 @@ class ChromeSyncClientTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
   ScopedMetricsServiceForSyntheticTrials metrics_service_{
       TestingBrowserProcess::GetGlobal()};
   syncer::FakeDeviceInfoSyncService device_info_sync_service_;

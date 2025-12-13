@@ -42,7 +42,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
@@ -93,9 +93,9 @@ public class AutoPiPTabModelObserverHelperTest {
     public void setUp() {
         mOnActivationChangedCallbackHelper = new TabActivationCallbackHelper();
         mInitialPage = mActivityTestRule.startOnBlankPage();
-        mInitialTab = mInitialPage.loadedTabElement.get();
+        mInitialTab = mInitialPage.loadedTabElement.value();
         mInitialActivity = mInitialPage.getActivity();
-        mObservedWebContents = mInitialPage.webContentsElement.get();
+        mObservedWebContents = mInitialPage.webContentsElement.value();
 
         // Initialize the C++ test utilities for the WebContents under observation,
         // passing it the callback to be invoked from C++.
@@ -127,7 +127,7 @@ public class AutoPiPTabModelObserverHelperTest {
     public void testTriggersOnTabActivationChanged() throws TimeoutException {
         int callCount = startObservingAndAssertInitialCallback(/* expectedIsActivated= */ true);
 
-        PageStation page = mInitialPage.openNewTabFast();
+        CtaPageStation page = mInitialPage.openNewTabFast();
         mOnActivationChangedCallbackHelper.waitForCallback(callCount++);
         assertFalse(mOnActivationChangedCallbackHelper.isActivated());
 
@@ -143,7 +143,7 @@ public class AutoPiPTabModelObserverHelperTest {
         int callCount = startObservingAndAssertInitialCallback(/* expectedIsActivated= */ true);
 
         AutoPiPTabModelObserverHelperTestUtils.stopObserving();
-        PageStation page = mInitialPage.openNewTabFast();
+        CtaPageStation page = mInitialPage.openNewTabFast();
         assertEquals(
                 "Callback should not have fired after stopping observation.",
                 callCount,
@@ -201,7 +201,7 @@ public class AutoPiPTabModelObserverHelperTest {
         int callCount = startObservingAndAssertInitialCallback(/* expectedIsActivated= */ true);
 
         // Open a second tab and switch to it
-        PageStation page = mInitialPage.openNewTabFast();
+        CtaPageStation page = mInitialPage.openNewTabFast();
         mOnActivationChangedCallbackHelper.waitForCallback(callCount++);
         assertFalse(mOnActivationChangedCallbackHelper.isActivated());
 
@@ -255,7 +255,7 @@ public class AutoPiPTabModelObserverHelperTest {
         }
         int callCount = startObservingAndAssertInitialCallback(/* expectedIsActivated= */ true);
         // Open a new tab
-        PageStation page = mInitialPage.openNewTabFast();
+        CtaPageStation page = mInitialPage.openNewTabFast();
         mOnActivationChangedCallbackHelper.waitForCallback(callCount++);
         assertFalse(mOnActivationChangedCallbackHelper.isActivated());
         // Switch back to the original tab

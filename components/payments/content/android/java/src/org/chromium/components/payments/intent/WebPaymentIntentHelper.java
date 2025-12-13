@@ -134,7 +134,7 @@ public class WebPaymentIntentHelper {
      */
     public static void parsePaymentResponse(
             int resultCode,
-            Intent data,
+            @Nullable Intent data,
             @Nullable PaymentOptions requestedPaymentOptions,
             PaymentErrorCallback errorCallback,
             PaymentSuccessCallback successCallback) {

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "ui/gfx/buffer_types.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/ozone/public/drm_modifiers_filter.h"
 
 namespace ui {
@@ -23,7 +23,7 @@ class MockDrmModifiersFilter : public DrmModifiersFilter {
 
   ~MockDrmModifiersFilter() override;
 
-  std::vector<uint64_t> Filter(gfx::BufferFormat format,
+  std::vector<uint64_t> Filter(viz::SharedImageFormat format,
                                const std::vector<uint64_t>& modifiers) override;
 
  private:

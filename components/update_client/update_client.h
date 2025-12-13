@@ -148,21 +148,17 @@ enum class Error;
 struct CrxUpdateItem;
 
 enum class ComponentState {
-  kNew,          // The component has not yet been checked for updates.
-  kChecking,     // The component is being checked for updates now.
-  kCanUpdate,    // An update is available and will soon be processed.
-  kDownloading,  // An update is being downloaded.
-  kUpdating,     // An update is being installed.
-  kUpdated,      // An update was successfully applied.
-  kUpToDate,     // The component was already up to date.
-  kUpdateError,  // The service encountered an error.
-  kRun,          // The component is running a server-specified action.
-
-  // TODO(crbug.com/353249967): These states are unsent by the engine and can
-  // be removed, along with translations and mappings associated with them.
-  kDownloadingDiff,
-  kUpdatingDiff,
-  kLastStatus
+  kNew,            // The component has not yet been checked for updates.
+  kChecking,       // The component is being checked for updates now.
+  kCanUpdate,      // An update is available and will soon be processed.
+  kDownloading,    // An update is being downloaded.
+  kDecompressing,  // An update is being decompressed.
+  kPatching,       // A patch is being applied.
+  kUpdating,       // An update is being installed.
+  kUpdated,        // An update was successfully applied.
+  kUpToDate,       // The component was already up to date.
+  kUpdateError,    // The service encountered an error.
+  kRun             // The component is running a server-specified action.
 };
 
 // Defines an interface for a generic CRX installer.
@@ -207,11 +203,6 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
 
   using ProgressCallback = base::RepeatingCallback<void(int progress)>;
   using Callback = base::OnceCallback<void(const Result& result)>;
-
-  // Called on the main sequence when there was a problem unpacking or
-  // verifying the CRX. |error| is a non-zero value which is only meaningful
-  // to the caller.
-  virtual void OnUpdateError(int error) = 0;
 
   // Called by the update service when a CRX has been unpacked
   // and it is ready to be installed. This method may be called from a

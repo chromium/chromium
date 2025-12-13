@@ -1,0 +1,117 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--search-background-color);
+  --color-composebox-cancel-button: rgba(10,10,10, 1);
+  /* The top border of matches/tab suggestions dropdown in context menu. */
+  --color-composebox-file-carousel-divider: rgba(210, 225, 252, 1);
+  --color-composebox-file-carousel-remove-button: rgba(0, 0, 0, 0.6);
+  --color-composebox-file-carousel-remove-gradient-end: rgba(0, 0, 0, 0.2);
+  --color-composebox-file-carousel-remove-gradient-start: rgba(0, 0, 0, 0.2);
+  --color-composebox-file-carousel-url: rgba(91,91,91, 1);
+  --color-composebox-file-chip-background: rgb(225, 227, 232);
+  --color-composebox-file-chip-background-hovered: rgba(225, 227, 232, 1);
+  --color-composebox-file-chip-favicon-background: rgba(225 224 238, 1);
+  --color-composebox-file-chip-text: rgba(31, 31, 31, 1);
+  --color-composebox-font: rgba(86, 89, 94, 1);
+  --color-composebox-font-dark: rgba(10, 10, 10, 1);
+  /* Used in matches + textbox input (but textbox input overridden
+   * for co-browsing to be color-composebox-font.
+   */
+  --color-composebox-font-light: rgba(31, 31, 31, 1);
+  --color-composebox-hover: rgba(233, 235, 240, 1);
+  --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
+  --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
+  --composebox-context-menu-entrypoint-button-color: rgba(31,31,31, 1);
+  --cr-composebox-background-color: rgba(243, 245, 246, 1);
+  --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
+  --cr-composebox-submit-button-hover-color: rgba(32, 33, 36, .2);
+  /* Dropdown item color in context menu entrypoint. */
+  --cr-primary-text-color: rgba(31, 31, 31, 1);
+  --error-bottom-line-color: #70757A;
+  --error-top-line-color: #202124;
+  --gradient-protection-width: 100%;
+  --protected-icon-background-color: #535353;
+  --remove-button-border-radius: 10%;
+  --remove-button-height: var(--remove-button-width);
+  --remove-button-inset-inline-end: calc((var(--thumbnail-chip-width) - var(--thumbnail-chip-icon-size)) / 2);
+  --remove-button-width: calc(var(--thumbnail-chip-icon-size) + var(--thumbnail-chip-padding) * 2);
+  --search-background-color: transparent;
+  --search-background-color-rgb: 255, 255, 255;
+  --thumbnail-chip-icon-size: 16px;
+  --thumbnail-chip-overlay-width: 100%;
+  --thumbnail-chip-padding: 6px;
+  --thumbnail-chip-width: 154px;
+}
+
+:host([dark-mode_]) {
+  --color-composebox-background: rgba(31, 31, 31, 1);
+  --color-composebox-cancel-button: rgba(191, 191, 191, 1);
+  --color-composebox-context-entrypoint-hover-background: rgba(63, 64, 74, 1);
+  --color-composebox-file-carousel-divider: rgba(94, 94, 94, 1);
+  --color-composebox-file-carousel-remove-gradient-end: rgba(100, 100, 100, 0.2);
+  --color-composebox-file-carousel-remove-gradient-start: rgba(100, 100, 100, 0.2);
+  --color-composebox-file-carousel-url: rgba(230, 232, 240, 1);
+  --color-composebox-file-chip-background: rgba(42, 43, 54, 1);
+  --color-composebox-file-chip-background-hovered: rgba(63, 64, 74, 1);
+  --color-composebox-file-chip-favicon-background: rgba(31, 31, 31, 1);
+  --color-composebox-file-chip-text: rgba(227, 227, 227, 1);
+  --color-composebox-font: rgba(230, 232, 240, 1);
+  --color-composebox-font-dark: rgba(230, 232, 240, 1);
+  --color-composebox-font-light: rgba(230, 232, 240, 1);
+  --color-composebox-hover: rgba(62, 63, 67, 1);
+  --color-composebox-input-icon: var(--color-searchbox-results-icon);
+  --color-composebox-voice-lens-button: rgba(191, 191, 191, 1);
+  --color-searchbox-results-background-hovered: rgba(54, 54, 54, 1);
+  --composebox-context-menu-entrypoint-button-color: rgba(63, 64, 74, 1);
+  --cr-color-sys-divider: var(--color-composebox-file-chip-divider);
+  --cr-composebox-background-color: rgba(29, 30, 38, 1);
+  --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
+  --cr-composebox-submit-button-hover-color: rgba(54, 54, 54, 1);
+  --cr-fallback-color-surface: var(--search-background-color-dark);
+  --cr-icon-button-fill-color: rgba(0, 0, 0, 1);
+  --cr-primary-text-color: var(--color-composebox-file-chip-text);
+  --error-bottom-line-color: #9AA0A6;
+  --error-top-line-color: #E8EAED;
+  --protected-icon-background-color: #E8EAED;
+  --remove-button-fill-color: rgba(255, 255, 255, 1);
+  --search-background-color: rgba(12, 20, 23, 1);
+  --search-background-color-rgb: 12, 20, 23;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+#threadFrame {
+  border: none;
+  flex-grow: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+error-page {
+  display: none;
+}
+
+:host([is-error-page-visible_]) error-page {
+  display: block;
+  position: fixed;
+  top: 76px;
+}
+
+:host([is-error-page-visible_]) #threadFrame,
+:host([is-error-page-visible_]) contextual-tasks-composebox {
+  visibility: hidden;
+}

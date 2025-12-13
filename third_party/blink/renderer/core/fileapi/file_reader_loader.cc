@@ -169,10 +169,9 @@ void FileReaderLoader::OnCalculatedSize(uint64_t total_size,
   if (IsSyncLoad()) {
     OnDataPipeReadable(MOJO_RESULT_OK);
   } else {
-    handle_watcher_.Watch(
-        consumer_handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-        WTF::BindRepeating(&FileReaderLoader::OnDataPipeReadable,
-                           WrapWeakPersistent(this)));
+    handle_watcher_.Watch(consumer_handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+                          BindRepeating(&FileReaderLoader::OnDataPipeReadable,
+                                        WrapWeakPersistent(this)));
   }
 }
 

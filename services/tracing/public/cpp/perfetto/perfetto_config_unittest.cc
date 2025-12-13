@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/perfetto/protos/perfetto/common/builtin_clock.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
 
 namespace tracing {
@@ -85,7 +86,8 @@ class AdaptPerfettoConfigForChromeTest : public ::testing::Test {
 
 base::trace_event::TraceConfig ParseTraceConfigFromJson(
     const std::string& json_config) {
-  auto dict = base::JSONReader::Read(json_config);
+  auto dict =
+      base::JSONReader::Read(json_config, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   return base::trace_event::TraceConfig(std::move(*dict).TakeDict());
 }
 
@@ -191,7 +193,7 @@ TEST_F(AdaptPerfettoConfigForChromeTest, PrivacyFiltering) {
 TEST_F(AdaptPerfettoConfigForChromeTest, DiscardBuffer) {
   auto perfetto_config = ParsePerfettoConfigFromText(R"pb(
     buffers: { fill_policy: DISCARD size_kb: 42 }
-    data_sources: { config: { name: "org.chromium.trace_metadata" } }
+    data_sources: { config: { name: "org.chromium.trace_metadata2" } }
   )pb");
   EXPECT_TRUE(AdaptPerfettoConfigForChrome(&perfetto_config));
 }
@@ -200,7 +202,7 @@ TEST_F(AdaptPerfettoConfigForChromeTest, MultipleBuffers) {
   auto perfetto_config = ParsePerfettoConfigFromText(R"pb(
     buffers: { fill_policy: RING_BUFFER size_kb: 42 }
     buffers: { fill_policy: DISCARD size_kb: 42 }
-    data_sources: { config: { name: "org.chromium.trace_metadata" } }
+    data_sources: { config: { name: "org.chromium.trace_metadata2" } }
   )pb");
   EXPECT_TRUE(AdaptPerfettoConfigForChrome(&perfetto_config));
 }
@@ -294,6 +296,27 @@ TEST_F(AdaptPerfettoConfigForChromeTest, EnableSystemBackend_Chrome) {
   for (auto& ds : perfetto_config.data_sources()) {
     EXPECT_TRUE(ds.config().has_chrome_config());
   }
+}
+
+TEST_F(AdaptPerfettoConfigForChromeTest, BuiltinDataSource_ClockBoottime) {
+  auto perfetto_config = ParsePerfettoConfigFromText(R"pb(
+    data_sources: {
+      config: {
+        name: "track_event"
+        track_event_config: {
+          enabled_categories: [ "foo", "__metadata" ]
+          disabled_categories: [ "*" ]
+        }
+      }
+    }
+    data_sources: { config: { name: "org.chromium.trace_metadata2" } }
+    builtin_data_sources { primary_trace_clock: BUILTIN_CLOCK_BOOTTIME }
+  )pb");
+
+  EXPECT_TRUE(
+      AdaptPerfettoConfigForChrome(&perfetto_config, false, false, true));
+  EXPECT_EQ(::perfetto::protos::gen::BuiltinClock::BUILTIN_CLOCK_BOOTTIME,
+            perfetto_config.builtin_data_sources().primary_trace_clock());
 }
 
 }  // namespace tracing

@@ -26,7 +26,6 @@
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager_proxy.h"
 #include "components/viz/service/gl/gpu_service_impl.h"  // nogncheck
-#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"  // nogncheck
 #include "gpu/ipc/service/arc_shared_image_interface.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) &&
         // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
@@ -59,26 +58,11 @@ void CreateArcVideoEncodeAccelerator(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::PendingReceiver<::arc::mojom::VideoEncodeAccelerator> receiver) {
-  std::unique_ptr<gpu::SharedImageFactory> factory;
-  auto context_state = gpu_service->GetContextState();
-  if (context_state) {
-    factory = std::make_unique<gpu::SharedImageFactory>(
-        gpu_service->gpu_preferences(),
-        gpu_service->gpu_driver_bug_workarounds(),
-        gpu_service->gpu_feature_info(), context_state.get(),
-        gpu_service->shared_image_manager(), context_state->memory_tracker(),
-        /*is_for_display_compositor=*/false);
-  }
-
-  scoped_refptr<gpu::ArcSharedImageInterface> sii;
-  if (factory) {
-    sii =
-        base::MakeRefCounted<gpu::ArcSharedImageInterface>(std::move(factory));
-  }
-
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<arc::GpuArcVideoEncodeAccelerator>(
-          std::move(sii), gpu_preferences, gpu_workarounds),
+          gpu::ArcSharedImageInterface::Create(
+              gpu_service->gpu_channel_manager(), gpu_service->main_runner()),
+          gpu_preferences, gpu_workarounds),
       std::move(receiver));
 }
 

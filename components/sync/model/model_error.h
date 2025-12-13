@@ -61,7 +61,7 @@ class ModelError {
     kAutofillValuableFailedToLoadDatabase = 37,
     kAutofillValuableFailedToLoadMetadata = 38,
     kAutofillValuableFailedToReadMetadata = 39,
-    kAutofillValuableFailedToSetLoyaltyCards = 40,
+    kAutofillValuableFailedToWriteToDatabase = 40,
     kAutofillValuableUnsupportedActionType = 41,
     kAutofillWalletFailedToLoadBenefitsFromTable = 42,
     kAutofillWalletFailedToLoadDatabase = 43,
@@ -139,13 +139,13 @@ class ModelError {
     kPlusAddressTransactionBeginFailedOnIncrementalSync = 128,
     kPlusAddressTransactionCommitFailedOnDisableSync = 129,
     kPlusAddressTransactionCommitFailedOnIncrementalSync = 130,
-    kPowerBookmarkDatabaseCommitFailed = 131,
-    kPowerBookmarkDatabaseInitFailed = 132,
-    kPowerBookmarkFailedToBeginTransaction = 133,
-    kPowerBookmarkFailedToCommitTransaction = 134,
-    kPowerBookmarkFailedToDeleteLocalPowers = 135,
-    kPowerBookmarkFailedToLoadMetadata = 136,
-    kPowerBookmarkFailedToMergeLocalPowers = 137,
+    // kPowerBookmarkDatabaseCommitFailed = 131,  // Deprecated.
+    // kPowerBookmarkDatabaseInitFailed = 132,  // Deprecated.
+    // kPowerBookmarkFailedToBeginTransaction = 133,  // Deprecated.
+    // kPowerBookmarkFailedToCommitTransaction = 134,  // Deprecated.
+    // kPowerBookmarkFailedToDeleteLocalPowers = 135,  // Deprecated.
+    // kPowerBookmarkFailedToLoadMetadata = 136,  // Deprecated.
+    // kPowerBookmarkFailedToMergeLocalPowers = 137,  // Deprecated.
     kPrefFailedToDeserializeValue = 138,
     kPrefModelsNotAssociated = 139,
     kPrintersFailedToDeserializeSpecifics = 140,
@@ -195,7 +195,11 @@ class ModelError {
     kContactInfoFailedToLoadAutofillWebDatabase = 185,
     kContactInfoFailedToLoadProfilesFromTable = 186,
     kGenericTestError = 187,
-    kMaxValue = kGenericTestError,
+    kAutofillValuableMetadataFailedToLoadDatabase = 188,
+    kAutofillValuableMetadataTransactionCommitFailedOnIncrementalSync = 189,
+    kAutofillValuableMetadataFailedToLoadMetadata = 190,
+    kDataTypeControllerInFailedState = 191,
+    kMaxValue = kDataTypeControllerInFailedState,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncModelError)
 

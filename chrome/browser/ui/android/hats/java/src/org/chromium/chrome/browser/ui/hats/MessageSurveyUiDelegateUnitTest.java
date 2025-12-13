@@ -469,7 +469,7 @@ public class MessageSurveyUiDelegateUnitTest {
         }
 
         void acceptMessage() {
-            mModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+            var unused = mModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
             dismissMessage(mModel, DismissReason.PRIMARY_ACTION);
         }
 

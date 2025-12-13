@@ -24,9 +24,11 @@ component("crypto") {
     "aes_cbc.h",
     "aes_ctr.cc",
     "aes_ctr.h",
+    "cose.cc",
+    "cose.h",
     "crypto_export.h",
-    "ec_private_key.cc",
-    "ec_private_key.h",
+    "ecdsa_utils.cc",
+    "ecdsa_utils.h",
     "evp.cc",
     "evp.h",
     "features.cc",
@@ -39,18 +41,22 @@ component("crypto") {
     "hmac.h",
     "kdf.cc",
     "kdf.h",
+    "kex.cc",
+    "kex.h",
     "keypair.cc",
     "keypair.h",
     "obsolete/md5.cc",
     "obsolete/md5.h",
+    "obsolete/sha1.cc",
+    "obsolete/sha1.h",
     "openssl_util.cc",
     "openssl_util.h",
+    "pem.cc",
+    "pem.h",
     "process_bound_string.cc",
     "process_bound_string.h",
     "random.cc",
     "random.h",
-    "rsa_private_key.cc",
-    "rsa_private_key.h",
     "scoped_nss_types.h",
     "secure_hash.cc",
     "secure_hash.h",
@@ -73,7 +79,7 @@ component("crypto") {
     "user_verifying_key.h",
   ]
 
-  deps = []
+  deps = [ "//components/cbor" ]
 
   public_deps = [
     ":buildflags",
@@ -83,26 +89,26 @@ component("crypto") {
 
   if (is_apple) {
     sources += [
-      "apple_keychain.cc",
-      "apple_keychain.h",
-      "apple_keychain_secitem.h",
-      "apple_keychain_secitem.mm",
-      "apple_keychain_util.h",
-      "apple_keychain_util.mm",
-      "apple_keychain_v2.h",
-      "apple_keychain_v2.mm",
+      "apple/keychain.cc",
+      "apple/keychain.h",
+      "apple/keychain_secitem.h",
+      "apple/keychain_secitem.mm",
+      "apple/keychain_util.h",
+      "apple/keychain_util.mm",
+      "apple/keychain_v2.h",
+      "apple/keychain_v2.mm",
+      "apple/scoped_keychain_user_interaction_allowed.cc",
+      "apple/scoped_keychain_user_interaction_allowed.h",
     ]
 
     if (is_mac) {
       sources += [
-        "apple_keychain_seckeychain.cc",
-        "apple_keychain_seckeychain.h",
-        "mac_security_services_lock.cc",
-        "mac_security_services_lock.h",
-        "scoped_lacontext.h",
-        "scoped_lacontext.mm",
-        "unexportable_key_mac.h",
-        "unexportable_key_mac.mm",
+        "apple/scoped_lacontext.h",
+        "apple/scoped_lacontext.mm",
+        "apple/security_framework_lock.cc",
+        "apple/security_framework_lock.h",
+        "apple/unexportable_key_mac.h",
+        "apple/unexportable_key_mac.mm",
         "user_verifying_key_mac.mm",
       ]
     }
@@ -155,13 +161,15 @@ component("crypto") {
   }
 
   defines = [ "CRYPTO_IMPLEMENTATION" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (is_apple) {
+  # TODO(https://crbug.com/431952820): move this into a crypto/apple/BUILD.gn
   source_set("mock_apple_keychain") {
     sources = [
-      "mock_apple_keychain.cc",
-      "mock_apple_keychain.h",
+      "apple/mock_keychain.cc",
+      "apple/mock_keychain.h",
     ]
 
     deps = [
@@ -176,16 +184,19 @@ test("crypto_unittests") {
     "aead_unittest.cc",
     "aes_cbc_unittest.cc",
     "aes_ctr_unittest.cc",
-    "ec_private_key_unittest.cc",
+    "cose_unittest.cc",
+    "ecdsa_utils_unittest.cc",
     "evp_unittest.cc",
     "hash_unittest.cc",
     "hmac_unittest.cc",
     "kdf_unittest.cc",
+    "kex_unittest.cc",
     "keypair_unittest.cc",
     "obsolete/md5_unittest.cc",
+    "obsolete/sha1_unittest.cc",
+    "pem_unittest.cc",
     "process_bound_string_unittest.cc",
     "random_unittest.cc",
-    "rsa_private_key_unittest.cc",
     "secure_hash_unittest.cc",
     "sha2_unittest.cc",
     "sign_unittest.cc",
@@ -193,24 +204,43 @@ test("crypto_unittests") {
     "unexportable_key_unittest.cc",
   ]
 
+  deps = [
+    ":crypto",
+    ":test_support",
+    "//base",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//components/cbor",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
   if (is_win || is_mac) {
     sources += [ "unexportable_key_metrics_unittest.cc" ]
   }
 
   if (is_apple) {
-    sources += [ "mock_apple_keychain_unittest.cc" ]
+    sources += [ "apple/mock_keychain_unittest.cc" ]
   }
 
-  if (is_mac) {
-    sources += [
-      "apple_keychain_util_unittest.mm",
-      "unexportable_key_mac_unittest.mm",
-      "user_verifying_key_mac_unittest.mm",
-    ]
+  if (is_ios) {
+    sources += [ "apple/keychain_secitem_ios_unittest.mm" ]
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+    deps += [ ":unittests_bundle_data" ]
+  } else {
+    data = [ "test/data/" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "apple/keychain_util_unittest.mm",
+      "apple/unexportable_key_mac_unittest.mm",
+      "user_verifying_key_mac_unittest.mm",
+    ]
   }
 
   # Some files are built when NSS is used for the platform certificate library.
@@ -226,19 +256,11 @@ test("crypto_unittests") {
     libs = [ "ncrypt.lib" ]
   }
 
-  deps = [
-    ":crypto",
-    ":test_support",
-    "//base",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-
   if (is_apple) {
     deps += [ ":mock_apple_keychain" ]
   }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -271,10 +293,10 @@ static_library("test_support") {
 
   if (is_mac) {
     sources += [
-      "fake_apple_keychain_v2.h",
-      "fake_apple_keychain_v2.mm",
-      "scoped_fake_apple_keychain_v2.h",
-      "scoped_fake_apple_keychain_v2.mm",
+      "apple/fake_keychain_v2.h",
+      "apple/fake_keychain_v2.mm",
+      "apple/scoped_fake_keychain_v2.h",
+      "apple/scoped_fake_keychain_v2.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",
@@ -289,7 +311,12 @@ static_library("test_support") {
     "//base",
   ]
 
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+bundle_data("unittests_bundle_data") {
+  testonly = true
+  sources = [ "test/data" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_root_relative_dir}}/" +
+              "{{source_file_part}}" ]
 }

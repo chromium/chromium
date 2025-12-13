@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Property column-rule value '10px'
+  assert_equals: expected "10px rgb(0, 255, 0)" but got "0px rgb(0, 255, 0)"
+[FAIL] Property column-rule value 'medium hidden currentcolor'
+  assert_equals: expected "3px hidden rgb(0, 255, 0)" but got "0px hidden rgb(0, 255, 0)"
+Harness: the test ran to completion.
+

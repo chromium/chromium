@@ -77,12 +77,6 @@ class PermissionPromptPreviewBrowserTest : public UiBrowserTest {
     InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kCameraMicPreview);
-    InProcessBrowserTest::SetUp();
-  }
-
   void ShowUi(const std::string& name) override {
     GURL url = embedded_test_server()->GetURL(kTestHtmlPage);
     TabStripModel* tab_strip = browser()->tab_strip_model();
@@ -115,9 +109,6 @@ class PermissionPromptPreviewBrowserTest : public UiBrowserTest {
   void WaitForUserDismissal() override {
     ui_test_utils::WaitForBrowserToClose();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

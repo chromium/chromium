@@ -190,6 +190,7 @@ void GenerateOneofDefinition(Context& ctx, const OneofDescriptor& oneof) {
            R"rs(
       #[repr(C)]
       #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+      #[non_exhaustive]
       #[allow(dead_code)]
       pub enum $case_enum_name$ {
         $cases$
@@ -254,14 +255,10 @@ void GenerateOneofAccessors(Context& ctx, const OneofDescriptor& oneof,
                 {{"upb_mt_field_index",
                   UpbMiniTableFieldIndex(*oneof.field(0))}},
                 R"rs(
-                let field_num = unsafe {
-                  let f = $pbr$::upb_MiniTable_GetFieldByIndex(
-                      <Self as $pbr$::AssociatedMiniTable>::mini_table(),
-                      $upb_mt_field_index$);
-                  $pbr$::upb_Message_WhichOneofFieldNumber(
-                        self.raw_msg(), f)
-                };
                 unsafe {
+                  let field_num = <Self as $pbr$::UpbGetMessagePtr>::get_ptr(
+                      &self, $pbi$::Private)
+                      .which_oneof_field_number_by_index($upb_mt_field_index$);
                   $oneof_enum_module$$case_enum_name$::try_from(field_num).unwrap_unchecked()
                 }
               )rs");

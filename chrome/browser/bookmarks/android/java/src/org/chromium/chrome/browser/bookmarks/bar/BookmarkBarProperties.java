@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import android.content.res.ColorStateList;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -27,8 +29,24 @@ class BookmarkBarProperties {
     /** The visibility of the bookmark bar. */
     public static final WritableIntPropertyKey VISIBILITY = new WritableIntPropertyKey();
 
+    /** The tint for the overflow button. */
+    public static final WritableObjectPropertyKey<ColorStateList> OVERFLOW_BUTTON_TINT_LIST =
+            new WritableObjectPropertyKey<>();
+
+    /** The color for the vertical divider. */
+    public static final WritableIntPropertyKey DIVIDER_COLOR = new WritableIntPropertyKey();
+
+    /** The color for the bottom hairline. */
+    public static final WritableIntPropertyKey HAIRLINE_COLOR = new WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                OVERFLOW_BUTTON_CLICK_CALLBACK, OVERFLOW_BUTTON_VISIBILITY, TOP_MARGIN, VISIBILITY
+                OVERFLOW_BUTTON_CLICK_CALLBACK,
+                OVERFLOW_BUTTON_VISIBILITY,
+                TOP_MARGIN,
+                VISIBILITY,
+                OVERFLOW_BUTTON_TINT_LIST,
+                DIVIDER_COLOR,
+                HAIRLINE_COLOR
             };
 }

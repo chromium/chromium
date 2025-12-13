@@ -148,8 +148,6 @@ EnumTraits<AssistiveWindowTypeMojo, AssistiveWindowType>::ToMojom(
   switch (type) {
     case AssistiveWindowType::kUndoWindow:
       return AssistiveWindowTypeMojo::kUndo;
-    case AssistiveWindowType::kEmojiSuggestion:
-      return AssistiveWindowTypeMojo::kEmojiSuggestion;
     case AssistiveWindowType::kPersonalInfoSuggestion:
       return AssistiveWindowTypeMojo::kPersonalInfoSuggestion;
     case AssistiveWindowType::kGrammarSuggestion:
@@ -174,9 +172,6 @@ bool EnumTraits<AssistiveWindowTypeMojo, AssistiveWindowType>::FromMojom(
     case AssistiveWindowTypeMojo::kUndo:
       *output = AssistiveWindowType::kUndoWindow;
       return true;
-    case AssistiveWindowTypeMojo::kEmojiSuggestion:
-      *output = AssistiveWindowType::kEmojiSuggestion;
-      return true;
     case AssistiveWindowTypeMojo::kPersonalInfoSuggestion:
       *output = AssistiveWindowType::kPersonalInfoSuggestion;
       return true;
@@ -189,6 +184,8 @@ bool EnumTraits<AssistiveWindowTypeMojo, AssistiveWindowType>::FromMojom(
     case AssistiveWindowTypeMojo::kLongpressDiacriticsSuggestion:
       *output = AssistiveWindowType::kLongpressDiacriticsSuggestion;
       return true;
+    default:
+      return false;
   }
 }
 

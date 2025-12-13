@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 #import "base/memory/raw_ptr.h"
@@ -127,7 +122,7 @@ class WebStateListTestObserver : public WebStateListObserver {
 
   // Returns the last group for the last detached WebState.
   const TabGroup* web_state_detached_group() const {
-    return web_state_detached_group_;
+    return web_state_detached_group_.get();
   }
 
   // Returns whether a WebState was activated.
@@ -344,30 +339,35 @@ class WebStateListTestObserver : public WebStateListObserver {
 
  private:
   int web_state_inserted_count_ = 0;
-  raw_ptr<const TabGroup> web_state_inserted_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> web_state_inserted_group_ =
+      nullptr;
   int web_state_moved_count_ = 0;
-  raw_ptr<const TabGroup> web_state_moved_old_group_ = nullptr;
-  raw_ptr<const TabGroup> web_state_moved_new_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> web_state_moved_old_group_ =
+      nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> web_state_moved_new_group_ =
+      nullptr;
   int web_state_replaced_count_ = 0;
   int web_state_detached_count_ = 0;
-  raw_ptr<const TabGroup> web_state_detached_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> web_state_detached_group_ =
+      nullptr;
   int web_state_activated_count_ = 0;
   int pinned_state_changed_count_ = 0;
   int status_only_count_ = 0;
-  raw_ptr<web::WebState> status_only_web_state_ = nullptr;
-  raw_ptr<const TabGroup> status_only_old_group_ = nullptr;
-  raw_ptr<const TabGroup> status_only_new_group_ = nullptr;
+  raw_ptr<web::WebState, DanglingUntriaged> status_only_web_state_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> status_only_old_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> status_only_new_group_ = nullptr;
   int group_created_count_ = 0;
-  raw_ptr<const TabGroup> group_created_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> group_created_group_ = nullptr;
   int visual_data_updated_count_ = 0;
-  raw_ptr<const TabGroup> visual_data_updated_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> visual_data_updated_group_ =
+      nullptr;
   TabGroupVisualData old_visual_data_ = TabGroupVisualData();
   int group_moved_count_ = 0;
-  raw_ptr<const TabGroup> group_moved_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> group_moved_group_ = nullptr;
   TabGroupRange group_moved_from_range_ = TabGroupRange::InvalidRange();
   TabGroupRange group_moved_to_range_ = TabGroupRange::InvalidRange();
   int group_deleted_count_ = 0;
-  raw_ptr<const TabGroup> group_deleted_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> group_deleted_group_ = nullptr;
   int batch_operation_started_count_ = 0;
   int batch_operation_ended_count_ = 0;
   int web_state_list_destroyed_count_ = 0;
@@ -457,9 +457,9 @@ class TestWebStateListDelegate final : public WebStateListDelegate {
   int inserted_web_state_count_ = 0;
   int activated_web_state_count_ = 0;
   int removed_web_state_count_ = 0;
-  raw_ptr<web::WebState> last_inserted_web_state_;
-  raw_ptr<web::WebState> last_activated_web_state_;
-  raw_ptr<web::WebState> last_removed_web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> last_inserted_web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> last_activated_web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> last_removed_web_state_;
 };
 
 class TestWebStateListGroupsDelegate final : public WebStateListGroupsDelegate {
@@ -1894,19 +1894,20 @@ TEST_F(WebStateListTest, InsertWebState_Groups_Automatic) {
 TEST_F(WebStateListTest, InsertWebState_Groups_AtIndex) {
   constexpr std::string_view web_state_list_description_before_insertion =
       "a | b [ 0 c d ] e f [ 1 g ]";
-  constexpr std::string_view expected_description_for_insertion_index[]{
-      "a | b [ 0 c d ] e f [ 1 g ] X",  // Insertion at 'a'.
-      "a | X b [ 0 c d ] e f [ 1 g ]",  // Insertion at 'b'.
-      "a | b X [ 0 c d ] e f [ 1 g ]",  // Insertion at 'c'.
-      "a | b [ 0 c X d ] e f [ 1 g ]",  // Insertion at 'd',.
-      "a | b [ 0 c d ] X e f [ 1 g ]",  // Insertion at 'e'.
-      "a | b [ 0 c d ] e X f [ 1 g ]",  // Insertion at 'f'.
-      "a | b [ 0 c d ] e f X [ 1 g ]",  // Insertion at 'g'.
-      "a | b [ 0 c d ] e f [ 1 g ] X",  // Insertion after 'g'.
-  };
+  constexpr auto expected_description_for_insertion_index =
+      std::to_array<std::string_view>({
+          "a | b [ 0 c d ] e f [ 1 g ] X",  // Insertion at 'a'.
+          "a | X b [ 0 c d ] e f [ 1 g ]",  // Insertion at 'b'.
+          "a | b X [ 0 c d ] e f [ 1 g ]",  // Insertion at 'c'.
+          "a | b [ 0 c X d ] e f [ 1 g ]",  // Insertion at 'd',.
+          "a | b [ 0 c d ] X e f [ 1 g ]",  // Insertion at 'e'.
+          "a | b [ 0 c d ] e X f [ 1 g ]",  // Insertion at 'f'.
+          "a | b [ 0 c d ] e f X [ 1 g ]",  // Insertion at 'g'.
+          "a | b [ 0 c d ] e f [ 1 g ] X",  // Insertion after 'g'.
+      });
 
-  for (int insertion_index = 0;
-       insertion_index < std::ssize(expected_description_for_insertion_index);
+  for (size_t insertion_index = 0;
+       insertion_index < expected_description_for_insertion_index.size();
        ++insertion_index) {
     // Setting up WebStateList and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -1949,19 +1950,20 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndex) {
 TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticWithOpener) {
   constexpr std::string_view web_state_list_description_before_insertion =
       "a b | c [ 0 d e ] f g [ 1 h ]";
-  constexpr std::string_view expected_description_for_opener_index[]{
-      "a b | c [ 0 d e ] f g [ 1 h ] X",  // Opener is 'a'.
-      "a b | X c [ 0 d e ] f g [ 1 h ]",  // Opener is 'b'.
-      "a b | c X [ 0 d e ] f g [ 1 h ]",  // Opener is 'c'.
-      "a b | c [ 0 d X e ] f g [ 1 h ]",  // Opener is 'd'.
-      "a b | c [ 0 d e X ] f g [ 1 h ]",  // Opener is 'e'.
-      "a b | c [ 0 d e ] f X g [ 1 h ]",  // Opener is 'f'.
-      "a b | c [ 0 d e ] f g X [ 1 h ]",  // Opener is 'g'.
-      "a b | c [ 0 d e ] f g [ 1 h X ]",  // Opener is 'h'.
-  };
+  constexpr auto expected_description_for_opener_index =
+      std::to_array<std::string_view>({
+          "a b | c [ 0 d e ] f g [ 1 h ] X",  // Opener is 'a'.
+          "a b | X c [ 0 d e ] f g [ 1 h ]",  // Opener is 'b'.
+          "a b | c X [ 0 d e ] f g [ 1 h ]",  // Opener is 'c'.
+          "a b | c [ 0 d X e ] f g [ 1 h ]",  // Opener is 'd'.
+          "a b | c [ 0 d e X ] f g [ 1 h ]",  // Opener is 'e'.
+          "a b | c [ 0 d e ] f X g [ 1 h ]",  // Opener is 'f'.
+          "a b | c [ 0 d e ] f g X [ 1 h ]",  // Opener is 'g'.
+          "a b | c [ 0 d e ] f g [ 1 h X ]",  // Opener is 'h'.
+      });
 
-  for (int opener_index = 0;
-       opener_index < std::ssize(expected_description_for_opener_index);
+  for (size_t opener_index = 0;
+       opener_index < expected_description_for_opener_index.size();
        ++opener_index) {
     // Setting up WebStateList, opener and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -1978,10 +1980,10 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticWithOpener) {
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 
     // Inserting the WebState with opener at `opener_index`.
-    WebStateOpener opener(opener_web_state);
     web_state_list_.InsertWebState(
         std::move(web_state_to_insert),
-        WebStateList::InsertionParams::Automatic().WithOpener(opener));
+        WebStateList::InsertionParams::Automatic().WithOpener(
+            WebStateOpener(opener_web_state)));
 
     // Check everything is as expected after insertion.
     EXPECT_TRUE(RangesOfTabGroupsAreValid())
@@ -2011,19 +2013,20 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticWithOpener) {
 TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInheritOpener) {
   constexpr std::string_view web_state_list_description_before_insertion =
       "a b | c [ 0 d e ] f g [ 1 h ]";
-  constexpr std::string_view expected_description_for_opener_index[]{
-      "a* b | c [ 0 d e ] f g [ 1 h ] X",  // Opener is 'a'.
-      "a b* | X c [ 0 d e ] f g [ 1 h ]",  // Opener is 'b'.
-      "a b | c* X [ 0 d e ] f g [ 1 h ]",  // Opener is 'c'.
-      "a b | c [ 0 d* X e ] f g [ 1 h ]",  // Opener is 'd'.
-      "a b | c [ 0 d e* X ] f g [ 1 h ]",  // Opener is 'e'.
-      "a b | c [ 0 d e ] f* X g [ 1 h ]",  // Opener is 'f'.
-      "a b | c [ 0 d e ] f g* X [ 1 h ]",  // Opener is 'g'.
-      "a b | c [ 0 d e ] f g [ 1 h* X ]",  // Opener is 'h'.
-  };
+  constexpr auto expected_description_for_opener_index =
+      std::to_array<std::string_view>({
+          "a* b | c [ 0 d e ] f g [ 1 h ] X",  // Opener is 'a'.
+          "a b* | X c [ 0 d e ] f g [ 1 h ]",  // Opener is 'b'.
+          "a b | c* X [ 0 d e ] f g [ 1 h ]",  // Opener is 'c'.
+          "a b | c [ 0 d* X e ] f g [ 1 h ]",  // Opener is 'd'.
+          "a b | c [ 0 d e* X ] f g [ 1 h ]",  // Opener is 'e'.
+          "a b | c [ 0 d e ] f* X g [ 1 h ]",  // Opener is 'f'.
+          "a b | c [ 0 d e ] f g* X [ 1 h ]",  // Opener is 'g'.
+          "a b | c [ 0 d e ] f g [ 1 h* X ]",  // Opener is 'h'.
+      });
 
-  for (int opener_index = 0;
-       opener_index < std::ssize(expected_description_for_opener_index);
+  for (size_t opener_index = 0;
+       opener_index < expected_description_for_opener_index.size();
        ++opener_index) {
     // Setting up WebStateList, opener and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -2040,8 +2043,6 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInheritOpener) {
     builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 
-    // Inserting the WebState with opener at `opener_index`.
-    WebStateOpener opener(opener_web_state);
     web_state_list_.InsertWebState(
         std::move(web_state_to_insert),
         WebStateList::InsertionParams::Automatic().InheritOpener());
@@ -2127,23 +2128,24 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInGroup) {
 TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup1) {
   constexpr std::string_view web_state_list_description_before_insertion =
       "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]";
-  constexpr std::string_view expected_description_for_insertion_index[]{
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'a'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'b'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'c'.
-      "a b | c [ 1 X d ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'd'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'e'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'f'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'g'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'h'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'i'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'j'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'k'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert after 'k'.
-  };
+  constexpr auto expected_description_for_insertion_index =
+      std::to_array<std::string_view>({
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'a'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'b'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'c'.
+          "a b | c [ 1 X d ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'd'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'e'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'f'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'g'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'h'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'i'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'j'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'k'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert after 'k'.
+      });
 
-  for (int insertion_index = 0;
-       insertion_index < std::ssize(expected_description_for_insertion_index);
+  for (size_t insertion_index = 0;
+       insertion_index < expected_description_for_insertion_index.size();
        ++insertion_index) {
     // Setting up WebStateList, opener and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -2191,23 +2193,24 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup1) {
 TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup2) {
   constexpr std::string_view web_state_list_description_before_insertion =
       "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]";
-  constexpr std::string_view expected_description_for_insertion_index[]{
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'a'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'b'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'c'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'd'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'e'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'f'.
-      "a b | c [ 1 d ] e f [ 2 X g h ] [ 3 i j k ]",  // Insert at 'g'.
-      "a b | c [ 1 d ] e f [ 2 g X h ] [ 3 i j k ]",  // Insert at 'h'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'i'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'j'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'k'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert after 'k'.
-  };
+  constexpr auto expected_description_for_insertion_index =
+      std::to_array<std::string_view>({
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'a'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'b'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'c'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'd'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'e'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'f'.
+          "a b | c [ 1 d ] e f [ 2 X g h ] [ 3 i j k ]",  // Insert at 'g'.
+          "a b | c [ 1 d ] e f [ 2 g X h ] [ 3 i j k ]",  // Insert at 'h'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'i'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'j'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'k'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert after 'k'.
+      });
 
-  for (int insertion_index = 0;
-       insertion_index < std::ssize(expected_description_for_insertion_index);
+  for (size_t insertion_index = 0;
+       insertion_index < expected_description_for_insertion_index.size();
        ++insertion_index) {
     // Setting up WebStateList, opener and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -2255,23 +2258,24 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup2) {
 TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup3) {
   constexpr std::string_view web_state_list_description_before_insertion =
       "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]";
-  constexpr std::string_view expected_description_for_insertion_index[]{
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'a'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'b'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'c'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'd'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'e'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'f'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'g'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'h'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 X i j k ]",  // Insert at 'i'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i X j k ]",  // Insert at 'j'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j X k ]",  // Insert at 'k'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert after 'k'.
-  };
+  constexpr auto expected_description_for_insertion_index =
+      std::to_array<std::string_view>({
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'a'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'b'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'c'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'd'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'e'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'f'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'g'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'h'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 X i j k ]",  // Insert at 'i'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i X j k ]",  // Insert at 'j'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j X k ]",  // Insert at 'k'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert after 'k'.
+      });
 
-  for (int insertion_index = 0;
-       insertion_index < std::ssize(expected_description_for_insertion_index);
+  for (size_t insertion_index = 0;
+       insertion_index < expected_description_for_insertion_index.size();
        ++insertion_index) {
     // Setting up WebStateList, opener and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -2337,22 +2341,23 @@ TEST_F(WebStateListTest, InsertWebState_Grouped_Grouped) {
 TEST_F(WebStateListTest, DetachWebStateAt_Groups) {
   constexpr std::string_view web_state_list_description_before_detach =
       "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]";
-  constexpr std::string_view expected_description_for_detach_index[]{
-      "b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'a'.
-      "a | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'b'.
-      "a b | [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'c'.
-      "a b | c e f [ 2 g h ] [ 3 i j k ]",        // Detach 'd'.
-      "a b | c [ 1 d ] f [ 2 g h ] [ 3 i j k ]",  // Detach 'e'.
-      "a b | c [ 1 d ] e [ 2 g h ] [ 3 i j k ]",  // Detach 'f'.
-      "a b | c [ 1 d ] e f [ 2 h ] [ 3 i j k ]",  // Detach 'g'.
-      "a b | c [ 1 d ] e f [ 2 g ] [ 3 i j k ]",  // Detach 'h'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 j k ]",  // Detach 'i'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i k ]",  // Detach 'j'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j ]",  // Detach 'k'.
-  };
+  constexpr auto expected_description_for_detach_index =
+      std::to_array<std::string_view>({
+          "b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'a'.
+          "a | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'b'.
+          "a b | [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'c'.
+          "a b | c e f [ 2 g h ] [ 3 i j k ]",        // Detach 'd'.
+          "a b | c [ 1 d ] f [ 2 g h ] [ 3 i j k ]",  // Detach 'e'.
+          "a b | c [ 1 d ] e [ 2 g h ] [ 3 i j k ]",  // Detach 'f'.
+          "a b | c [ 1 d ] e f [ 2 h ] [ 3 i j k ]",  // Detach 'g'.
+          "a b | c [ 1 d ] e f [ 2 g ] [ 3 i j k ]",  // Detach 'h'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 j k ]",  // Detach 'i'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i k ]",  // Detach 'j'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j ]",  // Detach 'k'.
+      });
 
-  for (int detach_index = 0;
-       detach_index < std::ssize(expected_description_for_detach_index);
+  for (size_t detach_index = 0;
+       detach_index < expected_description_for_detach_index.size();
        ++detach_index) {
     // Setting up WebStateList and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);

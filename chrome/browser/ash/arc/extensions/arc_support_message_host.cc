@@ -37,9 +37,7 @@ void ArcSupportMessageHost::SendMessage(const base::ValueView& message) {
   if (!client_)
     return;
 
-  std::string message_string;
-  base::JSONWriter::Write(message, &message_string);
-  client_->PostMessageFromNativeHost(message_string);
+  client_->PostMessageFromNativeHost(base::WriteJson(message).value_or(""));
 }
 
 void ArcSupportMessageHost::SetObserver(Observer* observer) {
@@ -69,8 +67,8 @@ void ArcSupportMessageHost::OnMessage(const std::string& message_string) {
   // which on Chrome OS runs in the browser process.
   // Therefore this use of JSONReader does not violate
   // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/rule-of-2.md.
-  std::optional<base::Value::Dict> message =
-      base::JSONReader::ReadDict(message_string);
+  std::optional<base::Value::Dict> message = base::JSONReader::ReadDict(
+      message_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!message) {
     NOTREACHED();
   }

@@ -27,6 +27,7 @@
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/window/hit_test_utils.h"
 
 namespace views {
@@ -243,7 +244,7 @@ void FrameCaptionButton::SetInkDropCornerRadius(int ink_drop_corner_radius) {
   ink_drop_corner_radius_ = ink_drop_corner_radius;
   // Changes to |ink_drop_corner_radius| will affect the ink drop. Therefore
   // this effect is handled by the ink drop.
-  OnPropertyChanged(&ink_drop_corner_radius_, kPropertyEffectsNone);
+  OnPropertyChanged(&ink_drop_corner_radius_, PropertyEffects::kNone);
 }
 
 int FrameCaptionButton::GetInkDropCornerRadius() const {
@@ -261,7 +262,7 @@ void FrameCaptionButton::SetPaintAsActive(bool paint_as_active) {
     return;
   }
   paint_as_active_ = paint_as_active;
-  OnPropertyChanged(&paint_as_active_, kPropertyEffectsPaint);
+  OnPropertyChanged(&paint_as_active_, PropertyEffects::kPaint);
 }
 
 bool FrameCaptionButton::GetPaintAsActive() const {

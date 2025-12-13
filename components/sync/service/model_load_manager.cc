@@ -165,7 +165,7 @@ void ModelLoadManager::LoadDesiredTypes() {
   const DataTypeSet types = preferred_types_without_errors_;
 
   // Start timer to measure time for loading to complete.
-  load_models_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
+  load_models_elapsed_timer_.emplace();
 
   for (DataType type : types) {
     auto dtc_iter = controllers_->find(type);
@@ -222,9 +222,9 @@ void ModelLoadManager::ModelLoadCallback(
     DVLOG(1) << "ModelLoadManager: Type encountered an error.";
     preferred_types_without_errors_.Remove(type);
     DataTypeController* dtc = controllers_->find(type)->second.get();
-    StopDatatypeImpl(
-        SyncError(error->location(), SyncError::MODEL_ERROR, error->ToString()),
-        SyncStopMetadataFate::KEEP_METADATA, dtc, base::DoNothing());
+    StopDatatypeImpl(SyncError::CreateFromModelError(*error),
+                     SyncStopMetadataFate::KEEP_METADATA, dtc,
+                     base::DoNothing());
     NotifyDelegateIfReadyForConfigure();
     return;
   }

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -59,6 +58,8 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostShouldReturnAccessCode) {
   input_parameters.terminate_upon_input = false;
   input_parameters.request_origin =
       SharedCrdSession::RequestOrigin::kEnterpriseAdmin;
+  input_parameters.audio_playback =
+      SharedCrdSession::AudioPlayback::kLocalOnly;
 
   ASSERT_FALSE(delegate().HasActiveSession());
   shared_crd_session_->StartCrdHost(input_parameters,
@@ -85,6 +86,8 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostShouldStartSharedSession) {
   input_parameters.allow_clipboard_sync = false;
   input_parameters.request_origin =
       SharedCrdSession::RequestOrigin::kEnterpriseAdmin;
+  input_parameters.audio_playback =
+      SharedCrdSession::AudioPlayback::kLocalOnly;
 
   ASSERT_FALSE(delegate().HasActiveSession());
   shared_crd_session_->StartCrdHost(input_parameters,
@@ -109,6 +112,10 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostShouldStartSharedSession) {
   ASSERT_EQ(ConvertToStartCrdSessionJobDelegateRequestOrigin(
                 input_parameters.request_origin),
             output_parameters.request_origin);
+  ASSERT_EQ(
+      ConvertToStartCrdSessionJobDelegateAudioPlayback(
+          input_parameters.audio_playback),
+      output_parameters.audio_playback);
   ASSERT_EQ("robot@account.com", output_parameters.user_name);
 }
 
@@ -120,6 +127,8 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostFailureShouldHaveErrorCode) {
   SharedCrdSession::SessionParameters input_parameters;
   input_parameters.request_origin =
       SharedCrdSession::RequestOrigin::kEnterpriseAdmin;
+  input_parameters.audio_playback =
+      SharedCrdSession::AudioPlayback::kLocalOnly;
 
   delegate().FailWithError(
       ExtendedStartCrdSessionResultCode::kFailureCrdHostError);
@@ -141,12 +150,14 @@ TEST_F(SharedCrdSessionImplTest, RunsConsumerCallbackOnCrdSessionEnd) {
   SharedCrdSession::SessionParameters input_parameters;
   input_parameters.request_origin =
       SharedCrdSession::RequestOrigin::kEnterpriseAdmin;
+  input_parameters.audio_playback =
+      SharedCrdSession::AudioPlayback::kLocalOnly;
   shared_crd_session_->StartCrdHost(input_parameters,
                                     access_code_future.GetCallback(),
                                     error_callback_future.GetCallback(),
                                     session_finished_future.GetCallback());
 
-  delegate().TerminateCrdSession(base::Seconds(0));
+  delegate().TerminateCrdSession();
   EXPECT_TRUE(session_finished_future.Wait());
 }
 

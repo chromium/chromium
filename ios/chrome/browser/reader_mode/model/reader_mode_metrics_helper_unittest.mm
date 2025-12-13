@@ -47,11 +47,19 @@ class ReaderModeMetricsHelperTest : public PlatformTest {
 
   void ResetMetricsHelper() { metrics_helper_.reset(); }
 
+  // Flush existing metrics by simulating a new navigation deactivating the
+  // active Reading Mode tab.
+  void Flush() {
+    metrics_helper_->Flush(
+        ReaderModeDeactivationReason::kNavigationDeactivated);
+  }
+
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
-  raw_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
+  raw_ptr<dom_distiller::DistilledPagePrefs, DanglingUntriaged>
+      distilled_page_prefs_;
 
  private:
   // Starts and finishes a committed navigation in `web_state()`. This
@@ -72,7 +80,7 @@ class ReaderModeMetricsHelperTest : public PlatformTest {
 // state.
 TEST_F(ReaderModeMetricsHelperTest, RecordHeuristicTrigger) {
   metrics_helper()->RecordReaderHeuristicTriggered();
-  metrics_helper()->Flush();
+  Flush();
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
               BucketsAre(Bucket(ReaderModeState::kHeuristicStarted, 1)));
@@ -87,7 +95,7 @@ TEST_F(ReaderModeMetricsHelperTest,
   metrics_helper()->RecordReaderHeuristicTriggered();
   task_environment_.AdvanceClock(base::Seconds(1));
 
-  metrics_helper()->CancelReaderHeuristicRecording();
+  metrics_helper()->RecordReaderHeuristicCanceled();
 
   // Heuristic result and state are recorded correctly.
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
@@ -129,7 +137,7 @@ TEST_F(ReaderModeMetricsHelperTest, OnFontFamilyChanged) {
 TEST_F(ReaderModeMetricsHelperTest, OnFontScaleChanged) {
   histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
 
-  distilled_page_prefs_->SetFontScaling(2.0);
+  distilled_page_prefs_->SetUserPrefFontScaling(2.0);
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),
@@ -144,7 +152,39 @@ TEST_F(ReaderModeMetricsHelperTest, OnFontScaleChanged) {
 TEST_F(ReaderModeMetricsHelperTest, OnThemeChanged) {
   histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
 
-  distilled_page_prefs_->SetTheme(dom_distiller::mojom::Theme::kDark);
+  distilled_page_prefs_->SetUserPrefTheme(dom_distiller::mojom::Theme::kDark);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),
+      BucketsAre(Bucket(ReaderModeCustomizationType::kTheme, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeThemeCustomizationHistogram),
+      BucketsAre(Bucket(ReaderModeTheme::kDark, 1)));
+}
+
+// Tests that changing the default theme multiple times does not impact
+// user preference customization metrics.
+TEST_F(ReaderModeMetricsHelperTest, OnDefaultThemeChangedMultipleTimes) {
+  histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
+
+  distilled_page_prefs_->SetDefaultTheme(dom_distiller::mojom::Theme::kLight);
+  distilled_page_prefs_->SetDefaultTheme(dom_distiller::mojom::Theme::kDark);
+  distilled_page_prefs_->SetDefaultTheme(dom_distiller::mojom::Theme::kDark);
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kReaderModeThemeCustomizationHistogram, 0);
+}
+
+// Tests that setting the same user preference multiple times to the same value
+// only counts once.
+TEST_F(ReaderModeMetricsHelperTest, OnUserPrefThemeChangedMultipleTimes) {
+  histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
+
+  distilled_page_prefs_->SetUserPrefTheme(dom_distiller::mojom::Theme::kDark);
+  distilled_page_prefs_->SetUserPrefTheme(dom_distiller::mojom::Theme::kDark);
+  task_environment_.RunUntilIdle();
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),
@@ -166,28 +206,37 @@ TEST_F(ReaderModeMetricsHelperTest, DeleteMetricsHelper) {
 // Tests that recording the distillation trigger updates the recorded Reading
 // mode state.
 TEST_F(ReaderModeMetricsHelperTest, ReaderDistillerTriggered) {
-  metrics_helper()->RecordReaderDistillerTriggered();
-  metrics_helper()->Flush();
+  metrics_helper()->RecordReaderDistillerTriggered(
+      ReaderModeAccessPoint::kContextualChip, /*is_incognito=*/false);
+  Flush();
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
               BucketsAre(Bucket(ReaderModeState::kDistillationStarted, 1)));
   histogram_tester_.ExpectTotalCount(kReaderModeDistillerLatencyHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kReaderModeAccessPointHistogram, 1);
 }
 
 // Tests that recording the distillation completion updates the recorded Reading
 // mode state.
 TEST_F(ReaderModeMetricsHelperTest, ReaderDistillerCompleted) {
-  metrics_helper()->RecordReaderDistillerTriggered();
+  metrics_helper()->RecordReaderDistillerTriggered(
+      ReaderModeAccessPoint::kContextualChip, /*is_incognito=*/false);
   task_environment_.AdvanceClock(base::Seconds(1));
 
   metrics_helper()->RecordReaderDistillerCompleted(
+      ReaderModeAccessPoint::kContextualChip,
       ReaderModeDistillerResult::kPageIsDistillable);
-  metrics_helper()->Flush();
+  Flush();
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
               BucketsAre(Bucket(ReaderModeState::kDistillationCompleted, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeDistillerResultHistogram),
+      BucketsAre(
+          Bucket(ReaderModeDistillerOutcome::kContextualChipIsDistillable, 1)));
   histogram_tester_.ExpectUniqueTimeSample(kReaderModeDistillerLatencyHistogram,
                                            base::Seconds(1), 1);
+  histogram_tester_.ExpectTotalCount(kReaderModeAccessPointHistogram, 1);
 
   std::vector<int64_t> ukm_entries = test_ukm_recorder_.GetMetricsEntryValues(
       IOS_ReaderMode_Distiller_Result::kEntryName,
@@ -216,7 +265,7 @@ TEST_F(ReaderModeMetricsHelperTest, ReaderShownStateAutomaticallyFlushed) {
 TEST_F(ReaderModeMetricsHelperTest, ReaderShownStateStartsReadingTime) {
   metrics_helper()->RecordReaderShown();
   task_environment_.AdvanceClock(base::Seconds(1));
-  metrics_helper()->Flush();
+  Flush();
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
               BucketsAre(Bucket(ReaderModeState::kReaderShown, 1)));
@@ -229,11 +278,11 @@ TEST_F(ReaderModeMetricsHelperTest, ReaderShownStateStartsReadingTime) {
 TEST_F(ReaderModeMetricsHelperTest, FlushMultipleReaderModeStates) {
   metrics_helper()->RecordReaderHeuristicTriggered();
   task_environment_.AdvanceClock(base::Seconds(1));
-  metrics_helper()->Flush();
+  Flush();
 
   metrics_helper()->RecordReaderHeuristicCompleted(
       ReaderModeHeuristicResult::kReaderModeEligible);
-  metrics_helper()->Flush();
+  Flush();
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
               BucketsAre(Bucket(ReaderModeState::kHeuristicStarted, 1),
@@ -243,6 +292,87 @@ TEST_F(ReaderModeMetricsHelperTest, FlushMultipleReaderModeStates) {
       BucketsAre(Bucket(ReaderModeHeuristicResult::kReaderModeEligible, 1)));
   // The second flushed recording did not trigger any latency collection.
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicLatencyHistogram, 0);
+}
+
+// Tests that canceling distillation records latency and reader mode state.
+TEST_F(ReaderModeMetricsHelperTest, DistillationCanceledOnTimeout) {
+  metrics_helper()->RecordReaderDistillerTriggered(
+      ReaderModeAccessPoint::kAIHub, /*is_incognito=*/false);
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  // Cancelation triggers a metrics flush.
+  metrics_helper()->RecordReaderDistillerTimedOut();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kDistillationTimedOut, 1)));
+  histogram_tester_.ExpectUniqueTimeSample(kReaderModeDistillerLatencyHistogram,
+                                           base::Seconds(1), 1);
+}
+
+// Tests that Reader Mode access point is recorded when a value is set.
+TEST_F(ReaderModeMetricsHelperTest, ReaderModeAccessPointRecorded) {
+  metrics_helper()->RecordReaderDistillerTriggered(
+      ReaderModeAccessPoint::kAIHub, /*is_incognito=*/false);
+  Flush();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kDistillationStarted, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeAccessPointHistogram),
+              BucketsAre(Bucket(ReaderModeAccessPoint::kAIHub, 1)));
+}
+
+// Tests that Reader Mode access point with mode is recorded for regular mode.
+TEST_F(ReaderModeMetricsHelperTest, ReaderModeAccessPointWithModeForRegular) {
+  metrics_helper()->RecordReaderDistillerTriggered(
+      ReaderModeAccessPoint::kAIHub, /*is_incognito=*/false);
+  Flush();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kDistillationStarted, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeAccessPointWithModeHistogram),
+      BucketsAre(Bucket(ReaderModeAccessPointWithMode::kAIHubInRegular, 1)));
+}
+
+// Tests that Reader Mode access point with mode is recorded for incognito mode.
+TEST_F(ReaderModeMetricsHelperTest, ReaderModeAccessPointWithModeForIncognito) {
+  metrics_helper()->RecordReaderDistillerTriggered(
+      ReaderModeAccessPoint::kAIHub, /*is_incognito=*/true);
+  Flush();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kDistillationStarted, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeAccessPointWithModeHistogram),
+      BucketsAre(Bucket(ReaderModeAccessPointWithMode::kAIHubInIncognito, 1)));
+}
+
+// Tests that a deactivation reason is recorded when metrics are flushed.
+TEST_F(ReaderModeMetricsHelperTest, ReaderDeactivatedByUser) {
+  metrics_helper()->Flush(ReaderModeDeactivationReason::kUserDeactivated);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeDeactivationReasonHistogram),
+      BucketsAre(Bucket(ReaderModeDeactivationReason::kUserDeactivated, 1)));
+}
+
+// Tests that Reader Mode access point UKM is recorded when the Reader is shown.
+TEST_F(ReaderModeMetricsHelperTest, ReaderModeShownAccessPointRecorded) {
+  metrics_helper()->RecordReaderDistillerTriggered(
+      ReaderModeAccessPoint::kAIHub, /*is_incognito=*/false);
+  metrics_helper()->RecordReaderDistillerCompleted(
+      ReaderModeAccessPoint::kAIHub,
+      ReaderModeDistillerResult::kPageIsDistillable);
+  metrics_helper()->RecordReaderShown();
+
+  std::vector<int64_t> ukm_access_point_entries =
+      test_ukm_recorder_.GetMetricsEntryValues(
+          ukm::builders::IOS_ReaderMode_ReaderModeShown_AccessPoint::kEntryName,
+          ukm::builders::IOS_ReaderMode_ReaderModeShown_AccessPoint::
+              kAccessPointName);
+  EXPECT_THAT(
+      ukm_access_point_entries,
+      testing::ElementsAre(static_cast<int>(ReaderModeAccessPoint::kAIHub)));
 }
 
 // Tests metrics functionality based on the heuristic result.
@@ -261,7 +391,7 @@ TEST_P(ReaderModeMetricsHelperWithEligibilityTest, RecordHeuristicElapsedTime) {
 
   ReaderModeHeuristicResult heuristic_result = GetEligibility();
   metrics_helper()->RecordReaderHeuristicCompleted(heuristic_result);
-  metrics_helper()->Flush();
+  Flush();
 
   // Heuristic result and state are recorded correctly.
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),

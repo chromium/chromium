@@ -36,3 +36,5 @@ void ScreenOrientationListenerAndroid::IsAutoRotateEnabledByUser(
 }
 
 }  // namespace device
+
+DEFINE_JNI(ScreenOrientationListener)

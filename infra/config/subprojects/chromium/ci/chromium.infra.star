@@ -3,21 +3,23 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.infra builder group."""
 
-load("//lib/branches.star", "branches")
-load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "cpu", "gardener_rotations", "os")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builder_health_indicators.star", "health_spec")
+load("@chromium-luci//builders.star", "cpu", "os")
+load("@chromium-luci//ci.star", "ci")
+load("@chromium-luci//consoles.star", "consoles")
+load("//lib/ci_constants.star", "ci_constants")
+load("//lib/gardener_rotations.star", "gardener_rotations")
 
 ci.defaults.set(
     builder_group = "chromium.infra",
-    pool = ci.DEFAULT_POOL,
+    pool = ci_constants.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    health_spec = health_spec.DEFAULT,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+    execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
+    health_spec = health_spec.default(),
+    service_account = ci_constants.DEFAULT_SERVICE_ACCOUNT,
+    shadow_service_account = ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
@@ -51,12 +53,13 @@ packager_builder(
     # Every 6 hours starting at 5am UTC.
     schedule = "0 5/6 * * * *",
     triggered_by = [],
+    pool = "luci.chromium.packager.ci",
     builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "packager|3pp|linux",
         short_name = "amd64",
     ),
-    execution_timeout = 5 * time.hour,
+    execution_timeout = 7 * time.hour,
     notifies = ["chromium-infra"],
     properties = {
         "$build/chromium_3pp": {
@@ -222,21 +225,32 @@ packager_builder(
             },
             {
                 "sdk_package_name": "cmdline-tools;latest",
-                "cipd_yaml": "third_party/android_sdk/cipd/cmdline-tools.yaml",
+                "cipd_yaml": "third_party/android_sdk/cipd/cmdline-tools/linux.yaml",
+            },
+            {
+                "sdk_package_name": "cmdline-tools;latest",
+                "cipd_yaml": "third_party/android_sdk/cipd/cmdline-tools/mac.yaml",
+                "target_os": "mac",
             },
             {
                 "sdk_package_name": "emulator",
-                "cipd_yaml": "third_party/android_sdk/cipd/emulator.yaml",
+                "cipd_yaml": "third_party/android_sdk/cipd/emulator/linux-amd64.yaml",
             },
             {
                 "sdk_package_name": "emulator",
-                "cipd_yaml": "third_party/android_sdk/cipd/emulator.yaml",
+                "cipd_yaml": "third_party/android_sdk/cipd/emulator/linux-amd64.yaml",
                 "sdk_channel": "BETA",
             },
             {
                 "sdk_package_name": "emulator",
-                "cipd_yaml": "third_party/android_sdk/cipd/emulator.yaml",
+                "cipd_yaml": "third_party/android_sdk/cipd/emulator/linux-amd64.yaml",
                 "sdk_channel": "CANARY",
+            },
+            {
+                "sdk_package_name": "emulator",
+                "cipd_yaml": "third_party/android_sdk/cipd/emulator/mac-arm64.yaml",
+                "target_os": "mac",
+                "target_arch": "arm64",
             },
             {
                 "sdk_package_name": "platforms;android-34",
@@ -348,32 +362,20 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-35/google_apis_tablet/x86_64.yaml",
             },
             {
+                "sdk_package_name": "system-images;android-36;google_apis;arm64-v8a",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36/google_apis/arm64-v8a.yaml",
+            },
+            {
                 "sdk_package_name": "system-images;android-36;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36/google_apis/x86_64.yaml",
             },
+            {
+                "sdk_package_name": "system-images;android-36.0-CANARY;google_apis;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36.0-CANARY/google_apis/x86_64.yaml",
+                "sdk_channel": "CANARY",
+            },
         ],
     },
-)
-
-packager_builder(
-    name = "rts-model-packager",
-    executable = "recipe:chromium_rts/create_model",
-    schedule = "0 9 * * *",  # at 1AM or 2AM PT (depending on DST), once a day.
-    triggered_by = [],
-    builderless = False,
-    cores = None,
-    console_view_entry = consoles.console_view_entry(
-        category = "packager|rts",
-        short_name = "create-model",
-    ),
-    execution_timeout = 10 * time.hour,
-    notifies = [
-        luci.notifier(
-            name = "rts-model-packager-notifier",
-            notify_emails = ["chrome-dev-infra-auto+alerts@google.com"],
-            on_occurrence = ["FAILURE", "INFRA_FAILURE"],
-        ),
-    ],
 )
 
 ci.builder(

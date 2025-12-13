@@ -39,6 +39,8 @@ enum PermissionName {
   FULLSCREEN,
   WEB_APP_INSTALLATION,
   LOCAL_NETWORK_ACCESS,
+  LOCAL_NETWORK,
+  LOOPBACK_NETWORK,
   VR,
   AR,
   HAND_TRACKING,
@@ -125,14 +127,21 @@ enum EmbeddedPermissionControlResult {
   kResolvedNoUserGesture = 4,
 };
 
+// Hold extra data of request originated from <geolocation> element
+struct GeolocationEmbeddedPermissionRequestDescriptor {
+  bool autolocate;
+  // TODO(crbug.com/442793180): Decide to support precise location request.
+};
+
 // Holds information about the embedded permission request
 struct EmbeddedPermissionRequestDescriptor {
-  // Define the list of permissions we will request.
-  array<PermissionDescriptor> permissions;
-
   // Element position (in screen coordinates), used to calculate position where
-  // the secondary prompt UI is expected to be shown
+  // the secondary prompt UI is expected to be shown.
   gfx.mojom.Rect element_position;
+
+  // Hold extra information, if the request comes from a dedicated element(
+  // <geolocation>).
+  GeolocationEmbeddedPermissionRequestDescriptor? geolocation;
 };
 
 // The Permission service provides permission handling capabilities by exposing
@@ -148,11 +157,13 @@ interface PermissionService {
   // object has been destroyed.
   RegisterPageEmbeddedPermissionControl(
     array<PermissionDescriptor> permissions,
+    EmbeddedPermissionRequestDescriptor descriptor,
     pending_remote<EmbeddedPermissionControlClient> client);
   // Calling this method indicates the user has explicitly requested the
   // permission by clicking on the `HTMLPermissionElement`. Asks for a list of
   // permissions and returns `EmbeddedPermissionControlResult` defined above
-  RequestPageEmbeddedPermission(EmbeddedPermissionRequestDescriptor descriptor)
+  RequestPageEmbeddedPermission(array<PermissionDescriptor> permissions,
+                                EmbeddedPermissionRequestDescriptor descriptor)
       => (EmbeddedPermissionControlResult status);
   // Request permission for the given `PermissionDescriptor`, and returns
   // permission status result.
@@ -167,10 +178,11 @@ interface PermissionService {
   AddPermissionObserver(PermissionDescriptor permission,
                         PermissionStatus last_known_status,
                         pending_remote<PermissionObserver> observer);
-  // Similar to `AddPermissionObserver`, but additionally takes the device's permission
-  // statuses into account when updating |observer| with changes to the origin's access
-  // to |permission|.
-  AddCombinedPermissionObserver(PermissionDescriptor permission,
+  // Calling this method indicates that a `HTMLPermissionElement` subscribes
+  // |observer| to updates about changes to the current origin's access to
+  // |permission|. This method is similar to `AddPermissionObserver` except it
+  // also takes into account the device's permission statuses.
+  AddPageEmbeddedPermissionObserver(PermissionDescriptor permission,
                                     PermissionStatus last_known_status,
                                     pending_remote<PermissionObserver> observer);
   // Notifies when an event listener with `event_type` was added to

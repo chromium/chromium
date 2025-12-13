@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"

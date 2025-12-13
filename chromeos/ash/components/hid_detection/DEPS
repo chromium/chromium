@@ -11,5 +11,6 @@ specific_include_rules = {
     # Allows fake implementations.
     "+chromeos/ash/services/bluetooth_config",
     "+components/session_manager/core/session_manager.h",
+    "+components/session_manager/core/fake_session_manager_delegate.h",
   ]
 }

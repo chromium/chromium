@@ -17,7 +17,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwTracingController_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace {
 
@@ -64,7 +64,7 @@ class AwTraceDataEndpoint
 namespace android_webview {
 
 static jlong JNI_AwTracingController_Init(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj) {
+                                          const JavaRef<jobject>& obj) {
   AwTracingController* controller = new AwTracingController(env, obj);
   return reinterpret_cast<intptr_t>(controller);
 }
@@ -121,3 +121,5 @@ bool AwTracingController::IsTracing(JNIEnv* env) {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwTracingController)

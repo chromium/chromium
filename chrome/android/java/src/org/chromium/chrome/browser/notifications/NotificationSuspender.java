@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Notification;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -17,10 +19,11 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -36,8 +39,9 @@ import java.util.List;
  * <p>All calls must be made on the UI thread, and the full browser must be started before using
  * this class.
  */
+@NullMarked
 public class NotificationSuspender {
-    private final Profile mProfile;
+    private final @Nullable Profile mProfile;
     private final Context mContext;
     private final BaseNotificationManagerProxy mNotificationManager;
 
@@ -49,7 +53,9 @@ public class NotificationSuspender {
     }
 
     public NotificationSuspender(
-            Profile profile, Context context, BaseNotificationManagerProxy notificationManager) {
+            @Nullable Profile profile,
+            Context context,
+            BaseNotificationManagerProxy notificationManager) {
         mProfile = profile;
         mContext = context;
         mNotificationManager = notificationManager;
@@ -97,9 +103,9 @@ public class NotificationSuspender {
             return new ArrayList<>();
         }
 
-        String[] notificationIds = new String[notifications.size()];
-        String[] origins = new String[notifications.size()];
-        Bitmap[] resources = new Bitmap[notifications.size() * 3];
+        @Nullable String[] notificationIds = new String[notifications.size()];
+        @Nullable String[] origins = new String[notifications.size()];
+        @Nullable Bitmap[] resources = new Bitmap[notifications.size() * 3];
 
         for (int i = 0; i < notifications.size(); ++i) {
             Notification notification = notifications.get(i).getNotification();
@@ -189,7 +195,7 @@ public class NotificationSuspender {
 
         mNotificationManager.getActiveNotifications(
                 (activeNotifications) -> {
-                    for (NotificationManagerProxy.StatusBarNotificationProxy notification :
+                    for (BaseNotificationManagerProxy.StatusBarNotificationProxy notification :
                             activeNotifications) {
                         if (notification.getId() != NotificationPlatformBridge.PLATFORM_ID) {
                             continue;
@@ -210,20 +216,20 @@ public class NotificationSuspender {
                 });
     }
 
-    private Bitmap getBitmapFromIcon(Icon icon) {
+    private @Nullable Bitmap getBitmapFromIcon(Icon icon) {
         if (icon == null || icon.getType() != Icon.TYPE_BITMAP) return null;
-        return ((BitmapDrawable) icon.loadDrawable(mContext)).getBitmap();
+        return assumeNonNull(((BitmapDrawable) icon.loadDrawable(mContext))).getBitmap();
     }
 
-    private Bitmap getNotificationIcon(Notification notification) {
+    private @Nullable Bitmap getNotificationIcon(Notification notification) {
         return getBitmapFromIcon(notification.getLargeIcon());
     }
 
-    private Bitmap getNotificationBadge(Notification notification) {
+    private @Nullable Bitmap getNotificationBadge(Notification notification) {
         return getBitmapFromIcon(notification.getSmallIcon());
     }
 
-    private Bitmap getNotificationImage(Notification notification) {
+    private @Nullable Bitmap getNotificationImage(Notification notification) {
         return (Bitmap) notification.extras.get(Notification.EXTRA_PICTURE);
     }
 
@@ -234,14 +240,14 @@ public class NotificationSuspender {
         // |notificationIds|. If a notification does not have a particular resource, pass null
         // instead. |origins| must be the same size as |notificationIds|.
         void storeNotificationResources(
-                @JniType("Profile*") Profile profile,
-                String[] notificationIds,
-                String[] origins,
-                Bitmap[] resources);
+                @JniType("Profile*") @Nullable Profile profile,
+                @Nullable String[] notificationIds,
+                @Nullable String[] origins,
+                @Nullable Bitmap[] resources);
 
         // Displays all suspended notifications for the given |origins|.
         void reDisplayNotifications(
-                @JniType("Profile*") Profile profile,
+                @JniType("Profile*") @Nullable Profile profile,
                 @JniType("std::vector<std::string>") String[] origins);
     }
 }

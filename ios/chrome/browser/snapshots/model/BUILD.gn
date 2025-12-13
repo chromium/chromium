@@ -26,12 +26,14 @@ source_set("model") {
     "snapshot_tab_helper.mm",
   ]
   deps = [
+    ":constants",
     ":features",
     ":model_common",
     ":model_swift",
+    ":snapshot_source",
     "//base",
     "//build:blink_buildflags",
-    "//ios/chrome/browser/sessions/model:session_constants",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
@@ -64,10 +66,22 @@ source_set("model_common") {
     "web_state_snapshot_info.mm",
   ]
   deps = [
+    ":snapshot_source",
     "//base",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/web/public",
     "//ui/base",
+  ]
+}
+
+source_set("snapshot_source") {
+  sources = [
+    "snapshot_source_tab_helper.h",
+    "snapshot_source_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
   ]
 }
 
@@ -94,6 +108,19 @@ swift_source_set("model_swift") {
   public_deps = [ "//base" ]
 }
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("constants") {
+  sources = [ "constants.h" ]
+  deps = [ "//base" ]
+}
+
 source_set("test_utils") {
   testonly = true
   sources = [
@@ -114,25 +141,28 @@ source_set("unit_tests") {
     "snapshot_generator_unittest.mm",
     "snapshot_id_wrapper_unittest.mm",
     "snapshot_lru_cache_unittest.mm",
+    "snapshot_source_tab_helper_unittest.mm",
     "snapshot_storage_unittest.mm",
     "snapshot_tab_helper_unittest.mm",
   ]
   deps = [
+    ":constants",
     ":features",
     ":model",
     ":model_common",
     ":model_swift",
+    ":snapshot_source",
     ":test_utils",
     "//base",
     "//base/test:test_support",
     "//components/sessions:session_id",
-    "//ios/chrome/browser/sessions/model:session_constants",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",
     "//ios/web",
+    "//ios/web/common:uikit",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gmock",
@@ -152,18 +182,10 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "snapshot_egtest.mm" ]
   deps = [
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  public_deps = [ "//base" ]
-  deps = []
 }

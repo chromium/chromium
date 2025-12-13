@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -26,10 +26,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
-namespace skia_bindings {
-class GrContextForGLES2Interface;
-}
-
 namespace viz {
 class TestGLES2Interface;
 class TestRasterInterface;
@@ -40,12 +36,8 @@ class TestContextProvider
       public RasterContextProvider {
  public:
   // Creates a context backed by TestGLES2Interface with no lock.
-  static scoped_refptr<TestContextProvider> Create(
+  static scoped_refptr<TestContextProvider> CreateGLES(
       std::string additional_extensions = std::string());
-  static scoped_refptr<TestContextProvider> Create(
-      std::unique_ptr<TestGLES2Interface> gl);
-  static scoped_refptr<TestContextProvider> Create(
-      scoped_refptr<gpu::TestSharedImageInterface> sii);
 
   // Creates a context backed by TestRasterInterface with no lock.
   static scoped_refptr<TestContextProvider> CreateRaster();
@@ -66,7 +58,6 @@ class TestContextProvider
   explicit TestContextProvider(
       std::unique_ptr<TestContextSupport> support,
       std::unique_ptr<TestGLES2Interface> gl,
-      std::unique_ptr<gpu::raster::RasterInterface> raster,
       scoped_refptr<gpu::TestSharedImageInterface> sii,
       bool support_locking);
 
@@ -82,13 +73,11 @@ class TestContextProvider
   gpu::gles2::GLES2Interface* ContextGL() override;
   gpu::raster::RasterInterface* RasterInterface() override;
   gpu::ContextSupport* ContextSupport() override;
-  class GrDirectContext* GrContext() override;
   gpu::TestSharedImageInterface* SharedImageInterface() override;
   ContextCacheController* CacheController() override;
   base::Lock* GetLock() override;
   void AddObserver(ContextLostObserver* obs) override;
   void RemoveObserver(ContextLostObserver* obs) override;
-  unsigned int GetGrGLTextureFormat(SharedImageFormat format) const override;
 
   TestGLES2Interface* TestContextGL();
   TestRasterInterface* GetTestRasterInterface();
@@ -98,6 +87,9 @@ class TestContextProvider
   // state on the test interface before binding.
   TestGLES2Interface* UnboundTestContextGL() { return context_gl_.get(); }
   TestRasterInterface* UnboundTestRasterInterface();
+  const gpu::GpuFeatureInfo& UnboundGpuFeatureInfo() const {
+    return gpu_feature_info_;
+  }
 
   TestContextSupport* support() { return support_.get(); }
 
@@ -123,8 +115,6 @@ class TestContextProvider
 
   // Used for GLES2 contexts.
   std::unique_ptr<TestGLES2Interface> context_gl_;
-  std::unique_ptr<gpu::raster::RasterInterface> raster_interface_gles_;
-  std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
 
   // Used for raster contexts.
   std::unique_ptr<TestRasterInterface> raster_context_;

@@ -6,14 +6,23 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
-#import "ios/chrome/browser/sessions/model/session_restoration_service.h"
-#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
+
+namespace {
+
+// Returns whether a page placeholder should be installed on `web_state`
+// when it is realized.
+bool ShouldInstallPagePlaceholder(web::WebState* web_state) {
+  const GURL& visible_url = web_state->GetVisibleURL();
+  return visible_url.is_valid() && visible_url != kChromeUINewTabURL;
+}
+
+}  // namespace
 
 PagePlaceholderBrowserAgent::PagePlaceholderBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
@@ -23,94 +32,56 @@ PagePlaceholderBrowserAgent::PagePlaceholderBrowserAgent(Browser* browser)
       << "PagePlaceholderBrowserAgent created for a Browser with a non-empty "
          "WebStateList.";
 
-  ProfileIOS* profile = browser_->GetProfile();
-  session_restoration_service_observation_.Observe(
-      SessionRestorationServiceFactory::GetForProfile(profile));
+  web_state_list_observation_.Observe(browser_->GetWebStateList());
 }
 
 PagePlaceholderBrowserAgent::~PagePlaceholderBrowserAgent() = default;
 
-#pragma mark - Public
-
-void PagePlaceholderBrowserAgent::ExpectNewForegroundTab() {
-  expecting_foreground_tab_ = true;
-}
-
-void PagePlaceholderBrowserAgent::AddPagePlaceholder() {
-  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
-  if (web_state && expecting_foreground_tab_) {
-    PagePlaceholderTabHelper::FromWebState(web_state)
-        ->AddPlaceholderForNextNavigation();
-  }
-}
-
-void PagePlaceholderBrowserAgent::CancelPagePlaceholder() {
-  if (!expecting_foreground_tab_) {
-    return;
+bool PagePlaceholderBrowserAgent::IsPagePlaceholderPlannedForWebState(
+    web::WebState* web_state) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      return ShouldInstallPagePlaceholder(web_state);
+    }
   }
 
-  // Now that the new tab has been displayed, return to normal. Rather than
-  // keep a reference to the previous tab, just turn off preview mode for all
-  // tabs (since doing so is a no-op for the tabs that don't have it set).
-  expecting_foreground_tab_ = false;
-
-  WebStateList* web_state_list = browser_->GetWebStateList();
-  const int web_state_list_size = web_state_list->count();
-  for (int index = 0; index < web_state_list_size; ++index) {
-    RemovePlaceholderFromWebState(web_state_list->GetWebStateAt(index));
-  }
-}
-
-#pragma mark - SessionRestorationObserver
-
-void PagePlaceholderBrowserAgent::WillStartSessionRestoration(
-    Browser* browser) {
-  // Nothing to do.
-}
-
-void PagePlaceholderBrowserAgent::SessionRestorationFinished(
-    Browser* browser,
-    const std::vector<web::WebState*>& restored_web_states) {
-  // Ignore the event if it does not correspond to the browser this
-  // object is bound to (which can happen with the optimised session
-  // storage code).
-  if (browser_.get() != browser) {
-    return;
-  }
-
-  // Setup the placeholder for the restored tabs if necessary.
-  for (web::WebState* web_state : restored_web_states) {
-    AddPlaceholderToWebState(web_state);
-  }
+  return PagePlaceholderTabHelper::FromWebState(web_state)
+      ->will_add_placeholder_for_next_navigation();
 }
 
 void PagePlaceholderBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
       // Nothing to do.
       break;
 
-    case WebStateListChange::Type::kDetach:
-      StopObservingWebState(
-          change.As<WebStateListChangeDetach>().detached_web_state());
+    case WebStateListChange::Type::kDetach: {
+      const auto& detach_change = change.As<WebStateListChangeDetach>();
+      WebStateRemoved(detach_change.detached_web_state());
       break;
+    }
 
     case WebStateListChange::Type::kMove:
       // Nothing do do.
       break;
 
-    case WebStateListChange::Type::kReplace:
-      StopObservingWebState(
-          change.As<WebStateListChangeReplace>().replaced_web_state());
+    case WebStateListChange::Type::kReplace: {
+      const bool force_placeholder = web_state_list->IsBatchInProgress();
+      const auto& replace_change = change.As<WebStateListChangeReplace>();
+      WebStateInserted(replace_change.inserted_web_state(), force_placeholder);
+      WebStateRemoved(replace_change.replaced_web_state());
       break;
+    }
 
-    case WebStateListChange::Type::kInsert:
-      // Nothing to do.
+    case WebStateListChange::Type::kInsert: {
+      const bool force_placeholder = web_state_list->IsBatchInProgress();
+      const auto& insert_change = change.As<WebStateListChangeInsert>();
+      WebStateInserted(insert_change.inserted_web_state(), force_placeholder);
       break;
+    }
 
     case WebStateListChange::Type::kGroupCreate:
       // Nothing to do.
@@ -131,61 +102,43 @@ void PagePlaceholderBrowserAgent::WebStateListDidChange(
 }
 
 void PagePlaceholderBrowserAgent::WebStateRealized(web::WebState* web_state) {
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  CHECK(web::features::CreateTabHelperOnlyForRealizedWebStates());
+  web_state_observations_.RemoveObservation(web_state);
   AddPlaceholderToWebState(web_state);
-  StopObservingWebState(web_state);
 }
 
 void PagePlaceholderBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
-  StopObservingWebState(web_state);
+  CHECK(web::features::CreateTabHelperOnlyForRealizedWebStates());
+  web_state_observations_.RemoveObservation(web_state);
 }
 
-void PagePlaceholderBrowserAgent::StartObservingWebState(
-    web::WebState* web_state) {
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
-  if (!web_state_observations_.IsObservingAnySource()) {
-    web_state_list_observation_.Observe(browser_->GetWebStateList());
+void PagePlaceholderBrowserAgent::WebStateInserted(web::WebState* web_state,
+                                                   bool force_placeholder) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      web_state_observations_.AddObservation(web_state);
+      return;
+    }
   }
-  web_state_observations_.AddObservation(web_state);
+
+  if (!web_state->IsRealized() || force_placeholder) {
+    AddPlaceholderToWebState(web_state);
+  }
 }
 
-void PagePlaceholderBrowserAgent::StopObservingWebState(
-    web::WebState* web_state) {
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
-  if (web_state_observations_.IsObservingSource(web_state)) {
-    web_state_observations_.RemoveObservation(web_state);
-    if (!web_state_observations_.IsObservingAnySource()) {
-      web_state_list_observation_.Reset();
+void PagePlaceholderBrowserAgent::WebStateRemoved(web::WebState* web_state) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      web_state_observations_.RemoveObservation(web_state);
+      return;
     }
   }
 }
 
 void PagePlaceholderBrowserAgent::AddPlaceholderToWebState(
     web::WebState* web_state) {
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
-    if (!web_state->IsRealized()) {
-      StartObservingWebState(web_state);
-      return;
-    }
-  }
-
-  const GURL& visible_url = web_state->GetVisibleURL();
-  if (visible_url.is_valid() && visible_url != kChromeUINewTabURL) {
+  if (ShouldInstallPagePlaceholder(web_state)) {
     PagePlaceholderTabHelper::FromWebState(web_state)
         ->AddPlaceholderForNextNavigation();
   }
-}
-
-void PagePlaceholderBrowserAgent::RemovePlaceholderFromWebState(
-    web::WebState* web_state) {
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
-    if (!web_state->IsRealized()) {
-      StopObservingWebState(web_state);
-      return;
-    }
-  }
-
-  PagePlaceholderTabHelper::FromWebState(web_state)
-      ->CancelPlaceholderForNextNavigation();
 }

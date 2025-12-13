@@ -55,7 +55,7 @@ source_set("tests") {
     "//net",
     "//net:test_support",
     "//net/cert:root_store_proto_lite",
-    "//services/cert_verifier/cert_net_url_loader:cert_net_url_loader",
+    "//services/cert_verifier/cert_net_url_loader",
     "//services/cert_verifier/public/mojom",
     "//services/network:network_service",
     "//services/network:test_support",

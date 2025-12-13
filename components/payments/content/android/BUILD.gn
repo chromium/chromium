@@ -30,8 +30,6 @@ static_library("android") {
     "payment_manifest_downloader_android.h",
     "payment_manifest_parser_android.cc",
     "payment_manifest_parser_android.h",
-    "payment_manifest_web_data_service_android.cc",
-    "payment_manifest_web_data_service_android.h",
     "payment_request_spec.cc",
     "payment_request_spec.h",
     "payment_request_update_event_listener.cc",
@@ -40,6 +38,8 @@ static_library("android") {
     "payment_validator_android.cc",
     "ssl_validity_checker_android.cc",
     "url_util.cc",
+    "web_payments_web_data_service_android.cc",
+    "web_payments_web_data_service_android.h",
   ]
 
   deps = [
@@ -53,8 +53,10 @@ static_library("android") {
     "//components/payments/content:utils",
     "//components/payments/content/utility",
     "//components/payments/core",
-    "//components/ukm/content:content",
+    "//components/prefs",
+    "//components/ukm/content",
     "//components/url_formatter",
+    "//components/user_prefs",
     "//components/webauthn/android",
     "//components/webdata/common",
     "//components/webdata_services",
@@ -76,11 +78,11 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/payments/PaymentHandlerNavigationThrottle.java",
     "java/src/org/chromium/components/payments/PaymentManifestDownloader.java",
     "java/src/org/chromium/components/payments/PaymentManifestParser.java",
-    "java/src/org/chromium/components/payments/PaymentManifestWebDataService.java",
     "java/src/org/chromium/components/payments/PaymentRequestWebContentsData.java",
     "java/src/org/chromium/components/payments/PaymentValidator.java",
     "java/src/org/chromium/components/payments/SslValidityChecker.java",
     "java/src/org/chromium/components/payments/UrlUtil.java",
+    "java/src/org/chromium/components/payments/WebPaymentsWebDataService.java",
   ]
 }
 
@@ -190,7 +192,6 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/PaymentManifestParser.java",
     "java/src/org/chromium/components/payments/PaymentManifestResolver.java",
     "java/src/org/chromium/components/payments/PaymentManifestVerifier.java",
-    "java/src/org/chromium/components/payments/PaymentManifestWebDataService.java",
     "java/src/org/chromium/components/payments/PaymentNotShownError.java",
     "java/src/org/chromium/components/payments/PaymentOptionsUtils.java",
     "java/src/org/chromium/components/payments/PaymentRequestService.java",
@@ -204,6 +205,7 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/SupportedDelegations.java",
     "java/src/org/chromium/components/payments/UrlUtil.java",
     "java/src/org/chromium/components/payments/WebAppManifestSection.java",
+    "java/src/org/chromium/components/payments/WebPaymentsWebDataService.java",
     "java/src/org/chromium/components/payments/intent/IsReadyToPayServiceHelper.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverter.java",
   ]
@@ -340,7 +342,6 @@ robolectric_library("junit_test_support") {
   sources = [
     "junit/src/org/chromium/components/payments/test_support/DefaultPaymentFeatureConfig.java",
     "junit/src/org/chromium/components/payments/test_support/PaymentRequestServiceBuilder.java",
-    "junit/src/org/chromium/components/payments/test_support/ShadowWebContentsStatics.java",
   ]
   deps = [
     ":java",

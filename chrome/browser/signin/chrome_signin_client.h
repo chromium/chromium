@@ -52,17 +52,18 @@ class ChromeSigninClient : public SigninClient {
   //   destruction (See ChromeSigninClient::PreSignOut(),
   //   PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile()).
   // - Supervised users on Android.IsRevokeSyncConsentAllowed
-  bool IsClearPrimaryAccountAllowed(bool has_sync_account) const override;
+  bool IsClearPrimaryAccountAllowed() const override;
 
   // TODO(crbug.com/40240844): Remove revoke sync restriction when allowing
   // enterprise users to revoke sync fully launches.
   bool IsRevokeSyncConsentAllowed() const override;
   void PreSignOut(
       base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
-      signin_metrics::ProfileSignout signout_source_metric,
-      bool has_sync_account) override;
+      signin_metrics::ProfileSignout signout_source_metric) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::CookieManager* GetCookieManager() override;
+  network::mojom::DeviceBoundSessionManager* GetDeviceBoundSessionManager()
+      const override;
   network::mojom::NetworkContext* GetNetworkContext() override;
   bool AreSigninCookiesAllowed() override;
   bool AreSigninCookiesDeletedOnExit() override;
@@ -81,6 +82,8 @@ class ChromeSigninClient : public SigninClient {
 
   std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
   CreateBoundSessionOAuthMultiloginDelegate() const override;
+  signin::OAuthConsumer GetOAuthConsumerFromId(
+      signin::OAuthConsumerId oauth_consumer_id) const override;
 
   // Adds the users to a synthetic field trial for user that were shown the
   // Bookmarks Bubble sign in/sync promo. Only adds user that are part of the
@@ -100,18 +103,16 @@ class ChromeSigninClient : public SigninClient {
   virtual void LockForceSigninProfile(const base::FilePath& profile_path);
 
  private:
-  // Returns what kind of signout is possible given `has_sync_account` and the
-  // optional `signout_source`. If `signout_source` is provided, it will be
-  // check against some sources that must always allow signout regardless of any
-  // restriction, otherwise the decision is made based on the profile's status.
+  // Returns what kind of signout is possible given the optional
+  // `signout_source`. If `signout_source` is provided, it will be check against
+  // some sources that must always allow signout regardless of any restriction,
+  // otherwise the decision is made based on the profile's status.
   SigninClient::SignoutDecision GetSignoutDecision(
-      bool has_sync_account,
       const std::optional<signin_metrics::ProfileSignout> signout_source) const;
   void VerifySyncToken();
   void OnCloseBrowsersSuccess(
       const signin_metrics::ProfileSignout signout_source_metric,
       bool should_sign_out,
-      bool has_sync_account,
       const base::FilePath& profile_path);
   void OnCloseBrowsersAborted(const base::FilePath& profile_path);
 
@@ -139,10 +140,6 @@ class ChromeSigninClient : public SigninClient {
   // pref.
   static void RegisterSyntheticTrialsFromPrefs();
 
-  // Attempts to launch a HaTS survey for users who signed in from the specified
-  // access point. The survey may be deferred if no browser is active.
-  void LaunchHatsSurveyForAccessPoint(signin_metrics::AccessPoint access_point);
-
   const std::unique_ptr<WaitForNetworkCallbackHelper>
       wait_for_network_callback_helper_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
@@ -157,6 +154,9 @@ class ChromeSigninClient : public SigninClient {
 
   scoped_refptr<network::SharedURLLoaderFactory>
       url_loader_factory_for_testing_;
+
+  // Used to convert OAuthConsumerIds to OAuthConsumers.
+  std::unique_ptr<signin::OAuthConsumerRegistry> oauth_consumer_registry_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_CLIENT_H_

@@ -608,6 +608,23 @@ bool FrameSelection::SelectionHasFocus() const {
       ComputeVisibleSelectionInFlatTree().End() >= focused_position)
     return true;
 
+  // Selection has focus if current selection matches the focused
+  // element's visible position and the focused element is focusable but not
+  // editable (e.g., tabindex="-1"). This handles cases where text selection
+  // should be visible in focusable but non-editable elements.
+  if (RuntimeEnabledFeatures::
+          SelectionAndFocusedVisiblePositionMatchEnabled()) {
+    if (GetDocument().FocusedElement() && focused_element->IsFocusable() &&
+        !IsEditable(*focused_element)) {
+      const VisiblePositionInFlatTree focused_visible_position =
+          CreateVisiblePosition(focused_position);
+      if (focused_visible_position.DeepEquivalent() ==
+          ComputeVisibleSelectionInFlatTree().Start()) {
+        return true;
+      }
+    }
+  }
+
   bool is_editable = IsEditable(*current);
   const TreeScope* tree_scope = &current->GetTreeScope();
   do {
@@ -1193,6 +1210,12 @@ String FrameSelection::SelectedTextForClipboard() const {
                  .SetEntersTextControls(true)
                  .SetIgnoresCSSTextTransforms(true)
                  .Build());
+}
+
+bool FrameSelection::HasVisibleText() const {
+  const EphemeralRange range =
+      ComputeVisibleSelectionInDOMTree().ToNormalizedEphemeralRange();
+  return !PlainText(range, TextIteratorBehavior()).empty();
 }
 
 PhysicalRect FrameSelection::AbsoluteUnclippedBounds() const {

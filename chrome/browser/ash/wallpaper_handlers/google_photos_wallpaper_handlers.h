@@ -18,13 +18,14 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
 class Profile;
 
-namespace net {
-struct NetworkTrafficAnnotationTag;
-}  // namespace net
+namespace network {
+class SimpleURLLoader;
+}  // namespace network
 
 namespace signin {
 class PrimaryAccountAccessTokenFetcher;
@@ -84,7 +85,7 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   void OnJsonReceived(std::unique_ptr<network::SimpleURLLoader> loader,
                       const GURL& service_url,
                       base::TimeTicks start_time,
-                      std::unique_ptr<std::string> response_body);
+                      std::optional<std::string> response_body);
   void OnResponseReady(const GURL& service_url,
                        base::TimeTicks start_time,
                        std::optional<base::Value> response);

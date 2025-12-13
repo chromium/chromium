@@ -8,6 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/query_title_server_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -19,9 +20,6 @@ namespace {
 
 NSString* const kRegularTabTitlePrefix = @"RegularTab";
 NSString* const kPinnedTabTitlePrefix = @"PinnedTab";
-
-constexpr base::TimeDelta kSnackbarAppearanceTimeout = base::Seconds(5);
-constexpr base::TimeDelta kSnackbarDisappearanceTimeout = base::Seconds(11);
 
 }  // namespace
 
@@ -75,36 +73,9 @@ void WaitForSnackbarTriggeredByTappingItem(NSString* snackbarLabel,
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 
   // Wait for the snackbar to appear.
-  id<GREYMatcher> snackbar_matcher =
-      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier");
-  ConditionBlock wait_for_appearance = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  if (!wait_for_appearance()) {
-    GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                   kSnackbarAppearanceTimeout, wait_for_appearance),
-               @"Snackbar did not appear.");
-  }
-
-  // Tap the snackbar to make it disappear. (It used to be that snackbars all
-  // disappeared after a delay, but not anymore: snackbars with an action now
-  // stay on-screen until interacted with).
+  id<GREYMatcher> snackbar_matcher = chrome_test_util::SnackbarViewMatcher();
+  [ChromeEarlGrey testUIElementAppearanceWithMatcher:snackbar_matcher];
+  // Tap the snackbar to make it disappear.
   [[EarlGrey selectElementWithMatcher:snackbar_matcher]
       performAction:grey_tap()];
-
-  // Wait for the snackbar to disappear.
-  ConditionBlock wait_for_disappearance = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
-        assertWithMatcher:grey_nil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 kSnackbarDisappearanceTimeout, wait_for_disappearance),
-             @"Snackbar did not disappear.");
 }

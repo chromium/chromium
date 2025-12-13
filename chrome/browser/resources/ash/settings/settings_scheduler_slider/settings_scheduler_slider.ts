@@ -354,6 +354,8 @@ export class SettingsSchedulerSliderElement extends
       case 'end':
         this.endDrag_(event);
         break;
+      default:
+        break;
     }
   }
 

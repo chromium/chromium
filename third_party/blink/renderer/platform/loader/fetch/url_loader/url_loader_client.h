@@ -35,7 +35,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"

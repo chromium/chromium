@@ -60,8 +60,8 @@ WebSharedStorageWorkletThreadImpl::WebSharedStorageWorkletThreadImpl(
       main_thread_runner_, std::move(receiver),
       std::move(global_scope_creation_params),
       /*worklet_terminated_callback=*/
-      WTF::BindOnce(&WebSharedStorageWorkletThreadImpl::DeleteSelf,
-                    WrapPersistent(this)));
+      BindOnce(&WebSharedStorageWorkletThreadImpl::DeleteSelf,
+               WrapPersistent(this)));
 }
 
 WebSharedStorageWorkletThreadImpl::~WebSharedStorageWorkletThreadImpl() =

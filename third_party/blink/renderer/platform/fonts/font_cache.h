@@ -101,7 +101,6 @@ extern const char kNotoColorEmojiCompat[];
 
 class PLATFORM_EXPORT FontCache final {
   DISALLOW_NEW();
-  friend class FontCachePurgePreventer;
 
  public:
   // FontCache initialisation on Windows depends on a global FontMgr being
@@ -155,9 +154,6 @@ class PLATFORM_EXPORT FontCache final {
 
   uint16_t Generation();
   void Invalidate();
-
-  sk_sp<SkFontMgr> FontManager() { return font_manager_; }
-  static void SetFontManager(sk_sp<SkFontMgr>);
 
 #if BUILDFLAG(IS_WIN)
   static WebFontPrewarmer* GetFontPrewarmer() { return prewarmer_; }
@@ -257,8 +253,6 @@ class PLATFORM_EXPORT FontCache final {
       const FontPlatformData*,
       bool subpixel_ascent_descent = false);
 
-  void InvalidateShapeCache();
-
   static void CrashWithFontInfo(const FontDescription*);
 
   // Memory reporting
@@ -274,7 +268,7 @@ class PLATFORM_EXPORT FontCache final {
   // BCP47 list used when requesting fallback font for a character.
   // inlineCapacity is set to 4: the array vector not need to hold more than 4
   // elements.
-  using Bcp47Vector = WTF::Vector<const char*, 4>;
+  using Bcp47Vector = Vector<const char*, 4>;
 
   const SimpleFontData* PlatformFallbackFontForCharacter(
       const FontDescription&,
@@ -290,15 +284,6 @@ class PLATFORM_EXPORT FontCache final {
 
   friend class FontGlobalContext;
   FontCache();
-
-  void Purge();
-
-  void DisablePurging() { purge_prevent_count_++; }
-  void EnablePurging() {
-    DCHECK(purge_prevent_count_);
-    if (!--purge_prevent_count_)
-      Purge();
-  }
 
   // FIXME: This method should eventually be removed.
   const FontPlatformData* GetFontPlatformData(
@@ -320,25 +305,18 @@ class PLATFORM_EXPORT FontCache final {
                                    const FontFaceCreationParams&,
                                    std::string& name);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  static AtomicString GetFamilyNameForCharacter(SkFontMgr*,
-                                                UChar32,
-                                                const FontDescription&,
-                                                const char* family_name,
-                                                FontFallbackPriority);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+  // SkFontMgr_FCI::onMatchFamilyStyleCharacter always crashes.
+  static const FontPlatformData* CreateFontPlatformDataForCharacter(
+      SkFontMgr*,
+      UChar32,
+      const FontDescription&,
+      const char* family_name,
+      FontFallbackPriority);
+#endif
 
   const SimpleFontData* FallbackOnStandardFontStyle(const FontDescription&,
                                                     UChar32);
-
-  // Don't purge if this count is > 0;
-  int purge_prevent_count_ = 0;
-
-  sk_sp<SkFontMgr> font_manager_;
-
-  // A leaky owning bare pointer.
-  static SkFontMgr* static_font_manager_;
 
 #if BUILDFLAG(IS_WIN)
   static WebFontPrewarmer* prewarmer_;
@@ -351,10 +329,6 @@ class PLATFORM_EXPORT FontCache final {
   static int32_t small_caption_font_height_;
   static AtomicString* status_font_family_name_;
   static int32_t status_font_height_;
-
-  // Windows creates an SkFontMgr for unit testing automatically. This flag is
-  // to ensure it's not happening in the production from the crash log.
-  bool is_test_font_mgr_ = false;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -378,23 +352,11 @@ class PLATFORM_EXPORT FontCache final {
   CharacterFallbackCache character_fallback_cache_;
 #endif
 
-  void PurgeFallbackListShaperCache();
-
   friend class SimpleFontData;  // For fontDataFromFontPlatformData
   friend class FontFallbackList;
   friend class FontPlatformDataCache;
   friend class FontCacheMacTest;
   FRIEND_TEST_ALL_PREFIXES(FontCacheAndroidTest, LocaleSpecificTypeface);
-};
-
-class PLATFORM_EXPORT FontCachePurgePreventer {
-  USING_FAST_MALLOC(FontCachePurgePreventer);
-
- public:
-  FontCachePurgePreventer() { FontCache::Get().DisablePurging(); }
-  FontCachePurgePreventer(const FontCachePurgePreventer&) = delete;
-  FontCachePurgePreventer& operator=(const FontCachePurgePreventer&) = delete;
-  ~FontCachePurgePreventer() { FontCache::Get().EnablePurging(); }
 };
 
 AtomicString ToAtomicString(const SkString&);

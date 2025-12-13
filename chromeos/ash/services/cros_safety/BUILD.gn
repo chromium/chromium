@@ -17,8 +17,8 @@ static_library("cros_safety") {
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/cros_safety/public/mojom",
-    "//components/manta:manta",
-    "//components/user_manager:user_manager",
+    "//components/manta",
+    "//components/user_manager",
   ]
 
   data_deps = [ ":mojo_service_manager_policy" ]
@@ -33,7 +33,7 @@ static_library("cloud_safety_session") {
     "//base",
     "//chromeos/ash/services/cros_safety/public/mojom",
     "//components/manta",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
   ]
 }
 

@@ -66,8 +66,7 @@ class DrmDumbBuffer {
   HandleCloser handle_closer_ = HandleCloser::DESTROY_DUMB;
 
   // Base address for memory mapping.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
+  // RAW_PTR_EXCLUSION: not managed by PartitionAlloc.
   RAW_PTR_EXCLUSION void* mmap_base_ = nullptr;
 
   // Size for memory mapping.

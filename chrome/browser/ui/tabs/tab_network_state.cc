@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 

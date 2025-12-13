@@ -212,7 +212,7 @@ impl Astronomical {
         let year = moment.inner() / 365.2425;
         // Note: Converting to int handles negative number Euclidean division skew.
         let year_int = (if year > 0.0 { year + 1.0 } else { year }) as i32;
-        let fixed_mid_year = crate::iso::fixed_from_iso(year_int, 7, 1);
+        let fixed_mid_year = crate::gregorian::fixed_from_gregorian(year_int, 7, 1);
         let c = ((fixed_mid_year.to_i64_date() as f64) - 693596.0) / 36525.0;
         let y2000 = (year_int - 2000) as f64;
         let y1700 = (year_int - 1700) as f64;
@@ -2375,11 +2375,10 @@ mod tests {
             let moment: Moment = Moment::new(*rd);
             let moonset_val = Astronomical::moonset(moment, crate::islamic::MECCA);
             let expected_moonset_val = *expected_val;
-            #[allow(clippy::unnecessary_unwrap)]
-            if moonset_val.is_none() {
-                assert_eq!(expected_moonset_val, 0.0);
+            if let Some(moonset_val) = moonset_val {
+                assert_eq_f64!(expected_moonset_val, moonset_val.inner(), moment);
             } else {
-                assert_eq_f64!(expected_moonset_val, moonset_val.unwrap().inner(), moment);
+                assert_eq!(expected_moonset_val, 0.0);
             }
         }
     }

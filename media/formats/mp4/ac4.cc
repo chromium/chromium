@@ -5,6 +5,7 @@
 #include "media/formats/mp4/ac4.h"
 
 #include <algorithm>
+#include <array>
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -18,7 +19,7 @@ namespace mp4 {
 namespace {
 // Refer to Table A.27: Speaker layouts and speaker indices in
 // https://www.etsi.org/deliver/etsi_ts/103100_103199/10319002/01.02.01_60/ts_10319002v010201p.pdf
-constexpr int kSpeakerIndicesMap[] = {
+constexpr auto kSpeakerIndicesMap = std::to_array<int>({
     2,  // (Group Index 00), Left (L) + Right (R)
     1,  // (Group Index 01), Centre (C)
     2,  // (Group Index 02), Left Surround (Ls) + Right Surround (Rs)
@@ -39,15 +40,11 @@ constexpr int kSpeakerIndicesMap[] = {
     2,  // (Group Index 17), Left Wide (Lw) + Right Wide (Rw)
     2,  // (Group Index 18), Vertical Height Left(Vhl) + Vertical Height
         // Right(Vhr)
-};
-
-// Refer to E.11.7 dsi_substream_channel_mask in
-// https://www.etsi.org/deliver/etsi_ts/103100_103199/10319002/01.02.01_60/ts_10319002v010201p.pdf
-constexpr int kMaxSpeakerGroupIndex = std::size(kSpeakerIndicesMap);
+});
 
 int ChannelMaskToChannelCount(int mask) {
   int channels = 0;
-  for (size_t i = 0; i < kMaxSpeakerGroupIndex; i++) {
+  for (size_t i = 0; i < kSpeakerIndicesMap.size(); i++) {
     if ((mask >> i) & 0x1) {
       channels += kSpeakerIndicesMap[i];
     }
@@ -62,13 +59,13 @@ bool ParseAc4BitrateDsi(BitReader& reader) {
 }
 
 bool ParseAlternativeInfo(BitReader& reader) {
-  int name_len;
+  uint16_t name_len;
   // name_len, 16 bits
   RCHECK(reader.ReadBits(16, &name_len));
   // Skip presentation_name * name_len, (8*name_len) bits
   RCHECK(reader.SkipBits(name_len * 8));
 
-  int n_targets;
+  uint8_t n_targets;
   // n_targets, 5 bits
   RCHECK(reader.ReadBits(5, &n_targets));
   // Skip n_targets * (target_md_compat, target_device_category),
@@ -94,23 +91,23 @@ AC4::AC4(const AC4& other) = default;
 AC4::~AC4() = default;
 
 bool AC4::ParseAc4DsiV1(BitReader& reader) {
-  int bitstream_version;
+  uint8_t bitstream_version;
   // bitstream_version, 7 bits
   RCHECK(reader.ReadBits(7, &bitstream_version));
   // Skip fs_index and frame_rate_index, (1+4) bits
   RCHECK(reader.SkipBits(1 + 4));
-  int n_presentations;
+  uint16_t n_presentations;
   // n_presentations, 9 bits
   RCHECK(reader.ReadBits(9, &n_presentations));
 
   if (bitstream_version > 1) {
-    int b_program_id;
+    uint8_t b_program_id;
     // b_program_id, 1 bit
     RCHECK(reader.ReadBits(1, &b_program_id));
     if (b_program_id) {
       // Skip short_program_id, 16 bits
       RCHECK(reader.SkipBits(16));
-      int b_uuid;
+      uint8_t b_uuid;
       // b_uuid, 1 bit
       RCHECK(reader.ReadBits(1, &b_uuid));
       if (b_uuid) {
@@ -123,15 +120,15 @@ bool AC4::ParseAc4DsiV1(BitReader& reader) {
   RCHECK(ParseAc4BitrateDsi(reader));
   RCHECK(Ac4ByteAlign(reader));
 
-  for (int i = 0; i < n_presentations; i++) {
-    int presentation_version;
+  for (uint16_t i = 0; i < n_presentations; i++) {
+    uint8_t presentation_version;
     // presentation_version, 8 bits
     RCHECK(reader.ReadBits(8, &presentation_version));
-    int pres_bytes;
+    uint8_t pres_bytes;
     // pres_bytes, 8 bits
     RCHECK(reader.ReadBits(8, &pres_bytes));
     if (pres_bytes == 255) {
-      int add_pres_bytes;
+      uint16_t add_pres_bytes;
       // add_pres_bytes, 16 bits
       RCHECK(reader.ReadBits(16, &add_pres_bytes));
       pres_bytes += add_pres_bytes;
@@ -162,18 +159,18 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
                                     uint8_t presentation_version) {
   const size_t initial_bits_read = reader.bits_read();
 
-  int presentation_config_v1;
+  uint8_t presentation_config_v1;
   // presentation_config_v1, 5 bits
   RCHECK(reader.ReadBits(5, &presentation_config_v1));
 
-  int b_add_emdf_substreams;
+  uint8_t b_add_emdf_substreams;
   if (presentation_config_v1 == 0x06) {
     b_add_emdf_substreams = 1;
   } else {
-    int mdcompat;
+    uint8_t mdcompat;
     // mdcompat, 3 bits
     RCHECK(reader.ReadBits(3, &mdcompat));
-    int b_presentation_id;
+    uint8_t b_presentation_id;
     // b_presentation_id, 1 bits
     RCHECK(reader.ReadBits(1, &b_presentation_id));
     if (b_presentation_id) {
@@ -184,11 +181,11 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
     // presentation_emdf_version, presentation_key_id, (2+2+5+10) bits
     RCHECK(reader.SkipBits(19));
 
-    int b_presentation_channel_coded;
+    uint8_t b_presentation_channel_coded;
     // b_presentation_channel_coded, 1 bit
     RCHECK(reader.ReadBits(1, &b_presentation_channel_coded));
     if (b_presentation_channel_coded) {
-      int dsi_presentation_ch_mode;
+      uint8_t dsi_presentation_ch_mode;
       // dsi_presentation_ch_mode, 5 bits
       RCHECK(reader.ReadBits(5, &dsi_presentation_ch_mode));
       if (dsi_presentation_ch_mode == 11 || dsi_presentation_ch_mode == 12 ||
@@ -201,11 +198,11 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
       RCHECK(reader.SkipBits(24));
     }
 
-    int b_presentation_core_differs;
+    uint8_t b_presentation_core_differs;
     // b_presentation_core_differs, 1 bit
     RCHECK(reader.ReadBits(1, &b_presentation_core_differs));
     if (b_presentation_core_differs) {
-      int b_presentation_core_channel_coded;
+      uint8_t b_presentation_core_channel_coded;
       // b_presentation_core_channel_coded, 1 bit
       RCHECK(reader.ReadBits(1, &b_presentation_core_channel_coded));
       if (b_presentation_core_channel_coded) {
@@ -214,13 +211,13 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
       }
     }
 
-    int b_presentation_filter;
+    uint8_t b_presentation_filter;
     // b_presentation_filter, 1 bit
     RCHECK(reader.ReadBits(1, &b_presentation_filter));
     if (b_presentation_filter) {
       // Skip b_enable_presentation, 1 bit
       RCHECK(reader.SkipBits(1));
-      int n_filter_bytes;
+      uint8_t n_filter_bytes;
       // n_filter_bytes, 8 bits
       RCHECK(reader.ReadBits(8, &n_filter_bytes));
       // Skip filter_data, (n_filter_bytes * 8) bits
@@ -231,11 +228,11 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
     if (presentation_config_v1 == 0x1f) {
       ac4_substream_groups = 1;
     } else {
-      int b_multi_pid;
+      uint8_t b_multi_pid;
       // b_multi_pid, 1 bit
       RCHECK(reader.ReadBits(1, &b_multi_pid));
 
-      int n_substream_groups_minus2;
+      uint8_t n_substream_groups_minus2;
       switch (presentation_config_v1) {
         case 0:
         case 1:
@@ -252,7 +249,7 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
           ac4_substream_groups = n_substream_groups_minus2 + 2;
           break;
         default:
-          int n_skip_bytes;
+          uint8_t n_skip_bytes;
           // n_skip_bytes, 7 bits
           RCHECK(reader.ReadBits(7, &n_skip_bytes));
           // Skip skip_data, (n_skip_bytes * 8) bits
@@ -275,7 +272,7 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
   }
 
   if (b_add_emdf_substreams) {
-    int n_add_emdf_substreams;
+    uint8_t n_add_emdf_substreams;
     // n_add_emdf_substreams, 7 bits
     RCHECK(reader.ReadBits(7, &n_add_emdf_substreams));
     // Skip substream_emdf_version, substream_key_id, (5+10) *
@@ -283,14 +280,14 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
     RCHECK(reader.SkipBits(15 * n_add_emdf_substreams));
   }
 
-  int b_presentation_bitrate_info;
+  uint8_t b_presentation_bitrate_info;
   // b_presentation_bitrate_info, 1 bit
   RCHECK(reader.ReadBits(1, &b_presentation_bitrate_info));
   if (b_presentation_bitrate_info) {
     RCHECK(ParseAc4BitrateDsi(reader));
   }
 
-  int b_alternative;
+  uint8_t b_alternative;
   // b_alternative, 1 bit
   RCHECK(reader.ReadBits(1, &b_alternative));
   if (b_alternative) {
@@ -308,7 +305,7 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
     RCHECK(reader.SkipBits(1));
     // Skip reserved, 4 bits
     RCHECK(reader.SkipBits(4));
-    int b_extended_presentation_id;
+    uint8_t b_extended_presentation_id;
     // b_extended_presentation_id, 1 bit
     RCHECK(reader.ReadBits(1, &b_extended_presentation_id));
     if (b_extended_presentation_id) {
@@ -338,21 +335,21 @@ bool AC4::ParseAc4SubstreamGroupDsi(BitReader& reader,
   stream_info.is_ajoc = 0;
   stream_info.channels = 0;
 
-  int b_substreams_present;
+  uint8_t b_substreams_present;
   // b_substreams_present, 1 bit
   RCHECK(reader.ReadBits(1, &b_substreams_present));
   // Skip b_hsf_ext, 1 bit
   RCHECK(reader.SkipBits(1));
-  int b_channel_coded;
+  uint8_t b_channel_coded;
   // b_channel_coded, 1 bit
   RCHECK(reader.ReadBits(1, &b_channel_coded));
-  int n_substreams;
+  uint8_t n_substreams;
   // n_substreams, 8 bits
   RCHECK(reader.ReadBits(8, &n_substreams));
-  for (int i = 0; i < n_substreams; i++) {
+  for (uint8_t i = 0; i < n_substreams; i++) {
     // Skip dsi_sf_multiplier, 2 bits
     RCHECK(reader.SkipBits(2));
-    int b_substream_bitrate_indicator;
+    uint8_t b_substream_bitrate_indicator;
     // b_substream_bitrate_indicator, 1 bit
     RCHECK(reader.ReadBits(1, &b_substream_bitrate_indicator));
     if (b_substream_bitrate_indicator) {
@@ -361,18 +358,18 @@ bool AC4::ParseAc4SubstreamGroupDsi(BitReader& reader,
     }
     if (b_channel_coded) {
       // dsi_substream_channel_mask, 24 bits
-      int dsi_substream_channel_mask = 0;
+      uint32_t dsi_substream_channel_mask = 0;
       RCHECK(reader.ReadBits(24, &dsi_substream_channel_mask));
       stream_info.channels =
           ChannelMaskToChannelCount(dsi_substream_channel_mask);
     } else {
-      int b_ajoc;
+      uint8_t b_ajoc;
       // b_ajoc, 1 bit
       RCHECK(reader.ReadBits(1, &b_ajoc));
       stream_info.is_ajoc = b_ajoc;
 
       if (b_ajoc) {
-        int b_static_dmx;
+        uint8_t b_static_dmx;
         // b_static_dmx, 1 bit
         RCHECK(reader.ReadBits(1, &b_static_dmx));
         if (b_static_dmx == 0) {
@@ -391,17 +388,17 @@ bool AC4::ParseAc4SubstreamGroupDsi(BitReader& reader,
     stream_info_internals_.push_back(stream_info);
   }
 
-  int b_content_type;
+  uint8_t b_content_type;
   // b_content_type, 1 bit
   RCHECK(reader.ReadBits(1, &b_content_type));
   if (b_content_type) {
     // Skip content_classifier, 3 bits
     RCHECK(reader.SkipBits(3));
-    int b_language_indicator;
+    uint8_t b_language_indicator;
     // b_language_indicator, 1 bit
     RCHECK(reader.ReadBits(1, &b_language_indicator));
     if (b_language_indicator) {
-      int n_language_tag_bytes;
+      uint8_t n_language_tag_bytes;
       // n_language_tag_bytes, 6 bits
       RCHECK(reader.ReadBits(6, &n_language_tag_bytes));
       // Skip language_tag_bytes * n_language_tag_bytes, (8 *
@@ -420,7 +417,7 @@ bool AC4::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
 
   BitReader reader(&data[0], data.size());
 
-  int ac4_dsi_version = 0;
+  uint8_t ac4_dsi_version = 0;
   // ac4_dsi_version, 3 bits
   RCHECK(reader.ReadBits(3, &ac4_dsi_version));
   // Only support DSI version 1 here since version 0 is not used in practice.

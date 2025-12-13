@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Process;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
@@ -35,6 +36,7 @@ class GeolocationTracker {
     private static boolean sUseLocationForTesting;
     private static long sLocationAgeForTesting;
     private static boolean sUseLocationAgeForTesting;
+    private static @Nullable Runnable sRefreshLastKnownLocationRunnableForTesting;
 
     private static class SelfCancelingListener implements LocationListener {
 
@@ -99,7 +101,7 @@ class GeolocationTracker {
     }
 
     /** Returns the last known location or null if none is available. */
-    static @Nullable Location getLastKnownLocation(Context context) {
+    static @Nullable Location getLastKnownLocation(Context context, boolean useFine) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationTracker.getLastKnownLocation")) {
             if (sUseLocationForTesting) {
                 return chooseLocation(sNetworkLocationForTesting, sGpsLocationForTesting);
@@ -115,8 +117,9 @@ class GeolocationTracker {
             Location networkLocation =
                     locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             Location gpsLocation = null;
-            if (hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                // Only try to get GPS location when ACCESS_FINE_LOCATION is granted.
+            if (useFine && hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // Only try to get GPS location when app-level and site-level precise permissions
+                // are granted.
                 gpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             }
             return chooseLocation(networkLocation, gpsLocation);
@@ -130,6 +133,11 @@ class GeolocationTracker {
      */
     static void refreshLastKnownLocation(Context context, long maxAge) {
         ThreadUtils.assertOnUiThread();
+
+        if (sRefreshLastKnownLocationRunnableForTesting != null) {
+            sRefreshLastKnownLocationRunnableForTesting.run();
+            return;
+        }
 
         if (!hasPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
             return;
@@ -170,6 +178,11 @@ class GeolocationTracker {
         }
         sLocationAgeForTesting = locationAgeForTesting;
         sUseLocationAgeForTesting = true;
+    }
+
+    static void setRefreshLastKnownLocationRunnableForTesting(Runnable runnable) {
+        sRefreshLastKnownLocationRunnableForTesting = runnable;
+        ResettersForTesting.register(() -> sRefreshLastKnownLocationRunnableForTesting = null);
     }
 
     private static boolean hasPermission(Context context, String permission) {

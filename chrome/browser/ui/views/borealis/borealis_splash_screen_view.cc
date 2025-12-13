@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/window_properties.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
@@ -68,8 +67,7 @@ void BorealisSplashScreenView::Show(Profile* profile) {
     // This UI has custom colors to match Steam's and those are close to ash's
     // dark mode.
     g_delegate->GetWidget()->SetColorModeOverride(
-        {ui::ColorProviderKey::ColorMode::kDark},
-        /*background_color=*/std::nullopt);
+        ui::ColorProviderKey::ColorMode::kDark);
   }
   g_delegate->GetWidget()->Show();
 }

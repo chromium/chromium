@@ -28,12 +28,7 @@ template <template <typename...> class Template, typename... Args>
 struct IsSpecializationOf<Template, Template<Args...>> : std::true_type {};
 
 template <typename T>
-struct AlwaysFalse {
-  static const bool value = false;
-};
-
-template <typename T>
-using IsAbslOptional = IsSpecializationOf<std::optional, std::decay_t<T>>;
+using IsStdOptional = IsSpecializationOf<std::optional, std::decay_t<T>>;
 
 template <typename T>
 using IsOptionalAsPointer =

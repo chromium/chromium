@@ -25,7 +25,6 @@ AwComponentMetricsProviderDelegate::AwComponentMetricsProviderDelegate(
 
 // The returned ComponentInfo have component's id and version as this is the
 // only info WebView keeps about components.
-// TODO(crbug.com/40777796): record the component's Omaha fingerprint.
 std::vector<ComponentInfo> AwComponentMetricsProviderDelegate::GetComponents() {
   return component_updater::ComponentsInfoHolder::GetInstance()
       ->GetComponents();

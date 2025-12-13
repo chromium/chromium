@@ -4,7 +4,13 @@
 
 // https://w3c.github.io/clipboard-apis/#clipboard-interface
 
-dictionary ClipboardUnsanitizedFormats {
+dictionary ClipboardReadOptions {
+  // https://chromestatus.com/feature/5203433409871872
+  // If types is provided, only the specified MIME types will be fetched.
+  // If `types` is an empty sequence (e.g. []), no clipboard read operation will be
+  // performed. If `types` is undefined, all available MIME types will be
+  // read.
+  [RuntimeEnabled=SelectiveClipboardFormatRead] sequence<DOMString>? types;
   sequence<DOMString> unsanitized;
 };
 
@@ -20,7 +26,7 @@ dictionary ClipboardUnsanitizedFormats {
     [MeasureAs=AsyncClipboardAPIUnsanitizedRead,
      CallWith=ScriptState,
      RaisesException
-    ] Promise<sequence<ClipboardItem>> read(ClipboardUnsanitizedFormats formats);
+    ] Promise<sequence<ClipboardItem>> read(ClipboardReadOptions options);
 
     [MeasureAs=AsyncClipboardAPIReadText,
      CallWith=ScriptState,

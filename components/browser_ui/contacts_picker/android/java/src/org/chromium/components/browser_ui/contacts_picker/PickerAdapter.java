@@ -6,7 +6,6 @@ package org.chromium.components.browser_ui.contacts_picker;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -19,11 +18,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
-import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContactsFetcher;
+import org.chromium.content_public.browser.ContactsFetcher.RetrievedContact;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,8 +39,7 @@ import java.util.Locale;
  */
 @NullMarked
 public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
-        implements ContactsFetcherWorkerTask.ContactsRetrievedCallback,
-                TopView.ChipToggledCallback {
+        implements ContactsFetcher.ContactsRetrievedCallback, TopView.ChipToggledCallback {
     /**
      * A ViewHolder for the top-most view in the RecyclerView. The view it contains has a checkbox
      * and some multi-line text that goes with it, so clicks on either text line should be treated
@@ -99,17 +98,14 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
     // The origin the data will be shared with, formatted for display with the scheme omitted.
     private String mFormattedOrigin;
 
-    // The content resolver to query data from.
-    private ContentResolver mContentResolver;
+    // An instance of {@link ContactsFetcher} to query data.
+    private ContactsFetcher mContactsFetcher;
 
     // The full list of all registered contacts on the device.
     private @Nullable ArrayList<ContactDetails> mContactDetails;
 
     // The email address of the owner of the device.
     private @Nullable String mOwnerEmail;
-
-    // The async worker task to use for fetching the contact details.
-    private @Nullable ContactsFetcherWorkerTask mWorkerTask;
 
     // Whether the user has switched to search mode.
     private boolean mSearchMode;
@@ -132,9 +128,6 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
     // Whether to include icons in the returned results.
     private static boolean sIncludeIcons;
 
-    // A list of contacts to use for testing (instead of querying Android).
-    private static @Nullable ArrayList<ContactDetails> sTestContacts;
-
     // An owner email to use when testing.
     private static @Nullable String sTestOwnerEmail;
 
@@ -144,33 +137,32 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
      * @param categoryView The category view to use to show the contacts.
      * @param context The current context.
      * @param formattedOrigin The origin the data will be shared with.
+     * @param contactsFetcher An instance of {@link ContactsFetcher} to query data.
      */
     @Initializer
     @CallSuper
-    public void init(PickerCategoryView categoryView, Context context, String formattedOrigin) {
+    public void init(
+            PickerCategoryView categoryView,
+            Context context,
+            String formattedOrigin,
+            ContactsFetcher contactsFetcher) {
         mContext = context;
         mCategoryView = categoryView;
-        mContentResolver = context.getContentResolver();
         mFormattedOrigin = formattedOrigin;
+        mContactsFetcher = contactsFetcher;
         sIncludeAddresses = true;
         sIncludeNames = true;
         sIncludeEmails = true;
         sIncludeTelephones = true;
         sIncludeIcons = true;
 
-        if (getAllContacts() == null && sTestContacts == null) {
-            mWorkerTask =
-                    new ContactsFetcherWorkerTask(
-                            context,
-                            this,
-                            mCategoryView.siteWantsNames(),
-                            mCategoryView.siteWantsEmails(),
-                            mCategoryView.siteWantsTel(),
-                            mCategoryView.siteWantsAddresses());
-            mWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            assumeNonNull(sTestContacts);
-            contactsRetrieved(sTestContacts);
+        if (getAllContacts() == null) {
+            mContactsFetcher.fetchContacts(
+                    mCategoryView.siteWantsNames(),
+                    mCategoryView.siteWantsEmails(),
+                    mCategoryView.siteWantsTel(),
+                    mCategoryView.siteWantsAddresses(),
+                    this);
         }
     }
 
@@ -257,11 +249,19 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
 
     // ContactsFetcherWorkerTask.ContactsRetrievedCallback:
     @Override
-    public void contactsRetrieved(ArrayList<ContactDetails> contacts) {
+    public void contactsRetrieved(ArrayList<RetrievedContact> contacts) {
         mOwnerEmail = sTestOwnerEmail != null ? sTestOwnerEmail : findOwnerEmail();
 
-        if (!processOwnerInfo(contacts, mOwnerEmail)) addOwnerInfoToContacts(contacts);
-        mContactDetails = contacts;
+        mContactDetails = new ArrayList<>(contacts.size());
+
+        for (RetrievedContact retrievedContact : contacts) {
+            mContactDetails.add(ContactDetails.fromRetrievedContact(retrievedContact));
+        }
+
+        if (!processOwnerInfo(mContactDetails, mOwnerEmail)) {
+            addOwnerInfoToContacts(mContactDetails);
+        }
+
         update();
     }
 
@@ -307,9 +307,9 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
                 return new ContactViewHolder(
                         itemView,
                         mCategoryView,
-                        mContentResolver,
                         mContext.getResources()
-                                .getDimensionPixelSize(R.dimen.contact_picker_icon_size));
+                                .getDimensionPixelSize(R.dimen.contact_picker_icon_size),
+                        mContactsFetcher);
         }
         return null;
     }
@@ -401,14 +401,9 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
         return sIncludeIcons;
     }
 
-    /**
-     * Sets a list of contacts to use as data for the dialog, and the owner email. For testing use
-     * only.
-     */
+    /** Sets the owner email. For testing use only. */
     @VisibleForTesting
-    public static void setTestContactsAndOwner(
-            ArrayList<ContactDetails> contacts, String ownerEmail) {
-        sTestContacts = contacts;
+    public static void setTestOwner(String ownerEmail) {
         sTestOwnerEmail = ownerEmail;
     }
 

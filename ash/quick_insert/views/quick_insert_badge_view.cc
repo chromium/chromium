@@ -21,6 +21,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -37,7 +38,6 @@ constexpr int kBadgeCornerRadius = 4;
 }  // namespace
 
 QuickInsertBadgeView::QuickInsertBadgeView() {
-  // TODO: b/342478227 - Ensure this works with tall text.
   views::Builder<views::BoxLayoutView>(this)
       .SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)

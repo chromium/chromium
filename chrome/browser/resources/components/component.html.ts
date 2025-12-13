@@ -22,7 +22,7 @@ export function getHtml(data: ComponentsData) {
 
   <div class="content">
     <div class="component-name no-components"
-        ?hidden=${data.components.length > 0}">
+        ?hidden="${data.components.length > 0}">
       <div>$i18n{noComponents}</div>
     </div>
 

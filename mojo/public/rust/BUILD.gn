@@ -1,128 +1,64 @@
-# Copyright 2021 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-import("//build/config/rust.gni")
 import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_executable.gni")
 import("//build/rust/rust_static_library.gni")
-import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 
-# Meta target to build everything
-group("mojo_rust") {
-  deps = [ ":mojo" ]
-}
-
-# These tests require real mojo and can't be mixed with test-only mojo. Mojo can
-# only be initialized once per process, and can't change modes.
-test("mojo_rust_integration_unittests") {
-  deps = [
-    "//base/test:run_all_unittests",
-    "//mojo/public/rust/tests:mojo_rust_system_tests",
-    "//testing/gtest",
-  ]
-}
-
-# These tests use stubbed out test-only mojo and can't be mixed with real mojo.
-# Mojo can only be initialized once per process, and can't change modes.
-test("mojo_rust_unittests") {
-  deps = [
-    "//base/test:run_all_unittests",
-    "//testing/gtest",
-  ]
-
-  if (enable_rust_mojom_bindings) {
-    deps += [ "//mojo/public/rust/tests:mojo_rust_bindings_tests" ]
-  }
-}
-
-source_set("mojo_c_system_wrapper") {
-  sources = [ "system/wrapper.h" ]
-  deps = [ "//mojo/public/c/system:headers" ]
-  visibility = [ ":*" ]
-}
-
-rust_bindgen("mojo_c_system_binding") {
-  header = "system/wrapper.h"
-  deps = [ ":mojo_c_system_wrapper" ]
-  visibility = [ ":*" ]
-}
-
-rust_static_library("mojo_system") {
-  crate_root = "system/lib.rs"
-  allow_unsafe = true
-
-  # This should be removed; we should not rely on unstable features. But it's in
-  # experimental code and won't block compiler rolls. If it becomes a problem
-  # just disable the whole build target.
-  configs -= [ "//build/config/compiler:disallow_unstable_features" ]
-  rustflags = [ "-Zallow-features=maybe_uninit_slice" ]
-
-  sources = [
-    "system/core.rs",
-    "system/data_pipe.rs",
-    "system/ffi.rs",
-    "system/handle.rs",
-    "system/lib.rs",
-    "system/message_pipe.rs",
-    "system/mojo_types.rs",
-    "system/shared_buffer.rs",
-    "system/trap.rs",
-    "system/wait.rs",
-    "system/wait_set.rs",
-  ]
-
-  deps = [
-    ":mojo_c_system_binding",
-    "//mojo/public/c/system",
-    "//third_party/rust/bitflags/v2:lib",
-  ]
-
-  # TODO(crbug.com/369430130): reenable this warning.
-  rustflags += [ "-Aimproper-ctypes" ]
-}
-
-rust_static_library("mojo_system_test_support") {
+group("all") {
+  # Meta target, don't depend on it from production code
   testonly = true
-  crate_root = "system/test_support/lib.rs"
-
-  # Calls Mojo FFI functions.
-  allow_unsafe = true
-
-  sources = [ "system/test_support/lib.rs" ]
-
   deps = [
-    ":mojo_system",
-    "//mojo/public/c/system",
+    ":mojo_c_system_bindings",
+    ":rust_mojo_tests",
+    "mojom_parser",
   ]
 }
 
-rust_static_library("mojo_bindings") {
-  crate_root = "bindings/lib.rs"
-  allow_unsafe = true
+rust_bindgen("mojo_c_system_bindings") {
+  header = "//mojo/public/c/system/thunks.h"
+  deps = [ "//mojo/public/c/system" ]
+}
 
+rust_static_library("mojo_ffi") {
+  crate_root = "system/ffi.rs"
+  sources = [ "system/ffi.rs" ]
+  deps = [ ":mojo_c_system_bindings" ]
+}
+
+rust_static_library("mojo_rust_system_api") {
+  crate_root = "system/lib.rs"
   sources = [
-    "bindings/data.rs",
-    "bindings/lib.rs",
-    "bindings/mojom.rs",
+    "system/data_pipe.rs",
+    "system/lib.rs",
+    "system/mojo_types.rs",
+    "system/raw_trap.rs",
+    "system/safe_trap.rs",
   ]
-
+  allow_unsafe = true
   deps = [
-    ":mojo_system",
+    ":mojo_ffi",
     "//third_party/rust/bitflags/v2:lib",
-    "//third_party/rust/bytemuck/v1:lib",
-    "//third_party/rust/static_assertions/v1:lib",
   ]
 }
 
-# Convenience target to link both Mojo Rust components and reexport them under a
-# single `mojo` name.
-rust_static_library("mojo") {
-  crate_root = "lib.rs"
-
-  sources = [ "lib.rs" ]
+# FOR_RELEASE: This should be run by the //mojo:mojo_unittests target
+group("tests") {
+  testonly = true
   deps = [
-    ":mojo_bindings",
-    ":mojo_system",
+    "mojom_parser:mojom_parser_unittests",
+    "test_mojom:test_mojom_rust",
+    "test_system:system_api_unittests",
+  ]
+}
+
+# Standalone testing binary with just rustmojo tests.
+# Convenient for development so we only have to build/run our own code.
+test("rust_mojo_tests") {
+  testonly = true
+  deps = [
+    ":tests",
+    "//base/test:run_all_unittests",
   ]
 }

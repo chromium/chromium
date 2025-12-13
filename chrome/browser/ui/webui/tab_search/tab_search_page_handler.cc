@@ -33,13 +33,15 @@
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
@@ -49,7 +51,6 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
@@ -61,8 +62,9 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
@@ -71,6 +73,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace {
 constexpr base::TimeDelta kTabsChangeDelay = base::Milliseconds(50);
@@ -745,7 +748,7 @@ TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
     return std::nullopt;
   }
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
-  if (!browser || !ShouldTrackBrowser(browser->GetBrowserForMigrationOnly())) {
+  if (!browser || !ShouldTrackBrowser(browser)) {
     return std::nullopt;
   }
   return TabDetails(tab);
@@ -764,12 +767,10 @@ void TabSearchPageHandler::GetTabOrganizationModelStrategy(
 
 void TabSearchPageHandler::GetIsSplit(GetIsSplitCallback callback) {
   bool is_split = false;
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    GURL url = web_ui_->GetWebContents()->GetURL();
-    if (url.spec() == chrome::kChromeUISplitViewNewTabPageURL) {
-      is_split = tabs::TabInterface::GetFromContents(web_ui_->GetWebContents())
-                     ->IsSplit();
-    }
+  GURL url = web_ui_->GetWebContents()->GetURL();
+  if (url.spec() == chrome::kChromeUISplitViewNewTabPageURL) {
+    is_split = tabs::TabInterface::GetFromContents(web_ui_->GetWebContents())
+                   ->IsSplit();
   }
   std::move(callback).Run(is_split);
 }
@@ -955,7 +956,8 @@ void TabSearchPageHandler::StartTabGroupTutorial() {
                              : nullptr;
   CHECK(tutorial_service);
 
-  const ui::ElementContext context = browser_->window()->GetElementContext();
+  const ui::ElementContext context =
+      BrowserElements::From(browser_)->GetContext();
   CHECK(context);
 
   user_education::TutorialIdentifier tutorial_id = kTabGroupTutorialId;
@@ -1090,49 +1092,59 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
 
   std::set<DedupKey> tab_dedup_keys;
   std::set<tab_groups::TabGroupId> tab_group_ids;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!ShouldTrackBrowser(browser)) {
-      continue;
-    }
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &profile_data, &tab_dedup_keys,
+       &tab_group_ids](BrowserWindowInterface* browser) {
+        if (!ShouldTrackBrowser(browser)) {
+          return true;
+        }
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
 
-    auto window = tab_search::mojom::Window::New();
-    window->active = browser->IsActive();
-    window->is_host_window = browser == browser_;
-    window->height = browser->window()->GetContentsSize().height();
-    for (int i = 0; i < tab_strip_model->count(); ++i) {
-      auto* web_contents = tab_strip_model->GetWebContentsAt(i);
-      // A Tab can potentially be in a state where it has no committed entries
-      // during loading and thus has no title/URL. Skip any such pending tabs.
-      // These tabs will be added to the list later on once loading has
-      // finished.
-      if (!web_contents->GetController().GetLastCommittedEntry()) {
-        continue;
-      }
-      tab_search::mojom::TabPtr tab = GetTab(tab_strip_model, web_contents, i);
-      tab_dedup_keys.insert(DedupKey(tab->url, tab->group_id));
-      window->tabs.push_back(std::move(tab));
-    }
-    profile_data->windows.push_back(std::move(window));
+        auto window = tab_search::mojom::Window::New();
+        window->active = browser->IsActive();
+        window->is_host_window = browser == browser_;
+        window->height = browser->GetBrowserForMigrationOnly()
+                             ->window()
+                             ->GetContentsSize()
+                             .height();
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
+          content::WebContents* const web_contents =
+              tab_strip_model->GetWebContentsAt(i);
+          // A Tab can potentially be in a state where it has no committed
+          // entries during loading and thus has no title/URL. Skip any such
+          // pending tabs. These tabs will be added to the list later on once
+          // loading has finished.
+          if (!web_contents->GetController().GetLastCommittedEntry()) {
+            continue;
+          }
+          tab_search::mojom::TabPtr tab =
+              GetTab(tab_strip_model, web_contents, i);
+          tab_dedup_keys.insert(DedupKey(tab->url, tab->group_id));
+          window->tabs.push_back(std::move(tab));
+        }
+        profile_data->windows.push_back(std::move(window));
 
-    if (tab_strip_model->group_model()) {
-      for (auto tab_group_id :
-           tab_strip_model->group_model()->ListTabGroups()) {
-        const tab_groups::TabGroupVisualData* tab_group_visual_data =
-            tab_strip_model->group_model()
-                ->GetTabGroup(tab_group_id)
-                ->visual_data();
+        // Collect tab groups from this browser
+        if (tab_strip_model->group_model()) {
+          for (auto tab_group_id :
+               tab_strip_model->group_model()->ListTabGroups()) {
+            const tab_groups::TabGroupVisualData* const tab_group_visual_data =
+                tab_strip_model->group_model()
+                    ->GetTabGroup(tab_group_id)
+                    ->visual_data();
 
-        auto tab_group = tab_search::mojom::TabGroup::New();
-        tab_group->id = tab_group_id.token();
-        tab_group->title = base::UTF16ToUTF8(tab_group_visual_data->title());
-        tab_group->color = tab_group_visual_data->color();
+            auto tab_group = tab_search::mojom::TabGroup::New();
+            tab_group->id = tab_group_id.token();
+            tab_group->title =
+                base::UTF16ToUTF8(tab_group_visual_data->title());
+            tab_group->color = tab_group_visual_data->color();
 
-        tab_group_ids.insert(tab_group_id);
-        profile_data->tab_groups.push_back(std::move(tab_group));
-      }
-    }
-  }
+            tab_group_ids.insert(tab_group_id);
+            profile_data->tab_groups.push_back(std::move(tab_group));
+          }
+        }
+        return true;
+      });
 
   AddRecentlyClosedEntries(profile_data->recently_closed_tabs,
                            profile_data->recently_closed_tab_groups,
@@ -1404,7 +1416,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
     int index,
     std::string custom_last_active_text) const {
   auto tab_data = tab_search::mojom::Tab::New();
-  const tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(index);
+  tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(index);
 
   tab_data->active = tab->IsActivated();
   tab_data->visible = tab->IsVisible();
@@ -1424,10 +1436,13 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   // A visible URL is used when the a new tab is still loading.
   // If it is cancelled during loading the visible URL becomes empty.
   // We will display an empty URL as about:blank in Javascript.
-  tab_data->url =
-      !last_committed_url.is_valid() || last_committed_url.is_empty()
-          ? tab_renderer_data.visible_url
-          : last_committed_url;
+  if (!last_committed_url.is_valid() || last_committed_url.is_empty()) {
+    tab_data->url = tab_renderer_data.should_display_url
+                        ? tab_renderer_data.visible_url
+                        : GURL(url::kAboutBlankURL);
+  } else {
+    tab_data->url = last_committed_url;
+  }
 
   if (tab_renderer_data.favicon.IsEmpty()) {
     tab_data->is_default_favicon = true;
@@ -1451,8 +1466,12 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
 
   tab_data->show_icon = tab_renderer_data.show_icon;
 
+  // https://crbug.com/435697558: Use the max value of
+  // GetLastInteractionTimeTicks and GetLastActiveTimeTicks to account for
+  // interaction without across multiple windows without switching tabs.
   const base::TimeTicks last_active_time_ticks =
-      contents->GetLastActiveTimeTicks();
+      std::max(contents->GetLastInteractionTimeTicks(),
+               contents->GetLastActiveTimeTicks());
   tab_data->last_active_time_ticks = last_active_time_ticks;
 
   // last_active_time_for_testing can affect pixel tests depending on when the
@@ -1464,17 +1483,18 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
           ? custom_last_active_text
           : GetLastActiveElapsedText(last_active_time_ticks);
 
-  std::vector<tabs::TabAlert> alert_states = GetTabAlertStatesForTab(tab);
+  std::vector<tabs::TabAlert> alert_states =
+      tabs::TabAlertController::From(tab)->GetAllActiveAlerts();
   // Currently, we only report media alert states.
   std::ranges::copy_if(alert_states.begin(), alert_states.end(),
                        std::back_inserter(tab_data->alert_states),
                        [](tabs::TabAlert alert) {
-                         return alert == tabs::TabAlert::MEDIA_RECORDING ||
-                                alert == tabs::TabAlert::AUDIO_RECORDING ||
-                                alert == tabs::TabAlert::VIDEO_RECORDING ||
-                                alert == tabs::TabAlert::AUDIO_PLAYING ||
-                                alert == tabs::TabAlert::AUDIO_MUTING ||
-                                alert == tabs::TabAlert::GLIC_ACCESSING;
+                         return alert == tabs::TabAlert::kMediaRecording ||
+                                alert == tabs::TabAlert::kAudioRecording ||
+                                alert == tabs::TabAlert::kVideoRecording ||
+                                alert == tabs::TabAlert::kAudioPlaying ||
+                                alert == tabs::TabAlert::kAudioMuting ||
+                                alert == tabs::TabAlert::kGlicAccessing;
                        });
 
   return tab_data;
@@ -1592,9 +1612,6 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
 }
 
 void TabSearchPageHandler::OnSplitTabChanged(const SplitTabChange& change) {
-  if (!base::FeatureList::IsEnabled(features::kSideBySide)) {
-    return;
-  }
   if (change.type != SplitTabChange::Type::kRemoved) {
     return;
   }
@@ -1801,9 +1818,9 @@ void TabSearchPageHandler::SetTabDeclutterControllerForTesting(
   SetTabDeclutterController(tab_declutter_controller);
 }
 
-bool TabSearchPageHandler::ShouldTrackBrowser(Browser* browser) {
-  return browser->profile() == Profile::FromWebUI(web_ui_) &&
-         browser->type() == Browser::Type::TYPE_NORMAL;
+bool TabSearchPageHandler::ShouldTrackBrowser(BrowserWindowInterface* browser) {
+  return browser->GetProfile() == Profile::FromWebUI(web_ui_) &&
+         browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
 }
 
 void TabSearchPageHandler::SetTimerForTesting(

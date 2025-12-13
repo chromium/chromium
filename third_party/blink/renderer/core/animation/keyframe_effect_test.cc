@@ -182,7 +182,7 @@ TEST_F(AnimationKeyframeEffectV8Test, SetAndRetrieveEffectComposite) {
   ScriptValue js_keyframes = ScriptValue::CreateNull(scope.GetIsolate());
   KeyframeEffect* effect = CreateAnimationFromOption(
       script_state, element.Get(), js_keyframes, effect_options_dictionary);
-  EXPECT_EQ("add", effect->composite());
+  EXPECT_EQ(V8CompositeOperation::Enum::kAdd, effect->composite());
 
   effect->setComposite(
       V8CompositeOperation(V8CompositeOperation::Enum::kReplace));
@@ -219,7 +219,7 @@ TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {
 
   KeyframeEffect* effect = CreateAnimationFromOption(
       script_state, element.Get(), js_keyframes, effect_options_dictionary);
-  EXPECT_EQ("add", effect->composite());
+  EXPECT_EQ(V8CompositeOperation::Enum::kAdd, effect->composite());
 
   PropertyHandle property(GetCSSPropertyWidth());
   const PropertySpecificKeyframeVector& keyframes =
@@ -282,10 +282,10 @@ TEST_F(AnimationKeyframeEffectV8Test, SpecifiedGetters) {
   EffectTiming* timing = animation->getTiming();
   EXPECT_EQ(2, timing->delay()->GetAsDouble());
   EXPECT_EQ(0.5, timing->endDelay()->GetAsDouble());
-  EXPECT_EQ("backwards", timing->fill());
+  EXPECT_EQ(V8FillMode::Enum::kBackwards, timing->fill());
   EXPECT_EQ(2, timing->iterationStart());
   EXPECT_EQ(10, timing->iterations());
-  EXPECT_EQ("reverse", timing->direction());
+  EXPECT_EQ(V8PlaybackDirection::Enum::kReverse, timing->direction());
   EXPECT_EQ("ease-in-out", timing->easing());
 }
 

@@ -128,16 +128,13 @@ void StorageManagerImpl::AddBatchEvents(
 // static
 StorageManagerConfig StorageManagerImpl::GetStorageManagerConfig() {
   int64_t free_disk_space =
-      base::SysInfo::AmountOfFreeDiskSpace(base::FilePath(kRootPartitionPath));
-
-  if (free_disk_space == -1) {
-    free_disk_space = 0;
-  }
+      base::SysInfo::AmountOfFreeDiskSpace(base::FilePath(kRootPartitionPath))
+          .value_or(0);
 
   free_disk_space = GetMaxDiskSizeRatio() * free_disk_space;
 
-  int64_t buffer_max_size =
-      base::SysInfo::AmountOfPhysicalMemory() * GetMaxBufferSizeRatio();
+  int64_t buffer_max_size = base::SysInfo::AmountOfPhysicalMemory().InBytes() *
+                            GetMaxBufferSizeRatio();
 
   return StorageManagerConfig{
       .buffer_max_bytes = std::max(buffer_max_size, kMinBufferSize),

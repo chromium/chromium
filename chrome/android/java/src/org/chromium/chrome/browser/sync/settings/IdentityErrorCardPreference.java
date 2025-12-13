@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -16,37 +18,42 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorCardDetails;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorUiAction;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserActionableError;
 
+@NullMarked
 public class IdentityErrorCardPreference extends Preference
         implements SyncService.SyncStateChangedListener {
     public interface Listener {
         /** Called when the user clicks the button. */
-        void onIdentityErrorCardButtonClicked(@SyncError int error);
+        void onIdentityErrorCardButtonClicked(@UserActionableError int error);
     }
 
-    private Profile mProfile;
-    private SyncService mSyncService;
+    private @Nullable Profile mProfile;
+    private @Nullable SyncService mSyncService;
     private Listener mListener;
 
-    private @SyncError int mIdentityError;
+    private @UserActionableError int mIdentityError;
 
     public IdentityErrorCardPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         setLayoutResource(R.layout.signin_settings_card_view);
-        mIdentityError = SyncError.NO_ERROR;
+        mIdentityError = UserActionableError.NONE;
     }
 
     /**
      * Initialize the dependencies for the IdentityErrorCardPreference and update the error card.
      */
+    @Initializer
     public void initialize(Profile profile, Listener listener) {
         assert getParent() != null : "Not attached to any parent.";
 
@@ -72,7 +79,7 @@ public class IdentityErrorCardPreference extends Preference
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        if (mIdentityError == SyncError.NO_ERROR) {
+        if (mIdentityError == UserActionableError.NONE) {
             return;
         }
         holder.setDividerAllowedAbove(false);
@@ -80,7 +87,7 @@ public class IdentityErrorCardPreference extends Preference
     }
 
     private void update() {
-        @SyncError int error = SyncSettingsUtils.getSyncError(mProfile);
+        @UserActionableError int error = SyncSettingsUtils.getSyncError(mProfile);
         if (error == mIdentityError) {
             // Nothing changed.
             return;
@@ -111,7 +118,7 @@ public class IdentityErrorCardPreference extends Preference
         Button button = card.findViewById(R.id.signin_settings_card_button);
 
         ErrorCardDetails error_card_details =
-                SyncSettingsUtils.getIdentityErrorErrorCardDetails(mIdentityError);
+                assumeNonNull(SyncSettingsUtils.getIdentityErrorErrorCardDetails(mIdentityError));
         error.setText(context.getString(error_card_details.message));
         button.setText(context.getString(error_card_details.buttonLabel));
 
@@ -133,6 +140,6 @@ public class IdentityErrorCardPreference extends Preference
     }
 
     private boolean shouldShowErrorCard() {
-        return mIdentityError != SyncError.NO_ERROR;
+        return mIdentityError != UserActionableError.NONE;
     }
 }

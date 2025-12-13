@@ -4,16 +4,11 @@
 
 import type {ExtensionApprovalsParams, ExtensionPermission, ParentAccessParams, WebApprovalsParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
 import {ParentAccessParams_FlowType} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
-import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-
-function strToMojoString16(str: string): String16 {
-  return {data: str.split('').map(ch => ch.charCodeAt(0))};
-}
 
 export function buildWebApprovalsParams(): ParentAccessParams {
   const webApprovalsParams: WebApprovalsParams = {
     url: {url: 'https://testing.com'},
-    childDisplayName: strToMojoString16('Child name'),
+    childDisplayName: 'Child name',
     faviconPngBytes: [],
   };
   const parentAccessParams: ParentAccessParams = {
@@ -28,14 +23,14 @@ export function buildExtensionApprovalsParamsWithPermissions(
     isDisabled: boolean = false,
     hasDetails: boolean = false): ParentAccessParams {
   const permission: ExtensionPermission = {
-    permission: strToMojoString16('permission'),
-    details: hasDetails ? strToMojoString16('details') : strToMojoString16(''),
+    permission: 'permission',
+    details: hasDetails ? 'details' : '',
   };
 
   const extensionApprovalsParams: ExtensionApprovalsParams = {
-    extensionName: strToMojoString16('Extension name'),
+    extensionName: 'Extension name',
     iconPngBytes: [],
-    childDisplayName: strToMojoString16('Child Name'),
+    childDisplayName: 'Child Name',
     permissions: [permission],
   };
 
@@ -51,9 +46,9 @@ export function buildExtensionApprovalsParamsWithPermissions(
 export function buildExtensionApprovalsParamsWithoutPermissions(
     isDisabled: boolean = false): ParentAccessParams {
   const extensionApprovalsParams: ExtensionApprovalsParams = {
-    extensionName: strToMojoString16('Extension name'),
+    extensionName: 'Extension name',
     iconPngBytes: [],
-    childDisplayName: strToMojoString16('Child Name'),
+    childDisplayName: 'Child Name',
     permissions: [],
   };
 

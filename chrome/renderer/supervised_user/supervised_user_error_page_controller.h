@@ -5,11 +5,14 @@
 #ifndef CHROME_RENDERER_SUPERVISED_USER_SUPERVISED_USER_ERROR_PAGE_CONTROLLER_H_
 #define CHROME_RENDERER_SUPERVISED_USER_SUPERVISED_USER_ERROR_PAGE_CONTROLLER_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "gin/weak_cell.h"
 #include "gin/wrappable.h"
+
+namespace cppgc {
+class Visitor;
+}
 
 namespace content {
 class RenderFrame;
@@ -45,6 +48,8 @@ class SupervisedUserErrorPageController
       content::RenderFrame* render_frame);
   ~SupervisedUserErrorPageController() override;
 
+  void Trace(cppgc::Visitor* visitor) const override;
+
  private:
   void GoBack();
   void RequestUrlAccessRemote();
@@ -73,7 +78,7 @@ class SupervisedUserErrorPageController
   // This weak factory is used to generate weak pointers to the controller that
   // are used for the request permission callback, so messages to no longer
   // existing interstitials are ignored.
-  base::WeakPtrFactory<SupervisedUserErrorPageController> weak_factory_{this};
+  gin::WeakCellFactory<SupervisedUserErrorPageController> weak_factory_{this};
 };
 
 #endif  // CHROME_RENDERER_SUPERVISED_USER_SUPERVISED_USER_ERROR_PAGE_CONTROLLER_H_

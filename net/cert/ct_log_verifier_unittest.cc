@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
@@ -591,96 +592,93 @@ std::string HashLeaf(const std::string& leaf) {
 
 // Calculates the root hash of a Merkle tree, given its leaf data and size.
 // See RFC6962, section 2.1.
-std::string HashTree(std::string leaves[], size_t tree_size) {
-  if (tree_size == 0)
+std::string HashTree(base::span<const std::string> leaves) {
+  if (leaves.empty()) {
     return GetEmptyTreeHash();
-  if (tree_size == 1)
+  }
+  if (leaves.size() == 1) {
     return HashLeaf(leaves[0]);
+  }
 
   // Find the index of the last leaf in the left sub-tree.
-  const size_t split = std::bit_floor(tree_size - 1);
+  auto split = leaves.split_at(std::bit_floor(leaves.size() - 1));
 
   // Hash the left and right sub-trees, then hash the results.
-  return ct::internal::HashNodes(
-      HashTree(leaves, split),
-      HashTree(&UNSAFE_TODO(leaves[split]), tree_size - split));
+  return ct::internal::HashNodes(HashTree(split.first), HashTree(split.second));
 }
 
 // Returns a Merkle audit proof for the leaf with index |leaf_index|.
-// The tree consists of |leaves[0]| to |leaves[tree_size-1]|.
-// If |leaf_index| is >= |tree_size|, an empty proof will be returned.
+// The tree consists of |leaves|.
+// If |leaf_index| is >= |leaves.size()|, an empty proof will be returned.
 // See RFC6962, section 2.1.1, for more details.
-std::vector<std::string> CreateAuditProof(std::string leaves[],
-                                          size_t tree_size,
+std::vector<std::string> CreateAuditProof(base::span<const std::string> leaves,
                                           size_t leaf_index) {
   std::vector<std::string> proof;
-  if (leaf_index >= tree_size)
+  if (leaf_index >= leaves.size()) {
     return proof;
-  if (tree_size == 1)
+  }
+  if (leaves.size() == 1) {
     return proof;
+  }
 
   // Find the index of the first leaf in the right sub-tree.
-  const size_t split = std::bit_floor(tree_size - 1);
-
-  // Recurse down the correct branch of the tree (left or right) to reach the
-  // leaf with |leaf_index|. Add the hash of the branch not taken at each step
-  // on the way up to build the proof.
+  const size_t split = std::bit_floor(leaves.size() - 1);
+  auto splits = leaves.split_at(split);
   if (leaf_index < split) {
-    proof = CreateAuditProof(leaves, split, leaf_index);
-    proof.push_back(HashTree(&UNSAFE_TODO(leaves[split]), tree_size - split));
+    proof = CreateAuditProof(splits.first, leaf_index);
+    proof.push_back(HashTree(splits.second));
   } else {
-    proof = CreateAuditProof(&UNSAFE_TODO(leaves[split]), tree_size - split,
-                             leaf_index - split);
-    proof.push_back(HashTree(leaves, split));
+    proof = CreateAuditProof(splits.second, leaf_index - split);
+    proof.push_back(HashTree(splits.first));
   }
 
   return proof;
 }
 
 // Returns a Merkle consistency proof between two Merkle trees.
-// The old tree contains |leaves[0]| to |leaves[old_tree_size-1]|.
-// The new tree contains |leaves[0]| to |leaves[new_tree_size-1]|.
+// The old tree contains |leaves.first(old_tree_size)|.
+// The new tree contains |leaves|.
 // Call with |contains_old_tree| = true.
 // See RFC6962, section 2.1.2, for more details.
-std::vector<std::string> CreateConsistencyProof(std::string leaves[],
-                                                size_t new_tree_size,
-                                                size_t old_tree_size,
-                                                bool contains_old_tree = true) {
+std::vector<std::string> CreateConsistencyProof(
+    base::span<const std::string> leaves,
+    size_t old_tree_size,
+    bool contains_old_tree = true) {
   std::vector<std::string> proof;
-  if (old_tree_size == 0 || old_tree_size > new_tree_size)
+  if (old_tree_size == 0 || old_tree_size > leaves.size()) {
     return proof;
-  if (old_tree_size == new_tree_size) {
+  }
+  if (old_tree_size == leaves.size()) {
     // Consistency proof for two equal subtrees is empty.
     if (!contains_old_tree) {
       // Record the hash of this subtree unless it's the root for which
       // the proof was originally requested. (This happens when the old tree is
       // balanced).
-      proof.push_back(HashTree(leaves, old_tree_size));
+      proof.push_back(HashTree(leaves));
     }
     return proof;
   }
 
   // Find the index of the last leaf in the left sub-tree.
-  const size_t split = std::bit_floor(new_tree_size - 1);
+  const size_t split = std::bit_floor(leaves.size() - 1);
 
+  auto splits = leaves.split_at(split);
   if (old_tree_size <= split) {
     // Root of the old tree is in the left subtree of the new tree.
     // Prove that the left subtrees are consistent.
     proof =
-        CreateConsistencyProof(leaves, split, old_tree_size, contains_old_tree);
+        CreateConsistencyProof(splits.first, old_tree_size, contains_old_tree);
     // Record the hash of the right subtree (only present in the new tree).
-    proof.push_back(
-        HashTree(&UNSAFE_TODO(leaves[split]), new_tree_size - split));
+    proof.push_back(HashTree(splits.second));
   } else {
     // The old tree root is at the same level as the new tree root.
     // Prove that the right subtrees are consistent. The right subtree
     // doesn't contain the root of the old tree, so set contains_old_tree =
     // false.
-    proof = CreateConsistencyProof(&UNSAFE_TODO(leaves[split]),
-                                   new_tree_size - split, old_tree_size - split,
+    proof = CreateConsistencyProof(splits.second, old_tree_size - split,
                                    /* contains_old_tree = */ false);
     // Record the hash of the left subtree (equal in both trees).
-    proof.push_back(HashTree(leaves, split));
+    proof.push_back(HashTree(splits.first));
   }
   return proof;
 }
@@ -700,16 +698,15 @@ TEST_P(CTLogVerifierTestUsingGenerator, VerifiesValidConsistencyProof) {
   for (size_t i = 0; i < tree_size; ++i)
     tree_leaves[i].push_back(static_cast<char>(i));
 
-  const std::string tree_root =
-      rfc6962::HashTree(tree_leaves.data(), tree_size);
+  const std::string tree_root = rfc6962::HashTree(tree_leaves);
 
   // Check consistency proofs for every sub-tree.
   for (size_t old_tree_size = 0; old_tree_size <= tree_size; ++old_tree_size) {
     SCOPED_TRACE(old_tree_size);
     const std::string old_tree_root =
-        rfc6962::HashTree(tree_leaves.data(), old_tree_size);
-    const std::vector<std::string> proof = rfc6962::CreateConsistencyProof(
-        tree_leaves.data(), tree_size, old_tree_size);
+        rfc6962::HashTree(base::span(tree_leaves).first(old_tree_size));
+    const std::vector<std::string> proof =
+        rfc6962::CreateConsistencyProof(tree_leaves, old_tree_size);
     // Checks that the consistency proof verifies only with the correct tree
     // sizes and root hashes.
     CheckVerifyConsistencyProof(*log_, old_tree_size, tree_size, old_tree_root,
@@ -726,13 +723,13 @@ TEST_P(CTLogVerifierTestUsingGenerator, VerifiesValidAuditProofs) {
   for (size_t i = 0; i < tree_size; ++i)
     tree_leaves[i].push_back(static_cast<char>(i));
 
-  const std::string root = rfc6962::HashTree(tree_leaves.data(), tree_size);
+  const std::string root = rfc6962::HashTree(tree_leaves);
 
   // Check audit proofs for every leaf in the tree.
   for (size_t leaf = 0; leaf < tree_size; ++leaf) {
     SCOPED_TRACE(leaf);
     std::vector<std::string> proof =
-        rfc6962::CreateAuditProof(tree_leaves.data(), tree_size, leaf);
+        rfc6962::CreateAuditProof(tree_leaves, leaf);
     // Checks that the audit proof verifies only for this leaf data, index,
     // hash, tree size and root hash.
     CheckVerifyAuditProof(*log_, leaf, tree_size, proof, root,

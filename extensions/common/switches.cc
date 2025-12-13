@@ -51,8 +51,13 @@ const char kExtensionTestApiOnWebPages[] = "extension-test-api-on-web-pages";
 const char kZeroStatePromoIphVariantParamName[] =
     "extension-zero-state-iph-variant";
 const char kZeroStatePromoCustomActionIph[] = "custom-action-iph";
-const char kZeroStatePromoCustomUiChipIph[] = "custom-ui-chip-iph";
+const char kZeroStatePromoCustomUiChipIphV1[] = "custom-ui-chip-iph";
+const char kZeroStatePromoCustomUiChipIphV2[] = "custom-ui-chip-iph-v2";
+const char kZeroStatePromoCustomUiChipIphV3[] = "custom-ui-chip-iph-v3";
 const char kZeroStatePromoCustomUiPlainLinkIph[] = "custom-ui-plain-link-iph";
+
+const char kExtensionsInstallVerification[] = "extensions-install-verification";
+const char kExtensionsNotWebstore[] = "extensions-not-webstore";
 
 bool AreExtensionsOnChromeURLsAllowed() {
   if (base::FeatureList::IsEnabled(

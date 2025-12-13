@@ -122,8 +122,9 @@ INSTANTIATE_TEST_SUITE_P(
         LastNameParserTestRecord{"van de Velde", "van de", "Velde", "", "",
                                  "Velde"},
         LastNameParserTestRecord{"ter Horst", "ter", "Horst", "", "", "Horst"},
-        LastNameParserTestRecord{"von Ruiz y Picasso", "von", "Ruiz y Picasso",
-                                 "Ruiz", "y", "Picasso"}));
+        LastNameParserTestRecord{"de la Ruiz y Picasso", "",
+                                 "de la Ruiz y Picasso", "de la Ruiz", "y",
+                                 "Picasso"}));
 
 class AutofillStructuredNameParseFullNameTest
     : public testing::TestWithParam<NameParserTestRecord> {};
@@ -195,10 +196,17 @@ INSTANTIATE_TEST_SUITE_P(
         NameParserTestRecord{"Pablo Ruiz y Picasso", "Pablo", "",
                              "Ruiz y Picasso", "", "Ruiz y Picasso", "Ruiz",
                              "y", "Picasso"},
-        // Hispanic/Latinx name with last name prefix.
-        NameParserTestRecord{"Pablo von Ruiz y Picasso", "Pablo", "",
-                             "von Ruiz y Picasso", "von", "Ruiz y Picasso",
-                             "Ruiz", "y", "Picasso"},
+        // Hispanic/Latinx name with last name prefix. Note that in hispanic
+        // names last name prefix should not be captured as a standalone type.
+        NameParserTestRecord{"Pablo de la Ruiz y Picasso", "Pablo", "",
+                             "de la Ruiz y Picasso", "", "de la Ruiz y Picasso",
+                             "de la Ruiz", "y", "Picasso"},
+        // Hispanic/Latinx name with last name prefix. Note that in hispanic
+        // names last name prefix should not be captured as a standalone type.
+        NameParserTestRecord{"Pablo Diego de la Ruiz y Picasso", "Pablo Diego",
+                             "", "de la Ruiz y Picasso", "",
+                             "de la Ruiz y Picasso", "de la Ruiz", "y",
+                             "Picasso"},
         // Name with multiple middle names.
         NameParserTestRecord{"George Walker Junior Bush", "George",
                              "Walker Junior", "Bush", "", "Bush", "", "",
@@ -641,7 +649,8 @@ TEST(AutofillStructuredName, MergePermutedNames) {
   EXPECT_EQ(two.GetValueForType(NAME_FIRST), u"First");
   EXPECT_EQ(two.GetValueForType(NAME_LAST), u"Last");
 
-  EXPECT_TRUE(one.MergeWithComponent(two));
+  EXPECT_TRUE(
+      one.MergeWithComponent(two, /*newer_was_more_recently_used=*/true));
 
   // It is expected that the alternative representation of the second component
   // is merged into the first one, while maintaining the observed substructure.
@@ -789,12 +798,14 @@ TEST(AutofillStructuredName,
   // structure of |one| is maintained, while the substructure of the last name
   // is taken from two.
   NameFull copy_of_one(one);
-  EXPECT_TRUE(one.MergeWithComponent(two));
+  EXPECT_TRUE(
+      one.MergeWithComponent(two, /*newer_was_more_recently_used=*/true));
 
   VerifyTestValues(&one, merge_expectation);
 
   // The merging should work in both directions equally.
-  EXPECT_TRUE(two.MergeWithComponent(copy_of_one));
+  EXPECT_TRUE(two.MergeWithComponent(copy_of_one,
+                                     /*newer_was_more_recently_used=*/true));
 
   VerifyTestValues(&two, merge_expectation);
 }
@@ -876,185 +887,6 @@ TEST(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
             VerificationStatus::kObserved);
   EXPECT_EQ(name.GetVerificationStatusForType(NAME_LAST),
             VerificationStatus::kObserved);
-}
-
-TEST(AutofillStructuredName, MergeSubsetLastname) {
-  NameFull name;
-  NameFull subset_name;
-  test_api(name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
-                              kRecursivelyMergeTokenEquivalentValues);
-
-  AddressComponentTestValues name_values = {
-      {.type = NAME_FIRST,
-       .value = "Thomas",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_MIDDLE,
-       .value = "Neo",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_LAST,
-       .value = "Anderson y Smith",
-       .status = VerificationStatus::kObserved},
-  };
-
-  AddressComponentTestValues subset_name_values = {
-      {.type = NAME_FIRST,
-       .value = "Thomas",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_MIDDLE,
-       .value = "Neo",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_LAST_FIRST,
-       .value = "Anderson",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_LAST_SECOND,
-       .value = "Smith",
-       .status = VerificationStatus::kObserved},
-  };
-
-  AddressComponentTestValues expectation = {
-      {.type = NAME_FIRST,
-       .value = "Thomas",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_MIDDLE,
-       .value = "Neo",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_LAST_FIRST,
-       .value = "Anderson",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_LAST_CONJUNCTION,
-       .value = "y",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_LAST_SECOND,
-       .value = "Smith",
-       .status = VerificationStatus::kObserved},
-  };
-
-  SetTestValues(&name, name_values);
-  SetTestValues(&subset_name, subset_name_values);
-
-  EXPECT_TRUE(name.IsMergeableWithComponent(subset_name));
-  EXPECT_TRUE(name.MergeWithComponent(subset_name));
-
-  VerifyTestValues(&name, name_values);
-}
-
-TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
-  NameFull name;
-  NameFull subset_name;
-  test_api(name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
-                              kRecursivelyMergeTokenEquivalentValues);
-
-  AddressComponentTestValues name_values = {
-      {.type = NAME_FULL,
-       .value = "Thomas-Neo-Anderson",
-       .status = VerificationStatus::kUserVerified},
-      {.type = NAME_FIRST,
-       .value = "Thomas",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_MIDDLE,
-       .value = "Thomas",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_LAST,
-       .value = "Anderson",
-       .status = VerificationStatus::kObserved},
-  };
-
-  AddressComponentTestValues subset_name_values = {
-      {.type = NAME_FULL,
-       .value = "Thomas-Anderson",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_FIRST,
-       .value = "Thomas",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_LAST,
-       .value = "Anderson",
-       .status = VerificationStatus::kObserved},
-  };
-
-  AddressComponentTestValues expectation = {
-      {.type = NAME_FULL,
-       .value = "Thomas-Neo-Anderson",
-       .status = VerificationStatus::kUserVerified},
-      {.type = NAME_FIRST,
-       .value = "Thomas",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_MIDDLE,
-       .value = "Thomas",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_LAST,
-       .value = "Anderson",
-       .status = VerificationStatus::kObserved},
-  };
-
-  SetTestValues(&name, name_values);
-  SetTestValues(&subset_name, subset_name_values);
-
-  // After normalization, the two names should have a single-token-superset
-  // relation.
-  SortedTokenComparisonResult token_comparison_result = CompareSortedTokens(
-      test_api(name).GetValueForComparison(subset_name.GetCountryCode()),
-      test_api(subset_name).GetValueForComparison(name.GetCountryCode()));
-  EXPECT_TRUE(token_comparison_result.IsSingleTokenSuperset());
-
-  // Without normalization, the two names should be considered distinct.
-  token_comparison_result =
-      CompareSortedTokens(name.GetValue(), subset_name.GetValue());
-  EXPECT_TRUE(token_comparison_result.status ==
-              SortedTokenComparisonStatus::kDistinct);
-
-  // Verify that those two names are not considered mergeable.
-  EXPECT_FALSE(name.IsMergeableWithComponent(subset_name));
-  EXPECT_FALSE(name.MergeWithComponent(subset_name));
-
-  VerifyTestValues(&name, expectation);
-}
-
-TEST(AutofillStructuredName, MergeSubsetLastname2) {
-  NameFull name;
-  NameFull subset_name;
-  test_api(name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
-                              kRecursivelyMergeTokenEquivalentValues);
-
-  AddressComponentTestValues name_values = {
-      {.type = NAME_FIRST,
-       .value = "Thomas",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_MIDDLE,
-       .value = "Neo",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_LAST,
-       .value = "Anderson",
-       .status = VerificationStatus::kObserved},
-  };
-
-  AddressComponentTestValues subset_name_values = {
-      {.type = NAME_FIRST,
-       .value = "Thomas",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_LAST,
-       .value = "Anderson",
-       .status = VerificationStatus::kObserved},
-  };
-
-  AddressComponentTestValues expectation = {
-      {.type = NAME_FIRST,
-       .value = "Thomas",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_MIDDLE,
-       .value = "Neo",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_LAST,
-       .value = "Anderson",
-       .status = VerificationStatus::kObserved},
-  };
-
-  SetTestValues(&name, name_values);
-  SetTestValues(&subset_name, subset_name_values);
-
-  EXPECT_TRUE(name.IsMergeableWithComponent(subset_name));
-  EXPECT_TRUE(name.MergeWithComponent(subset_name));
-
-  VerifyTestValues(&name, name_values);
 }
 
 }  // namespace

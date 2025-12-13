@@ -6,6 +6,8 @@
 
 #include <type_traits>
 
+#include "base/notreached.h"
+
 namespace chrome_pdf {
 
 namespace {
@@ -25,6 +27,18 @@ PageOrientation AddOrientations(PageOrientation first, PageOrientation second) {
 }
 
 }  // namespace
+
+bool IsTransposedPageOrientation(PageOrientation orientation) {
+  switch (orientation) {
+    case PageOrientation::kOriginal:
+    case PageOrientation::kClockwise180:
+      return false;
+    case PageOrientation::kClockwise90:
+    case PageOrientation::kClockwise270:
+      return true;
+  }
+  NOTREACHED();
+}
 
 PageOrientation RotateClockwise(PageOrientation orientation) {
   return AddOrientations(orientation, PageOrientation::kClockwise90);

@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalCronetEngine;
@@ -38,6 +39,7 @@ import org.chromium.net.UrlRequest;
 public class HttpTest {
     @Before
     public void setUp() throws Exception {
+        ContextUtils.initApplicationContext(ApplicationProvider.getApplicationContext());
         Http2TestServer.startHttp2TestServer(ApplicationProvider.getApplicationContext());
     }
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/partition_alloc_base/mac/mac_util.h"
 
 #include <sys/sysctl.h>
@@ -96,8 +101,7 @@ int MacOSMajorVersion() {
 
     // Darwin major version 25 corresponds to macOS version 26. Assume a
     // correspondence between Darwin's major version numbers and macOS major
-    // version numbers. TODO(https://crbug.com/424162749): Verify this before
-    // release.
+    // version numbers.
     return darwin_major_version + 1;
   }();
   return macos_major_version;

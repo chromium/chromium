@@ -1,5 +1,3 @@
-import("//build/config/features.gni")
-
 static_library("page_info") {
   sources = [
     "page_info.cc",
@@ -26,21 +24,22 @@ static_library("page_info") {
     "//components/privacy_sandbox",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser/password_protection",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
-    "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
     "//components/security_state/core",
     "//components/signin/public/identity_manager",
-    "//components/ssl_errors:ssl_errors",
+    "//components/ssl_errors",
     "//components/strings:components_branded_strings_grit",
     "//components/strings:components_strings_grit",
     "//components/subresource_filter/core/browser",
     "//components/ukm/content",
     "//components/url_formatter",
-    "//components/vector_icons:vector_icons",
-    "//content/public/browser:browser",
+    "//components/vector_icons",
+    "//content/public/browser",
     "//services/device/public/cpp:device_features",
     "//services/metrics/public/cpp:ukm_builders",
   ]
@@ -64,9 +63,10 @@ source_set("unit_tests") {
   deps = [
     ":page_info",
     "//base",
+    "//components/content_settings/core/browser",
     "//components/strings:components_strings_grit",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }

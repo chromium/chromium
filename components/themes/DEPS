@@ -9,4 +9,10 @@ include_rules = [
   "+services/network/test",
   "+third_party/skia",
   "+ui/base",
+  "+components/policy/core/browser",
+  "+components/policy/core/common",
+  "+components/policy",
+  "+components/prefs",
+  "+components/strings/grit",
+  "+third_party/re2",
 ]

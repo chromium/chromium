@@ -23,7 +23,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 struct MenuNotificationEntry {
@@ -75,7 +74,6 @@ class SafetyHubMenuNotificationService : public KeyedService {
       NotificationPermissionsReviewService* notification_permissions_service,
 #if !BUILDFLAG(IS_ANDROID)
       PasswordStatusCheckService* password_check_service,
-      SafetyHubHatsService* safety_hub_hats_service,
 #endif  // BUILDFLAG(IS_ANDROID)
       Profile* profile);
   SafetyHubMenuNotificationService(const SafetyHubMenuNotificationService&) =
@@ -101,10 +99,6 @@ class SafetyHubMenuNotificationService : public KeyedService {
       safety_hub::SafetyHubModuleType type,
       base::RepeatingCallback<std::optional<std::unique_ptr<SafetyHubResult>>()>
           result_getter);
-
-#if !BUILDFLAG(IS_ANDROID)
-  void MaybeTriggerControlSurvey() const;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   // Gets the latest result from each Safety Hub service. Will return
@@ -153,11 +147,6 @@ class SafetyHubMenuNotificationService : public KeyedService {
 
   // Registrar to record the pref changes to Safe Browsing.
   PrefChangeRegistrar registrar_;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Safety Hub Hats service to trigger surveys.
-  raw_ptr<SafetyHubHatsService> safety_hub_hats_service_;
-#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_MENU_NOTIFICATION_SERVICE_H_

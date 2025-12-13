@@ -4,6 +4,8 @@
 
 #include "base/metrics/field_trial_params.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
@@ -45,7 +47,7 @@ class FieldTrialParamsTest : public ::testing::Test {
   void CreateFeatureWithTrial(const Feature& feature,
                               FeatureList::OverrideState override_state,
                               FieldTrial* trial) {
-    std::unique_ptr<FeatureList> feature_list(new FeatureList);
+    auto feature_list = std::make_unique<FeatureList>();
     feature_list->RegisterFieldTrialOverride(feature.name, override_state,
                                              trial);
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));

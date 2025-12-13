@@ -234,10 +234,6 @@ TEST(AutofillStructuredAddressUtils, TokenizeValue) {
   EXPECT_EQ(TokenizeValue(u"이영호"), expected_cjk_tokens);
 }
 
-TEST(AutofillStructuredAddressUtils, NormalizeValue) {
-  EXPECT_EQ(NormalizeValue(u" MÜLLeR   Örber"), u"muller orber");
-}
-
 TEST(AutofillStructuredAddressUtils, TestGetRewriter) {
   EXPECT_EQ(NormalizeAndRewrite(AddressCountryCode("us"), u"unit #3",
                                 /*keep_white_space=*/true),

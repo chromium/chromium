@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -14,6 +15,7 @@
 #import "components/google/core/common/google_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/command_line_switches.h"
+#import "components/sync/base/features.h"
 #import "components/sync/service/sync_prefs.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -145,12 +147,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
   footerItem.text =
       l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_HINT_UNO);
-  footerItem.urls =
-      @[ [[CrURL alloc] initWithGURL:google_util::AppendGoogleLocaleParam(
-                                         GURL(kSyncGoogleDashboardURL),
-                                         GetApplicationContext()
-                                             ->GetApplicationLocaleStorage()
-                                             ->Get())] ];
+  footerItem.urls = @[ [[CrURL alloc]
+      initWithGURL:google_util::AppendGoogleLocaleParam(
+                       GURL(base::FeatureList::IsEnabled(
+                                syncer::kSyncEnableNewSyncDashboardUrl)
+                                ? kNewSyncGoogleDashboardURL
+                                : kLegacySyncGoogleDashboardURL),
+                       GetApplicationContext()
+                           ->GetApplicationLocaleStorage()
+                           ->Get())] ];
   return footerItem;
 }
 
@@ -214,6 +219,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
+#pragma mark - UIView
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  [self.presentationDelegate
+      syncEncryptionTableViewControllerDidDisappear:self];
+}
+
 #pragma mark - SettingsControllerProtocol callbacks
 
 - (void)reportDismissalUserAction {
@@ -264,6 +277,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        checked:(BOOL)checked
                        enabled:(BOOL)enabled {
   TableViewTextItem* item = [[TableViewTextItem alloc] initWithType:type];
+  item.titleNumberOfLines = 0;
   item.accessibilityTraits |= UIAccessibilityTraitButton;
   item.text = text;
   item.accessoryType = checked ? UITableViewCellAccessoryCheckmark

@@ -22,7 +22,7 @@ component("web_dialogs") {
     "//content/public/browser",
     "//content/public/common",
     "//skia",
-    "//ui/base",
+    "//ui/base/interaction",
     "//ui/webui",
     "//url",
   ]

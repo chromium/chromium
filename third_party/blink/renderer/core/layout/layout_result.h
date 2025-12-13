@@ -112,6 +112,10 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return rare_data_ ? rare_data_->lines_until_clamp : 0;
   }
 
+  const LayoutObject* LineClampAfterLayoutObject() const {
+    return rare_data_ ? rare_data_->line_clamp_after_layout_object : nullptr;
+  }
+
   // Returns true if the block-end of this line box is trimmable by the
   // `text-box-trim` property. If it's true, it means that this is the line box
   // that was the candidate for block-end trimming, but this doesn't necessarily
@@ -587,9 +591,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     friend class LayoutBox;
     friend class MeasureCache;
 
-    void SetFragmentChildrenInvalid() {
-      layout_result_->physical_fragment_->SetChildrenInvalid();
-    }
+    void SetFragmentChildrenInvalid();
 
    private:
     friend class LayoutResult;
@@ -605,7 +607,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
 #if DCHECK_IS_ON()
   void CheckSameForSimplifiedLayout(const LayoutResult&,
-                                    bool check_same_block_size = true,
                                     bool check_no_fragmentation = true) const;
 #endif
 
@@ -860,6 +861,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
           annotation_overflow(rare_data.annotation_overflow),
           block_end_annotation_space(rare_data.block_end_annotation_space),
           lines_until_clamp(rare_data.lines_until_clamp),
+          line_clamp_after_layout_object(
+              rare_data.line_clamp_after_layout_object),
           line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
           non_overflowing_scroll_ranges(
               rare_data.non_overflowing_scroll_ranges),
@@ -984,6 +987,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;
     int lines_until_clamp;
+    WeakMember<const LayoutObject> line_clamp_after_layout_object;
     Member<Element> accessibility_anchor;
     Member<GCedHeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
 

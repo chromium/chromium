@@ -104,11 +104,26 @@
     <table>
       <tbody id="variations-summary-body"></tbody>
     </table>
+    <h2>Stored Latest Seed Info</h2>
+    <button id="fetch-stored-latest-seed-info" disabled>Refresh</button>
+    <table>
+      <tbody id="stored-latest-seed-info-body"></tbody>
+    </table>
+    <h2>Stored Safe Seed Info</h2>
+    <button id="fetch-stored-safe-seed-info" disabled>Refresh</button>
+    <table>
+      <tbody id="stored-safe-seed-info-body"></tbody>
+    </table>
   </div>
   <div slot="tab">Field Trials</div>
   <div slot="panel">
     <h2>Field Trials Summary</h2>
     <field-trials-app></field-trials-app>
+  </div>
+  <div slot="tab" id="private-metrics-tab">Private Metrics</div>
+  <div slot="panel" id="private-metrics-panel">
+    <h2>Private Metrics Summary</h2>
+    <private-metrics-app></private-metrics-app>
   </div>
 </cr-tab-box>
 <template id="uma-log-row-template">
@@ -133,5 +148,14 @@
   <tr>
     <td><!-- Key --></td>
     <td><!-- Value --></td>
+  </tr>
+</template>
+<template id="seed-info-row-template">
+  <tr>
+    <td><!-- Key --></td>
+    <td><!-- Value --></td>
+    <td><!-- Copy -->
+      <button>Copy</button>
+    </td>
   </tr>
 </template>

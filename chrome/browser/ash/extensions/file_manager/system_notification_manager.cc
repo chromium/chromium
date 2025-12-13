@@ -11,7 +11,6 @@
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"

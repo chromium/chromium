@@ -76,6 +76,8 @@ class WebContentsViewMac : public WebContentsView,
   void FocusThroughTabTraversal(bool reverse) override;
   DropData* GetDropData() const override;
   gfx::Rect GetViewBounds() const override;
+  void Resize(const gfx::Rect& new_bounds) override;
+  gfx::Size GetSize() const override;
   void CreateView(gfx::NativeView context) override;
   RenderWidgetHostViewBase* CreateViewForWidget(
       RenderWidgetHost* render_widget_host) override;
@@ -125,7 +127,7 @@ class WebContentsViewMac : public WebContentsView,
   // ViewsHostableView:
   void ViewsHostableAttach(ViewsHostableView::Host* host) override;
   void ViewsHostableDetach() override;
-  void ViewsHostableSetBounds(const gfx::Rect& bounds_in_window) override;
+  void ViewsHostableSetBounds(const gfx::Rect& bounds_in_superview) override;
   void ViewsHostableSetVisible(bool visible) override;
   void ViewsHostableMakeFirstResponder() override;
   void ViewsHostableSetParentAccessible(

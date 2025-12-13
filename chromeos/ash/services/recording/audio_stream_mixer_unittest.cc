@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "chromeos/ash/services/recording/audio_stream_mixer.h"
 
 #include <algorithm>
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
 #include "chromeos/ash/services/recording/audio_capture_test_base.h"
 #include "chromeos/ash/services/recording/audio_capture_util.h"
 #include "chromeos/ash/services/recording/audio_stream.h"
-#include "chromeos/ash/services/recording/audio_stream_mixer.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,12 +29,10 @@ std::unique_ptr<media::AudioBus> AddBuses(const media::AudioBus& bus1,
   DCHECK_EQ(bus1.frames(), bus2.frames());
 
   auto output_bus = media::AudioBus::Create(bus1.channels(), bus1.frames());
-  for (int i = 0; i < output_bus->channels(); ++i) {
-    const auto* const bus1_channel = bus1.channel(i);
-    const auto* const bus2_channel = bus2.channel(i);
-    auto* const output_bus_channel = output_bus->channel(i);
-    for (int j = 0; j < bus1.frames(); ++j) {
-      output_bus_channel[j] = bus1_channel[j] + bus2_channel[j];
+  for (auto [src1_ch, src2_ch, dest_ch] : base::zip(
+           bus1.AllChannels(), bus2.AllChannels(), output_bus->AllChannels())) {
+    for (int i = 0; i < bus1.frames(); ++i) {
+      dest_ch[i] = src1_ch[i] + src2_ch[i];
     }
   }
 

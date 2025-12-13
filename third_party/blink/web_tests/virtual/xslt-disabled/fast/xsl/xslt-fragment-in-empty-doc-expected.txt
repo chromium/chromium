@@ -1,0 +1,5 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been removed in this browser. See https://chromestatus.com/feature/4709671889534976.
+CONSOLE ERROR: Uncaught NotSupportedError: Failed to construct 'XSLTProcessor': XSLT is disabled
+This test checks whether XSLTProcessor.transformToFragment() does not crash when the target document does not have a root node.
+
+PASS: You didn't crash.

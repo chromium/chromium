@@ -129,8 +129,7 @@ bool TtsPlatformImplChromeOs::StopSpeaking() {
 
 void TtsPlatformImplChromeOs::GetVoices(
     std::vector<content::VoiceData>* out_voices) {
-  for (const auto& voice : voices_)
-    out_voices->push_back(voice);
+  out_voices->insert(out_voices->end(), voices_.begin(), voices_.end());
 }
 
 std::string TtsPlatformImplChromeOs::GetError() {

@@ -12,7 +12,6 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"

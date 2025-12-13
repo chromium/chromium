@@ -16,7 +16,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gl/child_window_win.h"

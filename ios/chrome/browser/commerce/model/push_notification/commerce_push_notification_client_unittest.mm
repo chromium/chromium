@@ -57,13 +57,13 @@ constexpr char kHintKey[] = "https://www.merchant.com/price_drop_product";
 constexpr char kBookmarkFoundHistogramName[] =
     "Commerce.PriceTracking.Untrack.BookmarkFound";
 std::string kBookmarkTitle = "My product title";
-uint64_t kClusterId = 12345L;
+constexpr uint64_t kClusterId = 12345L;
 constexpr char kPayloadValue[] = "value";
-NSString* kSerializedPayloadKey = @"op";
-NSString* kVisitSiteActionId = @"visit_site";
-NSString* kVisitSiteTitle = @"Visit site";
-NSString* kUntrackPriceActionId = @"untrack_price";
-NSString* kUntrackPriceTitle = @"Untrack price";
+NSString* const kSerializedPayloadKey = @"op";
+NSString* const kVisitSiteActionId = @"visit_site";
+NSString* const kVisitSiteTitle = @"Visit site";
+NSString* const kUntrackPriceActionId = @"untrack_price";
+NSString* const kUntrackPriceTitle = @"Untrack price";
 constexpr char kUntrackSuccessHistogramName[] =
     "Commerce.PriceTracking.Untrack.Success";
 
@@ -166,7 +166,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return std::make_unique<
                   testing::NiceMock<commerce::MockShoppingService>>();
             }));

@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/public/hardware_capabilities.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 
@@ -46,7 +46,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
       const QuadList& quad_list) override;
 
   void CheckOverlaySupportImpl(
-      const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+      const std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* surfaces) override;
   // If UseMultipleOverlays is enabled, set `ReceiveHardwareCapabilities` as a
   // callback on `overlay_candidates_` to be called with a
@@ -64,6 +64,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
   // Forwards this message to the OverlayCandidates, which can react to swap
   // result accordingly.
   void OnSwapBuffersComplete(gfx::SwapResult swap_result) override;
+
+ protected:
+  void InsertPrimaryPlane(OverlayCandidate primary_plane,
+                          OverlayCandidateList& candidates) override;
+
+  bool ShouldCreatePrimaryPlane() const override;
 
  private:
   // Populates |native_pixmap| and |native_pixmap_unique_id| in |candidate|

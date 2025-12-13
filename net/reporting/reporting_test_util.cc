@@ -59,7 +59,7 @@ class PendingUploadImpl : public TestReportingUploader::PendingUpload {
   const GURL& url() const override { return url_; }
   const std::string& json() const override { return json_; }
   std::optional<base::Value> GetValue() const override {
-    return base::JSONReader::Read(json_);
+    return base::JSONReader::Read(json_, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   }
 
   void Complete(ReportingUploader::Outcome outcome) override {

@@ -5,8 +5,11 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_SAFE_BROWSING_AW_SAFE_BROWSING_LOCAL_STATE_DELEGATE_IMPL_H_
 #define ANDROID_WEBVIEW_BROWSER_SAFE_BROWSING_AW_SAFE_BROWSING_LOCAL_STATE_DELEGATE_IMPL_H_
 
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/browser/web_ui/safe_browsing_local_state_delegate.h"
 
+namespace content {
+class WebUI;
+}
 namespace safe_browsing {
 
 class AwSafeBrowsingLocalStateDelegateImpl

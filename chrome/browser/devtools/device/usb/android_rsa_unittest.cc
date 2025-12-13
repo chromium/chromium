@@ -10,9 +10,8 @@
 #include <string_view>
 
 #include "base/strings/string_view_util.h"
-#include "crypto/hash.h"
+#include "crypto/obsolete/sha1.h"
 #include "crypto/keypair.h"
-#include "crypto/rsa_private_key.h"
 #include "crypto/sign.h"
 #include "crypto/test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,8 +20,6 @@ namespace {
 
 TEST(AndroidRSATest, EncodePublicKey) {
   auto key = crypto::test::FixedRsa2048PrivateKeyForTesting();
-  auto rsa = crypto::RSAPrivateKey::CreateFromKey(key.key());
-  ASSERT_TRUE(rsa);
   std::string_view expected =
       "QAAAAIuxyjLdkf9dwbd1cL9LyHJ2RPiBOob18Y8buAkZfERfSAQ2N7dTCc763pGJ2VyBj3kZ"
       "b7uhsG6KQz9RyY8dOJxX4ihd97sEEju6y277D2vsjP1WhSPHomOw19yxH3YKQOE0z6/3TeCF"
@@ -34,7 +31,7 @@ TEST(AndroidRSATest, EncodePublicKey) {
       "eGChiZTqv1xIZlL+LoDeymZJQ6xul3Ipgu94Z5WqqOUSu/nzhbzcbQMdiB727n4ZM+INSxmd"
       "F5l0GR6DzDb/nF52MZjPgNCHmjEa6vM/mkEjAFZVz7f4VfSg+MgWm9iO86YvfG+QyoZToSzt"
       "dZa5hBvzNQk/jJHYa7EGrCq1UOa4ctVeb6Nig29n3cgxfAEAAQA=";
-  EXPECT_EQ(AndroidRSAPublicKey(rsa.get()), expected);
+  EXPECT_EQ(AndroidRSAPublicKey(key), expected);
 }
 
 TEST(AndroidRSATest, EncodePublicKeyTooSmall) {
@@ -92,24 +89,21 @@ TEST(AndroidRSATest, EncodePublicKeyTooSmall) {
        0xe9, 0xdc, 0x16, 0xa9, 0x06, 0x25, 0xdc, 0x31, 0x40, 0xf7, 0x9f, 0x03,
        0xd4, 0xe1, 0x22, 0x77, 0x1b, 0x84, 0xb2, 0x02, 0x18, 0xc1, 0x54, 0xf6,
        0x28, 0xec, 0x81, 0x1d, 0x15, 0xbc, 0xa6, 0x8c, 0x9d, 0x67});
-  auto rsa = crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(kTestRSA1024Key);
+  auto rsa = crypto::keypair::PrivateKey::FromPrivateKeyInfo(kTestRSA1024Key);
   ASSERT_TRUE(rsa);
   // RSA-1024 is too small to be used with Android's format.
-  EXPECT_EQ(AndroidRSAPublicKey(rsa.get()), std::nullopt);
+  EXPECT_EQ(AndroidRSAPublicKey(*rsa), std::nullopt);
 }
 
 TEST(AndroidRSATest, EncodePublicKeyTooLarge) {
   auto key = crypto::test::FixedRsa4096PrivateKeyForTesting();
-  auto rsa = crypto::RSAPrivateKey::CreateFromKey(key.key());
-  ASSERT_TRUE(rsa);
   // RSA-4096 is too large to be used with Android's format.
-  EXPECT_EQ(AndroidRSAPublicKey(rsa.get()), std::nullopt);
+  EXPECT_EQ(AndroidRSAPublicKey(key), std::nullopt);
 }
 
 TEST(AndroidRSATest, ValidPrehashedSignature) {
   auto privkey = crypto::test::FixedRsa2048PrivateKeyForTesting();
   auto pubkey = crypto::test::FixedRsa2048PublicKeyForTesting();
-  auto wrapped_privkey = crypto::RSAPrivateKey::CreateFromKey(privkey.key());
 
   constexpr auto kTestInput = std::to_array<uint8_t>({
       0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0xff, 0xfe, 0xfd,
@@ -119,9 +113,9 @@ TEST(AndroidRSATest, ValidPrehashedSignature) {
 
   // AndroidRSASign is supposed to compute a prehashed RSASSA-PKCS1-v1_5-SHA1
   // signature, so do that here, then check that the signature validates.
-  const auto hash = crypto::hash::Sha1(kTestInput);
-  std::string sig = AndroidRSASign(wrapped_privkey.get(),
-                                   std::string(base::as_string_view(hash)));
+  const auto hash = crypto::obsolete::Sha1::HashForTesting(kTestInput);
+  std::string sig =
+      AndroidRSASign(privkey, std::string(base::as_string_view(hash)));
 
   EXPECT_TRUE(crypto::sign::Verify(crypto::sign::SignatureKind::RSA_PKCS1_SHA1,
                                    pubkey, kTestInput,

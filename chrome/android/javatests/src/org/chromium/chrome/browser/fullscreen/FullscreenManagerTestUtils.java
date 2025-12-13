@@ -9,7 +9,7 @@ import android.os.SystemClock;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -39,7 +39,8 @@ public class FullscreenManagerTestUtils {
                 activity.getBrowserControlsManager();
         int browserControlsHeight = browserControlsStateProvider.getTopControlsHeight();
 
-        waitForPageToBeScrollable(activity.getActivityTab());
+        waitForPageToBeScrollable(
+                ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab()));
 
         float dragX = 50f;
         // Use a larger scroll range than the height of the browser controls to ensure we overcome
@@ -49,11 +50,13 @@ public class FullscreenManagerTestUtils {
         int expectedPosition = -browserControlsHeight;
 
         // The top back button toolbar will still be shown on automotive, even in fullscreen mode.
-        if (show && !BuildInfo.getInstance().isAutomotive) {
-            expectedPosition = 0;
-            float tempDragStartY = dragStartY;
-            dragStartY = dragEndY;
-            dragEndY = tempDragStartY;
+        if (show) {
+            if (!DeviceInfo.isAutomotive()) {
+                expectedPosition = 0;
+                float tempDragStartY = dragStartY;
+                dragStartY = dragEndY;
+                dragEndY = tempDragStartY;
+            }
         }
         long downTime = SystemClock.uptimeMillis();
         TouchCommon.performDragNoFling(activity, dragX, dragX, dragStartY, dragEndY, 100, downTime);
@@ -149,7 +152,11 @@ public class FullscreenManagerTestUtils {
                 });
 
         float dragX = 50f;
-        float dragStartY = activity.getActivityTab().getView().getHeight() - 50f;
+        float dragStartY =
+                ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab())
+                                .getView()
+                                .getHeight()
+                        - 50f;
 
         for (int i = 0; i < 10; i++) {
             float dragEndY = dragStartY - browserControlsStateProvider.getTopControlsHeight();
@@ -192,7 +199,8 @@ public class FullscreenManagerTestUtils {
                                     vx,
                                     vy,
                                     /* syntheticScroll= */ false,
-                                    /* preventBoosting= */ false);
+                                    /* preventBoosting= */ false,
+                                    /* isTouchpadEvent= */ false);
                 });
     }
 }

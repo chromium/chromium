@@ -116,8 +116,8 @@ gfx::Point ScreenAsh::GetCursorScreenPoint() {
 }
 
 bool ScreenAsh::IsWindowUnderCursor(gfx::NativeWindow window) {
-  return window->Contains(GetWindowAtScreenPoint(
-      display::Screen::GetScreen()->GetCursorScreenPoint()));
+  return window->Contains(
+      GetWindowAtScreenPoint(display::Screen::Get()->GetCursorScreenPoint()));
 }
 
 gfx::NativeWindow ScreenAsh::GetWindowAtScreenPoint(const gfx::Point& point) {
@@ -236,7 +236,7 @@ display::TabletState ScreenAsh::GetTabletState() const {
 std::unique_ptr<display::DisplayManager> ScreenAsh::CreateDisplayManager() {
   auto screen = std::make_unique<ScreenAsh>();
 
-  display::Screen* current = display::Screen::GetScreen();
+  display::Screen* current = display::Screen::Get();
   // If there is no native, or the native was for shutdown,
   // use ash's screen.
   if (!current || current == screen_for_shutdown)
@@ -253,14 +253,15 @@ std::unique_ptr<display::DisplayManager> ScreenAsh::CreateDisplayManager() {
 // static
 void ScreenAsh::CreateScreenForShutdown() {
   delete screen_for_shutdown;
-  screen_for_shutdown = new ScreenForShutdown(display::Screen::GetScreen());
+  screen_for_shutdown = new ScreenForShutdown(display::Screen::Get());
   display::Screen::SetScreenInstance(screen_for_shutdown);
 }
 
 // static
 void ScreenAsh::DeleteScreenForShutdown() {
-  if (display::Screen::GetScreen() == screen_for_shutdown)
+  if (display::Screen::Get() == screen_for_shutdown) {
     display::Screen::SetScreenInstance(nullptr);
+  }
   delete screen_for_shutdown;
   screen_for_shutdown = nullptr;
 }

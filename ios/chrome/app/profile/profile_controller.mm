@@ -26,6 +26,7 @@
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/content_settings/core/common/content_settings_types.h"
+#import "components/desktop_to_mobile_promos/features.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/language/core/browser/language_usage_metrics.h"
@@ -43,16 +44,20 @@
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
 #import "ios/chrome/app/profile/identity_confirmation_profile_agent.h"
 #import "ios/chrome/app/profile/multi_profile_forced_migration_profile_agent.h"
+#import "ios/chrome/app/profile/otr_profile_destroyer_profile_agent.h"
 #import "ios/chrome/app/profile/post_restore_profile_agent.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/profile/search_engine_choice_profile_agent.h"
 #import "ios/chrome/app/profile/session_metrics_profile_agent.h"
+#import "ios/chrome/app/profile/synced_set_up_profile_agent.h"
 #import "ios/chrome/app/profile/welcome_back_screen_profile_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service_factory.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
@@ -69,14 +74,13 @@
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
-#import "ios/chrome/browser/share_extension/model/share_extension_service.h"
-#import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -85,9 +89,10 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/snapshots/model/constants.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/components/cookie_util/cookie_util.h"
 #import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -144,9 +149,8 @@ bool ShouldLogStorageMetrics(PrefService* pref_service) {
   const base::Time last_logged =
       pref_service->GetTime(prefs::kLastApplicationStorageMetricsLogTime);
 
-  return last_logged == base::Time() ||
-         base::Time::Now() - last_logged <
-             kMinimumTimeBetweenDocumentsSizeLogging;
+  return base::Time::Now() - last_logged >=
+         kMinimumTimeBetweenDocumentsSizeLogging;
 }
 #endif
 
@@ -164,10 +168,9 @@ void FlushCookieStoreOnIOThread(
 // storage paths (regulard and off-the-record).
 void PurgeDataForSessions(const SessionIds& session_ids,
                           const std::array<base::FilePath, 2>& storage_paths) {
-  const std::array<base::FilePath::StringViewType, 3> directories = {
-      kLegacySessionsDirname,
+  const std::array<base::FilePath::StringViewType, 2> directories = {
       kSessionRestorationDirname,
-      FILE_PATH_LITERAL("Snapshots"),
+      kSnapshotsDirName,
   };
 
   for (const base::FilePath& storage_path : storage_paths) {
@@ -322,7 +325,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
       NOTREACHED();
 
     case ProfileInitStage::kLoadProfile:
-    case ProfileInitStage::kMigrateStorage:
     case ProfileInitStage::kPurgeDiscardedSessionsData:
     case ProfileInitStage::kProfileLoaded:
     case ProfileInitStage::kPrepareUI:
@@ -359,10 +361,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
     case ProfileInitStage::kLoadProfile:
       // Nothing to do.
-      break;
-
-    case ProfileInitStage::kMigrateStorage:
-      [self migrateSessionStorageIfNeeded];
       break;
 
     case ProfileInitStage::kPurgeDiscardedSessionsData:
@@ -449,19 +447,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   if (_state.initStage < ProfileInitStage::kPrepareUI) {
     return;
   }
-
-  DCHECK(_state.profile);
-  ProfileIOS* profile = _state.profile;
-
-  // Record session metrics for the regular profile and off-the-record profile
-  // (if it exists, do not force its creation).
-  SessionMetrics::FromProfile(profile)->RecordAndClearSessionMetrics(
-      MetricsToRecordFlags::kActivatedTabCount);
-  if (profile->HasOffTheRecordProfile()) {
-    SessionMetrics::FromProfile(profile->GetOffTheRecordProfile())
-        ->RecordAndClearSessionMetrics(
-            MetricsToRecordFlags::kActivatedTabCount);
-  }
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
@@ -538,6 +523,11 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   enterprise_idle::IdleServiceFactory::GetForProfile(profile)
       ->OnApplicationWillEnterForeground();
 
+  if (MobilePromoOnDesktopEnabled()) {
+    CrossPlatformPromosServiceFactory::GetForProfile(profile)
+        ->OnApplicationWillEnterForeground();
+  }
+
   // Send the "Chrome opened" event to the feature engagement tracker on a
   // warm start.
   [self sendChromeOpenedEvent];
@@ -558,17 +548,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
   [_state setProfile:profile];
   [_state queueTransitionToNextInitStage];
-}
-
-- (void)migrateSessionStorageIfNeeded {
-  DCHECK(_state.profile);
-
-  __weak ProfileController* weakSelf = self;
-  SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
-      _state.profile, SessionRestorationServiceFactory::kOptimized,
-      base::BindOnce(^{
-        [weakSelf.state queueTransitionToNextInitStage];
-      }));
 }
 
 - (void)purgeDiscardedSessionsData {
@@ -649,10 +628,13 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
     }
   }
 
-  [self attachProfileAgents];
+  if (!tests_hook::LoadMinimalAppUI()) {
+    [self attachProfileAgents];
+  }
 }
 
 - (void)attachProfileAgents {
+  [_state addAgent:[[OTRPRofileDestroyerProfileAgent alloc] init]];
   [_state addAgent:[[CertificatePolicyProfileAgent alloc] init]];
   [_state addAgent:[[FirstRunProfileAgent alloc] init]];
   [_state addAgent:[[MultiProfileForcedMigrationProfileAgent alloc] init]];
@@ -673,8 +655,12 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
     }
   }
 
-  if (first_run::IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackEnabled()) {
     [_state addAgent:[[WelcomeBackScreenProfileAgent alloc] init]];
+  }
+
+  if (IsSyncedSetUpEnabled()) {
+    [_state addAgent:[[SyncedSetUpProfileAgent alloc] init]];
   }
 }
 
@@ -707,7 +693,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   [self sendChromeOpenedEvent];
 
   _spotlightManager = [SpotlightManager spotlightManagerWithProfile:profile];
-  ShareExtensionServiceFactory::GetForProfile(profile)->Initialize();
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetForProfile(profile);
@@ -772,6 +757,10 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   DCHECK(_state.profile);
   enterprise_idle::IdleServiceFactory::GetForProfile(_state.profile)
       ->OnApplicationWillEnterForeground();
+  if (MobilePromoOnDesktopEnabled()) {
+    CrossPlatformPromosServiceFactory::GetForProfile(_state.profile)
+        ->OnApplicationWillEnterForeground();
+  }
 }
 
 - (void)sendChromeOpenedEvent {

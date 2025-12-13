@@ -8,10 +8,10 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/test_widget_builder.h"
 
 namespace ash {
 
@@ -27,13 +27,13 @@ class BubbleEventFilterTest : public AshTestBase,
   // testing::Test:
   void SetUp() override {
     AshTestBase::SetUp();
-    widget_ = TestWidgetBuilder()
+    widget_ = views::test::TestWidgetBuilder()
                   .SetBounds({10, 10, 100, 100})
                   .SetShow(true)
                   .BuildOwnsNativeWidget();
     // Create a separate Widget to host the View. A View must live in a Widget
     // to have valid screen coordinates.
-    view_holder_widget_ = TestWidgetBuilder()
+    view_holder_widget_ = views::test::TestWidgetBuilder()
                               .SetBounds({500, 500, 100, 100})
                               .SetShow(true)
                               .BuildOwnsNativeWidget();

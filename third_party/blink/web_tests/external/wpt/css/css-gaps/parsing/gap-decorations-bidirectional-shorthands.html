@@ -21,6 +21,18 @@
 
     column-rule-style: solid;
     row-rule-style: solid;
+
+    column-rule-break: intersection;
+    row-rule-break: intersection;
+
+    column-rule-edge-start-inset: 10px;
+    row-rule-edge-start-inset: 10px;
+    column-rule-edge-end-inset: 5px;
+    row-rule-edge-end-inset: 5px;
+    column-rule-interior-start-inset: 10px;
+    row-rule-interior-start-inset: 10px;
+    column-rule-interior-end-inset: 5px;
+    row-rule-interior-end-inset: 5px;
   }
 
   #target2 {
@@ -32,6 +44,18 @@
 
     column-rule-style: double;
     row-rule-style: dotted;
+
+    column-rule-break: intersection;
+    row-rule-break: spanning-item;
+
+    column-rule-edge-start-inset: 5px;
+    row-rule-edge-start-inset: 10px;
+    column-rule-edge-end-inset: 15px;
+    row-rule-edge-end-inset: 20px;
+    column-rule-interior-start-inset: 25px;
+    row-rule-interior-start-inset: 30px;
+    column-rule-interior-end-inset: 35px;
+    row-rule-interior-end-inset: 40px;
   }
 </style>
 <script>
@@ -47,6 +71,12 @@
   test(function() {
     assert_equals(window.getComputedStyle(document.getElementById('target1')).getPropertyValue('rule'), '10px solid rgb(0, 255, 0)');
   }, "rule shorthand computed from longhand values");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target1')).getPropertyValue('rule-break'), 'intersection');
+  }, "rule-break shorthand computed from longhand values");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target1')).getPropertyValue('rule-inset'), '10px 5px / 10px 5px');
+  }, "rule-inset shorthand computed from longhand values");
 
 
 
@@ -62,6 +92,12 @@
     test(function() {
     assert_equals(window.getComputedStyle(document.getElementById('target2')).getPropertyValue('rule'), '');
   }, "rule shorthand cannot be computed from longhand values so expect an empty string");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target2')).getPropertyValue('rule-break'), '');
+  }, "rule-break shorthand cannot be computed from longhand values so expect an empty string");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target2')).getPropertyValue('rule-inset'), '');
+  }, "rule-inset shorthand cannot be computed from longhand values so expect an empty string");
 </script>
 </body>
 </html>

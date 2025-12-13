@@ -16,6 +16,8 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
+class BrowserWindowInterface;
+
 namespace policy {
 
 // A View for the idle timeout dialog. This is shown to users to inform them
@@ -33,7 +35,7 @@ class IdleDialogView : public views::DialogDelegateView {
   // IdleProfileCloseTimeout policy, for displaying to the user.
   // |on_close_by_user| is run if the user clicks on "Continue", or presses
   // Escape to close the dialog.
-  static base::WeakPtr<views::Widget> Show(Browser* browser,
+  static base::WeakPtr<views::Widget> Show(BrowserWindowInterface* bwi,
                                            base::TimeDelta dialog_duration,
                                            base::TimeDelta idle_threshold,
                                            IdleDialog::ActionSet actions,

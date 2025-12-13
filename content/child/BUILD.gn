@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//third_party/blink/public/public_features.gni")
@@ -60,7 +59,7 @@ target(link_target_type, "child") {
   configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
-    "//gpu/ipc/client:client",
+    "//gpu/ipc/client",
     "//ipc",
     "//services/service_manager/public/mojom:mojom_blink",
     "//ui/base/mojom:ui_base_types",
@@ -98,7 +97,7 @@ target(link_target_type, "child") {
     "//services/service_manager/public/mojom",
     "//services/tracing/public/cpp",
     "//services/tracing/public/cpp:traced_process",
-    "//services/tracing/public/cpp/background_tracing:background_tracing",
+    "//services/tracing/public/cpp/background_tracing",
     "//services/webnn/public/mojom",
     "//skia",
     "//storage/common",
@@ -151,6 +150,19 @@ target(link_target_type, "child") {
       "font_warmup_win.h",
     ]
     libs = [ "dwrite.lib" ]
+  }
+
+  if (is_win || is_linux) {
+    sources += [
+      "font_data/font_data_manager.cc",
+      "font_data/font_data_manager.h",
+      "font_integration_init.cc",
+    ]
+    deps += [
+      # For font_data_manager
+      "//components/services/font_data/public/mojom",
+      "//third_party:freetype_buildflags",
+    ]
   }
 
   if (is_mac) {

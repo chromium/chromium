@@ -47,9 +47,7 @@ struct CORE_EXPORT BfcRect {
     return start_offset == other.start_offset && end_offset == other.end_offset;
   }
 
-  bool operator!=(const BfcRect& other) const { return !(*this == other); }
-
-  WTF::String ToString() const;
+  String ToString() const;
 
   BfcOffset start_offset;
   BfcOffset end_offset;

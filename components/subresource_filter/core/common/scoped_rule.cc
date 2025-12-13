@@ -19,6 +19,9 @@ ScopedRule::ScopedRule(scoped_refptr<const MemoryMappedRuleset> ruleset,
   CHECK(rule_);
 }
 
+ScopedRule::ScopedRule(ScopedRule&& other) = default;
+ScopedRule& ScopedRule::operator=(ScopedRule&& other) = default;
+
 ScopedRule::ScopedRule(const ScopedRule& other) = default;
 ScopedRule& ScopedRule::operator=(const ScopedRule& other) = default;
 

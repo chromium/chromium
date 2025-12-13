@@ -18,14 +18,14 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/views/window/hit_test_utils.h"
-#include "ui/views/window/non_client_view.h"
 
 namespace chromeos {
 
 using WindowOpacity = views::Widget::InitParams::WindowOpacity;
 
-int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
+int FrameBorderNonClientHitTest(views::FrameView* view,
                                 const gfx::Point& point_in_widget) {
   gfx::Rect expanded_bounds = view->bounds();
   int outside_bounds = chromeos::kResizeOutsideBoundsSize;
@@ -40,7 +40,7 @@ int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
   // Check the frame first, as we allow a small area overlapping the contents
   // to be used for resize handles.
   views::Widget* widget = view->GetWidget();
-  bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  bool in_tablet_mode = display::Screen::Get()->InTabletMode();
   // Ignore the resize border when maximized or full screen or in (split view)
   // tablet mode.
   const bool has_resize_border =
@@ -102,7 +102,7 @@ bool ShouldUseRestoreFrame(const views::Widget* widget) {
 
 SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
   const bool is_primary_display_layout = chromeos::IsDisplayLayoutPrimary(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+      display::Screen::Get()->GetDisplayNearestWindow(window));
   if (left_top) {
     return is_primary_display_layout ? SnapDirection::kPrimary
                                      : SnapDirection::kSecondary;
@@ -114,8 +114,8 @@ SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
 
 gfx::RoundedCornersF GetWindowRoundedCorners() {
   const int corner_radius = features::IsRoundedWindowsEnabled()
-                                ? features::RoundedWindowsRadius()
-                                : kTopCornerRadiusWhenRestored;
+                                ? kRoundedWindowCornerRadius
+                                : kRoundedWindowSmallCornerRadius;
 
   const bool rounded_bottom_corners = features::IsRoundedWindowsEnabled();
   return gfx::RoundedCornersF(corner_radius, corner_radius,

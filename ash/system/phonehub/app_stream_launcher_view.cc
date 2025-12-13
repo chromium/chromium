@@ -52,7 +52,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -66,18 +65,7 @@ constexpr auto kHeaderDefaultSpacing = gfx::Insets::VH(0, 0);
 
 constexpr gfx::Size kDefaultAppListScrollViewSize = gfx::Size(400, 400);
 
-// The horizontal interior margin for the apps page container - i.e. the margin
-// between the apps page bounds and the page content.
-constexpr int kHorizontalInteriorMargin = 25;
-
-// Number of columns of apps in the grid
-constexpr int kColumns = 4;
-
-constexpr int kRowHeight = 70;
-
 constexpr auto kHeaderViewInsets = gfx::Insets::TLBR(25, 15, 15, 15);
-
-constexpr int kAppViewWidth = 50;
 
 constexpr int kHeaderChildrenSpacing = 20;
 
@@ -173,14 +161,8 @@ std::unique_ptr<views::View> AppStreamLauncherView::CreateAppListView() {
   layout->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
-  if (features::IsEcheLauncherListViewEnabled()) {
-    layout->SetInteriorMargin(gfx::Insets::VH(kVerticalPaddingBetweenSections,
-                                              kAppListItemHorizontalMargin));
-  } else {
-    layout->SetInteriorMargin(gfx::Insets::VH(kVerticalPaddingBetweenSections,
-                                              kHorizontalInteriorMargin));
-  }
-
+  layout->SetInteriorMargin(gfx::Insets::VH(kVerticalPaddingBetweenSections,
+                                            kAppListItemHorizontalMargin));
   // All apps section.
   items_container_ =
       scroll_contents->AddChildView(std::make_unique<views::View>());
@@ -211,19 +193,7 @@ void AppStreamLauncherView::UpdateFromDataModel() {
       phone_hub_manager_->GetAppStreamLauncherDataModel()
           ->GetAppsListSortedByName();
 
-  if (features::IsEcheLauncherListViewEnabled()) {
     CreateListView(apps_list);
-  } else {
-    CreateGridView(apps_list);
-  }
-}
-
-std::unique_ptr<views::View> AppStreamLauncherView::CreateItemView(
-    const phonehub::Notification::AppMetadata& app) {
-  return std::make_unique<AppStreamLauncherItem>(
-      base::BindRepeating(&AppStreamLauncherView::AppIconActivated,
-                          base::Unretained(this), app),
-      app);
 }
 
 std::unique_ptr<views::View> AppStreamLauncherView::CreateListItemView(
@@ -273,8 +243,8 @@ std::unique_ptr<views::Button> AppStreamLauncherView::CreateButton(
     views::Button::PressedCallback callback,
     const gfx::VectorIcon& icon,
     int message_id) {
-  SkColor color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  SkColor color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
   SkColor disabled_color = SkColorSetA(color, gfx::kDisabledControlAlpha);
   auto button = views::CreateVectorImageButton(std::move(callback));
   views::SetImageFromVectorIconWithColor(button.get(), icon, color,
@@ -318,9 +288,9 @@ void AppStreamLauncherView::OnBubbleClose() {
 }
 
 void AppStreamLauncherView::OnAppListChanged() {
-  if (!features::IsEcheSWAEnabled() || !features::IsEcheLauncherEnabled())
-    return;
-  UpdateFromDataModel();
+  if (features::IsEcheSWAEnabled()) {
+    UpdateFromDataModel();
+  }
 }
 
 void AppStreamLauncherView::CreateListView(
@@ -330,29 +300,6 @@ void AppStreamLauncherView::CreateListView(
       kAppListItemSpacing));
   for (auto& app : *apps_list) {
     items_container_->AddChildView(CreateListItemView(app));
-  }
-}
-
-void AppStreamLauncherView::CreateGridView(
-    const std::vector<phonehub::Notification::AppMetadata>* apps_list) {
-  auto* table_layout = items_container_->SetLayoutManager(
-      std::make_unique<views::TableLayout>());
-  int spacing = (kTrayMenuWidth - kHorizontalInteriorMargin * 2 -
-                 kAppViewWidth * kColumns) /
-                (kColumns - 1);
-  for (int i = 0; i < kColumns; i++) {
-    table_layout->AddColumn(
-        views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch, 1.0,
-        views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-    if (i != kColumns - 1) {
-      table_layout->AddPaddingColumn(1.0, spacing);
-    }
-  }
-  table_layout->AddRows(ceil((double)apps_list->size() / kColumns),
-                        views::TableLayout::kFixedSize, kRowHeight);
-
-  for (auto& app : *apps_list) {
-    items_container_->AddChildView(CreateItemView(app));
   }
 }
 

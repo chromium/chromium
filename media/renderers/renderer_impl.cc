@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_renderer.h"
+#include "media/base/media_client.h"
 #include "media/base/media_log.h"
 #include "media/base/media_resource.h"
 #include "media/base/media_switches.h"
@@ -29,6 +30,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_renderer.h"
 #include "media/base/wall_clock_time_source.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -141,8 +143,8 @@ void RendererImpl::Initialize(MediaResource* media_resource,
   DCHECK_EQ(state_, STATE_UNINITIALIZED);
   DCHECK(init_cb);
   DCHECK(client);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "RendererImpl::Initialize",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("media", "RendererImpl::Initialize",
+                    perfetto::Track::FromPointer(this));
 
   client_ = client;
   media_resource_ = media_resource;
@@ -227,8 +229,8 @@ void RendererImpl::Flush(base::OnceClosure flush_cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!flush_cb_);
   DCHECK(!(pending_audio_track_change_ || pending_video_track_change_));
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "RendererImpl::Flush",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("media", "RendererImpl::Flush",
+                    perfetto::Track::FromPointer(this));
 
   if (state_ == STATE_FLUSHED) {
     flush_cb_ = base::BindPostTaskToCurrentDefault(std::move(flush_cb));
@@ -377,16 +379,15 @@ bool RendererImpl::HasEncryptedStream() {
 
 void RendererImpl::FinishInitialization(PipelineStatus status) {
   DCHECK(init_cb_);
-  TRACE_EVENT_NESTABLE_ASYNC_END1("media", "RendererImpl::Initialize",
-                                  TRACE_ID_LOCAL(this), "status",
-                                  PipelineStatusToString(status));
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+                  PipelineStatusToString(status));
   std::move(init_cb_).Run(status);
 }
 
 void RendererImpl::FinishFlush() {
   DCHECK(flush_cb_);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "RendererImpl::Flush",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("media", /*"RendererImpl::Flush"*/
+                  perfetto::Track::FromPointer(this));
   std::move(flush_cb_).Run();
 }
 
@@ -401,7 +402,9 @@ void RendererImpl::InitializeAudioRenderer() {
   DemuxerStream* audio_stream =
       media_resource_->GetFirstStream(DemuxerStream::AUDIO);
 
-  if (!audio_stream) {
+  MediaClient* media_client = GetMediaClient();
+  if (!audio_stream ||
+      (media_client && media_client->ShouldSuppressAudioTracks())) {
     audio_renderer_.reset();
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&RendererImpl::OnAudioRendererInitializeDone,

@@ -1,0 +1,36 @@
+<style include="settings-shared">
+  cr-view-manager [hidden-by-search],
+  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
+    display: none;
+  }
+</style>
+
+<cr-view-manager id="viewManager" class="cr-centered-card-container"
+    show-all$="[[shouldShowAll]]">
+
+  <settings-your-saved-info-page slot="view" id="parent" prefs="{{prefs}}">
+  </settings-your-saved-info-page>
+
+  <settings-autofill-section slot="view" id="contactInfo" prefs="{{prefs}}"
+      data-parent-view-id="parent">
+  </settings-autofill-section>
+
+  <settings-identity-docs-page slot="view" id="identityDocs" prefs="{{prefs}}"
+      data-parent-view-id="parent">
+  </settings-identity-docs-page>
+
+<if expr="is_win or is_macosx">
+  <settings-passkeys-subpage slot="view" id="passkeys"
+      data-parent-view-id="parent">
+  </settings-passkeys-subpage>
+</if>
+
+  <settings-payments-section slot="view" id="payments" prefs="{{prefs}}"
+      data-parent-view-id="parent">
+  </settings-payments-section>
+
+  <settings-travel-page slot="view" id="travel" prefs="{{prefs}}"
+      data-parent-view-id="parent">
+  </settings-travel-page>
+
+</cr-view-manager>

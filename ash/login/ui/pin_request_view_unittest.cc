@@ -39,7 +39,7 @@
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"

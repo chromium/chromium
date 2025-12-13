@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -24,6 +25,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/display.h"
@@ -32,6 +34,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
@@ -45,7 +48,11 @@ constexpr char kDocumentWithIframe[] = "/iframe_elements.html";
 class WebContentsInteractionTestUtilInteractiveUiTest
     : public InProcessBrowserTest {
  public:
-  WebContentsInteractionTestUtilInteractiveUiTest() = default;
+  WebContentsInteractionTestUtilInteractiveUiTest() {
+    InteractionTestUtilBrowser::PopulateSimulators(test_util_);
+    test_util_.AddSimulator(
+        std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
+  }
   ~WebContentsInteractionTestUtilInteractiveUiTest() override = default;
 
   void SetUp() override {
@@ -65,7 +72,7 @@ class WebContentsInteractionTestUtilInteractiveUiTest
   }
 
  protected:
-  InteractionTestUtilBrowser test_util_;
+  ui::test::InteractionTestUtil test_util_;
 };
 
 
@@ -76,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
   std::unique_ptr<WebContentsInteractionTestUtil> tab_search_page;
-  const ui::ElementContext context = browser()->window()->GetElementContext();
+  const auto context = BrowserElements::From(browser())->GetContext();
 
   // Poke into the doc to find something that's not at the top level, just to
   // verify we can.
@@ -129,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
   std::unique_ptr<WebContentsInteractionTestUtil> tab_search_page;
-  const ui::ElementContext context = browser()->window()->GetElementContext();
+  const auto context = BrowserElements::From(browser())->GetContext();
   raw_ptr<WebUIBubbleDialogView> bubble_view = nullptr;
 
   auto sequence =
@@ -216,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+          .SetContext(BrowserElements::From(browser())->GetContext())
           // Navigate to the test page.
           .AddStep(
               ui::InteractionSequence::StepBuilder()
@@ -284,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+          .SetContext(BrowserElements::From(browser())->GetContext())
           // Navigate to the test page.
           .AddStep(
               ui::InteractionSequence::StepBuilder()

@@ -25,6 +25,7 @@
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/property_effects.h"
 
 namespace ash {
 
@@ -96,7 +97,7 @@ void FloatingMenuButton::SetA11yTogglable(bool a11y_togglable) {
   is_a11y_togglable_ = a11y_togglable;
   UpdateAccessibleProperties();
 
-  OnPropertyChanged(&is_a11y_togglable_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&is_a11y_togglable_, views::PropertyEffects::kPaint);
 }
 
 bool FloatingMenuButton::GetDrawHighlight() const {
@@ -108,7 +109,7 @@ void FloatingMenuButton::SetDrawHighlight(bool draw_highlight) {
     return;
   }
   draw_highlight_ = draw_highlight;
-  OnPropertyChanged(&draw_highlight_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&draw_highlight_, views::PropertyEffects::kPaint);
 }
 
 bool FloatingMenuButton::GetToggled() const {
@@ -123,7 +124,7 @@ void FloatingMenuButton::SetToggled(bool toggled) {
   UpdateAccessibleProperties();
 
   UpdateImage();
-  OnPropertyChanged(&toggled_, views::PropertyEffects::kPropertyEffectsPaint);
+  OnPropertyChanged(&toggled_, views::PropertyEffects::kPaint);
 }
 
 void FloatingMenuButton::PaintButtonContents(gfx::Canvas* canvas) {

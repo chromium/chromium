@@ -19,6 +19,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -42,6 +43,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
@@ -140,10 +142,16 @@ void LogOmniboxZeroSuggestRequest(const RemoteRequestEvent request_event,
 // zero suggest cache is being used to store ZPS responses received from the
 // remote Suggest service for the given |result_type|.
 bool ShouldCacheResultTypeInContext(const ResultType result_type,
+                                    const bool has_contextual_input,
                                     const OEP::PageClassification page_class) {
   switch (result_type) {
     case ResultType::kRemoteNoURL:
-      return !omnibox::IsLensSearchbox(page_class);
+      // Only cache results for the NTP realbox if there is no contextual input.
+      if (omnibox::IsNTPRealbox(page_class)) {
+        return !has_contextual_input;
+      }
+      return !(omnibox::IsLensSearchbox(page_class) ||
+               omnibox::IsComposebox(page_class));
     case ResultType::kRemoteSendURL:
       return omnibox::IsSearchResultsPage(page_class)
                  ? base::FeatureList::IsEnabled(
@@ -188,8 +196,11 @@ bool StoreRemoteResponse(const std::string& response_json,
     return false;
   }
 
+  const bool has_contextual_input =
+      input.lens_overlay_suggest_inputs().has_value();
   const auto page_class = input.current_page_classification();
-  if (!ShouldCacheResultTypeInContext(result_type, page_class)) {
+  if (!ShouldCacheResultTypeInContext(result_type, has_contextual_input,
+                                      page_class)) {
     return true;
   }
 
@@ -217,7 +228,10 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
   DCHECK_NE(ResultType::kNone, result_type);
 
   const auto page_class = input.current_page_classification();
-  if (!ShouldCacheResultTypeInContext(result_type, page_class)) {
+  const bool has_contextual_input =
+      input.lens_overlay_suggest_inputs().has_value();
+  if (!ShouldCacheResultTypeInContext(result_type, has_contextual_input,
+                                      page_class)) {
     return false;
   }
 
@@ -267,6 +281,13 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
 
   // New Tab Page.
   if (omnibox::IsNTPPage(page_class)) {
+    if (input.type() == OIT::EMPTY) {
+      return ResultType::kRemoteNoURL;
+    }
+  }
+
+  // Composebox
+  if (omnibox::IsComposebox(page_class)) {
     if (input.type() == OIT::EMPTY) {
       return ResultType::kRemoteNoURL;
     }
@@ -328,20 +349,23 @@ void MaybeAddContextualSuggestParams(
     const AutocompleteInput& input,
     TemplateURLRef::SearchTermsArgs& search_terms_args) {
   // Do not add the contextual suggest params if Lens is not enabled to fulfill
-  // the suggestion.
-  if (!client->IsLensEnabled()) {
+  // the suggestion, unless the input contains context data, in which case lens
+  // will not be used to fulfill the suggestion.
+  if (!client->IsLensEnabled() && input.context_tab_title().empty()) {
     return;
   }
 
   std::vector<std::string> additional_query_params;
 
-  if (!search_terms_args.current_page_url.empty() &&
-      omnibox::IsOtherWebPage(search_terms_args.page_classification)) {
+  if ((!search_terms_args.current_page_url.empty() &&
+       omnibox::IsOtherWebPage(search_terms_args.page_classification)) ||
+      !input.context_tab_title().empty()) {
     // Add "ctxus=" CGI param.
     std::string_view contextual_url_suggest_param =
         omnibox_feature_configs::ContextualSearch::Get()
             .contextual_url_suggest_param;
-    if (!contextual_url_suggest_param.empty()) {
+    if (client->ShouldSendContextualUrlSuggestParam() &&
+        !contextual_url_suggest_param.empty()) {
       additional_query_params.push_back(
           base::StrCat({"ctxus=", contextual_url_suggest_param}));
     }
@@ -350,11 +374,18 @@ void MaybeAddContextualSuggestParams(
     if (omnibox_feature_configs::ContextualSearch::Get()
             .send_page_title_suggest_param &&
         client->IsPersonalizedUrlDataCollectionActive()) {
-      std::string page_title = EncodeURIComponent(base::UTF16ToUTF8(
-          TruncateUTF16(input.current_title(), kMaxPageTitleLength)));
-      if (!page_title.empty()) {
+      std::string page_title =
+          !input.context_tab_title().empty()
+              ? EncodeURIComponent(base::UTF16ToUTF8(TruncateUTF16(
+                    input.context_tab_title(), kMaxPageTitleLength)))
+              : EncodeURIComponent(base::UTF16ToUTF8(
+                    TruncateUTF16(input.current_title(), kMaxPageTitleLength)));
+      if (client->ShouldSendPageTitleSuggestParam() && !page_title.empty()) {
         additional_query_params.push_back(
             base::StrCat({"pageTitle=", page_title}));
+      }
+      if (!input.context_tab_url().is_empty()) {
+        search_terms_args.current_page_url = input.context_tab_url().spec();
       }
     }
 
@@ -577,6 +608,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
           : std::string();
   search_terms_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
+  search_terms_args.aim_tool_mode = input.aim_tool_mode();
 
   MaybeAddContextualSuggestParams(client(), input, search_terms_args);
 
@@ -673,7 +705,7 @@ void ZeroSuggestProvider::OnURLLoadComplete(
     const ResultType result_type,
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::OnURLLoadComplete");
 
   DCHECK(!done_);
@@ -736,7 +768,7 @@ void ZeroSuggestProvider::OnPrefetchURLLoadComplete(
     const ResultType result_type,
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::OnPrefetchURLLoadComplete");
 
   std::unique_ptr<network::SimpleURLLoader>* prefetch_loader = nullptr;

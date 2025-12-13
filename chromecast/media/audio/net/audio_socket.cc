@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/audio/net/audio_socket.h"
 
 #include <cstring>
@@ -302,8 +297,8 @@ bool AudioSocket::OnMessage(char* data, size_t size) {
     return false;
   }
 
-  memcpy(&packet_type, data, sizeof(packet_type));
-  data += sizeof(packet_type);
+  UNSAFE_TODO(memcpy(&packet_type, data, sizeof(packet_type)));
+  UNSAFE_TODO(data += sizeof(packet_type));
   size -= sizeof(packet_type);
 
   switch (static_cast<MessageType>(packet_type)) {
@@ -312,7 +307,8 @@ bool AudioSocket::OnMessage(char* data, size_t size) {
       if (!GetMetaDataPaddingBytes(data, size, padding_bytes)) {
         return false;
       }
-      return ParseMetadata(data + sizeof(padding_bytes), size - padding_bytes);
+      return ParseMetadata(UNSAFE_TODO(data + sizeof(padding_bytes)),
+                           size - padding_bytes);
     case MessageType::kAudio:
       return ParseAudio(data, size);
     default:
@@ -328,11 +324,11 @@ bool AudioSocket::OnMessageBuffer(scoped_refptr<net::IOBuffer> buffer,
     return false;
   }
 
-  char* data = buffer->data() + sizeof(uint16_t);
+  char* data = UNSAFE_TODO(buffer->data() + sizeof(uint16_t));
   size -= sizeof(uint16_t);
   int16_t type;
-  memcpy(&type, data, sizeof(type));
-  data += sizeof(type);
+  UNSAFE_TODO(memcpy(&type, data, sizeof(type)));
+  UNSAFE_TODO(data += sizeof(type));
   size -= sizeof(type);
 
   switch (static_cast<MessageType>(type)) {
@@ -341,7 +337,8 @@ bool AudioSocket::OnMessageBuffer(scoped_refptr<net::IOBuffer> buffer,
       if (!GetMetaDataPaddingBytes(data, size, padding_bytes)) {
         return false;
       }
-      return ParseMetadata(data + sizeof(padding_bytes), size - padding_bytes);
+      return ParseMetadata(UNSAFE_TODO(data + sizeof(padding_bytes)),
+                           size - padding_bytes);
     case MessageType::kAudio:
       return ParseAudioBuffer(std::move(buffer), data, size);
     default:
@@ -357,12 +354,12 @@ bool AudioSocket::ParseAudio(char* data, size_t size) {
     return false;
   }
 
-  memcpy(&timestamp, data, sizeof(timestamp));
-  data += sizeof(timestamp);
+  UNSAFE_TODO(memcpy(&timestamp, data, sizeof(timestamp)));
+  UNSAFE_TODO(data += sizeof(timestamp));
   size -= sizeof(timestamp);
 
   // Handle padding bytes.
-  data += sizeof(int32_t);
+  UNSAFE_TODO(data += sizeof(int32_t));
   size -= sizeof(int32_t);
 
   return delegate_->HandleAudioData(data, size, timestamp);
@@ -378,12 +375,12 @@ bool AudioSocket::ParseAudioBuffer(scoped_refptr<net::IOBuffer> buffer,
     return false;
   }
 
-  memcpy(&timestamp, data, sizeof(timestamp));
-  data += sizeof(timestamp);
+  UNSAFE_TODO(memcpy(&timestamp, data, sizeof(timestamp)));
+  UNSAFE_TODO(data += sizeof(timestamp));
   size -= sizeof(timestamp);
 
   // Handle padding bytes.
-  data += sizeof(int32_t);
+  UNSAFE_TODO(data += sizeof(int32_t));
   size -= sizeof(int32_t);
 
   return delegate_->HandleAudioBuffer(std::move(buffer), data, size, timestamp);

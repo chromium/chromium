@@ -4,19 +4,25 @@
 
 import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/harfbuzz-ng/harfbuzz.gni")
 
 if (use_system_harfbuzz) {
   import("//build/config/linux/pkg_config.gni")
-  pkg_config("harfbuzz-ng") {
-    visibility = [ "//third_party/harfbuzz-ng" ]
+  pkg_config("harfbuzz_from_pkgconfig") {
+    visibility = [
+      "//third_party/freetype",
+      "//third_party/harfbuzz-ng",
+    ]
     packages = [
       "harfbuzz",
       "harfbuzz-subset",
     ]
+  }
+
+  component("harfbuzz-ng") {
+    public_configs = [ ":harfbuzz_from_pkgconfig" ]
   }
 } else {
   config("harfbuzz_config") {
@@ -92,12 +98,14 @@ if (use_system_harfbuzz) {
       "src/src/hb-aat-map.hh",
       "src/src/hb-aat.h",
       "src/src/hb-algs.hh",
+      "src/src/hb-alloc-pool.hh",
       "src/src/hb-array.hh",
       "src/src/hb-atomic.hh",
       "src/src/hb-bimap.hh",
       "src/src/hb-bit-page.hh",
       "src/src/hb-bit-set-invertible.hh",
       "src/src/hb-bit-set.hh",
+      "src/src/hb-bit-vector.hh",
       "src/src/hb-blob.cc",
       "src/src/hb-blob.hh",
       "src/src/hb-buffer-deserialize-json.hh",
@@ -126,9 +134,13 @@ if (use_system_harfbuzz) {
       "src/src/hb-face.hh",
       "src/src/hb-font.cc",
       "src/src/hb-font.hh",
+      "src/src/hb-fontations.h",
+      "src/src/hb-free-pool.hh",
       "src/src/hb-geometry.hh",
+      "src/src/hb-harfrust.cc",
       "src/src/hb-icu.cc",
       "src/src/hb-iter.hh",
+      "src/src/hb-kbts.cc",
       "src/src/hb-kern.hh",
       "src/src/hb-limits.hh",
       "src/src/hb-machinery.hh",
@@ -242,12 +254,10 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-var-varc-table.hh",
       "src/src/hb-ot-var.cc",
       "src/src/hb-ot-vorg-table.hh",
-      "src/src/hb-paint-extents.cc",
-      "src/src/hb-paint-extents.hh",
-      "src/src/hb-pool.hh",
       "src/src/hb-priority-queue.hh",
       "src/src/hb-repacker.hh",
       "src/src/hb-sanitize.hh",
+      "src/src/hb-script-list.h",
       "src/src/hb-serialize.hh",
       "src/src/hb-set-digest.hh",
       "src/src/hb-set.cc",
@@ -272,9 +282,19 @@ if (use_system_harfbuzz) {
       "src/src/hb-subset-instancer-iup.hh",
       "src/src/hb-subset-instancer-solver.cc",
       "src/src/hb-subset-instancer-solver.hh",
+      "src/src/hb-subset-plan-layout.cc",
       "src/src/hb-subset-plan-member-list.hh",
+      "src/src/hb-subset-plan-var.cc",
       "src/src/hb-subset-plan.cc",
       "src/src/hb-subset-plan.hh",
+      "src/src/hb-subset-serialize.cc",
+      "src/src/hb-subset-serialize.h",
+      "src/src/hb-subset-table-cff.cc",
+      "src/src/hb-subset-table-color.cc",
+      "src/src/hb-subset-table-layout.cc",
+      "src/src/hb-subset-table-other.cc",
+      "src/src/hb-subset-table-var.cc",
+      "src/src/hb-subset-table.hh",
       "src/src/hb-subset.cc",
       "src/src/hb-subset.hh",
       "src/src/hb-ucd-table.hh",
@@ -294,10 +314,17 @@ if (use_system_harfbuzz) {
       "src/src/hb-cairo-utils.hh",
       "src/src/hb-cairo.cc",
       "src/src/hb-cairo.h",
+      "src/src/hb-coretext-font.cc",
+      "src/src/hb-coretext-shape.cc",
       "src/src/hb-coretext.cc",
       "src/src/hb-coretext.h",
+      "src/src/hb-coretext.hh",
+      "src/src/hb-decycler.hh",
+      "src/src/hb-directwrite-font.cc",
+      "src/src/hb-directwrite-shape.cc",
       "src/src/hb-directwrite.cc",
       "src/src/hb-directwrite.h",
+      "src/src/hb-directwrite.hh",
       "src/src/hb-fallback-shape.cc",
       "src/src/hb-ft-colr.hh",
       "src/src/hb-ft.cc",
@@ -311,6 +338,10 @@ if (use_system_harfbuzz) {
       "src/src/hb-graphite2.h",
       "src/src/hb-outline.cc",
       "src/src/hb-outline.hh",
+      "src/src/hb-paint-bounded.cc",
+      "src/src/hb-paint-bounded.hh",
+      "src/src/hb-paint-extents.cc",
+      "src/src/hb-paint-extents.hh",
       "src/src/hb-paint.cc",
       "src/src/hb-paint.h",
       "src/src/hb-paint.hh",

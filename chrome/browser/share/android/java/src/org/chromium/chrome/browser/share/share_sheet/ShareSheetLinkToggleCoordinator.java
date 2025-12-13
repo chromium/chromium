@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.share.share_sheet;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
@@ -13,6 +18,7 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.url.GURL;
 
 /** Coordinates toggling link-sharing on and off on the share sheet. */
+@NullMarked
 public class ShareSheetLinkToggleCoordinator {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
@@ -24,7 +30,7 @@ public class ShareSheetLinkToggleCoordinator {
         int COUNT = 2;
     }
 
-    private final LinkToTextCoordinator mLinkToTextCoordinator;
+    private final @Nullable LinkToTextCoordinator mLinkToTextCoordinator;
 
     private ShareParams mShareParams;
     private ChromeShareExtras mChromeShareExtras;
@@ -42,12 +48,13 @@ public class ShareSheetLinkToggleCoordinator {
     ShareSheetLinkToggleCoordinator(
             ShareParams shareParams,
             ChromeShareExtras chromeShareExtras,
-            LinkToTextCoordinator linkToTextCoordinator) {
+            @Nullable LinkToTextCoordinator linkToTextCoordinator) {
         mLinkToTextCoordinator = linkToTextCoordinator;
         setShareParamsAndExtras(shareParams, chromeShareExtras);
     }
 
     /** Sets the {@link ShareParams} and {@link ChromeShareExtras}. */
+    @Initializer
     void setShareParamsAndExtras(ShareParams shareParams, ChromeShareExtras chromeShareExtras) {
         mShareParams = shareParams;
         mChromeShareExtras = chromeShareExtras;
@@ -65,6 +72,7 @@ public class ShareSheetLinkToggleCoordinator {
     /** Returns the {@link ShareParams} associated with the {@link LinkToggleState}. */
     ShareParams getShareParams(@LinkToggleState int linkToggleState) {
         if (mShouldEnableLinkToTextToggle) {
+            assumeNonNull(mLinkToTextCoordinator);
             return mLinkToTextCoordinator.getShareParams(linkToggleState);
         }
         if (mShouldEnableGenericToggle) {

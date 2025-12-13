@@ -15,14 +15,15 @@ console-format-classes.js:32 Error: custom error with link www.chromium.org
                 formatted-stack-frame
                   devtools-link text-button link-style
           hidden-stack-trace
-            monospace stack-preview-container width-constrained
-              stack-preview-container width-constrained
-                show-all-link
-                  link
-                    css-inserted-text
-                show-less-link
-                  link
-                    css-inserted-text
+            vbox flex-auto monospace stack-preview-container width-constrained
+              widget
+                stack-preview-container width-constrained
+                  show-all-link
+                    link
+                      css-inserted-text
+                  show-less-link
+                    link
+                      css-inserted-text
 console-format-classes.js:32 (6) [1, empty × 2, 2, (...), empty] 
   console-row-wrapper
     console-message
@@ -48,14 +49,15 @@ console-format-classes.js:32 (6) [1, empty × 2, 2, (...), empty]
                   object-state-note info-note
                     children
           hidden-stack-trace
-            monospace stack-preview-container width-constrained
-              stack-preview-container width-constrained
-                show-all-link
-                  link
-                    css-inserted-text
-                show-less-link
-                  link
-                    css-inserted-text
+            vbox flex-auto monospace stack-preview-container width-constrained
+              widget
+                stack-preview-container width-constrained
+                  show-all-link
+                    link
+                      css-inserted-text
+                  show-less-link
+                    link
+                      css-inserted-text
 console-format-classes.js:32 {a: 1} 
   console-row-wrapper
     console-message
@@ -77,14 +79,15 @@ console-format-classes.js:32 {a: 1}
                   object-state-note info-note
                     children
           hidden-stack-trace
-            monospace stack-preview-container width-constrained
-              stack-preview-container width-constrained
-                show-all-link
-                  link
-                    css-inserted-text
-                show-less-link
-                  link
-                    css-inserted-text
+            vbox flex-auto monospace stack-preview-container width-constrained
+              widget
+                stack-preview-container width-constrained
+                  show-all-link
+                    link
+                      css-inserted-text
+                  show-less-link
+                    link
+                      css-inserted-text
 console-format-classes.js:32 {str: '', nan: NaN, posInf: Infinity, negInf: -Infinity, negZero: -0} 
   console-row-wrapper
     console-message
@@ -114,14 +117,15 @@ console-format-classes.js:32 {str: '', nan: NaN, posInf: Infinity, negInf: -Infi
                   object-state-note info-note
                     children
           hidden-stack-trace
-            monospace stack-preview-container width-constrained
-              stack-preview-container width-constrained
-                show-all-link
-                  link
-                    css-inserted-text
-                show-less-link
-                  link
-                    css-inserted-text
+            vbox flex-auto monospace stack-preview-container width-constrained
+              widget
+                stack-preview-container width-constrained
+                  show-all-link
+                    link
+                      css-inserted-text
+                  show-less-link
+                    link
+                      css-inserted-text
 console-format-classes.js:32 {null: null, undef: undefined, re: /^[regexp]$/g, constructedRe: /foo\/bar/, bool: false} 
   console-row-wrapper
     console-message
@@ -151,14 +155,15 @@ console-format-classes.js:32 {null: null, undef: undefined, re: /^[regexp]$/g, c
                   object-state-note info-note
                     children
           hidden-stack-trace
-            monospace stack-preview-container width-constrained
-              stack-preview-container width-constrained
-                show-all-link
-                  link
-                    css-inserted-text
-                show-less-link
-                  link
-                    css-inserted-text
+            vbox flex-auto monospace stack-preview-container width-constrained
+              widget
+                stack-preview-container width-constrained
+                  show-all-link
+                    link
+                      css-inserted-text
+                  show-less-link
+                    link
+                      css-inserted-text
 console-format-classes.js:32 Proxy(Object) {a: 1} 
   console-row-wrapper
     console-message
@@ -181,14 +186,15 @@ console-format-classes.js:32 Proxy(Object) {a: 1}
                   object-state-note info-note
                     children
           hidden-stack-trace
-            monospace stack-preview-container width-constrained
-              stack-preview-container width-constrained
-                show-all-link
-                  link
-                    css-inserted-text
-                show-less-link
-                  link
-                    css-inserted-text
+            vbox flex-auto monospace stack-preview-container width-constrained
+              widget
+                stack-preview-container width-constrained
+                  show-all-link
+                    link
+                      css-inserted-text
+                  show-less-link
+                    link
+                      css-inserted-text
 console-format-classes.js:32 HTMLAllCollection(4) [html, head, base, body] 
   console-row-wrapper
     console-message
@@ -217,14 +223,15 @@ console-format-classes.js:32 HTMLAllCollection(4) [html, head, base, body]
                   object-state-note info-note
                     children
           hidden-stack-trace
-            monospace stack-preview-container width-constrained
-              stack-preview-container width-constrained
-                show-all-link
-                  link
-                    css-inserted-text
-                show-less-link
-                  link
-                    css-inserted-text
+            vbox flex-auto monospace stack-preview-container width-constrained
+              widget
+                stack-preview-container width-constrained
+                  show-all-link
+                    link
+                      css-inserted-text
+                  show-less-link
+                    link
+                      css-inserted-text
 console-format-classes.js:36 (7) [Error: custom error with link www.chromium.org
     at test://evaluations/0/console-format-classes.j…, Array(6), {…}, {…}, {…}, Proxy(Object), HTMLAllCollection(4)] 
   console-row-wrapper
@@ -253,12 +260,13 @@ console-format-classes.js:36 (7) [Error: custom error with link www.chromium.or
                   object-state-note info-note
                     children
           hidden-stack-trace
-            monospace stack-preview-container width-constrained
-              stack-preview-container width-constrained
-                show-all-link
-                  link
-                    css-inserted-text
-                show-less-link
-                  link
-                    css-inserted-text
+            vbox flex-auto monospace stack-preview-container width-constrained
+              widget
+                stack-preview-container width-constrained
+                  show-all-link
+                    link
+                      css-inserted-text
+                  show-less-link
+                    link
+                      css-inserted-text
 

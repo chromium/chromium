@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 38
+// Next MinVersion: 40
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -390,6 +390,8 @@ enum CertificateSigningResult {
   kHttp404 = 7,
   kHttp500 = 8,
   kHttp503 = 9,
+  [MinVersion=38] kDevMode = 10,
+  [MinVersion=39] kHttp400 = 11,
 };
 
 // Enumerates the types of Anr and Crash dialogs, based on the resource id the

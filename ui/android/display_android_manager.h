@@ -24,13 +24,15 @@ class WindowAndroid;
 
 class UI_ANDROID_EXPORT DisplayAndroidManager : public display::ScreenBase {
  public:
+  static bool IsDisplayTopologyAvailable();
+  static void SetIsDisplayTopologyAvailableForTesting(bool value);
+
   DisplayAndroidManager(const DisplayAndroidManager&) = delete;
   DisplayAndroidManager& operator=(const DisplayAndroidManager&) = delete;
 
   ~DisplayAndroidManager() override = default;
 
-  // Screen interface.
-
+  // display::ScreenBase:
   display::Display GetDisplayNearestWindow(
       gfx::NativeWindow window) const override;
   display::Display GetDisplayNearestView(gfx::NativeView view) const override;
@@ -47,8 +49,12 @@ class UI_ANDROID_EXPORT DisplayAndroidManager : public display::ScreenBase {
                      jint sdkDisplayId,
                      const base::android::JavaRef<jstring>& label,
                      const base::android::JavaRef<jintArray>& jBounds,
-                     const base::android::JavaRef<jintArray>& jInsets,
+                     const base::android::JavaRef<jintArray>& jWorkArea,
+                     jint width,
+                     jint height,
                      jfloat dipScale,
+                     jfloat pixelsPerInchX,
+                     jfloat pixelsPerInchY,
                      jint rotationDegrees,
                      jint bitsPerPixel,
                      jint bitsPerComponent,
@@ -60,6 +66,12 @@ class UI_ANDROID_EXPORT DisplayAndroidManager : public display::ScreenBase {
                      jint sdkDisplayId);
   void SetPrimaryDisplayId(JNIEnv* env,
                            jint sdkDisplayId);
+
+  jint GetDisplaySdkMatching(JNIEnv* env,
+                             jint x,
+                             jint y,
+                             jint width,
+                             jint height);
 
  private:
   friend class WindowAndroid;
@@ -75,6 +87,8 @@ class UI_ANDROID_EXPORT DisplayAndroidManager : public display::ScreenBase {
                               const gfx::Rect& work_area,
                               const gfx::Size& size_in_pixels,
                               float dip_scale,
+                              float pixels_per_inch_x,
+                              float pixels_per_inch_y,
                               int rotation_degrees,
                               int bits_per_pixel,
                               int bits_per_component,

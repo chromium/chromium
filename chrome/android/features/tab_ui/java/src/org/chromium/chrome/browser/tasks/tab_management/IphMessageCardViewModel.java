@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -19,14 +20,17 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class IphMessageCardViewModel {
     /**
      * Create a {@link PropertyModel} for IphMessageCardView.
+     *
      * @param context The {@link Context} to use.
-     * @param uiDismissActionProvider The {@link MessageCardView.DismissActionProvider} to set.
+     * @param msgServiceDismissActionProvider The {@link
+     *     MessageCardView.ServiceDismissActionProvider} to set.
      * @param data The {@link IphMessageService.IphMessageData} to use.
      * @return A {@link PropertyModel} for the given {@code data}.
      */
     public static PropertyModel create(
             Context context,
-            MessageCardView.DismissActionProvider uiDismissActionProvider,
+            MessageCardView.ServiceDismissActionProvider<@MessageType Integer>
+                    msgServiceDismissActionProvider,
             IphMessageService.IphMessageData data) {
         String descriptionText = context.getString(R.string.iph_drag_and_drop_introduction);
         String actionText = context.getString(R.string.iph_drag_and_drop_show_me);
@@ -34,17 +38,19 @@ public class IphMessageCardViewModel {
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
 
         return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
-                .with(MessageCardViewProperties.MESSAGE_TYPE, MessageService.MessageType.IPH)
+                .with(MessageCardViewProperties.MESSAGE_TYPE, MessageType.IPH)
                 .with(
                         MessageCardViewProperties.MESSAGE_IDENTIFIER,
                         MessageService.DEFAULT_MESSAGE_IDENTIFIER)
-                .with(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER, uiDismissActionProvider)
                 .with(
-                        MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
+                        MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER,
                         data.getDismissActionProvider())
                 .with(
+                        MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
+                        msgServiceDismissActionProvider)
+                .with(
                         MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER,
-                        data.getReviewActionProvider())
+                        data.getAcceptActionProvider())
                 .with(MessageCardViewProperties.DESCRIPTION_TEXT, descriptionText)
                 .with(MessageCardViewProperties.ACTION_TEXT, actionText)
                 .with(
@@ -52,7 +58,7 @@ public class IphMessageCardViewModel {
                         dismissButtonContextDescription)
                 .with(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW, true)
                 .with(MessageCardViewProperties.IS_ICON_VISIBLE, false)
-                .with(MessageCardViewProperties.IS_INCOGNITO, false)
+                .with(MessageCardViewProperties.IS_INCOGNITO, data.isIncognito())
                 .with(
                         MessageCardViewProperties
                                 .MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE,

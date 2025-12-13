@@ -44,11 +44,6 @@
 - (void)stopReceivingNotifications;
 // Returns the camera attached to `_captureSession`.
 - (AVCaptureDevice*)camera;
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-// Returns the AVCaptureVideoOrientation to compensate for the current
-// UIInterfaceOrientation. Defaults to AVCaptureVideoOrientationPortrait.
-- (AVCaptureVideoOrientation)videoOrientationForCurrentInterfaceOrientation;
-#endif
 
 @end
 
@@ -117,24 +112,14 @@
 - (void)resetVideoOrientation:(AVCaptureVideoPreviewLayer*)previewLayer {
   DCHECK(previewLayer);
   AVCaptureConnection* videoConnection = [previewLayer connection];
-  if (@available(iOS 17, *)) {
-    AVCaptureDevice* camera = [self camera];
-    AVCaptureDeviceRotationCoordinator* rotationCoordiantor =
-        [[AVCaptureDeviceRotationCoordinator alloc]
-            initWithDevice:camera
-              previewLayer:previewLayer];
-    CGFloat angle =
-        rotationCoordiantor.videoRotationAngleForHorizonLevelCapture;
-    if ([videoConnection isVideoRotationAngleSupported:angle]) {
-      [videoConnection setVideoRotationAngle:angle];
-    }
+  AVCaptureDevice* camera = [self camera];
+  AVCaptureDeviceRotationCoordinator* rotationCoordiantor =
+      [[AVCaptureDeviceRotationCoordinator alloc] initWithDevice:camera
+                                                    previewLayer:previewLayer];
+  CGFloat angle = rotationCoordiantor.videoRotationAngleForHorizonLevelCapture;
+  if ([videoConnection isVideoRotationAngleSupported:angle]) {
+    [videoConnection setVideoRotationAngle:angle];
   }
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-  else if ([videoConnection isVideoOrientationSupported]) {
-    [videoConnection setVideoOrientation:
-                         [self videoOrientationForCurrentInterfaceOrientation]];
-  }
-#endif
 }
 
 - (void)startRecording {
@@ -340,18 +325,6 @@
   return [captureSessionInput device];
 }
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (AVCaptureVideoOrientation)videoOrientationForCurrentInterfaceOrientation {
-  UIInterfaceOrientation orientation = GetInterfaceOrientation();
-  switch (orientation) {
-    case UIInterfaceOrientationUnknown:
-      return AVCaptureVideoOrientationPortrait;
-    default:
-      return static_cast<AVCaptureVideoOrientation>(orientation);
-  }
-}
-#endif
-
 #pragma mark - Notification Handlers
 
 - (void)handleAVCaptureSessionRuntimeError:(NSNotification*)notification {
@@ -384,12 +357,10 @@
         break;
       case AVCaptureSessionInterruptionReasonAudioDeviceInUseByAnotherClient:
         NOTREACHED();
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
       case AVCaptureSessionInterruptionReasonSensitiveContentMitigationActivated:
         // TODO(crbug.com/423849692): Add a new camera state for this case.
         [weakSelf setCameraState:scanner::CAMERA_UNAVAILABLE];
         break;
-#endif
     }
   });
 }

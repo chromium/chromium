@@ -55,6 +55,10 @@ id<GREYMatcher> SearchCopiedImageMenuButton() {
 
 @implementation OmniboxFakeSuggestionsInttestTestCase
 
++ (BOOL)loadMinimalAppUI {
+  return YES;
+}
+
 - (void)setUp {
   [super setUp];
   [ChromeCoordinatorAppInterface startOmniboxCoordinator];
@@ -126,6 +130,10 @@ id<GREYMatcher> SearchCopiedImageMenuButton() {
 @end
 
 @implementation OmniboxInttestTestCase
+
++ (BOOL)loadMinimalAppUI {
+  return YES;
+}
 
 - (void)setUp {
   [super setUp];

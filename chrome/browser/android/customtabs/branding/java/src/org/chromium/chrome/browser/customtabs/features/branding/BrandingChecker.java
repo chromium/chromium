@@ -144,9 +144,6 @@ class BrandingChecker extends AsyncTask<BrandingInfo> {
         }
         BrandingInfo info = new BrandingInfo(brandingDecision, lastShowTimeGlobal, mimData);
         @BrandingAppIdType int appIdType = getAppIdType(mAppId);
-        RecordHistogram.recordTimesHistogram(
-                "CustomTabs.Branding.BrandingCheckDuration",
-                SystemClock.elapsedRealtime() - startTime);
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.Branding.AppIdType", appIdType, BrandingAppIdType.NUM_ENTRIES);
 

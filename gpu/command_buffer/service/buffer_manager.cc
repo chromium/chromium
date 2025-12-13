@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/buffer_manager.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/format_macros.h"
 #include "base/notreached.h"
@@ -179,12 +175,11 @@ const GLvoid* Buffer::StageShadow(bool use_shadow,
   shadow_.clear();
   if (use_shadow) {
     if (data) {
-      shadow_.insert(shadow_.begin(),
-                     static_cast<const uint8_t*>(data),
-                     static_cast<const uint8_t*>(data) + size);
+      shadow_.insert(shadow_.begin(), static_cast<const uint8_t*>(data),
+                     UNSAFE_TODO(static_cast<const uint8_t*>(data) + size));
     } else {
       shadow_.resize(size);
-      memset(shadow_.data(), 0, static_cast<size_t>(size));
+      UNSAFE_TODO(memset(shadow_.data(), 0, static_cast<size_t>(size)));
     }
     return shadow_.data();
   } else {
@@ -222,7 +217,7 @@ void Buffer::SetRange(GLintptr offset, GLsizeiptr size, const GLvoid * data) {
   DCHECK(CheckRange(offset, size));
   if (!shadow_.empty()) {
     DCHECK_LE(static_cast<size_t>(offset + size), shadow_.size());
-    memcpy(shadow_.data() + offset, data, size);
+    UNSAFE_TODO(memcpy(shadow_.data() + offset, data, size));
     ClearCache();
   }
 }
@@ -235,7 +230,7 @@ const void* Buffer::GetRange(GLintptr offset, GLsizeiptr size) const {
     return nullptr;
   }
   DCHECK_LE(static_cast<size_t>(offset + size), shadow_.size());
-  return shadow_.data() + offset;
+  return UNSAFE_TODO(shadow_.data() + offset);
 }
 
 void Buffer::ClearCache() {
@@ -246,10 +241,10 @@ template <typename T>
 GLuint GetMaxValue(const void* data, GLuint offset, GLsizei count,
     GLuint primitive_restart_index) {
   GLuint max_value = 0;
-  const T* element =
-      reinterpret_cast<const T*>(static_cast<const int8_t*>(data) + offset);
-  const T* end = element + count;
-  for (; element < end; ++element) {
+  const T* element = reinterpret_cast<const T*>(
+      UNSAFE_TODO(static_cast<const int8_t*>(data) + offset));
+  const T* end = UNSAFE_TODO(element + count);
+  for (; element < end; UNSAFE_TODO(++element)) {
     if (*element > max_value) {
       if (*element == primitive_restart_index) {
         continue;
@@ -675,7 +670,7 @@ void BufferManager::ValidateAndDoGetBufferParameteriv(
         break;
       }
     case GL_BUFFER_MAPPED:
-      *params = buffer->GetMappedRange() == nullptr ? false : true;
+      *params = buffer->GetMappedRange() != nullptr;
       break;
     default:
       NOTREACHED();

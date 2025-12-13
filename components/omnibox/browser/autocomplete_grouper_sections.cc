@@ -10,8 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -141,13 +139,6 @@ void ZpsSection::InitFromMatches(ACMatches& matches) {
             return transformed;
           }(),
           ", ");
-      SCOPED_CRASH_KEY_STRING32("ZpsSection", "match-type", match_type);
-      SCOPED_CRASH_KEY_STRING32("ZpsSection", "match-group-id", match_group_id);
-      SCOPED_CRASH_KEY_STRING32("ZpsSection", "match-relevance",
-                                match_relevance);
-      SCOPED_CRASH_KEY_STRING32("ZpsSection", "group-description",
-                                group_description);
-      base::debug::DumpWithoutCrashing();
 #if DCHECK_IS_ON()
       NOTREACHED() << "Match with type " << match_type << " and group id "
                    << match_group_id << " and relevance " << match_relevance
@@ -187,51 +178,39 @@ void ZpsSectionWithLocalHistory::InitFromMatches(ACMatches& matches) {
 AndroidNonZPSSection::AndroidNonZPSSection(
     bool show_only_search_suggestions,
     omnibox::GroupConfigMap& group_configs)
-    : Section(
-          15,
-          {
-              // Default match Group, not part of the Grouping.
-              Group(1,
-                    {
-                        {omnibox::GROUP_SEARCH, 1},
-                        {omnibox::GROUP_OTHER_NAVS, 1},
-                        {omnibox::GROUP_MOBILE_RICH_ANSWER,
-                         OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() &&
-                                 !OmniboxFieldTrial::
-                                      kAnswerActionsShowAboveKeyboard.Get()
-                             ? 1
-                             : 0},
-                    },
-                    /*is_zps=*/false),
-              // Top Group / above the keyboard.
-              Group(num_visible_matches_ - 1,
-                    {
-                        {omnibox::GROUP_SEARCH, 14},
-                        {omnibox::GROUP_OTHER_NAVS,
-                         show_only_search_suggestions ? 0 : 14},
-                    },
-                    /*is_zps=*/false),
-              // Dedicated Group for rich answer card just above the fold.
-              Group(1,
-                    {
-                        {omnibox::GROUP_MOBILE_RICH_ANSWER,
-                         OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() &&
-                                 OmniboxFieldTrial::
-                                     kAnswerActionsShowAboveKeyboard.Get()
-                             ? 1
-                             : 0},
-                    },
-                    /*is_zps=*/false),
-              // Bottom Group, up to the Section limit.
-              Group(14,
-                    {
-                        {omnibox::GROUP_SEARCH, 14},
-                        {omnibox::GROUP_OTHER_NAVS,
-                         show_only_search_suggestions ? 0 : 14},
-                    },
-                    /*is_zps=*/false),
-          },
-          group_configs) {}
+    : Section(15,
+              {
+                  // Default match Group, not part of the Grouping.
+                  Group(1,
+                        {
+                            {omnibox::GROUP_SEARCH, 1},
+                            {omnibox::GROUP_OTHER_NAVS, 1},
+                        },
+                        /*is_zps=*/false),
+                  // Top Group / above the keyboard.
+                  Group(num_visible_matches_ - 1,
+                        {
+                            {omnibox::GROUP_SEARCH, 14},
+                            {omnibox::GROUP_OTHER_NAVS,
+                             show_only_search_suggestions ? 0 : 14},
+                        },
+                        /*is_zps=*/false),
+                  // Dedicated Group for rich answer card just above the fold.
+                  Group(1,
+                        {
+                            {omnibox::GROUP_MOBILE_RICH_ANSWER, 0},
+                        },
+                        /*is_zps=*/false),
+                  // Bottom Group, up to the Section limit.
+                  Group(14,
+                        {
+                            {omnibox::GROUP_SEARCH, 14},
+                            {omnibox::GROUP_OTHER_NAVS,
+                             show_only_search_suggestions ? 0 : 14},
+                        },
+                        /*is_zps=*/false),
+              },
+              group_configs) {}
 
 void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
   auto rich_answer_match = std::ranges::find_if(
@@ -242,23 +221,16 @@ void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
     return;
   }
 
-  bool has_url = std::ranges::any_of(matches, [](const auto& match) {
-    return !AutocompleteMatch::IsSearchType(match.type);
-  });
-  bool hide_if_urls_present =
-      !OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.Get();
-  if (has_url && hide_if_urls_present) {
-    rich_answer_match->suggestion_group_id = omnibox::GROUP_SEARCH;
-  }
-
-  if (!OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() ||
-      !OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) {
-    return;
-  }
-
   auto& above_keyboard_group = groups_[1];
   above_keyboard_group.set_limit(above_keyboard_group.limit() - 1);
 }
+
+AndroidComposeboxNonZPSSection::AndroidComposeboxNonZPSSection(
+    omnibox::GroupConfigMap& group_configs)
+    : Section(1,
+              {// Default match Group only
+               Group(1, {{omnibox::GROUP_SEARCH, 1}})},
+              group_configs) {}
 
 AndroidHubZPSSection::AndroidHubZPSSection(
     omnibox::GroupConfigMap& group_configs)
@@ -443,6 +415,10 @@ DesktopNTPZpsSection::DesktopNTPZpsSection(
               Group(8,
                     {
                         {omnibox::GROUP_TRENDS, 8},
+                    }),
+              Group(5,
+                    {
+                        {omnibox::GROUP_CONTEXTUAL_SEARCH, 5},
                     }),
           },
           group_configs) {}
@@ -631,11 +607,97 @@ DesktopLensContextualZpsSection::DesktopLensContextualZpsSection(
 
 DesktopLensMultimodalZpsSection::DesktopLensMultimodalZpsSection(
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(8,
+    : DesktopLensMultimodalZpsSection(group_configs, 8) {}
+
+DesktopLensMultimodalZpsSection::DesktopLensMultimodalZpsSection(
+    omnibox::GroupConfigMap& group_configs,
+    size_t max_suggestions)
+    : ZpsSection(max_suggestions,
                  {
-                     Group(8,
+                     Group(max_suggestions,
                            {
-                               {omnibox::GROUP_MULTIMODAL, 8},
+                               {omnibox::GROUP_MULTIMODAL, max_suggestions},
+                           }),
+                 },
+                 group_configs) {}
+
+AndroidComposeboxZpsSection::AndroidComposeboxZpsSection(
+    omnibox::GroupConfigMap& group_configs,
+    size_t max_suggestions,
+    size_t max_aim_suggestions,
+    size_t max_contextual_suggestions)
+    : ZpsSection(max_suggestions,
+                 {
+                     Group(max_suggestions,
+                           {
+                               {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
+                                max_aim_suggestions},
+                               {omnibox::GROUP_MIA_RECOMMENDATIONS,
+                                max_aim_suggestions},
+                           }),
+                     Group(max_suggestions,
+                           {
+                               {omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED,
+                                max_aim_suggestions},
+                           }),
+                     Group(max_suggestions,
+                           {
+                               {omnibox::GROUP_CONTEXTUAL_SEARCH,
+                                max_contextual_suggestions},
+                           }),
+                 },
+                 group_configs) {}
+
+IOSComposeboxZpsSection::IOSComposeboxZpsSection(
+    omnibox::GroupConfigMap& group_configs,
+    size_t max_suggestions,
+    size_t max_aim_suggestions,
+    size_t max_contextual_suggestions)
+    : ZpsSection(max_suggestions,
+                 {
+                     Group(max_suggestions,
+                           {
+                               {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
+                                max_aim_suggestions},
+                               {omnibox::GROUP_MIA_RECOMMENDATIONS,
+                                max_aim_suggestions},
+                           }),
+                     Group(max_suggestions,
+                           {
+                               {omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED,
+                                max_aim_suggestions},
+                           }),
+                     Group(max_suggestions,
+                           {
+                               {omnibox::GROUP_CONTEXTUAL_SEARCH,
+                                max_contextual_suggestions},
+                           }),
+                 },
+                 group_configs) {}
+
+DesktopComposeboxZpsSection::DesktopComposeboxZpsSection(
+    omnibox::GroupConfigMap& group_configs,
+    size_t max_suggestions,
+    size_t max_aim_suggestions,
+    size_t max_contextual_suggestions)
+    : ZpsSection(max_suggestions,
+                 {
+                     Group(max_suggestions,
+                           {
+                               {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
+                                max_aim_suggestions},
+                               {omnibox::GROUP_MIA_RECOMMENDATIONS,
+                                max_aim_suggestions},
+                           }),
+                     Group(max_suggestions,
+                           {
+                               {omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED,
+                                max_aim_suggestions},
+                           }),
+                     Group(max_suggestions,
+                           {
+                               {omnibox::GROUP_CONTEXTUAL_SEARCH,
+                                max_contextual_suggestions},
                            }),
                  },
                  group_configs) {}

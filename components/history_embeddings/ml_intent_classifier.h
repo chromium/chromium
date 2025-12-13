@@ -11,16 +11,16 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/history_embeddings/intent_classifier.h"
 #include "components/history_embeddings/mock_intent_classifier.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 
 namespace history_embeddings {
 
-using optimization_guide::OptimizationGuideModelExecutor;
+using optimization_guide::OnDeviceCapability;
 
 class MlIntentClassifier : public IntentClassifier {
  public:
   class Execution;
-  explicit MlIntentClassifier(OptimizationGuideModelExecutor* model_executor);
+  explicit MlIntentClassifier(OnDeviceCapability* model_executor);
   ~MlIntentClassifier() override;
 
   int64_t GetModelVersion() override;
@@ -32,7 +32,7 @@ class MlIntentClassifier : public IntentClassifier {
   // Guaranteed to outlive `this`, since
   // `model_executor_` is owned by OptimizationGuideKeyedServiceFactory,
   // which HistoryEmbeddingsServiceFactory depends on.
-  raw_ptr<OptimizationGuideModelExecutor> model_executor_;
+  raw_ptr<OnDeviceCapability> model_executor_;
   // The current execution, cancelled if another is started.
   std::unique_ptr<Execution> execution_;
 };

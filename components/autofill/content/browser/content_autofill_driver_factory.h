@@ -26,7 +26,6 @@ namespace autofill {
 
 class ContentAutofillClient;
 class ContentAutofillDriver;
-class ScopedAutofillManagersObservation;
 
 // Creates one ContentAutofillDriver per content::RenderFrameHost and manages
 // its lifecycle corresponding to the content::RenderFrameHost's lifecycle.
@@ -89,11 +88,7 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
 
   AutofillDriverRouter& router() { return router_; }
 
-  size_t num_drivers() const { return driver_map_.size(); }
-
-  // Returns raw pointers to all drivers that the factory currently owns.
-  std::vector<ContentAutofillDriver*> GetExistingDrivers(
-      base::PassKey<ScopedAutofillManagersObservation>);
+  std::vector<AutofillDriver*> GetExistingDrivers() override;
 
   ContentAutofillDriver* DriverForFrame(
       content::RenderFrameHost* render_frame_host,

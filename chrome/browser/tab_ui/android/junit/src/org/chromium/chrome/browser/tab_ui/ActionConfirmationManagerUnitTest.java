@@ -45,9 +45,9 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -65,7 +65,6 @@ import java.util.Collections;
 /** Unit tests for {@link ActionConfirmationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ActionConfirmationManagerUnitTest {
-    private static final String TEST_EMAIL = "test@gmail.com";
     private static final String GROUP_TITLE = "Group1";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -75,7 +74,6 @@ public class ActionConfirmationManagerUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private Profile mProfile;
-    @Mock private Activity mActivity;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Callback<@ActionConfirmationResult Integer> mOnResult;
     @Mock private Callback<MaybeBlockingResult> mOnMaybeBlockingResult;
@@ -84,11 +82,11 @@ public class ActionConfirmationManagerUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsJni;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
-    @Mock private CoreAccountInfo mCoreAccountInfo;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelArgumentCaptor;
     @Captor private ArgumentCaptor<MaybeBlockingResult> mMaybeBlockingResultCaptor;
 
+    private Activity mActivity;
     private UserActionTester mActionTester;
 
     @Before
@@ -103,7 +101,7 @@ public class ActionConfirmationManagerUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(mCoreAccountInfo);
+                .thenReturn(TestAccounts.ACCOUNT1);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
@@ -248,7 +246,6 @@ public class ActionConfirmationManagerUnitTest {
 
     @Test
     public void testProcessUngroupTabAttempt_SignInButNoSync() {
-        when(mCoreAccountInfo.getEmail()).thenReturn(TEST_EMAIL);
         when(mSyncService.getActiveDataTypes()).thenReturn(Collections.emptySet());
 
         ActionConfirmationManager actionConfirmationManager =
@@ -266,7 +263,6 @@ public class ActionConfirmationManagerUnitTest {
 
     @Test
     public void testProcessUngroupTabAttempt_SignInAndSync() {
-        when(mCoreAccountInfo.getEmail()).thenReturn(TEST_EMAIL);
         when(mSyncService.getActiveDataTypes())
                 .thenReturn(Collections.singleton(DataType.SAVED_TAB_GROUP));
 

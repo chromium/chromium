@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 
 #include <memory>
@@ -14,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -27,6 +24,7 @@
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/update_client/update_query_params.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/extension_registrar.h"
@@ -36,6 +34,7 @@
 #include "extensions/browser/warning_set.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -63,21 +62,21 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #endif
 
+namespace {
+
 using extensions::Extension;
 using extensions::ExtensionSystem;
 using extensions::ExtensionUpdater;
 
 using extensions::api::runtime::PlatformInfo;
 
-namespace {
-
 // If an extension reloads itself within this many milliseconds of reloading
 // itself, the reload is considered suspiciously fast.
-const int kFastReloadTime = 10000;
+constexpr int kFastReloadTime = 10000;
 
 // Same as above, but we shorten the fast reload interval for unpacked
 // extensions for ease of testing.
-const int kUnpackedFastReloadTime = 1000;
+constexpr int kUnpackedFastReloadTime = 1000;
 
 // A holder class for the policy we use for exponential backoff of update check
 // requests.
@@ -322,6 +321,11 @@ void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
 // Helper function for GetPlatformInfo(). nacl_arch is deprecated, so
 // please do not add any new values here.
 extensions::api::runtime::PlatformNaclArch GetPlatformInfoNaClArch() {
+// Return no value on Android, since it never supported extensions
+// while NaCl was relevant.
+#if BUILDFLAG(IS_ANDROID)
+  return extensions::api::runtime::PlatformNaclArch::kNone;
+#else
 #if defined(ARCH_CPU_X86_FAMILY)
 #if defined(ARCH_CPU_X86_64)
   return extensions::api::runtime::PlatformNaclArch::kX86_64;
@@ -343,46 +347,52 @@ extensions::api::runtime::PlatformNaclArch GetPlatformInfoNaClArch() {
   // of NaCl removal.
   return extensions::api::runtime::PlatformNaclArch::kNone;
 #endif
+#endif
 }
 
 bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
-  const char* os = update_client::UpdateQueryParams::GetOS();
-  if (strcmp(os, "mac") == 0) {
+  const std::string_view os = update_client::UpdateQueryParams::GetOS();
+  if (os == "mac") {
     info->os = extensions::api::runtime::PlatformOs::kMac;
-  } else if (strcmp(os, "win") == 0) {
+  } else if (os == "win") {
     info->os = extensions::api::runtime::PlatformOs::kWin;
-  } else if (strcmp(os, "cros") == 0) {
+  } else if (os == "cros") {
     info->os = extensions::api::runtime::PlatformOs::kCros;
-  } else if (strcmp(os, "linux") == 0) {
+  } else if (os == "linux") {
     info->os = extensions::api::runtime::PlatformOs::kLinux;
-  } else if (strcmp(os, "openbsd") == 0) {
+  } else if (os == "openbsd") {
     info->os = extensions::api::runtime::PlatformOs::kOpenbsd;
-  } else if (strcmp(os, "android") == 0) {
+  } else if (os == "android") {
     info->os = extensions::api::runtime::PlatformOs::kAndroid;
   } else {
     NOTREACHED() << "Platform not supported: " << os;
   }
 
-  const char* arch = update_client::UpdateQueryParams::GetArch();
-  if (strcmp(arch, "arm") == 0) {
+  const std::string_view arch = update_client::UpdateQueryParams::GetArch();
+  if (arch == "arm") {
     info->arch = extensions::api::runtime::PlatformArch::kArm;
-  } else if (strcmp(arch, "arm64") == 0) {
+  } else if (arch == "arm64") {
     info->arch = extensions::api::runtime::PlatformArch::kArm64;
-  } else if (strcmp(arch, "x86") == 0) {
+  } else if (arch == "x86") {
     info->arch = extensions::api::runtime::PlatformArch::kX86_32;
-  } else if (strcmp(arch, "x64") == 0) {
+  } else if (arch == "x64") {
     info->arch = extensions::api::runtime::PlatformArch::kX86_64;
-  } else if (strcmp(arch, "mipsel") == 0) {
+  } else if (arch == "mipsel") {
     info->arch = extensions::api::runtime::PlatformArch::kMips;
-  } else if (strcmp(arch, "mips64el") == 0) {
+  } else if (arch == "mips64el") {
     info->arch = extensions::api::runtime::PlatformArch::kMips64;
-  } else if (strcmp(arch, "riscv64") == 0) {
+  } else if (arch == "riscv64") {
     info->arch = extensions::api::runtime::PlatformArch::kRiscv64;
   } else {
     NOTREACHED();
   }
 
-  info->nacl_arch = GetPlatformInfoNaClArch();
+  // Only include nacl_arch in the info if it's supported. The field is
+  // optional in the schema specification, so it's okay to omit it.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kApiRuntimeGetPlatformInfoNaClArch)) {
+    info->nacl_arch = GetPlatformInfoNaClArch();
+  }
 
   return true;
 }
@@ -428,8 +438,10 @@ int ChromeRuntimeAPIDelegate::GetDeveloperToolsWindowId(
       DevToolsWindow::AsDevToolsWindow(developer_tools_web_contents);
   content::WebContents* inspected_web_contents =
       devtools_window->GetInspectedWebContents();
-  bool is_docked = inspected_web_contents->GetTopLevelNativeWindow() ==
-                   developer_tools_web_contents->GetTopLevelNativeWindow();
+  bool is_docked = devtools_window->IsDocked();
+  DCHECK_EQ(is_docked,
+            inspected_web_contents->GetTopLevelNativeWindow() ==
+                developer_tools_web_contents->GetTopLevelNativeWindow());
 
   content::WebContents* web_contents_to_use =
       is_docked ? inspected_web_contents : developer_tools_web_contents;

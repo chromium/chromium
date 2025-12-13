@@ -10,7 +10,6 @@
 
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
 

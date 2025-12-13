@@ -20,6 +20,3 @@ enum ScrollerStyle;
 // but the network service doesn't exist yet.
 [Native]
 enum NetworkConnectionType;
-
-[Native]
-enum SystemThemeColor;

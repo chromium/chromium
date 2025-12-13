@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/gamepad/gamepad_haptic_actuator.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -116,8 +117,8 @@ ScriptPromise<V8GamepadHapticsResult> GamepadHapticActuator::playEffect(
   // Avoid resetting vibration for a preempted effect.
   should_reset_ = false;
 
-  auto callback = WTF::BindOnce(&GamepadHapticActuator::OnPlayEffectCompleted,
-                                WrapPersistent(this), WrapPersistent(resolver));
+  auto callback = BindOnce(&GamepadHapticActuator::OnPlayEffectCompleted,
+                           WrapPersistent(this), WrapPersistent(resolver));
 
   gamepad_dispatcher_->PlayVibrationEffectOnce(
       pad_index_, EffectTypeFromEnum(type.AsEnum()),
@@ -146,10 +147,10 @@ void GamepadHapticActuator::OnPlayEffectCompleted(
       // vibration if the user did not chain another vibration effect in the
       // Promise callback.
       context->GetTaskRunner(TaskType::kMiscPlatformAPI)
-          ->PostTask(FROM_HERE,
-                     WTF::BindOnce(
-                         &GamepadHapticActuator::ResetVibrationIfNotPreempted,
-                         WrapPersistent(this)));
+          ->PostTask(
+              FROM_HERE,
+              BindOnce(&GamepadHapticActuator::ResetVibrationIfNotPreempted,
+                       WrapPersistent(this)));
     } else {
       // The execution context is gone, meaning no new effects can be issued by
       // the page. Stop vibration without waiting for Promise callbacks.
@@ -172,8 +173,8 @@ ScriptPromise<V8GamepadHapticsResult> GamepadHapticActuator::reset(
       MakeGarbageCollected<ScriptPromiseResolver<V8GamepadHapticsResult>>(
           script_state);
 
-  auto callback = WTF::BindOnce(&GamepadHapticActuator::OnResetCompleted,
-                                WrapPersistent(this), WrapPersistent(resolver));
+  auto callback = BindOnce(&GamepadHapticActuator::OnResetCompleted,
+                           WrapPersistent(this), WrapPersistent(resolver));
 
   gamepad_dispatcher_->ResetVibrationActuator(pad_index_, std::move(callback));
 

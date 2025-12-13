@@ -90,6 +90,11 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // if the entry had no policies.
   const PolicyContainerPolicies* HistoryPolicies() const;
 
+  // Sets the connection allowlists for the new document.
+  //
+  // This must be called before `ComputePolicies()`.
+  void SetConnectionAllowlists(network::ConnectionAllowlists allowlists);
+
   // Sets the cross origin opener policy of the new document.
   //
   // This must be called before `ComputePolicies()`.
@@ -112,6 +117,12 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   //
   // This must be called before `ComputePolicies()`.
   void SetIPAddressSpace(network::mojom::IPAddressSpace address_space);
+
+  // Sets whether the origin is allowed to issue Local Network Access requests
+  // even if it is not a secure context. If not set, this defaults to false.
+  //
+  // If set, this must be called before `ComputePolicies()`.
+  void SetLocalNetworkAccessNonSecureContextAllowed(bool allowed);
 
   // Sets whether the origin of the document being navigated to is
   // potentially-trustworthy, as defined in:

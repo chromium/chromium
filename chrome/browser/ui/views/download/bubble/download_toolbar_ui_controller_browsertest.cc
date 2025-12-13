@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -100,9 +101,6 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 };
 
-// DownloadToolbarUIController and downloads toolbar button do not exist for
-// ChromeOS. See https://crbug.com/1323505.
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest, ShowHide) {
   EXPECT_EQ(toolbar_button(browser()), nullptr);
   controller(browser())->Show();
@@ -154,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_EQ(toolbar_button(browser()), nullptr);
   // Download a file and verify the download button appears after the download.
   ui_test_utils::DownloadURL(
-      browser(), ui_test_utils::GetTestUrl(
+      browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
@@ -170,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_EQ(toolbar_button(browser()), nullptr);
   // Download a file and verify the download button appears after the download.
   ui_test_utils::DownloadURL(
-      browser(), ui_test_utils::GetTestUrl(
+      browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
@@ -206,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        ButtonPressWithRecentDownloads) {
   ui_test_utils::DownloadURL(
-      browser(), ui_test_utils::GetTestUrl(
+      browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
@@ -233,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   Browser* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
   ui_test_utils::DownloadURL(
-      app_browser, ui_test_utils::GetTestUrl(
+      app_browser, chrome_test_utils::GetTestUrl(
                        base::FilePath().AppendASCII("downloads"),
                        base::FilePath().AppendASCII("a_zip_file.zip")));
   views::test::WaitForAnimatingLayoutManager(toolbar_container(app_browser));
@@ -260,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        DialogAutoCloses) {
   ui_test_utils::DownloadURL(
-      browser(), ui_test_utils::GetTestUrl(
+      browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
@@ -280,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        OpenPrimaryDialog) {
   ui_test_utils::DownloadURL(
-      browser(), ui_test_utils::GetTestUrl(
+      browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
@@ -426,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        ClosingBrowserWithOpenBubbleDoesNotCrash) {
   ui_test_utils::DownloadURL(
-      browser(), ui_test_utils::GetTestUrl(
+      browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
@@ -436,5 +434,3 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
             DownloadBubbleContentsView::Page::kPrimary);
   CloseBrowserSynchronously(browser());
 }
-
-#endif

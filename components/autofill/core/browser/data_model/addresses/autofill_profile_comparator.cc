@@ -10,14 +10,14 @@
 #include <string_view>
 #include <vector>
 
-#include "base/i18n/char_iterator.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
@@ -27,8 +27,6 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
@@ -54,163 +52,6 @@ std::ostream& operator<<(std::ostream& os,
     os << " raw_input: \"" << n.raw_input() << "\"";
   }
   return os;
-}
-
-bool IsPunctuationOrWhitespace(const int8_t character) {
-  switch (character) {
-    // Punctuation
-    case U_DASH_PUNCTUATION:
-    case U_START_PUNCTUATION:
-    case U_END_PUNCTUATION:
-    case U_CONNECTOR_PUNCTUATION:
-    case U_OTHER_PUNCTUATION:
-    // Whitespace
-    case U_CONTROL_CHAR:  // To escape the '\n' character.
-    case U_SPACE_SEPARATOR:
-    case U_LINE_SEPARATOR:
-    case U_PARAGRAPH_SEPARATOR:
-      return true;
-
-    default:
-      return false;
-  }
-}
-
-// Iterator for a string that processes punctuation and white space according to
-// `collapse_skippable_`.
-class NormalizingIterator {
- public:
-  NormalizingIterator(
-      std::u16string_view text,
-      AutofillProfileComparator::WhitespaceSpec whitespace_spec);
-  ~NormalizingIterator();
-
-  // Advances to the next non-skippable character in the string. Whether a
-  // punctuation or white space character is skippable depends on
-  // `collapse_skippable_`. Returns false if the end of the string has been
-  // reached.
-  void Advance();
-
-  // Returns true if the iterator has reached the end of the string.
-  bool End();
-
-  // Returns true if the iterator ends in skippable characters or if the
-  // iterator has reached the end of the string. Has the side effect of
-  // advancing the iterator to either the first skippable character or to the
-  // end of the string.
-  bool EndsInSkippableCharacters();
-
-  // Returns the next character that should be considered.
-  int32_t GetNextChar();
-
- private:
-  // When `collapse_skippable_` is false, this member is initialized to false
-  // and is not updated.
-  //
-  // When `collapse_skippable_` is true, this member indicates whether the
-  // previous character was punctuation or white space so that one or more
-  // consecutive embedded punctuation and white space characters can be
-  // collapsed to a single white space.
-  bool previous_was_skippable_ = false;
-
-  // True if punctuation and white space within the string should be collapsed
-  // to a single white space.
-  bool collapse_skippable_;
-
-  base::i18n::UTF16CharIterator iter_;
-};
-
-NormalizingIterator::NormalizingIterator(
-    std::u16string_view text,
-    AutofillProfileComparator::WhitespaceSpec whitespace_spec)
-    : collapse_skippable_(whitespace_spec ==
-                          AutofillProfileComparator::WhitespaceSpec::kRetain),
-      iter_(text) {
-  int32_t character = iter_.get();
-
-  while (!iter_.end() && IsPunctuationOrWhitespace(u_charType(character))) {
-    iter_.Advance();
-    character = iter_.get();
-  }
-}
-
-NormalizingIterator::~NormalizingIterator() = default;
-
-void NormalizingIterator::Advance() {
-  if (!iter_.Advance()) {
-    return;
-  }
-
-  while (!End()) {
-    int32_t character = iter_.get();
-    bool is_punctuation_or_whitespace =
-        IsPunctuationOrWhitespace(u_charType(character));
-
-    if (!is_punctuation_or_whitespace) {
-      previous_was_skippable_ = false;
-      return;
-    }
-
-    if (is_punctuation_or_whitespace && !previous_was_skippable_ &&
-        collapse_skippable_) {
-      // Punctuation or white space within the string was found, e.g. the "," in
-      // the string "Hotel Schmotel, 3 Old Rd", and is after a non-skippable
-      // character.
-      previous_was_skippable_ = true;
-      return;
-    }
-
-    iter_.Advance();
-  }
-}
-
-bool NormalizingIterator::End() {
-  return iter_.end();
-}
-
-bool NormalizingIterator::EndsInSkippableCharacters() {
-  while (!End()) {
-    int32_t character = iter_.get();
-    if (!IsPunctuationOrWhitespace(u_charType(character))) {
-      return false;
-    }
-    iter_.Advance();
-  }
-  return true;
-}
-
-int32_t NormalizingIterator::GetNextChar() {
-  if (End()) {
-    return 0;
-  }
-
-  if (previous_was_skippable_) {
-    return ' ';
-  }
-
-  return iter_.get();
-}
-
-// Helper function retrieving given name of `name_type` type from `profile`.
-// Function leverages `AddressComponent::GetValueForComparisonForType()` which
-// requires name from `other_profile` that the name is compared against.
-const std::u16string GetNameForComparison(
-    const AutofillProfile& profile,
-    const AddressCountryCode& common_country_code,
-    FieldType name_type) {
-  switch (name_type) {
-    case ALTERNATIVE_FULL_NAME:
-      return profile.GetNameInfo()
-          .GetStructuredAlternativeName()
-          .GetValueForComparisonForType(name_type, common_country_code);
-    case NAME_FULL:
-      // Using GetValue() directly to prevent normalization that would remove
-      // diactrics. Normalization happens in
-      // `AutofillProfileComparator::Compare()`.
-      return profile.GetNameInfo().GetStructuredName().GetValue();
-    default:
-      NOTREACHED();
-  }
 }
 
 }  // namespace
@@ -252,13 +93,14 @@ AutofillProfileComparator::GetSettingsVisibleProfileDifference(
   return GetProfileDifference(first_profile, second_profile, types, app_locale);
 }
 
+// static
 bool AutofillProfileComparator::Compare(
     std::u16string_view text1,
     std::u16string_view text2,
-    WhitespaceSpec whitespace_spec,
+    normalization::WhitespaceSpec whitespace_spec,
     std::optional<FieldType> type,
     AddressCountryCode country_code_1,
-    AddressCountryCode country_code_2) const {
+    AddressCountryCode country_code_2) {
   if (text1.empty() && text2.empty()) {
     return true;
   }
@@ -271,7 +113,7 @@ bool AutofillProfileComparator::Compare(
 
   // TODO(crbug.com/359768803): Extract alternative name transliteration and
   // remove `type` parameter. Japanese alternative names are stored in Hiragana
-  // only. We transliterate Katarana to ensure correct comparison.
+  // only. We transliterate Katakana to ensure correct comparison.
   if (type.has_value() && IsAlternativeNameType(type.value()) &&
       base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
@@ -279,8 +121,10 @@ bool AutofillProfileComparator::Compare(
     normalized_text2 = TransliterateAlternativeName(normalized_text2);
   }
 
-  NormalizingIterator normalizing_iter1{normalized_text1, whitespace_spec};
-  NormalizingIterator normalizing_iter2{normalized_text2, whitespace_spec};
+  normalization::NormalizingIterator normalizing_iter1{normalized_text1,
+                                                       whitespace_spec};
+  normalization::NormalizingIterator normalizing_iter2{normalized_text2,
+                                                       whitespace_spec};
 
   while (!normalizing_iter1.End() && !normalizing_iter2.End()) {
     if (normalizing_iter1.GetNextChar() != normalizing_iter2.GetNextChar()) {
@@ -296,61 +140,6 @@ bool AutofillProfileComparator::Compare(
   }
 
   return false;
-}
-
-bool AutofillProfileComparator::HasOnlySkippableCharacters(
-    std::u16string_view text) const {
-  if (text.empty()) {
-    return true;
-  }
-
-  return NormalizingIterator(
-             text, AutofillProfileComparator::WhitespaceSpec::kDiscard)
-      .End();
-}
-
-// static
-std::u16string AutofillProfileComparator::NormalizeForComparison(
-    std::u16string_view text,
-    AutofillProfileComparator::WhitespaceSpec whitespace_spec,
-    const AddressCountryCode& country_code) {
-  // This algorithm is not designed to be perfect, we could get arbitrarily
-  // fancy here trying to canonicalize address lines. Instead, this is designed
-  // to handle common cases for all types of data (addresses and names) without
-  // needing domain-specific logic.
-  //
-  // 1. Convert punctuation to spaces and normalize all whitespace to spaces if
-  //    `whitespace_spec` is WhitespaceSpec::kRetain.
-  //    This will convert "Mid-Island Plz." -> "Mid Island Plz " (the trailing
-  //    space will be trimmed off outside of the end of the loop).
-  //
-  // 2. Collapse consecutive punctuation/whitespace characters to a single
-  //    space. We pretend the string has already started with whitespace in
-  //    order to trim leading spaces.
-  //    If kDiscard was picked, remove all the punctuation/whitespace characters
-  //    altogether.
-  //
-  // 3. Remove diacritics (accents and other non-spacing marks) and perform
-  //    case folding to lower-case.
-  std::u16string result;
-  result.reserve(text.length());
-  const bool retain_whitespace = whitespace_spec == WhitespaceSpec::kRetain;
-  bool previous_was_whitespace = true;
-  for (base::i18n::UTF16CharIterator iter(text); !iter.end(); iter.Advance()) {
-    if (!IsPunctuationOrWhitespace(u_charType(iter.get()))) {
-      previous_was_whitespace = false;
-      base::WriteUnicodeCharacter(iter.get(), &result);
-    } else if (retain_whitespace && !previous_was_whitespace) {
-      result.push_back(' ');
-      previous_was_whitespace = true;
-    }
-  }
-  // Trim off trailing whitespace if we left one.
-  if (previous_was_whitespace && !result.empty()) {
-    result.resize(result.size() - 1);
-  }
-
-  return RemoveDiacriticsAndConvertToLowerCase(result, country_code);
 }
 
 bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
@@ -371,12 +160,16 @@ bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
     return false;
   }
 
-  if (!HaveMergeableNames(p1, p2)) {
+  if (!NameInfo::AreNamesMergeable(p1.GetNameInfo(), p1.GetAddressCountryCode(),
+                                   p2.GetNameInfo(),
+                                   p2.GetAddressCountryCode())) {
     DVLOG(1) << "Different names.";
     return false;
   }
 
-  if (!HaveMergeableAlternativeNames(p1, p2)) {
+  if (!NameInfo::AreAlternativeNamesMergeable(
+          p1.GetNameInfo(), p1.GetAddressCountryCode(), p2.GetNameInfo(),
+          p2.GetAddressCountryCode())) {
     DVLOG(1) << "Different alternative names.";
     return false;
   }
@@ -393,72 +186,6 @@ bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
 
   DVLOG(1) << "Profiles are mergeable.";
   return true;
-}
-
-bool AutofillProfileComparator::MergeNames(const AutofillProfile& new_profile,
-                                           const AutofillProfile& old_profile,
-                                           NameInfo& name_info) const {
-  DCHECK(HaveMergeableNames(new_profile, old_profile));
-  DCHECK(HaveMergeableAlternativeNames(new_profile, old_profile));
-
-  auto name_full = std::make_unique<NameFull>();
-  auto alternative_full_name = std::make_unique<AlternativeFullName>();
-
-  // TODO(crbug.com/375383124): Update `MergeNamesImpl` to provide meaningful
-  // return values.
-  MergeNamesImpl(new_profile, old_profile, NAME_FULL, *name_full);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSupportPhoneticNameForJP)) {
-    MergeNamesImpl(new_profile, old_profile, ALTERNATIVE_FULL_NAME,
-                   *alternative_full_name);
-  }
-  name_info = NameInfo(std::move(name_full), std::move(alternative_full_name));
-  return true;
-}
-
-bool AutofillProfileComparator::IsNameVariantOf(
-    const std::u16string& full_name_1,
-    const std::u16string& full_name_2) const {
-  data_util::NameParts name_1_parts = data_util::SplitName(full_name_1);
-
-  // Build the variants of full_name_1`s given, middle and family names.
-  //
-  // TODO(rogerm): Figure out whether or not we should break apart a compound
-  // family name into variants (crbug/619051)
-  const std::set<std::u16string> given_name_variants =
-      GetNamePartVariants(name_1_parts.given);
-  const std::set<std::u16string> middle_name_variants =
-      GetNamePartVariants(name_1_parts.middle);
-  std::u16string_view family_name = name_1_parts.family;
-
-  // Iterate over all full name variants of profile 2 and see if any of them
-  // match the full name from profile 1.
-  for (const auto& given_name : given_name_variants) {
-    for (const auto& middle_name : middle_name_variants) {
-      std::u16string candidate = base::CollapseWhitespace(
-          base::JoinString({given_name, middle_name, family_name}, kSpace),
-          true);
-      if (candidate == full_name_2) {
-        return true;
-      }
-    }
-  }
-
-  // Also check if the name is just composed of the user's initials. For
-  // example, "thomas jefferson miller" could be composed as "tj miller".
-  if (!name_1_parts.given.empty() && !name_1_parts.middle.empty()) {
-    std::u16string initials;
-    initials.push_back(name_1_parts.given[0]);
-    initials.push_back(name_1_parts.middle[0]);
-    std::u16string candidate = base::CollapseWhitespace(
-        base::JoinString({initials, family_name}, kSpace), true);
-    if (candidate == full_name_2) {
-      return true;
-    }
-  }
-
-  // There was no match found.
-  return false;
 }
 
 bool AutofillProfileComparator::MergeEmailAddresses(
@@ -498,7 +225,8 @@ bool AutofillProfileComparator::MergeCompanyNames(
       << "Company names are not mergeable: '" << c1 << "' vs '" << c2 << "'";
 
   CompareTokensResult result =
-      CompareTokens(NormalizeForComparison(c1), NormalizeForComparison(c2));
+      CompareTokens(normalization::NormalizeForComparison(c1),
+                    normalization::NormalizeForComparison(c2));
   switch (result) {
     case DIFFERENT_TOKENS:
     default:
@@ -531,16 +259,17 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   DCHECK(HaveMergeablePhoneNumbers(new_profile, old_profile))
       << "Phone numbers are not mergeable: '" << s1 << "' vs '" << s2 << "'";
 
-  if (HasOnlySkippableCharacters(s1) && HasOnlySkippableCharacters(s2)) {
+  if (normalization::HasOnlySkippableCharacters(s1) &&
+      normalization::HasOnlySkippableCharacters(s2)) {
     phone_number.SetRawInfo(kWholePhoneNumber, std::u16string());
   }
 
-  if (HasOnlySkippableCharacters(s1)) {
+  if (normalization::HasOnlySkippableCharacters(s1)) {
     phone_number.SetRawInfo(kWholePhoneNumber, s2);
     return true;
   }
 
-  if (HasOnlySkippableCharacters(s2) || s1 == s2) {
+  if (normalization::HasOnlySkippableCharacters(s2) || s1 == s2) {
     phone_number.SetRawInfo(kWholePhoneNumber, s1);
     return true;
   }
@@ -549,7 +278,8 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   // TODO(crbug.com/40221178) `GetNonEmptyOf()` prefers `new_profile` in case
   // both are non empty.
   std::string region = base::UTF16ToUTF8(GetNonEmptyOf(
-      new_profile, old_profile, AutofillType(HtmlFieldType::kCountryCode)));
+      new_profile, old_profile,
+      AutofillType(ADDRESS_HOME_COUNTRY, /*is_country_code=*/true)));
   if (region.empty()) {
     region = AutofillCountry::CountryCodeForLocale(app_locale_);
   }
@@ -640,6 +370,23 @@ bool AutofillProfileComparator::MergeAddresses(
     const AutofillProfile& old_profile,
     Address& address) const {
   DCHECK(HaveMergeableAddresses(new_profile, old_profile));
+  CHECK(!(old_profile.record_type() ==
+              AutofillProfile::RecordType::kAccountNameEmail &&
+          new_profile.record_type() ==
+              AutofillProfile::RecordType::kAccountNameEmail));
+
+  // If one of the profiles is `kAccountNameEmail` profile, sets `address` to
+  // address tree of the other profile and returns true.
+  if (new_profile.record_type() ==
+      AutofillProfile::RecordType::kAccountNameEmail) {
+    address = old_profile.GetAddress();
+    return true;
+  }
+  if (old_profile.record_type() ==
+      AutofillProfile::RecordType::kAccountNameEmail) {
+    address = new_profile.GetAddress();
+    return true;
+  }
 
   address = old_profile.GetAddress();
   return address.MergeStructuredAddress(
@@ -666,9 +413,14 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
   // For most setting-visible types, a HaveMergeable* function exists. If these
   // types ever become non-settings visible, the check in `maybe_add_type` will
   // fail in the unittest.
-  maybe_add_type(NAME_FULL, HaveMergeableNames(a, b));
+  maybe_add_type(NAME_FULL, NameInfo::AreNamesMergeable(
+                                a.GetNameInfo(), a.GetAddressCountryCode(),
+                                b.GetNameInfo(), b.GetAddressCountryCode()));
   if (setting_visible_types.contains(ALTERNATIVE_FULL_NAME)) {
-    maybe_add_type(ALTERNATIVE_FULL_NAME, HaveMergeableAlternativeNames(a, b));
+    maybe_add_type(ALTERNATIVE_FULL_NAME,
+                   NameInfo::AreAlternativeNamesMergeable(
+                       a.GetNameInfo(), a.GetAddressCountryCode(),
+                       b.GetNameInfo(), b.GetAddressCountryCode()));
   }
   maybe_add_type(COMPANY_NAME, HaveMergeableCompanyNames(a, b));
   maybe_add_type(PHONE_HOME_WHOLE_NUMBER, HaveMergeablePhoneNumbers(a, b));
@@ -709,12 +461,10 @@ bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
       const AddressCountryCode common_country_code =
           AddressComponent::GetCommonCountry(p1.GetAddressCountryCode(),
                                              p2.GetAddressCountryCode());
-      return p1.GetNameInfo()
-                 .GetStructuredAlternativeName()
-                 .GetValueForComparisonForType(type, common_country_code) !=
-             p2.GetNameInfo()
-                 .GetStructuredAlternativeName()
-                 .GetValueForComparisonForType(type, common_country_code);
+      return p1.GetNameInfo().GetValueForComparisonForType(
+                 type, common_country_code) !=
+             p2.GetNameInfo().GetValueForComparisonForType(type,
+                                                           common_country_code);
     }
     return p1.GetInfo(type, app_locale) != p2.GetInfo(type, app_locale);
   });
@@ -763,71 +513,6 @@ std::u16string AutofillProfileComparator::GetNonEmptyOf(
   return p2.GetInfo(t, app_locale_);
 }
 
-// static
-std::set<std::u16string> AutofillProfileComparator::GetNamePartVariants(
-    const std::u16string& name_part) {
-  const size_t kMaxSupportedSubNames = 8;
-
-  std::vector<std::u16string_view> sub_names = base::SplitStringPiece(
-      name_part, kSpace, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  // Limit the number of sub-names we support (to constrain memory usage);
-  if (sub_names.size() > kMaxSupportedSubNames) {
-    return {name_part};
-  }
-
-  // Start with the empty string as a variant.
-  std::set<std::u16string> variants = {{}};
-
-  // For each sub-name, add a variant of all the already existing variants that
-  // appends this sub-name and one that appends the initial of this sub-name.
-  // Duplicates will be discarded when they're added to the variants set.
-  for (const auto& sub_name : sub_names) {
-    if (sub_name.empty()) {
-      continue;
-    }
-    std::vector<std::u16string> new_variants;
-    for (const std::u16string& variant : variants) {
-      new_variants.push_back(base::CollapseWhitespace(
-          base::JoinString({variant, sub_name}, kSpace), true));
-      new_variants.push_back(base::CollapseWhitespace(
-          base::JoinString({variant, sub_name.substr(0, 1)}, kSpace), true));
-    }
-    variants.insert(new_variants.begin(), new_variants.end());
-  }
-
-  // As a common case, also add the variant that just concatenates all of the
-  // initials.
-  std::u16string initials;
-  for (const auto& sub_name : sub_names) {
-    if (sub_name.empty()) {
-      continue;
-    }
-    initials.push_back(sub_name[0]);
-  }
-  variants.insert(initials);
-
-  // And, we're done.
-  return variants;
-}
-
-bool AutofillProfileComparator::HaveMergeableNames(
-    const AutofillProfile& p1,
-    const AutofillProfile& p2) const {
-  return AreNamesMergeable(p1, p2, NAME_FULL);
-}
-
-bool AutofillProfileComparator::HaveMergeableAlternativeNames(
-    const AutofillProfile& p1,
-    const AutofillProfile& p2) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillSupportPhoneticNameForJP)) {
-    return true;
-  }
-
-  return AreNamesMergeable(p1, p2, ALTERNATIVE_FULL_NAME);
-}
-
 bool AutofillProfileComparator::HaveMergeableEmailAddresses(
     const AutofillProfile& p1,
     const AutofillProfile& p2) const {
@@ -842,10 +527,10 @@ bool AutofillProfileComparator::HaveMergeableCompanyNames(
     const AutofillProfile& p2) const {
   const std::u16string& company_name_1 = p1.GetInfo(COMPANY_NAME, app_locale_);
   const std::u16string& company_name_2 = p2.GetInfo(COMPANY_NAME, app_locale_);
-  return HasOnlySkippableCharacters(company_name_1) ||
-         HasOnlySkippableCharacters(company_name_2) ||
-         CompareTokens(NormalizeForComparison(company_name_1),
-                       NormalizeForComparison(company_name_2)) !=
+  return normalization::HasOnlySkippableCharacters(company_name_1) ||
+         normalization::HasOnlySkippableCharacters(company_name_2) ||
+         CompareTokens(normalization::NormalizeForComparison(company_name_1),
+                       normalization::NormalizeForComparison(company_name_2)) !=
              DIFFERENT_TOKENS;
 }
 
@@ -858,8 +543,9 @@ bool AutofillProfileComparator::HaveMergeablePhoneNumbers(
   const std::u16string& raw_phone_2 = p2.GetRawInfo(PHONE_HOME_WHOLE_NUMBER);
 
   // Are the two phone numbers trivially mergeable?
-  if (HasOnlySkippableCharacters(raw_phone_1) ||
-      HasOnlySkippableCharacters(raw_phone_2) || raw_phone_1 == raw_phone_2) {
+  if (normalization::HasOnlySkippableCharacters(raw_phone_1) ||
+      normalization::HasOnlySkippableCharacters(raw_phone_2) ||
+      raw_phone_1 == raw_phone_2) {
     return true;
   }
 
@@ -887,97 +573,13 @@ bool AutofillProfileComparator::HaveMergeablePhoneNumbers(
 bool AutofillProfileComparator::HaveMergeableAddresses(
     const AutofillProfile& p1,
     const AutofillProfile& p2) const {
+  CHECK(!(p1.record_type() == AutofillProfile::RecordType::kAccountNameEmail &&
+          p2.record_type() == AutofillProfile::RecordType::kAccountNameEmail));
+  if (p1.record_type() == AutofillProfile::RecordType::kAccountNameEmail ||
+      p2.record_type() == AutofillProfile::RecordType::kAccountNameEmail) {
+    return true;
+  }
   return p2.GetAddress().IsStructuredAddressMergeable(p1.GetAddress());
-}
-
-bool AutofillProfileComparator::AreNamesMergeable(const AutofillProfile& p1,
-                                                  const AutofillProfile& p2,
-                                                  FieldType name_type) const {
-  DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
-  const AddressCountryCode common_country_code =
-      AddressComponent::GetCommonCountry(p1.GetAddressCountryCode(),
-                                         p2.GetAddressCountryCode());
-  const std::u16string name_1 =
-      GetNameForComparison(p1, common_country_code, name_type);
-  const std::u16string name_2 =
-      GetNameForComparison(p2, common_country_code, name_type);
-
-  if (HasOnlySkippableCharacters(name_1) ||
-      HasOnlySkippableCharacters(name_2) ||
-      Compare(name_1, name_2, WhitespaceSpec::kDiscard, name_type,
-              p1.GetAddressCountryCode(), p2.GetAddressCountryCode())) {
-    return true;
-  }
-
-  // If the two names are just a permutation of each other, they are mergeable
-  // for structured names.
-  if (AreStringTokenEquivalent(name_1, name_2)) {
-    return true;
-  }
-
-  std::u16string canon_full_name_1 = NormalizeForComparison(
-      name_1, WhitespaceSpec::kRetain, p1.GetAddressCountryCode());
-  std::u16string canon_full_name_2 = NormalizeForComparison(
-      name_2, WhitespaceSpec::kRetain, p2.GetAddressCountryCode());
-
-  // Is it reasonable to merge the names from `p1` and `p2`?
-  bool result = IsNameVariantOf(canon_full_name_1, canon_full_name_2) ||
-                IsNameVariantOf(canon_full_name_2, canon_full_name_1);
-  return result;
-}
-
-void AutofillProfileComparator::MergeNamesImpl(
-    const AutofillProfile& new_profile,
-    const AutofillProfile& old_profile,
-    FieldType name_type,
-    AddressComponent& name_component) const {
-  DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
-
-  const AddressCountryCode common_country_code =
-      AddressComponent::GetCommonCountry(new_profile.GetAddressCountryCode(),
-                                         old_profile.GetAddressCountryCode());
-  const std::u16string name_1 = NormalizeForComparison(
-      GetNameForComparison(new_profile, common_country_code, name_type),
-      WhitespaceSpec::kRetain, new_profile.GetAddressCountryCode());
-  const std::u16string name_2 = NormalizeForComparison(
-      GetNameForComparison(old_profile, common_country_code, name_type),
-      WhitespaceSpec::kRetain, old_profile.GetAddressCountryCode());
-
-  // At this state it is already determined that the two names are mergeable.
-  // This can mean of of the following things:
-  // * One name is empty. In this scenario the non-empty name is used.
-  // * The names are token equivalent: In this scenario a merge of the tree
-  // structure should be possible.
-  // * One name is a variant of the other. In this scenario, use the non-variant
-  // name.
-  // First, set info to the original profile.
-  name_component.CopyFrom(*old_profile.GetNameInfo().GetRootForType(name_type));
-  // If the name of the `new_profile` is empty, just keep the state of
-  // `old_profile`.
-  if (HasOnlySkippableCharacters(name_1)) {
-    return;
-  }
-  // Vice versa set name to the one of `new_profile` if `old_profile` has an
-  // empty name
-  if (HasOnlySkippableCharacters(name_2)) {
-    name_component.CopyFrom(
-        *new_profile.GetNameInfo().GetRootForType(name_type));
-    return;
-  }
-  // Try to apply a direct merging.
-  if (name_component.MergeWithComponent(
-          *new_profile.GetNameInfo().GetRootForType(name_type))) {
-    return;
-  }
-  // If the name in `old_profile` is a variant of `new_profile` use the one in
-  // `new_profile`.
-  if (IsNameVariantOf(name_1, name_2)) {
-    name_component.CopyFrom(
-        *new_profile.GetNameInfo().GetRootForType(name_type));
-  } else {
-    name_component.CopyFrom(
-        *old_profile.GetNameInfo().GetRootForType(name_type));
-  }
 }
 
 }  // namespace autofill

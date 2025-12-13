@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -23,8 +22,7 @@
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab_group_header.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -41,6 +39,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/view.h"
 #include "url/url_constants.h"
 
 namespace tab_groups {
@@ -53,9 +52,7 @@ class DataSharingChromeNativeUiTest
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {});
+        {data_sharing::features::kDataSharingFeature}, {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
   }
@@ -96,8 +93,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
         // Directly show share UI to bypass sign in flow.
         data_sharing::RequestInfo request_info(group_id,
                                                data_sharing::FlowType::kShare);
-        browser()->GetFeatures().data_sharing_bubble_controller()->Show(
-            request_info);
+        DataSharingBubbleController::From(browser())->Show(request_info);
       }),
       WaitForShow(kDataSharingBubbleElementId),
       // Check the share bubble is anchored onto the group header view.
@@ -105,8 +101,9 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
                 [&](views::BubbleDialogDelegateView* bubble) {
                   const auto* const browser_view =
                       BrowserView::GetBrowserViewForBrowser(browser());
-                  const TabGroupHeader* const group_header =
-                      browser_view->tabstrip()->group_header(group_id);
+                  const views::View* const group_header =
+                      browser_view->tab_strip_view()->GetTabGroupAnchorView(
+                          group_id);
                   return group_header &&
                          bubble->GetAnchorView() == group_header;
                 }));
@@ -114,12 +111,12 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
 
 IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowManageBubble) {
   auto* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   std::optional<tab_groups::SavedTabGroup> group =
       tab_group_service->GetGroup(group_id);
-  tab_groups::CollaborationId fake_collab_id("fake_collab_id");
+  syncer::CollaborationId fake_collab_id("fake_collab_id");
   group->SetCollaborationId(fake_collab_id);
   tab_group_service->RemoveGroup(group->saved_guid());
   tab_group_service->AddGroup(group.value());
@@ -131,8 +128,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowManageBubble) {
         // Directly show manage UI to bypass sign in flow.
         data_sharing::RequestInfo request_info(group_id,
                                                data_sharing::FlowType::kManage);
-        browser()->GetFeatures().data_sharing_bubble_controller()->Show(
-            request_info);
+        DataSharingBubbleController::From(browser())->Show(request_info);
       }),
       WaitForShow(kDataSharingBubbleElementId),
       CheckView(kDataSharingBubbleElementId, [](views::View* bubble) {
@@ -153,8 +149,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowJoinBubble) {
             data_sharing::DataSharingUtils::ParseDataSharingUrl(share_link)
                 .value(),
             data_sharing::FlowType::kJoin);
-        browser()->GetFeatures().data_sharing_bubble_controller()->Show(
-            request_info);
+        DataSharingBubbleController::From(browser())->Show(request_info);
       }),
       WaitForShow(kDataSharingBubbleElementId),
       CheckView(kDataSharingBubbleElementId, [](views::View* bubble) {
@@ -310,12 +305,12 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
 IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
                        CloseBubbleResetProgress) {
   auto* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   std::optional<tab_groups::SavedTabGroup> group =
       tab_group_service->GetGroup(group_id);
-  tab_groups::CollaborationId fake_collab_id("fake_collab_id");
+  syncer::CollaborationId fake_collab_id("fake_collab_id");
   group->SetCollaborationId(fake_collab_id);
   tab_group_service->RemoveGroup(group->saved_guid());
   tab_group_service->AddGroup(group.value());
@@ -325,8 +320,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
       WaitForShow(kTabGroupEditorBubbleManageSharedGroupButtonId),
       Do([=, this]() {
         // Ensure action and progress set OnGroupAction
-        auto* bubble_controller =
-            browser()->GetFeatures().data_sharing_bubble_controller();
+        auto* bubble_controller = DataSharingBubbleController::From(browser());
         data_sharing::RequestInfo request_info(group_id,
                                                data_sharing::FlowType::kDelete);
         bubble_controller->Show(request_info);
@@ -344,8 +338,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
       }),
       WaitForShow(kDataSharingBubbleElementId), Do([=, this]() {
         // Ensure action and progress reset on dialog close.
-        auto* bubble_controller =
-            browser()->GetFeatures().data_sharing_bubble_controller();
+        auto* bubble_controller = DataSharingBubbleController::From(browser());
         bubble_controller->Close();
         EXPECT_EQ(std::nullopt, bubble_controller->group_action_for_testing());
         EXPECT_EQ(std::nullopt,

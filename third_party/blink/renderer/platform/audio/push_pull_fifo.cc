@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
 
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -81,14 +78,15 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
     const float* input_bus_channel = input_bus->Channel(i)->Data();
     if (remainder >= input_bus_length) {
       // The remainder is big enough for the input data.
-      memcpy(fifo_bus_channel + index_write_, input_bus_channel,
-             input_bus_length * sizeof(*fifo_bus_channel));
+      UNSAFE_TODO(memcpy(fifo_bus_channel + index_write_, input_bus_channel,
+                         input_bus_length * sizeof(*fifo_bus_channel)));
     } else {
       // The input data overflows the remainder size. Wrap around the index.
-      memcpy(fifo_bus_channel + index_write_, input_bus_channel,
-             remainder * sizeof(*fifo_bus_channel));
-      memcpy(fifo_bus_channel, input_bus_channel + remainder,
-             (input_bus_length - remainder) * sizeof(*fifo_bus_channel));
+      UNSAFE_TODO(memcpy(fifo_bus_channel + index_write_, input_bus_channel,
+                         remainder * sizeof(*fifo_bus_channel)));
+      UNSAFE_TODO(
+          memcpy(fifo_bus_channel, input_bus_channel + remainder,
+                 (input_bus_length - remainder) * sizeof(*fifo_bus_channel)));
     }
   }
 
@@ -171,22 +169,24 @@ size_t PushPullFIFO::Pull(AudioBus* output_bus, uint32_t frames_requested) {
     // Fill up the output bus with the available frames first.
     if (remainder >= frames_to_fill) {
       // The remainder is big enough for the frames to pull.
-      memcpy(output_bus_channel, fifo_bus_channel + index_read_,
-             frames_to_fill * sizeof(*fifo_bus_channel));
+      UNSAFE_TODO(memcpy(output_bus_channel, fifo_bus_channel + index_read_,
+                         frames_to_fill * sizeof(*fifo_bus_channel)));
     } else {
       // The frames to pull is bigger than the remainder size.
       // Wrap around the index.
-      memcpy(output_bus_channel, fifo_bus_channel + index_read_,
-             remainder * sizeof(*fifo_bus_channel));
-      memcpy(output_bus_channel + remainder, fifo_bus_channel,
-             (frames_to_fill - remainder) * sizeof(*fifo_bus_channel));
+      UNSAFE_TODO(memcpy(output_bus_channel, fifo_bus_channel + index_read_,
+                         remainder * sizeof(*fifo_bus_channel)));
+      UNSAFE_TODO(
+          memcpy(output_bus_channel + remainder, fifo_bus_channel,
+                 (frames_to_fill - remainder) * sizeof(*fifo_bus_channel)));
     }
 
     // The frames available was not enough to fulfill the requested frames. Fill
     // the rest of the channel with silence.
     if (frames_requested > frames_to_fill) {
-      memset(output_bus_channel + frames_to_fill, 0,
-             (frames_requested - frames_to_fill) * sizeof(*output_bus_channel));
+      UNSAFE_TODO(memset(
+          output_bus_channel + frames_to_fill, 0,
+          (frames_requested - frames_to_fill) * sizeof(*output_bus_channel)));
     }
   }
 
@@ -272,8 +272,8 @@ PushPullFIFO::PullResult PushPullFIFO::PullAndUpdateEarmark(
     // frames in subsequent callbacks without silence in between.
     for (unsigned i = 0; i < fifo_bus_->NumberOfChannels(); ++i) {
       float* output_bus_channel = output_bus->Channel(i)->MutableData();
-      memset(output_bus_channel, 0,
-             frames_requested * sizeof(*output_bus_channel));
+      UNSAFE_TODO(memset(output_bus_channel, 0,
+                         frames_requested * sizeof(*output_bus_channel)));
     }
 
     // No frames were pulled; the producer (WebAudio) needs to prepare the next
@@ -292,15 +292,16 @@ PushPullFIFO::PullResult PushPullFIFO::PullAndUpdateEarmark(
     // Fill up the output bus with the available frames first.
     if (remainder >= frames_to_fill) {
       // The remainder is big enough for the frames to pull.
-      memcpy(output_bus_channel, fifo_bus_channel + index_read_,
-            frames_to_fill * sizeof(*fifo_bus_channel));
+      UNSAFE_TODO(memcpy(output_bus_channel, fifo_bus_channel + index_read_,
+                         frames_to_fill * sizeof(*fifo_bus_channel)));
     } else {
       // The frames to pull is bigger than the remainder size.
       // Wrap around the index.
-      memcpy(output_bus_channel, fifo_bus_channel + index_read_,
-            remainder * sizeof(*fifo_bus_channel));
-      memcpy(output_bus_channel + remainder, fifo_bus_channel,
-            (frames_to_fill - remainder) * sizeof(*fifo_bus_channel));
+      UNSAFE_TODO(memcpy(output_bus_channel, fifo_bus_channel + index_read_,
+                         remainder * sizeof(*fifo_bus_channel)));
+      UNSAFE_TODO(
+          memcpy(output_bus_channel + remainder, fifo_bus_channel,
+                 (frames_to_fill - remainder) * sizeof(*fifo_bus_channel)));
     }
   }
 

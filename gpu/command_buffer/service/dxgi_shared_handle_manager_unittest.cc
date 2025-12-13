@@ -79,7 +79,7 @@ TEST_F(DXGISharedHandleManagerTest, LookupByToken) {
 
   auto orig_token = gfx::DXGIHandleToken();
   base::win::ScopedHandle orig_handle = CreateSharedHandle(d3d11_texture);
-  ASSERT_TRUE(orig_handle.IsValid());
+  ASSERT_TRUE(orig_handle.is_valid());
 
   scoped_refptr<DXGISharedHandleState> orig_state =
       dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
@@ -96,7 +96,7 @@ TEST_F(DXGISharedHandleManagerTest, LookupByToken) {
                       /*dwDesiredAccess=*/0,
                       /*bInerhitHandle=*/FALSE, DUPLICATE_SAME_ACCESS);
     base::win::ScopedHandle new_handle(handle);
-    ASSERT_TRUE(new_handle.IsValid());
+    ASSERT_TRUE(new_handle.is_valid());
 
     scoped_refptr<DXGISharedHandleState> state =
         dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
@@ -124,7 +124,7 @@ TEST_F(DXGISharedHandleManagerTest, LookupByTokenMultiThread) {
 
   auto orig_token = gfx::DXGIHandleToken();
   base::win::ScopedHandle orig_handle = CreateSharedHandle(d3d11_texture);
-  ASSERT_TRUE(orig_handle.IsValid());
+  ASSERT_TRUE(orig_handle.is_valid());
 
   scoped_refptr<DXGISharedHandleState> orig_state =
       dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
@@ -150,7 +150,7 @@ TEST_F(DXGISharedHandleManagerTest, LookupByTokenMultiThread) {
                             /*dwDesiredAccess=*/0,
                             /*bInerhitHandle=*/FALSE, DUPLICATE_SAME_ACCESS);
           base::win::ScopedHandle new_handle(handle);
-          ASSERT_TRUE(new_handle.IsValid());
+          ASSERT_TRUE(new_handle.is_valid());
 
           scoped_refptr<DXGISharedHandleState> state =
               dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(

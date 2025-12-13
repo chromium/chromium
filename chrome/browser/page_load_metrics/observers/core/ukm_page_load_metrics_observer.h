@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -21,17 +22,6 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 #include "ui/base/page_transition_types.h"
-
-namespace internal {
-
-extern const char
-    kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2
-        [];
-extern const char
-    kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2Incognito
-        [];
-
-}  // namespace internal
 
 namespace content {
 class BrowserContext;
@@ -54,11 +44,10 @@ class UkmPageLoadMetricsObserver
  public:
   // Returns a UkmPageLoadMetricsObserver, or nullptr if it is not needed.
   static std::unique_ptr<page_load_metrics::PageLoadMetricsObserver>
-  CreateIfNeeded(bool is_incognito);
+  CreateIfNeeded();
 
   explicit UkmPageLoadMetricsObserver(
-      network::NetworkQualityTracker* network_quality_tracker,
-      bool is_incognito);
+      network::NetworkQualityTracker* network_quality_tracker);
 
   UkmPageLoadMetricsObserver(const UkmPageLoadMetricsObserver&) = delete;
   UkmPageLoadMetricsObserver& operator=(const UkmPageLoadMetricsObserver&) =
@@ -141,6 +130,12 @@ class UkmPageLoadMetricsObserver
       const page_load_metrics::ContentfulPaintTimingInfo&
           all_frames_largest_contentful_paint);
 
+  // Finalizes soft navigation recording - this emits both the last
+  // SoftNavigationEvent, PageLoad.SoftNavigationCount, and the UMA
+  // histogram. This is to be emitted regardless of whether the page started in
+  // the background or is / was backgrounded.
+  void RecordLastSoftNavigation();
+
   // Records metrics based on the page load information exposed by the observer
   // delegate, as well as updating the URL. |app_background_time| should be set
   // to a timestamp if the app was backgrounded, otherwise it should be set to
@@ -167,12 +162,18 @@ class UkmPageLoadMetricsObserver
   const page_load_metrics::ContentfulPaintTimingInfo&
   GetCoreWebVitalsLcpTimingInfo();
 
+  bool PageLoadMayOriginGate(
+      content::NavigationHandle* navigation_handle) const;
+
   const page_load_metrics::ContentfulPaintTimingInfo&
   GetSoftNavigationLargestContentfulPaint() const;
 
   void RecordSoftNavigationMetrics(
       ukm::SourceId ukm_source_id,
-      page_load_metrics::mojom::SoftNavigationMetrics& soft_navigation_metrics);
+      const page_load_metrics::mojom::SoftNavigationMetrics&
+          soft_navigation_metrics);
+
+  void RecordLargestContentfulPaintBeforeSoftNavigation();
 
   void RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame();
 
@@ -261,19 +262,19 @@ class UkmPageLoadMetricsObserver
 
   // The number of body (not header) prefilter bytes consumed by requests for
   // the page.
-  int64_t cache_bytes_ = 0;
-  int64_t network_bytes_ = 0;
+  base::ByteCount cache_bytes_;
+  base::ByteCount network_bytes_;
 
-  // Sum of decoded body lengths of JS resources in bytes.
-  int64_t js_decoded_bytes_ = 0;
+  // Sum of decoded body lengths of JS resources.
+  base::ByteCount js_decoded_bytes_;
 
-  // Max decoded body length of JS resources in bytes.
-  int64_t js_max_decoded_bytes_ = 0;
+  // Max decoded body length of JS resources.
+  base::ByteCount js_max_decoded_bytes_;
 
   // Network data use broken down by resource type.
-  int64_t image_total_bytes_ = 0;
-  int64_t image_subframe_bytes_ = 0;
-  int64_t media_bytes_ = 0;
+  base::ByteCount image_total_bytes_;
+  base::ByteCount image_subframe_bytes_;
+  base::ByteCount media_bytes_;
 
   // Network quality estimates.
   net::EffectiveConnectionType effective_connection_type_ =
@@ -382,9 +383,6 @@ class UkmPageLoadMetricsObserver
   page_load_metrics::NavigationHandleUserData::InitiatorLocation
       navigation_trigger_type_ = page_load_metrics::NavigationHandleUserData::
           InitiatorLocation::kOther;
-
-  // Whether the WebContents being observed is for an Incognito profile.
-  bool is_incognito_;
 
   base::WeakPtrFactory<UkmPageLoadMetricsObserver> weak_factory_{this};
 };

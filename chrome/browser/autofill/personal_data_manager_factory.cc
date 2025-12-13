@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
+#include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -16,9 +17,9 @@
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/autofill/content/browser/content_autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strike_database/strike_database.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -69,6 +70,7 @@ PersonalDataManagerFactory::PersonalDataManagerFactory()
   DependsOn(StrikeDatabaseFactory::GetInstance());
   DependsOn(AutofillImageFetcherFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
+  DependsOn(AutofillOptimizationGuideDeciderFactory::GetInstance());
 }
 
 PersonalDataManagerFactory::~PersonalDataManagerFactory() = default;
@@ -96,6 +98,9 @@ PersonalDataManagerFactory::BuildServiceInstanceForBrowserContext(
 
   auto* sync_service = SyncServiceFactory::GetForProfile(profile);
 
+  auto* autofill_optimization_guide_decider =
+      AutofillOptimizationGuideDeciderFactory::GetForProfile(profile);
+
   auto* shared_storage_manager =
       profile->GetDefaultStoragePartition()->GetSharedStorageManager();
   auto shared_storage_handler =
@@ -109,8 +114,8 @@ PersonalDataManagerFactory::BuildServiceInstanceForBrowserContext(
       g_browser_process->local_state(), identity_manager, history_service,
       sync_service, strike_database, image_fetcher,
       std::move(shared_storage_handler),
-      g_browser_process->GetApplicationLocale(),
-      GetCountryCodeFromVariations());
+      g_browser_process->GetApplicationLocale(), GetCountryCodeFromVariations(),
+      autofill_optimization_guide_decider);
 }
 
 }  // namespace autofill

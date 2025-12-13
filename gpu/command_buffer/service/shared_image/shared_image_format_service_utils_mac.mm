@@ -138,7 +138,7 @@ skgpu::graphite::TextureInfo GraphiteMetalTextureInfo(
   // Must match CreateMetalTexture in iosurface_image_backing.mm.
   // TODO(sunnyps): Move constants to a common utility header.
   skgpu::graphite::MtlTextureInfo mtl_texture_info;
-  mtl_texture_info.fSampleCount = 1;
+  mtl_texture_info.fSampleCount = skgpu::graphite::SampleCount::k1;
   mtl_texture_info.fFormat = mtl_pixel_format;
   mtl_texture_info.fUsage = MTLTextureUsageShaderRead;
   if (format.is_single_plane() && !is_yuv_plane) {

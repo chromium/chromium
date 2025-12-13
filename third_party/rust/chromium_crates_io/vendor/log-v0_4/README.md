@@ -18,7 +18,7 @@ implementation that is most suitable for its use case.
 
 ## Minimum supported `rustc`
 
-`1.60.0+`
+`1.61.0+`
 
 This version is explicitly tested in CI and may be bumped in any release as needed. Maintaining compatibility with older compilers is a priority though, so the bar for bumping the minimum supported version is set very high. Any changes to the supported minimum version will be called out in the release notes.
 

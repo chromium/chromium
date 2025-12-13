@@ -134,7 +134,7 @@ class MouseCursorOverlayController::Observer {
     }
 
     const bool cursor_within_surface =
-        NSPointInRect(location_in_window, NSRectFromCGRect([view_ bounds]));
+        NSPointInRect(location_in_window, [view_ bounds]);
 
     // Compute the location within the view using Aura conventions: (0,0) is the
     // upper-left corner. So, if the NSView is flipped in Cocoa, it's not

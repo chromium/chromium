@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_STATES_HANDOFF_BUTTON_STATE_H_
 #define CHROME_BROWSER_ACTOR_UI_STATES_HANDOFF_BUTTON_STATE_H_
 
+#include <ostream>
+
 namespace actor::ui {
 
 // Tab-scoped state.
@@ -12,8 +14,8 @@ struct HandoffButtonState {
   enum class ControlOwnership {
     // Represents the state where the client has control over the tab.
     kClient,
-    // Represents the state where the agent has control over the tab.
-    kAgent,
+    // Represents the state where the actor has control over the tab.
+    kActor,
   };
 
   // Whether or not the component is active.
@@ -25,6 +27,21 @@ struct HandoffButtonState {
   bool operator==(const HandoffButtonState& other) const = default;
 };
 
+inline std::ostream& operator<<(std::ostream& os,
+                                const HandoffButtonState& state) {
+  os << "HandoffButtonState{"
+     << "is_active: " << state.is_active << ", controller: ";
+  switch (state.controller) {
+    case HandoffButtonState::ControlOwnership::kClient:
+      os << "kClient";
+      break;
+    case HandoffButtonState::ControlOwnership::kActor:
+      os << "kActor";
+      break;
+  }
+  os << "}";
+  return os;
+}
 }  // namespace actor::ui
 
 #endif  // CHROME_BROWSER_ACTOR_UI_STATES_HANDOFF_BUTTON_STATE_H_

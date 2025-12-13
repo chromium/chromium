@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 
+#include "base/check_is_test.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -59,10 +60,15 @@ LocationBarBubbleDelegateView::WebContentMouseHandler::WebContentMouseHandler(
     : bubble_(bubble), web_contents_(web_contents) {
   DCHECK(bubble_);
   DCHECK(web_contents_);
-  event_monitor_ = views::EventMonitor::CreateWindowMonitor(
-      this, web_contents_->GetTopLevelNativeWindow(),
-      {ui::EventType::kMousePressed, ui::EventType::kKeyPressed,
-       ui::EventType::kTouchPressed});
+  // In unittests `web_contents_` might not have a containing top-level window.
+  if (web_contents_->GetTopLevelNativeWindow()) {
+    event_monitor_ = views::EventMonitor::CreateWindowMonitor(
+        this, web_contents_->GetTopLevelNativeWindow(),
+        {ui::EventType::kMousePressed, ui::EventType::kKeyPressed,
+         ui::EventType::kTouchPressed});
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
 LocationBarBubbleDelegateView::WebContentMouseHandler::
@@ -79,10 +85,10 @@ void LocationBarBubbleDelegateView::WebContentMouseHandler::OnEvent(
 }
 
 LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     bool autosize)
-    : BubbleDialogDelegateView(anchor_view,
+    : BubbleDialogDelegateView(anchor,
                                views::BubbleBorder::TOP_RIGHT,
                                views::BubbleBorder::DIALOG_SHADOW,
                                autosize),

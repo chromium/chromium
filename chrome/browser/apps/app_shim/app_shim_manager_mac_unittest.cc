@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 
 #include <unistd.h>
@@ -18,6 +13,7 @@
 #include <vector>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
@@ -147,8 +143,10 @@ class TestingAppShimManager : public AppShimManager {
   void SetAcceptablyCodeSigned(bool is_acceptable_code_signed) {
     is_acceptably_code_signed_ = is_acceptable_code_signed;
   }
-  bool IsAcceptablyCodeSigned(audit_token_t audit_token) const override {
-    return is_acceptably_code_signed_;
+  void IsAcceptablyCodeSigned(
+      audit_token_t audit_token,
+      base::OnceCallback<void(bool)> callback) const override {
+    std::move(callback).Run(is_acceptably_code_signed_);
   }
 
   MOCK_METHOD1(ProfileForPath, Profile*(const base::FilePath&));
@@ -800,7 +798,7 @@ TEST_F(AppShimManagerTest, AppLaunchCancelled) {
   std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
       app_name, true, browser_window->GetBounds(), &profile_a_, true);
-  params.window = browser_window.get();
+  params.window = browser_window.release();
   auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
   manager_->OnBrowserAdded(browser.get());
 
@@ -1502,10 +1500,11 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
 
   // Notify manager that a new browser has been associated with the app.
   auto browser_window_a = std::make_unique<TestBrowserWindowShow>();
+  TestBrowserWindowShow* browser_window_a_ptr = browser_window_a.get();
   std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
   Browser::CreateParams params_a = Browser::CreateParams::CreateForApp(
       app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
-  params_a.window = browser_window_a.get();
+  params_a.window = browser_window_a.release();
   auto browser_a = Browser::DeprecatedCreateOwnedForTesting(params_a);
   manager_->OnBrowserAdded(browser_a.get());
 
@@ -1520,14 +1519,15 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
 
   // Notify manager that a new browser has been associated with the app.
   auto browser_window_b = std::make_unique<TestBrowserWindowShow>();
+  TestBrowserWindowShow* browser_window_b_ptr = browser_window_b.get();
   Browser::CreateParams params_b = Browser::CreateParams::CreateForApp(
       app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
-  params_b.window = browser_window_b.get();
+  params_b.window = browser_window_b.release();
   auto browser_b = Browser::DeprecatedCreateOwnedForTesting(params_b);
   manager_->OnBrowserAdded(browser_b.get());
 
-  EXPECT_FALSE(browser_window_a->did_show);
-  EXPECT_FALSE(browser_window_b->did_show);
+  EXPECT_FALSE(browser_window_a_ptr->did_show);
+  EXPECT_FALSE(browser_window_b_ptr->did_show);
 
   // Select profile A and B from the menu -- this should not request a launch,
   // because the profiles are already enabled.
@@ -1537,13 +1537,13 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
                         chrome::mojom::AppShimLoginItemRestoreState::kNone, _))
       .Times(0);
   host_aa_->ProfileSelectedFromMenu(profile_path_a_);
-  EXPECT_TRUE(browser_window_a->did_show);
-  EXPECT_FALSE(browser_window_b->did_show);
-  browser_window_a->did_show = false;
+  EXPECT_TRUE(browser_window_a_ptr->did_show);
+  EXPECT_FALSE(browser_window_b_ptr->did_show);
+  browser_window_a_ptr->did_show = false;
 
   host_aa_->ProfileSelectedFromMenu(profile_path_b_);
-  EXPECT_FALSE(browser_window_a->did_show);
-  EXPECT_TRUE(browser_window_b->did_show);
+  EXPECT_FALSE(browser_window_a_ptr->did_show);
+  EXPECT_TRUE(browser_window_b_ptr->did_show);
 }
 
 TEST_F(AppShimManagerTest, ProfileMenuOneProfile) {
@@ -1856,8 +1856,8 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
     std::vector<chrome::mojom::ApplicationDockMenuItemPtr> mock_dock_menu_items;
     for (size_t i = 0; i < menu_items_size; i++) {
       auto dock_menu_item = chrome::mojom::ApplicationDockMenuItem::New();
-      dock_menu_item->name = menu_items[i].name;
-      dock_menu_item->url = menu_items[i].url;
+      dock_menu_item->name = UNSAFE_TODO(menu_items[i]).name;
+      dock_menu_item->url = UNSAFE_TODO(menu_items[i]).url;
       mock_dock_menu_items.push_back(std::move(dock_menu_item));
     }
     return mock_dock_menu_items;
@@ -1868,8 +1868,10 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
     const auto& dock_menu_items = host_aa_->test_app_shim_->dock_menu_items_;
     EXPECT_EQ(expected_menu_items_size, dock_menu_items.size());
     for (size_t i = 0; i < dock_menu_items.size(); i++) {
-      EXPECT_EQ(expected_menu_items[i].name, dock_menu_items[i]->name);
-      EXPECT_EQ(expected_menu_items[i].url, dock_menu_items[i]->url);
+      UNSAFE_TODO(
+          EXPECT_EQ(expected_menu_items[i].name, dock_menu_items[i]->name));
+      UNSAFE_TODO(
+          EXPECT_EQ(expected_menu_items[i].url, dock_menu_items[i]->url));
     }
   };
 
@@ -1889,22 +1891,21 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
 
   // Create browser objects that can be passed via OnBrowserSetLastActive.
   std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
-  std::unique_ptr<BrowserWindow> browser_window_a, browser_window_b;
   std::unique_ptr<Browser> browser_profile_a, browser_profile_b;
 
   {
-    browser_window_a = std::make_unique<TestBrowserWindow>();
+    auto browser_window_a = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
         app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
-    params.window = browser_window_a.get();
+    params.window = browser_window_a.release();
     browser_profile_a = Browser::DeprecatedCreateOwnedForTesting(params);
   }
 
   {
-    browser_window_b = std::make_unique<TestBrowserWindow>();
+    auto browser_window_b = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
         app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
-    params.window = browser_window_b.get();
+    params.window = browser_window_b.release();
     browser_profile_b = Browser::DeprecatedCreateOwnedForTesting(params);
   }
 

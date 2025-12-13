@@ -45,6 +45,7 @@ class DisplayStyle {
       case kPseudoIdBefore:
       case kPseudoIdAfter:
       case kPseudoIdPickerIcon:
+      case kPseudoIdInterestHint:
       case kPseudoIdScrollButtonBlockStart:
       case kPseudoIdScrollButtonInlineStart:
       case kPseudoIdScrollButtonInlineEnd:

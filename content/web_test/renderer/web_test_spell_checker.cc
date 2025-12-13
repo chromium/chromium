@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/renderer/web_test_spell_checker.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <array>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 
 namespace content {
@@ -44,9 +40,6 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
   DCHECK(misspelled_offset);
   DCHECK(misspelled_length);
 
-  // Initialize this spellchecker.
-  InitializeIfNeeded();
-
   // Reset the result values as our spellchecker does.
   *misspelled_offset = 0;
   *misspelled_length = 0;
@@ -73,18 +66,53 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
     int word_length;
     std::u16string word;
 
+    // These words are known misspelled words in web tests. If there are other
+    // misspelled words in web tests, please add them in this array.
+    static const auto misspelled_words = std::to_array<std::u16string>({
+        u"foo",
+        u"Foo",
+        u"baz",
+        u"fo",
+        u"LibertyF",
+        u"chello",
+        u"xxxtestxxx",
+        u"XXxxx",
+        u"Textx",
+        u"blockquoted",
+        u"asd",
+        u"Lorem",
+        u"Nunc",
+        u"Curabitur",
+        u"eu",
+        u"adlj",
+        u"adaasj",
+        u"sdklj",
+        u"jlkds",
+        u"jsaada",
+        u"jlda",
+        u"contentEditable",
+
+        // Prefer to match the full word than a partial word when there's an
+        // ambiguous boundary.
+        u"zz't",
+        u"zz",
+
+        // The following words are used by unit tests.
+        u"ifmmp",
+        u"qwertyuiopasd",
+        u"qwertyuiopasdf",
+        u"upper case",
+        u"wellcome",
+    });
+
     // Look up our misspelled-word table to check if the extracted word is a
     // known misspelled word, and return the offset and the length of the
     // extracted word if this word is a known misspelled word.
-    // (See the comment in WebTestSpellChecker::InitializeIfNeeded() why we use
-    // a misspelled-word table.)
-    for (size_t i = 0; i < misspelled_words_.size(); ++i) {
+    for (const std::u16string& misspelled_word : misspelled_words) {
       word_length =
-          static_cast<int>(misspelled_words_.at(i).length()) > max_word_length
-              ? max_word_length
-              : static_cast<int>(misspelled_words_.at(i).length());
+          std::min(static_cast<int>(misspelled_word.length()), max_word_length);
       word = string_text.substr(word_offset, word_length);
-      if (word == misspelled_words_.at(i) &&
+      if (word == misspelled_word &&
           (static_cast<int>(string_text.length()) ==
                word_offset + word_length ||
            !IsASCIIAlpha(string_text[word_offset + word_length]))) {
@@ -143,68 +171,6 @@ void WebTestSpellChecker::FillSuggestionList(
     Append(suggestions, blink::WebString::FromUTF8("Hello"));
   else if (word == "wordl")
     Append(suggestions, blink::WebString::FromUTF8("world"));
-}
-
-bool WebTestSpellChecker::InitializeIfNeeded() {
-  // Exit if we have already initialized this object.
-  if (initialized_)
-    return false;
-
-  // Create a table that consists of misspelled words used in Blink web tests.
-  // Since Blink web tests don't have so many misspelled words as
-  // well-spelled words, it is easier to compare the given word with misspelled
-  // ones than to compare with well-spelled ones.
-  static auto misspelled_words = std::to_array<const char*>({
-      // These words are known misspelled words in web tests.
-      // If there are other misspelled words in web tests, please add them in
-      // this array.
-      "foo",
-      "Foo",
-      "baz",
-      "fo",
-      "LibertyF",
-      "chello",
-      "xxxtestxxx",
-      "XXxxx",
-      "Textx",
-      "blockquoted",
-      "asd",
-      "Lorem",
-      "Nunc",
-      "Curabitur",
-      "eu",
-      "adlj",
-      "adaasj",
-      "sdklj",
-      "jlkds",
-      "jsaada",
-      "jlda",
-      "contentEditable",
-      // Prefer to match the full word than a partial word when there's an
-      // ambiguous boundary.
-      "zz't",
-      "zz",
-      // The following words are used by unit tests.
-      "ifmmp",
-      "qwertyuiopasd",
-      "qwertyuiopasdf",
-      "upper case",
-      "wellcome",
-  });
-
-  misspelled_words_.clear();
-  for (size_t i = 0; i < std::size(misspelled_words); ++i)
-    misspelled_words_.push_back(
-        std::u16string(misspelled_words[i],
-                       misspelled_words[i] + strlen(misspelled_words[i])));
-
-  // Mark as initialized to prevent this object from being initialized twice
-  // or more.
-  initialized_ = true;
-
-  // Since this WebTestSpellChecker class doesn't download dictionaries, this
-  // function always returns false.
-  return false;
 }
 
 }  // namespace content

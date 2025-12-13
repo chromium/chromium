@@ -13,7 +13,6 @@
 #include "base/supports_user_data.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -29,30 +28,29 @@ class SegmentationPlatformServiceAndroid : public base::SupportsUserData::Data {
   ~SegmentationPlatformServiceAndroid() override;
 
   void GetSelectedSegment(JNIEnv* env,
-                          const JavaParamRef<jstring>& j_segmentation_key,
-                          const JavaParamRef<jobject>& j_callback);
+                          const JavaRef<jstring>& j_segmentation_key,
+                          const JavaRef<jobject>& j_callback);
 
-  void GetClassificationResult(
-      JNIEnv* env,
-      const JavaParamRef<jstring>& j_segmentation_key,
-      const JavaParamRef<jobject>& j_prediction_options,
-      const JavaParamRef<jobject>& j_input_context,
-      const JavaParamRef<jobject>& j_callback);
+  void GetClassificationResult(JNIEnv* env,
+                               const JavaRef<jstring>& j_segmentation_key,
+                               const JavaRef<jobject>& j_prediction_options,
+                               const JavaRef<jobject>& j_input_context,
+                               const JavaRef<jobject>& j_callback);
 
   ScopedJavaLocalRef<jobject> GetCachedSegmentResult(
       JNIEnv* env,
-      const JavaParamRef<jstring>& j_segmentation_key);
+      const JavaRef<jstring>& j_segmentation_key);
 
   void GetInputKeysForModel(JNIEnv* env,
-                            const JavaParamRef<jstring>& j_segmentation_key,
-                            const JavaParamRef<jobject>& j_callback);
+                            const JavaRef<jstring>& j_segmentation_key,
+                            const JavaRef<jobject>& j_callback);
 
   void CollectTrainingData(JNIEnv* env,
                            jint j_segment_id,
                            jlong j_request_id,
                            jlong j_ukm_source_id,
-                           const JavaParamRef<jobject>& j_param,
-                           const JavaParamRef<jobject>& j_callback);
+                           const JavaRef<jobject>& j_param,
+                           const JavaRef<jobject>& j_callback);
 
   ScopedJavaLocalRef<jobject> GetJavaObject();
 

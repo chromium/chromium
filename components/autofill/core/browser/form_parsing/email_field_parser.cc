@@ -18,15 +18,15 @@ namespace autofill {
 // static
 std::unique_ptr<FormFieldParser> EmailFieldParser::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   std::optional<FieldAndMatchInfo> match;
-  const size_t saved_cursor = scanner->CursorPosition();
+  const AutofillScanner::Position saved_cursor = scanner.GetPosition();
   // Try parsing an email field.
   const bool parsed_email =
       ParseField(context, scanner, "EMAIL_ADDRESS", &match);
   if (parsed_email) {
     // Try parsing the same field as a loyalty card field.
-    scanner->RewindTo(saved_cursor);
+    scanner.Restore(saved_cursor);
     const bool parsed_loyalty_card =
         base::FeatureList::IsEnabled(
             features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
@@ -35,23 +35,23 @@ std::unique_ptr<FormFieldParser> EmailFieldParser::Parse(
       return std::make_unique<EmailFieldParser>(std::move(*match),
                                                 EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
     }
-    scanner->Advance();
+    scanner.Advance();
     return std::make_unique<EmailFieldParser>(std::move(*match), EMAIL_ADDRESS);
   }
 
   // TODO(crbug.com/361560365): Consider moving this into the JSON files once
   // this is launched and they support placeholders.
-  const AutofillField* field = scanner->Cursor();
-  if ((IsValidEmailAddress(field->placeholder()) ||
-       IsValidEmailAddress(field->label()))) {
-    scanner->Advance();
+  const FormFieldData& field = scanner.Cursor();
+  if ((IsValidEmailAddress(field.placeholder()) ||
+       IsValidEmailAddress(field.label()))) {
+    scanner.Advance();
     // Since this is either a placeholder or a label match, it's technically not
     // necessarily a high quality label match. However, since this logic
     // predates the low/high quality label distinction, its behavior was kept.
     return std::make_unique<EmailFieldParser>(
-        FieldAndMatchInfo{field,
+        FieldAndMatchInfo(&field,
                           {.matched_attribute =
-                               MatchInfo::MatchAttribute::kHighQualityLabel}},
+                               MatchInfo::MatchAttribute::kHighQualityLabel}),
         EMAIL_ADDRESS);
   }
 

@@ -4,7 +4,10 @@
 
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 
+#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -117,7 +120,7 @@ class ResourcedClientImpl : public ResourcedClient {
 
   // Caches the total memory for reclaim_target_kb sanity check. The default
   // value is 32 GiB in case reading total memory failed.
-  uint64_t total_memory_kb_ = 32 * 1024 * 1024;
+  base::ByteCount total_memory_ = base::GiB(32);
 
   // A list of observers that are listening on state changes, etc.
   base::ObserverList<Observer> observers_;
@@ -129,9 +132,9 @@ class ResourcedClientImpl : public ResourcedClient {
 };
 
 ResourcedClientImpl::ResourcedClientImpl() {
-  base::SystemMemoryInfoKB info;
+  base::SystemMemoryInfo info;
   if (base::GetSystemMemoryInfo(&info)) {
-    total_memory_kb_ = static_cast<uint64_t>(info.total);
+    total_memory_ = base::ByteCount::FromUnsigned(info.total.InBytes());
   } else {
     PLOG(ERROR) << "Error reading total memory.";
   }
@@ -143,12 +146,14 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
   memory_pressure::ReclaimTarget reclaim_target;
   uint8_t pressure_level_byte;
   PressureLevel pressure_level;
+  uint64_t reclaim_target_kb;
 
   if (!signal_reader.PopByte(&pressure_level_byte) ||
-      !signal_reader.PopUint64(&reclaim_target.target_kb)) {
+      !signal_reader.PopUint64(&reclaim_target_kb)) {
     LOG(ERROR) << "Error reading signal from resourced: " << signal->ToString();
     return;
   }
+  reclaim_target.target = base::KiB(reclaim_target_kb);
 
   int64_t signal_origin_timestamp_ms = -1;
   // The signal origin timestamp may not be included by resourced, and if it is,
@@ -184,9 +189,8 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
     return;
   }
 
-  if (reclaim_target.target_kb > total_memory_kb_) {
-    LOG(ERROR) << "reclaim_target_kb is too large: "
-               << reclaim_target.target_kb;
+  if (reclaim_target.target > total_memory_) {
+    LOG(ERROR) << "reclaim_target is too large: " << reclaim_target.target;
     return;
   }
 
@@ -231,7 +235,7 @@ void ResourcedClientImpl::MemoryPressureArcContainerReceived(
       return;
   }
 
-  if (reclaim_target_kb > total_memory_kb_) {
+  if (base::KiB(reclaim_target_kb) > total_memory_) {
     LOG(ERROR) << "reclaim_target_kb is too large: " << reclaim_target_kb;
     return;
   }

@@ -9,8 +9,9 @@
 #include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -21,8 +22,9 @@ ash::TabClusterUIItem::Info GenerateTabItemInfo(
   ash::TabClusterUIItem::Info info;
   info.title = base::UTF16ToUTF8(web_contents->GetTitle());
   info.source = web_contents->GetVisibleURL().possibly_invalid_spec();
-  info.browser_window =
-      chrome::FindBrowserWithTab(web_contents)->window()->GetNativeWindow();
+  info.browser_window = ash::BrowserController::GetInstance()
+                            ->GetBrowserForTab(web_contents)
+                            ->GetNativeWindow();
   info.is_loading = web_contents->ShouldShowLoadingUI();
   return info;
 }

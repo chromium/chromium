@@ -12,7 +12,6 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
 import android.os.RemoteException;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.test.core.app.ApplicationProvider;
@@ -22,6 +21,7 @@ import androidx.test.uiautomator.UiObject2;
 
 import org.hamcrest.Matchers;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 

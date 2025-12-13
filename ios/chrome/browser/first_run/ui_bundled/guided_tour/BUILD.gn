@@ -18,10 +18,12 @@ source_set("guided_tour") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/image",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/toolbar/ui_bundled/buttons",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",
   ]

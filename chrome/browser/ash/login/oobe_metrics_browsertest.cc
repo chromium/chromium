@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -271,13 +272,20 @@ class FirstUserOobeMetricsTest : public OobeMetricsTest {
 
 IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest,
                        OobeBoundaryMilestonesMetrics) {
-  login_manager_mixin_.LoginAsNewRegularUser();
-  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
+  LoginDisplayHost::default_host()->StartWizard(GetFirstSigninScreen());
+  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
 
   cros_events::OOBE_OobeStarted oobe_started_event;
   oobe_started_event.SetIsFlexFlow(false).SetChromeMilestone(
       version_info::GetMajorVersionNumberAsInt());
   ValidateEventRecorded(oobe_started_event);
+
+  if (ash::features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
+    // Showing the GAIA screen requires OOBE to be marked complete.
+    StartupUtils::MarkOobeCompleted();
+  }
+  login_manager_mixin_.LoginAsNewRegularUser();
+  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
 
   cros_events::OOBE_PreLoginOobeCompleted prelogin_oobe_completed_event;
   prelogin_oobe_completed_event
@@ -333,6 +341,13 @@ IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest,
 // So, the following tests should only run on branded builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdNotReset) {
+  LoginDisplayHost::default_host()->StartWizard(GetFirstSigninScreen());
+  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  if (ash::features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
+    // Showing the GAIA screen requires OOBE to be marked complete.
+    StartupUtils::MarkOobeCompleted();
+  }
+
   login_manager_mixin_.LoginAsNewRegularUser();
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
 
@@ -355,6 +370,12 @@ IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdNotReset) {
 }
 
 IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdReset) {
+  LoginDisplayHost::default_host()->StartWizard(GetFirstSigninScreen());
+  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  if (ash::features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
+    StartupUtils::MarkOobeCompleted();
+  }
+
   login_manager_mixin_.LoginAsNewRegularUser();
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
 

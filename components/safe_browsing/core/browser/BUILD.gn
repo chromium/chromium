@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
-
 source_set("browser") {
   sources = [
     "database_manager_mechanism.cc",
@@ -29,7 +27,10 @@ source_set("browser") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//google_apis:google_apis" ]
+  public_deps = [
+    "//components/safe_browsing/core/browser/db:v4_protocol_config",
+    "//google_apis",
+  ]
 
   deps = [
     "//base",
@@ -46,7 +47,7 @@ source_set("browser") {
     "//components/safe_browsing/core/browser/realtime:policy_engine",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/browser/utils",
-    "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
@@ -67,11 +68,11 @@ source_set("ping_manager_unittest") {
 
   deps = [
     ":browser",
-    "//base:base",
+    "//base",
     "//components/safe_browsing/core/browser:token_fetcher_testing_helper",
     "//components/safe_browsing/core/browser/db:v4_test_util",
     "//components/safe_browsing/core/common",
-    "//net:net",
+    "//net",
     "//net:test_support",
     "//services/network:test_support",
     "//testing/gtest",
@@ -120,8 +121,8 @@ source_set("verdict_cache_manager") {
     "//base",
     "//components/content_settings/core/browser",
     "//components/history/core/browser",
-    "//components/keyed_service/core:core",
-    "//components/password_manager/core/browser:browser",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
     "//components/prefs",
     "//components/safe_browsing/core/browser:sync_observer",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
@@ -299,7 +300,7 @@ source_set("user_population_unittest") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/sync_preferences:test_support",
-    "//components/unified_consent:unified_consent",
+    "//components/unified_consent",
     "//components/version_info",
     "//testing/gtest",
   ]

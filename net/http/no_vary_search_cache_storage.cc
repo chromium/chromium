@@ -355,6 +355,7 @@ class NoVarySearchCacheStorage::Loader final {
     if (!operations_->Init()) {
       return GiveUp(Result::kOperationsInitFailed);
     }
+
     auto maybe_load_result = operations_->Load(kSnapshotFilename, kMaxFileSize);
     if (!maybe_load_result.has_value()) {
       base::UmaHistogramExactLinear("HttpCache.NoVarySearch.SnapshotLoadError",
@@ -461,17 +462,18 @@ class NoVarySearchCacheStorage::Loader final {
       }
       switch (maybe_type.value()) {
         case JournalEntryType::kInsert: {
-          std::string base_url_cache_key;
+          std::string partition_key;
+          std::string base_url;
           auto nvs_data = CreateHttpNoVarySearchData();
           std::optional<std::string> query;
           base::Time update_time;
-          if (!ReadPickleInto(iter, base_url_cache_key, nvs_data, query,
+          if (!ReadPickleInto(iter, partition_key, base_url, nvs_data, query,
                               update_time) ||
               !iter.ReachedEnd()) {
             had_error = true;
             break;
           }
-          cache_->ReplayInsert(std::move(base_url_cache_key),
+          cache_->ReplayInsert(std::move(partition_key), std::move(base_url),
                                std::move(nvs_data), std::move(query),
                                update_time);
           ++replayed_journal_entries;
@@ -479,15 +481,16 @@ class NoVarySearchCacheStorage::Loader final {
         }
 
         case JournalEntryType::kErase: {
-          std::string base_url_cache_key;
+          std::string partition_key;
+          std::string base_url;
           auto nvs_data = CreateHttpNoVarySearchData();
           std::optional<std::string> query;
-          if (!ReadPickleInto(iter, base_url_cache_key, nvs_data, query) ||
+          if (!ReadPickleInto(iter, partition_key, base_url, nvs_data, query) ||
               !iter.ReachedEnd()) {
             had_error = true;
             break;
           }
-          cache_->ReplayErase(base_url_cache_key, nvs_data, query);
+          cache_->ReplayErase(partition_key, base_url, nvs_data, query);
           ++replayed_journal_entries;
           break;
         }
@@ -627,23 +630,25 @@ void NoVarySearchCacheStorage::TakeSnapshot() {
                      base::Unretained(journal_.get()), std::move(pickle)));
 }
 
-void NoVarySearchCacheStorage::OnInsert(const std::string& base_url_cache_key,
+void NoVarySearchCacheStorage::OnInsert(const std::string& partition_key,
+                                        const std::string& base_url,
                                         const HttpNoVarySearchData& nvs_data,
                                         const std::optional<std::string>& query,
                                         base::Time update_time) {
   base::Pickle pickle;
-  WriteToPickle(pickle, JournalEntryType::kInsert, base_url_cache_key, nvs_data,
-                query, update_time);
+  WriteToPickle(pickle, JournalEntryType::kInsert, partition_key, base_url,
+                nvs_data, query, update_time);
   AppendToJournal(std::move(pickle));
 }
 
 void NoVarySearchCacheStorage::OnErase(
-    const std::string& base_url_cache_key,
+    const std::string& partition_key,
+    const std::string& base_url,
     const HttpNoVarySearchData& nvs_data,
     const std::optional<std::string>& query) {
   base::Pickle pickle;
-  WriteToPickle(pickle, JournalEntryType::kErase, base_url_cache_key, nvs_data,
-                query);
+  WriteToPickle(pickle, JournalEntryType::kErase, partition_key, base_url,
+                nvs_data, query);
   AppendToJournal(std::move(pickle));
 }
 

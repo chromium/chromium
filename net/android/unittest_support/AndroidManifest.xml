@@ -54,6 +54,10 @@ found in the LICENSE file.
             <meta-data android:name="android.accounts.AccountAuthenticator"
                      android:resource="@xml/dummy_spnego_authenticator" />
         </service>
+
+        <service android:name="org.chromium.build.gtest_apk.ProcessKeepaliveService"
+                android:process=":test_process"
+                android:exported="false" />
     </application>
 
     <instrumentation android:name="org.chromium.build.gtest_apk.NativeTestInstrumentationTestRunner"

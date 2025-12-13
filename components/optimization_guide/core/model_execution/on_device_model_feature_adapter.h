@@ -13,16 +13,15 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/text_safety.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-forward.h"
@@ -31,6 +30,10 @@ namespace optimization_guide {
 
 class Redactor;
 class ResponseParser;
+
+// The maximum number of tokens then model will support.
+// TODO(crbug.com/302402959): Choose max_tokens based on device + model.
+inline constexpr uint32_t kOnDeviceModelMaxTokens = 10240;
 
 // Adapts the on-device model to be used for a particular feature, based on
 // a configuration proto.
@@ -72,6 +75,8 @@ class OnDeviceModelFeatureAdapter final
   bool CanSkipTextSafety() const { return config_.can_skip_text_safety(); }
 
   SamplingParamsConfig GetSamplingParamsConfig() const;
+
+  SamplingParams GetDefaultSamplingParams() const;
 
   const proto::Any& GetFeatureMetadata() const;
 

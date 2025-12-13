@@ -16,7 +16,7 @@ namespace autofill {
 class LoyaltyFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
   explicit LoyaltyFieldParser(FieldAndMatchInfo match);
 
   LoyaltyFieldParser(const LoyaltyFieldParser&) = delete;

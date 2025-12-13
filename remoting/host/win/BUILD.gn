@@ -108,16 +108,44 @@ source_set("trust_util") {
   libs = [ "Wintrust.lib" ]
 }
 
+component("rdp_window") {
+  sources = [
+    "com_imported_mstscax.h",
+    "rdp_client_window.cc",
+    "rdp_client_window.h",
+  ]
+
+  if (is_clang) {
+    # TODO(thakis): Remove this once midl.exe no longer produces nonstandard
+    # C++ (see the enums in com_imported_mstscax.h).
+    cflags = [ "-Wno-microsoft-enum-forward-reference" ]
+  }
+
+  defines = [
+    "WEBRTC_CHROMIUM_BUILD",
+    "RDP_WINDOW_IMPL",
+  ]
+
+  deps = [
+    "//net",
+    "//remoting/host/base",
+    "//third_party/webrtc_overrides:webrtc_component",
+    "//third_party/wtl",
+    "//ui/base",
+  ]
+}
+
 source_set("win") {
   sources = [
     "audio_volume_filter_win.cc",
     "audio_volume_filter_win.h",
-    "com_imported_mstscax.h",
     "com_security.cc",
     "com_security.h",
     "core_resource.h",
     "default_audio_device_change_detector.cc",
     "default_audio_device_change_detector.h",
+    "desktop_event_handler.cc",
+    "desktop_event_handler.h",
     "etw_trace_consumer.h",
     "evaluate_3d_display_mode.cc",
     "evaluate_3d_display_mode.h",
@@ -129,10 +157,10 @@ source_set("win") {
     "host_service.h",
     "launch_process_with_token.cc",
     "launch_process_with_token.h",
+    "mouse_cursor_monitor_win.cc",
+    "mouse_cursor_monitor_win.h",
     "rdp_client.cc",
     "rdp_client.h",
-    "rdp_client_window.cc",
-    "rdp_client_window.h",
     "session_action_executor.cc",
     "session_action_executor.h",
     "session_input_injector.cc",
@@ -171,6 +199,7 @@ source_set("win") {
 
   public_deps = [ ":security_descriptor" ]
   deps = [
+    ":rdp_window",
     "//base:i18n",
     "//components/policy/core/common",
     "//crypto",
@@ -203,9 +232,11 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "desktop_event_handler_unittest.cc",
     "event_trace_data.cc",
     "event_trace_data.h",
     "event_trace_data_unittest.cc",
+    "mouse_cursor_monitor_win_unittest.cc",
     "rdp_client_unittest.cc",
     "worker_process_launcher_unittest.cc",
   ]
@@ -216,6 +247,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ipc",
     "//remoting/host:common",
+    "//remoting/host:platform_interfaces",
     "//remoting/host:test_support",
     "//remoting/host/base",
     "//remoting/host/it2me:common",
@@ -425,14 +457,14 @@ shared_library("remoting_core") {
     "//base:i18n",
     "//build/win:default_exe_manifest",
     "//ipc",
-    "//mojo/core/embedder:embedder",
+    "//mojo/core/embedder",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",
     "//remoting/base/crash",
-    "//remoting/host:host",
+    "//remoting/host",
     "//remoting/host:host_main_headers",
     "//remoting/host:implementation",
     "//remoting/host:ipc_constants",

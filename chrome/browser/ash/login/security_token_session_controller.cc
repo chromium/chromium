@@ -20,12 +20,11 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/certificate_provider/certificate_provider.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -37,6 +36,7 @@
 #include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/components/certificate_provider/certificate_info.h"
+#include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -118,7 +118,7 @@ bool SanitizeDomain(const std::string& domain, std::string& sanitized_domain) {
     return false;
   if (!url.has_host())
     return false;
-  sanitized_domain = url.host();
+  sanitized_domain = url.GetHost();
   return true;
 }
 

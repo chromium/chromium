@@ -5,9 +5,16 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_REPORTING_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_REPORTING_H_
 
+#include <cmath>
 #include <string>
 
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
+#include "content/browser/indexed_db/status.h"
+#include "net/base/net_errors.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace storage {
@@ -15,6 +22,7 @@ struct BucketLocator;
 }  // namespace storage
 
 namespace content::indexed_db {
+
 constexpr static const char* kBackingStoreActionUmaName =
     "WebCore.IndexedDB.BackingStore.Action";
 
@@ -90,6 +98,26 @@ enum class IndexedDBAction {
   kMaxValue = kDatabaseDeleteAttempt,
 };
 
+// Accumulates the elapsed time between construction and destruction into
+// `duration`.
+class ScopedTimeAccumulator {
+ public:
+  explicit ScopedTimeAccumulator(base::TimeDelta& duration)
+      : duration_(duration), start_time_(base::TimeTicks::Now()) {}
+  ~ScopedTimeAccumulator() {
+    *duration_ += base::TimeTicks::Now() - start_time_;
+  }
+
+  ScopedTimeAccumulator(const ScopedTimeAccumulator&) = delete;
+  ScopedTimeAccumulator& operator=(const ScopedTimeAccumulator&) = delete;
+  ScopedTimeAccumulator(ScopedTimeAccumulator&&) = delete;
+  ScopedTimeAccumulator& operator=(ScopedTimeAccumulator&&) = delete;
+
+ private:
+  const raw_ref<base::TimeDelta> duration_;
+  base::TimeTicks start_time_;
+};
+
 void ReportOpenStatus(BackingStoreOpenResult result,
                       const storage::BucketLocator& bucket_locator);
 
@@ -97,6 +125,48 @@ void ReportInternalError(const char* type, BackingStoreErrorSource location);
 
 void ReportLevelDBError(const std::string& histogram_name,
                         const leveldb::Status& s);
+
+inline constexpr static std::string_view ToVariantSuffix(bool in_memory) {
+  return in_memory ? ".InMemory" : ".OnDisk";
+}
+
+// Logs `duration` to `histogram_name` suffixed with a variant
+// indicating whether the backing store is `in_memory` or on-disk.
+inline void LogDuration(const base::TimeDelta& duration,
+                        std::string_view histogram_name,
+                        bool in_memory) {
+  base::UmaHistogramTimes(
+      base::StrCat({histogram_name, ToVariantSuffix(in_memory)}), duration);
+}
+
+// Logs `status` to `histogram_name` suffixed with a variant indicating whether
+// the backing store is `in_memory` or on-disk.
+inline Status LogStatus(Status status,
+                        std::string_view histogram_name,
+                        bool in_memory) {
+  status.Log(base::StrCat({histogram_name, ToVariantSuffix(in_memory)}));
+  return status;
+}
+
+// Logs the `net::Error` `result` to `histogram_name` suffixed with a variant
+// indicating whether the backing store is `in_memory` or on-disk.
+inline void LogNetError(std::string_view histogram_name,
+                        bool in_memory,
+                        net::Error result) {
+  base::UmaHistogramSparse(
+      base::StrCat({histogram_name, ToVariantSuffix(in_memory)}),
+      std::abs(result));
+}
+
+// Performs `action` and logs its result (expected to be a `StatusOr<>`) to
+// `histogram_name` suffixed with a variant indicating whether the backing store
+// is `in_memory` or on-disk.
+#define LOG_RESULT(action, histogram_name, in_memory)                       \
+  [&](std::string_view _histogram_name, bool _in_memory) {                  \
+    auto _result = action;                                                  \
+    LogStatus(_result.error_or(Status::OK()), _histogram_name, _in_memory); \
+    return _result;                                                         \
+  }(histogram_name, in_memory)
 
 // Use to signal conditions caused by data corruption.
 // A macro is used instead of an inline function so that the assert and log

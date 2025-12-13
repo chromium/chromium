@@ -3,27 +3,33 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.win builder group."""
 
-load("//lib/branches.star", "branches")
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "siso")
-load("//lib/consoles.star", "consoles")
-load("//lib/gn_args.star", "gn_args")
-load("//lib/targets.star", "targets")
-load("//lib/try.star", "try_")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builders.star", "builders", "os")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//targets.star", "targets")
+load("@chromium-luci//try.star", "try_")
+load("//lib/gpu.star", "gpu")
+load("//lib/siso.star", "siso")
+load("//lib/try_constants.star", "try_constants")
 load("//project.star", "settings")
 
 try_.defaults.set(
-    executable = try_.DEFAULT_EXECUTABLE,
+    executable = try_constants.DEFAULT_EXECUTABLE,
     builder_group = "tryserver.chromium.win",
-    pool = try_.DEFAULT_POOL,
+    pool = try_constants.DEFAULT_POOL,
     builderless = True,
     cores = 8,
     os = os.WINDOWS_DEFAULT,
     compilator_cores = 16,
-    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     orchestrator_cores = 2,
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
     # Downloading with "minimum" strategy doesn't work
     # well for the win builder because some steps are missing inputs.
     # e.g. mini_installer.exe
@@ -345,15 +351,12 @@ try_.builder(
             "ci/win-arm64-rel",
             "release_try_builder",
             "no_resource_allowlisting",
-            "use_clang_coverage",
-            "partial_code_coverage_instrumentation",
             "enable_dangling_raw_ptr_feature_flag",
         ],
     ),
     builderless = True,
     os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
-    coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     # The size of the testing pool is limited.
     max_concurrent_builds = 4,
@@ -367,7 +370,6 @@ try_.builder(
             "sandbox/policy/win/.+",
         ],
     ),
-    use_clang_coverage = True,
 )
 
 try_.builder(
@@ -452,7 +454,7 @@ try_.builder(
     execution_timeout = 20 * time.hour,
 )
 
-try_.gpu.optional_tests_builder(
+gpu.try_.optional_tests_builder(
     name = "win_optional_gpu_tests_rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = ("Runs GPU tests on Windows 10 machines with NVIDIA GTX 1660 and Intel UHD 630 GPUs. " +
@@ -470,7 +472,6 @@ try_.gpu.optional_tests_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-gpu-fyi-archive",
     ),
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
@@ -530,11 +531,22 @@ try_.gpu.optional_tests_builder(
         browser_config = targets.browser_config.RELEASE_X64,
         os_type = targets.os_type.WINDOWS,
     ),
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
     os = os.WINDOWS_DEFAULT,
+    ssd = builders.with_expiration(True, expiration = 5 * time.minute),
+    free_space = None,
+    alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     # default is 6 in _gpu_optional_tests_builder()
     execution_timeout = 5 * time.hour,
     main_list_view = "try",
+    # This is higher than the default of 7 for optional GPU builders
+    # because Windows builds take longer than other platforms even
+    # when using SSDs. Increasing the max concurrent builds a bit
+    # allows us to avoid long pending times without risk of
+    # overloading the testing hardware.
+    max_concurrent_builds = 9,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
         location_filters = [
@@ -556,6 +568,7 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "media/mojo/.+"),
             cq.location_filter(path_regexp = "media/renderers/.+"),
             cq.location_filter(path_regexp = "media/video/.+"),
+            cq.location_filter(path_regexp = "services/on_device_model/.+"),
             cq.location_filter(path_regexp = "services/webnn/.+"),
             cq.location_filter(path_regexp = "testing/buildbot/tryserver.chromium.win.json"),
             cq.location_filter(path_regexp = "testing/trigger_scripts/.+"),

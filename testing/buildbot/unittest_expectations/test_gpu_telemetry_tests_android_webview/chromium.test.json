@@ -17,6 +17,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test_android_webview",
         "name": "foo_tests",
         "swarming": {
           "dimensions": {

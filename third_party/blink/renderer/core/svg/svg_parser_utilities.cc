@@ -24,8 +24,6 @@
 
 #include <limits>
 
-#include "base/compiler_specific.h"
-#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
@@ -176,28 +174,6 @@ static bool GenericParseNumber(base::span<const CharType>& result_span,
   return true;
 }
 
-bool ParseNumber(const LChar*& ptr,
-                 const LChar* end,
-                 float& number,
-                 WhitespaceMode mode) {
-  // SAFETY: Simply wrap the parameters into span.
-  UNSAFE_BUFFERS(base::span result(ptr, end));
-  bool success = ParseNumber(result, number, mode);
-  ptr = result.empty() ? end : result.data();
-  return success;
-}
-
-bool ParseNumber(const UChar*& ptr,
-                 const UChar* end,
-                 float& number,
-                 WhitespaceMode mode) {
-  // SAFETY: Simply wrap the parameters into span.
-  UNSAFE_BUFFERS(base::span result(ptr, end));
-  bool success = ParseNumber(result, number, mode);
-  ptr = result.empty() ? end : result.data();
-  return success;
-}
-
 bool ParseNumber(base::span<const LChar>& span,
                  float& number,
                  WhitespaceMode mode) {
@@ -228,6 +204,33 @@ bool ParseNumberOptionalNumber(const String& string, float& x, float& y) {
 
     return chars.empty();
   });
+}
+
+template <typename CharType>
+base::span<const CharType> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const CharType> chars,
+    size_t position,
+    char delimiter) {
+  size_t start = position;
+  while (position < chars.size() && chars[position] != delimiter &&
+         !IsHTMLSpace<CharType>(chars[position])) {
+    ++position;
+  }
+  return chars.subspan(start, position - start);
+}
+
+base::span<const LChar> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const LChar> chars,
+    size_t position,
+    char delimiter) {
+  return TokenUntilSvgSpaceOrDelimiter<LChar>(chars, position, delimiter);
+}
+
+base::span<const UChar> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const UChar> chars,
+    size_t position,
+    char delimiter) {
+  return TokenUntilSvgSpaceOrDelimiter<UChar>(chars, position, delimiter);
 }
 
 }  // namespace blink

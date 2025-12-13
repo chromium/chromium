@@ -19,15 +19,25 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/safety_check/features.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -46,9 +56,12 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
 
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                web::BrowserState, password_manager::TestPasswordStore>));
+        base::BindOnce(&password_manager::BuildPasswordStore<
+                       ProfileIOS, password_manager::TestPasswordStore>));
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
 
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
@@ -58,6 +71,9 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
     local_pref_service_ =
         TestingApplicationContext::GetGlobal()->GetLocalState();
 
+    // Get the `AuthenticationService` instance for use in tests.
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile);
+
     safety_check_manager_ =
         IOSChromeSafetyCheckManagerFactory::GetForProfile(profile);
   }
@@ -65,6 +81,23 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
   void TearDown() override { safety_check_manager_->StopSafetyCheck(); }
 
  protected:
+  // Helper method to sign in a fake identity.
+  void SignIn() {
+    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentity(fake_identity);
+    // Signing in at `kSignin` level (default for `SignIn()`).
+    // This triggers `IdentityManager` observers.
+    auth_service_->SignIn(fake_identity, signin_metrics::AccessPoint::kUnknown);
+  }
+
+  // Helper method to sign out.
+  void SignOut() {
+    auth_service_->SignOut(signin_metrics::ProfileSignout::kTest, nil);
+  }
+
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
@@ -73,6 +106,7 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
   raw_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<PrefService> local_pref_service_;
+  raw_ptr<AuthenticationService> auth_service_;
 };
 
 std::vector<password_manager::CredentialUIEntry>
@@ -681,6 +715,92 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
             PasswordSafetyCheckState::kDefault);
 }
 
+// Tests that signing out clears the password check state and insecure password
+// counts.
+TEST_F(IOSChromeSafetyCheckManagerTest, ClearsPasswordStateOnSignOut) {
+  // Set up an initial state with insecure passwords and a specific check state.
+  password_manager::InsecurePasswordCounts initial_counts = {
+      /* compromised */ 5, /* dismissed */ 4, /* reused */ 3, /* weak */ 2};
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(initial_counts);
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+
+  // Verify the initial state.
+  EXPECT_EQ(safety_check_manager_->GetInsecurePasswordCounts(), initial_counts);
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+
+  // Simulate sign-in first.
+  SignIn();
+  ASSERT_TRUE(auth_service_->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+
+  // Simulate sign-out (clearing the primary account at the `kSignin` level).
+  // This will trigger `OnPrimaryAccountChanged()` in the `SafetyCheckManager`
+  // via the `AuthenticationService` updating the `IdentityManager`.
+  SignOut();
+  ASSERT_FALSE(
+      auth_service_->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+
+  // Verify that the password state has been reset.
+  password_manager::InsecurePasswordCounts reset_counts = {
+      /* compromised */ 0, /* dismissed */ 0, /* reused */ 0, /* weak */ 0};
+  EXPECT_EQ(safety_check_manager_->GetInsecurePasswordCounts(), reset_counts);
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kSignedOut);
+
+  // Verify that the prefs are also updated to the reset state.
+  password_manager::InsecurePasswordCounts pref_counts =
+      DictToInsecurePasswordCounts(pref_service_->GetDict(
+          prefs::kIosSafetyCheckManagerInsecurePasswordCounts));
+  EXPECT_EQ(pref_counts, reset_counts);
+  EXPECT_EQ(pref_service_->GetString(
+                prefs::kIosSafetyCheckManagerPasswordCheckResult),
+            NameForSafetyCheckState(PasswordSafetyCheckState::kSignedOut));
+}
+
+// Tests that signing out while a password check is running stops the check
+// before clearing the state.
+TEST_F(IOSChromeSafetyCheckManagerTest, StopsRunningCheckOnSignOut) {
+  // Start a safety check and simulate the password check running.
+  safety_check_manager_->StartSafetyCheck();
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kRunning);
+
+  // Verify the initial state.
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kRunning);
+
+  // Simulate sign-in.
+  SignIn();
+
+  // Simulate sign-out.
+  SignOut();
+
+  // Verify that the password check state has been reset to default, indicating
+  // the running check was stopped and the state cleared.
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+}
+
+// Tests that signing in (an account change other than clearing the primary
+// account) does not affect the password state.
+TEST_F(IOSChromeSafetyCheckManagerTest, DoesNotClearPasswordStateOnSignIn) {
+  // Set up an initial state.
+  password_manager::InsecurePasswordCounts initial_counts = {
+      /* compromised */ 1, /* dismissed */ 1, /* reused */ 1, /* weak */ 1};
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(initial_counts);
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kWeakPasswords);
+
+  // Simulate sign-in.
+  SignIn();
+
+  // Verify state is unchanged.
+  EXPECT_EQ(safety_check_manager_->GetInsecurePasswordCounts(), initial_counts);
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kWeakPasswords);
+}
+
 // Tests correctly generating a string representation of
 // `UpdateChromeSafetyCheckState`.
 TEST_F(IOSChromeSafetyCheckManagerTest, CreatesUpdateChromeSafetyCheckName) {
@@ -938,20 +1058,8 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
             PasswordSafetyCheckState::kDefault);
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kOutOfDate);
-
-  // The Safety Check Notifications project improves how Safety Check state is
-  // restored.
-  if (IsSafetyCheckNotificationsEnabled()) {
-    // If Safety Check Notifications is enabled, the Safe Browsing check
-    // should be restored to `kSafe`.
-    EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
-              SafeBrowsingSafetyCheckState::kSafe);
-  } else {
-    // Otherwise, the Safe Browsing check should be restored to the default
-    // state, as the state is not persisted.
-    EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
-              SafeBrowsingSafetyCheckState::kDefault);
-  }
+  EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
+            SafeBrowsingSafetyCheckState::kDefault);
 }
 
 // Tests `DictToInsecurePasswordCounts()` correctly converts a Dict to insecure
@@ -994,8 +1102,10 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 // check exists and is sufficiently old.
 TEST_F(IOSChromeSafetyCheckManagerTest,
        AllowsAutorunWhenPreviousCheckIsTooOld) {
+  const base::TimeDelta update_interval_in_days = base::Days(
+      safety_check::features::kBackgroundPasswordCheckInterval.Get().InDays());
   base::Time sufficiently_old_previous_check_time =
-      base::Time::Now() - (kSafetyCheckAutorunDelay + base::Days(7));
+      base::Time::Now() - (update_interval_in_days + base::Days(7));
 
   EXPECT_TRUE(
       CanAutomaticallyRunSafetyCheck(sufficiently_old_previous_check_time));
@@ -1005,8 +1115,10 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 // previous Safety Check run occurred too recently.
 TEST_F(IOSChromeSafetyCheckManagerTest,
        PreventsAutorunWhenPreviousCheckIsTooRecent) {
+  const base::TimeDelta update_interval_in_days = base::Days(
+      safety_check::features::kBackgroundPasswordCheckInterval.Get().InDays());
   base::Time recent_previous_check_time =
-      base::Time::Now() - (kSafetyCheckAutorunDelay - base::Minutes(30));
+      base::Time::Now() - (update_interval_in_days - base::Minutes(30));
 
   EXPECT_FALSE(CanAutomaticallyRunSafetyCheck(recent_previous_check_time));
 }

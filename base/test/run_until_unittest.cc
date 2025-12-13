@@ -4,7 +4,6 @@
 
 #include "base/test/run_until.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/bind_post_task.h"

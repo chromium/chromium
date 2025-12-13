@@ -22,23 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes_list>
 
-<histogram_suffixes name="AdapterDecision" separator="." ordering="prefix,2">
-  <suffix name="BrightnessChange" label=""/>
-  <suffix name="NoBrightnessChange" label=""/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.Brighten.AlsDelta"/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.Brighten.AlsStd"/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.Darken.AlsDelta"/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.Darken.AlsStd"/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.ModelIteration"/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.Unknown.AlsStd"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AdsPageLoadMetricsBytes" separator=".">
   <suffix base="true" name="AdFrames.Aggregate"
       label="Includes resources loaded across all ad frames on a page."/>
@@ -195,7 +178,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="AutofillStoredCardHasInvalidCardNumber" separator=".">
   <owner>smcgruer@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <suffix name="WithInvalidCardNumber" label="Card with an invalid number"/>
 <!-- Server cards always have valid card numbers, so this is local only. -->
 
@@ -252,68 +235,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Autofill.UnmaskPrompt.Duration.Success"/>
   <affected-histogram name="Autofill.UnmaskPrompt.Events"/>
   <affected-histogram name="Autofill.UnmaskPrompt.TimeBeforeAbandonUnmasking"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="CertificateTypeAlgorithms" separator=".">
-  <owner>rsleevi@chromium.org</owner>
-  <suffix name="DH" label="DH"/>
-  <suffix name="DSA" label="DSA"/>
-  <suffix name="ECDH" label="ECDH"/>
-  <suffix name="ECDSA" label="ECDSA"/>
-  <suffix name="RSA" label="RSA"/>
-  <suffix name="Unknown" label="SPKI unrecognized by cert library"/>
-  <suffix name="Unsupported" label="Un-histogrammed type - please fix"/>
-  <affected-histogram name="CertificateType2.BR.Intermediate"/>
-  <affected-histogram name="CertificateType2.BR.Leaf"/>
-  <affected-histogram name="CertificateType2.BR.Root"/>
-  <affected-histogram name="CertificateType2.NonBR.Intermediate"/>
-  <affected-histogram name="CertificateType2.NonBR.Leaf"/>
-  <affected-histogram name="CertificateType2.NonBR.Root"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="CertificateTypeChainPosition" separator=".">
-  <suffix name="Intermediate" label="Intermediate's SPKI"/>
-  <suffix name="Leaf" label="Leaf's SPKI"/>
-  <suffix name="Root" label="Root's SPKI"/>
-  <affected-histogram name="CertificateType2.BR"/>
-  <affected-histogram name="CertificateType2.NonBR"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ContentSetting" separator=".">
-  <suffix name="Allow" label="Allow"/>
-  <suffix name="AllowThirdParty" label="All third parties allowed on a domain"/>
-  <suffix name="Ask" label="Ask"/>
-  <suffix name="Block" label="Block"/>
-  <suffix name="DetectImportantContent" label="Detect important content"/>
-  <suffix name="DomainWildcardAllowThirdParty"
-      label="Third-party cookies allowed for a site group using a domain
-             wildcard"/>
-  <suffix name="MaxRequester"
-      label="Maximum number of exceptions per requester"/>
-  <suffix name="MaxTopLevel"
-      label="Maximum number of exceptions per top-level"/>
-  <suffix name="SessionOnly" label="Session only"/>
-  <suffix name="TemporaryAllowThirdParty"
-      label="Third-party cookies temporarily allowed on a domain"/>
-  <affected-histogram name="ContentSettings.RegularProfile.Exceptions.cookies"/>
-  <affected-histogram
-      name="ContentSettings.RegularProfile.Exceptions.javascript-jit"/>
-  <affected-histogram
-      name="ContentSettings.RegularProfile.Exceptions.javascript-optimizer"/>
-  <affected-histogram name="ContentSettings.RegularProfile.Exceptions.popups"/>
-  <affected-histogram
-      name="ContentSettings.RegularProfile.Exceptions.storage-access"/>
-  <affected-histogram
-      name="ContentSettings.RegularProfile.Exceptions.subresource-filter"/>
-  <affected-histogram
-      name="ContentSettings.RegularProfile.Exceptions.tracking-protection"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ContextMenuShoppingDomain" separator=".">
-  <suffix name="ShoppingDomain"
-      label="The context menu was shown for a link that its domain is on the
-             Shopping domain allowlist in the Lens experiment."/>
-  <affected-histogram name="ContextMenu.Shown"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Cras_ClientType" separator=".">
@@ -391,33 +312,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.StreamRuntime.Output.LaCrOS"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="FieldPredictionSubmissionEvents" separator=".">
-  <suffix name="BasedOnAutocomplete"
-      label="Quality metrics based on autocomplete attributes."/>
-  <suffix name="NoSubmission" label="No observed submission."/>
-  <affected-histogram name="Autofill.FieldPrediction.Heuristic"/>
-  <affected-histogram name="Autofill.FieldPrediction.Overall"/>
-  <affected-histogram name="Autofill.FieldPrediction.Server"/>
-  <affected-histogram
-      name="Autofill.FieldPredictionQuality.Aggregate.Heuristic"/>
-  <affected-histogram name="Autofill.FieldPredictionQuality.Aggregate.Overall"/>
-  <affected-histogram name="Autofill.FieldPredictionQuality.Aggregate.Server"/>
-  <affected-histogram
-      name="Autofill.FieldPredictionQuality.ByFieldType.Heuristic"/>
-  <affected-histogram
-      name="Autofill.FieldPredictionQuality.ByFieldType.Overall"/>
-  <affected-histogram
-      name="Autofill.FieldPredictionQuality.ByFieldType.Server"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="FirstUserActionTypeDevice" separator="">
-  <suffix name="Handset" label="(handset only)"/>
-  <suffix name="Tablet" label="(tablet only)"/>
-  <affected-histogram name="FirstUserAction.BackgroundTimeContinuation"/>
-  <affected-histogram name="FirstUserAction.BackgroundTimeExpiration"/>
-  <affected-histogram name="FirstUserAction.BackgroundTimeNewTask"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="HiddenWhileFlushing" separator=".">
   <suffix name="HiddenWhileFlushing"
       label="Tab hidden while flushing FCP value."/>
@@ -458,18 +352,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Navigation.TimeToReadyToCommit2.MainFrame"/>
   <affected-histogram name="Navigation.TimeToReadyToCommit2.SameProcess"/>
   <affected-histogram name="Navigation.TimeToReadyToCommit2.Subframe"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Net_HttpJob_TotalTimeSuccess_Priorities"
-    separator=".">
-  <suffix name="Priority0" label="THROTTLED or MINIMUM_PRIORITY"/>
-  <suffix name="Priority1" label="IDLE"/>
-  <suffix name="Priority2" label="LOWEST or DEFAULT_PRIORITY"/>
-  <suffix name="Priority3" label="LOW"/>
-  <suffix name="Priority4" label="MEDIUM"/>
-  <suffix name="Priority5" label="HIGHEST or MAXIMUM_PRIORITY"/>
-  <affected-histogram name="Net.HttpJob.TotalTimeSuccess"/>
-  <affected-histogram name="ResourceScheduler.RequestQueuingDuration"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="NetHttpContentLengthType2" separator=".">
@@ -527,8 +409,6 @@ chromium-metrics-reviews@google.com.
       label="The page was backgrounded at least once from navigation start to
              this event."/>
   <affected-histogram
-      name="PageLoad.Clients.DocWrite.Block.ParseTiming.ParseBlockedOnScriptLoad"/>
-  <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart"/>
@@ -543,15 +423,12 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsAfterPaint" separator=".">
   <suffix name="AfterPaint"
       label="Limited to the duration of time starting after first paint, for
              page loads that reached first paint."/>
-  <affected-histogram
-      name="PageLoad.Clients.FromGoogleSearch.PageTiming.ForegroundDuration"/>
   <affected-histogram name="PageLoad.PageTiming.ForegroundDuration"/>
 </histogram_suffixes>
 
@@ -586,7 +463,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstImagePaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsDocWrite" separator="."
@@ -599,11 +475,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
-  <affected-histogram
-      name="PageLoad.ParseTiming.ParseBlockedOnScriptExecution"/>
-  <affected-histogram
-      name="PageLoad.ParseTiming.ParseBlockedOnScriptExecutionFromDocumentWrite"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsFromGoogleSearch" separator="."
@@ -617,10 +488,7 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay4"/>
   <affected-histogram
-      name="PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame"/>
-  <affected-histogram
       name="PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2"/>
-  <affected-histogram name="PageLoad.PageTiming.ForegroundDuration"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstImagePaint"/>
@@ -660,7 +528,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsProtocol" separator="."
@@ -694,7 +561,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsScheme" separator="."
@@ -790,8 +656,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="PageLoadMetricsNoCommit" separator=".">
   <suffix name="NoCommit" label="Limited to page loads that did not commit."/>
-  <affected-histogram
-      name="PageLoad.Clients.FromGoogleSearch.PageTiming.ForegroundDuration"/>
   <affected-histogram name="PageLoad.PageTiming.ForegroundDuration"/>
 </histogram_suffixes>
 
@@ -801,8 +665,6 @@ chromium-metrics-reviews@google.com.
              paint."/>
   <suffix name="WithPaint"
       label="The foreground duration for page loads reached first paint."/>
-  <affected-histogram
-      name="PageLoad.Clients.FromGoogleSearch.PageTiming.ForegroundDuration"/>
   <affected-histogram name="PageLoad.PageTiming.ForegroundDuration"/>
 </histogram_suffixes>
 
@@ -944,6 +806,16 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PasswordProtection.Verdict"/>
 </histogram_suffixes>
 
+<histogram_suffixes
+    name="PasswordProtectionTriggerForOneTimePasswordFieldDetected"
+    separator=".">
+  <suffix name="OneTimePasswordFieldDetected"
+      label="Password protection triggered by one time password field
+             detected."/>
+  <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="PasswordProtectionTriggerForPasswordFieldOnFocus"
     separator=".">
   <suffix name="PasswordFieldOnFocus"
@@ -995,162 +867,6 @@ chromium-metrics-reviews@google.com.
              matches a primary account password but no current signed-in
              account is found."/>
   <affected-histogram name="PasswordProtection.Verdict"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PowerConsumptionTimes" separator=".">
-  <suffix name="All" label="Sampled once per minute."/>
-  <suffix name="DuringStartup"
-      label="Sampled once per second during the first 30 seconds after
-             launch."/>
-  <affected-histogram name="Power.Mac.CPU"/>
-  <affected-histogram name="Power.Mac.GPU0"/>
-  <affected-histogram name="Power.Mac.GPU1"/>
-  <affected-histogram name="Power.Mac.GPUi"/>
-  <affected-histogram name="Power.Mac.Total"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PrerenderSource" separator="_" ordering="prefix">
-  <suffix name="" label="All prerenders."/>
-  <suffix name="gws" label="GWS triggered prerender."/>
-  <suffix name="navigationpredictor"
-      label="Triggered by the NavigationPredictor."/>
-  <suffix name="none"
-      label="No origin; in the case of prefetch TTFCP this is when no
-             prefetch was involved."/>
-  <suffix name="web" label="Link triggered prerender."/>
-  <suffix name="webcross"
-      label="Link triggered prerender, rel=prerender, cross domain."/>
-  <suffix name="webnext" label="Link triggered prerender, rel=next."/>
-  <suffix name="websame"
-      label="Link triggered prerender, rel=prerender, same domain."/>
-  <affected-histogram name="Prerender.FinalStatus"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="QuicConnectionType" separator="">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <suffix name="ForHTTPS" label="Only secure HTTPS connections are counted."/>
-  <affected-histogram name="Net.QuicSession.ConnectRandomPort"/>
-  <affected-histogram
-      name="Net.QuicSession.ConnectRandomPortRequiringConfirmation"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SearchEnginePromoOrdering" separator="."
-    ordering="prefix,2">
-  <suffix name="First" label=""/>
-  <suffix name="Second" label=""/>
-  <suffix name="Third" label=""/>
-  <affected-histogram
-      name="Search.SearchEngineListedInPromoDialog.ExistingDevice"/>
-  <affected-histogram name="Search.SearchEngineListedInPromoDialog.NewDevice"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SecurityInterstitialSSLType" separator="."
-    ordering="prefix">
-  <suffix name="bad_clock" label=""/>
-  <suffix name="https_first_mode" label=""/>
-  <suffix name="legacy_tls" label=""/>
-  <suffix name="ssl_nonoverridable" label=""/>
-  <suffix name="ssl_overridable" label=""/>
-  <affected-histogram name="interstitial.decision"/>
-  <affected-histogram name="interstitial.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.interaction"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ServiceWorker_EventType" separator="_">
-<!-- TODO(crbug.com/40858621): rewrite with the new way. -->
-
-  <suffix name="ACTIVATE" label="ACTIVATE"/>
-  <suffix name="BACKGROUND_FETCH_ABORT" label=""/>
-  <suffix name="BACKGROUND_FETCH_CLICK" label=""/>
-  <suffix name="BACKGROUND_FETCH_FAIL" label=""/>
-  <suffix name="BACKGROUND_FETCH_SUCCESS" label=""/>
-  <suffix name="COOKIE_CHANGE" label="COOKIE_CHANGE"/>
-  <suffix name="FETCH_FENCED_FRAME" label="FETCH_FENCED_FRAME"/>
-  <suffix name="FETCH_MAIN_FRAME" label="FETCH_MAIN_FRAME"/>
-  <suffix name="FETCH_SHARED_WORKER" label="FETCH_SHARED_WORKER"/>
-  <suffix name="FETCH_SUB_FRAME" label="FETCH_SUB_FRAME"/>
-  <suffix name="FETCH_SUB_RESOURCE" label="FETCH_SUB_RESOURCE"/>
-  <suffix name="INSTALL" label="INSTALL"/>
-  <suffix name="LONG_RUNNING_MESSAGE" label="LONG_RUNNING_MESSAGE"/>
-  <suffix name="MESSAGE" label="MESSAGE"/>
-  <suffix name="NAVIGATION_HINT" label="NAVIGATION_HINT"/>
-  <suffix name="NOTIFICATION_CLICK" label="NOTIFICATION_CLICK"/>
-  <suffix name="NOTIFICATION_CLOSE" label="NOTIFICATION_CLOSE"/>
-  <suffix name="PUSH" label="PUSH"/>
-  <suffix name="SYNC" label="SYNC"/>
-  <suffix name="UNKNOWN" label="UNKNOWN"/>
-  <affected-histogram name="ServiceWorker.StartWorker.Time_Any"/>
-  <affected-histogram name="ServiceWorker.StartWorker.Time_DuringStartup"/>
-  <affected-histogram
-      name="ServiceWorker.StartWorker.Time_ExistingReadyProcess"/>
-  <affected-histogram
-      name="ServiceWorker.StartWorker.Time_ExistingUnreadyProcess"/>
-  <affected-histogram name="ServiceWorker.StartWorker.Time_NewProcess"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ServiceWorker_ResponseSource" separator=".">
-  <suffix name="CacheStorage" label="The response came from CacheStorage."/>
-  <suffix name="HttpCache" label="The response came from HttpCache."/>
-  <suffix name="Network" label="The response directly came from network."/>
-  <suffix name="Unspecified" label="The source of a response was unspecified."/>
-  <affected-histogram
-      name="ServiceWorker.LoadTiming.MainFrame.MainResource.ResponseReceivedToCompleted2"/>
-  <affected-histogram
-      name="ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SharingChannelType" separator=".">
-  <suffix name="FcmSenderId" label="FCM Sender ID"/>
-  <suffix name="Server" label="Server"/>
-  <suffix name="Unknown" label="Unknown"/>
-  <affected-histogram name="Sharing.SendMessageResult"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SharingMessage" separator=".">
-  <suffix name="ACK_MESSAGE" label="Ack Message"/>
-  <suffix name="CLICK_TO_CALL_MESSAGE" label="Click To Call Message"/>
-  <suffix name="DISCOVERY_REQUEST" label="Discovery Request Message"/>
-  <suffix name="OPTIMIZATION_GUIDE_PUSH_NOTIFICATION"
-      label="Optimization Guide Push Notification Message"/>
-  <suffix name="PEER_CONNECTION_ICE_CANDIDATES_MESSAGE"
-      label="Peer Connection Ice Candidates Message"/>
-  <suffix name="PEER_CONNECTION_OFFER_MESSAGE"
-      label="Peer Connection Offer Message"/>
-  <suffix name="PING_MESSAGE" label="Ping Message"/>
-  <suffix name="REMOTE_COPY_MESSAGE" label="Remote Copy Message"/>
-  <suffix name="SHARED_CLIPBOARD_MESSAGE" label="Shared Clipboard Message"/>
-  <suffix name="SMS_FETCH_REQUEST" label="SMS Fetch Request"/>
-  <suffix name="UNKNOWN_MESSAGE" label="Unknown Message"/>
-  <suffix name="WEB_RTC_SIGNALING_FRAME" label="Web RTC Signalling Message"/>
-  <affected-histogram name="Sharing.SendMessageResult"/>
-  <affected-histogram name="Sharing.SendMessageResult.Android"/>
-  <affected-histogram name="Sharing.SendMessageResult.ChromeOS"/>
-  <affected-histogram name="Sharing.SendMessageResult.iOS"/>
-  <affected-histogram name="Sharing.SendMessageResult.Linux"/>
-  <affected-histogram name="Sharing.SendMessageResult.Mac"/>
-  <affected-histogram name="Sharing.SendMessageResult.Server"/>
-  <affected-histogram name="Sharing.SendMessageResult.Unknown"/>
-  <affected-histogram name="Sharing.SendMessageResult.Windows"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="StartupTemperature" separator=".">
-  <suffix name="ColdStartup"
-      label="Startup was cold (mostly hard faults). Threshold updated Jan
-             2020, metrics expected to bump."/>
-  <suffix name="WarmStartup" label="Startup was warm (almost no hard faults)."/>
-  <affected-histogram
-      name="ProfilePicker.StartupTime.FirstPaint.FromApplicationStart"/>
-  <affected-histogram name="Startup.BrowserMessageLoopFirstIdle"/>
-  <affected-histogram name="Startup.BrowserMessageLoopStart.To.NonEmptyPaint2"/>
-  <affected-histogram name="Startup.BrowserMessageLoopStartTime"/>
-  <affected-histogram name="Startup.BrowserWindow.FirstPaint"/>
-  <affected-histogram name="Startup.BrowserWindowDisplay"/>
-  <affected-histogram name="Startup.FirstWebContents.MainNavigationFinished"/>
-  <affected-histogram name="Startup.FirstWebContents.MainNavigationStart"/>
-  <affected-histogram name="Startup.FirstWebContents.NonEmptyPaint3"/>
-  <affected-histogram name="Startup.LoadTime.ApplicationStartToChromeMain"/>
-  <affected-histogram name="Startup.LoadTime.ProcessCreateToApplicationStart"/>
 </histogram_suffixes>
 
 </histogram_suffixes_list>

@@ -10,9 +10,7 @@ namespace sensitive_content::features {
 // passwords or credit cards) are present on the page. The feature works only on
 // Android API level >= 35.
 // TODO(crbug.com/343119998): Clean up when launched.
-BASE_FEATURE(kSensitiveContent,
-             "SensitiveContent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSensitiveContent, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This param controls whether the feature should use password manager
 // heuristics to provide more accurate password form predictions, at the cost of
@@ -26,7 +24,6 @@ const base::FeatureParam<bool> kSensitiveContentUsePwmHeuristicsParam{
 // API level >= 35.
 // TODO(crbug.com/371547489): Clean up when launched.
 BASE_FEATURE(kSensitiveContentWhileSwitchingTabs,
-             "SensitiveContentWhileSwitchingTabs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace sensitive_content::features

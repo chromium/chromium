@@ -7,10 +7,13 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/types/strong_alias.h"
 #include "net/base/net_export.h"
+#include "net/disk_cache/sql/sql_backend_aliases.h"
 
 namespace disk_cache {
 
@@ -36,6 +39,12 @@ namespace disk_cache {
 // the main cache key string.
 class NET_EXPORT_PRIVATE CacheEntryKey {
  public:
+  using Hash = CacheEntryKeyHash;
+
+  // A utility to compute the hash of a string, without needing to create a
+  // CacheEntryKey object.
+  static Hash HashFromString(const std::string_view str);
+
   explicit CacheEntryKey(std::string str = "");
   ~CacheEntryKey();
 
@@ -48,9 +57,11 @@ class NET_EXPORT_PRIVATE CacheEntryKey {
   bool operator==(const CacheEntryKey& other) const;
 
   const std::string& string() const;
+  Hash hash() const { return hash_; }
 
  private:
   scoped_refptr<const base::RefCountedString> data_;
+  Hash hash_;
 };
 
 }  // namespace disk_cache
@@ -62,7 +73,8 @@ namespace std {
 template <>
 struct hash<disk_cache::CacheEntryKey> {
   std::size_t operator()(const disk_cache::CacheEntryKey& k) const {
-    return std::hash<std::string>{}(k.string());
+    // Narrowing conversion happens when sizeof(std::size_t) is less than 64.
+    return k.hash().value();
   }
 };
 

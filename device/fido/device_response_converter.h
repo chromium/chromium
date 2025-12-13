@@ -14,8 +14,8 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_get_info_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 // Converts response from authenticators to CTAPResponse objects. If the
 // response of the authenticator does not conform to format specified by the
@@ -56,6 +56,11 @@ std::optional<cbor::Value> FixInvalidUTF8(
 
 // Converts |in| to the equivalent |PINUVAuthProtocol|.
 std::optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in);
+
+// Returns a copy of a CTAP get assertion response with its sensitive fields
+// redacted.
+COMPONENT_EXPORT(DEVICE_FIDO)
+cbor::Value RedactCtapGetAssertionResponse(const cbor::Value& cbor);
 
 }  // namespace device
 

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import type {FormControlElement} from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import type {InferredLabel} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {ancestorTagNames, buildInferredLabelIfValid, findChildText, findChildTextWithIgnoreList, isTraversableContainerElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 
 /**
  * Shared function for InferLabelFromPrevious() and InferLabelFromNext().
@@ -19,8 +19,8 @@ import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  *                  sibling or no label.
  */
 function inferLabelFromSibling(
-    element: FormControlElement | null, forward: boolean):
-    InferredLabel | null {
+    element: FormControlElement|null,
+    forward: boolean): inferenceUtil.InferredLabel|null {
   let inferredLabel = '';
   let sibling: Node | null = element;
   if (!sibling) {
@@ -53,18 +53,20 @@ function inferLabelFromSibling(
     // Coalesce any text contained in multiple consecutive
     //  (a) plain text nodes or
     //  (b) inline HTML elements that are essentially equivalent to text nodes.
-    if (nodeType === Node.TEXT_NODE || gCrWebLegacy.fill.hasTagName(sibling, 'b') ||
-        gCrWebLegacy.fill.hasTagName(sibling, 'strong') ||
-        gCrWebLegacy.fill.hasTagName(sibling, 'span') ||
-        gCrWebLegacy.fill.hasTagName(sibling, 'font')) {
+    // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
+    if (nodeType === Node.TEXT_NODE ||
+        inferenceUtil.hasTagName(sibling as Element, 'b') ||
+        inferenceUtil.hasTagName(sibling as Element, 'strong') ||
+        inferenceUtil.hasTagName(sibling as Element, 'span') ||
+        inferenceUtil.hasTagName(sibling as Element, 'font')) {
       const value = findChildText(sibling);
       // A text node's value will be empty if it is for a line break.
       const addSpace = nodeType === Node.TEXT_NODE && value.length === 0;
       if (forward) {
-        inferredLabel = gCrWebLegacy.fill.combineAndCollapseWhitespace(
+        inferredLabel = inferenceUtil.combineAndCollapseWhitespace(
             inferredLabel, value, addSpace);
       } else {
-        inferredLabel = gCrWebLegacy.fill.combineAndCollapseWhitespace(
+        inferredLabel = inferenceUtil.combineAndCollapseWhitespace(
             value, inferredLabel, addSpace);
       }
       continue;
@@ -79,14 +81,14 @@ function inferLabelFromSibling(
 
     // <img> and <br> tags often appear between the input element and its
     // label text, so skip over them.
-    if (gCrWebLegacy.fill.hasTagName(sibling, 'img') ||
-        gCrWebLegacy.fill.hasTagName(sibling, 'br')) {
+    if (inferenceUtil.hasTagName(sibling as Element, 'img') ||
+        inferenceUtil.hasTagName(sibling as Element, 'br')) {
       continue;
     }
 
     // We only expect <p> and <label> tags to contain the full label text.
-    if (gCrWebLegacy.fill.hasTagName(sibling, 'p') ||
-        gCrWebLegacy.fill.hasTagName(sibling, 'label')) {
+    if (inferenceUtil.hasTagName(sibling as Element, 'p') ||
+        inferenceUtil.hasTagName(sibling as Element, 'label')) {
       return buildInferredLabelIfValid(findChildText(sibling));
     }
     break;
@@ -110,10 +112,10 @@ function inferLabelFromSibling(
  * @param element An element to examine.
  * @return The label of element.
  */
-gCrWebLegacy.fill.inferLabelFromPrevious = function(
-    element: FormControlElement): InferredLabel | null {
+export function inferLabelFromPrevious(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   return inferLabelFromSibling(element, false);
-};
+}
 
 /**
  * Same as InferLabelFromPrevious(), but in the other direction.
@@ -125,7 +127,8 @@ gCrWebLegacy.fill.inferLabelFromPrevious = function(
  * @param element An element to examine.
  * @return The label of element.
  */
-function inferLabelFromNext(element: FormControlElement): InferredLabel | null {
+export function inferLabelFromNext(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   return inferLabelFromSibling(element, true);
 }
 
@@ -139,8 +142,8 @@ function inferLabelFromNext(element: FormControlElement): InferredLabel | null {
  * @param element An element to examine.
  * @return The label of element.
  */
-function inferLabelFromPlaceholder(
-    element: FormControlElement): InferredLabel | null {
+function inferLabelFromPlaceholder(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   if (!element) {
     return null;
   }
@@ -162,13 +165,13 @@ function inferLabelFromPlaceholder(
  * @param element An element to examine.
  * @return The label of element.
  */
-function inferLabelFromAriaLabel(
-    element: FormControlElement): InferredLabel | null {
+function inferLabelFromAriaLabel(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   if (!element) {
     return null;
   }
 
-  return buildInferredLabelIfValid(gCrWebLegacy.fill.getAriaLabel(element));
+  return buildInferredLabelIfValid(fillUtil.getAriaLabel(element));
 }
 
 /**
@@ -182,8 +185,8 @@ function inferLabelFromAriaLabel(
  * @param element An element to examine.
  * @return The label of element.
  */
-function inferLabelFromValueAttr(
-    element: FormControlElement): InferredLabel | null {
+function inferLabelFromValueAttr(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   if (!element || !element.value || !element.hasAttribute('value') ||
       element.value !== element.getAttribute('value')) {
     return null;
@@ -203,24 +206,25 @@ function inferLabelFromValueAttr(
  * @param element An element to examine.
  * @return The label of element.
  */
-gCrWebLegacy.fill.inferLabelFromListItem = function(
-    element: FormControlElement): InferredLabel | null {
+// TODO(crbug.com/454044167): Cleanup autofill TS type casting.
+export function inferLabelFromListItem(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   if (!element) {
     return null;
   }
 
   let parentNode = element.parentNode;
   while (parentNode && parentNode.nodeType === Node.ELEMENT_NODE &&
-         !gCrWebLegacy.fill.hasTagName(parentNode, 'li')) {
+         !inferenceUtil.hasTagName(parentNode as Element, 'li')) {
     parentNode = parentNode.parentNode;
   }
 
-  if (parentNode && gCrWebLegacy.fill.hasTagName(parentNode, 'li')) {
+  if (parentNode && inferenceUtil.hasTagName(parentNode as Element, 'li')) {
     return buildInferredLabelIfValid(findChildText(parentNode));
   }
 
   return null;
-};
+}
 
 /**
  * Helper for |InferLabelForElement()| that infers a label, if possible, from
@@ -236,15 +240,16 @@ gCrWebLegacy.fill.inferLabelFromListItem = function(
  * @param element An element to examine.
  * @return The label of element.
  */
-gCrWebLegacy.fill.inferLabelFromTableColumn = function(
-    element: FormControlElement): InferredLabel | null {
+// TODO(crbug.com/454044167): Cleanup autofill TS type casting.
+export function inferLabelFromTableColumn(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   if (!element) {
     return null;
   }
 
   let parentNode = element.parentNode;
   while (parentNode && parentNode.nodeType === Node.ELEMENT_NODE &&
-         !gCrWebLegacy.fill.hasTagName(parentNode, 'td')) {
+         !inferenceUtil.hasTagName(parentNode as Element, 'td')) {
     parentNode = parentNode.parentNode;
   }
 
@@ -254,18 +259,18 @@ gCrWebLegacy.fill.inferLabelFromTableColumn = function(
 
   // Check all previous siblings, skipping non-element nodes, until we find a
   // non-empty text block.
-  let r: InferredLabel | null = null;
+  let r: inferenceUtil.InferredLabel|null = null;
   let previous = parentNode.previousSibling;
   while (!r && previous) {
-    if (gCrWebLegacy.fill.hasTagName(previous, 'td') ||
-        gCrWebLegacy.fill.hasTagName(previous, 'th')) {
+    if (inferenceUtil.hasTagName(previous as Element, 'td') ||
+        inferenceUtil.hasTagName(previous as Element, 'th')) {
       r = buildInferredLabelIfValid(findChildText(previous));
     }
     previous = previous.previousSibling;
   }
 
   return r;
-};
+}
 
 /**
  * Helper for |InferLabelForElement()| that infers a label, if possible, from
@@ -283,8 +288,9 @@ gCrWebLegacy.fill.inferLabelFromTableColumn = function(
  * @param element An element to examine.
  * @return The label of element.
  */
-gCrWebLegacy.fill.inferLabelFromTableRow = function(
-    element: FormControlElement): InferredLabel | null {
+// TODO(crbug.com/454044167): Cleanup autofill TS type casting.
+export function inferLabelFromTableRow(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   if (!element) {
     return null;
   }
@@ -292,7 +298,7 @@ gCrWebLegacy.fill.inferLabelFromTableRow = function(
   let parentCell = element.parentNode;
   while (parentCell) {
     if (parentCell.nodeType === Node.ELEMENT_NODE &&
-        gCrWebLegacy.fill.hasTagName(parentCell, 'td')) {
+        inferenceUtil.hasTagName(parentCell as Element, 'td')) {
       break;
     }
     parentCell = parentCell.parentNode;
@@ -313,7 +319,7 @@ gCrWebLegacy.fill.inferLabelFromTableRow = function(
   let cellIterator = cell.previousSibling;
   while (cellIterator) {
     if (cellIterator.nodeType === Node.ELEMENT_NODE &&
-        gCrWebLegacy.fill.hasTagName(cellIterator, 'td')) {
+        inferenceUtil.hasTagName(cellIterator as Element, 'td')) {
       cellPosition += (cellIterator as HTMLTableCellElement).colSpan;
     }
     cellIterator = cellIterator.previousSibling;
@@ -323,7 +329,7 @@ gCrWebLegacy.fill.inferLabelFromTableRow = function(
   cellIterator = cell.nextSibling;
   while (cellIterator) {
     if (cellIterator.nodeType === Node.ELEMENT_NODE &&
-        gCrWebLegacy.fill.hasTagName(cellIterator, 'td')) {
+        inferenceUtil.hasTagName(cellIterator as Element, 'td')) {
       cellCount += (cellIterator as HTMLTableCellElement).colSpan;
     }
     cellIterator = cellIterator.nextSibling;
@@ -336,7 +342,7 @@ gCrWebLegacy.fill.inferLabelFromTableRow = function(
   // Find the current row.
   let parentNode = element.parentNode;
   while (parentNode && parentNode.nodeType === Node.ELEMENT_NODE &&
-         !gCrWebLegacy.fill.hasTagName(parentNode, 'tr')) {
+         !inferenceUtil.hasTagName(parentNode as Element, 'tr')) {
     parentNode = parentNode.parentNode;
   }
 
@@ -348,7 +354,7 @@ gCrWebLegacy.fill.inferLabelFromTableRow = function(
   let rowIt = parentNode.previousSibling;
   while (rowIt) {
     if (rowIt.nodeType === Node.ELEMENT_NODE &&
-        gCrWebLegacy.fill.hasTagName(parentNode, 'tr')) {
+        inferenceUtil.hasTagName(parentNode as Element, 'tr')) {
       break;
     }
     rowIt = rowIt.previousSibling;
@@ -362,8 +368,8 @@ gCrWebLegacy.fill.inferLabelFromTableRow = function(
     let prevRowIt = rowIt.firstChild;
     while (prevRowIt) {
       if (prevRowIt.nodeType === Node.ELEMENT_NODE) {
-        if (gCrWebLegacy.fill.hasTagName(prevRowIt, 'td') ||
-            gCrWebLegacy.fill.hasTagName(prevRowIt, 'th')) {
+        if (inferenceUtil.hasTagName(prevRowIt as Element, 'td') ||
+            inferenceUtil.hasTagName(prevRowIt as Element, 'th')) {
           const span = (prevRowIt as HTMLTableCellElement).colSpan;
           const prevRowCountEnd = prevRowCount + span - 1;
           if (prevRowCount === cellPosition &&
@@ -386,16 +392,16 @@ gCrWebLegacy.fill.inferLabelFromTableRow = function(
   // If there is no previous row, or if the previous row and current row do not
   // align, check all previous siblings, skipping non-element nodes, until we
   // find a non-empty text block.
-  let r: InferredLabel | null = null;
+  let r: inferenceUtil.InferredLabel|null = null;
   let previous = parentNode.previousSibling;
   while (!r && previous) {
-    if (gCrWebLegacy.fill.hasTagName(previous, 'tr')) {
+    if (inferenceUtil.hasTagName(previous as Element, 'tr')) {
       r = buildInferredLabelIfValid(findChildText(previous));
     }
     previous = previous.previousSibling;
   }
   return r;
-};
+}
 
 /**
  * Helper for |InferLabelForElement()| that infers a label, if possible, from
@@ -408,20 +414,20 @@ gCrWebLegacy.fill.inferLabelFromTableRow = function(
  * @param element An element to examine.
  * @return The label of element.
  */
-gCrWebLegacy.fill.inferLabelFromEnclosingLabel = function(
-    element: FormControlElement): InferredLabel | null {
+export function inferLabelFromEnclosingLabel(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   if (!element) {
     return null;
   }
   let node = element.parentNode;
-  while (node && !gCrWebLegacy.fill.hasTagName(node, 'label')) {
+  while (node && !inferenceUtil.hasTagName(node as Element, 'label')) {
     node = node.parentNode;
   }
   if (node) {
     return buildInferredLabelIfValid(findChildText(node));
   }
   return null;
-};
+}
 
 /**
  * Helper for |InferLabelForElement()| that infers a label, if possible, from
@@ -444,8 +450,10 @@ gCrWebLegacy.fill.inferLabelFromEnclosingLabel = function(
  * @param element An element to examine.
  * @return The label of element.
  */
-gCrWebLegacy.fill.inferLabelFromDivTable = function(
-    element: FormControlElement): InferredLabel | null {
+// TODO(crbug.com/454044167): Cleanup autofill TS type casting.
+
+export function inferLabelFromDivTable(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   if (!element) {
     return null;
   }
@@ -455,9 +463,9 @@ gCrWebLegacy.fill.inferLabelFromDivTable = function(
   const divsToSkip: Node[] = [];
 
   // Search the sibling and parent <div>s until we find a candidate label.
-  let r: InferredLabel | null = null;
+  let r: inferenceUtil.InferredLabel|null = null;
   while (!r && node) {
-    if (gCrWebLegacy.fill.hasTagName(node, 'div')) {
+    if (inferenceUtil.hasTagName(node as Element, 'div')) {
       r = buildInferredLabelIfValid(
           lookingForParent
               ? findChildTextWithIgnoreList(node, divsToSkip)
@@ -485,7 +493,7 @@ gCrWebLegacy.fill.inferLabelFromDivTable = function(
     } else if (!lookingForParent) {
       // Infer a label from text nodes and unassigned <label> siblings.
       if (node.nodeType === Node.TEXT_NODE ||
-          (gCrWebLegacy.fill.hasTagName(node, 'label') &&
+          (inferenceUtil.hasTagName(node as Element, 'label') &&
            !(node as HTMLLabelElement).control)) {
         r = buildInferredLabelIfValid(findChildText(node));
       }
@@ -507,7 +515,7 @@ gCrWebLegacy.fill.inferLabelFromDivTable = function(
   }
 
   return r;
-};
+}
 
 /**
  * Helper for |InferLabelForElement()| that infers a label, if possible, from
@@ -521,19 +529,20 @@ gCrWebLegacy.fill.inferLabelFromDivTable = function(
  * @param element An element to examine.
  * @return The label of element.
  */
-gCrWebLegacy.fill.inferLabelFromDefinitionList = function(
-    element: FormControlElement): InferredLabel | null {
+
+export function inferLabelFromDefinitionList(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   if (!element) {
     return null;
   }
 
   let parentNode = element.parentNode;
   while (parentNode && parentNode.nodeType === Node.ELEMENT_NODE &&
-         !gCrWebLegacy.fill.hasTagName(parentNode, 'dd')) {
+         !inferenceUtil.hasTagName(parentNode as Element, 'dd')) {
     parentNode = parentNode.parentNode;
   }
 
-  if (!parentNode || !gCrWebLegacy.fill.hasTagName(parentNode, 'dd')) {
+  if (!parentNode || !inferenceUtil.hasTagName(parentNode as Element, 'dd')) {
     return null;
   }
 
@@ -543,12 +552,12 @@ gCrWebLegacy.fill.inferLabelFromDefinitionList = function(
     previous = previous.previousSibling;
   }
 
-  if (!previous || !gCrWebLegacy.fill.hasTagName(previous, 'dt')) {
+  if (!previous || !inferenceUtil.hasTagName(previous as Element, 'dt')) {
     return null;
   }
 
   return buildInferredLabelIfValid(findChildText(previous));
-};
+}
 
 /**
  * Infers corresponding label for |element| from surrounding context in the DOM,
@@ -560,17 +569,17 @@ gCrWebLegacy.fill.inferLabelFromDefinitionList = function(
  * @param element An element to examine.
  * @return The inferred label of element, or '' if none could be found.
  */
-gCrWebLegacy.fill.inferLabelForElement = function(
-    element: FormControlElement): InferredLabel | null {
-  let r: InferredLabel | null = null;
-  if (gCrWebLegacy.fill.isCheckableElement(element)) {
+export function inferLabelForElement(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
+  let r: inferenceUtil.InferredLabel|null = null;
+  if (inferenceUtil.isCheckableElement(element)) {
     r = inferLabelFromNext(element);
     if (r) {
       return r;
     }
   }
 
-  r = gCrWebLegacy.fill.inferLabelFromPrevious(element);
+  r = inferLabelFromPrevious(element);
   if (r) {
     return r;
   }
@@ -600,18 +609,18 @@ gCrWebLegacy.fill.inferLabelForElement = function(
 
     seenTagNames[tagName] = true;
     if (tagName === 'LABEL') {
-      r = gCrWebLegacy.fill.inferLabelFromEnclosingLabel(element);
+      r = inferLabelFromEnclosingLabel(element);
     } else if (tagName === 'DIV') {
-      r = gCrWebLegacy.fill.inferLabelFromDivTable(element);
+      r = inferLabelFromDivTable(element);
     } else if (tagName === 'TD') {
-      r = gCrWebLegacy.fill.inferLabelFromTableColumn(element);
+      r = inferLabelFromTableColumn(element);
       if (!r) {
-        r = gCrWebLegacy.fill.inferLabelFromTableRow(element);
+        r = inferLabelFromTableRow(element);
       }
     } else if (tagName === 'DD') {
-      r = gCrWebLegacy.fill.inferLabelFromDefinitionList(element);
+      r = inferLabelFromDefinitionList(element);
     } else if (tagName === 'LI') {
-      r = gCrWebLegacy.fill.inferLabelFromListItem(element);
+      r = inferLabelFromListItem(element);
     } else if (tagName === 'FIELDSET') {
       break;
     }
@@ -622,6 +631,4 @@ gCrWebLegacy.fill.inferLabelForElement = function(
   }
   // If we didn't find a label, check for the value attribute case.
   return inferLabelFromValueAttr(element);
-};
-
-export {inferLabelFromNext};
+}

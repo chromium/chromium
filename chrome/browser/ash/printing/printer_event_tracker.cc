@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
 
+#include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 
 namespace ash {
@@ -148,12 +149,11 @@ void SetPpdInfo(metrics::PrinterEventProto* event,
 
 // Add information to |event| specific to |usb_printer|.
 void SetUsbInfo(metrics::PrinterEventProto* event,
-                const PrinterDetector::DetectedPrinter& detected) {
-  event->set_usb_vendor_id(detected.ppd_search_data.usb_vendor_id);
-  event->set_usb_model_id(detected.ppd_search_data.usb_product_id);
-  event->set_usb_printer_manufacturer(
-      detected.ppd_search_data.usb_manufacturer);
-  event->set_usb_printer_model(detected.ppd_search_data.usb_model);
+                const chromeos::PrinterSearchData& ppd_search_data) {
+  event->set_usb_vendor_id(ppd_search_data.usb_vendor_id);
+  event->set_usb_model_id(ppd_search_data.usb_product_id);
+  event->set_usb_printer_manufacturer(ppd_search_data.usb_manufacturer);
+  event->set_usb_printer_model(ppd_search_data.usb_model);
 }
 
 // Add information to the |event| that only network printers have.
@@ -211,7 +211,8 @@ void PrinterEventTracker::set_logging(bool logging) {
 }
 
 void PrinterEventTracker::RecordUsbPrinterInstalled(
-    const PrinterDetector::DetectedPrinter& detected,
+    const chromeos::Printer::PpdReference& ppd_reference,
+    const chromeos::PrinterSearchData& ppd_search_data,
     SetupMode mode) {
   base::AutoLock l(lock_);
   if (!logging_) {
@@ -220,8 +221,8 @@ void PrinterEventTracker::RecordUsbPrinterInstalled(
 
   metrics::PrinterEventProto event;
   SetEventType(&event, mode);
-  SetPpdInfo(&event, detected.printer.ppd_reference());
-  SetUsbInfo(&event, detected);
+  SetPpdInfo(&event, ppd_reference);
+  SetUsbInfo(&event, ppd_search_data);
   events_.push_back(event);
 }
 
@@ -245,7 +246,7 @@ void PrinterEventTracker::RecordIppPrinterInstalled(
 }
 
 void PrinterEventTracker::RecordUsbSetupAbandoned(
-    const PrinterDetector::DetectedPrinter& detected) {
+    const chromeos::PrinterSearchData& ppd_search_data) {
   base::AutoLock l(lock_);
   if (!logging_) {
     return;
@@ -253,7 +254,7 @@ void PrinterEventTracker::RecordUsbSetupAbandoned(
 
   metrics::PrinterEventProto event;
   event.set_event_type(metrics::PrinterEventProto::SETUP_ABANDONED);
-  SetUsbInfo(&event, detected);
+  SetUsbInfo(&event, ppd_search_data);
   events_.push_back(event);
 }
 

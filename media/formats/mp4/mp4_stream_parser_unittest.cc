@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/mp4_stream_parser.h"
 
 #include <stddef.h>
@@ -984,9 +979,7 @@ TEST_F(MP4StreamParserTest, Vp9) {
                             VideoColorSpace::MatrixID::BT2020_NCL,
                             gfx::ColorSpace::RangeID::LIMITED));
 
-  ASSERT_TRUE(video_decoder_config_.hdr_metadata().has_value());
-
-  const auto& hdr_metadata = *video_decoder_config_.hdr_metadata();
+  const auto& hdr_metadata = video_decoder_config_.hdr_metadata();
   EXPECT_EQ(hdr_metadata.cta_861_3->max_content_light_level, 1000u);
   EXPECT_EQ(hdr_metadata.cta_861_3->max_frame_average_light_level, 640u);
 
@@ -1104,10 +1097,11 @@ TEST_P(MP4StreamParserRotationMatrixEvaluatorTest, RotationCalculation) {
   MovieHeader movie_header;
 
   // Identity matrix, with 16.16 and 2.30 fixed points.
-  uint32_t identity_matrix[9] = {1 << 16, 0, 0, 0, 1 << 16, 0, 0, 0, 1 << 30};
+  static constexpr std::array<int32_t, 9u> identity_matrix = {
+      1 << 16, 0, 0, 0, 1 << 16, 0, 0, 0, 1 << 30};
 
-  memcpy(movie_header.display_matrix, identity_matrix, sizeof(identity_matrix));
-  memcpy(track_header.display_matrix, identity_matrix, sizeof(identity_matrix));
+  base::span(movie_header.display_matrix).copy_from(identity_matrix);
+  base::span(track_header.display_matrix).copy_from(identity_matrix);
 
   MatrixRotationTestCaseParam data = GetParam();
 

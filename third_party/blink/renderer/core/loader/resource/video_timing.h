@@ -42,11 +42,6 @@ class VideoTiming final : public GarbageCollected<VideoTiming>,
     return first_frame_time_;
   }
 
-  void SetTimingAllowPassed(bool timing_allow_passed) {
-    timing_allow_passed_ = timing_allow_passed;
-  }
-  bool TimingAllowPassed() const override { return timing_allow_passed_; }
-
   uint64_t ContentSizeForEntropy() const override {
     // We don't do anything clever here to try to isolate the encoded size of
     // just the first frame; if we're calling this, then at least enough data
@@ -80,7 +75,6 @@ class VideoTiming final : public GarbageCollected<VideoTiming>,
   KURL url_;
   bool is_loaded_ = false;
   base::TimeTicks first_frame_time_;
-  bool timing_allow_passed_ = false;
   size_t content_size_ = 0;
 };
 

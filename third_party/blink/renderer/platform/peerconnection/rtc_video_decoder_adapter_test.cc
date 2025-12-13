@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -173,6 +174,12 @@ class RTCVideoDecoderAdapterWrapper : public webrtc::VideoDecoder {
                        &wrapper->rtc_video_decoder_adapter_, gpu_factories,
                        format, pass_resolution_monitor, &waiter, &result));
     waiter.Wait();
+
+    // To avoid a dangling `gpu_factories` pointer during test teardown, wait
+    // for the `RTCVideoDecoderAdapter::SharedResources` to acquire the raster
+    // context provider from the main thread.
+    base::RunLoop().RunUntilIdle();
+
     return result ? std::move(wrapper) : nullptr;
   }
 
@@ -699,6 +706,7 @@ TEST_F(RTCVideoDecoderAdapterTest, DecoderCountIsIncrementedByDecode) {
 
   // Make sure that it goes back to zero.
   EXPECT_EQ(GetCurrentDecoderCount(), 1);
+
   adapter_wrapper_.reset();
   media_thread_.FlushForTesting();
   EXPECT_EQ(GetCurrentDecoderCount(), 0);

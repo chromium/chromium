@@ -32,6 +32,7 @@
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -56,6 +57,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 namespace {

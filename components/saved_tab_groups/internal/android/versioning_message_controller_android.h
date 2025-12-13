@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/saved_tab_groups/public/versioning_message_controller.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace tab_groups {
 
@@ -24,19 +24,19 @@ class VersioningMessageControllerAndroid {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env);
 
-  bool IsInitialized(JNIEnv* env, const JavaParamRef<jobject>& j_caller);
+  bool IsInitialized(JNIEnv* env, const JavaRef<jobject>& j_caller);
   bool ShouldShowMessageUi(JNIEnv* env,
-                           const JavaParamRef<jobject>& j_caller,
+                           const JavaRef<jobject>& j_caller,
                            jint j_message_type);
   void ShouldShowMessageUiAsync(JNIEnv* env,
-                                const JavaParamRef<jobject>& j_caller,
+                                const JavaRef<jobject>& j_caller,
                                 jint j_message_type,
-                                const JavaParamRef<jobject>& j_callback);
+                                const JavaRef<jobject>& j_callback);
   void OnMessageUiShown(JNIEnv* env,
-                        const JavaParamRef<jobject>& j_caller,
+                        const JavaRef<jobject>& j_caller,
                         jint j_message_type);
   void OnMessageUiDismissed(JNIEnv* env,
-                            const JavaParamRef<jobject>& j_caller,
+                            const JavaRef<jobject>& j_caller,
                             jint j_message_type);
 
  private:

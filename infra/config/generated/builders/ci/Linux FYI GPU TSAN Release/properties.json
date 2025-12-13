@@ -45,7 +45,8 @@
           "group": "tryserver.chromium.linux"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux FYI GPU TSAN Release/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Linux FYI GPU TSAN Release/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

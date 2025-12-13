@@ -7,6 +7,7 @@
 import type {AccountStorageEnabledStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions, ShouldShowAccountStorageToggleChangedListener} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
+import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
 import {makeFamilyFetchResults, makePasswordCheckStatus} from './test_util.js';
 
 /**
@@ -16,6 +17,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     PasswordManagerProxy {
   data: {
     blockedSites: BlockedSite[],
+    actorLoginPermissions: ActorLoginPermission[],
     checkStatus: chrome.passwordsPrivate.PasswordCheckStatus,
     credentialWithReusedPassword: chrome.passwordsPrivate.PasswordUiEntryList[],
     familyFetchResults: chrome.passwordsPrivate.FamilyFetchResults,
@@ -65,12 +67,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'changeCredential',
       'changePasswordManagerPin',
       'continueImport',
+      'copyPlaintextBackupPassword',
       'deleteAllPasswordManagerData',
       'disconnectCloudAuthenticator',
       'dismissSafetyHubPasswordMenuNotification',
       'exportPasswords',
       'extendAuthValidity',
       'fetchFamilyMembers',
+      'getActorLoginPermissions',
       'getBlockedSitesList',
       'getCredentialGroups',
       'getCredentialsWithReusedPassword',
@@ -90,10 +94,12 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'recordPasswordViewInteraction',
       'removeBlockedSite',
       'removeCredential',
+      'removeBackupPassword',
       'requestCredentialsDetails',
       'requestExportProgressStatus',
       'requestPlaintextPassword',
       'resetImporter',
+      'revokeActorLoginPermission',
       'sharePassword',
       'showAddShortcutDialog',
       'showExportedFileInShell',
@@ -106,6 +112,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     // Set these to have non-empty data.
     this.data = {
       blockedSites: [],
+      actorLoginPermissions: [],
       checkStatus: makePasswordCheckStatus({}),
       credentialWithReusedPassword: [],
       familyFetchResults: makeFamilyFetchResults(),
@@ -251,6 +258,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     return Promise.resolve('plainTextPassword');
   }
 
+  copyPlaintextBackupPassword(id: number) {
+    this.methodCalled('copyPlaintextBackupPassword', {id});
+    return Promise.resolve(true);
+  }
+
   addPassword(options: chrome.passwordsPrivate.AddPasswordOptions) {
     this.methodCalled('addPassword', options);
     return Promise.resolve();
@@ -264,6 +276,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   removeCredential(
       id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet) {
     this.methodCalled('removeCredential', {id, fromStores});
+  }
+
+  removeBackupPassword(id: number) {
+    this.methodCalled('removeBackupPassword', {id});
   }
 
   removeBlockedSite(id: number) {
@@ -453,5 +469,18 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     }
 
     return Promise.reject(new Error());
+  }
+
+  getActorLoginPermissions() {
+    this.methodCalled('getActorLoginPermissions');
+    return Promise.resolve(this.data.actorLoginPermissions.slice());
+  }
+
+  revokeActorLoginPermission(site: ActorLoginPermission) {
+    this.methodCalled('revokeActorLoginPermission', site);
+    this.data.actorLoginPermissions = this.data.actorLoginPermissions.filter(
+        s =>
+            !(s.domainInfo.signonRealm === site.domainInfo.signonRealm &&
+              s.username === site.username));
   }
 }

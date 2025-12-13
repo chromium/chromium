@@ -38,6 +38,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/visitedlink/browser/partitioned_visitedlink_writer.cc:AddFingerprint) -->
 
+<enum name="BooleanDatabaseKilled">
+  <int value="0" label="Not Killed">The database was not razed.</int>
+  <int value="1" label="Killed">The database was razed.</int>
+</enum>
+
 <enum name="BooleanQueried">
   <int value="0" label="Not Queried"/>
   <int value="1" label="Queried"/>
@@ -59,7 +64,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="kNetworkErrorLogging"/>
   <int value="12" label="kTrustTokens"/>
   <int value="13" label="kConversions"/>
-  <int value="14" label="kDeferredCookies"/>
+  <int value="14" label="(obsolete) kDeferredCookies"/>
   <int value="15" label="kSharedStorage"/>
   <int value="16" label="kPreflightCache"/>
   <int value="17" label="kSharedDictionary"/>
@@ -231,6 +236,20 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="HistoryDatabaseVersion">
+<!-- Enum definitions must have a least one value, but we won't define beyond
+       value "0" because the version label is always identical to the version
+       value. There is no need to list them all explicitly. We care that version
+       numbers be treated as an enum rather than an integral value because they
+       should be viewed as buckets (averages and percentiles of version numbers
+       are non-sensical). -->
+
+  <int value="0" label="0">
+    Version 0 can either mean that the history database has no meta table, or
+    that the meta table is missing the version field.
+  </int>
+</enum>
+
 <enum name="HistoryInitStep">
   <int value="0" label="Open"/>
   <int value="1" label="Transaction begin"/>
@@ -302,6 +321,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/storage_partition_impl.cc:TracingDataType) -->
+
+<!-- LINT.IfChange(VisitContextMenuAction) -->
+
+<enum name="VisitContextMenuAction">
+  <int value="0" label="More from this site clicked"/>
+  <int value="1" label="Remove from history clicked"/>
+  <int value="2" label="Remove bookmark clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/history/constants.ts:VisitContextMenuAction) -->
 
 </enums>
 

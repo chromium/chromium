@@ -52,6 +52,7 @@ public class DragDropMetricUtils {
         UrlIntentSource.LINK,
         UrlIntentSource.TAB_IN_STRIP,
         UrlIntentSource.TAB_GROUP_IN_STRIP,
+        UrlIntentSource.MULTI_TAB_IN_STRIP,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface UrlIntentSource {
@@ -59,7 +60,8 @@ public class DragDropMetricUtils {
         int LINK = 1;
         int TAB_IN_STRIP = 2;
         int TAB_GROUP_IN_STRIP = 3;
-        int NUM_ENTRIES = 4;
+        int MULTI_TAB_IN_STRIP = 4;
+        int NUM_ENTRIES = 5;
     }
 
     /**
@@ -97,13 +99,16 @@ public class DragDropMetricUtils {
      *
      * @param dragDropType An enum indicating the drag source and drop target.
      * @param isInDesktopWindow Whether the app is running in a desktop window.
-     * @param isTabGroup True if the dragged item is a tab group; otherwise, it is assumed to be a
-     *     single tab.
+     * @param isTabGroup True if the dragged item is a tab group.
+     * @param isMultiTab True if the dragged item is part of a multi-tab operation.
      */
     public static void recordDragDropType(
-            @DragDropType int dragDropType, boolean isInDesktopWindow, boolean isTabGroup) {
-        String histogram =
-                String.format("Android.DragDrop.%s.Type", isTabGroup ? "TabGroup" : "Tab");
+            @DragDropType int dragDropType,
+            boolean isInDesktopWindow,
+            boolean isTabGroup,
+            boolean isMultiTab) {
+        String dragDropItemType = getDragDropItemType(isTabGroup, isMultiTab);
+        String histogram = String.format("Android.DragDrop.%s.Type", dragDropItemType);
         RecordHistogram.recordEnumeratedHistogram(
                 histogram, dragDropType, DragDropType.NUM_ENTRIES);
         if (isInDesktopWindow) {
@@ -121,12 +126,15 @@ public class DragDropMetricUtils {
      * @param isInDesktopWindow Whether the app is running in a desktop window.
      * @param isTabGroup True if the dragged item is a tab group; otherwise, it is assumed to be a
      *     single tab.
+     * @param isMultiTab True if the dragged item is part of a multi-tab operation.
      */
     public static void recordDragDropResult(
-            @DragDropResult int result, boolean isInDesktopWindow, boolean isTabGroup) {
-        String histogram =
-                String.format(
-                        "Android.DragDrop.%s.FromStrip.Result", isTabGroup ? "TabGroup" : "Tab");
+            @DragDropResult int result,
+            boolean isInDesktopWindow,
+            boolean isTabGroup,
+            boolean isMultiTab) {
+        String dragDropItemType = getDragDropItemType(isTabGroup, isMultiTab);
+        String histogram = String.format("Android.DragDrop.%s.FromStrip.Result", dragDropItemType);
         RecordHistogram.recordEnumeratedHistogram(histogram, result, DragDropResult.NUM_ENTRIES);
         if (isInDesktopWindow) {
             RecordHistogram.recordEnumeratedHistogram(
@@ -141,12 +149,13 @@ public class DragDropMetricUtils {
      * @param leavingStrip Whether the tab drag has left the source strip.
      * @param isTabGroup True if the dragged item is a tab group; otherwise, it is assumed to be a
      *     single tab.
+     * @param isMultiTab True if the dragged item is part of a multi-tab operation.
      */
-    public static void recordReorderStripWithDragDrop(boolean leavingStrip, boolean isTabGroup) {
+    public static void recordReorderStripWithDragDrop(
+            boolean leavingStrip, boolean isTabGroup, boolean isMultiTab) {
+        String dragDropItemType = getDragDropItemType(isTabGroup, isMultiTab);
         String histogram =
-                String.format(
-                        "Android.DragDrop.%s.ReorderStripWithDragDrop",
-                        isTabGroup ? "TabGroup" : "Tab");
+                String.format("Android.DragDrop.%s.ReorderStripWithDragDrop", dragDropItemType);
         RecordHistogram.recordBooleanHistogram(histogram, leavingStrip);
     }
 
@@ -158,11 +167,23 @@ public class DragDropMetricUtils {
      *     Chrome window.
      * @param isTabGroup True if the dragged item is a tab group; otherwise, it is assumed to be a
      *     single tab.
+     * @param isMultiTab True if the dragged item is part of a multi-tab operation.
      */
-    public static void recordDragDropClosedWindow(boolean didCloseWindow, boolean isTabGroup) {
+    public static void recordDragDropClosedWindow(
+            boolean didCloseWindow, boolean isTabGroup, boolean isMultiTab) {
+        String dragDropItemType = getDragDropItemType(isTabGroup, isMultiTab);
         String histogram =
-                String.format(
-                        "Android.DragDrop.%s.SourceWindowClosed", isTabGroup ? "TabGroup" : "Tab");
+                String.format("Android.DragDrop.%s.SourceWindowClosed", dragDropItemType);
         RecordHistogram.recordBooleanHistogram(histogram, didCloseWindow);
+    }
+
+    private static String getDragDropItemType(boolean isTabGroup, boolean isMultiTab) {
+        if (isMultiTab) {
+            return "MultiTab";
+        } else if (isTabGroup) {
+            return "TabGroup";
+        } else {
+            return "Tab";
+        }
     }
 }

@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
@@ -16,7 +16,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 #include "url/gurl.h"
 
 WebAppFrameToolbarTestMixin::WebAppFrameToolbarTestMixin() {
@@ -42,9 +42,9 @@ void WebAppFrameToolbarTestMixin::InstallAndLaunchWebApp(
   navigation_observer.WaitForNavigationFinished();
 
   browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
-  views::NonClientFrameView* frame_view =
+  views::FrameView* frame_view =
       browser_view_->GetWidget()->non_client_view()->frame_view();
-  frame_view_ = static_cast<BrowserNonClientFrameView*>(frame_view);
+  frame_view_ = static_cast<BrowserFrameView*>(frame_view);
 
   web_app_frame_toolbar_ = frame_view_->web_app_frame_toolbar_for_testing();
   DCHECK(web_app_frame_toolbar_);

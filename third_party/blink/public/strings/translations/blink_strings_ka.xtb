@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">შეამოკლეთ ტექსტი <ph name="MAX_CHARACTERS" /> ან ნაკლები რაოდენობის სიმბოლომდე (ამჟამად გამოყენებულია <ph name="CURRENT_LENGTH" /> სიმბოლო).</translation>
 <translation id="2247351761944213033">კვირა <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ჩანაწერი <ph name="NUMBER" /></translation>
+<translation id="2500270406326775625">მონაცემთა URL</translation>
 <translation id="2507943997699731163">შეავსეთ ეს ველი.</translation>
 <translation id="2613802280814924224">შეიყვანეთ სწორი მნიშვნელობა. უახლოესი სწორი მნიშვნელობაა <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">გაგზავნა</translation>

@@ -22,8 +22,8 @@ import android.graphics.drawable.Drawable;
 import androidx.browser.customtabs.ExperimentalOpenInBrowser;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
@@ -40,6 +40,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Implements CustomTab-specific behavior of adaptive toolbar button. */
 @NullMarked
@@ -97,7 +98,8 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
     @ExperimentalOpenInBrowser
     @Override
     public void registerPerSurfaceButtons(
-            AdaptiveToolbarButtonController controller, Supplier<Tracker> trackerSupplier) {
+            AdaptiveToolbarButtonController controller,
+            Supplier<@Nullable Tracker> trackerSupplier) {
         if (ChromeFeatureList.sCctAdaptiveButtonEnableVoice.getValue()) {
             mRegisterVoiceSearchRunnable.run();
         }
@@ -208,8 +210,7 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
 
     @ExperimentalOpenInBrowser
     private boolean isOpenInBrowserButtonEnabled() {
-        return ChromeFeatureList.sCctAdaptiveButtonEnableOpenInBrowser.getValue()
-                && mIntentDataProvider.getOpenInBrowserButtonState() != OPEN_IN_BROWSER_STATE_OFF;
+        return mIntentDataProvider.getOpenInBrowserButtonState() != OPEN_IN_BROWSER_STATE_OFF;
     }
 
     private boolean isShareButtonEnabled() {

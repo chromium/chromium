@@ -40,10 +40,10 @@
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/content_settings_provider.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -65,6 +65,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
@@ -156,9 +157,6 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
      "file-system-access-handles-data"},
     {ContentSettingsType::FEDERATED_IDENTITY_API, "federated-identity-api"},
-    {ContentSettingsType::PRIVATE_NETWORK_GUARD, "private-network-devices"},
-    {ContentSettingsType::PRIVATE_NETWORK_CHOOSER_DATA,
-     "private-network-devices-data"},
     {ContentSettingsType::ANTI_ABUSE, "anti-abuse"},
     {ContentSettingsType::STORAGE_ACCESS, "storage-access"},
     {ContentSettingsType::AUTO_PICTURE_IN_PICTURE, "auto-picture-in-picture"},
@@ -232,18 +230,15 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, nullptr},
     {ContentSettingsType::ALL_SCREEN_CAPTURE, nullptr},
     {ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr},
-    {ContentSettingsType::TPCD_TRIAL, nullptr},
     {ContentSettingsType::TPCD_METADATA_GRANTS, nullptr},
     // TODO(crbug.com/40101962): Update the name once the design is finalized
     // for the integration with Safety Hub.
     {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, nullptr},
     {ContentSettingsType::TPCD_HEURISTICS_GRANTS, nullptr},
     {ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION, nullptr},
-    {ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, nullptr},
     {ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS, nullptr},
     {ContentSettingsType::DIRECT_SOCKETS, nullptr},
     {ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS, nullptr},
-    {ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL, nullptr},
     {ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO, nullptr},
     {ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL, nullptr},
     // TODO(crbug.com/368266658): Implement the UI for Direct Sockets PNA.
@@ -261,6 +256,13 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS, nullptr},
     // TODO(crbug.com/430494524): Implement the WebUI
     {ContentSettingsType::GEOLOCATION_WITH_OPTIONS, nullptr},
+    {ContentSettingsType::DEVICE_ATTRIBUTES, nullptr},
+    {ContentSettingsType::PERMISSION_ACTIONS_HISTORY, nullptr},
+    {ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL, nullptr},
+    // TODO(crbug.com/465491626): Implement UI for both LOCAL_NETWORK and
+    // LOOPBACK_NETWORK
+    {ContentSettingsType::LOCAL_NETWORK, nullptr},
+    {ContentSettingsType::LOOPBACK_NETWORK, nullptr},
 });
 
 static_assert(
@@ -282,7 +284,7 @@ bool ShouldShowIwaContentSettingForOrigin(Profile* profile,
                                           std::string_view origin,
                                           ContentSettingsType content_setting) {
   // Show for non-origin-specific lists, IWAs, and non-default values.
-  if (origin.empty() || GURL(origin).SchemeIs(chrome::kIsolatedAppScheme)) {
+  if (origin.empty() || GURL(origin).SchemeIs(webapps::kIsolatedAppScheme)) {
     return true;
   }
   if (!profile) {
@@ -381,7 +383,7 @@ std::string GetDisplayNameForPattern(Profile* profile,
                                      const ContentSettingsPattern& pattern) {
   GURL url(pattern.ToString());
   if (url.is_valid() && (url.SchemeIs(extensions::kExtensionScheme) ||
-                         url.SchemeIs(chrome::kIsolatedAppScheme))) {
+                         url.SchemeIs(webapps::kIsolatedAppScheme))) {
     return GetDisplayNameForGURL(profile, url, /*hostname_only=*/false);
   }
   return pattern.ToString();
@@ -576,6 +578,7 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
   // so are not included here.
   static base::NoDestructor<std::vector<ContentSettingsType>> base_types{{
       ContentSettingsType::AR,
+      ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
       ContentSettingsType::AUTOMATIC_DOWNLOADS,
       ContentSettingsType::BACKGROUND_SYNC,
       ContentSettingsType::CLIPBOARD_READ_WRITE,
@@ -636,16 +639,6 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
       base_types->push_back(ContentSettingsType::ADS);
     }
 
-    if (base::FeatureList::IsEnabled(
-            network::features::kPrivateNetworkAccessPermissionPrompt)) {
-      base_types->push_back(ContentSettingsType::PRIVATE_NETWORK_GUARD);
-    }
-
-    if (base::FeatureList::IsEnabled(
-            blink::features::kMediaSessionEnterPictureInPicture)) {
-      base_types->push_back(ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
-    }
-
     if (base::FeatureList::IsEnabled(blink::features::kSpeakerSelection)) {
       base_types->push_back(ContentSettingsType::SPEAKER_SELECTION);
     }
@@ -680,9 +673,7 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
 
   // The permission categories below are only shown for certain origins.
   std::vector<ContentSettingsType> types_for_origin = *base_types;
-  if (base::FeatureList::IsEnabled(
-          features::kAutomaticFullscreenContentSetting) &&
-      ShouldShowIwaContentSettingForOrigin(
+  if (ShouldShowIwaContentSettingForOrigin(
           profile, origin, ContentSettingsType::AUTOMATIC_FULLSCREEN)) {
     types_for_origin.push_back(ContentSettingsType::AUTOMATIC_FULLSCREEN);
   }
@@ -774,7 +765,7 @@ std::string ProviderToDefaultSettingSourceString(const ProviderType provider) {
     case ProviderType::kNotificationAndroidProvider:
     case ProviderType::kProviderForTests:
     case ProviderType::kOtherProviderForTests:
-      NOTREACHED();
+      NOTREACHED() << provider;
   }
 }
 
@@ -906,7 +897,7 @@ std::string GetStorageAccessDisplayNameForPattern(
     ContentSettingsPattern pattern) {
   GURL url(pattern.ToString());
   if (url.is_valid() && (url.SchemeIs(extensions::kExtensionScheme) ||
-                         url.SchemeIs(chrome::kIsolatedAppScheme))) {
+                         url.SchemeIs(webapps::kIsolatedAppScheme))) {
     return GetDisplayNameForGURL(profile, url, /*hostname_only=*/false);
   }
 
@@ -1469,7 +1460,8 @@ std::vector<web_app::IsolatedWebAppUrlInfo> GetInstalledIsolatedWebApps(
   std::vector<web_app::IsolatedWebAppUrlInfo> iwas;
   web_app::WebAppRegistrar& registrar = web_app_provider->registrar_unsafe();
   for (const web_app::WebApp& web_app : registrar.GetApps()) {
-    if (!registrar.IsIsolated(web_app.app_id())) {
+    if (!registrar.AppMatches(web_app.app_id(),
+                              web_app::WebAppFilter::IsIsolatedApp())) {
       continue;
     }
     base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =

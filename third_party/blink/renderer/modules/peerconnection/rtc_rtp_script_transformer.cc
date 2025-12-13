@@ -25,18 +25,26 @@ void HandleSendKeyFrameRequestResult(
         resolver->GetExecutionContext()->IsContextThread());
   String message;
   switch (result) {
+    case RTCRtpScriptTransform::SendKeyFrameRequestResult::kUnused:
+      message = "Never attached to a receiver.";
+      break;
     case RTCRtpScriptTransform::SendKeyFrameRequestResult::kNoReceiver:
-      message = "Not attached to a receiver.";
+      message = "Attached to a sender.";
       break;
     case RTCRtpScriptTransform::SendKeyFrameRequestResult::kNoVideo:
       message = "The kind of the receiver is not video.";
       break;
-    case RTCRtpScriptTransform::SendKeyFrameRequestResult::kInvalidState:
+    case RTCRtpScriptTransform::SendKeyFrameRequestResult::kNoTransformer:
       message = "Invalid state.";
       break;
-    case RTCRtpScriptTransform::SendKeyFrameRequestResult::kTrackEnded:
-      message = "The receiver track is ended.";
+    case RTCRtpScriptTransform::SendKeyFrameRequestResult::kInvalidDirection:
+      message = "Invalid transceiver direction";
       break;
+    case RTCRtpScriptTransform::SendKeyFrameRequestResult::kDetached:
+      // Being detached from the receiver does not send any request, but should
+      // resolve.
+    case RTCRtpScriptTransform::SendKeyFrameRequestResult::kTrackEnded:
+      // Track ended does not send any request, but should resolve.
     case RTCRtpScriptTransform::SendKeyFrameRequestResult::kSuccess:
       resolver->Resolve();
       return;
@@ -153,7 +161,7 @@ bool RTCRtpScriptTransformer::IsOptionsDirty() const {
 }
 
 void RTCRtpScriptTransformer::SetUpAudio(
-    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    CrossThreadOnceClosure disconnect_callback_source,
     scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
         encoded_audio_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -168,7 +176,7 @@ void RTCRtpScriptTransformer::SetUpAudio(
 }
 
 void RTCRtpScriptTransformer::SetUpVideo(
-    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    CrossThreadOnceClosure disconnect_callback_source,
     scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
         encoded_video_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

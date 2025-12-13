@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 
-#include "base/compiler_specific.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/mojom/messaging/static_bitmap_image.mojom-blink.h"
@@ -43,8 +42,8 @@ ToSerializedAcceleratedImage(
     scoped_refptr<blink::StaticBitmapImage> static_bitmap_image) {
   // TODO(crbug.com/374812177): Remove this clone once the lifetime issues
   // around sending accelerated StaticBitmapImage are resolved.
-  auto cloned_image = blink::StaticBitmapImageTransform::Clone(
-      blink::FlushReason::kCreateImageBitmap, static_bitmap_image);
+  auto cloned_image =
+      blink::StaticBitmapImageTransform::Clone(static_bitmap_image);
   cloned_image->EnsureSyncTokenVerified();
 
   auto shared_image = cloned_image->GetSharedImage();
@@ -56,7 +55,7 @@ ToSerializedAcceleratedImage(
       blink::mojom::blink::SerializedStaticBitmapImage::NewAcceleratedImage(
           blink::AcceleratedImageInfo{
               shared_image->Export(), cloned_image->GetSyncToken(),
-              cloned_image->GetAlphaType(), cloned_image->GetColorSpace(),
+              cloned_image->GetAlphaType(),
               blink::BindOnce(&blink::StaticBitmapImage::UpdateSyncToken,
                               std::move(cloned_image))});
   return result;
@@ -176,8 +175,7 @@ bool StructTraits<blink::mojom::blink::SerializedArrayBufferContents::DataView,
   if (contents_data.size() != array_buffer_contents.DataLength()) {
     return false;
   }
-  UNSAFE_TODO(memcpy(array_buffer_contents.Data(), contents_data.data(),
-                     contents_data.size()));
+  array_buffer_contents.ByteSpan().copy_from(contents_data);
   *out = std::move(array_buffer_contents);
   return true;
 }

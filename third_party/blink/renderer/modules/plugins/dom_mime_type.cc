@@ -49,12 +49,8 @@ String DOMMimeType::suffixes() const {
   const Vector<String>& extensions = mime_class_info_->Extensions();
 
   StringBuilder builder;
-  for (wtf_size_t i = 0; i < extensions.size(); ++i) {
-    if (i)
-      builder.Append(',');
-    builder.Append(extensions[i]);
-  }
-  return builder.ToString();
+  builder.AppendRange(extensions, ",");
+  return builder.ReleaseString();
 }
 
 const String& DOMMimeType::description() const {
@@ -65,7 +61,8 @@ DOMPlugin* DOMMimeType::enabledPlugin() const {
   // FIXME: allowPlugins is just a client call. We should not need
   // to bounce through the loader to get there.
   // Something like: frame()->page()->client()->allowPlugins().
-  if (!window_ || !window_->GetFrame()->Loader().AllowPlugins()) {
+  if (!window_ || !window_->GetFrame() ||
+      !window_->GetFrame()->Loader().AllowPlugins()) {
     return nullptr;
   }
 

@@ -26,14 +26,14 @@ void AudioTrack::Trace(Visitor* visitor) const {
   TrackBase::Trace(visitor);
 }
 
-void AudioTrack::setEnabled(bool enabled) {
+void AudioTrack::setEnabled(bool enabled, ChangeSource source) {
   if (enabled == enabled_)
     return;
 
   enabled_ = enabled;
 
   if (MediaElement())
-    MediaElement()->AudioTrackChanged(this);
+    MediaElement()->AudioTrackChanged(this, source);
 }
 
 const AtomicString& AudioTrack::AlternativeKeyword() {

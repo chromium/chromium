@@ -81,13 +81,10 @@ class CredentialManagerPendingPreventSilentAccessTaskTest
     mock_affiliated_match_helper_ = profile_store_match_helper.get();
 
     profile_store_ = new TestPasswordStore(IsAccountStore(false));
-    profile_store_->Init(
-        /*prefs=*/nullptr,
-        /*affiliated_match_helper=*/std::move(profile_store_match_helper));
+    profile_store_->Init(std::move(profile_store_match_helper));
 
     account_store_ = new TestPasswordStore(IsAccountStore(true));
-    account_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
   }
 
   ~CredentialManagerPendingPreventSilentAccessTaskTest() override {

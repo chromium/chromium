@@ -18,15 +18,12 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
@@ -893,10 +890,9 @@ class CaptureModeProjectorBrowserTests : public CaptureModeCameraBrowserTests {
     ash::SystemWebAppManager::GetForTest(profile)
         ->InstallSystemAppsForTesting();
 
-    ui_test_utils::BrowserChangeObserver browser_opened(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ash::ProjectorClient::Get()->OpenProjectorApp();
-    browser_opened.Wait();
+    browser_created_observer.Wait();
 
     Browser* app_browser =
         FindSystemWebAppBrowser(profile, ash::SystemWebAppType::PROJECTOR);
@@ -972,10 +968,7 @@ class CaptureModeVideoConferenceBrowserTests
   }
 
   ash::VideoConferenceMediaState GetMediaStateInVideoConferenceManager() {
-    return crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->video_conference_manager_ash()
-        ->GetAggregatedState();
+    return ash::VideoConferenceManagerAsh::Get()->GetAggregatedState();
   }
 
  protected:

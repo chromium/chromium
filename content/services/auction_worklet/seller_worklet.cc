@@ -684,7 +684,7 @@ void SellerWorklet::ScoreAd(
   }
 
   score_ad_task->trace_wait_deps_start = base::TimeTicks::Now();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_score_ad_deps", trace_id);
+  TRACE_EVENT_BEGIN("fledge", "wait_score_ad_deps", perfetto::Track(trace_id));
 
   if (trusted_signals_cache_key) {
     // When using the TrustedSignalsCache, must have already discovered that the
@@ -848,8 +848,7 @@ void SellerWorklet::ReportResult(
       direct_from_seller_auction_signals_header_ad_slot;
 
   report_result_task->trace_wait_deps_start = base::TimeTicks::Now();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_report_result_deps",
-                                    trace_id);
+  TRACE_EVENT_BEGIN("fledge", "wait_report_result_deps", trace_id);
   RunReportResultIfReady(report_result_task);
 }
 
@@ -921,10 +920,10 @@ SellerWorklet::V8State::CreateContextRecyclerAndRunTopLevel(
   std::unique_ptr<ContextRecycler> context_recycler =
       std::make_unique<ContextRecycler>(v8_helper_.get());
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "get_seller_context", trace_id);
+  TRACE_EVENT_BEGIN("fledge", "get_seller_context", perfetto::Track(trace_id));
   ContextRecyclerScope context_recycler_scope(*context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "get_seller_context", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "get_seller_context"
 
   // We want this before RunScript, both because it's meant to be visible
   // to globals, and because we don't want to overwrite existing globals.
@@ -933,11 +932,11 @@ SellerWorklet::V8State::CreateContextRecyclerAndRunTopLevel(
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(v8_helper_->isolate());
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "sellerScript", trace_id);
+  TRACE_EVENT_BEGIN("fledge", "sellerScript", perfetto::Track(trace_id));
   AuctionV8Helper::Result result =
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
                             &total_timeout, errors_out);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "sellerScript", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "sellerScript"
   if (result != AuctionV8Helper::Result::kSuccess) {
     script_timed_out = (result == AuctionV8Helper::Result::kTimeout);
     return nullptr;
@@ -1037,7 +1036,7 @@ void SellerWorklet::V8State::ScoreAd(
                           base::TimeTicks::Now() - task_enqueued_time);
   base::ElapsedTimer elapsed_timer;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "post_v8_task"
 
   // Don't need to run `cleanup_score_ad_task` if this method is invoked;
   // it's bound to the closure to clean things up if this method got cancelled.
@@ -1143,10 +1142,10 @@ void SellerWorklet::V8State::ScoreAd(
       "Ads.InterestGroup.Auction.UsedPremadeContextForSellerWorklet",
       used_premade_context);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "get_seller_context", trace_id);
+  TRACE_EVENT_BEGIN("fledge", "get_seller_context", perfetto::Track(trace_id));
   ContextRecyclerScope context_recycler_scope(*context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "get_seller_context", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "get_seller_context"
 
   AuctionV8Logger v8_logger(v8_helper_.get(), context);
 
@@ -1336,7 +1335,7 @@ void SellerWorklet::V8State::ScoreAd(
 
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(isolate);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "score_ad", trace_id);
+  TRACE_EVENT_BEGIN("fledge", "score_ad", perfetto::Track(trace_id));
   v8::MaybeLocal<v8::Value> maybe_score_ad_result;
   AuctionV8Helper::Result result = v8_helper_->CallFunction(
       context, debug_id_.get(),
@@ -1346,7 +1345,7 @@ void SellerWorklet::V8State::ScoreAd(
     score_ad_result = maybe_score_ad_result.ToLocalChecked();
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "score_ad"
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdTime",
                           elapsed_timer.Elapsed());
 
@@ -1734,7 +1733,7 @@ void SellerWorklet::V8State::ReportResult(
     uint64_t trace_id,
     ReportResultCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "post_v8_task"
   base::ElapsedTimer elapsed_timer;
 
   // We may not be allowed any time to run.
@@ -1891,7 +1890,7 @@ void SellerWorklet::V8State::ReportResult(
 
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(isolate);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "report_result", trace_id);
+  TRACE_EVENT_BEGIN("fledge", "report_result", perfetto::Track(trace_id));
 
   std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
       v8_helper_->CreateTimeLimit(
@@ -1902,7 +1901,7 @@ void SellerWorklet::V8State::ReportResult(
                             total_timeout.get(), errors_out);
 
   if (result != AuctionV8Helper::Result::kSuccess) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
+    TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "report_result"
     PostReportResultCallbackToUserThread(
         std::move(callback), /*signals_for_winner=*/std::nullopt,
         /*report_url=*/std::nullopt, /*ad_beacon_map=*/{},
@@ -1951,7 +1950,7 @@ void SellerWorklet::V8State::ReportResult(
     }
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "report_result"
   base::TimeDelta elapsed = elapsed_timer.Elapsed();
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ReportResultTime",
                           elapsed);
@@ -2422,8 +2421,8 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "fledge", "wait_score_ad_deps", task->trace_id, "data",
+  TRACE_EVENT_END(
+      "fledge", perfetto::Track(task->trace_id), "data",
       [&](perfetto::TracedValue trace_context) {
         auto dict = std::move(trace_context).WriteDictionary();
         if (!task->wait_code.is_zero()) {
@@ -2437,7 +2436,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           dict.Add("wait_direct_from_seller_signals_ms",
                    task->wait_direct_from_seller_signals.InMillisecondsF());
         }
-      });
+      });  // "wait_score_ad_deps"
 
   ScoreAdInput slowest_input = ScoreAdInput::kScoringScript;
   base::TimeDelta slowest_input_time = task->wait_code;
@@ -2454,7 +2453,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdInputWaitTime",
                           slowest_input_time);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
+  TRACE_EVENT_BEGIN("fledge", "post_v8_task", perfetto::Track(task->trace_id));
 
   // Normally the PostTask below will eventually get `task` cleaned up once it
   // posts back to DeliverScoreAdCallbackOnUserThread with its results, but that
@@ -2597,8 +2596,8 @@ void SellerWorklet::RunReportResultIfReady(
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "fledge", "wait_report_result_deps", task->trace_id, "data",
+  TRACE_EVENT_END(
+      "fledge", perfetto::Track(task->trace_id), "data",
       [&](perfetto::TracedValue trace_context) {
         auto dict = std::move(trace_context).WriteDictionary();
         if (!task->wait_code.is_zero()) {
@@ -2608,8 +2607,8 @@ void SellerWorklet::RunReportResultIfReady(
           dict.Add("wait_direct_from_seller_signals_ms",
                    task->wait_direct_from_seller_signals.InMillisecondsF());
         }
-      });
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
+      });  // "wait_report_result_deps"
+  TRACE_EVENT_BEGIN("fledge", "post_v8_task", perfetto::Track(task->trace_id));
 
   size_t thread_index = get_next_thread_index_callback_.Run();
   cancelable_task_tracker_.PostTask(

@@ -33,6 +33,7 @@
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/reload_type.h"
@@ -284,14 +285,17 @@ void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
   // blocked navigations.  (This is in contrast to the normal behavior, wherein
   // Chrome marks navigations that result in an error as hidden.)  This is to
   // show the user the same thing that the custodian will see on the dashboard
-  // (where it gets via a different mechanism unrelated to history).
+  // (where it gets via a different mechanism unrelated to history).  Blocked
+  // requests are also distinct from 404 navigations, and we report the attempt
+  // accordingly.
   history::HistoryAddPageArgs add_page_args(
       url, timestamp, history::ContextIDForWebContents(web_contents()),
       /*nav_entry_id=*/0, /*local_navigation_id=*/std::nullopt,
       /*referrer=*/url, history::RedirectList(), ui::PAGE_TRANSITION_BLOCKED,
       /*hidden=*/false, history::SOURCE_BROWSED,
+      history::VisitResponseCodeCategory::kNot404,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
-      /*is_ephemeral=*/false,
+      history::VisitContextEphemerality::kNotEphemeral,
       /*title=*/std::nullopt,
       // TODO(crbug.com/40279734): Investigate whether we want to record blocked
       // navigations in the VisitedLinkDatabase, and if so, populate
@@ -376,7 +380,7 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
           reason);
   supervised_user_interstitials_[frame_id] = std::move(interstitial);
 
-  bool already_requested = base::Contains(requested_hosts_, url.host());
+  bool already_requested = base::Contains(requested_hosts_, url.GetHost());
   bool is_main_frame =
       frame_id == web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
@@ -433,7 +437,7 @@ void SupervisedUserNavigationObserver::RequestUrlAccessRemote(
   interstitial->RequestUrlAccessRemote(
       base::BindOnce(&SupervisedUserNavigationObserver::RequestCreated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     interstitial->url().host()));
+                     interstitial->url().GetHost()));
 }
 
 void SupervisedUserNavigationObserver::RequestUrlAccessLocal(

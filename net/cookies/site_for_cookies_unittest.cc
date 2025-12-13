@@ -20,8 +20,9 @@ namespace net {
 namespace {
 
 std::string NormalizedScheme(const GURL& url) {
-  return url.SchemeIsWSOrWSS() ? ChangeWebSocketSchemeToHttpScheme(url).scheme()
-                               : url.scheme();
+  return url.SchemeIsWSOrWSS()
+             ? ChangeWebSocketSchemeToHttpScheme(url).GetScheme()
+             : url.GetScheme();
 }
 
 // Tests that all URLs from |equivalent| produce SiteForCookies that match
@@ -51,8 +52,9 @@ void TestEquivalentAndDistinct(const std::vector<GURL>& equivalent,
     for (const GURL& other_url : distinct) {
       SiteForCookies other = SiteForCookies::FromUrl(other_url);
       EXPECT_EQ(NormalizedScheme(other_url), other.scheme());
-      EXPECT_EQ(other.RepresentativeUrl().spec(),
-                base::StrCat({other.scheme(), "://", other_url.host(), "/"}));
+      EXPECT_EQ(
+          other.RepresentativeUrl().spec(),
+          base::StrCat({other.scheme(), "://", other_url.GetHost(), "/"}));
 
       EXPECT_FALSE(equiv_a.IsEquivalent(other));
       EXPECT_FALSE(other.IsEquivalent(equiv_a));

@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.PINNED_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
@@ -55,7 +57,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.ColorUtils;
@@ -79,6 +80,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -124,7 +126,9 @@ import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
@@ -154,7 +158,6 @@ import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.ui.util.MotionEventUtils;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
 
@@ -174,10 +177,8 @@ import java.util.stream.IntStream;
         qualifiers = "sw600dp",
         shadows = {ShadowAppCompatResources.class})
 @LooperMode(Mode.LEGACY)
-@DisableFeatures({
-    ChromeFeatureList.DATA_SHARING,
-    ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY
-})
+@DisableFeatures(ChromeFeatureList.DATA_SHARING)
+@EnableFeatures(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
 public class StripLayoutHelperTest {
     private static final Token TAB_GROUP_ID_1 = new Token(1L, 1L);
     private static final Token TAB_GROUP_ID_2 = new Token(1L, 2L);
@@ -185,6 +186,7 @@ public class StripLayoutHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private View mInteractingTabView;
+    @Mock private StripLayoutHelperManager mManager;
     @Mock private LayoutManagerHost mManagerHost;
     @Mock private LayoutUpdateHost mUpdateHost;
     @Mock private LayoutRenderHost mRenderHost;
@@ -204,7 +206,6 @@ public class StripLayoutHelperTest {
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private TabContextMenuCoordinator mTabContextMenuCoordinator;
-    @Mock private MultiSelectedTabsContextMenuCoordinator mMultiSelectedTabsContextMenuCoordinator;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private ShareDelegate mShareDelegate;
@@ -220,10 +221,12 @@ public class StripLayoutHelperTest {
     @Mock private Bitmap mAvatarBitmap;
     @Mock private TintedCompositorButton mCloseButton;
     @Mock TabStripIphController mController;
+    @Mock private TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
+
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
-    @Captor private ArgumentCaptor<Callback<Boolean>> mSharedImageTilesCaptor;
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
     @Captor private ArgumentCaptor<Callback<TabClosureParams>> mTabRemoverCallbackCaptor;
+    @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
 
     private Activity mActivity;
     private Context mContext;
@@ -234,7 +237,6 @@ public class StripLayoutHelperTest {
     private final TestTabModel mModel = spy(new TestTabModel());
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
-    private static final int NEW_ANIM_TAB_RESIZE_MS = 200;
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
     private static final String EXPECTED_TAB = "The view should be a tab.";
     private static final String EXPECTED_TITLE = "The view should be a title.";
@@ -243,10 +245,9 @@ public class StripLayoutHelperTest {
     private static final String IDENTIFIER_SELECTED = "Selected Tab";
     private static final String INCOGNITO_IDENTIFIER = "Incognito Tab";
     private static final String INCOGNITO_IDENTIFIER_SELECTED = "Selected Incognito Tab";
-    private static final float SCREEN_WIDTH = 800.f;
-    private static final float SCREEN_WIDTH_LANDSCAPE = 1200.f;
-    // TODO(wenyufu): This needs to be renamed to TAB_STRIP_HEIGHT.
-    private static final float SCREEN_HEIGHT = 40.f;
+    private static final float STRIP_WIDTH = 800.f;
+    private static final float STRIP_WIDTH_LANDSCAPE = 1200.f;
+    private static final float STRIP_HEIGHT = 40.f;
     private static final float TAB_WIDTH_1 = 140.f;
     private static final float TAB_WIDTH_SMALL = 108.f;
     private static final float TAB_WIDTH_MEDIUM = 156.f;
@@ -282,12 +283,11 @@ public class StripLayoutHelperTest {
                         R.style.Theme_BrowserUI_DayNight);
 
         mActivity = Robolectric.setupActivity(Activity.class);
-        mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
         CompositorAnimationHandler.setTestingMode(true);
-        CompositorAnimationHandler mHandler =
-                new CompositorAnimationHandler(CallbackUtils.emptyRunnable());
-        when(mUpdateHost.getAnimationHandler()).thenReturn(mHandler);
+        when(mUpdateHost.getAnimationHandler())
+                .thenReturn(new CompositorAnimationHandler(CallbackUtils.emptyRunnable()));
         when(mModel.getProfile()).thenReturn(mProfile);
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
@@ -320,7 +320,7 @@ public class StripLayoutHelperTest {
     public void testSimpleTabOrder() {
         initializeTest(false, false, 0);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         assertTabStripAndOrder(getExpectedAccessibilityDescriptions(0));
@@ -337,7 +337,7 @@ public class StripLayoutHelperTest {
     public void testTabOrderWithIndex() {
         initializeTest(false, false, 1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Tabs should be in left to right order regardless of index
@@ -354,7 +354,7 @@ public class StripLayoutHelperTest {
     public void testTabOrderRtl() {
         initializeTest(true, false, 0);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Tabs should be in linear order even in RTL.
@@ -372,7 +372,7 @@ public class StripLayoutHelperTest {
     public void testIncognitoAccessibilityDescriptions() {
         initializeTest(false, true, 0);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         assertTabStripAndOrder(getExpectedAccessibilityDescriptions(0));
@@ -537,13 +537,12 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0);
 
         // Create collaboration group and show notification bubble on group title.
-        StripLayoutGroupTitle groupTitle =
-                createCollaborationGroup(
-                        /* multipleCollaborators= */ true,
-                        /* duringStripBuild= */ false,
-                        /* start= */ 0,
-                        /* end= */ 3,
-                        TAB_GROUP_ID_1);
+        createCollaborationGroup(
+                /* multipleCollaborators= */ true,
+                /* duringStripBuild= */ false,
+                /* start= */ 0,
+                /* end= */ 3,
+                TAB_GROUP_ID_1);
         int tabId = mModel.getTabAt(0).getId();
         Set<Integer> tabIds = new HashSet<>(Collections.singleton(tabId));
         mStripLayoutHelper.updateTabStripNotificationBubble(tabIds, /* hasUpdate= */ true);
@@ -558,14 +557,12 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testResizeStripOnTabClose_DoNotAnimateIfNotMoving() {
         final int numTabs = 10;
         initializeTest(false, false, 0, numTabs);
         // Trigger a size change so the strip layout tab heights and widths get set.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         // Set the initial scroll offset to trigger an update to draw X positions.
         mStripLayoutHelper.setScrollOffsetForTesting(0);
 
@@ -577,35 +574,27 @@ public class StripLayoutHelperTest {
         stripLayoutHelperSpy.handleCloseButtonClick(
                 tabs[closeTabIndex], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
-        // Initial animation is the tab removal animation, and after that ends the
-        // resizeStripOnTabClose animations begin.
-        runningAnimator.end();
-
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
                 .startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
         // Only the tabs that come after the closed tab should have to move and get animations
-        // created, plus the new tab button offset animation.
-        final int expectedAnimationCount = numTabs - closeTabIndex;
+        // created.
+        final int expectedAnimationCount = numTabs - closeTabIndex - 1;
         assertEquals(expectedAnimationCount, animationList.size());
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void
             testResizeStripOnTabClose_DoNotAnimateIfNotVisible_OutsideVisibleBounds_ToTheRight() {
         final int numTabs = 50;
         initializeTest(false, false, 0, numTabs);
         // Trigger a size change so the strip layout tab heights and widths get set.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         // Simplify the visible bounds by removing the right fade.
         mStripLayoutHelper.setRightFadeWidth(0);
         // Set the initial scroll offset to trigger an update to draw X positions.
@@ -616,41 +605,32 @@ public class StripLayoutHelperTest {
         final int closeTabIndex = 40;
         assertTrue(
                 "Tab getting closed should be outside of the visible bounds",
-                tabs[closeTabIndex].getDrawX() > mStripLayoutHelper.getVisibleRightBound());
+                tabs[closeTabIndex].getDrawX()
+                        > mStripLayoutHelper.getVisibleRightBound(
+                                /* clampToUnpinnedViews= */ true));
 
         final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
         stripLayoutHelperSpy.handleCloseButtonClick(
                 tabs[closeTabIndex], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
-        // Initial animation is the tab removal animation, and after that ends the
-        // resizeStripOnTabClose animations begin.
-        runningAnimator.end();
-
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
                 .startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
-        assertEquals(
-                "The only animation should be for the new tab button offset",
-                1,
-                animationList.size());
+        assertEquals("There should 1 animation for the closing tab.", 1, animationList.size());
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void
             testResizeStripOnTabClose_DoNotAnimateIfNotVisible_OutsideVisibleBounds_ToTheLeft() {
         final int numTabs = 50;
         initializeTest(false, false, 0, numTabs);
         // Trigger a size change so the strip layout tab heights and widths get set.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         // Simplify the visible bounds by removing the left fade.
         mStripLayoutHelper.setLeftFadeWidth(0);
         // Set the initial scroll offset to trigger an update to draw X positions.
@@ -664,41 +644,29 @@ public class StripLayoutHelperTest {
         assertTrue(
                 "Tab getting closed should be outside of the visible bounds",
                 tabs[closeTabIndex].getDrawX() + tabs[closeTabIndex].getWidth()
-                        < mStripLayoutHelper.getVisibleLeftBound());
+                        < mStripLayoutHelper.getVisibleLeftBound(/* clampToUnpinnedViews= */ true));
 
         final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
         stripLayoutHelperSpy.handleCloseButtonClick(
                 tabs[closeTabIndex], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
-        // Initial animation is the tab removal animation, and after that ends the
-        // resizeStripOnTabClose animations begin.
-        runningAnimator.end();
-
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
                 .startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
-        assertEquals(
-                "There should be 11 animations for the visible tabs, "
-                        + "plus the new tab button offset animation",
-                12,
-                animationList.size());
+        assertEquals("There should be 1 animations for the closing tab.", 1, animationList.size());
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testResizeStripOnTabClose_AnimateTab_MovingIntoVisibleBounds() {
         final int numTabs = 50;
         initializeTest(false, false, 0, numTabs);
         // Trigger a size change so the strip layout tab heights and widths get set.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         // Set the initial scroll offset to trigger an update to draw X positions.
         mStripLayoutHelper.setScrollOffsetForTesting(0);
 
@@ -708,56 +676,53 @@ public class StripLayoutHelperTest {
 
         final int firstNotVisibleIndex =
                 IntStream.range(0, tabs.length)
-                        .filter(i -> tabs[i].getDrawX() > mStripLayoutHelper.getVisibleRightBound())
+                        .filter(
+                                i ->
+                                        tabs[i].getDrawX()
+                                                > mStripLayoutHelper.getVisibleRightBound(
+                                                        /* clampToUnpinnedViews= */ true))
                         .findFirst()
                         .getAsInt();
 
         final int closeTabIndex = firstNotVisibleIndex - 1;
         assertTrue(
                 "Tab getting closed should be inside of the visible bounds",
-                tabs[closeTabIndex].getDrawX() <= mStripLayoutHelper.getVisibleRightBound());
+                tabs[closeTabIndex].getDrawX()
+                        <= mStripLayoutHelper.getVisibleRightBound(
+                                /* clampToUnpinnedViews= */ true));
 
         final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
         stripLayoutHelperSpy.handleCloseButtonClick(
                 tabs[closeTabIndex], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
-        // Initial animation is the tab removal animation, and after that ends the
-        // resizeStripOnTabClose animations begin.
-        runningAnimator.end();
-
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
                 .startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
         assertEquals(
-                "There should be one animation for the tab moving into the visible bounds, "
-                        + "plus the new tab button offset animation",
-                2,
+                "There should be one animation for the tab moving into the visible bounds",
+                1,
                 animationList.size());
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testComputeAndUpdateTabWidth_DontAnimateIfSizeNotChanging() {
         // Create a high number of tabs to ensure they're already at the minimum size
         final int numTabs = 50;
         initializeTest(false, false, 0, numTabs);
         // Trigger a size change so the strip layout tab heights and widths get set.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         // Set the initial scroll offset to trigger an update to draw X positions.
         mStripLayoutHelper.setScrollOffsetForTesting(0);
 
         assertEquals(
                 "Tabs should be at minimum width for this test to be valid",
                 MIN_TAB_WIDTH_DP,
-                mStripLayoutHelper.getCachedTabWidthForTesting(),
+                mStripLayoutHelper.getUnpinnedTabWidthForTesting(),
                 EPSILON);
 
         final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
@@ -770,9 +735,8 @@ public class StripLayoutHelperTest {
         verify(stripLayoutHelperSpy).startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
         assertEquals(
-                "There should be one animation for the newly created tab width, "
-                        + "plus one more animation for the new tab y offset",
-                2,
+                "There should be one animation for the newly created tab width",
+                1,
                 animationList.size());
     }
 
@@ -794,11 +758,168 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testQueueAnimationsForNonStripClosures() {
+        // Disable testing mode so we can queue animations. Initialize and group first two tabs.
+        CompositorAnimationHandler.setTestingMode(/* enabled= */ false);
+        initializeTest(false, false, 0);
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+
+        // Notify tab closures and verify state.
+        List<Tab> closingTabs = new ArrayList<>();
+        closingTabs.add(mModel.getTabAt(0));
+        closingTabs.add(mModel.getTabAt(1));
+        mModel.closeTabs(TabClosureParams.closeTabs(closingTabs).build());
+        mStripLayoutHelper.multipleTabsClosed(closingTabs);
+        int numClosingTabs = mStripLayoutHelper.getClosingTabsForTesting().size();
+        assertEquals("Should have two closing tabs.", 2, numClosingTabs);
+
+        // Notify group removal and verify state.
+        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
+        mStripLayoutHelper
+                .getTabGroupModelFilterObserverForTesting()
+                .didRemoveTabGroup(
+                        Tab.INVALID_TAB_ID, TAB_GROUP_ID_1, DidRemoveTabGroupReason.CLOSE);
+        int numClosingGroupTitles = mStripLayoutHelper.getClosingGroupTitlesForTesting().size();
+        assertEquals("Should have one closing group title.", 1, numClosingGroupTitles);
+
+        // Verify no animations have started yet.
+        assertNull(
+                "Animations should not yet be started.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+
+        // Update layout. Verify the queued animations have been started, and the views have not yet
+        // been removed.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        assertNotNull(
+                "Animations should now be started.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+        assertEquals(
+                "Closed views should still be present while the animations are running.",
+                6,
+                mStripLayoutHelper.getStripLayoutViewsForTesting().length);
+
+        // Finish animations, then verify the closing views have been removed.
+        mStripLayoutHelper.finishAnimations();
+        assertEquals(
+                "Closed views should no longer be present.",
+                3,
+                mStripLayoutHelper.getStripLayoutViewsForTesting().length);
+    }
+
+    @Test
+    public void testQueueAnimationsForNonStripClosures_Unselected() {
+        // Disable testing mode so we can queue animations. Initialize and group first two tabs.
+        CompositorAnimationHandler.setTestingMode(/* enabled= */ false);
+        initializeTest(false, false, 0);
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+        mStripLayoutHelper.tabModelSelected(/* selected= */ false);
+
+        // Notify tab closures and verify state.
+        List<Tab> closingTabs = new ArrayList<>();
+        closingTabs.add(mModel.getTabAt(0));
+        closingTabs.add(mModel.getTabAt(1));
+        mModel.closeTabs(TabClosureParams.closeTabs(closingTabs).build());
+        mStripLayoutHelper.multipleTabsClosed(closingTabs);
+        int numClosingTabs = mStripLayoutHelper.getClosingTabsForTesting().size();
+        assertEquals("Should have no closing tabs.", 0, numClosingTabs);
+
+        // Notify group removal and verify state.
+        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
+        mStripLayoutHelper
+                .getTabGroupModelFilterObserverForTesting()
+                .didRemoveTabGroup(
+                        Tab.INVALID_TAB_ID, TAB_GROUP_ID_1, DidRemoveTabGroupReason.CLOSE);
+        int numClosingGroupTitles = mStripLayoutHelper.getClosingGroupTitlesForTesting().size();
+        assertEquals("Should have no closing group titles.", 0, numClosingGroupTitles);
+
+        // Verify no animations have started.
+        assertNull(
+                "Animations should not yet be started.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+
+        // Update layout. Verify the queued animations have still not started, since this model is
+        // not showing.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.rebuildStripViews();
+        assertNull(
+                "Animations should still not yet be started.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+        assertEquals(
+                "Closed views should be removed already.",
+                3,
+                mStripLayoutHelper.getStripLayoutViewsForTesting().length);
+    }
+
+    @Test
+    public void testQueueAnimationsForNonStripClosures_ClearedOnFinishAnimations() {
+        // Disable testing mode so we can queue animations.
+        CompositorAnimationHandler.setTestingMode(/* enabled= */ false);
+        initializeTest(/* tabIndex= */ 0);
+
+        // Notify tab closures and verify state.
+        List<Tab> closingTabs = new ArrayList<>();
+        closingTabs.add(mModel.getTabAt(0));
+        closingTabs.add(mModel.getTabAt(1));
+        mModel.closeTabs(TabClosureParams.closeTabs(closingTabs).build());
+        mStripLayoutHelper.multipleTabsClosed(closingTabs);
+
+        // Verify no animations have started yet and closed views are still present.
+        assertNull(
+                "Animations should not yet be started.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+        assertEquals(
+                "Closed views should still be present.",
+                5,
+                mStripLayoutHelper.getStripLayoutViewsForTesting().length);
+
+        // Manually finish animations. Verify the closed views have been removed.
+        mStripLayoutHelper.finishAnimations();
+        assertEquals(
+                "Closed views should no longer be present.",
+                3,
+                mStripLayoutHelper.getStripLayoutViewsForTesting().length);
+
+        // Update layout. Verify the queued animations did not start, as they were cleared by the
+        // previous #finishAnimations call.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        assertNull(
+                "Animations should still not be started.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+    }
+
+    @Test
+    @Feature("Pinned Tabs")
+    public void testTabSelected_Pinned_HideCloseBtn() {
+        initializeTest(false, true, 3);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+
+        // Non-last tab not overlapping strip fade:
+        // drawX(530) + tabWidth(140 - 28) < width(800) - offsetXRight(20) - longRightFadeWidth(136)
+        when(tabs[3].getDrawX()).thenReturn(530.f);
+        when(tabs[3].getIsSelected()).thenReturn(true);
+
+        // Pin the third tab.
+        when(tabs[3].getIsPinned()).thenReturn(true);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
+
+        // Close btn is hidden on the selected tab, because its pinned.
+        verify(tabs[3]).setCanShowCloseButton(false, false);
+        // Close btn is hidden for the rest of tabs.
+        verify(tabs[0]).setCanShowCloseButton(false, false);
+        verify(tabs[1]).setCanShowCloseButton(false, false);
+        verify(tabs[2]).setCanShowCloseButton(false, false);
+        verify(tabs[4]).setCanShowCloseButton(false, false);
+    }
+
+    @Test
     public void testTabSelected_SelectedNonLastTab_ShowCloseBtn() {
         initializeTest(false, true, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
         // Non-last tab not overlapping strip fade:
@@ -821,7 +942,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, true, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
         // Non-last tab overlapping strip fade:
@@ -844,7 +965,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, true, 4);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
@@ -868,7 +989,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, true, 4);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
@@ -892,7 +1013,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
         // Non-last tab overlapping strip fade:
@@ -916,7 +1037,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
         // Non-last tab not overlapping strip fade:
@@ -940,7 +1061,7 @@ public class StripLayoutHelperTest {
         initializeTest(true, false, 4);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X_RTL);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
@@ -964,7 +1085,7 @@ public class StripLayoutHelperTest {
         initializeTest(true, false, 4);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X_RTL);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
@@ -988,7 +1109,7 @@ public class StripLayoutHelperTest {
         initializeTest(true, false, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
         // Non-last tab overlapping strip fade:
@@ -1011,7 +1132,7 @@ public class StripLayoutHelperTest {
         initializeTest(true, false, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
@@ -1109,7 +1230,7 @@ public class StripLayoutHelperTest {
         int tabCount = 4;
         initializeTest(false, false, 3, tabCount);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
 
         // Set New tab button position.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
@@ -1128,7 +1249,7 @@ public class StripLayoutHelperTest {
         int tabCount = 1;
         initializeTest(false, false, 0, tabCount);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify new tab button position.
@@ -1138,10 +1259,10 @@ public class StripLayoutHelperTest {
                 271.f,
                 mStripLayoutHelper.getNewTabButton().getDrawX(),
                 EPSILON);
-        // rightBound(311) = expectedNtbDrawX(271) + ntbWidth(32) + touchSlop(8)
+        // rightBound(247) = tabWidth(237) + tabOverLapWidth(28) + offsetXLeft(10)
         assertEquals(
-                "TouchableRect does not match. Right size should match ntb.getDrawX() + width.",
-                new RectF(PADDING_LEFT, 0, 311.f, SCREEN_HEIGHT),
+                "TouchableRect does not match. Right size should match last tab's right edge.",
+                new RectF(PADDING_LEFT, 0, 275.f, STRIP_HEIGHT),
                 mStripLayoutHelper.getTouchableRect());
     }
 
@@ -1151,7 +1272,7 @@ public class StripLayoutHelperTest {
         int tabCount = 5;
         initializeTest(false, false, 0, tabCount);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify new tab button position.
@@ -1163,7 +1284,7 @@ public class StripLayoutHelperTest {
                 EPSILON);
         assertEquals(
                 "TouchableRect does not match. Strip is full, touch size should match the strip.",
-                new RectF(PADDING_LEFT, 0, SCREEN_WIDTH - PADDING_RIGHT, SCREEN_HEIGHT),
+                new RectF(PADDING_LEFT, 0, STRIP_WIDTH - PADDING_RIGHT, STRIP_HEIGHT),
                 mStripLayoutHelper.getTouchableRect());
     }
 
@@ -1172,7 +1293,7 @@ public class StripLayoutHelperTest {
         int tabCount = 1;
         initializeTest(true, false, 0, tabCount);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify new tab button position.
@@ -1183,10 +1304,11 @@ public class StripLayoutHelperTest {
                 487,
                 mStripLayoutHelper.getNewTabButton().getDrawX(),
                 EPSILON);
-        // leftBound(479) = drawX(487) - touchSlop(8)
+        // visualLeftBound(543) = stripWidth(800) - PADDING_RIGHT(20) - tabWidth(237)
+        // touchableLeftBound(515) = visualLeftBound(543) - TAB_OVERLAP_WIDTH_DP(28)
         assertEquals(
-                "TouchableRect does not match. Left side should equal to ntb.getDrawX()",
-                new RectF(479.f, 0, SCREEN_WIDTH - PADDING_RIGHT, SCREEN_HEIGHT),
+                "TouchableRect does not match. Left side should be extended by tab overlap.",
+                new RectF(515.f, 0, STRIP_WIDTH - PADDING_RIGHT, STRIP_HEIGHT),
                 mStripLayoutHelper.getTouchableRect());
     }
 
@@ -1196,7 +1318,7 @@ public class StripLayoutHelperTest {
         int tabCount = 5;
         initializeTest(true, false, 0, tabCount);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify new tab button position.
@@ -1208,7 +1330,7 @@ public class StripLayoutHelperTest {
                 EPSILON);
         assertEquals(
                 "TouchableRect does not match. Strip is full, touch size should match the strip.",
-                new RectF(PADDING_LEFT, 0, SCREEN_WIDTH - PADDING_RIGHT, SCREEN_HEIGHT),
+                new RectF(PADDING_LEFT, 0, STRIP_WIDTH - PADDING_RIGHT, STRIP_HEIGHT),
                 mStripLayoutHelper.getTouchableRect());
     }
 
@@ -1217,7 +1339,7 @@ public class StripLayoutHelperTest {
         int tabCount = 1;
         initializeTest(false, false, 0, tabCount);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         assertEquals(
@@ -1235,7 +1357,7 @@ public class StripLayoutHelperTest {
         // Setup
         initializeTest(false, false, 0, 1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify new tab button hover highlight resource id.
@@ -1301,7 +1423,7 @@ public class StripLayoutHelperTest {
         // Setup
         initializeTest(false, false, 0, 1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify new tab button is hovered.
@@ -1493,7 +1615,7 @@ public class StripLayoutHelperTest {
 
         // Set screen width to 800dp and scroll selected tab to view.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         mStripLayoutHelper.scrollTabToView(TIMESTAMP, false);
         // Complete animations
@@ -1505,7 +1627,7 @@ public class StripLayoutHelperTest {
         // expectedOffset = scrollOffsetBefore + optimalEndDelta
         float expectedOffset =
                 scrollOffsetBefore
-                        + SCREEN_WIDTH
+                        + STRIP_WIDTH
                         - 60
                         - StripLayoutHelperManager.FADE_LONG_WIDTH_DP
                         - selectedTab.getIdealX()
@@ -1523,7 +1645,7 @@ public class StripLayoutHelperTest {
 
         // Set screen width to 800dp and scroll selected tab to view.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         mStripLayoutHelper.scrollTabToView(TIMESTAMP, false);
         // Complete scroll to update offset.
@@ -1535,7 +1657,7 @@ public class StripLayoutHelperTest {
         // expectedOffset = scrollOffsetBefore + optimalEndDelta
         float expectedOffset =
                 scrollOffsetBefore
-                        + SCREEN_WIDTH
+                        + STRIP_WIDTH
                         - 60
                         - StripLayoutHelperManager.FADE_MEDIUM_WIDTH_DP
                         - selectedTab.getIdealX()
@@ -1550,7 +1672,7 @@ public class StripLayoutHelperTest {
 
         // Set screen width to 800dp and scroll selected tab to view.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.scrollTabToView(TIMESTAMP, false);
 
         // optimalStart = leftFade(60) + leftPadding(10) - (index(0) * tabWidth(108-28))
@@ -1569,8 +1691,8 @@ public class StripLayoutHelperTest {
 
         // Set screen width to 1200 to start.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH_LANDSCAPE,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH_LANDSCAPE,
+                STRIP_HEIGHT,
                 false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -1586,13 +1708,13 @@ public class StripLayoutHelperTest {
         when(tabs[9].getDrawX()).thenReturn(720.f);
         when(tabs[9].getIdealX()).thenReturn(720.f);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, true, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, true, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
 
         // Assert: finalX value after orientation change.
         // stripWidth(800) - rightPadding(60) - rightFade(72) - selectedTab.idealX -
         // mCachedTabWidth(108)
         float expectedFinalX =
-                SCREEN_WIDTH
+                STRIP_WIDTH
                         - 60
                         - StripLayoutHelperManager.FADE_MEDIUM_WIDTH_DP
                         - selectedTab.getIdealX()
@@ -1611,8 +1733,8 @@ public class StripLayoutHelperTest {
 
         // Set screen width to 1200 to start
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH_LANDSCAPE,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH_LANDSCAPE,
+                STRIP_HEIGHT,
                 false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -1626,7 +1748,7 @@ public class StripLayoutHelperTest {
         // Act: change orientation.
         when(tabs[9].getDrawX()).thenReturn(-1.f);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, true, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, true, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
 
         // Assert: finalX value remains the same on orientation change.
         assertEquals(initialFinalX, mStripLayoutHelper.getScrollerForTesting().getFinalX());
@@ -1671,7 +1793,7 @@ public class StripLayoutHelperTest {
 
         // Set screen width to 800dp and scroll selected tab to view.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         StripLayoutTab tabToFocus = mStripLayoutHelper.getStripLayoutTabsForTesting()[0];
 
         // Set keyboard focus state of the last tab, as if we focus looped around.
@@ -1707,9 +1829,9 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         // Set initial scroller position to 1200.
-        mStripLayoutHelper.getScrollerForTesting().setFinalX((int) SCREEN_WIDTH_LANDSCAPE);
+        mStripLayoutHelper.getScrollerForTesting().setFinalX((int) STRIP_WIDTH_LANDSCAPE);
 
         // Act: Tab was restored after undoing a tab closure.
         boolean closureCancelled = true;
@@ -1735,9 +1857,9 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         // Set initial scroller position to 1200.
-        mStripLayoutHelper.getScrollerForTesting().setFinalX((int) SCREEN_WIDTH_LANDSCAPE);
+        mStripLayoutHelper.getScrollerForTesting().setFinalX((int) STRIP_WIDTH_LANDSCAPE);
 
         // Act: Tab was not restored after undoing a tab closure.
         boolean closureCancelled = false;
@@ -1766,7 +1888,7 @@ public class StripLayoutHelperTest {
         int selectedTabIndex = 1;
         initializeTest(isRtl, false, selectedTabIndex, 11);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
 
         // Set initial scroller position to -500 under ScrollDelegate's dynamic coordinate system
         // (not the static window coordinate system), which means:
@@ -1802,7 +1924,7 @@ public class StripLayoutHelperTest {
             // The setup moved the selected tab beyond the window's right edge. To make the tab
             // visible, we should scroll the tab strip to the left, i.e., "scrollDelta" below should
             // be negative.
-            float expectedTabX = SCREEN_WIDTH - reservedWidthRight - selectedTab.getWidth();
+            float expectedTabX = STRIP_WIDTH - reservedWidthRight - selectedTab.getWidth();
             float scrollDelta = expectedTabX - selectedTab.getIdealX();
             expectedScrollOffset = scrollOffsetBefore + scrollDelta;
         } else {
@@ -1890,7 +2012,7 @@ public class StripLayoutHelperTest {
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(false);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
         mStripLayoutHelper.onDown(DRAG_START_POINT.x, 0, MotionEvent.BUTTON_PRIMARY);
-        mStripLayoutHelper.drag(TIMESTAMP, DRAG_START_POINT.x, DRAG_START_POINT.y, 30f);
+        mStripLayoutHelper.drag(DRAG_START_POINT.x, DRAG_START_POINT.y, 30f);
 
         // Verify.
         assertEquals(
@@ -2002,7 +2124,7 @@ public class StripLayoutHelperTest {
         // Act
         onLongPress_OnTab(tabs);
 
-        mStripLayoutHelper.drag(TIMESTAMP, LONG_PRESS_X + dragDistance, LONG_PRESS_Y, dragDistance);
+        mStripLayoutHelper.drag(LONG_PRESS_X + dragDistance, LONG_PRESS_Y, dragDistance);
 
         // Verify we start reorder mode.
         verify(mockDelegate)
@@ -2044,7 +2166,11 @@ public class StripLayoutHelperTest {
         ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
                 ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab context menu is showing.
-        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), anyInt());
+        List<Integer> expectedTabIds = Collections.singletonList(tabs[1].getTabId());
+        verify(mTabContextMenuCoordinator)
+                .showMenu(
+                        rectProviderArgumentCaptor.capture(),
+                        argThat(anchorInfo -> anchorInfo.getAllTabIds().equals(expectedTabIds)));
         // Verify anchorView coordinates.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertThat(view, instanceOf(StripLayoutTab.class));
@@ -2065,8 +2191,8 @@ public class StripLayoutHelperTest {
         var tabs = initializeTest_ForTab();
         setupForIndividualTabContextMenu();
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH,
+                STRIP_HEIGHT,
                 false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -2078,7 +2204,7 @@ public class StripLayoutHelperTest {
         ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
                 ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab context menu is showing.
-        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), anyInt());
+        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), any());
         // Verify anchorView coordinates.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertThat(view, instanceOf(StripLayoutTab.class));
@@ -2180,14 +2306,19 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testBottomSheet_constructedWithoutDestroyHide() {
         var tabs = initializeTest_ForTab();
-        setupForContextMenu();
-        when(mModel.getTabById(anyInt())).thenReturn(mTab);
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
+        tabModel.setActive(true);
+        tabModel.addTab(tabs[0].getTabId());
         when(mTab.getUrl()).thenReturn(URL);
 
         // Initialize the menu.
-        mStripLayoutHelper.showTabContextMenuForTesting(tabs[0]);
+        mStripLayoutHelper.showTabContextMenuForTesting(
+                Collections.singletonList(tabs[0].getTabId()), tabs[0]);
 
         verify(mBottomSheetCoordinatorFactory, times(1))
                 .create(
@@ -2232,7 +2363,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
         // NTB is after group indicator and tabs.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.getNewTabButton().setDrawX(TAB_WIDTH_1 + tabs.length * TAB_WIDTH_1);
         setupForGroupContextMenu();
 
@@ -2269,7 +2400,7 @@ public class StripLayoutHelperTest {
         setupForGroupContextMenu();
 
         // Verify drag without context menu starts a scroll.
-        mStripLayoutHelper.drag(TIMESTAMP, /* x= */ 10f, /* y= */ 10f, /* deltaX= */ 10f);
+        mStripLayoutHelper.drag(/* x= */ 10f, /* y= */ 10f, /* deltaX= */ 10f);
         assertTrue(
                 "Scroll should be in progress.",
                 mStripLayoutHelper.getIsStripScrollInProgressForTesting());
@@ -2285,7 +2416,7 @@ public class StripLayoutHelperTest {
 
         // Long press on group title and verify drag with context menu does not start a scroll.
         when(mTabGroupContextMenuCoordinator.isMenuShowing()).thenReturn(true);
-        mStripLayoutHelper.drag(TIMESTAMP, /* x= */ 10f, /* y= */ 10f, /* deltaX= */ 10f);
+        mStripLayoutHelper.drag(/* x= */ 10f, /* y= */ 10f, /* deltaX= */ 10f);
         assertFalse(
                 "Scroll should not be in progress.",
                 mStripLayoutHelper.getIsStripScrollInProgressForTesting());
@@ -2293,7 +2424,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Group Context Menu")
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
     public void testDrag_DismissContextMenu() {
         // Initialize.
         initializeTest(false, false, 0);
@@ -2308,7 +2438,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onLongPress(10f, 0f);
         verify(mTabGroupContextMenuCoordinator).showMenu(any(), any());
         when(mTabGroupContextMenuCoordinator.isMenuShowing()).thenReturn(true);
-        mStripLayoutHelper.drag(TIMESTAMP, /* x= */ 60f, /* y= */ 10f, /* deltaX= */ 50f);
+        mStripLayoutHelper.drag(/* x= */ 60f, /* y= */ 10f, /* deltaX= */ 50f);
         verify(mTabGroupContextMenuCoordinator).dismiss();
     }
 
@@ -2321,7 +2451,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onTabStateInitialized();
         onLongPress_OnTab(tabs);
         float dragDistance = 40f; // Greater than INITIATE_REORDER_DRAG_THRESHOLD
-        mStripLayoutHelper.drag(TIMESTAMP, LONG_PRESS_X + dragDistance, LONG_PRESS_Y, dragDistance);
+        mStripLayoutHelper.drag(LONG_PRESS_X + dragDistance, LONG_PRESS_Y, dragDistance);
         // Verify drag invoked
         verify(mTabStripDragHandler)
                 .startTabDragAction(any(), any(), any(), anyFloat(), anyFloat());
@@ -2353,7 +2483,7 @@ public class StripLayoutHelperTest {
         when(mockDelegate.getInReorderMode()).thenReturn(true);
         float dragDistance = 100.f;
         float endX = 50.f + dragDistance;
-        mStripLayoutHelper.drag(TIMESTAMP, endX, 0f, dragDistance);
+        mStripLayoutHelper.drag(endX, 0f, dragDistance);
 
         // Verify we update reorder position.
         verify(mockDelegate)
@@ -2418,20 +2548,57 @@ public class StripLayoutHelperTest {
     private void onLongPress_OffTab() {
         // Initialize.
         initializeTest(false, false, 0);
+        // Set internal state for height, width and paddings.
+        mStripLayoutHelper.onSizeChanged(STRIP_WIDTH, STRIP_HEIGHT, false, 0, 0, 0, 0);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        mStripLayoutHelper.setTabStripContextMenuCoordinatorForTesting(
+                mTabStripContextMenuCoordinator);
 
         // Long press past the last tab.
+        int x = (int) STRIP_WIDTH - 10;
+        int y = 0;
         mStripLayoutHelper.setTabAtPositionForTesting(null);
-        mStripLayoutHelper.onLongPress(150f, 0f);
+        mStripLayoutHelper.onLongPress(x, y);
 
-        // Verify that we show the popup menu anchored on the close button.
+        // Verify that we do not show the popup menu anchored on the close button.
         assertFalse(
                 "Should not be in reorder mode after long press on empty space on tab strip.",
                 mStripLayoutHelper.getInReorderModeForTesting());
         assertFalse(
                 "Should not show after long press on empty space on tab strip.",
                 mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
+
+        // Verify that we show the strip context menu.
+        var rectProviderCaptor = ArgumentCaptor.forClass(RectProvider.class);
+        verify(mTabStripContextMenuCoordinator)
+                .showMenu(rectProviderCaptor.capture(), eq(mIncognito), any());
+        Rect rect = rectProviderCaptor.getValue().getRect();
+        assertEquals(new Rect(x, y, x, y), rect);
+    }
+
+    @Test
+    public void testRightClickOnEmptyStripSpaceShowsStripContextMenu() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        // Set internal state for height, width and paddings.
+        mStripLayoutHelper.onSizeChanged(STRIP_WIDTH, STRIP_HEIGHT, false, 0, 0, 0, 0);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        mStripLayoutHelper.setTabStripContextMenuCoordinatorForTesting(
+                mTabStripContextMenuCoordinator);
+
+        // Right-click on the empty strip space.
+        int x = (int) STRIP_WIDTH - 10;
+        int y = 0;
+        mStripLayoutHelper.click(0, x, y, MotionEvent.BUTTON_SECONDARY, 0);
+
+        // Verify that we show the strip context menu.
+        var rectProviderCaptor = ArgumentCaptor.forClass(RectProvider.class);
+        verify(mTabStripContextMenuCoordinator)
+                .showMenu(rectProviderCaptor.capture(), eq(mIncognito), any());
+        Rect rect = rectProviderCaptor.getValue().getRect();
+        assertEquals(new Rect(x, y, x, y), rect);
     }
 
     @Test
@@ -2487,8 +2654,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures(ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION)
     public void testBottomIndicatorWidthAfterTabResize_UngroupedTabClosed() {
         // Arrange
         int tabCount = 6;
@@ -2503,14 +2668,14 @@ public class StripLayoutHelperTest {
 
         // Update layout and set up animation.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         setupForAnimations();
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Check initial bottom indicator width.
         float expectedStartWidth =
                 calculateExpectedBottomIndicatorWidth(
-                        mStripLayoutHelper.getCachedTabWidthForTesting(), 2, groupTitle);
+                        mStripLayoutHelper.getUnpinnedTabWidthForTesting(), 2, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width before resize.",
                 expectedStartWidth,
@@ -2521,22 +2686,10 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.handleCloseButtonClick(
                 tabs[2], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        // Assert: Animations started.
-        assertTrue(
-                "MultiStepAnimations should have started.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Assert: Animations are still running.
-        assertTrue(
-                "MultiStepAnimations should still be running.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Act: Set animation time forward by 250ms for next set of animations.
-        mStripLayoutHelper.getRunningAnimatorForTesting().end();
-
-        // Act: End the animations to apply final values.
-        Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
-        runningAnimator.end();
+        // Act: Fake the tab closure and end the animation, so the tab is removed from the model.
+        Tab closingTab = mModel.getTabAt(2);
+        mStripLayoutHelper.finishAnimations();
+        mStripLayoutHelper.tabClosed(closingTab);
 
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
         // - groupTitleWidth(46) - titleOverlapWidth(4) = 680.
@@ -2551,9 +2704,6 @@ public class StripLayoutHelperTest {
                     stripTab.getWidth(),
                     0.1f);
         }
-        assertFalse(
-                "MultiStepAnimations should have ended.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
 
         // Check bottom indicator end width.
         float expectedEndWidth =
@@ -2579,12 +2729,12 @@ public class StripLayoutHelperTest {
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
 
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
 
         // Check initial bottom indicator width.
         float expectedStartWidth =
                 calculateExpectedBottomIndicatorWidth(
-                        mStripLayoutHelper.getCachedTabWidthForTesting(), 2, groupTitle);
+                        mStripLayoutHelper.getUnpinnedTabWidthForTesting(), 2, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width before resize.",
                 expectedStartWidth,
@@ -2626,7 +2776,7 @@ public class StripLayoutHelperTest {
         // Mock 5 tabs, group first 3 tabs as group1 and group the rest as group2.
         initializeTest(false, false, 0, 5);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         groupTabs(0, 3, TAB_GROUP_ID_1);
         groupTabs(3, 5, TAB_GROUP_ID_2);
@@ -3161,7 +3311,7 @@ public class StripLayoutHelperTest {
         // Mock 5 tabs. Group tab from start to endIndex.
         initializeTest(false, false, 0, 5);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         groupTabs(groupStartIndex, groupEndIndex, tabGroupId);
         mStripLayoutHelper.setTabModel(mModel, mTabCreator, false);
 
@@ -3414,7 +3564,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 3, 5);
         verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         if (multipleCollaborators) {
             mSharedGroupTestHelper.mockGetGroupData(
                     COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
@@ -3521,24 +3671,24 @@ public class StripLayoutHelperTest {
         // Start reorder and drag tab out of the tab group through group end.
         mStripLayoutHelper.startReorderModeAtIndexForTesting(index);
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
-        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
+        mStripLayoutHelper.drag(startX + dragDistance, 0f, dragDistance);
     }
 
     @Test
     public void testTabClosed() {
         // Initialize with 10 tabs.
         int tabCount = 10;
+        setupForAnimations();
         initializeTest(false, false, 0, tabCount);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
 
         // Remove tab from model and verify that the tab strip has not yet updated.
         int closedTabId = 1;
         int expectedNumTabs = tabCount;
+        Tab tab = mModel.getTabAt(closedTabId);
         mModel.getTabRemover()
-                .closeTabs(
-                        TabClosureParams.closeTab(mModel.getTabAt(closedTabId)).build(),
-                        /* allowDialog= */ false);
+                .closeTabs(TabClosureParams.closeTab(tab).build(), /* allowDialog= */ false);
         assertEquals(
                 "Tab strip should not yet have changed.",
                 expectedNumTabs,
@@ -3546,12 +3696,14 @@ public class StripLayoutHelperTest {
 
         // Trigger update and verify the tab strip matches the tab model.
         expectedNumTabs = 9;
-        mStripLayoutHelper.tabClosed(TIMESTAMP, closedTabId);
+        mStripLayoutHelper.tabClosed(tab);
+        mStripLayoutHelper.finishAnimations();
         assertEquals(
                 "Tab strip should match tab model.",
                 expectedNumTabs,
                 mStripLayoutHelper.getStripLayoutTabsForTesting().length);
-        verify(mUpdateHost, times(7)).requestUpdate();
+        verify(mUpdateHost, times(9)).requestUpdate();
+        verify(mUpdateHost, times(4)).requestUpdate(any());
     }
 
     @Test
@@ -3601,8 +3753,8 @@ public class StripLayoutHelperTest {
         initializeTest(/* rtl= */ false, /* incognito= */ false, selectedTabIndex, tabCount);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH,
+                STRIP_HEIGHT,
                 /* orientationChanged= */ false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -3613,7 +3765,7 @@ public class StripLayoutHelperTest {
 
         // Act
         mStripLayoutHelper.handleCloseButtonClick(tabs[selectedTabIndex], motionEventButtonState);
-        mStripLayoutHelper.getRunningAnimatorForTesting().end(); // end the closing animation
+        mStripLayoutHelper.finishAnimations(); // end the closing animation
 
         // Assert
         TestTabRemover testTabRemover = (TestTabRemover) mModel.getTabRemover();
@@ -3624,119 +3776,55 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
-    public void testTabClosing_NoTabResize() {
-        // Arrange
-        int tabCount = 15;
-        initializeTest(false, false, 14, tabCount);
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-        setupForAnimations();
-
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-
-        // Act: Call on close tab button handler.
-        mStripLayoutHelper.handleCloseButtonClick(
-                tabs[14], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
-
-        // Assert: Animations started.
-        assertTrue(
-                "MultiStepAnimations should have started.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Act: End the tab closing animations to apply final values.
-        Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
-        runningAnimator.end();
-
-        // Assert: Tab is closed and animations are still running.
-        int expectedTabCount = 14;
-        assertEquals(
-                "Unexpected tabs count",
-                expectedTabCount,
-                mStripLayoutHelper.getStripLayoutTabsForTesting().length);
-        assertTrue(
-                "MultiStepAnimations should still be running.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Act: End next set of animations to apply final values.
-        mStripLayoutHelper.getRunningAnimatorForTesting().end();
-
-        // Assert: Animations completed. The tab width is not resized and drawX does not change.
-        // stripRightBound = width(800) - offsetXRight(20) = 780;
-        // visibleTabRightBound = rightBound(780)- NTBWidth(32) - endPadding(8) = 740
-        // lastTabDrawX = visibleTabRightBound(740) - tabWidth(108) = 632
-        float expectedDrawX = 632.f;
-        StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        for (int i = updatedTabs.length - 1; i >= 0; i--) {
-            StripLayoutTab stripTab = updatedTabs[i];
-            assertEquals("Unexpected tab width after resize.", 108.f, stripTab.getWidth(), 0);
-            assertEquals("Unexpected tab position.", expectedDrawX, stripTab.getDrawX(), 0);
-            expectedDrawX -= TAB_WIDTH_SMALL - TAB_OVERLAP_WIDTH_DP;
-        }
-        assertFalse(
-                "MultiStepAnimations should have stopped running.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
+    public void testTabClosing_UpdateDrawProperties_NoTabResize() {
+        float expectedDrawX = 10.f; // offsetXLeft(10)
+        doTestTabClosingUpdateDrawProperties(
+                /* tabCount= */ 15, /* closingIndex= */ 14, expectedDrawX, TAB_WIDTH_SMALL);
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
-    public void testTabClosing_NonLastTab_TabResize() {
+    public void testTabClosing_UpdateDrawProperties_TabResize() {
+        float expectedDrawX = 10.f; // offsetXLeft(10)
+        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
+        // = 730
+        // expectedWidth = (availableSize(730) + 2 * overlap(28)) / 3  = 262
+        float expectedWidth = 262.f;
+        doTestTabClosingUpdateDrawProperties(
+                /* tabCount= */ 4, /* closingIndex= */ 2, expectedDrawX, expectedWidth);
+    }
+
+    private void doTestTabClosingUpdateDrawProperties(
+            int tabCount, int closingIndex, float expectedDrawX, float expectedWidth) {
         // Arrange
-        int tabCount = 4;
         initializeTest(false, false, 3, tabCount);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         setupForAnimations();
 
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Act: Call on close tab button handler.
         mStripLayoutHelper.handleCloseButtonClick(
-                tabs[2], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+                tabs[closingIndex], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        // Assert: Animations started.
-        assertTrue(
-                "MultiStepAnimations should have started.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Act: End the animations to apply final values.
-        Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
-        runningAnimator.end();
-
-        // Assert: Tab is closed and animations are still running.
-        int expectedTabCount = 3;
-        assertEquals(expectedTabCount, mStripLayoutHelper.getStripLayoutTabsForTesting().length);
-        assertTrue(
-                "MultiStepAnimations should still be running.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Act: Set animation time forward by 250ms for next set of animations.
+        // Act: Finish the close animations.
+        Tab closingTab = mModel.getTabAt(closingIndex);
         mStripLayoutHelper.getRunningAnimatorForTesting().end();
+        mStripLayoutHelper.tabClosed(closingTab);
 
-        // Assert: Animations completed. The tab width is resized, tab.drawX is changed and
-        // newTabButton.drawX is also changed.
-        float expectedDrawX = 10.f; // offsetXLeft(10)
-        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // = 730
-        // ExpectedWidth = (availableSize(730) + 2 * overlap(28)) / 3  = 262
-        float expectedWidthAfterResize = 262.f;
+        // Assert: Tab is closed.
+        int expectedTabCount = tabCount - 1;
+        assertEquals(expectedTabCount, mStripLayoutHelper.getStripLayoutTabsForTesting().length);
+
+        // Assert: Animations completed. The tab width and drawX may have changed.
         StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         for (int i = 0; i < updatedTabs.length; i++) {
             StripLayoutTab stripTab = updatedTabs[i];
-            assertEquals(
-                    "Unexpected tab width after resize.",
-                    expectedWidthAfterResize,
-                    stripTab.getWidth(),
-                    0.1f);
-            assertEquals("Unexpected tab position.", expectedDrawX, stripTab.getDrawX(), 0.1f);
-            expectedDrawX += (expectedWidthAfterResize - TAB_OVERLAP_WIDTH_DP);
+            assertEquals("Unexpected tab width.", expectedWidth, stripTab.getWidth(), EPSILON);
+            assertEquals("Unexpected tab position.", expectedDrawX, stripTab.getDrawX(), EPSILON);
+            expectedDrawX += (expectedWidth - TAB_OVERLAP_WIDTH_DP);
         }
-        assertFalse(
-                "MultiStepAnimations should have ended.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
     }
 
     @Test
@@ -3752,8 +3840,7 @@ public class StripLayoutHelperTest {
                 tabs[2], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
         // End the tab closure animation.
-        var runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
-        runningAnimator.end();
+        mStripLayoutHelper.finishAnimations();
 
         verify(mTabHoverCardView).hide();
     }
@@ -3766,7 +3853,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
     public void testPendingMouseTabClosure_SetOnClose() {
         // Initialize.
         initializeTest(/* tabIndex= */ 0);
@@ -3780,31 +3866,29 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
     public void testPendingMouseTabClosure_ClearOnTabClosure() {
         // Initialize and mark a pending a mouse tab closure.
+        setupForAnimations();
         initializeTest(/* tabIndex= */ 0);
         mStripLayoutHelper.setPendingMouseTabClosureForTesting(true);
 
         // Fake a tab closure.
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        mStripLayoutHelper.tabClosed(TIMESTAMP, tabs[0].getTabId());
+        mStripLayoutHelper.tabClosed(mModel.getTabAt(0));
+        mStripLayoutHelper.finishAnimations();
 
         // Verify state is cleared.
         verifyPendingMouseTabClosure(/* expectedPendingMouseTabClosure= */ false);
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
     public void testPendingMouseTabClosure_SuppressResize() {
         // Initialize and mark a pending a mouse tab closure.
         initializeTest(/* tabIndex= */ 0);
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, 0, 0, 0);
+        mStripLayoutHelper.onSizeChanged(STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, 0, 0, 0);
         mStripLayoutHelper.setPendingMouseTabClosureForTesting(true);
 
         // Attempt a resize.
-        mStripLayoutHelper.resizeTabStrip(
-                /* animate= */ true, /* tabToAnimate= */ null, /* tabAddedAnimation= */ false);
+        mStripLayoutHelper.resizeTabStrip(/* tabToAnimate= */ null, /* tabAddedAnimation= */ false);
 
         // Verify resize was suppressed.
         verifyPendingMouseTabClosure(/* expectedPendingMouseTabClosure= */ true);
@@ -3814,11 +3898,10 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
     public void testPendingMouseTabClosure_ResizeOnHoverExit_InTabStrip() {
         // Initialize and mark a pending a mouse tab closure.
         initializeTest(/* tabIndex= */ 0);
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, 0, 0, 0);
+        mStripLayoutHelper.onSizeChanged(STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, 0, 0, 0);
         mStripLayoutHelper.setPendingMouseTabClosureForTesting(true);
 
         // Notify a hover exit event occurred in the tab strip.
@@ -3832,11 +3915,10 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
     public void testPendingMouseTabClosure_ResizeOnHoverExit_NotInTabStrip() {
         // Initialize and mark a pending a mouse tab closure.
         initializeTest(/* tabIndex= */ 0);
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, 0, 0, 0);
+        mStripLayoutHelper.onSizeChanged(STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, 0, 0, 0);
         mStripLayoutHelper.setPendingMouseTabClosureForTesting(true);
 
         // Notify a hover exit event occurred outside the tab strip.
@@ -3847,6 +3929,37 @@ public class StripLayoutHelperTest {
         assertNotNull(
                 "Resize animation should be running.",
                 mStripLayoutHelper.getRunningAnimatorForTesting());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
+    public void testSelectedTabClose_AutoSelect() {
+        // Initialize and select the tab at index 2.
+        initializeTest(2);
+        when(mTab.getId()).thenReturn(2);
+        when(mModel.getTabAt(2)).thenReturn(mTab);
+
+        // Fake a close button click on the tab at index 2
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.handleCloseTab(tabs[2], /* allowUndo= */ true);
+
+        // Verify the tab to the left was selected.
+        verify(mModel).setIndex(eq(1), anyInt());
+    }
+
+    @Test
+    public void testSelectedTabClose_AutoSelectOnCloseChange() {
+        // Initialize and select the tab at index 2.
+        initializeTest(2);
+        when(mTab.getId()).thenReturn(2);
+        when(mModel.getTabAt(2)).thenReturn(mTab);
+
+        // Fake a close button click on the tab at index 2
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.handleCloseTab(tabs[2], /* allowUndo= */ true);
+
+        // Verify the tab to the right was selected.
+        verify(mModel).setIndex(eq(3), anyInt());
     }
 
     @Test
@@ -3908,14 +4021,14 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 11, 12);
         // Disable the padding as changing the visible width change the existing expected fling
         // distance.
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, 0, 0, 0);
+        mStripLayoutHelper.onSizeChanged(STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, 0, 0, 0);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         mStripLayoutHelper.setScrollOffsetForTesting(-150);
 
         // Act: Perform a fling and update layout.
         float velocityX = -7000f;
         // The velocityX value is used to calculate the scroller.finalX value.
-        mStripLayoutHelper.fling(TIMESTAMP, 0, 0, velocityX, 0);
+        mStripLayoutHelper.fling(TIMESTAMP, velocityX);
         // This will use the scroller.finalX value to update the scrollOffset. The timestamp
         // value here will determine the fling duration and affects the final offset value.
         mStripLayoutHelper.updateLayout(TIMESTAMP + 10);
@@ -3938,7 +4051,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 10, 11);
         // Disable the padding as changing the visible width change the existing expected fling
         // distance.
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, 0, 0, 0);
+        mStripLayoutHelper.onSizeChanged(STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, 0, 0, 0);
         // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
         // invoked. That also affects the scrollOffset value. So we call updateLayout before
         // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
@@ -3948,7 +4061,7 @@ public class StripLayoutHelperTest {
         // Act: Perform a fling and update layout.
         float velocity = 5000f;
         // The velocityX value is used to calculate the scroller.finalX value.
-        mStripLayoutHelper.fling(TIMESTAMP, 0, 0, velocity, 0);
+        mStripLayoutHelper.fling(TIMESTAMP, velocity);
         // This will use the scroller.finalX value to update the scrollOffset. The timestamp
         // value here will determine the fling duration and affects the final offset value.
         mStripLayoutHelper.updateLayout(TIMESTAMP + 20);
@@ -3975,7 +4088,7 @@ public class StripLayoutHelperTest {
         when(mTabGroupContextMenuCoordinator.isMenuShowing()).thenReturn(true);
         // Disable the padding as changing the visible width change the existing expected fling
         // distance.
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, 0, 0, 0);
+        mStripLayoutHelper.onSizeChanged(STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, 0, 0, 0);
         // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
         // invoked. That also affects the scrollOffset value. So we call updateLayout before
         // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
@@ -3988,7 +4101,7 @@ public class StripLayoutHelperTest {
         // Act: Perform a fling and update layout.
         float velocity = 5000f;
         // The velocityX value is used to calculate the scroller.finalX value.
-        mStripLayoutHelper.fling(TIMESTAMP, 0, 0, velocity, 0);
+        mStripLayoutHelper.fling(TIMESTAMP, velocity);
         // This will use the scroller.finalX value to update the scrollOffset. The timestamp
         // value here will determine the fling duration and affects the final offset value.
         mStripLayoutHelper.updateLayout(TIMESTAMP + 20);
@@ -4006,7 +4119,7 @@ public class StripLayoutHelperTest {
         // Arrange
         initializeTest(false, false, 13, 14);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
         // invoked. That also affects the scrollOffset value. So we call updateLayout before
         // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
@@ -4015,7 +4128,7 @@ public class StripLayoutHelperTest {
 
         // Act: Drag and update layout.
         float dragDeltaX = -200.f;
-        mStripLayoutHelper.drag(TIMESTAMP, 374.74f, 24.276f, dragDeltaX);
+        mStripLayoutHelper.drag(374.74f, 24.276f, dragDeltaX);
 
         float expectedOffset = -350; // mScrollOffset + dragDeltaX = -200 - 150 = -350
         // Assert scroll offset position.
@@ -4240,7 +4353,7 @@ public class StripLayoutHelperTest {
 
         // Set size.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         assertNotEquals(
                 "Offset should have changed.", 0, mStripLayoutHelper.getScrollOffset(), EPSILON);
     }
@@ -4275,10 +4388,6 @@ public class StripLayoutHelperTest {
     }
 
     private void setupForAnimations() {
-        CompositorAnimationHandler mHandler =
-                new CompositorAnimationHandler(CallbackUtils.emptyRunnable());
-        when(mUpdateHost.getAnimationHandler()).thenReturn(mHandler);
-
         // Update layout when updateHost.requestUpdate is called.
         doAnswer(
                         invocation -> {
@@ -4332,6 +4441,7 @@ public class StripLayoutHelperTest {
             }
         }
         mModel.setIndex(tabIndex);
+        mStripLayoutHelper.tabModelSelected(/* selected= */ true);
         mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
         mStripLayoutHelper.setTabStripIphControllerForTesting(mController);
         when(mController.wouldTriggerIph(anyInt())).thenReturn(true);
@@ -4382,6 +4492,7 @@ public class StripLayoutHelperTest {
         LocalizationUtils.setRtlForTesting(rtl);
         return new StripLayoutHelper(
                 mActivity,
+                mManager,
                 mManagerHost,
                 mUpdateHost,
                 mRenderHost,
@@ -4452,6 +4563,7 @@ public class StripLayoutHelperTest {
         for (int i = startIndex; i < endIndex; i++) {
             Tab tab = mModel.getTabAt(i);
             when(mTabGroupModelFilter.isTabInTabGroup(eq(tab))).thenReturn(true);
+            when(mTabGroupModelFilter.getIndexOfTabInGroup(tab)).thenReturn(i - startIndex);
             when(tab.getTabGroupId()).thenReturn(tabGroupId);
             relatedTabs.add(tab);
         }
@@ -4461,9 +4573,7 @@ public class StripLayoutHelperTest {
 
         mStripLayoutHelper.updateGroupTextAndSharedState(tabGroupId);
         mStripLayoutHelper.rebuildStripViews();
-        if (mStripLayoutHelper.getRunningAnimatorForTesting() != null) {
-            mStripLayoutHelper.getRunningAnimatorForTesting().end();
-        }
+        mStripLayoutHelper.finishAnimations();
     }
 
     private void setTabStripDragHandlerMock() {
@@ -4511,20 +4621,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    public void testDrag_sendMoveWindowBroadcast_success() {
-        XrUtils.setXrDeviceForTesting(true);
-        // Setup with tabs and select first tab.
-        setTabStripDragHandlerMock();
-        when(mToolbarContainerView.getContext()).thenReturn(mActivity);
-        initializeTest(false, false, 0, 5);
-
-        // Act and verify the broadcast is sent.
-        onLongPress_OffTab();
-        verify(mWindowAndroid, times(1)).sendBroadcast(any());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_DragOntoSourceStrip() {
         // Setup and mark the active clicked tab.
         initializeTest(false, false, 0, 5);
@@ -4557,7 +4653,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab draggedTab = tabs[1];
         mStripLayoutHelper.startDragAndDropTabForTesting(draggedTab, DRAG_START_POINT);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
 
         // Drag tab out of strip.
         mStripLayoutHelper.setTabAtPositionForTesting(draggedTab);
@@ -4576,12 +4672,100 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @Feature("Pinned Tabs")
+    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
+    public void testGetTabIndexForTabDrop_DropPinnedTabOverUnpinnedTab() {
+        // Setup with 3 tabs.
+        initializeTest(false, false, 1, 3);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH_LANDSCAPE,
+                STRIP_HEIGHT,
+                false,
+                TIMESTAMP,
+                PADDING_LEFT,
+                PADDING_RIGHT,
+                0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // First half of second tab:
+        // tabWidth(265) - overlapWidth(28) + inset(16) to +halfTabWidth(132.5) = 253 to 385.5
+        int expectedIndex = 0;
+        float dropX = 300.f;
+        assertEquals(
+                "Should prepare to drop at index 0.",
+                expectedIndex,
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ true));
+    }
+
+    @Test
+    @Feature("Pinned Tabs")
+    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
+    public void testGetTabIndexForTabDrop_DropUnpinnedTabOverPinnedTab() {
+        // Setup with 3 tabs.
+        initializeTest(false, false, 1, 3);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH_LANDSCAPE,
+                STRIP_HEIGHT,
+                false,
+                TIMESTAMP,
+                PADDING_LEFT,
+                PADDING_RIGHT,
+                0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Pin first two tabs
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        tabs[0].setIsPinned(true);
+        tabs[1].setIsPinned(true);
+
+        // First half of second tab:
+        // tabWidth(265) - overlapWidth(28) + inset(16) to +halfTabWidth(132.5) = 253 to 385.5
+        int expectedIndex = 2;
+        float dropX = 300.f;
+        assertEquals(
+                "Should prepare to drop at index 2.",
+                expectedIndex,
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
+    }
+
+    @Test
+    @Feature("Pinned Tabs")
+    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
+    public void testGetTabIndexForTabDrop_DropPinnedTabOverPinnedTab() {
+        // Setup with 3 tabs.
+        initializeTest(false, false, 1, 3);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH_LANDSCAPE,
+                STRIP_HEIGHT,
+                false,
+                TIMESTAMP,
+                PADDING_LEFT,
+                PADDING_RIGHT,
+                0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Pin first two tabs
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        tabs[0].setIsPinned(true);
+        tabs[1].setIsPinned(true);
+
+        // First half of second tab:
+        // tabWidth(265) - overlapWidth(28) + inset(16) to +halfTabWidth(132.5) = 253 to 385.5
+        int expectedIndex = 1;
+        float dropX = 300.f;
+        assertEquals(
+                "Should prepare to drop at index 1.",
+                expectedIndex,
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ true));
+    }
+
+    @Test
     public void testGetTabIndexForTabDrop_FirstHalfOfTab() {
         // Setup with 3 tabs.
         initializeTest(false, false, 1, 3);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH_LANDSCAPE,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH_LANDSCAPE,
+                STRIP_HEIGHT,
                 false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -4596,7 +4780,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should prepare to drop at index 1.",
                 expectedIndex,
-                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
     }
 
     @Test
@@ -4604,8 +4788,8 @@ public class StripLayoutHelperTest {
         // Setup with 3 tabs.
         initializeTest(false, false, 1, 3);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH_LANDSCAPE,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH_LANDSCAPE,
+                STRIP_HEIGHT,
                 false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -4620,7 +4804,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should prepare to drop at index 2.",
                 expectedIndex,
-                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
     }
 
     @Test
@@ -4643,8 +4827,8 @@ public class StripLayoutHelperTest {
         collapsedTab2.setWidth(TAB_OVERLAP_WIDTH_DP);
 
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH_LANDSCAPE,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH_LANDSCAPE,
+                STRIP_HEIGHT,
                 false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -4660,7 +4844,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should prepare to drop at index 1.",
                 expectedIndex,
-                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
     }
 
     @Test
@@ -4682,8 +4866,8 @@ public class StripLayoutHelperTest {
         collapsedTab2.setWidth(TAB_OVERLAP_WIDTH_DP);
 
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH_LANDSCAPE,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH_LANDSCAPE,
+                STRIP_HEIGHT,
                 false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -4699,7 +4883,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should prepare to drop at index 2.",
                 expectedIndex,
-                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
     }
 
     @Test
@@ -4708,8 +4892,8 @@ public class StripLayoutHelperTest {
         setupDragDropState();
         initializeTest(false, false, 1, 3);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH_LANDSCAPE,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH_LANDSCAPE,
+                STRIP_HEIGHT,
                 false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -4729,7 +4913,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should prepare to drop at index 0.",
                 expectedIndex,
-                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
     }
 
     @Test
@@ -4737,8 +4921,8 @@ public class StripLayoutHelperTest {
         // Setup with 3 tabs.
         initializeTest(false, false, 1, 3);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH_LANDSCAPE,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH_LANDSCAPE,
+                STRIP_HEIGHT,
                 false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -4753,7 +4937,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should prepare to drop at index 3.",
                 expectedIndex,
-                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
     }
 
     @Test
@@ -4762,8 +4946,8 @@ public class StripLayoutHelperTest {
         setupDragDropState();
         initializeTest(false, false, 1, 5);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH_LANDSCAPE,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH_LANDSCAPE,
+                STRIP_HEIGHT,
                 false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -4792,7 +4976,7 @@ public class StripLayoutHelperTest {
 
         assertEquals(
                 "TouchableRect does not match. Touch size should match the strip during drag.",
-                new RectF(PADDING_LEFT, 0, SCREEN_WIDTH_LANDSCAPE - PADDING_RIGHT, SCREEN_HEIGHT),
+                new RectF(PADDING_LEFT, 0, STRIP_WIDTH_LANDSCAPE - PADDING_RIGHT, STRIP_HEIGHT),
                 mStripLayoutHelper.getTouchableRect());
     }
 
@@ -4802,7 +4986,7 @@ public class StripLayoutHelperTest {
         boolean isIncognito = false;
         initializeTest(false, isIncognito, 1, 3);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
 
         // Prepare and verify no interaction.
         mStripLayoutHelper.handleDragEnter(0.f, 0.f, false, !isIncognito);
@@ -4812,7 +4996,7 @@ public class StripLayoutHelperTest {
 
         // Drag and verify no interaction.
         float expectedOffset = mStripLayoutHelper.getScrollOffset();
-        mStripLayoutHelper.handleDragWithin(TIMESTAMP, PADDING_LEFT, 0.f, 50.f, !isIncognito);
+        mStripLayoutHelper.handleDragWithin(PADDING_LEFT, 0.f, 50.f, !isIncognito);
         assertEquals(
                 "Shouldn't have scrolled when dragged tab Incognito is different.",
                 expectedOffset,
@@ -4832,7 +5016,7 @@ public class StripLayoutHelperTest {
         // Initialize with 10 tabs. Group tabs 2 through 3. Group tabs 5 through 8.
         initializeTest(false, false, 0, 10);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         groupTabs(1, 3, TAB_GROUP_ID_1);
         groupTabs(4, 8, TAB_GROUP_ID_2);
 
@@ -4865,13 +5049,59 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testRebuildStripViews_WithGroupIdToHideWithoutMatchingTab_ClearsInvalidState() {
+        initializeTest(/* tabIndex= */ 0);
+
+        // Fake that the tab group ID exists without a matching Tab.
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(true);
+
+        // Set nonexistent group ID to hide.
+        mStripLayoutHelper.getGroupIdToHideSupplierForTesting().set(TAB_GROUP_ID_1);
+
+        // Verify the invalid state is automatically cleared.
+        assertNull(
+                "The invalid tab group ID to hide should have been cleared.",
+                mStripLayoutHelper.getGroupIdToHideSupplierForTesting().get());
+    }
+
+    @Test
+    public void testRebuildStripViews_WithNonExistentGroupIdToHide_Asserts() {
+        initializeTest(/* tabIndex= */ 0);
+
+        // Fake that there's a matching Tab for the group ID, but that the group ID doesn't exist in
+        // the model.
+        groupTabs(0, 1, TAB_GROUP_ID_1);
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(false);
+
+        // Set nonexistent group ID to hide and verify an AssertionError is thrown.
+        try {
+            mStripLayoutHelper.getGroupIdToHideSupplierForTesting().set(TAB_GROUP_ID_1);
+            throw new Error("Expected assert to be triggered with invalid group ID to hide.");
+        } catch (AssertionError ignored) {
+        }
+    }
+
+    @Test
+    public void testRebuildStripViews_WithNonContiguousTabGroup_Asserts() {
+        initializeTest(/* tabIndex= */ 0);
+
+        // Create a non-contiguous tab group and verify an AssertionError is thrown.
+        try {
+            groupTabs(0, 1, TAB_GROUP_ID_1);
+            groupTabs(3, 4, TAB_GROUP_ID_1);
+            throw new Error("Expected assert to be triggered with a non-contiguous tab group.");
+        } catch (AssertionError ignored) {
+        }
+    }
+
+    @Test
     public void testHandleGroupTitleClick_Collapse() {
         // Initialize with 4 tabs. Group first three tabs.
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher("Android.TabStrip.TabGroupCollapsed", true);
         initializeTest(false, false, 3, 4);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         groupTabs(0, 3, TAB_GROUP_ID_1);
 
         // Fake a click on the group indicator.
@@ -4894,7 +5124,7 @@ public class StripLayoutHelperTest {
                         "Android.TabStrip.TabGroupCollapsed", false);
         initializeTest(false, false, 3, 4);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         groupTabs(0, 3, TAB_GROUP_ID_1);
 
         // Mark the group as collapsed. Fake a click on the group indicator.
@@ -4917,7 +5147,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0, 4);
         // Update layout to set view draw properties
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         // Group all tabs
         groupTabs(0, 3, TAB_GROUP_ID_1);
@@ -4942,7 +5172,7 @@ public class StripLayoutHelperTest {
                                         - stripViews[1].getTouchTargetBounds().left)
                                 / 2;
         mStripLayoutHelper.click(TIMESTAMP, viewMidX, 0, MotionEvent.BUTTON_SECONDARY, 0);
-        verify(mTabContextMenuCoordinator).showMenu(any(), anyInt());
+        verify(mTabContextMenuCoordinator).showMenu(any(), any());
 
         // Secondary click on tab close - show menu.
         // Mock tab's view.
@@ -4966,7 +5196,7 @@ public class StripLayoutHelperTest {
         // Initialize with 4 tabs. Group first three tabs.
         initializeTest(false, false, 3, 4);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         groupTabs(0, 3, TAB_GROUP_ID_1);
 
         // Verify initial dimensions.
@@ -4997,7 +5227,7 @@ public class StripLayoutHelperTest {
         // Initialize with 4 tabs. Group first three tabs.
         initializeTest(false, false, 3, 4);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         groupTabs(0, 3, TAB_GROUP_ID_1);
 
         // Collapse the group.
@@ -5031,8 +5261,8 @@ public class StripLayoutHelperTest {
         // Initialize with 5 tabs. Group last two tabs.
         initializeTest(false, false, 3, 5);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-        groupTabs(3, 4, TAB_GROUP_ID_1);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        groupTabs(3, 5, TAB_GROUP_ID_1);
 
         // Assert: the 4th tab is selected.
         assertEquals(
@@ -5055,7 +5285,7 @@ public class StripLayoutHelperTest {
         // Initialize with 5 tabs. Group first three tabs.
         initializeTest(false, false, 1, 5);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         groupTabs(0, 3, TAB_GROUP_ID_1);
 
         // Assert: the 2nd tab is selected.
@@ -5079,7 +5309,7 @@ public class StripLayoutHelperTest {
         // Initialize with 5 tabs. Group last two tabs.
         initializeTest(false, false, 3, 5);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         groupTabs(3, 5, TAB_GROUP_ID_1);
 
         // Assert: the 4th tab is selected.
@@ -5103,7 +5333,7 @@ public class StripLayoutHelperTest {
         // Initialize with 5 tabs. Group all five tabs.
         initializeTest(false, false, 3, 5);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         groupTabs(0, 5, TAB_GROUP_ID_1);
 
         // Assert: the 4th tab is selected.
@@ -5118,7 +5348,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
 
         // Verify: Ntp opened since there is no expanded tab on strip.
-        verify(mTabCreator).launchNtp();
+        verify(mTabCreator).launchNtp(anyInt());
     }
 
     @Test
@@ -5325,7 +5555,7 @@ public class StripLayoutHelperTest {
 
         // Change orientation.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_HEIGHT, SCREEN_WIDTH, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_HEIGHT, STRIP_WIDTH, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
 
         // Verify iph text bubble is dismissed on screen size change.
         verify(mController, times(2)).dismissTextBubble();
@@ -5333,10 +5563,10 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testTabTearingXrIph() {
-        XrUtils.setXrDeviceForTesting(true);
+        DeviceInfo.setIsXrForTesting(true);
         initializeTest(false, false, 0, 1);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
 
         // Create a new tab.
         mModel.addTab("new tab");
@@ -5371,7 +5601,7 @@ public class StripLayoutHelperTest {
                         false,
                         hoveredTab.getDrawX(),
                         hoveredTab.getWidth(),
-                        SCREEN_HEIGHT,
+                        STRIP_HEIGHT,
                         0f);
         assertEquals(
                 "Tab container opacity is incorrect.",
@@ -5387,8 +5617,8 @@ public class StripLayoutHelperTest {
 
         // Apply top padding to the strip.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH,
+                STRIP_HEIGHT,
                 false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -5405,7 +5635,7 @@ public class StripLayoutHelperTest {
                         false,
                         hoveredTab.getDrawX(),
                         hoveredTab.getWidth(),
-                        SCREEN_HEIGHT,
+                        STRIP_HEIGHT,
                         PADDING_TOP);
         assertEquals(
                 "Tab container opacity is incorrect.",
@@ -5443,7 +5673,7 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.isViewCompletelyHidden(hoveredTab));
 
         // Set simulated hovered StripLayoutTab drawX to assume a position beyond the right fade.
-        hoveredTab.setDrawX(SCREEN_WIDTH - StripLayoutHelperManager.FADE_MEDIUM_WIDTH_DP + 1);
+        hoveredTab.setDrawX(STRIP_WIDTH - StripLayoutHelperManager.FADE_MEDIUM_WIDTH_DP + 1);
         assertTrue(
                 "Tab should be considered hidden for hover state.",
                 mStripLayoutHelper.isViewCompletelyHidden(hoveredTab));
@@ -5452,7 +5682,7 @@ public class StripLayoutHelperTest {
     private void initializeTabHoverTest() {
         initializeTest(false, false, 0, 3);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.setTabHoverCardView(mTabHoverCardView);
         // For ease of dp/px calculation.
         mContext.getResources().getDisplayMetrics().density = 1f;
@@ -5572,13 +5802,13 @@ public class StripLayoutHelperTest {
         // Setup some tabs and group some.
         initializeTest(false, false, 1, 5);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         groupTabs(1, 3, TAB_GROUP_ID_1);
 
         // Simulate top padding update.
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH,
-                SCREEN_HEIGHT,
+                STRIP_WIDTH,
+                STRIP_HEIGHT,
                 false,
                 TIMESTAMP,
                 PADDING_LEFT,
@@ -5599,7 +5829,7 @@ public class StripLayoutHelperTest {
                     "Touch target bottom bound for view "
                             + stripViews[i].getAccessibilityDescription()
                             + " is incorrect.",
-                    PADDING_TOP + SCREEN_HEIGHT,
+                    PADDING_TOP + STRIP_HEIGHT,
                     stripViews[i].getTouchTargetBounds().bottom,
                     0f);
             if (stripViews[i] instanceof StripLayoutTab tab) {
@@ -5610,7 +5840,7 @@ public class StripLayoutHelperTest {
                         0f);
                 assertEquals(
                         "Touch target bottom bound for tab's close button is incorrect.",
-                        PADDING_TOP + SCREEN_HEIGHT,
+                        PADDING_TOP + STRIP_HEIGHT,
                         tab.getCloseButton().getTouchTargetBounds().bottom,
                         0f);
             }
@@ -5715,7 +5945,7 @@ public class StripLayoutHelperTest {
         assertTrue(
                 "Expected openKeyboardFocusedContextMenu to return true if tab context menu opened",
                 mStripLayoutHelper.openKeyboardFocusedContextMenu());
-        verify(mTabContextMenuCoordinator, times(1)).showMenu(any(), anyInt());
+        verify(mTabContextMenuCoordinator, times(1)).showMenu(any(), any());
     }
 
     @Test
@@ -5750,7 +5980,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testTabCreated_HorizontalAnimation() {
         // Initialize with default amount of tabs. Clear any animations.
         initializeTest(false, false, 3);
@@ -5765,14 +5994,13 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
-    public void testTabClosing_NoTabResize_HorizontalAnimation() {
+    public void testTabClosing_HorizontalAnimation() {
         // Arrange
         int tabCount = 10;
         initializeTest(false, false, 9, tabCount);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         setupForAnimations();
 
         mStripLayoutHelper.updateLayout(TIMESTAMP);
@@ -5781,15 +6009,10 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.handleCloseButtonClick(
                 tabs[9], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        // Assert: One set of animations started.
-        assertFalse(
-                "MultiStepAnimations should not have started.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Act: End the tab closing animations to apply final values.
-        Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
-        assertNotNull(runningAnimator);
-        runningAnimator.end();
+        // Act: Fake the tab closure and end the animation, so the tab is removed from the model.
+        Tab closingTab = mModel.getTabAt(9);
+        mStripLayoutHelper.finishAnimations();
+        mStripLayoutHelper.tabClosed(closingTab);
 
         // Assert: Tab is closed.
         int expectedTabCount = 9;
@@ -5806,8 +6029,8 @@ public class StripLayoutHelperTest {
     public void testWidthCalculated_withNullTabGroupModelFilter() {
         initializeTest(false, false, 0, 1, null);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-        assertNotEquals(0, mStripLayoutHelper.getCachedTabWidthForTesting(), EPSILON);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        assertNotEquals(0, mStripLayoutHelper.getUnpinnedTabWidthForTesting(), EPSILON);
     }
 
     @Test
@@ -5816,7 +6039,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0, 5);
         // Update layout to set view draw properties
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         // Arrange
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -5847,7 +6070,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0, 5);
         // Update layout to set view draw properties
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         // Arrange
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -5885,7 +6108,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 1, 5); // Start with Tab 1 active (this is the anchor).
         // Update layout to set view draw properties
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         // Arrange
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -5921,7 +6144,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 2, 5);
         // Update layout to set view draw properties
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         // Arrange
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -5969,7 +6192,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0, 5);
         // Update layout to set view draw properties
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         // Arrange
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -6011,7 +6234,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0, 5);
         // Update layout to set view draw properties
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         // Arrange
         StripLayoutView[] stripViews = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -6057,7 +6280,7 @@ public class StripLayoutHelperTest {
         when(mTabGroupModelFilter.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
         // Update layout to set view draw properties
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         StripLayoutView[] stripViews = mStripLayoutHelper.getStripLayoutViewsForTesting();
 
@@ -6079,7 +6302,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0, 5);
         // Update layout to set view draw properties
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutView[] stripViews = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -6118,7 +6341,7 @@ public class StripLayoutHelperTest {
     public void testMultiSelect_CtrlClick_ResetsAnchorTab() {
         initializeTest(false, false, 1, 5);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -6155,14 +6378,13 @@ public class StripLayoutHelperTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING})
-    public void testMultiSelectedTabsContextMenu_MultipleTabsSelected() {
+    public void testTabContextMenu_MultipleTabsSelected() {
         // Setup
         initializeTest(false, false, 0, 5);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
-        mStripLayoutHelper.setMultiSelectedTabsContextMenuCoordinatorForTesting(
-                mMultiSelectedTabsContextMenuCoordinator);
+        mStripLayoutHelper.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutView[] stripViews = mStripLayoutHelper.getStripLayoutViewsForTesting();
 
@@ -6191,7 +6413,579 @@ public class StripLayoutHelperTest {
         // Verify
         List<Integer> expectedTabIds =
                 List.of(tabs[0].getTabId(), tabs[1].getTabId(), tabs[3].getTabId());
-        verify(mMultiSelectedTabsContextMenuCoordinator).showMenu(any(), eq(expectedTabIds));
+        verify(mTabContextMenuCoordinator)
+                .showMenu(
+                        any(),
+                        argThat(anchorInfo -> anchorInfo.getAllTabIds().equals(expectedTabIds)));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING})
+    public void testTabContextMenu_MultipleTabsSelected_WithGroup() {
+        // Setup
+        initializeTest(false, false, 0, 5);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        StripLayoutView[] stripViews = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab tab = (StripLayoutTab) stripViews[4];
+        tab.setKeyboardFocused(true);
+        // Action: Multiselect the keyboard focused tab.
+        mStripLayoutHelper.multiselectKeyboardFocusedItem();
+        // Verify
+        assertTrue(mModel.isTabMultiSelected(tab.getTabId()));
+        // Action : Multiselect the keyboard focused tab again to deselect it.
+        mStripLayoutHelper.multiselectKeyboardFocusedItem();
+        // Verify
+        assertFalse(mModel.isTabMultiSelected(tab.getTabId()));
+    }
+
+    // 1. Moving a tab to higher indices, leaving a tab group
+    @Test
+    public void testKeyboardShortcut_MoveTabToHigherIndex_LeavingGroup() {
+        // Setup: 5 tabs, with tabs 1, 2, 3 in a group: 0, [1, 2, 3], 4
+        initializeTest(false, false, 0, 5);
+        groupTabs(1, 4, TAB_GROUP_ID_1);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab tab = (StripLayoutTab) views[4]; // Tab with ID 3 (skip group indicator)
+        tab.setKeyboardFocused(true);
+
+        // Action: Move tab 3 "to the right".
+        mStripLayoutHelper.moveSelectedStripView(false);
+
+        // Verify: Tab 3 has left the group but is still at index 3.
+        // Original model: 0, [1, 2, 3], 4
+        // Expected model: 0, [1, 2], 3, 4
+        verify(mTabUngrouper, times(1))
+                .ungroupTabs(eq(List.of(mModel.getTabAt(3))), eq(true), eq(true), any());
+    }
+
+    // 2. Moving a tab to higher indices, leaving a tab group, when the tab is at the end
+    @Test
+    public void testKeyboardShortcut_MoveTabToHigherIndex_LeavingGroup_AtEnd() {
+        // Setup: 5 tabs, with tabs 2, 3, 4 in a group: 0, 1, [2, 3, 4]
+        initializeTest(false, false, 0, 5);
+        groupTabs(2, 5, TAB_GROUP_ID_1);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab tab = (StripLayoutTab) views[5]; // Tab with ID 4 (skip group indicator)
+        tab.setKeyboardFocused(true);
+
+        // Action: Move tab 4 "to the right".
+        mStripLayoutHelper.moveSelectedStripView(false);
+
+        // Verify: Tab 3 has left the group but is still at index 3.
+        // Original model: 0, 1, [2, 3, 4]
+        // Expected model: 0, 1, [2, 3], 4
+        verify(mTabUngrouper, times(1))
+                .ungroupTabs(eq(List.of(mModel.getTabAt(4))), eq(true), eq(true), any());
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).moveTab(anyInt(), anyInt());
+    }
+
+    // 3. Moving a tab to lower indices, joining a tab group
+    @Test
+    public void testKeyboardShortcut_MoveTabToLowerIndex_JoiningGroup() {
+        // Setup: 5 tabs, with tabs 2, 3 in a group: 0, 1, [2, 3], 4
+        initializeTest(false, false, 0, 5);
+        groupTabs(2, 4, TAB_GROUP_ID_1);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab tab = (StripLayoutTab) views[5]; // Tab with ID 4 (skip group indicator)
+        tab.setKeyboardFocused(true);
+
+        // Action: Move tab 4 to the left
+        mStripLayoutHelper.moveSelectedStripView(true);
+
+        // Verify: Tab 4 has joined the group.
+        // Original model: 0, 1, [2, 3], 4
+        // Expected model: 0, 1, [2, 3, 4]
+        Tab expectedDestinationTab = mModel.getTabById(3);
+        verify(mTabGroupModelFilter, times(1))
+                .mergeListOfTabsToGroup(
+                        mTabListCaptor.capture(),
+                        eq(expectedDestinationTab),
+                        eq(null),
+                        eq(MergeNotificationType.DONT_NOTIFY));
+        assertTrue(mTabListCaptor.getValue().contains(mModel.getTabById(4)));
+        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
+        verify(mModel, never()).moveTab(anyInt(), anyInt());
+    }
+
+    // 4. Moving a tab to higher indices, joining a tab group
+    @Test
+    public void testKeyboardShortcut_MoveTabToHigherIndex_JoiningGroup() {
+        // Setup: 5 tabs, with tabs 2, 3 in a group: 0, 1, [2, 3], 4
+        initializeTest(false, false, 0, 5);
+        groupTabs(2, 4, TAB_GROUP_ID_1);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab tab = (StripLayoutTab) views[1]; // Tab with ID 1
+        tab.setKeyboardFocused(true);
+
+        // Action: Move tab 1 to the right, in which case it will cross the group indicator.
+        mStripLayoutHelper.moveSelectedStripView(false);
+
+        // Verify: Tab 1 has joined the group.
+        // Original model: 0, 1, [2, 3], 4
+        // Expected model: 0, [1, 2, 3], 4
+        Tab expectedDestinationTab = mModel.getTabById(2);
+        verify(mTabGroupModelFilter, times(1))
+                .mergeListOfTabsToGroup(
+                        mTabListCaptor.capture(),
+                        eq(expectedDestinationTab),
+                        eq(0),
+                        eq(MergeNotificationType.DONT_NOTIFY));
+        assertTrue(mTabListCaptor.getValue().contains(mModel.getTabById(1)));
+        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
+        verify(mModel, never()).moveTab(anyInt(), anyInt());
+    }
+
+    // 5. Moving a tab to lower indices, leaving a tab group, when the tab is at the start
+    @Test
+    public void testKeyboardShortcut_MoveTabToLowerIndex_LeavingGroup_AtStart() {
+        // Setup: 5 tabs, with tabs 0, 1, 2 in a group: [0, 1, 2], 3, 4
+        initializeTest(false, false, 0, 5);
+        groupTabs(0, 3, TAB_GROUP_ID_1);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab tab = (StripLayoutTab) views[1]; // Tab with ID 0 (skip group indicator)
+        tab.setKeyboardFocused(true);
+
+        // Action: Move tab 1 to the left, in which case it will cross the group indicator
+        mStripLayoutHelper.moveSelectedStripView(true);
+
+        // Verify: Tab 1 has left the group and is now at index 0.
+        verify(mTabUngrouper, times(1))
+                .ungroupTabs(eq(List.of(mModel.getTabAt(0))), eq(false), eq(true), any());
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).moveTab(anyInt(), anyInt());
+    }
+
+    // 6. Moving a tab within a tab group
+    @Test
+    public void testKeyboardShortcut_MoveTab_WithinGroup() {
+        // Setup: 5 tabs, with tabs 0, 1, 2 in a group: [0, 1, 2], 3, 4
+        initializeTest(false, false, 0, 5);
+        groupTabs(0, 3, TAB_GROUP_ID_1);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab tab = (StripLayoutTab) views[1]; // Tab with ID 0
+        tab.setKeyboardFocused(true);
+
+        // Action: Drag tab 0 to the right, where it remains in the group.
+        mStripLayoutHelper.moveSelectedStripView(false);
+
+        // Verify: The order within the group has changed.
+        verify(mModel, times(1)).moveTab(0, 1);
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
+    }
+
+    // 7. Moving a tab but it is not interacting with tab groups
+    @Test
+    public void testKeyboardShortcut_MoveTab_NoGroupInteraction() {
+        // Setup: 5 tabs, all ungrouped.
+        initializeTest(false, false, 0, 5);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab tab = (StripLayoutTab) views[1]; // Tab with ID 1
+        tab.setKeyboardFocused(true);
+
+        // Action: Move tab 1 to the right.
+        mStripLayoutHelper.moveSelectedStripView(false);
+
+        // Verify: The tab order has changed.
+        // Original model: 0, 1, 2, 3, 4
+        // Expected model: 0, 2, 1, 3, 4
+        verify(mModel, times(1)).moveTab(1, 2);
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
+    }
+
+    // 8. Moving a tab to the right, past a collapsed tab group
+    @Test
+    public void testKeyboardShortcut_MoveTab_ToTheRightOfCollapsedGroup() {
+        // Setup: 5 tabs, with tabs 1, 2 in a group: 0, [1, 2], 3, 4
+        initializeTest(false, false, 0, 5);
+        groupTabs(1, 3, TAB_GROUP_ID_1);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab tab = (StripLayoutTab) views[0]; // Tab with ID 0
+        tab.setKeyboardFocused(true);
+        StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) views[1]; // Tab group indicator
+        mStripLayoutHelper.collapseTabGroupForTesting(groupTitle, true);
+
+        // Action: Move tab 0 to the right.
+        mStripLayoutHelper.moveSelectedStripView(false);
+
+        // Verify: The tab order has changed.
+        verify(mModel, times(1)).moveTab(0, 2);
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
+    }
+
+    // 9. Moving a tab to the left, past a collapsed tab group
+    @Test
+    public void testKeyboardShortcut_MoveTab_ToTheLeftOfCollapsedGroup() {
+        // Setup: 5 tabs, with tabs 1, 2 in a group: 0, [1, 2], 3, 4
+        initializeTest(false, false, 0, 5);
+        groupTabs(1, 3, TAB_GROUP_ID_1);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab tab = (StripLayoutTab) views[4]; // Tab with ID 3 (skip group indicator)
+        tab.setKeyboardFocused(true);
+        StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) views[1]; // Tab group indicator
+        mStripLayoutHelper.collapseTabGroupForTesting(groupTitle, true);
+
+        // Action: Move tab 3 to the left.
+        mStripLayoutHelper.moveSelectedStripView(true);
+
+        // Verify: The tab order has changed.
+        verify(mModel, times(1)).moveTab(3, 1);
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
+    }
+
+    // 10. Moving a tab group to higher indices, past one tab
+    @Test
+    public void testKeyboardShortcut_MoveTabGroupToHigherIndex_PastOneTab() {
+        // Setup: 5 tabs, with tabs 1, 2 in a group: 0, [1, 2], 3, 4
+        initializeTest(false, false, 0, 5);
+        groupTabs(1, 3, TAB_GROUP_ID_1);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutGroupTitle group = (StripLayoutGroupTitle) views[1]; // Group 1
+        group.setKeyboardFocused(true);
+        int lastShownTabId = ((StripLayoutTab) views[2]).getTabId();
+        when(mTabGroupModelFilter.getGroupLastShownTabId(group.getTabGroupId()))
+                .thenReturn(lastShownTabId);
+
+        // Action: Move Group 1 to the right, past tab 3.
+        mStripLayoutHelper.moveSelectedStripView(false);
+
+        // Verify: The group has moved.
+        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(lastShownTabId, 3);
+        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
+    }
+
+    // 11. Moving a tab group to higher indices, past a tab group
+    @Test
+    public void testKeyboardShortcut_MoveTabGroupToHigherIndex_PastGroup() {
+        // Setup: 4 tabs, Group A (0, 1), Group B (2, 3): [0, 1], [2, 3]
+        initializeTest(false, false, 0, 4);
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+        groupTabs(2, 4, TAB_GROUP_ID_2);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutGroupTitle group = (StripLayoutGroupTitle) views[0]; // Group A
+        group.setKeyboardFocused(true);
+        int lastShownTabId = ((StripLayoutTab) views[1]).getTabId();
+        when(mTabGroupModelFilter.getGroupLastShownTabId(group.getTabGroupId()))
+                .thenReturn(lastShownTabId);
+
+        // Action: Move Group A to the right, past Group B.
+        mStripLayoutHelper.moveSelectedStripView(false);
+
+        // Verify: The groups have swapped positions.
+        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(lastShownTabId, 3);
+        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
+    }
+
+    // 12. Moving a tab group to lower indices, past one tab
+    @Test
+    public void testKeyboardShortcut_MoveTabGroupToLowerIndex_PastOneTab() {
+        // Setup: 5 tabs, with tabs 2, 3 in a group: 0, 1, [2, 3], 4
+        initializeTest(false, false, 0, 5);
+        groupTabs(2, 4, TAB_GROUP_ID_1);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutGroupTitle group = (StripLayoutGroupTitle) views[2]; // Group 1
+        group.setKeyboardFocused(true);
+        int lastShownTabId = ((StripLayoutTab) views[3]).getTabId();
+        when(mTabGroupModelFilter.getGroupLastShownTabId(group.getTabGroupId()))
+                .thenReturn(lastShownTabId);
+
+        // Action: Move Group 1 to the left, past tab 1.
+        mStripLayoutHelper.moveSelectedStripView(true);
+
+        // Verify: The group has moved.
+        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(lastShownTabId, 1);
+        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
+    }
+
+    // 13. Moving a tab group to lower indices, past a tab group
+    @Test
+    public void testKeyboardShortcut_MoveTabGroupToLowerIndex_PastGroup() {
+        // Setup: 4 tabs, Group A (0, 1), Group B (2, 3): [0, 1], [2, 3]
+        initializeTest(false, false, 0, 4);
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+        groupTabs(2, 4, TAB_GROUP_ID_2);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutGroupTitle group = (StripLayoutGroupTitle) views[3]; // Group B
+        group.setKeyboardFocused(true);
+        int lastShownTabId = ((StripLayoutTab) views[4]).getTabId();
+        when(mTabGroupModelFilter.getGroupLastShownTabId(group.getTabGroupId()))
+                .thenReturn(lastShownTabId);
+
+        // Action: Move Group B to the left, past Group A.
+        mStripLayoutHelper.moveSelectedStripView(true);
+
+        // Verify: The groups have swapped positions.
+        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(lastShownTabId, 0);
+        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
+    }
+
+    // 14. Moving a tab group to higher indices, past a collapsed tab group
+    @Test
+    public void testKeyboardShortcut_MoveTabGroupToHigherIndex_PastCollapsedGroup() {
+        // Setup: 4 tabs, Group A (0, 1), Group B (2, 3): [0, 1], [2, 3]
+        initializeTest(false, false, 0, 4);
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+        groupTabs(2, 4, TAB_GROUP_ID_2);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutGroupTitle group = (StripLayoutGroupTitle) views[0]; // Group A
+        mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[3], true);
+        group.setKeyboardFocused(true);
+        int lastShownTabId = ((StripLayoutTab) views[1]).getTabId();
+        when(mTabGroupModelFilter.getGroupLastShownTabId(group.getTabGroupId()))
+                .thenReturn(lastShownTabId);
+
+        // Action: Move Group A to the right, past Group B.
+        mStripLayoutHelper.moveSelectedStripView(false);
+
+        // Verify: The groups have swapped positions.
+        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(lastShownTabId, 3);
+        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
+    }
+
+    // 15. Moving a tab group to lower indices, past a collapsed tab group
+    @Test
+    public void testKeyboardShortcut_MoveTabGroupToLowerIndex_PastCollapsedGroup() {
+        // Setup: 4 tabs, Group A (0, 1), Group B (2, 3): [0, 1], [2, 3]
+        initializeTest(false, false, 0, 4);
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+        groupTabs(2, 4, TAB_GROUP_ID_2);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutGroupTitle group = (StripLayoutGroupTitle) views[3]; // Group B
+        group.setKeyboardFocused(true);
+        mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
+        int lastShownTabId = ((StripLayoutTab) views[4]).getTabId();
+        when(mTabGroupModelFilter.getGroupLastShownTabId(group.getTabGroupId()))
+                .thenReturn(lastShownTabId);
+
+        // Action: Move Group B to the left, past Group A.
+        mStripLayoutHelper.moveSelectedStripView(true);
+
+        // Verify: The groups have swapped positions.
+        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(lastShownTabId, 0);
+        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
+    }
+
+    @Test
+    @Feature("Pinned Tabs")
+    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
+    public void testTabsDrawXAndWidth_PinnedTabs() {
+        final int numTabs = 5;
+        initializeTest(false, false, 0, numTabs);
+
+        // Trigger a size change so the strip layout tab heights and widths get set.
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+
+        // Set the initial scroll offset to trigger an update to draw X positions.
+        mStripLayoutHelper.setScrollOffsetForTesting(0);
+
+        // Setup tab model and pin first tab.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
+        tabModel.addTab(0);
+        tabModel.addTab(1);
+        tabModel.addTab(2);
+        tabModel.addTab(3);
+        tabModel.addTab(4);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW);
+        tabModel.setActive(true);
+        tabModel.getTabAt(0).setIsPinned(true);
+        tabs[0].setIsPinned(true);
+
+        // Trigger an update to re-compute tabs widths.
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, true);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        float expectedDrawXWithPinnedTab = PADDING_LEFT;
+
+        // 191.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
+        // 48(pinnedTabWidth) + (28(overlapWidth) * 3) / 4(numTab).
+        float expectedTabWidthWithPinnedTab = 191.5f;
+
+        // Verify the tabs are resized and positioned correctly after pinning.
+        for (int i = 0; i < tabs.length; i++) {
+            assertEquals(
+                    "The tab's drawX is incorrect",
+                    expectedDrawXWithPinnedTab,
+                    tabs[i].getDrawX(),
+                    0.1f);
+            if (i == 0) {
+                assertTrue("The tab should be pinned", tabs[i].getIsPinned());
+                assertEquals(
+                        "The pinned tab's width is incorrect",
+                        PINNED_TAB_WIDTH_DP,
+                        tabs[i].getWidth(),
+                        0.1f);
+                assertFalse(
+                        "The pinned tab's close button should hide", tabs[i].canShowCloseButton());
+            } else {
+                assertFalse("The tab should not be pinned", tabs[i].getIsPinned());
+                assertEquals(
+                        "The tab's width is incorrect",
+                        expectedTabWidthWithPinnedTab,
+                        tabs[i].getWidth(),
+                        0.1f);
+                assertTrue(
+                        "The unpinned tab's close button should show",
+                        tabs[i].canShowCloseButton());
+            }
+            expectedDrawXWithPinnedTab += tabs[i].getWidth() - TAB_OVERLAP_WIDTH_DP;
+        }
+
+        // Unpin first tab and trigger an update.
+        tabModel.getTabAt(0).setIsPinned(false);
+        tabs[0].setIsPinned(false);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(new StripLayoutTab[0]);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        float expectedDrawXNoPinnedTab = PADDING_LEFT;
+        // 168.4(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) +
+        // 28(overlapWidth) * 4) / 5(numTab).
+        float expectedWidthNoPinnedTab = 168.4f;
+
+        // Verify the tabs are resized and positioned correctly after unpinning.
+        tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        expectedDrawXNoPinnedTab = PADDING_LEFT;
+        for (StripLayoutTab tab : tabs) {
+            assertEquals(
+                    "The tab's drawX is incorrect", expectedDrawXNoPinnedTab, tab.getDrawX(), 0.1f);
+            assertEquals(
+                    "The tab's width is incorrect", expectedWidthNoPinnedTab, tab.getWidth(), 0.1f);
+            expectedDrawXNoPinnedTab += tab.getWidth() - TAB_OVERLAP_WIDTH_DP;
+        }
+    }
+
+    @Test
+    @Feature("Pinned Tabs")
+    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
+    public void testTabsDrawXAndWidth_PinnedTabs_Rtl() {
+        LocalizationUtils.setRtlForTesting(true);
+        final int numTabs = 5;
+        initializeTest(true, false, 0, numTabs);
+
+        // Trigger a size change so the strip layout tab heights and widths get set.
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_RIGHT, PADDING_LEFT, 0f);
+
+        // Set the initial scroll offset to trigger an update to draw X positions.
+        mStripLayoutHelper.setScrollOffsetForTesting(0);
+
+        // Setup tab model and pin first tab.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
+        tabModel.addTab(0);
+        tabModel.addTab(1);
+        tabModel.addTab(2);
+        tabModel.addTab(3);
+        tabModel.addTab(4);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW);
+        tabModel.setActive(true);
+        tabModel.getTabAt(0).setIsPinned(true);
+        tabs[0].setIsPinned(true);
+
+        // Trigger an update to re-compute tabs widths.
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, true);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        float expectedDrawXWithPinnedTab = STRIP_WIDTH - PADDING_LEFT - TAB_OVERLAP_WIDTH_DP;
+
+        // 191.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
+        // 48(pinnedTabWidth) + (28(overlapWidth) * 3) / 4(numTab).
+        float expectedTabWidthWithPinnedTab = 191.5f;
+
+        // Verify the tabs are resized and positioned correctly after pinning.
+        for (int i = 0; i < tabs.length; i++) {
+            if (i == 0) {
+                assertTrue("The tab should be pinned", tabs[i].getIsPinned());
+                assertEquals(
+                        "The pinned tab's width is incorrect",
+                        PINNED_TAB_WIDTH_DP,
+                        tabs[i].getWidth(),
+                        0.1f);
+                assertFalse(
+                        "The pinned tab's close button should hide", tabs[i].canShowCloseButton());
+            } else {
+                assertFalse("The tab should not be pinned", tabs[i].getIsPinned());
+                assertEquals(
+                        "The tab's width is incorrect",
+                        expectedTabWidthWithPinnedTab,
+                        tabs[i].getWidth(),
+                        0.1f);
+                assertTrue(
+                        "The unpinned tab's close button should show",
+                        tabs[i].canShowCloseButton());
+            }
+            expectedDrawXWithPinnedTab -= (tabs[i].getWidth() - TAB_OVERLAP_WIDTH_DP);
+            assertEquals(
+                    "The tab's drawX is incorrect",
+                    expectedDrawXWithPinnedTab,
+                    tabs[i].getDrawX(),
+                    0.1f);
+        }
+
+        // Unpin first tab and trigger an update.
+        tabModel.getTabAt(0).setIsPinned(false);
+        tabs[0].setIsPinned(false);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(new StripLayoutTab[0]);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        float expectedDrawXNoPinnedTab = STRIP_WIDTH - PADDING_LEFT - TAB_OVERLAP_WIDTH_DP;
+        // 168.4(tabWidth) = (800(screenWidth) - 60(leftPadding) - 10(rightPadding) +
+        // 28(overlapWidth) * 4) / 5(numTab).
+        float expectedWidthNoPinnedTab = 168.4f;
+
+        // Verify the tabs are resized and positioned correctly after unpinning.
+        tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        expectedDrawXNoPinnedTab = STRIP_WIDTH - PADDING_LEFT - TAB_OVERLAP_WIDTH_DP;
+        for (StripLayoutTab tab : tabs) {
+            assertEquals(
+                    "The tab's width is incorrect", expectedWidthNoPinnedTab, tab.getWidth(), 0.1f);
+            expectedDrawXNoPinnedTab -= (tab.getWidth() - TAB_OVERLAP_WIDTH_DP);
+            assertEquals(
+                    "The tab's drawX is incorrect", expectedDrawXNoPinnedTab, tab.getDrawX(), 0.1f);
+        }
     }
 
     private float getClickCoordinateForTabAtIndex(StripLayoutView[] stripViews, int i) {
@@ -6218,7 +7012,7 @@ public class StripLayoutHelperTest {
             float expectedScrollDelta) {
         initializeTest(isRtl, false, 2, 22);
         mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
 
         // Set initial scroll offset under ScrollDelegate's dynamic coordinate system
         // (not the static window coordinate system), which means:
@@ -6261,7 +7055,7 @@ public class StripLayoutHelperTest {
 
         @Override
         public void closeTabs(
-                @NonNull TabClosureParams tabClosureParams,
+                TabClosureParams tabClosureParams,
                 boolean allowDialog,
                 @Nullable TabModelActionListener listener) {
             forceCloseTabs(tabClosureParams);
@@ -6269,24 +7063,24 @@ public class StripLayoutHelperTest {
 
         @Override
         public void prepareCloseTabs(
-                @NonNull TabClosureParams tabClosureParams,
+                TabClosureParams tabClosureParams,
                 boolean allowDialog,
                 @Nullable TabModelActionListener listener,
-                @NonNull Callback<TabClosureParams> onPreparedCallback) {
+                Callback<TabClosureParams> onPreparedCallback) {
             onPreparedCallback.onResult(tabClosureParams);
             mLastParamsForPrepareCloseTabs = tabClosureParams;
         }
 
         @Override
-        public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
+        public void forceCloseTabs(TabClosureParams tabClosureParams) {
             mModel.closeTabs(tabClosureParams);
             mLastParamsForForceCloseTabs = tabClosureParams;
         }
 
         @Override
         public void removeTab(
-                @NonNull Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener) {
-            assert false : "Not reached.";
+                Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener) {
+            throw new AssertionError("Not reached.");
         }
     }
 }

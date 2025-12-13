@@ -120,6 +120,9 @@ const char kIosDefaultBrowserPromoShowLabel[] = "ShowIosDefaultBrowserPromo";
 const char kFedCmUserKey[] = "fedcm_user";
 const char kFedCmUserUmaName[] = "FedCmUser";
 
+const char kTipsNotificationsRankerKey[] = "tips_notifications_ranker";
+const char kTipsNotificationsRankerUmaName[] = "TipsNotificationsRanker";
+
 // SEGMENTATION_CLIENT_KEYS_END
 
 // Please keep the UMA names for keys in sync with SegmentationKey variant in
@@ -225,7 +228,6 @@ const char kShortcuts[] = "Shortcuts";
 const char kSafetyCheck[] = "SafetyCheck";
 const char kTabResumption[] = "TabResumption";
 const char kParcelTracking[] = "ParcelTracking";
-const char kPriceTrackingPromo[] = "PriceTrackingPromo";
 const char kShopCard[] = "ShopCard";
 
 // Input Context keys for freshness for IOS modules.
@@ -236,6 +238,15 @@ const char kTabResumptionFreshness[] = "tab_resumption_freshness";
 const char kParcelTrackingFreshness[] = "parcel_tracking_freshness";
 const char kIsShowingStartSurface[] = "is_showing_start_surface";
 const char kShopCardFreshness[] = "shop_card_freshness";
+
+// Input Context keys for inputs for IOS default browser model.
+const char kClientAgeWeeks[] = "client_age_weeks";
+const char kIsPhone[] = "is_phone";
+const char kCountryBRIIM[] = "is_country_BRIIM";
+const char kSegmentationAndroidPhone[] = "is_segmentation_android_phone_input";
+const char kSegmentationIOSPhoneChrome[] = "is_segmentation_ios_chrome_phone";
+const char kSegmentationSyncedAndFirstDevice[] =
+    "is_segmentation_synced_first_device";
 
 // Labels for desktop new tab page drive module model.
 // Any updates to these strings need to also update the field trials allowlist
@@ -259,10 +270,6 @@ const char kComposePrmotionLabelDontShow[] = "DontShow";
 constexpr char kModelExecutionSamplingRateKey[] =
     "model_execution_sampling_rate";
 
-// Finch parameter key for introducing delay(in ms) in model initialization at
-// startup.
-constexpr char kModelInitializationDelay[] = "model_initialization_delay";
-
 // Input Context keys for FedCM.
 const char kFedCmHost[] = "host";
 const char kFedCmUrl[] = "url";
@@ -273,6 +280,22 @@ const char kFedCmPerImpressionClickthroughRate[] =
     "per_impression_clickthrough_rate";
 const char kFedCmLikelyToSignin[] = "likely_to_signin";
 const char kFedCmLikelyInsufficientData[] = "likely_insufficient_data";
+
+// Labels for tips notifications ranker.
+const char kEnhancedSafeBrowsing[] = "EnhancedSafeBrowsing";
+const char kQuickDelete[] = "QuickDelete";
+const char kGoogleLens[] = "GoogleLens";
+const char kBottomOmnibox[] = "BottomOmnibox";
+
+// Input Context keys for tips notifications ranker.
+const char kEnhancedSafeBrowsingStatus[] = "enhanced_safe_browsing_status";
+const char kQuickDeleteUsage[] = "quick_delete_usage";
+const char kBottomOmniboxStatus[] = "bottom_omnibox_status";
+const char kBottomOmniboxUsage[] = "bottom_omnibox_usage";
+const char kEnhancedSafeBrowsingTipShown[] = "enhanced_safe_browsing_tip_shown";
+const char kQuickDeleteTipShown[] = "quick_delete_tip_shown";
+const char kGoogleLensTipShown[] = "google_lens_tip_shown";
+const char kBottomOmniboxTipShown[] = "bottom_omnibox_tip_shown";
 
 }  // namespace segmentation_platform
 

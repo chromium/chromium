@@ -40,7 +40,7 @@ class VideoConferenceMediaListener
 
   void SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice device,
-      bool disabled);
+      bool enabled);
 
   // MediaStreamCaptureIndicator::Observer overrides
   void OnIsCapturingVideoChanged(content::WebContents* contents,
@@ -69,10 +69,10 @@ class VideoConferenceMediaListener
   void OnIsCapturingScreenChanged(content::WebContents* contents,
                                   bool is_capturing_screen);
 
-  // The following two fields are true if the camera/microphone is system-wide
+  // The following two fields are false if the camera/microphone is system-wide
   // software disabled OR disabled via a hardware switch.
-  bool camera_system_disabled_{false};
-  bool microphone_system_disabled_{false};
+  bool camera_system_enabled_{true};
+  bool microphone_system_enabled_{true};
 
   base::RepeatingCallback<void()> media_usage_update_callback_;
   base::RepeatingCallback<VideoConferenceWebApp*(content::WebContents*)>

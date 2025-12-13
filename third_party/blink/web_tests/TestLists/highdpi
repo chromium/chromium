@@ -1,8 +1,5 @@
 accessibility/click-event.html
 animations/3d/matrix-transform-type-animation.html
-animations/composition/background-position-composition.html
-animations/composition/clip-composition.html
-animations/composition/font-size-composition.html
 animations/cross-fade-webkit-mask-box-image.html
 animations/custom-properties/angle-type-interpolation.html
 animations/custom-properties/animate-high-priority.html
@@ -289,6 +286,7 @@ external/wpt/css/css-animations/crashtests/replace-keyframes-animating-filter-00
 external/wpt/css/css-animations/parsing/animation-invalid.html
 external/wpt/css/css-animations/responsive/column-width-001.html
 external/wpt/css/css-backgrounds/animations/background-color-transition-currentcolor.html
+external/wpt/css/css-backgrounds/animations/background-position-composition.html
 external/wpt/css/css-backgrounds/animations/invalidation/background-color-transition-with-initially-transparent.html
 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-image-6.html
 external/wpt/css/css-backgrounds/background-position/subpixel-position-center.tentative.html
@@ -379,6 +377,7 @@ external/wpt/css/css-flexbox/order/order-with-column-reverse.html
 external/wpt/css/css-flexbox/parsing/flex-grow-invalid.html
 external/wpt/css/css-flexbox/relayout-align-items.html
 external/wpt/css/css-font-loading/fontfacesetloadevent-constructor.html
+external/wpt/css/css-fonts/animations/font-size-composition.html
 external/wpt/css/css-fonts/animations/system-fonts.html
 external/wpt/css/css-fonts/font-display/font-display.html
 external/wpt/css/css-fonts/font-variant-ligatures-02.html
@@ -424,6 +423,7 @@ external/wpt/css/css-lists/crashtests/chrome-legacy-propagation-remove-body-cras
 external/wpt/css/css-lists/parsing/list-style-position-valid.html
 external/wpt/css/css-logical/logicalprops-with-deferred-writing-mode.html
 external/wpt/css/css-logical/parsing/border-inline-width-invalid.html
+external/wpt/css/css-masking/animations/clip-composition.html
 external/wpt/css/css-masking/animations/clip-path-interpolation-002.html
 external/wpt/css/css-masking/clip-path/animations/clip-path-animation-three-keyframes1.html
 external/wpt/css/css-masking/clip-path/clip-path-viewBox-1b.html

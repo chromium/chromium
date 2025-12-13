@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/mojom/error_notification.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 

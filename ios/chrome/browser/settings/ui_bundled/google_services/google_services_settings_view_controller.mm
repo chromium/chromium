@@ -13,10 +13,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/elements/info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/supervised_user_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_service_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_view_controller_model_delegate.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -40,38 +37,13 @@
   self.tableView.accessibilityIdentifier =
       kGoogleServicesSettingsViewIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE);
-
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(closePopoverOnTraitChange)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(closePopoverOnTraitChange)];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self closePopoverOnTraitChange];
-}
-#endif
 
 #pragma mark - Private
-
-- (void)switchAction:(UISwitch*)sender {
-  NSIndexPath* indexPath =
-      [self.tableViewModel indexPathForItemType:sender.tag];
-  DCHECK(indexPath);
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  CGRect targetRect = [self.view convertRect:sender.bounds fromView:sender];
-  [self.serviceDelegate toggleSwitchItem:item
-                               withValue:sender.isOn
-                              targetRect:targetRect];
-}
 
 // Shows an info popover anchored on `buttonView` depending on the signed-in
 // policy.
@@ -120,48 +92,6 @@
   UIButton* buttonView = base::apple::ObjCCastStrict<UIButton>(
       self.bubbleViewController.popoverPresentationController.sourceView);
   buttonView.enabled = YES;
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  if (_settingsAreDismissed) {
-    return cell;
-  }
-  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(switchAction:)
-                    forControlEvents:UIControlEventValueChanged];
-    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    switchCell.switchView.tag = item.type;
-  } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
-    TableViewInfoButtonCell* managedCell =
-        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-    if ([self.modelDelegate
-            isAllowChromeSigninItem:[self.tableViewModel
-                                        itemAtIndexPath:indexPath]
-                                        .type] &&
-        self.forcedSigninEnabled) {
-      // Use a specific target when tapping the info button of the allow
-      // sign-in item while forced sign-in is enabled. This is because the info
-      // bubble has different textual content.
-      [managedCell.trailingButton
-                 addTarget:self
-                    action:@selector(didTapForcedSigninUIInfoButton:)
-          forControlEvents:UIControlEventTouchUpInside];
-    } else {
-      [managedCell.trailingButton
-                 addTarget:self
-                    action:@selector(didTapManagedUIInfoButton:)
-          forControlEvents:UIControlEventTouchUpInside];
-    }
-  }
-  return cell;
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -222,21 +152,6 @@
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("IOSGoogleServicesSettingsCloseWithSwipe"));
-}
-
-#pragma mark - Actions
-
-// Called when the user clicks on the information button of the managed
-// setting's UI. Shows a textual bubble with management information.
-- (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
-  [self showManagedInfoPopoverOnButton:buttonView isForcedSigninEnabled:NO];
-}
-
-// Called when the user taps on the information button of the allow sign-in
-// item while forced sign-in is enabled. Shows a textual bubble with
-// information about the forced sign-in policy.
-- (void)didTapForcedSigninUIInfoButton:(UIButton*)buttonView {
-  [self showManagedInfoPopoverOnButton:buttonView isForcedSigninEnabled:YES];
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate

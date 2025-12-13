@@ -32,10 +32,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace extensions {
 
 namespace {
@@ -51,7 +47,7 @@ constexpr char kTestAuthLSIDCookie[] = "fake-auth-LSID-cookie";
 
 net::CanonicalCookie CreateCookie(const GURL& url, const std::string& name) {
   auto cookie = net::CanonicalCookie::CreateSanitizedCookie(
-      url, name, "test_value", "." + url.host(), "/", base::Time(),
+      url, name, "test_value", "." + url.GetHost(), "/", base::Time(),
       base::Time(), base::Time(), true, false,
       net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
       std::nullopt, nullptr);
@@ -73,14 +69,6 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
  public:
   GaiaRemoteConsentFlowParamBrowserTest()
       : fake_gaia_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-#if BUILDFLAG(IS_CHROMEOS)
-    std::unique_ptr<ash::MockNetworkPortalDetector>
-        mock_network_portal_detector_ =
-            std::make_unique<ash::MockNetworkPortalDetector>();
-
-    ash::network_portal_detector::InitializeForTesting(
-        mock_network_portal_detector_.release());
-#endif  // BUILDFLAG(IS_CHROMEOS)
     fake_gaia_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
     fake_gaia_test_server_.RegisterRequestHandler(base::BindRepeating(
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
@@ -130,7 +118,7 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
 
   CoreAccountInfo CreateFakeAccountInfoAndSetAsPrimary() {
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile());
+        IdentityManagerFactory::GetForProfile(GetProfile());
     CoreAccountInfo account_info = SetPrimaryAccount(
         identity_manager, kTestEmail, signin::ConsentLevel::kSync);
     SetRefreshTokenForPrimaryAccount(identity_manager, kFakeRefreshToken);
@@ -152,7 +140,7 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
     resolution_data.url = url;
     resolution_data.cookies = resolution_cookies;
 
-    flow_ = std::make_unique<GaiaRemoteConsentFlow>(&mock(), profile(),
+    flow_ = std::make_unique<GaiaRemoteConsentFlow>(&mock(), GetProfile(),
                                                     token_key, resolution_data,
                                                     /*user_gesture=*/true);
   }
@@ -189,8 +177,6 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer* fake_gaia_test_server() {
     return &fake_gaia_test_server_;
   }
-
-  Profile* profile() { return browser()->profile(); }
 
   GaiaRemoteConsentFlow* flow() { return flow_.get(); }
 

@@ -5,33 +5,49 @@
 #include "chrome/browser/ash/system_web_apps/apps/boca_web_app_info.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/menus/simple_menu_model.h"
 
 namespace {
 
+constexpr char kProfile[] = "Default";
+constexpr char kAffiliationId1[] = "affiliation-id-1";
+
 class BocaSystemAppDelegateTest : public testing::Test {
  protected:
-  BocaSystemAppDelegateTest() : delegate_(/*profile=*/nullptr) {}
+  BocaSystemAppDelegateTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
-  const BocaSystemAppDelegate* delegate() const { return &delegate_; }
+  void SetUp() override {
+    ASSERT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile(kProfile);
+    delegate_ = std::make_unique<BocaSystemAppDelegate>(profile_);
+  }
+  const BocaSystemAppDelegate* delegate() const { return delegate_.get(); }
   base::test::ScopedFeatureList* scoped_feature_list() {
     return &scoped_feature_list_;
   }
+  TestingProfile* profile() { return profile_; }
 
  private:
-  std::unique_ptr<ash::FakeBrowserContextHelperDelegate>
-      fake_browser_context_helper_delegate_ =
-          std::make_unique<ash::FakeBrowserContextHelperDelegate>();
-  ash::BrowserContextHelper helper{
-      std::move(fake_browser_context_helper_delegate_)};
-  const BocaSystemAppDelegate delegate_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfileManager profile_manager_;
+  std::unique_ptr<BocaSystemAppDelegate> delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<TestingProfile> profile_;
 };
 
 TEST_F(BocaSystemAppDelegateTest, AppShowFromSearchAndShelfByDefault) {
@@ -44,9 +60,58 @@ TEST_F(BocaSystemAppDelegateTest, AppShowFromLauncherByDefault) {
   EXPECT_FALSE(delegate()->IsAppEnabled());
 }
 
+TEST_F(BocaSystemAppDelegateTest, AppDisabledByKillSwitch) {
+  scoped_feature_list()->InitAndDisableFeature(ash::features::kBocaUber);
+  EXPECT_FALSE(delegate()->IsAppEnabled());
+}
+
 TEST_F(BocaSystemAppDelegateTest, AppEnabledWhenFeatureEnabled) {
   scoped_feature_list()->InitAndEnableFeature(ash::features::kBoca);
   EXPECT_TRUE(delegate()->IsAppEnabled());
+}
+
+TEST_F(BocaSystemAppDelegateTest, AppDisabledForUnAffliatedUser) {
+  EXPECT_FALSE(delegate()->IsAppEnabled());
+}
+
+TEST_F(BocaSystemAppDelegateTest, AppDisabledFromPref) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
+  profile()->GetTestingPrefService()->SetUserPref(
+      ash::prefs::kClassManagementToolsAvailabilitySetting,
+      base::Value("disabled"));
+  EXPECT_FALSE(delegate()->IsAppEnabled());
+}
+
+TEST_F(BocaSystemAppDelegateTest, BocaDisabledByDefaultFromPref) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
+  profile()->GetTestingPrefService()->SetUserPref(
+      ash::prefs::kClassManagementToolsAvailabilitySetting, base::Value(""));
+  EXPECT_FALSE(delegate()->IsAppEnabled());
+}
+
+TEST_F(BocaSystemAppDelegateTest, AppEnabledFromPref) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
+  profile()->GetTestingPrefService()->SetUserPref(
+      ash::prefs::kClassManagementToolsAvailabilitySetting,
+      base::Value("teacher"));
+  EXPECT_TRUE(delegate()->IsAppEnabled());
+}
+
+TEST_F(BocaSystemAppDelegateTest, OverrideURLScopeChecks) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
+  EXPECT_TRUE(delegate()->IsUrlInSystemAppScope(GURL()));
 }
 
 class BocaSystemAppProviderDelegateTest : public BocaSystemAppDelegateTest {

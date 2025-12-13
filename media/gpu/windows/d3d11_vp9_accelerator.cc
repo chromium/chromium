@@ -211,7 +211,8 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
     return false;
   }
 
-  memcpy(pic_params_buffer.data(), &pic_params, sizeof(pic_params));
+  pic_params_buffer.data().copy_prefix_from(
+      base::byte_span_from_ref(pic_params));
 
   if (!pic_params_buffer.Commit()) {
     return false;

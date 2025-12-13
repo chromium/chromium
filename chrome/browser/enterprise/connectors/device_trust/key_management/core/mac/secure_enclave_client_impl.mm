@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client_impl.h"
 
 #include <CoreFoundation/CoreFoundation.h>
@@ -26,11 +21,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/metrics_util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_helper.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
-#include "third_party/boringssl/src/include/openssl/digest.h"
-#include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/ec_key.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "crypto/keypair.h"
 
 using base::apple::CFToNSPtrCast;
 using base::apple::NSToCFPtrCast;
@@ -89,42 +80,6 @@ NSDictionary* CreateQueryForKey(SecureEnclaveClient::KeyType type) {
     CFToNSPtrCast(kSecReturnRef) : @YES,
     CFToNSPtrCast(kSecUseDataProtectionKeychain) : @YES,
   };
-}
-
-// Converts an external representation of an EC public key from ANSI X9.63
-// standard (using a byte string of 04 || X || Y) to a DER-encoded SPKI
-// structure.
-bool ConvertPublicKey(CFDataRef data_ref, std::vector<uint8_t>& output) {
-  if (!data_ref) {
-    return false;
-  }
-
-  auto data = base::apple::CFDataToSpan(data_ref);
-  bssl::UniquePtr<EC_GROUP> p256(
-      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-  bssl::UniquePtr<EC_POINT> point(EC_POINT_new(p256.get()));
-  if (!EC_POINT_oct2point(p256.get(), point.get(), data.data(), data.size(),
-                          /*ctx=*/nullptr)) {
-    return false;
-  }
-  bssl::UniquePtr<EC_KEY> ec_key(
-      EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  EC_KEY_set_public_key(ec_key.get(), point.get());
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-  EVP_PKEY_set1_EC_KEY(pkey.get(), ec_key.get());
-
-  uint8_t* der;
-  size_t der_len;
-  bssl::ScopedCBB cbb;
-  if (!CBB_init(cbb.get(), 0) ||
-      !EVP_marshal_public_key(cbb.get(), pkey.get()) ||
-      !CBB_finish(cbb.get(), &der, &der_len)) {
-    return false;
-  }
-
-  output.assign(der, der + der_len);
-  bssl::UniquePtr<uint8_t> delete_signed_cert_bytes(der);
-  return true;
 }
 
 }  // namespace
@@ -236,7 +191,11 @@ bool SecureEnclaveClientImpl::ExportPublicKey(SecKeyRef key,
     return false;
   }
 
-  if (!ConvertPublicKey(data_ref.get(), output)) {
+  // Convert from an X9.63-encoded point to a parsed PublicKey, then from that
+  // to a SubjectPublicKeyInfo.
+  auto decoded_key = crypto::keypair::PublicKey::FromEcP256Point(
+      base::apple::CFDataToSpan(data_ref.get()));
+  if (!decoded_key) {
     if (error) {
       // This arithmetic function doesn't really interact with any OS API, but
       // we'll use errSecConversionError for tracking purposes.
@@ -244,6 +203,8 @@ bool SecureEnclaveClientImpl::ExportPublicKey(SecKeyRef key,
     }
     return false;
   }
+  auto spki = decoded_key->ToSubjectPublicKeyInfo();
+  output.swap(spki);
   return true;
 }
 

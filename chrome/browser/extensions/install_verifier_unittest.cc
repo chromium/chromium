@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/install_verifier.h"
+#include "extensions/browser/install_verifier.h"
 
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -11,6 +11,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -38,6 +39,9 @@ class InstallVerifierTest : public ExtensionServiceTestBase {
     ExtensionServiceTestBase::SetUp();
 
     InitializeExtensionService(ExtensionServiceInitParams());
+
+    install_verifier_ = base::WrapUnique(
+        new InstallVerifier(ExtensionPrefs::Get(profile()), profile()));
   }
 
   // Adds an extension as being allowed by policy.
@@ -51,11 +55,14 @@ class InstallVerifierTest : public ExtensionServiceTestBase {
                     ->IsInstallationExplicitlyAllowed(id));
   }
 
+ protected:
+  InstallVerifier* install_verifier() { return install_verifier_.get(); }
+
  private:
   ScopedInstallVerifierBypassForTest force_install_verification{
       ScopedInstallVerifierBypassForTest::kForceOn};
   std::unique_ptr<ExtensionManagement> extension_management_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<InstallVerifier> install_verifier_;
 };
 
 // Test the behavior of the InstallVerifier for various extensions.
@@ -98,7 +105,6 @@ TEST_F(InstallVerifierTest, TestIsFromStoreAndMustRemainDisabled) {
        NOT_FROM_STORE, CAN_BE_ENABLED},
   };
 
-  InstallVerifier* install_verifier = InstallVerifier::Get(profile());
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.test_name);
     ExtensionBuilder extension_builder(test_case.test_name);
@@ -117,7 +123,8 @@ TEST_F(InstallVerifierTest, TestIsFromStoreAndMustRemainDisabled) {
     disable_reason::DisableReason disable_reason;
     EXPECT_EQ(
         test_case.expected_must_remain_disabled_status == MUST_REMAIN_DISABLED,
-        install_verifier->MustRemainDisabled(extension.get(), &disable_reason));
+        install_verifier()->MustRemainDisabled(extension.get(),
+                                               &disable_reason));
   }
 }
 
@@ -125,7 +132,6 @@ TEST_F(InstallVerifierTest, TestIsFromStoreAndMustRemainDisabled) {
 // Test the behavior of the InstallVerifier when an extension is
 // force-installed in different trust environments.
 TEST_F(InstallVerifierTest, ForceInstalledExtensionBehaviorWithTrustLevels) {
-  InstallVerifier* install_verifier = InstallVerifier::Get(profile());
   scoped_refptr<const Extension> forced_extension =
       ExtensionBuilder("Force Installed Extension")
           .SetLocation(ManifestLocation::kExternalPolicyDownload)
@@ -147,8 +153,8 @@ TEST_F(InstallVerifierTest, ForceInstalledExtensionBehaviorWithTrustLevels) {
 
     // In a low-trust environment, the extension should remain disabled.
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
-    EXPECT_TRUE(install_verifier->MustRemainDisabled(forced_extension.get(),
-                                                     &disable_reason));
+    EXPECT_TRUE(install_verifier()->MustRemainDisabled(forced_extension.get(),
+                                                       &disable_reason));
     EXPECT_EQ(disable_reason::DISABLE_NOT_VERIFIED, disable_reason);
   }
 
@@ -164,8 +170,8 @@ TEST_F(InstallVerifierTest, ForceInstalledExtensionBehaviorWithTrustLevels) {
 
     // In a high-trust environment, the extension should not remain disabled.
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
-    EXPECT_FALSE(install_verifier->MustRemainDisabled(forced_extension.get(),
-                                                      &disable_reason));
+    EXPECT_FALSE(install_verifier()->MustRemainDisabled(forced_extension.get(),
+                                                        &disable_reason));
     // Verify that disable_reason is still DISABLE_NONE.
     EXPECT_EQ(disable_reason::DISABLE_NONE, disable_reason);
   }

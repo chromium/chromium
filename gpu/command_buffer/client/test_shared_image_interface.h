@@ -37,13 +37,10 @@ class TestSharedImageInterface : public SharedImageInterface {
  public:
   TestSharedImageInterface();
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // TODO(blundell): Fold this inside of a TestSII::CreateSI() variant and have
-  // test clients that need the handle grab it from the created SI.
-  static gfx::GpuMemoryBufferHandle CreatePixmapHandle(
-      const gfx::Size& size,
-      gfx::BufferFormat format);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Creates a shared memory region and returns a handle to it.
+  static gfx::GpuMemoryBufferHandle CreateGMBHandle(
+      const viz::SharedImageFormat& format,
+      const gfx::Size& size);
 
   // for default-args overloads
   using SharedImageInterface::CreateSharedImage;
@@ -103,15 +100,12 @@ class TestSharedImageInterface : public SharedImageInterface {
       const SyncToken& sync_token,
       scoped_refptr<ClientSharedImage> client_shared_image) override;
 
-  SwapChainSharedImages CreateSwapChain(viz::SharedImageFormat format,
-                                        const gfx::Size& size,
-                                        const gfx::ColorSpace& color_space,
-                                        GrSurfaceOrigin surface_origin,
-                                        SkAlphaType alpha_type,
-                                        SharedImageUsageSet usage,
-                                        std::string_view debug_label) override;
-  void PresentSwapChain(const SyncToken& sync_token,
-                        const Mailbox& mailbox) override;
+  bool IsLost() const override { return false; }
+  bool AddGpuChannelLostObserver(GpuChannelLostObserver* observer) override {
+    return true;
+  }
+  void RemoveGpuChannelLostObserver(GpuChannelLostObserver* observer) override {
+  }
 
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(zx::eventpair service_handle,
@@ -125,6 +119,8 @@ class TestSharedImageInterface : public SharedImageInterface {
   SyncToken GenUnverifiedSyncToken() override;
   void VerifySyncToken(SyncToken& sync_token) override;
   void WaitSyncToken(const SyncToken& sync_token) override;
+  bool CanVerifySyncToken(const gpu::SyncToken& sync_token) override;
+  void VerifyFlush() override;
 
   // This is used only on windows for webrtc tests where test wants the
   // production code to trigger ClientSharedImage::MapAsync() but wants
@@ -139,6 +135,14 @@ class TestSharedImageInterface : public SharedImageInterface {
       gfx::BufferUsage buffer_usage,
       bool premapped,
       const ClientSharedImage::AsyncMapInvokedCallback& callback);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Creates a mappable SI backed by a NativePixmapHandle.
+  scoped_refptr<ClientSharedImage> CreateNativePixmapBackedSharedImage(
+      const SharedImageInfo& si_info,
+      SurfaceHandle surface_handle,
+      gfx::BufferUsage buffer_usage);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   void CreateSharedImagePool(
       const SharedImagePoolId& pool_id,
@@ -189,10 +193,6 @@ class TestSharedImageInterface : public SharedImageInterface {
     fail_shared_image_creation_with_buffer_usage_ = value;
   }
 
-  void UseTestGMBInSharedImageCreationWithBufferUsage() {
-    use_test_gmb_ = true;
-  }
-
   void emulate_client_provided_native_buffer() {
     emulate_client_provided_native_buffer_ = true;
   }
@@ -228,8 +228,6 @@ class TestSharedImageInterface : public SharedImageInterface {
 #endif
   SharedImageCapabilities shared_image_capabilities_;
   bool fail_shared_image_creation_with_buffer_usage_ = false;
-
-  bool use_test_gmb_ = false;
 
   // This is used to simply keep the SharedImagePoolClientInterface alive for
   // the duration of the SharedImagePool. Not keeping it alive and bound

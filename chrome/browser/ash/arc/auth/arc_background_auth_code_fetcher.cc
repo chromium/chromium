@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/auth/arc_background_auth_code_fetcher.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -18,12 +20,10 @@
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -38,7 +38,6 @@ namespace {
 
 constexpr int kGetAuthCodeNetworkRetry = 3;
 
-constexpr char kConsumerName[] = "ArcAuthContext";
 constexpr char kToken[] = "token";
 constexpr char kErrorDescription[] = "error_description";
 constexpr char kDeviceId[] = "device_id";
@@ -51,14 +50,6 @@ constexpr char kRefreshToken[] = "refresh_token";
 constexpr char kGetAuthCodeKey[] = "Content-Type";
 constexpr char kGetAuthCodeValue[] = "application/json; charset=utf-8";
 constexpr char kContentTypeJSON[] = "application/json";
-
-}  // namespace
-
-namespace {
-
-signin::ScopeSet GetAccessTokenScopes() {
-  return signin::ScopeSet({GaiaConstants::kOAuth1LoginScope});
-}
 
 }  // namespace
 
@@ -100,7 +91,8 @@ void ArcBackgroundAuthCodeFetcher::AttemptToRecoverAccessToken(
     const signin::AccessTokenInfo& token_info) {
   DCHECK(!attempted_to_recover_access_token_);
   attempted_to_recover_access_token_ = true;
-  context_.RemoveAccessTokenFromCache(GetAccessTokenScopes(), token_info.token);
+  context_.RemoveAccessTokenFromCache(
+      signin::OAuthConsumerId::kArcBackgroundAuthCodeFetcher, token_info.token);
   StartFetchingAccessToken();
 }
 
@@ -108,7 +100,7 @@ void ArcBackgroundAuthCodeFetcher::StartFetchingAccessToken() {
   DCHECK(!simple_url_loader_);
   DCHECK(!access_token_fetcher_);
   access_token_fetcher_ = context_.CreateAccessTokenFetcher(
-      kConsumerName, GetAccessTokenScopes(),
+      signin::OAuthConsumerId::kArcBackgroundAuthCodeFetcher,
       base::BindOnce(&ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete,
                      base::Unretained(this)));
 }
@@ -138,8 +130,7 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
   request_data.Set(kClientId, kClientIdArc);
   request_data.Set(kDeviceType, kDeviceTypeArc);
   request_data.Set(kDeviceId, device_id);
-  std::string request_string;
-  base::JSONWriter::Write(request_data, &request_string);
+  std::string request_string = base::WriteJson(request_data).value_or("");
   const net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("arc_auth_code_fetcher", R"(
       semantics {
@@ -200,7 +191,7 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
 
 void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
     signin::AccessTokenInfo token_info,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {

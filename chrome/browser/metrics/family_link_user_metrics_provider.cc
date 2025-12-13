@@ -30,7 +30,6 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
   std::vector<supervised_user::SupervisedUserLogRecord> records;
   for (Profile* profile : profile_list) {
 #if !BUILDFLAG(IS_ANDROID)
-    // TODO(b/274889379): Mock call to GetBrowserCount().
     if (!FamilyLinkUserMetricsProvider::
             skip_active_browser_count_for_unittesting_ &&
         chrome::GetBrowserCount(profile) == 0) {

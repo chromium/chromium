@@ -121,50 +121,6 @@ TEST_F(OptimizationGuideFeaturesTest,
 }
 
 TEST_F(OptimizationGuideFeaturesTest,
-       OptimizationGuidePersonalizedFetchingPopulatedParam) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuidePersonalizedFetching,
-      {
-          {"allowed_contexts", "CONTEXT_PAGE_NAVIGATION,CONTEXT_BOOKMARKS"},
-      });
-
-  features::RequestContextSet allowedContexts =
-      features::GetAllowedContextsForPersonalizedMetadata();
-
-  // Check contexts.
-  EXPECT_FALSE(
-      allowedContexts.Has(optimization_guide::proto::CONTEXT_UNSPECIFIED));
-  EXPECT_FALSE(allowedContexts.Has(
-      optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB));
-  EXPECT_TRUE(
-      allowedContexts.Has(optimization_guide::proto::CONTEXT_PAGE_NAVIGATION));
-  EXPECT_TRUE(
-      allowedContexts.Has(optimization_guide::proto::CONTEXT_BOOKMARKS));
-}
-
-TEST_F(OptimizationGuideFeaturesTest,
-       OptimizationGuidePersonalizedFetchingEmptyParam) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuidePersonalizedFetching,
-      {
-          {"allowed_contexts", ""},
-      });
-
-  features::RequestContextSet allowedContexts =
-      features::GetAllowedContextsForPersonalizedMetadata();
-
-  // Check contexts.
-  EXPECT_FALSE(
-      allowedContexts.Has(optimization_guide::proto::CONTEXT_UNSPECIFIED));
-  EXPECT_FALSE(
-      allowedContexts.Has(optimization_guide::proto::CONTEXT_PAGE_NAVIGATION));
-  EXPECT_FALSE(allowedContexts.Has(
-      optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB));
-}
-
-TEST_F(OptimizationGuideFeaturesTest,
        OptimizationGuideProactivePersonalizedHintsFetchingPopulatedParam) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(

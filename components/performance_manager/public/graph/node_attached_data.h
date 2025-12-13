@@ -16,9 +16,7 @@ class Node;
 // NodeAttachedData allows external observers of the graph to store data that is
 // associated with a graph node, providing lifetime management as a service.
 //
-// External (to performance_manager) implementations of NodeAttachedData should
-// derive from ExternalNodeAttachedDataImpl. For internal implementations refer
-// to NodeAttachedDataImpl and see node_attached_data_impl.h.
+// Implementations of NodeAttachedData should derive from NodeAttachedDataImpl.
 class NodeAttachedData {
  public:
   NodeAttachedData();
@@ -38,15 +36,14 @@ class NodeAttachedData {
 // In order for a UserDataType to be attached to a node of type |NodeType| it
 // must have a constructor of the form "UserDataType(const NodeType* node)".
 template <typename UserDataType>
-class ExternalNodeAttachedDataImpl : public NodeAttachedData {
+class NodeAttachedDataImpl : public NodeAttachedData {
  public:
-  ExternalNodeAttachedDataImpl() = default;
+  NodeAttachedDataImpl() = default;
 
-  ExternalNodeAttachedDataImpl(const ExternalNodeAttachedDataImpl&) = delete;
-  ExternalNodeAttachedDataImpl& operator=(const ExternalNodeAttachedDataImpl&) =
-      delete;
+  NodeAttachedDataImpl(const NodeAttachedDataImpl&) = delete;
+  NodeAttachedDataImpl& operator=(const NodeAttachedDataImpl&) = delete;
 
-  ~ExternalNodeAttachedDataImpl() override = default;
+  ~NodeAttachedDataImpl() override = default;
 
   // NodeAttachedData implementation:
   const void* GetKey() const override { return &kUserDataKey; }
@@ -74,7 +71,7 @@ class ExternalNodeAttachedDataImpl : public NodeAttachedData {
 // Everything below this point is pure implementation detail.
 
 // Provides access for setting/getting data in the map based storage. Not
-// intended to be used directly, but rather by (External)NodeAttachedDataImpl.
+// intended to be used directly, but rather by NodeAttachedDataImpl.
 class NodeAttachedDataMapHelper {
  public:
   // Attaches the provided |data| to the provided |node|. This should only be
@@ -93,17 +90,17 @@ class NodeAttachedDataMapHelper {
                                                          const void* key);
 };
 
-// Implementation of ExternalNodeAttachedDataImpl, which is declared in the
+// Implementation of NodeAttachedDataImpl, which is declared in the
 // corresponding public header. This helps keep the public headers as clean as
 // possible.
 
 // static
 template <typename UserDataType>
-constexpr int ExternalNodeAttachedDataImpl<UserDataType>::kUserDataKey;
+constexpr int NodeAttachedDataImpl<UserDataType>::kUserDataKey;
 
 template <typename UserDataType>
 template <typename NodeType>
-UserDataType* ExternalNodeAttachedDataImpl<UserDataType>::GetOrCreate(
+UserDataType* NodeAttachedDataImpl<UserDataType>::GetOrCreate(
     const NodeType* node) {
   if (auto* data = Get(node))
     return data;
@@ -116,8 +113,7 @@ UserDataType* ExternalNodeAttachedDataImpl<UserDataType>::GetOrCreate(
 
 template <typename UserDataType>
 template <typename NodeType>
-UserDataType* ExternalNodeAttachedDataImpl<UserDataType>::Get(
-    const NodeType* node) {
+UserDataType* NodeAttachedDataImpl<UserDataType>::Get(const NodeType* node) {
   auto* base = static_cast<const Node*>(node);
   auto* data = NodeAttachedDataMapHelper::GetFromMap(base, UserDataKey());
   if (!data)
@@ -128,7 +124,7 @@ UserDataType* ExternalNodeAttachedDataImpl<UserDataType>::Get(
 
 template <typename UserDataType>
 template <typename NodeType>
-bool ExternalNodeAttachedDataImpl<UserDataType>::Destroy(const NodeType* node) {
+bool NodeAttachedDataImpl<UserDataType>::Destroy(const NodeType* node) {
   auto* base = static_cast<const Node*>(node);
   std::unique_ptr<NodeAttachedData> data =
       NodeAttachedDataMapHelper::DetachFromMap(base, UserDataKey());

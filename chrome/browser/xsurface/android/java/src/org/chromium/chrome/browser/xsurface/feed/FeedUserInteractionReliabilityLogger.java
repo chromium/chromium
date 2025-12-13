@@ -34,7 +34,7 @@ public interface FeedUserInteractionReliabilityLogger {
         ClosedReason.SWITCH_STREAM
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ClosedReason {
+    @interface ClosedReason {
         /** The user taps on a card. */
         int OPEN_CARD = 0;
 
@@ -102,7 +102,7 @@ public interface FeedUserInteractionReliabilityLogger {
         PaginationResult.FAILURE
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface PaginationResult {
+    @interface PaginationResult {
         /** More feed content is retrieved. */
         int SUCCESS_WITH_MORE_FEED = 0;
 

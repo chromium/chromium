@@ -4,10 +4,10 @@
 
 #import "ios/chrome/app/background_refresh/app_refresh_provider.h"
 
-#import "base/cancelable_callback.h"
 #import "base/functional/bind.h"
 #import "base/notreached.h"
 #import "base/task/thread_pool.h"
+#import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
@@ -16,11 +16,15 @@
 // Key storing the last run time.
 @property(nonatomic, readonly) NSString* defaultsKey;
 
+// Read/write override for the due property.
+@property(nonatomic, readwrite, getter=isDue) BOOL due;
+
 @end
 
 @implementation AppRefreshProvider {
-  base::CancelableOnceCallback<void()> _task;
   SEQUENCE_CHECKER(_sequenceChecker);
+  base::Time _startTime;
+  BOOL _isCancelled;
 }
 
 - (instancetype)init {
@@ -76,27 +80,33 @@
 // Called on the main thread, runs tasks on (by default) the IO thread.
 - (void)handleRefreshWithCompletion:(ProceduralBlock)completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  id<AppRefreshProviderTask> task = [self task];
-  _task.Reset(base::BindOnce(^{
-    [task execute];
-  }));
+  _startTime = base::Time::Now();
+  _isCancelled = NO;
 
-  __weak __typeof(self) weakSelf = self;
-  base::OnceCallback callback = base::BindOnce(^{
-    [weakSelf refreshTaskFinishedWithCompletion:completion];
+  id<AppRefreshProviderTask> task = [self task];
+
+  // Create a weak pointer to `self` to be used in the reply callback.
+  // The reply callback runs on the main thread.
+  __weak AppRefreshProvider* weakSelf = self;
+
+  base::OnceClosure taskClosure = base::BindOnce(^{
+    [task execute];
   });
 
-  // `_task` has a cancelable wrapper, so `_task.callback()` is the underlying
-  // OnceCallback to execute.
-  self.taskThread->PostTaskAndReply(FROM_HERE, _task.callback(),
-                                    std::move(callback));
+  base::OnceClosure replyClosure = base::BindOnce(^{
+    if (weakSelf) {
+      [weakSelf refreshTaskFinishedWithCompletion:completion];
+    }
+  });
+
+  self.taskThread->PostTaskAndReply(FROM_HERE, std::move(taskClosure),
+                                    std::move(replyClosure));
 }
 
-// Terminate the running task immediately.
+// Cancel the task, so it won't run if it hasn't started.
 - (void)cancelRefresh {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-
-  _task.Cancel();
+  _isCancelled = YES;
 }
 
 - (id<AppRefreshProviderTask>)task {
@@ -108,6 +118,18 @@
 
 - (void)refreshTaskFinishedWithCompletion:(ProceduralBlock)completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  // If cancelled, do nothing.
+  if (_isCancelled) {
+    return;
+  }
+
+  // If the metric is missing from the dashboard, you need to add the provider
+  // identifier to the tokens for the histogram
+  // IOS.BackgroundRefresh.Provider.Duration.{ProviderID} in
+  // tools/metrics/histograms/metadata/ios/histograms.xml.
+  RecordProviderExecutionDuration(self.identifier,
+                                  base::Time::Now() - _startTime);
   self.lastRun = base::Time::Now();
 
   completion();

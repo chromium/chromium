@@ -5,13 +5,15 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_URL_LOADER_HELPER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_URL_LOADER_HELPER_H_
 
-#include "base/memory/weak_ptr.h"
-#include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
-#include "services/network/public/cpp/resource_request.h"
+
+class GURL;
 
 namespace content {
+
+class PrefetchServingHandle;
 
 // Checks if `prefetch_container` can be used for the url of intercepted
 // `tentative_resource_request`, and starts checking `PrefetchOriginProber` if
@@ -19,8 +21,8 @@ namespace content {
 void CONTENT_EXPORT OnGotPrefetchToServe(
     FrameTreeNodeId frame_tree_node_id,
     const GURL& tentative_resource_request_url,
-    base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback,
-    PrefetchContainer::Reader reader);
+    base::OnceCallback<void(PrefetchServingHandle)> get_prefetch_callback,
+    PrefetchServingHandle serving_handle);
 
 }  // namespace content
 

@@ -149,7 +149,6 @@ source_set("tests") {
     "generic_sensor/sensor_fusion_algorithm_using_accelerometer_unittest.cc",
     "geolocation/geolocation_impl_unittest.cc",
     "geolocation/geolocation_provider_impl_unittest.cc",
-    "geolocation/geolocation_service_unittest.cc",
     "geolocation/location_provider_manager_unittest.cc",
     "geolocation/network_location_provider_unittest.cc",
     "geolocation/position_cache_impl_unittest.cc",
@@ -168,6 +167,7 @@ source_set("tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/content_settings/core/common",
     "//components/system_cpu:test_support",
     "//components/variations",
     "//device/base/synchronization",
@@ -220,7 +220,7 @@ source_set("tests") {
       "generic_sensor/platform_sensor_provider_chromeos_unittest.cc",
     ]
     deps += [
-      "//chromeos/components/sensors:sensors",
+      "//chromeos/components/sensors",
       "//chromeos/components/sensors:test_support",
     ]
   } else if (is_linux && use_udev) {
@@ -324,7 +324,7 @@ source_set("tests") {
 
     deps += [
       "//device/bluetooth:mocks",
-      "//services/device/public/cpp/bluetooth:bluetooth",
+      "//services/device/public/cpp/bluetooth",
       "//services/device/serial",
       "//services/device/serial:test_support",
     ]
@@ -445,6 +445,10 @@ source_set("test_support") {
     "//services/service_manager/public/cpp/test:test_support",
     "//testing/gtest",
   ]
+
+  if (is_linux && use_dbus) {
+    deps += [ "//components/dbus" ]
+  }
 }
 
 if (is_android) {

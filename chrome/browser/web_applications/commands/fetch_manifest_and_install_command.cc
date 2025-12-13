@@ -12,7 +12,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
@@ -123,7 +122,7 @@ void LogInstallInfoForFallbackData(base::Value::Dict& dict,
                                    const WebAppInstallInfo& install_info) {
   dict.Set("manifest_id", install_info.manifest_id().spec());
   dict.Set("start_url", install_info.start_url().spec());
-  dict.Set("name", install_info.title);
+  dict.Set("name", install_info.title.AsDebugValue());
 }
 
 bool IsShortcutCreated(WebAppRegistrar& registrar,
@@ -141,9 +140,12 @@ static bool& ShouldBypassVisibilityChecks() {
   return g_bypass_visibility_checking;
 }
 
+// Fallback to using `kMinimumScreenshotSizeInPx` if there are no sizes
+// specified in the manifest for the screenshots, or if the size has been set to
+// `any`, which gets parsed as (0, 0).
 int ComputeIdealScreenshotSize(
     const blink::mojom::ManifestScreenshotPtr& screenshot) {
-  return screenshot->image.sizes.empty()
+  return screenshot->image.sizes.empty() || screenshot->image.sizes[0].IsEmpty()
              ? webapps::kMinimumScreenshotSizeInPx
              : std::max(screenshot->image.sizes[0].width(),
                         screenshot->image.sizes[0].height());
@@ -185,18 +187,16 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
       web_contents_(contents),
       dialog_callback_(std::move(dialog_callback)),
       fallback_behavior_(fallback_behavior),
-      ui_manager_(ui_manager),
-      install_error_log_entry_(/*background_installation=*/false,
-                               install_surface_) {
+      ui_manager_(ui_manager) {
   Observe(web_contents_.get());
   GetMutableDebugValue().Set("visible_url",
                              web_contents_->GetVisibleURL().spec());
   GetMutableDebugValue().Set("last_committed_url",
                              web_contents_->GetLastCommittedURL().spec());
   GetMutableDebugValue().Set("initial_visibility",
-                             static_cast<int>(web_contents()->GetVisibility()));
+                             base::ToString(web_contents()->GetVisibility()));
   GetMutableDebugValue().Set("install_surface",
-                             static_cast<int>(install_surface_));
+                             base::ToString(install_surface_));
   GetMutableDebugValue().Set("fallback_behavior",
                              base::ToString(fallback_behavior_));
 }
@@ -620,9 +620,15 @@ void FetchManifestAndInstallCommand::OnIconsDownloadedForFallbackInfoShowDialog(
 
   PopulateProductIcons(web_app_info_.get(), &icons_map);
   PopulateOtherIcons(web_app_info_.get(), icons_map);
+  if (web_app_info_->is_generated_icon) {
+    GetMutableDebugValue().Set("is_generated_icon", true);
+  }
   RecordDownloadedIconsResultAndHttpStatusCodes(result, icons_http_results);
-  install_error_log_entry_.LogDownloadedIconsErrors(
-      *web_app_info_, result, icons_map, icons_http_results);
+  base::DictValue icon_errors =
+      LogDownloadedIconsErrors(result, icons_map, icons_http_results);
+  if (!icon_errors.empty()) {
+    GetMutableDebugValue().Set("icon_errors", std::move(icon_errors));
+  }
   ShowInstallDialog();
 }
 
@@ -725,18 +731,6 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
 void FetchManifestAndInstallCommand::OnInstallCompleted(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
-  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
-    if (install_error_log_entry_.HasErrorDict()) {
-      command_manager()->LogToInstallManager(
-          install_error_log_entry_.TakeErrorDict());
-    }
-    base::Value::Dict install_info_dict =
-        manifest_to_install_info_job_
-            ->GetManifestToWebAppInfoGenerationErrors();
-    if (!install_info_dict.empty()) {
-      command_manager()->LogToInstallManager(std::move(install_info_dict));
-    }
-  }
   GetMutableDebugValue().Set("result_code", base::ToString(code));
 
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code),
@@ -796,7 +790,8 @@ void FetchManifestAndInstallCommand::StartPreloadingScreenshots() {
     }
 
     // Since narrow screenshots are filtered out, this is guaranteed to return
-    // either the minimum screen shot size, or the width.
+    // either the minimum screen shot size, or the width of the screenshot,
+    // provided the manifest has it declared extensively.
     int ideal_size = ComputeIdealScreenshotSize(screenshot);
     gfx::Size size_to_use = (ideal_size == webapps::kMinimumScreenshotSizeInPx)
                                 ? gfx::Size(ideal_size, ideal_size)

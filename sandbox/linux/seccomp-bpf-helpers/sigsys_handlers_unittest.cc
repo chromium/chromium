@@ -2,22 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 
+#include <fcntl.h>
 #include <linux/net.h>
+#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
+#include <sys/types.h>
+#include <termios.h>
+#include <unistd.h>
+
+#include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/strings/safe_sprintf.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/linux/seccomp-bpf/bpf_tests.h"
+#include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
+#include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/tests/unit_tests.h"
 
@@ -119,6 +126,41 @@ BPF_DEATH_TEST_C(
 #pragma GCC diagnostic pop
 }
 
+class CrashIoctlPolicy : public bpf_dsl::Policy {
+ public:
+  CrashIoctlPolicy() = default;
+  ~CrashIoctlPolicy() override = default;
+
+  ResultExpr EvaluateSyscall(int sysno) const override {
+    switch (sysno) {
+      case __NR_ioctl:
+        return CrashSIGSYSIoctl();
+      // The handler needs write() and fstat() for logging.
+      case __NR_write:
+      case __NR_fstat_default:
+        return Allow();
+      default:
+        return Allow();
+    }
+  }
+};
+
+BPF_DEATH_TEST_C(
+    SigsysHandlers,
+    SIGSYSIoctlFailureLogsFdInfo,
+    DEATH_SEGV_MESSAGE_PATTERN(
+        "*dev=0x*,ino=*,mode=0*,nlink=*,uid=*,gid=*,rdev=0x*,size=*,"
+        "blksize=*,blocks=*"),
+    CrashIoctlPolicy) {
+  base::FilePath temp_path;
+  CHECK(base::CreateTemporaryFile(&temp_path));
+  base::ScopedFD fd(open(temp_path.value().c_str(), O_RDONLY));
+  CHECK(fd.is_valid());
+
+  // This ioctl should be trapped and cause a crash.
+  ioctl(fd.get(), 0, 0);
+}
+
 const char kSigsysMessage[] =
     "nr=0x42 arg1=0xffffffffffffffff arg2=0x0 arg3=0xabcdef arg4=0xffffffff";
 
@@ -142,7 +184,8 @@ int g_syscall_no;
 SANDBOX_EXPORT intptr_t
 SIGSYSDirectSocketSyscallHandler(const struct arch_seccomp_data& args, void*) {
   // Record syscall args.
-  memcpy(g_syscall_args, args.args, kNumArgsToCopy * sizeof(uint64_t));
+  UNSAFE_TODO(
+      memcpy(g_syscall_args, args.args, kNumArgsToCopy * sizeof(uint64_t)));
   g_syscall_no = args.nr;
   return kDirectSocketSyscallRetVal;
 }
@@ -193,8 +236,8 @@ void CheckArgsMatch(long current_socketcall,
   // If the args don't match, crash to fail the test.
   for (size_t i = 0; i < N; i++) {
     unsigned long rewritten_socketcall_arg =
-        *reinterpret_cast<unsigned long*>(&g_syscall_args[i]);
-    CHECK_EQ(rewritten_socketcall_arg, expected_args[i])
+        *reinterpret_cast<unsigned long*>(&UNSAFE_TODO(g_syscall_args[i]));
+    UNSAFE_TODO(CHECK_EQ(rewritten_socketcall_arg, expected_args[i]))
         << "Socketcall " << current_socketcall << " differs at argument " << i;
   }
 }

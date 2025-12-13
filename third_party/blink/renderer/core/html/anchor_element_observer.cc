@@ -55,11 +55,8 @@ void AnchorElementObserver::Trace(Visitor* visitor) const {
 void AnchorElementObserver::Notify() {
   Element* new_anchor = source_element_->anchorElement();
   if (current_anchor_ != new_anchor) {
-    if (current_anchor_) {
-      current_anchor_->DecrementImplicitlyAnchoredElementCount();
-    }
     if (new_anchor) {
-      new_anchor->IncrementImplicitlyAnchoredElementCount();
+      new_anchor->SetMayBeImplicitAnchor();
     }
     current_anchor_ = new_anchor;
     if (source_element_->GetLayoutObject()) {

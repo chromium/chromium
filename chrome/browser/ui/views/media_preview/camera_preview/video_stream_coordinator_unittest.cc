@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -63,9 +62,7 @@ class VideoStreamCoordinatorTest : public testing::Test {
     coordinator_ = std::make_unique<VideoStreamCoordinator>(
         *parent_view_, media_preview_metrics::Context(
                            media_preview_metrics::UiLocation::kPermissionPrompt,
-                           media_preview_metrics::PreviewType::kCamera,
-                           media_preview_metrics::PromptType::kSingle,
-                           /*request=*/nullptr));
+                           media_preview_metrics::PreviewType::kCamera));
   }
 
   void TearDown() override {

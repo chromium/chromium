@@ -29,7 +29,6 @@ namespace autofill {
 class AutocompleteHistoryManager;
 class AutofillSuggestionDelegate;
 class PersonalDataManager;
-class StrikeDatabase;
 enum class SuggestionType;
 }  // namespace autofill
 
@@ -37,11 +36,14 @@ namespace content {
 class WebContents;
 }
 
+namespace strike_database {
+class StrikeDatabase;
+}  // namespace strike_database
+
 namespace syncer {
 class SyncService;
 }
 
-class PersonalDataManager;
 class PrefService;
 
 namespace android_autofill {
@@ -90,6 +92,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() final;
   autofill::AutofillCrowdsourcingManager& GetCrowdsourcingManager() final;
   autofill::VotesUploader& GetVotesUploader() override;
+  bool HasPersonalDataManager() const final;
   autofill::PersonalDataManager& GetPersonalDataManager() final;
   autofill::ValuablesDataManager* GetValuablesDataManager() override;
   autofill::EntityDataManager* GetEntityDataManager() override;
@@ -101,7 +104,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   signin::IdentityManager* GetIdentityManager() final;
   const signin::IdentityManager* GetIdentityManager() const final;
   autofill::FormDataImporter* GetFormDataImporter() final;
-  autofill::StrikeDatabase* GetStrikeDatabase() final;
+  strike_database::StrikeDatabase* GetStrikeDatabase() final;
   ukm::UkmRecorder* GetUkmRecorder() final;
   autofill::AddressNormalizer* GetAddressNormalizer() final;
   const GURL& GetLastCommittedPrimaryMainFrameURL() const final;
@@ -113,7 +116,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void ConfirmSaveAddressProfile(
       const autofill::AutofillProfile& profile,
       const autofill::AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      SaveAddressBubbleType save_address_bubble_type,
       AddressProfileSavePromptCallback callback) final;
   SuggestionUiSessionId ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
@@ -123,11 +126,9 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void HideAutofillSuggestions(autofill::SuggestionHidingReason reason) final;
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;
-  bool IsAutofillPaymentMethodsEnabled() const final;
+  bool IsWalletStorageEnabled() const final;
   bool IsAutocompleteEnabled() const final;
   bool IsPasswordManagerEnabled() const final;
-  void DidFillForm(autofill::AutofillTriggerSource trigger_source,
-                   bool is_refill) final;
   bool IsContextSecure() const final;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() final;
   autofill::autofill_metrics::FormInteractionsUkmLogger&

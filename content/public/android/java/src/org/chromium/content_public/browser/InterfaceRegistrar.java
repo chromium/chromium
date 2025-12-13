@@ -20,10 +20,10 @@ import java.util.List;
 @NullMarked
 public interface InterfaceRegistrar<ParamType> {
     /** Invoked to register interfaces on |registry|, parametrized by |paramValue|. */
-    public void registerInterfaces(InterfaceRegistry registry, @Nullable ParamType paramValue);
+    void registerInterfaces(InterfaceRegistry registry, @Nullable ParamType paramValue);
 
     /** A registry of InterfaceRegistrars. */
-    public static class Registry<ParamType> {
+    class Registry<ParamType> {
         private static @Nullable Registry<Void> sSingletonRegistry;
         private static @Nullable Registry<WebContents> sWebContentsRegistry;
         private static @Nullable Registry<RenderFrameHost> sRenderFrameHostRegistry;

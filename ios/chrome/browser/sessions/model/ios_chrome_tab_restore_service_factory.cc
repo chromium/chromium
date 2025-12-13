@@ -13,11 +13,8 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildTabRestoreService(
-    web::BrowserState* context) {
-  DCHECK(!context->IsOffTheRecord());
-
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildTabRestoreService(ProfileIOS* profile) {
+  DCHECK(!profile->IsOffTheRecord());
   return std::make_unique<sessions::TabRestoreServiceImpl>(
       std::make_unique<IOSChromeTabRestoreServiceClient>(
           profile->GetStatePath(), BrowserListFactory::GetForProfile(profile)),
@@ -41,9 +38,9 @@ IOSChromeTabRestoreServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+IOSChromeTabRestoreServiceFactory::TestingFactory
 IOSChromeTabRestoreServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildTabRestoreService);
+  return base::BindOnce(&BuildTabRestoreService);
 }
 
 IOSChromeTabRestoreServiceFactory::IOSChromeTabRestoreServiceFactory()
@@ -56,6 +53,6 @@ IOSChromeTabRestoreServiceFactory::~IOSChromeTabRestoreServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 IOSChromeTabRestoreServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildTabRestoreService(context);
+    ProfileIOS* profile) const {
+  return BuildTabRestoreService(profile);
 }

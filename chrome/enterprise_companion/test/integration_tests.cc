@@ -65,7 +65,7 @@ constexpr char kFakeMachineLevelExtensionPolicyValue[] =
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 std::string ToProxyURL(const GURL& url) {
-  return base::StrCat({url.host(), ":", url.port()});
+  return base::StrCat({url.GetHost(), ":", url.GetPort()});
 }
 #endif
 

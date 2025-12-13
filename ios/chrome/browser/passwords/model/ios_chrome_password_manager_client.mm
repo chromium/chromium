@@ -14,6 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/types/optional_util.h"
+#import "components/autofill/core/browser/integrators/password_manager/password_manager_autofill_helper_delegate.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
@@ -28,10 +29,13 @@
 #import "components/password_manager/core/browser/password_requirements_service.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "components/webauthn/ios/features.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -240,10 +244,7 @@ void IOSChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
     bool is_federated,
     const url::SchemeHostPort& federated_origin,
     const std::u16string& login_user_name) const {
-  // Guard the password login reporting event on iOS behind the feature flag.
-  if (!bridge_.profile ||
-      !base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
+  if (!bridge_.profile) {
     return;
   }
 
@@ -259,10 +260,7 @@ void IOSChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
 
 void IOSChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
     const std::vector<std::pair<GURL, std::u16string>>& identities) const {
-  // Guard the realtime event reporting feature on iOS behind the feature flag.
-  if (!bridge_.profile ||
-      !base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
+  if (!bridge_.profile) {
     return;
   }
 
@@ -283,8 +281,8 @@ void IOSChromePasswordManagerClient::NotifyStorePasswordCalled() {
 void IOSChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::LeakedPasswordDetails details) {
   [bridge_ showPasswordBreachForLeakType:details.leak_type
-                                     URL:details.origin
-                                username:details.username];
+                                     URL:details.credentials.url
+                                username:details.credentials.username_value];
 }
 
 void IOSChromePasswordManagerClient::NotifyKeychainError() {}
@@ -299,6 +297,21 @@ bool IOSChromePasswordManagerClient::IsSavingAndFillingEnabled(
 bool IOSChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
   return url.DeprecatedGetOriginAsURL() !=
          GURL(password_manager::kPasswordManagerAccountDashboardURL);
+}
+
+bool IOSChromePasswordManagerClient::IsFieldFilledWithOtp(
+    autofill::FormGlobalId form_id,
+    autofill::FieldGlobalId field_id) {
+  auto* autofill_client =
+      autofill::AutofillClientIOS::FromWebState(bridge_.webState);
+  if (!autofill_client) {
+    return false;
+  }
+  auto* helper = autofill_client->GetPasswordManagerAutofillHelper();
+  if (!helper) {
+    return false;
+  }
+  return helper->IsFieldFilledWithOtp(form_id, field_id);
 }
 
 bool IOSChromePasswordManagerClient::IsCommittedMainFrameSecure() const {
@@ -377,6 +390,19 @@ bool IOSChromePasswordManagerClient::IsIsolationForPasswordSitesEnabled()
 
 bool IOSChromePasswordManagerClient::IsNewTabPage() const {
   return false;
+}
+
+password_manager::WebAuthnCredentialsDelegate*
+IOSChromePasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
+    password_manager::PasswordManagerDriver* driver) {
+  if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim)) {
+    return nullptr;
+  }
+
+  return webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
+             bridge_.webState)
+      ->GetDelegateForFrame(
+          static_cast<IOSPasswordManagerDriver*>(driver)->web_frame_id());
 }
 
 safe_browsing::PasswordProtectionService*

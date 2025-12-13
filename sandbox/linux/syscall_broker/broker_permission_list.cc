@@ -12,6 +12,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/compiler_specific.h"
+
 namespace sandbox {
 namespace syscall_broker {
 
@@ -25,9 +28,9 @@ BrokerPermissionList::BrokerPermissionList(
   // so set up a pointer to array of element so it can be used
   // in async signal safe code instead of vector operations.
   if (num_of_permissions_ > 0) {
-    permissions_array_ = &permissions_[0];
+    permissions_array_ = permissions_;
   } else {
-    permissions_array_ = nullptr;
+    permissions_array_ = {};
   }
 }
 
@@ -37,8 +40,8 @@ const char* BrokerPermissionList::GetFileNameIfAllowedToAccess(
     const char* requested_filename,
     int requested_mode) const {
   for (size_t i = 0; i < num_of_permissions_; i++) {
-    const char* ret =
-        permissions_array_[i].CheckAccess(requested_filename, requested_mode);
+    const char* ret = permissions_array_[i]
+                          .CheckAccess(requested_filename, requested_mode);
     if (ret) {
       return ret;
     }
@@ -51,7 +54,8 @@ std::pair<const char*, bool> BrokerPermissionList::GetFileNameIfAllowedToOpen(
     int requested_flags) const {
   for (size_t i = 0; i < num_of_permissions_; i++) {
     std::pair<const char*, bool> ret =
-        permissions_array_[i].CheckOpen(requested_filename, requested_flags);
+        permissions_array_[i]
+            .CheckOpen(requested_filename, requested_flags);
     if (ret.first) {
       return ret;
     }
@@ -62,8 +66,8 @@ std::pair<const char*, bool> BrokerPermissionList::GetFileNameIfAllowedToOpen(
 const char* BrokerPermissionList::GetFileNameIfAllowedToStat(
     const char* requested_filename) const {
   for (size_t i = 0; i < num_of_permissions_; i++) {
-    const char* ret =
-        permissions_array_[i].CheckStatWithIntermediates(requested_filename);
+    const char* ret = permissions_array_[i]
+                          .CheckStatWithIntermediates(requested_filename);
     if (ret) {
       return ret;
     }
@@ -76,8 +80,8 @@ const char* BrokerPermissionList::GetFileNameIfAllowedToInotifyAddWatch(
     uint32_t mask) const {
   for (size_t i = 0; i < num_of_permissions_; i++) {
     const char* ret =
-        permissions_array_[i].CheckInotifyAddWatchWithIntermediates(
-            requested_filename, mask);
+        permissions_array_[i]
+            .CheckInotifyAddWatchWithIntermediates(requested_filename, mask);
     if (ret) {
       return ret;
     }

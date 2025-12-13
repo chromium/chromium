@@ -41,7 +41,8 @@ TEST_F(MarkerRangeMappingContextTest, FullNodeOffsetsCorrect) {
   ASSERT_TRUE(text_node);
 
   const TextOffsetRange fragment_range = {9, 26};
-  MarkerRangeMappingContext mapping_context(*text_node, fragment_range);
+  MarkerRangeMappingContext mapping_context(
+      *text_node, *text_node->GetLayoutObject(), fragment_range);
 
   TextFragmentMarker* marker_pre =
       MakeGarbageCollected<TextFragmentMarker>(1, 5);  // Before text

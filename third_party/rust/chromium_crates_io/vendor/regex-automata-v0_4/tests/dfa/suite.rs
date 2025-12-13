@@ -330,7 +330,7 @@ fn run_test<A: Automaton>(re: &Regex<A>, test: &RegexTest) -> TestResult {
                 TestResult::which(patset.iter().map(|p| p.as_usize()))
             }
         },
-        name => TestResult::fail(&format!("unrecognized test name: {}", name)),
+        name => TestResult::fail(&format!("unrecognized test name: {name}")),
     }
 }
 

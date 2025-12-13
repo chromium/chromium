@@ -102,7 +102,7 @@ void DesktopNativeCursorManager::SetMouseEventsEnabled(
   }
 }
 
-void DesktopNativeCursorManager::InitCursorSizeObserver(
+void DesktopNativeCursorManager::InitSystemCursorObservers(
     wm::NativeCursorManagerDelegate* delegate) {
   NOTREACHED();
 }

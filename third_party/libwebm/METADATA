@@ -1,0 +1,8 @@
+third_party {
+  security {
+    # This CVE has an overly broad 'Known Affected' list. The issue was fixed
+    # in libwebm-1.0.0.27-334-g8e88e04. The affected code is not included in
+    # libwebm or Chrome.
+    mitigated_security_patch: "CVE-2018-6406"
+  }
+}

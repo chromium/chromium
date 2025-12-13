@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -392,8 +393,10 @@ void EncryptionMigrationScreen::CheckAvailableStorage() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EncryptionMigrationScreen::OnGetAvailableStorage(int64_t size) {
-  if (size >= arc::kMigrationMinimumAvailableStorage || IsTestingUI()) {
+void EncryptionMigrationScreen::OnGetAvailableStorage(
+    std::optional<int64_t> size) {
+  if (size.value_or(-1) >= arc::kMigrationMinimumAvailableStorage.InBytes() ||
+      IsTestingUI()) {
     RecordFirstScreen(GetFirstScreenForMode(mode_));
     if (IsStartImmediately()) {
       WaitBatteryAndMigrate();
@@ -406,7 +409,7 @@ void EncryptionMigrationScreen::OnGetAvailableStorage(int64_t size) {
     if (GetRemote()->is_bound()) {
       (*GetRemote())
           ->SetSpaceInfoInString(
-              ui::FormatBytes(size),
+              ui::FormatBytes(base::ByteCount(size.value_or(-1))),
               ui::FormatBytes(arc::kMigrationMinimumAvailableStorage));
       UpdateUIState(screens_login::mojom::EncryptionMigrationPage::UIState::
                         kNotEnoughStorage);

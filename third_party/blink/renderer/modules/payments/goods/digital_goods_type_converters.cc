@@ -70,10 +70,10 @@ blink::ItemDetails* TypeConverter<blink::ItemDetails*, ItemDetailsPtr>::Convert(
       // Omit setting ItemType on output.
       break;
     case ItemType::kProduct:
-      output->setType("product");
+      output->setType(blink::V8ItemType::Enum::kProduct);
       break;
     case ItemType::kSubscription:
-      output->setType("subscription");
+      output->setType(blink::V8ItemType::Enum::kSubscription);
       break;
   }
   blink::Vector<blink::String> icon_urls;

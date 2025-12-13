@@ -49,12 +49,14 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/fake_profile_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/common/content_switches.h"
@@ -184,9 +186,7 @@ class ProfileManagerTest : public testing::Test {
     MOCK_METHOD1(OnProfileCreated, void(Profile* profile));
   };
 
-  ProfileManagerTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {
-  }
+  ProfileManagerTest() = default;
 
   ProfileManagerTest(const ProfileManagerTest&) = delete;
   ProfileManagerTest& operator=(const ProfileManagerTest&) = delete;
@@ -292,8 +292,6 @@ class ProfileManagerTest : public testing::Test {
     entry->SetIsEphemeral(true);
   }
 
-  TestingPrefServiceSimple* local_state() { return local_state_.Get(); }
-
 #if BUILDFLAG(IS_CHROMEOS)
   // Helper function to register an user with id |user_id| and create profile
   // with a correct path.
@@ -371,11 +369,10 @@ class ProfileManagerTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 #endif
 
-  // The path to temporary directory used to contain the test operations. These
-  // come before |task_environment_| to avoid issues around backend threads
+  // The path to temporary directory used to contain the test operations. This
+  // comes before |task_environment_| to avoid issues around backend threads
   // still using the temp directories upon teardown.
   base::ScopedTempDir temp_dir_;
-  ScopedTestingLocalState local_state_;
 
   content::BrowserTaskEnvironment task_environment_;
 
@@ -383,7 +380,7 @@ class ProfileManagerTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<ash::UserManagerDelegateImpl>(),
-          local_state_.Get(),
+          TestingBrowserProcess::GetGlobal()->local_state(),
           ash::CrosSettings::Get())};
   std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
       session_type_;
@@ -798,10 +795,11 @@ TEST_F(ProfileManagerTest,
   ASSERT_NE(entry1, nullptr);
 
   // Decrement next profile number to simulate it was never incremented.
-  EXPECT_EQ(local_state()->GetUserPref(prefs::kProfilesNumCreated)->GetInt(),
+  EXPECT_EQ(TestingBrowserProcess::GetGlobal()->local_state()->GetInteger(
+                prefs::kProfilesNumCreated),
             2);
-  local_state()->SetUserPref(prefs::kProfilesNumCreated,
-                             std::make_unique<base::Value>(1));
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
+      prefs::kProfilesNumCreated, std::make_unique<base::Value>(1));
   // Wipe the profile from profile attributes storage to simulate it got deleted
   // but not wiped from disk.
   profile_manager->GetProfileAttributesStorage().RemoveProfile(
@@ -1030,15 +1028,17 @@ TEST_F(ProfileManagerTest, AutoloadProfilesWithBackgroundApps) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  local_state()->SetUserPref(prefs::kBackgroundModeEnabled,
-                             std::make_unique<base::Value>(true));
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
+      prefs::kBackgroundModeEnabled, std::make_unique<base::Value>(true));
 
   // Setting a pref which is not applicable to a system (i.e., Android in this
   // case) does not necessarily create it. Don't bother continuing with the
   // test if this pref doesn't exist because it will not load the profiles if
   // it cannot verify that the pref for background mode is enabled.
-  if (!local_state()->HasPrefPath(prefs::kBackgroundModeEnabled))
+  if (!TestingBrowserProcess::GetGlobal()->local_state()->HasPrefPath(
+          prefs::kBackgroundModeEnabled)) {
     return;
+  }
 
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
@@ -1080,8 +1080,8 @@ TEST_F(ProfileManagerTest, DoNotAutoloadProfilesIfBackgroundModeOff) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  local_state()->SetUserPref(prefs::kBackgroundModeEnabled,
-                             std::make_unique<base::Value>(false));
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
+      prefs::kBackgroundModeEnabled, std::make_unique<base::Value>(false));
 
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
@@ -1606,7 +1606,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   ASSERT_TRUE(base::CreateDirectory(path2));
 
   // Set the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, profile_name1);
 
   // Set the last used profiles.
@@ -1677,7 +1677,7 @@ TEST_F(ProfileManagerGuestTest, CleanUpOnlyEphemeralProfiles) {
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
 
   // Set the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, guest_profile_name);
 
   // Set the last used profiles.
@@ -1724,7 +1724,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfilesWithGuestLastUsedProfile) {
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
 
   // Set the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, std::string("Guest Profile"));
 
   profile_manager->GetDeleteProfileHelper().CleanUpEphemeralProfiles();
@@ -1858,7 +1858,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeleted) {
       2u, profile_manager->GetProfileAttributesStorage().GetNumberOfProfiles());
 
   // Set the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, profile_basename1);
 
   // Delete the active profile.
@@ -1893,7 +1893,7 @@ TEST_F(ProfileManagerTest, LastProfileDeleted) {
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 
   // Set it as the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, profile_basename1);
 
   // Delete the active profile.
@@ -1955,7 +1955,7 @@ TEST_F(ProfileManagerGuestTest, LastProfileDeletedWithGuestActiveProfile) {
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 
   // Set the Guest profile as the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, guest_profile_basename);
 
   // Delete the other profile.
@@ -2223,7 +2223,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNeedsToLoadNextProfile) {
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
 
   // Set the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, profile_basename1);
 
   // Delete the active profile. This should switch and load the unloaded
@@ -2293,7 +2293,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   EXPECT_EQ(3u, storage.GetNumberOfProfiles());
 
   // Set the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed,
                          profile_path1.BaseName().MaybeAsASCII());
 

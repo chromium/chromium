@@ -30,7 +30,8 @@ PASS window.cached_navigator.appCodeName is window.navigator.appCodeName
 PASS window.cached_navigator.appName is window.navigator.appName
 PASS window.cached_navigator.appVersion is ''
 PASS window.cached_navigator.cookieEnabled is false
-FAIL window.cached_navigator.deprecatedRunAdAuctionEnforcesKAnonymity should be false. Was true.
+PASS window.cached_navigator.cpuPerformance is window.navigator.cpuPerformance
+PASS window.cached_navigator.deprecatedRunAdAuctionEnforcesKAnonymity is false
 PASS window.cached_navigator.deviceMemory is window.navigator.deviceMemory
 PASS window.cached_navigator.doNotTrack is null
 PASS window.cached_navigator.hardwareConcurrency is window.navigator.hardwareConcurrency
@@ -154,7 +155,6 @@ PASS window.cached_statusbar.visible is false
 PASS window.cached_styleMedia.type is ''
 PASS window.cached_toolbar.visible is false
 PASS window.cached_trustedTypes.defaultPolicy is null
-PASS window.cached_trustedTypes.onbeforecreatepolicy is null
 PASS window.cached_viewport.segments is null
 PASS window.cached_visualViewport.height is 0
 PASS window.cached_visualViewport.offsetLeft is 0

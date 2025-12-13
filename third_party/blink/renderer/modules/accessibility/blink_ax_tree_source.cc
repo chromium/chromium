@@ -173,7 +173,10 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
                << elem->Attributes().at(i).Value() << "\"";
         }
         html << ">" << elem->GetInnerHTMLString() << "</" << tag << ">";
-        tree_data->metadata.push_back(html.ReleaseString().Utf8());
+        if (!tree_data->metadata.has_value()) {
+          tree_data->metadata.emplace();
+        }
+        tree_data->metadata->push_back(html.ReleaseString().Utf8());
       }
     }
   }

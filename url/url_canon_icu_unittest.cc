@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "url/url_canon_icu.h"
 
 #include <stddef.h>
@@ -110,13 +105,9 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
     ICUCharsetConverter converter(conv.converter());
 
     if (query_cases[i].input8) {
-      int len = static_cast<int>(strlen(query_cases[i].input8));
-      Component in_comp(0, len);
       std::string out_str;
-
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(in_comp.as_string_view_on(query_cases[i].input8),
-                        &converter, &output, &out_comp);
+      CanonicalizeQuery(query_cases[i].input8, &converter, &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(query_cases[i].expected, out_str);
@@ -130,8 +121,8 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
       std::string out_str;
 
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(in_comp.as_string_view_on(input16.c_str()), &converter,
-                        &output, &out_comp);
+      CanonicalizeQuery(in_comp.AsViewOn(input16), &converter, &output,
+                        &out_comp);
       output.Complete();
 
       EXPECT_EQ(query_cases[i].expected, out_str);

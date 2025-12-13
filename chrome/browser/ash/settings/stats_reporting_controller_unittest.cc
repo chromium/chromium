@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
@@ -56,7 +55,7 @@ class StatsReportingControllerTest : public testing::Test {
     device_policy_.Build();
     fake_session_manager_client_.set_device_policy(device_policy_.GetBlob());
 
-    both_keys->ImportPrivateKeyAndSetPublicKey(device_policy_.GetSigningKey());
+    both_keys->ImportPrivateKeyAndSetPublicKey(*device_policy_.GetSigningKey());
     public_key_only->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
     // Prevent new keys from being generated.

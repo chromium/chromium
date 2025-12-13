@@ -23,8 +23,7 @@ class MidiSysexPermissionContext : public ContentSettingPermissionContextBase {
 
  private:
   // PermissionContextBase:
-  void UpdateTabContext(const PermissionRequestID& id,
-                        const GURL& requesting_frame,
+  void UpdateTabContext(const PermissionRequestData& request_data,
                         bool allowed) override;
 };
 

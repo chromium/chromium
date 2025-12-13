@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
@@ -107,7 +106,7 @@ net::AuthChallengeInfo GetAuthInfo() {
 // with RunLoop::Run() with explicit RunLoop::QuitClosure().
 class SystemProxyManagerTest : public testing::Test {
  public:
-  SystemProxyManagerTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  SystemProxyManagerTest() = default;
   ~SystemProxyManagerTest() override = default;
 
   // testing::Test
@@ -118,12 +117,13 @@ class SystemProxyManagerTest : public testing::Test {
 
     profile_ = std::make_unique<TestingProfile>();
     SystemProxyClient::InitializeFake();
-    system_proxy_manager_ =
-        std::make_unique<SystemProxyManager>(local_state_.Get());
+    system_proxy_manager_ = std::make_unique<SystemProxyManager>(
+        TestingBrowserProcess::GetGlobal()->local_state());
     // Listen for pref changes for the primary profile.
     system_proxy_manager_->StartObservingPrimaryProfilePrefs(profile_.get());
-    NetworkHandler::Get()->InitializePrefServices(profile_->GetPrefs(),
-                                                  local_state_.Get());
+    NetworkHandler::Get()->InitializePrefServices(
+        profile_->GetPrefs(),
+        TestingBrowserProcess::GetGlobal()->local_state());
   }
 
   void TearDown() override {
@@ -149,7 +149,6 @@ class SystemProxyManagerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
-  ScopedTestingLocalState local_state_;
   std::unique_ptr<SystemProxyManager> system_proxy_manager_;
   std::unique_ptr<TestingProfile> profile_;
 };
@@ -163,7 +162,8 @@ TEST_F(SystemProxyManagerTest, KerberosConfig) {
   EXPECT_EQ(++expected_set_auth_details_call_count,
             client_test_interface()->GetSetAuthenticationDetailsCallCount());
 
-  local_state_.Get()->SetBoolean(prefs::kKerberosEnabled, true);
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      prefs::kKerberosEnabled, true);
   EXPECT_EQ(++expected_set_auth_details_call_count,
             client_test_interface()->GetSetAuthenticationDetailsCallCount());
 
@@ -194,7 +194,8 @@ TEST_F(SystemProxyManagerTest, KerberosConfig) {
   EXPECT_TRUE(request.kerberos_enabled());
 
   // Disable kerberos.
-  local_state_.Get()->SetBoolean(prefs::kKerberosEnabled, false);
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      prefs::kKerberosEnabled, false);
   request = client_test_interface()->GetLastAuthenticationDetailsRequest();
   EXPECT_FALSE(request.kerberos_enabled());
 }

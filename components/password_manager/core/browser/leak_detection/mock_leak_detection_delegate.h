@@ -5,9 +5,14 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_MOCK_LEAK_DETECTION_DELEGATE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_MOCK_LEAK_DETECTION_DELEGATE_H_
 
-#include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace password_manager {
 
@@ -18,11 +23,11 @@ class MockLeakDetectionDelegateInterface
   ~MockLeakDetectionDelegateInterface() override;
 
   // LeakDetectionDelegateInterface:
-  MOCK_METHOD4(OnLeakDetectionDone,
-               void(bool, GURL, std::u16string, std::u16string));
-  MOCK_METHOD1(OnError, void(LeakDetectionError));
+  MOCK_METHOD(void, OnLeakDetectionDone, (bool, PasswordForm), (override));
+  MOCK_METHOD(void, OnError, (LeakDetectionError), (override));
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 class MockBulkLeakCheckDelegateInterface
     : public BulkLeakCheckDelegateInterface {
  public:
@@ -34,6 +39,7 @@ class MockBulkLeakCheckDelegateInterface
                void(LeakCheckCredential credential, IsLeaked is_leaked));
   MOCK_METHOD1(OnError, void(LeakDetectionError));
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager
 

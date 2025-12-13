@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.variations";
@@ -12,6 +12,8 @@ package variations;
 import "study.proto";
 import "layer.proto";
 
+option features.utf8_validation = NONE;
+
 // The VariationsSeed is a protobuf response from the server that contains the
 // list of studies and a serial number to uniquely identify its contents. The
 // serial number allows the client to easily determine if the list of
@@ -19,16 +21,16 @@ import "layer.proto";
 //
 // Next tag: 7
 message VariationsSeed {
-  optional string serial_number = 1;
+  string serial_number = 1;
   repeated Study study = 2;
 
   // Lowercase ISO 3166-1 alpha-2 country code of the client, according to IP
   // address. Deprecated.
-  optional string country_code = 3 [deprecated = true];
+  string country_code = 3 [deprecated = true];
 
   // A version string which identifies the version of the configuration files
   // that this seed was generated from.
-  optional string version = 4;
+  string version = 4;
 
   // Previous implementation of layers. Do not re-use.
   reserved 5;

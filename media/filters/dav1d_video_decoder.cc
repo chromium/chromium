@@ -476,14 +476,11 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
       // SAFETY: The best we can do is trust the size provided by Dav1d.
       auto t35_payload_span = UNSAFE_BUFFERS(base::span<const uint8_t>(
           p->itut_t35->payload, p->itut_t35->payload_size));
-      const std::optional<gfx::HdrMetadataAgtm> agtm =
-          GetHdrMetadataAgtmFromItutT35(p->itut_t35->country_code,
-                                        t35_payload_span);
-      if (agtm.has_value()) {
-        gfx::HDRMetadata hdr_metadata =
-            config_.hdr_metadata().value_or(gfx::HDRMetadata());
+      if (auto agtm = GetSerializedAgtmItutT35(p->itut_t35->country_code,
+                                               t35_payload_span)) {
+        gfx::HDRMetadata hdr_metadata = config_.hdr_metadata();
         // Overwrite existing AGTM metadata if any.
-        hdr_metadata.agtm = agtm;
+        hdr_metadata.setSerializedAgtm(agtm);
         config_.set_hdr_metadata(hdr_metadata);
       }
     }

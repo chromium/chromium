@@ -6,6 +6,7 @@ module viz.mojom;
 
 import "cc/mojom/browser_controls_params.mojom";
 import "cc/mojom/browser_controls_offset_tag_modifications.mojom";
+import "cc/mojom/layer_selection_bound.mojom";
 import "cc/mojom/layer_tree_debug_state.mojom";
 import "cc/mojom/ui_resource_id.mojom";
 import "services/viz/public/mojom/compositing/animation.mojom";
@@ -21,6 +22,7 @@ import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
+import "ui/gfx/mojom/delegated_ink_metadata.mojom";
 
 // Describes a request to create or delete a UIResource in the service-side
 // display tree.
@@ -74,6 +76,9 @@ struct LayerTreeUpdate {
   // number.
   int64 primary_main_frame_item_sequence_number;
 
+  // Indicates bounds of a selection begin-point and end-point.
+  cc.mojom.LayerSelection selection;
+
   // The page scale factors set by the tree's client. All must be positive,
   // non-zero.
   float page_scale_factor;
@@ -94,9 +99,19 @@ struct LayerTreeUpdate {
   // If a new LocalSurfaceId is assigned by the parent, it's included here.
   LocalSurfaceId? local_surface_id_from_parent;
 
-  // If a new LocalSurfaceId needs to be generated for LayerTreeImpl in viz
-  // process.
-  bool new_local_surface_id_request;
+  // The current LocalSurfaceId from client process.
+  LocalSurfaceId current_local_surface_id;
+
+  // Pass the frame_token generated on the client side to viz. Without this,
+  // viz needs to generate the token on its own, but GPU process could
+  // crash and rest the token generator, leading to client/viz inconsistence.
+  uint32 next_frame_token;
+
+  // Whether to call CompositorFrameSinkSupport::OnFrameTokenChanged().
+  // This is computed in renderer process when calling
+  // GenerateCompositorFrame(), passed to viz process, and sets it when
+  // calling GenerateCompositorFrame() again in viz process.
+  bool send_frame_token_to_embedder;
 
   // The viz::LocalSurfaceId to unthrottle drawing for.
   // This is from LayerTreeHostImpl.
@@ -119,11 +134,12 @@ struct LayerTreeUpdate {
   // The tree's viewport damage rect.
   gfx.mojom.Rect viewport_damage_rect;
 
+  // We cache a global bool for full tree damages to avoid walking the entire
+  // tree.
+  bool full_tree_damaged;
+
   // Debug state for the layer tree.
   cc.mojom.LayerTreeDebugState debug_state;
-
-  // The elastic overscroll amount applied to the layer tree.
-  gfx.mojom.Vector2dF elastic_overscroll;
 
   // Display transform hint for the generated compositor frame.
   gfx.mojom.OverlayTransform display_transform_hint;
@@ -196,10 +212,27 @@ struct LayerTreeUpdate {
   // Animation timelines removed since last update. These IDs correspond to the
   // IDs given in each AnimationTimeline when added or updated above.
   array<int32>? removed_animation_timelines;
+
+  // This is sent from Renderer to the Viz and indicates whether the frame has
+  // damage or not. Viz can use this to skip drawing a frame if frame does not
+  // have any damage. If frame has damage, then Viz should make sure its damage
+  // calculations matches it. This is used to enforce checks in Viz to make
+  // sure it is in sync with Renderer's behavior.
+  bool frame_has_damage;
+  uint32 damage_reasons_bit_mask;
+
+  // True if this compositor frame is related to an animated or precise scroll.
+  // This includes during the touch interaction just prior to the initiation of
+  // gesture scroll events.
+  bool is_handling_interaction;
+
+  // Metadata for delegated ink trails.
+  gfx.mojom.DelegatedInkMetadata? delegated_ink_metadata;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding
 // client-side (e.g. renderer- or browser-side) LayerTreeHost.
+[DirectReceiver]
 interface LayerContext {
   // Globally controls whether the tree contents are visible.
   SetVisible(bool visible);
@@ -207,10 +240,8 @@ interface LayerContext {
   // Flushes pending updates from the client to the service-side display tree.
   UpdateDisplayTree(LayerTreeUpdate update);
 
-  // Updates one or more tiles in a specific tiling. |update_damage| indicates
-  // whether the tiles in the tiling should update the damage for GPU-side
-  // LayerTreeHostImpl.
-  UpdateDisplayTiling(Tiling tiling, bool update_damage);
+  // Updates one or more tiles in a specific tiling.
+  UpdateDisplayTiling(Tiling tiling);
 };
 
 // Provides feedback from a GPU-side LayerTreeHostImpl to its corresponding
@@ -220,6 +251,12 @@ interface LayerContextClient {
   // the client had previously indicated that it wants an opporunity to make
   // changes to the tree before that frame is drawn.
   OnRequestCommitForFrame(BeginFrameArgs args);
+
+  // Notifies the client(Renderer) that tilings corresponding to
+  // |tiling_scales_to_clean_up| in the given layer can be safely deleted by
+  // the client.
+  OnTilingsReadyForCleanup(int32 layer_id,
+      array<float> tiling_scales_to_clean_up);
 };
 
 // Parameters needed to bind a LayerContext endpoint via a CompositorFrameSink.

@@ -2,6 +2,7 @@
 // META: global=window
 // META: timeout=long
 // META: script=../resources/util.js
+// META: script=/common/gc.js
 // META: script=/resources/testdriver.js
 // META: script=resources/util.js
 //
@@ -10,24 +11,20 @@
 
 'use strict';
 
+// TODO(crbug.com/390246212): Support model state controls for WPTs.
 promise_test(async t => {
+  // Create requires user activation when availability is 'downloadable'.
   const languagePair = {sourceLanguage: 'en', targetLanguage: 'ja'};
+  assert_implements_optional(await Translator.availability(languagePair) == 'downloadable');
+  assert_false(navigator.userActivation.isActive);
+  await promise_rejects_dom(t, 'NotAllowedError', Translator.create(languagePair));
+  await test_driver.bless('Translator.create', async () => { await Translator.create(languagePair); });
 
-  // Creating the translator without user activation rejects with
-  // NotAllowedError.
-  const createPromise = Translator.create(languagePair);
-  await promise_rejects_dom(t, 'NotAllowedError', createPromise);
-
-  // Creating the translator with user activation succeeds.
-  await createTranslator(languagePair);
-
-  // Creating it should have switched it to available.
-  const availability = await Translator.availability(languagePair);
-  assert_equals(availability, 'available');
-
-  // Now that it is available, we should no longer need user activation.
+  // Create does not require user activation when availability is 'available'.
+  assert_equals(await Translator.availability(languagePair), 'available');
+  assert_false(navigator.userActivation.isActive);
   await Translator.create(languagePair);
-}, 'Translator.create() requires user activation when availability is "downloadable.');
+}, 'Create requires user activation when availability is "downloadable"');
 
 promise_test(async t => {
   const translator =
@@ -52,16 +49,44 @@ promise_test(async () => {
 promise_test(async () => {
   const translator =
       await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
+  const streamingResponse = translator.translateStreaming('Welcome. Nice to meet you.');
+  assert_equals(
+      Object.prototype.toString.call(streamingResponse),
+      '[object ReadableStream]');
+  let result = '';
+  for await (const chunk of streamingResponse) {
+    result += chunk;
+  }
+  assert_equals(result, 'ようこそ。 はじめまして。');
+}, 'Multiple sentence Translator.translateStreaming() call');
+
+promise_test(async () => {
+  const translator =
+      await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
+  const streamingResponse = translator.translateStreaming('Hello, Dr. Sanders. Nice to meet you.');
+  assert_equals(
+      Object.prototype.toString.call(streamingResponse),
+      '[object ReadableStream]');
+  let result = '';
+  for await (const chunk of streamingResponse) {
+    result += chunk;
+  }
+  assert_equals(result, 'こんにちは、サンダース博士です。 はじめまして。');
+}, 'Multiple sentence Translator.translateStreaming() call with honorific');
+
+promise_test(async () => {
+  const translator =
+      await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
   const streamingResponse = translator.translateStreaming('hello');
-  gc();
+  garbageCollect();
   assert_equals(Object.prototype.toString.call(streamingResponse),
                 '[object ReadableStream]');
   let result = '';
   for await (const value of streamingResponse) {
     result += value;
-    gc();
+    garbageCollect();
   }
-assert_greater_than(result.length, 0, 'The result should not be empty.');
+  assert_greater_than(result.length, 0, 'The result should not be empty.');
 }, 'Translate Streaming API must continue even after GC has been performed.');
 
 promise_test(async t => {
@@ -189,8 +214,7 @@ promise_test(async t => {
   if (inputUsage < translator.inputQuota) {
     assert_equals(await translator.translate(text), 'こんにちは');
   } else {
-    await promise_rejects_dom(
-        t, 'QuotaExceededError', translator.translate(text));
+    await promise_rejects_quotaexceedederror(t, translator.translate(text), requested => requested !== null, translator.inputQuota);
   }
 }, 'Translator.measureInputUsage() and inputQuota basic usage.');
 

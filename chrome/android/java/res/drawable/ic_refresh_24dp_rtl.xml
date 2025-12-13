@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- This file is a mirrored version of ic_refresh_24dp.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960"
+    android:tint="?attr/colorControlNormal">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M480,800Q614,800 707,707Q800,614 800,480Q800,346 707,253Q614,160 480,160Q411,160 348,188.5Q285,217 240,270L240,160L160,160L160,440L440,440L440,360L272,360Q304,304 359.5,272Q415,240 480,240Q580,240 650,310Q720,380 720,480Q720,580 650,650Q580,720 480,720Q403,720 341,676Q279,632 254,560L170,560Q198,666 284,733Q370,800 480,800Z"/>
+</vector>

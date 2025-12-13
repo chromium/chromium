@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/allocator/buildflags.h"
-#include "base/containers/span.h"
+#include "base/containers/contains.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
@@ -23,6 +23,7 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
@@ -201,6 +202,7 @@ allocator_shim::AllocatorDispatch g_bad_malloc_dispatch = {
     &BadMalloc,         /* alloc_function */
     &BadMalloc,         /* alloc_unchecked_function */
     &BadCalloc,         /* alloc_zero_initialized_function */
+    &BadCalloc,         /* alloc_zero_initialized_unchecked_function */
     &BadAlignedAlloc,   /* alloc_aligned_function */
     &BadRealloc,        /* realloc_function */
     &BadRealloc,        /* realloc_unchecked_function */
@@ -398,10 +400,12 @@ TEST_F(StackTraceTest, MAYBE_StackEnd) {
 
 #if !defined(ADDRESS_SANITIZER) && !defined(UNDEFINED_SANITIZER)
 
-#if !defined(ARCH_CPU_ARM_FAMILY)
+#if defined(ARCH_CPU_X86_FAMILY)
+// Division by zero raising SIGFPE is mostly a x86 specific thing.
 // On Arm architecture invalid math operations such as division by zero are not
 // trapped and do not trigger a SIGFPE.
-// Hence disable the test for Arm platforms.
+// On RISC-V architecture, division by zero does not trigger SIGFPE.
+// Hence enable the test only for x86 platform
 TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGFPE) {
   // Values are volatile to prevent reordering of instructions, i.e. for
   // optimization. Reordering may lead to tests erroneously failing due to
@@ -413,7 +417,7 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGFPE) {
   EXPECT_EXIT(result = nominator / denominator,
               ::testing::KilledBySignal(SIGFPE), "");
 }
-#endif  // !defined(ARCH_CPU_ARM_FAMILY)
+#endif  // defined(ARCH_CPU_X86_FAMILY)
 
 TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGSEGV) {
   // Pointee and pointer are volatile to prevent reordering of instructions,
@@ -448,6 +452,8 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
     asm("ud2");
 #elif defined(ARCH_CPU_ARM_FAMILY)
     asm("udf 0");
+#elif defined(ARCH_CPU_RISCV_FAMILY)
+    asm("unimp");
 #else
 #error Unsupported platform!
 #endif
@@ -457,5 +463,27 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+TEST(StackTraceTest, EnabledStackTraces) {
+  // This is slightly pointless as this is also enabled by the test harness, but
+  // it ensures we are exercising the InProcessStackDumpingEnabled() path.
+  EXPECT_TRUE(base::debug::EnableInProcessStackDumping());
+  EXPECT_TRUE(base::debug::InProcessStackDumpingEnabled());
+}
+
+TEST(StackTraceTest, UnsymbolizedStackTraces) {
+  EXPECT_TRUE(base::debug::DisableInProcessStackDumpingForTesting());
+  EXPECT_FALSE(base::debug::InProcessStackDumpingEnabled());
+
+  StackTrace trace;
+  auto as_string = trace.ToString();
+  EXPECT_THAT(as_string,
+              ::testing::ContainsRegex("Dumping unresolved backtrace"));
+
+  // Restore global state.
+  EXPECT_TRUE(base::debug::EnableInProcessStackDumping());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace base::debug

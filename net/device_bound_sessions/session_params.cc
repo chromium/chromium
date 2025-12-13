@@ -6,6 +6,8 @@
 
 namespace net::device_bound_sessions {
 
+SessionParams::SessionParams() = default;
+
 SessionParams::SessionParams(
     std::string id,
     GURL fetcher_url,
@@ -37,5 +39,11 @@ SessionParams::Scope& SessionParams::Scope::operator=(
     SessionParams::Scope&& other) noexcept = default;
 
 SessionParams::Scope::~Scope() = default;
+
+WellKnownParams::WellKnownParams() = default;
+WellKnownParams::~WellKnownParams() = default;
+WellKnownParams::WellKnownParams(WellKnownParams&& other) noexcept = default;
+WellKnownParams& WellKnownParams::operator=(WellKnownParams&& other) noexcept =
+    default;
 
 }  // namespace net::device_bound_sessions

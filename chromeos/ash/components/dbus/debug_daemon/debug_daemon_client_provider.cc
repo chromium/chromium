@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client_provider.h"
 
+#include <utility>
+
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "dbus/bus.h"
@@ -22,7 +24,7 @@ DebugDaemonClientProvider::DebugDaemonClientProvider()
   dbus_options.bus_type = dbus::Bus::SYSTEM;
   dbus_options.connection_type = dbus::Bus::PRIVATE;
   dbus_options.dbus_task_runner = dbus_task_runner_;
-  dbus_bus_ = base::MakeRefCounted<dbus::Bus>(dbus_options);
+  dbus_bus_ = base::MakeRefCounted<dbus::Bus>(std::move(dbus_options));
 
   debug_daemon_client_->Init(dbus_bus_.get());
 }

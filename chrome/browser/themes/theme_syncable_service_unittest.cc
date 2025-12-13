@@ -56,6 +56,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/themes/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -210,6 +211,9 @@ class FakeThemeService : public ThemeService {
   ThemeService::BrowserColorScheme GetBrowserColorScheme() const override {
     return ThemeService::BrowserColorScheme::kSystem;
   }
+
+  void SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme color_scheme) override {}
 
   const extensions::Extension* theme_extension() const {
     return theme_extension_.get();
@@ -866,7 +870,7 @@ class RealThemeSyncableServiceTest
 
     extensions::ExtensionServiceTestBase::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams());
-    service_->Init();
+    service()->Init();
 
     theme_service_ = ThemeServiceFactory::GetForProfile(profile());
 
@@ -1039,8 +1043,8 @@ TEST_F(RealThemeSyncableServiceTest, UpdateThemeSpecifics_CurrentTheme_Policy) {
 
   fake_change_processor()->changes().clear();
   // Set up theme service to use policy theme.
-  profile_->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyThemeColor, std::make_unique<base::Value>(100));
+  testing_profile()->GetTestingPrefService()->SetManagedPref(
+      themes::prefs::kPolicyThemeColor, std::make_unique<base::Value>(100));
 
   ASSERT_TRUE(theme_service()->UsingPolicyTheme());
   // Applying policy theme doesn't trigger sync changes.
@@ -2795,7 +2799,7 @@ class ThemeSyncableServiceTestWithAccountThemesSeparation
 
   sync_pb::ThemeSpecifics ReadSavedLocalThemeSpecifics() {
     std::string encoded_str =
-        profile_->GetPrefs()->GetString(prefs::kSavedLocalTheme);
+        profile()->GetPrefs()->GetString(prefs::kSavedLocalTheme);
     std::string decoded_str;
     EXPECT_TRUE(base::Base64Decode(encoded_str, &decoded_str));
 
@@ -2987,7 +2991,8 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
                   fake_change_processor())));
 
   // No theme was saved.
-  EXPECT_FALSE(profile_->GetPrefs()->GetUserPrefValue(prefs::kSavedLocalTheme));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kSavedLocalTheme));
 }
 
 TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
@@ -3381,6 +3386,38 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
 }
 
 TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
+       LoadsDefaultBrowserColorSchemeUponSyncStopIfNoLocalThemeExistedInPref) {
+  // Set remote browser color scheme.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_browser_color_scheme(
+      sync_pb::ThemeSpecifics_BrowserColorScheme_LIGHT);
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::unique_ptr<syncer::SyncChangeProcessor>(
+              new syncer::SyncChangeProcessorWrapperForTest(
+                  fake_change_processor())));
+  ASSERT_FALSE(error.has_value()) << error->ToString();
+
+  ASSERT_EQ(theme_service()->GetBrowserColorScheme(),
+            ThemeService::BrowserColorScheme::kLight);
+
+  base::HistogramTester histogram_tester;
+  // No local theme pref is set.
+  ASSERT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kSavedLocalTheme));
+  // Stop syncing.
+  theme_sync_service()->StopSyncing(syncer::THEMES);
+  // Browser color scheme is reset to default.
+  EXPECT_EQ(theme_service()->GetBrowserColorScheme(),
+            ThemeService::BrowserColorScheme::kSystem);
+  histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
+                                      false, 1);
+}
+
+TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
        ShouldNotLoadLocalThemeFromPrefUponBrowserShutdown) {
   // Set remote extension theme.
   sync_pb::ThemeSpecifics theme_specifics;
@@ -3511,7 +3548,7 @@ class ThemeSyncableServiceTestForThemeExtension
     ThemeSyncableServiceTestWithAccountThemesSeparation::SetUp();
 
     // Remove theme extension added during parent SetUp().
-    service_->UnloadAllExtensionsForTest();
+    service()->UnloadAllExtensionsForTest();
     ASSERT_FALSE(
         extensions::ExtensionRegistry::Get(profile())->GetExtensionById(
             kCustomThemeId, extensions::ExtensionRegistry::EVERYTHING));
@@ -3528,9 +3565,8 @@ class ThemeSyncableServiceTestForThemeExtension
     // TODO(crbug.com/425913203): Remove once usage of TestSyncService is
     // simplified.
     SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile_.get(),
-        base::BindRepeating([](content::BrowserContext* context)
-                                -> std::unique_ptr<KeyedService> {
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
           return std::make_unique<syncer::TestSyncService>();
         }));
   }

@@ -30,7 +30,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/web_ui.h"
@@ -42,13 +41,9 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-using signin::constants::kNoHostedDomainFound;
-
 namespace {
 
-BASE_FEATURE(kSigninInterceptSimpleButtons,
-             "SigninInterceptSimpleButtons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSigninInterceptSimpleButtons, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr char kEnterprizeBadgeSource[] = "cr:domain";
 constexpr char kSupervisedBadgeSource[] = "cr:kite";
@@ -193,13 +188,17 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
 
   UpdateExtendedAccountsInfo();
 
-  // If there is no extended info for the primary account, populate with
-  // reasonable defaults.
-  if (primary_account().hosted_domain.empty()) {
-    bubble_parameters_.primary_account.hosted_domain = kNoHostedDomainFound;
-  }
-  if (primary_account().given_name.empty()) {
-    bubble_parameters_.primary_account.given_name = primary_account().email;
+  if (!bubble_parameters_.primary_account.IsEmpty()) {
+    // If there is no extended info for the primary account, populate with
+    // reasonable defaults (unless it's empty).
+    AccountInfo::Builder builder(bubble_parameters_.primary_account);
+    if (!primary_account().GetHostedDomain().has_value()) {
+      builder.SetHostedDomain(std::string());
+    }
+    if (primary_account().given_name.empty()) {
+      builder.SetGivenName(primary_account().email);
+    }
+    bubble_parameters_.primary_account = builder.Build();
   }
 
   DCHECK(!args.empty());
@@ -354,10 +353,9 @@ std::string DiceWebSigninInterceptHandler::GetChromeSigninSubtitle() {
         IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED);
   }
   return l10n_util::GetStringUTF8(
-    base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSignInPromos)
-      ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_WITH_BOOKMARKS
-      : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE);
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_WITH_BOOKMARKS
+          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE);
 }
 
 std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
@@ -463,8 +461,9 @@ std::string DiceWebSigninInterceptHandler::GetManagedDisclaimerText() {
   // TODO(crbug.com/425456152): Handle the flex org case when there is no
   // hosted domain for managed accounts.
   std::string manager_domain =
-      intercepted_account().IsManaged() == signin::Tribool::kTrue
-          ? intercepted_account().hosted_domain
+      (intercepted_account().IsManaged() == signin::Tribool::kTrue &&
+       intercepted_account().GetHostedDomain().has_value())
+          ? std::string(*intercepted_account().GetHostedDomain())
           : std::string();
   if (manager_domain.empty()) {
     manager_domain = GetDeviceManagerIdentity().value_or(std::string());

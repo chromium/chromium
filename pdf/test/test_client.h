@@ -19,7 +19,7 @@ class PDFiumEngine;
 
 class TestClient : public PDFiumEngineClient {
  public:
-  TestClient();
+  explicit TestClient(bool use_skia_renderer);
 
   TestClient(const TestClient& other) = delete;
   TestClient& operator=(const TestClient& other) = delete;
@@ -31,6 +31,7 @@ class TestClient : public PDFiumEngineClient {
 
   // PDFiumEngineClient:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
+  bool UseSkiaPremultipliedAlpha() override;
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
                      const std::string& default_answer) override;
@@ -59,6 +60,9 @@ class TestClient : public PDFiumEngineClient {
   // Not owned. Expected to dangle briefly, as the engine usually is destroyed
   // before the client.
   raw_ptr<PDFiumEngine, DisableDanglingPtrDetection> engine_ = nullptr;
+
+  // Use Skia when set to true, or AGG when set to false.
+  const bool use_skia_renderer_;
 };
 
 }  // namespace chrome_pdf

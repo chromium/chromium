@@ -25,9 +25,9 @@
     ImplementedAs=DOMPlugin,
     LegacyUnenumerableNamedProperties
 ] interface Plugin {
-    [HighEntropy=Direct, MeasureAs=PluginName] readonly attribute DOMString name;
-    [HighEntropy=Direct, MeasureAs=PluginFilename] readonly attribute DOMString filename;
-    [HighEntropy=Direct, MeasureAs=PluginDescription] readonly attribute DOMString description;
+    [MeasureAs=PluginName] readonly attribute DOMString name;
+    [MeasureAs=PluginFilename] readonly attribute DOMString filename;
+    [MeasureAs=PluginDescription] readonly attribute DOMString description;
     readonly attribute unsigned long length;
     getter MimeType? item(unsigned long index);
     getter MimeType? namedItem(DOMString name);

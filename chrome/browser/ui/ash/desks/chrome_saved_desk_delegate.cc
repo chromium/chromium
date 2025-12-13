@@ -44,6 +44,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user_manager.h"
+#include "extensions/browser/extension_registry.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"

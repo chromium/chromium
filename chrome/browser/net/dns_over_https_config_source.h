@@ -21,6 +21,9 @@ class DnsOverHttpsConfigSource {
   // Returns the DNS-over-HTTPS template URIs.
   virtual std::string GetDnsOverHttpsTemplates() const = 0;
 
+  // Returns the `dns_over_https.automatic_mode_fallback_to_doh` pref value.
+  virtual bool AutomaticModeFallbackToDohEnabled() const = 0;
+
   // Returns true is the DNS-over-HTTPS configuration is managed by enterprise
   // policy.
   virtual bool IsConfigManaged() const = 0;

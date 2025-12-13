@@ -152,9 +152,7 @@ class MEDIA_EXPORT VideoDecoderConfig {
   void set_hdr_metadata(const gfx::HDRMetadata& hdr_metadata) {
     hdr_metadata_ = hdr_metadata;
   }
-  const std::optional<gfx::HDRMetadata>& hdr_metadata() const {
-    return hdr_metadata_;
-  }
+  const gfx::HDRMetadata& hdr_metadata() const { return hdr_metadata_; }
 
   // Codec level.
   void set_level(VideoCodecLevel level) { level_ = level; }
@@ -188,7 +186,7 @@ class MEDIA_EXPORT VideoDecoderConfig {
   EncryptionScheme encryption_scheme_ = EncryptionScheme::kUnencrypted;
 
   VideoColorSpace color_space_info_;
-  std::optional<gfx::HDRMetadata> hdr_metadata_;
+  gfx::HDRMetadata hdr_metadata_;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is

@@ -47,10 +47,7 @@ DiscoverFeedServiceFactory::DiscoverFeedServiceFactory()
 DiscoverFeedServiceFactory::~DiscoverFeedServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
-DiscoverFeedServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+DiscoverFeedServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   DiscoverFeedConfiguration* configuration =
       [[DiscoverFeedConfiguration alloc] init];
   configuration.profilePrefService = profile->GetPrefs();

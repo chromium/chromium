@@ -383,7 +383,7 @@ TEST_P(ToastTestWithParam, BlockToast) {
 
   std::u16string expected_toast_str = l10n_util::GetStringFUTF16(
       IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
-      base::UTF8ToUTF16(url.host()),
+      base::UTF8ToUTF16(url.GetHost()),
       l10n_util::GetStringUTF16(GetParam().expected_dst_name_id));
 
   EXPECT_CALL(

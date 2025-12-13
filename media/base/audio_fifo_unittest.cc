@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

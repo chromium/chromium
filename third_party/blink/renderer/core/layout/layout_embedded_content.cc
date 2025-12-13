@@ -105,16 +105,6 @@ const std::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
 
 PhysicalNaturalSizingInfo LayoutEmbeddedContent::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::
-          LayoutReplacedReturnExplicitDefaultNaturalSizeEnabled()) {
-    // 300x150, no aspect ratio. (Should probably be none.)
-    PhysicalSize natural_size{LayoutUnit(kDefaultWidth),
-                              LayoutUnit(kDefaultHeight)};
-    natural_size.Scale(StyleRef().EffectiveZoom());
-    PhysicalNaturalSizingInfo sizing_info;
-    sizing_info.size = natural_size;
-    return sizing_info;
-  }
   return PhysicalNaturalSizingInfo::None();
 }
 
@@ -316,10 +306,12 @@ bool LayoutEmbeddedContent::NodeAtPoint(
                                             accumulated_offset, phase);
 }
 
-void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
-                                           const ComputedStyle* old_style) {
+void LayoutEmbeddedContent::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutReplaced::StyleDidChange(diff, old_style);
+  LayoutReplaced::StyleDidChange(diff, old_style, style_change_context);
   const ComputedStyle& new_style = StyleRef();
 
   if (Frame* frame = GetFrameOwnerElement()->ContentFrame())

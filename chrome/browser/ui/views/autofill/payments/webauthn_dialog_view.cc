@@ -18,6 +18,7 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -151,12 +152,13 @@ void WebauthnDialogView::RefreshContent() {
   DeprecatedLayoutImmediately();
 
   // Update the dialog's size.
-  if (GetWidget() && controller_->GetWebContents()) {
+  content::WebContents* const web_contents = controller_->GetWebContents();
+  if (GetWidget() && web_contents) {
     constrained_window::UpdateWebContentsModalDialogPosition(
-        GetWidget(), web_modal::WebContentsModalDialogManager::FromWebContents(
-                         controller_->GetWebContents())
-                         ->delegate()
-                         ->GetWebContentsModalDialogHost());
+        GetWidget(),
+        web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
+            ->delegate()
+            ->GetWebContentsModalDialogHost(web_contents));
   }
 }
 

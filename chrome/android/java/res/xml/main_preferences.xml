@@ -5,15 +5,12 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- The main_preferences file will be reordered with the upcoming autofill
-options. Only the order changes. Each pref should exist here and in the layout
-for the previous order (main_preferences_legacy). -->
-<!-- LINT.IfChange -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orderingFromXml="false">
-<!-- `order=0` is reserved and it will be added in code.  -->
-<!-- TODO(crbug.com/364906215): Move SettingsPromoCardPreference here once SyncPromoPreference is removed -->
+    <org.chromium.chrome.browser.ui.settings_promo_card.SettingsPromoCardPreference
+        android:key="settings_promo_card"
+        android:order="0" />
     <PreferenceCategory
         android:key="account_and_google_services_section"
         android:order="1"
@@ -55,11 +52,6 @@ for the previous order (main_preferences_legacy). -->
         android:order="8"
         android:title="@string/prefs_privacy_security"/>
     <Preference
-        android:fragment="org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment"
-        android:key="safety_check"
-        android:order="9"
-        android:title="@string/prefs_safety_check"/>
-    <Preference
         android:fragment="org.chromium.chrome.browser.safety_hub.SafetyHubFragment"
         android:key="safety_hub"
         android:order="10"
@@ -70,7 +62,6 @@ for the previous order (main_preferences_legacy). -->
         android:order="11"
         android:title="@string/prefs_section_autofill"/>
     <org.chromium.chrome.browser.password_manager.settings.PasswordsPreference
-        android:fragment="org.chromium.chrome.browser.password_manager.settings.PasswordSettings"
         android:key="passwords"
         android:order="12"
         android:title="@string/password_manager_settings_title"/>
@@ -166,4 +157,3 @@ for the previous order (main_preferences_legacy). -->
         android:title="@string/prefs_about_chrome"/>
 
 </PreferenceScreen>
-<!-- LINT.ThenChange(//chrome/android/java/res/xml/main_preferences_legacy.xml) -->

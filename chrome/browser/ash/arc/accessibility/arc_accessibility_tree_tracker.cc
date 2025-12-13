@@ -142,6 +142,53 @@ FromMojomResponseToAutomationResponse(
 
 }  // namespace
 
+// Observes (1) Addition and removal of ArcNotificationSurface, and
+// (2) Removal of aura::Window corresponds to ARC notification.
+class ArcAccessibilityTreeTracker::NotificationObserver
+    : public ash::ArcNotificationSurfaceManager::Observer,
+      public aura::WindowObserver {
+ public:
+  explicit NotificationObserver(ArcAccessibilityTreeTracker* owner)
+      : owner_(owner) {
+    auto* surface_manager = ash::ArcNotificationSurfaceManager::Get();
+    if (surface_manager) {
+      arc_notification_observation_.Observe(surface_manager);
+    }
+  }
+
+  // ash::ArcNotificationSurfaceManager::Observer overrides:
+  void OnNotificationSurfaceAdded(
+      ash::ArcNotificationSurface* surface) override {
+    owner_->OnNotificationSurfaceAdded(surface);
+
+    aura::Window* window = surface->GetWindow();
+    if (window && !window_observations_.IsObservingSource(window)) {
+      window_observations_.AddObservation(window);
+    }
+  }
+
+  void OnNotificationSurfaceRemoved(
+      ash::ArcNotificationSurface* surface) override {
+    owner_->OnNotificationSurfaceRemoved(surface);
+  }
+
+  // aura::WindowObserver overrides:
+  void OnWindowDestroying(aura::Window* window) override {
+    if (window_observations_.IsObservingSource(window)) {
+      window_observations_.RemoveObservation(window);
+    }
+    owner_->OnNotificationWindowRemoved(window);
+  }
+
+ private:
+  base::ScopedObservation<ash::ArcNotificationSurfaceManager,
+                          ash::ArcNotificationSurfaceManager::Observer>
+      arc_notification_observation_{this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
+  raw_ptr<ArcAccessibilityTreeTracker> const owner_;
+};
+
 class ArcAccessibilityTreeTracker::FocusChangeObserver
     : public aura::client::FocusChangeObserver {
  public:
@@ -310,53 +357,6 @@ class ArcAccessibilityTreeTracker::MojoConnectionObserver
                        ax::android::mojom::AccessibilityHelperHost>,
       ConnectionObserver<ax::android::mojom::AccessibilityHelperInstance>>
       helper_instance_connection_observation_{this};
-  raw_ptr<ArcAccessibilityTreeTracker> const owner_;
-};
-
-// Observes (1) Addition and removal of ArcNotificationSurface, and
-// (2) Removal of aura::Window corresponds to ARC notification.
-class ArcAccessibilityTreeTracker::NotificationObserver
-    : public ash::ArcNotificationSurfaceManager::Observer,
-      public aura::WindowObserver {
- public:
-  explicit NotificationObserver(ArcAccessibilityTreeTracker* owner)
-      : owner_(owner) {
-    auto* surface_manager = ash::ArcNotificationSurfaceManager::Get();
-    if (surface_manager) {
-      arc_notification_observation_.Observe(surface_manager);
-    }
-  }
-
-  // ash::ArcNotificationSurfaceManager::Observer overrides:
-  void OnNotificationSurfaceAdded(
-      ash::ArcNotificationSurface* surface) override {
-    owner_->OnNotificationSurfaceAdded(surface);
-
-    aura::Window* window = surface->GetWindow();
-    if (window && !window_observations_.IsObservingSource(window)) {
-      window_observations_.AddObservation(window);
-    }
-  }
-
-  void OnNotificationSurfaceRemoved(
-      ash::ArcNotificationSurface* surface) override {
-    owner_->OnNotificationSurfaceRemoved(surface);
-  }
-
-  // aura::WindowObserver overrides:
-  void OnWindowDestroying(aura::Window* window) override {
-    if (window_observations_.IsObservingSource(window)) {
-      window_observations_.RemoveObservation(window);
-    }
-    owner_->OnNotificationWindowRemoved(window);
-  }
-
- private:
-  base::ScopedObservation<ash::ArcNotificationSurfaceManager,
-                          ash::ArcNotificationSurfaceManager::Observer>
-      arc_notification_observation_{this};
-  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
-      window_observations_{this};
   raw_ptr<ArcAccessibilityTreeTracker> const owner_;
 };
 

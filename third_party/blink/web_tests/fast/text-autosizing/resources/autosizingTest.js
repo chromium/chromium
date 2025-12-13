@@ -10,6 +10,8 @@ function setFontScaleFactor(scale) {
 
 function initAutosizingTest() {
     if (window.internals) {
+        // setTextAutosizingEnabled(true) causes Blink to bypass disabling the
+        // autosizer on desktop.
         internals.settings.setTextAutosizingEnabled(true);
         setWindowSizeOverride(320, 480);
     } else if (window.console && console.warn) {

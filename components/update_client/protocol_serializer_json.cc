@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -17,6 +18,11 @@
 
 namespace update_client {
 
+namespace switches {
+const char kComponentUpdaterCompatProtocols[] =
+    "component-updater-compat-protocols";
+}  // namespace switches
+
 std::string ProtocolSerializerJSON::Serialize(
     const protocol_request::Request& request) const {
   base::Value::Dict root_node;
@@ -24,7 +30,14 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node.Set("protocol", request.protocol_version);
   request_node.Set("ismachine", request.is_machine);
   request_node.Set("dedup", "cr");
-  request_node.Set("acceptformat", "crx3,download,puff,run,xz,zucc");
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kComponentUpdaterCompatProtocols)) {
+    // Don't change this string without consulting webview-leads. Add new
+    // protocols to the 'else' branch below instead.
+    request_node.Set("acceptformat", "crx3,download,puff,run");
+  } else {
+    request_node.Set("acceptformat", "crx3,download,puff,run,xz,zucc");
+  }
   if (!request.additional_attributes.empty()) {
     for (const auto& [name, value] : request.additional_attributes) {
       request_node.Set(name, value);

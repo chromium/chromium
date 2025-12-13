@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<title>Canvas.drawElementImage: elements from the subtree are supported</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<style>
+  #child {
+    width: 100px;
+    height: 100px;
+    background: orange;
+  }
+  #grandchild {
+    width: 100px;
+    height: 100px;
+    background: green;
+    /* forces a stacking context and grouping */
+    isolation: isolate;
+  }
+  #canvas {
+    background: red;
+  }
+</style>
+
+<canvas id=canvas width="100" height="100" layoutsubtree>
+  <div id=child>
+    <div id=grandchild></div>
+  </div>
+</canvas>
+
+<script>
+  function runTest() {
+    var context = canvas.getContext('2d');
+    context.drawElementImage(grandchild, 0, 0);
+  }
+  onload = () => runTest();
+</script>
+</html>

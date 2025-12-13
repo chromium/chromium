@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -480,7 +481,8 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
   // Scroll the view so that both |content1| and |content2| are in the interest
   // rect.
   GetLayoutView().GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 3000), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 3000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesExceptPaint();
   // The layer needs repaint when its contents cull rect changes.
   EXPECT_TRUE(target_layer->SelfNeedsRepaint());
@@ -828,6 +830,7 @@ TEST_P(PaintLayerPainterTest, EmptyFilterReference) {
 }
 
 TEST_P(PaintLayerPainterTest, DevtoolsPaintTraceEvents) {
+  base::test::TracingEnvironment tracing_environment;
   SetBodyInnerHTML(R"HTML(
     <div id=scroller style="width: 400px; height: 400px; overflow-y: scroll;
                             position: relative">

@@ -9,10 +9,15 @@ import("//testing/test.gni")
 
 source_set("headless") {
   sources = [
+    "headless_mode_platform.h",
     "headless_mode_switches.h",
     "headless_mode_util.cc",
     "headless_mode_util.h",
   ]
+
+  if (is_mac) {
+    sources += [ "headless_mode_platform_mac.mm" ]
+  }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -121,6 +126,7 @@ if (!is_android) {
         "//chrome/browser/infobars",
         "//chrome/browser/profiles",
         "//chrome/browser/ui",
+        "//chrome/browser/ui/views/frame:toolbar_button_provider",
         "//components/devtools/simple_devtools_protocol_client",
         "//components/headless/clipboard",
         "//components/headless/command_handler",
@@ -152,6 +158,7 @@ if (!is_android) {
       "test/data/",
       "//components/headless/test/data",
       "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/inspector-protocol-test.js",
+      "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/inspector-protocol-test-subtarget.html",
       "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/http-interceptor.js",
     ]
 

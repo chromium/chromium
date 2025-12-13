@@ -678,7 +678,7 @@ mod inner {
         #[inline]
         pub(super) fn value(&self) -> &T {
             match self.value {
-                Ok(ref v) => &**v,
+                Ok(ref v) => v,
                 // SAFETY: This is safe because the only way a PoolGuard gets
                 // created for self.value=Err is when the current thread
                 // corresponds to the owning thread, of which there can only
@@ -703,7 +703,7 @@ mod inner {
         #[inline]
         pub(super) fn value_mut(&mut self) -> &mut T {
             match self.value {
-                Ok(ref mut v) => &mut **v,
+                Ok(ref mut v) => v,
                 // SAFETY: This is safe because the only way a PoolGuard gets
                 // created for self.value=None is when the current thread
                 // corresponds to the owning thread, of which there can only
@@ -947,7 +947,7 @@ mod inner {
         }
     }
 
-    /// A spin-lock based mutex. Yes, I have read spinlocks cosnidered
+    /// A spin-lock based mutex. Yes, I have read spinlocks considered
     /// harmful[1], and if there's a reasonable alternative choice, I'll
     /// happily take it.
     ///

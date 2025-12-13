@@ -11,7 +11,6 @@
   <uses-feature android:name="android.software.leanback" android:required="false"/>
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
   <application
-      android:extractNativeLibs="false"
       android:hasCode="false"
       android:icon="@drawable/icon_webview"
       android:label="Trichrome Library"

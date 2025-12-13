@@ -18,7 +18,7 @@ namespace {
 
 // Returns true if navigation URL host is google.com or www.google.com.
 bool IsGoogleUrl(const GURL& url) {
-  return url.host() == "google.com" || url.host() == "www.google.com";
+  return url.GetHost() == "google.com" || url.GetHost() == "www.google.com";
 }
 
 }  // namespace
@@ -196,7 +196,7 @@ void BreadcrumbManagerTabHelper::OnInfoBarReplaced(
   }
 }
 
-void BreadcrumbManagerTabHelper::OnManagerShuttingDown(
+void BreadcrumbManagerTabHelper::OnManagerWillBeDestroyed(
     infobars::InfoBarManager* manager) {
   DCHECK_EQ(infobar_manager_, manager);
   DCHECK(infobar_observation_.IsObservingSource(manager));

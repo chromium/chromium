@@ -11,8 +11,6 @@ const char kUMATabSwitcherIdleIncognitoTabGridPageHistogram[] =
     "IOS.TabSwitcher.Idle.IncognitoTabGridPage";
 const char kUMATabSwitcherIdleRegularTabGridPageHistogram[] =
     "IOS.TabSwitcher.Idle.RegularTabGridPage";
-const char kUMATabSwitcherIdleRecentTabsHistogram[] =
-    "IOS.TabSwitcher.Idle.RecentTabs";
 const char kUMATabSwitcherIdleTabGroupsHistogram[] =
     "IOS.TabSwitcher.Idle.TabGroups";
 
@@ -55,16 +53,15 @@ NSString* const kTabGridEditShareButtonIdentifier =
 NSString* const kTabGridSearchBarIdentifier = @"kTabGridSearchBarIdentifier";
 NSString* const kTabGridSearchTextFieldIdentifierPrefix = @"kSearchTextId_";
 NSString* const kTabGridScrimIdentifier = @"kTabGridScrimIdentifier";
+NSString* const kTabGridOverflowMenuButtonIdentifier =
+    @"kTabGridOverflowMenuButtonIdentifier";
 
 NSString* const kTabCellActivityLabelIdentifier =
     @"TabCellActivityLabelIdentifier";
 
-// The color of the text buttons in the toolbars.
-const int kTabGridToolbarTextButtonColor = 0xFFFFFF;
-
-// Colors for the empty state and disabled tab view.
-const int kTabGridEmptyStateTitleTextColor = 0xF8F9FA;
-const int kTabGridEmptyStateBodyTextColor = 0xBDC1C6;
+UIColor* TabGridGlassButtonTintColor() {
+  return [UIColor.blackColor colorWithAlphaComponent:0.25];
+}
 
 // The distance the toolbar content is inset from either side.
 const CGFloat kTabGridToolbarHorizontalInset = 16.0f;
@@ -87,6 +84,9 @@ const CGFloat kTabGridSearchBarWidthRatio = 0.9f;
 const CGFloat kTabGridSearchBarHeight = 44.0f;
 // The Search bar width ratio modifier for non-compact orientation.
 const CGFloat kTabGridSearchBarNonCompactWidthRatioModifier = 0.5f;
+
+NSString* const kTabGridSearchSuggestedHistoryItemId =
+    @"kTabGridSearchSuggestedHistoryItemId";
 
 // Intrinsic heights of the tab grid toolbars.
 const CGFloat kTabGridTopToolbarHeight = 52.0f;

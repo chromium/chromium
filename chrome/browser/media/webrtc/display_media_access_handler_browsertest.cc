@@ -17,7 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -138,13 +138,13 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest, RejectNoVideoByDefault) {
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_THAT(content::EvalJs(web_contents->GetPrimaryMainFrame(),
-                              R"((async () => {
+  EXPECT_THAT(
+      content::EvalJs(web_contents->GetPrimaryMainFrame(),
+                      R"((async () => {
     return navigator.mediaDevices.getDisplayMedia({
         audio: true, systemAudio: 'include', video: false});
-  })())")
-                  .error,
-              testing::HasSubstr("Not supported"));
+  })())"),
+      content::EvalJsResult::ErrorIs(testing::HasSubstr("Not supported")));
   EXPECT_EQ(dialog_opened_, false);
 }
 
@@ -190,13 +190,13 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_THAT(content::EvalJs(web_contents->GetPrimaryMainFrame(),
-                              R"((async () => {
+  EXPECT_THAT(
+      content::EvalJs(web_contents->GetPrimaryMainFrame(),
+                      R"((async () => {
     return navigator.mediaDevices.getDisplayMedia({
         audio: true, systemAudio: 'include', video: false});
-  })())")
-                  .error,
-              testing::HasSubstr("Not supported"));
+  })())"),
+      content::EvalJsResult::ErrorIs(testing::HasSubstr("Not supported")));
   EXPECT_EQ(dialog_opened_, false);
 }
 
@@ -217,13 +217,13 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_THAT(content::EvalJs(web_contents->GetPrimaryMainFrame(),
-                              R"((async () => {
+  EXPECT_THAT(
+      content::EvalJs(web_contents->GetPrimaryMainFrame(),
+                      R"((async () => {
     return navigator.mediaDevices.getDisplayMedia({
         audio: true, systemAudio: 'exclude', video: false});
-  })())")
-                  .error,
-              testing::HasSubstr("Not supported"));
+  })())"),
+      content::EvalJsResult::ErrorIs(testing::HasSubstr("Not supported")));
   EXPECT_EQ(dialog_opened_, false);
 }
 

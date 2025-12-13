@@ -7,12 +7,11 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
-#import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -43,15 +42,6 @@
   _toggleMap = toggleMap;
 }
 
-- (void)populateBackgroundCustomizationConfigurations:
-            (NSMutableDictionary<NSString*,
-                                 id<BackgroundCustomizationConfiguration>>*)
-                BackgroundCustomizationConfigurationMap
-                                 selectedBackgroundId:
-                                     (NSString*)selectedBackgroundId {
-  // No-op for fake implementation.
-}
-
 @end
 
 // Tests for the Home Customization mediator.
@@ -64,24 +54,22 @@ class HomeCustomizationMediatorUnitTest : public PlatformTest {
     pref_service_ = profile_->GetPrefs();
     discover_feed_visibility_browser_agent_ =
         DiscoverFeedVisibilityBrowserAgent::FromBrowser(browser);
-    imageFetcherService_ =
-        ImageFetcherServiceFactory::GetForProfile(browser->GetProfile());
 
-    mediator_ = [[HomeCustomizationMediator alloc]
-                       initWithPrefService:pref_service_
-        discoverFeedVisibilityBrowserAgent:
-            discover_feed_visibility_browser_agent_
-                       imageFetcherService:imageFetcherService_];
+    mediator_ =
+        [[HomeCustomizationMediator alloc] initWithPrefService:pref_service_
+                            discoverFeedVisibilityBrowserAgent:
+                                discover_feed_visibility_browser_agent_
+                                               shoppingService:nil];
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   HomeCustomizationMediator* mediator_;
-  raw_ptr<DiscoverFeedVisibilityBrowserAgent>
+  raw_ptr<DiscoverFeedVisibilityBrowserAgent, DanglingUntriaged>
       discover_feed_visibility_browser_agent_;
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<image_fetcher::ImageFetcherService> imageFetcherService_;
 };
 
 // Tests that the mediator populates the main page data for its consumer based
@@ -92,8 +80,10 @@ TEST_F(HomeCustomizationMediatorUnitTest, TestMainPageData) {
   mediator_.mainPageConsumer = fake_consumer;
 
   // Set the values.
-  pref_service_->SetBoolean(prefs::kHomeCustomizationMostVisitedEnabled, NO);
-  pref_service_->SetBoolean(prefs::kHomeCustomizationMagicStackEnabled, YES);
+  pref_service_->SetBoolean(ntp_tiles::prefs::kMostVisitedHomeModuleEnabled,
+                            NO);
+  pref_service_->SetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
+                            YES);
   discover_feed_visibility_browser_agent_->SetEnabled(NO);
 
   [mediator_ configureMainPageData];

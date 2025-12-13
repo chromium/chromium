@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/test/frame_generator_for_test.h"
 
 #include <stdint.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
@@ -68,7 +64,7 @@ scoped_refptr<DecoderBufferBase> FrameGeneratorForTest::Generate() {
 
   // Generate the frame data.
   for (size_t k = 0; k < frame_spec.size; k++) {
-    buffer->writable_data()[k] = total_buffer_size_ & 0xff;
+    UNSAFE_TODO(buffer->writable_data()[k]) = total_buffer_size_ & 0xff;
     total_buffer_size_++;
   }
 

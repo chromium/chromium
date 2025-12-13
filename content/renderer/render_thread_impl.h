@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include <deque>
-#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -23,7 +22,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/structured_shared_memory.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
@@ -41,7 +40,10 @@
 #include "content/common/renderer.mojom.h"
 #include "content/common/renderer_host.mojom.h"
 #include "content/public/renderer/render_thread.h"
+#include "content/renderer/blink_isolates_pressure_listener.h"
 #include "content/renderer/discardable_memory_utils.h"
+#include "content/renderer/memory_reclaimer_pressure_listener.h"
+#include "content/renderer/skia_graphics_pressure_listener.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/media_buildflags.h"
@@ -50,7 +52,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_change_notifier.h"
@@ -63,7 +64,7 @@
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_connection_type.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace blink {
 class WebVideoCaptureImplManager;
@@ -81,7 +82,7 @@ class RasterDarkModeFilter;
 
 namespace gpu {
 class GpuChannelHost;
-class ClientSharedImageInterface;
+class SharedImageInterface;
 }
 
 namespace media {
@@ -121,7 +122,8 @@ class CONTENT_EXPORT RenderThreadImpl
       public ChildThreadImpl,
       public mojom::Renderer,
       public viz::mojom::CompositingModeWatcher,
-      public base::trace_event::TraceLog::AsyncEnabledStateObserver {
+      public base::trace_event::TraceLog::AsyncEnabledStateObserver,
+      public base::MemoryPressureListener {
  public:
   static RenderThreadImpl* current();
 
@@ -170,6 +172,7 @@ class CONTENT_EXPORT RenderThreadImpl
   void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
       override;
+  blink::mojom::PerformanceTier GetCpuPerformanceTier() override;
 
   // IPC::Listener implementation via ChildThreadImpl:
   void OnAssociatedInterfaceRequest(
@@ -266,7 +269,7 @@ class CONTENT_EXPORT RenderThreadImpl
       GetVideoFrameCompositorContextProvider(
           scoped_refptr<viz::RasterContextProvider>);
 
-  scoped_refptr<gpu::ClientSharedImageInterface>
+  scoped_refptr<gpu::SharedImageInterface>
   GetRenderThreadSharedImageInterface();
 
   // Returns a worker context provider that will be bound on the compositor
@@ -372,7 +375,7 @@ class CONTENT_EXPORT RenderThreadImpl
 #if BUILDFLAG(IS_ANDROID)
   // ChildThreadImpl
   void OnMemoryPressureFromBrowserReceived(
-      base::MemoryPressureListener::MemoryPressureLevel level) override;
+      base::MemoryPressureLevel level) override;
 #endif
   void SetBatterySaverMode(bool battery_saver_mode_enabled) override;
 
@@ -403,13 +406,14 @@ class CONTENT_EXPORT RenderThreadImpl
       const blink::UserAgentMetadata& user_agent_metadata,
       const std::vector<std::string>& cors_exempt_header_list,
       blink::mojom::OriginTrialsSettingsPtr origin_trial_settings,
+      blink::mojom::PerformanceTier cpu_performance_tier,
       uint64_t trace_id) override;
   void UpdateScrollbarTheme(
       mojom::UpdateScrollbarThemeParamsPtr params) override;
   void OnSystemColorsChanged(int32_t aqua_color_variant) override;
   void UpdateSystemColorInfo(
       mojom::UpdateSystemColorInfoParamsPtr params) override;
-  void PurgePluginListCache(bool reload_pages) override;
+  void PurgePluginListCache() override;
   void PurgeResourceCache(PurgeResourceCacheCallback callback) override;
   void SetProcessState(base::Process::Priority priority,
                        mojom::RenderProcessVisibleState visible_state) override;
@@ -424,7 +428,7 @@ class CONTENT_EXPORT RenderThreadImpl
   void SetWebUIResourceUrlToCodeCacheMap(
       const base::flat_map<GURL, int>& resource_map) override;
   void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   bool RendererIsHidden() const;
   void OnRendererHidden();
@@ -433,9 +437,6 @@ class CONTENT_EXPORT RenderThreadImpl
   bool RendererIsBackgrounded() const;
   void OnRendererBackgrounded();
   void OnRendererForegrounded();
-
-  void OnSyncMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
   void OnRendererInterfaceReceiver(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
@@ -524,11 +525,18 @@ class CONTENT_EXPORT RenderThreadImpl
 
   scoped_refptr<viz::RasterContextProvider> shared_worker_context_provider_;
 
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
 
   HistogramCustomizer histogram_customizer_;
 
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
+
+  MemoryReclaimerPressureListener memory_reclaimer_pressure_listener_;
+
+  SkiaGraphicsPressureListener skia_graphics_pressure_listener_;
+
+  BlinkIsolatesPressureListener blink_isolates_pressure_listener_;
 
   std::unique_ptr<viz::Gpu> gpu_;
 
@@ -581,6 +589,9 @@ class CONTENT_EXPORT RenderThreadImpl
   // off only one asynchronous request.
   bool cached_items_requested_ = false;
   bool use_cached_routing_table_ = false;
+
+  blink::mojom::PerformanceTier cpu_performance_tier_ =
+      blink::mojom::PerformanceTier::kUnknown;
 
   std::optional<base::ThreadPoolInstance::ScopedRestrictedTasks>
       restrict_thread_pool_;

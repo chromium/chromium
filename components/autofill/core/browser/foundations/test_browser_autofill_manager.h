@@ -25,7 +25,6 @@ namespace autofill {
 
 class MockBnplManager;
 class AutofillDriver;
-class FormStructure;
 class TestPersonalDataManager;
 
 class TestBrowserAutofillManager : public BrowserAutofillManager {
@@ -51,10 +50,13 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   void OnTextFieldValueChanged(const FormData& form,
                                const FieldGlobalId& field_id,
                                const base::TimeTicks timestamp) override;
+  void OnDidEndTextFieldEditing() override;
   void OnTextFieldDidScroll(const FormData& form,
                             const FieldGlobalId& field_id) override;
   void OnSelectControlSelectionChanged(const FormData& form,
                                        const FieldGlobalId& field_id) override;
+  void OnSelectFieldOptionsDidChange(const FormData& form,
+                                     const FieldGlobalId& field_id) override;
   void OnAskForValuesToFill(
       const FormData& form,
       const FieldGlobalId& field_id,
@@ -63,8 +65,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       std::optional<PasswordSuggestionRequest> password_request) override;
   void OnFocusOnFormField(const FormData& form,
                           const FieldGlobalId& field_id) override;
-  void OnDidFillAutofillFormData(const FormData& form,
-                                 const base::TimeTicks timestamp) override;
+  void OnDidAutofillForm(const FormData& form) override;
   void OnJavaScriptChangedAutofilledValue(
       const FormData& form,
       const FieldGlobalId& field_id,
@@ -79,28 +80,20 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   // Unique to TestBrowserAutofillManager:
 
   void AddSeenForm(const FormData& form,
-                   const std::vector<FieldType>& field_types,
-                   bool preserve_values_in_form_structure = false) {
+                   const std::vector<FieldType>& field_types) {
     AddSeenForm(form, /*heuristic_types=*/field_types,
-                /*server_types=*/field_types,
-                preserve_values_in_form_structure);
+                /*server_types=*/field_types);
   }
 
   void AddSeenForm(const FormData& form,
                    const std::vector<FieldType>& heuristic_types,
-                   const std::vector<FieldType>& server_types,
-                   bool preserve_values_in_form_structure = false);
+                   const std::vector<FieldType>& server_types);
 
   void AddSeenForm(
       const FormData& form,
       const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
           heuristic_types,
-      const std::vector<FieldType>& server_types,
-      bool preserve_values_in_form_structure = false);
-
-  void AddSeenFormStructure(std::unique_ptr<FormStructure> form_structure);
-
-  void ClearFormStructures();
+      const std::vector<FieldType>& server_types);
 
   const std::string& GetSubmittedFormSignature();
 

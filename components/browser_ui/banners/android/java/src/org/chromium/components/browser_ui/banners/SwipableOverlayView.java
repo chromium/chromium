@@ -123,7 +123,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
     }
 
     /** Set the given WebContents for scrolling changes. */
-    public void setWebContents(WebContents webContents) {
+    public void setWebContents(@Nullable WebContents webContents) {
         if (mWebContents != null && mGestureStateListener != null) {
             assumeNonNull(GestureListenerManager.fromWebContents(mWebContents))
                     .removeListener(mGestureStateListener);

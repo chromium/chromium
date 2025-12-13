@@ -9,6 +9,8 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/to_string.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -51,6 +53,7 @@ WebInstallFromUrlCommand::WebInstallFromUrlCommand(
     const GURL& install_url,
     const std::optional<GURL>& manifest_id,
     base::WeakPtr<content::WebContents> web_contents,
+    const GURL& installed_by,
     WebAppInstallDialogCallback dialog_callback,
     WebInstallFromUrlCommandCallback installed_callback)
     : WebAppCommand<SharedWebContentsLock,
@@ -67,13 +70,13 @@ WebInstallFromUrlCommand::WebInstallFromUrlCommand(
       manifest_id_(manifest_id),
       install_url_(install_url),
       web_contents_(web_contents),
-      dialog_callback_(std::move(dialog_callback)),
-      install_error_log_entry_(/*background_installation=*/false,
-                               kInstallSource) {
+      installed_by_(installed_by),
+      dialog_callback_(std::move(dialog_callback)) {
   if (manifest_id_.has_value()) {
     GetMutableDebugValue().Set("manifest_id_param", manifest_id_->spec());
   }
   GetMutableDebugValue().Set("install_url_param", install_url_.spec());
+  GetMutableDebugValue().Set("installed_by", installed_by_.spec());
 }
 
 WebInstallFromUrlCommand::~WebInstallFromUrlCommand() = default;
@@ -118,13 +121,9 @@ void WebInstallFromUrlCommand::Abort(webapps::InstallResultCode code) {
 
 void WebInstallFromUrlCommand::OnUrlLoadedFetchManifest(
     webapps::WebAppUrlLoaderResult result) {
-  GetMutableDebugValue().Set("url_loading_result",
-                             ConvertUrlLoaderResultToString(result));
+  GetMutableDebugValue().Set("url_loading_result", base::ToString(result));
 
   if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
-    install_error_log_entry_.LogUrlLoaderError("OnUrlLoadedFetchManifest",
-                                               install_url_.spec(), result);
-
     webapps::InstallResultCode install_result =
         (result == webapps::WebAppUrlLoaderResult::kFailedPageTookTooLong)
             ? webapps::InstallResultCode::kInstallURLLoadTimeOut
@@ -244,6 +243,7 @@ void WebInstallFromUrlCommand::OnInstallDialogCompleted(
 
   web_app_info_->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
+  web_app_info_->installed_by = installed_by_;
   WebAppInstallFinalizer::FinalizeOptions finalize_options(kInstallSource);
   finalize_options.install_state =
       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;

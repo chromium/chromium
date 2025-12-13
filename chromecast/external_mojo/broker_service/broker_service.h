@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "chromecast/external_mojo/public/mojom/connector.mojom.h"
 #include "chromecast/mojo/interface_bundle.h"

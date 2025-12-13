@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/translate_table_view_controller.h"
 
 #import <Foundation/Foundation.h>
-#import <MaterialComponents/MaterialSnackbar.h>
 
 #import <memory>
 
@@ -25,13 +24,12 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -138,6 +136,8 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
       [[TableViewSwitchItem alloc] initWithType:ItemTypeTranslate];
   _translationItem.text = l10n_util::GetNSString(IDS_IOS_TRANSLATE_SETTING);
   _translationItem.on = [_translationEnabled value];
+  _translationItem.target = self;
+  _translationItem.selector = @selector(translateSwitchToggled:);
   [model addItem:_translationItem
       toSectionWithIdentifier:SectionIdentifierTranslate];
 
@@ -158,31 +158,6 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
                                              ->GetApplicationLocaleStorage()
                                              ->Get())] ];
   [model setFooter:footer forSectionWithIdentifier:SectionIdentifierTranslate];
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-
-  switch (itemType) {
-    case ItemTypeTranslate: {
-      cell.selectionStyle = UITableViewCellSelectionStyleNone;
-      TableViewSwitchCell* switchCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-      [switchCell.switchView addTarget:self
-                                action:@selector(translateToggled:)
-                      forControlEvents:UIControlEventValueChanged];
-      break;
-    }
-    default:
-      break;
-  }
-
-  return cell;
 }
 
 #pragma mark - UITableViewDelegate
@@ -215,8 +190,8 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
     TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
     NSString* messageText =
         l10n_util::GetNSString(IDS_IOS_TRANSLATE_SETTING_RESET_NOTIFICATION);
-    MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
-    message.category = kTranslateSettingsCategory;
+    SnackbarMessage* message =
+        [[SnackbarMessage alloc] initWithTitle:messageText];
     [self.snackbarCommandsHandler showSnackbarMessage:message bottomOffset:0];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
@@ -236,7 +211,7 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
 
 #pragma mark - Actions
 
-- (void)translateToggled:(id)sender {
+- (void)translateSwitchToggled:(UISwitch*)sender {
   NSIndexPath* switchPath =
       [self.tableViewModel indexPathForItemType:ItemTypeTranslate
                               sectionIdentifier:SectionIdentifierTranslate];
@@ -244,12 +219,7 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
-  TableViewSwitchCell* switchCell =
-      base::apple::ObjCCastStrict<TableViewSwitchCell>(
-          [self.tableView cellForRowAtIndexPath:switchPath]);
-
-  DCHECK_EQ(switchCell.switchView, sender);
-  BOOL isOn = switchCell.switchView.isOn;
+  BOOL isOn = sender.isOn;
   switchItem.on = isOn;
   [_translationEnabled setValue:isOn];
 }

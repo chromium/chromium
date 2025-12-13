@@ -94,7 +94,7 @@ gfx::Insets GetTrayBubbleInsets(aura::Window* window) {
   // The work area in tablet mode always uses the in-app shelf height, which is
   // shorter than the standard shelf height. In this state, we need to add back
   // the difference to compensate (see crbug.com/1033302).
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return insets;
   }
 
@@ -153,7 +153,7 @@ int CalculateMaxTrayBubbleHeight(aura::Window* window) {
       WorkAreaInsets::ForWindow(shelf->GetWindow()->GetRootWindow());
   int free_space_height_above_anchor =
       anchor_rect_top - work_area->user_work_area_bounds().y();
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     free_space_height_above_anchor -= GetBubbleInsetHotseatCompensation(window);
   }
   return free_space_height_above_anchor - kBubbleMenuPadding * 2;

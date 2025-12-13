@@ -47,7 +47,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -439,7 +438,6 @@ public class AwVariationsSeedFetcherTest {
     public void testFastFetchJitterPeriodSettings() throws IOException, TimeoutException {
         try {
             TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
-            final Date date = mock(Date.class);
             PersistableBundle bundle = new PersistableBundle();
             bundle.putBoolean(AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE, true);
 
@@ -698,7 +696,7 @@ public class AwVariationsSeedFetcherTest {
             Assert.assertEquals(seedInfo.country, updatedSeedInfo.country);
             Assert.assertEquals(seedInfo.isGzipCompressed, updatedSeedInfo.isGzipCompressed);
             Assert.assertEquals(67890L, updatedSeedInfo.date);
-            Arrays.equals(seedInfo.seedData, updatedSeedInfo.seedData);
+            Assert.assertArrayEquals(seedInfo.seedData, updatedSeedInfo.seedData);
         } finally {
             VariationsUtils.closeSafely(out);
             VariationsTestUtils.deleteSeeds(); // Remove seed files.

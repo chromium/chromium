@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -43,7 +44,6 @@ public class MvtSettingsMediatorUnitTest {
     @Mock private BottomSheetDelegate mDelegate;
     @Mock View mView;
     @Mock private PropertyModel mBottomSheetPropertyModel;
-    @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Captor private ArgumentCaptor<View.OnClickListener> mBackPressHandlerCaptor;
 
     private MvtSettingsMediator mMediator;
@@ -84,14 +84,24 @@ public class MvtSettingsMediatorUnitTest {
 
     @Test
     public void testOnMvtSwitchToggledAndState() {
-        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
-        mMediator.onMvtSwitchToggled(/* isEnabled= */ true);
-        assertTrue(configManager.getPrefIsMvtVisible());
-        assertTrue(mMediator.isMvtTurnedOn());
+        String histogramName = "NewTabPage.Customization.MvtEnabled";
 
+        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, /* value= */ true);
+        mMediator.onMvtSwitchToggled(/* isEnabled= */ true);
+        assertTrue(configManager.getPrefIsMvtToggleOn());
+        assertTrue(mMediator.isMvtTurnedOn());
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, /* value= */ false);
         mMediator.onMvtSwitchToggled(/* isEnabled= */ false);
-        assertFalse(configManager.getPrefIsMvtVisible());
+        assertFalse(configManager.getPrefIsMvtToggleOn());
         assertFalse(mMediator.isMvtTurnedOn());
+        histogramWatcher.assertExpected();
     }
 
     @Test

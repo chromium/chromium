@@ -12,8 +12,8 @@
 #import "base/types/expected.h"
 #import "build/branding_buildflags.h"
 #import "components/grit/components_resources.h"
-#import "components/plus_addresses/grit/plus_addresses_strings.h"
-#import "components/plus_addresses/metrics/plus_address_metrics.h"
+#import "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#import "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
@@ -106,7 +107,7 @@ NSAttributedString* DescriptionMessageWithEmail(NSString* originForDisplay,
 
 // Returns the image view with the branding image.
 UIImageView* BrandingImageView() {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   // Branding icon inside the container with the white background.
   return [[UIImageView alloc]
       initWithImage:MakeSymbolMulticolor(CustomSymbolWithPointSize(
@@ -115,7 +116,7 @@ UIImageView* BrandingImageView() {
   return [[UIImageView alloc]
       initWithImage:DefaultSymbolTemplateWithPointSize(
                         kMailFillSymbol, kPlusAddressSheetBrandingIconSize)];
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 }
 
 }  // namespace
@@ -160,7 +161,7 @@ UIImageView* BrandingImageView() {
 - (instancetype)initWithDelegate:(id<PlusAddressBottomSheetDelegate>)delegate
     withBrowserCoordinatorCommands:
         (id<BrowserCoordinatorCommands>)browserCoordinatorHandler {
-  self = [super init];
+  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
   if (self) {
     _delegate = delegate;
     _browserCoordinatorHandler = browserCoordinatorHandler;
@@ -181,20 +182,18 @@ UIImageView* BrandingImageView() {
                                  ? IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_NOTICE_IOS
                                  : IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_IOS);
   self.titleTextStyle = UIFontTextStyleTitle2;
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS);
-  self.customScrollViewBottomInsets = 0;
+  [self reloadConfiguration];
+  self.addsContentViewBottomInset = NO;
 
-  // Don't show the dismiss bar button (with the secondary button used for
-  // canceling), and ensure there is still sufficient space between the top of
-  // the bottom sheet content and the top of the sheet. This is especially
-  // relevant with larger accessibility text sizes.
-  self.showDismissBarButton = NO;
+  // Ensure there is still sufficient space between the top of the bottom sheet
+  // content and the top of the sheet. This is especially relevant with larger
+  // accessibility text sizes.
   self.topAlignedLayout = YES;
-  self.customSpacingBeforeImageIfNoNavigationBar =
-      kPlusAddressSheetBeforeImageTopMargin;
+  self.customSpacingBeforeImage = kPlusAddressSheetBeforeImageTopMargin;
   self.customSpacingAfterImage = kPlusAddressSheetAfterImageMargin;
 
   self.underTitleView = [self setUpUnderTitleView];
@@ -249,7 +248,7 @@ UIImageView* BrandingImageView() {
       /*refresh_count=*/(int)_refreshCount, [_delegate shouldShowNotice]);
   _bottomSheetModalCompletionErrorStatus.reset();
   _bottomSheetCreationErrorType.reset();
-  self.isLoading = NO;
+  [self setLoading:NO];
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
@@ -257,7 +256,7 @@ UIImageView* BrandingImageView() {
     withCreateErrorType:(PlusAddressCreationBottomSheetErrorType)errorType {
   _bottomSheetModalCompletionErrorStatus = completionStatus;
   _bottomSheetCreationErrorType = errorType;
-  self.isLoading = NO;
+  [self setLoading:NO];
 }
 
 - (void)dismissBottomSheet {
@@ -270,28 +269,9 @@ UIImageView* BrandingImageView() {
 
 #pragma mark - UITextViewDelegate
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-// Handle click on URLs on the bottomsheet.
-// TODO(crbug.com/40276862) Add primaryActionForTextItem: when this method is
-// deprecated after ios 17 (detail on UITextItem.h).
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  if (textView == _noticeMessage) {
-    [_delegate openNewTab:PlusAddressURLType::kLearnMore];
-  } else {
-    [_delegate openNewTab:PlusAddressURLType::kManagement];
-  }
-  [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
-  // Returns NO as the app is handling the opening of the URL.
-  return NO;
-}
-#endif
-
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   PlusAddressURLType type;
   if (textView == _noticeMessage) {
     type = PlusAddressURLType::kLearnMore;
@@ -544,7 +524,7 @@ UIImageView* BrandingImageView() {
 // Called when the user chose to confirm the plus address.
 - (void)willConfirmPlusAddress {
   [self enablePrimaryActionButton:NO];
-  self.isLoading = YES;
+  [self setLoading:YES];
 
   [_delegate confirmPlusAddress];
   plus_addresses::metrics::RecordModalEvent(
@@ -555,7 +535,6 @@ UIImageView* BrandingImageView() {
 // Enables/Disables the primary action button.
 - (void)enablePrimaryActionButton:(BOOL)enabled {
   self.primaryActionButton.enabled = enabled;
-  UpdateButtonColorOnEnableDisable(self.primaryActionButton);
 }
 
 - (void)onURLTapForType:(PlusAddressURLType)type {

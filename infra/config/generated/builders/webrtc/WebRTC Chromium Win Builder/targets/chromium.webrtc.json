@@ -4,7 +4,7 @@
       "remoting_unittests"
     ]
   },
-  "WebRTC Chromium Win10 Tester": {
+  "WebRTC Chromium Win Tester": {
     "gtest_tests": [
       {
         "args": [
@@ -18,10 +18,12 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
         "name": "browser_tests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10"
+            "os": "Windows-11"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -36,10 +38,12 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
         "name": "browser_tests_functional",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10"
+            "os": "Windows-11"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -53,10 +57,12 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//content/test:content_browsertests",
+        "module_scheme": "gtest",
         "name": "content_browsertests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10"
+            "os": "Windows-11"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -71,10 +77,12 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//content/test:content_browsertests",
+        "module_scheme": "gtest",
         "name": "content_browsertests_sequential",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10"
+            "os": "Windows-11"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -90,10 +98,12 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//content/test:content_browsertests",
+        "module_scheme": "gtest",
         "name": "content_browsertests_stress",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10"
+            "os": "Windows-11"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -107,10 +117,12 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//content/test:content_unittests",
+        "module_scheme": "gtest",
         "name": "content_unittests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10"
+            "os": "Windows-11"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -124,10 +136,12 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//remoting:remoting_unittests",
+        "module_scheme": "gtest",
         "name": "remoting_unittests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10"
+            "os": "Windows-11"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

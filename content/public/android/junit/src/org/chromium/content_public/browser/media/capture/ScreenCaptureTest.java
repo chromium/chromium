@@ -21,8 +21,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -39,6 +41,7 @@ import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.Surface;
 import android.view.WindowMetrics;
@@ -61,10 +64,12 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
+import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
@@ -88,7 +93,7 @@ public class ScreenCaptureTest {
     private static final int NEW_HEIGHT_PX = 500;
     private static final long NATIVE_POINTER = 1L;
 
-    @Mock private WebContents mWebContents;
+    @Mock private MockWebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private MediaProjection mMediaProjection;
     @Mock private VirtualDisplay mVirtualDisplay;
@@ -172,7 +177,7 @@ public class ScreenCaptureTest {
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
+        mContext = spy(ApplicationProvider.getApplicationContext());
 
         mScreenCapture = spy(new ScreenCapture(NATIVE_POINTER, this::createTestImageHandler));
         ScreenCaptureJni.setInstanceForTesting(mNativeMock);
@@ -226,6 +231,44 @@ public class ScreenCaptureTest {
         when(image.getFormat()).thenReturn(PixelFormat.RGBA_8888);
         when(image.getPlanes()).thenReturn(new Plane[] {plane});
         when(image.getCropRect()).thenReturn(new Rect());
+        return image;
+    }
+
+    private Image createMockYuvImage(
+            long timestamp,
+            Rect cropRect,
+            int yPixelStride,
+            int yRowStride,
+            int uPixelStride,
+            int uRowStride,
+            int vPixelStride,
+            int vRowStride) {
+        final Image image = mock(Image.class);
+        when(image.getFormat()).thenReturn(ImageFormat.YUV_420_888);
+        when(image.getTimestamp()).thenReturn(timestamp);
+        when(image.getCropRect()).thenReturn(cropRect);
+
+        // Use real ByteBuffers we can't mock ByteBuffer.
+        final ByteBuffer yBuffer = ByteBuffer.allocate(1);
+        final ByteBuffer uBuffer = ByteBuffer.allocate(1);
+        final ByteBuffer vBuffer = ByteBuffer.allocate(1);
+
+        final Plane yPlane = mock(Plane.class);
+        when(yPlane.getBuffer()).thenReturn(yBuffer);
+        when(yPlane.getPixelStride()).thenReturn(yPixelStride);
+        when(yPlane.getRowStride()).thenReturn(yRowStride);
+
+        final Plane uPlane = mock(Plane.class);
+        when(uPlane.getBuffer()).thenReturn(uBuffer);
+        when(uPlane.getPixelStride()).thenReturn(uPixelStride);
+        when(uPlane.getRowStride()).thenReturn(uRowStride);
+
+        final Plane vPlane = mock(Plane.class);
+        when(vPlane.getBuffer()).thenReturn(vBuffer);
+        when(vPlane.getPixelStride()).thenReturn(vPixelStride);
+        when(vPlane.getRowStride()).thenReturn(vRowStride);
+
+        when(image.getPlanes()).thenReturn(new Plane[] {yPlane, uPlane, vPlane});
         return image;
     }
 
@@ -423,9 +466,18 @@ public class ScreenCaptureTest {
         ScreenCapture.onForegroundServiceRunning(true);
         assertTrue(mScreenCapture.startCapture());
 
-        final MediaProjection.Callback callback = getMediaProjectionCallback();
-        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(null));
+        final ArgumentCaptor<WebContentsObserver> observerCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(mWebContents).addObserver(observerCaptor.capture());
+        final WebContentsObserver observer = observerCaptor.getValue();
+        assertNotNull(observer);
 
+        // Simulate a window change.
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(null));
+        observer.onTopLevelNativeWindowChanged(mWindowAndroid);
+        shadowOf(Looper.myLooper()).idle();
+
+        final MediaProjection.Callback callback = getMediaProjectionCallback();
         callback.onCapturedContentResize(NEW_WIDTH_PX, NEW_HEIGHT_PX);
 
         assertEquals(1, mImageHandlerStates.size());
@@ -638,5 +690,301 @@ public class ScreenCaptureTest {
         releaseCb2.run();
         verify(image1).close();
         verify(image2).close();
+    }
+
+    @Test
+    public void testImageHandlerFrameReleaseAfterDestroy() {
+        final Queue<Runnable> pendingReleases = new ArrayDeque<>();
+        doAnswer(invocation -> pendingReleases.add(invocation.getArgument(1)))
+                .when(mNativeMock)
+                .onRgbaFrameAvailable(
+                        anyLong(),
+                        any(Runnable.class),
+                        anyLong(),
+                        any(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt());
+
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+
+        final ImageHandler handler = mImageHandlerStates.get(0).imageHandler;
+        final ImageReader reader = mImageHandlerStates.get(0).imageReader;
+
+        // Push two frames to fill up the ImageReader.
+        final Image image0 = createMockImage();
+        when(reader.acquireLatestImage()).thenReturn(image0).thenReturn(null);
+        handler.onImageAvailable(reader);
+        final Runnable releaseCb0 = pendingReleases.remove();
+
+        final Image image1 = createMockImage();
+        when(reader.acquireLatestImage()).thenReturn(image1).thenReturn(null);
+        handler.onImageAvailable(reader);
+        pendingReleases.remove();
+        assertEquals(2, handler.getAcquiredImageCountForTesting());
+        verify(reader, times(2)).acquireLatestImage();
+
+        // Push a third frame, which will be pending since the ImageReader is full.
+        handler.onImageAvailable(reader);
+        verify(reader, times(2)).acquireLatestImage();
+
+        // Destroy ScreenCapture. This should close the ImageReader.
+        mScreenCapture.destroy();
+        verify(reader).close();
+        assertEquals(0, handler.getAcquiredImageCountForTesting());
+
+        // The reader is already closed, so throw.
+        when(reader.acquireLatestImage()).thenThrow(new IllegalStateException());
+
+        // The release callback would normally signal to acquire a new frame, but everything
+        // is already closed. This should be able to run without crashing.
+        releaseCb0.run();
+    }
+
+    @Test
+    public void testMultipleOnCapturedContentResizeBeforeFrame() {
+        final Queue<Runnable> pendingReleases = new ArrayDeque<>();
+        doAnswer(invocation -> pendingReleases.add(invocation.getArgument(1)))
+                .when(mNativeMock)
+                .onRgbaFrameAvailable(
+                        anyLong(),
+                        any(Runnable.class),
+                        anyLong(),
+                        any(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt());
+
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+        final MediaProjection.Callback callback = getMediaProjectionCallback();
+
+        // Resize twice before sending any frames.
+        callback.onCapturedContentResize(NEW_WIDTH_PX, NEW_HEIGHT_PX);
+        callback.onCapturedContentResize(NEW_WIDTH_PX + 1, NEW_HEIGHT_PX + 1);
+        assertEquals(3, mImageHandlerStates.size());
+
+        // Push a frame for the newest handler. This should trigger the closing of the older
+        // handlers. Since they have no acquired images, they should close immediately.
+        final ImageHandler handler2 = mImageHandlerStates.get(2).imageHandler;
+        final ImageReader reader2 = mImageHandlerStates.get(2).imageReader;
+        final Image image = createMockImage();
+        when(reader2.acquireLatestImage()).thenReturn(image).thenReturn(null);
+        handler2.onImageAvailable(reader2);
+        assertEquals(1, pendingReleases.size());
+
+        // Verify the old handlers were closed immediately.
+        final ImageHandler handler0 = mImageHandlerStates.get(0).imageHandler;
+        final ImageReader reader0 = mImageHandlerStates.get(0).imageReader;
+        verify(reader0).close();
+        verify(mScreenCapture).onClose(handler0);
+
+        final ImageHandler handler1 = mImageHandlerStates.get(1).imageHandler;
+        final ImageReader reader1 = mImageHandlerStates.get(1).imageReader;
+        verify(reader1).close();
+        verify(mScreenCapture).onClose(handler1);
+
+        // The current handler should not be closed.
+        verify(reader2, never()).close();
+
+        // Clean up the acquired frame.
+        pendingReleases.remove().run();
+        verify(image).close();
+    }
+
+    @Test
+    public void testOnTopLevelNativeWindowChanged() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+
+        assertTrue(mScreenCapture.startCapture());
+        assertEquals(1, mImageHandlerStates.size());
+
+        final ArgumentCaptor<WebContentsObserver> observerCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(mWebContents).addObserver(observerCaptor.capture());
+        final WebContentsObserver observer = observerCaptor.getValue();
+        assertNotNull(observer);
+
+        // Simulate a DPI change.
+        final int newDpi = TEST_DPI + 100;
+        updateConfiguration(mContext, TEST_WIDTH_DP, TEST_HEIGHT_DP, newDpi);
+
+        // Simulate a window change.
+        observer.onTopLevelNativeWindowChanged(mWindowAndroid);
+        shadowOf(Looper.myLooper()).idle();
+
+        // Verify a new ImageHandler was created with the new DPI.
+        assertEquals(2, mImageHandlerStates.size());
+        final var handler = mImageHandlerStates.get(1).imageHandler;
+        assertEquals(newDpi, handler.getCaptureState().dpi);
+
+        // Verify VirtualDisplay was updated. The width/height in pixels should not change.
+        final int widthPx = mImageHandlerStates.get(0).imageHandler.getCaptureState().width;
+        final int heightPx = mImageHandlerStates.get(0).imageHandler.getCaptureState().height;
+        verify(mVirtualDisplay).resize(widthPx, heightPx, newDpi);
+        verify(mVirtualDisplay).setSurface(handler.getSurface());
+    }
+
+    @Test
+    public void testOnConfigurationChanged() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+
+        assertTrue(mScreenCapture.startCapture());
+        assertEquals(1, mImageHandlerStates.size());
+
+        final ArgumentCaptor<ComponentCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(ComponentCallbacks.class);
+        verify(mContext).registerComponentCallbacks(callbackCaptor.capture());
+        final ComponentCallbacks callback = callbackCaptor.getValue();
+        assertNotNull(callback);
+
+        // Simulate a DPI change.
+        final int newDpi = TEST_DPI + 100;
+        updateConfiguration(mContext, TEST_WIDTH_DP, TEST_HEIGHT_DP, newDpi);
+
+        // Manually trigger the callback - robolectric doesn't do this for us.
+        callback.onConfigurationChanged(mContext.getResources().getConfiguration());
+        shadowOf(Looper.myLooper()).idle();
+
+        // Verify a new ImageHandler was created with the new DPI.
+        assertEquals(2, mImageHandlerStates.size());
+        final var handler = mImageHandlerStates.get(1).imageHandler;
+        assertEquals(newDpi, handler.getCaptureState().dpi);
+
+        // Verify VirtualDisplay was updated. The width/height in pixels should not change.
+        final int widthPx = mImageHandlerStates.get(0).imageHandler.getCaptureState().width;
+        final int heightPx = mImageHandlerStates.get(0).imageHandler.getCaptureState().height;
+        verify(mVirtualDisplay).resize(widthPx, heightPx, newDpi);
+        verify(mVirtualDisplay).setSurface(handler.getSurface());
+    }
+
+    @Test
+    public void testOnI420FrameAvailable() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+
+        assertTrue(mScreenCapture.startCapture());
+        assertEquals(1, mImageHandlerStates.size());
+
+        // Fallback to YUV first.
+        final ImageReader reader0 = mImageHandlerStates.get(0).imageReader;
+        final ImageHandler handler0 = mImageHandlerStates.get(0).imageHandler;
+        when(reader0.acquireLatestImage()).thenThrow(new UnsupportedOperationException());
+        handler0.onImageAvailable(reader0);
+
+        // Verify fallback occurred and we have a YUV handler.
+        assertEquals(2, mImageHandlerStates.size());
+        final ImageHandler handler1 = mImageHandlerStates.get(1).imageHandler;
+        final ImageReader reader1 = mImageHandlerStates.get(1).imageReader;
+        assertEquals(ImageFormat.YUV_420_888, handler1.getCaptureState().format);
+
+        // Prepare a mock YUV image.
+        final int rowStride = 128;
+        final Rect cropRect = new Rect(10, 20, 50, 60);
+        final long timestamp = 12345L;
+        final Image image =
+                createMockYuvImage(
+                        timestamp,
+                        cropRect,
+                        /* yPixelStride= */ 1,
+                        /* yRowStride= */ rowStride,
+                        /* uPixelStride= */ 2,
+                        /* uRowStride= */ rowStride,
+                        /* vPixelStride= */ 2,
+                        /* vRowStride= */ rowStride);
+        final Plane[] planes = image.getPlanes();
+
+        when(reader1.acquireLatestImage()).thenReturn(image).thenReturn(null);
+        handler1.onImageAvailable(reader1);
+
+        // Verify the native JNI call (onI420FrameAvailable) and its parameters.
+        final ByteBuffer buffer0 = planes[0].getBuffer();
+        final ByteBuffer buffer1 = planes[1].getBuffer();
+        final ByteBuffer buffer2 = planes[2].getBuffer();
+        verify(mNativeMock)
+                .onI420FrameAvailable(
+                        eq(NATIVE_POINTER),
+                        any(Runnable.class),
+                        eq(timestamp),
+                        eq(buffer0),
+                        eq(1),
+                        eq(rowStride),
+                        eq(buffer1),
+                        eq(2),
+                        eq(rowStride),
+                        eq(buffer2),
+                        eq(2),
+                        eq(rowStride),
+                        eq(cropRect.left),
+                        eq(cropRect.top),
+                        eq(cropRect.right),
+                        eq(cropRect.bottom));
+        verify(mNativeMock, never())
+                .onRgbaFrameAvailable(
+                        anyLong(), any(), anyLong(), any(), anyInt(), anyInt(), anyInt(), anyInt(),
+                        anyInt(), anyInt());
+    }
+
+    @Test
+    public void testOnI420FrameAvailableAfterDestroy() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+
+        assertTrue(mScreenCapture.startCapture());
+        assertEquals(1, mImageHandlerStates.size());
+
+        // Fallback to YUV first.
+        final ImageReader reader0 = mImageHandlerStates.get(0).imageReader;
+        final ImageHandler handler0 = mImageHandlerStates.get(0).imageHandler;
+        when(reader0.acquireLatestImage()).thenThrow(new UnsupportedOperationException());
+        handler0.onImageAvailable(reader0);
+
+        // Destroy ScreenCapture.
+        final ImageHandler handler1 = mImageHandlerStates.get(1).imageHandler;
+        final ImageReader reader1 = mImageHandlerStates.get(1).imageReader;
+        mScreenCapture.destroy();
+
+        // Prepare a mock YUV image.
+        final int rowStride = 128;
+        final Rect cropRect = new Rect(10, 20, 50, 60);
+        final long timestamp = 12345L;
+        final Image image =
+                createMockYuvImage(
+                        timestamp,
+                        cropRect,
+                        /* yPixelStride= */ 1,
+                        /* yRowStride= */ rowStride,
+                        /* uPixelStride= */ 2,
+                        /* uRowStride= */ rowStride,
+                        /* vPixelStride= */ 2,
+                        /* vRowStride= */ rowStride);
+
+        // Simulate the frame arriving after destroy.
+        when(reader1.acquireLatestImage()).thenReturn(image).thenReturn(null);
+        handler1.onImageAvailable(reader1);
+
+        // Verify no call to the native side.
+        verify(mNativeMock, never())
+                .onI420FrameAvailable(
+                        anyLong(), any(), anyLong(), any(), anyInt(), anyInt(), any(), anyInt(),
+                        anyInt(), any(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(),
+                        anyInt());
     }
 }

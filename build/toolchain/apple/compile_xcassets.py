@@ -31,6 +31,9 @@ SECTION_HEADER = re.compile('^/\\* ([^ ]*) \\*/$')
 # Name of the section containing informational messages that can be ignored.
 NOTICE_SECTION = 'com.apple.actool.compilation-results'
 
+# Name of the section containing warning messages.
+WARNING_SECTION = 'com.apple.actool.document.warnings'
+
 # App icon asset type.
 APP_ICON_ASSET_TYPE = '.appiconset'
 
@@ -86,6 +89,11 @@ def FilterCompilerOutput(compiler_output, relative_paths):
             data_in_section = False
             current_section = match.group(1)
             continue
+        if current_section and current_section == WARNING_SECTION:
+            if line.startswith(
+                    ':(null): warning: Failed to generate flattened icon stack'
+            ):
+                continue
         if current_section and current_section != NOTICE_SECTION:
             if not data_in_section:
                 data_in_section = True
@@ -254,6 +262,18 @@ def CompileAssetCatalog(output, target_os, target_environment, product_type,
                 else:
                     command.extend(['--app-icon', asset_name])
 
+            if asset_type == ".icon":
+                inputs.remove(relative_path)
+                dir = os.path.dirname(relative_path)
+                path_with_dir = os.path.join(dir, asset_name + asset_type)
+                path_without_dir = os.path.join(relative_path,
+                                                asset_name + asset_type)
+                shutil.copytree(path_without_dir, path_with_dir)
+                inputs.append(path_with_dir)
+                command.extend(['--app-icon', asset_name])
+                command.extend(
+                    ['--enable-icon-stack-fallback-generation=disabled'])
+                command.extend(['--include-all-app-icons'])
             if asset_type not in ACTOOL_FLAG_FOR_ASSET_TYPE:
                 continue
 

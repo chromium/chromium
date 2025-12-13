@@ -10,10 +10,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -28,8 +28,8 @@ class TemplateUrlServiceAndroidUnitTest
     : public LoadedTemplateURLServiceUnitTestBase {
  public:
   void SetUp() override {
-    // Chosen due to being an EEA country, see
-    // `regional_capabilities::IsEeaCountry()`.
+    // Chosen due to being associated to
+    // `regional_capabilities::ProgramSettings::kWaffle`.
     const char kBelgiumCountryId[] = "BE";
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, kBelgiumCountryId);
@@ -40,11 +40,6 @@ class TemplateUrlServiceAndroidUnitTest
 
     template_url_service_android_ =
         std::make_unique<TemplateUrlServiceAndroid>(&template_url_service());
-  }
-
-  base::android::JavaParamRef<jstring> ToParamRef(
-      base::android::ScopedJavaLocalRef<jstring> local_ref) {
-    return base::android::JavaParamRef<jstring>(env_, local_ref.obj());
   }
 
   base::android::ScopedJavaLocalRef<jstring> ToLocalJavaString(
@@ -91,12 +86,10 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, SetPlayAPISearchEngine) {
             keyword);
 
   template_url_service_android().SetPlayAPISearchEngine(
-      env(), ToParamRef(short_name), ToParamRef(jkeyword),
-      ToParamRef(search_url), ToParamRef(suggest_url), ToParamRef(favicon_url),
-      ToParamRef(new_tab_url), ToParamRef(image_url),
-      ToParamRef(image_url_post_params), ToParamRef(image_translate_url),
-      ToParamRef(image_translate_source_language_param_key),
-      ToParamRef(image_translate_target_language_param_key));
+      env(), short_name, jkeyword, search_url, suggest_url, favicon_url,
+      new_tab_url, image_url, image_url_post_params, image_translate_url,
+      image_translate_source_language_param_key,
+      image_translate_target_language_param_key);
 
   TemplateURL* t_url = template_url_service().GetTemplateURLForKeyword(keyword);
   EXPECT_TRUE(t_url);

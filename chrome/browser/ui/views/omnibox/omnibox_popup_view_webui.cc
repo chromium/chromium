@@ -11,20 +11,25 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
-#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
-#include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -45,14 +50,15 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
     : OmniboxPopupView(controller),
       construction_time_(base::TimeTicks::Now()),
       omnibox_view_(omnibox_view),
-      location_bar_view_(location_bar_view),
-      presenter_(std::make_unique<OmniboxPopupPresenter>(location_bar_view,
-                                                         controller)) {
-  model()->set_popup_view(this);
+      location_bar_view_(location_bar_view) {
+  presenter_ =
+      std::make_unique<OmniboxPopupPresenter>(location_bar_view, controller);
+  controller->edit_model()->set_popup_view(this);
+  edit_model_observation_.Observe(controller->edit_model());
 }
 
 OmniboxPopupViewWebUI::~OmniboxPopupViewWebUI() {
-  model()->set_popup_view(nullptr);
+  controller()->edit_model()->set_popup_view(nullptr);
 }
 
 bool OmniboxPopupViewWebUI::IsOpen() const {
@@ -61,39 +67,51 @@ bool OmniboxPopupViewWebUI::IsOpen() const {
 
 void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
 
-void OmniboxPopupViewWebUI::OnSelectionChanged(
-    OmniboxPopupSelection old_selection,
-    OmniboxPopupSelection new_selection) {
-  if (RealboxHandler* handler = presenter_->GetHandler()) {
-    handler->UpdateSelection(old_selection, new_selection);
-  }
-}
-
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
-  // Measure time since construction just once.
-  if (!construction_time_.is_null()) {
-    const base::TimeDelta delta = base::TimeTicks::Now() - construction_time_;
-    construction_time_ = base::TimeTicks();
-    base::UmaHistogramTimes("Omnibox.WebUI.FirstUpdate", delta);
-  }
+  const bool should_be_visible =
+      controller()->popup_state_manager()->popup_state() !=
+          OmniboxPopupState::kAim &&
+      !controller()->autocomplete_controller()->result().empty() &&
+      !omnibox_view_->IsImeShowingPopup();
 
-  if (controller()->autocomplete_controller()->result().empty() ||
-      omnibox_view_->IsImeShowingPopup()) {
+  if (!should_be_visible) {
     presenter_->Hide();
+    // Update the popup state manager that the classic popup is closing.
+    // Do this AFTER widget operations. LocationBarView is subscribed to state
+    // changes and attempts to call `UpdatePopupAppearance()` again if the
+    // widget is open.
+    // Only update the state if it's currently kClassic. If it's already
+    // transitioning to another state (e.g., kAim), don't override it.
+    if (controller()->popup_state_manager()->popup_state() ==
+        OmniboxPopupState::kClassic) {
+      controller()->popup_state_manager()->SetPopupState(
+          OmniboxPopupState::kNone);
+    }
   } else {
-    const bool was_visible = presenter_->IsShown();
+    const bool was_visible = IsOpen();
+
     presenter_->Show();
+    // Update the popup state manager that the classic popup is opening.
+    controller()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kClassic);
+
     if (!was_visible) {
-      NotifyOpenListeners();
+      if (!construction_time_.is_null()) {
+        const base::TimeDelta delta =
+            base::TimeTicks::Now() - construction_time_;
+        construction_time_ = base::TimeTicks();
+        base::UmaHistogramTimes(
+            "Omnibox.Popup.WebUI.ConstructionToFirstShownDuration", delta);
+      }
     }
   }
 }
 
-void OmniboxPopupViewWebUI::ProvideButtonFocusHint(size_t line) {
-  // TODO(crbug.com/40062053): Not implemented for WebUI omnibox popup yet.
+void OmniboxPopupViewWebUI::OnContentsChanged() {
+  UpdatePopupAppearance();
 }
 
-void OmniboxPopupViewWebUI::OnMatchIconUpdated(size_t match_index) {
+void OmniboxPopupViewWebUI::ProvideButtonFocusHint(size_t line) {
   // TODO(crbug.com/40062053): Not implemented for WebUI omnibox popup yet.
 }
 
@@ -101,3 +119,8 @@ void OmniboxPopupViewWebUI::OnDragCanceled() {}
 
 void OmniboxPopupViewWebUI::GetPopupAccessibleNodeData(
     ui::AXNodeData* node_data) const {}
+
+raw_ptr<OmniboxPopupViewWebUI>
+OmniboxPopupViewWebUI::GetOmniboxPopupViewWebUI() {
+  return this;
+}

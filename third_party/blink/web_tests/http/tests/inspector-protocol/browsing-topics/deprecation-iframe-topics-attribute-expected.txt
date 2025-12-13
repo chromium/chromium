@@ -1,0 +1,22 @@
+Tests that deprecation issues are reported for <iframe browsingtopics>.
+
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 28
+                    lineNumber : 2
+                    scriptId : <string>
+                    url :
+                }
+                type : Topics
+            }
+        }
+    }
+}
+

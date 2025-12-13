@@ -17,7 +17,7 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class ImageSkia;
@@ -172,6 +172,11 @@ AURA_EXPORT extern const WindowProperty<ui::mojom::WindowShowState>* const
 // window state, which can have a non-normal window state. Note this property
 // does not have any effort on any other operation systems except Chrome OS.
 AURA_EXPORT extern const WindowProperty<bool>* const kIsRestoringKey;
+
+// A property that specifies that the system default caption and icon should not
+// be rendered, and that the client area should be equivalent to the window
+// area.
+AURA_EXPORT extern const WindowProperty<bool>* const kRemoveStandardFrame;
 
 // A property key to store key event dispatch policy. The default value is
 // false, which means IME receives a key event in PREDISPATCH phace before a

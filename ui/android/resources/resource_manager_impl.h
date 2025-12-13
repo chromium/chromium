@@ -13,11 +13,13 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace cc {
 class UIResourceManager;
@@ -49,6 +51,10 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
   Resource* GetStaticResourceWithTint(int res_id,
                                       SkColor tint_color,
                                       bool preserve_color_alpha) override;
+  Resource* GetAndRetainStaticResourceWithTint(int res_id,
+                                               SkColor tint_color) override;
+  void ReleaseStaticResource(int res_id) override;
+
   void PreloadResource(AndroidResourceType res_type, int res_id) override;
   void OnFrameUpdatesFinished() override;
 
@@ -71,6 +77,8 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
+
+  base::WeakPtr<ResourceManager> GetWeakPtr() override;
 
  private:
   friend class TestResourceManagerImpl;
@@ -95,9 +103,13 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
   TintedResourceMap tinted_resources_;
 
   // The set of tints that are used for resources in the current frame.
-  std::unordered_set<SkColor> used_tints_;
+  absl::flat_hash_set<SkColor> used_tints_;
+
+  absl::flat_hash_map<int, SkColor> tinted_resources_to_keep_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
+
+  base::WeakPtrFactory<ResourceManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

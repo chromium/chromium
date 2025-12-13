@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "headless/lib/browser/command_line_handler.h"
 
 #include <cstdio>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -101,7 +97,8 @@ bool HandleWindowSize(base::CommandLine& command_line,
 
   int width = 0;
   int height = 0;
-  int n = sscanf(switch_value.c_str(), "%d%*[x,]%d", &width, &height);
+  int n =
+      UNSAFE_TODO(sscanf(switch_value.c_str(), "%d%*[x,]%d", &width, &height));
   if (n != 2 || width < 0 || height < 0) {
     LOG(ERROR) << "Malformed window size: " << switch_value;
     return false;

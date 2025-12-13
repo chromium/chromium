@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "extensions/browser/install_prompt_permissions.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"

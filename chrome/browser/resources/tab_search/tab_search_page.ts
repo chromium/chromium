@@ -26,7 +26,7 @@ import type {SearchOptions} from './search.js';
 import {search} from './search.js';
 import type {SelectableLazyListElement} from './selectable_lazy_list.js';
 import {NO_SELECTION, selectorNavigationKeys} from './selectable_lazy_list.js';
-import {ariaLabel, getHostname, getTabGroupTitle, getTitle, type ItemData, normalizeURL, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
+import {ariaLabel, getDisplayHostnameForUrl, getHostname, getTabGroupTitle, getTitle, type ItemData, normalizeURL, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
 import type {ProfileData, RecentlyClosedTab, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from './tab_search.mojom-webui.js';
 import {TabSearchSection} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
@@ -312,8 +312,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     }
 
     this.apiProxy_.getProfileData().then(({profileData}) => {
-      // TODO(crbug.com/40205026): this is a side-by-side comparison of metrics
-      // reporter histogram vs. old histogram. Cleanup when the experiment ends.
       this.metricsReporter.measure('TabListDataReceived')
           .then(
               e => this.metricsReporter.umaReportTime(
@@ -664,8 +662,9 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private tabData_(
       tab: Tab|RecentlyClosedTab, inActiveWindow: boolean, type: TabItemType,
       tabGroupsMap: Map<string, TabGroup>): TabData {
-    const tabData =
-        new TabData(tab, type, new URL(normalizeURL(tab.url.url)).hostname);
+    const tabData = new TabData(
+        tab, type,
+        getDisplayHostnameForUrl(new URL(normalizeURL(tab.url.url))));
 
     if (tab.groupId) {
       tabData.tabGroup = tabGroupsMap.get(tokenToString(tab.groupId));

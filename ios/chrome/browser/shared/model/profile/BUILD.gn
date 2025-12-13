@@ -54,6 +54,8 @@ source_set("profile") {
 
 source_set("profile_keyed_service_factory") {
   sources = [
+    "profile_dependency_manager_ios.cc",
+    "profile_dependency_manager_ios.h",
     "profile_keyed_service_factory_ios.cc",
     "profile_keyed_service_factory_ios.h",
     "profile_keyed_service_traits.h",
@@ -65,7 +67,7 @@ source_set("profile_keyed_service_factory") {
 
   deps = [
     ":profile",
-    "//components/keyed_service/ios",
+    "//components/keyed_service/core",
     "//ios/web/public",
   ]
 }
@@ -74,12 +76,26 @@ source_set("incognito_session_tracker") {
   sources = [
     "incognito_session_tracker.h",
     "incognito_session_tracker.mm",
+    "profile_incognito_session_tracker.h",
+    "profile_incognito_session_tracker.mm",
   ]
   deps = [
     ":profile",
     "//base",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "profile_ios_util.h",
+    "profile_ios_util.mm",
+  ]
+  deps = [
+    ":profile",
+    "//base",
+    "//ios/chrome/browser/shared/model/application_context",
   ]
 }
 

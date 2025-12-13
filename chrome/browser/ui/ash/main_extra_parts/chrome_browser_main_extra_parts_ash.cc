@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/refresh_rate_controller.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -30,8 +31,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
+#include "chrome/browser/ash/app_restore/browser_restore_observer.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/auth/active_session_fingerprint_client_impl.h"
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
@@ -65,6 +68,7 @@
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc/arc_open_url_delegate_impl.h"
+#include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/graduation/graduation_manager_impl.h"
@@ -75,6 +79,7 @@
 #include "chrome/browser/ui/ash/login/oobe_dialog_util_impl.h"
 #include "chrome/browser/ui/ash/management_disclosure/management_disclosure_client_impl.h"
 #include "chrome/browser/ui/ash/media_client/media_client_impl.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_browser_adaptor.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
@@ -96,6 +101,7 @@
 #include "chrome/browser/ui/ash/web_view/ash_web_view_factory_impl.h"
 #include "chrome/browser/ui/ash/wm/tab_cluster_ui_client.h"
 #include "chrome/browser/ui/chromeos/screen_orientation/screen_orientation_delegate.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
@@ -104,11 +110,10 @@
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/game_mode/game_mode_controller.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/heatmap/heatmap_palm_detector_impl.h"
 #include "chromeos/ash/components/login/readahead/login_readahead_performer.h"
 #include "chromeos/ash/components/network/network_connect.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/window/arc_window_watcher.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
@@ -179,6 +184,51 @@ class ChromeShelfControllerInitializer
 
 }  // namespace internal
 
+class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
+    : public session_manager::SessionManagerObserver {
+ public:
+  explicit UserProfileLoadedObserver(
+      ash::MultiUserWindowManagerBrowserAdaptor*
+          multi_user_window_manager_browser_adaptor)
+      : multi_user_window_manager_browser_adaptor_(
+            multi_user_window_manager_browser_adaptor) {
+    session_observation_.Observe(session_manager::SessionManager::Get());
+  }
+
+  UserProfileLoadedObserver(const UserProfileLoadedObserver&) = delete;
+  UserProfileLoadedObserver& operator=(const UserProfileLoadedObserver&) =
+      delete;
+
+  ~UserProfileLoadedObserver() override = default;
+
+  // session_manager::SessionManagerObserver:
+  void OnUserProfileLoaded(const AccountId& account_id) override {
+    Profile* profile =
+        ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+    if (ash::ProfileHelper::IsUserProfile(profile) &&
+        !profile->IsGuestSession()) {
+      // Start the error notifier services to show auth/sync notifications.
+      ash::SigninErrorNotifierFactory::GetForProfile(profile);
+      ash::SyncErrorNotifierFactory::GetForProfile(profile);
+    }
+
+    if (multi_user_window_manager_browser_adaptor_) {
+      multi_user_window_manager_browser_adaptor_->AddUser(account_id);
+    }
+    if (ChromeShelfController::instance()) {
+      ChromeShelfController::instance()->OnUserProfileReadyToSwitch(profile);
+    }
+  }
+
+ private:
+  const raw_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
+      multi_user_window_manager_browser_adaptor_;
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+};
+
 // static
 ChromeBrowserMainExtraPartsAsh* ChromeBrowserMainExtraPartsAsh::Get() {
   return g_instance;
@@ -193,10 +243,6 @@ ChromeBrowserMainExtraPartsAsh::ChromeBrowserMainExtraPartsAsh()
 ChromeBrowserMainExtraPartsAsh::~ChromeBrowserMainExtraPartsAsh() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
-}
-
-void ChromeBrowserMainExtraPartsAsh::PreCreateMainMessageLoop() {
-  user_profile_loaded_observer_ = std::make_unique<UserProfileLoadedObserver>();
 }
 
 void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
@@ -233,6 +279,14 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   ash_shell_init_ = std::make_unique<AshShellInit>(
       CHECK_DEREF(g_browser_process->local_state()));
+
+  if (ash::features::IsVideoConferenceEnabled()) {
+    video_conference_manager_ash_ =
+        std::make_unique<ash::VideoConferenceManagerAsh>();
+    ChromeCaptureModeDelegate::Get()->set_video_conference_manager_ash(
+        video_conference_manager_ash_.get());
+  }
+
   ash::Shell::Get()
       ->login_unlock_throughput_recorder()
       ->post_login_deferred_task_runner()
@@ -243,6 +297,22 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
                      // Safe because SessionManager singleton will be destroyed
                      // after message loops stops.
                      base::Unretained(session_manager::SessionManager::Get())));
+  if (ash::MultiUserWindowManager::IsEnabled()) {
+    multi_user_window_manager_browser_adaptor_ =
+        std::make_unique<ash::MultiUserWindowManagerBrowserAdaptor>(
+            ash::Shell::Get()->multi_user_window_manager());
+  }
+  // Note: BrowserRestoreObserver needs to be instantiated after
+  // MultiUserWindowManagerBrowserAdaptor.
+  // Both MultiUserWindowManagerBrowserAdaptor and BrowserRestoreObserver
+  // register themselves as BrowserListObserver, and the order is critical,
+  // because the code we run as a part of BrowserRestoreObserver on Browser
+  // creation depends on the data that is annotated by the
+  // MultiUserWindowManagerBrowserAdaptor.
+  browser_restore_observer_ = std::make_unique<ash::BrowserRestoreObserver>();
+
+  user_profile_loaded_observer_ = std::make_unique<UserProfileLoadedObserver>(
+      multi_user_window_manager_browser_adaptor_.get());
 
   screen_orientation_delegate_ =
       std::make_unique<ScreenOrientationDelegateChromeos>();
@@ -294,6 +364,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
       CHECK_DEREF(
           g_browser_process->platform_part()->browser_policy_connector_ash()));
   network_connect_delegate_->SetSystemTrayClient(system_tray_client_.get());
+
+  settings_window_manager_ = std::make_unique<chrome::SettingsWindowManager>();
 
   if (ash::features::IsCoralFeatureEnabled()) {
     ash::TabClusterUIController* tab_cluster_ui_controller =
@@ -554,7 +626,12 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
 
   // Initialized in PreProfileInit (which may not get called in some tests).
   login_readahead_performer_.reset();
+  if (device::GeolocationSystemPermissionManager::GetInstance()) {
+    device::GeolocationSystemPermissionManager::GetInstance()->Shutdown();
+  }
   device::GeolocationSystemPermissionManager::SetInstance(nullptr);
+
+  settings_window_manager_.reset();
   system_tray_client_.reset();
   session_controller_client_.reset();
   ime_controller_client_.reset();
@@ -565,10 +642,14 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // AppListClientImpl indirectly holds WebContents for answer card and
   // needs to be released before destroying the profile.
   app_list_client_.reset();
+  user_profile_loaded_observer_.reset();
+  browser_restore_observer_.reset();
+  multi_user_window_manager_browser_adaptor_.reset();
   ash_shell_init_.reset();
 
   // These instances must be destructed after `ash_shell_init_`.
   video_conference_tray_controller_.reset();
+  video_conference_manager_ash_.reset();
   read_write_cards_manager_.reset();
 
   // Must be destructed after `read_write_cards_manager_`.
@@ -582,45 +663,9 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
     ash::NetworkConnect::Shutdown();
   }
   network_connect_delegate_.reset();
-  user_profile_loaded_observer_.reset();
   arc_window_watcher_.reset();
 }
 
 void ChromeBrowserMainExtraPartsAsh::ResetChromeNewWindowClientForTesting() {
   chrome_new_window_client_.reset();
 }
-
-class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
-    : public session_manager::SessionManagerObserver {
- public:
-  UserProfileLoadedObserver() {
-    session_observation_.Observe(session_manager::SessionManager::Get());
-  }
-
-  UserProfileLoadedObserver(const UserProfileLoadedObserver&) = delete;
-  UserProfileLoadedObserver& operator=(const UserProfileLoadedObserver&) =
-      delete;
-
-  ~UserProfileLoadedObserver() override = default;
-
-  // session_manager::SessionManagerObserver:
-  void OnUserProfileLoaded(const AccountId& account_id) override {
-    Profile* profile =
-        ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-    if (ash::ProfileHelper::IsUserProfile(profile) &&
-        !profile->IsGuestSession()) {
-      // Start the error notifier services to show auth/sync notifications.
-      ash::SigninErrorNotifierFactory::GetForProfile(profile);
-      ash::SyncErrorNotifierFactory::GetForProfile(profile);
-    }
-
-    if (ChromeShelfController::instance()) {
-      ChromeShelfController::instance()->OnUserProfileReadyToSwitch(profile);
-    }
-  }
-
- private:
-  base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_observation_{this};
-};

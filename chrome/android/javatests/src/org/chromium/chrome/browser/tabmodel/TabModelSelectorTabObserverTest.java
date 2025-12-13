@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -26,10 +25,12 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -43,17 +44,25 @@ import java.util.Set;
 @Batch(Batch.PER_CLASS)
 public class TabModelSelectorTabObserverTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Profile mProfile;
-    @Mock private Profile mIncognitoProfile;
-    private int mTabId;
 
     @ClassRule
     public static final TabModelSelectorObserverTestRule sTestRule =
             new TabModelSelectorObserverTestRule();
 
+    @Mock private TabDelegateFactory mTabDelegateFactory;
+    private int mTabId;
+    private Profile mProfile;
+    private Profile mIncognitoProfile;
+
     @Before
     public void setUp() {
-        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mProfile = sTestRule.getNormalTabModel().getProfile();
+                    mIncognitoProfile = sTestRule.getIncognitoTabModel().getProfile();
+                });
     }
 
     @Test
@@ -201,8 +210,13 @@ public class TabModelSelectorTabObserverTest {
     private Tab createTestTab(boolean incognito) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    return new MockTab(
-                            Tab.INVALID_TAB_ID, incognito ? mIncognitoProfile : mProfile);
+                    return TabBuilder.createForLazyLoad(
+                                    incognito ? mIncognitoProfile : mProfile,
+                                    new LoadUrlParams("about:blank"),
+                                    /* title= */ null)
+                            .setDelegateFactory(mTabDelegateFactory)
+                            .setLaunchType(TabLaunchType.FROM_LINK)
+                            .build();
                 });
     }
 

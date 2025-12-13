@@ -8,6 +8,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
@@ -29,11 +30,18 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
       base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info);
 
+  static base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr> Create(
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+      base::WeakPtr<WebNNContextImpl> context,
+      mojom::TensorInfoPtr tensor_info,
+      RepresentationPtr representation);
+
   TensorImplCoreml(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info,
       scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
+      RepresentationPtr representation,
       base::PassKey<TensorImplCoreml> pass_key);
 
   TensorImplCoreml(const TensorImplCoreml&) = delete;
@@ -42,6 +50,9 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
   // WebNNTensorImpl:
   void ReadTensorImpl(mojom::WebNNTensor::ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
+  bool ImportTensorImpl(ScopedAccessPtr access) override;
+  void ExportTensorImpl(ScopedAccessPtr access,
+                        ExportTensorCallback callback) override;
 
   const scoped_refptr<QueueableResourceState<BufferContent>>& GetBufferState()
       const;
@@ -49,10 +60,8 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
  private:
   ~TensorImplCoreml() override;
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
   scoped_refptr<QueueableResourceState<BufferContent>> buffer_state_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+      GUARDED_BY_CONTEXT(gpu_sequence_checker_);
 };
 
 }  // namespace coreml

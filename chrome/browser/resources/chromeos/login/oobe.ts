@@ -35,6 +35,40 @@ declare global {
   }
 }
 
+function setOobeReadyForTestingOnceInitialAnimationIsFinished() {
+  const downFinishedClass = 'down-finished';
+  const callback =
+      (mutationsList: MutationRecord[], observer: MutationObserver) => {
+        for (const mutation of mutationsList) {
+          if (mutation.type === 'attributes' &&
+              mutation.attributeName === 'class') {
+            const element = mutation.target as HTMLElement;
+
+            if (element.classList.contains(downFinishedClass)) {
+              console.log('Mark OOBE ready for testing.');
+              Oobe.readyForTesting = true;
+              observer.disconnect();
+            }
+          }
+        }
+      };
+
+  const observer = new MutationObserver(callback);
+
+  const innerContainer = $('inner-container');
+  if (innerContainer) {
+    if (innerContainer.classList.contains(downFinishedClass)) {
+      return;
+    }
+    const config:
+        MutationObserverInit = {attributes: true, attributeFilter: ['class']};
+
+    observer.observe(innerContainer, config);
+  } else {
+    console.error('Element with ID "inner-container" not found.');
+  }
+}
+
 // Create the global values attached to `window` that are used
 // for accessing OOBE controls from the browser side.
 function prepareGlobalValues(): void {
@@ -48,7 +82,6 @@ function prepareGlobalValues(): void {
   window.MultiTapDetector = MultiTapDetector;
   window.Oobe = Oobe;
 
-  // TODO(crbug.com/1229130) - Remove the necessity for these global objects.
   if (window.cr === undefined) {
     window.cr = {};
   }
@@ -76,13 +109,19 @@ function initializeOobe(): void {
     QuickStartDebugger.addDebugger();
   }
 
+  Oobe.initialize();
+
   // Add the OOBE Test API
   if (OobeTestApi.OobeApiProvider) {
     window.OobeAPI = new OobeTestApi.OobeApiProvider();
+    // In case of gaia-signin flow we can set `readyForTesting` here. In the
+    // regular OOBE flow we shall wait for the starting animation to finish.
+    const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
+    if (!isOobeFlow) {
+      Oobe.readyForTesting = true;
+    }
   }
 
-  Oobe.initialize();
-  Oobe.readyForTesting = true;
   traceExecution(TraceEvent.OOBE_INITIALIZED);
   loginSyslog('OOBE finished loading.');
 }
@@ -181,6 +220,13 @@ function startOobe(): void {
     assert(
         document.body.classList.contains('oobe-display'),
         'The body of the document must contain oobe-display as a class for the OOBE flow!');
+  }
+
+  // Wait for the initial OOBE animation to finish before setting
+  // `readyForTesting`.
+  if (OobeTestApi.OobeApiProvider && isOobeFlow) {
+    // Set up this listener before adding screens to the main container.
+    setOobeReadyForTestingOnceInitialAnimationIsFinished();
   }
 
   // For the OOBE flow, we prioritize the loading of the Welcome screen.

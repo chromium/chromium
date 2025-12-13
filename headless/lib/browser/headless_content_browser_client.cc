@@ -22,6 +22,8 @@
 #include "build/build_config.h"
 #include "components/embedder_support/switches.h"
 #include "components/headless/command_handler/headless_command_switches.h"
+#include "components/policy/content/safe_search_service.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
@@ -64,10 +66,15 @@
 #include "content/public/browser/network_service_util.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
+#endif
+
 #if defined(HEADLESS_USE_POLICY)
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "headless/lib/browser/policy/headless_policy_blocklist_service_factory.h"
 #endif  // defined(HEADLESS_USE_POLICY)
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -103,6 +110,7 @@ class HeadlessVideoOverlayWindow : public content::VideoOverlayWindow {
   void SetSkipAdButtonVisibility(bool is_visible) override {}
   void SetNextTrackButtonVisibility(bool is_visible) override {}
   void SetPreviousTrackButtonVisibility(bool is_visible) override {}
+  void SetHidePictureInPictureButtonVisibility(bool is_visible) override {}
   void SetMicrophoneMuted(bool muted) override {}
   void SetCameraState(bool turned_on) override {}
   void SetToggleMicrophoneButtonVisibility(bool is_visible) override {}
@@ -411,18 +419,6 @@ bool HeadlessContentBrowserClient::IsFencedStorageReadAllowed(
   return true;
 }
 
-bool HeadlessContentBrowserClient::IsCookieDeprecationLabelAllowed(
-    content::BrowserContext* browser_context) {
-  return true;
-}
-
-bool HeadlessContentBrowserClient::IsCookieDeprecationLabelAllowedForContext(
-    content::BrowserContext* browser_context,
-    const url::Origin& top_frame_origin,
-    const url::Origin& context_origin) {
-  return true;
-}
-
 void HeadlessContentBrowserClient::ConfigureNetworkContextParams(
     content::BrowserContext* context,
     bool in_memory,
@@ -478,7 +474,7 @@ bool HeadlessContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
 device::GeolocationSystemPermissionManager*
 HeadlessContentBrowserClient::GetGeolocationSystemPermissionManager() {
 #if BUILDFLAG(IS_MAC)
-  return browser_->GetGeolocationSystemPermissionManager();
+  return device::GeolocationSystemPermissionManager::GetInstance();
 #else
   return nullptr;
 #endif
@@ -499,8 +495,12 @@ void HeadlessContentBrowserClient::CreateThrottlesForNavigation(
   // (happens in tests).
   content::NavigationHandle& handle = registry.GetNavigationHandle();
   if (browser_->GetPrefs()) {
+    content::BrowserContext* context =
+        handle.GetWebContents()->GetBrowserContext();
     registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-        registry, handle.GetWebContents()->GetBrowserContext()));
+        registry, user_prefs::UserPrefs::Get(context),
+        HeadlessPolicyBlocklistServiceFactory::GetForBrowserContext(context),
+        SafeSearchFactory::GetForBrowserContext(context)));
   }
 }
 #endif  // defined(HEADLESS_USE_POLICY)

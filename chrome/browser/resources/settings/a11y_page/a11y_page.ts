@@ -18,7 +18,7 @@ import '../settings_shared.css.js';
 import './ax_annotations_section.js';
 // </if>
 // <if expr="is_win or is_macosx">
-import './live_caption_section.js';
+import './live_caption.js';
 
 import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 // </if>

@@ -71,9 +71,9 @@ void SpdyWriteQueue::Enqueue(
   CHECK_LE(priority, MAXIMUM_PRIORITY);
   if (stream.get())
     DCHECK_EQ(stream->priority(), priority);
-  queue_[priority].push_back(
-      {frame_type, std::move(frame_producer), stream,
-       MutableNetworkTrafficAnnotationTag(traffic_annotation)});
+  queue_[priority].emplace_back(
+      frame_type, std::move(frame_producer), stream,
+      MutableNetworkTrafficAnnotationTag(traffic_annotation));
   if (IsSpdyFrameTypeWriteCapped(frame_type)) {
     DCHECK_GE(num_queued_capped_frames_, 0);
     num_queued_capped_frames_++;

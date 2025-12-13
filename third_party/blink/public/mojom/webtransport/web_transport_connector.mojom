@@ -15,5 +15,6 @@ interface WebTransportConnector {
   Connect(
     url.mojom.Url url,
     array<network.mojom.WebTransportCertificateFingerprint> fingerprints,
+    array<string> application_protocols,
     pending_remote<network.mojom.WebTransportHandshakeClient> client);
 };

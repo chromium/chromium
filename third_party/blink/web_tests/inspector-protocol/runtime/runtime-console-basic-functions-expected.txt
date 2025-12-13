@@ -33,10 +33,10 @@ Testing console.log with required args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -79,10 +79,10 @@ Testing console.debug with required args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -125,10 +125,10 @@ Testing console.info with required args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -171,10 +171,10 @@ Testing console.error with required args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -217,10 +217,10 @@ Testing console.warn with required args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -263,10 +263,10 @@ Testing console.dir with required args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -309,10 +309,10 @@ Testing console.dirxml with required args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -355,10 +355,10 @@ Testing console.table with required args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -382,10 +382,10 @@ Testing console.trace with optional args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -409,10 +409,10 @@ Testing console.clear with optional args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -436,10 +436,10 @@ Testing console.group with optional args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -463,10 +463,10 @@ Testing console.groupCollapsed with optional args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -490,10 +490,10 @@ Testing console.groupEnd with optional args inside page context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -536,10 +536,10 @@ Testing console.log with required args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -582,10 +582,10 @@ Testing console.debug with required args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -628,10 +628,10 @@ Testing console.info with required args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -674,10 +674,10 @@ Testing console.error with required args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -720,10 +720,10 @@ Testing console.warn with required args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -766,10 +766,10 @@ Testing console.dir with required args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -812,10 +812,10 @@ Testing console.dirxml with required args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -858,10 +858,10 @@ Testing console.table with required args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -885,10 +885,10 @@ Testing console.trace with optional args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -912,10 +912,10 @@ Testing console.clear with optional args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -939,10 +939,10 @@ Testing console.group with optional args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -966,10 +966,10 @@ Testing console.groupCollapsed with optional args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -993,10 +993,10 @@ Testing console.groupEnd with optional args inside frame context
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }

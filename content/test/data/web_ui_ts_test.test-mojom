@@ -40,6 +40,10 @@ struct StringDict {
   MappedDict data;
 };
 
+interface TestAssociatedClient {
+  BlockUntilBound();
+};
+
 interface WebUITsMojoTestCache {
   Put(url.mojom.Url url, string contents);
 
@@ -83,6 +87,12 @@ interface WebUITsMojoTestCache {
 
   GetStringWrapperList()
       => (array<pending_remote<StringWrapper>> string_wrapper_list);
+
+  // Send over an associated interface then immediately write to it.
+  // This tests that the js side correctly blocks messages until the associated
+  // iface client is bound.
+  GetAssociatedReceiver() => (pending_associated_receiver<TestAssociatedClient> client);
+  Ping() => (string ping);
 };
 
 struct Result {
@@ -91,4 +101,35 @@ struct Result {
 
 interface MojoResultTest {
   TestResult() => result<Result, mojo_base.mojom.JsError>;
+};
+
+struct TypeWithNestedEnum {
+  enum Enum {
+    kWhatever,
+    // Test with this value to ensure that default value doesn't accidentally
+    // pass the test.
+    kToTest,
+  };
+
+  int32 some_field;
+};
+
+enum TypemappedEnum {
+  kNothing,
+  kSomething,
+};
+
+interface TestMoreTypemap {
+  TestNestedEnum(TypeWithNestedEnum req) => (TypeWithNestedEnum res);
+};
+
+union Union {
+  int32 one;
+  uint64 two;
+  string three;
+};
+
+[Extensible]
+union ExtensibleUnion {
+  [Default] int32 foo;
 };

@@ -61,15 +61,7 @@ class MEDIA_EXPORT MimeUtil {
   // Platform configuration structure.  Controls which codecs are supported at
   // runtime.  Also used by tests to simulate platform differences.
   struct PlatformInfo {
-#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-    bool has_platform_dv_decoder = false;
-#endif
     bool has_platform_vp8_decoder = false;
-    bool has_platform_vp9_decoder = false;
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    bool has_platform_hevc_decoder = false;
-#endif
-    bool has_platform_opus_decoder = false;
   };
 
   struct ParsedCodecResult {
@@ -87,10 +79,10 @@ class MEDIA_EXPORT MimeUtil {
       std::string_view mime_type,
       std::string_view codec_id,
       bool allow_ambiguous_matches) const;
-  bool ParseAudioCodecString(std::string_view mime_type,
-                             std::string_view codec_id,
-                             bool* out_is_ambiguous,
-                             AudioCodec* out_codec) const;
+  std::optional<AudioType> ParseAudioCodecString(
+      std::string_view mime_type,
+      std::string_view codec_id,
+      bool allow_ambiguous_matches) const;
   SupportsType IsSupportedMediaFormat(std::string_view mime_type,
                                       const std::vector<std::string>& codecs,
                                       bool is_encrypted) const;

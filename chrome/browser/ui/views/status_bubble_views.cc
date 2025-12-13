@@ -9,13 +9,18 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
@@ -25,6 +30,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -45,6 +51,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scrollbar/scroll_bar_views.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/widget/root_view.h"
@@ -204,6 +211,13 @@ class StatusBubbleViews::StatusView : public views::View {
   void StartHiding();
   void StartShowing();
 
+  // Manage the timer used to delay destruction of the popup widget. This is
+  // meant to balance the performance tradeoffs of rapid creation/destruction
+  // and the memory savings of closing the widget when it's hidden and unused.
+  void StartDestroyTimer();
+  void OnDestroyTimer();
+  void CancelDestroyTimer();
+
   // Set the text label's colors according to the theme.
   void SetTextLabelColors(views::Label* label);
 
@@ -221,14 +235,11 @@ class StatusBubbleViews::StatusView : public views::View {
   // The currently-displayed text.
   raw_ptr<views::Label> text_;
 
-  // A timer used to delay destruction of the popup widget. This is meant to
-  // balance the performance tradeoffs of rapid creation/destruction and the
-  // memory savings of closing the widget when it's hidden and unused.
-  base::OneShotTimer destroy_popup_timer_;
-
   base::CallbackListSubscription paint_as_active_subscription_;
 
   base::WeakPtrFactory<StatusBubbleViews::StatusView> timer_factory_{this};
+  base::WeakPtrFactory<StatusBubbleViews::StatusView> destroy_timer_factory_{
+      this};
 };
 using StatusView = StatusBubbleViews::StatusView;
 
@@ -272,7 +283,7 @@ void StatusView::SetText(std::u16string_view text) {
   }
 
   text_->SetText(text);
-  OnPropertyChanged(&text_, views::kPropertyEffectsNone);
+  OnPropertyChanged(&text_, views::PropertyEffects::kNone);
 }
 
 void StatusView::AnimateForText(std::u16string_view text) {
@@ -290,7 +301,7 @@ void StatusView::SetStyle(BubbleStyle style) {
   }
 
   style_ = style;
-  OnPropertyChanged(&style_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&style_, views::PropertyEffects::kPaint);
 }
 
 void StatusView::ShowInstantly() {
@@ -299,7 +310,7 @@ void StatusView::ShowInstantly() {
   SetOpacity(1.0);
   state_ = BubbleState::kShown;
   GetWidget()->ShowInactive();
-  destroy_popup_timer_.Stop();
+  CancelDestroyTimer();
 }
 
 void StatusView::HideInstantly() {
@@ -312,13 +323,7 @@ void StatusView::HideInstantly() {
   // it to be detached/reattached, which may trigger a space switch. Instead,
   // just leave the window fully transparent and unclickable.
   GetWidget()->Hide();
-  destroy_popup_timer_.Stop();
-  // This isn't done in the constructor as tests may change the task runner
-  // after the fact.
-  destroy_popup_timer_.SetTaskRunner(status_bubble_->task_runner_.get());
-  destroy_popup_timer_.Start(FROM_HERE, kDestroyPopupDelay,
-                             status_bubble_.get(),
-                             &StatusBubbleViews::DestroyPopup);
+  StartDestroyTimer();
 }
 
 void StatusView::ResetTimer() {
@@ -342,7 +347,7 @@ void StatusView::OnAnimationEnded() {
 }
 
 bool StatusView::IsDestroyPopupTimerRunning() const {
-  return destroy_popup_timer_.IsRunning();
+  return destroy_timer_factory_.HasWeakPtrs();
 }
 
 void StatusView::OnThemeChanged() {
@@ -406,7 +411,7 @@ void StatusView::StartHiding() {
 }
 
 void StatusView::StartShowing() {
-  destroy_popup_timer_.Stop();
+  CancelDestroyTimer();
 
   if (state_ == BubbleState::kHidden) {
     GetWidget()->ShowInactive();
@@ -431,6 +436,39 @@ void StatusView::StartShowing() {
   }
 }
 
+void StatusView::StartDestroyTimer() {
+  CancelDestroyTimer();
+
+  if (base::FeatureList::IsEnabled(base::features::kReducePPMs)) {
+    // The widget resources can be destroyed on a best-effort basis, but must be
+    // sequenced with the UI code. So schedule the time of destruction with a
+    // best-effort task, and post an immediate task to the correct sequence at
+    // that time.
+    status_bubble_->best_effort_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindPostTask(status_bubble_->task_runner_,
+                           base::BindOnce(&StatusView::OnDestroyTimer,
+                                          destroy_timer_factory_.GetWeakPtr())),
+        kDestroyPopupDelay);
+  } else {
+    status_bubble_->task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&StatusView::OnDestroyTimer,
+                       destroy_timer_factory_.GetWeakPtr()),
+        kDestroyPopupDelay);
+  }
+}
+
+void StatusView::OnDestroyTimer() {
+  status_bubble_->DestroyPopup();
+}
+
+void StatusView::CancelDestroyTimer() {
+  if (destroy_timer_factory_.HasWeakPtrs()) {
+    destroy_timer_factory_.InvalidateWeakPtrs();
+  }
+}
+
 void StatusView::SetTextLabelColors(views::Label* text) {
   const auto* color_provider = status_bubble_->base_view()->GetColorProvider();
   const bool active =
@@ -450,11 +488,10 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
   float scale = canvas->UndoDeviceScaleFactor();
   const float radius = kBubbleCornerRadius * scale;
 
-  std::array<SkScalar, 8> rad{};
+  std::array<SkVector, 4> rad{};
   auto round_corner = [&rad, radius](gfx::RRectF::Corner c) {
     int index = base::to_underlying(c);
-    rad[2 * index] = radius;
-    rad[2 * index + 1] = radius;
+    rad[index] = {radius, radius};
   };
 
   // Top Edges - if the bubble is in its bottom position (sticking downwards),
@@ -528,8 +565,8 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
   // Align to pixel centers now that the layout is correct.
   bubble_rect.Inset(0.5);
 
-  SkPath path;
-  path.addRoundRect(gfx::RectFToSkRect(bubble_rect), rad);
+  const SkPath path = SkPath::RRect(
+      SkRRect::MakeRectRadii(gfx::RectFToSkRect(bubble_rect), rad.data()));
 
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kStroke_Style);
@@ -699,7 +736,9 @@ const int StatusBubbleViews::kShadowThickness = 1;
 
 StatusBubbleViews::StatusBubbleViews(views::View* base_view)
     : base_view_(base_view),
-      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault().get()) {}
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      best_effort_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT})) {}
 
 StatusBubbleViews::~StatusBubbleViews() {
   DestroyPopup();
@@ -727,9 +766,9 @@ void StatusBubbleViews::InitPopup() {
 #endif
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.accept_events = false;
-    views::Widget* frame = base_view_->GetWidget();
-    params.parent = frame->GetNativeView();
-    params.context = frame->GetNativeWindow();
+    views::Widget* widget = base_view_->GetWidget();
+    params.parent = widget->GetNativeView();
+    params.context = widget->GetNativeWindow();
     params.name = "StatusBubble";
 #if BUILDFLAG(IS_CHROMEOS)
     params.init_properties_container.SetProperty(ash::kHideInOverviewKey, true);
@@ -916,8 +955,7 @@ void StatusBubbleViews::Hide() {
 }
 
 void StatusBubbleViews::MouseMoved(bool left_content) {
-  MouseMovedAt(display::Screen::GetScreen()->GetCursorScreenPoint(),
-               left_content);
+  MouseMovedAt(display::Screen::Get()->GetCursorScreenPoint(), left_content);
 }
 
 void StatusBubbleViews::MouseMovedAt(const gfx::Point& location,
@@ -994,7 +1032,7 @@ void StatusBubbleViews::AvoidMouse(const gfx::Point& location) {
     // Check if the bubble sticks out from the monitor.
     gfx::NativeView view = base_view_->GetWidget()->GetNativeView();
     gfx::Rect monitor_rect =
-        display::Screen::GetScreen()->GetDisplayNearestView(view).work_area();
+        display::Screen::Get()->GetDisplayNearestView(view).work_area();
     const int bubble_bottom_y = top_left.y() + position_.y() + size_.height();
 
     if (bubble_bottom_y + offset > monitor_rect.height()) {
@@ -1025,18 +1063,18 @@ void StatusBubbleViews::AvoidMouse(const gfx::Point& location) {
 }
 
 bool StatusBubbleViews::IsFrameVisible() {
-  views::Widget* frame = base_view_->GetWidget();
-  if (!frame->IsVisible()) {
+  views::Widget* widget = base_view_->GetWidget();
+  if (!widget->IsVisible()) {
     return false;
   }
 
-  views::Widget* window = frame->GetTopLevelWidget();
+  views::Widget* window = widget->GetTopLevelWidget();
   return !window || !window->IsMinimized();
 }
 
 bool StatusBubbleViews::IsFrameMaximized() {
-  views::Widget* frame = base_view_->GetWidget();
-  views::Widget* window = frame->GetTopLevelWidget();
+  views::Widget* widget = base_view_->GetWidget();
+  views::Widget* window = widget->GetTopLevelWidget();
   return window && window->IsMaximized();
 }
 

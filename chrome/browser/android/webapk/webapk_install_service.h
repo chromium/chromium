@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INSTALL_SERVICE_H_
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INSTALL_SERVICE_H_
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>

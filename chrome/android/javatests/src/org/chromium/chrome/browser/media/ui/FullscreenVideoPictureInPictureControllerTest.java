@@ -202,7 +202,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     }
 
     private WebContents getWebContents() {
-        return mActivity.getCurrentWebContents();
+        return mActivityTestRule.getWebContents();
     }
 
     private void triggerAutoPiPAndWait() throws Throwable {

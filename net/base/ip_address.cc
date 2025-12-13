@@ -334,9 +334,9 @@ std::string IPAddress::ToString() const {
   url::StdStringCanonOutput output(&str);
 
   if (IsIPv4()) {
-    url::AppendIPv4Address(ip_address_.span().data(), &output);
+    url::AppendIPv4Address(ip_address_.span(), &output);
   } else if (IsIPv6()) {
-    url::AppendIPv6Address(ip_address_.span().data(), &output);
+    url::AppendIPv6Address(ip_address_.span(), &output);
   }
 
   output.Complete();

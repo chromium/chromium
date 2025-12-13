@@ -2,15 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 
+#include <android/hardware_buffer.h>
 #include <dawn/webgpu_cpp.h>
-#include <sync/sync.h>
 #include <unistd.h>
 
 #include <algorithm>
@@ -18,9 +13,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -54,6 +49,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
@@ -232,18 +228,14 @@ unsigned int AHardwareBufferFormat(viz::SharedImageFormat format) {
 
 constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-    SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-    SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
-    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_SCANOUT |
-    SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-    SHARED_IMAGE_USAGE_VIDEO_DECODE |
+    SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU_READ |
+    SHARED_IMAGE_USAGE_WEBGPU_WRITE | SHARED_IMAGE_USAGE_VIDEO_DECODE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
     SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-
 }  // namespace
 
 // Implementation of SharedImageBacking that holds an AHardwareBuffer. This
@@ -271,6 +263,10 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
       delete;
 
   ~AHardwareBufferImageBacking() override;
+
+  AHardwareBuffer* GetAHardwareBuffer() {
+    return hardware_buffer_handle_.get();
+  }
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
@@ -311,6 +307,11 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
       wgpu::BackendType backend_type,
       std::vector<wgpu::TextureFormat> view_formats,
       scoped_refptr<SharedContextState> context_state) override;
+
+  std::unique_ptr<VideoImageRepresentation> ProduceVideo(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      VideoDevice device) override;
 
  private:
   const base::android::ScopedHardwareBufferHandle hardware_buffer_handle_;
@@ -382,6 +383,27 @@ class OverlayAHBImageRepresentation : public OverlayImageRepresentation {
   }
 
   raw_ptr<OverlayImage> gl_image_ = nullptr;
+};
+
+class VideoImageAHBRepresentation : public VideoImageRepresentation {
+ public:
+  VideoImageAHBRepresentation(SharedImageManager* manager,
+                              SharedImageBacking* backing,
+                              MemoryTypeTracker* tracker)
+      : VideoImageRepresentation(manager, backing, tracker) {}
+
+  ~VideoImageAHBRepresentation() override = default;
+
+  AHardwareBuffer* GetAHardwareBuffer() const override {
+    return static_cast<AHardwareBufferImageBacking*>(backing())
+        ->GetAHardwareBuffer();
+  }
+
+ private:
+  bool BeginWriteAccess() override { return true; }
+  void EndWriteAccess() override {}
+  bool BeginReadAccess() override { return true; }
+  void EndReadAccess() override {}
 };
 
 AHardwareBufferImageBacking::AHardwareBufferImageBacking(
@@ -651,6 +673,14 @@ AHardwareBufferImageBacking::ProduceDawn(
 #endif  // BUILDFLAG(USE_DAWN)
 }
 
+std::unique_ptr<VideoImageRepresentation>
+AHardwareBufferImageBacking::ProduceVideo(SharedImageManager* manager,
+                                          MemoryTypeTracker* tracker,
+                                          VideoDevice device) {
+  DCHECK(!device);
+  return std::make_unique<VideoImageAHBRepresentation>(manager, this, tracker);
+}
+
 OverlayImage* AHardwareBufferImageBacking::BeginOverlayAccess(
     gfx::GpuFenceHandle& begin_read_fence) {
   AutoLock auto_lock(this);
@@ -753,7 +783,6 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
       vulkan_context_provider_(vulkan_context_provider),
       use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder),
       gl_format_caps_(GLFormatCaps(feature_info)) {
-  DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
 
   // Build the feature info for all the supported formats.
   for (auto format : kSupportedFormats) {
@@ -819,7 +848,6 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
-  DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
   DCHECK(!format.IsCompressed());
 
   if (!ValidateUsage(usage, size, format)) {
@@ -842,46 +870,23 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   hwb_desc.height = size.height();
   hwb_desc.format = format_info.ahb_format;
 
-  if (base::FeatureList::IsEnabled(
-          features::kUseHardwareBufferUsageFlagsFromVulkan)) {
-    hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
-                     AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
-    if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
-      hwb_desc.usage |= AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
-    }
+  hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
+                   AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
+  if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
+    hwb_desc.usage |= AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
+  }
 
-    if (!usage.Has(SHARED_IMAGE_USAGE_SCANOUT) ||
-        base::FeatureList::IsEnabled(
-            features::kAllowHardwareBufferUsageFlagsFromVulkanForScanout)) {
-      if (vulkan_context_provider_) {
-        std::optional<uint64_t> ahb_usage =
-            GetRecommendedAHBUsage(vulkan_context_provider_->GetDeviceQueue()
-                                       ->GetVulkanPhysicalDevice(),
-                                   format);
-        if (!ahb_usage.has_value()) {
-          return nullptr;
-        }
-        hwb_desc.usage |= ahb_usage.value();
-      } else {
-        // For GL we use flags from SurfaceControl::RequiredUsage.
-        // TODO(crbug.com/40836080): Add support for Dawn
-        if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
-          hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
-        }
-      }
-    } else {
-      // Fallback to old behaviour if we're adding
-      // AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY and
-      // kAllowHardwareBufferUsageFlagsFromVulkanForScanout is off.
-      if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
-        hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
-      }
+  if (vulkan_context_provider_) {
+    std::optional<uint64_t> ahb_usage = GetRecommendedAHBUsage(
+        vulkan_context_provider_->GetDeviceQueue()->GetVulkanPhysicalDevice(),
+        format);
+    if (!ahb_usage.has_value()) {
+      return nullptr;
     }
+    hwb_desc.usage |= ahb_usage.value();
   } else {
-    // Set usage so that gpu can both read as a texture/write as a framebuffer
-    // attachment.
-    hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
-                     AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
+    // For GL we use flags from SurfaceControl::RequiredUsage.
+    // TODO(crbug.com/40836080): Add support for Dawn
     if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
       hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
     }
@@ -900,7 +905,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   hwb_desc.rfu1 = 0;
 
   // Allocate an AHardwareBuffer.
-  base::AndroidHardwareBufferCompat::GetInstance().Allocate(&hwb_desc, &buffer);
+  AHardwareBuffer_allocate(&hwb_desc, &buffer);
   if (!buffer) {
     LOG(ERROR) << "Failed to allocate AHardwareBuffer";
     return nullptr;
@@ -913,16 +918,16 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   if (!pixel_data.empty()) {
     // Get description about buffer to obtain stride
     AHardwareBuffer_Desc hwb_info;
-    base::AndroidHardwareBufferCompat::GetInstance().Describe(buffer,
-                                                              &hwb_info);
+    AHardwareBuffer_describe(buffer, &hwb_info);
     void* address = nullptr;
-    if (int error = base::AndroidHardwareBufferCompat::GetInstance().Lock(
-            buffer, AHARDWAREBUFFER_USAGE_CPU_WRITE_RARELY, -1, 0, &address)) {
+    if (int error =
+            AHardwareBuffer_lock(buffer, AHARDWAREBUFFER_USAGE_CPU_WRITE_RARELY,
+                                 -1, nullptr, &address)) {
       LOG(ERROR) << "Failed to lock AHardwareBuffer: " << error;
       return nullptr;
     }
 
-    int bytes_per_pixel = format.BitsPerPixel() / 8;
+    int bytes_per_pixel = format.BytesPerPixel();
 
     // NOTE: hwb_info.stride is in pixels
     const size_t dst_stride = bytes_per_pixel * hwb_info.stride;
@@ -935,14 +940,15 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     }
 
     for (size_t y = 0; y < height; y++) {
-      void* dst = reinterpret_cast<uint8_t*>(address) + dst_stride * y;
-      const void* src = pixel_data.data() + src_stride * y;
+      void* dst =
+          UNSAFE_TODO(reinterpret_cast<uint8_t*>(address) + dst_stride * y);
+      const void* src = UNSAFE_TODO(pixel_data.data() + src_stride * y);
 
-      memcpy(dst, src, src_stride);
+      UNSAFE_TODO(memcpy(dst, src, src_stride));
     }
 
     int32_t fence = -1;
-    base::AndroidHardwareBufferCompat::GetInstance().Unlock(buffer, &fence);
+    AHardwareBuffer_unlock(buffer, &fence);
     initial_upload_fd = base::ScopedFD(fence);
   }
 
@@ -1058,7 +1064,8 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
   CHECK_EQ(handle.type, gfx::ANDROID_HARDWARE_BUFFER);
-  if (!ValidateUsage(usage, size, format)) {
+  if (!ValidateUsage(usage, size, format) &&
+      !IsSupportedForMappableBuffer(usage, format, handle.type)) {
     return nullptr;
   }
 
@@ -1080,6 +1087,85 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
 
 SharedImageBackingType AHardwareBufferImageBackingFactory::GetBackingType() {
   return SharedImageBackingType::kAHardwareBuffer;
+}
+
+bool AHardwareBufferImageBackingFactory::IsSupportedForMappableBuffer(
+    SharedImageUsageSet usage,
+    viz::SharedImageFormat format,
+    gfx::GpuMemoryBufferType gmb_type) {
+  if (format != viz::MultiPlaneFormat::kNV12) {
+    return false;
+  }
+  if (gmb_type != gfx::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER) {
+    return false;
+  }
+  constexpr SharedImageUsageSet kMappableUsage =
+      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_CPU_READ;
+  if (!kMappableUsage.HasAll(usage)) {
+    return false;
+  }
+  return true;
+}
+
+// static
+bool AHardwareBufferImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion shared_memory) {
+  if (buffer_handle.type != gfx::ANDROID_HARDWARE_BUFFER) {
+    return false;
+  }
+
+  base::WritableSharedMemoryMapping mapping = shared_memory.Map();
+  if (!mapping.IsValid()) {
+    return false;
+  }
+
+  base::android::ScopedHardwareBufferHandle ahb_handle =
+      buffer_handle.android_hardware_buffer.Clone();
+  AHardwareBuffer* hardware_buffer = ahb_handle.get();
+  if (!hardware_buffer) {
+    return false;
+  }
+
+  AHardwareBuffer_Desc desc;
+  AHardwareBuffer_describe(hardware_buffer, &desc);
+
+  if (desc.format != AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420) {
+    return false;
+  }
+
+  CHECK(desc.usage & (AHARDWAREBUFFER_USAGE_CPU_READ_RARELY |
+                      AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN));
+
+  base::span<uint8_t> dst_buffer = mapping.GetMemoryAsSpan<uint8_t>();
+  const size_t required_size =
+      static_cast<size_t>(desc.width) * desc.height * 3 / 2;
+  if (dst_buffer.size() < required_size) {
+    return false;
+  }
+
+  void* src_data = nullptr;
+  int fence = -1;
+  int ret = AHardwareBuffer_lock(hardware_buffer,
+                                 AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, fence,
+                                 nullptr, &src_data);
+  if (ret != 0) {
+    return false;
+  }
+
+  const uint8_t* src_y = static_cast<uint8_t*>(src_data);
+  const int src_y_stride = desc.stride;
+  const int src_uv_stride = desc.stride;
+  const int dst_stride = desc.width;
+
+  int result = libyuv::NV12Copy(
+      src_y, src_y_stride, UNSAFE_TODO(src_y + src_y_stride * desc.height),
+      src_uv_stride, dst_buffer.data(), dst_stride,
+      dst_buffer.subspan(desc.height * dst_stride).data(), dst_stride,
+      desc.width, desc.height);
+
+  AHardwareBuffer_unlock(hardware_buffer, &fence);
+  return result == 0;
 }
 
 }  // namespace gpu

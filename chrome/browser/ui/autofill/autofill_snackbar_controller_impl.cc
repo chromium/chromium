@@ -15,7 +15,8 @@
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -62,6 +63,15 @@ void AutofillSnackbarControllerImpl::ShowWithDurationAndCallback(
       true);
 }
 
+void AutofillSnackbarControllerImpl::ShowPaymentsSnackbar(
+    AutofillSnackbarType autofill_snackbar_type,
+    const CreditCard& filled_card,
+    base::OnceClosure on_action_clicked_callback) {
+  filled_card_ = filled_card;
+
+  Show(autofill_snackbar_type, std::move(on_action_clicked_callback));
+}
+
 void AutofillSnackbarControllerImpl::OnActionClicked() {
   base::UmaHistogramBoolean(
       base::StrCat({"Autofill.Snackbar.", GetSnackbarTypeForLogging(),
@@ -105,6 +115,11 @@ std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
     case AutofillSnackbarType::kCardInfoRetrieval:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SNACKBAR_MESSAGE_TEXT);
+    case AutofillSnackbarType::kBnpl:
+      CHECK(filled_card_);
+      return l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_BNPL_FILLED_CARD_SNACKBAR_MESSAGE_TEXT,
+          filled_card_->CardNameForAutofillDisplay());
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED();
   }
@@ -114,6 +129,7 @@ std::u16string AutofillSnackbarControllerImpl::GetActionButtonText() const {
   switch (autofill_snackbar_type_) {
     case AutofillSnackbarType::kVirtualCard:
     case AutofillSnackbarType::kCardInfoRetrieval:
+    case AutofillSnackbarType::kBnpl:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_ACTION_TEXT);
     case AutofillSnackbarType::kMandatoryReauth:
@@ -166,6 +182,8 @@ std::string AutofillSnackbarControllerImpl::GetSnackbarTypeForLogging() {
       return "PlusAddressEmailOverride";
     case AutofillSnackbarType::kCardInfoRetrieval:
       return "CardInfoRetrievalEnrolled";
+    case AutofillSnackbarType::kBnpl:
+      return "BnplVirtualCard";
     case AutofillSnackbarType::kUnspecified:
       return "Unspecified";
   }

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/memory/ptr_util.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
@@ -72,7 +73,8 @@ BatchUploadServiceTestHelper::CreateBatchUploadService(
     signin::IdentityManager* identity_manager,
     std::unique_ptr<BatchUploadDelegate> delegate) {
   return std::make_unique<BatchUploadService>(
-      identity_manager, GetSyncServiceMock(), std::move(delegate));
+      identity_manager, GetSyncServiceMock(), &pref_service_,
+      std::move(delegate));
 }
 
 const syncer::LocalDataDescription&

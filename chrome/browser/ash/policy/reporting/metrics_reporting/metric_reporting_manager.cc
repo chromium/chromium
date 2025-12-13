@@ -107,7 +107,6 @@ BASE_FEATURE(kEnableFatalCrashEventsObserver,
              "EnableFatalCrashEventsObserver",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableChromeFatalCrashEventsObserver,
-             "EnableChromeFatalCrashEventsObserver",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool MetricReportingManager::Delegate::IsUserAffiliated(

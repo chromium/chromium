@@ -12,6 +12,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
+#include "base/android/jni_android.h"
 #include "components/input/android/jni_headers/InputUtils_jni.h"
 #include "components/input/features.h"
 #endif
@@ -26,7 +27,7 @@ using perfetto::protos::pbzero::ChromeLatencyInfo2;
 bool InputUtils::initialized_ = false;
 bool InputUtils::has_security_update_ = false;
 
-jboolean JNI_InputUtils_IsTransferInputToVizSupported(JNIEnv* env) {
+static jboolean JNI_InputUtils_IsTransferInputToVizSupported(JNIEnv* env) {
   return InputUtils::IsTransferInputToVizSupported();
 }
 
@@ -80,6 +81,14 @@ bool InputUtils::IsTransferInputToVizSupported() {
   return false;
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+
+void InputUtils::RunGarbageCollection() {
+  Java_InputUtils_runGarbageCollection(base::android::AttachCurrentThread());
+}
+
+#endif
 
 ChromeLatencyInfo2::InputType InputEventTypeToProto(
     blink::WebInputEvent::Type event_type) {
@@ -195,3 +204,7 @@ ChromeLatencyInfo2::InputResultState InputEventResultStateToProto(
 }
 
 }  // namespace input
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(InputUtils)
+#endif

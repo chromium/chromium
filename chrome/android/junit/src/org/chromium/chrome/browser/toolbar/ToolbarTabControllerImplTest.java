@@ -27,12 +27,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -40,10 +39,15 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
+
+import java.util.Collections;
+import java.util.function.Supplier;
 
 /** Unit tests for ToolbarTabControllerImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -163,9 +167,9 @@ public class ToolbarTabControllerImplTest {
     @Test
     public void openHomepage_loadsHomePage() {
         mToolbarTabController.openHomepage();
-        GURL homePageGurl = HomepageManager.getInstance().getHomepageGurl();
+        GURL homePageGurl = HomepageManager.getInstance().getHomepageGurl(/* isIncognito= */ false);
         if (homePageGurl.isEmpty()) {
-            homePageGurl = ChromeUrlConstants.nativeNtpGurl();
+            homePageGurl = UrlConstantResolverFactory.getOriginalResolver().getNtpGurl();
         }
         verify(mTab)
                 .loadUrl(
@@ -237,7 +241,9 @@ public class ToolbarTabControllerImplTest {
         inOrder.verify(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
         inOrder.verify(mTab2).goBack();
-        inOrder.verify(mMultiInstanceManager).moveTabToNewWindow(mTab2);
+        inOrder.verify(mMultiInstanceManager)
+                .moveTabsToNewWindow(
+                        Collections.singletonList(mTab2), NewWindowAppSource.KEYBOARD_SHORTCUT);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -295,17 +301,21 @@ public class ToolbarTabControllerImplTest {
         inOrder.verify(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
         inOrder.verify(mTab2).goForward();
-        inOrder.verify(mMultiInstanceManager).moveTabToNewWindow(mTab2);
+        inOrder.verify(mMultiInstanceManager)
+                .moveTabsToNewWindow(
+                        Collections.singletonList(mTab2), NewWindowAppSource.KEYBOARD_SHORTCUT);
         inOrder.verifyNoMoreInteractions();
     }
 
     private void initToolbarTabController() {
+        UrlConstantResolver urlConstantResolver =
+                UrlConstantResolverFactory.getForProfile(/* profile= */ null);
         mToolbarTabController =
                 new ToolbarTabControllerImpl(
                         mTabSupplier,
                         mTrackerSupplier,
                         mBottomControlsCoordinatorSupplier,
-                        ToolbarManager::homepageUrl,
+                        urlConstantResolver::getNtpUrl,
                         mRunnable,
                         mActivityTabProvider,
                         mTabCreatorManager,

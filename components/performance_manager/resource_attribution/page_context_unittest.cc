@@ -18,6 +18,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace resource_attribution {
@@ -64,6 +65,12 @@ TEST_F(ResourceAttrPageContextTest, PageContexts) {
       PageContext::FromWebContents(web_contents2.get());
   EXPECT_TRUE(page_context2.has_value());
   EXPECT_NE(page_context2, page_context);
+
+  // Put contexts in an absl set to make sure they can be hashed.
+  absl::flat_hash_set<PageContext> context_set{page_context.value(),
+                                               page_context_after_nav.value(),
+                                               page_context2.value()};
+  EXPECT_EQ(context_set.size(), 2u);
 
   web_contents.reset();
 

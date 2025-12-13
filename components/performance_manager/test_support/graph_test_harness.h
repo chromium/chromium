@@ -120,11 +120,12 @@ struct TestNodeWrapper<FrameNodeImpl>::Factory {
           content::BrowsingInstanceId(0),
       content::SiteInstanceGroupId site_instance_group_id =
           content::SiteInstanceGroupId(0),
-      bool is_current = true) {
+      bool is_current = true,
+      bool is_active = true) {
     return std::make_unique<FrameNodeImpl>(
         process_node, page_node, parent_frame_node,
         outer_document_for_fenced_frame, render_frame_id, frame_token,
-        browsing_instance_id, site_instance_group_id, is_current);
+        browsing_instance_id, site_instance_group_id, is_current, is_active);
   }
 };
 

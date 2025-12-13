@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -110,8 +111,9 @@ IN_PROC_BROWSER_TEST_P(KioskAutoLoginBailoutEnabledTest,
   ASSERT_TRUE(PressBailoutAccelerator());
 
   RunUntilBrowserProcessQuits();
-  EXPECT_EQ(KioskAppLaunchError::Error::kUserCancel,
-            KioskAppLaunchError::Get());
+  EXPECT_EQ(
+      KioskAppLaunchError::Error::kUserCancel,
+      KioskAppLaunchError::Get(CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(KioskController::Get().IsSessionStarting());
 }
 

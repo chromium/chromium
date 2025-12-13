@@ -15,6 +15,24 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
+namespace {
+// Default factory for PushNotificationProfileService.
+std::unique_ptr<KeyedService> BuildInstance(ProfileIOS* profile) {
+  const scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+
+  std::unique_ptr<PushNotificationClientManager> client_manager =
+      IsMultiProfilePushNotificationHandlingEnabled()
+          ? std::make_unique<PushNotificationClientManager>(task_runner,
+                                                            profile)
+          : nullptr;
+
+  return std::make_unique<PushNotificationProfileService>(
+      IdentityManagerFactory::GetForProfile(profile), std::move(client_manager),
+      profile->GetStatePath());
+}
+}  // namespace
+
 // static
 PushNotificationProfileServiceFactory*
 PushNotificationProfileServiceFactory::GetInstance() {
@@ -41,19 +59,12 @@ PushNotificationProfileServiceFactory::
 
 std::unique_ptr<KeyedService>
 PushNotificationProfileServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
+  return BuildInstance(profile);
+}
 
-  const scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::SequencedTaskRunner::GetCurrentDefault();
-
-  std::unique_ptr<PushNotificationClientManager> client_manager =
-      IsMultiProfilePushNotificationHandlingEnabled()
-          ? std::make_unique<PushNotificationClientManager>(task_runner,
-                                                            profile)
-          : nullptr;
-
-  return std::make_unique<PushNotificationProfileService>(
-      IdentityManagerFactory::GetForProfile(profile), std::move(client_manager),
-      profile->GetStatePath());
+// static
+PushNotificationProfileServiceFactory::TestingFactory
+PushNotificationProfileServiceFactory::GetDefaultFactory() {
+  return base::BindOnce(&BuildInstance);
 }

@@ -116,9 +116,8 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickSingleAxisResizeEdge) {
 
   wm::ActivateWindow(window.get());
 
-  gfx::Rect work_area = display::Screen::GetScreen()
-                            ->GetDisplayNearestWindow(window.get())
-                            .work_area();
+  gfx::Rect work_area =
+      display::Screen::Get()->GetDisplayNearestWindow(window.get()).work_area();
 
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      window.get());
@@ -178,7 +177,7 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickSingleAxisResizeEdge) {
   // TODO(crbug.com/40638870): Unit tests should be able to simulate mouse input
   // without having to call |CursorManager::SetDisplay|.
   Shell::Get()->cursor_manager()->SetDisplay(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(second_root));
+      display::Screen::Get()->GetDisplayNearestWindow(second_root));
 
   // Y-axis maximization.
   delegate.set_window_component(HTTOP);
@@ -221,9 +220,8 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickSingleAxisWhenSideSnapped) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(&delegate, restored_bounds));
 
-  gfx::Rect work_area_in_screen = display::Screen::GetScreen()
-                                      ->GetDisplayNearestWindow(window.get())
-                                      .work_area();
+  gfx::Rect work_area_in_screen =
+      display::Screen::Get()->GetDisplayNearestWindow(window.get()).work_area();
 
   WindowState* window_state = WindowState::Get(window.get());
   const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
@@ -641,7 +639,7 @@ TEST_F(WorkspaceEventHandlerTest,
   // Lock window.
   window_util::PinWindow(window.get(), /*trusted=*/true);
   WindowState* const window_state = WindowState::Get(window.get());
-  ASSERT_TRUE(window_state->IsTrustedPinned());
+  ASSERT_TRUE(window_state->IsLockedFullscreen());
 
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      window.get());
@@ -649,7 +647,7 @@ TEST_F(WorkspaceEventHandlerTest,
   const gfx::Point tap_target = window->bounds().top_center();
   generator.GestureTapAt(tap_target);
   generator.GestureTapAt(tap_target);
-  EXPECT_TRUE(window_state->IsTrustedPinned());
+  EXPECT_TRUE(window_state->IsLockedFullscreen());
 }
 
 // Verifies deleting the window while dragging doesn't crash.

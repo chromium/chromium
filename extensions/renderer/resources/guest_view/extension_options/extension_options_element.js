@@ -22,4 +22,5 @@ class ExtensionOptionsElement extends GuestViewContainerElement {
   }
 }
 
-registerElement('ExtensionOptions', ExtensionOptionsElement);
+registerElement(
+    'ExtensionOptions', 'ExtensionOptions', ExtensionOptionsElement);

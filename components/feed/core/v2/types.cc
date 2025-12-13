@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/feed/core/v2/types.h"
 
 #include <ostream>
@@ -14,6 +9,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/json/values_util.h"
 #include "base/pickle.h"
@@ -107,8 +103,8 @@ std::vector<uint32_t> GetExpandedHashes(
     const std::vector<feedstore::StreamContentHashList>& hashes_list) {
   std::vector<uint32_t> expanded_hashes;
   for (const feedstore::StreamContentHashList& hash_list : hashes_list)
-    for (const auto& hash : hash_list.hashes())
-      expanded_hashes.push_back(hash);
+    expanded_hashes.insert(expanded_hashes.end(), hash_list.hashes().begin(),
+                           hash_list.hashes().end());
   return expanded_hashes;
 }
 
@@ -162,7 +158,7 @@ std::string SerializeDebugStreamData(const DebugStreamData& data) {
   PickleDebugStreamData(data, pickle);
   const uint8_t* pickle_data_ptr = static_cast<const uint8_t*>(pickle.data());
   return base::Base64Encode(
-      base::span<const uint8_t>(pickle_data_ptr, pickle.size()));
+      UNSAFE_TODO(base::span<const uint8_t>(pickle_data_ptr, pickle.size())));
 }
 
 std::optional<DebugStreamData> DeserializeDebugStreamData(

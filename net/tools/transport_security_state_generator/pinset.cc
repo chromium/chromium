@@ -6,8 +6,7 @@
 
 namespace net::transport_security_state {
 
-Pinset::Pinset(std::string name, std::string report_uri)
-    : name_(name), report_uri_(report_uri) {}
+Pinset::Pinset(std::string name) : name_(name) {}
 
 Pinset::~Pinset() = default;
 

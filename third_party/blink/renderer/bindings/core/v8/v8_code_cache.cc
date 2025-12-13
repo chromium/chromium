@@ -7,10 +7,8 @@
 #include <optional>
 
 #include "base/containers/span_reader.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/code_cache_util.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
@@ -32,15 +30,6 @@
 namespace blink {
 
 namespace {
-
-BASE_FEATURE(kConfigurableV8CodeCacheHotHours,
-             "ConfigurableV8CodeCacheHotHours",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-MIRACLE_PARAMETER_FOR_INT(GetV8CodeCacheHotHours,
-                          kConfigurableV8CodeCacheHotHours,
-                          "HotHours",
-                          72)
 
 enum CacheTagKind {
   kCacheTagCode = 0,
@@ -64,11 +53,11 @@ uint32_t CacheTag(CacheTagKind kind, const String& encoding) {
   // later load the script from the cache and interpret it with a different
   // encoding, the cached data is not valid for that encoding.
   return (v8_cache_data_version | kind) +
-         (encoding.IsNull() ? 0 : WTF::GetHash(encoding));
+         (encoding.IsNull() ? 0 : GetHash(encoding));
 }
 
 bool TimestampIsRecent(const CachedMetadata* cached_metadata) {
-  const base::TimeDelta kHotHours = base::Hours(GetV8CodeCacheHotHours());
+  const base::TimeDelta kHotHours = base::Hours(72);
   base::SpanReader reader(cached_metadata->Data());
   uint64_t time_stamp_ms;
   CHECK(reader.ReadU64NativeEndian(time_stamp_ms));

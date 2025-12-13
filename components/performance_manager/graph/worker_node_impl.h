@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
@@ -58,8 +59,8 @@ class WorkerNodeImpl
   const GURL& GetURL() const override;
   const url::Origin& GetOrigin() const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
-  uint64_t GetResidentSetKbEstimate() const override;
-  uint64_t GetPrivateFootprintKbEstimate() const override;
+  base::ByteCount GetResidentSetEstimate() const override;
+  base::ByteCount GetPrivateFootprintEstimate() const override;
 
   // Invoked when a frame starts/stops being a client of this worker.
   void AddClientFrame(FrameNodeImpl* frame_node);
@@ -71,8 +72,8 @@ class WorkerNodeImpl
 
   // Setters are not thread safe.
   void SetPriorityAndReason(const PriorityAndReason& priority_and_reason);
-  void SetResidentSetKbEstimate(uint64_t rss_estimate);
-  void SetPrivateFootprintKbEstimate(uint64_t pmf_estimate);
+  void SetResidentSetEstimate(base::ByteCount rss_estimate);
+  void SetPrivateFootprintEstimate(base::ByteCount pmf_estimate);
 
   // Invoked when the worker script was fetched and the final response URL is
   // available.
@@ -143,14 +144,13 @@ class WorkerNodeImpl
   // distinction between client workers and child workers.
   NodeSet child_workers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  uint64_t resident_set_kb_estimate_ = 0;
+  base::ByteCount resident_set_estimate_;
 
-  uint64_t private_footprint_kb_estimate_ = 0;
+  base::ByteCount private_footprint_estimate_;
 
   // Worker priority information. Set via ExecutionContextPriorityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       PriorityAndReason,
-      const PriorityAndReason&,
       &WorkerNodeObserver::OnPriorityAndReasonChanged>
       priority_and_reason_ GUARDED_BY_CONTEXT(sequence_checker_){
           PriorityAndReason(base::TaskPriority::LOWEST,

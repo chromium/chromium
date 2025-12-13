@@ -29,7 +29,8 @@
 
 namespace blink {
 
-OESTextureFloatLinear::OESTextureFloatLinear(WebGLRenderingContextBase* context)
+OESTextureFloatLinear::OESTextureFloatLinear(WebGLRenderingContextBase* context,
+                                             ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_OES_texture_float_linear");

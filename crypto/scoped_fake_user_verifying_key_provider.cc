@@ -13,6 +13,8 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
@@ -21,9 +23,14 @@ namespace crypto {
 
 namespace {
 
-// This tracks deleted keys, so calling `DeleteUserVerifyingKey` with one
-// can return false, allowing deletion to be tested.
-std::vector<UserVerifyingKeyLabel> g_deleted_keys_;
+// The vector of deleted keys needs to be shared between instances of
+// FakeUserVerifyingKeyProvider - in production the keys all live in a shared
+// key store, so deleting a key via one provider should show up in any other
+// providers as well.
+std::vector<UserVerifyingKeyLabel>& GetDeletedKeys() {
+  static base::NoDestructor<std::vector<UserVerifyingKeyLabel>> s_labels;
+  return *s_labels;
+}
 
 // When true, fake UV signing keys indicate that they are hardware backed.
 bool g_fake_hardware_backing_ = false;
@@ -82,7 +89,7 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
   void GetUserVerifyingSigningKey(
       UserVerifyingKeyLabel key_label,
       UserVerifyingKeyCreationCallback callback) override {
-    for (auto deleted_key : g_deleted_keys_) {
+    for (auto deleted_key : GetDeletedKeys()) {
       if (deleted_key == key_label) {
         std::move(callback).Run(
             base::unexpected(UserVerifyingKeyCreationError::kUnknownError));
@@ -106,7 +113,7 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
   void DeleteUserVerifyingKey(
       UserVerifyingKeyLabel key_label,
       base::OnceCallback<void(bool)> callback) override {
-    g_deleted_keys_.push_back(key_label);
+    GetDeletedKeys().push_back(key_label);
     std::move(callback).Run(true);
   }
 };
@@ -198,4 +205,18 @@ ScopedFailingUserVerifyingKeyProvider::
     ~ScopedFailingUserVerifyingKeyProvider() {
   internal::SetUserVerifyingKeyProviderForTesting(nullptr);
 }
+
+ScopedUserVerifyingKeysSupportedOverride::
+    ScopedUserVerifyingKeysSupportedOverride(
+        UserVerifyingKeysSupportedOverride override) {
+  internal::SetUserVerifyingKeysSupportedOverrideForTesting(
+      std::move(override));
+}
+
+ScopedUserVerifyingKeysSupportedOverride::
+    ~ScopedUserVerifyingKeysSupportedOverride() {
+  internal::SetUserVerifyingKeysSupportedOverrideForTesting(
+      base::NullCallback());
+}
+
 }  // namespace crypto

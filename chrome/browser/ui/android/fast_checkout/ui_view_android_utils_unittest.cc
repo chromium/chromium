@@ -20,10 +20,8 @@ TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
   base::android::ScopedJavaLocalRef<jobject> scoped_profile =
       CreateFastCheckoutAutofillProfile(env, profile, "en-US");
 
-  base::android::JavaParamRef<jobject> java_profile(env, scoped_profile.obj());
-
   std::unique_ptr<autofill::AutofillProfile> parsed_profile =
-      CreateFastCheckoutAutofillProfileFromJava(env, java_profile, "en-US");
+      CreateFastCheckoutAutofillProfileFromJava(env, scoped_profile, "en-US");
 
   EXPECT_EQ(profile.guid(), parsed_profile->guid());
   EXPECT_EQ(profile.language_code(), parsed_profile->language_code());
@@ -62,11 +60,8 @@ TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutCreditCard) {
     base::android::ScopedJavaLocalRef<jobject> scoped_credit_card =
         CreateFastCheckoutCreditCard(env, credit_card, "en-US");
 
-    base::android::JavaParamRef<jobject> java_credit_card(
-        env, scoped_credit_card.obj());
-
     std::unique_ptr<autofill::CreditCard> parsed_credit_card =
-        CreateFastCheckoutCreditCardFromJava(env, java_credit_card);
+        CreateFastCheckoutCreditCardFromJava(env, scoped_credit_card);
     EXPECT_EQ(credit_card, *parsed_credit_card.get());
   }
 }

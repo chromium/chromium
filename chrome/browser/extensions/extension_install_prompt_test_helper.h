@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_PROMPT_TEST_HELPER_H_
 
 #include "chrome/browser/extensions/extension_install_prompt.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 // A helper class to be used with ExtensionInstallPrompt that keeps track of the
 // payload. Note that this class does no lifetime management.

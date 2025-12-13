@@ -10,7 +10,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gin/gin_export.h"

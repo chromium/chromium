@@ -150,6 +150,6 @@ suite('PaymentsSectionPayOverTime', function() {
         entry.shadowRoot!.querySelector<HTMLElement>('#summaryLabel');
 
     assertTrue(!!payOverTimeItemSummaryLabel);
-    assertEquals('hello', payOverTimeItemSummaryLabel.textContent!.trim());
+    assertEquals('hello', payOverTimeItemSummaryLabel.textContent.trim());
   });
 });

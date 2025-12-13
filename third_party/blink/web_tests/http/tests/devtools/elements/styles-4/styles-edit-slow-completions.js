@@ -37,7 +37,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   TestRunner.completeTest();
 
   function dumpFocus() {
-    const element = Platform.DOMUtilities.deepActiveElement(document);
+    const element = UIModule.DOMUtilities.deepActiveElement(document);
     TestRunner.addResult(`Active element: ${element.tagName}, ${element.className}`);
   }
 })();

@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
@@ -25,10 +26,12 @@ struct Config;
 class FetchAndRankHelper : public base::RefCounted<FetchAndRankHelper> {
  public:
   using FetchResultCallback = base::OnceCallback<void(
-      std::vector<jni_zero::ScopedJavaLocalRef<jobject>>)>;
+      std::vector<jni_zero::ScopedJavaLocalRef<jobject>>,
+      const visited_url_ranking::URLVisitsMetadata& metadata)>;
 
   // The |entries_callback| is called when history data is fetched and ranked.
-  // It passes a List<AuxiliarySearchDataEntry> to Java.
+  // It passes a Java List<AuxiliarySearchDataEntry> and metadata about the
+  // entries.
   FetchAndRankHelper(
       visited_url_ranking::VisitedURLRankingService* ranking_service,
       FetchResultCallback entries_callback,

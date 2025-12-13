@@ -7,7 +7,6 @@
 
 #include "base/types/pass_key.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -16,6 +15,8 @@ namespace credential_management {
 class ContentCredentialManager;
 }
 namespace autofill {
+
+class PasswordManagerAutofillHelper;
 
 // Common base class for those AutofillClients that have the //content layer.
 //
@@ -44,10 +45,18 @@ class ContentAutofillClient
   virtual credential_management::ContentCredentialManager*
   GetContentCredentialManager() = 0;
 
+  // Implementation of AutofillClient:
+  bool DocumentUsedWebOTP() final;
+  PasswordManagerAutofillHelperDelegate* GetPasswordManagerAutofillHelper()
+      override;
+  AutofillManager* GetAutofillManagerForPrimaryMainFrame() override;
+
  private:
   friend class content::WebContentsUserData<ContentAutofillClient>;
 
   ContentAutofillDriverFactory autofill_driver_factory_;
+  std::unique_ptr<PasswordManagerAutofillHelper>
+      password_manager_autofill_helper_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

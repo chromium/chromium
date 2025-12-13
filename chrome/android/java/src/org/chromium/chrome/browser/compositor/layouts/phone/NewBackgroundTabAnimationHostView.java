@@ -21,8 +21,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -39,6 +39,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /** Host view for the new background tab animation. */
+@NullMarked
 public class NewBackgroundTabAnimationHostView extends FrameLayout implements RunOnNextLayout {
     /* package */ static final long CROSS_FADE_DURATION_MS = 150L;
     private static final long PATH_ARC_DURATION_MS = 400L;
@@ -75,6 +76,27 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout implements Ru
         super(context, attrs);
         mAnimationType = AnimationType.UNINITIALIZED;
         mRunOnNextLayoutDelegate = new RunOnNextLayoutDelegate(this);
+    }
+
+    /**
+     * Determines the {@link AnimationType} based on the current state.
+     *
+     * @param tabSwitcherButtonIsVisible True if the tab switcher button is visible.
+     * @param isNtp True if the current tab is the regular Ntp.
+     * @param ntpToolbarTransitionPercentage To know the current transition percentage of the ntp
+     *     search box.
+     */
+    public static @AnimationType int calculateAnimationType(
+            boolean tabSwitcherButtonIsVisible,
+            boolean isNtp,
+            float ntpToolbarTransitionPercentage) {
+        if (tabSwitcherButtonIsVisible || !isNtp) {
+            return AnimationType.DEFAULT;
+        } else {
+            return ntpToolbarTransitionPercentage == 1f
+                    ? AnimationType.NTP_FULL_SCROLL
+                    : AnimationType.NTP_PARTIAL_SCROLL;
+        }
     }
 
     @Override
@@ -135,38 +157,39 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout implements Ru
      * Prepares the animation.
      *
      * @param tabSwitcherButton The real Tab Switcher Button.
-     * @param isNtp True if the current tab is the regular Ntp.
+     * @param tabSwitcherRect The {@link Rect} of the tab switcher button.
      * @param isIncognito True if the current tab is an incognito tab.
      * @param isTopToolbar True if current tab has a top toolbar.
      * @param backgroundColor The current color of the toolbar.
+     * @param animationType The {@link AnimationType}.
+     * @param brandedColorScheme The {@link BrandedColorScheme} for the toolbar.
      * @param tabCount The tab count to display.
      * @param toolbarHeight Current height of the toolbar in the screen (absolute y-coordinate in
      *     the screen).
      * @param statusBarHeight The status bar height to calculate the y-offset within the screen.
      * @param xOffset Offset for cases where the screen can't draw from x = 0.
-     * @param ntpToolbarTransitionPercentage To know if the search box is in the toolbar position.
      */
     /* package */ void setUpAnimation(
             ToggleTabStackButton tabSwitcherButton,
-            boolean isNtp,
+            Rect tabSwitcherRect,
             boolean isIncognito,
             boolean isTopToolbar,
             @ColorInt int backgroundColor,
+            @AnimationType int animationType,
+            @BrandedColorScheme int brandedColorScheme,
             int tabCount,
             int toolbarHeight,
             int statusBarHeight,
-            int xOffset,
-            float ntpToolbarTransitionPercentage) {
+            int xOffset) {
+
+        mAnimationType = animationType;
         mStatusBarHeight = statusBarHeight;
         mXOffset = xOffset;
         mIsTopToolbar = isTopToolbar;
         mFakeTabSwitcherButton.setTabCount(tabCount, isIncognito);
+        mFakeTabSwitcherButton.setBrandedColorScheme(brandedColorScheme);
 
         Context context = getContext();
-        @BrandedColorScheme
-        int brandedColorScheme =
-                ThemeUtils.getBrandedColorScheme(context, backgroundColor, isIncognito);
-        mFakeTabSwitcherButton.setBrandedColorScheme(brandedColorScheme);
         if (ColorUtils.inNightMode(context)) {
             mLinkIcon.setImageTintList(ChromeColors.getPrimaryIconTint(context, isIncognito));
             @ColorInt
@@ -179,27 +202,20 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout implements Ru
             roundedRect.setColor(color);
         }
 
-        Rect tabSwitcherRect = new Rect();
-        boolean tabSwitcherButtonIsVisible =
-                tabSwitcherButton.getGlobalVisibleRect(tabSwitcherRect);
         int horizontalMargin = tabSwitcherRect.left - xOffset;
         int verticalMargin = toolbarHeight - statusBarHeight;
 
-        if (tabSwitcherButtonIsVisible || !isNtp) {
-            mAnimationType = AnimationType.DEFAULT;
+        if (mAnimationType == AnimationType.DEFAULT) {
             mFakeTabSwitcherButton.setButtonColor(backgroundColor);
             mFakeTabSwitcherButton.setNotificationIconStatus(
                     tabSwitcherButton.shouldShowNotificationIcon());
         } else {
             mFakeTabSwitcherButton.setUpNtpAnimation(/* incrementCount= */ true);
-            if (ntpToolbarTransitionPercentage == 1f) {
-                mAnimationType = AnimationType.NTP_FULL_SCROLL;
+            if (mAnimationType == AnimationType.NTP_FULL_SCROLL) {
                 verticalMargin +=
                         Math.round(
                                 context.getResources()
                                         .getDimension(R.dimen.toolbar_height_no_shadow));
-            } else {
-                mAnimationType = AnimationType.NTP_PARTIAL_SCROLL;
             }
         }
         mFakeTabSwitcherButton.setMargin(verticalMargin, horizontalMargin);

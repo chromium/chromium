@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
@@ -26,12 +27,13 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -42,6 +44,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -175,6 +178,10 @@ class WebAppsPreventCloseChromeOsBrowserTest
       const WebAppsPreventCloseChromeOsBrowserTest&) = delete;
   ~WebAppsPreventCloseChromeOsBrowserTest() override = default;
 
+  web_app::ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
+    return &data_provider_;
+  }
+
   void TearDownOnMainThread() override {
     // Clear policy values, otherwise we won't be able to gracefully close stop
     // browser test.
@@ -206,8 +213,10 @@ class WebAppsPreventCloseChromeOsBrowserTest
 
       case AppType::kIsolatedWebApp:
         auto web_bundle_id = web_app::test::GetDefaultEd25519WebBundleId();
+        data_provider_.Update(
+            [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id); });
 
-        isolated_web_app_update_server_mixin_.AddBundle(
+        iwa_test_update_server_.AddBundle(
             web_app::IsolatedWebAppBuilder(
                 web_app::ManifestBuilder().SetVersion("1.0.0"))
                 .BuildBundle(web_bundle_id,
@@ -222,7 +231,7 @@ class WebAppsPreventCloseChromeOsBrowserTest
 
         web_app::test::AddForceInstalledIwaToPolicy(
             profile()->GetPrefs(),
-            isolated_web_app_update_server_mixin_.CreateForceInstallPolicyEntry(
+            iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 web_bundle_id));
         break;
     }
@@ -252,8 +261,9 @@ class WebAppsPreventCloseChromeOsBrowserTest
 
  protected:
   std::optional<std::string> installed_app_url_;
-  web_app::IsolatedWebAppUpdateServerMixin
-      isolated_web_app_update_server_mixin_{&mixin_host_};
+  web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
+
+  web_app::FakeIwaRuntimeDataProvider data_provider_;
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest, CheckMenuModel) {

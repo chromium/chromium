@@ -4,7 +4,7 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core)
 
 source_set("search") {
   sources = [
@@ -25,4 +25,7 @@ source_set("search") {
     "//chrome/common/extensions/api",
     "//components/search_engines",
   ]
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android/tab_model" ]
+  }
 }

@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/credential_details.h"
 
+#import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 
 @implementation CredentialDetails
 
@@ -60,6 +62,9 @@
     }
     if (!credential.passkey_credential_id.empty()) {
       _credentialType = CredentialTypePasskey;
+    }
+    if (base::FeatureList::IsEnabled(kCredentialProviderSignalAPI)) {
+      _hidden = credential.hidden;
     }
   }
   return self;

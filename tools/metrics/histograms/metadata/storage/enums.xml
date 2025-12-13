@@ -77,6 +77,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Denied by preventSilentAccess"/>
 </enum>
 
+<!-- LINT.IfChange(BlobBuildFromStreamResult) -->
+
+<enum name="BlobBuildFromStreamResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Aborted while building"/>
+  <int value="2" label="Failed to allocate memory for blob"/>
+  <int value="3" label="Failed to allocate file space for blob"/>
+  <int value="4" label="Failed writing to file"/>
+</enum>
+
+<!-- LINT.ThenChange(//storage/browser/blob/blob_builder_from_stream.h:BlobBuildFromStreamResult) -->
+
 <enum name="BooleanInherited">
   <int value="0" label="Not inherited"/>
   <int value="1" label="Inherited"/>
@@ -235,6 +247,16 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Mac, error when starting the FSEvents event stream"/>
 </enum>
 
+<!-- LINT.IfChange(IDBTransactionMode) -->
+
+<enum name="IDBTransactionMode">
+  <int value="0" label="ReadOnly"/>
+  <int value="1" label="ReadWrite"/>
+  <int value="2" label="VersionChange"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/indexeddb/indexeddb.mojom:IDBTransactionMode) -->
+
 <enum name="ImportantSitesReason">
   <int value="0" label="Engagement"/>
   <int value="1" label="Durable"/>
@@ -242,6 +264,70 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Home Screen"/>
   <int value="4" label="Notifications"/>
 </enum>
+
+<!-- LINT.IfChange(IndexedDbLevelDbCleanupVerificationEvent) -->
+
+<enum name="IndexedDbLevelDbCleanupVerificationEvent">
+  <int value="0"
+      label="Cleanup was started and a verification snapshot was taken (or at
+             least attempted)"/>
+  <int value="1"
+      label="Error while trying to open the databases before cleanup"/>
+  <int value="2"
+      label="Error while trying to create the snapshot before cleanup"/>
+  <int value="3"
+      label="Error while trying to open the databases after cleanup"/>
+  <int value="4"
+      label="Error while trying to create the snapshot after cleanup"/>
+  <int value="5" label="Snapshots matched before and after cleanup"/>
+  <int value="6" label="Snapshots didn't match"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/indexed_db/instance/leveldb/backing_store.h:InSessionCleanupVerificationEvent) -->
+
+<!-- LINT.IfChange(IndexedDbSqliteSpecificEvent) -->
+
+<enum name="IndexedDbSqliteSpecificEvent">
+  <int value="0" label="Database opened"/>
+  <int value="1"
+      label="Database had at least one SQLite error in connection lifetime"/>
+  <int value="2"
+      label="Error when updating active blob bookkeeping after txn rollback"/>
+  <int value="3" label="Failed to retrieve streaming handle to blob in DB"/>
+  <int value="4" label="Failed to increment refcount to a streaming blob"/>
+  <int value="5" label="Failed to decrement refcount for a streaming blob"/>
+  <int value="6" label="pragma to get page count failed"/>
+  <int value="7" label="pragma to get page size failed"/>
+  <int value="8" label="Metadata table was missing"/>
+  <int value="9" label="Database compatible version indicated DB too new"/>
+  <int value="10" label="Database version indicated DB too new"/>
+  <int value="11" label="Database stored name didn't match hash"/>
+  <int value="12" label="A requested blob overflow chunk was missing"/>
+  <int value="13" label="Object store unexpectedly not found in DB"/>
+  <int value="14" label="Invalid type found for blob"/>
+  <int value="15"
+      label="V8 data format version too new or missing from metadata"/>
+  <int value="16"
+      label="A value in the DB that represents a UTF16 string was the wrong
+             length"/>
+  <int value="17"
+      label="Failed to decompress a value when reading from the DB"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/indexed_db/instance/sqlite/database_connection.h:SpecificEvent) -->
+
+<!-- LINT.IfChange(IndexedDbStatusType) -->
+
+<enum name="IndexedDbStatusType">
+  <int value="0" label="OK"/>
+  <int value="1" label="Not found"/>
+  <int value="2" label="Corrupted or inconsistent database state"/>
+  <int value="3" label="Invalid argument"/>
+  <int value="4" label="IO error"/>
+  <int value="5" label="Database engine detected and reported an error"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/indexed_db/status.h:Type) -->
 
 <!-- LINT.IfChange(InterestGroupStorageInitializationResult) -->
 

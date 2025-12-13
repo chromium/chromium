@@ -2,41 +2,93 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/jni_string.h"
-#include "base/android/scoped_java_ref.h"
 #include "components/security_state/content/android/security_state_client.h"
 #include "components/security_state/content/android/security_state_model_delegate.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// This generated header with the static declaration for the JNI function.
 #include "components/security_state/content/android/jni_headers/SecurityStateModel_jni.h"
 
-using base::android::ConvertJavaStringToUTF16;
-using base::android::JavaParamRef;
+using security_state::GetSecurityStateClient;
+using security_state::MaliciousContentStatus;
+using security_state::SecurityLevel;
+using security_state::SecurityStateClient;
 
-// static
-jint JNI_SecurityStateModel_GetSecurityLevelForWebContents(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(web_contents);
+namespace security_state::internal {
 
-  security_state::SecurityStateClient* security_state_client =
-      security_state::GetSecurityStateClient();
+SecurityStateModelDelegate* CreateSecurityStateModelDelegate() {
+  SecurityStateClient* security_state_client = GetSecurityStateClient();
+  if (!security_state_client) {
+    return nullptr;
+  }
+  // Transfer ownership to caller which should manage memory for the created
+  // security state client.
+  return security_state_client->MaybeCreateSecurityStateModelDelegate()
+      .release();
+}
 
-  // At this time, the usage of the client isn't mandatory as it is used only
-  // for optional overriding of default behavior.
-  if (security_state_client) {
-    std::unique_ptr<SecurityStateModelDelegate> security_state_model_delegate =
-        security_state_client->MaybeCreateSecurityStateModelDelegate();
-
-    if (security_state_model_delegate)
-      return security_state_model_delegate->GetSecurityLevel(web_contents);
+// This function is testable from the unit test file.
+MaliciousContentStatus GetMaliciousContentStatusForWebContentsInternal(
+    content::WebContents* web_contents,
+    SecurityStateModelDelegate* delegate) {
+  if (!web_contents) {
+    return MaliciousContentStatus::MALICIOUS_CONTENT_STATUS_NONE;
   }
 
-  return security_state::GetSecurityLevel(
-      *security_state::GetVisibleSecurityState(web_contents));
+  if (!delegate) {
+    return MaliciousContentStatus::MALICIOUS_CONTENT_STATUS_NONE;
+  }
+  return delegate->GetMaliciousContentStatus(web_contents);
 }
+
+// This function is testable from the unit test file.
+SecurityLevel GetSecurityLevelForWebContentsInternal(
+    content::WebContents* web_contents,
+    SecurityStateModelDelegate* delegate) {
+  if (!web_contents) {
+    return SecurityLevel::NONE;
+  }
+
+  if (!delegate) {
+    return security_state::GetSecurityLevel(
+        *security_state::GetVisibleSecurityState(web_contents));
+  }
+
+  return delegate->GetSecurityLevel(web_contents);
+}
+
+// Provides thread-safe, on-demand access to the SecurityStateModelDelegate
+// instance. Returns nullptr if the delegate cannot be created.
+SecurityStateModelDelegate* GetSecurityStateModelDelegate() {
+  // Function-local static pointer initialized exactly once (thread-safe since
+  // C++11). This pointer once initialized is maintained in memory till the
+  // process terminates.
+  static SecurityStateModelDelegate* const delegate =
+      CreateSecurityStateModelDelegate();
+
+  return delegate;
+}
+
+}  // namespace security_state::internal
+
+// The actual JNI function, now a thin wrapper.
+static jint JNI_SecurityStateModel_GetMaliciousContentStatusForWebContents(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  return security_state::internal::
+      GetMaliciousContentStatusForWebContentsInternal(
+          web_contents,
+          security_state::internal::GetSecurityStateModelDelegate());
+}
+
+// The actual JNI function, now a thin wrapper.
+static jint JNI_SecurityStateModel_GetSecurityLevelForWebContents(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  return security_state::internal::GetSecurityLevelForWebContentsInternal(
+      web_contents, security_state::internal::GetSecurityStateModelDelegate());
+}
+
+DEFINE_JNI(SecurityStateModel)

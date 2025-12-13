@@ -43,7 +43,7 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
     private @Nullable String mOldAppShortName;
 
     // The package name for this app.
-    private String mPackageName;
+    private @Nullable String mPackageName;
 
     // The callback to run when the user has made a decision.
     private Callback<Integer> mDialogResultCallback;
@@ -73,14 +73,14 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
     public void show(
             Context activityContext,
             ModalDialogManager manager,
-            String packageName,
+            @Nullable String packageName,
             boolean iconChanging,
             boolean shortNameChanging,
             boolean nameChanging,
-            String oldAppShortName,
-            String newAppShortName,
-            String oldAppName,
-            String newAppName,
+            @Nullable String oldAppShortName,
+            @Nullable String newAppShortName,
+            @Nullable String oldAppName,
+            @Nullable String newAppName,
             Bitmap currentAppIcon,
             Bitmap updatedAppIcon,
             boolean oldIconAdaptive,

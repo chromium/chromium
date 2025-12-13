@@ -8,6 +8,8 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 /**
  * Wraps a lazy-loaded nullable object, notifying observers a single time when the dependency
  * becomes available. This intentionally doesn't extend {@link OneshotSupplier} to support the

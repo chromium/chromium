@@ -40,9 +40,8 @@ class TestAutofillProvider : public AutofillProvider {
   void OnFocusOnFormField(AndroidAutofillManager* manager,
                           const FormData& form,
                           const FormFieldData& field) override {}
-  void OnDidFillAutofillFormData(AndroidAutofillManager* manager,
-                                 const FormData& form,
-                                 base::TimeTicks timestamp) override {}
+  void OnDidAutofillForm(AndroidAutofillManager* manager,
+                         const FormData& form) override {}
   void OnHidePopup(AndroidAutofillManager* manager) override {}
   void OnServerPredictionsAvailable(AndroidAutofillManager&,
                                     FormGlobalId form) override {}

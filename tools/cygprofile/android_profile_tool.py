@@ -14,6 +14,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 from typing import List, Optional
 
 _SRC_PATH = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
@@ -38,6 +39,22 @@ class NoProfileDataError(Exception):
 
   def __str__(self):
     return repr(self.value)
+
+
+def RunCommand(command: List[str]):
+  """Run a command from current build directory root.
+
+  Args:
+    command: A list of command strings.
+
+  Returns:
+    The process's return code.
+  """
+  root = constants.DIR_SOURCE_ROOT
+  logging.info('Executing %s in %s', ' '.join(command), root)
+  process = subprocess.Popen(command, cwd=root, env=os.environ)
+  process.wait()
+  return process.returncode
 
 
 class AndroidProfileTool:
@@ -118,7 +135,7 @@ class AndroidProfileTool:
       cmd += ['--chromium-output-directory', out_dir]
     cmd += [profile_benchmark] + ['-v'] * self._verbosity
     logging.debug('Running telemetry command: %s', cmd)
-    self._RunCommand(cmd)
+    RunCommand(cmd)
     data = self._PullProfileData(profile_benchmark)
     self._DeleteDeviceData()
     return data
@@ -151,16 +168,21 @@ class AndroidProfileTool:
       cmd += ['--chromium-output-directory', out_dir]
     cmd += [profile_benchmark] + ['-v'] * self._verbosity
     logging.debug('Running telemetry command: %s', cmd)
-    self._RunCommand(cmd)
+    RunCommand(cmd)
     data = self._PullProfileData(profile_benchmark)
     self._DeleteDeviceData()
     return data
 
-  def CollectWebViewStartupProfile(self, apk: str):
+  def CollectWebViewStartupProfile(self,
+                                   apk: str,
+                                   arch: str,
+                                   out_dir: Optional[str] = None):
     """Run the given benchmark and collect the generated profiles.
 
     Args:
       apk: The location of the webview apk file to profile.
+      arch: The target architecture to profile.
+      out_dir: The output directory, to find the chromedriver binary.
 
     Returns:
       A list of profile hitmaps.
@@ -175,64 +197,94 @@ class AndroidProfileTool:
     package_info = self._GetPackageInfo(apk)
     changer = self._SetCommandLineFlags(package_info)
 
-    chromium_out_dir = os.path.abspath(os.path.join(os.path.dirname(apk), '..'))
-    browser = self._GetBrowserFromApk(apk)
+    if out_dir:
+      maybe_driver_path = [
+          f'--driver-path={os.path.join(out_dir, "clang_x64", "chromedriver")}']
+      wpr_bin_path = os.path.join(constants.DIR_SOURCE_ROOT, 'third_party',
+                                  'webpagereplay', 'cipd', 'bin', 'linux',
+                                  'x86_64', 'wpr')
+      maybe_wpr_bin_path = f',"wpr_go_bin":"{wpr_bin_path}"'
+      adb_bin_path = os.path.join(constants.DIR_SOURCE_ROOT, 'third_party',
+                                  'android_sdk', 'public', 'platform-tools',
+                                  'adb')
+      maybe_adb_bin_path = f',"adb_bin":"{adb_bin_path}"'
+    else:
+      maybe_driver_path = []
+      maybe_wpr_bin_path = ''
+      maybe_adb_bin_path = ''
 
-    profile_benchmark = 'orderfile_generation.webview_startup'
-    if self._debug:
-      logging.info('Using reduced debugging profile')
-      profile_benchmark = 'orderfile_generation.webview_startup_debugging'
-    self._RunCommand([
-        'tools/perf/run_benchmark', '--device', self._device.serial,
-        '--browser', browser, '--chromium-output-directory', chromium_out_dir,
-        profile_benchmark
+    RunCommand([
+        'tools/perf/cb',
+        'embedder',
+        f'--browser={{browser:"clank/android_webview/tools/crossbench_config/cipd/{arch}/Velvet_{arch}.apk",driver:{{type:"Android"' +
+        maybe_adb_bin_path +
+        '}}',
+    ] + maybe_driver_path + [
+        '--splashscreen=skip',
+        '--cuj-config=third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',
+        '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo"' +
+        maybe_wpr_bin_path +
+        ',"skip_deterministic_script_injection":true}',
+        '--embedder-process-name=googleapp',
+        '--embedder-setup-command-config=clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson',
     ])
     self._RestoreCommandLineFlags(changer)
 
-    data = self._PullProfileData(profile_benchmark)
+    pid = self._GetProcessPid(
+        'com.google.android.googlequicksearchbox:googleapp')
+    time.sleep(60)  # Leave time for the profile dump
+    data = self._PullProfileData('embedder.crossbench')
+    data = self._FilterWebViewProfiles(data, pid)
+    if len(data) != 2:
+      raise NoProfileDataError(
+          f'Expected 2 profiles (browser and renderer) but found {len(data)}')
     self._DeleteDeviceData()
     return data
+
+  def _FilterWebViewProfiles(self, data: List[str],
+                             pid: Optional[int]) -> List[str]:
+    if not pid:
+      logging.warning('Could not find PID, not filtering profiles.')
+      return data
+
+    pid_str = str(pid)
+    filtered_data = []
+    for path in data:
+      filename = os.path.basename(path)
+      # Renderer profiles are always included.
+      # The renderer is less likely to dump a profile as a result of
+      # an app starting WebView from the background.
+      if 'profile-hitmap-renderer-' in filename:
+        filtered_data.append(path)
+        continue
+      # For browser profiles, check the PID.
+      if f'profile-hitmap-{pid_str}-' in filename:
+        filtered_data.append(path)
+    logging.info('Filtered Pulled profile files: %s', '\n'.join(filtered_data))
+    return filtered_data
+
+  def _GetProcessPid(self, full_process_name: str) -> Optional[int]:
+    pid_list = self._device.GetPids(full_process_name).get(full_process_name)
+    if pid_list:
+      return pid_list[0]
+    return None
 
   def InstallAndSetWebViewProvider(self, installer_path: str):
     """Installs the built WebView on the device and set it as the WebView
     provider.
     public instructions: https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/build-instructions.md#installing-webview-and-switching-provider # pylint: disable=line-too-long
+    The orderfile script tries to install WebView with the "com.android.webview"
+    package name. This package name is usually different from the package name
+    for the WebView installed by default on the device in the system image.
     """
-    # Uninstall the existing WebView package to avoid signatures issues.
-    self._device.Uninstall('com.google.android.webview.debug')
-    self._RunCommand([installer_path, 'install'])
-    self._RunCommand([installer_path, 'set-webview-provider'])
-
-  @staticmethod
-  def _GetBrowserFromApk(apk: str):
-    browser = 'android-webview'
-    apk_name = os.path.basename(apk)
-    if 'TrichromeWebView' in apk_name:
-      browser = browser + '-trichrome'
-    if 'Monochrome.apk' in apk_name or 'Google' in apk_name:
-      browser = browser + '-google'
-    return browser
-
-  @classmethod
-  def _RunCommand(cls, command: List[str]):
-    """Run a command from current build directory root.
-
-    Args:
-      command: A list of command strings.
-
-    Returns:
-      The process's return code.
-    """
-    root = constants.DIR_SOURCE_ROOT
-    logging.info('Executing %s in %s', ' '.join(command), root)
-    process = subprocess.Popen(command, cwd=root, env=os.environ)
-    process.wait()
-    return process.returncode
+    RunCommand([installer_path, 'install'])
+    RunCommand([installer_path, 'set-webview-provider'])
 
   def Cleanup(self):
     """Delete all local and device files left over from profiling. """
     self._DeleteDeviceData()
     self._DeleteHostData(self._host_profile_root)
+
 
   def _SetUpDevice(self):
     """When profiling, files are output to the disk by every process.  This
@@ -334,6 +386,7 @@ class AndroidProfileTool:
 
     if len(files) == 0:
       raise NoProfileDataError('No profile data was collected')
+    logging.info('Pulled profile files: %s', '\n'.join(files))
 
     return files
 

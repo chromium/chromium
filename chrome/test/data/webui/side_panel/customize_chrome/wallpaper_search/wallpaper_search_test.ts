@@ -1936,8 +1936,8 @@ suite('WallpaperSearchTest', () => {
               '#inspirationCard .inspiration-title');
       assertTrue(!!inspirationTitles);
       assertEquals(2, inspirationTitles.length);
-      assertEquals('foobar', inspirationTitles[0]!.textContent!.trim());
-      assertEquals('baz', inspirationTitles[1]!.textContent!.trim());
+      assertEquals('foobar', inspirationTitles[0]!.textContent.trim());
+      assertEquals('baz', inspirationTitles[1]!.textContent.trim());
       // Ensure the correct amount of groups show.
       const inspirationsGroups =
           wallpaperSearchElement.shadowRoot.querySelectorAll(
@@ -2018,11 +2018,11 @@ suite('WallpaperSearchTest', () => {
       const separator = loadTimeData.getString('separator');
       assertEquals(
           ['foo, bar, baz, Yellow'].join(separator),
-          inspirationTitles[0]!.textContent!.trim(),
+          inspirationTitles[0]!.textContent.trim(),
       );
       assertEquals(
           ['foo, baz'].join(separator),
-          inspirationTitles[1]!.textContent!.trim());
+          inspirationTitles[1]!.textContent.trim());
     });
 
     test('setting inspiration to background calls backend', async () => {

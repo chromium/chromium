@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "absl/log/absl_check.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
 #include "absl/strings/substitute.h"
 #include "google/protobuf/compiler/cpp/field.h"
@@ -19,6 +21,7 @@
 #include "google/protobuf/compiler/cpp/options.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/io/printer.h"
+#include "google/protobuf/port.h"
 
 // Must be included last.
 #include "google/protobuf/port_def.inc"
@@ -174,6 +177,7 @@ class Map : public FieldGeneratorBase {
   void GenerateByteSize(io::Printer* p) const override;
 
  private:
+
   const FieldDescriptor* key_;
   const FieldDescriptor* val_;
   const Options* opts_;
@@ -244,6 +248,7 @@ void Map::GenerateInlineAccessorDefinitions(io::Printer* p) const {
     inline $Map$* $nonnull$ $Msg$::mutable_$name$()
         ABSL_ATTRIBUTE_LIFETIME_BOUND {
       $WeakDescriptorSelfPin$;
+      $set_hasbit$;
       $annotate_mutable$;
       // @@protoc_insertion_point(field_mutable_map:$pkg.Msg.field$)
       return _internal_mutable_$name_internal$();

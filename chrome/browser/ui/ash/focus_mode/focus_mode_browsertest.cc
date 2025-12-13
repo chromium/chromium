@@ -569,6 +569,11 @@ INSTANTIATE_TEST_SUITE_P(
     FocusModeSpokenFeedbackTest,
     ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo)));
 
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3,
+    FocusModeSpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree)));
+
 // Tests that when using `Search + Left/Right Arrow` key to navigate on the
 // focus panel, the user update the timer texfield and start a focus session,
 // which should also update the session duration for the controller.

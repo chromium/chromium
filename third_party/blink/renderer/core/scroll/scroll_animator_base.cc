@@ -51,6 +51,7 @@ ScrollOffset ScrollAnimatorBase::ComputeDeltaToConsume(
 ScrollResult ScrollAnimatorBase::UserScroll(
     ui::ScrollGranularity,
     const ScrollOffset& delta,
+    cc::ScrollSourceType source_type,
     ScrollableArea::ScrollCallback on_finish) {
   // Run the callback for non-animation user scroll.
 
@@ -65,7 +66,9 @@ ScrollResult ScrollAnimatorBase::UserScroll(
   }
 
   SetCurrentOffset(new_pos);
-  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
+  source_type_ = source_type;
+  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser,
+                      source_type);
 
   if (on_finish) {
     std::move(on_finish).Run(ScrollableArea::ScrollCompletionMode::kFinished);
@@ -76,9 +79,12 @@ ScrollResult ScrollAnimatorBase::UserScroll(
 }
 
 void ScrollAnimatorBase::ScrollToOffsetWithoutAnimation(
-    const ScrollOffset& offset) {
+    const ScrollOffset& offset,
+    cc::ScrollSourceType source_type) {
   SetCurrentOffset(offset);
-  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
+  source_type_ = source_type;
+  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser,
+                      source_type);
 }
 
 void ScrollAnimatorBase::SetCurrentOffset(const ScrollOffset& offset) {

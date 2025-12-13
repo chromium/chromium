@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/services/quarantine/quarantine.h"
+#include "url/gurl.h"
 
 namespace quarantine {
 

@@ -554,8 +554,8 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
   }
 
   // Open the tab to invoke the APIs, as well as test the action visibility.
-  ASSERT_TRUE(NavigateToURL(extension->GetResourceURL("page.html")));
   content::WebContents* tab = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(tab, extension->GetResourceURL("page.html")));
 
   static constexpr char kScript[] =
       R"(setRulesInPageEnvironment([{
@@ -758,6 +758,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
 IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
                        MAYBE_RulesPersistence) {
   const Extension* extension = GetSingleLoadedExtension();
+  // TODO(crbug.com/40200835): On desktop Android this assert fails because the
+  // extension was not loaded. It's not clear why.
   ASSERT_TRUE(extension) << message_;
   ASSERT_EQ(kRulesExtensionName, extension->name());
 

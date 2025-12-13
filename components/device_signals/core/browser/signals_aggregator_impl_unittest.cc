@@ -25,7 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Pointee;
 using testing::Ref;
 using testing::Return;
@@ -78,13 +77,12 @@ class SignalsAggregatorImplTest : public testing::Test {
         .WillByDefault(Return(std::unordered_set<SignalName>({signal_name})));
 
     ON_CALL(*mock_collector.get(), GetSignal(signal_name, _, _, _, _))
-        .WillByDefault(
-            Invoke([&](SignalName signal_name, UserPermission permission,
-                       const SignalsAggregationRequest& request,
-                       SignalsAggregationResponse& response,
-                       base::OnceClosure done_closure) {
-              std::move(done_closure).Run();
-            }));
+        .WillByDefault([&](SignalName signal_name, UserPermission permission,
+                           const SignalsAggregationRequest& request,
+                           SignalsAggregationResponse& response,
+                           base::OnceClosure done_closure) {
+          std::move(done_closure).Run();
+        });
 
     return mock_collector;
   }
@@ -404,28 +402,27 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_MultipleSignals_Supported) {
   EXPECT_CALL(
       *settings_signal_collector_,
       GetSignal(SignalName::kSystemSettings, UserPermission::kGranted, _, _, _))
-      .WillOnce(Invoke([&](SignalName signal_name, UserPermission permission,
-                           const SignalsAggregationRequest& request,
-                           SignalsAggregationResponse& response,
-                           base::OnceClosure done_closure) {
+      .WillOnce([&](SignalName signal_name, UserPermission permission,
+                    const SignalsAggregationRequest& request,
+                    SignalsAggregationResponse& response,
+                    base::OnceClosure done_closure) {
         response.settings_response = settings_response;
         std::move(done_closure).Run();
-      }));
+      });
   EXPECT_CALL(
       *files_signal_collector_,
       GetSignal(SignalName::kFileSystemInfo, UserPermission::kGranted, _, _, _))
-      .WillOnce(Invoke([&](SignalName signal_name, UserPermission permission,
-                           const SignalsAggregationRequest& request,
-                           SignalsAggregationResponse& response,
-                           base::OnceClosure done_closure) {
+      .WillOnce([&](SignalName signal_name, UserPermission permission,
+                    const SignalsAggregationRequest& request,
+                    SignalsAggregationResponse& response,
+                    base::OnceClosure done_closure) {
         response.file_system_info_response = files_response;
         std::move(done_closure).Run();
-      }));
+      });
 
 #if BUILDFLAG(IS_WIN)
   AvProduct av_product;
   av_product.display_name = "some_name";
-  av_product.product_id = "some_id";
   av_product.state = device_signals::AvProductState::kOn;
   AntiVirusSignalResponse av_response;
   av_response.av_products.push_back(av_product);
@@ -433,13 +430,13 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_MultipleSignals_Supported) {
   EXPECT_CALL(
       *av_signal_collector_,
       GetSignal(SignalName::kAntiVirus, UserPermission::kGranted, _, _, _))
-      .WillOnce(Invoke([&](SignalName signal_name, UserPermission permission,
-                           const SignalsAggregationRequest& request,
-                           SignalsAggregationResponse& response,
-                           base::OnceClosure done_closure) {
+      .WillOnce([&](SignalName signal_name, UserPermission permission,
+                    const SignalsAggregationRequest& request,
+                    SignalsAggregationResponse& response,
+                    base::OnceClosure done_closure) {
         response.av_signal_response = av_response;
         std::move(done_closure).Run();
-      }));
+      });
 #endif  // BUILDFLAG(IS_WIN)
 
   base::test::TestFuture<SignalsAggregationResponse> future;

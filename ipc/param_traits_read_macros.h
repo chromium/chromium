@@ -5,23 +5,21 @@
 #ifndef IPC_PARAM_TRAITS_READ_MACROS_H_
 #define IPC_PARAM_TRAITS_READ_MACROS_H_
 
-// Null out all the macros that need nulling.
-#include "ipc/ipc_message_null_macros.h"
-
 // Set up so next include will generate read methods.
 #undef IPC_STRUCT_TRAITS_BEGIN
 #undef IPC_STRUCT_TRAITS_MEMBER
 #undef IPC_STRUCT_TRAITS_PARENT
 #undef IPC_STRUCT_TRAITS_END
+#undef IPC_ENUM_TRAITS_VALIDATE
+
 #define IPC_STRUCT_TRAITS_BEGIN(struct_name)                              \
   bool ParamTraits<struct_name>::Read(                                    \
       const base::Pickle* m, base::PickleIterator* iter, param_type* p) { \
-  return
+    return
 #define IPC_STRUCT_TRAITS_MEMBER(name) ReadParam(m, iter, &p->name) &&
 #define IPC_STRUCT_TRAITS_PARENT(type) ParamTraits<type>::Read(m, iter, p) &&
 #define IPC_STRUCT_TRAITS_END() 1; }
 
-#undef IPC_ENUM_TRAITS_VALIDATE
 #define IPC_ENUM_TRAITS_VALIDATE(enum_name, validation_expression)        \
   bool ParamTraits<enum_name>::Read(                                      \
       const base::Pickle* m, base::PickleIterator* iter, param_type* p) { \

@@ -28,8 +28,9 @@ affiliations::AffiliationService*
 IOSChromeAffiliationServiceFactory::GetForProfile(ProfileIOS* profile) {
   CHECK(profile);
 
-  return static_cast<affiliations::AffiliationService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<affiliations::AffiliationService>(
+          profile, /*create=*/true);
 }
 
 IOSChromeAffiliationServiceFactory::IOSChromeAffiliationServiceFactory()
@@ -41,17 +42,17 @@ IOSChromeAffiliationServiceFactory::~IOSChromeAffiliationServiceFactory() =
 
 std::unique_ptr<KeyedService>
 IOSChromeAffiliationServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   auto affiliation_service =
       std::make_unique<affiliations::AffiliationServiceImpl>(
-          context->GetSharedURLLoaderFactory(), backend_task_runner);
+          profile->GetSharedURLLoaderFactory(), backend_task_runner);
   affiliation_service->Init(
       GetApplicationContext()->GetNetworkConnectionTracker(),
-      context->GetStatePath().Append(
+      profile->GetStatePath().Append(
           affiliations::kAffiliationDatabaseFileName));
 
   return affiliation_service;

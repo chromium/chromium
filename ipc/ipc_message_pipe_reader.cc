@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ipc/ipc_message_pipe_reader.h"
 
 #include <stdint.h>
@@ -22,7 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_channel.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/thread_safe_proxy.h"
 
@@ -110,26 +105,6 @@ void MessagePipeReader::Close() {
     receiver_.reset();
 }
 
-bool MessagePipeReader::Send(std::unique_ptr<Message> message) {
-  CHECK(message->IsValid());
-  TRACE_EVENT_WITH_FLOW0("toplevel.flow", "MessagePipeReader::Send",
-                         message->flags(), TRACE_EVENT_FLAG_FLOW_OUT);
-  std::optional<std::vector<mojo::native::SerializedHandlePtr>> handles;
-  MojoResult result = MOJO_RESULT_OK;
-  result = ChannelMojo::ReadFromMessageAttachmentSet(message.get(), &handles);
-  if (result != MOJO_RESULT_OK)
-    return false;
-
-  if (!sender_)
-    return false;
-
-  base::span<const uint8_t> bytes(static_cast<const uint8_t*>(message->data()),
-                                  message->size());
-  sender_->Receive(MessageView(bytes, std::move(handles)));
-  DVLOG(4) << "Send " << message->type() << ": " << message->size();
-  return true;
-}
-
 void MessagePipeReader::GetRemoteInterface(
     mojo::GenericPendingAssociatedReceiver receiver) {
   if (!sender_.is_bound())
@@ -139,31 +114,6 @@ void MessagePipeReader::GetRemoteInterface(
 
 void MessagePipeReader::SetPeerPid(int32_t peer_pid) {
   delegate_->OnPeerPidReceived(peer_pid);
-}
-
-void MessagePipeReader::Receive(MessageView message_view) {
-  if (message_view.bytes().empty()) {
-    delegate_->OnBrokenDataReceived();
-    return;
-  }
-  Message message(reinterpret_cast<const char*>(message_view.bytes().data()),
-                  message_view.bytes().size());
-  if (!message.IsValid()) {
-    delegate_->OnBrokenDataReceived();
-    return;
-  }
-
-  DVLOG(4) << "Receive " << message.type() << ": " << message.size();
-  MojoResult write_result = ChannelMojo::WriteToMessageAttachmentSet(
-      message_view.TakeHandles(), &message);
-  if (write_result != MOJO_RESULT_OK) {
-    OnPipeError(write_result);
-    return;
-  }
-
-  TRACE_EVENT_WITH_FLOW0("toplevel.flow", "MessagePipeReader::Receive",
-                         message.flags(), TRACE_EVENT_FLAG_FLOW_IN);
-  delegate_->OnMessageReceived(message);
 }
 
 void MessagePipeReader::GetAssociatedInterface(

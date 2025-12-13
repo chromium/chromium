@@ -47,8 +47,23 @@ public class TopToolbarOverlayProperties {
     /** The current x offset of the top toolbar. */
     public static final WritableFloatPropertyKey X_OFFSET = new WritableFloatPropertyKey();
 
-    /** The current y offset of the top toolbar. */
-    public static final WritableFloatPropertyKey CONTENT_OFFSET = new WritableFloatPropertyKey();
+    /**
+     * The current x offset of the top toolbar. This is used when |LEGACY_CONTENT_OFFSET| is not
+     * set.
+     */
+    public static final WritableFloatPropertyKey Y_OFFSET = new WritableFloatPropertyKey();
+
+    // TODO(https://crbug.com/454338286): Rename / remove in favor of yOffset.
+    /**
+     * The current content offset used to position the top toolbar. This offset effectively
+     * represents the offset between the bottom edge of the toolbar and might not equal to the
+     * content offset from the current browser control, especially when there are other browser
+     * controls shown below the toolbar (e.g. bookmark bar).
+     *
+     * <p>When this attribute is set, the value of {@link #Y_OFFSET} will be ignored.
+     */
+    public static final WritableFloatPropertyKey LEGACY_CONTENT_OFFSET =
+            new WritableFloatPropertyKey();
 
     /** The OffsetTag indicating that this layer should be moved by viz. */
     public static final WritableObjectPropertyKey<OffsetTag> TOOLBAR_OFFSET_TAG =
@@ -67,7 +82,8 @@ public class TopToolbarOverlayProperties {
                 URL_BAR_RESOURCE_ID,
                 VISIBLE,
                 X_OFFSET,
-                CONTENT_OFFSET,
+                Y_OFFSET,
+                LEGACY_CONTENT_OFFSET,
                 TOOLBAR_OFFSET_TAG,
                 CAPTURE_RESOURCE_ID
             };

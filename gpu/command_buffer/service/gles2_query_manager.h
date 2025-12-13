@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/query_manager.h"
 #include "gpu/gpu_gles2_export.h"

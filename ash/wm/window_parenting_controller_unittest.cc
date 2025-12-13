@@ -5,8 +5,8 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
 #include "ui/aura/window.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -26,7 +26,7 @@ TEST_F(WindowParentingControllerTest, TransientParent) {
 
   // Transient.
   std::unique_ptr<views::Widget> transient_widget =
-      TestWidgetBuilder()
+      views::test::TestWidgetBuilder()
           .SetShow(true)
           .SetParent(window.get())
           .BuildOwnsNativeWidget();

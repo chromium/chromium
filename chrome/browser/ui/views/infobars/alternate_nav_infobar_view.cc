@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/controls/label.h"
@@ -35,13 +36,26 @@ AlternateNavInfoBarView::AlternateNavInfoBarView(
   std::u16string message_text = delegate_ptr->GetMessageTextWithOffset(&offset);
   DCHECK_NE(std::u16string::npos, offset);
   label_1_text_ = message_text.substr(0, offset);
-  label_1_ = AddContentChildView(CreateLabel(label_1_text_));
+
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    label_1_ = content_container()->AddChildView(CreateLabel(label_1_text_));
+  } else {
+    label_1_ = AddContentChildView(CreateLabel(label_1_text_));
+  }
 
   link_text_ = delegate_ptr->GetLinkText();
-  link_ = AddContentChildView(CreateLink(link_text_));
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    link_ = content_container()->AddChildView(CreateLink(link_text_));
+  } else {
+    link_ = AddContentChildView(CreateLink(link_text_));
+  }
 
   label_2_text_ = message_text.substr(offset);
-  label_2_ = AddContentChildView(CreateLabel(label_2_text_));
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    label_2_ = content_container()->AddChildView(CreateLabel(label_2_text_));
+  } else {
+    label_2_ = AddContentChildView(CreateLabel(label_2_text_));
+  }
 }
 
 AlternateNavInfoBarView::~AlternateNavInfoBarView() = default;
@@ -75,6 +89,9 @@ void AlternateNavInfoBarView::ElideLabels(Labels* labels, int available_width) {
 void AlternateNavInfoBarView::Layout(PassKey) {
   LayoutSuperclass<InfoBarView>(this);
 
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    return;
+  }
   label_1_->SetText(label_1_text_);
   link_->SetText(link_text_);
   label_2_->SetText(label_2_text_);
@@ -90,6 +107,9 @@ void AlternateNavInfoBarView::Layout(PassKey) {
 }
 
 int AlternateNavInfoBarView::GetContentMinimumWidth() const {
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    return 0;
+  }
   int label_1_width = label_1_->GetMinimumSize().width();
   return label_1_width ? label_1_width : link_->GetMinimumSize().width();
 }

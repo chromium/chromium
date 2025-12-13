@@ -141,6 +141,7 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
     const std::optional<int>& action_index,
     const std::optional<std::u16string>& reply,
     const std::optional<bool>& by_user,
+    const std::optional<bool>& is_suspicious,
     base::OnceClosure on_completed_cb) {
   NotificationHandler* handler = GetNotificationHandler(notification_type);
   DCHECK(handler);
@@ -164,7 +165,8 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
         observer.OnNotificationClosed(notification_id);
       break;
     case NotificationOperation::kDisablePermission:
-      handler->DisableNotifications(profile_, origin, notification_id);
+      handler->DisableNotifications(profile_, origin, notification_id,
+                                    is_suspicious);
       break;
     case NotificationOperation::kSettings:
       handler->OpenSettings(profile_, origin);
@@ -307,6 +309,7 @@ void NotificationDisplayServiceImpl::ProfileLoadedCallback(
     const std::optional<int>& action_index,
     const std::optional<std::u16string>& reply,
     const std::optional<bool>& by_user,
+    const std::optional<bool>& is_suspicious,
     base::OnceClosure on_completed_cb,
     Profile* profile) {
   base::UmaHistogramBoolean("Notifications.LoadProfileResult",
@@ -321,7 +324,7 @@ void NotificationDisplayServiceImpl::ProfileLoadedCallback(
       NotificationDisplayServiceImpl::GetForProfile(profile);
   display_service->ProcessNotificationOperation(
       operation, notification_type, origin, notification_id, action_index,
-      reply, by_user, std::move(on_completed_cb));
+      reply, by_user, is_suspicious, std::move(on_completed_cb));
 }
 
 void NotificationDisplayServiceImpl::SetBlockersForTesting(

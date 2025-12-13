@@ -19,7 +19,6 @@
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 namespace base {

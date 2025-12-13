@@ -38,6 +38,8 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
+#import "ui/accessibility/platform/ax_private_attributes_mac.h"
+#import "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/accessibility/platform/browser_accessibility_mac.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
@@ -69,156 +71,6 @@ static_assert(
     "back an AXTextMarker");
 
 namespace {
-
-// Private WebKit accessibility attributes.
-NSString* const
-    NSAccessibilityUIElementCountForSearchPredicateParameterizedAttribute =
-        @"AXUIElementCountForSearchPredicate";
-NSString* const
-    CrNSAccessibilityUIElementsForSearchPredicateParameterizedAttribute =
-#if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
-        @"AXUIElementsForSearchPredicate";
-#else
-        // This is public as of the macOS 26 SDK. When macOS 26 is the minimum,
-        // eliminate the compatibility Cr* name and transition use sites
-        // directly to the NS* name.
-    NSAccessibilityUIElementsForSearchPredicateParameterizedAttribute;
-#endif
-
-// Private attributes for text markers.
-NSString* const NSAccessibilityStartTextMarkerAttribute = @"AXStartTextMarker";
-NSString* const NSAccessibilityEndTextMarkerAttribute = @"AXEndTextMarker";
-NSString* const NSAccessibilitySelectedTextMarkerRangeAttribute =
-    @"AXSelectedTextMarkerRange";
-NSString* const NSAccessibilityTextMarkerIsValidParameterizedAttribute =
-    @"AXTextMarkerIsValid";
-NSString* const NSAccessibilityIndexForTextMarkerParameterizedAttribute =
-    @"AXIndexForTextMarker";
-NSString* const NSAccessibilityTextMarkerForIndexParameterizedAttribute =
-    @"AXTextMarkerForIndex";
-NSString* const NSAccessibilityEndTextMarkerForBoundsParameterizedAttribute =
-    @"AXEndTextMarkerForBounds";
-NSString* const NSAccessibilityStartTextMarkerForBoundsParameterizedAttribute =
-    @"AXStartTextMarkerForBounds";
-NSString* const
-    NSAccessibilityLineTextMarkerRangeForTextMarkerParameterizedAttribute =
-        @"AXLineTextMarkerRangeForTextMarker";
-// TODO(nektar): Implement programmatic text operations.
-//
-// NSString* const NSAccessibilityTextOperationMarkerRanges =
-//    @"AXTextOperationMarkerRanges";
-NSString* const NSAccessibilityUIElementForTextMarkerParameterizedAttribute =
-    @"AXUIElementForTextMarker";
-NSString* const
-    NSAccessibilityTextMarkerRangeForUIElementParameterizedAttribute =
-        @"AXTextMarkerRangeForUIElement";
-NSString* const NSAccessibilityLineForTextMarkerParameterizedAttribute =
-    @"AXLineForTextMarker";
-NSString* const NSAccessibilityTextMarkerRangeForLineParameterizedAttribute =
-    @"AXTextMarkerRangeForLine";
-NSString* const NSAccessibilityStringForTextMarkerRangeParameterizedAttribute =
-    @"AXStringForTextMarkerRange";
-NSString* const NSAccessibilityTextMarkerForPositionParameterizedAttribute =
-    @"AXTextMarkerForPosition";
-NSString* const NSAccessibilityBoundsForTextMarkerRangeParameterizedAttribute =
-    @"AXBoundsForTextMarkerRange";
-NSString* const
-    NSAccessibilityAttributedStringForTextMarkerRangeWithOptionsParameterizedAttribute =
-        @"AXAttributedStringForTextMarkerRangeWithOptions";
-NSString* const
-    NSAccessibilityTextMarkerRangeForUnorderedTextMarkersParameterizedAttribute =
-        @"AXTextMarkerRangeForUnorderedTextMarkers";
-NSString* const
-    NSAccessibilityNextTextMarkerForTextMarkerParameterizedAttribute =
-        @"AXNextTextMarkerForTextMarker";
-NSString* const
-    NSAccessibilityPreviousTextMarkerForTextMarkerParameterizedAttribute =
-        @"AXPreviousTextMarkerForTextMarker";
-NSString* const
-    NSAccessibilityLeftWordTextMarkerRangeForTextMarkerParameterizedAttribute =
-        @"AXLeftWordTextMarkerRangeForTextMarker";
-NSString* const
-    NSAccessibilityRightWordTextMarkerRangeForTextMarkerParameterizedAttribute =
-        @"AXRightWordTextMarkerRangeForTextMarker";
-NSString* const
-    NSAccessibilityLeftLineTextMarkerRangeForTextMarkerParameterizedAttribute =
-        @"AXLeftLineTextMarkerRangeForTextMarker";
-NSString* const
-    NSAccessibilityRightLineTextMarkerRangeForTextMarkerParameterizedAttribute =
-        @"AXRightLineTextMarkerRangeForTextMarker";
-NSString* const
-    NSAccessibilitySentenceTextMarkerRangeForTextMarkerParameterizedAttribute =
-        @"AXSentenceTextMarkerRangeForTextMarker";
-NSString* const
-    NSAccessibilityParagraphTextMarkerRangeForTextMarkerParameterizedAttribute =
-        @"AXParagraphTextMarkerRangeForTextMarker";
-NSString* const
-    NSAccessibilityNextWordEndTextMarkerForTextMarkerParameterizedAttribute =
-        @"AXNextWordEndTextMarkerForTextMarker";
-NSString* const
-    NSAccessibilityPreviousWordStartTextMarkerForTextMarkerParameterizedAttribute =
-        @"AXPreviousWordStartTextMarkerForTextMarker";
-NSString* const
-    NSAccessibilityNextLineEndTextMarkerForTextMarkerParameterizedAttribute =
-        @"AXNextLineEndTextMarkerForTextMarker";
-NSString* const
-    NSAccessibilityPreviousLineStartTextMarkerForTextMarkerParameterizedAttribute =
-        @"AXPreviousLineStartTextMarkerForTextMarker";
-NSString* const
-    NSAccessibilityNextSentenceEndTextMarkerForTextMarkerParameterizedAttribute =
-        @"AXNextSentenceEndTextMarkerForTextMarker";
-NSString* const
-    NSAccessibilityPreviousSentenceStartTextMarkerForTextMarkerParameterizedAttribute =
-        @"AXPreviousSentenceStartTextMarkerForTextMarker";
-NSString* const
-    NSAccessibilityNextParagraphEndTextMarkerForTextMarkerParameterizedAttribute =
-        @"AXNextParagraphEndTextMarkerForTextMarker";
-NSString* const
-    NSAccessibilityPreviousParagraphStartTextMarkerForTextMarkerParameterizedAttribute =
-        @"AXPreviousParagraphStartTextMarkerForTextMarker";
-NSString* const
-    NSAccessibilityStyleTextMarkerRangeForTextMarkerParameterizedAttribute =
-        @"AXStyleTextMarkerRangeForTextMarker";
-NSString* const NSAccessibilityLengthForTextMarkerRangeParameterizedAttribute =
-    @"AXLengthForTextMarkerRange";
-
-// Private attributes that can be used for testing text markers, e.g. in dump
-// tree tests.
-NSString* const
-    NSAccessibilityTextMarkerDebugDescriptionParameterizedAttribute =
-        @"AXTextMarkerDebugDescription";
-NSString* const
-    NSAccessibilityTextMarkerRangeDebugDescriptionParameterizedAttribute =
-        @"AXTextMarkerRangeDebugDescription";
-NSString* const
-    NSAccessibilityTextMarkerNodeDebugDescriptionParameterizedAttribute =
-        @"AXTextMarkerNodeDebugDescription";
-
-// Other private attributes.
-NSString* const NSAccessibilitySelectTextWithCriteriaParameterizedAttribute =
-    @"AXSelectTextWithCriteria";
-NSString* const NSAccessibilityIndexForChildUIElementParameterizedAttribute =
-    @"AXIndexForChildUIElement";
-NSString* const NSAccessibilityValueAutofillAvailableAttribute =
-    @"AXValueAutofillAvailable";
-// Not currently supported by Chrome -- information not stored:
-// NSString* const NSAccessibilityValueAutofilledAttribute =
-// @"AXValueAutofilled";
-
-// Not currently supported by Chrome -- mismatch of types supported: NSString*
-// const NSAccessibilityValueAutofillTypeAttribute = @"AXValueAutofillType";
-
-// Actions.
-NSString* const CrNSAccessibilityScrollToVisibleAction =
-#if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
-    @"AXScrollToVisible";
-#else
-    // This is public as of the macOS 26 SDK. When macOS 26 is the minimum,
-    // eliminate the compatibility Cr* name and transition use sites directly to
-    // the NS* name.
-    NSAccessibilityScrollToVisibleAction;
-#endif
-
 // A mapping from an accessibility attribute to its method name.
 NSDictionary* gAttributeToMethodNameMap = nil;
 
@@ -511,11 +363,6 @@ AXTextEdit::~AXTextEdit() = default;
 
 }  // namespace ui
 
-// Not defined in current versions of library, but may be in the future:
-#ifndef NSAccessibilityLanguageAttribute
-#define NSAccessibilityLanguageAttribute @"AXLanguage"
-#endif
-
 bool ui::IsNSRange(id value) {
   return [value isKindOfClass:[NSValue class]] &&
          0 == UNSAFE_TODO(strcmp([value objCType], @encode(NSRange)));
@@ -533,62 +380,52 @@ bool ui::IsNSRange(id value) {
 }
 
 + (void)initialize {
-  const struct {
-    NSString* attribute;
-    NSString* methodName;
-  } attributeToMethodNameContainer[] = {
-      {NSAccessibilityColumnsAttribute, @"columns"},
-      {NSAccessibilityColumnIndexRangeAttribute, @"columnIndexRange"},
-      {NSAccessibilityContentsAttribute, @"contents"},
-      {NSAccessibilityDisclosingAttribute, @"disclosing"},
-      {NSAccessibilityDisclosedByRowAttribute, @"disclosedByRow"},
-      {NSAccessibilityDisclosureLevelAttribute, @"disclosureLevel"},
-      {NSAccessibilityDisclosedRowsAttribute, @"disclosedRows"},
-      {NSAccessibilityEnabledAttribute, @"enabled"},
-      {NSAccessibilityEndTextMarkerAttribute, @"endTextMarker"},
-      {NSAccessibilityExpandedAttribute, @"expanded"},
-      {NSAccessibilityHeaderAttribute, @"header"},
-      {NSAccessibilityIndexAttribute, @"index"},
-      {NSAccessibilityLanguageAttribute, @"language"},
-      {NSAccessibilityLinkedUIElementsAttribute, @"linkedUIElements"},
-      {NSAccessibilityMaxValueAttribute, @"maxValue"},
-      {NSAccessibilityMinValueAttribute, @"minValue"},
-      {NSAccessibilityOrientationAttribute, @"orientation"},
-      {NSAccessibilityPositionAttribute, @"position"},
-      {NSAccessibilityRoleAttribute, @"role"},
-      {NSAccessibilityRowHeaderUIElementsAttribute, @"rowHeaders"},
-      {NSAccessibilityRowIndexRangeAttribute, @"rowIndexRange"},
-      {NSAccessibilityRowsAttribute, @"accessibilityRows"},
-      // TODO(aboxhall): expose
-      // NSAccessibilityServesAsTitleForUIElementsAttribute
-      {NSAccessibilityStartTextMarkerAttribute, @"startTextMarker"},
-      {NSAccessibilitySelectedChildrenAttribute, @"selectedChildren"},
-      {NSAccessibilitySelectedTextMarkerRangeAttribute,
-       @"selectedTextMarkerRange"},
-      {NSAccessibilitySortDirectionAttribute, @"sortDirection"},
-      {NSAccessibilitySubroleAttribute, @"subrole"},
-      {NSAccessibilityTabsAttribute, @"tabs"},
-      {NSAccessibilityTopLevelUIElementAttribute, @"window"},
-      {NSAccessibilityValueAttribute, @"value"},
-      {NSAccessibilityValueAutofillAvailableAttribute,
-       @"valueAutofillAvailable"},
-      // Not currently supported by Chrome -- information not stored:
-      // {NSAccessibilityValueAutofilledAttribute, @"valueAutofilled"},
-      // Not currently supported by Chrome -- mismatch of types supported:
-      // {NSAccessibilityValueAutofillTypeAttribute, @"valueAutofillType"},
-      {NSAccessibilityValueDescriptionAttribute, @"valueDescription"},
-      {NSAccessibilityVisibleCellsAttribute, @"visibleCells"},
-      {NSAccessibilityVisibleChildrenAttribute, @"visibleChildren"},
-      {NSAccessibilityVisibleColumnsAttribute, @"visibleColumns"},
-      {NSAccessibilityVisibleRowsAttribute, @"visibleRows"},
-      {NSAccessibilityWindowAttribute, @"window"},
+  gAttributeToMethodNameMap = @{
+    NSAccessibilityColumnsAttribute : @"columns",
+    NSAccessibilityColumnIndexRangeAttribute : @"columnIndexRange",
+    NSAccessibilityContentsAttribute : @"contents",
+    NSAccessibilityDisclosingAttribute : @"disclosing",
+    NSAccessibilityDisclosedByRowAttribute : @"disclosedByRow",
+    NSAccessibilityDisclosureLevelAttribute : @"disclosureLevel",
+    NSAccessibilityDisclosedRowsAttribute : @"disclosedRows",
+    NSAccessibilityEnabledAttribute : @"enabled",
+    NSAccessibilityEndTextMarkerAttribute : @"endTextMarker",
+    NSAccessibilityExpandedAttribute : @"expanded",
+    NSAccessibilityHeaderAttribute : @"header",
+    NSAccessibilityIndexAttribute : @"index",
+    NSAccessibilityLanguageAttribute : @"language",
+    NSAccessibilityLinkedUIElementsAttribute : @"linkedUIElements",
+    NSAccessibilityMaxValueAttribute : @"maxValue",
+    NSAccessibilityMinValueAttribute : @"minValue",
+    NSAccessibilityOrientationAttribute : @"orientation",
+    NSAccessibilityPositionAttribute : @"position",
+    NSAccessibilityRoleAttribute : @"role",
+    NSAccessibilityRowHeaderUIElementsAttribute : @"rowHeaders",
+    NSAccessibilityRowIndexRangeAttribute : @"rowIndexRange",
+    NSAccessibilityRowsAttribute : @"accessibilityRows",
+    // TODO(aboxhall): expose
+    // NSAccessibilityServesAsTitleForUIElementsAttribute
+    NSAccessibilityStartTextMarkerAttribute : @"startTextMarker",
+    NSAccessibilitySelectedChildrenAttribute : @"selectedChildren",
+    NSAccessibilitySelectedTextMarkerRangeAttribute :
+        @"selectedTextMarkerRange",
+    NSAccessibilitySortDirectionAttribute : @"sortDirection",
+    NSAccessibilitySubroleAttribute : @"subrole",
+    NSAccessibilityTabsAttribute : @"tabs",
+    NSAccessibilityTopLevelUIElementAttribute : @"window",
+    NSAccessibilityValueAttribute : @"value",
+    NSAccessibilityValueAutofillAvailableAttribute : @"valueAutofillAvailable",
+    // Not currently supported by Chrome -- information not stored:
+    // NSAccessibilityValueAutofilledAttribute: @"valueAutofilled",
+    // Not currently supported by Chrome -- mismatch of types supported:
+    // NSAccessibilityValueAutofillTypeAttribute: @"valueAutofillType",
+    NSAccessibilityValueDescriptionAttribute : @"valueDescription",
+    NSAccessibilityVisibleCellsAttribute : @"visibleCells",
+    NSAccessibilityVisibleChildrenAttribute : @"visibleChildren",
+    NSAccessibilityVisibleColumnsAttribute : @"visibleColumns",
+    NSAccessibilityVisibleRowsAttribute : @"visibleRows",
+    NSAccessibilityWindowAttribute : @"window",
   };
-
-  NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
-  for (const auto& item : attributeToMethodNameContainer) {
-    dict[item.attribute] = item.methodName;
-  }
-  gAttributeToMethodNameMap = dict;
 }
 
 - (instancetype)initWithObject:(BrowserAccessibility*)accessibility
@@ -1902,6 +1739,9 @@ bool ui::IsNSRange(id value) {
 
 // Returns the accessibility value for the given attribute and parameter. If the
 // value isn't supported this will return nil.
+//
+// TODO(nektar): Implement programmatic text operations.
+//
 - (id)accessibilityAttributeValue:(NSString*)attribute
                      forParameter:(id)parameter {
   if (parameter && [parameter isKindOfClass:[NSNumber self]]) {
@@ -2312,7 +2152,7 @@ bool ui::IsNSRange(id value) {
 
   if ([attribute
           isEqualToString:
-              CrNSAccessibilityUIElementsForSearchPredicateParameterizedAttribute]) {
+              NSAccessibilityUIElementsForSearchPredicateParameterizedAttribute]) {
     OneShotAccessibilityTreeSearch search(_owner);
     if (InitializeAccessibilityTreeSearch(&search, parameter)) {
       size_t count = search.CountMatches();
@@ -2492,7 +2332,7 @@ bool ui::IsNSRange(id value) {
     NSAccessibilityBoundsForRangeParameterizedAttribute,
     NSAccessibilityStringForRangeParameterizedAttribute,
     NSAccessibilityUIElementCountForSearchPredicateParameterizedAttribute,
-    CrNSAccessibilityUIElementsForSearchPredicateParameterizedAttribute,
+    NSAccessibilityUIElementsForSearchPredicateParameterizedAttribute,
     NSAccessibilitySelectTextWithCriteriaParameterizedAttribute
   ] mutableCopy];
 
@@ -2540,7 +2380,7 @@ bool ui::IsNSRange(id value) {
 
   NSMutableArray* actions = [NSMutableArray
       arrayWithObjects:NSAccessibilityShowMenuAction,
-                       CrNSAccessibilityScrollToVisibleAction, nil];
+                       NSAccessibilityScrollToVisibleAction, nil];
 
   // VoiceOver expects the "press" action to be first.
   if (_owner->IsClickable())
@@ -2688,8 +2528,9 @@ bool ui::IsNSRange(id value) {
   // language, so it may make more sense to always expose this attribute.
   //
   // For now we expose the language attribute if we have any language set.
-  if (_owner->node() && !_owner->node()->GetLanguage().empty())
+  if (_owner->node() && !_owner->node()->GetLanguage().empty()) {
     [ret addObject:NSAccessibilityLanguageAttribute];
+  }
 
   // TODO(aboxhall): expose NSAccessibilityServesAsTitleForUIElementsAttribute
   // for elements which are referred to by labelledby or are labels
@@ -2843,7 +2684,7 @@ bool ui::IsNSRange(id value) {
     // LINT.ThenChange(accessibilityPerformPress)
   } else if ([action isEqualToString:NSAccessibilityShowMenuAction]) {
     manager->ShowContextMenu(*actionTarget);
-  } else if ([action isEqualToString:CrNSAccessibilityScrollToVisibleAction]) {
+  } else if ([action isEqualToString:NSAccessibilityScrollToVisibleAction]) {
     ui::AXPlatformNodeBase* mac_obj =
         [base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
             actionTarget->GetNativeViewAccessible().Get()) node];
@@ -3046,7 +2887,7 @@ bool ui::IsNSRange(id value) {
 - (BrowserAccessibility*)actionTarget {
   // When an action is triggered on a container with selectable children and
   // one of those children is an active descendant or focused, retarget the
-  // action to that child. See https://crbug.com/1114892.
+  // action to that child. See https://crbug.com/40711038.
   if (!ui::IsContainerWithSelectableChildren(_owner->GetRole()))
     return _owner;
 

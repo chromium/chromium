@@ -18,23 +18,23 @@ namespace autofill {
 // Arguments passed to |DocumentSubmitted|.
 struct TestSubmitDocumentInfo {
   TestSubmitDocumentInfo();
-  raw_ptr<web::WebState> web_state = nullptr;
-  raw_ptr<web::WebFrame> sender_frame = nullptr;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state = nullptr;
+  raw_ptr<web::WebFrame, DanglingUntriaged> sender_frame = nullptr;
   FormData form_data;
   bool has_user_gesture;
 };
 
 // Arguments passed to |FormActivityRegistered|.
 struct TestFormActivityInfo {
-  raw_ptr<web::WebState> web_state = nullptr;
-  raw_ptr<web::WebFrame> sender_frame = nullptr;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state = nullptr;
+  raw_ptr<web::WebFrame, DanglingUntriaged> sender_frame = nullptr;
   FormActivityParams form_activity;
 };
 
 // Arguments passed to |FormRemovalRegistered|.
 struct TestFormRemovalInfo {
-  raw_ptr<web::WebState> web_state = nullptr;
-  raw_ptr<web::WebFrame> sender_frame = nullptr;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state = nullptr;
+  raw_ptr<web::WebFrame, DanglingUntriaged> sender_frame = nullptr;
   FormRemovalParams form_removal_params;
 };
 
@@ -63,7 +63,8 @@ class TestFormActivityObserver : public autofill::FormActivityObserver {
   void DocumentSubmitted(web::WebState* web_state,
                          web::WebFrame* sender_frame,
                          const FormData& form_data,
-                         bool has_user_gesture) override;
+                         bool has_user_gesture,
+                         bool perfect_filling) override;
 
   void FormActivityRegistered(web::WebState* web_state,
                               web::WebFrame* sender_frame,
@@ -74,7 +75,7 @@ class TestFormActivityObserver : public autofill::FormActivityObserver {
                    const FormRemovalParams& params) override;
 
  private:
-  raw_ptr<web::WebState> web_state_ = nullptr;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state_ = nullptr;
   std::unique_ptr<TestSubmitDocumentInfo> submit_document_info_;
   std::unique_ptr<TestFormActivityInfo> form_activity_info_;
   std::unique_ptr<TestFormRemovalInfo> form_removal_info_;

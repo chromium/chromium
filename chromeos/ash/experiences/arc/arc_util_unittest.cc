@@ -13,7 +13,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
@@ -27,6 +26,7 @@
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_platform_support.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/testing_pref_service.h"
@@ -95,11 +95,15 @@ class ArcUtilTest : public ash::AshTestBase {
   }
 
   void SetUp() override {
+    fake_arc_platform_support_ = std::make_unique<FakeArcPlatformSupport>();
     ash::AshTestBase::SetUp();
     prefs::RegisterProfilePrefs(profile_prefs_.registry());
   }
 
-  void TearDown() override { ash::AshTestBase::TearDown(); }
+  void TearDown() override {
+    ash::AshTestBase::TearDown();
+    fake_arc_platform_support_.reset();
+  }
 
  protected:
   void InjectUpstartStartJobFailure(const std::string& job_name_to_fail) {
@@ -125,9 +129,28 @@ class ArcUtilTest : public ash::AshTestBase {
 
   PrefService* profile_prefs() { return &profile_prefs_; }
 
+  std::unique_ptr<FakeArcPlatformSupport> fake_arc_platform_support_;
+
  private:
   TestingPrefServiceSimple profile_prefs_;
 };
+
+TEST_F(ArcUtilTest, IsArcAvailable_ArcVmDlcRequired_DlcNotEnabled) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--enable-arcvm-dlc"});
+  command_line->InitFromArgv({"", "--arcvm-dlc-hardware-satisfied"});
+  fake_arc_platform_support_->SetDlcEnabled(false);
+
+  EXPECT_FALSE(IsArcAvailable());
+}
+
+TEST_F(ArcUtilTest, IsArcAvailable_ArcVmDlcRequired_HardwareNotSatisfied) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--enable-arcvm-dlc"});
+  fake_arc_platform_support_->SetDlcEnabled(true);
+
+  EXPECT_FALSE(IsArcAvailable());
+}
 
 TEST_F(ArcUtilTest, IsArcAvailable_None) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -214,12 +237,20 @@ TEST_F(ArcUtilTest, IsArcVmEnabled) {
   EXPECT_TRUE(IsArcVmEnabled());
 }
 
-TEST_F(ArcUtilTest, IsArcVmDlcEnabled) {
-  EXPECT_FALSE(IsArcVmDlcEnabled());
+TEST_F(ArcUtilTest, IsArcVmDlcRequired) {
+  EXPECT_FALSE(IsArcVmDlcRequired());
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--enable-arcvm-dlc"});
-  EXPECT_TRUE(IsArcVmDlcEnabled());
+  EXPECT_TRUE(IsArcVmDlcRequired());
+}
+
+TEST_F(ArcUtilTest, IsArcVmDlcHardwareRequirementSatisfied) {
+  EXPECT_FALSE(IsArcVmDlcHardwareRequirementSatisfied());
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--arcvm-dlc-hardware-satisfied"});
+  EXPECT_TRUE(IsArcVmDlcHardwareRequirementSatisfied());
 }
 
 TEST_F(ArcUtilTest, GetArcAndroidSdkVersionAsInt) {
@@ -522,8 +553,8 @@ TEST_F(ArcUtilTest, ConfigureUpstartJobs_StartFail) {
 }
 
 TEST_F(ArcUtilTest, GetArcWindowTaskId) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(100, nullptr));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 100});
 
   exo::SetShellApplicationId(window.get(), "org.chromium.arc.100");
 
@@ -546,8 +577,8 @@ TEST_F(ArcUtilTest, GetArcWindowTaskId) {
 }
 
 TEST_F(ArcUtilTest, GetArcWindowSessionId) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(200, nullptr));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 200});
 
   exo::SetShellApplicationId(window.get(), "org.chromium.arc.session.200");
 

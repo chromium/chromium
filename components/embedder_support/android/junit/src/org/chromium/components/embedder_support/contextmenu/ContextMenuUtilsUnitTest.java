@@ -40,7 +40,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink_public.common.ContextMenuDataMediaFlags;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils.HeaderInfo;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -57,6 +59,9 @@ public class ContextMenuUtilsUnitTest {
     private static final String sTitleText = "titleText";
     private static final String sLinkText = "linkText";
     private static final String sSrcUrl = "https://www.google.com/";
+    private static final GURL sPageGUrl = new GURL("https://www.youtube.com/");
+    private static final GURL sSrcGUrl = new GURL("https://www.google.com/");
+    private static final GURL sLinkGUrl = new GURL("https://www.wikipedia.org/");
 
     @Mock private MenuModelBridge mMenuModelBridge;
 
@@ -75,12 +80,174 @@ public class ContextMenuUtilsUnitTest {
 
     @Test
     @SmallTest
+    public void testGetHeaderInfo_noCustomItemPresent() {
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.IMAGE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        sPageGUrl,
+                        sLinkGUrl,
+                        sLinkText,
+                        GURL.emptyGURL(),
+                        sSrcGUrl,
+                        sTitleText,
+                        null,
+                        true,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        0,
+                        null);
+
+        HeaderInfo headerInfo =
+                ContextMenuUtils.getHeaderInfo(
+                        params,
+                        /** isCustomContextMenuItemPresent= */
+                        false);
+
+        assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
+        assertEquals("URL should be the link URL.", sLinkGUrl, headerInfo.getUrl());
+        assertEquals(
+                "Secondary URL should be empty.", GURL.emptyGURL(), headerInfo.getSecondaryUrl());
+        assertEquals(
+                "Tertiary URL should be empty.", GURL.emptyGURL(), headerInfo.getTertiaryUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetHeaderInfo_customItemPresent_notImage() {
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.VIDEO,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        sPageGUrl,
+                        sLinkGUrl,
+                        sLinkText,
+                        GURL.emptyGURL(),
+                        sSrcGUrl,
+                        sTitleText,
+                        null,
+                        true,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        0,
+                        null);
+
+        HeaderInfo headerInfo =
+                ContextMenuUtils.getHeaderInfo(
+                        params,
+                        /** isCustomContextMenuItemPresent= */
+                        true);
+
+        assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
+        assertEquals(
+                "URL should be the link URL as it's not an image.", sLinkGUrl, headerInfo.getUrl());
+        assertEquals(
+                "Secondary URL should be empty as it's not an image.",
+                GURL.emptyGURL(),
+                headerInfo.getSecondaryUrl());
+        assertEquals(
+                "Tertiary URL should be empty as it's not an image.",
+                GURL.emptyGURL(),
+                headerInfo.getTertiaryUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetHeaderInfo_customItemPresent_isImageLink() {
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.IMAGE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        sPageGUrl,
+                        sLinkGUrl,
+                        sLinkText,
+                        GURL.emptyGURL(),
+                        sSrcGUrl,
+                        sTitleText,
+                        null,
+                        true,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        0,
+                        null);
+
+        HeaderInfo headerInfo =
+                ContextMenuUtils.getHeaderInfo(
+                        params,
+                        /** isCustomContextMenuItemPresent= */
+                        true);
+
+        assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
+        assertEquals("URL should be the src URL.", sSrcGUrl, headerInfo.getUrl());
+        assertEquals(
+                "Secondary URL should be the page URL.", sPageGUrl, headerInfo.getSecondaryUrl());
+        assertEquals(
+                "Tertiary URL should be the link URL.", sLinkGUrl, headerInfo.getTertiaryUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetHeaderInfo_customItemPresent_isImageNotAnchor() {
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.IMAGE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        sPageGUrl,
+                        GURL.emptyGURL(),
+                        "",
+                        GURL.emptyGURL(),
+                        sSrcGUrl,
+                        sTitleText,
+                        null,
+                        false,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        0,
+                        null);
+
+        HeaderInfo headerInfo =
+                ContextMenuUtils.getHeaderInfo(
+                        params,
+                        /** isCustomContextMenuItemPresent= */
+                        true);
+
+        assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
+        assertEquals("URL should be the src URL.", sSrcGUrl, headerInfo.getUrl());
+        assertEquals(
+                "Secondary URL should be the page URL.", sPageGUrl, headerInfo.getSecondaryUrl());
+        assertEquals(
+                "Tertiary URL should be empty.", GURL.emptyGURL(), headerInfo.getTertiaryUrl());
+    }
+
+    @Test
+    @SmallTest
     public void getTitle_hasTitleText() {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
                         sLinkText,
@@ -108,6 +275,7 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
                         sLinkText,
@@ -135,6 +303,7 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
+                        0,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
                         "",
@@ -162,6 +331,7 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
                         "",
@@ -271,6 +441,7 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
                         sLinkText,
@@ -300,6 +471,7 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
                         sLinkText,
@@ -329,6 +501,7 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
                         sLinkText,
@@ -400,6 +573,7 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
                         sLinkText,
@@ -433,14 +607,11 @@ public class ContextMenuUtilsUnitTest {
         int expectedY = (int) (touchPointYPx + topContentOffsetPx);
 
         if (isPopup) {
-            int[] layoutScreenLocation = new int[2];
-            mockContainerView.getLocationOnScreen(layoutScreenLocation);
-            expectedX += layoutScreenLocation[0];
-            expectedY += layoutScreenLocation[1];
+            expectedX += mockLocation[0];
+            expectedY += mockLocation[1];
 
-            var attrs = mockWindow.getAttributes();
-            expectedX += attrs.x;
-            expectedY += attrs.y;
+            expectedX += mockLayoutParams.x;
+            expectedY += mockLayoutParams.y;
         }
 
         assertEquals(expectedX, result.x);
@@ -513,6 +684,7 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
                         sLinkText,

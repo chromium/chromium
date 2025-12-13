@@ -32,7 +32,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
-#include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
@@ -46,6 +45,7 @@
 #include "third_party/blink/renderer/core/frame/universal_global_scope.h"
 #include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
 #include "third_party/blink/renderer/core/script/script.h"
+#include "third_party/blink/renderer/core/url/dom_origin_utils.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
@@ -66,7 +66,6 @@ struct GlobalScopeCreationParams;
 class ConsoleMessage;
 class FetchClientSettingsObjectSnapshot;
 class FontFaceSet;
-class FontMatchingMetrics;
 struct GlobalScopeCreationParams;
 class InstalledScriptsManager;
 class OffscreenFontSelector;
@@ -74,6 +73,7 @@ class WorkerResourceTimingNotifier;
 class TrustedTypePolicyFactory;
 class V8UnionTrustedScriptURLOrUSVString;
 class WorkerLocation;
+struct WorkerMainScriptLoadParameters;
 class WorkerNavigator;
 class WorkerThread;
 
@@ -82,11 +82,15 @@ class CORE_EXPORT WorkerGlobalScope
       public WindowOrWorkerGlobalScope,
       public UniversalGlobalScope,
       public ActiveScriptWrappable<WorkerGlobalScope>,
-      public Supplementable<WorkerGlobalScope> {
+      public Supplementable<WorkerGlobalScope>,
+      public DOMOriginUtils {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   ~WorkerGlobalScope() override;
+
+  // DOMOriginUtils overrides:
+  DOMOrigin* GetDOMOrigin(LocalDOMWindow*) const override;
 
   // Returns null if caching is not supported.
   // TODO(crbug/964467): Currently workers do fetch cached code but they don't
@@ -138,9 +142,7 @@ class CORE_EXPORT WorkerGlobalScope
   bool IsContextThread() const final;
   const KURL& BaseURL() const final;
   String UserAgent() const final { return user_agent_; }
-  UserAgentMetadata GetUserAgentMetadata() const override {
-    return ua_metadata_;
-  }
+  UserAgentMetadata GetUserAgentMetadata() const override;
   HttpsState GetHttpsState() const override { return https_state_; }
   scheduler::WorkerScheduler* GetScheduler() final;
   ukm::UkmRecorder* UkmRecorder() final;
@@ -238,8 +240,9 @@ class CORE_EXPORT WorkerGlobalScope
 
   FontFaceSet* fonts();
 
+  // TODO(crbug.com/451479061): Consider moving the following function
+  // under trustedTypes/
   TrustedTypePolicyFactory* GetTrustedTypes() const override;
-  TrustedTypePolicyFactory* trustedTypes() const { return GetTrustedTypes(); }
 
   // TODO(https://crbug.com/835717): Remove this function after dedicated
   // workers support off-the-main-thread script fetch by default.
@@ -255,10 +258,6 @@ class CORE_EXPORT WorkerGlobalScope
   // Returns the token uniquely identifying this worker. The token type will
   // match the actual worker type.
   virtual WorkerToken GetWorkerToken() const = 0;
-
-  // Tracks and reports metrics of attempted font match attempts (both
-  // successful and not successful) by the worker.
-  FontMatchingMetrics* GetFontMatchingMetrics();
 
   bool IsUrlValid() { return url_.IsValid(); }
 
@@ -347,10 +346,6 @@ class CORE_EXPORT WorkerGlobalScope
   int last_pending_error_event_id_ = 0;
 
   Member<OffscreenFontSelector> font_selector_;
-
-  // Tracks and reports UKM metrics of the number of attempted font family match
-  // attempts (both successful and not successful) by the worker.
-  std::unique_ptr<FontMatchingMetrics> font_matching_metrics_;
 
   blink::BrowserInterfaceBrokerProxyImpl browser_interface_broker_proxy_;
 

@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/test/fake_network_dispatcher.h"
 
 #include <stddef.h>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 
@@ -27,17 +24,16 @@ FakeNetworkDispatcher::~FakeNetworkDispatcher() {
 }
 
 webrtc::IPAddress FakeNetworkDispatcher::AllocateAddress() {
-  in6_addr addr;
-  memset(&addr, 0, sizeof(addr));
+  in6_addr addr{};
 
   // fc00::/7 is reserved for unique local addresses.
   addr.s6_addr[0] = 0xfc;
 
   // Copy |allocated_address_| to the end of |addr|.
   ++allocated_address_;
-  for (size_t i = 0; i < sizeof(allocated_address_); ++i) {
-    addr.s6_addr[15 - i] = (allocated_address_ >> (8 * i)) & 0xff;
-  }
+  base::span<uint8_t>(addr.s6_addr)
+      .last(sizeof(allocated_address_))
+      .copy_from(base::U32ToBigEndian(allocated_address_));
 
   return webrtc::IPAddress(addr);
 }

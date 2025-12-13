@@ -510,19 +510,14 @@ bool MixedContentChecker::ShouldBlockFetch(
   switch (context_type) {
     case mojom::blink::MixedContentContextType::kOptionallyBlockable:
 
-#if (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)) && \
-    BUILDFLAG(ENABLE_CAST_RECEIVER)
-      // Fuchsia WebEngine can be configured to allow loading Mixed Content from
-      // an insecure IP address. This is a workaround to revert Fuchsia Cast
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+      // Cast receivers can be configured to allow loading Mixed Content from
+      // an insecure IP address. This is a workaround to revert Cast
       // Receivers to the behavior before crrev.com/c/4032146.
-      // TODO(crbug.com/1434440): Remove this workaround when there is a better
-      // way to disable blocking Mixed Content with an IP address.
       allowed = !strict_mode;
 #else
       allowed = !strict_mode && !GURL(url).HostIsIPAddress();
-#endif  // (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)) &&
-        // BUILDFLAG(ENABLE_CAST_RECEIVER)
-
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER)
       if (allowed) {
         if (content_settings_client)
           content_settings_client->PassiveInsecureContentFound(url);
@@ -584,13 +579,13 @@ bool MixedContentChecker::ShouldBlockFetch(
       NOTREACHED();
   };
 
-  // Skip mixed content check for local and loopback targets if the request is a
-  // Local Network Access (LNA) request. LNA checks later on will ensure that
-  // (a) the request is actually an LNA request, and (b) the user has given
+  // Skip mixed content check for URLs where we can determine that the request
+  // is a Local Network Access (LNA) request. LNA checks later on will ensure
+  // that (a) the request is actually an LNA request, and (b) the user has given
   // permission for the LNA request to go through.
   //
   // Reference:
-  // https://github.com/explainers-by-googlers/local-network-access
+  // https://wicg.github.io/local-network-access/
   //
   // This only checks for mixed content subresources; subframe navigation mixed
   // content is checked in
@@ -602,44 +597,22 @@ bool MixedContentChecker::ShouldBlockFetch(
     // (1) The `targetAddressSpace` fetch option was set.
     //     `target_address_space` here is private/local only when resource
     //     request has explicitly set `targetAddressSpace` fetch option.
-    // (2) The host is a private IP address literal
-    // (3) The hostname is a .local domain (per RFC 6762).
+    // (2) The url can be determined to be hosted in the local or loopback
+    //      address spaces.
     //
-    // There is no check for loopback addresses because loopback addresses are
-    // considered secure and not mixed content.
+    // Loopback addresses shouldn't need to be checked as they are considered
+    // secure and not mixed content, but it can't hurt.
     //
     // TODO(crbug.com/395895368): check the IP address space for initiator, only
     // skip when the initiator is more public.
+    std::optional<network::mojom::IPAddressSpace> ip_address_space =
+        network::GetAddressSpaceFromUrl(GURL(url));
     if (target_address_space == network::mojom::blink::IPAddressSpace::kLocal ||
         target_address_space ==
             network::mojom::blink::IPAddressSpace::kLoopback ||
-        network::ParsePrivateIpFromUrl(GURL(url)) ||
-        network::IsRFC6762LocalDomain(GURL(url))) {
-      allowed = true;
-    }
-  }
-
-  // Skip mixed content check for private and local targets.
-  // `target_address_space` here is private/local only when resource request
-  // has explicitly set `targetAddressSpace` fetch option.
-  // TODO(lyf): check the IP address space for initiator, only skip when the
-  // initiator is more public.
-  if (base::FeatureList::IsEnabled(
-          network::features::kPrivateNetworkAccessPermissionPrompt) &&
-      RuntimeEnabledFeatures::PrivateNetworkAccessPermissionPromptEnabled(
-          frame->DomWindow())) {
-    // TODO(crbug.com/323583084): Re-enable PNA permission prompt for documents
-    // fetched via service worker.
-    if (!frame->Loader()
-             .GetDocumentLoader()
-             ->GetResponse()
-             .WasFetchedViaServiceWorker() &&
-        (target_address_space ==
-             network::mojom::blink::IPAddressSpace::kLocal ||
-         target_address_space ==
-             network::mojom::blink::IPAddressSpace::kLoopback)) {
-      UseCounter::Count(frame->GetDocument(),
-                        WebFeature::kPrivateNetworkAccessPermissionPrompt);
+        (ip_address_space &&
+         (ip_address_space == network::mojom::IPAddressSpace::kLocal ||
+          ip_address_space == network::mojom::IPAddressSpace::kLoopback))) {
       allowed = true;
     }
   }
@@ -937,27 +910,28 @@ bool MixedContentChecker::ShouldAutoupgrade(
   // (1) The `targetAddressSpace` fetch option was set.
   //     `target_address_space` here is local/loopback only when resource
   //     request has explicitly set `targetAddressSpace` fetch option.
-  // (2) The host is a private IP address literal (already exempted above)
-  // (3) The hostname is a .local domain (per RFC 6762).
+  // (2) The url can be determined to be hosted in the local or loopback
+  //      address spaces.
   //
-  // Private IP address literals (2) are already included in the exemption
-  // above.
-  //
-  // There is no check for loopback addresses because loopback addresses are
-  // considered secure and not mixed content.
+  // Loopback addresses shouldn't need to be checked as they are considered
+  // secure and not mixed content, but it can't hurt.
   //
   // Reference:
-  // https://github.com/explainers-by-googlers/local-network-access
+  // https://wicg.github.io/local-network-access/
   //
   // TODO(crbug.com/395895368): check the IP address space for initiator, only
   // skip when the initiator is more public.
   if (base::FeatureList::IsEnabled(
           network::features::kLocalNetworkAccessChecks)) {
+    std::optional<network::mojom::IPAddressSpace> ip_address_space =
+        network::GetAddressSpaceFromUrl(GURL(request_url));
     if (resource_request.GetTargetAddressSpace() ==
             network::mojom::blink::IPAddressSpace::kLocal ||
         resource_request.GetTargetAddressSpace() ==
             network::mojom::blink::IPAddressSpace::kLoopback ||
-        network::IsRFC6762LocalDomain(GURL(request_url))) {
+        (ip_address_space &&
+         (ip_address_space == network::mojom::IPAddressSpace::kLocal ||
+          ip_address_space == network::mojom::IPAddressSpace::kLoopback))) {
       if (!request_url.ProtocolIs("https")) {
         if (auto* window =
                 DynamicTo<LocalDOMWindow>(execution_context_for_logging)) {

@@ -155,7 +155,9 @@ AppPtr App::Clone() const {
   app->allow_uninstall = allow_uninstall;
   app->has_badge = has_badge;
   app->paused = paused;
-  app->intent_filters = CloneIntentFilters(intent_filters);
+  if (intent_filters) {
+    app->intent_filters = CloneIntentFilters(*intent_filters);
+  }
   app->resize_locked = resize_locked;
   app->window_mode = window_mode;
   app->allow_window_mode_selection = allow_window_mode_selection;

@@ -162,7 +162,7 @@ TEST_F(NativeCursorManagerAshTest, SetDeviceScaleFactorAndRotation) {
 }
 
 TEST_F(NativeCursorManagerAshTest, RotationWithPanelOrientation) {
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
 
   display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                          display_id);
@@ -183,7 +183,7 @@ TEST_F(NativeCursorManagerAshTest, RotationWithPanelOrientation) {
 
   CursorManagerTestApi test_api;
   ASSERT_EQ(gfx::Size(1080, 1920),
-            display::Screen::GetScreen()->GetPrimaryDisplay().size());
+            display::Screen::Get()->GetPrimaryDisplay().size());
   EXPECT_EQ(display::Display::ROTATE_90, test_api.GetCurrentCursorRotation());
 }
 

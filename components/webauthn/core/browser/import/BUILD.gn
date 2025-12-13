@@ -1,0 +1,42 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("import") {
+  sources = [
+    "import_processing_result.cc",
+    "import_processing_result.h",
+    "imported_passkey_checker.cc",
+    "imported_passkey_checker.h",
+    "passkey_importer.cc",
+    "passkey_importer.h",
+  ]
+  deps = [
+    "//base",
+    "//components/sync/protocol",
+    "//components/webauthn/core/browser:passkey_model",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [
+      "imported_passkey_checker_unittest.cc",
+      "passkey_importer_unittest.cc",
+    ]
+    deps += [
+      ":import",
+      "//base/test:test_support",
+      "//components/sync/protocol",
+      "//components/webauthn/core/browser:passkey_model",
+      "//components/webauthn/core/browser:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

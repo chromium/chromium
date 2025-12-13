@@ -43,7 +43,7 @@ EmbeddedTestServer::Type SchemeTypeOf(const GURL& origin) {
 std::string MapOriginToServer(const GURL& origin,
                               const EmbeddedTestServer& server) {
   return base::StrCat(
-      {"MAP ", origin.host_piece(), " ", server.host_port_pair().ToString()});
+      {"MAP ", origin.host(), " ", server.host_port_pair().ToString()});
 }
 
 // Appends the given `rule` to `kHostResolverRules`, maintaining existing rules.
@@ -78,7 +78,7 @@ FakeOriginTestServerMixin::FakeOriginTestServerMixin(
   CHECK(origin_.is_valid());
   CHECK(origin_.has_scheme());
   CHECK(origin_.has_host());
-  CHECK(!origin_.has_path() || origin_.path_piece() == "/");
+  CHECK(!origin_.has_path() || origin_.path() == "/");
   CHECK(!origin_.has_query());
   CHECK(!origin_.has_username());
   CHECK(!origin_.has_password());
@@ -87,7 +87,7 @@ FakeOriginTestServerMixin::FakeOriginTestServerMixin(
 
   // Generate SSL certificates for `origin_` on HTTPS.
   if (SchemeTypeOf(origin_) == EmbeddedTestServer::TYPE_HTTPS) {
-    server_.SetCertHostnames({origin_.host()});
+    server_.SetCertHostnames({origin_.GetHost()});
   }
 }
 

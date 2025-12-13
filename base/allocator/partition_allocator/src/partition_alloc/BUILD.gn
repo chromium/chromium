@@ -135,7 +135,6 @@ declare_args() {
 pa_buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
-    "ASSERT_CPP_20=$assert_cpp20",
     "BACKUP_REF_PTR_EXTRA_OOB_CHECKS=$backup_ref_ptr_extra_oob_checks",
     "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
     "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
@@ -155,6 +154,8 @@ pa_buildflag_header("buildflags") {
     "ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=$enable_pointer_arithmetic_trait_check",
     "ENABLE_POINTER_COMPRESSION=$enable_pointer_compression",
     "ENABLE_POINTER_SUBTRACTION_CHECK=$enable_pointer_subtraction_check",
+    "MOVE_METADATA_OUT_OF_GIGACAGE_FOR_64_BITS_POINTERS=$move_metadata_outside_gigacage",
+    "ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL=$enable_move_metadata_outside_gigacage_trial",
     "ENABLE_THREAD_ISOLATION=$enable_pkeys",
     "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
     "FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=$force_disable_backup_ref_ptr_feature",
@@ -278,7 +279,7 @@ if (is_clang_or_gcc) {
   }
 
   config("memory_tagging") {
-    if (current_cpu == "arm64" &&
+    if (current_cpu == "arm64" && is_clang &&
         (is_linux || is_chromeos || is_android || is_fuchsia)) {
       # base/ has access to the MTE intrinsics because it needs to use them,
       # but they're not backwards compatible. Use base::CPU::has_mte()
@@ -399,6 +400,8 @@ if (is_clang_or_gcc) {
       "address_space_stats.h",
       "allocation_guard.cc",
       "allocation_guard.h",
+      "allocator_config.cc",
+      "allocator_config.h",
       "bucket_lookup.h",
       "compressed_pointer.cc",
       "compressed_pointer.h",
@@ -451,7 +454,6 @@ if (is_clang_or_gcc) {
       "partition_page_constants.h",
       "partition_root.cc",
       "partition_root.h",
-      "partition_shared_mutex.h",
       "partition_stats.cc",
       "partition_stats.h",
       "partition_superpage_extent_entry.h",
@@ -465,6 +467,8 @@ if (is_clang_or_gcc) {
       "scheduler_loop_quarantine.h",
       "scheduler_loop_quarantine_support.cc",
       "scheduler_loop_quarantine_support.h",
+      "slot_start.cc",
+      "slot_start.h",
       "spinning_mutex.cc",
       "spinning_mutex.h",
       "stack/stack.cc",
@@ -544,7 +548,7 @@ if (is_clang_or_gcc) {
     if (use_partition_alloc_as_malloc_on_win_component_build) {
       # We need to add explicit libc++ dependency here because of
       # no_default_deps=true.
-      deps += [ "//buildtools/third_party/libc++:libc++" ]
+      deps += [ "//buildtools/third_party/libc++" ]
     }
 
     public_configs = []
@@ -585,6 +589,19 @@ if (is_clang_or_gcc) {
     # This is incompatible with stack protectors since the TLS won't be pkey-tagged.
     if (enable_pkeys && partition_alloc_is_debug) {
       configs += [ ":no_stack_protector" ]
+
+      if (defined(is_debug) && is_debug) {
+        # Chromium debug build uses -fstack-protector for libc++ modules and the
+        # flag is not compatible with "no_stack_protector" config.
+        #
+        # Note that `is_debug`, `libcxx_modules` and `use_clang_modules`
+        # arguments are not part of partition_alloc. They are part of Chromium.
+        # They may be undefined or unused respectively.
+        use_libcxx_modules = false
+        if (!defined(use_clang_modules)) {
+          not_needed([ "use_libcxx_modules" ])
+        }
+      }
     }
   }
 
@@ -612,8 +629,6 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/containers/flat_tree.h",
       "partition_alloc_base/cpu.cc",
       "partition_alloc_base/cpu.h",
-      "partition_alloc_base/cxx20_identity.h",
-      "partition_alloc_base/cxx20_is_constant_evaluated.h",
       "partition_alloc_base/cxx_wrapper/algorithm.h",
       "partition_alloc_base/cxx_wrapper/optional.h",
       "partition_alloc_base/debug/alias.cc",
@@ -632,6 +647,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/memory/ref_counted.h",
       "partition_alloc_base/memory/scoped_policy.h",
       "partition_alloc_base/memory/scoped_refptr.h",
+      "partition_alloc_base/memory/stack_allocated.h",
       "partition_alloc_base/no_destructor.h",
       "partition_alloc_base/notreached.h",
       "partition_alloc_base/numerics/checked_math.h",
@@ -649,9 +665,6 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/process/process_handle.h",
       "partition_alloc_base/rand_util.cc",
       "partition_alloc_base/rand_util.h",
-      "partition_alloc_base/ranges/algorithm.h",
-      "partition_alloc_base/ranges/functional.h",
-      "partition_alloc_base/ranges/ranges.h",
       "partition_alloc_base/scoped_clear_last_error.h",
       "partition_alloc_base/strings/cstring_builder.cc",
       "partition_alloc_base/strings/cstring_builder.h",
@@ -796,7 +809,7 @@ if (is_clang_or_gcc) {
     if (use_partition_alloc_as_malloc_on_win_component_build) {
       # We need to add explicit libc++ dependency here because of
       # no_default_deps=true.
-      deps += [ "//buildtools/third_party/libc++:libc++" ]
+      deps += [ "//buildtools/third_party/libc++" ]
     }
     if (is_fuchsia) {
       public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fit" ]
@@ -870,7 +883,7 @@ if (is_clang_or_gcc) {
       shim_headers += [
         "shim/allocator_shim_override_apple_default_zone.h",
         "shim/allocator_shim_override_apple_symbols.h",
-        "shim/early_zone_registration_constants.h",
+        "shim/early_zone_registration_utils_apple.h",
         "shim/allocator_interception_apple.h",
         "shim/malloc_zone_functions_apple.h",
       ]
@@ -960,16 +973,31 @@ if (is_clang_or_gcc) {
 # TODO(crbug.com/40158212): Consider supporting building tests outside of
 # chromium and having a dedicated 'partition_alloc_unittests' target.
 if (build_with_chromium) {
+  if (is_linux || is_chromeos || is_android) {
+    source_set("debug_proc_maps") {
+      testonly = true
+
+      sources = [
+        "partition_alloc_base/debug/proc_maps_linux.cc",
+        "partition_alloc_base/debug/proc_maps_linux.h",
+      ]
+
+      deps = [
+        ":allocator_base",
+        ":allocator_core",
+        ":buildflags",
+      ]
+    }
+  }
+
   source_set("unittests") {
     testonly = true
 
     sources = [ "partition_alloc_base/test/gtest_util.h" ]
+    deps = []
 
     if (is_linux || is_chromeos || is_android) {
-      sources += [
-        "partition_alloc_base/debug/proc_maps_linux.cc",
-        "partition_alloc_base/debug/proc_maps_linux.h",
-      ]
+      deps += [ ":debug_proc_maps" ]
     }
 
     if (is_android) {
@@ -984,34 +1012,29 @@ if (build_with_chromium) {
         "address_pool_manager_unittest.cc",
         "address_space_randomization_unittest.cc",
         "compressed_pointer_unittest.cc",
-        "hardening_unittest.cc",
         "memory_reclaimer_unittest.cc",
-        "page_allocator_unittest.cc",
         "partition_alloc_base/bits_pa_unittest.cc",
         "partition_alloc_base/component_export_pa_unittest.cc",
         "partition_alloc_base/containers/flat_map_pa_unittest.cc",
-        "partition_alloc_base/containers/flat_tree_pa_unittest.cc",
         "partition_alloc_base/cpu_pa_unittest.cc",
         "partition_alloc_base/logging_pa_unittest.cc",
         "partition_alloc_base/no_destructor_pa_unittest.cc",
         "partition_alloc_base/rand_util_pa_unittest.cc",
-        "partition_alloc_base/ranges/algorithm_pa_unittest.cc",
-        "partition_alloc_base/ranges/functional_pa_unittest.cc",
-        "partition_alloc_base/ranges/ranges_pa_unittest.cc",
         "partition_alloc_base/scoped_clear_last_error_pa_unittest.cc",
         "partition_alloc_base/strings/cstring_builder_pa_unittest.cc",
         "partition_alloc_base/strings/safe_sprintf_pa_unittest.cc",
         "partition_alloc_base/strings/string_util_pa_unittest.cc",
         "partition_alloc_base/strings/stringprintf_pa_unittest.cc",
         "partition_alloc_base/thread_annotations_pa_unittest.cc",
-        "partition_alloc_unittest.cc",
         "partition_lock_unittest.cc",
         "reverse_bytes_unittest.cc",
         "scheduler_loop_quarantine_unittest.cc",
-        "slot_start_unittest.cc",
         "thread_cache_unittest.cc",
-        "use_death_tests.h",
       ]
+
+      if (!is_android) {
+        deps += [ ":death_unittests" ]
+      }
     }
 
     if (is_fuchsia) {
@@ -1057,6 +1080,19 @@ if (build_with_chromium) {
       # value from the TLS which won't be pkey-tagged, hence disabling it for
       # the test.
       configs += [ ":no_stack_protector" ]
+
+      if (defined(is_debug) && is_debug) {
+        # Chromium debug build uses -fstack-protector for libc++ modules and the
+        # flag is not compatible with "no_stack_protector" config.
+        #
+        # Note that `is_debug`, `libcxx_modules` and `use_clang_modules`
+        # arguments are not part of partition_alloc. They are part of Chromium.
+        # They may be undefined or unused respectively.
+        use_libcxx_modules = false
+        if (!defined(use_clang_modules)) {
+          not_needed([ "use_libcxx_modules" ])
+        }
+      }
     }
 
     frameworks = []
@@ -1067,7 +1103,52 @@ if (build_with_chromium) {
       ]
     }
 
-    deps = [
+    deps += [
+      ":partition_alloc",
+      ":test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+
+    configs -= partition_alloc_remove_configs
+    configs += partition_alloc_add_configs
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+
+  source_set("death_unittests") {
+    testonly = true
+
+    sources = [ "partition_alloc_base/test/gtest_util.h" ]
+    deps = []
+
+    if (is_linux || is_chromeos || is_android) {
+      deps += [ ":debug_proc_maps" ]
+    }
+
+    if (use_partition_alloc) {
+      sources += [
+        "hardening_unittest.cc",
+        "page_allocator_unittest.cc",
+        "partition_alloc_base/containers/flat_tree_pa_unittest.cc",
+        "partition_alloc_unittest.cc",
+        "slot_start_unittest.cc",
+        "use_death_tests.h",
+      ]
+    }
+
+    if ((is_android || is_linux) && target_cpu == "arm64") {
+      cflags = [
+        "-Xclang",
+        "-target-feature",
+        "-Xclang",
+        "+mte",
+      ]
+    }
+
+    deps += [
       ":partition_alloc",
       ":test_support",
       "//testing/gmock",

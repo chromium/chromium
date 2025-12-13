@@ -125,7 +125,7 @@ bool IsRemoteLoggingFeatureEnabled() {
   return enabled;
 }
 
-BrowserContext* GetBrowserContext(int render_process_id) {
+BrowserContext* GetBrowserContext(content::ChildProcessId render_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderProcessHost* const host = RenderProcessHost::FromID(render_process_id);
   return host ? host->GetBrowserContext() : nullptr;
@@ -276,7 +276,6 @@ void WebRtcEventLogManager::OnPeerConnectionUpdated(
     int lid,
     const std::string& type,
     const std::string& value) {
-  // TODO(crbug.com/40562061): Get rid of magic value.
   if (type == "stop") {
     OnPeerConnectionStopped(frame_id, lid, base::NullCallback());
   }
@@ -316,7 +315,9 @@ void WebRtcEventLogManager::StartRemoteLogging(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(reply);
 
-  BrowserContext* browser_context = GetBrowserContext(render_process_id);
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+  BrowserContext* browser_context = GetBrowserContext(
+      content::ChildProcessId::FromUnsafeValue(render_process_id));
   const char* error = nullptr;
 
   if (!browser_context) {
@@ -534,13 +535,14 @@ void WebRtcEventLogManager::OnPeerConnectionAdded(
 
   // |this| is destroyed by ~BrowserProcessImpl(), so base::Unretained(this)
   // will not be dereferenced after destruction.
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &WebRtcEventLogManager::OnPeerConnectionAddedInternal,
           base::Unretained(this),
-          PeerConnectionKey(frame_id.child_id, lid, browser_context_id,
-                            frame_id.frame_routing_id),
+          PeerConnectionKey(frame_id.child_id.GetUnsafeValue(), lid,
+                            browser_context_id, frame_id.frame_routing_id),
           std::move(reply)));
 }
 
@@ -560,13 +562,14 @@ void WebRtcEventLogManager::OnPeerConnectionRemoved(
 
   // |this| is destroyed by ~BrowserProcessImpl(), so base::Unretained(this)
   // will not be dereferenced after destruction.
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &WebRtcEventLogManager::OnPeerConnectionRemovedInternal,
           base::Unretained(this),
-          PeerConnectionKey(frame_id.child_id, lid, browser_context_id,
-                            frame_id.frame_routing_id),
+          PeerConnectionKey(frame_id.child_id.GetUnsafeValue(), lid,
+                            browser_context_id, frame_id.frame_routing_id),
           std::move(reply)));
 }
 
@@ -597,13 +600,14 @@ void WebRtcEventLogManager::OnPeerConnectionSessionIdSet(
 
   // |this| is destroyed by ~BrowserProcessImpl(), so base::Unretained(this)
   // will not be dereferenced after destruction.
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &WebRtcEventLogManager::OnPeerConnectionSessionIdSetInternal,
           base::Unretained(this),
-          PeerConnectionKey(frame_id.child_id, lid, browser_context_id,
-                            frame_id.frame_routing_id),
+          PeerConnectionKey(frame_id.child_id.GetUnsafeValue(), lid,
+                            browser_context_id, frame_id.frame_routing_id),
           session_id, std::move(reply)));
 }
 
@@ -626,13 +630,14 @@ void WebRtcEventLogManager::OnWebRtcEventLogWrite(
 
   // |this| is destroyed by ~BrowserProcessImpl(), so base::Unretained(this)
   // will not be dereferenced after destruction.
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &WebRtcEventLogManager::OnWebRtcEventLogWriteInternal,
           base::Unretained(this),
-          PeerConnectionKey(frame_id.child_id, lid, browser_context_id,
-                            frame_id.frame_routing_id),
+          PeerConnectionKey(frame_id.child_id.GetUnsafeValue(), lid,
+                            browser_context_id, frame_id.frame_routing_id),
           message, std::move(reply)));
 }
 
@@ -696,13 +701,14 @@ void WebRtcEventLogManager::OnWebRtcDataChannelLogWrite(
 
   // |this| is destroyed by ~BrowserProcessImpl(), so base::Unretained(this)
   // will not be dereferenced after destruction.
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &WebRtcEventLogManager::OnWebRtcDataChannelLogWriteInternal,
           base::Unretained(this),
-          PeerConnectionKey(frame_id.child_id, lid, browser_context_id,
-                            frame_id.frame_routing_id),
+          PeerConnectionKey(frame_id.child_id.GetUnsafeValue(), lid,
+                            browser_context_id, frame_id.frame_routing_id),
           message, std::move(reply)));
 }
 

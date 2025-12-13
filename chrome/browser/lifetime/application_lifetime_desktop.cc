@@ -27,10 +27,12 @@
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -71,16 +73,18 @@ using IgnoreUnloadHandlers =
 void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   // TODO(beng): Can this use ProfileManager::GetLoadedProfiles instead?
   // TODO(crbug.com/40180622): Unset SaveSessionState if the restart fails.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    browser->profile()->SaveSessionState();
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [](BrowserWindowInterface* browser) {
+        browser->GetProfile()->SaveSessionState();
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
-    auto* session_data_service =
-        SessionDataServiceFactory::GetForProfile(browser->profile());
-    if (session_data_service) {
-      session_data_service->SetForceKeepSessionState();
-    }
+        if (auto* session_data_service =
+                SessionDataServiceFactory::GetForProfile(
+                    browser->GetProfile())) {
+          session_data_service->SetForceKeepSessionState();
+        }
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
-  }
+        return true;
+      });
 
   PrefService* pref_service = g_browser_process->local_state();
   pref_service->SetBoolean(prefs::kWasRestarted, true);
@@ -116,7 +120,8 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
 }
 
 void ShutdownIfNoBrowsers() {
-  if (GetTotalBrowserCount() > 0) {
+  if (KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+          KeepAliveOrigin::BROWSER)) {
     return;
   }
 
@@ -155,9 +160,10 @@ void CloseAllBrowsers() {
   // If there are no browsers and closing the last browser would quit the
   // application, send the APP_TERMINATING action here. Otherwise, it will be
   // sent by RemoveBrowser() when the last browser has closed.
-  if (GetTotalBrowserCount() == 0 &&
+  const auto* const keep_alive_registry = KeepAliveRegistry::GetInstance();
+  if (!keep_alive_registry->IsOriginRegistered(KeepAliveOrigin::BROWSER) &&
       (browser_shutdown::IsTryingToQuit() ||
-       !KeepAliveRegistry::GetInstance()->IsKeepingAlive())) {
+       !keep_alive_registry->IsKeepingAlive())) {
     ShutdownIfNoBrowsers();
     return;
   }
@@ -282,27 +288,29 @@ void MarkAsCleanShutdown() {
   std::set<Profile*> pending_profiles;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (ExitTypeService* exit_type_service =
-            ExitTypeService::GetInstanceForProfile(browser->profile())) {
-      exit_type_service->SetCurrentSessionExitType(ExitType::kClean);
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        Profile* const profile = browser->GetProfile();
+        if (ExitTypeService* exit_type_service =
+                ExitTypeService::GetInstanceForProfile(profile)) {
+          exit_type_service->SetCurrentSessionExitType(ExitType::kClean);
 
 #if BUILDFLAG(IS_CHROMEOS)
-      // Explicitly schedule pending writes on ChromeOS so that even if the
-      // UI thread is hosed (e.g. taking a long time to close all tabs because
-      // of page faults/swap-in), the clean shutdown flag still gets a chance
-      // to be persisted. See https://crbug.com/1294764
-      Profile* profile = browser->profile();
-      if (pending_profiles.insert(profile).second) {
-        profile->GetPrefs()->CommitPendingWrite();
-      }
+          // Explicitly schedule pending writes on ChromeOS so that even if the
+          // UI thread is hosed (e.g. taking a long time to close all tabs
+          // because of page faults/swap-in), the clean shutdown flag still gets
+          // a chance to be persisted. See https://crbug.com/1294764
+          if (pending_profiles.insert(profile).second) {
+            profile->GetPrefs()->CommitPendingWrite();
+          }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    }
-  }
+        }
+        return true;
+      });
 }
 
 bool AreAllBrowsersCloseable() {
-  if (BrowserList::GetInstance()->empty()) {
+  if (GlobalBrowserCollection::GetInstance()->IsEmpty()) {
     return true;
   }
 
@@ -313,12 +321,15 @@ bool AreAllBrowsersCloseable() {
   }
 
   // Check TabsNeedBeforeUnloadFired().
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->TabsNeedBeforeUnloadFired()) {
-      return false;
-    }
-  }
-  return true;
+  bool all_closeable = true;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&all_closeable](BrowserWindowInterface* bwi) {
+        if (bwi->GetBrowserForMigrationOnly()->TabsNeedBeforeUnloadFired()) {
+          all_closeable = false;
+        }
+        return all_closeable;
+      });
+  return all_closeable;
 }
 
 }  // namespace chrome

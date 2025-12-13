@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/service/memory_program_cache.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -513,7 +509,8 @@ void MemoryProgramCache::LoadProgram(const std::string& key,
   }
 
   std::vector<uint8_t> binary(proto->program().length());
-  memcpy(binary.data(), proto->program().c_str(), proto->program().length());
+  UNSAFE_TODO(memcpy(binary.data(), proto->program().c_str(),
+                     proto->program().length()));
 
   auto program_sha =
       base::as_byte_span(proto->sha()).to_fixed_extent<kHashLength>();

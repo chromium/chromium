@@ -12,8 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconUseLargeFavicon;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -60,20 +58,7 @@ public class AuxiliarySearchUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures("AndroidAppIntegrationWithFavicon:use_large_favicon/false")
-    public void testGetFaviconSize_small() {
-        Resources resources = ContextUtils.getApplicationContext().getResources();
-        int faviconSizeSmall =
-                resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size_small);
-
-        assertEquals(faviconSizeSmall, AuxiliarySearchUtils.getFaviconSize(resources));
-    }
-
-    @Test
-    @EnableFeatures("AndroidAppIntegrationWithFavicon:use_large_favicon/true")
     public void testGetFaviconSize() {
-        assertTrue(sAndroidAppIntegrationWithFaviconUseLargeFavicon.getValue());
-
         Resources resources = ContextUtils.getApplicationContext().getResources();
         int faviconSize = resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size);
 
@@ -187,22 +172,6 @@ public class AuxiliarySearchUtilsUnitTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON + ":skip_device_check/false"
-    })
-    public void testIsShareTabsWithOsDefaultEnabled() {
-        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
-        when(hooksMock.isEnabled()).thenReturn(true);
-        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(true);
-        AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(hooksMock);
-
-        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
-
-        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(false);
-        assertFalse(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
-    }
-
-    @Test
-    @EnableFeatures({
         ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE
                 + ":multi_data_source_skip_device_check/false"
     })
@@ -220,19 +189,6 @@ public class AuxiliarySearchUtilsUnitTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON + ":skip_device_check/true"
-    })
-    public void testIsShareTabsWithOsDefaultEnabled_SkipDeviceCheck() {
-        assertTrue(AuxiliarySearchUtils.SKIP_DEVICE_CHECK.getValue());
-
-        assertFalse(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
-        // Verifies that isShareTabsWithOsDefaultEnabled() returns true if skipping device check is
-        // enabled on Pixel devices.
-        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
-    }
-
-    @Test
-    @EnableFeatures({
         ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE
                 + ":multi_data_source_skip_device_check/true"
     })
@@ -243,20 +199,6 @@ public class AuxiliarySearchUtilsUnitTest {
         // Verifies that isShareTabsWithOsDefaultEnabled() returns true if skipping device check is
         // enabled on Pixel devices.
         assertTrue(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON + ":skip_device_check/true",
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE + ":show_third_party_card/true"
-    })
-    public void testIsShareTabsWithOsDefaultEnabled_SkipDeviceCheck_NonPixelDevices() {
-        assertTrue(AuxiliarySearchUtils.SKIP_DEVICE_CHECK.getValue());
-
-        assertFalse(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
-        // Verifies that isShareTabsWithOsDefaultEnabled() returns false if skipping device check is
-        // enabled on third party devices.
-        assertFalse(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
     }
 
     @Test

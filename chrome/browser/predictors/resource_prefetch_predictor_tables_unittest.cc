@@ -306,7 +306,7 @@ void ResourcePrefetchPredictorTablesTest::TestOriginStatsAreEqual(
 
 void ResourcePrefetchPredictorTablesTest::AddKey(RedirectDataMap* m,
                                                  const GURL& url) const {
-  auto it = test_host_redirect_data_.find(url.host());
+  auto it = test_host_redirect_data_.find(url.GetHost());
   EXPECT_TRUE(it != test_host_redirect_data_.end());
   m->insert(*it);
 }

@@ -21,49 +21,77 @@
 namespace blink {
 
 // static
-void ViewTransitionUtils::ForEachTransitionPseudo(Element& element,
-                                                  PseudoFunctor func) {
-  auto* transition_pseudo = element.GetPseudoElement(kPseudoIdViewTransition);
-  if (!transition_pseudo) {
+void ViewTransitionUtils::ForEachTransitionPseudo(const Element& element,
+                                                  PseudoFunctor func,
+                                                  Filter filter) {
+  if (!element.IsPseudoElement()) {
+    if (PseudoElement* transition_element =
+            element.GetPseudoElement(kPseudoIdViewTransition)) {
+      func(transition_element);
+      if (filter == Filter::kDescendants) {
+        ForEachTransitionPseudo(*transition_element, func, filter);
+      }
+    }
     return;
   }
 
-  func(transition_pseudo);
+  if (!IsTransitionPseudoElement(element.GetPseudoId())) {
+    return;
+  }
 
-  for (const auto& view_transition_name :
-       To<ViewTransitionPseudoElementBase>(transition_pseudo)
-           ->GetViewTransitionNames()) {
-    auto* container_pseudo =
-        To<ViewTransitionTransitionElement>(transition_pseudo)
-            ->FindViewTransitionGroupPseudoElement(view_transition_name);
-    if (!container_pseudo) {
-      continue;
-    }
+  const ViewTransitionPseudoElementBase& transition_pseudo =
+      To<ViewTransitionPseudoElementBase>(element);
+  const AtomicString& self_name = transition_pseudo.view_transition_name();
 
-    func(container_pseudo);
+  switch (transition_pseudo.GetPseudoId()) {
+    case kPseudoIdViewTransition:
+    case kPseudoIdViewTransitionGroupChildren:
+      for (const AtomicString& name :
+           transition_pseudo.GetViewTransitionNames()) {
+        if (PseudoElement* group = transition_pseudo.GetPseudoElement(
+                kPseudoIdViewTransitionGroup, name)) {
+          func(group);
+          if (filter == Filter::kDescendants) {
+            ForEachTransitionPseudo(*group, func, filter);
+          }
+        }
+      }
+      break;
 
-    if (auto* nested_groups = container_pseudo->GetPseudoElement(
-            kPseudoIdViewTransitionGroupChildren, view_transition_name)) {
-      func(nested_groups);
-    }
+    case kPseudoIdViewTransitionGroup:
+      if (PseudoElement* image_pair = transition_pseudo.GetPseudoElement(
+              kPseudoIdViewTransitionImagePair, self_name)) {
+        func(image_pair);
+        if (filter == Filter::kDescendants) {
+          ForEachTransitionPseudo(*image_pair, func, filter);
+        }
+      }
+      if (PseudoElement* group_children = transition_pseudo.GetPseudoElement(
+              kPseudoIdViewTransitionGroupChildren, self_name)) {
+        func(group_children);
+        if (filter == Filter::kDescendants) {
+          ForEachTransitionPseudo(*group_children, func, filter);
+        }
+      }
+      break;
 
-    auto* wrapper_pseudo = container_pseudo->GetPseudoElement(
-        kPseudoIdViewTransitionImagePair, view_transition_name);
-    if (!wrapper_pseudo) {
-      continue;
-    }
+    case kPseudoIdViewTransitionImagePair:
+      if (PseudoElement* old_image = transition_pseudo.GetPseudoElement(
+              kPseudoIdViewTransitionOld, self_name)) {
+        func(old_image);
+      }
+      if (PseudoElement* new_image = transition_pseudo.GetPseudoElement(
+              kPseudoIdViewTransitionNew, self_name)) {
+        func(new_image);
+      }
+      break;
 
-    func(wrapper_pseudo);
+    case kPseudoIdViewTransitionOld:
+    case kPseudoIdViewTransitionNew:
+      break;
 
-    if (auto* content = wrapper_pseudo->GetPseudoElement(
-            kPseudoIdViewTransitionOld, view_transition_name)) {
-      func(content);
-    }
-
-    if (auto* content = wrapper_pseudo->GetPseudoElement(
-            kPseudoIdViewTransitionNew, view_transition_name)) {
-      func(content);
-    }
+    default:
+      NOTREACHED();
   }
 }
 
@@ -123,74 +151,8 @@ PseudoElement* ViewTransitionUtils::FindPseudoIf(const Element& element,
 }
 
 // static
-void ViewTransitionUtils::ForEachDirectTransitionPseudo(const Element* element,
-                                                        PseudoFunctor func) {
-  if (element->IsDocumentElement()) {
-    if (auto* pseudo = element->GetPseudoElement(kPseudoIdViewTransition)) {
-      func(pseudo);
-    }
-    return;
-  }
-
-  if (!IsTransitionPseudoElement(element->GetPseudoId())) {
-    return;
-  }
-
-  const AtomicString& self_name =
-      To<PseudoElement>(element)->view_transition_name();
-  switch (element->GetPseudoId()) {
-    case kPseudoIdViewTransition:
-      for (auto name : To<ViewTransitionPseudoElementBase>(element)
-                           ->GetViewTransitionNames()) {
-        if (auto* pseudo =
-                element->GetPseudoElement(kPseudoIdViewTransitionGroup, name)) {
-          func(pseudo);
-        }
-      }
-      break;
-    case kPseudoIdViewTransitionGroup:
-      if (auto* pseudo = element->GetPseudoElement(
-              kPseudoIdViewTransitionImagePair, self_name)) {
-        func(pseudo);
-      }
-      if (auto* pseudo = element->GetPseudoElement(
-              kPseudoIdViewTransitionGroupChildren, self_name)) {
-        func(pseudo);
-      }
-      break;
-    case kPseudoIdViewTransitionGroupChildren: {
-      const Vector<AtomicString>& nested_names =
-          To<ViewTransitionPseudoElementBase>(element)
-              ->GetContainedViewTransitionNames();
-      for (const auto& nested_name : nested_names) {
-        if (auto* pseudo = element->GetPseudoElement(
-                kPseudoIdViewTransitionGroup, nested_name)) {
-          func(pseudo);
-        }
-      }
-      break;
-    }
-    case kPseudoIdViewTransitionImagePair:
-      if (auto* pseudo = element->GetPseudoElement(kPseudoIdViewTransitionOld,
-                                                   self_name)) {
-        func(pseudo);
-      }
-      if (auto* pseudo = element->GetPseudoElement(kPseudoIdViewTransitionNew,
-                                                   self_name)) {
-        func(pseudo);
-      }
-      break;
-    case kPseudoIdViewTransitionOld:
-    case kPseudoIdViewTransitionNew:
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
-// static
 ViewTransition* ViewTransitionUtils::GetTransition(const Document& document) {
-  auto* supplement = ViewTransitionSupplement::FromIfExists(document);
+  auto* supplement = document.GetViewTransitionsIfExists();
   if (!supplement) {
     return nullptr;
   }
@@ -203,8 +165,7 @@ ViewTransition* ViewTransitionUtils::GetTransition(const Document& document) {
 
 // static
 ViewTransition* ViewTransitionUtils::GetTransition(const Element& element) {
-  auto* supplement =
-      ViewTransitionSupplement::FromIfExists(element.GetDocument());
+  auto* supplement = element.GetDocument().GetViewTransitionsIfExists();
   if (!supplement) {
     return nullptr;
   }
@@ -241,7 +202,7 @@ ViewTransition* ViewTransitionUtils::TransitionForTaggedElement(
 void ViewTransitionUtils::ForEachTransition(
     const Document& document,
     base::FunctionRef<void(ViewTransition&)> function) {
-  if (auto* supplement = ViewTransitionSupplement::FromIfExists(document)) {
+  if (auto* supplement = document.GetViewTransitionsIfExists()) {
     supplement->ForEachTransition(function);
   }
 }
@@ -267,33 +228,9 @@ ViewTransition* ViewTransitionUtils::GetOutgoingCrossDocumentTransition(
 }
 
 // static
-DOMViewTransition* ViewTransitionUtils::GetTransitionScriptDelegate(
-    const Document& document) {
-  ViewTransition* view_transition =
-      ViewTransitionUtils::GetTransition(document);
-  if (!view_transition) {
-    return nullptr;
-  }
-
-  return view_transition->GetScriptDelegate();
-}
-
-// static
-PseudoElement* ViewTransitionUtils::GetRootPseudo(const Document& document) {
-  if (!document.documentElement()) {
-    return nullptr;
-  }
-
-  PseudoElement* view_transition_pseudo =
-      document.documentElement()->GetPseudoElement(kPseudoIdViewTransition);
-  DCHECK(!view_transition_pseudo || GetTransition(document));
-  return view_transition_pseudo;
-}
-
-// static
 VectorOf<std::unique_ptr<ViewTransitionRequest>>
 ViewTransitionUtils::GetPendingRequests(const Document& document) {
-  auto* supplement = ViewTransitionSupplement::FromIfExists(document);
+  auto* supplement = document.GetViewTransitionsIfExists();
   if (supplement) {
     return supplement->TakePendingRequests();
   }
@@ -328,7 +265,7 @@ ViewTransitionUtils::GetPropertyCSSValueScope::GetPropertyCSSValueScope(
     return;
   }
 
-  if (auto* supplement = ViewTransitionSupplement::FromIfExists(document_)) {
+  if (auto* supplement = document_.GetViewTransitionsIfExists()) {
     supplement->WillEnterGetComputedStyleScope();
   }
 }
@@ -338,13 +275,13 @@ ViewTransitionUtils::GetPropertyCSSValueScope::~GetPropertyCSSValueScope() {
     return;
   }
 
-  if (auto* supplement = ViewTransitionSupplement::FromIfExists(document_)) {
+  if (auto* supplement = document_.GetViewTransitionsIfExists()) {
     supplement->WillExitGetComputedStyleScope();
   }
 }
 
 void ViewTransitionUtils::WillUpdateStyleAndLayoutTree(Document& document) {
-  if (auto* supplement = ViewTransitionSupplement::FromIfExists(document)) {
+  if (auto* supplement = document.GetViewTransitionsIfExists()) {
     supplement->WillUpdateStyleAndLayoutTree();
   }
 }

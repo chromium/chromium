@@ -11,7 +11,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -39,9 +39,9 @@ public class InstalledWebappBridge {
      */
     static class Permission {
         public final Origin origin;
-        public final @ContentSettingValues int setting;
+        public final @ContentSetting int setting;
 
-        public Permission(Origin origin, @ContentSettingValues int setting) {
+        public Permission(Origin origin, @ContentSetting int setting) {
             this.origin = origin;
             this.setting = setting;
         }
@@ -54,8 +54,7 @@ public class InstalledWebappBridge {
                 .notifyPermissionsChange(sNativeInstalledWebappProvider, type);
     }
 
-    public static void runPermissionCallback(
-            long callback, @ContentSettingValues int settingValue) {
+    public static void runPermissionCallback(long callback, @ContentSetting int settingValue) {
         if (callback == 0) return;
 
         InstalledWebappBridgeJni.get().runPermissionCallback(callback, settingValue);
@@ -89,7 +88,7 @@ public class InstalledWebappBridge {
             long callback) {
         Origin origin = Origin.create(Uri.parse(originUrl));
         if (origin == null) {
-            runPermissionCallback(callback, ContentSettingValues.BLOCK);
+            runPermissionCallback(callback, ContentSetting.BLOCK);
             return;
         }
         switch (type) {
@@ -108,6 +107,6 @@ public class InstalledWebappBridge {
     interface Natives {
         void notifyPermissionsChange(long provider, int type);
 
-        void runPermissionCallback(long callback, @ContentSettingValues int settingValue);
+        void runPermissionCallback(long callback, @ContentSetting int settingValue);
     }
 }

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/gtest_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -108,11 +107,10 @@ IN_PROC_BROWSER_TEST_P(SupervisionRemovalExtensionTest,
       extension_registry()->GetInstalledExtension(kGoodCrxId);
   EXPECT_TRUE(extension);
 
-    // This extension is a supervised user initiated install and should remain
-    // disabled.
-    EXPECT_TRUE(
-        extension_registry()->disabled_extensions().Contains(kGoodCrxId));
-    EXPECT_TRUE(IsDisabledForCustodianApproval(kGoodCrxId));
+  // This extension is a supervised user initiated install and should remain
+  // disabled.
+  EXPECT_TRUE(extension_registry()->disabled_extensions().Contains(kGoodCrxId));
+  EXPECT_TRUE(IsDisabledForCustodianApproval(kGoodCrxId));
 }
 
 IN_PROC_BROWSER_TEST_P(SupervisionRemovalExtensionTest,
@@ -199,9 +197,8 @@ class ParentApprovalHandlingByExtensionSwitchTest
   ParentApprovalHandlingByExtensionSwitchTest() = default;
 };
 
-IN_PROC_BROWSER_TEST_P(
-    ParentApprovalHandlingByExtensionSwitchTest,
-    PRE_GrantParentApprovalWhenExtensionSwitchBecomesEnabled) {
+IN_PROC_BROWSER_TEST_P(ParentApprovalHandlingByExtensionSwitchTest,
+                       GrantParentApprovalWhenExtensionSwitchBecomesEnabled) {
   ASSERT_TRUE(profile()->IsChild());
 
   // Set the Extensions preference to OFF, requiring parent approval for
@@ -211,11 +208,6 @@ IN_PROC_BROWSER_TEST_P(
   bool should_be_loaded = false;
   bool should_be_enabled = false;
   InstallExtensionAndCheckStatus(should_be_loaded, should_be_enabled);
-}
-
-IN_PROC_BROWSER_TEST_P(ParentApprovalHandlingByExtensionSwitchTest,
-                       GrantParentApprovalWhenExtensionSwitchBecomesEnabled) {
-  ASSERT_TRUE(profile()->IsChild());
 
   // Flip the Extensions preference to ON.
   supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
@@ -314,9 +306,7 @@ IN_PROC_BROWSER_TEST_P(ParentApprovalRequestTest,
 
   supervised_user_extensions_delegate->RequestToAddExtensionOrShowError(
       *extension.get(), browser()->tab_strip_model()->GetActiveWebContents(),
-      gfx::ImageSkia::CreateFrom1xBitmap(icon),
-      SupervisedUserExtensionParentApprovalEntryPoint::kOnWebstoreInstallation,
-      base::DoNothing());
+      gfx::ImageSkia::CreateFrom1xBitmap(icon), base::DoNothing());
 
   // The dialog should not have appeared.
   EXPECT_FALSE(parent_permission_dialog_appeared_);
@@ -372,9 +362,7 @@ IN_PROC_BROWSER_TEST_P(ParentApprovalRequestTest,
   SkBitmap icon;
   supervised_user_extensions_delegate->RequestToAddExtensionOrShowError(
       *extension.get(), browser()->tab_strip_model()->GetActiveWebContents(),
-      gfx::ImageSkia::CreateFrom1xBitmap(icon),
-      SupervisedUserExtensionParentApprovalEntryPoint::kOnWebstoreInstallation,
-      base::DoNothing());
+      gfx::ImageSkia::CreateFrom1xBitmap(icon), base::DoNothing());
 
   // Confirm that the parent approval dialog for extensions for each OS is
   // created.

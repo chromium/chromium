@@ -242,8 +242,8 @@ class PLATFORM_EXPORT ContouredRect {
   void Move(const gfx::Vector2dF& offset) { rect_.Move(offset); }
   void Inset(const gfx::InsetsF& insets) { rect_.Inset(insets); }
   void Inset(float inset) { rect_.Inset(inset); }
-  void OutsetForMarginOrShadow(float outset) {
-    OutsetForMarginOrShadow(gfx::OutsetsF(outset));
+  void OutsetWithCornerCorrection(float outset) {
+    OutsetWithCornerCorrection(gfx::OutsetsF(outset));
   }
 
   void OutsetForShapeMargin(float outset) {
@@ -255,7 +255,7 @@ class PLATFORM_EXPORT ContouredRect {
                       float& max_x_intercept) const;
 
   void Outset(const gfx::OutsetsF& outsets) { rect_.Outset(outsets); }
-  void OutsetForMarginOrShadow(const gfx::OutsetsF&);
+  void OutsetWithCornerCorrection(const gfx::OutsetsF&);
 
   void ConstrainRadii() { rect_.ConstrainRadii(); }
 
@@ -265,6 +265,10 @@ class PLATFORM_EXPORT ContouredRect {
   bool IsRenderable() const { return rect_.IsRenderable(); }
   String ToString() const;
   Path GetPath() const;
+
+  // The origin rect, which usually correspond to the border box of an element,
+  // is used to align the curves of an inset/outset ContouredRect to the
+  // original ContouredRect, so that the curve thickness appears to be constant.
   const FloatRoundedRect& GetOriginRect() const {
     return origin_rect_ ? *origin_rect_ : rect_;
   }

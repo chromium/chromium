@@ -53,6 +53,7 @@ class Browser : public base::SupportsUserData {
   virtual Type type() const = 0;
 
   // Accessor for the owning Profile.
+  // The returned pointer is not nullptr.
   virtual ProfileIOS* GetProfile() = 0;
 
   // Accessor for the WebStateList.

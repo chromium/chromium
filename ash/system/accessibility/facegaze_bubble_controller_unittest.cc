@@ -10,12 +10,12 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/facegaze_bubble_view.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/image_button.h"
 
 namespace ash {
 
@@ -30,8 +30,6 @@ class FaceGazeBubbleControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityFaceGaze);
     AshTestBase::SetUp();
     Shell::Get()->accessibility_controller()->face_gaze().SetEnabled(true);
   }
@@ -50,7 +48,7 @@ class FaceGazeBubbleControllerTest : public AshTestBase {
     return GetController()->facegaze_bubble_view_;
   }
 
-  const raw_ptr<FaceGazeBubbleCloseView> GetCloseView() {
+  const raw_ptr<views::ImageButton> GetCloseView() {
     return GetView()->GetCloseViewForTesting();
   }
 
@@ -59,9 +57,6 @@ class FaceGazeBubbleControllerTest : public AshTestBase {
   std::u16string_view GetBubbleText() { return GetView()->GetTextForTesting(); }
 
   bool IsShowTimerRunning() { return GetController()->show_timer_.IsRunning(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FaceGazeBubbleControllerTest, LabelText) {

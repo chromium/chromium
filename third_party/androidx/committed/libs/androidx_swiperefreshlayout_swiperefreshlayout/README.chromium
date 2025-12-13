@@ -1,7 +1,7 @@
 Name: Swipe Refresh Layout
 Short Name: swiperefreshlayout
-URL: https://developer.android.com/jetpack/androidx/releases/swiperefreshlayout#1.2.0-SNAPSHOT
-Version: 1.2.0-SNAPSHOT
+URL: https://dl.google.com/dl/android/maven2/androidx/swiperefreshlayout/swiperefreshlayout/1.2.0/swiperefreshlayout-1.2.0.aar
+Version: 1.2.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 The Support Library is a static library that you can add to your Android application in order to use APIs that are either not available for older platform versions or utility APIs that aren't a part of the framework APIs. Compatible on devices running API 14 or later.
+
+See also: https://developer.android.com/jetpack/androidx/releases/swiperefreshlayout#1.2.0
+
 
 Local Modifications:
 No modifications.

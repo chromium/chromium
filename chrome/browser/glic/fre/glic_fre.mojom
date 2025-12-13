@@ -18,6 +18,9 @@ interface FrePageHandler {
   // glic WebUI.
   AcceptFre();
 
+  // Rejects the glic FRE modal dialog.
+  RejectFre();
+
   // Closes the glic FRE modal dialog. The `panel` identifies which panel was
   // closed.
   DismissFre(FreWebUiState panel);
@@ -41,7 +44,7 @@ interface FrePageHandler {
   // entered the error state.
   ExceededTimeoutError();
 
-  // Signal to the fre controller that the web ui framework has completed
+  // Signal to the fre controller that the WebUI framework has completed
   // loading and the remote web content is about to start loading in the
   // webview. This is used to record timing metrics.
   LogWebUiLoadComplete();
@@ -68,5 +71,7 @@ enum FreWebUiState {
   kOffline,
   // Web view is displayed.
   kReady,
+  // The admin has explicitly disabled Glic.
+  kDisabledByAdmin,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:FreWebUiState)

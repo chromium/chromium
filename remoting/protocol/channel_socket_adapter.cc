@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/protocol/channel_socket_adapter.h"
 
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "net/base/io_buffer.h"
@@ -28,10 +24,10 @@ TransportChannelSocketAdapter::TransportChannelSocketAdapter(
                 const webrtc::ReceivedIpPacket& packet) {
         OnNewPacket(transport, packet);
       });
-  channel_->SignalWritableState.connect(
-      this, &TransportChannelSocketAdapter::OnWritableState);
-  channel_->SignalDestroyed.connect(
-      this, &TransportChannelSocketAdapter::OnChannelDestroyed);
+  channel_->SubscribeWritableState(
+      this, [this](webrtc::PacketTransportInternal* transport) {
+        OnWritableState(transport);
+      });
 }
 
 TransportChannelSocketAdapter::~TransportChannelSocketAdapter() {
@@ -121,7 +117,6 @@ void TransportChannelSocketAdapter::Close(int error_code) {
   DCHECK(error_code != net::OK);
   closed_error_code_ = error_code;
   channel_->DeregisterReceivedPacketCallback(this);
-  channel_->SignalDestroyed.disconnect(this);
   channel_ = nullptr;
 
   if (!read_callback_.is_null()) {
@@ -155,7 +150,8 @@ void TransportChannelSocketAdapter::OnNewPacket(
       data_size = read_buffer_size_;
     }
 
-    memcpy(read_buffer_->data(), packet.payload().data(), data_size);
+    UNSAFE_TODO(
+        memcpy(read_buffer_->data(), packet.payload().data(), data_size));
 
     net::CompletionRepeatingCallback callback = read_callback_;
     read_callback_.Reset();
@@ -186,13 +182,6 @@ void TransportChannelSocketAdapter::OnWritableState(
       callback.Run(result);
     }
   }
-}
-
-void TransportChannelSocketAdapter::OnChannelDestroyed(
-    webrtc::IceTransportInternal* channel) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(channel, channel_);
-  Close(net::ERR_CONNECTION_ABORTED);
 }
 
 }  // namespace remoting::protocol

@@ -54,8 +54,7 @@ WebHistoryServiceFactory::WebHistoryServiceFactory()
 WebHistoryServiceFactory::~WebHistoryServiceFactory() = default;
 
 std::unique_ptr<KeyedService> WebHistoryServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<history::WebHistoryService>(
       IdentityManagerFactory::GetForProfile(profile),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

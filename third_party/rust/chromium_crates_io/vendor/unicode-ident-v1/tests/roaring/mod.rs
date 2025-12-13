@@ -1,3 +1,5 @@
+#![allow(clippy::incompatible_msrv)]
+
 use roaring::RoaringBitmap;
 
 pub fn xid_start_bitmap() -> RoaringBitmap {

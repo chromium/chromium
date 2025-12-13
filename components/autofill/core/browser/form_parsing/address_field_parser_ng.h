@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_ADDRESS_FIELD_PARSER_NG_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_ADDRESS_FIELD_PARSER_NG_H_
 
-#include <map>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 
 namespace autofill {
@@ -27,7 +28,7 @@ struct ClassifiedFieldSequence {
   // the `score` is used as a tiebreaker.
   bool BetterThan(const ClassifiedFieldSequence& other) const;
 
-  base::flat_map<FieldType, raw_ptr<AutofillField>> assignments;
+  base::flat_map<FieldType, raw_ptr<const FormFieldData>> assignments;
   // The set of field types that exist in `assignments`. As a performance
   // optimization, we don't delete entries from `assignments` (flat_map is slow
   // when the keyset is modified) but write null entries instead.
@@ -35,7 +36,7 @@ struct ClassifiedFieldSequence {
   // assigned in `assignments`.
   FieldTypeSet contained_types;
   // The index of the last field in the form which was assigned a field type.
-  size_t last_classified_field_index = 0u;
+  std::optional<AutofillScanner::Position> last_classified_field_index;
   // The score of a classification. Bigger is better. Tiebreaker in case two
   // `ClassifiedFieldSequence`s have the same number of classified fields.
   double score = 0.0;
@@ -53,7 +54,7 @@ class AddressFieldParserNG : public FormFieldParser {
   class FieldTypeInformation;
 
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
   ~AddressFieldParserNG() override;
   AddressFieldParserNG(const AddressFieldParserNG&) = delete;
@@ -109,7 +110,7 @@ class AddressFieldParserNG : public FormFieldParser {
   // is in progress and must not be accessed afterwards:
   raw_ptr<ParsingContext> context_;
   raw_ptr<AutofillScanner> scanner_;
-  raw_ptr<AutofillField> initial_field_;
+  raw_ptr<const FormFieldData> initial_field_;
 
   // An intermediate classification (assignment of field types to fields) that
   // is being worked on during the parsing.

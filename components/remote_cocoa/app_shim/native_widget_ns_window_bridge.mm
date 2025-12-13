@@ -62,7 +62,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #import "ui/gfx/mac/nswindow_frame_controls.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 using remote_cocoa::mojom::VisibilityTransition;
 using remote_cocoa::mojom::WindowVisibilityState;
@@ -83,7 +83,7 @@ constexpr auto kUIPaintTimeout = base::Milliseconds(500);
 
 // Returns the display that the specified window is on.
 display::Display GetDisplayForWindow(NSWindow* window) {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(
+  return display::Screen::Get()->GetDisplayNearestWindow(
       gfx::NativeWindow(window));
 }
 
@@ -513,6 +513,14 @@ void NativeWidgetNSWindowBridge::ShowEmojiPanel() {
 void NativeWidgetNSWindowBridge::CreateWindow(
     mojom::CreateWindowParamsPtr params) {
   SetWindow(CreateNSWindow(params.get()));
+  if (window_set_callback_) {
+    std::move(window_set_callback_).Run(ns_window());
+  }
+}
+
+void NativeWidgetNSWindowBridge::OnWindowSetForTesting(  // IN-TEST
+    base::OnceCallback<void(NativeWidgetMacNSWindow*)> callback) {
+  window_set_callback_ = std::move(callback);
 }
 
 void NativeWidgetNSWindowBridge::InitWindow(
@@ -521,10 +529,11 @@ void NativeWidgetNSWindowBridge::InitWindow(
   is_translucent_window_ = params->is_translucent;
   pending_restoration_data_ = params->state_restoration_data;
 
-  if (params->is_headless_mode_window)
+  if (display::Screen::Get()->IsHeadless()) {
     headless_mode_window_ = std::make_optional<HeadlessModeWindow>();
+  }
 
-  [window_ setIsHeadless:params->is_headless_mode_window];
+  [window_ setIsHeadless:headless_mode_window_.has_value()];
 
   // Register for application hide notifications so that visibility can be
   // properly tracked. This is not done in the delegate so that the lifetime is
@@ -661,10 +670,41 @@ void NativeWidgetNSWindowBridge::SetSizeAndCenter(
   new_window_bounds.set_size(GetWindowSizeForClientSize(window_, content_size));
   SetBounds(new_window_bounds, minimum_content_size, std::nullopt);
 
-  // Note that this is not the precise center of screen, but it is the standard
-  // location for windows like dialogs to appear on screen for Mac.
-  // TODO(tapted): If there is a parent window, center in that instead.
-  [window_ center];
+  if (!parent_) {
+    // Note that this is not the precise center of screen, but it is the
+    // standard location for windows like dialogs to appear on screen for Mac.
+    [window_ center];
+  } else {
+    NSWindow* parent_window = parent_->ns_view().window;
+    NSRect parent_rect = [parent_window frame];
+    NSRect window_rect = [window_ frame];
+
+    // Clamp to the visible area of the screen where the parent window resides.
+    // This ensures the window stays within viewable bounds and respects
+    // the menu bar and dock.
+    NSScreen* screen = [parent_window screen];
+    if (screen) {
+      NSRect visible_frame = [screen visibleFrame];
+      parent_rect = NSIntersectionRect(parent_rect, visible_frame);
+
+      // Calculate the centered position relative to the parent's visible area.
+      CGFloat x = NSMidX(parent_rect) - window_rect.size.width / 2;
+      CGFloat y = NSMidY(parent_rect) - window_rect.size.height / 2;
+
+      // Ensure the child window stays completely within the visible frame,
+      // even if the parent's visible area is smaller than the child window.
+      x = std::max(x, NSMinX(visible_frame));
+      x = std::min(x, NSMaxX(visible_frame) - window_rect.size.width);
+
+      y = std::max(y, NSMinY(visible_frame));
+      y = std::min(y, NSMaxY(visible_frame) - window_rect.size.height);
+
+      [window_ setFrameOrigin:NSMakePoint(x, y)];
+    } else {
+      // Fallback if no screen is available.
+      [window_ center];
+    }
+  }
 }
 
 void NativeWidgetNSWindowBridge::DestroyContentView() {
@@ -749,10 +789,6 @@ void NativeWidgetNSWindowBridge::CloseWindow() {
     return;
   }
 
-  // Destroy the content view so that it won't call back into |host_| while
-  // being torn down.
-  DestroyContentView();
-
   // If the window wants to be visible and has a parent, then the parent may
   // order it back in (in the period between orderOut: and close).
   wants_to_be_visible_ = false;
@@ -795,9 +831,22 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
   // expected visibility state and lie to the upper layer pretending the
   // window did change its visibility and activation state.
   if (headless_mode_window_) {
-    headless_mode_window_->visibility_state =
+    const bool new_visibility_state =
         new_state != WindowVisibilityState::kHideWindow;
-    host_->OnVisibilityChanged(headless_mode_window_->visibility_state);
+    if (headless_mode_window_->visibility_state != new_visibility_state) {
+      headless_mode_window_->visibility_state = new_visibility_state;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](const base::WeakPtr<NativeWidgetNSWindowBridge>& bridge,
+                 bool visibility_state) {
+                if (bridge && bridge->host_) {
+                  bridge->host_->OnVisibilityChanged(visibility_state);
+                }
+              },
+              factory_.GetWeakPtr(), new_visibility_state));
+    }
+
     if (new_state == WindowVisibilityState::kShowAndActivateWindow) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
@@ -991,8 +1040,11 @@ void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
           ui::EventFromNative(base::apple::OwnedNSEvent(event));
       bool event_handled = false;
       if (ui_event && ui_event->type() != ui::EventType::kUnknown) {
-        weak_ptr->host_->DispatchMonitorEvent(std::move(ui_event),
-                                              &event_handled);
+        // Pass up whether or not the event is for this specific window. This
+        // allows consumers to filter events that are not for this window.
+        bool target_is_this_window = event.window == weak_ptr->window_;
+        weak_ptr->host_->DispatchMonitorEvent(
+            std::move(ui_event), target_is_this_window, &event_handled);
       }
 
       return event_handled ? nil : event;
@@ -1538,8 +1590,7 @@ int64_t NativeWidgetNSWindowBridge::FullscreenControllerGetDisplayId() const {
 gfx::Rect NativeWidgetNSWindowBridge::FullscreenControllerGetFrameForDisplay(
     int64_t display_id) const {
   display::Display display;
-  if (display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
-                                                            &display)) {
+  if (display::Screen::Get()->GetDisplayWithDisplayId(display_id, &display)) {
     // Use the current window size to avoid unexpected window resizes on
     // subsequent cross-screen window drag and drops; see crbug.com/1338664
     return gfx::Rect(display.work_area().origin(),

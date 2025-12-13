@@ -704,9 +704,9 @@ TEST(SessionCommandsTest, ConfigureSession_unhandledPromptBehaviorDict) {
   ASSERT_NE(desired_caps_out, nullptr);
   // Testing specific values could be fragile, but want to verify they are set
 
-  std::string json;
-  base::JSONWriter::Write(session.unhandled_prompt_behavior.CapabilityView(),
-                          &json);
+  std::string json =
+      base::WriteJson(session.unhandled_prompt_behavior.CapabilityView())
+          .value_or("");
   ASSERT_EQ(
       "{\"alert\":\"accept\",\"beforeUnload\":\"accept\",\"confirm\":"
       "\"dismiss\",\"prompt\":\"ignore\"}",

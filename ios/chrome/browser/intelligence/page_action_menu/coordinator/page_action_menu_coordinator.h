@@ -12,6 +12,7 @@
 
 @protocol PageActionMenuCommands;
 
+// TODO(crbug.com/465867724): Rename page action menu.
 // Coordinator for the page action menu.
 @interface PageActionMenuCoordinator : ChromeCoordinator
 

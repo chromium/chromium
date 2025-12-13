@@ -15,12 +15,14 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 
+import java.util.concurrent.TimeoutException;
+
 /** Static methods for use in tests to manipulate the PWA App list for restoring. */
 @JNINamespace("webapps")
 public class PwaRestoreBottomSheetTestUtils {
     private static final CallbackHelper sCallbackHelper = new CallbackHelper();
 
-    public static void waitForWebApkDatabaseInitialization() throws Exception {
+    public static void waitForWebApkDatabaseInitialization() throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
@@ -32,15 +34,12 @@ public class PwaRestoreBottomSheetTestUtils {
     }
 
     /** Set the app list to use for testing. */
-    public static void setAppListForRestoring(String[][] appList, int[] lastUsedInDays)
-            throws Exception {
+    public static void setAppListForRestoring(String[][] appList) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PwaRestoreBottomSheetTestUtilsJni.get()
                             .setAppListForRestoring(
-                                    appList,
-                                    lastUsedInDays,
-                                    ProfileManager.getLastUsedRegularProfile());
+                                    appList, ProfileManager.getLastUsedRegularProfile());
                 });
     }
 
@@ -53,7 +52,6 @@ public class PwaRestoreBottomSheetTestUtils {
     interface Natives {
         void waitForWebApkDatabaseInitialization(@JniType("Profile*") Profile profile);
 
-        void setAppListForRestoring(
-                String[][] appList, int[] lastUsedInDays, @JniType("Profile*") Profile profile);
+        void setAppListForRestoring(String[][] appList, @JniType("Profile*") Profile profile);
     }
 }

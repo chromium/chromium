@@ -29,7 +29,8 @@ namespace policy {
 namespace {
 
 void OnPolicyFetchCompleted(bool success) {
-  VLOG(1) << "Policy fetch " << (success ? "succeeded" : "failed");
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << "Policy fetch " << (success ? "succeeded" : "failed");
 }
 
 }  // namespace
@@ -74,7 +75,8 @@ void ChromeBrowserCloudManagementRegistrar::
   // request context because the user is not signed in to this profile.
   registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
       policy_client.get(),
-      enterprise_management::DeviceRegisterRequest::BROWSER);
+      enterprise_management::DeviceRegisterRequest::BROWSER,
+      enterprise_management::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
 
   // Check if token enrollment is mandatory
   bool is_enrollment_mandatory =
@@ -124,6 +126,15 @@ void MachineLevelUserCloudPolicyFetcher::SetupRegistrationAndFetchPolicy(
   policy_manager_->core()->client()->SetupRegistration(
       dm_token.value(), client_id, std::vector<std::string>());
   policy_manager_->store()->SetupRegistration(dm_token, client_id);
+  if (policy_manager_->extension_install_store()) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    policy_manager_->extension_install_store()->SetupRegistration(dm_token,
+                                                                  client_id);
+#else
+    NOTREACHED() << "extension_install_store initialized on a platform without "
+                    "extensions";
+#endif
+  }
   DCHECK(policy_manager_->IsClientRegistered());
 
   policy_manager_->core()->service()->RefreshPolicy(

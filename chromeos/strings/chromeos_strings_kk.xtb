@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">апельсиндер</translation>
 <translation id="1275718070701477396">Таңдалған</translation>
 <translation id="1290331692326790741">Әлсіз сигнал</translation>
+<translation id="1292474106138697109">Сабақ құралдарының дисплейі</translation>
 <translation id="1300115153046603471">APN түрі — әдепкі және <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Түрлендіру</translation>
@@ -253,7 +254,7 @@
 <translation id="1914144885717544695">жұма күні</translation>
 <translation id="1915960750806557358">Пікір жіберіңіз немесе мәселені сипаттаңыз. Жеке басқа қатысты, шетін не құпия ештеңе қоспаңыз.</translation>
 <translation id="1923388006036088459">Акценттік түстер</translation>
-<translation id="1926611810597212636">жалғызмүйіз</translation>
+<translation id="1926611810597212636">сыңармүйіз</translation>
 <translation id="1944321879609775960">Қорытынды жасау үшін <ph name="DEVICE_TYPE" /> құрылғысын өшіріп қосыңыз.</translation>
 <translation id="1945403655450283000">Диктофон</translation>
 <translation id="1947737735496445907">Басып шығарылған</translation>
@@ -269,7 +270,7 @@
 <translation id="1999615961760456652">Адаптивті портал</translation>
 <translation id="2004572381882349402">Ретушь</translation>
 <translation id="200669432486043882">Файлды ауыстыру</translation>
-<translation id="2006864819935886708">Қосылу мүмкіндігі</translation>
+<translation id="2006864819935886708">Байланыс</translation>
 <translation id="2008685064673031089">Prime search</translation>
 <translation id="2011174342667534258">SDK нұсқасы:</translation>
 <translation id="2016697457005847575">Ақауларды жою қадамдарын орындап көріңіз</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> сурет</translation>
 <translation id="4300272766492248925">Қолданбаны ашу</translation>
 <translation id="430786093962686457">шифон</translation>
+<translation id="4309762678330556039">Транскрипцияларды автоматты түрде жасаңыз және аудио іздеңіз. Интернетке қосылмасаңыз да, жазбалар жасауға болады.</translation>
 <translation id="4310735698903592804">Google AI жасаған соңғы тұсқағаздар</translation>
 <translation id="4320904097188876154">неон қызғылт</translation>
 <translation id="432961742358282111">Анықтамаларды, аудармаларды немесе түрлендірілген бірліктерді алу үшін тінтуірдің оң жақ түймесін басыңыз немесе экранды басып тұрыңыз. Бұл функцияны басқару үшін сол немесе оң бағыт пернелерін пайдаланыңыз.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Қосымша опциялар</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> пернесі тексерілді.</translation>
 <translation id="5606865426897221650">Қойынды</translation>
+<translation id="5612205513582918357">Сабақ құралдары экраныңызды <ph name="RECEIVER_NAME" /> дисплейіне жіберіп жатыр.</translation>
 <translation id="5613201299517339763">Аккаунттан шығарылдыңыз.</translation>
 <translation id="5620281292257375798">Тек ішкі қолданысқа арналған</translation>
 <translation id="5628106863521633649">Қолжетімді тілдер</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Бұлт ағыны</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Сканерлер жоқ</translation>
-<translation id="6231648282154119906">Күмәнді файлдар сіз таңдайтын күшейтілген қорғаныс функциясының аясында Google Safe Browsing арқылы автоматты түрде сканерленеді.</translation>
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6234024205316847054">Құрылымдарды көрсету</translation>
 <translation id="6243280677745499710">Қазіргісі</translation>

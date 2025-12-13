@@ -68,6 +68,7 @@ class FakeDownloadTask final : public DownloadTask {
   void SetPerformedBackgroundDownload(bool flag);
   void SetOriginatingHost(NSString* originating_host);
   void SetRedirectedURL(const GURL& redirected_url);
+  void SetIdentifier(NSString* identifier);
 
  private:
   // Called when download task was updated.
@@ -76,7 +77,7 @@ class FakeDownloadTask final : public DownloadTask {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::ObserverList<DownloadTaskObserver, true> observers_;
-  raw_ptr<WebState> web_state_ = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state_ = nullptr;
   State state_ = State::kNotStarted;
   GURL original_url_;
   GURL redirected_url_;

@@ -6,8 +6,8 @@
 #define GPU_COMMAND_BUFFER_SERVICE_DRM_MODIFIERS_FILTER_DAWN_H_
 
 #include "base/containers/flat_map.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/gpu_gles2_export.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/ozone/public/drm_modifiers_filter.h"
 
 namespace wgpu {
@@ -34,12 +34,12 @@ class GPU_GLES2_EXPORT DrmModifiersFilterDawn : public ui::DrmModifiersFilter {
 
   ~DrmModifiersFilterDawn() override;
 
-  std::vector<uint64_t> Filter(gfx::BufferFormat format,
+  std::vector<uint64_t> Filter(viz::SharedImageFormat format,
                                const std::vector<uint64_t>& modifiers) override;
 
  private:
   // Map from all BufferFormats to a set of modifiers supported by that format.
-  base::flat_map<gfx::BufferFormat, std::vector<uint64_t>> modifier_map_;
+  base::flat_map<viz::SharedImageFormat, std::vector<uint64_t>> modifier_map_;
 };
 
 }  //  namespace gpu

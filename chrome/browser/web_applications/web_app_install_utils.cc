@@ -4,16 +4,12 @@
 
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 
-#include <algorithm>
-#include <array>
-#include <iterator>
+#include <cstddef>
 #include <map>
 #include <optional>
-#include <ostream>
 #include <set>
 #include <string>
 #include <string_view>
-#include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -21,19 +17,14 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_helpers.h"
-#include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -43,13 +34,12 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
-#include "chrome/browser/web_applications/scope_extension_info.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
@@ -58,8 +48,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
-#include "components/services/app_service/public/cpp/protocol_handler_info.h"
-#include "components/services/app_service/public/cpp/share_target.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -71,10 +60,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -340,6 +326,34 @@ apps::FileHandler::LaunchType ToFileHandlerLaunchType(
   }
 }
 
+void PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
+    const IconsMap& icons_downloaded,
+    const std::vector<apps::IconInfo>& icon_metadata,
+    std::map<SquareSizePx, SkBitmap>& output_size_to_bitmaps) {
+  CHECK(output_size_to_bitmaps.empty());
+  std::vector<SkBitmap> square_icons_matching_infos;
+  // First, choose all bitmaps from `icons_downloaded` that share the same url
+  // as the entries in `icon_metadata` in `square_icons_matching_infos`.
+  AddSquareIconsFromMapMatchingIconInfos(&square_icons_matching_infos,
+                                         icon_metadata, icons_downloaded);
+
+  // Second, start populating the `output_size_to_bitmaps` map with all the
+  // parsed bitmaps, once per size.
+  for (auto& icon : square_icons_matching_infos) {
+    output_size_to_bitmaps[icon.width()] = icon;
+  }
+
+  // Third, resize existing icons if any and populate `output_size_to_bitmaps`
+  // with the bitmaps whose sizes are not populated previously.
+  SizeToBitmap sizes_to_icons = ConstrainBitmapsToSizes(
+      square_icons_matching_infos, web_app::SizesToGenerate());
+  for (auto& [size, icon] : sizes_to_icons) {
+    if (!base::Contains(output_size_to_bitmaps, size)) {
+      output_size_to_bitmaps[size] = std::move(icon);
+    }
+  }
+}
+
 }  // namespace
 
 void PopulateFileHandlerInfoFromManifest(
@@ -450,22 +464,23 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
   }
   AddSquareIconsFromBitmaps(&square_icons_any, web_app_info->icon_bitmaps.any);
 
-  for (SkBitmap& bitmap : square_icons_maskable) {
-    // Retain any bitmaps provided as input to the installation.
-    if (web_app_info->icon_bitmaps.maskable.count(bitmap.width()) == 0)
-      web_app_info->icon_bitmaps.maskable[bitmap.width()] = std::move(bitmap);
+  // Retain any bitmaps provided as input to the installation.
+  for (auto& icon : square_icons_maskable) {
+    if (!base::Contains(web_app_info->icon_bitmaps.maskable, icon.width())) {
+      web_app_info->icon_bitmaps.maskable[icon.width()] = std::move(icon);
+    }
   }
 
-  for (SkBitmap& bitmap : square_icons_monochrome) {
-    // Retain any bitmaps provided as input to the installation.
-    if (web_app_info->icon_bitmaps.monochrome.count(bitmap.width()) == 0)
-      web_app_info->icon_bitmaps.monochrome[bitmap.width()] = std::move(bitmap);
+  for (auto& icon : square_icons_monochrome) {
+    if (!base::Contains(web_app_info->icon_bitmaps.monochrome, icon.width())) {
+      web_app_info->icon_bitmaps.monochrome[icon.width()] = std::move(icon);
+    }
   }
 
   std::u16string icon_letter =
       web_app_info->title.empty()
           ? shortcuts::GenerateIconLetterFromUrl(web_app_info->start_url())
-          : shortcuts::GenerateIconLetterFromName(web_app_info->title);
+          : shortcuts::GenerateIconLetterFromName(web_app_info->title.value());
 
   // Ensure that all top-level icons that are in web_app_info with  Purpose::ANY
   // are present, by generating icons for any sizes that have failed to
@@ -482,6 +497,42 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
     if (web_app_info->icon_bitmaps.any.count(item.first) == 0)
       web_app_info->icon_bitmaps.any[item.first] = std::move(item.second);
   }
+}
+
+void PopulateTrustedIconBitmaps(WebAppInstallInfo& web_app_info,
+                                const IconsMap& icons_map) {
+  // Exit early if there have been no downloaded icons, as then the whole
+  // `trusted_icons` metadata will be empty.
+  if (icons_map.empty()) {
+    return;
+  }
+
+  // Construct the trusted icon metadata per purpose.
+  std::vector<apps::IconInfo> trusted_icons_any;
+  std::vector<apps::IconInfo> trusted_icons_maskable;
+  std::vector<apps::IconInfo> trusted_icons_monochrome;
+  for (apps::IconInfo& icon_info : web_app_info.trusted_icons) {
+    switch (icon_info.purpose) {
+      case apps::IconInfo::Purpose::kAny:
+        trusted_icons_any.push_back(icon_info);
+        break;
+      case apps::IconInfo::Purpose::kMaskable:
+        trusted_icons_maskable.push_back(icon_info);
+        break;
+      case apps::IconInfo::Purpose::kMonochrome:
+        trusted_icons_monochrome.push_back(icon_info);
+        break;
+    }
+  }
+
+  PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
+      icons_map, trusted_icons_any, web_app_info.trusted_icon_bitmaps.any);
+  PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
+      icons_map, trusted_icons_maskable,
+      web_app_info.trusted_icon_bitmaps.maskable);
+  PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
+      icons_map, trusted_icons_monochrome,
+      web_app_info.trusted_icon_bitmaps.monochrome);
 }
 
 void RecordDownloadedIconsResultAndHttpStatusCodes(
@@ -672,12 +723,14 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetManifestId(web_app_info.manifest_id());
 
   DCHECK(!web_app_info.title.empty());
-  web_app.SetName(base::UTF16ToUTF8(web_app_info.title));
+  web_app.SetName(base::UTF16ToUTF8(web_app_info.title.value()));
 
   web_app.SetStartUrl(web_app_info.start_url());
 
   web_app.SetDisplayMode(web_app_info.display_mode);
   web_app.SetDisplayModeOverride(web_app_info.display_override);
+
+  web_app.SetBorderlessUrlPatterns(web_app_info.borderless_url_patterns);
 
   web_app.SetDescription(base::UTF16ToUTF8(web_app_info.description));
   web_app.SetLaunchQueryParams(web_app_info.launch_query_params);
@@ -710,7 +763,7 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   // manifest_id above.
   CHECK(sync_proto.has_start_url());
   CHECK(sync_proto.has_relative_manifest_id());
-  sync_proto.set_name(base::UTF16ToUTF8(web_app_info.title));
+  sync_proto.set_name(base::UTF16ToUTF8(web_app_info.title.value()));
   sync_proto.clear_theme_color();
   if (web_app_info.theme_color.has_value()) {
     sync_proto.set_theme_color(web_app_info.theme_color.value());
@@ -725,7 +778,7 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   }
   sync_proto.clear_trusted_icons();
   for (const apps::IconInfo& trusted_icon : web_app_info.trusted_icons) {
-    *(sync_proto.add_icon_infos()) = AppIconInfoToSyncProto(trusted_icon);
+    *(sync_proto.add_trusted_icons()) = AppIconInfoToSyncProto(trusted_icon);
   }
   web_app.SetSyncProto(std::move(sync_proto));
 
@@ -753,8 +806,6 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
 
   web_app.SetNoteTakingNewNoteUrl(web_app_info.note_taking_new_note_url);
 
-  web_app.SetCaptureLinks(web_app_info.capture_links);
-
   web_app.SetManifestUrl(web_app_info.manifest_url);
 
   web_app.SetLaunchHandler(web_app_info.launch_handler);
@@ -774,12 +825,20 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
 void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
                                 WebApp& web_app) {
   web_app.SetManifestIcons(web_app_info.manifest_icons);
+  web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
+  web_app.SetTrustedIcons(web_app_info.trusted_icons);
+
+  // Cache size information for icons stored on disk.
   for (IconPurpose purpose : kIconPurposes) {
     web_app.SetDownloadedIconSizes(
         purpose, GetSquareSizePxs(web_app_info.icon_bitmaps, purpose));
+    if (web_app_info.trusted_icon_bitmaps.empty() ||
+        purpose == IconPurpose::MONOCHROME) {
+      continue;
+    }
+    web_app.SetStoredTrustedIconSizes(
+        purpose, GetSquareSizePxs(web_app_info.trusted_icon_bitmaps, purpose));
   }
-  web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
-  web_app.SetTrustedIcons(web_app_info.trusted_icons);
 }
 
 bool CanWebAppUpdateIdentity(const WebApp* web_app) {

@@ -12,13 +12,14 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/callback_list.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/ui/ash/login/kiosk_app_menu_controller.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_ui_pref_controller.h"
 #include "chrome/browser/ui/ash/login/signin_ui.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_manager/user_type.h"
 
@@ -34,7 +35,7 @@ class OobeCrosEventsMetrics;
 // implementation - the goal is to reduce code duplication between
 // LoginDisplayHostMojo and LoginDisplayHostWebUI.
 class LoginDisplayHostCommon : public LoginDisplayHost,
-                               public BrowserListObserver,
+                               public BrowserController::Observer,
                                public SigninUI {
  public:
   explicit LoginDisplayHostCommon(bool update_geolocation_usage_allowed);
@@ -84,12 +85,15 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
       base::OnceCallback<void(std::unique_ptr<UserContext>)> on_skip_migration)
       final;
   void ShowSigninError(SigninError error, const std::string& details) final;
+  void ShowOobeNotCompletedError() final;
+
   void SAMLConfirmPassword(::login::StringList scraped_passwords,
                            std::unique_ptr<UserContext> user_context) final;
+  void ShowPasswordSelectionScreen() final;
   WizardContext* GetWizardContextForTesting() final;
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
+  // BrowserController::Observer:
+  void OnBrowserCreated(BrowserDelegate* browser) override;
 
   WizardContext* GetWizardContext() override;
 
@@ -163,6 +167,9 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   std::unique_ptr<OobeMetricsHelper> oobe_metrics_helper_;
 
   std::unique_ptr<OobeCrosEventsMetrics> oobe_cros_events_metrics_;
+
+  base::ScopedObservation<BrowserController, BrowserController::Observer>
+      browser_controller_observation_{this};
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 };

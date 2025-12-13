@@ -37,6 +37,7 @@ class TabMatcher;
 class ZeroSuggestCacheService;
 struct AutocompleteMatch;
 struct ProviderStateService;
+class AimEligibilityService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -116,6 +117,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual base::CallbackListSubscription GetLensSuggestInputsWhenReady(
       LensOverlaySuggestInputsCallback callback) const = 0;
   virtual tab_groups::TabGroupSyncService* GetTabGroupSyncService() const = 0;
+  virtual AimEligibilityService* GetAimEligibilityService() const = 0;
 
   // The value to use for Accept-Languages HTTP header when making an HTTP
   // request.
@@ -243,10 +245,23 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // shown to the user.
   virtual std::optional<bool> IsPagePaywalled() const;
 
+  // Whether the client should send the `ctxus=` URL parameter to Suggest in
+  // order to request contextual search suggestions in the Omnibox.
+  virtual bool ShouldSendContextualUrlSuggestParam() const;
+
+  // Whether the client should send the `pageTitle=` URL parameter to Suggest
+  // when requesting ZPS suggestions in the Omnibox.
+  virtual bool ShouldSendPageTitleSuggestParam() const;
+
   // Returns whether the app is currently in the background state (Mobile only).
   virtual bool in_background_state() const;
 
   virtual void set_in_background_state(bool in_background_state) {}
+
+  // Whether the "Omnibox Next" feature param with the given `param_name` is
+  // enabled.
+  virtual bool IsOmniboxNextFeatureParamEnabled(
+      const std::string& param_name) const;
 
   // Gets a weak pointer to the client. Used when providers need to use the
   // client when the client may no longer be around.

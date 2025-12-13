@@ -13,4 +13,7 @@ BOOL IsFirstRun();
 // Returns whether first run was more recent than `timeDelta`.
 BOOL IsFirstRunRecent(const base::TimeDelta& timeDelta);
 
+// Returns the time since first run.
+base::TimeDelta ClientAge();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_UTILS_FIRST_RUN_UTIL_H_

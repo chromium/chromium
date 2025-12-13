@@ -415,6 +415,8 @@ class MockAccessibilityPrivate {
   /**
    * Creates a synthetic keyboard event.
    * @param {chrome.accessibilityPrivate.SyntheticKeyboardEvent} event
+   * @param {boolean} useRewriters
+   * @param {boolean} isRepeat
    */
   sendSyntheticKeyEvent(event, useRewriters, isRepeat) {
     event.useRewriters = useRewriters;
@@ -571,10 +573,10 @@ class MockAccessibilityPrivate {
    * occur when the user or a chrome extension toggles Dictation active state.
    * @param {boolean} activated
    */
-  callOnToggleDictation(activated) {
+  async callOnToggleDictation(activated) {
     this.dictationActivated_ = activated;
     if (this.dictationToggleListener_) {
-      this.dictationToggleListener_(activated);
+      await this.dictationToggleListener_(activated);
     }
   }
 
@@ -821,9 +823,23 @@ class MockAccessibilityPrivate {
    * @param {string} description
    * @param {?string|undefined} cancelName
    * @param {function(boolean): void} callback
+   * @return {!Promise<boolean>} if `callback` is not provided.
    */
-  showConfirmationDialog(title, description, cancelName, callback) {}
+  showConfirmationDialog(title, description, cancelName, callback) {
+    if (callback) {
+      // Do not invoke `callback` because tests do not run WebCamFaceLandmarker
+      // init.
+      return;
+    }
 
+    // Similarly, returns a promise that never resolves.
+    return new Promise(resolve => {});
+  }
+
+  /**
+   * @param {!chrome.accessibilityPrivate.ScreenPoint} target
+   * @param {!chrome.accessibilityPrivate.ScrollDirection} direction
+   */
   scrollAtPoint(target, direction) {
     this.scrollAtPointData_.count += 1;
     this.scrollAtPointData_.target = target;

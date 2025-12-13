@@ -1,0 +1,45 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+static_library("site_protection") {
+  sources = [
+    "site_familiarity_fetcher.cc",
+    "site_familiarity_fetcher.h",
+    "site_familiarity_heuristic_name.h",
+    "site_familiarity_process_selection_deferring_condition.cc",
+    "site_familiarity_process_selection_deferring_condition.h",
+    "site_familiarity_process_selection_user_data.cc",
+    "site_familiarity_process_selection_user_data.h",
+    "site_familiarity_utils.cc",
+    "site_familiarity_utils.h",
+    "site_protection_metrics.h",
+    "site_protection_metrics_observer.cc",
+    "site_protection_metrics_observer.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/engagement",
+    "//chrome/browser/history",
+    "//chrome/browser/profiles",
+    "//chrome/browser/safe_browsing",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/site_engagement/content",
+    "//content/public/browser",
+    "//net",
+    "//url",
+  ]
+}

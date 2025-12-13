@@ -13,8 +13,9 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
   QuickOpen.QuickOpen.QuickOpenImpl.show('');
 
-  const dialogWidget = UIModule.Dialog.Dialog.instance.widget();
-  const filteredListWidget = dialogWidget.defaultFocusedChild;
+  const dialogWidget = UIModule.Dialog.Dialog.getInstance().widget();
+  const filteredListWidget =
+      UIModule.Widget.Widget.get(dialogWidget.getDefaultFocusedElement());
   TestRunner.assertTrue(filteredListWidget instanceof QuickOpen.FilteredListWidget.FilteredListWidget);
 
   await AxeCoreTestRunner.runValidation(filteredListWidget.contentElement);

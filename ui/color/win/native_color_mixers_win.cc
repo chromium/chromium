@@ -2,9 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/color/win/native_color_mixers_win.h"
+
 #include <windows.h>
 
+#include <optional>
+
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
+#include "skia/ext/skia_utils_win.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -14,9 +21,26 @@
 #include "ui/color/color_transform.h"
 #include "ui/color/win/accent_color_observer.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 
 namespace ui {
+
+base::flat_map<ColorId, SkColor> GetCurrentSysColors() {
+  const auto get_sys_color = [](int color) {
+    return skia::COLORREFToSkColor(GetSysColor(color));
+  };
+  return {{kColorNativeBtnFace, get_sys_color(COLOR_BTNFACE)},
+          {kColorNativeBtnHighlight, get_sys_color(COLOR_BTNHIGHLIGHT)},
+          {kColorNativeBtnShadow, get_sys_color(COLOR_BTNSHADOW)},
+          {kColorNativeBtnText, get_sys_color(COLOR_BTNTEXT)},
+          {kColorNativeGrayText, get_sys_color(COLOR_GRAYTEXT)},
+          {kColorNativeHighlight, get_sys_color(COLOR_HIGHLIGHT)},
+          {kColorNativeHighlightText, get_sys_color(COLOR_HIGHLIGHTTEXT)},
+          {kColorNativeHotlight, get_sys_color(COLOR_HOTLIGHT)},
+          {kColorNativeMenuHilight, get_sys_color(COLOR_MENUHILIGHT)},
+          {kColorNativeScrollbar, get_sys_color(COLOR_SCROLLBAR)},
+          {kColorNativeWindow, get_sys_color(COLOR_WINDOW)},
+          {kColorNativeWindowText, get_sys_color(COLOR_WINDOWTEXT)}};
+}
 
 // Maps the base set of sys color ids to appropriate platform defined high
 // contrast colors.
@@ -93,64 +117,14 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
                              const ColorProviderKey& key) {
   ColorMixer& mixer = provider->AddMixer();
 
-  // TODO(pkasting): Not clear whether this is really the set of interest.
-  // Maybe there's some way to query colors used by UxTheme.dll, or maybe we
-  // should be hardcoding a list of colors for system light/dark modes based on
-  // reverse-engineering current Windows behavior.  Or maybe the union of all
-  // these.
-  mixer[kColorNative3dDkShadow] = {
-      color_utils::GetSysSkColor(COLOR_3DDKSHADOW)};
-  mixer[kColorNative3dLight] = {color_utils::GetSysSkColor(COLOR_3DLIGHT)};
-  mixer[kColorNativeActiveBorder] = {
-      color_utils::GetSysSkColor(COLOR_ACTIVEBORDER)};
-  mixer[kColorNativeActiveCaption] = {
-      color_utils::GetSysSkColor(COLOR_ACTIVECAPTION)};
-  mixer[kColorNativeAppWorkspace] = {
-      color_utils::GetSysSkColor(COLOR_APPWORKSPACE)};
-  mixer[kColorNativeBackground] = {
-      color_utils::GetSysSkColor(COLOR_BACKGROUND)};
-  mixer[kColorNativeBtnFace] = {color_utils::GetSysSkColor(COLOR_BTNFACE)};
-  mixer[kColorNativeBtnHighlight] = {
-      color_utils::GetSysSkColor(COLOR_BTNHIGHLIGHT)};
-  mixer[kColorNativeBtnShadow] = {color_utils::GetSysSkColor(COLOR_BTNSHADOW)};
-  mixer[kColorNativeBtnText] = {color_utils::GetSysSkColor(COLOR_BTNTEXT)};
-  mixer[kColorNativeCaptionText] = {
-      color_utils::GetSysSkColor(COLOR_CAPTIONTEXT)};
-  mixer[kColorNativeGradientActiveCaption] = {
-      color_utils::GetSysSkColor(COLOR_GRADIENTACTIVECAPTION)};
-  mixer[kColorNativeGradientInactiveCaption] = {
-      color_utils::GetSysSkColor(COLOR_GRADIENTINACTIVECAPTION)};
-  mixer[kColorNativeGrayText] = {color_utils::GetSysSkColor(COLOR_GRAYTEXT)};
-  mixer[kColorNativeHighlight] = {color_utils::GetSysSkColor(COLOR_HIGHLIGHT)};
-  mixer[kColorNativeHighlightText] = {
-      color_utils::GetSysSkColor(COLOR_HIGHLIGHTTEXT)};
-  mixer[kColorNativeHotlight] = {color_utils::GetSysSkColor(COLOR_HOTLIGHT)};
-  mixer[kColorNativeInactiveBorder] = {
-      color_utils::GetSysSkColor(COLOR_INACTIVEBORDER)};
-  mixer[kColorNativeInactiveCaption] = {
-      color_utils::GetSysSkColor(COLOR_INACTIVECAPTION)};
-  mixer[kColorNativeInactiveCaptionText] = {
-      color_utils::GetSysSkColor(COLOR_INACTIVECAPTIONTEXT)};
-  mixer[kColorNativeInfoBk] = {color_utils::GetSysSkColor(COLOR_INFOBK)};
-  mixer[kColorNativeInfoText] = {color_utils::GetSysSkColor(COLOR_INFOTEXT)};
-  mixer[kColorNativeMenu] = {color_utils::GetSysSkColor(COLOR_MENU)};
-  mixer[kColorNativeMenuBar] = {color_utils::GetSysSkColor(COLOR_MENUBAR)};
-  mixer[kColorNativeMenuHilight] = {
-      color_utils::GetSysSkColor(COLOR_MENUHILIGHT)};
-  mixer[kColorNativeMenuText] = {color_utils::GetSysSkColor(COLOR_MENUTEXT)};
-  mixer[kColorNativeScrollbar] = {color_utils::GetSysSkColor(COLOR_SCROLLBAR)};
-  mixer[kColorNativeWindow] = {color_utils::GetSysSkColor(COLOR_WINDOW)};
-  mixer[kColorNativeWindowFrame] = {
-      color_utils::GetSysSkColor(COLOR_WINDOWFRAME)};
-  mixer[kColorNativeWindowText] = {
-      color_utils::GetSysSkColor(COLOR_WINDOWTEXT)};
+  for (const auto& entry : GetCurrentSysColors()) {
+    mixer[entry.first] = {entry.second};
+  }
 
   // Use the system accent color as the Chrome accent color, if present and only
   // if dwm colors are enabled.
-  const auto* accent_color_observer = AccentColorObserver::Get();
-  const auto& accent_color = accent_color_observer->accent_color();
-  if (accent_color.has_value() &&
-      accent_color_observer->use_dwm_frame_color()) {
+  if (const std::optional<SkColor> accent_color =
+          AccentColorObserver::Get()->accent_color()) {
     mixer[kColorAccent] = PickGoogleColor(accent_color.value());
   }
 
@@ -244,15 +218,16 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   mixer[kColorItemSelectionBackground] = {kColorNativeHighlight};
   mixer[kColorMenuSelectionBackground] = {kColorNativeHighlight};
   mixer[kColorSubtleAccent] = {kColorNativeHighlight};
+  mixer[kColorTableBackgroundSelectedFocused] = {kColorNativeHighlight};
   mixer[kColorTextfieldSelectionBackground] = {kColorNativeHighlight};
   mixer[kColorTextSelectionBackground] = {kColorNativeHighlight};
+  mixer[kColorTreeNodeBackgroundSelectedFocused] = {kColorNativeHighlight};
 
   // Highlight/Selected Text Foreground
   mixer[kColorButtonForegroundProminent] = {kColorNativeHighlightText};
   mixer[kColorMenuItemForegroundSelected] = {kColorNativeHighlightText};
   mixer[kColorNotificationInputForeground] = {kColorNativeHighlightText};
   mixer[kColorTableForegroundSelectedFocused] = {kColorNativeHighlightText};
-  mixer[kColorTableForegroundSelectedUnfocused] = {kColorNativeHighlightText};
   mixer[kColorTextSelectionForeground] = {kColorNativeHighlightText};
   mixer[kColorTreeNodeForegroundSelectedFocused] = {kColorNativeHighlightText};
   mixer[kColorTreeNodeForegroundSelectedUnfocused] = {

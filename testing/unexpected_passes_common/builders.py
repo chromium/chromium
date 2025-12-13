@@ -10,9 +10,6 @@ import os
 import subprocess
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
-# vpython-provided modules.
-import six
-
 # //testing imports.
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
@@ -289,9 +286,8 @@ class Builders():
                                 stdout=devnull,
                                 stderr=devnull)
       except subprocess.CalledProcessError as e:
-        six.raise_from(
-            RuntimeError('You are not logged into bb - run `bb auth-login`.'),
-            e)
+        raise RuntimeError(
+            'You are not logged into bb - run `bb auth-login`.') from e
       self._authenticated = True
     # Split out for ease of testing.
     # Get the Buildbucket ID for the most recent completed build for a builder.

@@ -112,7 +112,7 @@ bool ShouldDefaultToNaturalScroll() {
 }
 
 display::Display::TouchSupport GetInternalDisplayTouchSupport() {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   // No screen in some unit tests.
   if (!screen)
     return display::Display::TouchSupport::UNKNOWN;
@@ -161,36 +161,37 @@ void ComputeEventLatencyOS(EventType type,
     case EventType::kMousewheel:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kMouseWheelEventName, delta);
       // Do not record traces for wheel events to avoid spam.
-      return;
+      break;
     case EventType::kTouchMoved:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kTouchMovedEventName, delta);
       // Do not record traces for move events to avoid spam.
-      return;
+      break;
     case EventType::kTouchPressed:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kTouchPressedEventName, delta);
       RecordEventLatencyTrace(kTouchPressedEventName, time_stamp, current_time);
-      return;
+      break;
     case EventType::kTouchReleased:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kTouchReleasedEventName, delta);
       RecordEventLatencyTrace(kTouchReleasedEventName, time_stamp,
                               current_time);
-      return;
+      break;
     case EventType::kTouchCancelled:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kTouchCancelledEventName, delta);
       RecordEventLatencyTrace(kTouchCancelledEventName, time_stamp,
                               current_time);
-      return;
+      break;
     case EventType::kKeyPressed:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kKeyPressedEventName, delta);
       RecordEventLatencyTrace(kKeyPressedEventName, time_stamp, current_time);
-      return;
+      break;
     case EventType::kMousePressed:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kMousePressedEventName, delta);
       RecordEventLatencyTrace(kMousePressedEventName, time_stamp, current_time);
-      return;
+      break;
     default:
       return;
   }
+  UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2", delta);
 }
 
 #if BUILDFLAG(IS_WIN)

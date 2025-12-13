@@ -27,7 +27,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -38,6 +37,8 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.Supplier;
 
 /** Unit test for {@link BaseButtonDataProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)

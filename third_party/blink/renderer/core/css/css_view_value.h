@@ -21,7 +21,7 @@ class CORE_EXPORT CSSViewValue : public CSSValue {
   const CSSValue* Axis() const { return axis_.Get(); }
   const CSSValue* Inset() const { return inset_.Get(); }
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
   bool Equals(const CSSViewValue&) const;
   void TraceAfterDispatch(blink::Visitor*) const;
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
 
 #include <Windows.h>
@@ -19,11 +14,13 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -270,7 +267,7 @@ WinHttpUrlFetcher::~WinHttpUrlFetcher() {
 }
 
 bool WinHttpUrlFetcher::IsValid() const {
-  return session_.IsValid();
+  return session_.is_valid();
 }
 
 HRESULT WinHttpUrlFetcher::SetRequestHeader(const char* name,
@@ -301,7 +298,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
 
   response->clear();
 
-  if (!session_.IsValid()) {
+  if (!session_.is_valid()) {
     LOGFN(ERROR) << "Invalid fetcher";
     return E_UNEXPECTED;
   }
@@ -309,7 +306,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
   // Open a connection to the server.
   ScopedWinHttpHandle connect;
   {
-    std::string host = url_.host();
+    std::string host = url_.GetHost();
     ScopedWinHttpHandle::Handle connect_tmp = ::WinHttpConnect(
         session_.Get(), A2CW(host.c_str()), INTERNET_DEFAULT_PORT, 0);
     if (!connect_tmp) {
@@ -335,7 +332,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
 
   {
     bool use_post = !body_.empty();
-    std::string path = url_.path();
+    std::string path = url_.GetPath();
     std::string path_for_request = url_.PathForRequest();
     ScopedWinHttpHandle::Handle request = ::WinHttpOpenRequest(
         connect.Get(), use_post ? L"POST" : L"GET",
@@ -409,7 +406,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
 
     size_t current_size = response->size();
     response->resize(response->size() + actual);
-    memcpy(response->data() + current_size, buffer.get(), actual);
+    UNSAFE_TODO(memcpy(response->data() + current_size, buffer.get(), actual));
     if (response->size() >= kMaxResponseSize) {
       LOGFN(ERROR) << "Response has exceeded max size=" << kMaxResponseSize;
       return E_OUTOFMEMORY;

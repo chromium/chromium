@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -224,10 +223,10 @@ std::unique_ptr<HttpResponse> HandleEchoAll(const HttpRequest& request) {
   http_response->set_content_type("text/html");
   http_response->set_content(body);
 
-  if (request.GetURL().path_piece().ends_with("/nocache")) {
+  if (request.GetURL().path().ends_with("/nocache")) {
     http_response->AddCustomHeader("Cache-Control",
                                    "no-cache, no-store, must-revalidate");
-  } else if (request.GetURL().path_piece().ends_with("/cache")) {
+  } else if (request.GetURL().path().ends_with("/cache")) {
     http_response->AddCustomHeader("Cache-Control", "max-age=3600");
   }
 
@@ -237,7 +236,7 @@ std::unique_ptr<HttpResponse> HandleEchoAll(const HttpRequest& request) {
 // /echo-raw
 // Returns the query string as the raw response (no HTTP headers).
 std::unique_ptr<HttpResponse> HandleEchoRaw(const HttpRequest& request) {
-  return std::make_unique<RawHttpResponse>("", request.GetURL().query());
+  return std::make_unique<RawHttpResponse>("", request.GetURL().GetQuery());
 }
 
 // /set-cookie?COOKIES
@@ -248,8 +247,9 @@ std::unique_ptr<HttpResponse> HandleSetCookie(const HttpRequest& request) {
   std::string content;
   GURL request_url = request.GetURL();
   if (request_url.has_query()) {
-    std::vector<std::string> cookies = base::SplitString(
-        request_url.query(), "&", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    std::vector<std::string> cookies =
+        base::SplitString(request_url.GetQuery(), "&", base::KEEP_WHITESPACE,
+                          base::SPLIT_WANT_ALL);
     for (const auto& cookie : cookies) {
       http_response->AddCustomHeader("Set-Cookie", cookie);
       content += cookie;
@@ -394,7 +394,7 @@ std::unique_ptr<HttpResponse> HandleSetHeaderWithFile(
   base::FilePath server_root;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &server_root);
   base::FilePath file_path =
-      server_root.AppendASCII(request_url.path().substr(prefix.size() + 1));
+      server_root.AppendASCII(request_url.GetPath().substr(prefix.size() + 1));
   std::string file_content;
   CHECK(base::ReadFileToString(file_path, &file_content));
   http_response->set_content(file_content);
@@ -419,7 +419,7 @@ std::unique_ptr<HttpResponse> HandleIframe(const HttpRequest& request) {
 
   GURL iframe_url("about:blank");
   if (request_url.has_query()) {
-    iframe_url = GURL(base::UnescapeBinaryURLComponent(request_url.query()));
+    iframe_url = GURL(base::UnescapeBinaryURLComponent(request_url.GetQuery()));
   }
 
   http_response->set_content(base::StringPrintf(
@@ -539,7 +539,7 @@ std::unique_ptr<HttpResponse> HandleAuthBasic(const HttpRequest& request) {
 }
 
 std::string Sha256String(std::string_view input) {
-  return base::ToLowerASCII(base::HexEncode(crypto::hash::Sha256(input)));
+  return base::HexEncodeLower(crypto::hash::Sha256(input));
 }
 
 // /auth-digest
@@ -648,8 +648,7 @@ std::unique_ptr<HttpResponse> HandleServerRedirect(HttpStatusCode redirect_code,
                                                    bool allow_cors,
                                                    const HttpRequest& request) {
   GURL request_url = request.GetURL();
-  std::string dest =
-      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
   RequestQuery query = ParseQuery(request_url);
 
   if (request.method == METHOD_OPTIONS) {
@@ -680,8 +679,7 @@ std::unique_ptr<HttpResponse> HandleServerRedirectWithCookie(
     HttpStatusCode redirect_code,
     const HttpRequest& request) {
   GURL request_url = request.GetURL();
-  std::string dest =
-      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
   RequestQuery query = ParseQuery(request_url);
 
   auto http_response = std::make_unique<BasicHttpResponse>();
@@ -701,8 +699,7 @@ std::unique_ptr<HttpResponse> HandleServerRedirectWithSecureCookie(
     HttpStatusCode redirect_code,
     const HttpRequest& request) {
   GURL request_url = request.GetURL();
-  std::string dest =
-      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
   RequestQuery query = ParseQuery(request_url);
 
   auto http_response = std::make_unique<BasicHttpResponse>();
@@ -752,8 +749,7 @@ std::unique_ptr<HttpResponse> HandleCrossSiteRedirect(
 // Returns a meta redirect to URL.
 std::unique_ptr<HttpResponse> HandleClientRedirect(const HttpRequest& request) {
   GURL request_url = request.GetURL();
-  std::string dest =
-      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
 
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_content_type("text/html");
@@ -782,7 +778,7 @@ std::unique_ptr<HttpResponse> HandleSlowServer(const HttpRequest& request) {
 
   GURL request_url = request.GetURL();
   if (request_url.has_query())
-    delay = std::atof(request_url.query().c_str());
+    delay = std::atof(request_url.GetQuery().c_str());
 
   auto http_response =
       std::make_unique<DelayedHttpResponse>(base::Seconds(delay));
@@ -851,7 +847,7 @@ std::unique_ptr<HttpResponse> HandleExabyteResponse(
 // Returns a response with a gzipped body of "<body>". Attempts to allocate
 // enough memory to contain the body, but DCHECKs if that fails.
 std::unique_ptr<HttpResponse> HandleGzipBody(const HttpRequest& request) {
-  std::string uncompressed_body = request.GetURL().query();
+  std::string uncompressed_body = request.GetURL().GetQuery();
   auto compressed_body = CompressGzip(uncompressed_body);
 
   auto http_response = std::make_unique<BasicHttpResponse>();

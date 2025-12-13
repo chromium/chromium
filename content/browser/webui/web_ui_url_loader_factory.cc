@@ -277,9 +277,10 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       return;
     }
 
-    if (request.url.scheme() != scheme_) {
-      DVLOG(1) << "Bad scheme: " << request.url.scheme();
-      SCOPED_CRASH_KEY_STRING32("WebUI", "actual_scheme", request.url.scheme());
+    if (request.url.GetScheme() != scheme_) {
+      DVLOG(1) << "Bad scheme: " << request.url.GetScheme();
+      SCOPED_CRASH_KEY_STRING32("WebUI", "actual_scheme",
+                                request.url.GetScheme());
       SCOPED_CRASH_KEY_STRING32("WebUI", "expected_scheme", scheme_);
       SCOPED_CRASH_KEY_STRING64("WebUI", "requested_url", request.url.spec());
       SCOPED_CRASH_KEY_STRING64(
@@ -295,10 +296,10 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
 
     CHECK(allowed_hosts_.empty() ||
           (request.url.has_host() &&
-           allowed_hosts_.find(request.url.host()) != allowed_hosts_.end()))
-        << "Incorrect host: " << request.url.host();
+           allowed_hosts_.find(request.url.GetHost()) != allowed_hosts_.end()))
+        << "Incorrect host: " << request.url.GetHost();
 
-    if (request.url.host_piece() == kChromeUIBlobInternalsHost) {
+    if (request.url.host() == kChromeUIBlobInternalsHost) {
       GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE,
           base::BindOnce(
@@ -311,8 +312,8 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     // This path is entered on user-trigger navigations (e.g. from omnibox or
     // links) to chrome://network-error or chrome://dino. Actual network error
     // does not trigger this path.
-    if (request.url.host_piece() == kChromeUINetworkErrorHost ||
-        request.url.host_piece() == kChromeUIDinoHost) {
+    if (request.url.host() == kChromeUINetworkErrorHost ||
+        request.url.host() == kChromeUIDinoHost) {
       // Simulate a network error.
       StartNetworkErrorsURLLoader(request, std::move(client));
       // Logs WebUI usage. These WebUIs don't create a WebUI object.

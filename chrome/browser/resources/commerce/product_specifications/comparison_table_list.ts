@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './images/icons.html.js';
+import './comparison_table_list_item.js';
 
 import {ShowSetDisposition} from '//resources/cr_components/commerce/product_specifications.mojom-webui.js';
 import type {ProductSpecificationsBrowserProxy} from '//resources/cr_components/commerce/product_specifications_browser_proxy.js';

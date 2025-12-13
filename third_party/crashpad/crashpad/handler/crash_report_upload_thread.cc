@@ -28,6 +28,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "client/settings.h"
+#include "handler/crash_report_upload_rate_limit.h"
 #include "handler/minidump_to_upload_parameters.h"
 #include "snapshot/minidump/process_snapshot_minidump.h"
 #include "snapshot/module_snapshot.h"
@@ -384,29 +385,13 @@ bool CrashReportUploadThread::ShouldRateLimitUpload(
   Settings* const settings = database_->GetSettings();
   time_t last_upload_attempt_time;
   if (settings->GetLastUploadAttemptTime(&last_upload_attempt_time)) {
-    time_t now = time(nullptr);
-    if (now >= last_upload_attempt_time) {
-      // If the most recent upload attempt occurred within the past hour,
-      // don’t attempt to upload the new report. If it happened longer ago,
-      // attempt to upload the report.
-      constexpr int kUploadAttemptIntervalSeconds = 60 * 60;  // 1 hour
-      if (now - last_upload_attempt_time < kUploadAttemptIntervalSeconds) {
-        database_->SkipReportUpload(
-            report.uuid, Metrics::CrashSkippedReason::kUploadThrottled);
-        return true;
-      }
-    } else {
-      // The most recent upload attempt purportedly occurred in the future. If
-      // it “happened” at least one day in the future, assume that the last
-      // upload attempt time is bogus, and attempt to upload the report. If
-      // the most recent upload time is in the future but within one day,
-      // accept it and don’t attempt to upload the report.
-      constexpr int kBackwardsClockTolerance = 60 * 60 * 24;  // 1 day
-      if (last_upload_attempt_time - now < kBackwardsClockTolerance) {
-        database_->SkipReportUpload(
-            report.uuid, Metrics::CrashSkippedReason::kUnexpectedTime);
-        return true;
-      }
+    const time_t now = time(nullptr);
+    constexpr int kUploadAttemptIntervalSeconds = 60 * 60;  // 1 hour
+    const auto should_rate_limit = ShouldRateLimit(
+        now, last_upload_attempt_time, kUploadAttemptIntervalSeconds);
+    if (should_rate_limit.skip_reason.has_value()) {
+      database_->SkipReportUpload(report.uuid, *should_rate_limit.skip_reason);
+      return true;
     }
   }
   return false;

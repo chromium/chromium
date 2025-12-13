@@ -19,6 +19,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -40,7 +41,6 @@
 namespace mojo::core {
 
 namespace {
-std::atomic<bool> g_use_writev{false};
 
 const size_t kMaxBatchReadCapacity = 256 * 1024;
 }  // namespace
@@ -174,13 +174,13 @@ void ChannelPosix::LeakHandle() {
   leak_handle_ = true;
 }
 
-bool ChannelPosix::GetReadPlatformHandles(const void* payload,
-                                          size_t payload_size,
-                                          size_t num_handles,
-                                          const void* extra_header,
-                                          size_t extra_header_size,
-                                          std::vector<PlatformHandle>* handles,
-                                          bool* deferred) {
+bool ChannelPosix::GetReadPlatformHandles(
+    const void* payload,
+    size_t payload_size,
+    size_t num_handles,
+    const void* extra_header,
+    size_t extra_header_size,
+    std::vector<PlatformHandle>* handles) {
   if (num_handles > std::numeric_limits<uint16_t>::max())
     return false;
 
@@ -352,6 +352,9 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
                    message_view.data_num_bytes()};
       size_t num_handles_to_send =
           std::min(num_handles - handles_written, kMaxSendmsgHandles);
+      // TODO(crbug.com/439305148): Sending a large number of handles without
+      // a payload causes the message to be dropped.
+      CHECK(num_handles_to_send && (message_view.data_num_bytes() > 0));
       std::vector<base::ScopedFD> fds(num_handles_to_send);
       for (size_t i = 0; i < num_handles_to_send; ++i)
         fds[i] = handles[i + handles_written].TakeHandle().TakeFD();
@@ -431,14 +434,11 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
 }
 
 bool ChannelPosix::FlushOutgoingMessagesNoLock() {
-  if (g_use_writev)
-    return FlushOutgoingMessagesWritevNoLock();
-
   base::circular_deque<MessageView> messages;
   std::swap(outgoing_messages_, messages);
 
   if (!messages.empty()) {
-    UMA_HISTOGRAM_COUNTS_1000("Mojo.Channel.WriteQueuePendingMessages",
+    UMA_HISTOGRAM_COUNTS_1000("Mojo.Channel.WriteQueuePendingMessages2",
                               messages.size());
   }
 
@@ -465,12 +465,8 @@ bool ChannelPosix::FlushOutgoingMessagesNoLock() {
   return true;
 }
 
-void ChannelPosix::RejectUpgradeOffer() {
+void ChannelPosix::RejectPreIpczUpgradeOffer() {
   Write(Message::CreateMessage(0, 0, Message::MessageType::UPGRADE_REJECT));
-}
-
-void ChannelPosix::AcceptUpgradeOffer() {
-  Write(Message::CreateMessage(0, 0, Message::MessageType::UPGRADE_ACCEPT));
 }
 
 void ChannelPosix::OnWriteError(Error error) {
@@ -494,105 +490,7 @@ void ChannelPosix::OnWriteError(Error error) {
   OnError(error);
 }
 
-bool ChannelPosix::WriteOutgoingMessagesWithWritev() {
-  if (outgoing_messages_.empty())
-    return true;
 
-  // If all goes well we can submit a writev(2) with a iovec of size
-  // outgoing_messages_.size() but never more than the kernel allows.
-  size_t num_messages_to_send =
-      std::min<size_t>(IOV_MAX, outgoing_messages_.size());
-  base::FixedArray<iovec> iov(num_messages_to_send);
-
-  // Populate the iov.
-  size_t num_iovs_set = 0;
-  for (auto it = outgoing_messages_.begin();
-       num_iovs_set < num_messages_to_send; ++it) {
-    if (it->num_handles_remaining() > 0) {
-      // We can't send handles with writev(2) so stop at this message.
-      break;
-    }
-
-    iov[num_iovs_set].iov_base = const_cast<void*>(it->data());
-    iov[num_iovs_set].iov_len = it->data_num_bytes();
-    num_iovs_set++;
-  }
-
-  size_t iov_offset = 0;
-  while (iov_offset < num_iovs_set) {
-    ssize_t bytes_written = SocketWritev(socket_.get(), &iov[iov_offset],
-                                         num_iovs_set - iov_offset);
-    if (bytes_written < 0) {
-      if (errno == EAGAIN || errno == EWOULDBLOCK) {
-        WaitForWriteOnIOThreadNoLock();
-        return true;
-      }
-      return false;
-    }
-
-    // Let's walk our outgoing_messages_ popping off outgoing_messages_
-    // that were fully written.
-    size_t bytes_remaining = bytes_written;
-    while (bytes_remaining > 0) {
-      if (bytes_remaining >= outgoing_messages_.front().data_num_bytes()) {
-        // This message was fully written.
-        bytes_remaining -= outgoing_messages_.front().data_num_bytes();
-        outgoing_messages_.pop_front();
-        iov_offset++;
-      } else {
-        // This message was partially written, account for what was
-        // already written.
-        outgoing_messages_.front().advance_data_offset(bytes_remaining);
-        bytes_remaining = 0;
-
-        // Update the iov too as we will call writev again.
-        iov[iov_offset].iov_base =
-            const_cast<void*>(outgoing_messages_.front().data());
-        iov[iov_offset].iov_len = outgoing_messages_.front().data_num_bytes();
-      }
-    }
-  }
-
-  return true;
-}
-
-// FlushOutgoingMessagesWritevNoLock is equivalent to
-// FlushOutgoingMessagesNoLock except it looks for opportunities to make only
-// a single write syscall by using writev(2) instead of write(2). In most
-// situations this is very straight forward; however, when a handle needs to
-// be transferred we cannot use writev(2) and instead will fall back to the
-// standard write.
-bool ChannelPosix::FlushOutgoingMessagesWritevNoLock() {
-  do {
-    // If the first message contains a handle we will flush it first using a
-    // standard write, we will also use the standard write if we only have a
-    // single message.
-    while (!outgoing_messages_.empty() &&
-           (outgoing_messages_.front().num_handles_remaining() > 0 ||
-            outgoing_messages_.size() == 1)) {
-      MessageView message = std::move(outgoing_messages_.front());
-
-      outgoing_messages_.pop_front();
-      size_t messages_before_write = outgoing_messages_.size();
-      if (!WriteNoLock(std::move(message)))
-        return false;
-
-      if (outgoing_messages_.size() > messages_before_write) {
-        // It was re-queued by WriteNoLock.
-        return true;
-      }
-    }
-
-    if (!WriteOutgoingMessagesWithWritev())
-      return false;
-
-    // At this point if we have more messages then it's either because we
-    // exceeded IOV_MAX OR it's because we ran into a FileHandle. Either way
-    // we just start the process all over again and it will flush any
-    // FileHandles before attempting writev(2) again.
-  } while (!outgoing_messages_.empty());
-  return true;
-}
 
 bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
                                     const void* payload,
@@ -603,7 +501,7 @@ bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
       // ChannelPosix itself does not support upgrades, if the message was
       // delivered here it could have been when this channel was created we
       // didn't support upgrades but another process does.
-      RejectUpgradeOffer();
+      RejectPreIpczUpgradeOffer();
       return true;
     }
 #if BUILDFLAG(IS_IOS)
@@ -667,11 +565,6 @@ bool ChannelPosix::CloseHandles(const int* fds, size_t num_fds) {
   return true;
 }
 #endif  // BUILDFLAG(IS_IOS)
-
-// static
-void Channel::set_posix_use_writev(bool use_writev) {
-  g_use_writev = use_writev;
-}
 
 // static
 scoped_refptr<Channel> Channel::Create(

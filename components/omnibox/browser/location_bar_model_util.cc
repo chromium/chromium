@@ -10,6 +10,7 @@
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/security_interstitials/core/features.h"
 #include "components/security_state/core/security_state.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -23,14 +24,22 @@ namespace location_bar_model {
 
 const gfx::VectorIcon& GetSecurityVectorIcon(
     security_state::SecurityLevel security_level,
-    security_state::MaliciousContentStatus malicious_content_status) {
+    security_state::VisibleSecurityState* visible_security_state) {
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+  security_state::MaliciousContentStatus malicious_content_status =
+      visible_security_state->malicious_content_status;
+
   switch (security_level) {
     case security_state::NONE:
       return omnibox::kHttpChromeRefreshIcon;
     case security_state::SECURE:
       return omnibox::kSecurePageInfoChromeRefreshIcon;
     case security_state::WARNING:
+      if (base::FeatureList::IsEnabled(
+              security_interstitials::features::kHttpsFirstDialogUi) &&
+          visible_security_state->is_https_only_mode_upgraded) {
+        return vector_icons::kNoEncryptionIcon;
+      }
       return vector_icons::kNotSecureWarningChromeRefreshIcon;
     case security_state::DANGEROUS:
       if (malicious_content_status ==

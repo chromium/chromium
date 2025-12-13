@@ -16,10 +16,8 @@ import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -33,6 +31,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
+import java.util.function.Supplier;
+
 /**
  * A coordinator for the menu on tab group cards in GTS. It is responsible for creating a list of
  * menu items, setting up the menu and displaying the menu.
@@ -40,7 +40,6 @@ import org.chromium.ui.widget.ViewRectProvider;
 @NullMarked
 public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator {
     private final Activity mActivity;
-    private final boolean mShouldShowIcons;
     private boolean mIsMenuFocusableUponCreation;
 
     /**
@@ -57,21 +56,19 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             Activity activity) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
+                R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
                 tabModelSupplier,
+                /* multiInstanceManager= */ null,
                 tabGroupSyncService,
                 collaborationService,
                 activity);
         mActivity = activity;
-        mShouldShowIcons = ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled();
     }
 
-    /**
-     * Creates a {@link TabListMediator.TabActionListener} that creates the menu and shows it when
-     * clicked.
-     */
-    TabListMediator.TabActionListener getTabActionListener() {
-        return new TabListMediator.TabActionListener() {
+    /** Creates a {@link TabActionListener} that creates the menu and shows it when clicked. */
+    TabActionListener getTabActionListener() {
+        return new TabActionListener() {
             @Override
             public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                 @Nullable TabModel tabModel = getTabModel();
@@ -142,13 +139,13 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 buildListItem(
                         R.string.close_tab_group_menu_item,
                         R.id.close_tab_group,
-                        mShouldShowIcons ? R.drawable.ic_tab_close_24dp : Resources.ID_NULL,
+                        R.drawable.ic_tab_close_24dp,
                         isIncognito));
         itemList.add(
                 buildListItem(
                         R.string.rename_tab_group_menu_item,
                         R.id.edit_group_name,
-                        mShouldShowIcons ? R.drawable.ic_edit_24dp : Resources.ID_NULL,
+                        R.drawable.ic_edit_24dp,
                         isIncognito));
 
         if (!hasCollaborationData) {
@@ -156,7 +153,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                     buildListItem(
                             R.string.ungroup_tab_group_menu_item,
                             R.id.ungroup_tab,
-                            mShouldShowIcons ? R.drawable.ic_ungroup_tabs_24dp : Resources.ID_NULL,
+                            R.drawable.ic_ungroup_tabs_24dp,
                             isIncognito));
             if (!isIncognito && mCollaborationService.getServiceStatus().isAllowedToCreate()) {
                 itemList.add(buildShareMenuItem(R.string.share_tab_group_menu_item));
@@ -173,9 +170,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                     buildListItem(
                             R.string.delete_tab_group_menu_item,
                             R.id.delete_tab_group,
-                            mShouldShowIcons
-                                    ? R.drawable.material_ic_delete_24dp
-                                    : Resources.ID_NULL,
+                            R.drawable.material_ic_delete_24dp,
                             /* isIncognito= */ false));
         }
     }
@@ -188,35 +183,28 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                     buildListItem(
                             R.string.delete_tab_group_menu_item,
                             R.id.delete_shared_group,
-                            mShouldShowIcons
-                                    ? R.drawable.material_ic_delete_24dp
-                                    : Resources.ID_NULL,
+                            R.drawable.material_ic_delete_24dp,
                             /* isIncognito= */ false));
         } else if (memberRole == MemberRole.MEMBER) {
             itemList.add(
                     buildListItem(
                             R.string.leave_tab_group_menu_item,
                             R.id.leave_group,
-                            mShouldShowIcons
-                                    ? R.drawable.material_ic_delete_24dp
-                                    : Resources.ID_NULL,
+                            R.drawable.material_ic_delete_24dp,
                             /* isIncognito= */ false));
         }
     }
 
     @Override
     protected int getMenuWidth(int anchorViewWidthPx) {
-        return getDimensionPixelSize(
-                mShouldShowIcons
-                        ? R.dimen.tab_group_menu_with_icons_width
-                        : R.dimen.tab_group_menu_width);
+        return getDimensionPixelSize(R.dimen.tab_group_menu_with_icons_width);
     }
 
     private ListItem buildShareMenuItem(@StringRes int stringId) {
         return new ListItemBuilder()
                 .withTitleRes(stringId)
                 .withMenuId(R.id.share_group)
-                .withStartIconRes(mShouldShowIcons ? R.drawable.ic_group_24dp : Resources.ID_NULL)
+                .withStartIconRes(R.drawable.ic_group_24dp)
                 .withTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
                 .build();
     }

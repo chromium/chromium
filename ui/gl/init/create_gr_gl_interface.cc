@@ -33,9 +33,7 @@ namespace {
 
 // If enabled, adds a delay to GL program link whose value is given by the
 // feature param. Used for an ablation study.
-BASE_FEATURE(kAddDelayToGLProgramLink,
-             "AddDelayToGLProgramLink",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAddDelayToGLProgramLink, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kGLProgramLinkDelayMicroseconds{
     &kAddDelayToGLProgramLink, /*name=*/"GLProgramLinkDelayMicroseconds",
     /*default_value=*/1000};
@@ -287,7 +285,7 @@ const GLubyte* GetStringHook(const char* gl_version_string,
   }
 }
 
-const char* kBlocklistExtensions[] = {
+constexpr const char* kBlocklistExtensions[] = {
     "GL_APPLE_framebuffer_multisample",
     "GL_ARB_ES3_1_compatibility",
     "GL_ARB_draw_indirect",

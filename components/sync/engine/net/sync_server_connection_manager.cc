@@ -72,9 +72,9 @@ HttpResponse Connection::PostRequestAndDownloadResponse(
   post_provider_->SetURL(sync_request_url);
 
   if (!access_token.empty()) {
-    std::string headers;
-    headers = "Authorization: Bearer " + access_token;
-    post_provider_->SetExtraRequestHeaders(headers.c_str());
+    net::HttpRequestHeaders headers;
+    headers.SetHeader("Authorization", "Bearer " + access_token);
+    post_provider_->SetExtraRequestHeaders(headers);
   }
 
   // Must be octet-stream, or the payload may be parsed for a cookie.
@@ -101,8 +101,7 @@ HttpResponse Connection::PostRequestAndDownloadResponse(
 
   // We got a server response, copy over response codes and content.
   HttpResponse response = HttpResponse::ForHttpStatusCode(http_status_code);
-  response.content_length =
-      static_cast<int64_t>(post_provider_->GetResponseContentLength());
+  response.content_length = post_provider_->GetResponseContentLength();
 
   // Write the content into the buffer.
   buffer_out->assign(post_provider_->GetResponseContent(),

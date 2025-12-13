@@ -31,7 +31,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 namespace ash {
@@ -160,9 +159,7 @@ std::string InternetDetailDialog::GetDialogArgs() const {
   args.Set("type", network_type_);
   args.Set("guid", network_id_);
   args.Set("name", network_name_);
-  std::string json;
-  base::JSONWriter::Write(args, &json);
-  return json;
+  return base::WriteJson(args).value_or("");
 }
 
 // InternetDetailDialogUI
@@ -192,12 +189,6 @@ void InternetDetailDialogUI::BindInterface(
     mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
         receiver) {
   GetNetworkConfigService(std::move(receiver));
-}
-
-void InternetDetailDialogUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void InternetDetailDialogUI::BindInterface(

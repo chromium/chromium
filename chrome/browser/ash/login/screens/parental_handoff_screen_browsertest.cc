@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -24,7 +23,6 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
@@ -82,15 +80,11 @@ class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
 
   std::unique_ptr<base::AutoReset<bool>> is_google_branded_build_;
 
-  std::unique_ptr<base::AutoReset<bool>> assistant_is_enabled_;
-
   LoginManagerMixin login_manager_mixin_{&mixin_host_, /* initial_users */ {},
                                          &fake_gaia_};
 };
 
 void ParentalHandoffScreenBrowserTest::SetUpOnMainThread() {
-  assistant_is_enabled_ =
-      AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(false);
   ParentalHandoffScreen* screen = GetParentalHandoffScreen();
   original_callback_ = screen->get_exit_callback_for_test();
   screen->set_exit_callback_for_test(
@@ -183,9 +177,7 @@ class ParentalHandoffScreenChildBrowserTest
       &policy_server_mixin_};
 };
 
-// TODO(crbug.com/353692644): Test is flaky
-IN_PROC_BROWSER_TEST_F(ParentalHandoffScreenChildBrowserTest,
-                       DISABLED_ChildUserLogin) {
+IN_PROC_BROWSER_TEST_F(ParentalHandoffScreenChildBrowserTest, ChildUserLogin) {
   LoginAsNewChildUser();
 
   WizardController* wizard = WizardController::default_controller();

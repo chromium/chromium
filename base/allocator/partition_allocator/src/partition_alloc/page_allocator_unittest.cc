@@ -15,6 +15,7 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/page_allocator_constants.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
@@ -22,7 +23,7 @@
 #include "partition_alloc/tagging.h"
 
 #if defined(LINUX_NAME_REGION)
-#include "partition_alloc/partition_alloc_base/debug/proc_maps_linux.h"
+#include "partition_alloc/partition_alloc_base/debug/proc_maps_linux.h"  // nogncheck
 #endif
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -247,8 +248,9 @@ TEST(PartitionAllocPageAllocatorTest,
   ptrdiff_t invalid_offset =
       reinterpret_cast<char*>(arm_bti_test_function_invalid_offset) -
       reinterpret_cast<char*>(arm_bti_test_function);
-  memcpy(reinterpret_cast<void*>(buffer),
-         reinterpret_cast<void*>(arm_bti_test_function), function_range);
+  PA_UNSAFE_TODO(memcpy(reinterpret_cast<void*>(buffer),
+                        reinterpret_cast<void*>(arm_bti_test_function),
+                        function_range));
 
   // Next re-protect the page.
   SetSystemPagesAccess(
@@ -291,6 +293,13 @@ TEST(PartitionAllocPageAllocatorTest,
   }
 
 #if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
+  ChangeMemoryTaggingModeForCurrentThread(
+      TagViolationReportingMode::kSynchronous);
+  ASSERT_TRUE(GetMemoryTaggingModeForCurrentThread() !=
+              TagViolationReportingMode::kDisabled)
+      << "Test was built with MTE enabled and the CPU supports it, but MTE is "
+         "currently disabled in the device.";
+
   uintptr_t buffer =
       AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
                  PageAccessibilityConfiguration(
@@ -349,6 +358,13 @@ TEST(PartitionAllocPageAllocatorTest,
   }
 
 #if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
+  ChangeMemoryTaggingModeForCurrentThread(
+      TagViolationReportingMode::kSynchronous);
+  ASSERT_TRUE(GetMemoryTaggingModeForCurrentThread() !=
+              TagViolationReportingMode::kDisabled)
+      << "Test was built with MTE enabled and the CPU supports it, but MTE is "
+         "currently disabled in the device.";
+
   uintptr_t buffer =
       AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
                  PageAccessibilityConfiguration(
@@ -455,14 +471,18 @@ TEST(PartitionAllocPageAllocatorTest, InaccessiblePages) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-// TODO(crbug.com/40212918): Understand why we can't read from Read-Execute
-// pages on iOS.
-#if PA_BUILDFLAG(IS_IOS)
-#define MAYBE_ReadExecutePages DISABLED_ReadExecutePages
-#else
-#define MAYBE_ReadExecutePages ReadExecutePages
-#endif  // PA_BUILDFLAG(IS_IOS)
-TEST(PartitionAllocPageAllocatorTest, MAYBE_ReadExecutePages) {
+TEST(PartitionAllocPageAllocatorTest, ReadExecutePages) {
+  // Before iOS 18.6 on devices this appears to trigger a mach exception and not
+  // a fault signal, which doesn't work with the FAULT_TEST_BEGIN/FAULT_TEST_END
+  // logic. Skip on these devices.
+#if PA_BUILDFLAG(IS_IOS) && !TARGET_IPHONE_SIMULATOR
+  if (__builtin_available(iOS 18.6, *)) {
+  } else {
+    // Workaround for incorrectly failed iOS tests with GTEST_SKIP,
+    // see crbug.com/912138 for details.
+    return;
+  }
+#endif  // PA_BUILDFLAG(IS_IOS) && !TARGET_IPHONE_SIMULATOR
   uintptr_t buffer =
       AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
                  PageAccessibilityConfiguration(
@@ -542,7 +562,7 @@ TEST(PartitionAllocPageAllocatorTest, DecommitErasesMemory) {
                                 PageTag::kChromium);
   ASSERT_TRUE(buffer);
 
-  memset(reinterpret_cast<void*>(buffer), 42, size);
+  PA_UNSAFE_TODO(memset(reinterpret_cast<void*>(buffer), 42, size));
 
   DecommitSystemPages(buffer, size,
                       PageAccessibilityDisposition::kAllowKeepForPerf);
@@ -554,7 +574,7 @@ TEST(PartitionAllocPageAllocatorTest, DecommitErasesMemory) {
   uint8_t* recommitted_buffer = reinterpret_cast<uint8_t*>(buffer);
   uint32_t sum = 0;
   for (size_t i = 0; i < size; i++) {
-    sum += recommitted_buffer[i];
+    sum += PA_UNSAFE_TODO(recommitted_buffer[i]);
   }
   EXPECT_EQ(0u, sum) << "Data was not erased";
 
@@ -569,7 +589,7 @@ TEST(PartitionAllocPageAllocatorTest, DecommitAndZero) {
                                 PageTag::kChromium);
   ASSERT_TRUE(buffer);
 
-  memset(reinterpret_cast<void*>(buffer), 42, size);
+  PA_UNSAFE_TODO(memset(reinterpret_cast<void*>(buffer), 42, size));
 
   DecommitAndZeroSystemPages(buffer, size);
 
@@ -598,7 +618,7 @@ TEST(PartitionAllocPageAllocatorTest, DecommitAndZero) {
   uint8_t* recommitted_buffer = reinterpret_cast<uint8_t*>(buffer);
   uint32_t sum = 0;
   for (size_t i = 0; i < size; i++) {
-    sum += recommitted_buffer[i];
+    sum += PA_UNSAFE_TODO(recommitted_buffer[i]);
   }
   EXPECT_EQ(0u, sum) << "Data was not erased";
 

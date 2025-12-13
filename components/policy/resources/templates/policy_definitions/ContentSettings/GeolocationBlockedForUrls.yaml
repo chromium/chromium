@@ -1,0 +1,28 @@
+caption: Block geolocation on these sites
+desc: |-
+  Setting the policy lets you set a list of URL patterns that specify sites that are not allowed to access the user's geolocation, and are also prevented from requesting user permission to do so.
+
+        Leaving the policy unset means <ph name="DEFAULT_GEOLOCATION_SETTING">DefaultGeolocationSetting</ph> applies for all sites, if it's set. If not, the user's personal setting applies.
+
+        For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://chromeenterprise.google/policies/url-patterns. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- engedy@chromium.org
+- file://components/permissions/PERMISSIONS_OWNERS
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:144-
+- chrome_os:144-
+- android:144-
+tags: []
+type: list

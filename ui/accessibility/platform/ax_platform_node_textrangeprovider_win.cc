@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/string_search.h"
@@ -710,10 +706,10 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetBoundingRectangles(
     if (SUCCEEDED(hr)) {
       for (size_t rect_index = 0; rect_index < rects.size(); rect_index++) {
         const gfx::Rect& rect = rects[rect_index];
-        double_array[rect_index * 4] = rect.x();
-        double_array[rect_index * 4 + 1] = rect.y();
-        double_array[rect_index * 4 + 2] = rect.width();
-        double_array[rect_index * 4 + 3] = rect.height();
+        UNSAFE_TODO(double_array[rect_index * 4]) = rect.x();
+        UNSAFE_TODO(double_array[rect_index * 4 + 1]) = rect.y();
+        UNSAFE_TODO(double_array[rect_index * 4 + 2]) = rect.width();
+        UNSAFE_TODO(double_array[rect_index * 4 + 3]) = rect.height();
       }
       hr = SafeArrayUnaccessData(safe_array);
     }

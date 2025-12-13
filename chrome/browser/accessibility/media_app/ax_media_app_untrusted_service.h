@@ -43,7 +43,7 @@
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_source.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class SkBitmap;
 
@@ -65,6 +65,7 @@ namespace ui {
 struct AXActionData;
 class AXNode;
 struct AXUpdatesAndEvents;
+class NativeWindowTracker;
 class RectF;
 
 }  // namespace ui
@@ -195,6 +196,7 @@ class AXMediaAppUntrustedService
   // This `BrowserContext` will always outlive the WebUI, so this is safe.
   raw_ref<content::BrowserContext> browser_context_;
   gfx::NativeWindow native_window_;
+  std::unique_ptr<ui::NativeWindowTracker> native_window_tracker_;
   mojo::Remote<media_app_ui::mojom::OcrUntrustedPage> media_app_page_;
   gfx::RectF viewport_box_;
   float scale_factor_ = 0.0f;

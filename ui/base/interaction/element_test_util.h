@@ -9,6 +9,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui::test {
 
@@ -36,9 +37,13 @@ class TestElementBase : public TrackedElement {
   void SetScreenBounds(const gfx::Rect& screen_bounds);
   gfx::Rect GetScreenBounds() const override;
 
+  void SetNativeView(gfx::NativeView native_view);
+  gfx::NativeView GetNativeView() const override;
+
  private:
   bool visible_ = false;
   gfx::Rect screen_bounds_;
+  gfx::NativeView native_view_ = gfx::NativeView();
 };
 
 // Provides a platform-less test element in a fictional UI framework.

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/reporting/storage/storage_queue.h"
 
 #include <algorithm>
@@ -22,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
@@ -134,9 +130,9 @@ struct RecordHeader {
     if (header.record_sequencing_id < 0) {
       return base::unexpected(Status(error::INTERNAL, "header is corrupt"));
     }
-    p += sizeof(header.record_sequencing_id);
+    UNSAFE_TODO(p += sizeof(header.record_sequencing_id));
     header.record_size = *reinterpret_cast<const int32_t*>(p);
-    p += sizeof(header.record_size);
+    UNSAFE_TODO(p += sizeof(header.record_size));
     header.record_hash = *reinterpret_cast<const int32_t*>(p);
 
     return header;
@@ -793,8 +789,8 @@ Status StorageQueue::ReadMetadata(
                   base::StrCat({"Cannot read metafile=", meta_file->name(),
                                 " status=", read_result.error().ToString()}));
   }
-  const int64_t generation_id =
-      *reinterpret_cast<const int64_t*>(read_result.value().data());
+  const int64_t generation_id = *UNSAFE_TODO(
+      reinterpret_cast<const int64_t*>(read_result.value().data()));
   if (generation_id <= 0) {
     // Generation is not in [1, max_int64] range - file corrupt or empty.
     base::UmaHistogramEnumeration(
@@ -2460,7 +2456,8 @@ StatusOr<std::string_view> StorageQueue::SingleFile::Read(
   if (data_start_ + size > buffer_.size()) {
     CHECK_GT(data_start_, 0u);  // Cannot happen if 0.
     if (data_end_ > data_start_) {
-      memmove(buffer_.at(0), buffer_.at(data_start_), data_end_ - data_start_);
+      buffer_.span().copy_prefix_from(
+          buffer_.subspan(data_start_, data_end_ - data_start_));
     }
     data_end_ -= data_start_;
     data_start_ = 0;
@@ -2470,9 +2467,9 @@ StatusOr<std::string_view> StorageQueue::SingleFile::Read(
   while (actual_size < size) {
     // Read as much as possible.
     CHECK_LT(data_end_, buffer_.size());
-    const int32_t result =
-        handle_->Read(pos, buffer_.at(data_end_), buffer_.size() - data_end_);
-    if (result < 0) {
+    const std::optional<size_t> bytes_read =
+        handle_->Read(pos, buffer_.subspan(data_end_));
+    if (!bytes_read) {
       base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                     DataLossErrorReason::FAILED_TO_READ_FILE,
                                     DataLossErrorReason::MAX_VALUE);
@@ -2482,13 +2479,13 @@ StatusOr<std::string_view> StorageQueue::SingleFile::Read(
                         handle_->ErrorToString(handle_->GetLastFileError()),
                         " ", name()})));
     }
-    if (result == 0) {
+    if (bytes_read == 0) {
       break;
     }
-    pos += result;
-    data_end_ += result;
+    pos += *bytes_read;
+    data_end_ += *bytes_read;
     CHECK_LE(data_end_, buffer_.size());
-    actual_size += result;
+    actual_size += *bytes_read;
   }
   if (actual_size > size) {
     actual_size = size;
@@ -2498,7 +2495,8 @@ StatusOr<std::string_view> StorageQueue::SingleFile::Read(
     return base::unexpected(Status(error::OUT_OF_RANGE, "End of file"));
   }
   // Prepare reference to actually loaded data.
-  auto read_data = std::string_view(buffer_.at(data_start_), actual_size);
+  const std::string_view read_data =
+      base::as_string_view(buffer_.subspan(data_start_, actual_size));
   // Move start and file position to after that data.
   data_start_ += actual_size;
   file_position_ += actual_size;
@@ -2522,9 +2520,10 @@ StatusOr<uint32_t> StorageQueue::SingleFile::Append(std::string_view data) {
                base::StrCat({"Attempt to append to read-only File ", name()})));
   }
   size_t actual_size = 0;
-  while (data.size() > 0) {
-    const int32_t result = handle_->Write(size_, data.data(), data.size());
-    if (result < 0) {
+  base::span<const uint8_t> data_span = base::as_byte_span(data);
+  while (data_span.size() > 0) {
+    std::optional<size_t> bytes_written = handle_->Write(size_, data_span);
+    if (!bytes_written) {
       base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                     DataLossErrorReason::FAILED_TO_WRITE_FILE,
                                     DataLossErrorReason::MAX_VALUE);
@@ -2534,9 +2533,9 @@ StatusOr<uint32_t> StorageQueue::SingleFile::Append(std::string_view data) {
                         handle_->ErrorToString(handle_->GetLastFileError()),
                         " ", name()})));
     }
-    size_ += result;
-    actual_size += result;
-    data = data.substr(result);  // Skip data that has been written.
+    size_ += *bytes_written;
+    actual_size += *bytes_written;
+    data_span = data_span.subspan(*bytes_written);
   }
   return actual_size;
 }

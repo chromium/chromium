@@ -16,19 +16,19 @@
 #include "base/callback_list.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/observer_list_internal.h"
+#include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_specifier.h"
 #include "ui/base/interaction/element_tracker.h"
 
 namespace ui {
@@ -306,6 +306,14 @@ InteractionSequence::StepBuilder::StepBuilder(StepBuilder&& other) = default;
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::operator=(
     StepBuilder&& other) = default;
 InteractionSequence::StepBuilder::~StepBuilder() = default;
+
+InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetElement(
+    ElementSpecifier element_spec) {
+  DCHECK(element_spec);
+  step_->id = element_spec.identifier();
+  step_->element_name = element_spec.name();
+  return *this;
+}
 
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetElementID(ElementIdentifier element_id) {

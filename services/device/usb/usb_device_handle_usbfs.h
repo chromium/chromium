@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "services/device/usb/usb_device_handle.h"
 

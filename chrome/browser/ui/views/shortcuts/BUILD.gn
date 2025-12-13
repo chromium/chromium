@@ -27,6 +27,7 @@ source_set("test_support") {
     "//chrome/browser/ui/toolbar",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support_ui",
+    "//ui/base/interaction:test_support",
     "//ui/views",
   ]
 }

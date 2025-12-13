@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -17,6 +18,9 @@
 #include "components/variations/variations_seed_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace variations {
+namespace {
 
 class GoogleGroupsManagerTest : public ::testing::Test {
  public:
@@ -253,3 +257,6 @@ TEST_F(GoogleGroupsManagerTest,
   EXPECT_FALSE(
       google_groups_updater.IsFeatureEnabledForProfile(kSampleFeature));
 }
+
+}  // namespace
+}  // namespace variations

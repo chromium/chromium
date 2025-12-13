@@ -25,10 +25,9 @@ InternalsRTCPeerConnection::waitForPeerConnectionDispatchEventsTaskCreated(
       MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
   auto promise = resolver->Promise();
   CHECK(!connection->dispatch_events_task_created_callback_for_testing_);
-  connection->dispatch_events_task_created_callback_for_testing_ =
-      WTF::BindOnce(
-          [](ScriptPromiseResolver<IDLAny>* resolver) { resolver->Resolve(); },
-          WrapPersistent(resolver));
+  connection->dispatch_events_task_created_callback_for_testing_ = BindOnce(
+      [](ScriptPromiseResolver<IDLAny>* resolver) { resolver->Resolve(); },
+      WrapPersistent(resolver));
   return promise;
 }
 

@@ -8,12 +8,17 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 
 ImmersiveModeTester::ImmersiveModeTester(Browser* browser) : browser_(browser) {
-  scoped_observation_.Observe(GetBrowserView()->immersive_mode_controller());
+  scoped_observation_.Observe(GetController());
 }
 
 ImmersiveModeTester::~ImmersiveModeTester() = default;
+
+ImmersiveModeController* ImmersiveModeTester::GetController() {
+  return ImmersiveModeController::From(browser_);
+}
 
 BrowserView* ImmersiveModeTester::GetBrowserView() {
   return BrowserView::GetBrowserViewForBrowser(browser_);
@@ -35,21 +40,20 @@ void ImmersiveModeTester::VerifyTabIndexAfterReveal(int expected_index) {
 }
 
 void ImmersiveModeTester::WaitForFullscreenToEnter() {
-  if (!GetBrowserView()->immersive_mode_controller()->IsEnabled() ||
-      !GetBrowserView()->IsFullscreen()) {
+  if (!GetController()->IsEnabled() || !GetBrowserView()->IsFullscreen()) {
     fullscreen_entering_loop_ = std::make_unique<base::RunLoop>();
     fullscreen_entering_loop_->Run();
   }
-  ASSERT_TRUE(GetBrowserView()->immersive_mode_controller()->IsEnabled());
+  ASSERT_TRUE(GetController()->IsEnabled());
   ASSERT_TRUE(GetBrowserView()->IsFullscreen());
 }
 
 void ImmersiveModeTester::WaitForFullscreenToExit() {
-  if (GetBrowserView()->immersive_mode_controller()->IsEnabled()) {
+  if (GetController()->IsEnabled()) {
     fullscreen_exiting_loop_ = std::make_unique<base::RunLoop>();
     fullscreen_exiting_loop_->Run();
   }
-  ASSERT_FALSE(GetBrowserView()->immersive_mode_controller()->IsEnabled());
+  ASSERT_FALSE(GetController()->IsEnabled());
   ASSERT_FALSE(GetBrowserView()->IsFullscreen());
 }
 
@@ -57,7 +61,7 @@ void ImmersiveModeTester::OnImmersiveRevealStarted() {
   EXPECT_FALSE(reveal_started_);
   EXPECT_FALSE(reveal_ended_);
   reveal_started_ = true;
-  EXPECT_TRUE(GetBrowserView()->immersive_mode_controller()->IsRevealed());
+  EXPECT_TRUE(GetController()->IsRevealed());
 }
 
 void ImmersiveModeTester::OnImmersiveRevealEnded() {
@@ -65,7 +69,7 @@ void ImmersiveModeTester::OnImmersiveRevealEnded() {
   EXPECT_FALSE(reveal_ended_);
   reveal_started_ = false;
   reveal_ended_ = true;
-  EXPECT_FALSE(GetBrowserView()->immersive_mode_controller()->IsRevealed());
+  EXPECT_FALSE(GetController()->IsRevealed());
   if (reveal_loop_ && reveal_loop_->running()) {
     reveal_loop_->Quit();
   }

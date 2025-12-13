@@ -1,86 +1,86 @@
 zh-CN: 誤過骨
 #zh-CN:
-"Tinos (Fontations)" : 7,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 7,
+"Noto Sans CJK JP" : 3
 
 zh-TW: 誤過骨
 #zh-TW:
-"Tinos (Fontations)" : 7,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 7,
+"Noto Sans CJK JP" : 3
 
 zh-HK: 誤過骨
 #zh-HK:
-"Tinos (Fontations)" : 7,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 7,
+"Noto Sans CJK JP" : 3
 
 ja: 誤過骨
 #ja:
-"Tinos (Fontations)" : 4,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 4,
+"Noto Sans CJK JP" : 3
 
 ja-JP: 誤過骨
 #ja-JP:
-"Tinos (Fontations)" : 7,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 7,
+"Noto Sans CJK JP" : 3
 
 ko: 誤過骨
 #ko:
-"Tinos (Fontations)" : 4,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 4,
+"Noto Sans CJK JP" : 3
 
 ko-KR: 誤過骨
 #ko-KR:
-"Tinos (Fontations)" : 7,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 7,
+"Noto Sans CJK JP" : 3
 
 en-CN: 誤過骨
 #en-CN:
-"Tinos (Fontations)" : 7,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 7,
+"Noto Sans CJK JP" : 3
 
 en-JP: 誤過骨
 #en-JP:
-"Tinos (Fontations)" : 7,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 7,
+"Noto Sans CJK JP" : 3
 
 en-KR: 誤過骨
 #en-KR:
-"Tinos (Fontations)" : 7,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 7,
+"Noto Sans CJK JP" : 3
 
 en-HK: 誤過骨
 #en-HK:
-"Tinos (Fontations)" : 7,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 7,
+"Noto Sans CJK JP" : 3
 
 en-TW: 誤過骨
 #en-TW:
-"Tinos (Fontations)" : 7,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 7,
+"Noto Sans CJK JP" : 3
 
 en-HanS: 誤過骨
 #en-HanS:
-"Tinos (Fontations)" : 9,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 9,
+"Noto Sans CJK JP" : 3
 
 en-HanT: 誤過骨
 #en-HanT:
-"Tinos (Fontations)" : 9,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 9,
+"Noto Sans CJK JP" : 3
 
 en-HanS-JP: 誤過骨
 #en-HanS-JP:
-"Tinos (Fontations)" : 12,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 12,
+"Noto Sans CJK JP" : 3
 
 en-HanT-JP: 誤過骨
 #en-HanT-JP:
-"Tinos (Fontations)" : 12,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 12,
+"Noto Sans CJK JP" : 3
 
 en-US: 誤過骨
 #en-US:
-"Tinos (Fontations)" : 7,
-"Noto Sans CJK JP (Fontations)" : 3
+"Tinos" : 7,
+"Noto Sans CJK JP" : 3
 
 

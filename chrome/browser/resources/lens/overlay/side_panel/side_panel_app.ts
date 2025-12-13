@@ -8,11 +8,17 @@ import './feedback_toast.js';
 import '/strings.m.js';
 import '/lens/shared/searchbox_ghost_loader.js';
 import '/lens/shared/searchbox_shared_style.css.js';
+import '//resources/cr_components/composebox/composebox.js';
 import '//resources/cr_components/searchbox/searchbox.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';
 import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -48,12 +54,14 @@ const RESHOW_FEEDBACK_TOAST_DELAY_MS = 4100;
 
 export interface LensSidePanelAppElement {
   $: {
+    composebox: ComposeboxElement,
     feedbackToast: FeedbackToastElement,
     ghostLoader: SidePanelGhostLoaderElement,
     messageToast: CrToastElement,
     messageToastDismissButton: CrButtonElement,
     errorPage: SidePanelErrorPageElement,
     results: HTMLIFrameElement,
+    resultsWebview: chrome.webviewTag.WebView,
     searchbox: SearchboxElement,
     searchboxContainer: HTMLElement,
     searchboxGhostLoader: SearchboxGhostLoaderElement,
@@ -77,6 +85,36 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       autocompleteRequestStarted: {
         type: Boolean,
         value: false,
+      },
+      enableAimSearchbox: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableAimSearchbox'),
+      },
+      enableFloatingGForHeader: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableFloatingGForHeader'),
+      },
+      enableClientSideAimHeader: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableClientSideAimHeader'),
+      },
+      enableWebviewResults: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableWebviewResults'),
+      },
+      enableLensAimSuggestions: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableLensAimSuggestions'),
+      },
+      enableLensAimSuggestionsGradientBackground: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean(
+            'enableLensAimSuggestionsGradientBackground'),
       },
       enableCsbMotionTweaks: {
         reflectToAttribute: true,
@@ -152,6 +190,16 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         value: false,
         notify: true,
       },
+      showLensButton: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showLensButton'),
+        reflectToAttribute: true,
+      },
+      showSubmitButton: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('composeboxShowSubmit'),
+        reflectToAttribute: true,
+      },
       pageContentType: {
         type: Number,
         value: PageContentType.kUnknown,
@@ -181,6 +229,33 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         type: Number,
         value: 0,
       },
+      isOnAimResults: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+      composeboxHeight_: {
+        type: Number,
+        value: 0,
+      },
+      composeboxDropdownHeight_: {
+        type: Number,
+        value: 0,
+      },
+      maxSuggestions: {
+        type: Number,
+        value: 0,
+      },
+      isOverlayShowing: {
+        type: Boolean,
+        value: true,
+        reflectToAttribute: true,
+      },
+      isComposeboxFocused: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -192,6 +267,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   declare isBackArrowVisible: boolean;
   // Whether the user is currently focused into the searchbox.
   declare isSearchboxFocused: boolean;
+  // Whether the composebox is currently focused.
+  declare isComposeboxFocused: boolean;
   declare private showGhostLoader: boolean;
   // Whether to purposely suppress the ghost loader. Done when escaping from
   // the searchbox when there's text or when page bytes aren't successfully
@@ -200,6 +277,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   declare placeholderText: string;
   // Whether the ghost loader should show its error state.
   declare showErrorState: boolean;
+  // Whether the lens button should be shown in the searchbox.
+  declare private showLensButton: boolean;
+  // Whether the submit button should be shown in the searchbox.
+  declare private showSubmitButton: boolean;
   declare private showUploadProgress: boolean;
   // The current progress of the page content upload.
   declare uploadProgressPercentage: number;
@@ -209,6 +290,18 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   declare private pageContentType: PageContentType;
   // Whether this is an in flight request to autocomplete.
   declare private autocompleteRequestStarted: boolean;
+  // Whether the AIM searchbox is enabled via feature flag.
+  declare private enableAimSearchbox: boolean;
+  // Whether the floating G for header is enabled via feature flag.
+  declare private enableFloatingGForHeader: boolean;
+  // Whether the client side header is enabled via feature flag.
+  declare private enableClientSideAimHeader: boolean;
+  // Whether the webview results container is enabled via feature flag.
+  declare private enableWebviewResults: boolean;
+  declare private enableLensAimSuggestions: boolean;
+  // Whether the gradient background for AIM suggestions is enabled via feature
+  // flag.
+  declare private enableLensAimSuggestionsGradientBackground: boolean;
   declare private isErrorPageVisible: boolean;
   // Whether the results iframe is currently loading. This needs to be done via
   // browser because the iframe is cross-origin. Default true since the side
@@ -223,13 +316,17 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   private progressBarAnimation: Animation|null = null;
   private progressBarHideAnimation: Animation|null = null;
   // A helper object responsible for handling post messages received by the
-  // window.
-  private postMessageReceiver: PostMessageReceiver =
-      new PostMessageReceiver(SidePanelBrowserProxyImpl.getInstance());
+  // window. Only alive while this component is connected to the DOM.
+  private postMessageReceiver?: PostMessageReceiver;
   // Whether the feedback toast has been explicitly dismissed by the user.
   private feedbackToastDismissed = false;
+  // Whether the feedback toast has been shown for the current results.
+  private feedbackToastShown = false;
   // The timeout ID for reshowing the feedback toast.
   private feedbackToastReshowTimeoutId = -1;
+  // The timeout ID for showing the feedback toast after an initial delay
+  // after the results are loaded.
+  private feedbackToastShowAfterDelayTimeoutId = -1;
 
   private browserProxy: SidePanelBrowserProxy =
       SidePanelBrowserProxyImpl.getInstance();
@@ -240,8 +337,17 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   declare private toastMessage: string;
   // The number of suggestions currently being shown to the user.
   declare private searchboxSuggestionCount: number;
+  // Whether the results in the iframe are currently on the AIM UI.
+  declare private isOnAimResults: boolean;
+  declare private composeboxHeight_: number;
+  declare private composeboxDropdownHeight_: number;
+  declare private maxSuggestions: number;
+  // Whether the visual selection overlay is currently showing.
+  declare private isOverlayShowing: boolean;
   private eventTracker_: EventTracker = new EventTracker();
-
+  // Watches for changes in the height of the composebox.
+  private composeboxResizeObserver_: ResizeObserver|null = null;
+  private composeboxDropdownResizeObserver_: ResizeObserver|null = null;
   private searchboxBoundingClientRectObserver: ResizeObserver =
       new ResizeObserver(this.onSearchboxBoundsChanged.bind(this));
 
@@ -285,9 +391,22 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
           this.pageContentTypeChanged.bind(this)),
       this.browserProxy.callbackRouter.showToast.addListener(
           this.showMessageToast.bind(this)),
+      this.browserProxy.callbackRouter.aimResultsChanged.addListener(
+          this.onAimResultsChanged.bind(this)),
+      this.browserProxy.callbackRouter.focusResultsFrame.addListener(
+          this.focusResultsFrame.bind(this)),
+      this.browserProxy.callbackRouter.setIsOverlayShowing.addListener(
+          this.setIsOverlayShowing.bind(this)),
+      this.browserProxy.callbackRouter.focusSearchbox.addListener(
+          this.focusSearchbox.bind(this)),
     ];
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
+    });
+    this.eventTracker_.add(this.$.searchbox, 'keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        this.onSearchboxEnter();
+      }
     });
     this.eventTracker_.add(
         document, 'query-autocomplete',
@@ -295,9 +414,40 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.eventTracker_.add(
         this.$.feedbackToast, 'feedback-toast-dismissed',
         () => this.feedbackToastDismissed = true);
+    this.eventTracker_.add(this.$.composebox, 'composebox-focus-in', () => {
+      this.$.feedbackToast.hide();
+      this.$.composebox.playGlowAnimation();
+      this.isComposeboxFocused = true;
+    });
+    this.eventTracker_.add(this.$.composebox, 'composebox-focus-out', () => {
+      this.isComposeboxFocused = false;
+      this.$.composebox.animationState = GlowAnimationState.NONE;
+    });
+    this.eventTracker_.add(window, 'resize', () => {
+      this.updateMaxSuggestions();
+    });
+
 
     // Start listening to postMessages on the window.
-    this.postMessageReceiver.listen();
+    this.postMessageReceiver = new PostMessageReceiver(
+        SidePanelBrowserProxyImpl.getInstance(), this.getResults());
+
+    // If the composebox is enabled, start listening to resize events to update
+    // the composebox height.
+    if (this.enableAimSearchbox) {
+      const composebox = this.$.composebox;
+      this.composeboxResizeObserver_ = new ResizeObserver(() => {
+        this.composeboxHeight_ = composebox.offsetHeight;
+        this.updateMaxSuggestions();
+      });
+      this.composeboxDropdownResizeObserver_ = new ResizeObserver(() => {
+        this.composeboxDropdownHeight_ =
+            composebox.getMatchesElement().offsetHeight;
+      });
+      this.composeboxResizeObserver_.observe(composebox);
+      this.composeboxDropdownResizeObserver_.observe(
+          composebox.getMatchesElement());
+    }
   }
 
   override disconnectedCallback() {
@@ -307,11 +457,29 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
     this.eventTracker_.removeAll();
-    this.postMessageReceiver.detach();
+    // Let the postMessageReceiver cleanup before it is destroyed.
+    this.postMessageReceiver!.detach();
+    this.postMessageReceiver = undefined;
+
+    if (this.composeboxResizeObserver_) {
+      this.composeboxResizeObserver_.disconnect();
+      this.composeboxResizeObserver_ = null;
+    }
+
+    if (this.composeboxDropdownResizeObserver_) {
+      this.composeboxDropdownResizeObserver_.disconnect();
+      this.composeboxDropdownResizeObserver_ = null;
+    }
   }
 
   private onBackArrowClick() {
     this.pageHandler.popAndLoadQueryFromHistory();
+  }
+
+  private onSearchboxEnter() {
+    if (this.$.searchbox.isInputEmpty() && this.$.searchbox.hasThumbnail()) {
+      this.browserProxy.handler.onImageQueryWithEmptyText();
+    }
   }
 
   private setIsLoadingResults(isLoading: boolean) {
@@ -325,6 +493,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       // focused.
       this.blurSearchbox();
 
+      clearTimeout(this.feedbackToastShowAfterDelayTimeoutId);
       clearTimeout(this.feedbackToastReshowTimeoutId);
       this.$.feedbackToast.hide();
       this.$.messageToast.hide();
@@ -344,8 +513,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
       // Show the feedback on every result load by showing it as soon as the
       // result load animation is complete.
-      this.feedbackToastDismissed = false;
-      this.showFeedbackToast();
+      this.hideAndReshowFeedbackToast();
     }
   }
 
@@ -379,7 +547,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private loadResultsInFrame(resultsUrl: Url) {
     const url = new URL(resultsUrl.url);
-    const resultsBoundingRect = this.$.results.getBoundingClientRect();
+    const resultsBoundingRect = this.getResults().getBoundingClientRect();
     if (resultsBoundingRect.width > 0) {
       url.searchParams.set(
           VIEWPORT_WIDTH_KEY, resultsBoundingRect.width.toString());
@@ -391,7 +559,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     // The src needs to be reset explicitly every time this function is called
     // to force a reload. We cannot get the currently displayed URL from the
     // frame because of cross-origin restrictions.
-    this.$.results.src = url.href;
+    this.getResults().src = url.href;
     // Remove focus from the input when results are loaded. Does not have
     // any effect if input is not focused.
     this.blurSearchbox();
@@ -401,6 +569,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
         ?.shadowRoot!.querySelector<HTMLElement>('input')
         ?.blur();
+
+    this.$.composebox.blur();
   }
 
   private handleEscapeSearchbox(e: CustomEvent) {
@@ -526,20 +696,65 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     if (!loadTimeData.getBoolean('newFeedbackEnabled')) {
       return;
     }
-
     await this.$.messageToast.hide();
+
+    if (loadTimeData.getBoolean('updatedFeedbackEnabled')) {
+      this.feedbackToastShowAfterDelayTimeoutId = setTimeout(() => {
+        if (this.isComposeboxFocused) {
+          return;
+        }
+        this.feedbackToastShown = true;
+        this.$.feedbackToast.show();
+      }, loadTimeData.getInteger('updatedFeedbackToastTimeoutMs'));
+      return;
+    }
+
+    this.feedbackToastShown = true;
     this.$.feedbackToast.show();
   }
 
   private async showMessageToast(message: string) {
     this.$.feedbackToast.hide();
     await this.showToast(this.$.messageToast, message);
-    if (!this.feedbackToastDismissed) {
+    if (!this.feedbackToastDismissed && this.feedbackToastShown) {
       clearTimeout(this.feedbackToastReshowTimeoutId);
       this.feedbackToastReshowTimeoutId = setTimeout(() => {
         this.showFeedbackToast();
       }, RESHOW_FEEDBACK_TOAST_DELAY_MS);
     }
+  }
+
+  private onAimResultsChanged(onAim: boolean) {
+    if (onAim && loadTimeData.getBoolean('updatedFeedbackEnabled')) {
+      // If the results are changing to AIM results, reset the feedback toast
+      // dismissed state and show the feedback toast because the SRP wil not
+      // reload.
+      this.hideAndReshowFeedbackToast();
+    }
+
+    this.isOnAimResults = onAim;
+  }
+
+  private setIsOverlayShowing(isShowing: boolean) {
+    this.isOverlayShowing = isShowing;
+  }
+
+  private focusResultsFrame() {
+    // If the results frame is called to be focused, it is because new results
+    // are being loaded. This should dismiss the feedback toast and reshow it.
+    if (loadTimeData.getBoolean('updatedFeedbackEnabled')) {
+      this.hideAndReshowFeedbackToast();
+    }
+
+    this.getResults().focus();
+  }
+
+  private focusSearchbox() {
+    if (this.enableAimSearchbox) {
+      this.$.composebox.focusInput();
+      return;
+    }
+    this.$.searchbox.focus();
   }
 
   private async showToast(toast: CrToastElement, message?: string) {
@@ -560,10 +775,28 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private onHideMessageToastClick() {
     this.$.messageToast.hide();
-    if (!this.feedbackToastDismissed) {
+    if (!this.feedbackToastDismissed && this.feedbackToastShown) {
       clearTimeout(this.feedbackToastReshowTimeoutId);
       this.showFeedbackToast();
     }
+  }
+
+  // Returns the container housing the results. Can either be the results
+  // iframe or webview.
+  private getResults(): HTMLIFrameElement|chrome.webviewTag.WebView {
+    if (this.enableWebviewResults) {
+      return this.$.resultsWebview;
+    }
+    return this.$.results;
+  }
+
+  private hideAndReshowFeedbackToast() {
+    // Cancel the timeout to show the feedback toast if it is set.
+    clearTimeout(this.feedbackToastShowAfterDelayTimeoutId);
+
+    this.$.feedbackToast.hide();
+    this.feedbackToastDismissed = false;
+    this.showFeedbackToast();
   }
 
   makeGhostLoaderVisibleForTesting() {
@@ -572,6 +805,27 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.isSearchboxFocused = true;
     this.autocompleteRequestStarted = true;
   }
+
+  private updateMaxSuggestions() {
+    // 66px is the height of the AIM header.
+    const headerHeight = this.enableClientSideAimHeader ? 66 : 0;
+    // 24px for the gradient that is under the header
+    const headerGradientHeight = this.enableClientSideAimHeader ? 24 : 0;
+    // 30px is the margin bottom of the composebox.
+    const marginBottom = 30;
+    // 136px is the height of the expanded composebox. Since suggestions are
+    // only shown when the composebox is expanded, take the max value of the
+    // soon to be coposebox height, or the current height to account for
+    // transitions.
+    const adjustedComposeboxHeight = Math.max(this.composeboxHeight_, 136);
+    // 54px is the height of a suggestion match.
+    const matchHeight = 54;
+
+    const availableHeight = window.innerHeight - adjustedComposeboxHeight -
+        marginBottom - headerHeight - headerGradientHeight;
+    this.maxSuggestions =
+        Math.max(0, Math.floor(availableHeight / matchHeight));
+  }
 }
 
 declare global {
@@ -579,5 +833,23 @@ declare global {
     'lens-side-panel-app': LensSidePanelAppElement;
   }
 }
+
+// Register the custom property for the composebox gradient color.
+// Custom properties are ignored by the browser in shadow DOMs, so need to
+// register them globally here. Additionally, the property can only by
+// registered once per document, so this must be done in the main window, rather
+// than in the class itself.
+window.CSS.registerProperty({
+  name: '--search-background-color',
+  syntax: '<color>',
+  inherits: true,
+  initialValue: 'white',
+});
+window.CSS.registerProperty({
+  name: '--cr-composebox-background-color',
+  syntax: '<color>',
+  inherits: true,
+  initialValue: 'white',
+});
 
 customElements.define(LensSidePanelAppElement.is, LensSidePanelAppElement);

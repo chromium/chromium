@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_ACCOUNT_PASSWORD_STORE_FACTORY_H_
 #define IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_ACCOUNT_PASSWORD_STORE_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"

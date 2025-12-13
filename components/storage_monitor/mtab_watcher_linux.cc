@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // MtabWatcherLinux implementation.
 
 #include "components/storage_monitor/mtab_watcher_linux.h"
@@ -17,6 +12,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -80,7 +76,7 @@ void MtabWatcherLinux::ReadMtab() const {
   while (getmntent_r(fp, &entry, buf, sizeof(buf))) {
     // We only care about real file systems.
     for (size_t i = 0; i < std::size(kKnownFileSystems); ++i) {
-      if (strcmp(kKnownFileSystems[i], entry.mnt_type) == 0) {
+      if (UNSAFE_TODO(strcmp(kKnownFileSystems[i], entry.mnt_type)) == 0) {
         device_map[base::FilePath(entry.mnt_dir)] =
             base::FilePath(entry.mnt_fsname);
         break;

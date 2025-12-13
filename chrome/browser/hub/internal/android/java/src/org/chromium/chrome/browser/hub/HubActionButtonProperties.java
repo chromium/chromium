@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -15,7 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @NullMarked
 public class HubActionButtonProperties {
     // When set then an interactable button for the primary pane action should be shown.
-    public static final WritableObjectPropertyKey<FullButtonData> ACTION_BUTTON_DATA =
+    public static final WritableObjectPropertyKey<@Nullable FullButtonData> ACTION_BUTTON_DATA =
             new WritableObjectPropertyKey();
 
     // The visibility of the action button.

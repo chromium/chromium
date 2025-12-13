@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/webshare/win/fake_data_writer_factory.h"
 
 #include <robuffer.h>
 #include <windows.foundation.h>
 #include <wrl/async.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/fake_iasync_operation_win.h"
 #include "chrome/browser/webshare/win/fake_buffer.h"
@@ -113,7 +109,7 @@ class FakeDataWriter final
     }
 
     for (UINT32 i = 0; i < value_length; i++) {
-      raw_buffer[i] = value[i];
+      UNSAFE_TODO(raw_buffer[i]) = UNSAFE_TODO(value[i]);
     }
     return S_OK;
   }

@@ -670,7 +670,8 @@ def _make_blink_api_call(code_node,
 
     code_generator_info = cg_context.member_like.code_generator_info
     is_partial = code_generator_info.defined_in_partial
-    if (is_partial and
+    is_across_component = code_generator_info.defined_across_component
+    if ((is_partial or is_across_component) and
             not (cg_context.constructor or cg_context.member_like.is_static)):
         arguments.append("*${blink_receiver}")
 
@@ -704,7 +705,7 @@ def _make_blink_api_call(code_node,
         func_name = _make_reflect_accessor_func_name(cg_context)
 
     if (cg_context.constructor or cg_context.member_like.is_static
-            or is_partial):
+            or is_partial or is_across_component):
         class_like = cg_context.member_like.owner_mixin or cg_context.class_like
         class_name = (code_generator_info.receiver_implemented_as
                       or name_style.class_(class_like.identifier))
@@ -905,8 +906,9 @@ def make_check_constructor_call(cg_context):
     if not cg_context.is_legacy_factory_function:
         node.append(
             CxxLikelyIfNode(
-                cond=("ConstructorMode::Current(${isolate}) == "
-                      "ConstructorMode::kWrapExistingObject"),
+                cond=(
+                    "V8PerIsolateData::From(${isolate})->InWrapperConstructor()"
+                ),
                 attribute=None,
                 body=T("bindings::V8SetReturnValue(${info}, ${v8_receiver});\n"
                        "return;")))
@@ -915,54 +917,6 @@ def make_check_constructor_call(cg_context):
             "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
         ]))
     return node
-
-
-def make_check_proxy_access(cg_context):
-    assert isinstance(cg_context, CodeGenContext)
-
-    T = TextNode
-
-    if cg_context.class_like.identifier != "Window":
-        return None
-
-    ext_attrs = cg_context.member_like.extended_attributes
-    if "CrossOrigin" not in ext_attrs:
-        return None
-
-    # COOP: restrict-properties and Partitioned Popins never restrict
-    # postMessage() and closed accesses, which should still be possible across
-    # browsing context groups.
-    if cg_context.property_.identifier in ("postMessage", "closed"):
-        return None
-
-    values = ext_attrs.values_of("CrossOrigin")
-    if cg_context.attribute_get and not (not values or "Getter" in values):
-        return None
-    elif cg_context.attribute_set and not ("Setter" in values):
-        return None
-
-    if cg_context.is_interceptor_returning_v8intercepted:
-        error_exit_return_statement = "return v8::Intercepted::kYes;"
-    else:
-        error_exit_return_statement = "return;"
-
-    node = CxxUnlikelyIfNode(
-        cond=
-        ("auto reason = ${blink_receiver}->GetProxyAccessBlockedReason(${isolate})"
-         ),
-        attribute="[[unlikely]]",
-        body=[
-            T("V8ThrowDOMException::Throw(${isolate}, "
-              "DOMExceptionCode::kSecurityError, "
-              "DOMWindow::GetProxyAccessBlockedExceptionMessage(*reason));"),
-            T(error_exit_return_statement),
-        ])
-    node.accumulate(
-        CodeGenAccumulator.require_include_headers([
-            "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
-        ]))
-    return node
-
 
 def make_promise_return_context(cg_context):
     assert isinstance(cg_context, CodeGenContext)
@@ -1455,61 +1409,6 @@ def _make_measure_web_feature_constant(cg_context):
     return "WebFeature::{}".format(name)
 
 
-def make_report_high_entropy(cg_context):
-    assert isinstance(cg_context, CodeGenContext)
-
-    ext_attrs = cg_context.logging_target.extended_attributes
-    if "HighEntropy" not in ext_attrs:
-        return None
-
-    node = SequenceNode([
-        TextNode("// [HighEntropy]"),
-        FormatNode(
-            "const Dactyloscoper::HighEntropyTracer"
-            "  high_entropy_tracer(\"{logging_id}\", ${info});",
-            logging_id=_make_bindings_logging_id(cg_context)),
-    ])
-    node.accumulate(
-        CodeGenAccumulator.require_include_headers([
-            "third_party/blink/renderer/core/frame/dactyloscoper.h",
-        ]))
-    return node
-
-
-def make_report_high_entropy_direct(cg_context):
-    assert isinstance(cg_context, CodeGenContext)
-
-    ext_attrs = cg_context.logging_target.extended_attributes
-    if not ext_attrs.value_of("HighEntropy") == "Direct":
-        return None
-    if cg_context.attribute_set:
-        return None
-
-    assert "Measure" in ext_attrs or "MeasureAs" in ext_attrs, "{}: {}".format(
-        cg_context.idl_location_and_name,
-        "[HighEntropy=Direct] must be specified with either [Measure] or "
-        "[MeasureAs].")
-
-    assert "MeasureAs" not in ext_attrs or not ext_attrs.value_of(
-        "MeasureAs").startswith("WebDXFeature::"), "{}: {}".format(
-            cg_context.idl_location_and_name,
-            "[HighEntropy=Direct] is not yet supported for a WebDXFeature "
-            "use counter.")
-
-    node = SequenceNode([
-        TextNode("// [HighEntropy=Direct]"),
-        FormatNode(
-            "Dactyloscoper::RecordDirectSurface("
-            "${current_execution_context}, {measure_constant}, "
-            "${return_value});",
-            measure_constant=_make_measure_web_feature_constant(cg_context)),
-    ])
-    node.accumulate(
-        CodeGenAccumulator.require_include_headers(
-            ["third_party/blink/renderer/core/frame/dactyloscoper.h"]))
-    return node
-
-
 def make_report_measure_as(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
@@ -1964,17 +1863,13 @@ def make_attribute_get_callback_def(cg_context, function_name):
         make_bindings_trace_event(cg_context),
         make_report_coop_access(cg_context),
         make_report_deprecate_as(cg_context),
-        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
-        EmptyNode(),
-        make_check_proxy_access(cg_context),
         EmptyNode(),
         make_return_value_cache_return_early(cg_context),
         EmptyNode(),
         make_check_security_of_return_value(cg_context),
         make_v8_set_return_value(cg_context),
-        make_report_high_entropy_direct(cg_context),
         make_return_value_cache_update_value(cg_context),
     ])
     if cg_context.is_interceptor_returning_v8intercepted:
@@ -2101,7 +1996,6 @@ def make_attribute_set_callback_def(cg_context, function_name):
         make_runtime_call_timer_scope(cg_context),
         make_bindings_trace_event(cg_context),
         make_report_deprecate_as(cg_context),
-        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
@@ -2186,11 +2080,6 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
     if node:
         body.append(node)
         return func_def
-
-    body.extend([
-        make_check_argument_length(cg_context),
-        EmptyNode(),
-    ])
 
     if "PutForwards" in ext_attrs:
         body.append(make_steps_of_put_forwards(cg_context))
@@ -2303,7 +2192,6 @@ def make_constructor_function_def(cg_context, function_name):
 
     body.extend([
         make_report_deprecate_as(cg_context),
-        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
@@ -2329,10 +2217,6 @@ def make_constructor_function_def(cg_context, function_name):
               "${return_value}->AssociateWithWrapper(${isolate}, "
               "${class_name}::GetWrapperTypeInfo(), ${v8_receiver});"))
         body.append(T("bindings::V8SetReturnValue(${info}, v8_wrapper);"))
-
-    body.extend([
-        make_report_high_entropy_direct(cg_context),
-    ])
 
     return func_def
 
@@ -2682,11 +2566,8 @@ def make_operation_function_def(cg_context, function_name):
         EmptyNode(),
         make_report_coop_access(cg_context),
         make_report_deprecate_as(cg_context),
-        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
-        EmptyNode(),
-        make_check_proxy_access(cg_context),
         EmptyNode(),
         make_check_argument_length(cg_context),
         EmptyNode(),
@@ -2694,7 +2575,6 @@ def make_operation_function_def(cg_context, function_name):
         EmptyNode(),
         make_check_security_of_return_value(cg_context),
         make_v8_set_return_value(cg_context),
-        make_report_high_entropy_direct(cg_context),
     ])
 
     return func_def
@@ -2965,26 +2845,15 @@ return ${class_name}::NamedPropertySetterCallback(
         TextNode("""\
 // 3.9.2. [[Set]]
 // https://webidl.spec.whatwg.org/#legacy-platform-object-set
-// step 1. If O and Receiver are the same object, then:\
-"""),
-        CxxLikelyIfNode(cond="${info}.HolderV2() == ${info}.This()",
-                        attribute=None,
-                        body=[
-                            TextNode("""\
+// step 1. If O and Receiver are the same object, then:
+// (V8 calls this callback only when that's the case).
 // step 1.1.1. Invoke the indexed property setter with P and V.\
 """),
-                            make_steps_of_ce_reactions(cg_context),
-                            EmptyNode(),
-                            make_v8_set_return_value(cg_context),
-                            TextNode(
-                                "return BlinkInterceptorResultToV8Intercepted("
-                                "${return_value});"),
-                        ]),
+        make_steps_of_ce_reactions(cg_context),
         EmptyNode(),
-        TextNode("""\
-// Do not intercept.  Fallback to OrdinarySetWithOwnDescriptor.
-return v8::Intercepted::kNo;
-"""),
+        make_v8_set_return_value(cg_context),
+        TextNode("return BlinkInterceptorResultToV8Intercepted("
+                 "${return_value});"),
     ])
 
     return func_decl, func_def
@@ -3364,18 +3233,14 @@ return v8::Intercepted::kNo;
         TextNode("""\
 // 3.9.2. [[Set]]
 // https://webidl.spec.whatwg.org/#legacy-platform-object-set
-// step 1. If O and Receiver are the same object, then:\
-"""),
-        CxxLikelyIfNode(cond="${info}.HolderV2() == ${info}.This()",
-                        attribute=None,
-                        body=[
-                            TextNode("""\
+// step 1. If O and Receiver are the same object, then:
+// (V8 calls this callback only when that's the case).
 // step 1.2.1. Invoke the named property setter with P and V.\
 """),
-                            make_steps_of_ce_reactions(cg_context),
-                            EmptyNode(),
-                            make_v8_set_return_value(cg_context),
-                            TextNode("""\
+        make_steps_of_ce_reactions(cg_context),
+        EmptyNode(),
+        make_v8_set_return_value(cg_context),
+        TextNode("""\
 % if interface.identifier == "CSSStyleDeclaration" or \
      interface.identifier == "HTMLEmbedElement" or \
      interface.identifier == "HTMLObjectElement":
@@ -3387,12 +3252,6 @@ return BlinkInterceptorResultToV8Intercepted(${return_value});
 // ${return_value} returned.
 return v8::Intercepted::kYes;
 % endif\
-"""),
-                        ]),
-        EmptyNode(),
-        TextNode("""\
-// Do not intercept.  Fallback to OrdinarySetWithOwnDescriptor.
-return v8::Intercepted::kNo;\
 """),
     ])
 
@@ -3891,13 +3750,6 @@ def make_cross_origin_indexed_getter_callback(cg_context, function_name):
         return func_def
 
     bind_return_value(body, cg_context, overriding_args=["${index}"])
-
-    # Do this before the index verification below, because we do not want to
-    # reveal any information about the number of frames in this window.
-    body.extend([
-        make_check_proxy_access(cg_context),
-        EmptyNode(),
-    ])
 
     body.extend([
         CxxLikelyIfNode(cond="${index} >= ${blink_receiver}->length()",
@@ -4904,7 +4756,11 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
         for member in members:
             is_context_dependent = member.exposure.is_context_dependent(
                 global_names)
+            runtime_enabled_features = False
             if isinstance(member, web_idl.OverloadGroup):
+                runtime_enabled_features = any(
+                  overload.exposure.runtime_enabled_features for overload in member
+                )
                 exposure_conditional = expr_or([
                     expr_from_exposure(overload.exposure,
                                        global_names=global_names,
@@ -4912,10 +4768,17 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
                     for overload in member
                 ])
             else:
+                runtime_enabled_features = bool(member.exposure.runtime_enabled_features)
                 exposure_conditional = expr_from_exposure(
                     member.exposure,
                     global_names=global_names,
                     may_use_feature_selector=True)
+
+            if runtime_enabled_features:
+              callback_def_nodes.accumulate(
+                  CodeGenAccumulator.require_include_headers([
+                      "third_party/blink/renderer/platform/runtime_enabled_features.h"
+                  ]))
 
             if "PerWorldBindings" in member.extended_attributes:
                 assert not isinstance(
@@ -6361,6 +6224,14 @@ def make_is_exposed(cg_context, function_name):
         is_exposed_def.body.append(
             FormatNode("return {};",
                        expr_from_exposure(class_like.exposure).to_text()))
+        runtime_enabled_features = class_like.exposure.runtime_enabled_features or any(
+            entry.feature for entry in class_like.exposure.global_names_and_features
+        )
+        if runtime_enabled_features:
+            is_exposed_def.accumulate(
+                CodeGenAccumulator.require_include_headers([
+                    "third_party/blink/renderer/platform/runtime_enabled_features.h"
+                ]))
     else:
         is_exposed_def.body.append(TextNode("return false;"))
     return (is_exposed_decl, is_exposed_def)
@@ -6392,8 +6263,8 @@ def make_wrapper_type_info(cg_context, function_name,
 
     public_defs.append(
         TextNode("""\
-  static_assert(static_cast<v8::CppHeapPointerTag>({this_tag}) <
-                 blink::kLastScriptWrappableTag,
+  static_assert({this_tag} <
+                 blink::kLastGeneratedScriptWrappableTag,
                  "There are more ScriptWrappable types than available type tags."
                  "You have to increase the kLastScirptWrappableTag in wrapper_type_info.h");
   static constexpr v8::CppHeapPointerTag kThisTag =
@@ -6746,6 +6617,13 @@ def _collect_include_headers(class_like):
         if idl_type.is_frozen_array:
             headers.add(
                 "third_party/blink/renderer/bindings/core/v8/frozen_array.h")
+            return
+
+        observable_array_def_obj = idl_type.observable_array_definition_object
+        if observable_array_def_obj is not None:
+            headers.add(
+                PathManager(observable_array_def_obj).api_path(ext="h"))
+            return
 
     for attribute in class_like.attributes:
         collect_from_idl_type(attribute.idl_type)

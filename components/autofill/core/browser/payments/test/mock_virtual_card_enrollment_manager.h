@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_MOCK_VIRTUAL_CARD_ENROLLMENT_MANAGER_H_
 
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -15,7 +16,8 @@ class MockVirtualCardEnrollmentManager
  public:
   MockVirtualCardEnrollmentManager(
       PaymentsDataManager* payments_data_manager,
-      payments::TestPaymentsNetworkInterface* payments_network_interface,
+      payments::MultipleRequestPaymentsNetworkInterface*
+          payments_network_interface,
       TestAutofillClient* autofill_client);
   ~MockVirtualCardEnrollmentManager() override;
 

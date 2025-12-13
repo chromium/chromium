@@ -19,7 +19,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/messages/android/jni_headers/SimpleConfirmInfoBarBuilder_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace {
 
@@ -27,7 +27,7 @@ namespace {
 class SimpleConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   SimpleConfirmInfoBarDelegate(
-      const JavaParamRef<jobject>& j_listener,
+      const JavaRef<jobject>& j_listener,
       infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
       const gfx::Image& bitmap,
       const std::u16string& message_str,
@@ -67,7 +67,7 @@ class SimpleConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
 };
 
 SimpleConfirmInfoBarDelegate::SimpleConfirmInfoBarDelegate(
-    const JavaParamRef<jobject>& j_listener,
+    const JavaRef<jobject>& j_listener,
     infobars::InfoBarDelegate::InfoBarIdentifier identifier,
     const gfx::Image& bitmap,
     const std::u16string& message_str,
@@ -145,17 +145,17 @@ bool SimpleConfirmInfoBarDelegate::Cancel() {
 
 // Native JNI methods ---------------------------------------------------------
 
-void JNI_SimpleConfirmInfoBarBuilder_Create(
+static void JNI_SimpleConfirmInfoBarBuilder_Create(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_web_contents,
+    const JavaRef<jobject>& j_web_contents,
     jint j_identifier,
-    const JavaParamRef<jobject>& j_icon,
-    const JavaParamRef<jstring>& j_message,
-    const JavaParamRef<jstring>& j_primary,
-    const JavaParamRef<jstring>& j_secondary,
-    const JavaParamRef<jstring>& j_link_text,
+    const JavaRef<jobject>& j_icon,
+    const JavaRef<jstring>& j_message,
+    const JavaRef<jstring>& j_primary,
+    const JavaRef<jstring>& j_secondary,
+    const JavaRef<jstring>& j_link_text,
     jboolean auto_expire,
-    const JavaParamRef<jobject>& j_listener) {
+    const JavaRef<jobject>& j_listener) {
   infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier =
       static_cast<infobars::InfoBarDelegate::InfoBarIdentifier>(j_identifier);
 
@@ -190,3 +190,5 @@ void JNI_SimpleConfirmInfoBarBuilder_Create(
           j_listener, infobar_identifier, icon_bitmap, message_str, primary_str,
           secondary_str, link_text_str, auto_expire)));
 }
+
+DEFINE_JNI(SimpleConfirmInfoBarBuilder)

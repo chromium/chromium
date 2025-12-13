@@ -23,10 +23,10 @@
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -48,7 +48,6 @@ using testing::_;
 using testing::AnyNumber;
 using testing::ByMove;
 using testing::Eq;
-using testing::Invoke;
 using testing::IsNull;
 using testing::Ne;
 using testing::Not;
@@ -231,19 +230,19 @@ class MetricReportingManagerTest
     mock_delegate_ =
         std::make_unique<::testing::NiceMock<test::MockDelegate>>();
     ON_CALL(*mock_delegate_, CreateMetricReportQueue(_, _, _, _, _))
-        .WillByDefault(WithArg<2>(Invoke([](Priority priority) {
+        .WillByDefault(WithArg<2>([](Priority priority) {
           return std::make_unique<test::FakeMetricReportQueue>(priority);
-        })));
+        }));
     ON_CALL(*mock_delegate_,
             CreatePeriodicUploadReportQueue(_, _, _, _, _, _, _, _))
         .WillByDefault(WithArgs<2, 3, 4, 5, 6>(
-            Invoke([](Priority priority, ReportingSettings* reporting_settings,
-                      const std::string& rate_setting_path,
-                      base::TimeDelta default_rate, int rate_unit_to_ms) {
+            [](Priority priority, ReportingSettings* reporting_settings,
+               const std::string& rate_setting_path,
+               base::TimeDelta default_rate, int rate_unit_to_ms) {
               return std::make_unique<test::FakeMetricReportQueue>(
                   priority, reporting_settings, rate_setting_path, default_rate,
                   rate_unit_to_ms);
-            })));
+            }));
   }
 
   ::ash::SessionTerminationManager session_termination_manager_;
@@ -1060,8 +1059,8 @@ class EventDrivenTelemetryCollectorPoolTest
   ::ash::SessionTerminationManager session_termination_manager_;
   std::unique_ptr<::testing::NiceMock<test::MockDelegate>> mock_delegate_;
 
+  ::ash::ScopedStubInstallAttributes install_attributes_;
   ::ash::ScopedTestingCrosSettings cros_settings_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 
   // Placeholder test profile needed for initializing downstream components.
   TestingProfile profile_;

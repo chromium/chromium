@@ -26,7 +26,6 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -67,8 +66,10 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
   CookiePolicyBrowserTest& operator=(const CookiePolicyBrowserTest&) = delete;
 
   void SetBlockThirdPartyCookies() {
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kTrackingProtection3pcdEnabled, true);
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
   }
 
  protected:
@@ -129,7 +130,7 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
                       const std::string& cookie) {
     content::EvalJsResult result =
         EvalJs(frame, base::StrCat({"document.cookie = '", cookie, "'"}));
-    ASSERT_TRUE(result.error.empty()) << result.error;
+    ASSERT_TRUE(result.is_ok()) << result;
   }
 
   std::string GetCookieViaJS(content::RenderFrameHost* frame) {
@@ -578,8 +579,7 @@ class CookiePolicyStorageBrowserTest
     switch (ContextType()) {
       case ContextType::kFrame:
         storage::test::ExpectStorageForFrame(frame, expected_storage);
-        EXPECT_EQ(expected_cookie && !Is3pcd(),
-                  content::EvalJs(frame, "hasCookie()"));
+        EXPECT_EQ(expected_cookie, content::EvalJs(frame, "hasCookie()"));
         return;
       case ContextType::kWorker:
         storage::test::ExpectStorageForWorker(frame, expected_storage);
@@ -590,17 +590,12 @@ class CookiePolicyStorageBrowserTest
   void SetStorage(content::RenderFrameHost* frame) {
     switch (ContextType()) {
       case ContextType::kFrame:
-        storage::test::SetStorageForFrame(frame, /*include_cookies=*/!Is3pcd());
+        storage::test::SetStorageForFrame(frame, /*include_cookies=*/true);
         return;
       case ContextType::kWorker:
         storage::test::SetStorageForWorker(frame);
         return;
     }
-  }
-
-  bool Is3pcd() {
-    return base::FeatureList::IsEnabled(
-        content_settings::features::kTrackingProtection3pcd);
   }
 
   ContextType ContextType() const { return GetParam(); }
@@ -749,8 +744,7 @@ class ThirdPartyPartitionedStorageAccessibilityTest
     if (StoragePartitioningEnabled()) {
       return {};
     }
-    return {net::features::kThirdPartyStoragePartitioning,
-            content_settings::features::kTrackingProtection3pcd};
+    return {net::features::kThirdPartyStoragePartitioning};
   }
 
   ContextType ContextType() const { return std::get<0>(GetParam()); }
@@ -870,8 +864,7 @@ class ThirdPartyPartitionedStorageAccessibilityCanBeDisabledTest
     : public ThirdPartyPartitionedStorageAccessibilityTest {
  protected:
   std::vector<base::test::FeatureRef> DisabledFeatures() override {
-    return {net::features::kThirdPartyPartitionedStorageAllowedByDefault,
-            content_settings::features::kTrackingProtection3pcd};
+    return {net::features::kThirdPartyPartitionedStorageAllowedByDefault};
   }
 };
 

@@ -39,7 +39,6 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/favicon_base/favicon_url_parser.h"
-#include "components/page_image_service/features.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -53,7 +52,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 const char kSidePanelRootBookmarkID[] = "SIDE_PANEL_ROOT_BOOKMARK_ID";
@@ -202,9 +200,6 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       !prefs->GetList(bookmarks::prefs::kManagedBookmarks).empty());
   source->AddBoolean("shoppingListEnabled",
                      commerce::IsShoppingListAllowedForEnterprise(prefs));
-  source->AddBoolean(
-      "urlImagesEnabled",
-      base::FeatureList::IsEnabled(page_image_service::kImageService));
 
   source->AddBoolean("guestMode", profile->IsGuestSession());
   source->AddBoolean("incognitoMode", profile->IsIncognitoProfile());
@@ -212,8 +207,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean(
       "bookmarksTreeViewEnabled",
       base::FeatureList::IsEnabled(features::kBookmarksTreeView));
-  source->AddBoolean("splitViewEnabled",
-                     base::FeatureList::IsEnabled(features::kSideBySide));
+
   // TODO(crbug.com/380818698): Replace this with the flag which will be used to
   // launch account storage for bookmarks.
   source->AddBoolean("isBookmarksInTransportModeEnabled",
@@ -273,13 +267,6 @@ void BookmarksSidePanelUI::BindInterface(
         receiver) {
   price_tracking_factory_receiver_.reset();
   price_tracking_factory_receiver_.Bind(std::move(receiver));
-}
-
-void BookmarksSidePanelUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void BookmarksSidePanelUI::BindInterface(

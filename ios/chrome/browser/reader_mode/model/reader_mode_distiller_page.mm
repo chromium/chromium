@@ -46,14 +46,29 @@ bool ReaderModeDistillerPage::ShouldFetchOfflineData() {
   return false;
 }
 
+dom_distiller::DistillerType ReaderModeDistillerPage::GetDistillerType() {
+  return dom_distiller::ShouldUseReadabilityDistiller()
+             ? dom_distiller::DistillerType::kReadability
+             : dom_distiller::DistillerType::kDOMDistiller;
+}
+
 void ReaderModeDistillerPage::HandleJavaScriptResult(
     const GURL& url,
     const base::Value* result) {
-  if (dom_distiller::ShouldUseReadabilityDistiller()) {
-    OnDistillationDone(url, result);
-  } else {
-    base::Value result_as_value =
-        dom_distiller::ParseValueFromScriptResult(result);
-    OnDistillationDone(url, &result_as_value);
+  switch (GetDistillerType()) {
+    case dom_distiller::DistillerType::kReadability: {
+      base::Value result_as_value;
+      if (result) {
+        result_as_value = result->Clone();
+      }
+      OnDistillationDone(url, &result_as_value);
+      break;
+    }
+    case dom_distiller::DistillerType::kDOMDistiller: {
+      base::Value result_as_value =
+          dom_distiller::ParseValueFromScriptResult(result);
+      OnDistillationDone(url, &result_as_value);
+      break;
+    }
   }
 }

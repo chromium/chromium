@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/mock_removable_storage_observer.h"
@@ -46,20 +46,24 @@ const char kStorageDescription[] = "ExampleDescription";
 const char kStorageVolumeIdentifier[] = "ExampleVolumeId";
 const char kStorageSerialNumber[] = "0123456789ABCDEF0123456789ABCDEF";
 
-base::LazyInstance<std::map<std::string, device::mojom::MtpStorageInfo>>::Leaky
-    g_fake_storage_info_map = LAZY_INSTANCE_INITIALIZER;
+std::map<std::string, device::mojom::MtpStorageInfo>& GetFakeStorageInfoMap() {
+  static base::NoDestructor<
+      std::map<std::string, device::mojom::MtpStorageInfo>>
+      fake_storage_info_map;
+  return *fake_storage_info_map;
+}
 
 const device::mojom::MtpStorageInfo* GetFakeMtpStorageInfoSync(
     const std::string& storage_name) {
   // Fill the map out if it is empty.
-  if (g_fake_storage_info_map.Get().empty()) {
+  if (GetFakeStorageInfoMap().empty()) {
     // Add the invalid MTP storage info.
     auto storage_info = device::mojom::MtpStorageInfo();
     storage_info.storage_name = kStorageWithInvalidInfo;
-    g_fake_storage_info_map.Get().insert(
+    GetFakeStorageInfoMap().insert(
         std::make_pair(kStorageWithInvalidInfo, storage_info));
     // Add the valid MTP storage info.
-    g_fake_storage_info_map.Get().insert(std::make_pair(
+    GetFakeStorageInfoMap().insert(std::make_pair(
         kStorageWithValidInfo,
         device::mojom::MtpStorageInfo(
             kStorageWithValidInfo, kStorageVendor, kStorageVendorId,
@@ -70,8 +74,8 @@ const device::mojom::MtpStorageInfo* GetFakeMtpStorageInfoSync(
             kStorageVolumeIdentifier, kStorageSerialNumber)));
   }
 
-  const auto it = g_fake_storage_info_map.Get().find(storage_name);
-  return it != g_fake_storage_info_map.Get().end() ? &it->second : nullptr;
+  const auto it = GetFakeStorageInfoMap().find(storage_name);
+  return it != GetFakeStorageInfoMap().end() ? &it->second : nullptr;
 }
 
 class FakeMtpManagerClientChromeOS : public MtpManagerClientChromeOS {

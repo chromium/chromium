@@ -213,8 +213,7 @@ TEST_F(PipelineControllerTest, StartSuspendedSeekAndResume) {
   EXPECT_FALSE(was_seeked_);
 
   PipelineStatusCallback resume_cb;
-  EXPECT_CALL(*pipeline_, OnResume(_, _))
-      .WillOnce(DoAll(MoveArg<1>(&resume_cb)));
+  EXPECT_CALL(*pipeline_, OnResume(_, _)).WillOnce(MoveArg<1>(&resume_cb));
   EXPECT_CALL(*pipeline_, GetMediaTime())
       .WillRepeatedly(Return(base::TimeDelta()));
 

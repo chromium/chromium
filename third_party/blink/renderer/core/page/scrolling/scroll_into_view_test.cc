@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
@@ -36,7 +37,30 @@ namespace blink {
 
 namespace {
 
-class ScrollIntoViewTest : public SimTest {};
+class ScrollIntoViewTest : public SimTest {
+ public:
+  ScrollIntoViewTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {
+            ::features::kProgrammaticScrollAnimationOverride,
+            {
+                {"cubic_bezier_x1", "0.4"},          //
+                {"cubic_bezier_y1", "0.0"},          //
+                {"cubic_bezier_x2", "0.0"},          //
+                {"cubic_bezier_y2", "1.0"},          //
+                {"max_animation_duration", "1.5s"},  //
+            }  //
+        }  //
+    };
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        std::move(enabled_features),
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_F(ScrollIntoViewTest, InstantScroll) {
   v8::HandleScope HandleScope(
@@ -52,7 +76,7 @@ TEST_F(ScrollIntoViewTest, InstantScroll) {
   ASSERT_EQ(Window().scrollY(), 0);
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   content->scrollIntoViewForTesting(
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options));
 
@@ -224,8 +248,8 @@ TEST_F(ScrollIntoViewTest, SmoothScroll) {
 
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("smooth");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   Compositor().BeginFrame();
@@ -236,7 +260,7 @@ TEST_F(ScrollIntoViewTest, SmoothScroll) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 299, 1);
+  ASSERT_NEAR(Window().scrollY(), 736, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -260,8 +284,8 @@ TEST_F(ScrollIntoViewTest, NestedContainer) {
   Element* container = GetDocument().getElementById(AtomicString("container"));
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("smooth");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   Compositor().BeginFrame();
@@ -272,9 +296,9 @@ TEST_F(ScrollIntoViewTest, NestedContainer) {
   // Scrolling the outer container
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 299, 1);
-  ASSERT_NEAR(container->scrollTop(), 299, 1);
+  Compositor().BeginFrame(0.1);
+  ASSERT_NEAR(Window().scrollY(), 171, 1);
+  ASSERT_NEAR(container->scrollTop(), 171, 1);
 
   // Finish scrolling the outer container
   Compositor().BeginFrame(1);
@@ -307,8 +331,8 @@ TEST_F(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   Element* content1 = GetDocument().getElementById(AtomicString("content1"));
   Element* content2 = GetDocument().getElementById(AtomicString("content2"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("smooth");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
 
@@ -320,16 +344,16 @@ TEST_F(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   content1->scrollIntoViewForTesting(arg);
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 299, 1);
-  ASSERT_NEAR(container1->scrollTop(), 299, 1);
+  Compositor().BeginFrame(0.1);
+  ASSERT_NEAR(Window().scrollY(), 171, 1);
+  ASSERT_NEAR(container1->scrollTop(), 171, 1);
 
   content2->scrollIntoViewForTesting(arg);
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 61, 1);
-  ASSERT_GT(container1->scrollTop(), 299);
+  Compositor().BeginFrame(0.1);
+  ASSERT_NEAR(Window().scrollY(), 35, 1);
+  ASSERT_GT(container1->scrollTop(), 171);
 
   Compositor().BeginFrame(1);
   ASSERT_EQ(Window().scrollY(), container2->OffsetTop());
@@ -368,8 +392,8 @@ TEST_F(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
 
   {
     ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-    options->setBlock("start");
-    options->setBehavior("smooth");
+    options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+    options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
     auto* arg =
         MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
     content->scrollIntoViewForTesting(arg);
@@ -378,15 +402,15 @@ TEST_F(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 241, 1);
-  ASSERT_NEAR(container->scrollTop(), 299, 1);
+  ASSERT_NEAR(Window().scrollY(), 288, 1);
+  ASSERT_NEAR(container->scrollTop(), 732, 1);
 
   // Since visibleElement is already on screen, this call should be a no-op.
   {
     ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
     // "nearest" is a no-op if the element is fully on-screen.
-    options->setBlock("nearest");
-    options->setBehavior("smooth");
+    options->setBlock(V8ScrollLogicalPosition::Enum::kNearest);
+    options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
     auto* arg =
         MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
     visibleElement->scrollIntoViewForTesting(arg);
@@ -395,8 +419,8 @@ TEST_F(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
   // The window animation should continue running but the container shouldn't
   // yet have started unless MultiSmoothScrollIntoView support is enabled.
   Compositor().BeginFrame();
-  ASSERT_NEAR(Window().scrollY(), 260, 1);
-  ASSERT_GT(container->scrollTop(), 299);
+  ASSERT_NEAR(Window().scrollY(), 292, 1);
+  ASSERT_GT(container->scrollTop(), 732);
 
   // Finish the animation to make sure the animation to content finishes
   // without interruption.
@@ -424,8 +448,8 @@ TEST_F(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   Element* container = GetDocument().getElementById(AtomicString("container"));
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("smooth");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   Compositor().BeginFrame();
@@ -436,19 +460,19 @@ TEST_F(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   // Scrolling the outer container
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 299, 1);
-  ASSERT_NEAR(container->scrollTop(), 299, 1);
+  Compositor().BeginFrame(0.15);
+  ASSERT_NEAR(Window().scrollY(), 531, 1);
+  ASSERT_NEAR(container->scrollTop(), 531, 1);
 
   ScrollToOptions* window_option = ScrollToOptions::Create();
   window_option->setLeft(0);
   window_option->setTop(0);
-  window_option->setBehavior("smooth");
+  window_option->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   Window().scrollTo(nullptr, window_option);
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 58, 1);
+  ASSERT_NEAR(Window().scrollY(), 65, 1);
 
   Compositor().BeginFrame(1);
   ASSERT_EQ(Window().scrollY(), 0);
@@ -478,8 +502,8 @@ TEST_F(ScrollIntoViewTest, BlockAndInlineSettings) {
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   ASSERT_EQ(Window().scrollY(), 0);
 
-  options->setBlock("nearest");
-  options->setInlinePosition("nearest");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kNearest);
+  options->setInlinePosition(V8ScrollLogicalPosition::Enum::kNearest);
   auto* arg1 =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   content->scrollIntoViewForTesting(arg1);
@@ -488,16 +512,16 @@ TEST_F(ScrollIntoViewTest, BlockAndInlineSettings) {
   ASSERT_EQ(Window().scrollY(),
             content->OffsetTop() + content_height - window_height);
 
-  options->setBlock("start");
-  options->setInlinePosition("start");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setInlinePosition(V8ScrollLogicalPosition::Enum::kStart);
   auto* arg2 =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   content->scrollIntoViewForTesting(arg2);
   ASSERT_EQ(Window().scrollX(), content->OffsetLeft());
   ASSERT_EQ(Window().scrollY(), content->OffsetTop());
 
-  options->setBlock("center");
-  options->setInlinePosition("center");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kCenter);
+  options->setInlinePosition(V8ScrollLogicalPosition::Enum::kCenter);
   auto* arg3 =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   content->scrollIntoViewForTesting(arg3);
@@ -506,8 +530,8 @@ TEST_F(ScrollIntoViewTest, BlockAndInlineSettings) {
   ASSERT_EQ(Window().scrollY(),
             content->OffsetTop() + (content_height - window_height) / 2);
 
-  options->setBlock("end");
-  options->setInlinePosition("end");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kEnd);
+  options->setInlinePosition(V8ScrollLogicalPosition::Enum::kEnd);
   auto* arg4 =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   content->scrollIntoViewForTesting(arg4);
@@ -540,7 +564,7 @@ TEST_F(ScrollIntoViewTest, SmoothAndInstantInChain) {
       GetDocument().getElementById(AtomicString("inner_container"));
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   Compositor().BeginFrame();
@@ -559,7 +583,7 @@ TEST_F(ScrollIntoViewTest, SmoothAndInstantInChain) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(container->scrollTop(), 299, 1);
+  ASSERT_NEAR(container->scrollTop(), 732, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -593,7 +617,7 @@ TEST_F(ScrollIntoViewTest, SmoothScrollAnchor) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(container->scrollTop(), 299, 1);
+  ASSERT_NEAR(container->scrollTop(), 732, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -637,7 +661,7 @@ TEST_F(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
 
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   Compositor().BeginFrame();
@@ -648,7 +672,7 @@ TEST_F(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 299, 1);
+  ASSERT_NEAR(Window().scrollY(), 736, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -840,7 +864,7 @@ TEST_F(ScrollIntoViewTest, SmoothUserScrollNotAbortedByProgrammaticScrolls) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 299, 1);
+  ASSERT_NEAR(Window().scrollY(), 736, 1);
 
   // ProgrammaticScroll that could interrupt the current smooth scroll.
   Window().scrollToForTesting(0, 0);
@@ -866,8 +890,8 @@ TEST_F(ScrollIntoViewTest, LongDistanceSmoothScrollFinishedInThreeSeconds) {
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("smooth");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   target->scrollIntoViewForTesting(arg);
@@ -876,10 +900,10 @@ TEST_F(ScrollIntoViewTest, LongDistanceSmoothScrollFinishedInThreeSeconds) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 16971, 1);
+  ASSERT_NEAR(Window().scrollY(), 6064, 1);
 
   // Finish scrolling the container
-  Compositor().BeginFrame(0.5);
+  Compositor().BeginFrame(1.5);
   ASSERT_EQ(Window().scrollY(), target->OffsetTop());
 }
 
@@ -960,7 +984,8 @@ TEST_F(ScrollIntoViewTest, OriginCrossingUseCounter) {
   }
 
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   // Cross origin frames should record the scroll into view use count.
   {
@@ -1042,8 +1067,8 @@ TEST_F(ScrollIntoViewTest, FromDisplayNoneIframe) {
   // Calling scroll into view on an element without a LayoutObject shouldn't
   // cause scrolling or a crash
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("smooth");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   target->scrollIntoViewForTesting(arg);

@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils.parseContainmentAttributes;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -20,10 +22,12 @@ import androidx.preference.SwitchPreferenceCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
+import org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils;
 
 /** A Chrome switch preference that supports managed preferences. */
 @NullMarked
-public class ChromeSwitchPreference extends SwitchPreferenceCompat {
+public class ChromeSwitchPreference extends SwitchPreferenceCompat implements ContainmentItem {
     private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
 
     /** The View for this preference. */
@@ -47,6 +51,7 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
     private @Nullable String mSummaryOverrideForScreenReader;
 
     private boolean mUseSummaryAsTitle;
+    private final @BackgroundStyle int mBackgroundStyle;
 
     public ChromeSwitchPreference(Context context) {
         this(context, null);
@@ -54,6 +59,10 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
 
     public ChromeSwitchPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+
+        ContainmentUiUtils.ContainmentAttributes containmentAttributes =
+                parseContainmentAttributes(context, attrs);
+        mBackgroundStyle = containmentAttributes.backgroundStyle;
 
         mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
         mUseSummaryAsTitle = true;
@@ -170,5 +179,17 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
         if (mView == null || mBackgroundColorInt == null) return;
         mInitialBackgroundDrawable = mView.getBackground();
         mView.setBackgroundColor(mBackgroundColorInt);
+    }
+
+    @Override
+    public @BackgroundStyle int getCustomBackgroundStyle() {
+        return mBackgroundStyle;
+    }
+
+    @Override
+    public int getCustomMinHeight() {
+        return getContext()
+                .getResources()
+                .getDimensionPixelSize(R.dimen.settings_toggle_item_min_height);
     }
 }

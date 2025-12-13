@@ -10,10 +10,10 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
+#import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
-#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/logging/upgrade_signin_logger.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/logging/fullscreen_signin_promo_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/uno_signin_screen_provider.h"
@@ -50,7 +50,7 @@ using base::UserMetricsAction;
   ScreenProvider* _screenProvider;
 
   // The signin logger for the upgrade screen.
-  UpgradeSigninLogger* _upgradeSigninLogger;
+  FullscreenSigninPromoLogger* _fullscreenSigninPromoLogger;
 
   ChangeProfileContinuationProvider _continuationProvider;
 
@@ -66,7 +66,7 @@ using base::UserMetricsAction;
                    promoAction:(signin_metrics::PromoAction)promoAction
           continuationProvider:
               (const ChangeProfileContinuationProvider&)continuationProvider {
-  DCHECK(!browser->GetProfile()->IsOffTheRecord());
+  DCHECK_EQ(browser->type(), Browser::Type::kRegular);
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                               contextStyle:contextStyle
@@ -81,26 +81,32 @@ using base::UserMetricsAction;
         IdentityManagerFactory::GetForProfile(self.profile);
     ChromeAccountManagerService* accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
-    _upgradeSigninLogger =
-        [[UpgradeSigninLogger alloc] initWithAccessPoint:accessPoint
-                                             promoAction:promoAction
-                                         identityManager:identityManager
-                                   accountManagerService:accountManagerService];
+    _fullscreenSigninPromoLogger = [[FullscreenSigninPromoLogger alloc]
+          initWithAccessPoint:accessPoint
+                  promoAction:promoAction
+              identityManager:identityManager
+        accountManagerService:accountManagerService];
   }
   return self;
 }
 
 - (void)dealloc {
-  CHECK(!_upgradeSigninLogger, base::NotFatalUntil::M146);
+  CHECK(!_fullscreenSigninPromoLogger, base::NotFatalUntil::M146);
+}
+
+#pragma mark - BuggyAuthenticationViewOwner
+
+- (BOOL)viewWillPersist {
+  return YES;
 }
 
 #pragma mark - ChromeCoordinator
 
 - (void)start {
   [super start];
-  if (self.accessPoint == signin_metrics::AccessPoint::kSigninPromo) {
+  if (self.accessPoint == signin_metrics::AccessPoint::kFullscreenSigninPromo) {
     // TODO(crbug.com/41352590): Need to add `CHECK(accountManagerService)`.
-    [_upgradeSigninLogger logSigninStarted];
+    [_fullscreenSigninPromoLogger logSigninStarted];
   }
   _screenProvider = [[UnoSigninScreenProvider alloc] init];
   _navigationController =
@@ -136,8 +142,8 @@ using base::UserMetricsAction;
       dismissViewControllerAnimated:animated
                          completion:nil];
   [self finishWithResult:SigninCoordinatorResultInterrupted identity:nil];
-  [_upgradeSigninLogger disconnect];
-  _upgradeSigninLogger = nil;
+  [_fullscreenSigninPromoLogger disconnect];
+  _fullscreenSigninPromoLogger = nil;
   DCHECK(!_navigationController);
   DCHECK(!_childCoordinator);
   DCHECK(!_screenProvider);
@@ -210,6 +216,7 @@ using base::UserMetricsAction;
     case kLensInteractivePromo:
     case kLensAnimatedPromo:
     case kStepsCompleted:
+    case kSyncedSetUp:
     case kGuidedTour:
     case kSafariImport:
       break;
@@ -221,10 +228,11 @@ using base::UserMetricsAction;
 // `identity`.
 - (void)finishWithResult:(SigninCoordinatorResult)result
                 identity:(id<SystemIdentity>)identity {
-  if (self.accessPoint == signin_metrics::AccessPoint::kSigninPromo) {
+  if (self.accessPoint == signin_metrics::AccessPoint::kFullscreenSigninPromo) {
     // TODO(crbug.com/40074532): `addedAccount` is not always `NO`. Need to fix
     // that call to have the right value.
-    [_upgradeSigninLogger logSigninCompletedWithResult:result addedAccount:NO];
+    [_fullscreenSigninPromoLogger logSigninCompletedWithResult:result
+                                                  addedAccount:NO];
   }
   // When this coordinator is interrupted, `_childCoordinator` needs to be
   // stopped here.

@@ -21,12 +21,6 @@
 // URL text to display.
 @property(nonatomic, copy) NSString* URLText;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-- (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 @end
 
 #endif  // IOS_CHROME_BROWSER_YOUTUBE_INCOGNITO_UI_YOUTUBE_INCOGNITO_ENTERPRISE_SHEET_H_

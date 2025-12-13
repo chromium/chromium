@@ -163,7 +163,7 @@ SegmentationPlatformServiceFactory::BuildServiceInstanceForBrowserContext(
       session_sync_service, profile);
   auto home_modules_card_registry =
       std::make_unique<home_modules::HomeModulesCardRegistry>(
-          profile->GetPrefs());
+          profile->GetPrefs(), g_browser_process->local_state());
 
   InitializeUkmDatabaseIfNeeded(profile);
 
@@ -173,12 +173,8 @@ SegmentationPlatformServiceFactory::BuildServiceInstanceForBrowserContext(
       base::PersistentHash(base::as_byte_span(profile_path)));
   params->history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
-  base::TaskPriority priority = base::TaskPriority::BEST_EFFORT;
-  if (base::FeatureList::IsEnabled(features::kSegmentationPlatformUserVisibleTaskRunner)) {
-    priority = base::TaskPriority::USER_VISIBLE;
-  }
   params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), priority});
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   params->storage_dir =
       profile->GetPath().Append(chrome::kSegmentationPlatformStorageDirName);
   params->db_provider =

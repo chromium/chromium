@@ -28,7 +28,7 @@ struct RubyItemIndexes {
   wtf_size_t column_start;
   // Points a kOpenTag for <rt> item or a kCloseRubyColumn item.
   wtf_size_t base_end;
-  // Points a kOpenTag for <rt> item, or WTF::kNotFound.
+  // Points a kOpenTag for <rt> item, or kNotFound.
   wtf_size_t annotation_start;
   // Points a kCloseRubyColumn item.
   wtf_size_t column_end;
@@ -215,8 +215,10 @@ class CORE_EXPORT RubyBlockPositionCalculator {
   }
 
  private:
-  void HandleRubyLine(const RubyLine& current_ruby_line,
-                      const HeapVector<Member<LogicalRubyColumn>>& column_list);
+  // Returns the maximum metrics of the ruby annotations from the |column_list|.
+  FontHeight HandleRubyLine(
+      const RubyLine& current_ruby_line,
+      const HeapVector<Member<LogicalRubyColumn>>& column_list);
   RubyLine& EnsureRubyLine(const RubyLevel& level);
 
   HeapVector<Member<RubyLine>, 2> ruby_lines_;

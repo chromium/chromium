@@ -5,8 +5,6 @@
 #include "ash/accelerators/keyboard_code_util.h"
 
 #include "ash/public/cpp/accelerators_util.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
-#include "ash/public/cpp/assistant/assistant_state_base.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -69,12 +67,6 @@ std::optional<std::u16string> GetSpecialStringForKeyboardCode(
       return std::nullopt;
   }
   return l10n_util::GetStringUTF16(msg_id);
-}
-
-bool IsAssistantAvailable() {
-  AssistantStateBase* state = AssistantState::Get();
-  return state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
-         state->settings_enabled().value_or(false);
 }
 
 }  // namespace
@@ -157,9 +149,7 @@ const gfx::VectorIcon* GetSearchOrLauncherVectorIcon() {
     case ui::mojom::MetaKey::kSearch:
       return &kCaptureModeDemoToolsSearchIcon;
     case ui::mojom::MetaKey::kLauncher:
-      return IsAssistantAvailable()
-                 ? &kCaptureModeDemoToolsLauncherAssistantOnIcon
-                 : &kCaptureModeDemoToolsLauncherAssistantOffIcon;
+      return &kCaptureModeDemoToolsLauncherAssistantOffIcon;
     case ui::mojom::MetaKey::kLauncherRefresh:
       return &kCampbellHeroIcon;
     case ui::mojom::MetaKey::kExternalMeta:

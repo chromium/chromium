@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals_handler.h"
 
+#include <optional>
+#include <string>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -91,7 +95,7 @@ void SuggestInternalsHandler::OnRequestStarted(
 void SuggestInternalsHandler::OnRequestCompleted(
     const base::UnguessableToken& request_id,
     const int response_code,
-    const std::unique_ptr<std::string>& response_body) {
+    base::optional_ref<std::string> response_body) {
   // Update the page with the request information.
   suggest_internals::mojom::RequestPtr mojom_request =
       suggest_internals::mojom::Request::New();
@@ -109,14 +113,14 @@ void SuggestInternalsHandler::OnRequestCompleted(
 void SuggestInternalsHandler::OnRequestCompleted(
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     RemoteSuggestionsService::CompletionCallback completion_callback) {
   CHECK(hardcoded_response_and_delay_);
   const auto [hardcoded_response, delay] = *hardcoded_response_and_delay_;
 
   // Override the response with the hardcoded response given by the page.
   if (response_code == 200) {
-    *response_body = hardcoded_response;
+    *response_body = std::move(hardcoded_response);
   }
 
   // Call the completion callback after the delay given by the page.
@@ -124,8 +128,7 @@ void SuggestInternalsHandler::OnRequestCompleted(
       FROM_HERE,
       base::BindOnce(
           [](base::WeakPtr<const network::SimpleURLLoader> weak_source,
-             const int response_code,
-             std::unique_ptr<std::string> response_body,
+             const int response_code, std::optional<std::string> response_body,
              RemoteSuggestionsService::CompletionCallback completion_callback) {
             if (weak_source) {
               std::move(completion_callback)
@@ -142,14 +145,14 @@ void SuggestInternalsHandler::OnIndexedRequestCompleted(
     const int request_index,
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     RemoteSuggestionsService::IndexedCompletionCallback completion_callback) {
   CHECK(hardcoded_response_and_delay_);
   const auto [hardcoded_response, delay] = *hardcoded_response_and_delay_;
 
   // Override the response with the hardcoded response given by the page.
   if (response_code == 200) {
-    *response_body = hardcoded_response;
+    *response_body = std::move(hardcoded_response);
   }
 
   // Call the completion callback after the delay given by the page.
@@ -158,7 +161,7 @@ void SuggestInternalsHandler::OnIndexedRequestCompleted(
       base::BindOnce(
           [](base::WeakPtr<const network::SimpleURLLoader> weak_source,
              const int request_index, const int response_code,
-             std::unique_ptr<std::string> response_body,
+             std::optional<std::string> response_body,
              RemoteSuggestionsService::IndexedCompletionCallback
                  completion_callback) {
             if (weak_source) {

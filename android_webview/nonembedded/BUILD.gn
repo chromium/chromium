@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 generate_jni("nonembedded_jni_headers") {
   sources = [
@@ -275,9 +276,4 @@ android_resources("devui_resources") {
 
 java_group("devui_launcher_icon_resources") {
   mergeable_android_manifests = [ "java/DeveloperUiLauncherManifest.xml" ]
-}
-
-java_group("monochrome_devui_launcher_icon_resources") {
-  mergeable_android_manifests =
-      [ "java/MonochromeDeveloperUiLauncherManifest.xml" ]
 }

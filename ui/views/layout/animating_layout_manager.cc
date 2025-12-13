@@ -28,6 +28,7 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 
@@ -38,7 +39,6 @@ namespace {
 // (go/chrome-performance-work-should-be-finched).
 // TODO(crbug.com/40897031): Clean up when experiment is complete.
 BASE_FEATURE(kAvoidUnnecessaryShouldRenderRichAnimation,
-             "AvoidUnnecessaryShouldRenderRichAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Returns the ChildLayout data for the child view in the proposed layout, or
@@ -693,6 +693,14 @@ void AnimatingLayoutManager::OnLayoutChanged() {
 }
 
 void AnimatingLayoutManager::LayoutImpl() {
+  // Layouts can be invalidated when views are removed prior to deletion when
+  // a view or widget is being destroyed. This is not a good time to recalculate
+  // the layout.
+  if (check_widget_ &&
+      (!host_view()->GetWidget() || host_view()->GetWidget()->IsClosed())) {
+    return;
+  }
+
   // Changing the size of a view directly will lead to a layout call rather
   // than an invalidation. This should reset the layout (but see the note in
   // RecalculateTarget() below).

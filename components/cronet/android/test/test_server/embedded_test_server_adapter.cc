@@ -23,6 +23,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_support_android.h"
 #include "net/http/http_status_code.h"
@@ -130,10 +131,10 @@ namespace cronet {
 std::unique_ptr<net::test_server::HttpResponse>
 NativeTestServerHandleRequestCallback::operator()(
     const net::test_server::HttpRequest& http_request) const {
-  cronet::Java_NativeTestServer_handleRequest(jni_zero::AttachCurrentThread(),
-                                              java_callback_,
-                                              {.http_request = http_request});
-  return nullptr;
+  return cronet::Java_NativeTestServer_handleRequest(
+             jni_zero::AttachCurrentThread(), java_callback_,
+             {.http_request = http_request})
+      .raw_http_response;
 }
 
 }  // namespace cronet
@@ -289,7 +290,7 @@ std::unique_ptr<net::test_server::HttpResponse> CronetTestRequestHandler(
 
 namespace cronet {
 
-long JNI_NativeTestServer_Create(
+static long JNI_NativeTestServer_Create(
     JNIEnv* env,
     std::string& test_files_root,
     std::string& test_data_dir,
@@ -400,3 +401,5 @@ void EmbeddedTestServerAdapter::RegisterRequestHandler(
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(NativeTestServer)

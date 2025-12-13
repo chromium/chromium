@@ -43,7 +43,8 @@ bool IsLensContextualSearchbox(OEP::PageClassification classification) {
 bool IsLensSearchbox(OEP::PageClassification classification) {
   return IsLensContextualSearchbox(classification) ||
          (classification == OEP::SEARCH_SIDE_PANEL_SEARCHBOX) ||
-         (classification == OEP::LENS_SIDE_PANEL_SEARCHBOX);
+         (classification == OEP::LENS_SIDE_PANEL_SEARCHBOX) ||
+         (classification == OEP::LENS_SIDE_PANEL_COMPOSEBOX);
 }
 
 bool IsCustomTab(OEP::PageClassification classification) {
@@ -56,7 +57,8 @@ bool IsAndroidHub(OEP::PageClassification classification) {
 }
 
 bool IsWebUISearchbox(OEP::PageClassification classification) {
-  return classification == OEP::NTP_REALBOX || IsLensSearchbox(classification);
+  return classification == OEP::NTP_REALBOX ||
+         IsLensSearchbox(classification) || IsComposebox(classification);
 }
 
 void CheckObsoletePageClass(OEP::PageClassification classification) {
@@ -77,6 +79,23 @@ bool SupportsMostVisitedSites(OEP::PageClassification classification) {
   return classification == OEP::OTHER ||
          classification == OEP::ANDROID_SEARCH_WIDGET ||
          classification == OEP::ANDROID_SHORTCUTS_WIDGET;
+}
+
+bool IsOmniboxComposebox(OEP::PageClassification classification) {
+  return classification == OEP::NTP_OMNIBOX_COMPOSEBOX ||
+         classification == OEP::SRP_OMNIBOX_COMPOSEBOX ||
+         classification == OEP::OTHER_OMNIBOX_COMPOSEBOX;
+}
+
+bool IsComposebox(OEP::PageClassification classification) {
+  return classification == OEP::NTP_COMPOSEBOX ||
+         classification == OEP::LENS_SIDE_PANEL_COMPOSEBOX ||
+         classification == OEP::CO_BROWSING_COMPOSEBOX ||
+         IsOmniboxComposebox(classification);
+}
+
+bool IsNTPRealbox(OEP::PageClassification classification) {
+  return classification == OEP::NTP_REALBOX;
 }
 
 }  // namespace omnibox

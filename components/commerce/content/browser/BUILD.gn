@@ -18,9 +18,11 @@ static_library("browser") {
     "//base",
     "//components/commerce/core:shopping_service",
     "//components/commerce/core/mojom:mojo_bindings",
+    "//components/history/core/browser:features",
     "//components/resources:components_resources_grit",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//net",
     "//ui/webui",
   ]
 
@@ -39,6 +41,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/commerce/core:shopping_service_test_support",
     "//components/commerce/core/mojom:mojo_bindings",
+    "//components/history/core/browser:features",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gtest",

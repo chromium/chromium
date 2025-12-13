@@ -1579,15 +1579,6 @@ void GL_APIENTRY GLES2BindFragDataLocationEXT(GLuint program,
 GLint GL_APIENTRY GLES2GetFragDataIndexEXT(GLuint program, const char* name) {
   return gles2::GetGLContext()->GetFragDataIndexEXT(program, name);
 }
-void GL_APIENTRY GLES2InitializeDiscardableTextureCHROMIUM(GLuint texture_id) {
-  gles2::GetGLContext()->InitializeDiscardableTextureCHROMIUM(texture_id);
-}
-void GL_APIENTRY GLES2UnlockDiscardableTextureCHROMIUM(GLuint texture_id) {
-  gles2::GetGLContext()->UnlockDiscardableTextureCHROMIUM(texture_id);
-}
-bool GL_APIENTRY GLES2LockDiscardableTextureCHROMIUM(GLuint texture_id) {
-  return gles2::GetGLContext()->LockDiscardableTextureCHROMIUM(texture_id);
-}
 void GL_APIENTRY GLES2WindowRectanglesEXT(GLenum mode,
                                           GLsizei count,
                                           const GLint* box) {
@@ -3062,21 +3053,6 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glGetFragDataIndexEXT",
         reinterpret_cast<GLES2FunctionPointer>(glGetFragDataIndexEXT),
-    },
-    {
-        "glInitializeDiscardableTextureCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glInitializeDiscardableTextureCHROMIUM),
-    },
-    {
-        "glUnlockDiscardableTextureCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glUnlockDiscardableTextureCHROMIUM),
-    },
-    {
-        "glLockDiscardableTextureCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glLockDiscardableTextureCHROMIUM),
     },
     {
         "glWindowRectanglesEXT",

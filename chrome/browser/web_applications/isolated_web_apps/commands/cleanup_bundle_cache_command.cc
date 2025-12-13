@@ -15,12 +15,16 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/error/uma_logging.h"
 
 namespace web_app {
 
 namespace {
 
 using SessionType = IwaCacheClient::SessionType;
+
+constexpr char kCleanupBundleCacheMetric[] =
+    "WebApp.Isolated.CleanupBundleCache";
 
 // This function is blocking, should be called only by
 // `CleanupBundleCacheCommand::StartWithLock`.
@@ -64,6 +68,13 @@ CleanupBundleCacheResult CleanupBundleCacheCommandImpl(
       failed_to_cleaned_up_directories});
 }
 
+CleanupBundleCacheResult RecordMetric(CleanupBundleCacheResult result) {
+  web_app::UmaLogExpectedStatus(
+      kCleanupBundleCacheMetric,
+      result.transform_error(&CleanupBundleCacheError::type));
+  return result;
+}
+
 }  // namespace
 
 std::string CleanupBundleCacheSuccess::ToString() const {
@@ -93,7 +104,7 @@ CleanupBundleCacheCommand::CleanupBundleCacheCommand(
     : WebAppCommand<AllAppsLock, CleanupBundleCacheResult>(
           "CleanupBundleCacheCommand",
           AllAppsLockDescription(),
-          std::move(callback),
+          base::BindOnce(&RecordMetric).Then(std::move(callback)),
           /*args_for_shutdown=*/
           base::unexpected(CleanupBundleCacheError{
               CleanupBundleCacheError::Type::kSystemShutdown})),

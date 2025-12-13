@@ -211,7 +211,9 @@ TEST_P(ConnectorsServiceReportingFeatureTest,
   chromeos::FakeManagedGuestSession fake_mgs;
 
   if (pref_value()) {
-    profile_->GetPrefs()->Set(pref(), *base::JSONReader::Read(pref_value()));
+    profile_->GetPrefs()->Set(
+        pref(), *base::JSONReader::Read(pref_value(),
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     profile_->GetPrefs()->SetInteger(scope_pref(),
                                      policy::POLICY_SCOPE_MACHINE);
   }
@@ -229,7 +231,9 @@ TEST_P(ConnectorsServiceReportingFeatureTest,
 TEST_P(ConnectorsServiceReportingFeatureTest,
        ChromeOsManagedGuestSessionFlagNotSetInUserSession) {
   if (pref_value()) {
-    profile_->GetPrefs()->Set(pref(), *base::JSONReader::Read(pref_value()));
+    profile_->GetPrefs()->Set(
+        pref(), *base::JSONReader::Read(pref_value(),
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     profile_->GetPrefs()->SetInteger(scope_pref(),
                                      policy::POLICY_SCOPE_MACHINE);
   }
@@ -248,17 +252,18 @@ TEST_P(ConnectorsServiceReportingFeatureTest,
 TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
   ConnectorsService* connectors_service =
       ConnectorsServiceFactory::GetForBrowserContext(profile_);
-  ConnectorsManager* connectors_manager =
-      connectors_service->ConnectorsManagerForTesting();
+  ConnectorsManagerBase* connectors_manager_base =
+      connectors_service->ConnectorsManagerBaseForTesting();
 
   base::test::TestFuture<void> future;
   connectors_service->ObserveTelemetryReporting(future.GetRepeatingCallback());
 
-  ASSERT_FALSE(
-      connectors_manager->GetTelemetryObserverCallbackForTesting().is_null());
+  ASSERT_FALSE(connectors_manager_base->GetTelemetryObserverCallbackForTesting()
+                   .is_null());
   // Cache initially empty
   ASSERT_TRUE(
-      connectors_manager->GetReportingConnectorsSettingsForTesting().empty());
+      connectors_manager_base->GetReportingConnectorsSettingsForTesting()
+          .empty());
 
   // Enable browser crash event
   test::SetOnSecurityEventReporting(pref_service(), true, {kBrowserCrashEvent},
@@ -268,7 +273,8 @@ TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
   // Clear enabled events (not cached when cleared)
   test::SetOnSecurityEventReporting(pref_service(), false, {}, {});
   ASSERT_TRUE(
-      connectors_manager->GetReportingConnectorsSettingsForTesting().empty());
+      connectors_manager_base->GetReportingConnectorsSettingsForTesting()
+          .empty());
   EXPECT_TRUE(future.WaitAndClear());
 
   // Enable telemetry event
@@ -331,7 +337,8 @@ class ConnectorsServiceExemptURLsTest
   void SetUp() override {
     profile_->GetPrefs()->Set(
         AnalysisConnectorPref(connector()),
-        *base::JSONReader::Read(kWildcardAnalysisSettingsPref));
+        *base::JSONReader::Read(kWildcardAnalysisSettingsPref,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     profile_->GetPrefs()->SetInteger(AnalysisConnectorScopePref(connector()),
                                      policy::POLICY_SCOPE_MACHINE);
   }
@@ -362,6 +369,21 @@ TEST_P(ConnectorsServiceExemptURLsTest, ThirdPartyExtensions) {
   }
 }
 
+TEST_P(ConnectorsServiceExemptURLsTest, DevTools) {
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
+
+  for (const char* url :
+       {"devtools://fake_id", "devtools://fake_id/background",
+        "devtools://devtools/main.html",
+        "devtools://devtools/bundled/main.html?param=value"}) {
+    ASSERT_TRUE(GURL(url).is_valid());
+    auto settings = service->GetAnalysisSettings(GURL(url), connector());
+    ASSERT_NE(settings.has_value(),
+              connector() == AnalysisConnector::BULK_DATA_ENTRY ||
+                  connector() == AnalysisConnector::FILE_ATTACHED);
+  }
+}
+
 TEST_P(ConnectorsServiceExemptURLsTest, BlobAndFilesystem) {
   auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
 
@@ -379,15 +401,17 @@ TEST_P(ConnectorsServiceExemptURLsTest, BlobAndFilesystem) {
 
   // Test against a specific pattern policy to validate the correct inner URL is
   // used.
-  profile_->GetPrefs()->Set(AnalysisConnectorPref(connector()),
-                            *base::JSONReader::Read(R"([
+  profile_->GetPrefs()->Set(
+      AnalysisConnectorPref(connector()),
+      *base::JSONReader::Read(R"([
         {
           "service_provider": "google",
           "enable": [
             {"url_list": ["foo.com"], "tags": ["dlp", "malware"]}
           ]
         }
-      ])"));
+      ])",
+                              base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   for (const char* url_string :
        {"blob:https://foo.com", "blob:ftp://foo.com/with/path",

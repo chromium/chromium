@@ -14,9 +14,6 @@
 // Did accept the BWG Promo.
 - (void)didAcceptPromo;
 
-// Informs the delegate that `BWGPromoViewController` was dismissed.
-- (void)promoViewControllerWasDismissed;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_PROMO_VIEW_CONTROLLER_DELEGATE_H_

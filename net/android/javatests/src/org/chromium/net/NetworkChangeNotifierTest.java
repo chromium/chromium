@@ -369,7 +369,7 @@ public class NetworkChangeNotifierTest {
 
     // Types of network changes. Each is associated with a NetworkChangeNotifierAutoDetect.Observer
     // callback, and NONE is provided to indicate no callback observed.
-    private static enum ChangeType {
+    private enum ChangeType {
         NONE,
         CONNECT,
         SOON_TO_DISCONNECT,
@@ -459,7 +459,7 @@ public class NetworkChangeNotifierTest {
     private MockConnectivityManagerDelegate mConnectivityDelegate;
     private MockWifiManagerDelegate mWifiDelegate;
 
-    private static enum WatchForChanges {
+    private enum WatchForChanges {
         ALWAYS,
         ONLY_WHEN_APP_IN_FOREGROUND,
     }
@@ -872,24 +872,22 @@ public class NetworkChangeNotifierTest {
             delegate.getNetworkState(
                     new WifiManagerDelegate(InstrumentationRegistry.getTargetContext()));
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // getConnectionType(Network) doesn't crash upon invalid Network argument.
-            Network invalidNetwork = Helper.netIdToNetwork(NetId.INVALID);
-            Assert.assertEquals(
-                    ConnectionType.CONNECTION_NONE, delegate.getConnectionType(invalidNetwork));
+        // getConnectionType(Network) doesn't crash upon invalid Network argument.
+        Network invalidNetwork = Helper.netIdToNetwork(NetId.INVALID);
+        Assert.assertEquals(
+                ConnectionType.CONNECTION_NONE, delegate.getConnectionType(invalidNetwork));
 
-            Network[] networks = delegate.getAllNetworksUnfiltered();
-            Assert.assertNotNull(networks);
-            if (networks.length >= 1) {
-                delegate.getConnectionType(networks[0]);
-            }
-            delegate.getDefaultNetwork();
-            NetworkCallback networkCallback = new NetworkCallback();
-            NetworkRequest networkRequest = new NetworkRequest.Builder().build();
-            delegate.registerNetworkCallback(
-                    networkRequest, networkCallback, new Handler(Looper.myLooper()));
-            delegate.unregisterNetworkCallback(networkCallback);
+        Network[] networks = delegate.getAllNetworksUnfiltered();
+        Assert.assertNotNull(networks);
+        if (networks.length >= 1) {
+            delegate.getConnectionType(networks[0]);
         }
+        delegate.getDefaultNetwork();
+        NetworkCallback networkCallback = new NetworkCallback();
+        NetworkRequest networkRequest = new NetworkRequest.Builder().build();
+        delegate.registerNetworkCallback(
+                networkRequest, networkCallback, new Handler(Looper.myLooper()));
+        delegate.unregisterNetworkCallback(networkCallback);
     }
 
     /**
@@ -927,12 +925,6 @@ public class NetworkChangeNotifierTest {
         NetworkChangeNotifierAutoDetect ncn =
                 new NetworkChangeNotifierAutoDetect(
                         observer, new RegistrationPolicyApplicationStatus());
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            Assert.assertEquals(0, ncn.getNetworksAndTypes().length);
-            Assert.assertEquals(NetId.INVALID, ncn.getDefaultNetId());
-            return;
-        }
 
         // Insert a mocked dummy implementation for the ConnectivityDelegate.
         ncn.setConnectivityManagerDelegateForTests(
@@ -982,7 +974,6 @@ public class NetworkChangeNotifierTest {
     @Test
     @MediumTest
     @Feature({"Android-AppBase"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
     public void testNetworkCallbacks() throws Exception {
         // Setup NetworkChangeNotifierAutoDetect
         final TestNetworkChangeNotifierAutoDetectObserver observer =

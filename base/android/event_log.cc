@@ -16,3 +16,5 @@ void EventLogWriteInt(int tag, int value) {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(EventLog)

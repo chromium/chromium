@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/synchronization/waitable_event.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/memory/stack_allocated.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -229,18 +225,16 @@ cmp_fst_addr(const std::pair<WaitableEvent*, unsigned>& a,
 
 // static
 // NO_THREAD_SAFETY_ANALYSIS: Complex control flow.
-size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
-                                   size_t count) NO_THREAD_SAFETY_ANALYSIS {
+size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> raw_waitables)
+    NO_THREAD_SAFETY_ANALYSIS {
   // We need to acquire the locks in a globally consistent order. Thus we sort
   // the array of waitables by address. We actually sort a pairs so that we can
   // map back to the original index values later.
   std::vector<std::pair<WaitableEvent*, size_t>> waitables;
-  waitables.reserve(count);
-  for (size_t i = 0; i < count; ++i) {
+  waitables.reserve(raw_waitables.size());
+  for (size_t i = 0; i < raw_waitables.size(); ++i) {
     waitables.emplace_back(raw_waitables[i], i);
   }
-
-  DCHECK_EQ(count, waitables.size());
 
   std::ranges::sort(waitables, cmp_fst_addr);
 
@@ -253,8 +247,8 @@ size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
 
   SyncWaiter sw;
 
-  const size_t r = EnqueueMany(&waitables[0], count, &sw);
-  if (r < count) {
+  const size_t r = EnqueueMany(waitables, &sw);
+  if (r < waitables.size()) {
     // One of the events is already signaled. The SyncWaiter has not been
     // enqueued anywhere.
     return waitables[r].second;
@@ -264,8 +258,8 @@ size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
   // enqueued our waiter in them all.
   sw.lock()->Acquire();
   // Release the WaitableEvent locks in the reverse order
-  for (size_t i = 0; i < count; ++i) {
-    waitables[count - (1 + i)].first->kernel_->lock_.Release();
+  for (size_t i = 0; i < waitables.size(); ++i) {
+    waitables[waitables.size() - (1 + i)].first->kernel_->lock_.Release();
   }
 
   for (;;) {
@@ -284,7 +278,7 @@ size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
 
   // Take the locks of each WaitableEvent in turn (except the signaled one) and
   // remove our SyncWaiter from the wait-list
-  for (size_t i = 0; i < count; ++i) {
+  for (size_t i = 0; i < waitables.size(); ++i) {
     if (raw_waitables[i] != signaled_event) {
       raw_waitables[i]->kernel_->lock_.Acquire();
       // There's no possible ABA issue with the address of the SyncWaiter here
@@ -317,12 +311,11 @@ size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
 // -----------------------------------------------------------------------------
 // static
 // NO_THREAD_SAFETY_ANALYSIS: Complex control flow.
-size_t WaitableEvent::EnqueueMany(std::pair<WaitableEvent*, size_t>* waitables,
-                                  size_t count,
+size_t WaitableEvent::EnqueueMany(base::span<WaiterAndIndex> waitables,
                                   Waiter* waiter) NO_THREAD_SAFETY_ANALYSIS {
-  size_t winner = count;
-  size_t winner_index = count;
-  for (size_t i = 0; i < count; ++i) {
+  size_t winner = waitables.size();
+  size_t winner_index = waitables.size();
+  for (size_t i = 0; i < waitables.size(); ++i) {
     auto& kernel = waitables[i].first->kernel_;
     kernel->lock_.Acquire();
     if (kernel->signaled_ && waitables[i].second < winner) {
@@ -333,18 +326,18 @@ size_t WaitableEvent::EnqueueMany(std::pair<WaitableEvent*, size_t>* waitables,
 
   // No events signaled. All locks acquired. Enqueue the Waiter on all of them
   // and return.
-  if (winner == count) {
-    for (size_t i = 0; i < count; ++i) {
-      waitables[i].first->Enqueue(waiter);
+  if (winner == waitables.size()) {
+    for (auto& w : waitables) {
+      w.first->Enqueue(waiter);
     }
-    return count;
+    return waitables.size();
   }
 
   // Unlock in reverse order and possibly clear the chosen winner's signal
   // before returning its index.
-  for (auto* w = waitables + count - 1; w >= waitables; --w) {
-    auto& kernel = w->first->kernel_;
-    if (w->second == winner) {
+  for (auto& w : base::Reversed(waitables)) {
+    auto& kernel = w.first->kernel_;
+    if (w.second == winner) {
       if (!kernel->manual_reset_) {
         kernel->signaled_ = false;
       }

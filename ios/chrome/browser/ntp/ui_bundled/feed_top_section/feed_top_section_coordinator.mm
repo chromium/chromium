@@ -70,9 +70,7 @@ using base::UserMetricsAction;
 
 @end
 
-@implementation FeedTopSectionCoordinator {
-  SigninCoordinator* _signinCoordinator;
-}
+@implementation FeedTopSectionCoordinator
 
 // Synthesized from ChromeCoordinator.
 @synthesize viewController = _viewController;
@@ -102,7 +100,7 @@ using base::UserMetricsAction;
   self.isSignInPromoEnabled =
       ShouldShowTopOfFeedSyncPromo() && authenticationService &&
       [self.NTPDelegate isSignInAllowed] &&
-      !authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+      !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 
   // If the user is signed out and signin is allowed, then start the top-of-feed
   // signin promo components.
@@ -155,7 +153,6 @@ using base::UserMetricsAction;
   self.signinPromoMediator = nil;
   self.feedTopSectionMediator = nil;
   self.feedTopSectionViewController = nil;
-  [self stopSigninCoordinator];
 }
 
 #pragma mark - Public
@@ -184,28 +181,13 @@ using base::UserMetricsAction;
 
 - (void)showSignin:(SigninPromoViewMediator*)mediator
            command:(ShowSigninCommand*)command {
-  CHECK_EQ(self.signinPromoMediator, mediator);
-  if (_signinCoordinator) {
-    // This can occur in case of double tap.
-    return;
-  }
   __weak __typeof(self) weakSelf = self;
-  [command addSigninCompletion:^(SigninCoordinatorResult result,
+  [command addSigninCompletion:^(SigninCoordinator* coordinator,
+                                 SigninCoordinatorResult result,
                                  id<SystemIdentity>) {
-    [weakSelf signinDidCompleteWithResult:result];
+    [weakSelf.signinPromoMediator signinDidCompleteWithResult:result];
   }];
-  _signinCoordinator =
-      [SigninCoordinator signinCoordinatorWithCommand:command
-                                              browser:self.browser
-                                   baseViewController:self.baseViewController];
-  [_signinCoordinator start];
-}
-
-#pragma mark - SigninPromoViewMediatorDelegate Helper
-
-- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result {
-  [self.signinPromoMediator signinDidCompleteWithResult:result];
-  [self stopSigninCoordinator];
+  [self.NTPDelegate showSigninWithCommand:command];
 }
 
 #pragma mark - Setters
@@ -286,14 +268,6 @@ using base::UserMetricsAction;
 
 - (void)logHistogramForEvent:(ContentNotificationTopOfFeedPromoEvent)event {
   UmaHistogramEnumeration("ContentNotifications.Promo.TopOfFeed.Event", event);
-}
-
-#pragma mark - Private
-
-// Stops the signin coordinator.
-- (void)stopSigninCoordinator {
-  [_signinCoordinator stop];
-  _signinCoordinator = nil;
 }
 
 @end

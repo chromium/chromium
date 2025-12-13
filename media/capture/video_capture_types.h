@@ -247,9 +247,13 @@ enum class VideoCaptureFrameDropReason {
   kRendererSinkFrameDelivererIsNotStarted = 26,
   kCropVersionNotCurrent_DEPRECATED = 27,
   kGpuMemoryBufferMapFailed = 28,
-  kSubCaptureTargetVersionNotCurrent = 29,
+  kSubCaptureTargetVersionNotCurrent_DEPRECATED = 29,
   kPostProcessingFailed = 30,
-  kMaxValue = kPostProcessingFailed
+  kResolutionAdapterFrameIsNotMappable = 31,
+  kResolutionAdapterCannotCreateConvertFrame = 32,
+  kResolutionAdapterConvertAndScaleFailed = 33,
+  kOldCaptureVersion = 34,
+  kMaxValue = kOldCaptureVersion
 };
 
 // Assert that the int:frequency mapping is correct.
@@ -332,7 +336,8 @@ struct CAPTURE_EXPORT VideoCaptureParams {
     return requested_format == other.requested_format &&
            resolution_change_policy == other.resolution_change_policy &&
            power_line_frequency == other.power_line_frequency &&
-           is_high_dpi_enabled == other.is_high_dpi_enabled;
+           is_high_dpi_enabled == other.is_high_dpi_enabled &&
+           capture_version_source == other.capture_version_source;
   }
 
   // Requests a resolution and format at which the capture will occur.
@@ -355,6 +360,11 @@ struct CAPTURE_EXPORT VideoCaptureParams {
   // Flag indicating whether HiDPI mode should be enabled for tab capture
   // sessions.
   bool is_high_dpi_enabled = true;
+
+  // Starts at 0 when the capture starts, and is incremented whenever the target
+  // of the capture is dynamically changed, as for example when using
+  // share-this-tab-instead.
+  uint32_t capture_version_source = 0;
 };
 
 CAPTURE_EXPORT std::ostream& operator<<(

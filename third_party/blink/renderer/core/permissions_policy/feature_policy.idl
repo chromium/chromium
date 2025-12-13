@@ -8,7 +8,7 @@
   ImplementedAs=DOMFeaturePolicy
 ] interface FeaturePolicy {
   [MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] boolean allowsFeature(DOMString feature, optional DOMString origin);
-  [HighEntropy=Direct, MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] sequence<DOMString> features();
+  [MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] sequence<DOMString> features();
   [MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] sequence<DOMString> allowedFeatures();
   [MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] sequence<DOMString> getAllowlistForFeature(DOMString feature);
 };

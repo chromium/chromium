@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
@@ -111,7 +110,6 @@ class VotesUploader : public AutofillDriverFactory::Observer {
                           base::TimeTicks initial_interaction_timestamp,
                           base::TimeTicks submission_timestamp,
                           bool observed_submission,
-                          const std::u16string& last_unlocked_credit_card_cvc,
                           ukm::SourceId ukm_source_id);
 
  private:
@@ -125,7 +123,6 @@ class VotesUploader : public AutofillDriverFactory::Observer {
       base::TimeTicks initial_interaction_timestamp,
       base::TimeTicks submission_timestamp,
       bool observed_submission,
-      const std::u16string& last_unlocked_credit_card_cvc,
       ukm::SourceId ukm_source_id,
       std::pair<std::unique_ptr<FormStructure>,
                 std::vector<AutofillUploadContents>> form_and_upload_contents);

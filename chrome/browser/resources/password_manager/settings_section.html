@@ -1,26 +1,31 @@
 <style include="shared-style cr-shared-style cr-spinner-style">
-  #blockedSitesTitle {
+  #blockedSitesTitle, #actorLoginPermissionsTitle {
     margin-top: 28px;
   }
 
-  .blocked-site-content {
+  .site-content {
     border-top: var(--cr-separator-line);
     flex: 1;
     min-height: var(--section-min-height);
   }
 
-  .blocked-site-content[first] {
+  .site-content[first] {
     border-top: none;
   }
 
   .favicon,
-  #blockedSitesHeader {
+  #blockedSitesHeader,
+  #actorLoginPermissionsHeader {
     margin-inline-end: 20px;
     margin-inline-start: 20px;
   }
 
-  .site-url {
+  .flex-spacer {
     flex: 1;
+  }
+
+  .site-username {
+    margin-inline-start: 8px;
   }
 
   cr-icon-button {
@@ -174,6 +179,41 @@
       is-syncing-passwords="[[isSyncingPasswords]]">
   </full-data-reset>
 </div>
+<template is="dom-if" if="[[shouldShowActorLoginPermissions_]]" restamp>
+  <h3 id="actorLoginPermissionsTitle"
+      class="page-title">$i18n{actorLoginPermissionsTitle}</h3>
+  <div class="card" id="actorLoginPermissions">
+    <div class="flex-centered single-line-label">
+      <div id="actorLoginPermissionsHeader" class="cr-secondary-text label">
+        $i18n{actorLoginPermissionsDescription}
+      </div>
+    </div>
+    <div id="actorLoginPermissionsList" class="hr">
+      <template is="dom-repeat" items="[[actorLoginPermissions_]]">
+        <div class="flex-centered">
+          <site-favicon class="favicon" domain="[[item.domainInfo.url.url]]"
+              url="[[item.faviconUrl.url]]">
+          </site-favicon>
+          <div class="site-content flex-centered"
+              first$="[[!index]]">
+            <div class="label">[[item.domainInfo.humanReadableName]]</div>
+            <div class="label site-username cr-secondary-text">
+              [[item.username]]
+            </div>
+            <div class="flex-spacer"></div>
+            <cr-icon-button class="icon-clear"
+                id="removeActorLoginPermissionValueButton"
+                on-click="onRemoveActorLoginPermissionClick_"
+                title="$i18n{deletePassword}"
+                aria-label="[[i18n('removeBlockedAriaDescription',
+                    item.domainInfo.humanReadableName)]]">
+            </cr-icon-button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</template>
 <div hidden="[[!blockedSites_.length]]">
   <h3 id="blockedSitesTitle" class="page-title">$i18n{blockedSitesTitle}</h3>
   <div class="card" id="blockedSites">
@@ -187,8 +227,9 @@
         <div class="flex-centered">
           <site-favicon class="favicon" domain="[[item.urls.link]]">
           </site-favicon>
-          <div class="blocked-site-content flex-centered" first$="[[!index]]">
-            <div class="label site-url">[[item.urls.shown]]</div>
+          <div class="site-content flex-centered" first$="[[!index]]">
+            <div class="label">[[item.urls.shown]]</div>
+            <div class="flex-spacer"></div>
             <cr-icon-button class="icon-clear" id="removeBlockedValueButton"
                 on-click="onRemoveBlockedSiteClick_"
                 title="$i18n{deletePassword}"
@@ -205,6 +246,14 @@
       on-close="onCloseDisconnectCloudAuthenticatorDialog_"
       on-disconnect-cloud-authenticator="onDisconnectCloudAuthenticator_">
   </disconnect-cloud-authenticator-dialog>
+</template>
+<template is="dom-if" if="[[removeActorLoginPermissionSite_]]" restamp>
+  <remove-actor-login-permission-dialog
+      id="removeActorLoginPermissionDialog"
+      origin="[[removeActorLoginPermissionSite_.domain_info.humanReadableName]]"
+      on-close="onCloseRemoveActorLoginPermissionDialog_"
+      on-remove-actor-login-permission-click="onRemoveActorLoginPermission_">
+  </remove-actor-login-permission-dialog>
 </template>
 <cr-toast id="toast" duration="5000">
   <span id="toast-message">[[toastMessage_]]</span>

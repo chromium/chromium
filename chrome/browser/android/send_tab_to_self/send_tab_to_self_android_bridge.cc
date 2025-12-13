@@ -27,7 +27,6 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -63,9 +62,9 @@ JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(JNIEnv* env,
 static jboolean JNI_SendTabToSelfAndroidBridge_AddEntry(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jstring>& j_title,
-    const JavaParamRef<jstring>& j_target_device_sync_cache_guid) {
+    const JavaRef<jstring>& j_url,
+    const JavaRef<jstring>& j_title,
+    const JavaRef<jstring>& j_target_device_sync_cache_guid) {
   const std::string url = ConvertJavaStringToUTF8(env, j_url);
   const std::string title = ConvertJavaStringToUTF8(env, j_title);
   const std::string target_device_sync_cache_guid =
@@ -82,7 +81,7 @@ static jboolean JNI_SendTabToSelfAndroidBridge_AddEntry(
 static void JNI_SendTabToSelfAndroidBridge_DeleteEntry(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jstring>& j_guid) {
+    const JavaRef<jstring>& j_guid) {
   SendTabToSelfModel* model =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
@@ -96,7 +95,7 @@ static void JNI_SendTabToSelfAndroidBridge_DeleteEntry(
 static void JNI_SendTabToSelfAndroidBridge_DismissEntry(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jstring>& j_guid) {
+    const JavaRef<jstring>& j_guid) {
   SendTabToSelfModel* model =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
@@ -108,7 +107,7 @@ static void JNI_SendTabToSelfAndroidBridge_DismissEntry(
 
 static void JNI_SendTabToSelfAndroidBridge_UpdateActiveWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_web_contents) {
+    const JavaRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   Profile* profile =
@@ -125,7 +124,7 @@ static ScopedJavaLocalRef<jobject>
 JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jstring>& j_url_to_share) {
+    const JavaRef<jstring>& j_url_to_share) {
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile);
   std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
@@ -141,13 +140,10 @@ JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(
   // TODO(crbug.com/40772220): Having an empty optional/null to represent the
   // hidden entry point doesn't seem worth it after all. Make that just another
   // value in the enum, sparing the complexity here.
-  ScopedJavaLocalRef<jclass> integer_class =
-      base::android::GetClass(env, "java/lang/Integer");
-  jmethodID constructor =
-      base::android::MethodID::Get<base::android::MethodID::TYPE_INSTANCE>(
-          env, integer_class.obj(), "<init>", "(I)V");
-  return ScopedJavaLocalRef<jobject>(
-      env, env->NewObject(integer_class.obj(), constructor, *reason));
+  return jni_zero::ToJavaInteger(env, static_cast<int32_t>(*reason));
 }
 
 }  // namespace send_tab_to_self
+
+DEFINE_JNI(SendTabToSelfAndroidBridge)
+DEFINE_JNI(TargetDeviceInfo)

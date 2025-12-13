@@ -4,8 +4,13 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_detail_view.h"
 
+#import <optional>
+
+#import "base/check.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_detail_view_configuration.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_view_configuration.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -29,16 +34,6 @@ constexpr CGFloat kIconContainerCornerRadius = 12;
 constexpr CGFloat kCheckmarkSize = 19;
 constexpr CGFloat kCheckmarkTopOffset = -6;
 constexpr CGFloat kCheckmarkTrailingOffset = 6;
-
-// Constants related to icon sizing.
-constexpr CGFloat kIconSize = 22;
-
-// Constants related to Badge Icon sizing.
-constexpr CGFloat kBadgeIconSize = 14;
-
-// Constants related to Badge Icon container sizing and positioning.
-constexpr CGFloat kBadgeIconCircleContainerRadius = 10;
-constexpr CGFloat kBadgeIconSquareContainerRadius = 4;
 
 // Constants related to background image.
 
@@ -94,24 +89,26 @@ UIImageView* CheckmarkIcon() {
 // The `has_background_image` argument indicates whether the icon is displayed
 // with a background image. This information is used to adjust the size of the
 // badge icon.
-UIImageView* BadgeIcon(NSString* badge_symbol_name,
-                       BOOL default_symbol,
-                       NSArray<UIColor*>* color_palette,
-                       CGFloat container_size,
-                       BOOL has_background_image) {
+UIImageView* BadgeIcon(
+    const IconDetailViewConfiguration* icon_detail_view_configuration) {
+  CHECK(icon_detail_view_configuration);
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
       configurationWithWeight:UIImageSymbolWeightMedium];
 
-  UIImageSymbolConfiguration* color_config =
-      [UIImageSymbolConfiguration configurationWithPaletteColors:color_palette];
+  UIImageSymbolConfiguration* color_config = [UIImageSymbolConfiguration
+      configurationWithPaletteColors:icon_detail_view_configuration
+                                         .badgeColorPalette];
 
   config = [config configurationByApplyingConfiguration:color_config];
 
   UIImage* image =
-      default_symbol ? DefaultSymbolWithConfiguration(badge_symbol_name, config)
-                     : CustomSymbolWithConfiguration(badge_symbol_name, config);
+      icon_detail_view_configuration.badgeUsesDefaultSymbol
+          ? DefaultSymbolWithConfiguration(
+                icon_detail_view_configuration.badgeSymbolName, config)
+          : CustomSymbolWithConfiguration(
+                icon_detail_view_configuration.badgeSymbolName, config);
 
-  if (!color_palette) {
+  if (!icon_detail_view_configuration.badgeColorPalette) {
     image = MakeSymbolMulticolor(image);
   }
 
@@ -120,7 +117,9 @@ UIImageView* BadgeIcon(NSString* badge_symbol_name,
   badge_icon.translatesAutoresizingMaskIntoConstraints = NO;
 
   // Calculate badge size based on container size and background image presence.
-  CGFloat badge_size = container_size / (has_background_image ? 1.15 : 1.5);
+  CGFloat badge_size =
+      icon_detail_view_configuration.badgeShapeConfig.size /
+      (icon_detail_view_configuration.backgroundImage ? 1.15 : 1.5);
 
   [NSLayoutConstraint activateConstraints:@[
     [badge_icon.widthAnchor constraintEqualToConstant:badge_size],
@@ -236,233 +235,20 @@ UIView* BadgeIconInContainer(UIImageView* icon,
 }  // namespace
 
 @implementation IconDetailView {
-  // The title to be displayed in the view.
-  NSString* _title;
-
-  // The descriptive text to be displayed in the view.
-  NSString* _description;
-
-  // The item layout type. This determines the spacing of elements within the
-  // view.
-  IconDetailViewLayoutType _layoutType;
-
-  // The image used to create the background image for the icon. If valid, this
-  // will be used instead of the symbol image.
-  UIImage* _backgroundImage;
-
-  // The symbol to be displayed in the view.
-  NSString* _symbolName;
-
-  // The color palette of the symbol displayed in the view.
-  NSArray<UIColor*>* _symbolColorPalette;
-
-  // The background color of the symbol displayed in the view.
-  UIColor* _symbolBackgroundColor;
-
-  // The width of the symbol.
-  CGFloat _symbolWidth;
-
-  // Indicates whether the symbol is a default symbol.
-  BOOL _usesDefaultSymbol;
-
-  // Whether or not the icon should be displayed with a green checkmark to
-  // indicate a completed state.
-  BOOL _showCheckmark;
-
-  // The symbol name of the Badge Icon to be displayed in the view.
-  NSString* _badgeSymbolName;
-
-  // The color palette of the badge symbol displayed in the view.
-  NSArray<UIColor*>* _badgeColorPalette;
-
-  // The shape configuration of the badge displayed on the icon.
-  BadgeShapeConfig _badgeShapeConfig;
-
-  // The background color of the Badge Icon to be displayed in the view.
-  UIColor* _badgeBackgroundColor;
-
-  // Indicates whether the Badge's Icon is a default symbol.
-  BOOL _badgeUsesDefaultSymbol;
-
+  // Configuration for this view.
+  IconDetailViewConfiguration* _configuration;
   // UI tap gesture recognizer. This recognizer detects taps on the view
   // and triggers the appropriate action.
   UITapGestureRecognizer* _tapGestureRecognizer;
-
-  // The accessibility identifier for the view
-  NSString* _accessibilityIdentifier;
 }
 
-- (instancetype)initWithTitle:(NSString*)title
-                  description:(NSString*)description
-                   layoutType:(IconDetailViewLayoutType)layoutType
-              backgroundImage:(UIImage*)backgroundImage
-                   symbolName:(NSString*)symbolName
-           symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
-        symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-            usesDefaultSymbol:(BOOL)usesDefaultSymbol
-                  symbolWidth:(CGFloat)symbolWidth
-                showCheckmark:(BOOL)showCheckmark
-              badgeSymbolName:(NSString*)badgeSymbolName
-            badgeColorPalette:(NSArray<UIColor*>*)badgeColorPalette
-             badgeShapeConfig:(BadgeShapeConfig)badgeShapeConfig
-         badgeBackgroundColor:(UIColor*)badgeBackgroundColor
-       badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
-      accessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  if ((self = [super init])) {
-    _title = title;
-    _description = description;
-    _layoutType = layoutType;
-    _backgroundImage = backgroundImage;
-    _symbolName = symbolName;
-    _symbolColorPalette = symbolColorPalette;
-    _symbolBackgroundColor = symbolBackgroundColor;
-    _usesDefaultSymbol = usesDefaultSymbol;
-    _symbolWidth = symbolWidth;
-    _showCheckmark = showCheckmark;
-    _badgeSymbolName = badgeSymbolName;
-    _badgeColorPalette = badgeColorPalette;
-    _badgeShapeConfig = badgeShapeConfig;
-    _badgeBackgroundColor = badgeBackgroundColor;
-    _badgeUsesDefaultSymbol = badgeUsesDefaultSymbol;
-    _accessibilityIdentifier = accessibilityIdentifier;
+- (instancetype)initWithConfiguration:
+    (IconDetailViewConfiguration*)configuration {
+  if ((self = [super initWithFrame:CGRectZero])) {
+    CHECK(configuration);
+    _configuration = [configuration copy];
   }
-
   return self;
-}
-
-- (instancetype)initWithTitle:(NSString*)title
-                  description:(NSString*)description
-                   layoutType:(IconDetailViewLayoutType)layoutType
-              backgroundImage:(UIImage*)backgroundImage
-                   symbolName:(NSString*)symbolName
-           symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
-        symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-            usesDefaultSymbol:(BOOL)usesDefaultSymbol
-                showCheckmark:(BOOL)showCheckmark
-              badgeSymbolName:(NSString*)badgeSymbolName
-            badgeColorPalette:(NSArray<UIColor*>*)badgeColorPalette
-                   badgeShape:(IconDetailViewBadgeShape)badgeShape
-         badgeBackgroundColor:(UIColor*)badgeBackgroundColor
-       badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
-      accessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  CGFloat cornerRadius = (badgeShape == IconDetailViewBadgeShape::kCircle)
-                             ? kBadgeIconCircleContainerRadius
-                             : kBadgeIconSquareContainerRadius;
-
-  BadgeShapeConfig badgeShapeConfig = {badgeShape,   kBadgeIconSize,
-                                       cornerRadius, cornerRadius,
-                                       cornerRadius, cornerRadius};
-
-  return [self initWithTitle:title
-                  description:description
-                   layoutType:layoutType
-              backgroundImage:backgroundImage
-                   symbolName:symbolName
-           symbolColorPalette:symbolColorPalette
-        symbolBackgroundColor:symbolBackgroundColor
-            usesDefaultSymbol:usesDefaultSymbol
-                  symbolWidth:kIconSize
-                showCheckmark:showCheckmark
-              badgeSymbolName:badgeSymbolName
-            badgeColorPalette:badgeColorPalette
-             badgeShapeConfig:badgeShapeConfig
-         badgeBackgroundColor:badgeBackgroundColor
-       badgeUsesDefaultSymbol:badgeUsesDefaultSymbol
-      accessibilityIdentifier:accessibilityIdentifier];
-}
-
-- (instancetype)initWithTitle:(NSString*)title
-                  description:(NSString*)description
-                   layoutType:(IconDetailViewLayoutType)layoutType
-              backgroundImage:(UIImage*)backgroundImage
-                   symbolName:(NSString*)symbolName
-           symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
-        symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-            usesDefaultSymbol:(BOOL)usesDefaultSymbol
-                showCheckmark:(BOOL)showCheckmark
-      accessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  BadgeShapeConfig badgeShapeConfig = {
-      IconDetailViewBadgeShape::kCircle, kBadgeIconSize,
-      kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius,
-      kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius};
-
-  return [self initWithTitle:title
-                  description:description
-                   layoutType:layoutType
-              backgroundImage:backgroundImage
-                   symbolName:symbolName
-           symbolColorPalette:symbolColorPalette
-        symbolBackgroundColor:symbolBackgroundColor
-            usesDefaultSymbol:usesDefaultSymbol
-                  symbolWidth:kIconSize
-                showCheckmark:showCheckmark
-              badgeSymbolName:nil
-            badgeColorPalette:nil
-             badgeShapeConfig:badgeShapeConfig
-         badgeBackgroundColor:nil
-       badgeUsesDefaultSymbol:NO
-      accessibilityIdentifier:accessibilityIdentifier];
-}
-
-- (instancetype)initWithTitle:(NSString*)title
-                  description:(NSString*)description
-                   layoutType:(IconDetailViewLayoutType)layoutType
-                   symbolName:(NSString*)symbolName
-            usesDefaultSymbol:(BOOL)usesDefaultSymbol
-                  symbolWidth:(CGFloat)symbolWidth
-                showCheckmark:(BOOL)showCheckmark
-      accessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  BadgeShapeConfig badgeShapeConfig = {
-      IconDetailViewBadgeShape::kCircle, kBadgeIconSize,
-      kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius,
-      kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius};
-
-  return [self initWithTitle:title
-                  description:description
-                   layoutType:layoutType
-              backgroundImage:nil
-                   symbolName:symbolName
-           symbolColorPalette:@[ [UIColor whiteColor] ]
-        symbolBackgroundColor:[UIColor colorNamed:kBackgroundColor]
-            usesDefaultSymbol:usesDefaultSymbol
-                  symbolWidth:kIconSize
-                showCheckmark:showCheckmark
-              badgeSymbolName:nil
-            badgeColorPalette:nil
-             badgeShapeConfig:badgeShapeConfig
-         badgeBackgroundColor:nil
-       badgeUsesDefaultSymbol:NO
-      accessibilityIdentifier:accessibilityIdentifier];
-}
-
-- (instancetype)initWithTitle:(NSString*)title
-                  description:(NSString*)description
-                   layoutType:(IconDetailViewLayoutType)layoutType
-                   symbolName:(NSString*)symbolName
-            usesDefaultSymbol:(BOOL)usesDefaultSymbol
-                showCheckmark:(BOOL)showCheckmark
-      accessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  BadgeShapeConfig badgeShapeConfig = {
-      IconDetailViewBadgeShape::kCircle, kBadgeIconSize,
-      kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius,
-      kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius};
-
-  return [self initWithTitle:title
-                  description:description
-                   layoutType:layoutType
-              backgroundImage:nil
-                   symbolName:symbolName
-           symbolColorPalette:@[ [UIColor whiteColor] ]
-        symbolBackgroundColor:[UIColor colorNamed:kBackgroundColor]
-            usesDefaultSymbol:usesDefaultSymbol
-                  symbolWidth:kIconSize
-                showCheckmark:showCheckmark
-              badgeSymbolName:nil
-            badgeColorPalette:nil
-             badgeShapeConfig:badgeShapeConfig
-         badgeBackgroundColor:nil
-       badgeUsesDefaultSymbol:NO
-      accessibilityIdentifier:accessibilityIdentifier];
 }
 
 #pragma mark - UIView
@@ -476,7 +262,8 @@ UIView* BadgeIconInContainer(UIImageView* icon,
 #pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
-  return [NSString stringWithFormat:@"%@, %@", _title, _description];
+  return [NSString stringWithFormat:@"%@, %@", _configuration.titleText,
+                                    _configuration.descriptionText];
 }
 
 #pragma mark - Private
@@ -492,7 +279,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   }
 
   self.translatesAutoresizingMaskIntoConstraints = NO;
-  self.accessibilityIdentifier = _accessibilityIdentifier;
+  self.accessibilityIdentifier = _configuration.accessibilityIdentifier;
   self.isAccessibilityElement = YES;
   self.accessibilityTraits = UIAccessibilityTraitButton;
 
@@ -500,29 +287,14 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   // chevron.
   NSMutableArray* arrangedSubviews = [[NSMutableArray alloc] init];
 
-  BOOL isHeroLayout = _layoutType == IconDetailViewLayoutType::kHero;
-
-  IconView* icon =
-      _usesDefaultSymbol
-          ? [[IconView alloc] initWithDefaultSymbol:_symbolName
-                                 symbolColorPalette:_symbolColorPalette
-                              symbolBackgroundColor:_symbolBackgroundColor
-                                        symbolWidth:_symbolWidth
-                                      compactLayout:!isHeroLayout
-                                           inSquare:YES]
-          : [[IconView alloc] initWithCustomSymbol:_symbolName
-                                symbolColorPalette:_symbolColorPalette
-                             symbolBackgroundColor:_symbolBackgroundColor
-                                       symbolWidth:_symbolWidth
-                                     compactLayout:!isHeroLayout
-                                          inSquare:YES];
-
+  IconView* icon = [[IconView alloc]
+      initWithConfiguration:[_configuration iconViewConfiguration:YES]];
   UIView* image = icon;
 
-  if (_backgroundImage) {
+  if (_configuration.backgroundImage) {
     UIImageView* backgroundImageView = [[UIImageView alloc] init];
 
-    backgroundImageView.image = _backgroundImage;
+    backgroundImageView.image = _configuration.backgroundImage;
     backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
     backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
     backgroundImageView.layer.borderWidth = 0;
@@ -561,15 +333,18 @@ UIView* BadgeIconInContainer(UIImageView* icon,
 
   image.translatesAutoresizingMaskIntoConstraints = NO;
 
+  BOOL isHeroLayout =
+      _configuration.layoutType == IconDetailViewLayoutType::kHero;
+
   // When the item is displayed in a hero-style layout, the icon is more
   // prominently displayed via an icon container view.
   if (isHeroLayout) {
     UIView* imageContainerView =
         [self imageInContainer:image
-             useLargeContainer:(_backgroundImage != nil)];
+             useLargeContainer:(_configuration.backgroundImage != nil)];
 
     // Display a green checkmark when the layout is hero-cell complete.
-    if (_showCheckmark) {
+    if (_configuration.showCheckmark) {
       UIImageView* checkmark = CheckmarkIcon();
 
       [imageContainerView addSubview:checkmark];
@@ -585,20 +360,19 @@ UIView* BadgeIconInContainer(UIImageView* icon,
     }
 
     // Create the Badge Icon, if applicable.
-    if (_badgeSymbolName.length != 0) {
-      UIImageView* badge = BadgeIcon(_badgeSymbolName, _badgeUsesDefaultSymbol,
-                                     _badgeColorPalette, _badgeShapeConfig.size,
-                                     _backgroundImage != nil);
+    if (_configuration.badgeSymbolName.length != 0) {
+      UIImageView* badge = BadgeIcon(_configuration);
 
       UIView* badgeWithContainer =
-          BadgeIconInContainer(badge, _badgeBackgroundColor, _badgeShapeConfig);
+          BadgeIconInContainer(badge, _configuration.badgeBackgroundColor,
+                               _configuration.badgeShapeConfig);
 
       [imageContainerView addSubview:badgeWithContainer];
 
       // Calculate the offset to equally space the badge from the right and
       // bottom.
-      CGFloat badgeOffset =
-          _badgeShapeConfig.size / (_backgroundImage ? 5.0 : 3.0);
+      CGFloat badgeOffset = _configuration.badgeShapeConfig.size /
+                            (_configuration.backgroundImage ? 5.0 : 3.0);
 
       [NSLayoutConstraint activateConstraints:@[
         [badgeWithContainer.bottomAnchor
@@ -687,7 +461,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
           useLargeContainer:(BOOL)useLargeContainer {
   UIView* iconContainer = [[UIView alloc] init];
 
-  iconContainer.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  iconContainer.backgroundColor = _configuration.iconContainerBackgroundColor;
   iconContainer.layer.cornerRadius = kIconContainerCornerRadius;
 
   [iconContainer addSubview:icon];
@@ -710,11 +484,11 @@ UIView* BadgeIconInContainer(UIImageView* icon,
 - (UILabel*)createTitleLabel {
   UILabel* label = [[UILabel alloc] init];
 
-  label.text = _title;
+  label.text = _configuration.titleText;
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.numberOfLines = 0;
   label.lineBreakMode = NSLineBreakByWordWrapping;
-  if (_layoutType == IconDetailViewLayoutType::kHero) {
+  if (_configuration.layoutType == IconDetailViewLayoutType::kHero) {
     label.font =
         PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightSemibold,
                                   kMaxTextSizeForStyleFootnote);
@@ -734,7 +508,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
 - (UILabel*)createDescriptionLabel {
   UILabel* label = [[UILabel alloc] init];
 
-  label.text = _description;
+  label.text = _configuration.descriptionText;
   label.numberOfLines = 2;
   label.lineBreakMode = NSLineBreakByTruncatingTail;
   label.font = PreferredFontForTextStyle(UIFontTextStyleFootnote, std::nullopt,

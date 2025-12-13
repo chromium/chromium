@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/ipc/common/dxgi_helpers.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -83,10 +79,7 @@ bool CopyDXGIBufferToShMem(
 
   Microsoft::WRL::ComPtr<ID3D11Device1> device1;
   HRESULT hr = d3d11_device->QueryInterface(IID_PPV_ARGS(&device1));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to open D3D11_1 device. hr=" << std::hex << hr;
-    return false;
-  }
+  CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
 
@@ -197,8 +190,8 @@ bool CopyD3D11TexToMem(
 
   return libyuv::NV12Copy(
              source_buffer, source_stride,
-             source_buffer + texture_desc.Height * source_stride, source_stride,
-             dst_buffer.data(), dest_stride,
+             UNSAFE_TODO(source_buffer + texture_desc.Height * source_stride),
+             source_stride, dst_buffer.data(), dest_stride,
              dst_buffer.subspan(texture_desc.Height * dest_stride).data(),
              dest_stride, texture_desc.Width, texture_desc.Height) == 0;
 }
@@ -213,10 +206,7 @@ bool CopyShMemToDXGIBuffer(base::span<uint8_t> shared_memory,
 
   Microsoft::WRL::ComPtr<ID3D11Device1> device1;
   HRESULT hr = d3d11_device->QueryInterface(IID_PPV_ARGS(&device1));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to open D3D11_1 device. hr=" << std::hex << hr;
-    return false;
-  }
+  CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
 

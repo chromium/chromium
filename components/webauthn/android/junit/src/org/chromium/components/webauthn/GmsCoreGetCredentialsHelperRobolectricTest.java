@@ -30,7 +30,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.webauthn.GmsCoreGetCredentialsHelper.GmsCoreGetCredentialsResult;
 import org.chromium.components.webauthn.GmsCoreGetCredentialsHelper.Reason;
-import org.chromium.device.DeviceFeatureList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,7 @@ import java.util.List;
 /** Robolectric tests for {@link GmsCoreGetCredentialsHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({DeviceFeatureList.WEBAUTHN_ANDROID_PASSKEY_CACHE_MIGRATION})
+@EnableFeatures({WebauthnFeatures.WEBAUTHN_ANDROID_PASSKEY_CACHE_MIGRATION})
 public class GmsCoreGetCredentialsHelperRobolectricTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -68,7 +67,7 @@ public class GmsCoreGetCredentialsHelperRobolectricTest {
     }
 
     @Test
-    @DisableFeatures({DeviceFeatureList.WEBAUTHN_ANDROID_PASSKEY_CACHE_MIGRATION})
+    @DisableFeatures({WebauthnFeatures.WEBAUTHN_ANDROID_PASSKEY_CACHE_MIGRATION})
     public void testGetCredentials_featureDisabled_fido2ApiSuccess() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -98,7 +97,7 @@ public class GmsCoreGetCredentialsHelperRobolectricTest {
     }
 
     @Test
-    @DisableFeatures({DeviceFeatureList.WEBAUTHN_ANDROID_PASSKEY_CACHE_MIGRATION})
+    @DisableFeatures({WebauthnFeatures.WEBAUTHN_ANDROID_PASSKEY_CACHE_MIGRATION})
     public void testGetCredentials_featureDisabled_fido2ApiFailure() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

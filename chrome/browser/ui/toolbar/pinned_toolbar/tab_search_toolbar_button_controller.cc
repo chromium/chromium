@@ -14,11 +14,8 @@
 #include "chrome/common/chrome_features.h"
 
 TabSearchToolbarButtonController::TabSearchToolbarButtonController(
-    BrowserView* browser_view,
-    TabSearchBubbleHost* tab_search_bubble_host)
-    : browser_view_(browser_view) {
-  tab_search_bubble_host_observation_.Observe(tab_search_bubble_host);
-}
+    BrowserView* browser_view)
+    : browser_view_(browser_view) {}
 
 TabSearchToolbarButtonController::~TabSearchToolbarButtonController() = default;
 
@@ -55,16 +52,22 @@ void TabSearchToolbarButtonController::OnBubbleDestroying() {
       base::Seconds(1));
 }
 
-void TabSearchToolbarButtonController::UpdateForWebUITabStrip() {
-  PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
-      browser_view_->toolbar()->pinned_toolbar_actions_container();
-  if (pinned_toolbar_actions_container) {
-    actions::ActionItem* tab_search_action =
-        pinned_toolbar_actions_container->GetActionItemFor(kActionTabSearch);
-    if (tab_search_action) {
-      // Do not make tab search button available if webui tab strip is enabled.
-      tab_search_action->SetVisible(!browser_view_->webui_tab_strip());
-    }
+void TabSearchToolbarButtonController::UpdateBubbleHost(
+    TabSearchBubbleHost* new_tab_search_bubble_host) {
+  tab_search_bubble_host_observation_.Reset();
+
+  actions::ActionItem* action_item = GetTabSearchActionItem();
+  CHECK(action_item);
+
+  if (new_tab_search_bubble_host) {
+    action_item->SetProperty(
+        actions::kActionItemPinnableKey,
+        static_cast<int>(actions::ActionPinnableState::kPinnable));
+    tab_search_bubble_host_observation_.Observe(new_tab_search_bubble_host);
+  } else {
+    action_item->SetProperty(
+        actions::kActionItemPinnableKey,
+        static_cast<int>(actions::ActionPinnableState::kNotPinnable));
   }
 }
 

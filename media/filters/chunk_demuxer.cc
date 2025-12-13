@@ -28,6 +28,7 @@
 #include "media/filters/frame_processor.h"
 #include "media/filters/source_buffer_stream.h"
 #include "media/filters/stream_parser_factory.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace {
 
@@ -160,21 +161,6 @@ bool ChunkDemuxerStream::EvictCodedFrames(base::TimeDelta media_time,
   // |media_time| is allowed to be a little imprecise here. GC only needs to
   // know which GOP currentTime points to.
   return stream_->GarbageCollectIfNeeded(media_time, newDataSize);
-}
-
-void ChunkDemuxerStream::OnMemoryPressure(
-    base::TimeDelta media_time,
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level,
-    bool force_instant_gc) {
-  // TODO(sebmarchand): Check if MEMORY_PRESSURE_LEVEL_MODERATE should also be
-  // ignored.
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-  base::AutoLock auto_lock(lock_);
-  return stream_->OnMemoryPressure(media_time, memory_pressure_level,
-                                   force_instant_gc);
 }
 
 void ChunkDemuxerStream::OnSetDuration(base::TimeDelta duration) {
@@ -485,7 +471,8 @@ DemuxerType ChunkDemuxer::GetDemuxerType() const {
 void ChunkDemuxer::Initialize(DemuxerHost* host,
                               PipelineStatusCallback init_cb) {
   DVLOG(1) << "Initialize()";
-  TRACE_EVENT_ASYNC_BEGIN0("media", "ChunkDemuxer::Initialize", this);
+  TRACE_EVENT_BEGIN("media", "ChunkDemuxer::Initialize",
+                    perfetto::Track::FromPointer(this));
 
   base::OnceClosure open_cb;
 
@@ -522,7 +509,8 @@ void ChunkDemuxer::Stop() {
 void ChunkDemuxer::Seek(base::TimeDelta time, PipelineStatusCallback cb) {
   DVLOG(1) << "Seek(" << time.InSecondsF() << ")";
   DCHECK(time >= base::TimeDelta());
-  TRACE_EVENT_ASYNC_BEGIN0("media", "ChunkDemuxer::Seek", this);
+  TRACE_EVENT_BEGIN("media", "ChunkDemuxer::Seek",
+                    perfetto::Track::FromPointer(this));
 
   base::AutoLock auto_lock(lock_);
   DCHECK(!seek_cb_);
@@ -907,23 +895,6 @@ void ChunkDemuxer::OnTracksChanged(DemuxerStream::Type track_type,
 
 void ChunkDemuxer::DisableCanChangeType() {
   supports_change_type_ = false;
-}
-
-void ChunkDemuxer::OnMemoryPressure(
-    base::TimeDelta currentMediaTime,
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level,
-    bool force_instant_gc) {
-  // TODO(sebmarchand): Check if MEMORY_PRESSURE_LEVEL_MODERATE should also be
-  // ignored.
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-  base::AutoLock auto_lock(lock_);
-  for (const auto& [source, state] : source_state_map_) {
-    state->OnMemoryPressure(currentMediaTime, memory_pressure_level,
-                            force_instant_gc);
-  }
 }
 
 bool ChunkDemuxer::EvictCodedFrames(const std::string& id,
@@ -1660,16 +1631,16 @@ void ChunkDemuxer::ShutdownAllStreams() {
 void ChunkDemuxer::RunInitCB_Locked(PipelineStatus status) {
   lock_.AssertAcquired();
   DCHECK(init_cb_);
-  TRACE_EVENT_ASYNC_END1("media", "ChunkDemuxer::Initialize", this, "status",
-                         PipelineStatusToString(status));
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+                  PipelineStatusToString(status));
   std::move(init_cb_).Run(status);
 }
 
 void ChunkDemuxer::RunSeekCB_Locked(PipelineStatus status) {
   lock_.AssertAcquired();
   DCHECK(seek_cb_);
-  TRACE_EVENT_ASYNC_END1("media", "ChunkDemuxer::Seek", this, "status",
-                         PipelineStatusToString(status));
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+                  PipelineStatusToString(status));
   std::move(seek_cb_).Run(status);
 }
 

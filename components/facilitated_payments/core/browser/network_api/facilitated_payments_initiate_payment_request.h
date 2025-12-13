@@ -23,7 +23,7 @@ namespace payments::facilitated {
 class FacilitatedPaymentsInitiatePaymentRequest
     : public autofill::payments::PaymentsRequest {
  public:
-  // Either the PIX code or the payment link must be present in the
+  // Either the Pix code or the payment link must be present in the
   // `request_details`.
   FacilitatedPaymentsInitiatePaymentRequest(
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>

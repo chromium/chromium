@@ -445,7 +445,7 @@ void PhoneHubTray::CloseBubbleInternal() {
     phone_status_view_dont_use_ = nullptr;
   }
 
-  if (features::IsEcheSWAEnabled() && features::IsEcheLauncherEnabled() &&
+  if (features::IsEcheSWAEnabled() &&
       phone_hub_manager_->GetAppStreamLauncherDataModel()) {
     phone_hub_manager_->GetAppStreamLauncherDataModel()
         ->SetShouldShowMiniLauncher(false);
@@ -501,8 +501,6 @@ void PhoneHubTray::ExecuteCommand(int command_id, int event_flags) {
 }
 
 void PhoneHubTray::UpdateHeaderVisibility() {
-  if (!features::IsEcheLauncherEnabled())
-    return;
   if (!GetPhoneStatusView())
     return;
 

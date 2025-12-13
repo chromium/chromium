@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents_view_delegate.h"

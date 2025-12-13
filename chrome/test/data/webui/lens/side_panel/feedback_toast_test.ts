@@ -26,6 +26,7 @@ suite('FeedbackToast', () => {
   let lensSidePanelElement: LensSidePanelAppElement;
   let callbackRouterRemote: LensSidePanelPageRemote;
   let reshowFeedbackToastCallback: Function;
+  let origSetTimeout: (handler: TimerHandler, timeout?: number) => number;
 
   function isRendered(el: HTMLElement) {
     // isVisible only checks if the bounding client rect is not empty and
@@ -47,13 +48,13 @@ suite('FeedbackToast', () => {
     SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
 
     // Enable the new feedback feature.
-    loadTimeData.overrideValues({'newFeedbackEnabled': true});
-
+    loadTimeData.overrideValues(
+        {'newFeedbackEnabled': true, 'updatedFeedbackEnabled': false});
 
     // Override setTimeout, and only alter behavior for the text received
     // timeout. Using MockTimer did not work here, as it interfered with many
     // other, unrelated timers causing tests to crash.
-    const origSetTimeout = window.setTimeout;
+    origSetTimeout = window.setTimeout;
     window.setTimeout = function(
         handler: TimerHandler, timeout: number|undefined): number {
       if (timeout === RESHOW_FEEDBACK_TOAST_DELAY_MS) {
@@ -69,6 +70,10 @@ suite('FeedbackToast', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lensSidePanelElement = document.createElement('lens-side-panel-app');
     document.body.appendChild(lensSidePanelElement);
+  });
+
+  teardown(() => {
+    window.setTimeout = origSetTimeout;
   });
 
   test('FeedbackToastDoesNotShowWhenDisabled', async () => {
@@ -248,6 +253,149 @@ suite('FeedbackToast', () => {
 
     // Feedback toast should reappear because the dismissed state was reset on
     // load finish.
+    assertTrue(isRendered(getFeedbackToast()));
+  });
+});
+
+const UPDATED_FEEDBACK_TOAST_DELAY_MS = 9009;
+
+suite('FeedbackToastUpdated', () => {
+  let testBrowserProxy: TestLensSidePanelBrowserProxy;
+  let lensSidePanelElement: LensSidePanelAppElement;
+  let callbackRouterRemote: LensSidePanelPageRemote;
+  let showFeedbackToastCallback: Function;
+  let origSetTimeout: (handler: TimerHandler, timeout?: number) => number;
+
+  function isRendered(el: HTMLElement) {
+    // isVisible only checks if the bounding client rect is not empty and
+    // zeroed.
+    return isVisible(el) && getComputedStyle(el).visibility !== 'hidden';
+  }
+
+  function getFeedbackToast(): CrToastElement {
+    return lensSidePanelElement.$.feedbackToast.shadowRoot.querySelector(
+        'cr-toast')!;
+  }
+
+  setup(() => {
+    testBrowserProxy = new TestLensSidePanelBrowserProxy();
+    SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
+
+    // Enable the new feedback feature.
+    loadTimeData.overrideValues({
+      'newFeedbackEnabled': true,
+      'updatedFeedbackEnabled': true,
+      'updatedFeedbackToastTimeoutMs': UPDATED_FEEDBACK_TOAST_DELAY_MS,
+    });
+
+
+    // Override setTimeout, and only alter behavior for the text received
+    // timeout. Using MockTimer did not work here, as it interfered with many
+    // other, unrelated timers causing tests to crash.
+    origSetTimeout = window.setTimeout;
+    window.setTimeout = function(
+        handler: TimerHandler, timeout: number|undefined): number {
+      if (timeout === UPDATED_FEEDBACK_TOAST_DELAY_MS) {
+        const callback = handler as Function;
+        showFeedbackToastCallback = callback;
+        return 0;
+      }
+      return origSetTimeout(handler, timeout);
+    };
+
+    callbackRouterRemote =
+        testBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    lensSidePanelElement = document.createElement('lens-side-panel-app');
+    document.body.appendChild(lensSidePanelElement);
+  });
+
+  teardown(() => {
+    window.setTimeout = origSetTimeout;
+  });
+
+  test('ShowFeedbackToastOnLoadFinishedWithDelay', async () => {
+    callbackRouterRemote.setIsLoadingResults(false);
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Toast should not be visible immediately.
+    assertFalse(isRendered(getFeedbackToast()));
+
+    // Call the timeout.
+    showFeedbackToastCallback();
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Feedback toast should appear.
+    assertTrue(isRendered(getFeedbackToast()));
+  });
+
+  test('FeedbackToastReshowsOnAimResultChange', async () => {
+    // Show the feedback toast first.
+    callbackRouterRemote.setIsLoadingResults(false);
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Toast should not be visible immediately.
+    assertFalse(isRendered(getFeedbackToast()));
+
+    // Call the timeout.
+    showFeedbackToastCallback();
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Feedback toast should appear.
+    assertTrue(isRendered(getFeedbackToast()));
+
+    // Click the close button, which should hide the feedback toast.
+    const closeButton =
+        lensSidePanelElement.$.feedbackToast.shadowRoot.querySelector(
+            'cr-icon-button');
+    assertTrue(closeButton !== null);
+    closeButton.click();
+    await waitAfterNextRender(lensSidePanelElement);
+    assertFalse(isRendered(getFeedbackToast()));
+
+    // Reset the show feedback toast callback.
+    showFeedbackToastCallback = () => {};
+
+    // Changing to AIM results should reshow the toast.
+    callbackRouterRemote.aimResultsChanged(true);
+    await waitAfterNextRender(lensSidePanelElement);
+    showFeedbackToastCallback();
+    await waitAfterNextRender(lensSidePanelElement);
+    assertTrue(isRendered(getFeedbackToast()));
+  });
+
+  test('FeedbackToastReshowsOnFocusResultsFrame', async () => {
+    // Show the feedback toast first.
+    callbackRouterRemote.setIsLoadingResults(false);
+    await waitAfterNextRender(lensSidePanelElement);
+    // Toast should not be visible immediately.
+    assertFalse(isRendered(getFeedbackToast()));
+
+    // Call the timeout.
+    showFeedbackToastCallback();
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Feedback toast should appear.
+    assertTrue(isRendered(getFeedbackToast()));
+
+    // Click the close button, which should hide the feedback toast.
+    const closeButton =
+        lensSidePanelElement.$.feedbackToast.shadowRoot.querySelector(
+            'cr-icon-button');
+    assertTrue(closeButton !== null);
+    closeButton.click();
+    await waitAfterNextRender(lensSidePanelElement);
+    assertFalse(isRendered(getFeedbackToast()));
+
+    // Reset the show feedback toast callback.
+    showFeedbackToastCallback = () => {};
+
+
+    // Focusing the results frame should reshow the toast.
+    callbackRouterRemote.focusResultsFrame();
+    await waitAfterNextRender(lensSidePanelElement);
+    showFeedbackToastCallback();
+    await waitAfterNextRender(lensSidePanelElement);
     assertTrue(isRendered(getFeedbackToast()));
   });
 });

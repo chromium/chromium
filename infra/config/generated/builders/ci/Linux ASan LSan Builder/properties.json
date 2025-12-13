@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-memory-archive",
               "builder_group": "chromium.memory",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -38,7 +37,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-memory-archive",
               "builder_group": "chromium.memory",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -84,7 +82,9 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux ASan LSan Builder/targets"
+      "retry_invalid_shards": true,
+      "targets_spec_directory": "infra/config/generated/builders/ci/Linux ASan LSan Builder/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

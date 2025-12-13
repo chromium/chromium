@@ -29,6 +29,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Quinn Okabayashi <quinnokabayashi@gmail.com>"
   cargo_pkg_name = "strck"
   cargo_pkg_description = "Checked owned and borrowed strings"
+  cargo_pkg_repository = "https://github.com/QnnOkabayashi/strck"
   cargo_pkg_version = "1.0.0"
 
   allow_unsafe = true

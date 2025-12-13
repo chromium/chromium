@@ -17,8 +17,6 @@ include_rules = [
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/nearby",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/nearby_sharing",
-  "+chrome/common/channel_info.h",
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:

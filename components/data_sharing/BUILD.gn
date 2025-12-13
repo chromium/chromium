@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -14,6 +15,7 @@ group("unit_tests") {
 
   deps = [
     "//components/data_sharing/internal:unit_tests",
+    "//components/data_sharing/migration/internal:unit_tests",
     "//components/data_sharing/public:unit_tests",
   ]
 
@@ -26,6 +28,12 @@ source_set("components_unittests_gtest_filter") {
   data = [ "components_unittests.filter" ]
 }
 
+proto_library("personal_collaboration_data_test_support_proto") {
+  testonly = true
+  sources =
+      [ "test_support/extended_shared_tab_group_account_data_specifics.proto" ]
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -36,6 +44,8 @@ source_set("test_support") {
     "test_support/mock_data_sharing_network_loader.h",
     "test_support/mock_data_sharing_service.cc",
     "test_support/mock_data_sharing_service.h",
+    "test_support/mock_personal_collaboration_data_service.cc",
+    "test_support/mock_personal_collaboration_data_service.h",
     "test_support/mock_preview_server_proxy.cc",
     "test_support/mock_preview_server_proxy.h",
     "test_support/test_utils.cc",
@@ -48,6 +58,7 @@ source_set("test_support") {
     "//base",
     "//components/data_sharing/internal",
     "//components/data_sharing/public",
+    "//components/data_sharing/public:personal_collaboration_data",
     "//net/traffic_annotation",
     "//testing/gmock",
     "//testing/gtest",

@@ -5,6 +5,7 @@
 #ifndef BASE_ENTERPRISE_UTIL_H_
 #define BASE_ENTERPRISE_UTIL_H_
 
+#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "build/build_config.h"
 
@@ -31,6 +32,15 @@ BASE_EXPORT bool IsEnterpriseDevice();
 // recommended to use the PlatformManagementService to obtain this information,
 // if possible.
 BASE_EXPORT bool IsManagedOrEnterpriseDevice();
+
+#if BUILDFLAG(IS_WIN)
+// Note: returning base::AutoReset<bool> is preferred, but including that header
+// here causes libc++ header pollution on Windows due to the low-level nature
+// of this file.
+// Sets the global flag for testing enterprise device status.
+[[nodiscard]] BASE_EXPORT AutoReset<bool> SetIsEnterpriseDeviceForTesting(
+    bool is_enterprise);
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_APPLE)
 

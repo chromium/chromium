@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_transaction_options.h"
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -48,6 +49,8 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/core/workers/worker_navigator.h"
 #include "third_party/blink/renderer/modules/buckets/storage_bucket.h"
 #include "third_party/blink/renderer/modules/buckets/storage_bucket_manager.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
@@ -101,9 +104,12 @@ namespace {
 
 const char kIndexedDBObjectGroup[] = "indexeddb";
 const char kNoDocumentError[] = "No document for given frame found";
+const char kOriginMismatchError[] =
+    "Requested security origin does not match the target's origin.";
 
-base::expected<LocalFrame*, protocol::Response> ResolveFrame(
+base::expected<ExecutionContext*, protocol::Response> ResolveExecutionContext(
     InspectedFrames* inspected_frames,
+    WorkerGlobalScope* worker_global_scope,
     const std::optional<String>& security_origin,
     const std::optional<String>& storage_key,
     std::unique_ptr<protocol::Storage::StorageBucket>& storage_bucket) {
@@ -112,6 +118,17 @@ base::expected<LocalFrame*, protocol::Response> ResolveFrame(
         "At least and at most one of security_origin, "
         "storage_key, and storage_bucket must be specified."));
   }
+
+  if (worker_global_scope) {
+    if (security_origin &&
+        worker_global_scope->GetSecurityOrigin()->ToRawString() !=
+            *security_origin) {
+      return base::unexpected(
+          protocol::Response::ServerError(kOriginMismatchError));
+    }
+    return worker_global_scope;
+  }
+
   LocalFrame* frame;
   if (storage_bucket) {
     frame =
@@ -124,7 +141,30 @@ base::expected<LocalFrame*, protocol::Response> ResolveFrame(
   if (!frame) {
     return base::unexpected(protocol::Response::ServerError(kNoDocumentError));
   }
-  return frame;
+  return frame->DomWindow();
+}
+
+ScriptState* ToScriptState(ExecutionContext* context) {
+  if (!context) {
+    return nullptr;
+  }
+
+  // If the context is a window, we need the main world's script state.
+  // This path will only be taken when the agent is running for a frame,
+  // hence on the main thread.
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    return ToScriptStateForMainWorld(window->GetFrame());
+  }
+
+  // If the context is a worker, it has only one script controller and one
+  // script state. This path is taken for workers.
+  if (auto* worker = DynamicTo<WorkerGlobalScope>(context)) {
+    if (WorkerOrWorkletScriptController* script = worker->ScriptController()) {
+      return script->GetScriptState();
+    }
+  }
+
+  return nullptr;
 }
 
 // Gets the IDBFactory for the given frame and optional storage bucket, and
@@ -140,24 +180,24 @@ class ExecutableWithIdbFactory
   virtual ~ExecutableWithIdbFactory() = default;
 
   static void Start(
-      LocalFrame* frame,
+      ExecutionContext* context,
       std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
       IdbFactoryGetterCallback request_callback) {
     ExecutableWithIdbFactory* idb_factory_getter =
         MakeGarbageCollected<ExecutableWithIdbFactory>(
             std::move(request_callback));
-    idb_factory_getter->SetUp(frame, std::move(storage_bucket));
+    idb_factory_getter->SetUp(context, std::move(storage_bucket));
   }
 
   void Trace(Visitor* visitor) const {}
 
  private:
-  void SetUp(LocalFrame* frame,
+  void SetUp(ExecutionContext* context,
              std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket) {
     if (storage_bucket && storage_bucket->hasName()) {
-      GetBucketIDBFactory(frame, storage_bucket->getName(""));
+      GetBucketIDBFactory(context, storage_bucket->getName(""));
     } else {
-      GetDefaultIDBFactory(frame);
+      GetDefaultIDBFactory(context);
     }
   }
   void OnFailure(protocol::Response response) {
@@ -167,28 +207,30 @@ class ExecutableWithIdbFactory
     std::move(callback_).Run(protocol::Response::Success(), idb_factory);
   }
 
-  void GetDefaultIDBFactory(LocalFrame* frame) {
-    LocalDOMWindow* dom_window = frame->DomWindow();
-    CHECK(dom_window);
-    IDBFactory* idb_factory = GlobalIndexedDB::indexedDB(*dom_window);
+  void GetDefaultIDBFactory(ExecutionContext* context) {
+    IDBFactory* idb_factory = GlobalIndexedDB::indexedDB(*context);
 
     if (!idb_factory) {
       OnFailure(protocol::Response::ServerError(
-          "No IndexedDB factory for given frame found"));
+          "No IndexedDB factory for given execution context found"));
       return;
     }
     OnSuccess(idb_factory);
   }
 
-  void GetBucketIDBFactory(LocalFrame* frame,
-                           const WTF::String& storage_bucket_name) {
-    LocalDOMWindow* dom_window = frame->DomWindow();
-    CHECK(dom_window);
-
-    ScriptState* script_state = ToScriptStateForMainWorld(frame);
+  void GetBucketIDBFactory(ExecutionContext* context,
+                           const String& storage_bucket_name) {
+    ScriptState* script_state = ToScriptState(context);
     CHECK(script_state);
 
-    Navigator* navigator = dom_window->navigator();
+    NavigatorBase* navigator = nullptr;
+    if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+      navigator = window->navigator();
+    } else if (auto* worker = DynamicTo<WorkerGlobalScope>(context)) {
+      navigator = worker->navigator();
+    }
+    CHECK(navigator);
+
     StorageBucketManager* storage_bucket_manager =
         StorageBucketManager::storageBuckets(*navigator);
     StorageBucket* storage_bucket =
@@ -254,19 +296,19 @@ class ExecutableWithDatabase
   virtual ~ExecutableWithDatabase() = default;
   virtual void Execute(IDBDatabase*, ScriptState*) = 0;
   virtual RequestCallback* GetRequestCallback() = 0;
-  void Start(LocalFrame* frame,
+  void Start(ExecutionContext* context,
              std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
              const String& database_name) {
-    if (!frame) {
+    if (!context) {
       SendFailure(protocol::Response::ServerError(kNoDocumentError));
       return;
     }
     database_name_ = database_name;
-    frame_ = frame;
+    context_ = context;
     ExecutableWithIdbFactory::Start(
-        frame_, std::move(storage_bucket),
-        WTF::BindOnce(&ExecutableWithDatabase::OnGetIDBFactory,
-                      WrapRefCounted(this)));
+        context_, std::move(storage_bucket),
+        blink::BindOnce(&ExecutableWithDatabase::OnGetIDBFactory,
+                        WrapRefCounted(this)));
   }
 
  private:
@@ -276,14 +318,14 @@ class ExecutableWithDatabase
       return;
     }
 
-    ScriptState* script_state = ToScriptStateForMainWorld(frame_);
+    ScriptState* script_state = ToScriptState(context_);
     if (!script_state) {
       SendFailure(protocol::Response::InternalError());
       return;
     }
 
     ScriptState::Scope scope(script_state);
-    DoStart(idb_factory, script_state, frame_->DomWindow()->GetSecurityOrigin(),
+    DoStart(idb_factory, script_state, context_->GetSecurityOrigin(),
             database_name_);
   }
 
@@ -312,7 +354,7 @@ class ExecutableWithDatabase
     GetRequestCallback()->sendFailure(response);
   }
 
-  Persistent<LocalFrame> frame_;
+  Persistent<ExecutionContext> context_;
   String database_name_;
 };
 
@@ -341,7 +383,7 @@ class OpenDatabaseCallback final : public NativeEventListener {
     }
 
     IDBOpenDBRequest* idb_open_db_request =
-        static_cast<IDBOpenDBRequest*>(event->target());
+        static_cast<IDBOpenDBRequest*>(event->RawTarget());
     IDBAny* request_result = idb_open_db_request->ResultAsAny();
     if (request_result->GetType() != IDBAny::kIDBDatabaseType) {
       executable_with_database_->GetRequestCallback()->sendFailure(
@@ -391,7 +433,7 @@ class UpgradeDatabaseCallback final : public NativeEventListener {
     // had previously been enumerated was deleted. We don't want to
     // implicitly re-create it here, so abort the transaction.
     IDBOpenDBRequest* idb_open_db_request =
-        static_cast<IDBOpenDBRequest*>(event->target());
+        static_cast<IDBOpenDBRequest*>(event->RawTarget());
     NonThrowableExceptionState exception_state;
     idb_open_db_request->transaction()->abort(exception_state);
     executable_with_database_->GetRequestCallback()->sendFailure(
@@ -413,7 +455,7 @@ IDBTransaction* TransactionForDatabase(
       MakeGarbageCollected<V8UnionStringOrStringSequence>(object_store_name);
   IDBTransactionOptions* options =
       MakeGarbageCollected<IDBTransactionOptions>();
-  options->setDurability("relaxed");
+  options->setDurability(V8IDBTransactionDurability::Enum::kRelaxed);
   auto v8_mode = V8IDBTransactionMode::Create(mode);
   if (!v8_mode) {
     return nullptr;
@@ -613,22 +655,22 @@ class DataLoader;
 class OpenCursorCallback final : public NativeEventListener {
  public:
   static OpenCursorCallback* Create(
-      v8_inspector::V8InspectorSession* v8_session,
+      InspectorIndexedDBAgent* agent,
       ScriptState* script_state,
       std::unique_ptr<RequestDataCallback> request_callback,
       int skip_count,
       unsigned page_size) {
-    return MakeGarbageCollected<OpenCursorCallback>(v8_session, script_state,
+    return MakeGarbageCollected<OpenCursorCallback>(agent, script_state,
                                                     std::move(request_callback),
                                                     skip_count, page_size);
   }
 
-  OpenCursorCallback(v8_inspector::V8InspectorSession* v8_session,
+  OpenCursorCallback(InspectorIndexedDBAgent* agent,
                      ScriptState* script_state,
                      std::unique_ptr<RequestDataCallback> request_callback,
                      int skip_count,
                      unsigned page_size)
-      : v8_session_(v8_session),
+      : agent_(agent),
         script_state_(script_state),
         request_callback_(std::move(request_callback)),
         skip_count_(skip_count),
@@ -638,13 +680,19 @@ class OpenCursorCallback final : public NativeEventListener {
   ~OpenCursorCallback() override = default;
 
   void Invoke(ExecutionContext*, Event* event) override {
+    if (!agent_) {
+      request_callback_->sendFailure(protocol::Response::ServerError(
+          "DevTools session detached during operation."));
+      return;
+    }
+
     if (event->type() != event_type_names::kSuccess) {
       request_callback_->sendFailure(
           protocol::Response::ServerError("Unexpected event type."));
       return;
     }
 
-    IDBRequest* idb_request = static_cast<IDBRequest*>(event->target());
+    IDBRequest* idb_request = static_cast<IDBRequest*>(event->RawTarget());
     IDBAny* request_result = idb_request->ResultAsAny();
     if (request_result->GetType() == IDBAny::kIDBValueType) {
       end(false);
@@ -688,19 +736,21 @@ class OpenCursorCallback final : public NativeEventListener {
     if (!script_state_->ContextIsValid()) {
       return;
     }
+
+    v8_inspector::V8InspectorSession* v8_session = agent_->v8_session();
     ScriptState::Scope scope(script_state_);
     v8::Local<v8::Context> context = script_state_->GetContext();
     v8_inspector::StringView object_group =
         ToV8InspectorStringView(kIndexedDBObjectGroup);
     std::unique_ptr<DataEntry> data_entry =
         DataEntry::create()
-            .setKey(v8_session_->wrapObject(
+            .setKey(v8_session->wrapObject(
                 context, idb_cursor->key(script_state_).V8Value(), object_group,
                 true /* generatePreview */))
-            .setPrimaryKey(v8_session_->wrapObject(
+            .setPrimaryKey(v8_session->wrapObject(
                 context, idb_cursor->primaryKey(script_state_).V8Value(),
                 object_group, true /* generatePreview */))
-            .setValue(v8_session_->wrapObject(
+            .setValue(v8_session->wrapObject(
                 context, idb_cursor->value(script_state_).V8Value(),
                 object_group, true /* generatePreview */))
             .build();
@@ -712,12 +762,13 @@ class OpenCursorCallback final : public NativeEventListener {
   }
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(agent_);
     visitor->Trace(script_state_);
     NativeEventListener::Trace(visitor);
   }
 
  private:
-  raw_ptr<v8_inspector::V8InspectorSession> v8_session_;
+  WeakMember<InspectorIndexedDBAgent> agent_;
   Member<ScriptState> script_state_;
   std::unique_ptr<RequestDataCallback> request_callback_;
   int skip_count_;
@@ -728,21 +779,28 @@ class OpenCursorCallback final : public NativeEventListener {
 class DataLoader final : public ExecutableWithDatabase<RequestDataCallback> {
  public:
   static scoped_refptr<DataLoader> Create(
-      v8_inspector::V8InspectorSession* v8_session,
+      InspectorIndexedDBAgent* agent,
       std::unique_ptr<RequestDataCallback> request_callback,
       const String& object_store_name,
-      const String& index_name,
+      std::optional<String> index_name,
       IDBKeyRange* idb_key_range,
       int skip_count,
       unsigned page_size) {
-    return base::AdoptRef(new DataLoader(
-        v8_session, std::move(request_callback), object_store_name, index_name,
-        idb_key_range, skip_count, page_size));
+    return base::AdoptRef(new DataLoader(agent, std::move(request_callback),
+                                         object_store_name, index_name,
+                                         idb_key_range, skip_count, page_size));
   }
 
   ~DataLoader() override = default;
 
   void Execute(IDBDatabase* idb_database, ScriptState* script_state) override {
+    if (!agent_) {
+      request_callback_->sendFailure(protocol::Response::ServerError(
+          "The DevTools session was detached before the operation could "
+          "complete."));
+      return;
+    }
+
     IDBTransaction* idb_transaction =
         TransactionForDatabase(script_state, idb_database, object_store_name_);
     if (!idb_transaction) {
@@ -759,8 +817,8 @@ class DataLoader final : public ExecutableWithDatabase<RequestDataCallback> {
     }
 
     IDBRequest* idb_request;
-    if (!index_name_.empty()) {
-      IDBIndex* idb_index = IndexForObjectStore(idb_object_store, index_name_);
+    if (index_name_.has_value()) {
+      IDBIndex* idb_index = IndexForObjectStore(idb_object_store, *index_name_);
       if (!idb_index) {
         request_callback_->sendFailure(
             protocol::Response::ServerError("Could not get index"));
@@ -774,7 +832,7 @@ class DataLoader final : public ExecutableWithDatabase<RequestDataCallback> {
           script_state, idb_key_range_.Get(), mojom::IDBCursorDirection::Next);
     }
     OpenCursorCallback* open_cursor_callback = OpenCursorCallback::Create(
-        v8_session_, script_state, std::move(request_callback_), skip_count_,
+        agent_.Get(), script_state, std::move(request_callback_), skip_count_,
         page_size_);
     idb_request->addEventListener(event_type_names::kSuccess,
                                   open_cursor_callback, false);
@@ -783,14 +841,14 @@ class DataLoader final : public ExecutableWithDatabase<RequestDataCallback> {
   RequestDataCallback* GetRequestCallback() override {
     return request_callback_.get();
   }
-  DataLoader(v8_inspector::V8InspectorSession* v8_session,
+  DataLoader(InspectorIndexedDBAgent* agent,
              std::unique_ptr<RequestDataCallback> request_callback,
              const String& object_store_name,
-             const String& index_name,
+             std::optional<String> index_name,
              IDBKeyRange* idb_key_range,
              int skip_count,
              unsigned page_size)
-      : v8_session_(v8_session),
+      : agent_(agent),
         request_callback_(std::move(request_callback)),
         object_store_name_(object_store_name),
         index_name_(index_name),
@@ -798,10 +856,10 @@ class DataLoader final : public ExecutableWithDatabase<RequestDataCallback> {
         skip_count_(skip_count),
         page_size_(page_size) {}
 
-  raw_ptr<v8_inspector::V8InspectorSession> v8_session_;
+  WeakPersistent<InspectorIndexedDBAgent> agent_;
   std::unique_ptr<RequestDataCallback> request_callback_;
   String object_store_name_;
-  String index_name_;
+  std::optional<String> index_name_;
   Persistent<IDBKeyRange> idb_key_range_;
   int skip_count_;
   unsigned page_size_;
@@ -812,10 +870,14 @@ class DataLoader final : public ExecutableWithDatabase<RequestDataCallback> {
 // static
 InspectorIndexedDBAgent::InspectorIndexedDBAgent(
     InspectedFrames* inspected_frames,
+    WorkerGlobalScope* worker_global_scope,
     v8_inspector::V8InspectorSession* v8_session)
     : inspected_frames_(inspected_frames),
+      worker_global_scope_(worker_global_scope),
       v8_session_(v8_session),
-      enabled_(&agent_state_, /*default_value=*/false) {}
+      enabled_(&agent_state_, /*default_value=*/false) {
+  DCHECK(worker_global_scope || inspected_frames_);
+}
 
 InspectorIndexedDBAgent::~InspectorIndexedDBAgent() = default;
 
@@ -849,34 +911,35 @@ void InspectorIndexedDBAgent::requestDatabaseNames(
     std::optional<String> storage_key,
     std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
     std::unique_ptr<RequestDatabaseNamesCallback> request_callback) {
-  base::expected<LocalFrame*, protocol::Response> frame_or_response =
-      ResolveFrame(inspected_frames_.Get(), security_origin, storage_key,
-                   storage_bucket);
-  if (!frame_or_response.has_value()) {
-    request_callback->sendFailure(frame_or_response.error());
+  base::expected<ExecutionContext*, protocol::Response> context_or_response =
+      ResolveExecutionContext(inspected_frames_.Get(),
+                              worker_global_scope_.Get(), security_origin,
+                              storage_key, storage_bucket);
+  if (!context_or_response.has_value()) {
+    request_callback->sendFailure(context_or_response.error());
     return;
   }
-  LocalFrame* frame = frame_or_response.value();
+  ExecutionContext* context = context_or_response.value();
   ExecutableWithIdbFactory::Start(
-      frame, std::move(storage_bucket),
-      WTF::BindOnce(
+      context, std::move(storage_bucket),
+      BindOnce(
           [](std::unique_ptr<RequestDatabaseNamesCallback> request_callback,
-             LocalFrame* frame, protocol::Response response,
+             ExecutionContext* context, protocol::Response response,
              IDBFactory* idb_factory) {
             if (!response.IsSuccess()) {
               request_callback->sendFailure(response);
               return;
             }
-            ScriptState* script_state = ToScriptStateForMainWorld(frame);
+            ScriptState* script_state = ToScriptState(context);
             if (!script_state) {
               request_callback->sendFailure(
                   protocol::Response::InternalError());
               return;
             }
-            idb_factory->GetDatabaseInfoForDevTools(WTF::BindOnce(
-                &OnGotDatabaseNames, std::move(request_callback)));
+            idb_factory->GetDatabaseInfoForDevTools(
+                BindOnce(&OnGotDatabaseNames, std::move(request_callback)));
           },
-          std::move(request_callback), WrapPersistent(frame)));
+          std::move(request_callback), WrapPersistent(context)));
 }
 
 void InspectorIndexedDBAgent::requestDatabase(
@@ -885,16 +948,17 @@ void InspectorIndexedDBAgent::requestDatabase(
     std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
     const String& database_name,
     std::unique_ptr<RequestDatabaseCallback> request_callback) {
-  base::expected<LocalFrame*, protocol::Response> frame_or_response =
-      ResolveFrame(inspected_frames_.Get(), security_origin, storage_key,
-                   storage_bucket);
-  if (!frame_or_response.has_value()) {
-    request_callback->sendFailure(frame_or_response.error());
+  base::expected<ExecutionContext*, protocol::Response> context_or_response =
+      ResolveExecutionContext(inspected_frames_.Get(),
+                              worker_global_scope_.Get(), security_origin,
+                              storage_key, storage_bucket);
+  if (!context_or_response.has_value()) {
+    request_callback->sendFailure(context_or_response.error());
     return;
   }
   scoped_refptr<DatabaseLoader> database_loader =
       DatabaseLoader::Create(std::move(request_callback));
-  database_loader->Start(frame_or_response.value(), std::move(storage_bucket),
+  database_loader->Start(context_or_response.value(), std::move(storage_bucket),
                          database_name);
 }
 
@@ -904,7 +968,7 @@ void InspectorIndexedDBAgent::requestData(
     std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
     const String& database_name,
     const String& object_store_name,
-    const String& index_name,
+    std::optional<String> index_name,
     int skip_count,
     int page_size,
     std::unique_ptr<protocol::IndexedDB::KeyRange> key_range,
@@ -916,18 +980,19 @@ void InspectorIndexedDBAgent::requestData(
         protocol::Response::ServerError("Can not parse key range."));
     return;
   }
-  base::expected<LocalFrame*, protocol::Response> frame_or_response =
-      ResolveFrame(inspected_frames_.Get(), security_origin, storage_key,
-                   storage_bucket);
-  if (!frame_or_response.has_value()) {
-    request_callback->sendFailure(frame_or_response.error());
+  base::expected<ExecutionContext*, protocol::Response> context_or_response =
+      ResolveExecutionContext(inspected_frames_.Get(),
+                              worker_global_scope_.Get(), security_origin,
+                              storage_key, storage_bucket);
+  if (!context_or_response.has_value()) {
+    request_callback->sendFailure(context_or_response.error());
     return;
   }
-  scoped_refptr<DataLoader> data_loader = DataLoader::Create(
-      v8_session_, std::move(request_callback), object_store_name, index_name,
-      idb_key_range, skip_count, page_size);
+  scoped_refptr<DataLoader> data_loader =
+      DataLoader::Create(this, std::move(request_callback), object_store_name,
+                         index_name, idb_key_range, skip_count, page_size);
 
-  data_loader->Start(frame_or_response.value(), std::move(storage_bucket),
+  data_loader->Start(context_or_response.value(), std::move(storage_bucket),
                      database_name);
 }
 
@@ -945,7 +1010,7 @@ class GetMetadataListener final : public NativeEventListener {
       return;
     }
 
-    IDBRequest* idb_request = static_cast<IDBRequest*>(event->target());
+    IDBRequest* idb_request = static_cast<IDBRequest*>(event->RawTarget());
     IDBAny* request_result = idb_request->ResultAsAny();
     if (request_result->GetType() != IDBAny::kIntegerType) {
       NotifySubtaskDone(owner_, "Unexpected result type.");
@@ -1067,16 +1132,17 @@ void InspectorIndexedDBAgent::getMetadata(
     const String& database_name,
     const String& object_store_name,
     std::unique_ptr<GetMetadataCallback> request_callback) {
-  base::expected<LocalFrame*, protocol::Response> frame_or_response =
-      ResolveFrame(inspected_frames_.Get(), security_origin, storage_key,
-                   storage_bucket);
-  if (!frame_or_response.has_value()) {
-    request_callback->sendFailure(frame_or_response.error());
+  base::expected<ExecutionContext*, protocol::Response> context_or_response =
+      ResolveExecutionContext(inspected_frames_.Get(),
+                              worker_global_scope_.Get(), security_origin,
+                              storage_key, storage_bucket);
+  if (!context_or_response.has_value()) {
+    request_callback->sendFailure(context_or_response.error());
     return;
   }
   scoped_refptr<GetMetadata> get_metadata =
       GetMetadata::Create(object_store_name, std::move(request_callback));
-  get_metadata->Start(frame_or_response.value(), std::move(storage_bucket),
+  get_metadata->Start(context_or_response.value(), std::move(storage_bucket),
                       database_name);
 }
 
@@ -1170,17 +1236,18 @@ void InspectorIndexedDBAgent::deleteObjectStoreEntries(
         protocol::Response::ServerError("Can not parse key range"));
     return;
   }
-  base::expected<LocalFrame*, protocol::Response> frame_or_response =
-      ResolveFrame(inspected_frames_.Get(), security_origin, storage_key,
-                   storage_bucket);
-  if (!frame_or_response.has_value()) {
-    request_callback->sendFailure(frame_or_response.error());
+  base::expected<ExecutionContext*, protocol::Response> context_or_response =
+      ResolveExecutionContext(inspected_frames_.Get(),
+                              worker_global_scope_.Get(), security_origin,
+                              storage_key, storage_bucket);
+  if (!context_or_response.has_value()) {
+    request_callback->sendFailure(context_or_response.error());
     return;
   }
   scoped_refptr<DeleteObjectStoreEntries> delete_object_store_entries =
       DeleteObjectStoreEntries::Create(object_store_name, idb_key_range,
                                        std::move(request_callback));
-  delete_object_store_entries->Start(frame_or_response.value(),
+  delete_object_store_entries->Start(context_or_response.value(),
                                      std::move(storage_bucket), database_name);
 }
 
@@ -1271,16 +1338,17 @@ void InspectorIndexedDBAgent::clearObjectStore(
     const String& database_name,
     const String& object_store_name,
     std::unique_ptr<ClearObjectStoreCallback> request_callback) {
-  base::expected<LocalFrame*, protocol::Response> frame_or_response =
-      ResolveFrame(inspected_frames_.Get(), security_origin, storage_key,
-                   storage_bucket);
-  if (!frame_or_response.has_value()) {
-    request_callback->sendFailure(frame_or_response.error());
+  base::expected<ExecutionContext*, protocol::Response> context_or_response =
+      ResolveExecutionContext(inspected_frames_.Get(),
+                              worker_global_scope_.Get(), security_origin,
+                              storage_key, storage_bucket);
+  if (!context_or_response.has_value()) {
+    request_callback->sendFailure(context_or_response.error());
     return;
   }
   scoped_refptr<ClearObjectStore> clear_object_store =
       ClearObjectStore::Create(object_store_name, std::move(request_callback));
-  clear_object_store->Start(frame_or_response.value(),
+  clear_object_store->Start(context_or_response.value(),
                             std::move(storage_bucket), database_name);
 }
 
@@ -1290,26 +1358,27 @@ void InspectorIndexedDBAgent::deleteDatabase(
     std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
     const String& database_name,
     std::unique_ptr<DeleteDatabaseCallback> request_callback) {
-  base::expected<LocalFrame*, protocol::Response> frame_or_response =
-      ResolveFrame(inspected_frames_.Get(), security_origin, storage_key,
-                   storage_bucket);
-  if (!frame_or_response.has_value()) {
-    request_callback->sendFailure(frame_or_response.error());
+  base::expected<ExecutionContext*, protocol::Response> context_or_response =
+      ResolveExecutionContext(inspected_frames_.Get(),
+                              worker_global_scope_.Get(), security_origin,
+                              storage_key, storage_bucket);
+  if (!context_or_response.has_value()) {
+    request_callback->sendFailure(context_or_response.error());
     return;
   }
-  LocalFrame* frame = frame_or_response.value();
+  ExecutionContext* context = context_or_response.value();
   ExecutableWithIdbFactory::Start(
-      frame, std::move(storage_bucket),
-      WTF::BindOnce(
+      context, std::move(storage_bucket),
+      BindOnce(
           [](std::unique_ptr<DeleteDatabaseCallback> request_callback,
-             LocalFrame* frame, String database_name,
+             ExecutionContext* context, String database_name,
              protocol::Response response, IDBFactory* idb_factory) {
             if (!response.IsSuccess()) {
               request_callback->sendFailure(response);
               return;
             }
 
-            ScriptState* script_state = ToScriptStateForMainWorld(frame);
+            ScriptState* script_state = ToScriptState(context);
             if (!script_state) {
               request_callback->sendFailure(
                   protocol::Response::InternalError());
@@ -1329,14 +1398,15 @@ void InspectorIndexedDBAgent::deleteDatabase(
                 event_type_names::kSuccess,
                 MakeGarbageCollected<DeleteCallback>(
                     std::move(request_callback),
-                    frame->DomWindow()->GetSecurityOrigin()->ToRawString()),
+                    context->GetSecurityOrigin()->ToRawString()),
                 false);
           },
-          std::move(request_callback), WrapPersistent(frame), database_name));
+          std::move(request_callback), WrapPersistent(context), database_name));
 }
 
 void InspectorIndexedDBAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
+  visitor->Trace(worker_global_scope_);
   InspectorBaseAgent::Trace(visitor);
 }
 

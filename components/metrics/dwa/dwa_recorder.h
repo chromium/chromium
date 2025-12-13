@@ -65,6 +65,9 @@ class COMPONENT_EXPORT(DWA_RECORDER) DwaRecorder {
   const std::vector<metrics::dwa::mojom::DwaEntryPtr>& GetEntriesForTesting()
       const;
 
+  // Returns true if either DwaFeature or PrivateMetricsFeature is enabled.
+  static bool IsDwaOrPrivateMetricsFeatureEnabled();
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

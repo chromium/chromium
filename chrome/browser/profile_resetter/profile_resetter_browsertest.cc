@@ -196,20 +196,30 @@ class PinnedTabsResetTest : public InProcessBrowserTest,
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PinnedTabsResetTest, ResetPinnedTabs) {
+// TODO(434716727): The test is flaky on Mac machines.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ResetPinnedTabs DISABLED_ResetPinnedTabs
+#else
+#define MAYBE_ResetPinnedTabs ResetPinnedTabs
+#endif
+IN_PROC_BROWSER_TEST_F(PinnedTabsResetTest, MAYBE_ResetPinnedTabs) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  const GURL kTestURLs[] = {GURL("https://example.com/0"),
+                            GURL("https://example.com/1"),
+                            GURL("https://example.com/2"),
+                            GURL("https://example.com/3"),
+                            GURL("https://example.com/4")};
 
   // Start with one tab (about:blank). Navigating it.
   content::WebContents* initial_contents = tab_strip_model->GetWebContentsAt(0);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("http://example.com/0")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestURLs[0]));
   initial_contents = tab_strip_model->GetWebContentsAt(0);
 
   // Add 4 tabs
-  content::WebContents* tab_contents1 = AddTab(GURL("http://example.com/1"));
-  content::WebContents* tab_contents2 = AddTab(GURL("http://example.com/2"));
-  content::WebContents* tab_contents3 = AddTab(GURL("http://example.com/3"));
-  content::WebContents* tab_contents4 = AddTab(GURL("http://example.com/4"));
+  content::WebContents* tab_contents1 = AddTab(kTestURLs[1]);
+  content::WebContents* tab_contents2 = AddTab(kTestURLs[2]);
+  content::WebContents* tab_contents3 = AddTab(kTestURLs[3]);
+  content::WebContents* tab_contents4 = AddTab(kTestURLs[4]);
 
   // Current order: initial, tab_contents1, tab_contents2, tab_contents3,
   // tab_contents4
@@ -236,11 +246,12 @@ IN_PROC_BROWSER_TEST_F(PinnedTabsResetTest, ResetPinnedTabs) {
   ResetAndWait(ProfileResetter::PINNED_TABS);
 
   // The order should be preserved, just all unpinned.
-  EXPECT_EQ(tab_contents2, tab_strip_model->GetWebContentsAt(0));
-  EXPECT_EQ(tab_contents1, tab_strip_model->GetWebContentsAt(1));
-  EXPECT_EQ(initial_contents, tab_strip_model->GetWebContentsAt(2));
-  EXPECT_EQ(tab_contents3, tab_strip_model->GetWebContentsAt(3));
-  EXPECT_EQ(tab_contents4, tab_strip_model->GetWebContentsAt(4));
+  EXPECT_EQ(kTestURLs[2], tab_strip_model->GetWebContentsAt(0)->GetURL());
+  EXPECT_EQ(kTestURLs[1], tab_strip_model->GetWebContentsAt(1)->GetURL());
+  EXPECT_EQ(kTestURLs[0], tab_strip_model->GetWebContentsAt(2)->GetURL());
+  EXPECT_EQ(kTestURLs[3], tab_strip_model->GetWebContentsAt(3)->GetURL());
+  EXPECT_EQ(kTestURLs[4], tab_strip_model->GetWebContentsAt(4)->GetURL());
+
   EXPECT_EQ(0, tab_strip_model->IndexOfFirstNonPinnedTab());
 }
 

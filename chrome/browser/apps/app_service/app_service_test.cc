@@ -13,8 +13,6 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/app_service/publishers/arc_apps.h"
-#include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "components/services/app_service/public/cpp/features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

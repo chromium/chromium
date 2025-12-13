@@ -12,10 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/interactions_stats.h"
 
 namespace password_manager {
 
-struct InteractionsStats;
 struct PasswordForm;
 class PasswordFormMetricsRecorder;
 

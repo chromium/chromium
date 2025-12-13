@@ -22,6 +22,10 @@
 #include "services/network/public/mojom/document_isolation_policy.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 class BrowserContext;
@@ -58,6 +62,8 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
       delete;
   ServiceWorkerDevToolsAgentHost& operator=(
       const ServiceWorkerDevToolsAgentHost&) = delete;
+
+  std::optional<blink::StorageKey> GetStorageKey() const;
 
   // DevToolsAgentHost overrides.
   BrowserContext* GetBrowserContext() override;

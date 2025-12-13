@@ -5,6 +5,8 @@
 package org.chromium.content.browser.input;
 
 import android.os.Build;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.inputmethod.SurroundingText;
 
@@ -122,11 +124,25 @@ public class TextInputState {
             int beforeLength, int afterLength) {
         beforeLength = Math.max(0, Math.min(beforeLength, mSelection.start()));
         afterLength = Math.max(0, Math.min(afterLength, mText.length() - mSelection.end()));
-        CharSequence text =
-                TextUtils.substring(
-                        mText, mSelection.start() - beforeLength, mSelection.end() + afterLength);
+        CharSequence text;
+        if (mText instanceof Spanned) {
+            text =
+                    new SpannableStringBuilder(
+                            mText,
+                            mSelection.start() - beforeLength,
+                            mSelection.end() + afterLength);
+        } else {
+            text =
+                    TextUtils.substring(
+                            mText,
+                            mSelection.start() - beforeLength,
+                            mSelection.end() + afterLength);
+        }
+
         return new SurroundingTextInternal(
-                text, beforeLength, mSelection.end() - (mSelection.start() - beforeLength), -1);
+                text, /* selectionStart= */ beforeLength,
+                /* selectionEnd= */ beforeLength + mSelection.end() - mSelection.start(),
+                /* offset= */ mSelection.start() - beforeLength);
     }
 
     @Override

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_transform.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

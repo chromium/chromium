@@ -36,11 +36,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace WTF {
+namespace blink {
 
 SegmentedBuffer::Iterator& SegmentedBuffer::Iterator::operator++() {
-  DCHECK(!IsEnd());
-  UNSAFE_TODO(++segment_it_);
+  CHECK(!IsEnd());
+  // SAFETY: The above CHECK ensures it's safe.
+  UNSAFE_BUFFERS(++segment_it_);
   Init(0);
   return *this;
 }
@@ -107,7 +108,9 @@ SegmentedBuffer::Iterator SegmentedBuffer::GetIteratorAtInternal(
                         [](const size_t& position, const Segment& segment) {
                           return position < segment.start_position();
                         });
-  UNSAFE_TODO(--it);
+  // SAFETY: The above `if` handles a case for the first segment, so `it` must
+  // not be `begin()`.
+  UNSAFE_BUFFERS(--it);
   return Iterator(it, position - it->start_position(), this);
 }
 
@@ -121,9 +124,8 @@ bool SegmentedBuffer::GetBytes(base::span<uint8_t> buffer) const {
       break;
     }
     const size_t to_be_written = std::min(span.size(), buffer.size());
-    auto [buffer_fragment, rest] = buffer.split_at(to_be_written);
-    buffer_fragment.copy_from(base::as_bytes(span.first(to_be_written)));
-    buffer = rest;
+    buffer.take_first(to_be_written)
+        .copy_from(base::as_bytes(span.first(to_be_written)));
   }
   return buffer.empty();
 }
@@ -180,4 +182,4 @@ scoped_refptr<SharedBuffer> SharedBuffer::Create(Vector<char>&& vector) {
   return buffer;
 }
 
-}  // namespace WTF
+}  // namespace blink

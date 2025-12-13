@@ -19,9 +19,6 @@
 #include "chrome/browser/ash/notifications/system_proxy_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
@@ -46,7 +43,6 @@
 #include "net/http/http_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/aura/window.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 

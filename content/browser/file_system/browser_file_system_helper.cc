@@ -193,8 +193,12 @@ void PrepareDropDataForChildProcess(
   // renderer. This probably needs to check that this didn't originate from the
   // renderer... Also, this probably can just be GrantRequestURL (which doesn't
   // yet exist) instead of GrantCommitURL.
-  if (drop_data->url.SchemeIs(content::kExternalFileScheme))
-    security_policy->GrantCommitURL(child_id, drop_data->url);
+  if (!drop_data->url_infos.empty()) {
+    const GURL& url = drop_data->url_infos.front().url;
+    if (url.SchemeIs(content::kExternalFileScheme)) {
+      security_policy->GrantCommitURL(child_id, url);
+    }
+  }
 #endif
 
   std::string filesystem_id = PrepareDataTransferFilenamesForChildProcess(

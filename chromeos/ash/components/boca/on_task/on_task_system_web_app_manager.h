@@ -63,6 +63,11 @@ class OnTaskSystemWebAppManager {
       SessionID window_id,
       const std::set<SessionID>& tab_ids_to_remove) = 0;
 
+  // Set restriction_level for the tabs in the specified Boca SWA window.
+  virtual void SetParentTabsRestriction(
+      SessionID window_id,
+      ::boca::LockedNavigationOptions::NavigationType restriction_level) = 0;
+
   // Sets up the specified Boca SWA window for OnTask. Setting
   // `close_bundle_content` will remove all pre-existing content tabs except for
   // the homepage one, normally required at the onset of a new session or when
@@ -80,6 +85,9 @@ class OnTaskSystemWebAppManager {
 
   // Mute/unmute all tabs in all browser instances.
   virtual void SetAllChromeTabsMuted(bool muted) = 0;
+
+  // If current window is in lock/pinned state.
+  virtual bool IsWindowPinned(SessionID window_id) = 0;
 
  protected:
   OnTaskSystemWebAppManager() = default;

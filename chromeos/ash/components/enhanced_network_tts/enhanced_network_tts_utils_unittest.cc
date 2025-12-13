@@ -145,7 +145,8 @@ TEST_F(EnhancedNetworkTtsUtilsTest, GetResultOnError) {
 TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
   const std::vector<uint8_t> response_data = {1, 2, 5};
   const std::string server_response = CreateServerResponse(response_data);
-  std::optional<base::Value> json = base::JSONReader::Read(server_response);
+  std::optional<base::Value> json = base::JSONReader::Read(
+      server_response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   mojom::TtsResponsePtr result = UnpackJsonResponse(
       json->GetList(), 0 /* start_index */, true /* is_last_request */);
@@ -175,7 +176,8 @@ TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
 TEST_F(EnhancedNetworkTtsUtilsTest,
        UnpackJsonResponseFailsWithWrongResponseFormat) {
   const std::string encoded_response = "[{}, {}, {}]";
-  std::optional<base::Value> json = base::JSONReader::Read(encoded_response);
+  std::optional<base::Value> json = base::JSONReader::Read(
+      encoded_response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   mojom::TtsResponsePtr result = UnpackJsonResponse(
       json->GetList(), 0 /* start_index */, true /* is_last_request */);
@@ -192,7 +194,8 @@ TEST_F(EnhancedNetworkTtsUtilsTest,
   // being valid base64.
   const std::string encoded_response =
       base::StringPrintf(kTemplateResponse, "a b");
-  std::optional<base::Value> json = base::JSONReader::Read(encoded_response);
+  std::optional<base::Value> json = base::JSONReader::Read(
+      encoded_response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   mojom::TtsResponsePtr result = UnpackJsonResponse(
       json->GetList(), 0 /* start_index */, true /* is_last_request */);

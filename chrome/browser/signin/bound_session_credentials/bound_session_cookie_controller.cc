@@ -20,6 +20,7 @@ BoundSessionCookieController::BoundSessionCookieController(
           bound_session_params.creation_time())),
       refresh_url_(bound_session_params.refresh_url()),
       site_(bound_session_params.site()),
+      session_origin_(bound_session_params.session_origin()),
       delegate_(delegate) {
   CHECK(!scope_url_.is_empty());
   CHECK(!site_.is_empty());
@@ -56,7 +57,8 @@ BoundSessionCookieController::bound_session_throttler_params() const {
   }
 
   return chrome::mojom::BoundSessionThrottlerParams::New(
-      scope_url().host(), scope_url().path(), min_cookie_expiration_time());
+      scope_url().GetHost(), scope_url().GetPath(),
+      min_cookie_expiration_time());
 }
 
 base::flat_set<std::string> BoundSessionCookieController::bound_cookie_names()

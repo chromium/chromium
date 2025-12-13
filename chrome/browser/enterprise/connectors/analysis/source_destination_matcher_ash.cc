@@ -23,7 +23,6 @@ namespace {
 // Checks if the key of the sources or destinations list is known.
 // This should only be extended when a key is properly supported.
 bool AllowedFSInfoKey(const std::string& key) {
-  // TODO(crbug.com/1340553): Also allow settings for app ids and smb.
   return key == "file_system_type";
 }
 
@@ -263,7 +262,6 @@ void SourceDestinationMatcherAsh::AddFilters(
     ID* id,
     const base::Value::List* settings_list) {
   DCHECK(id);
-  // TODO(crbug.com/1340553): Adapt for app ids and smb settings
   if (!settings_list) {
     LOG(ERROR) << "No settings list found.";
     return;

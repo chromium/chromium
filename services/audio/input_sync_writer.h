@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "base/time/time.h"
@@ -105,6 +104,9 @@ class InputSyncWriter final : public InputController::SyncWriter {
   bool SignalDataWrittenAndUpdateCounters();
 
   media::AudioInputBuffer* GetSharedInputBuffer(uint32_t segment_id);
+
+  // Helper method for creating internal log messages prefixed with "AISW::".
+  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
 
   const base::RepeatingCallback<void(const std::string&)> log_callback_;
 

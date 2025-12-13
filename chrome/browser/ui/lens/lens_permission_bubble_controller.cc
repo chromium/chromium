@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
+#include "chrome/browser/ui/lens/lens_string_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -178,10 +179,12 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel(
   return ui::DialogModel::Builder()
       .SetInternalName(kLensPermissionDialogName)
       .SetTitle(
-          l10n_util::GetStringUTF16(IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE))
+          l10n_util::GetStringUTF16(lens::GetLensOverlayEntrypointLabelAltIds(
+              IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE)))
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      .SetIcon(ui::ImageModel::FromVectorIcon(vector_icons::kGoogleColorIcon,
-                                              ui::kColorIcon, 20))
+      .SetIcon(ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_GOOGLE_G_GRADIENT_20)))
       .SetBannerImage(ui::ImageModel::FromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               lens::features::IsLensOverlayPermissionBubbleAltEnabled()
@@ -218,7 +221,7 @@ void LensPermissionBubbleController::OnHelpCenterLinkClicked(
   tab_interface_->GetBrowserWindowInterface()->OpenGURL(
       GURL(lens::features::GetLensOverlayHelpCenterURL()),
       ui::DispositionFromEventFlags(event.flags(),
-                                    WindowOpenDisposition::NEW_BACKGROUND_TAB));
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
 void LensPermissionBubbleController::OnPermissionDialogAccept(

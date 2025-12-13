@@ -29,6 +29,7 @@
 import collections
 import logging
 import re
+from typing import Sequence
 
 # pylint: disable=unused-import; `Build` is imported by other modules
 from blinkpy.common.memoized import memoized
@@ -51,8 +52,12 @@ class TestResultsFetcher:
         https://www.chromium.org/developers/the-json-test-results-format
     """
 
+
+    # Matches either:
+    # ://\:blink_web_tests!webtest::accessibility#option-removed-from-shadow-dom-crash.html
+    # ninja://:blink_web_tests/accessibility/option-removed-from-shadow-dom-crash.html
     _test_id_pattern = re.compile(
-        r'ninja://\S+_(web_tests|wpt(|_\w+))/(?P<name>\S+)')
+        r'(ninja)?://\S+_(web_tests|wpt(|_\w+))(/|\S+::)(?P<name>\S+)')
 
     def __init__(self, web, luci_auth):
         self.web = web
@@ -117,7 +122,8 @@ class TestResultsFetcher:
                 test_result['testId'])
             if not test_id_match:
                 continue
-            test_results_by_name[test_id_match['name']].append(test_result)
+            test_results_by_name[test_id_match['name'].replace(
+                '#', '/')].append(test_result)
         return test_results_by_name
 
     def _group_artifacts_by_test_run(self, artifacts):
@@ -170,17 +176,26 @@ class TestResultsFetcher:
         The URLs look like:
             https://results.usercontent.cr.dev/invocations/ \
                 task-chromium-swarm.appspot.com-58590ed6228fd611/ \
-                artifacts/wpt_reports_android_webview_01.json \
-                ?token=AXsiX2kiOiIxNjQx...
+                artifacts/wpt_reports.json?token=AXsiX2kiOiIxNjQx...
 
         Arguments:
             build_ids: Build IDs retrieved from Buildbucket.
 
         Returns:
-            A list of URLs, sorted by (product, shard index). Note that the URLs
-            contain a time-sensitive `token` query parameter required for
-            access.
+            A list of URLs. Note that the URLs contain a time-sensitive `token`
+            query parameter required for access.
         """
+        return self._fetch_artifact_urls(build_ids, r'wpt_reports\.json')
+
+    def fetch_wpt_screenshot_urls(self, *build_ids: str) -> list[str]:
+        """Fetch a list of wptscreenshot artifacts.
+
+        See `fetch_wpt_report_urls()` for usage.
+        """
+        return self._fetch_artifact_urls(build_ids, r'wpt_screenshots\.txt')
+
+    def _fetch_artifact_urls(self, build_ids: Sequence[str],
+                             id_pattern: str) -> list[str]:
         if not build_ids:
             return []
         artifacts = self._resultdb_client.query_artifacts(
@@ -188,7 +203,7 @@ class TestResultsFetcher:
                 'followEdges': {
                     'includedInvocations': True,
                 },
-                'artifactIdRegexp': 'wpt_reports.json',
+                'artifactIdRegexp': id_pattern,
             })
         artifacts.sort(key=lambda artifact: artifact['artifactId'])
         return [artifact['fetchUrl'] for artifact in artifacts]

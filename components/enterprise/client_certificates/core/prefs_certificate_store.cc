@@ -203,4 +203,23 @@ void PrefsCertificateStore::OnPrivateKeyCreated(
   std::move(callback).Run(private_key);
 }
 
+void PrefsCertificateStore::DeleteIdentities(
+    const std::vector<std::string>& identity_names,
+    base::OnceCallback<void(std::optional<StoreError>)> callback) {
+  // Check that all identity names are non-empty.
+  for (const auto& identity_name : identity_names) {
+    if (identity_name.empty()) {
+      std::move(callback).Run(StoreError::kInvalidIdentityName);
+      return;
+    }
+  }
+
+  // Clear all identities from the prefs.
+  for (const auto& identity_name : identity_names) {
+    pref_service_->ClearPref(identity_name);
+  }
+
+  std::move(callback).Run(std::nullopt);
+}
+
 }  // namespace client_certificates

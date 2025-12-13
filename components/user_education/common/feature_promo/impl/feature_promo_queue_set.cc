@@ -66,24 +66,27 @@ bool FeaturePromoQueueSet::IsQueued(const base::Feature& iph_feature) const {
 
 FeaturePromoResult FeaturePromoQueueSet::CanQueue(
     const FeaturePromoSpecification& spec,
-    const FeaturePromoParams& promo_params) const {
+    const FeaturePromoParams& promo_params,
+    const UserEducationContextPtr& promo_context) const {
   const auto info = priority_provider_->GetPromoPriorityInfo(spec);
   auto* const queue = base::FindOrNull(queues_, info.priority);
-  return queue ? queue->CanQueue(spec, promo_params)
+  return queue ? queue->CanQueue(spec, promo_params, promo_context)
                : FeaturePromoResult::kError;
 }
 
 FeaturePromoResult FeaturePromoQueueSet::CanShow(
     const FeaturePromoSpecification& spec,
-    const FeaturePromoParams& promo_params) const {
+    const FeaturePromoParams& promo_params,
+    const UserEducationContextPtr& promo_context) const {
   const auto info = priority_provider_->GetPromoPriorityInfo(spec);
   auto* const queue = base::FindOrNull(queues_, info.priority);
-  return queue ? queue->CanShow(spec, promo_params)
+  return queue ? queue->CanShow(spec, promo_params, promo_context)
                : FeaturePromoResult::kError;
 }
 
 void FeaturePromoQueueSet::TryToQueue(const FeaturePromoSpecification& spec,
-                                      FeaturePromoParams promo_params) {
+                                      FeaturePromoParams promo_params,
+                                      UserEducationContextPtr promo_context) {
   const auto info = priority_provider_->GetPromoPriorityInfo(spec);
   auto* const queue = base::FindOrNull(queues_, info.priority);
   if (!queue) {
@@ -91,7 +94,7 @@ void FeaturePromoQueueSet::TryToQueue(const FeaturePromoSpecification& spec,
         std::move(promo_params.show_promo_result_callback),
         FeaturePromoResult::kError);
   } else {
-    queue->TryToQueue(spec, std::move(promo_params));
+    queue->TryToQueue(spec, std::move(promo_params), std::move(promo_context));
   }
 }
 

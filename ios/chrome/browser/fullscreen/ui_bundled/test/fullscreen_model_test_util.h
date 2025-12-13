@@ -24,6 +24,9 @@ void SimulateFullscreenUserScrollWithDelta(FullscreenModel* model,
 void SimulateFullscreenUserScrollForProgress(FullscreenModel* model,
                                              CGFloat progress);
 
+// Simulates a user scroll to the bottom of the content.
+void SimulateScrollToBottom(FullscreenModel* model);
+
 // Returns the delta from `model`'s current Y offset that would result in
 // `progress`.
 CGFloat GetFullscreenOffsetDeltaForProgress(FullscreenModel* model,

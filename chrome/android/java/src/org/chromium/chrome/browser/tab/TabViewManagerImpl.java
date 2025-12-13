@@ -12,10 +12,11 @@ import android.widget.FrameLayout;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.DestroyableObservableSupplier;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginAdapter;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -67,7 +68,9 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
     private final PriorityQueue<TabViewProvider> mTabViewProviders;
     private final TabImpl mTab;
     private @Nullable View mCurrentView;
-    private @Nullable DestroyableObservableSupplier<Rect> mMarginSupplier;
+    private final ObservableSupplierImpl<Rect> mBrowserControlsMarginsSupplier =
+            new ObservableSupplierImpl<>();
+    private @Nullable Destroyable mMarginsAdapter;
 
     TabViewManagerImpl(TabImpl tab) {
         mTab = tab;
@@ -77,17 +80,18 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
     private void initMarginSupplier() {
         if (mTab.getActivity() == null
                 || mTab.getActivity().isActivityFinishingOrDestroyed()
-                || mMarginSupplier != null) {
+                || mMarginsAdapter != null) {
             return;
         }
 
-        mMarginSupplier =
-                new BrowserControlsMarginSupplier(mTab.getActivity().getBrowserControlsManager());
-        mMarginSupplier.addObserver(this::updateViewMargins);
+        mMarginsAdapter =
+                BrowserControlsMarginAdapter.create(
+                        mTab.getActivity().getBrowserControlsManager(),
+                        mBrowserControlsMarginsSupplier);
         // Update margins immediately if available rather than waiting for a posted notification.
         // Waiting for a posted notification could allow a layout pass to occur before the margins
         // are set.
-        updateViewMargins(mMarginSupplier.get());
+        mBrowserControlsMarginsSupplier.addSyncObserverAndCallIfNonNull(this::updateViewMargins);
     }
 
     /**
@@ -185,6 +189,6 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
         TabViewProvider currentTabViewProvider = mTabViewProviders.peek();
         if (currentTabViewProvider != null) currentTabViewProvider.onHidden();
         mTabViewProviders.clear();
-        if (mMarginSupplier != null) mMarginSupplier.destroy();
+        if (mMarginsAdapter != null) mMarginsAdapter.destroy();
     }
 }

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "components/page_load_metrics/common/page_load_metrics_debug_string.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,10 +40,7 @@ void FakePageTimingSender::SetUpDroppedFramesReporting(
 void FakePageTimingSender::SendCustomUserTiming(
     mojom::CustomUserTimingMarkPtr timing) {}
 
-FakePageTimingSender::PageTimingValidator::PageTimingValidator() {
-  expected_input_timing.max_event_durations =
-      mojom::UserInteractionLatencies::NewUserInteractionLatencies({});
-}
+FakePageTimingSender::PageTimingValidator::PageTimingValidator() = default;
 
 FakePageTimingSender::PageTimingValidator::~PageTimingValidator() {
   VerifyExpectedTimings();
@@ -87,8 +85,12 @@ void FakePageTimingSender::PageTimingValidator::
             *expected_soft_navigation_metrics_.at(i))) {
       continue;
     }
-    ADD_FAILURE() << "Observed soft navigation metric != expected one at index "
-                  << i;
+    ADD_FAILURE() << "Actual soft navigation metric != expected at index "
+                  << i << "\n"
+                  << "Actual: "
+                  << DebugString(*actual_soft_navigation_metrics_.at(i))
+                  << "\nExpected: "
+                  << DebugString(*expected_soft_navigation_metrics_.at(i));
   }
 }
 
@@ -96,20 +98,16 @@ void FakePageTimingSender::PageTimingValidator::UpdateExpectedInteractionTiming(
     const base::TimeDelta interaction_duration,
     uint64_t interaction_offset,
     const base::TimeTicks interaction_time) {
-  expected_input_timing.num_interactions++;
-  expected_input_timing.max_event_durations->get_user_interaction_latencies()
-      .emplace_back(mojom::UserInteractionLatency::New(
-          interaction_duration, interaction_offset, interaction_time));
+  expected_input_timing_.user_interaction_latencies.emplace_back(
+      mojom::UserInteractionLatency::New(interaction_duration,
+                                         interaction_offset, interaction_time));
 }
 void FakePageTimingSender::PageTimingValidator::
     VerifyExpectedInteractionTiming() const {
-  ASSERT_EQ(expected_input_timing.num_interactions,
-            actual_input_timing.num_interactions);
-  auto& expected_latencies = expected_input_timing.max_event_durations
-                                 ->get_user_interaction_latencies();
-  auto& actual_latencies =
-      actual_input_timing.max_event_durations->get_user_interaction_latencies();
+  auto& expected_latencies = expected_input_timing_.user_interaction_latencies;
+  auto& actual_latencies = actual_input_timing_.user_interaction_latencies;
 
+  ASSERT_EQ(expected_latencies.size(), actual_latencies.size());
   for (size_t i = 0; i < expected_latencies.size(); ++i) {
     ASSERT_EQ(expected_latencies[i]->interaction_latency,
               actual_latencies[i]->interaction_latency);
@@ -181,9 +179,11 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) {
   actual_timings_.push_back(timing.Clone());
   actual_soft_navigation_metrics_.push_back(soft_navigation_metrics->Clone());
+
   if (!cpu_timing->task_time.is_zero()) {
     actual_cpu_timings_.push_back(cpu_timing.Clone());
   }
+
   for (const blink::UseCounterFeature& feature : new_features) {
     EXPECT_EQ(actual_features_.find(feature), actual_features_.end())
         << "Feature " << feature.type() << ": " << feature.value()
@@ -192,20 +192,14 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   }
 
   actual_render_data_.layout_shift_delta = render_data.layout_shift_delta;
+
   actual_main_frame_intersection_rect_ = metadata->main_frame_intersection_rect;
   actual_main_frame_viewport_rect_ = metadata->main_frame_viewport_rect;
 
-  if (new_input_timing->num_interactions > 0 &&
-      actual_input_timing.num_interactions == 0) {
-    actual_input_timing.max_event_durations =
-        mojom::UserInteractionLatencies::NewUserInteractionLatencies({});
-  }
-  actual_input_timing.num_interactions = new_input_timing->num_interactions;
   for (const mojom::UserInteractionLatencyPtr& user_interaction :
-       new_input_timing->max_event_durations
-           ->get_user_interaction_latencies()) {
-    actual_input_timing.max_event_durations->get_user_interaction_latencies()
-        .emplace_back(mojom::UserInteractionLatency::New(
+       new_input_timing->user_interaction_latencies) {
+    actual_input_timing_.user_interaction_latencies.emplace_back(
+        mojom::UserInteractionLatency::New(
             user_interaction->interaction_latency,
             user_interaction->interaction_offset,
             user_interaction->interaction_time));

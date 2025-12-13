@@ -6,10 +6,8 @@
 
 #include <variant>
 
-#include "base/android/build_info.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
@@ -20,8 +18,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
-#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
@@ -30,33 +26,11 @@ namespace password_manager {
 
 namespace {
 
-constexpr char kUPMActiveHistogram[] =
-    "PasswordManager.UnifiedPasswordManager.ActiveStatus2";
-
 std::string GetSyncingAccount(const syncer::SyncService* sync_service) {
   CHECK(sync_service);
   return password_manager::sync_util::HasChosenToSyncPasswords(sync_service)
              ? sync_service->GetAccountInfo().email
              : std::string();
-}
-
-void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
-  if (!password_manager::sync_util::HasChosenToSyncPasswords(sync_service)) {
-    base::UmaHistogramEnumeration(
-        kUPMActiveHistogram,
-        UnifiedPasswordManagerActiveStatus::kInactiveSyncOff);
-    return;
-  }
-
-  if (password_manager_upm_eviction::IsCurrentUserEvicted(prefs)) {
-    base::UmaHistogramEnumeration(
-        kUPMActiveHistogram,
-        UnifiedPasswordManagerActiveStatus::kInactiveUnenrolledDueToErrors);
-    return;
-  }
-
-  base::UmaHistogramEnumeration(kUPMActiveHistogram,
-                                UnifiedPasswordManagerActiveStatus::kActive);
 }
 
 template <typename Response, typename CallbackType>
@@ -67,13 +41,10 @@ void ReplyWithEmptyList(CallbackType callback) {
 
 }  // namespace
 
-PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
-    PrefService* prefs,
-    password_manager::IsAccountStore is_account_store)
+PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend()
     : PasswordStoreAndroidBackend(
-          PasswordStoreAndroidBackendBridgeHelper::Create(is_account_store),
-          std::make_unique<PasswordManagerLifecycleHelperImpl>(),
-          prefs) {
+          PasswordStoreAndroidBackendBridgeHelper::Create(kAccountStore),
+          std::make_unique<PasswordManagerLifecycleHelperImpl>()) {
   sync_controller_delegate_ =
       std::make_unique<PasswordSyncControllerDelegateAndroid>(
           std::make_unique<PasswordSyncControllerDelegateBridgeImpl>());
@@ -90,11 +61,9 @@ PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
     std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
     std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
     std::unique_ptr<PasswordSyncControllerDelegateAndroid>
-        sync_controller_delegate,
-    PrefService* prefs)
+        sync_controller_delegate)
     : PasswordStoreAndroidBackend(std::move(bridge_helper),
-                                  std::move(lifecycle_helper),
-                                  prefs) {
+                                  std::move(lifecycle_helper)) {
   sync_controller_delegate_ = std::move(sync_controller_delegate);
   sync_controller_delegate_->SetSyncObserverCallbacks(
       base::BindRepeating(
@@ -298,9 +267,6 @@ void PasswordStoreAndroidAccountBackend::OnSyncServiceInitialized(
   // without a need for it. If it is don't repeatedly initialize the sync
   // service to make it clear that it's not needed to do so for future readers
   // of the code.
-  if (!sync_service_) {
-    LogUPMActiveStatus(sync_service, prefs());
-  }
   sync_service_ = sync_service;
   sync_controller_delegate_->OnSyncServiceInitialized(sync_service);
 }

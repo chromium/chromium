@@ -37,7 +37,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -347,7 +349,16 @@ public class LinkToTextCoordinatorTest {
         mLinkToTextCoordinator.initLinkToTextCoordinator(
                 mTab, mShareCallback, mChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "", false);
         mLinkToTextCoordinator.shareLinkToText();
-        mLinkToTextCoordinator.onUpdateUrl(mTab, new GURL(VISIBLE_URL));
+        mLinkToTextCoordinator.onDidStartNavigationInPrimaryMainFrame(
+                mTab,
+                NavigationHandle.createForTesting(
+                        new GURL(VISIBLE_URL),
+                        /* isInPrimaryMainFrame= */ true,
+                        /* isSameDocument= */ false,
+                        /* isRendererInitiated= */ false,
+                        PageTransition.TYPED,
+                        /* hasUserGesture= */ false,
+                        /* isReload= */ false));
 
         // check doesn't show share sheet
         verify(mShareCallback, times(0)).showShareSheet(any(), any(), anyLong());
@@ -458,7 +469,16 @@ public class LinkToTextCoordinatorTest {
                 "",
                 false);
         mLinkToTextCoordinator.shareLinkToText();
-        mLinkToTextCoordinator.onUpdateUrl(mTab, new GURL(VISIBLE_URL));
+        mLinkToTextCoordinator.onDidStartNavigationInPrimaryMainFrame(
+                mTab,
+                NavigationHandle.createForTesting(
+                        new GURL(VISIBLE_URL),
+                        /* isInPrimaryMainFrame= */ true,
+                        /* isSameDocument= */ false,
+                        /* isRendererInitiated= */ false,
+                        PageTransition.TYPED,
+                        /* hasUserGesture= */ false,
+                        /* isReload= */ false));
 
         // check doesn't show share sheet
         verify(mShareCallback, times(0)).showShareSheet(any(), any(), anyLong());

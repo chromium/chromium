@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/memory/page_size.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -51,7 +52,7 @@ class MockMetric final
   MockMetric() : PreFreezeBackgroundMemoryTrimmer::PreFreezeMetric("Mock") {
     count_++;
   }
-  std::optional<uint64_t> Measure() const override { return 0; }
+  std::optional<ByteCount> Measure() const override { return ByteCount(0); }
   static size_t count_;
 
   ~MockMetric() override { count_--; }

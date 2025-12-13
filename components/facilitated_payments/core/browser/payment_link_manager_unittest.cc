@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -33,6 +34,7 @@
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -77,10 +79,13 @@ class PaymentLinkManagerTest : public testing::Test {
     payments_data_manager_.SetPrefService(pref_service_.get());
     payments_data_manager_.SetSyncServiceForTest(&sync_service_);
     test_strike_database_ = std::make_unique<autofill::TestStrikeDatabase>();
+    payments_network_interface_ =
+        std::make_unique<MockFacilitatedPaymentsNetworkInterface>(
+            *identity_test_env_.identity_manager(), payments_data_manager_);
     ON_CALL(client_, GetPaymentsDataManager)
         .WillByDefault(testing::Return(&payments_data_manager_));
     ON_CALL(client_, GetFacilitatedPaymentsNetworkInterface)
-        .WillByDefault(testing::Return(&payments_network_interface_));
+        .WillByDefault(testing::Return(payments_network_interface_.get()));
     ON_CALL(client_, IsInLandscapeMode).WillByDefault(testing::Return(false));
     ON_CALL(client_, IsFoldable).WillByDefault(testing::Return(false));
     ON_CALL(client_, GetCoreAccountInfo)
@@ -120,6 +125,7 @@ class PaymentLinkManagerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  signin::IdentityTestEnvironment identity_test_env_;
   MockFacilitatedPaymentsClient client_;
   optimization_guide::MockOptimizationGuideDecider optimization_guide_decider_;
   // Order matters here because `payment_link_manager_` keeps a reference
@@ -128,7 +134,8 @@ class PaymentLinkManagerTest : public testing::Test {
   std::unique_ptr<PrefService> pref_service_;
   syncer::TestSyncService sync_service_;
   autofill::TestPaymentsDataManager payments_data_manager_;
-  MockFacilitatedPaymentsNetworkInterface payments_network_interface_;
+  std::unique_ptr<MockFacilitatedPaymentsNetworkInterface>
+      payments_network_interface_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   std::unique_ptr<autofill::TestStrikeDatabase> test_strike_database_;
 };
@@ -145,10 +152,9 @@ TEST_F(PaymentLinkManagerTest, LogPaymentLinkDetected) {
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Ewallet.PaymentLinkDetected",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("FacilitatedPayments.PaymentLinkDetected",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_PaymentLinkDetected::kEntryName,
       {ukm::builders::FacilitatedPayments_PaymentLinkDetected::
@@ -302,10 +308,9 @@ TEST_F(PaymentLinkManagerTest,
   GURL supported_payment_link(
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+  ON_CALL(client_, GetPaymentsDataManager)
+      .WillByDefault(testing::Return(nullptr));
 
-  EXPECT_CALL(client_, GetPaymentsDataManager)
-      .Times(1)
-      .WillOnce(testing::Return(nullptr));
   EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
@@ -394,12 +399,10 @@ TEST_F(PaymentLinkManagerTest,
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  EXPECT_CALL(GetApiClient(), IsAvailableSync)
-      .Times(1)
-      .WillOnce(testing::Invoke([&]() {
-        FastForwardBy(base::Seconds(2));
-        return true;
-      }));
+  EXPECT_CALL(GetApiClient(), IsAvailableSync).Times(1).WillOnce([&]() {
+    FastForwardBy(base::Seconds(2));
+    return true;
+  });
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
@@ -426,12 +429,10 @@ TEST_F(PaymentLinkManagerTest,
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  EXPECT_CALL(GetApiClient(), IsAvailableSync)
-      .Times(1)
-      .WillOnce(testing::Invoke([&]() {
-        FastForwardBy(base::Seconds(2));
-        return false;
-      }));
+  EXPECT_CALL(GetApiClient(), IsAvailableSync).Times(1).WillOnce([&]() {
+    FastForwardBy(base::Seconds(2));
+    return false;
+  });
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
@@ -649,7 +650,7 @@ TEST_F(
       .Times(1)
       .WillOnce(testing::Return(nullptr));
 
-  EXPECT_CALL(payments_network_interface_,
+  EXPECT_CALL(*payments_network_interface_,
               InitiatePayment(testing::_, testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(client_, ShowErrorScreen);
@@ -660,7 +661,7 @@ TEST_F(
 // Test that LogInitiatePaymentAttempt is logged correctly.
 TEST_F(PaymentLinkManagerTest, LogInitiatePaymentAttempt) {
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(payments_network_interface_,
+  EXPECT_CALL(*payments_network_interface_,
               InitiatePayment(testing::_, testing::_, testing::_));
 
   test_api(*payment_link_manager_).SendInitiatePaymentRequest();
@@ -991,7 +992,7 @@ TEST_F(PaymentLinkManagerTest,
   // Simulate that the FOP selector was shown successfully.
   test_api(*payment_link_manager_)
       .ShowPaymentLinkPrompt({supported_ewallet}, {}, base::DoNothing());
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
 
   // Verify that when the eWallet FOP selector is shown, latency histogram is
   // logged.
@@ -1002,6 +1003,16 @@ TEST_F(PaymentLinkManagerTest,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletOnly.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletOnly.FopSelectorShown."
       "LatencyAfterDetectingPaymentLink.ShopeePay",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
@@ -1057,7 +1068,7 @@ TEST_P(PaymentLinkManagerTestForUiScreens, NewScreenShown) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen was shown successfully.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
 
   // Verify feature has updated the UI state.
   EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), ui_state());
@@ -1077,7 +1088,8 @@ TEST_P(PaymentLinkManagerTestForUiScreens, NewScreenCouldNotBeShown) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen could not be shown.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedNotByUser);
+  test_api(*payment_link_manager_)
+      .OnUiScreenEvent(UiEvent::kScreenClosedNotByUser);
 
   // Verify that the UI state is hidden.
   EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
@@ -1098,9 +1110,10 @@ TEST_P(PaymentLinkManagerTestForUiScreens, ScreenClosedNotByUser) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen was shown successfully.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed, but it was not due to a user action.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedNotByUser);
+  test_api(*payment_link_manager_)
+      .OnUiScreenEvent(UiEvent::kScreenClosedNotByUser);
 
   // Verify that the UI state is hidden.
   EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
@@ -1121,9 +1134,10 @@ TEST_P(PaymentLinkManagerTestForUiScreens, ScreenClosedByUser) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen was shown successfully.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed by the user.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedByUser);
+  test_api(*payment_link_manager_)
+      .OnUiScreenEvent(UiEvent::kScreenClosedByUser);
 
   // Verify that the UI state is hidden.
   EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
@@ -1385,9 +1399,10 @@ TEST_F(PaymentLinkManagerTest, ScreenClosedByUser_FopSelectorRejected) {
   test_api(*payment_link_manager_)
       .ShowPaymentLinkPrompt(std::move(ewallets), {}, base::DoNothing());
   // Simulate new screen was shown successfully.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed by the user.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedByUser);
+  test_api(*payment_link_manager_)
+      .OnUiScreenEvent(UiEvent::kScreenClosedByUser);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_Ewallet_FopSelectorResult::kEntryName,
@@ -1549,9 +1564,9 @@ class PaymentLinkManagerTestForA2AFlow : public PaymentLinkManagerTest {
     ON_CALL(client_, GetDeviceDelegate)
         .WillByDefault(testing::Return(mock_device_delegate_.get()));
     ON_CALL(*mock_device_delegate_, GetSupportedPaymentApps)
-        .WillByDefault(testing::Invoke([&]() {
+        .WillByDefault([&]() {
           return std::move(mock_facilitated_payments_app_info_list_);
-        }));
+        });
     ON_CALL(optimization_guide_decider_,
             CanApplyOptimization(
                 testing::_,
@@ -1570,6 +1585,7 @@ class PaymentLinkManagerTestForA2AFlow : public PaymentLinkManagerTest {
 
 // A2A payment prompt is not shown when the flag is off.
 TEST_F(PaymentLinkManagerTestForA2AFlow, FlagOff_A2APaymentPromptNotShown) {
+  base::HistogramTester histogram_tester;
   feature_list_.InitAndDisableFeature(
       payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL supported_payment_link(
@@ -1582,42 +1598,84 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, FlagOff_A2APaymentPromptNotShown) {
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason",
+      A2AFlowExitedReason::kFlagNotEnabled, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason.PromptPay",
+      A2AFlowExitedReason::kFlagNotEnabled, /*expected_bucket_count=*/1);
 }
 
 // A2A payment prompt is not shown when there are no supported payment apps.
 TEST_F(PaymentLinkManagerTestForA2AFlow,
        NoSupportedPaymentApps_A2APaymentPromptNotShown) {
+  base::HistogramTester histogram_tester;
   feature_list_.InitAndEnableFeature(
       payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL supported_payment_link(
       "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
 
   EXPECT_CALL(*mock_facilitated_payments_app_info_list_, Size)
-      .WillOnce(testing::Return(0));
+      .Times(2)
+      .WillRepeatedly(testing::Return(0));
   EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason",
+      A2AFlowExitedReason::kNoSupportedPaymentApp, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason.PromptPay",
+      A2AFlowExitedReason::kNoSupportedPaymentApp, /*expected_bucket_count=*/1);
 }
 
-// A2A payment prompt is shown.
+// A2A payment prompt is shown and latency metrics are logged.
 TEST_F(PaymentLinkManagerTestForA2AFlow, A2APaymentPromptShown) {
+  base::HistogramTester histogram_tester;
+
   feature_list_.InitAndEnableFeature(
       payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL supported_payment_link(
       "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
-  EXPECT_CALL(*mock_facilitated_payments_app_info_list_, Size)
-      .WillOnce(testing::Return(2));
+  EXPECT_CALL(*mock_facilitated_payments_app_info_list_, Size())
+      .Times(2)
+      .WillRepeatedly(testing::Return(2));
   EXPECT_CALL(client_, ShowPaymentLinkPrompt);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
+
+  // Fully mocked time, does not advance by itself.
+  FastForwardBy(base::Seconds(2));
+
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2AOnly.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2AOnly.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink.PromptPay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "FacilitatedPayments.Ewallet.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink",
+      0);
 }
 
-// Payment prompt is shown with A2A and eWallet options.
+// Payment prompt is shown with A2A and eWallet options and latency metrics are
+// logged.
 TEST_F(PaymentLinkManagerTestForA2AFlow, PaymentPromptShown_A2AAndEwallet) {
+  base::HistogramTester histogram_tester;
+
   feature_list_.InitAndEnableFeature(
       payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   autofill::Ewallet supported_ewallet(
@@ -1644,6 +1702,22 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, PaymentPromptShown_A2AAndEwallet) {
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
+
+  // Fully mocked time, does not advance by itself.
+  FastForwardBy(base::Seconds(2));
+
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletAndA2A.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletAndA2A.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // A2A payment prompt is shown for websites in the allolwist.
@@ -1675,6 +1749,7 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, UrlInAllowlist_A2APaymentPromptShown) {
 // A2A payment prompt is not shown for websites not in the allolwist.
 TEST_F(PaymentLinkManagerTestForA2AFlow,
        UrlNotInAllowlist_A2APaymentPromptNotShown) {
+  base::HistogramTester histogram_tester;
   feature_list_.InitAndEnableFeature(
       payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL page_url("https://www.example.com");
@@ -1695,6 +1770,423 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason",
+      A2AFlowExitedReason::kNotInAllowlist, /*expected_bucket_count=*/1);
+}
+
+// Test when A2A payment prompt is shown, set
+// FacilitatedPaymentsA2ATriggeredOnce pref to `true` is invoked;
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       A2APaymentPromptShown_A2ATriggeredOncePrefSet) {
+  feature_list_.InitAndEnableFeature(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+  GURL supported_payment_link(
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
+  EXPECT_CALL(*mock_facilitated_payments_app_info_list_, Size())
+      .Times(2)
+      .WillRepeatedly(testing::Return(2));
+  EXPECT_CALL(client_, ShowPaymentLinkPrompt);
+
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  EXPECT_TRUE(pref_service_.get()->GetBoolean(
+      autofill::prefs::kFacilitatedPaymentsA2ATriggeredOnce));
+}
+
+// A2A payment prompt is not shown if the user has opted out of the A2A flow.
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       UserOptedOut_A2APaymentPromptNotShown) {
+  feature_list_.InitAndEnableFeature(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+  GURL supported_payment_link(
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
+  ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
+      .WillByDefault(testing::Return(2));
+
+  // Test that when `kFacilitatedPaymentsA2AEnabled` pref is true,
+  // `ShowPaymentLinkPrompt` is invoked.
+  pref_service_.get()->SetBoolean(
+      autofill::prefs::kFacilitatedPaymentsA2AEnabled, true);
+
+  EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(1);
+
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  // Test that when `kFacilitatedPaymentsA2AEnabled` pref is false,
+  // `ShowPaymentLinkPrompt` is not invoked.
+  pref_service_.get()->SetBoolean(
+      autofill::prefs::kFacilitatedPaymentsA2AEnabled, false);
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
+
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason",
+      A2AFlowExitedReason::kUserOptedOut, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason.PromptPay",
+      A2AFlowExitedReason::kUserOptedOut, /*expected_bucket_count=*/1);
+}
+
+// Test that when a payment app is selected, the strikes are cleared.
+TEST_F(PaymentLinkManagerTestForA2AFlow, OnPaymentAppSelected_ClearsStrikes) {
+  // Setup strikes.
+  PaymentLinkSuggestionStrikeDatabase strike_database =
+      PaymentLinkSuggestionStrikeDatabase(test_strike_database_.get());
+  strike_database.AddStrikes(2);
+  ASSERT_EQ(2, strike_database.GetStrikes());
+
+  test_api(*payment_link_manager_).set_is_payment_app_available(true);
+
+  // Trigger the call.
+  test_api(*payment_link_manager_)
+      .OnPaymentAppSelected("com.example.app", "com.example.app.activity");
+
+  // Verify strikes are cleared.
+  EXPECT_EQ(0, strike_database.GetStrikes());
+}
+
+// Test that when a payment app is selected, the app is invoked.
+TEST_F(PaymentLinkManagerTestForA2AFlow, OnPaymentAppSelected_InvokesApp) {
+  // Setup for InvokePaymentApp call.
+  const std::string package_name = "com.example.app";
+  const std::string activity_name = "com.example.app.activity";
+  const std::string payment_link =
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay";
+  auto request_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  request_details->payment_link_ = payment_link;
+  test_api(*payment_link_manager_)
+      .set_initiate_payment_request_details(std::move(request_details));
+
+  test_api(*payment_link_manager_).set_is_payment_app_available(true);
+
+  EXPECT_CALL(
+      *mock_device_delegate_,
+      InvokePaymentApp(package_name, activity_name, GURL(payment_link)));
+  // `DismissPrompt` is called once when a payment app is selected, and again
+  // when the test fixture destroys the `manager_`.
+  EXPECT_CALL(client_, DismissPrompt).Times(2);
+
+  // Trigger the call.
+  test_api(*payment_link_manager_)
+      .OnPaymentAppSelected(package_name, activity_name);
+}
+
+// Test that when a payment app is selected, the app is invoked.
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       OnPaymentAppSelected_InvokedAppSucceed_RecordHistogram) {
+  base::HistogramTester histogram_tester;
+  // Setup for InvokePaymentApp call.
+  const std::string package_name = "com.example.app";
+  const std::string activity_name = "com.example.app.activity";
+  const std::string payment_link =
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path";
+  auto request_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  request_details->payment_link_ = payment_link;
+  test_api(*payment_link_manager_)
+      .set_initiate_payment_request_details(std::move(request_details));
+
+  test_api(*payment_link_manager_)
+      .set_is_payment_app_available(/*is_payment_app_available=*/true);
+  test_api(*payment_link_manager_)
+      .set_scheme(PaymentLinkValidator::Scheme::kPromptPay);
+
+  EXPECT_CALL(*mock_device_delegate_,
+              InvokePaymentApp(package_name, activity_name, GURL(payment_link)))
+      .WillOnce(testing::Return(true));
+
+  // Trigger the call.
+  test_api(*payment_link_manager_)
+      .OnPaymentAppSelected(package_name, activity_name);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2AOnly.FopSelector.UserAction",
+      PaymentLinkFopSelectorAction::kPaymentAppSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2AOnly.FopSelector.UserAction.PromptPay",
+      PaymentLinkFopSelectorAction::kPaymentAppSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "FacilitatedPayments.A2A.InvokePaymentApp.Success."
+      "LatencyAfterDetectingPaymentLink",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "FacilitatedPayments.A2A.InvokePaymentApp.Success."
+      "LatencyAfterDetectingPaymentLink.PromptPay",
+      1);
+}
+
+// Test that when a payment app is selected, the app is invoked.
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       OnPaymentAppSelected_InvokedAppFailed_RecordHistogram) {
+  base::HistogramTester histogram_tester;
+  // Setup for InvokePaymentApp call.
+  const std::string package_name = "com.example.app";
+  const std::string activity_name = "com.example.app.activity";
+  const std::string payment_link =
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path";
+  auto request_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  request_details->payment_link_ = payment_link;
+  test_api(*payment_link_manager_)
+      .set_initiate_payment_request_details(std::move(request_details));
+
+  test_api(*payment_link_manager_)
+      .set_is_payment_app_available(/*is_payment_app_available=*/true);
+  test_api(*payment_link_manager_)
+      .set_scheme(PaymentLinkValidator::Scheme::kPromptPay);
+
+  EXPECT_CALL(*mock_device_delegate_,
+              InvokePaymentApp(package_name, activity_name, GURL(payment_link)))
+      .WillOnce(testing::Return(false));
+
+  // Trigger the call.
+  test_api(*payment_link_manager_)
+      .OnPaymentAppSelected(package_name, activity_name);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2AOnly.FopSelector.UserAction",
+      PaymentLinkFopSelectorAction::kPaymentAppSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2AOnly.FopSelector.UserAction.PromptPay",
+      PaymentLinkFopSelectorAction::kPaymentAppSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "FacilitatedPayments.A2A.InvokePaymentApp.Failure."
+      "LatencyAfterDetectingPaymentLink",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "FacilitatedPayments.A2A.InvokePaymentApp.Failure."
+      "LatencyAfterDetectingPaymentLink.PromptPay",
+      1);
+}
+
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       OnPaymentAppSelected_WithEwalletAvailable_RecordHistogram) {
+  base::HistogramTester histogram_tester;
+  feature_list_.InitAndEnableFeature(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+
+  // Setup for InvokePaymentApp call.
+  const std::string package_name = "com.example.app";
+  const std::string activity_name = "com.example.app.activity";
+  const GURL payment_link(
+      "https://www.itmx.co.th/facilitated-payment/"
+      "prompt-pay?path=fake_path");
+
+  // Setup eWallet.
+  payments_data_manager_.AddEwalletForTest(autofill::Ewallet(
+      /*instrument_id=*/100, u"nickname",
+      /*display_icon_url=*/GURL("http://www.example.com"), u"ewallet_name",
+      u"account_display_name",
+      /*supported_payment_link_uris=*/
+      {u"^https:\\/\\/www\\.itmx\\.co\\.th\\/facilitated-payment\\/"
+       u"prompt-pay.+"},
+      /*is_fido_enrolled=*/true));
+
+  // Setup payment app.
+  ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
+      .WillByDefault(testing::Return(1));
+
+  // Trigger payment flow.
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  FastForwardBy(base::Seconds(2));
+
+  EXPECT_CALL(*mock_device_delegate_,
+              InvokePaymentApp(package_name, activity_name, payment_link))
+      .WillOnce(testing::Return(true));
+  // Trigger the call.
+  test_api(*payment_link_manager_)
+      .OnPaymentAppSelected(package_name, activity_name);
+
+  // Verify histograms.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletAndA2A.FopSelector.UserAction",
+      PaymentLinkFopSelectorAction::kPaymentAppSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletAndA2A.FopSelector.UserAction."
+      "PromptPay",
+      PaymentLinkFopSelectorAction::kPaymentAppSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.InvokePaymentApp.Success."
+      "LatencyAfterDetectingPaymentLink",
+      2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.InvokePaymentApp.Success."
+      "LatencyAfterDetectingPaymentLink.PromptPay",
+      2000,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PaymentLinkManagerTestForA2AFlow, OnEwalletSelected_RecordHistogram) {
+  base::HistogramTester histogram_tester;
+  const GURL payment_link(
+      "https://www.itmx.co.th/facilitated-payment/"
+      "prompt-pay?path=fake_path");
+
+  // Setup eWallet.
+  payments_data_manager_.AddEwalletForTest(autofill::Ewallet(
+      /*instrument_id=*/100, u"nickname",
+      /*display_icon_url=*/GURL("http://www.example.com"), u"ewallet_name",
+      u"account_display_name",
+      /*supported_payment_link_uris=*/
+      {u"^https:\\/\\/www\\.itmx\\.co\\.th\\/facilitated-payment\\/"
+       u"prompt-pay.+"},
+      /*is_fido_enrolled=*/true));
+
+  // Trigger payment flow.
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  // Trigger the eWallet selection.
+  test_api(*payment_link_manager_)
+      .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
+
+  // Verify histograms.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletOnly.FopSelector.UserAction",
+      PaymentLinkFopSelectorAction::kEwalletSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletOnly.FopSelector.UserAction.PromptPay",
+      PaymentLinkFopSelectorAction::kEwalletSelected,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       OnEwalletSelected_WithPaymentAppAvailable_RecordHistogram) {
+  base::HistogramTester histogram_tester;
+  feature_list_.InitAndEnableFeature(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+
+  const GURL payment_link(
+      "https://www.itmx.co.th/facilitated-payment/"
+      "prompt-pay?path=fake_path");
+
+  // Setup eWallet.
+  payments_data_manager_.AddEwalletForTest(autofill::Ewallet(
+      /*instrument_id=*/100, u"nickname",
+      /*display_icon_url=*/GURL("http://www.example.com"), u"ewallet_name",
+      u"account_display_name",
+      /*supported_payment_link_uris=*/
+      {u"^https:\\/\\/www\\.itmx\\.co\\.th\\/facilitated-payment\\/"
+       u"prompt-pay.+"},
+      /*is_fido_enrolled=*/true));
+
+  // Setup payment app.
+  ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
+      .WillByDefault(testing::Return(1));
+
+  // Trigger payment flow.
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  // Trigger the eWallet selection.
+  test_api(*payment_link_manager_)
+      .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
+
+  // Verify histograms.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletAndA2A.FopSelector.UserAction",
+      PaymentLinkFopSelectorAction::kEwalletSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletAndA2A.FopSelector.UserAction."
+      "PromptPay",
+      PaymentLinkFopSelectorAction::kEwalletSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason",
+      A2AFlowExitedReason::kOtherFopSelected, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason.PromptPay",
+      A2AFlowExitedReason::kOtherFopSelected, /*expected_bucket_count=*/1);
+}
+
+// Test that when FOP selector is closed not by user, A2A flow exited reason is
+// logged.
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       FopSelectorClosedNotByUser_A2AFlowExitedReasonLogged) {
+  base::HistogramTester histogram_tester;
+  feature_list_.InitAndEnableFeature(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+  GURL supported_payment_link(
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
+  ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
+      .WillByDefault(testing::Return(2));
+
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  // Simulate FOP selector was shown.
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
+  // Simulate FOP selector was closed not by user.
+  test_api(*payment_link_manager_)
+      .OnUiScreenEvent(UiEvent::kScreenClosedNotByUser);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason",
+      A2AFlowExitedReason::kFopSelectorClosedNotByUser,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason.PromptPay",
+      A2AFlowExitedReason::kFopSelectorClosedNotByUser,
+      /*expected_bucket_count=*/1);
+}
+
+// Test that when FOP selector is closed by user, A2A flow exited reason is
+// logged.
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       FopSelectorClosedByUser_A2AFlowExitedReasonLogged) {
+  base::HistogramTester histogram_tester;
+  feature_list_.InitAndEnableFeature(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+  GURL supported_payment_link(
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
+  ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
+      .WillByDefault(testing::Return(2));
+
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  // Simulate FOP selector was shown.
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
+  // Simulate FOP selector was closed by user.
+  test_api(*payment_link_manager_)
+      .OnUiScreenEvent(UiEvent::kScreenClosedByUser);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason",
+      A2AFlowExitedReason::kFopSelectorClosedByUser,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason.PromptPay",
+      A2AFlowExitedReason::kFopSelectorClosedByUser,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace payments::facilitated

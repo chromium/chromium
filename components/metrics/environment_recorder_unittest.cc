@@ -10,6 +10,7 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace metrics {
+namespace {
 
 class EnvironmentRecorderTest : public testing::Test {
  public:
@@ -72,4 +73,5 @@ TEST_F(EnvironmentRecorderTest, LoadEnvironmentFromPrefs) {
   }
 }
 
+}   // namespace
 }  // namespace metrics

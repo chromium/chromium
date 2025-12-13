@@ -23,6 +23,17 @@ namespace extensions {
 class ExtensionWebUIOverrideRegistrar : public BrowserContextKeyedAPI,
                                         public ExtensionRegistryObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    // Called when an extension with a URL override is added and enabled.
+    virtual void OnExtensionOverrideAdded(const Extension& extension) = 0;
+
+    // Called when an extension with a URL override is removed or disabled.
+    virtual void OnExtensionOverrideRemoved(const Extension& extension) = 0;
+  };
+
   explicit ExtensionWebUIOverrideRegistrar(content::BrowserContext* context);
 
   ExtensionWebUIOverrideRegistrar(const ExtensionWebUIOverrideRegistrar&) =
@@ -31,6 +42,9 @@ class ExtensionWebUIOverrideRegistrar : public BrowserContextKeyedAPI,
       const ExtensionWebUIOverrideRegistrar&) = delete;
 
   ~ExtensionWebUIOverrideRegistrar() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<ExtensionWebUIOverrideRegistrar>*
@@ -60,6 +74,8 @@ class ExtensionWebUIOverrideRegistrar : public BrowserContextKeyedAPI,
   // Listen to extension load, unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<ExtensionWebUIOverrideRegistrar> weak_factory_{this};
 };

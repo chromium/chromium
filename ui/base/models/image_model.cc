@@ -13,6 +13,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/vector_icon_utils.h"
 
 #if !BUILDFLAG(IS_IOS)

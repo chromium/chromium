@@ -132,8 +132,9 @@ void NotifierStateTracker::SetNotifierEnabled(
   ScopedListPrefUpdate update(profile_->GetPrefs(), pref_name);
   base::Value::List& update_list = update.Get();
   if (add_new_item) {
-    if (!base::Contains(update_list, id))
+    if (!base::Contains(update_list, id)) {
       update_list.Append(std::move(id));
+    }
   } else {
     update_list.EraseValue(id);
   }

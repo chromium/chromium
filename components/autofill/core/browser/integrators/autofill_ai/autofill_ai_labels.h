@@ -8,7 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/types/optional_ref.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 
@@ -31,17 +35,16 @@ using EntityLabel = std::vector<std::u16string>;
 //
 // This is for example used by filling suggestions and the settings page.
 //
-// If `allow_only_disambiguating_types` is true, only disambiguating types are
-// considered. For example, for a passport, the name and country are considered,
-// but the number is not.
+// `attribute_types_to_ignore` contains types that shouldn't be used to generate
+// labels.
 //
-// If `allow_only_disambiguating_values` is false and the attributes agree on
-// all values of the (potentially disambiguating) attribute types, then we fall
-// back to some of those values they agree on.
+// If `only_disambiguating_types` is true, only `AttributeType`s satisfying
+// `AttributeType::is_disambiguating_type()` are considered. For example, for a
+// passport, the name and country are considered, but the number is not.
 std::vector<EntityLabel> GetLabelsForEntities(
-    base::span<const EntityInstance*> entities,
-    bool allow_only_disambiguating_types,
-    bool allow_only_disambiguating_values,
+    base::span<const EntityInstance* const> entities,
+    DenseSet<AttributeType> attribute_types_to_ignore,
+    bool only_disambiguating_types,
     const std::string& app_locale);
 
 }  // namespace autofill

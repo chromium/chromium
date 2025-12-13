@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import android.app.Activity;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -82,5 +84,17 @@ public class Facility<HostStationT extends Station<?>> extends ConditionalState 
                 mHostStation == null ? "-unset" : mHostStation.getId(),
                 mId,
                 mCustomName != null ? mCustomName : getClass().getSimpleName());
+    }
+
+    @Override
+    @Nullable ActivityElement<?> determineActivityElement() {
+        return mHostStation.determineActivityElement();
+    }
+
+    @Override
+    <T extends Activity> void onDeclaredActivityElement(ActivityElement<T> element) {
+        throw new UnsupportedOperationException(
+                "Facilities cannot declare ActivityElements, Views are searched in the host"
+                        + " Station's Activity");
     }
 }

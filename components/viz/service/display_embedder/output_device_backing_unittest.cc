@@ -8,17 +8,16 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
 namespace {
 
 size_t GetViewportSizeInBytes(const gfx::Size& viewport_size) {
-  size_t bytes = std::numeric_limits<size_t>::max();
-  CHECK(ResourceSizes::MaybeSizeInBytes(viewport_size,
-                                        SinglePlaneFormat::kRGBA_8888, &bytes));
-  return bytes;
+  return SharedMemorySizeForSharedImageFormat(SinglePlaneFormat::kRGBA_8888,
+                                              viewport_size)
+      .value();
 }
 
 // Test implementation with a set viewport size.

@@ -6,7 +6,6 @@
 #define COMPONENTS_TRACING_COMMON_BACKGROUND_TRACING_UTILS_H_
 
 #include "base/component_export.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 
 namespace tracing {

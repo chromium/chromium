@@ -17,7 +17,6 @@
 #include "chrome/browser/sessions/session_restore_stats_collector.h"
 #include "chrome/browser/sessions/tab_loader.h"
 #include "chrome/common/url_constants.h"
-#include "components/favicon/content/content_favicon_driver.h"
 #include "components/performance_manager/public/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -91,20 +90,6 @@ void SessionRestoreDelegate::RestoreTabs(
   if (tabs.empty())
     return;
 
-  // Restore the favicon for all tabs. Any tab may end up being deferred due
-  // to memory pressure so it's best to have some visual indication of its
-  // contents.
-  for (const auto& restored_tab : tabs) {
-    CHECK(restored_tab.contents());
-    // Restore the favicon for deferred tabs.
-    favicon::ContentFaviconDriver* favicon_driver =
-        favicon::ContentFaviconDriver::FromWebContents(restored_tab.contents());
-    if (favicon_driver) {
-      favicon_driver->FetchFavicon(favicon_driver->GetActiveURL(),
-                                   /*is_same_document=*/false);
-    }
-  }
-
   SessionRestoreStatsCollector::GetOrCreateInstance(
       restore_started,
       std::make_unique<
@@ -116,7 +101,7 @@ void SessionRestoreDelegate::RestoreTabs(
   if (!base::FeatureList::IsEnabled(
           performance_manager::features::
               kBackgroundTabLoadingFromPerformanceManager)) {
-    TabLoader::RestoreTabs(tabs, restore_started);
+    TabLoader::DeprecatedRestoreTabs(tabs, restore_started);
   } else {
     std::vector<content::WebContents*> web_contents_vector;
     web_contents_vector.reserve(tabs.size());

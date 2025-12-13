@@ -85,8 +85,8 @@ TEST(LinkHandlerModelTest, TestRewriteUrl) {
   GURL rewritten = Rewrite(original);
   EXPECT_NE(original, rewritten);
   EXPECT_TRUE(rewritten.SchemeIs(url::kHttpsScheme));
-  EXPECT_EQ("www.chromium.org", rewritten.host());
-  EXPECT_EQ("/", rewritten.path());
+  EXPECT_EQ("www.chromium.org", rewritten.GetHost());
+  EXPECT_EQ("/", rewritten.GetPath());
 
   original = GURL(
       "http://www.google.co.uk/url?"
@@ -94,9 +94,9 @@ TEST(LinkHandlerModelTest, TestRewriteUrl) {
   rewritten = Rewrite(original);
   EXPECT_NE(original, rewritten);
   EXPECT_TRUE(rewritten.SchemeIs(url::kHttpScheme));
-  EXPECT_EQ("chromium.org", rewritten.host());
-  EXPECT_EQ("/Home", rewritten.path());
-  EXPECT_EQ("k=v", rewritten.query());
+  EXPECT_EQ("chromium.org", rewritten.GetHost());
+  EXPECT_EQ("/Home", rewritten.GetPath());
+  EXPECT_EQ("k=v", rewritten.GetQuery());
 
   original = GURL(
       "http://www.google.com/url?"
@@ -104,9 +104,9 @@ TEST(LinkHandlerModelTest, TestRewriteUrl) {
   rewritten = Rewrite(original);
   EXPECT_NE(original, rewritten);
   EXPECT_TRUE(rewritten.SchemeIs(url::kHttpScheme));
-  EXPECT_EQ("chromium.org", rewritten.host());
-  EXPECT_EQ("/Home", rewritten.path());
-  EXPECT_EQ("k=v", rewritten.query());
+  EXPECT_EQ("chromium.org", rewritten.GetHost());
+  EXPECT_EQ("/Home", rewritten.GetPath());
+  EXPECT_EQ("k=v", rewritten.GetQuery());
 }
 
 TEST(LinkHandlerModelTest, TestRewriteUrlTooLong) {
@@ -122,8 +122,8 @@ TEST(LinkHandlerModelTest, TestRewriteUrlTooLong) {
   GURL rewritten = Rewrite(original);
   EXPECT_NE(original, rewritten);
   EXPECT_TRUE(rewritten.SchemeIs(url::kHttpsScheme));
-  EXPECT_EQ("www.chromium.org", rewritten.host());
-  EXPECT_EQ("/" + path, rewritten.path());
+  EXPECT_EQ("www.chromium.org", rewritten.GetHost());
+  EXPECT_EQ("/" + path, rewritten.GetPath());
 
   // Check that the rewriter does not crash even if the input is too long.
   path = std::string(kMaxValueLen - 33, 'a');

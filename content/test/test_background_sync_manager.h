@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/service_worker/service_worker_registry.h"

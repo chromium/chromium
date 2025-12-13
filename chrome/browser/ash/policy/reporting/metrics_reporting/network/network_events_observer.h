@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/mojo_service_events_observer_base.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"

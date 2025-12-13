@@ -41,6 +41,9 @@ class ScopedGlobalScenarioMemory {
   std::optional<performance_scenarios::ScopedReadOnlyScenarioMemory>
       read_only_mapping_;
 
+  // This is a convenient place to own the PerformanceScenarioObserverList.
+  performance_scenarios::ScopedScenarioObserverList observer_list_;
+
   // True when the writable shared memory region was successfully installed.
   bool writable_global_memory_installed_ = false;
 };

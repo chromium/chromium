@@ -152,6 +152,9 @@ TEST(SelectorQueryTest, StandardsModeFastPaths) {
       </body>
     </html>
   )HTML");
+
+  // NOTE: If StringHasher changes and we're unlucky,
+  // the values for .two and .B may need updating.
   static const struct QueryTest kTestCases[] = {
       // Id in right most selector fast path.
       {"#A", false, 1, {1, 1, 0, 0, 0, 0, 0}},
@@ -171,17 +174,17 @@ TEST(SelectorQueryTest, StandardsModeFastPaths) {
       {"span", true, 9, {14, 0, 0, 14, 0, 0, 0}},
 
       // Single selector class fast path.
-      {".two", false, 1, {6, 0, 6, 0, 0, 0, 0}},
-      {".two", true, 4, {14, 0, 14, 0, 0, 0, 0}},
+      {".two", false, 1, {5, 0, 5, 0, 0, 0, 0}},
+      {".two", true, 4, {13, 0, 13, 0, 0, 0, 0}},
 
       // Class in the right most selector fast path.
-      {"body .two", false, 1, {6, 0, 6, 0, 0, 0, 0}},
-      {"div .two", false, 1, {12, 0, 12, 0, 0, 0, 0}},
+      {"body .two", false, 1, {5, 0, 5, 0, 0, 0, 0}},
+      {"div .two", false, 1, {11, 0, 11, 0, 0, 0, 0}},
 
       // Classes in the right most selector for querySelectorAll use a fast
       // path.
-      {"body .two", true, 4, {14, 0, 14, 0, 0, 0, 0}},
-      {"div .two", true, 2, {14, 0, 14, 0, 0, 0, 0}},
+      {"body .two", true, 4, {13, 0, 13, 0, 0, 0, 0}},
+      {"div .two", true, 2, {13, 0, 13, 0, 0, 0, 0}},
 
       // TODO: We could use the fast class path to find the elements inside
       // the id scope instead of the fast scan.
@@ -261,17 +264,20 @@ TEST(SelectorQueryTest, FastPathScoped) {
       scope->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   // Make the inside the shadow root be identical to that of the outer document.
   shadowRoot.appendChild(document->documentElement()->cloneNode(/*deep*/ true));
+
+  // NOTE: If StringHasher changes and we're unlucky,
+  // the values for .c and .child may need updating.
   static const struct QueryTest kTestCases[] = {
       // Id in the right most selector.
       {"#first", false, 0, {0, 0, 0, 0, 0, 0, 0}},
 
       {"#B", false, 1, {1, 1, 0, 0, 0, 0, 0}},
       {"#multiple", false, 1, {1, 1, 0, 0, 0, 0, 0}},
-      {"#multiple.c", false, 1, {2, 2, 0, 0, 0, 0, 0}},
+      {"#multiple.c", false, 1, {1, 1, 0, 0, 0, 0, 0}},
 
       // Class in the right most selector.
       {".child", false, 1, {1, 0, 1, 0, 0, 0, 0}},
-      {".child", true, 4, {7, 0, 7, 0, 0, 0, 0}},
+      {".child", true, 4, {4, 0, 4, 0, 0, 0, 0}},
 
       // If an ancestor has the class name we fast scan all the descendants of
       // the scope.
@@ -317,6 +323,9 @@ TEST(SelectorQueryTest, QuirksModeSlowPath) {
       </body>
     </html>
   )HTML");
+
+  // NOTE: If StringHasher changes and we're unlucky,
+  // the values for .two may need updating.
   static const struct QueryTest kTestCases[] = {
       // Quirks mode can't use the id fast path due to being case-insensitive.
       {"#one", false, 1, {5, 0, 0, 0, 5, 0, 0}},
@@ -330,12 +339,12 @@ TEST(SelectorQueryTest, QuirksModeSlowPath) {
       // Quirks can use the class and tag name fast paths though.
       {"span", false, 1, {4, 0, 0, 4, 0, 0, 0}},
       {"span", true, 3, {6, 0, 0, 6, 0, 0, 0}},
-      {".two", false, 1, {5, 0, 5, 0, 0, 0, 0}},
-      {".two", true, 2, {6, 0, 6, 0, 0, 0, 0}},
+      {".two", false, 1, {4, 0, 4, 0, 0, 0, 0}},
+      {".two", true, 2, {5, 0, 5, 0, 0, 0, 0}},
       {"body span", false, 1, {4, 0, 0, 0, 4, 0, 0}},
       {"body span", true, 3, {6, 0, 0, 0, 6, 0, 0}},
-      {"body .two", false, 1, {5, 0, 5, 0, 0, 0, 0}},
-      {"body .two", true, 2, {6, 0, 6, 0, 0, 0, 0}},
+      {"body .two", false, 1, {4, 0, 4, 0, 0, 0, 0}},
+      {"body .two", true, 2, {5, 0, 5, 0, 0, 0, 0}},
   };
   RunTests(*document, kTestCases);
 }
@@ -356,13 +365,16 @@ TEST(SelectorQueryTest, DisconnectedSubtree) {
       </span>
     </section>
   )HTML");
+
+  // NOTE: If StringHasher changes and we're unlucky,
+  // the values for .child may need updating.
   static const struct QueryTest kTestCases[] = {
       {"#A", false, 1, {3, 0, 0, 0, 3, 0, 0}},
       {"#B", false, 1, {4, 0, 0, 0, 4, 0, 0}},
       {"#B", true, 1, {6, 0, 0, 0, 6, 0, 0}},
       {"#multiple", true, 2, {6, 0, 0, 0, 6, 0, 0}},
-      {".child", false, 1, {4, 0, 4, 0, 0, 0, 0}},
-      {".child", true, 2, {6, 0, 6, 0, 0, 0, 0}},
+      {".child", false, 1, {3, 0, 3, 0, 0, 0, 0}},
+      {".child", true, 2, {4, 0, 4, 0, 0, 0, 0}},
       {"#first span", false, 1, {3, 0, 0, 0, 3, 0, 0}},
       {"#first span", true, 4, {6, 0, 0, 0, 6, 0, 0}},
   };
@@ -388,13 +400,16 @@ TEST(SelectorQueryTest, DisconnectedTreeScope) {
       </span>
     </section>
   )HTML");
+
+  // NOTE: If StringHasher changes and we're unlucky,
+  // the values for .child may need updating.
   static const struct QueryTest kTestCases[] = {
       {"#A", false, 1, {1, 1, 0, 0, 0, 0, 0}},
       {"#B", false, 1, {1, 1, 0, 0, 0, 0, 0}},
       {"#B", true, 1, {1, 1, 0, 0, 0, 0, 0}},
       {"#multiple", true, 2, {2, 2, 0, 0, 0, 0, 0}},
-      {".child", false, 1, {4, 0, 4, 0, 0, 0, 0}},
-      {".child", true, 2, {6, 0, 6, 0, 0, 0, 0}},
+      {".child", false, 1, {3, 0, 3, 0, 0, 0, 0}},
+      {".child", true, 2, {4, 0, 4, 0, 0, 0, 0}},
       {"#first span", false, 1, {2, 1, 0, 0, 1, 0, 0}},
       {"#first span", true, 4, {5, 1, 0, 0, 4, 0, 0}},
   };

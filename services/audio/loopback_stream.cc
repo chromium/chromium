@@ -22,21 +22,13 @@
 
 namespace audio {
 
-namespace {
-
-// Start with a conservative, but reasonable capture delay that should work for
-// most platforms (i.e., not needing an increase during a loopback session).
-constexpr base::TimeDelta kInitialCaptureDelay = base::Milliseconds(20);
-
-}  // namespace
-
 // static
 constexpr double LoopbackStream::kMaxVolume;
 
 LoopbackStream::LoopbackStream(
     CreatedCallback created_callback,
     BindingLostCallback binding_lost_callback,
-    scoped_refptr<base::SequencedTaskRunner> flow_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> loopback_task_runner,
     mojo::PendingReceiver<media::mojom::AudioInputStream> receiver,
     mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
     mojo::PendingRemote<media::mojom::AudioInputStreamObserver> observer,
@@ -48,11 +40,13 @@ LoopbackStream::LoopbackStream(
       receiver_(this, std::move(receiver)),
       client_(std::move(client)),
       observer_(std::move(observer)),
-      coordinator_(coordinator),
-      group_id_(group_id),
-      network_(nullptr, base::OnTaskRunnerDeleter(flow_task_runner)) {
-  DCHECK(coordinator_);
-
+      loopback_signal_provider_(
+          params,
+          LoopbackGroupObserver::CreateMatchingGroupObserver(coordinator,
+                                                             group_id)),
+      loopback_signal_forwarder_(
+          nullptr,
+          base::OnTaskRunnerDeleter(loopback_task_runner)) {
   TRACE_EVENT1("audio", "LoopbackStream::LoopbackStream", "params",
                params.AsHumanReadableString());
 
@@ -66,7 +60,7 @@ LoopbackStream::LoopbackStream(
       base::BindOnce(&LoopbackStream::OnError, base::Unretained(this)));
 
   // Construct the components of the AudioDataPipe, for delivering the data to
-  // the consumer. If successful, create the FlowNetwork too.
+  // the consumer. If successful, create the LoopbackSignalForwarder too.
   base::CancelableSyncSocket foreign_socket;
   std::unique_ptr<InputSyncWriter> writer = InputSyncWriter::Create(
       base::BindRepeating(
@@ -82,8 +76,9 @@ LoopbackStream::LoopbackStream(
         std::move(created_callback)
             .Run({std::in_place, std::move(shared_memory_region),
                   std::move(socket_handle)});
-        network_.reset(new FlowNetwork(std::move(flow_task_runner), params,
-                                       std::move(writer)));
+        loopback_signal_forwarder_.reset(new LoopbackSignalForwarder(
+            std::move(loopback_task_runner), params, std::move(writer),
+            &loopback_signal_provider_));
         return;  // Success!
       }
     }
@@ -100,36 +95,24 @@ LoopbackStream::~LoopbackStream() {
 
   TRACE_EVENT0("audio", "LoopbackStream::~LoopbackStream");
 
-  if (network_) {
-    if (network_->is_started()) {
-      coordinator_->RemoveObserver(group_id_, this);
-      while (!snoopers_.empty()) {
-        OnMemberLeftGroup(snoopers_.begin()->first);
-      }
-    }
-    DCHECK(snoopers_.empty());
+  if (loopback_signal_forwarder_) {
+    // Since the LoopbackSignalProvider is about to be destroyed, we need to
+    // prevent the LoopbackSignalForwarder from using it afterwards.
+    loopback_signal_forwarder_->InvalidateLoopbackSignalProvider();
   }
 }
 
 void LoopbackStream::Record() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!network_ || network_->is_started()) {
+  if (!loopback_signal_forwarder_ || loopback_signal_forwarder_->is_started()) {
     return;
   }
 
   TRACE_EVENT0("audio", "LoopbackStream::Record");
 
-  // Begin snooping on all group members. This will set up the mixer network
-  // and begin accumulating audio data in the Snoopers' buffers.
-  DCHECK(snoopers_.empty());
-  coordinator_->ForEachMemberInGroup(
-      group_id_, base::BindRepeating(&LoopbackStream::OnMemberJoinedGroup,
-                                     base::Unretained(this)));
-  coordinator_->AddObserver(group_id_, this);
-
   // Start the data flow.
-  network_->Start();
+  loopback_signal_forwarder_->Start();
 
   if (observer_) {
     observer_->DidStartRecording();
@@ -148,62 +131,9 @@ void LoopbackStream::SetVolume(double volume) {
     return;
   }
 
-  if (network_) {
-    network_->SetVolume(std::min(volume, kMaxVolume));
+  if (loopback_signal_forwarder_) {
+    loopback_signal_forwarder_->SetVolume(std::min(volume, kMaxVolume));
   }
-}
-
-void LoopbackStream::OnMemberJoinedGroup(LoopbackGroupMember* member) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!network_) {
-    return;
-  }
-
-  if (!base::TimeTicks::IsHighResolution()) {
-    // As of this writing, only machines manufactured before 2008 won't be able
-    // to produce high-resolution timestamps. Since the buffer management logic
-    // (to mitigate overruns/underruns) depends on them to function correctly,
-    // simply return early (i.e., never start snooping on the |member|).
-    TRACE_EVENT_INSTANT0("audio",
-                         "LoopbackStream::OnMemberJoinedGroup Rejected",
-                         TRACE_EVENT_SCOPE_THREAD);
-    return;
-  }
-
-  TRACE_EVENT1("audio", "LoopbackStream::OnMemberJoinedGroup", "member",
-               static_cast<void*>(member));
-
-  const media::AudioParameters& input_params = member->GetAudioParameters();
-  const auto emplace_result = snoopers_.emplace(
-      std::piecewise_construct, std::forward_as_tuple(member),
-      std::forward_as_tuple(input_params, network_->output_params()));
-  DCHECK(emplace_result.second);  // There was no pre-existing map entry.
-  SnooperNode* const snooper = &(emplace_result.first->second);
-  member->StartSnooping(snooper);
-  network_->AddInput(snooper);
-}
-
-void LoopbackStream::OnMemberLeftGroup(LoopbackGroupMember* member) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!network_) {
-    return;
-  }
-
-  const auto snoop_it = snoopers_.find(member);
-  if (snoop_it == snoopers_.end()) {
-    // See comments about "high-resolution timestamps" in OnMemberJoinedGroup().
-    return;
-  }
-
-  TRACE_EVENT1("audio", "LoopbackStream::OnMemberLeftGroup", "member",
-               static_cast<void*>(member));
-
-  SnooperNode* const snooper = &(snoop_it->second);
-  member->StopSnooping(snooper);
-  network_->RemoveInput(snooper);
-  snoopers_.erase(snoop_it);
 }
 
 void LoopbackStream::OnError() {
@@ -239,43 +169,37 @@ void LoopbackStream::OnError() {
   // take care of the rest.
 }
 
-LoopbackStream::FlowNetwork::FlowNetwork(
-    scoped_refptr<base::SequencedTaskRunner> flow_task_runner,
+LoopbackStream::LoopbackSignalForwarder::LoopbackSignalForwarder(
+    scoped_refptr<base::SequencedTaskRunner> loopback_task_runner,
     const media::AudioParameters& output_params,
-    std::unique_ptr<InputSyncWriter> writer)
+    std::unique_ptr<InputSyncWriter> writer,
+    LoopbackSignalProvider* loopback_signal_provider)
     : clock_(base::DefaultTickClock::GetInstance()),
-      flow_task_runner_(flow_task_runner),
+      loopback_task_runner_(loopback_task_runner),
       output_params_(output_params),
       writer_(std::move(writer)),
-      mix_bus_(media::AudioBus::Create(output_params_)) {}
+      mix_bus_(media::AudioBus::Create(output_params_)),
+      loopback_signal_provider_(loopback_signal_provider) {}
 
-void LoopbackStream::FlowNetwork::AddInput(SnooperNode* node) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
-
-  base::AutoLock scoped_lock(lock_);
-  DCHECK(!base::Contains(inputs_, node));
-  inputs_.push_back(node);
-}
-
-void LoopbackStream::FlowNetwork::RemoveInput(SnooperNode* node) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
-
-  base::AutoLock scoped_lock(lock_);
-  const auto it = std::ranges::find(inputs_, node);
-  CHECK(it != inputs_.end());
-  inputs_.erase(it);
-}
-
-void LoopbackStream::FlowNetwork::SetVolume(double volume) {
+void LoopbackStream::LoopbackSignalForwarder::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
 
   base::AutoLock scoped_lock(lock_);
   volume_ = volume;
 }
 
-void LoopbackStream::FlowNetwork::Start() {
+void LoopbackStream::LoopbackSignalForwarder::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
   DCHECK(!is_started());
+  {
+    // Even though there is no risk of simultaneous access yet we need to take
+    // the lock to satisfy the GUARDED_BY annotation.
+    base::AutoLock scoped_lock(lock_);
+    if (!loopback_signal_provider_) {
+      return;
+    }
+    loopback_signal_provider_->Start();
+  }
 
   timer_.emplace();
   // Note: GenerateMoreAudio() will schedule the timer.
@@ -283,94 +207,55 @@ void LoopbackStream::FlowNetwork::Start() {
   first_generate_time_ = clock_->NowTicks();
   frames_elapsed_ = 0;
   next_generate_time_ = first_generate_time_;
-  capture_delay_ = kInitialCaptureDelay;
 
-  flow_task_runner_->PostTask(
+  loopback_task_runner_->PostTask(
       FROM_HERE,
       // Unretained is safe because the destructor will always be invoked from a
       // task that runs afterwards.
-      base::BindOnce(&FlowNetwork::GenerateMoreAudio, base::Unretained(this)));
+      base::BindOnce(&LoopbackSignalForwarder::GenerateMoreAudio,
+                     base::Unretained(this)));
 }
 
-LoopbackStream::FlowNetwork::~FlowNetwork() {
-  DCHECK(flow_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(inputs_.empty());
+void LoopbackStream::LoopbackSignalForwarder::
+    InvalidateLoopbackSignalProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
+  base::AutoLock scoped_lock(lock_);
+  loopback_signal_provider_ = nullptr;
 }
 
-void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
-  DCHECK(flow_task_runner_->RunsTasksInCurrentSequence());
+LoopbackStream::LoopbackSignalForwarder::~LoopbackSignalForwarder() {
+  DCHECK(loopback_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_EQ(loopback_signal_provider_, nullptr);
+}
+
+void LoopbackStream::LoopbackSignalForwarder::GenerateMoreAudio() {
+  DCHECK(loopback_task_runner_->RunsTasksInCurrentSequence());
 
   TRACE_EVENT_WITH_FLOW0("audio", "GenerateMoreAudio", this,
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
-  // Drive the audio flows from the SnooperNodes and produce the single result
-  // stream. Hold the lock during this part of the process to prevent any of the
-  // control methods from altering the configuration of the network.
   double output_volume;
   base::TimeTicks delayed_capture_time;
   {
     base::AutoLock scoped_lock(lock_);
+    if (!loopback_signal_provider_) {
+      // Access to the provider has been removed because the loopback stream
+      // is shutting down. The LoopbackSignalForwarder will be destroyed soon.
+      return;
+    }
     output_volume = volume_;
-
-    // Compute the reference time to use for audio rendering. Query each input
-    // node and update |capture_delay_|, if necessary. This is used to always
-    // generate audio from a "safe point" in the recent past, to prevent buffer
-    // underruns in the inputs. http://crbug.com/934770
-    delayed_capture_time = next_generate_time_ - capture_delay_;
-    for (SnooperNode* node : inputs_) {
-      const std::optional<base::TimeTicks> suggestion =
-          node->SuggestLatestRenderTime(mix_bus_->frames());
-      if (suggestion.value_or(delayed_capture_time) < delayed_capture_time) {
-        const base::TimeDelta increase = delayed_capture_time - (*suggestion);
-        TRACE_EVENT_INSTANT2("audio", "GenerateMoreAudio Capture Delay Change",
-                             TRACE_EVENT_SCOPE_THREAD, "old capture delay (µs)",
-                             capture_delay_.InMicroseconds(), "change (µs)",
-                             increase.InMicroseconds());
-        delayed_capture_time = *suggestion;
-        capture_delay_ += increase;
-      }
-    }
-    TRACE_COUNTER_ID1("audio", "Loopback Capture Delay (µs)", this,
-                      capture_delay_.InMicroseconds());
-
-    // Render the audio from each input, apply this stream's volume setting by
-    // scaling the data, then mix it all together to form a single audio
-    // signal. If there are no snoopers, just render silence.
-    auto it = inputs_.begin();
-    if (it == inputs_.end()) {
-      mix_bus_->Zero();
-    } else {
-      // Render the first input's signal directly into |mix_bus_|.
-      (*it)->Render(delayed_capture_time, mix_bus_.get());
-      mix_bus_->Scale(volume_);
-
-      // Render each successive input's signal into |transfer_bus_|, and then
-      // mix it into |mix_bus_|.
-      ++it;
-      if (it != inputs_.end()) {
-        if (!transfer_bus_) {
-          transfer_bus_ = media::AudioBus::Create(output_params_);
-        }
-        do {
-          (*it)->Render(delayed_capture_time, transfer_bus_.get());
-          for (auto [src_ch, dest_ch] : base::zip(transfer_bus_->AllChannels(),
-                                                  mix_bus_->AllChannels())) {
-            media::vector_math::FMAC(src_ch, volume_, dest_ch);
-          }
-          ++it;
-        } while (it != inputs_.end());
-      }
-    }
+    delayed_capture_time = loopback_signal_provider_->PullLoopbackData(
+        mix_bus_.get(), next_generate_time_, volume_);
   }
 
   // Insert the result into the AudioDataPipe.
   writer_->Write(mix_bus_.get(), output_volume, delayed_capture_time, {});
 
-  // Determine when to generate more audio again. This is done by advancing the
-  // frame count by one interval's worth, then computing the TimeTicks
-  // corresponding to the new frame count. Also, check the clock to detect when
-  // the user's machine is overloaded and the output needs to skip forward one
-  // or more intervals.
+  // Determine when to generate more audio again. This is done by advancing
+  // the frame count by one interval's worth, then computing the TimeTicks
+  // corresponding to the new frame count. Also, check the clock to detect
+  // when the user's machine is overloaded and the output needs to skip
+  // forward one or more intervals.
   const int frames_per_buffer = mix_bus_->frames();
   frames_elapsed_ += frames_per_buffer;
   next_generate_time_ =
@@ -382,9 +267,9 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
     TRACE_EVENT_INSTANT1("audio", "GenerateMoreAudio Is Behind",
                          TRACE_EVENT_SCOPE_THREAD, "µsec_behind",
                          (now - next_generate_time_).InMicroseconds());
-    // Audio generation has fallen behind. Skip-ahead the frame counter so that
-    // audio generation will resume for the next buffer after the one that
-    // should be generating right now. http://crbug.com/847487
+    // Audio generation has fallen behind. Skip-ahead the frame counter so
+    // that audio generation will resume for the next buffer after the one
+    // that should be generating right now. http://crbug.com/847487
     const int64_t target_frame_count =
         (now - first_generate_time_).InMicroseconds() *
         output_params_.sample_rate() / base::Time::kMicrosecondsPerSecond;
@@ -397,12 +282,12 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
                            output_params_.sample_rate());
   }
 
-  // Note: It's acceptable for |next_generate_time_| to be slightly before |now|
-  // due to integer truncation behaviors in the math above. The timer task
-  // started below will just run immediately and there will be no harmful
+  // Note: It's acceptable for `next_generate_time_` to be slightly before
+  // `now` due to integer truncation behaviors in the math above. The timer
+  // task started below will just run immediately and there will be no harmful
   // effects in the next GenerateMoreAudio() call. http://crbug.com/847487
   timer_->Start(FROM_HERE, next_generate_time_, this,
-                &FlowNetwork::GenerateMoreAudio,
+                &LoopbackSignalForwarder::GenerateMoreAudio,
                 base::subtle::DelayPolicy::kPrecise);
 }
 

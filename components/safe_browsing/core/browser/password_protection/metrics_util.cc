@@ -89,6 +89,10 @@ const char kPasswordOnFocusRequestOutcomeHistogram[] =
     "PasswordProtection.RequestOutcome.PasswordFieldOnFocus";
 const char kPasswordOnFocusVerdictHistogram[] =
     "PasswordProtection.Verdict.PasswordFieldOnFocus";
+const char kOneTimePasswordFieldDetectedRequestOutcomeHistogram[] =
+    "PasswordProtection.RequestOutcome.OneTimePasswordFieldDetected";
+const char kOneTimePasswordFieldDetectedVerdictHistogram[] =
+    "PasswordProtection.Verdict.OneTimePasswordFieldDetected";
 const char kNonSyncPasswordEntryRequestOutcomeHistogram[] =
     "PasswordProtection.RequestOutcome.NonSyncPasswordEntry";
 const char kSyncPasswordEntryRequestOutcomeHistogram[] =
@@ -169,6 +173,11 @@ void LogPasswordOnFocusRequestOutcome(RequestOutcome outcome) {
   UMA_HISTOGRAM_ENUMERATION(kPasswordOnFocusRequestOutcomeHistogram, outcome);
 }
 
+void LogOneTimePasswordFieldDetectedRequestOutcome(RequestOutcome outcome) {
+  UMA_HISTOGRAM_ENUMERATION(
+      kOneTimePasswordFieldDetectedRequestOutcomeHistogram, outcome);
+}
+
 void LogPasswordAlertModeOutcome(
     RequestOutcome outcome,
     ReusedPasswordAccountType password_account_type) {
@@ -190,10 +199,16 @@ void LogNoPingingReason(LoginReputationClientRequest::TriggerType trigger_type,
                         RequestOutcome reason,
                         ReusedPasswordAccountType password_account_type) {
   DCHECK(trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
-         trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT);
+         trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT ||
+         trigger_type ==
+             LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED);
 
   if (trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
     UMA_HISTOGRAM_ENUMERATION(kPasswordOnFocusRequestOutcomeHistogram, reason);
+  } else if (trigger_type ==
+             LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kOneTimePasswordFieldDetectedRequestOutcomeHistogram, reason);
   } else {
     LogPasswordEntryRequestOutcome(reason, password_account_type);
   }
@@ -270,6 +285,11 @@ void LogPasswordProtectionVerdict(
             verdict_type,
             (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
       }
+      break;
+    case LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED:
+      UMA_HISTOGRAM_ENUMERATION(
+          kOneTimePasswordFieldDetectedVerdictHistogram, verdict_type,
+          (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
       break;
     default:
       NOTREACHED();

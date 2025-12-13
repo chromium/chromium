@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chromeos/printing/uri.h"
 #include "url/gurl.h"

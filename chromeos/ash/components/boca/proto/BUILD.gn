@@ -10,6 +10,7 @@ proto_library("proto") {
   proto_in_dir = "//"
   sources = [
     "bundle.proto",
+    "receiver.proto",
     "roster.proto",
     "session.proto",
   ]

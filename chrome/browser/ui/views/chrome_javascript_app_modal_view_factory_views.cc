@@ -16,7 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -80,7 +80,7 @@ class ChromeJavaScriptAppModalDialogViews
 void AdjustWidgetBoundsIfOffscreen(views::Widget* widget) {
   gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
   gfx::Rect screen_rect =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestPoint(widget_bounds.CenterPoint())
           .work_area();
 

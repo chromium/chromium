@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/win/object_watcher.h"
 #include "components/policy/core/common/async_policy_loader.h"

@@ -102,6 +102,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -127,7 +128,7 @@ namespace ash {
 namespace {
 
 // Maximum delay for startup sound after 'loginPromptVisible' signal.
-const int kStartupSoundMaxDelayMs = 4000;
+const int kStartupSoundMaxDelayMs = 10000;
 
 // URL which corresponds to the OOBE WebUI.
 const char kOobeURL[] = "chrome://oobe/oobe";
@@ -461,6 +462,15 @@ PrefService* GetLocalState() {
   return nullptr;
 }
 
+bool IsWizardOnWelcomeScreen(const WizardController* wizard_controller) {
+  if (wizard_controller == nullptr) {
+    return false;
+  }
+  return wizard_controller->HasScreen(WelcomeView::kScreenId) &&
+         wizard_controller->current_screen() ==
+             wizard_controller->GetScreen<WelcomeScreen>();
+}
+
 }  // namespace
 
 // static
@@ -633,11 +643,9 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   }
 
   if (ash::features::IsBootAnimationEnabled()) {
-    const bool should_show =
-        wizard_controller_->HasScreen(WelcomeView::kScreenId) &&
-        wizard_controller_->current_screen() ==
-            GetWizardController()->GetScreen<WelcomeScreen>();
-    if (should_show) {
+    const bool should_show_boot_animation =
+        IsWizardOnWelcomeScreen(GetWizardController());
+    if (should_show_boot_animation) {
       ash::Shell::Get()
           ->booting_animation_controller()
           ->ShowAnimationWithEndCallback(base::BindOnce(
@@ -680,9 +688,8 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
 
   OnStartSignInScreenCommon();
 
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0(
-      "ui", "WaitForScreenStateInitialize",
-      TRACE_ID_WITH_SCOPE(kShowLoginWebUIid, TRACE_ID_GLOBAL(1)));
+  TRACE_EVENT_INSTANT("ui", "WaitForScreenStateInitialize",
+                      perfetto::NamedTrack::Global(kShowLoginWebUIid));
 
   // TODO(crbug.com/40549648): Make sure this is ported to views.
   BootTimesRecorder::Get()->RecordCurrentStats(
@@ -777,7 +784,7 @@ void LoginDisplayHostWebUI::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
   const display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   if (display.id() != primary_display.id() ||
       !(changed_metrics & DISPLAY_METRIC_BOUNDS)) {
     return;
@@ -860,8 +867,8 @@ void LoginDisplayHostWebUI::OnCurrentScreenChanged(OobeScreenId current_screen,
                                                    OobeScreenId new_screen) {
   if (current_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Notify that the OOBE page is ready and the first screen is shown. It
-    // might happen that front-end part isn't fully initialized yet (when
-    // `OobeLazyLoading` is enabled), so wait for it to happen before notifying.
+    // might happen that front-end part isn't fully initialized yet, so wait for
+    // it to happen before notifying.
     GetOobeUI()->IsJSReady(base::BindOnce(
         &session_manager::SessionManager::NotifyLoginOrLockScreenVisible,
         base::Unretained(session_manager::SessionManager::Get())));
@@ -1182,9 +1189,11 @@ void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {
                           time_since_login_prompt_visible);
 
   // Don't try to play startup sound if login prompt has been already visible
-  // for a long time.
+  // for a long time or user has already advanced from the welcome screen to the
+  // next step in the flow.
   if (time_since_login_prompt_visible >
-      base::Milliseconds(kStartupSoundMaxDelayMs)) {
+          base::Milliseconds(kStartupSoundMaxDelayMs) ||
+      !IsWizardOnWelcomeScreen(GetWizardController())) {
     return;
   }
   AccessibilityManager::Get()->PlayEarcon(Sound::kStartup,

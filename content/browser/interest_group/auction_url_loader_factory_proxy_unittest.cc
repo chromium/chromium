@@ -151,8 +151,6 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
             &trusted_url_loader_factory_),
         base::BindOnce(&AuctionUrlLoaderFactoryProxyTest::PreconnectSocket,
                        base::Unretained(this)),
-        base::BindRepeating(
-            []() -> std::optional<std::string> { return std::nullopt; }),
         base::BindRepeating([]() -> std::vector<std::string> { return {}; }),
         /*force_reload=*/force_reload_, top_frame_origin_, frame_origin_,
         /*renderer_process_id=*/kRenderProcessId, is_for_seller_,
@@ -845,8 +843,8 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, ClientSecurityState) {
        {network::mojom::PrivateNetworkRequestPolicy::kAllow,
         network::mojom::PrivateNetworkRequestPolicy::kWarn,
         network::mojom::PrivateNetworkRequestPolicy::kBlock,
-        network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock,
-        network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock}) {
+        network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn,
+        network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock}) {
     client_security_state_->private_network_request_policy =
         private_network_request_policy;
     // Force creation of a new proxy, with correct `ip_address_space` value.

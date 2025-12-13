@@ -12,6 +12,7 @@
 #include "base/barrier_closure.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_threadsafe.h"
@@ -19,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/performance_manager/embedder/graph_features.h"
@@ -51,6 +53,7 @@ namespace resource_attribution {
 namespace {
 
 using ::testing::_;
+using ::testing::Between;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using QueryParams = internal::QueryParams;
@@ -63,8 +66,9 @@ constexpr auto kWorkerContextTypeId =
     ResourceContextTypeId::ForType<WorkerContext>();
 
 // Fake memory results.
-constexpr uint64_t kFakeResidentSetSize = 123;
-constexpr uint64_t kFakePrivateFootprint = 456;
+constexpr base::ByteCount kFakeResidentSetSize = base::KiB(123);
+constexpr base::ByteCount kFakePrivateFootprint = base::KiB(456);
+constexpr base::ByteCount kFakePrivateSwap = base::KiB(789);
 
 class LenientMockQueryResultObserver : public QueryResultObserver {
  public:
@@ -110,11 +114,13 @@ class ResourceAttrQueriesPMTest
     // Set fake memory results for the page's process.
     content::RenderProcessHost* rph = rfh->GetProcess();
     ASSERT_TRUE(rph);
-    memory_delegate_factory_.memory_summaries()
-        [ProcessContext::FromRenderProcessHost(rph).value()] =
+    main_frame_process_context_ = ProcessContext::FromRenderProcessHost(rph);
+    memory_delegate_factory_
+        .memory_summaries()[main_frame_process_context_.value()] =
         MemoryMeasurementDelegate::MemorySummaryMeasurement{
-            .resident_set_size_kb = kFakeResidentSetSize,
-            .private_footprint_kb = kFakePrivateFootprint,
+            .resident_set_size = kFakeResidentSetSize,
+            .private_footprint = kFakePrivateFootprint,
+            .private_swap = kFakePrivateSwap,
         };
   }
 
@@ -135,6 +141,11 @@ class ResourceAttrQueriesPMTest
     return main_frame_context_.value();
   }
 
+  // A ResourceContext for the main frame's process.
+  ResourceContext main_frame_process_context() const {
+    return main_frame_process_context_.value();
+  }
+
   // Lets tests update the fake results for kMemorySummary queries.
   MemoryMeasurementDelegate::MemorySummaryMap& fake_memory_summaries() {
     return memory_delegate_factory_.memory_summaries();
@@ -144,6 +155,7 @@ class ResourceAttrQueriesPMTest
   raw_ptr<Graph> graph_ = nullptr;
 
   std::optional<FrameContext> main_frame_context_;
+  std::optional<ProcessContext> main_frame_process_context_;
 
   // These must be deleted after TearDown() so that they outlive the
   // CPUMeasurementMonitor and MemoryMeasurementProvider.
@@ -174,8 +186,9 @@ MemorySummaryResult FakeMemorySummaryResult(
     base::TimeTicks expected_measurement_time = base::TimeTicks::Now()) {
   return {
       .metadata = ResultMetadata(expected_measurement_time, expected_algorithm),
-      .resident_set_size_kb = kFakeResidentSetSize,
-      .private_footprint_kb = kFakePrivateFootprint,
+      .resident_set_size = kFakeResidentSetSize,
+      .private_footprint = kFakePrivateFootprint,
+      .private_swap = kFakePrivateSwap,
   };
 }
 
@@ -307,15 +320,13 @@ TEST_F(ResourceAttrQueriesPMTest, QueryBuilder_QueryOnce_CPUAndMemory) {
 }
 
 TEST_F(ResourceAttrQueriesPMTest, AddRemoveScopedQuery) {
-  QueryScheduler* scheduler = nullptr;
-  scheduler = QueryScheduler::GetFromGraph(
+  auto* scheduler = QueryScheduler::GetFromGraph(
       performance_manager::PerformanceManager::GetGraph());
+  // Abort the whole test if the scheduler wasn't found.
   ASSERT_TRUE(scheduler);
   EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kCPUTime), 0U);
   EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kMemorySummary),
             0U);
-  // Abort the whole test if the scheduler wasn't found.
-  ASSERT_TRUE(scheduler);
 
   std::optional<ScopedResourceUsageQuery> scoped_memory_query =
       QueryBuilder()
@@ -607,6 +618,31 @@ TEST_F(ResourceAttrQueriesPMTest, RepeatingQueries) {
   task_environment()->FastForwardBy(kDelay);
 }
 
+TEST_F(ResourceAttrQueriesPMTest, RepeatingQueriesZeroDelta) {
+  ScopedResourceUsageQuery scoped_query =
+      QueryBuilder()
+          .AddResourceContext(main_frame_context())
+          .AddResourceType(ResourceType::kMemorySummary)
+          .CreateScopedQuery();
+
+  MockQueryResultObserver observer;
+  scoped_query.AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnResourceUsageUpdated(_)).Times(0);
+
+  scoped_query.Start(base::TimeDelta());
+  task_environment()->FastForwardBy(base::Minutes(1));
+
+  ::testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Observer should be notified only by QueryOnce.
+  EXPECT_CALL(observer, OnResourceUsageUpdated(_))
+      .WillOnce(base::test::RunClosure(task_environment()->QuitClosure()));
+
+  scoped_query.QueryOnce();
+  task_environment()->RunUntilQuit();
+}
+
 TEST_F(ResourceAttrQueriesPMTest, ThrottleQueryOnce) {
   const base::TimeDelta min_query_once_delay =
       ScopedResourceUsageQuery::GetMinMemoryQueryDelayForTesting();
@@ -764,6 +800,218 @@ TEST_F(ResourceAttrQueriesPMTest, ThrottleQueryOnce) {
   EXPECT_CALL(memory_cpu_observer, OnResourceUsageUpdated(_))
       .InSequence(memory_cpu_sequence);
   fast_forward_to(2 * repeating_query_delay);
+}
+
+TEST_F(ResourceAttrQueriesPMTest, ObserveOtherQueries) {
+  ScopedResourceUsageQuery::ScopedDisableMemoryQueryDelayForTesting disable;
+
+  // Queries that drive repeated measurements.
+  ScopedResourceUsageQuery cpu_query =
+      QueryBuilder()
+          .AddResourceContext(main_frame_context())
+          .AddResourceType(ResourceType::kCPUTime)
+          .CreateScopedQuery();
+  MockQueryResultObserver cpu_observer;
+  cpu_query.AddObserver(&cpu_observer);
+  cpu_query.Start(base::Minutes(2));
+
+  ScopedResourceUsageQuery memory_query =
+      QueryBuilder()
+          .AddResourceContext(main_frame_context())
+          .AddResourceType(ResourceType::kMemorySummary)
+          .CreateScopedQuery();
+  MockQueryResultObserver memory_observer;
+  memory_query.AddObserver(&memory_observer);
+  memory_query.Start(base::Minutes(3));
+
+  // Queries that don't trigger repeated measurements of their own.
+  ScopedResourceUsageQuery passive_cpu_query =
+      QueryBuilder()
+          .AddResourceContext(main_frame_context())
+          .AddResourceType(ResourceType::kCPUTime)
+          .CreateScopedQuery();
+  MockQueryResultObserver passive_cpu_observer;
+  passive_cpu_query.AddObserver(&passive_cpu_observer);
+  passive_cpu_query.Start(base::TimeDelta(), /*observe_other_queries=*/true);
+
+  ScopedResourceUsageQuery passive_memory_query =
+      QueryBuilder()
+          .AddResourceContext(main_frame_context())
+          .AddResourceType(ResourceType::kMemorySummary)
+          .CreateScopedQuery();
+  MockQueryResultObserver passive_memory_observer;
+  passive_memory_query.AddObserver(&passive_memory_observer);
+  passive_memory_query.Start(base::TimeDelta(), /*observe_other_queries=*/true);
+
+  ScopedResourceUsageQuery passive_all_query =
+      QueryBuilder()
+          .AddAllContextsOfType<FrameContext>()
+          .AddResourceType(ResourceType::kCPUTime)
+          .AddResourceType(ResourceType::kMemorySummary)
+          .CreateScopedQuery();
+  MockQueryResultObserver passive_all_observer;
+  passive_all_query.AddObserver(&passive_all_observer);
+  passive_all_query.Start(base::TimeDelta(), /*observe_other_queries=*/true);
+
+  // Should be notified with results from the main frame's process, which must
+  // be measured to calculate the main frame's results, even though no query
+  // directly measures it.
+  ScopedResourceUsageQuery passive_process_query =
+      QueryBuilder()
+          .AddResourceContext(main_frame_process_context())
+          .AddResourceType(ResourceType::kCPUTime)
+          .AddResourceType(ResourceType::kMemorySummary)
+          .CreateScopedQuery();
+  MockQueryResultObserver passive_process_observer;
+  passive_process_query.AddObserver(&passive_process_observer);
+  passive_process_query.Start(base::TimeDelta(),
+                              /*observe_other_queries=*/true);
+
+  // Should not be notified because it doesn't observe a context with results.
+  ScopedResourceUsageQuery passive_no_context_query =
+      QueryBuilder()
+          .AddAllContextsOfType<WorkerContext>()
+          .AddResourceType(ResourceType::kCPUTime)
+          .AddResourceType(ResourceType::kMemorySummary)
+          .CreateScopedQuery();
+  MockQueryResultObserver passive_no_context_observer;
+  passive_no_context_query.AddObserver(&passive_no_context_observer);
+  passive_no_context_query.Start(base::TimeDelta(),
+                                 /*observe_other_queries=*/true);
+
+  // This query both makes its own repeated measurements, and observes others.
+  ScopedResourceUsageQuery other_cpu_query =
+      QueryBuilder()
+          .AddResourceContext(main_frame_context())
+          .AddResourceType(ResourceType::kCPUTime)
+          .CreateScopedQuery();
+  MockQueryResultObserver other_cpu_observer;
+  other_cpu_query.AddObserver(&other_cpu_observer);
+  other_cpu_query.Start(base::Minutes(5), /*observe_other_queries=*/true);
+
+  auto verify_and_clear_expectations = [&] {
+    ::testing::Mock::VerifyAndClearExpectations(&cpu_observer);
+    ::testing::Mock::VerifyAndClearExpectations(&memory_observer);
+    ::testing::Mock::VerifyAndClearExpectations(&passive_cpu_observer);
+    ::testing::Mock::VerifyAndClearExpectations(&passive_memory_observer);
+    ::testing::Mock::VerifyAndClearExpectations(&passive_all_observer);
+    ::testing::Mock::VerifyAndClearExpectations(&passive_process_observer);
+    ::testing::Mock::VerifyAndClearExpectations(&passive_no_context_observer);
+    ::testing::Mock::VerifyAndClearExpectations(&other_cpu_observer);
+  };
+
+  // No measurements after 1 minute.
+  task_environment()->FastForwardBy(base::Minutes(1));
+  verify_and_clear_expectations();
+
+  // At minute 2, `cpu_query` measures CPU.
+  EXPECT_CALL(cpu_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_cpu_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_all_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_process_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(other_cpu_observer, OnResourceUsageUpdated(_));
+  task_environment()->FastForwardBy(base::Minutes(1));
+  verify_and_clear_expectations();
+
+  // At minute 3, `memory_query` measures memory.
+  EXPECT_CALL(memory_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_memory_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_all_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_process_observer, OnResourceUsageUpdated(_));
+  task_environment()->FastForwardBy(base::Minutes(1));
+  verify_and_clear_expectations();
+
+  // At minute 4, `cpu_query` measures CPU again.
+  EXPECT_CALL(cpu_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_cpu_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_all_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_process_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(other_cpu_observer, OnResourceUsageUpdated(_));
+  task_environment()->FastForwardBy(base::Minutes(1));
+  verify_and_clear_expectations();
+
+  // At minute 5, `other_cpu_query` measures CPU. `cpu_observer` should NOT be
+  // notified because it doesn't have `observe_other_queries` set.
+  EXPECT_CALL(cpu_observer, OnResourceUsageUpdated(_)).Times(0);
+  EXPECT_CALL(passive_cpu_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_all_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_process_observer, OnResourceUsageUpdated(_));
+  // Must only be notified once (not once for the repeating timer and again for
+  // `observe_other_queries`).
+  EXPECT_CALL(other_cpu_observer, OnResourceUsageUpdated(_)).Times(1);
+  task_environment()->FastForwardBy(base::Minutes(1));
+  verify_and_clear_expectations();
+
+  // At minute 6, `cpu_query` and `memory_query` both take measurements.
+  EXPECT_CALL(cpu_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(memory_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_cpu_observer, OnResourceUsageUpdated(_));
+  EXPECT_CALL(passive_memory_observer, OnResourceUsageUpdated(_));
+  // Memory and CPU results may be notified together or separately.
+  EXPECT_CALL(passive_all_observer, OnResourceUsageUpdated(_))
+      .Times(Between(1, 2));
+  EXPECT_CALL(passive_process_observer, OnResourceUsageUpdated(_))
+      .Times(Between(1, 2));
+  EXPECT_CALL(other_cpu_observer, OnResourceUsageUpdated(_));
+  task_environment()->FastForwardBy(base::Minutes(1));
+  verify_and_clear_expectations();
+
+  // QueryOnce also notifies other queries.
+  {
+    auto barrier_closure =
+        base::BarrierClosure(5, task_environment()->QuitClosure());
+    EXPECT_CALL(cpu_observer, OnResourceUsageUpdated(_))
+        .WillOnce(base::test::RunClosure(barrier_closure));
+    EXPECT_CALL(passive_cpu_observer, OnResourceUsageUpdated(_))
+        .WillOnce(base::test::RunClosure(barrier_closure));
+    EXPECT_CALL(passive_all_observer, OnResourceUsageUpdated(_))
+        .WillOnce(base::test::RunClosure(barrier_closure));
+    EXPECT_CALL(passive_process_observer, OnResourceUsageUpdated(_))
+        .WillOnce(base::test::RunClosure(barrier_closure));
+    EXPECT_CALL(other_cpu_observer, OnResourceUsageUpdated(_))
+        .WillOnce(base::test::RunClosure(barrier_closure));
+    cpu_query.QueryOnce();
+    task_environment()->RunUntilQuit();
+    verify_and_clear_expectations();
+  }
+
+  // QueryOnce on a query that doesn't make repeating queries also notifies
+  // other queries, but NOT queries without `observe_other_queries` set.
+  {
+    auto barrier_closure =
+        base::BarrierClosure(4, task_environment()->QuitClosure());
+    EXPECT_CALL(cpu_observer, OnResourceUsageUpdated(_)).Times(0);
+    // Must only be notified once (not once for QueryOnce and again for
+    // `observe_other_queries`).
+    EXPECT_CALL(passive_cpu_observer, OnResourceUsageUpdated(_))
+        .WillOnce(base::test::RunClosure(barrier_closure));
+    EXPECT_CALL(passive_all_observer, OnResourceUsageUpdated(_))
+        .WillOnce(base::test::RunClosure(barrier_closure));
+    EXPECT_CALL(passive_process_observer, OnResourceUsageUpdated(_))
+        .WillOnce(base::test::RunClosure(barrier_closure));
+    EXPECT_CALL(other_cpu_observer, OnResourceUsageUpdated(_))
+        .WillOnce(base::test::RunClosure(barrier_closure));
+    passive_cpu_query.QueryOnce();
+    task_environment()->RunUntilQuit();
+    verify_and_clear_expectations();
+  }
+
+  // A non-scoped query should also notify scoped query observers with
+  // `observe_other_queries` set.
+  auto barrier_closure =
+      base::BarrierClosure(4, task_environment()->QuitClosure());
+  EXPECT_CALL(passive_memory_observer, OnResourceUsageUpdated(_))
+      .WillOnce(base::test::RunClosure(barrier_closure));
+  EXPECT_CALL(passive_all_observer, OnResourceUsageUpdated(_))
+      .WillOnce(base::test::RunClosure(barrier_closure));
+  EXPECT_CALL(passive_process_observer, OnResourceUsageUpdated(_))
+      .WillOnce(base::test::RunClosure(barrier_closure));
+  QueryBuilder()
+      .AddResourceContext(main_frame_context())
+      .AddResourceType(ResourceType::kMemorySummary)
+      .QueryOnce(base::IgnoreArgs<const QueryResultMap&>(barrier_closure));
+  task_environment()->RunUntilQuit();
+  verify_and_clear_expectations();
 }
 
 }  // namespace resource_attribution

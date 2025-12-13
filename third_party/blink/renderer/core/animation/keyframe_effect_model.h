@@ -108,22 +108,56 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
       return keyframes_;
     }
 
-    bool IsStatic() const { return has_static_value_; }
 
     void Trace(Visitor* visitor) const { visitor->Trace(keyframes_); }
 
+    enum class StaticCheckResult {
+      // Requires initial evaluation.
+      kUnset,
+      // Value changes across keyframes.
+      kDynamic,
+      // Value is constant across all keyframes.
+      kStatic,
+      // Value is constant across specified keyframes, but may differ from the
+      // underlying style. The corresponding property is assumed dynamic until
+      // checked.
+      kProvisionalUnchecked,
+      // Value is constant across specified keyframes and currently matches the
+      // underlying style. The corresponding property can be assumed static
+      // until proven otherwise, at which time it will be downgraded to
+      // kDynamic.
+      kProvisionalChecked
+    };
+    bool IsStaticMaybeDowngradeProvisional(const PropertyHandle&,
+                                           const Element*) const;
+
+    // Only considered static if all keyframes are set and have precisely the
+    // same value and composite mode.
+    bool IsStrictlyStatic() const {
+      DCHECK(static_check_result_ != StaticCheckResult::kUnset);
+      return static_check_result_ == StaticCheckResult::kStatic;
+    }
+    // Static if all specified keyframes meet the requirements to be strictly
+    // static. If there are any neutral keyframes, the underlying value must
+    // have been verified to match the value for the specified keyframes and
+    // composite mode must be replace.
+    bool IsCurrentlyStatic() const {
+      DCHECK(static_check_result_ != StaticCheckResult::kUnset);
+      return static_check_result_ == StaticCheckResult::kStatic ||
+             static_check_result_ == StaticCheckResult::kProvisionalChecked;
+    }
+
    private:
     void RemoveRedundantKeyframes();
-    void CheckIfStatic();
+    void CheckIfStatic(const KeyframeEffectModelBase& model);
     bool AddSyntheticKeyframeIfRequired(
         scoped_refptr<TimingFunction> zero_offset_easing);
+    const CSSPropertySpecificKeyframe* FirstCssKeyframeWithSetValue() const;
 
     PropertySpecificKeyframeVector keyframes_;
 
-    // TODO(kevers): Store CSS value if static in order to short-circuit
-    // applying the effect if set as we don't need to determine the bounding
-    // keyframes.
-    bool has_static_value_ = false;
+    // Cache results of the static property check for efficiency.
+    mutable StaticCheckResult static_check_result_ = StaticCheckResult::kUnset;
 
     friend class KeyframeEffectModelBase;
   };
@@ -140,8 +174,10 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
       STACK_ALLOCATED();
 
      public:
-      explicit Iterator(const KeyframeEffectModelBase* model)
+      explicit Iterator(const KeyframeEffectModelBase* model,
+                        const Element* element)
           : model_(model),
+            element_(element),
             current_keyframe_group_(model_->keyframe_groups_->begin()) {
         AdvanceToNextGroup();
       }
@@ -160,18 +196,21 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
       void AdvanceToNextGroup();
 
       const KeyframeEffectModelBase* model_;
+      const Element* element_;
       KeyframeGroupMap::const_iterator current_keyframe_group_;
     };
 
-    explicit IterableDynamicProperties(const KeyframeEffectModelBase* model)
-        : model_(model) {}
-    Iterator begin() const { return Iterator(model_); }
+    explicit IterableDynamicProperties(const KeyframeEffectModelBase* model,
+                                       const Element* element)
+        : model_(model), element_(element) {}
+    Iterator begin() const { return Iterator(model_, element_); }
     EndIterator end() const { return EndIterator(); }
     bool empty() const { return begin() == end(); }
     bool Contains(const PropertyHandle& property) const;
 
    private:
     const KeyframeEffectModelBase* model_;
+    const Element* element_;
   };
 
   bool AffectedByUnderlyingAnimations() const final { return !IsReplaceOnly(); }
@@ -184,7 +223,11 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   // Returns an iterable collection over the properties with changing
   // values that are animated by keyframes in this effect.
-  IterableDynamicProperties DynamicProperties() const;
+  // If an element is specified, provisional properties are recheck to determine
+  // if dynamic or static. In the absence of an element, provisional properties
+  // are treated as static if previously validated and dynamic otherwise.
+  IterableDynamicProperties DynamicProperties(
+      const Element* element = nullptr) const;
 
   bool HasStaticProperty() const;
 
@@ -200,6 +243,11 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   CompositeOperation Composite() const { return composite_; }
   void SetComposite(CompositeOperation composite);
+
+  IterationCompositeOperation IterationComposite() const {
+    return iteration_composite_;
+  }
+  void SetIterationComposite(IterationCompositeOperation iteration_composite);
 
   const PropertySpecificKeyframeVector* GetPropertySpecificKeyframes(
       const PropertyHandle& property) const {
@@ -342,6 +390,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   mutable double last_fraction_;
   mutable AnimationTimeDelta last_iteration_duration_;
   CompositeOperation composite_;
+  IterationCompositeOperation iteration_composite_ = kIterationCompositeReplace;
   scoped_refptr<TimingFunction> default_keyframe_easing_;
 
   mutable bool has_synthetic_keyframes_ = false;
@@ -380,14 +429,18 @@ class KeyframeEffectModel : public KeyframeEffectModelBase {
       Keyframe* new_keyframe = keyframe->Clone();
       keyframes.push_back(static_cast<K*>(new_keyframe));
     }
-    return MakeGarbageCollected<KeyframeEffectModel<K>>(
+    auto* cloned = MakeGarbageCollected<KeyframeEffectModel<K>>(
         keyframes, composite_, default_keyframe_easing_);
+    cloned->SetIterationComposite(iteration_composite_);
+    return cloned;
   }
 
   KeyframeEffectModel<StringKeyframe>* CloneAsEmptyStringKeyframeModel() {
     HeapVector<Member<StringKeyframe>> empty_keyframes;
-    return MakeGarbageCollected<KeyframeEffectModel<StringKeyframe>>(
+    auto* cloned = MakeGarbageCollected<KeyframeEffectModel<StringKeyframe>>(
         empty_keyframes, composite_, default_keyframe_easing_);
+    cloned->SetIterationComposite(iteration_composite_);
+    return cloned;
   }
 
  private:

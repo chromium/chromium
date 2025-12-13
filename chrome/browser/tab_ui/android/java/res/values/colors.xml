@@ -18,6 +18,7 @@ found in the LICENSE file.
   <color name="incognito_tab_tile_number_selected_color">@color/baseline_primary_20</color>
 
   <color name="incognito_tab_action_button_selected_color">@color/baseline_primary_20</color>
+  <color name="incognito_tab_action_button_color">@color/baseline_neutral_variant_80</color>
 
   <color name="incognito_tab_card_hover_color_overlay">@color/baseline_neutral_100_alpha_16</color>
 </resources>

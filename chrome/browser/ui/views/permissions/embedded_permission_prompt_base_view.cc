@@ -45,6 +45,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
                                       kLabelViewId2);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
                                       kTitleViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
+                                      kOkButtonId);
 
 using permissions::feature_params::PermissionElementPromptPosition;
 
@@ -86,7 +88,7 @@ int GetPermissionIconSize() {
 
 float GetScreenScaleFactor(Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  return browser_view ? display::Screen::GetScreen()
+  return browser_view ? display::Screen::Get()
                             ->GetPreferredScaleFactorForWindow(
                                 browser_view->GetNativeWindow())
                             .value_or(1.0f)
@@ -235,7 +237,9 @@ void EmbeddedPermissionPromptBaseView::PrepareToClose() {
 
 PermissionElementPromptPosition
 EmbeddedPermissionPromptBaseView::GetPromptPosition() const {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPermissionElement));
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPermissionElement) ||
+        base::FeatureList::IsEnabled(blink::features::kGeolocationElement) ||
+        base::FeatureList::IsEnabled(blink::features::kUserMediaElement));
   if (!base::FeatureList::IsEnabled(
           permissions::features::kPermissionElementPromptPositioning)) {
     return PermissionElementPromptPosition::kWindowMiddle;

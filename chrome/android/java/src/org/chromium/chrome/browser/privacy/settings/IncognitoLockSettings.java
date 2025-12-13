@@ -11,6 +11,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingSwitchPreference;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
@@ -71,6 +73,10 @@ public class IncognitoLockSettings {
             return;
         }
 
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            mIncognitoReauthPreference.setTitle(
+                    activity.getString(R.string.settings_incognito_window_lock_title));
+        }
         mIncognitoReauthPreference.setLinkClickDelegate(
                 () -> {
                     activity.startActivity(

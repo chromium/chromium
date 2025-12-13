@@ -64,12 +64,12 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator_collection.h"
 #include "ui/compositor/overscroll/scroll_input_handler.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/presentation_feedback.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_switches.h"
 
@@ -280,8 +280,17 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   }
 
   if (command_line->HasSwitch(switches::kUISlowAnimations)) {
-    slow_animations_ = std::make_unique<ScopedAnimationDurationScaleMode>(
-        ScopedAnimationDurationScaleMode::SLOW_DURATION);
+    slow_animations_ = std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+        gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  } else if (command_line->HasSwitch(switches::kAnimationDurationScale)) {
+    double animation_duration_scale = 1.0f;
+    if (!base::StringToDouble(command_line->GetSwitchValueASCII(
+                                  switches::kAnimationDurationScale),
+                              &animation_duration_scale)) {
+      animation_duration_scale = 1.0f;
+    }
+    slow_animations_ = std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+        animation_duration_scale);
   }
 
   settings.disable_frame_rate_limit =
@@ -327,7 +336,7 @@ Compositor::~Compositor() {
     host_frame_sink_manager->UnregisterFrameSinkHierarchy(frame_sink_id_,
                                                           client);
   }
-  host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_, this);
+  host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_, this, {});
 }
 
 void Compositor::AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) {
@@ -895,7 +904,7 @@ void Compositor::DidPresentCompositorFrame(
       "cc,benchmark", "FramePresented",
       frame_timing_details.presentation_feedback.timestamp, "environment",
       "browser");
-  observer_list_.Notify(&CompositorObserver::OnDidPresentCompositorFrame,
+  observer_list_.Notify(&CompositorObserver::OnDidPresentCompositorFrame, this,
                         frame_token,
                         frame_timing_details.presentation_feedback);
 }

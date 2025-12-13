@@ -40,7 +40,8 @@
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 #include "ui/events/devices/device_data_manager.h"
 
-const char* kCmdline[] = {"presentation_service_mojolpm_fuzzer", nullptr};
+constexpr const char* kCmdline[] = {"presentation_service_mojolpm_fuzzer",
+                                    nullptr};
 
 content::mojolpm::FuzzerEnvironment& GetEnvironment() {
   static base::NoDestructor<content::mojolpm::FuzzerEnvironment> environment(

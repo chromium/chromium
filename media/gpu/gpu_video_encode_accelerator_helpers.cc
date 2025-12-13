@@ -9,7 +9,9 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/bitrate.h"
 
@@ -226,6 +228,63 @@ VideoBitrateAllocation AllocateDefaultBitrateForTesting(
   if (use_vbr)
     allocation.SetPeakBps(bitrate.peak_bps());
   return allocation;
+}
+
+VideoBitrateAllocation BitrateToBitrateAllocation(const Bitrate& bitrate) {
+  VideoBitrateAllocation allocation(bitrate.mode());
+  switch (bitrate.mode()) {
+    case Bitrate::Mode::kVariable:
+      allocation.SetBitrate(0, 0, bitrate.target_bps());
+      allocation.SetPeakBps(bitrate.peak_bps());
+      break;
+    case Bitrate::Mode::kConstant:
+      allocation.SetBitrate(0, 0, bitrate.target_bps());
+      break;
+    case Bitrate::Mode::kExternal:
+      break;
+  }
+  return allocation;
+}
+
+VEAEncodingLatencyMetricsHelper::VEAEncodingLatencyMetricsHelper(
+    const std::string& uma_prefix,
+    VideoCodec codec)
+    : uma_name_(uma_prefix + GetCodecNameForUMA(codec)) {}
+
+VEAEncodingLatencyMetricsHelper::~VEAEncodingLatencyMetricsHelper() {
+  if (frame_count_ == 0) {
+    return;
+  }
+
+  base::UmaHistogramCounts1000(uma_name_, total_encode_time_ms_ / frame_count_);
+}
+
+void VEAEncodingLatencyMetricsHelper::EncodeOneFrame(
+    bool is_key_frame,
+    base::TimeDelta time_delta) {
+  const uint64_t delta_ms = time_delta.InMilliseconds();
+
+  if (!base::CheckAdd(total_encode_time_ms_, delta_ms).IsValid()) {
+    // If overflow happens, report the metrics and reset the counters.
+    // Use checked math to detect overflow when adding delta_ms to
+    // total_encode_time_ms_. This avoids manual limit arithmetic and is
+    // clearer about intent.
+    if (frame_count_ > 0) {
+      base::UmaHistogramCounts1000(uma_name_,
+                                   total_encode_time_ms_ / frame_count_);
+    }
+    frame_count_ = 0;
+    total_encode_time_ms_ = 0;
+  }
+
+  frame_count_++;
+  total_encode_time_ms_ += delta_ms;
+  if (is_key_frame) {
+    base::UmaHistogramCounts1000(uma_name_,
+                                 total_encode_time_ms_ / frame_count_);
+    frame_count_ = 0;
+    total_encode_time_ms_ = 0;
+  }
 }
 
 }  // namespace media

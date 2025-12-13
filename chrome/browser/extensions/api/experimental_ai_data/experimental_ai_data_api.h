@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_AI_DATA_EXPERIMENTAL_AI_DATA_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_AI_DATA_EXPERIMENTAL_AI_DATA_API_H_
 
-#include "base/feature_list.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"
 #include "chrome/common/extensions/api/experimental_ai_data.h"
 #include "extensions/browser/extension_function.h"

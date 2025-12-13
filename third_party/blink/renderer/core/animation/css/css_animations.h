@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -56,9 +55,10 @@ class ComputedStyleBuilder;
 class Element;
 class StylePropertyShorthand;
 class StyleResolver;
+class StyleRuleKeyframes;
 class StyleTimeline;
 class WritingDirectionMode;
-class AnimationTrigger;
+class TimelineTrigger;
 
 class CORE_EXPORT CSSAnimations final {
   DISALLOW_NEW();
@@ -133,6 +133,12 @@ class CORE_EXPORT CSSAnimations final {
                                    CSSAnimationUpdate&,
                                    ComputedStyleBuilder&);
 
+  // This performs an update of the given element's set of named triggers, but
+  // only named triggers which are directly declared on this element via CSS.
+  static void UpdateNamedTriggers(const ComputedStyleBuilder& style_builder,
+                                  const CSSAnimationUpdate& update,
+                                  Element& element);
+
   const CSSAnimationUpdate& PendingUpdate() const { return pending_update_; }
   void SetPendingUpdate(const CSSAnimationUpdate& update) {
     ClearPendingUpdate();
@@ -184,10 +190,7 @@ class CORE_EXPORT CSSAnimations final {
       specified_timing = update.specified_timing;
     }
 
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(animation);
-      visitor->Trace(style_rule);
-    }
+    void Trace(Visitor*) const;
 
     Member<Animation> animation;
     AtomicString name;
@@ -465,14 +468,13 @@ class CORE_EXPORT CSSAnimations final {
       TransitionUpdateState& state,
       const PropertyHandle& transitioning_property);
 
-  // TODO(crbug.com/429392773): Uncomment and use this function.
-  // static AnimationTrigger* ComputeTimelineTrigger(
-  //     Element* element,
-  //     const CSSAnimationData* data,
-  //     wtf_size_t animation_index,
-  //     const CSSAnimationUpdate& update,
-  //     AnimationTrigger* existing_trigger,
-  //     float zoom);
+  static TimelineTrigger* ComputeTimelineTrigger(
+      const CSSAnimationData* data,
+      wtf_size_t animation_index,
+      const CSSAnimationUpdate& update,
+      float zoom,
+      Element* element,
+      TimelineTrigger* existing_trigger);
 
   class AnimationEventDelegate final : public AnimationEffect::EventDelegate {
    public:

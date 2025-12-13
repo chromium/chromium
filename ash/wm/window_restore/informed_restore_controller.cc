@@ -51,6 +51,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -71,7 +72,7 @@ bool ShouldShowInformedRestoreImage(const gfx::ImageSkia& image) {
   const bool is_image_landscape = image_size.width() > image_size.height();
 
   const display::Display display_with_dialog =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   const bool is_display_landscape = chromeos::IsLandscapeOrientation(
       chromeos::GetDisplayCurrentOrientation(display_with_dialog));
 

@@ -52,7 +52,7 @@ class TouchHudTestBase : public AshTestBase {
   }
 
   display::Display GetPrimaryDisplay() {
-    return display::Screen::GetScreen()->GetPrimaryDisplay();
+    return display::Screen::Get()->GetPrimaryDisplay();
   }
 
   display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,

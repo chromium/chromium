@@ -16,7 +16,7 @@ promise_test(async () => {
   const nosysex_outport = nosysex_access.outputs.values().next().value;
   const sysex_message = [0xf0, 0x00, 0x01, 0x02, 0xf7];
 
-  assert_throws_dom("InvalidAccessError", () => {
+  assert_throws_dom("NotAllowedError", () => {
     nosysex_outport.send(sysex_message);
   });
 

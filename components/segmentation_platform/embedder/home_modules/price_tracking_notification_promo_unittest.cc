@@ -48,8 +48,6 @@ TEST_F(PriceTrackingNotificationPromoTest, TestComputeCardResult) {
 //
 // Note: `kMaxPriceTrackingNotificationCardImpressions` is 3.
 TEST_F(PriceTrackingNotificationPromoTest, TestIsEnabled) {
-  feature_list_.InitWithFeatures({commerce::kPriceTrackingPromo}, {});
-
   EXPECT_TRUE(PriceTrackingNotificationPromo::IsEnabled(0));
   EXPECT_TRUE(PriceTrackingNotificationPromo::IsEnabled(1));
   EXPECT_TRUE(PriceTrackingNotificationPromo::IsEnabled(2));

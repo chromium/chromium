@@ -10,13 +10,19 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "components/dbus/utils/types.h"
+#include "components/dbus/utils/variant.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 
-namespace dbus_utils::internal {
+namespace dbus_utils {
 
+// Writes a D-Bus `value` to `writer`. `value` must not be (or contain) an empty
+// Variant.
 template <typename T>
+  requires IsSupportedDBusType<T>
 void WriteValue(dbus::MessageWriter& writer, const T& value);
+
+namespace internal {
 
 template <typename T>
   requires IsSupportedArray<T>::value
@@ -59,7 +65,10 @@ void WriteStruct(dbus::MessageWriter& writer, const T& structure) {
   writer.CloseContainer(&struct_writer);
 }
 
+}  // namespace internal
+
 template <typename T>
+  requires IsSupportedDBusType<T>
 void WriteValue(dbus::MessageWriter& writer, const T& value) {
   if constexpr (std::is_same_v<T, int16_t>) {
     writer.AppendInt16(value);
@@ -85,17 +94,19 @@ void WriteValue(dbus::MessageWriter& writer, const T& value) {
     writer.AppendObjectPath(value);
   } else if constexpr (std::is_same_v<T, base::ScopedFD>) {
     writer.AppendFileDescriptor(value.get());
-  } else if constexpr (IsSupportedArray<T>::value) {
-    WriteArray(writer, value);
-  } else if constexpr (IsSupportedMap<T>::value) {
-    WriteMap(writer, value);
-  } else if constexpr (IsSupportedStruct<T>::value) {
-    WriteStruct(writer, value);
+  } else if constexpr (internal::IsSupportedArray<T>::value) {
+    internal::WriteArray(writer, value);
+  } else if constexpr (internal::IsSupportedMap<T>::value) {
+    internal::WriteMap(writer, value);
+  } else if constexpr (internal::IsSupportedStruct<T>::value) {
+    internal::WriteStruct(writer, value);
+  } else if constexpr (std::is_same_v<T, Variant>) {
+    value.Write(writer);
   } else {
     static_assert(false, "Unsupported type for D-Bus writing");
   }
 }
 
-}  // namespace dbus_utils::internal
+}  // namespace dbus_utils
 
 #endif  // COMPONENTS_DBUS_UTILS_WRITE_VALUE_H_

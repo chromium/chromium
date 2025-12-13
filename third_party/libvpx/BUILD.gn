@@ -631,6 +631,15 @@ static_library("libvpxrc") {
   public_deps = [ ":libvpx" ]
 
   public_configs = [ ":libvpx_public_config" ]
+
+  if (is_apple) {
+    # TODO(https://crbug.com/434866376): macOS/iOS builds require more
+    # modulemaps from Apple SDKs for this, e.g. Darwin.modulemap,
+    # Darwin_Mach.modulemap.
+    # Currently disable clang module for target to enable clang module by
+    # default in other places first.
+    use_libcxx_modules = false
+  }
 }
 
 test("vp8_encoder_fuzz_test") {

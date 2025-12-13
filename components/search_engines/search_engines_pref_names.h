@@ -18,8 +18,12 @@ inline constexpr char kDefaultSearchProviderGUID[] =
     "default_search_provider.guid";
 
 // Epoch timestamp in seconds of when the user's search engine choice was
-// invalidated. We do this for example when they detect that a choice has
-// been transferred to a different device.
+// invalidated.
+// While Chrome is processing detected restored installs on a just-in-time
+// basis, we use this pref to flag the detected installs and differentiate them
+// from the ones we missed.
+// TODO(crbug.com/434651685): Remove this pref and the associated code when we
+// fully transition to retroactive detection.
 inline constexpr char kDefaultSearchProviderChoiceInvalidationTimestamp[] =
     "default_search_provider.choice_invalidation_timestamp";
 
@@ -36,6 +40,11 @@ inline constexpr char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
 // search engine choice in the choice screen or in settings.
 inline constexpr char kDefaultSearchProviderChoiceScreenCompletionVersion[] =
     "default_search_provider.choice_screen_completion_version";
+
+// The regional program for which the user made a search engine choice.
+// See `regional_capabilities::Program` for the format.
+inline constexpr char kDefaultSearchProviderChoiceScreenCompletionProgram[] =
+    "default_search_provider.choice_screen_completion_program";
 
 // Prepopulated id of the search engine chosen in a guest session if the user
 // decides to propagate the default search engine to all guest sessions. The
@@ -67,6 +76,21 @@ inline constexpr char kDefaultSearchProviderContextMenuAccessAllowed[] =
 // Whether having a default search provider is enabled.
 inline constexpr char kDefaultSearchProviderEnabled[] =
     "default_search_provider.enabled";
+
+// Tracks if a default search engine reset has occurred that the user hasn't
+// been notified of. This is set to true when a reset occurs and false after the
+// notification is shown.
+inline constexpr char kUnacknowledgedDefaultSearchEngineResetOccurred[] =
+    "default_search_provider.reset_occurred";
+
+// The time the last mirror check based reset occurred.
+inline constexpr char kDefaultSearchEngineMirrorCheckResetTimeStamp[] =
+    "default_search_provider.reset_time";
+
+// The time of the default search engine reset for which the last notification
+// was shown.
+inline constexpr char kResetTimeForLastShownNotification[] =
+    "default_search_provider.notification_reset_time";
 
 // The dictionary key used when the default search providers are given
 // in the preferences file. Normally they are copied from the main

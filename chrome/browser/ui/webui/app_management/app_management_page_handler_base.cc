@@ -112,8 +112,8 @@ std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
   // expect that converting from unsigned to signed int here should always
   // yield a positive value, since overflowing into negative would require an
   // implausibly large app (2^63 bytes ~= 9 exabytes).
-  int64_t signed_bytes = static_cast<int64_t>(bytes.value());
-  if (signed_bytes < 0) {
+  base::ByteCount signed_bytes = base::ByteCount(bytes.value());
+  if (signed_bytes < base::ByteCount(0)) {
     // TODO(crbug.com/40063212): Investigate ARC apps which have negative data
     // sizes.
     LOG(ERROR) << "Invalid app size: " << signed_bytes;

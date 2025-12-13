@@ -13,9 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/load_error_reporter.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/extension_id.h"
 
@@ -60,7 +60,7 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
   // LoadErrorReporter::Observer:
   void OnLoadFailure(content::BrowserContext* browser_context,
                      const base::FilePath& file_path,
-                     const std::string& error) override;
+                     const std::u16string& error) override;
 
  private:
   // Runs the enable flow. It starts by checking if the extension is loaded.
@@ -80,8 +80,7 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
 
   // Called when the extension approval flow is complete.
   void OnExtensionApprovalDone(
-      extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult
-          result);
+      extensions::SupervisedExtensionApprovalResult result);
 
   // Starts/stops observing extension load notifications.
   void StartObserving();

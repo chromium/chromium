@@ -13,48 +13,44 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 
+namespace gpu {
+class ClientSharedImage;
+class RasterScopedAccess;
+}  // namespace gpu
+
+namespace viz {
+class RasterContextProvider;
+}  // namespace viz
+
 namespace blink {
-class WebGraphicsContext3DProviderWrapper;
 class MailboxRef;
 
 class MailboxTextureBacking : public TextureBacking {
  public:
   explicit MailboxTextureBacking(
-      sk_sp<SkImage> sk_image,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       scoped_refptr<MailboxRef> mailbox_ref,
       const gfx::Size& size,
       const viz::SharedImageFormat& format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper);
-  explicit MailboxTextureBacking(
-      const gpu::Mailbox& mailbox,
-      scoped_refptr<MailboxRef> mailbox_ref,
-      const gfx::Size& size,
-      const viz::SharedImageFormat& format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper);
+      scoped_refptr<viz::RasterContextProvider> context_provider);
   ~MailboxTextureBacking() override;
   const SkImageInfo& GetSkImageInfo() override;
   gpu::Mailbox GetMailbox() const override;
-  sk_sp<SkImage> GetAcceleratedSkImage() override;
   sk_sp<SkImage> GetSkImageViaReadback() override;
   bool readPixels(const SkImageInfo& dst_info,
                   void* dst_pixels,
                   size_t dst_row_bytes,
                   int src_x,
                   int src_y) override;
-  void FlushPendingSkiaOps() override;
 
  private:
-  const sk_sp<SkImage> sk_image_;
-  const gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   scoped_refptr<MailboxRef> mailbox_ref_;
+  std::unique_ptr<gpu::RasterScopedAccess> scoped_access_;
   const SkImageInfo sk_image_info_;
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+  scoped_refptr<viz::RasterContextProvider> context_provider_;
   THREAD_CHECKER(thread_checker_);
 };
 

@@ -5,18 +5,22 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -44,10 +48,6 @@
 #include "services/network/test/test_utils.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
 namespace glic {
 
 namespace {
@@ -68,9 +68,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
  protected:
   GlicUserStatusBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlic, {}},
-         {features::kTabstripComboButton, {}},
-         {features::kGlicRollout, {}},
+        {{features::kGlicRollout, {}},
          {features::kGlicUserStatusCheck,
           {{features::kGlicUserStatusRequestDelay.name, "200ms"},
            {features::kGlicUserStatusRequestDelayJitter.name, "0"}}}},
@@ -104,6 +102,14 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
     profile()->GetPrefs()->SetInteger(
         ::prefs::kGeminiSettings,
         static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/460830699): Evaluate whether this is necessary on
+    // ChromeOS.
+    disclaimer_service_resetter_ =
+        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
+            profile());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDownOnMainThread() override {
@@ -118,11 +124,12 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   void RegisterUserStatusHandler(net::HttpStatusCode status_code,
                                  std::string response_body) {
     embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
-        [=](const net::test_server::HttpRequest& request)
+        [=, this](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
           if (request.relative_url != kGlicUserStatusRelativeTestUrl) {
             return nullptr;
           }
+          most_recent_request_ = request;
           auto response =
               std::make_unique<net::test_server::BasicHttpResponse>();
 
@@ -134,22 +141,22 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
         }));
   }
   // Simulates user signing in and getting a refresh token.
-  void SimulatePrimaryAccountChangedSignIn(TestAccount* account) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    auto resetter =
-        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
-            profile());
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  void SimulatePrimaryAccountChangedSignIn(TestAccount* account,
+                                           bool fetch_account_info = true) {
     identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
 
     AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
-        account->email, signin::ConsentLevel::kSync);
+        account->email, signin::ConsentLevel::kSignin);
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_can_use_model_execution_features(true);
+    SetGlicCapability(mutator, true);
+    mutator.set_is_subject_to_enterprise_features(
+        !account->host_domain.empty());
     identity_test_env_->UpdateAccountInfoForAccount(account_info);
 
-    SimulateSuccessfulFetchOfAccountInfo(account, &account_info);
+    if (fetch_account_info) {
+      SimulateSuccessfulFetchOfAccountInfo(account, &account_info);
+    }
   }
 
   void SimulateSuccessfulFetchOfAccountInfo(const TestAccount* test_account,
@@ -210,15 +217,21 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsGlicEnabled() { return GlicEnabling::IsEnabledForProfile(profile()); }
-
   Profile* profile() { return browser()->profile(); }
 
+  net::test_server::HttpRequest& most_recent_request() {
+    return most_recent_request_.value();
+  }
+
+  GlicTestEnvironment glic_test_env_;
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  base::ScopedClosureRunner disclaimer_service_resetter_;
+  std::optional<net::test_server::HttpRequest> most_recent_request_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignInEnabled) {
@@ -251,8 +264,16 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignInEnabled) {
   EXPECT_TRUE(IsGlicEnabled());
 }
 
+// TODO(460830699): Re-enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_EnterpriseSignInEnabledGeminiSettings \
+  DISABLED_EnterpriseSignInEnabledGeminiSettings
+#else
+#define MAYBE_EnterpriseSignInEnabledGeminiSettings \
+  EnterpriseSignInEnabledGeminiSettings
+#endif
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
-                       EnterpriseSignInEnabledGeminiSettings) {
+                       MAYBE_EnterpriseSignInEnabledGeminiSettings) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -476,10 +497,10 @@ IN_PROC_BROWSER_TEST_F(
 
   identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
   AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
-      enterpriseAccount.email, signin::ConsentLevel::kSync);
+      enterpriseAccount.email, signin::ConsentLevel::kSignin);
   enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_can_use_model_execution_features(true);
+  SetGlicCapability(mutator, true);
   identity_test_env_->UpdateAccountInfoForAccount(account_info);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetCachedStatusDict().has_value());
@@ -638,7 +659,13 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   EXPECT_FALSE(IsGlicEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignOut) {
+// TODO(460830699): Re-enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_EnterpriseSignOut DISABLED_EnterpriseSignOut
+#else
+#define MAYBE_EnterpriseSignOut EnterpriseSignOut
+#endif
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, MAYBE_EnterpriseSignOut) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -766,6 +793,143 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
                 .FindBool(kIsEnterpriseAccountDataProtected),
             false);
 }
+
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, ClientDataHeaderExists) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  RegisterUserStatusHandler(
+      net::HTTP_OK,
+      R"({"isGlicEnabled": true, "isAccessDeniedByAdmin": false})");
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  SetGlicUserStatusUrlForTest();
+
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetCachedStatusDict().has_value(); }));
+
+  EXPECT_NE(most_recent_request().headers["X-Client-Data"], "");
+}
+
+class GlicShareImageEnablementBrowserTest
+    : public GlicUserStatusBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  GlicShareImageEnablementBrowserTest() {
+    if (IsGlicShareImageEnterpriseEnabled()) {
+      feature_list_.InitWithFeatures(
+          {features::kGlicShareImage, features::kGlicShareImageEnterprise}, {});
+    } else {
+      feature_list_.InitWithFeatures({features::kGlicShareImage},
+                                     {features::kGlicShareImageEnterprise});
+    }
+  }
+
+  bool IsGlicShareImageEnterpriseEnabled() const { return GetParam(); }
+
+  bool IsShareImageEnabled() {
+    return GlicEnabling::IsShareImageEnabledForProfile(profile());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicShareImageEnablementBrowserTest,
+                       EnterpriseSignInEnabledNonManaged) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  // If enterprise checks are enabled, we should reject if value is pending.
+  EXPECT_EQ(IsShareImageEnabled(), IsGlicShareImageEnterpriseEnabled());
+
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+
+  // This should continue to be the case after fetching (as this is an
+  // enterprise user).
+  EXPECT_EQ(IsShareImageEnabled(), IsGlicShareImageEnterpriseEnabled());
+}
+
+IN_PROC_BROWSER_TEST_P(GlicShareImageEnablementBrowserTest,
+                       NonEnterpriseSignIn) {
+  EXPECT_EQ(IsShareImageEnabled(), IsGlicShareImageEnterpriseEnabled());
+
+  SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount);
+
+  ASSERT_TRUE(IsGlicEnabled());
+  {
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::CLOUD);
+    EXPECT_EQ(IsShareImageEnabled(), IsGlicShareImageEnterpriseEnabled());
+  }
+  {
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::NONE);
+    // In all cases, share image should be enabled here.
+    EXPECT_TRUE(IsShareImageEnabled());
+  }
+}
+
+class GlicShareImageGlicDisabledBrowserTest
+    : public GlicUserStatusBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  GlicShareImageGlicDisabledBrowserTest() {
+    if (IsGlicShareImageEnterpriseEnabled()) {
+      feature_list_.InitWithFeatures(
+          {features::kGlicShareImage, features::kGlicShareImageEnterprise},
+          {features::kGlic});
+    } else {
+      feature_list_.InitWithFeatures(
+          {features::kGlicShareImage},
+          {features::kGlicShareImageEnterprise, features::kGlic});
+    }
+  }
+
+  bool IsGlicShareImageEnterpriseEnabled() const { return GetParam(); }
+
+  bool IsShareImageEnabled() {
+    return GlicEnabling::IsShareImageEnabledForProfile(profile());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// If glic is disabled, share image should always be disabled.
+IN_PROC_BROWSER_TEST_P(GlicShareImageGlicDisabledBrowserTest, AlwaysDisabled) {
+  EXPECT_FALSE(IsShareImageEnabled());
+
+  SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount);
+
+  ASSERT_FALSE(IsGlicEnabled());
+  {
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::CLOUD);
+    EXPECT_FALSE(IsShareImageEnabled());
+  }
+  {
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::NONE);
+    EXPECT_FALSE(IsShareImageEnabled());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(ToggleGlicShareImageEnterprise,
+                         GlicShareImageEnablementBrowserTest,
+                         testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(ToggleGlicShareImageEnterprise,
+                         GlicShareImageGlicDisabledBrowserTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace glic

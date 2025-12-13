@@ -120,6 +120,13 @@ class ComponentLoader : public KeyedService {
   std::vector<ExtensionId> GetRegisteredComponentExtensionsIds() const;
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // Whether the given extension is being loaded in the file task runner.
+  bool IsPendingAdd(const ExtensionId& extension_id) const;
+
+  // Convenience wrapper of `Exists` and `IsPendingAdd` since most callers do
+  // not need to differentiate the two cases.
+  bool ExistsOrPendingAdd(const ExtensionId& extension_id) const;
+
   // Identical to AddComponentFromDir() except allows for the caller to supply
   // the name of the manifest file.
   void AddComponentFromDirWithManifestFilename(
@@ -127,7 +134,8 @@ class ComponentLoader : public KeyedService {
       const ExtensionId& extension_id,
       const base::FilePath::CharType* manifest_file_name,
       const base::FilePath::CharType* guest_manifest_file_name,
-      base::OnceClosure done_cb);
+      base::OnceClosure done_cb,
+      base::OnceClosure error_cb);
 
   // Add a component extension from a specific directory. Assumes that the
   // extension uses a different manifest file when this is a guest session
@@ -136,15 +144,6 @@ class ComponentLoader : public KeyedService {
   void AddComponentFromDir(const base::FilePath& root_directory,
                            const ExtensionId& extension_id,
                            base::OnceClosure done_cb);
-
-  // Add a component extension from a specific directory. Assumes that the
-  // extension's manifest file lives in `root_directory` and its name is
-  // 'manifest.json'. `name_string` and `description_string` are used to
-  // localize component extension's name and description text exclusively.
-  void AddWithNameAndDescriptionFromDir(const base::FilePath& root_directory,
-                                        const ExtensionId& extension_id,
-                                        const std::string& name_string,
-                                        const std::string& description_string);
 
   void AddChromeOsSpeechSynthesisExtensions();
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -158,6 +157,7 @@ class ComponentLoader : public KeyedService {
 
  private:
   friend class ComponentLoaderFactory;
+  friend class TtsApiTest;
   FRIEND_TEST_ALL_PREFIXES(ComponentLoaderTest, ParseManifest);
 
   // Information about a registered component extension.
@@ -233,6 +233,7 @@ class ComponentLoader : public KeyedService {
       const std::optional<std::string>& name_string,
       const std::optional<std::string>& description_string,
       base::OnceClosure done_cb,
+      base::OnceClosure error_cb,
       std::optional<base::Value::Dict> manifest);
 
   // Finishes loading an extension tts engine.
@@ -240,7 +241,8 @@ class ComponentLoader : public KeyedService {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<const Extension> CreateExtension(
-      const ComponentExtensionInfo& info, std::string* utf8_error);
+      const ComponentExtensionInfo& info,
+      std::u16string* error);
 
   // Unloads `component` from the memory.
   void UnloadComponent(ComponentExtensionInfo* component);
@@ -250,14 +252,17 @@ class ComponentLoader : public KeyedService {
   raw_ptr<ExtensionSystem, AcrossTasksDanglingUntriaged> extension_system_;
 
   // List of registered component extensions (see mojom::ManifestLocation).
-  typedef std::vector<ComponentExtensionInfo> RegisteredComponentExtensions;
+  using RegisteredComponentExtensions = std::vector<ComponentExtensionInfo>;
   RegisteredComponentExtensions component_extensions_;
 
   bool ignore_allowlist_for_testing_;
 
-  base::WeakPtrFactory<ComponentLoader> weak_factory_{this};
+#if BUILDFLAG(IS_CHROMEOS)
+  // Ids of extensions that are being loaded on file task runner.
+  ExtensionIdSet pending_extension_ids_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-  friend class TtsApiTest;
+  base::WeakPtrFactory<ComponentLoader> weak_factory_{this};
 };
 
 }  // namespace extensions

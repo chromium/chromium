@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
-
 #include <memory>
 #include <utility>
 
@@ -17,8 +15,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -32,7 +30,6 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
-#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -48,7 +45,6 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_metrics.h"
-#include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -63,11 +59,8 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/launch_util.h"
-#include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/api/management.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -83,55 +76,6 @@ using InstallOrLaunchWebAppCallback =
 using InstallOrLaunchWebAppResult =
     ManagementAPIDelegate::InstallOrLaunchWebAppResult;
 using InstallableCheckResult = web_app::InstallableCheckResult;
-
-class ManagementSetEnabledFunctionInstallPromptDelegate
-    : public InstallPromptDelegate {
- public:
-  ManagementSetEnabledFunctionInstallPromptDelegate(
-      content::WebContents* web_contents,
-      content::BrowserContext* browser_context,
-      const Extension* extension,
-      base::OnceCallback<void(bool)> callback)
-      : install_prompt_(new ExtensionInstallPrompt(web_contents)),
-        callback_(std::move(callback)) {
-    ExtensionInstallPrompt::PromptType type =
-        ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
-            browser_context, extension);
-    install_prompt_->ShowDialog(
-        base::BindOnce(&ManagementSetEnabledFunctionInstallPromptDelegate::
-                           OnInstallPromptDone,
-                       weak_factory_.GetWeakPtr()),
-        extension, nullptr,
-        std::make_unique<ExtensionInstallPrompt::Prompt>(type),
-        ExtensionInstallPrompt::GetDefaultShowDialogCallback());
-  }
-
-  ManagementSetEnabledFunctionInstallPromptDelegate(
-      const ManagementSetEnabledFunctionInstallPromptDelegate&) = delete;
-  ManagementSetEnabledFunctionInstallPromptDelegate& operator=(
-      const ManagementSetEnabledFunctionInstallPromptDelegate&) = delete;
-
-  ~ManagementSetEnabledFunctionInstallPromptDelegate() override = default;
-
- private:
-  void OnInstallPromptDone(
-      ExtensionInstallPrompt::DoneCallbackPayload payload) {
-    // This dialog doesn't support the "withhold permissions" checkbox.
-    DCHECK_NE(
-        payload.result,
-        ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
-    std::move(callback_).Run(payload.result ==
-                             ExtensionInstallPrompt::Result::ACCEPTED);
-  }
-
-  // Used for prompting to re-enable items with permissions escalation updates.
-  std::unique_ptr<ExtensionInstallPrompt> install_prompt_;
-
-  base::OnceCallback<void(bool)> callback_;
-
-  base::WeakPtrFactory<ManagementSetEnabledFunctionInstallPromptDelegate>
-      weak_factory_{this};
-};
 
 void OnGenerateAppForLinkCompleted(
     ManagementGenerateAppForLinkFunction* function,
@@ -317,21 +261,7 @@ void OnWebAppInstallabilityChecked(
   NOTREACHED();
 }
 
-SupervisedUserExtensionsDelegate*
-GetSupervisedUserExtensionsDelegateFromContext(
-    content::BrowserContext* context) {
-  SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
-      ManagementAPI::GetFactoryInstance()
-          ->Get(context)
-          ->GetSupervisedUserExtensionsDelegate();
-  CHECK(supervised_user_extensions_delegate);
-  return supervised_user_extensions_delegate;
-}
 }  // namespace
-
-ChromeManagementAPIDelegate::ChromeManagementAPIDelegate() = default;
-
-ChromeManagementAPIDelegate::~ChromeManagementAPIDelegate() = default;
 
 bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
     const Extension* extension,
@@ -364,27 +294,6 @@ bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
   RecordAppLaunchType(extension_misc::APP_LAUNCH_EXTENSION_API,
                       extension->GetType());
   return true;
-}
-
-GURL ChromeManagementAPIDelegate::GetFullLaunchURL(
-    const Extension* extension) const {
-  return AppLaunchInfo::GetFullLaunchURL(extension);
-}
-
-LaunchType ChromeManagementAPIDelegate::GetLaunchType(
-    const ExtensionPrefs* prefs,
-    const Extension* extension) const {
-  return ::extensions::GetLaunchType(prefs, extension);
-}
-
-std::unique_ptr<InstallPromptDelegate>
-ChromeManagementAPIDelegate::SetEnabledFunctionDelegate(
-    content::WebContents* web_contents,
-    content::BrowserContext* browser_context,
-    const Extension* extension,
-    base::OnceCallback<void(bool)> callback) const {
-  return std::make_unique<ManagementSetEnabledFunctionInstallPromptDelegate>(
-      web_contents, browser_context, extension, std::move(callback));
 }
 
 bool ChromeManagementAPIDelegate::CreateAppShortcutFunctionDelegate(
@@ -468,72 +377,6 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
       web_app_url, web_contents_ptr,
       base::BindOnce(&OnWebAppInstallabilityChecked, profile->GetWeakPtr(),
                      std::move(callback), std::move(web_contents)));
-}
-
-void ChromeManagementAPIDelegate::EnableExtension(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id) const {
-  const Extension* extension =
-      ExtensionRegistry::Get(context)->GetExtensionById(
-          extension_id, ExtensionRegistry::EVERYTHING);
-  // The extension must exist as this method is invoked on enabling an extension
-  // from the extensions management page (see `ManagementSetEnabledFunction`).
-  CHECK(extension);
-
-  SupervisedUserExtensionsDelegate* extensions_delegate =
-      GetSupervisedUserExtensionsDelegateFromContext(context);
-  extensions_delegate->MaybeRecordPermissionsIncreaseMetrics(*extension);
-  extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/true);
-
-  // If the extension was disabled for a permissions increase, the Management
-  // API will have displayed a re-enable prompt to the user, so we know it's
-  // safe to grant permissions here.
-  ExtensionRegistrar::Get(context)->GrantPermissionsAndEnableExtension(
-      *extension);
-}
-
-void ChromeManagementAPIDelegate::DisableExtension(
-    content::BrowserContext* context,
-    const Extension* source_extension,
-    const ExtensionId& extension_id,
-    disable_reason::DisableReason disable_reason) const {
-  SupervisedUserExtensionsDelegate* extensions_delegate =
-      GetSupervisedUserExtensionsDelegateFromContext(context);
-  extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/false);
-  ExtensionRegistrar::Get(context)->DisableExtensionWithSource(
-      source_extension, extension_id, disable_reason);
-}
-
-bool ChromeManagementAPIDelegate::UninstallExtension(
-    content::BrowserContext* context,
-    const ExtensionId& transient_extension_id,
-    UninstallReason reason,
-    std::u16string* error) const {
-  return extensions::ExtensionRegistrar::Get(context)->UninstallExtension(
-      transient_extension_id, reason, error);
-}
-
-void ChromeManagementAPIDelegate::SetLaunchType(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    LaunchType launch_type) const {
-  ::extensions::SetLaunchType(context, extension_id, launch_type);
-}
-
-GURL ChromeManagementAPIDelegate::GetIconURL(const Extension* extension,
-                                             int icon_size,
-                                             ExtensionIconSet::Match match,
-                                             bool grayscale) const {
-  return ExtensionIconSource::GetIconURL(extension, icon_size, match,
-                                         grayscale);
-}
-
-GURL ChromeManagementAPIDelegate::GetEffectiveUpdateURL(
-    const Extension& extension,
-    content::BrowserContext* context) const {
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(context);
-  return extension_management->GetEffectiveUpdateURL(extension);
 }
 
 void ChromeManagementAPIDelegate::ShowMv2DeprecationReEnableDialog(

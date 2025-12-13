@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/base/resource/scoped_file_writer.h"
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 
@@ -31,7 +27,7 @@ void ScopedFileWriter::Write(const void* data, size_t data_size) {
   if (!data_size)
     return;
 
-  if (valid_ && fwrite(data, data_size, 1, file_) != 1) {
+  if (valid_ && UNSAFE_TODO(fwrite(data, data_size, 1, file_)) != 1) {
     PLOG(ERROR) << "Could not write to pak file";
     valid_ = false;
   }

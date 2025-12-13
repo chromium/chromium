@@ -166,13 +166,8 @@ class InterstitialEnterpriseUtilTest : public testing::Test {
 };
 
 TEST_F(InterstitialEnterpriseUtilTest, RouterEventDisabledInIncognitoMode) {
-  std::vector<base::test::FeatureRef> enable_features;
-#if BUILDFLAG(IS_ANDROID)
-  enable_features.push_back(
-      enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid);
-#endif
-  enable_features.push_back(safe_browsing::kEnhancedFieldsForSecOps);
-  scoped_feature_list_.InitWithFeatures(enable_features, {});
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kEnhancedFieldsForSecOps);
   Profile* incognito_profile =
       profile_manager_.CreateTestingProfile("testing_profile")
           ->GetPrimaryOTRProfile(
@@ -187,13 +182,8 @@ TEST_F(InterstitialEnterpriseUtilTest, RouterEventDisabledInIncognitoMode) {
 
 TEST_F(InterstitialEnterpriseUtilTest,
        SecurityInterstitialShownEventSentInGuestMode) {
-  std::vector<base::test::FeatureRef> enable_features;
-#if BUILDFLAG(IS_ANDROID)
-  enable_features.push_back(
-      enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid);
-#endif
-  enable_features.push_back(safe_browsing::kEnhancedFieldsForSecOps);
-  scoped_feature_list_.InitWithFeatures(enable_features, {});
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kEnhancedFieldsForSecOps);
   Profile* guest_profile =
       profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
           /*create_if_needed=*/true);
@@ -214,12 +204,11 @@ TEST_F(InterstitialEnterpriseUtilTest,
   base::Value::Dict report_dict;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](bool include_device_info, base::Value::Dict&& report,
-              policy::CloudPolicyClient::ResultCallback callback) {
-            report_dict = std::move(report);
-            run_loop.Quit();
-          }));
+      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        report_dict = std::move(report);
+        run_loop.Quit();
+      });
 
   MaybeTriggerSecurityInterstitialShownEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
@@ -231,13 +220,8 @@ TEST_F(InterstitialEnterpriseUtilTest,
 
 TEST_F(InterstitialEnterpriseUtilTest,
        SecurityInterstitialProceededEventSentInGuestMode) {
-  std::vector<base::test::FeatureRef> enable_features;
-#if BUILDFLAG(IS_ANDROID)
-  enable_features.push_back(
-      enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid);
-#endif
-  enable_features.push_back(safe_browsing::kEnhancedFieldsForSecOps);
-  scoped_feature_list_.InitWithFeatures(enable_features, {});
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kEnhancedFieldsForSecOps);
   Profile* guest_profile =
       profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
           /*create_if_needed=*/true);
@@ -258,12 +242,11 @@ TEST_F(InterstitialEnterpriseUtilTest,
   base::Value::Dict report_dict;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](bool include_device_info, base::Value::Dict&& report,
-              policy::CloudPolicyClient::ResultCallback callback) {
-            report_dict = std::move(report);
-            run_loop.Quit();
-          }));
+      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        report_dict = std::move(report);
+        run_loop.Quit();
+      });
 
   MaybeTriggerSecurityInterstitialProceededEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
@@ -275,8 +258,8 @@ TEST_F(InterstitialEnterpriseUtilTest,
 
 TEST_F(InterstitialEnterpriseUtilTest,
        UrlFilteringInterstitialEventSentInGuestMode) {
-  scoped_feature_list_.InitWithFeatures(
-      {safe_browsing::kEnhancedFieldsForSecOps}, {});
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kEnhancedFieldsForSecOps);
   Profile* guest_profile =
       profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
           /*create_if_needed=*/true);
@@ -306,12 +289,11 @@ TEST_F(InterstitialEnterpriseUtilTest,
   base::Value::Dict report_dict;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](bool include_device_info, base::Value::Dict&& report,
-              policy::CloudPolicyClient::ResultCallback callback) {
-            report_dict = std::move(report);
-            run_loop.Quit();
-          }));
+      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        report_dict = std::move(report);
+        run_loop.Quit();
+      });
 
   MaybeTriggerUrlFilteringInterstitialEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
@@ -321,8 +303,8 @@ TEST_F(InterstitialEnterpriseUtilTest,
 }
 
 TEST_F(InterstitialEnterpriseUtilTest, ReferrerChainFallsbackToEventUrl) {
-  scoped_feature_list_.InitWithFeatures(
-      {safe_browsing::kEnhancedFieldsForSecOps}, {});
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kEnhancedFieldsForSecOps);
   Profile* guest_profile =
       profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
           /*create_if_needed=*/true);
@@ -358,12 +340,11 @@ TEST_F(InterstitialEnterpriseUtilTest, ReferrerChainFallsbackToEventUrl) {
   base::Value::Dict report_dict;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](bool include_device_info, base::Value::Dict&& report,
-              policy::CloudPolicyClient::ResultCallback callback) {
-            report_dict = std::move(report);
-            run_loop.Quit();
-          }));
+      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        report_dict = std::move(report);
+        run_loop.Quit();
+      });
 
   MaybeTriggerUrlFilteringInterstitialEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
@@ -371,20 +352,3 @@ TEST_F(InterstitialEnterpriseUtilTest, ReferrerChainFallsbackToEventUrl) {
   run_loop.Run();
   ValidateReferrerChain(report_dict, "urlFilteringInterstitialEvent");
 }
-
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(InterstitialEnterpriseUtilTest,
-       RouterEventEnabledInGuestMode_NoEventReportedWhenExperimentOff) {
-  scoped_feature_list_.InitWithFeatures(
-      {}, {enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid});
-  Profile* guest_profile =
-      profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
-          /*create_if_needed=*/true);
-  EnableReportingPolicy(guest_profile);
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(0);
-  MaybeTriggerSecurityInterstitialShownEvent(
-      web_contents_factory_.CreateWebContents(guest_profile),
-      GURL("https://phishing.com/"), "reason",
-      /*net_error_code=*/0);
-}
-#endif

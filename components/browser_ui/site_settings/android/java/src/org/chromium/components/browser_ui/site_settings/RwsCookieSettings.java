@@ -24,6 +24,7 @@ import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -67,50 +68,33 @@ public class RwsCookieSettings extends BaseSiteSettingsFragment
         int pageState = getArguments().getInt(RwsCookieSettings.EXTRA_COOKIE_PAGE_STATE);
         if (pageState == CookieControlsMode.BLOCK_THIRD_PARTY) {
             setupAllowRwsPreference();
-            mAllowRwsPreference.setVisible(true);
+            mAllowRwsPreference.setVisible(
+                    getSiteSettingsDelegate().isRelatedWebsiteSetsUiEnabled());
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_block_third_party_subtitle);
-            if (getSiteSettingsDelegate().isAlwaysBlock3pcsIncognitoEnabled()) {
-                int bulletOneId =
-                        R.string.settings_cookies_block_third_party_settings_block_bullet_one;
-                int bulletTwoId =
-                        R.string.settings_cookies_block_third_party_settings_block_bullet_two;
-                int bulletThreeId =
-                        R.string.settings_cookies_block_third_party_settings_block_bullet_three;
-                mBulletOne.setSummary(getContext().getString(bulletOneId));
-                mBulletOne.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_block));
-                mBulletTwo.setSummary(getContext().getString(bulletTwoId));
-                mBulletTwo.setIcon(
-                        SettingsUtils.getTintedIcon(getContext(), R.drawable.permission_cookie));
-                mBulletThree.setVisible(true);
-                mBulletThree.setSummary(getContext().getString(bulletThreeId));
-                mBulletThree.setIcon(
-                        SettingsUtils.getTintedIcon(getContext(), R.drawable.broken_24));
-            } else {
-                mBulletTwo.setSummary(R.string.website_settings_category_cookie_subpage_bullet_two);
-            }
+            int bulletOneId = R.string.settings_cookies_block_third_party_settings_block_bullet_one;
+            int bulletTwoId = R.string.settings_cookies_block_third_party_settings_block_bullet_two;
+            int bulletThreeId =
+                    R.string.settings_cookies_block_third_party_settings_block_bullet_three;
+            mBulletOne.setSummary(getContext().getString(bulletOneId));
+            mBulletOne.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_block));
+            mBulletTwo.setSummary(getContext().getString(bulletTwoId));
+            mBulletTwo.setIcon(
+                    SettingsUtils.getTintedIcon(getContext(), R.drawable.permission_cookie));
+            mBulletThree.setSummary(getContext().getString(bulletThreeId));
+            mBulletThree.setIcon(
+                    SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_broken_24dp));
         } else if (pageState == CookieControlsMode.INCOGNITO_ONLY) {
-            if (getSiteSettingsDelegate().isAlwaysBlock3pcsIncognitoEnabled()) {
-                mSubtitle.setTitle(
-                        R.string.website_settings_category_cookie_allow_third_party_subtitle);
-                int bulletOneId =
-                        R.string.settings_cookies_block_third_party_settings_allow_bullet_one;
-                int bulletTwoId =
-                        R.string.settings_cookies_block_third_party_settings_allow_bullet_two;
-                int bulletThreeId =
-                        R.string.settings_cookies_block_third_party_settings_allow_bullet_three;
-                mBulletOne.setSummary(getContext().getString(bulletOneId));
-                mBulletTwo.setSummary(getContext().getString(bulletTwoId));
-                mBulletTwo.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.web_24));
-                mBulletThree.setVisible(true);
-                mBulletThree.setSummary(getContext().getString(bulletThreeId));
-            } else {
-                mSubtitle.setTitle(
-                        R.string
-                                .website_settings_category_cookie_block_third_party_incognito_subtitle);
-                mBulletTwo.setSummary(
-                        R.string.website_settings_category_cookie_subpage_incognito_bullet_two);
-            }
+            mSubtitle.setTitle(
+                    R.string.website_settings_category_cookie_allow_third_party_subtitle);
+            int bulletOneId = R.string.settings_cookies_block_third_party_settings_allow_bullet_one;
+            int bulletTwoId = R.string.settings_cookies_block_third_party_settings_allow_bullet_two;
+            int bulletThreeId =
+                    R.string.settings_cookies_block_third_party_settings_allow_bullet_three;
+            mBulletOne.setSummary(getContext().getString(bulletOneId));
+            mBulletTwo.setSummary(getContext().getString(bulletTwoId));
+            mBulletTwo.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.web_24));
+            mBulletThree.setSummary(getContext().getString(bulletThreeId));
             mAllowRwsPreference.setVisible(false);
         } else {
             assert false
@@ -193,4 +177,9 @@ public class RwsCookieSettings extends BaseSiteSettingsFragment
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new BaseSearchIndexProvider(
+                    RwsCookieSettings.class.getName(), R.xml.rws_cookie_settings);
 }

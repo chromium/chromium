@@ -37,7 +37,7 @@ using BoolSet = media_constraints::DiscreteSet<bool>;
 // TODO(crbug.com/704136): Replace VideoInputDeviceCapabilities with Blink
 // mojo pointer type once dependent types are migrated to Blink.
 using DeviceInfo = VideoInputDeviceCapabilities;
-using DistanceVector = WTF::Vector<double>;
+using DistanceVector = Vector<double>;
 
 // Number of default settings to be used as final tie-breaking criteria for
 // settings that are equally good at satisfying constraints:
@@ -1038,8 +1038,7 @@ void AppendDistancesFromDefault(
           : 0.0);
 
   // Favor IDs that appear first in the enumeration.
-  for (WTF::wtf_size_t i = 0; i < capabilities.device_capabilities.size();
-       ++i) {
+  for (wtf_size_t i = 0; i < capabilities.device_capabilities.size(); ++i) {
     if (device.device_id == capabilities.device_capabilities[i].device_id) {
       distance_vector->push_back(i);
       break;

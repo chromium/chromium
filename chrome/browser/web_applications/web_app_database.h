@@ -29,11 +29,13 @@ class MetadataChangeList;
 namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
+class PersistableLog;
 class WebApp;
+struct RegistryUpdateData;
+
 namespace proto {
 class WebApp;
 }  // namespace proto
-struct RegistryUpdateData;
 
 // Exclusively used from the UI thread.
 class WebAppDatabase {
@@ -49,6 +51,10 @@ class WebAppDatabase {
   WebAppDatabase& operator=(const WebAppDatabase&) = delete;
   ~WebAppDatabase();
 
+  // Returns nullptr if OpenDatabase() has not been called yet.
+  const PersistableLog* log() const;
+
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   using RegistryOpenedCallback = base::OnceCallback<void(
       Registry registry,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch)>;
@@ -123,6 +129,28 @@ class WebAppDatabase {
       ProtobufState& state,
       std::set<webapps::AppId>& changed_apps);
 
+  // Ensures that `pending_update_info.was_ignored` field exists and is default
+  // initialized to `false`.
+  void MigratePendingUpdateInfoWasIgnored(
+      ProtobufState& state,
+      std::set<webapps::AppId>& changed_apps);
+
+  // Ensures that if the icon metadata for a pending update is corrupted for the
+  // web app, then the icon metadata is cleared. A pending update containing
+  // icons is considered to be corrupt if either of the following conditions are
+  // true:
+  // 1. If manifest_icons exist, but the downloaded_manifest_icons is empty (and
+  // vice-versa).
+  // 2. If trusted_icons exist, but the downloaded_trusted_icons is empty (and
+  // vice-versa).
+  // 3. If the data in the icons are corrupt, like they have missing urls or
+  // purposes.
+  // 4. If the data in the downloaded_<X> fields are corrupt, like missing sizes
+  // or purposes.
+  void MigratePendingUpdateInfoClearIconMetadataIfCorrupted(
+      ProtobufState& state,
+      std::set<webapps::AppId>& changed_apps);
+
   void OnDatabaseOpened(RegistryOpenedCallback callback,
                         const std::optional<syncer::ModelError>& error,
                         std::unique_ptr<syncer::DataTypeStore> store);
@@ -140,6 +168,9 @@ class WebAppDatabase {
   const raw_ptr<AbstractWebAppDatabaseFactory, DanglingUntriaged>
       database_factory_;
   ReportErrorCallback error_callback_;
+
+  raw_ptr<WebAppProvider> provider_ = nullptr;
+  std::unique_ptr<PersistableLog> log_;
 
   // Database is opened if store is created and all data read.
   bool opened_ = false;

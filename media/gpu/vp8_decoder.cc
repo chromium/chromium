@@ -33,25 +33,24 @@ bool VP8Decoder::Flush() {
   return true;
 }
 
-void VP8Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
-  auto decoder_buffer_span = base::span(decoder_buffer);
-  const uint8_t* ptr = decoder_buffer_span.data();
-  const size_t size = decoder_buffer_span.size();
-  const DecryptConfig* decrypt_config = decoder_buffer.decrypt_config();
+void VP8Decoder::SetStream(int32_t id,
+                           scoped_refptr<DecoderBuffer> decoder_buffer) {
+  CHECK(decoder_buffer);
+  curr_frame_start_ = nullptr;
+  decoder_buffer_ = std::move(decoder_buffer);
+  const DecryptConfig* decrypt_config = decoder_buffer_->decrypt_config();
 
-  DCHECK(ptr);
-  DCHECK(size);
   if (decrypt_config) {
     NOTIMPLEMENTED();
     state_ = kError;
     return;
   }
 
-  DVLOG(4) << "New input stream id: " << id << " at: " << (void*)ptr
-           << " size: " << size;
+  DVLOG(4) << "New input stream id: " << id
+           << ", buffer: " << decoder_buffer_->AsHumanReadableString();
   stream_id_ = id;
-  curr_frame_start_ = ptr;
-  frame_size_ = size;
+  curr_frame_start_ = base::span(*decoder_buffer_).data();
+  frame_size_ = decoder_buffer_->size();
 }
 
 void VP8Decoder::Reset() {
@@ -60,6 +59,7 @@ void VP8Decoder::Reset() {
   frame_size_ = 0;
 
   ref_frames_.Clear();
+  decoder_buffer_.reset();
 
   if (state_ == kDecoding)
     state_ = kAfterReset;
@@ -200,9 +200,9 @@ VideoColorSpace VP8Decoder::GetVideoColorSpace() const {
   return VideoColorSpace();
 }
 
-std::optional<gfx::HDRMetadata> VP8Decoder::GetHDRMetadata() const {
+gfx::HDRMetadata VP8Decoder::GetHDRMetadata() const {
   // VP8 doesn't support HDR metadata.
-  return std::nullopt;
+  return gfx::HDRMetadata();
 }
 
 size_t VP8Decoder::GetRequiredNumOfPictures() const {

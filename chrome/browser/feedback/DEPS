@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "feedback_dialog_utils\\.cc": [
+    "+ash/multi_user/multi_user_window_manager.h",
+    "+ash/shell.h",
+  ]
+}

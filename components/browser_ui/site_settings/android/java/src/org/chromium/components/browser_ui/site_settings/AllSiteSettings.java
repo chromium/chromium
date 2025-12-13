@@ -122,6 +122,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             if (mEmptyView == null) return;
 
             mEmptyView.setVisibility(hasEntries ? View.GONE : View.VISIBLE);
+            notifyPreferencesUpdated();
         }
     }
 
@@ -461,6 +462,13 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     private void addPreferencesFromXml() {
         if (mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES) {
             SettingsUtils.addPreferencesFromResource(this, R.xml.all_site_preferences_v2);
+            // TODO(crbug.com/439911511): Remove the divider directly form the layout.
+            if (getSiteSettingsDelegate().isSettingsContainmentEnabled()) {
+                Preference divider = findPreference("clear_browsing_divider");
+                if (divider != null) {
+                    getPreferenceScreen().removePreference(divider);
+                }
+            }
             ChromeBasePreference clearBrowsingDataLink = findPreference(PREF_CLEAR_BROWSING_DATA);
             assertNonNull(clearBrowsingDataLink);
             if (!getSiteSettingsDelegate().canLaunchClearBrowsingDataDialog()) {
@@ -501,7 +509,6 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                                     getSiteSettingsDelegate(),
                                     entry,
                                     getActivity().getLayoutInflater(),
-                                    /* showRwsMembershipLabels= */ true,
                                     /* isClickable= */ true);
                     preference.setOnDeleteCallback(
                             () -> {

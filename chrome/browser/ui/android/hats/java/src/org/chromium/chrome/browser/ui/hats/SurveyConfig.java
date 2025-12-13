@@ -22,7 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Java equivalent of C++ survey::SurveyConfig. All member variable are kept package protected, as
@@ -77,7 +76,7 @@ public class SurveyConfig {
      * SurveyThrottler#MIN_DAYS_BETWEEN_ANY_PROMPT_DISPLAYED}. This value is set only if the survey
      * feature launched for a specific list of users defined by some Google group.
      */
-    final Optional<Integer> mCooldownPeriodOverride;
+    final @Nullable Integer mCooldownPeriodOverride;
 
     /** Requested browser type decides where the survey can be shown. */
     final @RequestedBrowserType int mRequestedBrowserType;
@@ -91,7 +90,7 @@ public class SurveyConfig {
             boolean userPrompted,
             String[] psdBitDataFields,
             String[] psdStringDataFields,
-            Optional<Integer> cooldownPeriodOverride,
+            @Nullable Integer cooldownPeriodOverride,
             @RequestedBrowserType int requestedBrowserType) {
         mTrigger = trigger;
         mTriggerId = triggerId;
@@ -214,9 +213,7 @@ public class SurveyConfig {
                         userPrompted,
                         psdBitDataFields,
                         psdStringDataFields,
-                        cooldownPeriodOverride == 0
-                                ? Optional.empty()
-                                : Optional.of(cooldownPeriodOverride),
+                        cooldownPeriodOverride == 0 ? null : cooldownPeriodOverride,
                         requestedBrowserType));
     }
 

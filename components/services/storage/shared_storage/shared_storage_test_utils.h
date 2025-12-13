@@ -40,7 +40,6 @@ using BatchUpdateResult = SharedStorageDatabase::BatchUpdateResult;
 using GetResult = SharedStorageDatabase::GetResult;
 using BudgetResult = SharedStorageDatabase::BudgetResult;
 using TimeResult = SharedStorageDatabase::TimeResult;
-using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 
 // For categorizing test databases.
 enum class SharedStorageTestDBType {
@@ -117,7 +116,8 @@ class TestDatabaseOperationReceiver {
   static std::u16string SerializeTimeDelta(base::TimeDelta delta);
   static std::u16string SerializeBool(bool b);
   static std::u16string SerializeSetBehavior(SetBehavior behavior);
-  static std::u16string SerializeMemoryPressureLevel(MemoryPressureLevel level);
+  static std::u16string SerializeMemoryPressureLevel(
+      base::MemoryPressureLevel level);
 
   bool is_finished() const { return finished_; }
 

@@ -35,7 +35,6 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -103,12 +102,12 @@ DeduplicateGoogleCorpGotoDomains(
     }
     const GURL& url = link_data->url;
     if (!url.has_host() || !url.has_path() ||
-        !kGoogleCorpGotoHosts.contains(url.host_piece())) {
+        !kGoogleCorpGotoHosts.contains(url.host())) {
       deduped_results.push_back(std::move(link));
       continue;
     }
 
-    auto [it, inserted] = seen.emplace(url.path_piece());
+    auto [it, inserted] = seen.emplace(url.path());
     if (inserted) {
       deduped_results.push_back(std::move(link));
     }
@@ -121,7 +120,6 @@ std::vector<QuickInsertSearchResult> ConvertGifResponse(
     base::expected<tenor::mojom::PaginatedGifResponsesPtr,
                    GifTenorApiFetcher::Error> response) {
   if (!response.has_value()) {
-    // TODO: b/325368650 - Add better handling of errors.
     return {};
   }
 
@@ -175,8 +173,6 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
   }
 
   if (!cros_search_sources.empty()) {
-    // TODO: b/326166751 - Use `available_categories_` to decide what searches
-    // to do.
     for (QuickInsertSearchSource source : cros_search_sources) {
       MarkSearchStarted(source);
     }

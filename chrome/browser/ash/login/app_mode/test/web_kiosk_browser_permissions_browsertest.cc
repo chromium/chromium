@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/functional/bind.h"
+#include <string>
+
+#include "base/files/file_path.h"
+#include "base/values.h"
 #include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
-#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -60,8 +64,9 @@ class WebKioskBrowserPermissionsTest
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ASSERT_TRUE(WaitKioskLaunched());
-    SelectFirstBrowser();
+    SetBrowser(browser_created_observer.Wait());
   }
 
   content::WebContents* GetKioskAppWebContents() {
@@ -101,19 +106,6 @@ class WebKioskGeolocationBrowserPermissionTest
                 /*latitude=*/0,
                 /*longitude=*/0)) {}
 
-  void WaitForPermissionDefined(content::WebContents* web_contents) {
-    ash::test::TestPredicateWaiter(
-        base::BindRepeating(
-            [](content::WebContents* web_contents) {
-              return content::EvalJs(
-                         web_contents,
-                         "typeof navigator.geolocation !== 'undefined'")
-                  .ExtractBool();
-            },
-            web_contents))
-        .Wait();
-  }
-
   content::EvalJsResult CallPermission(content::WebContents* web_contents) {
     return content::EvalJs(web_contents, R"(
     (async function() {
@@ -148,8 +140,7 @@ IN_PROC_BROWSER_TEST_P(WebKioskGeolocationBrowserPermissionTest,
   content::WebContents* web_contents = GetKioskAppWebContents();
   ASSERT_NE(web_contents, nullptr);
   ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(GetParam().origin)));
-
-  WaitForPermissionDefined(web_contents);
+  ASSERT_TRUE(WaitForLoadStop(web_contents));
 
   content::EvalJsResult result = CallPermission(web_contents);
   EXPECT_EQ(result, GetParam().result_message);

@@ -6,6 +6,7 @@
 #define COMPONENTS_NTP_TILES_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace ntp_tiles {
 
@@ -20,6 +21,16 @@ BASE_DECLARE_FEATURE(kPopularSitesBakedInContentFeature);
 // Feature to allow the new Google favicon server for fetching favicons for Most
 // Likely tiles on the New Tab Page.
 BASE_DECLARE_FEATURE(kNtpMostLikelyFaviconsFromServerFeature);
+
+// Feature to allow shortcuts for the New Tab Page to be defined by the
+// `NTPShortcuts` policy.
+BASE_DECLARE_FEATURE(kNtpEnterpriseShortcuts);
+
+// Parameter determining whether the to use fake data for manual testing.
+extern const base::FeatureParam<bool> kNtpEnterpriseShortcutsUseFakeDataParam;
+
+// Parameter determining whether allow mixing for enterprise shortcuts.
+extern const base::FeatureParam<bool> kNtpEnterpriseShortcutsAllowMixingParam;
 
 }  // namespace ntp_tiles
 

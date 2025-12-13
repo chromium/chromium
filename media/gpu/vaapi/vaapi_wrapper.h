@@ -39,10 +39,13 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
-enum class BufferFormat : uint8_t;
 class NativePixmap;
 class NativePixmapDmaBuf;
 class Rect;
+}
+
+namespace viz {
+class SharedImageFormat;
 }
 
 #define MAYBE_ASSERT_ACQUIRED(lock) \
@@ -313,7 +316,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
 
   static VAEntrypoint GetDefaultVaEntryPoint(CodecMode mode, VAProfile profile);
 
-  static uint32_t BufferFormatToVARTFormat(gfx::BufferFormat fmt);
+  static uint32_t SharedImageFormatToVARTFormat(viz::SharedImageFormat format);
 
   // Creates |num_surfaces| VASurfaceIDs of |va_format|, |size| and
   // |surface_usage_hints| and, if successful, creates a |va_context_id_| of the
@@ -409,7 +412,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
 
   // Creates a self-releasing ScopedVASurface from |frame|. The created object
   // shares the ownership of the underlying buffer represented by |frame|.
-  // |frame|->StorageType() must either be STORAGE_GPU_MEMORY_BUFFER or
+  // |frame|->StorageType() must either be STORAGE_MAPPABLE_SHARED_IMAGE or
   // STORAGE_DMABUFS. The ownership of the surface is transferred to the caller.
   // A caller can destroy |frame| after this method returns and the underlying
   // buffer will be kept alive by the ScopedVASurface. |protected_content|
@@ -555,14 +558,15 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       size_t* max_ref_frames);
 
   // Gets packed headers are supported for encoding. This is called for
-  // H264 encoding. |packed_sps|, |packed_pps| and |packed_slice| stands for
-  // whether packed slice parameter set, packed picture parameter set and packed
-  // slice header is supported, respectively.
+  // H264 encoding. |packed_sps|, |packed_pps|, |packed_slice| and |packed_raw|
+  // stands for whether packed slice parameter set, packed picture parameter
+  // set, packed slice header and packed raw data is supported, respectively.
   [[nodiscard]] virtual bool GetSupportedPackedHeaders(
       VideoCodecProfile profile,
       bool& packed_sps,
       bool& packed_pps,
-      bool& packed_slice);
+      bool& packed_slice,
+      bool& packed_raw);
 
   // Gets the minimum segment block size supported for AV1 encoding.
   [[nodiscard]] bool GetMinAV1SegmentSize(VideoCodecProfile profile,
@@ -641,19 +645,10 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Notes:
   //
   // - For VA_FOURCC_IMC3, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::YVU_420 because we don't have a YUV_420 format. The
+  //   viz::MultiPlaneFormat::kYV12 because we don't have a YUV_420 format. The
   //   planes are flipped accordingly, i.e.,
   //   gfx::NativePixmapDmaBuf::GetDmaBufOffset(1) refers to the V plane.
   //   TODO(andrescj): revisit once crrev.com/c/1573718 lands.
-  //
-  // - For VA_FOURCC_NV12, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::YUV_420_BIPLANAR.
-  //
-  // - For VA_FOURCC_P010, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::P010.
-  //
-  // - For VA_FOURCC_ARGB, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::BGRA_8888.
   //
   // Returns nullptr on failure, or if the exported surface can't contain
   // |va_surface_size|.

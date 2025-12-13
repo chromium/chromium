@@ -65,9 +65,9 @@ class ThreadedIconLoaderTest : public PageTestBase {
     icon_loader->Start(
         GetDocument().GetExecutionContext(), resource_request,
         resize_dimensions,
-        WTF::BindOnce(&ThreadedIconLoaderTest::DidGetIcon,
-                      WTF::Unretained(this), run_loop.QuitClosure(),
-                      WTF::Unretained(&icon), WTF::Unretained(&resize_scale)));
+        blink::BindOnce(&ThreadedIconLoaderTest::DidGetIcon, Unretained(this),
+                        run_loop.QuitClosure(), Unretained(&icon),
+                        Unretained(&resize_scale)));
     URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
     run_loop.Run();
 

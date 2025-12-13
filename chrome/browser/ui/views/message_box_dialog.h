@@ -35,6 +35,8 @@ class MessageBoxDialog : public views::DialogDelegate,
       std::u16string_view checkbox_text,
       MessageBoxResultCallback callback = MessageBoxResultCallback());
 
+  void set_close_on_deactivate(bool value) { close_on_deactivate_ = value; }
+
   // views::DialogDelegate:
   std::u16string GetWindowTitle() const override;
   views::View* GetContentsView() override;
@@ -66,6 +68,7 @@ class MessageBoxDialog : public views::DialogDelegate,
   const chrome::MessageBoxType type_;
   raw_ptr<views::MessageBoxView> message_box_view_;
   MessageBoxResultCallback result_callback_;
+  bool close_on_deactivate_ = true;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MESSAGE_BOX_DIALOG_H_

@@ -6,6 +6,11 @@
 
 #include "base/memory/ptr_util.h"
 
+namespace {
+permissions::PermissionPromptDisposition permission_prompt_disposition =
+    permissions::PermissionPromptDisposition::NOT_APPLICABLE;
+}  // namespace
+
 namespace permissions {
 
 PermissionMessage::PermissionMessage(content::WebContents* web_contents,
@@ -24,13 +29,19 @@ std::unique_ptr<PermissionMessage> PermissionMessage::Create(
     content::WebContents* web_contents,
     Delegate* delegate) {
   auto prompt = base::WrapUnique(new PermissionMessage(web_contents, delegate));
-  if (prompt->message_delegate_)
+  if (prompt->message_delegate_) {
+    // The MessageUI can be used to display a quiet or a loud prompt.
+    permission_prompt_disposition =
+        delegate->ShouldCurrentRequestUseQuietUI()
+            ? PermissionPromptDisposition::MESSAGE_UI
+            : PermissionPromptDisposition::MESSAGE_UI_LOUD;
     return prompt;
+  }
   return nullptr;
 }
 
 PermissionPromptDisposition PermissionMessage::GetPromptDisposition() const {
-  return PermissionPromptDisposition::MESSAGE_UI;
+  return permission_prompt_disposition;
 }
 
 }  // namespace permissions

@@ -31,7 +31,7 @@ constexpr auto kCencCommonSystemId =
 static bool ReadAllPsshBoxes(
     base::span<const uint8_t> input,
     std::vector<mp4::FullProtectionSystemSpecificHeader>* pssh_boxes) {
-  CHECK(!input.empty(), base::NotFatalUntil::M140);
+  CHECK(!input.empty());
 
   // TODO(wolenetz): Questionable MediaLog usage, http://crbug.com/712310
   NullMediaLog media_log;

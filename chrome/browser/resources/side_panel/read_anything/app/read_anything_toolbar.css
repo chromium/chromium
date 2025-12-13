@@ -1,0 +1,160 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=./toolbar_styles_shared.css.js
+ * #include=toolbar-styles-shared cr-icons-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+#play-pause {
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-fill-color: var(--color-sys-primary);
+  --cr-icon-button-size: 28px;
+  color: var(--color-side-panel-entry-icon);
+}
+
+@media (forced-colors: active) {
+    #play-pause {
+    --cr-icon-button-fill-color: CanvasText;
+  }
+
+  cr-icon-button#color {
+    display: none;
+  }
+}
+
+.audio-background-when-active-false {
+  --audio-controls-background: transparent;
+  --audio-controls-right-margin: 2px;
+  --audio-controls-right-padding: 0px;
+}
+
+.audio-background-when-active-true {
+  --audio-controls-background: var(--color-sys-tonal-container);
+  --audio-controls-right-margin: 6px;
+  --audio-controls-right-padding: 4px;
+}
+
+#audio-controls {
+  background: var(--audio-controls-background);
+  border-radius: 18px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: fit-content;
+  margin-inline-end: var(--audio-controls-right-margin);
+  padding: 4px var(--audio-controls-right-padding) 4px 4px;
+}
+
+.audio-controls {
+  margin: 0px;
+}
+
+/* Separate CSS classes are needed instead of setting the style directly so
+ * that when forced colors are active, the color menu isn't reshown through
+ * the code used to manage toolbar overflows. */
+.hidden {
+  display: none;
+}
+
+.visibility-hidden {
+  visibility: hidden;
+}
+
+.granularity-container-when-active-true {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.granularity-container-when-active-false {
+  display: none;
+}
+
+#font-size-decrease {
+  margin-inline-start: 12px;
+}
+
+#font-size-reset {
+  margin-inline-end: 4px;
+}
+
+.text-button {
+  border: none;
+  font-size: 13px;
+}
+
+.toolbar-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  overflow: visible;
+  padding: 6px 8px;
+  flex-wrap: var(--toolbar-flex-wrap);
+}
+
+.immersive-toolbar-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: end;
+  overflow: visible;
+  padding: 6px 8px;
+  flex-wrap: var(--toolbar-flex-wrap);
+}
+
+.announce-block {
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  position: absolute;
+}
+
+/*
+ * Based on styling for cr-icon-button.
+ * The rate menu needs to use a text-based button instead of an icon-based
+ * button in order for the rates to be properly localized. i.e. 1,5 vs. 1.5
+ */
+#rate {
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  --cr-button-text-color: var(--color-sys-on-surface-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  height: 24px;
+  margin: 4px;
+  min-width: 0;
+  padding: 0;
+  width: 24px;
+}
+
+.separator {
+  border: 1px solid var(--color-side-panel-divider);
+  display: inline;
+  height: 20px;
+  margin: 6px 8px;
+  width: 0px;
+}
+
+.spinner {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.more-options-icon {
+  margin: 8px 6px;
+}
+
+#more-options-menu-dialog::part(dialog) {
+  min-width: 92px;
+}

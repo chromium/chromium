@@ -56,21 +56,6 @@ class CORE_EXPORT ColorFunctionParser {
       CSSParserTokenStream& stream,
       const CSSParserContext& context,
       const css_parsing_utils::ColorParserContext& color_parser_context);
-  void MakePerColorSpaceAdjustments();
-
-  static double ResolveColorChannel(
-      const CSSValue* value,
-      ChannelType channel_type,
-      double percentage_base,
-      const CSSColorChannelMap& color_channel_map);
-  static double ResolveAlpha(const CSSValue* value,
-                             ChannelType channel_type,
-                             const CSSColorChannelMap& color_channel_map);
-  static double ResolveRelativeChannelValue(
-      const CSSValue* value,
-      ChannelType channel_type,
-      double percentage_base,
-      const CSSColorChannelMap& color_channel_map);
 
   bool IsRelativeColor() const;
   bool AllChannelsAreResolvable() const;
@@ -93,7 +78,6 @@ class CORE_EXPORT ColorFunctionParser {
 
   // For relative colors
   const CSSValue* unresolved_origin_color_ = nullptr;
-  std::optional<Color> origin_color_;
   CSSColorChannelMap color_channel_map_;
 };
 

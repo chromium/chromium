@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_CONTEXTUAL_PANEL_ENTRYPOINT_IPH_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_CONTEXTUAL_PANEL_ENTRYPOINT_IPH_COMMANDS_H_
 
-#import "base/feature_list.h"
-
 struct ContextualPanelItemConfiguration;
 
 // Commands for the Contextual Panel Entrypoint's IPH.

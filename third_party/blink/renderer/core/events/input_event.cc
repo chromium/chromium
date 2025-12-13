@@ -202,6 +202,20 @@ InputEvent* InputEvent::CreateInput(InputType input_type,
                                           is_composing, ranges);
 }
 
+/* static */
+InputEvent* InputEvent::CreateInput(InputType input_type,
+                                    DataTransfer* data_transfer,
+                                    EventIsComposing is_composing,
+                                    const GCedStaticRangeVector* ranges) {
+  auto* event_init = UIEventInit::Create();
+  event_init->setBubbles(true);
+  event_init->setCancelable(false);
+  event_init->setComposed(true);
+  return MakeGarbageCollected<InputEvent>(event_type_names::kInput, *event_init,
+                                          input_type, String(), data_transfer,
+                                          is_composing, ranges);
+}
+
 String InputEvent::inputType() const {
   return ConvertInputTypeToString(input_type_);
 }

@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gcm/base/gcm_export.h"
 #include "google_apis/gcm/engine/gcm_store.h"

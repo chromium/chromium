@@ -6,12 +6,13 @@ package org.chromium.chrome.browser.browserservices;
 
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -23,14 +24,15 @@ import org.chromium.webapk.lib.common.WebApkConstants;
  * The calling app's identity is established using {@link CustomTabsSessionToken} provided in the
  * intent.
  */
+@NullMarked
 public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
 
     private static final String TAG = "TwaDataActivity";
 
-    private static String sCallingPackageForTesting;
+    private static @Nullable String sCallingPackageForTesting;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (getIntent().getData() == null) {
@@ -54,6 +56,7 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
         TrustedWebActivityUmaRecorder.recordOpenedSettingsViaManageSpace();
 
         if (isWebApk) {
+            assert urlToLaunchSettingsFor != null;
             TrustedWebActivitySettingsNavigation.launchForWebApkPackageName(
                     this, packageName, urlToLaunchSettingsFor);
         } else {

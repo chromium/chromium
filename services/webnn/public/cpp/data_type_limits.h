@@ -14,10 +14,10 @@ namespace webnn {
 struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   explicit DataTypeLimits(mojo::DefaultConstruct::Tag);
 
-  DataTypeLimits(SupportedDataTypes input,
-                 SupportedDataTypes constant,
+  DataTypeLimits(SupportedTensors input,
+                 SupportedTensors constant,
                  SupportedTensors arg_min_max_input,
-                 SupportedDataTypes arg_min_max_output,
+                 SupportedTensors arg_min_max_output,
                  SupportedTensors batch_normalization_input,
                  SupportedTensors batch_normalization_mean,
                  SupportedTensors cast_input,
@@ -48,6 +48,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors logical_or_input,
                  SupportedTensors logical_xor_input,
                  SupportedTensors logical_not_input,
+                 SupportedTensors is_nan_input,
+                 SupportedTensors is_infinite_input,
                  SupportedDataTypes logical_output,
                  SupportedTensors abs_input,
                  SupportedTensors ceil_input,
@@ -59,6 +61,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors log_input,
                  SupportedTensors neg_input,
                  SupportedTensors reciprocal_input,
+                 SupportedTensors round_even_input,
                  SupportedTensors sign_input,
                  SupportedTensors sin_input,
                  SupportedTensors sqrt_input,
@@ -76,6 +79,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors gemm_c,
                  SupportedTensors gru_input,
                  SupportedTensors gru_bias,
+                 SupportedTensors gru_output_sequence,
                  SupportedTensors gru_cell_input,
                  SupportedTensors gru_cell_bias,
                  SupportedTensors hard_sigmoid_input,
@@ -87,6 +91,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors linear_input,
                  SupportedTensors lstm_input,
                  SupportedTensors lstm_bias,
+                 SupportedTensors lstm_output_sequence,
                  SupportedTensors lstm_cell_input,
                  SupportedTensors lstm_cell_bias,
                  SupportedTensors matmul_input,
@@ -137,12 +142,12 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   ~DataTypeLimits();
 
   // Output supported data types are the same as inputs.
-  SupportedDataTypes output() const { return input; }
+  SupportedTensors output() const { return input; }
 
-  SupportedDataTypes input;
-  SupportedDataTypes constant;
+  SupportedTensors input;
+  SupportedTensors constant;
   SupportedTensors arg_min_max_input;
-  SupportedDataTypes arg_min_max_output;
+  SupportedTensors arg_min_max_output;
   SupportedTensors batch_normalization_input;
   SupportedTensors batch_normalization_mean;
   SupportedTensors cast_input;
@@ -173,6 +178,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors logical_or_input;
   SupportedTensors logical_xor_input;
   SupportedTensors logical_not_input;
+  SupportedTensors is_nan_input;
+  SupportedTensors is_infinite_input;
   SupportedDataTypes logical_output;
   SupportedTensors abs_input;
   SupportedTensors ceil_input;
@@ -184,6 +191,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors log_input;
   SupportedTensors neg_input;
   SupportedTensors reciprocal_input;
+  SupportedTensors round_even_input;
   SupportedTensors sign_input;
   SupportedTensors sin_input;
   SupportedTensors sqrt_input;
@@ -201,6 +209,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors gemm_c;
   SupportedTensors gru_input;
   SupportedTensors gru_bias;
+  SupportedTensors gru_output_sequence;
   SupportedTensors gru_cell_input;
   SupportedTensors gru_cell_bias;
   SupportedTensors hard_sigmoid_input;
@@ -212,6 +221,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors linear_input;
   SupportedTensors lstm_input;
   SupportedTensors lstm_bias;
+  SupportedTensors lstm_output_sequence;
   SupportedTensors lstm_cell_input;
   SupportedTensors lstm_cell_bias;
   SupportedTensors matmul_input;
@@ -291,6 +301,8 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.logical_or_input == rhs.logical_or_input &&
          lhs.logical_xor_input == rhs.logical_xor_input &&
          lhs.logical_not_input == rhs.logical_not_input &&
+         lhs.is_nan_input == rhs.is_nan_input &&
+         lhs.is_infinite_input == rhs.is_infinite_input &&
          lhs.logical_output == rhs.logical_output &&
          lhs.abs_input == rhs.abs_input &&
          lhs.ceil_input == rhs.ceil_input &&
@@ -302,6 +314,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.log_input == rhs.log_input &&
          lhs.neg_input == rhs.neg_input &&
          lhs.reciprocal_input == rhs.reciprocal_input &&
+         lhs.round_even_input == rhs.round_even_input &&
          lhs.sign_input == rhs.sign_input &&
          lhs.sin_input == rhs.sin_input &&
          lhs.sqrt_input == rhs.sqrt_input &&
@@ -319,6 +332,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.gemm_c == rhs.gemm_c &&
          lhs.gru_input == rhs.gru_input &&
          lhs.gru_bias == rhs.gru_bias &&
+         lhs.gru_output_sequence == rhs.gru_output_sequence &&
          lhs.gru_cell_input == rhs.gru_cell_input &&
          lhs.gru_cell_bias == rhs.gru_cell_bias &&
          lhs.hard_sigmoid_input == rhs.hard_sigmoid_input &&
@@ -330,6 +344,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.linear_input == rhs.linear_input &&
          lhs.lstm_input == rhs.lstm_input &&
          lhs.lstm_bias == rhs.lstm_bias &&
+         lhs.lstm_output_sequence == rhs.lstm_output_sequence &&
          lhs.lstm_cell_input == rhs.lstm_cell_input &&
          lhs.lstm_cell_bias == rhs.lstm_cell_bias &&
          lhs.matmul_input == rhs.matmul_input &&

@@ -140,6 +140,11 @@ StyleColor::UnresolvedRelativeColor::UnresolvedRelativeColor(
       [&conversion_data](const CSSValue& value) -> const CalculationValue* {
     if (const CSSNumericLiteralValue* numeric =
             DynamicTo<CSSNumericLiteralValue>(value)) {
+      if (numeric->IsAngle()) {
+        return MakeGarbageCollected<CalculationValue>(
+            PixelsAndPercent(numeric->ComputeDegrees()),
+            Length::ValueRange::kAll);
+      }
       if (numeric->IsPercentage()) {
         return MakeGarbageCollected<CalculationValue>(
             PixelsAndPercent(0., numeric->DoubleValue(), false, true),

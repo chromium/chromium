@@ -34,7 +34,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -58,6 +57,7 @@
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -178,7 +178,7 @@ class ShellTest : public AshTestBase {
   void TestCreateWindow(views::Widget::InitParams::Type type,
                         bool always_on_top,
                         aura::Window* expected_container) {
-    TestWidgetBuilder builder;
+    views::test::TestWidgetBuilder builder;
     if (always_on_top)
       builder.SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
     views::Widget* widget =
@@ -202,7 +202,7 @@ class ShellTest : public AshTestBase {
 
     // Create a LockScreen window.
     views::Widget* lock_widget =
-        TestWidgetBuilder()
+        views::test::TestWidgetBuilder()
             .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
             .SetShow(false)
             .BuildOwnedByNativeWidget();
@@ -273,7 +273,8 @@ TEST_F(ShellTest, CreateWindowWithPreferredSize) {
 
 TEST_F(ShellTest, ChangeZOrderLevel) {
   // Creates a normal window.
-  views::Widget* widget = TestWidgetBuilder().BuildOwnedByNativeWidget();
+  views::Widget* widget =
+      views::test::TestWidgetBuilder().BuildOwnedByNativeWidget();
 
   // It should be in the active desk container.
   EXPECT_TRUE(
@@ -301,7 +302,8 @@ TEST_F(ShellTest, ChangeZOrderLevel) {
 
 TEST_F(ShellTest, CreateModalWindow) {
   // Create a normal window.
-  views::Widget* widget = TestWidgetBuilder().BuildOwnedByNativeWidget();
+  views::Widget* widget =
+      views::test::TestWidgetBuilder().BuildOwnedByNativeWidget();
 
   // It should be in the active desk container.
   EXPECT_TRUE(
@@ -323,7 +325,8 @@ TEST_F(ShellTest, CreateModalWindow) {
 
 TEST_F(ShellTest, CreateLockScreenModalWindow) {
   // Create a normal window.
-  views::Widget* widget = TestWidgetBuilder().BuildOwnedByNativeWidget();
+  views::Widget* widget =
+      views::test::TestWidgetBuilder().BuildOwnedByNativeWidget();
   EXPECT_TRUE(widget->GetNativeView()->HasFocus());
 
   // It should be in the active desk container.
@@ -332,8 +335,9 @@ TEST_F(ShellTest, CreateLockScreenModalWindow) {
 
   GetSessionControllerClient()->LockScreen();
   // Create a LockScreen window.
-  views::Widget* lock_widget =
-      TestWidgetBuilder().SetShow(false).BuildOwnedByNativeWidget();
+  views::Widget* lock_widget = views::test::TestWidgetBuilder()
+                                   .SetShow(false)
+                                   .BuildOwnedByNativeWidget();
   Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                       kShellWindowId_LockScreenContainer)
       ->AddChild(lock_widget->GetNativeView());
@@ -433,7 +437,7 @@ TEST_F(ShellTest, ManagedWindowModeBasics) {
   //  EXPECT_FALSE(wallpaper->layer());
 
   // Create a normal window.  It is not maximized.
-  views::Widget* widget = TestWidgetBuilder()
+  views::Widget* widget = views::test::TestWidgetBuilder()
                               .SetBounds(gfx::Rect(11, 22, 300, 400))
                               .BuildOwnedByNativeWidget();
   EXPECT_FALSE(widget->IsMaximized());
@@ -691,11 +695,11 @@ class ShellShutdownTest : public AshTestBase {
 
 TEST_F(ShellShutdownTest, ActivateWindow) {
   aura::Window* to_observe =
-      CreateTestWindowInShellWithBounds(gfx::Rect(40, 0, 60, 40));
+      CreateTestWindowInShell({.bounds = {40, 0, 60, 40}, .window_id = 0});
   to_observe->Show();
 
   aura::Window* to_activate =
-      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 30, 20));
+      CreateTestWindowInShell({.bounds = {30, 20}, .window_id = 0});
   // Put `to_activate` in a container after desks containers so that its
   // destruction (and activations of `to_activate`) comes after desk containers
   // destruction.

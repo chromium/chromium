@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_FILE_IMPL_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_FILE_IMPL_H_
 
-#include "components/download/public/common/download_file.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -17,7 +15,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -27,6 +25,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/download/public/common/base_file.h"
+#include "components/download/public/common/download_file.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/rate_estimator.h"
@@ -207,13 +206,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
 
  protected:
   // For test class overrides.
-  // Validate the first |bytes_to_validate| bytes and write the next
-  // |bytes_to_write| bytes of data from the offset to the file.
+  // Validate that |to_validate| exists at |offset| in the file, then write
+  // |to_write| after it.
   virtual DownloadInterruptReason ValidateAndWriteDataToFile(
       int64_t offset,
-      const char* data,
-      size_t bytes_to_validate,
-      size_t bytes_to_write);
+      base::span<const uint8_t> to_validate,
+      base::span<const uint8_t> to_write);
 
   virtual base::TimeDelta GetRetryDelayForFailedRename(int attempt_number);
 

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_PARKABLE_STRING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_PARKABLE_STRING_H_
 
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -44,7 +45,7 @@ struct BackgroundTaskParams;
 // |ToString()| on a parked string.
 // |Lock()| does *not* unpark a string.
 class PLATFORM_EXPORT ParkableStringImpl
-    : public WTF::ThreadSafeRefCounted<ParkableStringImpl> {
+    : public ThreadSafeRefCounted<ParkableStringImpl> {
  public:
   enum class ParkingMode {
     kSynchronousOnly,
@@ -56,7 +57,7 @@ class PLATFORM_EXPORT ParkableStringImpl
     kSuccessOrTransientFailure,
     kNonTransientFailure
   };
-  enum class Age { kYoung = 0, kOld = 1, kVeryOld = 2 };
+  enum class Age : uint8_t { kYoung = 0, kOld = 1, kVeryOld = 2 };
   enum class CompressionAlgorithm {
     kZlib = 0,
     kSnappy = 1,
@@ -319,12 +320,8 @@ class PLATFORM_EXPORT ParkableStringImpl
     // Young -> Old -> Very old: By calling |MaybeAgeOrParkString()|.
     // (Old | Very Old) -> Young: When the string is accessed, either by
     //                            |Lock()|-ing it or calling |ToString()|.
-    //
-    // Thread safety: it is typically not safe to guard only one part of a
-    // bitfield with a mutex, but this is correct here, as the other members are
-    // const (and never change).
-    Age age_ : 3 GUARDED_BY(lock_);
-    const bool is_8bit_ : 1;
+    Age age_ GUARDED_BY(lock_);
+    const bool is_8bit_;
     const unsigned length_;
   };
 

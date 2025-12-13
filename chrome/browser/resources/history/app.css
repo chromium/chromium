@@ -1,0 +1,119 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_scrollable_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=./shared_style.css.js
+ * #include=cr-shared-style-lit shared-style cr-scrollable-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  color: var(--cr-primary-text-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  line-height: 1.54;  /* 20px. */
+  overflow: hidden;
+}
+
+:host([enable-history-embeddings_]) {
+  --first-card-padding-top: 0;
+  --first-cluster-padding-top: 0;
+}
+
+#main-container {
+  anchor-name: --main-container;
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+#content {
+  flex: 1;
+  min-width: 0;
+}
+
+#content,
+#content > * {
+  height: 100%;
+}
+
+#historyEmbeddingsDisclaimer {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 auto;
+  padding: 6px 10px 8px;
+  color: var(--cr-secondary-text-color);
+  font-size: 11px;
+  font-weight: 400;
+  text-wrap: pretty;
+}
+
+#historyEmbeddingsDisclaimer[narrow] {
+  padding-inline: 24px;
+  max-width: none;
+}
+
+#historyEmbeddingsDisclaimer:not([narrow])
+    #historyEmbeddingsDisclaimerContent {
+  max-width: 680px;
+}
+
+cr-history-embeddings-filter-chips {
+  margin: 0 auto;
+  padding: 16px 8px;
+}
+
+cr-history-embeddings-filter-chips ~ #tabsContent {
+  --first-card-padding-top: 8px;
+  --first-cluster-padding-top: 8px;
+}
+
+#tabsContainer {
+  display: flex;
+  flex-direction: column;
+  --cr-tabs-height: 48px;
+  --tabs-margin-top: 16px;
+}
+
+#tabs {
+  --cr-tabs-icon-margin-end: 12px;
+  --cr-tabs-selection-bar-width: 3px;
+  --cr-tabs-tab-inline-padding: 16px;
+  border-bottom: 1px solid var(--separator-color);
+  display: flex;
+  justify-content: start;
+  margin: 0 auto;
+  max-width: var(--cluster-max-width);
+  width: 100%;
+}
+
+#tabsScrollContainer {
+  overflow: auto;
+  height: 100%;
+  scrollbar-gutter: stable;
+}
+
+.cr-scrollable-top-shadow {
+  /* The cr-scrollable containers are only within the content area, but
+    * the shadow should stretch across both the sidebar and the content
+    * area, below the entirety of the toolbar. */
+  position-anchor: --main-container;
+}
+
+/* Both history-list and history-clusters have their own empty states
+  * that show a text message indicating there are no results. Hide the
+  * entire components to hide these messages if there are history
+  * embeddings results. */
+:host([has-history-embeddings-results_]) history-list[is-empty],
+:host([has-history-embeddings-results_]) history-clusters[is-empty] {
+  display: none;
+}
+
+cr-history-embeddings {
+  margin-block-end: var(--card-padding-between);
+}

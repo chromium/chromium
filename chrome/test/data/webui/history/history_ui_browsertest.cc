@@ -7,6 +7,7 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -64,6 +65,10 @@ IN_PROC_BROWSER_TEST_F(HistoryTest, SearchedLabel) {
 
 IN_PROC_BROWSER_TEST_F(HistoryTest, HistoryEmbeddingsPromo) {
   RunTest("history/history_embeddings_promo_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryTest, HistorySideBarFooter) {
+  RunTest("history/history_side_bar_footer_test.js", "mocha.run()");
 }
 
 class HistoryListTest : public HistoryUIBrowserTest {
@@ -204,6 +209,12 @@ class HistoryWithHistoryEmbeddingsTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(HistoryWithHistoryEmbeddingsTest, App) {
+// TODO(crbug.com/458161947): Re-enable flaky test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_App DISABLED_App
+#else
+#define MAYBE_App App
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(HistoryWithHistoryEmbeddingsTest, MAYBE_App) {
   RunTest("history/history_app_test.js", "mocha.run()");
 }

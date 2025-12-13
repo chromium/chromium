@@ -87,7 +87,7 @@ suite('<hotspot-config-dialog>', () => {
     assertFalse(cancelBtn.disabled);
     assertEquals(
         hotspotConfigDialog.i18n('hotspotConfigNameEmptyInfo'),
-        hotspotNameInputInfo.textContent!.trim());
+        hotspotNameInputInfo.textContent.trim());
     assertTrue(hotspotNameInputInfo.classList.contains('error'));
 
     hotspotNameInput.value = 'new_ssid';
@@ -96,7 +96,7 @@ suite('<hotspot-config-dialog>', () => {
     assertFalse(cancelBtn.disabled);
     assertEquals(
         hotspotConfigDialog.i18n('hotspotConfigNameInfo'),
-        hotspotNameInputInfo.textContent!.trim());
+        hotspotNameInputInfo.textContent.trim());
     assertFalse(hotspotNameInputInfo.classList.contains('error'));
 
     hotspotConfig.setFakeSetHotspotConfigResult(
@@ -147,7 +147,7 @@ suite('<hotspot-config-dialog>', () => {
     assertFalse(cancelBtn.disabled);
     assertEquals(
         hotspotConfigDialog.i18n('hotspotConfigPasswordInfo'),
-        hotspotPasswordInputInfo.textContent!.trim());
+        hotspotPasswordInputInfo.textContent.trim());
     assertFalse(hotspotPasswordInputInfo.classList.contains('error'));
 
     hotspotConfig.setFakeSetHotspotConfigResult(
@@ -307,7 +307,7 @@ suite('<hotspot-config-dialog>', () => {
     assertEquals(
         hotspotConfigDialog.i18n(
             'hotspotConfigInvalidConfigurationErrorMessage'),
-        errorMessageElement.textContent!.trim());
+        errorMessageElement.textContent.trim());
 
     hotspotConfig.setFakeSetHotspotConfigResult(
         SetHotspotConfigResult.kFailedNotLogin);
@@ -318,7 +318,7 @@ suite('<hotspot-config-dialog>', () => {
     assertTrue(!!errorMessageElement, 'Hotspot error message doesn\'t show');
     assertEquals(
         hotspotConfigDialog.i18n('hotspotConfigNotLoginErrorMessage'),
-        errorMessageElement.textContent!.trim());
+        errorMessageElement.textContent.trim());
 
     cancelBtn.click();
     await flushTasks();

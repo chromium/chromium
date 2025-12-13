@@ -5,17 +5,17 @@
 #include "components/browsing_data/core/features.h"
 
 #include "build/build_config.h"
+#include "components/history/core/browser/features.h"
 
 namespace browsing_data::features {
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kBrowsingDataModel,
-             "BrowsingDataModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBrowsingDataModel, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-BASE_FEATURE(kDbdRevampDesktop,
-             "DbdRevampDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDbdRevampDesktop, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPasswordRemovalExtensionErrorKillSwitch,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }  // namespace browsing_data::features

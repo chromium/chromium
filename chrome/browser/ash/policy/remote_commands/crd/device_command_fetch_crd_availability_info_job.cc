@@ -4,17 +4,22 @@
 
 #include "chrome/browser/ash/policy/remote_commands/crd/device_command_fetch_crd_availability_info_job.h"
 
+#include <cstdint>
+#include <string>
+#include <utility>
+
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/numerics/clamped_math.h"
+#include "base/syslog_logging.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/pref_names.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
-#include "components/prefs/pref_service.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 
 namespace policy {
 
@@ -91,6 +96,7 @@ DeviceCommandFetchCrdAvailabilityInfoJob::GetType() const {
 
 void DeviceCommandFetchCrdAvailabilityInfoJob::RunImpl(
     CallbackWithResult result_callback) {
+  SYSLOG(INFO) << "Running fetch CRD availability command";
   CalculateIsInManagedEnvironmentAsync(base::BindOnce(
       &DeviceCommandFetchCrdAvailabilityInfoJob::SendPayload,
       weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
@@ -114,8 +120,8 @@ void DeviceCommandFetchCrdAvailabilityInfoJob::SendPayload(
                                                GetCurrentUserSessionType())))
           .value();
 
-  CRD_VLOG(1) << "Finished FETCH_CRD_AVAILABILITY_INFO remote command: "
-              << payload;
+  SYSLOG(INFO) << "Finished FETCH_CRD_AVAILABILITY_INFO remote command: "
+               << payload;
   std::move(callback).Run(ResultType::kSuccess, std::move(payload));
 }
 

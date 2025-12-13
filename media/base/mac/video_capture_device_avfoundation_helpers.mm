@@ -13,7 +13,6 @@ namespace media {
 
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kUseAVCaptureDeviceTypeContinuity,
-             "UseAVCaptureDeviceTypeContinuity",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 

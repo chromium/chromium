@@ -17,9 +17,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.net.CronetTestFramework;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.CronetImplementation;
-import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetManifest;
 import org.chromium.net.impl.CronetManifestInterceptor;

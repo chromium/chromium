@@ -35,14 +35,13 @@
 #include "net/http/structured_headers.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/integrity_metadata.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_response.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
-#include "third_party/blink/renderer/platform/loader/unencoded_digest.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -364,8 +363,7 @@ base::TimeDelta ResourceResponse::CacheControlStaleWhileRevalidate() const {
 
 static std::optional<base::Time> ParseDateValueInHeader(
     const HTTPHeaderMap& headers,
-    const AtomicString& header_name,
-    UseCounter& use_counter) {
+    const AtomicString& header_name) {
   const AtomicString& header_value = headers.Get(header_name);
   if (header_value.empty())
     return std::nullopt;
@@ -383,18 +381,16 @@ static std::optional<base::Time> ParseDateValueInHeader(
   // Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
   // Sunday, 06-Nov-94 08:49:37 GMT ; RFC 850, obsoleted by RFC 1036
   // Sun Nov  6 08:49:37 1994       ; ANSI C's asctime() format
-  std::optional<base::Time> date = ParseDate(header_value, use_counter);
+  std::optional<base::Time> date = ParseDate(header_value);
 
   if (date && date.value().is_max())
     return std::nullopt;
   return date;
 }
 
-std::optional<base::Time> ResourceResponse::Date(
-    UseCounter& use_counter) const {
+std::optional<base::Time> ResourceResponse::Date() const {
   if (!have_parsed_date_header_) {
-    date_ = ParseDateValueInHeader(http_header_fields_, http_names::kLowerDate,
-                                   use_counter);
+    date_ = ParseDateValueInHeader(http_header_fields_, http_names::kLowerDate);
     have_parsed_date_header_ = true;
   }
   return date_;
@@ -416,32 +412,22 @@ std::optional<base::TimeDelta> ResourceResponse::Age() const {
   return age_;
 }
 
-std::optional<base::Time> ResourceResponse::Expires(
-    UseCounter& use_counter) const {
+std::optional<base::Time> ResourceResponse::Expires() const {
   if (!have_parsed_expires_header_) {
-    expires_ = ParseDateValueInHeader(http_header_fields_,
-                                      http_names::kLowerExpires, use_counter);
+    expires_ =
+        ParseDateValueInHeader(http_header_fields_, http_names::kLowerExpires);
     have_parsed_expires_header_ = true;
   }
   return expires_;
 }
 
-std::optional<base::Time> ResourceResponse::LastModified(
-    UseCounter& use_counter) const {
+std::optional<base::Time> ResourceResponse::LastModified() const {
   if (!have_parsed_last_modified_header_) {
-    last_modified_ = ParseDateValueInHeader(
-        http_header_fields_, http_names::kLowerLastModified, use_counter);
+    last_modified_ = ParseDateValueInHeader(http_header_fields_,
+                                            http_names::kLowerLastModified);
     have_parsed_last_modified_header_ = true;
   }
   return last_modified_;
-}
-
-std::optional<UnencodedDigest> ResourceResponse::UnencodedDigest(
-    const FeatureContext* feature_context) const {
-  if (!RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context)) {
-    return std::nullopt;
-  }
-  return UnencodedDigest::Create(HttpHeaderFields());
 }
 
 bool ResourceResponse::IsAttachment() const {
@@ -556,6 +542,16 @@ ResourceResponse::GetCrossOriginEmbedderPolicy() const {
   } else {
     return network::mojom::CrossOriginEmbedderPolicyValue::kNone;
   }
+}
+
+const Vector<network::IntegrityMetadata>&
+ResourceResponse::GetUnencodedDigests() const {
+  return unencoded_digests_;
+}
+
+void ResourceResponse::SetUnencodedDigests(
+    Vector<network::IntegrityMetadata> digests) {
+  unencoded_digests_ = std::move(digests);
 }
 
 STATIC_ASSERT_ENUM(WebURLResponse::kHTTPVersionUnknown,

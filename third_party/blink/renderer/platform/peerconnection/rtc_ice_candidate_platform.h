@@ -42,13 +42,6 @@ namespace blink {
 class PLATFORM_EXPORT RTCIceCandidatePlatform final
     : public GarbageCollected<RTCIceCandidatePlatform> {
  public:
-  // Creates a new RTCIceCandidatePlatform using |candidate|, |sdp_mid| and
-  // |sdp_m_line_index|. If |sdp_m_line_index| is negative, it is
-  // considered as having no value.
-  RTCIceCandidatePlatform(String candidate,
-                          String sdp_mid,
-                          std::optional<uint16_t> sdp_m_line_index);
-
   // Creates a new RTCIceCandidatePlatform using |candidate|, |sdp_mid|,
   // |sdp_m_line_index|, |username_fragment| and |url|.
   RTCIceCandidatePlatform(String candidate,
@@ -82,7 +75,7 @@ class PLATFORM_EXPORT RTCIceCandidatePlatform final
   void Trace(Visitor*) const {}
 
  private:
-  void PopulateFields(bool use_username_from_candidate);
+  void PopulateFields();
 
   String candidate_;
   String sdp_mid_;

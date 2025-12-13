@@ -111,4 +111,19 @@ void BluetoothScanningPromptAndroid::OnDialogFinished(JNIEnv* env,
   NOTREACHED();
 }
 
+// static
+std::unique_ptr<BluetoothScanningPromptAndroid>
+BluetoothScanningPromptAndroid::CreateForTesting(
+    content::RenderFrameHost* frame,
+    const EventHandler& event_handler,
+    std::unique_ptr<BluetoothScanningPromptAndroidDelegate> delegate,
+    CreateJavaDialogCallback create_java_dialog_callback) {
+  // Using `new` to access a non-public constructor.
+  return base::WrapUnique(new BluetoothScanningPromptAndroid(
+      frame, event_handler, std::move(delegate),
+      std::move(create_java_dialog_callback)));
+}
+
 }  // namespace permissions
+
+DEFINE_JNI(BluetoothScanningPermissionDialog)

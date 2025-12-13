@@ -7,13 +7,18 @@ package org.chromium.base;
 import static android.content.Context.UI_MODE_SERVICE;
 
 import android.app.UiModeManager;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.FeatureInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.os.Process;
+import android.provider.Settings;
+import android.util.DisplayMetrics;
 
 import androidx.annotation.GuardedBy;
 
@@ -24,23 +29,37 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-/** DeviceInfo is a utility class to access the device-related information. */
+/**
+ * Caches device info during app start-up. For values that might change during the lifetime of the
+ * app, refer to @see org.chromium.ui.base.DeviceFormFactor.java
+ */
 @JNINamespace("base::android::device_info")
 @NullMarked
 public final class DeviceInfo {
     private static final String TAG = "DeviceInfo";
 
     private static @Nullable String sGmsVersionCodeForTesting;
+    private static @Nullable Boolean sIsAutomotiveForTesting;
     private static boolean sInitialized;
+    private static @Nullable Boolean sIsXrForTesting;
+    private static @Nullable Boolean sIsRetailDemoModeForTesting;
     private final IDeviceInfo mIDeviceInfo;
+    private @Nullable Boolean mIsRetailDemoMode;
+    private @Nullable ApplicationInfo mGmsAppInfo;
+
+    // This is the minimum width in DP that defines a large display device
+    public static final int LARGE_DISPLAY_MIN_SCREEN_WIDTH_600_DP = 600;
 
     @GuardedBy("CREATION_LOCK")
     private static @Nullable DeviceInfo sInstance;
 
     private static final Object CREATION_LOCK = new Object();
+
+    private static boolean sIsNativeLoaded;
 
     // Called by the native code to retrieve field values. There is no easy way to
     // return several fields from Java to native, so instead this calls back into
@@ -50,6 +69,7 @@ public final class DeviceInfo {
     @CalledByNative
     private static void nativeReadyForFields() {
         sendToNative(getInstance().mIDeviceInfo);
+        sIsNativeLoaded = true;
     }
 
     public static void sendToNative(IDeviceInfo info) {
@@ -60,7 +80,9 @@ public final class DeviceInfo {
                         /* isAutomotive= */ info.isAutomotive,
                         /* isFoldable= */ info.isFoldable,
                         /* isDesktop= */ info.isDesktop,
-                        /* vulkanDeqpLevel= */ info.vulkanDeqpLevel);
+                        /* vulkanDeqpLevel= */ info.vulkanDeqpLevel,
+                        /* isXr= */ (sIsXrForTesting != null) ? sIsXrForTesting : info.isXr,
+                        /* wasLaunchedOnLargeDisplay= */ info.wasLaunchedOnLargeDisplay);
     }
 
     public static IDeviceInfo getAidlInfo() {
@@ -71,12 +93,27 @@ public final class DeviceInfo {
         return getInstance().mIDeviceInfo.gmsVersionCode;
     }
 
+    public static @Nullable ApplicationInfo getGmsAppInfo() {
+        return getInstance().mGmsAppInfo;
+    }
+
     @CalledByNativeForTesting
     public static void setGmsVersionCodeForTest(@JniType("std::string") String gmsVersionCode) {
         sGmsVersionCodeForTesting = gmsVersionCode;
         // Every time we call getInstance in a test we reconstruct the mIDeviceInfo object, so we
         // don't need to set mIDeviceInfo's copy here as it'll just get reconstructed.
         ResettersForTesting.register(() -> sGmsVersionCodeForTesting = null);
+        if (sIsNativeLoaded) {
+            sendToNative(getInstance().mIDeviceInfo);
+        }
+    }
+
+    public static void setIsAutomotiveForTesting(boolean isAutomotive) {
+        sIsAutomotiveForTesting = isAutomotive;
+        ResettersForTesting.register(() -> sIsAutomotiveForTesting = null);
+        if (sIsNativeLoaded) {
+            sendToNative(getInstance().mIDeviceInfo);
+        }
     }
 
     public static boolean isTV() {
@@ -99,12 +136,62 @@ public final class DeviceInfo {
         return getInstance().mIDeviceInfo.vulkanDeqpLevel;
     }
 
+    public static boolean isXr() {
+        return (sIsXrForTesting != null) ? sIsXrForTesting : getInstance().mIDeviceInfo.isXr;
+    }
+
+    public static boolean isRetailDemoMode() {
+        if (sIsRetailDemoModeForTesting != null) {
+            return sIsRetailDemoModeForTesting;
+        }
+        // Always assume false for tests, unless specifically overridden by a test.
+        if (BuildConfig.IS_FOR_TEST) {
+            return false;
+        }
+        DeviceInfo instance = getInstance();
+        boolean ret;
+        if (instance.mIsRetailDemoMode != null) {
+            ret = instance.mIsRetailDemoMode;
+        } else {
+            ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
+            // Android demo mode (Settings.Global.DEVICE_DEMO_MODE is @hide).
+            ret = Settings.Global.getInt(resolver, "device_demo_mode", 0) != 0;
+            instance.mIsRetailDemoMode = ret;
+        }
+        return ret;
+    }
+
+    @CalledByNative
+    public static String getDeviceName() {
+        return Settings.Global.getString(
+                ContextUtils.getApplicationContext().getContentResolver(), "device_name");
+    }
+
     public static boolean isInitializedForTesting() {
         return sInitialized;
     }
 
+    @CalledByNativeForTesting
+    public static void setIsXrForTesting(boolean value) {
+        sIsXrForTesting = value;
+        ResettersForTesting.register(() -> sIsXrForTesting = null);
+        if (sIsNativeLoaded) {
+            sendToNative(getInstance().mIDeviceInfo);
+        }
+    }
+
+    @CalledByNativeForTesting
+    public static void resetIsXrForTesting() {
+        sIsXrForTesting = null;
+    }
+
+    public static void setIsRetailDemoModeForTesting(boolean value) {
+        sIsRetailDemoModeForTesting = value;
+        ResettersForTesting.register(() -> sIsRetailDemoModeForTesting = null);
+    }
+
     private static DeviceInfo getInstance() {
-        // Some tests mock out things BuildInfo is based on, so disable caching in tests to ensure
+        // Some tests mock out things DeviceInfo is based on, so disable caching in tests to ensure
         // such mocking is not defeated by caching.
         if (BuildConfig.IS_FOR_TEST) {
             return new DeviceInfo();
@@ -130,17 +217,44 @@ public final class DeviceInfo {
         }
     }
 
+    /**
+     * @return CPU architecture name, see "arch:" in:
+     *     https://chromium.googlesource.com/chromium/src.git/+/master/docs/updater/protocol_3_1.md
+     */
+    public static String getArch() {
+        boolean is64Bit = Process.is64Bit();
+        if (NativeLibraries.sCpuFamily == NativeLibraries.CPU_FAMILY_ARM) {
+            return is64Bit ? "arm64" : "arm";
+        } else if (NativeLibraries.sCpuFamily == NativeLibraries.CPU_FAMILY_X86) {
+            return is64Bit ? "x86_64" : "x86";
+        }
+        return "";
+    }
+
+    /**
+     * @return The device's screen width in density-independent pixels (dp).
+     */
+    private static int getDeviceWidthInDp() {
+        DisplayMetrics displayMetrics =
+                ContextUtils.getApplicationContext().getResources().getDisplayMetrics();
+        return (int) (displayMetrics.widthPixels / displayMetrics.density);
+    }
+
     private DeviceInfo() {
         mIDeviceInfo = new IDeviceInfo();
         sInitialized = true;
         PackageInfo gmsPackageInfo = PackageUtils.getPackageInfo("com.google.android.gms", 0);
-        mIDeviceInfo.gmsVersionCode =
-                gmsPackageInfo != null
-                        ? String.valueOf(packageVersionCode(gmsPackageInfo))
-                        : "gms versionCode not available.";
-        if (sGmsVersionCodeForTesting != null) {
-            mIDeviceInfo.gmsVersionCode = sGmsVersionCodeForTesting;
+        String gmsVersionCode;
+        if (gmsPackageInfo != null) {
+            mGmsAppInfo = gmsPackageInfo.applicationInfo;
+            gmsVersionCode = String.valueOf(packageVersionCode(gmsPackageInfo));
+        } else {
+            gmsVersionCode = "gms versionCode not available.";
         }
+        if (sGmsVersionCodeForTesting != null) {
+            gmsVersionCode = sGmsVersionCodeForTesting;
+        }
+        mIDeviceInfo.gmsVersionCode = gmsVersionCode;
 
         Context appContext = ContextUtils.getApplicationContext();
         PackageManager pm = appContext.getPackageManager();
@@ -164,14 +278,19 @@ public final class DeviceInfo {
         }
         mIDeviceInfo.isAutomotive = isAutomotive;
 
-        // Detect whether device is foldable.
-        mIDeviceInfo.isFoldable =
-                Build.VERSION.SDK_INT >= VERSION_CODES.R
-                        && pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE);
+        if (sIsAutomotiveForTesting != null) {
+            mIDeviceInfo.isAutomotive = sIsAutomotiveForTesting;
+        }
 
         mIDeviceInfo.isDesktop =
                 (BuildConfig.IS_DESKTOP_ANDROID && pm.hasSystemFeature(PackageManager.FEATURE_PC))
                         || CommandLine.getInstance().hasSwitch(BaseSwitches.FORCE_DESKTOP_ANDROID);
+
+        // Detect whether device is foldable.
+        mIDeviceInfo.isFoldable =
+                !mIDeviceInfo.isDesktop
+                        && Build.VERSION.SDK_INT >= VERSION_CODES.R
+                        && pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE);
 
         int vulkanLevel = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -186,6 +305,11 @@ public final class DeviceInfo {
             }
         }
         mIDeviceInfo.vulkanDeqpLevel = vulkanLevel;
+
+        mIDeviceInfo.wasLaunchedOnLargeDisplay =
+                getDeviceWidthInDp() >= LARGE_DISPLAY_MIN_SCREEN_WIDTH_600_DP;
+
+        mIDeviceInfo.isXr = pm.hasSystemFeature("android.software.xr.api.openxr");
     }
 
     @NativeMethods
@@ -196,6 +320,8 @@ public final class DeviceInfo {
                 boolean isAutomotive,
                 boolean isFoldable,
                 boolean isDesktop,
-                int vulkanDeqpLevel);
+                int vulkanDeqpLevel,
+                boolean isXr,
+                boolean wasLaunchedOnLargeDisplay);
     }
 }

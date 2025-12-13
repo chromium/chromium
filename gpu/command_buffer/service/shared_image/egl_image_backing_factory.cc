@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -24,12 +23,9 @@ namespace {
 
 constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-    SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-    SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
-    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU_READ |
-    SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+    SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |

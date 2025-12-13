@@ -120,26 +120,25 @@ class CookieManager {
                               jboolean accept);
   jboolean GetShouldAcceptCookies(JNIEnv* env);
   void SetCookie(JNIEnv* env,
-                 const base::android::JavaParamRef<jstring>& url,
+                 const base::android::JavaRef<jstring>& url,
                  std::string& value,
-                 const base::android::JavaParamRef<jobject>& java_callback);
+                 const base::android::JavaRef<jobject>& java_callback);
   void SetCookieSync(JNIEnv* env,
-                     const base::android::JavaParamRef<jstring>& url,
+                     const base::android::JavaRef<jstring>& url,
                      std::string& value);
 
   std::string GetCookie(JNIEnv* env,
-                        const base::android::JavaParamRef<jstring>& url);
+                        const base::android::JavaRef<jstring>& url);
 
   base::android::ScopedJavaLocalRef<jobjectArray> GetCookieInfo(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& url);
+      const base::android::JavaRef<jstring>& url);
 
-  void RemoveAllCookies(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_callback);
+  void RemoveAllCookies(JNIEnv* env,
+                        const base::android::JavaRef<jobject>& java_callback);
   void RemoveSessionCookies(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_callback);
+      const base::android::JavaRef<jobject>& java_callback);
   void RemoveAllCookiesSync(JNIEnv* env);
   void RemoveSessionCookiesSync(JNIEnv* env);
   void RemoveExpiredCookies(JNIEnv* env);

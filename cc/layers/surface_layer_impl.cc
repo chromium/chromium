@@ -243,11 +243,6 @@ void SurfaceLayerImpl::AppendQuads(const AppendQuadsContext& context,
   // |surface_range_| more than once.
   deadline_in_frames_ = 0u;
 
-  if (!base::FeatureList::IsEnabled(
-          features::kAlignSurfaceLayerImplToPixelGrid)) {
-    return;
-  }
-
   // Don't allow DrawQuads to align on non-pixel boundaries.
   gfx::Vector2dF quad_rect_offset = quad_rect.OffsetFromOrigin();
   gfx::PointF rect_offset_in_target =

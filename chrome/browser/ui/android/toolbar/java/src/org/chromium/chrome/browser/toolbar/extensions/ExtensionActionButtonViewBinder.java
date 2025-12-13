@@ -24,11 +24,12 @@ public class ExtensionActionButtonViewBinder {
             button.setContentDescription(title);
         } else if (key == ExtensionActionButtonProperties.ICON) {
             Bitmap bitmap = model.get(ExtensionActionButtonProperties.ICON);
-            // TODO: Investigate the correct resizing method.
-            bitmap.setDensity(120);
             button.setImageBitmap(bitmap);
         } else if (key == ExtensionActionButtonProperties.ON_CLICK_LISTENER) {
             button.setOnClickListener(model.get(ExtensionActionButtonProperties.ON_CLICK_LISTENER));
+        } else if (key == ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER) {
+            button.setOnContextClickListener(
+                    model.get(ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER));
         }
     }
 }

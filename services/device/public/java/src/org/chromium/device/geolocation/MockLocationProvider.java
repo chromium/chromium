@@ -19,6 +19,7 @@ public class MockLocationProvider implements LocationProvider {
     private Handler mHandler;
     private HandlerThread mHandlerThread;
     private final Object mLock = new Object();
+    private boolean mEnableHighAccuracy;
 
     private static final int UPDATE_LOCATION_MSG = 100;
 
@@ -39,6 +40,7 @@ public class MockLocationProvider implements LocationProvider {
         }
 
         mIsRunning = true;
+        mEnableHighAccuracy = enableHighAccuracy;
         synchronized (mLock) {
             mHandler.sendEmptyMessage(UPDATE_LOCATION_MSG);
         }
@@ -82,6 +84,6 @@ public class MockLocationProvider implements LocationProvider {
         Location location = new Location("MockLocationProvider");
         location.setTime(System.currentTimeMillis());
         location.setAccuracy(0.5f);
-        LocationProviderAdapter.onNewLocationAvailable(location);
+        LocationProviderAdapter.onNewLocationAvailable(location, mEnableHighAccuracy);
     }
 }

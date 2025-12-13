@@ -129,20 +129,34 @@ public class PrefServiceTest {
 
     @Test
     public void testIsManaged() {
-        boolean expected = true;
+        for (boolean expected : new boolean[] {false, true}) {
+            doReturn(expected).when(mNativeMock).isManagedPreference(NATIVE_HANDLE, PREF);
+            assertEquals(expected, mPrefService.isManagedPreference(PREF));
+        }
+    }
 
-        doReturn(expected).when(mNativeMock).isManagedPreference(NATIVE_HANDLE, PREF);
+    @Test
+    public void testHasRecommendation() {
+        for (boolean expected : new boolean[] {false, true}) {
+            doReturn(expected).when(mNativeMock).hasRecommendation(NATIVE_HANDLE, PREF);
+            assertEquals(expected, mPrefService.hasRecommendation(PREF));
+        }
+    }
 
-        assertEquals(expected, mPrefService.isManagedPreference(PREF));
+    @Test
+    public void testIsFollowingRecommendation() {
+        for (boolean expected : new boolean[] {false, true}) {
+            doReturn(expected).when(mNativeMock).isFollowingRecommendation(NATIVE_HANDLE, PREF);
+            assertEquals(expected, mPrefService.isFollowingRecommendation(PREF));
+        }
     }
 
     @Test
     public void testIsRecommended() {
-        boolean expected = true;
-
-        doReturn(expected).when(mNativeMock).isRecommendedPreference(NATIVE_HANDLE, PREF);
-
-        assertEquals(expected, mPrefService.isRecommendedPreference(PREF));
+        for (boolean expected : new boolean[] {false, true}) {
+            doReturn(expected).when(mNativeMock).isRecommendedPreference(NATIVE_HANDLE, PREF);
+            assertEquals(expected, mPrefService.isRecommendedPreference(PREF));
+        }
     }
 
     @Test

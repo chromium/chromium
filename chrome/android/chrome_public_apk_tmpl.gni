@@ -224,11 +224,17 @@ template("chrome_common_apk_or_module_tmpl") {
       }
     } else {
       input = "//chrome/android/java/AndroidManifest.xml"
+      variables += [ "library_name=chrome" ]
     }
     if (_is_monochrome || _is_trichrome) {
       _force_32_bit = _include_32_bit_webview && _include_64_bit_webview &&
                       !_is_64_bit_browser
       variables += [ "force_32_bit=$_force_32_bit" ]
+      if (_is_64_bit_browser) {
+        variables += [ "library_name=monochrome_64" ]
+      } else {
+        variables += [ "library_name=monochrome" ]
+      }
     }
     if (_is_test) {
       includes += [ input ]
@@ -244,6 +250,9 @@ template("chrome_common_apk_or_module_tmpl") {
     if (defined(invoker.jinja_extra_includes)) {
       includes += invoker.jinja_extra_includes
     }
+    if (enable_javaless_renderers) {
+      variables += [ "javaless_renderers=true" ]
+    }
   }
   target(_target_type, target_name) {
     android_manifest = _android_manifest
@@ -252,8 +261,6 @@ template("chrome_common_apk_or_module_tmpl") {
 
     if (defined(invoker.min_sdk_version)) {
       min_sdk_version = invoker.min_sdk_version
-    } else if (_is_trichrome) {
-      min_sdk_version = 29
     }
     if (defined(invoker.version_name)) {
       version_name = invoker.version_name
@@ -457,7 +464,6 @@ template("chrome_common_apk_or_module_tmpl") {
     if (_is_monochrome) {
       deps += [
         "//android_webview/glue:glue_java",
-        "//android_webview/nonembedded:monochrome_devui_launcher_icon_resources",
         "//android_webview/nonembedded:nonembedded_java",
       ]
 

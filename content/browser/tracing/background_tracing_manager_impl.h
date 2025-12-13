@@ -17,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "base/token.h"
 #include "base/trace_event/named_trigger.h"
@@ -28,7 +27,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_metadata_source.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
 
 namespace tracing::mojom {

@@ -63,7 +63,7 @@ base::expected<std::vector<uint8_t>, Error> DownloadObfuscator::ObfuscateChunk(
   std::vector<uint8_t> result;
 
   // Update the hash with the original data
-  unobfuscated_hash_->Update(data.data(), data.size());
+  unobfuscated_hash_->Update(data);
 
   // If it's the first chunk, create and prepend the header.
   if (chunk_counter_ == 0) {

@@ -7,7 +7,7 @@
 namespace autofill {
 
 TestCreditCardSaveStrikeDatabase::TestCreditCardSaveStrikeDatabase(
-    StrikeDatabase* strike_database)
+    strike_database::StrikeDatabase* strike_database)
     : CreditCardSaveStrikeDatabase(strike_database) {}
 
 }  // namespace autofill

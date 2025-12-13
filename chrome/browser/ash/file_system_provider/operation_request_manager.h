@@ -5,13 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATION_REQUEST_MANAGER_H_
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATION_REQUEST_MANAGER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"

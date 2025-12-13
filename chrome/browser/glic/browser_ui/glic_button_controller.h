@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -22,22 +21,19 @@ class GlicKeyedService;
 
 // Controller class for the button entry point. Manages visibility, icon
 // and attachment indicator for the button.
-class GlicButtonController : public GlicWindowController::StateObserver {
+class GlicButtonController {
  public:
-  explicit GlicButtonController(Profile* profile,
-                                GlicButtonControllerDelegate* delegate,
-                                GlicKeyedService* service);
-  ~GlicButtonController() override;
-
-  // GlicWindowController::StateObserver:
-  void PanelStateChanged(const mojom::PanelState& panel_state,
-                         Browser*) override;
+  GlicButtonController(Profile* profile,
+                       BrowserWindowInterface& browser,
+                       GlicButtonControllerDelegate* delegate,
+                       GlicKeyedService* service);
+  ~GlicButtonController();
 
  private:
-  void OnPrefsChanged();
-  void UpdateShowState(bool detached);
+  void UpdateButton();
 
   raw_ptr<Profile> profile_;
+  raw_ref<BrowserWindowInterface> browser_;
   raw_ptr<GlicButtonControllerDelegate> glic_controller_delegate_;
   raw_ptr<GlicKeyedService> glic_keyed_service_;
   PrefChangeRegistrar pref_registrar_;

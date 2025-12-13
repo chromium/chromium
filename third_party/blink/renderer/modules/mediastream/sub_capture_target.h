@@ -6,13 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_SUB_CAPTURE_TARGET_H_
 
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
-#include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class Element;
+class ExceptionState;
 class MediaDevices;
 class ScriptState;
 

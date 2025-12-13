@@ -38,6 +38,7 @@
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/painter.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -187,7 +188,7 @@ void LabelButton::SetFocusRingCornerRadii(const gfx::RoundedCornersF& radii) {
 
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 focus_ring_corner_radii_);
-  OnPropertyChanged(&focus_ring_corner_radii_, kPropertyEffectsPaint);
+  OnPropertyChanged(&focus_ring_corner_radii_, PropertyEffects::kPaint);
 }
 
 void LabelButton::SetFocusRingCornerRadius(float radius) {
@@ -229,7 +230,7 @@ void LabelButton::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
     return;
   }
   horizontal_alignment_ = alignment;
-  OnPropertyChanged(&min_size_, kPropertyEffectsLayout);
+  OnPropertyChanged(&min_size_, PropertyEffects::kLayout);
 }
 
 gfx::HorizontalAlignment LabelButton::GetHorizontalAlignment() const {
@@ -245,7 +246,7 @@ void LabelButton::SetMinSize(const gfx::Size& min_size) {
     return;
   }
   min_size_ = min_size;
-  OnPropertyChanged(&min_size_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&min_size_, PropertyEffects::kPreferredSizeChanged);
 }
 
 gfx::Size LabelButton::GetMaxSize() const {
@@ -257,7 +258,7 @@ void LabelButton::SetMaxSize(const gfx::Size& max_size) {
     return;
   }
   max_size_ = max_size;
-  OnPropertyChanged(&max_size_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&max_size_, PropertyEffects::kPreferredSizeChanged);
 }
 
 bool LabelButton::GetIsDefault() const {
@@ -295,7 +296,7 @@ void LabelButton::SetImageLabelSpacing(int spacing) {
   }
   image_label_spacing_ = spacing;
   OnPropertyChanged(&image_label_spacing_,
-                    kPropertyEffectsPreferredSizeChanged);
+                    PropertyEffects::kPreferredSizeChanged);
 }
 
 bool LabelButton::GetImageCentered() const {
@@ -307,7 +308,7 @@ void LabelButton::SetImageCentered(bool image_centered) {
     return;
   }
   image_centered_ = image_centered;
-  OnPropertyChanged(&image_centered_, kPropertyEffectsLayout);
+  OnPropertyChanged(&image_centered_, PropertyEffects::kLayout);
 }
 
 std::unique_ptr<LabelButtonBorder> LabelButton::CreateDefaultBorder() const {
@@ -570,7 +571,7 @@ PropertyEffects LabelButton::UpdateStyleToIndicateDefaultStatus() {
   label_->SetFontList(GetIsDefault() ? cached_default_button_font_list_
                                      : cached_normal_font_list_);
   ResetLabelEnabledColor();
-  return kPropertyEffectsPreferredSizeChanged;
+  return PropertyEffects::kPreferredSizeChanged;
 }
 
 void LabelButton::ChildPreferredSizeChanged(View* child) {
@@ -628,8 +629,8 @@ void LabelButton::SetTextInternal(std::u16string_view text) {
 
   // Setting text cancels ShrinkDownThenClearText().
   const auto effects = shrinking_down_label_
-                           ? kPropertyEffectsPreferredSizeChanged
-                           : kPropertyEffectsNone;
+                           ? PropertyEffects::kPreferredSizeChanged
+                           : PropertyEffects::kNone;
   shrinking_down_label_ = false;
 
   // TODO(pkasting): Remove this and forward callback subscriptions to the

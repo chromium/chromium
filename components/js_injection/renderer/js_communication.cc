@@ -24,9 +24,7 @@ namespace {
 
 // If enabled will bind browser->js pipes lazily instead of when the window
 // object is cleared.
-BASE_FEATURE(kLazyBindJsInjection,
-             "LazyBindJsInjection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLazyBindJsInjection, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

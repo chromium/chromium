@@ -26,12 +26,14 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -87,7 +89,9 @@ public class PrivacyGuideFragment extends Fragment
                             FragmentType.DONE));
 
     private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
-    private ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
+
     private PrivacyGuidePagerAdapter mPagerAdapter;
     private View mView;
     private ViewPager2 mViewPager;
@@ -110,7 +114,6 @@ public class PrivacyGuideFragment extends Fragment
         if (savedInstanceState != null) {
             mPrivacyGuideMetricsDelegate.restoreState(savedInstanceState);
         }
-        mHandleBackPressChangedSupplier = new ObservableSupplierImpl<>();
     }
 
     @Override
@@ -120,6 +123,11 @@ public class PrivacyGuideFragment extends Fragment
             @Nullable Bundle savedInstanceState) {
         modifyAppBar();
         mView = inflater.inflate(R.layout.privacy_guide_steps, container, false);
+
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            View mainContentView = mView.findViewById(R.id.main_content);
+            mainContentView.setBackgroundResource(R.drawable.privacy_guide_containment_background);
+        }
 
         mViewPager = (ViewPager2) mView.findViewById(R.id.review_viewpager);
         mPagerAdapter =
@@ -223,7 +231,12 @@ public class PrivacyGuideFragment extends Fragment
     private void modifyAppBar() {
         AppCompatActivity settingsActivity = (AppCompatActivity) getActivity();
         settingsActivity.setTitle(R.string.privacy_guide_fragment_title);
-        assumeNonNull(settingsActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
+
+        if (!ChromeFeatureList.sSettingsMultiColumn.isEnabled()) {
+            // Hides the back arrow button only when multi-column mode is disabled.
+            // In multi-column mode, the back button works to close the activity.
+            assumeNonNull(settingsActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
+        }
     }
 
     private void nextStep() {
@@ -312,12 +325,18 @@ public class PrivacyGuideFragment extends Fragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        inflater.inflate(R.menu.privacy_guide_toolbar_menu, menu);
+        if (!ChromeFeatureList.sSettingsMultiColumn.isEnabled()) {
+            // Hide the close button on multi-column mode.
+            // In multi-column mode, the back arrow button works to close the activity.
+            inflater.inflate(R.menu.privacy_guide_toolbar_menu, menu);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.close_menu_id) {
+        if (item.getItemId() == R.id.close_menu_id
+                || (ChromeFeatureList.sSettingsMultiColumn.isEnabled()
+                        && item.getItemId() == android.R.id.home)) {
             getActivity().finish();
             return true;
         }
@@ -337,7 +356,7 @@ public class PrivacyGuideFragment extends Fragment
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressChangedSupplier;
     }
 

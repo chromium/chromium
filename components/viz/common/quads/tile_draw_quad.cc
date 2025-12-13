@@ -53,7 +53,6 @@ const TileDrawQuad* TileDrawQuad::MaterialCast(const DrawQuad* quad) {
 
 void TileDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
   ContentDrawQuadBase::ExtendValue(value);
-  value->SetInteger("resource_id", resource_id.GetUnsafeValue());
 }
 
 }  // namespace viz

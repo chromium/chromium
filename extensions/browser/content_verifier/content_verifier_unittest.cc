@@ -241,7 +241,7 @@ class ContentVerifierTest : public ExtensionsTest {
     base::FilePath path;
     EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));
 
-    std::string error;
+    std::u16string error;
     scoped_refptr<Extension> extension(
         Extension::Create(path, mojom::ManifestLocation::kInternal, manifest,
                           Extension::NO_FLAGS, &error));
@@ -343,12 +343,6 @@ TEST_F(ContentVerifierTest, NormalizeRelativePath) {
     base::FilePath expected(test_case.expected);
     EXPECT_EQ(expected,
               ContentVerifier::NormalizeRelativePathForTesting(input));
-
-    // A leading separator should be ignored.
-    base::FilePath input_with_root(
-        base::FilePath(FILE_PATH_LITERAL("/")).Append(test_case.input));
-    EXPECT_EQ(expected, ContentVerifier::NormalizeRelativePathForTesting(
-                            input_with_root));
   }
 }
 

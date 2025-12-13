@@ -14,7 +14,7 @@ pub fn clone_vec_as_bytes<T: NoUninit>(input: &[T]) -> Vec<u8> {
 }
 
 pub fn vec_from_bytes<T: PodTrait>(bytes: &[u8]) -> Vec<T> {
-    if bytes.len() % size_of::<T>() != 0 {
+    if !bytes.len().is_multiple_of(size_of::<T>()) {
         panic!(
             "vecT: got {} bytes, needed multiple of {}",
             bytes.len(),

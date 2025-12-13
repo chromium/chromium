@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/flatland/flatland_surface_canvas.h"
 
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/testing/fake_flatland.h>
 
+#include "base/compiler_specific.h"
 #include "base/fuchsia/koid.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_publisher.h"
@@ -217,7 +213,8 @@ class FlatlandSurfaceCanvasTest : public ::testing::Test {
     const char* image_data =
         reinterpret_cast<const char*>(frames_[frame_index].mapping.memory());
     size_t pixel_offset = y * image_stride_ + x * sizeof(SkColor);
-    auto result = *reinterpret_cast<const SkColor*>(image_data + pixel_offset);
+    auto result = *reinterpret_cast<const SkColor*>(
+        UNSAFE_TODO(image_data + pixel_offset));
     return result;
   }
 

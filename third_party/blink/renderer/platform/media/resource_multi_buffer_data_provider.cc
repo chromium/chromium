@@ -80,8 +80,8 @@ void ResourceMultiBufferDataProvider::Start() {
 
   if (url_data_->length() > 0 && byte_pos() >= url_data_->length()) {
     task_runner_->PostTask(
-        FROM_HERE, WTF::BindOnce(&ResourceMultiBufferDataProvider::Terminate,
-                                 weak_factory_.GetWeakPtr()));
+        FROM_HERE, blink::BindOnce(&ResourceMultiBufferDataProvider::Terminate,
+                                   weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -103,7 +103,8 @@ void ResourceMultiBufferDataProvider::Start() {
   // tell the remote server that we really can't handle files other
   // than the one we already started playing. Unfortunately, doing
   // so will disable the http cache, and possibly other proxies
-  // along the way. See crbug/504194 and crbug/689989 for more information.
+  // along the way. See crbug.com/41185060 and crbug.com/41300485 for more
+  // information.
 
   // Disable compression, compression for audio/video doesn't make sense...
   request.SetHttpHeaderField(
@@ -466,8 +467,8 @@ void ResourceMultiBufferDataProvider::DidFinishLoading() {
       retries_++;
       task_runner_->PostDelayedTask(
           FROM_HERE,
-          WTF::BindOnce(&ResourceMultiBufferDataProvider::Start,
-                        weak_factory_.GetWeakPtr()),
+          blink::BindOnce(&ResourceMultiBufferDataProvider::Start,
+                          weak_factory_.GetWeakPtr()),
           base::Milliseconds(kLoaderPartialRetryDelayMs));
       return;
     } else {
@@ -495,8 +496,8 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
     retries_++;
     task_runner_->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(&ResourceMultiBufferDataProvider::Start,
-                      weak_factory_.GetWeakPtr()),
+        blink::BindOnce(&ResourceMultiBufferDataProvider::Start,
+                        weak_factory_.GetWeakPtr()),
         base::Milliseconds(kLoaderFailedRetryDelayMs +
                            kAdditionalDelayPerRetryMs * retries_));
   } else {

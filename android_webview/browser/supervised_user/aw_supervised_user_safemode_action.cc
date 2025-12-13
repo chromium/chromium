@@ -48,3 +48,5 @@ static jboolean JNI_AwSupervisedUserSafeModeAction_IsSupervisionEnabled(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwSupervisedUserSafeModeAction)

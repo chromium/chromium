@@ -77,7 +77,7 @@ using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
 
 // The size of trailing symbol icons.
-NSInteger kTrailingSymbolImagePointSize = 22;
+constexpr NSInteger kTrailingSymbolImagePointSize = 22;
 
 // Registers account preference that will be used for Safe Browsing.
 PrefService* SetPrefService() {
@@ -122,21 +122,20 @@ class SafetyCheckMediatorTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+        base::BindOnce(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return std::make_unique<syncer::MockSyncService>();
             }));
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<web::BrowserState,
+        base::BindOnce(
+            &password_manager::BuildPasswordStore<ProfileIOS,
                                                   TestPasswordStore>));
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
-          return std::unique_ptr<KeyedService>(
-              std::make_unique<affiliations::FakeAffiliationService>());
-        })));
+        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+          return std::make_unique<affiliations::FakeAffiliationService>();
+        }));
 
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
@@ -260,9 +259,9 @@ class SafetyCheckMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  raw_ptr<ProfileIOS> profile_;
+  raw_ptr<ProfileIOS, DanglingUntriaged> profile_;
   scoped_refptr<TestPasswordStore> store_;
-  raw_ptr<AuthenticationService> auth_service_;
+  raw_ptr<AuthenticationService, DanglingUntriaged> auth_service_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
   TestProfileManagerIOS profile_manager_;
   SafetyCheckMediator* mediator_;

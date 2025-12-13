@@ -16,7 +16,6 @@
 #include "chromeos/ash/services/cros_safety/public/mojom/cros_safety_service.mojom.h"
 #include "components/manta/manta_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 

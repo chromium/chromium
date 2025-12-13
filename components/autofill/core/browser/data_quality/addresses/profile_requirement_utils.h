@@ -28,6 +28,15 @@ std::vector<autofill_metrics::AddressProfileImportRequirementMetric>
 ValidateProfileImportRequirements(const AutofillProfile& profile,
                                   LogBuffer* log_buffer = nullptr);
 
+// Removes invalid values of certain types. This is for types validated
+// in multiple countries, including those where they are optional parts of an
+// address. For example, if a zip code is optional in Country X and the user
+// enters an invalid value, we remove it instead of rejecting the entire
+// profile. Emits type validation violation metrics.
+void RemoveInvalidValues(AutofillProfile& profile,
+                         LogBuffer* log_buffer,
+                         const ProfileImportMetadata& import_metadata);
+
 // Validates non-empty values for certain types (e.g. is the email address
 // an actual email address). Emits metrics for all violate (= non-empty and
 // invalid) types.

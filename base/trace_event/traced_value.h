@@ -83,7 +83,7 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   // the held |TracedValue*| is in array state).
   //
   // Example:
-  //   std::unique_ptr<TracedValue> value(new TracedValue());
+  //   auto value = std::make_unique<TracedValue>();
   //   {
   //     auto scope = value->BeginArrayScoped("array_name");
   //     value->AppendBoolean(false);
@@ -126,7 +126,7 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   // (which checks if the held |TracedValue*| is in dictionary state).
   //
   // Example:
-  //   std::unique_ptr<TracedValue> value(new TracedValue());
+  //   auto value = std::make_unique<TracedValue>();
   //   {
   //     auto scope = value->BeginDictionaryScoped("dictionary_name");
   //     value->SetBoolean("my_boolean", false);

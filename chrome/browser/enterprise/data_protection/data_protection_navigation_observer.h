@@ -92,7 +92,7 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
   // RealTimeUrlLookupService or not.
   // This function is public to be called by tests and should no be called by
   // non-test code other that `DataProtectionNavigationObserver` and
-  // `DataProtectionNavigationController`.
+  // `DataProtectionViewController`.
   static void ApplyDataProtectionSettings(Profile* profile,
                                           content::WebContents* web_contents,
                                           Callback callback);
@@ -109,6 +109,9 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
 
   static void SetLookupServiceForTesting(
       safe_browsing::RealTimeUrlLookupServiceBase* lookup_service);
+
+  // public for testing
+  static size_t GetVerdictCacheMaxSize();
 
  private:
   void OnLookupComplete(

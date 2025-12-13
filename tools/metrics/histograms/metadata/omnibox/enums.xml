@@ -33,7 +33,60 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Directions"/>
   <int value="3" label="Website"/>
   <int value="4" label="Reviews"/>
+  <int value="5" label="Aim"/>
+  <int value="6" label="Lens"/>
+  <int value="7" label="TabSwitch"/>
 </enum>
+
+<!-- LINT.IfChange(AimEligibilityRequestStatus) -->
+
+<enum name="AimEligibilityRequestStatus">
+  <summary>
+    The status of a HTTP GET request sent to a backend to fetch AIM eligibility.
+  </summary>
+  <int value="0" label="kSent"/>
+  <int value="1" label="kErrorResponse"/>
+  <int value="2" label="kFailedToParse"/>
+  <int value="3" label="kSuccess"/>
+  <int value="4" label="kSuccessBrowserCache"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.h:EligibilityRequestStatus) -->
+
+<!-- LINT.IfChange(AimEligibilityResponseSource) -->
+
+<enum name="AimEligibilityResponseSource">
+  <summary>The source of the response for AIM eligibility.</summary>
+  <int value="0" label="kDefault"/>
+  <int value="1" label="kPrefs"/>
+  <int value="2" label="kServer"/>
+  <int value="3" label="kBrowserCache"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.h:EligibilityResponseSource) -->
+
+<!-- LINT.IfChange(AiModeActivationSource) -->
+
+<enum name="AiModeActivationSource">
+  <summary>The source of the response for AIM eligibility.</summary>
+  <int value="0" label="Tool Menu"/>
+  <int value="1" label="Dedicated Button"/>
+  <int value="2" label="NTP Button"/>
+  <int value="3" label="Implicit"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:AiModeActivationSource,//ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:AiModeActivationSource) -->
+
+<!-- LINT.IfChange(AutocompleteRequestType) -->
+
+<enum name="AutocompleteRequestType">
+  <int value="0" label="Search"/>
+  <int value="1" label="Search prefetch"/>
+  <int value="2" label="AI Mode"/>
+  <int value="3" label="Image Generation"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteRequestType.java,//ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:AutocompleteRequestType)-->
 
 <enum name="BooleanNavigated">
   <int value="0" label="Navigation did not occur"/>
@@ -91,6 +144,30 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Served then not served"/>
   <int value="3" label="Served then served"/>
 </enum>
+
+<!-- LINT.IfChange(FocusResultedInNavigationTypes) -->
+
+<enum name="FocusResultedInNavigationTypes">
+  <int value="0" label="No navigation, no attachments"/>
+  <int value="1" label="Navigation, no attachments"/>
+  <int value="2" label="No navigation, with attachments"/>
+  <int value="3" label="Navigation, with attachments"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/OmniboxMetrics.java:FocusResultedInNavigationTypes,//ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:FocusResultedInNavigationType) -->
+
+<!-- LINT.IfChange(FuseboxAttachmentButtonType) -->
+
+<enum name="FuseboxAttachmentButtonType">
+  <int value="0" label="Current Tab"/>
+  <int value="1" label="Tab Picker"/>
+  <int value="2" label="Camera"/>
+  <int value="3" label="Gallery"/>
+  <int value="4" label="Files"/>
+  <int value="5" label="Clipboard"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:FuseboxAttachmentButtonType,//ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:FuseboxAttachmentButtonType) -->
 
 <enum name="GroupId">
   <summary>
@@ -171,6 +248,25 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Title non-prefix"/>
   <int value="4" label="Shortcut text prefix"/>
 </enum>
+
+<!-- LINT.IfChange(OpenMatchWithKeyboardModifiers) -->
+
+<enum name="OpenMatchWithKeyboardModifiers">
+  <int value="0" label="No modifier"/>
+  <int value="1" label="Ctrl"/>
+  <int value="2" label="Alt"/>
+  <int value="3" label="Ctrl+Alt"/>
+  <int value="4" label="Shift+Command"/>
+  <int value="5" label="Ctrl+Shift+Command"/>
+  <int value="6" label="Alt+Shift"/>
+  <int value="7" label="Ctrl+Alt+Shift"/>
+  <int value="8" label="Command"/>
+  <int value="9" label="Ctrl+Command"/>
+  <int value="10" label="Shift"/>
+  <int value="11" label="Ctrl+Shift"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/omnibox/omnibox_view_views.cc:OpenMatchWithKeyboardModifiers) -->
 
 <!-- LINT.IfChange(PaywallSignal) -->
 

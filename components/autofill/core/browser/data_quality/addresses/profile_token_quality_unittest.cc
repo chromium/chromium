@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -37,25 +38,31 @@ namespace autofill {
 using ObservationType = ProfileTokenQuality::ObservationType;
 using testing::UnorderedElementsAre;
 
-class ProfileTokenQualityTest : public testing::Test {
+class ProfileTokenQualityTest : public testing::Test,
+                                public WithTestAutofillClientDriverManager<> {
  public:
-  // Creates a form and registers it with the `bam_` as-if it had the given
-  // `types` as predictions.
+  ProfileTokenQualityTest() {
+    InitAutofillClient();
+    CreateAutofillDriver();
+  }
+
+  // Creates a form and registers it with the `autofill_manager()` as-if it had
+  // the given `types` as predictions.
   FormData GetFormWithTypes(const std::vector<FieldType>& types) {
     FormData form_data = test::GetFormData(types);
-    bam_.AddSeenForm(form_data, types);
+    autofill_manager().AddSeenForm(form_data, types);
     return form_data;
   }
 
   // Edits the value of field number `field_index` to `new_value` and notifies
-  // the `bam_` about this change.
+  // the `autofill_manager()` about this change.
   void EditFieldValue(FormData& form,
                       size_t field_index,
                       std::u16string new_value) {
     FormFieldData& field = test_api(form).field(field_index);
     field.set_value(std::move(new_value));
-    bam_.OnTextFieldValueChanged(form, field.global_id(),
-                                 base::TimeTicks::Now());
+    autofill_manager().OnTextFieldValueChanged(form, field.global_id(),
+                                               base::TimeTicks::Now());
   }
 
   // Fills the `form` with the `profile`, as-if autofilling was triggered from
@@ -63,18 +70,16 @@ class ProfileTokenQualityTest : public testing::Test {
   void FillForm(const FormData& form,
                 const AutofillProfile& profile,
                 size_t triggering_field_index = 0) {
-    bam_.FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                           form.fields()[triggering_field_index].global_id(),
-                           &profile, AutofillTriggerSource::kPopup);
+    autofill_manager().FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form,
+        form.fields()[triggering_field_index].global_id(), &profile,
+        AutofillTriggerSource::kPopup);
   }
 
   TestAddressDataManager& adm() { return adm_; }
 
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  TestAutofillClient client_;
-  TestAutofillDriver driver_{&client_};
-  TestBrowserAutofillManager bam_{&driver_};
 
  private:
   TestAddressDataManager adm_;
@@ -117,7 +122,8 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Accepted) {
   // Accept field 1 as-is too. But since it has a derived type, it counts as
   // a partial accept for the middle name (its stored type).
 
-  FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
+  const FormStructure* form_structure =
+      autofill_manager().FindCachedFormById(form.global_id());
   EXPECT_TRUE(
       quality.AddObservationsForFilledForm(*form_structure, form, adm()));
 
@@ -150,7 +156,8 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
   // Edit field 3 to a completely different token.
   EditFieldValue(form, 3, u"different value");
 
-  FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
+  const FormStructure* form_structure =
+      autofill_manager().FindCachedFormById(form.global_id());
   EXPECT_TRUE(
       quality.AddObservationsForFilledForm(*form_structure, form, adm()));
 
@@ -186,7 +193,8 @@ TEST_F(ProfileTokenQualityTest,
   EditFieldValue(form, 1,
                  other_profile.GetInfo(ADDRESS_HOME_STATE, adm().app_locale()));
 
-  FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
+  const FormStructure* form_structure =
+      autofill_manager().FindCachedFormById(form.global_id());
   EXPECT_TRUE(
       quality.AddObservationsForFilledForm(*form_structure, form, adm()));
 
@@ -207,7 +215,8 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_SameField) {
   FormData form = GetFormWithTypes({NAME_FIRST});
   FillForm(form, profile);
 
-  FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
+  const FormStructure* form_structure =
+      autofill_manager().FindCachedFormById(form.global_id());
   EXPECT_TRUE(
       quality.AddObservationsForFilledForm(*form_structure, form, adm()));
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
@@ -228,7 +237,8 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_DynamicChange) {
   FormData form = GetFormWithTypes({NAME_FIRST});
   FillForm(form, profile);
 
-  FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
+  FormStructure* form_structure =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
   form_structure->field(0)->SetTypeTo(AutofillType(NAME_LAST),
                                       AutofillPredictionSource::kHeuristics);
   EXPECT_TRUE(
@@ -256,7 +266,7 @@ TEST_F(ProfileTokenQualityTest,
   FillForm(form, profile2, /*triggering_field_index=*/1);
 
   ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
-      *bam_.FindCachedFormById(form.global_id()), form, adm());
+      *autofill_manager().FindCachedFormById(form.global_id()), form, adm());
 
   // Expect that observations for both profiles were collected. Since
   // `SaveObservationsForFilledFormForAllSubmittedProfiles()` operates on the
@@ -346,7 +356,7 @@ TEST_P(ProfileTokenQualityObservationDroppingTest,
   FillForm(form, profile);
 
   EXPECT_TRUE(quality.AddObservationsForFilledForm(
-      *bam_.FindCachedFormById(form.global_id()), form, adm()));
+      *autofill_manager().FindCachedFormById(form.global_id()), form, adm()));
   EXPECT_EQ(test.expected_number_of_observations,
             std::ranges::count_if(test.form_types, [&](FieldType type) {
               return !quality.GetObservationTypesForFieldType(type).empty();

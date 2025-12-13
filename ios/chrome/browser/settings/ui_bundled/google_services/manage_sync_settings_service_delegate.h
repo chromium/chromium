@@ -11,9 +11,6 @@
 // Protocol to handle user actions from the manage sync settings view.
 @protocol ManageSyncSettingsServiceDelegate <NSObject>
 
-// Called when the UISwitch from the SyncSwitchItem is toggled.
-- (void)toggleSwitchItem:(SyncSwitchItem*)switchItem withValue:(BOOL)value;
-
 // Called when the cell is tapped.
 // `cellRect` cell rect in table view system coordinate.
 - (void)didSelectItem:(TableViewItem*)item cellRect:(CGRect)cellRect;

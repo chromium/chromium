@@ -32,8 +32,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/webui/webui_util.h"
 #include "ui/wm/core/shadow_types.h"
 
@@ -144,12 +143,6 @@ void MultiDeviceSetupDialogUI::BindInterface(
   if (service) {
     service->BindMultiDeviceSetup(std::move(receiver));
   }
-}
-
-void MultiDeviceSetupDialogUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MultiDeviceSetupDialogUI)

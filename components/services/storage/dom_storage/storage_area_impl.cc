@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,7 +25,7 @@ void StorageAreaImpl::Delegate::PrepareToCommit(
     std::vector<DomStorageDatabase::KeyValuePair>* extra_entries_to_add,
     std::vector<DomStorageDatabase::Key>* extra_keys_to_delete) {}
 
-void StorageAreaImpl::Delegate::OnMapLoaded(DbStatus) {}
+void StorageAreaImpl::Delegate::OnMapLoaded() {}
 
 bool StorageAreaImpl::s_aggressive_flushing_enabled_ = false;
 
@@ -93,7 +94,7 @@ StorageAreaImpl::~StorageAreaImpl() {
 void StorageAreaImpl::InitializeAsEmpty() {
   DCHECK_EQ(map_state_, MapState::UNLOADED);
   map_state_ = MapState::LOADING_FROM_DATABASE;
-  OnMapLoaded(DbStatus::OK(), {});
+  OnMapLoaded(std::vector<DomStorageDatabase::KeyValuePair>());
 }
 
 void StorageAreaImpl::Bind(
@@ -588,26 +589,22 @@ void StorageAreaImpl::LoadMap(base::OnceClosure completion_callback) {
   map_state_ = MapState::LOADING_FROM_DATABASE;
 
   if (!database_) {
-    OnMapLoaded(DbStatus::IOError("Database no longer valid."), {});
+    OnMapLoaded(
+        base::unexpected(DbStatus::IOError("Database no longer valid.")));
     return;
   }
 
   database_->RunDatabaseTask(
       base::BindOnce(
           [](const DomStorageDatabase::Key& prefix,
-             const DomStorageDatabase& db) {
-            std::vector<DomStorageDatabase::KeyValuePair> data;
-            DbStatus status = db.GetPrefixed(prefix, &data);
-            return std::make_tuple(status, std::move(data));
-          },
+             DomStorageDatabaseLevelDB& db) { return db.GetPrefixed(prefix); },
           prefix_),
       base::BindOnce(&StorageAreaImpl::OnMapLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void StorageAreaImpl::OnMapLoaded(
-    DbStatus status,
-    std::vector<DomStorageDatabase::KeyValuePair> data) {
+    StatusOr<std::vector<DomStorageDatabase::KeyValuePair>> data) {
   DCHECK(keys_values_map_.empty());
   DCHECK_EQ(map_state_, MapState::LOADING_FROM_DATABASE);
 
@@ -615,25 +612,22 @@ void StorageAreaImpl::OnMapLoaded(
   map_state_ = MapState::LOADED_KEYS_AND_VALUES;
 
   keys_values_map_.clear();
-  for (auto& entry : data) {
-    DCHECK_GE(entry.key.size(), prefix_.size());
-    keys_values_map_[DomStorageDatabase::Key(entry.key.begin() + prefix_.size(),
-                                             entry.key.end())] =
-        std::move(entry.value);
-  }
-  CalculateStorageAndMemoryUsed();
-
-  // We proceed without using a backing store, nothing will be persisted but the
-  // class is functional for the lifetime of the object.
-  delegate_->OnMapLoaded(status);
-  if (!status.ok()) {
+  if (data.has_value()) {
+    for (DomStorageDatabase::KeyValuePair& entry : *data) {
+      keys_values_map_[base::ToVector(base::span(entry.key).subspan(
+          prefix_.size()))] = std::move(entry.value);
+    }
+  } else {
+    // We proceed without using a backing store, nothing will be persisted but
+    // the class is functional for the lifetime of the object.
     if (database_) {
       database_->RemoveCommitter(this);
+      database_ = nullptr;
     }
-    database_ = nullptr;
     SetCacheMode(CacheMode::KEYS_AND_VALUES);
   }
-
+  CalculateStorageAndMemoryUsed();
+  delegate_->OnMapLoaded();
   if (on_load_callback_for_testing_)
     std::move(on_load_callback_for_testing_).Run();
 
@@ -731,7 +725,7 @@ void StorageAreaImpl::CommitChanges() {
     return;
   }
 
-  database_->InitiateCommit(this);
+  database_->InitiateCommit();
 }
 
 std::optional<AsyncDomStorageDatabase::Commit>

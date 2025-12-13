@@ -62,7 +62,7 @@ bool IsSafeSearchSettingUrl(const GURL& url) {
     return false;
   }
 
-  return url.path_piece() == "/safesearch";
+  return url.path() == "/safesearch";
 }
 
 }  // namespace
@@ -85,7 +85,7 @@ void ForceGoogleSafeSearch(const GURL& url, GURL* new_url) {
     return;
   }
 
-  std::string query = url.query();
+  std::string query = url.GetQuery();
   std::string new_query = AddSafeSearchParameters(query);
   if (query == new_query) {
     return;

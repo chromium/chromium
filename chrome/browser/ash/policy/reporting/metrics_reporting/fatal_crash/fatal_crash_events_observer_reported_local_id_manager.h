@@ -17,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 
 namespace reporting {
 

@@ -5,28 +5,92 @@
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 #include "base/check.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_utils.h"
-#include "ios/web/public/browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
-web::BrowserState* ProfileKeyedServiceFactoryIOS::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetContextToUseForKeyedServiceFactory(context, profile_selection_);
+namespace {
+
+// Wraps `testing_factory` as a KeyedServiceFactory::TestingFactory.
+base::OnceCallback<std::unique_ptr<KeyedService>(void*)> WrapFactory(
+    ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory) {
+  if (!testing_factory) {
+    return {};
+  }
+
+  return base::BindOnce(
+      [](ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory,
+         void* context) -> std::unique_ptr<KeyedService> {
+        return std::move(testing_factory)
+            .Run(static_cast<ProfileIOS*>(context));
+      },
+      std::move(testing_factory));
 }
 
-bool ProfileKeyedServiceFactoryIOS::ServiceIsCreatedWithBrowserState() const {
-  return service_creation_ == ServiceCreation::kCreateWithProfile;
+}  // namespace
+
+void ProfileKeyedServiceFactoryIOS::SetTestingFactory(
+    PassKey pass_key,
+    ProfileIOS* profile,
+    TestingFactory testing_factory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  KeyedServiceFactory::SetTestingFactory(
+      profile, WrapFactory(std::move(testing_factory)));
 }
 
-bool ProfileKeyedServiceFactoryIOS::ServiceIsNULLWhileTesting() const {
-  return testing_creation_ == TestingCreation::kNoServiceForTests;
+void ProfileKeyedServiceFactoryIOS::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Nothing to do.
 }
 
 KeyedService* ProfileKeyedServiceFactoryIOS::GetServiceForProfile(
     ProfileIOS* profile,
     bool create) {
-  return GetServiceForBrowserState(profile, create);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetServiceForContext(profile, create);
+}
+
+void ProfileKeyedServiceFactoryIOS::DependsOn(
+    ProfileKeyedServiceFactoryIOS* other) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  KeyedServiceFactory::DependsOn(other);
+}
+
+void ProfileKeyedServiceFactoryIOS::DependsOn(
+    RefcountedProfileKeyedServiceFactoryIOS* other) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  KeyedServiceFactory::DependsOn(other);
+}
+
+void* ProfileKeyedServiceFactoryIOS::GetContextToUse(void* context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  AssertContextWasntDestroyed(context);
+  return GetContextToUseForKeyedServiceFactory(
+      static_cast<ProfileIOS*>(context), profile_selection_);
+}
+
+bool ProfileKeyedServiceFactoryIOS::ServiceIsCreatedWithContext() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return service_creation_ == ServiceCreation::kCreateWithProfile;
+}
+
+bool ProfileKeyedServiceFactoryIOS::ServiceIsNULLWhileTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return testing_creation_ == TestingCreation::kNoServiceForTests;
+}
+
+void ProfileKeyedServiceFactoryIOS::RegisterPrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RegisterProfilePrefs(registry);
+}
+
+std::unique_ptr<KeyedService>
+ProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(void* context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return BuildServiceInstanceFor(static_cast<ProfileIOS*>(context));
 }
 
 ProfileKeyedServiceFactoryIOS::ProfileKeyedServiceFactoryIOS(
@@ -35,9 +99,9 @@ ProfileKeyedServiceFactoryIOS::ProfileKeyedServiceFactoryIOS(
     ServiceCreation service_creation,
     TestingCreation testing_creation,
     base::trait_helpers::NotATraitTag)
-    : BrowserStateKeyedServiceFactory(
-          name,
-          BrowserStateDependencyManager::GetInstance()),
+    : KeyedServiceFactory(name,
+                          ProfileDependencyManagerIOS::GetInstance(),
+                          BROWSER_STATE),
       profile_selection_(profile_selection),
       service_creation_(service_creation),
       testing_creation_(testing_creation) {

@@ -143,24 +143,23 @@ enum class FeedUserActionType {
   // User tapped the "Follow" button on the main menu. (Android)
   // User tapped the "Follow" option on the context menu. (IOS)
   kTappedFollowButton = 44,
+
+  // The following enum values are deprecated as a result of removing the feed
+  // header toggle.
   // User tapped on the Discover feed from the feed header.
-  kDiscoverFeedSelected = 45,
+  // kDiscoverFeedSelected = 45,
   // User tapped on the Following feed from the feed header.
-  kFollowingFeedSelected = 46,
+  // kFollowingFeedSelected = 46,
+
   // User tapped the "Unfollow" option on the context menu.
   kTappedUnfollowButton = 47,
-  // User action caused a follow succeed snackbar to be shown. User action not
-  // reported here. iOS only.
-  kShowFollowSucceedSnackbar = 48,
-  // User action caused a follow failed snackbar to be shown. User action not
-  // reported here. iOS only.
-  kShowFollowFailedSnackbar = 49,
-  // User action caused a unfollow succeed snackbar to be shown. User action not
-  // reported here. iOS only.
-  kShowUnfollowSucceedSnackbar = 50,
-  // User action caused a unfollow failed snackbar to be shown. User action not
-  // reported here. iOS only.
-  kShowUnfollowFailedSnackbar = 51,
+
+  // The following enum values are deprecated.
+  // kShowFollowSucceedSnackbar = 48,
+  // kShowFollowFailedSnackbar = 49,
+  // kShowUnfollowSucceedSnackbar = 50,
+  // kShowUnfollowFailedSnackbar = 51,
+
   // User tapped to go to Following feed using the snackbar 'go to Following'
   // option.
   kTappedGoToFeedOnSnackbar = 52,
@@ -169,16 +168,12 @@ enum class FeedUserActionType {
   // No longer used after the removal of Crow.
   // kTappedCrowButton = 53,
 
-  // User action caused a first follow sheet to be shown. User action not
-  // reported here. iOS only.
-  kFirstFollowSheetShown = 54,
-  // User tapped the "Go To Feed" button on the first follow sheet. (IOS)
-  kFirstFollowSheetTappedGoToFeed = 55,
-  // User tapped the "Got It" button on the first follow sheet. (IOS)
-  kFirstFollowSheetTappedGotIt = 56,
-  // Page load caused a Follow Recommendation IPH to be shown. User action not
-  // reported here. iOS only.
-  kFollowRecommendationIPHShown = 57,
+  // First follow actions on iOS. No longer used after follow removal.
+  // kFirstFollowSheetShown = 54,
+  // kFirstFollowSheetTappedGoToFeed = 55,
+  // kFirstFollowSheetTappedGotIt = 56,
+  // kFollowRecommendationIPHShown = 57,
+
   // User opened the article in a new tab in group from the back of card menu.
   kTappedOpenInNewTabInGroup = 58,
   // User selected the "Group by Publisher" Following feed sort type.

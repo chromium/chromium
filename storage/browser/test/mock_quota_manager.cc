@@ -56,6 +56,14 @@ MockQuotaManager::MockQuotaManager(
 void MockQuotaManager::UpdateOrCreateBucket(
     const BucketInitParams& params,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  if (delay_results_) {
+    base::ScopedClosureRunner scoped(base::BindOnce(base::BindOnce(
+        &MockQuotaManager::UpdateOrCreateBucket, weak_factory_.GetWeakPtr(),
+        params, std::move(callback))));
+    delayed_results_.emplace_back(std::move(scoped));
+    return;
+  }
+
   // Make sure serialization doesn't fail.
   params.storage_key.Serialize();
 
@@ -374,6 +382,11 @@ void MockQuotaManager::DidDeleteBucketData(
     StatusCallback callback,
     blink::mojom::QuotaStatusCode status) {
   std::move(callback).Run(status);
+}
+
+void MockQuotaManager::ReleaseResults() {
+  delay_results_ = false;
+  delayed_results_.clear();
 }
 
 }  // namespace storage

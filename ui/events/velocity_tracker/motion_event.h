@@ -76,6 +76,7 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
   virtual float GetRawY(size_t pointer_index) const = 0;
   virtual float GetTouchMajor(size_t pointer_index) const = 0;
   virtual float GetTouchMinor(size_t pointer_index) const = 0;
+  virtual bool HasNativeTouchMajor(size_t pointer_index) const = 0;
   virtual float GetOrientation(size_t pointer_index) const = 0;
   virtual float GetPressure(size_t pointer_index) const = 0;
   virtual float GetTiltX(size_t pointer_index) const = 0;
@@ -89,7 +90,7 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
   virtual base::TimeTicks GetLatestEventTime() const;
   // Returns the event time (in milliseconds) of first down in the input
   // sequence.
-  virtual base::TimeTicks GetDownTime() const;
+  virtual base::TimeTicks GetRawDownTime() const;
 
   virtual Classification GetClassification() const;
 
@@ -98,6 +99,8 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
   virtual base::TimeTicks GetHistoricalEventTime(size_t historical_index) const;
   virtual float GetHistoricalTouchMajor(size_t pointer_index,
                                         size_t historical_index) const;
+  virtual bool GetHistoricalHasNativeTouchMajor(size_t pointer_index,
+                                                size_t historical_index) const;
   virtual float GetHistoricalX(size_t pointer_index,
                                size_t historical_index) const;
   virtual float GetHistoricalY(size_t pointer_index,
@@ -150,7 +153,7 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
   // They guarantee only that the returned type will reflect the same
   // data exposed by the MotionEvent interface; no guarantees are made that the
   // underlying implementation is identical to the source implementation.
-  std::unique_ptr<MotionEvent> Clone() const;
+  std::unique_ptr<MotionEvent> Clone(bool with_history = true) const;
   std::unique_ptr<MotionEvent> Cancel() const;
 };
 

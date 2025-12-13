@@ -192,7 +192,8 @@ pub trait TryWriteable {
     ///     .try_write_to_string()
     ///     .map_err(|(e, _)| e);
     /// ```
-    fn try_write_to_string(&self) -> Result<Cow<str>, (Self::Error, Cow<str>)> {
+    #[cfg(feature = "alloc")]
+    fn try_write_to_string(&self) -> Result<Cow<'_, str>, (Self::Error, Cow<'_, str>)> {
         let hint = self.writeable_length_hint();
         if hint.is_zero() {
             return Ok(Cow::Borrowed(""));
@@ -248,7 +249,8 @@ where
     }
 
     #[inline]
-    fn try_write_to_string(&self) -> Result<Cow<str>, (Self::Error, Cow<str>)> {
+    #[cfg(feature = "alloc")]
+    fn try_write_to_string(&self) -> Result<Cow<'_, str>, (Self::Error, Cow<'_, str>)> {
         match self {
             Ok(t) => Ok(t.write_to_string()),
             Err(e) => Err((e.clone(), e.write_to_string())),
@@ -291,7 +293,8 @@ where
     }
 
     #[inline]
-    fn write_to_string(&self) -> Cow<str> {
+    #[cfg(feature = "alloc")]
+    fn write_to_string(&self) -> Cow<'_, str> {
         match self.0.try_write_to_string() {
             Ok(s) => s,
             Err((infallible, _)) => match infallible {},
@@ -344,7 +347,8 @@ where
     }
 
     #[inline]
-    fn try_write_to_string(&self) -> Result<Cow<str>, (Infallible, Cow<str>)> {
+    #[cfg(feature = "alloc")]
+    fn try_write_to_string(&self) -> Result<Cow<'_, str>, (Infallible, Cow<'_, str>)> {
         Ok(self.0.write_to_string())
     }
 }

@@ -5,11 +5,6 @@
 package org.chromium.chrome.browser.app.appmenu;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
-import static org.chromium.base.test.transit.Triggers.pressBackTo;
 
 import androidx.test.filters.LargeTest;
 
@@ -17,18 +12,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.bookmarks.BookmarksPhoneStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -40,6 +38,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
 
@@ -48,7 +47,7 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 // TODO: Add new tests when the flag is enabled.
-@DisableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
+@DisableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE, ChromeFeatureList.SETTINGS_MULTI_COLUMN})
 public class TabbedAppMenuPTTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
@@ -57,7 +56,7 @@ public class TabbedAppMenuPTTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
                     .setDescription("App menu")
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
                     .build();
@@ -66,24 +65,49 @@ public class TabbedAppMenuPTTest {
     @Test
     @LargeTest
     public void testOpenNewTab() {
-        RegularNewTabPageStation newTabPage =
-                mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewTab();
+        mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewTab();
 
         assertEquals(2, mCtaTestRule.tabsCount(/* incognito= */ false));
         assertEquals(0, mCtaTestRule.tabsCount(/* incognito= */ true));
-        assertFinalDestination(newTabPage);
     }
 
-    /** Tests that "New Incognito tab" opens a new incognito tab with the incognito NTP. */
+    /**
+     * Tests that "New Incognito tab/window" opens a new incognito tab/window with the incognito
+     * NTP.
+     */
     @Test
     @LargeTest
-    public void testOpenNewIncognitoTab() {
-        IncognitoNewTabPageStation newIncognitoTabPage =
+    public void testOpenNewIncognitoTabOrWindow() {
+        // openNewIncognitoTab() opens either an incognito tab or an incognito window.
+        var incognitoNewTabPageStation =
                 mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
 
-        assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ false));
-        assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ true));
-        assertFinalDestination(newIncognitoTabPage);
+        // TabModel#getCount() requires the UI thread.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> assertEquals(1, incognitoNewTabPageStation.getTabModel().getCount()));
+    }
+
+    /** Tests that "Bookmarks" opens the Bookmarks page. */
+    @Test
+    @LargeTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testOpenBookmarksTablet() {
+        WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
+
+        pageStation.openRegularTabAppMenu().openBookmarksTablet();
+    }
+
+    /** Tests that "Bookmarks" opens the Bookmarks page. */
+    @Test
+    @LargeTest
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testOpenBookmarksPhone() {
+        WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
+
+        BookmarksPhoneStation bookmarks = pageStation.openRegularTabAppMenu().openBookmarksPhone();
+
+        // Exit bookmarks for the initial state rule to be able to reset state.
+        bookmarks.pressBackTo().arriveAt(WebPageStation.newBuilder().initFrom(pageStation).build());
     }
 
     /** Tests that "Settings" opens the SettingsActivity. */
@@ -91,42 +115,16 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     public void testOpenSettings() {
         WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
-        Tab tab = pageStation.loadedTabElement.get();
+        Tab tab = pageStation.loadedTabElement.value();
         SettingsStation settings = pageStation.openRegularTabAppMenu().openSettings();
 
-        assertFinalDestination(settings);
-
         // Exit settings for the initial state rule to be able to reset state.
-        pressBackTo()
+        settings.pressBackTo()
                 .arriveAt(
                         WebPageStation.newBuilder()
                                 .withIncognito(false)
                                 .withTabAlreadySelected(tab)
                                 .build());
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
-    public void testPinTabToggle() {
-        WebPageStation page = mCtaTestRule.startOnBlankPage();
-        Tab tab = page.loadedTabElement.get();
-        assertFalse(tab.getIsPinned());
-
-        // Open the app menu and pin the tab.
-        RegularWebPageAppMenuFacility menu = page.openRegularTabAppMenu();
-
-        menu.pinTab();
-        tab = page.loadedTabElement.get();
-        assertTrue(tab.getIsPinned());
-        assertFinalDestination(page);
-
-        // Open the app menu and unpin the tab.
-        RegularWebPageAppMenuFacility pinnedMenu = page.openRegularTabAppMenu();
-
-        pinnedMenu.unpinTab();
-        tab = page.loadedTabElement.get();
-        assertFalse(tab.getIsPinned());
     }
 
     /**
@@ -141,9 +139,12 @@ public class TabbedAppMenuPTTest {
         RegularNewTabPageStation newTabPage = blankPage.openRegularTabAppMenu().openNewTab();
         RegularNewTabPageAppMenuFacility menu = newTabPage.openAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.get(), "regular_ntp_app_menu_v3");
+        String appMenuGoldenId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? "regular_ntp_app_menu_with_open_incognito_window"
+                        : "regular_ntp_app_menu_with_open_incognito_tab";
+        mRenderTestRule.render(menu.menuListElement.value(), appMenuGoldenId);
         menu.verifyPresentItems();
-        assertFinalDestination(newTabPage, menu);
 
         // Clean up for next tests in batch
         menu.clickOutsideToClose();
@@ -161,9 +162,12 @@ public class TabbedAppMenuPTTest {
                 mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
         IncognitoNewTabPageAppMenuFacility menu = incognitoNewTabPage.openAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.get(), "incognito_ntp_app_menu");
+        String appMenuGoldenId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? "incognito_ntp_app_menu_with_open_incognito_window"
+                        : "incognito_ntp_app_menu_with_open_incognito_tab";
+        mRenderTestRule.render(menu.menuListElement.value(), appMenuGoldenId);
         menu.verifyPresentItems();
-        assertFinalDestination(incognitoNewTabPage, menu);
 
         // Clean up for next tests in batch
         menu.clickOutsideToClose();
@@ -180,9 +184,12 @@ public class TabbedAppMenuPTTest {
         WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
         RegularWebPageAppMenuFacility menu = blankPage.openRegularTabAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.get(), "regular_webpage_app_menu_v3");
+        String appMenuGoldenId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? "regular_webpage_app_menu_with_open_incognito_window"
+                        : "regular_webpage_app_menu_with_open_incognito_tab";
+        mRenderTestRule.render(menu.menuListElement.value(), appMenuGoldenId);
         menu.verifyPresentItems();
-        assertFinalDestination(blankPage, menu);
 
         // Clean up for next tests in batch
         menu.clickOutsideToClose();
@@ -205,9 +212,12 @@ public class TabbedAppMenuPTTest {
                         NavigatePageStations.newNavigateOnePageBuilder());
         IncognitoWebPageAppMenuFacility menu = pageOne.openIncognitoTabAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.get(), "incognito_webpage_app_menu");
+        String appMenuGoldenId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? "incognito_webpage_app_menu_with_open_incognito_window"
+                        : "incognito_webpage_app_menu_with_open_incognito_tab";
+        mRenderTestRule.render(menu.menuListElement.value(), appMenuGoldenId);
         menu.verifyPresentItems();
-        assertFinalDestination(pageOne, menu);
 
         // Clean up for next tests in batch
         menu.clickOutsideToClose();

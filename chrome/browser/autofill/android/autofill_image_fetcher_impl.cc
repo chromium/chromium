@@ -81,3 +81,5 @@ AutofillImageFetcherImpl::GetOrCreateJavaImageFetcher() {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillImageFetcher)

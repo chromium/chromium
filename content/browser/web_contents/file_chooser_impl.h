@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEB_CONTENTS_FILE_CHOOSER_IMPL_H_
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_select_listener.h"
@@ -15,6 +16,7 @@
 
 namespace content {
 
+class RenderFrameHost;
 class RenderFrameHostImpl;
 
 // An implementation of blink::mojom::FileChooser and FileSelectListener
@@ -59,7 +61,7 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser {
 #endif
   };
 
-  static void Create(RenderFrameHostImpl* render_frame_host,
+  static void Create(RenderFrameHost* render_frame_host,
                      mojo::PendingReceiver<blink::mojom::FileChooser> receiver);
   static mojo::Remote<blink::mojom::FileChooser> CreateBoundForTesting(
       RenderFrameHostImpl* render_frame_host);

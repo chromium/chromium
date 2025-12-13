@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/host/mojom/remoting_mojom_traits.h"
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "remoting/base/source_location.h"
 
 namespace mojo {
@@ -331,9 +327,9 @@ bool mojo::StructTraits<
     return false;
   }
 
-  std::unique_ptr<::webrtc::DesktopFrame> new_frame(
-      new ::webrtc::BasicDesktopFrame(image_size));
-  memcpy(new_frame->data(), image_data.data(), image_data.size());
+  auto new_frame = std::make_unique<::webrtc::BasicDesktopFrame>(
+      image_size, webrtc::FOURCC_ARGB);
+  UNSAFE_TODO(memcpy(new_frame->data(), image_data.data(), image_data.size()));
 
   // ::webrtc::MouseCursor methods take a raw pointer *and* take ownership.
   // TODO(joedow): Update webrtc::MouseCursor to use std::unique_ptr.
@@ -606,6 +602,17 @@ bool mojo::StructTraits<remoting::mojom::SourceLocationDataView,
   out_source_info->InitializeWithBackingStore(function_name, file_name,
                                               data_view.line_number());
 
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::FractionalCoordinateDataView,
+                        ::remoting::protocol::FractionalCoordinate>::
+    Read(remoting::mojom::FractionalCoordinateDataView data_view,
+         ::remoting::protocol::FractionalCoordinate* out_coordinate) {
+  out_coordinate->set_screen_id(data_view.screen_id());
+  out_coordinate->set_x(data_view.x());
+  out_coordinate->set_y(data_view.y());
   return true;
 }
 

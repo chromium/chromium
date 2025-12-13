@@ -400,9 +400,12 @@ void SessionControllerImpl::SetClient(SessionControllerClient* client) {
 void SessionControllerImpl::SetSessionInfo(const SessionInfo& info) {
   can_lock_ = info.can_lock_screen;
   should_lock_screen_automatically_ = info.should_lock_screen_automatically;
-  is_running_in_app_mode_ = info.is_running_in_app_mode;
-  if (info.is_demo_session)
+  if (info.is_running_in_app_mode) {
+    SetIsRunningInAppMode();
+  }
+  if (info.is_demo_session) {
     SetIsDemoSession();
+  }
   add_user_session_policy_ = info.add_user_session_policy;
   SetSessionState(info.state);
 }
@@ -572,6 +575,17 @@ void SessionControllerImpl::ClearUserSessionsForTest() {
   last_active_user_prefs_ = nullptr;
   active_session_id_ = 0u;
   primary_session_id_ = 0u;
+}
+
+void SessionControllerImpl::SetIsRunningInAppMode() {
+  if (is_running_in_app_mode_) {
+    return;
+  }
+  is_running_in_app_mode_ = true;
+
+  for (auto& observer : observers_) {
+    observer.OnAppModeSessionStarted();
+  }
 }
 
 void SessionControllerImpl::SetIsDemoSession() {

@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #if defined(WTF_USE_WEBAUDIO_PFFFT)
 
-#include "third_party/blink/renderer/platform/audio/fft_frame.h"
-
+#include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
+#include "third_party/blink/renderer/platform/audio/fft_frame.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -151,8 +146,8 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
 
   // Copy/setup frame data.
   unsigned nbytes = sizeof(float) * (fft_size_ / 2);
-  memcpy(RealData().Data(), frame.RealData().Data(), nbytes);
-  memcpy(ImagData().Data(), frame.ImagData().Data(), nbytes);
+  UNSAFE_TODO(memcpy(RealData().Data(), frame.RealData().Data(), nbytes));
+  UNSAFE_TODO(memcpy(ImagData().Data(), frame.ImagData().Data(), nbytes));
 }
 
 unsigned FFTFrame::MinFFTSize() {
@@ -212,8 +207,8 @@ void FFTFrame::DoFFT(const float* data) {
   float* imag = imag_data_.Data();
   for (unsigned k = 0; k < len; ++k) {
     int index = 2 * k;
-    real[k] = c[index];
-    imag[k] = c[index + 1];
+    UNSAFE_TODO(real[k]) = UNSAFE_TODO(c[index]);
+    UNSAFE_TODO(imag[k]) = UNSAFE_TODO(c[index + 1]);
   }
 }
 
@@ -229,8 +224,8 @@ void FFTFrame::DoInverseFFT(float* data) {
   const float* imag = imag_data_.Data();
   for (unsigned k = 0; k < len; ++k) {
     int index = 2 * k;
-    fft_data[index] = real[k];
-    fft_data[index + 1] = imag[k];
+    UNSAFE_TODO(fft_data[index]) = UNSAFE_TODO(real[k]);
+    UNSAFE_TODO(fft_data[index + 1]) = UNSAFE_TODO(imag[k]);
   }
 
   PFFFT_Setup* setup = FFTSetupForSize(fft_size_);

@@ -12,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -103,14 +104,6 @@ void RecordCountWithAndWithoutSuffix(const std::string& metric,
                                  /*buckets=*/50);
 }
 
-void RecordTimeWithAndWithoutSuffix(const std::string& metric,
-                                    base::TimeDelta duration,
-                                    const base::FilePath& file_path) {
-  base::UmaHistogramTimes(metric, duration);
-  std::string suffix = GetUmaSuffixForStore(file_path);
-  base::UmaHistogramTimes(metric + suffix, duration);
-}
-
 void RecordApplyUpdateResult(const std::string& base_metric,
                              ApplyUpdateResult result,
                              const base::FilePath& file_path) {
@@ -154,17 +147,13 @@ void RecordRemovalsHashesCount(const std::string& base_metric,
 }
 
 void RecordApplyUpdateDuration(const std::string& base_metric,
-                               base::TimeDelta duration,
-                               const base::FilePath& file_path) {
-  RecordTimeWithAndWithoutSuffix(base_metric + kApplyUpdateDuration, duration,
-                                 file_path);
+                               base::TimeDelta duration) {
+  base::UmaHistogramTimes(base_metric + kApplyUpdateDuration, duration);
 }
 
 void RecordVerifyChecksumDuration(const std::string& base_metric,
-                                  base::TimeDelta duration,
-                                  const base::FilePath& file_path) {
-  RecordTimeWithAndWithoutSuffix(base_metric + kVerifyChecksumDuration,
-                                 duration, file_path);
+                                  base::TimeDelta duration) {
+  base::UmaHistogramTimes(base_metric + kVerifyChecksumDuration, duration);
 }
 
 void RecordStoreReadResult(StoreReadResult result) {
@@ -245,9 +234,10 @@ class BaseFileOutputStream
       if (!file_.IsValid()) {
         return false;
       }
-      int bytes_written = UNSAFE_TODO(
-          file_.WriteAtCurrentPos(reinterpret_cast<const char*>(buffer), size));
-      if (bytes_written == size) {
+      std::optional<size_t> bytes_written = file_.WriteAtCurrentPos(
+          UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(buffer),
+                                 base::checked_cast<size_t>(size))));
+      if (bytes_written == base::checked_cast<size_t>(size)) {
         return true;
       }
       file_ = base::File(base::File::GetLastFileError());
@@ -307,10 +297,11 @@ class BaseFileInputStream : public google::protobuf::io::ZeroCopyInputStream {
       if (!file_.IsValid()) {
         return -1;
       }
-      const int bytes_read = UNSAFE_TODO(
-          file_.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), size));
-      if (bytes_read >= 0) {
-        return bytes_read;
+      const std::optional<size_t> bytes_read = file_.ReadAtCurrentPos(
+          UNSAFE_TODO(base::span(reinterpret_cast<uint8_t*>(buffer),
+                                 base::checked_cast<size_t>(size))));
+      if (bytes_read) {
+        return base::checked_cast<int>(*bytes_read);
       }
       file_ = base::File(base::File::GetLastFileError());
       return -1;
@@ -558,8 +549,7 @@ void V4Store::ApplyUpdate(
                                 apply_update_type);
   if (metric.has_value()) {
     RecordApplyUpdateResult(metric.value(), apply_update_result, store_path_);
-    RecordApplyUpdateDuration(metric.value(), thread_timer.Elapsed(),
-                              store_path_);
+    RecordApplyUpdateDuration(metric.value(), thread_timer.Elapsed());
   }
 
   // Posting the task should be the last thing to do in this function.
@@ -982,36 +972,6 @@ bool V4Store::VerifyChecksum() {
 
   crypto::hash::Hasher checksum_ctx(crypto::hash::HashKind::kSha256);
   while (has_unmerged) {
-#if DCHECK_IS_ON()
-    // This is expensive (see https://crbug.com/373928217), but it's
-    // useful to validate that the DB hasn't changed to debug
-    // https://crbug.com/390144275
-    const HashPrefixMapView recomputed_map_view = hash_prefix_map_->view();
-
-    for (const auto& iterator_pair : iterator_map) {
-      PrefixSize prefix_size = iterator_pair.first;
-      HashPrefixesView::const_iterator start = iterator_pair.second;
-
-      HashPrefixesView hash_prefixes = map_view.at(prefix_size);
-      HashPrefixesView recomputed_hash_prefixes =
-          recomputed_map_view.at(prefix_size);
-
-      // Both regions should be the same.
-      DCHECK_EQ(hash_prefixes.data(), recomputed_hash_prefixes.data());
-      DCHECK_EQ(hash_prefixes.size(), recomputed_hash_prefixes.size());
-
-      // And the iterator map should be pointing into the region and
-      // properly aligned.
-      DCHECK_LE(base::to_address(recomputed_hash_prefixes.begin()),
-                base::to_address(start));
-      DCHECK_LE(base::to_address(start),
-                base::to_address(recomputed_hash_prefixes.end()));
-      DCHECK_EQ(
-          std::distance(recomputed_hash_prefixes.begin(), start) % prefix_size,
-          0u);
-    }
-#endif
-
     PrefixSize next_smallest_prefix_size = next_smallest_prefix.size();
 
     // Update the iterator map, which means that we have read one hash
@@ -1037,13 +997,11 @@ bool V4Store::VerifyChecksum() {
     DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
              << "; expected: " << expected_checksum_b64 << "; store: " << *this;
 #endif
-    RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed(),
-                                 store_path_);
+    RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed());
     return false;
   }
 
-  RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed(),
-                               store_path_);
+  RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed());
   return true;
 }
 

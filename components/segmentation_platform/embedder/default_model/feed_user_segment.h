@@ -15,6 +15,21 @@ struct Config;
 // metadata for the Feed user optimization target.
 class FeedUserSegment : public DefaultModelProvider {
  public:
+  enum Feature {
+    kFeatureMobileNTPMostVisited,
+    kFeatureMobileNewTabOpened,
+    kFeatureMobileNewTabShown,
+    kFeatureHome,
+    kFeatureMobileMenuRecentTabs,
+    kFeatureMobileMenuHistory,
+    kFeatureMobileTabReturnedToCurrentTab,
+    kFeatureFeedEngagementEngaged,
+    kFeatureFeedEngagementSimple,
+    kFeatureFeedEngagementInteracted,
+    kFeatureFeedEngagementScrolled,
+    kFeatureCount
+  };
+
   FeedUserSegment();
   ~FeedUserSegment() override = default;
 

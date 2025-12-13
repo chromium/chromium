@@ -63,7 +63,7 @@
 <translation id="1207734034680156868">추천은 설명을 기반으로 합니다.</translation>
 <translation id="121090498480012229">미디어를 재생 또는 일시중지합니다</translation>
 <translation id="1216675364136048456">닫기</translation>
-<translation id="1223498995510244364">요약</translation>
+<translation id="1223498995510244364">요약해 보세요</translation>
 <translation id="123124571410524056">포털 의심됨</translation>
 <translation id="1232610416724362657">폭포</translation>
 <translation id="1238163879850290856">다른 사용자가 데이터에 액세스하지 못하도록 재설정하고 신뢰할 수 있는 입력 방법만 사용하세요.</translation>
@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">오렌지</translation>
 <translation id="1275718070701477396">선택됨</translation>
 <translation id="1290331692326790741">신호 약함</translation>
+<translation id="1292474106138697109">수업 도구 표시</translation>
 <translation id="1300115153046603471">APN은 기본값 및 <ph name="ATTACH" /> 유형입니다.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">변환</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">상위 도움말 콘텐츠</translation>
 <translation id="2277631741861284101">오디오를 간편하게 녹음하고 공유하세요</translation>
 <translation id="2279051792571591988">기본값 복원</translation>
-<translation id="2286454467119466181">단순</translation>
+<translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">사용할 수 있는 이미지가 없습니다. 사진을 추가하려면 <ph name="LINK" />(으)로 이동하세요.</translation>
 <translation id="2294577623958216786">현재 설정된 일정은 <ph name="SUNRISE" />~<ph name="SUNSET" />입니다. 일몰 및 일출 일정을 자동으로 업데이트하려면 시스템 위치 액세스를 사용 설정하세요.</translation>
 <translation id="2305172810646967500">블랙</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989">이미지 <ph name="IMAGE_COUNT" />개</translation>
 <translation id="4300272766492248925">앱 열기</translation>
 <translation id="430786093962686457">시폰</translation>
+<translation id="4309762678330556039">자동으로 스크립트를 작성하고 오디오를 검색하세요. 인터넷에 연결되지 않아도 녹음 파일을 만들 수 있습니다.</translation>
 <translation id="4310735698903592804">Google AI 기반 최신 배경화면</translation>
 <translation id="4320904097188876154">네온 핑크색</translation>
 <translation id="432961742358282111">마우스 오른쪽 버튼으로 클릭하거나 길게 눌러 정의, 번역 또는 단위 변환을 확인합니다. 이 기능을 관리하려면 왼쪽 또는 오른쪽 화살표 키를 사용하세요.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> 키는 테스트했습니다.</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">수업 도구에서 <ph name="RECEIVER_NAME" />에 화면을 공유 중입니다.</translation>
 <translation id="5613201299517339763">로그아웃되었습니다</translation>
 <translation id="5620281292257375798">내부용</translation>
 <translation id="5628106863521633649">지원 언어</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">구름의 흐름</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">사용 가능한 스캐너 없음</translation>
-<translation id="6231648282154119906">선택한 향상된 보호 모드에 따라 Google 세이프 브라우징에서 의심스러운 파일을 자동으로 검사합니다.</translation>
 <translation id="6232017090690406397">배터리</translation>
 <translation id="6234024205316847054">개요 표시</translation>
 <translation id="6243280677745499710">현재 설정</translation>
@@ -1451,7 +1453,7 @@
 <translation id="7343649194310845056">네트워크 기기</translation>
 <translation id="7344788170842919262">황톳빛</translation>
 <translation id="7346768383111016081">게임 액션에 컨트롤을 사용하여 키보드로 플레이하세요.</translation>
-<translation id="7352651011704765696">문제가 발생했습니다.</translation>
+<translation id="7352651011704765696">문제가 발생했습니다</translation>
 <translation id="7353413232959255829">검색 결과 <ph name="LIST_SIZE" />개 중 <ph name="LIST_POSITION" />번: <ph name="SEARCH_RESULT_TEXT" />. 바로가기로 이동하려면 Enter를 누르세요.</translation>
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="73631062356239394">진단 데이터 공유</translation>
@@ -1866,7 +1868,7 @@
 <translation id="921080052717160800">이미지를 카메라 배경으로 설정</translation>
 <translation id="9211490828691860325">모든 데스크</translation>
 <translation id="9218016617214286986">알려진 APN 표시</translation>
-<translation id="932327136139879170">홈</translation>
+<translation id="932327136139879170">집</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> 키가 누락되었습니다. <ph name="ASSIGN_INSTRUCTION" /></translation>

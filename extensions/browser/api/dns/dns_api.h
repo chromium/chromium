@@ -32,11 +32,11 @@ class DnsResolveFunction : public ExtensionFunction,
 
  private:
   // network::mojom::ResolveHostClient implementation:
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override;
+  void OnComplete(
+      int result,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override;
 
   // A reference to `this` must be taken while the request is being made on this
   // receiver so the object is alive when the request completes.

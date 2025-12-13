@@ -24,6 +24,7 @@ declare_args() {
   ios_toolchains_path = ""
   xcode_version = ""
   xcode_version_int = 0
+  xcode_version_verbatim = ""
   xcode_build = ""
   machine_os_build = ""
 
@@ -124,6 +125,7 @@ if (ios_sdk_path == "") {
   ios_toolchains_path = _ios_sdk_result.toolchains_path
   xcode_version = _ios_sdk_result.xcode_version
   xcode_version_int = _ios_sdk_result.xcode_version_int
+  xcode_version_verbatim = _ios_sdk_result.xcode_version_verbatim
   xcode_build = _ios_sdk_result.xcode_build
   machine_os_build = _ios_sdk_result.machine_os_build
   if (target_environment == "simulator") {

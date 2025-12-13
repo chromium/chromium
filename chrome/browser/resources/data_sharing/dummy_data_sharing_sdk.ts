@@ -6,6 +6,8 @@
 import type {AddAccessTokenParams, AddAccessTokenResult, AddMemberParams, CreateGroupParams, CreateGroupResult, DataSharingSdk, DataSharingSdkGroupData, DataSharingSdkResponse, DeleteGroupParams, LeaveGroupParams, ReadGroupOptions, ReadGroupParams, ReadGroupResult, ReadGroupsParams, ReadGroupsResult, RunCloseFlowParams, RunDeleteFlowParams, RunInviteFlowParams, RunJoinFlowParams, RunManageFlowParams} from './data_sharing_sdk_types.js';
 import {Code} from './data_sharing_sdk_types.js';
 
+export const SHAREKIT_SDK_VERSION = '42';
+
 // Add something to the dialog to tell which flow it is.
 function appendTextForTesting(text: string) {
   const newDiv: HTMLElement = document.createElement('div');
@@ -120,6 +122,10 @@ export class DataSharingSdkImpl implements DataSharingSdk {
   // Setup Helpers
   setOauthAccessToken(_params: {accessToken: string}): void {}
   updateClearcut(_params: {enabled: boolean}): void {}
+  setClientVersionAndResetPeopleStore(
+      _versionString: string,
+      _baselineCl: number,
+      ): void {}
 
   static getInstance(): DataSharingSdk {
     return dataSharingSdkInstance ||

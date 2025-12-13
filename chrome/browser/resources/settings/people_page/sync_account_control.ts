@@ -20,15 +20,17 @@ import '../settings_shared.css.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from '//resources/js/assert.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {ChromeSigninAccessPoint, StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {Router} from '../router.js';
+import {routes} from '../route.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './sync_account_control.html.js';
 
@@ -39,8 +41,15 @@ export interface SettingsSyncAccountControlElement {
   };
 }
 
+// Helper enum to determine which promo type the app should display. Used in the
+// CSS styling, where the string literals are used for attributes matching.
+enum PromoType {
+  SIGNIN = 'signin',
+  SYNC = 'sync',
+}
+
 const SettingsSyncAccountControlElementBase =
-    WebUiListenerMixin(PrefsMixin(PolymerElement));
+    WebUiListenerMixin(PrefsMixin(RouteObserverMixin(PolymerElement)));
 
 export class SettingsSyncAccountControlElement extends
     SettingsSyncAccountControlElementBase {
@@ -114,12 +123,27 @@ export class SettingsSyncAccountControlElement extends
         reflectToAttribute: true,
       },
 
+      // This property should be set by the parent only and should not change
+      // after the element is created.
+      accessPoint: {
+        type: Number,
+        reflectToAttribute: true,
+      },
+
       shouldShowAvatarRow_: {
         type: Boolean,
         value: false,
         computed: 'computeShouldShowAvatarRow_(storedAccounts_, syncStatus,' +
             'storedAccounts_.length, syncStatus.signedInState)',
         observer: 'onShouldShowAvatarRowChange_',
+      },
+
+      shouldShowSigninPausedButtons_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShouldShowSigninPausedButtons_(syncStatus,' +
+            'syncStatus.signedInState)',
+        observer: 'maybeRecordSigninPendingOffered_',
       },
 
       subLabel_: {
@@ -132,6 +156,13 @@ export class SettingsSyncAccountControlElement extends
         type: Boolean,
         computed: 'computeShowSetupButtons_(' +
             'hideButtons, syncStatus.firstSetupInProgress)',
+      },
+
+      // Reflected as `promo-type_` to be used in the CSS styling with
+      // attributes matching.
+      promoType_: {
+        type: String,
+        reflectToAttribute: true,
       },
     };
   }
@@ -154,11 +185,15 @@ export class SettingsSyncAccountControlElement extends
   declare embeddedInSubpage: boolean;
   declare hideButtons: boolean;
   declare hideBanner: boolean;
+  declare accessPoint: ChromeSigninAccessPoint;
   declare private shouldShowAvatarRow_: boolean;
   declare private subLabel_: string;
   declare private showSetupButtons_: boolean;
+  declare private shouldShowSigninPausedButtons_: boolean;
+  private signinPausedImpressionRecorded_: boolean = false;
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
+  declare private promoType_: PromoType;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -173,6 +208,15 @@ export class SettingsSyncAccountControlElement extends
         'stored-accounts-updated', this.handleStoredAccounts_.bind(this));
     this.addWebUiListener(
         'profile-avatar-changed', this.handleUpdateAvatar_.bind(this));
+
+    this.promoType_ =
+        loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') ?
+        PromoType.SIGNIN :
+        PromoType.SYNC;
+  }
+
+  override currentRouteChanged(_newRoute: Route, _oldRoute?: Route): void {
+    this.maybeRecordSigninPendingOffered_();
   }
 
   /**
@@ -225,7 +269,8 @@ export class SettingsSyncAccountControlElement extends
       return loadTimeData.substituteString(syncingLabel, email);
     }
 
-    return (this.shownAccount_! && this.shownAccount_.isPrimaryAccount) ?
+    return (this.shownAccount_! && this.shownAccount_.isPrimaryAccount &&
+            this.promoType_ === PromoType.SYNC) ?
         loadTimeData.substituteString(signedInLabel, email) :
         email;
   }
@@ -344,6 +389,11 @@ export class SettingsSyncAccountControlElement extends
       return webOnlySignedInAccountRowTitle;
     }
 
+    if (this.promoType_ === PromoType.SIGNIN &&
+        this.syncStatus.signedInState === SignedInState.SIGNED_IN) {
+      return accountName;
+    }
+
     if (this.syncStatus && this.syncStatus.hasError &&
         this.syncStatus.statusText) {
       return accountName;
@@ -425,17 +475,26 @@ export class SettingsSyncAccountControlElement extends
       case SignedInState.SYNCING:
       case SignedInState.SIGNED_IN_PAUSED:
         return true;
+      case undefined:
+        assertNotReached('Invalid SignedInState');
+      default:
+        assertNotReachedCase(
+            this.syncStatus.signedInState, 'Invalid SignedInState');
     }
 
-    assertNotReached('Invalid SignedInState');
   }
 
   /**
-   * Determines whether the sync button should be hidden, in the case where the
-   * user has sync enabled, is in sign in paused, or if the property to hide
-   * the banner was explicitly set.
+   * Determines whether the sync button should be hidden, in the case where
+   * `replaceSyncPromosWithSignInPromos` is enabled, the user has sync enabled,
+   * is in sign in paused, or if the property to hide the banner was explicitly
+   * set.
    */
   private shouldHideSyncButton_(): boolean {
+    if (this.promoType_ === PromoType.SIGNIN) {
+      return true;
+    }
+
     if (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
       return true;
     }
@@ -483,8 +542,8 @@ export class SettingsSyncAccountControlElement extends
 
     if (this.embeddedInSubpage &&
         this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE) {
-      // In a subpage the passphrase button is not required.
-      return false;
+      // In the sync subpage the passphrase button is not required.
+      return !this.isSyncing_();
     }
 
     if (this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
@@ -519,9 +578,13 @@ export class SettingsSyncAccountControlElement extends
       case SignedInState.SYNCING:
       case SignedInState.SIGNED_IN:
         return false;
+      case undefined:
+        assertNotReached('Invalid SignedInState');
+      default:
+        assertNotReachedCase(
+            this.syncStatus.signedInState, 'Invalid SignedInState');
     }
 
-    assertNotReached('Invalid SignedInState');
   }
 
   private handleStoredAccounts_(accounts: StoredAccount[]) {
@@ -548,7 +611,7 @@ export class SettingsSyncAccountControlElement extends
     const routes = router.getRoutes();
     switch (this.syncStatus.statusAction) {
       case StatusAction.REAUTHENTICATE:
-        this.syncBrowserProxy_.startSignIn();
+        this.syncBrowserProxy_.startSignIn(this.accessPoint);
         break;
       case StatusAction.UPGRADE_CLIENT:
         router.navigateTo(routes.ABOUT);
@@ -559,6 +622,10 @@ export class SettingsSyncAccountControlElement extends
       case StatusAction.ENTER_PASSPHRASE:
         this.syncBrowserProxy_.showSyncPassphraseDialog();
         break;
+      case StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE:
+        // TODO(crbug.com/452968646): Adjust this with providing the concrete
+        // help center article link.
+        break;
       case StatusAction.CONFIRM_SYNC_SETTINGS:
       default:
         router.navigateTo(routes.SYNC);
@@ -566,7 +633,7 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private onSigninClick_() {
-    this.syncBrowserProxy_.startSignIn();
+    this.syncBrowserProxy_.startSignIn(this.accessPoint);
     // Need to close here since one menu item also triggers this function.
     const actionMenu = this.shadowRoot!.querySelector('cr-action-menu');
     if (actionMenu) {
@@ -686,9 +753,36 @@ export class SettingsSyncAccountControlElement extends
         'sync-setup-done', {bubbles: true, composed: true, detail: true}));
   }
 
-  private shouldShowSigninPausedButtons_() {
+  private computeShouldShowSigninPausedButtons_() {
     return !this.hideButtons && !!this.syncStatus &&
         this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED;
+  }
+
+  private maybeRecordSigninPendingOffered_() {
+    if (!this.shouldShowSigninPausedButtons_) {
+      return;
+    }
+
+    // Only record if we are currently on a page that could have an account
+    // control in pending state.
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    if (![routes.BASIC, routes.PEOPLE, routes.YOUR_SAVED_INFO].includes(
+            currentRoute)) {
+      return;
+    }
+
+    // Only record for account controls that are visible in pending state.
+    if (this.embeddedInSubpage) {
+      return;
+    }
+
+    // Don't record twice.
+    if (this.signinPausedImpressionRecorded_) {
+      return;
+    }
+
+    this.syncBrowserProxy_.recordSigninPendingOffered();
+    this.signinPausedImpressionRecorded_ = true;
   }
 
   private isSyncing_(): boolean {

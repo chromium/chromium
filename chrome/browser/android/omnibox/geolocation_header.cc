@@ -13,11 +13,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/omnibox/jni_headers/GeolocationHeader_jni.h"
 
-bool HasGeolocationPermission() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_GeolocationHeader_hasGeolocationPermission(env);
-}
-
 std::optional<std::string> GetGeolocationHeaderIfAllowed(const GURL& url,
                                                          Profile* profile) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -35,3 +30,5 @@ std::optional<std::string> GetGeolocationHeaderIfAllowed(const GURL& url,
 
   return base::android::ConvertJavaStringToUTF8(env, geo_header);
 }
+
+DEFINE_JNI(GeolocationHeader)

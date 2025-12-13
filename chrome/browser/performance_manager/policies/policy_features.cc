@@ -18,23 +18,15 @@ namespace features {
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-BASE_FEATURE(kTrimOnMemoryPressure,
-             "TrimOnMemoryPressure",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTrimOnMemoryPressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrimArcOnMemoryPressure,
-             "TrimArcOnMemoryPressure",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTrimArcOnMemoryPressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrimArcVmOnMemoryPressure,
-             "TrimArcVmOnMemoryPressure",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTrimArcVmOnMemoryPressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrimOnFreeze, "TrimOnFreeze", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrimOnFreeze, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDisableTrimmingWhileSuspended,
-             "DisableTrimmingWhileSuspended",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDisableTrimmingWhileSuspended, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kGraphWalkBackoffTimeSec = {
     &kTrimOnMemoryPressure, "GraphWalkBackoffTimeSec", 180};
@@ -155,10 +147,30 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kTerminationTargetPolicy,
-             "TerminationTargetPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTerminationTargetPolicy, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
+
+BASE_FEATURE(kSustainedPMUrgentDiscarding, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The percentage of available memory threshold under which it is considered
+// memory pressure.
+BASE_FEATURE_PARAM(int,
+                   kSustainedPMUrgentDiscarding_PercentAvailableMemory,
+                   &kSustainedPMUrgentDiscarding,
+                   "percent_available_memory",
+                   15);
+// Delay between checking the memory pressure state.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSustainedPMUrgentDiscarding_CheckPressureDelay,
+                   &kSustainedPMUrgentDiscarding,
+                   "delay_for_check_pressure",
+                   base::Seconds(5));
+// Delay until the memory pressure state is considered "sustained".
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSustainedPMUrgentDiscarding_SustainedPressureDelay,
+                   &kSustainedPMUrgentDiscarding,
+                   "delay_for_sustained_pressure",
+                   base::Seconds(10));
 
 }  // namespace features
 }  // namespace performance_manager

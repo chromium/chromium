@@ -49,7 +49,7 @@ class CONTENT_EXPORT BlinkPlatformImpl : public blink::Platform {
       int resource_id,
       const blink::WebString& value1,
       const blink::WebString& value2) override;
-  void SuddenTerminationChanged(bool enabled) override {}
+  void SetSuddenTerminationAllowed(bool allowed) override {}
   blink::WebCrypto* Crypto() override;
   blink::ThreadSafeBrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker()
       override;
@@ -61,8 +61,6 @@ class CONTENT_EXPORT BlinkPlatformImpl : public blink::Platform {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner>
-      media_stream_video_source_video_task_runner_;
   const scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       browser_interface_broker_proxy_;
   webcrypto::WebCryptoImpl web_crypto_;

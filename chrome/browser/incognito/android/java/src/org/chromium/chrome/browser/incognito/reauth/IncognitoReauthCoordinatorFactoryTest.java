@@ -184,6 +184,7 @@ public class IncognitoReauthCoordinatorFactoryTest {
 
             verify(mLayoutManagerMock).isLayoutVisible(LayoutType.TAB_SWITCHER);
             verify(mTabModelSelectorMock, times(1)).selectModel(/* incognito= */ eq(false));
+            verify(mPaneManagerMock).getDefaultPaneId();
             verify(mPaneManagerMock).focusPane(PaneId.TAB_SWITCHER);
         } else {
             doNothing().when(mContextMock).startActivity(mIntentMock);
@@ -224,6 +225,7 @@ public class IncognitoReauthCoordinatorFactoryTest {
 
         mHubManagerSupplier.set(mHubManagerMock);
         ShadowLooper.idleMainLooper();
+        verify(mPaneManagerMock).getDefaultPaneId();
         verify(mPaneManagerMock).focusPane(PaneId.TAB_SWITCHER);
     }
 
@@ -279,6 +281,7 @@ public class IncognitoReauthCoordinatorFactoryTest {
 
             verify(mLayoutManagerMock).isLayoutVisible(LayoutType.TAB_SWITCHER);
             verify(mTabModelSelectorMock, times(1)).selectModel(/* incognito= */ eq(false));
+            verify(mPaneManagerMock).getDefaultPaneId();
             verify(mPaneManagerMock).focusPane(PaneId.TAB_SWITCHER);
         } else {
             doNothing().when(mContextMock).startActivity(mIntentMock);

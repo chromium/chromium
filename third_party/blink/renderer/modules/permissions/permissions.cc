@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -103,12 +102,10 @@ ScriptPromise<PermissionStatus> Permissions::query(
   // permission prompt will be shown even if the returned permission will most
   // likely be "prompt".
   PermissionDescriptorPtr descriptor_copy = descriptor->Clone();
-  base::TimeTicks query_start_time;
   GetService(context)->HasPermission(
       std::move(descriptor),
-      WTF::BindOnce(&Permissions::QueryTaskComplete, WrapPersistent(this),
-                    WrapPersistent(resolver), std::move(descriptor_copy),
-                    query_start_time));
+      blink::BindOnce(&Permissions::TaskComplete, WrapPersistent(this),
+                      WrapPersistent(resolver), std::move(descriptor_copy)));
   return promise;
 }
 
@@ -134,9 +131,9 @@ ScriptPromise<PermissionStatus> Permissions::request(
 
   GetService(context)->RequestPermission(
       std::move(descriptor), LocalFrame::HasTransientUserActivation(frame),
-      WTF::BindOnce(&Permissions::VerifyPermissionAndReturnStatus,
-                    WrapPersistent(this), WrapPersistent(resolver),
-                    std::move(descriptor_copy)));
+      BindOnce(&Permissions::VerifyPermissionAndReturnStatus,
+               WrapPersistent(this), WrapPersistent(resolver),
+               std::move(descriptor_copy)));
   return promise;
 }
 
@@ -158,8 +155,8 @@ ScriptPromise<PermissionStatus> Permissions::revoke(
   GetService(ExecutionContext::From(script_state))
       ->RevokePermission(
           std::move(descriptor),
-          WTF::BindOnce(&Permissions::TaskComplete, WrapPersistent(this),
-                        WrapPersistent(resolver), std::move(descriptor_copy)));
+          BindOnce(&Permissions::TaskComplete, WrapPersistent(this),
+                   WrapPersistent(resolver), std::move(descriptor_copy)));
   return promise;
 }
 
@@ -212,17 +209,12 @@ ScriptPromise<IDLSequence<PermissionStatus>> Permissions::requestAll(
   GetService(context)->RequestPermissions(
       std::move(internal_permissions),
       LocalFrame::HasTransientUserActivation(frame),
-      WTF::BindOnce(
+      BindOnce(
           &Permissions::VerifyPermissionsAndReturnStatus, WrapPersistent(this),
           WrapPersistent(resolver), std::move(internal_permissions_copy),
           std::move(caller_index_to_internal_index),
           -1 /* last_verified_permission_index */, true /* is_bulk_request */));
   return promise;
-}
-
-void Permissions::ContextDestroyed() {
-  base::UmaHistogramCounts1000("Permissions.API.CreatedPermissionStatusObjects",
-                               created_permission_status_objects_);
 }
 
 void Permissions::Trace(Visitor* visitor) const {
@@ -240,7 +232,7 @@ PermissionService* Permissions::GetService(
         execution_context,
         service_.BindNewPipeAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kPermission)));
-    service_.set_disconnect_handler(WTF::BindOnce(
+    service_.set_disconnect_handler(BindOnce(
         &Permissions::ServiceConnectionError, WrapWeakPersistent(this)));
   }
   return service_.get();
@@ -248,15 +240,6 @@ PermissionService* Permissions::GetService(
 
 void Permissions::ServiceConnectionError() {
   service_.reset();
-}
-void Permissions::QueryTaskComplete(
-    ScriptPromiseResolver<PermissionStatus>* resolver,
-    mojom::blink::PermissionDescriptorPtr descriptor,
-    base::TimeTicks query_start_time,
-    mojom::blink::PermissionStatus result) {
-  base::UmaHistogramTimes("Permissions.Query.QueryResponseTime",
-                          base::TimeTicks::Now() - query_start_time);
-  TaskComplete(resolver, std::move(descriptor), result);
 }
 
 void Permissions::TaskComplete(
@@ -322,12 +305,12 @@ void Permissions::VerifyPermissionsAndReturnStatus(
       auto descriptor_copy = descriptors[internal_index]->Clone();
       service_->HasPermission(
           std::move(descriptor_copy),
-          WTF::BindOnce(&Permissions::PermissionVerificationComplete,
-                        WrapPersistent(this), WrapPersistent(resolver),
-                        std::move(descriptors),
-                        std::move(caller_index_to_internal_index),
-                        std::move(results), std::move(verification_descriptor),
-                        internal_index, is_bulk_request));
+          BindOnce(&Permissions::PermissionVerificationComplete,
+                   WrapPersistent(this), WrapPersistent(resolver),
+                   std::move(descriptors),
+                   std::move(caller_index_to_internal_index),
+                   std::move(results), std::move(verification_descriptor),
+                   internal_index, is_bulk_request));
       return;
     }
 
@@ -380,8 +363,8 @@ PermissionStatusListener* Permissions::GetOrCreatePermissionStatusListener(
 
   if (!listeners_.Contains(*type)) {
     listeners_.insert(
-        *type, PermissionStatusListener::Create(*this, GetExecutionContext(),
-                                                status, std::move(descriptor)));
+        *type, PermissionStatusListener::Create(GetExecutionContext(), status,
+                                                std::move(descriptor)));
   } else {
     listeners_.at(*type)->SetStatus(status);
   }

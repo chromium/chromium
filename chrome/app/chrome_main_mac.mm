@@ -75,6 +75,31 @@ bool IsHelperAppLaunchedBySafeExamBrowser() {
   return bundle_identifier == "org.safeexambrowser.SafeExamBrowser";
 }
 
+// Returns the NSBundle for the outer browser application, even when running
+// inside the helper. In unbundled applications, such as tests, returns nil.
+NSBundle* OuterAppBundle() {
+  @autoreleasepool {
+    if (!base::apple::AmIBundled()) {
+      // If unbundled (as in a test), there's no app bundle.
+      return nil;
+    }
+
+    if (!base::apple::IsBackgroundOnlyProcess()) {
+      // Shortcut: in the browser process, just return the main app bundle.
+      return NSBundle.mainBundle;
+    }
+
+    // From C.app/Contents/Frameworks/C.framework/Versions/1.2.3.4, go up five
+    // steps to C.app.
+    base::FilePath framework_path = chrome::GetFrameworkBundlePath();
+    base::FilePath outer_app_dir =
+        framework_path.DirName().DirName().DirName().DirName().DirName();
+    NSString* outer_app_dir_ns = base::SysUTF8ToNSString(outer_app_dir.value());
+
+    return [NSBundle bundleWithPath:outer_app_dir_ns];
+  }
+}
+
 }  // namespace
 
 void SetUpBundleOverrides() {
@@ -82,7 +107,7 @@ void SetUpBundleOverrides() {
     base::apple::SetOverrideFrameworkBundlePath(
         chrome::GetFrameworkBundlePath());
 
-    NSBundle* base_bundle = chrome::OuterAppBundle();
+    NSBundle* base_bundle = OuterAppBundle();
     base::apple::SetOverrideOuterBundle(base_bundle);
     base::apple::SetBaseBundleIDOverride(
         base::SysNSStringToUTF8(base_bundle.bundleIdentifier));

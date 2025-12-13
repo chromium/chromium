@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
@@ -38,7 +39,7 @@ bool StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
       object_stores;
   data.GetObjectStoresDataView(&object_stores);
   out->object_stores.ReserveCapacityForSize(
-      base::checked_cast<wtf_size_t>(object_stores.size()));
+      base::checked_cast<blink::wtf_size_t>(object_stores.size()));
   for (size_t i = 0; i < object_stores.size(); ++i) {
     const int64_t key = object_stores.keys()[i];
     scoped_refptr<blink::IDBObjectStoreMetadata> object_store;
@@ -49,6 +50,7 @@ bool StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
     out->object_stores.insert(key, object_store);
   }
   out->was_cold_open = data.was_cold_open();
+  out->is_sqlite = data.is_sqlite();
   return true;
 }
 
@@ -164,10 +166,10 @@ UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
 }
 
 // static
-base::span<const uint8_t>
+mojo_base::BigBuffer
 StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
     bits(const std::unique_ptr<blink::IDBValue>& input) {
-  return input->Data();
+  return mojo_base::BigBuffer(input->Data());
 }
 
 // static
@@ -211,12 +213,12 @@ bool StructTraits<blink::mojom::IDBValueDataView,
                   std::unique_ptr<blink::IDBValue>>::
     Read(blink::mojom::IDBValueDataView data,
          std::unique_ptr<blink::IDBValue>* out) {
-  blink::Vector<char> value_bits;
-  if (!data.ReadBits(reinterpret_cast<blink::Vector<uint8_t>*>(&value_bits))) {
+  mojo_base::BigBuffer buffer;
+  if (!data.ReadBits(&buffer)) {
     return false;
   }
 
-  if (value_bits.empty()) {
+  if (buffer.size() == 0U) {
     *out = std::make_unique<blink::IDBValue>();
     return true;
   }
@@ -259,7 +261,7 @@ bool StructTraits<blink::mojom::IDBValueDataView,
   }
 
   *out = std::make_unique<blink::IDBValue>();
-  (*out)->SetData(std::move(value_bits));
+  (*out)->SetData(std::move(buffer));
   (*out)->SetBlobInfo(std::move(value_blob_info));
   (*out)->SetFileSystemAccessTokens(std::move(file_system_access_tokens));
   return true;
@@ -283,7 +285,7 @@ StructTraits<blink::mojom::IDBKeyPathDataView, blink::IDBKeyPath>::data(
       const auto& array = key_path.Array();
       blink::Vector<blink::String> result;
       result.ReserveInitialCapacity(
-          base::checked_cast<wtf_size_t>(array.size()));
+          base::checked_cast<blink::wtf_size_t>(array.size()));
       for (const auto& item : array)
         result.push_back(item);
       return blink::mojom::blink::IDBKeyPathData::NewStringArray(
@@ -347,7 +349,7 @@ bool StructTraits<blink::mojom::IDBObjectStoreMetadataDataView,
   MapDataView<int64_t, blink::mojom::IDBIndexMetadataDataView> indexes;
   data.GetIndexesDataView(&indexes);
   value->indexes.ReserveCapacityForSize(
-      base::checked_cast<wtf_size_t>(indexes.size()));
+      base::checked_cast<blink::wtf_size_t>(indexes.size()));
   for (size_t i = 0; i < indexes.size(); ++i) {
     const int64_t key = indexes.keys()[i];
     scoped_refptr<blink::IDBIndexMetadata> index;

@@ -6,6 +6,9 @@
 mod databake;
 #[cfg(feature = "serde")]
 pub(crate) mod serde;
+#[cfg(feature = "zerovec")]
+mod zerovec;
+
 use crate::common::*;
 #[cfg(feature = "alloc")]
 use crate::Error;
@@ -187,7 +190,7 @@ where
         match B::validate_store(core::borrow::Borrow::borrow(&store)) {
             Ok(()) => (),
             Err(e) => {
-                debug_assert!(false, "{:?}", e);
+                debug_assert!(false, "{e:?}");
             }
         };
         Ok(Self::from_boxed_store_unchecked(store))
@@ -226,7 +229,7 @@ where
         match B::validate_store(core::borrow::Borrow::borrow(&store)) {
             Ok(()) => (),
             Err(e) => {
-                debug_assert!(false, "{:?} for pattern {:?}", e, pattern);
+                debug_assert!(false, "{e:?} for pattern {pattern:?}");
             }
         };
         Ok(Self::from_boxed_store_unchecked(store))
@@ -238,7 +241,7 @@ where
     B: PatternBackend,
 {
     /// Returns an iterator over the [`PatternItem`]s in this pattern.
-    pub fn iter(&self) -> impl Iterator<Item = PatternItem<B::PlaceholderKey<'_>>> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = PatternItem<'_, B::PlaceholderKey<'_>>> + '_ {
         B::iter_items(&self.store)
     }
 

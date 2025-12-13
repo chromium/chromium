@@ -11,4 +11,7 @@ parcelable IDeviceInfo {
   boolean isFoldable;
   boolean isTv;
   int vulkanDeqpLevel;
+  boolean isXr;
+  // Display width is >= 600dp. At this width, we can display desktop pages instead of mobile
+  boolean wasLaunchedOnLargeDisplay;
 }

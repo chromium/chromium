@@ -50,7 +50,8 @@ class IOSWebMessageHost : public js_injection::WebMessageHost {
 
     // TODO(crbug.com/40260088): Move this parsing to the renderer process.
     std::optional<base::Value> message_value =
-        base::JSONReader::Read(base::UTF16ToUTF8(*received_message));
+        base::JSONReader::Read(base::UTF16ToUTF8(*received_message),
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!message_value) {
       return;
     }

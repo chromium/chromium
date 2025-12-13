@@ -116,7 +116,6 @@ WebAuthnCredManDelegate::CredManMode() {
     case CredManSupport::NOT_EVALUATED:
       NOTREACHED();
     case CredManSupport::DISABLED:
-    case CredManSupport::IF_REQUIRED:
       return CredManEnabledMode::kNotEnabled;
     case CredManSupport::FULL_UNLESS_INAPPLICABLE:
       return CredManEnabledMode::kAllCredMan;
@@ -129,3 +128,5 @@ WebAuthnCredManDelegate::CredManMode() {
 std::optional<int> WebAuthnCredManDelegate::cred_man_support_ = std::nullopt;
 
 }  // namespace webauthn
+
+DEFINE_JNI(CredManSupportProvider)

@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.tab;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.base.BinderCallsListener;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.GestureListenerManager;
@@ -23,8 +25,15 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
     private static final Class<TabGestureStateListener> USER_DATA_KEY =
             TabGestureStateListener.class;
 
+    private static final String TIME_SPENT_IN_BINDER_DURING_SCROLL_MS_HISTOGRAM =
+            "Event.Android.GestureScrollEnd.TimeSpentInBinder";
+    private static final String TOTAL_BINDER_TRANSACTION_COUNT_DURING_SCROLL_HISTOGRAM =
+            "Event.Android.GestureScrollEnd.TotalBinderTransactions";
+
     private final Tab mTab;
     private @Nullable GestureStateListener mGestureListener;
+    private long mScrollStartBinderTimeMs = -1L;
+    private int mScrollStartBinderCount = -1;
 
     /**
      * Creates TabGestureStateListener and lets the WebContentsUserData of the Tab manage it.
@@ -68,11 +77,13 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
                     public void onScrollStarted(
                             int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
                         onScrollingStateChanged();
+                        recordScrollStartBinderMetrics();
                     }
 
                     @Override
                     public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {
                         onScrollingStateChanged();
+                        recordScrollEndBinderMetrics();
                     }
 
                     @Override
@@ -90,6 +101,24 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
                                 ((TabImpl) mTab).getTabObservers();
                         while (observers.hasNext()) {
                             observers.next().onGestureEnd();
+                        }
+                    }
+
+                    @Override
+                    public void onTouchDown() {
+                        RewindableIterator<TabObserver> observers =
+                                ((TabImpl) mTab).getTabObservers();
+                        while (observers.hasNext()) {
+                            observers.next().onTouchDown();
+                        }
+                    }
+
+                    @Override
+                    public void onTouchUp() {
+                        RewindableIterator<TabObserver> observers =
+                                ((TabImpl) mTab).getTabObservers();
+                        while (observers.hasNext()) {
+                            observers.next().onTouchUp();
                         }
                     }
 
@@ -114,5 +143,34 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
             }
         }
         mGestureListener = null;
+    }
+
+    private void recordScrollStartBinderMetrics() {
+        BinderCallsListener binderListener = BinderCallsListener.getInstance();
+        if (!binderListener.isInstalled()) {
+            return;
+        }
+        mScrollStartBinderTimeMs = binderListener.getTimeSpentInBinderCalls();
+        mScrollStartBinderCount = binderListener.getTotalBinderTransactionsCount();
+    }
+
+    private void recordScrollEndBinderMetrics() {
+        BinderCallsListener binderListener = BinderCallsListener.getInstance();
+        if (!binderListener.isInstalled()) {
+            return;
+        }
+
+        if (mScrollStartBinderTimeMs >= 0L) {
+            RecordHistogram.recordMediumTimesHistogram(
+                    TIME_SPENT_IN_BINDER_DURING_SCROLL_MS_HISTOGRAM,
+                    binderListener.getTimeSpentInBinderCalls() - mScrollStartBinderTimeMs);
+        }
+        if (mScrollStartBinderCount >= 0) {
+            RecordHistogram.recordCount1000Histogram(
+                    TOTAL_BINDER_TRANSACTION_COUNT_DURING_SCROLL_HISTOGRAM,
+                    binderListener.getTotalBinderTransactionsCount() - mScrollStartBinderCount);
+        }
+        mScrollStartBinderTimeMs = -1L;
+        mScrollStartBinderCount = -1;
     }
 }

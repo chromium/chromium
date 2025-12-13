@@ -41,6 +41,20 @@ chromium-metrics-reviews@google.com.
              cancellations."/>
 </enum>
 
+<!-- LINT.IfChange(CombinedSelectorAction) -->
+
+<enum name="CombinedSelectorAction">
+  <int value="0"
+      label="Accept button clicked with a single credential available."/>
+  <int value="1"
+      label="Accept button clicked with the default credential selected."/>
+  <int value="2"
+      label="Accept button clicked with a non-default credential selected."/>
+  <int value="3" label="Cancel button clicked."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.cc:CombinedSelectorAction) -->
+
 <enum name="CredManCreateRequestEnum">
   <int value="0" label="A createCredential request was sent to the platform."/>
   <int value="1"
@@ -118,6 +132,21 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Cancelled - PIN create modal"/>
   <int value="5" label="Failure dialog shown"/>
 </enum>
+
+<!-- LINT.IfChange(PasskeyUpgradeResultEnum) -->
+
+<enum name="PasskeyUpgradeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="GPM disabled"/>
+  <int value="2" label="Passkey upgrades disabled"/>
+  <int value="3" label="GPM Enclave not initialized"/>
+  <int value="4" label="Password store error"/>
+  <int value="5" label="No password with matching username found"/>
+  <int value="6" label="Matching password was not recently used"/>
+  <int value="7" label="GPM Enclave error"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h:PasskeyUpgradeResult) -->
 
 <!-- LINT.IfChange(SignalAllAcceptedCredentialsResultEnum) -->
 
@@ -211,6 +240,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Canceled"/>
 </enum>
 
+<!-- LINT.IfChange(WebAuthenticationCredentialRequestResult) -->
+
 <enum name="WebAuthenticationCredentialRequestResult">
   <int value="0" label="Timeout"/>
   <int value="1" label="User cancelled"/>
@@ -228,7 +259,30 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Enclave failure"/>
   <int value="14" label="Other device success"/>
   <int value="15" label="Other device error"/>
+  <int value="16" label="Android FIDO2 success"/>
+  <int value="17" label="Android FIDO2 error"/>
+  <int value="18" label="Android CredMan success"/>
+  <int value="19" label="Android CredMan error"/>
+  <int value="20" label="Android FIDO2 hybrid success"/>
+  <int value="21" label="Android FIDO2 hybrid error"/>
+  <int value="22" label="Android FIDO2 legacy success"/>
+  <int value="23" label="Android FIDO2 legacy error"/>
+  <int value="24" label="Android Identity Credentials Module success"/>
+  <int value="25" label="Android Identity Credentials Module error"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webauth/authenticator_request_outcome_enums.h:CredentialRequestResult) -->
+
+<!-- LINT.IfChange(WebAuthenticationDeduplicatedType) -->
+
+<enum name="WebAuthenticationDeduplicatedType">
+  <int value="0" label="Google Password Manager Passkey"/>
+  <int value="1" label="Platform Passkey"/>
+  <int value="2" label="Password"/>
+  <int value="3" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/credential_sorter.h:WebAuthnDeduplicatedType) -->
 
 <enum name="WebAuthenticationEnclaveEvent">
   <int value="0" label="Onboarding sheet was shown to the user"/>
@@ -265,6 +319,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Recovery Key Store Downgrade"/>
   <int value="7" label="Failed Transaction"/>
   <int value="8" label="Other Error"/>
+  <int value="9" label="Cohort not yet deprecated"/>
 </enum>
 
 <enum name="WebAuthenticationEnclaveTransactionResult">
@@ -304,7 +359,32 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Enclave Authenticator Error"/>
   <int value="13" label="Timeout Occurred"/>
   <int value="14" label="Other Failure"/>
+  <int value="15" label="Blocked by actor task"/>
 </enum>
+
+<!-- LINT.IfChange(WebAuthenticationGPMRecoveryEvent) -->
+
+<enum name="WebAuthenticationGPMRecoveryEvent">
+  <int value="0"
+      label="Storing key from explicit key retrieval flow (started)"/>
+  <int value="1"
+      label="Storing key from explicit key retrieval flow (succeeded)"/>
+  <int value="2"
+      label="Storing key from opportunistic key retrieval flow (started)"/>
+  <int value="3"
+      label="Storing key from opportunistic key retrieval flow (succeeded)"/>
+  <int value="4"
+      label="Storing key from opportunistic key retrieval flow (key ignored
+             because it is redundant)"/>
+  <int value="5"
+      label="Storing key from opportunistic key retrieval flow (key ignored
+             because no UV available)"/>
+  <int value="6"
+      label="Storing key from opportunistic key retrieval flow (failed when
+             adding device to account)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.h:WebAuthenticationGPMRecoveryEvent) -->
 
 <!-- LINT.IfChange(WebAuthenticationImmediateMediationRejectionReason) -->
 
@@ -346,7 +426,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//components/webauthn/ios/passkey_tab_helper.mm) -->
+<!-- LINT.ThenChange(//components/webauthn/ios/passkey_tab_helper.h) -->
 
 <enum name="WebAuthenticationMacOSPasskeysPermission">
   <int value="0" label="Requested permission during a create() call"/>
@@ -412,18 +492,18 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Timeout Occurred"/>
   <int value="17" label="Other Failure"/>
   <int value="18" label="Conditional Create (Passkey Upgrade) Failure"/>
+  <int value="19" label="Blocked by actor task"/>
 </enum>
 
-<!-- LINT.IfChange(WebAuthenticationMechanismDeduplicatedType) -->
+<!-- LINT.IfChange(ErrorUIEventType) -->
 
-<enum name="WebAuthenticationMechanismDeduplicatedType">
-  <int value="0" label="Enclave Passkey"/>
-  <int value="1" label="Platform Passkey"/>
-  <int value="2" label="Password"/>
-  <int value="3" label="Other"/>
+<enum name="WebAuthenticationPasskeyUnlockErrorUiEvent">
+  <int value="0" label="Avatar Error UI Displayed"/>
+  <int value="1" label="Avatar Error UI Hidden"/>
+  <int value="2" label="Avatar Button with Error UI Pressed"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/webauthn/mechanism_sorter.h:WebAuthnMechanismDeduplicatedType) -->
+<!-- LINT.ThenChange(//chrome/browser/webauthn/passkey_unlock_manager.h:ErrorUIEventType) -->
 
 <enum name="WebAuthenticationPinRenewalEvent">
   <int value="0" label="Considered renewing the PIN"/>
@@ -449,6 +529,12 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Tried to renew but the security domain reports no PIN"/>
   <int value="10"
       label="Renewal failed because the security domain has been reset"/>
+  <int value="11"
+      label="Renewal failed because the enclave reports the cohort hasn't
+             been deprecated yet"/>
+  <int value="12"
+      label="Renewal failed because it would result in downgrading the
+             recovery store"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/webauthn/enclave_manager.h:PinRenewalFailureCause) -->
@@ -464,6 +550,20 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/webauth/authenticator_request_outcome_enums.h:AuthenticationRequestMode) -->
+
+<!-- LINT.IfChange(WebAuthenticationResidentKeyRequirement) -->
+
+<enum name="WebAuthenticationResidentKeyRequirement">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="residentKey Discouraged"/>
+  <int value="2" label="residentKey Preferred"/>
+  <int value="3" label="residentKey Required"/>
+  <int value="4" label="requireResidentKey True"/>
+  <int value="5" label="requireResidentKey False"/>
+  <int value="6" label="residentKey provided with an unknown value"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/credentialmanagement/authentication_credentials_container.cc:WebAuthenticationResidentKeyRequirement) -->
 
 <enum name="WindowsForegroundedHelloDialog">
   <int value="0" label="Succeeded"/>

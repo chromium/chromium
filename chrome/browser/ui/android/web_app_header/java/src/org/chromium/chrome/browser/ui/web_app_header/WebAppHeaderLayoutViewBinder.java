@@ -43,7 +43,10 @@ class WebAppHeaderLayoutViewBinder {
         } else if (key == WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK) {
             view.setOnWidthChanged(model.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK));
         } else if (key == WebAppHeaderLayoutProperties.BACKGROUND_COLOR) {
-            view.setBackgroundColor(model.get(WebAppHeaderLayoutProperties.BACKGROUND_COLOR));
+            view.setBackgroundDrawableColor(
+                    model.get(WebAppHeaderLayoutProperties.BACKGROUND_COLOR));
+        } else if (key == WebAppHeaderLayoutProperties.BACKGROUND_CUTOUTS) {
+            view.setBackgroundCutouts(model.get(WebAppHeaderLayoutProperties.BACKGROUND_CUTOUTS));
         } else if (key == WebAppHeaderLayoutProperties.VISIBILITY_CHANGED_CALLBACK) {
             view.setOnVisibilityChangedCallback(
                     model.get(WebAppHeaderLayoutProperties.VISIBILITY_CHANGED_CALLBACK));

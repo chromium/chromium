@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -118,8 +119,8 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
   bool SupportsMultipleConcurrentReadAccess() override { return true; }
 
   // Graphite context submit is done only once per frame for Dawn D3D backend.
-  bool NeedGraphiteContextSubmitBeforeEndAccess() override {
-    return !context_state_->IsGraphiteDawnD3D();
+  bool SupportsDeferredGraphiteSubmit() override {
+    return context_state_->IsGraphiteDawnD3D();
   }
 
  private:

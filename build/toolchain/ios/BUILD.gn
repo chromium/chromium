@@ -5,9 +5,9 @@
 import("//build/config/ios/ios_sdk.gni")
 import("//build/toolchain/apple/toolchain.gni")
 
-# Specialisation of the apple_toolchain template to declare the toolchain
+# Specialisation of the apple_toolchain template to declare a single toolchain
 # and its tools to build target for iOS platform.
-template("ios_toolchain") {
+template("ios_single_toolchain") {
   assert(defined(invoker.toolchain_args),
          "Toolchains must declare toolchain_args")
 
@@ -23,146 +23,59 @@ template("ios_toolchain") {
       forward_variables_from(invoker.toolchain_args, "*")
       xcode_build = xcode_build
       current_os = "ios"
-    }
-  }
-}
 
-# Specialisation of the ios_toolchain template to declare the toolchain
-# and its tools to build application extension for iOS platform.
-template("ios_app_ext_toolchain") {
-  assert(defined(invoker.toolchain_args),
-         "Toolchains must declare toolchain_args")
+      # TODO(crbug.com/408032145): Add ptrauth support to lld, remove this.
+      if (current_cpu == "arm64e") {
+        use_lld = false
+      }
 
-  ios_toolchain(target_name) {
-    forward_variables_from(invoker, "*", [ "toolchain_args" ])
-
-    toolchain_args = {
-      forward_variables_from(invoker.toolchain_args, "*")
-
-      ios_is_app_extension = true
-
-      # Those variables are defined outside of //build and thus only exists
-      # when used as part of Chromium. Use build_with_chromium to check if
-      # they can be overridden safely. This prevents breaking third-party
-      # projects such as WebRTC that only uses //build but not //base.
-      if (build_with_chromium) {
-        use_partition_alloc = false
-        ios_partition_alloc_enabled = false
+      # Disable partition alloc for app extensions except for blink.
+      if (ios_is_app_extension && !use_blink) {
+        # As use_partition_alloc is defined outside of //build, check that
+        # the build is part of chromium before overriding the variable.
+        if (build_with_chromium) {
+          use_partition_alloc = false
+        }
       }
     }
   }
 }
 
-# Specialisation of the ios_toolchain template to declare the toolchain
-# and its tools to build application extension for iOS platform.
-template("ios_blink_app_ext_toolchain") {
+# Template to declare all the toolchains for a given architecture for iOS.
+template("ios_all_toolchains") {
   assert(defined(invoker.toolchain_args),
          "Toolchains must declare toolchain_args")
 
-  ios_toolchain(target_name) {
+  ios_single_toolchain(target_name) {
     forward_variables_from(invoker, "*", [ "toolchain_args" ])
-
     toolchain_args = {
       forward_variables_from(invoker.toolchain_args, "*")
+    }
+  }
 
+  ios_single_toolchain(target_name + "_app_ext") {
+    forward_variables_from(invoker, "*", [ "toolchain_args" ])
+    toolchain_args = {
+      forward_variables_from(invoker.toolchain_args, "*")
       ios_is_app_extension = true
     }
   }
 }
 
-ios_toolchain("ios_clang_arm64") {
+ios_all_toolchains("ios_clang_arm64") {
   toolchain_args = {
     current_cpu = "arm64"
   }
 }
 
-ios_toolchain("ios_clang_arm64e") {
+ios_all_toolchains("ios_clang_arm64e") {
   toolchain_args = {
     current_cpu = "arm64e"
-
-    # TODO(crbug.com/408032145): Add ptrauth support to lld, remove this.
-    use_lld = false
   }
 }
 
-ios_toolchain("ios_clang_arm64_16_0") {
-  toolchain_args = {
-    current_cpu = "arm64"
-    ios_deployment_target = "16.0"
-  }
-}
-
-ios_toolchain("ios_clang_arm64e_16_0") {
-  toolchain_args = {
-    current_cpu = "arm64e"
-    ios_deployment_target = "16.0"
-
-    # TODO(crbug.com/408032145): Add ptrauth support to lld, remove this.
-    use_lld = false
-  }
-}
-
-ios_toolchain("ios_clang_x64") {
+ios_all_toolchains("ios_clang_x64") {
   toolchain_args = {
     current_cpu = "x64"
-  }
-}
-
-ios_toolchain("ios_clang_x64_16_0") {
-  toolchain_args = {
-    current_cpu = "x64"
-    ios_deployment_target = "16.0"
-  }
-}
-
-ios_app_ext_toolchain("ios_clang_arm64_app_ext") {
-  toolchain_args = {
-    current_cpu = "arm64"
-  }
-}
-
-ios_app_ext_toolchain("ios_clang_arm64e_app_ext") {
-  toolchain_args = {
-    current_cpu = "arm64e"
-
-    # TODO(crbug.com/408032145): Add ptrauth support to lld, remove this.
-    use_lld = false
-  }
-}
-
-ios_blink_app_ext_toolchain("ios_clang_arm64_blink_app_ext") {
-  toolchain_args = {
-    current_cpu = "arm64"
-    use_blink = true
-  }
-}
-
-ios_blink_app_ext_toolchain("ios_clang_arm64e_blink_app_ext") {
-  toolchain_args = {
-    current_cpu = "arm64e"
-    use_blink = true
-
-    # TODO(crbug.com/408032145): Add ptrauth support to lld, remove this.
-    use_lld = false
-  }
-}
-
-ios_blink_app_ext_toolchain("ios_clang_x64_blink_app_ext") {
-  toolchain_args = {
-    current_cpu = "x64"
-    use_blink = true
-  }
-}
-
-ios_app_ext_toolchain("ios_clang_x64_app_ext") {
-  toolchain_args = {
-    current_cpu = "x64"
-  }
-}
-
-ios_toolchain("ios_clang_arm64_blink") {
-  toolchain_args = {
-    current_cpu = "arm64"
-    use_blink = true
   }
 }

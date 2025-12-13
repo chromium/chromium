@@ -11,7 +11,7 @@
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if defined(USE_AURA)
 #include <optional>

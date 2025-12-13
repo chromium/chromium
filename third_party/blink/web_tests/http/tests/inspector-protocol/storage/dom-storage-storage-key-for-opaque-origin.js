@@ -9,7 +9,7 @@
   const attachmentPromise = dp.Page.onceFrameAttached();
   const id = (await attachmentPromise).params.frameId;
 
-  const response = await dp.Storage.getStorageKeyForFrame({frameId: id});
+  const response = await dp.Storage.getStorageKey({frameId: id});
   if (response.error) {
    testRunner.log('Throws an expected error: ' + response.error.message);
   }

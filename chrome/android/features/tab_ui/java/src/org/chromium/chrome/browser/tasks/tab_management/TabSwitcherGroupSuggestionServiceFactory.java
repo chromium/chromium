@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.recordGroupSuggestionHistogram;
+
 import android.app.Activity;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -18,6 +19,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.SuggestionLifecycleObserverHandler;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionUiEvent;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 
@@ -33,14 +35,14 @@ public class TabSwitcherGroupSuggestionServiceFactory {
      * @param activity The activity to create the service for.
      * @param currentTabGroupModelFilterSupplier Supplies the current tab group model filter.
      * @param profile The profile to use for the service.
-     * @param tabListHighlighter Used for highlighting tabs when a suggestion is shown.
+     * @param tabListCoordinator Used for highlighting tabs when a suggestion is shown.
      * @param messageService Used for showing a suggestion message.
      */
     public static TabSwitcherGroupSuggestionService build(
             Activity activity,
             ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             Profile profile,
-            TabListHighlighter tabListHighlighter,
+            TabListCoordinator tabListCoordinator,
             TabGroupSuggestionMessageService messageService) {
         assert ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled();
         assert !profile.isOffTheRecord();
@@ -48,16 +50,17 @@ public class TabSwitcherGroupSuggestionServiceFactory {
         @WindowId int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
 
         SuggestionLifecycleObserverHandler handler =
-                initObserver(tabListHighlighter, messageService);
+                initObserver(tabListCoordinator, messageService);
 
         return new TabSwitcherGroupSuggestionService(
                 windowId, currentTabGroupModelFilterSupplier, profile, handler);
     }
 
     private static SuggestionLifecycleObserverHandler initObserver(
-            TabListHighlighter tabListHighlighter,
+            TabListCoordinator tabListCoordinator,
             TabGroupSuggestionMessageService messageService) {
         SuggestionLifecycleObserverHandler handler = new SuggestionLifecycleObserverHandler();
+        TabListHighlighter tabListHighlighter = tabListCoordinator.getTabListHighlighter();
         SuggestionLifecycleObserver observer =
                 new SuggestionLifecycleObserver() {
                     @Override
@@ -67,30 +70,31 @@ public class TabSwitcherGroupSuggestionServiceFactory {
 
                     @Override
                     public void onSuggestionAccepted() {
-                        RecordUserAction.record(
-                                TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX + ".Accepted");
+                        recordGroupSuggestionHistogram(SuggestionUiEvent.ACCEPTED);
                     }
 
                     @Override
                     public void onSuggestionDismissed() {
-                        RecordUserAction.record(
-                                TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX
-                                        + ".Dismissed");
+                        recordGroupSuggestionHistogram(SuggestionUiEvent.REJECTED);
                     }
 
                     @Override
                     public void onSuggestionIgnored() {
                         messageService.dismissMessage(CallbackUtils.emptyRunnable());
-                        RecordUserAction.record(
-                                TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX + ".Ignored");
+                        recordGroupSuggestionHistogram(SuggestionUiEvent.IGNORED);
                     }
 
                     @Override
                     public void onShowSuggestion(List<@TabId Integer> tabIdsSortedByIndex) {
+                        @TabId
+                        int lastTabId = tabIdsSortedByIndex.get(tabIdsSortedByIndex.size() - 1);
+                        int lastCardIndex = tabListCoordinator.getTabIndexFromTabId(lastTabId) + 1;
+
                         tabListHighlighter.highlightTabs(new HashSet<>(tabIdsSortedByIndex));
                         messageService.addGroupMessageForTabs(tabIdsSortedByIndex, handler);
-                        RecordUserAction.record(
-                                TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX + ".Shown");
+                        recordGroupSuggestionHistogram(SuggestionUiEvent.SHOWN);
+
+                        tabListCoordinator.scrollToPosition(lastCardIndex);
                     }
                 };
         handler.initialize(observer);

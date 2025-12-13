@@ -29,7 +29,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -73,10 +72,10 @@ String CheckSameOriginEnforcement(const KURL& request_url,
                                   const KURL& response_url) {
   if (request_url != response_url &&
       !SecurityOrigin::AreSameOrigin(request_url, response_url)) {
-    return "Refused to load the top-level worker script from '" +
-           response_url.ElidedString() +
-           "' because it doesn't match the origin of the request URL '" +
-           request_url.ElidedString() + "'";
+    return StrCat({"Refused to load the top-level worker script from '",
+                   response_url.ElidedString(),
+                   "' because it doesn't match the origin of the request URL '",
+                   request_url.ElidedString(), "'"});
   }
   return String();
 }
@@ -266,7 +265,7 @@ void WorkerClassicScriptLoader::DidReceiveData(base::span<const char> data) {
 void WorkerClassicScriptLoader::DidReceiveCachedMetadata(
     mojo_base::BigBuffer data) {
   cached_metadata_ = std::make_unique<Vector<uint8_t>>(data.size());
-  UNSAFE_TODO(memcpy(cached_metadata_->data(), data.data(), data.size()));
+  base::span(*cached_metadata_).copy_from(base::span(data));
 }
 
 void WorkerClassicScriptLoader::DidFinishLoading(uint64_t identifier) {

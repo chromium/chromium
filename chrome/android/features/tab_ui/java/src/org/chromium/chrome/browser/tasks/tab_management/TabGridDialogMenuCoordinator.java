@@ -7,13 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -24,6 +22,8 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+
+import java.util.function.Supplier;
 
 /**
  * A coordinator for the menu in TabGridDialog toolbar. It is responsible for creating a list of
@@ -39,7 +39,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
      * @param tabGroupIdSupplier The tab group ID supplier for the tab group being acted on.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param collaborationService Used for checking the user is the owner of a group.
-     * @param context The {@link Context} that the coordinator resides in.
+     * @param activity The {@link Activity} that the coordinator resides in.
      */
     public TabGridDialogMenuCoordinator(
             OnItemClickedCallback<Token> onItemClicked,
@@ -47,14 +47,16 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
             Supplier<@Nullable Token> tabGroupIdSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
-            Context context) {
+            Activity activity) {
         super(
+                R.layout.tab_switcher_action_menu_layout,
                 R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
                 tabModelSupplier,
+                /* multiInstanceManager= */ null,
                 tabGroupSyncService,
                 collaborationService,
-                context);
+                activity);
         mTabGroupIdSupplier = tabGroupIdSupplier;
     }
 

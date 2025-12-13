@@ -26,26 +26,27 @@ class HistoryServiceObserver {
 
   virtual ~HistoryServiceObserver() = default;
 
-  // Called when a `new_visit` is added to History. This happens in two
+  // Called when a new visit is added to History. This happens in two
   // scenarios:
   //  1. User makes a new visit on the local device.
   //  2. Sync brings a visit from a different device onto the local device.
   //     Notably, this is called for each visit brought over.
   //
-  // The values in `url_row` and `new_visit` are set to what is currently in the
-  // history database.
+  // The `visited_url_info` struct contains all the necessary information about
+  // the visit, including the URL and response code category.
+  // The values in `url_row` and `visit_row` members of `visited_url_info` are
+  // set to what is currently in the history database. The
+  // `response_code_category` member indicates whether or not the visit had a
+  // 404 response.
   virtual void OnURLVisited(HistoryService* history_service,
-                            const URLRow& url_row,
-                            const VisitRow& new_visit) {}
+                            const VisitedURLInfo& visited_url_info) {}
 
   // Same as above, but including the navigation_id from the underlying
   // `content::NavigationHandle`. Observers only need to override `OnURLVisited`
   // or `OnNavigationURLVisited`, but not both.
   virtual void OnURLVisitedWithNavigationId(
       HistoryService* history_service,
-      const URLRow& url_row,
-      const VisitRow& new_visit,
-      std::optional<int64_t> local_navigation_id) {}
+      const VisitedURLInfo& visited_url_info) {}
 
   // Called when a URL has a metadata-only update. In situations where a URL has
   // a metadata-only update AND new visits, both `OnURLsModified` and
@@ -60,6 +61,9 @@ class HistoryServiceObserver {
   // `changed_urls` lists the information for each of the URLs affected. The
   // rows will have the IDs that are currently in effect in the main history
   // database.
+  //
+  // Callers may receive URLRows that contain 404 visits and thus have
+  // visit counts or times that take 404 errors into account.
   virtual void OnURLsModified(HistoryService* history_service,
                               const URLRows& changed_urls) {}
 

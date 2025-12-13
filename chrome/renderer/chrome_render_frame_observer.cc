@@ -31,6 +31,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/media/media_feeds.h"
+#include "chrome/renderer/process_state.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
@@ -59,6 +60,7 @@
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -73,6 +75,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_controller.h"
 #include "chrome/renderer/actor/journal.h"
+#include "chrome/renderer/actor/page_stability_monitor.h"
 #include "chrome/renderer/actor/tool_executor.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -113,10 +116,10 @@ static const bool kDiscardTransparencyForContextMenu = false;
 
 namespace {
 
-const char kGifExtension[] = ".gif";
-const char kPngExtension[] = ".png";
-const char kJpgExtension[] = ".jpg";
-const char kWebpExtension[] = ".webp";
+const char kImageGif[] = "image/gif";
+const char kImageJpeg[] = "image/jpeg";
+const char kImagePng[] = "image/png";
+const char kImageWebp[] = "image/webp";
 
 #if BUILDFLAG(IS_ANDROID)
 base::Lock& GetFrameHeaderMapLock() {
@@ -239,19 +242,30 @@ void ChromeRenderFrameObserver::ReadyToCommitNavigation(
   if (render_frame()->IsMainFrame() && web_cache_impl_)
     web_cache_impl_->ExecutePendingClearCache();
 
-  // Let translate_agent do any preparatory work for loading a URL.
-  if (!translate_agent_)
-    return;
-
-  translate_agent_->PrepareForUrl(
-      render_frame()->GetWebFrame()->GetDocument().Url());
+  // Let translate_agent do any preparatory work before the new document loads.
+  if (translate_agent_) {
+    translate_agent_->PrepareForNewDocument();
+  }
 }
 
 void ChromeRenderFrameObserver::DidSetPageLifecycleState(
-    bool restoring_from_bfcache) {
-  if (restoring_from_bfcache && translate_agent_) {
+    blink::BFCacheStateChange bfcache_change) {
+  if (bfcache_change == blink::BFCacheStateChange::kRestoredFromBFCache &&
+      translate_agent_) {
     translate_agent_->RenewPageRegistration();
   }
+#if !BUILDFLAG(IS_ANDROID)
+  if (bfcache_change == blink::BFCacheStateChange::kStoredToBFCache) {
+    // Reset actor state if entering the BFCache
+    page_stability_monitor_.reset();
+    tool_executor_.reset();
+
+    // Flush any remaining log entries which may have been added in the
+    // destructors above. Don't reset the actor journal since it is only created
+    // from the constructor.
+    actor_journal_->SendLogBuffer();
+  }
+#endif
 }
 
 void ChromeRenderFrameObserver::DidFinishLoad() {
@@ -325,10 +339,9 @@ void ChromeRenderFrameObserver::DidCommitProvisionalLoad(
 
 void ChromeRenderFrameObserver::DidClearWindowObject() {
 #if !BUILDFLAG(IS_ANDROID)
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(switches::kInstantProcess))
+  if (process_state::IsInstantProcess()) {
     SearchBoxExtension::Install(render_frame()->GetWebFrame());
+  }
 
   // Install ReadAnythingAppController on render frames with the Read Anything
   // url, which is chrome-untrusted. ReadAnythingAppController installs v8
@@ -380,7 +393,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   WebNode context_node = render_frame()->GetWebFrame()->ContextMenuImageNode();
   std::vector<uint8_t> image_data;
   gfx::Size original_size;
-  std::string image_extension;
+  std::string mime_type;
   std::vector<lens::mojom::LatencyLogPtr> latency_logs;
 
   // Map for converting between multiple mojom ImageFormat structures to
@@ -399,24 +412,24 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
     // The downscaled size is the original size, since no downscaling was
     // required.
     std::move(callback).Run(image_data, original_size,
-                            /*downscaled_size=*/original_size, image_extension,
+                            /*downscaled_size=*/original_size, mime_type,
                             std::move(latency_logs));
     return;
   }
 
   WebElement web_element = context_node.To<WebElement>();
   original_size = web_element.GetImageSize();
-  image_extension = "." + web_element.ImageExtension();
+  mime_type = web_element.ImageMimeType().Utf8();
   bool needs_downscale = NeedsDownscale(
       original_size, thumbnail_min_area_pixels, thumbnail_max_size_pixels);
-  bool needs_encode = NeedsEncodeImage(image_extension, image_format) ||
+  bool needs_encode = NeedsEncodeImage(mime_type, image_format) ||
                       IsAnimatedWebp(web_element.CopyOfImageData());
   if (!needs_encode && !needs_downscale) {
     image_data = web_element.CopyOfImageData();
     // The downscaled size is the original size, since no downscaling was
     // required.
     std::move(callback).Run(std::move(image_data), original_size,
-                            /*downscaled_size=*/original_size, image_extension,
+                            /*downscaled_size=*/original_size, mime_type,
                             std::move(latency_logs));
     return;
   }
@@ -450,9 +463,9 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   if (image_format == chrome::mojom::ImageFormat::ORIGINAL) {
     // ORIGINAL will only fall back to here if the image needs to downscale.
     // Let's PNG downscale to PNG and JEPG downscale to JPEG.
-    if (image_extension == kPngExtension) {
+    if (mime_type == kImagePng) {
       image_format = chrome::mojom::ImageFormat::PNG;
-    } else if (image_extension == kJpgExtension) {
+    } else if (mime_type == kImageJpeg) {
       image_format = chrome::mojom::ImageFormat::JPEG;
     }
   }
@@ -470,14 +483,14 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
           bitmap, kDiscardTransparencyForContextMenu);
       if (data) {
         image_data.swap(data.value());
-        image_extension = kPngExtension;
+        mime_type = kImagePng;
       }
       break;
     case chrome::mojom::ImageFormat::WEBP:
       data = gfx::WebpCodec::Encode(bitmap, quality);
       if (data) {
         image_data.swap(data.value());
-        image_extension = kWebpExtension;
+        mime_type = kImageWebp;
       }
       break;
     case chrome::mojom::ImageFormat::ORIGINAL:
@@ -486,7 +499,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
       data = gfx::JPEGCodec::Encode(bitmap, quality);
       if (data) {
         image_data.swap(data.value());
-        image_extension = kJpgExtension;
+        mime_type = kImageJpeg;
       }
       break;
   }
@@ -497,8 +510,8 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
         sizeof(uint8_t) * image_data.size()));
   }
 
-  std::move(callback).Run(image_data, original_size, downscaled_size,
-                          image_extension, std::move(latency_logs));
+  std::move(callback).Run(image_data, original_size, downscaled_size, mime_type,
+                          std::move(latency_logs));
 }
 
 void ChromeRenderFrameObserver::RequestBitmapForContextNode(
@@ -609,12 +622,6 @@ void ChromeRenderFrameObserver::LoadBlockedPlugins(
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 }
 
-void ChromeRenderFrameObserver::SetSupportsDraggableRegions(
-    bool supports_draggable_regions) {
-  render_frame()->GetWebView()->SetSupportsDraggableRegions(
-      supports_draggable_regions);
-}
-
 void ChromeRenderFrameObserver::SetShouldDeferMediaLoad(bool should_defer) {
   prerender::SetShouldDeferMediaLoad(render_frame(), should_defer);
 }
@@ -631,10 +638,26 @@ void ChromeRenderFrameObserver::InvokeTool(
   tool_executor_->InvokeTool(std::move(request), std::move(callback));
 }
 
+void ChromeRenderFrameObserver::CancelTool(const actor::TaskId& task_id) {
+  if (tool_executor_) {
+    tool_executor_->CancelTool(task_id);
+  }
+}
+
 void ChromeRenderFrameObserver::StartActorJournal(
     mojo::PendingAssociatedRemote<actor::mojom::JournalClient> client) {
   actor_journal_->Bind(std::move(client));
 }
+
+void ChromeRenderFrameObserver::CreatePageStabilityMonitor(
+    mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
+    const actor::TaskId& task_id,
+    bool supports_paint_stability) {
+  page_stability_monitor_ = std::make_unique<actor::PageStabilityMonitor>(
+      *render_frame(), supports_paint_stability, task_id, *actor_journal_);
+  page_stability_monitor_->Bind(std::move(monitor));
+}
+
 #endif
 
 void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
@@ -807,21 +830,18 @@ SkBitmap ChromeRenderFrameObserver::Downscale(
 
 // static
 bool ChromeRenderFrameObserver::NeedsEncodeImage(
-    const std::string& image_extension,
+    const std::string& mime_type,
     chrome::mojom::ImageFormat image_format) {
   switch (image_format) {
     case chrome::mojom::ImageFormat::PNG:
-      return !base::EqualsCaseInsensitiveASCII(image_extension, kPngExtension);
+      return mime_type != kImagePng;
     case chrome::mojom::ImageFormat::WEBP:
-      return !base::EqualsCaseInsensitiveASCII(image_extension, kWebpExtension);
+      return mime_type != kImageWebp;
     case chrome::mojom::ImageFormat::JPEG:
-      return !base::EqualsCaseInsensitiveASCII(image_extension, kJpgExtension);
+      return mime_type != kImageJpeg;
     case chrome::mojom::ImageFormat::ORIGINAL:
-      return !base::EqualsCaseInsensitiveASCII(image_extension,
-                                               kGifExtension) &&
-             !base::EqualsCaseInsensitiveASCII(image_extension,
-                                               kJpgExtension) &&
-             !base::EqualsCaseInsensitiveASCII(image_extension, kPngExtension);
+      return mime_type != kImageGif && mime_type != kImageJpeg &&
+             mime_type != kImagePng;
   }
 
   // Should never hit this code since all cases were handled above.

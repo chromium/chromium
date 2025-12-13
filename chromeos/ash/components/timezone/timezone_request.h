@@ -6,11 +6,13 @@
 #define CHROMEOS_ASH_COMPONENTS_TIMEZONE_TIMEZONE_REQUEST_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -97,7 +99,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneRequest {
   }
 
  private:
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // Start new request.
   void StartRequest();

@@ -16,6 +16,7 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "components/google/core/common/google_util.h"
 #include "components/paint_preview/browser/file_manager.h"
+#include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "url/android/gurl_android.h"
@@ -49,7 +50,7 @@ const char kGoogleNewsPathPattern[] = "/articles/(.*)";
 
 // Used to free a CaptureResult if it is passed up to Java and cannot be used by
 // the compositior for some reason.
-void JNI_LongScreenshotsTabService_ReleaseCaptureResultPtr(
+static void JNI_LongScreenshotsTabService_ReleaseCaptureResultPtr(
     JNIEnv* env,
     jlong j_capture_result_ptr) {
   // `j_capture_result_ptr` is checked to not be nullptr in Java.
@@ -86,19 +87,23 @@ LongScreenshotsTabService::~LongScreenshotsTabService() {
   capture_handle_.RunAndReset();
 }
 
-void LongScreenshotsTabService::CaptureTab(int tab_id,
-                                           const GURL& url,
-                                           content::WebContents* contents,
-                                           int clip_x,
-                                           int clip_y,
-                                           int clip_width,
-                                           int clip_height,
-                                           bool in_memory) {
+void LongScreenshotsTabService::CaptureTab(
+    int tab_id,
+    const GURL& url,
+    content::WebContents* contents,
+    int clip_x,
+    int clip_y,
+    int clip_width,
+    int clip_height,
+    bool in_memory,
+    paint_preview::mojom::ClipCoordOverride clip_x_coord_override,
+    paint_preview::mojom::ClipCoordOverride clip_y_coord_override) {
   // If the system is under memory pressure don't try to capture.
   auto* memory_monitor = base::MemoryPressureMonitor::Get();
   if (memory_monitor &&
-      memory_monitor->GetCurrentPressureLevel() >=
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+      memory_monitor->GetCurrentPressureLevel(
+          base::MemoryPressureMonitorTag::kLongScreenshotsTabService) >=
+          base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_LongScreenshotsTabService_processCaptureTabStatus(
         env, java_ref_, Status::kLowMemoryDetected);
@@ -116,6 +121,7 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
   if (in_memory) {
     CaptureTabInternal(tab_id, rfh->GetFrameTreeNodeId(), rfh->GetGlobalId(),
                        clip_x, clip_y, clip_width, clip_height, in_memory,
+                       clip_x_coord_override, clip_y_coord_override,
                        std::nullopt);
     return;
   }
@@ -129,7 +135,8 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
       base::BindOnce(&LongScreenshotsTabService::CaptureTabInternal,
                      weak_ptr_factory_.GetWeakPtr(), tab_id,
                      rfh->GetFrameTreeNodeId(), rfh->GetGlobalId(), clip_x,
-                     clip_y, clip_width, clip_height, in_memory));
+                     clip_y, clip_width, clip_height, in_memory,
+                     clip_x_coord_override, clip_y_coord_override));
 }
 
 void LongScreenshotsTabService::CaptureTabInternal(
@@ -141,6 +148,8 @@ void LongScreenshotsTabService::CaptureTabInternal(
     int clip_width,
     int clip_height,
     bool in_memory,
+    paint_preview::mojom::ClipCoordOverride clip_x_coord_override,
+    paint_preview::mojom::ClipCoordOverride clip_y_coord_override,
     const std::optional<base::FilePath>& file_path) {
   if (!in_memory && !file_path.has_value()) {
     JNIEnv* env = base::android::AttachCurrentThread();
@@ -174,6 +183,8 @@ void LongScreenshotsTabService::CaptureTabInternal(
                 : paint_preview::RecordingPersistence::kFileSystem;
   capture_params.render_frame_host = rfh;
   capture_params.clip_rect = gfx::Rect(clip_x, clip_y, clip_width, clip_height);
+  capture_params.clip_x_coord_override = clip_x_coord_override;
+  capture_params.clip_y_coord_override = clip_y_coord_override;
   capture_params.capture_links = false;
   capture_params.max_per_capture_size = kMaxPerCaptureSizeBytes;
   CapturePaintPreview(capture_params,
@@ -233,7 +244,7 @@ bool LongScreenshotsTabService::IsAmpUrl(const GURL& url) {
 
   // Check for "*.cdn.ampproject.org" URLs.
   if (url.DomainIs(kGoogleAmpCacheHost) &&
-      re2::RE2::FullMatch(url.path(), google_amp_cache_path_regex_)) {
+      re2::RE2::FullMatch(url.GetPath(), google_amp_cache_path_regex_)) {
     return true;
   }
 
@@ -241,13 +252,13 @@ bool LongScreenshotsTabService::IsAmpUrl(const GURL& url) {
   if (google_util::IsGoogleDomainUrl(
           url, google_util::DISALLOW_SUBDOMAIN,
           google_util::DISALLOW_NON_STANDARD_PORTS) &&
-      re2::RE2::FullMatch(url.path(), google_amp_viewer_path_regex_)) {
+      re2::RE2::FullMatch(url.GetPath(), google_amp_viewer_path_regex_)) {
     return true;
   }
 
   // Check for "news.google.com/articles/*".
   if (url.DomainIs(kGoogleNewsHost) &&
-      re2::RE2::FullMatch(url.path(), google_news_path_regex_)) {
+      re2::RE2::FullMatch(url.GetPath(), google_news_path_regex_)) {
     return true;
   }
 
@@ -263,13 +274,27 @@ void LongScreenshotsTabService::DeleteAllLongScreenshotFiles() {
 void LongScreenshotsTabService::CaptureTabAndroid(
     JNIEnv* env,
     jint j_tab_id,
-    const base::android::JavaParamRef<jobject>& j_gurl,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jobject>& j_gurl,
+    const base::android::JavaRef<jobject>& j_web_contents,
     jint clip_x,
     jint clip_y,
     jint clip_width,
     jint clip_height,
-    jboolean in_memory) {
+    jboolean in_memory,
+    jint clip_x_coord_override,
+    jint clip_y_coord_override) {
+  CHECK_GE(
+      clip_x_coord_override,
+      static_cast<int>(paint_preview::mojom::ClipCoordOverride::kMinValue));
+  CHECK_LE(
+      clip_x_coord_override,
+      static_cast<int>(paint_preview::mojom::ClipCoordOverride::kMaxValue));
+  CHECK_GE(
+      clip_y_coord_override,
+      static_cast<int>(paint_preview::mojom::ClipCoordOverride::kMinValue));
+  CHECK_LE(
+      clip_y_coord_override,
+      static_cast<int>(paint_preview::mojom::ClipCoordOverride::kMaxValue));
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
@@ -277,10 +302,16 @@ void LongScreenshotsTabService::CaptureTabAndroid(
   CaptureTab(static_cast<int>(j_tab_id), url, web_contents,
              static_cast<int>(clip_x), static_cast<int>(clip_y),
              static_cast<int>(clip_width), static_cast<int>(clip_height),
-             static_cast<bool>(in_memory));
+             static_cast<bool>(in_memory),
+             static_cast<paint_preview::mojom::ClipCoordOverride>(
+                 clip_x_coord_override),
+             static_cast<paint_preview::mojom::ClipCoordOverride>(
+                 clip_y_coord_override));
 }
 
 void LongScreenshotsTabService::LongScreenshotsClosedAndroid(JNIEnv* env) {
   DeleteAllLongScreenshotFiles();
 }
 }  // namespace long_screenshots
+
+DEFINE_JNI(LongScreenshotsTabService)

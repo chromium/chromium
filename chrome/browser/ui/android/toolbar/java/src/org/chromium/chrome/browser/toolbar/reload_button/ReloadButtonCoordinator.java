@@ -12,11 +12,15 @@ import android.widget.ImageButton;
 
 import androidx.core.graphics.Insets;
 
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
+import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.Toast;
@@ -27,7 +31,7 @@ import org.chromium.ui.widget.Toast;
  * changes.
  */
 @NullMarked
-public class ReloadButtonCoordinator {
+public class ReloadButtonCoordinator extends ToolbarChildButton {
     /** An interface that allows parent components to control tab reload logic. */
     public interface Delegate {
         /**
@@ -50,15 +54,18 @@ public class ReloadButtonCoordinator {
      * @param ntpLoadingSupplier a supplier that provides loading state of content inside NTP, e.g
      *     feed, this is not a reload state of the whole tab.
      * @param themeColorProvider a provider that notifies about theme changes and focus tint.
+     * @param incognitoStateProvider a provider that notifies about incognito state changes.
      */
     public ReloadButtonCoordinator(
             ImageButton view,
-            ReloadButtonCoordinator.Delegate delegate,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            Delegate delegate,
+            NullableObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Boolean> ntpLoadingSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
             ThemeColorProvider themeColorProvider,
+            IncognitoStateProvider incognitoStateProvider,
             boolean isWebApp) {
+        super(view.getContext(), themeColorProvider, incognitoStateProvider);
         mView = view;
 
         // ThemeColorProvider might not be updated by this time. Keep existing color list.
@@ -72,6 +79,7 @@ public class ReloadButtonCoordinator {
                         .with(
                                 ReloadButtonProperties.IS_VISIBLE,
                                 mView.getVisibility() == View.VISIBLE)
+                        .with(ReloadButtonProperties.HAS_SPACE_TO_SHOW, true)
                         .with(
                                 ReloadButtonProperties.CONTENT_DESCRIPTION,
                                 mView.getContentDescription())
@@ -93,6 +101,15 @@ public class ReloadButtonCoordinator {
         PropertyModelChangeProcessor.create(model, mView, ReloadButtonViewBinder::bind);
     }
 
+    @Override
+    public void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            int brandedColorScheme) {
+        super.onTintChanged(tint, activityFocusTint, brandedColorScheme);
+        mMediator.onTintChanged(tint, activityFocusTint, brandedColorScheme);
+    }
+
     /**
      * Sets reload button visibility.
      *
@@ -100,6 +117,11 @@ public class ReloadButtonCoordinator {
      */
     public void setVisibility(boolean isVisible) {
         mMediator.setVisibility(isVisible);
+    }
+
+    @Override
+    public void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mMediator.setHasSpaceToShow(hasSpaceToShow);
     }
 
     /**
@@ -122,7 +144,10 @@ public class ReloadButtonCoordinator {
      * @return {@link ObjectAnimator} that animates view's alpha.
      */
     public ObjectAnimator getFadeAnimator(boolean shouldShow) {
-        return mMediator.getFadeAnimator(shouldShow);
+        ObjectAnimator fadeAnimator = mMediator.getFadeAnimator(shouldShow);
+        return shouldShow
+                ? ToolbarUtils.asFadeInAnimation(fadeAnimator)
+                : ToolbarUtils.asFadeOutAnimation(fadeAnimator);
     }
 
     /**
@@ -141,12 +166,15 @@ public class ReloadButtonCoordinator {
      *
      * @return a Boolean indicating whether view is visible or not.
      */
-    public boolean isVisibile() {
+    @Override
+    public boolean isVisible() {
         return mMediator.isVisible();
     }
 
     /** Destroys current object instance. It can't be used after this call. */
+    @Override
     public void destroy() {
+        super.destroy();
         mMediator.destroy();
     }
 }

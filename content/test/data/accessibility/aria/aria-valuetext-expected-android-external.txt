@@ -1,2 +1,2 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++ProgressBar text:"three" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="progressIndicator", roleDescription="progress indicator"]
+++ProgressBar stateDescription:"three" actions:[AX_FOCUS] bundle:[chromeRole="progressIndicator"]

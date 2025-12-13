@@ -10,8 +10,6 @@
 #include "base/time/time.h"
 #include "media/mojo/mojom/playback_events_recorder.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 

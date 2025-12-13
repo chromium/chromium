@@ -74,7 +74,7 @@
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
 namespace {

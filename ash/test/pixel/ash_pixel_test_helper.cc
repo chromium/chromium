@@ -8,10 +8,15 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "base/base_switches.h"
+#include "base/byte_count.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/run_loop.h"
+#include "base/system/sys_info.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 
@@ -39,11 +44,27 @@ AshPixelTestHelper::AshPixelTestHelper(pixel_test::InitParams params)
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         ::switches::kForceUIDirection, ::switches::kForceDirectionRTL);
   }
+
+  scoped_feature_list_.InitWithFeatureState(
+      chromeos::features::kDisableSystemBlur, !IsSystemBlurEnabled());
+  if (!IsSystemBlurEnabled()) {
+    // This switch simulates a device with less than 4GB of memory, which is
+    // necessary to disable system blur. See
+    // `chromeos::features::IsSystemBlurEnabled()`.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableLowEndDeviceMode);
+    CHECK_EQ(base::SysInfo::AmountOfPhysicalMemory(), base::MiB(512));
+  }
 }
 
 AshPixelTestHelper::~AshPixelTestHelper() = default;
 
 void AshPixelTestHelper::StabilizeUi() {
+  // Consumes pending tasks. Specifically, on user login simulation,
+  // it will trigger an async wallpaper setting task. SetWallpaper() needs
+  // to be called after the completion of the wallpaper setting task for
+  // login.
+  base::RunLoop().RunUntilIdle();
   MaybeSetDarkMode();
   SetWallpaper();
   SetBatteryState();

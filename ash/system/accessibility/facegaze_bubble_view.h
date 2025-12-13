@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -27,7 +28,6 @@ class Label;
 
 namespace ash {
 
-class FaceGazeBubbleCloseView;
 class FaceGazeBubbleMainContentView;
 
 // The FaceGaze bubble view. This is a UI that appears at the top of the screen,
@@ -52,7 +52,7 @@ class ASH_EXPORT FaceGazeBubbleView : public views::BubbleDialogDelegateView {
 
   std::u16string_view GetTextForTesting() const;
 
-  const raw_ptr<FaceGazeBubbleCloseView> GetCloseViewForTesting() const {
+  const raw_ptr<views::ImageButton> GetCloseViewForTesting() const {
     return close_view_;
   }
 
@@ -69,7 +69,7 @@ class ASH_EXPORT FaceGazeBubbleView : public views::BubbleDialogDelegateView {
 
   // The view containing the close button, which can be used to quickly turn
   // FaceGaze off. Owned by the views hierarchy.
-  raw_ptr<FaceGazeBubbleCloseView> close_view_ = nullptr;
+  raw_ptr<views::ImageButton> close_view_ = nullptr;
 };
 
 // The main content view. This is the part of the bubble UI that tells the user
@@ -108,31 +108,6 @@ class ASH_EXPORT FaceGazeBubbleMainContentView : public views::View {
   // A label that displays the most recently recognized gesture and
   // corresponding action.
   raw_ptr<views::Label> label_ = nullptr;
-};
-
-// The close button view. It contains the button used to quickly toggle
-// FaceGaze off.
-class ASH_EXPORT FaceGazeBubbleCloseView : public views::View {
-  METADATA_HEADER(FaceGazeBubbleCloseView, views::View)
-
- public:
-  FaceGazeBubbleCloseView(
-      const base::RepeatingCallback<void(const ui::Event& event)>&
-          on_close_button_clicked);
-  FaceGazeBubbleCloseView(const FaceGazeBubbleCloseView&) = delete;
-  FaceGazeBubbleCloseView& operator=(const FaceGazeBubbleCloseView&) = delete;
-  ~FaceGazeBubbleCloseView() override;
-
-  // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-
- private:
-  // Custom callback that is called whenever the close button is clicked.
-  const base::RepeatingCallback<void(const ui::Event& event)>
-      on_close_button_clicked_;
-
-  // The close 'X' image.
-  raw_ptr<views::ImageView> close_button_ = nullptr;
 };
 
 }  // namespace ash

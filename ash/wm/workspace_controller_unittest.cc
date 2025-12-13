@@ -34,12 +34,12 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -123,7 +123,7 @@ class WorkspaceControllerTest : public AshTestBase {
   }
 
   aura::Window* CreatePopupLikeWindow(const gfx::Rect& bounds) {
-    aura::Window* window = CreateTestWindowInShellWithBounds(bounds);
+    aura::Window* window = CreateTestWindowInShell({.bounds = bounds});
     window->Show();
     return window;
   }
@@ -134,9 +134,7 @@ class WorkspaceControllerTest : public AshTestBase {
   }
 
   gfx::Rect GetFullscreenBounds(aura::Window* window) {
-    return display::Screen::GetScreen()
-        ->GetDisplayNearestWindow(window)
-        .bounds();
+    return display::Screen::Get()->GetDisplayNearestWindow(window).bounds();
   }
 
   ShelfWidget* shelf_widget() { return GetPrimaryShelf()->shelf_widget(); }
@@ -659,8 +657,10 @@ TEST_F(WorkspaceControllerTest, DontCrashOnChangeAndActivate) {
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
 
   DontCrashOnChangeAndActivateDelegate delegate;
-  std::unique_ptr<Window> w1(CreateTestWindowInShellWithDelegate(
-      &delegate, 1000, gfx::Rect(10, 11, 250, 251)));
+  std::unique_ptr<Window> w1(
+      CreateTestWindowInShell({.delegate = &delegate,
+                               .bounds = {10, 11, 250, 251},
+                               .window_id = 1000}));
 
   w1->Show();
   WindowState* w1_state = WindowState::Get(w1.get());
@@ -761,7 +761,8 @@ TEST_F(WorkspaceControllerTest, BasicAutoPlacingOnCreate) {
 // transient child.
 TEST_F(WorkspaceControllerTest, AutoPlacingMovesTransientChild) {
   // Create an auto-positioned window.
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   gfx::Rect desktop_area = window1->parent()->bounds();
   WindowState::Get(window1.get())->SetWindowPositionManaged(true);
   // Hide and then show |window1| to trigger auto-positioning logic.
@@ -789,7 +790,8 @@ TEST_F(WorkspaceControllerTest, AutoPlacingMovesTransientChild) {
 
   // Create and show a second window forcing the first window and its child to
   // move.
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   WindowState::Get(window2.get())->SetWindowPositionManaged(true);
   // Hide and then show |window2| to trigger auto-positioning logic.
   window2->Hide();
@@ -812,11 +814,13 @@ TEST_F(WorkspaceControllerTest, AutoPlacingMovesTransientChild) {
 TEST_F(WorkspaceControllerTest, BasicAutoPlacingOnShowHide) {
   // Test 1: In case there is no manageable window, no window should shift.
 
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   window1->SetBounds(gfx::Rect(16, 32, 640, 320));
   gfx::Rect desktop_area = window1->parent()->bounds();
 
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   // Trigger the auto window placement function by making it visible.
   // Note that the bounds are getting changed while it is invisible.
   window2->Hide();
@@ -836,7 +840,8 @@ TEST_F(WorkspaceControllerTest, BasicAutoPlacingOnShowHide) {
   // Test 2: Set up two managed windows and check their auto positioning.
   window1_state->SetWindowPositionManaged(true);
 
-  std::unique_ptr<aura::Window> window3(CreateTestWindowInShellWithId(2));
+  std::unique_ptr<aura::Window> window3(
+      CreateTestWindowInShell({.window_id = 2}));
   WindowState::Get(window3.get())->SetWindowPositionManaged(true);
   // To avoid any auto window manager changes due to SetBounds, the window
   // gets first hidden and then shown again.
@@ -859,7 +864,8 @@ TEST_F(WorkspaceControllerTest, BasicAutoPlacingOnShowHide) {
 
   // Test 3: Set up a manageable and a non manageable window and check
   // positioning.
-  std::unique_ptr<aura::Window> window4(CreateTestWindowInShellWithId(3));
+  std::unique_ptr<aura::Window> window4(
+      CreateTestWindowInShell({.window_id = 3}));
   // To avoid any auto window manager changes due to SetBounds, the window
   // gets first hidden and then shown again.
   window1->Hide();
@@ -888,10 +894,12 @@ TEST_F(WorkspaceControllerTest, BasicAutoPlacingOnShowHide) {
 
 // Test the proper usage of user window movement interaction.
 TEST_F(WorkspaceControllerTest, TestUserMovedWindowRepositioning) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   window1->SetBounds(gfx::Rect(16, 32, 640, 320));
   gfx::Rect desktop_area = window1->parent()->bounds();
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   window2->SetBounds(gfx::Rect(32, 48, 256, 512));
   window1->Hide();
   window2->Hide();
@@ -936,11 +944,11 @@ TEST_F(WorkspaceControllerTest, TestUserMovedWindowRepositioning) {
 // Test if the single window will be restored at original position.
 TEST_F(WorkspaceControllerTest, TestSingleWindowsRestoredBounds) {
   std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
+      CreateTestWindowInShell({.bounds = {100, 100, 100, 100}}));
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShellWithBounds(gfx::Rect(110, 110, 100, 100)));
+      CreateTestWindowInShell({.bounds = {110, 110, 100, 100}}));
   std::unique_ptr<aura::Window> window3(
-      CreateTestWindowInShellWithBounds(gfx::Rect(120, 120, 100, 100)));
+      CreateTestWindowInShell({.bounds = {120, 120, 100, 100}}));
   window1->Hide();
   window2->Hide();
   window3->Hide();
@@ -984,7 +992,8 @@ TEST_F(WorkspaceControllerTest, TestSingleWindowsRestoredBounds) {
 // Test that user placed windows go back to their user placement after the user
 // closes all other windows.
 TEST_F(WorkspaceControllerTest, TestUserHandledWindowRestore) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   gfx::Rect user_pos = gfx::Rect(16, 42, 640, 320);
   window1->SetBounds(user_pos);
   WindowState* window1_state = WindowState::Get(window1.get());
@@ -993,7 +1002,8 @@ TEST_F(WorkspaceControllerTest, TestUserHandledWindowRestore) {
   gfx::Rect desktop_area = window1->parent()->bounds();
 
   // Create a second window to let the auto manager kick in.
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   window2->SetBounds(gfx::Rect(32, 48, 256, 512));
   window1->Hide();
   window2->Hide();
@@ -1025,7 +1035,7 @@ TEST_F(WorkspaceControllerTest, TestRestoreToUserModifiedBounds) {
   UpdateDisplay("400x300");
   gfx::Rect default_bounds(10, 0, 100, 100);
   std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(default_bounds));
+      CreateTestWindowInShell({.bounds = default_bounds}));
   WindowState* window1_state = WindowState::Get(window1.get());
   window1->Hide();
   window1_state->SetWindowPositionManaged(true);
@@ -1033,7 +1043,7 @@ TEST_F(WorkspaceControllerTest, TestRestoreToUserModifiedBounds) {
   // First window is centered.
   EXPECT_EQ("150,0 100x100", window1->bounds().ToString());
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShellWithBounds(default_bounds));
+      CreateTestWindowInShell({.bounds = default_bounds}));
   WindowState* window2_state = WindowState::Get(window2.get());
   window2->Hide();
   window2_state->SetWindowPositionManaged(true);
@@ -1071,13 +1081,15 @@ TEST_F(WorkspaceControllerTest, TestRestoreToUserModifiedBounds) {
 
 // Test that a window from normal to minimize will repos the remaining.
 TEST_F(WorkspaceControllerTest, ToMinimizeRepositionsRemaining) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   WindowState* window1_state = WindowState::Get(window1.get());
   window1_state->SetWindowPositionManaged(true);
   window1->SetBounds(gfx::Rect(16, 32, 640, 320));
   gfx::Rect desktop_area = window1->parent()->bounds();
 
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   WindowState* window2_state = WindowState::Get(window2.get());
   window2_state->SetWindowPositionManaged(true);
   window2->SetBounds(gfx::Rect(32, 48, 256, 512));
@@ -1103,12 +1115,14 @@ TEST_F(WorkspaceControllerTest, ToMinimizeRepositionsRemaining) {
 
 // Test that minimizing an initially maximized window will repos the remaining.
 TEST_F(WorkspaceControllerTest, MaxToMinRepositionsRemaining) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   WindowState* window1_state = WindowState::Get(window1.get());
   window1_state->SetWindowPositionManaged(true);
   gfx::Rect desktop_area = window1->parent()->bounds();
 
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   WindowState* window2_state = WindowState::Get(window2.get());
   window2_state->SetWindowPositionManaged(true);
   window2->SetBounds(gfx::Rect(32, 48, 256, 512));
@@ -1127,13 +1141,15 @@ TEST_F(WorkspaceControllerTest, MaxToMinRepositionsRemaining) {
 
 // Test that nomral, maximize, minimizing will repos the remaining.
 TEST_F(WorkspaceControllerTest, NormToMaxToMinRepositionsRemaining) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   window1->SetBounds(gfx::Rect(16, 32, 640, 320));
   WindowState* window1_state = WindowState::Get(window1.get());
   window1_state->SetWindowPositionManaged(true);
   gfx::Rect desktop_area = window1->parent()->bounds();
 
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   WindowState* window2_state = WindowState::Get(window2.get());
   window2_state->SetWindowPositionManaged(true);
   window2->SetBounds(gfx::Rect(32, 40, 256, 512));
@@ -1163,13 +1179,15 @@ TEST_F(WorkspaceControllerTest, NormToMaxToMinRepositionsRemaining) {
 
 // Test that nomral, maximize, normal will repos the remaining.
 TEST_F(WorkspaceControllerTest, NormToMaxToNormRepositionsRemaining) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   window1->SetBounds(gfx::Rect(16, 32, 640, 320));
   WindowState* window1_state = WindowState::Get(window1.get());
   window1_state->SetWindowPositionManaged(true);
   gfx::Rect desktop_area = window1->parent()->bounds();
 
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   WindowState::Get(window2.get())->SetWindowPositionManaged(true);
   window2->SetBounds(gfx::Rect(32, 40, 256, 512));
 
@@ -1197,13 +1215,15 @@ TEST_F(WorkspaceControllerTest, NormToMaxToNormRepositionsRemaining) {
 
 // Test that animations are triggered.
 TEST_F(WorkspaceControllerTest, AnimatedNormToMaxToNormRepositionsRemaining) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   window1->Hide();
   window1->SetBounds(gfx::Rect(16, 32, 640, 320));
   gfx::Rect desktop_area = window1->parent()->bounds();
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   window2->Hide();
   window2->SetBounds(gfx::Rect(32, 48, 256, 512));
 
@@ -1239,9 +1259,8 @@ TEST_F(WorkspaceControllerTest, AnimatedNormToMaxToNormRepositionsRemaining) {
 // with a real browser the browser here has a transient child window
 // (corresponds to the status bubble).
 TEST_F(WorkspaceControllerTest, VerifyLayerOrdering) {
-  std::unique_ptr<Window> browser(aura::test::CreateTestWindowWithDelegate(
-      nullptr, aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(5, 6, 7, 8),
-      nullptr));
+  std::unique_ptr<Window> browser =
+      aura::test::CreateTestWindow({.bounds = {5, 6, 7, 8}});
   browser->SetName("browser");
   ParentWindowInPrimaryRootWindow(browser.get());
   browser->Show();
@@ -1252,16 +1271,17 @@ TEST_F(WorkspaceControllerTest, VerifyLayerOrdering) {
   aura::test::TestWindowDelegate* status_bubble_delegate =
       aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
   status_bubble_delegate->set_can_focus(false);
-  Window* status_bubble = aura::test::CreateTestWindowWithDelegate(
-      status_bubble_delegate, aura::client::WINDOW_TYPE_POPUP,
-      gfx::Rect(5, 6, 7, 8), nullptr);
+  Window* status_bubble = aura::test::CreateTestWindow(
+                              {.delegate = status_bubble_delegate,
+                               .bounds = {5, 6, 7, 8},
+                               .window_type = aura::client::WINDOW_TYPE_POPUP})
+                              .release();
   ::wm::AddTransientChild(browser.get(), status_bubble);
   ParentWindowInPrimaryRootWindow(status_bubble);
   status_bubble->SetName("status_bubble");
 
-  std::unique_ptr<Window> app(aura::test::CreateTestWindowWithDelegate(
-      nullptr, aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(5, 6, 7, 8),
-      nullptr));
+  std::unique_ptr<Window> app =
+      aura::test::CreateTestWindow({.bounds = {5, 6, 7, 8}});
   app->SetName("app");
   ParentWindowInPrimaryRootWindow(app.get());
 
@@ -1312,7 +1332,8 @@ TEST_F(WorkspaceControllerTest, VerifyLayerOrdering) {
 // window (crbug.com/692175).
 TEST_F(WorkspaceControllerTest, RestoreMinimizedSnappedWindow) {
   // Create an auto-positioned window.
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   WindowState* window_state = WindowState::Get(window.get());
   window_state->SetWindowPositionManaged(true);
   window->SetBounds(gfx::Rect(10, 20, 100, 200));
@@ -1323,7 +1344,7 @@ TEST_F(WorkspaceControllerTest, RestoreMinimizedSnappedWindow) {
   const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
   const gfx::Rect work_area =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestPoint(window->bounds().origin())
           .work_area();
   gfx::Rect snapped_bounds(work_area.x(), work_area.y(), work_area.width() / 2,
@@ -1363,9 +1384,8 @@ TEST_F(WorkspaceControllerTest, SwitchFromModal) {
 TEST_F(WorkspaceControllerTest, DragWindowKeepsShelfAutohidden) {
   aura::test::TestWindowDelegate delegate;
   delegate.set_window_component(HTCAPTION);
-  std::unique_ptr<Window> window(aura::test::CreateTestWindowWithDelegate(
-      &delegate, aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(5, 5, 100, 50),
-      nullptr));
+  std::unique_ptr<Window> window = aura::test::CreateTestWindow(
+      {.delegate = &delegate, .bounds = {5, 5, 100, 50}});
   ParentWindowInPrimaryRootWindow(window.get());
 
   Shelf* shelf = GetPrimaryShelf();
@@ -1389,13 +1409,13 @@ TEST_F(WorkspaceControllerTest, DragWindowKeepsShelfAutohidden) {
 // Verifies that events are targeted properly just outside the window edges.
 TEST_F(WorkspaceControllerTest, WindowEdgeHitTest) {
   aura::test::TestWindowDelegate d_first, d_second;
-  std::unique_ptr<Window> first(aura::test::CreateTestWindowWithDelegate(
-      &d_first, 123, gfx::Rect(20, 10, 100, 50), nullptr));
+  std::unique_ptr<Window> first = aura::test::CreateTestWindow(
+      {.delegate = &d_first, .bounds = {20, 10, 100, 50}, .window_id = 123});
   ParentWindowInPrimaryRootWindow(first.get());
   first->Show();
 
-  std::unique_ptr<Window> second(aura::test::CreateTestWindowWithDelegate(
-      &d_second, 234, gfx::Rect(30, 40, 40, 10), nullptr));
+  std::unique_ptr<Window> second = aura::test::CreateTestWindow(
+      {.delegate = &d_second, .bounds = {30, 40, 40, 10}, .window_id = 234});
   ParentWindowInPrimaryRootWindow(second.get());
   second->Show();
 

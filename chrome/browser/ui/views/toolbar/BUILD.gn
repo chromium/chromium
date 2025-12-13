@@ -8,65 +8,41 @@ import("//build/config/ui.gni")
 import("//ui/webui/webui_features.gni")
 
 source_set("toolbar") {
-  sources = [
-    "app_menu.cc",
+  public = [
     "app_menu.h",
-    "back_forward_button.cc",
     "back_forward_button.h",
-    "browser_app_menu_button.cc",
     "browser_app_menu_button.h",
-    "chrome_labs/chrome_labs_bubble_view.cc",
     "chrome_labs/chrome_labs_bubble_view.h",
-    "chrome_labs/chrome_labs_coordinator.cc",
     "chrome_labs/chrome_labs_coordinator.h",
-    "chrome_labs/chrome_labs_item_view.cc",
     "chrome_labs/chrome_labs_item_view.h",
-    "chrome_labs/chrome_labs_view_controller.cc",
     "chrome_labs/chrome_labs_view_controller.h",
-    "home_button.cc",
     "home_button.h",
-    "overflow_button.cc",
     "overflow_button.h",
-    "pinned_action_toolbar_button.cc",
     "pinned_action_toolbar_button.h",
-    "pinned_action_toolbar_button_menu_model.cc",
     "pinned_action_toolbar_button_menu_model.h",
-    "pinned_toolbar_actions_container.cc",
     "pinned_toolbar_actions_container.h",
-    "pinned_toolbar_actions_container_layout.cc",
     "pinned_toolbar_actions_container_layout.h",
-    "pinned_toolbar_button_status_indicator.cc",
+    "pinned_toolbar_actions_controller.h",
     "pinned_toolbar_button_status_indicator.h",
-    "reload_button.cc",
     "reload_button.h",
-    "split_tabs_button.cc",
+    "reload_button_web_view.h",
+    "reload_control.h",
     "split_tabs_button.h",
-    "toolbar_action_hover_card_bubble_view.cc",
     "toolbar_action_hover_card_bubble_view.h",
-    "toolbar_action_hover_card_controller.cc",
     "toolbar_action_hover_card_controller.h",
-    "toolbar_action_view.cc",
     "toolbar_action_view.h",
-    "toolbar_action_view_delegate_views.h",
-    "toolbar_actions_bar_bubble_views.cc",
-    "toolbar_actions_bar_bubble_views.h",
-    "toolbar_button.cc",
     "toolbar_button.h",
-    "toolbar_chip_button.cc",
+    "toolbar_button_menu_highlighter.h",
     "toolbar_chip_button.h",
-    "toolbar_controller.cc",
     "toolbar_controller.h",
-    "toolbar_icon_container_view.cc",
     "toolbar_icon_container_view.h",
-    "toolbar_ink_drop_util.cc",
     "toolbar_ink_drop_util.h",
-    "toolbar_view.cc",
     "toolbar_view.h",
   ]
+
   public_deps = [
     "//base",
     "//build:buildflag_header_h",
-    "//chrome/browser/sharing_hub",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/global_error",
@@ -75,14 +51,16 @@ source_set("toolbar") {
     "//chrome/browser/ui/toolbar/chrome_labs",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/views",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/location_bar",
     "//components/bookmarks/browser",
     "//components/prefs",
     "//components/saved_tab_groups/public",
+    "//components/user_education/common",
     "//components/webui/flags",
     "//skia",
     "//ui/actions:actions_headers",
     "//ui/base",
-    "//ui/base:features",
     "//ui/base:types",
     "//ui/base/mojom:ui_base_types",
     "//ui/compositor",
@@ -92,7 +70,50 @@ source_set("toolbar") {
     "//ui/views",
     "//url",
   ]
+
+  if (enable_webui_tab_strip) {
+    public += [ "webui_tab_counter_button.h" ]
+  }
+
+  if (is_chromeos) {
+    public_deps += [ "//chromeos/ash/experiences/arc/intent_helper" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "app_menu.cc",
+    "back_forward_button.cc",
+    "browser_app_menu_button.cc",
+    "chrome_labs/chrome_labs_bubble_view.cc",
+    "chrome_labs/chrome_labs_coordinator.cc",
+    "chrome_labs/chrome_labs_item_view.cc",
+    "chrome_labs/chrome_labs_view_controller.cc",
+    "home_button.cc",
+    "overflow_button.cc",
+    "pinned_action_toolbar_button.cc",
+    "pinned_action_toolbar_button_menu_model.cc",
+    "pinned_toolbar_actions_container.cc",
+    "pinned_toolbar_actions_container_layout.cc",
+    "pinned_toolbar_actions_controller.cc",
+    "pinned_toolbar_button_status_indicator.cc",
+    "reload_button.cc",
+    "reload_button_web_view.cc",
+    "split_tabs_button.cc",
+    "toolbar_action_hover_card_bubble_view.cc",
+    "toolbar_action_hover_card_controller.cc",
+    "toolbar_action_view.cc",
+    "toolbar_button.cc",
+    "toolbar_button_menu_highlighter.cc",
+    "toolbar_chip_button.cc",
+    "toolbar_controller.cc",
+    "toolbar_icon_container_view.cc",
+    "toolbar_ink_drop_util.cc",
+    "toolbar_view.cc",
+  ]
+
   deps = [
+    ":toolbar",
     "//base:i18n",
     "//build:branding_buildflags",
     "//cc/paint",
@@ -109,6 +130,7 @@ source_set("toolbar") {
     "//chrome/browser:browser_process",
     "//chrome/browser:flags",
     "//chrome/browser:primitives",
+    "//chrome/browser/extensions",
     "//chrome/browser/feedback",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/performance_manager/public/user_tuning",
@@ -117,10 +139,12 @@ source_set("toolbar") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/search",
+    "//chrome/browser/sharing_hub",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/themes",
+    "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/bookmarks",
@@ -128,15 +152,24 @@ source_set("toolbar") {
     "//chrome/browser/ui/color:mixers",
     "//chrome/browser/ui/customize_chrome",
     "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/contextual_tasks",
     "//chrome/browser/ui/views/download",
-    "//chrome/browser/ui/views/page_action:page_action",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/page_action",
+    "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/views/side_panel:side_panel_enums",
+    "//chrome/browser/ui/waap",
     "//chrome/browser/ui/web_applications",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/reload_button",
     "//chrome/browser/upgrade_detector",
     "//chrome/browser/user_education",
     "//chrome/browser/web_applications:features",
@@ -163,39 +196,211 @@ source_set("toolbar") {
     "//extensions/browser/api/feedback_private",
     "//extensions/common",
     "//media",
+    "//skia",
     "//third_party/abseil-cpp:absl",
     "//ui/accessibility:ax_base",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/base/dragdrop:types",
     "//ui/base/ime",
-    "//ui/color:color_headers",
+    "//ui/color",
     "//ui/display",
     "//ui/events",
-    "//ui/gfx:color_utils",
-    "//ui/gfx/geometry:geometry_skia",
-    "//ui/menus",
+    "//ui/gfx/range",
     "//ui/native_theme",
+    "//ui/views/controls/webview",
   ]
-  allow_circular_includes_from = [ "//chrome/browser/ui/views/download" ]
+
   if (enable_webui_tab_strip) {
-    sources += [
-      "webui_tab_counter_button.cc",
-      "webui_tab_counter_button.h",
-    ]
+    sources += [ "webui_tab_counter_button.cc" ]
   }
+
   if (use_aura) {
     deps += [ "//ui/aura" ]
   }
   if (is_chromeos) {
-    public_deps += [ "//chromeos/ash/experiences/arc/intent_helper" ]
     deps += [
-      "//ash/constants",
       "//chrome/browser/ash/ownership",
       "//chrome/browser/ash/settings",
-      "//chromeos/components/mgs",
     ]
   }
+
   if (!is_android) {
     deps += [ "//chrome/browser/ui/views/zoom" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "app_menu_browsertest.cc",
+      "chrome_labs/chrome_labs_browsertest.cc",
+      "home_button_browsertest.cc",
+      "pinned_action_toolbar_button_menu_model_browsertest.cc",
+      "pinned_toolbar_actions_container_browsertest.cc",
+    ]
+
+    if (toolkit_views) {
+      sources += [ "toolbar_view_browsertest.cc" ]
+    }
+
+    if (enable_webui_tab_strip) {
+      sources += [ "webui_tab_counter_button_browsertest.cc" ]
+    }
+
+    deps = [
+      ":toolbar",
+      "//base",
+      "//chrome/browser:flags",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/safety_hub:test_support",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/test:test_support",
+      "//components/commerce/core:feature_list",
+      "//components/prefs",
+      "//components/translate/content/browser:test_support",
+      "//components/vector_icons",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
+}
+
+if (!is_android && !is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    if (toolkit_views) {
+      sources = [
+        "app_menu_interactive_uitest.cc",
+        "browser_app_menu_button_interactive_uitest.cc",
+        "reload_button_browsertest.cc",
+        "split_tabs_button_interactive_ui_test.cc",
+        "tab_search_toolbar_button_interactive_uitest.cc",
+        "toolbar_action_hover_card_bubble_view_interactive_uitest.cc",
+        "toolbar_controller_interactive_uitest.cc",
+        "toolbar_view_interactive_uitest.cc",
+      ]
+    }
+
+    if (is_chromeos) {
+      sources += [ "browser_app_menu_button_interactive_uitest_chromeos.cc" ]
+    }
+
+    deps = [
+      ":toolbar",
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/tabs:tab_menu",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/browser/user_education",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/bookmarks/browser",
+      "//components/commerce/core:feature_list",
+      "//components/feature_engagement/test:test_support",
+      "//components/policy/core/browser",
+      "//components/prefs",
+      "//components/user_education/views",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/base:ozone_buildflags",
+      "//ui/views",
+    ]
+  }
+}
+
+if (toolkit_views) {
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [
+      "chrome_labs/chrome_labs_button_unittest.cc",
+      "chrome_labs/chrome_labs_unittest.cc",
+      "pinned_toolbar_actions_container_unittest.cc",
+      "reload_button_unittest.cc",
+      "toolbar_action_view_unittest.cc",
+      "toolbar_button_unittest.cc",
+      "toolbar_controller_unittest.cc",
+      "toolbar_ink_drop_util_unittest.cc",
+    ]
+
+    deps = [
+      ":toolbar",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:generated_resources",
+      "//chrome/browser",
+      "//chrome/browser:flags",
+      "//chrome/browser/history",
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/color:mixers",
+      "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:test_support",
+      "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/toolbar:test_support",
+      "//chrome/browser/ui/toolbar/chrome_labs",
+      "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/browser/ui/waap",
+      "//chrome/common:buildflags",
+      "//chrome/test:test_support",
+      "//components/keyed_service/core",
+      "//components/prefs",
+      "//components/user_education/views",
+      "//components/vector_icons",
+      "//components/version_info",
+      "//components/webui/flags",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/accessibility",
+      "//ui/actions",
+      "//ui/base",
+      "//ui/base/dragdrop:types",
+      "//ui/base/mojom",
+      "//ui/compositor",
+      "//ui/events",
+      "//ui/events:test_support",
+      "//ui/gfx",
+      "//ui/gfx:test_support",
+      "//ui/menus",
+      "//ui/views",
+      "//ui/views:test_support",
+      "//ui/views/controls/webview",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//ash/constants",
+        "//chrome/browser/ash/ownership",
+        "//chrome/browser/ash/settings",
+        "//chromeos/ash/components/cryptohome",
+        "//chromeos/ash/components/dbus/session_manager",
+        "//components/user_manager",
+      ]
+    }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }

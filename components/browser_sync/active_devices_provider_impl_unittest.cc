@@ -55,7 +55,7 @@ std::unique_ptr<DeviceInfo> CreateFakeDeviceInfo(
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
       fcm_registration_token, interested_data_types,
-      /*floating_workspace_last_signin_timestamp=*/std::nullopt);
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
 }
 
 DataTypeSet DefaultInterestedDataTypes() {

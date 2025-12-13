@@ -80,7 +80,10 @@ class PendingDialogContainer {
             boolean showAsNext) {
         Integer key = computeKey(dialogType, dialogPriority);
         List<PropertyModel> dialogs = mPendingDialogs.get(key);
-        if (dialogs == null) mPendingDialogs.put(key, dialogs = new ArrayList<>());
+        if (dialogs == null) {
+            dialogs = new ArrayList<>();
+            mPendingDialogs.put(key, dialogs);
+        }
         dialogs.add(showAsNext ? 0 : dialogs.size(), model);
     }
 

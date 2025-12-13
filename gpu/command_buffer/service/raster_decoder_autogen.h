@@ -300,8 +300,10 @@ error::Error RasterDecoderImpl::HandleCopySharedImageINTERNALImmediate(
   GLint yoffset = static_cast<GLint>(c.yoffset);
   GLint x = static_cast<GLint>(c.x);
   GLint y = static_cast<GLint>(c.y);
-  GLsizei width = static_cast<GLsizei>(c.width);
-  GLsizei height = static_cast<GLsizei>(c.height);
+  GLsizei src_width = static_cast<GLsizei>(c.src_width);
+  GLsizei src_height = static_cast<GLsizei>(c.src_height);
+  GLsizei dest_width = static_cast<GLsizei>(c.dest_width);
+  GLsizei dest_height = static_cast<GLsizei>(c.dest_height);
   uint32_t mailboxes_size;
   if (!gles2::GLES2Util::ComputeDataSize<GLbyte, 32>(1, &mailboxes_size)) {
     return error::kOutOfBounds;
@@ -312,20 +314,31 @@ error::Error RasterDecoderImpl::HandleCopySharedImageINTERNALImmediate(
   volatile const GLbyte* mailboxes =
       gles2::GetImmediateDataAs<volatile const GLbyte*>(c, mailboxes_size,
                                                         immediate_data_size);
-  if (width < 0) {
+  if (src_width < 0) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImageINTERNAL",
-                       "width < 0");
+                       "src_width < 0");
     return error::kNoError;
   }
-  if (height < 0) {
+  if (src_height < 0) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImageINTERNAL",
-                       "height < 0");
+                       "src_height < 0");
+    return error::kNoError;
+  }
+  if (dest_width < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImageINTERNAL",
+                       "dest_width < 0");
+    return error::kNoError;
+  }
+  if (dest_height < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImageINTERNAL",
+                       "dest_height < 0");
     return error::kNoError;
   }
   if (mailboxes == nullptr) {
     return error::kOutOfBounds;
   }
-  DoCopySharedImageINTERNAL(xoffset, yoffset, x, y, width, height, mailboxes);
+  DoCopySharedImageINTERNAL(xoffset, yoffset, x, y, src_width, src_height,
+                            dest_width, dest_height, mailboxes);
   return error::kNoError;
 }
 

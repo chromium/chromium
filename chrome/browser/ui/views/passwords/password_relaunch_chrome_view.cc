@@ -22,7 +22,7 @@
 #include "ui/views/layout/layout_provider.h"
 
 RelaunchChromeView::RelaunchChromeView(content::WebContents* web_contents,
-                                       views::View* anchor_view,
+                                       views::BubbleAnchor anchor_view,
                                        PrefService* prefs)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,

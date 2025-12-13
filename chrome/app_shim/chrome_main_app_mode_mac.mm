@@ -19,9 +19,9 @@
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_sending_event.h"
@@ -45,13 +45,27 @@
 #include "chrome/common/mac/app_mode_common.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "components/crash/core/app/crashpad.h"
+#include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/features.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
+
+namespace {
+
+// Called when the app shim process receives a bad IPC message.
+void HandleBadMessage(const std::string& error) {
+  LOG(ERROR) << "Mojo error in app shim process: " << error;
+  mojo::debug::ScopedMessageErrorCrashKey crash_key_value(error);
+  base::debug::DumpWithoutCrashing();
+}
+
+}  // namespace
 
 // The NSApplication for app shims is a vanilla NSApplication, but
 // implements the CrAppProtocol and CrAppControlPrototocol protocols to skip
@@ -157,14 +171,12 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     // <user_data_dir>/<profile_dir>/Web Applications/_crx_extensionid/.
     const base::FilePath user_data_dir =
         base::FilePath(info->user_data_dir).DirName().DirName().DirName();
-
-    // TODO(crbug.com/40807881): Specify `user_data_dir` to  CrashPad.
-    ChromeCrashReporterClient::Create();
-    crash_reporter::InitializeCrashpad(true, "app_shim");
-
     base::PathService::OverrideAndCreateIfNeeded(
         chrome::DIR_USER_DATA, user_data_dir, /*is_absolute=*/false,
         /*create=*/false);
+
+    ChromeCrashReporterClient::Create();
+    crash_reporter::InitializeCrashpad(true, "app_shim");
 
     // Initialize features and field trials, either from command line or from
     // file in user data dir.
@@ -234,6 +246,8 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     ChromeContentClient chrome_content_client;
     content::SetContentClient(&chrome_content_client);
 
+    remote_cocoa::ApplicationBridge::SetIsOutOfProcessAppShim();
+
     // Local histogram to let tests verify that histograms are emitted properly.
     LOCAL_HISTOGRAM_BOOLEAN("AppShim.Launched", true);
 
@@ -256,6 +270,7 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     mojo::core::Configuration config;
     config.is_broker_process = true;
     mojo::core::Init(config);
+    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
     mojo::core::ScopedIPCSupport ipc_support(
         io_thread->task_runner(),
         mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);

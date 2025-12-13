@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "url/url_util.h"
 
 #include <stddef.h>
@@ -51,7 +46,7 @@ class URLUtilTest : public testing::Test {
     StdStringCanonOutput output(&canonicalized);
     Parsed parsed;
     bool success =
-        Canonicalize(url_case.input.data(), url_case.input.size(),
+        Canonicalize(url_case.input,
                      /*trim_path_end=*/false,
                      /*charset_converter=*/nullptr, &output, &parsed);
     output.Complete();
@@ -63,15 +58,14 @@ class URLUtilTest : public testing::Test {
     SCOPED_TRACE(testing::Message()
                  << "base: " << test.base << ", rel: " << test.rel);
 
-    Parsed base_parsed = ParseNonSpecialURL(test.base);
+    Parsed base_parsed = ParseNonSpecialUrl(test.base);
 
     std::string resolved;
     StdStringCanonOutput output(&resolved);
 
     Parsed resolved_parsed;
-    bool valid = ResolveRelative(test.base.data(), test.base.size(),
-                                 base_parsed, test.rel.data(), test.rel.size(),
-                                 nullptr, &output, &resolved_parsed);
+    bool valid = ResolveRelative(test.base, base_parsed, test.rel, nullptr,
+                                 &output, &resolved_parsed);
     output.Complete();
 
     if (valid) {
@@ -91,47 +85,38 @@ TEST_F(URLUtilTest, FindAndCompareScheme) {
 
   // Simple case where the scheme is found and matches.
   const char kStr1[] = "http://www.com/";
-  EXPECT_TRUE(FindAndCompareScheme(kStr1, static_cast<int>(strlen(kStr1)),
-                                   "http", nullptr));
-  EXPECT_TRUE(FindAndCompareScheme(
-      kStr1, static_cast<int>(strlen(kStr1)), "http", &found_scheme));
+  EXPECT_TRUE(FindAndCompareScheme(kStr1, "http", nullptr));
+  EXPECT_TRUE(FindAndCompareScheme(kStr1, "http", &found_scheme));
   EXPECT_TRUE(found_scheme == Component(0, 4));
 
   // A case where the scheme is found and doesn't match.
-  EXPECT_FALSE(FindAndCompareScheme(
-      kStr1, static_cast<int>(strlen(kStr1)), "https", &found_scheme));
+  EXPECT_FALSE(FindAndCompareScheme(kStr1, "https", &found_scheme));
   EXPECT_TRUE(found_scheme == Component(0, 4));
 
   // A case where there is no scheme.
   const char kStr2[] = "httpfoobar";
-  EXPECT_FALSE(FindAndCompareScheme(
-      kStr2, static_cast<int>(strlen(kStr2)), "http", &found_scheme));
+  EXPECT_FALSE(FindAndCompareScheme(kStr2, "http", &found_scheme));
   EXPECT_TRUE(found_scheme == Component());
 
   // When there is an empty scheme, it should match the empty scheme.
   const char kStr3[] = ":foo.com/";
-  EXPECT_TRUE(FindAndCompareScheme(
-      kStr3, static_cast<int>(strlen(kStr3)), "", &found_scheme));
+  EXPECT_TRUE(FindAndCompareScheme(kStr3, "", &found_scheme));
   EXPECT_TRUE(found_scheme == Component(0, 0));
 
   // But when there is no scheme, it should fail.
-  EXPECT_FALSE(FindAndCompareScheme("", 0, "", &found_scheme));
+  EXPECT_FALSE(FindAndCompareScheme("", "", &found_scheme));
   EXPECT_TRUE(found_scheme == Component());
 
   // When there is a whitespace char in scheme, it should canonicalize the URL
   // before comparison.
   const char whtspc_str[] = " \r\n\tjav\ra\nscri\tpt:alert(1)";
-  EXPECT_TRUE(FindAndCompareScheme(whtspc_str,
-                                   static_cast<int>(strlen(whtspc_str)),
-                                   "javascript", &found_scheme));
+  EXPECT_TRUE(FindAndCompareScheme(whtspc_str, "javascript", &found_scheme));
   EXPECT_TRUE(found_scheme == Component(1, 10));
 
   // Control characters should be stripped out on the ends, and kept in the
   // middle.
   const char ctrl_str[] = "\02jav\02scr\03ipt:alert(1)";
-  EXPECT_FALSE(FindAndCompareScheme(ctrl_str,
-                                    static_cast<int>(strlen(ctrl_str)),
-                                    "javascript", &found_scheme));
+  EXPECT_FALSE(FindAndCompareScheme(ctrl_str, "javascript", &found_scheme));
   EXPECT_TRUE(found_scheme == Component(1, 11));
 }
 
@@ -210,23 +195,23 @@ TEST_F(URLUtilTest, ReplaceComponents) {
 
   // Check that the following calls do not cause crash
   Replacements<char> replacements;
-  replacements.SetRef("test", Component(0, 4));
-  ReplaceComponents(nullptr, 0, parsed, replacements, nullptr, &output,
+  replacements.SetRefStr("test");
+  ReplaceComponents(std::string_view(), parsed, replacements, nullptr, &output,
                     &new_parsed);
-  ReplaceComponents("", 0, parsed, replacements, nullptr, &output, &new_parsed);
+  ReplaceComponents("", parsed, replacements, nullptr, &output, &new_parsed);
   replacements.ClearRef();
-  replacements.SetHost("test", Component(0, 4));
-  ReplaceComponents(nullptr, 0, parsed, replacements, nullptr, &output,
+  replacements.SetHostStr("test");
+  ReplaceComponents(std::string_view(), parsed, replacements, nullptr, &output,
                     &new_parsed);
-  ReplaceComponents("", 0, parsed, replacements, nullptr, &output, &new_parsed);
+  ReplaceComponents("", parsed, replacements, nullptr, &output, &new_parsed);
 
   replacements.ClearHost();
-  ReplaceComponents(nullptr, 0, parsed, replacements, nullptr, &output,
+  ReplaceComponents(std::string_view(), parsed, replacements, nullptr, &output,
                     &new_parsed);
-  ReplaceComponents("", 0, parsed, replacements, nullptr, &output, &new_parsed);
-  ReplaceComponents(nullptr, 0, parsed, replacements, nullptr, &output,
+  ReplaceComponents("", parsed, replacements, nullptr, &output, &new_parsed);
+  ReplaceComponents(std::string_view(), parsed, replacements, nullptr, &output,
                     &new_parsed);
-  ReplaceComponents("", 0, parsed, replacements, nullptr, &output, &new_parsed);
+  ReplaceComponents("", parsed, replacements, nullptr, &output, &new_parsed);
 }
 
 static std::string CheckReplaceScheme(const char* base_url,
@@ -234,17 +219,16 @@ static std::string CheckReplaceScheme(const char* base_url,
   // Make sure the input is canonicalized.
   RawCanonOutput<32> original;
   Parsed original_parsed;
-  Canonicalize(base_url, strlen(base_url), true, nullptr, &original,
-               &original_parsed);
+  Canonicalize(base_url, true, nullptr, &original, &original_parsed);
 
   Replacements<char> replacements;
-  replacements.SetScheme(scheme, Component(0, strlen(scheme)));
+  replacements.SetSchemeStr(scheme);
 
   std::string output_string;
   StdStringCanonOutput output(&output_string);
   Parsed output_parsed;
-  ReplaceComponents(original.data(), original.length(), original_parsed,
-                    replacements, nullptr, &output, &output_parsed);
+  ReplaceComponents(original.view(), original_parsed, replacements, nullptr,
+                    &output, &output_parsed);
 
   output.Complete();
   return output_string;
@@ -429,14 +413,13 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkup) {
 
   for (const auto& test : cases) {
     SCOPED_TRACE(::testing::Message() << test.base << ", " << test.rel);
-    Parsed base_parsed = ParseStandardURL(test.base);
+    Parsed base_parsed = ParseStandardUrl(test.base);
 
     std::string resolved;
     StdStringCanonOutput output(&resolved);
     Parsed resolved_parsed;
-    bool valid =
-        ResolveRelative(test.base, strlen(test.base), base_parsed, test.rel,
-                        strlen(test.rel), nullptr, &output, &resolved_parsed);
+    bool valid = ResolveRelative(test.base, base_parsed, test.rel, nullptr,
+                                 &output, &resolved_parsed);
     ASSERT_TRUE(valid);
     output.Complete();
 
@@ -451,7 +434,7 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkupAfterReplacement) {
   Parsed original_parsed;
   RawCanonOutput<32> original;
   const char* url = "htt\nps://example.com/<path";
-  Canonicalize(url, strlen(url), false, nullptr, &original, &original_parsed);
+  Canonicalize(url, false, nullptr, &original, &original_parsed);
   ASSERT_TRUE(original_parsed.potentially_dangling_markup);
 
   // Perform a replacement, and validate that the potentially_dangling_markup
@@ -460,8 +443,8 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkupAfterReplacement) {
   replacements.ClearRef();
   Parsed replaced_parsed;
   RawCanonOutput<32> replaced;
-  ReplaceComponents(original.data(), original.length(), original_parsed,
-                    replacements, nullptr, &replaced, &replaced_parsed);
+  ReplaceComponents(original.view(), original_parsed, replacements, nullptr,
+                    &replaced, &replaced_parsed);
   EXPECT_TRUE(replaced_parsed.potentially_dangling_markup);
 }
 
@@ -470,18 +453,18 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkupAfterSchemeOnlyReplacement) {
   Parsed original_parsed;
   RawCanonOutput<32> original;
   const char* url = "http://example.com/\n/<path";
-  Canonicalize(url, strlen(url), false, nullptr, &original, &original_parsed);
+  Canonicalize(url, false, nullptr, &original, &original_parsed);
   ASSERT_TRUE(original_parsed.potentially_dangling_markup);
 
   // Perform a replacement, and validate that the potentially_dangling_markup
   // flag carried over to the new Parsed object.
   Replacements<char> replacements;
   const char* new_scheme = "https";
-  replacements.SetScheme(new_scheme, Component(0, strlen(new_scheme)));
+  replacements.SetSchemeStr(new_scheme);
   Parsed replaced_parsed;
   RawCanonOutput<32> replaced;
-  ReplaceComponents(original.data(), original.length(), original_parsed,
-                    replacements, nullptr, &replaced, &replaced_parsed);
+  ReplaceComponents(original.view(), original_parsed, replacements, nullptr,
+                    &replaced, &replaced_parsed);
   EXPECT_TRUE(replaced_parsed.potentially_dangling_markup);
 }
 
@@ -534,7 +517,7 @@ std::optional<std::string> CanonicalizeSpec(std::string_view spec,
   std::string canonicalized;
   StdStringCanonOutput output(&canonicalized);
   Parsed parsed;
-  if (!Canonicalize(spec.data(), spec.size(), trim_path_end,
+  if (!Canonicalize(spec, trim_path_end,
                     /*charset_converter=*/nullptr, &output, &parsed)) {
     return {};
   }
@@ -719,13 +702,12 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
     SCOPED_TRACE(testing::Message()
                  << "base: " << test.base << ", rel: " << test.rel);
 
-    Parsed base_parsed = ParseNonSpecialURL(test.base);
+    Parsed base_parsed = ParseNonSpecialUrl(test.base);
     std::string resolved;
     StdStringCanonOutput output(&resolved);
     Parsed resolved_parsed;
-    bool valid =
-        ResolveRelative(test.base, strlen(test.base), base_parsed, test.rel,
-                        strlen(test.rel), nullptr, &output, &resolved_parsed);
+    bool valid = ResolveRelative(test.base, base_parsed, test.rel, nullptr,
+                                 &output, &resolved_parsed);
     output.Complete();
 
     EXPECT_EQ(test.is_valid, valid);

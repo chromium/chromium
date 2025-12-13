@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "components/download/public/common/download_path_reservation_tracker.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -24,7 +23,6 @@
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/download/public/common/download_path_reservation_tracker.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "net/base/filename_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -466,8 +464,9 @@ TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
   // Make room for the path with no uniquifier, the |kMaxUniqueFiles|
   // numerically uniquified paths, and then one more for the timestamp
   // uniquified path.
-  std::unique_ptr<MockDownloadItem>
-      items[DownloadPathReservationTracker::kMaxUniqueFiles + 2];
+  std::array<std::unique_ptr<MockDownloadItem>,
+             DownloadPathReservationTracker::kMaxUniqueFiles + 2>
+      items;
 
   // Create |kMaxUniqueFiles + 2| reservations for |path|. The first reservation
   // will have no uniquifier. Then |kMaxUniqueFiles| paths have numeric

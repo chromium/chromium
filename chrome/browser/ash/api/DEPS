@@ -16,5 +16,4 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/test/base",
-  "+chrome/browser/web_applications",
 ]

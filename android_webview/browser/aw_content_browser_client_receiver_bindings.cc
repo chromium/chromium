@@ -269,13 +269,8 @@ void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<spellcheck::mojom::SpellCheckHost>(
       create_spellcheck_host, content::GetUIThreadTaskRunner({}));
 #endif
-
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewMediaIntegrityApiBlinkExtension)) {
-    map->Add<blink::mojom::WebViewMediaIntegrityService>(
-        &BindMediaIntegrityServiceReceiver);
-  }
-
+  map->Add<blink::mojom::WebViewMediaIntegrityService>(
+      &BindMediaIntegrityServiceReceiver);
   if (base::FeatureList::IsEnabled(::features::kWebPayments)) {
     map->Add<payments::mojom::PaymentRequest>(
         &ForwardToJavaFrame<payments::mojom::PaymentRequest>);

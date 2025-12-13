@@ -11,9 +11,9 @@
 #import "base/strings/string_util.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/strike_database/strike_database.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/autofill/model/autofill_image_fetcher_factory.h"
@@ -66,9 +66,7 @@ PersonalDataManagerFactory::PersonalDataManagerFactory()
 PersonalDataManagerFactory::~PersonalDataManagerFactory() = default;
 
 std::unique_ptr<KeyedService>
-PersonalDataManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+PersonalDataManagerFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   scoped_refptr<autofill::AutofillWebDataService> local_storage =
       ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
@@ -78,8 +76,6 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
-  StrikeDatabase* strike_database =
-      StrikeDatabaseFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   AutofillImageFetcherBase* autofill_image_fetcher =
@@ -89,10 +85,11 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
       local_storage, account_storage, profile->GetPrefs(),
       GetApplicationContext()->GetLocalState(),
       IdentityManagerFactory::GetForProfile(profile), history_service,
-      sync_service, strike_database, autofill_image_fetcher,
+      sync_service, StrikeDatabaseFactory::GetForProfile(profile),
+      autofill_image_fetcher,
       /*shared_storage_handler=*/nullptr,
       GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
-      GetCountryCodeFromVariations());
+      GetCountryCodeFromVariations(), /*autofill_optimization_guide=*/nullptr);
 }
 
 }  // namespace autofill

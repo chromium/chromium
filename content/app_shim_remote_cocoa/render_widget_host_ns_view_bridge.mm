@@ -19,6 +19,8 @@
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"
 #import "content/app_shim_remote_cocoa/web_menu_runner_mac.h"
 #include "content/common/mac/attributed_string_type_converters.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/apple/url_conversions.h"
 #import "skia/ext/skia_utils_mac.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -306,14 +308,30 @@ void RenderWidgetHostNSViewBridge::UnlockKeyboard() {
 void RenderWidgetHostNSViewBridge::ShowSharingServicePicker(
     const std::string& title,
     const std::string& text,
-    const std::string& url,
+    const GURL& url,
     const std::vector<std::string>& file_paths,
     ShowSharingServicePickerCallback callback) {
-  NSString* ns_title = base::SysUTF8ToNSString(title);
-  NSString* ns_url = base::SysUTF8ToNSString(url);
-  NSString* ns_text = base::SysUTF8ToNSString(text);
-
-  NSMutableArray* items = [@[ ns_title, ns_url, ns_text ] mutableCopy];
+  NSMutableArray* items = [[NSMutableArray alloc] init];
+  if (url.is_valid()) {
+    if (@available(macOS 13.0, *)) {
+      NSString* ns_title =
+          base::SysUTF8ToNSString(title.empty() ? url.spec() : title);
+      NSURL* ns_url = net::NSURLWithGURL(url);
+      [items addObject:[[NSPreviewRepresentingActivityItem alloc]
+                           initWithItem:ns_url
+                                  title:ns_title
+                                  image:nil
+                                   icon:nil]];
+    } else {
+      [items addObject:base::SysUTF8ToNSString(url.spec())];
+      [items addObject:base::SysUTF8ToNSString(title)];
+    }
+  } else if (!title.empty()) {
+    [items addObject:base::SysUTF8ToNSString(title)];
+  }
+  if (!text.empty()) {
+    [items addObject:base::SysUTF8ToNSString(text)];
+  }
 
   for (const auto& file_path : file_paths) {
     NSString* ns_file_path = base::SysUTF8ToNSString(file_path);

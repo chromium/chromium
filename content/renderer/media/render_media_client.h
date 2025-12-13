@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/decoder.h"
@@ -40,6 +41,7 @@ class RenderMediaClient : public media::MediaClient {
   bool IsDecoderSupportedVideoType(const media::VideoType& type) final;
   bool IsEncoderSupportedVideoType(const media::VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(media::AudioCodec codec) final;
+  bool ShouldSuppressAudioTracks() final;
   std::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
       media::AudioParameters audio_parameters) final;

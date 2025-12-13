@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.usage_stats;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.usage_stats.WebsiteEventProtos.Timestamp;
 
 import java.util.ArrayList;
@@ -16,9 +18,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
- * In-memory store of {@link org.chromium.chrome.browser.usage_stats.WebsiteEvent} objects.
- * Allows for addition of events and querying for all events in a time interval.
+ * In-memory store of {@link org.chromium.chrome.browser.usage_stats.WebsiteEvent} objects. Allows
+ * for addition of events and querying for all events in a time interval.
  */
+@NullMarked
 public class EventTracker {
     private final UsageStatsBridge mBridge;
     private final Promise<List<WebsiteEvent>> mRootPromise;
@@ -30,7 +33,7 @@ public class EventTracker {
         // call variants of then() that don't take a single callback. These variants set an
         // exception handler on the returned promise, so they expect there to be one on the root
         // promise.
-        mRootPromise.except(CallbackUtils.emptyCallback());
+        mRootPromise.except(CallbackUtils.<@Nullable Exception>emptyCallback());
         mBridge.getAllEvents(
                 (result) -> {
                     List<WebsiteEvent> events = new ArrayList<>(result.size());
@@ -65,8 +68,8 @@ public class EventTracker {
      * last event in the list is illegal. The returned promise will be fulfilled once persistence
      * succeeds, and rejected if persistence fails.
      */
-    public Promise<Void> addWebsiteEvent(WebsiteEvent event) {
-        final Promise<Void> writePromise = new Promise<>();
+    public Promise<@Nullable Void> addWebsiteEvent(WebsiteEvent event) {
+        final Promise<@Nullable Void> writePromise = new Promise<>();
         mRootPromise.then(
                 (result) -> {
                     List<WebsiteEventProtos.WebsiteEvent> eventsList =
@@ -82,14 +85,14 @@ public class EventTracker {
                                 }
                             });
                 },
-                CallbackUtils.emptyCallback());
+                CallbackUtils.<@Nullable Exception>emptyCallback());
 
         return writePromise;
     }
 
     /** Remove every item in the list of events. */
-    public Promise<Void> clearAll() {
-        final Promise<Void> writePromise = new Promise<>();
+    public Promise<@Nullable Void> clearAll() {
+        final Promise<@Nullable Void> writePromise = new Promise<>();
         mRootPromise.then(
                 (result) -> {
                     mBridge.deleteAllEvents(
@@ -102,13 +105,13 @@ public class EventTracker {
                                 }
                             });
                 },
-                CallbackUtils.emptyCallback());
+                CallbackUtils.<@Nullable Exception>emptyCallback());
         return writePromise;
     }
 
     /** Removes items in the list in the half-open range [startTimeMs, endTimeMs). */
-    public Promise<Void> clearRange(long startTimeMs, long endTimeMs) {
-        final Promise<Void> writePromise = new Promise<>();
+    public Promise<@Nullable Void> clearRange(long startTimeMs, long endTimeMs) {
+        final Promise<@Nullable Void> writePromise = new Promise<>();
         mRootPromise.then(
                 (result) -> {
                     mBridge.deleteEventsInRange(
@@ -123,13 +126,13 @@ public class EventTracker {
                                 }
                             });
                 },
-                CallbackUtils.emptyCallback());
+                CallbackUtils.<@Nullable Exception>emptyCallback());
         return writePromise;
     }
 
     /** Clear any events that have a domain in fqdns. */
-    public Promise<Void> clearDomains(List<String> fqdns) {
-        final Promise<Void> writePromise = new Promise<>();
+    public Promise<@Nullable Void> clearDomains(List<String> fqdns) {
+        final Promise<@Nullable Void> writePromise = new Promise<>();
         mRootPromise.then(
                 (result) -> {
                     mBridge.deleteEventsWithMatchingDomains(
@@ -143,7 +146,7 @@ public class EventTracker {
                                 }
                             });
                 },
-                CallbackUtils.emptyCallback());
+                CallbackUtils.<@Nullable Exception>emptyCallback());
         return writePromise;
     }
 

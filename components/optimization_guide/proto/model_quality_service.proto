@@ -6,22 +6,28 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/features/actor_login.proto";
+import "components/optimization_guide/proto/features/amount_extraction.proto";
 import "components/optimization_guide/proto/features/bling_prototyping.proto";
 import "components/optimization_guide/proto/features/compose.proto";
+import "components/optimization_guide/proto/features/contextual_tasks_context.proto";
 import "components/optimization_guide/proto/features/default.proto";
 import "components/optimization_guide/proto/features/enhanced_calendar.proto";
 import "components/optimization_guide/proto/features/forms_classifications.proto";
 import "components/optimization_guide/proto/features/history_answer.proto";
 import "components/optimization_guide/proto/features/history_query.proto";
 import "components/optimization_guide/proto/features/history_query_intent.proto";
+import "components/optimization_guide/proto/features/ios_smart_tab_grouping.proto";
 import "components/optimization_guide/proto/features/model_prototyping.proto";
 import "components/optimization_guide/proto/features/notification_content_detection.proto";
 import "components/optimization_guide/proto/features/password_change_submission.proto";
-import "components/optimization_guide/proto/features/permissions_ai.proto";
 import "components/optimization_guide/proto/features/product_specifications.proto";
+import "components/optimization_guide/proto/features/prompt_api.proto";
 import "components/optimization_guide/proto/features/proofreader_api.proto";
 import "components/optimization_guide/proto/features/scam_detection.proto";
+import "components/optimization_guide/proto/features/summarize.proto";
 import "components/optimization_guide/proto/features/tab_organization.proto";
+import "components/optimization_guide/proto/features/walletable_pass_extraction.proto";
 import "components/optimization_guide/proto/features/wallpaper_search.proto";
 import "components/optimization_guide/proto/features/writing_assistance_api.proto";
 import "components/optimization_guide/proto/features/zero_state_suggestions.proto";
@@ -34,7 +40,12 @@ option java_outer_classname = "ModelQualityServiceProto";
 // A request to send AI data logs to the model quality server. Data logging for
 // an AI feature with metadata specific to the logging.
 message LogAiDataRequest {
-  reserved 10, 11;
+  reserved 10, 11, 18;
+
+  // For the use of MQLS client ID in glic API.
+  // LINT.IfChange(MQLSClientIdReservation)
+  reserved 1002;
+  // LINT.ThenChange(//components/optimization_guide/core/model_quality/model_quality_util.cc:MQLSClientIdReservation)
 
   // Information about a feature's AiLoggingData, such as training opt-outs.
   LoggingMetadata logging_metadata = 1;
@@ -66,8 +77,6 @@ message LogAiDataRequest {
 
     ScamDetectionLoggingData scam_detection = 17;
 
-    PermissionsAILoggingData permissions_ai = 18;
-
     FormsClassificationsLoggingData forms_classifications = 19;
 
     NotificationContentDetectionLoggingData notification_content_detection = 20;
@@ -79,6 +88,20 @@ message LogAiDataRequest {
     WritingAssistanceApiLoggingData writing_assistance_api = 23;
 
     ProofreaderApiLoggingData proofreader_api = 25;
+
+    PromptApiLoggingData prompt_api = 26;
+
+    SummarizeLoggingData summarize = 27;
+
+    WalletablePassExtractionLoggingData walletable_pass_extraction = 28;
+
+    AmountExtractionLoggingData amount_extraction = 29;
+
+    IosSmartTabGroupingLoggingData ios_smart_tab_grouping = 30;
+
+    ActorLoginLoggingData actor_login = 31;
+
+    ContextualTasksContextLoggingData contextual_tasks_context = 32;
 
     DefaultLoggingData default = 1000;
   }

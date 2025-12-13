@@ -4,7 +4,7 @@
 
 package org.chromium.ui.test.util;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.RestrictionSkipCheck;
@@ -26,7 +26,11 @@ public final class DeviceRestriction {
 
     private static boolean isAuto() {
         if (sIsAuto == null) {
-            sIsAuto = ThreadUtils.runOnUiThreadBlocking(() -> BuildInfo.getInstance().isAutomotive);
+            sIsAuto =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> {
+                                return DeviceInfo.isAutomotive();
+                            });
         }
         return sIsAuto;
     }

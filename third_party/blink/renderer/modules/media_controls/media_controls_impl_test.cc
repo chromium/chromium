@@ -157,17 +157,13 @@ enum DownloadActionMetrics {
 
 class MediaControlsImplTest
     : public PageTestBase,
-      private ScopedMediaCastOverlayButtonForTest,
       private ScopedMediaControlsOverlayPlayButtonForTest {
  public:
   explicit MediaControlsImplTest(
       base::test::TaskEnvironment::TimeSource time_source)
       : PageTestBase(time_source),
-        ScopedMediaCastOverlayButtonForTest(true),
         ScopedMediaControlsOverlayPlayButtonForTest(true) {}
-  MediaControlsImplTest()
-      : ScopedMediaCastOverlayButtonForTest(true),
-        ScopedMediaControlsOverlayPlayButtonForTest(true) {}
+  MediaControlsImplTest() : ScopedMediaControlsOverlayPlayButtonForTest(true) {}
 
  protected:
   void SetUp() override {
@@ -527,20 +523,6 @@ TEST_F(MediaControlsImplTest, CastOverlayDefault) {
   ASSERT_TRUE(IsElementVisible(*cast_overlay_button));
 }
 
-TEST_F(MediaControlsImplTest, CastOverlayDisabled) {
-  MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
-                                                     false);
-
-  ScopedMediaCastOverlayButtonForTest media_cast_overlay_button(false);
-
-  Element* cast_overlay_button = GetElementByShadowPseudoId(
-      MediaControls(), "-internal-media-controls-overlay-cast-button");
-  ASSERT_NE(nullptr, cast_overlay_button);
-
-  SimulateRemotePlaybackAvailable();
-  ASSERT_FALSE(IsElementVisible(*cast_overlay_button));
-}
-
 TEST_F(MediaControlsImplTest, CastOverlayDisableRemotePlaybackAttr) {
   MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
                                                      false);
@@ -581,27 +563,6 @@ TEST_F(MediaControlsImplTest, CastOverlayMediaControlsDisabled) {
 
   GetDocument().GetSettings()->SetMediaControlsEnabled(true);
   EXPECT_TRUE(IsElementVisible(*cast_overlay_button));
-}
-
-TEST_F(MediaControlsImplTest, CastOverlayDisabledMediaControlsDisabled) {
-  MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
-                                                     false);
-
-  ScopedMediaCastOverlayButtonForTest media_cast_overlay_button(false);
-
-  Element* cast_overlay_button = GetElementByShadowPseudoId(
-      MediaControls(), "-internal-media-controls-overlay-cast-button");
-  ASSERT_NE(nullptr, cast_overlay_button);
-
-  EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
-  SimulateRemotePlaybackAvailable();
-  EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
-
-  GetDocument().GetSettings()->SetMediaControlsEnabled(false);
-  EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
-
-  GetDocument().GetSettings()->SetMediaControlsEnabled(true);
-  EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
 }
 
 TEST_F(MediaControlsImplTest, CastOverlayDisabledAutoplayMuted) {

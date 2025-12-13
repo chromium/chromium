@@ -36,9 +36,6 @@ class ShellContentRendererClient : public content::ContentRendererClient {
   bool OverrideCreatePlugin(content::RenderFrame* render_frame,
                             const blink::WebPluginParams& params,
                             blink::WebPlugin** plugin) override;
-  blink::WebPlugin* CreatePluginReplacement(
-      content::RenderFrame* render_frame,
-      const base::FilePath& plugin_path) override;
   void WillSendRequest(blink::WebLocalFrame* frame,
                        ui::PageTransition transition_type,
                        const blink::WebURL& upstream_url,

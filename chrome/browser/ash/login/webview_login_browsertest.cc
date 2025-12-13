@@ -23,6 +23,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -245,45 +246,6 @@ void PolicyChangedCallback(base::RepeatingClosure callback,
                            const base::Value* new_value) {
   callback.Run();
 }
-
-// Observes OOBE screens and can be queried to see if the error screen has been
-// displayed since ErrorScreenWatcher has been constructed.
-class ErrorScreenWatcher : public OobeUI::Observer {
- public:
-  ErrorScreenWatcher() {
-    OobeUI* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
-    oobe_ui_observation_.Observe(oobe_ui);
-
-    if (oobe_ui->current_screen() == ErrorScreenView::kScreenId) {
-      has_error_screen_been_shown_ = true;
-    }
-  }
-
-  ErrorScreenWatcher(const ErrorScreenWatcher& other) = delete;
-  ErrorScreenWatcher& operator=(const ErrorScreenWatcher& other) = delete;
-
-  ~ErrorScreenWatcher() override = default;
-
-  bool has_error_screen_been_shown() const {
-    return has_error_screen_been_shown_;
-  }
-
-  // OobeUI::Observer:
-  void OnCurrentScreenChanged(OobeScreenId current_screen,
-                              OobeScreenId new_screen) override {
-    if (new_screen == ErrorScreenView::kScreenId) {
-      has_error_screen_been_shown_ = true;
-    }
-  }
-
-  // OobeUI::Observer:
-  void OnDestroyingOobeUI() override {}
-
- private:
-  base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observation_{this};
-
-  bool has_error_screen_been_shown_ = false;
-};
 
 bool EqualsTestCert(const net::X509Certificate& cert,
                     const std::string& expected_test_cert_name) {
@@ -1442,28 +1404,11 @@ class ReauthEndpointWebviewLoginOwnerTest
   ReauthEndpointWebviewLoginOwnerTest() = default;
   ~ReauthEndpointWebviewLoginOwnerTest() override = default;
 
-  void SetUp() override {
-    ReauthEndpointWebviewLoginTest::SetUp();
-
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-  }
-
   void SetUpOnMainThread() override {
     ReauthEndpointWebviewLoginTest::SetUpOnMainThread();
-
-    GetFakeUserManager().SetOwnerId(AccountId::FromUserEmailGaiaId(
+    user_manager::UserManager::Get()->SetOwnerId(AccountId::FromUserEmailGaiaId(
         FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserGaiaId));
   }
-
- private:
-  ash::FakeChromeUserManager& GetFakeUserManager() {
-    return CHECK_DEREF(static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get()));
-  }
-
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(ReauthEndpointWebviewLoginOwnerTest, SupervisedUser) {
@@ -1565,7 +1510,10 @@ class WebviewLoginWithIframeTest
 };
 
 IN_PROC_BROWSER_TEST_P(WebviewLoginWithIframeTest, GaiaWithIframe) {
-  ErrorScreenWatcher error_screen_watcher;
+  // Observes OOBE screens and can be queried to see if the error screen has
+  // been displayed since it has been constructed.
+  test::OobeScreenWatcher<ErrorScreenView> error_screen_watcher(
+      LoginDisplayHost::default_host()->GetOobeUI());
 
   content::TestNavigationObserver navigation_observer(frame_url_);
   navigation_observer.StartWatchingNewWebContents();
@@ -1586,7 +1534,7 @@ IN_PROC_BROWSER_TEST_P(WebviewLoginWithIframeTest, GaiaWithIframe) {
   // screen is currently being replaced, because the error screen could have
   // been shown in the meantime (and then exited again because the "device" has
   // internet connectivity).
-  EXPECT_FALSE(error_screen_watcher.has_error_screen_been_shown());
+  EXPECT_FALSE(error_screen_watcher.has_target_screen_been_shown());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1642,9 +1590,9 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
         BuildDeviceOncDictForUntrustedAuthority(x509_contents);
 
     em::ChromeDeviceSettingsProto& proto(device_policy_builder_.payload());
-    base::JSONWriter::Write(onc_dict,
-                            proto.mutable_open_network_configuration()
-                                ->mutable_open_network_configuration());
+    *(proto.mutable_open_network_configuration()
+          ->mutable_open_network_configuration()) =
+        base::WriteJson(onc_dict).value_or("");
 
     device_policy_builder_.Build();
 

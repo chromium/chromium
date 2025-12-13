@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/track_run_iterator.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
@@ -431,7 +427,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
 
       // Avoid allocating insane sample counts for invalid media.
       size_t max_sample_count =
-          GetDemuxerMemoryLimit(DemuxerType::kChunkDemuxer) /
+          GetDemuxerMemoryLimit(DemuxerType::kChunkDemuxer).InBytes() /
           sizeof(decltype(tri.samples)::value_type);
 
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
@@ -512,14 +508,9 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
           }
 #endif  // BUILDFLAG(IS_CASTOS)
           if (is_encrypted && !iv_size) {
-            const uint8_t constant_iv_size =
-                index == 0 ? track_encryption->default_constant_iv_size
-                           : info_entry->constant_iv_size;
-            RCHECK(constant_iv_size != 0);
-            const uint8_t* constant_iv =
+            entry.initialization_vector =
                 index == 0 ? track_encryption->default_constant_iv
                            : info_entry->constant_iv;
-            memcpy(entry.initialization_vector, constant_iv, constant_iv_size);
           }
         }
       }
@@ -586,8 +577,9 @@ bool TrackRunIterator::AuxInfoNeedsToBeCached() {
 }
 
 // This implementation currently only caches CENC auxiliary info.
-bool TrackRunIterator::CacheAuxInfo(const uint8_t* buf, int buf_size) {
-  RCHECK(AuxInfoNeedsToBeCached() && buf_size >= aux_info_size());
+bool TrackRunIterator::CacheAuxInfo(base::span<const uint8_t> buf) {
+  RCHECK(AuxInfoNeedsToBeCached() &&
+         buf.size() >= base::checked_cast<size_t>(aux_info_size()));
 
   std::vector<SampleEncryptionEntry>& sample_encryption_entries =
       runs_[run_itr_ - runs_.begin()].sample_encryption_entries;
@@ -599,7 +591,8 @@ bool TrackRunIterator::CacheAuxInfo(const uint8_t* buf, int buf_size) {
       info_size = run_itr_->aux_info_sizes[i];
 
     if (IsSampleEncrypted(i)) {
-      BufferReader reader(buf + pos, info_size);
+      BufferReader reader(buf.subspan(base::checked_cast<size_t>(pos)).data(),
+                          info_size);
       const uint8_t iv_size = GetIvSize(i);
       const bool has_subsamples = info_size > iv_size;
       SampleEncryptionEntry& entry = sample_encryption_entries[i];
@@ -740,8 +733,8 @@ std::unique_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
     SampleEncryptionEntry sample_encryption_entry;
     if (ApplyConstantIv(sample_idx, &sample_encryption_entry)) {
       std::string iv(reinterpret_cast<const char*>(
-                         sample_encryption_entry.initialization_vector),
-                     std::size(sample_encryption_entry.initialization_vector));
+                         sample_encryption_entry.initialization_vector.data()),
+                     sample_encryption_entry.initialization_vector.size());
       switch (run_itr_->encryption_scheme) {
         case EncryptionScheme::kUnencrypted:
           return nullptr;
@@ -762,8 +755,8 @@ std::unique_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
   const SampleEncryptionEntry& sample_encryption_entry =
       run_itr_->sample_encryption_entries[sample_idx];
   std::string iv(reinterpret_cast<const char*>(
-                     sample_encryption_entry.initialization_vector),
-                 std::size(sample_encryption_entry.initialization_vector));
+                     sample_encryption_entry.initialization_vector.data()),
+                 sample_encryption_entry.initialization_vector.size());
 
   size_t total_size = 0;
   if (!sample_encryption_entry.subsamples.empty() &&
@@ -823,16 +816,18 @@ bool TrackRunIterator::ApplyConstantIv(size_t sample_index,
                                        SampleEncryptionEntry* entry) const {
   DCHECK(IsSampleEncrypted(sample_index));
   uint32_t index = GetGroupDescriptionIndex(sample_index);
-  const uint8_t constant_iv_size =
-      index == 0
-          ? track_encryption().default_constant_iv_size
-          : GetSampleEncryptionInfoEntry(*run_itr_, index)->constant_iv_size;
-  RCHECK(constant_iv_size != 0);
-  const uint8_t* constant_iv =
-      index == 0 ? track_encryption().default_constant_iv
-                 : GetSampleEncryptionInfoEntry(*run_itr_, index)->constant_iv;
-  RCHECK(constant_iv != nullptr);
-  memcpy(entry->initialization_vector, constant_iv, kInitializationVectorSize);
+  if (index == 0) {
+    const auto& tenc = track_encryption();
+    RCHECK(tenc.default_constant_iv_size != 0);
+    base::span(entry->initialization_vector)
+        .copy_from(tenc.default_constant_iv);
+  } else {
+    const CencSampleEncryptionInfoEntry* entry_info =
+        GetSampleEncryptionInfoEntry(*run_itr_, index);
+    RCHECK(entry_info);
+    RCHECK(entry_info->constant_iv_size != 0);
+    base::span(entry->initialization_vector).copy_from(entry_info->constant_iv);
+  }
   return true;
 }
 

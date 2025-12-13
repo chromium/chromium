@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Žanras</translation>
 <translation id="1254593899333212300">Tiesioginis interneto ryšys</translation>
 <translation id="1272293450992660632">PIN kodai nesutampa.</translation>
+<translation id="1279040297980392566">Laukiama, kol bus baigtas nuskaitymas. Vėliau bandykite dar kartą</translation>
 <translation id="1280820357415527819">Ieškoma mobiliojo ryšio tinklų</translation>
 <translation id="1293556467332435079">Failai</translation>
 <translation id="1297922636971898492">„Google“ diskas dabar nepasiekiamas. Įkėlimas bus iš naujo pradėtas automatiškai, kai „Google“ diskas bus vėl pasiekiamas.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Pasirinktas 1 failas</translation>
 <translation id="3817579325494460411">Nepateikta</translation>
 <translation id="3819448694985509187">Netinkamas PIN kodas. Liko vienas bandymas.</translation>
-<translation id="3822559385185038546">Šį tarpinio serverio nustatymą priverstinai pritaikė administratorius</translation>
 <translation id="3830674330436234648">Atkūrimas nepasiekiamas</translation>
 <translation id="383652340667548381">Serbų</translation>
 <translation id="3839045880592694915">Operatorius neleidžia prijungti modemo. Susisiekite su operatoriumi, jei reikia daugiau išsamios informacijos.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="5602622065581044566">Bulgarų k. su fonetine klaviatūra</translation>
 <translation id="5605830556594064952">JAV Dvorako</translation>
+<translation id="560739212255190568">Administratorius nustatė tarpinio serverio nepaisymo taisykles ir įgalino toliau nurodytą tarpinį serverį</translation>
 <translation id="5618330573454123917">Šis failas skirtas kompiuteriui, kuriame naudojama „Macintosh“ programinė įranga. Jis nesuderinamas su jūsų įrenginiu, kuriame veikia „Chrome“ OS. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /> apie failų atidarymą naudojant „Chrome“ OS.</translation>
 <translation id="5625294776298156701">Tamilų k. su „Tamil99“ klaviatūra</translation>
 <translation id="5633226425545095130">Perkėlus šį elementą jis bus bendrinamas su visais, kurie gali peržiūrėti bendrinamą aplanką „<ph name="DESTINATION_NAME" />“.</translation>
@@ -787,7 +788,7 @@
 <translation id="7075931588889865715">Tajų k. su TIS 820-2531 klaviatūra</translation>
 <translation id="708278670402572152">Atjunkite, kad įgalintumėte nuskaitymą</translation>
 <translation id="7086590977277044826">Tamilų k. su „InScript“ klaviatūra</translation>
-<translation id="7088615885725309056">Ankstesnė</translation>
+<translation id="7088615885725309056">Senesnis</translation>
 <translation id="7103992300314999525">Makedoniečių k.</translation>
 <translation id="7104338189998813914">Bandant pasiekti „OneDrive“ paskyrą kilo problema</translation>
 <translation id="7106346894903675391">Įsigyti daugiau atminties...</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, išsami informacija</translation>
 <translation id="8545476925160229291">Anglų k. (JAV)</translation>
 <translation id="854655314928502177">Žiniatinklio tarpinio serverio automatinio aptikimo URL:</translation>
+<translation id="8547747809824590510">Administratorius nustatė tarpinio serverio nepaisymo taisykles</translation>
 <translation id="8549186985808798022">Italų k.</translation>
 <translation id="8551494947769799688">Latvių</translation>
 <translation id="8560515948038859357">Kantoniečių k.</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Failas pavadinimu „<ph name="FILE_NAME" />“ jau yra. Pasirinkite kitą pavadinimą.</translation>
 <translation id="9046895021617826162">Nepavyko prisijungti</translation>
 <translation id="9065512565307033593">Jei jums nepavyks patvirtinti, tinklo prieiga bus išjungta.</translation>
+<translation id="9079844694307518094">Administratorius įgalino toliau nurodytą tarpinį serverį</translation>
 <translation id="908378762078012445">Rusų k. su fonetine AATSEEL klaviatūra</translation>
 <translation id="9086302186042011942">Sinchronizuojama</translation>
 <translation id="9099674669267916096">Puslapių skaičius</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Diegimas sėkmingai pradėtas.</translation>
 <translation id="9219103736887031265">Vaizdai</translation>
 <translation id="9219908252191632183">Mėnulyje</translation>
+<translation id="931652069802536959">Tinklas užblokuotas pagal politiką</translation>
 <translation id="938470336146445890">Įdiekite naudotojo sertifikatą.</translation>
 <translation id="939736085109172342">Naujas aplankas</translation>
 <translation id="943972244133411984">Pakeitė</translation>

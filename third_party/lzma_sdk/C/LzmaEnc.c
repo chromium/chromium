@@ -62,7 +62,9 @@ void LzmaEncProps_Init(CLzmaEncProps *p)
   p->lc = p->lp = p->pb = p->algo = p->fb = p->btMode = p->numHashBytes = p->numThreads = -1;
   p->numHashOutBits = 0;
   p->writeEndMark = 0;
+  p->affinityGroup = -1;
   p->affinity = 0;
+  p->affinityInGroup = 0;
 }
 
 void LzmaEncProps_Normalize(CLzmaEncProps *p)
@@ -598,6 +600,10 @@ SRes LzmaEnc_SetProps(CLzmaEncHandle p, const CLzmaEncProps *props2)
   p->multiThread = (props.numThreads > 1);
   p->matchFinderMt.btSync.affinity =
   p->matchFinderMt.hashSync.affinity = props.affinity;
+  p->matchFinderMt.btSync.affinityGroup =
+  p->matchFinderMt.hashSync.affinityGroup = props.affinityGroup;
+  p->matchFinderMt.btSync.affinityInGroup =
+  p->matchFinderMt.hashSync.affinityInGroup = props.affinityInGroup;
   #endif
 
   return SZ_OK;

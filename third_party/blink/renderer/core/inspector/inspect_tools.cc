@@ -803,20 +803,47 @@ void PausedInDebuggerTool::Dispatch(const ScriptValue& message,
         overlay_->GetFrame()->GetTaskRunner(TaskType::kInternalInspector);
     if (message_string == "resume") {
       task_runner->PostTask(
-          FROM_HERE, WTF::BindOnce(&v8_inspector::V8InspectorSession::resume,
-                                   WTF::Unretained(v8_session_),
-                                   /* setTerminateOnResume */ false));
+          FROM_HERE,
+          blink::BindOnce(&PausedInDebuggerTool::ExecuteOnV8Session,
+                          WrapPersistent(weak_factory_.GetWeakCell()),
+                          Action::kResume));
       return;
     }
     if (message_string == "stepOver") {
       task_runner->PostTask(
-          FROM_HERE, WTF::BindOnce(&v8_inspector::V8InspectorSession::stepOver,
-                                   WTF::Unretained(v8_session_)));
+          FROM_HERE,
+          blink::BindOnce(&PausedInDebuggerTool::ExecuteOnV8Session,
+                          WrapPersistent(weak_factory_.GetWeakCell()),
+                          Action::kStepOver));
       return;
     }
   }
   exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                     kInvalidOverlayCommand);
+}
+
+void PausedInDebuggerTool::ExecuteOnV8Session(Action action) {
+  if (!v8_session_) {
+    return;
+  }
+
+  switch (action) {
+    case Action::kResume:
+      v8_session_->resume(/* setTerminateOnResume */ false);
+      break;
+    case Action::kStepOver:
+      v8_session_->stepOver();
+      break;
+  }
+}
+
+void PausedInDebuggerTool::OnAgentDisable() {
+  v8_session_ = nullptr;
+}
+
+void PausedInDebuggerTool::Trace(Visitor* visitor) const {
+  InspectTool::Trace(visitor);
+  visitor->Trace(weak_factory_);
 }
 
 // WcoTool --------------------------------------------------------

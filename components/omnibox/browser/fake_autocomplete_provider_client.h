@@ -15,6 +15,7 @@
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -79,7 +80,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   const TabMatcher& GetTabMatcher() const override;
   scoped_refptr<history::TopSites> GetTopSites() override;
   std::string ProfileUserName() const override;
-
+  AimEligibilityService* GetAimEligibilityService() const override;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
@@ -138,6 +139,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   scoped_refptr<history::TopSites> top_sites_;
   std::unique_ptr<tab_groups::FakeTabGroupSyncService>
       fake_tab_group_sync_service_;
+  std::unique_ptr<MockAimEligibilityService> mock_aim_eligibility_service_;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<FakeOnDeviceTailModelService> on_device_tail_model_service_;

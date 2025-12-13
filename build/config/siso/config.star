@@ -31,6 +31,10 @@ __KNOWN_CONFIG_OPTIONS = [
     # This is useful when remote actions are expected to take longer than
     # the configured timeouts. e.g. remote linking for official builds.
     "no-remote-timeout",
+
+    # Run javac commands locally. Needed to get hints about how to fix missing
+    # GN deps.
+    "no-remote-javac",
 ]
 
 def __check(ctx):

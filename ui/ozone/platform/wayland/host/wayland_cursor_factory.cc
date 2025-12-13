@@ -41,7 +41,9 @@ WaylandCursorFactory::ThemeData::ThemeData() = default;
 WaylandCursorFactory::ThemeData::~ThemeData() {
   for (auto& [cursor_type, cursor] : cache()) {
     // Avoids Dangling raw_ptr of wl_cursor*.
-    cursor->bitmap_cursor()->clear_platform_data();
+    if (cursor->bitmap_cursor()) {
+        cursor->bitmap_cursor()->clear_platform_data();
+    }
   }
 }
 
@@ -70,6 +72,7 @@ WaylandCursorFactory::WaylandCursorFactory(WaylandConnection* connection)
 }
 
 WaylandCursorFactory::~WaylandCursorFactory() {
+  connection_->UpdateCursor();
   connection_->SetCursorBufferListener(nullptr);
 }
 

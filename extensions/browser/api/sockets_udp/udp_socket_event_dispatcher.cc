@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/sockets_udp/udp_socket_event_dispatcher.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/containers/to_vector.h"
@@ -128,9 +129,9 @@ void UDPSocketEventDispatcher::ReceiveCallback(
     receive_info.remote_address = address;
     receive_info.remote_port = port;
     auto args = sockets_udp::OnReceive::Create(receive_info);
-    std::unique_ptr<Event> event(new Event(events::SOCKETS_UDP_ON_RECEIVE,
-                                           sockets_udp::OnReceive::kEventName,
-                                           std::move(args)));
+    auto event = std::make_unique<Event>(events::SOCKETS_UDP_ON_RECEIVE,
+                                         sockets_udp::OnReceive::kEventName,
+                                         std::move(args));
     PostEvent(params, std::move(event));
 
     // Post a task to delay the read until the socket is available, as

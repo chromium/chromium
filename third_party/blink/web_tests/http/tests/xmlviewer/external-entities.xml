@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+[
+<!ENTITY test_entity SYSTEM "http://127.0.0.1:8000/xmlviewer/external.ent">
+]>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  When external entities are allowed, you should see "SUCCESS, RESOLVED!" after
+  the question below. Otherwise the anwer is empty.<br /><br />
+  External entity resolved?
+  <span id="containsTestEntity">&test_entity;</span>
+  <script>
+    async_test(function (t) {
+      document.addEventListener("DOMContentLoaded", function (e) {
+        t.step(function () {
+          assert_equals(
+            document.getElementById("containsTestEntity").textContent.trim(),
+            "SUCCESS, RESOLVED!",
+            "While external entities are still allowed, the test element should contain text, otherwise this should fail."
+          );
+        });
+        t.done();
+      });
+    }, "External resolution of XML entities, depending on flag.");
+  </script>
+</html>

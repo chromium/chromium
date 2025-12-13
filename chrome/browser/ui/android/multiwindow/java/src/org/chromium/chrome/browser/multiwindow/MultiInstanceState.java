@@ -10,12 +10,12 @@ import android.util.SparseBooleanArray;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Tracks multi-instance mode of Chrome browser app.
@@ -43,7 +43,7 @@ public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListe
         boolean is(String baseActivity);
     }
 
-    private final Supplier<List<AppTask>> mAppTaskSupplier;
+    @Nullable private Supplier<List<AppTask>> mAppTaskSupplier;
     private final BaseActivityName mBaseActivityName;
 
     // Task visibility observer list.
@@ -73,6 +73,7 @@ public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListe
     }
 
     private boolean isRelevantTaskId(int taskId) {
+        assert mAppTaskSupplier != null;
         for (AppTask task : mAppTaskSupplier.get()) {
             ActivityManager.RecentTaskInfo taskInfo = AndroidTaskUtils.getTaskInfoFromTask(task);
             if (taskInfo == null || taskInfo.baseActivity == null || taskInfo.id != taskId) {
@@ -126,6 +127,7 @@ public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListe
     void clear() {
         ApplicationStatus.unregisterTaskVisibilityListener(this);
         mObservers.clear();
+        mAppTaskSupplier = null;
         sInstance = null;
     }
 

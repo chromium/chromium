@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/crash/core/app/crashpad.h"
 
 #include <dlfcn.h>
@@ -18,12 +13,15 @@
 #include <algorithm>
 #include <string_view>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
+#include "base/android/apk_info.h"
+#include "base/android/device_info.h"
 #include "base/android/java_exception_reporter.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -160,12 +158,11 @@ class SandboxedHandler {
     // Android's debuggerd handler on JB MR2 until OREO displays a dialog which
     // is a bad user experience for child process crashes. Disable the debuggerd
     // handler for user builds. crbug.com/273706
-    base::android::BuildInfo* build_info =
-        base::android::BuildInfo::GetInstance();
     restore_previous_handler_ =
-        build_info->sdk_int() >= base::android::SDK_VERSION_OREO ||
-        build_info->build_type() == "eng" ||
-        build_info->build_type() == "userdebug";
+        base::android::android_info::sdk_int() >=
+            base::android::android_info::SDK_VERSION_OREO ||
+        base::android::android_info::build_type() == "eng" ||
+        base::android::android_info::build_type() == "userdebug";
 
     bool signal_stack_initialized =
         CrashpadClient::InitializeSignalStackForThread();
@@ -235,7 +232,8 @@ class SandboxedHandler {
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;
     cmsg->cmsg_len = CMSG_LEN(sizeof(int));
-    *reinterpret_cast<int*>(CMSG_DATA(cmsg)) = handlers_socket.get();
+    *reinterpret_cast<int*>(UNSAFE_TODO(CMSG_DATA(cmsg))) =
+        handlers_socket.get();
 
     if (HANDLE_EINTR(sendmsg(server_fd_, &msg, MSG_NOSIGNAL)) < 0) {
       return errno;
@@ -286,23 +284,28 @@ void SetJavaExceptionInfo(const char* info_string) {
 }
 
 void SetBuildInfoAnnotations(std::map<std::string, std::string>* annotations) {
-  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
+  (*annotations)["android_build_id"] =
+      base::android::android_info::android_build_id();
+  (*annotations)["android_build_fp"] =
+      base::android::android_info::android_build_fp();
+  (*annotations)["sdk"] =
+      base::StringPrintf("%d", base::android::android_info::sdk_int());
+  (*annotations)["device"] = base::android::android_info::device();
+  (*annotations)["model"] = base::android::android_info::model();
+  (*annotations)["brand"] = base::android::android_info::brand();
+  (*annotations)["board"] = base::android::android_info::board();
+  (*annotations)["installer_package_name"] =
+      base::android::apk_info::installer_package_name();
+  (*annotations)["abi_name"] = base::android::android_info::abi_name();
+  (*annotations)["resources_version"] =
+      base::android::apk_info::resources_version();
+  (*annotations)["gms_core_version"] =
+      base::android::device_info::gms_version_code();
 
-  (*annotations)["android_build_id"] = info->android_build_id();
-  (*annotations)["android_build_fp"] = info->android_build_fp();
-  (*annotations)["sdk"] = base::StringPrintf("%d", info->sdk_int());
-  (*annotations)["device"] = info->device();
-  (*annotations)["model"] = info->model();
-  (*annotations)["brand"] = info->brand();
-  (*annotations)["board"] = info->board();
-  (*annotations)["installer_package_name"] = info->installer_package_name();
-  (*annotations)["abi_name"] = info->abi_name();
-  (*annotations)["resources_version"] = info->resources_version();
-  (*annotations)["gms_core_version"] = info->gms_version_code();
-
-  (*annotations)["package"] = std::string(info->package_name()) + " v" +
-                              info->package_version_code() + " (" +
-                              info->package_version_name() + ")";
+  (*annotations)["package"] =
+      std::string(base::android::apk_info::package_name()) + " v" +
+      base::android::apk_info::package_version_code() + " (" +
+      base::android::apk_info::package_version_name() + ")";
 }
 
 // Constructs paths to a handler trampoline executable and a library exporting
@@ -313,8 +316,8 @@ bool GetHandlerTrampoline(std::string* handler_trampoline,
                           std::string* handler_library) {
   // The linker doesn't support loading executables passed on its command
   // line until Q.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_Q) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_Q) {
     return false;
   }
 
@@ -409,11 +412,13 @@ bool BuildEnvironmentWithApk(bool use_64_bit,
 
   result->push_back("CLASSPATH=" + classpath);
   result->push_back("LD_LIBRARY_PATH=" + library_path);
-  for (char** envp = environ; *envp != nullptr; ++envp) {
-    if ((strncmp(*envp, kClasspathVar, strlen(kClasspathVar)) == 0 &&
-         (*envp)[strlen(kClasspathVar)] == '=') ||
-        (strncmp(*envp, kLdLibraryPathVar, strlen(kLdLibraryPathVar)) == 0 &&
-         (*envp)[strlen(kLdLibraryPathVar)] == '=')) {
+  for (char** envp = environ; *envp != nullptr; UNSAFE_TODO(++envp)) {
+    if ((UNSAFE_TODO(strncmp(*envp, kClasspathVar, strlen(kClasspathVar))) ==
+             0 &&
+         UNSAFE_TODO((*envp)[strlen(kClasspathVar)]) == '=') ||
+        (UNSAFE_TODO(strncmp(*envp, kLdLibraryPathVar,
+                             strlen(kLdLibraryPathVar))) == 0 &&
+         UNSAFE_TODO((*envp)[strlen(kLdLibraryPathVar)]) == '=')) {
       continue;
     }
     result->push_back(*envp);
@@ -694,9 +699,11 @@ bool PlatformCrashpadInitialization(
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
     const std::vector<std::string>& initial_arguments,
+    const std::vector<base::FilePath>& attachments,
     base::FilePath* database_path) {
   DCHECK_EQ(initial_client, browser_process);
   DCHECK(initial_arguments.empty());
+  DCHECK(attachments.empty());
 
   // Not used on Android.
   DCHECK(!embedded_handler);
@@ -754,3 +761,5 @@ bool PlatformCrashpadInitialization(
 }  // namespace internal
 
 }  // namespace crash_reporter
+
+DEFINE_JNI(PackagePaths)

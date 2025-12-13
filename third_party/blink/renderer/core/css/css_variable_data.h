@@ -138,7 +138,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   //
   // If you change this, length_ below may need updates.
   //
-  // https://drafts.csswg.org/css-variables/#long-variables
+  // https://drafts.csswg.org/css-values-5/#long-substitution
   static const size_t kMaxVariableBytes = 2097152;
 
  private:

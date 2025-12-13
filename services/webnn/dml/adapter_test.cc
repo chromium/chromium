@@ -8,6 +8,7 @@
 
 #include "services/webnn/dml/test_base.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/webnn_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/dxcore.h"
 

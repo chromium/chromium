@@ -5,6 +5,10 @@
 import '/strings.m.js';
 import '../alert_indicators.js';
 
+import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
+import type {Tab} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
+import {NetworkState} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
+import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {getFavicon} from 'chrome://resources/js/icon.js';
@@ -13,12 +17,6 @@ import {isRTL} from 'chrome://resources/js/util.js';
 
 import type {AlertIndicatorsElement} from '../alert_indicators.js';
 import {getTemplate} from '../tab.html.js';
-import type {Tab} from '../tab_strip_api_data_model.mojom-webui.js';
-import type {NodeId} from '../tab_strip_api_types.mojom-webui.js';
-import {TabNetworkState} from '../tabs.mojom-webui.js';
-
-import type {TabStripApiProxy} from './tab_strip_api.js';
-import {TabStripApiProxyImpl} from './tab_strip_api.js';
 
 function getPaddingInlineEndProperty(): string {
   return isRTL() ? 'paddingLeft' : 'paddingRight';
@@ -31,15 +29,12 @@ export class TabElement extends CustomElement {
 
   private alertIndicatorsEl_: AlertIndicatorsElement;
   private closeButtonEl_: HTMLElement;
-  private dragImageEl_: HTMLElement;
   private tabEl_: HTMLElement;
   private faviconEl_: HTMLElement;
   private thumbnail_: HTMLImageElement;
   private tab_: Tab|null = null;
   private titleTextEl_: HTMLElement;
   private onTabActivating_: (tabId: NodeId) => void;
-  private tabStripApi_: TabStripApiProxy;
-  private isValidDragOverTarget_: boolean;
   private dragHandler_: any;
 
   // Temp public
@@ -48,6 +43,14 @@ export class TabElement extends CustomElement {
   blocked: boolean = false;
   crashed: boolean = false;
   showIcon: boolean = false;
+
+  override get draggable(): boolean {
+    return this.hasAttribute('draggable');
+  }
+
+  override set draggable(isDraggable: boolean) {
+    this.toggleAttribute('draggable', isDraggable);
+  }
 
   constructor() {
     super();
@@ -63,36 +66,23 @@ export class TabElement extends CustomElement {
     this.closeButtonEl_.setAttribute(
         'aria-label', loadTimeData.getString('closeTab'));
 
-    this.dragImageEl_ = this.getRequiredElement('#dragImage');
     this.tabEl_ = this.getRequiredElement('#tab');
     this.faviconEl_ = this.getRequiredElement('#favicon');
     this.thumbnail_ =
         this.getRequiredElement<HTMLImageElement>('#thumbnailImg');
 
     this.titleTextEl_ = this.getRequiredElement('#titleText');
-    this.tabStripApi_ = TabStripApiProxyImpl.getInstance();
     this.dragHandler_ = () => 0;
-
-    /**
-     * Flag indicating if this TabElement can accept dragover events. This
-     * is used to pause dragover events while animating as animating causes
-     * the elements below the pointer to shift.
-     */
-    this.isValidDragOverTarget_ = true;
-
 
     this.tabEl_.addEventListener('click', () => this.onClick_());
     this.addEventListener(
         'dragend',
-        (event: MouseEvent) => this.dragHandler_(this, event.clientX));
+        (event: MouseEvent) =>
+            this.dragHandler_(this, event.clientX, event.clientY));
 
     this.closeButtonEl_.addEventListener('click', e => this.onClose_(e));
     this.onTabActivating_ = (tabId: NodeId) =>
-        this.tabStripApi_.activateTab(tabId);
-  }
-
-  hasTabModel(): boolean {
-    return this.tab_ !== null;
+        TabStripService.getRemote().activateTab(tabId);
   }
 
   get tab(): Tab {
@@ -100,7 +90,8 @@ export class TabElement extends CustomElement {
     return this.tab_;
   }
 
-  set dragEndHandler(handler: (element: TabElement, x: number) => void) {
+  set dragEndHandler(
+      handler: (element: TabElement, x: number, y: number) => void) {
     this.dragHandler_ = handler;
   }
 
@@ -108,36 +99,36 @@ export class TabElement extends CustomElement {
     this.toggleAttribute('active', this.isActive);
     this.toggleAttribute('hide-icon_', !this.showIcon);
     this.toggleAttribute(
-        'waiting_', tab.networkState === TabNetworkState.kWaiting);
+        'waiting_', tab.networkState === NetworkState.kWaiting);
     this.toggleAttribute(
-        'loading_', tab.networkState === TabNetworkState.kLoading);
+        'loading_', tab.networkState === NetworkState.kLoading);
     this.toggleAttribute('pinned', this.isPinned);
+    this.setAttribute('draggable', 'true');
     this.toggleAttribute('blocked_', this.blocked);
-    this.setAttribute('draggable', String(true));
     this.toggleAttribute('crashed_', this.crashed);
 
     if (tab.title) {
       this.titleTextEl_.textContent = tab.title;
-    } else if ((tab.networkState === TabNetworkState.kWaiting ||
-                tab.networkState === TabNetworkState.kLoading)) {
+    } else if ((tab.networkState === NetworkState.kWaiting ||
+                tab.networkState === NetworkState.kLoading)) {
       this.titleTextEl_.textContent = loadTimeData.getString('loadingTab');
     } else {
       this.titleTextEl_.textContent = loadTimeData.getString('defaultTabTitle');
     }
     this.titleTextEl_.setAttribute('aria-label', tab.title);
 
-    if (tab.networkState === TabNetworkState.kWaiting) {
+    if (tab.networkState === NetworkState.kWaiting) {
       this.faviconEl_.style.backgroundImage = 'none';
-    } else if (tab.faviconUrl) {
-      this.faviconEl_.style.backgroundImage = `url(${tab.faviconUrl.url})`;
+    } else if (tab.favicon) {
+      this.faviconEl_.style.backgroundImage = `url(${tab.favicon.dataUrl.url})`;
     } else {
       this.faviconEl_.style.backgroundImage = getFavicon('');
     }
 
     // Expose the ID to an attribute to allow easy querySelector use
-    this.setAttribute('data-tab-id', tab.id.id.toString());
+    this.setAttribute('data-tab-id', tab.id);
 
-    this.alertIndicatorsEl_.updateAlertStates(tab.alertStates)
+    this.alertIndicatorsEl_.updateAlertStates(tab.alertStates as any[])
         .then((alertIndicatorsCount) => {
           this.toggleAttribute('has-alert-states_', alertIndicatorsCount > 0);
         });
@@ -145,26 +136,8 @@ export class TabElement extends CustomElement {
     this.tab_ = Object.freeze(tab);
   }
 
-  get isValidDragOverTarget(): boolean {
-    return !this.hasAttribute('dragging_') && this.isValidDragOverTarget_;
-  }
-
-  set isValidDragOverTarget(isValid: boolean) {
-    this.isValidDragOverTarget_ = isValid;
-  }
-
   override focus() {
     this.tabEl_.focus();
-  }
-
-  getDragImage(): HTMLElement {
-    return this.dragImageEl_;
-  }
-
-  getDragImageCenter(): HTMLElement {
-    // dragImageEl_ has padding, so the drag image should be centered relative
-    // to tabEl_, the element within the padding.
-    return this.tabEl_;
   }
 
   updateThumbnail(imgData: string) {
@@ -185,7 +158,7 @@ export class TabElement extends CustomElement {
     assert(this.tab_);
     event.stopPropagation();
     console.info('Close tab', this.tab_.id);
-    this.tabStripApi_.closeTabs([this.tab_.id]);
+    TabStripService.getRemote().closeTabs([this.tab_.id]);
   }
 
   slideOut(): Promise<void> {

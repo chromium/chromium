@@ -9,12 +9,12 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/install_prompt_permissions.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -90,8 +90,7 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
           &ParentAccessExtensionApprovalsManager::OnParentAccessDialogClosed,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback1)));
   if (show_error != ash::ParentAccessDialogProvider::ShowError::kNone) {
-    std::move(callback2).Run(
-        SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kFailed);
+    std::move(callback2).Run(SupervisedExtensionApprovalResult::kFailed);
   }
 }
 
@@ -100,27 +99,23 @@ void ParentAccessExtensionApprovalsManager::OnParentAccessDialogClosed(
     std::unique_ptr<ash::ParentAccessDialog::Result> result) {
   switch (result->status) {
     case ash::ParentAccessDialog::Result::Status::kApproved:
-      std::move(callback).Run(
-          SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved);
+      std::move(callback).Run(SupervisedExtensionApprovalResult::kApproved);
       return;
 
     case ash::ParentAccessDialog::Result::Status::kDeclined:
     case ash::ParentAccessDialog::Result::Status::kCanceled:
-      std::move(callback).Run(
-          SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kCanceled);
+      std::move(callback).Run(SupervisedExtensionApprovalResult::kCanceled);
       return;
 
     case ash::ParentAccessDialog::Result::Status::kError:
-      std::move(callback).Run(
-          SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kFailed);
+      std::move(callback).Run(SupervisedExtensionApprovalResult::kFailed);
       return;
 
     case ash::ParentAccessDialog::Result::Status::kDisabled:
       SupervisedUserExtensionsMetricsRecorder::RecordEnablementUmaMetrics(
           SupervisedUserExtensionsMetricsRecorder::EnablementState::
               kFailedToEnable);
-      std::move(callback).Run(
-          SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kBlocked);
+      std::move(callback).Run(SupervisedExtensionApprovalResult::kBlocked);
       return;
   }
 }

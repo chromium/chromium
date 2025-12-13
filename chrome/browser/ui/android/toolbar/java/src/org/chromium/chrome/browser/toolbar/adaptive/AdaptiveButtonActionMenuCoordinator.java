@@ -96,7 +96,7 @@ public class AdaptiveButtonActionMenuCoordinator {
                 BrowserUiListMenuUtils.getBasicListMenu(
                         context,
                         listItems,
-                        (model) -> {
+                        (model, view) -> {
                             onItemClicked.onResult(model.get(ListMenuItemProperties.MENU_ITEM_ID));
                         });
 
@@ -141,5 +141,9 @@ public class AdaptiveButtonActionMenuCoordinator {
 
     public View getContentViewForTesting() {
         return assumeNonNull(mListMenu).getContentView();
+    }
+
+    public @Nullable BasicListMenu getListMenuForTesting() {
+        return mListMenu;
     }
 }

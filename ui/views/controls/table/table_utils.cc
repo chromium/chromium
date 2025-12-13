@@ -18,8 +18,6 @@
 
 namespace views {
 
-const int kUnspecifiedColumnWidth = 90;
-
 int WidthForContent(const gfx::FontList& header_font_list,
                     const gfx::FontList& content_font_list,
                     int padding,

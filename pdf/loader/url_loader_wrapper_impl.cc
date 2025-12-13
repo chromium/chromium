@@ -7,9 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -21,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_util.h"
 #include "pdf/loader/result_codes.h"
@@ -33,6 +34,8 @@ namespace {
 
 // We should read with delay to prevent block UI thread, and reduce CPU usage.
 constexpr base::TimeDelta kReadDelayMs = base::Milliseconds(2);
+
+constexpr std::string_view kBytes = "bytes";
 
 UrlRequest MakeRangeRequest(const std::string& url,
                             const std::string& referrer_url,
@@ -54,59 +57,44 @@ UrlRequest MakeRangeRequest(const std::string& url,
   return request;
 }
 
-bool GetByteRangeFromStr(const std::string& content_range_str,
-                         int* start,
-                         int* end) {
-  std::string range = content_range_str;
-  if (!base::StartsWith(range, "bytes", base::CompareCase::INSENSITIVE_ASCII))
-    return false;
+std::optional<gfx::Range> GetByteRangeFromStr(
+    std::string_view content_range_str) {
+  if (!base::StartsWith(content_range_str, kBytes,
+                        base::CompareCase::INSENSITIVE_ASCII)) {
+    return std::nullopt;
+  }
 
-  range = range.substr(strlen("bytes"));
+  std::string range(content_range_str.substr(kBytes.size()));
   std::string::size_type pos = range.find('-');
   std::string range_end;
-  if (pos != std::string::npos)
+  if (pos != std::string::npos) {
     range_end = range.substr(pos + 1);
+  }
   base::TrimWhitespaceASCII(range, base::TRIM_LEADING, &range);
   base::TrimWhitespaceASCII(range_end, base::TRIM_LEADING, &range_end);
-  *start = atoi(range.c_str());
-  *end = atoi(range_end.c_str());
-  return true;
+  return gfx::Range(atoi(range.c_str()), atoi(range_end.c_str()));
 }
 
-// If the headers have a byte-range response, writes the start and end
-// positions and returns true if at least the start position was parsed.
+// If the headers have a byte-range response, and at least the start position
+// was parsed, returns a range with the start and end positions.
 // The end position will be set to 0 if it was not found or parsed from the
 // response.
-// Returns false if not even a start position could be parsed.
-bool GetByteRangeFromHeaders(const std::string& headers, int* start, int* end) {
+// Returns std::nullopt if not even a start position could be parsed.
+std::optional<gfx::Range> GetByteRangeFromHeaders(std::string_view headers) {
   net::HttpUtil::HeadersIterator it(headers, "\n");
   while (it.GetNext()) {
     if (base::EqualsCaseInsensitiveASCII(it.name_piece(), "content-range")) {
-      if (GetByteRangeFromStr(it.values().c_str(), start, end))
-        return true;
+      std::optional<gfx::Range> range = GetByteRangeFromStr(it.values());
+      if (range.has_value()) {
+        return range;
+      }
     }
   }
-  return false;
+  return std::nullopt;
 }
 
-bool IsDoubleEndLineAtEnd(const char* buffer, int size) {
-  if (size < 2)
-    return false;
-
-  UNSAFE_TODO({
-    if (buffer[size - 1] == '\n' && buffer[size - 2] == '\n') {
-      return true;
-    }
-  });
-
-  if (size < 4) {
-    return false;
-  }
-
-  UNSAFE_TODO({
-    return buffer[size - 1] == '\n' && buffer[size - 2] == '\r' &&
-           buffer[size - 3] == '\n' && buffer[size - 4] == '\r';
-  });
+bool IsDoubleEndLineAtEnd(std::string_view buffer) {
+  return buffer.ends_with("\n\n") || buffer.ends_with("\r\n\r\n");
 }
 
 }  // namespace
@@ -171,7 +159,7 @@ void URLLoaderWrapperImpl::OpenRange(const std::string& url,
 }
 
 void URLLoaderWrapperImpl::ReadResponseBody(
-    base::span<char> buffer,
+    base::span<uint8_t> buffer,
     base::OnceCallback<void(int)> callback) {
   buffer_ = buffer;
   read_starter_.Start(
@@ -207,7 +195,7 @@ void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
       content_length_ = atoi(it.values().c_str());
     } else if (base::EqualsCaseInsensitiveASCII(name, "accept-ranges")) {
       accept_ranges_bytes_ =
-          base::EqualsCaseInsensitiveASCII(it.values(), "bytes");
+          base::EqualsCaseInsensitiveASCII(it.values(), kBytes);
     } else if (base::EqualsCaseInsensitiveASCII(name, "content-encoding")) {
       content_encoded_ = true;
     } else if (base::EqualsCaseInsensitiveASCII(name, "content-type")) {
@@ -220,22 +208,19 @@ void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
       // multipart boundary.
       std::string type = base::ToLowerASCII(it.values_piece());
       if (base::StartsWith(type, "multipart/", base::CompareCase::SENSITIVE)) {
-        UNSAFE_TODO({
-          const char* boundary = strstr(type.c_str(), "boundary=");
-          DCHECK(boundary);
-          if (boundary) {
-            multipart_boundary_ = std::string(boundary + 9);
-            is_multipart_ = !multipart_boundary_.empty();
-          }
-        });
+        static constexpr std::string_view kBoundary = "boundary=";
+        size_t boundary = type.find(kBoundary);
+        if (boundary != std::string::npos) {
+          multipart_boundary_ = type.substr(boundary + kBoundary.size());
+          is_multipart_ = !multipart_boundary_.empty();
+        }
       }
     } else if (base::EqualsCaseInsensitiveASCII(name, "content-disposition")) {
       content_disposition_ = it.values();
     } else if (base::EqualsCaseInsensitiveASCII(name, "content-range")) {
-      int start = 0;
-      int end = 0;
-      if (GetByteRangeFromStr(it.values().c_str(), &start, &end)) {
-        byte_range_ = gfx::Range(start, end);
+      std::optional<gfx::Range> range = GetByteRangeFromStr(it.values());
+      if (range.has_value()) {
+        byte_range_ = range.value();
       }
     }
   }
@@ -266,31 +251,29 @@ void URLLoaderWrapperImpl::DidRead(base::OnceCallback<void(int)> callback,
     return;
   }
 
-  char* start = buffer_.data();
-  size_t length = result;
+  base::span<uint8_t> start = buffer_.first(static_cast<size_t>(result));
   multi_part_processed_ = true;
-  for (int i = 2; i < result; ++i) {
-    if (IsDoubleEndLineAtEnd(buffer_.data(), i)) {
-      int start_pos = 0;
-      int end_pos = 0;
-      if (GetByteRangeFromHeaders(std::string(buffer_.data(), i), &start_pos,
-                                  &end_pos)) {
-        byte_range_ = gfx::Range(start_pos, end_pos);
-        UNSAFE_TODO({ start += i; });
-        length -= i;
-      }
-      break;
+  for (size_t i = 2; i < static_cast<size_t>(result); ++i) {
+    auto buffer = base::as_string_view(buffer_.first(i));
+    if (!IsDoubleEndLineAtEnd(buffer)) {
+      continue;
     }
+
+    std::optional<gfx::Range> range = GetByteRangeFromHeaders(buffer);
+    if (range.has_value()) {
+      byte_range_ = range.value();
+      start = start.subspan(i);
+    }
+    break;
   }
-  result = length;
-  if (result == 0) {
+
+  if (start.empty()) {
     // Continue receiving.
     return ReadResponseBodyImpl(std::move(callback));
   }
-  DCHECK_GT(result, 0);
-  UNSAFE_TODO(memmove(buffer_.data(), start, result));
 
-  std::move(callback).Run(result);
+  base::span(buffer_).copy_prefix_from(start);
+  std::move(callback).Run(base::checked_cast<int32_t>(start.size()));
 }
 
 void URLLoaderWrapperImpl::SetHeadersFromLoader() {

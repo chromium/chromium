@@ -115,7 +115,7 @@ suite('bookmarks.StoreClientMixin', function() {
 
   function getRenderedItems() {
     return Array.from(client.shadowRoot.querySelectorAll('.item'))
-        .map((div) => div.textContent!.trim());
+        .map((div) => div.textContent.trim());
   }
 
   setup(function() {

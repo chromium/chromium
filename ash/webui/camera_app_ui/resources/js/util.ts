@@ -370,8 +370,6 @@ export async function cropSquare(blob: Blob): Promise<Blob> {
     ctx.drawImage(
         img, Math.floor((img.width - side) / 2),
         Math.floor((img.height - side) / 2), side, side, 0, 0, side, side);
-    // TODO(b/174190121): Patch important exif entries from input blob to
-    // result blob.
     const croppedBlob = await canvasToJpegBlob(canvas);
     return croppedBlob;
   } finally {

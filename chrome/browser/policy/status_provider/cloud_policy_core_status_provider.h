@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_STATUS_PROVIDER_CLOUD_POLICY_CORE_STATUS_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
@@ -32,11 +33,17 @@ class CloudPolicyCoreStatusProvider
   // policy::CloudPolicyStore::Observer implementation.
   void OnStoreLoaded(policy::CloudPolicyStore* store) override;
   void OnStoreError(policy::CloudPolicyStore* store) override;
+  void OnStoreDestruction(policy::CloudPolicyStore* store) override;
 
  protected:
   // Policy status is read from the CloudPolicyClient, CloudPolicyStore and
   // CloudPolicyRefreshScheduler hosted by this |core_|.
   raw_ptr<policy::CloudPolicyCore> core_;
+
+ private:
+  base::ScopedObservation<policy::CloudPolicyStore,
+                          policy::CloudPolicyStore::Observer>
+      scoped_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_POLICY_STATUS_PROVIDER_CLOUD_POLICY_CORE_STATUS_PROVIDER_H_

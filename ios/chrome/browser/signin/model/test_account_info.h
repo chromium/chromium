@@ -9,6 +9,8 @@
 
 #import <string>
 
+class GaiaId;
+
 @interface TestAccountInfo : NSObject <NSSecureCoding>
 
 // Encodes `identities` into a string, using NSKeyedArchiver.
@@ -47,9 +49,9 @@
 //                          userGivenName:nil
 //                           capabilities:nil]`
 + (instancetype)testAccountInfoWithUserEmail:(NSString*)userEmail
-                                      gaiaID:(NSString*)gaiaID;
+                                      gaiaID:(const GaiaId&)gaiaID;
 
-@property(copy, nonatomic, readonly) NSString* gaiaID;
+@property(assign, nonatomic, readonly) GaiaId gaiaID;
 @property(copy, nonatomic, readonly) NSString* userEmail;
 @property(copy, nonatomic, readonly) NSString* userFullName;
 @property(copy, nonatomic, readonly) NSString* userGivenName;
@@ -69,7 +71,7 @@
 // `capabilities`: if is nil, `+[TestAccountInfo defaultCapabilityValues]` is
 // used.
 - (instancetype)initWithUserEmail:(NSString*)userEmail
-                           gaiaID:(NSString*)gaiaID
+                           gaiaID:(const GaiaId&)gaiaID
                      userFullName:(NSString*)userFullName
                     userGivenName:(NSString*)userGivenName
                      capabilities:

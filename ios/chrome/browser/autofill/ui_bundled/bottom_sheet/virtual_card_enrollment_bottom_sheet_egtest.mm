@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -13,7 +14,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/authentication_egtest_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -28,6 +28,8 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using base::test::ios::kWaitForDownloadTimeout;
+
+namespace {
 
 // Path to the autofill test pages.
 const char kAutofillTestPagesDirectory[] = "components/test/data/autofill";
@@ -96,10 +98,14 @@ id<GREYMatcher> VirtualCardEnrollmentAcceptButton() {
       IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_ACCEPT_BUTTON_LABEL));
 }
 
-id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
-  return testing::ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_SKIP));
+// Matcher for the activity indicator.
+id<GREYMatcher> ActivityIndicatorMatcher() {
+  return grey_allOf(grey_kindOfClassName(@"UIActivityIndicatorView"),
+                    grey_ancestor(chrome_test_util::ButtonStackPrimaryButton()),
+                    nil);
 }
+
+}  // namespace
 
 @interface VirtualCardEnrollmentBottomSheetEgTest : ChromeTestCase
 @end
@@ -275,7 +281,14 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
       performAction:grey_tap()];
 }
 
-- (void)testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed {
+// TODO(crbug.com/415396933): Re-enable the test.
+- (void)
+    DISABLED_testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed {
+  // TODO(crbug.com/437268290): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [self showVirtualCardEnrollmentBottomSheetAfterSaveCardBottomSheet:YES];
 
   // Avoid immediately failing due to missing access token.
@@ -294,18 +307,14 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
       performAction:grey_tap()];
 
   // Assert an activity indicator view is being shown in the loading state.
-  id<GREYMatcher> activityIndicatorView =
-      grey_kindOfClassName(@"UIActivityIndicatorView");
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:activityIndicatorView];
-  [[[EarlGrey selectElementWithMatcher:activityIndicatorView]
-      inRoot:grey_accessibilityID(
-                 kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:ActivityIndicatorMatcher()];
+  [[EarlGrey selectElementWithMatcher:ActivityIndicatorMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Assert the primary action button is disabled.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       assertWithMatcher:
           grey_allOf(
               grey_not(grey_enabled()),
@@ -314,9 +323,8 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
               nil)];
 
   // Assert the secondary action button is disabled.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kConfirmationAlertSecondaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
   // Inject a successful enrollment response from the payments server.
@@ -325,17 +333,14 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
                               withErrorCode:net::HTTP_OK];
 
   // Assert the primary action button is still disabled.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
   // Assert the primary action button contains the checkmark symbol.
   [[[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kConfirmationAlertCheckmarkSymbolIdentifier)]
-      inRoot:grey_accessibilityID(
-                 kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+      selectElementWithMatcher:chrome_test_util::ButtonStackCheckmarkSymbol()]
+      inRoot:chrome_test_util::ButtonStackPrimaryButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

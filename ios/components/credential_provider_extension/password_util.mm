@@ -6,33 +6,57 @@
 
 #import <Security/Security.h>
 
+#import "base/apple/bridging.h"
+#import "base/apple/foundation_util.h"
+#import "base/apple/scoped_cftyperef.h"
 #import "base/logging.h"
+#import "base/strings/sys_string_conversions.h"
+#import "crypto/apple/keychain_util.h"
 
 namespace credential_provider_extension {
+
+using base::apple::CFToNSPtrCast;
+using base::apple::GetValueFromDictionary;
+using base::apple::ScopedCFTypeRef;
 
 NSString* PasswordWithKeychainIdentifier(NSString* identifier) {
   if (!identifier) {
     return nil;
   }
   NSDictionary* query = @{
-    (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-    (__bridge id)kSecAttrAccount : identifier,
-    (__bridge id)kSecReturnData : @YES
+    CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassGenericPassword),
+    CFToNSPtrCast(kSecAttrAccount) : identifier,
+    CFToNSPtrCast(kSecReturnData) : @YES,
+    CFToNSPtrCast(kSecReturnAttributes) : @YES,
   };
 
   // Get the keychain item containing the password.
-  CFDataRef sec_data_ref = nullptr;
-  OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query,
-                                        (CFTypeRef*)&sec_data_ref);
+  base::apple::ScopedCFTypeRef<CFTypeRef> result;
+  OSStatus status = SecItemCopyMatching(base::apple::NSToCFOwnershipCast(query),
+                                        result.InitializeInto());
 
   if (status != errSecSuccess) {
     DLOG(ERROR) << "Error retrieving password, OSStatus: " << status;
     return nil;
   }
 
-  // This is safe because SecItemCopyMatching either assign an owned reference
-  // to sec_data_ref, or leave it unchanged, and bridging maps nullptr to nil.
-  NSData* data = (__bridge_transfer NSData*)sec_data_ref;
+  CFDictionaryRef result_dict =
+      base::apple::CFCast<CFDictionaryRef>(result.get());
+  CFDataRef password_data_ref = base::apple::GetValueFromDictionary<CFDataRef>(
+      result_dict, kSecValueData);
+
+  // If the fetched password data was stored with kSecAttrAccessibleWhenUnlocked
+  // accessibility, it should be migrated to instead use
+  // kSecAttrAccessibleAfterFirstUnlock accessibility. The following query and
+  // call to MigrateKeychainItemAccessibilityIfNeeded() handle this.
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> update_query =
+      crypto::apple::GenerateGenericPasswordUpdateQuery(
+          base::SysNSStringToUTF8(identifier));
+
+  crypto::apple::MigrateKeychainItemAccessibilityIfNeeded(result_dict,
+                                                          update_query.get());
+
+  NSData* data = (__bridge NSData*)password_data_ref;
   return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
@@ -43,15 +67,18 @@ BOOL StorePasswordInKeychain(NSString* password, NSString* identifier) {
 
   NSData* passwordData = [password dataUsingEncoding:NSUTF8StringEncoding];
 
+  CFStringRef attr_accessible =
+      crypto::apple::GetKeychainAccessibilityAttribute();
+
   NSDictionary* query = @{
-    (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-    (__bridge id)
-    kSecAttrAccessible : (__bridge id)kSecAttrAccessibleWhenUnlocked,
-    (__bridge id)kSecValueData : passwordData,
-    (__bridge id)kSecAttrAccount : identifier,
+    CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassGenericPassword),
+    CFToNSPtrCast(kSecAttrAccessible) : CFToNSPtrCast(attr_accessible),
+    CFToNSPtrCast(kSecValueData) : passwordData,
+    CFToNSPtrCast(kSecAttrAccount) : identifier,
   };
 
-  OSStatus status = SecItemAdd((__bridge CFDictionaryRef)query, NULL);
+  OSStatus status =
+      SecItemAdd(base::apple::NSToCFOwnershipCast(query), nullptr);
   return status == errSecSuccess;
 }
 

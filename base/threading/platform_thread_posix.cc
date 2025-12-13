@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/threading/platform_thread_internal_posix.h"
+#include "base/threading/platform_thread_metrics.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_restrictions.h"
@@ -103,6 +104,9 @@ void* ThreadFunc(void* params) {
   ThreadIdNameManager::GetInstance()->RemoveName(
       PlatformThread::CurrentHandle().platform_handle(),
       PlatformThread::CurrentId());
+#if BUILDFLAG(IS_ANDROID)
+  PlatformThreadPriorityMonitor::Get().UnregisterCurrentThread();
+#endif
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   partition_alloc::internal::StackTopRegistry::Get().NotifyThreadDestroyed();
@@ -370,41 +374,18 @@ bool PlatformThreadBase::CanChangeThreadType(ThreadType from, ThreadType to) {
   return internal::CanLowerNiceTo(internal::ThreadTypeToNiceValue(to));
 }
 
-namespace internal {
-
-void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint) {
-  if (internal::SetCurrentThreadTypeForPlatform(thread_type, pump_type_hint)) {
-    return;
-  }
-
-  // setpriority(2) should change the whole thread group's (i.e. process)
-  // priority. However, as stated in the bugs section of
-  // http://man7.org/linux/man-pages/man2/getpriority.2.html: "under the current
-  // Linux/NPTL implementation of POSIX threads, the nice value is a per-thread
-  // attribute". Also, 0 is prefered to the current thread id since it is
-  // equivalent but makes sandboxing easier (https://crbug.com/399473).
-  const int nice_setting = internal::ThreadTypeToNiceValue(thread_type);
-  if (setpriority(PRIO_PROCESS, 0, nice_setting)) {
-    DVPLOG(1) << "Failed to set nice value of thread ("
-              << PlatformThread::CurrentId() << ") to " << nice_setting;
-  }
-}
-
-}  // namespace internal
-
 // static
-ThreadPriorityForTest PlatformThreadBase::GetCurrentThreadPriorityForTest() {
+ThreadType PlatformThreadBase::GetCurrentEffectiveThreadTypeForTest() {
   // Mirrors SetCurrentThreadPriority()'s implementation.
   auto platform_specific_priority =
-      internal::GetCurrentThreadPriorityForPlatformForTest();  // IN-TEST
+      internal::GetCurrentEffectiveThreadTypeForPlatformForTest();  // IN-TEST
   if (platform_specific_priority) {
     return platform_specific_priority.value();
   }
 
   int nice_value = internal::GetCurrentThreadNiceValue();
 
-  return internal::NiceValueToThreadPriorityForTest(nice_value);  // IN-TEST
+  return internal::NiceValueToThreadTypeForTest(nice_value);  // IN-TEST
 }
 
 #endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)

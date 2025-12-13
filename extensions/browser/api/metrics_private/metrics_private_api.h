@@ -63,6 +63,18 @@ class MetricsPrivateRecordUserActionFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class MetricsPrivateRecordExtensionUsageUkmFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordExtensionUsageUkm",
+                             METRICSPRIVATE_RECORDEXTENSIONUSAGEUKM)
+
+ protected:
+  ~MetricsPrivateRecordExtensionUsageUkmFunction() override = default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class MetricsHistogramHelperFunction : public ExtensionFunction {
  protected:
   ~MetricsHistogramHelperFunction() override {}

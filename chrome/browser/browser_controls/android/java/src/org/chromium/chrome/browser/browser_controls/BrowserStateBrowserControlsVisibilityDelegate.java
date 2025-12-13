@@ -11,8 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -37,19 +36,18 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
     private final Handler mHandler = new Handler();
 
     /** Predicate that tells if we're in persistent fullscreen mode. */
-    private final Supplier<Boolean> mPersistentFullscreenMode;
+    private final NonNullObservableSupplier<Boolean> mPersistentFullscreenMode;
 
     private long mCurrentShowingStartTime;
 
     /**
-     * Constructs a BrowserControlsVisibilityDelegate designed to deal with overrides driven by
-     * the browser UI (as opposed to the state of the tab).
+     * Constructs a BrowserControlsVisibilityDelegate designed to deal with overrides driven by the
+     * browser UI (as opposed to the state of the tab).
      *
      * @param persistentFullscreenMode Predicate that tells if we're in persistent fullscreen mode.
      */
     public BrowserStateBrowserControlsVisibilityDelegate(
-            ObservableSupplier<Boolean> persistentFullscreenMode) {
-        super(BrowserControlsState.BOTH);
+            NonNullObservableSupplier<Boolean> persistentFullscreenMode) {
         mTokenHolder = new TokenHolder(this::updateVisibilityConstraints);
         mPersistentFullscreenMode = persistentFullscreenMode;
         persistentFullscreenMode.addObserver((persistentMode) -> updateVisibilityConstraints());

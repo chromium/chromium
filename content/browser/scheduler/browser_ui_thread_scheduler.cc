@@ -4,6 +4,7 @@
 
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -21,6 +22,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/scheduler/browser_task_priority.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
 
@@ -35,9 +37,19 @@ BrowserUIThreadScheduler::~BrowserUIThreadScheduler() = default;
 
 // static
 std::unique_ptr<BrowserUIThreadScheduler>
+BrowserUIThreadScheduler::CreateForTesting() {
+  auto scheduler = base::WrapUnique(new BrowserUIThreadScheduler());
+  scheduler->InstallPartitionAllocSchedulerLoopQuarantineTaskObserver();
+  return scheduler;
+}
+// static
+std::unique_ptr<BrowserUIThreadScheduler>
 BrowserUIThreadScheduler::CreateForTesting(
     base::sequence_manager::SequenceManager* sequence_manager) {
-  return base::WrapUnique(new BrowserUIThreadScheduler(sequence_manager));
+  auto scheduler =
+      base::WrapUnique(new BrowserUIThreadScheduler(sequence_manager));
+  scheduler->InstallPartitionAllocSchedulerLoopQuarantineTaskObserver();
+  return scheduler;
 }
 BrowserUIThreadScheduler* BrowserUIThreadScheduler::Get() {
   DCHECK(g_browser_ui_thread_scheduler);
@@ -51,7 +63,10 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler()
                   .SetCanRunTasksByBatches(true)
                   .SetPrioritySettings(
                       internal::CreateBrowserTaskPrioritySettings())
+                  .SetIsMainThread(true)
                   .SetShouldSampleCPUTime(true)
+                  .SetShouldReportLockMetrics(true)
+                  .SetShouldBlockOnScopedFences(true)
                   .Build())),
       task_queues_(BrowserThread::UI, owned_sequence_manager_.get()),
       handle_(task_queues_.GetHandle()) {
@@ -79,6 +94,18 @@ void BrowserUIThreadScheduler::CommonSequenceManagerSetup(
   DCHECK_EQ(static_cast<size_t>(sequence_manager->GetPriorityCount()),
             static_cast<size_t>(internal::BrowserTaskPriority::kPriorityCount));
   sequence_manager->EnableCrashKeys("ui_scheduler_async_stack");
+
+  scenario_priority_boost_ =
+      std::make_unique<base::TaskMonitoringScopedBoostPriority>(
+          base::ThreadType::kInteractive,
+          base::BindRepeating(&internal::ShouldBoostThreadsPriority));
+}
+
+void BrowserUIThreadScheduler::OnStartupComplete() {
+  if (base::FeatureList::IsEnabled(
+          features::kBoostThreadsPriorityDuringInputScenario)) {
+    owned_sequence_manager_->AddTaskObserver(scenario_priority_boost_.get());
+  }
 }
 
 void BrowserUIThreadScheduler::OnTaskCompleted(
@@ -90,6 +117,15 @@ void BrowserUIThreadScheduler::OnTaskCompleted(
   // that subsampling to record histograms without fear of oversampling.
   task_timing->RecordTaskEnd(lazy_now);
   task_timing->RecordUmaOnCpuMetrics("BrowserScheduler.UIThread");
+}
+
+void BrowserUIThreadScheduler::
+    InstallPartitionAllocSchedulerLoopQuarantineTaskObserver() {
+  if (base::FeatureList::IsEnabled(
+          features::
+              kPartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread)) {
+    task_queues_.AddTaskObserver(&scheduler_loop_quarantine_task_observer_);
+  }
 }
 
 }  // namespace content

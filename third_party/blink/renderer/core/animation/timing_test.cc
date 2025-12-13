@@ -18,10 +18,10 @@ class AnimationTimingTest : public testing::Test {
     Timing::AnimationDirection animation_direction =
         playback_rate < 0 ? Timing::AnimationDirection::kBackwards
                           : Timing::AnimationDirection::kForwards;
-    return timing_.CalculateTimings(local_time,
-                                    /* is_idle */ false, normalized_timing_,
-                                    animation_direction, is_keyframe_effect,
-                                    playback_rate);
+    return timing_.CalculateTimings(
+        local_time,
+        /* is_idle */ false, normalized_timing_, animation_direction,
+        is_keyframe_effect, playback_rate, /*paused_for_trigger=*/false);
   }
   bool IsCurrent(std::optional<double> local_time, double playback_rate) {
     std::optional<AnimationTimeDelta> local_time_delta;

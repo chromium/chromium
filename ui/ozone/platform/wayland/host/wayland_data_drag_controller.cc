@@ -102,6 +102,9 @@ uint32_t DragOperationsToDndActions(int operations) {
   if (operations & DragDropTypes::DRAG_MOVE) {
     dnd_actions |= WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE;
   }
+  if (operations & DragDropTypes::DRAG_LINK) {
+    dnd_actions |= WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY;
+  }
   return dnd_actions;
 }
 
@@ -130,6 +133,7 @@ WaylandDataDragController::WaylandDataDragController(
 
 WaylandDataDragController::~WaylandDataDragController() {
   window_manager_->RemoveObserver(this);
+  data_device_manager_->GetDevice()->ResetDragDelegate();
 }
 
 bool WaylandDataDragController::StartSession(const OSExchangeData& data,
@@ -482,17 +486,9 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location,
   if (drag_source_.has_value()) {
     // Update the cursor position only for drag with mouse.
     if (*drag_source_ == mojom::DragEventSource::kMouse) {
-      auto* cursor_position = connection_->wayland_cursor_position();
-      if (cursor_position) {
-        CHECK(window_);
-        // TODO(crbug.com/41494257): Once we enable the input region for
-        // subsurfaces, we need to update this part since the location will no
-        // longer be relative to the window.
-        auto location_in_screen =
-            gfx::ToRoundedPoint(location) +
-            window_->GetBoundsInDIP().origin().OffsetFromOrigin();
-        cursor_position->OnCursorPositionChanged(location_in_screen);
-      }
+      pointer_delegate_->OnPointerMotionEvent(
+          location, timestamp, wl::EventDispatchPolicy::kImmediate,
+          /*is_synthesized=*/true);
     }
   }
 
@@ -569,7 +565,13 @@ void WaylandDataDragController::OnDataSourceDropPerformed(
           << " origin=" << !!origin_window_
           << " nested_dispatcher=" << !!nested_dispatcher_;
 
-  HandleDragEnd(DragResult::kCompleted, timestamp);
+  // Treat a "drop performed" event with a `dnd_action` of NONE (0) as a
+  // cancellation (passing `kCancelled`). Per the protocol, `cancelled` event
+  // can be sent after "drop performed", that is what `KWin` does, for example.
+  // See crbug.com/447037092.
+  HandleDragEnd(data_source_->dnd_action() ? DragResult::kCompleted
+                                           : DragResult::kCancelled,
+                timestamp);
 }
 
 void WaylandDataDragController::OnDataSourceSend(WaylandDataSource* source,

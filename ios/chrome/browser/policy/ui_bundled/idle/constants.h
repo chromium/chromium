@@ -7,7 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/time/time.h"
+
 extern NSString* const kIdleTimeoutDialogAccessibilityIdentifier;
 extern NSString* const kIdleTimeoutLaunchScreenAccessibilityIdentifier;
-extern NSTimeInterval const kIdleTimeoutSnackbarDuration;
+inline constexpr base::TimeDelta kIdleTimeoutSnackbarDuration =
+    base::Seconds(7);
 #endif  // IOS_CHROME_BROWSER_POLICY_UI_BUNDLED_IDLE_CONSTANTS_H_

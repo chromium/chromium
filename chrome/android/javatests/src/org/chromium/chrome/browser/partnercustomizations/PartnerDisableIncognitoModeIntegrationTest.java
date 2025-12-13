@@ -13,8 +13,10 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
@@ -24,6 +26,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
@@ -31,10 +34,14 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.modelutil.MVCListAdapter;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /** Integration tests for the partner disabling incognito mode feature. */
@@ -42,9 +49,23 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures(UiAndroidFeatures.USE_NEW_ETC1_ENCODER) // https://crbug.com/401244299
 public class PartnerDisableIncognitoModeIntegrationTest {
+    private final BasePartnerBrowserCustomizationIntegrationTestRule
+            mPartnerBrowserCustomizationRule =
+                    new BasePartnerBrowserCustomizationIntegrationTestRule();
+
+    private final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
     @Rule
-    public BasePartnerBrowserCustomizationIntegrationTestRule mActivityTestRule =
-            new BasePartnerBrowserCustomizationIntegrationTestRule();
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mPartnerBrowserCustomizationRule).around(mActivityTestRule);
+
+    @Rule public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
+
+    @Before
+    public void setUp() {
+        mHomepageTestRule.useChromeNtpForTest();
+    }
 
     private void setParentalControlsEnabled(boolean enabled) {
         Uri uri =
@@ -66,8 +87,9 @@ public class PartnerDisableIncognitoModeIntegrationTest {
                                         .getMenuItems());
         MVCListAdapter.ListItem newIncognitoItem = null;
         for (MVCListAdapter.ListItem item : modelList) {
-            if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID)
-                    == R.id.new_incognito_tab_menu_id) {
+            int itemId = item.model.get(AppMenuItemProperties.MENU_ITEM_ID);
+            if (List.of(R.id.new_incognito_tab_menu_id, R.id.new_incognito_window_menu_id)
+                    .contains(itemId)) {
                 newIncognitoItem = item;
                 break;
             }
@@ -104,9 +126,9 @@ public class PartnerDisableIncognitoModeIntegrationTest {
     @Feature({"DisableIncognitoMode"})
     public void testIncognitoEnabledIfNoParentalControls() throws InterruptedException {
         setParentalControlsEnabled(false);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        var page = mActivityTestRule.startOnBlankPage();
         waitForParentalControlsEnabledState(false);
-        mActivityTestRule.newIncognitoTabFromMenu();
+        page.openNewIncognitoTabOrWindowFast();
     }
 
     @Test
@@ -115,7 +137,7 @@ public class PartnerDisableIncognitoModeIntegrationTest {
     public void testIncognitoMenuItemEnabledBasedOnParentalControls()
             throws InterruptedException, ExecutionException {
         setParentalControlsEnabled(true);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         waitForParentalControlsEnabledState(true);
         assertIncognitoMenuItemEnabled(false);
 
@@ -139,12 +161,29 @@ public class PartnerDisableIncognitoModeIntegrationTest {
             testServer.getURL("/chrome/test/data/android/test.html")
         };
         setParentalControlsEnabled(false);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        var page = mActivityTestRule.startOnBlankPage();
         waitForParentalControlsEnabledState(false);
-        mActivityTestRule.loadUrlInNewTab(testUrls[0], true);
-        mActivityTestRule.loadUrlInNewTab(testUrls[1], true);
-        mActivityTestRule.loadUrlInNewTab(testUrls[2], true);
-        mActivityTestRule.loadUrlInNewTab(testUrls[0], false);
+        var incognitoPage =
+                page.openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(testUrls[0])
+                        .openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(testUrls[1])
+                        .openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(testUrls[2]);
+
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            // Incognito tabs were opened in a new window, so just focus the regular window.
+            page.bringWindowToFront();
+            page.loadWebPageProgrammatically(testUrls[0]);
+        } else {
+            // Otherwise, switch to the regular tabs pane then to a regular tab.
+            incognitoPage
+                    .openIncognitoTabSwitcher()
+                    .selectRegularTabsPane()
+                    .selectTabAtIndex(0, WebPageStation.newBuilder().initSelectingExistingTab())
+                    .loadWebPageProgrammatically(testUrls[0]);
+        }
+
         setParentalControlsEnabled(true);
         toggleActivityForegroundState();
         waitForParentalControlsEnabledState(true);

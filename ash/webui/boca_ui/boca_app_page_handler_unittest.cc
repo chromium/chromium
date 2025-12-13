@@ -6,10 +6,19 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
+#include "ash/annotator/annotation_tray.h"
+#include "ash/annotator/annotator_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/annotator/test/mock_annotator_client.h"
+#include "ash/webui/boca_ui/boca_util.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-data-view.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
@@ -43,6 +52,8 @@
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
+#include "chromeos/ash/components/boca/student_screen_presenter.h"
+#include "chromeos/ash/components/boca/teacher_screen_presenter.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
@@ -51,6 +62,7 @@
 #include "components/content_settings/core/browser/content_settings_policy_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -76,7 +88,6 @@
 
 using ::testing::_;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::IsNull;
 using ::testing::NiceMock;
 using ::testing::NotNull;
@@ -113,6 +124,22 @@ constexpr char kBocaAddStudentsErrorCodeUmaPath[] =
     "Ash.Boca.AddStudents.ErrorCode";
 constexpr char kBocaRemoveStudentErrorCodeUmaPath[] =
     "Ash.Boca.RemoveStudent.ErrorCode";
+constexpr char kBocaPresentOwnScreenOutOfSessionResultUmaPath[] =
+    "Ash.Boca.ScreenShare.PresentOwnScreenOutOfSession.Result";
+constexpr char kBocaPresentOwnScreenOutOfSessionFailureReasonUmaPath[] =
+    "Ash.Boca.ScreenShare.PresentOwnScreenOutOfSession.FailureReason";
+constexpr char kBocaPresentOwnScreenInSessionResultUmaPath[] =
+    "Ash.Boca.ScreenShare.PresentOwnScreenInSession.Result";
+constexpr char kBocaPresentOwnScreenInSessionFailureReasonUmaPath[] =
+    "Ash.Boca.ScreenShare.PresentOwnScreenInSession.FailureReason";
+constexpr char kBocaPresentStudentScreenResultUmaPath[] =
+    "Ash.Boca.ScreenShare.PresentStudentScreen.Result";
+constexpr char kBocaPresentStudentScreenFailureReasonUmaPath[] =
+    "Ash.Boca.ScreenShare.PresentStudentScreen.FailureReason";
+constexpr char kStudentDeviceId[] = "student_device_id";
+constexpr char kActiveStudentId[] = "active_student_id";
+constexpr char kReceiverId[] = "receiver_id";
+constexpr char kReceiverName[] = "receiver_name";
 
 mojom::OnTaskConfigPtr GetCommonTestLockOnTaskConfig() {
   std::vector<mojom::ControlledTabPtr> tabs;
@@ -264,6 +291,7 @@ class MockBocaAppClient : public BocaAppClient {
               (override));
   MOCK_METHOD(std::string, GetSchoolToolsServerBaseUrl, (), (override));
   MOCK_METHOD(void, OpenFeedbackDialog, (), (override));
+  MOCK_METHOD(int, GetAppInstanceCount, (), (override));
 };
 
 class MockSessionManager : public BocaSessionManager {
@@ -290,6 +318,20 @@ class MockSessionManager : public BocaSessionManager {
               (const ::boca::CaptionsConfig&),
               (override));
   MOCK_METHOD(bool, disabled_on_non_managed_network, (), (override));
+  MOCK_METHOD(StudentScreenPresenter*,
+              GetStudentScreenPresenter,
+              (),
+              (override));
+  MOCK_METHOD(TeacherScreenPresenter*,
+              GetTeacherScreenPresenter,
+              (),
+              (override));
+  MOCK_METHOD(std::optional<std::string>,
+              GetStudentActiveDeviceId,
+              (std::string_view),
+              (override));
+  MOCK_METHOD(void, EndSpotlightSession, (base::OnceClosure), (override));
+  MOCK_METHOD(void, CleanupPresenters, (), (override));
   ~MockSessionManager() override = default;
 };
 
@@ -323,6 +365,50 @@ class MockWebviewAuthHandler : public WebviewAuthHandler {
   ~MockWebviewAuthHandler() override {}
 
   MOCK_METHOD1(AuthenticateWebview, void(AuthenticateWebviewCallback));
+};
+
+class MockStudentScreenPresenter : public StudentScreenPresenter {
+ public:
+  MockStudentScreenPresenter() = default;
+  ~MockStudentScreenPresenter() override = default;
+
+  MOCK_METHOD(void,
+              Start,
+              (std::string_view,
+               const ::boca::UserIdentity&,
+               std::string_view,
+               base::OnceCallback<void(bool)>,
+               base::OnceClosure),
+              (override));
+
+  MOCK_METHOD(void, CheckConnection, (), (override));
+
+  MOCK_METHOD(void, Stop, (base::OnceCallback<void(bool)>), (override));
+
+  MOCK_METHOD(bool,
+              IsPresenting,
+              (std::optional<std::string_view>),
+              (override));
+};
+
+class MockTeacherScreenPresenter : public TeacherScreenPresenter {
+ public:
+  MockTeacherScreenPresenter() = default;
+  ~MockTeacherScreenPresenter() override = default;
+
+  MOCK_METHOD(void,
+              Start,
+              (std::string_view,
+               std::string_view,
+               ::boca::UserIdentity,
+               bool,
+               base::OnceCallback<void(bool)>,
+               base::OnceClosure),
+              (override));
+
+  MOCK_METHOD(void, Stop, (base::OnceCallback<void(bool)>), (override));
+
+  MOCK_METHOD(bool, IsPresenting, (), (override));
 };
 
 class FakePage : public mojom::Page {
@@ -362,6 +448,17 @@ class FakePage : public mojom::Page {
     session_caption_disabled_cb_ = std::move(session_caption_disabled_cb);
   }
 
+  void SetPresentStudentScreenEndedInterceptorCallback(
+      base::OnceClosure present_student_screen_ended_cb) {
+    present_student_screen_ended_cb_ =
+        std::move(present_student_screen_ended_cb);
+  }
+
+  void SetPresentOwnScreenEndedInterceptorCallback(
+      base::OnceClosure present_own_screen_ended_cb) {
+    present_own_screen_ended_cb_ = std::move(present_own_screen_ended_cb);
+  }
+
   void OnSpotlightCrdSessionStatusUpdated(
       mojom::CrdConnectionState state) override {}
 
@@ -392,10 +489,24 @@ class FakePage : public mojom::Page {
   }
   void OnFrameDataReceived(const SkBitmap& frame_data) override {}
 
+  void OnPresentStudentScreenEnded() override {
+    if (present_student_screen_ended_cb_) {
+      std::move(present_student_screen_ended_cb_).Run();
+    }
+  }
+
+  void OnPresentOwnScreenEnded() override {
+    if (present_own_screen_ended_cb_) {
+      std::move(present_own_screen_ended_cb_).Run();
+    }
+  }
+
   ActivityInterceptorCallback student_activity_updated_cb_;
   SessionConfigInterceptorCallback session_config_updated_cb_;
   base::OnceClosure local_caption_disabled_cb_;
   base::OnceCallback<void(bool)> session_caption_disabled_cb_;
+  base::OnceClosure present_student_screen_ended_cb_;
+  base::OnceClosure present_own_screen_ended_cb_;
 
   const mojo::Receiver<mojom::Page> receiver_;
 };
@@ -405,13 +516,17 @@ class BocaAppPageHandlerTest : public testing::Test {
   BocaAppPageHandlerTest() = default;
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kBoca},
+        {ash::features::kBoca, ash::features::kBocaScreenSharingStudent,
+         ash::features::kBocaScreenSharingTeacher},
         // TODO:crbug.com/424867979 - Re-enable feature flag after adding unit
         // tests.
-        /*disabled_features=*/{ash::features::kBocaSpotlightRobotRequester});
+        /*disabled_features=*/{ash::features::kBocaSpotlightRobotRequester,
+                               ash::features::kAnnotatorMode});
     // Set up UserManager related modules.
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     ash::boca_util::RegisterPrefs(local_state_.registry());
+    local_state_.SetDict(ash::prefs::kClassManagementToolsKioskReceiverCodes,
+                         base::Value::Dict().Set(kReceiverId, kReceiverName));
     content_settings::PolicyProvider::RegisterProfilePrefs(
         pref_service_.registry());
     fake_user_manager_.Reset(
@@ -451,7 +566,7 @@ class BocaAppPageHandlerTest : public testing::Test {
                 GetSession(_, /*can_skip_duplicate_request=*/true))
         .Times(1);
     session_manager_ =
-        std::make_unique<StrictMock<MockSessionManager>>(&session_client_impl_);
+        std::make_unique<NiceMock<MockSessionManager>>(&session_client_impl_);
 
     // Create the WebContents for the BrowserContext.
     web_contents_ = content::WebContents::Create(
@@ -475,14 +590,22 @@ class BocaAppPageHandlerTest : public testing::Test {
  protected:
   void CreateBocaAppHandler(bool is_producer) {
     is_producer_ = is_producer;
+    boca_app_handler_ =
+        CreateNewBocaAppHandler(is_producer, &remote_, &fake_page_);
+  }
+
+  std::unique_ptr<BocaAppHandler> CreateNewBocaAppHandler(
+      bool is_producer,
+      mojo::Remote<mojom::PageHandler>* remote,
+      std::unique_ptr<FakePage>* fake_page) {
     mojo::PendingReceiver<mojom::Page> page_pending_receiver;
-    remote_.reset();
+    remote->reset();
     // `BocaAppClient::GetSessionManager` should be called exactly once on
     // construction.
     EXPECT_CALL(*boca_app_client(), GetSessionManager)
         .WillOnce(Return(session_manager()));
-    boca_app_handler_ = std::make_unique<BocaAppHandler>(
-        remote_.BindNewPipeAndPassReceiver(),
+    auto boca_app_handler = std::make_unique<BocaAppHandler>(
+        remote->BindNewPipeAndPassReceiver(),
         // TODO(crbug.com/359929870): Setting nullptr for other dependencies for
         // now. Adding test case for classroom and tab info.
         page_pending_receiver.InitWithNewPipeAndPassRemote(), web_ui_.get(),
@@ -491,10 +614,11 @@ class BocaAppPageHandlerTest : public testing::Test {
         /*classroom_client_impl=*/nullptr,
         /*content_settings_handler=*/nullptr,
         /*system_web_app_manager=*/nullptr, &session_client_impl_, is_producer);
-    fake_page_ = std::make_unique<FakePage>(std::move(page_pending_receiver));
-    boca_app_handler_->SetSpotlightService(&spotlight_service_);
+    *fake_page = std::make_unique<FakePage>(std::move(page_pending_receiver));
+    boca_app_handler->SetSpotlightService(&spotlight_service_);
     // Explicitly set pref
-    boca_app_handler_->SetPrefForTesting(&local_state_);
+    boca_app_handler->SetPrefForTesting(&local_state_);
+    return boca_app_handler;
   }
 
   void PrepareGetSession(::boca::Session* current_session,
@@ -535,6 +659,7 @@ class BocaAppPageHandlerTest : public testing::Test {
     if (!is_producer_) {
       return;
     }
+    EXPECT_CALL(*boca_app_client(), GetAppInstanceCount).WillOnce(Return(1));
     EXPECT_CALL(*session_manager(), GetCurrentSession())
         .WillOnce(Return(&session));
     EXPECT_CALL(*session_manager(),
@@ -553,11 +678,11 @@ class BocaAppPageHandlerTest : public testing::Test {
         .WillOnce(WithArg<0>(
             // Unique pointer have ownership issue, have to do manual deep copy
             // here instead of using SaveArg.
-            Invoke([&](auto request) {
+            [&](auto request) {
               ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
               ASSERT_EQ(::boca::Session::PAST, *request->session_state());
               request->callback().Run(std::make_unique<::boca::Session>());
-            })));
+            }));
   }
 
   MockSessionClientImpl* session_client_impl() { return &session_client_impl_; }
@@ -581,14 +706,20 @@ class BocaAppPageHandlerTest : public testing::Test {
         }));
   }
 
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
+
  private:
   bool is_producer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestingPrefServiceSimple local_state_;
   ::boca::Session session = GetCommonActiveSessionProto();
-  session_manager::SessionManager device_session_manager_;
+  session_manager::SessionManager device_session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
@@ -598,7 +729,7 @@ class BocaAppPageHandlerTest : public testing::Test {
   std::unique_ptr<NiceMock<MockBocaAppClient>> boca_app_client_;
 
   StrictMock<MockSessionClientImpl> session_client_impl_{nullptr};
-  std::unique_ptr<StrictMock<MockSessionManager>> session_manager_;
+  std::unique_ptr<NiceMock<MockSessionManager>> session_manager_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   mojo::Remote<mojom::PageHandler> remote_;
@@ -613,6 +744,11 @@ class BocaAppPageHandlerProducerTest : public BocaAppPageHandlerTest {
   void SetUp() override {
     BocaAppPageHandlerTest::SetUp();
     CreateBocaAppHandler(/*is_producer=*/true);
+  }
+
+  void TearDown() override {
+    EXPECT_CALL(*session_manager(), CleanupPresenters).Times(1);
+    BocaAppPageHandlerTest::TearDown();
   }
 };
 
@@ -654,7 +790,7 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionWithFullInput) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(session_duration, request->duration());
             ASSERT_EQ(
@@ -748,7 +884,7 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionWithFullInput) {
             EXPECT_TRUE(request->captions_config()->captions_enabled());
             EXPECT_TRUE(request->captions_config()->translations_enabled());
             request->callback().Run(std::make_unique<::boca::Session>());
-          })));
+          }));
 
   // Verify local events dispatched
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
@@ -788,7 +924,7 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionWithCritialInputOnly) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(session_duration, request->duration());
             ASSERT_EQ(
@@ -799,7 +935,7 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionWithCritialInputOnly) {
             ASSERT_FALSE(request->on_task_config());
             ASSERT_TRUE(request->roster());
             request->callback().Run(std::make_unique<::boca::Session>());
-          })));
+          }));
 
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
@@ -841,7 +977,7 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionFailedWithHttpError) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(session_duration, request->duration());
             ASSERT_EQ(
@@ -853,7 +989,7 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionFailedWithHttpError) {
             ASSERT_TRUE(request->roster());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
 
   // Verify local events not dispatched
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(0);
@@ -918,7 +1054,7 @@ TEST_F(BocaAppPageHandlerConsumerTest, GetSessionWithFullInputTest) {
                             future.GetCallback());
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/false))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
         auto* start_time = session->mutable_start_time();
         start_time->set_seconds(1111111);
@@ -989,7 +1125,7 @@ TEST_F(BocaAppPageHandlerConsumerTest, GetSessionWithFullInputTest) {
         (*student_statuses)["111"] = std::move(status_1);
 
         request->callback().Run(std::move(session));
-      })));
+      }));
 
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
@@ -1054,12 +1190,12 @@ TEST_F(BocaAppPageHandlerProducerTest, GetSessionWithPartialInputTest) {
                             future.GetCallback());
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/false))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
         session->mutable_duration()->set_seconds(120);
         session->set_session_state(::boca::Session::ACTIVE);
         request->callback().Run(std::move(session));
-      })));
+      }));
 
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
@@ -1085,10 +1221,10 @@ TEST_F(BocaAppPageHandlerProducerTest, GetSessionWithHTTPError) {
                             future.GetCallback());
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/false))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         request->callback().Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
-      })));
+      }));
 
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
@@ -1117,8 +1253,8 @@ TEST_F(BocaAppPageHandlerProducerTest, GetSessionWithNullPtrInputTest) {
                             future.GetCallback());
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/false))
-      .WillOnce(WithArg<0>(Invoke(
-          [&](auto request) { request->callback().Run(base::ok(nullptr)); })));
+      .WillOnce(WithArg<0>(
+          [&](auto request) { request->callback().Run(base::ok(nullptr)); }));
 
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(IsNull(), /*dispatch_event=*/true))
@@ -1143,9 +1279,9 @@ TEST_F(BocaAppPageHandlerProducerTest, GetSessionWithNonActiveSessionTest) {
                             future.GetCallback());
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/false))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         request->callback().Run(std::make_unique<::boca::Session>());
-      })));
+      }));
 
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(IsNull(), /*dispatch_event=*/true))
@@ -1171,11 +1307,11 @@ TEST_F(BocaAppPageHandlerProducerTest,
                             future.GetCallback());
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/false))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
         session->set_session_state(::boca::Session::ACTIVE);
         request->callback().Run(std::move(session));
-      })));
+      }));
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
       .Times(1);
@@ -1238,11 +1374,11 @@ TEST_F(BocaAppPageHandlerProducerTest, EndSessionSucceed) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(::boca::Session::PAST, *request->session_state());
             request->callback().Run(std::make_unique<::boca::Session>());
-          })));
+          }));
 
   boca_app_handler()->EndSession(future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -1275,12 +1411,12 @@ TEST_F(BocaAppPageHandlerProducerTest, EndSessionWithHTTPFailure) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(::boca::Session::PAST, *request->session_state());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
 
   boca_app_handler()->EndSession(future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -1342,11 +1478,11 @@ TEST_F(BocaAppPageHandlerProducerTest, ExtendSessionDurationSucceed) {
                                future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
         ASSERT_EQ(base::Seconds(150), *request->duration());
         request->callback().Run(std::make_unique<::boca::Session>());
-      })));
+      }));
 
   boca_app_handler()->ExtendSessionDuration(base::Seconds(30),
                                             future_1.GetCallback());
@@ -1376,7 +1512,7 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateOnTaskConfigSucceed) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             EXPECT_EQ(session.teacher().gaia_id(),
                       request->teacher().gaia_id());
             ASSERT_EQ(GetCommonTestLockOnTaskConfigProto().SerializeAsString(),
@@ -1390,7 +1526,7 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateOnTaskConfigSucceed) {
                       request->captions_config()->SerializeAsString());
             request->callback().Run(std::make_unique<::boca::Session>(
                 GetCommonActiveSessionProto()));
-          })));
+          }));
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
                                          future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -1445,12 +1581,12 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateOnTaskConfigWithHTTPFailure) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(session.teacher().gaia_id(),
                       request->teacher().gaia_id());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
 
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
                                          future_1.GetCallback());
@@ -1514,7 +1650,7 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateCaptionConfigSucceed) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(session.teacher().gaia_id(),
                       request->teacher().gaia_id());
             ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
@@ -1528,7 +1664,7 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateCaptionConfigSucceed) {
                       request->on_task_config()->SerializeAsString());
             request->callback().Run(std::make_unique<::boca::Session>(
                 GetCommonActiveSessionProto()));
-          })));
+          }));
 
   SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
@@ -1618,12 +1754,12 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateCaptionWithHTTPFailure) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(session.teacher().gaia_id(),
                       request->teacher().gaia_id());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
 
   SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
@@ -1646,9 +1782,9 @@ TEST_F(BocaAppPageHandlerProducerTest,
 
   std::vector<UpdateSessionCallback> update_session_cb;
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
-      .WillRepeatedly(WithArg<0>(Invoke([&](auto request) {
+      .WillRepeatedly(WithArg<0>([&](auto request) {
         update_session_cb.emplace_back(request->callback());
-      })));
+      }));
   SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
                                          base::DoNothing());
@@ -1688,10 +1824,10 @@ TEST_F(BocaAppPageHandlerProducerTest,
   std::unique_ptr<UpdateSessionRequest> second_request;
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(
+          WithArg<0>([&](auto request) { first_request = std::move(request); }))
       .WillOnce(WithArg<0>(
-          Invoke([&](auto request) { first_request = std::move(request); })))
-      .WillOnce(WithArg<0>(
-          Invoke([&](auto request) { second_request = std::move(request); })));
+          [&](auto request) { second_request = std::move(request); }));
   SetSessionCaptionInitializer(/*success=*/true);
   // Update caption config.
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
@@ -1731,10 +1867,10 @@ TEST_F(BocaAppPageHandlerProducerTest,
   std::unique_ptr<UpdateSessionRequest> second_request;
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(
+          WithArg<0>([&](auto request) { first_request = std::move(request); }))
       .WillOnce(WithArg<0>(
-          Invoke([&](auto request) { first_request = std::move(request); })))
-      .WillOnce(WithArg<0>(
-          Invoke([&](auto request) { second_request = std::move(request); })));
+          [&](auto request) { second_request = std::move(request); }));
   // Update ontask config.
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
                                          base::DoNothing());
@@ -1786,7 +1922,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
                                session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
         ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
                   request->captions_config()->SerializeAsString());
@@ -1799,8 +1935,8 @@ TEST_F(BocaAppPageHandlerProducerTest,
                   request->on_task_config()->SerializeAsString());
         request->callback().Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-      })))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      }))
+      .WillOnce(WithArg<0>([&](auto request) {
         ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
         ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
                   request->on_task_config()->SerializeAsString());
@@ -1813,7 +1949,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
                   request->captions_config()->SerializeAsString());
         request->callback().Run(
             std::make_unique<::boca::Session>(GetCommonActiveSessionProto()));
-      })));
+      }));
   SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
                                           future_1.GetCallback());
@@ -1850,7 +1986,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
                                session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
         ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
                   request->on_task_config()->SerializeAsString());
@@ -1863,8 +1999,8 @@ TEST_F(BocaAppPageHandlerProducerTest,
                   request->captions_config()->SerializeAsString());
         request->callback().Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-      })))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      }))
+      .WillOnce(WithArg<0>([&](auto request) {
         ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
         ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
                   request->captions_config()->SerializeAsString());
@@ -1877,7 +2013,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
                   request->on_task_config()->SerializeAsString());
         request->callback().Run(
             std::make_unique<::boca::Session>(GetCommonActiveSessionProto()));
-      })));
+      }));
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
                                          future_1.GetCallback());
   SetSessionCaptionInitializer(/*success=*/true);
@@ -2024,12 +2160,12 @@ TEST_F(BocaAppPageHandlerProducerTest,
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(1u, request->student_ids().size());
             ASSERT_EQ(student_id, request->student_ids()[0]);
             request->callback().Run(true);
-          })));
+          }));
 
   boca_app_handler()->RemoveStudent(student_id, future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -2062,13 +2198,13 @@ TEST_F(BocaAppPageHandlerProducerTest, RemoveStudentWithHTTPFailure) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(1u, request->student_ids().size());
             ASSERT_EQ(student_id, request->student_ids()[0]);
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
 
   boca_app_handler()->RemoveStudent(student_id, future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -2126,12 +2262,12 @@ TEST_F(BocaAppPageHandlerProducerTest, RenotifyStudentSucceed) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(1u, request->student_ids().size());
             ASSERT_EQ(student_id, request->student_ids()[0]);
             request->callback().Run(true);
-          })));
+          }));
 
   boca_app_handler()->RenotifyStudent(student_id, future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -2161,13 +2297,13 @@ TEST_F(BocaAppPageHandlerProducerTest, RenotifyStudentWithHTTPFailure) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(1u, request->student_ids().size());
             ASSERT_EQ(student_id, request->student_ids()[0]);
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
 
   boca_app_handler()->RenotifyStudent(student_id, future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -2227,7 +2363,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(2u, request->students().size());
             ASSERT_EQ(group_id, request->student_group_id());
@@ -2241,7 +2377,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
             EXPECT_EQ("b@gmail.com", request->students()[1].email());
             EXPECT_EQ("cdn://s2", request->students()[1].photo_url());
             request->callback().Run(true);
-          })));
+          }));
   EXPECT_CALL(*session_manager(), LoadCurrentSession(/*from_polling=*/false))
       .Times(1);
   std::vector<mojom::IdentityPtr> students;
@@ -2279,12 +2415,12 @@ TEST_F(BocaAppPageHandlerProducerTest, AddStudentsWithHTTPFailure) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(0u, request->students().size());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
   EXPECT_CALL(*session_manager(), LoadCurrentSession(/*from_polling=*/false))
       .Times(0);
   boca_app_handler()->AddStudents({}, future_1.GetCallback());
@@ -2379,9 +2515,9 @@ TEST_F(BocaAppPageHandlerProducerTest, JoinSessionSucceeded) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             request->callback().Run(std::make_unique<::boca::Session>());
-          })));
+          }));
   EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
       .WillOnce(Return(false));
 
@@ -2410,10 +2546,10 @@ TEST_F(BocaAppPageHandlerProducerTest, JoinSessionFailed) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
   EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
       .WillOnce(Return(false));
 
@@ -2455,8 +2591,8 @@ TEST_F(BocaAppPageHandlerProducerTest,
 TEST_F(BocaAppPageHandlerProducerTest, ViewScreenSucceeded) {
   const std::string student_id = "123";
   EXPECT_CALL(*spotlight_service(), ViewScreen(student_id, kTestUrlBase, _))
-      .WillOnce(WithArg<2>(Invoke(
-          [&](auto request) { std::move(request).Run(base::ok(true)); })));
+      .WillOnce(WithArg<2>(
+          [&](auto request) { std::move(request).Run(base::ok(true)); }));
 
   base::test::TestFuture<std::optional<mojom::ViewStudentScreenError>> future;
 
@@ -2470,10 +2606,10 @@ TEST_F(BocaAppPageHandlerProducerTest, ViewScreenFailed) {
   const std::string student_id = "123";
 
   EXPECT_CALL(*spotlight_service(), ViewScreen(student_id, kTestUrlBase, _))
-      .WillOnce(WithArg<2>(Invoke([&](auto request) {
+      .WillOnce(WithArg<2>([&](auto request) {
         std::move(request).Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-      })));
+      }));
 
   base::test::TestFuture<std::optional<mojom::ViewStudentScreenError>> future;
 
@@ -2490,8 +2626,7 @@ TEST_F(BocaAppPageHandlerProducerTest, ViewScreenFailed) {
 
 TEST_F(BocaAppPageHandlerProducerTest, AuthenticateWebviewSuccess) {
   EXPECT_CALL(*webview_auth_handler(), AuthenticateWebview(testing::_))
-      .WillOnce(
-          testing::Invoke(base::test::RunOnceCallback<0>(/*is_success=*/true)));
+      .WillOnce(base::test::RunOnceCallback<0>(/*is_success=*/true));
   base::RunLoop run_loop;
   boca_app_handler()->AuthenticateWebview(
       base::BindLambdaForTesting([&](bool success) -> void {
@@ -2503,8 +2638,7 @@ TEST_F(BocaAppPageHandlerProducerTest, AuthenticateWebviewSuccess) {
 
 TEST_F(BocaAppPageHandlerProducerTest, AuthenticateWebviewFailure) {
   EXPECT_CALL(*webview_auth_handler(), AuthenticateWebview(testing::_))
-      .WillOnce(testing::Invoke(
-          base::test::RunOnceCallback<0>(/*is_success=*/false)));
+      .WillOnce(base::test::RunOnceCallback<0>(/*is_success=*/false));
   base::RunLoop run_loop;
   boca_app_handler()->AuthenticateWebview(
       base::BindLambdaForTesting([&](bool success) -> void {
@@ -2534,12 +2668,13 @@ TEST_F(BocaAppPageHandlerProducerTest, TestPrefGetterAndSetter) {
 
 TEST_F(BocaAppPageHandlerProducerTest, EndViewScreenSessionSucceeded) {
   const std::string student_id = "123";
+  EXPECT_CALL(*session_manager(), EndSpotlightSession).Times(1);
   EXPECT_CALL(
       *spotlight_service(),
       UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::INACTIVE,
                             kTestUrlBase, _))
-      .WillOnce(WithArg<3>(Invoke(
-          [&](auto request) { std::move(request).Run(base::ok(true)); })));
+      .WillOnce(WithArg<3>(
+          [&](auto request) { std::move(request).Run(base::ok(true)); }));
 
   base::test::TestFuture<std::optional<mojom::EndViewScreenSessionError>>
       future;
@@ -2548,18 +2683,40 @@ TEST_F(BocaAppPageHandlerProducerTest, EndViewScreenSessionSucceeded) {
   EXPECT_FALSE(future.Get().has_value());
 }
 
+TEST_F(BocaAppPageHandlerProducerTest,
+       EndViewScreenSessionWhilePresentingStudentScreen) {
+  const std::string_view kEndViewScreenStudentId = "student-id";
+  base::test::TestFuture<std::optional<mojom::EndViewScreenSessionError>>
+      future;
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  EXPECT_CALL(
+      *student_screen_presenter,
+      IsPresenting(std::optional<std::string_view>(kEndViewScreenStudentId)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*session_manager(), EndSpotlightSession).Times(0);
+  EXPECT_CALL(*spotlight_service(), UpdateViewScreenState).Times(0);
+
+  boca_app_handler()->EndViewScreenSession(std::string(kEndViewScreenStudentId),
+                                           future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
+}
+
 TEST_F(BocaAppPageHandlerProducerTest, EndViewScreenSessionFailed) {
   base::HistogramTester histogram_tester;
   const std::string student_id = "123";
 
+  EXPECT_CALL(*session_manager(), EndSpotlightSession).Times(1);
   EXPECT_CALL(
       *spotlight_service(),
       UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::INACTIVE,
                             kTestUrlBase, _))
-      .WillOnce(WithArg<3>(Invoke([&](auto request) {
+      .WillOnce(WithArg<3>([&](auto request) {
         std::move(request).Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-      })));
+      }));
 
   base::test::TestFuture<std::optional<mojom::EndViewScreenSessionError>>
       future;
@@ -2594,8 +2751,8 @@ TEST_F(BocaAppPageHandlerProducerTest, SetViewScreenSessionActiveSucceeded) {
       *spotlight_service(),
       UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::ACTIVE,
                             kTestUrlBase, _))
-      .WillOnce(WithArg<3>(Invoke(
-          [&](auto request) { std::move(request).Run(base::ok(true)); })));
+      .WillOnce(WithArg<3>(
+          [&](auto request) { std::move(request).Run(base::ok(true)); }));
 
   base::test::TestFuture<std::optional<mojom::SetViewScreenSessionActiveError>>
       future;
@@ -2613,10 +2770,10 @@ TEST_F(BocaAppPageHandlerProducerTest, SetViewScreenSessionActiveFailed) {
       *spotlight_service(),
       UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::ACTIVE,
                             kTestUrlBase, _))
-      .WillOnce(WithArg<3>(Invoke([&](auto request) {
+      .WillOnce(WithArg<3>([&](auto request) {
         std::move(request).Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-      })));
+      }));
 
   base::test::TestFuture<std::optional<mojom::SetViewScreenSessionActiveError>>
       future;
@@ -2978,6 +3135,600 @@ TEST_F(BocaAppPageHandlerProducerTest,
   EXPECT_TRUE(enable_captions_notified.translations_enabled());
   EXPECT_FALSE(disable_captions_notified.captions_enabled());
   EXPECT_TRUE(disable_captions_notified.translations_enabled());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenSuccess) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  base::OnceClosure disconnected_callback;
+  base::test::TestFuture<bool> success_future;
+  base::test::TestFuture<void> disconnected_future;
+  mojom::IdentityPtr student_identity_mojom = mojom::Identity::New(
+      kActiveStudentId, "student name", "student@email.com", std::nullopt);
+  ::boca::UserIdentity student_identity;
+
+  // Simulate existence of another `BocaAppHandler` instance to verify that it
+  // will receive the disconnected event.
+  EXPECT_CALL(*boca_app_client(), GetAppInstanceCount).WillOnce(Return(2));
+  base::test::TestFuture<void> second_disconnected_future;
+  mojo::Remote<mojom::PageHandler> second_remote;
+  std::unique_ptr<FakePage> second_fake_page;
+  std::unique_ptr<BocaAppHandler> second_boca_app_handler =
+      CreateNewBocaAppHandler(/*is_producer=*/true, &second_remote,
+                              &second_fake_page);
+
+  ::boca::Session session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*session_manager(), EndSpotlightSession)
+      .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
+  EXPECT_CALL(*spotlight_service(), UpdateViewScreenState)
+      .WillOnce([](std::string, ::boca::ViewScreenConfig::ViewScreenState,
+                   std::string, ViewScreenRequestCallback callback) {
+        std::move(callback).Run(true);
+      });
+  EXPECT_CALL(*session_manager(), GetStudentActiveDeviceId)
+      .WillOnce(Return(kStudentDeviceId));
+  EXPECT_CALL(*student_screen_presenter,
+              Start(kReceiverId, _, kStudentDeviceId, _, _))
+      .WillOnce([&disconnected_callback, &student_identity](
+                    std::string_view, const ::boca::UserIdentity& student,
+                    std::string_view, base::OnceCallback<void(bool)> success_cb,
+                    base::OnceClosure disconnected_cb) {
+        student_identity = std::move(student);
+        disconnected_callback = std::move(disconnected_cb);
+        std::move(success_cb).Run(true);
+      });
+  boca_app_handler()->PresentStudentScreen(student_identity_mojom->Clone(),
+                                           kReceiverId,
+                                           success_future.GetCallback());
+  EXPECT_TRUE(success_future.Get());
+  EXPECT_EQ(student_identity.gaia_id(), student_identity_mojom->id);
+  EXPECT_EQ(student_identity.full_name(), student_identity_mojom->name);
+  EXPECT_EQ(student_identity.email(), student_identity_mojom->email);
+
+  fake_page()->SetPresentStudentScreenEndedInterceptorCallback(
+      disconnected_future.GetCallback());
+  second_fake_page->SetPresentStudentScreenEndedInterceptorCallback(
+      second_disconnected_future.GetCallback());
+  std::move(disconnected_callback).Run();
+  EXPECT_TRUE(disconnected_future.Wait());
+  EXPECT_TRUE(second_disconnected_future.Wait());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenFailure) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  base::test::TestFuture<bool> success_future;
+  ::boca::Session session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*session_manager(), EndSpotlightSession)
+      .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
+  EXPECT_CALL(*spotlight_service(), UpdateViewScreenState)
+      .WillOnce([](std::string, ::boca::ViewScreenConfig::ViewScreenState,
+                   std::string, ViewScreenRequestCallback callback) {
+        std::move(callback).Run(true);
+      });
+  EXPECT_CALL(*session_manager(), GetStudentActiveDeviceId)
+      .WillOnce(Return(kStudentDeviceId));
+  EXPECT_CALL(*student_screen_presenter,
+              Start(kReceiverId, _, kStudentDeviceId, _, _))
+      .WillOnce([](std::string_view, const ::boca::UserIdentity&,
+                   std::string_view, base::OnceCallback<void(bool)> success_cb,
+                   base::OnceClosure disconnected_cb) {
+        std::move(success_cb).Run(false);
+      });
+  boca_app_handler()->PresentStudentScreen(
+      mojom::Identity::New(kActiveStudentId, "student name",
+                           "student@email.com", std::nullopt),
+      kReceiverId, success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest,
+       PresentStudentScreenWhilePresentingTeacherScreen) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<bool> success_future;
+  ::boca::Session session = GetCommonActiveSessionProto();
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  auto teacher_screen_presenter =
+      std::make_unique<MockTeacherScreenPresenter>();
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(teacher_screen_presenter.get()));
+  EXPECT_CALL(*teacher_screen_presenter, IsPresenting).WillOnce(Return(true));
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  boca_app_handler()->PresentStudentScreen(
+      mojom::Identity::New(kActiveStudentId, "student name",
+                           "student@email.com", std::nullopt),
+      kReceiverId, success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+  histogram_tester.ExpectTotalCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath, 1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath,
+      /* kTeacherScreenShareActive */ 2, 1);
+  histogram_tester.ExpectTotalCount(kBocaPresentStudentScreenResultUmaPath, 1);
+  histogram_tester.ExpectBucketCount(kBocaPresentStudentScreenResultUmaPath,
+                                     /* failure*/ 0, 1);
+}
+
+TEST_F(BocaAppPageHandlerProducerTest,
+       PresentTeacherScreenBeforeCompletingPresentStudentScreen) {
+  base::test::TestFuture<bool> success_future;
+  base::test::TestFuture<ViewScreenRequestCallback> update_view_screen_future;
+  ::boca::Session session = GetCommonActiveSessionProto();
+  auto teacher_screen_presenter =
+      std::make_unique<MockTeacherScreenPresenter>();
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(teacher_screen_presenter.get()));
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  ON_CALL(*session_manager(), GetStudentActiveDeviceId)
+      .WillByDefault(Return(kStudentDeviceId));
+
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*session_manager(), EndSpotlightSession)
+      .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
+  EXPECT_CALL(*spotlight_service(), UpdateViewScreenState)
+      .WillOnce([&update_view_screen_future](
+                    std::string, ::boca::ViewScreenConfig::ViewScreenState,
+                    std::string, ViewScreenRequestCallback callback) {
+        update_view_screen_future.GetCallback().Run(std::move(callback));
+      });
+  EXPECT_CALL(*student_screen_presenter, Start).Times(0);
+  // Initially simulate that there is no teacher screen presentation in
+  // progress.
+  EXPECT_CALL(*teacher_screen_presenter, IsPresenting).WillOnce(Return(false));
+  boca_app_handler()->PresentStudentScreen(
+      mojom::Identity::New(kActiveStudentId, "student name",
+                           "student@email.com", std::nullopt),
+      kReceiverId, success_future.GetCallback());
+  // Simulate teacher screen presentation started before UpdateViewScreenState
+  // is completed.
+  ViewScreenRequestCallback update_view_screen_cb =
+      update_view_screen_future.Take();
+  EXPECT_CALL(*teacher_screen_presenter, IsPresenting).WillOnce(Return(true));
+  std::move(update_view_screen_cb).Run(true);
+
+  EXPECT_FALSE(success_future.Get());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest,
+       PresentStudentScreenEndViewScreenFailure) {
+  base::HistogramTester histogram_tester;
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  base::test::TestFuture<bool> success_future;
+  ::boca::Session session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*session_manager(), EndSpotlightSession)
+      .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
+  EXPECT_CALL(*spotlight_service(), UpdateViewScreenState)
+      .WillOnce([](std::string, ::boca::ViewScreenConfig::ViewScreenState,
+                   std::string, ViewScreenRequestCallback callback) {
+        std::move(callback).Run(
+            base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
+      });
+  EXPECT_CALL(*student_screen_presenter, Start).Times(0);
+  boca_app_handler()->PresentStudentScreen(
+      mojom::Identity::New(kActiveStudentId, "student name",
+                           "student@email.com", std::nullopt),
+      kReceiverId, success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+  histogram_tester.ExpectTotalCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath, 1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath,
+      /* kEndSpotlightFailed */ 4, 1);
+  histogram_tester.ExpectTotalCount(kBocaPresentStudentScreenResultUmaPath, 1);
+  histogram_tester.ExpectBucketCount(kBocaPresentStudentScreenResultUmaPath,
+                                     /* failure*/ 0, 1);
+}
+
+TEST_F(BocaAppPageHandlerProducerTest,
+       PresentStudentScreenSessionInactiveAfterCall) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  ON_CALL(*session_manager(), GetStudentActiveDeviceId)
+      .WillByDefault(Return(kStudentDeviceId));
+  base::test::TestFuture<bool> success_future;
+  ViewScreenRequestCallback view_screen_update_cb;
+  ::boca::Session session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*session_manager(), EndSpotlightSession)
+      .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
+  EXPECT_CALL(*spotlight_service(), UpdateViewScreenState)
+      .WillOnce([&view_screen_update_cb](
+                    std::string, ::boca::ViewScreenConfig::ViewScreenState,
+                    std::string, ViewScreenRequestCallback callback) {
+        view_screen_update_cb = std::move(callback);
+      });
+  EXPECT_CALL(*student_screen_presenter, Start).Times(0);
+  boca_app_handler()->PresentStudentScreen(
+      mojom::Identity::New(kActiveStudentId, "student name",
+                           "student@email.com", std::nullopt),
+      kReceiverId, success_future.GetCallback());
+  session.set_session_state(::boca::Session::PAST);
+  std::move(view_screen_update_cb).Run(true);
+  EXPECT_FALSE(success_future.Get());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenNoDeviceFound) {
+  base::HistogramTester histogram_tester;
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  base::test::TestFuture<bool> success_future;
+  ::boca::Session session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*session_manager(), EndSpotlightSession)
+      .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
+  EXPECT_CALL(*spotlight_service(), UpdateViewScreenState)
+      .WillOnce([](std::string, ::boca::ViewScreenConfig::ViewScreenState,
+                   std::string, ViewScreenRequestCallback callback) {
+        std::move(callback).Run(true);
+      });
+  EXPECT_CALL(*session_manager(), GetStudentActiveDeviceId)
+      .WillOnce(Return(std::nullopt));
+  EXPECT_CALL(*student_screen_presenter, Start).Times(0);
+  boca_app_handler()->PresentStudentScreen(
+      mojom::Identity::New(kActiveStudentId, "student name",
+                           "student@email.com", std::nullopt),
+      kReceiverId, success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+  histogram_tester.ExpectTotalCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath, 1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath,
+      /* kNoActiveStudentDevice */ 5, 1);
+  histogram_tester.ExpectTotalCount(kBocaPresentStudentScreenResultUmaPath, 1);
+  histogram_tester.ExpectBucketCount(kBocaPresentStudentScreenResultUmaPath,
+                                     /* failure*/ 0, 1);
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenWhenNull) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(nullptr));
+  base::test::TestFuture<bool> success_future;
+  ::boca::Session session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  boca_app_handler()->PresentStudentScreen(
+      mojom::Identity::New(kActiveStudentId, "student name",
+                           "student@email.com", std::nullopt),
+      kReceiverId, success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+  histogram_tester.ExpectTotalCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath, 1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath,
+      /* kFeatureDisabled */ 0, 1);
+  histogram_tester.ExpectTotalCount(kBocaPresentStudentScreenResultUmaPath, 1);
+  histogram_tester.ExpectBucketCount(kBocaPresentStudentScreenResultUmaPath,
+                                     /* failure*/ 0, 1);
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, StopPresentingStudentScreenSuccess) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  base::test::TestFuture<bool> success_future;
+  boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*student_screen_presenter, Stop)
+      .WillOnce([](base::OnceCallback<void(bool)> success_cb) {
+        std::move(success_cb).Run(true);
+      });
+  boca_app_handler()->StopPresentingStudentScreen(success_future.GetCallback());
+  EXPECT_TRUE(success_future.Get());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, StopPresentingStudentScreenFailure) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  base::test::TestFuture<bool> success_future;
+  boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*student_screen_presenter, Stop)
+      .WillOnce([](base::OnceCallback<void(bool)> success_cb) {
+        std::move(success_cb).Run(false);
+      });
+  boca_app_handler()->StopPresentingStudentScreen(success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, PresentingStudentScreenOnSessionEnd) {
+  base::test::TestFuture<void> disconnected_future;
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  EXPECT_CALL(*student_screen_presenter, IsPresenting).WillOnce(Return(true));
+  boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*student_screen_presenter, Stop).Times(1);
+  boca_app_handler()->OnSessionEnded("session_id");
+
+  fake_page()->SetPresentStudentScreenEndedInterceptorCallback(
+      disconnected_future.GetCallback());
+  EXPECT_TRUE(disconnected_future.Wait());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, NotPresentingStudentScreenOnSessionEnd) {
+  base::test::TestFuture<void> disconnected_future;
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  EXPECT_CALL(*student_screen_presenter, IsPresenting).WillOnce(Return(false));
+  boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*student_screen_presenter, Stop).Times(0);
+  boca_app_handler()->OnSessionEnded("session_id");
+
+  fake_page()->SetPresentStudentScreenEndedInterceptorCallback(
+      disconnected_future.GetCallback());
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(disconnected_future.IsReady());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, StopPresentingStudentScreenWhenNull) {
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(nullptr));
+  base::test::TestFuture<bool> success_future;
+  boca_app_handler()->StopPresentingStudentScreen(success_future.GetCallback());
+  EXPECT_TRUE(success_future.Get());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest,
+       CheckPresentingStudentScreenConnectionOnInvalidation) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*student_screen_presenter, CheckConnection).Times(1);
+  boca_app_handler()->OnReceiverInvalidation();
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, PresentOwnScreenSuccess) {
+  auto teacher_screen_presenter =
+      std::make_unique<MockTeacherScreenPresenter>();
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(teacher_screen_presenter.get()));
+  base::OnceClosure disconnected_callback;
+  base::test::TestFuture<bool> success_future;
+  base::test::TestFuture<void> disconnected_future;
+  EXPECT_CALL(*teacher_screen_presenter,
+              Start(kReceiverId, kReceiverName, _, _, _, _))
+      .WillOnce([&disconnected_callback](
+                    std::string_view, std::string_view, ::boca::UserIdentity,
+                    bool, base::OnceCallback<void(bool)> success_cb,
+                    base::OnceClosure disconnected_cb) {
+        disconnected_callback = std::move(disconnected_cb);
+        std::move(success_cb).Run(true);
+      });
+  boca_app_handler()->PresentOwnScreen(kReceiverId,
+                                       success_future.GetCallback());
+  EXPECT_TRUE(success_future.Get());
+
+  fake_page()->SetPresentOwnScreenEndedInterceptorCallback(
+      disconnected_future.GetCallback());
+  std::move(disconnected_callback).Run();
+  EXPECT_TRUE(disconnected_future.Wait());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, PresentOwnScreenFail) {
+  auto teacher_screen_presenter =
+      std::make_unique<MockTeacherScreenPresenter>();
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(teacher_screen_presenter.get()));
+  base::test::TestFuture<bool> success_future;
+  EXPECT_CALL(*teacher_screen_presenter,
+              Start(kReceiverId, kReceiverName, _, _, _, _))
+      .WillOnce([](std::string_view, std::string_view, ::boca::UserIdentity,
+                   bool, base::OnceCallback<void(bool)> success_cb,
+                   base::OnceClosure) { std::move(success_cb).Run(false); });
+  boca_app_handler()->PresentOwnScreen(kReceiverId,
+                                       success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest,
+       PresentOwnScreenWhilePresentingStudentScreen) {
+  base::HistogramTester histogram_tester;
+  auto teacher_screen_presenter =
+      std::make_unique<MockTeacherScreenPresenter>();
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(teacher_screen_presenter.get()));
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  base::test::TestFuture<bool> success_future;
+  EXPECT_CALL(*teacher_screen_presenter, Start).Times(0);
+  EXPECT_CALL(*student_screen_presenter, IsPresenting).WillOnce(Return(true));
+  boca_app_handler()->PresentOwnScreen(kReceiverId,
+                                       success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+  histogram_tester.ExpectTotalCount(
+      kBocaPresentOwnScreenInSessionFailureReasonUmaPath, 1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentOwnScreenInSessionFailureReasonUmaPath,
+      /* kStudentScreenShareActive */ 1, 1);
+  histogram_tester.ExpectTotalCount(kBocaPresentOwnScreenInSessionResultUmaPath,
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentOwnScreenInSessionResultUmaPath, /* failure*/ 0, 1);
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, StopPresentingOwnScreenSuccess) {
+  auto teacher_screen_presenter =
+      std::make_unique<MockTeacherScreenPresenter>();
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(teacher_screen_presenter.get()));
+  base::test::TestFuture<bool> success_future;
+  EXPECT_CALL(*teacher_screen_presenter, Start).Times(1);
+  EXPECT_CALL(*teacher_screen_presenter, Stop)
+      .WillOnce([](base::OnceCallback<void(bool)> success_cb) {
+        std::move(success_cb).Run(true);
+      });
+  boca_app_handler()->PresentOwnScreen(kReceiverId, base::DoNothing());
+  boca_app_handler()->StopPresentingOwnScreen(success_future.GetCallback());
+  EXPECT_TRUE(success_future.Get());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, StopPresentingOwnScreenFailure) {
+  auto teacher_screen_presenter =
+      std::make_unique<MockTeacherScreenPresenter>();
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(teacher_screen_presenter.get()));
+  base::test::TestFuture<bool> success_future;
+  EXPECT_CALL(*teacher_screen_presenter, Start).Times(1);
+  EXPECT_CALL(*teacher_screen_presenter, Stop)
+      .WillOnce([](base::OnceCallback<void(bool)> success_cb) {
+        std::move(success_cb).Run(false);
+      });
+  boca_app_handler()->PresentOwnScreen(kReceiverId, base::DoNothing());
+  boca_app_handler()->StopPresentingOwnScreen(success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, StopPresentingOwnScreenWhenNull) {
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(nullptr));
+  base::test::TestFuture<bool> success_future;
+  boca_app_handler()->StopPresentingOwnScreen(success_future.GetCallback());
+  EXPECT_TRUE(success_future.Get());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest,
+       PresentOwnScreenOutOfSessionFailureFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  // Mock that the TeacherScreenPresenter is nullptr, which happens when the
+  // feature is disabled.
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(nullptr));
+  base::test::TestFuture<bool> success_future;
+  boca_app_handler()->PresentOwnScreen(kReceiverId,
+                                       success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+  histogram_tester.ExpectTotalCount(
+      kBocaPresentOwnScreenOutOfSessionFailureReasonUmaPath, 1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentOwnScreenOutOfSessionFailureReasonUmaPath,
+      /* kFeatureDisabled */ 0, 1);
+  histogram_tester.ExpectTotalCount(
+      kBocaPresentOwnScreenOutOfSessionResultUmaPath, 1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentOwnScreenOutOfSessionResultUmaPath, /* failure*/ 0, 1);
+}
+
+TEST_F(BocaAppPageHandlerProducerTest,
+       PresentOwnScreenInSessionFailureFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  // Mock that the TeacherScreenPresenter is nullptr, which happens when the
+  // feature is disabled.
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(nullptr));
+  base::test::TestFuture<bool> success_future;
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  boca_app_handler()->PresentOwnScreen(kReceiverId,
+                                       success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+  histogram_tester.ExpectTotalCount(
+      kBocaPresentOwnScreenInSessionFailureReasonUmaPath, 1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentOwnScreenInSessionFailureReasonUmaPath,
+      /* kFeatureDisabled */ 0, 1);
+  histogram_tester.ExpectTotalCount(kBocaPresentOwnScreenInSessionResultUmaPath,
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentOwnScreenInSessionResultUmaPath, /* failure*/ 0, 1);
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenFailureNoSession) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<bool> success_future;
+  boca_app_handler()->PresentStudentScreen(
+      mojom::Identity::New(kActiveStudentId, "student name",
+                           "student@email.com", std::nullopt),
+      kReceiverId, success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+  histogram_tester.ExpectTotalCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath, 1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath,
+      /* kNoSession */ 6, 1);
+  histogram_tester.ExpectTotalCount(kBocaPresentStudentScreenResultUmaPath, 1);
+  histogram_tester.ExpectBucketCount(kBocaPresentStudentScreenResultUmaPath,
+                                     /* failure*/ 0, 1);
+}
+
+class BocaAppPageHandlerProducerMarkerModeTest : public AshTestBase {
+ public:
+  BocaAppPageHandlerProducerMarkerModeTest() = default;
+  void SetUp() override {
+    ui::ResourceBundle::CleanupSharedInstance();
+    AshTestSuite::LoadTestResources();
+    AshTestBase::SetUp();
+
+    AnnotatorController* annotator_controller =
+        ash::Shell::Get()->annotator_controller();
+    annotator_controller->SetToolClient(&client_);
+  }
+
+  void TearDown() override { AshTestBase::TearDown(); }
+
+ protected:
+  AnnotationTray* annotator_tray() {
+    return ash::Shell::GetPrimaryRootWindowController()
+        ->GetStatusAreaWidget()
+        ->annotation_tray();
+  }
+
+ private:
+  MockAnnotatorClient client_;
+};
+
+TEST_F(BocaAppPageHandlerProducerMarkerModeTest, EnableAndDisableMarkerMode) {
+  ash::boca::util::EnableOrDisableMarkerMode(/*enable=*/true);
+  EXPECT_TRUE(annotator_tray()->visible_preferred());
+
+  ash::boca::util::EnableOrDisableMarkerMode(/*enable=*/false);
+  EXPECT_FALSE(annotator_tray()->visible_preferred());
 }
 
 }  // namespace

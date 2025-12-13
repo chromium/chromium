@@ -120,6 +120,36 @@ public class WindowInsetsUtilsJavaUnitTest {
 
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
+    @DisabledTest(message = "crbug.com/362337139")
+    public void testGetBoundingRects_PostV_correctRects() {
+        var boundingRects = List.of(new Rect(50, 0, 100, 100), new Rect(800, 0, 1600, 100));
+        var insets =
+                new WindowInsets.Builder()
+                        .setBoundingRects(WindowInsetsCompat.Type.captionBar(), boundingRects)
+                        .setFrame(1650, 800)
+                        .build();
+        assertEquals(
+                "Bounding rects should have been corrected to match the window frame.",
+                List.of(new Rect(0, 0, 100, 100), new Rect(800, 0, 1650, 100)),
+                WindowInsetsUtils.getBoundingRectsFromInsets(
+                        insets, WindowInsetsCompat.Type.captionBar()));
+
+        boundingRects = List.of(new Rect(400, 0, 100, 100), new Rect(800, 0, 1600, 100));
+        insets =
+                new WindowInsets.Builder()
+                        .setBoundingRects(WindowInsetsCompat.Type.captionBar(), boundingRects)
+                        .setFrame(2000, 800)
+                        .build();
+        assertEquals(
+                "Bounding rects should not be corrected when the difference is too great.",
+                List.of(new Rect(400, 0, 100, 100), new Rect(800, 0, 1600, 100)),
+                WindowInsetsUtils.getBoundingRectsFromInsets(
+                        insets, WindowInsetsCompat.Type.captionBar()));
+    }
+
+    @Test
+    @SmallTest
     public void testGetWidestUnoccludedRect_NoBlockedRects() {
         Rect region = new Rect(0, 0, 600, 800);
         List<Rect> blocks = List.of();

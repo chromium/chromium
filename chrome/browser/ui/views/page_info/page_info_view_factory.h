@@ -16,7 +16,6 @@
 class ChromePageInfoUiDelegate;
 class PageInfo;
 class PageInfoNavigationHandler;
-class PageInfoHistoryController;
 
 // A factory class that creates pages and individual views for page info.
 class PageInfoViewFactory {
@@ -24,7 +23,6 @@ class PageInfoViewFactory {
   PageInfoViewFactory(PageInfo* presenter,
                       ChromePageInfoUiDelegate* ui_delegate,
                       PageInfoNavigationHandler* navigation_handler,
-                      PageInfoHistoryController* history_controller,
                       bool allow_extended_site_info);
 
   // Bubble width constraints.
@@ -65,7 +63,6 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_CURRENT_VIEW,
     VIEW_ID_PAGE_INFO_RESET_PERMISSIONS_BUTTON,
     VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
-    VIEW_ID_PAGE_INFO_HISTORY_BUTTON,
     VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON,
     VIEW_ID_PAGE_INFO_MORE_ABOUT_THIS_PAGE_BUTTON,
     VIEW_ID_PERMISSION_TOGGLE_ROW_TOGGLE_BUTTON,
@@ -75,8 +72,6 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE,
     VIEW_ID_PAGE_INFO_EXTENDED_SITE_INFO_SECTION,
     VIEW_ID_PAGE_INFO_COOKIES_SYNC,
-    VIEW_ID_PAGE_INFO_ACT_PROTECTIONS_BUTTON,
-    VIEW_ID_PAGE_INFO_BUTTON_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS,
   };
 
   // Creates a separator view with padding on top and bottom. Use with flex
@@ -135,7 +130,6 @@ class PageInfoViewFactory {
       content::WebContents* web_contents);
   [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreateCookiesPageView();
-  [[nodiscard]] std::unique_ptr<views::View> CreatePrivacyAndSiteDataPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustPageView();
 
  private:
@@ -155,7 +149,6 @@ class PageInfoViewFactory {
   raw_ptr<PageInfo, DanglingUntriaged> presenter_;
   raw_ptr<ChromePageInfoUiDelegate, DanglingUntriaged> ui_delegate_;
   raw_ptr<PageInfoNavigationHandler> navigation_handler_;
-  raw_ptr<PageInfoHistoryController, DanglingUntriaged> history_controller_;
   const bool allow_extended_site_info_;
 };
 

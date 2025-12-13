@@ -67,7 +67,7 @@ void ParseSheetFuzzer(blink::CSSParserMode mode,
 
   auto* style_sheet =
       blink::MakeGarbageCollected<blink::StyleSheetContents>(context);
-  WTF::String style_sheet_string(sheet_txt);
+  blink::String style_sheet_string(sheet_txt);
   blink::CSSParser::ParseSheet(context, style_sheet, style_sheet_string,
                                defer_property_parsing);
   blink::ThreadState::Current()->CollectAllGarbageForTesting();

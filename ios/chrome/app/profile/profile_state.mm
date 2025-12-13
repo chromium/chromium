@@ -54,7 +54,7 @@
 @end
 
 @implementation ProfileState {
-  raw_ptr<ProfileIOS> _profile;
+  base::WeakPtr<ProfileIOS> _profile;
 
   // Agents attached to this profile state.
   NSMutableArray<id<ProfileStateAgent>>* _agents;
@@ -110,7 +110,11 @@
 }
 
 - (void)setProfile:(ProfileIOS*)profile {
-  _profile = profile;
+  if (profile) {
+    _profile = profile->AsWeakPtr();
+  } else {
+    _profile.reset();
+  }
 }
 
 - (SceneState*)foregroundActiveScene {

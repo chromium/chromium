@@ -4,6 +4,7 @@
 
 #include "chrome/browser/thumbnail/cc/thumbnail_cache.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"

@@ -6,11 +6,12 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_CONTROLLEE_REQUEST_HANDLER_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
@@ -19,8 +20,6 @@
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
 

@@ -14,7 +14,7 @@ namespace autofill {
 // static
 std::unique_ptr<FormFieldParser> MerchantPromoCodeFieldParser::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   std::optional<FieldAndMatchInfo> match;
   if (ParseField(context, scanner, "MERCHANT_PROMO_CODE", &match)) {
     return std::make_unique<MerchantPromoCodeFieldParser>(std::move(*match));

@@ -19,11 +19,11 @@ set(ABSL_INTERNAL_DLL_FILES
   "base/internal/endian.h"
   "base/internal/errno_saver.h"
   "base/internal/hide_ptr.h"
-  "base/internal/identity.h"
   "base/internal/iterator_traits.h"
   "base/internal/low_level_alloc.cc"
   "base/internal/low_level_alloc.h"
   "base/internal/low_level_scheduling.h"
+  "base/internal/nullability_traits.h"
   "base/internal/per_thread_tls.h"
   "base/internal/poison.cc"
   "base/internal/poison.h"
@@ -127,6 +127,8 @@ set(ABSL_INTERNAL_DLL_FILES
   "debugging/internal/address_is_readable.h"
   "debugging/internal/addresses.h"
   "debugging/internal/bounded_utf8_length_sequence.h"
+  "debugging/internal/borrowed_fixup_buffer.h"
+  "debugging/internal/borrowed_fixup_buffer.cc"
   "debugging/internal/decode_rust_punycode.cc"
   "debugging/internal/decode_rust_punycode.h"
   "debugging/internal/demangle.cc"
@@ -200,6 +202,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "log/initialize.cc"
   "log/initialize.h"
   "log/log.h"
+  "log/log_entry.cc"
   "log/log_entry.h"
   "log/log_sink.cc"
   "log/log_sink.h"
@@ -214,10 +217,14 @@ set(ABSL_INTERNAL_DLL_FILES
   "numeric/int128.h"
   "numeric/internal/bits.h"
   "numeric/internal/representation.h"
+  "profiling/hashtable.cc"
+  "profiling/hashtable.h"
   "profiling/internal/exponential_biased.cc"
   "profiling/internal/exponential_biased.h"
   "profiling/internal/periodic_sampler.cc"
   "profiling/internal/periodic_sampler.h"
+  "profiling/internal/profile_builder.cc"
+  "profiling/internal/profile_builder.h"
   "profiling/internal/sample_recorder.h"
   "random/bernoulli_distribution.h"
   "random/beta_distribution.h"
@@ -287,6 +294,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "strings/cord_buffer.h"
   "strings/escaping.cc"
   "strings/escaping.h"
+  "strings/internal/append_and_overwrite.h"
   "strings/internal/charconv_bigint.cc"
   "strings/internal/charconv_bigint.h"
   "strings/internal/charconv_parse.cc"
@@ -368,6 +376,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "strings/internal/str_split_internal.h"
   "strings/internal/utf8.cc"
   "strings/internal/utf8.h"
+  "strings/resize_and_overwrite.h"
   "synchronization/barrier.cc"
   "synchronization/barrier.h"
   "synchronization/blocking_counter.cc"
@@ -438,7 +447,12 @@ set(ABSL_INTERNAL_DLL_FILES
   "debugging/leak_check.cc"
 )
 
-if(NOT MSVC)
+if(MSVC)
+  list(APPEND ABSL_INTERNAL_DLL_FILES
+    "time/internal/cctz/src/time_zone_name_win.cc"
+    "time/internal/cctz/src/time_zone_name_win.h"
+  )
+else()
   list(APPEND ABSL_INTERNAL_DLL_FILES
     "flags/commandlineflag.cc"
     "flags/commandlineflag.h"
@@ -823,6 +837,9 @@ function(absl_make_dll)
       ${_dll_libs}
       ${ABSL_DEFAULT_LINKOPTS}
       $<$<BOOL:${ANDROID}>:-llog>
+      $<$<BOOL:${MINGW}>:-ladvapi32>
+      $<$<BOOL:${MINGW}>:-ldbghelp>
+      $<$<BOOL:${MINGW}>:-lbcrypt>
   )
   set_target_properties(${_dll} PROPERTIES
     LINKER_LANGUAGE "CXX"

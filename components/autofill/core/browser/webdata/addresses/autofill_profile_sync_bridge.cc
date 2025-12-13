@@ -55,7 +55,7 @@ void AutofillProfileSyncBridge::CreateForWebDataServiceAndBackend(
     const std::string& app_locale,
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
-  web_data_service->GetDBUserData()->SetUserData(
+  web_data_service->GetDBUserData().SetUserData(
       &kAutofillProfileSyncBridgeUserDataKey,
       std::make_unique<AutofillProfileSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -68,7 +68,7 @@ void AutofillProfileSyncBridge::CreateForWebDataServiceAndBackend(
 syncer::DataTypeSyncBridge* AutofillProfileSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<AutofillProfileSyncBridge*>(
-      web_data_service->GetDBUserData()->GetUserData(
+      web_data_service->GetDBUserData().GetUserData(
           &kAutofillProfileSyncBridgeUserDataKey));
 }
 

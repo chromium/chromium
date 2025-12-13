@@ -22,13 +22,14 @@
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/player/android/convert_to_java_bitmap.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/paint_preview/player/android/jni_headers/PlayerCompositorDelegateImpl_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -49,15 +50,15 @@ constexpr std::
 
 }  // namespace
 
-jlong JNI_PlayerCompositorDelegateImpl_Initialize(
+static jlong JNI_PlayerCompositorDelegateImpl_Initialize(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_object,
+    const JavaRef<jobject>& j_object,
     jlong paint_preview_service,
     jlong j_capture_result_ptr,
-    const JavaParamRef<jstring>& j_url_spec,
-    const JavaParamRef<jstring>& j_directory_key,
+    const JavaRef<jstring>& j_url_spec,
+    const JavaRef<jstring>& j_directory_key,
     jboolean j_main_frame_mode,
-    const JavaParamRef<jobject>& j_compositor_error_callback,
+    const JavaRef<jobject>& j_compositor_error_callback,
     jboolean j_is_low_mem) {
   TRACE_EVENT0("paint_preview", "JNI_PlayerCompositorDelegateImpl_Initialize");
   PlayerCompositorDelegateAndroid* delegate =
@@ -71,13 +72,13 @@ jlong JNI_PlayerCompositorDelegateImpl_Initialize(
 
 PlayerCompositorDelegateAndroid::PlayerCompositorDelegateAndroid(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_object,
+    const JavaRef<jobject>& j_object,
     PaintPreviewBaseService* paint_preview_service,
     jlong j_capture_result_ptr,
-    const JavaParamRef<jstring>& j_url_spec,
-    const JavaParamRef<jstring>& j_directory_key,
+    const JavaRef<jstring>& j_url_spec,
+    const JavaRef<jstring>& j_directory_key,
     jboolean j_main_frame_mode,
-    const JavaParamRef<jobject>& j_compositor_error_callback,
+    const JavaRef<jobject>& j_compositor_error_callback,
     jboolean j_is_low_mem)
     : PlayerCompositorDelegate(),
       request_id_(0),
@@ -170,11 +171,10 @@ PlayerCompositorDelegateAndroid::GetRootFrameOffsets(JNIEnv* env) {
 }
 
 void PlayerCompositorDelegateAndroid::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   // Don't handle the critical case leave that to the base class implementation
   // which should kill the preview.
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     Java_PlayerCompositorDelegateImpl_onModerateMemoryPressure(
         base::android::AttachCurrentThread(), java_ref_);
   }
@@ -220,17 +220,17 @@ void PlayerCompositorDelegateAndroid::CompositeResponseFramesToVectors(
 jint PlayerCompositorDelegateAndroid::RequestBitmap(
     JNIEnv* env,
     std::optional<base::UnguessableToken>& frame_guid,
-    const JavaParamRef<jobject>& j_bitmap_callback,
-    const JavaParamRef<jobject>& j_error_callback,
+    const JavaRef<jobject>& j_bitmap_callback,
+    const JavaRef<jobject>& j_error_callback,
     jfloat j_scale_factor,
     jint j_clip_x,
     jint j_clip_y,
     jint j_clip_width,
     jint j_clip_height) {
   TRACE_EVENT0("paint_preview", "RequestBitmap");
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "paint_preview", "PlayerCompositorDelegateAndroid::RequestBitmap",
-      TRACE_ID_LOCAL(request_id_));
+  TRACE_EVENT_BEGIN("paint_preview",
+                    "PlayerCompositorDelegateAndroid::RequestBitmap",
+                    perfetto::Track(request_id_));
   gfx::Rect rect(j_clip_x, j_clip_y, j_clip_width, j_clip_height);
   auto callback = base::BindPostTask(
       task_runner_,
@@ -267,17 +267,16 @@ void PlayerCompositorDelegateAndroid::OnJavaBitmapCallback(
     int request_id,
     JavaBitmapResult result) {
   TRACE_EVENT0("paint_preview", "OnBitmapReceived");
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "paint_preview", "PlayerCompositorDelegateAndroid::RequestBitmap",
-      TRACE_ID_LOCAL(request_id), "status", static_cast<int>(result.status),
+  TRACE_EVENT_END(
+      "paint_preview", /* PlayerCompositorDelegateAndroid::RequestBitmap */
+      perfetto::Track(request_id), "status", static_cast<int>(result.status),
       "bytes", result.bytes);
 
   if (result.status ==
       mojom::PaintPreviewCompositor::BitmapStatus::kAllocFailed) {
     base::android::RunRunnableAndroid(j_error_callback);
     // Treat this as a critical memory pressure failure. We should abort.
-    OnMemoryPressure(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     return;
   }
 
@@ -332,3 +331,5 @@ void PlayerCompositorDelegateAndroid::Destroy(JNIEnv* env) {
 PlayerCompositorDelegateAndroid::~PlayerCompositorDelegateAndroid() = default;
 
 }  // namespace paint_preview
+
+DEFINE_JNI(PlayerCompositorDelegateImpl)

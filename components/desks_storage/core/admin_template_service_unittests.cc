@@ -29,7 +29,8 @@ namespace desks_storage {
 
 namespace {
 base::Value ParsePolicyFromString(std::string_view policy) {
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(policy);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      policy, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   CHECK(parsed_json.has_value());
   CHECK(parsed_json->is_list());

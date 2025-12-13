@@ -21,6 +21,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
@@ -173,5 +174,16 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
     /** Set the view to focus to next after the toolbar. */
     public void setNextFocusableView(View nextFocusableView) {
         mNextFocusableView = nextFocusableView;
+    }
+
+    /** Set the editor toolbar to use creation mode text. */
+    public void setCreationModeText(@CreationMode int creationMode) {
+        if (creationMode == CreationMode.ITEM_PICKER) {
+            mNumberRollView.setStringForZero(R.string.tab_selection_editor_toolbar_add_recent_tabs);
+            mNumberRollView.setString(R.plurals.collaboration_preview_dialog_tabs);
+        } else {
+            mNumberRollView.setStringForZero(R.string.tab_selection_editor_toolbar_select_items);
+            mNumberRollView.setString(R.plurals.tab_selection_editor_item_count);
+        }
     }
 }

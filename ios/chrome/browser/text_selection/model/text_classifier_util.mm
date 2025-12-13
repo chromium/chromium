@@ -23,8 +23,9 @@ bool IsEntitySelectionAllowedForURL(web::WebState* web_state) {
     return false;
   }
 
-  if (url.host() == base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                        kForceAllowDomainForEntitySelection)) {
+  if (url.GetHost() ==
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kForceAllowDomainForEntitySelection)) {
     return true;
   }
 

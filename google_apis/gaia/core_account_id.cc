@@ -38,8 +38,9 @@ CoreAccountId& CoreAccountId::operator=(CoreAccountId&&) noexcept = default;
 
 // static
 CoreAccountId CoreAccountId::FromGaiaId(const GaiaId& gaia_id) {
-  if (gaia_id.empty())
+  if (gaia_id.empty()) {
     return CoreAccountId();
+  }
 
   DCHECK(!IsEmailString(gaia_id.ToString()))
       << "Expected a Gaia ID and got an email [actual = " << gaia_id << "]";
@@ -48,8 +49,9 @@ CoreAccountId CoreAccountId::FromGaiaId(const GaiaId& gaia_id) {
 
 // static
 CoreAccountId CoreAccountId::FromRobotEmail(const std::string& robot_email) {
-  if (robot_email.empty())
+  if (robot_email.empty()) {
     return CoreAccountId();
+  }
   DCHECK(gaia::IsGoogleRobotAccountEmail(robot_email))
       << "Not a valid robot email [robot_email = " << robot_email << "]";
   return CoreAccountId::FromString(robot_email);
@@ -58,8 +60,9 @@ CoreAccountId CoreAccountId::FromRobotEmail(const std::string& robot_email) {
 #if BUILDFLAG(IS_CHROMEOS)
 // static
 CoreAccountId CoreAccountId::FromEmail(const std::string& email) {
-  if (email.empty())
+  if (email.empty()) {
     return CoreAccountId();
+  }
 
   DCHECK(IsEmailString(email))
       << "Expected an email [actual = " << email << "]";
@@ -108,3 +111,7 @@ CoreAccountId ConvertFromJavaCoreAccountId(
       Java_CoreAccountId_getId(env, j_core_account_id));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(CoreAccountId)
+#endif

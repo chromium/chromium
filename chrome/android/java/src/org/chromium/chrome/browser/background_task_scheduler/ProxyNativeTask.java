@@ -11,6 +11,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
@@ -19,6 +20,7 @@ import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
 
 /**
  * Entry point for the background tasks scheduled through the native interface. This class acts as a
@@ -62,7 +64,7 @@ public final class ProxyNativeTask extends NativeBackgroundTask {
                     .addStartupCompletedObserver(
                             new BrowserStartupController.StartupCallback() {
                                 @Override
-                                public void onSuccess() {
+                                public void onSuccess(@Nullable StartupMetrics metrics) {
                                     if (mNativeProxyNativeTask == 0) return;
                                     ProxyNativeTaskJni.get()
                                             .onFullBrowserLoaded(

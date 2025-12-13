@@ -150,11 +150,11 @@ FetchRequestData* FetchRequestData::Create(
           mojo::Remote<network::mojom::blink::ChunkedDataPipeGetter>>(
           fetch_api_request->body.TakeStreamBody());
       body_remote->set_disconnect_with_reason_handler(
-          WTF::BindOnce(SignalError, WrapPersistent(completion_notifier)));
+          BindOnce(SignalError, WrapPersistent(completion_notifier)));
       auto* body_remote_raw = body_remote.get();
       (*body_remote_raw)
-          ->GetSize(WTF::BindOnce(SignalSize, std::move(body_remote),
-                                  WrapPersistent(completion_notifier)));
+          ->GetSize(BindOnce(SignalSize, std::move(body_remote),
+                             WrapPersistent(completion_notifier)));
       (*body_remote_raw)->StartReading(std::move(writable));
     } else {
       request->SetBuffer(BodyStreamBuffer::Create(

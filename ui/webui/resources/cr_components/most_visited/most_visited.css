@@ -12,9 +12,11 @@
  * #css_wrapper_metadata_end */
 
 :host {
+    --cr-tooltip-icon-fill-color: var(--cr-fallback-color-on-surface-subtle);
   --icon-button-color-active: var(--google-grey-700);
   --icon-button-color: var(--google-grey-600);
   --icon-size: 48px;
+    --managed-tile-background-color: var(--cr-fallback-color-neutral-container);
   --tile-background-color: rgb(229, 231, 232);
   --tile-hover-color: rgba(var(--google-grey-900-rgb), .1);
   --tile-size: 112px;
@@ -55,6 +57,8 @@
 }
 
 #addShortcutIcon,
+#showMoreIcon,
+#showLessIcon,
 .query-tile-icon {
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
@@ -62,7 +66,7 @@
   width: 24px;
 }
 
-#addShortcutIconContainer {
+.tile-icon-container {
   background-color:
       var(--add-shortcut-background-color, var(--tile-background-color));
   margin-inline-start: auto;
@@ -75,6 +79,18 @@
       var(--add-shortcut-foreground-color, var(--google-grey-900));
 }
 
+#showMoreIcon {
+  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/expand_content.svg);
+  background-color:
+      var(--add-shortcut-foreground-color, var(--google-grey-900));
+}
+
+#showLessIcon {
+  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/collapse_content.svg);
+  background-color:
+      var(--add-shortcut-foreground-color, var(--google-grey-900));
+}
+
 .query-tile-icon {
   -webkit-mask-image: url(chrome://resources/images/icon_search.svg);
   background-color: var(--google-grey-700);
@@ -82,12 +98,16 @@
 
 @media (forced-colors: active) {
   #addShortcutIcon,
+  #showMoreIcon,
+  #showLessIcon,
   .query-tile-icon {
     background-color: ButtonText;
   }
 }
 
-:host([use-white-tile-icon_]) #addShortcutIcon {
+:host([use-white-tile-icon_]) #addShortcutIcon,
+:host([use-white-tile-icon_]) #showMoreIcon,
+:host([use-white-tile-icon_]) #showLessIcon {
   background-color: white;
 }
 
@@ -96,7 +116,9 @@
 }
 
 .tile,
-#addShortcut {
+#addShortcut,
+#showMore,
+#showLess {
   -webkit-tap-highlight-color: transparent;
   align-items: center;
   border-radius: 4px;
@@ -127,20 +149,26 @@
 }
 
 :host-context(.focus-outline-visible) .tile a:focus,
-:host-context(.focus-outline-visible) #addShortcut:focus {
+:host-context(.focus-outline-visible) #addShortcut:focus,
+:host-context(.focus-outline-visible) #showMore:focus,
+:host-context(.focus-outline-visible) #showLess:focus {
   box-shadow: var(--most-visited-focus-shadow);
 }
 
 @media (forced-colors: active) {
   :host-context(.focus-outline-visible) .tile a:focus,
-  :host-context(.focus-outline-visible) #addShortcut:focus {
+  :host-context(.focus-outline-visible) #addShortcut:focus,
+  :host-context(.focus-outline-visible) #showMore:focus,
+  :host-context(.focus-outline-visible) #showLess:focus {
     /* Use outline instead of box-shadow (which does not work) in Windows
         HCM. */
     outline: var(--cr-focus-outline-hcm);
   }
 }
 
-#addShortcut {
+#addShortcut,
+#showMore,
+#showLess {
   background-color: transparent;
   border: none;
   box-shadow: none;
@@ -150,6 +178,8 @@
 
 :host(:not([reordering_])) .tile:hover,
 :host(:not([reordering_])) #addShortcut:hover,
+:host(:not([reordering_])) #showMore:hover,
+:host(:not([reordering_])) #showLess:hover,
 .force-hover {
   background-color: var(--tile-hover-color);
 }
@@ -171,6 +201,24 @@
   width: 24px;
 }
 
+.managed-tile-icon {
+  align-items: center;
+  background-color: var(--managed-tile-background-color);
+  border-radius: 50%;
+  display: flex;
+  flex-shrink: 0;
+  height: 24px;
+  justify-content: center;
+  left: 68px;
+  position: absolute;
+  top: 40px;
+  width: 24px;
+}
+
+cr-policy-indicator {
+  --cr-icon-size: 16px;
+}
+
 .tile-title {
   align-items: center;
   border-radius: calc(var(--title-height) / 2 + 2px);
@@ -180,7 +228,7 @@
   line-height: calc(var(--title-height) / 2);
   margin-top: 6px;
   padding: 2px 8px;
-  width: 88px;
+  max-width: 102px;
 }
 
 .tile-title span {
@@ -248,4 +296,23 @@ cr-icon-button {
 
 #dialogContent {
   height: 160px;
+}
+
+/* When the policy subtitle is visible, the dialog content needs to be
+ * taller to fit it. The extra 36px accounts for the subtitle's content
+ * (~20px) and its bottom margin (16px). */
+#dialogContent:has(#policySubtitleContainer:not([hidden])) {
+  height: 196px;
+}
+
+#policySubtitleContainer {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  gap: 10px;
+  display: flex;
+  margin-bottom: 16px;
+}
+
+cr-toast-manager {
+  --cr-toast-white-space: normal;
 }

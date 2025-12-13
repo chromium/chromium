@@ -54,7 +54,8 @@ class FakeDownloadManagerTabHelper final : public DownloadManagerTabHelper {
     download_task_started_ = task;
   }
 
-  raw_ptr<web::DownloadTask> download_task_started_ = nullptr;
+  raw_ptr<web::DownloadTask, DanglingUntriaged> download_task_started_ =
+      nullptr;
 };
 
 #pragma mark - SaveToDriveMediatorTest

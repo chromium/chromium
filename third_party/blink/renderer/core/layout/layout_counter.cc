@@ -86,8 +86,9 @@ String LayoutCounter::GenerateCounterText(Vector<int> counter_values,
       CounterTextFromStyleAndValue(counter_style, counter_values.front());
   if (!separator.IsNull()) {
     for (wtf_size_t i = 1u; i < counter_values.size(); ++i) {
-      text = CounterTextFromStyleAndValue(counter_style, counter_values[i]) +
-             separator + text;
+      text = StrCat(
+          {CounterTextFromStyleAndValue(counter_style, counter_values[i]),
+           separator, text});
     }
   }
   return text;

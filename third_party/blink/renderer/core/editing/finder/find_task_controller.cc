@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -51,8 +52,8 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
     } else {
       controller_->GetLocalFrame()
           ->GetTaskRunner(blink::TaskType::kInternalFindInPage)
-          ->PostTask(FROM_HERE, WTF::BindOnce(&FindTask::Invoke,
-                                              WrapWeakPersistent(this)));
+          ->PostTask(FROM_HERE,
+                     BindOnce(&FindTask::Invoke, WrapWeakPersistent(this)));
     }
   }
 
@@ -217,9 +218,6 @@ void FindTaskController::StartRequest(
     int identifier,
     const String& search_text,
     const mojom::blink::FindOptions& options) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "blink", "FindInPageRequest",
-      TRACE_ID_WITH_SCOPE("FindInPageRequest", identifier));
   DCHECK(!finding_in_progress_);
   DCHECK_EQ(current_find_identifier_, kInvalidFindIdentifier);
   // This is a brand new search, so we need to reset everything.

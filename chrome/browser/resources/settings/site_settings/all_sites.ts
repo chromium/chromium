@@ -7,15 +7,17 @@
  * 'all-sites' is the polymer element for showing the list of all sites under
  * Site Settings.
  */
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
-import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../settings_shared.css.js';
+import '../settings_page/settings_subpage.js';
 import './all_sites_icons.html.js';
 import './clear_storage_dialog_shared.css.js';
 import './site_entry.js';
@@ -35,12 +37,13 @@ import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {DeleteBrowsingDataAction, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
-import {RouteObserverMixin, Router} from '../router.js';
+import {Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './all_sites.html.js';
 import {AllSitesAction2, AllSitesDialog, ContentSetting, SortMethod} from './constants.js';
+import type {OriginInfo, SiteGroup} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
 interface ActionMenuModel {
   actionScope: string;
@@ -81,7 +84,7 @@ export interface AllSitesElement {
   };
 }
 
-const AllSitesElementBase = GlobalScrollTargetMixin(RouteObserverMixin(
+const AllSitesElementBase = SettingsViewMixin(GlobalScrollTargetMixin(
     WebUiListenerMixin(I18nMixin(SiteSettingsMixin(PolymerElement)))));
 
 const RWS_RELATED_SEARCH_PREFIX: string = 'related:';
@@ -148,11 +151,6 @@ export class AllSitesElement extends AllSitesElementBase {
         readOnly: true,
       },
 
-      isRelatedWebsiteSetsV2UiEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isRelatedWebsiteSetsV2UiEnabled'),
-      },
-
       /**
        * Stores the last selected item in the All Sites list.
        */
@@ -206,7 +204,6 @@ export class AllSitesElement extends AllSitesElementBase {
   declare private totalUsage_: string;
   private metricsBrowserProxy: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  declare private isRelatedWebsiteSetsV2UiEnabled_: boolean;
 
   override ready() {
     super.ready();
@@ -245,7 +242,7 @@ export class AllSitesElement extends AllSitesElementBase {
    * RouteObserverBehavior
    */
   override currentRouteChanged(currentRoute: Route, oldRoute?: Route) {
-    super.currentRouteChanged(currentRoute);
+    super.currentRouteChanged(currentRoute, oldRoute);
     if (currentRoute === routes.SITE_SETTINGS_ALL &&
         currentRoute !== oldRoute) {
       this.populateList_();
@@ -472,15 +469,6 @@ export class AllSitesElement extends AllSitesElementBase {
         this.filteredList_.length > 0;
   }
 
-  private hasFilteredRwsSitesV2Ui_(): boolean {
-    return this.isRelatedWebsiteSetsV2UiEnabled_ && this.hasFilteredRwsSites_();
-  }
-
-  private shouldShowRwsV1LearnMore_(): boolean {
-    return !this.isRelatedWebsiteSetsV2UiEnabled_ &&
-        this.hasFilteredRwsSites_();
-  }
-
   private onShowRelatedSites_() {
     this.browserProxy.recordAction(AllSitesAction2.FILTER_BY_FPS_OWNER);
     this.$.menu.get().close();
@@ -597,23 +585,10 @@ export class AllSitesElement extends AllSitesElementBase {
     return this.filter.startsWith(RWS_RELATED_SEARCH_PREFIX);
   }
 
-  /**
-   * Checks if the RWS V2 UI is enabled and an RWS filter is applied.
-   * @return True if the RWS V2 UI is enabled and `isRwsFiltered_` is true.
-   */
-  private isRwsV2Filtered_(): boolean {
-    return this.isRelatedWebsiteSetsV2UiEnabled_ && this.isRwsFiltered_();
-  }
-
   private getRwsLearnMoreLabel_() {
     const rwsOwner = this.filter.substring(this.filter.indexOf(':') + 1);
     return loadTimeData.getStringF(
         'siteSettingsRelatedWebsiteSetsLearnMore', rwsOwner);
-  }
-
-  private getShowRwsButtonLabel_() {
-    return this.i18n(this.isRelatedWebsiteSetsV2UiEnabled_ ?
-      'allSitesShowRwsButton' : 'relatedWebsiteSetsShowRelatedSitesButton');
   }
 
   /**
@@ -623,13 +598,9 @@ export class AllSitesElement extends AllSitesElementBase {
    *     is applied.
    */
   private getClearDataButtonString_(): string {
-    if (this.isFiltered_()) {
-      const messageId = this.isRwsV2Filtered_() ?
-          'allSitesRwsDeleteDataButtonLabel' :
-          'siteSettingsDeleteDisplayedStorageLabel';
-      return this.i18n(messageId);
-    }
-    return this.i18n('siteSettingsDeleteAllStorageLabel');
+    return this.i18n(
+        this.isFiltered_() ? 'siteSettingsDeleteDisplayedStorageLabel' :
+                             'siteSettingsDeleteAllStorageLabel');
   }
 
   /**
@@ -639,12 +610,9 @@ export class AllSitesElement extends AllSitesElementBase {
    *     is applied.
    */
   private getClearStorageDescription_(): string {
-    let descriptionId = 'siteSettingsClearAllStorageDescription';
-    if (this.hasFilteredRwsSitesV2Ui_()) {
-      descriptionId = 'allSitesRwsFilterViewStorageDescription';
-    } else if (this.isFiltered_()) {
-      descriptionId = 'siteSettingsClearDisplayedStorageDescription';
-    }
+    const descriptionId = this.isFiltered_() ?
+        'siteSettingsClearDisplayedStorageDescription' :
+        'siteSettingsClearAllStorageDescription';
     return loadTimeData.substituteString(
         this.i18n(descriptionId), this.totalUsage_);
   }
@@ -760,13 +728,9 @@ export class AllSitesElement extends AllSitesElementBase {
    * @return The appropriate title for clear storage confirmation dialog.
    */
   private getClearAllStorageDialogTitle_(): string {
-    if (this.isFiltered_()) {
-      const messageId = this.isRwsV2Filtered_() ?
-          'allSitesRwsDeleteDataDialogTitle' :
-          'siteSettingsDeleteDisplayedStorageDialogTitle';
-      return this.i18n(messageId);
-    }
-    return this.i18n('siteSettingsDeleteAllStorageDialogTitle');
+    return this.i18n(
+        this.isFiltered_() ? 'siteSettingsDeleteDisplayedStorageDialogTitle' :
+                             'siteSettingsDeleteAllStorageDialogTitle');
   }
 
   /**
@@ -777,13 +741,6 @@ export class AllSitesElement extends AllSitesElementBase {
    */
   private getClearAllStorageDialogDescription_(): string {
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
-    if (this.isRwsV2Filtered_()) {
-      const rwsOwner = this.filter.substring(this.filter.indexOf(':') + 1);
-      const messageId = anyAppsInstalled ?
-          'siteSettingsDeleteRwsStorageConfirmationInstalled' :
-          'siteSettingsDeleteRwsStorageConfirmation';
-      return loadTimeData.getStringF(messageId, this.totalUsage_, rwsOwner);
-    }
 
     let messageId;
     if (anyAppsInstalled) {
@@ -807,13 +764,9 @@ export class AllSitesElement extends AllSitesElementBase {
    *     filter is applied and/or the RWS V2 view is shown.
    */
   private getClearAllStorageDialogSignOutLabel_(): string {
-    if (this.isFiltered_()) {
-      const messageId = this.isRwsV2Filtered_() ?
-          'siteSettingsClearRwsStorageSignOut' :
-          'siteSettingsClearDisplayedStorageSignOut';
-      return this.i18n(messageId);
-    }
-    return this.i18n('siteSettingsClearAllStorageSignOut');
+    return this.i18n(
+        this.isFiltered_() ? 'siteSettingsClearDisplayedStorageSignOut' :
+                             'siteSettingsClearAllStorageSignOut');
   }
 
   private recordUserAction_(scopes: string[]) {
@@ -914,6 +867,11 @@ export class AllSitesElement extends AllSitesElementBase {
     this.forceListUpdate_();
     this.totalUsage_ = '0 B';
     this.onCloseDialog_(e);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

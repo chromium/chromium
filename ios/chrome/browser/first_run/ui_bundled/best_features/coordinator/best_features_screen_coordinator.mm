@@ -168,32 +168,34 @@
 // Logs when user selects a Best features item row.
 - (void)logItemSelection:(BestFeaturesItemType)itemType {
   using enum BestFeaturesItemType;
-  using enum BestFeaturesMainScreenActionType;
   BestFeaturesMainScreenActionType enumValue;
   switch (itemType) {
     case kLensSearch:
-      enumValue = kLensItemTapped;
+      enumValue = BestFeaturesMainScreenActionType::kLensItemTapped;
       break;
     case kEnhancedSafeBrowsing:
-      enumValue = kEnhancedSafeBrowsingItemTapped;
+      enumValue =
+          BestFeaturesMainScreenActionType::kEnhancedSafeBrowsingItemTapped;
       break;
     case kLockedIncognitoTabs:
-      enumValue = kLockedIncognitoTabsItemTapped;
+      enumValue =
+          BestFeaturesMainScreenActionType::kLockedIncognitoTabsItemTapped;
       break;
     case kSaveAndAutofillPasswords:
-      enumValue = kSharePasswordsItemTapped;
+      enumValue = BestFeaturesMainScreenActionType::kSharePasswordsItemTapped;
       break;
     case kTabGroups:
-      enumValue = kTabGroupsTapped;
+      enumValue = BestFeaturesMainScreenActionType::kTabGroupsTapped;
       break;
     case kPriceTrackingAndInsights:
-      enumValue = kPriceTrackingTapped;
+      enumValue = BestFeaturesMainScreenActionType::kPriceTrackingTapped;
       break;
     case kAutofillPasswordsInOtherApps:
-      enumValue = kSaveAutofillPasswordsItemTapped;
+      enumValue =
+          BestFeaturesMainScreenActionType::kSaveAutofillPasswordsItemTapped;
       break;
     case kSharePasswordsWithFamily:
-      enumValue = kSharePasswordsItemTapped;
+      enumValue = BestFeaturesMainScreenActionType::kSharePasswordsItemTapped;
       break;
   }
   base::UmaHistogramEnumeration(kActionOnBestFeaturesMainScreenHistogram,

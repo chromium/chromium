@@ -1692,8 +1692,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
 
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<TableBreakTokenData>(
-            container_builder_.GetBreakTokenData(), rows,
-            cell_block_constraints, sections, total_table_min_block_size_,
+            rows, cell_block_constraints, sections, total_table_min_block_size_,
             consumed_table_box_block_size, has_entered_table_box,
             is_past_table_box));
   }

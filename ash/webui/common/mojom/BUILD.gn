@@ -33,7 +33,7 @@ mojom("shortcut_input_provider") {
 
   public_deps = [ "//mojo/public/mojom/base" ]
 
-  deps = [ "//ash/public/mojom:mojom" ]
+  deps = [ "//ash/public/mojom" ]
 }
 
 mojom("accelerator_fetcher") {
@@ -44,7 +44,7 @@ mojom("accelerator_fetcher") {
 
   public_deps = [ "//mojo/public/mojom/base" ]
 
-  deps = [ "//ash/public/mojom:mojom" ]
+  deps = [ "//ash/public/mojom" ]
 }
 
 mojom("webui_syslog_emitter") {
@@ -52,7 +52,7 @@ mojom("webui_syslog_emitter") {
   sources = [ "webui_syslog_emitter.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
 
-  deps = [ "//ash/public/mojom:mojom" ]
+  deps = [ "//ash/public/mojom" ]
   webui_module_path = "/"
 }
 

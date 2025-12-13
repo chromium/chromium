@@ -49,7 +49,7 @@ class AudioShifterTest :
     input_sample_n_ += input_size_;
 
     if (tag_input_) {
-      input->channel_span(0)[0] = 10000000.0;
+      input->channel(0)[0] = 10000000.0;
       tag_input_ = false;
       expect_smooth_output_ = false;
     }
@@ -83,7 +83,7 @@ class AudioShifterTest :
       if (now_ >= time_to_pull_) {
         shifter_.Pull(test_output_.get(), now_ + playback_latency_);
         bool silence = true;
-        auto first_channel = test_output_->channel_span(0);
+        auto first_channel = test_output_->channel(0);
         for (size_t j = 0;
              j < static_cast<size_t>(test_output_->frames());
              j++) {

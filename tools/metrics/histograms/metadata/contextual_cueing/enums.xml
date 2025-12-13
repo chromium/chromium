@@ -85,6 +85,24 @@ chromium-metrics-reviews@google.com.
     The page was eligible for the nudge, but the user already has a window modal
     UI showing.
   </int>
+  <int value="14"
+      label="The nudge was not shown as the user already has the feature side
+             panel open in the tab">
+    The page was eligible for the nudge, but the user already has the feature
+    side panel open in the tab.
+  </int>
+  <int value="15"
+      label="The nudge was not shown as the browser actor was active on the
+             tab">
+    The page was eligible for the nudge, but the browser actor is currently
+    active on the tab.
+  </int>
+  <int value="16"
+      label="The nudge was not shown as the contextual tasks side panel was
+             open for the tab">
+    The page was eligible for the nudge, but the contextual tasks side panel was
+    open for the tab.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeDecision) -->
@@ -116,6 +134,18 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeInteraction) -->
+
+<enum name="ContextualCueingZeroStateSuggestionsPageContextIneligibilityType">
+  <int value="0" label="None"/>
+  <int value="1" label="Optimization Metadata">
+    The optimization metadata returned for the page (or all pages, if a pinned
+    tabs request) deemed the request ineligible.
+  </int>
+  <int value="2" label="Page context">
+    The page context fetched for the page (or all pages, if a pinned tabs
+    request) was invalid.
+  </int>
+</enum>
 
 </enums>
 

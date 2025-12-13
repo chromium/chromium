@@ -9,10 +9,11 @@ import android.text.format.DateUtils;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
@@ -28,6 +29,7 @@ import java.util.regex.Pattern;
 /**
  * Centralizes UMA data collection for Contextual Search. All calls must be made from the UI thread.
  */
+@NullMarked
 public class ContextualSearchUma {
     // Constants to use for the original selection gesture
     private static final boolean LONG_PRESS = false;
@@ -560,7 +562,9 @@ public class ContextualSearchUma {
      * @return The code to write into a panel-seen histogram.
      */
     private static int getPanelSeenByGestureStateCode(boolean wasPanelSeen, boolean wasTap) {
-        return SEEN_BY_GESTURE_CODES.get(new Pair<>(wasPanelSeen, wasTap));
+        Integer code = SEEN_BY_GESTURE_CODES.get(new Pair<>(wasPanelSeen, wasTap));
+        assert code != null;
+        return code;
     }
 
     /**

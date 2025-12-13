@@ -12,6 +12,7 @@
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/shortcuts/shortcut_integration_interaction_test_base.h"
 #include "chrome/grit/branded_strings.h"
@@ -21,6 +22,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace shortcuts {
 
@@ -33,12 +38,24 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
 // Identifier for the shortcut created in these tests.
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewShortcutId);
 
+#if BUILDFLAG(IS_MAC)
+bool kTestDisabledForVirtualMachineMac =
+    (base::mac::MacOSMajorVersion() == 15) && base::mac::IsVirtualMachine();
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace
 
 using ShortcutIntegrationInteractiveUiTest =
     ShortcutIntegrationInteractionTestBase;
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest, CreateAndLaunch) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   const GURL kPageWithIconsUrl =
       embedded_https_test_server().GetURL("/shortcuts/page_icons.html");
   RunTestSequence(
@@ -52,6 +69,13 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest, CreateAndLaunch) {
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest, CustomTitle) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   const GURL kPageWithIconsUrl =
       embedded_https_test_server().GetURL("/shortcuts/page_icons.html");
   RunTestSequence(
@@ -64,6 +88,13 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest, CustomTitle) {
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest,
                        MultipleShortcuts) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   const GURL kPageWithIconsUrl =
       embedded_https_test_server().GetURL("/shortcuts/page_icons.html");
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondShortcutId);
@@ -162,22 +193,23 @@ class ShortcutIntegrationMultiProfileInteractiveUiTest
 
   // Creates shortcuts in both profiles.
   [[nodiscard]] MultiStep CreateShortcuts() {
-    return Steps(InstrumentTab(kProfile1TabId, /*tab_index=*/std::nullopt,
-                               profile1_browser()),
-                 InstrumentTab(kProfile2TabId, /*tab_index=*/std::nullopt,
-                               profile2_browser()),
-                 NavigateWebContents(kProfile1TabId, profile1_shortcut_url()),
-                 NavigateWebContents(kProfile2TabId, profile2_shortcut_url()),
+    return Steps(
+        InstrumentTab(kProfile1TabId, /*tab_index=*/std::nullopt,
+                      profile1_browser()),
+        InstrumentTab(kProfile2TabId, /*tab_index=*/std::nullopt,
+                      profile2_browser()),
+        NavigateWebContents(kProfile1TabId, profile1_shortcut_url()),
+        NavigateWebContents(kProfile2TabId, profile2_shortcut_url()),
 
-                 InstrumentNextShortcut(kProfile2ShortcutId),
-                 InContext(profile2_browser()->window()->GetElementContext(),
-                           ShowAndAcceptCreateShortcutDialog()),
-                 InAnyContext(WaitForShow(kProfile2ShortcutId)),
+        InstrumentNextShortcut(kProfile2ShortcutId),
+        InContext(BrowserElements::From(profile2_browser())->GetContext(),
+                  ShowAndAcceptCreateShortcutDialog()),
+        InAnyContext(WaitForShow(kProfile2ShortcutId)),
 
-                 InstrumentNextShortcut(kProfile1ShortcutId),
-                 InContext(profile1_browser()->window()->GetElementContext(),
-                           ShowAndAcceptCreateShortcutDialog()),
-                 InAnyContext(WaitForShow(kProfile1ShortcutId)));
+        InstrumentNextShortcut(kProfile1ShortcutId),
+        InContext(BrowserElements::From(profile1_browser())->GetContext(),
+                  ShowAndAcceptCreateShortcutDialog()),
+        InAnyContext(WaitForShow(kProfile1ShortcutId)));
   }
 
   static base::FilePath ProfilePathFromWebContents(ui::TrackedElement* te) {
@@ -193,6 +225,13 @@ class ShortcutIntegrationMultiProfileInteractiveUiTest
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
                        CreatedForCorrectProfile) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   const std::u16string shortcut_title_1 =
       u"Page with icon links (" +
       // "Your Chrome"
@@ -211,6 +250,13 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
                        LaunchInCorrectProfile) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfile1NewTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfile2NewTabId);
 
@@ -242,6 +288,13 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
                        DontLaunchInLockedProfile) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);

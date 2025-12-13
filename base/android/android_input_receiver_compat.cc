@@ -6,7 +6,7 @@
 
 #include <dlfcn.h>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/check.h"
 #include "base/logging.h"
 
@@ -49,6 +49,10 @@ AndroidInputReceiverCompat::AndroidInputReceiverCompat() {
       dlsym(main_dl_handle, "AInputReceiverCallbacks_setMotionEventCallback");
   DCHECK(AInputReceiverCallbacks_setMotionEventCallbackFn);
 
+  *reinterpret_cast<void**>(&AInputReceiverCallbacks_setKeyEventCallbackFn) =
+      dlsym(main_dl_handle, "AInputReceiverCallbacks_setKeyEventCallback");
+  DCHECK(AInputReceiverCallbacks_setKeyEventCallbackFn);
+
   *reinterpret_cast<void**>(&AInputReceiver_createBatchedInputReceiverFn) =
       dlsym(main_dl_handle, "AInputReceiver_createBatchedInputReceiver");
   DCHECK(AInputReceiver_createBatchedInputReceiverFn);
@@ -68,8 +72,8 @@ AndroidInputReceiverCompat::AndroidInputReceiverCompat() {
 
 // static
 bool AndroidInputReceiverCompat::IsSupportAvailable() {
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         base::android::SDK_VERSION_V;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_V;
 }
 
 // static

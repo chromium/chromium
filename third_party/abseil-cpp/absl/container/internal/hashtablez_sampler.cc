@@ -81,12 +81,12 @@ void HashtablezInfo::PrepareForSampling(int64_t stride,
   capacity.store(0, std::memory_order_relaxed);
   size.store(0, std::memory_order_relaxed);
   num_erases.store(0, std::memory_order_relaxed);
+  num_insert_hits.store(0, std::memory_order_relaxed);
   num_rehashes.store(0, std::memory_order_relaxed);
   max_probe_length.store(0, std::memory_order_relaxed);
   total_probe_length.store(0, std::memory_order_relaxed);
   hashes_bitwise_or.store(0, std::memory_order_relaxed);
   hashes_bitwise_and.store(~size_t{}, std::memory_order_relaxed);
-  hashes_bitwise_xor.store(0, std::memory_order_relaxed);
   max_reserve.store(0, std::memory_order_relaxed);
 
   create_time = absl::Now();
@@ -94,8 +94,9 @@ void HashtablezInfo::PrepareForSampling(int64_t stride,
   // The inliner makes hardcoded skip_count difficult (especially when combined
   // with LTO).  We use the ability to exclude stacks by regex when encoding
   // instead.
-  depth = absl::GetStackTrace(stack, HashtablezInfo::kMaxStackDepth,
-                              /* skip_count= */ 0);
+  depth = static_cast<unsigned>(
+      absl::GetStackTrace(stack, HashtablezInfo::kMaxStackDepth,
+                          /* skip_count= */ 0));
   inline_element_size = inline_element_size_value;
   key_size = key_size_value;
   value_size = value_size_value;
@@ -229,8 +230,8 @@ void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
   }
 }
 
-void RecordInsertSlow(HashtablezInfo* info, size_t hash,
-                      size_t distance_from_desired) {
+void RecordInsertMissSlow(HashtablezInfo* info, size_t hash,
+                          size_t distance_from_desired) {
   // SwissTables probe in groups of 16, so scale this to count items probes and
   // not offset from desired.
   size_t probe_length = distance_from_desired;
@@ -242,7 +243,6 @@ void RecordInsertSlow(HashtablezInfo* info, size_t hash,
 
   info->hashes_bitwise_and.fetch_and(hash, std::memory_order_relaxed);
   info->hashes_bitwise_or.fetch_or(hash, std::memory_order_relaxed);
-  info->hashes_bitwise_xor.fetch_xor(hash, std::memory_order_relaxed);
   info->max_probe_length.store(
       std::max(info->max_probe_length.load(std::memory_order_relaxed),
                probe_length),

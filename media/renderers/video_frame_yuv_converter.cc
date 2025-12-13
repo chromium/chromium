@@ -100,27 +100,9 @@ gpu::SyncToken ConvertYuvVideoFrameToRgbSharedImage(
                                       : gfx::Rect(video_frame->coded_size());
 
   // This SharedImage will be written to (and later read from) via the raster
-  // interface. The full usage depends on whether raster is OOP or is going
-  // over the GLES2 interface.
+  // interface.
   gpu::SharedImageUsageSet src_usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                                        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-  const auto& caps = raster_context_provider->ContextCapabilities();
-  if (caps.gpu_rasterization) {
-    src_usage |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-  } else {
-    // NOTE: This GLES2 usage is *only* for raster, as this SharedImage is
-    // created to hold YUV data that is then converted to RGBA via the raster
-    // interface before being shared with some other use case (e.g., WebGL).
-    // There is no flow wherein this SharedImage is directly exposed to
-    // WebGL. Moreover, this raster usage is by definition *only* over GLES2
-    // (since this is non-OOP-R). It is critical to specify both of these
-    // facts to the service side to ensure that the needed SharedImage backing
-    // gets created (see crbug.com/328472684).
-    src_usage |= gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                 gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-                 gpu::SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
-                 gpu::SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY;
-  }
 
   // For pure software pixel upload path with video frame that does not have
   // textures.

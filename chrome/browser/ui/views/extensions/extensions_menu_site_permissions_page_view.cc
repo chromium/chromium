@@ -8,10 +8,10 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
@@ -19,6 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -43,7 +44,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -75,33 +76,7 @@ std::vector<views::RadioButton*> GetSiteAccessButtons(views::View* page) {
   return site_access_buttons;
 }
 
-std::u16string GetShowRequestsToggleAccessibleName(bool is_toggle_on) {
-  int label_id =
-      is_toggle_on
-          ? IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SHOW_REQUESTS_TOGGLE_ON
-          : IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SHOW_REQUESTS_TOGGLE_OFF;
-  return l10n_util::GetStringUTF16(label_id);
-}
 
-// Returns the radio button text for `site_access` option.
-std::u16string GetSiteAccessRadioButtonText(
-    PermissionsManager::UserSiteAccess site_access,
-    std::u16string current_site = std::u16string()) {
-  switch (site_access) {
-    case PermissionsManager::UserSiteAccess::kOnClick:
-      return l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_ON_CLICK_TEXT);
-    case PermissionsManager::UserSiteAccess::kOnSite:
-      return l10n_util::GetStringFUTF16(
-          IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_ON_SITE_TEXT,
-          current_site);
-    case PermissionsManager::UserSiteAccess::kOnAllSites:
-      return l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_ON_ALL_SITES_TEXT);
-    default:
-      NOTREACHED();
-  }
-}
 
 // Returns the radio button description for `site_access` option.
 std::u16string GetSiteAccessRadioButtonDescription(
@@ -208,7 +183,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                                   dialog_insets.right()))
             .AddChildren(
                 views::Builder<views::RadioButton>()
-                    .SetText(GetSiteAccessRadioButtonText(site_access))
+                    // Text is set during the update.
                     .SetLabelStyle(views::style::STYLE_BODY_3)
                     .SetEnabledTextColors(kColorExtensionsMenuText)
                     .SetGroup(kSiteAccessButtonsId)
@@ -400,41 +375,43 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
 void ExtensionsMenuSitePermissionsPageView::Update(
     const std::u16string& extension_name,
     const ui::ImageModel& extension_icon,
-    const std::u16string& current_site,
-    PermissionsManager::UserSiteAccess user_site_access,
-    bool is_show_requests_toggle_on,
-    bool is_on_site_enabled,
-    bool is_on_all_sites_enabled) {
+    ExtensionsMenuViewModel::ExtensionSiteAccessOptionsState
+        site_access_state) {
   extension_icon_->SetImage(extension_icon);
   extension_name_->SetText(extension_name);
 
-  // Update the site access buttons with new `user_site_access` and
-  // `current_site`.
-  int new_selected_index = GetSiteAccessButtonIndex(user_site_access);
   std::vector<views::RadioButton*> site_access_buttons =
       GetSiteAccessButtons(this);
-  for (int i = 0; i < static_cast<int>(site_access_buttons.size()); ++i) {
-    site_access_buttons[i]->SetChecked(i == new_selected_index);
-    if (i == kOnSiteButtonIndex) {
-      site_access_buttons[i]->SetText(GetSiteAccessRadioButtonText(
-          PermissionsManager::UserSiteAccess::kOnSite, current_site));
-    }
-  }
+  site_access_buttons[kOnClickButtonIndex]->SetChecked(
+      site_access_state.on_click_option.is_on);
+  site_access_buttons[kOnSiteButtonIndex]->SetChecked(
+      site_access_state.on_site_option.is_on);
+  site_access_buttons[kOnAllSitesButtonIndex]->SetChecked(
+      site_access_state.on_all_sites_option.is_on);
 
-  // Enable the site access buttons accordingly. The extension is guaranteed to
-  // at least have "on click" enabled when this page is opened.
-  site_access_buttons[kOnSiteButtonIndex]->SetEnabled(is_on_site_enabled);
+  site_access_buttons[kOnClickButtonIndex]->SetEnabled(
+      site_access_state.on_click_option.status ==
+      ExtensionsMenuViewModel::ControlState::Status::kEnabled);
+  site_access_buttons[kOnSiteButtonIndex]->SetEnabled(
+      site_access_state.on_site_option.status ==
+      ExtensionsMenuViewModel::ControlState::Status::kEnabled);
   site_access_buttons[kOnAllSitesButtonIndex]->SetEnabled(
-      is_on_all_sites_enabled);
+      site_access_state.on_all_sites_option.status ==
+      ExtensionsMenuViewModel::ControlState::Status::kEnabled);
 
-  UpdateShowRequestsToggle(is_show_requests_toggle_on);
+  site_access_buttons[kOnClickButtonIndex]->SetText(
+      site_access_state.on_click_option.text);
+  site_access_buttons[kOnSiteButtonIndex]->SetText(
+      site_access_state.on_site_option.text);
+  site_access_buttons[kOnAllSitesButtonIndex]->SetText(
+      site_access_state.on_all_sites_option.text);
 }
 
 void ExtensionsMenuSitePermissionsPageView::UpdateShowRequestsToggle(
-    bool is_on) {
-  show_requests_toggle_->SetIsOn(is_on);
+    ExtensionsMenuViewModel::ControlState show_requests_toggle) {
+  show_requests_toggle_->SetIsOn(show_requests_toggle.is_on);
   show_requests_toggle_->GetViewAccessibility().SetName(
-      GetShowRequestsToggleAccessibleName(is_on));
+      show_requests_toggle.accessible_name);
 }
 
 views::RadioButton*

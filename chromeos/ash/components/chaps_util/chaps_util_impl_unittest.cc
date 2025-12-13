@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/chaps_util/chaps_util_impl.h"
 
 #include <pkcs11t.h>
@@ -19,6 +14,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -185,7 +181,7 @@ class AttributeData {
       return std::nullopt;
     }
     CK_BBOOL value;
-    memcpy(&value, attribute.pValue, sizeof(CK_BBOOL));
+    UNSAFE_TODO(memcpy(&value, attribute.pValue, sizeof(CK_BBOOL)));
     return value;
   }
 
@@ -198,14 +194,14 @@ class AttributeData {
       return std::nullopt;
     }
     CK_ULONG value;
-    memcpy(&value, attribute.pValue, sizeof(CK_ULONG));
+    UNSAFE_TODO(memcpy(&value, attribute.pValue, sizeof(CK_ULONG)));
     return value;
   }
 
   static std::optional<std::vector<CK_BYTE>> ParseCkBytes(
       const CK_ATTRIBUTE& attribute) {
     std::vector<CK_BYTE> result(attribute.ulValueLen);
-    memcpy(result.data(), attribute.pValue, result.size());
+    UNSAFE_TODO(memcpy(result.data(), attribute.pValue, result.size()));
     return result;
   }
 };
@@ -219,7 +215,7 @@ struct ObjectAttributes {
                                     CK_ULONG attributes_count) {
     ObjectAttributes result;
     for (CK_ULONG i = 0; i < attributes_count; ++i) {
-      const CK_ATTRIBUTE& attr = attributes[i];
+      const CK_ATTRIBUTE& attr = UNSAFE_TODO(attributes[i]);
       if (result.parsed_attributes_map.contains(attr.type)) {
         ADD_FAILURE() << "Already stored attribute type:" << attr.type;
       }
@@ -372,7 +368,8 @@ class FakeChapsSlotSession : public ChapsSlotSession {
 
     // Remember the modulus.
     SECItem* modulus = &(public_key->u.rsa.modulus);
-    public_key_modulus_.assign(modulus->data, modulus->data + modulus->len);
+    public_key_modulus_.assign(modulus->data,
+                               UNSAFE_TODO(modulus->data + modulus->len));
     return CKR_OK;
   }
 
@@ -393,7 +390,8 @@ class FakeChapsSlotSession : public ChapsSlotSession {
       if (pTemplate[0].ulValueLen < kModulusBytes) {
         return CKR_BUFFER_TOO_SMALL;
       }
-      memcpy(pTemplate[0].pValue, public_key_modulus_.data(), kModulusBytes);
+      UNSAFE_TODO(memcpy(pTemplate[0].pValue, public_key_modulus_.data(),
+                         kModulusBytes));
       return CKR_OK;
     }
     if (hObject == private_key_handle_) {
@@ -404,8 +402,8 @@ class FakeChapsSlotSession : public ChapsSlotSession {
       if (pTemplate[0].ulValueLen < sizeof(key_in_software_value)) {
         return CKR_BUFFER_TOO_SMALL;
       }
-      memcpy(pTemplate[0].pValue, &key_in_software_value,
-             sizeof(key_in_software_value));
+      UNSAFE_TODO(memcpy(pTemplate[0].pValue, &key_in_software_value,
+                         sizeof(key_in_software_value)));
       return CKR_OK;
     }
     return CKR_OBJECT_HANDLE_INVALID;
@@ -427,10 +425,10 @@ class FakeChapsSlotSession : public ChapsSlotSession {
     uint8_t* data = reinterpret_cast<uint8_t*>(pTemplate[0].pValue);
     size_t length = pTemplate[0].ulValueLen;
     if (hObject == public_key_handle_) {
-      passed_data_->public_key_cka_id.assign(data, data + length);
+      passed_data_->public_key_cka_id.assign(data, UNSAFE_TODO(data + length));
       return CKR_OK;
     } else if (hObject == private_key_handle_) {
-      passed_data_->private_key_cka_id.assign(data, data + length);
+      passed_data_->private_key_cka_id.assign(data, UNSAFE_TODO(data + length));
       return CKR_OK;
     }
     return CKR_OBJECT_HANDLE_INVALID;
@@ -568,7 +566,7 @@ std::vector<uint8_t> GetExpectedCkaId(SECKEYPrivateKey* private_key) {
   crypto::ScopedSECItem cka_id_secitem(
       PK11_GetLowLevelKeyIDForPrivateKey(private_key));
   uint8_t* cka_id_data = reinterpret_cast<uint8_t*>(cka_id_secitem->data);
-  return {cka_id_data, cka_id_data + cka_id_secitem->len};
+  return {cka_id_data, UNSAFE_TODO(cka_id_data + cka_id_secitem->len)};
 }
 
 // Successfully generates a software-backed key pair. Also verifies CKA_ID

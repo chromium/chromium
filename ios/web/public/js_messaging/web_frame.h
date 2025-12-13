@@ -37,6 +37,10 @@ class WebFrame : public base::SupportsUserData {
   virtual bool IsMainFrame() const = 0;
   // The security origin associated with this frame.
   virtual url::Origin GetSecurityOrigin() const = 0;
+  // The URL associated with this frame. Important: for security-relevant
+  // decisions, do not use this function. Instead, use `GetSecurityOrigin()`. A
+  // `GURL` and an `Origin` are not interchangeable.
+  virtual GURL GetUrl() const = 0;
 
   // Returns the BrowserState associated with this WebFrame.
   virtual BrowserState* GetBrowserState() = 0;

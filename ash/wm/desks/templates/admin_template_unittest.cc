@@ -100,7 +100,8 @@ class AdminTemplateTest : public OverviewTestBase,
   // Creates a template from a JSON string.
   std::unique_ptr<DeskTemplate> CreateTemplateFromJson(std::string_view json) {
     base::JSONReader::Result json_read_result =
-        base::JSONReader::ReadAndReturnValueWithError(json);
+        base::JSONReader::ReadAndReturnValueWithError(
+            json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!json_read_result.has_value()) {
       return nullptr;
     }

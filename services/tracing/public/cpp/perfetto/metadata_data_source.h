@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"

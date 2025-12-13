@@ -13,9 +13,7 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog_args.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::app_install {
 

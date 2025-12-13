@@ -21,6 +21,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/branded_constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/registration_data.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -82,6 +83,20 @@ PersistedData::PersistedData(
               pref_service),
           std::move(activity_service))) {
   CHECK(pref_service_);
+
+  PersistedDataEvent event;
+  for (const std::string& app_id : GetAppIds()) {
+    PersistedDataEvent::RegisteredApp app;
+    app.app_id = app_id;
+    app.brand_code = GetBrandCode(app_id);
+    app.cohort = GetCohort(app_id);
+    app.version = GetProductVersion(app_id).GetString();
+    event.AddRegisteredApp(app);
+  }
+  event.SetEulaRequired(GetEulaRequired())
+      .SetLastChecked(GetLastChecked())
+      .SetLastStarted(GetLastStarted())
+      .WriteAsync();
 }
 
 PersistedData::~PersistedData() {
@@ -463,21 +478,21 @@ void PersistedData::SetThrottleUpdatesUntil(base::Time time) {
 
 void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   VLOG(2) << __func__ << ": Registering " << rq.app_id;
-  if (rq.version.IsValid()) {
+  if (base::Version(rq.version).IsValid()) {
     VLOG(2) << __func__ << ": app version " << rq.version;
-    SetProductVersion(rq.app_id, rq.version);
+    SetProductVersion(rq.app_id, base::Version(rq.version));
   }
-  if (!rq.version_path.empty()) {
-    SetProductVersionPath(rq.app_id, rq.version_path);
+  if (rq.version_path && !rq.version_path->empty()) {
+    SetProductVersionPath(rq.app_id, *rq.version_path);
   }
-  if (!rq.version_key.empty()) {
-    SetProductVersionKey(rq.app_id, rq.version_key);
+  if (rq.version_key && !rq.version_key->empty()) {
+    SetProductVersionKey(rq.app_id, *rq.version_key);
   }
   if (!rq.existence_checker_path.empty()) {
     SetExistenceCheckerPath(rq.app_id, rq.existence_checker_path);
   }
-  if (!rq.lang.empty()) {
-    SetLang(rq.app_id, rq.lang);
+  if (rq.lang && !rq.lang->empty()) {
+    SetLang(rq.app_id, *rq.lang);
   }
   if (!rq.brand_code.empty()) {
     SetBrandCode(rq.app_id, rq.brand_code);
@@ -488,11 +503,11 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   if (!rq.ap.empty()) {
     SetAP(rq.app_id, rq.ap);
   }
-  if (!rq.ap_path.empty()) {
-    SetAPPath(rq.app_id, rq.ap_path);
+  if (rq.ap_path && !rq.ap_path->empty()) {
+    SetAPPath(rq.app_id, *rq.ap_path);
   }
-  if (!rq.ap_key.empty()) {
-    SetAPKey(rq.app_id, rq.ap_key);
+  if (rq.ap_key && !rq.ap_key->empty()) {
+    SetAPKey(rq.app_id, *rq.ap_key);
   }
   if (rq.dla) {
     SetDateLastActive(rq.app_id, rq.dla.value());
@@ -507,18 +522,27 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   if (rq.install_date) {
     SetInstallDate(rq.app_id, *rq.install_date);
   }
-  if (!rq.cohort.empty()) {
-    SetCohort(rq.app_id, rq.cohort);
+  if (rq.cohort && !rq.cohort->empty()) {
+    SetCohort(rq.app_id, *rq.cohort);
   }
-  if (!rq.cohort_name.empty()) {
-    SetCohortName(rq.app_id, rq.cohort_name);
+  if (rq.cohort_name && !rq.cohort_name->empty()) {
+    SetCohortName(rq.app_id, *rq.cohort_name);
   }
-  if (!rq.cohort_hint.empty()) {
-    SetCohortHint(rq.app_id, rq.cohort_hint);
+  if (rq.cohort_hint && !rq.cohort_hint->empty()) {
+    SetCohortHint(rq.app_id, *rq.cohort_hint);
   }
-  if (!rq.install_id.empty()) {
-    SetInstallId(rq.app_id, rq.install_id);
+  if (rq.install_id && !rq.install_id->empty()) {
+    SetInstallId(rq.app_id, *rq.install_id);
   }
+}
+
+bool PersistedData::HasApp(const std::string& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const base::Value::Dict* apps =
+      pref_service_->GetDict(update_client::kPersistedDataPreference)
+          .FindDict("apps");
+  return apps && apps->Find(base::ToLowerASCII(id)) != nullptr;
 }
 
 bool PersistedData::RemoveApp(const std::string& id) {

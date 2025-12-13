@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/dark_mode_support.h"
 #include "base/win/win_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -19,9 +20,11 @@ int main(int argc, char** argv) {
     return 1;
 
 #if BUILDFLAG(IS_WIN)
-  // Load and pin user32.dll to avoid having to load it once tests start while
-  // on the main thread loop where blocking calls are disallowed.
+  // Load and pin user32.dll and uxtheme.dll to avoid having to load them once
+  // tests start while on the main thread loop where blocking calls are
+  // disallowed.
   base::win::PinUser32();
+  base::win::AllowDarkModeForApp(true);
 #endif  // BUILDFLAG(IS_WIN)
 
   extensions::AppShellTestLauncherDelegate launcher_delegate;

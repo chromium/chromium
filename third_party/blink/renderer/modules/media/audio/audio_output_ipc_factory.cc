@@ -15,6 +15,11 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/media/audio/mojo_audio_output_ipc.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -22,9 +27,9 @@ namespace blink {
 
 class AudioOutputIPCFactory::Impl {
  public:
-  using StreamFactoryMap = WTF::HashMap<
-      uint64_t,
-      mojo::Remote<mojom::blink::RendererAudioOutputStreamFactory>>;
+  using StreamFactoryMap =
+      HashMap<uint64_t,
+              mojo::Remote<mojom::blink::RendererAudioOutputStreamFactory>>;
 
   explicit Impl(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
       : io_task_runner_(std::move(io_task_runner)) {}
@@ -82,21 +87,21 @@ void AudioOutputIPCFactory::RegisterRemoteFactory(
       factory_remote.InitWithNewPipeAndPassReceiver());
   // Unretained is safe due to the contract at the top of the header file.
   // It's safe to pass the |factory_remote| PendingRemote between threads.
-  io_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+  PostCrossThreadTask(
+      *io_task_runner(), FROM_HERE,
+      CrossThreadBindOnce(
           &AudioOutputIPCFactory::Impl::RegisterRemoteFactoryOnIOThread,
-          base::Unretained(impl_.get()), frame_token,
+          CrossThreadUnretained(impl_.get()), frame_token,
           std::move(factory_remote)));
 }
 
 void AudioOutputIPCFactory::MaybeDeregisterRemoteFactory(
     const blink::LocalFrameToken& frame_token) {
-  io_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+  PostCrossThreadTask(
+      *io_task_runner(), FROM_HERE,
+      CrossThreadBindOnce(
           &AudioOutputIPCFactory::Impl::MaybeDeregisterRemoteFactoryOnIOThread,
-          base::Unretained(impl_.get()), frame_token));
+          CrossThreadUnretained(impl_.get()), frame_token));
 }
 
 const scoped_refptr<base::SingleThreadTaskRunner>&
@@ -133,9 +138,9 @@ void AudioOutputIPCFactory::Impl::RegisterRemoteFactoryOnIOThread(
 
   // Unretained is safe because |this| owns the remote, so a connection error
   // cannot trigger after destruction.
-  emplaced_factory.set_disconnect_handler(base::BindOnce(
+  emplaced_factory.set_disconnect_handler(blink::BindOnce(
       &AudioOutputIPCFactory::Impl::MaybeDeregisterRemoteFactoryOnIOThread,
-      base::Unretained(this), frame_token));
+      Unretained(this), frame_token));
 }
 
 void AudioOutputIPCFactory::Impl::MaybeDeregisterRemoteFactoryOnIOThread(

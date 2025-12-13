@@ -101,7 +101,7 @@ void JavaMethod::EnsureTypesAndIDAreSetUp() const {
   // Form the signature and record the parameter types.
   parameter_types_.resize(num_parameters_);
   for (size_t i = 0; i < num_parameters_; ++i) {
-    ScopedJavaLocalRef<jclass> parameter(
+    auto parameter = ScopedJavaLocalRef<jclass>::Adopt(
         env,
         static_cast<jclass>(env->GetObjectArrayElement(parameters.obj(), i)));
     signature += BinaryNameToJNISignature(GetClassName(env, parameter),

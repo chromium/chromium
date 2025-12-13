@@ -26,6 +26,10 @@ SerializedPredefinedColorSpace SerializeColorSpace(
       return SerializedPredefinedColorSpace::kRec2100PQ;
     case PredefinedColorSpace::kSRGBLinear:
       return SerializedPredefinedColorSpace::kSRGBLinear;
+    case PredefinedColorSpace::kDisplayP3Linear:
+      return SerializedPredefinedColorSpace::kDisplayP3Linear;
+    case PredefinedColorSpace::kRec2100Linear:
+      return SerializedPredefinedColorSpace::kRec2100Linear;
   }
   NOTREACHED();
 }
@@ -46,6 +50,10 @@ PredefinedColorSpace DeserializeColorSpace(
       return PredefinedColorSpace::kRec2100PQ;
     case SerializedPredefinedColorSpace::kSRGBLinear:
       return PredefinedColorSpace::kSRGBLinear;
+    case SerializedPredefinedColorSpace::kDisplayP3Linear:
+      return PredefinedColorSpace::kDisplayP3Linear;
+    case SerializedPredefinedColorSpace::kRec2100Linear:
+      return PredefinedColorSpace::kRec2100Linear;
   }
   NOTREACHED();
 }

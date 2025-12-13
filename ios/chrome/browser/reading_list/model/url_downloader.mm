@@ -149,7 +149,7 @@ std::string ReplaceImagesInHTML(
     std::string image_data;
     base::Value value(images[i].url.spec());
 
-    base::JSONWriter::Write(value, &image_url);
+    image_url = base::WriteJson(value).value_or("");
     image_data = base::Base64Encode(images[i].data);
 
     std::string src_with_data =

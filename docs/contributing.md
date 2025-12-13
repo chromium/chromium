@@ -379,7 +379,8 @@ When a new patch set is uploaded, approvals may be removed (in order to prevent
 someone from landing significantly different unreviewed code after getting
 approval in a previous patch set).
 
-Approvals may be copied between patch sets in some situations.
+Approvals may be copied between patch sets in some situations. These can also
+be referred to as "sticky" votes or approvals.
 * Code-Review approvals will be copied between patch sets if:
   * It is a trivial rebase (as detected by Gerrit),
   * It is a commit message change, or
@@ -529,6 +530,9 @@ general rules of thumb can be helpful in navigating how to structure changes:
   more detailed rationale in [this doc](https://docs.google.com/document/d/1elJisUpOb3h4-7WA4Wn754nzfgeCJ4v2kAFvMOzNfek/edit#)
   (Google internal). If you need an exception or help, please contact
   chromium-code-health-rotation@google.com.
+
+- **When using AI coding assistants, follow the [Chromium AI Coding
+  Policy](../agents/ai_policy.md).**
 
 ## Tips
 

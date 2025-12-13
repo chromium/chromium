@@ -19,6 +19,8 @@ class BrowserWindowInterface;
 
 extern const ui::ClassProperty<actions::ActionId>* const kActionIdKey;
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kPinnedActionToolbarUnpinElementId);
+
 // PinnedActionToolbarButtonMenuModel is the interface for the showing of the
 // context menu for the buttons in the PinnedToolbarActionsContainer, the
 // context menu is created using the ActionItem's child actions as well as any
@@ -55,19 +57,23 @@ class PinnedActionToolbarButtonMenuModel final : public ui::MenuModel {
   MenuModel* GetSubmenuModelAt(size_t index) const override;
   void ActivatedAt(size_t index) override;
   void ActivatedAt(size_t index, int event_flags) override;
+  ui::ElementIdentifier GetElementIdentifierAt(size_t index) const override;
 
   actions::ActionId GetActionIdAtForTesting(size_t index);
 
  private:
   struct Item {
     Item(Item&&);
-    Item(actions::ActionId action_id, ItemType type);
+    Item(actions::ActionId action_id,
+         ItemType type,
+         std::optional<ui::ElementIdentifier> unique_id = std::nullopt);
     explicit Item(ItemType type);
     Item& operator=(Item&&);
     ~Item();
 
     actions::ActionId action_id = 0;
     ItemType type = TYPE_COMMAND;
+    std::optional<ui::ElementIdentifier> unique_id;
   };
 
   // Adds menu items specific to the action item to the menu.

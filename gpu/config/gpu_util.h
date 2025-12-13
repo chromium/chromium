@@ -78,8 +78,8 @@ GPU_CONFIG_EXPORT bool EnableSwiftShaderIfNeeded(
 GPU_CONFIG_EXPORT IntelGpuSeriesType GetIntelGpuSeriesType(uint32_t vendor_id,
                                                            uint32_t device_id);
 
-GPU_CONFIG_EXPORT std::string GetIntelGpuGeneration(uint32_t vendor_id,
-                                                    uint32_t device_id);
+GPU_CONFIG_EXPORT IntelGpuGeneration GetIntelGpuGeneration(uint32_t vendor_id,
+                                                           uint32_t device_id);
 
 // If multiple Intel GPUs are detected, this returns the latest generation.
 GPU_CONFIG_EXPORT IntelGpuGeneration
@@ -96,10 +96,16 @@ GPU_CONFIG_EXPORT void RecordDevicePerfInfoHistograms();
 // Currently only record for AMD/Nvidia GPUs.
 GPU_CONFIG_EXPORT void RecordDiscreteGpuHistograms(const GPUInfo& gpu_info);
 
+// Record histograms for NPU device id.
+// Currently only record for Intel NPUs.
+GPU_CONFIG_EXPORT void RecordNpuHistograms(const GPUInfo& gpu_info);
+
 #if BUILDFLAG(IS_WIN)
 GPU_CONFIG_EXPORT std::string DirectMLFeatureLevelToString(
     uint32_t directml_feature_level);
 GPU_CONFIG_EXPORT std::string D3DFeatureLevelToString(
+    uint32_t d3d_feature_level);
+GPU_CONFIG_EXPORT std::string D3DFeatureLevelToNumberString(
     uint32_t d3d_feature_level);
 GPU_CONFIG_EXPORT std::string VulkanVersionToString(uint32_t vulkan_version);
 #endif  // BUILDFLAG(IS_WIN)

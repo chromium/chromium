@@ -7,7 +7,6 @@
 
 #include <deque>
 
-#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_rewriter.h"

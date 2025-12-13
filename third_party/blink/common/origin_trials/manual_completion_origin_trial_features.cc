@@ -23,7 +23,6 @@ bool FeatureHasExpiryGracePeriod(blink::mojom::OriginTrialFeature feature) {
       blink::mojom::OriginTrialFeature::
           kOriginTrialsSampleAPIPersistentExpiryGracePeriod,
       // Production grace period trials start here:
-      blink::mojom::OriginTrialFeature::kWebViewXRequestedWithDeprecation,
       blink::mojom::OriginTrialFeature::kRTCEncodedFrameSetMetadata,
   };
   return base::Contains(kHasExpiryGracePeriod, feature);

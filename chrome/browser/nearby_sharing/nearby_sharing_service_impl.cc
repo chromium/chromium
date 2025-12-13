@@ -50,8 +50,6 @@
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/cpp/conversions.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
@@ -248,7 +246,7 @@ bool IsOutOfStorage(const base::FilePath& file_path,
                     int64_t storage_required,
                     std::optional<int64_t> free_disk_space_for_testing) {
   int64_t free_space = free_disk_space_for_testing.value_or(
-      base::SysInfo::AmountOfFreeDiskSpace(file_path));
+      base::SysInfo::AmountOfFreeDiskSpace(file_path).value_or(-1));
   return free_space < storage_required;
 }
 
@@ -695,20 +693,6 @@ NearbySharingServiceImpl::RegisterReceiveSurface(
       << __func__ << ": A ReceiveSurface(" << ReceiveSurfaceStateToString(state)
       << ") has been registered";
 
-  // TODO(crbug.com/40753805): Remove these logs. They are only needed to help
-  // debug crbug.com/1186559.
-  if (state == ReceiveSurfaceState::kForeground) {
-    if (!IsBluetoothPresent()) {
-      CD_LOG(ERROR, Feature::NS) << __func__ << ": Bluetooth is not present.";
-    } else if (!IsBluetoothPowered()) {
-      CD_LOG(WARNING, Feature::NS) << __func__ << ": Bluetooth is not powered.";
-    } else {
-      CD_LOG(VERBOSE, Feature::NS)
-          << __func__ << ": This device's MAC address is: "
-          << bluetooth_adapter_->GetAddress();
-    }
-  }
-
   InvalidateReceiveSurfaceState();
   return StatusCodes::kOk;
 }
@@ -1066,7 +1050,7 @@ void NearbySharingServiceImpl::Open(const ShareTarget& share_target,
 
 void NearbySharingServiceImpl::OpenURL(GURL url) {
   DCHECK(profile_);
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
@@ -3158,7 +3142,6 @@ void NearbySharingServiceImpl::OnCreatePayloads(
   // For metrics.
   all_cancelled_share_target_ids_.clear();
 
-  // TODO(crbug.com/1111458): Add preferred transfer type.
   nearby_connections_manager_->Connect(
       std::move(endpoint_info), *info->endpoint_id(),
       std::move(bluetooth_mac_address), settings_.GetDataUsage(),
@@ -4216,8 +4199,6 @@ void NearbySharingServiceImpl::OnFrameRead(
 void NearbySharingServiceImpl::HandleCertificateInfoFrame(
     const sharing::mojom::CertificateInfoFramePtr& certificate_frame) {
   DCHECK(certificate_frame);
-
-  // TODO(crbug.com/1113858): Allow saving certificates from remote devices.
 }
 
 void NearbySharingServiceImpl::OnIncomingConnectionDisconnected(

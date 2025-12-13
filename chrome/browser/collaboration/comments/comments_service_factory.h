@@ -33,7 +33,7 @@ class CommentsServiceFactory : public ProfileKeyedServiceFactory {
 
   // Disallow copy/assign.
   CommentsServiceFactory(const CommentsServiceFactory&) = delete;
-  void operator=(const CommentsServiceFactory&) = delete;
+  CommentsServiceFactory& operator=(const CommentsServiceFactory&) = delete;
 
  private:
   friend base::NoDestructor<CommentsServiceFactory>;

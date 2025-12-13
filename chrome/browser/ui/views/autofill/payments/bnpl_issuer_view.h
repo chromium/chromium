@@ -30,8 +30,10 @@ class BnplIssuerView : public views::BoxLayoutView {
   ~BnplIssuerView() override;
 
   void AddedToWidget() override;
+  void UpdateIssuers();
 
  private:
+  void PopulateIssuers();
   void IssuerSelected(BnplIssuer issuer, const ui::Event& event);
 
   const raw_ptr<SelectBnplIssuerDialog> issuer_dialog_;

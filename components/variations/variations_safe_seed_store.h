@@ -36,9 +36,8 @@ class VariationsSafeSeedStore {
   // used was fetched. (See VariationsSeedStore::GetTimeForStudyDateChecks().)
   virtual base::Time GetTimeForStudyDateChecks() const = 0;
 
-  // Getter and setter for the compressed and base64-encoded safe seed.
-  virtual StoredSeed GetCompressedSeed() const = 0;
-  virtual void SetCompressedSeed(ValidatedSeedInfo seed_info) = 0;
+  // Setter for the safe seed and other seed-related info.
+  virtual StoreSeedResult SetCompressedSeed(ValidatedSeedInfo seed_info) = 0;
 
   // Getter and setter for the locale associated with the safe seed in the
   // underlying storage.
@@ -60,6 +59,29 @@ class VariationsSafeSeedStore {
 
   // Clear all state in the underlying storage.
   virtual void ClearState() = 0;
+
+  // Reads seed data and returns the result of the load. If a pointer for the
+  // signature is provided, the signature will be read and stored into
+  // |base64_seed_signature|. The value stored into |seed_data| should only be
+  // used if the result is `LoadSeedResult::kSuccess`.
+  // Side-effect: If the read fails, clears the prefs associated with the seed.
+  virtual LoadSeedResult ReadSeedData(std::string* seed_data,
+                                      std::string* base64_seed_signature) = 0;
+
+  // Reads and processes seed data and calls `done_callback` with the result of
+  // the load, the seed data, and the signature. The seed data and signature
+  // should only be used if the result is `LoadSeedResult::kSuccess`.
+  // Side-effect: If the read fails, clears the prefs associated with the seed.
+  virtual void ReadSeedData(
+      SeedReaderWriter::ReadSeedDataCallback done_callback) = 0;
+
+  // Allows the safe seed to be purged from memory after being persisted. This
+  // will cause next reads to potentially have to read from disk.
+  virtual void AllowToPurgeSeedDataFromMemory() = 0;
+
+  // Calls `done_callback` with the stored seed info for debugging.
+  virtual void GetStoredSeedInfoForDebugging(
+      base::OnceCallback<void(StoredSeedInfo)> done_callback) = 0;
 };
 
 }  // namespace variations

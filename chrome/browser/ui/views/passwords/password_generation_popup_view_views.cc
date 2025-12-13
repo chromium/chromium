@@ -39,6 +39,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/widget/widget.h"
 
@@ -77,7 +78,10 @@ std::unique_ptr<views::View> CreatePasswordLabelWithIcon() {
                     /*resize=*/false, view.get());
 
   auto* label = view->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_NUDGE_TITLE),
+      l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_GENERATION_NUDGE_TITLE,
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT)),
       views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);

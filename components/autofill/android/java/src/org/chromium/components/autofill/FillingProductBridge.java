@@ -13,7 +13,8 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class FillingProductBridge {
 
-    public static int getFillingProductFromSuggestionType(@SuggestionType int type) {
+    public static @FillingProduct int getFillingProductFromSuggestionType(
+            @SuggestionType int type) {
         return FillingProductBridgeJni.get().getFillingProductFromSuggestionType(type);
     }
 

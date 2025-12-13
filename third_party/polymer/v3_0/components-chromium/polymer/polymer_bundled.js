@@ -10023,6 +10023,14 @@ class DomIfBase extends PolymerElement {
       },
 
       /**
+       * When true, elements are updated when they are hidden due to the "if"
+       * condition being false.
+       */
+      updateWhenFalse: {
+        type: Boolean
+      },
+
+      /**
        * When true, elements will be removed from DOM and discarded when `if`
        * becomes false and re-created and added back to the DOM when `if`
        * becomes true.  By default, stamped elements will be hidden but left
@@ -10345,7 +10353,7 @@ class DomIfLegacy extends DomIfBase {
              */
             forwardHostProp: function(prop, value) {
               if (this.__instance) {
-                if (this.if) {
+                if (this.if || this.updateWhenFalse) {
                   this.__instance.forwardHostProp(prop, value);
                 } else {
                   // If we have an instance but are squelching host property

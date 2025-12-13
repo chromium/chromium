@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/buildflag.h"
@@ -139,7 +140,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
   bool ShouldShowCloseButton() const override;
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   gfx::Rect GetBubbleBounds() override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
@@ -249,8 +250,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void OnTitleTextChanged();
 
   void UpdateAccessibleName();
-
-  bool IsTranslateHeaderEnabled() const;
 
   bool IsScrollabilityEnabled() const;
   void ResetScrollIfLocked(gfx::PointF current_offset,

@@ -41,29 +41,33 @@ std::unique_ptr<ViewTransitionRequest> ViewTransitionRequest::CreateCapture(
     const blink::ViewTransitionToken& transition_token,
     bool maybe_cross_frame_sink,
     std::vector<viz::ViewTransitionElementResourceId> capture_ids,
-    ViewTransitionCaptureCallback commit_callback) {
+    ViewTransitionCaptureCallback commit_callback,
+    bool delay_layer_tree_view_deletion) {
   return base::WrapUnique(new ViewTransitionRequest(
       Type::kSave, transition_token, maybe_cross_frame_sink,
-      std::move(capture_ids), std::move(commit_callback)));
+      std::move(capture_ids), std::move(commit_callback),
+      delay_layer_tree_view_deletion));
 }
 
 // static
 std::unique_ptr<ViewTransitionRequest>
 ViewTransitionRequest::CreateAnimateRenderer(
     const blink::ViewTransitionToken& transition_token,
-    bool maybe_cross_frame_sink) {
+    bool maybe_cross_frame_sink,
+    bool delay_layer_tree_view_deletion) {
   return base::WrapUnique(new ViewTransitionRequest(
       Type::kAnimateRenderer, transition_token, maybe_cross_frame_sink, {},
-      ViewTransitionCaptureCallback()));
+      ViewTransitionCaptureCallback(), delay_layer_tree_view_deletion));
 }
 
 // static
 std::unique_ptr<ViewTransitionRequest> ViewTransitionRequest::CreateRelease(
     const blink::ViewTransitionToken& transition_token,
-    bool maybe_cross_frame_sink) {
+    bool maybe_cross_frame_sink,
+    bool delay_layer_tree_view_deletion) {
   return base::WrapUnique(new ViewTransitionRequest(
       Type::kRelease, transition_token, maybe_cross_frame_sink, {},
-      ViewTransitionCaptureCallback()));
+      ViewTransitionCaptureCallback(), delay_layer_tree_view_deletion));
 }
 
 ViewTransitionRequest::ViewTransitionRequest(
@@ -71,13 +75,15 @@ ViewTransitionRequest::ViewTransitionRequest(
     const blink::ViewTransitionToken& transition_token,
     bool maybe_cross_frame_sink,
     std::vector<viz::ViewTransitionElementResourceId> capture_ids,
-    ViewTransitionCaptureCallback commit_callback)
+    ViewTransitionCaptureCallback commit_callback,
+    bool delay_layer_tree_view_deletion)
     : type_(type),
       transition_token_(transition_token),
       maybe_cross_frame_sink_(maybe_cross_frame_sink),
       commit_callback_(std::move(commit_callback)),
       sequence_id_(s_next_sequence_id_++),
-      capture_resource_ids_(std::move(capture_ids)) {
+      capture_resource_ids_(std::move(capture_ids)),
+      delay_layer_tree_view_deletion_(delay_layer_tree_view_deletion) {
   DCHECK(type_ == Type::kSave || !commit_callback_);
 }
 
@@ -86,16 +92,19 @@ ViewTransitionRequest::~ViewTransitionRequest() = default;
 viz::CompositorFrameTransitionDirective
 ViewTransitionRequest::ConstructDirective(
     const ViewTransitionElementMap& shared_element_render_pass_id_map,
-    const gfx::DisplayColorSpaces& display_color_spaces) const {
+    const gfx::DisplayColorSpaces& display_color_spaces,
+    bool delay_layer_tree_view_deletion) const {
   switch (type_) {
     case Type::kRelease:
       DCHECK(capture_resource_ids_.empty());
       return viz::CompositorFrameTransitionDirective::CreateRelease(
-          transition_token_, maybe_cross_frame_sink_, sequence_id_);
+          transition_token_, maybe_cross_frame_sink_, sequence_id_,
+          delay_layer_tree_view_deletion);
     case Type::kAnimateRenderer:
       DCHECK(capture_resource_ids_.empty());
       return viz::CompositorFrameTransitionDirective::CreateAnimate(
-          transition_token_, maybe_cross_frame_sink_, sequence_id_);
+          transition_token_, maybe_cross_frame_sink_, sequence_id_,
+          delay_layer_tree_view_deletion);
     case Type::kSave:
       break;
   }
@@ -116,7 +125,8 @@ ViewTransitionRequest::ConstructDirective(
 
   return viz::CompositorFrameTransitionDirective::CreateSave(
       transition_token_, maybe_cross_frame_sink_, sequence_id_,
-      std::move(shared_elements), display_color_spaces);
+      std::move(shared_elements), display_color_spaces,
+      delay_layer_tree_view_deletion_);
 }
 
 std::string ViewTransitionRequest::ToString() const {

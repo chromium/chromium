@@ -22,7 +22,7 @@ class BookmarkPathCacheTest : public BookmarkIOSUnitTestSupport {
  protected:
   void SetUp() override {
     BookmarkIOSUnitTestSupport::SetUp();
-    [BookmarkPathCache registerBrowserStatePrefs:prefs_.registry()];
+    [BookmarkPathCache registerProfilePrefs:prefs_.registry()];
   }
 
   sync_preferences::TestingPrefServiceSyncable prefs_;

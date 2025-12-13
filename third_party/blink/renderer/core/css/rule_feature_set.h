@@ -63,7 +63,6 @@ class CORE_EXPORT RuleFeatureSet {
   RuleFeatureSet& operator=(const RuleFeatureSet&) = delete;
 
   bool operator==(const RuleFeatureSet&) const;
-  bool operator!=(const RuleFeatureSet& o) const { return !(*this == o); }
 
   // Merge the given RuleFeatureSet (which remains unchanged) into this one.
   void Merge(const RuleFeatureSet&);

@@ -66,7 +66,7 @@ bool ScanRun(VTTScanner& scanner, StringView str) {
 }
 
 bool ScanRun(VTTScanner& scanner, AlignSetting align) {
-  return ScanRun(scanner, V8AlignSetting(align).AsString());
+  return ScanRun(scanner, V8AlignSetting(align).AsStringView());
 }
 
 constexpr auto kDisplayWritingModeMap = std::to_array<CSSValueID>(
@@ -696,7 +696,8 @@ VTTCueBox* VTTCue::GetDisplayTree() {
 
   cue_background_box_->RemoveChildren();
   NodeCloningData data{CloneOption::kIncludeDescendants};
-  cue_background_box_->CloneChildNodesFrom(*vtt_node_tree_, data);
+  cue_background_box_->CloneChildNodesFrom(*vtt_node_tree_, data,
+                                           /*fallback_registry*/ nullptr);
 
   if (!region()) {
     VTTDisplayParameters display_parameters = CalculateDisplayParameters();

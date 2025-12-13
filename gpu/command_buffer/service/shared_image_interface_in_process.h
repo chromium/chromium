@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -57,23 +57,28 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       gpu::SharedContextState* context_state,
       SharedImageManager* shared_image_manager,
       bool is_for_display_compositor,
-      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+      bool always_create_native_gmb_handles = false);
 
   SharedImageInterfaceInProcess(const SharedImageInterfaceInProcess&) = delete;
   SharedImageInterfaceInProcess& operator=(
       const SharedImageInterfaceInProcess&) = delete;
 
   // SharedImageInterface:
-  const SharedImageCapabilities& GetCapabilities() override;
+  scoped_refptr<ClientSharedImage> CreateSharedImage(
+      const SharedImageInfo& si_info,
+      SurfaceHandle surface_handle,
+      gfx::BufferUsage buffer_usage,
+      std::optional<SharedImagePoolId> pool_id) override;
 
  protected:
   ~SharedImageInterfaceInProcess() override;
 
   // SharedImageInterfaceBase:
-  SharedImageFactory* GetSharedImageFactory() override;
-  bool MakeContextCurrent(bool needs_gl) override;
-  using SharedImageInterfaceInProcessBase::MakeContextCurrent;
-  void MarkContextLost() override;
+  SharedImageFactory* GetSharedImageFactoryOnGpuThread() override;
+  bool MakeContextCurrentOnGpuThread(bool needs_gl) override;
+  using SharedImageInterfaceInProcessBase::MakeContextCurrentOnGpuThread;
+  void MarkContextLostOnGpuThread() override;
   void ScheduleGpuTask(base::OnceClosure task,
                        std::vector<SyncToken> sync_token_fences,
                        const SyncToken& release) override;
@@ -96,9 +101,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   void SetUpOnGpu(std::unique_ptr<SetUpOnGpuParams> params);
   void DestroyOnGpu(base::WaitableEvent* completion);
 
-  void GetCapabilitiesOnGpu(base::WaitableEvent* completion,
-                            SharedImageCapabilities* out_capabilities);
-
   // Used to schedule work on the gpu thread. This is a raw pointer for now
   // since the ownership of SingleTaskSequence would be the same as the
   // SharedImageInterfaceInProcess.
@@ -118,7 +120,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   scoped_refptr<SharedContextState> context_state_;
   ScopedSyncPointClientState sync_point_client_state_;
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
-  std::unique_ptr<SharedImageCapabilities> shared_image_capabilities_;
+  bool always_create_native_gmb_handles_ = false;
 };
 
 }  // namespace gpu

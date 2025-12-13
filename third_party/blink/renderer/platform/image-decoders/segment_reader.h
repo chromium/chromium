@@ -41,7 +41,7 @@ class PLATFORM_EXPORT SegmentReader
       scoped_refptr<const SharedBuffer>);
 
   // These versions use thread-safe input, so they are always thread-safe.
-  static scoped_refptr<SegmentReader> CreateFromSkData(sk_sp<SkData>);
+  static scoped_refptr<SegmentReader> CreateFromSkData(sk_sp<const SkData>);
   static scoped_refptr<SegmentReader> CreateFromROBuffer(
       scoped_refptr<ROBuffer>);
 
@@ -53,7 +53,7 @@ class PLATFORM_EXPORT SegmentReader
   // `position`. If there's no data at the specified `position`, an empty span
   // is returned.
   virtual base::span<const uint8_t> GetSomeData(size_t position) const = 0;
-  virtual sk_sp<SkData> GetAsSkData() const = 0;
+  virtual sk_sp<const SkData> GetAsSkData() const = 0;
   virtual void LockData() {}
   virtual void UnlockData() {}
 

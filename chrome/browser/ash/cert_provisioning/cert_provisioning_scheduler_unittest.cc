@@ -32,7 +32,6 @@ using testing::_;
 using testing::AtLeast;
 using testing::ByMove;
 using testing::Exactly;
-using testing::Invoke;
 using testing::Mock;
 using testing::Return;
 using testing::ReturnRef;
@@ -542,7 +541,6 @@ TEST_F(CertProvisioningSchedulerTest, DeserializeWorkers) {
             "profile_id": "cert_profile_1"
           },
           "cert_scope": 0,
-          "invalidation_topic": "",
           "public_key": "fake_public_key_1",
           "state": 1
         })");
@@ -597,7 +595,6 @@ TEST_F(CertProvisioningSchedulerTest, DeserializeWorkerForExistingCert) {
             "profile_id": "cert_profile_1"
           },
           "cert_scope": 0,
-          "invalidation_topic": "",
           "public_key": "fake_public_key_1",
           "state": 1
         })");
@@ -871,7 +868,6 @@ TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
             "profile_id": "cert_profile_1"
           },
           "cert_scope": 0,
-          "invalidation_topic": "",
           "public_key": "fake_public_key_1",
           "state": 1
         })");

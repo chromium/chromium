@@ -47,9 +47,6 @@ class WebStateID;
 // GridTransitionCell. Also this way PinnedTransitionCell has easier access to
 // some of the internal properties of the PinnedCell. If PinnedTransitionCell
 // is moved into its own file the same should be done with GridTransitionCell.
-//
-// TODO(crbug.com/40890700): Refactor `Transition` cells into separate header
-// and implementation files.
 @interface PinnedTransitionCell : PinnedCell <LegacyGridToTabTransitionView>
 
 // Returns a cell with the same theme, icon, snapshot, title, and frame as

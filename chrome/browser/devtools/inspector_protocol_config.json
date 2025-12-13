@@ -28,7 +28,7 @@
             },
             {
                 "domain": "Emulation",
-                "include": ["disable", "setAutomationOverride"]
+                "include": ["disable", "setAutomationOverride", "getScreenInfos", "addScreen", "removeScreen"]
             },
             {
                 "domain": "WindowManager"
@@ -53,7 +53,7 @@
             },
             {
                 "domain": "Autofill",
-                "async": [ "setAddresses" ]
+                "async": [ "setAddresses", "trigger" ]
             },
             {
                 "domain": "PWA",

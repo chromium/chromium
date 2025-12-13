@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -38,7 +40,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-// TODO(crbug.com/40966307): Write test to verify we handle the policy toggling.
 IntranetRedirectDetector::IntranetRedirectDetector()
     : redirect_origin_(g_browser_process->local_state()->GetString(
           prefs::kLastKnownIntranetRedirectOrigin)) {
@@ -179,7 +180,7 @@ void IntranetRedirectDetector::FinishSleep() {
 
 void IntranetRedirectDetector::OnSimpleLoaderComplete(
     network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Delete the loader on this function's exit.
   auto it = simple_loaders_.find(source);
   CHECK(it != simple_loaders_.end());

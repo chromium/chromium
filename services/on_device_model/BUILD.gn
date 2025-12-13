@@ -23,11 +23,14 @@ component("backend_interfaces") {
 
 component("on_device_model_service") {
   sources = [
+    "on_device_model_mojom_impl.cc",
+    "on_device_model_mojom_impl.h",
     "on_device_model_service.cc",
     "on_device_model_service.h",
   ]
   deps = [
     ":backend_interfaces",
+    "//build:chromecast_buildflags",
     "//components/optimization_guide/core:features",
     "//services/on_device_model/fake",
     "//services/on_device_model/ml:ml_no_internal",
@@ -59,7 +62,10 @@ component("on_device_model_service") {
   if (is_linux || is_chromeos) {
     deps += [ "//gpu/config" ]
   }
-  if (!is_fuchsia) {
+  if (is_android) {
+    deps += [ "//services/on_device_model/android" ]
+  }
+  if (!is_fuchsia && !(is_linux && enable_cast_receiver)) {
     deps += [
       "//third_party/dawn/include/dawn:cpp_headers",
       "//third_party/dawn/src/dawn:proc",
@@ -77,6 +83,7 @@ source_set("tests") {
     "//base/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
     "//services/on_device_model/fake",
+    "//services/on_device_model/ml:ml_no_internal",
     "//services/on_device_model/public/cpp/test_support",
     "//services/on_device_model/public/mojom",
     "//testing/gmock",

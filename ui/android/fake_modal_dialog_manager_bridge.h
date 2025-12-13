@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/modal_dialog_manager_bridge.h"
 #include "ui/android/ui_android_export.h"
 
@@ -38,7 +39,15 @@ class UI_ANDROID_EXPORT FakeModalDialogManagerBridge {
   bool IsCheckboxChecked();
 
   int GetButtonStyles();
+
   std::vector<std::u16string> GetMessageParagraphs();
+  void ClickLinkInMessageParagraphs(int index);
+
+  std::vector<std::u16string> GetMenuItemTexts();
+  std::vector<SkBitmap> GetMenuItemIcons();
+  void ClickMenuItem(int index);
+
+  SkBitmap GetTitleIcon();
 
   bool IsSuspend(ModalDialogManagerBridge::ModalDialogType dialog_type);
 

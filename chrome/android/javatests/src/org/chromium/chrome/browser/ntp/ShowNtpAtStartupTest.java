@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ntp;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -34,7 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -43,6 +45,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -74,6 +77,8 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
+// TODO(https://crbug.com/454091341): Enable this feature on this test suite.
+@Features.DisableFeatures({ChromeFeatureList.ANDROID_COMPOSEPLATE})
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @DoNotBatch(reason = "This test suite tests startup behaviors.")
 public class ShowNtpAtStartupTest {
@@ -104,7 +109,7 @@ public class ShowNtpAtStartupTest {
                 2,
                 UrlConstants.NTP_URL,
                 /* expectHomeSurfaceUiShown= */ true);
-        waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         histogram.assertExpected();
     }
@@ -180,18 +185,18 @@ public class ShowNtpAtStartupTest {
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
                 cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
         Assert.assertTrue(ntp.isMagicStackVisibleForTesting());
         View singleTabModule = cta.findViewById(R.id.single_tab_view);
         Assert.assertNotNull(singleTabModule.findViewById(R.id.tab_thumbnail));
 
         // Verifies that closing the tracking Tab will remove the "continue browsing" card from
         // the NTP.
-        Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
                     cta.getCurrentTabModel()
                             .getTabRemover()
                             .closeTabs(
@@ -200,11 +205,12 @@ public class ShowNtpAtStartupTest {
                                             .build(),
                                     /* allowDialog= */ false);
                 });
-        Assert.assertEquals(2, cta.getCurrentTabModel().getCount());
+        Assert.assertEquals(2, mActivityTestRule.tabsCount(false));
         Assert.assertFalse(ntp.isMagicStackVisibleForTesting());
 
         // Tests to set another tracking Tab on the NTP.
-        Tab newTrackingTab = cta.getCurrentTabModel().getTabAt(0);
+        Tab newTrackingTab =
+                ThreadUtils.runOnUiThreadBlocking(() -> cta.getCurrentTabModel().getTabAt(0));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ntp.showMagicStack(newTrackingTab);
@@ -221,7 +227,7 @@ public class ShowNtpAtStartupTest {
                                             .build(),
                                     /* allowDialog= */ false);
                 });
-        Assert.assertEquals(1, cta.getCurrentTabModel().getCount());
+        Assert.assertEquals(1, mActivityTestRule.tabsCount(false));
         Assert.assertFalse(ntp.isMagicStackVisibleForTesting());
     }
 
@@ -239,9 +245,9 @@ public class ShowNtpAtStartupTest {
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
                 cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
         Assert.assertTrue(ntp.isMagicStackVisibleForTesting());
         onViewWaiting(allOf(withId(R.id.single_tab_view), isDisplayed()));
         View singleTabModule = cta.findViewById(R.id.single_tab_view);
@@ -263,7 +269,7 @@ public class ShowNtpAtStartupTest {
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
                 cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         onViewWaiting(allOf(withId(R.id.home_modules_recycler_view), isDisplayed()));
         View singleTabModule = cta.findViewById(R.id.single_tab_view);
@@ -292,7 +298,7 @@ public class ShowNtpAtStartupTest {
         mActivityTestRule.startOnNtp();
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
         LogoView logoView = ntp.getView().findViewById(R.id.search_provider_logo);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -319,9 +325,9 @@ public class ShowNtpAtStartupTest {
         mActivityTestRule.startOnNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
 
         // Verifies the vertical margins of the module most visited tiles is correct.
         verifyMvtAndSingleTabCardVerticalMargins(
@@ -345,7 +351,7 @@ public class ShowNtpAtStartupTest {
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
                 cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> cta.findViewById(R.id.single_tab_view).performClick());
@@ -358,9 +364,9 @@ public class ShowNtpAtStartupTest {
             int expectedLogoHeight, int expectedTopMargin, int expectedBottomMargin) {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
         ViewGroup logoView = ntp.getView().findViewById(R.id.search_provider_logo);
 
         // Verifies the logo size and margins.
@@ -389,10 +395,10 @@ public class ShowNtpAtStartupTest {
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
                 cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
-        Tab ntpTab = cta.getActivityTab();
+        Tab ntpTab = mActivityTestRule.getActivityTab();
         NewTabPage ntp = (NewTabPage) ntpTab.getNativePage();
         Assert.assertTrue(
                 "The single tab card is still invisible after initialization.",
@@ -442,9 +448,9 @@ public class ShowNtpAtStartupTest {
         mActivityTestRule.startOnNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
 
         Resources res = cta.getResources();
         int expectedTwoSideMargin =
@@ -463,9 +469,9 @@ public class ShowNtpAtStartupTest {
         mActivityTestRule.startOnNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
 
         Resources res = cta.getResources();
         int expectedContainerTwoSideMargin = 0;
@@ -534,7 +540,9 @@ public class ShowNtpAtStartupTest {
 
     private void verifyTabCountAndActiveTabUrl(
             ChromeTabbedActivity cta, int tabCount, String url, Boolean expectHomeSurfaceUiShown) {
-        Assert.assertEquals(tabCount, cta.getCurrentTabModel().getCount());
+        int currentTabCount =
+                ThreadUtils.runOnUiThreadBlocking(() -> cta.getCurrentTabModel().getCount());
+        Assert.assertEquals(tabCount, currentTabCount);
         Tab tab = HomeSurfaceTestUtils.getCurrentTabFromUiThread(cta);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -548,7 +556,7 @@ public class ShowNtpAtStartupTest {
     }
 
     private static void waitForNtpLoaded(final Tab tab) {
-        assert !tab.isIncognito();
+        assertThat(tab.isIncognito()).isFalse();
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(tab.getNativePage(), Matchers.instanceOf(NewTabPage.class));
@@ -564,7 +572,7 @@ public class ShowNtpAtStartupTest {
         View searchBoxLayout = ntpLayout.findViewById(R.id.search_box);
 
         // Orientation changes are not supported on automotive.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             verifyFakeSearchBoxWidthForCurrentOrientation(
                     expectedLandScapeWidth, expectedPortraitWidth, ntpLayout, searchBoxLayout);
             return;
@@ -626,7 +634,7 @@ public class ShowNtpAtStartupTest {
                 ((MarginLayoutParams) mvTilesLayout.getTileAt(1).getLayoutParams()).leftMargin;
 
         // Orientation changes are not supported on automotive.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             verifyTileMargin(
                     expectedContainerWidth,
                     expectedEdgeMargin,

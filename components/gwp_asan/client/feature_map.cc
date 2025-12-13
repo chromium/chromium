@@ -36,3 +36,5 @@ static jlong JNI_GwpAsanFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace gwp_asan::android
+
+DEFINE_JNI(GwpAsanFeatureMap)

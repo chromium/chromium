@@ -62,6 +62,7 @@ fedcm/support/${manifest_filename}`;
       providers: [{
         configURL: manifest_path,
         clientId: '1',
+        // TODO(crbug.com/441895082): Move nonce to params when FedCmNonceInParams is enabled by default
         nonce: '2'
       }]
     },
@@ -129,6 +130,14 @@ export function request_options_with_two_idps(mediation = 'required') {
 export function fedcm_test(test_func, test_name) {
   promise_test(async t => {
     assert_implements(window.IdentityCredential, "FedCM is not supported");
+
+    try {
+      await navigator.credentials.preventSilentAccess();
+    } catch (ex) {
+      // In Chrome's content_shell, the promise will be rejected
+      // even though the part we care about succeeds.
+    }
+
     // Turn off delays that are not useful in tests.
     try {
       await test_driver.set_fedcm_delay_enabled(false);
@@ -136,6 +145,30 @@ export function fedcm_test(test_func, test_name) {
       // Failure is not critical; it just might slow down tests.
     }
 
+    // Reset cooldown in case a previous test triggered it.
+    try {
+      await test_driver.reset_fedcm_cooldown();
+    } catch (e) {
+      // Failure is not critical.
+    }
+
+    t.add_cleanup(async () => {
+      // A fedcm_test may affect the connected account set from the IDPs, so invoke
+      // disconnect as a cleanup.
+      try {
+        await IdentityCredential.disconnect(disconnect_options(""));
+      } catch (ex) {
+        // Failure is not critical, test state is reset.
+      }
+      try {
+        await IdentityCredential.disconnect(alt_disconnect_options(""));
+      } catch (ex) {
+        // Failure is not critical, test state is reset.
+      }
+    });
+
+    await mark_signed_in();
+    await mark_signed_in(alt_manifest_origin);
     await set_fedcm_cookie();
     await set_alt_fedcm_cookie();
     await test_func(t);
@@ -184,13 +217,17 @@ export function fedcm_get_dialog_type_promise(t) {
   return new Promise((resolve, reject) => {
     async function helper() {
       // Try to get the dialog type. If the UI is not up yet, we'll catch a 'no such alert'
-      // exception and try again in 100ms. Other exceptions will be rejected.
+      // exception and try again in 10ms. Other exceptions will be rejected.
       try {
         const type = await window.test_driver.get_fedcm_dialog_type();
         resolve(type);
       } catch (ex) {
         if (String(ex).includes("no such alert")) {
-          t.step_timeout(helper, 100);
+          if (t) {
+            t.step_timeout(helper, 10);
+          } else{
+            window.setTimeout(helper, 10);
+          }
         } else {
           reject(ex);
         }
@@ -226,12 +263,12 @@ export function fedcm_get_title_promise(t) {
   return new Promise(resolve => {
     async function helper() {
       // Try to get the title. If the UI is not up yet, we'll catch an exception
-      // and try again in 100ms.
+      // and try again in 10ms.
       try {
         const title = await window.test_driver.get_fedcm_dialog_title();
         resolve(title);
       } catch (ex) {
-        t.step_timeout(helper, 100);
+        t.step_timeout(helper, 10);
       }
     }
     helper();
@@ -261,14 +298,14 @@ export function fedcm_error_dialog_dismiss(t) {
   return new Promise(resolve => {
     async function helper() {
       // Try to select the account. If the UI is not up yet, we'll catch an exception
-      // and try again in 100ms.
+      // and try again in 10ms.
       try {
         let type = await fedcm_get_dialog_type_promise(t);
         assert_equals(type, "Error");
         await window.test_driver.cancel_fedcm_dialog();
         resolve();
       } catch (ex) {
-        t.step_timeout(helper, 100);
+        t.step_timeout(helper, 10);
       }
     }
     helper();
@@ -279,14 +316,14 @@ export function fedcm_error_dialog_click_button(t, button) {
   return new Promise(resolve => {
     async function helper() {
       // Try to select the account. If the UI is not up yet, we'll catch an exception
-      // and try again in 100ms.
+      // and try again in 10ms.
       try {
         let type = await fedcm_get_dialog_type_promise(t);
         assert_equals(type, "Error");
         await window.test_driver.click_fedcm_dialog_button(button);
         resolve();
       } catch (ex) {
-        t.step_timeout(helper, 100);
+        t.step_timeout(helper, 10);
       }
     }
     helper();
@@ -317,4 +354,24 @@ fedcm/support/${manifest_filename}`;
       clientId: '1',
       accountHint: accountHint
   };
+}
+
+export async function fedcm_get_flexible_tokens_credential(t, type) {
+  const options = request_options_with_mediation_required(`manifest_flexible_tokens.json`);
+  options.identity.providers[0].params = {
+      "token_type": type
+  };
+  await select_manifest(t, options);
+  return await fedcm_get_and_select_first_account(t, options);
+}
+
+export function set_well_known_format(format_type) {
+  const url_query = `?format=${encodeURIComponent(format_type)}`;
+
+  return new Promise(resolve => {
+    const img = document.createElement('img');
+    img.addEventListener('error', resolve);
+    img.src = `/fedcm/support/set-well-known-format.py${url_query}`;
+    document.body.appendChild(img);
+  });
 }

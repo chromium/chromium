@@ -10,13 +10,13 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/OverscrollSceneLayer_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace android {
 
 OverscrollSceneLayer::OverscrollSceneLayer(JNIEnv* env,
-                                           const JavaParamRef<jobject>& jobj,
-                                           const JavaParamRef<jobject>& jwindow)
+                                           const JavaRef<jobject>& jobj,
+                                           const JavaRef<jobject>& jwindow)
     : SceneLayer(env, jobj),
       window_(ui::WindowAndroid::FromJavaWindowAndroid(jwindow)),
       glow_effect_(std::make_unique<ui::OverscrollGlow>(this)) {
@@ -49,11 +49,10 @@ void OverscrollSceneLayer::Prepare(JNIEnv* env,
                                content_scroll_offset);
 }
 
-jboolean OverscrollSceneLayer::Update(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jresource_manager,
-    jfloat accumulated_overscroll_x,
-    jfloat delta_x) {
+jboolean OverscrollSceneLayer::Update(JNIEnv* env,
+                                      const JavaRef<jobject>& jresource_manager,
+                                      jfloat accumulated_overscroll_x,
+                                      jfloat delta_x) {
   if (!resource_manager_) {
     if (jresource_manager.is_null()) {
       return false;
@@ -88,7 +87,7 @@ void OverscrollSceneLayer::OnDetachCompositor() {
 
 void OverscrollSceneLayer::SetContentTree(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcontent_tree) {
+    const JavaRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
   if (!content_tree || !content_tree->layer()) {
     return;
@@ -104,10 +103,9 @@ void OverscrollSceneLayer::OnReset(JNIEnv* env) {
   glow_effect_->Reset();
 }
 
-static jlong JNI_OverscrollSceneLayer_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
-    const JavaParamRef<jobject>& jwindow) {
+static jlong JNI_OverscrollSceneLayer_Init(JNIEnv* env,
+                                           const JavaRef<jobject>& jobj,
+                                           const JavaRef<jobject>& jwindow) {
   // This will automatically bind to the Java object and pass ownership there.
   OverscrollSceneLayer* tree_provider =
       new OverscrollSceneLayer(env, jobj, jwindow);
@@ -115,3 +113,5 @@ static jlong JNI_OverscrollSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(OverscrollSceneLayer)

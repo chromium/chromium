@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSER_UI_SITE_SETTINGS_ANDROID_WEBSITE_PREFERENCE_BRIDGE_UTIL_H_
 #define COMPONENTS_BROWSER_UI_SITE_SETTINGS_ANDROID_WEBSITE_PREFERENCE_BRIDGE_UTIL_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"

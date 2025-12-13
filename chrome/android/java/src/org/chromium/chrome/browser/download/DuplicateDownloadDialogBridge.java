@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -18,6 +19,7 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
  * Glues duplicate download dialogs UI code and handles the communication to download native
  * backend.
  */
+@NullMarked
 public class DuplicateDownloadDialogBridge {
     private long mNativeDuplicateDownloadDialogBridge;
 
@@ -56,7 +58,7 @@ public class DuplicateDownloadDialogBridge {
             OtrProfileId otrProfileId,
             long callbackId) {
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) {
+        if (!(activity instanceof ModalDialogManagerHolder)) {
             onConfirmed(callbackId, false);
             return;
         }

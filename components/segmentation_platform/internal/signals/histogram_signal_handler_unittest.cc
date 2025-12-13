@@ -16,7 +16,6 @@
 using ::segmentation_platform::proto::SignalType;
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::WithArgs;
 
 namespace segmentation_platform {
@@ -212,10 +211,9 @@ TEST_F(HistogramSignalHandlerTest, ObserversNotified) {
 
   EXPECT_CALL(*signal_database_, WriteSample(proto::SignalType::HISTOGRAM_ENUM,
                                              kExpectedHash, Eq(1), _))
-      .WillOnce(
-          WithArgs<3>(Invoke([](MockSignalDatabase::SuccessCallback callback) {
-            std::move(callback).Run(true);
-          })));
+      .WillOnce(WithArgs<3>([](MockSignalDatabase::SuccessCallback callback) {
+        std::move(callback).Run(true);
+      }));
   EXPECT_CALL(*ukm_db_,
               AddUmaMetric(kProfileId, SampleEq(SignalType::HISTOGRAM_ENUM,
                                                 kExpectedHash)));

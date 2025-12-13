@@ -80,13 +80,13 @@ function compareBuffersWithConstraints(should, actual, expected, options) {
       .beLessThanOrEqualTo(thresholdDiffCount);
 }
 
-// TODO(saqlain): compareBuffersWithConstraintsModern() is the
+// TODO(saqlain): compareBuffersWithConstraints_W3CTH() is the
 // testharness.js-compatible version of compareBuffersWithConstraints().
 // It replaces the old audit.js-style assertions with
 // standard testharness.js assertions. Once all audit.js tests are migrated,
 // rename this to testTailTime() and delete the old one.
 
-function compareBuffersWithConstraintsModern(actual, expected, options) {
+function compareBuffersWithConstraints_W3CTH(actual, expected, options) {
   if (!options)
     options = {};
 
@@ -262,65 +262,14 @@ function computeSNR(actual, expected) {
   return signalPower / noisePower;
 }
 
-// BufferLoader – utility for fetching & decoding multiple audio files.
-function BufferLoader(context, urlList, callback) {
-  this.context = context;
-  this.urlList = urlList;
-  this.onload = callback;
-  this.bufferList = new Array();
-  this.loadCount = 0;
+// Similar to computeSNR(), computes the signal-to-noise ratio (SNR) between
+// |actual| and |expected|. However, this method returns the SNR as a power
+// ratio expressed in decibels so it is easier to reason about.
+function computeSnrInDecibels(actual, expected) {
+  return 10 * Math.log10(computeSNR(actual, expected));
 }
 
-// BufferLoader – utility for fetching & decoding multiple audio files.
-BufferLoader.prototype.loadBuffer = function(url, index) {
-  // Load buffer asynchronously
-  let request = new XMLHttpRequest();
-  request.open('GET', url, true);
-  request.responseType = 'arraybuffer';
 
-  let loader = this;
-
-  request.onload = function() {
-    loader.context.decodeAudioData(
-      request.response,
-      function(decodedAudio) {
-        try {
-          loader.bufferList[index] = decodedAudio;
-          if (++loader.loadCount === loader.urlList.length)
-            loader.onload(loader.bufferList);
-        } catch (e) {
-          console.log(e);
-          alert(
-            'BufferLoader: unable to load buffer ' + index +
-            ', url: ' + loader.urlList[index]);
-        }
-      },
-      function() {
-        alert('error decoding file data: ' + url);
-      }
-    );
-  };
-
-  request.onerror = function() {
-    alert('BufferLoader: XHR error');
-  };
-
-  request.send();
-};
-
-BufferLoader.prototype.load = function() {
-  for (let i = 0; i < this.urlList.length; ++i)
-    this.loadBuffer(this.urlList[i], i);
-};
-
-// Returns a promise that resolves with an array of AudioBuffers once all
-// resources have loaded.
-function loadBuffers(context, urls) {
-  return new Promise((resolve, reject) => {
-    const loader = new BufferLoader(context, urls, resolve, reject);
-    loader.load();
-  });
-}
 
 /**
  * Creates a test buffer with linear ramp PCM data: 0, 1, 2, ... length-1.
@@ -344,21 +293,48 @@ function createTestBuffer(context, length) {
 }
 
 /**
- * Asserts that two arrays are equal within a given epsilon for each element.
- * @param {!Array<number>} actual
- * @param {!Array<number>} expected
- * @param {number} epsilon
+ * Asserts that two arrays are equal within a given tolerance for each element.
+ * The |threshold| can be:
+ *   - A number (absolute epsilon)
+ *   - An object with optional {absoluteThreshold, relativeThreshold}
+ *   - If omitted, compares with exact equality (epsilon = 0)
+ *
+ * For each element i, we require:
+ *   |actual[i] − expected[i]| ≤ max(absoluteThreshold,
+ *                                   |expected[i]|·relativeThreshold)
+ *
+ * @param {!Array<number>|!TypedArray<number>} actual
+ * @param {!Array<number>|!TypedArray<number>} expected
+ * @param {number|{ absoluteThreshold?:number, relativeThreshold?:number }}
+ *   [threshold=0]
  * @param {string} desc
  */
 function assert_array_equal_within_eps(
-    actual, expected, epsilon, desc) {
-  assert_equals(
-      actual.length, expected.length, desc + ": length");
+    actual, expected, threshold = 0, desc = '') {
+  assert_equals(actual.length, expected.length, desc + ': length mismatch');
+
+  let abs = 0;
+  let rel = 0;
+
+  if (typeof threshold === 'number') {
+    abs = threshold;
+  } else if (threshold && typeof threshold === 'object') {
+    abs = threshold.absoluteThreshold ?? 0;
+    rel = threshold.relativeThreshold ?? 0;
+  }
+
   for (let i = 0; i < actual.length; ++i) {
+    const epsilon = Math.max(abs, Math.abs(expected[i]) * rel);
+    const diff = Math.abs(actual[i] - expected[i]);
     assert_approx_equals(
-        actual[i], expected[i], epsilon, `${desc} sample[${i}]`);
+        actual[i],
+        expected[i],
+        epsilon,
+        `${desc} sample[${i}] |${actual[i]} - ${expected[i]}|` +
+            ` = ${diff} > ${epsilon}`);
   }
 }
+
 
 /**
  * Asserts that all elements of an array are (approximately) equal to a value.
@@ -373,4 +349,45 @@ function assert_array_constant_value(
     assert_approx_equals(
         arr[i], value, epsilon, `${desc} sample[${i}]`);
   }
+}
+
+/**
+ * Loads a file from the specified URL using an XMLHttpRequest and returns its
+ * contents as an ArrayBuffer.
+ *
+ * This function is typically used to fetch binary resources
+ * (such as audio files) for web audio tests.
+ * It resolves with the file's ArrayBuffer on success, or rejects with an
+ * error message on failure.
+ *
+ * @param {string} fileUrl - The URL of the file to load.
+ * @returns {Promise<ArrayBuffer>} A promise that resolves with the file's
+ * ArrayBuffer if the request is successful, or rejects with an error
+ * message if it fails.
+ */
+function loadFileFromUrl(fileUrl) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', fileUrl, true);
+    xhr.responseType = 'arraybuffer';
+
+    xhr.onload = () => {
+      // |status = 0| workaround for certain test servers.
+      if (xhr.status === 200 || xhr.status === 0) {
+        resolve(xhr.response);
+      } else {
+        reject(
+          'loadFile: Request failed when loading ' +
+          fileUrl + '. ' + xhr.statusText +
+          '. (status = ' + xhr.status + ')'
+        );
+      }
+    };
+
+    xhr.onerror = () => {
+      reject('loadFile: Network failure when loading ' + fileUrl + '.');
+    };
+
+    xhr.send();
+  });
 }

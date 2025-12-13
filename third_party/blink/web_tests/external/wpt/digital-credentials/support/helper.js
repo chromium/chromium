@@ -3,166 +3,186 @@
 /**
  * @typedef {import('../dc-types').GetProtocol} GetProtocol
  * @typedef {import('../dc-types').DigitalCredentialGetRequest} DigitalCredentialGetRequest
- * @typedef {import('../dc-types').DigitalCredentialRequestOptions} DigitalCredentialRequestOptions
  * @typedef {import('../dc-types').CredentialRequestOptions} CredentialRequestOptions
  * @typedef {import('../dc-types').CreateProtocol} CreateProtocol
  * @typedef {import('../dc-types').DigitalCredentialCreateRequest} DigitalCredentialCreateRequest
  * @typedef {import('../dc-types').CredentialCreationOptions} CredentialCreationOptions
- * @typedef {import('../dc-types').DigitalCredentialCreationOptions} DigitalCredentialCreationOptions
  * @typedef {import('../dc-types').SendMessageData} SendMessageData
+ * @typedef {import('../dc-types').MakeGetOptionsConfig} MakeGetOptionsConfig
+ * @typedef {import('../dc-types').MakeCreateOptionsConfig} MakeCreateOptionsConfig
+ * @typedef {import('../dc-types').CredentialMediationRequirement} CredentialMediationRequirement
+ * @typedef {import('../dc-types').MobileDocumentRequest} MobileDocumentRequest
+ * @typedef {GetProtocol | CreateProtocol} Protocol
  */
 
-/**
- * Internal helper to build the request array from validated input.
- * Assumes requestsInputArray is a non-empty array of strings.
- * @private
- * @param {string[]} requestsInputArray - An array of request type strings.
- * @param {string} mediation - The mediation requirement.
- * @param {object} requestMapping - The specific mapping object for the operation type.
- * @returns {{ digital: { requests: any[] }, mediation: string }} - The final options structure.
- * @throws {Error} If an unknown request type string is encountered within the array.
- */
-function _makeOptionsInternal(requestsInputArray, mediation, requestMapping) {
-  const requests = [];
-  for (const request of requestsInputArray) {
-    const factoryFunction = requestMapping[request];
-    if (factoryFunction) {
-      requests.push(factoryFunction()); // Call the mapped function
-    } else {
-      // This error means a string *within the array* was unknown
-      throw new Error(`Unknown request type within array: ${request}`);
-    }
-  }
-  return { digital: { requests }, mediation };
-}
-
-const allMappings = {
-  get: {
-    "openid4vp": () => makeOID4VPDict(),
-    "default": () => makeDigitalCredentialGetRequest(undefined, undefined),
+/** @type {Record<Protocol, object | MobileDocumentRequest>} */
+const CANONICAL_REQUEST_OBJECTS = {
+  openid4vci: {
+    /* Canonical object coming soon */
   },
-  create: {
-    "openid4vci": () => makeOID4VCIDict(),
-    "default": () => makeDigitalCredentialCreateRequest(),
+  "openid4vp-v1-unsigned": {
+    /* Canonical object coming soon */
+  },
+  "openid4vp-v1-signed": {
+    /* Canonical object coming soon */
+  },
+  "openid4vp-v1-multisigned": {
+    /* Canonical object coming soon */
+  },
+  /** @type MobileDocumentRequest **/
+  "org-iso-mdoc": {
+    deviceRequest:
+      "omd2ZXJzaW9uYzEuMGtkb2NSZXF1ZXN0c4GhbGl0ZW1zUmVxdWVzdNgYWIKiZ2RvY1R5cGV1b3JnLmlzby4xODAxMy41LjEubURMam5hbWVTcGFjZXOhcW9yZy5pc28uMTgwMTMuNS4x9pWthZ2Vfb3Zlcl8yMfRqZ2l2ZW5fbmFtZfRrZmFtaWx5X25hbWX0cmRyaXZpbmdfcHJpdmlsZWdlc_RocG9ydHJhaXT0",
+    encryptionInfo:
+      "gmVkY2FwaaJlbm9uY2VYICBetSsDkKlE_G9JSIHwPzr3ctt6Ol9GgmCH8iGdGQNJcnJlY2lwaWVudFB1YmxpY0tleaQBAiABIVggKKm1iPeuOb9bDJeeJEL4QldYlWvY7F_K8eZkmYdS9PwiWCCm9PLEmosiE_ildsE11lqq4kDkjhfQUKPpbX-Hm1ZSLg",
   },
 };
 
 /**
- * Internal unified function to handle option creation logic.
- * Routes calls from specific public functions.
- * @private
- * @param {'get' | 'create'} type - The type of operation.
- * @param {string | string[]} [requestsToUse] - Raw input for request types from public function.
- * @param {string} mediation - Mediation requirement (default handled by public function).
- * @returns {{ digital: { requests: any[] }, mediation: string }}
- * @throws {Error} If type is invalid internally, or input strings are invalid.
+ * Internal helper to create final options from a list of requests.
+ *
+ * @template {DigitalCredentialGetRequest[] | DigitalCredentialCreateRequest[]} TRequests
+ * @template {CredentialRequestOptions | CredentialCreationOptions} TOptions
+ * @param {TRequests} requests
+ * @param {CredentialMediationRequirement} [mediation]
+ * @param {AbortSignal} [signal]
+ * @returns {TOptions}
  */
-function _makeOptionsUnified(type, requestsToUse, mediation) {
-  // 1. Get mapping (Type validation primarily happens via caller)
-  const mapping = allMappings[type];
-   // Added safety check, though public functions should prevent this.
-  if (!mapping) {
-    throw new Error(`Internal error: Invalid options type specified: ${type}`);
+function makeOptionsFromRequests(requests, mediation, signal) {
+  /** @type {TOptions} */
+  const options = /** @type {TOptions} */ ({ digital: { requests } });
+
+  if (mediation) {
+    options.mediation = mediation;
   }
 
-  // 2. Handle default for requestsToUse
-  const actualRequestsToUse = requestsToUse === undefined ? ["default"] : requestsToUse;
+  if (signal) {
+    options.signal = signal;
+  }
 
-  // 3. Handle single string input
-  if (typeof actualRequestsToUse === 'string') {
-    if (mapping[actualRequestsToUse]) {
-      // Valid single string: Pass as array to the core array helper
-      return _makeOptionsInternal([actualRequestsToUse], mediation, mapping);
-    } else {
-      // Invalid single string for this type
-      throw new Error(`Unknown request type string '${actualRequestsToUse}' provided for operation type '${type}'`);
+  return options;
+}
+
+/**
+ * Build requests from protocols, using canonical data for each protocol.
+ * For create operations with explicit data, uses that data for all protocols.
+ *
+ * @template Req
+ * @param {Protocol[]} protocols
+ * @param {Record<string, (data?: MobileDocumentRequest | object) => Req>} mapping
+ * @param {MobileDocumentRequest | object} [explicitData] - Explicit data for create operations
+ * @returns {Req[]}
+ * @throws {Error} If an unknown protocol string is encountered.
+ */
+function buildRequestsFromProtocols(protocols, mapping, explicitData) {
+  return protocols.map((protocol) => {
+    if (!(protocol in mapping)) {
+      throw new Error(`Unknown request type within array: ${protocol}`);
     }
+    // Use explicit data if provided (for create with data), otherwise canonical data
+    return mapping[protocol](explicitData);
+  });
+}
+
+/** @type {{
+ *   get: Record<GetProtocol, (data?: MobileDocumentRequest | object) => DigitalCredentialGetRequest>;
+ *   create: Record<CreateProtocol, (data?: object) => DigitalCredentialCreateRequest>;
+ * }} */
+const allMappings = {
+  get: {
+    "org-iso-mdoc": (
+      data = { ...CANONICAL_REQUEST_OBJECTS["org-iso-mdoc"] },
+    ) => {
+      return { protocol: "org-iso-mdoc", data };
+    },
+    "openid4vp-v1-unsigned": (
+      data = { ...CANONICAL_REQUEST_OBJECTS["openid4vp-v1-unsigned"] },
+    ) => {
+      return { protocol: "openid4vp-v1-unsigned", data };
+    },
+    "openid4vp-v1-signed": (
+      data = { ...CANONICAL_REQUEST_OBJECTS["openid4vp-v1-signed"] },
+    ) => {
+      return { protocol: "openid4vp-v1-signed", data };
+    },
+    "openid4vp-v1-multisigned": (
+      data = { ...CANONICAL_REQUEST_OBJECTS["openid4vp-v1-multisigned"] },
+    ) => {
+      return { protocol: "openid4vp-v1-multisigned", data };
+    },
+  },
+  create: {
+    "openid4vci": (data = { ...CANONICAL_REQUEST_OBJECTS["openid4vci"] }) => {
+      return { protocol: "openid4vci", data };
+    },
+  },
+};
+
+/**
+ * Generic helper to create credential options from config with protocol already set.
+ * @template {MakeGetOptionsConfig | MakeCreateOptionsConfig} TConfig
+ * @template {DigitalCredentialGetRequest | DigitalCredentialCreateRequest} TRequest
+ * @template {CredentialRequestOptions | CredentialCreationOptions} TOptions
+ * @param {TConfig} config - Configuration options with protocol already defaulted
+ * @param {Record<string, (data?: MobileDocumentRequest | object) => TRequest>} mapping - Protocol to request mapping
+ * @returns {TOptions}
+ */
+function makeCredentialOptionsFromConfig(config, mapping) {
+  const { protocol, requests = [], data, mediation, signal } = config;
+
+  // Validate that we have either a protocol or requests
+  if (!protocol && !requests?.length) {
+    throw new Error("No protocol. Can't make options.");
   }
 
-  // 4. Handle array input
-  if (Array.isArray(actualRequestsToUse)) {
-    if (actualRequestsToUse.length === 0) {
-      // Handle empty array explicitly
-      return { digital: { requests: [] }, mediation };
-    }
-    // Pass valid non-empty array to the core array helper
-    return _makeOptionsInternal(actualRequestsToUse, mediation, mapping);
+  /** @type {TRequest[]} */
+  const  allRequests = [];
+
+  allRequests.push(.../** @type {TRequest[]} */ (requests));
+
+  if (protocol) {
+    const protocolArray = Array.isArray(protocol) ? protocol : [protocol];
+    const protocolRequests = buildRequestsFromProtocols(protocolArray, mapping, data);
+    allRequests.push(...protocolRequests);
   }
 
-  // 5. Handle invalid input types (neither string nor array)
-  return { digital: { requests: [] }, mediation };
+  return /** @type {TOptions} */ (makeOptionsFromRequests(allRequests, mediation, signal));
 }
 
 /**
  * Creates options for getting credentials.
  * @export
- * @param {string | string[]} [requestsToUse] - Request types ('default', 'openid4vp', or an array). Defaults to ['default'].
- * @param {string} [mediation="required"] - Credential mediation requirement ("required", "optional", "silent").
- * @returns {{ digital: { requests: any[] }, mediation: string }}
+ * @param {MakeGetOptionsConfig} [config={}] - Configuration options
+ * @returns {CredentialRequestOptions}
  */
-export function makeGetOptions(requestsToUse, mediation = "required") {
-  // Pass type 'get', the user's input, and the final mediation value
-  return _makeOptionsUnified('get', requestsToUse, mediation);
+export function makeGetOptions(config = {}) {
+  /** @type {MakeGetOptionsConfig} */
+  const configWithDefaults = {
+    protocol: ["openid4vp-v1-unsigned", "org-iso-mdoc"],
+    ...config,
+  };
+
+  return /** @type {CredentialRequestOptions} */ (
+    makeCredentialOptionsFromConfig(configWithDefaults, allMappings.get)
+  );
 }
 
 /**
  * Creates options for creating credentials.
  * @export
- * @param {string | string[]} [requestsToUse] - Request types ('default', 'openid4vci', or an array). Defaults to ['default'].
- * @param {string} [mediation="required"] - Credential mediation requirement ("required", "optional", "silent").
- * @returns {{ digital: { requests: any[] }, mediation: string }} // Adjust inner array type if known
+ * @param {MakeCreateOptionsConfig} [config={}] - Configuration options
+ * @returns {CredentialCreationOptions}
  */
-export function makeCreateOptions(requestsToUse, mediation = "required") {
-  // Pass type 'create', the user's input, and the final mediation value
-  return _makeOptionsUnified('create', requestsToUse, mediation);
-}
-
-/**
- *
- * @param {string} protocol
- * @param {object} data
- * @returns {DigitalCredentialGetRequest}
- */
-function makeDigitalCredentialGetRequest(protocol = "protocol", data = {}) {
-  return {
-    protocol,
-    data,
+export function makeCreateOptions(config = {}) {
+  /** @type {MakeCreateOptionsConfig} */
+  const configWithDefaults = {
+    protocol: "openid4vci",
+    ...config,
   };
-}
 
-/**
- * Representation of an OpenID4VP request.
- *
- * @returns {DigitalCredentialGetRequest}
- **/
-function makeOID4VPDict() {
-  return makeDigitalCredentialGetRequest("openid4vp", {
-    // Canonical example of an OpenID4VP request coming soon.
-  });
-}
-
-/**
- *
- * @param {string} protocol
- * @param {object} data
- * @returns {DigitalCredentialCreateRequest}
- */
-function makeDigitalCredentialCreateRequest(protocol = "protocol", data = {}) {
-  return {
-    protocol,
-    data,
-  };
-}
-
-/**
- * Representation of an OpenID4VCI request.
- *
- * @returns {DigitalCredentialCreateRequest}
- **/
-function makeOID4VCIDict() {
-  return makeDigitalCredentialCreateRequest("openid4vci", {
-    // Canonical example of an OpenID4VCI request coming soon.
-  });
+  return /** @type {CredentialCreationOptions} */ (
+    makeCredentialOptionsFromConfig(configWithDefaults, allMappings.create)
+  );
 }
 
 /**
@@ -177,8 +197,8 @@ export function sendMessage(iframe, data) {
     if (!iframe.contentWindow) {
       reject(
         new Error(
-          "iframe.contentWindow is undefined, cannot send message (something is wrong with the test that called this)."
-        )
+          "iframe.contentWindow is undefined, cannot send message (something is wrong with the test that called this).",
+        ),
       );
       return;
     }
@@ -201,8 +221,10 @@ export function sendMessage(iframe, data) {
  */
 export function loadIframe(iframe, url) {
   return new Promise((resolve, reject) => {
-    iframe.addEventListener("load", resolve, { once: true });
-    iframe.addEventListener("error", reject, { once: true });
+    iframe.addEventListener("load", () => resolve(), { once: true });
+    iframe.addEventListener("error", (event) => reject(event.error), {
+      once: true,
+    });
     if (!iframe.isConnected) {
       document.body.appendChild(iframe);
     }

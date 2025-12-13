@@ -13,10 +13,19 @@
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 
+class SpellcheckCustomDictionary;
+
+namespace fake_server {
+class FakeServer;
+}  // namespace fake_server
+
 namespace dictionary_helper {
 
-// Returns set of words stored in dictionary for given |profile_index|.
-const std::set<std::string>& GetDictionaryWords(int profile_index);
+// Returns the dictionary for the given profile index.
+SpellcheckCustomDictionary* GetDictionary(int index);
+
+// Returns set of words stored in dictionary for given `profile_index`.
+std::set<std::string> GetDictionaryWords(int profile_index);
 
 // Synchronously loads the dictionaries across all profiles. Returns only after
 // the dictionaries have finished to load.
@@ -36,6 +45,15 @@ bool AddWords(int index, int n, const std::string& prefix);
 // Removes |word| from the dictionary for profile with index |index|.
 // Returns true if |word| was found. Otherwise returns false.
 bool RemoveWord(int index, const std::string& word);
+
+// Injects a word into the fake server. This is used to simulate server-side
+// data.
+void InjectWordToFakeServer(const std::string& word,
+                            fake_server::FakeServer* fake_server);
+
+// Returns true if the word is present in the fake server.
+bool HasWordInFakeServer(const std::string& word,
+                         fake_server::FakeServer* fake_server);
 
 // Checker to block until all clients have expected dictionaries.
 class DictionaryChecker : public MultiClientStatusChangeChecker {

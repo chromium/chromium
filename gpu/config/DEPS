@@ -1,6 +1,6 @@
 include_rules = [
   "+components/crash/core/common/crash_key.h",
-  "+components/miracle_parameter",
+  "+components/viz/common/resources/shared_image_format.h",
   "+services/webnn/public/mojom/features.mojom-features.h",
   "+skia/buildflags.h",
   "+third_party/dawn/include",

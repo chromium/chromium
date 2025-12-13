@@ -17,6 +17,7 @@
 
 using ::base::test::EqualsProto;
 using ::testing::IsEmpty;
+using Dict = ::base::Value::Dict;
 
 namespace chromeos {
 
@@ -125,6 +126,84 @@ TEST(ManagedPrinterConfigFromDict, DictWithPrintJobOptions) {
       true);
   ASSERT_TRUE(managed_printer.has_value());
   EXPECT_THAT(*managed_printer, EqualsProto(expected));
+}
+
+TEST(ManagedPrinterConfigFromDict, DictWithUsbDeviceId) {
+  auto printer_dict = Dict().Set(
+      "usb_device_id", Dict()
+          .Set("vendor_id", 123)
+          .Set("product_id", 456)
+          .Set("usb_protocol", 1));
+
+  auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
+
+  ManagedPrinterConfiguration expected;
+  expected.mutable_usb_device_id()->set_vendor_id(123);
+  expected.mutable_usb_device_id()->set_product_id(456);
+  expected.mutable_usb_device_id()->set_usb_protocol(
+      ManagedPrinterConfiguration_UsbProtocol::
+          ManagedPrinterConfiguration_UsbProtocol_USB_PROTOCOL_LEGACY_USB);
+  ASSERT_TRUE(managed_printer.has_value());
+  EXPECT_THAT(*managed_printer, EqualsProto(expected));
+}
+
+TEST(ManagedPrinterConfigFromDict, DictWithInvalidUsbDeviceId_OutOfRange) {
+  auto printer_dict = Dict().Set(
+      "usb_device_id", Dict()
+          .Set("vendor_id", 65536)
+          .Set("product_id", 1)
+          .Set("usb_protocol", 1));
+
+  auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
+
+  ASSERT_FALSE(managed_printer.has_value());
+}
+
+TEST(ManagedPrinterConfigFromDict, DictWithInvalidUsbDeviceId_MissingVendorId) {
+  auto printer_dict = Dict().Set(
+      "usb_device_id", Dict()
+          .Set("product_id", 1)
+          .Set("usb_protocol", 1));
+
+  auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
+
+  ASSERT_FALSE(managed_printer.has_value());
+}
+
+TEST(ManagedPrinterConfigFromDict, DictWithBothUriAndUsbDeviceId) {
+  auto printer_dict = Dict()
+      .Set("uri", "d")
+      .Set("usb_device_id", Dict()
+          .Set("vendor_id", 123)
+          .Set("product_id", 456)
+          .Set("usb_protocol", 1));
+
+  auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
+
+  ASSERT_FALSE(managed_printer.has_value());
+}
+
+TEST(ManagedPrinterConfigFromDict, DictWithInvalidUsbDeviceId_MissingProtocol) {
+  auto printer_dict = Dict()
+      .Set("usb_device_id", Dict()
+          .Set("vendor_id", 123)
+          .Set("product_id", 456));
+
+  auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
+
+  ASSERT_FALSE(managed_printer.has_value());
+}
+
+TEST(ManagedPrinterConfigFromDict, DictWithInvalidUsbDeviceId_InvalidProtocol) {
+  auto printer_dict = Dict()
+      .Set("usb_device_id", Dict()
+          .Set("vendor_id", 123)
+          .Set("product_id", 456)
+          .Set("usb_protocol", 0));
+
+  auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
+
+  ASSERT_FALSE(managed_printer.has_value());
 }
 
 TEST(PrinterFromManagedPrinterConfig, MissingGuid) {
@@ -264,6 +343,73 @@ TEST(PrinterFromManagedPrinterConfig, WithInvalidPrintJobOptions) {
   // Media size default value doesn't have width component, thus the conversion
   // from managed printer should fail.
   EXPECT_EQ(PrinterFromManagedPrinterConfig(managed_printer), std::nullopt);
+}
+
+TEST(PrinterFromManagedPrinterConfig, UsbDeviceId) {
+  ManagedPrinterConfiguration managed_printer = ValidManagedPrinter();
+  managed_printer.mutable_usb_device_id()->set_vendor_id(123);
+  managed_printer.mutable_usb_device_id()->set_product_id(456);
+  managed_printer.mutable_usb_device_id()->set_usb_protocol(
+      ManagedPrinterConfiguration_UsbProtocol::
+          ManagedPrinterConfiguration_UsbProtocol_USB_PROTOCOL_IPP_USB);
+
+  std::optional<Printer> printer =
+      PrinterFromManagedPrinterConfig(managed_printer);
+
+  ASSERT_TRUE(printer.has_value());
+  EXPECT_EQ(printer->usb_device_id(), Printer::UsbDeviceId(123, 456));
+}
+
+TEST(PrinterFromManagedPrinterConfig, InvalidUsbDeviceId) {
+  ManagedPrinterConfiguration managed_printer = ValidManagedPrinter();
+  managed_printer.mutable_usb_device_id()->set_vendor_id(123);
+  managed_printer.mutable_usb_device_id()->set_product_id(-1);
+  managed_printer.mutable_usb_device_id()->set_usb_protocol(
+      ManagedPrinterConfiguration_UsbProtocol::
+          ManagedPrinterConfiguration_UsbProtocol_USB_PROTOCOL_IPP_USB);
+
+  EXPECT_FALSE(PrinterFromManagedPrinterConfig(managed_printer).has_value());
+}
+
+TEST(PrinterFromManagedPrinterConfig, UsbProtocol_IPP_USB) {
+  ManagedPrinterConfiguration managed_printer = ValidManagedPrinter();
+  managed_printer.mutable_usb_device_id()->set_vendor_id(123);
+  managed_printer.mutable_usb_device_id()->set_product_id(456);
+  managed_printer.mutable_usb_device_id()->set_usb_protocol(
+      ManagedPrinterConfiguration_UsbProtocol::
+          ManagedPrinterConfiguration_UsbProtocol_USB_PROTOCOL_IPP_USB);
+
+  std::optional<Printer> printer =
+      PrinterFromManagedPrinterConfig(managed_printer);
+
+  ASSERT_TRUE(printer.has_value());
+  EXPECT_EQ(printer->uri().GetNormalized(), "ippusb://007b_01c8/ipp/print");
+}
+
+TEST(PrinterFromManagedPrinterConfig, UsbProtocol_LEGACY_USB) {
+  ManagedPrinterConfiguration managed_printer = ValidManagedPrinter();
+  managed_printer.mutable_usb_device_id()->set_vendor_id(123);
+  managed_printer.mutable_usb_device_id()->set_product_id(456);
+  managed_printer.mutable_usb_device_id()->set_usb_protocol(
+      ManagedPrinterConfiguration_UsbProtocol::
+          ManagedPrinterConfiguration_UsbProtocol_USB_PROTOCOL_LEGACY_USB);
+
+  std::optional<Printer> printer =
+      PrinterFromManagedPrinterConfig(managed_printer);
+
+  ASSERT_TRUE(printer.has_value());
+  EXPECT_EQ(printer->uri().GetNormalized(), "usb://007b/01c8?serial");
+}
+
+TEST(PrinterFromManagedPrinterConfig, InvalidUsbProtocol) {
+  ManagedPrinterConfiguration managed_printer = ValidManagedPrinter();
+  managed_printer.mutable_usb_device_id()->set_vendor_id(123);
+  managed_printer.mutable_usb_device_id()->set_product_id(456);
+  managed_printer.mutable_usb_device_id()->set_usb_protocol(
+      ManagedPrinterConfiguration_UsbProtocol::
+          ManagedPrinterConfiguration_UsbProtocol_USB_PROTOCOL_UNSPECIFIED);
+
+  EXPECT_FALSE(PrinterFromManagedPrinterConfig(managed_printer).has_value());
 }
 
 }  // namespace

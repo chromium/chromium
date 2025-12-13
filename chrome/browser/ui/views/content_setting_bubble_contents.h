@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CONTENT_SETTING_BUBBLE_CONTENTS_H_
 #define CHROME_BROWSER_UI_VIEWS_CONTENT_SETTING_BUBBLE_CONTENTS_H_
 
-#include <map>
 #include <memory>
 #include <string>
 

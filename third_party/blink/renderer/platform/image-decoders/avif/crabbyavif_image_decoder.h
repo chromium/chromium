@@ -10,9 +10,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/crabbyavif/src/include/avif/avif.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -48,7 +48,6 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
   SkYUVColorSpace GetYUVColorSpace() const override;
   uint8_t GetYUVBitDepth() const override;
-  std::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
   void DecodeToYUV() override;
   int RepetitionCount() const override;
   bool FrameIsReceivedAtIndex(wtf_size_t) const override;
@@ -135,7 +134,6 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   bool decode_to_half_float_ = false;
   uint8_t chroma_shift_x_ = 0;
   uint8_t chroma_shift_y_ = 0;
-  std::optional<gfx::HDRMetadata> hdr_metadata_;
   bool progressive_ = false;
   // Number of displayed rows for a non-progressive still image.
   int incrementally_displayed_height_ = 0;
@@ -146,7 +144,8 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   SkYUVColorSpace yuv_color_space_ = SkYUVColorSpace::kIdentity_SkYUVColorSpace;
   // Used to call UpdateBppHistogram<"Avif">() at most once to record the
   // bits-per-pixel value of the image when the image is successfully decoded.
-  base::OnceCallback<void(gfx::Size, size_t)> update_bpp_histogram_callback_;
+  CrossThreadOnceFunction<void(gfx::Size, size_t)>
+      update_bpp_histogram_callback_;
   // Whether the 'clap' (clean aperture) property should be ignored, e.g.
   // because the 'clap' property is invalid or unsupported.
   bool ignore_clap_ = false;

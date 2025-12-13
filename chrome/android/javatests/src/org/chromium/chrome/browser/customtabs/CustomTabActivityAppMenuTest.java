@@ -669,7 +669,6 @@ public class CustomTabActivityAppMenuTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
     public void testOpenInIncognitoBrowser() throws Exception {
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(false);
         // Augment the CustomTabsSession to catch the callback.
@@ -725,7 +724,7 @@ public class CustomTabActivityAppMenuTest {
 
         callbackTriggered.waitForCallback(0);
 
-        CriteriaHelper.pollInstrumentationThread(
+        CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
                             RecordHistogram.getHistogramValueCountForTesting(

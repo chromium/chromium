@@ -1,19 +1,24 @@
+use crate::syntax::attrs::OtherAttrs;
+use crate::syntax::cfg::ComputedCfg;
 use crate::syntax::improper::ImproperCtype;
 use crate::syntax::instantiate::ImplKey;
 use crate::syntax::map::{OrderedMap, UnorderedMap};
+use crate::syntax::query::TypeQuery;
 use crate::syntax::report::Errors;
 use crate::syntax::resolve::Resolution;
-use crate::syntax::set::{OrderedSet, UnorderedSet};
+use crate::syntax::set::UnorderedSet;
 use crate::syntax::trivial::{self, TrivialReason};
+use crate::syntax::unpin::{self, UnpinReason};
 use crate::syntax::visit::{self, Visit};
 use crate::syntax::{
-    toposort, Api, Atom, Enum, EnumRepr, ExternType, Impl, Lifetimes, Pair, Struct, Type, TypeAlias,
+    toposort, Api, Atom, Enum, ExternFn, ExternType, Impl, Lifetimes, Pair, Struct, Type, TypeAlias,
 };
+use indexmap::map::Entry;
 use proc_macro2::Ident;
 use quote::ToTokens;
 
 pub(crate) struct Types<'a> {
-    pub all: OrderedSet<&'a Type>,
+    pub all: OrderedMap<&'a Type, ComputedCfg<'a>>,
     pub structs: UnorderedMap<&'a Ident, &'a Struct>,
     pub enums: UnorderedMap<&'a Ident, &'a Enum>,
     pub cxx: UnorderedSet<&'a Ident>,
@@ -21,15 +26,27 @@ pub(crate) struct Types<'a> {
     pub aliases: UnorderedMap<&'a Ident, &'a TypeAlias>,
     pub untrusted: UnorderedMap<&'a Ident, &'a ExternType>,
     pub required_trivial: UnorderedMap<&'a Ident, Vec<TrivialReason<'a>>>,
-    pub impls: OrderedMap<ImplKey<'a>, Option<&'a Impl>>,
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    pub required_unpin: UnorderedMap<&'a Ident, UnpinReason<'a>>,
+    pub impls: OrderedMap<ImplKey<'a>, ConditionalImpl<'a>>,
     pub resolutions: UnorderedMap<&'a Ident, Resolution<'a>>,
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    pub associated_fn: UnorderedMap<&'a Ident, Vec<&'a ExternFn>>,
     pub struct_improper_ctypes: UnorderedSet<&'a Ident>,
     pub toposorted_structs: Vec<&'a Struct>,
 }
 
+pub(crate) struct ConditionalImpl<'a> {
+    pub cfg: ComputedCfg<'a>,
+    // None for implicit impls, which arise from using a generic type
+    // instantiation in a struct field or function signature.
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    pub explicit_impl: Option<&'a Impl>,
+}
+
 impl<'a> Types<'a> {
     pub(crate) fn collect(cx: &mut Errors, apis: &'a [Api]) -> Self {
-        let mut all = OrderedSet::new();
+        let mut all = OrderedMap::new();
         let mut structs = UnorderedMap::new();
         let mut enums = UnorderedMap::new();
         let mut cxx = UnorderedSet::new();
@@ -38,25 +55,50 @@ impl<'a> Types<'a> {
         let mut untrusted = UnorderedMap::new();
         let mut impls = OrderedMap::new();
         let mut resolutions = UnorderedMap::new();
+        let mut associated_fn = UnorderedMap::new();
         let struct_improper_ctypes = UnorderedSet::new();
         let toposorted_structs = Vec::new();
 
-        fn visit<'a>(all: &mut OrderedSet<&'a Type>, ty: &'a Type) {
-            struct CollectTypes<'s, 'a>(&'s mut OrderedSet<&'a Type>);
+        fn visit<'a>(
+            all: &mut OrderedMap<&'a Type, ComputedCfg<'a>>,
+            ty: &'a Type,
+            cfg: impl Into<ComputedCfg<'a>>,
+        ) {
+            struct CollectTypes<'s, 'a> {
+                all: &'s mut OrderedMap<&'a Type, ComputedCfg<'a>>,
+                cfg: ComputedCfg<'a>,
+            }
 
             impl<'s, 'a> Visit<'a> for CollectTypes<'s, 'a> {
                 fn visit_type(&mut self, ty: &'a Type) {
-                    self.0.insert(ty);
+                    match self.all.entry(ty) {
+                        Entry::Vacant(entry) => {
+                            entry.insert(self.cfg.clone());
+                        }
+                        Entry::Occupied(mut entry) => entry.get_mut().merge_or(self.cfg.clone()),
+                    }
                     visit::visit_type(self, ty);
                 }
             }
 
-            CollectTypes(all).visit_type(ty);
+            let mut visitor = CollectTypes {
+                all,
+                cfg: cfg.into(),
+            };
+            visitor.visit_type(ty);
         }
 
-        let mut add_resolution = |name: &'a Pair, generics: &'a Lifetimes| {
-            resolutions.insert(&name.rust, Resolution { name, generics });
-        };
+        let mut add_resolution =
+            |name: &'a Pair, attrs: &'a OtherAttrs, generics: &'a Lifetimes| {
+                resolutions.insert(
+                    &name.rust,
+                    Resolution {
+                        name,
+                        attrs,
+                        generics,
+                    },
+                );
+            };
 
         let mut type_names = UnorderedSet::new();
         let mut function_names = UnorderedSet::new();
@@ -79,21 +121,21 @@ impl<'a> Types<'a> {
                         // If already declared as a struct or enum, or if
                         // colliding with something other than an extern C++
                         // type, then error.
-                        duplicate_name(cx, strct, ident);
+                        duplicate_name(cx, strct, ItemName::Type(ident));
                     }
                     structs.insert(&strct.name.rust, strct);
                     for field in &strct.fields {
-                        visit(&mut all, &field.ty);
+                        let cfg = ComputedCfg::all(&strct.cfg, &field.cfg);
+                        visit(&mut all, &field.ty, cfg);
                     }
-                    add_resolution(&strct.name, &strct.generics);
+                    add_resolution(&strct.name, &strct.attrs, &strct.generics);
                 }
                 Api::Enum(enm) => {
-                    match &enm.repr {
-                        EnumRepr::Native { atom: _, repr_type } => {
-                            all.insert(repr_type);
+                    match all.entry(&enm.repr.repr_type) {
+                        Entry::Vacant(entry) => {
+                            entry.insert(ComputedCfg::Leaf(&enm.cfg));
                         }
-                        #[cfg(feature = "experimental-enum-variants-from-header")]
-                        EnumRepr::Foreign { rust_type: _ } => {}
+                        Entry::Occupied(mut entry) => entry.get_mut().merge_or(&enm.cfg),
                     }
                     let ident = &enm.name.rust;
                     if !type_names.insert(ident)
@@ -104,15 +146,10 @@ impl<'a> Types<'a> {
                         // If already declared as a struct or enum, or if
                         // colliding with something other than an extern C++
                         // type, then error.
-                        duplicate_name(cx, enm, ident);
+                        duplicate_name(cx, enm, ItemName::Type(ident));
                     }
                     enums.insert(ident, enm);
-                    if enm.variants_from_header {
-                        // #![variants_from_header] enums are implicitly extern
-                        // C++ type.
-                        cxx.insert(&enm.name.rust);
-                    }
-                    add_resolution(&enm.name, &enm.generics);
+                    add_resolution(&enm.name, &enm.attrs, &enm.generics);
                 }
                 Api::CxxType(ety) => {
                     let ident = &ety.name.rust;
@@ -123,69 +160,64 @@ impl<'a> Types<'a> {
                         // If already declared as an extern C++ type, or if
                         // colliding with something which is neither struct nor
                         // enum, then error.
-                        duplicate_name(cx, ety, ident);
+                        duplicate_name(cx, ety, ItemName::Type(ident));
                     }
                     cxx.insert(ident);
                     if !ety.trusted {
                         untrusted.insert(ident, ety);
                     }
-                    add_resolution(&ety.name, &ety.generics);
+                    add_resolution(&ety.name, &ety.attrs, &ety.generics);
                 }
                 Api::RustType(ety) => {
                     let ident = &ety.name.rust;
                     if !type_names.insert(ident) {
-                        duplicate_name(cx, ety, ident);
+                        duplicate_name(cx, ety, ItemName::Type(ident));
                     }
                     rust.insert(ident);
-                    add_resolution(&ety.name, &ety.generics);
+                    add_resolution(&ety.name, &ety.attrs, &ety.generics);
                 }
                 Api::CxxFunction(efn) | Api::RustFunction(efn) => {
                     // Note: duplication of the C++ name is fine because C++ has
                     // function overloading.
-                    if !function_names.insert((&efn.receiver, &efn.name.rust)) {
-                        duplicate_name(cx, efn, &efn.name.rust);
+                    let self_type = efn.self_type();
+                    if let Some(self_type) = self_type {
+                        associated_fn
+                            .entry(self_type)
+                            .or_insert_with(Vec::new)
+                            .push(efn);
+                    }
+                    if !self_type.is_some_and(|self_type| self_type == "Self")
+                        && !function_names.insert((self_type, &efn.name.rust))
+                    {
+                        duplicate_name(cx, efn, ItemName::Function(self_type, &efn.name.rust));
                     }
                     for arg in &efn.args {
-                        visit(&mut all, &arg.ty);
+                        visit(&mut all, &arg.ty, &efn.cfg);
                     }
                     if let Some(ret) = &efn.ret {
-                        visit(&mut all, ret);
+                        visit(&mut all, ret, &efn.cfg);
                     }
                 }
                 Api::TypeAlias(alias) => {
                     let ident = &alias.name.rust;
                     if !type_names.insert(ident) {
-                        duplicate_name(cx, alias, ident);
+                        duplicate_name(cx, alias, ItemName::Type(ident));
                     }
                     cxx.insert(ident);
                     aliases.insert(ident, alias);
-                    add_resolution(&alias.name, &alias.generics);
+                    add_resolution(&alias.name, &alias.attrs, &alias.generics);
                 }
                 Api::Impl(imp) => {
-                    visit(&mut all, &imp.ty);
-                    if let Some(key) = imp.ty.impl_key() {
-                        impls.insert(key, Some(imp));
-                    }
+                    visit(&mut all, &imp.ty, &imp.cfg);
                 }
             }
         }
 
-        for ty in &all {
-            let Some(impl_key) = ty.impl_key() else {
-                continue;
-            };
-            let implicit_impl = match &impl_key {
-                ImplKey::RustBox(ident)
-                | ImplKey::RustVec(ident)
-                | ImplKey::UniquePtr(ident)
-                | ImplKey::SharedPtr(ident)
-                | ImplKey::WeakPtr(ident)
-                | ImplKey::CxxVector(ident) => {
-                    Atom::from(ident.rust).is_none() && !aliases.contains_key(ident.rust)
+        for api in apis {
+            if let Api::Impl(imp) = api {
+                if let Some(key) = imp.ty.impl_key(&resolutions) {
+                    impls.insert(key, ConditionalImpl::from(imp));
                 }
-            };
-            if implicit_impl && !impls.contains_key(&impl_key) {
-                impls.insert(impl_key, None);
             }
         }
 
@@ -193,8 +225,19 @@ impl<'a> Types<'a> {
         // we check that this is permissible. We do this _after_ scanning all
         // the APIs above, in case some function or struct references a type
         // which is declared subsequently.
-        let required_trivial =
-            trivial::required_trivial_reasons(apis, &all, &structs, &enums, &cxx);
+        let required_trivial = trivial::required_trivial_reasons(
+            apis,
+            &all,
+            &structs,
+            &enums,
+            &cxx,
+            &aliases,
+            &impls,
+            &resolutions,
+        );
+
+        let required_unpin =
+            unpin::required_unpin_reasons(apis, &all, &structs, &enums, &cxx, &aliases);
 
         let mut types = Types {
             all,
@@ -205,13 +248,29 @@ impl<'a> Types<'a> {
             aliases,
             untrusted,
             required_trivial,
+            required_unpin,
             impls,
             resolutions,
+            associated_fn,
             struct_improper_ctypes,
             toposorted_structs,
         };
 
         types.toposorted_structs = toposort::sort(cx, apis, &types);
+
+        for (ty, cfg) in &types.all {
+            let Some(impl_key) = ty.impl_key(&types.resolutions) else {
+                continue;
+            };
+            if impl_key.is_implicit_impl_ok(&types) {
+                match types.impls.entry(impl_key) {
+                    Entry::Vacant(entry) => {
+                        entry.insert(ConditionalImpl::from(cfg.clone()));
+                    }
+                    Entry::Occupied(mut entry) => entry.get_mut().cfg.merge_or(cfg.clone()),
+                }
+            }
+        }
 
         let mut unresolved_structs = types.structs.keys();
         let mut new_information = true;
@@ -240,16 +299,17 @@ impl<'a> Types<'a> {
         types
     }
 
-    pub(crate) fn needs_indirect_abi(&self, ty: &Type) -> bool {
+    pub(crate) fn needs_indirect_abi(&self, ty: impl Into<TypeQuery<'a>>) -> bool {
+        let ty = ty.into();
         match ty {
-            Type::RustBox(_)
-            | Type::UniquePtr(_)
-            | Type::Ref(_)
-            | Type::Ptr(_)
-            | Type::Str(_)
-            | Type::Fn(_)
-            | Type::SliceRef(_) => false,
-            Type::Array(_) => true,
+            TypeQuery::RustBox
+            | TypeQuery::UniquePtr
+            | TypeQuery::Ref(_)
+            | TypeQuery::Ptr(_)
+            | TypeQuery::Str
+            | TypeQuery::Fn
+            | TypeQuery::SliceRef => false,
+            TypeQuery::Array(_) => true,
             _ => !self.is_guaranteed_pod(ty) || self.is_considered_improper_ctype(ty),
         }
     }
@@ -260,8 +320,7 @@ impl<'a> Types<'a> {
     // refuses to believe that C could know how to supply us with a pointer to a
     // Rust String, even though C could easily have obtained that pointer
     // legitimately from a Rust call.
-    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
-    pub(crate) fn is_considered_improper_ctype(&self, ty: &Type) -> bool {
+    pub(crate) fn is_considered_improper_ctype(&self, ty: impl Into<TypeQuery<'a>>) -> bool {
         match self.determine_improper_ctype(ty) {
             ImproperCtype::Definite(improper) => improper,
             ImproperCtype::Depends(ident) => self.struct_improper_ctypes.contains(ident),
@@ -270,22 +329,108 @@ impl<'a> Types<'a> {
 
     // Types which we need to assume could possibly exist by value on the Rust
     // side.
-    pub(crate) fn is_maybe_trivial(&self, ty: &Ident) -> bool {
-        self.structs.contains_key(ty)
-            || self.enums.contains_key(ty)
-            || self.aliases.contains_key(ty)
+    pub(crate) fn is_maybe_trivial(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Ident(named_type) => {
+                let ident = &named_type.rust;
+                self.structs.contains_key(ident)
+                    || self.enums.contains_key(ident)
+                    || self.aliases.contains_key(ident)
+            }
+            Type::CxxVector(_) => false,
+            _ => unreachable!("syntax/check.rs should reject other types"),
+        }
+    }
+
+    pub(crate) fn contains_elided_lifetime(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Ident(ty) => {
+                Atom::from(&ty.rust).is_none()
+                    && ty.generics.lifetimes.len()
+                        != self.resolve(&ty.rust).generics.lifetimes.len()
+            }
+            Type::RustBox(ty)
+            | Type::RustVec(ty)
+            | Type::UniquePtr(ty)
+            | Type::SharedPtr(ty)
+            | Type::WeakPtr(ty)
+            | Type::CxxVector(ty) => self.contains_elided_lifetime(&ty.inner),
+            Type::Ref(ty) => ty.lifetime.is_none() || self.contains_elided_lifetime(&ty.inner),
+            Type::Ptr(ty) => self.contains_elided_lifetime(&ty.inner),
+            Type::Str(ty) => ty.lifetime.is_none(),
+            Type::SliceRef(ty) => ty.lifetime.is_none() || self.contains_elided_lifetime(&ty.inner),
+            Type::Array(ty) => self.contains_elided_lifetime(&ty.inner),
+            Type::Fn(_) | Type::Void(_) => false,
+        }
+    }
+
+    /// Whether the current module is responsible for generic type
+    /// instantiations pertaining to the given type.
+    pub(crate) fn is_local(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Ident(ident) => {
+                Atom::from(&ident.rust).is_none() && !self.aliases.contains_key(&ident.rust)
+            }
+            Type::RustBox(_) => {
+                // TODO: We should treat Box<LocalType> as local.
+                // https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.trait.fundamental
+                false
+            }
+            Type::Array(_)
+            | Type::CxxVector(_)
+            | Type::Fn(_)
+            | Type::Void(_)
+            | Type::RustVec(_)
+            | Type::UniquePtr(_)
+            | Type::SharedPtr(_)
+            | Type::WeakPtr(_)
+            | Type::Ref(_)
+            | Type::Ptr(_)
+            | Type::Str(_)
+            | Type::SliceRef(_) => false,
+        }
     }
 }
 
 impl<'t, 'a> IntoIterator for &'t Types<'a> {
     type Item = &'a Type;
-    type IntoIter = crate::syntax::set::Iter<'t, 'a, Type>;
+    type IntoIter = std::iter::Copied<indexmap::map::Keys<'t, &'a Type, ComputedCfg<'a>>>;
     fn into_iter(self) -> Self::IntoIter {
-        self.all.into_iter()
+        self.all.keys().copied()
     }
 }
 
-fn duplicate_name(cx: &mut Errors, sp: impl ToTokens, ident: &Ident) {
-    let msg = format!("the name `{}` is defined multiple times", ident);
+impl<'a> From<ComputedCfg<'a>> for ConditionalImpl<'a> {
+    fn from(cfg: ComputedCfg<'a>) -> Self {
+        ConditionalImpl {
+            cfg,
+            explicit_impl: None,
+        }
+    }
+}
+
+impl<'a> From<&'a Impl> for ConditionalImpl<'a> {
+    fn from(imp: &'a Impl) -> Self {
+        ConditionalImpl {
+            cfg: ComputedCfg::Leaf(&imp.cfg),
+            explicit_impl: Some(imp),
+        }
+    }
+}
+
+enum ItemName<'a> {
+    Type(&'a Ident),
+    Function(Option<&'a Ident>, &'a Ident),
+}
+
+fn duplicate_name(cx: &mut Errors, sp: impl ToTokens, name: ItemName) {
+    let description = match name {
+        ItemName::Type(name) => format!("type `{}`", name),
+        ItemName::Function(Some(self_type), name) => {
+            format!("associated function `{}::{}`", self_type, name)
+        }
+        ItemName::Function(None, name) => format!("function `{}`", name),
+    };
+    let msg = format!("the {} is defined multiple times", description);
     cx.error(sp, msg);
 }

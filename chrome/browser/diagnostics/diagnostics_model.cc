@@ -136,7 +136,7 @@ class DiagnosticsModelWin : public DiagnosticsModelImpl {
     tests_.push_back(MakeVersionTest());
     tests_.push_back(MakeUserDirTest());
     tests_.push_back(MakeLocalStateFileTest());
-    tests_.push_back(MakeDictonaryDirTest());
+    tests_.push_back(MakeDictionaryDirTest());
     tests_.push_back(MakeResourcesFileTest());
     tests_.push_back(MakeDiskSpaceTest());
     tests_.push_back(MakePreferencesTest());
@@ -161,7 +161,7 @@ class DiagnosticsModelMac : public DiagnosticsModelImpl {
     tests_.push_back(MakeInstallTypeTest());
     tests_.push_back(MakeUserDirTest());
     tests_.push_back(MakeLocalStateFileTest());
-    tests_.push_back(MakeDictonaryDirTest());
+    tests_.push_back(MakeDictionaryDirTest());
     tests_.push_back(MakeDiskSpaceTest());
     tests_.push_back(MakePreferencesTest());
     tests_.push_back(MakeLocalStateTest());
@@ -186,7 +186,7 @@ class DiagnosticsModelPosix : public DiagnosticsModelImpl {
     tests_.push_back(MakeVersionTest());
     tests_.push_back(MakeUserDirTest());
     tests_.push_back(MakeLocalStateFileTest());
-    tests_.push_back(MakeDictonaryDirTest());
+    tests_.push_back(MakeDictionaryDirTest());
     tests_.push_back(MakeResourcesFileTest());
     tests_.push_back(MakeDiskSpaceTest());
     tests_.push_back(MakePreferencesTest());

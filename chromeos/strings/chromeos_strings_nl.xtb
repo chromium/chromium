@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">sinaasappelen</translation>
 <translation id="1275718070701477396">Geselecteerd</translation>
 <translation id="1290331692326790741">Zwak signaal</translation>
+<translation id="1292474106138697109">Weergave van Tools voor lesgroepen</translation>
 <translation id="1300115153046603471">APN is van het type standaard en <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Converteren</translation>
@@ -756,6 +757,7 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> afbeeldingen</translation>
 <translation id="4300272766492248925">App openen</translation>
 <translation id="430786093962686457">chiffon</translation>
+<translation id="4309762678330556039">Maak automatisch transcripties en doorzoek audio. Je kunt opnamen maken, ook als je geen verbinding met internet hebt.</translation>
 <translation id="4310735698903592804">Recente achtergronden mogelijk gemaakt door AI van Google</translation>
 <translation id="4320904097188876154">neonroze</translation>
 <translation id="432961742358282111">Klik met de rechtermuisknop of houd je vinger op het scherm om definities, vertalingen of eenheidsconversies op te vragen. Gebruik de pijl-rechts of pijl-links om deze functie te beheren.</translation>
@@ -1045,6 +1047,7 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="5600027863942488546">De toets <ph name="KEY_NAME" /> is getest</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Tools voor lesgroepen deelt je scherm met <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Je bent uitgelogd</translation>
 <translation id="5620281292257375798">Alleen voor intern gebruik</translation>
 <translation id="5628106863521633649">Beschikbare talen</translation>
@@ -1178,10 +1181,9 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="6205145102504628069">Wolkenstroom</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Geen scanners beschikbaar</translation>
-<translation id="6231648282154119906">Verdachte bestanden worden automatisch gescand door Google Safe Browsing als onderdeel van de geoptimaliseerde beveiliging die je hebt gekozen</translation>
 <translation id="6232017090690406397">Batterij</translation>
 <translation id="6234024205316847054">Contouren weergeven</translation>
-<translation id="6243280677745499710">Momenteel ingesteld</translation>
+<translation id="6243280677745499710">Nu ingesteld</translation>
 <translation id="6250316632541035980">eieren met spek</translation>
 <translation id="6265268291107409527">De geselecteerde toets is <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Pijl-rechts</translation>
@@ -1584,7 +1586,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7953669802889559161">Invoermethoden</translation>
 <translation id="7955587717700691983">Bluetooth-toetsenbord</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
-<translation id="7971535376154084247">Algemene bedieningselementen</translation>
+<translation id="7971535376154084247">Algemene bedienings</translation>
 <translation id="7977800524392185497">Ga naar Instellingen als je verbinding wilt maken met een <ph name="NETWORK_NAME" />-netwerk</translation>
 <translation id="7978412674231730200">Privésleutel</translation>
 <translation id="7979468455552394856">Tools voor lesgroepen is verbonden met leerlingen</translation>

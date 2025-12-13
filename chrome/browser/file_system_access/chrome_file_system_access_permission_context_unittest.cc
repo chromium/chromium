@@ -29,6 +29,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,13 +49,14 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/android/path_utils.h"
 #else
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
@@ -67,7 +69,10 @@
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+// "nogncheck" is necessary here because GN doesn't properly handle the
+// conditional statements in BUILD.gn files that import this file. See
+// "gn help nogncheck" for more information.
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"  // nogncheck
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #endif
@@ -498,10 +503,13 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   const PathInfo kTestPathInfo2 = PathInfo(FILE_PATH_LITERAL("/baz/"));
   const url::Origin kChromeOrigin = url::Origin::Create(GURL("chrome://test"));
 
+  // Resets the block path rules and waits for the initialization to complete.
   void ResetBlockPath() {
     permission_context_->ResetBlockPathsForTesting();
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      return permission_context_->GetIsBlockPathRulesInitCompleteForTesting();
+      return permission_context_->GetBlockPathRulesStatusForTesting() ==
+             ChromeFileSystemAccessPermissionContext::BlockPathRulesStatus::
+                 kInitialized;
     }));
   }
 
@@ -580,7 +588,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DontBlockAllChildren) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
-  ResetBlockPath();
 
   // The Home directory itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
@@ -607,7 +614,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_BlockAllChildren) {
   base::FilePath app_dir = temp_dir_.GetPath().AppendASCII("app");
   base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
-  ResetBlockPath();
 
   // The App directory itself should not be allowed.
   EXPECT_TRUE(IsOpenAbort(app_dir, HandleType::kDirectory));
@@ -725,7 +731,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::ScopedPathOverride app_override(base::DIR_EXE, temp_dir_.GetPath(),
                                         true, true);
   base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
-  ResetBlockPath();
 
   // `base::DIR_HOME` and paths inside of it should not be allowed.
   EXPECT_FALSE(IsOpenAllowed(home_dir, HandleType::kDirectory));
@@ -750,7 +755,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_RelativePathBlock) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
-  ResetBlockPath();
 
   // ~/.ssh should be blocked.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
@@ -803,7 +807,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DontBlockAllChildren_Overlapping) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
-  ResetBlockPath();
 
   // The Home directory itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
@@ -868,7 +871,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_BlockAllChildren_UserApplicationsDir) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
-  ResetBlockPath();
 
   // User's Applications directory should be blocked.
   base::FilePath user_applications_dir(home_dir.AppendASCII("Applications"));
@@ -892,7 +894,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   ASSERT_FALSE(outer_bundle_path.empty());
   base::ScopedPathOverride bundle_override(chrome::DIR_OUTER_BUNDLE,
                                            outer_bundle_path, true, true);
-  ResetBlockPath();
 
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathInfo(outer_bundle_path),
@@ -916,6 +917,30 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 PathInfo(FILE_PATH_LITERAL("\\\\server\\share\\foo\\bar")),
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAllowed);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server-a\\share\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server_a\\share\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\share$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server~a\\share\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
 
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(
@@ -972,6 +997,44 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 PathInfo(FILE_PATH_LITERAL("\\\\myhostname\\c$\\foo\\bar")),
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAbort);
+
+  // Drive admin shares should be blocked on any server
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\C$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\d$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  // Named admin shares should be blocked on any server
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\ADMIN$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\PRINT$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\IPC$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\FAX$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
 }
 #endif
 
@@ -981,14 +1044,12 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // Content-URI with an authority which matches the package name should fail.
   EXPECT_TRUE(IsOpenAbort(
       base::FilePath(
-          base::StrCat({"content://",
-                        base::android::BuildInfo::GetInstance()->package_name(),
+          base::StrCat({"content://", base::android::apk_info::package_name(),
                         ".fileprovider/cache/dir"})),
       HandleType::kDirectory));
   EXPECT_TRUE(IsOpenAbort(
       base::FilePath(
-          base::StrCat({"content://",
-                        base::android::BuildInfo::GetInstance()->package_name(),
+          base::StrCat({"content://", base::android::apk_info::package_name(),
                         ".fileprovider/cache/file"})),
       HandleType::kFile));
 
@@ -1007,7 +1068,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest,
   ASSERT_TRUE(base::CreateDirectory(app_dir));
 
   base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
-  ResetBlockPath();
 
   CreateSymbolicLinkResult result =
       CreateSymbolicLinkForTesting(app_dir, symlink1);
@@ -1054,7 +1114,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest,
 
   // Set the blocked path to a symbolic link.
   base::ScopedPathOverride app_override(base::DIR_EXE, symlink1, true, true);
-  ResetBlockPath();
   // The target of the blocked symbolic link should be blocked.
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(permission_context(), PathInfo(app_dir),
@@ -1066,7 +1125,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DangerousFile) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
-  ResetBlockPath();
 
   // Saving files with a harmless extension should be allowed.
   EXPECT_EQ(
@@ -3213,6 +3271,236 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, new_path, HandleType::kFile, GrantType::kWrite));
 }
+
+// Tests that removing a file revokes the read permission grant for that file.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryRemoved_NotifyEntryModified_File) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFileSystemAccessRevokeReadOnRemove);
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+  // Sets up a file path to be the test target.
+  const auto file_path_info =
+      PathInfo(kTestPathInfo.path.AppendASCII("test_file.txt"));
+
+  // Grant read and write permission to the file path.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info,
+                                         HandleType::kFile, UserAction::kSave)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  EXPECT_EQ(permission_context()
+                ->GetWritePermissionGrant(kTestOrigin, file_path_info,
+                                          HandleType::kFile, UserAction::kSave)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  // Verify the origin has read & write extended permissions to the file path.
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kRead));
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kWrite));
+
+  // 1. Revoke the read permission for the file path.
+  permission_context()->NotifyEntryRemoved(kTestOrigin, file_path_info);
+
+  // Verify the read permission to the file path is revoked; while the write
+  // permission is still granted.
+  auto updated_file_read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, file_path_info, HandleType::kFile, UserAction::kNone);
+  EXPECT_EQ(updated_file_read_grant->GetStatus(), PermissionStatus::ASK);
+  auto updated_file_write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, file_path_info, HandleType::kFile, UserAction::kNone);
+  EXPECT_EQ(updated_file_write_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Verify the origin no longer has read extended permission to the file path.
+  EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kRead));
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kWrite));
+
+  // Verify the path is added to downgraded_read_paths.
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+
+  // 2. Restore the read permission for the file.
+  permission_context()->NotifyEntryModified(kTestOrigin, file_path_info);
+
+  // Verify the read permission to the file path is restored.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info,
+                                         HandleType::kFile, UserAction::kNone)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+
+  // Verify the path is removed from downgraded_read_paths.
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+}
+
+// Tests that removing a file within a directory that has a read-write
+// permission grant does not revoke the grants for the directory.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryRemoved_NotifyEntryModified_FileInReadWriteDirectory) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFileSystemAccessRevokeReadOnRemove);
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+
+  // Grant write permission to a directory.
+  auto dir_write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kDirectory, UserAction::kOpen);
+  base::test::TestFuture<PermissionRequestOutcome> write_future;
+  dir_write_grant->RequestPermission(frame_id(),
+                                     UserActivationState::kNotRequired,
+                                     write_future.GetCallback());
+  EXPECT_EQ(write_future.Get(), PermissionRequestOutcome::kUserGranted);
+  EXPECT_EQ(dir_write_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Grant read permission to the same directory.
+  auto dir_read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kDirectory, UserAction::kOpen);
+  base::test::TestFuture<PermissionRequestOutcome> read_future;
+  dir_read_grant->RequestPermission(
+      frame_id(), UserActivationState::kNotRequired, read_future.GetCallback());
+  EXPECT_EQ(read_future.Get(), PermissionRequestOutcome::kUserGranted);
+  EXPECT_EQ(dir_read_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Sets up a file path to be the test target.
+  const auto file_path_info =
+      PathInfo(kTestPathInfo.path.AppendASCII("test_file.txt"));
+
+  // The child file should inherit read/write permission from its parent.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info,
+                                         HandleType::kFile, UserAction::kOpen)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  EXPECT_EQ(permission_context()
+                ->GetWritePermissionGrant(kTestOrigin, file_path_info,
+                                          HandleType::kFile, UserAction::kOpen)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  // Verify the origin has read & write extended permissions to the child file.
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kRead));
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kWrite));
+
+  // 1. Removing a file within a directory with read-write access should be a
+  // no-op in terms of permissions.
+  permission_context()->NotifyEntryRemoved(kTestOrigin, file_path_info);
+
+  // Permissions for the parent directory should be unchanged.
+  EXPECT_EQ(dir_write_grant->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_EQ(dir_read_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Permissions for the file path should also be unchanged, as they are
+  // inherited. A new file can be created at the same path.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info,
+                                         HandleType::kFile, UserAction::kNone)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  EXPECT_EQ(permission_context()
+                ->GetWritePermissionGrant(kTestOrigin, file_path_info,
+                                          HandleType::kFile, UserAction::kNone)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  // Verify the origin still has extended permissions to the child file.
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kRead));
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kWrite));
+
+  // Verify the path is NOT in the downgraded paths set.
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+
+  // 2. Restore the read permission for the child file.
+  permission_context()->NotifyEntryModified(kTestOrigin, file_path_info);
+
+  // Verify the read permission is still granted.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info,
+                                         HandleType::kFile, UserAction::kNone)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+
+  // Verify the path is still NOT in the downgraded paths set.
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+}
+
+// Tests that moving a file to a destination with a pre-existing permission
+// grant works correctly.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_FileDestinationPermissionExists) {
+  // Disable kFileSystemAccessRevokeReadOnRemove to ensure that a GRANTED
+  // permission grant exists at the destination path after the original file is
+  // removed. This is the core scenario this test targets.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFileSystemAccessMoveWithOverwrite},
+      /*disabled_features=*/{
+          blink::features::kFileSystemAccessRevokeReadOnRemove});
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+
+  // Create 2 files.
+  base::FilePath file_path1 = temp_dir_.GetPath().AppendASCII("file1.txt");
+  const auto path_info1 = PathInfo(file_path1);
+  ASSERT_TRUE(base::WriteFile(file_path1, "file1 content"));
+  base::FilePath file_path2 = temp_dir_.GetPath().AppendASCII("file2.txt");
+  const auto path_info2 = PathInfo(file_path2);
+  ASSERT_TRUE(base::WriteFile(file_path2, "file2 content"));
+
+  // Grant readwrite permission to file1.
+  auto file1_read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, path_info1, HandleType::kFile, UserAction::kSave);
+  auto file1_write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, path_info1, HandleType::kFile, UserAction::kSave);
+  ASSERT_EQ(file1_read_grant->GetStatus(), PermissionStatus::GRANTED);
+  ASSERT_EQ(file1_write_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Grant readwrite permission to file2.
+  auto file2_read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, path_info2, HandleType::kFile, UserAction::kSave);
+  auto file2_write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, path_info2, HandleType::kFile, UserAction::kSave);
+  ASSERT_EQ(file2_read_grant->GetStatus(), PermissionStatus::GRANTED);
+  ASSERT_EQ(file2_write_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Delete file1.
+  ASSERT_TRUE(base::DeleteFile(file_path1));
+  // Simulate moving from file2 to file1.
+  permission_context()->NotifyEntryMoved(kTestOrigin, path_info2, path_info1);
+
+  // The grants for file2 should now be associated with file_path1.
+  EXPECT_EQ(file2_read_grant->GetPath(), file_path1);
+  EXPECT_EQ(file2_write_grant->GetPath(), file_path1);
+  EXPECT_EQ(file2_read_grant->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_EQ(file2_write_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // The original grants for file1 should be gone: they are essentially grants
+  // for file2.
+  auto new_file1_read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, path_info1, HandleType::kFile, UserAction::kNone);
+  auto new_file1_write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, path_info1, HandleType::kFile, UserAction::kNone);
+  EXPECT_EQ(new_file1_read_grant, file2_read_grant);
+  EXPECT_EQ(new_file1_write_grant, file2_write_grant);
+
+  // Grants for the old path of file2 should be gone.
+  auto old_file2_read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, path_info2, HandleType::kFile, UserAction::kNone);
+  auto old_file2_write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, path_info2, HandleType::kFile, UserAction::kNone);
+  EXPECT_EQ(old_file2_read_grant->GetStatus(), PermissionStatus::ASK);
+  EXPECT_EQ(old_file2_write_grant->GetStatus(), PermissionStatus::ASK);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -3511,7 +3799,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath home_dir(FILE_PATH_LITERAL("C:PC\\Documents"));
   ScopedHomeDirOverride home_override =
       OverrideHomeDir(home_dir, /*should_skip_check=*/true);
-  ResetBlockPath();
 
   // The path should not have any effect, and path like the `temp_dir_` should
   // not be blocked. There should be no crash either.
@@ -3530,7 +3817,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath absolute_home_dir = base::MakeAbsoluteFilePath(home_dir);
   ScopedHomeDirOverride home_override =
       OverrideHomeDir(home_dir, /*should_skip_check=*/true);
-  ResetBlockPath();
 
   // The home path itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(

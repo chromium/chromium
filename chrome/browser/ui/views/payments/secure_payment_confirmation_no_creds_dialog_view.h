@@ -54,6 +54,7 @@ class SecurePaymentConfirmationNoCredsDialogView
                   OptOutCallback opt_out_callback) override;
   void HideDialog() override;
   bool ClickOptOutForTesting() override;
+  bool AcceptDialogForTesting() override;
 
   // views::DialogDelegate:
   bool ShouldShowCloseButton() const override;

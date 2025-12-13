@@ -7,7 +7,7 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -48,7 +48,7 @@ AwPingManagerFactory::BuildServiceInstanceForBrowserContext(
                                          /*disable_auto_update=*/false),
       GetURLLoaderFactory(), /*token_fetcher=*/nullptr,
       get_should_fetch_access_token,
-      safe_browsing::WebUIInfoSingleton::GetInstance(),
+      safe_browsing::WebUIContentInfoSingleton::GetInstance(),
       content::GetUIThreadTaskRunner({}),
       // TODO(crbug.com/40814717) If features get added that can alter
       // user population values in android_webview, we should consider
@@ -70,10 +70,6 @@ AwPingManagerFactory::GetURLLoaderFactory() const {
   if (testing_url_loader_factory_) {
     return testing_url_loader_factory_;
   }
-  // TODO(crbug.com/40820267): Support separate SafeBrowsingNetworkContexts per
-  // browser context instead of having the same one all contexts. If done
-  // similar to the chrome/ implementation, GetURLLoaderFactory will take in a
-  // browser context as a parameter.
   return android_webview::AwBrowserProcess::GetInstance()
       ->GetSafeBrowsingUIManager()
       ->GetURLLoaderFactory();

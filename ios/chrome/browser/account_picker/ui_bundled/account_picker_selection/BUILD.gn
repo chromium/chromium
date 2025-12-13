@@ -29,9 +29,9 @@ source_set("account_picker_selection") {
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -50,5 +50,8 @@ source_set("identity_item_configurator") {
     "account_picker_selection_screen_identity_item_configurator.h",
     "account_picker_selection_screen_identity_item_configurator.mm",
   ]
-  deps = [ "//ios/chrome/browser/authentication/ui_bundled/cells" ]
+  deps = [
+    "//google_apis",
+    "//ios/chrome/browser/authentication/ui_bundled/cells",
+  ]
 }

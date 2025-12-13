@@ -7,10 +7,12 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
 #include "build/build_config.h"
+#include "pdf/pdf_rect.h"
 #include "pdf/pdfium/pdfium_engine_exports.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
@@ -26,6 +28,11 @@
 
 namespace chrome_pdf {
 
+// Converts between the two rect types. The returned rect is really the same
+// instance as the input rect.
+const FS_RECTF& FsRectFFromPdfRect(const PdfRect& rect);
+FS_RECTF& FsRectFFromPdfRect(PdfRect& rect);
+
 // Same as LoadPdfDataWithPassword(), but without a password.
 ScopedFPDFDocument LoadPdfData(base::span<const uint8_t> pdf_data);
 
@@ -34,9 +41,25 @@ ScopedFPDFDocument LoadPdfData(base::span<const uint8_t> pdf_data);
 ScopedFPDFDocument LoadPdfDataWithPassword(base::span<const uint8_t> pdf_data,
                                            const std::string& password);
 
+// Wrapper around FPDFAnnot_GetRect(). Returns the bounds for `annot`, or
+// std::nullopt on failure.
+std::optional<PdfRect> GetAnnotRect(FPDF_ANNOTATION annot);
+
+// Wrapper around FPDF_GetPageBoundingBox(). Returns the bounds for `page`, or
+// std::nullopt on failure.
+std::optional<PdfRect> GetPageBoundingBox(FPDF_PAGE page);
+
+// Wrapper around FPDFPageObj_GetBounds(). Returns the bounds for `page_object`,
+// or std::nullopt on failure.
+std::optional<PdfRect> GetPageObjectBounds(FPDF_PAGEOBJECT page_object);
+
 // Wrapper around FPDFPageObjMark_GetName().
 // Returns the name of `mark`, or an empty string on failure.
 std::u16string GetPageObjectMarkName(FPDF_PAGEOBJECTMARK mark);
+
+// Wrapper around FPDFText_GetCharBox(). Returns the bounds for text at `index`
+// in `text_page`, or std::nullopt on failure.
+std::optional<PdfRect> GetTextCharBox(FPDF_TEXTPAGE text_page, int index);
 
 // Wrapper around FPDF_RenderPageBitmap().
 // Renders `page` using `settings` into `bitmap_buffer`. Returns whether

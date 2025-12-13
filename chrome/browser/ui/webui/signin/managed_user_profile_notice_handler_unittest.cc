@@ -24,6 +24,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
@@ -38,7 +39,6 @@
 #endif  //  !BUILDFLAG(IS_CHROMEOS)
 
 using testing::_;
-using testing::Invoke;
 
 namespace {
 

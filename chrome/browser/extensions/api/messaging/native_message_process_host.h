@@ -35,10 +35,6 @@ namespace extensions {
 
 // Manages the native side of a connection between an extension and a native
 // process.
-//
-// This class must only be created, called, and deleted on the IO thread.
-// Public methods typically accept callbacks which will be invoked on the UI
-// thread.
 class NativeMessageProcessHost : public NativeMessageHost {
  public:
   NativeMessageProcessHost(const NativeMessageProcessHost&) = delete;

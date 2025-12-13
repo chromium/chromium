@@ -27,9 +27,9 @@ class LanguageModelManagerFactory : public ProfileKeyedServiceFactoryIOS {
   LanguageModelManagerFactory();
   ~LanguageModelManagerFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_LANGUAGE_MODEL_LANGUAGE_MODEL_MANAGER_FACTORY_H_

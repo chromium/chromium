@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_DOM_SNAPSHOT_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_DOM_SNAPSHOT_AGENT_H_
 
-#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -116,7 +115,7 @@ class CORE_EXPORT InspectorDOMSnapshotAgent final
       computed_styles_;
 
   std::unique_ptr<protocol::Array<String>> strings_;
-  WTF::HashMap<String, int> string_table_;
+  HashMap<String, int> string_table_;
 
   HeapHashMap<Member<const CSSValue>, int> css_value_cache_;
   HeapHashMap<Member<const ComputedStyle>, protocol::Array<int>*> style_cache_;

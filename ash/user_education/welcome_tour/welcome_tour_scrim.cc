@@ -17,6 +17,7 @@
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/aura/window.h"
@@ -97,8 +98,8 @@ class MaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
     // In the absence of help bubble anchor views, the scrim should be fully
     // visible. As such, the mask layer for the scrim should be fully opaque.
     gfx::SizeF size(layer()->size());
-    SkPath path(SkPath::Rect(gfx::RectFToSkRect(gfx::RectF(size)),
-                             SkPathDirection::kCW));
+    SkPathBuilder path;
+    path.addRect(gfx::RectFToSkRect(gfx::RectF(size)), SkPathDirection::kCW);
 
     // Clip the otherwise fully opaque mask layer around help bubble anchor
     // views so that they are emphasized by the scrim and not obstructed by it.
@@ -120,7 +121,7 @@ class MaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
     flags.setStyle(cc::PaintFlags::kFill_Style);
 
     // Draw `path`.
-    canvas->DrawPath(path, flags);
+    canvas->DrawPath(path.detach(), flags);
   }
 
   // Invoked once to initialize `this`.

@@ -81,7 +81,7 @@ import * as Console from 'devtools/panels/console/console.js';
   }
 
   function reset() {
-    Console.ConsoleView.ConsoleView.clearConsole();
+    consoleView.clearConsole();
     resetShowHideCounts();
   }
 

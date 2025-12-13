@@ -553,7 +553,9 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testDidMergeTabToGroup() {
-        mTabGroupModelFilterObserverCaptor.getValue().didMergeTabToGroup(mTab1);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didMergeTabToGroup(mTab1, /* isDestinationTab= */ true);
         verify(mTabGroupSyncService, times(1)).addGroup(mSavedTabGroupCaptor.capture());
         Assert.assertEquals(LOCAL_TAB_GROUP_ID_1, mSavedTabGroupCaptor.getValue().localId);
         verify(mTabGroupModelFilter, never()).getRelatedTabList(anyInt());

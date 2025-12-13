@@ -1,0 +1,6 @@
+Ensures that DurableMessages can be reconfigured with a second call
+Request for http://127.0.0.1:8000/inspector-protocol/network/resources/final.js
+
+Request for http://127.0.0.1:8000/inspector-protocol/network/resources/final.js
+Y29uc29sZS5sb2coJTIySGVsbG8lMjBmcm9tJTIwZmluYWwuanMhJTIyKSUzQiUwQQ==
+

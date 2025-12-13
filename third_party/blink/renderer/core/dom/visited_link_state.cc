@@ -111,8 +111,7 @@ static inline LinkHash LinkHashForElement(
     const AtomicString& attribute = AtomicString()) {
   DCHECK(attribute.IsNull() || LinkAttribute(element) == attribute);
   return base::FeatureList::IsEnabled(
-                     blink::features::
-                         kPartitionVisitedLinkDatabaseWithSelfLinks)
+             blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)
              ? PartitionedLinkHashForElement(element, attribute)
              : UnpartitionedLinkHashForElement(element, attribute);
 }
@@ -215,22 +214,16 @@ EInsideLink VisitedLinkState::DetermineLinkStateSlowCase(
   // links can be tested in platform independent manner, without
   // explicit support in the test harness.
   if (attribute.empty()) {
-    base::UmaHistogramBoolean(
-        "Blink.History.VisitedLinks.IsLinkStyledAsVisited", true);
     return EInsideLink::kInsideVisitedLink;
   }
 
   if (LinkHash hash = LinkHashForElement(element, attribute)) {
     links_checked_for_visited_state_.insert(hash);
     if (Platform::Current()->IsLinkVisited(hash)) {
-      base::UmaHistogramBoolean(
-          "Blink.History.VisitedLinks.IsLinkStyledAsVisited", true);
       return EInsideLink::kInsideVisitedLink;
     }
   }
 
-  base::UmaHistogramBoolean("Blink.History.VisitedLinks.IsLinkStyledAsVisited",
-                            false);
   return EInsideLink::kInsideUnvisitedLink;
 }
 

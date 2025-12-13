@@ -46,7 +46,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -55,6 +54,7 @@ import org.chromium.cc.input.BrowserControlsOffsetTags;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -93,7 +93,6 @@ public class BrowserControlsManagerUnitTest {
     @Mock private ControlContainer mControlContainer;
     @Mock private View mContainerView;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Resources mResources;
     @Mock private BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
     @Mock private Tab mTab;
@@ -103,11 +102,11 @@ public class BrowserControlsManagerUnitTest {
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private WebContents mWebContents;
 
-    private @Captor ArgumentCaptor<Callback<Tab>> mCallbackTabCaptor;
     private @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     private @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private final UserDataHost mUserDataHost = new UserDataHost();
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private BrowserControlsManager mBrowserControlsManager;
     private BrowserStateBrowserControlsVisibilityDelegate mControlsDelegate;
 
@@ -122,12 +121,12 @@ public class BrowserControlsManagerUnitTest {
         when(mControlContainer.getView()).thenReturn(mContainerView);
 
         // Only the last/current visibility matters and is verified by tests.
+        when(mContainerView.getVisibility()).thenReturn(View.VISIBLE);
         doCallback(
                         (Integer visibility) ->
                                 when(mContainerView.getVisibility()).thenReturn(visibility))
                 .when(mContainerView)
                 .setVisibility(anyInt());
-        mContainerView.setVisibility(View.VISIBLE);
 
         when(mTab.isUserInteractable()).thenReturn(true);
         when(mTab.isInitialized()).thenReturn(true);
@@ -137,6 +136,7 @@ public class BrowserControlsManagerUnitTest {
         doNothing().when(mContentView).removeOnSystemUiVisibilityChangeListener(any());
         doNothing().when(mContentView).addOnHierarchyChangeListener(any());
         doNothing().when(mContentView).addOnSystemUiVisibilityChangeListener(any());
+        when(mTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
         when(mTabModelSelector.getModels()).thenReturn(Collections.singletonList(mTabModel));
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabModel);
 
@@ -189,13 +189,6 @@ public class BrowserControlsManagerUnitTest {
                     TabLaunchType.FROM_LINK,
                     TabCreationState.LIVE_IN_FOREGROUND,
                     /* markedForSelection= */ false);
-        }
-    }
-
-    private void notifyCurrentTab(Tab tab) {
-        verify(mActivityTabProvider, atLeast(1)).addObserver(mCallbackTabCaptor.capture());
-        for (Callback<Tab> observer : mCallbackTabCaptor.getAllValues()) {
-            observer.onResult(tab);
         }
     }
 
@@ -327,7 +320,7 @@ public class BrowserControlsManagerUnitTest {
     public void testRendererDrivenHeightIncreaseAnimation() {
         remakeWithoutSpy();
         notifyAddTab(mTab);
-        notifyCurrentTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mControlContainer.getToolbarHairlineHeight()).thenReturn(TOOLBAR_HAIRLINE_HEIGHT);
@@ -380,7 +373,7 @@ public class BrowserControlsManagerUnitTest {
     public void testRendererDrivenHeightDecreaseAnimation() {
         remakeWithoutSpy();
         notifyAddTab(mTab);
-        notifyCurrentTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mControlContainer.getToolbarHairlineHeight()).thenReturn(TOOLBAR_HAIRLINE_HEIGHT);
@@ -549,6 +542,7 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowAndroidControlsObserver() {
         remakeWithoutSpy();
 
@@ -581,7 +575,7 @@ public class BrowserControlsManagerUnitTest {
                 R.dimen.control_container_height);
         assertEquals(View.VISIBLE, browserControlsManager.getAndroidControlsVisibility());
 
-        mContainerView.setVisibility(View.INVISIBLE);
+        when(mContainerView.getVisibility()).thenReturn(View.INVISIBLE);
         assertEquals(View.INVISIBLE, browserControlsManager.getAndroidControlsVisibility());
     }
 
@@ -592,7 +586,7 @@ public class BrowserControlsManagerUnitTest {
 
         // Emit tab event such that we get an active tab observer.
         notifyAddTab(mTab);
-        notifyCurrentTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
 
         // Wait for SHOWN otherwise the optimization doesn't take effect.
         ShadowLooper.idleMainLooper(
@@ -623,11 +617,8 @@ public class BrowserControlsManagerUnitTest {
         mBrowserControlsManager.releaseAndroidControlsHidingToken(token);
         assertEquals(View.INVISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
 
-        // But now switch tabs instead. The manager should clear the scrolling signal. Although this
-        // is actually the same tab object, nothing is doing an equality check.
-        for (Callback<Tab> observer : mCallbackTabCaptor.getAllValues()) {
-            observer.onResult(mTab);
-        }
+        // But now switch tabs instead. The manager should clear the scrolling signal.
+        mActivityTabProvider.setForTesting(Mockito.mock(Tab.class));
         assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
     }
 
@@ -637,7 +628,7 @@ public class BrowserControlsManagerUnitTest {
 
         // Emit tab event such that we get an active tab observer.
         notifyAddTab(mTab);
-        notifyCurrentTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
 
         // Switching tabs locks the controls, advance time past this.
         assertEquals(BrowserControlsState.SHOWN, mControlsDelegate.get().intValue());
@@ -669,7 +660,7 @@ public class BrowserControlsManagerUnitTest {
     public void testSetControlsPosition() {
         remakeWithoutSpy();
         notifyAddTab(mTab);
-        notifyCurrentTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
 
         assertEquals(
                 0.0f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
@@ -767,7 +758,7 @@ public class BrowserControlsManagerUnitTest {
     public void testSkipOffsetChangedIfAnimatingPositionChange() {
         remakeWithoutSpy();
         notifyAddTab(mTab);
-        notifyCurrentTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
 
         mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
 
@@ -792,6 +783,28 @@ public class BrowserControlsManagerUnitTest {
                         anyBoolean(),
                         anyBoolean(),
                         anyBoolean());
+    }
+
+    @Test
+    public void testConstraintChangeFromTab() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
+        // Put the control container in a hidden state and bottom-positioned.
+        mBrowserControlsManager.setControlsPosition(
+                ControlsPosition.BOTTOM, 0, 0, 0, TOOLBAR_HEIGHT, 10, TOOLBAR_HEIGHT);
+        ShadowLooper.idleMainLooper();
+        Mockito.clearInvocations(mContainerView);
+        // Locking the controls via the TabControlsObserver should check for forced relayout.
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onOffsetTagsInfoChanged(
+                        mTab,
+                        new BrowserControlsOffsetTagsInfo(),
+                        new BrowserControlsOffsetTagsInfo(),
+                        BrowserControlsState.SHOWN);
+        ShadowLooper.idleMainLooper();
+        verify(mContainerView).requestLayout();
     }
 
     private void verifyUpdateOffsetTagDefinitions(

@@ -6,7 +6,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {FPS, IS_HIDPI, IS_MOBILE} from './constants.js';
 import type {Dimensions} from './dimensions.js';
-import {Runner} from './offline.js';
+import type {GameStateProvider} from './game_state_provider.js';
+import type {ImageSpriteProvider} from './image_sprite_provider.js';
 import type {ObstacleType} from './offline_sprite_definitions.js';
 import {CollisionBox} from './offline_sprite_definitions.js';
 import type {SpritePosition} from './sprite_position.js';
@@ -51,6 +52,7 @@ export class Obstacle {
   // For animated obstacles.
   private currentFrame: number = 0;
   private timer: number = 0;
+  private resourceProvider: ImageSpriteProvider&GameStateProvider;
 
   /**
    * Obstacle.
@@ -59,20 +61,22 @@ export class Obstacle {
       canvasCtx: CanvasRenderingContext2D, type: ObstacleType,
       spriteImgPos: SpritePosition, dimensions: Dimensions,
       gapCoefficient: number, speed: number, xOffset: number = 0,
+      resourceProvider: ImageSpriteProvider&GameStateProvider,
       isAltGameMode: boolean = false) {
-    const runner = Runner.getInstance();
     this.canvasCtx = canvasCtx;
     this.spritePos = spriteImgPos;
     this.typeConfig = type;
+    this.resourceProvider = resourceProvider;
     this.gapCoefficient =
-        runner.hasSlowdown ? gapCoefficient * 2 : gapCoefficient;
+        this.resourceProvider.hasSlowdown ? gapCoefficient * 2 : gapCoefficient;
     this.size = getRandomNum(1, maxObstacleLength);
     this.xPos = dimensions.width + xOffset;
     this.altGameModeActive = isAltGameMode;
     const imageSprite = this.typeConfig.type === 'collectable' ?
-        runner.getAltCommonImageSprite() :
-        this.altGameModeActive ? runner.getRunnerAltGameImageSprite() :
-                                 runner.getRunnerImageSprite();
+        this.resourceProvider.getAltCommonImageSprite() :
+        this.altGameModeActive ?
+        this.resourceProvider.getRunnerAltGameImageSprite() :
+        this.resourceProvider.getRunnerImageSprite();
     assert(imageSprite);
     this.imageSprite = imageSprite;
 
@@ -131,7 +135,7 @@ export class Obstacle {
     this.gap = this.getGap(this.gapCoefficient, speed);
 
     // Increase gap for audio cues enabled.
-    if (Runner.getInstance().hasAudioCues) {
+    if (this.resourceProvider.hasAudioCues) {
       this.gap *= 2;
     }
   }

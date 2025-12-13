@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
@@ -37,20 +33,12 @@ class TransferCacheTest : public testing::Test {
   TransferCacheTest() : test_client_entry_(std::vector<uint8_t>(100)) {}
 
   void SetUp() override {
-    gpu::ContextCreationAttribs attribs;
-    attribs.fail_if_major_perf_caveat = false;
-    // Enable GPU rasterization.
-    attribs.enable_gpu_rasterization = true;
-    attribs.enable_raster_interface = true;
-    attribs.enable_gles2_interface = false;
-
     context_ = std::make_unique<gpu::RasterInProcessContext>();
     auto result = context_->Initialize(
-        viz::TestGpuServiceHolder::GetInstance()->task_executor(), attribs,
-        gpu::SharedMemoryLimits(), nullptr, nullptr);
+        viz::TestGpuServiceHolder::GetInstance()->task_executor(), nullptr,
+        nullptr);
 
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
-    ASSERT_TRUE(context_->GetCapabilities().gpu_rasterization);
   }
 
   void TearDown() override { context_.reset(); }
@@ -73,9 +61,9 @@ class TransferCacheTest : public testing::Test {
   void CreateEntry(const ClientTransferCacheEntry& entry) {
     auto* context_support = ContextSupport();
     uint32_t size = entry.SerializedSize();
-    void* data = context_support->MapTransferCacheEntry(size);
-    ASSERT_TRUE(data);
-    entry.Serialize(base::span(static_cast<uint8_t*>(data), size));
+    base::span<uint8_t> data = context_support->MapTransferCacheEntry(size);
+    ASSERT_FALSE(data.empty());
+    entry.Serialize(data);
     context_support->UnmapAndCreateTransferCacheEntry(entry.UnsafeType(),
                                                       entry.Id());
   }

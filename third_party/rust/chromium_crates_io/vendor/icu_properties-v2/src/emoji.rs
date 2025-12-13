@@ -22,7 +22,7 @@ impl EmojiSetData {
     ///
     /// [📚 Help choosing a constructor](icu_provider::constructors)
     #[cfg(feature = "compiled_data")]
-    #[allow(clippy::new_ret_no_self)]
+    #[expect(clippy::new_ret_no_self)]
     pub const fn new<P: EmojiSet>() -> EmojiSetDataBorrowed<'static> {
         EmojiSetDataBorrowed::new::<P>()
     }
@@ -168,4 +168,8 @@ pub trait EmojiSet: crate::private::Sealed {
     #[doc(hidden)]
     #[cfg(feature = "compiled_data")]
     const SINGLETON: &'static PropertyUnicodeSet<'static>;
+    /// The name of this property
+    const NAME: &'static [u8];
+    /// The abbreviated name of this property, if it exists, otherwise the name
+    const SHORT_NAME: &'static [u8];
 }

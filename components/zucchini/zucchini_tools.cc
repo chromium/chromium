@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/element_detection.h"
@@ -21,6 +22,7 @@
 #include "components/zucchini/heuristic_ensemble_matcher.h"
 #include "components/zucchini/imposed_ensemble_matcher.h"
 #include "components/zucchini/io_utils.h"
+#include "components/zucchini/zucchini.h"
 
 namespace zucchini {
 

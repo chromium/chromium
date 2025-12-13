@@ -10,11 +10,11 @@
 // Common UI elements for BWG.
 @interface BWGUIUtils : NSObject
 
-// Creates the primary button with the given title.
-+ (UIButton*)createPrimaryButtonWithTitle:(NSString*)title;
+// Returns the branded version of the Gemini symbol with a `pointSize`.
++ (UIImage*)brandedGeminiSymbolWithPointSize:(CGFloat)pointSize;
 
-// Creates the secondary button with the given title.
-+ (UIButton*)createSecondaryButtonWithTitle:(NSString*)title;
+// Create the Gemini logo with a diagonal linear gradient color palette.
++ (UIImage*)createGradientGeminiLogo:(CGFloat)pointSize;
 
 @end
 

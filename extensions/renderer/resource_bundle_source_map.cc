@@ -36,18 +36,17 @@ ResourceBundleSourceMap::ResourceInfo::ResourceInfo(ResourceInfo&& other) =
 
 ResourceBundleSourceMap::ResourceInfo::~ResourceInfo() = default;
 
-ResourceBundleSourceMap::ResourceInfo& ResourceBundleSourceMap::ResourceInfo::
-operator=(ResourceInfo&& other) = default;
+ResourceBundleSourceMap::ResourceInfo&
+ResourceBundleSourceMap::ResourceInfo::operator=(ResourceInfo&& other) =
+    default;
 
 ResourceBundleSourceMap::ResourceBundleSourceMap(
     const ui::ResourceBundle* resource_bundle)
-    : resource_bundle_(resource_bundle) {
-}
+    : resource_bundle_(resource_bundle) {}
 
-ResourceBundleSourceMap::~ResourceBundleSourceMap() {
-}
+ResourceBundleSourceMap::~ResourceBundleSourceMap() = default;
 
-void ResourceBundleSourceMap::RegisterSource(const char* const name,
+void ResourceBundleSourceMap::RegisterSource(std::string_view name,
                                              int resource_id) {
   base::AutoLock lock(lock_);
   resource_map_.emplace(name, resource_id);
@@ -65,8 +64,9 @@ v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
   }
 
   const ResourceInfo& info = resource_iter->second;
-  if (info.cached)
+  if (info.cached) {
     return ConvertString(isolate, *info.cached);
+  }
 
   std::string_view resource = resource_bundle_->GetRawDataResource(info.id);
   if (resource.empty()) {

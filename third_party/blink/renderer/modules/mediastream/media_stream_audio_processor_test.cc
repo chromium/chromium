@@ -20,12 +20,14 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_sample_types.h"
+#include "media/base/media_switches.h"
 #include "media/webrtc/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -370,7 +372,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
       media::AudioBus::Create(params_.channels(), params_.frames_per_buffer());
   data_bus->Zero();
   for (int i = 0; i < data_bus->frames(); ++i) {
-    data_bus->channel_span(0)[i] = (i % 11) * 0.1f - 0.5f;
+    data_bus->channel(0)[i] = (i % 11) * 0.1f - 0.5f;
   }
 
   // Test without and with audio processing enabled.
@@ -436,10 +438,10 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
             float left_channel_energy = 0.0f;
             float right_channel_energy = 0.0f;
             for (int i = 0; i < processed_audio.frames(); ++i) {
-              left_channel_energy += processed_audio.channel_span(0)[i] *
-                                     processed_audio.channel_span(0)[i];
-              right_channel_energy += processed_audio.channel_span(1)[i] *
-                                      processed_audio.channel_span(1)[i];
+              left_channel_energy +=
+                  processed_audio.channel(0)[i] * processed_audio.channel(0)[i];
+              right_channel_energy +=
+                  processed_audio.channel(1)[i] * processed_audio.channel(1)[i];
             }
             if (use_apm && num_preferred_channels <= 1) {
               // Mono output. Output channels are averaged.
@@ -754,6 +756,12 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      FalseWhenOnlyHardwareEffectsAreUsed) {
+  if (media::IsSystemLoopbackAsAecReferenceEnabled()) {
+    // Hardware AEC cannot be enabled by using EchoCancellationMode::kAll when
+    // loopback AEC is enabled.
+    return;
+  }
+
   test::TaskEnvironment task_environment_;
   AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
   properties.echo_cancellation_mode = EchoCancellationMode::kAll;

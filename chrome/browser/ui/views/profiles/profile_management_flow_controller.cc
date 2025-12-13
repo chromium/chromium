@@ -7,7 +7,6 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
@@ -82,10 +81,11 @@ void ProfileManagementFlowController::SwitchToStep(
           base::BindOnce(&FlowTracker::FinishedStepSwitch,
                          base::Unretained(&flow_tracker_), step));
 
+  std::vector<StepSwitchFinishedCallback> callbacks;
+  callbacks.push_back(std::move(internal_step_switch_finished_callback));
+  callbacks.push_back(std::move(step_switch_finished_callback));
   StepSwitchFinishedCallback combined_step_switch_callbacks =
-      CombineCallbacks<StepSwitchFinishedCallback, bool>(
-          std::move(internal_step_switch_finished_callback),
-          std::move(step_switch_finished_callback));
+      CombineCallbacks<StepSwitchFinishedCallback, bool>(std::move(callbacks));
 
   auto* new_step_controller = initialized_steps_.at(step).get();
   DCHECK(new_step_controller);
@@ -104,12 +104,10 @@ void ProfileManagementFlowController::OnNavigateBackRequested() {
       ->OnNavigateBackRequested();
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfileManagementFlowController::OnReloadRequested() {
   DCHECK(initialized_steps_.contains(flow_tracker_.tracked_step()));
   initialized_steps_.at(flow_tracker_.tracked_step())->OnReloadRequested();
 }
-#endif
 
 std::u16string
 ProfileManagementFlowController::GetFallbackAccessibleWindowTitle() const {
@@ -175,6 +173,9 @@ void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
             .Then(std::move(post_host_cleared_callback.value()));
   }
 
+  bool open_command_line_urls = ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened();
+  ProfilePicker::SetOpenCommandLineUrlsInNextProfileOpened(false);
+
   // Start by opening the browser window, to ensure that we have another
   // KeepAlive for `profile` by the time we clear the flow and its host.
   // TODO(crbug.com/40242414): Make sure we do something or log an error if
@@ -183,7 +184,7 @@ void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
       std::move(post_browser_open_callback),
       /*always_create=*/false,   // Don't create a window if one already exists.
       /*is_new_profile=*/false,  // Don't create a first run window.
-      profile);
+      open_command_line_urls, profile);
 }
 
 base::OnceClosure
@@ -238,12 +239,9 @@ void ProfileManagementFlowController::FlowTracker::EnteredNewStep(Step step) {
 void ProfileManagementFlowController::FlowTracker::FinishedStepSwitch(
     Step step,
     bool success) {
-  if (tracked_step_ != step) {
-    NOTREACHED(base::NotFatalUntil::M143)
-        << "Step switch callback should run while the step is still the "
-           "current step being tracked.";
-    return;
-  }
+  CHECK_EQ(tracked_step_, step)
+      << "Step switch callback should run while the step is still the "
+         "current step being tracked.";
 
   if (!success) {
     base::UmaHistogramEnumeration(

@@ -51,7 +51,7 @@ source_set("unit_tests") {
     "//chromeos/strings/",
     "//content/test:test_support",
     "//testing/gtest",
-    "//ui/events/ash:ash",
+    "//ui/events/ash",
     "//ui/events/devices:test_support",
     "//ui/webui",
   ]

@@ -45,8 +45,8 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_uncaptured_error_event.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_validation_error.h"
 #include "third_party/blink/renderer/modules/webgpu/string_utils.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -119,12 +119,10 @@ std::optional<V8GPUFeatureName::Enum> RequiredFeatureForTextureFormat(
     case V8GPUTextureFormat::Enum::kR16Unorm:
     case V8GPUTextureFormat::Enum::kRg16Unorm:
     case V8GPUTextureFormat::Enum::kRgba16Unorm:
-      return V8GPUFeatureName::Enum::kChromiumExperimentalUnorm16TextureFormats;
-
     case V8GPUTextureFormat::Enum::kR16Snorm:
     case V8GPUTextureFormat::Enum::kRg16Snorm:
     case V8GPUTextureFormat::Enum::kRgba16Snorm:
-      return V8GPUFeatureName::Enum::kChromiumExperimentalSnorm16TextureFormats;
+      return V8GPUFeatureName::Enum::kTextureFormatsTier1;
 
     default:
       return std::nullopt;
@@ -248,11 +246,12 @@ void GPUDevice::AddSingletonWarning(GPUSingletonWarning type) {
     String message;
     switch (type) {
       case GPUSingletonWarning::kNonPreferredFormat:
-        message =
-            "WebGPU canvas configured with a different format than is "
-            "preferred by this device (\"" +
-            FromDawnEnum(GPU::GetPreferredCanvasFormat()).AsString() +
-            "\"). This requires an extra copy, which may impact performance.";
+        message = StrCat(
+            {"WebGPU canvas configured with a different format than is "
+             "preferred by this device (\"",
+             FromDawnEnum(GPU::GetPreferredCanvasFormat()).AsStringView(),
+             "\"). This requires an extra copy, which may impact "
+             "performance."});
         break;
       case GPUSingletonWarning::kDepthKey:
         message =
@@ -506,22 +505,11 @@ GPUQueue* GPUDevice::queue() {
 void GPUDevice::destroy(v8::Isolate* isolate) {
   destroyed_ = true;
   external_texture_cache_->Destroy();
+  // Dissociate mailboxes before destroying the device. This ensures that
+  // mailbox operations which run during dissociation can succeed.
+  DissociateMailboxes();
   UnmapAllMappableBuffers(isolate);
-
-  // Texture dissociate mailbox will clear texture contents to black if device
-  // is destroyed/lost. Make sure to destroy the device before dissociating the
-  // mailboxes.
   GetHandle().Destroy();
-
-  for (auto& texture : textures_with_mailbox_) {
-    // Since the device is now lost, the texture will be fully cleared (using
-    // Skia) before presenting, so there's no need to run the AlphaClearer. (The
-    // AlphaClearer wouldn't work on the destroyed device anyway.)
-    texture->GetMailboxTexture()->UnsetAlphaClearer();
-    texture->DissociateMailbox();
-  }
-  textures_with_mailbox_.clear();
-
   FlushNow();
 }
 
@@ -595,8 +583,8 @@ ScriptPromise<GPURenderPipeline> GPUDevice::createRenderPipelineAsync(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
-                    WrapPersistent(this), descriptor->label())));
+      BindOnce(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
+               WrapPersistent(this), descriptor->label())));
 
   GetHandle().CreateRenderPipelineAsync(
       &dawn_desc_info.dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
@@ -622,8 +610,8 @@ ScriptPromise<GPUComputePipeline> GPUDevice::createComputePipelineAsync(
       AsDawnType(this, descriptor, &desc_label, &computeStage);
 
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&GPUDevice::OnCreateComputePipelineAsyncCallback,
-                    WrapPersistent(this), descriptor->label())));
+      BindOnce(&GPUDevice::OnCreateComputePipelineAsyncCallback,
+               WrapPersistent(this), descriptor->label())));
 
   GetHandle().CreateComputePipelineAsync(
       &dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
@@ -676,9 +664,8 @@ ScriptPromise<IDLNullable<GPUError>> GPUDevice::popErrorScope(
           script_state);
   auto promise = resolver->Promise();
 
-  auto* callback =
-      MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          &GPUDevice::OnPopErrorScopeCallback, WrapPersistent(this))));
+  auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
+      BindOnce(&GPUDevice::OnPopErrorScopeCallback, WrapPersistent(this))));
 
   GetHandle().PopErrorScope(wgpu::CallbackMode::AllowSpontaneous,
                             callback->UnboundCallback(),
@@ -747,6 +734,7 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(lost_property_);
   visitor->Trace(external_texture_cache_);
   visitor->Trace(textures_with_mailbox_);
+  visitor->Trace(buffers_with_mailbox_);
   visitor->Trace(mappable_buffers_);
   ExecutionContextClient::Trace(visitor);
   EventTarget::Trace(visitor);
@@ -758,6 +746,18 @@ void GPUDevice::Dispose() {
   if (external_texture_cache_ != nullptr) {
     external_texture_cache_->Destroy();
   }
+}
+
+void GPUDevice::DissociateMailboxes() {
+  for (auto& texture : textures_with_mailbox_) {
+    texture->DissociateMailbox();
+  }
+  textures_with_mailbox_.clear();
+
+  for (auto& buffer : buffers_with_mailbox_) {
+    buffer->DissociateMailbox();
+  }
+  buffers_with_mailbox_.clear();
 }
 
 void GPUDevice::UnmapAllMappableBuffers(v8::Isolate* isolate) {
@@ -784,6 +784,16 @@ void GPUDevice::UntrackTextureWithMailbox(GPUTexture* texture) {
   textures_with_mailbox_.erase(texture);
 }
 
+void GPUDevice::TrackBufferWithMailbox(GPUBuffer* buffer) {
+  DCHECK(buffer);
+  buffers_with_mailbox_.insert(buffer);
+}
+
+void GPUDevice::UntrackBufferWithMailbox(GPUBuffer* buffer) {
+  DCHECK(buffer);
+  buffers_with_mailbox_.erase(buffer);
+}
+
 void GPUDevice::SetDescriptorCallbacks(wgpu::DeviceDescriptor& dawn_desc) {
   // Set the uncaptured error callback first because it's ownership will be
   // passed to the device lost callback immediately after.
@@ -794,8 +804,8 @@ void GPUDevice::SetDescriptorCallbacks(wgpu::DeviceDescriptor& dawn_desc) {
                                        error_callback->AsUserdata());
 
   auto* lost_callback = MakeWGPUOnceCallback(
-      WTF::BindOnce(&GPUDevice::OnDeviceLost, WrapWeakPersistent(this),
-                    std::move(error_callback)));
+      BindOnce(&GPUDevice::OnDeviceLost, WrapWeakPersistent(this),
+               std::move(error_callback)));
   dawn_desc.SetDeviceLostCallback(wgpu::CallbackMode::AllowSpontaneous,
                                   lost_callback->UnboundCallback(),
                                   lost_callback->AsUserdata());

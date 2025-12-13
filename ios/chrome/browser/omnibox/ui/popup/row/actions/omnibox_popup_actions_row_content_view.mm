@@ -34,7 +34,6 @@ const CGFloat kMultilineTextTopMargin = 12.0;
 const CGFloat kTextTrailingMargin = 0.0;
 const CGFloat kMultilineTextTrailingMargin = 4.0;
 const CGFloat kMultilineLineSpacing = 2.0;
-const CGFloat kTrailingButtonSize = 24;
 const CGFloat kTrailingButtonTrailingMargin = 14;
 /// Trailing button trailing margin with popout omnibox.
 const CGFloat kTrailingButtonTrailingMarginPopout = 22.0;
@@ -147,11 +146,11 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
     _trailingButton.translatesAutoresizingMaskIntoConstraints = NO;
     _trailingButton.isAccessibilityElement = NO;
     _trailingButton.contentMode = UIViewContentModeScaleAspectFit;
+    _trailingButton.presentationContext = configuration.presentationContext;
 
     [_trailingButton addTarget:self
                         action:@selector(trailingButtonTapped)
               forControlEvents:UIControlEventTouchUpInside];
-    _trailingButton.hidden = YES;  // Optional view.
     [_richEntityView addSubview:_trailingButton];
     _actionsView = [[ActionsView alloc] initWithConfiguration:configuration];
 
@@ -228,9 +227,7 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
 
       // Trailing button constraints.
       [_trailingButton.heightAnchor
-          constraintEqualToConstant:kTrailingButtonSize],
-      [_trailingButton.widthAnchor
-          constraintEqualToConstant:kTrailingButtonSize],
+          constraintEqualToAnchor:_trailingButton.widthAnchor],
       _trailingButtonTrailingConstraint,
 
       // Separator height anchor added in `didMoveToWindow`.
@@ -362,6 +359,8 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
   // Trailing Button.
   _trailingButton.trailingIconType = configuration.trailingIconType;
   _trailingButton.isHighlighted = configuration.isBackgroundHighlighted;
+  _trailingButton.refineQueryArrowDirectionDown =
+      configuration.refineQueryArrowDirectionDown;
   _textTrailingToButtonConstraint.active = !_trailingButton.hidden;
 
   // Separator.

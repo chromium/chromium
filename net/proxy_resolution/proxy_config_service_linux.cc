@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/proxy_resolution/proxy_config_service_linux.h"
 
 #include <errno.h>
@@ -19,6 +14,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -58,7 +54,7 @@ namespace {
 // This turns all rules with a hostname into wildcard matches, which will
 // match not just the indicated hostname but also any hostname that ends with
 // it.
-void RewriteRulesForSuffixMatching(ProxyBypassRules* out) {
+void RewriteRulesForSuffixMatching(ProxyHostMatchingRules* out) {
   // Prepend a wildcard (*) to any hostname based rules, provided it isn't an IP
   // address.
   for (size_t i = 0; i < out->rules().size(); ++i) {
@@ -439,9 +435,9 @@ class SettingGetterImplGSettings
     gchar** list = g_settings_get_strv(client, key.data());
     if (!list)
       return false;
-    for (size_t i = 0; list[i]; ++i) {
-      result->push_back(static_cast<char*>(list[i]));
-      g_free(list[i]);
+    for (size_t i = 0; UNSAFE_TODO(list[i]); ++i) {
+      result->push_back(static_cast<char*>(UNSAFE_TODO(list[i])));
+      g_free(UNSAFE_TODO(list[i]));
     }
     g_free(list);
     return true;
@@ -590,7 +586,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
 
         // Reverses the order of paths to store them in ascending order of
         // priority
-        std::reverse(kde_config_dirs_.begin(), kde_config_dirs_.end());
+        std::ranges::reverse(kde_config_dirs_);
       }
     }
   }
@@ -881,13 +877,13 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       bool line_too_long = false;
       char line[BUFFER_SIZE];
       // fgets() will return NULL on EOF or error.
-      while (fgets(line, sizeof(line), input.get())) {
+      while (UNSAFE_TODO(fgets(line, sizeof(line), input.get()))) {
         // fgets() guarantees the line will be properly terminated.
         size_t length = strlen(line);
         if (!length)
           continue;
         // This should be true even with CRLF endings.
-        if (line[length - 1] != '\n') {
+        if (UNSAFE_TODO(line[length - 1]) != '\n') {
           line_too_long = true;
           continue;
         }
@@ -899,22 +895,24 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
           continue;
         }
         // Remove the LF at the end, and the CR if there is one.
-        line[--length] = '\0';
-        if (length && line[length - 1] == '\r')
-          line[--length] = '\0';
+        UNSAFE_TODO(line[--length]) = '\0';
+        if (length && UNSAFE_TODO(line[length - 1]) == '\r') {
+          UNSAFE_TODO(line[--length]) = '\0';
+        }
         // Now parse the line.
         if (line[0] == '[') {
           // Switching sections. All we care about is whether this is
           // the (a?) proxy settings section, for both KDE3 and KDE4.
-          in_proxy_settings = !strncmp(line, "[Proxy Settings]", 16);
+          in_proxy_settings =
+              !UNSAFE_TODO(strncmp(line, "[Proxy Settings]", 16));
         } else if (in_proxy_settings) {
           // A regular line, in the (a?) proxy settings section.
-          char* split = strchr(line, '=');
+          char* split = UNSAFE_TODO(strchr(line, '='));
           // Skip this line if it does not contain an = sign.
           if (!split)
             continue;
           // Split the line on the = and advance |split|.
-          *(split++) = 0;
+          *(UNSAFE_TODO(split++)) = 0;
           std::string key = line;
           std::string value = split;
           base::TrimWhitespaceASCII(key, base::TRIM_ALL, &key);
@@ -972,15 +970,16 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       // inotify returns variable-length structures, which is why we have
       // this strange-looking loop instead of iterating through an array.
       char* event_ptr = event_buf;
-      while (event_ptr < event_buf + r) {
+      while (event_ptr < UNSAFE_TODO(event_buf + r)) {
         inotify_event* event = reinterpret_cast<inotify_event*>(event_ptr);
         // The kernel always feeds us whole events.
-        CHECK_LE(event_ptr + sizeof(inotify_event), event_buf + r);
-        CHECK_LE(event->name + event->len, event_buf + r);
-        if (!strcmp(event->name, "kioslaverc"))
+        UNSAFE_TODO(CHECK_LE(event_ptr + sizeof(inotify_event), event_buf + r));
+        UNSAFE_TODO(CHECK_LE(event->name + event->len, event_buf + r));
+        if (!UNSAFE_TODO(strcmp(event->name, "kioslaverc"))) {
           kioslaverc_touched = true;
+        }
         // Advance the pointer just past the end of the filename.
-        event_ptr = event->name + event->len;
+        event_ptr = UNSAFE_TODO(event->name + event)->len;
       }
       // We keep reading even if |kioslaverc_touched| is true to drain the
       // inotify event queue.

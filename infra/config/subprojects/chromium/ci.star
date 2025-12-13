@@ -2,10 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/branches.star", "branches")
-load("//lib/builders.star", "builders", "cpu", "siso")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builders.star", "builders", "cpu")
+load("@chromium-luci//ci.star", "ci")
+load("@chromium-luci//consoles.star", "consoles")
+load("//lib/ci_constants.star", "ci_constants")
+load("//lib/gardener_rotations.star", "gardener_rotations")
+load("//lib/gpu.star", "gpu")
+load("//lib/siso.star", "siso")
 load("//project.star", "settings")
 
 # Bucket-wide defaults
@@ -79,15 +83,15 @@ luci.bucket(
                 "chromium-led-users",
             ],
             users = [
-                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
-                ci.gpu.SHADOW_SERVICE_ACCOUNT,
+                ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                gpu.ci.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
         luci.binding(
             roles = "role/buildbucket.triggerer",
             users = [
-                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
-                ci.gpu.SHADOW_SERVICE_ACCOUNT,
+                ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                gpu.ci.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
         # TODO(crbug.com/40941662): Remove this binding after shadow bucket
@@ -102,8 +106,8 @@ luci.bucket(
         luci.binding(
             roles = "role/resultdb.invocationCreator",
             users = [
-                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
-                ci.gpu.SHADOW_SERVICE_ACCOUNT,
+                ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                gpu.ci.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
     ],
@@ -144,6 +148,7 @@ luci.gitiles_poller(
         "chromium.swangle",
         "chromium.updater",
         "chromium.enterprise_companion",
+        "crossbench",
     ],
 ) for name, title in (
     ("main", "{} Main Console".format(settings.project_title)),
@@ -151,8 +156,9 @@ luci.gitiles_poller(
 )]
 
 def register_gardener_rotation_consoles():
-    rotations = [getattr(builders.gardener_rotations, a) for a in dir(builders.gardener_rotations)]
-    for rotation in rotations:
+    rotations = [getattr(gardener_rotations, a) for a in dir(gardener_rotations)]
+    for r in rotations:
+        rotation = r.get()
         if rotation:
             consoles.console_view(name = rotation.console_name)
             if rotation.tree_closer_console:
@@ -193,6 +199,7 @@ consoles.console_view(
 ) for name, category, short_name in (
     ("fuchsia-arm64-rel-ready", "p/chrome|arm64", "rel-ready"),
     ("fuchsia-arm64-nest-sd", "p/chrome|official", "nest-arm"),
+    ("fuchsia-arm64-nest-sd-perf", "p/chrome|official", "nest-arm-perf"),
     ("fuchsia-ava-astro", "hardware|ava", "ast"),
     ("fuchsia-ava-nelson", "hardware|ava", "nsn"),
     ("fuchsia-ava-sherlock", "hardware|ava", "sher"),
@@ -246,8 +253,10 @@ exec("./ci/chromium.linux.star")
 exec("./ci/chromium.mac.star")
 exec("./ci/chromium.memory.star")
 exec("./ci/chromium.memory.fyi.star")
+exec("./ci/chromium.prompt_eval.star")
 exec("./ci/chromium.rust.star")
 exec("./ci/chromium.swangle.star")
 exec("./ci/chromium.updater.star")
 exec("./ci/chromium.win.star")
+exec("./ci/crossbench.star")
 exec("./ci/metadata.exporter.star")

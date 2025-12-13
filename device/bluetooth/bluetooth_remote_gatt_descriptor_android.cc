@@ -19,7 +19,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace device {
@@ -135,7 +134,7 @@ void BluetoothRemoteGattDescriptorAndroid::WriteRemoteDescriptor(
 void BluetoothRemoteGattDescriptorAndroid::OnRead(
     JNIEnv* env,
     int32_t status,
-    const JavaParamRef<jbyteArray>& value) {
+    const JavaRef<jbyteArray>& value) {
   read_pending_ = false;
 
   // Clear callbacks before calling to avoid reentrancy issues.
@@ -177,3 +176,5 @@ BluetoothRemoteGattDescriptorAndroid::BluetoothRemoteGattDescriptorAndroid(
     : instance_id_(instance_id) {}
 
 }  // namespace device
+
+DEFINE_JNI(ChromeBluetoothRemoteGattDescriptor)

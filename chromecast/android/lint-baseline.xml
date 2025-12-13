@@ -1,55 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.11.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.11.0-alpha09">
+<issues format="6" by="lint 9.0.0-alpha14" type="baseline" client="" dependencies="true" name="" variant="all" version="9.0.0-alpha14">
 
     <issue
         id="PictureInPictureIssue"
         message="An activity in this app supports picture-in-picture and the targetSdkVersion is 31 or above; it is therefore strongly recommended to call both `setAutoEnterEnabled(true)` and `setSourceRectHint(...)`"
-        errorLine1="  &lt;application android:name=&quot;org.chromium.chromecast.shell.CastBrowserApplication&quot; android:icon=&quot;@drawable/ic_settings_cast&quot;>"
-        errorLine2="   ~~~~~~~~~~~">
+        errorLine1="    &lt;application>"
+        errorLine2="     ~~~~~~~~~~~">
         <location
-            file="gen/chromecast/cast_browser_apk__lint/AndroidManifest.xml"
-            line="34"
-            column="4"/>
-    </issue>
-
-    <issue
-        id="UnspecifiedRegisterReceiverFlag"
-        message="`mReceiver` is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected broadcasts registered for an IntentFilter that cannot be inspected by lint"
-        errorLine1="        mContext.registerReceiver(mReceiver, filter);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chromecast/browser/android/apk/src/org/chromium/chromecast/shell/BroadcastReceiverScope.java"
-            line="39"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="DiscouragedApi"
-        message="Fixed screen orientations will be ignored in most cases, starting from Android 16. Android is moving toward a model where apps are expected to adapt to various orientations, display sizes, and aspect ratios."
-        errorLine1="    &lt;activity android:name=&quot;org.chromium.chromecast.shell.CastWebContentsActivity&quot; android:theme=&quot;@style/CastShellTheme&quot; android:exported=&quot;true&quot; android:hardwareAccelerated=&quot;true&quot; android:launchMode=&quot;singleInstance&quot; android:process=&quot;:cast_browser_process&quot; android:screenOrientation=&quot;landscape&quot; android:taskAffinity=&quot;.CastWebContentsActivity&quot; android:supportsPictureInPicture=&quot;true&quot; android:configChanges=&quot;orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|screenLayout|smallestScreenSize|uiMode&quot; android:excludeFromRecents=&quot;false&quot; android:noHistory=&quot;false&quot; android:showWhenLocked=&quot;true&quot;>"
-        errorLine2="                                                                                                                                                                                                                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_browser_apk__lint/AndroidManifest.xml"
-            line="59"
-            column="257"/>
+            file="android_lint_cache/aars/play-services-base.aar/AndroidManifest.xml"
+            line="19"
+            column="6"/>
     </issue>
 
     <issue
         id="Overdraw"
-        message="Possible overdraw: Root element paints background `#FFFFFF` with a theme that also paints a background (inferred theme is `@style/CastShellTheme`)"
+        message="Possible overdraw: Root element paints background `#FFFFFF` with a theme that also paints a background (inferred theme is `@android:style/Theme.Holo`)"
         errorLine1="    android:background=&quot;#FFFFFF&quot;"
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chromecast/browser/android/apk/res/layout/cast_web_contents_activity.xml"
-            line="12"
+            line="9"
             column="5"/>
     </issue>
 
     <issue
-        id="RtlEnabled"
-        message="The project references RTL attributes, but does not explicitly enable or disable RTL support with `android:supportsRtl` in the manifest">
+        id="UnusedResources"
+        message="The resource `R.color.ic_settings_cast_background` appears to be unused"
+        errorLine1="  &lt;color name=&quot;ic_settings_cast_background&quot;>#1c73e8&lt;/color>"
+        errorLine2="         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chromecast/cast_browser_apk__lint/AndroidManifest.xml"/>
+            file="../../chromecast/browser/android/apk/res-values/values/colors.xml"
+            line="3"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_cast_vector` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../../chromecast/browser/android/apk/res/drawable-nodpi/ic_cast_vector.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_settings_cast` appears to be unused">
+        <location
+            file="../../chromecast/browser/android/apk/res/drawable-hdpi/ic_settings_cast.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.CastShellTheme` appears to be unused"
+        errorLine1="    &lt;style name=&quot;CastShellTheme&quot; parent=&quot;@android:style/Theme.Holo.Light.NoActionBar&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chromecast/browser/android/apk/res-values/values-v17/styles.xml"
+            line="9"
+            column="12"/>
     </issue>
 
 </issues>

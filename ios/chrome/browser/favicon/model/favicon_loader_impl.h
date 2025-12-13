@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/sequence_checker.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "ios/chrome/browser/favicon/model/favicon_loader.h"
 
 @class FaviconLoaderCacheKey;

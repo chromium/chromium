@@ -23,15 +23,13 @@
 #include "third_party/webrtc/p2p/base/packet_transport_internal.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
-#include "third_party/webrtc/rtc_base/third_party/sigslot/sigslot.h"
 
 namespace remoting::protocol {
 
 // TransportChannelSocketAdapter implements P2PDatagramSocket interface on
 // top of webrtc::IceTransportInternal. It is used by IceTransport to provide
 // P2PDatagramSocket interface for channels.
-class TransportChannelSocketAdapter : public P2PDatagramSocket,
-                                      public sigslot::has_slots<> {
+class TransportChannelSocketAdapter : public P2PDatagramSocket {
  public:
   // Doesn't take ownership of |ice_transport|. |ice_transport| must outlive
   // this adapter.
@@ -66,7 +64,6 @@ class TransportChannelSocketAdapter : public P2PDatagramSocket,
   void OnNewPacket(webrtc::PacketTransportInternal* transport,
                    const webrtc::ReceivedIpPacket& packet);
   void OnWritableState(webrtc::PacketTransportInternal* transport);
-  void OnChannelDestroyed(webrtc::IceTransportInternal* ice_transport);
 
   raw_ptr<webrtc::IceTransportInternal> channel_;
 

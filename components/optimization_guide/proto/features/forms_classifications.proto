@@ -32,9 +32,12 @@ message FormsClassificationsLoggingData {
   ModelExecutionInfo model_execution_info = 4 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 7
+// Next ID: 8
 message AutofillAiTypeRequest {
   // The context of the page that the form is on.
+  // In practice, only the PageContext::url is set. Notably, annotated page
+  // content is passed through AutofillAiTypeRequest::annotated_page_content.
+  // TODO(crbug.com/389625970): Remove in favor of `url` once most clients set it.
   PageContext page_context = 1 [features = { field_presence: EXPLICIT }];
 
   // The form to predict values for. It is expected that the values for each
@@ -51,6 +54,10 @@ message AutofillAiTypeRequest {
   // Should include reasoning for debugging purposes.
   bool include_reasoning = 6 [features = { field_presence: IMPLICIT }];
 
+  // The URL of the page that the form is on. This field should replace
+  // `page_context` once most clients set it.
+  string url = 7 [features = { field_presence: IMPLICIT }];
+
   reserved 4;
 }
 
@@ -64,13 +71,15 @@ message AutofillAiTypeResponse {
   repeated FieldTypeResponse field_responses = 1;
 }
 
-// Next ID: 7
+// Next ID: 9
 message FieldTypeResponse {
   // The (zero-based) index of the field among those passed in the request that
   // this prediction refers to.
   int32 field_index = 5 [features = { field_presence: EXPLICIT }];
 
-  // The predicted type for the field.
+  // The predicted type for the field. For backwards compatibility, this will
+  // contain the first or most confident prediction from the model.
+  // This field is deprecated in favor of `all_field_types`.
   int32 field_type = 2 [features = { field_presence: EXPLICIT }];
 
   // Optional formatting metadata for downstream use.
@@ -80,6 +89,17 @@ message FieldTypeResponse {
   // The confidence score for the prediction, ranging from 0.0 to 1.0.
   // Higher values indicate greater confidence in the predicted type.
   float confidence = 4 [features = { field_presence: IMPLICIT }];
+
+  // All predicted types for the field, including the one in `field_type`.
+  // This is the field that should be used for all new multi-type logic.
+  repeated int32 all_field_types = 7;
+
+  // When `include_reasoning` in the request is set to true, this field contains
+  // the model's internal representation of the predicted types, before
+  // mapping them to Autofill FieldTypes. It provides a way to return
+  // predictions for types that are not supported by Autofill yet. This is
+  // useful when analysing whether adding some new type provide value.
+  repeated string internal_predicted_types = 8;
 
   reserved 1, 6;
 }
@@ -91,12 +111,18 @@ message FormTypeQuality {
   AutofillAiFieldEvent field_event = 2 [features = { field_presence: EXPLICIT }];
 
   AutofillAiKeyMetrics key_metrics = 3 [features = { field_presence: EXPLICIT }];
+
+  AutofillAiUserPromptMetrics user_prompt_metrics = 4 [features = { field_presence: EXPLICIT }];
 }
 
 // See `AutofillAiUkmLogger::FieldEvent`.
 message AutofillAiFieldEvent {
   // The server AI type of the field as classified by autofill's ML model.
+  // TODO(crbug.com/432645177): Remove the non-`repeated` when almost all
+  // clients have migrated to the repeated field.
   int32 ai_field_type = 1 [features = { field_presence: EXPLICIT }];
+
+  repeated int32 ai_field_types = 16;
 
   // Type of the event being recorded.
   AutofillAiFieldEventType event_type = 2 [features = { field_presence: IMPLICIT }];
@@ -108,13 +134,17 @@ message AutofillAiFieldEvent {
   // would have two different values.
   uint64 field_session_identifier = 3 [features = { field_presence: IMPLICIT }];
 
-  // The signature of the field (mod 1021). This is the hash identifier used to
-  // denote this field for query and voting purposes. See
+  // The signature of the field. This is the hash identifier used to denote this
+  // field for query and voting purposes. See
   // components/autofill/core/common/signatures.cc for more details.
   uint64 field_signature = 4 [features = { field_presence: IMPLICIT }];
 
   // The type of the field as classified by autofill.
+  // TODO(crbug.com/432645177): Remove the non-`repeated` when almost all
+  // clients have migrated to the repeated field.
   int32 field_type = 5 [features = { field_presence: EXPLICIT }];
+
+  repeated int32 field_types = 15;
 
   // The source of the format string of the field, see `FormatStringSource` in
   // components/autofill/core/browser/autofill_field.h for more info.
@@ -132,8 +162,8 @@ message AutofillAiFieldEvent {
   // AutofillAi.KeyMetrics.
   uint64 form_session_identifier = 8 [features = { field_presence: IMPLICIT }];
 
-  // The signature of the form (mod 1021). This is the hash identifier used to
-  // denote this form for query and voting purposes. See
+  // The signature of the form. This is the hash identifier used to denote this
+  // form for query and voting purposes. See
   // components/autofill/core/common/signatures.cc for more details.
   uint64 form_signature = 9 [features = { field_presence: IMPLICIT }];
 
@@ -150,6 +180,16 @@ message AutofillAiFieldEvent {
 
   // The registered domain of the page that the form is on.
   string domain = 13 [features = { field_presence: IMPLICIT }];
+
+  // The type of entity for which the metrics are being recorded. This is useful
+  // in forms that ask about multiple entity types (e.g. driver's license and
+  // vehicle information).
+  AutofillAiEntityType entity_type = 14 [features = { field_presence: IMPLICIT }];
+
+  // The storage type of the entity for which the metrics are being recorded,
+  // meaning whether it is stored locally for the user or in some server
+  // service.
+  AutofillAiEntityStorageType storage_type = 17 [features = { field_presence: IMPLICIT }];
 }
 
 message AutofillAiKeyMetrics {
@@ -190,8 +230,8 @@ message AutofillAiKeyMetrics {
   // AutofillAi.FieldInfo.
   uint64 form_session_identifier = 5 [features = { field_presence: IMPLICIT }];
 
-  // The signature of the form (mod 1021). This is the hash identifier used to
-  // denote this form for query and voting purposes. See
+  // The signature of the form. This is the hash identifier used to denote this
+  // form for query and voting purposes. See
   // components/autofill/core/common/signatures.cc for more details.
   uint64 form_signature = 6 [features = { field_presence: IMPLICIT }];
 
@@ -206,6 +246,41 @@ message AutofillAiKeyMetrics {
   // The number of fields that were filled by Autofill AI at form submission
   // specifically, all fields autofilled by other sources will be excluded.
   int32 autofill_ai_filled_field_count = 9 [features = { field_presence: IMPLICIT }];
+
+  // The type of entity for which the metrics are being recorded. This is useful
+  // in forms that ask about multiple entity types (e.g. driver's license and
+  // vehicle information).
+  AutofillAiEntityType entity_type = 10 [features = { field_presence: IMPLICIT }];
+
+  // True for submitted and autofilled forms if the user didn't have to edit any
+  // field manually. Only recorded if an Autofill AI suggestion was filled.
+  bool perfect_filling = 11 [features = { field_presence: EXPLICIT }];
+}
+
+message AutofillAiUserPromptMetrics {
+  // A random variable assigned to a specific instance of a HTML form in a
+  // specific renderer. This should be globally unique and suitable for
+  // counting distinct forms. Two different users would have different values.
+  // A single user loading the same form in two different tabs would have two
+  // different values. This is used to link the fields to a form in
+  // AutofillAi.FieldInfo.
+  uint64 form_session_identifier = 1 [features = { field_presence: IMPLICIT }];
+
+  // The registered domain of the page that the form is on.
+  string domain = 2 [features = { field_presence: IMPLICIT }];
+
+  AutofillAiEntityStorageType storage_type = 3 [features = { field_presence: IMPLICIT }];
+
+  AutofillAiPromptType prompt_type = 4 [features = { field_presence: IMPLICIT }];
+
+  AutofillAiEntityType entity_type = 5 [features = { field_presence: IMPLICIT }];
+
+  AutofillAiPromptUserDecision result = 6 [features = { field_presence: IMPLICIT }];
+
+  // The signature of the form. This is the hash identifier used to denote this
+  // form for query and voting purposes. See
+  // components/autofill/core/common/signatures.cc for more details.
+  uint64 form_signature = 7 [features = { field_presence: IMPLICIT }];
 }
 
 enum AutofillAiFieldEventType {
@@ -226,4 +301,64 @@ enum FormatStringSource {
   FORMAT_STRING_SOURCE_ML_MODEL = 2;
 
   FORMAT_STRING_SOURCE_SERVER = 3;
+}
+
+// This is a copy of autofill::EntityTypeName that is auto-generated by
+// components/autofill/core/browser/data_model/autofill_ai/transpile_entity_schema.py
+// Additionally, we add an UNKNOWN value as a bucket to support cases where the
+// client does not set the entity type.
+enum AutofillAiEntityType {
+  AUTOFILL_AI_ENTITY_TYPE_UNKNOWN = 0;
+
+  AUTOFILL_AI_ENTITY_TYPE_PASSPORT = 1;
+
+  AUTOFILL_AI_ENTITY_TYPE_DRIVERS_LICENSE = 2;
+
+  AUTOFILL_AI_ENTITY_TYPE_VEHICLE = 3;
+
+  AUTOFILL_AI_ENTITY_TYPE_NATIONAL_ID_CARD = 4;
+
+  AUTOFILL_AI_ENTITY_TYPE_KNOWN_TRAVELER_NUMBER = 5;
+
+  AUTOFILL_AI_ENTITY_TYPE_REDRESS_NUMBER = 6;
+
+  AUTOFILL_AI_ENTITY_TYPE_FLIGHT_RESERVATION = 7;
+}
+
+// Defines the different types of storage that can hold AutofillAi entities.
+enum AutofillAiEntityStorageType {
+  AUTOFILL_AI_ENTITY_STORAGE_TYPE_UNKNOWN = 0;
+
+  AUTOFILL_AI_ENTITY_STORAGE_TYPE_WALLET = 1;
+
+  AUTOFILL_AI_ENTITY_STORAGE_TYPE_LOCAL = 2;
+}
+
+// Defines different types of prompts that can be shown to the user. For example
+// whether the user would like to save or update an entity.
+enum AutofillAiPromptType {
+  AUTOFILL_AI_PROMPT_TYPE_UNKNOWN = 0;
+
+  AUTOFILL_AI_PROMPT_TYPE_SAVE_ENTITY = 1;
+
+  AUTOFILL_AI_PROMPT_TYPE_UPDATE_ENTITY = 2;
+
+  AUTOFILL_AI_PROMPT_TYPE_MIGRATE_ON_SAVE = 3;
+
+  AUTOFILL_AI_PROMPT_TYPE_MIGRATE_ON_UPDATE = 4;
+}
+
+// Specified the different decisions users can make when being shown a
+// prompt/dialog, for example to update or save an entity.
+enum AutofillAiPromptUserDecision {
+  AUTOFILL_AI_PROMPT_USER_DECISION_UNKNOWN = 0;
+
+  // The user accepted the save or update entities prompt.
+  AUTOFILL_AI_PROMPT_USER_DECISION_ACCEPTED = 1;
+
+  // The user explicitly declined the save or update entities prompt.
+  AUTOFILL_AI_PROMPT_USER_DECISION_DECLINED = 2;
+
+  // The user ignored the save or update entities prompt.
+  AUTOFILL_AI_PROMPT_USER_DECISION_IGNORED = 3;
 }

@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
-#import "ios/chrome/browser/page_info/ui_bundled/features.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_app_interface.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_constants.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_app_interface.h"
@@ -153,7 +152,6 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   config.features_enabled.push_back(
       feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
-  config.features_enabled.push_back(kPageInfoLastVisitedIOS);
   config.additional_args.push_back(
       std::string("-") +
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
@@ -246,8 +244,8 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Rotates the device and checks that the page info view is still presented.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPageInfoViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -392,21 +390,22 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   [[EarlGrey selectElementWithMatcher:
                  grey_text([NSString
                      stringWithCString:[ChromeEarlGrey webStateVisibleURL]
-                                           .host()
+                                           .GetHost()
                                            .c_str()
                               encoding:[NSString defaultCStringEncoding]])]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Rotate to landscape mode and check the navigation bar is still visible.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kPageInfoViewNavigationBarAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Rotate back to portrait mode and check the navigation bar is still visible.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kPageInfoViewNavigationBarAccessibilityIdentifier)]
@@ -825,7 +824,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   // Select "Open in New Tab" and confirm that new tab is opened with selected
   // URL.
-  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:kURLExternalWebsiteString];
+  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:kURLExternalWebsite];
 
   // Assert that the Context Menu Last Visited History Entry Actions metric is
   // populated.
@@ -838,10 +837,6 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 - (void)testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-  }
-  if (@available(iOS 19.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -932,7 +927,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   // Select "Open in New Incognito Tab" and confirm that new tab is opened in
   // incognito with the selected URL.
-  [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:kURLExternalWebsiteString];
+  [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:kURLExternalWebsite];
 
   // Assert that the Context Menu Last Visited History Entry Actions metric is
   // populated.

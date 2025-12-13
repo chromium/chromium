@@ -1,10 +1,10 @@
 # APIs that have their externs generated.
 # TODO(crbug.com/40868715): Remove these as we migrate all consumers towards
 # typescript definitions.
-audio.idl
-bluetooth.idl
+audio.webidl
+bluetooth.webidl
 bluetooth_private.idl
-clipboard.idl
+clipboard.webidl
 events.json
 extension_types.json
 metrics_private.json

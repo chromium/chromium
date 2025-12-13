@@ -7,6 +7,7 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
@@ -21,15 +22,15 @@ constexpr int kQuickInsertFocusIndicatorWidth = 3;
 
 constexpr SkScalar kQuickInsertFocusIndicatorRadius =
     SkIntToScalar(kQuickInsertFocusIndicatorWidth);
-constexpr SkScalar kQuickInsertFocusIndicatorRadii[8] = {
-    0,
-    0,  // top-left
-    kQuickInsertFocusIndicatorRadius,
-    kQuickInsertFocusIndicatorRadius,  // top-right
-    kQuickInsertFocusIndicatorRadius,
-    kQuickInsertFocusIndicatorRadius,  // bottom-right
-    0,
-    0};  // bottom-left
+constexpr SkVector kQuickInsertFocusIndicatorRadii[4] = {
+    // top-left
+    {0, 0},
+    // top-right
+    {kQuickInsertFocusIndicatorRadius, kQuickInsertFocusIndicatorRadius},
+    // bottom-right
+    {kQuickInsertFocusIndicatorRadius, kQuickInsertFocusIndicatorRadius},
+    // bottom-left
+    {0, 0}};
 
 }  // namespace
 
@@ -37,11 +38,11 @@ void PaintQuickInsertFocusIndicator(gfx::Canvas* canvas,
                                     const gfx::Point& origin,
                                     int height,
                                     SkColor color) {
-  SkPath path;
   const gfx::Rect focus_indicator_bounds(
       origin, gfx::Size(kQuickInsertFocusIndicatorWidth, height));
-  path.addRoundRect(gfx::RectToSkRect(focus_indicator_bounds),
-                    kQuickInsertFocusIndicatorRadii);
+  const SkPath path = SkPath::RRect(
+      SkRRect::MakeRectRadii(gfx::RectToSkRect(focus_indicator_bounds),
+                             kQuickInsertFocusIndicatorRadii));
 
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kFill_Style);

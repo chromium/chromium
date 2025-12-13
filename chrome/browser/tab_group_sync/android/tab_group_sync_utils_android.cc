@@ -20,7 +20,7 @@
 static void JNI_TabGroupSyncUtils_OnDidFinishNavigation(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_group_id,
+    const jni_zero::JavaRef<jobject>& j_group_id,
     jint j_tab_id,
     jlong navigation_handle_ptr) {
   CHECK(profile);
@@ -49,7 +49,7 @@ static void JNI_TabGroupSyncUtils_OnDidFinishNavigation(
 static void JNI_TabGroupSyncUtils_UpdateTabRedirectChain(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_group_id,
+    const jni_zero::JavaRef<jobject>& j_group_id,
     jint j_tab_id,
     jlong navigation_handle_ptr) {
   CHECK(profile);
@@ -75,7 +75,7 @@ static void JNI_TabGroupSyncUtils_UpdateTabRedirectChain(
 static jboolean JNI_TabGroupSyncUtils_IsUrlInTabRedirectChain(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_group_id,
+    const jni_zero::JavaRef<jobject>& j_group_id,
     jint j_tab_id,
     GURL& url) {
   CHECK(profile);
@@ -98,3 +98,16 @@ static jboolean JNI_TabGroupSyncUtils_IsUrlInTabRedirectChain(
 
   return tab->IsURLInRedirectChain(url);
 }
+
+static jboolean JNI_TabGroupSyncUtils_IsSaveableNavigation(
+    JNIEnv* env,
+    jboolean is_extension_navigation_allowed,
+    jlong navigation_handle_ptr) {
+  auto* navigation_handle =
+      reinterpret_cast<content::NavigationHandle*>(navigation_handle_ptr);
+
+  return tab_groups::TabGroupSyncUtils::IsSaveableNavigation(
+      is_extension_navigation_allowed, navigation_handle);
+}
+
+DEFINE_JNI(TabGroupSyncUtils)

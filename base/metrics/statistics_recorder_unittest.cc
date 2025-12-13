@@ -16,7 +16,9 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/record_histogram_checker.h"
@@ -28,6 +30,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using testing::_;
 
 // Class to make sure any manipulations we do to the min log level are
 // contained (i.e., do not affect other unit tests).
@@ -415,7 +419,8 @@ TEST_P(StatisticsRecorderTest, ToJSON) {
   std::string json(StatisticsRecorder::ToJSON(JSON_VERBOSITY_LEVEL_FULL));
 
   // Check for valid JSON.
-  std::optional<Value> root = JSONReader::Read(json);
+  std::optional<Value> root =
+      JSONReader::Read(json, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
   Value::Dict* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
@@ -454,7 +459,8 @@ TEST_P(StatisticsRecorderTest, ToJSONOmitBuckets) {
 
   std::string json =
       StatisticsRecorder::ToJSON(JSON_VERBOSITY_LEVEL_OMIT_BUCKETS);
-  std::optional<Value> root = JSONReader::Read(json);
+  std::optional<Value> root =
+      JSONReader::Read(json, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
   Value::Dict* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
@@ -971,6 +977,98 @@ TEST_P(StatisticsRecorderTest, RecordHistogramChecker) {
   StatisticsRecorder::SetRecordChecker(std::move(record_checker));
   EXPECT_TRUE(StatisticsRecorder::ShouldRecordHistogram(1));
   EXPECT_FALSE(StatisticsRecorder::ShouldRecordHistogram(2));
+}
+
+TEST_P(StatisticsRecorderTest, GetHistogramsExcludeFlags) {
+  std::vector<Histogram*> histograms = {
+      CreateHistogram("TestHistogram1", 1, 1000, 10),
+      CreateHistogram("TestHistogram2", 1, 1000, 10),
+      CreateHistogram("TestHistogram3", 1, 1000, 10),
+      CreateHistogram("TestHistogram4", 1, 1000, 10),
+      CreateHistogram("TestHistogram5", 1, 1000, 10),
+  };
+
+  // Set up histograms with different sets of flags.
+  histograms[0]->SetFlags(HistogramBase::Flags::kNoFlags);
+  histograms[1]->SetFlags(HistogramBase::Flags::kUmaTargetedHistogramFlag);
+  histograms[2]->SetFlags(HistogramBase::Flags::kUmaStabilityHistogramFlag);
+  histograms[3]->SetFlags(HistogramBase::Flags::kIPCSerializationSourceFlag);
+  histograms[4]->SetFlags(HistogramBase::Flags::kIPCSerializationSourceFlag |
+                          HistogramBase::Flags::kUmaTargetedHistogramFlag);
+
+  // Register histograms.
+  for (Histogram* histogram : histograms) {
+    EXPECT_EQ(histogram,
+              StatisticsRecorder::RegisterOrDeleteDuplicate(histogram));
+  }
+
+  EXPECT_EQ(StatisticsRecorder::GetHistograms().size(), 5);
+
+  EXPECT_THAT(
+      StatisticsRecorder::GetHistograms(true, HistogramBase::Flags::kNoFlags),
+      UnorderedElementsAre(  //
+          histograms[0], histograms[1], histograms[2], histograms[3],
+          histograms[4]));
+
+  EXPECT_THAT(StatisticsRecorder::GetHistograms(
+                  true, HistogramBase::Flags::kUmaTargetedHistogramFlag),
+              UnorderedElementsAre(histograms[0], histograms[3]));
+
+  EXPECT_THAT(StatisticsRecorder::GetHistograms(
+                  true, HistogramBase::Flags::kUmaStabilityHistogramFlag),
+              UnorderedElementsAre(histograms[0], histograms[3]));
+
+  EXPECT_THAT(
+      StatisticsRecorder::GetHistograms(
+          true, HistogramBase::Flags::kIPCSerializationSourceFlag),
+      UnorderedElementsAre(histograms[0], histograms[1], histograms[2]));
+
+  EXPECT_THAT(StatisticsRecorder::GetHistograms(
+                  true, HistogramBase::Flags::kCallbackExists),
+              UnorderedElementsAre(  //
+                  histograms[0], histograms[1], histograms[2], histograms[3],
+                  histograms[4]));
+
+  EXPECT_THAT(StatisticsRecorder::GetHistograms(
+                  true, HistogramBase::Flags::kUmaTargetedHistogramFlag |
+                            HistogramBase::Flags::kIPCSerializationSourceFlag),
+              UnorderedElementsAre(histograms[0]));
+}
+
+class MockHistogramFlattener : public base::HistogramFlattener {
+ public:
+  MockHistogramFlattener() = default;
+  ~MockHistogramFlattener() override = default;
+
+  MOCK_METHOD(void,
+              RecordDelta,
+              (const base::HistogramBase& histogram,
+               const base::HistogramSamples& snapshot),
+              (override));
+};
+
+TEST_P(StatisticsRecorderTest, PrepareDeltasDoesNotExcludeHistograms) {
+  Histogram* histogram =
+      CreateHistogram("TestHistogramPrepareDeltasExclude", 1, 1000, 10);
+
+  // Set kPumaRcTargetedHistogramFlag, this is a flag excluded by default by
+  // GetHistograms.
+  histogram->SetFlags(HistogramBase::Flags::kPumaRcTargetedHistogramFlag);
+
+  histogram->Add(12);
+
+  // Register histogram.
+  EXPECT_EQ(histogram,
+            StatisticsRecorder::RegisterOrDeleteDuplicate(histogram));
+
+  MockHistogramFlattener flattener;
+  HistogramSnapshotManager histogram_manager(&flattener);
+
+  EXPECT_CALL(flattener, RecordDelta(_, _)).Times(1);
+
+  StatisticsRecorder::PrepareDeltas(
+      true, HistogramBase::Flags::kNoFlags,
+      HistogramBase::Flags::kPumaRcTargetedHistogramFlag, &histogram_manager);
 }
 
 }  // namespace base

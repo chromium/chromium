@@ -26,6 +26,15 @@ namespace {
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrivacySandboxTopicsElementId);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPrivacySandboxManageTopicsPageVisible);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(
+    kPrivacySandboxManageTopicsFirstToggleVisible);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(
+    kPrivacySandboxManageTopicsSecondToggleVisible);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(
+    kPrivacySandboxManageTopicsBlockedTopicsListVisible);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(
+    kPrivacySandboxAdTopicsBlockedTopicsRowVisible);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kIronCollapseFinishedTransitioningEvent);
 
 constexpr char BlockedTopicsListLengthFunc[] =
@@ -36,15 +45,25 @@ constexpr char BlockedTopicsListFirstTopicIdFunc[] =
     "topicId";
 
 DeepQuery GetManageTopicsPageQuery() {
-  return DeepQuery({{"settings-ui", "settings-main", "settings-basic-page",
-                     "settings-privacy-page",
-                     "settings-privacy-sandbox-manage-topics-subpage"}});
+  return DeepQuery(
+      {{"settings-ui", "settings-main", "settings-privacy-page-index",
+        "settings-privacy-sandbox-manage-topics-subpage"}});
 }
 
 DeepQuery GetAdTopicsPageQuery() {
   return DeepQuery(
-      {{"settings-ui", "settings-main", "settings-basic-page",
-        "settings-privacy-page", "settings-privacy-sandbox-topics-subpage"}});
+      {{"settings-ui", "settings-main", "settings-privacy-page-index",
+        "settings-privacy-sandbox-topics-subpage"}});
+}
+
+auto ElementIsVisibleStateChange(ui::CustomElementEventType event,
+                                 DeepQuery query) {
+  WebContentsInteractionTestUtil::StateChange element_is_visible;
+  element_is_visible.event = event;
+  element_is_visible.where = query;
+  element_is_visible.type =
+      WebContentsInteractionTestUtil::StateChange::Type::kExists;
+  return element_is_visible;
 }
 
 class PrivacySandboxSettingsTopicsInteractiveTest
@@ -103,8 +122,16 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
       InstrumentTab(kPrivacySandboxTopicsElementId),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
                           GURL(chrome::kPrivacySandboxManageTopicsURL)),
+      WaitForStateChange(
+          kPrivacySandboxTopicsElementId,
+          ElementIsVisibleStateChange(
+              kPrivacySandboxManageTopicsFirstToggleVisible, firstToggle)),
       CheckJsResultAt(kPrivacySandboxTopicsElementId, firstToggle,
                       "(el) => el.checked", false),
+      WaitForStateChange(
+          kPrivacySandboxTopicsElementId,
+          ElementIsVisibleStateChange(
+              kPrivacySandboxManageTopicsSecondToggleVisible, secondToggle)),
       CheckJsResultAt(kPrivacySandboxTopicsElementId, secondToggle,
                       "(el) => el.checked", false));
 }
@@ -123,11 +150,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
   BlockFirstTopicOnManageTopicsPage
 #endif
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
-                       BlockFirstTopicOnManageTopicsPage) {
+                       MAYBE_BlockFirstTopicOnManageTopicsPage) {
   RunTestSequence(
       InstrumentTab(kPrivacySandboxTopicsElementId),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
                           GURL(chrome::kPrivacySandboxManageTopicsURL)),
+      WaitForStateChange(
+          kPrivacySandboxTopicsElementId,
+          ElementIsVisibleStateChange(
+              kPrivacySandboxManageTopicsFirstToggleVisible, firstToggle)),
       CheckJsResultAt(kPrivacySandboxTopicsElementId, firstToggle,
                       "(el) => el.checked"),
       ExecuteJsAt(kPrivacySandboxTopicsElementId, firstToggle,
@@ -140,6 +171,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
                   "Checking that the one blocked topic is topic(1)"),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
                           GURL(chrome::kPrivacySandboxAdTopicsURL)),
+      WaitForStateChange(
+          kPrivacySandboxTopicsElementId,
+          ElementIsVisibleStateChange(
+              kPrivacySandboxManageTopicsBlockedTopicsListVisible,
+              blockedTopicsList)),
       CheckJsResultAt(kPrivacySandboxTopicsElementId, blockedTopicsList,
                       BlockedTopicsListLengthFunc, 1),
       CheckJsResultAt(kPrivacySandboxTopicsElementId, blockedTopicsList,
@@ -164,6 +200,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
       InstrumentTab(kPrivacySandboxTopicsElementId),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
                           GURL(chrome::kPrivacySandboxAdTopicsURL)),
+      WaitForStateChange(
+          kPrivacySandboxTopicsElementId,
+          ElementIsVisibleStateChange(
+              kPrivacySandboxManageTopicsBlockedTopicsListVisible,
+              blockedTopicsList)),
       CheckJsResultAt(kPrivacySandboxTopicsElementId, blockedTopicsList,
                       BlockedTopicsListLengthFunc, 1),
       CheckJsResultAt(kPrivacySandboxTopicsElementId, blockedTopicsList,
@@ -174,6 +215,10 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
                   "Checking that there are 0 blocked topics"),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
                           GURL(chrome::kPrivacySandboxManageTopicsURL)),
+      WaitForStateChange(
+          kPrivacySandboxTopicsElementId,
+          ElementIsVisibleStateChange(
+              kPrivacySandboxManageTopicsFirstToggleVisible, firstToggle)),
       CheckJsResultAt(kPrivacySandboxTopicsElementId, firstToggle,
                       "(el) => el.checked"));
 }
@@ -186,6 +231,10 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
       InstrumentTab(kPrivacySandboxTopicsElementId),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
                           GURL(chrome::kPrivacySandboxManageTopicsURL)),
+      WaitForStateChange(kPrivacySandboxTopicsElementId,
+                         ElementIsVisibleStateChange(
+                             kPrivacySandboxManageTopicsPageVisible,
+                             GetManageTopicsPageQuery() + "settings-subpage")),
       CheckJsResultAt(kPrivacySandboxTopicsElementId,
                       GetManageTopicsPageQuery(),
                       R"(
@@ -227,12 +276,16 @@ IN_PROC_BROWSER_TEST_F(
       StateChange::Type::kExistsAndConditionTrue;
   ironCollapseFinishedTransitioning.where = ironCollapse;
   ironCollapseFinishedTransitioning.test_function =
-      "(el) => { return el.transitioning === false }";
+      "(el) => { return el.opened; }";
 
   RunTestSequence(
       InstrumentTab(kPrivacySandboxTopicsElementId),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
                           GURL(chrome::kPrivacySandboxManageTopicsURL)),
+      WaitForStateChange(
+          kPrivacySandboxTopicsElementId,
+          ElementIsVisibleStateChange(
+              kPrivacySandboxManageTopicsFirstToggleVisible, firstToggle)),
       ExecuteJsAt(kPrivacySandboxTopicsElementId, firstToggle,
                   "(el) => { el.click(); }"),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
@@ -241,6 +294,10 @@ IN_PROC_BROWSER_TEST_F(
                  "ManageTopicsPageAfterFirstTopicBlocked", "5405426"),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
                           GURL(chrome::kPrivacySandboxAdTopicsURL)),
+      WaitForStateChange(kPrivacySandboxTopicsElementId,
+                         ElementIsVisibleStateChange(
+                             kPrivacySandboxAdTopicsBlockedTopicsRowVisible,
+                             blockedTopicsRow)),
       ExecuteJsAt(kPrivacySandboxTopicsElementId, ironCollapse,
                   "(el) => { el.noAnimation = true; }"),
       ExecuteJsAt(kPrivacySandboxTopicsElementId, blockedTopicsRow,

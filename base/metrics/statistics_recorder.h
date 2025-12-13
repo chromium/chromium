@@ -22,13 +22,12 @@
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/ranges_manager.h"
-#include "base/metrics/record_histogram_checker.h"
 #include "base/observer_list_threadsafe.h"
+#include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
@@ -37,6 +36,7 @@ namespace base {
 
 class BucketRanges;
 class HistogramSnapshotManager;
+class RecordHistogramChecker;
 
 // In-memory recorder of usage statistics (aka metrics, aka histograms).
 //
@@ -119,6 +119,27 @@ class BASE_EXPORT StatisticsRecorder {
     const OnSampleWithEventCallback callback_;
   };
 
+  // A convenience wrapper around ScopedHistogramSampleObserver. Listens for
+  // changes to the histogram provided at construction. This class only allows
+  // `Wait()` to be called once. If you need to call `Wait()` multiple
+  // times, create multiple instances of this class.
+  class BASE_EXPORT HistogramWaiter {
+   public:
+    explicit HistogramWaiter(std::string_view histogram_name);
+
+    ~HistogramWaiter();
+    HistogramWaiter(const HistogramWaiter&) = delete;
+    HistogramWaiter& operator=(const HistogramWaiter&) = delete;
+
+    // Waits for the next update to the observed histogram.
+    void Wait();
+
+  private:
+    base::RunLoop run_loop_;
+    std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
+        histogram_observer_;
+  };
+
   typedef std::vector<HistogramBase*> Histograms;
 
   StatisticsRecorder(const StatisticsRecorder&) = delete;
@@ -174,14 +195,23 @@ class BASE_EXPORT StatisticsRecorder {
   static std::string ToJSON(JSONVerbosityLevel verbosity_level);
 
   // Gets existing histograms. |include_persistent| determines whether
-  // histograms held in persistent storage are included.
+  // histograms held in persistent storage are included. Histograms with flags
+  // that intersect with |exclude_flags| are excluded.
+  //
+  // The default value of the |exclude_flags| parameter is set to exclude all
+  // PUMA histograms as a safety measure. This is because PUMA uses a different
+  // system for uploading metrics than UMA, and we need to ensure PUMA
+  // histograms don't break any existing code and vice-versa.
   //
   // The order of returned histograms is not guaranteed.
   //
   // Ownership of the individual histograms remains with the StatisticsRecorder.
   //
   // This method is thread safe.
-  static Histograms GetHistograms(bool include_persistent = true)
+  static Histograms GetHistograms(
+      bool include_persistent = true,
+      int32_t exclude_flags =
+          HistogramBase::Flags::kPumaRcTargetedHistogramFlag)
       LOCKS_EXCLUDED(GetLock());
 
   // Gets BucketRanges used by all histograms registered. The order of returned
@@ -320,8 +350,11 @@ class BASE_EXPORT StatisticsRecorder {
   }
 
  private:
-  static Lock& GetLock() { return lock_.Get(); }
-  static void AssertLockHeld() { lock_.Get().AssertAcquired(); }
+  // Global lock for internal synchronization.
+  // Note: Care must be taken to not read or write anything to persistent memory
+  // while holding this lock, as that could cause a file I/O stall.
+  static Lock& GetLock();
+  static void AssertLockHeld();
 
   // Returns the histogram registered with |hash|, if there is one. Returns
   // nullptr otherwise.
@@ -400,11 +433,6 @@ class BASE_EXPORT StatisticsRecorder {
 
   // Previous global recorder that existed when this one was created.
   raw_ptr<StatisticsRecorder> previous_ = nullptr;
-
-  // Global lock for internal synchronization.
-  // Note: Care must be taken to not read or write anything to persistent memory
-  // while holding this lock, as that could cause a file I/O stall.
-  static LazyInstance<Lock>::Leaky lock_;
 
   // Current global recorder. This recorder is used by static methods. When a
   // new global recorder is created by CreateTemporaryForTesting(), then the

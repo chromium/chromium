@@ -34,8 +34,8 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_view.h"
@@ -338,8 +338,8 @@ TEST_P(PrivacyIndicatorsControllerTest, NotificationWithTwoApps) {
 TEST_P(PrivacyIndicatorsControllerTest, PrivacyIndicatorsTrayItemView) {
   // Uses normal animation duration so that the icons would not be immediately
   // hidden after the animation.
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Make sure privacy indicators work on multiple displays.
   UpdateDisplay("300x200,500x400");

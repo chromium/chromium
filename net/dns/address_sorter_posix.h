@@ -76,7 +76,8 @@ class NET_EXPORT_PRIVATE AddressSorterPosix
   class SortContext;
 
   // NetworkChangeNotifier::IPAddressObserver:
-  void OnIPAddressChanged() override;
+  void OnIPAddressChanged(
+      NetworkChangeNotifier::IPAddressChangeType change_type) override;
   // Fills |info| with values for |address| from policy tables.
   void FillPolicy(const IPAddress& address, SourceAddressInfo* info) const;
 

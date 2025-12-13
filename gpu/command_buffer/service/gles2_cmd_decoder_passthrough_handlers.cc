@@ -1142,6 +1142,10 @@ error::Error GLES2DecoderPassthroughImpl::HandleReadPixels(
     }
     pixels =
         reinterpret_cast<uint8_t*>(static_cast<intptr_t>(pixels_shm_offset));
+    // The bufSize argument to glReadPixels must be large enough to fit the data
+    // and is validated independently of pixel pack buffer state. The buffer is
+    // independently validated to be large enough.
+    buffer_size = std::numeric_limits<GLsizei>::max();
   }
 
   GLsizei bufsize = buffer_size;
@@ -2568,52 +2572,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleCompressedTexSubImage3D(
   return DoCompressedTexSubImage3D(target, level, xoffset, yoffset, zoffset,
                                    width, height, depth, format, image_size,
                                    data_size, data);
-}
-
-error::Error
-GLES2DecoderPassthroughImpl::HandleInitializeDiscardableTextureCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::InitializeDiscardableTextureCHROMIUM& c =
-      *static_cast<
-          const volatile gles2::cmds::InitializeDiscardableTextureCHROMIUM*>(
-          cmd_data);
-  GLuint texture_id = c.texture_id;
-  uint32_t shm_id = c.shm_id;
-  uint32_t shm_offset = c.shm_offset;
-
-  scoped_refptr<gpu::Buffer> buffer = GetSharedMemoryBuffer(shm_id);
-  if (!DiscardableHandleBase::ValidateParameters(buffer.get(), shm_offset)) {
-    return error::kInvalidArguments;
-  }
-
-  ServiceDiscardableHandle handle(std::move(buffer), shm_offset, shm_id);
-
-  return DoInitializeDiscardableTextureCHROMIUM(texture_id, std::move(handle));
-}
-
-error::Error
-GLES2DecoderPassthroughImpl::HandleUnlockDiscardableTextureCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::UnlockDiscardableTextureCHROMIUM& c =
-      *static_cast<
-          const volatile gles2::cmds::UnlockDiscardableTextureCHROMIUM*>(
-          cmd_data);
-  GLuint texture_id = c.texture_id;
-
-  return DoUnlockDiscardableTextureCHROMIUM(texture_id);
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleLockDiscardableTextureCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::LockDiscardableTextureCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::LockDiscardableTextureCHROMIUM*>(
-          cmd_data);
-  GLuint texture_id = c.texture_id;
-
-  return DoLockDiscardableTextureCHROMIUM(texture_id);
 }
 
 error::Error GLES2DecoderPassthroughImpl::HandleCreateGpuFenceINTERNAL(

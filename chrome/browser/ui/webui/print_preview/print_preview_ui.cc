@@ -46,7 +46,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/pdf_resources_map.h"
 #include "chrome/grit/print_preview_resources.h"
 #include "chrome/grit/print_preview_resources_map.h"
 #include "components/device_event_log/device_event_log.h"
@@ -66,6 +65,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/nup_parameters.h"
 #include "printing/print_job_constants.h"
+#include "printing/printing_features.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -320,9 +320,8 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
 #endif
 
   // Register strings for the PDF viewer, so that $i18n{} replacements work.
-  base::Value::Dict pdf_strings;
-  pdf_extension_util::AddStrings(
-      pdf_extension_util::PdfViewerContext::kPrintPreview, &pdf_strings);
+  base::Value::Dict pdf_strings = pdf_extension_util::GetStrings(
+      pdf_extension_util::PdfViewerContext::kPrintPreview);
   source->AddLocalizedStrings(pdf_strings);
 }
 
@@ -334,6 +333,10 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
       prefs::kPrintPreviewUseSystemDefaultPrinter);
   source->AddBoolean("useSystemDefaultPrinter", system_default_printer);
 #endif
+
+  source->AddBoolean("alignPdfDefaultPrintSettingsWithHTML",
+                     base::FeatureList::IsEnabled(
+                         features::kAlignPdfDefaultPrintSettingsWithHTML));
 
   source->AddBoolean(
       "isEnterpriseManaged",
@@ -369,7 +372,8 @@ void CreateAndAddPrintPreviewUISource(Profile* profile) {
       base::StrCat({webui::kDefaultTrustedTypesPolicies,
                     " print-preview-plugin-loader;"}));
   AddPrintPreviewStrings(source);
-  source->AddResourcePaths(kPdfResources);
+  source->AddResourcePaths(pdf_extension_util::GetResources(
+      pdf_extension_util::PdfViewerContext::kPrintPreview));
   SetupPrintPreviewPlugin(source);
   AddPrintPreviewFlags(source, profile);
 }
@@ -412,7 +416,7 @@ bool PrintPreviewUIConfig::IsWebUIEnabled(
 }
 
 bool PrintPreviewUIConfig::ShouldHandleURL(const GURL& url) {
-  return url.path() == "/" || url.path() == "/test_loader.html";
+  return url.GetPath() == "/" || url.GetPath() == "/test_loader.html";
 }
 
 PrintPreviewUIConfig::~PrintPreviewUIConfig() = default;
@@ -498,10 +502,9 @@ void PrintPreviewUI::ClearPreviewUIId() {
   id_.reset();
 }
 
-void PrintPreviewUI::GetPrintPreviewDataForIndex(
-    int index,
-    scoped_refptr<base::RefCountedMemory>* data) const {
-  PrintPreviewDataService::GetInstance()->GetDataEntry(*id_, index, data);
+scoped_refptr<base::RefCountedMemory>
+PrintPreviewUI::GetPrintPreviewDataForIndex(int index) const {
+  return PrintPreviewDataService::GetInstance()->GetDataEntry(*id_, index);
 }
 
 void PrintPreviewUI::SetPrintPreviewDataForIndex(

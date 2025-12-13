@@ -130,14 +130,6 @@ bool AwPrefetchServiceDelegate::IsDomainInPrefetchAllowList(
 }
 
 bool AwPrefetchServiceDelegate::IsContaminationExempt(
-    const GURL& referring_url) {
-  // WebView app initiated prefetching does not use an isolated network context.
-  // However, if WebView ever adds support for non-app triggered prefetching, we
-  // may need to revisit the value returned here.
-  return false;
-}
-
-bool AwPrefetchServiceDelegate::IsContaminationExemptPerOrigin(
     const url::Origin& referring_origin) {
   // WebView app initiated prefetching does not use an isolated network context.
   // However, if WebView ever adds support for non-app triggered prefetching, we

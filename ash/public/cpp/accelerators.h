@@ -297,9 +297,7 @@ ASH_PUBLIC_EXPORT inline constexpr auto kAcceleratorData = std::to_array<
     {true, ui::VKEY_OEM_103, ui::EF_NONE, AcceleratorAction::kMediaRewind},
     {true, ui::VKEY_OEM_104, ui::EF_NONE, AcceleratorAction::kMediaFastForward},
 
-    // Assistant shortcut. Assistant has two shortcuts, a dedicated Assistant
-    // key and Search+A. Search+A is defined below as
-    // `kAssistantSearchPlusAAcceleratorData`.
+    // Assistant shortcut.
     {true, ui::VKEY_ASSISTANT, ui::EF_NONE, AcceleratorAction::kStartAssistant},
 
     // IME mode change key.
@@ -349,8 +347,9 @@ ASH_PUBLIC_EXPORT inline constexpr auto kAcceleratorData = std::to_array<
 
     // Quick Insert.
     {false, ui::VKEY_QUICK_INSERT, ui::EF_NONE,
-     AcceleratorAction::kTogglePicker, true},
-    {true, ui::VKEY_F, ui::EF_COMMAND_DOWN, AcceleratorAction::kTogglePicker},
+     AcceleratorAction::kToggleQuickInsert, true},
+    {true, ui::VKEY_F, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kToggleQuickInsert},
 
     // Game Dashboard shortcut.
     {true, ui::VKEY_G, ui::EF_COMMAND_DOWN,
@@ -360,11 +359,6 @@ ASH_PUBLIC_EXPORT inline constexpr auto kAcceleratorData = std::to_array<
     {true, ui::VKEY_SPACE, ui::EF_COMMAND_DOWN,
      AcceleratorAction::kStartSunfishSession},
 });
-
-ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
-    kAssistantSearchPlusAAcceleratorData[] = {
-        {true, ui::VKEY_A, ui::EF_COMMAND_DOWN,
-         AcceleratorAction::kStartAssistant}};
 
 // Accelerators that are enabled/disabled with new accelerator mapping.
 // crbug.com/1067269

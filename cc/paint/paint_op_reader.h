@@ -18,6 +18,7 @@
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
+#include "third_party/skia/include/core/SkPathTypes.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 
 struct SkGainmapInfo;
@@ -143,6 +144,9 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
   void Read(SkMipmapMode* mipmap_mode) {
     ReadEnum<SkMipmapMode, SkMipmapMode::kLast>(mipmap_mode);
+  }
+  void Read(SkPathFillType* fill_type) {
+    ReadEnum<SkPathFillType, SkPathFillType::kInverseEvenOdd>(fill_type);
   }
 
   void Read(bool* data) {

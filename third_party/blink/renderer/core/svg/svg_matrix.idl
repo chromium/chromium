@@ -22,30 +22,28 @@
 
 // http://www.w3.org/TR/SVG11/coords.html#InterfaceSVGMatrix
 
-// TODO(foolip): SVGMatrix is gone from SVG 2, replaced by DOMMatrix.
-// https://crbug.com/709001
 [
     Exposed=Window,
     ImplementedAs=SVGMatrixTearOff
 ] interface SVGMatrix {
     // FIXME: these attributes should all be floats but since we implement
     // AffineTransform with doubles setting these as doubles makes more sense.
-    [RaisesException=Setter] attribute unrestricted double a;
-    [RaisesException=Setter] attribute unrestricted double b;
-    [RaisesException=Setter] attribute unrestricted double c;
-    [RaisesException=Setter] attribute unrestricted double d;
-    [RaisesException=Setter] attribute unrestricted double e;
-    [RaisesException=Setter] attribute unrestricted double f;
+    [RaisesException=Setter] attribute double a;
+    [RaisesException=Setter] attribute double b;
+    [RaisesException=Setter] attribute double c;
+    [RaisesException=Setter] attribute double d;
+    [RaisesException=Setter] attribute double e;
+    [RaisesException=Setter] attribute double f;
 
     SVGMatrix multiply(SVGMatrix secondMatrix);
     [RaisesException] SVGMatrix inverse();
-    SVGMatrix translate(unrestricted float x, unrestricted float y);
-    SVGMatrix scale(unrestricted float scaleFactor);
-    SVGMatrix scaleNonUniform(unrestricted float scaleFactorX, unrestricted float scaleFactorY);
-    SVGMatrix rotate(unrestricted float angle);
-    [RaisesException] SVGMatrix rotateFromVector(unrestricted float x, unrestricted float y);
+    SVGMatrix translate(float x, float y);
+    SVGMatrix scale(float scaleFactor);
+    SVGMatrix scaleNonUniform(float scaleFactorX, float scaleFactorY);
+    SVGMatrix rotate(float angle);
+    [RaisesException] SVGMatrix rotateFromVector(float x, float y);
     SVGMatrix flipX();
     SVGMatrix flipY();
-    SVGMatrix skewX(unrestricted float angle);
-    SVGMatrix skewY(unrestricted float angle);
+    SVGMatrix skewX(float angle);
+    SVGMatrix skewY(float angle);
 };

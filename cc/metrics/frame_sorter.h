@@ -16,7 +16,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/ring_buffer.h"
-#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "cc/cc_export.h"

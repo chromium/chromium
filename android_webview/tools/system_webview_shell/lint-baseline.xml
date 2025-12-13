@@ -1,71 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.11.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.11.0-alpha09">
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 23 (current min is 21): `canGrant`"
-        errorLine1="            if (!canGrant(webkitPermission)) {"
-        errorLine2="                 ~~~~~~~~">
-        <location
-            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserFragment.java"
-            line="636"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="RequiresFeature"
-        message="`getInstance` should only be called if the feature `TRACING_CONTROLLER_BASIC_USAGE` is present; to check call `androidx.webkit.WebViewFeature#isFeatureSupported`"
-        errorLine1="                TracingController tracingController = TracingController.getInstance();"
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="224"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="RequiresFeature"
-        message="`setForceDark` should only be called if the feature `FORCE_DARK` is present; to check call `androidx.webkit.WebViewFeature#isFeatureSupported`"
-        errorLine1="            WebSettingsCompat.setForceDark("
-        errorLine2="            ^">
-        <location
-            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="247"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="RequiresFeature"
-        message="`setForceDark` should only be called if the feature `FORCE_DARK` is present; to check call `androidx.webkit.WebViewFeature#isFeatureSupported`"
-        errorLine1="            WebSettingsCompat.setForceDark("
-        errorLine2="            ^">
-        <location
-            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="252"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="RequiresFeature"
-        message="`setForceDark` should only be called if the feature `FORCE_DARK` is present; to check call `androidx.webkit.WebViewFeature#isFeatureSupported`"
-        errorLine1="            WebSettingsCompat.setForceDark(mWebView.getSettings(), WebSettingsCompat.FORCE_DARK_ON);"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="257"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="RequiresFeature"
-        message="`getInstance` should only be called if the feature `TRACING_CONTROLLER_BASIC_USAGE` is present; to check call `androidx.webkit.WebViewFeature#isFeatureSupported`"
-        errorLine1="        final TracingController tracingController = TracingController.getInstance();"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewTracingActivity.java"
-            line="102"
-            column="53"/>
-    </issue>
+<issues format="6" by="lint 9.0.0-alpha14" type="baseline" client="" dependencies="true" name="" variant="all" version="9.0.0-alpha14">
 
     <issue
         id="UnclosedTrace"
@@ -101,14 +35,98 @@
     </issue>
 
     <issue
-        id="HardcodedDebugMode"
-        message="Avoid hardcoding the debug mode; leaving it out allows debug and release builds to automatically assign one"
-        errorLine1="  &lt;application android:icon=&quot;@drawable/ic_launcher&quot; android:label=&quot;@string/app_name&quot; android:theme=&quot;@style/ShellTheme&quot; android:enableOnBackInvokedCallback=&quot;true&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:debuggable=&quot;true&quot;>"
-        errorLine2="                                                                                                                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="UnusedResources"
+        message="The resource `R.xml.ad_services_config` appears to be unused"
+        errorLine1="&lt;ad-services-config>"
+        errorLine2="^">
         <location
-            file="gen/android_webview/tools/system_webview_shell/system_webview_shell_apk__lint/AndroidManifest.xml"
-            line="105"
-            column="224"/>
+            file="../../android_webview/tools/system_webview_shell/apk/res/xml/ad_services_config.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_launcher` appears to be unused">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/res/drawable-mdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.network_security_config` appears to be unused"
+        errorLine1="&lt;network-security-config>"
+        errorLine2="^">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/res/xml/network_security_config.xml"
+            line="6"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.app_name` appears to be unused"
+        errorLine1="    &lt;string name=&quot;app_name&quot;>WebView Shell&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/res/values/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.title_activity_browser_second_process` appears to be unused"
+        errorLine1="    &lt;string name=&quot;title_activity_browser_second_process&quot;>Second Process Browser Tester&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/res/values/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.title_activity_layout_test` appears to be unused"
+        errorLine1="    &lt;string name=&quot;title_activity_layout_test&quot;>WebView Layout Test&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/res/values/strings.xml"
+            line="14"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.title_activity_thread_test` appears to be unused"
+        errorLine1="    &lt;string name=&quot;title_activity_thread_test&quot;>WebView Thread Test&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/res/values/strings.xml"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.title_activity_page_cycler` appears to be unused"
+        errorLine1="    &lt;string name=&quot;title_activity_page_cycler&quot;>WebView Page Cycler Test&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/res/values/strings.xml"
+            line="17"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.ShellTheme` appears to be unused"
+        errorLine1="  &lt;style name=&quot;ShellTheme&quot; parent=&quot;Theme.AppCompat.DayNight.NoActionBar&quot;>"
+        errorLine2="         ~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/res/values-v17/styles.xml"
+            line="7"
+            column="10"/>
     </issue>
 
     <issue

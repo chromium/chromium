@@ -122,7 +122,7 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
 
   GURL ConvertDrivePathToFileSystemUrl(const base::FilePath& file_path,
                                        const GURL& listener_url) override {
-    return GURL(base::StrCat({listener_url.host(), ":", file_path.value()}));
+    return GURL(base::StrCat({listener_url.GetHost(), ":", file_path.value()}));
   }
 
   std::vector<GURL> ConvertPathsToFileSystemUrls(
@@ -131,7 +131,7 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
     std::vector<GURL> urls;
     for (const auto& path : paths) {
       const GURL url =
-          GURL(base::StrCat({listener_url.host(), ":", path.value()}));
+          GURL(base::StrCat({listener_url.GetHost(), ":", path.value()}));
       urls.push_back(url);
     }
     return urls;

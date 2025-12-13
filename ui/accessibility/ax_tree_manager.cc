@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_tree_manager.h"
 
 #include "base/debug/crash_logging.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_export.h"

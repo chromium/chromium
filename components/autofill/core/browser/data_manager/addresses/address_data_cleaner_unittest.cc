@@ -7,13 +7,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/version_info/version_info.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner_test_api.h"
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
@@ -44,7 +47,8 @@ class AddressDataCleanerTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<PrefService> prefs_;
   syncer::TestSyncService sync_service_;
   TestAddressDataManager test_adm_;
@@ -63,8 +67,9 @@ MATCHER(IsEqualForDeduplicationPurposes, "") {
   const AutofillProfile* a = std::get<0>(arg);
   const AutofillProfile& b = std::get<1>(arg);
 
-  return a->record_type() == b.record_type() &&
-         a->Compare(b) == 0;
+  return a->record_type() == b.record_type() && a->Compare(b) == 0 &&
+         a->usage_history().use_count() == b.usage_history().use_count() &&
+         a->usage_history().use_date() == b.usage_history().use_date();
 }
 
 // Tests that for users not syncing addresses, `MaybeCleanupAddressData()`
@@ -103,6 +108,7 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_MergedProfileValues) {
   AutofillProfile profile1(AddressCountryCode("US"));
   profile1.SetRawInfo(NAME_MIDDLE, u"J");
   profile1.SetRawInfo(ADDRESS_HOME_LINE1, u"742. Evergreen Terrace");
+  profile1.SetRawInfo(ADDRESS_HOME_ZIP, u"1234");
   profile1.usage_history().set_use_count(10);
   profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(1));
   test_adm_.AddProfile(profile1);
@@ -143,11 +149,11 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_MergedProfileValues) {
   // The middle name should be full, even if the profile with the higher
   // ranking only had an initial (no loss of information).
   EXPECT_EQ(u"Jay", deduped_profile.GetRawInfo(NAME_MIDDLE));
-  // The specified phone number from profile1 should be kept (no loss of
+  // The specified phone number from profile2 should be kept (no loss of
   // information).
   EXPECT_EQ(u"12345678910",
             deduped_profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  // The specified company name from profile2 should be kept (no loss of
+  // The specified company name from profile3 should be kept (no loss of
   // information).
   EXPECT_EQ(u"Fox", deduped_profile.GetRawInfo(COMPANY_NAME));
   // The specified country from the imported profile should be kept (no loss of
@@ -165,12 +171,12 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_MergedProfileValues) {
 // Tests that ApplyDeduplicationRoutine doesn't affect profiles that shouldn't
 // get deduplicated.
 TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_UnrelatedProfile) {
-  // Expect that the `UpdateableStandardProfile()` is deduplicated into the
-  // `StandardProfile()`, but the `UpdateableStandardProfile()` remains
+  // Expect that the `SubsetOfStandardProfile()` is deduplicated into the
+  // `StandardProfile()`, but the `DifferentFromStandardProfile()` remains
   // unaffected.
   AutofillProfile standard_profile = test::StandardProfile();
   test_adm_.AddProfile(standard_profile);
-  test_adm_.AddProfile(test::UpdateableStandardProfile());
+  test_adm_.AddProfile(test::SubsetOfStandardProfile());
   AutofillProfile different_profile = test::DifferentFromStandardProfile();
   test_adm_.AddProfile(different_profile);
 
@@ -182,7 +188,7 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_UnrelatedProfile) {
 
 TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_Metrics) {
   test_adm_.AddProfile(test::StandardProfile());
-  test_adm_.AddProfile(test::UpdateableStandardProfile());
+  test_adm_.AddProfile(test::SubsetOfStandardProfile());
 
   base::HistogramTester histogram_tester;
   test_api(data_cleaner_).ApplyDeduplicationRoutine();
@@ -195,7 +201,7 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_Metrics) {
 // Tests that deduplication is not run a second time on the same major version.
 TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_OncePerVersion) {
   test_adm_.AddProfile(test::StandardProfile());
-  test_adm_.AddProfile(test::UpdateableStandardProfile());
+  test_adm_.AddProfile(test::SubsetOfStandardProfile());
   // Pretend that deduplication was already run this milestone.
   prefs_->SetInteger(prefs::kAutofillLastVersionDeduped,
                      version_info::GetMajorVersionNumberAsInt());
@@ -204,7 +210,10 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_OncePerVersion) {
 }
 
 // Tests that `kAccount` profiles are not deduplicated against each other.
+// TODO(crbug.com/357074792): Remove this test when the feature is cleaned up.
 TEST_F(AddressDataCleanerTest, Deduplicate_kAccountPairs) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kAutofillDeduplicateAccountAddresses);
   AutofillProfile account_profile1 = test::StandardProfile();
   test_api(account_profile1)
       .set_record_type(AutofillProfile::RecordType::kAccount);
@@ -250,10 +259,6 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountExactDuplicates) {
 TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
   // Create a non-Chrome account profile and a local profile.
   AutofillProfile account_profile = test::StandardProfile();
-  const int non_chrome_service =
-      AutofillProfile::kInitialCreatorOrModifierChrome + 1;
-  account_profile.set_initial_creator_id(non_chrome_service);
-  account_profile.set_last_modifier_id(non_chrome_service);
   test_api(account_profile)
       .set_record_type(AutofillProfile::RecordType::kAccount);
   test_adm_.AddProfile(account_profile);
@@ -265,10 +270,6 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
   std::vector<const AutofillProfile*> deduped_profiles =
       test_adm_.GetProfiles();
   ASSERT_THAT(deduped_profiles, UnorderedElementsAre(Pointee(account_profile)));
-  EXPECT_EQ(deduped_profiles[0]->initial_creator_id(),
-            AutofillProfile::kInitialCreatorOrModifierChrome);
-  EXPECT_EQ(deduped_profiles[0]->last_modifier_id(),
-            AutofillProfile::kInitialCreatorOrModifierChrome);
 }
 
 // Tests that `kLocalOrSyncable` profiles which are a subset of a `kAccount`
@@ -294,9 +295,76 @@ TEST_F(AddressDataCleanerTest,
                   {account_profile}));
 }
 
+// Tests that the best usage history is persistent during subset deduplication.
+// The test verifies that if there are three profiles, A, B and C, where:
+// A ⊆ B and A ⊆ C
+// B ⊄ C and C ⊄ B
+// Both B and C profiles may benefit from the usage information that A had.
+TEST_F(AddressDataCleanerTest, Deduplicate_MergingSubsets) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillDeduplicateAccountAddresses};
+  base::Time now = base::Time::Now();
+
+  // Setup subset with count: 5 and use date: Now - 5 minutes.
+  AutofillProfile subset_profile(AddressCountryCode("US"));
+  subset_profile.SetInfoWithVerificationStatus(
+      EMAIL_ADDRESS, u"test@gmail.com", "en-US",
+      VerificationStatus::kUserVerified);
+  test_api(subset_profile)
+      .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
+  subset_profile.usage_history().set_use_date(now - base::Minutes(5));
+  subset_profile.usage_history().set_use_count(5);
+  test_adm_.AddProfile(subset_profile);
+
+  // Setup superset with count: 10 and use date: Now - 10 minutes.
+  AutofillProfile superset_profile_1(AddressCountryCode("US"));
+  superset_profile_1.SetInfoWithVerificationStatus(
+      EMAIL_ADDRESS, u"test@gmail.com", "en-US",
+      VerificationStatus::kUserVerified);
+  superset_profile_1.SetInfoWithVerificationStatus(
+      ADDRESS_HOME_CITY, u"Warsaw", "en-US", VerificationStatus::kUserVerified);
+  test_api(superset_profile_1)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  superset_profile_1.usage_history().set_use_date(now - base::Minutes(10));
+  superset_profile_1.usage_history().set_use_count(10);
+  test_adm_.AddProfile(superset_profile_1);
+
+  // Setup superset 2 (not mergabe with the first superset) with count: 1 and
+  // use date: Now.
+  AutofillProfile superset_profile_2(AddressCountryCode("US"));
+  superset_profile_2.SetInfoWithVerificationStatus(
+      EMAIL_ADDRESS, u"test@gmail.com", "en-US",
+      VerificationStatus::kUserVerified);
+  superset_profile_2.SetInfoWithVerificationStatus(
+      ADDRESS_HOME_CITY, u"Munich", "en-US", VerificationStatus::kUserVerified);
+  test_api(superset_profile_2)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  superset_profile_2.usage_history().set_use_date(now);
+  superset_profile_2.usage_history().set_use_count(1);
+  test_adm_.AddProfile(superset_profile_2);
+
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
+
+  AutofillProfile expected_1 = superset_profile_1;
+  expected_1.usage_history().set_use_count(10);
+  expected_1.usage_history().set_use_date(now - base::Minutes(5));
+  AutofillProfile expected_2 = superset_profile_2;
+  expected_2.usage_history().set_use_count(5);
+  expected_2.usage_history().set_use_date(now);
+
+  // Expect that the subset was merged into both supersets and that their best
+  // combined usage history attributes are kept.
+  EXPECT_THAT(test_adm_.GetProfiles(),
+              testing::UnorderedPointwise(IsEqualForDeduplicationPurposes(),
+                                          {expected_1, expected_2}));
+}
+
 // Tests that `kAccount` profiles which are a subset of a `kLocalOrSyncable`
 // profile are not deduplicated.
+// TODO(crbug.com/357074792): Remove this test when the feature is cleaned up.
 TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kAutofillDeduplicateAccountAddresses);
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
   test_api(account_profile)
       .set_record_type(AutofillProfile::RecordType::kAccount);
@@ -316,6 +384,7 @@ TEST_F(AddressDataCleanerTest,
        Deduplicate_kAccountSubsetWithAccountDeduplicationEnabled) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillDeduplicateAccountAddresses};
+
   AutofillProfile local_profile = test::StandardProfile();
   test_api(local_profile)
       .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
@@ -337,17 +406,20 @@ TEST_F(AddressDataCleanerTest,
 TEST_F(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillDeduplicateAccountAddresses};
+  base::Time now = base::Time::Now();
 
   AutofillProfile local_profile(AddressCountryCode{"CA"});
   test::SetProfileInfo(&local_profile, "", "", "", "", "", "6543 CH BACON",
-                       "APP 3", "MONTRÉAL", "QUÉBEC", "HHH999", "CA", "");
+                       "APP 3", "Montreal", "QUÉBEC", "HHH999", "CA", "");
+  local_profile.usage_history().set_use_date(now - base::Minutes(5));
   test_api(local_profile)
       .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
   test_adm_.AddProfile(local_profile);
 
   AutofillProfile account_profile(AddressCountryCode{"CA"});
   test::SetProfileInfo(&account_profile, "", "", "", "", "", "6543, Bacon Rd",
-                       "", "Montreal", "QC", "hhh 999", "CA", "");
+                       "", "Montreal", "QC", "hhh 999", "CA", "+1123456789");
+  account_profile.usage_history().set_use_date(now);
   test_api(account_profile)
       .set_record_type(AutofillProfile::RecordType::kAccount);
   test_adm_.AddProfile(account_profile);
@@ -364,6 +436,9 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
                                             VerificationStatus::kObserved);
   expected.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"hhh 999",
                                             VerificationStatus::kObserved);
+  expected.SetRawInfoWithVerificationStatus(
+      PHONE_HOME_WHOLE_NUMBER, u"+1123456789", VerificationStatus::kObserved);
+  expected.usage_history().set_use_date(now);
   // The resulting profile should be local.
   test_api(expected).set_record_type(
       AutofillProfile::RecordType::kLocalOrSyncable);
@@ -373,7 +448,50 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
                                           {expected}));
 }
 
+TEST_F(AddressDataCleanerTest, Deduplicate_kAccountNameEmailSubset) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillDeduplicateAccountAddresses,
+       features::kAutofillEnableSupportForNameAndEmail},
+      {});
+
+  AutofillProfile account_name_email_profile(AddressCountryCode("XX"));
+  account_name_email_profile.SetInfoWithVerificationStatus(
+      NAME_FULL, u"John Doe", "en-US", VerificationStatus::kUserVerified);
+  account_name_email_profile.SetInfoWithVerificationStatus(
+      EMAIL_ADDRESS, u"test@gmail.com", "en-US",
+      VerificationStatus::kUserVerified);
+  account_name_email_profile.FinalizeAfterImport();
+  test_api(account_name_email_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountNameEmail);
+  test_adm_.AddProfile(account_name_email_profile);
+
+  AutofillProfile superset_profile = test::StandardProfile();
+  superset_profile.SetInfoWithVerificationStatus(
+      NAME_FULL, u"John Doe", "en-US", VerificationStatus::kUserVerified);
+  superset_profile.SetInfoWithVerificationStatus(
+      EMAIL_ADDRESS, u"test@gmail.com", "en-US",
+      VerificationStatus::kUserVerified);
+  superset_profile.FinalizeAfterImport();
+  test_api(superset_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  test_adm_.AddProfile(superset_profile);
+
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
+  EXPECT_THAT(test_adm_.GetProfiles(),
+              testing::UnorderedPointwise(IsEqualForDeduplicationPurposes(),
+                                          {superset_profile}));
+}
+
+// TODO(crbug.com/357074792): This test is temporarily disabled. For the rollout
+// of kAutofillDeduplicateAccountAddresses, deduplication is exceptionally run
+// a second time per milestone, so metric changes can be observed without
+// waiting one milestone per channel. During the cleanup of the feature, this
+// logic will be removed and this test can be re-enabled.
 TEST_F(AddressDataCleanerTest, DeduplicateOncePerMilestone) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillDeduplicateAccountAddresses);
   MockAddressDataCleaner data_cleaner(
       test_adm_, /*sync_service=*/nullptr, *prefs_,
       /*alternative_state_name_map_updater=*/nullptr);
@@ -497,6 +615,53 @@ TEST_F(AddressDataCleanerTest, CalculateMinimalIncompatibleTypeSets) {
                                                         {EMAIL_ADDRESS}},
           autofill_metrics::DifferingProfileWithTypeSet{
               &other_profile3, {PHONE_HOME_WHOLE_NUMBER}}));
+}
+
+// Checks that migration of phonetic names from regular name fields, does not
+// run if the feature is disabled.
+TEST_F(AddressDataCleanerTest, NoNameMigrationIfFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillSupportPhoneticNameForJP);
+  base::HistogramTester histogram_tester;
+
+  // Creating a profile.
+  AutofillProfile profile(AddressCountryCode("JP"));
+  profile.SetRawInfo(NAME_FULL, u"タ ワ");
+  profile.FinalizeAfterImport();
+  test_adm_.AddProfile(profile);
+
+  data_cleaner_.MaybeCleanupAddressData();
+  histogram_tester.ExpectTotalCount(
+      "Autofill.NumberOfNamesMigratedToAlternativeNamesDuringCleanUp", 0);
+  EXPECT_THAT(test_adm_.GetProfiles(), UnorderedElementsAre(Pointee(profile)));
+}
+
+// Checks that migration of phonetic names from regular name fields,
+// records the metric and migrates the name.
+TEST_F(AddressDataCleanerTest, NameMigration) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+  base::HistogramTester histogram_tester;
+
+  AutofillProfile profile(AddressCountryCode("JP"));
+  profile.SetRawInfo(NAME_FULL, u"タ ワ");
+  profile.FinalizeAfterImport();
+  test_adm_.AddProfile(profile);
+
+  AutofillProfile expected(AddressCountryCode("JP"));
+  expected.set_guid(profile.guid());
+  expected.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME, u"タ ワ",
+                                            VerificationStatus::kNoStatus);
+  expected.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME, u"タ",
+                                            VerificationStatus::kNoStatus);
+  expected.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"ワ",
+                                            VerificationStatus::kNoStatus);
+
+  data_cleaner_.MaybeCleanupAddressData();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.NumberOfNamesMigratedToAlternativeNamesDuringCleanUp", 1, 1);
+  EXPECT_THAT(test_adm_.GetProfiles(), UnorderedElementsAre(Pointee(expected)));
 }
 
 }  // namespace

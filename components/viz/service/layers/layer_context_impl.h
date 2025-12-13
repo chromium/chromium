@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "cc/animation/animation_host.h"
 #include "cc/layers/tile_display_layer_impl.h"
@@ -59,9 +61,10 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   base::expected<void, std::string> DoUpdateDisplayTree(
       mojom::LayerTreeUpdatePtr update);
   base::expected<void, std::string> DoUpdateDisplayTiling(
-      mojom::TilingPtr tiling,
-      bool update_damage);
-  void DoDraw(const BeginFrameArgs& begin_frame_args);
+      mojom::TilingPtr tiling);
+  void DoDraw(const BeginFrameArgs& begin_frame_args,
+              base::TimeTicks start_update_display_tree,
+              bool frame_has_damage);
 
   // Receive exported resources returned from the frame sink.
   void ReceiveReturnsFromParent(std::vector<ReturnedResource> resources);
@@ -90,6 +93,7 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread(bool urgent) override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;
+  void DidChangeBeginFrameSourcePaused(bool paused) override;
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override;
   bool IsInsideDraw() override;
   void RenewTreePriority() override;
@@ -145,12 +149,23 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   // mojom::LayerContext:
   void SetVisible(bool visible) override;
   void UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) override;
-  void UpdateDisplayTiling(mojom::TilingPtr tiling,
-                           bool update_damage) override;
+  void UpdateDisplayTiling(mojom::TilingPtr tiling) override;
 
   // Return any resources pending in |resources_to_return_| to the LayerContext
   // client, via the frame sink.
   void DoReturnResources();
+
+  void HandleBadMojoMessage(const std::string& function,
+                            const std::string& error);
+
+  // Draws and submits a frame if there is damage. When |expects_to_draw|
+  // is set, this will force draw even if there is no computed damage, or
+  // other conditions would make us abort drawing.
+  void DoDrawInternal(const BeginFrameArgs& begin_frame_args,
+                      base::TimeTicks start_update_display_tree,
+                      std::optional<bool> frame_has_damage = std::nullopt);
+
+  void SendTilingsCleanupNotificationToClient();
 
   const raw_ptr<CompositorFrameSinkSupport> compositor_sink_;
   const std::unique_ptr<cc::AnimationHost> animation_host_{
@@ -165,6 +180,10 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
 
   raw_ptr<cc::LayerTreeFrameSinkClient> frame_sink_client_ = nullptr;
   const std::unique_ptr<cc::LayerTreeHostImpl> host_impl_;
+
+  // Must be the last member to ensure this is destroyed first in the
+  // destruction order and invalidates all weak pointers.
+  base::WeakPtrFactory<LayerContextImpl> weak_factory_{this};
 };
 
 }  // namespace viz

@@ -94,14 +94,14 @@ void CheckPdfRendering(base::span<const uint8_t> pdf_data,
   ASSERT_TRUE(exports.RenderPDFPageToBitmap(pdf_data, page_number, settings,
                                             page_bitmap.getPixels()));
 
-  EXPECT_TRUE(MatchesPngFile(page_bitmap.asImage().get(),
+  EXPECT_TRUE(MatchesPngFile(*page_bitmap.asImage(),
                              GetReferenceFilePath(expected_png_filename)));
 }
 
 }  // namespace
 
 TEST_P(PDFiumPrintTest, Basic) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -149,7 +149,7 @@ TEST_P(PDFiumPrintTest, Basic) {
 }
 
 TEST_P(PDFiumPrintTest, AlterScalingDefault) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("rectangles.pdf"));
   ASSERT_TRUE(engine);
@@ -178,7 +178,7 @@ TEST_P(PDFiumPrintTest, AlterScalingDefault) {
 }
 
 TEST_P(PDFiumPrintTest, AlterScalingFitPaper) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("rectangles.pdf"));
   ASSERT_TRUE(engine);
@@ -209,7 +209,7 @@ TEST_P(PDFiumPrintTest, AlterScalingFitPaper) {
 }
 
 TEST_P(PDFiumPrintTest, AlterScalingFitPrintable) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("rectangles.pdf"));
   ASSERT_TRUE(engine);
@@ -237,6 +237,101 @@ TEST_P(PDFiumPrintTest, AlterScalingFitPrintable) {
       pdf_data, 0, kExpectedDimensions[0],
       GenerateRendererSpecificFileName("alter_scaling_fit-printable_raster",
                                        /*use_skia_renderer=*/GetParam()));
+}
+
+TEST_P(PDFiumPrintTest, CenterPositionCenterShrinkToFitPaper) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("rectangles.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPrint print(engine.get());
+
+  const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
+  static constexpr std::array<int, 1> kPageIndices = {0};
+
+  blink::WebPrintParams print_params = GetDefaultPrintParams();
+  print_params.printable_area_in_css_pixels = kPrintableAreaRect;
+  print_params.print_scaling_option =
+      printing::mojom::PrintScalingOption::kCenterShrinkToFitPaper;
+  std::vector<uint8_t> pdf_data =
+      print.PrintPagesAsPdf(kPageIndices, print_params);
+  CheckPdfDimensions(pdf_data, kExpectedDimensions);
+  CheckPdfRendering(
+      pdf_data, 0, kExpectedDimensions[0],
+      GenerateRendererSpecificFileName(
+          "center_position_center-shrink-to-fit-paper", GetParam()));
+  print_params.rasterize_pdf = true;
+  pdf_data = print.PrintPagesAsPdf(kPageIndices, print_params);
+  CheckPdfDimensions(pdf_data, kExpectedDimensions);
+  CheckPdfRendering(
+      pdf_data, 0, kExpectedDimensions[0],
+      GenerateRendererSpecificFileName(
+          "center_position_center-shrink-to-fit-paper_raster", GetParam()));
+}
+
+TEST_P(PDFiumPrintTest, CenterPositionRotatedCenterShrinkToFitPaper) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client,
+      FILE_PATH_LITERAL("rotated_rectangles_smaller_than_size_letter.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPrint print(engine.get());
+
+  const ExpectedDimensions kExpectedDimensions = {{792.0, 612.0}};
+  static constexpr std::array<int, 1> kPageIndices = {0};
+
+  blink::WebPrintParams print_params = GetDefaultPrintParams();
+  print_params.printable_area_in_css_pixels = kPrintableAreaRect;
+  print_params.print_scaling_option =
+      printing::mojom::PrintScalingOption::kCenterShrinkToFitPaper;
+  std::vector<uint8_t> pdf_data =
+      print.PrintPagesAsPdf(kPageIndices, print_params);
+  CheckPdfDimensions(pdf_data, kExpectedDimensions);
+  CheckPdfRendering(
+      pdf_data, 0, kExpectedDimensions[0],
+      GenerateRendererSpecificFileName(
+          "center_position_rotated_center-shrink-to-fit-paper", GetParam()));
+  print_params.rasterize_pdf = true;
+  pdf_data = print.PrintPagesAsPdf(kPageIndices, print_params);
+  CheckPdfDimensions(pdf_data, kExpectedDimensions);
+  CheckPdfRendering(
+      pdf_data, 0, kExpectedDimensions[0],
+      GenerateRendererSpecificFileName(
+          "center_position_rotated_center-shrink-to-fit-paper_raster",
+          GetParam()));
+}
+
+TEST_P(PDFiumPrintTest, AlterScalingCenterShrinkToFitPaper) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("A4_rects.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPrint print(engine.get());
+
+  const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
+  static constexpr std::array<int, 1> kPageIndices = {0};
+
+  blink::WebPrintParams print_params = GetDefaultPrintParams();
+  print_params.printable_area_in_css_pixels = kPrintableAreaRect;
+  print_params.print_scaling_option =
+      printing::mojom::PrintScalingOption::kCenterShrinkToFitPaper;
+  std::vector<uint8_t> pdf_data =
+      print.PrintPagesAsPdf(kPageIndices, print_params);
+  CheckPdfDimensions(pdf_data, kExpectedDimensions);
+  CheckPdfRendering(
+      pdf_data, 0, kExpectedDimensions[0],
+      GenerateRendererSpecificFileName(
+          "alter_scaling_center-shrink-to-fit-paper", GetParam()));
+  print_params.rasterize_pdf = true;
+  pdf_data = print.PrintPagesAsPdf(kPageIndices, print_params);
+  CheckPdfDimensions(pdf_data, kExpectedDimensions);
+  CheckPdfRendering(
+      pdf_data, 0, kExpectedDimensions[0],
+      GenerateRendererSpecificFileName(
+          "alter_scaling_center-shrink-to-fit-paper_raster", GetParam()));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPrintTest, testing::Bool());

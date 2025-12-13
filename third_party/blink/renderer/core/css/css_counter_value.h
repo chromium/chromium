@@ -1,75 +1,71 @@
-/*
- * (C) 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright (C) 2004, 2005, 2006, 2008 Apple Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public License
- * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA 02110-1301, USA.
- */
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COUNTER_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COUNTER_VALUE_H_
 
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
-#include "third_party/blink/renderer/core/css/css_identifier_value.h"
-#include "third_party/blink/renderer/core/css/css_string_value.h"
-#include "third_party/blink/renderer/platform/wtf/casting.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class CSSPrimitiveValue;
+
 namespace cssvalue {
 
-class CSSCounterValue : public CSSValue {
+// Represents a parsed single counter value for 'counter-increment',
+// 'counter-set', or 'counter-reset' properties.
+//
+// This class captures a single counter definition, which related to the
+// grammar:
+//   [ <counter-name> <integer>? ]+ | none
+//
+// Or specifically for 'counter-reset':
+//   [ <counter-name> <integer>? | <reversed-counter-name> <integer>? ]+ | none
+//
+// It holds the counter identifier, an optional integer value, and a flag
+// indicating if the `reversed()` function syntax was used. This value is
+// produced by the parser and consumed to populate |CounterDirectives|.
+class CSSCounterValue final : public CSSValue {
  public:
-  CSSCounterValue(const CSSCustomIdentValue* identifier,
-                  const CSSCustomIdentValue* list_style,
-                  const CSSStringValue* separator)
+  // |value| may be null if the integer component is omitted.
+  // Note: For standard counters, the parser supplies a default value. But, for
+  // `counter-reset: reversed(foo)`, the value is explicitly null.
+  CSSCounterValue(const CSSCustomIdentValue& identifier,
+                  const CSSPrimitiveValue* value,
+                  bool is_reversed)
       : CSSValue(kCounterClass),
         identifier_(identifier),
-        list_style_(list_style),
-        separator_(separator) {
-    // There's no way to define a counter() function value where the identifiers
-    // are associated with different tree scopes.
-    DCHECK_EQ(identifier->IsScopedValue(), list_style->IsScopedValue());
-    DCHECK_EQ(identifier->GetTreeScope(), list_style->GetTreeScope());
-    needs_tree_scope_population_ = !list_style->IsScopedValue();
-  }
+        value_(value),
+        is_reversed_(is_reversed) {}
 
-  const String& Identifier() const { return identifier_->Value(); }
-  const AtomicString& ListStyle() const { return list_style_->Value(); }
-  const String& Separator() const { return separator_->Value(); }
-  const TreeScope* GetTreeScope() const { return list_style_->GetTreeScope(); }
+  const CSSCustomIdentValue* Identifier() const { return identifier_; }
+
+  // Returns the explicit integer value associated with the counter, or nullptr
+  // if no value was specified (e.g., `counter-reset: reversed(foo)`).
+  const CSSPrimitiveValue* Value() const { return value_; }
+
+  bool IsReversed() const { return is_reversed_; }
 
   bool Equals(const CSSCounterValue& other) const {
-    return Identifier() == other.Identifier() &&
-           ListStyle() == other.ListStyle() &&
-           Separator() == other.Separator() &&
-           IsScopedValue() == other.IsScopedValue() &&
-           GetTreeScope() == other.GetTreeScope();
+    return Identifier() == other.Identifier() && Value() == other.Value() &&
+           IsReversed() == other.IsReversed();
   }
 
-  const CSSCounterValue& PopulateWithTreeScope(const TreeScope*) const;
+  void TraceAfterDispatch(blink::Visitor* v) const {
+    v->Trace(identifier_);
+    v->Trace(value_);
+    CSSValue::TraceAfterDispatch(v);
+  }
 
   String CustomCSSText() const;
 
-  void TraceAfterDispatch(blink::Visitor*) const;
-
  private:
-  Member<const CSSCustomIdentValue> identifier_;  // string
-  Member<const CSSCustomIdentValue> list_style_;  // ident
-  Member<const CSSStringValue> separator_;        // string
+  Member<const CSSCustomIdentValue> identifier_;
+  Member<const CSSPrimitiveValue> value_;
+  // Indicates if the counter is declared with the reversed() function.
+  // https://drafts.csswg.org/css-lists-3/#counter-reset
+  bool is_reversed_ = false;
 };
 
 }  // namespace cssvalue

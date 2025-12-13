@@ -17,11 +17,11 @@ bool StructTraits<proxy_resolver::mojom::ProxyInfoDataView, net::ProxyInfo>::
   }
 
   net::ProxyList proxy_list;
-  for (const auto& chain : proxy_chains) {
-    proxy_list.AddProxyChain(chain);
+  for (auto& chain : proxy_chains) {
+    proxy_list.AddProxyChain(std::move(chain));
   }
 
-  out->UseProxyList(proxy_list);
+  out->UseProxyList(std::move(proxy_list));
   return true;
 }
 

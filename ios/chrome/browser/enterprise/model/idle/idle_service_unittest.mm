@@ -124,11 +124,11 @@ class IdleTimeoutServiceTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockObserver mock_observer_;
-  raw_ptr<MockActionRunner> action_runner_;
+  raw_ptr<MockActionRunner, DanglingUntriaged> action_runner_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<IdleService> idle_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  raw_ptr<AuthenticationService> authentication_service_;
+  raw_ptr<AuthenticationService, DanglingUntriaged> authentication_service_;
 };
 
 // Test that the observer methods are not called when the policy is not set, and

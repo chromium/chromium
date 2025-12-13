@@ -1,0 +1,18 @@
+[
+    {
+        "os": [
+            "chromeos"
+        ],
+        "simple_policy_pref_mapping_test": {
+            "pref_name": "securitykey.permit_attestation",
+            "pref_location": "signin_profile",
+            "default_value": [],
+            "values_to_test": [
+                [
+                    "https://example.com",
+                    "example.net"
+                ]
+            ]
+        }
+    }
+]

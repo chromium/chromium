@@ -4,15 +4,15 @@
 
 #include "chrome/browser/page_load_metrics/observers/ash_session_restore_page_load_metrics_observer.h"
 
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 
@@ -35,7 +35,7 @@ bool AshSessionRestorePageLoadMetricsObserver::ShouldBeInstantiated(
   // observer instance if the user's prefs don't allow a full restore to begin
   // with.
   CHECK(profile);
-  if (!ash::full_restore::CanPerformRestore(profile->GetPrefs())) {
+  if (!ash::CanPerformRestore(profile->GetPrefs())) {
     g_can_record_first_input_delay = false;
     return false;
   }
@@ -111,13 +111,13 @@ void AshSessionRestorePageLoadMetricsObserver::TryRecordFirstInputDelay(
     const page_load_metrics::mojom::PageLoadTiming& timing) const {
   // Only record metric for the active browser's active tab in a session restore
   // (not just a browser window the user manually opened).
-  const Browser* const active_browser =
-      BrowserList::GetInstance()->GetLastActive();
-  if (!active_browser || !is_web_contents_from_restore_) {
+  const BrowserWindowInterface* const bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (!bwi || !is_web_contents_from_restore_) {
     return;
   }
   const content::WebContents* const active_web_contents =
-      active_browser->tab_strip_model()->GetActiveWebContents();
+      bwi->GetTabStripModel()->GetActiveWebContents();
   if (!active_web_contents || web_contents_ != active_web_contents) {
     return;
   }

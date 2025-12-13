@@ -1077,14 +1077,6 @@ GLint GLES2InterfaceStub::GetFragDataIndexEXT(GLuint /* program */,
                                               const char* /* name */) {
   return 0;
 }
-void GLES2InterfaceStub::InitializeDiscardableTextureCHROMIUM(
-    GLuint /* texture_id */) {}
-void GLES2InterfaceStub::UnlockDiscardableTextureCHROMIUM(
-    GLuint /* texture_id */) {}
-bool GLES2InterfaceStub::LockDiscardableTextureCHROMIUM(
-    GLuint /* texture_id */) {
-  return 0;
-}
 void GLES2InterfaceStub::WindowRectanglesEXT(GLenum /* mode */,
                                              GLsizei /* count */,
                                              const GLint* /* box */) {}

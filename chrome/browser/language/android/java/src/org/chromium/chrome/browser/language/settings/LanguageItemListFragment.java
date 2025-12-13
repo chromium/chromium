@@ -24,10 +24,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
@@ -82,7 +84,7 @@ public abstract class LanguageItemListFragment extends Fragment
 
             // ListMenu.Delegate handles return from three dot menu.
             ListMenu.Delegate delegate =
-                    (model) -> {
+                    (model, view) -> {
                         int textId = model.get(ListMenuItemProperties.TITLE_ID);
                         if (textId == R.string.remove) {
                             onLanguageRemoved(currentLanguageItem.getCode());
@@ -105,7 +107,8 @@ public abstract class LanguageItemListFragment extends Fragment
     private @MonotonicNonNull Profile mProfile;
     private ListAdapter mAdapter;
     private ListDelegate mListDelegate;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -156,14 +159,39 @@ public abstract class LanguageItemListFragment extends Fragment
         addLanguageButton.setOnClickListener(
                 view -> { // Lambda for View.OnClickListener
                     recordAddLanguageImpression();
-                    Intent intent =
-                            SettingsNavigationFactory.createSettingsNavigation()
-                                    .createSettingsIntent(
-                                            getActivity(), SelectLanguageFragment.class);
-                    intent.putExtra(
-                            SelectLanguageFragment.INTENT_POTENTIAL_LANGUAGES,
-                            getPotentialLanguageType());
-                    startActivityForResult(intent, REQUEST_CODE_SELECT_LANGUAGE);
+                    Bundle args = new Bundle();
+                    args.putShort(
+                            SelectLanguageFragment.KEY_POTENTIAL_LANGUAGES,
+                            (short) getPotentialLanguageType());
+                    if (!ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+                        // Use an Intent with extra. Return value is received via onActivityResult.
+                        Intent intent =
+                                SettingsNavigationFactory.createSettingsNavigation()
+                                        .createSettingsIntent(
+                                                getActivity(), SelectLanguageFragment.class, args);
+                        startActivityForResult(intent, REQUEST_CODE_SELECT_LANGUAGE);
+                        return;
+                    }
+
+                    // On using fragment, the result is received via this result listener.
+                    var fragmentManager = getFragmentManager();
+                    assumeNonNull(fragmentManager);
+                    fragmentManager.setFragmentResultListener(
+                            SelectLanguageFragment.FRAGMENT_RESULT_TAG,
+                            this,
+                            (String requestKey, Bundle result) -> {
+                                String code =
+                                        result.getString(
+                                                SelectLanguageFragment.KEY_SELECTED_LANGUAGE);
+                                assumeNonNull(code);
+                                onSelectLanguageResult(code);
+                            });
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(
+                                    getActivity(),
+                                    SelectLanguageFragment.class,
+                                    args,
+                                    /* addToBackStack= */ true);
                 });
 
         return inflatedView;
@@ -174,11 +202,16 @@ public abstract class LanguageItemListFragment extends Fragment
         super.onActivityResult(requestCode, requestCode, data);
         if (requestCode == REQUEST_CODE_SELECT_LANGUAGE && resultCode == Activity.RESULT_OK) {
             assumeNonNull(data);
-            String code = data.getStringExtra(SelectLanguageFragment.INTENT_SELECTED_LANGUAGE);
-            onLanguageAdded(code);
-            mAdapter.onDataUpdated();
-            recordAddAction();
+            String code = data.getStringExtra(SelectLanguageFragment.KEY_SELECTED_LANGUAGE);
+            assumeNonNull(code);
+            onSelectLanguageResult(code);
         }
+    }
+
+    private void onSelectLanguageResult(String code) {
+        onLanguageAdded(code);
+        mAdapter.onDataUpdated();
+        recordAddAction();
     }
 
     @Override

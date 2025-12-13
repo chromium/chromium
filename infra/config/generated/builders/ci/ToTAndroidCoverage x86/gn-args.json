@@ -12,6 +12,7 @@
     "treat_warnings_as_errors": false,
     "use_clang_coverage": true,
     "use_reclient": false,
+    "use_remoteexec": true,
     "use_siso": true
   }
 }

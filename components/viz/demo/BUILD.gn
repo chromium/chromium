@@ -55,7 +55,7 @@ static_library("service") {
     "//components/viz/common",
     "//components/viz/service",
     "//components/viz/service/main",
-    "//gpu/ipc/host:host",
+    "//gpu/ipc/host",
     "//mojo/public/cpp/system",
     "//services/viz/privileged/mojom",
     "//services/viz/privileged/mojom/gl",

@@ -259,7 +259,7 @@ suite('TabDiscardExceptionList', function() {
     await onShowTooltip;
     assertEquals(
         CrPolicyStrings.controlledSettingPolicy,
-        exceptionList.$.tooltip.textContent!.trim());
+        exceptionList.$.tooltip.textContent.trim());
     assertFalse(tooltip.hidden);
     assertEquals(indicator, exceptionList.$.tooltip.target);
 

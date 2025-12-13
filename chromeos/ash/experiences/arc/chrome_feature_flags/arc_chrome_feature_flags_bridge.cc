@@ -13,6 +13,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 
 namespace arc {
 
@@ -79,14 +80,8 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
   flags->jelly_colors = true;
   flags->touchscreen_emulation = true;
   flags->rounded_window_compat_strategy =
-      base::FeatureList::IsEnabled(arc::kRoundedWindowCompat)
-          ? static_cast<mojom::RoundedWindowCompatStrategy>(
-                base::GetFieldTrialParamByFeatureAsInt(
-                    kRoundedWindowCompat, kRoundedWindowCompatStrategy,
-                    static_cast<int>(mojom::RoundedWindowCompatStrategy::
-                                         kLeftRightBottomGesture)))
-          : mojom::RoundedWindowCompatStrategy::kDisabled;
-  flags->rounded_window_radius = chromeos::features::RoundedWindowsRadius();
+      mojom::RoundedWindowCompatStrategy::kLeftRightBottomGesture;
+  flags->rounded_window_radius = chromeos::kRoundedWindowCornerRadius;
   flags->enable_pip_double_tap = true;
   flags->render_arc_notifications_by_chrome =
       ash::features::IsRenderArcNotificationsByChromeEnabled();

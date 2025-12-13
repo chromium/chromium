@@ -107,9 +107,7 @@ void ForceInstalledAffiliatedExtensionApiTest::TestExtension(
     const base::Value::Dict& custom_arg_value) {
   DCHECK(page_url.is_valid()) << "page_url must be valid";
 
-  std::string custom_arg;
-  base::JSONWriter::Write(custom_arg_value, &custom_arg);
-  SetCustomArg(custom_arg);
+  SetCustomArg(base::WriteJson(custom_arg_value).value_or(""));
 
   extensions::ResultCatcher catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(page_url)));

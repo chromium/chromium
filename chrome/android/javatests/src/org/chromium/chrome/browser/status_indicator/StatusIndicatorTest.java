@@ -218,7 +218,7 @@ public class StatusIndicatorTest {
     @MediumTest
     public void testShowAndHideOnNtp() {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         final int viewId = View.generateViewId();
         final View view = tab.getNativePage().getView();
@@ -301,7 +301,7 @@ public class StatusIndicatorTest {
     @MediumTest
     public void testShowAndHideOnRecentTabsPage() {
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
         RecentTabsPageTestUtils.waitForRecentTabsPageLoaded(tab);
 
         // R.id.status_indicator won't be in the View tree until the indicator is shown for the

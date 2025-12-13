@@ -32,12 +32,14 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/util.h"
@@ -94,13 +96,15 @@ std::u16string PossibleAttestationWarning(
     case device::AttestationConveyancePreference::kDirect:
       return l10n_util::GetStringFUTF16(
           IDS_WEBAUTHN_ATTESTATION_WARNING,
-          AuthenticatorSheetModelBase::GetRelyingPartyIdString(dialog_model));
+          AuthenticatorSheetModelBase::GetRelyingPartyIdStringLabel(
+              dialog_model));
     case device::AttestationConveyancePreference::
         kEnterpriseIfRPListedOnAuthenticator:
     case device::AttestationConveyancePreference::kEnterpriseApprovedByBrowser:
       return l10n_util::GetStringFUTF16(
           IDS_WEBAUTHN_ENTERPRISE_ATTESTATION_WARNING,
-          AuthenticatorSheetModelBase::GetRelyingPartyIdString(dialog_model));
+          AuthenticatorSheetModelBase::GetRelyingPartyIdStringLabel(
+              dialog_model));
   }
 }
 
@@ -130,13 +134,38 @@ AuthenticatorSheetModelBase::~AuthenticatorSheetModelBase() {
 }
 
 // static
+int AuthenticatorSheetModelBase::GetPreferredContentWidth() {
+  views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+  return layout_provider->GetDistanceMetric(
+             views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
+         layout_provider->GetInsetsMetric(views::INSETS_DIALOG).width() -
+         layout_provider->GetInsetsMetric(views::INSETS_DIALOG_TITLE).width();
+}
+
+// static
 std::u16string AuthenticatorSheetModelBase::GetRelyingPartyIdString(
+    const AuthenticatorRequestDialogModel* dialog_model,
+    gfx::FontList font_list) {
+  return webauthn_ui_helpers::RpIdToElidedHost(
+      dialog_model->relying_party_id, GetPreferredContentWidth(), font_list);
+}
+
+// static
+std::u16string AuthenticatorSheetModelBase::GetRelyingPartyIdStringLabel(
     const AuthenticatorRequestDialogModel* dialog_model) {
-  // The preferred width of medium snap point modal dialog view is 448 dp, but
-  // we leave some room for padding between the text and the modal views.
-  static constexpr int kDialogWidth = 300;
-  return webauthn_ui_helpers::RpIdToElidedHost(dialog_model->relying_party_id,
-                                               kDialogWidth);
+  gfx::FontList font_list = views::TypographyProvider::Get().GetFont(
+      views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
+  return AuthenticatorSheetModelBase::GetRelyingPartyIdString(dialog_model,
+                                                              font_list);
+}
+
+// static
+std::u16string AuthenticatorSheetModelBase::GetRelyingPartyIdStringTitle(
+    const AuthenticatorRequestDialogModel* dialog_model) {
+  gfx::FontList font_list = views::TypographyProvider::Get().GetFont(
+      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_4);
+  return AuthenticatorSheetModelBase::GetRelyingPartyIdString(dialog_model,
+                                                              font_list);
 }
 
 bool AuthenticatorSheetModelBase::IsActivityIndicatorVisible() const {
@@ -216,7 +245,7 @@ std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepTitle() const {
            device::FidoRequestType::kMakeCredential);
   return l10n_util::GetStringFUTF16(
       IDS_WEBAUTHN_CREATE_PASSKEY_CHOOSE_DEVICE_TITLE,
-      GetRelyingPartyIdString(dialog_model()));
+      GetRelyingPartyIdStringTitle(dialog_model()));
 }
 
 std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepDescription()
@@ -243,8 +272,8 @@ bool AuthenticatorInsertAndActivateUsbSheetModel::IsActivityIndicatorVisible()
 
 std::u16string AuthenticatorInsertAndActivateUsbSheetModel::GetStepTitle()
     const {
-  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_GENERIC_TITLE,
-                                    GetRelyingPartyIdString(dialog_model()));
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_GENERIC_TITLE, GetRelyingPartyIdStringTitle(dialog_model()));
 }
 
 std::u16string AuthenticatorInsertAndActivateUsbSheetModel::GetStepDescription()
@@ -299,8 +328,9 @@ std::u16string AuthenticatorNoAvailableTransportsErrorModel::GetStepTitle()
 
 std::u16string
 AuthenticatorNoAvailableTransportsErrorModel::GetStepDescription() const {
-  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_ERROR_MISSING_CAPABILITY_DESC,
-                                    GetRelyingPartyIdString(dialog_model()));
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_ERROR_MISSING_CAPABILITY_DESC,
+      GetRelyingPartyIdStringLabel(dialog_model()));
 }
 
 // AuthenticatorNoPasskeysErrorModel ------------------------------------------
@@ -319,8 +349,9 @@ std::u16string AuthenticatorNoPasskeysErrorModel::GetStepTitle() const {
 }
 
 std::u16string AuthenticatorNoPasskeysErrorModel::GetStepDescription() const {
-  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_ERROR_NO_PASSKEYS_DESCRIPTION,
-                                    GetRelyingPartyIdString(dialog_model()));
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_ERROR_NO_PASSKEYS_DESCRIPTION,
+      GetRelyingPartyIdStringLabel(dialog_model()));
 }
 
 // AuthenticatorNotRegisteredErrorModel ---------------------------------------
@@ -600,7 +631,7 @@ AuthenticatorTouchIdSheetModel::AuthenticatorTouchIdSheetModel(
 }
 
 std::u16string AuthenticatorTouchIdSheetModel::GetStepTitle() const {
-  const std::u16string rp_id = GetRelyingPartyIdString(dialog_model());
+  const std::u16string rp_id = GetRelyingPartyIdStringTitle(dialog_model());
   std::optional<int> id = std::nullopt;
   switch (dialog_model()->request_type) {
     case device::FidoRequestType::kMakeCredential:
@@ -628,7 +659,7 @@ std::u16string AuthenticatorTouchIdSheetModel::GetStepDescription() const {
                  ? std::u16string()
                  : l10n_util::GetStringFUTF16(
                        IDS_WEBAUTHN_TOUCH_ID_ASSERTION_DESC,
-                       GetRelyingPartyIdString(dialog_model()));
+                       GetRelyingPartyIdStringLabel(dialog_model()));
   }
 }
 
@@ -700,7 +731,7 @@ std::u16string AuthenticatorOffTheRecordInterstitialSheetModel::GetStepTitle()
     const {
   return l10n_util::GetStringFUTF16(
       IDS_WEBAUTHN_PLATFORM_AUTHENTICATOR_OFF_THE_RECORD_INTERSTITIAL_TITLE,
-      GetRelyingPartyIdString(dialog_model()));
+      GetRelyingPartyIdStringTitle(dialog_model()));
 }
 
 std::u16string
@@ -882,8 +913,8 @@ bool AuthenticatorClientPinTapAgainSheetModel::IsActivityIndicatorVisible()
 }
 
 std::u16string AuthenticatorClientPinTapAgainSheetModel::GetStepTitle() const {
-  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_GENERIC_TITLE,
-                                    GetRelyingPartyIdString(dialog_model()));
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_GENERIC_TITLE, GetRelyingPartyIdStringTitle(dialog_model()));
 }
 
 std::u16string AuthenticatorClientPinTapAgainSheetModel::GetStepDescription()
@@ -1032,7 +1063,7 @@ AuthenticatorGenericErrorSheetModel::ForMissingCapability(
       dialog_model,
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_ERROR_MISSING_CAPABILITY_TITLE),
       l10n_util::GetStringFUTF16(IDS_WEBAUTHN_ERROR_MISSING_CAPABILITY_DESC,
-                                 GetRelyingPartyIdString(dialog_model))));
+                                 GetRelyingPartyIdStringLabel(dialog_model))));
 }
 
 // static
@@ -1121,8 +1152,8 @@ AuthenticatorResidentCredentialConfirmationSheetView::GetAcceptButtonLabel()
 
 std::u16string
 AuthenticatorResidentCredentialConfirmationSheetView::GetStepTitle() const {
-  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_GENERIC_TITLE,
-                                    GetRelyingPartyIdString(dialog_model()));
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_GENERIC_TITLE, GetRelyingPartyIdStringTitle(dialog_model()));
 }
 
 std::u16string
@@ -1174,15 +1205,17 @@ std::u16string AuthenticatorSelectAccountSheetModel::GetStepTitle() const {
   if (dialog_model()->creds.size() > 1) {
     return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CHOOSE_PASSKEY_TITLE);
   }
-  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_USE_PASSKEY_TITLE,
-                                    GetRelyingPartyIdString(dialog_model()));
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_USE_PASSKEY_TITLE,
+      GetRelyingPartyIdStringTitle(dialog_model()));
 }
 
 std::u16string AuthenticatorSelectAccountSheetModel::GetStepDescription()
     const {
   if (dialog_model()->creds.size() > 1) {
-    return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_CHOOSE_PASSKEY_BODY,
-                                      GetRelyingPartyIdString(dialog_model()));
+    return l10n_util::GetStringFUTF16(
+        IDS_WEBAUTHN_CHOOSE_PASSKEY_BODY,
+        GetRelyingPartyIdStringLabel(dialog_model()));
   }
   return u"";
 }
@@ -1326,8 +1359,9 @@ AuthenticatorCreatePasskeySheetModel::~AuthenticatorCreatePasskeySheetModel() =
     default;
 
 std::u16string AuthenticatorCreatePasskeySheetModel::GetStepTitle() const {
-  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_CREATE_PASSKEY_TITLE,
-                                    GetRelyingPartyIdString(dialog_model()));
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_CREATE_PASSKEY_TITLE,
+      GetRelyingPartyIdStringTitle(dialog_model()));
 }
 
 std::u16string AuthenticatorCreatePasskeySheetModel::GetStepDescription()
@@ -1361,11 +1395,8 @@ void AuthenticatorCreatePasskeySheetModel::OnAccept() {
 
 AuthenticatorGPMErrorSheetModel::AuthenticatorGPMErrorSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(
-          dialog_model,
-          base::FeatureList::IsEnabled(device::kWebAuthnNoAccountTimeout)
-              ? OtherMechanismButtonVisibility::kVisible
-              : OtherMechanismButtonVisibility::kHidden) {
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {
   vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
   if (dialog_model->in_onboarding_flow) {
     RecordOnboardingEvent(webauthn::metrics::OnboardingEvents::kFailure);
@@ -1461,10 +1492,11 @@ AuthenticatorMultiSourcePickerSheetModel::
 std::u16string AuthenticatorMultiSourcePickerSheetModel::GetStepTitle() const {
   if (has_passwords_) {
     return u"Use a saved credential for " +
-           GetRelyingPartyIdString(dialog_model()) + u" (UT)";
+           GetRelyingPartyIdStringTitle(dialog_model()) + u" (UT)";
   }
-  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_CHOOSE_PASSKEY_FOR_RP_TITLE,
-                                    GetRelyingPartyIdString(dialog_model()));
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_CHOOSE_PASSKEY_FOR_RP_TITLE,
+      GetRelyingPartyIdStringTitle(dialog_model()));
 }
 
 std::u16string AuthenticatorMultiSourcePickerSheetModel::GetStepDescription()
@@ -1489,8 +1521,9 @@ AuthenticatorPriorityMechanismSheetModel::
     ~AuthenticatorPriorityMechanismSheetModel() = default;
 
 std::u16string AuthenticatorPriorityMechanismSheetModel::GetStepTitle() const {
-  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_USE_PASSKEY_TITLE,
-                                    GetRelyingPartyIdString(dialog_model()));
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_USE_PASSKEY_TITLE,
+      GetRelyingPartyIdStringTitle(dialog_model()));
 }
 
 std::u16string AuthenticatorPriorityMechanismSheetModel::GetStepDescription()
@@ -1583,7 +1616,7 @@ std::u16string AuthenticatorGpmPinSheetModelBase::GetStepDescription() const {
     case Mode::kPinEntry:
       return l10n_util::GetStringFUTF16(
           IDS_WEBAUTHN_GPM_ENTER_PIN_DESC,
-          GetRelyingPartyIdString(dialog_model()));
+          GetRelyingPartyIdStringLabel(dialog_model()));
   }
 }
 
@@ -1751,7 +1784,7 @@ std::u16string AuthenticatorGpmArbitraryPinSheetModel::GetAccessibleName()
     case Mode::kPinEntry:
       return l10n_util::GetStringFUTF16(
           IDS_WEBAUTHN_GPM_ENTER_ALPHANUMERIC_PIN_ACCESSIBILITY_WITH_WEBSITE,
-          GetRelyingPartyIdString(dialog_model()));
+          base::UTF8ToUTF16(dialog_model()->relying_party_id));
   }
 }
 
@@ -1858,8 +1891,9 @@ AuthenticatorCreateGpmPasskeySheetModel::
     ~AuthenticatorCreateGpmPasskeySheetModel() = default;
 
 std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetStepTitle() const {
-  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_GPM_CREATE_PASSKEY_TITLE,
-                                    GetRelyingPartyIdString(dialog_model()));
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_GPM_CREATE_PASSKEY_TITLE,
+      GetRelyingPartyIdStringTitle(dialog_model()));
 }
 
 std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetStepDescription()
@@ -2059,6 +2093,8 @@ CombinedSelectorSheetModel::CombinedSelectorSheetModel(
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden) {
   webauthn::user_actions::RecordCombinedSelectorShown();
+  webauthn::metrics::RecordCombinedSelectorShown(
+      /*credential_count=*/dialog_model->mechanisms.size());
 }
 
 CombinedSelectorSheetModel::SelectionStatus
@@ -2081,7 +2117,7 @@ void CombinedSelectorSheetModel::SetSelectionIndex(size_t index) {
 std::u16string CombinedSelectorSheetModel::GetStepTitle() const {
   return l10n_util::GetStringFUTF16(
       IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE,
-      base::UTF8ToUTF16(dialog_model()->relying_party_id));
+      GetRelyingPartyIdStringTitle(dialog_model()));
 }
 
 std::u16string CombinedSelectorSheetModel::GetStepDescription() const {
@@ -2112,7 +2148,15 @@ std::u16string CombinedSelectorSheetModel::GetAcceptButtonLabel() const {
 }
 
 void CombinedSelectorSheetModel::OnAccept() {
+  webauthn::metrics::RecordCombinedSelectorAccept(
+      /*credential_count=*/dialog_model()->mechanisms.size(),
+      /*default_selected=*/selection_index_ == 0);
   const auto& mech = dialog_model()->mechanisms.at(selection_index_);
   webauthn::user_actions::RecordMechanismClick(mech);
   mech.callback.Run();
+}
+
+void CombinedSelectorSheetModel::OnCancel() {
+  webauthn::metrics::RecordCombinedSelectorCancelButtonClicked();
+  AuthenticatorSheetModelBase::OnCancel();
 }

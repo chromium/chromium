@@ -175,6 +175,8 @@
 -SearchPrefetchServiceEnabledBrowserTest.PrefetchServedBeforeHeaders
 # https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSearchPrefetchServiceNavigationPrefetchBrowserTest.DSEDoesNotAllowPrefetch
 -SearchPrefetchServiceNavigationPrefetchBrowserTest.DSEDoesNotAllowPrefetch
+# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSettingsTest.PaymentsSection
+-SettingsTest.PaymentsSection
 # https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSettingsTest.PaymentsSectionCardDialogs
 -SettingsTest.PaymentsSectionCardDialogs
 # https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSettingsTest.PaymentsSectionCardDialogs__PaymentsSectionCardDialogs_verifyOnlyValidCardNumbersAllowed_InvalidCasesWithNoError

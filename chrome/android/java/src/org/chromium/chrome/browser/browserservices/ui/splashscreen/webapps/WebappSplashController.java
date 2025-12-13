@@ -15,6 +15,8 @@ import android.widget.ImageView;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
@@ -29,6 +31,7 @@ import org.chromium.webapk.lib.common.WebApkCommonUtils;
 import org.chromium.webapk.lib.common.splash.SplashLayout;
 
 /** Displays the splash screen for homescreen shortcuts and WebAPKs. */
+@NullMarked
 public class WebappSplashController implements SplashDelegate {
     public static final int HIDE_ANIMATION_DURATION_MS = 300;
 
@@ -36,7 +39,7 @@ public class WebappSplashController implements SplashDelegate {
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final WebappInfo mWebappInfo;
 
-    private WebApkSplashNetworkErrorObserver mWebApkNetworkErrorObserver;
+    private @Nullable WebApkSplashNetworkErrorObserver mWebApkNetworkErrorObserver;
 
     public WebappSplashController(
             Activity activity,
@@ -48,7 +51,7 @@ public class WebappSplashController implements SplashDelegate {
 
         mWebappInfo = WebappInfo.create(intentDataProvider);
 
-        mSplashController.setConfig(this, HIDE_ANIMATION_DURATION_MS);
+        mSplashController.setConfigAndShowSplash(this, HIDE_ANIMATION_DURATION_MS);
 
         if (mWebappInfo.isForWebApk()) {
             mWebApkNetworkErrorObserver = new WebApkSplashNetworkErrorObserver(activity);
@@ -106,7 +109,7 @@ public class WebappSplashController implements SplashDelegate {
         storage.getSplashScreenImage(
                 new WebappDataStorage.FetchCallback<>() {
                     @Override
-                    public void onDataRetrieved(Bitmap splashImage) {
+                    public void onDataRetrieved(@Nullable Bitmap splashImage) {
                         initializeWebApkInfoSplashLayout(
                                 splashScreen, backgroundColor, splashImage, false);
                     }
@@ -117,7 +120,7 @@ public class WebappSplashController implements SplashDelegate {
     private void initializeWebApkInfoSplashLayout(
             ViewGroup splashScreen,
             int backgroundColor,
-            Bitmap splashImage,
+            @Nullable Bitmap splashImage,
             boolean isSplashIconMaskable) {
         Context context = ContextUtils.getApplicationContext();
 
@@ -144,12 +147,12 @@ public class WebappSplashController implements SplashDelegate {
         ImageView splashView = new ImageView(appContext);
         splashView.setBackgroundColor(backgroundColor);
 
+        String packageName = mWebappInfo.webApkPackageName();
+        assert packageName != null;
         Bitmap splashBitmap =
                 FileUtils.queryBitmapFromContentProvider(
                         appContext,
-                        Uri.parse(
-                                WebApkCommonUtils.generateSplashContentProviderUri(
-                                        mWebappInfo.webApkPackageName())));
+                        Uri.parse(WebApkCommonUtils.generateSplashContentProviderUri(packageName)));
         if (splashBitmap != null) {
             splashView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             splashView.setImageBitmap(splashBitmap);

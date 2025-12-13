@@ -57,7 +57,7 @@ source_set("generic_sensor") {
     "//base",
     "//device/base/synchronization",
     "//services/device/public/cpp:device_features",
-    "//ui/gfx/geometry:geometry",
+    "//ui/gfx/geometry",
   ]
 
   public_deps = [ "//services/device/public/cpp/generic_sensor" ]

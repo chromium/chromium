@@ -18,12 +18,12 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,10 +82,10 @@ class IsolatedWebAppTrustCheckerTest : public WebAppTest {
       web_package::SignedWebBundleId::CreateForPublicKey(kPublicKey2);
 
   const GURL kStartUrl1 =
-      GURL(std::string(chrome::kIsolatedAppScheme) +
+      GURL(std::string(webapps::kIsolatedAppScheme) +
            url::kStandardSchemeSeparator + kWebBundleId1.id());
   const GURL kStartUrl2 =
-      GURL(std::string(chrome::kIsolatedAppScheme) +
+      GURL(std::string(webapps::kIsolatedAppScheme) +
            url::kStandardSchemeSeparator + kWebBundleId2.id());
 
  private:

@@ -10,6 +10,8 @@ add_llvm_executable(spanify
   ../raw_ptr_plugin/StackAllocatedChecker.cpp
   )
 
+target_compile_features(spanify PUBLIC cxx_std_20)
+
 target_link_libraries(spanify
   clangASTMatchers
   clangTooling

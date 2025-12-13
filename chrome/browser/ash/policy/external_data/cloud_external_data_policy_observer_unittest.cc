@@ -49,6 +49,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/test_utils.h"
@@ -85,8 +86,9 @@ void ConstructAvatarPolicy(const std::string& file_name,
   ASSERT_TRUE(base::ReadFileToString(
       test_data_dir.Append("chromeos").Append("avatars").Append(file_name),
       policy_data));
-  base::JSONWriter::Write(
-      test::ConstructExternalDataReference(url, *policy_data), policy);
+  *policy =
+      base::WriteJson(test::ConstructExternalDataReference(url, *policy_data))
+          .value_or("");
 }
 
 class TestDelegate : public CloudExternalDataPolicyObserver::Delegate {
@@ -206,7 +208,8 @@ class CloudExternalDataPolicyObserverTest : public ash::DeviceSettingsTestBase {
       user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
 
   TestingProfileManager profile_manager_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 };
 
 CloudExternalDataPolicyObserverTest::CloudExternalDataPolicyObserverTest()

@@ -15,10 +15,18 @@ enum PATH_EXCL_MODE {
   EXCL_ABSPATH         // -ep3 (the full path with the disk letter)
 };
 
-enum {SOLID_NONE=0,SOLID_NORMAL=1,SOLID_COUNT=2,SOLID_FILEEXT=4,
-      SOLID_VOLUME_DEPENDENT=8,SOLID_VOLUME_INDEPENDENT=16};
+enum {
+  SOLID_NONE=0,    // Non-solid mode.
+  SOLID_NORMAL=1,  // Standard solid mode.
+  SOLID_COUNT=2,   // Reset the solid data after specified file count.
+  SOLID_FILEEXT=4, // Reset the solid data for every new file extension.
+  SOLID_VOLUME_DEPENDENT=8,    // Preserve solid data in all volumes.
+  SOLID_VOLUME_INDEPENDENT=16, // Reset solid data in all volumes.
+  SOLID_RESET=32,              // Reset solid data for newly added files.
+  SOLID_BLOCK_SIZE=64          // Reset solid data after the specified size.
+};
 
-enum {ARCTIME_NONE=0,ARCTIME_KEEP,ARCTIME_LATEST};
+enum ARCTIME_MODE {ARCTIME_NONE=0,ARCTIME_KEEP,ARCTIME_LATEST,ARCTIME_SPECIFIED};
 
 enum EXTTIME_MODE {
   EXTTIME_NONE=0,EXTTIME_1S,EXTTIME_MAX
@@ -145,8 +153,9 @@ class RAROptions
     bool DisableDone;
     bool DisableNames;
     bool PrintVersion;
-    int Solid;
-    int SolidCount;
+    uint Solid;
+    uint SolidCount;
+    uint64 SolidBlockSize;
     bool ClearArc;
     bool AddArcOnly;
     bool DisableComment;
@@ -159,7 +168,6 @@ class RAROptions
     bool AllYes;
     bool VerboseOutput; // -iv, display verbose output, used only in "WinRAR t" now.
     bool DisableSortSolid;
-    int ArcTime;
     int ConvertNames;
     bool ProcessOwners;
     bool SaveSymLinks;

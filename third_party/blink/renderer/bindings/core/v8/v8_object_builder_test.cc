@@ -72,10 +72,10 @@ TEST(V8ObjectBuilderTest, addString) {
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);
 
-  WTF::String test1 = "test1";
-  WTF::String test2;
-  WTF::String test3 = "test3";
-  WTF::String test4;
+  String test1 = "test1";
+  String test2;
+  String test3 = "test3";
+  String test4;
 
   builder.AddString("test1", test1);
   builder.AddString("test2", test2);

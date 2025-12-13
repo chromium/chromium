@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -81,7 +80,7 @@ LoginsResultOrError ProcessExactAndPSLForms(
 }
 
 void InjectAffiliationAndBrandingInformation(
-    AffiliatedMatchHelper* affiliated_match_helper,
+    base::WeakPtr<AffiliatedMatchHelper> affiliated_match_helper,
     LoginsOrErrorReply callback,
     LoginsResultOrError forms_or_error) {
   if (!affiliated_match_helper ||
@@ -172,9 +171,9 @@ void GetLoginsHelper::Init(AffiliatedMatchHelper* affiliated_match_helper,
   // Once for perfect matches and once for affiliations.
   const int kCallsNumber = 2;
 
-  auto affiliation_info_injection =
-      base::BindOnce(&InjectAffiliationAndBrandingInformation,
-                     affiliated_match_helper, std::move(callback));
+  auto affiliation_info_injection = base::BindOnce(
+      &InjectAffiliationAndBrandingInformation,
+      affiliated_match_helper->GetWeakPtr(), std::move(callback));
   auto forms_received_callback = base::BarrierCallback<LoginsResultOrError>(
       kCallsNumber, base::BindOnce(&GetLoginsHelper::MergeResults, this)
                         .Then(std::move(affiliation_info_injection)));

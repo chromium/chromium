@@ -19,8 +19,6 @@ const char kEducationalTipModuleHistogramName[] =
 
 constexpr int kHistorySyncPromoId = 10;
 
-constexpr std::array<int32_t, 0> kEducationalTipModuleHistogramEnumValues{};
-
 }  // namespace
 
 namespace segmentation_platform::home_modules {
@@ -36,26 +34,21 @@ std::map<SignalKey, FeatureQuery> HistorySyncPromo::GetInputs() {
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
            .name = kIsEligibleToHistoryOptIn})}};
 
-  int days_to_show_ephemeral_card_once =
-      features::KDaysToShowEphemeralCardOnce.Get();
   // Define signal for number of times all educational tip card has shown to the
   // user in limited days.
   DEFINE_UMA_FEATURE_ENUM_COUNT(countOfEducationalTipCardShownTimes,
                                 kEducationalTipModuleHistogramName,
-                                kEducationalTipModuleHistogramEnumValues.data(),
-                                kEducationalTipModuleHistogramEnumValues.size(),
-                                /* days= */ days_to_show_ephemeral_card_once);
+                                /* enum_id= */ nullptr, /* enum_size= */ 0,
+                                /* days= */ KDaysToShowEphemeralCardOnce);
   map.emplace(kEducationalTipShownCount,
               std::move(countOfEducationalTipCardShownTimes));
 
-  int days_to_show_history_sync_card_once =
-      features::KDaysToShowEachEphemeralCardOnce.Get();
   // Define signal for number of times history sync promo card has shown to the
   // user in limited days.
-  DEFINE_UMA_FEATURE_ENUM_COUNT(
-      countOfHistorySyncPromoShownTimes, kEducationalTipModuleHistogramName,
-      &kHistorySyncPromoId, /* enum_size= */ 1,
-      /* days= */ days_to_show_history_sync_card_once);
+  DEFINE_UMA_FEATURE_ENUM_COUNT(countOfHistorySyncPromoShownTimes,
+                                kEducationalTipModuleHistogramName,
+                                &kHistorySyncPromoId, /* enum_size= */ 1,
+                                /* days= */ KDaysToShowEachEphemeralCardOnce);
   map.emplace(kHistorySyncPromoShownCount,
               std::move(countOfHistorySyncPromoShownTimes));
   return map;
@@ -116,8 +109,7 @@ CardSelectionInfo::ShowResult HistorySyncPromo::ComputeCardResult(
   return result;
 }
 
-bool HistorySyncPromo::IsEnabled(bool is_in_enabled_cards_set,
-                                 int impression_count) {
+bool HistorySyncPromo::IsEnabled(int impression_count) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -128,12 +120,11 @@ bool HistorySyncPromo::IsEnabled(bool is_in_enabled_cards_set,
   }
 
   if (!base::FeatureList::IsEnabled(features::kEducationalTipModule) ||
-      !base::FeatureList::IsEnabled(switches::kHistoryOptInEducationalTip) ||
-      !is_in_enabled_cards_set) {
+      !base::FeatureList::IsEnabled(switches::kHistoryOptInEducationalTip)) {
     return false;
   }
 
-  if (impression_count >= features::kMaxHistorySyncCardImpressions.Get()) {
+  if (impression_count >= kSingleEphemeralCardMaxImpressions) {
     return false;
   }
 

@@ -25,7 +25,7 @@
 #include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkScalar.h"
+#include "third_party/skia/include/core/SkPoint.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
@@ -66,19 +66,19 @@ constexpr float kVersionButtonStrokeWidth = 1.0f;
 // otherwise both sides are rounded. Calling
 // `SetFlipCanvasOnPaintForRTLUI(true)` for the view means only one set of
 // corners for the "partnered" case is needed for both RTL and LTR.
-constexpr size_t kNumVersionButtonCornerRadii = 8;
-constexpr SkScalar
+constexpr size_t kNumVersionButtonCornerRadii = 4;
+constexpr SkVector
     kPartneredVersionButtonCorners[kNumVersionButtonCornerRadii] = {
-        kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius,
-        kVersionButtonSmallCornerRadius, kVersionButtonSmallCornerRadius,
-        kVersionButtonSmallCornerRadius, kVersionButtonSmallCornerRadius,
-        kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius};
-constexpr SkScalar
+        {kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius},
+        {kVersionButtonSmallCornerRadius, kVersionButtonSmallCornerRadius},
+        {kVersionButtonSmallCornerRadius, kVersionButtonSmallCornerRadius},
+        {kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius}};
+constexpr SkVector
     kStandaloneVersionButtonCorners[kNumVersionButtonCornerRadii] = {
-        kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius,
-        kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius,
-        kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius,
-        kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius};
+        {kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius},
+        {kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius},
+        {kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius},
+        {kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius}};
 
 // Corners for the `VersionButton` ink drop. For this, the "partnered" case
 // requires separate sets of corners for RTL and LTR.
@@ -99,15 +99,15 @@ constexpr gfx::RoundedCornersF kStandaloneVersionButtonInkDropCorners(
     kVersionButtonLargeCornerRadius);
 
 // Corners for the `SubmitFeedbackButton` contents.
-constexpr SkScalar kSubmitFeedbackButtonCorners[] = {
-    kSubmitFeedbackButtonSmallCornerRadius,
-    kSubmitFeedbackButtonSmallCornerRadius,
-    kSubmitFeedbackButtonLargeCornerRadius,
-    kSubmitFeedbackButtonLargeCornerRadius,
-    kSubmitFeedbackButtonLargeCornerRadius,
-    kSubmitFeedbackButtonLargeCornerRadius,
-    kSubmitFeedbackButtonSmallCornerRadius,
-    kSubmitFeedbackButtonSmallCornerRadius};
+constexpr SkVector kSubmitFeedbackButtonCorners[] = {
+    {kSubmitFeedbackButtonSmallCornerRadius,
+     kSubmitFeedbackButtonSmallCornerRadius},
+    {kSubmitFeedbackButtonLargeCornerRadius,
+     kSubmitFeedbackButtonLargeCornerRadius},
+    {kSubmitFeedbackButtonLargeCornerRadius,
+     kSubmitFeedbackButtonLargeCornerRadius},
+    {kSubmitFeedbackButtonSmallCornerRadius,
+     kSubmitFeedbackButtonSmallCornerRadius}};
 
 // Corners for the `SubmitFeedbackButton` ink drop. For this, the "partnered"
 // case requires separate sets of corners for RTL and LTR.
@@ -122,11 +122,11 @@ constexpr gfx::RoundedCornersF kSubmitFeedbackButtonInkDropCornersRToL(
     kSubmitFeedbackButtonSmallCornerRadius,
     kSubmitFeedbackButtonLargeCornerRadius);
 
-// Returns an array of `SkScalar` used to generate the rounded rect that's
+// Returns an array of `SkVector` used to generate the rounded rect that's
 // painted for the button, the same regardless of RTL/LTR but may be different
 // if `VersionButton` is "standalone" vs. "partnered" with a
 // `SubmitFeedbackButton`.
-const SkScalar (&GetVersionButtonContentCorners(
+const SkVector (&GetVersionButtonContentCorners(
     bool allow_user_feedback))[kNumVersionButtonCornerRadii] {
   return allow_user_feedback ? kPartneredVersionButtonCorners
                              : kStandaloneVersionButtonCorners;
@@ -220,9 +220,9 @@ class VersionButton : public views::LabelButton {
 
     flags.setAntiAlias(true);
     flags.setStrokeWidth(kVersionButtonStrokeWidth);
-    canvas->DrawPath(
-        SkPath().addRoundRect(gfx::RectFToSkRect(bounds), content_corners_),
-        flags);
+    canvas->DrawPath(SkPath::RRect(SkRRect::MakeRectRadii(
+                         gfx::RectFToSkRect(bounds), content_corners_)),
+                     flags);
   }
 
   void OnThemeChanged() override {
@@ -244,7 +244,7 @@ class VersionButton : public views::LabelButton {
   const bool allow_user_feedback_;
 
   // Array of values that represents the content rounded rect corners.
-  SkScalar content_corners_[kNumVersionButtonCornerRadii];
+  SkVector content_corners_[kNumVersionButtonCornerRadii];
 };
 
 BEGIN_METADATA(VersionButton)
@@ -256,13 +256,13 @@ class SubmitFeedbackButton : public IconButton {
   METADATA_HEADER(SubmitFeedbackButton, IconButton)
 
  public:
-  // `content_corners` - an array of `SkScalar` used to generate the rounded
+  // `content_corners` - an array of `SkVector` used to generate the rounded
   // rect that's painted for the button, the same regardless of RTL/LTR.
   // `highlight_corners` - a `gfx::RoundedCornersF` used to generate the
   // highlight path and ink drop, will be different depending on RTL/LTR.
   explicit SubmitFeedbackButton(
       version_info::Channel channel,
-      const SkScalar (&content_corners)[kNumVersionButtonCornerRadii],
+      const SkVector (&content_corners)[kNumVersionButtonCornerRadii],
       const gfx::RoundedCornersF& highlight_corners)
       : IconButton(base::BindRepeating([](const ui::Event& event) {
                      quick_settings_metrics_util::RecordQsButtonActivated(
@@ -305,9 +305,9 @@ class SubmitFeedbackButton : public IconButton {
 
     flags.setAntiAlias(true);
     flags.setStrokeWidth(kVersionButtonStrokeWidth);
-    canvas->DrawPath(
-        SkPath().addRoundRect(gfx::RectFToSkRect(bounds), content_corners_),
-        flags);
+    canvas->DrawPath(SkPath::RRect(SkRRect::MakeRectRadii(
+                         gfx::RectFToSkRect(bounds), content_corners_)),
+                     flags);
     IconButton::PaintButtonContents(canvas);
   }
 
@@ -329,7 +329,7 @@ class SubmitFeedbackButton : public IconButton {
 
  private:
   // Array of values that represents the content rounded rect corners.
-  SkScalar content_corners_[kNumVersionButtonCornerRadii];
+  SkVector content_corners_[kNumVersionButtonCornerRadii];
 };
 
 BEGIN_METADATA(SubmitFeedbackButton)

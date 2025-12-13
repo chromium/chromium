@@ -18,3 +18,21 @@ source_set("content_filters_observer_bridge") {
     "//components/supervised_user/core/common",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_filters_observer_bridge_unittest.cc" ]
+  deps = [
+    ":content_filters_observer_bridge",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//components/supervised_user/core/common:features",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}

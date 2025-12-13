@@ -19,7 +19,7 @@ source_set("omnibox_popup_shared") {
 # See the comment above on omnibox_suggestion_icon_util
 # for why these two targets are separated.
 source_set("omnibox_util") {
-  sources = [ "omnibox_text_field_delegate.h" ]
+  sources = [ "omnibox_text_input_delegate.h" ]
   deps = [
     "//base",
     "//components/omnibox/browser",
@@ -36,12 +36,16 @@ source_set("omnibox_util") {
 # Build target allowed while moving files from ui_bundled to other folders.
 # TODO(crbug.com/394567614): Move model files to model folder.
 source_set("model_interface") {
-  sources = [ "omnibox_text_field_ios.h" ]
+  sources = [
+    "omnibox_text_field_ios.h",
+    "omnibox_text_input.h",
+  ]
 
   deps = [
     ":omnibox_popup_shared",
     ":omnibox_util",
     "//base",
+    "//ios/chrome/browser/omnibox/public",
   ]
 }
 
@@ -56,6 +60,8 @@ source_set("omnibox_internal") {
     "omnibox_text_field_ios.mm",
     "omnibox_text_field_paste_delegate.h",
     "omnibox_text_field_paste_delegate.mm",
+    "omnibox_text_view_ios.h",
+    "omnibox_text_view_ios.mm",
     "omnibox_thumbnail_button.h",
     "omnibox_thumbnail_button.mm",
     "omnibox_view_controller.h",
@@ -109,10 +115,12 @@ source_set("unit_tests") {
   sources = [ "omnibox_text_field_ios_unittest.mm" ]
   deps = [
     ":omnibox_internal",
+    ":omnibox_util",
     ":resources_unit_tests",
     ":ui",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:string_conversions",

@@ -35,7 +35,7 @@ const CFTimeInterval kOutOfMemoryResetTimeInterval = 5;
 - (void)handleMemoryPressure {
   // Notify the system that the memory is critical and something should be done.
   base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   ++_foregroundMemoryWarningCount;
   // Register that we might die because of memory. If we are still alive in

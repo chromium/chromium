@@ -29,6 +29,7 @@
 #include <memory>
 
 #include "base/unguessable_token.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/request_priority.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"

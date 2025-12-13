@@ -35,7 +35,7 @@ source_set("renderer") {
 source_set("resource_provider") {
   visibility += [
     "//components/cast_streaming/renderer/*",
-    "//content/renderer:renderer",
+    "//content/renderer",
   ]
   public = [
     "public/resource_provider.h",

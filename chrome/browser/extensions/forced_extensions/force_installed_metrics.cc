@@ -19,14 +19,18 @@
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/updater/extension_downloader.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/extensions/management/management_util.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -36,6 +40,20 @@ using FailureReason = InstallStageTracker::FailureReason;
 namespace {
 // Timeout to report UMA if not all force-installed extension were loaded.
 constexpr base::TimeDelta kInstallationTimeout = base::Minutes(5);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Returns whether the management environment for the profile is low-trust.
+bool IsLowTrustEnvironment(Profile* profile) {
+  switch (GetHigherManagementAuthorityTrustworthiness(profile)) {
+    case policy::ManagementAuthorityTrustworthiness::NONE:
+    case policy::ManagementAuthorityTrustworthiness::LOW:
+      return true;
+    case policy::ManagementAuthorityTrustworthiness::TRUSTED:
+    case policy::ManagementAuthorityTrustworthiness::FULLY_TRUSTED:
+      return false;
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Converts user_manager::UserType to InstallStageTracker::UserType for
@@ -428,6 +446,26 @@ void ForceInstalledMetrics::ReportDisableReason(
                            smallest_disable_reason);
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+void ForceInstalledMetrics::ReportGreylistedStateByTrustLevel(
+    const ExtensionId& extension_id,
+    bool is_low_trust_environment) {
+  if (!blocklist_prefs::IsExtensionGreylisted(extension_id,
+                                              ExtensionPrefs::Get(profile_))) {
+    return;
+  }
+  if (is_low_trust_environment) {
+    base::UmaHistogramBoolean(
+        "Extensions.GreylistedForceInstalled.LowTrust.Enabled",
+        registry_->enabled_extensions().Contains(extension_id));
+  } else {
+    base::UmaHistogramBoolean(
+        "Extensions.GreylistedForceInstalled.HighTrust.Enabled",
+        registry_->enabled_extensions().Contains(extension_id));
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 void ForceInstalledMetrics::ReportMetricsOnExtensionsReady() {
   for (const auto& extension : tracker_->extensions()) {
     if (extension.second.status != ExtensionStatus::kReady)
@@ -446,6 +484,15 @@ void ForceInstalledMetrics::ReportMetricsOnExtensionsReady() {
 void ForceInstalledMetrics::ReportMetrics() {
   base::UmaHistogramCounts100("Extensions.ForceInstalledTotalCandidateCount",
                               tracker_->extensions().size());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  const bool is_low_trust_environment = IsLowTrustEnvironment(profile_);
+  for (const auto& extension : tracker_->extensions()) {
+    ReportGreylistedStateByTrustLevel(extension.first,
+                                      is_low_trust_environment);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
   std::set<ExtensionId> missing_forced_extensions;
   InstallStageTracker* install_stage_tracker =
       InstallStageTracker::Get(profile_);

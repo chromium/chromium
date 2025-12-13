@@ -16,7 +16,8 @@
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/ozone/public/native_pixmap_usage.h"
 
 namespace ui {
 
@@ -39,8 +40,8 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   bool InitializeBuffer(
       gfx::AcceleratedWidget widget,
       gfx::Size size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
+      viz::SharedImageFormat format,
+      NativePixmapUsageSet usage,
       std::optional<gfx::Size> visible_area_size = std::nullopt);
 
   // Creates a buffer object from native pixmap handle and initializes the
@@ -49,7 +50,7 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   // scheduled as an overlay.
   bool InitializeBufferFromHandle(gfx::AcceleratedWidget widget,
                                   gfx::Size size,
-                                  gfx::BufferFormat format,
+                                  viz::SharedImageFormat format,
                                   gfx::NativePixmapHandle handle);
 
   // gfx::NativePixmap overrides:
@@ -61,7 +62,7 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   size_t GetNumberOfPlanes() const override;
   bool SupportsZeroCopyWebGPUImport() const override;
   uint64_t GetBufferFormatModifier() const override;
-  gfx::BufferFormat GetBufferFormat() const override;
+  viz::SharedImageFormat GetSharedImageFormat() const override;
   gfx::Size GetBufferSize() const override;
   uint32_t GetUniqueId() const override;
   bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
@@ -74,7 +75,8 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   ~GbmPixmapWayland() override;
 
   // Asks Wayland to create a dmabuf based wl_buffer.
-  void CreateDmabufBasedWlBuffer();
+  void CreateDmabufBasedWlBuffer(
+      const gfx::OverlayPlaneData& overlay_plane_data);
 
   // gbm_bo wrapper for struct gbm_bo.
   std::unique_ptr<GbmBuffer> gbm_bo_;

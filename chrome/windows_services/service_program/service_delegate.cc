@@ -4,6 +4,7 @@
 
 #include "chrome/windows_services/service_program/service_delegate.h"
 
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 
 uint16_t ServiceDelegate::GetLogEventCategory() {
@@ -24,7 +25,8 @@ bool ServiceDelegate::PreRun() {
   return false;  // This delegate does not implement `Run()`.
 }
 
-HRESULT ServiceDelegate::Run(const base::CommandLine& /*command_line*/) {
+HRESULT ServiceDelegate::Run(const base::CommandLine& /*command_line*/,
+                             base::OnceClosure /*on_service_stopping*/) {
   NOTREACHED();
   return E_NOTIMPL;
 }

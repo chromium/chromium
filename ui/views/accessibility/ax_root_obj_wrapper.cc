@@ -44,7 +44,7 @@ void AXRootObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   out_node_data->id = unique_id_.Get();
   out_node_data->role = ax::mojom::Role::kDesktop;
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (!screen) {
     return;
   }

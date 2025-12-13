@@ -18,6 +18,12 @@ message NetworkEvent {
     MACOS_BACKGROUND_DOWNLOADER = 3;
   }
 
+  enum UserState {
+    UNSPECIFIED = 0;
+    LOGGED_IN = 1;
+    NOT_LOGGED_IN = 2;
+  }
+
   Stack stack = 1;
 
   // The URL of the network event.
@@ -38,6 +44,9 @@ message NetworkEvent {
 
   // Network outcome, 0 if success.
   int32 error_code = 7;
+
+  // UserState at the time the download was requested.
+  UserState user_state = 8;
 }
 
 message Omaha4Metric {

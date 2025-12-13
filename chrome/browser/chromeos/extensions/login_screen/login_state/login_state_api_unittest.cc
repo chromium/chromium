@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "extensions/browser/api_test_utils.h"
@@ -67,6 +69,23 @@ TEST_F(LoginStateApiUnittest, GetProfileType_SigninProfile) {
   EXPECT_EQ("SIGNIN_PROFILE", api_test_utils::RunFunctionAndReturnSingleResult(
                                   function.get(), "[]", profile.get())
                                   ->GetString());
+}
+
+// Test that |loginState.getProfileType()| returns |LOCK_PROFILE| for
+// extensions running in the lock profile.
+TEST_F(LoginStateApiUnittest, GetProfileType_LockProfile) {
+  // |ash::ProfileHelper::GetLockScreenProfile()| cannot be used as the
+  // |TestingProfileManager| set up by |BrowserWithTestWindowTest| has an empty
+  // user data directory.
+  TestingProfile::Builder builder;
+  builder.SetPath(base::FilePath(
+      FILE_PATH_LITERAL(ash::kLockScreenBrowserContextBaseName)));
+  std::unique_ptr<Profile> profile = builder.Build();
+
+  auto function = base::MakeRefCounted<LoginStateGetProfileTypeFunction>();
+  EXPECT_EQ("LOCK_PROFILE", api_test_utils::RunFunctionAndReturnSingleResult(
+                                function.get(), "[]", profile.get())
+                                ->GetString());
 }
 
 class LoginStateApiAshUnittest : public LoginStateApiUnittest {

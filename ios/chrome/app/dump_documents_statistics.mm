@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/app/dump_documents_statistics.h"
 
 #import "base/apple/backup_util.h"
@@ -91,8 +86,8 @@ void WriteSandboxStatisticsToFile(base::FilePath root,
     base::File statistics_file(
         statistics_file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     if (statistics_file.IsValid()) {
-      std::string json_value = json.value();
-      statistics_file.WriteAtCurrentPos(json_value.data(), json_value.size());
+      statistics_file.WriteAtCurrentPos(
+          base::as_bytes(base::span(json.value())));
       statistics_file.Flush();
     } else {
       DLOG(ERROR) << "Statistics file path could not be opened.";

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -104,7 +105,7 @@ enum class LinkFollowingPolicy {
 };
 
 GURL AppendUrlSeparator(const GURL& url) {
-  std::string new_path = url.path() + '/';
+  std::string new_path = url.GetPath() + '/';
   GURL::Replacements replacements;
   replacements.SetPathStr(new_path);
   return url.ReplaceComponents(replacements);
@@ -282,7 +283,8 @@ class FileURLDirectoryLoader
 #endif
       pending_data_.append(net::GetDirectoryListingEntry(
           filename.LossyDisplayName(), raw_bytes, data.info.IsDirectory(),
-          data.info.GetSize(), data.info.GetLastModifiedTime()));
+          base::ByteCount(data.info.GetSize()),
+          data.info.GetLastModifiedTime()));
     }
 
     MaybeTransferPendingData();
@@ -616,7 +618,8 @@ class FileURLLoader : public network::mojom::URLLoader {
     }
 
     auto file_data_source = std::make_unique<mojo::FileDataSource>(
-        base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ));
+        base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                             base::File::FLAG_WIN_SHARE_DELETE));
 
     std::vector<char> initial_read_buffer(net::kMaxBytesToSniff);
     auto read_result =

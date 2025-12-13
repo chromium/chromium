@@ -10,6 +10,7 @@
 #include <map>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 
@@ -55,8 +56,7 @@ class MediaPathFilter {
       const MediaFileExtensionList& extensions_list,
       MediaGalleryFileType type);
   void AddAdditionalExtensionsToMediaFileExtensionMap(
-      const base::FilePath::CharType* const* extensions_list,
-      size_t extensions_list_size,
+      base::span<const base::FilePath::CharType* const> extensions_list,
       MediaGalleryFileType type);
   void AddExtensionToMediaFileExtensionMap(
       const base::FilePath::CharType* extension,

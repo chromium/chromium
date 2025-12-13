@@ -11,10 +11,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.CHROME_COLORS;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.CHROME_DEFAULT;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.THEME_COLLECTIONS;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.UPLOAD_AN_IMAGE;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -45,7 +45,7 @@ public class NtpThemeBottomSheetViewUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private NtpThemeListItemView mChromeDefaultSection;
+    @Mock private NtpThemeListItemView mDefaultSection;
     @Mock private NtpThemeListItemView mUploadAnImageSection;
     @Mock private NtpThemeListItemView mChromeColorsSection;
     @Mock private NtpThemeListItemView mThemeCollectionsSection;
@@ -64,13 +64,12 @@ public class NtpThemeBottomSheetViewUnitTest {
 
         mNtpThemeBottomSheetView = spy(new NtpThemeBottomSheetView(mContext, null));
 
-        when(mNtpThemeBottomSheetView.getItemBySectionType(CHROME_DEFAULT))
-                .thenReturn(mChromeDefaultSection);
-        when(mNtpThemeBottomSheetView.getItemBySectionType(UPLOAD_AN_IMAGE))
+        when(mNtpThemeBottomSheetView.getItemBySectionType(DEFAULT)).thenReturn(mDefaultSection);
+        when(mNtpThemeBottomSheetView.getItemBySectionType(IMAGE_FROM_DISK))
                 .thenReturn(mUploadAnImageSection);
-        when(mNtpThemeBottomSheetView.getItemBySectionType(CHROME_COLORS))
+        when(mNtpThemeBottomSheetView.getItemBySectionType(CHROME_COLOR))
                 .thenReturn(mChromeColorsSection);
-        when(mNtpThemeBottomSheetView.getItemBySectionType(THEME_COLLECTIONS))
+        when(mNtpThemeBottomSheetView.getItemBySectionType(THEME_COLLECTION))
                 .thenReturn(mThemeCollectionsSection);
         when(mThemeCollectionsSection.findViewById(R.id.leading_icon))
                 .thenReturn(mThemeCollectionsItemIconView);
@@ -80,7 +79,7 @@ public class NtpThemeBottomSheetViewUnitTest {
     public void testDestroy() {
         mNtpThemeBottomSheetView.destroy();
 
-        verify(mChromeDefaultSection).destroy();
+        verify(mDefaultSection).destroy();
         verify(mUploadAnImageSection).destroy();
         verify(mChromeColorsSection).destroy();
         verify(mThemeCollectionsSection).destroy();
@@ -88,28 +87,29 @@ public class NtpThemeBottomSheetViewUnitTest {
 
     @Test
     public void testSetSectionTrailingIconVisibility() {
-        mNtpThemeBottomSheetView.setSectionTrailingIconVisibility(CHROME_DEFAULT, true);
-        verify(mChromeDefaultSection).setTrailingIconVisibility(eq(true));
+        mNtpThemeBottomSheetView.setSectionTrailingIconVisibility(DEFAULT, true);
+        verify(mDefaultSection).setTrailingIconVisibility(eq(true));
 
-        mNtpThemeBottomSheetView.setSectionTrailingIconVisibility(UPLOAD_AN_IMAGE, false);
+        mNtpThemeBottomSheetView.setSectionTrailingIconVisibility(IMAGE_FROM_DISK, false);
         verify(mUploadAnImageSection).setTrailingIconVisibility(eq(false));
     }
 
     @Test
     public void testSetSectionOnClickListener() {
-        mNtpThemeBottomSheetView.setSectionOnClickListener(CHROME_COLORS, mOnClickListener);
+        mNtpThemeBottomSheetView.setSectionOnClickListener(CHROME_COLOR, mOnClickListener);
         verify(mChromeColorsSection).setOnClickListener(mOnClickListener);
 
-        mNtpThemeBottomSheetView.setSectionOnClickListener(THEME_COLLECTIONS, mOnClickListener);
+        mNtpThemeBottomSheetView.setSectionOnClickListener(THEME_COLLECTION, mOnClickListener);
         verify(mThemeCollectionsSection).setOnClickListener(mOnClickListener);
     }
 
     @Test
     public void testSetLeadingIconForThemeCollections() {
-        final Pair<Integer, Integer> pair =
-                new Pair<>(
-                        R.drawable.upload_an_image_icon_for_theme_bottom_sheet,
-                        R.drawable.upload_an_image_icon_for_theme_bottom_sheet);
+        Drawable primaryDrawable =
+                mContext.getDrawable(R.drawable.upload_an_image_icon_for_theme_bottom_sheet);
+        Drawable secondaryDrawable =
+                mContext.getDrawable(R.drawable.upload_an_image_icon_for_theme_bottom_sheet);
+        final Pair<Drawable, Drawable> pair = new Pair<>(primaryDrawable, secondaryDrawable);
         mNtpThemeBottomSheetView.setLeadingIconForThemeCollections(pair);
 
         ArgumentCaptor<Pair<Drawable, Drawable>> captor = ArgumentCaptor.forClass(Pair.class);

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_UTILS_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/web/public/web_state_id.h"
@@ -16,6 +17,23 @@ class BrowserList;
 @class TabItem;
 @class TabSwitcherItem;
 class WebStateList;
+
+// Enum for the various layouts for the empty thumbnail of a tab grid view.
+typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType) {
+  EmptyThumbnailLayoutTypeLandscape = 1,
+  EmptyThumbnailLayoutTypePortrait,
+  EmptyThumbnailLayoutTypeCenteredPortrait,
+  EmptyThumbnailLayoutTypeLandscapeLeading,
+};
+
+// Returns the aspect ratio (height / width) of an item based on the container
+// `size`.
+CGFloat TabGridItemAspectRatio(CGSize size);
+
+// Returns the number of columns based on based on the container `size` and
+// `content_size_category`.
+NSInteger TabGridColumnsCount(CGSize size,
+                              UIContentSizeCategory content_size_category);
 
 // Returns the TabItem object representing the tab with the given `criteria`.
 // Returns `nil` if the tab is not found.

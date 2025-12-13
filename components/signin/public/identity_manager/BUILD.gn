@@ -6,6 +6,10 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+if (!is_fuchsia) {
+  import("//pdf/features.gni")
+}
+
 source_set("identity_manager") {
   sources = [
     "access_token_fetcher.cc",
@@ -20,6 +24,9 @@ source_set("identity_manager") {
     "account_managed_status_finder.cc",
     "account_managed_status_finder.h",
     "account_managed_status_finder_outcome.h",
+    "account_state_fetcher.cc",
+    "account_state_fetcher.h",
+    "accounts_cookie_mutator.cc",
     "accounts_cookie_mutator.h",
     "accounts_in_cookie_jar_info.cc",
     "accounts_in_cookie_jar_info.h",
@@ -35,7 +42,6 @@ source_set("identity_manager") {
     "identity_utils.cc",
     "identity_utils.h",
     "load_credentials_state.h",
-    "oauth_consumer_ids.h",
     "primary_account_access_token_fetcher.cc",
     "primary_account_access_token_fetcher.h",
     "primary_account_change_event.cc",
@@ -60,12 +66,16 @@ source_set("identity_manager") {
 
   deps = [
     "//components/image_fetcher/core",
-    "//components/plus_addresses:features",
+    "//components/plus_addresses/core/common:features",
     "//components/prefs",
     "//components/signin/internal/identity_manager",
     "//components/signin/public/webdata",
     "//services/network/public/cpp",
   ]
+
+  if (!is_fuchsia) {
+    deps += [ "//pdf:buildflags" ]
+  }
 
   if (is_chromeos) {
     deps += [ "//components/user_manager" ]
@@ -113,6 +123,7 @@ source_set("unit_tests") {
     "account_capabilities_unittest.cc",
     "account_info_unittest.cc",
     "account_managed_status_finder_unittest.cc",
+    "account_state_fetcher_unittest.cc",
     "accounts_cookie_mutator_unittest.cc",
     "accounts_in_cookie_jar_info_unittest.cc",
     "accounts_mutator_unittest.cc",
@@ -157,6 +168,10 @@ source_set("unit_tests") {
       "//components/account_manager_core",
       "//components/account_manager_core:test_support",
     ]
+  }
+
+  if (!is_fuchsia) {
+    deps += [ "//pdf:buildflags" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

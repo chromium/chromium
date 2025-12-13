@@ -14,7 +14,10 @@ static_library("extended_updates") {
     "extended_updates_notification.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/notifications",
+  ]
 
   deps = [
     "//ash",

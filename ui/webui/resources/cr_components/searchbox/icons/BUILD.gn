@@ -84,7 +84,10 @@ if (is_chrome_branded) {
     out_grd = "$target_gen_dir/chrome_branded_resources.grdp"
     input_files = [
       "camera.svg",
+      "google_agentspace_logo_25.svg",
       "google_agentspace_logo.svg",
+      "google_agentspace_monochrome_logo_25.svg",
+      "google_agentspace_monochrome_logo.svg",
       "google_g.svg",
       "google_g_gradient.svg",
       "google_g_cr23.svg",

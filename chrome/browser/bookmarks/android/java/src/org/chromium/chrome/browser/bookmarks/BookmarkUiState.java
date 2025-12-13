@@ -76,7 +76,7 @@ public class BookmarkUiState {
         String url = uri.toString();
 
         BookmarkUiState tempState = null;
-        if (url.equals(UrlConstants.BOOKMARKS_URL)) {
+        if (url.equals(UrlConstants.BOOKMARKS_NATIVE_URL)) {
             assumeNonNull(bookmarkModel.getDefaultFolderViewLocation());
             return createFolderState(bookmarkModel.getDefaultFolderViewLocation(), bookmarkModel);
         } else if (url.startsWith(UrlConstants.BOOKMARKS_FOLDER_URL)) {

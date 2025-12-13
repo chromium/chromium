@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
@@ -30,13 +31,15 @@ ScriptState* ScriptState::Create(v8::Local<v8::Context> context,
 ScriptState::ScriptState(v8::Local<v8::Context> context,
                          DOMWrapperWorld* world,
                          ExecutionContext* execution_context)
-    : isolate_(v8::Isolate::GetCurrent()),
+    : isolate_(world->GetIsolate()),
       context_(isolate_, context),
       world_(world),
       per_context_data_(MakeGarbageCollected<V8PerContextData>(context)) {
+  CHECK(isolate_);
   DCHECK(world_);
   context_.SetWeak(this, &OnV8ContextCollectedCallback);
-  context->SetAlignedPointerInEmbedderData(kV8ContextPerContextDataIndex, this);
+  context->SetAlignedPointerInEmbedderData(kV8ContextPerContextDataIndex, this,
+                                           gin::kBlinkScriptState);
   RendererResourceCoordinator::Get()->OnScriptStateCreated(this,
                                                            execution_context);
 }
@@ -78,8 +81,8 @@ void ScriptState::DissociateContext() {
 
   v8::HandleScope scope(GetIsolate());
   // Cut the reference from V8 context to ScriptState.
-  GetContext()->SetAlignedPointerInEmbedderData(kV8ContextPerContextDataIndex,
-                                                nullptr);
+  GetContext()->SetAlignedPointerInEmbedderData(
+      kV8ContextPerContextDataIndex, nullptr, gin::kBlinkScriptState);
   reference_from_v8_context_.Clear();
 
   // Cut the reference from ScriptState to V8 context.

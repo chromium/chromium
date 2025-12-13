@@ -6,13 +6,12 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -21,12 +20,14 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/unload_controller.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -64,6 +66,10 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/wm/window_pin_util.h"
+#endif
 
 using content::OpenURLParams;
 using content::Referrer;
@@ -165,7 +171,7 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase,
   SkColor GetTabColor(BrowserView* browser_view) {
     return TabStyle::Get()->GetTabBackgroundColor(
         TabStyle::TabSelectionState::kActive, /*hovered=*/false,
-        /*frame_active=*/true, *browser_view->GetColorProvider());
+        /*frame_active=*/true, browser_view->GetColorProvider());
   }
 
   WebAppRegistrar& registrar() {
@@ -224,8 +230,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
   Browser* app_browser;
   webapps::AppId app_id;
   {
-    ui_test_utils::BrowserChangeObserver app_browser_observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     base::RunLoop run_loop;
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
     DCHECK(provider);
@@ -250,7 +255,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
             }),
         FallbackBehavior::kAllowFallbackDataAlways);
     run_loop.Run();
-    app_browser = app_browser_observer.Wait();
+    app_browser = browser_created_observer.Wait();
     ASSERT_TRUE(app_browser);
     EXPECT_NE(app_browser, browser());
   }
@@ -276,13 +281,18 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   webapps::AppId app_id = Install();
 
   // Trigger the launch but do not wait for the web contents to load.
-  content::WebContents* web_contents =
-      apps::AppServiceProxyFactory::GetForProfile(profile())
-          ->BrowserAppLauncher()
-          ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-              app_id, apps::LaunchContainer::kLaunchContainerWindow,
-              WindowOpenDisposition::CURRENT_TAB,
-              apps::LaunchSource::kFromTest));
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile());
+  base::test::TestFuture<base::WeakPtr<Browser>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      future;
+  provider->scheduler().LaunchAppWithCustomParams(
+      apps::AppLaunchParams(
+          app_id, apps::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromTest),
+      future.GetCallback());
+  content::WebContents* web_contents = future.template Get<1>().get();
   ASSERT_TRUE(web_contents);
   Browser* app_browser = chrome::FindBrowserWithTab(web_contents);
   App app{app_id, app_browser,
@@ -420,10 +430,12 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MonochromeAppIconOnHomeTab) {
   Browser* app_browser = LaunchWebAppBrowser(app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
-  TabIcon* tab_icon = BrowserView::GetBrowserViewForBrowser(app_browser)
-                          ->tabstrip()
-                          ->tab_at(0)
-                          ->GetTabIconForTesting();
+  TabIcon* tab_icon =
+      static_cast<HorizontalTabStripRegionView*>(
+          BrowserView::GetBrowserViewForBrowser(app_browser)->tab_strip_view())
+          ->tab_strip()
+          ->tab_at(0)
+          ->GetTabIconForTesting();
 
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
 
@@ -512,8 +524,9 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   // Install and close app.
   webapps::AppId app_id = InstallTestWebApp(start_url);
-  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
-  CloseAndWait(app_browser);
+  BrowserWindowInterface* app_browser =
+      FindWebAppBrowser(browser()->profile(), app_id);
+  CloseAndWait(app_browser->GetBrowserForMigrationOnly());
 
   // Navigate to the app URL in the browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -525,7 +538,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
   // Reparent web contents into app browser.
   app_browser =
       web_app::ReparentWebContentsIntoAppBrowser(web_contents, app_id);
-  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  TabStripModel* tab_strip = app_browser->GetFeatures().tab_strip_model();
 
   // Expect the pinned home tab to also be opened.
   EXPECT_EQ(tab_strip->count(), 2);
@@ -543,7 +556,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
   // Reparent web contents into app browser.
   EXPECT_EQ(app_browser,
             web_app::ReparentWebContentsIntoAppBrowser(web_contents, app_id));
-  tab_strip = app_browser->tab_strip_model();
+  tab_strip = app_browser->GetFeatures().tab_strip_model();
 
   // Expect home tab to be focused.
   EXPECT_EQ(tab_strip->count(), 2);
@@ -694,15 +707,14 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
 
   chrome::NewTab(app_browser);
 
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
 
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::MoveTabsToNewWindow(app_browser, {1});
-  Browser* new_browser = new_browser_observer.Wait();
+  Browser* new_browser = browser_created_observer.Wait();
   ASSERT_TRUE(new_browser);
 
-  EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+  EXPECT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
 
   // Check that the tab made it to a new window.
   EXPECT_NE(app_browser, new_browser);
@@ -726,10 +738,9 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
   chrome::NewTab(app_browser);
 
   // Open a second app browser window.
-  ui_test_utils::BrowserChangeObserver app_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::MoveTabsToNewWindow(app_browser, {1});
-  Browser* app_browser2 = app_browser_observer.Wait();
+  Browser* app_browser2 = browser_created_observer.Wait();
   ASSERT_TRUE(app_browser2);
 
   EXPECT_EQ(app_browser->tab_strip_model()->count(), 1);
@@ -814,8 +825,8 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, NoFavicons) {
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
 
   // No favicons shown for web apps.
-  EXPECT_FALSE(tab_strip->delegate()->ShouldDisplayFavicon(
-      tab_strip->GetActiveWebContents()));
+  EXPECT_FALSE(
+      app_browser->ShouldDisplayFavicon(tab_strip->GetActiveWebContents()));
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
@@ -1007,7 +1018,11 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   EXPECT_EQ(tab_strip_model->GetWebContentsAt(0)->GetVisibleURL(), start_url);
   EXPECT_EQ(tab_strip_model->active_index(), 0);
 
-  BrowserView* view = BrowserView::GetBrowserViewForBrowser(app_browser);
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(app_browser);
+  ::TabStrip* tab_strip =
+      static_cast<HorizontalTabStripRegionView*>(browser_view->tab_strip_view())
+          ->tab_strip();
 
   // Open another tab.
   OpenUrlAndWait(app_browser,
@@ -1015,18 +1030,15 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   EXPECT_EQ(tab_strip_model->count(), 2);
 
   // Home tab should not be closable.
-  view->tabstrip()->CloseTab(view->tabstrip()->tab_at(0),
-                             CloseTabSource::kFromMouse);
+  tab_strip->CloseTab(tab_strip->tab_at(0), CloseTabSource::kFromMouse);
   EXPECT_EQ(tab_strip_model->count(), 2);
 
   // Non home tab should be closable.
-  view->tabstrip()->CloseTab(view->tabstrip()->tab_at(1),
-                             CloseTabSource::kFromMouse);
+  tab_strip->CloseTab(tab_strip->tab_at(1), CloseTabSource::kFromMouse);
   EXPECT_EQ(tab_strip_model->count(), 1);
 
   // The home tab is the only tab open so it can be closed.
-  view->tabstrip()->CloseTab(view->tabstrip()->tab_at(0),
-                             CloseTabSource::kFromMouse);
+  tab_strip->CloseTab(tab_strip->tab_at(0), CloseTabSource::kFromMouse);
   EXPECT_EQ(tab_strip_model->count(), 0);
 }
 
@@ -1351,6 +1363,12 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripForOnTaskBrowserTest,
   ASSERT_EQ(tab_strip_model->count(), 1);
   ASSERT_TRUE(tab_strip_model->IsTabPinned(0));
 
+  PinWindow(app_browser->window()->GetNativeWindow(), /*trusted=*/true);
+  // TODO(crbug.com/429215055): This should happen as a part of pin state
+  // transition.
+  app_browser->command_controller()->LockedFullscreenStateChanged();
+  ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(app_browser));
+
   // Open another tab so we can test tab close behavior on both home and
   // non-home tabs.
   OpenUrlAndWait(app_browser,
@@ -1358,8 +1376,11 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripForOnTaskBrowserTest,
   ASSERT_EQ(tab_strip_model->count(), 2);
 
   // Verify home tab cannot be closed.
-  auto* const tab_strip =
-      BrowserView::GetBrowserViewForBrowser(app_browser)->tabstrip();
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(app_browser);
+  ::TabStrip* tab_strip =
+      static_cast<HorizontalTabStripRegionView*>(browser_view->tab_strip_view())
+          ->tab_strip();
   tab_strip->CloseTab(tab_strip->tab_at(0), CloseTabSource::kFromMouse);
   ASSERT_EQ(tab_strip_model->count(), 2);
 
@@ -1389,8 +1410,11 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripForOnTaskBrowserTest,
   ASSERT_EQ(tab_strip_model->count(), 2);
 
   // Verify home tab cannot be closed (default behavior on tabbed web apps).
-  auto* const tab_strip =
-      BrowserView::GetBrowserViewForBrowser(app_browser)->tabstrip();
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(app_browser);
+  ::TabStrip* tab_strip =
+      static_cast<HorizontalTabStripRegionView*>(browser_view->tab_strip_view())
+          ->tab_strip();
   tab_strip->CloseTab(tab_strip->tab_at(0), CloseTabSource::kFromMouse);
   ASSERT_EQ(tab_strip_model->count(), 2);
 

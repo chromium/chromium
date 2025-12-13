@@ -23,11 +23,15 @@ This currently doesnt work on Windows due to different deps handling.
 
 Example usage: (Remove use_remoteexec=true if you don't have reclient access.)
 
-$ gn gen out/Debug --args="system_headers_in_deps=true enable_nacl=false
+$ gn gen out/Debug --args="system_headers_in_deps=true \
       symbol_level=0 use_remoteexec=true"
 $ autoninja -C out/Debug chrome
 $ tools/clang/scripts/compiler_inputs_size.py out/Debug \
       <(ninja -C out/Debug -t commands chrome) <(ninja -C out/Debug -t deps)
+
+Or with Siso:
+$ tools/clang/scripts/compiler_inputs_size.py out/Debug \
+      <(siso query commands -C out/Debug chrome) <(siso query deps -C out/Debug)
 apps/app_lifetime_monitor.cc 9,034,754
 apps/app_lifetime_monitor_factory.cc 5,863,660
 apps/app_restore_service.cc 9,198,130
@@ -114,6 +118,33 @@ def parse_deps(build_dir, deps_output):
   ...   '\n'.splitlines(keepends=True))
   >>> sorted(deps['foo.cc'])
   ['foo.h', 'foo_arm.h']
+
+  >>> deps = parse_deps(
+  ...   'dir1/dir2',
+  ...   'obj/foo.o: #deps 3, deps mtime 123456789 (VALID)\n'
+  ...   '    ../../gen.modulemap\n'
+  ...   '    ../../foo.cc\n'
+  ...   '    ../../foo.h\n'
+  ...   '\n'.splitlines(keepends=True))
+  >>> sorted(deps.keys())
+  ['foo.cc']
+  >>> sorted(deps['foo.cc'])
+  ['foo.h', 'gen.modulemap']
+
+  >>> deps = parse_deps(
+  ...   'dir1/dir2',
+  ...   'module.pcm: #deps 1, deps mtime 123456789 (VALID)\n'
+  ...   '    module.modulemap\n'
+  ...   '\n'
+  ...   'obj/foo.o: #deps 3, deps mtime 123456789 (VALID)\n'
+  ...   '    ../../gen.modulemap\n'
+  ...   '    ../../foo.cc\n'
+  ...   '    ../../foo.h\n'
+  ...   '\n'.splitlines(keepends=True))
+  >>> sorted(deps.keys())
+  ['foo.cc']
+  >>> sorted(deps['foo.cc'])
+  ['foo.h', 'gen.modulemap']
   """
 
   # obj/foo.o: #deps 3, deps mtime 123456789 (VALID)
@@ -121,7 +152,7 @@ def parse_deps(build_dir, deps_output):
   #     ../../foo.h
   #     ../../bar.h
   #
-  HEADER_RE = re.compile(r'.*: #deps (\d+), deps mtime \d+ \((VALID|STALE)\)')
+  HEADER_RE = re.compile(r'(.*): #deps (\d+), deps mtime \d+ \((VALID|STALE)\)')
 
   deps = dict()
   deps_iter = iter(deps_output)
@@ -134,10 +165,12 @@ def parse_deps(build_dir, deps_output):
     m = HEADER_RE.match(line)
     if not m:
       raise Exception("Unexpected deps header line: '%s'" % line)
-    num_deps = int(m.group(1))
-    if m.group(2) == 'STALE':
-      # A deps entry is stale if the .o file doesn't exist or if it's newer than
-      # the deps entry. Skip such entries.
+
+    num_deps = int(m.group(2))
+    if m.group(1).endswith(".pcm") or m.group(3) == 'STALE':
+      # Ignore dependencies for precompiled modules (.pcm) and stale entries.
+      # A 'STALE' entry means the .o file doesn't exist or if it's newer than
+      # the deps entry.
       for _ in range(num_deps + 1):
         next(deps_iter)
       continue
@@ -146,20 +179,25 @@ def parse_deps(build_dir, deps_output):
       next(deps_iter)
       continue
 
-    # Read the main file line.
-    line = next(deps_iter)
-    if not line.startswith('    '):
-      raise Exception("Unexpected deps main file line '%s'" % line)
-    main_file = norm_path(build_dir, line[4:].rstrip('\n'))
-    deps.setdefault(main_file, set())
-
+    # The main source file isn't always the first dependency, e.g. when using
+    # clang modules. So we need to find the main source file.
+    main_file = None
+    # The set of dependencies for the current file.
+    dep = set()
     # Read the deps lines.
-    for _ in range(num_deps - 1):
+    for _ in range(num_deps):
       line = next(deps_iter)
       if not line.startswith('    '):
         raise Exception("Unexpected deps file line '%s'" % line)
       dep_file = norm_path(build_dir, line[4:].rstrip('\n'))
-      deps[main_file].add(dep_file)
+      if not dep_file.endswith(".pcm") and not dep_file.endswith(
+          ".modulemap") and not dep_file.endswith(".txt") and main_file is None:
+        main_file = dep_file
+        continue
+      dep.add(dep_file)
+
+    deps.setdefault(main_file, set())
+    deps[main_file] |= dep
 
     # Read the blank line.
     line = next(deps_iter)
@@ -177,6 +215,7 @@ def parse_commands(build_dir, commands_output):
   >>> sorted(parse_commands('dir1/dir2',
   ...  '/x/rewrapper ../y/clang++ -a -b -c ../../foo.cc -o foo.o\n'
   ...  'clang -x blah -c ../../bar.c -o bar.o\n'
+  ...  'clang -x blah -c ../../bar.modulemap -o bar.pcm\n'
   ...  'clang-cl.exe /Fobaz.o /c baz.cc\n'.splitlines(keepends=True)))
   ['bar.c', 'dir1/dir2/baz.cc', 'foo.cc']
   """
@@ -185,7 +224,10 @@ def parse_commands(build_dir, commands_output):
   for line in commands_output:
     m = COMPILE_RE.match(line)
     if m:
-      files.add(norm_path(build_dir, m.group(1)))
+      file = norm_path(build_dir, m.group(1))
+      # Ignore modulemap config file.
+      if not file.endswith(".modulemap"):
+        files.add(file)
   return files
 
 

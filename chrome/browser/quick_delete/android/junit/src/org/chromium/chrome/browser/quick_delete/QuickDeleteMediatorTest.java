@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.quick_delete;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,7 +49,7 @@ public class QuickDeleteMediatorTest {
     @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
 
     @Mock private Profile mProfileMock;
-    @Mock private QuickDeleteBridge mQuickDeleteBridgeMock;
+    @Mock private QuickDeleteBridge.Natives mQuickDeleteBridgeNatives;
     @Mock private QuickDeleteTabsFilter mQuickDeleteTabsFilterMock;
     @Mock private QuickDeleteTabsFilter mQuickDeleteArchivedTabsFilterMock;
     @Mock private List<Tab> mTabsListMock;
@@ -63,6 +63,7 @@ public class QuickDeleteMediatorTest {
         when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock))
                 .thenReturn(mIdentityManagerMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
+        QuickDeleteBridgeJni.setInstanceForTesting(mQuickDeleteBridgeNatives);
 
         mPropertyModel = new PropertyModel.Builder(QuickDeleteProperties.ALL_KEYS).build();
     }
@@ -85,11 +86,7 @@ public class QuickDeleteMediatorTest {
 
         mQuickDeleteMediator =
                 new QuickDeleteMediator(
-                        mPropertyModel,
-                        mProfileMock,
-                        mQuickDeleteBridgeMock,
-                        mQuickDeleteTabsFilterMock,
-                        null);
+                        mPropertyModel, mProfileMock, mQuickDeleteTabsFilterMock, null);
         mQuickDeleteMediator.onTimePeriodChanged(TimePeriod.LAST_15_MINUTES);
 
         assertTrue(mPropertyModel.get(QuickDeleteProperties.IS_SIGNED_IN));
@@ -98,8 +95,8 @@ public class QuickDeleteMediatorTest {
                 TimePeriod.LAST_15_MINUTES, mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD));
         assertTrue(mPropertyModel.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING));
         assertFalse(mPropertyModel.get(QuickDeleteProperties.IS_SYNCING_HISTORY));
-        verify(mQuickDeleteBridgeMock)
-                .getLastVisitedDomainAndUniqueDomainCount(eq(TimePeriod.LAST_15_MINUTES), any());
+        verify(mQuickDeleteBridgeNatives)
+                .restartCounterForTimePeriod(anyLong(), eq(TimePeriod.LAST_15_MINUTES));
     }
 
     @Test
@@ -124,7 +121,6 @@ public class QuickDeleteMediatorTest {
                 new QuickDeleteMediator(
                         mPropertyModel,
                         mProfileMock,
-                        mQuickDeleteBridgeMock,
                         mQuickDeleteTabsFilterMock,
                         mQuickDeleteArchivedTabsFilterMock);
         mQuickDeleteMediator.onTimePeriodChanged(TimePeriod.LAST_15_MINUTES);
@@ -135,7 +131,7 @@ public class QuickDeleteMediatorTest {
                 TimePeriod.LAST_15_MINUTES, mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD));
         assertTrue(mPropertyModel.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING));
         assertFalse(mPropertyModel.get(QuickDeleteProperties.IS_SYNCING_HISTORY));
-        verify(mQuickDeleteBridgeMock)
-                .getLastVisitedDomainAndUniqueDomainCount(eq(TimePeriod.LAST_15_MINUTES), any());
+        verify(mQuickDeleteBridgeNatives)
+                .restartCounterForTimePeriod(anyLong(), eq(TimePeriod.LAST_15_MINUTES));
     }
 }

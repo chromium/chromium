@@ -13,7 +13,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/paint_preview/common/mock_paint_preview_recorder.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
+#include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -26,47 +28,19 @@ using paint_preview::DirectoryKey;
 using paint_preview::FileManager;
 
 namespace {
-
 constexpr char kFeatureName[] = "tab_service_test";
 
 // Override PaintPreviewRecorder with a mock version where the status and
 // response can be manipulated based on the expected response.
-class MockPaintPreviewRecorder
-    : public paint_preview::mojom::PaintPreviewRecorder {
+class LaxMockPaintPreviewRecorder
+    : public paint_preview::MockPaintPreviewRecorder {
  public:
-  MockPaintPreviewRecorder() = default;
-  ~MockPaintPreviewRecorder() override = default;
+  LaxMockPaintPreviewRecorder() = default;
+  ~LaxMockPaintPreviewRecorder() override = default;
 
-  MockPaintPreviewRecorder(const MockPaintPreviewRecorder&) = delete;
-  MockPaintPreviewRecorder& operator=(const MockPaintPreviewRecorder&) = delete;
-
-  void CapturePaintPreview(
-      paint_preview::mojom::PaintPreviewCaptureParamsPtr params,
-      paint_preview::mojom::PaintPreviewRecorder::CapturePaintPreviewCallback
-          callback) override {
-    std::move(callback).Run(status_, std::move(response_));
-  }
-
-  // Must be called with a new `response` before each capture.
-  void SetResponse(
-      paint_preview::mojom::PaintPreviewStatus status,
-      paint_preview::mojom::PaintPreviewCaptureResponsePtr&& response) {
-    status_ = status;
-    response_ = std::move(response);
-  }
-
-  void BindRequest(mojo::ScopedInterfaceEndpointHandle handle) {
-    binding_.reset();
-    binding_.Bind(
-        mojo::PendingAssociatedReceiver<
-            paint_preview::mojom::PaintPreviewRecorder>(std::move(handle)));
-  }
-
- private:
-  paint_preview::mojom::PaintPreviewStatus status_;
-  paint_preview::mojom::PaintPreviewCaptureResponsePtr response_;
-  mojo::AssociatedReceiver<paint_preview::mojom::PaintPreviewRecorder> binding_{
-      this};
+ protected:
+  void CheckParams(const paint_preview::mojom::PaintPreviewCaptureParamsPtr&
+                       params) override {}
 };
 
 std::vector<base::FilePath> ListDir(const base::FilePath& path) {
@@ -122,12 +96,12 @@ class LongScreenshotsTabServiceTest : public ChromeRenderViewHostTestHarness {
     return service_->GetRootRenderFrameHost(frame, url);
   }
 
-  void OverrideInterface(MockPaintPreviewRecorder* recorder) {
+  void OverrideInterface(LaxMockPaintPreviewRecorder* recorder) {
     blink::AssociatedInterfaceProvider* remote_interfaces =
         web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
     remote_interfaces->OverrideBinderForTesting(
         paint_preview::mojom::PaintPreviewRecorder::Name_,
-        base::BindRepeating(&MockPaintPreviewRecorder::BindRequest,
+        base::BindRepeating(&LaxMockPaintPreviewRecorder::BindRequest,
                             base::Unretained(recorder)));
   }
 
@@ -142,15 +116,15 @@ class LongScreenshotsTabServiceTest : public ChromeRenderViewHostTestHarness {
 TEST_F(LongScreenshotsTabServiceTest, CaptureTab) {
   const int kTabId = 1U;
 
-  MockPaintPreviewRecorder recorder;
-  recorder.SetResponse(
-      paint_preview::mojom::PaintPreviewStatus::kOk,
-      paint_preview::mojom::PaintPreviewCaptureResponse::New());
+  LaxMockPaintPreviewRecorder recorder;
+  recorder.SetResponse();
   OverrideInterface(&recorder);
 
   auto* service = GetService();
   service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
-                      1000, false);
+                      1000, false,
+                      paint_preview::mojom::ClipCoordOverride::kNone,
+                      paint_preview::mojom::ClipCoordOverride::kNone);
   task_environment()->RunUntilIdle();
 
   auto file_manager = service->GetFileMixin()->GetFileManager();
@@ -175,17 +149,20 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTab) {
 TEST_F(LongScreenshotsTabServiceTest, CaptureTabInMemory) {
   const int kTabId = 1U;
 
-  MockPaintPreviewRecorder recorder;
+  LaxMockPaintPreviewRecorder recorder;
   paint_preview::mojom::PaintPreviewCaptureResponsePtr response =
       paint_preview::mojom::PaintPreviewCaptureResponse::New();
+  response->geometry_metadata =
+      paint_preview::mojom::GeometryMetadataResponse::New();
   response->skp.emplace(mojo_base::BigBuffer());
-  recorder.SetResponse(paint_preview::mojom::PaintPreviewStatus::kOk,
-                       std::move(response));
+  recorder.SetResponse(std::move(response));
   OverrideInterface(&recorder);
 
   auto* service = GetService();
   service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
-                      1000, true);
+                      1000, true,
+                      paint_preview::mojom::ClipCoordOverride::kNone,
+                      paint_preview::mojom::ClipCoordOverride::kNone);
   task_environment()->RunUntilIdle();
 
   // No file should have been created.
@@ -203,15 +180,15 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabInMemory) {
 TEST_F(LongScreenshotsTabServiceTest, CaptureTabTwice) {
   const int kTabId = 1U;
 
-  MockPaintPreviewRecorder recorder;
-  recorder.SetResponse(
-      paint_preview::mojom::PaintPreviewStatus::kOk,
-      paint_preview::mojom::PaintPreviewCaptureResponse::New());
+  LaxMockPaintPreviewRecorder recorder;
+  recorder.SetResponse();
   OverrideInterface(&recorder);
 
   auto* service = GetService();
   service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
-                      1000, false);
+                      1000, false,
+                      paint_preview::mojom::ClipCoordOverride::kNone,
+                      paint_preview::mojom::ClipCoordOverride::kNone);
 
   task_environment()->RunUntilIdle();
   auto file_manager = service->GetFileMixin()->GetFileManager();
@@ -236,11 +213,11 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabTwice) {
   auto files_1 = ListDir(path_1);
   ASSERT_EQ(1U, files_1.size());
 
-  recorder.SetResponse(
-      paint_preview::mojom::PaintPreviewStatus::kOk,
-      paint_preview::mojom::PaintPreviewCaptureResponse::New());
+  recorder.SetResponse();
   service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 1000, 1000,
-                      2000, 2000, false);
+                      2000, 2000, false,
+                      paint_preview::mojom::ClipCoordOverride::kNone,
+                      paint_preview::mojom::ClipCoordOverride::kNone);
   task_environment()->RunUntilIdle();
 
   service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
@@ -280,15 +257,16 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabTwice) {
 TEST_F(LongScreenshotsTabServiceTest, CaptureTabFailed) {
   const int kTabId = 1U;
 
-  MockPaintPreviewRecorder recorder;
+  LaxMockPaintPreviewRecorder recorder;
   recorder.SetResponse(
-      paint_preview::mojom::PaintPreviewStatus::kFailed,
-      paint_preview::mojom::PaintPreviewCaptureResponse::New());
+      base::unexpected(paint_preview::mojom::PaintPreviewStatus::kFailed));
   OverrideInterface(&recorder);
 
   auto* service = GetService();
   service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
-                      1000, false);
+                      1000, false,
+                      paint_preview::mojom::ClipCoordOverride::kNone,
+                      paint_preview::mojom::ClipCoordOverride::kNone);
   task_environment()->RunUntilIdle();
 
   auto file_manager = service->GetFileMixin()->GetFileManager();

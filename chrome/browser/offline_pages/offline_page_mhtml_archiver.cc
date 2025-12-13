@@ -99,7 +99,7 @@ void OfflinePageMHTMLArchiver::GenerateMHTML(
   params.use_binary_encoding = true;
   params.remove_popup_overlay = create_archive_params.remove_popup_overlay;
 
-  web_contents->GenerateMHTMLWithResult(
+  web_contents->GenerateMHTML(
       params,
       base::BindOnce(&OfflinePageMHTMLArchiver::OnGenerateMHTMLDone,
                      weak_ptr_factory_.GetWeakPtr(), url, file_path, title,
@@ -112,24 +112,19 @@ void OfflinePageMHTMLArchiver::OnGenerateMHTMLDone(
     const std::u16string& title,
     const std::string& name_space,
     base::Time mhtml_start_time,
-    const content::MHTMLGenerationResult& result) {
-  if (result.file_size < 0) {
+    int64_t file_size) {
+  if (file_size < 0) {
     DeleteFileAndReportFailure(file_path,
                                ArchiverResult::ERROR_ARCHIVE_CREATION_FAILED);
     return;
   }
 
-  if (result.file_digest) {
-    OnComputeDigestDone(url, file_path, title, name_space, base::Time(),
-                        result.file_size, result.file_digest.value());
-  } else {
-    const base::Time digest_start_time = OfflineTimeNow();
-    ComputeDigestOnFileThread(
-        file_path,
-        base::BindOnce(&OfflinePageMHTMLArchiver::OnComputeDigestDone,
-                       weak_ptr_factory_.GetWeakPtr(), url, file_path, title,
-                       name_space, digest_start_time, result.file_size));
-  }
+  const base::Time digest_start_time = OfflineTimeNow();
+  ComputeDigestOnFileThread(
+      file_path,
+      base::BindOnce(&OfflinePageMHTMLArchiver::OnComputeDigestDone,
+                     weak_ptr_factory_.GetWeakPtr(), url, file_path, title,
+                     name_space, digest_start_time, file_size));
 }
 
 void OfflinePageMHTMLArchiver::OnComputeDigestDone(

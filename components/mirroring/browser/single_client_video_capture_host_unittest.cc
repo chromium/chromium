@@ -5,7 +5,6 @@
 #include "components/mirroring/browser/single_client_video_capture_host.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
@@ -18,13 +17,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#endif
 
 using media::VideoFrameReceiver;
 using ::testing::InvokeWithoutArgs;
@@ -80,20 +74,13 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
   ~FakeDeviceLauncher() override = default;
 
   // content::VideoCaptureDeviceLauncher implementation.
-  void LaunchDeviceAsync(
-      const std::string& device_id,
-      blink::mojom::MediaStreamType stream_type,
-      const VideoCaptureParams& params,
-      base::WeakPtr<VideoFrameReceiver> receiver,
-      base::OnceClosure connection_lost_cb,
-      Callbacks* callbacks,
-      base::OnceClosure done_cb,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor,
-#endif
-      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-          readonly_video_effects_manager) override {
+  void LaunchDeviceAsync(const std::string& device_id,
+                         blink::mojom::MediaStreamType stream_type,
+                         const VideoCaptureParams& params,
+                         base::WeakPtr<VideoFrameReceiver> receiver,
+                         base::OnceClosure connection_lost_cb,
+                         Callbacks* callbacks,
+                         base::OnceClosure done_cb) override {
     if (!params.IsValid()) {
       callbacks->OnDeviceLaunchFailed(
           media::VideoCaptureError::
@@ -172,8 +159,8 @@ class MockVideoCaptureObserver final
   }
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason reason));
 
-  MOCK_METHOD1(OnNewSubCaptureTargetVersion,
-               void(uint32_t sub_capture_target_version));
+  MOCK_METHOD1(OnNewCaptureVersion,
+               void(const media::CaptureVersion& capture_version));
 
   MOCK_METHOD1(OnStateChangedCall, void(media::mojom::VideoCaptureState state));
   MOCK_METHOD1(OnVideoCaptureErrorCall, void(media::VideoCaptureError error));

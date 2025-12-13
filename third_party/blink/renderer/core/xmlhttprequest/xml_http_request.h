@@ -294,11 +294,6 @@ class CORE_EXPORT XMLHttpRequest final
   //   so there is no need.
   void ReportMemoryUsageToV8();
 
-  // Creates a task scope used for firing events if the `task_state_` is set
-  // and different from the current task.
-  std::optional<scheduler::TaskAttributionTracker::TaskScope>
-  MaybeCreateTaskAttributionScope();
-
   Member<XMLHttpRequestUpload> upload_;
 
   KURL url_;
@@ -364,6 +359,10 @@ class CORE_EXPORT XMLHttpRequest final
   // |m_responseTypeCode| is NOT ResponseTypeBlob.
   Member<BlobLoader> blob_loader_;
 
+  // Task state associated with send(). Note this will be null before send() is
+  // called, which means event dispatched before that, e.g. due to open(), will
+  // have a null context -- which is fine since task attribution ignores null
+  // both null task state and non-top-level propagation.
   Member<scheduler::TaskAttributionInfo> task_state_;
 
   bool async_ = true;

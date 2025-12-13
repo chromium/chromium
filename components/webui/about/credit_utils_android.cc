@@ -18,3 +18,5 @@ static void JNI_CreditUtils_WriteCreditsHtml(JNIEnv* env, jint fd) {
 }
 
 }  // namespace about_ui
+
+DEFINE_JNI(CreditUtils)

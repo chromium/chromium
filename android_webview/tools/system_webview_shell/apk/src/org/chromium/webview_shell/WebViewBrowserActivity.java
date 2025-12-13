@@ -43,9 +43,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Locale;
 import java.util.concurrent.Executors;
 
 /**
@@ -61,14 +58,6 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     private boolean mEnableTracing;
     private boolean mIsStoppingTracing;
     private WebView mWebView;
-
-    // This set of models will always bypass strict mode.
-    // Google pre-release hardware models do not belong here.
-    private static final HashSet<String> STRICT_MODE_BYPASS_MODELS =
-            new HashSet<>(
-                    Arrays.asList(
-                            "humuhumu titan" // See https://crbug.com/1090841#c76
-                            ));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -264,6 +253,11 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         } else if (itemId == R.id.start_animation_activity) {
             startActivity(new Intent(this, WebViewAnimationTestActivity.class));
             return true;
+        } else if (itemId == R.id.menu_fullscreen) {
+            Intent intent = new Intent(this, FullscreenActivity.class);
+            intent.putExtra(FullscreenActivity.URL_EXTRA, mWebView.getUrl());
+            startActivity(intent);
+            return true;
         } else if (itemId == R.id.menu_print) {
             PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
             String jobName = "WebViewShell document";
@@ -282,6 +276,14 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                 mWebView.setVisibility(View.INVISIBLE);
             } else {
                 mWebView.setVisibility(View.VISIBLE);
+            }
+            return true;
+        } else if (itemId == R.id.menu_preconnect) {
+            String url = mFragment.getUrlFromUrlBar();
+            if (url == null || url.equals("about:blank")) {
+                Toast.makeText(this, "Please enter URL in URL bar.", Toast.LENGTH_SHORT).show();
+            } else {
+                WebViewCompat.getProfile(mWebView).preconnect(url);
             }
             return true;
         }
@@ -353,15 +355,16 @@ public class WebViewBrowserActivity extends AppCompatActivity {
      * not controlled by WebView or by WebView shell browser).
      */
     private static void enableStrictMode() {
-        String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.US);
-        String model = Build.MODEL.toLowerCase(Locale.US);
-
         StrictMode.ThreadPolicy.Builder threadPolicyBuilder =
                 new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDeath();
 
-        if (!manufacturer.equalsIgnoreCase("google") || STRICT_MODE_BYPASS_MODELS.contains(model)) {
-            threadPolicyBuilder.permitDiskReads();
-            threadPolicyBuilder.permitDiskWrites();
+        // See https://crbug.com/1090841#c76
+        // See https://crbug.com/439646941
+        // See https://crbug.com/439646941
+        threadPolicyBuilder.permitDiskReads();
+        threadPolicyBuilder.permitDiskWrites();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            threadPolicyBuilder.permitUnbufferedIo();
         }
 
         StrictMode.setThreadPolicy(threadPolicyBuilder.build());

@@ -280,7 +280,7 @@ impl Config {
 
     /// Enable verbose mode in the regular expression.
     ///
-    /// When enabled, verbose mode permits insigificant whitespace in many
+    /// When enabled, verbose mode permits insignificant whitespace in many
     /// places in the regular expression, as well as comments. Comments are
     /// started using `#` and continue until the end of the line.
     ///

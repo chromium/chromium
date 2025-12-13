@@ -64,7 +64,7 @@
         el7.setAttribute('id','el7')
         document.body.appendChild(el7)
         document.designMode='on'
-        window.getSelection().setBaseAndExtent(el3, 0, null, 0)
+        window.getSelection().setBaseAndExtent(el3, 0, el3, 0)
         document.execCommand('InsertLineBreak')
         document.execCommand('selectall')
         document.execCommand('strikethrough')

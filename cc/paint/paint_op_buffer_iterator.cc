@@ -10,6 +10,32 @@ namespace cc {
 
 namespace {
 
+static bool SupportsFoldingAlpha(const PaintOp* op) {
+  if (!op->IsPaintOpWithFlags()) {
+    return false;
+  }
+  if (!static_cast<const PaintOpWithFlags*>(op)->flags.SupportsFoldingAlpha()) {
+    return false;
+  }
+  // SkPaint::drawTextBlob() applies alpha on each glyph so we don't
+  // fold kSaveLayerAlpha into DrawTextBlob to ensure correct alpha
+  // even if some glyphs overlap.
+  if (op->GetType() == PaintOpType::kDrawTextBlob) {
+    return false;
+  }
+  // Paint worklet ignores alpha on the flags.
+  if (op->GetType() == PaintOpType::kDrawImage &&
+      static_cast<const DrawImageOp*>(op)->image.IsPaintWorklet()) {
+    return false;
+  }
+  if (op->GetType() == PaintOpType::kDrawImageRect &&
+      static_cast<const DrawImageRectOp*>(op)->image.IsPaintWorklet()) {
+    return false;
+  }
+
+  return true;
+}
+
 // When |op| is a DrawRecordOp, this returns the PaintOp inside that record if
 // it contains (recursively) a single drawing op, otherwise it returns |op| if
 // it's a drawing op, or nullptr.
@@ -93,17 +119,10 @@ void PaintOpBuffer::PlaybackFoldingIterator::FindNextOp() {
       third = NextUnfoldedOp();
       if (third && third->GetType() == PaintOpType::kRestore) {
         auto* save_op = static_cast<const SaveLayerAlphaOp*>(current_op_);
-        if (draw_op->IsPaintOpWithFlags() &&
-            // SkPaint::drawTextBlob() applies alpha on each glyph so we don't
-            // fold kSaveLayerAlpha into DrwaTextBlob to ensure correct alpha
-            // even if some glyphs overlap.
-            draw_op->GetType() != PaintOpType::kDrawTextBlob) {
-          auto* flags_op = static_cast<const PaintOpWithFlags*>(draw_op);
-          if (flags_op->flags.SupportsFoldingAlpha()) {
-            current_alpha_ = save_op->alpha;
-            current_op_ = draw_op;
-            break;
-          }
+        if (SupportsFoldingAlpha(draw_op)) {
+          current_alpha_ = save_op->alpha;
+          current_op_ = draw_op;
+          break;
         } else if (draw_op->GetType() == PaintOpType::kDrawColor &&
                    static_cast<const DrawColorOp*>(draw_op)->mode ==
                        SkBlendMode::kSrcOver) {

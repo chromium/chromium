@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- This layout is used in `compact_signin_promo_view.xml` and differs from `account_row.xml`
+ in the following ways:
+ - in account_text_primary:
+    * changed android:textAppearance value from "@style/TextAppearance.TextLarge.Primary" to
+      "@style/TextAppearance.TextMedium.Primary"
+    * added values for android:includeFontPadding, android:paddingTop, android:paddingBottom
+ - in account_text_secondary:
+    * added values for android:includeFontPadding, android:paddingTop, android:paddingBottom
+-->
+<!-- LINT.IfChange -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <ImageView
+        android:id="@+id/account_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/logo_avatar_anonymous"/>
+
+      <LinearLayout
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/account_text_primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+            android:textDirection="locale"
+            android:includeFontPadding="false"
+            android:paddingTop="1dp"
+            android:paddingBottom="1dp"
+            tools:text="John Doe"/>
+        <TextView
+            android:id="@+id/account_text_secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:textDirection="locale"
+            android:includeFontPadding="false"
+            android:paddingTop="1dp"
+            android:paddingBottom="1dp"
+            tools:text="john.doe@example.com"/>
+      </LinearLayout>
+
+</merge>
+<!-- LINT.ThenChange(//chrome/browser/ui/android/signin/java/res/layout/account_row.xml) -->

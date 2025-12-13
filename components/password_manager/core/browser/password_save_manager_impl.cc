@@ -608,6 +608,11 @@ bool PasswordSaveManagerImpl::IsPasswordUpdate() const {
   return pending_credentials_state_ == PendingCredentialsState::UPDATE;
 }
 
+bool PasswordSaveManagerImpl::IsEqualToSavedMatch() const {
+  return pending_credentials_state_ ==
+         PendingCredentialsState::EQUAL_TO_SAVED_MATCH;
+}
+
 bool PasswordSaveManagerImpl::HasGeneratedPassword() const {
   return generation_manager_ && generation_manager_->HasGeneratedPassword();
 }
@@ -618,6 +623,10 @@ std::unique_ptr<PasswordSaveManager> PasswordSaveManagerImpl::Clone() {
       account_store_form_saver_ ? account_store_form_saver_->Clone() : nullptr);
   CloneInto(result.get());
   return result;
+}
+
+void PasswordSaveManagerImpl::SetShouldStoreActorLoginPermission() {
+  should_store_actor_login_permission_ = true;
 }
 
 PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
@@ -671,10 +680,19 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
   pending_credentials.password_value =
       HasGeneratedPassword() ? generation_manager_->generated_password()
                              : password_to_save.value;
-  const std::optional<std::u16string> backup_password =
-      parsed_submitted_form.GetPasswordBackup();
-  if (backup_password) {
+  pending_credentials.actor_login_approved |=
+      should_store_actor_login_permission_;
+  pending_credentials.date_last_used = base::Time::Now();
+  // `parsed_submitted_form` will contain backup password only during a password
+  // change flow and it's guaranteed to have one as well.
+  if (const std::optional<std::u16string> backup_password =
+          parsed_submitted_form.GetPasswordBackup()) {
     pending_credentials.SetPasswordBackupNote(backup_password.value());
+  } else if (IsPasswordUpdate()) {
+    // This branch means that we are not in the password change flow and we are
+    // updating the password. If the old password is updated, the backup
+    // password also loses it's purpose, so we can delete it.
+    pending_credentials.DeletePasswordBackupNote();
   }
   pending_credentials.date_last_used = base::Time::Now();
   pending_credentials.form_has_autofilled_value =
@@ -994,6 +1012,38 @@ PasswordForm::Store PasswordSaveManagerImpl::GetPasswordStoreForSavingImpl(
     }
   }
   return result;
+}
+
+void PasswordSaveManagerImpl::UpdateDateLastFilled(
+    const PasswordForm& parsed_form) {
+  pending_credentials_.date_last_filled = base::Time::Now();
+
+  PendingCredentialsStates states = ComputePendingCredentialsStates(
+      parsed_form, form_fetcher_->GetAllRelevantMatches(),
+      username_updated_in_bubble_, generation_manager_.get());
+  PasswordForm::Store store_to_save = GetPasswordStoreForSavingImpl(states);
+  if ((store_to_save & PasswordForm::Store::kProfileStore) ==
+          PasswordForm::Store::kProfileStore &&
+      states.profile_store_state ==
+          PendingCredentialsState::EQUAL_TO_SAVED_MATCH) {
+    UpdateDateLastFilledImpl(*states.similar_saved_form_from_profile_store,
+                             profile_store_form_saver_.get());
+  }
+  if ((store_to_save & PasswordForm::Store::kAccountStore) ==
+          PasswordForm::Store::kAccountStore &&
+      states.account_store_state ==
+          PendingCredentialsState::EQUAL_TO_SAVED_MATCH) {
+    UpdateDateLastFilledImpl(*states.similar_saved_form_from_account_store,
+                             account_store_form_saver_.get());
+  }
+}
+
+void PasswordSaveManagerImpl::UpdateDateLastFilledImpl(
+    const PasswordForm& similar_saved_form,
+    FormSaver* form_saver) {
+  PasswordForm form_to_update = UpdateFormPreservingDifferentFieldsAcrossStores(
+      similar_saved_form, pending_credentials_);
+  form_saver->UpdateWithoutPostProcessing(form_to_update);
 }
 
 void PasswordSaveManagerImpl::UsernameUpdatedInBubble() {

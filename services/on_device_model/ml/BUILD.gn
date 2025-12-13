@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//components/optimization_guide/features.gni")
 import("//services/on_device_model/on_device_model.gni")
 
 source_set("api") {
@@ -11,7 +12,10 @@ source_set("api") {
     "chrome_ml_audio_buffer.h",
     "chrome_ml_types.h",
   ]
-  sources = [ "chrome_ml_audio_buffer.cc" ]
+  sources = [
+    "chrome_ml_api.cc",
+    "chrome_ml_audio_buffer.cc",
+  ]
   deps = [ "//third_party/dawn/src/dawn/native:headers" ]
 
   # Any target that pulls in this source set needs to specify its own skia_config.
@@ -22,10 +26,11 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
     public = [ "chrome_ml_holder.h" ]
     sources = [ "chrome_ml_holder.cc" ]
 
+    deps = [ "//services/on_device_model/public/cpp" ]
+
     public_deps = [
       ":api",
       "//base",
-      "//skia",
     ]
   }
 
@@ -34,7 +39,6 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
       "chrome_ml.h",
       "gpu_blocklist.h",
       "on_device_model_executor.h",
-      "on_device_model_internal.h",
       "performance_class.h",
       "session_accessor.h",
       "ts_model.h",
@@ -45,34 +49,40 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
     sources = [
       "chrome_ml.cc",
       "on_device_model_executor.cc",
-      "on_device_model_internal.cc",
       "performance_class.cc",
       "session_accessor.cc",
       "ts_model.cc",
     ]
-    if (is_ios) {
-      sources += [ "gpu_blocklist_ios.cc" ]
-    } else {
+    if (use_blink) {
       sources += [ "gpu_blocklist.cc" ]
+    } else {
+      assert(is_ios)
+      sources += [ "gpu_blocklist_ios.cc" ]
     }
 
     deps = [
       "//components/crash/core/common:crash_key",
       "//components/language_detection/core",
+      "//components/optimization_guide:machine_learning_tflite_buildflags",
       "//components/optimization_guide/core:features",
       "//components/translate/core/language_detection",
       "//services/on_device_model:backend_interfaces",
+      "//services/on_device_model/safety:safety_util",
       "//third_party/abseil-cpp:absl",
       "//third_party/angle:includes",
       "//third_party/dawn/src/dawn:proc",
       "//third_party/dawn/src/dawn/native",
     ]
+
     if (enable_constraints) {
       defines += [ "ENABLE_ON_DEVICE_CONSTRAINTS" ]
       deps += [ "//third_party/rust/llguidance/v1:lib" ]
     }
     if (use_blink) {
       deps += [ "//gpu/config" ]
+    }
+    if (!is_fuchsia && build_with_tflite_lib) {
+      deps += [ "//services/on_device_model/safety:bert_safety_model" ]
     }
     public_deps = [
       ":api",
@@ -83,7 +93,7 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
       "//services/on_device_model/public/mojom",
     ]
     if (use_blink) {
-      public_deps += [ "//gpu/config:webgpu_blocklist_impl" ]
+      public_deps += [ "//gpu/config" ]
     }
   }
 

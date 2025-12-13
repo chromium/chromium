@@ -24,11 +24,11 @@ void FakeOnDeviceTailModelService::OnModelUpdated(
   // Only initialize the runner and the executor here, such that tests without
   // test task environment will not fail unless they explicitly call
   // `OnModelUpdated`.
-  model_executor_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+  model_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   tail_model_executor_ =
       ExecutorUniquePtr(new OnDeviceTailModelExecutor(),
-                        base::OnTaskRunnerDeleter(model_executor_task_runner_));
+                        base::OnTaskRunnerDeleter(model_task_runner_));
 
   OnDeviceTailModelService::OnModelUpdated(optimization_target, model_info);
 }

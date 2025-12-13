@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "ui/gfx/mojom/accelerated_widget.mojom.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace mojo {
 

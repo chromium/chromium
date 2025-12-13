@@ -14,6 +14,10 @@
 
 class Profile;
 
+namespace apps {
+class AppServiceProxyBase;
+}
+
 namespace apps_util {
 
 // Utility to wait for a change in preferred apps settings to be reflected in a
@@ -23,12 +27,33 @@ namespace apps_util {
 // preinstalled_web_app_manager_browsertest.cc and by
 // intent_picker_bubble_view_browsertest.cc, and is being tested against
 // multiple desktop platforms including but not limited to ChromeOS.
+//
+//  If this is used in an InteractiveBrowserTest/InteractiveAshTest, the
+//  constructor's `run_loop_type` must be set to kNestableTasksAllowed.
 class PreferredAppUpdateWaiter
     : public apps::PreferredAppsListHandle::Observer {
  public:
-  explicit PreferredAppUpdateWaiter(apps::PreferredAppsListHandle& handle,
-                                    std::string app_id,
-                                    bool is_preferred_app = true);
+  // Waits for the PreferredAppsList in `handle` to update.
+  PreferredAppUpdateWaiter(
+      apps::PreferredAppsListHandle& handle,
+      std::string app_id,
+      bool is_preferred_app = true,
+      base::RunLoop::Type run_loop_type = base::RunLoop::Type::kDefault);
+
+  // Waits for the PreferredAppsList owned by `proxy` to update.
+  PreferredAppUpdateWaiter(
+      apps::AppServiceProxyBase* proxy,
+      std::string app_id,
+      bool is_preferred_app = true,
+      base::RunLoop::Type run_loop_type = base::RunLoop::Type::kDefault);
+
+  // Waits for the PreferredAppsList for `profile` to update.
+  PreferredAppUpdateWaiter(
+      Profile* profile,
+      std::string app_id,
+      bool is_preferred_app = true,
+      base::RunLoop::Type run_loop_type = base::RunLoop::Type::kDefault);
+
   ~PreferredAppUpdateWaiter() override;
 
   void Wait();

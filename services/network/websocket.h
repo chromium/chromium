@@ -28,6 +28,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "services/network/network_service.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "services/network/websocket_interceptor.h"
@@ -67,6 +68,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
       const url::Origin& origin,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       uint32_t options,
       net::NetworkTrafficAnnotationTag traffic_annotation,
       HasRawHeadersAccess has_raw_cookie_access,
@@ -109,7 +111,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       net::CompletionOnceCallback callback,
       const net::HttpResponseHeaders* original_response_headers,
       scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
-      std::optional<GURL>* preserve_fragment_on_redirect_url);
+      std::optional<GURL>* preserve_fragment_on_redirect_url,
+      const std::optional<net::SSLInfo>& ssl_info);
 
   // Gets the WebSocket associated with this request.
   static WebSocket* ForRequest(const net::URLRequest& request);
@@ -176,6 +179,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       const std::optional<std::string>& headers,
       const std::optional<GURL>& preserve_fragment_on_redirect_url);
 
+  // Disconnect the WebSocket and mojo pipes and tell WebSocketFactory to delete
+  // `this`. Will not work correctly if called during construction.
   void Reset();
 
   enum class InterruptionReason {
@@ -229,6 +234,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
 
   // The web origin to use for the WebSocket.
   const url::Origin origin_;
+
+  const network::mojom::ClientSecurityStatePtr client_security_state_;
 
   // For 3rd-party cookie permission checking.
   net::SiteForCookies site_for_cookies_;

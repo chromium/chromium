@@ -66,8 +66,10 @@ const MediaPlayer& MediaInspectorContextImpl::MediaPlayerFromId(
 WebString MediaInspectorContextImpl::CreatePlayer() {
   String next_player_id =
       String::FromUTF8(base::UnguessableToken::Create().ToString());
-  players_.insert(next_player_id, MakeGarbageCollected<MediaPlayer>());
-  probe::PlayersCreated(GetSupplementable(), {next_player_id});
+  MediaPlayer* player = MakeGarbageCollected<MediaPlayer>();
+  player->player_id = next_player_id;
+  players_.insert(next_player_id, player);
+  probe::PlayerCreated(GetSupplementable(), *player);
   if (!GetSupplementable()->GetProbeSink() ||
       !GetSupplementable()->GetProbeSink()->HasInspectorMediaAgents()) {
     unsent_players_.push_back(next_player_id);
@@ -75,8 +77,8 @@ WebString MediaInspectorContextImpl::CreatePlayer() {
   return next_player_id;
 }
 
-void MediaInspectorContextImpl::RemovePlayer(const WebString& playerId) {
-  const auto& player = players_.Take(playerId);
+void MediaInspectorContextImpl::RemovePlayer(const WebString& player_id) {
+  const auto& player = players_.Take(player_id);
   if (player) {
     total_event_count_ -=
         player->errors.size() + player->events.size() + player->messages.size();
@@ -84,8 +86,8 @@ void MediaInspectorContextImpl::RemovePlayer(const WebString& playerId) {
   }
 }
 
-void MediaInspectorContextImpl::TrimPlayer(const WebString& playerId) {
-  MediaPlayer* player = players_.Take(playerId);
+void MediaInspectorContextImpl::TrimPlayer(const WebString& player_id) {
+  MediaPlayer* player = players_.Take(player_id);
   wtf_size_t overage = total_event_count_ - kMaxCachedPlayerEvents;
 
   wtf_size_t excess = std::min<wtf_size_t>(overage, player->events.size());
@@ -103,7 +105,7 @@ void MediaInspectorContextImpl::TrimPlayer(const WebString& playerId) {
   total_event_count_ -= excess;
   overage -= excess;
 
-  players_.insert(playerId, player);
+  players_.insert(player_id, player);
 }
 
 void MediaInspectorContextImpl::CullPlayers(const WebString& prefer_keep) {
@@ -137,8 +139,9 @@ void MediaInspectorContextImpl::CullPlayers(const WebString& prefer_keep) {
       return;
     auto iterator = players_.begin();
     // Make sure not to delete the item that is preferred to keep.
-    if (WTF::String(prefer_keep) == iterator->key)
+    if (String(prefer_keep) == iterator->key) {
       ++iterator;
+    }
     RemovePlayer(iterator->key);
   }
 
@@ -147,76 +150,85 @@ void MediaInspectorContextImpl::CullPlayers(const WebString& prefer_keep) {
     TrimPlayer(players_.begin()->key);
 }
 
-void MediaInspectorContextImpl::DestroyPlayer(const WebString& playerId) {
-  if (unsent_players_.Contains(String(playerId))) {
+void MediaInspectorContextImpl::SetDomNodeIdForPlayer(
+    const WebString& player_id,
+    int dom_node_id) {
+  const auto& player_iter = players_.find(player_id);
+  if (player_iter != players_.end()) {
+    player_iter->value->dom_node_id = dom_node_id;
+  }
+}
+
+void MediaInspectorContextImpl::DestroyPlayer(const WebString& player_id) {
+  if (unsent_players_.Contains(String(player_id))) {
     // unsent players become dead when destroyed.
-    unsent_players_.EraseAt(unsent_players_.Find(String(playerId)));
-    dead_players_.push_back(playerId);
+    unsent_players_.EraseAt(unsent_players_.Find(String(player_id)));
+    dead_players_.push_back(player_id);
   } else {
-    expendable_players_.push_back(playerId);
+    expendable_players_.push_back(player_id);
   }
 }
 
 // Convert public version of event to protocol version, and send it.
 void MediaInspectorContextImpl::NotifyPlayerErrors(
-    WebString playerId,
+    WebString player_id,
     const InspectorPlayerErrors& errors) {
-  const auto& player = players_.find(playerId);
+  const auto& player = players_.find(player_id);
   if (player != players_.end()) {
     player->value->errors.AppendRange(errors.begin(), errors.end());
     total_event_count_ += errors.size();
     if (total_event_count_ > kMaxCachedPlayerEvents)
-      CullPlayers(playerId);
+      CullPlayers(player_id);
   }
 
   Vector<InspectorPlayerError> vector =
       Iter2Vector<InspectorPlayerError>(errors);
-  probe::PlayerErrorsRaised(GetSupplementable(), playerId, vector);
+  probe::PlayerErrorsRaised(GetSupplementable(), player_id, vector);
 }
 
 void MediaInspectorContextImpl::NotifyPlayerEvents(
-    WebString playerId,
+    WebString player_id,
     const InspectorPlayerEvents& events) {
-  const auto& player = players_.find(playerId);
+  const auto& player = players_.find(player_id);
   if (player != players_.end()) {
     player->value->events.AppendRange(events.begin(), events.end());
     total_event_count_ += events.size();
     if (total_event_count_ > kMaxCachedPlayerEvents)
-      CullPlayers(playerId);
+      CullPlayers(player_id);
   }
 
   Vector<InspectorPlayerEvent> vector =
       Iter2Vector<InspectorPlayerEvent>(events);
-  probe::PlayerEventsAdded(GetSupplementable(), playerId, vector);
+  probe::PlayerEventsAdded(GetSupplementable(), player_id, vector);
 }
 
 void MediaInspectorContextImpl::SetPlayerProperties(
-    WebString playerId,
+    WebString player_id,
     const InspectorPlayerProperties& props) {
-  const auto& player = players_.find(playerId);
+  const auto& player = players_.find(player_id);
   Vector<InspectorPlayerProperty> properties;
   if (player != players_.end()) {
     for (const auto& property : props)
       player->value->properties.Set(property.name, property);
     properties.assign(player->value->properties.Values());
   }
-  probe::PlayerPropertiesChanged(GetSupplementable(), playerId, properties);
+  probe::PlayerPropertiesChanged(GetSupplementable(), player_id, properties);
 }
 
 void MediaInspectorContextImpl::NotifyPlayerMessages(
-    WebString playerId,
+    WebString player_id,
     const InspectorPlayerMessages& messages) {
-  const auto& player = players_.find(playerId);
+  const auto& player = players_.find(player_id);
   if (player != players_.end()) {
     player->value->messages.AppendRange(messages.begin(), messages.end());
     total_event_count_ += messages.size();
     if (total_event_count_ > kMaxCachedPlayerEvents)
-      CullPlayers(playerId);
+      CullPlayers(player_id);
   }
 
   Vector<InspectorPlayerMessage> vector =
       Iter2Vector<InspectorPlayerMessage>(messages);
-  probe::PlayerMessagesLogged(GetSupplementable(), playerId, vector);
+  probe::PlayerMessagesLogged(GetSupplementable(), player_id, vector);
 }
 
 HeapHashMap<String, Member<MediaPlayer>>*

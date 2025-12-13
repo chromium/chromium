@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -54,8 +55,6 @@ public final class FeedActionDelegateImplTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
-    @Mock private SigninAndHistorySyncActivityLauncher mMockSigninLauncher;
-
     @Mock private SigninAndHistorySyncActivityLauncher mMockSigninAndHistorySyncActivityLauncher;
 
     @Mock private SnackbarManager mMockSnackbarManager;
@@ -100,6 +99,7 @@ public final class FeedActionDelegateImplTest {
     @Test
     @EnableFeatures(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)
     public void testStartSigninFlow_shownWhenFlagEnabled() {
+        when(mActivity.getString(anyInt())).thenReturn("string");
         when(mMockSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         any(), any(), any(), eq(SigninAccessPoint.NTP_FEED_TOP_PROMO)))
                 .thenReturn(mSigninIntent);
@@ -134,6 +134,7 @@ public final class FeedActionDelegateImplTest {
 
     @Test
     public void testShowSigninInterstitial() {
+        when(mActivity.getString(anyInt())).thenReturn("string");
         when(mMockSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         any(), any(), any(), eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO)))
                 .thenReturn(mSigninIntent);

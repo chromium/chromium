@@ -1,0 +1,6 @@
+# Mutter should only be used in testing code. This visibility list helps
+# enforce that.
+visibility = [
+  "//third_party/mutter/*",
+  "//ui/ozone/platform/wayland:ui_test_support",
+]

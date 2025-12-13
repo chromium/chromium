@@ -171,6 +171,12 @@ content::PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
     case blink::PermissionType::LOCAL_NETWORK_ACCESS:
       return CreatePermissionDescriptor(
           blink::mojom::PermissionName::LOCAL_NETWORK_ACCESS);
+    case blink::PermissionType::LOCAL_NETWORK:
+      return CreatePermissionDescriptor(
+          blink::mojom::PermissionName::LOCAL_NETWORK);
+    case blink::PermissionType::LOOPBACK_NETWORK:
+      return CreatePermissionDescriptor(
+          blink::mojom::PermissionName::LOOPBACK_NETWORK);
     case blink::PermissionType::NUM:
       NOTREACHED();
   }

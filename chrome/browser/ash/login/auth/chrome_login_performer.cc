@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_paths.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/early_prefs/early_prefs_reader.h"
 #include "chromeos/ash/components/osauth/impl/early_login_auth_policy_connector.h"
@@ -130,8 +130,8 @@ void ChromeLoginPerformer::LoadAndApplyEarlyPrefs(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   base::FilePath early_prefs_dir;
-  bool success = base::PathService::Get(chrome::DIR_CHROMEOS_HOMEDIR_MOUNT,
-                                        &early_prefs_dir);
+  bool success =
+      base::PathService::Get(ash::DIR_HOMEDIR_MOUNT, &early_prefs_dir);
   CHECK(success);
   early_prefs_dir = early_prefs_dir.Append(context->GetUserIDHash());
 

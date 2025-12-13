@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/svc_layers.h"
@@ -198,7 +199,7 @@ scoped_refptr<AV1Picture> GetAV1Picture(
 void DownscaleSegmentMap(const uint8_t* src_seg_map,
                          uint32_t src_seg_size,
                          size_t num_segments,
-                         uint8_t* dst_seg_map,
+                         base::span<uint8_t> dst_seg_map,
                          uint32_t dst_seg_size,
                          const gfx::Size& coded_size) {
   CHECK(std::has_single_bit(src_seg_size));
@@ -244,6 +245,7 @@ void DownscaleSegmentMap(const uint8_t* src_seg_map,
       src_seg_map++;
     }
   }
+  auto dst_seg_map_it = dst_seg_map.begin();
   for (uint32_t dst_y = 0; dst_y < dst_height; dst_y++) {
     size_t row_offset = dst_y * dst_width;
     for (uint32_t dst_x = 0; dst_x < dst_width; dst_x++) {
@@ -256,8 +258,8 @@ void DownscaleSegmentMap(const uint8_t* src_seg_map,
           most_freq = i;
         }
       }
-      *dst_seg_map = most_freq;
-      dst_seg_map++;
+      *dst_seg_map_it = most_freq;
+      ++dst_seg_map_it;
     }
   }
 }
@@ -559,6 +561,10 @@ BitstreamBufferMetadata AV1VaapiVideoEncoderDelegate::GetMetadata(
 VaapiVideoEncoderDelegate::PrepareEncodeJobResult
 AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   if (frame_num_ == current_params_.intra_period) {
+    encode_job.ProduceKeyframe();
+  }
+
+  if (svc_layers_ && svc_layers_->IsKeyFrame()) {
     encode_job.ProduceKeyframe();
   }
 
@@ -953,8 +959,8 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
     }
     segment_map_param.segmentMapDataSize = segmentation_map_.size();
     DownscaleSegmentMap(seg_data.segmentation_map, kSegmentGranularity,
-                        seg_data.delta_q_size, segmentation_map_.data(),
-                        seg_size_, coded_size_);
+                        seg_data.delta_q_size, segmentation_map_, seg_size_,
+                        coded_size_);
     segment_map_param.pSegmentMap = segmentation_map_.data();
   }
 

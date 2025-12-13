@@ -36,6 +36,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -118,9 +119,17 @@ class PrefetchManagerTest : public testing::TestWithParam<bool> {
   }
 
   void CheckHeaders(network::ResourceRequest& request) {
-    EXPECT_THAT(
-        request.headers.GetHeader(blink::kPurposeHeaderName),
-        testing::Optional(std::string(blink::kSecPurposePrefetchHeaderValue)));
+    // Test Purpose headers based on feature flag state
+    if (GetParam()) {
+      // When feature is enabled, legacy Purpose header should be removed
+      EXPECT_FALSE(request.headers.HasHeader(blink::kPurposeHeaderName));
+    } else {
+      // When feature is disabled, ensure legacy Purpose header is working
+      EXPECT_THAT(request.headers.GetHeader(blink::kPurposeHeaderName),
+                  testing::Optional(
+                      std::string(blink::kSecPurposePrefetchHeaderValue)));
+    }
+
     EXPECT_THAT(
         request.headers.GetHeader(blink::kSecPurposeHeaderName),
         testing::Optional(std::string(blink::kSecPurposePrefetchHeaderValue)));
@@ -130,7 +139,7 @@ class PrefetchManagerTest : public testing::TestWithParam<bool> {
   // IO_MAINLOOP is needed for the EmbeddedTestServer.
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<FakePrefetchManagerDelegate> fake_delegate_;
@@ -147,7 +156,8 @@ PrefetchManagerTest::PrefetchManagerTest()
     features_.InitWithFeatures(
         /*enabled_features=*/
         {features::kLoadingPredictorPrefetch,
-         features::kLoadingPredictorPrefetchUseReadAndDiscardBody},
+         features::kLoadingPredictorPrefetchUseReadAndDiscardBody,
+         blink::features::kRemovePurposeHeaderForPrefetch},
         /*disabled_features=*/{
             features::kPrefetchManagerUseNetworkContextPrefetch});
   } else {
@@ -155,7 +165,8 @@ PrefetchManagerTest::PrefetchManagerTest()
         /*enabled_features=*/{features::kLoadingPredictorPrefetch},
         /*disabled_features=*/{
             features::kLoadingPredictorPrefetchUseReadAndDiscardBody,
-            features::kPrefetchManagerUseNetworkContextPrefetch});
+            features::kPrefetchManagerUseNetworkContextPrefetch,
+            blink::features::kRemovePurposeHeaderForPrefetch});
   }
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kLoadingPredictorAllowLocalRequestForTesting);

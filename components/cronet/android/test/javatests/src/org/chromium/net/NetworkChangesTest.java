@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetLibraryLoader;
 

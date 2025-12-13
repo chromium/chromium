@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -27,8 +28,10 @@
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
+#include "components/autofill/core/browser/form_qualifiers.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
@@ -44,6 +47,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-data-view.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -78,27 +82,7 @@ class FormStructureTestImpl : public test::FormStructureTest {
     return base::NumberToString(StrToHash64Bit(str));
   }
 
- protected:
-  bool FormIsAutofillable(const FormData& form) {
-    FormStructure form_structure(form);
-    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-    return form_structure.IsAutofillable();
-  }
-
-  bool FormShouldRunHeuristics(const FormData& form) {
-    return FormStructure(form).ShouldRunHeuristics();
-  }
-
-  bool FormShouldRunHeuristicsForSingleFields(const FormData& form) {
-    return FormStructure(form).ShouldRunHeuristicsForSingleFields();
-  }
-
-  bool FormShouldBeQueried(const FormData& form) {
-    return FormStructure(form).ShouldBeQueried();
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
@@ -178,340 +162,6 @@ TEST_F(FormStructureTestImpl, FullSourceURLWithHashAndParam) {
   FormStructure form_structure(form);
 
   EXPECT_EQ(form.full_url(), form_structure.full_source_url());
-}
-
-TEST_F(FormStructureTestImpl, IsAutofillable) {
-  FormData form;
-  form.set_url(GURL("http://www.foo.com/"));
-  FormFieldData field;
-
-  // Start with a username field. It should be picked up by the password but
-  // not by autofill.
-  field.set_label(u"username");
-  field.set_name(u"username");
-  field.set_form_control_type(FormControlType::kInputText);
-  field.set_renderer_id(test::MakeFieldRendererId());
-  test_api(form).Append(field);
-
-  // With min required fields enabled.
-  EXPECT_FALSE(FormIsAutofillable(form));
-
-  // Add a password field. The form should be picked up by the password but
-  // not by autofill.
-  field.set_label(u"password");
-  field.set_name(u"password");
-  field.set_form_control_type(FormControlType::kInputPassword);
-  field.set_renderer_id(test::MakeFieldRendererId());
-  test_api(form).Append(field);
-
-  EXPECT_FALSE(FormIsAutofillable(form));
-
-  // Add an auto-fillable fields. With just one auto-fillable field, this should
-  // be picked up by autofill only if there is no minimum field enforcement.
-  field.set_label(u"Full Name");
-  field.set_name(u"fullname");
-  field.set_form_control_type(FormControlType::kInputText);
-  field.set_renderer_id(test::MakeFieldRendererId());
-  test_api(form).Append(field);
-
-  EXPECT_FALSE(FormIsAutofillable(form));
-
-  // Add an auto-fillable fields. With just one auto-fillable field, this should
-  // be picked up by autofill only if there is no minimum field enforcement.
-  field.set_label(u"Address Line 1");
-  field.set_name(u"address1");
-  field.set_form_control_type(FormControlType::kInputText);
-  field.set_renderer_id(test::MakeFieldRendererId());
-  test_api(form).Append(field);
-
-  EXPECT_FALSE(FormIsAutofillable(form));
-
-  // We now have three auto-fillable fields. It's always autofillable.
-  field.set_label(u"Email");
-  field.set_name(u"email");
-  field.set_form_control_type(FormControlType::kInputEmail);
-  field.set_renderer_id(test::MakeFieldRendererId());
-  test_api(form).Append(field);
-
-  EXPECT_TRUE(FormIsAutofillable(form));
-
-  // The target cannot include http(s)://*/search...
-  form.set_action(GURL("http://google.com/search?q=hello"));
-
-  EXPECT_FALSE(FormIsAutofillable(form));
-
-  // But search can be in the URL.
-  form.set_action(GURL("http://search.com/?q=hello"));
-
-  EXPECT_TRUE(FormIsAutofillable(form));
-}
-
-class FormStructureTestImpl_ShouldBeParsed_Test : public FormStructureTestImpl {
- public:
-  FormStructureTestImpl_ShouldBeParsed_Test() {
-    form_.set_url(GURL("http://www.foo.com/"));
-    form_structure_ = std::make_unique<FormStructure>(form_);
-  }
-
-  ~FormStructureTestImpl_ShouldBeParsed_Test() override = default;
-
-  void SetAction(GURL action) {
-    form_.set_action(action);
-    form_structure_ = nullptr;
-  }
-
-  void AddField(FormFieldData field) {
-    field.set_renderer_id(test::MakeFieldRendererId());
-    test_api(form_).Append(std::move(field));
-    form_structure_ = nullptr;
-  }
-
-  void AddTextField() {
-    FormFieldData field;
-    field.set_form_control_type(FormControlType::kInputText);
-    AddField(field);
-  }
-
-  FormStructure& form_structure() {
-    if (!form_structure_) {
-      form_structure_ = std::make_unique<FormStructure>(form_);
-    }
-    return *form_structure_.get();
-  }
-
- private:
-  FormData form_;
-  std::unique_ptr<FormStructure> form_structure_;
-};
-
-// Empty forms should not be parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfNoFields) {
-  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-}
-
-// Forms with only checkable fields should not be parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, IgnoresCheckableFields) {
-  // Start with a single checkable field.
-  {
-    FormFieldData field;
-    field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
-    field.set_form_control_type(FormControlType::kInputRadio);
-    AddField(field);
-  }
-  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-
-  // Add a second checkable field.
-  {
-    FormFieldData field;
-    field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
-    field.set_form_control_type(FormControlType::kInputCheckbox);
-    AddField(field);
-  }
-  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-
-  // Add one text field.
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-}
-
-// Forms with at least one text field should be parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOneTextField) {
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-}
-
-// Forms that have only select fields should not be parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectField) {
-  {
-    FormFieldData field;
-    field.set_form_control_type(FormControlType::kSelectOne);
-    AddField(field);
-  }
-  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-}
-
-// Form whose action is a search URL should not be parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfSearchURL) {
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-
-  // The target cannot include http(s)://*/search...
-  SetAction(GURL("http://google.com/search?q=hello"));
-  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-
-  // But search can be in the URL.
-  SetAction(GURL("http://search.com/?q=hello"));
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-}
-
-// Forms with two password fields and no other fields should be parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOnlyPasswordFields) {
-  {
-    FormFieldData field;
-    field.set_form_control_type(FormControlType::kInputPassword);
-    AddField(field);
-  }
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure())
-          .ShouldBeParsed(
-              {.min_required_fields = 2,
-               .required_fields_for_forms_with_only_password_fields = 1}));
-  EXPECT_FALSE(
-      test_api(form_structure())
-          .ShouldBeParsed(
-              {.min_required_fields = 2,
-               .required_fields_for_forms_with_only_password_fields = 2}));
-
-  {
-    FormFieldData field;
-    field.set_form_control_type(FormControlType::kInputPassword);
-    AddField(field);
-  }
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure())
-          .ShouldBeParsed(
-              {.min_required_fields = 2,
-               .required_fields_for_forms_with_only_password_fields = 1}));
-  EXPECT_TRUE(
-      test_api(form_structure())
-          .ShouldBeParsed(
-              {.min_required_fields = 2,
-               .required_fields_for_forms_with_only_password_fields = 2}));
-}
-
-// Forms with at least one field with an autocomplete attribute should be
-// parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test,
-       TrueIfOneFieldHasAutocomplete) {
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-
-  {
-    FormFieldData field;
-    field.set_parsed_autocomplete(AutocompleteParsingResult{
-        .section = "my-billing-section", .field_type = HtmlFieldType::kName});
-    field.set_form_control_type(FormControlType::kInputText);
-    AddField(field);
-  }
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-}
-
-TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
-  std::unique_ptr<FormStructure> form_structure;
-  FormData form;
-  form.set_fields(
-      {CreateTestFormField("Name", "name", "", FormControlType::kInputText,
-                           "name"),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputText,
-                           "email"),
-       CreateTestFormField("Address", "address", "",
-                           FormControlType::kInputText, "address-line1")});
-
-  // Baseline, HTTP should work.
-  form.set_url(GURL("http://wwww.foo.com/myform"));
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_TRUE(form_structure->ShouldBeParsed());
-  EXPECT_TRUE(form_structure->ShouldRunHeuristics());
-  EXPECT_TRUE(form_structure->ShouldBeQueried());
-  EXPECT_TRUE(form_structure->ShouldBeUploaded());
-
-  // Baseline, HTTPS should work.
-  form.set_url(GURL("https://wwww.foo.com/myform"));
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_TRUE(form_structure->ShouldBeParsed());
-  EXPECT_TRUE(form_structure->ShouldRunHeuristics());
-  EXPECT_TRUE(form_structure->ShouldBeQueried());
-  EXPECT_TRUE(form_structure->ShouldBeUploaded());
-
-  // Chrome internal urls shouldn't be parsed.
-  form.set_url(GURL("chrome://settings"));
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_FALSE(form_structure->ShouldBeParsed());
-  EXPECT_FALSE(form_structure->ShouldRunHeuristics());
-  EXPECT_FALSE(form_structure->ShouldBeQueried());
-  EXPECT_FALSE(form_structure->ShouldBeUploaded());
-
-  // FTP urls shouldn't be parsed.
-  form.set_url(GURL("ftp://ftp.foo.com/form.html"));
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_FALSE(form_structure->ShouldBeParsed());
-  EXPECT_FALSE(form_structure->ShouldRunHeuristics());
-  EXPECT_FALSE(form_structure->ShouldBeQueried());
-  EXPECT_FALSE(form_structure->ShouldBeUploaded());
-
-  // Blob urls shouldn't be parsed.
-  form.set_url(GURL("blob://blob.foo.com/form.html"));
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_FALSE(form_structure->ShouldBeParsed());
-  EXPECT_FALSE(form_structure->ShouldRunHeuristics());
-  EXPECT_FALSE(form_structure->ShouldBeQueried());
-  EXPECT_FALSE(form_structure->ShouldBeUploaded());
-
-  // About urls shouldn't be parsed.
-  form.set_url(GURL("about://about.foo.com/form.html"));
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_FALSE(form_structure->ShouldBeParsed());
-  EXPECT_FALSE(form_structure->ShouldRunHeuristics());
-  EXPECT_FALSE(form_structure->ShouldBeQueried());
-  EXPECT_FALSE(form_structure->ShouldBeUploaded());
-}
-
-// Tests that ShouldBeParsed returns true for a form containing less than three
-// fields if at least one has an autocomplete attribute.
-TEST_F(FormStructureTestImpl, ShouldBeParsed_TwoFields_HasAutocomplete) {
-  std::unique_ptr<FormStructure> form_structure;
-  FormData form;
-  form.set_url(GURL("http://www.foo.com/"));
-  form.set_fields({CreateTestFormField("Name", "name", "",
-                                       FormControlType::kInputText, "name"),
-                   CreateTestFormField("Address", "Address", "",
-                                       FormControlType::kSelectOne, "")});
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_TRUE(form_structure->ShouldBeParsed());
 }
 
 // Tests that ShouldBeParsed returns true for a form containing less than three
@@ -878,21 +528,26 @@ TEST_F(FormStructureTestImpl,
   field.set_renderer_id(test::MakeFieldRendererId());
   test_api(form).Append(field);
 
-  EXPECT_FALSE(FormShouldRunHeuristics(form));
+  EXPECT_FALSE(ShouldRunHeuristics(FormStructure(form)));
 
-  EXPECT_TRUE(FormShouldBeQueried(form));
+  EXPECT_TRUE(ShouldBeQueried(FormStructure(form)));
 
   // Default configuration.
   {
     FormStructure form_structure(form);
-    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+    const RegexPredictions regex_predictions =
+        DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                            form_structure.ToFormData(), nullptr);
+    regex_predictions.ApplyTo(form_structure.fields());
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(2U, form_structure.field_count());
     ASSERT_EQ(0U, AutofillCount(form_structure));
     EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
     EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(1)->heuristic_type());
     EXPECT_EQ(NO_SERVER_DATA, form_structure.field(0)->server_type());
     EXPECT_EQ(NO_SERVER_DATA, form_structure.field(1)->server_type());
-    EXPECT_FALSE(form_structure.IsAutofillable());
+    EXPECT_FALSE(IsAutofillable(form_structure));
   }
 }
 
@@ -909,23 +564,29 @@ TEST_F(FormStructureTestImpl,
                            FormControlType::kInputText, "given-name"),
        CreateTestFormField("Last Name", "lastname", "",
                            FormControlType::kInputText, "")});
-  EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldBeQueried(form));
+  EXPECT_FALSE(ShouldRunHeuristics(FormStructure(form)));
+  EXPECT_TRUE(ShouldBeQueried(FormStructure(form)));
 
-  // As a side effect of parsing small forms (if any of the heuristics, query,
+  // As a side effect of parsing small forms, if any of the heuristics, query,
   // or upload minimums are disabled, we'll autofill fields with an
   // autocomplete attribute, even if its the only field in the form.
   {
     FormData form_copy = form;
     test_api(form_copy).Remove(-1);
     FormStructure form_structure(form_copy);
-    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+    const RegexPredictions regex_predictions =
+        DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                            form_structure.ToFormData(), nullptr);
+    regex_predictions.ApplyTo(form_structure.fields());
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(1U, form_structure.field_count());
     ASSERT_EQ(1U, AutofillCount(form_structure));
     EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
     EXPECT_EQ(NO_SERVER_DATA, form_structure.field(0)->server_type());
-    EXPECT_EQ(NAME_FIRST, form_structure.field(0)->Type().GetStorableType());
-    EXPECT_TRUE(form_structure.IsAutofillable());
+    EXPECT_THAT(form_structure.field(0)->Type().GetTypes(),
+                ElementsAre(NAME_FIRST));
+    EXPECT_TRUE(IsAutofillable(form_structure));
   }
 }
 
@@ -943,17 +604,23 @@ TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
   field.set_renderer_id(test::MakeFieldRendererId());
   test_api(form).Append(field);
 
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(FormStructure(form)));
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
 
   // Default configuration.
   {
     FormStructure form_structure(form);
-    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+    const RegexPredictions regex_predictions =
+        DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                            form_structure.ToFormData(), nullptr);
+    regex_predictions.ApplyTo(form_structure.fields());
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(1U, form_structure.field_count());
     ASSERT_EQ(1U, AutofillCount(form_structure));
     EXPECT_EQ(MERCHANT_PROMO_CODE, form_structure.field(0)->heuristic_type());
     EXPECT_EQ(NO_SERVER_DATA, form_structure.field(0)->server_type());
-    EXPECT_TRUE(form_structure.IsAutofillable());
+    EXPECT_TRUE(IsAutofillable(form_structure));
   }
 }
 
@@ -973,13 +640,18 @@ TEST_F(FormStructureTestImpl, PasswordFormShouldBeQueried) {
                    CreateTestFormField("Password", "Password", "",
                                        FormControlType::kInputPassword)});
   FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure.ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure.fields());
+  form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                              LanguageCode(""), nullptr);
   EXPECT_TRUE(
       std::ranges::any_of(form_structure.fields(), [](const auto& field) {
         return field->form_control_type() == FormControlType::kInputPassword;
       }));
-  EXPECT_TRUE(form_structure.ShouldBeQueried());
-  EXPECT_TRUE(form_structure.ShouldBeUploaded());
+  EXPECT_TRUE(ShouldBeQueried(form_structure));
+  EXPECT_TRUE(ShouldBeUploaded(form_structure));
 }
 
 // Verify that we can correctly process a degenerate section listed in the
@@ -1005,7 +677,12 @@ TEST_F(FormStructureTestImpl,
        CreateTestFormField("", "", "", FormControlType::kInputText,
                            "garbage billing email")});
   FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure.ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure.fields());
+  form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                              LanguageCode(""), nullptr);
 
   // Expect the correct number of fields.
   ASSERT_EQ(6U, form_structure.field_count());
@@ -1031,7 +708,12 @@ TEST_F(FormStructureTestImpl,
                    CreateTestFormField("", "", "", FormControlType::kInputText,
                                        "section-foo address-line1")});
   FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure.ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure.fields());
+  form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                              LanguageCode(""), nullptr);
 
   // Expect the correct number of fields.
   ASSERT_EQ(2U, form_structure.field_count());
@@ -1106,8 +788,13 @@ TEST_F(FormStructureTestImpl, HeuristicsSample8) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
   ASSERT_EQ(10U, form_structure->field_count());
   ASSERT_EQ(9U, AutofillCount(*form_structure));
 
@@ -1180,8 +867,13 @@ TEST_F(FormStructureTestImpl, HeuristicsSample6) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
   ASSERT_EQ(7U, form_structure->field_count());
   ASSERT_EQ(6U, AutofillCount(*form_structure));
 
@@ -1254,8 +946,13 @@ TEST_F(FormStructureTestImpl, HeuristicsLabelsOnly) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
   ASSERT_EQ(8U, form_structure->field_count());
   ASSERT_EQ(7U, AutofillCount(*form_structure));
 
@@ -1318,8 +1015,13 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfo) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
   ASSERT_EQ(6U, form_structure->field_count());
   ASSERT_EQ(5U, AutofillCount(*form_structure));
 
@@ -1386,8 +1088,13 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfoWithUnknownCardField) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
   ASSERT_EQ(7U, form_structure->field_count());
   ASSERT_EQ(5U, AutofillCount(*form_structure));
 
@@ -1438,8 +1145,13 @@ TEST_F(FormStructureTestImpl, ThreeAddressLines) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
   ASSERT_EQ(4U, form_structure->field_count());
   ASSERT_EQ(4U, AutofillCount(*form_structure));
 
@@ -1483,7 +1195,12 @@ TEST_F(FormStructureTestImpl, SurplusAddressLinesIgnored) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   ASSERT_EQ(4U, form_structure->field_count());
   ASSERT_EQ(3U, AutofillCount(*form_structure));
 
@@ -1531,8 +1248,13 @@ TEST_F(FormStructureTestImpl, ThreeAddressLinesExpedia) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
   ASSERT_EQ(4U, form_structure->field_count());
   EXPECT_EQ(4U, AutofillCount(*form_structure));
 
@@ -1573,8 +1295,13 @@ TEST_F(FormStructureTestImpl, TwoAddressLinesEbay) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
   ASSERT_EQ(3U, form_structure->field_count());
   ASSERT_EQ(3U, AutofillCount(*form_structure));
 
@@ -1610,8 +1337,13 @@ TEST_F(FormStructureTestImpl, HeuristicsStateWithProvince) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
   ASSERT_EQ(3U, form_structure->field_count());
   ASSERT_EQ(3U, AutofillCount(*form_structure));
 
@@ -1688,8 +1420,13 @@ TEST_F(FormStructureTestImpl, HeuristicsWithBilling) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
   ASSERT_EQ(11U, form_structure->field_count());
   ASSERT_EQ(11U, AutofillCount(*form_structure));
 
@@ -1742,8 +1479,13 @@ TEST_F(FormStructureTestImpl, ThreePartPhoneNumber) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
   ASSERT_EQ(4U, form_structure->field_count());
   ASSERT_EQ(4U, AutofillCount(*form_structure));
 
@@ -1789,8 +1531,13 @@ TEST_F(FormStructureTestImpl, HeuristicsInfernoCC) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
 
   // Expect the correct number of fields.
   ASSERT_EQ(5U, form_structure->field_count());
@@ -1850,8 +1597,13 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesNotFirst) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
 
   // Expect the correct number of fields.
   ASSERT_EQ(6U, form_structure->field_count());
@@ -1915,8 +1667,13 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesFirst) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
 
   // Expect the correct number of fields.
   ASSERT_EQ(6U, form_structure->field_count());
@@ -2173,7 +1930,7 @@ TEST_F(FormStructureTestImpl, ToFormData) {
   field.set_renderer_id(test::MakeFieldRendererId());
   test_api(form).Append(field);
 
-  EXPECT_TRUE(FormData::DeepEqual(form, FormStructure(form).ToFormData()));
+  EXPECT_EQ(form, FormStructure(form).ToFormData());
 }
 
 // Tests that an Autofill upload for password form with 1 field should not be
@@ -2186,7 +1943,7 @@ TEST_F(FormStructureTestImpl, OneFieldPasswordFormShouldNotBeUpload) {
   field.set_renderer_id(test::MakeFieldRendererId());
   test_api(form).Append(field);
 
-  EXPECT_FALSE(FormStructure(form).ShouldBeUploaded());
+  EXPECT_FALSE(ShouldBeUploaded(FormStructure(form)));
 }
 
 
@@ -2390,44 +2147,58 @@ TEST_F(FormStructureTestImpl, GetFormTypes_AutocompleteUnrecognized) {
 }
 
 // The test ensures that single field email forms are correctly parsed via
-// `FormShouldRunHeuristicsForSingleFields`.
+// `ShouldRunHeuristicsForSingleFields()`.
 TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsBehavior) {
   FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
-  EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
+  EXPECT_FALSE(ShouldRunHeuristics(FormStructure(form)));
+  EXPECT_FALSE(ShouldRunHeuristics(form));
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(FormStructure(form)));
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
 
   {
     FormStructure form_structure(form);
-    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+    const RegexPredictions regex_predictions =
+        DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                            form_structure.ToFormData(), nullptr);
+    regex_predictions.ApplyTo(form_structure.fields());
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(1U, form_structure.field_count());
     ASSERT_EQ(1U, AutofillCount(form_structure));
     EXPECT_EQ(EMAIL_ADDRESS, form_structure.field(0)->heuristic_type());
-    EXPECT_TRUE(form_structure.IsAutofillable());
+    EXPECT_TRUE(IsAutofillable(form_structure));
   }
 }
 
 // The test ensures that email fields are correctly parsed (via
-// `FormShouldRunHeuristicsForSingleFields`) on small forms with two fields.
+// `ShouldRunHeuristicsForSingleFields()`) on small forms with two fields.
 TEST_F(FormStructureTestImpl, TwoFieldFormEmailHeuristicsBehavior) {
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FULL}, {.role = EMAIL_ADDRESS}}});
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
-  EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
+  EXPECT_FALSE(ShouldRunHeuristics(FormStructure(form)));
+  EXPECT_FALSE(ShouldRunHeuristics(form));
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(FormStructure(form)));
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
 
   {
     FormStructure form_structure(form);
-    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+    const RegexPredictions regex_predictions =
+        DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                            form_structure.ToFormData(), nullptr);
+    regex_predictions.ApplyTo(form_structure.fields());
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(2U, form_structure.field_count());
     ASSERT_EQ(1U, AutofillCount(form_structure));
     EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
     EXPECT_EQ(EMAIL_ADDRESS, form_structure.field(1)->heuristic_type());
-    EXPECT_TRUE(form_structure.IsAutofillable());
+    EXPECT_TRUE(IsAutofillable(form_structure));
   }
 }
 
@@ -2440,17 +2211,24 @@ TEST_F(FormStructureTestImpl,
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
-  EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
+  EXPECT_FALSE(ShouldRunHeuristics(FormStructure(form)));
+  EXPECT_FALSE(ShouldRunHeuristics(form));
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(FormStructure(form)));
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
 
   {
     FormStructure form_structure(form);
-    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+    const RegexPredictions regex_predictions =
+        DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                            form_structure.ToFormData(), nullptr);
+    regex_predictions.ApplyTo(form_structure.fields());
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(2U, form_structure.field_count());
     ASSERT_EQ(1U, AutofillCount(form_structure));
     EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
     EXPECT_EQ(EMAIL_ADDRESS, form_structure.field(1)->heuristic_type());
-    EXPECT_TRUE(form_structure.IsAutofillable());
+    EXPECT_TRUE(IsAutofillable(form_structure));
   }
 }
 
@@ -2463,17 +2241,24 @@ TEST_F(FormStructureTestImpl,
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
-  EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
+  EXPECT_FALSE(ShouldRunHeuristics(FormStructure(form)));
+  EXPECT_FALSE(ShouldRunHeuristics(form));
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(FormStructure(form)));
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
   {
     FormStructure form_structure(form);
-    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+    const RegexPredictions regex_predictions =
+        DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                            form_structure.ToFormData(), nullptr);
+    regex_predictions.ApplyTo(form_structure.fields());
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(1U, form_structure.field_count());
     // However, because the email field is in a form and matches the heuristics,
     // it should be autofillable when the feature is enabled.
     ASSERT_EQ(1U, AutofillCount(form_structure));
     EXPECT_EQ(EMAIL_ADDRESS, form_structure.field(0)->heuristic_type());
-    EXPECT_TRUE(form_structure.IsAutofillable());
+    EXPECT_TRUE(IsAutofillable(form_structure));
   }
 }
 
@@ -2522,8 +2307,13 @@ TEST_F(FormStructureTestImpl, LoyaltyCardsHeuristics_BigForms) {
                            FormControlType::kInputText, "phone")});
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure->IsAutofillable());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  EXPECT_TRUE(IsAutofillable(*form_structure));
   ASSERT_EQ(5U, form_structure->field_count());
   ASSERT_EQ(5U, AutofillCount(*form_structure));
 
@@ -2538,6 +2328,70 @@ TEST_F(FormStructureTestImpl, LoyaltyCardsHeuristics_BigForms) {
   // Phone number.
   EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER,
             form_structure->field(4)->heuristic_type());
+}
+
+// Tests that `FormStructure::UpdateFormData()` correctly updates information of
+// `FormStructure` coming from `FormData` and leaves other information
+// unchanged.
+TEST_F(FormStructureTestImpl, UpdateFormData) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillFixFormEquality};
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}},
+       .name = u"form-name"});
+
+  FormStructure form_structure(form);
+  // Set information that is contained in `FormStructure` and not `FormData`.
+  form_structure.field(0)->SetTypeTo(AutofillType(NAME_FULL),
+                                     /*source=*/std::nullopt);
+  form_structure.set_submission_source(mojom::SubmissionSource::XHR_SUCCEEDED);
+  ASSERT_EQ(form_structure.ToFormData(), form);
+
+  // Update some information in `FormStructure` that come from `FormData`.
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  fields.front().set_value(u"John Doe");
+  form.set_fields(std::move(fields));
+  form.set_name_attribute(u"new-form-name");
+  ASSERT_NE(form_structure.ToFormData(), form);
+
+  // By updating the `FormData` in `form_structure`, `form` matches again with
+  // `form_structure.ToFormData()`, and the other  information in
+  // `form_structure` remain unchanged.
+  test_api(form_structure).UpdateFormData(form);
+  EXPECT_EQ(form_structure.ToFormData(), form);
+  EXPECT_EQ(form_structure.field(0)->Type().GetAddressType(), NAME_FULL);
+  EXPECT_EQ(form_structure.submission_source(),
+            mojom::SubmissionSource::XHR_SUCCEEDED);
+}
+
+// Tests that `FormStructure::UpdateFormData()` preserves field types that are
+// computed during rationalization. Regression test for crbug.com/467384724.
+TEST_F(FormStructureTestImpl, UpdateFormData_PreservesRationalizedTypes) {
+  FormData form =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NUMBER,
+                                     .autocomplete_attribute = "cc-number"},
+                                    {.role = CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                                     .max_length = 5,
+                                     .autocomplete_attribute = "cc-exp"}}});
+
+  FormStructure form_structure(form);
+  ASSERT_EQ(form_structure.field(1)->Type().GetCreditCardType(),
+            CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
+
+  // By running rationalization, the `max_length` is taken into account for the
+  // field type of the expiration date field, which fixes the overall
+  // prediction.
+  form_structure.RationalizeAndAssignSections(
+      GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);
+  ASSERT_EQ(form_structure.field(1)->Type().GetCreditCardType(),
+            CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
+
+  // By updating the `FormData` in `form_structure`, the logic rewrites the
+  // autocomplete attributes of the fields, which can invalidate the
+  // rationalized type. Make sure the rationalized type is preserved.
+  test_api(form_structure).UpdateFormData(form);
+  EXPECT_EQ(form_structure.field(1)->Type().GetCreditCardType(),
+            CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
 }
 
 }  // namespace

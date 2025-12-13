@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
@@ -94,7 +93,7 @@ class SessionStorageDataMap final
       scoped_refptr<SessionStorageDataMap> forking_from);
   ~SessionStorageDataMap() override;
 
-  void OnMapLoaded(DbStatus status) override;
+  void OnMapLoaded() override;
 
   static StorageAreaImpl::Options GetOptions();
 

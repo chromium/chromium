@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
@@ -12,6 +13,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace policy::skyvault_ui_utils {
 

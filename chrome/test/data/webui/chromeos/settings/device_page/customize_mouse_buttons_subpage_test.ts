@@ -157,7 +157,7 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
         assertEquals(
             'Add or locate buttons on your mouse',
             page.shadowRoot!.querySelector<HTMLElement>(
-                                '.help-title')!.textContent!.trim());
+                                '.help-title')!.textContent.trim());
         // Go to the second mouse subpage with metadata.
         const url = new URLSearchParams({
           'mouseId': encodeURIComponent(fakeMice[1]!.id),
@@ -171,6 +171,6 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
         assertEquals(
             'Locate buttons on your mouse',
             page.shadowRoot!.querySelector<HTMLElement>(
-                                '.help-title')!.textContent!.trim());
+                                '.help-title')!.textContent.trim());
       });
 });

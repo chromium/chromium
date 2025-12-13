@@ -7,10 +7,6 @@
 
 #include "content/public/common/buildflags.h"
 
-namespace base {
-class FilePath;
-}
-
 namespace blink {
 struct WebPluginParams;
 }
@@ -38,12 +34,6 @@ class NonLoadablePluginPlaceholder {
   static plugins::PluginPlaceholder* CreateFlashDeprecatedPlaceholder(
       content::RenderFrame* render_frame,
       const blink::WebPluginParams& params);
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  static plugins::PluginPlaceholder* CreateErrorPlugin(
-      content::RenderFrame* render_frame,
-      const base::FilePath& file_path);
-#endif
 };
 
 #endif  // CHROME_RENDERER_PLUGINS_NON_LOADABLE_PLUGIN_PLACEHOLDER_H_

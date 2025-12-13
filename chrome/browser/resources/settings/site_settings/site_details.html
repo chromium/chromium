@@ -32,12 +32,13 @@
       }
     </style>
 
+  <settings-subpage page-title="[[pageTitle_]]" route-path$="[[routePath]]">
     <!-- Confirm reset settings dialog. -->
     <cr-dialog id="confirmResetSettings" close-text="$i18n{close}"
         on-close="onResetSettingsDialogClosed_">
       <div slot="title">$i18n{siteSettingsSiteResetDialogTitle}</div>
       <div slot="body">
-        [[i18n('siteSettingsSiteResetConfirmation', pageTitle)]]
+        [[i18n('siteSettingsSiteResetConfirmation', pageTitle_)]]
       </div>
       <div slot="button-container">
         <cr-button class="cancel-button" on-click="onCloseDialog_">
@@ -57,7 +58,7 @@
         $i18n{siteSettingsSiteDeleteStorageDialogTitle}
       </div>
       <div slot="body">
-        [[i18n('siteSettingsSiteClearStorageConfirmationNew', pageTitle)]]
+        [[i18n('siteSettingsSiteClearStorageConfirmationNew', pageTitle_)]]
         <div class="detail-list">
           <div class="detail">
             <cr-icon icon="all-sites:logout" aria-hidden="true"
@@ -179,7 +180,7 @@
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.SOUND]]"
           icon="privacy:volume-up" label="$i18n{siteSettingsSound}"
-          use-automatic-label="[[blockAutoplayEnabled]]">
+          use-automatic-label="[[blockAutoplayEnabled_]]">
       </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.AUTOMATIC_DOWNLOADS]]"
@@ -258,6 +259,8 @@
       </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.JAVASCRIPT_OPTIMIZER]]"
+          use-block-if-unfamiliar-label-for-default="[[
+              useBlockIfUnfamiliarLabelForV8OptimizerDefault_]]"
           icon="privacy:v8"
           label="$i18n{siteSettingsJavascriptOptimizer}">
       </site-details-permission>
@@ -292,27 +295,22 @@
           category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
           icon="privacy:font-download" label="$i18n{fonts}">
       </site-details-permission>
-      <template is="dom-if" if="[[autoPictureInPictureEnabled_]]">
-        <site-details-permission
-            category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"
-            icon="settings:picture-in-picture"
-            label="$i18n{siteSettingsAutoPictureInPicture}">
-        </site-details-permission>
-      </template>
-      <template is="dom-if" if="[[capturedSurfaceControlEnabled_]]">
+      <site-details-permission
+          category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"
+          icon="settings:picture-in-picture"
+          label="$i18n{siteSettingsAutoPictureInPicture}">
+      </site-details-permission>
+      <template is="dom-if" if="[[enableCapturedSurfaceControl_]]">
         <site-details-permission
             category="[[contentSettingsTypesEnum_.CAPTURED_SURFACE_CONTROL]]"
             icon="settings:touchpad-mouse"
             label="$i18n{siteSettingsCapturedSurfaceControl}">
         </site-details-permission>
       </template>
-      <template is="dom-if" if="[[enableAutomaticFullscreenContentSetting_]]">
-        <site-details-permission
-            category="[[contentSettingsTypesEnum_.AUTOMATIC_FULLSCREEN]]"
-            icon="cr:fullscreen"
-            label="$i18n{siteSettingsAutomaticFullscreen}">
-        </site-details-permission>
-      </template>
+      <site-details-permission
+          category="[[contentSettingsTypesEnum_.AUTOMATIC_FULLSCREEN]]"
+          icon="cr:fullscreen" label="$i18n{siteSettingsAutomaticFullscreen}">
+      </site-details-permission>
       <template is="dom-if" if="[[enableKeyboardLockPrompt_]]">
         <site-details-permission
             category="[[contentSettingsTypesEnum_.KEYBOARD_LOCK]]"
@@ -335,3 +333,4 @@
         </site-details-permission>
       </template>
     </div>
+  </settings-subpage>

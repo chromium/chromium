@@ -30,7 +30,6 @@ class MiniMapMediatorTest : public PlatformTest {
     delegate_ = OCMStrictProtocolMock(@protocol(MiniMapMediatorDelegate));
 
     mediator_ = [[MiniMapMediator alloc] initWithPrefs:profile_->GetPrefs()
-                                                  type:MiniMapQueryType::kText
                                               webState:nullptr];
     mediator_.delegate = delegate_;
   }
@@ -57,10 +56,6 @@ class MiniMapMediatorTest : public PlatformTest {
 
 // Tests that consent screen is not triggered if not needed.
 TEST_F(MiniMapMediatorTest, TestNoConsentNeeded) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
-
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   OCMExpect([delegate_ showMapWithIPH:NO]);
@@ -69,10 +64,6 @@ TEST_F(MiniMapMediatorTest, TestNoConsentNeeded) {
 
 // Tests that consent screen is not triggered but IPH is displayed.
 TEST_F(MiniMapMediatorTest, TestConsentIPH) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
-
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   OCMExpect([delegate_ showMapWithIPH:YES]);

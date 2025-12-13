@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.isTrustedWebActivity;
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 
 import android.net.Uri;
 import android.os.RemoteException;
@@ -35,10 +36,12 @@ import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpda
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.test.MockCertVerifierRuleAndroid;
+import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
-import org.chromium.components.content_settings.ContentSettingValues;
-import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.SessionModel;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
@@ -142,22 +145,36 @@ public class TrustedWebActivityLocationDelegationTest {
     }
 
     private void setAllowChromeSiteLocation(GURL url, boolean allowed) {
-        @ContentSettingValues
-        int setting = allowed ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+        @ContentSetting int setting = allowed ? ContentSetting.ALLOW : ContentSetting.BLOCK;
         Profile profile = mCustomTabActivityTestRule.getProfile(false);
         PermissionInfo info =
                 new PermissionInfo(
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         url.getSpec(),
                         /* embedder= */ null,
                         /* isEmbargoed= */ false,
                         SessionModel.DURABLE);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
+        boolean approxGeoEnabled =
+                PermissionsAndroidFeatureMap.isEnabled(
+                        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (approxGeoEnabled) {
+                        info.setGeolocationSetting(
+                                profile, new GeolocationSetting(setting, setting));
+                    } else {
+                        info.setContentSetting(profile, setting);
+                    }
+                });
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return info.getContentSetting(profile) == setting;
+                    if (approxGeoEnabled) {
+                        return info.getGeolocationSetting(profile).mPrecise == setting;
+                    } else {
+                        return info.getContentSetting(profile) == setting;
+                    }
                 });
     }
 

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.EDUCATIONAL_TIP_LAST_DEFAULT_BROWSER_PROMO_TIMESTAMP;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.role.RoleManager;
@@ -12,6 +14,8 @@ import android.content.Context;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -26,9 +30,13 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.time.Duration;
+
 /** A utility class providing information regarding states of default browser. */
 @NullMarked
 public class DefaultBrowserPromoUtils {
+    private static final long COOLDOWN_PERIOD_MS = Duration.ofDays(7).toMillis();
+
     /**
      * An interface for receiving updates related to the trigger state of the default browser promo.
      */
@@ -178,10 +186,36 @@ public class DefaultBrowserPromoUtils {
 
     /** Notifies listeners that a default browser promo is now visible to the user. */
     public void notifyDefaultBrowserPromoVisible() {
+        setLastDefaultBrowserPromoTimestamp();
         for (DefaultBrowserPromoTriggerStateListener listener :
                 mDefaultBrowserPromoTriggerStateListeners) {
             listener.onDefaultBrowserPromoTriggered();
         }
+    }
+
+    /** Records the current time as the last-shown timestamp for any Default Browser Promo. */
+    private void setLastDefaultBrowserPromoTimestamp() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeLong(
+                EDUCATIONAL_TIP_LAST_DEFAULT_BROWSER_PROMO_TIMESTAMP,
+                TimeUtils.currentTimeMillis());
+    }
+
+    /**
+     * Checks if any Default Browser Promo has been shown within the defined cooldown period
+     * (currently 7 days). This function reads the last-shown timestamp from SharedPreferences and
+     * compares it against the current time.
+     */
+    public static boolean hasPromoShownRecently() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        long lastShownTime =
+                prefsManager.readLong(EDUCATIONAL_TIP_LAST_DEFAULT_BROWSER_PROMO_TIMESTAMP, 0);
+
+        if (lastShownTime == 0) {
+            return false; // Never shown
+        }
+
+        return (TimeUtils.currentTimeMillis() - lastShownTime) < COOLDOWN_PERIOD_MS;
     }
 
     @SuppressLint("NewApi")

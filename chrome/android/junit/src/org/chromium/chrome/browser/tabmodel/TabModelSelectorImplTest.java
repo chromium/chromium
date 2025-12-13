@@ -9,7 +9,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
@@ -34,6 +36,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -41,6 +44,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -60,6 +64,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 /** Unit tests for {@link TabModelSelectorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -78,6 +83,7 @@ public class TabModelSelectorImplTest {
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
 
     @Mock
     private IncognitoTabModelObserver.IncognitoReauthDialogDelegate
@@ -115,6 +121,7 @@ public class TabModelSelectorImplTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
+                        mMultiInstanceManager,
                         mAsyncTabParamsManager,
                         /* supportUndo= */ false,
                         NO_RESTORE_TYPE,
@@ -424,36 +431,69 @@ public class TabModelSelectorImplTest {
 
     @Test
     public void testOnActivityAttachmentChanged() {
-        MockTab tab0 = mRegularTabModel.addTab(0);
-        MockTab tab1 = mRegularTabModel.addTab(1);
-        TabGroupModelFilter filter =
-                mTabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
-        assertEquals(filter.getTabModel(), mRegularTabModel);
-        assertEquals(0, TabModelUtils.getTabIndexById(mRegularTabModel, tab0.getId()));
-        assertEquals(1, TabModelUtils.getTabIndexById(mRegularTabModel, tab1.getId()));
+        MockTabCreatorManager tabCreatorManager = new MockTabCreatorManager();
+        TabModelSelectorImpl tabModelSelector =
+                new TabModelSelectorImpl(
+                        mContext,
+                        mModalDialogManager,
+                        mProfileProviderSupplier,
+                        tabCreatorManager,
+                        mNextTabPolicySupplier,
+                        mMultiInstanceManager,
+                        mAsyncTabParamsManager,
+                        /* supportUndo= */ false,
+                        NO_RESTORE_TYPE,
+                        /* startIncognito= */ false);
+        MockTabModel regularTabModel = new MockTabModel(mProfile, null);
+        TabGroupModelFilterInternal filter = mock(TabGroupModelFilterInternal.class);
+        when(filter.getTabModel()).thenReturn(regularTabModel);
+        TabRemover regularTabRemover = new PassthroughTabRemover(() -> filter);
+        regularTabModel.setActive(true);
+        regularTabModel.setTabRemoverForTesting(regularTabRemover);
+        TabUngrouper tabUngrouper = mock(TabUngrouper.class);
+        when(filter.getTabUngrouper()).thenReturn(tabUngrouper);
+        doAnswer(
+                        invocation -> {
+                            List<Tab> tabs = (List<Tab>) invocation.getArguments()[0];
+                            for (Tab tab : tabs) {
+                                tab.setTabGroupId(null);
+                                when(filter.isTabInTabGroup(tab)).thenReturn(false);
+                            }
+                            return null;
+                        })
+                .when(tabUngrouper)
+                .ungroupTabs(any(), anyBoolean(), anyBoolean());
+        tabCreatorManager.initialize(tabModelSelector);
+        tabModelSelector.onNativeLibraryReadyInternal(
+                mMockTabContentManager,
+                new TabModelHolder(regularTabModel, filter),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(mIncognitoTabModel));
+        MockTab tab0 = regularTabModel.addTab(0);
+        MockTab tab1 = regularTabModel.addTab(1);
+        assertEquals(0, TabModelUtils.getTabIndexById(regularTabModel, tab0.getId()));
+        assertEquals(1, TabModelUtils.getTabIndexById(regularTabModel, tab1.getId()));
 
-        assertFalse(filter.isTabInTabGroup(tab1));
         for (TabObserver observer : tab1.getObservers()) {
             observer.onActivityAttachmentChanged(tab1, /* window= */ null);
         }
-        assertFalse(filter.isTabInTabGroup(tab1));
-        assertEquals(0, TabModelUtils.getTabIndexById(mRegularTabModel, tab0.getId()));
+        verify(tabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean());
+        assertEquals(0, TabModelUtils.getTabIndexById(regularTabModel, tab0.getId()));
         assertEquals(
                 TabModel.INVALID_TAB_INDEX,
-                TabModelUtils.getTabIndexById(mRegularTabModel, tab1.getId()));
+                TabModelUtils.getTabIndexById(regularTabModel, tab1.getId()));
 
-        filter.createSingleTabGroup(tab0);
+        // Simulate the tab being ungrouped.
+        tab0.setTabGroupId(new Token(1, 1));
+        when(filter.isTabInTabGroup(tab0)).thenReturn(true);
 
-        assertTrue(filter.isTabInTabGroup(tab0));
         for (TabObserver observer : tab0.getObservers()) {
             observer.onActivityAttachmentChanged(tab0, /* window= */ null);
         }
-        assertFalse(filter.isTabInTabGroup(tab0));
+        verify(tabUngrouper).ungroupTabs(any(), anyBoolean(), anyBoolean());
         assertNull(tab0.getTabGroupId());
-        assertEquals(tab0.getId(), tab0.getRootId());
         assertEquals(
                 TabModel.INVALID_TAB_INDEX,
-                TabModelUtils.getTabIndexById(mRegularTabModel, tab0.getId()));
+                TabModelUtils.getTabIndexById(regularTabModel, tab0.getId()));
     }
 
     @Test
@@ -461,7 +501,7 @@ public class TabModelSelectorImplTest {
     public void testMarkTabStateInitializedReentrancy() {
         mTabModelSelector.destroy();
 
-        TabModelImpl regularModel = mock(TabModelImpl.class);
+        TabModelJniBridge regularModel = mock(TabModelJniBridge.class);
         mTabModelSelector =
                 new TabModelSelectorImpl(
                         mContext,
@@ -469,6 +509,7 @@ public class TabModelSelectorImplTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
+                        mMultiInstanceManager,
                         mAsyncTabParamsManager,
                         /* supportUndo= */ false,
                         NO_RESTORE_TYPE,
@@ -506,7 +547,7 @@ public class TabModelSelectorImplTest {
     public void testInitDoesNotBroadcastInHeadless() {
         mTabModelSelector.destroy();
 
-        TabModelImpl regularModel = mock(TabModelImpl.class);
+        TabModelJniBridge regularModel = mock(TabModelJniBridge.class);
         mTabModelSelector =
                 new TabModelSelectorImpl(
                         mContext,
@@ -514,6 +555,7 @@ public class TabModelSelectorImplTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
+                        mMultiInstanceManager,
                         mAsyncTabParamsManager,
                         /* supportUndo= */ false,
                         NO_RESTORE_TYPE,

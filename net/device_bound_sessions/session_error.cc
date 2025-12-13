@@ -4,62 +4,120 @@
 
 #include "net/device_bound_sessions/session_error.h"
 
+#include "base/notreached.h"
+
 namespace net::device_bound_sessions {
 
 SessionError::SessionError(SessionError::ErrorType type) : type(type) {}
 
 SessionError::~SessionError() = default;
 
+SessionError::SessionError(const SessionError&) = default;
+SessionError& SessionError::operator=(const SessionError&) = default;
 SessionError::SessionError(SessionError&&) noexcept = default;
 SessionError& SessionError::operator=(SessionError&&) noexcept = default;
 
-bool SessionError::IsFatal() const {
-  using enum ErrorType;
-
+std::optional<DeletionReason> SessionError::GetDeletionReason() const {
   switch (type) {
     case kSuccess:
-      return false;
+      return std::nullopt;
+    case kServerRequestedTermination:
+      return DeletionReason::kServerRequested;
     case kKeyError:
     case kSigningError:
-    case kServerRequestedTermination:
-    case kInvalidConfigJson:
-    case kInvalidSessionId:
-    case kInvalidCredentials:
+    case kPersistentHttpError:
     case kInvalidChallenge:
     case kTooManyChallenges:
+      return DeletionReason::kRefreshFatalError;
+    case kInvalidConfigJson:
+    case kInvalidSessionId:
+    case kInvalidCredentialsConfig:
+    case kInvalidCredentialsType:
+    case kInvalidCredentialsEmptyName:
+    case kInvalidCredentialsCookie:
+    case kInvalidCredentialsCookieCreationTime:
+    case kInvalidCredentialsCookieName:
+    case kInvalidCredentialsCookieParsing:
+    case kInvalidCredentialsCookieUnpermittedAttribute:
+    case kInvalidCredentialsCookieInvalidDomain:
+    case kInvalidCredentialsCookiePrefix:
     case kInvalidFetcherUrl:
     case kInvalidRefreshUrl:
-    case kPersistentHttpError:
     case kScopeOriginSameSiteMismatch:
     case kRefreshUrlSameSiteMismatch:
     case kInvalidScopeOrigin:
+    case kScopeOriginContainsPath:
     case kMismatchedSessionId:
-    case kInvalidRefreshInitiators:
-    case kInvalidScopeRule:
+    case kRefreshInitiatorNotString:
+    case kRefreshInitiatorInvalidHostPattern:
+    case kInvalidScopeRulePath:
+    case kInvalidScopeRuleHostPattern:
+    case kScopeRuleOriginScopedHostPatternMismatch:
+    case kScopeRuleSiteScopedHostPatternMismatch:
+    case kInvalidScopeSpecification:
+    case kMissingScopeSpecificationType:
+    case kEmptyScopeSpecificationDomain:
+    case kEmptyScopeSpecificationPath:
+    case kInvalidScopeSpecificationType:
     case kMissingScope:
     case kNoCredentials:
     case kInvalidScopeIncludeSite:
-      return true;
-
+    case kMissingScopeIncludeSite:
+      return DeletionReason::kInvalidSessionParams;
     case kNetError:
+    case kProxyError:
     case kTransientHttpError:
-      return false;
+    case kBoundCookieSetForbidden:
+    case kSigningQuotaExceeded:
+      return std::nullopt;
+    // Registration-only errors never trigger session deletion.
+    case kSubdomainRegistrationWellKnownUnavailable:
+    case kSubdomainRegistrationUnauthorized:
+    case kSubdomainRegistrationWellKnownMalformed:
+    case kFederatedNotAuthorizedByProvider:
+    case kFederatedNotAuthorizedByRelyingParty:
+    case kSessionProviderWellKnownUnavailable:
+    case kSessionProviderWellKnownMalformed:
+    case kSessionProviderWellKnownHasProviderOrigin:
+    case kRelyingPartyWellKnownUnavailable:
+    case kRelyingPartyWellKnownMalformed:
+    case kRelyingPartyWellKnownHasRelyingOrigins:
+    case kFederatedKeyThumbprintMismatch:
+    case kInvalidFederatedSessionUrl:
+    case kInvalidFederatedSessionProviderSessionMissing:
+    case kInvalidFederatedSessionWrongProviderOrigin:
+    case kInvalidFederatedKey:
+    case kTooManyRelyingOriginLabels:
+    case kEmptySessionConfig:
+    case kRegistrationAttemptedChallenge:
+    case kInvalidFederatedSessionProviderFailedToRestoreKey:
+    case kFailedToUnwrapKey:
+      NOTREACHED();
   }
 }
 
 bool SessionError::IsServerError() const {
-  using enum ErrorType;
-
   switch (type) {
     case kSuccess:
     case kKeyError:
     case kSigningError:
     case kNetError:
+    case kProxyError:
+    case kSigningQuotaExceeded:
       return false;
     case kServerRequestedTermination:
     case kInvalidConfigJson:
     case kInvalidSessionId:
-    case kInvalidCredentials:
+    case kInvalidCredentialsConfig:
+    case kInvalidCredentialsType:
+    case kInvalidCredentialsEmptyName:
+    case kInvalidCredentialsCookie:
+    case kInvalidCredentialsCookieCreationTime:
+    case kInvalidCredentialsCookieName:
+    case kInvalidCredentialsCookieParsing:
+    case kInvalidCredentialsCookieUnpermittedAttribute:
+    case kInvalidCredentialsCookieInvalidDomain:
+    case kInvalidCredentialsCookiePrefix:
     case kInvalidChallenge:
     case kTooManyChallenges:
     case kInvalidFetcherUrl:
@@ -68,14 +126,49 @@ bool SessionError::IsServerError() const {
     case kScopeOriginSameSiteMismatch:
     case kRefreshUrlSameSiteMismatch:
     case kInvalidScopeOrigin:
+    case kScopeOriginContainsPath:
     case kTransientHttpError:
     case kMismatchedSessionId:
-    case kInvalidRefreshInitiators:
-    case kInvalidScopeRule:
+    case kRefreshInitiatorNotString:
+    case kRefreshInitiatorInvalidHostPattern:
+    case kInvalidScopeRulePath:
+    case kInvalidScopeRuleHostPattern:
+    case kScopeRuleOriginScopedHostPatternMismatch:
+    case kScopeRuleSiteScopedHostPatternMismatch:
+    case kInvalidScopeSpecification:
+    case kMissingScopeSpecificationType:
+    case kEmptyScopeSpecificationDomain:
+    case kEmptyScopeSpecificationPath:
+    case kInvalidScopeSpecificationType:
     case kMissingScope:
     case kNoCredentials:
     case kInvalidScopeIncludeSite:
+    case kMissingScopeIncludeSite:
+    case kBoundCookieSetForbidden:
       return true;
+    // Registration-only errors never get reported to the server.
+    case kSubdomainRegistrationWellKnownUnavailable:
+    case kSubdomainRegistrationUnauthorized:
+    case kSubdomainRegistrationWellKnownMalformed:
+    case kFederatedNotAuthorizedByProvider:
+    case kFederatedNotAuthorizedByRelyingParty:
+    case kSessionProviderWellKnownUnavailable:
+    case kSessionProviderWellKnownMalformed:
+    case kSessionProviderWellKnownHasProviderOrigin:
+    case kRelyingPartyWellKnownUnavailable:
+    case kRelyingPartyWellKnownMalformed:
+    case kRelyingPartyWellKnownHasRelyingOrigins:
+    case kFederatedKeyThumbprintMismatch:
+    case kInvalidFederatedSessionUrl:
+    case kInvalidFederatedSessionProviderSessionMissing:
+    case kInvalidFederatedSessionWrongProviderOrigin:
+    case kInvalidFederatedKey:
+    case kTooManyRelyingOriginLabels:
+    case kEmptySessionConfig:
+    case kRegistrationAttemptedChallenge:
+    case kInvalidFederatedSessionProviderFailedToRestoreKey:
+    case kFailedToUnwrapKey:
+      NOTREACHED();
   }
 }
 

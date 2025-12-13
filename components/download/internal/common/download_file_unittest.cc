@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -70,7 +66,7 @@ struct SourceStreamTestData {
 int64_t GetBuffersLength(const char** buffers, size_t num_buffer) {
   int64_t result = 0;
   for (size_t i = 0; i < num_buffer; ++i)
-    result += static_cast<int64_t>(strlen(buffers[i]));
+    result += static_cast<int64_t>(strlen(UNSAFE_TODO(buffers[i])));
   return result;
 }
 
@@ -78,7 +74,7 @@ std::string GetHexEncodedHashValue(crypto::SecureHash* hash_state) {
   if (!hash_state)
     return std::string();
   std::vector<uint8_t> hash_value(hash_state->GetHashLength());
-  hash_state->Finish(&hash_value.front(), hash_value.size());
+  hash_state->Finish(hash_value);
   return base::HexEncode(hash_value);
 }
 
@@ -354,10 +350,10 @@ class DownloadFileTest : public testing::Test {
     DCHECK(input_stream);
     size_t current_pos = static_cast<size_t>(offset);
     for (size_t i = 0; i < num_chunks; i++) {
-      const char* source_data = data_chunks[i];
+      const char* source_data = UNSAFE_TODO(data_chunks[i]);
       size_t length = strlen(source_data);
       auto data = base::MakeRefCounted<net::IOBufferWithSize>(length);
-      memcpy(data->data(), source_data, length);
+      UNSAFE_TODO(memcpy(data->data(), source_data, length));
       EXPECT_CALL(*input_stream, Read(_, _))
           .InSequence(s)
           .WillOnce(DoAll(SetArgPointee<0>(data), SetArgPointee<1>(length),

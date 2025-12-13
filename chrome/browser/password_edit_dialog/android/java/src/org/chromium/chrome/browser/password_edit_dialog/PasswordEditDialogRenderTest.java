@@ -8,6 +8,7 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.password_edit_dialog.R.style.Theme_BrowserUI_DayNight;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -61,6 +62,7 @@ public class PasswordEditDialogRenderTest {
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
+    @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
@@ -82,12 +84,11 @@ public class PasswordEditDialogRenderTest {
                                     mActivityTestRule
                                             .getActivity()
                                             .getLayoutInflater()
-                                            .inflate(
-                                                    R.layout.password_edit_dialog,
-                                                    null);
+                                            .inflate(R.layout.password_edit_dialog, null);
                     mActivityTestRule.getActivity().setContentView(mDialogView);
                     ChromeRenderTestRule.sanitize(mDialogView);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @After
@@ -128,5 +129,6 @@ public class PasswordEditDialogRenderTest {
                     PropertyModelChangeProcessor.create(
                             model, mDialogView, PasswordEditDialogViewBinder::bind);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 }

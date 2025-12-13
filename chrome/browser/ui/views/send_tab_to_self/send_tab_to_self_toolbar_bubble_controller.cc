@@ -4,16 +4,17 @@
 
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 
-#include "chrome/browser/ui/browser.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace send_tab_to_self {
 SendTabToSelfToolbarBubbleController::SendTabToSelfToolbarBubbleController(
-    Browser* browser)
-    : browser_(browser) {}
+    BrowserWindowInterface* bwi)
+    : bwi_(CHECK_DEREF(bwi)) {}
 
 SendTabToSelfToolbarBubbleController::~SendTabToSelfToolbarBubbleController() {
   HideBubble();
@@ -27,8 +28,8 @@ void SendTabToSelfToolbarBubbleController::ShowBubble(
     return;
   }
   auto bubble_view = std::make_unique<SendTabToSelfToolbarBubbleView>(
-      browser_, anchor_view, entry,
-      base::BindOnce(base::IgnoreResult(&Navigate)));
+      *bwi_, anchor_view, entry,
+      base::BindOnce([](NavigateParams* params) { Navigate(params); }));
   bubble_tracker_.SetView(bubble_view.get());
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view))->Show();
 }

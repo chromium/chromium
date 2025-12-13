@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_COMMERCE_IOS_BROWSER_COMMERCE_INTERNALS_UI_H_
 #define COMPONENTS_COMMERCE_IOS_BROWSER_COMMERCE_INTERNALS_UI_H_
 
-#import "base/functional/callback.h"
 #import "components/commerce/core/internals/commerce_internals_handler.h"
 #import "components/commerce/core/internals/commerce_internals_ui_base.h"
 #import "components/commerce/core/internals/mojom/commerce_internals.mojom.h"

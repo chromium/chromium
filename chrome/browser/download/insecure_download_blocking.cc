@@ -270,7 +270,7 @@ struct InsecureDownloadData {
     bool insecure_nonunique = false;
     if (initiator_.has_value() &&
         !network::IsUrlPotentiallyTrustworthy(initiator_->GetURL()) &&
-        net::IsHostnameNonUnique(initiator_->GetURL().host())) {
+        net::IsHostnameNonUnique(initiator_->GetURL().GetHost())) {
       insecure_nonunique = true;
     }
 
@@ -355,9 +355,8 @@ struct InsecureDownloadData {
           !net::IsLocalhost(dl_url);
     }
 
-    is_user_initiated_on_webui_ =
-        item->GetTabUrl().SchemeIs(content::kChromeUIScheme) &&
-        download_source == DownloadSource::CONTEXT_MENU;
+    is_initiated_from_trusted_webui_ =
+        item->GetTabUrl().SchemeIs(content::kChromeUIScheme);
   }
 
   std::optional<url::Origin> initiator_;
@@ -370,8 +369,9 @@ struct InsecureDownloadData {
   bool is_mixed_content_;
   // Was the download initiated by an insecure origin or delivered insecurely?
   bool is_insecure_download_;
-  // Was the download initiated by a user on a chrome:// WebUI?
-  bool is_user_initiated_on_webui_;
+  // Was the download initiated from a trusted WebUI page (chrome://...)?
+  // This can happen, e.g., if user saves a HTTP link from chrome://history.
+  bool is_initiated_from_trusted_webui_;
 };
 
 // Check if |extension| is contained in the comma separated |extension_list|.
@@ -413,11 +413,11 @@ void PrintConsoleMessage(const InsecureDownloadData& data) {
     return;
   }
 
-  // The user can right-click and save a HTTP link from a chrome:// WebUI
+  // The user saved a HTTP resource from a chrome:// WebUI page
   // (e.g. NTP or history). This is arguably a valid use case unless we
   // completely ban users from visiting HTTP sites, so don't warn. Otherwise,
   // an error will be generated and uploaded to the crash server.
-  if (data.is_user_initiated_on_webui_) {
+  if (data.is_initiated_from_trusted_webui_) {
     return;
   }
 

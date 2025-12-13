@@ -232,12 +232,13 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
   DCHECK(!IsChannelEstablished());
   EstablishAndWait();
 
-  gpu::ContextCreationAttribs attributes;
   auto impl = std::make_unique<gpu::CommandBufferProxyImpl>(
       GetGpuChannel(), content::kGpuStreamIdDefault,
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  ASSERT_EQ(impl->Initialize(nullptr, content::kGpuStreamPriorityDefault,
-                             attributes, GURL()),
+  ASSERT_EQ(impl->Initialize(content::kGpuStreamPriorityDefault,
+                             gpu::mojom::ContextCreationAttribs::NewGles(
+                                 gpu::mojom::GLESCreationAttribs::New()),
+                             GURL()),
             gpu::ContextResult::kSuccess);
 
   // Creating a transfer buffer works normally.

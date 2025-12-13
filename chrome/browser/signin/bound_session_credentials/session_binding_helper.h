@@ -36,7 +36,7 @@ class SessionBindingHelper {
     kLoadKeyFailure = 1,
     kCreateAssertionFailure = 2,
     kSignAssertionFailure = 3,
-    kVerifySignatureFailure = 4,
+    // kVerifySignatureFailure = 4, obsolete.
     kAppendSignatureFailure = 5,
     kMaxValue = kAppendSignatureFailure
   };

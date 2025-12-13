@@ -7,10 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 
 @class LayoutGuideCenter;
-@class OmniboxTextFieldIOS;
+@protocol OmniboxTextInput;
+@class OmniboxMetricsRecorder;
 
 /// The omnibox container view is the view that is shown in the location bar's
 /// edit state. It contains the omnibox textfield and the buttons on the left
@@ -18,7 +20,10 @@
 @interface OmniboxContainerView : UIView <TextFieldViewContaining>
 
 /// The contained omnibox textfield.
-@property(nonatomic, strong, readonly) OmniboxTextFieldIOS* textField;
+@property(nonatomic, strong, readonly) id<OmniboxTextInput> textInput;
+
+/// The metrics recorder.
+@property(nonatomic, weak) OmniboxMetricsRecorder* metricsRecorder;
 
 /// The contained clear button. Hide with `setClearButtonHidden`.
 @property(nonatomic, strong, readonly) UIButton* clearButton;
@@ -33,13 +38,14 @@
 /// thumbnail.
 @property(nonatomic, strong) UIImage* thumbnailImage;
 
-/// Initialize the container view with the given frame, text color, and tint
-/// color for omnibox.
+/// Initialize the container view with the given frame, text color, tint
+/// color and presentation context for the omnibox.
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
-                textFieldTint:(UIColor*)textFieldTint
+                textInputTint:(UIColor*)textInputTint
                      iconTint:(UIColor*)iconTint
-                isLensOverlay:(BOOL)isLensOverlay NS_DESIGNATED_INITIALIZER;
+          presentationContext:(OmniboxPresentationContext)presentationContext
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
@@ -51,9 +57,11 @@
 /// Sets the scale of the leading image view.
 - (void)setLeadingImageScale:(CGFloat)scaleValue;
 
-/// Hides or shows the clear button. TODO(crbug.com/325035406): cleanup with
-/// kRichAutocompletion.
+/// Hides or shows the clear button.
 - (void)setClearButtonHidden:(BOOL)isHidden;
+
+/// Updates the height of the text view.
+- (void)updateTextViewHeight;
 
 @end
 

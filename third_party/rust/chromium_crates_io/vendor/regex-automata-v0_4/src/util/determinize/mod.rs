@@ -131,7 +131,7 @@ pub(crate) fn next(
     if !state.look_need().is_empty() {
         // Add look-ahead assertions that are now true based on the current
         // input unit.
-        let mut look_have = state.look_have().clone();
+        let mut look_have = state.look_have();
         match unit.as_u8() {
             Some(b'\r') => {
                 if !rev || !state.is_half_crlf() {
@@ -269,7 +269,7 @@ pub(crate) fn next(
                 // guarantee here, but it's subtle. In particular, a Thompson
                 // NFA guarantees that each pattern has exactly one match
                 // state. Moreover, since we're iterating over the NFA state
-                // IDs in a set, we are guarateed not to have any duplicative
+                // IDs in a set, we are guaranteed not to have any duplicative
                 // match states. Thus, it is impossible to add the same pattern
                 // ID more than once.
                 //

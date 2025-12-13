@@ -221,12 +221,8 @@ String WebSocketCommon::EncodeSubprotocolString(const String& protocol) {
 String WebSocketCommon::JoinStrings(const Vector<String>& strings,
                                     const char* separator) {
   StringBuilder builder;
-  for (wtf_size_t i = 0; i < strings.size(); ++i) {
-    if (i)
-      builder.Append(separator);
-    builder.Append(strings[i]);
-  }
-  return builder.ToString();
+  builder.AppendRange(strings, separator);
+  return builder.ReleaseString();
 }
 
 std::optional<uint16_t> WebSocketCommon::ValidateCloseCodeAndReason(

@@ -104,9 +104,14 @@
       </message>
     </else>
   </if>
-  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt title is shown on both the Desktop bubble and the Android infobar.">
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt title is shown on both the Desktop bubble, the Android infobar and IOS payments bottom sheet.">
     Save card?
   </message>
+  <if expr="is_ios">
+   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL_ON_THIS_DEVICE" desc="Title text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt title is shown on IOS infobar.">
+    Save card on this device?
+  </message>
+  </if>
   <if expr="is_ios">
     <then>
       <message name="IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt description is shown on iOS bottomsheet.">
@@ -190,18 +195,22 @@
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
     This card's CVC will be encrypted and saved in your Google Account for faster checkout
   </message>
-  <message name="IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation for the effect of the Autofill save card prompt when the card is to be saved along with the CVC by uploading it to the server. The prompt will be shown on both the Desktop bubble and the Android bottom sheet.">
-    To pay faster next time, save your card, encrypted security code, and billing address in your Google Account
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging. Became the new default for Desktop in Dec. 2024 and new default for Android and IOS (bottomsheet only) in H1 2025.">
+    Pay faster when your card is saved. Card details are encrypted in your Google Account.
   </message>
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging. Became the new default for Desktop in Dec. 2024 and new default for Android and IOS (bottomsheet only) in H1 2025.">
-      Pay faster when your card is saved. Card details are encrypted in your Google Account.
-    </message>
-  <if expr="is_android">
-    <message name="IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT" desc="Positive button label for the Autofill save CVC prompt that offers to save CVC for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission. The prompt is shown in a Message UI on Android devices.">
+  <if expr="is_android or is_ios">
+    <message name="IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT" desc="Positive button label for the Autofill save CVC prompt that offers to save CVC for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission. The prompt is shown on Android and IOS devices.">
       Save
     </message>
   </if>
-
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD_IOS" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission on IOS devices.">
+      For faster checkout, save this CVC in your account, <ph name="ACCOUNT_EMAIL">$1<ex>youraccount@email.com</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL_SAVE_IOS" desc="Explanation text for the Autofill save CVC prompt that offers to save CVC to this device for existing local cards. This prompt is shown if a CVC is detected for an existing local card on form submission on IOS devices.">
+      For faster checkout, save this CVC on your device
+    </message>
+  </if>
   <if expr="is_ios">
     <then>
       <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_CARDHOLDER_NAME" desc="The label text for the cardholder name textfield.">
@@ -299,6 +308,9 @@
       Name on card is invalid
     </message>
   </if>
+  <message name="IDS_AUTOFILL_PENDING_DIALOG_LOADING_ACCESSIBILITY_DESCRIPTION" desc="The accessibility string read to indicate that the dialog or bottomsheet is in a pending state. It is announced when the user taps on the spinner and TalkBack is enabled." formatter_data="android_java">
+    Loading
+  </message>
 
   <!-- Autofill error dialog related strings -->
   <message name="IDS_AUTOFILL_MASKED_SERVER_CARD_RISK_BASED_UNMASKING_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog during credit card risk-based unmasking.">
@@ -537,7 +549,7 @@
   </message>
 
   <!-- DeviceAuthentication titles-->
-  <if expr="is_macosx">
+  <if expr="is_macosx or is_chromeos">
     <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup, asking the user to authenticate using biometric or device unlock before filling. Note: MacOS has the wording 'Google Chrome is trying to' prepended onto the message during user auth, and it will add a period at the end.">
       verify it's you so it can fill in your payment info
     </message>
@@ -559,6 +571,12 @@
     </message>
     <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_SUBLABEL" desc="Sublabel for a toggle that allows users to turn on mandatory authentication when managing credit cards. This sublabel explains when the toggle is turned off Autofill will still request authentication occasionally.">
       For added protection, always use your fingerprint, face, or other screen lock when you pay using autofill
+    </message>
+    <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_SAVE_SECURITY_CODES_LABEL" desc="Label for a button that allows the users to manage security code (also known as CVC) autofill and/or delete saved CVCs.">
+      Save security codes
+    </message>
+    <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_SAVE_SECURITY_CODES_SUBLABEL" desc="Sublabel for a button that allows the users to manage security code (also known as CVC) autofill and/or delete saved CVCs">
+      Check out faster when your CVCs are saved
     </message>
     <if expr="_google_chrome">
       <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel, asking the user to authenticate using biometric or device unlock before filling.">
@@ -664,6 +682,9 @@
   </message>
   <message name="IDS_AUTOFILL_SAVE_IBAN_LABEL" desc="Text to show for the Autofill prompt IBAN (International Bank Account Number) label where user can see the IBAN to be saved.">
     IBAN
+  </message>
+  <message name="IDS_AUTOFILL_IBANS_TITLE" desc="Title of a chip referring to IBANs (IDS_AUTOFILL_SAVE_IBAN_LABEL) on Your saved info settings page.">
+    IBANs
   </message>
   <message name="IDS_AUTOFILL_SAVE_IBAN_BUBBLE_SAVE_ACCEPT" desc="The text label for `Save` button used in autofill prompt IBAN (International Bank Account Number) save bubble on desktop.">
     Save
@@ -917,19 +938,25 @@
       Now you can autofill your <ph name="CARD_ISSUER_NAME">$1<ex>PayPay</ex></ph> cards because your <ph name="CARD_ISSUER_NAME">$1<ex>PayPay</ex></ph> account is linked to Google Pay.
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_OR_ZIP_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop. Used when the possible available BNPL issuers are Affirm and Zip.">
-      Now you can pay over time using Affirm or Zip
+      Use Affirm or Zip to pay over time
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_OR_ZIP_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop. Used when the possible available BNPL issuers are Affirm and Zip.">
-      Now you can pay over time using Affirm or Zip
+      Use Affirm or Zip to pay over time
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_ZIP_OR_KLARNA_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop. Used when the possible available BNPL issuers are Affirm, Zip, and Klarna.">
-      Now you can pay over time using Affirm, Zip, or Klarna
+      Use Affirm, Zip, or Klarna to pay over time
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_ZIP_OR_KLARNA_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop. Used when the possible available BNPL issuers are Affirm, Zip, and Klarna.">
-      Now you can pay over time using Affirm, Zip, or Klarna
+      Use Affirm, Zip, or Klarna to pay over time
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_SUGGESTION_WITH_GOOGLE_PAY_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users that when using a BNPL suggestion, you can pay over time with Google Pay.">
+      Buy now, pay later is available with Google Pay
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_SUGGESTION_WITH_GOOGLE_PAY_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER" desc="Screenreader label for the `In-Product Help(IPH)` bubble to educate users that when using a BNPL suggestion, you can pay over time with Google Pay.">
+      Buy now, pay later is available with Google Pay
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY" desc="Text for the payment option button in the BNPL select provider screen, explaining that users can pay monthly or in installments. It is specifically for Affirm and Afterpay options.">
-      Pay monthly or in 4 interest-free installments (subject to eligibility)
+      No fees, as low as 0% APR (subject to eligibility)
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_ZIP" desc="Text for the payment option button in the BNPL select provider screen, explaining that users can pay monthly or in installments. It is specifically for Zip options.">
       Pay in easy installments (subject to eligibility, fees apply)
@@ -946,19 +973,25 @@
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH" desc="Text for the payment option button in the BNPL select provider screen, explaining that the checkout amount is too high for the BNPL issuer to support.">
       Purchase must be under <ph name="CHECKOUT_AMOUNT_MAXIMUM">$1<ex>$10,000.00</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION" desc="Text shown in the footnote of the BNPL select provider screen, instructing users how to hide the pay over time options.">
-  To hide pay over time options, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT">$1<ex>payment settings</ex></ph>
+  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_AI_FOOTNOTE" desc="A note explaining that Google will collect data from the checkout page to determine the checkout amount.">
+      Google uses information from the checkout page and other relevant data to offer these options. To hide pay later options, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT">$1<ex>payment settings</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_FOR_AI_AMOUNT_EXTRACTION_NOTE" desc="A note explaining that Google will collect data from the checkout page to determine the checkout amount.">
+      Google uses information from the checkout page and other relevant data to offer these options.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION" desc="Text shown in the footnote of the BNPL select provider screen, instructing users how to hide the pay later options.">
+  To hide pay later options, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT">$1<ex>payment settings</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" desc="Text for the payment settings link in the BNPL footnote.">
   payment settings
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_TITLE" desc="Title of the BNPL select provider screen that prompts the user to choose a pay over time provider.">
-    Choose a pay over time provider
+  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_TITLE" desc="Title of the BNPL select provider screen that prompts the user to choose a pay later provider.">
+    Choose a pay later provider
   </message>
     <message name="IDS_AUTOFILL_BNPL_SELECT_PROVIDER_TITLE_DESCRIPTION" desc="Accessibility description for the title of the BNPL select provider screen containing the combined GPay logo image.">
-    <ph name="SELECT_PROVIDER_TITLE">$1<ex>Choose a pay over time provider</ex></ph>. <ph name="LOGO_DESCRIPTION">$2<ex>Google Pay logo</ex></ph>
+    <ph name="SELECT_PROVIDER_TITLE">$1<ex>Choose a pay later provider</ex></ph>. <ph name="LOGO_DESCRIPTION">$2<ex>Google Pay logo</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_LINKED_ISSUER_PILL_LABEL" desc="Label for the linked issuer pill view, which may be displayed on the BNPL select provider screen that prompts the user to choose a pay over time provider. If this label is present, it indicates that the user has previously associated this BNPL provider with their Google account.">
+  <message name="IDS_AUTOFILL_CARD_BNPL_LINKED_ISSUER_PILL_LABEL" desc="Label for the linked issuer pill view, which may be displayed on the BNPL select provider screen that prompts the user to choose a pay later provider. If this label is present, it indicates that the user has previously associated this BNPL provider with their Google account." formatter_data="android_java">
     Linked
   </message>
   <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_FALLBACK_LABEL" desc="Text shown in the `In-Product Help(IPH)` bubble for card info retrieval suggestions on Chrome Android when the issuer_id is not present in the card. It is specifically for card info retrieval enrolled card. Card info will be copied after the user clicks the suggestion.">
@@ -1045,17 +1078,26 @@
   </message>
 
   <!-- Buy now pay later related strings -->
-  <message name="IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_MAIN_TEXT" desc="Main text for the Buy Now Pay Later option in the autofill credit card popup. If the option is selected, a pop up will be shown to allow users choose a Buy Now Pay Later issuer.">
-    Pay over time options
+  <message name="IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT" desc="Main text for the Buy Now Pay Later option in the autofill credit card popup. If the option is selected, a pop up will be shown to allow users choose a Buy Now Pay Later issuer." formatter_data="android_java">
+    Pay later options
   </message>
   <message name="IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL" desc="One line label shows the minimum qualifying amount for the Buy Now Pay Later option in the autofill credit card popup. If the option is selected, a pop up will be shown to allow users choose a Buy Now Pay Later issuer.">
     Available for purchases over <ph name="RANGE_MINIMUM">$1<ex>$35</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_BNPL_SETTINGS_LABEL" desc="Label for the Buy Now Pay Later preference in the payments settings page. When enabled, users can checkout with external BNPL issuers using a pay-over-time payment option.">
-    Pay over time
+  <message name="IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL_TWO_ISSUERS" desc="Text that shows the two issuers present that can be used in a payments autofill BNPL flow. Shown in the second line of the BNPL suggestion in the payments autofill dropdown.">
+    <ph name="ISSUER_1_NAME">$1<ex>Affirm</ex></ph> or <ph name="ISSUER_2_NAME">$2<ex>Zip</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL" desc="Sublabel for the Buy Now Pay Later preference in the payments settings page, including a hyperlink to learn more about pay over time. When enabled, users can checkout with external BNPL issuers using a pay-over-time payment option.">
-    Show <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN">&lt;a href="$1" aria-description="$2"&gt;</ph>pay over time<ph name="PAY_OVER_TIME_HELP_LINK_END">&lt;/a&gt;</ph> options at checkout
+  <message name="IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL_THREE_ISSUERS" desc="Text that shows the three issuers present that can be used in a payments autofill BNPL flow. Shown in the second line of the BNPL suggestion in the payments autofill dropdown.">
+    <ph name="ISSUER_1_NAME">$1<ex>Affirm</ex></ph>, <ph name="ISSUER_2_NAME">$2<ex>Zip</ex></ph>, or <ph name="ISSUER_3_NAME">$3<ex>Klarna</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_SUGGESTION_LABEL_FOR_UNAVAILABLE_PURCHASE" desc="One line label shows the Buy Now Pay Later option is unavailable for the purchase in the autofill credit card popup." formatter_data="android_java">
+    Unavailable for this purchase
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_SETTINGS_LABEL" desc="Label for the Buy Now Pay Later preference in the payments settings page. When enabled, users can checkout with external BNPL issuers using a pay-over-time payment option." formatter_data="android_java">
+    Pay later
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL" desc="Sublabel for the Buy Now Pay Later preference in the payments settings page, including a hyperlink to learn more about pay later options. When enabled, users can checkout with external BNPL issuers using a Buy Now Pay Later option.">
+    Show <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN">&lt;a href="$1" aria-description="$2"&gt;</ph>pay later<ph name="PAY_LATER_OPTIONS_HELP_LINK_END">&lt;/a&gt;</ph> options at checkout
   </message>
   <message name="IDS_AUTOFILL_BNPL_AFFIRM" desc="Name of Buy Now Pay Later provider Affirm.">
     Affirm
@@ -1087,27 +1129,57 @@
   <message name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL" desc="The description label shown in body of the Autofill filled card information bubble for the Buy Now Pay Later flow.">
     When you pay over time, a one-time virtual card number is filled. You can click to copy and paste card details for this purchase.
   </message>
-  <message name="IDS_AUTOFILL_BNPL_TOS_OK_BUTTON_LABEL" desc="The OK button label of the Buy-Now-Pay-Later Terms of Service dialog. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website.">
+  <message name="IDS_AUTOFILL_BNPL_FILLED_CARD_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a Buy Now Pay Later virtual card number autofilled.">
+    <ph name="BNPL_ISSUER_NAME">$1<ex>PayLater</ex></ph> one-time virtual card number filled.
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_TOS_OK_BUTTON_LABEL" desc="The OK button label of the Buy-Now-Pay-Later Terms of Service dialog. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website." formatter_data="android_java">
     Continue
   </message>
   <message name="IDS_AUTOFILL_BNPL_TOS_CANCEL_BUTTON_LABEL" desc="The cancel button label of the Buy-Now-Pay-Later Terms of Service dialog. If the user cancels this dialog, the flow will end and the dialog will close.">
     Cancel
   </message>
-  <message name="IDS_AUTOFILL_BNPL_TOS_TITLE" desc="The title of the Buy-Now-Pay-Later Terms of Service dialog. This dialog is shown to users after they have selected a new unlinked BNPL issuer to use. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website. If the user cancels this dialog, they will return back to the BNPL issuer selection dialog.">
-    Link account and pay with <ph name="BNPL_ISSUER_NAME">$1</ph>?
-  </message>
   <message name="IDS_AUTOFILL_BNPL_TOS_TITLE_DESCRIPTION" desc="Accessibility description for the title of the Buy-Now-Pay-Later Terms of Service dialog containing the combined GPay and BNPL Issuer logo image.">
     <ph name="TOS_TITLE">$1<ex>Link account and pay with Affirm?</ex></ph> <ph name="LOGO_DESCRIPTION">$2<ex>Google Pay, Affirm logo</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog.">
-    After you review your order, you must sign into or create an <ph name="BNPL_ISSUER_NAME">$1</ph> account. This account will be automatically linked to Google Pay.
-  </message>
-  <message name="IDS_AUTOFILL_BNPL_TOS_APPROVE_TEXT" desc="The text informing the user that that BNPL issuer will check and approve their eligibility in the Buy-Now-Pay-Later Terms of Service dialog.">
-    <ph name="BNPL_ISSUER_NAME">$1</ph> will check your eligibility (this won't affect your credit score). If approved, <ph name="BNPL_ISSUER_NAME">$1</ph> will provide payment plans for you to choose from and complete your purchase.
-  </message>
-  <message name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT" desc="The text informing the user the benefits of linking their BNPL account in the Buy-Now-Pay-Later Terms of Service dialog.">
-    Keeping your account linked helps you pay faster with <ph name="BNPL_ISSUER_NAME">$1</ph>, but you can unlink it by going to <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT">$2<ex>wallet.google.com</ex></ph>
-  </message>
+  <if expr="is_android">
+    <then>
+      <message name="IDS_AUTOFILL_BNPL_TOS_BOTTOM_SHEET_CANCEL_BUTTON_LABEL" desc="The cancel button label of the Buy-Now-Pay-Later Terms of Service bottom sheet. If the user cancels, the flow will end and the bottom sheet will close." formatter_data="android_java">
+        No thanks
+      </message>
+      <message name="IDS_AUTOFILL_BNPL_TOS_UNLINKED_TITLE" desc="The title of the Buy-Now-Pay-Later Terms of Service dialog. This dialog is shown to users after they have selected a new unlinked BNPL issuer to use. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website. If the user cancels this dialog, they will return back to the BNPL issuer selection dialog." formatter_data="android_java">
+        Link account and pay with <ph name="BNPL_ISSUER_NAME">%1$s</ph>?
+      </message>
+      <message name="IDS_AUTOFILL_BNPL_TOS_LINKED_TITLE" desc="The title of the Buy-Now-Pay-Later Terms of Service dialog. This dialog is shown to users after they have selected a new linked BNPL issuer to use. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website. If the user cancels this dialog, they will return back to the BNPL issuer selection dialog." formatter_data="android_java">
+        Continue to pay with <ph name="BNPL_ISSUER_NAME">%1$s</ph>?
+      </message>
+      <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog." formatter_data="android_java">
+        After you review your order, you must sign into or create an account with <ph name="BNPL_ISSUER_NAME">%1$s</ph>. This account will be automatically linked to Google Pay.
+      </message>
+      <message name="IDS_AUTOFILL_BNPL_TOS_APPROVE_TEXT" desc="The text informing the user that that BNPL issuer will check and approve their eligibility in the Buy-Now-Pay-Later Terms of Service dialog." formatter_data="android_java">
+        <ph name="BNPL_ISSUER_NAME">%1$s</ph> will check your eligibility (this won't affect your credit score). If approved, <ph name="BNPL_ISSUER_NAME">%1$s</ph> will provide payment plans for you to choose from and complete your purchase.
+      </message>
+      <message name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT" desc="The text informing the user the benefits of linking their BNPL account in the Buy-Now-Pay-Later Terms of Service dialog." formatter_data="android_java">
+        Keeping your account linked helps you pay faster with <ph name="BNPL_ISSUER_NAME">%1$s</ph>, but you can unlink it by going to <ph name="BEGIN_LINK">&lt;link&gt;</ph><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT">%2$s<ex>wallet.google.com</ex></ph><ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+    </then>
+    <else>
+      <message name="IDS_AUTOFILL_BNPL_TOS_UNLINKED_TITLE" desc="The title of the Buy-Now-Pay-Later Terms of Service dialog. This dialog is shown to users after they have selected a new unlinked BNPL issuer to use. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website. If the user cancels this dialog, they will return back to the BNPL issuer selection dialog.">
+        Link account and pay with <ph name="BNPL_ISSUER_NAME">$1</ph>?
+      </message>
+      <message name="IDS_AUTOFILL_BNPL_TOS_LINKED_TITLE" desc="The title of the Buy-Now-Pay-Later Terms of Service dialog. This dialog is shown to users after they have selected a new linked BNPL issuer to use. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website. If the user cancels this dialog, they will return back to the BNPL issuer selection dialog.">
+        Continue to pay with <ph name="BNPL_ISSUER_NAME">$1</ph>?
+      </message>
+      <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog.">
+        After you review your order, you must sign into or create an account with <ph name="BNPL_ISSUER_NAME">$1</ph>. This account will be automatically linked to Google Pay.
+      </message>
+      <message name="IDS_AUTOFILL_BNPL_TOS_APPROVE_TEXT" desc="The text informing the user that that BNPL issuer will check and approve their eligibility in the Buy-Now-Pay-Later Terms of Service dialog.">
+        <ph name="BNPL_ISSUER_NAME">$1</ph> will check your eligibility (this won't affect your credit score). If approved, <ph name="BNPL_ISSUER_NAME">$1</ph> will provide payment plans for you to choose from and complete your purchase.
+      </message>
+      <message name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT" desc="The text informing the user the benefits of linking their BNPL account in the Buy-Now-Pay-Later Terms of Service bottom sheet.">
+        Keeping your account linked helps you pay faster with <ph name="BNPL_ISSUER_NAME">$1</ph>, but you can unlink it by going to <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT">$2<ex>wallet.google.com</ex></ph>
+      </message>
+    </else>
+  </if>
   <message name="IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_TITLE" desc="The title of the progress dialog to be displayed after the user reviewed their payment plan for the Buy-Now-Pay-Later transaction, and Chrome is attempting to retrieve the virtual card from the Payments server. If the retrieval was successful, a confirmation message will display in the progress dialog and then the virtual card will be filled.">
     Getting ready for checkout
   </message>
@@ -1117,15 +1189,23 @@
   <message name="IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_CONFIRMATION_MESSAGE" desc="The description text of the progress dialog to be displayed after Chrome successfully retrieved the virtual card from the Payments server, and Chrome is going to fill the virtual card.">
     Done!
   </message>
-  <message name="IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE" desc="The title text of an error dialog informing the user that something went wrong in the Buy Now Pay Later flow.">
+  <message name="IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE" desc="The title text of an error dialog informing the user that something went wrong in the Buy Now Pay Later flow." formatter_data="android_java">
     Something went wrong
   </message>
-  <message name="IDS_AUTOFILL_BNPL_TEMPORARY_ERROR_DESCRIPTION" desc="The description text of an error dialog informing the user that a temporary error occurred in the Buy Now Pay Later flow.">
-    Pay over time isn't available right now. Try again later.
+  <message name="IDS_AUTOFILL_BNPL_TEMPORARY_ERROR_DESCRIPTION" desc="The description text of an error dialog informing the user that a temporary error occurred in the Buy Now Pay Later flow." formatter_data="android_java">
+    Pay later is unavailable at this time. Try again or choose another payment method.
   </message>
   <message name="IDS_AUTOFILL_BNPL_PERMANENT_ERROR_DESCRIPTION" desc="The description text of an error dialog informing the user that a permanent error occurred in the Buy Now Pay Later flow.">
     Contact the provider for more information
   </message>
+  <message name="IDS_AUTOFILL_BNPL_ERROR_OK_BUTTON" desc="The label of the button which would close the error screen of the touch to fill bottomsheet and reset the Buy Now Pay Later flow." formatter_data="android_java">
+    OK
+  </message>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_BNPL_SETTINGS_TOGGLE_SUBLABEL" desc="Sublabel for the Buy Now Pay Later toggle in the payments settings page. When enabled, users can checkout with external BNPL issuers using a Buy Now Pay Later option." formatter_data="android_java">
+      Show pay later options at checkout
+    </message>
+  </if>
 
   <!-- Credit card benefits-related strings -->
   <message name="IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS" desc="benefit text string shown in suggestion dropdown indicating that the credit card has an applicable benefit for this purchase with `terms apply` appended.">
@@ -1163,6 +1243,9 @@
     </message>
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUMMARY" desc="Summary for the toggle switch in the card benefits settings page, which allows user enable/disable the card benefit from showing in the payments autofill card selection bottomsheet." formatter_data="android_java">
       Show which rewards and benefits are available for your cards at checkout
+    </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUMMARY_WITH_ISSUER_TERMS_APPLY_TEXT" desc="Summary for the toggle switch in the card benefits settings page, which allows user enable/disable the card benefit from showing in the payments autofill card selection bottomsheet." formatter_data="android_java">
+      Show available card benefits and rewards at checkout. Issuer terms apply.
     </message>
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_LEARN_ABOUT_LINK_TEXT" desc="A label with a link to a help page in the card benefits settings page, which allows users to view help page for card benefits in a new tab." formatter_data="android_java">
       <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph> about card benefits
@@ -1297,7 +1380,7 @@
     <message name="IDS_AUTOFILL_BOTTOM_SHEET_ALL_LOYALTY_CARDS_SCREEN_TITLE" desc="The title of the screen in the loyalty card filling bottom sheet that displays all loyalty cards of a user." formatter_data="android_java">
       Your loyalty cards
     </message>
-    <message name="IDS_AUTOFILL_BOTTOM_SHEET_BACK_BUTTON_DESCRIPTION" desc="Accessibility string for the icon that allows closing the all loyalty cards screen and going back to the intial loyalty card filling screen." formatter_data="android_java">
+    <message name="IDS_AUTOFILL_BOTTOM_SHEET_BACK_BUTTON_DESCRIPTION" desc="Accessibility string for the icon that allows closing the current screen and going back to the intial screen on a bottomsheet." formatter_data="android_java">
       Back
     </message>
     <message name="IDS_AUTOFILL_BOTTOM_SHEET_MANAGE_LOYALTY_CARDS" desc="An option in the autofill bottom sheet that triggers navigation to the loyalty cards management UI in Google Wallet." formatter_data="android_java">
@@ -1348,11 +1431,74 @@
     <message name="IDS_AUTOFILL_LOYALTY_CARD_BOTTOM_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet showing a list of the user's loyalty cards is closed." formatter_data="android_java">
       List of loyalty cards is closed.
     </message>
+    <message name="IDS_AUTOFILL_BNPL_PROGRESS_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. It describes the bottom sheet which shows a progress spinner for a Buy-Now-Pay-Later flow." formatter_data="android_java">
+      Buy-Now-Pay-Later progress screen. Keyboard hidden.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_PROGRESS_SHEET_HALF_HEIGHT" desc="Accessibility string read when the bottom sheet showing a Buy-Now-Pay-Later progress spinner is opened at half height. The sheet will occupy the bottom half the screen." formatter_data="android_java">
+      Buy-Now-Pay-Later progress screen opened at half height.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_PROGRESS_SHEET_FULL_HEIGHT" desc="Accessibility string read when the bottom sheet showing a Buy-Now-Pay-Later progress spinner is opened at full height. The sheet will occupy the entire screen." formatter_data="android_java">
+      Buy-Now-Pay-Later progress screen opened at full height.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_PROGRESS_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet showing a Buy-Now-Pay-Later progress spinner is closed." formatter_data="android_java">
+      Buy-Now-Pay-Later progress screen is closed.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. It describes the bottom sheet where a user can pick a BNPL issuer for pay over time." formatter_data="android_java">
+      Buy-Now-Pay-Later issuers available for pay over time. Keyboard hidden.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_BOTTOM_SHEET_HALF_HEIGHT" desc="Accessibility string read when the bottom sheet showing a list of the BNPL issuers is opened at half height. The sheet will occupy the bottom half the screen." formatter_data="android_java">
+      Buy-Now-Pay-Later issuers available for pay over time opened at half height.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_BOTTOM_SHEET_FULL_HEIGHT" desc="Accessibility string read when the bottom sheet showing a list of the BNPL issuers is opened at full height. The sheet will occupy the entire screen." formatter_data="android_java">
+      Buy-Now-Pay-Later issuers available for pay over time opened at full height.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_BOTTOM_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet showing a list of BNPL issuers is closed." formatter_data="android_java">
+      List of Buy-Now-Pay-Later issuers is closed.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_TOS_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. It describes the bottom sheet where a user can read and accept terms for linking a new BNPL issuer." formatter_data="android_java">
+      Buy-Now-Pay-Later terms of service screen. Keyboard hidden.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_TOS_BOTTOM_SHEET_HALF_HEIGHT" desc="Accessibility string read when the bottom sheet showing terms for linking a new issuer is opened at half height. The sheet will occupy the bottom half the screen." formatter_data="android_java">
+      Buy-Now-Pay-Later terms of service screen opened at half height.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_TOS_BOTTOM_SHEET_FULL_HEIGHT" desc="Accessibility string read when the bottom sheet showing terms for linking a new issuer is opened at full height. The sheet will occupy the entire screen." formatter_data="android_java">
+      Buy-Now-Pay-Later terms of service screen opened at full height.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_TOS_BOTTOM_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet showing terms for linking a new issuer is closed." formatter_data="android_java">
+      Buy-Now-Pay-Later terms of service screen is closed.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ERROR_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. It describes the bottom sheet which shows an error for a Buy-Now-Pay-Later flow." formatter_data="android_java">
+      Buy-Now-Pay-Later error screen. Keyboard hidden.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ERROR_SHEET_HALF_HEIGHT" desc="Accessibility string read when the bottom sheet showing a Buy-Now-Pay-Later error is opened at half height. The sheet will occupy the bottom half the screen." formatter_data="android_java">
+      Buy-Now-Pay-Later error screen opened at half height.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ERROR_SHEET_FULL_HEIGHT" desc="Accessibility string read when the bottom sheet showing a Buy-Now-Pay-Later error is opened at full height. The sheet will occupy the entire screen." formatter_data="android_java">
+      Buy-Now-Pay-Later error screen opened at full height.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ERROR_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet showing a Buy-Now-Pay-Later error is closed." formatter_data="android_java">
+      Buy-Now-Pay-Later error screen is closed.
+    </message>
     <message name="IDS_AUTOFILL_PAYMENT_METHOD_A11Y_ITEM_COLLECTION_INFO" desc="A template message for a fillable item content description, provides its position in the list info (e.g. 'Item label, 2 of 4')." formatter_data="android_java">
       <ph name="ITEM_LABEL">%1$s<ex>Card info</ex></ph>, <ph name="ITEM_POSITION">%2$s<ex>2</ex></ph> of <ph name="ITEMS_TOTAL">%3$s<ex>8</ex></ph>.
     </message>
     <message name="IDS_AUTOFILL_PAYMENT_METHOD_BOTTOM_SHEET_BENEFITS_TERMS_LABEL" desc="The label for the card benefits terms appears on the bottom sheet when at least one of the cards has benefits." formatter_data="android_java">
       Terms apply for card benefits
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_AFFIRM_BOTTOM_SHEET" desc="Text for the payment option button in the BNPL select provider bottomsheet, explaining that users can pay monthly or in installments. It is specifically for Affirm options.">
+        Monthly or 4 installments
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_ZIP_BOTTOM_SHEET" desc="Text for the payment option button in the BNPL select provider bottomsheet, explaining that users can pay monthly or in installments. It is specifically for Zip options.">
+        Pay in easy installments
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_KLARNA_BOTTOM_SHEET" desc="Text for the payment option button in the BNPL select provider bottomsheet, explaining that users can pay monthly or in installments. It is specifically for Klarna options.">
+        Pay in low monthly installments
+    </message>
+    <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_BOTTOM_SHEET_FOOTNOTE_HIDE_OPTION" desc="Text shown in the footnote of the BNPL select provider bottom sheet, instructing users how to hide the pay later options." formatter_data="android_java">
+      To hide pay later options, go to <ph name="BEGIN_LINK">&lt;link&gt;</ph>payment settings<ph name="END_LINK">&lt;/link&gt;</ph>
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_BOTTOM_SHEET_TERMS_LABEL" desc="The label for the BNPL issuer terms appears in the BNPL select provider and progress bottom sheets" formatter_data="android_java">
+      Payment plans are subject to eligibility.
     </message>
   </if>
 
@@ -1397,12 +1543,17 @@
       CVC saved
     </message>
   </if>
-  <if expr="is_android">
+  <if expr="is_ios or is_android">
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_LABEL" desc="Label for the payments settings page button that allows the user to bulk delete all the CVCs stored locally and on Google servers." formatter_data="android_java">
       Delete saved security codes
     </message>
   </if>
-  <if expr="not is_android">
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_DELETE_CVC_STORAGE_LABEL" desc="Description for the payments settings page button that allows the user to bulk delete all the CVCs stored locally and on Google servers.">
+      Your payment methods will still be saved
+    </message>
+  </if>
+  <if expr="not is_ios and not is_android">
     <message name="IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT" desc="The main text shown in the credit card suggestion list when the CVC field is focused. It will be the main text which is on the first line of suggestion. If the user hovers over the suggestion, the credit card will be previewed. If the user clicks on the suggestion, credit card will be filled.">
       CVC
     </message>
@@ -1410,6 +1561,11 @@
   <if expr="is_android">
     <message name="IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT" desc="The main text shown in the credit card suggestion list when the CVC field is focused. It will be the main text which is on the first line of suggestion. If the user clicks on the suggestion, credit card will be filled.">
       CVC for <ph name="CARD_NAME">$1<ex>Visa</ex></ph>
+    </message>
+  </if>
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT" desc="The main text shown in the credit card suggestion list when the CVC field is focused. It will be the main text which is on the first line of suggestion. If the user clicks on the suggestion, credit card will be filled.">
+      Security code
     </message>
   </if>
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_CVC_SAVED_LABEL" desc="Label for a credit card on the payment settings page when the user has stored the cvc." formatter_data="android_java">
@@ -1434,7 +1590,7 @@
     Card saved
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT" desc="Title text for confirmation shown after save card upload to the server was unsuccessful.">
-    Card saved to device only
+    Card saved on device only
   </message>
   <message name="IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_SUCCESS_TITLE_TEXT" desc="Title text for confirmation shown after upload save IBAN attempt was successful and it was uploaded to the server.">
     IBAN saved
@@ -1450,7 +1606,7 @@
   </message>
 
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after save card is successfully uploaded and saved to the server.">
-    This card is saved in your Google Account so you can use it across Google services.
+    Your card is saved in your Google Account so you can autofill it for future purchases
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after save card upload to the server was unsuccessful.">
     This card couldn't be saved in your Google Account. It's saved to Chrome on this device instead.

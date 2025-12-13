@@ -27,6 +27,7 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/client_process_impl.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -119,9 +120,10 @@ void CoordinatorImpl::RequestGlobalMemoryDump(
     const std::vector<std::string>& allocator_dump_names,
     RequestGlobalMemoryDumpCallback callback) {
   // This merely strips out the |dump_guid| argument.
-  auto adapter = [](RequestGlobalMemoryDumpCallback callback, bool success,
-                    uint64_t, mojom::GlobalMemoryDumpPtr global_memory_dump) {
-    std::move(callback).Run(success, std::move(global_memory_dump));
+  auto adapter = [](RequestGlobalMemoryDumpCallback callback,
+                    mojom::RequestOutcome outcome, uint64_t,
+                    mojom::GlobalMemoryDumpPtr global_memory_dump) {
+    std::move(callback).Run(outcome, std::move(global_memory_dump));
   };
 
   QueuedRequest::Args args(dump_type, level_of_detail, determinism,
@@ -139,16 +141,16 @@ void CoordinatorImpl::RequestGlobalMemoryDumpForPid(
   // Error out early if process id is null to avoid confusing with global
   // dump for all processes case when pid is kNullProcessId.
   if (pid == base::kNullProcessId) {
-    std::move(callback).Run(false, nullptr);
+    std::move(callback).Run(mojom::RequestOutcome::kNullPid, nullptr);
     return;
   }
 
   // This merely strips out the |dump_guid| argument; this is not relevant
   // as we are not adding to trace.
   auto adapter = [](RequestGlobalMemoryDumpForPidCallback callback,
-                    bool success, uint64_t,
+                    mojom::RequestOutcome outcome, uint64_t,
                     mojom::GlobalMemoryDumpPtr global_memory_dump) {
-    std::move(callback).Run(success, std::move(global_memory_dump));
+    std::move(callback).Run(outcome, std::move(global_memory_dump));
   };
 
   QueuedRequest::Args args(
@@ -167,9 +169,9 @@ void CoordinatorImpl::RequestPrivateMemoryFootprint(
   // This merely strips out the |dump_guid| argument; this is not relevant
   // as we are not adding to trace.
   auto adapter = [](RequestPrivateMemoryFootprintCallback callback,
-                    bool success, uint64_t,
+                    mojom::RequestOutcome outcome, uint64_t,
                     mojom::GlobalMemoryDumpPtr global_memory_dump) {
-    std::move(callback).Run(success, std::move(global_memory_dump));
+    std::move(callback).Run(outcome, std::move(global_memory_dump));
   };
 
   QueuedRequest::Args args(
@@ -188,9 +190,9 @@ void CoordinatorImpl::RequestGlobalMemoryDumpAndAppendToTrace(
     RequestGlobalMemoryDumpAndAppendToTraceCallback callback) {
   // This merely strips out the |dump_ptr| argument.
   auto adapter = [](RequestGlobalMemoryDumpAndAppendToTraceCallback callback,
-                    bool success, uint64_t dump_guid,
+                    mojom::RequestOutcome outcome, uint64_t dump_guid,
                     mojom::GlobalMemoryDumpPtr) {
-    std::move(callback).Run(success, dump_guid);
+    std::move(callback).Run(outcome, dump_guid);
   };
 
   QueuedRequest::Args args(dump_type, level_of_detail, determinism, {},
@@ -244,7 +246,7 @@ void CoordinatorImpl::UnregisterClientProcess(base::ProcessId process_id) {
       DLOG(ERROR)
           << "Memory dump request failed due to disconnected child process "
           << process_id;
-      request->failed_memory_dump_count++;
+      request->outcome = mojom::RequestOutcome::kProcessUnregistered;
     }
     FinalizeGlobalMemoryDumpIfAllManagersReplied();
   }
@@ -296,7 +298,8 @@ void CoordinatorImpl::RequestGlobalMemoryDumpInternal(
                 << base::trace_event::MemoryDumpLevelOfDetailToString(
                        args.level_of_detail)
                 << ") is already in the queue";
-        std::move(callback).Run(false /* success */, 0 /* dump_guid */,
+        std::move(callback).Run(mojom::RequestOutcome::kRedundant,
+                                0 /* dump_guid */,
                                 nullptr /* global_memory_dump */);
         return;
       }
@@ -330,7 +333,7 @@ void CoordinatorImpl::OnQueuedRequestTimedOut(uint64_t dump_guid) {
     DLOG(ERROR) << "Global dump request timed out waiting for "
                 << request->pending_responses.size() << " requests";
   }
-  request->failed_memory_dump_count += request->pending_responses.size();
+  request->outcome = mojom::RequestOutcome::kTimeout;
   request->pending_responses.clear();
 
   // Callback the consumer of the service.
@@ -419,7 +422,7 @@ QueuedRequest* CoordinatorImpl::GetCurrentRequest() {
 
 void CoordinatorImpl::OnChromeMemoryDumpResponse(
     base::ProcessId process_id,
-    bool success,
+    mojom::RequestOutcome outcome,
     uint64_t dump_guid,
     std::unique_ptr<base::trace_event::ProcessMemoryDump> chrome_memory_dump) {
   using ResponseType = QueuedRequest::PendingResponse::Type;
@@ -439,9 +442,9 @@ void CoordinatorImpl::OnChromeMemoryDumpResponse(
   auto* response = &request->responses[process_id];
   response->chrome_dump = std::move(chrome_memory_dump);
 
-  if (!success) {
+  if (outcome != mojom::RequestOutcome::kSuccess) {
     DLOG(ERROR) << "Memory dump request failed: NACK from client process";
-    request->failed_memory_dump_count++;
+    request->outcome = outcome;
   }
 
   FinalizeGlobalMemoryDumpIfAllManagersReplied();
@@ -449,7 +452,7 @@ void CoordinatorImpl::OnChromeMemoryDumpResponse(
 
 void CoordinatorImpl::OnOSMemoryDumpResponse(uint64_t dump_guid,
                                              base::ProcessId process_id,
-                                             bool success,
+                                             mojom::RequestOutcome outcome,
                                              OSMemDumpMap os_dumps) {
   using ResponseType = QueuedRequest::PendingResponse::Type;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -467,9 +470,9 @@ void CoordinatorImpl::OnOSMemoryDumpResponse(uint64_t dump_guid,
 
   request->responses[process_id].os_dumps = std::move(os_dumps);
 
-  if (!success) {
+  if (outcome != mojom::RequestOutcome::kSuccess) {
     DLOG(ERROR) << "Memory dump request failed: NACK from client process";
-    request->failed_memory_dump_count++;
+    request->outcome = outcome;
   }
 
   FinalizeGlobalMemoryDumpIfAllManagersReplied();
@@ -477,11 +480,13 @@ void CoordinatorImpl::OnOSMemoryDumpResponse(uint64_t dump_guid,
 
 void CoordinatorImpl::OnOSMemoryDumpForVMRegions(uint64_t dump_guid,
                                                  base::ProcessId process_id,
-                                                 bool success,
+                                                 mojom::RequestOutcome outcome,
                                                  OSMemDumpMap os_dumps) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto request_it = in_progress_vm_region_requests_.find(dump_guid);
   CHECK(request_it != in_progress_vm_region_requests_.end());
+
+  // TODO(crbug.com/450929521): Check the `outcome`?
 
   QueuedVmRegionRequest* request = request_it->second.get();
   auto it = request->pending_responses.find(process_id);
@@ -530,8 +535,8 @@ void CoordinatorImpl::OnDumpProcessesForTracing(
         TRACE_EVENT_PHASE_MEMORY_DUMP,
         TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
             base::trace_event::MemoryDumpManager::kTraceCategory),
-        "periodic_interval", trace_event_internal::kGlobalScope, dump_guid,
-        result->pid, &args, TRACE_EVENT_FLAG_HAS_ID);
+        "periodic_interval", dump_guid, result->pid, &args,
+        TRACE_EVENT_FLAG_HAS_ID);
   }
 
   FinalizeGlobalMemoryDumpIfAllManagersReplied();

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 
 // This file is here so other GLES2 related files can have a common set of
@@ -513,10 +508,6 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
 
     // -- glHint with GL_OES_standard_derivatives
     case GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES:
-      return 1;
-
-    // Chromium internal bind_generates_resource query
-    case GL_BIND_GENERATES_RESOURCE_CHROMIUM:
       return 1;
 
     // bad enum
@@ -1548,7 +1539,8 @@ std::string GLES2Util::GetStringBool(uint32_t value) {
 std::string GLES2Util::GetQualifiedEnumString(const EnumToString* table,
                                               size_t count,
                                               uint32_t value) {
-  for (const EnumToString* end = table + count; table < end; ++table) {
+  for (const EnumToString* end = UNSAFE_TODO(table + count); table < end;
+       UNSAFE_TODO(++table)) {
     if (table->value == value) {
       return table->name;
     }

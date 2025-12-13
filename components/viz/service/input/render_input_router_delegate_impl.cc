@@ -88,12 +88,16 @@ void RenderInputRouterDelegateImpl::NotifyObserversOfInputEvent(
   if (IsInputEventContinuous(event)) {
     return;
   }
+
+  auto* remote = delegate_->GetRIRDelegateClientRemote(frame_sink_id_);
+  if (!remote) {
+    return;
+  }
+
   auto web_coalesced_event =
       std::make_unique<blink::WebCoalescedInputEvent>(event, ui::LatencyInfo());
-
-  delegate_->GetRIRDelegateClientRemote(frame_sink_id_)
-      ->NotifyObserversOfInputEvent(std::move(web_coalesced_event),
-                                    dispatched_to_renderer);
+  remote->NotifyObserversOfInputEvent(std::move(web_coalesced_event),
+                                      dispatched_to_renderer);
 }
 
 void RenderInputRouterDelegateImpl::NotifyObserversOfInputEventAcks(
@@ -103,12 +107,16 @@ void RenderInputRouterDelegateImpl::NotifyObserversOfInputEventAcks(
   if (IsInputEventContinuous(event)) {
     return;
   }
+
+  auto* remote = delegate_->GetRIRDelegateClientRemote(frame_sink_id_);
+  if (!remote) {
+    return;
+  }
+
   auto web_coalesced_event =
       std::make_unique<blink::WebCoalescedInputEvent>(event, ui::LatencyInfo());
-
-  delegate_->GetRIRDelegateClientRemote(frame_sink_id_)
-      ->NotifyObserversOfInputEventAcks(ack_source, ack_result,
-                                        std::move(web_coalesced_event));
+  remote->NotifyObserversOfInputEventAcks(ack_source, ack_result,
+                                          std::move(web_coalesced_event));
 }
 
 bool RenderInputRouterDelegateImpl::IsInitializedAndNotDead() {
@@ -125,8 +133,11 @@ input::TouchEmulator* RenderInputRouterDelegateImpl::GetTouchEmulator(
 }
 
 void RenderInputRouterDelegateImpl::OnInvalidInputEventSource() {
-  delegate_->GetRIRDelegateClientRemote(frame_sink_id_)
-      ->OnInvalidInputEventSource();
+  auto* remote = delegate_->GetRIRDelegateClientRemote(frame_sink_id_);
+  if (!remote) {
+    return;
+  }
+  remote->OnInvalidInputEventSource();
 }
 
 std::unique_ptr<PeakGpuMemoryTracker>
@@ -179,8 +190,11 @@ void RenderInputRouterDelegateImpl::DidOverscroll(
   // |RenderInputRouterSupportAndroid::GestureEventAck| which calls in
   // StopFlingingIfNecessary, so the decision to stop any fling due to
   // overscroll is handled within the Viz process.
-  delegate_->GetRIRDelegateClientRemote(frame_sink_id_)
-      ->StateOnOverscrollTransfer(std::move(params));
+  auto* remote = delegate_->GetRIRDelegateClientRemote(frame_sink_id_);
+  if (!remote) {
+    return;
+  }
+  remote->StateOnOverscrollTransfer(std::move(params));
 }
 
 }  // namespace viz

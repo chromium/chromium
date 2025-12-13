@@ -39,7 +39,10 @@ class NetworkAnnotationBlocklistHandlerTest : public testing::Test {
   PolicyMap policies_;
 };
 
-TEST_F(NetworkAnnotationBlocklistHandlerTest, DisabledByDefault) {
+TEST_F(NetworkAnnotationBlocklistHandlerTest, DisabledWithFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kNetworkAnnotationMonitoring);
+
   EXPECT_FALSE(handler_.CheckPolicySettings(PolicyMap(), nullptr));
 }
 

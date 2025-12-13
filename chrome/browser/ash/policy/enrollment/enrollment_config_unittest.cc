@@ -52,7 +52,13 @@ class EnrollmentConfigTest : public testing::Test {
   base::test::ScopedCommandLine command_line_;
   test::EnrollmentTestHelper enrollment_test_helper_{&command_line_,
                                                      &statistics_provider_};
-  ash::FakeLoginDisplayHost fake_login_display_host_;
+
+  // TODO(crbug.com/332587367): Because the process spawn by DEATH_CHECK's
+  // do not instantiate TestingBrowserProcess, FakeLoginDisplayHost can not call
+  // out to TestingBrowserProcess::GetGlobal()->local_state() to
+  // get a PrefService instance. For this reason, the instance is passed in
+  // here.
+  ash::FakeLoginDisplayHost fake_login_display_host_{&local_state_};
 };
 
 TEST_F(EnrollmentConfigTest, TokenEnrollmentModeWithNoTokenYieldsModeNone) {

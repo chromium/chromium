@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,8 +14,8 @@ import android.os.SystemClock;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
@@ -25,10 +27,14 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
+import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.WebApkSplashscreenMetrics;
 
+import java.util.function.Supplier;
+
 /** Handles recording user metrics for WebAPK activities. */
+@NullMarked
 public class WebApkActivityLifecycleUmaTracker
         implements ActivityStateListener, InflationObserver, PauseResumeWithNativeObserver {
     private final Activity mActivity;
@@ -40,6 +46,11 @@ public class WebApkActivityLifecycleUmaTracker
 
     /** The start time that the activity becomes focused in milliseconds since boot. */
     private long mStartTime;
+
+    private boolean isColdStart() {
+        return ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
+                && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession();
+    }
 
     public WebApkActivityLifecycleUmaTracker(
             Activity activity,
@@ -69,13 +80,14 @@ public class WebApkActivityLifecycleUmaTracker
                     }
 
                     WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
+                    assumeNonNull(webApkExtras);
                     WebApkUmaRecorder.recordShellApkVersion(
                             webApkExtras.shellApkVersion, webApkExtras.distributor);
                 });
 
         // Decide whether to record startup UMA histograms. This is a similar check to the one done
         // in ChromeTabbedActivity.performPreInflationStartup refer to the comment there for why.
-        if (!LibraryLoader.getInstance().isInitialized()) {
+        if (isColdStart()) {
             mLegacyTabStartupMetricsTracker.setHistogramSuffix(ActivityType.WEB_APK);
             mStartupMetricsTracker.setHistogramSuffix(ActivityType.WEB_APK);
             // If there is a saved instance state, then the intent (and its stored timestamp) might
@@ -108,12 +120,13 @@ public class WebApkActivityLifecycleUmaTracker
     public void onPostInflationStartup() {}
 
     @Override
-    public void onResumeWithNative() {
-    }
+    public void onResumeWithNative() {}
 
     @Override
     public void onPauseWithNative() {
         WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
+        assumeNonNull(webApkExtras);
+
         long sessionDuration = SystemClock.elapsedRealtime() - mStartTime;
         WebApkUmaRecorder.recordWebApkSessionDuration(webApkExtras.distributor, sessionDuration);
         WebApkUkmRecorder.recordWebApkSessionDuration(

@@ -30,9 +30,7 @@
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -53,6 +51,7 @@
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/browser/test_management_policy.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/management.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -63,6 +62,8 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::ManifestLocation;
 
@@ -109,8 +110,6 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
                              std::string* error,
                              bool enabled = true);
 
-  Browser* browser() { return browser_.get(); }
-
   // Returns the initialization parameters for the extension service.
   virtual ExtensionServiceInitParams GetExtensionServiceInitParams() {
     return ExtensionServiceInitParams();
@@ -125,9 +124,6 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
   // ScopedDisableRootChecking needs to be used (which disables the root window
   // check).
   test::ScopedDisableRootChecking disable_root_checking_;
-  // The browser (and accompanying window).
-  std::unique_ptr<TestBrowserWindow> browser_window_;
-  std::unique_ptr<Browser> browser_;
 };
 
 bool ManagementApiUnitTest::RunFunction(
@@ -149,17 +145,20 @@ bool ManagementApiUnitTest::RunSetEnabledFunction(
                     : ScopedTestDialogAutoConfirm::CANCEL);
   std::optional<ExtensionFunction::ScopedUserGestureForTests> gesture =
       std::nullopt;
-  if (use_user_gesture)
+  if (use_user_gesture) {
     gesture.emplace();
+  }
   auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
-  if (web_contents)
+  if (web_contents) {
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  }
   base::Value::List args;
   args.Append(extension_id);
   args.Append(enabled);
   bool result = RunFunction(function, args);
-  if (error)
+  if (error) {
     *error = function->GetError();
+  }
   return result;
 }
 
@@ -171,17 +170,12 @@ void ManagementApiUnitTest::SetUp() {
 
   EventRouterFactory::GetInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&BuildEventRouter));
-
-  browser_window_ = std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_NORMAL;
-  params.window = browser_window_.get();
-  browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 }
 
 void ManagementApiUnitTest::TearDown() {
-  browser_.reset();
-  browser_window_.reset();
+  // TODO(crbug.com/371332103): Call ExtensionServiceTestWithInstall::TearDown
+  // here. As-is this skips the ExtensionServiceUserTestBase::TearDown() call
+  // on Chrome OS. It's unclear if that's important.
   ExtensionServiceTestBase::TearDown();
 }
 
@@ -897,8 +891,10 @@ TEST_F(ManagementApiUnitTest,
   EXPECT_FALSE(registry()->enabled_extensions().Contains(extension->id()));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Test suite for cases where the user is in the "disable with re-enable"
-// experiment phase.
+// experiment phase. Tests are not run on Android, which only supports MV3 and
+// hence has no "MV2 re-enable" phase.
 class ManagementApiUnitTestMV2DisableWithReEnableUnitTest
     : public ManagementApiUnitTest {
  public:
@@ -1024,6 +1020,7 @@ TEST_F(ManagementApiUnitTestMV2DisableWithReEnableUnitTest,
     EXPECT_FALSE(prefs->DidExtensionEscalatePermissions(extension_id));
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // A delegate that senses when extensions are enabled or disabled.
 class TestManagementAPIDelegate : public ManagementAPIDelegate {
@@ -1041,7 +1038,7 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
   }
   LaunchType GetLaunchType(const ExtensionPrefs* prefs,
                            const Extension* extension) const override {
-    return LaunchType::LAUNCH_TYPE_DEFAULT;
+    return LaunchType::kDefault;
   }
   std::unique_ptr<InstallPromptDelegate> SetEnabledFunctionDelegate(
       content::WebContents* web_contents,
@@ -1133,8 +1130,6 @@ class TestSupervisedUserExtensionsDelegate
       const extensions::Extension& extension,
       content::WebContents* contents,
       const gfx::ImageSkia& icon,
-      SupervisedUserExtensionParentApprovalEntryPoint
-          extension_approval_entry_point,
       ExtensionApprovalDoneCallback extension_approval_callback) override {
     // Preconditions.
     DCHECK(IsChild());
@@ -1148,16 +1143,13 @@ class TestSupervisedUserExtensionsDelegate
           extension, contents,
           ExtensionInstalledBlockedByParentDialogAction::kAdd,
           base::BindOnce(std::move(extension_approval_callback),
-                         SupervisedUserExtensionsDelegate::
-                             ExtensionApprovalResult::kBlocked));
+                         SupervisedExtensionApprovalResult::kBlocked));
     }
   }
 
   void RequestToEnableExtensionOrShowError(
       const extensions::Extension& extension,
       content::WebContents* contents,
-      SupervisedUserExtensionParentApprovalEntryPoint
-          extension_approval_entry_point,
       ExtensionApprovalDoneCallback extension_approval_callback) override {
     // Preconditions.
     DCHECK(IsChild());
@@ -1172,13 +1164,12 @@ class TestSupervisedUserExtensionsDelegate
           extension, contents,
           ExtensionInstalledBlockedByParentDialogAction::kEnable,
           base::BindOnce(std::move(extension_approval_callback),
-                         SupervisedUserExtensionsDelegate::
-                             ExtensionApprovalResult::kBlocked));
+                         SupervisedExtensionApprovalResult::kBlocked));
     }
   }
 
   void set_next_parent_permission_dialog_result(
-      ExtensionApprovalResult result) {
+      SupervisedExtensionApprovalResult result) {
     dialog_result_ = result;
   }
 
@@ -1209,7 +1200,8 @@ class TestSupervisedUserExtensionsDelegate
     std::move(done_callback).Run();
   }
 
-  ExtensionApprovalResult dialog_result_ = ExtensionApprovalResult::kFailed;
+  SupervisedExtensionApprovalResult dialog_result_ =
+      SupervisedExtensionApprovalResult::kFailed;
   int show_dialog_count_ = 0;
   int show_block_dialog_count_ = 0;
 };
@@ -1240,7 +1232,7 @@ class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
     ManagementApiUnitTest::SetUp();
 
     // Set up custodians (parents) for the child.
-    supervised_user_test_util::AddCustodians(browser()->profile());
+    supervised_user_test_util::AddCustodians(profile());
 
     // Set the pref to allow the child to request extension install.
     supervised_user_test_util::
@@ -1287,13 +1279,13 @@ TEST_F(ManagementApiSupervisedUserTest,
 
   bool is_locally_parent_approved = false;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    // Simulate a local approval grant for this extension.
-    base::Value::Dict locally_approved;
-    locally_approved.Set(extension_id, true);
-    profile()->GetPrefs()->SetDict(
-        prefs::kSupervisedUserLocallyParentApprovedExtensions,
-        std::move(locally_approved));
-    is_locally_parent_approved = true;
+  // Simulate a local approval grant for this extension.
+  base::Value::Dict locally_approved;
+  locally_approved.Set(extension_id, true);
+  profile()->GetPrefs()->SetDict(
+      prefs::kSupervisedUserLocallyParentApprovedExtensions,
+      std::move(locally_approved));
+  is_locally_parent_approved = true;
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
@@ -1420,10 +1412,13 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabled_AfterIncreasedPermissions) {
       SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName, 2);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that if an extension still requires parental consent, the supervised
 // user approving it for permissions increase won't enable the extension and
 // bypass parental consent.
 // Prevents a regression to crbug/1070760.
+// TODO(crbug.com/402488726): Enable on desktop Android when supervised users
+// are fully supported, in particular the install approval dialog.
 TEST_F(ManagementApiSupervisedUserTest,
        SetEnabled_CustodianApprovalRequiredAndPermissionsIncrease) {
   // Preconditions.
@@ -1486,7 +1481,7 @@ TEST_F(ManagementApiSupervisedUserTest,
   // Now try again with parent approval, and this should succeed.
   {
     supervised_user_delegate_->set_next_parent_permission_dialog_result(
-        SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved);
+        SupervisedExtensionApprovalResult::kApproved);
     std::string error;
     bool success = RunSetEnabledFunction(web_contents_.get(), extension_id,
                                          /*use_user_gesture=*/true,
@@ -1508,6 +1503,7 @@ TEST_F(ManagementApiSupervisedUserTest,
   // The parent approval dialog should have appeared again.
   EXPECT_EQ(2, supervised_user_delegate_->show_dialog_count());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that trying to enable an extension with parent approval for supervised
 // users still fails, if there's unsupported requirements.
@@ -1537,7 +1533,7 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabled_UnsupportedRequirement) {
   // Parent approval should fail because of the unsupported requirements.
   {
     supervised_user_delegate_->set_next_parent_permission_dialog_result(
-        SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved);
+        SupervisedExtensionApprovalResult::kApproved);
     std::string error;
     bool success = RunSetEnabledFunction(web_contents_.get(), extension->id(),
                                          /*use_user_gesture=*/true,
@@ -1555,8 +1551,11 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabled_UnsupportedRequirement) {
   }
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests UMA metrics related to supervised users enabling and disabling
 // extensions.
+// TODO(crbug.com/402488726): Enable on desktop Android when supervised users
+// are fully supported, in particular the install approval dialog.
 TEST_F(ManagementApiSupervisedUserTest, SetEnabledDisabled_UmaMetrics) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
@@ -1571,7 +1570,7 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabledDisabled_UmaMetrics) {
 
   // The parent will approve.
   supervised_user_delegate_->set_next_parent_permission_dialog_result(
-      SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved);
+      SupervisedExtensionApprovalResult::kApproved);
 
   RunSetEnabledFunction(web_contents_.get(), extension->id(),
                         /*use_user_gesture=*/true, /*accept_dialog=*/true,
@@ -1620,6 +1619,7 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabledDisabled_UmaMetrics) {
             user_action_tester.GetActionCount(
                 SupervisedUserExtensionsMetricsRecorder::kDisabledActionName));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests for supervised users (child accounts) with additional setup code.
 class ManagementApiSupervisedUserTestWithSetup
@@ -1645,6 +1645,9 @@ class ManagementApiSupervisedUserTestWithSetup
   scoped_refptr<const Extension> extension_;
 };
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/402488726): Enable on desktop Android when supervised users
+// are fully supported, in particular the install approval dialog.
 TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_ParentApproves) {
   // Preconditions.
   ASSERT_TRUE(profile()->IsChild());
@@ -1657,7 +1660,7 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_ParentApproves) {
 
   // The parent will approve.
   supervised_user_delegate_->set_next_parent_permission_dialog_result(
-      SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved);
+      SupervisedExtensionApprovalResult::kApproved);
 
   // Simulate a call to chrome.management.setEnabled(). It should succeed.
   std::string error;
@@ -1681,7 +1684,7 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_ParentDenies) {
 
   // The parent will deny the next dialog.
   supervised_user_delegate_->set_next_parent_permission_dialog_result(
-      SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kCanceled);
+      SupervisedExtensionApprovalResult::kCanceled);
 
   // Simulate a call to chrome.management.setEnabled(). It should not succeed.
   std::string error;
@@ -1697,6 +1700,7 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_ParentDenies) {
   // Extension was not enabled.
   EXPECT_EQ(0, delegate_->enable_count_);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_DialogFails) {
   // Start with a disabled extension that needs parent permission.
@@ -1706,7 +1710,7 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_DialogFails) {
   // The next dialog will close due to a failure (e.g. network failure while
   // looking up parent information).
   supervised_user_delegate_->set_next_parent_permission_dialog_result(
-      SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kFailed);
+      SupervisedExtensionApprovalResult::kFailed);
 
   // Simulate a call to chrome.management.setEnabled(). It should not succeed.
   std::string error;
@@ -1740,8 +1744,11 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_PreviouslyAllowed) {
   EXPECT_EQ(0, supervised_user_delegate_->show_dialog_count());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests launching the Parent Permission Dialog from a background page, where
 // there isn't active web contents. The parent approves the request.
+// TODO(crbug.com/402488726): Enable on desktop Android when supervised users
+// are fully supported, in particular the install approval dialog.
 TEST_F(ManagementApiSupervisedUserTestWithSetup,
        SetEnabled_ParentPermissionApprovedFromBackgroundPage) {
   // Preconditions.
@@ -1753,7 +1760,7 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
 
   // The parent will approve.
   supervised_user_delegate_->set_next_parent_permission_dialog_result(
-      SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved);
+      SupervisedExtensionApprovalResult::kApproved);
 
   // Simulate a call to chrome.management.setEnabled(). It should succeed
   // despite a lack of web contents.
@@ -1774,6 +1781,8 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
 
 // Tests launching the Parent Permission Dialog from a background page, where
 // there isn't active web contents. The parent cancels the request.
+// TODO(crbug.com/402488726): Enable on desktop Android when supervised users
+// are fully supported, in particular the install approval dialog.
 TEST_F(ManagementApiSupervisedUserTestWithSetup,
        SetEnabled_ParentPermissionCanceledFromBackgroundPage) {
   // Preconditions.
@@ -1785,7 +1794,7 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
 
   // The parent will cancel.
   supervised_user_delegate_->set_next_parent_permission_dialog_result(
-      SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kCanceled);
+      SupervisedExtensionApprovalResult::kCanceled);
 
   // Simulate a call to chrome.management.setEnabled() with no web contents.
   std::string error;
@@ -1807,6 +1816,8 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
 // Tests launching the Parent Permission Dialog from a background page, where
 // there isn't active web contents. The request will fail due to some sort of
 // error, such as a network error.
+// TODO(crbug.com/402488726): Enable on desktop Android when supervised users
+// are fully supported, in particular the install approval dialog.
 TEST_F(ManagementApiSupervisedUserTestWithSetup,
        SetEnabled_ParentPermissionFailedFromBackgroundPage) {
   // Preconditions.
@@ -1818,7 +1829,7 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
 
   // The request will fail.
   supervised_user_delegate_->set_next_parent_permission_dialog_result(
-      SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kFailed);
+      SupervisedExtensionApprovalResult::kFailed);
 
   // Simulate a call to chrome.management.setEnabled() with no web contents.
   std::string error;
@@ -1836,5 +1847,7 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
   // Extension was not enabled.
   EXPECT_EQ(0, delegate_->enable_count_);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 }  // namespace
 }  // namespace extensions

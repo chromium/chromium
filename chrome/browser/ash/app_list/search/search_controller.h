@@ -218,7 +218,6 @@ class SearchController {
 
   std::unique_ptr<AppSearchDataSource> app_search_data_source_;
 
-  // TODO(b/315709613):Temporary before it is moved to a new service.
   std::unique_ptr<SearchEngine> search_engine_;
 
   std::unique_ptr<SearchFileScanner> search_file_scanner_;

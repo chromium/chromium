@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/timer/timer.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
@@ -66,6 +66,11 @@ struct WDKeywordsResult {
 
 class WebDataServiceConsumer;
 
+// KeywordWebDataService is a specialization of WebDataServiceBase that manages
+// the keywords table. It is responsible for persisting search engine data to
+// the web database and is used by the TemplateURLService to load and save
+// search engine information. All database operations are performed on a
+// background thread.
 class KeywordWebDataService : public WebDataServiceBase {
  public:
   // Instantiate this to turn on batch mode on the provided |service|
@@ -115,10 +120,6 @@ class KeywordWebDataService : public WebDataServiceBase {
 
   // Sets the version of the builtin keyword data.
   void SetBuiltinKeywordDataVersion(int version);
-
-  // Clears the Chrome milestone associated with the builtin keyword data. Used
-  // for cleanup.
-  void ClearBuiltinKeywordMilestone();
 
   // Sets the country ID associated with the builtin keyword data.
   void SetBuiltinKeywordCountry(country_codes::CountryId country_id);

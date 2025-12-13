@@ -14,6 +14,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/model/active_contextual_panel_tab_helper_observation_forwarder.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
@@ -23,6 +24,8 @@
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer_bridge.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
@@ -124,6 +127,14 @@
   return self;
 }
 
+- (void)cancelContextualPanelEntrypointLoudMoment {
+  [self resetTimersAndUIStateAnimated:YES];
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(
+          _webStateList->GetActiveWebState());
+  contextualPanelTabHelper->SetLoudMomentEntrypointCanceled(true);
+}
+
 - (void)disconnect {
   _infobarBadgeObservation->Reset();
   _infobarBadgeObservation.reset();
@@ -181,6 +192,23 @@
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {
   [self.delegate setLocationBarLabelCenteredBetweenContent:self
                                                   centered:centered];
+}
+
+- (void)didCompleteTransitionToSmallEntrypoint {
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState || activeWebState->IsBeingDestroyed()) {
+    return;
+  }
+  // Notify the configuration item that it transitioned to a small entrypoint.
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(activeWebState);
+  ContextualPanelItemConfiguration* config =
+      contextualPanelTabHelper->GetFirstCachedConfig().get();
+  if (config) {
+    config->DidTransitionToSmallEntrypoint();
+  }
+  [self.visibilityDelegate setContextualPanelCurrentlyAnimating:NO];
+  [self.consumer updateAccessibilityStatus];
 }
 
 #pragma mark - ContextualPanelTabHelperObserving
@@ -274,6 +302,13 @@
   size_t badgesCount = tabHelper->GetInfobarBadgesCount();
 
   BOOL infobarBadgesCurrentlyShown = badgesCount > 0;
+
+  // Disable contextual panel separator when Proactive Suggestions Framework is
+  // enabled to prevent conflicts.
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    infobarBadgesCurrentlyShown = NO;
+  }
+
   if (_infobarBadgesCurrentlyShown == infobarBadgesCurrentlyShown) {
     return;
   }
@@ -293,6 +328,8 @@
 - (void)resetTimersAndUIStateAnimated:(BOOL)animated {
   _transitionToEntrypointLoudMomentTimer = nullptr;
   _transitionToDefaultEntrypointTimer = nullptr;
+  [self.visibilityDelegate setContextualPanelCurrentlyAnimating:NO];
+  [self.consumer updateAccessibilityStatus];
   [self dismissEntrypointIPHAnimated:animated];
   [self cleanupAndTransitionToSmallEntrypoint];
 }
@@ -305,6 +342,18 @@
   if (!config) {
     [self.consumer hideEntrypoint];
     return;
+  }
+
+  // Prevents entrypoint from showing while the Gemini promo is showing.
+  if (IsPageActionMenuEnabled()) {
+    BwgTabHelper* BWGTabHelper =
+        BwgTabHelper::FromWebState(_webStateList->GetActiveWebState());
+    if (BWGTabHelper) {
+      if (BWGTabHelper->ShouldPreventContextualPanelEntryPoint()) {
+        [self.consumer hideEntrypoint];
+        return;
+      }
+    }
   }
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
@@ -320,6 +369,8 @@
   }
 
   [self.consumer setEntrypointConfig:config];
+  [self.visibilityDelegate setContextualPanelItemType:config->item_type];
+  [self.consumer updateAccessibilityStatus];
   [self.consumer transitionToSmallEntrypoint];
   [self.consumer showEntrypoint];
 
@@ -375,7 +426,8 @@
 
   _transitionToDefaultEntrypointTimer = std::make_unique<base::OneShotTimer>();
   _transitionToDefaultEntrypointTimer->Start(
-      FROM_HERE, config->GetLargeEntrypointDisplayedDuration(),
+      FROM_HERE,
+      base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()),
       base::BindOnce(^{
         [weakSelf cleanupAndTransitionToSmallEntrypoint];
       }));
@@ -396,6 +448,8 @@
       base::BindOnce(^{
         [weakSelf setupAndTransitionToLargeEntrypoint];
       }));
+  [self.visibilityDelegate setContextualPanelCurrentlyAnimating:YES];
+  [self.consumer updateAccessibilityStatus];
 }
 
 - (void)setupAndShowEntrypointIPH {
@@ -439,7 +493,8 @@
   __weak ContextualPanelEntrypointMediator* weakSelf = self;
   _transitionToDefaultEntrypointTimer = std::make_unique<base::OneShotTimer>();
   _transitionToDefaultEntrypointTimer->Start(
-      FROM_HERE, config->GetLargeEntrypointDisplayedDuration(),
+      FROM_HERE,
+      base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()),
       base::BindOnce(^{
         [weakSelf dismissEntrypointIPHAnimated:YES];
         [weakSelf.delegate enableFullscreen];
@@ -502,6 +557,7 @@
   return !_infobarBadgesCurrentlyShown &&
          !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
          !contextualPanelTabHelper->WasLoudMomentEntrypointShown() &&
+         !contextualPanelTabHelper->WasLoudMomentEntrypointCanceled() &&
          [self.delegate canShowLargeContextualPanelEntrypoint:self];
 }
 

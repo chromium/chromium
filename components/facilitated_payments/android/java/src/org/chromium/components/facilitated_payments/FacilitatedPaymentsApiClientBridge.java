@@ -14,7 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.RenderFrameHost;
 
-/** Native bridge for facilitated payment APIs, such as PIX. */
+/** Native bridge for facilitated payment APIs, such as Pix. */
 @JNINamespace("payments::facilitated")
 @NullMarked
 public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsApiClient.Delegate {

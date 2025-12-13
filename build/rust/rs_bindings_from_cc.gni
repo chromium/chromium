@@ -247,7 +247,7 @@ template("rs_bindings_from_cc") {
       visibility = _visibility
     }
 
-    script = "//build/rust/run_rs_bindings_from_cc.py"
+    script = "//build/rust/gni_impl/run_rs_bindings_from_cc.py"
     inputs = [ "//third_party/rust-toolchain/bin/rs_bindings_from_cc" ]
     sources = invoker.public_headers
     outputs = [

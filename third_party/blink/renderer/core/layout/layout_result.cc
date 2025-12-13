@@ -254,6 +254,10 @@ LayoutResult::LayoutResult(const PhysicalFragment* physical_fragment,
   if (builder->would_be_last_line_if_not_for_ellipsis_) {
     EnsureRareData()->set_would_be_last_line_if_not_for_ellipsis();
   }
+  if (builder->line_clamp_after_layout_object_) {
+    EnsureRareData()->line_clamp_after_layout_object =
+        builder->line_clamp_after_layout_object_;
+  }
 
   if (builder->tallest_unbreakable_block_size_ >= LayoutUnit()) {
     EnsureRareData()->tallest_unbreakable_block_size =
@@ -341,15 +345,22 @@ void LayoutResult::MutableForOutOfFlow::SetDisplayLocksAffectedByAnchors(
   }
 }
 
+void LayoutResult::MutableForLayoutBoxCachedResults::
+    SetFragmentChildrenInvalid() {
+  if (const auto* box_fragment = DynamicTo<PhysicalBoxFragment>(
+          layout_result_->physical_fragment_.Get())) {
+    box_fragment->SetChildrenInvalid();
+  }
+}
+
 #if DCHECK_IS_ON()
 void LayoutResult::CheckSameForSimplifiedLayout(
     const LayoutResult& other,
-    bool check_same_block_size,
     bool check_no_fragmentation) const {
   To<PhysicalBoxFragment>(*physical_fragment_)
       .CheckSameForSimplifiedLayout(
           To<PhysicalBoxFragment>(*other.physical_fragment_),
-          check_same_block_size, check_no_fragmentation);
+          check_no_fragmentation);
 
   DCHECK(LinesUntilClamp() == other.LinesUntilClamp());
   GetExclusionSpace().CheckSameForSimplifiedLayout(other.GetExclusionSpace());
@@ -406,6 +417,7 @@ void LayoutResult::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(non_overflowing_scroll_ranges);
   visitor->Trace(column_spanner_path);
   visitor->Trace(exclusion_space);
+  visitor->Trace(line_clamp_after_layout_object);
   visitor->Trace(accessibility_anchor);
   visitor->Trace(display_locks_affected_by_anchors);
 }

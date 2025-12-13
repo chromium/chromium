@@ -20,19 +20,19 @@
 #include "components/cbor/diagnostic_writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/hash.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/filter.h"
 #include "device/fido/make_credential_task.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/type_conversions.h"
-#include "third_party/microsoft_webauthn/webauthn.h"
+#include "third_party/microsoft_webauthn/src/webauthn.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -358,8 +358,6 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   DCHECK(!request_.cred_protect_enforce);
 
   transport_availability_info().request_type = FidoRequestType::kMakeCredential;
-  transport_availability_info().is_off_the_record_context =
-      options_.is_off_the_record_context;
   transport_availability_info().resident_key_requirement =
       options_.resident_key;
   transport_availability_info().attestation_conveyance_preference =
@@ -553,6 +551,9 @@ void MakeCredentialRequestHandler::AuthenticatorRemoved(
 
   FidoRequestHandlerBase::AuthenticatorRemoved(discovery, authenticator);
 
+  if (bio_enroller_ && authenticator == bio_enroller_->authenticator()) {
+    bio_enroller_.reset();
+  }
   if (authenticator == selected_authenticator_for_pin_uv_auth_token_) {
     selected_authenticator_for_pin_uv_auth_token_ = nullptr;
     // Authenticator could have been removed during PIN entry, PIN fallback

@@ -373,7 +373,7 @@ void AppsContainerView::UpdateAppListConfig(const gfx::Rect& contents_bounds) {
 
   std::unique_ptr<AppListConfig> new_config =
       AppListConfigProvider::Get().CreateForTabletAppList(
-          display::Screen::GetScreen()
+          display::Screen::Get()
               ->GetDisplayNearestView(GetWidget()->GetNativeView())
               .work_area()
               .size(),
@@ -600,9 +600,6 @@ void AppsContainerView::TransitionStarted() {
 }
 
 void AppsContainerView::TransitionEnded() {
-  // TODO(crbug.com/1285184): Sometimes gradient mask is not removed because
-  // this function does not get called in some cases.
-
   // Gradient mask is no longer necessary once transition is finished.
   MaybeRemoveGradientMask();
 }
@@ -644,8 +641,7 @@ bool AppsContainerView::IsPointWithinBottomDragBuffer(
 }
 
 void AppsContainerView::MaybeCreateGradientMask() {
-  if (!features::IsBackgroundBlurEnabled() ||
-      !chromeos::features::IsSystemBlurEnabled()) {
+  if (!chromeos::features::IsSystemBlurEnabled()) {
     return;
   }
 
@@ -1182,7 +1178,7 @@ int AppsContainerView::GetMinTopMarginForAppsGrid(
 
 int AppsContainerView::GetIdealVerticalMargin() const {
   const int screen_height =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestView(GetWidget()->GetNativeView())
           .bounds()
           .height();
@@ -1343,7 +1339,7 @@ AppsContainerView::GridLayout AppsContainerView::CalculateGridLayout() const {
 
   // Adapt columns and rows based on the display/root window size.
   const gfx::Size size =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestView(GetWidget()->GetNativeView())
           .work_area()
           .size();

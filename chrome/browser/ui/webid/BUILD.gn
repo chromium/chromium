@@ -16,8 +16,8 @@ source_set("webid") {
   public_deps = [
     "//base",
     "//build:buildflag_header_h",
-    "//chrome/browser:fedcm_clickthrough_rate_metadata_proto",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/webid:fedcm_clickthrough_rate_metadata_proto",
     "//components/segmentation_platform/public",
     "//content/public/browser",
     "//ui/gfx",
@@ -65,5 +65,9 @@ if (!is_android) {
       "//third_party/blink/public/common",
       "//url",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }

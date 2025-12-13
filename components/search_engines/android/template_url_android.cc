@@ -7,9 +7,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#import "build/branding_buildflags.h"
+#include "build/branding_buildflags.h"
 #include "components/search_engines/template_url.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "url/android/gurl_android.h"
 
 #if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS)
@@ -19,14 +20,14 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/search_engines/android/jni_headers/TemplateUrl_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 TemplateURL* ToTemplateURL(jlong j_template_url) {
   return reinterpret_cast<TemplateURL*>(j_template_url);
 }
 
-ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetShortName(
+static ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetShortName(
     JNIEnv* env,
     jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
@@ -34,13 +35,14 @@ ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetShortName(
                                                  template_url->short_name());
 }
 
-ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetKeyword(JNIEnv* env,
-                                                       jlong template_url_ptr) {
+static ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetKeyword(
+    JNIEnv* env,
+    jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return base::android::ConvertUTF16ToJavaString(env, template_url->keyword());
 }
 
-ScopedJavaLocalRef<jobject> JNI_TemplateUrl_GetFaviconURL(
+static ScopedJavaLocalRef<jobject> JNI_TemplateUrl_GetFaviconURL(
     JNIEnv* env,
     jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
@@ -48,7 +50,7 @@ ScopedJavaLocalRef<jobject> JNI_TemplateUrl_GetFaviconURL(
   return url::GURLAndroid::FromNativeGURL(env, template_url->favicon_url());
 }
 
-jboolean JNI_TemplateUrl_IsPrepopulatedOrDefaultProviderByPolicy(
+static jboolean JNI_TemplateUrl_IsPrepopulatedOrDefaultProviderByPolicy(
     JNIEnv* env,
     jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
@@ -57,12 +59,14 @@ jboolean JNI_TemplateUrl_IsPrepopulatedOrDefaultProviderByPolicy(
          template_url->CreatedByRegulatoryProgram();
 }
 
-jlong JNI_TemplateUrl_GetLastVisitedTime(JNIEnv* env, jlong template_url_ptr) {
+static jlong JNI_TemplateUrl_GetLastVisitedTime(JNIEnv* env,
+                                                jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return template_url->last_visited().InMillisecondsSinceUnixEpoch();
 }
 
-jint JNI_TemplateUrl_GetPrepopulatedId(JNIEnv* env, jlong template_url_ptr) {
+static jint JNI_TemplateUrl_GetPrepopulatedId(JNIEnv* env,
+                                              jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return template_url->prepopulate_id();
 }
@@ -73,13 +77,14 @@ ScopedJavaLocalRef<jobject> CreateTemplateUrlAndroid(
   return Java_TemplateUrl_create(env, reinterpret_cast<intptr_t>(template_url));
 }
 
-ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetURL(JNIEnv* env,
-                                                   jlong template_url_ptr) {
+static ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetURL(
+    JNIEnv* env,
+    jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return base::android::ConvertUTF8ToJavaString(env, template_url->url());
 }
 
-ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetNewTabURL(
+static ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetNewTabURL(
     JNIEnv* env,
     jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
@@ -109,9 +114,11 @@ JNI_TemplateUrl_GetBuiltInSearchEngineIcon(JNIEnv* env,
 
   if (res_id) {
     return base::android::ToJavaByteArray(
-        env,
-        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(res_id));
+        env, ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
+                 res_id, ui::k200Percent));
   }
 #endif
   return {};
 }
+
+DEFINE_JNI(TemplateUrl)

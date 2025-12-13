@@ -343,7 +343,7 @@ void AppListTestApi::WaitForBubbleWindow(bool wait_for_opening_animation) {
 void AppListTestApi::WaitForBubbleWindowInRootWindow(
     aura::Window* root_window,
     bool wait_for_opening_animation) {
-  DCHECK(!Shell::Get()->IsInTabletMode());
+  DCHECK(!display::Screen::Get()->InTabletMode());
 
   // Wait for the window only when the app list window does not exist.
   auto* app_list_controller = Shell::Get()->app_list_controller();
@@ -382,7 +382,7 @@ void AppListTestApi::WaitForAppListShowAnimation(bool is_bubble_window) {
   if (!is_bubble_window)
     return;
 
-  DCHECK(!Shell::Get()->IsInTabletMode());
+  DCHECK(!display::Screen::Get()->InTabletMode());
 
   ScrollableAppsGridView* scrollable_apps_grid_view =
       static_cast<ScrollableAppsGridView*>(GetTopLevelAppsGridView());
@@ -798,7 +798,7 @@ void AppListTestApi::RegisterReorderAnimationDoneCallback(
     ReorderAnimationEndState* actual_state) {
   AddReorderAnimationCallback(base::BindRepeating(
       &AppListTestApi::OnReorderAnimationDone, weak_factory_.GetWeakPtr(),
-      !ash::Shell::Get()->IsInTabletMode(), actual_state));
+      !display::Screen::Get()->InTabletMode(), actual_state));
 }
 
 void AppListTestApi::OnReorderAnimationDone(bool for_bubble_app_list,

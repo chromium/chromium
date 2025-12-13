@@ -92,7 +92,7 @@ mod test {
         // will be empty. This is because the string is split into
         // words like [" ", "foobar ", "baz"], which puts "foobar " on
         // the second line. We never output trailing whitespace
-        assert_eq!(wrap(" foobar baz", 6), vec!["", " foobar", " baz"]);
+        assert_eq!(wrap(" foobar baz", 6), vec![" foobar", " baz"]);
     }
 
     #[test]

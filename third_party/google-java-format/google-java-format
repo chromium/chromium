@@ -23,4 +23,5 @@ exec "$JAVA" \
     --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
     --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED \
     com.google.googlejavaformat.java.Main $GOOGLE_JAVA_FORMAT_ARGS \
+    --aosp \
     "$@"

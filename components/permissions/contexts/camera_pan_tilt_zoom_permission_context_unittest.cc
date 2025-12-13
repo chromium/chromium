@@ -5,13 +5,17 @@
 #include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "components/webrtc/media_stream_device_enumerator_impl.h"
 #include "content/public/test/test_renderer_host.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -246,5 +250,131 @@ INSTANTIATE_TEST_SUITE_P(
         // Default camera permission is ask if camera PTZ is ask.
         TestConfig{CONTENT_SETTING_DEFAULT, CONTENT_SETTING_ASK,
                    CONTENT_SETTING_ASK}));
+
+// Verify MEDIASTREAM_CAMERA permission granted through a synchronization with
+// CAMERA_PAN_TILT_ZOOM is correctly marked as eligible (i.e. `last_visited`
+// timestamp is tracked) for Safety Hub auto-revocation when the
+// kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is enabled.
+TEST_F(CameraPanTiltZoomContentSettingTests,
+       OnContentSettingChanged_LastVisited_Tracked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  auto delegate =
+      std::make_unique<TestCameraPanTiltZoomPermissionContextDelegate>(
+          browser_context());
+  CameraPanTiltZoomPermissionContext permission_context(
+      browser_context(), std::move(delegate), device_enumerator());
+
+  // Simulate CAMERA_PAN_TILT_ZOOM being changed from ASK to ALLOW.
+  // This sets MEDIASTREAM_CAMERA to ALLOWed too.
+  ContentSettingsChangeWaiter waiter(browser_context(),
+                                     ContentSettingsType::CAMERA_PAN_TILT_ZOOM);
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ASK,
+            GetContentSetting(ContentSettingsType::CAMERA_PAN_TILT_ZOOM));
+  SetContentSetting(ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+                    ContentSetting::CONTENT_SETTING_ALLOW);
+  waiter.Wait();
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
+            GetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA));
+
+  // Verify that `last_visited` was recorded for MEDIASTREAM_CAMERA and lies
+  // within the past 7 days.
+  //
+  // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to privacy.
+  // It rounds given timestamp down to the nearest multiple of 7 in the past.
+  // [1] components/content_settings/core/browser/content_settings_utils.cc
+  GURL url("https://www.example.com");
+  base::Time now = base::Time::Now();
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* hcsm =
+      PermissionsClient::Get()->GetSettingsMap(browser_context());
+  hcsm->GetWebsiteSetting(url, GURL(), ContentSettingsType::MEDIASTREAM_CAMERA,
+                          &info);
+  EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+  EXPECT_LE(info.metadata.last_visited(), now);
+}
+
+// Verify MEDIASTREAM_CAMERA permission blocked through a synchronization with
+// CAMERA_PAN_TILT_ZOOM is not marked as eligible (i.e. `last_visited`
+// timestamp is tracked) for Safety Hub auto-revocation even if the
+// kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is enabled.
+TEST_F(CameraPanTiltZoomContentSettingTests,
+       OnContentSettingChanged_LastVisited_NotTracked_WrongValue) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  auto delegate =
+      std::make_unique<TestCameraPanTiltZoomPermissionContextDelegate>(
+          browser_context());
+  CameraPanTiltZoomPermissionContext permission_context(
+      browser_context(), std::move(delegate), device_enumerator());
+
+  // Simulate CAMERA_PAN_TILT_ZOOM being changed from ASK to BLOCK.
+  // This sets MEDIASTREAM_CAMERA to BLOCKed too.
+  ContentSettingsChangeWaiter waiter(browser_context(),
+                                     ContentSettingsType::CAMERA_PAN_TILT_ZOOM);
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ASK,
+            GetContentSetting(ContentSettingsType::CAMERA_PAN_TILT_ZOOM));
+  SetContentSetting(ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+                    ContentSetting::CONTENT_SETTING_BLOCK);
+  waiter.Wait();
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_BLOCK,
+            GetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA));
+
+  // Verify that `last_visited` is not recorded for MEDIASTREAM_CAMERA unless
+  // the value is ALLOW.
+  GURL url("https://www.example.com");
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* hcsm =
+      PermissionsClient::Get()->GetSettingsMap(browser_context());
+  hcsm->GetWebsiteSetting(url, GURL(), ContentSettingsType::MEDIASTREAM_CAMERA,
+                          &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+// Verify MEDIASTREAM_CAMERA permission granted through a synchronization with
+// CAMERA_PAN_TILT_ZOOM is not marked as eligible (i.e. `last_visited`
+// timestamp is tracked) for Safety Hub auto-revocation because the
+// kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is disabled.
+TEST_F(CameraPanTiltZoomContentSettingTests,
+       OnContentSettingChanged_LastVisited_NotTracked_FeatureOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  auto delegate =
+      std::make_unique<TestCameraPanTiltZoomPermissionContextDelegate>(
+          browser_context());
+  CameraPanTiltZoomPermissionContext permission_context(
+      browser_context(), std::move(delegate), device_enumerator());
+
+  // Simulate CAMERA_PAN_TILT_ZOOM being changed from ASK to ALLOW.
+  // This sets MEDIASTREAM_CAMERA to ALLOWed too.
+  ContentSettingsChangeWaiter waiter(browser_context(),
+                                     ContentSettingsType::CAMERA_PAN_TILT_ZOOM);
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ASK,
+            GetContentSetting(ContentSettingsType::CAMERA_PAN_TILT_ZOOM));
+  SetContentSetting(ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+                    ContentSetting::CONTENT_SETTING_ALLOW);
+  waiter.Wait();
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
+            GetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA));
+
+  // Verify that `last_visited` is not recorded for MEDIASTREAM_CAMERA when the
+  // feature is off.
+  GURL url("https://www.example.com");
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* hcsm =
+      PermissionsClient::Get()->GetSettingsMap(browser_context());
+  hcsm->GetWebsiteSetting(url, GURL(), ContentSettingsType::MEDIASTREAM_CAMERA,
+                          &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
 
 }  // namespace permissions

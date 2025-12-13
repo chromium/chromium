@@ -8,7 +8,6 @@
 
 #include "base/cpu.h"
 #include "base/debug/alias.h"
-#include "base/files/file_util.h"
 #include "components/crash/core/common/crash_key.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"

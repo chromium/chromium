@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/service/shader_translator.h"
 #include "ui/gl/gl_implementation.h"
@@ -18,7 +19,6 @@
 namespace gpu {
 namespace gles2 {
 
-struct DisallowedFeatures;
 class Buffer;
 class BufferManager;
 class FeatureInfo;
@@ -104,11 +104,9 @@ class TestHelper {
 
   static void SetupContextGroupInitExpectations(
       ::gl::MockGLInterface* gl,
-      const DisallowedFeatures& disallowed_features,
       const char* extensions,
       const char* gl_version,
-      ContextType context_type,
-      bool bind_generates_resource);
+      ContextType context_type);
   static void SetupFeatureInfoInitExpectations(::gl::MockGLInterface* gl,
                                                const char* extensions);
   static void SetupFeatureInfoInitExpectationsWithGLVersion(
@@ -146,8 +144,7 @@ class TestHelper {
       size_t num_uniforms,
       VaryingInfo* varyings,
       size_t num_varyings,
-      ProgramOutputInfo* program_outputs,
-      size_t num_program_outputs,
+      base::span<ProgramOutputInfo> program_outputs,
       GLuint service_id);
 
   static void SetupProgramSuccessExpectations(
@@ -159,8 +156,7 @@ class TestHelper {
       size_t num_uniforms,
       VaryingInfo* varyings,
       size_t num_varyings,
-      ProgramOutputInfo* program_outputs,
-      size_t num_program_outputs,
+      base::span<ProgramOutputInfo> program_outputs,
       GLuint service_id);
 
   static void DoBufferData(::gl::MockGLInterface* gl,

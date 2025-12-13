@@ -43,6 +43,32 @@ constexpr TokenId kNumber = TokenId(14);
 constexpr TokenId kCLS = TokenId(15);
 // Representation of the form-level CLS ("classification") token.
 constexpr TokenId kFormCLS = TokenId(16);
+
+FormData CreateTestForm() {
+  FormData form(test::GetFormData(
+      {.fields = {
+           {
+               .label = u"Phone 'number",
+               .placeholder = u"Phone 'number",
+               .autocomplete_attribute = "Phone 'number",
+               .form_control_type = mojom::FormControlType::kInputNumber,
+           },
+           {
+               .label = u"City Number Phone Address Card Last Zip ",
+               .placeholder = u"City Number Phone Address Card Last Zip ",
+               .autocomplete_attribute =
+                   "City Number Phone Address Card Last Zip ",
+               .form_control_type = mojom::FormControlType::kInputNumber,
+           }}}));
+  form.set_id_attribute(u"form1");
+  form.set_name_attribute(u"Number form");
+  form.set_button_titles(
+      {{u"Submit Telefone",
+        mojom::ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE}});
+  form.set_url(GURL("https://www.example.com/account/form/number"));
+  return form;
+}
+
 }  // namespace
 
 class FieldClassificationModelEncoderTest : public testing::Test {
@@ -147,19 +173,7 @@ TEST_F(FieldClassificationModelEncoderTest, InputConstructedCorrectly) {
 
 TEST_F(FieldClassificationModelEncoderTest, FormEncodedCorrectly_BasicModel) {
   FieldClassificationModelEncoder encoder(CreateBasicEncoder());
-  FormStructure form(test::GetFormData(
-      {.fields = {
-           {
-               .label = u"Phone 'number",
-               .placeholder = u"Phone 'number",
-               .autocomplete_attribute = "Phone 'number",
-           },
-           {
-               .label = u"City Number Phone Address Card Last Zip ",
-               .placeholder = u"City Number Phone Address Card Last Zip ",
-               .autocomplete_attribute =
-                   "City Number Phone Address Card Last Zip ",
-           }}}));
+  FormData form(CreateTestForm());
   EXPECT_THAT(
       encoder.EncodeForm(form),
       ElementsAre(ElementsAre(
@@ -186,28 +200,8 @@ TEST_F(FieldClassificationModelEncoderTest,
        FormEncodedCorrectly_ModelWithFormFeatures) {
   FieldClassificationModelEncoder encoder(EncoderFromFileContents(
       GetTestModelMetadataPath("model_with_form_features_metadata.binarypb")));
-  FormData form(test::GetFormData(
-      {.fields = {
-           {
-               .label = u"Phone 'number",
-               .placeholder = u"Phone 'number",
-               .autocomplete_attribute = "Phone 'number",
-               .form_control_type = mojom::FormControlType::kInputNumber,
-           },
-           {
-               .label = u"City Number Phone Address Card Last Zip ",
-               .placeholder = u"City Number Phone Address Card Last Zip ",
-               .autocomplete_attribute =
-                   "City Number Phone Address Card Last Zip ",
-               .form_control_type = mojom::FormControlType::kInputNumber,
-           }}}));
-  form.set_id_attribute(u"form1");
-  form.set_name_attribute(u"Number form");
-  form.set_button_titles(
-      {{u"Submit Telefone",
-        mojom::ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE}});
-  form.set_url(GURL("https://www.example.com/account/form/number"));
-  EXPECT_THAT(encoder.EncodeForm(FormStructure(form)),
+  FormData form(CreateTestForm());
+  EXPECT_THAT(encoder.EncodeForm(form),
               ElementsAre(ElementsAre(
                               // CLS
                               kCLS,
@@ -230,6 +224,51 @@ TEST_F(FieldClassificationModelEncoderTest,
                               kUnknown, kNumber, kUnknown, kUnknown, kUnknown,
                               // FEATURE_AUTOCOMPLETE
                               kUnknown, kNumber, kUnknown, kUnknown, kUnknown,
+                              // FEATURE_NAME
+                              kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,
+                              // FEATURE_TYPE
+                              kNumber, kEmpty, kEmpty, kEmpty, kEmpty),
+                          ElementsAre(
+                              // Form level features CLS
+                              kFormCLS,
+                              // FEATURE_BUTTON_TITLES
+                              kUnknown, kTelefone, kEmpty, kEmpty, kEmpty,
+                              // FEATURE_FORM_ID
+                              kUnknown, kEmpty, kEmpty, kEmpty, kEmpty,
+                              // FEATURE_FORM_NAME
+                              kNumber, kUnknown, kEmpty, kEmpty, kEmpty,
+                              // FEATURE_FRAME_URL_PATH
+                              kUnknown, kUnknown, kNumber, kEmpty, kEmpty,
+                              // PADDING
+                              kEmpty, kEmpty, kEmpty, kEmpty, kEmpty)));
+}
+
+TEST_F(FieldClassificationModelEncoderTest,
+       FormEncodedCorrectly_ModelWithFormFeatures_FormLongerThanMaxNumFields) {
+  // Load a model metadata that requires form level features encoding.
+  optimization_guide::proto::AutofillFieldClassificationModelMetadata metadata;
+  std::string proto_content;
+  ASSERT_TRUE(base::ReadFileToString(
+      GetTestModelMetadataPath("model_with_form_features_metadata.binarypb"),
+      &proto_content));
+  ASSERT_TRUE(metadata.ParseFromString(proto_content));
+  // Set a small maximum number of fields.
+  metadata.mutable_encoding_parameters()->set_maximum_number_of_fields(1);
+  FieldClassificationModelEncoder encoder(metadata.input_token(),
+                                          metadata.encoding_parameters());
+
+  FormData form(CreateTestForm());
+
+  EXPECT_THAT(encoder.EncodeForm(form),
+              ElementsAre(ElementsAre(
+                              // CLS
+                              kCLS,
+                              // FEATURE_LABEL
+                              kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
+                              // FEATURE_PLACEHOLDER
+                              kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
+                              // FEATURE_AUTOCOMPLETE
+                              kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
                               // FEATURE_NAME
                               kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,
                               // FEATURE_TYPE

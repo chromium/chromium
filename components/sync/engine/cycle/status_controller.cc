@@ -75,8 +75,6 @@ int StatusController::num_server_conflicts() const {
   return model_neutral_.num_server_conflicts;
 }
 
-int StatusController::TotalNumConflictingItems() const {
-  return num_server_conflicts();
-}
+
 
 }  // namespace syncer

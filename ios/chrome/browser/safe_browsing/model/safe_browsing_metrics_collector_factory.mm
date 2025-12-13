@@ -28,8 +28,7 @@ SafeBrowsingMetricsCollectorFactory::SafeBrowsingMetricsCollectorFactory()
 
 std::unique_ptr<KeyedService>
 SafeBrowsingMetricsCollectorFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+    ProfileIOS* profile) const {
   return std::make_unique<safe_browsing::SafeBrowsingMetricsCollector>(
       profile->GetPrefs());
 }

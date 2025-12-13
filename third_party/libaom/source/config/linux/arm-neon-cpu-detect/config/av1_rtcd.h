@@ -210,7 +210,8 @@ void av1_filter_intra_edge_neon(uint8_t *p, int sz, int strength);
 RTCD_EXTERN void (*av1_filter_intra_edge)(uint8_t *p, int sz, int strength);
 
 void av1_filter_intra_predictor_c(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
-#define av1_filter_intra_predictor av1_filter_intra_predictor_c
+void av1_filter_intra_predictor_neon(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
+RTCD_EXTERN void (*av1_filter_intra_predictor)(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
 
 void av1_fwd_txfm2d_16x16_c(const int16_t *input, int32_t *output, int stride, TX_TYPE tx_type, int bd);
 void av1_fwd_txfm2d_16x16_neon(const int16_t *input, int32_t *output, int stride, TX_TYPE tx_type, int bd);
@@ -272,7 +273,7 @@ void av1_fwht4x4_c(const int16_t *input, tran_low_t *output, int stride);
 void av1_fwht4x4_neon(const int16_t *input, tran_low_t *output, int stride);
 RTCD_EXTERN void (*av1_fwht4x4)(const int16_t *input, tran_low_t *output, int stride);
 
-uint32_t av1_get_crc32c_value_c(void *crc_calculator, uint8_t *p, size_t length);
+uint32_t av1_get_crc32c_value_c(void *crc_calculator, const uint8_t *p, size_t length);
 #define av1_get_crc32c_value av1_get_crc32c_value_c
 
 void av1_get_horver_correlation_full_c(const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
@@ -544,6 +545,8 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) av1_dr_prediction_z3 = av1_dr_prediction_z3_neon;
     av1_filter_intra_edge = av1_filter_intra_edge_c;
     if (flags & HAS_NEON) av1_filter_intra_edge = av1_filter_intra_edge_neon;
+    av1_filter_intra_predictor = av1_filter_intra_predictor_c;
+    if (flags & HAS_NEON) av1_filter_intra_predictor = av1_filter_intra_predictor_neon;
     av1_fwd_txfm2d_16x16 = av1_fwd_txfm2d_16x16_c;
     if (flags & HAS_NEON) av1_fwd_txfm2d_16x16 = av1_fwd_txfm2d_16x16_neon;
     av1_fwd_txfm2d_16x32 = av1_fwd_txfm2d_16x32_c;

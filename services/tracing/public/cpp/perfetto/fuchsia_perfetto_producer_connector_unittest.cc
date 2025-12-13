@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "services/tracing/public/cpp/perfetto/fuchsia_perfetto_producer_connector.h"
 
 #include <fcntl.h>
@@ -20,6 +15,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
@@ -211,8 +207,8 @@ TEST_F(FuchsiaPerfettoProducerConnectorTest, Success) {
   EXPECT_EQ(sizeof(kTestBufferContents),
             static_cast<size_t>(read(received_fd.get(), read_buf,
                                      sizeof(kTestBufferContents))));
-  EXPECT_EQ(0,
-            memcmp(read_buf, kTestBufferContents, sizeof(kTestBufferContents)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(read_buf, kTestBufferContents,
+                                  sizeof(kTestBufferContents))));
 }
 
 // Verify that errors in the service's application layer are handled properly.

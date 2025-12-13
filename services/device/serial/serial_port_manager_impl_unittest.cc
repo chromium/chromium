@@ -280,11 +280,11 @@ TEST_F(SerialPortManagerImplTest, PortRemovedAndAdded) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(client, OnPortRemoved(_))
-        .WillOnce(Invoke([&](mojom::SerialPortInfoPtr port) {
+        .WillOnce([&](mojom::SerialPortInfoPtr port) {
           EXPECT_EQ(port1_token, port->token);
           EXPECT_EQ(kFakeDevicePath1, port->path);
           run_loop.Quit();
-        }));
+        });
     run_loop.Run();
   }
 
@@ -292,11 +292,11 @@ TEST_F(SerialPortManagerImplTest, PortRemovedAndAdded) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(client, OnPortAdded(_))
-        .WillOnce(Invoke([&](mojom::SerialPortInfoPtr port) {
+        .WillOnce([&](mojom::SerialPortInfoPtr port) {
           EXPECT_NE(port1_token, port->token);
           EXPECT_EQ(kFakeDevicePath1, port->path);
           run_loop.Quit();
-        }));
+        });
     run_loop.Run();
   }
 }
@@ -379,13 +379,13 @@ TEST_F(SerialPortManagerImplTest, BluetoothPortRemovedAndAdded) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(client, OnPortRemoved(_))
-        .WillOnce(Invoke([&](mojom::SerialPortInfoPtr port) {
+        .WillOnce([&](mojom::SerialPortInfoPtr port) {
           EXPECT_EQ(port1_token, port->token);
           EXPECT_EQ(port->path, base::FilePath::FromASCII(kDeviceAddress));
           EXPECT_EQ(mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM,
                     port->type);
           run_loop.Quit();
-        }));
+        });
     run_loop.Run();
   }
 
@@ -400,13 +400,13 @@ TEST_F(SerialPortManagerImplTest, BluetoothPortRemovedAndAdded) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(client, OnPortAdded(_))
-        .WillOnce(Invoke([&](mojom::SerialPortInfoPtr port) {
+        .WillOnce([&](mojom::SerialPortInfoPtr port) {
           EXPECT_NE(port1_token, port->token);
           EXPECT_EQ(port->path, base::FilePath::FromASCII(kDeviceAddress));
           EXPECT_EQ(mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM,
                     port->type);
           run_loop.Quit();
-        }));
+        });
     run_loop.Run();
   }
 }

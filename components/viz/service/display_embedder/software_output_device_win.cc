@@ -12,15 +12,16 @@
 #include "base/win/windows_version.h"
 #include "components/viz/common/display/use_layered_window.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/service/display_embedder/software_output_device_win_swapchain.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/viz/privileged/mojom/compositing/layered_window_updater.mojom.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_win.h"
-#include "ui/gfx/gdi_util.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/win/gdi_util.h"
 #include "ui/gfx/win/hwnd_util.h"
 #include "ui/gl/vsync_provider_win.h"
 
@@ -119,18 +120,17 @@ bool SoftwareOutputDeviceWinProxy::ResizeDelegated(
     const gfx::Size& viewport_pixel_size) {
   canvas_.reset();
 
-  size_t required_bytes;
-  if (!ResourceSizes::MaybeSizeInBytes(viewport_pixel_size,
-                                       SinglePlaneFormat::kRGBA_8888,
-                                       &required_bytes)) {
+  auto required_bytes = SharedMemorySizeForSharedImageFormat(
+      SinglePlaneFormat::kRGBA_8888, viewport_pixel_size);
+  if (!required_bytes) {
     DLOG(ERROR) << "Invalid viewport size " << viewport_pixel_size.ToString();
     return false;
   }
 
   base::UnsafeSharedMemoryRegion region =
-      base::UnsafeSharedMemoryRegion::Create(required_bytes);
+      base::UnsafeSharedMemoryRegion::Create(required_bytes.value());
   if (!region.IsValid()) {
-    DLOG(ERROR) << "Failed to allocate " << required_bytes << " bytes";
+    DLOG(ERROR) << "Failed to allocate " << required_bytes.value() << " bytes";
     return false;
   }
 
@@ -160,13 +160,17 @@ void SoftwareOutputDeviceWinProxy::EndPaintDelegated(
       &SoftwareOutputDeviceWinProxy::DrawAck, base::Unretained(this)));
   waiting_on_draw_ack_ = true;
 
-  TRACE_EVENT_ASYNC_BEGIN0("viz", "SoftwareOutputDeviceWinProxy::Draw", this);
+  TRACE_EVENT_BEGIN("viz", "SoftwareOutputDeviceWinProxy::Draw",
+                    perfetto::Track::FromPointer(this));
 }
 
 void SoftwareOutputDeviceWinProxy::DrawAck() {
   DCHECK(waiting_on_draw_ack_);
 
-  TRACE_EVENT_ASYNC_END0("viz", "SoftwareOutputDeviceWinProxy::Draw", this);
+  TRACE_EVENT_END(
+      "viz",
+      /* SoftwareOutputDeviceWinProxy::Draw */ perfetto::Track::FromPointer(
+          this));
 
   waiting_on_draw_ack_ = false;
 

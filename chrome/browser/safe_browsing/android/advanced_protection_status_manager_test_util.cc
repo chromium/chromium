@@ -19,3 +19,5 @@ void SetAdvancedProtectionStateForTesting(
 }
 
 }  // namespace safe_browsing
+
+DEFINE_JNI(AdvancedProtectionStatusManagerTestUtil)

@@ -12,6 +12,13 @@
   line-height: 154%;
   overflow: hidden;
   user-select: text;
+  --table-header: rgb(240, 240, 240);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --table-header: var(--google-grey-900-white-4-percent);
+  }
 }
 
 html {
@@ -29,8 +36,12 @@ ul {
 }
 
 table {
-  border-collapse: collapse;
+  border-collapse: separate;
   font-family: monospace;
+  border-spacing: 0;
+  border-radius: var(--cr-card-border-radius);
+  border: 1px solid var(--cr-separator-color);
+  overflow: hidden;
 }
 
 pre,
@@ -38,16 +49,26 @@ table {
   font-size: 1.25em;
 }
 
-th {
-  background: var(--cr-card-background-color);
-  color: var(--cr-primary-text-color);
-}
-
 th,
 td {
-  border: 1px solid var(--cr-primary-text-color);
+  border: none;
   padding: 6px 10px;
   text-align: center;
+}
+
+tr:not(:last-child) > td {
+  border-bottom: 1px solid var(--cr-separator-color);
+}
+
+th:not(:last-child),
+td:not(:last-child) {
+  border-right: 1px solid var(--cr-separator-color);
+}
+
+th {
+  background: var(--cr-card-background-color);
+  border-bottom: 1px solid var(--cr-separator-color);
+  color: var(--cr-primary-text-color);
 }
 
 label {
@@ -152,4 +173,8 @@ a[href] {
 .card-text {
   margin-inline-end: 24px;
   margin-inline-start: 24px;
+}
+
+section.cr-left-card-container th {
+  background: var(--table-header);
 }

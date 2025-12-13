@@ -29,11 +29,11 @@ enum InstallStatus {
   USER_LEVEL_INSTALL_EXISTS = 5,  // User level install already exists.
   SYSTEM_LEVEL_INSTALL_EXISTS = 6,  // Machine level install already exists.
   INSTALL_FAILED = 7,               // Install/update failed.
-  SETUP_PATCH_FAILED = 8,           // Failed to patch setup.exe.
-  OS_NOT_SUPPORTED = 9,             // Current OS not supported.
-  OS_ERROR = 10,                    // OS API call failed.
-  TEMP_DIR_FAILED = 11,             // Unable to get Temp directory.
-  UNCOMPRESSION_FAILED = 12,        // Failed to uncompress Chrome archive.
+  // SETUP_PATCH_FAILED = 8,        // Failed to patch setup.exe.
+  OS_NOT_SUPPORTED = 9,       // Current OS not supported.
+  OS_ERROR = 10,              // OS API call failed.
+  TEMP_DIR_FAILED = 11,       // Unable to get Temp directory.
+  UNCOMPRESSION_FAILED = 12,  // Failed to uncompress Chrome archive.
   INVALID_ARCHIVE = 13,       // Something wrong with the installer archive.
   INSUFFICIENT_RIGHTS = 14,   // User trying system level install is not Admin.
   CHROME_NOT_INSTALLED = 15,  // Chrome not installed (returned in case of
@@ -70,7 +70,7 @@ enum InstallStatus {
   // CONFLICTING_CHANNEL_EXISTS = 39,
   // READY_MODE_REQUIRES_CHROME = 40,
   // APP_HOST_REQUIRES_MULTI_INSTALL = 41,
-  APPLY_DIFF_PATCH_FAILED = 42,  // Failed to apply a diff patch.
+  // APPLY_DIFF_PATCH_FAILED = 42,  // Failed to apply a diff patch.
   // INCONSISTENT_UPDATE_POLICY = 43,
   // APP_HOST_REQUIRES_USER_LEVEL = 44,
   // APP_HOST_REQUIRES_BINARIES = 45,
@@ -78,10 +78,10 @@ enum InstallStatus {
   INVALID_STATE_FOR_OPTION = 47,  // A non-install option was called with an
                                   // invalid installer state.
   // WAIT_FOR_EXISTING_FAILED = 48,
-  PATCH_INVALID_ARGUMENTS = 49,    // The arguments of --patch were missing or
-                                   // they were invalid for any reason.
-  DIFF_PATCH_SOURCE_MISSING = 50,  // No previous version archive found for
-                                   // differential update.
+  // PATCH_INVALID_ARGUMENTS = 49,    // The arguments of --patch were missing
+  // or they were invalid for any reason.
+  // DIFF_PATCH_SOURCE_MISSING = 50,  // No previous version archive found for
+  // differential update.
   // UNUSED_BINARIES = 51,
   // UNUSED_BINARIES_UNINSTALLED = 52,
   UNSUPPORTED_OPTION = 53,          // An unsupported legacy option was given.
@@ -135,23 +135,13 @@ enum InstallStatus {
                             // the SetupInstallResult enum in enums.xml.
 };
 
-// The type of an update archive.
-enum ArchiveType {
-  UNKNOWN_ARCHIVE_TYPE,     // Unknown or uninitialized.
-  FULL_ARCHIVE_TYPE,        // Full chrome.7z archive.
-  INCREMENTAL_ARCHIVE_TYPE  // Incremental or differential archive.
-};
-
 // Stages of an installation from which a progress indication is derived.
-// Generally listed in the order in which they are reached. The exceptions to
-// this are the fork-and-join for diff vs. full installers (where there are
-// additional (costly) stages for the former) and rollback in case of error.
+// Generally listed in the order in which they are reached, except that
+// ROLLINGBACK may occur throughout in case of error.
 enum InstallerStage {
   NO_STAGE,                  // No stage to report.
-  UPDATING_SETUP,            // Patching setup.exe with differential update.
   PRECONDITIONS,             // Evaluating pre-install conditions.
   UNCOMPRESSING,             // Uncompressing chrome.packed.7z.
-  PATCHING,                  // Patching chrome.7z with differential update.
   UNPACKING,                 // Unpacking chrome.7z.
   CREATING_VISUAL_MANIFEST,  // Creating VisualElementsManifest.xml.
   BUILDING,                  // Building the install work item list.
@@ -189,7 +179,6 @@ extern const char kInstallArchive[];
 extern const char kInstallerData[];
 extern const char kInstallLevel[];
 extern const char kLogFile[];
-extern const char kMakeChromeDefault[];
 extern const char kMsi[];
 extern const char kNewSetupExe[];
 extern const char kNonce[];

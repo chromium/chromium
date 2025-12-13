@@ -4,6 +4,8 @@
 
 #include <utility>
 
+#include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "build/buildflag.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
@@ -31,7 +33,6 @@ class PlatformHandleImpl : public PlatformHandle {
 
   void Request(ContentSettingsType type,
                SystemPermissionResponseCallback callback) override {
-    std::move(callback).Run();
     NOTREACHED();
   }
 

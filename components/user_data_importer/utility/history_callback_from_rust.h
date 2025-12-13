@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_USER_DATA_IMPORTER_UTILITY_HISTORY_CALLBACK_FROM_RUST_H_
 #define COMPONENTS_USER_DATA_IMPORTER_UTILITY_HISTORY_CALLBACK_FROM_RUST_H_
 
+#include <memory>
 #include <vector>
 
 namespace user_data_importer {
 
-struct HistoryEntry;
+struct SafariHistoryEntry;
 struct StablePortabilityHistoryEntry;
 
 // The primary purpose of this class is to provide an API that
@@ -18,12 +19,15 @@ struct StablePortabilityHistoryEntry;
 template <typename HistoryType>
 class HistoryCallbackFromRust {
  public:
-  // Callback function called from Rust to import history entries.
-  // This input vector is cleared within this function call.
-  // The "completed" argument must be false if there are still more history
-  // entries to import and false if the history parsing is completed.
-  virtual void ImportHistoryEntries(std::vector<HistoryType>& history_entries,
-                                    bool completed) = 0;
+  // Callback function called from Rust to import history entries. The
+  // "completed" argument must be false if there are still more history entries
+  // to import and false if the history parsing is completed.
+  virtual void ImportHistoryEntries(
+      std::unique_ptr<std::vector<HistoryType>> history_entries,
+      bool completed) = 0;
+
+  // Called from Rust to signal that parsing has failed.
+  virtual void Fail() = 0;
 
   virtual ~HistoryCallbackFromRust() = default;
 
@@ -38,7 +42,8 @@ class HistoryCallbackFromRust {
 };
 
 // Cxx-friendly type aliases for the template class.
-using SafariHistoryCallbackFromRust = HistoryCallbackFromRust<HistoryEntry>;
+using SafariHistoryCallbackFromRust =
+    HistoryCallbackFromRust<SafariHistoryEntry>;
 using StablePortabilityHistoryCallbackFromRust =
     HistoryCallbackFromRust<StablePortabilityHistoryEntry>;
 

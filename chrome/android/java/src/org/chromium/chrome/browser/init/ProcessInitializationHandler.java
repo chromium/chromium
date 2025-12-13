@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.init;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -20,9 +22,9 @@ import androidx.annotation.WorkerThread;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BaseSwitches;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FileProviderUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ServiceLoaderUtil;
@@ -38,6 +40,9 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
@@ -46,6 +51,7 @@ import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
 import org.chromium.chrome.browser.FileProviderHelper;
+import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettingsBridge;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
@@ -72,6 +78,7 @@ import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.PackageMetrics;
+import org.chromium.chrome.browser.metrics.StorageSystem;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.notifications.TrampolineActivityTracker;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
@@ -96,7 +103,7 @@ import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.ui.cars.DrivingRestrictionsManager;
 import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
@@ -107,8 +114,8 @@ import org.chromium.chrome.browser.webapps.WebApkUninstallTracker;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
+import org.chromium.components.browser_ui.contacts_picker.AndroidContactsPermissionProviderImpl;
 import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
 import org.chromium.components.browser_ui.photo_picker.PhotoPickerDelegateBase;
 import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
@@ -124,6 +131,8 @@ import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
+import org.chromium.content_public.browser.ContactsDialogHost;
+import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.DeviceUtils;
@@ -137,6 +146,7 @@ import org.chromium.ui.base.PhotoPicker;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.url.GURL;
 
 import java.io.File;
@@ -152,6 +162,7 @@ import java.util.Locale;
  * initialization that is not tied to any particular Activity, and the logic that should only be
  * triggered a single time for the lifetime of the browser process.
  */
+@NullMarked
 public class ProcessInitializationHandler {
     private static final String TAG = "ProcessInitHandler";
 
@@ -162,7 +173,7 @@ public class ProcessInitializationHandler {
 
     private static final String SNAPSHOT_DATABASE_NAME = "snapshots.db";
 
-    private static ProcessInitializationHandler sInstance;
+    private static @MonotonicNonNull ProcessInitializationHandler sInstance;
 
     private boolean mInitializedPreNative;
     private boolean mInitializedPreNativeLibraryLoad;
@@ -172,7 +183,7 @@ public class ProcessInitializationHandler {
     private boolean mNetworkChangeNotifierInitializationComplete;
     private final Locale mInitialLocale = Locale.getDefault();
 
-    private DevToolsServer mDevToolsServer;
+    private @MonotonicNonNull DevToolsServer mDevToolsServer;
 
     private final ProfileKeyedMap<Boolean> mStartupProfileTasksCompleted =
             new ProfileKeyedMap<>(
@@ -384,7 +395,7 @@ public class ProcessInitializationHandler {
         ChromeActivitySessionTracker.getInstance().initializeWithNative();
         ProfileManagerUtils.removeSessionCookiesForAllProfiles();
         AppBannerManager.setAppDetailsDelegate(
-                ServiceLoaderUtil.maybeCreate(AppDetailsDelegate.class));
+                assumeNonNull(ServiceLoaderUtil.maybeCreate(AppDetailsDelegate.class)));
         ChromeLifetimeController.initialize();
         Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
 
@@ -401,20 +412,24 @@ public class ProcessInitializationHandler {
                             PhotoPickerListener listener,
                             boolean allowMultiple,
                             List<String> mimeTypes) {
+                        Context context = windowAndroid.getContext().get();
+                        assumeNonNull(context);
                         PhotoPickerDialog dialog =
                                 new PhotoPickerDialog(
                                         windowAndroid,
-                                        windowAndroid.getContext().get().getContentResolver(),
+                                        context.getContentResolver(),
                                         listener,
                                         allowMultiple,
                                         mimeTypes,
                                         shouldDialogPadForContent(windowAndroid));
-                        dialog.getWindow().getAttributes().windowAnimations =
+                        assumeNonNull(dialog.getWindow()).getAttributes().windowAnimations =
                                 R.style.PickerDialogAnimation;
                         dialog.show();
                         return dialog;
                     }
                 });
+
+        ContactsDialogHost.setPermissionProvider(new AndroidContactsPermissionProviderImpl());
 
         ContactsPicker.setContactsPickerDelegate(
                 (WebContents webContents,
@@ -425,14 +440,17 @@ public class ProcessInitializationHandler {
                         boolean includeTel,
                         boolean includeAddresses,
                         boolean includeIcons,
-                        String formattedOrigin) -> {
+                        String formattedOrigin,
+                        ContactsFetcher contactsFetcher) -> {
                     WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+                    assumeNonNull(windowAndroid);
+                    Context context = windowAndroid.getContext().get();
+                    assumeNonNull(context);
                     ContactsPickerDialog dialog =
                             new ContactsPickerDialog(
                                     windowAndroid,
                                     new ChromePickerAdapter(
-                                            windowAndroid.getContext().get(),
-                                            Profile.fromWebContents(webContents)),
+                                            context, Profile.fromWebContents(webContents)),
                                     listener,
                                     allowMultiple,
                                     includeNames,
@@ -441,8 +459,9 @@ public class ProcessInitializationHandler {
                                     includeAddresses,
                                     includeIcons,
                                     formattedOrigin,
-                                    shouldDialogPadForContent(windowAndroid));
-                    dialog.getWindow().getAttributes().windowAnimations =
+                                    shouldDialogPadForContent(windowAndroid),
+                                    contactsFetcher);
+                    assumeNonNull(dialog.getWindow()).getAttributes().windowAnimations =
                             R.style.PickerDialogAnimation;
                     dialog.show();
                     return dialog;
@@ -479,7 +498,7 @@ public class ProcessInitializationHandler {
 
         AccessibilityState.registerObservers();
 
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             DrivingRestrictionsManager.initialize();
         }
 
@@ -553,8 +572,13 @@ public class ProcessInitializationHandler {
         HistoryDeletionBridge.getForProfile(profile)
                 .addObserver(
                         new ContentCaptureHistoryDeletionObserver(
-                                () -> PlatformContentCaptureController.getInstance()));
+                                () ->
+                                        assumeNonNull(
+                                                PlatformContentCaptureController.getInstance())));
         PageZoomUtils.recordFeatureUsage(profile);
+        RecordHistogram.recordBooleanHistogram(
+                AccessibilitySettingsBridge.ACCESSIBILITY_CARET_BROWSING_ENABLED_HISTOGRAM,
+                AccessibilitySettingsBridge.isCaretBrowsingEnabled(profile));
     }
 
     /**
@@ -583,22 +607,24 @@ public class ProcessInitializationHandler {
     }
 
     /**
-     * Handle application level deferred startup tasks that can be lazily done after all
-     * the necessary initialization has been completed. Should only be triggered once per browser
+     * Handle application level deferred startup tasks that can be lazily done after all the
+     * necessary initialization has been completed. Should only be triggered once per browser
      * process lifetime. Any calls requiring network access should probably go here.
      *
-     * Keep these tasks short and break up long tasks into multiple smaller tasks, as they run on
+     * <p>Keep these tasks short and break up long tasks into multiple smaller tasks, as they run on
      * the UI thread and are blocking. Remember to follow RAIL guidelines, as much as possible, and
      * that most devices are quite slow, so leave enough buffer.
+     *
+     * @param profile The profile associated with deferred startup.
      */
-    public final void initializeDeferredStartupTasks() {
+    public final void initializeDeferredStartupTasks(Profile profile) {
         ThreadUtils.checkUiThread();
         if (mInitializedDeferredStartupTasks) return;
         mInitializedDeferredStartupTasks = true;
 
         DeferredStartupHandler deferredStartupHandler = DeferredStartupHandler.getInstance();
         List<Runnable> deferredTasks = new ArrayList<>();
-        addPerApplicationStartupDeferredTasks(deferredTasks);
+        addPerApplicationStartupDeferredTasks(deferredTasks, profile);
         deferredStartupHandler.addDeferredTasks(deferredTasks);
     }
 
@@ -608,7 +634,7 @@ public class ProcessInitializationHandler {
      * lifetime. Any calls requiring network access should probably go here.
      *
      * @param profile The Profile associated with the startup tasks.
-     * @see #initializeDeferredStartupTasks() for timing considerations.
+     * @see #initializeDeferredStartupTasks(Profile) for timing considerations.
      */
     public final void initializeProfileDependentDeferredStartupTasks(Profile profile) {
         ThreadUtils.checkUiThread();
@@ -633,12 +659,15 @@ public class ProcessInitializationHandler {
      * the application.
      *
      * @param tasks The list where new tasks should be added.
+     * @param profile The profile associated with deferred startup.
      */
     @CallSuper
-    protected void addPerApplicationStartupDeferredTasks(List<Runnable> tasks) {
+    protected void addPerApplicationStartupDeferredTasks(List<Runnable> tasks, Profile profile) {
         tasks.add(
                 () -> {
                     initAsyncDiskTask();
+
+                    StorageSystem.recordStorageType();
 
                     DefaultBrowserInfo.initBrowserFetcher();
 
@@ -649,7 +678,9 @@ public class ProcessInitializationHandler {
                                     () -> {
                                         HomepageManager homepageManager =
                                                 HomepageManager.getInstance();
-                                        GURL homepageGurl = homepageManager.getHomepageGurl();
+                                        GURL homepageGurl =
+                                                homepageManager.getHomepageGurl(
+                                                        profile.isOffTheRecord());
                                         LaunchMetrics.recordHomePageLaunchMetrics(
                                                 homepageManager.isHomepageEnabled(),
                                                 UrlUtilities.isNtpUrl(homepageGurl),
@@ -717,7 +748,7 @@ public class ProcessInitializationHandler {
 
         // Asynchronously query system accessibility state so it is ready for clients.
         tasks.add(AccessibilityState::initializeOnStartup);
-        tasks.add(TabPersistentStore::onDeferredStartup);
+        tasks.add(TabPersistentStoreImpl::onDeferredStartup);
     }
 
     /**
@@ -766,7 +797,8 @@ public class ProcessInitializationHandler {
             /**
              * The threshold after which it's no longer appropriate to try to attach logcat output
              * to a minidump file.
-             * Note: This threshold of 12 hours was chosen fairly imprecisely, based on the
+             *
+             * <p>Note: This threshold of 12 hours was chosen fairly imprecisely, based on the
              * following intuition: On the one hand, Chrome can only access its own logcat output,
              * so the most recent lines should be relevant when available. On a typical device,
              * multiple hours of logcat output are available. On the other hand, it's important to
@@ -876,7 +908,7 @@ public class ProcessInitializationHandler {
              * startups that had *any* pending minidumps had at least one pending minidump without
              * any logcat output. About 5% had multiple minidumps without any logcat output.
              *
-             * TODO(isherman): This is the simplest approach to resolving the complexity of
+             * <p>TODO(isherman): This is the simplest approach to resolving the complexity of
              * correctly attributing logcat output to the correct crash. However, it would be better
              * to attach logcat output to each minidump file that lacks it, if the relevant output
              * is still available. We can look at timestamps to correlate logcat lines with the
@@ -885,7 +917,7 @@ public class ProcessInitializationHandler {
              * @return A single fresh minidump that should have logcat attached to it, or null if no
              *     such minidump exists.
              */
-            private File processMinidumpsSansLogcat(CrashFileManager crashFileManager) {
+            private @Nullable File processMinidumpsSansLogcat(CrashFileManager crashFileManager) {
                 File[] minidumpsSansLogcat = crashFileManager.getMinidumpsSansLogcat();
 
                 // If there are multiple minidumps present that are missing logcat output, only
@@ -920,6 +952,7 @@ public class ProcessInitializationHandler {
              * extracting and appending the logcat content is itself crashing. That is, the user can
              * wait 12 hours prior to relaunching Chrome, at which point this potential crash loop
              * would be circumvented.
+             *
              * @return Whether to try to include logcat output in the crash report corresponding to
              *     the given minidump.
              */
@@ -949,8 +982,11 @@ public class ProcessInitializationHandler {
     }
 
     private void startBindingManagementIfNeeded() {
+        ChildProcessLauncherHelper.initialize();
         // Moderate binding doesn't apply to low end devices.
-        if (SysUtils.isLowEndDevice()) return;
+        if (SysUtils.isLowEndDevice() || ChromeFeatureList.sProtectRecentlyVisibleTab.isEnabled()) {
+            return;
+        }
         ChildProcessLauncherHelper.startBindingManagement(ContextUtils.getApplicationContext());
     }
 

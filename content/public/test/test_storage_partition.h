@@ -156,8 +156,6 @@ class TestStoragePartition : public StoragePartition {
 
   PrivateAggregationDataModel* GetPrivateAggregationDataModel() override;
 
-  CookieDeprecationLabelManager* GetCookieDeprecationLabelManager() override;
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   CdmStorageDataModel* GetCdmStorageDataModel() override;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -251,7 +249,6 @@ class TestStoragePartition : public StoragePartition {
   void FlushNetworkInterfaceForTesting() override;
   void FlushCertVerifierInterfaceForTesting() override;
   void WaitForDeletionTasksForTesting() override;
-  void WaitForCodeCacheShutdownForTesting() override;
   void SetNetworkContextForTesting(
       mojo::PendingRemote<network::mojom::NetworkContext>
           network_context_remote) override;

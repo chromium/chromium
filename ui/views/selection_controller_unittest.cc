@@ -128,7 +128,7 @@ class SelectionControllerTest : public ::testing::Test {
     mouse_location_ = location;
     // Ensure that mouse presses are spaced apart by at least the double-click
     // interval to avoid triggering a double-click.
-    last_event_time_ += base::Milliseconds(views::GetDoubleClickInterval() + 1);
+    last_event_time_ += views::GetDoubleClickInterval() + base::Milliseconds(1);
     controller_->OnMousePressed(
         ui::MouseEvent(ui::EventType::kMousePressed, location, location,
                        last_event_time_, mouse_flags_, button),

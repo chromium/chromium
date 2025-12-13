@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/base64.h"
@@ -104,8 +105,7 @@ AutocompleteMatchType::Type GetAutocompleteMatchType(
       return AutocompleteMatchType::NAVSUGGEST_PERSONALIZED;
     default: {
       // Use `ACMatchType::SEARCH_SUGGEST_ENTITY` for categorical suggestions.
-      if (suggest_type == omnibox::TYPE_CATEGORICAL_QUERY &&
-          base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
+      if (suggest_type == omnibox::TYPE_CATEGORICAL_QUERY) {
         return AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
       }
       return AutocompleteMatchType::SEARCH_SUGGEST;
@@ -568,6 +568,7 @@ void SearchSuggestionParser::Results::Clear() {
   experiment_stats_v2s.clear();
   relevances_from_server = false;
   suggestion_groups_map.clear();
+  smart_compose_inline_hint.clear();
 }
 
 bool SearchSuggestionParser::Results::HasServerProvidedScores() const {
@@ -594,14 +595,14 @@ bool SearchSuggestionParser::Results::HasServerProvidedScores() const {
 // static
 std::string SearchSuggestionParser::ExtractJsonData(
     const network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const net::HttpResponseHeaders* response_headers = nullptr;
   if (source && source->ResponseInfo())
     response_headers = source->ResponseInfo()->headers.get();
   if (!response_body)
     return std::string();
 
-  std::string json_data = std::move(*response_body);
+  std::string json_data = std::move(response_body).value();
 
   // JSON is supposed to be UTF-8, but some suggest service providers send
   // JSON files in non-UTF-8 encodings.  The actual encoding is usually
@@ -663,7 +664,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
   // 3rd element: Ignore the optional description list for now.
   // 4th element: Disregard the query URL list.
-  // 5th element: Disregard the optional key-value pairs from the server.
+  // 5th element: Disregard the optional key-value pairs from the server for
+  // now.
 
   // Reset suggested relevance information.
   results->verbatim_relevance = -1;
@@ -678,6 +680,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   int prerender_index = -1;
   omnibox::GroupsInfo groups_info;
 
+  // Parse the optional key-value pairs from the server (5th element).
   if (root_list.size() > 4u && root_list[4].is_dict()) {
     const base::Value::Dict& extras = root_list[4].GetDict();
 
@@ -761,9 +764,21 @@ bool SearchSuggestionParser::ParseSuggestResults(
       subtype_identifiers = nullptr;
     }
 
+    // Clear old smart compose result. New result may or may not have a smart
+    // compose field.
+    results->smart_compose_inline_hint.clear();
+    // Smart compose response.
+    const base::Value::Dict* smart_compose_data =
+        extras.FindDict("google:smartcompose");
+    if (smart_compose_data) {
+      // Smart compose completion.
+      results->smart_compose_inline_hint =
+          FindStringOrEmpty(*smart_compose_data, "c");
+    }
+
     // Store the metadata that came with the response in case we need to pass
     // it along with the prefetch query to Instant.
-    base::JSONWriter::Write(extras, &results->metadata);
+    results->metadata = base::WriteJson(extras).value_or("");
   }
 
   // Processed list of match subtypes, one vector per match.
@@ -932,17 +947,16 @@ bool SearchSuggestionParser::ParseSuggestResults(
         }
         if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
           // omnibox::RichAnswerTemplate is preferred to "ansa" if available.
-          if (suggest_template.has_rich_answer_template() &&
-              !OmniboxFieldTrial::kAnswerActionsCounterfactual.Get()) {
+          if (suggest_template.has_rich_answer_template()) {
             answer_template = suggest_template.rich_answer_template();
             FormatAnswerTemplateImageURL(&answer_template);
             // Ensure `answer_template` has an answer.
             answer_parsed_successfully = answer_template.answers_size() > 0;
           } else if (const auto* answer_json =
                          suggestion_detail.FindDict("ansa")) {
-              answer_parsed_successfully =
-                  omnibox::answer_data_parser::ParseJsonToAnswerData(
-                      *answer_json, &answer_template);
+            answer_parsed_successfully =
+                omnibox::answer_data_parser::ParseJsonToAnswerData(
+                    *answer_json, &answer_template);
           }
           base::UmaHistogramBoolean("Omnibox.AnswerParseSuccess",
                                     answer_parsed_successfully);

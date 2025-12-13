@@ -28,9 +28,9 @@ bool Vp9RawBitsReader::ReadBool() {
   if (!valid_)
     return false;
 
-  int value = 0;
-  valid_ = reader_->ReadBits(1, &value);
-  return valid_ ? value == 1 : false;
+  bool value = false;
+  valid_ = reader_->ReadFlag(&value);
+  return valid_ && value;
 }
 
 int Vp9RawBitsReader::ReadLiteral(int bits) {
@@ -38,7 +38,7 @@ int Vp9RawBitsReader::ReadLiteral(int bits) {
   if (!valid_)
     return 0;
 
-  int value = 0;
+  uint32_t value = 0;
   DCHECK_LT(static_cast<size_t>(bits), sizeof(value) * 8);
   valid_ = reader_->ReadBits(bits, &value);
   return valid_ ? value : 0;

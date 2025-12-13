@@ -18,20 +18,17 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-class PrefService;
-
 namespace password_manager {
 
-// Tracks the active browsing time that the user spends in each state related to
-// the account-scoped password storage, i.e. signed in or not, opted in or not.
+// Tracks the active browsing time that the user spends in each
+// features_util::PasswordAccountStorageUserState.
 class PasswordSessionDurationsMetricsRecorder
     : public syncer::SyncServiceObserver {
  public:
-  // |pref_service| must not be null and must outlive this object.
   // |sync_service| may be null (in incognito profiles or due to a commandline
   // flag), but if non-null must outlive this object.
-  PasswordSessionDurationsMetricsRecorder(PrefService* pref_service,
-                                          syncer::SyncService* sync_service);
+  explicit PasswordSessionDurationsMetricsRecorder(
+      syncer::SyncService* sync_service);
   ~PasswordSessionDurationsMetricsRecorder() override;
 
   PasswordSessionDurationsMetricsRecorder(
@@ -43,11 +40,11 @@ class PasswordSessionDurationsMetricsRecorder
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
   void CheckForUserStateChange();
 
-  const raw_ptr<PrefService> pref_service_;
   const raw_ptr<syncer::SyncService> sync_service_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>

@@ -9,10 +9,7 @@ assert(is_chromeos)
 mojom("mojom") {
   disable_variants = true
 
-  sources = [
-    "assistant_volume_control.mojom",
-    "wallpaper.mojom",
-  ]
+  sources = [ "wallpaper.mojom" ]
 
   public_deps = [
     ":accelerator_actions",

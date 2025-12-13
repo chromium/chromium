@@ -185,9 +185,7 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
   item.accessibilityTraits = UIAccessibilityTraitButton;
   if (!recipient.isEligible) {
     item.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
-    item.textColor = [UIColor colorNamed:kTextTertiaryColor];
-    item.detailTextColor = [UIColor colorNamed:kTextTertiaryColor];
-    item.imageViewAlpha = 0.4f;
+    item.alpha = 0.4f;
   }
   return item;
 }

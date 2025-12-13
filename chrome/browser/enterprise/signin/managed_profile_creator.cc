@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_delegate_impl.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"

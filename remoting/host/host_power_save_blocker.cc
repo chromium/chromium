@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "remoting/host/host_status_monitor.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
@@ -16,11 +17,8 @@ namespace remoting {
 
 HostPowerSaveBlocker::HostPowerSaveBlocker(
     scoped_refptr<HostStatusMonitor> monitor,
-    const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
-    const scoped_refptr<base::SingleThreadTaskRunner>& file_task_runner)
-    : monitor_(monitor),
-      ui_task_runner_(ui_task_runner),
-      file_task_runner_(file_task_runner) {
+    const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner)
+    : monitor_(monitor), ui_task_runner_(ui_task_runner) {
   DCHECK(monitor_);
   monitor_->AddStatusObserver(this);
 }
@@ -30,10 +28,13 @@ HostPowerSaveBlocker::~HostPowerSaveBlocker() {
 }
 
 void HostPowerSaveBlocker::OnClientConnected(const std::string& jid) {
+  // TODO(447203893): Re-enable this on Linux once the bug is fixed.
+#if !BUILDFLAG(IS_LINUX)
   blocker_ = std::make_unique<device::PowerSaveBlocker>(
       device::mojom::WakeLockType::kPreventDisplaySleep,
       device::mojom::WakeLockReason::kOther, "Remoting session is active",
-      ui_task_runner_, file_task_runner_);
+      ui_task_runner_);
+#endif
 }
 
 void HostPowerSaveBlocker::OnClientDisconnected(const std::string& jid) {

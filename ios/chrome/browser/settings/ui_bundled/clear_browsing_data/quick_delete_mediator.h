@@ -42,7 +42,7 @@ class PrefService;
                        identityManager:(signin::IdentityManager*)identityManager
                    browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
                    discoverFeedService:(DiscoverFeedService*)discoverFeedService
-        canPerformTabsClosureAnimation:(BOOL)canPerformTabsClosureAnimation
+         canPerformRadialWipeAnimation:(BOOL)canPerformRadialWipeAnimation
                        uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget
               featureEngagementTracker:(feature_engagement::Tracker*)tracker
     NS_DESIGNATED_INITIALIZER;

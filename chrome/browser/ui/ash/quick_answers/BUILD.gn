@@ -40,7 +40,7 @@ source_set("quick_answers") {
 
   deps = [
     "//ash",
-    "//chrome/browser/ash/magic_boost:magic_boost",
+    "//chrome/browser/ash/magic_boost",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/editor_menu:utils",
     "//chrome/browser/ui/ash/quick_answers/ui:loading_view",
@@ -56,7 +56,7 @@ source_set("quick_answers") {
     "//chromeos/components/quick_answers/public/cpp",
     "//chromeos/components/quick_answers/public/cpp:constants",
     "//chromeos/components/quick_answers/public/cpp:prefs",
-    "//chromeos/constants:constants",
+    "//chromeos/constants",
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/vector_icons",
     "//components/account_id",

@@ -7,11 +7,11 @@
 
 #include <memory>
 
+#include "base/byte_count.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/current_thread.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
-
-class PrefService;
 
 namespace optimization_guide {
 
@@ -26,44 +26,30 @@ class TestComponentState final {
   std::unique_ptr<OnDeviceModelComponentStateManager::Delegate>
   CreateDelegate();
 
-  void SetFreeDiskSpace(int64_t free_space_bytes) {
+  void SetFreeDiskSpace(base::ByteCount free_space_bytes) {
     free_disk_space_ = free_space_bytes;
   }
-  bool installer_registered() const { return installer_registered_; }
+  bool installer_registered() const { return !!registered_manager_; }
   bool uninstall_called() const { return uninstall_called_; }
+
+  void Install(std::unique_ptr<FakeBaseModelAsset> asset);
+  void SimulateShutdown() {
+    registered_manager_.reset();
+    uninstall_called_ = false;
+  }
+
+  bool WaitForRegistration() const {
+    return base::test::RunUntil([&]() { return installer_registered(); });
+  }
 
  private:
   class DelegateImpl;
 
-  int64_t free_disk_space_ = 100 * 1024ll * 1024 * 1024;
-  bool installer_registered_ = false;
+  base::ByteCount free_disk_space_ = base::GiB(100);
+  base::WeakPtr<OnDeviceModelComponentStateManager> registered_manager_;
   bool uninstall_called_ = false;
+  std::unique_ptr<FakeBaseModelAsset> installed_asset_;
   base::WeakPtrFactory<TestComponentState> weak_ptr_factory_{this};
-};
-
-// Provides scoped creation and destruction of
-// OnDeviceModelComponentStateManager. Checks to make sure only one instance is
-// used at a time.
-class TestOnDeviceModelComponentStateManager {
- public:
-  explicit TestOnDeviceModelComponentStateManager(PrefService* local_state);
-  ~TestOnDeviceModelComponentStateManager();
-
-  base::WeakPtr<OnDeviceModelComponentStateManager> get();
-
-  void Reset();
-
-  bool IsInstallerRegistered() const;
-  bool WasComponentUninstalled() const;
-
-  void SetFreeDiskSpace(int64_t free_space_bytes);
-
-  void SetReady(const FakeBaseModelAsset& asset);
-
- private:
-  raw_ptr<PrefService> local_state_;
-  std::unique_ptr<OnDeviceModelComponentStateManager> manager_;
-  std::unique_ptr<TestComponentState> state_;
 };
 
 }  // namespace optimization_guide

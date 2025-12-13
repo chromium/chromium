@@ -118,14 +118,14 @@ static double EnforceRange(double x,
                            ExceptionState& exception_state) {
   if (!std::isfinite(x)) {
     exception_state.ThrowTypeError(
-        "Value is" + String(std::isinf(x) ? " infinite and" : "") +
-        " not of type '" + String(type_name) + "'.");
+        StrCat({"Value is", std::isinf(x) ? " infinite and" : "",
+                " not of type '", type_name, "'."}));
     return 0;
   }
   x = trunc(x);
   if (x < minimum || x > maximum) {
-    exception_state.ThrowTypeError("Value is outside the '" +
-                                   String(type_name) + "' value range.");
+    exception_state.ThrowTypeError(
+        StrCat({"Value is outside the '", type_name, "' value range."}));
     return 0;
   }
   return x;
@@ -184,8 +184,8 @@ static inline T ToSmallerInt(v8::Isolate* isolate,
     if (result >= LimitsTrait::kMinValue && result <= LimitsTrait::kMaxValue)
       return static_cast<T>(result);
     if (configuration == kEnforceRange) {
-      exception_state.ThrowTypeError("Value is outside the '" +
-                                     String(type_name) + "' value range.");
+      exception_state.ThrowTypeError(
+          StrCat({"Value is outside the '", type_name, "' value range."}));
       return 0;
     }
     if (configuration == kClamp)
@@ -252,8 +252,8 @@ static inline T ToSmallerUInt(v8::Isolate* isolate,
     if (result >= 0 && result <= LimitsTrait::kMaxValue)
       return static_cast<T>(result);
     if (configuration == kEnforceRange) {
-      exception_state.ThrowTypeError("Value is outside the '" +
-                                     String(type_name) + "' value range.");
+      exception_state.ThrowTypeError(
+          StrCat({"Value is outside the '", type_name, "' value range."}));
       return 0;
     }
     if (configuration == kClamp)
@@ -438,6 +438,14 @@ int64_t ToInt64Slow(v8::Isolate* isolate,
     return EnforceRange(number_value, -kJSMaxInteger, kJSMaxInteger,
                         "long long", exception_state);
   }
+  if (std::isnan(number_value)) {
+    return 0;
+  }
+
+  if (configuration == kClamp) {
+    return ClampTo<int64_t>(std::nearbyint(number_value), -kJSMaxInteger,
+                            kJSMaxInteger);
+  }
 
   return DoubleToInteger(number_value);
 }
@@ -479,8 +487,9 @@ uint64_t ToUInt64Slow(v8::Isolate* isolate,
   if (std::isnan(number_value))
     return 0;
 
-  if (configuration == kClamp)
-    return ClampTo<uint64_t>(number_value);
+  if (configuration == kClamp) {
+    return ClampTo<uint64_t>(std::nearbyint(number_value), 0, kJSMaxInteger);
+  }
 
   return DoubleToInteger(number_value);
 }
@@ -869,23 +878,15 @@ bool IsInParallelAlgorithmRunnable(ExecutionContext* execution_context,
 
 void ApplyContextToException(ScriptState* script_state,
                              v8::Local<v8::Value> exception,
-                             const ExceptionContext& exception_context) {
-  ApplyContextToException(
-      script_state->GetIsolate(), script_state->GetContext(), exception,
-      exception_context.GetType(), exception_context.GetClassName(),
-      exception_context.GetPropertyName());
-}
-
-void ApplyContextToException(v8::Isolate* isolate,
-                             v8::Local<v8::Context> context,
-                             v8::Local<v8::Value> exception,
                              v8::ExceptionContext type,
                              const char* class_name,
                              const String& property_name) {
+  v8::Isolate* isolate = script_state->GetIsolate();
   if (auto* dom_exception = V8DOMException::ToWrappable(isolate, exception)) {
     dom_exception->AddContextToMessages(type, class_name, property_name);
   } else if (exception->IsObject()) {
     v8::TryCatch try_catch(isolate);
+    v8::Local<v8::Context> context = script_state->GetContext();
     v8::Local<v8::String> message_key = V8String(isolate, "message");
     auto exception_object = exception.As<v8::Object>();
     String updated_message = ExceptionMessages::AddContextToMessage(

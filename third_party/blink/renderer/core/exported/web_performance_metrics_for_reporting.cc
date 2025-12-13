@@ -141,6 +141,11 @@ double WebPerformanceMetricsForReporting::FirstPaint() const {
       .InSecondsF();
 }
 
+base::TimeTicks WebPerformanceMetricsForReporting::FirstPaintAsMonotonicTime()
+    const {
+  return private_->timingForReporting()->FirstPaintAsMonotonicTimeForMetrics();
+}
+
 double WebPerformanceMetricsForReporting::FirstImagePaint() const {
   return base::Milliseconds(private_->timingForReporting()->FirstImagePaint())
       .InSecondsF();

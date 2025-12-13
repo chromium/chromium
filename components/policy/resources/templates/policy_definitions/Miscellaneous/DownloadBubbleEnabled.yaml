@@ -23,7 +23,7 @@ owners:
 schema:
   type: boolean
 supported_on:
-- 'chrome.*: 102-118'
-- 'chrome_os: 102-118'
+- chrome.*:102-118
+- chrome_os:102-118
 tags: []
 type: main

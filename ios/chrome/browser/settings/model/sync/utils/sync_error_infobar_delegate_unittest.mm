@@ -7,18 +7,17 @@
 #import <memory>
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
+#import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
-#import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
@@ -48,7 +47,7 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     profile_ = std::move(builder).Build();
-    presenter_ = OCMStrictProtocolMock(@protocol(SyncPresenter));
+    presenter_ = OCMStrictProtocolMock(@protocol(SyncPresenterCommands));
     web_state_.SetBrowserState(profile_.get());
     // Navigation manager is needed for infobar manager.
     web_state_.SetNavigationManager(
@@ -70,7 +69,7 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
     return InfoBarManagerImpl::FromWebState(&web_state_);
   }
 
-  id<SyncPresenter> presenter_;
+  id<SyncPresenterCommands> presenter_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   base::HistogramTester histogram_tester_;
@@ -84,18 +83,41 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceSignInNeedsUpdate) {
           Return(syncer::SyncService::UserActionableError::kSignInNeedsUpdate));
 
   OCMExpect([presenter_ showPrimaryAccountReauth]);
-  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
-                                   kSyncErrorInfoBarTrigger));
+  auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
+      profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
+
+  EXPECT_FALSE(delegate->Accept());
+}
+
+// Tests that the user sign-out while the infobar is displayed, check that
+// nothing occurs when accept is called.
+TEST_F(SyncErrorInfobarDelegateTest, SyncServiceSignInNeedsUpdateAndSignout) {
+  ON_CALL(*mock_sync_service(), GetUserActionableError())
+      .WillByDefault(
+          Return(syncer::SyncService::UserActionableError::kSignInNeedsUpdate));
+
+  auto delegate_unique_ptr = std::make_unique<SyncErrorInfoBarDelegate>(
+      profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
+
+  SyncErrorInfoBarDelegate* delegate = delegate_unique_ptr.get();
+  // The infobar must be set, otherwise the delegate believes the infobar is
+  // being stopped.
+  infobars::InfoBar infobar(std::move(delegate_unique_ptr));
+
+  ON_CALL(*mock_sync_service(), GetUserActionableError())
+      .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
+  delegate->OnStateChanged(mock_sync_service());
+
+  // The actual test here is that `presenter_` is not called on anything. It’s a
+  // strick mock, so any call on it would cause the test to fail.
 
   EXPECT_FALSE(delegate->Accept());
 }
 
 TEST_F(SyncErrorInfobarDelegateTest, SyncServiceUnrecoverableError) {
   OCMExpect([presenter_ showAccountSettings]);
-  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
-                                   kSyncErrorInfoBarTrigger));
+  auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
+      profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
   EXPECT_FALSE(delegate->Accept());
 }
@@ -106,9 +128,8 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceNeedsPassphrase) {
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
 
   OCMExpect([presenter_ showSyncPassphraseSettings]);
-  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
-                                   kSyncErrorInfoBarTrigger));
+  auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
+      profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
   EXPECT_FALSE(delegate->Accept());
 }
@@ -118,12 +139,12 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceNeedsTrustedVaultKey) {
       .WillByDefault(Return(syncer::SyncService::UserActionableError::
                                 kNeedsTrustedVaultKeyForEverything));
 
-  OCMExpect([presenter_
-      showTrustedVaultReauthForFetchKeysWithTrigger:
-          syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar]);
-  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
-                                   kSyncErrorInfoBarTrigger));
+  OCMExpect(
+      [presenter_ showTrustedVaultReauthForFetchKeysWithTrigger:
+                      trusted_vault ::TrustedVaultUserActionTriggerForUMA::
+                          kNewTabPageInfobar]);
+  auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
+      profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
   EXPECT_FALSE(delegate->Accept());
 }
@@ -135,12 +156,12 @@ TEST_F(SyncErrorInfobarDelegateTest,
           Return(syncer::SyncService::UserActionableError::
                      kTrustedVaultRecoverabilityDegradedForEverything));
 
-  OCMExpect([presenter_
-      showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-          syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar]);
-  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
-                                   kSyncErrorInfoBarTrigger));
+  OCMExpect(
+      [presenter_ showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+                      trusted_vault ::TrustedVaultUserActionTriggerForUMA::
+                          kNewTabPageInfobar]);
+  auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
+      profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
   EXPECT_FALSE(delegate->Accept());
 }
@@ -150,9 +171,8 @@ TEST_F(SyncErrorInfobarDelegateTest, LogsMetricOnDismissal) {
       .WillByDefault(Return(syncer::SyncService::UserActionableError::
                                 kNeedsTrustedVaultKeyForPasswords));
 
-  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
-                                   kSyncErrorInfoBarTrigger));
+  auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
+      profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
   delegate->InfoBarDismissed();
   constexpr int kSyncNeedsTrustedVaultKeyBucket = 6;
@@ -162,17 +182,12 @@ TEST_F(SyncErrorInfobarDelegateTest, LogsMetricOnDismissal) {
 }
 
 TEST_F(SyncErrorInfobarDelegateTest, InfobarNotCreatedBeforeTimeoutEnds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultInfobarImprovements);
-
   ON_CALL(*mock_sync_service(), GetUserActionableError())
       .WillByDefault(Return(syncer::SyncService::UserActionableError::
                                 kNeedsTrustedVaultKeyForPasswords));
 
-  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
-                                   kSyncErrorInfoBarTrigger));
+  auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
+      profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
   // Trigger recording last infobar dismissal time. Advance the time close to
   // the timeout, but still before. Double check it is not displayed again.
@@ -183,17 +198,12 @@ TEST_F(SyncErrorInfobarDelegateTest, InfobarNotCreatedBeforeTimeoutEnds) {
 }
 
 TEST_F(SyncErrorInfobarDelegateTest, InfobarCreatedAgainAfterTimeout) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultInfobarImprovements);
-
   ON_CALL(*mock_sync_service(), GetUserActionableError())
       .WillByDefault(Return(syncer::SyncService::UserActionableError::
                                 kNeedsTrustedVaultKeyForPasswords));
 
-  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
-                                   kSyncErrorInfoBarTrigger));
+  auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
+      profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
   // Trigger recording last infobar dismissal time. Advance the time after the
   // timeout is over and confirm it is created again.
@@ -206,17 +216,12 @@ TEST_F(SyncErrorInfobarDelegateTest, InfobarCreatedAgainAfterTimeout) {
 // Tests that after the infobar is ignored by the user and dismissed by timeout,
 // the separate timeout kicks in to not display infobar for a defined period.
 TEST_F(SyncErrorInfobarDelegateTest, InfobarTimeoutActiveAfterIgnoredByUser) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultInfobarImprovements);
-
   ON_CALL(*mock_sync_service(), GetUserActionableError())
       .WillByDefault(Return(syncer::SyncService::UserActionableError::
                                 kNeedsTrustedVaultKeyForPasswords));
 
-  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
-                                   kSyncErrorInfoBarTrigger));
+  auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
+      profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
   // Inform delegate that the infobar was dismissed through its timeout.
   delegate->InfoBarDismissedByTimeout();

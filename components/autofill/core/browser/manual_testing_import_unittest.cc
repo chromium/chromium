@@ -317,6 +317,20 @@ TEST_F(ManualTestingImportTest,
   EXPECT_FALSE(LoadProfilesFromFile(file_path).has_value());
 }
 
+// Regression test for crbug.com/439823380.
+TEST_F(ManualTestingImportTest, LoadProfilesFromFile_PhoneNumberTypes) {
+  base::FilePath file_path = GetFilePath();
+  base::WriteFile(file_path, R"({
+    "profiles" : [
+      {
+        "PHONE_HOME_CITY_AND_NUMBER" : "123"
+      }
+    ]
+  })");
+  // Expect that the import fails gracefully (rater than crashes).
+  EXPECT_FALSE(LoadProfilesFromFile(file_path).has_value());
+}
+
 class ManualTestingImportTesti18n : public ManualTestingImportTest {
  private:
   base::test::ScopedFeatureList features_{features::kAutofillUseINAddressModel};

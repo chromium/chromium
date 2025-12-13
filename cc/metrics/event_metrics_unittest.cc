@@ -287,6 +287,51 @@ TEST_F(EventMetricsTest, ScrollUpdateCreate) {
                   .is_null());
 }
 
+TEST_F(EventMetricsTest, ScrollUpdateCoalesceWith) {
+  // Arrange
+  base::TimeTicks now = base::TimeTicks::Now();
+  std::unique_ptr<ScrollUpdateEventMetrics> older_scroll_event_metric =
+      ScrollUpdateEventMetrics::Create(
+          ui::EventType::kGestureScrollUpdate,
+          ui::ScrollInputType::kTouchscreen,
+          /*is_inertial=*/false,
+          ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/444,
+          /*timestamp=*/now - base::Microseconds(100),
+          /*arrived_in_browser_main_timestamp=*/now - base::Microseconds(80),
+          /*blocking_touch_dispatched_to_renderer=*/now -
+              base::Microseconds(90),
+          TraceId(123));
+  older_scroll_event_metric->set_predicted_delta(333);
+  older_scroll_event_metric->set_caused_frame_update(false);
+  older_scroll_event_metric->set_did_scroll(false);
+  std::unique_ptr<ScrollUpdateEventMetrics> newer_scroll_event_metric =
+      ScrollUpdateEventMetrics::Create(
+          ui::EventType::kGestureScrollUpdate,
+          ui::ScrollInputType::kTouchscreen,
+          /*is_inertial=*/false,
+          ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/22,
+          /*timestamp=*/now - base::Microseconds(50),
+          /*arrived_in_browser_main_timestamp=*/now - base::Microseconds(30),
+          /*blocking_touch_dispatched_to_renderer=*/now -
+              base::Microseconds(40),
+          TraceId(456));
+  newer_scroll_event_metric->set_predicted_delta(11);
+  newer_scroll_event_metric->set_caused_frame_update(true);
+  newer_scroll_event_metric->set_did_scroll(true);
+
+  // Act
+  older_scroll_event_metric->CoalesceWith(*newer_scroll_event_metric);
+
+  // Assert
+  EXPECT_EQ(older_scroll_event_metric->last_timestamp(),
+            now - base::Microseconds(50));
+  EXPECT_EQ(older_scroll_event_metric->coalesced_event_count(), 2);
+  EXPECT_EQ(older_scroll_event_metric->delta(), 444 + 22);
+  EXPECT_EQ(older_scroll_event_metric->predicted_delta(), 333 + 11);
+  EXPECT_TRUE(older_scroll_event_metric->caused_frame_update());
+  EXPECT_TRUE(older_scroll_event_metric->did_scroll());
+}
+
 TEST_F(EventMetricsTest, ScrollUpdateCreateFromExisting) {
   // Arrange
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Microseconds(100);

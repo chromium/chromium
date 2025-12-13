@@ -38,15 +38,14 @@ class ArcAuthContext : public signin::IdentityManager::Observer {
   using PrepareCallback = base::OnceCallback<void(bool success)>;
   void Prepare(PrepareCallback callback);
 
-  // Creates and starts a request to fetch an access token for the given
-  // |scopes|. The caller owns the returned request. |callback| will be
-  // called with results if the returned request is not deleted.
+  // Creates and starts a request to fetch an access token. The caller owns the
+  // returned request. |callback| will be called with results if the returned
+  // request is not deleted.
   std::unique_ptr<signin::AccessTokenFetcher> CreateAccessTokenFetcher(
-      const std::string& consumer_name,
-      const signin::ScopeSet& scopes,
+      const signin::OAuthConsumerId consumer_id,
       signin::AccessTokenFetcher::TokenCallback callback);
 
-  void RemoveAccessTokenFromCache(const signin::ScopeSet& scopes,
+  void RemoveAccessTokenFromCache(const signin::OAuthConsumerId consumer_id,
                                   const std::string& access_token);
 
   // signin::IdentityManager::Observer:

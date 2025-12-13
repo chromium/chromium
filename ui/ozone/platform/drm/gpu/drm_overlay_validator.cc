@@ -39,7 +39,7 @@ scoped_refptr<DrmFramebuffer> GetBufferForPageFlipTest(
   uint32_t fourcc_format =
       overlay_surface.is_opaque
           ? GetFourCCFormatForOpaqueFramebuffer(overlay_surface.format)
-          : GetFourCCFormatFromBufferFormat(overlay_surface.format);
+          : GetFourCCFormatFromSharedImageFormat(overlay_surface.format);
   gfx::Size size = overlay_surface.buffer_size;
   bool is_0th_plane = !overlay_surface.plane_z_order;
   // Force the 0th plane (e.g. primary plane and fullscreen) with the modifiers

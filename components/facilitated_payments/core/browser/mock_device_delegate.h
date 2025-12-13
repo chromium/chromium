@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_MOCK_DEVICE_DELEGATE_H_
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_MOCK_DEVICE_DELEGATE_H_
 
+#include <string_view>
+
 #include "base/functional/callback.h"
 #include "components/facilitated_payments/core/browser/device_delegate.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
@@ -17,8 +19,11 @@ class MockDeviceDelegate : public DeviceDelegate {
   MockDeviceDelegate();
   ~MockDeviceDelegate() override;
 
-  MOCK_METHOD(bool, IsPixAccountLinkingSupported, (), (const, override));
-  MOCK_METHOD(void, LaunchPixAccountLinkingPage, (), (override));
+  MOCK_METHOD(WalletEligibilityForPixAccountLinking,
+              IsPixAccountLinkingSupported,
+              (),
+              (const, override));
+  MOCK_METHOD(void, LaunchPixAccountLinkingPage, (std::string), (override));
   MOCK_METHOD(void,
               SetOnReturnToChromeCallbackAndObserveAppState,
               (base::OnceClosure),
@@ -27,6 +32,13 @@ class MockDeviceDelegate : public DeviceDelegate {
               GetSupportedPaymentApps,
               (const GURL& payment_link_url),
               (override));
+  MOCK_METHOD(bool,
+              InvokePaymentApp,
+              (std::string_view package_name,
+               std::string_view activity_name,
+               const GURL& payment_link_url),
+              (override));
+  MOCK_METHOD(bool, IsPixSupportAvailableViaGboard, (), (const, override));
 };
 
 }  // namespace payments::facilitated

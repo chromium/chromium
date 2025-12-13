@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/common/page_load_timing.h"
+
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 
 namespace page_load_metrics {
 
@@ -21,7 +22,7 @@ mojom::PageLoadTimingPtr CreatePageLoadTiming() {
       std::vector<mojo::StructPtr<mojom::BackForwardCacheTiming>>{},
       std::optional<base::TimeDelta>(), std::optional<base::TimeDelta>(),
       std::optional<base::TimeDelta>(), std::optional<base::TimeDelta>(),
-      std::optional<base::TimeDelta>());
+      std::optional<base::TimeDelta>(), /*monotonic_paint_timing=*/nullptr);
 }
 
 mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming() {
@@ -31,9 +32,11 @@ mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming() {
 }
 
 mojom::SoftNavigationMetricsPtr CreateSoftNavigationMetrics() {
-  return mojom::SoftNavigationMetrics::New(
-      blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-      blink::kNavigationIdDefaultValue, CreateLargestContentfulPaintTiming());
+  auto timing = mojom::SoftNavigationMetrics::New();
+  timing->navigation_id = 0;
+  timing->start_time = base::Milliseconds(0);
+  timing->largest_contentful_paint = CreateLargestContentfulPaintTiming();
+  return timing;
 }
 
 bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {
@@ -46,8 +49,7 @@ bool IsEmpty(const page_load_metrics::mojom::InteractiveTiming& timing) {
 }
 
 bool IsEmpty(const page_load_metrics::mojom::InputTiming& timing) {
-  // TODO(sullivan): Adjust this to be based on max_event_durations
-  return !timing.num_interactions;
+  return timing.user_interaction_latencies.empty();
 }
 
 bool IsEmpty(const page_load_metrics::mojom::PaintTiming& timing) {
@@ -72,6 +74,27 @@ bool IsEmpty(const page_load_metrics::mojom::DomainLookupTiming& timing) {
   return !timing.domain_lookup_start && !timing.domain_lookup_end;
 }
 
+bool IsEmpty(const mojom::LcpResourceLoadTimings& timing) {
+  return !timing.discovery_time && !timing.load_start && !timing.load_end;
+}
+
+bool IsEmpty(const mojom::LargestContentfulPaintTiming& timing) {
+  return !timing.largest_image_paint && !timing.largest_text_paint &&
+         (!timing.resource_load_timings ||
+          IsEmpty(*timing.resource_load_timings));
+}
+
+bool IsEmpty(const mojom::MonotonicPaintTiming& timing) {
+  return !timing.first_paint && !timing.first_contentful_paint;
+}
+
+bool IsEmpty(const mojom::SoftNavigationMetrics& timing) {
+  return !timing.count && timing.start_time.is_zero() &&
+         !timing.navigation_id && !timing.same_document_metrics_token &&
+         (!timing.largest_contentful_paint ||
+          IsEmpty(*timing.largest_contentful_paint));
+}
+
 bool IsEmpty(const page_load_metrics::mojom::PageLoadTiming& timing) {
   return timing.navigation_start.is_null() && !timing.connect_start &&
          !timing.connect_end && !timing.response_start &&
@@ -88,7 +111,9 @@ bool IsEmpty(const page_load_metrics::mojom::PageLoadTiming& timing) {
          timing.back_forward_cache_timings.empty() &&
          !timing.user_timing_mark_fully_loaded &&
          !timing.user_timing_mark_fully_visible &&
-         !timing.user_timing_mark_interactive;
+         !timing.user_timing_mark_interactive &&
+         (!timing.monotonic_paint_timing ||
+          IsEmpty(*timing.monotonic_paint_timing));
 }
 
 void InitPageLoadTimingForTest(mojom::PageLoadTiming* timing) {
@@ -101,6 +126,7 @@ void InitPageLoadTimingForTest(mojom::PageLoadTiming* timing) {
   timing->paint_timing->experimental_largest_contentful_paint =
       CreateLargestContentfulPaintTiming();
   timing->parse_timing = mojom::ParseTiming::New();
+  timing->monotonic_paint_timing.reset();
   timing->back_forward_cache_timings.clear();
 }
 

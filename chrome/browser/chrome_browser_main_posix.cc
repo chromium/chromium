@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/chrome_browser_main_posix.h"
 
 #include <errno.h>
@@ -19,6 +14,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -155,8 +151,7 @@ int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
 
   // We need to accept SIGCHLD, even though our handler is a no-op because
   // otherwise we cannot wait on children. (According to POSIX 2001.)
-  struct sigaction action;
-  memset(&action, 0, sizeof(action));
+  struct sigaction action = {};
   action.sa_handler = SIGCHLDHandler;
   CHECK_EQ(0, sigaction(SIGCHLD, &action, nullptr));
 

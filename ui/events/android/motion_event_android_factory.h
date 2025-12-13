@@ -66,6 +66,9 @@ class EVENTS_EXPORT MotionEventAndroidFactory {
       const MotionEventAndroid::Pointer* const pointer1,
       bool is_latest_event_time_resampled);
 
+  // TODO(crbug.com/383307455): Cleanup `event_times` once events are default
+  // forwarded to Viz i.e. when `kForwardEventsSeenOnBrowserToViz` parameter is
+  // default enabled for InputOnViz.
   static std::unique_ptr<MotionEventAndroid> CreateFromNative(
       base::android::ScopedInputEvent input_event,
       float pix_to_dip,

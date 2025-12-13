@@ -17,14 +17,14 @@ import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 /**
  * Implemented in Chromium.
  *
- * Provides dependencies for xsurface at the surface level.
+ * <p>Provides dependencies for xsurface at the surface level.
  *
- * Should only be called on the UI thread.
+ * <p>Should only be called on the UI thread.
  */
 @NullMarked
 public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependencyProvider {
     /** User-set preference for when videos are eligible to autoplay. */
-    public enum AutoplayPreference {
+    enum AutoplayPreference {
         /** Autoplay is disabled. */
         AUTOPLAY_DISABLED,
         /** Autoplay only occurs on Wi-Fi. */
@@ -39,7 +39,7 @@ public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependen
     }
 
     /** Events that are triggered during the video playing. */
-    public @interface VideoPlayEvent {
+    @interface VideoPlayEvent {
         // Events applying muted autoplay only.
 
         /**
@@ -65,7 +65,7 @@ public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependen
     }
 
     /** Errors occurred during the video player initialization. */
-    public @interface VideoInitializationError {
+    @interface VideoInitializationError {
         int CLIENT_LIBRARY_UPDATE_REQUIRED = 0;
         int DEVELOPER_KEY_INVALID = 1;
         int ERROR_CONNECTING_TO_SERVICE = 2;
@@ -81,7 +81,7 @@ public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependen
     }
 
     /** Errors occurred during the video playing. */
-    public @interface VideoPlayError {
+    @interface VideoPlayError {
         int NOT_PLAYABLE = 0;
         int UNAUTHORIZED_OVERLAY = 1;
         int INTERNAL_ERROR = 2;

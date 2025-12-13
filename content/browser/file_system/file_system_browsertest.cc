@@ -51,7 +51,8 @@ class FileSystemBrowserTest : public ContentBrowserTest,
     VLOG(0) << "Navigating to URL and blocking.";
     NavigateToURLBlockUntilNavigationsComplete(browser(), test_url, 2);
     VLOG(0) << "Navigation done.";
-    std::string result = browser()->web_contents()->GetLastCommittedURL().ref();
+    std::string result =
+        browser()->web_contents()->GetLastCommittedURL().GetRef();
     if (result != "pass") {
       std::string js_result = EvalJs(browser(), "getLog()").ExtractString();
       FAIL() << "Failed: " << js_result;

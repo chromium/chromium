@@ -1,0 +1,122 @@
+Tests that deprecation issues are reported for shared storage worklet APIs.
+
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                }
+                sourceCodeLocation : {
+                    columnNumber : 8
+                    lineNumber : 0
+                    url :
+                }
+                type : SharedStorage
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                }
+                sourceCodeLocation : {
+                    columnNumber : 8
+                    lineNumber : 0
+                    url :
+                }
+                type : SharedStorage
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                }
+                sourceCodeLocation : {
+                    columnNumber : 8
+                    lineNumber : 0
+                    url :
+                }
+                type : SharedStorage
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                }
+                sourceCodeLocation : {
+                    columnNumber : 8
+                    lineNumber : 0
+                    url :
+                }
+                type : SharedStorage
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                }
+                sourceCodeLocation : {
+                    columnNumber : 8
+                    lineNumber : 0
+                    url :
+                }
+                type : SharedStorage
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                }
+                sourceCodeLocation : {
+                    columnNumber : 8
+                    lineNumber : 0
+                    url :
+                }
+                type : SharedStorage
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                }
+                sourceCodeLocation : {
+                    columnNumber : 8
+                    lineNumber : 0
+                    url :
+                }
+                type : SharedStorage
+            }
+        }
+    }
+}
+

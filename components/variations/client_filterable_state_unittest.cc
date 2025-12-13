@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
+namespace {
 
 TEST(ClientFilterableStateTest, IsEnterprise) {
   // Test, for non enterprise clients, is_enterprise_function_ is called once.
@@ -40,4 +41,5 @@ TEST(ClientFilterableStateTest, GoogleGroups) {
   EXPECT_EQ(client.GoogleGroups(), expected_google_groups);
 }
 
+}  // namespace
 }  // namespace variations

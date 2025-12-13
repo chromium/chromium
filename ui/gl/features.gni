@@ -10,7 +10,8 @@ declare_args() {
   use_static_angle = is_android || is_ios
 
   # Should Dawn support be compiled to back the WebGPU implementation?
-  # Also controls linking Dawn dependencies in such as SPIRV-Tools/SPIRV-Cross.
+  # Also controls linking Dawn dependencies in such as SPIRV-Tools or
+  # Vulkan Validation Layers.
   use_dawn = is_apple || is_win || is_chromeos || (is_linux && !is_castos) ||
              (is_android && target_cpu != "x86" && target_cpu != "x64") ||
              is_desktop_android
@@ -19,9 +20,7 @@ declare_args() {
   # Independent of use_dawn, which controls whether Dawn is used in Chromium.
   build_dawn_tests = is_mac || is_win || is_linux || is_chromeos || is_android
 
-  # desktop android devices exclusively use angle and thus should not use
-  # the validating command decoder
-  enable_validating_command_decoder = is_android && !is_desktop_android
+  enable_validating_command_decoder = is_android
 }
 
 declare_args() {

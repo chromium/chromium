@@ -5,46 +5,49 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_WIN_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_WIN_H_
 
+#include <array>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/win/scoped_gdi_object.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/windows_caption_button.h"
 #include "chrome/browser/ui/views/tab_icon_view.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 class BrowserView;
 class BrowserCaptionButtonContainer;
 
-class BrowserFrameViewWin : public BrowserNonClientFrameView,
-                            public TabIconViewModel {
-  METADATA_HEADER(BrowserFrameViewWin, BrowserNonClientFrameView)
+class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
+  METADATA_HEADER(BrowserFrameViewWin, BrowserFrameView)
 
  public:
-  // Constructs a non-client view for an BrowserFrame.
-  BrowserFrameViewWin(BrowserFrame* frame, BrowserView* browser_view);
+  // Constructs a non-client view for an BrowserWidget.
+  BrowserFrameViewWin(BrowserWidget* widget, BrowserView* browser_view);
   BrowserFrameViewWin(const BrowserFrameViewWin&) = delete;
   BrowserFrameViewWin& operator=(const BrowserFrameViewWin&) = delete;
   ~BrowserFrameViewWin() override;
 
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
+  BrowserLayoutParams GetBrowserLayoutParams() const override;
   bool CaptionButtonsOnLeadingEdge() const override;
   gfx::Rect GetBoundsForTabStripRegion(
       const gfx::Size& tabstrip_minimum_size) const override;
   gfx::Rect GetBoundsForWebAppFrameToolbar(
       const gfx::Size& toolbar_preferred_size) const override;
   int GetTopInset(bool restored) const override;
-  bool HasVisibleBackgroundTabShapes(
-      BrowserFrameActiveState active_state) const override;
   SkColor GetCaptionColor(BrowserFrameActiveState active_state) const override;
   void UpdateThrobber(bool running) override;
   gfx::Size GetMinimumSize() const override;
   void WindowControlsOverlayEnabledChanged() override;
+  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
+                               views::Label& window_title_label) const override;
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
@@ -80,15 +83,21 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   const TabIconView* window_icon_for_testing() const { return window_icon_; }
 
  protected:
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
+  BoundsAndMargins GetCaptionButtonBounds() const override;
   void PaintAsActiveChanged() override;
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
   void Layout(PassKey) override;
+  void AddedToWidget() override;
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override;
 
  private:
   friend class BrowserCaptionButtonContainer;
+
+  class CaptionButtonMetrics;
 
   // Describes the type of titlebar that a window might have; used to query
   // whether specific elements may be present.
@@ -185,6 +194,9 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
           base::BindRepeating(&BrowserFrameViewWin::TabletModeChanged,
                               base::Unretained(this)));
 
+  // Tracks information about caption button location, size, etc.
+  std::unique_ptr<CaptionButtonMetrics> caption_button_metrics_;
+
   // Whether or not the window throbber is currently animating.
   bool throbber_running_ = false;
 
@@ -192,8 +204,22 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   int throbber_frame_ = 0;
 
   static const int kThrobberIconCount = 24;
-  static HICON throbber_icons_[kThrobberIconCount];
+  static std::array<HICON, kThrobberIconCount> throbber_icons_;
   static void InitThrobberIcons();
+};
+
+// Specialization of OpaqueBrowserFrameView for Windows.
+class OpaqueBrowserFrameViewWin : public OpaqueBrowserFrameView {
+  METADATA_HEADER(OpaqueBrowserFrameViewWin, OpaqueBrowserFrameView)
+ public:
+  OpaqueBrowserFrameViewWin(BrowserWidget* widget,
+                            BrowserView* browser_view,
+                            OpaqueBrowserFrameViewLayout* layout);
+  ~OpaqueBrowserFrameViewWin() override;
+
+  // OpaqueBrowserFrameView:
+  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
+                               views::Label& window_title_label) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_WIN_H_

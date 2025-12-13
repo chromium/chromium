@@ -51,11 +51,6 @@
 
 namespace gfx {
 struct GpuMemoryBufferHandle;
-class ClientNativePixmapFactory;
-}
-
-namespace gpu {
-class LegacyGpuMemoryBufferForVideo;
 }
 
 namespace media {
@@ -98,8 +93,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     STORAGE_DMABUFS = 5,  // Each plane is stored into a DmaBuf.
 #endif
-    STORAGE_GPU_MEMORY_BUFFER = 6,
-    STORAGE_MAX = STORAGE_GPU_MEMORY_BUFFER,
+    STORAGE_MAPPABLE_SHARED_IMAGE = 6,
+    STORAGE_MAX = STORAGE_MAPPABLE_SHARED_IMAGE,
   };
 
   // CB to be called on the mailbox backing this frame when the frame is
@@ -119,28 +114,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
    protected:
     virtual ~SyncTokenClient() = default;
-  };
-
-  // This class will allow VF clients to be able to get CPU mapped memory and
-  // other metadata either from GMB or MappableSI backing the VF. Note that this
-  // class will go away once GMB is removed. Clients can directly called a new
-  // method like VideoFrame::MapSharedImage() to get a
-  // ClientSharedImage::ScopedMapping object.
-  class MEDIA_EXPORT ScopedMapping {
-   public:
-    virtual ~ScopedMapping() = default;
-
-    // Returns a pointer to the beginning of the plane.
-    virtual uint8_t* Memory(uint32_t plane_index) = 0;
-
-    // Returns a span pointing to the plane's memory.
-    virtual base::span<uint8_t> GetMemoryAsSpan(uint32_t plane_index) = 0;
-
-    // Returns plane stride.
-    virtual size_t Stride(uint32_t plane_index) = 0;
-
-    // Returns the size of the buffer.
-    virtual gfx::Size Size() = 0;
   };
 
   enum class FrameControlType {
@@ -280,14 +253,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const VideoFrameLayout& layout,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      const uint8_t* data,
-      size_t data_size,
-      base::TimeDelta timestamp);
-
-  static scoped_refptr<VideoFrame> WrapExternalDataWithLayout(
-      const VideoFrameLayout& layout,
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
       base::span<const uint8_t> data,
       base::TimeDelta timestamp);
 
@@ -304,17 +269,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       base::span<const uint8_t> y_data,
       base::span<const uint8_t> u_data,
       base::span<const uint8_t> v_data,
-      base::TimeDelta timestamp);
-
-  // Wraps external YUV data with VideoFrameLayout. The returned VideoFrame does
-  // not own the data passed in.
-  static scoped_refptr<VideoFrame> WrapExternalYuvDataWithLayout(
-      const VideoFrameLayout& layout,
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      const uint8_t* y_data,
-      const uint8_t* u_data,
-      const uint8_t* v_data,
       base::TimeDelta timestamp);
 
   static scoped_refptr<VideoFrame> WrapExternalYuvDataWithLayout(
@@ -355,20 +309,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       base::span<const uint8_t> y_data,
       base::span<const uint8_t> uv_data,
       base::TimeDelta timestamp);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Wraps |handle|. For use in contexts where the GPUMemoryBufferHandle has no
-  // SharedImage associated with it.
-  static scoped_refptr<VideoFrame> WrapExternalGpuMemoryBufferHandle(
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
-      gfx::GpuMemoryBufferHandle handle,
-      const gfx::Size& coded_size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      base::TimeDelta timestamp);
-#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Wraps provided dmabufs
@@ -478,12 +418,16 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   static size_t Columns(size_t plane, VideoPixelFormat format, int width);
 
   // Given a crypto/hash Hasher, hash in the pixels from a single VideoFrame.
+  // If `visible_data_only` is true only the frame's visible area will be
+  // hashed, if false then the entire coded frame area will be hashed.
   static void UpdateHashWithFrameForTesting(crypto::hash::Hasher& hasher,
-                                            const VideoFrame& frame);
+                                            const VideoFrame& frame,
+                                            bool visible_data_only = true);
 
   // Convenience wrapper around UpdateHashWithFrameForTesting(): produces the
   // SHA-256 hash of a single video frame's pixels, as a lowercase hex string.
-  static std::string HexHashOfFrameForTesting(const VideoFrame& frame);
+  static std::string HexHashOfFrameForTesting(const VideoFrame& frame,
+                                              bool visible_data_only = true);
 
   // Returns true if |frame| is accessible mapped in the VideoFrame memory
   // space.
@@ -530,10 +474,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns true if the video frame uses ClientSharedImage.
   bool HasSharedImage() const;
 
-  // Returns true if the |storage_type_| is STOAGE_GPU_MEMORY_BUFFER which
-  // indicates that the VideoFrame is backed by GMB or a MappableSharedImage
-  // when its enabled.
-  bool HasMappableGpuBuffer() const;
+  // Returns true if the VideoFrame is backed by a MappableSharedImage.
+  bool HasMappableSharedImage() const;
 
   // Returns true if the GpuMemoruBuffer backing the video frame is native
   // buffer and not shared memory buffer. A native GPU memory buffer is a
@@ -541,33 +483,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // memory which allows for hardware acceleration.
   bool HasNativeGpuMemoryBuffer() const;
 
-  // Gets the ScopedMapping object which clients can use to access the CPU
-  // visible memory and other metadata for the gpu buffer backing this
-  // VideoFrame(via GpuMemoryBuffer or MappableSI).
-  // TODO(crbug.com/40263579): Note that once MappableSI is fully launched and
-  // enabled for VideoFrame, rename this method to MapSharedImage(). It can
-  // then directly return ClientSharedImage::ScopedMapping object instead.
-  std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage() const;
-
-  // Gets the ScopedMapping object which clients can use to access the CPU
-  // visible memory and other metadata for the gpu buffer backing this
-  // VideoFrame(via GpuMemoryBuffer or MappableSI).
-  // This isn't guaranteed to be always async.
-  // If 'AsyncMappingIsNonBlocking()' is 'false', this will run the callback
-  // in the current sequence. Otherwise, the callback will be invoked in the
-  // GpuMemoryThread.
-  // Note: the frame must not be destroyed before the result callback is
-  // executed.
-  // TODO(crbug.com/40263579): Note that once MappableSI is fully launched and
-  // enabled for VideoFrame, rename this method to MapSharedImageAsync(). It can
-  // then directly return ClientSharedImage::ScopedMapping object instead.
-  void MapGMBOrSharedImageAsync(
-      base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
-          result_cb) const;
-
-  // Returns true if the underlying SharedImage or GMB can be mapped truly
+  // Returns true if the underlying SharedImage can be mapped truly
   // asynchronously: with an unblocking request to the GPU process.
-  // Only call if `HasMappableGpuBuffer() == true`.
+  // Only call if `HasMappableSharedImage() == true`.
   bool AsyncMappingIsNonBlocking() const;
 
   // Gets the GpuMemoryBufferHandle backing the VideoFrame.
@@ -590,11 +508,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Apple's Rec709) with sRGB, for compatibility with existing behavior.
   gfx::ColorSpace CompatRGBColorSpace() const;
 
-  const std::optional<gfx::HDRMetadata>& hdr_metadata() const {
-    return hdr_metadata_;
-  }
+  const gfx::HDRMetadata& hdr_metadata() const { return hdr_metadata_; }
 
-  void set_hdr_metadata(const std::optional<gfx::HDRMetadata>& hdr_metadata) {
+  void set_hdr_metadata(const gfx::HDRMetadata& hdr_metadata) {
     hdr_metadata_ = hdr_metadata;
   }
 
@@ -627,6 +543,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   int row_bytes(size_t plane) const;
   int rows(size_t plane) const;
 
+  // Similar to row_bytes() and rows(), but instead refers to the visible area.
+  int GetVisibleRowBytes(size_t plane) const;
+  int GetVisibleRows(size_t plane) const;
+
   // Returns the number of columns for a given plane.
   int columns(size_t plane) const;
 
@@ -647,16 +567,22 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     return data_[plane];
   }
 
+  base::span<uint8_t> writable_span(size_t plane) {
+    // TODO(crbug.com/40265179): Also CHECK that the storage type isn't
+    // STORAGE_UNOWNED_MEMORY once non-compliant usages are fixed.
+    CHECK_NE(storage_type_, STORAGE_SHMEM);
+    auto const_span = data_span(plane);
+    // SAFETY: We take data() and size() from another span, which supposedly
+    // refers to a valid range in memory.
+    return UNSAFE_BUFFERS(
+        base::span(const_cast<uint8_t*>(const_span.data()), const_span.size()));
+  }
+
   uint8_t* writable_data(size_t plane) {
     // TODO(crbug.com/40265179): Also CHECK that the storage type isn't
     // STORAGE_UNOWNED_MEMORY once non-compliant usages are fixed.
     CHECK_NE(storage_type_, STORAGE_SHMEM);
     return const_cast<uint8_t*>(data(plane));
-  }
-
-  bool is_mappable_si_enabled() const {
-    return wrapped_frame_ ? wrapped_frame_->is_mappable_si_enabled()
-                          : is_mappable_si_enabled_;
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -771,18 +697,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns the number of bits per channel.
   size_t BitDepth() const;
 
-  // Tests can use this method to mark a VF as non-texturable. This is required
-  // when tests creates a VF with a mappable shared image but does not want to
-  // render it. In those cases only looking for ::HasSharedImage() does not
-  // provide enough info to make a decision if VF is texturable or not since VF
-  // will always have a shared image for MappableSI case.
-  void DisableTexturingForTesting() {
-    CHECK(is_mappable_si_enabled_);
-    is_texturable_for_testing_ = false;
-  }
-
-  bool IsTexturableForTesting() const { return is_texturable_for_testing_; }
-
  protected:
   friend class base::RefCountedThreadSafe<VideoFrame>;
   virtual ~VideoFrame();
@@ -818,30 +732,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       base::TimeDelta timestamp);
-
-  static scoped_refptr<VideoFrame> CreateFrameForMappableSIInternal(
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      scoped_refptr<gpu::ClientSharedImage> shared_image,
-      ReleaseMailboxCB mailbox_holder_release_cb,
-      base::TimeDelta timestamp);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  static scoped_refptr<VideoFrame> CreateFrameForGpuMemoryBufferInternal(
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      std::unique_ptr<gpu::LegacyGpuMemoryBufferForVideo> gpu_memory_buffer,
-      base::TimeDelta timestamp);
-
-  void MakeScopedMappingForGpuMemoryBuffer(
-      base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
-          result_cb,
-      bool success) const;
-#endif
-  void WrapScopedSharedImageMapping(
-      base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
-          result_cb,
-      std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping) const;
 
   // Return the alignment for the whole frame, calculated as the max of the
   // alignment for each individual plane.
@@ -918,15 +808,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   base::ReadOnlySharedMemoryRegion owned_shm_region_;
   base::ReadOnlySharedMemoryMapping owned_shm_mapping_;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // GPU memory buffer, if this frame is STORAGE_GPU_MEMORY_BUFFER.
-  std::unique_ptr<gpu::LegacyGpuMemoryBufferForVideo> gpu_memory_buffer_;
-#endif
-
-  // This field will be set by clients when using MappableSI instead of
-  // GpuMemoryBuffers. Clients will set this flag while creating a VideoFrame.
-  bool is_mappable_si_enabled_ = false;
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Dmabufs for the frame, used when storage is STORAGE_DMABUFS. Size is either
   // equal or less than the number of planes of the frame. If it is less, then
@@ -949,7 +830,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   const ID unique_id_;
 
   gfx::ColorSpace color_space_;
-  std::optional<gfx::HDRMetadata> hdr_metadata_;
+  gfx::HDRMetadata hdr_metadata_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Sampler conversion information which is used in vulkan context for android.
@@ -958,17 +839,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Allocation which makes up |data_| planes for self-allocated frames.
   std::unique_ptr<uint8_t, base::UncheckedFreeDeleter> private_data_;
-
-  // Only used by tests.
-  // Some tests creates VideoFrame with a Mappable shared image which it does
-  // not intend to render. Tests generally uses ::IsSharedImage() to identify
-  // if a frame is texture backed and can be rendered. This is not enough when
-  // MappableSI is used since a Mappable shared image can be created by tests
-  // only for mapping the underlying buffer to CPU visible memory for
-  // read/write and not necessarily for rendering. Tests which intends to do so
-  // must explicitly mark the VideoFrame as non texturable via
-  // ::DisableTexturingForTesting().
-  bool is_texturable_for_testing_ = true;
 };
 
 }  // namespace media

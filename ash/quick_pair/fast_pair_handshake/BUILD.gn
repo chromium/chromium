@@ -48,8 +48,8 @@ source_set("fast_pair_handshake") {
     "//base",
     "//chromeos/ash/services/quick_pair",
     "//chromeos/ash/services/quick_pair/public/cpp",
-    "//components/cross_device/logging:logging",
-    "//crypto:crypto",
+    "//components/cross_device/logging",
+    "//crypto",
     "//device/bluetooth",
     "//third_party/protobuf:protobuf_lite",
   ]
@@ -100,7 +100,7 @@ source_set("unit_tests") {
   deps = [
     ":fast_pair_handshake",
     ":test_support",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/quick_pair/common",
     "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/repository:test_support",

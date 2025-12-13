@@ -14,5 +14,5 @@ declare_args() {
   # Google-internal list of isolated origins even in a developer build.  Setting
   # this variable explicitly to true will cause your build to fail if the
   # internal file is missing.
-  use_internal_isolated_origins = is_chrome_branded && is_android
+  use_internal_isolated_origins = enable_src_internal && is_android
 }

@@ -10,8 +10,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/handoff_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_coordinator_delegate.h"
@@ -36,7 +34,6 @@
 #import "ui/base/device_form_factor.h"
 
 @interface PrivacyCoordinator () <
-    ClearBrowsingDataCoordinatorDelegate,
     IncognitoLockCoordinatorDelegate,
     PrivacyGuideMainCoordinatorDelegate,
     PrivacyNavigationCommands,
@@ -53,18 +50,12 @@
 // Coordinator for Incognito lock settings.
 @property(nonatomic, strong) IncognitoLockCoordinator* incognitoLockCoordinator;
 
-// TODO(crbug.com/335387869): Delete this coordinator when Quick Delete is fully
-// launched. The coordinator for the clear browsing data screen.
-@property(nonatomic, strong)
-    ClearBrowsingDataCoordinator* clearBrowsingDataCoordinator;
-
 // Coordinator for Lockdown Mode settings.
 @property(nonatomic, strong) LockdownModeCoordinator* lockdownModeCoordinator;
 
 // Coordinator for the Privacy Guide screen.
 @property(nonatomic, strong)
     PrivacyGuideMainCoordinator* privacyGuideMainCoordinator;
-
 @end
 
 @implementation PrivacyCoordinator {
@@ -114,8 +105,6 @@
 
 - (void)stop {
   _stopped = YES;
-  [self.clearBrowsingDataCoordinator stop];
-  self.clearBrowsingDataCoordinator = nil;
   [self stopLockdownModeCoordinator];
   [self stopSafeBrowsingCoordinator];
   [self stopIncognitoLockCoordinator];
@@ -155,19 +144,11 @@
       browsing_data::DeleteBrowsingDataDialogAction::
           kPrivacyEntryPointSelected);
 
-  if (IsIosQuickDeleteEnabled()) {
-    id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), QuickDeleteCommands);
-    [quickDeleteHandler
-        showQuickDeleteAndCanPerformTabsClosureAnimation:
-            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET];
-  } else {
-    self.clearBrowsingDataCoordinator = [[ClearBrowsingDataCoordinator alloc]
-        initWithBaseNavigationController:self.baseNavigationController
-                                 browser:self.browser];
-    self.clearBrowsingDataCoordinator.delegate = self;
-    [self.clearBrowsingDataCoordinator start];
-  }
+  id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), QuickDeleteCommands);
+  [quickDeleteHandler
+      showQuickDeleteAndCanPerformRadialWipeAnimation:
+          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET];
 }
 
 - (void)showSafeBrowsing {
@@ -205,16 +186,6 @@
   self.privacyGuideMainCoordinator.delegate = self;
   [self.privacyGuideMainCoordinator start];
 }
-
-#pragma mark - ClearBrowsingDataCoordinatorDelegate
-
-- (void)clearBrowsingDataCoordinatorViewControllerWasRemoved:
-    (ClearBrowsingDataCoordinator*)coordinator {
-  DCHECK_EQ(self.clearBrowsingDataCoordinator, coordinator);
-  [self.clearBrowsingDataCoordinator stop];
-  self.clearBrowsingDataCoordinator = nil;
-}
-
 #pragma mark - SafeBrowsingCoordinatorDelegate
 
 - (void)privacySafeBrowsingCoordinatorDidRemove:

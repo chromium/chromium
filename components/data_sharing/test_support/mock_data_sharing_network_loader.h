@@ -28,15 +28,8 @@ class MockDataSharingNetworkLoader : public DataSharingNetworkLoader {
       delete;
 
   // DataSharingNetworkLoader Impl.
-  MOCK_METHOD5(LoadUrl,
+  MOCK_METHOD4(LoadUrl,
                void(const GURL&,
-                    const std::vector<std::string>&,
-                    const std::string&,
-                    const net::NetworkTrafficAnnotationTag&,
-                    NetworkLoaderCallback));
-  MOCK_METHOD5(LoadUrl,
-               void(const GURL&,
-                    const std::vector<std::string>&,
                     const std::string&,
                     DataSharingRequestType,
                     NetworkLoaderCallback));

@@ -10,12 +10,14 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
@@ -42,7 +44,8 @@ public class ImageDescriptionsSettings extends PreferenceFragmentCompat
     private boolean mIsEnabled;
     private boolean mOnlyOnWifi;
     private Profile mProfile;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -122,4 +125,9 @@ public class ImageDescriptionsSettings extends PreferenceFragmentCompat
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    ImageDescriptionsSettings.class.getName(), R.xml.image_descriptions_preference);
 }

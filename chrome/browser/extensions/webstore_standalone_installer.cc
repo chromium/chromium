@@ -15,9 +15,7 @@
 #include "base/version.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/install_approval.h"
-#include "chrome/browser/extensions/install_tracker.h"
-#include "chrome/browser/extensions/scoped_active_install.h"
+#include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/id_util.h"
@@ -27,9 +25,15 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/install_approval.h"
+#include "extensions/browser/install_tracker.h"
+#include "extensions/browser/scoped_active_install.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::WebContents;
 
@@ -103,7 +107,8 @@ void WebstoreStandaloneInstaller::AbortInstall() {
 bool WebstoreStandaloneInstaller::EnsureUniqueInstall(
     webstore_install::Result* reason,
     std::string* error) {
-  InstallTracker* tracker = InstallTracker::Get(profile_);
+  InstallTracker* tracker =
+      InstallTrackerFactory::GetForBrowserContext(profile_);
   DCHECK(tracker);
 
   const ActiveInstallData* existing_install_data =
@@ -147,7 +152,7 @@ WebstoreStandaloneInstaller::GetLocalizedExtensionForDisplay() {
     if (!manifest_.has_value())
       return nullptr;
 
-    std::string error;
+    std::u16string error;
     localized_extension_for_display_ =
         ExtensionInstallPrompt::GetLocalizedExtensionForDisplay(
             *manifest_, Extension::REQUIRE_KEY | Extension::FROM_WEBSTORE, id_,
@@ -359,7 +364,8 @@ void WebstoreStandaloneInstaller::ShowInstallUI() {
 
   install_ui_ = CreateInstallUI();
   install_ui_->ShowDialog(
-      base::BindOnce(&WebstoreStandaloneInstaller::OnInstallPromptDone, this),
+      base::BindOnce(&WebstoreStandaloneInstaller::OnInstallPromptDone,
+                     weak_ptr_factory_.GetWeakPtr()),
       localized_extension.get(), &icon_, std::move(install_prompt_),
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
 }

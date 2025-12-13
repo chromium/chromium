@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -22,6 +23,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -189,14 +191,9 @@ void LeakDetectionRequest::LookupSingleLeak(
     resource_request->headers.SetHeader(kAuthHeaderApiKey, api_key.value());
   }
 
-  // TODO: crbug.com/399358532 - clean up kill switch once change is in stable
-  // release for a month.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSetLeakCheckRequestCriticality)) {
-    resource_request->headers.SetHeader(
-        kRequestCriticalityHeader,
-        InitiatorToRequestCriticality(payload.initiator));
-  }
+  resource_request->headers.SetHeader(
+      kRequestCriticalityHeader,
+      InitiatorToRequestCriticality(payload.initiator));
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
@@ -212,7 +209,7 @@ void LeakDetectionRequest::LookupSingleLeak(
 
 void LeakDetectionRequest::OnLookupSingleLeakResponse(
     LookupSingleLeakCallback callback,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   if (!response) {
     RecordLookupResponseResult(LeakLookupResponseResult::kFetchError);
     DLOG(ERROR) << "Empty Lookup Single Leak Response";

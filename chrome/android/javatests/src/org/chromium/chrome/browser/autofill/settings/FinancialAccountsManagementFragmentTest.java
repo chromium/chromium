@@ -36,6 +36,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
@@ -67,10 +68,8 @@ import java.util.concurrent.TimeoutException;
 
 /** Instrumentation tests for FinancialAccountsManagementFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS,
-    ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS
-})
+@EnableFeatures({ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS})
+@DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
 @Batch(Batch.PER_CLASS)
 public class FinancialAccountsManagementFragmentTest {
     @Rule public final AutofillTestRule rule = new AutofillTestRule();
@@ -516,6 +515,7 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testActivityTriggered_noArgs_emptyTitle() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -524,6 +524,7 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testActivityTriggered_titlePresentInArgs_titleSet() {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putString(FinancialAccountsManagementFragment.TITLE_KEY, "Title");
@@ -535,6 +536,7 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testActivityTriggered_titleNotPresentInArgs_emptyTitle() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
 

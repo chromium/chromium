@@ -75,7 +75,7 @@ export class AlbumListElement extends WithPersonalizationStore {
     this.updateList(
         /*propertyPath=*/ 'albumsForDisplay_',
         /*identityGetter=*/
-        (album: AmbientModeAlbum) => album.id,
+        (album: AmbientModeAlbum) => album.id + `${album.numberOfPhotos}`,
         /*newList=*/ albums,
         /*identityBasedUpdate=*/ true,
     );

@@ -25,15 +25,15 @@
     [CallWith=Document] constructor();
     readonly attribute Node commonAncestorContainer;
 
-    [RaisesException] void setStart(Node node, unsigned long offset);
-    [RaisesException] void setEnd(Node node, unsigned long offset);
-    [RaisesException] void setStartBefore(Node node);
-    [RaisesException] void setStartAfter(Node node);
-    [RaisesException] void setEndBefore(Node node);
-    [RaisesException] void setEndAfter(Node node);
-    void collapse(optional boolean toStart = false);
-    [RaisesException] void selectNode(Node node);
-    [RaisesException] void selectNodeContents(Node node);
+    [RaisesException] undefined setStart(Node node, unsigned long offset);
+    [RaisesException] undefined setEnd(Node node, unsigned long offset);
+    [RaisesException] undefined setStartBefore(Node node);
+    [RaisesException] undefined setStartAfter(Node node);
+    [RaisesException] undefined setEndBefore(Node node);
+    [RaisesException] undefined setEndAfter(Node node);
+    undefined collapse(optional boolean toStart = false);
+    [RaisesException] undefined selectNode(Node node);
+    [RaisesException] undefined selectNodeContents(Node node);
 
     const unsigned short START_TO_START = 0;
     const unsigned short START_TO_END = 1;
@@ -41,14 +41,14 @@
     const unsigned short END_TO_START = 3;
     [RaisesException] short compareBoundaryPoints(unsigned short how, Range sourceRange);
 
-    [RaisesException, CEReactions] void deleteContents();
+    [RaisesException, CEReactions] undefined deleteContents();
     [NewObject, RaisesException, CEReactions] DocumentFragment extractContents();
     [NewObject, RaisesException, CEReactions] DocumentFragment cloneContents();
-    [RaisesException, CEReactions] void insertNode(Node node);
-    [RaisesException, CEReactions] void surroundContents(Node newParent);
+    [RaisesException, CEReactions] undefined insertNode(Node node);
+    [RaisesException, CEReactions] undefined surroundContents(Node newParent);
 
     [NewObject] Range cloneRange();
-    [MeasureAs=RangeDetach] void detach();
+    [MeasureAs=RangeDetach] undefined detach();
 
     [RaisesException] boolean isPointInRange(Node node, unsigned long offset);
     [RaisesException] short comparePoint(Node node, unsigned long offset);

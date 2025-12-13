@@ -7,6 +7,8 @@
 #pragma allow_unsafe_libc_calls
 #endif
 
+#include "sandbox/linux/tests/unit_tests.h"
+
 #include <fcntl.h>
 #include <poll.h>
 #include <signal.h>
@@ -22,12 +24,12 @@
 
 #include <tuple>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/debug/leak_annotations.h"
-#include "base/files/file_util.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/pattern.h"
 #include "build/build_config.h"
-#include "sandbox/linux/tests/unit_tests.h"
 
 // Specifically, PNaCl toolchain does not have this flag.
 #if !defined(POLLRDHUP)
@@ -61,6 +63,16 @@ int CountThreads() {
     return -1;
   const int num_threads = task_stat.st_nlink - 2;
   return num_threads;
+}
+
+// Helper for DeathSEGVMessage and DeathSEGVMessagePattern.
+// Checks that the process died with SIGSEGV.
+void CheckDeathBySEGV(int status, const std::string& details) {
+  const bool subprocess_got_sigsegv =
+      WIFSIGNALED(status) && (SIGSEGV == WTERMSIG(status));
+
+  ASSERT_TRUE(subprocess_got_sigsegv)
+      << "Exit status: " << status << " " << details;
 }
 
 }  // namespace
@@ -299,15 +311,21 @@ void UnitTests::DeathSEGVMessage(int status,
                                  const void* aux) {
   std::string details(TestFailedMessage(msg));
   const char* expected_msg = static_cast<const char*>(aux);
-
-  const bool subprocess_got_sigsegv =
-      WIFSIGNALED(status) && (SIGSEGV == WTERMSIG(status));
-
-  ASSERT_TRUE(subprocess_got_sigsegv) << "Exit status: " << status
-                                      << " " << details;
-
+  CheckDeathBySEGV(status, details);
   bool subprocess_exited_without_matching_message =
       !base::Contains(msg, expected_msg);
+  EXPECT_FALSE(subprocess_exited_without_matching_message) << details;
+}
+
+void UnitTests::DeathSEGVMessagePattern(int status,
+                                        const std::string& msg,
+                                        const void* aux) {
+  std::string details(TestFailedMessage(msg));
+  const char* expected_msg = static_cast<const char*>(aux);
+  CheckDeathBySEGV(status, details);
+  std::string pattern(expected_msg);
+  bool subprocess_exited_without_matching_message =
+      !base::MatchPattern(msg, pattern);
   EXPECT_FALSE(subprocess_exited_without_matching_message) << details;
 }
 

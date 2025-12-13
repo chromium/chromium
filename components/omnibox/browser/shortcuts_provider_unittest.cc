@@ -296,8 +296,7 @@ void ShortcutsProviderTest::SetUp() {
   ASSERT_TRUE(client_->GetShortcutsBackend());
   provider_ = base::MakeRefCounted<ShortcutsProvider>(client_.get());
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
-                                       shortcut_test_db,
-                                       std::size(shortcut_test_db));
+                                       shortcut_test_db);
 }
 
 void ShortcutsProviderTest::TearDown() {
@@ -525,7 +524,7 @@ TEST_F(ShortcutsProviderTest, SimpleSingleMatchKeyword) {
                               "https://google.com/q=search", false, true),
   };
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
-                                       shortcuts, std::size(shortcuts));
+                                       shortcuts);
 
   const auto test = [&](const std::u16string text, bool prefer_keyword,
                         std::string expected_url, bool allowed_to_be_default,
@@ -595,7 +594,7 @@ TEST_F(ShortcutsProviderTest, MultiMatch) {
       MakeShortcutData("prefix-long-shortcut-text-length", 2),
   };
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
-                                       shortcut_data, std::size(shortcut_data));
+                                       shortcut_data);
 
   AutocompleteInput input(u"prefix", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
@@ -690,8 +689,7 @@ TEST_F(ShortcutsProviderTest, DeleteMatch) {
   scoped_refptr<ShortcutsBackend> backend = client_->GetShortcutsBackend();
   size_t original_shortcuts_count = backend->shortcuts_map().size();
 
-  PopulateShortcutsBackendWithTestData(backend, shortcuts_to_test_delete,
-                                       std::size(shortcuts_to_test_delete));
+  PopulateShortcutsBackendWithTestData(backend, shortcuts_to_test_delete);
 
   EXPECT_EQ(original_shortcuts_count + 4, backend->shortcuts_map().size());
   EXPECT_FALSE(backend->shortcuts_map().end() ==
@@ -753,7 +751,7 @@ TEST_F(ShortcutsProviderTest, DoAutocompleteAggregateShortcuts) {
       MakeShortcutData("zebra8", "https://wikipedia.org/zebra-d", 1, 10),
   };
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
-                                       shortcut_data, std::size(shortcut_data));
+                                       shortcut_data);
 
   {
     SCOPED_TRACE("Input 'wi'");
@@ -866,7 +864,7 @@ TEST_F(ShortcutsProviderTest, DoAutocompleteWithScoringSignals) {
       MakeShortcutData("wilson7", "https://wikipedia.org/wilson7-other", 2, 2),
   };
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
-                                       shortcut_data, std::size(shortcut_data));
+                                       shortcut_data);
 
   // When multiple shortcuts with the same destination URL match the input,
   // they should be scored together (i.e. their visit counts summed, the most
@@ -1002,7 +1000,7 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
   };
 
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
-                                       shortcut_data, std::size(shortcut_data));
+                                       shortcut_data);
 
   {
     // Searches shouldn't be boosted since the appropriate param is not set.
@@ -1132,7 +1130,7 @@ TEST_F(ShortcutsProviderTest, HistoryClusterSuggestions) {
       create_test_data("text_cluster_3", true),
   };
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
-                                       test_data, std::size(test_data));
+                                       test_data);
 
   AutocompleteInput input(u"tex", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());

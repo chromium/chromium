@@ -41,11 +41,10 @@ FakeServerHttpPostProvider::FakeServerHttpPostProvider(
 
 FakeServerHttpPostProvider::~FakeServerHttpPostProvider() = default;
 
-void FakeServerHttpPostProvider::SetExtraRequestHeaders(const char* headers) {
+void FakeServerHttpPostProvider::SetExtraRequestHeaders(
+    const net::HttpRequestHeaders& headers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(pvalenzuela): Add assertions on this value.
-  extra_request_headers_.assign(headers);
+  extra_request_headers_ = headers;
 }
 
 void FakeServerHttpPostProvider::SetURL(const GURL& url) {
@@ -156,8 +155,14 @@ void FakeServerHttpPostProvider::HandleCommandOnFakeServerThread(
     std::string* response) {
   DCHECK(fake_server_task_runner_->RunsTasksInCurrentSequence());
 
-  if (!fake_server_ || aborted_) {
-    // Command explicitly aborted or server destroyed.
+  if (!fake_server_) {
+    // Server destroyed.
+    Abort();
+  }
+
+  if (aborted_) {
+    // Command explicitly aborted. |synchronous_post_completion_| has already
+    // been signalled by the FakeServerHttpPostProvider::Abort call.
     return;
   }
 

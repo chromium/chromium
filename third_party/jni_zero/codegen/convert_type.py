@@ -93,9 +93,9 @@ def from_jni_expression(sb: common.StringBuilder,
     jtype = 'jobject'
 
   if release_ref:
-    rvalue = f'jni_zero::ScopedJavaLocalRef<{jtype}>(env, {rvalue})'
+    rvalue = f'jni_zero::ScopedJavaLocalRef<{jtype}>::Adopt(env, {rvalue})'
   else:
-    rvalue = f'jni_zero::JavaParamRef<{jtype}>(env, {rvalue})'
+    rvalue = f'jni_zero::JavaRef<{jtype}>::CreateLeaky(env, {rvalue})'
 
   if java_type.is_collection():
     sb(f'jni_zero::FromJniCollection<{T}>')

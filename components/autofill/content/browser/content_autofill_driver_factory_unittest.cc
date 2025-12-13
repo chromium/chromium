@@ -45,7 +45,6 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AtLeast;
 using ::testing::Between;
-using ::testing::DoAll;
 using ::testing::Each;
 using ::testing::InSequence;
 using ::testing::Property;
@@ -542,7 +541,7 @@ class ContentAutofillDriverFactoryTestLifecycleState
 #define EXPECT_DRIVER_CREATED(driver_ptr_ptr)                                  \
   EXPECT_CALL(observer(), OnContentAutofillDriverCreated(Ref(factory()),       \
                                                          HasState(kInactive))) \
-      .WillOnce(DoAll(SaveArgPtr<1>((driver_ptr_ptr))))
+      .WillOnce(SaveArgPtr<1>((driver_ptr_ptr)))
 #define EXPECT_LIFECYCLE_CHANGE(driver_matcher, from, to)                  \
   EXPECT_CALL(observer(),                                                  \
               OnContentAutofillDriverStateChanged(                         \

@@ -255,6 +255,8 @@ class DiceWebSigninInterceptionBubblePixelTest
     : public DialogBrowserTest,
       public testing::WithParamInterface<TestParam> {
  public:
+  DiceWebSigninInterceptionBubblePixelTest() = default;
+
   // DialogBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam().use_dark_theme) {
@@ -332,41 +334,46 @@ class DiceWebSigninInterceptionBubblePixelTest
 
   // Generates bubble parameters for testing.
   WebSigninInterceptor::Delegate::BubbleParameters GetTestBubbleParameters() {
-    AccountInfo intercepted_account;
-    intercepted_account.account_id =
-        CoreAccountId::FromGaiaId(GaiaId("intercepted_ID"));
-    intercepted_account.given_name = GivenNameFromNameFormat();
-    intercepted_account.full_name = intercepted_account.given_name + " Sample";
-    intercepted_account.email = "sam.sample@intercepted.com";
     bool is_managed_intercepted_account =
         GetParam().intercepted_account_management_state ==
         ManagedAccountState::kEnterpriseAccount;
-    intercepted_account.hosted_domain = is_managed_intercepted_account
-                                            ? "intercepted.com"
-                                            : kNoHostedDomainFound;
-    AccountCapabilitiesTestMutator mutator(&intercepted_account.capabilities);
-    mutator.set_is_subject_to_enterprise_policies(
+    AccountCapabilities capabilities;
+    AccountCapabilitiesTestMutator mutator(&capabilities);
+    mutator.set_is_subject_to_enterprise_features(
         is_managed_intercepted_account);
     if (GetParam().intercepted_account_management_state ==
         ManagedAccountState::kSupervisedAccount) {
       mutator.set_is_subject_to_parental_controls(true);
     }
 
-    AccountInfo primary_account;
-    primary_account.account_id =
-        CoreAccountId::FromGaiaId(GaiaId("primary_ID"));
-    primary_account.given_name = "Tessa";
-    primary_account.full_name = "Tessa Tester";
-    primary_account.email = "tessa.tester@primary.com";
-    primary_account.hosted_domain =
-        GetParam().primary_account_management_state ==
-                ManagedAccountState::kEnterpriseAccount
-            ? "primary.com"
-            : kNoHostedDomainFound;
-    AccountCapabilitiesTestMutator(&primary_account.capabilities)
-        .set_is_subject_to_enterprise_policies(
+    AccountInfo intercepted_account =
+        AccountInfo::Builder(GaiaId("intercepted_ID"),
+                             "sam.sample@intercepted.com")
+            .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("intercepted_ID")))
+            .SetGivenName(GivenNameFromNameFormat())
+            .SetFullName(GivenNameFromNameFormat() + " Sample")
+            .SetHostedDomain(is_managed_intercepted_account
+                                 ? "intercepted.com"
+                                 : kNoHostedDomainFound)
+            .UpdateAccountCapabilitiesWith(capabilities)
+            .Build();
+
+    AccountCapabilities primary_capabilities;
+    AccountCapabilitiesTestMutator(&primary_capabilities)
+        .set_is_subject_to_enterprise_features(
             GetParam().primary_account_management_state ==
             ManagedAccountState::kEnterpriseAccount);
+    AccountInfo primary_account =
+        AccountInfo::Builder(GaiaId("primary_ID"), "tessa.tester@primary.com")
+            .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("primary_ID")))
+            .SetGivenName("Tessa")
+            .SetFullName("Tessa Tester")
+            .SetHostedDomain(GetParam().primary_account_management_state ==
+                                     ManagedAccountState::kEnterpriseAccount
+                                 ? "primary.com"
+                                 : kNoHostedDomainFound)
+            .UpdateAccountCapabilitiesWith(primary_capabilities)
+            .Build();
     bool show_managed_disclaimer =
         (GetParam().intercepted_account_management_state ==
              ManagedAccountState::kEnterpriseAccount ||

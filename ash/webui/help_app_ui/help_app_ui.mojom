@@ -26,6 +26,7 @@ struct DeviceInfo {
 /**
  * These values correspond to the ActionType enum found at
  * https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/scalable_iph/scalable_iph_constants.h;drc=ea198b54e3f6b0cfdd6bacbb01c2307fd1797b63;l=10.
+ * TODO(crbug.com/385152937): Remove this and `TriggerWelcomeTipCallToAction`.
  */
 enum ActionTypeId {
   INVALID = 0,
@@ -86,6 +87,7 @@ interface PageHandler {
   ShowParentalControls();
 
   // Triggers the call-to-action associated with the given action type id.
+  // TODO(crbug.com/385152937): Remove this since this is no-op.
   TriggerWelcomeTipCallToAction(ActionTypeId action_type_id);
 
   // Returns true if the Help App Launcher Search feature is enabled.

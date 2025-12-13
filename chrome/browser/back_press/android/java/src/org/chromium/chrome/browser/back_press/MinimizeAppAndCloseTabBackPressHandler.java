@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.back_press;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Pair;
@@ -14,11 +16,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -45,18 +48,18 @@ public class MinimizeAppAndCloseTabBackPressHandler
 
     // A conditionally enabled supplier, whose value is false only when minimizing app without
     // closing tabs in the 'system back' arm.
-    private final ObservableSupplierImpl<Boolean> mSystemBackPressSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mSystemBackPressSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     // An always-enabled supplier since this handler is the final step of back press handling.
-    private final ObservableSupplierImpl<Boolean> mNonSystemBackPressSupplier =
-            new ObservableSupplierImpl<>();
+    private final NonNullObservableSupplier<Boolean> mNonSystemBackPressSupplier =
+            ObservableSuppliers.alwaysTrue();
     private final Predicate<Tab> mBackShouldCloseTab;
     private final Predicate<Tab> mMinimizationShouldCloseTab;
     private final Callback<@Nullable Tab> mSendToBackground;
     private final Callback<Tab> mCloseTabUponMinimization;
-    private final Callback<Tab> mOnTabChanged = this::onTabChanged;
-    private final ObservableSupplier<Tab> mActivityTabSupplier;
+    private final Callback<@Nullable Tab> mOnTabChanged = this::onTabChanged;
+    private final NullableObservableSupplier<Tab> mActivityTabSupplier;
     private final boolean mUseSystemBack;
 
     private static @Nullable Integer sVersionForTesting;
@@ -97,7 +100,7 @@ public class MinimizeAppAndCloseTabBackPressHandler
         boolean isAtLeastB =
                 (sVersionForTesting == null ? VERSION.SDK_INT : sVersionForTesting)
                         >= VERSION_CODES.BAKLAVA;
-        return isAtLeastB && ChromeFeatureList.sAllowTabClosingUponMinimization.isEnabled();
+        return isAtLeastB;
     }
 
     /**
@@ -142,7 +145,7 @@ public class MinimizeAppAndCloseTabBackPressHandler
      * @param sendToBackground Callback when app should be sent to background on back press.
      */
     public MinimizeAppAndCloseTabBackPressHandler(
-            ObservableSupplier<Tab> activityTabSupplier,
+            NullableObservableSupplier<Tab> activityTabSupplier,
             Predicate<Tab> backShouldCloseTab,
             Predicate<Tab> minimizationShouldCloseTab,
             Callback<Tab> closeTabUponMinimization,
@@ -153,7 +156,6 @@ public class MinimizeAppAndCloseTabBackPressHandler
         mSendToBackground = sendToBackground;
         mActivityTabSupplier = activityTabSupplier;
         mUseSystemBack = shouldUseSystemBack();
-        mNonSystemBackPressSupplier.set(true);
 
         mActivityTabSupplier.addObserver(mOnTabChanged);
         // Init system back arm, using the current tab to determine whether back press should be
@@ -194,6 +196,7 @@ public class MinimizeAppAndCloseTabBackPressHandler
             assert shouldCloseTab || !mUseSystemBack;
             mSendToBackground.onResult(shouldCloseTab ? currentTab : null);
         } else { // shouldCloseTab is always true if minimizeApp is false.
+            assumeNonNull(currentTab);
             record(MinimizeAppAndCloseTabType.CLOSE_TAB);
             recordTabClosureType(TabClosureType.WITHOUT_MINIMIZATION);
             WebContents webContents = currentTab.getWebContents();
@@ -210,6 +213,11 @@ public class MinimizeAppAndCloseTabBackPressHandler
             mCloseTabUponMinimization.onResult(currentTab);
             recordTabClosureType(TabClosureType.OS_MINIMIZATION);
         }
+    }
+
+    @Override
+    public boolean invokeBackActionOnEscape() {
+        return false;
     }
 
     private Pair<Boolean, Boolean> determineBackPressAction(@Nullable Tab currentTab) {
@@ -232,7 +240,7 @@ public class MinimizeAppAndCloseTabBackPressHandler
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mUseSystemBack ? mSystemBackPressSupplier : mNonSystemBackPressSupplier;
     }
 
@@ -241,7 +249,7 @@ public class MinimizeAppAndCloseTabBackPressHandler
         mActivityTabSupplier.removeObserver(mOnTabChanged);
     }
 
-    private void onTabChanged(Tab tab) {
+    private void onTabChanged(@Nullable Tab tab) {
         if (supportCloseTabUponMinimization()) {
             Pair<Boolean, Boolean> backPressAction = determineBackPressAction(tab);
             boolean minimizeApp = backPressAction.first;

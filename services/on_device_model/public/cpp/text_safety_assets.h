@@ -8,8 +8,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 

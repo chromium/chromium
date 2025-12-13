@@ -70,7 +70,7 @@ component("gcm") {
   ]
   deps = [
     "//base",
-    "//mojo/public/cpp/system:system",
+    "//mojo/public/cpp/system",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -110,7 +110,7 @@ static_library("test_support") {
   public_deps = [ ":gcm" ]
   deps = [
     "//base",
-    "//mojo/public/cpp/system:system",
+    "//mojo/public/cpp/system",
     "//net",
     "//net:test_support",
     "//testing/gtest",
@@ -168,7 +168,7 @@ test("gcm_unit_tests") {
     "//google_apis",
     "//google_apis:run_all_unittests",
     "//google_apis:test_support",
-    "//mojo/public/cpp/system:system",
+    "//mojo/public/cpp/system",
     "//net",
     "//net:test_support",
     "//services/network:network_service",

@@ -91,7 +91,7 @@ KeywordProvider::KeywordProvider(AutocompleteProviderClient* client,
   AddListener(listener);
 }
 
-std::u16string KeywordProvider::GetKeywordForText(
+const TemplateURL* KeywordProvider::GetTemplateUrlForText(
     const std::u16string& text,
     TemplateURLService* template_url_service) const {
   // We want the Search button to persist as long as the input begins with a
@@ -101,22 +101,22 @@ std::u16string KeywordProvider::GetKeywordForText(
       AutocompleteInput::SplitKeywordFromInput(text, true, nullptr));
 
   if (keyword.empty())
-    return u"";
+    return nullptr;
 
   // Don't provide a keyword if it doesn't support replacement.
   const TemplateURL* const template_url =
       template_url_service->GetTemplateURLForKeyword(keyword);
   if (!template_url || !template_url->SupportsReplacement(
                            template_url_service->search_terms_data())) {
-    return std::u16string();
+    return nullptr;
   }
 
   // Don't provide a keyword for inactive/disabled extension keywords.
-  if ((template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) &&
+  if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION &&
       extensions_delegate_ &&
       !extensions_delegate_->IsEnabledExtension(
           template_url->GetExtensionId())) {
-    return std::u16string();
+    return nullptr;
   }
 
   // Don't provide a keyword for inactive search engines (if the active search
@@ -125,7 +125,7 @@ std::u16string KeywordProvider::GetKeywordForText(
   if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION &&
       template_url->prepopulate_id() == 0 &&
       template_url->is_active() != TemplateURLData::ActiveStatus::kTrue) {
-    return std::u16string();
+    return nullptr;
   }
 
   // The built-in history keyword mode is disabled in incognito mode. Don't
@@ -133,10 +133,10 @@ std::u16string KeywordProvider::GetKeywordForText(
   if (client_->IsOffTheRecord() &&
       template_url->starter_pack_id() ==
           template_url_starter_pack_data::kHistory) {
-    return std::u16string();
+    return nullptr;
   }
 
-  return keyword;
+  return template_url;
 }
 
 AutocompleteMatch KeywordProvider::CreateVerbatimMatch(

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_monster.h"
@@ -139,7 +140,7 @@ class CookieURLHelper {
   explicit CookieURLHelper(const std::string& url_string);
 
   const std::string& domain() const { return domain_and_registry_; }
-  std::string host() const { return url_.host(); }
+  std::string host() const { return url_.GetHost(); }
   const GURL& url() const { return url_; }
   const GURL AppendPath(const std::string& path) const;
 

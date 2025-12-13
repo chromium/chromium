@@ -53,6 +53,12 @@ found in the LICENSE file.
       <div id="devices-incognito" hidden>
         Remote debugging is not available in Incognito mode.
       </div>
+      <div id="devices-stale" hidden>
+        Device information is stale.
+      </div>
+      <div id="devices-not-responding" hidden>
+        Device discovery is not responding. Please disconnect unresponsive devices.
+      </div>
       <div id="devices-list"></div>
     </div>
     <div id="pages">
@@ -78,6 +84,28 @@ found in the LICENSE file.
     <div id="shared-storage-worklets">
       <div class="content-header">Shared storage worklets</div>
       <div id="shared-storage-worklets-list" class="list"></div>
+    </div>
+    <div id="remote-debugging">
+      <div class="content-header">Remote debugging</div>
+      <div class="settings-bar">
+        <label class="full-width">
+          <input id="remote-debugging-enabled" type="checkbox" disabled>
+          <span>Allow remote debugging for this browser instance</span>
+        </label>
+      </div>
+      <p class="remote-debugging-text">
+        Turning on this setting allows external apps to request full control of
+        this browser. This includes read access to your saved data, cookies and
+        site data, and the ability to navigate to any URL.
+      </p>
+      <p class="remote-debugging-text">
+        Only web developers should turn on this feature, and only use it with
+        trusted apps.
+      </p>
+      <div id="remote-debugging-address-container" class="remote-debugging-text" hidden>
+        <span>Server running at: </span>
+        <code id="remote-debugging-address"></code>
+      </div>
     </div>
     <div id="native-ui" hidden>
       <div class="content-header">Native UI</div>

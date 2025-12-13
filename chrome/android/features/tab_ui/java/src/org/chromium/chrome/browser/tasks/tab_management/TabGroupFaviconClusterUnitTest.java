@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -28,6 +31,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.ui.base.TestActivity;
@@ -118,5 +122,28 @@ public class TabGroupFaviconClusterUnitTest {
         TabGroupFaviconCluster.createBitmapFrom(
                 savedTabGroup, mActivity, mFaviconResolver, mBitmapCallback);
         verify(mFaviconResolver, times(3)).resolve(any(), any());
+    }
+
+    @Test
+    public void testSetContainmentEnabled() {
+        TabGroupFaviconCluster cluster =
+                (TabGroupFaviconCluster)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.tab_group_favicon_cluster, null, false);
+        cluster.setContainmentEnabled(true);
+        ColorStateList tint = cluster.getBackgroundTintList();
+        assertEquals(SemanticColorUtils.getColorSurfaceBright(mActivity), tint.getDefaultColor());
+    }
+
+    @Test
+    public void testSetContainmentDefault() {
+        TabGroupFaviconCluster cluster =
+                (TabGroupFaviconCluster)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.tab_group_favicon_cluster, null, false);
+        cluster.setContainmentEnabled(false);
+        ColorStateList tint = cluster.getBackgroundTintList();
+        assertEquals(
+                SemanticColorUtils.getColorSurfaceContainer(mActivity), tint.getDefaultColor());
     }
 }

@@ -40,8 +40,8 @@ source_set("bluetooth_internals") {
 
   if (is_android) {
     deps += [
-      "//components/permissions:permissions",
-      "//ui/android:android",
+      "//components/permissions",
+      "//ui/android",
     ]
   }
 }

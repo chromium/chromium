@@ -12,8 +12,6 @@
 
 namespace content_settings {
 
-class PartitionKey;
-
 class ObservableProvider : public ProviderInterface {
  public:
   ObservableProvider();
@@ -26,8 +24,7 @@ class ObservableProvider : public ProviderInterface {
   // See `content_settings::Observer` for details.
   void NotifyObservers(const ContentSettingsPattern& primary_pattern,
                        const ContentSettingsPattern& secondary_pattern,
-                       ContentSettingsType content_type,
-                       const PartitionKey* partition_key);
+                       ContentSettingsType content_type);
   void RemoveAllObservers();
   bool CalledOnValidThread();
 

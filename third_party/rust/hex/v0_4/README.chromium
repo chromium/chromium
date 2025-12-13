@@ -2,7 +2,7 @@ Name: hex
 URL: https://crates.io/crates/hex
 Version: 0.4.3
 Revision: b2b4370b5bf021b98ee7adc92233e8de3f2de792
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/hex-v0_4/LICENSE-APACHE
 Shipped: no

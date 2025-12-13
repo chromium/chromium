@@ -19,7 +19,7 @@ void DocumentPictureInPictureNavigationThrottle::MaybeCreateAndAdd(
   // We prevent the main frame of document picture-in-picture windows from doing
   // cross-document navigation.
   NavigationHandle& handle = registry.GetNavigationHandle();
-  if (!handle.IsInMainFrame() || handle.IsSameDocument() ||
+  if (!handle.IsInOutermostMainFrame() || handle.IsSameDocument() ||
       !handle.GetWebContents() ||
       !handle.GetWebContents()->GetPictureInPictureOptions().has_value()) {
     return;
@@ -46,12 +46,12 @@ DocumentPictureInPictureNavigationThrottle::
 
 NavigationThrottle::ThrottleCheckResult
 DocumentPictureInPictureNavigationThrottle::WillStartRequest() {
-  return ClosePiPWindowAndCancelNavigation();
+  return CancelNavigationAndMayClosePiPWindow();
 }
 
 NavigationThrottle::ThrottleCheckResult
 DocumentPictureInPictureNavigationThrottle::WillCommitWithoutUrlLoader() {
-  return ClosePiPWindowAndCancelNavigation();
+  return CancelNavigationAndMayClosePiPWindow();
 }
 
 const char* DocumentPictureInPictureNavigationThrottle::GetNameForLogging() {
@@ -60,13 +60,18 @@ const char* DocumentPictureInPictureNavigationThrottle::GetNameForLogging() {
 
 NavigationThrottle::ThrottleCheckResult
 DocumentPictureInPictureNavigationThrottle::
-    ClosePiPWindowAndCancelNavigation() {
-  // We are not allowed to synchronously close the WebContents here, so we must
-  // do it asynchronously.
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebContents::ClosePage,
-                     navigation_handle()->GetWebContents()->GetWeakPtr()));
+    CancelNavigationAndMayClosePiPWindow() {
+  // Close the PiP window only if this navigation happens in the primary page.
+  // Otherwise, just cancel the navigation, that might be for prerendering or
+  // some other non-primary pages.
+  if (navigation_handle()->IsInPrimaryMainFrame()) {
+    // We are not allowed to synchronously close the WebContents here, so we
+    // must do it asynchronously.
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebContents::ClosePage,
+                       navigation_handle()->GetWebContents()->GetWeakPtr()));
+  }
 
   return CANCEL_AND_IGNORE;
 }

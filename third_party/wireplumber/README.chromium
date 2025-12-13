@@ -1,0 +1,26 @@
+Name: Wireplumber
+URL: https://gitlab.freedesktop.org/pipewire/wireplumber
+Version: 0.5.11
+Revision: 3a785e502642ddb1e91d953e587c7b06444e0b51
+Update Mechanism: Manual (https://crbug.com/446536453)
+License: MIT
+License File: LICENSE
+Security Critical: no
+Shipped: no
+
+Description:
+WirePlumber is a modular session / policy manager for PipeWire and a GObject-based high-level
+library that wraps PipeWire's API, providing convenience for writing the daemon's
+modules as well as external tools for managing PipeWire. The WirePlumber daemon implements the
+session & policy management service. It follows a modular design, having plugins that implement
+the actual management functionality.
+
+This contains a 3pp description used to build a CIPD package of the above code.
+This package is used only by WebRTC to test PipeWire code.
+
+Local Modifications:
+A patch removing use of gettid() used only for debug purpose to avoid a build failure on undefined
+reference.
+
+This package will be only pulled in to CIPD and not into chromium/src.
+

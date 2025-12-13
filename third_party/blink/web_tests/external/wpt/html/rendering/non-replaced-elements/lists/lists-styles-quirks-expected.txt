@@ -1,21 +1,11 @@
 This is a testharness.js-based test.
-Found 115 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] <li> - text-align
-  assert_equals: expected "start" but got "left"
-[FAIL] <li> (in <dir>) - text-align
-  assert_equals: expected "start" but got "left"
+Found 82 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <menu>\n   <li> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li> (in <menu>) - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol>\n   <li> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li> (in <ol>) - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ul>\n   <li> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li> (in <ul>) - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <menu> (in <dir>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul> (in <dir>) - counter-reset
@@ -100,135 +90,79 @@ Found 115 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="1"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="1"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol type="a" class="type-a"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="a" class="type-a"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="a" class="type-a"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol type="A" class="type-A"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="A" class="type-A"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="A" class="type-A"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol type="i" class="type-i"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="i" class="type-i"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="i" class="type-i"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol type="I" class="type-I"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="I" class="type-I"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="I" class="type-I"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol type="none"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="none"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="none"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol type="NONE"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="NONE"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="NONE"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol type="disc"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="disc"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="disc"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol type="DISC"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="DISC"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="DISC"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol type="circle"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="circle"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="circle"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol type="CIRCLE"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="CIRCLE"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="CIRCLE"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol type="square"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="square"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="square"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol type="SQUARE"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="SQUARE"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li type="SQUARE"> - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol>\n    <li value="10"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li value="10"> (in <ol>) - counter-set
   assert_equals: expected "list-item 10" but got "none"
-[FAIL] <li value="10"> (in <ol>) - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <li value="10xyz"> (in <ol>) - counter-set
   assert_equals: expected "list-item 10" but got "none"
-[FAIL] <li value="10xyz"> (in <ol>) - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <li value="10e10"> (in <ol>) - counter-set
   assert_equals: expected "list-item 10" but got "none"
-[FAIL] <li value="10e10"> (in <ol>) - text-align
-  assert_equals: expected "start" but got "left"
-[FAIL] <li value="xyz"> (in <ol>) - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol start="10"><li> - counter-reset
   assert_equals: expected "list-item 9" but got "none"
-[FAIL] <li> (in <ol start="10">) - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol start="10xyz"><li> - counter-reset
   assert_equals: expected "list-item 9" but got "none"
-[FAIL] <li> (in <ol start="10xyz">) - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol start="10e10"><li> - counter-reset
   assert_equals: expected "list-item 9" but got "none"
-[FAIL] <li> (in <ol start="10e10">) - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol start="xyz"><li> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li> (in <ol start="xyz">) - text-align
-  assert_equals: expected "start" but got "left"
 [FAIL] <ol reversed=""><li> - counter-reset
-  assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li> (in <ol reversed="">) - text-align
-  assert_equals: expected "start" but got "left"
+  assert_equals: expected "reversed(list-item)" but got "none"
 [FAIL] <ol reversed="" start="20"><li> - counter-reset
-  assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li> (in <ol reversed="" start="20">) - text-align
-  assert_equals: expected "start" but got "left"
+  assert_equals: expected "reversed(list-item) 21" but got "none"
 [FAIL] <ol reversed="" start="20xyz"><li> - counter-reset
-  assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li> (in <ol reversed="" start="20xyz">) - text-align
-  assert_equals: expected "start" but got "left"
+  assert_equals: expected "reversed(list-item) 21" but got "none"
 [FAIL] <ol reversed="" start="20e10"><li> - counter-reset
-  assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li> (in <ol reversed="" start="20e10">) - text-align
-  assert_equals: expected "start" but got "left"
+  assert_equals: expected "reversed(list-item) 21" but got "none"
 [FAIL] <ol reversed="" start="xyz"><li> - counter-reset
-  assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li> (in <ol reversed="" start="xyz">) - text-align
-  assert_equals: expected "start" but got "left"
-[FAIL] <li dir="ltr"> (in <ul dir="rtl">) - text-align
-  assert_equals: expected "start" but got "right"
-[FAIL] <li dir="rtl"> (in <ul dir="ltr">) - text-align
-  assert_equals: expected "start" but got "left"
+  assert_equals: expected "reversed(list-item)" but got "none"
 Harness: the test ran to completion.
 

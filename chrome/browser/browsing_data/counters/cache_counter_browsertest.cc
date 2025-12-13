@@ -93,7 +93,7 @@ class CacheCounterTest : public InProcessBrowserTest {
             ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess()
             .get(),
-        simple_loader_helper.GetCallbackDeprecated());
+        simple_loader_helper.GetCallback());
     simple_loader_helper.WaitForCallback();
   }
 

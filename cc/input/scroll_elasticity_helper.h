@@ -5,7 +5,9 @@
 #ifndef CC_INPUT_SCROLL_ELASTICITY_HELPER_H_
 #define CC_INPUT_SCROLL_ELASTICITY_HELPER_H_
 
+#include "base/containers/flat_set.h"
 #include "cc/cc_export.h"
+#include "cc/paint/element_id.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -52,24 +54,32 @@ class CC_EXPORT ScrollElasticityHelper {
 
   virtual ~ScrollElasticityHelper() {}
 
-  virtual bool IsUserScrollableHorizontal() const = 0;
-  virtual bool IsUserScrollableVertical() const = 0;
+  virtual bool IsUserScrollableHorizontal(ElementId) const = 0;
+  virtual bool IsUserScrollableVertical(ElementId) const = 0;
 
-  // The bounds of the root scroller.
-  virtual gfx::Size ScrollBounds() const = 0;
+  // The bounds of the scroller.
+  virtual gfx::Size ScrollBounds(ElementId) const = 0;
 
   // The amount that the view is stretched past the normal allowable bounds.
-  virtual gfx::Vector2dF StretchAmount() const = 0;
-  virtual void SetStretchAmount(const gfx::Vector2dF& stretch_amount) = 0;
+  virtual gfx::Vector2dF StretchAmount(ElementId) const = 0;
+  virtual void SetStretchAmount(ElementId,
+                                const gfx::Vector2dF& stretch_amount) = 0;
+  virtual void ResetStretchAmounts() = 0;
+  // Applies stretch amounts to the pending transform tree.
+  virtual void ApplyStretchAmountsToPending() = 0;
+  // Applies stretch amounts to the active transform tree.
+  virtual void ApplyStretchAmountsToActive() = 0;
 
-  // Functions for the scrolling of the root scroll layer.
-  virtual gfx::PointF ScrollOffset() const = 0;
-  virtual gfx::PointF MaxScrollOffset() const = 0;
-  virtual void ScrollBy(const gfx::Vector2dF& delta) = 0;
+  // Functions for the scrolling of the scroll layer.
+  virtual gfx::PointF ScrollOffset(ElementId) const = 0;
+  virtual gfx::PointF MaxScrollOffset(ElementId) const = 0;
+  virtual void ScrollBy(ElementId, const gfx::Vector2dF& delta) = 0;
 
   // Requests that another frame happens for the controller to continue ticking
   // animations.
   virtual void RequestOneBeginFrame() = 0;
+
+  virtual void AnimationFinished(ElementId) = 0;
 };
 
 }  // namespace cc

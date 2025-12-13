@@ -10,7 +10,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-win-archive",
               "builder_group": "chromium.win",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -34,7 +33,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-win-archive",
               "builder_group": "chromium.win",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -72,7 +70,8 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Win10 Tests x64 (dbg)/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Win10 Tests x64 (dbg)/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {
@@ -95,5 +94,11 @@
     ]
   },
   "builder_group": "chromium.win",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "chromium"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }

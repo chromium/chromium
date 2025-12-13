@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"

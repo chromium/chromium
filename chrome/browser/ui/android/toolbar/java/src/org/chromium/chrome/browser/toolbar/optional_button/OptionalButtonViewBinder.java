@@ -20,6 +20,10 @@ class OptionalButtonViewBinder {
         } else if (OptionalButtonProperties.TRANSITION_STARTED_CALLBACK.equals(propertyKey)) {
             view.setTransitionStartedCallback(
                     model.get(OptionalButtonProperties.TRANSITION_STARTED_CALLBACK));
+        } else if (OptionalButtonProperties.ON_BEFORE_WIDTH_TRANSITION_CALLBACK.equals(
+                propertyKey)) {
+            view.setOnBeforeWidthTransitionCallback(
+                    model.get(OptionalButtonProperties.ON_BEFORE_WIDTH_TRANSITION_CALLBACK));
         } else if (OptionalButtonProperties.TRANSITION_FINISHED_CALLBACK.equals(propertyKey)) {
             view.setTransitionFinishedCallback(
                     model.get(OptionalButtonProperties.TRANSITION_FINISHED_CALLBACK));

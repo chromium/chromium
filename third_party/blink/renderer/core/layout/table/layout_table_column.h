@@ -39,16 +39,14 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
   // Clears needs-layout for child columns too.
   void ClearNeedsLayoutForChildren() const;
 
-  PhysicalSize Size() const override;
+  PhysicalSize StitchedSize() const override;
 
-  PhysicalOffset PhysicalLocation(const LayoutBox*) const override;
+  PhysicalOffset PhysicalLocation() const override;
   PhysicalRect BoundingBoxRelativeToFirstFragment() const override;
 
   void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
                                const LayoutBoxModelObject* ancestor,
                                MapCoordinatesFlags) const override;
-
-  DeprecatedLayoutPoint DeprecatedLocationInternal() const override;
 
   // LayoutObject methods start.
 
@@ -60,13 +58,9 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
       return "LayoutTableColGroup";
   }
 
-  bool IsLayoutNGObject() const final {
-    NOT_DESTROYED();
-    return true;
-  }
-
   void StyleDidChange(StyleDifference diff,
-                      const ComputedStyle* old_style) final;
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) final;
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) final;
 

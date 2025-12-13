@@ -5,65 +5,72 @@
 #ifndef CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_EXTENSION_API_CONSTANTS_H_
 #define CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_EXTENSION_API_CONSTANTS_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace tts_extension_api_constants {
 
-extern const char kCharIndexKey[];
-extern const char kLengthKey[];
-extern const char kDesiredEventTypesKey[];
-extern const char kEnqueueKey[];
-extern const char kErrorKey[];
-extern const char kErrorMessageKey[];
-extern const char kEventTypeKey[];
-extern const char kEventTypesKey[];
-extern const char kExtensionIdKey[];
-extern const char kGenderKey[];
-extern const char kIdKey[];
-extern const char kInstallStatusKey[];
-extern const char kIsFinalEventKey[];
-extern const char kLangKey[];
-extern const char kOnEventKey[];
-extern const char kPitchKey[];
-extern const char kRateKey[];
-extern const char kRemoteKey[];
-extern const char kUninstallImmediatelyKey[];
-extern const char kRequiredEventTypesKey[];
-extern const char kSourceKey[];
-extern const char kSrcIdKey[];
-extern const char kVoiceNameKey[];
-extern const char kVolumeKey[];
+inline constexpr char kCharIndexKey[] = "charIndex";
+inline constexpr char kLengthKey[] = "length";
+inline constexpr char kDesiredEventTypesKey[] = "desiredEventTypes";
+inline constexpr char kEnqueueKey[] = "enqueue";
+inline constexpr char kErrorKey[] = "error";
+inline constexpr char kErrorMessageKey[] = "errorMessage";
+inline constexpr char kEventTypeKey[] = "type";
+inline constexpr char kEventTypesKey[] = "eventTypes";
+inline constexpr char kExtensionIdKey[] = "extensionId";
+inline constexpr char kGenderKey[] = "gender";
+inline constexpr char kIdKey[] = "id";
+inline constexpr char kInstallStatusKey[] = "installStatus";
+inline constexpr char kIsFinalEventKey[] = "isFinalEvent";
+inline constexpr char kLangKey[] = "lang";
+inline constexpr char kOnEventKey[] = "onEvent";
+inline constexpr char kPitchKey[] = "pitch";
+inline constexpr char kRateKey[] = "rate";
+inline constexpr char kRemoteKey[] = "remote";
+inline constexpr char kUninstallImmediatelyKey[] = "uninstallImmediately";
+inline constexpr char kRequiredEventTypesKey[] = "requiredEventTypes";
+inline constexpr char kSourceKey[] = "source";
+inline constexpr char kSrcIdKey[] = "srcId";
+inline constexpr char kVoiceNameKey[] = "voiceName";
+inline constexpr char kVolumeKey[] = "volume";
 
-extern const char kSampleRateKey[];
-extern const char kBufferSizeKey[];
-extern const char kAudioBufferKey[];
-extern const char kIsLastBufferKey[];
+inline constexpr char kSampleRateKey[] = "sampleRate";
+inline constexpr char kBufferSizeKey[] = "bufferSize";
+inline constexpr char kAudioBufferKey[] = "audioBuffer";
+inline constexpr char kIsLastBufferKey[] = "isLastBuffer";
 
-extern const char kEventTypeCancelled[];
-extern const char kEventTypeEnd[];
-extern const char kEventTypeError[];
-extern const char kEventTypeInterrupted[];
-extern const char kEventTypeMarker[];
-extern const char kEventTypePause[];
-extern const char kEventTypeResume[];
-extern const char kEventTypeSentence[];
-extern const char kEventTypeStart[];
-extern const char kEventTypeWord[];
+inline constexpr char kEventTypeCancelled[] = "cancelled";
+inline constexpr char kEventTypeEnd[] = "end";
+inline constexpr char kEventTypeError[] = "error";
+inline constexpr char kEventTypeInterrupted[] = "interrupted";
+inline constexpr char kEventTypeMarker[] = "marker";
+inline constexpr char kEventTypePause[] = "pause";
+inline constexpr char kEventTypeResume[] = "resume";
+inline constexpr char kEventTypeSentence[] = "sentence";
+inline constexpr char kEventTypeStart[] = "start";
+inline constexpr char kEventTypeWord[] = "word";
 
 // Used by TtsEngine Extension to communicate installation status of voices for
 // a specific language
-extern const char kVoicePackStatusNotInstalled[];
-extern const char kVoicePackStatusInstalling[];
-extern const char kVoicePackStatusInstalled[];
-extern const char kVoicePackStatusFailed[];
+inline constexpr char kVoicePackStatusNotInstalled[] = "notInstalled";
+inline constexpr char kVoicePackStatusInstalling[] = "installing";
+inline constexpr char kVoicePackStatusInstalled[] = "installed";
+inline constexpr char kVoicePackStatusFailed[] = "failed";
 
-extern const char kErrorExtensionIdMismatch[];
-extern const char kErrorInvalidLang[];
-extern const char kErrorInvalidPitch[];
-extern const char kErrorInvalidRate[];
-extern const char kErrorInvalidVolume[];
-extern const char kErrorMissingPauseOrResume[];
-extern const char kErrorUndeclaredEventType[];
-extern const char kErrorUtteranceTooLong[];
+inline constexpr char kErrorExtensionIdMismatch[] = "Extension id mismatch.";
+inline constexpr char kErrorInvalidLang[] = "Invalid lang.";
+inline constexpr char kErrorInvalidPitch[] = "Invalid pitch.";
+inline constexpr char kErrorInvalidRate[] = "Invalid rate.";
+inline constexpr char kErrorInvalidVolume[] = "Invalid volume.";
+inline constexpr char kErrorMissingPauseOrResume[] =
+    "A TTS engine extension should either listen for both onPause and onResume "
+    "events, or neither.";
+inline constexpr char kErrorUndeclaredEventType[] =
+    "Cannot send an event type that is not declared in the extension manifest.";
+inline constexpr char kErrorUtteranceTooLong[] =
+    "Utterance length is too long.";
 
 }  // namespace tts_extension_api_constants.
 #endif  // CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_EXTENSION_API_CONSTANTS_H_

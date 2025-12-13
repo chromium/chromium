@@ -43,15 +43,6 @@ base::Value GetRevokedAbusiveNotificationPermissionsSettingValue(
 bool IsAbusiveNotificationRevocationIgnored(HostContentSettingsMap* hcsm,
                                             GURL setting_url);
 
-// Sets the `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` value for a url, given
-// the constraints and whether the user wants to ignore future
-// auto-revocation.
-void SetRevokedAbusiveNotificationPermission(
-    HostContentSettingsMap* hcsm,
-    GURL url,
-    bool is_ignored,
-    const content_settings::ContentSettingConstraints& constraints = {});
-
 #if !BUILDFLAG(IS_ANDROID)
 // Fetches data for the version card to return data to the desktop UI.
 base::Value::Dict GetVersionCardData();

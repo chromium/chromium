@@ -5,6 +5,7 @@ Version: R_2_7_1-22-g69d6c054
 CPEPrefix: cpe:/a:libexpat_project:libexpat:2.7.1
 Date: 2025-04-03
 Revision: 69d6c054c1bd5258c2a13405a7f5628c72c177c2
+Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
 License: MIT

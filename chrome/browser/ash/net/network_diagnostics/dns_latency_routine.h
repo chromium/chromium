@@ -57,11 +57,11 @@ class DnsLatencyRoutine : public NetworkDiagnosticsRoutine {
   const base::TickClock* tick_clock() { return tick_clock_; }
 
  private:
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata);
+  void OnComplete(
+      int result,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints);
 
   void CreateHostResolver();
   void AttemptNextResolution();

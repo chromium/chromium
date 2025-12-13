@@ -64,15 +64,6 @@ public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider
                                 : originalProfile.getOffTheRecordProfile(
                                         otrProfileId, createIfNeeded);
                     }
-
-                    @Override
-                    public boolean hasOffTheRecordProfile() {
-                        Profile originalProfile = getOriginalProfile();
-                        OtrProfileId otrProfileId = getOrCreateOtrProfileId();
-                        return otrProfileId == null
-                                ? originalProfile.hasPrimaryOtrProfile()
-                                : originalProfile.hasOffTheRecordProfile(otrProfileId);
-                    }
                 });
     }
 

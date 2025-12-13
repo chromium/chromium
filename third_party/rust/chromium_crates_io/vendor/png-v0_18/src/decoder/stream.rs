@@ -1121,6 +1121,11 @@ impl StreamingDecoder {
                 num_frames: buf.read_be()?,
                 num_plays: buf.read_be()?,
             };
+            // The spec says that "0 is not a valid value" for `num_frames`.
+            // So let's ignore such malformed `acTL` chunks.
+            if actl.num_frames == 0 {
+                return Ok(Decoded::Nothing);
+            }
             self.info.as_mut().unwrap().animation_control = Some(actl);
             Ok(Decoded::AnimationControl(actl))
         }

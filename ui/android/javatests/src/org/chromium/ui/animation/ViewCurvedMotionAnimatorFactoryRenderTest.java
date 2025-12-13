@@ -29,6 +29,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -235,6 +236,7 @@ public class ViewCurvedMotionAnimatorFactoryRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/453805640")
     public void testQuadrantIV_Clockwise() throws IOException {
         float[] start = new float[] {800f, 50f};
         float[] end = new float[] {50f, 1200f};

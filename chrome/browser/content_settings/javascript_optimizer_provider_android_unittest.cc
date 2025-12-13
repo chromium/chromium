@@ -13,7 +13,6 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "components/content_settings/core/browser/content_settings_mock_observer.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
-#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -76,9 +75,7 @@ class JavascriptOptimizerProviderAndroidTest : public testing::Test {
 std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
     JavascriptOptimizerProviderAndroid& provider,
     ContentSettingsType content_type) {
-  return provider.GetRuleIterator(
-      content_type, /*off_the_record=*/false,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  return provider.GetRuleIterator(content_type, /*off_the_record=*/false);
 }
 
 TEST_F(JavascriptOptimizerProviderAndroidTest,
@@ -145,10 +142,8 @@ TEST_F(JavascriptOptimizerProviderAndroidTest, GetRuleIterator_AfterShutdown) {
 std::unique_ptr<content_settings::Rule> GetRule(
     JavascriptOptimizerProviderAndroid& provider,
     ContentSettingsType content_type) {
-  return provider.GetRule(
-      GURL(kTestUrl), GURL(kTestUrl), content_type,
-      /*off_the_record=*/false,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  return provider.GetRule(GURL(kTestUrl), GURL(kTestUrl), content_type,
+                          /*off_the_record=*/false);
 }
 
 TEST_F(JavascriptOptimizerProviderAndroidTest,

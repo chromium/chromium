@@ -28,6 +28,7 @@
 #include "content/public/browser/presentation_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
@@ -132,6 +133,7 @@ class MediaSessionImpl : public MediaSession,
   // WebContentsObserver implementation
   void WebContentsDestroyed() override;
   void RenderFrameDeleted(RenderFrameHost* rfh) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void OnWebContentsFocused(RenderWidgetHost*) override;
   void OnWebContentsLostFocus(RenderWidgetHost*) override;
@@ -178,10 +180,6 @@ class MediaSessionImpl : public MediaSession,
   // Creates a binding between |this| and |request|.
   mojo::PendingRemote<media_session::mojom::MediaSession> AddRemote();
 
-  // Returns information about the MediaSession.
-  CONTENT_EXPORT media_session::mojom::MediaSessionInfoPtr
-  GetMediaSessionInfoSync();
-
   // Returns if the session can be controlled by the user.
   CONTENT_EXPORT bool IsControllable() const;
 
@@ -213,8 +211,21 @@ class MediaSessionImpl : public MediaSession,
       const base::UnguessableToken& group_id) override;
 
   // Returns the `RenderFrameHost` for the currently MediaSession routed
-  // service.
+  // service, if the routed service exists, otherwise returns the top most frame
+  // with an active media player.
   RenderFrameHost* GetRoutedFrame() override;
+
+  // Returns the current media session info synchronously for a one-off request.
+  CONTENT_EXPORT media_session::mojom::MediaSessionInfoPtr
+  GetMediaSessionInfoSync() override;
+
+  // Returns the current media session position for a one-off request.
+  CONTENT_EXPORT std::optional<media_session::MediaPosition>
+  GetMediaSessionPosition() override;
+
+  // Returns the current media session metadata for a one-off request.
+  CONTENT_EXPORT const media_session::MediaMetadata& GetMediaSessionMetadata()
+      override;
 
   // Suspend the media session.
   // |type| represents the origin of the request.
@@ -465,9 +476,12 @@ class MediaSessionImpl : public MediaSession,
   // Returns whether the frame |rfh| uses MediaSession API.
   bool IsServiceActiveForRenderFrameHost(RenderFrameHost* rfh);
 
-  // Compute the MediaSessionService that should be routed, which will be used
-  // to update |routed_service_|.
-  CONTENT_EXPORT MediaSessionServiceImpl* ComputeServiceForRouting();
+  // Compute the frame that should be routed for media session. If
+  // |ensure_service| is true, the routed frame must have an active
+  // MediaSessionService, otherwise it does not, e.g. when no MediaSession API
+  // has been called but there is an active media player. This method can be
+  // used to compute both the routed frame and routed service.
+  CONTENT_EXPORT RenderFrameHost* ComputeFrameForRouting(bool ensure_service);
 
   // Rebuilds |actions_| and notifies observers if they have changed.
   void RebuildAndNotifyActionsChanged();
@@ -533,15 +547,30 @@ class MediaSessionImpl : public MediaSession,
   CONTENT_EXPORT void SetShouldThrottleDurationUpdateForTest(
       bool should_throttle);
 
-  // Returns true if there exists a single normal "playing" player with picture
-  // in picture available, false otherwise.
-  bool CouldEnterBrowserInitiatedAutomaticPictureInPicture() const;
+  // True if `routed_service_` exists and either the camera or microphone are
+  // currently actively used, false otherwise.
+  bool IsActivelyUsingCameraOrMicrophone() const;
+
+  // Returns true if we can enter browser initiated automatic
+  // picture-in-picture, false otherwise.
+  bool CanEnterBrowserInitiatedAutomaticPictureInPicture() const;
 
   // Automatically enter picture-in-picture from a non-user source (e.g. in
   // reaction to content being hidden), if the EnterAutoPictureInPicture action
   // is registered by the browser (the user did not provide an
   // `enterpictureinpicture` action handler).
-  void MaybeEnterBrowserInitiatedAutomaticPictureInPicture() const;
+  void MaybeEnterBrowserInitiatedAutomaticPictureInPicture();
+
+  // Returns true if browser initiated picture in picture is enabled. This will
+  // be true if either the main feature or the dry run feature is enabled.
+  bool IsBrowserInitiatedPictureInPictureEnabled() const;
+
+  // Notifies a player of the last known auto picture-in-picture information.
+  // This is used to keep newly added players updated with the latest
+  // information.
+  void NotifyPlayerOfAutoPictureInPictureInfo(
+      MediaSessionPlayerObserver* observer,
+      int player_id);
 
   // Duration update allowance is inscreasing by 1 every 20 seconds, and
   // capped at 3. Every duration updates will consume 1 allowance, and
@@ -700,6 +729,10 @@ class MediaSessionImpl : public MediaSession,
   // changes often enough to be considered live. See
   // `MaybeGuardDurationUpdate()` for details on duration changes.
   bool is_considered_live_ = false;
+
+  // The last auto picture-in-picture information that was sent to players.
+  std::optional<media::PictureInPictureEventsInfo::AutoPipInfo>
+      last_auto_picture_in_picture_info_;
 
   base::WeakPtrFactory<MediaSessionImpl> weak_factory_{this};
 

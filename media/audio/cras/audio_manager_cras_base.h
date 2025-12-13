@@ -59,9 +59,8 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
   // Unregisters system AEC dump. Virtual to mock in unittest.
   virtual void DeregisterSystemAecDumpSource(AecdumpRecordingSource* stream);
 
-  virtual void SetAecDumpRecordingManager(
-      base::WeakPtr<AecdumpRecordingManager> aecdump_recording_manager)
-      override;
+  void SetAecDumpRecordingManager(base::WeakPtr<AecdumpRecordingManager>
+                                      aecdump_recording_manager) override;
 
  protected:
   // Called by MakeLinearOutputStream and MakeLowLatencyOutputStream.

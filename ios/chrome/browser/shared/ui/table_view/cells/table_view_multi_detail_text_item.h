@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 // TableViewMultiDetailTextItem contains the model data for a
-// TableViewMultiDetailTextCell.
+// TableViewCellContentView.
 @interface TableViewMultiDetailTextItem : TableViewItem
 
 // Main text to be displayed.
@@ -20,20 +20,6 @@
 
 // Text color for the trailing detail text.
 @property(nonatomic, strong) UIColor* trailingDetailTextColor;
-
-@end
-
-// TableViewCell that displays two leading text labels on top of each other and
-// one trailing text label. The leading text labels are displayed on an
-// unlimited number of lines.
-@interface TableViewMultiDetailTextCell : TableViewCell
-
-@property(nonatomic, readonly, strong) UILabel* textLabel;
-@property(nonatomic, readonly, strong) UILabel* leadingDetailTextLabel;
-@property(nonatomic, readonly, strong) UILabel* trailingDetailTextLabel;
-
-// Adjusts cell constraints based on icon visibility.
-- (void)updateConstraintsForTrailingIconVisible:(BOOL)visible;
 
 @end
 

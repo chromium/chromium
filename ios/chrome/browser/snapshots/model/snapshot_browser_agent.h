@@ -61,10 +61,6 @@ class SnapshotBrowserAgent : public BrowserUserData<SnapshotBrowserAgent>,
 
   explicit SnapshotBrowserAgent(Browser* browser);
 
-  // Migrates the snapshot storage if a folder exists in the old snapshots
-  // storage location.
-  void MigrateStorageIfNecessary();
-
   // Purges the snapshots folder of unused snapshots.
   void PurgeUnusedSnapshots();
 

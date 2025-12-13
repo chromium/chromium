@@ -6,11 +6,6 @@ found in the LICENSE file.
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <org.chromium.components.browser_ui.accessibility.PageZoomPreference
-        android:key="page_zoom_default_zoom"
-        android:selectable="false" />
-
     <Preference
         android:key="zoom_info"
         android:title="@string/zoom_info_preference_title"/>
@@ -40,6 +35,11 @@ found in the LICENSE file.
         android:summary="@string/jump_start_omnibox_summary"
         android:title="@string/jump_start_omnibox_title" />
 
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="caret_browsing"
+        android:summary="@string/caret_browsing_summary"
+        android:title="@string/caret_browsing_title" />
+
     <Preference
         android:key="captions"
         android:title="@string/accessibility_captions_title"/>
@@ -48,5 +48,10 @@ found in the LICENSE file.
         android:fragment="org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings"
         android:key="image_descriptions"
         android:title="@string/image_descriptions_settings_title" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="touchpad_overscroll_history_navigation"
+        android:summary="@string/touchpad_overscroll_history_navigation_summary"
+        android:title="@string/touchpad_overscroll_history_navigation_title" />
 
 </PreferenceScreen>

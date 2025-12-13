@@ -306,21 +306,19 @@ void SetAppAccessNotifier(AppAccessNotifier* app_access_notifier) {
 }
 
 std::pair<base::Time, base::Time> SunriseSunsetSchedule() {
-  const base::Time default_sunrise_time =
+  auto default_sunrise_time =
       base::Time::Now().LocalMidnight() + base::Hours(6);
-  const base::Time default_sunset_time = default_sunrise_time + base::Hours(12);
+  SunRiseSetTime default_times = {
+      .sunrise = default_sunrise_time,
+      .sunset = default_sunrise_time + base::Hours(12)};
+
   const ash::GeolocationController* geolocation_controller =
       ash::GeolocationController::Get();
-  const base::Time sunrise_time =
+  const auto times =
       geolocation_controller
-          ? geolocation_controller->GetSunriseTime().value_or(
-                default_sunrise_time)
-          : default_sunrise_time;
-  const base::Time sunset_time =
-      geolocation_controller ? geolocation_controller->GetSunsetTime().value_or(
-                                   default_sunset_time)
-                             : default_sunrise_time;
-  return std::make_pair(sunrise_time, sunset_time);
+          ? geolocation_controller->GetSunRiseSetTime().value_or(default_times)
+          : default_times;
+  return std::make_pair(times.sunrise, times.sunset);
 }
 
 bool ContentBlocked(ContentType type) {

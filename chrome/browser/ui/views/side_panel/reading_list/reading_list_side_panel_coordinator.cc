@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/side_panel/read_later_side_panel_web_view.h"
+#include "chrome/browser/ui/views/side_panel/reading_list/read_later_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 
@@ -38,5 +38,5 @@ void ReadingListSidePanelCoordinator::CreateAndRegisterEntry(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
       base::BindRepeating(&CreateReadingListWebView, &profile_.get(),
                           &tab_strip_model_.get()),
-      SidePanelEntry::kSidePanelDefaultContentWidth));
+      /*default_content_width_callback=*/base::NullCallback()));
 }

@@ -256,7 +256,7 @@ void CannedSyncableFileSystem::SetUp() {
       quota_manager_.get(), io_task_runner_.get());
 
   std::vector<std::string> additional_allowed_schemes;
-  additional_allowed_schemes.push_back(origin_.scheme());
+  additional_allowed_schemes.push_back(origin_.GetScheme());
   storage::FileSystemOptions options(
       storage::FileSystemOptions::PROFILE_MODE_NORMAL, in_memory_file_system_,
       additional_allowed_schemes);

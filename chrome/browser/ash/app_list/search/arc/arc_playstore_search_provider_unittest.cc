@@ -39,22 +39,26 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
 
   // AppListTestBase:
   void SetUp() override {
+    arc_app_test_.PreProfileSetUp();
     AppListTestBase::SetUp();
-    arc_test_.SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
     controller_ = std::make_unique<::test::TestAppListControllerDelegate>();
   }
 
   void TearDown() override {
+    provider_ = nullptr;
+    search_controller_.reset();
     controller_.reset();
-    arc_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     AppListTestBase::TearDown();
+    arc_app_test_.PostProfileTearDown();
   }
 
  protected:
   void CreateSearch(int max_results) {
     search_controller_ = std::make_unique<TestSearchController>();
     auto provider = std::make_unique<ArcPlayStoreSearchProvider>(
-        max_results, profile_.get(), controller_.get());
+        max_results, profile(), controller_.get());
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
   }
@@ -79,10 +83,10 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
   }
 
  private:
+  ArcAppTest arc_app_test_;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   std::unique_ptr<TestSearchController> search_controller_;
   raw_ptr<ArcPlayStoreSearchProvider> provider_ = nullptr;
-  ArcAppTest arc_test_;
 };
 
 TEST_F(ArcPlayStoreSearchProviderTest, Basic) {

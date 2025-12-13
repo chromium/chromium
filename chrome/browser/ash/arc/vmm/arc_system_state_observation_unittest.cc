@@ -43,9 +43,11 @@ ArcAppListPrefs::AppInfo MakePlayStoreInfo(bool ready) {
 class ArcSystemStateObservationTest : public testing::Test {
  public:
   ArcSystemStateObservationTest() {
-    arc_test().SetUp(&profile_);
+    arc_app_test().PreProfileSetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    arc_app_test().PostProfileSetUp(profile_.get());
 
-    observation_ = std::make_unique<ArcSystemStateObservation>(&profile_);
+    observation_ = std::make_unique<ArcSystemStateObservation>(profile_.get());
 
     active_window_observer_ =
         observation_->GetObserverByName(kArcActiveWindowThrottleObserverName);
@@ -60,18 +62,20 @@ class ArcSystemStateObservationTest : public testing::Test {
 
   ~ArcSystemStateObservationTest() override {
     observation_.reset();
-    arc_test().TearDown();
+    arc_app_test().PreProfileTearDown();
+    profile_.reset();
+    arc_app_test().PostProfileTearDown();
   }
 
   ArcSystemStateObservation* observation() { return observation_.get(); }
-  ArcAppTest& arc_test() { return arc_test_; }
+  ArcAppTest& arc_app_test() { return arc_app_test_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  TestingProfile profile_;
-  ArcAppTest arc_test_;
+  std::unique_ptr<TestingProfile> profile_;
+  ArcAppTest arc_app_test_;
 
   std::unique_ptr<ArcSystemStateObservation> observation_;
 

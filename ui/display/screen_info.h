@@ -29,6 +29,10 @@ struct DISPLAY_EXPORT ScreenInfo {
   // The screen depth in bits per pixel.
   int depth = 0;
 
+  // The area around an editable region where handwriting should still be
+  // possible.
+  int handwriting_radius = 0;
+
   // The bits per colour component. This assumes that the colours are balanced
   // equally.
   int depth_per_component = 0;

@@ -11,8 +11,6 @@
 <translation id="1032891413405719768">O lapis óptico ten pouca batería</translation>
 <translation id="1036073649888683237">Para xestionar as notificacións vai a Configuración</translation>
 <translation id="1036348656032585052">Desactivar</translation>
-<translation id="1036672894875463507">Son o teu Asistente de Google e estou aquí para botarche unha man ao longo do día.
-Para comezar, podes probar o seguinte.</translation>
 <translation id="1037492556044956303">Engadiuse <ph name="DEVICE_NAME" /></translation>
 <translation id="1038106730571050514">Mostrar suxestións</translation>
 <translation id="1047017786576569492">parcial</translation>
@@ -26,11 +24,9 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1073899992769346247">Substitúe ou carga a batería</translation>
 <translation id="1081015718268701546">Neste momento non están dispoñibles as aplicacións de Linux; gardaranse outras.</translation>
 <translation id="108486256082349153">Móbil: <ph name="ADDRESS" /></translation>
-<translation id="1087110696012418426">Boas tardes, <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242">Busca <ph name="CATEGORY" />, ficheiros, aplicacións e moito máis. Usa as teclas das frechas para moverte polas aplicacións.</translation>
 <translation id="1093645050124056515">control + alt + frecha abaixo</translation>
 <translation id="1094756674036064790">Queres desactivar o Bluetooth?</translation>
-<translation id="109942774857561566">Abúrrome</translation>
 <translation id="1104084341931202936">Mostrar a configuración de accesibilidade</translation>
 <translation id="1104621072296271835">Os dispositivos funcionan mellor xuntos</translation>
 <translation id="1111021433905331574">Podes cambiar a cor da retroiluminación do teclado en Configuración &gt; <ph name="APP_TITLE" /></translation>
@@ -79,13 +75,11 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1242198791279543032">As notificacións están silenciadas</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="1245476784081715330">Bo traballo!</translation>
-<translation id="1245644940275736236">Ir ao Asistente</translation>
 <translation id="124678866338384709">Pechar a pestana actual</translation>
 <translation id="1246890715821376239">Aplicacións non compatibles</translation>
 <translation id="1247372569136754018">Micrófono (interno)</translation>
 <translation id="1247519845643687288">Aplicacións recentes</translation>
 <translation id="1252999807265626933">Cargando a través de <ph name="POWER_SOURCE" /></translation>
-<translation id="1255033239764210633">Que tempo vai?</translation>
 <translation id="1256734167083229794">Premiches o atallo de teclado da lupa de pantalla completa. Usa <ph name="ZOOM_IN_ACCELERATOR" /> para achegar a vista e <ph name="ZOOM_OUT_ACCELERATOR" /> para afastala. Preme Control + Alt + teclas de frecha para desprazarte pola vista achegada.</translation>
 <translation id="1269405891096105529">O periférico non está dispoñible no modo de convidado</translation>
 <translation id="1270290102613614947">Teclado en pantalla desactivado</translation>
@@ -207,7 +201,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1647986356840967552">Páxina anterior</translation>
 <translation id="1651914502370159744">Abrir páxina do historial</translation>
-<translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
 <translation id="1673232940951031776">Finalizar o modo Sen distraccións. Tempo restante: <ph name="REMAINING_TIME" />.</translation>
 <translation id="1675570947608765064">Outras persoas poderán ver os cambios que fagas nesta tarefa</translation>
@@ -219,7 +212,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1680659827022803830">Controis de videochamada</translation>
 <translation id="169515659049020177">Maiús</translation>
 <translation id="1696984622403682083">Podes desactivar esta función en calquera momento en Configuración. <ph name="LINK_TO_LEARN_MORE" /></translation>
-<translation id="1698080062160024910">Temporizador de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Enderezo IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1700782710852683371">Non se poden crear imaxes disto neste momento. Proba a reformular a descrición. Ten en conta que non se poden crear imaxes de persoas nin nas que se inclúa contido explícito ou daniño.</translation>
 <translation id="1703117532528082099">Ventá activa fixada á esquerda.</translation>
@@ -293,7 +285,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1929331825127010451">Volver á pregunta</translation>
 <translation id="1946615340060705561">Preme C para soltar o botón</translation>
 <translation id="1948405482892809935">Cambiar ao seguinte usuario</translation>
-<translation id="1951012854035635156">Asistente</translation>
 <translation id="1954252331066828794">Completouse a gravación da pantalla</translation>
 <translation id="1956087014741188812">Pór en pausa as teclas do rato</translation>
 <translation id="1957958912175573503">Definir idioma</translation>
@@ -303,9 +294,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1967970931040389207">Activar zona wifi</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Quitáronse o escritorio e as ventás. Preme Control + Z para desfacer a acción.</translation>
-<translation id="1972950159383891558">Ola, <ph name="USERNAME" /></translation>
 <translation id="1977686871076551563">Activouse o modo de inversión da cor. Preme <ph name="ACCELERATOR" /> de novo para desactivalo.</translation>
-<translation id="1978498689038657292">Introdución de texto</translation>
 <translation id="1980808257969311265">Unirse a <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Mostrar semana anterior</translation>
 <translation id="1986150224850161328">Asegúrate de que o teléfono e o Chromebook estean conectados á mesma rede e téntao de novo. <ph name="LEARN_MORE" /></translation>
@@ -315,9 +304,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1996162290124031907">Ir á seguinte pestana</translation>
 <translation id="1998100899771863792">Este escritorio</translation>
 <translation id="2001444736072756133">Busca <ph name="CATEGORY" />, ficheiros, aplicacións e moito máis.</translation>
-<translation id="2016340657076538683">Escribe unha mensaxe</translation>
 <translation id="2017998995161831444">Abrir Axuda na aplicación Explorar</translation>
-<translation id="2018630726571919839">Cóntame un chiste</translation>
 <translation id="2021864487439853900">Para desbloqueala, fai clic</translation>
 <translation id="2034971124472263449">Gardar de todas formas</translation>
 <translation id="2041220428661959602">Nivel de batería: <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -329,13 +316,14 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2067602449040652523">Brillo do teclado</translation>
 <translation id="2075520525463668108">Activar ou desactivar <ph name="CAPTURE_MEDIUM" />. A función <ph name="CAPTURE_MEDIUM" /> está <ph name="CAPTURE_STATE" /></translation>
 <translation id="2079545284768500474">Desfacer</translation>
-<translation id="2083190527011054446">Boas noites, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Abrir selector de emojis</translation>
 <translation id="2088116547584365419">xogos</translation>
+<translation id="2093792000875799555">Noticias sobre Steam para Chromebook</translation>
 <translation id="209965399369889474">Non hai conexión á rede</translation>
 <translation id="2107581415810719320">Outro botón <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">O teu cable USB-C non é compatible con Thunderbolt. O rendemento do dispositivo podería verse limitado.</translation>
 <translation id="2108303511227308752">O atallo de teclado Alt + Retroceso cambiou. Para usar a tecla Suprimir, preme <ph name="LAUNCHER_KEY_NAME" /> + Retroceso.</translation>
+<translation id="2115680839221566783">Batería ao <ph name="PERCENTAGE" /> por cento. A carga está en pausa.</translation>
 <translation id="2126242104232412123">Novo escritorio</translation>
 <translation id="2132302418721800944">Gravar pantalla completa</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
@@ -400,7 +388,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2367186422933365202">Non se puido iniciar sesión no Chromebook</translation>
 <translation id="2367972762794486313">Mostrar aplicacións</translation>
 <translation id="2368828502825385061">Localizar</translation>
-<translation id="2369165858548251131">"Ola" en chinés</translation>
 <translation id="2370971919968699910">Pode que se apliquen custos polo uso de datos.
 Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2383521554963939360">Grupos de aplicacións e pestanas</translation>
@@ -467,12 +454,12 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2549711466868162843">Iluminación mellorada</translation>
 <translation id="2549985041256363841">Iniciar gravación</translation>
 <translation id="255671100581129685">O Asistente de Google non está dispoñible cando se utiliza unha sesión pública.</translation>
+<translation id="2562459326218811217">O dispositivo está enchufado, pero non se está cargando. Proba un cargador con máis watts (W) ou usa un orixinal.</translation>
 <translation id="256712445991462162">a lupa ancorada</translation>
 <translation id="2573588302192866788">Non se puido conectar o dispositivo (<ph name="NAME" />)</translation>
 <translation id="2575685495496069081">Desactivouse o inicio de sesión múltiple</translation>
 <translation id="2579264398927991698">Actualizacións de firmware</translation>
 <translation id="2586657967955657006">Portapapeis</translation>
-<translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Fai unha captura de pantalla da ventá</translation>
 <translation id="2598725286293895280">O escritorio contén aplicacións non compatibles</translation>
 <translation id="2607678425161541573">É necesario iniciar sesión en liña</translation>
@@ -537,6 +524,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
+<translation id="2815594810045873507">Proba un cargador con máis watts (W) ou usa un orixinal.</translation>
 <translation id="2819276065543622893">Pecharase a túa sesión agora.</translation>
 <translation id="2822551631199737692">Estase utilizando a cámara</translation>
 <translation id="2825619548187458965">Estante</translation>
@@ -580,7 +568,6 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="2949420361496057765">Preme <ph name="MODIFIER" /> e fai clic nunha ligazón</translation>
 <translation id="2957159466053076448">Podes desactivar estas funcións cando queiras en Configuración. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio do dispositivo</translation>
-<translation id="2961963223658824723">Produciuse un erro. Téntao de novo nuns segundos.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Queres activar o acceso ao micrófono?</translation>
 <translation id="296762781903199866">Non se puideron descargar os ficheiros de voz en <ph name="LANGUAGE" /></translation>
@@ -603,11 +590,9 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3026897869154397692">Engadiuse ao calendario</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combinar con <ph name="DESK_NAME" /></translation>
-<translation id="3036649622769666520">Abrir ficheiros</translation>
 <translation id="3039939407102840004">Batería do lapis óptico ao <ph name="PERCENTAGE" /> %.</translation>
 <translation id="304097922505898963">Abrir aplicación Atallos de teclado</translation>
 <translation id="304417730895741346">As túas aplicacións fixadas e abertas están no andel. Para fixar unha aplicación no andel, fai clic nela co botón dereito ou toca o panel táctil con dous dedos.</translation>
-<translation id="3045488863354895414">Boas tardes!</translation>
 <translation id="3045670165536837541">Controlador da parte superior dereita seleccionado; usa as teclas de frecha para movelo</translation>
 <translation id="3047761520276763270">Proba a dicir:</translation>
 <translation id="3053407068093039599">Activar ou desactivar acceso á cámara</translation>
@@ -653,7 +638,6 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3176221688814061633">O teu dispositivo Chromebook ou Bluetooth usa unha versión antiga de Bluetooth. Activa o Bluetooth de alta resolución ou usa o micrófono interno para desfrutar dunha mellor calidade de audio.</translation>
 <translation id="3181441307743005334">O reinicio pode tardar uns intres</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectado a un dispositivo}other{Conectado a # dispositivos}}</translation>
-<translation id="320207200541803018">Define o temporizador</translation>
 <translation id="3203405173652969239">Activouse o Acceso con interruptores</translation>
 <translation id="3206735939915734551">Activar ou desactivar bloqueo de maiúsculas</translation>
 <translation id="3207953481422525583">Configuración do usuario</translation>
@@ -668,7 +652,6 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="324366796737464147">Cancelación de ruído</translation>
 <translation id="3249513730522716925">A ventá <ph name="WINDOW_TITLE" /> moveuse do escritorio <ph name="ACTIVE_DESK" /> ao escritorio <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Tipo de traballo de clase: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
-<translation id="3255483164551725916">Que podes facer?</translation>
 <translation id="3256109297135787951">Deixa de destacar un elemento do estante</translation>
 <translation id="3260969790895726815">A voz procésase localmente e o ditado funciona sen conexión, pero algúns comandos de voz non funcionarán.</translation>
 <translation id="3264031581203585083">Ocultar todas as suxestións de Google Drive</translation>
@@ -692,7 +675,6 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3339826665088060472">Captura de pantalla, ferramentas para facer capturas e gravacións de pantalla</translation>
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3341303451326249809">Realizouse a captura de pantalla</translation>
-<translation id="334252345105450327">Fai unha captura de pantalla</translation>
 <translation id="3346728094401457853">Introduce o contrasinal do dispositivo de <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Selecciona o texto desde cursor ata o final da liña</translation>
 <translation id="3349345708646875009">Abrir xestor de tarefas</translation>
@@ -719,7 +701,6 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3430396595145920809">Pasa o dedo desde a dereita para volver</translation>
 <translation id="3431517721463707585">Escritorio 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
-<translation id="343571671045587506">Editar recordatorio</translation>
 <translation id="3435967511775410570">Recoñeceuse a impresión dixital</translation>
 <translation id="3437677362970530951">Xogos de Play Store e doutras plataformas de videoxogos</translation>
 <translation id="3439896670700055005">Volver cargar páxina actual sen usar o contido almacenado na memoria caché</translation>
@@ -818,7 +799,6 @@ Conecta o dispositivo á corrente.</translation>
 <translation id="3694122362646626770">Sitios web</translation>
 <translation id="3697991387880191195">Preme o atallo para facer unha captura de pantalla</translation>
 <translation id="3702809606464356667">Estanse mostrando só as ventás do escritorio actual. Para que se mostren as de todos os escritorios, preme a tecla Frecha arriba</translation>
-<translation id="3702846122927433391">Poboación de Nixeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Entretemento</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> e <ph name="UNAVAILABLE_DLC_TWO" /> non están dispoñibles.</translation>
@@ -847,7 +827,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3796215473395753611">alt + frecha arriba</translation>
 <translation id="3798670284305777884">Altofalante (interno)</translation>
 <translation id="3799080171973636491">Premiches o atallo de teclado para a lupa de pantalla completa. Queres activala?</translation>
-<translation id="380165613292957338">Ola! Como podo axudarche?</translation>
 <translation id="3804737937830804242">Contraer a cámara</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Non hai máis resultados.}other{# emojis. Non hai máis resultados.}}</translation>
 <translation id="3822403841174077928">Non se puido copiar o texto co formato</translation>
@@ -858,7 +837,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="383629559565718788">Mostrar a configuración do teclado</translation>
 <translation id="384082539148746321">Queres eliminar o modelo?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> e despois <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> ou <ph name="KEY_FOUR" /></translation>
-<translation id="3846559267983630264">50 + 94 / 5</translation>
 <translation id="3846575436967432996">Non hai información de rede dispoñible</translation>
 <translation id="3848526302597027234">Accede aos seguintes permisos:</translation>
 <translation id="385051799172605136">Atrás</translation>
@@ -872,9 +850,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3891340733213178823">Preme Ctrl + Maiús + Q dúas veces para pechar sesión.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3893630138897523026">ChromeVox (comentarios orais)</translation>
-<translation id="3897533311200664389">Iniciar unha consulta de texto</translation>
 <translation id="3898464793473355515">Rotar pantalla 90 graos cara á dereita</translation>
-<translation id="3899995891769452915">Entrada de voz</translation>
 <translation id="3900355044994618856">A sesión finalizará dentro de <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Conectando con <ph name="NAME" /></translation>
 <translation id="3904768293285573640">Colocar ventá de cambio de tamaño de mosaico cara á esquerda</translation>
@@ -899,6 +875,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="397726367135689299">É posible que cargar a batería non sexa fiable.</translation>
 <translation id="3977512764614765090">Nivel de batería: <ph name="PERCENTAGE" /> % (cargando).</translation>
+<translation id="3978162107953847778">Insire ligazóns de sitios como o teu historial de navegación ou Google Drive. Tamén podes inserir emojis, ficheiros de imaxe e moito máis. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Queres cambiar a saída de audio?</translation>
 <translation id="3984536049089846927">Páxina seguinte</translation>
 <translation id="3986082989454912832">Responder</translation>
@@ -915,7 +892,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4024840464866786680">Se esqueciches o PIN e o contrasinal ou cambiaches o da Conta de Google recentemente, proba a recuperar este usuario.</translation>
 <translation id="4026843240379844265">Mover ventá activa entre as pantallas</translation>
 <translation id="4028481283645788203">É necesario escribir o contrasinal para obter seguranza adicional</translation>
-<translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + frecha esquerda</translation>
 <translation id="4039699481424758547">Preme Introducir para facer unha captura de pantalla da ventá <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Estás compartindo a pantalla</translation>
@@ -946,7 +922,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4136724716305260864">Función activada ata o amencer</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + frecha dereita</translation>
 <translation id="4146671046252289537">Móvese ao final da seguinte palabra</translation>
-<translation id="4146833061457621061">Reproducir música</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4151054805501931758">Retoque facial</translation>
 <translation id="4156293514828496577">Queda un <ph name="PERCENTAGE" /> % de batería. Tempo restante aproximado: <ph name="TIME_LEFT" />.
@@ -1002,7 +977,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="428715201724021596">Conectando co perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="4287250812980588583">Ventá de Chrome</translation>
 <translation id="4291322857434980285">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> controla o volume do micrófono}other{# aplicacións controlan o volume do micrófono}}</translation>
-<translation id="4294319844246081198">Bos días, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Borrar as <ph name="COUNT" /> notificacións</translation>
 <translation id="4300272766492248925">Abrir aplicación</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> moveuse ao cartafol <ph name="FOLDER_NAME" />.</translation>
@@ -1040,7 +1014,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="440113666232554208">Non se puido gardar a gravación da pantalla</translation>
 <translation id="4405151984121254935">O tipo de periférico conectado non é compatible</translation>
 <translation id="4406883609789734330">Subtítulos instantáneos</translation>
-<translation id="4412698727486357573">Centro de Axuda</translation>
+<translation id="4412698727486357573">Centro de axuda</translation>
 <translation id="4412944820643904175">A función <ph name="FEATURE_NAME" /> está desactivada.</translation>
 <translation id="4417647906073317561">Configuración do modo Sen distraccións. Programa un temporizador, escolle unha tarefa e pon música para concentrarte mellor.</translation>
 <translation id="4418600384772451109">Pechar o panel</translation>
@@ -1052,9 +1026,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificación importante}other{# notificacións importantes}}</translation>
 <translation id="4450893287417543264">Non mostrar outra vez</translation>
 <translation id="4451374464530248585">O atallo Alt + Frecha abaixo cambiou. Para usar a tecla Avanzar páxina, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha abaixo.</translation>
-<translation id="4453876312474547652">Podes ver o portapapeis se mantés premidas as teclas Control + V. Para desactivar este atallo, inhabilita a función experimental #clipboard-history-longpress en chrome://flags (os://flags se usas Lacros).</translation>
 <translation id="445765352722456792">Personalizar suxestións</translation>
-<translation id="445864333228800152">Bo serán!</translation>
 <translation id="4458688154122353284">Deter gravación da pantalla</translation>
 <translation id="445923051607553918">Unirse á rede wifi</translation>
 <translation id="4471354919263203780">Descargando ficheiros de recoñecemento de voz… <ph name="PERCENT" /> %</translation>
@@ -1094,7 +1066,6 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4566144812051858745">Non me interesa recibir suxestións</translation>
 <translation id="4569753163207712681">Consulta o contido multimedia, as aplicacións e as fotos recentes do teu teléfono</translation>
 <translation id="4573176682887762361">"Escribe [palabra/frase]"</translation>
-<translation id="4577274620589681794">Acabouse o tempo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
 <translation id="4578906031062871102">Abriuse o menú de configuración</translation>
 <translation id="458210817642223147">Gravar GIF</translation>
@@ -1150,7 +1121,6 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + frecha arriba</translation>
 <translation id="4762573482154983647">Ocultar aplicacións</translation>
-<translation id="4762802395013012237">5 pés en metros</translation>
 <translation id="4763885921995354846">Desta forma, todas as aplicacións e sitios web que teñan permiso de cámara poderán acceder a ela. É posible que teñas que actualizar a páxina web ou reiniciar a aplicación.</translation>
 <translation id="4774338217796918551">Volve mañá á seguinte hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Aínda non se puido verificar o teu contrasinal. Téntao de novo.</translation>
@@ -1203,7 +1173,6 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="491504982845934899">Activar despois da configuración do dispositivo <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceptar</translation>
-<translation id="491907188205944472">Busca o que necesites directamente no menú de aplicacións</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> está usando a cámara nestes intres</translation>
 <translation id="492453977506755176">Tecla do modo de captura</translation>
 <translation id="4925542575807923399">O administrador desta conta require que esta conta sexa a primeira na que se inicie sesión cando se cree unha sesión de inicio de sesión múltiple.</translation>
@@ -1223,7 +1192,6 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="4964188651935955085">Se desactivas o Bluetooth, este aparello externo desconectarase do teu dispositivo (<ph name="DEVICE_TYPE" />):</translation>
 <translation id="4966431234408005599">Subir volume</translation>
-<translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="496999337731226334">Paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> da visita. Os controis que se usan con frecuencia, como a wifi, o Bluetooth e o volume, están en Configuración rápida. Tamén podes facer capturas de pantalla desde aquí. Preme Alt + Maiúsculas + S para abrir Configuración rápida.</translation>
 <translation id="4975771730019223894">Indicadores de notificacións</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
@@ -1259,7 +1227,6 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="5077936103761694531">Queres confirmar a resolución?</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083035541015925118">control + alt + frecha arriba</translation>
-<translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
 <translation id="5091636240353511739">Mostrar o PIN</translation>
 <translation id="5092436659250499817">Activar ou desactivar retroiluminación do teclado</translation>
 <translation id="5094577350232361255">acerca de</translation>
@@ -1318,7 +1285,6 @@ Tamén podes usar o atallo de teclado. Primeiro, destaca o texto e, a continuaci
 <translation id="5277869901083657836">Activar ou desactivar ferramentas do lapis óptico</translation>
 <translation id="5278086053818066789">Activar ou desactivar ChromeVox (comentarios de voz)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> require a túa atención.</translation>
-<translation id="5283198616748585639">Engadir 1 min</translation>
 <translation id="528468243742722775">Final</translation>
 <translation id="5286194356314741248">Buscando</translation>
 <translation id="528641622273682395">Activar/desactivar a proba do micrófono</translation>
@@ -1372,6 +1338,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5429993543155113935">As ventás do modo de incógnito agora mesmo non son compatibles</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5433020815079095860">Entrada de audio</translation>
+<translation id="543584294741034249">Podes conectar ata <ph name="DISPLAY_LIMIT" /> pantallas externas.</translation>
 <translation id="544691375626129091">Xa se engadiron todos os usuarios dispoñibles a esta sesión.</translation>
 <translation id="54609108002486618">Dispositivo xestionado</translation>
 <translation id="5460938382730614333">O marcador está activado.</translation>
@@ -1389,7 +1356,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5519005148254860683">Despregar Tarefas de Google</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">O teu administrador quitou todos os perfís de eSIM. Para obter máis información, ponte en contacto con el.</translation>
-<translation id="5520909879404821039">"Ola" en francés</translation>
 <translation id="5523434445161341166">A función <ph name="FEATURE_NAME" /> estase conectando.</translation>
 <translation id="5529587891732734495">Pór emisión en pausa</translation>
 <translation id="5532994612895037630">Toca calquera parte para realizar unha gravación da pantalla completa</translation>
@@ -1589,6 +1555,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="612734058257491180">O Asistente de Google non está dispoñible cando se utiliza unha sesión de convidado.</translation>
 <translation id="6127395413317891856">Estás sen conexión. Comproba a túa conexión e téntao de novo.</translation>
 <translation id="6129953537138746214">Espazo</translation>
+<translation id="6136872094979134163">Non se poden recuperar as noticias de Steam para Chromebook.</translation>
 <translation id="6137566720514957455">Abrir cadro de diálogo de eliminación para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">En que tarefa queres concentrarte?</translation>
 <translation id="6141988275892716286">Confirma a descarga</translation>
@@ -1604,7 +1571,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6166852626429024716">Realiza buscas no teu dispositivo, nas aplicacións, nas opcións de configuración, na Web…</translation>
 <translation id="6168318496333165060">Abrir aplicación Diagnostics</translation>
 <translation id="6168622430237609329">As túas aplicacións instaladas</translation>
-<translation id="6179832488876878285">Podes fixar aquí os ficheiros importantes. Para comezar a utilizar esta función, abre a aplicación Ficheiros.</translation>
 <translation id="6180193585172850042">Botón de retroceso</translation>
 <translation id="6180651297859206670">Botón de avance</translation>
 <translation id="6182592640011875895">Abrir escritorio</translation>
@@ -1632,10 +1598,10 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6247728804802644171">Abrir notificacións</translation>
 <translation id="6249795363855770621">Non se puido marcar como completada. Téntao de novo cando esteas en liña.</translation>
 <translation id="6254629735336163724">Pantalla bloqueada en posición horizontal</translation>
-<translation id="6259254695169772643">Usa o teu lapis óptico para seleccionar</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: activando...</translation>
 <translation id="6274202259872570803">Gravación da pantalla</translation>
+<translation id="6274422179279280249">Insire ligazóns, emojis e moito máis. Tamén podes obter axuda para escribir coa IA de Google. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Consultar fonte da páxina</translation>
 <translation id="6285871695023807425">Engadir a Calendar</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode engadirse de novo máis adiante co permiso da súa nai ou do seu pai.</translation>
@@ -1679,6 +1645,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
+<translation id="6448529022565414427">A carga está en pausa</translation>
 <translation id="6449483711453944360">As aplicacións de Linux e as ventás do modo de incógnito agora mesmo non son compatibles</translation>
 <translation id="6450245544201845082">O atallo para facer clic co botón dereito está desactivado</translation>
 <translation id="6452181791372256707">Rexeitar</translation>
@@ -1717,7 +1684,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova instalación</translation>
 <translation id="6559158502366839560">Explorar máis aplicacións e xogos</translation>
-<translation id="6559976592393364813">Pedirllo ao administrador</translation>
 <translation id="6562447480759345110">Finalizar o modo Sen distraccións</translation>
 <translation id="6565007273808762236">Non se puido establecer conexión coa eSIM</translation>
 <translation id="6570831796530454248">{0,plural, =1{Actualiza o dispositivo en 1 hora}other{Actualiza o dispositivo en # horas}}</translation>
@@ -1729,6 +1695,7 @@ Nova instalación</translation>
 <translation id="6582012689384648647">Se queres desfrutar de listas de reprodución personalizadas para concentrarte, permite o acceso a YouTube Music</translation>
 <translation id="6582034443359256692">Calculando o nivel de carga da batería.</translation>
 <translation id="6585808820553845416">A sesión finaliza dentro de <ph name="SESSION_TIME_REMAINING" /> .</translation>
+<translation id="6586685375736417639">Non se pode cargar o dispositivo</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Cámara axustada á esquina inferior esquerda. Conflito coa plataforma do sistema.</translation>
 <translation id="6605415194043280389">Modo Sen distraccións activado</translation>
@@ -1845,7 +1812,6 @@ Nova instalación</translation>
 <translation id="696267987219125751">O zoom automático está desactivado.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6972629891077993081">Dispositivos de interface humana</translation>
-<translation id="6972754398087986839">Introdución</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">inserir</translation>
 <translation id="6981291220124935078">Activar acceso</translation>
@@ -1874,7 +1840,6 @@ Nova instalación</translation>
 <translation id="7064351585062927183">O próximo <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">Esta rede está desactivada polo administrador.</translation>
 <translation id="7067196344162293536">Xirar automat.</translation>
-<translation id="7068360136237591149">Abrir ficheiros</translation>
 <translation id="7076293881109082629">Iniciando sesión</translation>
 <translation id="7076878155205969899">Silenciar son</translation>
 <translation id="7083848064787091821">Sen distraccións</translation>
@@ -1907,7 +1872,6 @@ Nova instalación</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7181691792034457084">Ola! <ph name="PRODUCT_NAME" /> é un pouco diferente.</translation>
 <translation id="7188494361780961876">O menú moveuse á esquina superior esquerda da pantalla.</translation>
-<translation id="7189412385142492784">A que distancia está Venus?</translation>
 <translation id="7198435252016571249">Cámara axustada á esquina inferior dereita. Conflito coa plataforma do sistema.</translation>
 <translation id="7219573373513695352">Non hai ningún dispositivo conectado</translation>
 <translation id="7228968829656641943">Selecciona unha zona para facer buscas na miña pantalla. Preme Tabulador e despois Espazo para desprazarte polo teclado.</translation>
@@ -1921,13 +1885,11 @@ Nova instalación</translation>
 <translation id="7256634071279256947">Micrófono traseiro</translation>
 <translation id="7258828758145722155">Editouse onte</translation>
 <translation id="726276584504105859">Arrastra aquí a ventá para usar a vista dividida</translation>
-<translation id="7262906531272962081">Crear recordatorio</translation>
 <translation id="7264788308526527464">Reducir <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + retroceso</translation>
 <translation id="7285232777292757180">Usa a ferramenta de captura de pantalla que está na configuración rápida para facer capturas de pantalla</translation>
 <translation id="7301826272005790482">Pechar as suxestións de ventás</translation>
 <translation id="7302889331339392448">A función Subtítulos instantáneos está desactivada.</translation>
-<translation id="7303365578352795231">Respondendo consulta noutro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">Non se encontraron resultados</translation>
 <translation id="7312210124139670355">O teu administrador está restablecendo a eSIM. Esta acción pode tardar uns minutos.</translation>
@@ -1968,7 +1930,6 @@ Nova instalación</translation>
 <translation id="7413851974711031813">Para pechar o diálogo, preme a tecla Escape</translation>
 <translation id="7416471219712049036">Gardar páxina actual</translation>
 <translation id="742594950370306541">Estase utilizando a cámara.</translation>
-<translation id="742608627846767349">Bos días!</translation>
 <translation id="743058460480092004">Estanse utilizando a cámara e o micrófono.</translation>
 <translation id="7440404390546433462">Busca de Google</translation>
 <translation id="7441711280402516925">Reproducindo · Cambiar á pestana</translation>
@@ -2093,7 +2054,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7825412704590278437">Dun evento próximo do calendario</translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7830453190047749513">Podes personalizar as accións dos botóns ou a velocidade do cursor, entre outras opcións, para <ph name="PERIPHERAL_NAME" /></translation>
-<translation id="7837740436429729974">Acabouse o tempo</translation>
 <translation id="7842569679327885685">Advertencia: Función experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7848989271541991537">Moveuse á páxina <ph name="PAGE_NUMBER" />, fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
@@ -2108,9 +2068,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7884902759927478774">Cancelar acción de arrastrar a pestana</translation>
 <translation id="7886169021410746335">Axustar a configuración de privacidade</translation>
 <translation id="7886277072580235377">Cando saias da conta, borrarase a túa sesión de Internet. <ph name="LEARN_MORE" /></translation>
-<translation id="788781083998633524">Enviar un correo</translation>
 <translation id="7893503627044934815">Non quero que se mostre este ficheiro</translation>
-<translation id="7893547474469215105">Define "cénit"</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7896681766480521542">Engadir unha tarefa</translation>
 <translation id="7897375687985782769">Premiches o atallo de teclado para xirar a pantalla. Queres realizar esta acción?</translation>
@@ -2130,7 +2088,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos conectados</translation>
 <translation id="7921565901396407357">Non se puido verificar o teu PIN. Téntao de novo.</translation>
-<translation id="7923534281713082605">O tempo</translation>
 <translation id="7926080067315048321">Ver na Web todas as tarefas de Tarefas de Google</translation>
 <translation id="7930731167419639574">O que se diga procésase de xeito local e o ditado funciona sen conexión</translation>
 <translation id="7932451802722951285">Abrir en Google Calendar</translation>
@@ -2235,6 +2192,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8237964652943995219">Escritorio seguinte: <ph name="DESK_NAME" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Fai unha visita rápida para familiarizarte co teu dispositivo <ph name="PRODUCT_NAME" />. Comeza a usalo en cinco pasos.</translation>
 <translation id="8239034820133090126">Activar escritorio da dereita</translation>
+<translation id="8241650983304689286">Engadir pestana á nova vista dividida</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, batería do teléfono ao <ph name="BATTERY_STATUS" /></translation>
 <translation id="825129991941217170">Mostrar todo o contido de Google Drive</translation>
 <translation id="8257510091797044096">Configurar o teu dispositivo</translation>
@@ -2253,7 +2211,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8315514906653279104">Activando...</translation>
 <translation id="8331351032546853669">Descarga pendente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
-<translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Mal resultado</translation>
 <translation id="8345019317483336363">Ventá seleccionada: <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">menú de aplicacións</translation>
@@ -2261,12 +2218,10 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> en uso.</translation>
 <translation id="8369166482916924789">Escritorio gardado, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
-<translation id="8370414029565771236">Buscar <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Avanzar unha letra</translation>
 <translation id="8371991222807690464">É posible que os periféricos teñan un rendemento limitado no modo de convidado</translation>
 <translation id="8374601332003098278">Premer Introducir para gravar parte da pantalla</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o teu teléfono conectaranse automaticamente</translation>
-<translation id="8380784334203145311">Boas noites!</translation>
 <translation id="8382715499079447151">Protección fronte a miróns</translation>
 <translation id="8383614331548401927">Recapitulación de benvida</translation>
 <translation id="838540623579162843">Obter Music Premium</translation>
@@ -2278,7 +2233,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (estoxo)</translation>
 <translation id="8420205633584771378">Queres eliminar esta suxestión?</translation>
 <translation id="8421270167862077762">A aplicación <ph name="UNAVAILABLE_APPS" /> non está dispoñible neste dispositivo.</translation>
-<translation id="8426708595819210923">Bo serán, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> do <ph name="KEY_ONE" /> ao <ph name="KEY_TWO" /></translation>
 <translation id="8429547770382807369">Gardar grupo para máis tarde</translation>
@@ -2320,10 +2274,8 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8558521694042102707">A IA xenerativa pode cometer erros (mesmo no referente á información sobre persoas), polo que debes revisar os resultados.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> editouno</translation>
 <translation id="8569146227972631631">°F</translation>
-<translation id="8569751806372591456">Aquí tes algunhas suxestións que podes probar</translation>
 <translation id="857201607579416096">O menú moveuse á esquina inferior dereita da pantalla.</translation>
 <translation id="8581946341807941670">Preme <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> e fai clic nunha ligazón</translation>
-<translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordena as túas aplicacións por nome ou cor</translation>
 <translation id="8609384513243082612">Abrir nova pestana</translation>
 <translation id="861045123704058818">As aplicacións están organizadas por categoría de forma temporal</translation>
@@ -2342,13 +2294,11 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restante</translation>
 <translation id="8640470573049727749">Ocultar todas as suxestións de grupos</translation>
 <translation id="8641510901370802679">Mostrando información sobre <ph name="ANSWER_TYPE" /></translation>
-<translation id="8646417893960517480">Temporizador de <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Para engadir unha persoa, escribe o código de acceso parental de Family Link</translation>
 <translation id="8649597172973390955">O estante móstrase sempre</translation>
 <translation id="8652175077544655965">Pechar configuración</translation>
 <translation id="8653151467777939995">Mostrar a configuración de notificacións. Están activadas</translation>
 <translation id="8657066291275741003">minúsculas</translation>
-<translation id="8660331759611631213">Raíz cadrada de 71</translation>
 <translation id="8662921061190671299">Non se puido engadir o evento a Calendar</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Premer Introducir para facer captura de pantalla parcial</translation>
@@ -2381,7 +2331,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8756799553341497810">En canto saias desta vista, poderás comezar a personalizar o deseño da túa aplicación.</translation>
 <translation id="8759408218731716181">Erro ao configurar o inicio de sesión múltiple</translation>
 <translation id="8763883995157866248">Por dispositivo no modo de suspensión</translation>
-<translation id="877404052021108314">90 °F en C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, aplicación instalada, bloqueada</translation>
 <translation id="8785070478575117577">Conectar con <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -2415,7 +2364,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8875021410787719674">Móvete entre a esquina inferior dereita, o menú de aplicacións, a barra de enderezos, a barra de marcadores, o sitio web que teñas aberto e as descargas</translation>
 <translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> de <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Comproba a conexión</translation>
-<translation id="8877788021141246043">Definir un recordatorio</translation>
 <translation id="8885424115080869847">Non se puido establecer a conexión con YouTube Music</translation>
 <translation id="888982883502837004">Hai actualizacións de firmware dispoñibles para o teu dispositivo. Fai clic para revisalas e instalalas.</translation>
 <translation id="8896630965521842259">Eliminarase <ph name="DESK_TEMPLATE_NAME" /> de forma permanente</translation>
@@ -2466,7 +2414,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9050999376345823055">Preme "." para soltar o botón</translation>
 <translation id="906458777597946297">Maximizar ventá</translation>
 <translation id="9065203028668620118">Editar</translation>
-<translation id="9070640332319875144">Configuración do Asistente</translation>
+<translation id="9068849894565669697">Seleccionar cor</translation>
 <translation id="9071966355747967534"><ph name="FEATURE_NAME" /> non está dispoñible</translation>
 <translation id="9072519059834302790">Tempo que falta ata que a batería estea baleira: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074432941673450836">Usa as aplicacións para facer todo o que necesites no teu dispositivo <ph name="PRODUCT_NAME" />. Podes atopalas no menú de aplicacións. Tamén podes premer a tecla do menú de aplicacións (encima da tecla Maiúsculas que está á esquerda) no teclado.</translation>
@@ -2522,7 +2470,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="92580429198593979">Premiches o atallo de teclado da inversión da cor. Queres activala?</translation>
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="938407504481277932">Escritorio actual: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />). Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
-<translation id="938963181863597773">Que hai no meu calendario?</translation>
 <translation id="94468042118567862">Non se puido cambiar a versión</translation>
 <translation id="945383118875625837">Arrastra a ligazón á barra de marcadores</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>

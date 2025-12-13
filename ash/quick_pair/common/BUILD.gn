@@ -37,12 +37,12 @@ component("common") {
   ]
 
   deps = [
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/services/quick_pair/public/mojom",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//components/metrics/structured:structured_events",
     "//components/metrics/structured:structured_metrics_features",
     "//components/prefs",
@@ -102,7 +102,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     ":test_support",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//base/test:test_support",
     "//chromeos/ash/components/feature_usage",
     "//components/prefs:test_support",

@@ -33,6 +33,9 @@ enum class AutofillSnackbarType {
 
   // Used when masked server card enrolled in card info retrieval is retrieved.
   kCardInfoRetrieval = 7,
+
+  // Used when a BNPL virtual card is retrieved.
+  kBnpl = 8,
 };
 
 }  // namespace autofill

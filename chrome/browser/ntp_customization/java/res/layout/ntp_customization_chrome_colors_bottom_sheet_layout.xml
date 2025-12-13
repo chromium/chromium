@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ntp_customization_chrome_colors_bottom_sheet_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom">
+
+    <include layout="@layout/ntp_customization_drag_handle_bar" />
+
+    <ImageView
+        android:id="@+id/back_button"
+        android:layout_height="@dimen/ntp_customization_back_button_clickable_size"
+        android:layout_width="@dimen/ntp_customization_back_button_clickable_size"
+        android:padding="@dimen/ntp_customization_back_button_padding"
+        android:layout_marginStart="@dimen/ntp_customization_back_button_margin_start"
+        android:src="@drawable/btn_back"
+        app:tint="@macro/default_icon_color"
+        android:contentDescription="@string/back"
+        app:layout_constraintTop_toTopOf="@id/bottom_sheet_title"
+        app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_title"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/bottom_sheet_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"
+        android:text="@string/ntp_customization_chrome_colors_title"
+        android:layout_marginStart="@dimen/ntp_customization_ntp_cards_title_margin"
+        android:layout_marginTop="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:layout_marginEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/drag_handle_bar"
+        app:layout_constraintEnd_toStartOf="@id/learn_more_button" />
+
+    <ImageView
+        android:id="@+id/learn_more_button"
+        android:layout_height="@dimen/ntp_customization_back_button_clickable_size"
+        android:layout_width="@dimen/ntp_customization_back_button_clickable_size"
+        android:padding="@dimen/ntp_customization_back_button_padding"
+        android:layout_marginEnd="@dimen/ntp_customization_back_button_margin_start"
+        android:src="@drawable/ic_help_and_feedback"
+        app:tint="@macro/default_icon_color"
+        android:contentDescription="@string/learn_more"
+        app:layout_constraintTop_toTopOf="@id/bottom_sheet_title"
+        app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_title"
+        app:layout_constraintStart_toEndOf="@id/bottom_sheet_title"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
+        android:id="@+id/chrome_colors_switch_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:layout_marginHorizontal="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:paddingHorizontal="@dimen/ntp_customization_edit_icon_margin"
+        app:layout_constraintTop_toBottomOf="@id/bottom_sheet_title"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_single"
+        tools:baselinealigned="false"
+        android:text="@string/ntp_customization_theme_collections_daily_update" />
+
+    <include
+        android:id="@+id/custom_color_picker_container"
+        layout="@layout/ntp_customization_custom_color_picker"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/chrome_colors_switch_button"
+        app:layout_constraintStart_toStartOf="@id/chrome_colors_switch_button"
+        app:layout_constraintEnd_toEndOf="@id/chrome_colors_switch_button"
+        android:visibility="gone"/>
+
+    <FrameLayout
+        android:id="@+id/chrome_colors_recycler_view_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/ntp_customization_ntp_cards_margin"
+        app:layout_constraintTop_toBottomOf="@id/custom_color_picker_container"
+        app:layout_constraintStart_toStartOf="@id/chrome_colors_switch_button"
+        app:layout_constraintEnd_toEndOf="@id/chrome_colors_switch_button">
+        <view
+            class="org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorGridRecyclerView"
+            android:id="@+id/chrome_colors_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

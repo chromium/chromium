@@ -52,7 +52,7 @@ class CompositorViewImpl : public CompositorView,
                       jint width,
                       jint height,
                       bool can_be_used_with_surface_control,
-                      const base::android::JavaParamRef<jobject>& surface);
+                      const base::android::JavaRef<jobject>& surface);
 
   // CompositorView implementation.
   void SetRootLayer(scoped_refptr<cc::slim::Layer> layer) override;

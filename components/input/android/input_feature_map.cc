@@ -33,3 +33,5 @@ static jlong JNI_InputFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace input
+
+DEFINE_JNI(InputFeatureMap)

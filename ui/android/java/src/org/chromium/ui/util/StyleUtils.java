@@ -103,11 +103,10 @@ public class StyleUtils {
         }
 
         if (applyTextColor) {
-            int textColor =
-                    appearance.getColor(
-                            R.styleable.TextAppearance_android_textColor, INVALID_RESOURCE_ID);
-            assert textColor != INVALID_RESOURCE_ID : "textColor is not defined in style.";
-            textPaint.setColor(textColor);
+            var textColorStateList =
+                    appearance.getColorStateList(R.styleable.TextAppearance_android_textColor);
+            assert textColorStateList != null : "textColor is not defined in style.";
+            textPaint.setColor(textColorStateList.getDefaultColor());
         }
 
         appearance.recycle();

@@ -139,6 +139,9 @@ class TestSyncImpl : public TestSync, public TestSyncCommonImpl {
 
   // TestSync implementation:
   void Ping(PingCallback callback) override { PingImpl(std::move(callback)); }
+  void NoInterruptPing(NoInterruptPingCallback callback) override {
+    PingImpl(std::move(callback));
+  }
   void Echo(int32_t value, EchoCallback callback) override {
     EchoImpl(value, std::move(callback));
   }
@@ -191,6 +194,9 @@ class TestSyncAssociatedImpl : public TestSync, public TestSyncCommonImpl {
 
   // TestSync implementation:
   void Ping(PingCallback callback) override { PingImpl(std::move(callback)); }
+  void NoInterruptPing(NoInterruptPingCallback callback) override {
+    PingImpl(std::move(callback));
+  }
   void Echo(int32_t value, EchoCallback callback) override {
     EchoImpl(value, std::move(callback));
   }
@@ -1722,12 +1728,10 @@ class OneSyncImpl;
 
 class NoSyncImpl : public mojom::NoSync {
  public:
-  explicit NoSyncImpl(PendingReceiver<mojom::NoSync> receiver)
-      : receiver_(this, std::move(receiver)) {}
+  explicit NoSyncImpl(PendingReceiver<mojom::NoSync> receiver);
 
   explicit NoSyncImpl(
-      PendingAssociatedReceiver<mojom::NoSync> associated_receiver)
-      : associated_receiver_(this, std::move(associated_receiver)) {}
+      PendingAssociatedReceiver<mojom::NoSync> associated_receiver);
 
   // mojom::NoSync implementation:
   void Method(MethodCallback callback) override;
@@ -1764,6 +1768,13 @@ class OneSyncImpl : public mojom::OneSync {
   std::unique_ptr<NoSyncImpl> associated_no_sync_;
   std::unique_ptr<OneSyncImpl> associated_one_sync_;
 };
+
+NoSyncImpl::NoSyncImpl(PendingReceiver<mojom::NoSync> receiver)
+    : receiver_(this, std::move(receiver)) {}
+
+NoSyncImpl::NoSyncImpl(
+    PendingAssociatedReceiver<mojom::NoSync> associated_receiver)
+    : associated_receiver_(this, std::move(associated_receiver)) {}
 
 void NoSyncImpl::Method(MethodCallback callback) {
   EXPECT_TRUE(false);

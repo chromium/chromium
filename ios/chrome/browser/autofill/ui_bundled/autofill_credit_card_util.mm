@@ -11,7 +11,7 @@
 #import "components/autofill/core/browser/autofill_type.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_type_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -24,6 +24,7 @@
                                  expirationMonth:(NSString*)expirationMonth
                                   expirationYear:(NSString*)expirationYear
                                     cardNickname:(NSString*)cardNickname
+                                         cardCvc:(NSString*)cardCvc
                                         appLocal:(const std::string&)appLocal {
   autofill::CreditCard creditCard = autofill::CreditCard();
   [self updateCreditCard:&creditCard
@@ -32,6 +33,7 @@
          expirationMonth:expirationMonth
           expirationYear:expirationYear
             cardNickname:cardNickname
+                 cardCvc:cardCvc
                 appLocal:appLocal];
   return creditCard;
 }
@@ -40,12 +42,13 @@
           expirationMonth:(NSString*)expirationMonth
            expirationYear:(NSString*)expirationYear
              cardNickname:(NSString*)cardNickname
+                  cardCvc:(NSString*)cardCvc
                  appLocal:(const std::string&)appLocal {
-  return ([self isValidCreditCardNumber:cardNumber appLocal:appLocal] &&
-          [self isValidCreditCardExpirationMonth:expirationMonth] &&
-          [self isValidCreditCardExpirationYear:expirationYear
-                                       appLocal:appLocal] &&
-          [self isValidCardNickname:cardNickname]);
+  return (
+      [self isValidCreditCardNumber:cardNumber appLocal:appLocal] &&
+      [self isValidCreditCardExpirationMonth:expirationMonth] &&
+      [self isValidCreditCardExpirationYear:expirationYear appLocal:appLocal] &&
+      [self isValidCardNickname:cardNickname] && [self isValidCardCvc:cardCvc]);
 }
 
 + (void)updateCreditCard:(autofill::CreditCard*)creditCard
@@ -54,6 +57,7 @@
          expirationMonth:(NSString*)expirationMonth
           expirationYear:(NSString*)expirationYear
             cardNickname:(NSString*)cardNickname
+                 cardCvc:(NSString*)cardCvc
                 appLocal:(const std::string&)appLocal {
   [self updateCreditCard:creditCard
                   cardProperty:cardHolderName
@@ -75,6 +79,11 @@
       autofillCreditCardUIType:AutofillCreditCardUIType::kExpYear
                       appLocal:appLocal];
 
+  [self updateCreditCard:creditCard
+                  cardProperty:cardCvc
+      autofillCreditCardUIType:AutofillCreditCardUIType::kSecurityCode
+                      appLocal:appLocal];
+
   creditCard->SetNickname(base::SysNSStringToUTF16(cardNickname));
 }
 
@@ -85,6 +94,7 @@
                                                    expirationMonth:nil
                                                     expirationYear:nil
                                                       cardNickname:nil
+                                                           cardCvc:nil
                                                           appLocal:appLocal];
   return creditCard.HasValidCardNumber();
 }
@@ -102,6 +112,7 @@
                      expirationMonth:nil
                       expirationYear:expirationYear
                         cardNickname:nil
+                             cardCvc:nil
                             appLocal:appLocal];
   return creditCard.HasValidExpirationYear();
 }
@@ -109,6 +120,21 @@
 + (BOOL)isValidCardNickname:(NSString*)cardNickname {
   return autofill::CreditCard::IsNicknameValid(
       base::SysNSStringToUTF16(cardNickname));
+}
+
++ (BOOL)isValidCardCvc:(NSString*)cardCvc {
+  // CVC is optional.
+  if (cardCvc.length == 0) {
+    return YES;
+  }
+  // TODO(crbug.com/436559372): Add HasValidCVC to autofill::creditCard class
+  // and use the same mechanism as above method.
+  NSUInteger len = cardCvc.length;
+  return (len == 3 || len == 4) &&
+         [cardCvc
+             rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet]
+                                         invertedSet]]
+                 .location == NSNotFound;
 }
 
 + (BOOL)shouldEditCardFromPaymentsWebPage:(const autofill::CreditCard&)card {

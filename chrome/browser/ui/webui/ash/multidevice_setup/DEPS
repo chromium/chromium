@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/browser/ui/webui/ash/user_image",
   "+chrome/browser/ui/webui/metrics_handler.h",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
 ]

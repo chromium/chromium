@@ -5,6 +5,7 @@
 #ifndef BASE_STRINGS_STRING_NUMBER_CONVERSIONS_WIN_H_
 #define BASE_STRINGS_STRING_NUMBER_CONVERSIONS_WIN_H_
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 
@@ -19,6 +20,8 @@ BASE_EXPORT std::wstring NumberToWString(unsigned long value);
 BASE_EXPORT std::wstring NumberToWString(long long value);
 BASE_EXPORT std::wstring NumberToWString(unsigned long long value);
 BASE_EXPORT std::wstring NumberToWString(double value);
+BASE_EXPORT std::wstring NumberToWStringWithFixedPrecision(double value,
+                                                           int digits);
 
 // The following section contains overloads of the cross-platform APIs for
 // std::wstring and std::wstring_view.

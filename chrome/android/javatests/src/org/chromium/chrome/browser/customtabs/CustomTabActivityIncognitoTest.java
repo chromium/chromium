@@ -60,7 +60,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -398,7 +398,7 @@ public class CustomTabActivityIncognitoTest {
         Intent intent = createTestCustomTabIntent();
         CustomTabIntentDataProvider.addReaderModeUiExtras(intent);
         IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
-                intent, IntentHandler.IncognitoCctCallerId.READER_MODE);
+                intent, BrowserServicesIntentDataProvider.IncognitoCctCallerId.READER_MODE);
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(activity);
 

@@ -220,6 +220,7 @@ component("bluetooth") {
       "//chromeos/ash/services/nearby/public/cpp/",
       "//chromeos/ash/services/secure_channel/public/cpp/shared",
       "//chromeos/constants",
+      "//device/bluetooth/bluez/ble_scan_parser",
     ]
   }
 
@@ -453,10 +454,6 @@ component("bluetooth") {
         "dbus/bluez_dbus_client.h",
         "dbus/bluez_dbus_manager.cc",
         "dbus/bluez_dbus_manager.h",
-        "dbus/bluez_dbus_thread_manager.cc",
-        "dbus/bluez_dbus_thread_manager.h",
-        "dbus/dbus_bluez_manager_wrapper_linux.cc",
-        "dbus/dbus_bluez_manager_wrapper_linux.h",
         "dbus/fake_bluetooth_adapter_client.cc",
         "dbus/fake_bluetooth_adapter_client.h",
         "dbus/fake_bluetooth_admin_policy_client.cc",
@@ -586,6 +583,12 @@ component("bluetooth") {
         "floss/floss_version.h",
         "floss/test_helpers.h",
       ]
+      if (is_linux) {
+        sources += [
+          "dbus/dbus_bluez_manager_wrapper_linux.cc",
+          "dbus/dbus_bluez_manager_wrapper_linux.h",
+        ]
+      }
       if (is_chromeos) {
         import("//chromeos/dbus/config/use_real_dbus_clients.gni")
         configs += [ "//chromeos/dbus/config:use_real_dbus_clients_config" ]
@@ -597,10 +600,12 @@ component("bluetooth") {
           "chromeos_platform_features.cc",
           "chromeos_platform_features.h",
         ]
-        deps += [ "//services/data_decoder/public/mojom" ]
       }
       if (use_dbus) {
-        public_deps += [ "//dbus" ]
+        public_deps += [
+          "//components/dbus",
+          "//dbus",
+        ]
       }
     } else {  # !use_bluez
       defines += [ "LINUX_WITHOUT_DBUS" ]
@@ -636,10 +641,15 @@ component("bluetooth") {
           "//chromecast/device/bluetooth/le",
         ]
       } else {
+        defines += [ "NO_PLATFORM_BLUETOOTH" ]
         sources += [ "bluetooth_adapter_stub.cc" ]
       }
     }
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("mocks") {

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/device/bluetooth/le/le_scan_result.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +62,8 @@ TEST(LeScanResultTest, Name) {
   scan_result.type_to_data[LeScanResult::kGapShortName].push_back(
       std::vector<uint8_t>(
           reinterpret_cast<const uint8_t*>(kName1),
-          reinterpret_cast<const uint8_t*>(kName1) + strlen(kName1)));
+          UNSAFE_TODO(reinterpret_cast<const uint8_t*>(kName1) +
+                      strlen(kName1))));
   std::optional<std::string> name = scan_result.Name();
   ASSERT_TRUE(name);
   EXPECT_EQ(kName1, *name);
@@ -74,7 +71,8 @@ TEST(LeScanResultTest, Name) {
   scan_result.type_to_data[LeScanResult::kGapCompleteName].push_back(
       std::vector<uint8_t>(
           reinterpret_cast<const uint8_t*>(kName2),
-          reinterpret_cast<const uint8_t*>(kName2) + strlen(kName2)));
+          UNSAFE_TODO(reinterpret_cast<const uint8_t*>(kName2) +
+                      strlen(kName2))));
 
   name = scan_result.Name();
   ASSERT_TRUE(name);

@@ -32,12 +32,12 @@ chromium-metrics-reviews@google.com.
   <variant name="ARCVM" summary="ARCVM"/>
   <variant name="BOREALIS" summary="BOREALIS"/>
   <variant name="BRUSCHETTA" summary="BRUSCHETTA"/>
-  <variant name="PLUGIN_VM" summary="PLUGIN_VM"/>
+  <variant name="PLUGIN_VM" summary="PLUGIN_VM (deprecated in M138)"/>
   <variant name="TERMINA" summary="TERMINA"/>
 </variants>
 
 <histogram name="Virtualization.{Name}.Disk.{Duration}.IoCount" units="count"
-    expires_after="2025-11-26">
+    expires_after="2026-11-26">
   <owner>uekawa@google.com</owner>
   <owner>takayas@google.com</owner>
   <owner>cros-virt-devices-guests@google.com</owner>
@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.Disk.{Duration}.IoSize" units="MiB"
-    expires_after="2025-11-26">
+    expires_after="2026-11-26">
   <owner>uekawa@google.com</owner>
   <owner>takayas@google.com</owner>
   <owner>cros-virt-devices-guests@google.com</owner>
@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.Disk.{Duration}.IoTicks"
-    units="Milliseconds" expires_after="2025-11-26">
+    units="Milliseconds" expires_after="2026-11-26">
   <owner>uekawa@google.com</owner>
   <owner>takayas@google.com</owner>
   <owner>cros-virt-devices-guests@google.com</owner>
@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.Disk.{Duration}.KbPerTicks"
-    units="KiBPerMilliSecond" expires_after="2025-11-26">
+    units="KiBPerMilliSecond" expires_after="2026-11-26">
   <owner>uekawa@google.com</owner>
   <owner>takayas@google.com</owner>
   <owner>cros-virt-devices-guests@google.com</owner>
@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.StartDuration" units="Milliseconds"
-    expires_after="2025-11-26">
+    expires_after="2026-11-26">
   <owner>uekawa@google.com</owner>
   <owner>cros-virt-devices-guests@google.com</owner>
   <summary>
@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.StopDuration" units="Milliseconds"
-    expires_after="2025-11-26">
+    expires_after="2026-11-26">
   <owner>uekawa@google.com</owner>
   <owner>cros-virt-devices-guests@google.com</owner>
   <summary>

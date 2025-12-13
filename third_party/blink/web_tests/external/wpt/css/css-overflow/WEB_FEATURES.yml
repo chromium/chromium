@@ -1,7 +1,25 @@
 features:
+- name: scroll-markers
+  files:
+  - column-scroll-marker*
+  - html-scroll-marker*
+  - inline-with-scroll-marker*
+  - nested-scroll-markers*
+  - root-scroll-marker*
+  - scroll-marker*
+  - target-current-scroll-marker-update.html
+  - targeted-column-scroll-marker*
+  - targeted-scroll-marker*
+- name: scrollbar-buttons
+  files:
+  - root-scroll-button*
+  - scroll-button*
 - name: scrollbar-gutter
   files:
   - scrollbar-gutter-*
+- name: overflow-overlay
+  files:
+  - overflow-overlay.html
 - name: overflow-shorthand
   files:
   - overflow-*

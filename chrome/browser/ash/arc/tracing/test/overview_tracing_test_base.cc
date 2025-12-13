@@ -21,9 +21,10 @@ OverviewTracingTestBase::OverviewTracingTestBase()
 OverviewTracingTestBase::~OverviewTracingTestBase() = default;
 
 void OverviewTracingTestBase::SetUp() {
+  arc_app_test_.PreProfileSetUp();
   ChromeAshTestBase::SetUp();
   profile_ = std::make_unique<TestingProfile>();
-  arc_app_test_.SetUp(profile_.get());
+  arc_app_test_.PostProfileSetUp(profile_.get());
 
   // WMHelper constructor sets a global instance which the Handler constructor
   // requires.
@@ -47,11 +48,12 @@ void OverviewTracingTestBase::TearDown() {
 
   wm_helper_.reset();
 
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
 
   profile_.reset();
 
   ChromeAshTestBase::TearDown();
+  arc_app_test_.PostProfileTearDown();
 }
 
 void OverviewTracingTestBase::CommitAndPresentFrames(

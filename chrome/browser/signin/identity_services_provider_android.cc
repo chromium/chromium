@@ -12,7 +12,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/signin/services/android/jni_headers/IdentityServicesProvider_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 static signin::IdentityManager* JNI_IdentityServicesProvider_GetIdentityManager(
@@ -29,3 +29,5 @@ JNI_IdentityServicesProvider_GetSigninManager(JNIEnv* env, Profile* profile) {
   // traces, so just let the Java side handle possible issues with null.
   return signin_manager ? signin_manager->GetJavaObject() : nullptr;
 }
+
+DEFINE_JNI(IdentityServicesProvider)

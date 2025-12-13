@@ -96,8 +96,8 @@ int GetValidatorOptions(Extension* extension) {
   int options = csp_validator::OPTIONS_NONE;
 
   // crbug.com/146487
-  if (extension->GetType() == Manifest::TYPE_EXTENSION ||
-      extension->GetType() == Manifest::TYPE_LEGACY_PACKAGED_APP) {
+  if (extension->GetType() == Manifest::Type::kExtension ||
+      extension->GetType() == Manifest::Type::kLegacyPackagedApp) {
     options |= csp_validator::OPTIONS_ALLOW_UNSAFE_EVAL;
   }
 
@@ -131,7 +131,7 @@ const char* GetDefaultExtensionPagesCSP(Extension* extension) {
     return kDefaultMV3CSP;
   }
 
-  if (extension->GetType() == Manifest::TYPE_PLATFORM_APP) {
+  if (extension->GetType() == Manifest::Type::kPlatformApp) {
     return kDefaultPlatformAppContentSecurityPolicy;
   }
 
@@ -224,9 +224,9 @@ std::optional<std::string> CSPInfo::GetIsolatedWorldCSP(
   }
 
   Manifest::Type type = extension.GetType();
-  bool bypass_main_world_csp = type == Manifest::TYPE_PLATFORM_APP ||
-                               type == Manifest::TYPE_EXTENSION ||
-                               type == Manifest::TYPE_LEGACY_PACKAGED_APP;
+  bool bypass_main_world_csp = type == Manifest::Type::kPlatformApp ||
+                               type == Manifest::Type::kExtension ||
+                               type == Manifest::Type::kLegacyPackagedApp;
   if (!bypass_main_world_csp) {
     // The isolated world will use the main world CSP.
     return std::nullopt;
@@ -268,7 +268,7 @@ const char* CSPHandler::GetMinimumUnpackedMV3CSPForTesting() {
 }
 
 bool CSPHandler::Parse(Extension* extension, std::u16string* error) {
-  const char* key = extension->GetType() == Manifest::TYPE_PLATFORM_APP
+  const char* key = extension->GetType() == Manifest::Type::kPlatformApp
                         ? keys::kPlatformAppContentSecurityPolicy
                         : keys::kContentSecurityPolicy;
 
@@ -440,11 +440,11 @@ void CSPHandler::SetSandboxCSP(Extension* extension, std::string sandbox_csp) {
 }
 
 bool CSPHandler::AlwaysParseForType(Manifest::Type type) const {
-  // TODO(crbug.com/40099692): Check if TYPE_USER_SCRIPT needs to be included
+  // TODO(crbug.com/40099692): Check if Type::kUserScript needs to be included
   // here.
-  return type == Manifest::TYPE_PLATFORM_APP ||
-         type == Manifest::TYPE_EXTENSION ||
-         type == Manifest::TYPE_LEGACY_PACKAGED_APP;
+  return type == Manifest::Type::kPlatformApp ||
+         type == Manifest::Type::kExtension ||
+         type == Manifest::Type::kLegacyPackagedApp;
 }
 
 base::span<const char* const> CSPHandler::Keys() const {

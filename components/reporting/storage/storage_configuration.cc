@@ -52,10 +52,10 @@ constexpr base::FilePath::CharType kManualLacrosQueueSubdir[] =
 constexpr base::FilePath::CharType kManualLacrosQueuePrefix[] =
     FILE_PATH_LITERAL("P_ManualLacros");
 
-// Failed upload retry delay: if an upload fails and there are no more incoming
-// events, collected events will not get uploaded for an indefinite time (see
-// b/192666219).
-constexpr base::TimeDelta kFailedUploadRetryDelay = base::Seconds(1);
+// Failed upload retry delay: if an upload fails and there are no more
+// incoming events, collected events will attempt to get re-uploaded after
+// that long.
+constexpr base::TimeDelta kFailedUploadRetryDelay = base::Seconds(3);
 
 }  // namespace
 

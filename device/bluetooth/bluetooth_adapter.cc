@@ -37,7 +37,7 @@ BluetoothAdapter::ServiceOptions::~ServiceOptions() = default;
     !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX)
 // static
 scoped_refptr<BluetoothAdapter> BluetoothAdapter::CreateAdapter() {
-  return nullptr;
+  NOTREACHED();
 }
 #endif  // Not supported platforms.
 

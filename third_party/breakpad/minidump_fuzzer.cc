@@ -43,7 +43,7 @@ struct membuf : std::streambuf {
 
 bool PrintMinidumpProcess(const uint8_t* data,
                           size_t size,
-                          const std::vector<string>& symbol_paths) {
+                          const std::vector<std::string>& symbol_paths) {
   // Signature and version number.
   static const uint8_t kHeaderPrefix[] = {'P', 'M', 'D', 'M', 0, 0, 0xa7, 0x93};
   if (size > std::numeric_limits<size_t>::max() - sizeof(kHeaderPrefix))
@@ -91,6 +91,6 @@ bool PrintMinidumpProcess(const uint8_t* data,
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // TODO(wfh): Somehow pull symbols in.
-  PrintMinidumpProcess(data, size, std::vector<string>());
+  PrintMinidumpProcess(data, size, std::vector<std::string>());
   return 0;
 }

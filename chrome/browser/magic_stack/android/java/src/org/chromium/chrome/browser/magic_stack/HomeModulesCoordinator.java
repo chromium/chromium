@@ -85,7 +85,19 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             ModuleRegistry moduleRegistry) {
         mModuleDelegateHost = moduleDelegateHost;
         mHomeModulesConfigManager = homeModulesConfigManager;
-        mHomeModulesStateListener = this::onModuleConfigChanged;
+        mHomeModulesStateListener =
+                new HomeModulesConfigManager.HomeModulesStateListener() {
+                    @Override
+                    public void onModuleConfigChanged(int moduleType, boolean isEnabled) {
+                        HomeModulesCoordinator.this.onModuleConfigChanged(moduleType, isEnabled);
+                    }
+
+                    @Override
+                    public void allCardsConfigChanged(boolean isEnabled) {
+                        // TODO(crbug.com/7142982): If all cards are turned off, reflect that on the
+                        // NTP.
+                    }
+                };
         mHomeModulesConfigManager.addListener(mHomeModulesStateListener);
         mModuleRegistry = moduleRegistry;
 
@@ -233,12 +245,13 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             return;
         }
 
-        if (mProfileSupplier.hasValue()) {
+        var profile = mProfileSupplier.get();
+        if (profile != null) {
             mMediator.showModules(callback, this);
         } else {
             long waitForProfileStartTimeMs = SystemClock.elapsedRealtime();
             mOnProfileAvailableObserver =
-                    (profile) -> {
+                    (p) -> {
                         onProfileAvailable(callback, waitForProfileStartTimeMs);
                     };
 

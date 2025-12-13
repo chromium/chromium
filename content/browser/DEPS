@@ -34,6 +34,7 @@ include_rules = [
   "+components/offline_pages/core/request_header",
   "+components/payments/content/icon",
   "+components/payments/mojom",
+  "+components/persistent_cache",
   "+components/services/heap_profiling/public",
   "+components/services/quarantine/public/mojom/quarantine.mojom.h",
   "+components/system_media_controls",
@@ -45,7 +46,7 @@ include_rules = [
   "+components/web_package",
   "+components/webauthn/json",
   "+components/cbor",
-  "+components/os_crypt/sync/os_crypt_switches.h",
+  "+components/os_crypt/common/os_crypt_switches.h",
   # *********************************** NOTE ***********************************
   # If adding a new component dependency, email
   # content-owners@chromium.org first.
@@ -86,7 +87,6 @@ include_rules = [
   "+services/cert_verifier/public/cpp",
   "+services/cert_verifier/public/mojom",
   "+services/screen_ai/buildflags",
-  "+services/video_effects/public/cpp/buildflags.h",
 
   # In general, //content shouldn't depend on //device.
   # This is the an exception.

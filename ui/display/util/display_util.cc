@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/util/display_util.h"
 
 #include <stddef.h>
@@ -14,12 +9,14 @@
 #include <array>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/edid_parser.h"
 #include "ui/gfx/icc_profile.h"
@@ -61,8 +58,10 @@ bool NearlyEqual(const skcms_Matrix3x3& lhs,
                  float epsilon) {
   for (int r = 0; r < 3; r++) {
     for (int c = 0; c < 3; c++) {
-      if (std::abs(lhs.vals[r][c] - rhs.vals[r][c]) > epsilon)
+      if (std::abs(UNSAFE_TODO(lhs.vals[r][c]) - UNSAFE_TODO(rhs.vals[r][c])) >
+          epsilon) {
         return false;
+      }
     }
   }
   return true;
@@ -344,12 +343,12 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     gfx::ColorSpace hdr_color_space = gfx::ColorSpace::CreateCustom(
         primary_matrix, gfx::ColorSpace::TransferID::SRGB_HDR);
 
-    display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+    display_color_spaces.SetOutputColorSpaceAndFormat(
         gfx::ContentColorUsage::kHDR, false /* needs_alpha */, hdr_color_space,
-        gfx::BufferFormat::RGBA_1010102);
-    display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+        viz::SinglePlaneFormat::kRGBA_1010102);
+    display_color_spaces.SetOutputColorSpaceAndFormat(
         gfx::ContentColorUsage::kHDR, true /* needs_alpha */, hdr_color_space,
-        gfx::BufferFormat::RGBA_1010102);
+        viz::SinglePlaneFormat::kRGBA_1010102);
     display_color_spaces.SetHDRMaxLuminanceRelative(1.1f);
   }
 
@@ -362,7 +361,7 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     // ContentColorUsage. BT2020 primaries and PQ transfer function require a
     // 10-bit buffer.
     display_color_spaces = gfx::DisplayColorSpaces(
-        gfx::ColorSpace::CreateHDR10(), gfx::BufferFormat::RGBA_1010102);
+        gfx::ColorSpace::CreateHDR10(), viz::SinglePlaneFormat::kRGBA_1010102);
     // TODO(b/165822222): Set initial luminance values based on display
     // brightness
     display_color_spaces.SetSDRMaxLuminanceNits(

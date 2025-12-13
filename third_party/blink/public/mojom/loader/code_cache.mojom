@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "components/persistent_cache/mojom/persistent_cache.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
@@ -19,6 +20,12 @@ enum CodeCacheType {
 // can use this interface to persistently store and retrieve executable code
 // generated for a URL.
 interface CodeCacheHost {
+  // Requests a pending backend for an independent read-only connection to a
+  // PersistentCache for the specified `cache_type`. `pending_backend` will be
+  // empty if the cache is not functioning.
+  GetPendingBackend(CodeCacheType cache_type) =>
+      (persistent_cache.mojom.PendingReadOnlyBackend? pending_backend);
+
   // Requests that the browser cache |data| associated with |url| and
   // |expected_response_time|.
   DidGenerateCacheableMetadata(CodeCacheType cache_type,

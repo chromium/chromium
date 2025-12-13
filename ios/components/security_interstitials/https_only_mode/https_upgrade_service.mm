@@ -30,7 +30,7 @@ bool HttpsUpgradeService::IsLocalhost(const GURL& url) const {
   // Tests use 127.0.0.1 for embedded servers, which is a localhost URL.
   // Only check for "localhost" in tests.
   if (https_port_for_testing_) {
-    return url.host() == "localhost";
+    return url.GetHost() == "localhost";
   }
   return net::IsLocalhost(url);
 }
@@ -40,7 +40,7 @@ void HttpsUpgradeService::SetFallbackHttpPortForTesting(int http_port) {
 }
 
 GURL HttpsUpgradeService::GetUpgradedHttpsUrl(const GURL& http_url) const {
-  DCHECK_EQ(url::kHttpScheme, http_url.scheme());
+  DCHECK_EQ(url::kHttpScheme, http_url.GetScheme());
   GURL::Replacements replacements;
 
   // This needs to be in scope when ReplaceComponents() is called:
@@ -49,7 +49,7 @@ GURL HttpsUpgradeService::GetUpgradedHttpsUrl(const GURL& http_url) const {
   if (https_port_for_testing_) {
     // We'll only get here in tests. Tests should always have a non-default
     // port on the input text.
-    DCHECK(!http_url.port().empty());
+    DCHECK(!http_url.GetPort().empty());
     replacements.SetPortStr(port_str);
 
     // Change the URL to help with debugging.
@@ -65,9 +65,9 @@ GURL HttpsUpgradeService::GetUpgradedHttpsUrl(const GURL& http_url) const {
 
 GURL HttpsUpgradeService::GetHttpUrl(const GURL& url) const {
   if (use_fake_https_for_testing_) {
-    DCHECK_EQ(url::kHttpScheme, url.scheme());
+    DCHECK_EQ(url::kHttpScheme, url.GetScheme());
   } else {
-    DCHECK_EQ(url::kHttpsScheme, url.scheme());
+    DCHECK_EQ(url::kHttpsScheme, url.GetScheme());
   }
 
   GURL::Replacements replacements;
@@ -78,7 +78,7 @@ GURL HttpsUpgradeService::GetHttpUrl(const GURL& url) const {
   if (http_port_for_testing_) {
     // We'll only get here in tests. Tests should always have a non-default
     // port on the input text.
-    DCHECK(!url.port().empty());
+    DCHECK(!url.GetPort().empty());
     replacements.SetPortStr(port_str);
   }
   return url.ReplaceComponents(replacements);

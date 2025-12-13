@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -571,6 +570,8 @@ if (is_android) {
     ]
     deps = [
       "//base:base_java",
+      "//base:flagged_apis_java",
+      "//base:service_loader_java",
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_jvm_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -585,7 +586,8 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/junit:junit",
+      "//third_party/google-truth:google_truth_java",
+      "//third_party/junit",
     ]
   }
 

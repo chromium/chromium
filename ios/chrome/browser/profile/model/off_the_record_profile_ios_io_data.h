@@ -8,7 +8,6 @@
 #import <memory>
 
 #import "base/files/file_path.h"
-#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "ios/chrome/browser/net/model/net_types.h"

@@ -17,6 +17,7 @@
 #include "base/types/zip.h"
 #include "base/unguessable_token.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -61,7 +62,7 @@ AutofillTestEnvironment::AutofillTestEnvironment(const Options& options) {
   current_instance_ = this;
   if (options.disable_server_communication) {
     scoped_feature_list_.InitAndDisableFeature(
-        features::test::kAutofillServerCommunication);
+        features::debug::kAutofillServerCommunication);
   }
 }
 
@@ -125,7 +126,11 @@ FormData CreateFormDataForFrame(FormData form, LocalFrameToken frame_token) {
 
 FormData WithoutValues(FormData form) {
   for (FormFieldData& field : test_api(form).fields()) {
+    field.set_user_input({});
     field.set_value({});
+    field.set_is_autofilled(false);
+    field.set_is_user_edited(false);
+    field.set_check_status(FormFieldData::CheckStatus::kNotCheckable);
   }
   return form;
 }
@@ -139,7 +144,9 @@ FormData AsAutofilled(FormData form, bool is_autofilled) {
 
 FormData WithoutUnserializedData(FormData form) {
   form.set_url({});
-  form.set_main_frame_origin({});
+  form.set_full_url({});
+  form.set_main_frame_origin(
+      url::Origin::CreateFromNormalizedTuple("http", "placeholder", 80));
   form.set_host_frame({});
   for (FormFieldData& field : test_api(form).fields()) {
     field = WithoutUnserializedData(std::move(field));
@@ -149,6 +156,9 @@ FormData WithoutUnserializedData(FormData form) {
 
 FormFieldData WithoutUnserializedData(FormFieldData field) {
   field.set_host_frame({});
+  field.set_host_form_signature({});
+  field.set_origin(
+      url::Origin::CreateFromNormalizedTuple("http", "placeholder", 80));
   return field;
 }
 

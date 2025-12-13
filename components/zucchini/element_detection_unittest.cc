@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "components/zucchini/buffer_view.h"
+#include "components/zucchini/image_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace zucchini {

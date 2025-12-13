@@ -41,6 +41,29 @@ import "services/network/public/mojom/web_client_hints_types.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+// Caches enabled client hints to allow handling `ACCEPT_CH` frames in the
+// network service, avoiding an IPC to the browser process.
+// This should be used only in TrustedUrlRequestParams so that only
+// trustworthy clients can pass it.
+struct EnabledClientHints {
+  // The origin for which the client hints are enabled.
+  url.mojom.Origin origin;
+
+  // Whether this is for an outermost main frame.
+  bool is_outermost_main_frame;
+
+  // The set of client hints that are enabled for the origin and currently
+  // allowed to be attached to the request (e.g., by Feature Policy).
+  array<WebClientHintsType> hints;
+
+  // The set of client hints that are persisted for the origin but are
+  // currently not allowed to be attached to the request (e.g., blocked by
+  // Feature Policy). This is used in the network service to avoid an
+  // unnecessary IPC to the browser process when an ACCEPT_CH frame contains
+  // such hints.
+  array<WebClientHintsType> not_allowed_hints;
+};
+
 // See documentation at `URLRequest.trusted_params`.
 //
 // For values that have a corresponding value in URLLoaderFactoryParams
@@ -90,8 +113,7 @@ struct TrustedUrlRequestParams {
 
   // Enabled Client Hints to be evaluated quickly within the network layer
   // when it receives the AcceptCHFrame.
-  // The value is set only if the flag is enabled.
-  array<WebClientHintsType>? enabled_client_hints;
+  EnabledClientHints? enabled_client_hints;
 
   // Observer which should be notified when this URLRequest reads or writes
   // a cookie. If this is set to non-null, the observer passed to
@@ -520,38 +542,6 @@ struct URLRequest {
   // If set, it contains NetLog related parameters to identify the initiator
   // of the request in NetLog.
   NetLogSource? net_log_reference_info;
-
-  // The IP address space to which the target endpoint of this request should
-  // belong, or `kUnknown` if there is no such requirement. Used to implement
-  // the Private Network Access API. If the target endpoint of the network
-  // socket does not belong to this address space, the request is failed with
-  // a CORS error.
-  //
-  // Clients outside the network service must not set this field to a value
-  // other than `kUnknown`.
-  //
-  // If the ClientSecurityState::private_network_request_policy for the
-  // request is kPreflightBlock, then the behavior is as follows:
-  //
-  // CorsURLLoader will send requests (both preflights and non-preflights)
-  // with the default value of `kUnknown`. If URLLoader gets a connection to
-  // a private network, it will fail the request with
-  // `ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS` and populate
-  // `URLLoaderCompletionStatus::cors_error_status` with information about the
-  // address space that was returned.
-  //
-  // Then, regardless of whether that was a preflight request or not,
-  // CorsURLLoader will create a new preflight URLLoader with
-  // `target_ip_address_space` set to the value of the connection that was made,
-  // which will let the preflight request through the checks that blocked the
-  // original one (assume a connection on the same network was returned).
-  //
-  // Then CorsURLLoader will check the headers of the preflight, and if they
-  // allow access to the more private network (and, if other CORS permissions
-  // are needed, those pass as well), the actual request will be made, with the
-  // same `target_ip_address_space` value, which will again bypass the checks,
-  // if a connection on the same network is received.
-  IPAddressSpace target_ip_address_space;
 
   // The target address space to which a given fetch operation is expected to
   // connect. See more:

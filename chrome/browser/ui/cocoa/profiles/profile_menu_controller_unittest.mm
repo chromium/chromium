@@ -9,7 +9,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -245,10 +245,7 @@ TEST_F(ProfileMenuControllerTest, SetActiveAndRemove) {
   std::unique_ptr<Browser> browser = release_browser();
   browser->tab_strip_model()->CloseAllTabs();
   browser.reset();
-  std::unique_ptr<BrowserWindow> browser_window = release_browser_window();
-  browser_window->Close();
-  browser_window.reset();
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   [controller() activeBrowserChangedTo:nil];
   VerifyProfileNamedIsActive(base::SysUTF16ToNSString(kDefaultProfileName),

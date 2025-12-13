@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
@@ -44,7 +43,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.android.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
@@ -89,7 +87,8 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/android-webview-12-x64-dbg/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/android-webview-12-x64-dbg/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

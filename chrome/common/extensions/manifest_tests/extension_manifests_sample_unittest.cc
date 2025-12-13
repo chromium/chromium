@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

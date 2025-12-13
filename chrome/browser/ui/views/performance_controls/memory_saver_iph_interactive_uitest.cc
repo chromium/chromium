@@ -68,7 +68,7 @@ class MemorySaverIphUiTest : public InteractiveFeaturePromoTest {
   // Pretend to have 1GB of memory, to ensure the memory saver promo will
   // show.
   base::test::ScopedAmountOfPhysicalMemoryOverride
-      scoped_amount_of_physical_memory_override_{1024};
+      scoped_amount_of_physical_memory_override_{base::GiB(1)};
 };
 
 // Check that the memory saver mode in-product help promo is shown when
@@ -100,7 +100,14 @@ IN_PROC_BROWSER_TEST_F(MemorySaverIphUiTest, PromoCustomActionClicked) {
 
 // Check that the performance menu item is alerted when the memory saver
 // promo is shown and the app menu button is clicked
-IN_PROC_BROWSER_TEST_F(MemorySaverIphUiTest, AlertMenuItemWhenPromoShown) {
+// TODO(crbug.com/438937135): Times out on mac-ready-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AlertMenuItemWhenPromoShown DISABLED_AlertMenuItemWhenPromoShown
+#else
+#define MAYBE_AlertMenuItemWhenPromoShown AlertMenuItemWhenPromoShown
+#endif
+IN_PROC_BROWSER_TEST_F(MemorySaverIphUiTest,
+                       MAYBE_AlertMenuItemWhenPromoShown) {
   RunTestSequence(TriggerMemorySaverPromo(),
                   // This is required because normally this would happen when
                   // the button is pressed, but pages loading in the background

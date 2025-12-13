@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/dbus/properties/dbus_properties.h"
 #include "components/dbus/properties/success_barrier_callback.h"
+#include "components/dbus/utils/variant.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/menus/simple_menu_model.h"
@@ -43,7 +44,7 @@ const char kPropertyVersion[] = "Version";
 
 // Property values.
 const char kPropertyValueStatusNormal[] = "normal";
-uint32_t kPropertyValueVersion = 3;
+constexpr uint32_t kPropertyValueVersion = 3;
 
 // Signals.
 const char kSignalItemsPropertiesUpdated[] = "ItemsPropertiesUpdated";
@@ -51,32 +52,44 @@ const char kSignalLayoutUpdated[] = "LayoutUpdated";
 
 // Creates a variant with the default value for |property_name|, or an empty
 // variant if |property_name| is invalid.
-DbusVariant CreateDefaultPropertyValue(const std::string& property_name) {
-  if (property_name == "type")
-    return MakeDbusVariant(DbusString("standard"));
-  if (property_name == "label")
-    return MakeDbusVariant(DbusString(""));
-  if (property_name == "enabled")
-    return MakeDbusVariant(DbusBoolean(true));
-  if (property_name == "visible")
-    return MakeDbusVariant(DbusBoolean(true));
-  if (property_name == "icon-name")
-    return MakeDbusVariant(DbusString(""));
-  if (property_name == "icon-data")
-    return MakeDbusVariant(DbusByteArray());
-  if (property_name == "shortcut")
-    return MakeDbusVariant(DbusArray<DbusArray<DbusString>>());
-  if (property_name == "toggle-type")
-    return MakeDbusVariant(DbusString(""));
-  if (property_name == "toggle-state")
-    return MakeDbusVariant(DbusInt32(-1));
-  if (property_name == "children-display")
-    return MakeDbusVariant(DbusString(""));
-  return DbusVariant();
+dbus_utils::Variant CreateDefaultPropertyValue(
+    const std::string& property_name) {
+  if (property_name == "type") {
+    return dbus_utils::Variant::Wrap<"s">("standard");
+  }
+  if (property_name == "label") {
+    return dbus_utils::Variant::Wrap<"s">("");
+  }
+  if (property_name == "enabled") {
+    return dbus_utils::Variant::Wrap<"b">(true);
+  }
+  if (property_name == "visible") {
+    return dbus_utils::Variant::Wrap<"b">(true);
+  }
+  if (property_name == "icon-name") {
+    return dbus_utils::Variant::Wrap<"s">("");
+  }
+  if (property_name == "icon-data") {
+    return dbus_utils::Variant::Wrap<"ay">(std::vector<uint8_t>());
+  }
+  if (property_name == "shortcut") {
+    return dbus_utils::Variant::Wrap<"aas">(
+        std::vector<std::vector<std::string>>());
+  }
+  if (property_name == "toggle-type") {
+    return dbus_utils::Variant::Wrap<"s">("");
+  }
+  if (property_name == "toggle-state") {
+    return dbus_utils::Variant::Wrap<"i">(-1);
+  }
+  if (property_name == "children-display") {
+    return dbus_utils::Variant::Wrap<"s">("");
+  }
+  return dbus_utils::Variant();
 }
 
-DbusString DbusTextDirection() {
-  return DbusString(base::i18n::IsRTL() ? "rtl " : "ltr");
+const char* DbusTextDirection() {
+  return base::i18n::IsRTL() ? "rtl " : "ltr";
 }
 
 void WriteRemovedProperties(dbus::MessageWriter* writer,
@@ -96,7 +109,7 @@ void WriteRemovedProperties(dbus::MessageWriter* writer,
 }  // namespace
 
 DbusMenu::MenuItem::MenuItem(int32_t id,
-                             std::map<std::string, DbusVariant>&& properties,
+                             MenuItemProperties&& properties,
                              std::vector<int32_t>&& children,
                              ui::MenuModel* menu,
                              ui::MenuModel* containing_menu,
@@ -126,14 +139,16 @@ DbusMenu::ScopedMethodResponse::~ScopedMethodResponse() {
 
 dbus::MessageWriter& DbusMenu::ScopedMethodResponse::Writer() {
   EnsureResponse();
-  if (!writer_)
+  if (!writer_) {
     writer_ = std::make_unique<dbus::MessageWriter>(response_.get());
+  }
   return *writer_;
 }
 
 void DbusMenu::ScopedMethodResponse::EnsureResponse() {
-  if (!response_)
+  if (!response_) {
     response_ = dbus::Response::FromMethodCall(method_call_);
+  }
 }
 
 DbusMenu::DbusMenu(dbus::ExportedObject* exported_object,
@@ -168,14 +183,14 @@ DbusMenu::DbusMenu(dbus::ExportedObject* exported_object,
 
   properties_ = std::make_unique<DbusProperties>(menu_, barrier_);
   properties_->RegisterInterface(kInterfaceDbusMenu);
-  auto set_property = [&](const std::string& property_name, auto&& value) {
-    properties_->SetProperty(kInterfaceDbusMenu, property_name,
-                             std::forward<decltype(value)>(value), false);
-  };
-  set_property(kPropertyIconThemePath, DbusArray<DbusString>());
-  set_property(kPropertyMenuStatus, DbusString(kPropertyValueStatusNormal));
-  set_property(kPropertyTextDirection, DbusTextDirection());
-  set_property(kPropertyVersion, DbusUint32(kPropertyValueVersion));
+  properties_->SetProperty<"as">(kInterfaceDbusMenu, kPropertyIconThemePath, {},
+                                 false);
+  properties_->SetProperty<"s">(kInterfaceDbusMenu, kPropertyMenuStatus,
+                                kPropertyValueStatusNormal, false);
+  properties_->SetProperty<"s">(kInterfaceDbusMenu, kPropertyTextDirection,
+                                DbusTextDirection(), false);
+  properties_->SetProperty<"u">(kInterfaceDbusMenu, kPropertyVersion,
+                                kPropertyValueVersion, false);
 }
 
 DbusMenu::~DbusMenu() = default;
@@ -183,17 +198,18 @@ DbusMenu::~DbusMenu() = default;
 void DbusMenu::SetModel(ui::MenuModel* model, bool send_signal) {
   items_.clear();
 
-  std::map<std::string, DbusVariant> properties;
+  MenuItemProperties properties;
   std::vector<int32_t> children;
   if (model) {
-    properties["children-display"] = MakeDbusVariant(DbusString("submenu"));
+    properties["children-display"] = dbus_utils::Variant::Wrap<"s">("submenu");
     children = ConvertMenu(model);
   }
   items_[0] = std::make_unique<MenuItem>(
       0, std::move(properties), std::move(children), nullptr, nullptr, -1);
 
-  if (send_signal)
+  if (send_signal) {
     SendLayoutChangedSignal(0);
+  }
 }
 
 void DbusMenu::MenuLayoutUpdated(ui::MenuModel* model) {
@@ -206,8 +222,9 @@ void DbusMenu::MenuLayoutUpdated(ui::MenuModel* model) {
 
 void DbusMenu::MenuItemsPropertiesUpdated(
     const std::vector<MenuItemReference>& menu_items) {
-  if (menu_items.empty())
+  if (menu_items.empty()) {
     return;
+  }
 
   MenuPropertyChanges updated_props;
   MenuPropertyChanges removed_props;
@@ -232,10 +249,12 @@ void DbusMenu::MenuItemsPropertiesUpdated(
     MenuPropertyList item_removed_props;
     ComputeMenuPropertyChanges(old_properties, item->properties,
                                &item_updated_props, &item_removed_props);
-    if (!item_updated_props.empty())
+    if (!item_updated_props.empty()) {
       updated_props[item->id] = std::move(item_updated_props);
-    if (!item_removed_props.empty())
+    }
+    if (!item_removed_props.empty()) {
       removed_props[item->id] = std::move(item_removed_props);
+    }
   }
 
   dbus::Signal signal(kInterfaceDbusMenu, kSignalItemsPropertiesUpdated);
@@ -266,31 +285,36 @@ void DbusMenu::OnExported(const std::string& interface_name,
 
 void DbusMenu::OnAboutToShow(ScopedMethodResponse* response) {
   int32_t id;
-  if (!response->reader().PopInt32(&id))
+  if (!response->reader().PopInt32(&id)) {
     return;
+  }
 
-  if (!AboutToShowImpl(id))
+  if (!AboutToShowImpl(id)) {
     return;
+  }
 
   response->Writer().AppendBool(false);
 }
 
 void DbusMenu::OnAboutToShowGroup(ScopedMethodResponse* response) {
   dbus::MessageReader array_reader(nullptr);
-  if (!response->reader().PopArray(&array_reader))
+  if (!response->reader().PopArray(&array_reader)) {
     return;
+  }
   std::vector<int32_t> ids;
   while (array_reader.HasMoreData()) {
     int32_t id;
-    if (!array_reader.PopInt32(&id))
+    if (!array_reader.PopInt32(&id)) {
       return;
+    }
     ids.push_back(id);
   }
 
   std::vector<int32_t> id_errors;
   for (int32_t id : ids) {
-    if (!AboutToShowImpl(id))
+    if (!AboutToShowImpl(id)) {
       id_errors.push_back(id);
+    }
   }
 
   // IDs of updates needed (none).
@@ -300,16 +324,18 @@ void DbusMenu::OnAboutToShowGroup(ScopedMethodResponse* response) {
 }
 
 void DbusMenu::OnEvent(ScopedMethodResponse* response) {
-  if (!EventImpl(&response->reader(), nullptr))
+  if (!EventImpl(&response->reader(), nullptr)) {
     return;
+  }
 
   response->EnsureResponse();
 }
 
 void DbusMenu::OnEventGroup(ScopedMethodResponse* response) {
   dbus::MessageReader array_reader(nullptr);
-  if (!response->reader().PopArray(&array_reader))
+  if (!response->reader().PopArray(&array_reader)) {
     return;
+  }
   std::vector<int32_t> id_errors;
   while (array_reader.HasMoreData()) {
     dbus::MessageReader struct_reader(nullptr);
@@ -317,8 +343,9 @@ void DbusMenu::OnEventGroup(ScopedMethodResponse* response) {
 
     int32_t id_error = -1;
     if (!EventImpl(&struct_reader, &id_error)) {
-      if (id_error < 0)
+      if (id_error < 0) {
         return;
+      }
       id_errors.push_back(id_error);
     }
   }
@@ -328,24 +355,28 @@ void DbusMenu::OnEventGroup(ScopedMethodResponse* response) {
 
 void DbusMenu::OnGetGroupProperties(ScopedMethodResponse* response) {
   dbus::MessageReader id_reader(nullptr);
-  if (!response->reader().PopArray(&id_reader))
+  if (!response->reader().PopArray(&id_reader)) {
     return;
+  }
   std::vector<int32_t> ids;
   while (id_reader.HasMoreData()) {
     int32_t id;
-    if (!id_reader.PopInt32(&id))
+    if (!id_reader.PopInt32(&id)) {
       return;
+    }
     ids.push_back(id);
   }
 
   std::set<std::string> property_filter;
   dbus::MessageReader property_reader(nullptr);
-  if (!response->reader().PopArray(&property_reader))
+  if (!response->reader().PopArray(&property_reader)) {
     return;
+  }
   while (property_reader.HasMoreData()) {
     std::string property;
-    if (!property_reader.PopString(&property))
+    if (!property_reader.PopString(&property)) {
       return;
+    }
     property_filter.insert(property);
   }
 
@@ -367,7 +398,7 @@ void DbusMenu::OnGetGroupProperties(ScopedMethodResponse* response) {
       dbus::MessageWriter dict_entry_writer(nullptr);
       property_writer.OpenDictEntry(&dict_entry_writer);
       dict_entry_writer.AppendString(property_pair.first);
-      property_pair.second.Write(&dict_entry_writer);
+      property_pair.second.Write(dict_entry_writer);
       property_writer.CloseContainer(&dict_entry_writer);
     }
     struct_writer.CloseContainer(&property_writer);
@@ -375,13 +406,15 @@ void DbusMenu::OnGetGroupProperties(ScopedMethodResponse* response) {
   };
 
   if (ids.empty()) {
-    for (const auto& item_pair : items_)
+    for (const auto& item_pair : items_) {
       write_item(item_pair.first, *item_pair.second);
+    }
   } else {
     for (int32_t id : ids) {
       auto it = items_.find(id);
-      if (it != items_.end())
+      if (it != items_.end()) {
         write_item(id, *it->second);
+      }
     }
   }
 
@@ -399,8 +432,9 @@ void DbusMenu::OnGetLayout(ScopedMethodResponse* response) {
   }
 
   auto it = items_.find(id);
-  if (it == items_.end())
+  if (it == items_.end()) {
     return;
+  }
 
   dbus::MessageWriter& writer = response->Writer();
   writer.AppendUint32(revision_);
@@ -411,57 +445,68 @@ void DbusMenu::OnGetProperty(ScopedMethodResponse* response) {
   dbus::MessageReader& reader = response->reader();
   int32_t id;
   std::string name;
-  if (!reader.PopInt32(&id) || !reader.PopString(&name))
+  if (!reader.PopInt32(&id) || !reader.PopString(&name)) {
     return;
+  }
 
   auto item_it = items_.find(id);
-  if (item_it == items_.end())
+  if (item_it == items_.end()) {
     return;
+  }
 
   MenuItem* item = item_it->second.get();
   auto property_it = item->properties.find(name);
   if (property_it == item->properties.end()) {
-    DbusVariant default_value = CreateDefaultPropertyValue(name);
-    if (default_value)
-      default_value.Write(&response->Writer());
+    dbus_utils::Variant default_value = CreateDefaultPropertyValue(name);
+    if (!default_value.signature().empty()) {
+      default_value.Write(response->Writer());
+    }
   } else {
-    property_it->second.Write(&response->Writer());
+    property_it->second.Write(response->Writer());
   }
 }
 
 bool DbusMenu::AboutToShowImpl(int32_t id) {
   auto item = items_.find(id);
-  if (item == items_.end())
+  if (item == items_.end()) {
     return false;
+  }
 
-  ui::MenuModel* menu = item->second->menu;
-  if (!menu)
-    return false;
+  if (id != 0) {
+    ui::MenuModel* menu = item->second->menu;
+    if (!menu) {
+      return false;
+    }
 
-  menu->MenuWillShow();
+    menu->MenuWillShow();
+  }
 
   return true;
 }
 
 bool DbusMenu::EventImpl(dbus::MessageReader* reader, int32_t* id_error) {
   int32_t id;
-  if (!reader->PopInt32(&id))
+  if (!reader->PopInt32(&id)) {
     return false;
+  }
   auto item_it = items_.find(id);
   if (item_it == items_.end()) {
-    if (id_error)
+    if (id_error) {
       *id_error = id;
+    }
     return false;
   }
 
   std::string type;
-  if (!reader->PopString(&type))
+  if (!reader->PopString(&type)) {
     return false;
+  }
 
   if (type == "clicked") {
     MenuItem* item = item_it->second.get();
-    if (!item->containing_menu)
+    if (!item->containing_menu) {
       return false;
+    }
     item->containing_menu->ActivatedAt(item->containing_menu_index);
   } else {
     DCHECK(type == "hovered" || type == "opened" || type == "closed")
@@ -474,8 +519,9 @@ bool DbusMenu::EventImpl(dbus::MessageReader* reader, int32_t* id_error) {
 
 std::vector<int32_t> DbusMenu::ConvertMenu(ui::MenuModel* menu) {
   std::vector<int32_t> items;
-  if (!menu)
+  if (!menu) {
     return items;
+  }
   items.reserve(menu->GetItemCount());
 
   for (size_t i = 0; i < menu->GetItemCount(); ++i) {
@@ -514,7 +560,7 @@ void DbusMenu::WriteMenuItem(const MenuItem* item,
       dbus::MessageWriter dict_entry_writer(nullptr);
       properties_writer.OpenDictEntry(&dict_entry_writer);
       dict_entry_writer.AppendString(property.first);
-      property.second.Write(&dict_entry_writer);
+      property.second.Write(dict_entry_writer);
       properties_writer.CloseContainer(&dict_entry_writer);
     }
   }
@@ -553,7 +599,7 @@ void DbusMenu::WriteUpdatedProperties(
       dbus::MessageWriter dict_entry_writer(nullptr);
       array_writer.OpenDictEntry(&dict_entry_writer);
       dict_entry_writer.AppendString(key);
-      item->properties[key].Write(&dict_entry_writer);
+      item->properties[key].Write(dict_entry_writer);
       array_writer.CloseContainer(&dict_entry_writer);
     }
     struct_writer.CloseContainer(&array_writer);
@@ -564,13 +610,15 @@ void DbusMenu::WriteUpdatedProperties(
 
 DbusMenu::MenuItem* DbusMenu::FindMenuItemForModel(const ui::MenuModel* model,
                                                    MenuItem* item) const {
-  if (item->menu == model)
+  if (item->menu == model) {
     return item;
+  }
   for (int32_t id : item->children) {
     MenuItem* child = items_.find(id)->second.get();
     MenuItem* found = FindMenuItemForModel(model, child);
-    if (found)
+    if (found) {
       return found;
+    }
   }
   return nullptr;
 }
@@ -581,8 +629,9 @@ void DbusMenu::DeleteItem(MenuItem* item) {
 }
 
 void DbusMenu::DeleteItemChildren(MenuItem* item) {
-  for (int32_t id : item->children)
+  for (int32_t id : item->children) {
     DeleteItem(items_.find(id)->second.get());
+  }
 }
 
 void DbusMenu::SendLayoutChangedSignal(int32_t id) {

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <algorithm>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -18,15 +14,14 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "device/fido/p256_public_key.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 #include "device/fido/public_key.h"
-#include "fido_transport_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -746,8 +741,9 @@ TEST(CTAPResponseTest, TestReadGetInfoResponse) {
 TEST(CTAPResponseTest, TestReadGetInfoResponseWithDuplicateVersion) {
   uint8_t
       get_info[sizeof(kTestAuthenticatorGetInfoResponseWithDuplicateVersion)];
-  memcpy(get_info, kTestAuthenticatorGetInfoResponseWithDuplicateVersion,
-         sizeof(get_info));
+  UNSAFE_TODO(memcpy(get_info,
+                     kTestAuthenticatorGetInfoResponseWithDuplicateVersion,
+                     sizeof(get_info)));
   // Should fail to parse with duplicate versions.
   EXPECT_FALSE(ReadCTAPGetInfoResponse(get_info));
 
@@ -756,7 +752,7 @@ TEST(CTAPResponseTest, TestReadGetInfoResponseWithDuplicateVersion) {
   static constexpr std::string_view kU2Fv9 = "U2F_V9";
   auto first_version = std::ranges::search(get_info, kU2Fv9);
   ASSERT_FALSE(first_version.empty());
-  memcpy(first_version.begin(), "U2F_V3", 6);
+  UNSAFE_TODO(memcpy(first_version.begin(), "U2F_V3", 6));
   std::optional<AuthenticatorGetInfoResponse> response =
       ReadCTAPGetInfoResponse(get_info);
   ASSERT_TRUE(response);

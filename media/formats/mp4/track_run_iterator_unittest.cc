@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/track_run_iterator.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <array>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -532,10 +528,10 @@ class TrackRunIteratorTest : public testing::Test {
 
   // Add SampleGroupDescription Box to track level sample table and to
   // fragment. Populate SampleToGroup Box from input array.
-  void AddCencSampleGroup(Track* track,
-                          TrackFragment* frag,
-                          const SampleToGroupEntry* sample_to_group_entries,
-                          size_t num_entries) {
+  void AddCencSampleGroup(
+      Track* track,
+      TrackFragment* frag,
+      base::span<const SampleToGroupEntry> sample_to_group_entries) {
     auto& track_cenc_group =
         track->media.information.sample_table.sample_group_description;
     track_cenc_group.grouping_type = FOURCC_SEIG;
@@ -566,8 +562,9 @@ class TrackRunIteratorTest : public testing::Test {
         base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
 
     frag->sample_to_group.grouping_type = FOURCC_SEIG;
-    frag->sample_to_group.entries.assign(sample_to_group_entries,
-                                         sample_to_group_entries + num_entries);
+    frag->sample_to_group.entries.assign(
+        sample_to_group_entries.data(),
+        sample_to_group_entries.subspan(sample_to_group_entries.size()).data());
   }
 
   // Add aux info covering the first track run to a TrackFragment, and update
@@ -624,7 +621,8 @@ class TrackRunIteratorTest : public testing::Test {
     sinf->info.track_encryption.default_crypt_byte_block = 1;
     sinf->info.track_encryption.default_skip_byte_block = 9;
     sinf->info.track_encryption.default_constant_iv_size = 16;
-    memcpy(sinf->info.track_encryption.default_constant_iv, kIv3.data(), 16);
+    base::as_writable_byte_span(sinf->info.track_encryption.default_constant_iv)
+        .copy_from(base::as_byte_span(kIv3));
     sinf->info.track_encryption.default_kid.assign(
         kKeyId.data(),
         base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
@@ -637,20 +635,23 @@ class TrackRunIteratorTest : public testing::Test {
     track_cenc_group.entries[0].crypt_byte_block = 1;
     track_cenc_group.entries[0].skip_byte_block = 9;
     track_cenc_group.entries[0].constant_iv_size = 16;
-    memcpy(track_cenc_group.entries[0].constant_iv, kIv4.data(), 16);
+    base::as_writable_byte_span(track_cenc_group.entries[0].constant_iv)
+        .copy_from(base::as_byte_span(kIv4));
 
     frag->sample_group_description.entries[1].iv_size = 0;
     frag->sample_group_description.entries[1].crypt_byte_block = 1;
     frag->sample_group_description.entries[1].skip_byte_block = 9;
     frag->sample_group_description.entries[1].constant_iv_size = 16;
-    memcpy(frag->sample_group_description.entries[1].constant_iv, kIv5.data(),
-           16);
+    base::as_writable_byte_span(
+        frag->sample_group_description.entries[1].constant_iv)
+        .copy_from(base::as_byte_span(kIv5));
     frag->sample_group_description.entries[2].iv_size = 0;
     frag->sample_group_description.entries[2].crypt_byte_block = 1;
     frag->sample_group_description.entries[2].skip_byte_block = 9;
     frag->sample_group_description.entries[2].constant_iv_size = 16;
-    memcpy(frag->sample_group_description.entries[2].constant_iv, kIv5.data(),
-           16);
+    base::as_writable_byte_span(
+        frag->sample_group_description.entries[2].constant_iv)
+        .copy_from(base::as_byte_span(kIv5));
   }
 
   void AddSampleEncryptionCbcs(TrackFragment* frag) {
@@ -692,8 +693,7 @@ class TrackRunIteratorTest : public testing::Test {
 
     // We don't care about the actual data in aux.
     std::vector<uint8_t> aux_info(1000);
-    return iter_->Init(*moof) &&
-           iter_->CacheAuxInfo(&aux_info[0], aux_info.size());
+    return iter_->Init(*moof) && iter_->CacheAuxInfo(aux_info);
   }
 
   void SetAscending(std::vector<uint32_t>* vec) {
@@ -935,8 +935,7 @@ TEST_F(TrackRunIteratorTest,
       // Associated with the third entry in SampleGroupDescription Box.
       // With Iv size 16 bytes.
       {1, SampleToGroupEntry::kFragmentGroupDescriptionIndexBase + 3}};
-  AddCencSampleGroup(&moov_.tracks[1], &moof.tracks[1], kSampleToGroupTable,
-                     std::size(kSampleToGroupTable));
+  AddCencSampleGroup(&moov_.tracks[1], &moof.tracks[1], kSampleToGroupTable);
 
   ASSERT_TRUE(iter_->Init(moof));
   // The run for track 2 will be the second, which is parsed according to
@@ -985,10 +984,10 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTestWithAuxInfo) {
   EXPECT_EQ(static_cast<uint32_t>(iter_->aux_info_size()), std::size(kAuxInfo));
   EXPECT_EQ(iter_->aux_info_offset(), 50);
   EXPECT_EQ(iter_->GetMaxClearOffset(), 50);
-  EXPECT_FALSE(iter_->CacheAuxInfo(nullptr, 0));
-  EXPECT_FALSE(iter_->CacheAuxInfo(kAuxInfo, 3));
+  EXPECT_FALSE(iter_->CacheAuxInfo({}));
+  EXPECT_FALSE(iter_->CacheAuxInfo(base::span(kAuxInfo).first<3>()));
   EXPECT_TRUE(iter_->AuxInfoNeedsToBeCached());
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo));
   EXPECT_FALSE(iter_->AuxInfoNeedsToBeCached());
   EXPECT_EQ(iter_->sample_offset(), 200);
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[0].runs[0].data_offset);
@@ -1014,8 +1013,7 @@ TEST_F(TrackRunIteratorTest, CencSampleGroupTest) {
       {1, SampleToGroupEntry::kFragmentGroupDescriptionIndexBase + 2},
       // Associated with the first entry in SampleGroupDescription Box.
       {1, SampleToGroupEntry::kFragmentGroupDescriptionIndexBase + 1}};
-  AddCencSampleGroup(&moov_.tracks[0], &moof.tracks[0], kSampleToGroupTable,
-                     std::size(kSampleToGroupTable));
+  AddCencSampleGroup(&moov_.tracks[0], &moof.tracks[0], kSampleToGroupTable);
 
   iter_.reset(new TrackRunIterator(&moov_, &media_log_));
   ASSERT_TRUE(InitMoofWithArbitraryAuxInfo(&moof));
@@ -1047,8 +1045,7 @@ TEST_F(TrackRunIteratorTest, CencSampleGroupWithTrackEncryptionBoxTest) {
       {3, SampleToGroupEntry::kFragmentGroupDescriptionIndexBase + 1},
       // Associated with the 1st entry in track SampleGroupDescription Box.
       {2, 1}};
-  AddCencSampleGroup(&moov_.tracks[0], &moof.tracks[0], kSampleToGroupTable,
-                     std::size(kSampleToGroupTable));
+  AddCencSampleGroup(&moov_.tracks[0], &moof.tracks[0], kSampleToGroupTable);
 
   iter_.reset(new TrackRunIterator(&moov_, &media_log_));
   ASSERT_TRUE(InitMoofWithArbitraryAuxInfo(&moof));
@@ -1113,19 +1110,19 @@ TEST_F(TrackRunIteratorTest, SharedAuxInfoTest) {
   ASSERT_TRUE(iter_->Init(moof));
   EXPECT_EQ(iter_->track_id(), 1u);
   EXPECT_EQ(iter_->aux_info_offset(), 50);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo));
   std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
   ASSERT_EQ(std::size(kIv1), config->iv().size());
-  EXPECT_TRUE(!memcmp(kIv1, config->iv().data(), config->iv().size()));
+  EXPECT_EQ(base::span(kIv1), base::span(config->iv()));
   iter_->AdvanceSample();
   EXPECT_EQ(iter_->GetMaxClearOffset(), 50);
   iter_->AdvanceRun();
   EXPECT_EQ(iter_->GetMaxClearOffset(), 50);
   EXPECT_EQ(iter_->aux_info_offset(), 50);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 200);
   ASSERT_EQ(std::size(kIv1), config->iv().size());
-  EXPECT_TRUE(!memcmp(kIv1, config->iv().data(), config->iv().size()));
+  EXPECT_EQ(base::span(kIv1), base::span(config->iv()));
   iter_->AdvanceSample();
   EXPECT_EQ(iter_->GetMaxClearOffset(), 201);
 }
@@ -1159,13 +1156,13 @@ TEST_F(TrackRunIteratorTest, UnexpectedOrderingTest) {
   EXPECT_EQ(iter_->track_id(), 2u);
   EXPECT_EQ(iter_->aux_info_offset(), 50);
   EXPECT_EQ(iter_->sample_offset(), 200);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 100);
   iter_->AdvanceRun();
   EXPECT_EQ(iter_->track_id(), 1u);
   EXPECT_EQ(iter_->aux_info_offset(), 20000);
   EXPECT_EQ(iter_->sample_offset(), 100);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 100);
   iter_->AdvanceSample();
   EXPECT_EQ(iter_->GetMaxClearOffset(), 101);
@@ -1174,7 +1171,7 @@ TEST_F(TrackRunIteratorTest, UnexpectedOrderingTest) {
   EXPECT_EQ(iter_->aux_info_offset(), 201);
   EXPECT_EQ(iter_->sample_offset(), 10000);
   EXPECT_EQ(iter_->GetMaxClearOffset(), 201);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 10000);
 }
 
@@ -1265,8 +1262,7 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTestWithSampleGroupsAndConstantIv) {
       {1, SampleToGroupEntry::kFragmentGroupDescriptionIndexBase + 1},
       // Associated with the 1st entry in track SampleGroupDescription Box.
       {1, 1}};
-  AddCencSampleGroup(&moov_.tracks[1], &moof.tracks[1], kSampleToGroupTable,
-                     std::size(kSampleToGroupTable));
+  AddCencSampleGroup(&moov_.tracks[1], &moof.tracks[1], kSampleToGroupTable);
   AddConstantIvsToCencSampleGroup(&moov_.tracks[1], &moof.tracks[1]);
   iter_.reset(new TrackRunIterator(&moov_, &media_log_));
   ASSERT_TRUE(iter_->Init(moof));

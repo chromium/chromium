@@ -52,9 +52,6 @@ inline constexpr char kGetHttpMethod[] = "GET";
 // specifications entry point.
 inline constexpr int kProductSpecMaxEntryPointTriggeringInterval = 64;
 
-// OAuth name used for network request.
-inline constexpr char kOAuthName[] = "chromememex_svc";
-
 // Open graph keys.
 inline constexpr char kOgImage[] = "image";
 inline constexpr char kOgPriceAmount[] = "price:amount";

@@ -25,6 +25,7 @@
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/protocol/desktop_capturer.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace base {
@@ -66,7 +67,7 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
       webrtc::ScreenId id) override;
   DesktopDisplayInfoMonitor* GetDisplayInfoMonitor() override;
-  std::unique_ptr<webrtc::MouseCursorMonitor> CreateMouseCursorMonitor()
+  std::unique_ptr<protocol::MouseCursorMonitor> CreateMouseCursorMonitor()
       override;
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)

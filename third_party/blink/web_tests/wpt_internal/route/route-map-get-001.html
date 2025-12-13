@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<title>document.routeMap</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://github.com/WICG/declarative-partial-updates?tab=readme-ov-file#part-2-route-matching">
+<script type="routemap">
+  {
+    "routes": [
+      {
+        "name": "r1",
+        "pattern": { "protocol": "http*" }
+      },
+      {
+        "name": "r2",
+        "pattern": "*different-url"
+      }
+    ]
+  }
+</script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  promise_test(async t => {
+    const routeMap = document.routeMap;
+    assert_true(routeMap instanceof RouteMap, "routeMap should be RouteMap");
+    const r1 = routeMap.get("r1");
+    assert_true(r1 instanceof Route, "r1 should be Route");
+    const r2 = routeMap.get("r2");
+    assert_true(r2 instanceof Route, "r2 should be Route");
+    const rbogus = routeMap.get("rbogus");
+    assert_equals(rbogus, null, "rbogus should not be found");
+
+    assert_true(r1.matches);
+    assert_false(r2.matches);
+
+    history.pushState(0, null, "different-url");
+
+    window.onpageshow = t.step_func_done(() => {
+      assert_true(r1.matches);
+      assert_true(r2.matches);
+    });
+  }, "document.routeMap");
+</script>

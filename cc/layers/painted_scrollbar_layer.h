@@ -98,7 +98,8 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
 
   // Snapshot of properties taken in UpdateGeometry and used in
   // PushPropertiesTo.
-  ProtectedSequenceReadable<gfx::Size> thumb_size_;
+  ProtectedSequenceReadable<int32_t> minimum_thumb_length_;
+  ProtectedSequenceReadable<int32_t> thumb_thickness_;
   ProtectedSequenceReadable<gfx::Rect> track_rect_;
   ProtectedSequenceReadable<gfx::Rect> back_button_rect_;
   ProtectedSequenceReadable<gfx::Rect> forward_button_rect_;

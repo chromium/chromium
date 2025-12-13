@@ -80,6 +80,7 @@ class TestSyncService : public SyncService {
   void SetInitialSyncFeatureSetupComplete(
       bool initial_sync_feature_setup_complete);
   void SetFailedDataTypes(const DataTypeSet& types);
+  void SetBookmarksLimitExceeded(bool exceeded);
 
   void SetLastCycleSnapshot(const SyncCycleSnapshot& snapshot);
   // Convenience versions of the above, for when the caller doesn't care about
@@ -105,7 +106,8 @@ class TestSyncService : public SyncService {
 
   // The passed callback (if non-null) will be called on TriggerRefresh().
   void SetTriggerRefreshCallback(
-      const base::RepeatingCallback<void(DataTypeSet)>& trigger_refresh_cb);
+      const base::RepeatingCallback<
+          void(TriggerRefreshSource, const DataTypeSet&)>& trigger_refresh_cb);
 
   void FireStateChanged();
   void FireSyncCycleCompleted();
@@ -131,7 +133,6 @@ class TestSyncService : public SyncService {
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
   bool HasCachedPersistentAuthErrorForMetrics() const override;
-  bool RequiresClientUpgrade() const override;
 
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
       override;
@@ -142,7 +143,8 @@ class TestSyncService : public SyncService {
   DataTypeSet GetActiveDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   void OnDataTypeRequestsSyncStartup(DataType type) override;
-  void TriggerRefresh(const DataTypeSet& types) override;
+  void TriggerRefresh(TriggerRefreshSource source,
+                      const DataTypeSet& types) override;
   void DataTypePreconditionChanged(DataType type) override;
 
   void AddObserver(SyncServiceObserver* observer) override;
@@ -182,6 +184,7 @@ class TestSyncService : public SyncService {
   void SelectTypeAndMigrateLocalDataItemsWhenActive(
       DataType data_type,
       std::vector<LocalDataItemModel::DataId> items) override;
+  void AcknowledgeBookmarksLimitExceededError() override;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -200,6 +203,8 @@ class TestSyncService : public SyncService {
 
   DataTypeSet failed_data_types_;
 
+  bool bookmarks_limit_exceeded_ = false;
+
   std::map<DataType, DataTypeDownloadStatus> download_statuses_;
 
   bool detailed_sync_status_engine_available_ = false;
@@ -207,8 +212,7 @@ class TestSyncService : public SyncService {
 
   SyncCycleSnapshot last_cycle_snapshot_;
 
-  base::ObserverList<SyncServiceObserver>::UncheckedAndDanglingUntriaged
-      observers_;
+  base::ObserverList<SyncServiceObserver> observers_;
 
   GURL sync_service_url_;
 
@@ -220,7 +224,8 @@ class TestSyncService : public SyncService {
   base::RepeatingClosure send_passphrase_to_platform_client_cb_;
 
   // Nullable.
-  base::RepeatingCallback<void(syncer::DataTypeSet)> trigger_refresh_cb_;
+  base::RepeatingCallback<void(TriggerRefreshSource, const DataTypeSet&)>
+      trigger_refresh_cb_;
 
   base::WeakPtrFactory<TestSyncService> weak_factory_{this};
 };

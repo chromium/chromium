@@ -13,8 +13,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 class ReadAnythingUntrustedPageHandler;
 class ReadAnythingUntrustedUI;
@@ -41,10 +39,6 @@ class ReadAnythingUntrustedUI
   ReadAnythingUntrustedUI& operator=(const ReadAnythingUntrustedUI&) = delete;
   ~ReadAnythingUntrustedUI() override;
 
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          pending_receiver);
-
   // Instantiates the implementor of the mojom::UntrustedPageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
@@ -66,7 +60,6 @@ class ReadAnythingUntrustedUI
 
   std::unique_ptr<ReadAnythingUntrustedPageHandler>
       read_anything_untrusted_page_handler_;
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   mojo::Receiver<read_anything::mojom::UntrustedPageHandlerFactory>
       read_anything_page_factory_receiver_{this};
 

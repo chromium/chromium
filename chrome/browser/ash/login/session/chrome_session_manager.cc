@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/session/session_length_limiter.h"
+#include "chrome/browser/ash/login/session/session_manager_delegate_impl.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
@@ -74,6 +75,10 @@
 namespace ash {
 
 namespace {
+
+void RemoveObsoleteKioskCryptohomes() {
+  KioskController::Get().RemoveObsoleteCryptohomes();
+}
 
 // Starts kiosk app launch and shows the splash screen.
 void StartKioskSession(KioskAppId app, bool is_auto_launch = false) {
@@ -363,8 +368,10 @@ void InitFeaturesSessionType(const user_manager::User* user) {
 
 }  // namespace
 
-ChromeSessionManager::ChromeSessionManager()
-    : oobe_configuration_(std::make_unique<OobeConfiguration>()),
+ChromeSessionManager::ChromeSessionManager(
+    std::unique_ptr<session_manager::SessionManagerDelegate> delegate)
+    : session_manager::SessionManager(std::move(delegate)),
+      oobe_configuration_(std::make_unique<OobeConfiguration>()),
       user_session_initializer_(std::make_unique<UserSessionInitializer>()) {
   AddObserver(user_session_initializer_.get());
 }
@@ -435,7 +442,7 @@ void ChromeSessionManager::Initialize(
   const AccountId login_account_id(
       known_user.GetAccountIdByCryptohomeId(cryptohome_id));
 
-  KioskCryptohomeRemover::RemoveObsoleteCryptohomes();
+  RemoveObsoleteKioskCryptohomes();
 
   if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state)) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";

@@ -8,7 +8,8 @@
 
 namespace blink {
 
-EXTShaderTextureLOD::EXTShaderTextureLOD(WebGLRenderingContextBase* context)
+EXTShaderTextureLOD::EXTShaderTextureLOD(WebGLRenderingContextBase* context,
+                                         ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_EXT_shader_texture_lod");

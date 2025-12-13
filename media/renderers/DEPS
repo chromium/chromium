@@ -5,6 +5,7 @@ include_rules = [
   "+gpu/ipc/client/client_shared_image_interface.h",
   "+media/base/audio_buffer.h",
   "+media/base/speech_recognition_client.h",
+  "+third_party/fp16/src/include",
   "+third_party/khronos/GLES2",
   "+third_party/khronos/GLES3",
   "+ul/gl/gl_enums.h",

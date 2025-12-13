@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
-#import "components/plus_addresses/grit/plus_addresses_strings.h"
+#import "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
@@ -120,7 +120,7 @@ enum ManualFallbackItemType : NSInteger {
   CrURL* crurl = [[CrURL alloc] initWithGURL:plusAddressItem.faviconURL];
   [self.imageDataSource
       faviconForPageURL:crurl
-             completion:^(FaviconAttributes* attributes) {
+             completion:^(FaviconAttributes* attributes, bool cached) {
                // Only set favicon if the cell hasn't been reused.
                if ([plusAddressCell.uniqueIdentifier
                        isEqualToString:itemIdentifier]) {

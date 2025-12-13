@@ -46,14 +46,14 @@ bool ParamTraits<mojo::test::PickledStructChromium>::Read(
   return true;
 }
 
-#include "ipc/param_traits_write_macros.h"
-IPC_ENUM_TRAITS_MAX_VALUE(mojo::test::PickledEnumChromium,
-                          mojo::test::PickledEnumChromium::VALUE_2)
+// Generate param trais read methods from macros.
+#undef MOJO_PUBLIC_CPP_BINDINGS_TESTS_PICKLED_TYPES_CHROMIUM_H_
 #include "ipc/param_traits_read_macros.h"
-IPC_ENUM_TRAITS_MAX_VALUE(mojo::test::PickledEnumChromium,
-                          mojo::test::PickledEnumChromium::VALUE_2)
-#include "ipc/param_traits_log_macros.h"
-IPC_ENUM_TRAITS_MAX_VALUE(mojo::test::PickledEnumChromium,
-                          mojo::test::PickledEnumChromium::VALUE_2)
+#include "mojo/public/cpp/bindings/tests/pickled_types_chromium.h"
+
+// Generate param traits write methods from macros.
+#undef MOJO_PUBLIC_CPP_BINDINGS_TESTS_PICKLED_TYPES_CHROMIUM_H_
+#include "ipc/param_traits_write_macros.h"
+#include "mojo/public/cpp/bindings/tests/pickled_types_chromium.h"
 
 }  // namespace IPC

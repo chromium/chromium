@@ -32,14 +32,13 @@ class HttpClientBridge {
 
   void Destroy(JNIEnv* env);
 
-  void SendNetworkRequest(
-      JNIEnv* env,
-      GURL& gurl,
-      std::string& request_type,
-      std::vector<uint8_t>& request_body,
-      std::map<std::string, std::string> headers,
-      jint j_network_annotation_hashcode,
-      const base::android::JavaParamRef<jobject>& j_callback);
+  void SendNetworkRequest(JNIEnv* env,
+                          GURL& gurl,
+                          std::string& request_type,
+                          std::vector<uint8_t>& request_body,
+                          std::map<std::string, std::string> headers,
+                          jint j_network_annotation_hashcode,
+                          const base::android::JavaRef<jobject>& j_callback);
 
  private:
   void OnResult(const base::android::ScopedJavaGlobalRef<jobject>& j_callback,

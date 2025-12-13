@@ -52,9 +52,9 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   // Delays script evaluation after `ScriptRunnerDelayer::Activate()` until
   // `ScriptRunnerDelayer::Deactivate()`.
   //
-  // Each `DelayReason` value represents one reason to delay, and there should
-  // be at most one active `ScriptRunnerDelayer` for each `ScriptRunnerDelayer`
-  // for each `ScriptRunner`.
+  // Each `DelayReason` value represents one reason to delay, and for each
+  // `ScriptRunner` there should be at most one active `ScriptRunnerDelayer` for
+  // each `DelayReason`.
   //
   // Each script can choose to wait or not to wait for each `DelayReason`, and
   // are evaluated after all of its relevant `ScriptRunnerDelayer`s are
@@ -71,6 +71,11 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
     // Milestone is reached as defined by https://crbug.com/1340837.
     kMilestone = 1 << 1,
 
+    // Paused all JavasScript execution on prerendering pags until activation.
+    // It is an opt-in setting that triggers can specify. One of the triggers is
+    // prerender-until-script: see https://crbug.com/428500219 for details.
+    kPausedForPrerender = 1 << 2,
+
     kTest1 = 1 << 6,
     kTest2 = 1 << 7,
   };
@@ -85,12 +90,6 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
     task_runner_ = task_runner;
   }
 
-  // Returns true until all force in-order scripts are evaluated.
-  // pending_force_in_order_scripts_ can be empty a little earlier than that.
-  bool HasForceInOrderScripts() const {
-    return pending_force_in_order_scripts_count_ > 0;
-  }
-
   void Trace(Visitor*) const override;
   const char* GetHumanReadableName() const override { return "ScriptRunner"; }
 
@@ -99,8 +98,6 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
 
   void ExecuteAsyncPendingScript(PendingScript* pending_script,
                                  base::TimeTicks ready_to_evaluate_time);
-  void ExecuteForceInOrderPendingScript(PendingScript*);
-  void ExecuteParserBlockingScriptsBlockedByForceInOrder();
 
  private:
   // Execute the given pending script.
@@ -119,12 +116,6 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   HeapHashMap<Member<PendingScript>, DelayReasons> pending_async_scripts_;
 
   Member<Document> document_;
-
-  HeapDeque<Member<PendingScript>> pending_force_in_order_scripts_;
-  // The number of force in-order scripts that aren't yet evaluated. This is
-  // different from pending_force_in_order_scripts_.size() == the number of
-  // force in-order scripts that aren't yet scheduled to evaluate.
-  wtf_size_t pending_force_in_order_scripts_count_ = 0;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner_;

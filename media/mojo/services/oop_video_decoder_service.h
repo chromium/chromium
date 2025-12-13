@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/cdm_factory_daemon/remote_cdm_context.h"
@@ -49,7 +50,6 @@ namespace media {
 // the class declaration).
 class MEDIA_MOJO_EXPORT OOPVideoDecoderService
     : public mojom::VideoDecoder,
-      public mojom::VideoFrameHandleReleaser,
       public mojom::VideoDecoderClient,
       public mojom::MediaLog {
  public:
@@ -79,18 +79,13 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderService
   void Reset(ResetCallback callback) final;
   void OnOverlayInfoChanged(const OverlayInfo& overlay_info) final;
 
-  // mojom::VideoFrameHandleReleaser implementation.
-  void ReleaseVideoFrame(
-      const base::UnguessableToken& release_token,
-      const std::optional<gpu::SyncToken>& release_sync_token) final;
-
   // mojom::VideoDecoderClient implementation.
   void OnVideoFrameDecoded(
       const scoped_refptr<VideoFrame>& frame,
       bool can_read_without_stalling,
       const std::optional<base::UnguessableToken>& release_token) final;
   void OnWaiting(WaitingReason reason) final;
-  void RequestOverlayInfo(bool restart_for_transitions) final;
+  void RequestOverlayInfo() final;
 
   // mojom::MediaLog implementation.
   void AddLogRecord(const MediaLogRecord& event) final;
@@ -106,6 +101,14 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderService
   mojo::Remote<mojom::VideoDecoderTracker> tracker_remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Forwards `video_frame_handle_releaser_receiver` are forwarded to
+  // `VideoFrameHandleReleaser` endpoint of `dst_video_decoder_`.
+  //
+  // This object also keeps the video decoder alive by taking ownership of
+  // `tracker_remote_`.
+  mojo::SelfOwnedReceiverRef<mojom::VideoFrameHandleReleaser>
+      video_frame_handle_releaser_;
+
   // Incoming calls from the |dst_video_decoder_| to
   // |video_decoder_client_receiver_| are forwarded to
   // |video_decoder_client_remote_|.
@@ -120,15 +123,6 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderService
       GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Remote<mojom::MediaLog> media_log_remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Incoming requests from the client to
-  // |video_frame_handle_releaser_receiver_| are forwarded to
-  // |video_frame_handle_releaser_remote_|.
-  mojo::Receiver<mojom::VideoFrameHandleReleaser>
-      video_frame_handle_releaser_receiver_
-          GUARDED_BY_CONTEXT(sequence_checker_);
-  mojo::Remote<mojom::VideoFrameHandleReleaser>
-      video_frame_handle_releaser_remote_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The incoming mojom::VideoDecoder requests are forwarded to
   // |dst_video_decoder_receiver_| through |dst_video_decoder_remote_|.

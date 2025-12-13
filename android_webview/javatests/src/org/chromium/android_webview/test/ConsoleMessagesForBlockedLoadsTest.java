@@ -131,36 +131,4 @@ public class ConsoleMessagesForBlockedLoadsTest extends AwParameterizedTest {
             }
         }
     }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testCrossOriginDenial() throws Throwable {
-        startWebServer();
-        final String iframeXsl =
-                "<?xml version='1.0' encoding='UTF-8'?><xsl:stylesheet version='1.0'"
-                        + " xmlns:xsl='http://www.w3.org/1999/XSL/Transform'><xsl:template match='*'>"
-                        + "<html><body>FAIL</body></html></xsl:template></xsl:stylesheet>";
-        final String iframeXslUrl =
-                mWebServer
-                        .setResponse("/iframe.xsl", iframeXsl, null)
-                        .replace(SERVER_HOSTNAME, "127.0.0.1");
-        final String iframeXml =
-                "<?xml version='1.0' encoding='UTF-8'?>"
-                        + "<?xml-stylesheet type='text/xsl' href='"
-                        + iframeXslUrl
-                        + "'?>"
-                        + "<html xmlns='http://www.w3.org/1999/xhtml'>"
-                        + "<body>PASS</body></html>";
-        final String iframeXmlUrl = mWebServer.setResponse("/iframe.xml", iframeXml, null);
-        final String pageHtml =
-                CommonResources.makeHtmlPageFrom("", "<iframe src='" + iframeXmlUrl + "' />");
-        final String pageUrl = mWebServer.setResponse("/page.html", pageHtml, null);
-        mOnConsoleMessageHelper.clearMessages();
-        mActivityTestRule.loadUrlSync(
-                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-        AwConsoleMessage errorMessage = getSingleErrorMessage();
-        assertNotEquals(errorMessage.message().indexOf(iframeXslUrl), -1);
-        assertNotEquals(errorMessage.message().indexOf(iframeXmlUrl), -1);
-    }
 }

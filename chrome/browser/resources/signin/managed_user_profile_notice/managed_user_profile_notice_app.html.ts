@@ -16,8 +16,8 @@ ${html`
     <div id="content-container">
       ${this.showValueProposition_ ? html`
         <managed-user-profile-notice-value-prop id="value-prop"
-            title="$i18n{valuePropositionTitle}"
-            subtitle="$i18n{valuePropSubtitle}"
+            title="${this.valuePropTitle_}"
+            subtitle="${this.valuePropSubtitle_}"
             picture-url="${this.pictureUrl_}"
             email="${this.email_}" account-name="${this.accountName_}"
             ?show-enterprise-badge="${this.showEnterpriseBadge_}">
@@ -25,6 +25,8 @@ ${html`
         </managed-user-profile-notice-value-prop>
       ${this.showDisclosure_ ? html`
         <managed-user-profile-notice-disclosure id="disclosure"
+            title="${this.disclosureTitle_}"
+            subtitle="${this.disclosureSubtitle_}"
             picture-url="${this.pictureUrl_}"
             ?show-enterprise-badge="${this.showEnterpriseBadge_}">
         </managed-user-profile-notice-disclosure>
@@ -49,13 +51,17 @@ ${html`
       ` : ''}
       ${this.showError_ ? html`
         <managed-user-profile-notice-state id="error" icon="cr:domain"
-            title=${this.errorTitle_} subtitle=${this.errorSubtitle_}>
+            title="${this.errorTitle_}" subtitle="${this.errorSubtitle_}">
           <img class="error-icon" alt="">
         </managed-user-profile-notice-state>
       ` : ''}
       ${this.showUserDataHandling_ ? html`
         <managed-user-profile-notice-data-handling id="user-data-handling"
-            title="$i18n{separateBrowsingDataTitle}"
+            title="${this.separateDataTitle_}"
+            separate-data-choice-title="${this.separateDataChoiceTitle_}"
+            separate-data-choice-details="${this.separateDataChoiceDetails_}"
+            merge-data-choice-title="${this.mergeDataChoiceTitle_}"
+            merge-data-choice-details="${this.mergeDataChoiceDetails_}"
             .selectedDataHandling="${this.selectedDataHandling_}"
             @selected-data-handling-changed="${this.onDataHandlingChanged_}">
         </managed-user-profile-notice-data-handling>

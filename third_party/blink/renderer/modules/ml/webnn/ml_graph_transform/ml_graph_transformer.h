@@ -10,6 +10,7 @@
 
 namespace blink {
 
+class MLConstantOperand;
 using OperandIndex = wtf_size_t;
 
 class MODULES_EXPORT MLGraphTransformer
@@ -25,21 +26,19 @@ class MODULES_EXPORT MLGraphTransformer
   // Apply the transformation to the given graph.
   virtual void Transform(MLNamedOperands& named_outputs) = 0;
 
-  // The return value is the index of the disconnected input operand of "to"
-  static OperandIndex Disconnect(MLOperand* from, MLOperator* to);
-
   static void Disconnect(MLOperand* from,
                          MLOperator* to,
-                         OperandIndex input_index);
+                         OperandIndex positional_input_index);
 
   static void Connect(MLOperand* from,
                       MLOperator* to,
-                      OperandIndex input_index);
+                      OperandIndex positional_input_index);
 
   static void SwapInput(MLOperator* op,
-                        OperandIndex input_index,
+                        OperandIndex positional_input_index,
                         MLOperand* new_input);
 
+  // If old_input is used as multiple input arguments to `op`, all are swapped.
   static void SwapInput(MLOperator* op,
                         MLOperand* old_input,
                         MLOperand* new_input);
@@ -50,6 +49,12 @@ class MODULES_EXPORT MLGraphTransformer
   // original operand
   static MLOperand* ReplaceOperandWithNewShape(
       MLOperand* old_operand,
+      const Vector<uint32_t>& new_shape);
+
+  // Replace constant operand with a new constant operand, the constant handle
+  // gets reused for the new constant.
+  static MLConstantOperand* ReplaceConstantOperandWithNewShape(
+      const MLConstantOperand* old_operand,
       const Vector<uint32_t>& new_shape);
 
   static MLOperand* ReplaceOperandWithNewDataType(
@@ -74,7 +79,8 @@ class MODULES_EXPORT MLGraphTransformer
       const MLOperand* operand,
       webnn::OperandDataType data_type);
 
-  static void ReplaceOperand(MLOperand* old_operand, MLOperand* new_operand);
+  static void ReplaceOperand(const MLOperand* old_operand,
+                             MLOperand* new_operand);
 };
 
 }  // namespace blink

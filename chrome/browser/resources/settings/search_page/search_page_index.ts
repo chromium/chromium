@@ -12,7 +12,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {routes} from '../route.js';
 import {RouteObserverMixin} from '../router.js';
-import type {Route} from '../router.js';
+import type {Route, SettingsRoutes} from '../router.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 import {SearchableViewContainerMixin} from '../settings_page/searchable_view_container_mixin.js';
 
@@ -41,10 +41,16 @@ export class SettingsSearchPageIndexElement extends
   static get properties() {
     return {
       prefs: Object,
+
+      routes_: {
+        type: Object,
+        value: () => routes,
+      },
     };
   }
 
   declare prefs: {[key: string]: any};
+  declare private routes_: SettingsRoutes;
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     super.currentRouteChanged(newRoute, oldRoute);

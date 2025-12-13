@@ -71,8 +71,10 @@ library already in Chromium? If introducing a library with similar functionality
 as existing, will it be easy for another developer to understand which should be
 used where? Will you commit to consolidating uses in Chromium and remove the
 alternative libraries?
-* Is the library memory safe? If not, is there an alternative library
-available that is memory safe and meets Chromium's needs?
+* Is the library written in a [memory safe
+  language](security/rule-of-2.md#unsafe-implementation-languages)? If not, is
+  there an alternative library available that is memory safe and meets
+  Chromium's needs?
   * You will be responsible for [owning the library](#add-owners), which
     includes updating it for security and stability fixes. For C/C++, this is
     your responsibility.  For [Rust](#rust), minor version updates are regularly
@@ -92,10 +94,10 @@ questions.
 Rust is allowed for third party libraries. Unlike C++ libraries, Rust third
 party libraries are [regularly rolled to updated versions by a
 rotation](https://chromium.googlesource.com/chromium/src/tools/+/HEAD/crates/create_update_cl.md)
-and can be audited for unsafety. The process for adding a Googler adding new Rust third-party
-dependencies is documented at go/chrome-rust. External contributors adding a new
-third party Rust dependency will be shepherded through the process as part of
-their ATL review.
+and can be audited for unsafety.
+The process for importing a new Rust third-party dependency is documented at
+[`//third_party/rust/README-importing-new-crates.md`](../third_party/rust/README-importing-new-crates.md)
+(Googlers can also find additional considerations at go/chrome-rust).
 
 Email rust-dev@chromium.org with any questions about the Rust toolchain.
 
@@ -193,7 +195,7 @@ in third_party/OWNERS for help.
 
 See [Moving large files to Google Storage](https://goto.google.com/checking-in-large-files)
 
-# Standard directory structure for dependencies {standard-dep-structure}
+# Standard directory structure for dependencies {#standard-dep-structure}
 
 Regardless of how you import a dependency, you should use the following
 directory structure. This folder layout enforces separation between first and
@@ -398,6 +400,10 @@ If the library will never be shipped as a part of Chrome (e.g. build-time tools,
 testing tools), make sure to set the "Shipped" field to "no" so that the license
 is not included in about:credits page ([more on this below](#credits)).
 
+README.chromium files contain a 'License Android Compatible' field indicating whether
+the package's license is compatible with Android. This is optional if the package is
+not shipped, or uses a standard license.
+
 When a dependency allows a choice of license, OWNERS should choose the least
 restrictive license that meets Chromium's needs and document only the chosen
 license(s) in the README.chromium file.
@@ -515,13 +521,14 @@ Non-Googlers can email one of the people in
   for security vulnerabilities. Help people make informed decisions about
   relying on this package by highlighting security considerations.
 * Add chromium-third-party@google.com as a reviewer on your change. This
-  will trigger an automatic round-robin assignment to a reviewer who will check
-  licensing matters. These reviewers may not be able to +1 a change so look for
-  verbal approval in the comments. (This list does not receive or deliver
-  email, so only use it as a reviewer, not for other communication. Internally,
-  see [cl/221704656](http://cl/221704656) for details about how
-  this is configured.). If you have questions about the third-party process,
-  ask one of the [//third_party/OWNERS](../third_party/OWNERS) instead.
+  will trigger automatic assignment to a reviewer who will check license use,
+  metadata compliance and verify long term dependency maintenance plans.
+  Not all these reviewers may be able to +1 a change so look for verbal approval
+  in the comments. (This list does not receive or deliver email, so only use it
+  as a reviewer, not for other communication. Internally, see
+  [crbug.com/441381904](https://crbug.com/441381904) for additional context on
+  how this is configured.). If you have questions about the third-party
+  process, ask one of the [//third_party/OWNERS](../third_party/OWNERS) instead.
 * Lastly, if all other steps are complete, get a positive code review from a
   member of [//third_party/OWNERS](../third_party/OWNERS) to land the change.
 

@@ -1,0 +1,19 @@
+Name: LeakCanary extension for Android instrumentation tests.
+Short Name: leakcanary-android-instrumentation
+URL: https://repo.maven.apache.org/maven2/com/squareup/leakcanary/leakcanary-android-instrumentation/3.0-alpha-8/leakcanary-android-instrumentation-3.0-alpha-8.aar
+Version: 3.0-alpha-8
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+LeakCanary
+
+See also: https://github.com/square/leakcanary/
+
+
+Local Modifications:
+No modifications.

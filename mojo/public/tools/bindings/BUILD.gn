@@ -40,7 +40,6 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/cpp_templates/struct_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_definition.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_macros.tmpl",
-    "$mojom_generator_root/generators/cpp_templates/struct_macros.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_serialization_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_traits_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_traits_definition.tmpl",
@@ -117,8 +116,8 @@ action("precompile_templates") {
     "$target_gen_dir/java_templates.zip",
     "$target_gen_dir/js_templates.zip",
     "$target_gen_dir/mojolpm_templates.zip",
-    "$target_gen_dir/rust_templates.zip",
     "$target_gen_dir/ts_templates.zip",
+    "$target_gen_dir/rust_templates.zip",
   ]
   args = [
     "-o",
@@ -132,6 +131,7 @@ group("tests") {
   data = [
     mojom_generator_script,
     "checks/mojom_attributes_check_unittest.py",
+    "checks/mojom_interface_direct_receiver_check_unittest.py",
     "checks/mojom_interface_feature_check_unittest.py",
     "checks/mojom_restrictions_checks_unittest.py",
     "mojom_bindings_generator_unittest.py",

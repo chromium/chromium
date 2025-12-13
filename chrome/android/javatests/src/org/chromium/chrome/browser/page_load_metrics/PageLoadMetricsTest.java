@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.page_load_metrics;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -21,7 +20,9 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -37,13 +38,15 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PageLoadMetricsTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final int PAGE_LOAD_METRICS_TIMEOUT_MS = 6000;
     private static final String PAGE_PREFIX = "/chrome/test/data/android/google.html";
 
     private EmbeddedTestServer mTestServer;
     private int mLoadCount;
+    private WebPageStation mPage;
 
     // Provide the next URL to test with. To eliminate a potential source of flakiness each observed
     // URL is unique.
@@ -79,10 +82,8 @@ public class PageLoadMetricsTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTestServer = mActivityTestRule.getTestServer();
     }
 
     private void assertMetricsEmitted(PageLoadMetricsTestObserver observer)
@@ -216,7 +217,7 @@ public class PageLoadMetricsTest {
     public void testPageLoadMetricEmitted() throws InterruptedException {
         Assert.assertFalse(
                 "Tab shouldn't be loading anything before we add observer",
-                mActivityTestRule.getActivity().getActivityTab().isLoading());
+                mActivityTestRule.getActivityTab().isLoading());
         PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> PageLoadMetrics.addObserver(metricsObserver, false));
@@ -258,7 +259,7 @@ public class PageLoadMetricsTest {
     public void testPageLoadMetricForPrerendering() throws Exception {
         Assert.assertFalse(
                 "Tab shouldn't be loading anything before we add observer",
-                mActivityTestRule.getActivity().getActivityTab().isLoading());
+                mActivityTestRule.getActivityTab().isLoading());
         // Add two observers, one doesn't support prerendering, and the other is does.
         PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
         ThreadUtils.runOnUiThreadBlocking(

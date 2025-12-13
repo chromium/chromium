@@ -89,6 +89,12 @@ class SyncableServiceBasedBridge : public DataTypeSyncBridge {
                                 std::unique_ptr<MetadataBatch> metadata_batch);
   void OnSyncableServiceReady(std::unique_ptr<MetadataBatch> metadata_batch);
   [[nodiscard]] std::optional<ModelError> StartSyncableService();
+  void ProcessRemoteDelete(const EntityChange& change,
+                           DataTypeStore::WriteBatch* batch,
+                           SyncChangeList* output_sync_change_list);
+  void ProcessRemoteAddOrUpdate(const EntityChange& change,
+                                DataTypeStore::WriteBatch* batch,
+                                SyncChangeList* output_sync_change_list);
   SyncChangeList StoreAndConvertRemoteChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList input_entity_change_list);

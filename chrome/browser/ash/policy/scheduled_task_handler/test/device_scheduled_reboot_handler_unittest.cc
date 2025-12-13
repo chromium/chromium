@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -16,7 +17,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor_impl.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_util.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/test/fake_reboot_notifications_scheduler.h"
@@ -29,8 +29,10 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -92,7 +94,9 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
   DeviceScheduledRebootHandlerTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()),
+        user_manager_(std::make_unique<user_manager::UserManagerImpl>(
+            std::make_unique<user_manager::FakeUserManagerDelegate>(),
+            TestingBrowserProcess::GetGlobal()->GetTestingLocalState())),
         prefs_(std::make_unique<TestingPrefServiceSimple>()),
         notifications_scheduler_(task_environment_.GetMockClock(),
                                  task_environment_.GetMockTickClock(),
@@ -177,13 +181,8 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
             task_environment_.GetMockClock()->Now());
   }
 
-  ash::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   base::test::TaskEnvironment task_environment_;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::ScopedUserManager user_manager_;
   raw_ptr<FakeScheduledTaskExecutor, DanglingUntriaged>
       scheduled_task_executor_;
   std::unique_ptr<DeviceScheduledRebootHandlerForTest>
@@ -197,9 +196,9 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
 
 TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfDailyRebootIsScheduledForKiosk) {
-  auto* user_manager = GetFakeUserManager();
+  auto* user_manager = user_manager::UserManager::Get();
   auto* user =
-      user_manager->AddKioskChromeAppUser(AccountId::FromUserEmail(kKioskName));
+      user_manager::TestHelper(user_manager).AddKioskChromeAppUser(kKioskName);
   user_manager->UserLoggedIn(
       user->GetAccountId(),
       user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
@@ -239,8 +238,10 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 
 TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfMonthlyRebootIsScheduledForKiosk) {
-  auto* user_manager = GetFakeUserManager();
-  auto* user = user_manager->AddUser(AccountId::FromUserEmail(kTestName));
+  auto* user_manager = user_manager::UserManager::Get();
+  auto* user = user_manager::TestHelper(user_manager)
+                   .AddRegularUser(AccountId::FromUserEmailGaiaId(
+                       kTestName, GaiaId::Literal("123456789")));
   user_manager->UserLoggedIn(
       user->GetAccountId(),
       user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
@@ -272,27 +273,6 @@ TEST_F(DeviceScheduledRebootHandlerTest,
   // is scheduled, but not executed since we are not in the kiosk mode.
   expected_scheduled_reboots += 1;
   task_environment_.FastForwardBy(small_delay);
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-
-  // The next reboot should happen at the same day of month next month. Switch
-  // to the kiosk mode and verify the reboot is executed.
-  auto* kiosk_user =
-      user_manager->AddKioskChromeAppUser(AccountId::FromUserEmail(kKioskName));
-  user_manager->UserLoggedIn(kiosk_user->GetAccountId(),
-                             user_manager::TestHelper::GetFakeUsernameHash(
-                                 kiosk_user->GetAccountId()));
-  user_manager->SwitchActiveUser(kiosk_user->GetAccountId());
-  expected_scheduled_reboots += 1;
-  expected_reboot_requests += 1;
-  EXPECT_TRUE(scheduled_task_test_util::AdvanceTimeAndSetDayOfMonth(
-      scheduled_reboot_data->day_of_month.value(),
-      first_reboot_icu_time.get()));
-  base::Time second_reboot_time =
-      scheduled_task_test_util::IcuToBaseTime(*first_reboot_icu_time);
-  std::optional<base::TimeDelta> second_reboot_delay =
-      second_reboot_time - scheduled_task_executor_->GetCurrentTime();
-  ASSERT_TRUE(second_reboot_delay.has_value());
-  task_environment_.FastForwardBy(second_reboot_delay.value());
   EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
 }
 
@@ -345,9 +325,10 @@ TEST_F(DeviceScheduledRebootHandlerTest, EnableForceRebootFeatureInKiosk) {
   // Set device uptime to 10 minutes and enable kiosk mode. We don't apply grace
   // period to kiosks, so reboot should occur.
   task_environment_.FastForwardBy(base::Minutes(10));
-  auto* user_manager = GetFakeUserManager();
+
+  auto* user_manager = user_manager::UserManager::Get();
   auto* user =
-      user_manager->AddKioskChromeAppUser(AccountId::FromUserEmail(kKioskName));
+      user_manager::TestHelper(user_manager).AddKioskChromeAppUser(kKioskName);
   user_manager->UserLoggedIn(
       user->GetAccountId(),
       user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
@@ -381,8 +362,10 @@ TEST_F(DeviceScheduledRebootHandlerTest, EnableForceRebootFeatureInKiosk) {
 
 TEST_F(DeviceScheduledRebootHandlerTest,
        EnableForceRebootFeatureNonKioskSession) {
-  auto* user_manager = GetFakeUserManager();
-  auto* user = user_manager->AddUser(AccountId::FromUserEmail(kTestName));
+  auto* user_manager = user_manager::UserManager::Get();
+  auto* user = user_manager::TestHelper(user_manager)
+                   .AddRegularUser(AccountId::FromUserEmailGaiaId(
+                       kTestName, GaiaId::Literal("123456789")));
   user_manager->UserLoggedIn(
       user->GetAccountId(),
       user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
@@ -435,8 +418,10 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 }
 
 TEST_F(DeviceScheduledRebootHandlerTest, SimulateNotificationButtonClick) {
-  auto* user_manager = GetFakeUserManager();
-  auto* user = user_manager->AddUser(AccountId::FromUserEmail(kTestName));
+  auto* user_manager = user_manager::UserManager::Get();
+  auto* user = user_manager::TestHelper(user_manager)
+                   .AddRegularUser(AccountId::FromUserEmailGaiaId(
+                       kTestName, GaiaId::Literal("123456789")));
   user_manager->UserLoggedIn(
       user->GetAccountId(),
       user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));

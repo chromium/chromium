@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/nintendo_controller.h"
 
 #include <algorithm>
 #include <array>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
@@ -72,6 +69,7 @@ const size_t kSpiAnalogStickParametersSize = 18;
 const size_t kSubCommandDataOffset = 11;
 // Byte index for the first byte of SPI data in SPI read responses.
 const size_t kSpiDataOffset = 20;
+const size_t kSpiDataLength = kMaxInputReportSizeBytes - kSpiDataOffset;
 
 // Values for the |device_type| field reported in the MAC reply.
 const uint8_t kUsbDeviceTypeChargingGripNoDevice = 0x00;
@@ -123,7 +121,7 @@ struct VibrationFrequency {
   uint8_t lf;
   int freq_hz;  // rounded
 };
-auto kVibrationFrequency = std::to_array<VibrationFrequency>(
+constexpr auto kVibrationFrequency = std::to_array<VibrationFrequency>(
     {// The linear resonant actuators (LRAs) on Switch devices are capable of
      // producing vibration effects at a wide range of frequencies, but the
      // Gamepad API assumes "dual-rumble" style vibration which is typically
@@ -144,7 +142,7 @@ struct VibrationAmplitude {
   uint16_t lfa;
   int amp;  // rounded, max 1000 (kVibrationAmplitudeMax)
 };
-auto kVibrationAmplitude = std::to_array<VibrationAmplitude>({
+constexpr auto kVibrationAmplitude = std::to_array<VibrationAmplitude>({
     // Only include safe amplitudes.
     {0x00, 0x0040, 0},   {0x02, 0x8040, 10},   {0x04, 0x0041, 12},
     {0x06, 0x8041, 14},  {0x08, 0x0042, 17},   {0x0a, 0x8042, 20},
@@ -281,7 +279,7 @@ struct SpiReadReport {
   uint8_t addrh;
   uint8_t padding[2];  // 0x00 0x00
   uint8_t length;
-  uint8_t spi_data[kMaxInputReportSizeBytes - kSpiDataOffset];
+  uint8_t spi_data[kSpiDataLength];
 };
 #pragma pack(pop)
 static_assert(sizeof(SpiReadReport) == kMaxInputReportSizeBytes - 1,
@@ -300,8 +298,8 @@ void UnpackShorts(uint8_t byte0,
 }
 
 // Unpack a 6-byte MAC address.
-uint64_t UnpackSwitchMacAddress(const uint8_t* data) {
-  DCHECK(data);
+uint64_t UnpackSwitchMacAddress(base::span<const uint8_t, 6> data) {
+  DCHECK(!data.empty());
   uint64_t acc = data[5];
   acc = (acc << 8) | data[4];
   acc = (acc << 8) | data[3];
@@ -313,9 +311,8 @@ uint64_t UnpackSwitchMacAddress(const uint8_t* data) {
 
 // Unpack the analog stick parameters into |cal|.
 void UnpackSwitchAnalogStickParameters(
-    const uint8_t* data,
+    base::span<const uint8_t, kSpiDataLength> data,
     NintendoController::SwitchCalibrationData& cal) {
-  DCHECK(data);
   // Only fetch the dead zone and range ratio. The other parameters are unknown.
   UnpackShorts(data[3], data[4], data[5], &cal.dead_zone, &cal.range_ratio);
   if (cal.dead_zone == kCalBogusValue) {
@@ -327,9 +324,8 @@ void UnpackSwitchAnalogStickParameters(
 
 // Unpack the IMU calibration data into |cal|
 void UnpackSwitchImuCalibration(
-    const uint8_t* data,
+    base::span<const uint8_t, kSpiDataLength> data,
     NintendoController::SwitchCalibrationData& cal) {
-  DCHECK(data);
   // 24 bytes, as 4 groups of 3 16-bit little-endian values.
   cal.accelerometer_origin_x = (data[1] << 8) | data[0];
   cal.accelerometer_origin_y = (data[3] << 8) | data[2];
@@ -347,9 +343,8 @@ void UnpackSwitchImuCalibration(
 
 // Unpack the IMU horizontal offsets into |cal|.
 void UnpackSwitchImuHorizontalOffsets(
-    const uint8_t* data,
+    base::span<const uint8_t, kSpiDataLength> data,
     NintendoController::SwitchCalibrationData& cal) {
-  DCHECK(data);
   // 6 bytes, as 3 16-bit little-endian values.
   cal.horizontal_offset_x = (data[1] << 8) | data[0];
   cal.horizontal_offset_y = (data[3] << 8) | data[2];
@@ -358,9 +353,8 @@ void UnpackSwitchImuHorizontalOffsets(
 
 // Unpack the analog stick calibration data into |cal|.
 void UnpackSwitchAnalogStickCalibration(
-    const uint8_t* data,
+    base::span<const uint8_t, kSpiDataLength> data,
     NintendoController::SwitchCalibrationData& cal) {
-  DCHECK(data);
   // 18 bytes, as 2 groups of 6 packed 12-bit values.
   UnpackShorts(data[0], data[1], data[2], &cal.lx_max, &cal.ly_max);
   UnpackShorts(data[3], data[4], data[5], &cal.lx_center, &cal.ly_center);
@@ -400,9 +394,8 @@ void UnpackSwitchAnalogStickCalibration(
 }
 
 // Unpack one frame of IMU data into |imu_data|.
-void UnpackSwitchImuData(const uint8_t* data,
+void UnpackSwitchImuData(base::span<const uint8_t, 12> data,
                          NintendoController::SwitchImuData* imu_data) {
-  DCHECK(data);
   DCHECK(imu_data);
   // 12 bytes of IMU data containing 6 16-bit little-endian values.
   imu_data->accelerometer_x = (data[1] << 8) | data[0];
@@ -434,10 +427,12 @@ bool ApplyDeadZone(uint16_t& x,
 // Normalize |value| to the range [|min|,|max|]. If |value| is outside this
 // range, clamp it.
 double NormalizeAndClampAxis(int value, int min, int max) {
-  if (value <= min)
+  if (value <= min) {
     return -1.0;
-  if (value >= max)
+  }
+  if (value >= max) {
     return 1.0;
+  }
   return (2.0 * (value - min) / static_cast<double>(max - min)) - 1.0;
 }
 
@@ -625,7 +620,8 @@ void UpdateButtonForLeftSide(const Gamepad& src_pad,
         break;
     }
   }
-  dst_pad.buttons[remapped_index] = src_pad.buttons[button_index];
+  UNSAFE_TODO(dst_pad.buttons[remapped_index]) =
+      UNSAFE_TODO(src_pad.buttons[button_index]);
 }
 
 // Update the state for a single button. The button state is taken from
@@ -680,7 +676,8 @@ void UpdateButtonForRightSide(const Gamepad& src_pad,
         NOTREACHED();
     }
   }
-  dst_pad.buttons[remapped_index] = src_pad.buttons[button_index];
+  UNSAFE_TODO(dst_pad.buttons[remapped_index]) =
+      UNSAFE_TODO(src_pad.buttons[button_index]);
 }
 
 // Update the state for a single axis. The axis state is taken from the axis at
@@ -693,7 +690,7 @@ void UpdateAxisForLeftSide(const Gamepad& src_pad,
                            size_t axis_index,
                            bool horizontal) {
   size_t remapped_index = axis_index;
-  double axis_value = src_pad.axes[axis_index];
+  double axis_value = UNSAFE_TODO(src_pad.axes[axis_index]);
   // The internal axis values assume a docked orientation for Joy-Cons. If a
   // Joy-Con is used by itself, remap the axis indices and adjust the sign on
   // the axis value for a horizontal orientation.
@@ -712,7 +709,7 @@ void UpdateAxisForLeftSide(const Gamepad& src_pad,
         NOTREACHED();
     }
   }
-  dst_pad.axes[remapped_index] = axis_value;
+  UNSAFE_TODO(dst_pad.axes[remapped_index]) = axis_value;
 }
 
 // Update the state for a single axis. The axis state is taken from the axis at
@@ -725,7 +722,7 @@ void UpdateAxisForRightSide(const Gamepad& src_pad,
                             size_t axis_index,
                             bool horizontal) {
   size_t remapped_index = axis_index;
-  double axis_value = src_pad.axes[axis_index];
+  double axis_value = UNSAFE_TODO(src_pad.axes[axis_index]);
   // The internal axis values assume a docked orientation for Joy-Cons. If a
   // Joy-Con is used by itself, remap the axis indices and adjust the sign on
   // the axis value for a horizontal orientation.
@@ -744,7 +741,7 @@ void UpdateAxisForRightSide(const Gamepad& src_pad,
         NOTREACHED();
     }
   }
-  dst_pad.axes[remapped_index] = axis_value;
+  UNSAFE_TODO(dst_pad.axes[remapped_index]) = axis_value;
 }
 
 // Convert the vibration parameters |frequency| and |amplitude| into a set of
@@ -770,8 +767,9 @@ void FrequencyToHex(float frequency,
       // it is closer than the current best.
       int vf_error_above = vf->freq_hz - freq;
       int best_vf_error_below = freq - best_vf->freq_hz;
-      if (vf_error_above < best_vf_error_below)
+      if (vf_error_above < best_vf_error_below) {
         best_vf = vf;
+      }
       break;
     }
   }
@@ -785,8 +783,9 @@ void FrequencyToHex(float frequency,
       // it is closer than the current best.
       int va_error_above = va->amp - amp;
       int best_va_error_below = amp - best_va->amp;
-      if (va_error_above < best_va_error_below)
+      if (va_error_above < best_va_error_below) {
         best_va = va;
+      }
       break;
     }
   }
@@ -805,8 +804,9 @@ GamepadBusType BusTypeFromDeviceInfo(const mojom::HidDeviceInfo* device_info) {
   // If the |device_info| indicates the device is connected over Bluetooth, it's
   // probably right. On some platforms the bus type is reported as USB
   // regardless of the actual connection.
-  if (device_info->bus_type == mojom::HidBusType::kHIDBusTypeBluetooth)
+  if (device_info->bus_type == mojom::HidBusType::kHIDBusTypeBluetooth) {
     return GAMEPAD_BUS_BLUETOOTH;
+  }
   auto gamepad_id = GamepadIdList::Get().GetGamepadId(device_info->product_name,
                                                       device_info->vendor_id,
                                                       device_info->product_id);
@@ -880,8 +880,9 @@ NintendoController::NintendoController(
   DCHECK(composite2);
   composite_left_ = std::move(composite1);
   composite_right_ = std::move(composite2);
-  if (composite_left_->GetGamepadHand() != GamepadHand::kLeft)
+  if (composite_left_->GetGamepadHand() != GamepadHand::kLeft) {
     composite_left_.swap(composite_right_);
+  }
   DCHECK_EQ(composite_left_->GetGamepadHand(), GamepadHand::kLeft);
   DCHECK_EQ(composite_right_->GetGamepadHand(), GamepadHand::kRight);
   DCHECK_EQ(composite_left_->GetBusType(), composite_right_->GetBusType());
@@ -938,10 +939,12 @@ NintendoController::Decompose() {
   SetZeroVibration();
 
   std::vector<std::unique_ptr<NintendoController>> decomposed_devices;
-  if (composite_left_)
+  if (composite_left_) {
     decomposed_devices.push_back(std::move(composite_left_));
-  if (composite_right_)
+  }
+  if (composite_right_) {
     decomposed_devices.push_back(std::move(composite_right_));
+  }
   return decomposed_devices;
 }
 
@@ -961,8 +964,9 @@ void NintendoController::Open(base::OnceClosure device_ready_closure) {
 }
 
 GamepadHand NintendoController::GetGamepadHand() const {
-  if (is_composite_)
+  if (is_composite_) {
     return GamepadHand::kNone;
+  }
   switch (gamepad_id_) {
     case GamepadId::kNintendoProduct2009:
     case GamepadId::kPowerALicPro:
@@ -1000,10 +1004,12 @@ GamepadHand NintendoController::GetGamepadHand() const {
 }
 
 bool NintendoController::IsUsable() const {
-  if (state_ != kInitialized)
+  if (state_ != kInitialized) {
     return false;
-  if (is_composite_)
+  }
+  if (is_composite_) {
     return composite_left_ && composite_right_;
+  }
   switch (gamepad_id_) {
     case GamepadId::kNintendoProduct2009:
     case GamepadId::kNintendoProduct2006:
@@ -1145,16 +1151,19 @@ void NintendoController::UpdateLeftGamepadState(Gamepad& pad,
   const size_t kLeftAxisIndicesSize = std::size(kLeftAxisIndices);
 
   if (pad_.buttons_length == SWITCH_BUTTON_INDEX_COUNT) {
-    for (size_t i = 0; i < kLeftButtonIndicesSize; ++i)
+    for (size_t i = 0; i < kLeftButtonIndicesSize; ++i) {
       UpdateButtonForLeftSide(pad_, pad, kLeftButtonIndices[i], horizontal);
+    }
   }
   if (pad_.axes_length == AXIS_INDEX_COUNT) {
-    for (size_t i = 0; i < kLeftAxisIndicesSize; ++i)
+    for (size_t i = 0; i < kLeftAxisIndicesSize; ++i) {
       UpdateAxisForLeftSide(pad_, pad, kLeftAxisIndices[i], horizontal);
+    }
   }
   pad.timestamp = std::max(pad.timestamp, pad_.timestamp);
-  if (!pad_.connected)
+  if (!pad_.connected) {
     pad.connected = false;
+  }
 }
 
 void NintendoController::UpdateRightGamepadState(Gamepad& pad,
@@ -1183,16 +1192,19 @@ void NintendoController::UpdateRightGamepadState(Gamepad& pad,
   const size_t kRightAxisIndicesSize = std::size(kRightAxisIndices);
 
   if (pad_.buttons_length == SWITCH_BUTTON_INDEX_COUNT) {
-    for (size_t i = 0; i < kRightButtonIndicesSize; ++i)
+    for (size_t i = 0; i < kRightButtonIndicesSize; ++i) {
       UpdateButtonForRightSide(pad_, pad, kRightButtonIndices[i], horizontal);
+    }
   }
   if (pad_.axes_length == AXIS_INDEX_COUNT) {
-    for (size_t i = 0; i < kRightAxisIndicesSize; ++i)
+    for (size_t i = 0; i < kRightAxisIndicesSize; ++i) {
       UpdateAxisForRightSide(pad_, pad, kRightAxisIndices[i], horizontal);
+    }
   }
   pad.timestamp = std::max(pad.timestamp, pad_.timestamp);
-  if (!pad_.connected)
+  if (!pad_.connected) {
     pad.connected = false;
+  }
 }
 
 void NintendoController::Connect(mojom::HidManager::ConnectCallback callback) {
@@ -1244,8 +1256,9 @@ void NintendoController::StartInitSequence() {
 void NintendoController::FinishInitSequence() {
   state_ = kInitialized;
   UpdatePadConnected();
-  if (device_ready_closure_)
+  if (device_ready_closure_) {
     std::move(device_ready_closure_).Run();
+  }
 }
 
 void NintendoController::FailInitSequence() {
@@ -1261,27 +1274,29 @@ void NintendoController::HandleInputReport(
 
   // Listen for reports related to the initialization sequence or gamepad state.
   // Other reports are ignored.
-  if (bus_type_ == GAMEPAD_BUS_USB && report_id == kUsbReportIdInput81)
+  if (bus_type_ == GAMEPAD_BUS_USB && report_id == kUsbReportIdInput81) {
     HandleUsbInputReport81(report_bytes);
-  else if (report_id == kReportIdInput21)
+  } else if (report_id == kReportIdInput21) {
     HandleInputReport21(report_bytes);
-  else if (report_id == kReportIdInput30)
+  } else if (report_id == kReportIdInput30) {
     HandleInputReport30(report_bytes);
+  }
 
   // Check whether the input report should cause us to transition to the next
   // initialization step.
-  if (state_ != kInitialized && state_ != kUninitialized)
+  if (state_ != kInitialized && state_ != kUninitialized) {
     ContinueInitSequence(report_id, report_bytes);
+  }
 }
 
 void NintendoController::HandleUsbInputReport81(
     const std::vector<uint8_t>& report_bytes) {
-  const auto* ack_report =
-      reinterpret_cast<const UsbInputReport81*>(report_bytes.data());
+  const auto* ack_report = UNSAFE_TODO(
+      reinterpret_cast<const UsbInputReport81*>(report_bytes.data()));
   switch (ack_report->subtype) {
     case kSubTypeRequestMac: {
-      const auto* mac_report =
-          reinterpret_cast<const MacAddressReport*>(report_bytes.data());
+      const auto* mac_report = UNSAFE_TODO(
+          reinterpret_cast<const MacAddressReport*>(report_bytes.data()));
       mac_address_ = UnpackSwitchMacAddress(mac_report->mac_data);
       if (usb_device_type_ != mac_report->device_type) {
         usb_device_type_ = mac_report->device_type;
@@ -1292,16 +1307,18 @@ void NintendoController::HandleUsbInputReport81(
             // the Joy-Cons was disconnected from the charging grip. The HID
             // device does not disconnect; de-initialize the device so the
             // composite device will be hidden.
-            if (state_ == kInitialized)
+            if (state_ == kInitialized) {
               FailInitSequence();
+            }
             break;
           case kUsbDeviceTypeChargingGripJoyConL:
           case kUsbDeviceTypeChargingGripJoyConR:
             UpdatePadConnected();
             // A Joy-Con was connected to a de-initialized device. Restart the
             // initialization sequence.
-            if (state_ == kUninitialized)
+            if (state_ == kUninitialized) {
               StartInitSequence();
+            }
             break;
           default:
             break;
@@ -1317,7 +1334,7 @@ void NintendoController::HandleUsbInputReport81(
 void NintendoController::HandleInputReport21(
     const std::vector<uint8_t>& report_bytes) {
   const auto* spi_report =
-      reinterpret_cast<const SpiReadReport*>(report_bytes.data());
+      UNSAFE_TODO(reinterpret_cast<const SpiReadReport*>(report_bytes.data()));
   if (UpdateGamepadFromControllerData(spi_report->controller_data, cal_data_,
                                       pad_)) {
     pad_.timestamp = GamepadDataFetcher::CurrentTimeInMicroseconds();
@@ -1348,12 +1365,15 @@ void NintendoController::HandleInputReport21(
 
 void NintendoController::HandleInputReport30(
     const std::vector<uint8_t>& report_bytes) {
-  const auto* controller_report =
-      reinterpret_cast<const ControllerDataReport*>(report_bytes.data());
+  const auto* controller_report = UNSAFE_TODO(
+      reinterpret_cast<const ControllerDataReport*>(report_bytes.data()));
   // Each input report contains three frames of IMU data.
-  UnpackSwitchImuData(&controller_report->imu_data[0], &imu_data_[0]);
-  UnpackSwitchImuData(&controller_report->imu_data[12], &imu_data_[1]);
-  UnpackSwitchImuData(&controller_report->imu_data[24], &imu_data_[2]);
+  UnpackSwitchImuData(base::span(controller_report->imu_data).subspan<0, 12>(),
+                      &imu_data_[0]);
+  UnpackSwitchImuData(base::span(controller_report->imu_data).subspan<12, 12>(),
+                      &imu_data_[1]);
+  UnpackSwitchImuData(base::span(controller_report->imu_data).subspan<24, 12>(),
+                      &imu_data_[2]);
   if (UpdateGamepadFromControllerData(controller_report->controller_data,
                                       cal_data_, pad_)) {
     pad_.timestamp = GamepadDataFetcher::CurrentTimeInMicroseconds();
@@ -1363,10 +1383,10 @@ void NintendoController::HandleInputReport30(
 void NintendoController::ContinueInitSequence(
     uint8_t report_id,
     const std::vector<uint8_t>& report_bytes) {
-  const auto* ack_report =
-      reinterpret_cast<const UsbInputReport81*>(report_bytes.data());
+  const auto* ack_report = UNSAFE_TODO(
+      reinterpret_cast<const UsbInputReport81*>(report_bytes.data()));
   const auto* spi_report =
-      reinterpret_cast<const SpiReadReport*>(report_bytes.data());
+      UNSAFE_TODO(reinterpret_cast<const SpiReadReport*>(report_bytes.data()));
   const uint8_t ack_subtype =
       (report_id == kUsbReportIdInput81) ? ack_report->subtype : 0;
   const uint8_t spi_subcommand =
@@ -1381,10 +1401,11 @@ void NintendoController::ContinueInitSequence(
     case kPendingMacAddress:
       if (ack_subtype == kSubTypeRequestMac) {
         CancelTimeout();
-        if (mac_address_)
+        if (mac_address_) {
           MakeInitSequenceRequests(kPendingHandshake1);
-        else
+        } else {
           FailInitSequence();
+        }
       }
       break;
     case kPendingHandshake1:
@@ -1705,8 +1726,9 @@ void NintendoController::WriteOutputReport(
   connection_->Write(report_id, report_bytes,
                      base::BindOnce(&NintendoController::OnWriteOutputReport,
                                     weak_factory_.GetWeakPtr()));
-  if (expect_reply)
+  if (expect_reply) {
     ArmTimeout();
+  }
 }
 
 void NintendoController::OnWriteOutputReport(bool success) {
@@ -1717,11 +1739,13 @@ void NintendoController::OnWriteOutputReport(bool success) {
 }
 
 void NintendoController::DoShutdown() {
-  if (composite_left_)
+  if (composite_left_) {
     composite_left_->Shutdown();
+  }
   composite_left_.reset();
-  if (composite_right_)
+  if (composite_right_) {
     composite_right_->Shutdown();
+  }
   composite_right_.reset();
   connection_.reset();
   device_info_.reset();
@@ -1767,9 +1791,9 @@ void NintendoController::CancelTimeout() {
 
 void NintendoController::OnTimeout() {
   ++retry_count_;
-  if (retry_count_ <= kMaxRetryCount)
+  if (retry_count_ <= kMaxRetryCount) {
     MakeInitSequenceRequests(state_);
-  else {
+  } else {
     retry_count_ = 0;
     StartInitSequence();
   }

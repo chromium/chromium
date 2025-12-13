@@ -50,8 +50,8 @@ cat $TEMP_DIR/output.* |
 sort -k 2 |
 
 # Combine the matches for the same rule.
-awk 'NR>1 && rule!=$2 {print count,rule; count=0} {count+=$1} {rule=$2} \
-  END {print count,rule}' |
+awk 'NR>1 && rule!=$2 {printf "%.15f %s\n", count, rule; count=0} {count+=$1} \
+ {rule=$2} END {printf "%.15f %s\n", count, rule}' |
 
 # Sort the output in descending order by match count.
 sort -n -r

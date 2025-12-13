@@ -12,24 +12,6 @@
 
 namespace tab_strip_ui {
 
-TabBeforeUnloadTracker::TabBeforeUnloadTracker(
-    TabCloseCancelledCallback cancelled_callback)
-    : cancelled_callback_(std::move(cancelled_callback)) {}
-TabBeforeUnloadTracker::~TabBeforeUnloadTracker() = default;
-
-void TabBeforeUnloadTracker::Observe(content::WebContents* contents) {
-  observers_[contents] = std::make_unique<TabObserver>(contents, this);
-}
-
-void TabBeforeUnloadTracker::Unobserve(content::WebContents* contents) {
-  observers_.erase(contents);
-}
-
-void TabBeforeUnloadTracker::OnBeforeUnloadDialogCancelled(
-    content::WebContents* contents) {
-  cancelled_callback_.Run(contents);
-}
-
 class TabBeforeUnloadTracker::TabObserver
     : public content::WebContentsObserver {
  public:
@@ -47,5 +29,23 @@ class TabBeforeUnloadTracker::TabObserver
  private:
   raw_ptr<TabBeforeUnloadTracker> tracker_;
 };
+
+TabBeforeUnloadTracker::TabBeforeUnloadTracker(
+    TabCloseCancelledCallback cancelled_callback)
+    : cancelled_callback_(std::move(cancelled_callback)) {}
+TabBeforeUnloadTracker::~TabBeforeUnloadTracker() = default;
+
+void TabBeforeUnloadTracker::Observe(content::WebContents* contents) {
+  observers_[contents] = std::make_unique<TabObserver>(contents, this);
+}
+
+void TabBeforeUnloadTracker::Unobserve(content::WebContents* contents) {
+  observers_.erase(contents);
+}
+
+void TabBeforeUnloadTracker::OnBeforeUnloadDialogCancelled(
+    content::WebContents* contents) {
+  cancelled_callback_.Run(contents);
+}
 
 }  // namespace tab_strip_ui

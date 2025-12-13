@@ -1,9 +1,9 @@
 import path from 'path';
 
-import defaultConfig from '../../../eslint_ts.config_base.mjs';
+import {defaultConfig} from '../../../eslint_ts.config_base.mjs';
 
 export default [
-  defaultConfig,
+  ...defaultConfig,
   {
     languageOptions: {
       parserOptions: {

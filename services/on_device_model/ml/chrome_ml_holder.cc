@@ -8,9 +8,11 @@
 
 #include "base/base_paths.h"
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "services/on_device_model/public/cpp/features.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
@@ -78,7 +80,8 @@ std::unique_ptr<ChromeMLHolder> ChromeMLHolder::Create(
     return {};
   }
 
-  const ChromeMLAPI* api = get_api();
+  const ChromeMLAPI* api = get_api(base::FeatureList::IsEnabled(
+      on_device_model::features::kOnDeviceModelLitertLmBackend));
   if (!api) {
     LOG(ERROR) << "GetChromeMLAPI() returned null.";
     return {};

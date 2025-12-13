@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -71,9 +70,9 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
     ContentAutofillDriver* autofill_driver =
         ContentAutofillDriver::GetForRenderFrameHost(
             web_contents()->GetPrimaryMainFrame());
-    return static_cast<BrowserAutofillManager&>(
-               autofill_driver->GetAutofillManager())
-        .GetCreditCardAccessManager();
+    return *static_cast<BrowserAutofillManager&>(
+                autofill_driver->GetAutofillManager())
+                .GetCreditCardAccessManager();
   }
 
  private:

@@ -12,6 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
@@ -21,8 +22,10 @@ import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/ir
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+
+import type {ZoomLevelEntry} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {ZoomLevelEntry} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './zoom_levels.html.js';
 
 export interface ZoomLevelsElement {
@@ -33,8 +36,8 @@ export interface ZoomLevelsElement {
   };
 }
 
-const ZoomLevelsElementBase = ListPropertyUpdateMixin(
-    SiteSettingsMixin(WebUiListenerMixin(PolymerElement)));
+const ZoomLevelsElementBase = SettingsViewMixin(ListPropertyUpdateMixin(
+    SiteSettingsMixin(WebUiListenerMixin(PolymerElement))));
 
 export class ZoomLevelsElement extends ZoomLevelsElementBase {
   static get is() {
@@ -89,6 +92,11 @@ export class ZoomLevelsElement extends ZoomLevelsElementBase {
   private removeZoomLevel_(event: DomRepeatEvent<ZoomLevelEntry>) {
     const site = this.sites_[event.model.index];
     this.browserProxy.removeZoomLevel(site.hostOrSpec);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

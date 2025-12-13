@@ -55,12 +55,20 @@ bool GridRange::IsImplicit() const {
   return properties.HasProperty(TrackSpanProperties::kIsImplicit);
 }
 
+bool GridRange::IsAutoRepeat() const {
+  return properties.HasProperty(TrackSpanProperties::kIsAutoRepeat);
+}
+
 void GridRange::SetIsCollapsed() {
   properties.SetProperty(TrackSpanProperties::kIsCollapsed);
 }
 
 void GridRange::SetIsImplicit() {
   properties.SetProperty(TrackSpanProperties::kIsImplicit);
+}
+
+void GridRange::SetIsAutoRepeat() {
+  properties.SetProperty(TrackSpanProperties::kIsAutoRepeat);
 }
 
 GridRangeBuilder::GridRangeBuilder(const ComputedStyle& grid_style,
@@ -110,7 +118,9 @@ void GridRangeBuilder::EnsureTrackCoverage(
   end_lines_.emplace_back(start_line + span_length, grid_item_end_range_index);
 }
 
-GridRangeVector GridRangeBuilder::FinalizeRanges() {
+GridRangeVector GridRangeBuilder::FinalizeRanges(
+    bool needs_intrinsic_track_size,
+    Vector<wtf_size_t>* collapsed_track_indexes) {
   DCHECK_EQ(start_lines_.size(), end_lines_.size());
 
   // Sort start and ending tracks from low to high.
@@ -220,6 +230,13 @@ GridRangeVector GridRangeBuilder::FinalizeRanges() {
       range.repeater_offset =
           (current_range_start_line - current_explicit_grid_line) %
           current_repeater_size;
+
+      const auto repeat_type =
+          explicit_tracks_.RepeatType(current_explicit_repeater_index);
+      if (repeat_type == GridTrackRepeater::RepeatType::kAutoFit ||
+          repeat_type == GridTrackRepeater::RepeatType::kAutoFill) {
+        range.SetIsAutoRepeat();
+      }
     } else {
       range.SetIsImplicit();
       if (!implicit_tracks_.RepeaterCount()) {
@@ -291,12 +308,20 @@ GridRangeVector GridRangeBuilder::FinalizeRanges() {
         *end_lines_[line_index].grid_item_range_index_to_cache = ranges.size();
     }
 
-    // TODO(almaher): Handle special auto-fit behavior for Masonry.
-    //
-    // https://drafts.csswg.org/css-grid-3/#repeat-auto-fit
-    if (is_in_auto_fit_range && open_items_or_repeaters == 1) {
+    // Don't collapse tracks if we are in the first track sizing pass used to
+    // calculate the track size/count for repeat(auto-fit,
+    // <intrinsic-track-size>).
+    if (is_in_auto_fit_range && open_items_or_repeaters == 1 &&
+        !needs_intrinsic_track_size) {
       range.SetIsCollapsed();
       range.set_count = 0;
+      if (collapsed_track_indexes) {
+        wtf_size_t start_line = range.start_line;
+        for (wtf_size_t i = start_line; i < start_line + range.track_count;
+             ++i) {
+          collapsed_track_indexes->emplace_back(i);
+        }
+      }
     } else {
       // If this is a non-collapsed range, the number of sets in this range is
       // the number of track definitions in the current repeater clamped by the
@@ -351,14 +376,14 @@ GridRangeBuilder::GridRangeBuilder(const GridTrackList& explicit_tracks,
         explicit_tracks_.RepeatSize(i);
 
     // Subgrids can have zero auto repetitions. Grids with repeat(auto-fill,
-    // auto) also currently can have a track count of 0.
+    // <intrinsic-track-size>) also currently can have a track count of 0.
     //
     // TODO (almaher): Update this check depending on if we allow Grid to have
-    // repeat(auto-fill, auto) track definitions.
+    // repeat(auto-fill, <intrinsic-track-size>) track definitions.
     if (repeater_track_count == 0) {
       DCHECK(explicit_tracks_.IsSubgriddedAxis() ||
-             explicit_tracks_.HasAutoSizedRepeater() ||
-             implicit_tracks_.HasAutoSizedRepeater());
+             explicit_tracks_.HasIntrinsicSizedRepeater() ||
+             implicit_tracks_.HasIntrinsicSizedRepeater());
       continue;
     }
 
@@ -995,17 +1020,18 @@ void GridSizingTrackCollection::SetMinorBaseline(
 }
 
 void GridSizingTrackCollection::BuildSets(
-    const ComputedStyle& grid_style,
-    const LogicalSize& grid_available_size) {
+    const ComputedStyle& container_style,
+    const LogicalSize& container_available_size) {
   gutter_size_ = GridTrackSizingAlgorithm::CalculateGutterSize(
-      grid_style, grid_available_size, track_direction_);
+      container_style, container_available_size, track_direction_);
 
   const auto& available_size = (track_direction_ == kForColumns)
-                                   ? grid_available_size.inline_size
-                                   : grid_available_size.block_size;
+                                   ? container_available_size.inline_size
+                                   : container_available_size.block_size;
 
-  BuildSets(grid_style.TemplateTracks(track_direction_).GetTrackList(),
-            grid_style.AutoTracks(track_direction_),
+  BuildSets(container_style.TemplateTracks(track_direction_).GetTrackList(),
+            container_style.AutoTracks(track_direction_),
+            container_style.IsDisplayGridLanesBox(),
             available_size == kIndefiniteSize);
   InitializeSets(available_size);
 }
@@ -1013,14 +1039,15 @@ void GridSizingTrackCollection::BuildSets(
 void GridSizingTrackCollection::BuildSets(
     const GridTrackList& explicit_track_list,
     const GridTrackList& implicit_track_list,
+    bool is_grid_lanes,
     bool is_available_size_indefinite) {
-  properties_.Reset();
+  properties_.ResetType();
   sets_.Shrink(0);
 
   for (auto& range : ranges_) {
     // Notice that |GridRange::Reset| does not reset the |kIsCollapsed| or
     // |kIsImplicit| flags as they're not affected by the set definitions.
-    range.properties.Reset();
+    range.properties.ResetType();
 
     // Collapsed ranges don't produce sets as they will be sized to zero anyway.
     if (range.IsCollapsed())
@@ -1110,9 +1137,30 @@ void GridSizingTrackCollection::BuildSets(
               TrackSpanProperties::kIsDependentOnAvailableSize);
         }
 
-        if (auto_sized_repeater_track_index_ == kNotFound &&
-            set_track_size.IsTrackDefinitionAuto()) {
-          auto_sized_repeater_track_index_ = i;
+        if (intrinsic_sized_repeater_set_index_ == kNotFound &&
+            range.IsAutoRepeat() &&
+            set_track_size.IsTrackDefinitionIntrinsic()) {
+          // This is not yet supported in Grid, only Grid-lanes.
+          CHECK(is_grid_lanes);
+
+          // Get the index of the first set of the intrinsic auto repeat. For
+          // example, if the track definition was repeat(auto-fill, 50px auto),
+          // we want the index of the set that holds 50px.
+          wtf_size_t repeater_offset = range.repeater_offset;
+
+          // Use the size since that will be the index of the current set once
+          // it is added.
+          wtf_size_t set_index = sets_.size();
+
+          // If this range/set doesn't start the intrinsic auto repeat, walk the
+          // sets backward until we hit the first track in the repeat.
+          while (repeater_offset > 0) {
+            set_index--;
+            CHECK_LT(set_index, sets_.size());
+            repeater_offset -= sets_[set_index].track_count;
+          }
+          CHECK_EQ(repeater_offset, 0U);
+          intrinsic_sized_repeater_set_index_ = set_index;
         }
 
         CacheSetProperties(sets_.emplace_back(set_track_count, set_track_size,

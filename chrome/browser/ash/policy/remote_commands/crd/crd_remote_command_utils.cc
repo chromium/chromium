@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -37,15 +39,14 @@ using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
 using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
 
-const ash::KioskAppManagerBase* GetKioskAppManager(
-    const user_manager::UserManager& user_manager) {
-  if (user_manager.IsLoggedInAsKioskChromeApp()) {
+const ash::KioskAppManagerBase* GetKioskAppManager() {
+  if (chromeos::IsChromeAppKioskSession()) {
     return ash::KioskChromeAppManager::Get();
   }
-  if (user_manager.IsLoggedInAsKioskWebApp()) {
+  if (chromeos::IsWebKioskSession()) {
     return ash::KioskWebAppManager::Get();
   }
-  if (user_manager.IsLoggedInAsKioskIWA()) {
+  if (chromeos::IsIwaKioskSession()) {
     return ash::KioskIwaManager::Get();
   }
 
@@ -54,8 +55,8 @@ const ash::KioskAppManagerBase* GetKioskAppManager(
   NOTREACHED();
 }
 
-bool IsRunningAutoLaunchedKiosk(const user_manager::UserManager& user_manager) {
-  const auto& kiosk_app_manager = CHECK_DEREF(GetKioskAppManager(user_manager));
+bool IsRunningAutoLaunchedKiosk() {
+  const auto& kiosk_app_manager = CHECK_DEREF(GetKioskAppManager());
   return kiosk_app_manager.current_app_was_auto_launched_with_zero_delay();
 }
 
@@ -116,6 +117,12 @@ void CloseMojomConnection(
 
 }  // namespace
 
+const std::string GetCrdCrashKeyValue(CrdSessionType crd_session_type,
+                                      UserSessionType session_type) {
+  return base::StrCat({CrdSessionTypeToString(crd_session_type), "-",
+                       UserSessionTypeToString(session_type)});
+}
+
 base::TimeDelta GetDeviceIdleTime() {
   base::TimeTicks last_activity =
       CHECK_DEREF(ui::UserActivityDetector::Get()).last_activity_time();
@@ -126,6 +133,12 @@ base::TimeDelta GetDeviceIdleTime() {
   return base::TimeTicks::Now() - last_activity;
 }
 
+bool IsDeviceIdleSinceReboot() {
+  base::TimeTicks last_activity =
+      CHECK_DEREF(ui::UserActivityDetector::Get()).last_activity_time();
+  return last_activity.is_null();
+}
+
 UserSessionType GetCurrentUserSessionType() {
   const auto& user_manager = CHECK_DEREF(user_manager::UserManager::Get());
 
@@ -134,7 +147,7 @@ UserSessionType GetCurrentUserSessionType() {
   }
 
   if (user_manager.IsLoggedInAsAnyKioskApp()) {
-    if (IsRunningAutoLaunchedKiosk(user_manager)) {
+    if (IsRunningAutoLaunchedKiosk()) {
       return UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION;
     } else {
       return UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION;
@@ -276,6 +289,34 @@ ConvertToStartCrdSessionJobDelegateRequestOrigin(
       return StartCrdSessionJobDelegate::RequestOrigin::kClassManagement;
     case SharedCrdSession::RequestOrigin::kEnterpriseAdmin:
       return StartCrdSessionJobDelegate::RequestOrigin::kEnterpriseAdmin;
+  }
+  NOTREACHED();
+}
+
+remoting::ChromeOsEnterpriseAudioPlayback
+ConvertToChromeOsEnterpriseAudioPlayback(
+    StartCrdSessionJobDelegate::AudioPlayback audio_playback) {
+  switch (audio_playback) {
+    case StartCrdSessionJobDelegate::AudioPlayback::kLocalOnly:
+      return remoting::ChromeOsEnterpriseAudioPlayback::kLocalOnly;
+    case StartCrdSessionJobDelegate::AudioPlayback::kRemoteAndLocal:
+      return remoting::ChromeOsEnterpriseAudioPlayback::kRemoteAndLocal;
+    case StartCrdSessionJobDelegate::AudioPlayback::kRemoteOnly:
+      return remoting::ChromeOsEnterpriseAudioPlayback::kRemoteOnly;
+  }
+  NOTREACHED();
+}
+
+StartCrdSessionJobDelegate::AudioPlayback
+ConvertToStartCrdSessionJobDelegateAudioPlayback(
+    SharedCrdSession::AudioPlayback audio_playback) {
+  switch (audio_playback) {
+    case SharedCrdSession::AudioPlayback::kLocalOnly:
+      return StartCrdSessionJobDelegate::AudioPlayback::kLocalOnly;
+    case SharedCrdSession::AudioPlayback::kRemoteAndLocal:
+      return StartCrdSessionJobDelegate::AudioPlayback::kRemoteAndLocal;
+    case SharedCrdSession::AudioPlayback::kRemoteOnly:
+      return StartCrdSessionJobDelegate::AudioPlayback::kRemoteOnly;
   }
   NOTREACHED();
 }

@@ -119,6 +119,9 @@ AccountId TestSessionControllerClient::AddUserSession(
   // user email must be same as cannonicalized display email.
   CHECK_EQ(account_id.GetUserEmail(), gaia::CanonicalizeEmail(display_email));
 
+  // There must not exist the user session for the user passed here.
+  CHECK(!controller_->GetUserSessionByAccountId(account_id)) << account_id;
+
   // Set is_ephemeral in user_info to true if the user type is guest or public
   // account.
   bool is_ephemeral =

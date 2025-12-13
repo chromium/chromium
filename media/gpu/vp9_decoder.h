@@ -124,7 +124,8 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
   ~VP9Decoder() override;
 
   // AcceleratedVideoDecoder implementation.
-  void SetStream(int32_t id, const DecoderBuffer& decoder_buffer) override;
+  void SetStream(int32_t id,
+                 scoped_refptr<DecoderBuffer> decoder_buffer) override;
   [[nodiscard]] bool Flush() override;
   void Reset() override;
   [[nodiscard]] DecodeResult Decode() override;
@@ -134,7 +135,7 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
   uint8_t GetBitDepth() const override;
   VideoChromaSampling GetChromaSampling() const override;
   VideoColorSpace GetVideoColorSpace() const override;
-  std::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
+  gfx::HDRMetadata GetHDRMetadata() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
@@ -164,6 +165,9 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
 
   // Current stream buffer id; to be assigned to pictures decoded from it.
   int32_t stream_id_ = -1;
+
+  // Most recent call to SetStream().
+  scoped_refptr<media::DecoderBuffer> decoder_buffer_;
 
   // Current frame header and decrypt config to be used in decoding the next
   // picture.

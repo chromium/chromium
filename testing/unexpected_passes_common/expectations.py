@@ -13,9 +13,6 @@ import re
 import subprocess
 from typing import Dict, FrozenSet, Iterable, List, Optional, Set, Tuple, Union
 
-# vpython-provided modules.
-import six
-
 # //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
 
@@ -1086,13 +1083,7 @@ def _GetNonRecentExpectationContent(expectation_file_path: str,
     if not stripped_line_content or stripped_line_content.startswith('#'):
       content += line_content
     else:
-      if six.PY2:
-        date_parts = date.split('-')
-        date = datetime.date(year=int(date_parts[0]),
-                             month=int(date_parts[1]),
-                             day=int(date_parts[2]))
-      else:
-        date = datetime.date.fromisoformat(date)
+      date = datetime.date.fromisoformat(date)
       date_diff = datetime.date.today() - date
       if date_diff > num_days:
         content += line_content

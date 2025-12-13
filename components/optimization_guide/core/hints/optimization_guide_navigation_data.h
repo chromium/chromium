@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <optional>
 #include <utility>
 
@@ -62,18 +61,6 @@ class OptimizationGuideNavigationData {
     registered_optimization_types_ = registered_optimization_types;
   }
 
-  // The optimization targets that were registered at the start of the
-  // navigation.
-  base::flat_set<optimization_guide::proto::OptimizationTarget>
-  registered_optimization_targets() const {
-    return registered_optimization_targets_;
-  }
-  void set_registered_optimization_targets(
-      base::flat_set<optimization_guide::proto::OptimizationTarget>
-          registered_optimization_targets) {
-    registered_optimization_targets_ = registered_optimization_targets;
-  }
-
   // The duration between the fetch for a hint for the navigation going out to
   // when it was received by the client if a fetch was initiated for the
   // navigation.
@@ -120,19 +107,10 @@ class OptimizationGuideNavigationData {
   base::flat_set<optimization_guide::proto::OptimizationType>
       registered_optimization_types_;
 
-  // The optimization targets that were registered at the start of the
-  // navigation.
-  base::flat_set<optimization_guide::proto::OptimizationTarget>
-      registered_optimization_targets_;
-
   // The map from optimization type to the last decision made for that type.
   base::flat_map<optimization_guide::proto::OptimizationType,
                  optimization_guide::OptimizationTypeDecision>
       optimization_type_decisions_;
-
-  // The page hint for the navigation.
-  std::optional<std::unique_ptr<optimization_guide::proto::PageHint>>
-      page_hint_;
 
   // The time that the hints fetch for this navigation started. Is only present
   // if a fetch was initiated for this navigation.

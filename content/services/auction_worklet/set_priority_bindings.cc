@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/webidl_compat.h"
+#include "gin/public/gin_embedders.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 #include "v8/include/v8-exception.h"
@@ -27,8 +28,8 @@ SetPriorityBindings::SetPriorityBindings(AuctionV8Helper* v8_helper)
 SetPriorityBindings::~SetPriorityBindings() = default;
 
 void SetPriorityBindings::AttachToContext(v8::Local<v8::Context> context) {
-  v8::Local<v8::External> v8_this =
-      v8::External::New(v8_helper_->isolate(), this);
+  v8::Local<v8::External> v8_this = v8::External::New(
+      v8_helper_->isolate(), this, gin::kSetPriorityBindingsTag);
   v8::Local<v8::Function> v8_function =
       v8::Function::New(context, &SetPriorityBindings::SetPriority, v8_this)
           .ToLocalChecked();
@@ -46,7 +47,7 @@ void SetPriorityBindings::Reset() {
 void SetPriorityBindings::SetPriority(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   SetPriorityBindings* bindings = static_cast<SetPriorityBindings*>(
-      v8::External::Cast(*args.Data())->Value());
+      v8::External::Cast(*args.Data())->Value(gin::kSetPriorityBindingsTag));
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
   AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());

@@ -1,0 +1,13 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("app_store_bundle") {
+  sources = [
+    "test_app_store_bundle.mm",
+    "test_app_store_bundle_service.h",
+    "test_app_store_bundle_service.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/app_store_bundle/model" ]
+  deps = [ "//ios/public/provider/chrome/browser/app_store_bundle:app_store_bundle_api" ]
+}

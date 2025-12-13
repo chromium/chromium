@@ -30,8 +30,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayerJni;
@@ -49,6 +51,7 @@ import org.chromium.components.prefs.PrefService;
 
 /** Unit tests for {@link PlayerCoordinator}. */
 @Config(manifest = Config.NONE)
+@DisableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
 @RunWith(BaseRobolectricTestRunner.class)
 public class PlayerCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -58,7 +61,7 @@ public class PlayerCoordinatorUnitTest {
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private Playback mPlayback;
-    @Mock private PlayerCoordinator.Observer mObserver;
+    @Mock private Player.Observer mObserver;
     @Mock private PlayerMediator mMediator;
     @Mock private MiniPlayerCoordinator mMiniPlayer;
     private MockPrefServiceHelper mMockPrefServiceHelper;

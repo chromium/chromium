@@ -57,7 +57,7 @@ class AXPlatformNodeId
 
 namespace std {
 template <>
-struct std::hash<ui::AXPlatformNodeId>
-    : std::hash<base::StrongAlias<class ui::AXPlatformNodeIdTag, int32_t>> {};
+struct hash<ui::AXPlatformNodeId>
+    : hash<base::StrongAlias<class ui::AXPlatformNodeIdTag, int32_t>> {};
 }  // namespace std
 #endif  // UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_ID_H_

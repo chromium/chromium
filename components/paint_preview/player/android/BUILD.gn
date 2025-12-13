@@ -200,6 +200,7 @@ robolectric_binary("paint_preview_junit_tests") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/google-truth:google_truth_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]

@@ -674,7 +674,7 @@ void GpuDiskCache::Init() {
       net::SHADER_CACHE, net::CACHE_BACKEND_DEFAULT,
       /*file_operations=*/nullptr, cache_path_, GetDefaultGpuDiskCacheSize(),
       disk_cache::ResetHandling::kResetOnError,
-      /*net_log=*/nullptr,
+      /*net_log=*/nullptr, /*cache_encryption_delegate=*/nullptr,
       base::BindOnce(&GpuDiskCache::CacheCreatedCallback, this));
 
   if (rv.net_error == net::OK) {

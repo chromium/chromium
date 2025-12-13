@@ -7,7 +7,6 @@
 
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/network_context_client.mojom.h"
 

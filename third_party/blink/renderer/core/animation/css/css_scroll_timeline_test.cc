@@ -28,9 +28,9 @@ class CSSScrollTimelineTest : public PageTestBase {
     return GetDocument().GetDocumentAnimations();
   }
 
-  const HeapHashSet<WeakMember<ScrollSnapshotClient>>&
-  GetScrollSnapshotClientsForTesting() {
-    return GetFrame().GetScrollSnapshotClientsForTesting();
+  const HeapHashSet<WeakMember<PostLayoutSnapshotClient>>&
+  GetPostLayoutSnapshotClientsForTesting() {
+    return GetFrame().GetPostLayoutSnapshotClientsForTesting();
   }
 };
 
@@ -203,7 +203,7 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
     <div id=main></div>
   )HTML");
 
-  ASSERT_TRUE(GetScrollSnapshotClientsForTesting().empty());
+  ASSERT_TRUE(GetPostLayoutSnapshotClientsForTesting().empty());
 
   Element* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   element->setAttribute(blink::html_names::kIdAttr, AtomicString("element"));
@@ -223,7 +223,7 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
   observer->observe(element);
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(1u, GetScrollSnapshotClientsForTesting().size());
+  EXPECT_EQ(1u, GetPostLayoutSnapshotClientsForTesting().size());
 }
 
 namespace {

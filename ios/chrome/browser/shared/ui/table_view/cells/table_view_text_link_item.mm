@@ -26,7 +26,7 @@
   return self;
 }
 
-- (void)configureCell:(TableViewCell*)tableCell
+- (void)configureCell:(LegacyTableViewCell*)tableCell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   TableViewTextLinkCell* cell =
@@ -128,24 +128,6 @@
   [super prepareForReuse];
   self.delegate = nil;
 }
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  if (@available(iOS 17, *)) {
-    return NO;
-  }
-
-  DCHECK(self.textView == textView);
-  DCHECK(URL);
-  CrURL* crurl = [[CrURL alloc] initWithNSURL:URL];
-  [self.delegate tableViewTextLinkCell:self didRequestOpenURL:crurl];
-  // Returns NO as the app is handling the opening of the URL.
-  return NO;
-}
-#endif
 
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem

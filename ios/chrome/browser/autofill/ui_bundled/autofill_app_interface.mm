@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/singleton.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -27,20 +28,20 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/credit_card_save_manager_test_observer_bridge.h"
+#import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/autofill/ios/browser/ios_test_event_waiter.h"
-#import "components/autofill/ios/common/features.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -455,6 +456,11 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
                      autofill::AutofillProfile::RecordType::kAccountHome);
 }
 
++ (void)saveExampleAccountNameEmailProfile {
+  AddAutofillProfile([self personalDataManager],
+                     autofill::AutofillProfile::RecordType::kAccountNameEmail);
+}
+
 + (NSString*)exampleProfileName {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   std::u16string name = profile.GetInfo(
@@ -500,11 +506,40 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
   return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
 }
 
++ (NSString*)saveLocalCreditCardWithCvc {
+  autofill::PersonalDataManager* personalDataManager =
+      [self personalDataManager];
+  autofill::CreditCard card =
+      autofill::test::WithCvc(autofill::test::GetCreditCard());
+  size_t card_count =
+      personalDataManager->payments_data_manager().GetCreditCards().size();
+  personalDataManager->payments_data_manager().AddCreditCard(card);
+  ConditionBlock conditionBlock = ^bool {
+    return card_count <
+           personalDataManager->payments_data_manager().GetCreditCards().size();
+  };
+  CHECK(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForFileOperationTimeout, conditionBlock));
+  personalDataManager->NotifyPersonalDataObserver();
+  return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
+}
+
 + (NSInteger)localCreditCount {
   return [self personalDataManager]
       ->payments_data_manager()
       .GetCreditCards()
       .size();
+}
+
++ (NSString*)firstLocalCreditCardCvc {
+  autofill::PaymentsDataManager& paymentsDataManager =
+      [self personalDataManager]->payments_data_manager();
+  const std::vector<const autofill::CreditCard*>& cards =
+      paymentsDataManager.GetLocalCreditCards();
+  if (cards.empty()) {
+    return nil;
+  }
+  return autofill::GetCreditCardCvcString(*cards[0]);
 }
 
 + (NSString*)saveMaskedCreditCard {
@@ -613,15 +648,10 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 }
 
 + (void)considerCreditCardFormSecureForTesting {
-  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  web::WebFramesManager* frames_manager =
-      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
-          web_state);
-  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
-  test_api(autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state,
-                                                                main_frame)
-               ->GetAutofillManager())
-      .SetConsiderFormAsSecureForTesting(true);
+  static_cast<autofill::ChromeAutofillClientIOS&>(
+      *autofill::AutofillClientIOS::FromWebState(
+          chrome_test_util::GetCurrentWebState()))
+      .ConsiderAsSecureForTesting();
 }
 
 + (NSString*)paymentsRiskData {
@@ -664,13 +694,11 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
       .SetPaymentMethodsMandatoryReauthEnabled(enabled);
 }
 
-+ (BOOL)isKeyboardAccessoryUpgradeEnabled {
-  return IsKeyboardAccessoryUpgradeEnabled();
-}
-
-+ (BOOL)isDynamicallyLoadFieldsOnInputEnabled {
-  return base::FeatureList::IsEnabled(
-      kAutofillDynamicallyLoadsFieldsForAddressInput);
++ (void)setPaymentCvcStorageEnabled:(BOOL)enabled {
+  autofill::PersonalDataManager* personalDataManager =
+      [self personalDataManager];
+  personalDataManager->payments_data_manager().SetPaymentsCvcStorageEnabled(
+      enabled);
 }
 
 #pragma mark - Private

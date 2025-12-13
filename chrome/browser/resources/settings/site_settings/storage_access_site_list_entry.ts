@@ -8,10 +8,11 @@
  * storage access permissions with the same origin and type of permission (e.g.
  * allowed, blocked).
  */
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import './storage_access_static_site_list_entry.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
@@ -21,8 +22,8 @@ import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundle
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContentSettingsTypes} from './constants.js';
+import type {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './storage_access_site_list_entry.html.js';
 import type {StorageAccessStaticSiteListEntry} from './storage_access_static_site_list_entry.js';
 

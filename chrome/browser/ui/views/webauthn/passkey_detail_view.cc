@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"

@@ -18,7 +18,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,9 +25,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "components/ip_protection/common/masked_domain_list_manager.h"
-#include "components/ip_protection/common/probabilistic_reveal_token_registry.h"
-#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -44,6 +40,8 @@
 #include "net/log/net_log.h"
 #include "net/log/trace_net_log_observer.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/devtools_durable_msg_collector.h"
+#include "services/network/devtools_durable_msg_collector_manager.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_change_manager.h"
@@ -68,14 +66,11 @@
 #include "services/network/public/mojom/ct_log_info.mojom.h"
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
-namespace mojo_base {
-class ProtoWrapper;
-}
-
 namespace net {
 class FileNetLogObserver;
 class HostResolverManager;
 class HttpAuthHandlerFactory;
+class IPEndPoint;
 class LoggingNetworkChangeObserver;
 class NetworkChangeNotifier;
 class NetworkQualityEstimator;
@@ -85,7 +80,7 @@ class URLRequestContext;
 namespace network {
 
 class DnsConfigChangeManager;
-class HttpAuthCacheCopier;
+class HttpAuthCacheProxyCopier;
 class NetLogProxySink;
 class NetworkContext;
 class NetworkService;
@@ -175,7 +170,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       bool happy_eyeballs_v3_enabled,
       net::SecureDnsMode secure_dns_mode,
       const net::DnsOverHttpsConfig& dns_over_https_config,
-      bool additional_dns_types_enabled) override;
+      bool additional_dns_types_enabled,
+      const std::vector<net::IPEndPoint>& fallback_doh_nameservers) override;
   void DisableQuic() override;
   void SetUpHttpAuth(
       mojom::HttpAuthStaticParamsPtr http_auth_static_params) override;
@@ -183,7 +179,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojom::HttpAuthDynamicParamsPtr http_auth_dynamic_params) override;
   void SetRawHeadersAccess(int32_t process_id,
                            const std::vector<url::Origin>& origins) override;
-  void SetMaxConnectionsPerProxyChain(int32_t max_connections) override;
+  void SetMaxConnectionsPerProxyChain(uint32_t max_connections) override;
   void GetNetworkChangeManager(
       mojo::PendingReceiver<mojom::NetworkChangeManager> receiver) override;
   void GetNetworkQualityEstimatorManager(
@@ -197,8 +193,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void OnTrustStoreChanged() override;
   void OnClientCertStoreChanged() override;
   void SetEncryptionKey(const std::string& encryption_key) override;
-  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
-                            memory_pressure_level) override;
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
   void OnPeerToPeerConnectionsCountChange(uint32_t count) override;
 #if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state) override;
@@ -226,19 +222,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   void UpdateKeyPinsList(mojom::PinListPtr pin_list,
                          base::Time update_time) override;
-
-  void UpdateMaskedDomainList(
-      mojo_base::ProtoWrapper masked_domain_list,
-      const std::vector<std::string>& exclusion_list) override;
-
-  void UpdateMaskedDomainListFlatbuffer(
-      base::File default_file,
-      uint64_t default_file_size,
-      base::File regular_browsing_file,
-      uint64_t regular_browsing_file_size) override;
-
-  void UpdateProbabilisticRevealTokenRegistry(
-      base::Value::Dict registry) override;
 
 #if BUILDFLAG(IS_ANDROID)
   void DumpWithoutCrashing(base::Time dump_request_time) override;
@@ -271,7 +254,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojo::PendingRemote<network::mojom::URLLoaderClient>
           dest_url_loader_client) override;
 
+  void DecodeContentEncoding(
+      const std::vector<net::SourceStreamType>& content_encoding_types,
+      mojo::ScopedDataPipeConsumerHandle source_body,
+      mojo::ScopedDataPipeProducerHandle dest_body,
+      DecodeContentEncodingCallback callback) override;
+
   void SetTLS13EarlyDataEnabled(bool enabled) override;
+
+  // Adds a Durable Message collector to NetworkService, with its lifetime tied
+  // to the pipe associated with the receiver supplied. There may be multiple
+  // collectors enabled concurrently, each created by its own independent
+  // DevTools Root Session.
+  void AddDurableMessageCollector(
+      mojo::PendingReceiver<mojom::DurableMessageCollector> receiver) override;
 
   void StartNetLogBounded(base::File file,
                           uint64_t max_total_size,
@@ -315,8 +311,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   net::HostResolver::Factory* host_resolver_factory() {
     return host_resolver_factory_.get();
   }
-  HttpAuthCacheCopier* http_auth_cache_copier() {
-    return http_auth_cache_copier_.get();
+  HttpAuthCacheProxyCopier* http_auth_cache_proxy_copier() {
+    return http_auth_cache_proxy_copier_.get();
   }
 
   FirstPartySetsManager* first_party_sets_manager() const {
@@ -327,22 +323,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     return tpcd_metadata_manager_.get();
   }
 
-  ip_protection::MaskedDomainListManager* masked_domain_list_manager() const {
-    return masked_domain_list_manager_.get();
-  }
-
-  ip_protection::ProbabilisticRevealTokenRegistry*
-  probabilistic_reveal_token_registry() const {
-    return probabilistic_reveal_token_registry_.get();
-  }
-
   void set_host_resolver_factory_for_testing(
       std::unique_ptr<net::HostResolver::Factory> host_resolver_factory) {
     host_resolver_factory_ = std::move(host_resolver_factory);
-  }
-
-  bool split_auth_cache_by_network_isolation_key() const {
-    return split_auth_cache_by_network_isolation_key_;
   }
 
   // From initialization on, this will be non-null and will always point to the
@@ -403,6 +386,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   }
 
   static NetworkService* GetNetworkServiceForTesting();
+
+  std::vector<base::WeakPtr<DevtoolsDurableMessageCollector>>
+  GetDurableMessageCollectorsEnabledForProfile(
+      const base::UnguessableToken& devtools_profile);
+  DevtoolsDurableMessageCollectorManager*
+  GetDurableMessageCollectorManagerForTesting() {
+    return durable_message_collector_manager_.get();
+  }
 
  private:
   class DelayedDohProbeActivator;
@@ -478,7 +469,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   std::unique_ptr<net::HostResolverManager> host_resolver_manager_;
   std::unique_ptr<net::HostResolver::Factory> host_resolver_factory_;
-  std::unique_ptr<HttpAuthCacheCopier> http_auth_cache_copier_;
+  std::unique_ptr<HttpAuthCacheProxyCopier> http_auth_cache_proxy_copier_;
 
   // Members that would store the http auth network_service related params.
   // These Params are later used by NetworkContext to create
@@ -504,24 +495,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // this with |owned_network_contexts_|.
   std::set<raw_ptr<NetworkContext, SetExperimental>> network_contexts_;
 
-  std::unique_ptr<ip_protection::MaskedDomainListManager>
-      masked_domain_list_manager_;
-
-  // Holds the list of domains that have registered to receive Probabilistic
-  // Reveal Tokens.
-  std::unique_ptr<ip_protection::ProbabilisticRevealTokenRegistry>
-      probabilistic_reveal_token_registry_;
-
   // A per-process_id map of origins that are white-listed to allow
   // them to request raw headers for resources they request.
   std::map<int32_t, base::flat_set<url::Origin>>
       raw_headers_access_origins_by_pid_;
 
   bool quic_disabled_ = false;
-
-  // Whether new NetworkContexts will be configured to partition their
-  // HttpAuthCaches by NetworkIsolationKey.
-  bool split_auth_cache_by_network_isolation_key_ = false;
 
   // Globally-scoped cryptographic state for the Trust Tokens protocol
   // (https://github.com/wicg/trust-token-api), updated via a Mojo IPC and
@@ -559,6 +538,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<network::tpcd::metadata::Manager> tpcd_metadata_manager_;
 
   bool exclusive_cookie_database_locking_ = true;
+
+  std::unique_ptr<DevtoolsDurableMessageCollectorManager>
+      durable_message_collector_manager_;
+
   base::WeakPtrFactory<NetworkService> weak_factory_{this};
 };
 

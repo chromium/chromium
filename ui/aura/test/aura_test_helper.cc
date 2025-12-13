@@ -27,10 +27,10 @@
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/display/screen.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/cursor_loader.h"
 #include "ui/wm/core/default_activation_client.h"
 #include "ui/wm/core/default_screen_position_client.h"
@@ -82,8 +82,8 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory) {
   ui::test::EventGeneratorDelegate::SetFactoryFunction(
       base::BindRepeating(&EventGeneratorDelegateAura::Create));
 
-  zero_duration_mode_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  zero_duration_mode_ = std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // Some tests suites create Env globally.
   if (Env::HasInstance())
@@ -133,7 +133,7 @@ AuraTestHelper* AuraTestHelper::GetInstance() {
 }
 
 void AuraTestHelper::SetUp() {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   gfx::Size host_size(screen ? screen->GetPrimaryDisplay().GetSizeInPixel()
                              : kDefaultHostSize);
   test_screen_.reset(TestScreen::Create(host_size));
@@ -182,7 +182,7 @@ void AuraTestHelper::TearDown() {
   focus_client_.reset();
   host_.reset();
 
-  if (test_screen_ && (display::Screen::GetScreen() == GetTestScreen())) {
+  if (test_screen_ && (display::Screen::Get() == GetTestScreen())) {
     display::Screen::SetScreenInstance(nullptr);
   }
   test_screen_.reset();

@@ -77,7 +77,7 @@ bool AddStudentsRequest::GetContentData(std::string* upload_content_type,
   student_groups.Append(std::move(student_group));
   root.Set(kStudentGroups, std::move(student_groups));
 
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
   return true;
 }
 

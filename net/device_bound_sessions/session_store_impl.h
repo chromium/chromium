@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "components/sqlite_proto/key_value_table.h"
@@ -93,6 +94,12 @@ class NET_EXPORT SessionStoreImpl : public SessionStore {
       const std::map<std::string, proto::SiteSessions>& loaded_data,
       std::vector<std::string>& keys_to_delete);
 
+  // Helper function used to run every entry in `restore_callbacks_`
+  void OnSessionBindingKeyRestored(
+      const SessionKey& session_key,
+      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+          key_or_error);
+
   // Key service used to wrap/unwrap unexportable session keys.
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
 
@@ -122,6 +129,11 @@ class NET_EXPORT SessionStoreImpl : public SessionStore {
   // Used only for tests to notify that shutdown tasks are completed on
   // the DB sequence.
   base::OnceClosure shutdown_callback_;
+
+  // Holds pending key restore operations. This ensures that we don't
+  // try to restore the same key twice.
+  std::map<SessionKey, std::vector<RestoreSessionBindingKeyCallback>>
+      restore_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

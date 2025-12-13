@@ -16,7 +16,6 @@
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"

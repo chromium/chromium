@@ -30,15 +30,12 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using signin::constants::kNoHostedDomainFound;
-
 namespace {
 
-// Dummy DiceWebSigninInterceptor::Delegate that does nothing.
+// Placeholder `WebSigninInterceptor::Delegate` that does nothing.
 class TestDiceWebSigninInterceptorDelegate
     : public WebSigninInterceptor::Delegate {
  public:
@@ -72,6 +69,8 @@ class TestDiceWebSigninInterceptorDelegate
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType interception_type) override {
   }
+  void ShowSigninError(content::WebContents* web_contents,
+                       const SigninUIError& error) override {}
 };
 
 class TestPasswordManagerClient
@@ -123,13 +122,15 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
   AccountInfo SetupInterception() {
     std::string email = "bob@example.com";
     AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
-    account_info.full_name = "fullname";
-    account_info.given_name = "givenname";
-    account_info.hosted_domain = kNoHostedDomainFound;
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("fullname")
+                       .SetGivenName("givenname")
+                       .SetHostedDomain(std::string())
+                       .SetLocale("en")
+                       .SetAvatarUrl("https://example.com")
+                       .Build();
     AccountCapabilitiesTestMutator(&account_info.capabilities)
-        .set_is_subject_to_enterprise_policies(false);
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
+        .set_is_subject_to_account_level_enterprise_policies(false);
     DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
     Profile* profile_2 = profile_manager()->CreateTestingProfile("Profile 2");
@@ -154,13 +155,12 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
         identity_test_env()->identity_manager());
     test_password_manager_client_.set_sync_service(&sync_service_);
 
-    // If features::kEnablePasswordsAccountStorage is enabled, then the browser
-    // never asks to save the primary account's password. So fake-signin an
-    // arbitrary primary account here, so that any follow-up signs to the Gaia
-    // page aren't considered primary account sign-ins and hence trigger the
-    // password save prompt.
+    // The browser never asks to save the primary account's password. So
+    // fake-signin an arbitrary primary account here, so that any follow-up
+    // signs to the Gaia page aren't considered primary account sign-ins and
+    // hence trigger the password save prompt.
     identity_test_env()->MakePrimaryAccountAvailable(
-        "primary@example.org", signin::ConsentLevel::kSync);
+        "primary@example.org", signin::ConsentLevel::kSignin);
   }
 
   void TearDown() override {
@@ -203,8 +203,8 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
   password_manager::SyncCredentialsFilter sync_filter_;
 };
 
-// Checks that MultiProfileCredentialsFilter returns false when
-// SyncCredentialsFilter returns false.
+// Checks that `MultiProfileCredentialsFilter` returns false when
+// `SyncCredentialsFilter` returns false.
 TEST_F(MultiProfileCredentialsFilterTest, SyncCredentialsFilter) {
   password_manager::PasswordForm form =
       password_manager::SyncUsernameTestBase::SimpleGaiaForm(
@@ -323,9 +323,9 @@ TEST_F(MultiProfileCredentialsFilterTest, SigninInterceptionUnknown) {
   ASSERT_TRUE(sync_filter_.ShouldSave(form));
   // Add extra Gaia account with incomplete info, so that interception outcome
   // is unknown.
-  std::string dummy_email = "bob@example.com";
+  std::string extra_email = "bob@example.com";
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable(dummy_email);
+      identity_test_env()->MakeAccountAvailable(extra_email);
   ASSERT_FALSE(dice_web_signin_interceptor()->is_interception_in_progress());
   ASSERT_FALSE(dice_web_signin_interceptor()->GetHeuristicOutcome(
       /*is_new_account=*/true, /*is_sync_signin=*/false, kFormEmail));
@@ -343,14 +343,16 @@ TEST_F(MultiProfileCredentialsFilterTest, SigninNotIntercepted) {
 
   std::string email = "user@example.org";
   AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = kNoHostedDomainFound;
+  account_info = AccountInfo::Builder(account_info)
+                     .SetFullName("fullname")
+                     .SetGivenName("givenname")
+                     .SetHostedDomain(std::string())
+                     .SetLocale("en")
+                     .SetAvatarUrl("https://example.com")
+                     .Build();
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(false);
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
+      .set_is_subject_to_account_level_enterprise_policies(false);
+  CHECK(account_info.IsValid());
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   password_manager::PasswordForm form =

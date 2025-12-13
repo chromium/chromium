@@ -7,79 +7,74 @@
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let audit = Audit.createTaskRunner();
-      let secondsToRender = 2;
-      let sampleRate = 48000;
+    <script>
+      const secondsToRender = 2;
+      const sampleRate = 48000;
 
       let stateChangeCount = 0;
       let context;
       let contextState;
 
-      function checkStateChange(e, should) {
+      const checkStateChange = (e) => {
         contextState = e.currentTarget.state;
 
         switch (stateChangeCount) {
           case 0:
-            should(contextState, 'context.state').beEqualTo('running');
+            assert_equals(contextState, 'running', 'context.state');
             break;
           case 1:
-            should(contextState, 'context.state').beEqualTo('closed');
+            assert_equals(contextState, 'closed', 'context.state');
             break;
           default:
-            should(stateChangeCount, 'Number of state changes')
-                .beLessThanOrEqualTo(2)
+            assert_less_than_equal(
+                stateChangeCount, 2, 'Number of state changes');
         }
         ++stateChangeCount;
-      }
+      };
 
-      function finalCheck(should) {
+      const finalCheck = () => {
         // Final check that we got the right number of state changes and the
         // correct final state.
-        should(stateChangeCount, 'stateChangeCount').beEqualTo(2);
-        should(context.state, 'After rendering context.state')
-            .beEqualTo('closed');
-      }
+        assert_equals(stateChangeCount, 2, 'stateChangeCount');
+        assert_equals(context.state, 'closed', 'After rendering context.state');
+      };
 
-      audit.define(
-          {label: 'test', description: 'Signaling of statechange event'},
-          (task, should) => {
-            // Create an offline context with a source passing through a
-            // convolver.  The convolver is just to waste some time.
-            context = new OfflineAudioContext(
-                1, secondsToRender * sampleRate, sampleRate);
-            let buffer = createImpulseBuffer(context, sampleRate);
-            let source = context.createBufferSource();
-            let conv = context.createConvolver();
+      promise_test(t => {
+        // Create an offline context with a source passing through a
+        // convolver.  The convolver is just to waste some time.
+        context = new OfflineAudioContext(
+            1, secondsToRender * sampleRate, sampleRate);
+        const buffer = createImpulseBuffer(context, sampleRate);
 
-            source.buffer = buffer;
-            conv.normalize = false;
-            conv.buffer = buffer;
+        // Use constructor form for source and pass buffer in options
+        const source = new AudioBufferSourceNode(context, {buffer: buffer});
+        const conv = new ConvolverNode(context, {
+          buffer: buffer,
+          disableNormalization: true,
+        });
 
-            source.connect(conv);
-            conv.connect(context.destination);
+        source.connect(conv).connect(context.destination);
+        source.start();
 
-            source.start();
+        context.onstatechange = (event) => checkStateChange(event);
+        // Start rendering but do not await the promise here; original test
+        // relied on scheduling and a timeout to perform final checks.
+        context.startRendering();
 
-            context.onstatechange = (event) => checkStateChange(event, should);
-
-            should(context.startRendering(), 'Context rendering').beResolved();
-
-            // Don't want to set an oncomplete for the context and don't want to
-            // use the promise because the order of the state change event and
-            // resolving the promise is not specified.  Thus, just wait for a
-            // bit and then finish the test.  We assume the offline context runs
-            // faster than realtime.
-            setTimeout(() => {
-              finalCheck(should);
-              task.done();
-            }, secondsToRender * 1000);
-          });
-
-      audit.run();
+        // Don't want to set an oncomplete for the context and don't want to
+        // use the promise because the order of the state change event and
+        // resolving the promise is not specified.  Thus, just wait for a
+        // bit and then finish the test.  We assume the offline context runs
+        // faster than realtime.
+        return new Promise(resolve => {
+          setTimeout(() => {
+            finalCheck();
+            resolve();
+          }, secondsToRender * 1000);
+        });
+      }, 'test: Signaling of statechange event');
     </script>
   </body>
 </html>

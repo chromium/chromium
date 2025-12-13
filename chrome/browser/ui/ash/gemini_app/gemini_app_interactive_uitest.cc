@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/gemini.h"
@@ -210,7 +211,7 @@ class OnBrowserSetLastActiveWaiter : public BrowserListObserver {
 
 // Base class for interactive UI tests of the Gemini app.
 class GeminiAppInteractiveUiTestBase
-    : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
+    : public InteractiveBrowserTestMixin<MixinBasedInProcessBrowserTest> {
  public:
   GeminiAppInteractiveUiTestBase(
       std::optional<ash::LoggedInUserMixin::LogInType> login_type)
@@ -223,23 +224,6 @@ class GeminiAppInteractiveUiTestBase
     // Enable Gemini app preinstallation.
     scoped_feature_list_.InitAndEnableFeature(
         chromeos::features::kGeminiAppPreinstall);
-
-    // Use a consistent context for element tracking. Otherwise each widget has
-    // its own context, greatly increasing the complexity of tracking
-    // cross-widget CUJs as is the case in this test suite.
-    views::ElementTrackerViews::SetContextOverrideCallback(
-        base::BindRepeating([](views::Widget* widget) {
-          return ui::ElementContext(ash::Shell::GetPrimaryRootWindow());
-        }));
-  }
-
-  // Returns a builder for a step which assigns the last active browser to the
-  // specified `ptr_ref`.
-  [[nodiscard]] auto AssignLastActiveBrowser(
-      std::reference_wrapper<Browser*> ptr_ref) {
-    return Do([ptr_ref]() {
-      ptr_ref.get() = BrowserList::GetInstance()->GetLastActive();
-    });
   }
 
   // Returns a builder for a step which assigns the view associated with the
@@ -261,7 +245,7 @@ class GeminiAppInteractiveUiTestBase
 
   // Returns the expected title for the Gemini app.
   const std::u16string& GetGeminiAppTitle() const {
-    return gemini_app_install_info_->title;
+    return gemini_app_install_info_->title.value();
   }
 
   // Returns a builder for a step which presses and releases the given `key`.
@@ -285,9 +269,9 @@ class GeminiAppInteractiveUiTestBase
   }
 
  protected:
-  // InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>:
+  // InteractiveBrowserTestMixin<MixinBasedInProcessBrowserTest>:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    InteractiveBrowserTestT<
+    InteractiveBrowserTestMixin<
         MixinBasedInProcessBrowserTest>::SetUpDefaultCommandLine(command_line);
 
     // Disable sync as it would otherwise block updating of shelf pins.
@@ -297,20 +281,21 @@ class GeminiAppInteractiveUiTestBase
   void SetUpOnMainThread() override {
     // There's nothing to do if not logging in the user.
     if (!ShouldLogInUser()) {
-      InteractiveBrowserTestT<
+      InteractiveBrowserTestMixin<
           MixinBasedInProcessBrowserTest>::SetUpOnMainThread();
       return;
     }
 
     // For logged-in user sessions, perform login prior to
-    // `InteractiveBrowserTestT<>::SetUpOnMainThread()` so that the interactive
-    // browser test base class will successfully set the context widget for the
-    // test sequence. The context widget will be associated with the browser.
+    // `InteractiveBrowserTestMixin<>::SetUpOnMainThread()` so that the
+    // interactive browser test base class will successfully set the context
+    // widget for the test sequence. The context widget will be associated with
+    // the browser.
     if (std::holds_alternative<ash::LoggedInUserMixin>(user_session_mixin_)) {
       std::get<ash::LoggedInUserMixin>(user_session_mixin_).LogInUser();
     }
 
-    InteractiveBrowserTestT<
+    InteractiveBrowserTestMixin<
         MixinBasedInProcessBrowserTest>::SetUpOnMainThread();
 
     // Wait for installation of both system and external web apps. The Gemini
@@ -452,7 +437,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromAppList) {
   raw_ptr<ash::AppListItemView> gmail_app = nullptr;
 
   // Test.
-  RunTestSequence(
+  RunTestSequence(InAnyContext(
       // Launch app list.
       DoDefaultAction(ash::kHomeButtonElementId),
       WaitForShow(ash::kAppListBubbleViewElementId),
@@ -532,7 +517,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromAppList) {
 
       // Check Gemini app launch URL.
       WaitForWebContentsReady(kGeminiAppWebContentsElementId,
-                              GetGeminiAppLaunchUrl()));
+                              GetGeminiAppLaunchUrl())));
 }
 
 // Initializes user state and restarts Chrome before `LaunchFromShelf`.
@@ -546,7 +531,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromShelf) {
   raw_ptr<ash::ShelfView> shelf = nullptr;
 
   // Test.
-  RunTestSequence(
+  RunTestSequence(InAnyContext(
       // Cache shelf.
       AssignView(ash::kShelfViewElementId, std::ref(shelf)),
 
@@ -597,7 +582,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromShelf) {
 
       // Check Gemini app launch URL.
       WaitForWebContentsReady(kGeminiAppWebContentsElementId,
-                              GetGeminiAppLaunchUrl()));
+                              GetGeminiAppLaunchUrl())));
 }
 
 // Initializes user state and restarts Chrome before
@@ -608,55 +593,50 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest,
 // Verifies that the Gemini app is the preferred app for supported links.
 IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest,
                        PreferredAppForSupportedLinks) {
-  // Browser.
-  Browser* gemini_app_browser = nullptr;
+  const std::string url_with_contents =
+      base::StrCat({"data:text/html;base64,",
+                    base::Base64Encode(base::ReplaceStringPlaceholders(
+                        R"(<DOCTYPE html>
+                             <html>
+                               <head>
+                                 <style>
+                                   html, body, a {
+                                     display: block;
+                                     height: 100%;
+                                     width: 100%;
+                                   }
+                                 </style>
+                               </head>
+                               <body>
+                                 <a href="$1" target="_blank"></a>
+                               </body>
+                             </html>)",
+                        /*subst=*/{GetGeminiAppLaunchUrl().spec()},
+                        /*offsets=*/nullptr))});
 
   // Test.
   RunTestSequence(
       // Navigate browser to page with supported link.
-      AddInstrumentedTab(
-          kBrowserWebContentsElementId,
-          GURL(base::StrCat({"data:text/html;base64,",
-                             base::Base64Encode(base::ReplaceStringPlaceholders(
-                                 R"(<DOCTYPE html>
-                                    <html>
-                                      <head>
-                                        <style>
-                                          html, body, a {
-                                            display: block;
-                                            height: 100%;
-                                            width: 100%;
-                                          }
-                                        </style>
-                                      </head>
-                                      <body>
-                                        <a href="$1" target="_blank"></a>
-                                      </body>
-                                    </html>)",
-                                 /*subst=*/{GetGeminiAppLaunchUrl().spec()},
-                                 /*offsets=*/nullptr))}))),
+      AddInstrumentedTab(kBrowserWebContentsElementId, GURL(url_with_contents)),
 
       // Launch Gemini app via supported link.
       MoveMouseTo(kBrowserViewElementId), ClickMouse(),
+      InAnyContext(
+          WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true)),
+      InSameContext(
+          InstrumentTab(kGeminiAppWebContentsElementId),
 
-      // Instrument Gemini app browser.
-      WaitForOnBrowserSetLastActive(),
-      AssignLastActiveBrowser(std::ref(gemini_app_browser)),
-      InstrumentTab(kGeminiAppWebContentsElementId,
-                    /*tab_index=*/std::nullopt, std::ref(gemini_app_browser)),
+          // Check Gemini app browser.
+          CheckElement(kGeminiAppWebContentsElementId,
+                       [](ui::TrackedElement* el) {
+                         auto* const browser = chrome::FindBrowserWithTab(
+                             AsInstrumentedWebContents(el)->web_contents());
+                         return IsBrowserForWebApp(ash::kGeminiAppId, browser);
+                       }),
 
-      // Check Gemini app browser.
-      CheckElement(
-          kGeminiAppWebContentsElementId,
-          base::BindOnce(&AsInstrumentedWebContents)
-              .Then(
-                  base::BindOnce(&WebContentsInteractionTestUtil::web_contents))
-              .Then(base::BindOnce(&chrome::FindBrowserWithTab))
-              .Then(base::BindOnce(&IsBrowserForWebApp, ash::kGeminiAppId))),
-
-      // Check Gemini app launch URL.
-      WaitForWebContentsReady(kGeminiAppWebContentsElementId,
-                              GetGeminiAppLaunchUrl()));
+          // Check Gemini app launch URL.
+          WaitForWebContentsReady(kGeminiAppWebContentsElementId,
+                                  GetGeminiAppLaunchUrl())));
 }
 
 // Initializes user state and restarts Chrome before `UninstallFromAppList`.
@@ -664,7 +644,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, PRE_UninstallFromAppList) {}
 
 // Verifies that the Gemini app cannot be uninstalled from the app list.
 IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, UninstallFromAppList) {
-  RunTestSequence(
+  RunTestSequence(InAnyContext(
       // Launch app list.
       DoDefaultAction(ash::kHomeButtonElementId),
       WaitForShow(ash::kAppListBubbleViewElementId),
@@ -690,11 +670,10 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, UninstallFromAppList) {
       PressAndReleaseKey(ui::VKEY_DOWN),
 
       // Check Gemini app cannot be uninstalled.
-      CheckResult(
-          &FindMenuItemViews,
-          AllOf(Not(IsEmpty()),
-                Not(Contains(Pointer(Property(&views::MenuItemView::GetCommand,
-                                              Eq(ash::UNINSTALL))))))));
+      CheckResult(&FindMenuItemViews,
+                  AllOf(Not(IsEmpty()), Not(Contains(Pointer(Property(
+                                            &views::MenuItemView::GetCommand,
+                                            Eq(ash::UNINSTALL)))))))));
 }
 
 // Initializes user state and restarts Chrome before `UninstallFromSettings`.
@@ -724,7 +703,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, UninstallFromSettings) {
   };
 
   // Test.
-  RunTestSequence(
+  RunTestSequence(InAnyContext(
       // Cache shelf.
       AssignView(ash::kShelfViewElementId, std::ref(shelf)),
 
@@ -780,7 +759,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, UninstallFromSettings) {
           get_settings_app_subpage_query("app-management-uninstall-button"),
           "appManagementUninstallButton => "
           "!appManagementUninstallButton.shadowRoot.querySelector('*[role="
-          "button]')"));
+          "button]')")));
 }
 
 // Initializes user state and restarts Chrome before `UninstallFromShelf`.
@@ -792,7 +771,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, UninstallFromShelf) {
   raw_ptr<ash::ShelfView> shelf = nullptr;
 
   // Test.
-  RunTestSequence(
+  RunTestSequence(InAnyContext(
       // Cache shelf.
       AssignView(ash::kShelfViewElementId, std::ref(shelf)),
 
@@ -810,11 +789,10 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, UninstallFromShelf) {
       PressAndReleaseKey(ui::VKEY_DOWN),
 
       // Check Gemini app cannot be uninstalled.
-      CheckResult(
-          &FindMenuItemViews,
-          AllOf(Not(IsEmpty()),
-                Not(Contains(Pointer(Property(&views::MenuItemView::GetCommand,
-                                              Eq(ash::UNINSTALL))))))));
+      CheckResult(&FindMenuItemViews,
+                  AllOf(Not(IsEmpty()), Not(Contains(Pointer(Property(
+                                            &views::MenuItemView::GetCommand,
+                                            Eq(ash::UNINSTALL)))))))));
 }
 
 // GeminiAppInteractiveUiIneligibilityTest -------------------------------------
@@ -915,7 +893,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Verifies the Gemini app is absent from the app list for ineligible users.
 IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiIneligibilityTest,
                        AbsentFromAppList) {
-  RunTestSequence(
+  RunTestSequence(InAnyContext(
       // Launch app list.
       DoDefaultAction(ash::kHomeButtonElementId),
       WaitForShow(ash::kAppListBubbleViewElementId),
@@ -937,13 +915,13 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiIneligibilityTest,
                    std::ranges::none_of(apps, [&](ash::AppListItemView* app) {
                      return IsAppListItemViewForWebApp(ash::kGeminiAppId, app);
                    });
-          }));
+          })));
 }
 
 // Verifies the Gemini app is absent from the shelf for ineligible users.
 IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiIneligibilityTest,
                        AbsentFromShelf) {
-  RunTestSequence(
+  RunTestSequence(InAnyContext(
       // Check Gemini app absent.
       CheckView(ash::kShelfViewElementId, [](ash::ShelfView* shelf) {
         std::vector<raw_ptr<ash::ShelfAppButton>> apps;
@@ -954,5 +932,5 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiIneligibilityTest,
                      return IsShelfAppButtonForWebApp(std::cref(shelf),
                                                       ash::kGeminiAppId, app);
                    });
-      }));
+      })));
 }

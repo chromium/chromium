@@ -4,13 +4,23 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
+import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.CLICK_HANDLER;
+import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ICON_HIGHLIGHTED;
+import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS;
+import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.WIDTH;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MessageCardScope.REGULAR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType.ARCHIVED_TABS_MESSAGE;
+
 import android.view.View;
-import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsMessageService.ArchivedTabsMessageData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -25,40 +35,30 @@ public class ArchivedTabsCardViewBinder {
      * @param key The {@link PropertyKey} to bind.
      */
     public static void bind(PropertyModel model, View view, PropertyKey key) {
-        Context context = view.getContext();
-        if (ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS == key) {
-            int numInactiveTabs = model.get(ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS);
-            String title =
-                    context.getResources()
-                            .getQuantityString(
-                                    R.plurals.archived_tab_card_title,
-                                    numInactiveTabs,
-                                    numInactiveTabs);
-            ((TextView) view.findViewById(R.id.title)).setText(title);
-        } else if (ArchivedTabsCardViewProperties.ARCHIVE_TIME_DELTA_DAYS == key) {
-            int inactiveTimeDeltaDays =
-                    model.get(ArchivedTabsCardViewProperties.ARCHIVE_TIME_DELTA_DAYS);
-            int tabCardSubtitleRes =
-                    ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
-                            ? R.plurals.archived_tab_card_subtitle_with_tab_groups
-                            : R.plurals.archived_tab_card_subtitle;
-            String subtitle =
-                    context.getResources()
-                            .getQuantityString(
-                                    tabCardSubtitleRes,
-                                    inactiveTimeDeltaDays,
-                                    inactiveTimeDeltaDays);
-            ((TextView) view.findViewById(R.id.subtitle)).setText(subtitle);
-        } else if (ArchivedTabsCardViewProperties.CLICK_HANDLER == key) {
-            view.setOnClickListener(
-                    v -> {
-                        ((Runnable) model.get(ArchivedTabsCardViewProperties.CLICK_HANDLER)).run();
-                    });
-        } else if (ArchivedTabsCardViewProperties.WIDTH == key) {
-            View card = view.findViewById(R.id.card);
-            var params = card.getLayoutParams();
-            params.width = model.get(ArchivedTabsCardViewProperties.WIDTH);
-            card.setLayoutParams(params);
+        ArchivedTabsCardView cardView = (ArchivedTabsCardView) view;
+        if (key == NUMBER_OF_ARCHIVED_TABS) {
+            cardView.setNumberOfArchivedTabs(model.get(NUMBER_OF_ARCHIVED_TABS));
+        } else if (key == ICON_HIGHLIGHTED) {
+            cardView.setIconHighlight(model.get(ICON_HIGHLIGHTED));
+        } else if (key == CLICK_HANDLER) {
+            cardView.setClickHandler(model.get(CLICK_HANDLER));
+        } else if (key == WIDTH) {
+            cardView.setCardWidth(model.get(WIDTH));
+        } else if (key == CARD_ALPHA) {
+            cardView.setAlpha(model.get(CARD_ALPHA));
+        } else if (key == CARD_ANIMATION_STATUS) {
+            cardView.scaleCard(model.get(CARD_ANIMATION_STATUS));
         }
+    }
+
+    public static PropertyModel createPropertyModel(ArchivedTabsMessageData data) {
+        return new PropertyModel.Builder(ArchivedTabsCardViewProperties.ALL_KEYS)
+                .with(CLICK_HANDLER, data.onClickRunnable)
+                .with(ICON_HIGHLIGHTED, false)
+                .with(MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE, REGULAR)
+                .with(CARD_ALPHA, 1f)
+                .with(MESSAGE_TYPE, ARCHIVED_TABS_MESSAGE)
+                .with(CARD_TYPE, MESSAGE)
+                .build();
     }
 }

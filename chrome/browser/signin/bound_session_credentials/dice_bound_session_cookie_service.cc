@@ -6,7 +6,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -55,7 +54,7 @@ void DiceBoundSessionCookieService::OnBoundSessionTerminated(
     const GURL& site,
     const base::flat_set<std::string>& bound_cookie_names) {
   const GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
-  if (!gaia_url.DomainIs(site.host_piece())) {
+  if (!gaia_url.DomainIs(site.host())) {
     return;
   }
 

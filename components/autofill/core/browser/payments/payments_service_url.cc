@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/metrics/field_trial.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -96,8 +97,8 @@ GURL GetManageInstrumentsUrl() {
 
 GURL GetManageInstrumentUrl(int64_t instrument_id) {
   GURL url = GetManageInstrumentsUrl();
-  std::string new_query =
-      base::StrCat({url.query(), "&id=", base::NumberToString(instrument_id)});
+  std::string new_query = base::StrCat(
+      {url.GetQuery(), "&id=", base::NumberToString(instrument_id)});
   GURL::Replacements replacements;
   replacements.SetQueryStr(new_query);
   return url.ReplaceComponents(replacements);

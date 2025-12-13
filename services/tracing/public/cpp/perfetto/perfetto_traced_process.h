@@ -197,8 +197,17 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   bool SetupStartupTracing(const base::trace_event::TraceConfig&,
                            bool privacy_filtering_enabled);
 
+  // Initialize the Perfetto client library (i.e., perfetto::Tracing) for this
+  // process.
+  // |enable_consumer| should be true if the system consumer can be enabled.
+  // Currently this is only the case if this is running in the browser process.
   // Called on the process's main thread once the thread pool is ready.
-  void InitPostFeatureList(bool enable_consumer);
+  // |enable_system_backend| indicates if the system backend should be enabled
+  // on Posix platforms. It is ignored on other platforms.
+  void SetupClientLibrary(
+      bool enable_consumer,
+      bool enable_system_backend,
+      std::optional<uint64_t> process_track_uuid = std::nullopt);
 
   // Set a callback that returns whether a system tracing session is allowed.
   // The callback will be executed on the sequence that set it. Only a single
@@ -234,12 +243,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   explicit PerfettoTracedProcess(bool will_trace_thread_restart);
   explicit PerfettoTracedProcess(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
-
-  // Initialize the Perfetto client library (i.e., perfetto::Tracing) for this
-  // process.
-  // |enable_consumer| should be true if the system consumer can be enabled.
-  // Currently this is only the case if this is running in the browser process.
-  void SetupClientLibrary(bool enable_consumer);
 
   // perfetto::TracingPolicy implementation:
   void ShouldAllowConsumerSession(

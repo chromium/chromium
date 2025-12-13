@@ -109,6 +109,7 @@
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -1210,7 +1211,7 @@ ConstructGhostWinnerFromGroupAndCandidate(
           return blink::HashedKAnonKeyForAdComponentBid(ad.render_url()) ==
                  component_ad_hash;
         });
-    if (component_ad_it == group.ads->end()) {
+    if (component_ad_it == group.ad_components->end()) {
       return std::nullopt;
     }
     result.ad_components.emplace_back(component_ad_it->render_url());
@@ -1318,15 +1319,15 @@ void InterestGroupAuction::BidState::BeginTracing() {
   trace_id = base::trace_event::GetNextGlobalTraceId();
 
   const blink::InterestGroup& interest_group = bidder->interest_group;
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("fledge", "bid", *trace_id, "bidding_url",
-                                    interest_group.bidding_url,
-                                    "interest_group_name", interest_group.name);
+  TRACE_EVENT_BEGIN("fledge", "bid", perfetto::Track(*trace_id), "bidding_url",
+                    interest_group.bidding_url, "interest_group_name",
+                    interest_group.name);
 }
 
 void InterestGroupAuction::BidState::EndTracing() {
   DCHECK(trace_id.has_value());
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bid", *trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(*trace_id));
   trace_id = std::nullopt;
 }
 
@@ -1378,15 +1379,15 @@ void InterestGroupAuction::Bid::BeginTracingForScoring() {
   DCHECK(!trace_id.has_value());
 
   trace_id = base::trace_event::GetNextGlobalTraceId();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-      "fledge", "score", *trace_id, "bidding_url", interest_group->bidding_url,
-      "interest_group_name", interest_group->name);
+  TRACE_EVENT_BEGIN("fledge", "score", perfetto::Track(*trace_id),
+                    "bidding_url", interest_group->bidding_url,
+                    "interest_group_name", interest_group->name);
 }
 
 void InterestGroupAuction::Bid::EndTracingForScoring() {
   DCHECK(trace_id.has_value());
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score", *trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(*trace_id));
   trace_id = std::nullopt;
 }
 
@@ -1606,8 +1607,8 @@ class InterestGroupAuction::BuyerHelper
     // Request processes for all bidder worklets.
     for (auto& bid_state : bid_states_) {
       bid_state->BeginTracing();
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidder_worklet_generate_bid",
-                                        *bid_state->trace_id);
+      TRACE_EVENT_BEGIN("fledge", "bidder_worklet_generate_bid",
+                        perfetto::Track(*bid_state->trace_id));
       auto worklet_key = auction_->BidderWorkletKey(*bid_state);
       auction_->auction_metrics_recorder_->ReportBidderWorkletKey(worklet_key);
       auction_->auction_worklet_manager_->RequestWorkletByKey(
@@ -2164,8 +2165,8 @@ class InterestGroupAuction::BuyerHelper
       // sufficient.
       CloseBidStatePipes(*bid_states_[i]);
       if (bid_states_[i]->trace_id) {
-        TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("fledge", "bid_exceeds_size_limit",
-                                            *bid_states_[i]->trace_id);
+        TRACE_EVENT_INSTANT("fledge", "bid_exceeds_size_limit",
+                            perfetto::Track(*bid_states_[i]->trace_id));
       }
     }
     auction_->auction_metrics_recorder_->RecordBidsFilteredByPerBuyerLimits(
@@ -2515,8 +2516,8 @@ class InterestGroupAuction::BuyerHelper
 
     if (bid_filtered) {
       if (state->trace_id) {
-        TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("fledge", "bid_filtered",
-                                            *state->trace_id);
+        TRACE_EVENT_INSTANT("fledge", "bid_filtered",
+                            perfetto::Track(*state->trace_id));
       }
       // Record if there are other bidders, as if there are not, the next call
       // may delete `this`.
@@ -2639,8 +2640,8 @@ class InterestGroupAuction::BuyerHelper
     // We may not have a trace ID if we timed out before being delivered a
     // worklet.
     if (state->trace_id.has_value()) {
-      TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidder_worklet_generate_bid",
-                                      *state->trace_id);
+      // Corresponds to TRACE_EVENT_BEGIN "bidder_worklet_generate_bid"
+      TRACE_EVENT_END("fledge", perfetto::Track(*state->trace_id));
     }
 
     const blink::InterestGroup& interest_group = state->bidder->interest_group;
@@ -3194,9 +3195,8 @@ InterestGroupAuction::InterestGroupAuction(
       is_server_auction_(config->server_response.has_value()),
       get_data_decoder_callback_(std::move(get_data_decoder_callback)) {
   DCHECK(is_interest_group_api_allowed_callback_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", "auction", *trace_id_,
-                                    "decision_logic_url",
-                                    config_->decision_logic_url);
+  TRACE_EVENT_BEGIN("fledge", "auction", perfetto::Track(*trace_id_),
+                    "decision_logic_url", config_->decision_logic_url);
 
   // Warm up decoder.
   get_data_decoder_callback_.Run(config->seller);
@@ -3242,7 +3242,8 @@ InterestGroupAuction::InterestGroupAuction(
 
 InterestGroupAuction::~InterestGroupAuction() {
   if (trace_id_.has_value()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "auction", *trace_id_);
+    // Corresponds to the "auction" TRACE_EVENT_BEGIN.
+    TRACE_EVENT_END("fledge", perfetto::Track(*trace_id_));
   }
 
   if (!final_auction_result_) {
@@ -3325,7 +3326,7 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
   DCHECK(!final_auction_result_);
   DCHECK_EQ(num_pending_loads_, 0u);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "load_groups_phase", *trace_id_);
+  TRACE_EVENT_BEGIN("fledge", "load_groups_phase", perfetto::Track(*trace_id_));
 
   load_interest_groups_phase_callback_ =
       std::move(load_interest_groups_phase_callback);
@@ -3427,8 +3428,8 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
 
   bidding_and_scoring_phase_state_ = PhaseState::kDuring;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidding_and_scoring_phase",
-                                    *trace_id_);
+  TRACE_EVENT_BEGIN("fledge", "bidding_and_scoring_phase",
+                    perfetto::Track(*trace_id_));
 
   if (debug_report_lockout_and_cooldowns.has_value()) {
     debug_report_lockout_and_cooldowns_ = *debug_report_lockout_and_cooldowns;
@@ -4194,7 +4195,7 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
     return url;
   }
 
-  std::string query_string = url.query();
+  std::string query_string = url.GetQuery();
   base::ReplaceSubstringsAfterOffset(&query_string, 0, "${winningBid}",
                                      base::NumberToString(signals.winning_bid));
   base::ReplaceSubstringsAfterOffset(
@@ -5253,7 +5254,8 @@ void InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete(
   if (!parent_) {
     auction_metrics_recorder_->OnLoadInterestGroupPhaseComplete();
   }
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "load_groups_phase", *trace_id_);
+  // Corresponds to the "load_groups_phase" TRACE_EVENT_BEGIN.
+  TRACE_EVENT_END("fledge", perfetto::Track(*trace_id_));
 
   if (!HasInterestGroups()) {
     UMA_HISTOGRAM_TIMES("Ads.InterestGroup.Auction.LoadNoGroupsTime",
@@ -5300,8 +5302,8 @@ void InterestGroupAuction::RequestSellerWorklet() {
   if (bidding_and_scoring_phase_state_ != PhaseState::kDuring) {
     return;
   }
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "request_seller_worklet",
-                                    *trace_id_);
+  TRACE_EVENT_BEGIN("fledge", "request_seller_worklet",
+                    perfetto::Track(*trace_id_));
   auction_worklet_manager_->RequestSellerWorklet(
       devtools_auction_id_, *config_->decision_logic_url,
       config_->trusted_scoring_signals_url, config_->seller_experiment_group_id,
@@ -5329,8 +5331,8 @@ void InterestGroupAuction::OnSellerWorkletReceived() {
   DCHECK(!on_seller_process_assigned_callback_);
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "request_seller_worklet",
-                                  *trace_id_);
+  // Corresponds to the "request_seller_worklet" TRACE_EVENT_BEGIN.
+  TRACE_EVENT_END("fledge", perfetto::Track(*trace_id_));
 
   seller_worklet_received_ = true;
 
@@ -5359,19 +5361,20 @@ void InterestGroupAuction::ScoreQueuedBidsIfReady() {
 
   auto unscored_bids = std::move(unscored_bids_);
   for (auto& unscored_bid : unscored_bids) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1(
-        "fledge", "wait_for_seller_deps", unscored_bid->TraceIdForScoring(),
-        "data", [&](perfetto::TracedValue trace_context) {
-          auto dict = std::move(trace_context).WriteDictionary();
-          if (!unscored_bid->wait_worklet.is_zero()) {
-            dict.Add("wait_worklet_ms",
-                     unscored_bid->wait_worklet.InMillisecondsF());
-          }
-          if (!unscored_bid->wait_promises.is_zero()) {
-            dict.Add("wait_promises_ms",
-                     unscored_bid->wait_promises.InMillisecondsF());
-          }
-        });
+    // Corresponds to the "wait_for_seller_deps" TRACE_EVENT_BEGIN.
+    TRACE_EVENT_END("fledge",
+                    perfetto::Track(unscored_bid->TraceIdForScoring()), "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      if (!unscored_bid->wait_worklet.is_zero()) {
+                        dict.Add("wait_worklet_ms",
+                                 unscored_bid->wait_worklet.InMillisecondsF());
+                      }
+                      if (!unscored_bid->wait_promises.is_zero()) {
+                        dict.Add("wait_promises_ms",
+                                 unscored_bid->wait_promises.InMillisecondsF());
+                      }
+                    });
     ScoreBid(std::move(unscored_bid));
   }
 
@@ -5757,8 +5760,8 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
   uint64_t bid_trace_id = bid->TraceIdForScoring();
   if (!ReadyToScoreBids()) {
     bid->trace_wait_seller_deps_start = base::TimeTicks::Now();
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_for_seller_deps",
-                                      bid_trace_id);
+    TRACE_EVENT_BEGIN("fledge", "wait_for_seller_deps",
+                      perfetto::Track(bid_trace_id));
     unscored_bids_.emplace_back(std::move(bid));
     return;
   }
@@ -5769,9 +5772,10 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
   DCHECK(ReadyToScoreBids());
 
   uint64_t bid_trace_id = bid->TraceIdForScoring();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", ScoreAdTraceEventName(*bid),
-                                    bid_trace_id, "decision_logic_url",
-                                    config_->decision_logic_url);
+  TRACE_EVENT_BEGIN("fledge",
+                    perfetto::DynamicString(ScoreAdTraceEventName(*bid)),
+                    perfetto::Track(bid_trace_id), "decision_logic_url",
+                    config_->decision_logic_url);
   bid->seller_worklet_score_ad_start = base::TimeTicks::Now();
 
   ++bids_being_scored_;
@@ -6005,8 +6009,8 @@ void InterestGroupAuction::OnScoreAdComplete(
     ++seller_scripts_timed_out_;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", ScoreAdTraceEventName(*bid),
-                                  bid->TraceIdForScoring());
+  // End "ScoreAd" trace event.
+  TRACE_EVENT_END("fledge", perfetto::Track(bid->TraceIdForScoring()));
   bid->EndTracingForScoring();
   bid->bid_state->pa_timings(seller_phase()).script_run_time =
       score_ad_timing_metrics->script_latency;
@@ -6294,8 +6298,7 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   bidding_and_scoring_phase_state_ = PhaseState::kAfter;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidding_and_scoring_phase",
-                                  *trace_id_);
+  TRACE_EVENT_END("fledge", perfetto::Track(*trace_id_));
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 

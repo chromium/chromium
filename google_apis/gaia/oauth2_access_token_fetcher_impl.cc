@@ -21,6 +21,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_response.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -412,7 +413,8 @@ bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenSuccessResponse(
     const std::string& response_body,
     OAuth2AccessTokenConsumer::TokenResponse* token_response) {
   CHECK(token_response);
-  auto dict = base::JSONReader::ReadDict(response_body);
+  auto dict = base::JSONReader::ReadDict(response_body,
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     return false;
   }
@@ -450,7 +452,8 @@ bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
   CHECK(error);
   CHECK(error_subtype);
   CHECK(error_description);
-  auto dict = base::JSONReader::ReadDict(response_body);
+  auto dict = base::JSONReader::ReadDict(response_body,
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     return false;
   }

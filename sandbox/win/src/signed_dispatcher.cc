@@ -59,7 +59,7 @@ bool SignedDispatcher::CreateSection(IPCInfo* ipc, HANDLE file_handle) {
   auto path = GetPathFromHandle(local_handle.get());
   if (!path)
     return false;
-  const wchar_t* module_name = path->c_str();
+  std::wstring_view module_name(*path);
   CountedParameterSet<NameBased> params;
   params[NameBased::NAME] = ParamPickerMake(module_name);
 

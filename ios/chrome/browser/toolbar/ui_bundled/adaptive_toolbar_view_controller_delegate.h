@@ -13,6 +13,9 @@ enum class FullscreenExitReason;
 // Exits fullscreen.
 - (void)exitFullscreen:(FullscreenExitReason)FullscreenExitReason;
 
+// Returns true if Reader Mode is activated for the web page.
+- (BOOL)isReaderModeActive;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_ADAPTIVE_TOOLBAR_VIEW_CONTROLLER_DELEGATE_H_

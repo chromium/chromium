@@ -7,12 +7,15 @@
 #include <limits>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/text_elider.h"
 
 namespace gfx {
 
@@ -42,6 +45,26 @@ TEST_F(CanvasTest, StringWidth) {
 
 TEST_F(CanvasTest, StringWidthEmptyString) {
   EXPECT_EQ(0, GetStringWidth(""));
+}
+
+// Strings with less than 4 characters get cached. Check for consistency.
+TEST_F(CanvasTest, StringWidthRepeatedCalls) {
+  base::test::ScopedFeatureList feature_list(features::kStringWidthCache);
+
+  // The cache is global so it can have values at the start of the test.
+  Canvas::GetStringWidthCacheForTesting().Clear();
+
+  int width_1 = GetStringWidth(gfx::kEllipsis);
+
+  // Verify that the cache entry was created.
+  EXPECT_EQ(Canvas::GetStringWidthCacheForTesting().size(), 1U);
+
+  int width_2 = GetStringWidth(gfx::kEllipsis);
+
+  // Verify that the repeated call didn't add a new cache entry.
+  EXPECT_EQ(Canvas::GetStringWidthCacheForTesting().size(), 1U);
+
+  EXPECT_EQ(width_1, width_2);
 }
 
 TEST_F(CanvasTest, StringSizeEmptyString) {

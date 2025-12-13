@@ -147,11 +147,7 @@ class ManifestTest : public testing::Test {
 
   // used to differentiate between calls to LoadAndExpectError,
   // LoadAndExpectWarning and LoadAndExpectSuccess via function RunTestcases.
-  enum ExpectType {
-    EXPECT_TYPE_ERROR,
-    EXPECT_TYPE_WARNING,
-    EXPECT_TYPE_SUCCESS
-  };
+  enum class ExpectType { kError, kWarning, kSuccess };
 
   struct Testcase {
     const std::string manifest_filename_;

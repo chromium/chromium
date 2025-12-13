@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_visibility_state.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
@@ -271,6 +272,24 @@ void InterceptNavigationDelegate::HandleSubframeExternalProtocol(
     bool has_user_gesture,
     const std::optional<url::Origin>& initiating_origin,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jdelegate = weak_jdelegate_.get(env);
+
+  if (jdelegate.is_null()) {
+    return;
+  }
+
+  // We don't support checking for subframes and main frames in parallel. Try to
+  // finish the main frame check.
+  if (should_ignore_result_callback_) {
+    Java_InterceptNavigationDelegate_requestFinishPendingShouldIgnoreCheck(
+        env, jdelegate);
+    // If we are still doing a main frame check, block the subframe check.
+    if (should_ignore_result_callback_) {
+      return;
+    }
+  }
+
   // If there's a pending async subframe action, don't consider external
   // navigation for the current navigation.
   if (subframe_redirect_url_ || url_loader_) {
@@ -284,12 +303,6 @@ void InterceptNavigationDelegate::HandleSubframeExternalProtocol(
     return;
   }
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jdelegate = weak_jdelegate_.get(env);
-
-  if (jdelegate.is_null()) {
-    return;
-  }
   ScopedJavaLocalRef<jobject> j_gurl =
       Java_InterceptNavigationDelegate_handleSubframeExternalProtocol(
           env, jdelegate, url::GURLAndroid::FromNativeGURL(env, escaped_url),
@@ -348,7 +361,7 @@ void InterceptNavigationDelegate::OnResourceRequestWithGesture() {
 
 void InterceptNavigationDelegate::OnSubframeAsyncActionTaken(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_gurl) {
+    const base::android::JavaRef<jobject>& j_gurl) {
   // subframe_redirect_url_ no longer empty indicates the async action has been
   // taken.
   subframe_redirect_url_ =
@@ -360,7 +373,7 @@ void InterceptNavigationDelegate::OnSubframeAsyncActionTaken(
 
 static void JNI_InterceptNavigationDelegate_OnShouldIgnoreNavigationResult(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
+    const base::android::JavaRef<jobject>& jweb_contents,
     jboolean should_ignore) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
@@ -374,3 +387,5 @@ static void JNI_InterceptNavigationDelegate_OnShouldIgnoreNavigationResult(
 }
 
 }  // namespace navigation_interception
+
+DEFINE_JNI(InterceptNavigationDelegate)

@@ -31,10 +31,12 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -55,6 +57,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8.h"
 
@@ -166,7 +169,7 @@ IDBRequest* IDBObjectStore::get(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   db().Get(transaction_->Id(), Id(), IDBIndexMetadata::kInvalidId, key_range,
            /*key_only=*/false,
-           WTF::BindOnce(&IDBRequest::OnGet, WrapWeakPersistent(request)));
+           BindOnce(&IDBRequest::OnGet, WrapWeakPersistent(request)));
   return request;
 }
 
@@ -209,7 +212,7 @@ IDBRequest* IDBObjectStore::getKey(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   db().Get(transaction_->Id(), Id(), IDBIndexMetadata::kInvalidId, key_range,
            /*key_only=*/true,
-           WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
+           BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
   return request;
 }
 
@@ -268,6 +271,11 @@ IDBRequest* IDBObjectStore::getAllRecords(ScriptState* script_state,
                                           ExceptionState& exception_state) {
   TRACE_EVENT1("IndexedDB", "IDBObjectStore::getAllRecordsRequestSetup",
                "store_name", metadata_->name.Utf8());
+
+  // Explicitly count `kIndexedDBGetAllRecords` usage because the IDL definition
+  // for `getAllRecords()` already has a [Measure] recording `kIndexedDBRead`.
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kIndexedDBGetAllRecords);
 
   return CreateGetAllRequest(
       IDBRequest::TypeForMetrics::kObjectStoreGetAllRecords, script_state,
@@ -385,6 +393,13 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
       break;
   }
   IDBRequest::AsyncTraceState metrics(tracing_type);
+
+  // This function is known to be heap allocation heavy and performance
+  // critical. Extra memory safety checks can introduce regression
+  // (https://crbug.com/425145252) and these are disabled here.
+  // TODO(https://crbug.com/433423496): Optimize to remove this annotation.
+  base::ScopedSafetyChecksExclusion scoped_unsafe;
+
   if (IsDeleted()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -413,7 +428,7 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
           ? SerializedScriptValue::SerializeOptions::kSerialize
           : SerializedScriptValue::SerializeOptions::kBlockedInNonSecureContext;
   IDBValueWrapper value_wrapper(isolate, value.V8Value(), wasm_policy,
-                                exception_state);
+                                exception_state, db().Metadata().is_sqlite);
   transaction_->SetActiveDuringSerialization(true);
   if (exception_state.HadException())
     return nullptr;
@@ -560,10 +575,9 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
       script_state, source, transaction_.Get(), std::move(metrics));
   value_wrapper.DoneCloning();
 
-  transaction_->Put(
-      Id(), std::move(value_wrapper).Build(), IDBKey::Clone(key), put_mode,
-      std::move(index_keys),
-      WTF::BindOnce(&IDBRequest::OnPut, WrapWeakPersistent(request)));
+  transaction_->Put(Id(), std::move(value_wrapper).Build(), IDBKey::Clone(key),
+                    put_mode, std::move(index_keys),
+                    BindOnce(&IDBRequest::OnPut, WrapWeakPersistent(request)));
 
   return request;
 }
@@ -575,6 +589,13 @@ IDBRequest* IDBObjectStore::Delete(ScriptState* script_state,
                metadata_->name.Utf8());
   IDBRequest::AsyncTraceState metrics(
       IDBRequest::TypeForMetrics::kObjectStoreDelete);
+
+  // This function is known to be heap allocation heavy and performance
+  // critical. Extra memory safety checks can introduce regression
+  // (https://crbug.com/425145252) and these are disabled here.
+  // TODO(https://crbug.com/433423496): Optimize to remove this annotation.
+  base::ScopedSafetyChecksExclusion scoped_unsafe;
+
   if (IsDeleted()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -619,9 +640,8 @@ IDBRequest* IDBObjectStore::deleteFunction(
     IDBRequest::AsyncTraceState metrics) {
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-  db().DeleteRange(
-      transaction_->Id(), Id(), key_range,
-      WTF::BindOnce(&IDBRequest::OnDelete, WrapPersistent(request)));
+  db().DeleteRange(transaction_->Id(), Id(), key_range,
+                   BindOnce(&IDBRequest::OnDelete, WrapPersistent(request)));
   return request;
 }
 
@@ -633,8 +653,8 @@ IDBRequest* IDBObjectStore::getKeyGeneratorCurrentNumber(
 
   db().GetKeyGeneratorCurrentNumber(
       transaction_->Id(), Id(),
-      WTF::BindOnce(&IDBRequest::OnGotKeyGeneratorCurrentNumber,
-                    WrapWeakPersistent(request)));
+      BindOnce(&IDBRequest::OnGotKeyGeneratorCurrentNumber,
+               WrapWeakPersistent(request)));
   return request;
 }
 
@@ -670,7 +690,7 @@ IDBRequest* IDBObjectStore::clear(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   db().Clear(transaction_->Id(), Id(),
-             WTF::BindOnce(&IDBRequest::OnClear, WrapPersistent(request)));
+             BindOnce(&IDBRequest::OnClear, WrapPersistent(request)));
   return request;
 }
 
@@ -714,11 +734,14 @@ class IndexPopulator final : public NativeEventListener {
 
     DCHECK_EQ(ExecutionContext::From(script_state_), execution_context);
     DCHECK_EQ(event->type(), event_type_names::kSuccess);
-    EventTarget* target = event->target();
+    EventTarget* target = event->RawTarget();
     IDBRequest* request = static_cast<IDBRequest*>(target);
 
+    // This event would be dispatched by native code, so create scopes required
+    // by possible V8 usage within.
     ScriptState::Scope scope(script_state_);
-
+    v8::MicrotasksScope microtasksScope(
+        script_state_->GetContext(), v8::MicrotasksScope::kDoNotRunMicrotasks);
     IDBAny* cursor_any = request->ResultAsAny();
     IDBCursorWithValue* cursor = nullptr;
     if (cursor_any->GetType() == IDBAny::kIDBCursorWithValueType)
@@ -1049,7 +1072,7 @@ IDBRequest* IDBObjectStore::count(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   db().Count(transaction_->Id(), Id(), IDBIndexMetadata::kInvalidId, key_range,
-             WTF::BindOnce(&IDBRequest::OnCount, WrapWeakPersistent(request)));
+             BindOnce(&IDBRequest::OnCount, WrapWeakPersistent(request)));
   return request;
 }
 

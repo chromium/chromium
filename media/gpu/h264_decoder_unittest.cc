@@ -87,7 +87,7 @@ H264Decoder::H264Accelerator::Status ParseSliceHeader(
     full_data.insert(full_data.end(), span.begin(), span.end());
   }
   H264Parser parser;
-  parser.SetStream(full_data.data(), full_data.size());
+  parser.SetStream(full_data);
   while (true) {
     H264NALU nalu;
     H264Parser::Result res = parser.AdvanceToNextNALU(&nalu);
@@ -203,13 +203,12 @@ class H264DecoderTest : public ::testing::Test {
   }
 
  protected:
+  std::vector<scoped_refptr<DecoderBuffer>> decoder_buffers_;
   std::unique_ptr<H264Decoder> decoder_;
   raw_ptr<MockH264Accelerator> accelerator_;
 
  private:
   base::queue<std::string> input_frame_files_;
-  std::string bitstream_;
-  scoped_refptr<DecoderBuffer> decoder_buffer_;
 };
 
 void H264DecoderTest::SetUp() {
@@ -236,19 +235,22 @@ AcceleratedVideoDecoder::DecodeResult H264DecoderTest::Decode(
       return result;
     auto input_file = GetTestDataFilePath(input_frame_files_.front());
     input_frame_files_.pop();
-    CHECK(base::ReadFileToString(input_file, &bitstream_));
-    decoder_buffer_ = DecoderBuffer::CopyFrom(base::as_byte_span(bitstream_));
+    std::string bitstream;
+    CHECK(base::ReadFileToString(input_file, &bitstream));
+    decoder_buffers_.push_back(
+        DecoderBuffer::CopyFrom(base::as_byte_span(bitstream)));
     if (full_sample_encryption) {
       // We only use this in 2 tests, each use the same data where the offset to
       // the byte after the NALU type for the slice header is 669.
       constexpr int kOffsetToSliceHeader = 669;
-      decoder_buffer_->set_decrypt_config(DecryptConfig::CreateCencConfig(
-          "kFakeKeyId", std::string(DecryptConfig::kDecryptionKeySize, 'x'),
-          {SubsampleEntry(kOffsetToSliceHeader,
-                          bitstream_.size() - kOffsetToSliceHeader)}));
+      decoder_buffers_.back()->set_decrypt_config(
+          DecryptConfig::CreateCencConfig(
+              "kFakeKeyId", std::string(DecryptConfig::kDecryptionKeySize, 'x'),
+              {SubsampleEntry(kOffsetToSliceHeader,
+                              bitstream.size() - kOffsetToSliceHeader)}));
     }
-    EXPECT_NE(decoder_buffer_.get(), nullptr);
-    decoder_->SetStream(bitstream_id++, *decoder_buffer_);
+    EXPECT_NE(decoder_buffers_.back().get(), nullptr);
+    decoder_->SetStream(bitstream_id++, decoder_buffers_.back());
   }
 }
 
@@ -613,10 +615,11 @@ TEST_F(H264DecoderTest, SetEncryptedStream) {
               SubmitDecode(DecryptConfigMatches(decrypt_config.get())))
       .WillOnce(Return(H264Decoder::H264Accelerator::Status::kOk));
 
-  auto buffer = DecoderBuffer::CopyFrom(base::as_byte_span(bitstream));
-  ASSERT_NE(buffer.get(), nullptr);
-  buffer->set_decrypt_config(std::move(decrypt_config));
-  decoder_->SetStream(0, *buffer);
+  decoder_buffers_.push_back(
+      DecoderBuffer::CopyFrom(base::as_byte_span(bitstream)));
+  ASSERT_NE(decoder_buffers_.back().get(), nullptr);
+  decoder_buffers_.back()->set_decrypt_config(std::move(decrypt_config));
+  decoder_->SetStream(0, decoder_buffers_.back());
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
   EXPECT_EQ(H264PROFILE_BASELINE, decoder_->GetProfile());
   EXPECT_EQ(8u, decoder_->GetBitDepth());

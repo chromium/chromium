@@ -153,6 +153,15 @@ struct TrimOnMemoryPressureParams {
 BASE_DECLARE_FEATURE(kTerminationTargetPolicy);
 #endif  // BUILDFLAG(IS_WIN)
 
+BASE_DECLARE_FEATURE(kSustainedPMUrgentDiscarding);
+
+BASE_DECLARE_FEATURE_PARAM(int,
+                           kSustainedPMUrgentDiscarding_PercentAvailableMemory);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kSustainedPMUrgentDiscarding_CheckPressureDelay);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kSustainedPMUrgentDiscarding_SustainedPressureDelay);
+
 }  // namespace features
 }  // namespace performance_manager
 

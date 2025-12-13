@@ -28,6 +28,7 @@ after discussions on the right group.
       <annotation id="rlz"/>
       <annotation id="webapk_create"/>
       <annotation id="webapk_update"/>
+      <annotation id="webview_preconnect"/>
       <annotation id="webview_proxy_config"/>
     </sender>
     <sender name="Feed Library">
@@ -56,7 +57,6 @@ after discussions on the right group.
       <annotation id="fwupd_firmware_update"/>
       <annotation id="gaia_reauth_token_fetcher"/>
       <annotation id="help_content_provider"/>
-      <annotation id="image_downloader"/>
       <annotation id="ime_url_downloader"/>
       <annotation id="kiosk_app_icon"/>
       <annotation id="launcher_item_suggest"/>
@@ -78,7 +78,6 @@ after discussions on the right group.
       <annotation id="wallpaper_google_photos_albums"/>
       <annotation id="wallpaper_google_photos_enabled"/>
       <annotation id="wallpaper_google_photos_photos"/>
-      <annotation id="search_and_assistant_enabled_checker"/>
       <annotation id="wallpaper_online_downloader"/>
     </sender>
     <sender name="ChromeOS Recovery">
@@ -256,7 +255,6 @@ after discussions on the right group.
       <annotation id="crash_file_uploader"/>
       <annotation id="glanceables_classroom_integration"/>
       <annotation id="promise_app_service_download_icon"/>
-      <annotation id="ip_protection_service_get_token"/>
       <annotation id="supervised_user_request_blocked_site_permission"/>
       <annotation id="password_sharing_recipients"/>
       <annotation id="ntp_image_url_verification"/>
@@ -264,7 +262,6 @@ after discussions on the right group.
       <annotation id="iwa_update_discovery_update_manifest"/>
       <annotation id="iwa_update_discovery_web_bundle"/>
       <annotation id="almanac_launcher_app"/>
-      <annotation id="ip_protection_service_get_proxy_config"/>
       <annotation id="almanac_icon_cache"/>
       <annotation id="blink_fetch_later_manager"/>
       <annotation id="carrier_lock_manager_fetch_configuration"/>
@@ -296,6 +293,7 @@ after discussions on the right group.
       <annotation id="birch_calendar_provider"/>
       <annotation id="recovery_key_store_fetch"/>
       <annotation id="enterprise_logo_fetcher"/>
+      <annotation id="private_metrics_encryption_key"/>
       <annotation id="remoting_corp_logging_report_session_disconnected"/>
       <annotation id="focus_mode_sounds_image_downloader"/>
       <annotation id="help_me_write_request"/>
@@ -326,7 +324,6 @@ after discussions on the right group.
       <annotation id="iwa_web_app_internals_update_manifest"/>
       <annotation id="iwa_web_app_internals_web_bundle"/>
       <annotation id="iwa_dev_tools_installation_web_bundle"/>
-      <annotation id="digital_asset_links_include"/>
       <annotation id="remoting_cloud_send_heartbeat"/>
       <annotation id="remoting_cloud_update_remote_access_host"/>
       <annotation id="remoting_directory_legacy_heartbeat"/>
@@ -359,7 +356,6 @@ after discussions on the right group.
       <annotation id="omnibox_search_aggregator_suggest"/>
       <annotation id="microsoft_files_page_handler"/>
       <annotation id="outlook_calendar_event_attachment"/>
-      <annotation id="ip_protection_service_get_probabilistic_reveal_token"/>
       <annotation id="remoting_compute_engine_instance_identity_token"/>
       <annotation id="remoting_compute_engine_instance_access_token"/>
       <annotation id="remoting_compute_engine_instance_access_token_scopes"/>
@@ -381,6 +377,21 @@ after discussions on the right group.
       <annotation id="keepalive_fetch_retry"/>
       <annotation id="ntp_composebox_query_controller"/>
       <annotation id="password_change_submission_model_execution"/>
+      <annotation id="glic_web_ui"/>
+      <annotation id="glic_fre_web_ui"/>
+      <annotation id="aim_eligibility_fetch"/>
+      <annotation id="enterprise_logo_fetcher_for_browser"/>
+      <annotation id="devtools_gdp_service"/>
+      <annotation id="save_to_drive"/>
+      <annotation id="corp_messaging_client_receive_client_messages"/>
+      <annotation id="corp_messaging_client_send_host_message"/>
+      <annotation id="legion_client"/>
+      <annotation id="webrtc_rtc_transport"/>
+      <annotation id="email_verification"/>
+      <annotation id="amount_extraction_model_execution"/>
+      <annotation id="legion_service_get_token"/>
+      <annotation id="metrics_report_private_metrics"/>
+      <annotation id="scam_detection_model_execution"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

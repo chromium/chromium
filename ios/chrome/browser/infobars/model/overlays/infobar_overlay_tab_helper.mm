@@ -60,7 +60,7 @@ void InfobarOverlayTabHelper::OverlayRequestScheduler::OnInfoBarAdded(
   tab_helper_->request_inserter()->InsertOverlayRequest(params);
 }
 
-void InfobarOverlayTabHelper::OverlayRequestScheduler::OnManagerShuttingDown(
+void InfobarOverlayTabHelper::OverlayRequestScheduler::OnManagerWillBeDestroyed(
     InfoBarManager* manager) {
   DCHECK(scoped_observation_.IsObservingSource(manager));
   scoped_observation_.Reset();

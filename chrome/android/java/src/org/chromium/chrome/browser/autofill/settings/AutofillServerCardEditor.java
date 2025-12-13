@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +32,7 @@ import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.ImageSize;
@@ -151,7 +155,15 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
             LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        final View v = super.onCreateView(inflater, container, savedInstanceState);
+        LayoutInflater localInflater = inflater;
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            // TODO(crbug.com/439911511): Set the style directly in the layout instead.
+            Context themedContext =
+                    new ContextThemeWrapper(
+                            getActivity(), R.style.ThemeOverlay_Chromium_Settings_InputFields);
+            localInflater = inflater.cloneInContext(themedContext);
+        }
+        final View v = super.onCreateView(localInflater, container, savedInstanceState);
         if (mCard == null) {
             SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
             return v;
@@ -333,8 +345,18 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     }
 
     @Override
+    protected void onBillingAddressSelected(AutofillProfile profile) {
+        if (mInitialBillingProfile != null
+                && !TextUtils.equals(profile.getGUID(), mInitialBillingProfile.getGUID())) {
+            Button button = assumeNonNull(getView()).findViewById(R.id.button_primary);
+            button.setEnabled(true);
+        }
+    }
+
+    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (parent == mBillingAddress && position != mInitialBillingAddressPos) {
+        assert mBillingAddressSpinner != null;
+        if (parent == mBillingAddressSpinner && position != mInitialBillingAddressPos) {
             Button button = assumeNonNull(getView()).findViewById(R.id.button_primary);
             button.setEnabled(true);
         }
@@ -342,12 +364,21 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
 
     @Override
     protected boolean saveEntry() {
-        if (mBillingAddress.getSelectedItem() != null
-                && mBillingAddress.getSelectedItem() instanceof AutofillProfile) {
-            mCard.setBillingAddressId(
-                    ((AutofillProfile) mBillingAddress.getSelectedItem()).getGUID());
-            PersonalDataManagerFactory.getForProfile(getProfile())
-                    .updateServerCardBillingAddress(mCard);
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            if (mSelectedBillingProfile != null) {
+                mCard.setBillingAddressId(mSelectedBillingProfile.getGUID());
+                PersonalDataManagerFactory.getForProfile(getProfile())
+                        .updateServerCardBillingAddress(mCard);
+            }
+        } else {
+            assert mBillingAddressSpinner != null;
+            if (mBillingAddressSpinner.getSelectedItem() != null
+                    && mBillingAddressSpinner.getSelectedItem() instanceof AutofillProfile) {
+                mCard.setBillingAddressId(
+                        ((AutofillProfile) mBillingAddressSpinner.getSelectedItem()).getGUID());
+                PersonalDataManagerFactory.getForProfile(getProfile())
+                        .updateServerCardBillingAddress(mCard);
+            }
         }
         return true;
     }

@@ -136,13 +136,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
         const base::FilePath& pack_path,
         ResourceScaleFactor scale_factor) = 0;
 
-    // Called before a locale pack file is loaded. Return the full path for
-    // the pack file to continue loading or an empty value to cancel loading.
-    // |pack_path| will contain the complete default path for the pack file if
-    // known or just the pack file name otherwise.
-    virtual base::FilePath GetPathForLocalePack(const base::FilePath& pack_path,
-                                                std::string_view locale) = 0;
-
     // Return an image resource or an empty value to attempt retrieval of the
     // default resource.
     virtual gfx::Image GetImageNamed(int resource_id) = 0;
@@ -190,6 +183,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   class COMPONENT_EXPORT(UI_BASE) SharedInstanceSwapperForTesting {
    public:
     SharedInstanceSwapperForTesting();
+    explicit SharedInstanceSwapperForTesting(ResourceBundle* instance);
     ~SharedInstanceSwapperForTesting();
 
    private:
@@ -464,7 +458,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   const base::FilePath& GetOverriddenPakPath() const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ResourceBundleTest, DelegateGetPathForLocalePack);
   FRIEND_TEST_ALL_PREFIXES(ResourceBundleTest, DelegateGetImageNamed);
   FRIEND_TEST_ALL_PREFIXES(ResourceBundleTest, DelegateGetNativeImageNamed);
 

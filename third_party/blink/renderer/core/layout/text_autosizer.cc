@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -1097,7 +1096,7 @@ float TextAutosizer::MultiplierFromBlock(const LayoutBlock* block) {
 // containing block, and wasn't marked as needing layout.
 #if DCHECK_IS_ON()
   DCHECK(blocks_that_have_begun_layout_.Contains(block) ||
-         !block->NeedsLayout() || IsA<LayoutMultiColumnFlowThread>(block));
+         !block->NeedsLayout());
 #endif
   // Block width, in CSS pixels.
   float block_width = WidthFromBlock(block);
@@ -1592,8 +1591,6 @@ void TextAutosizer::CheckSuperclusterConsistency() {
 }
 
 float TextAutosizer::ContentInlineSize(const LayoutBlock* block) const {
-  if (!block->IsLayoutNGObject())
-    return block->ContentLogicalWidth().ToFloat();
   auto iter = inline_size_map_.find(block);
   if (iter == inline_size_map_.end())
     return block->ContentLogicalWidth().ToFloat();

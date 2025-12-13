@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
-++android.widget.Button role_description='button' clickable focusable interesting name='Native button'
-++android.widget.Button role_description='button' clickable interesting name='ARIA button'
+++android.widget.Button clickable focusable interesting name='Native button'
+++android.widget.Button clickable interesting name='ARIA button'
 ++android.widget.Button role_description='Clicky' clickable interesting name='Clicky button'
 ++android.widget.TextView interesting name='foo'
 ++android.widget.TextView focusable interesting name='bar'

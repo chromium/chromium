@@ -72,7 +72,7 @@ class OriginTrialsBrowserTest : public InProcessBrowserTest {
   }
 
   bool InterceptRequest(content::URLLoaderInterceptor::RequestParams* params) {
-    std::string path = params->url_request.url.path();
+    std::string path = params->url_request.url.GetPath();
 
     std::string headers = "HTTP/1.1 200 OK\n";
     // Set Origin-Trial related headers

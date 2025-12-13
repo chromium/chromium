@@ -2,3 +2,5 @@ dcastagna@chromium.org
 dnicoara@chromium.org
 msisov@igalia.com
 spang@chromium.org
+
+per-file fontconfig_util*=file://third_party/fontconfig/OWNERS

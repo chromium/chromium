@@ -93,7 +93,7 @@ class CORE_EXPORT DOMSelection final : public ScriptWrappable,
   void collapseToStart(ExceptionState&);
   void extend(Node*, unsigned offset, ExceptionState&);
   Range* getRangeAt(unsigned, ExceptionState&) const;
-  void removeRange(Range*);
+  void removeRange(Range*, ExceptionState&);
   void removeAllRanges();
   void addRange(Range*);
   void deleteFromDocument();

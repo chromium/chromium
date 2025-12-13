@@ -8,21 +8,14 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "JavaScriptAllowedForUrls": [
-            "[*.]google.com"
-          ]
-        },
-        "prefs": {
-          "profile.managed_javascript_allowed_for_urls": {
-            "value": [
-              "[*.]google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_javascript_allowed_for_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "[*.]google.com"
+        ]
+      ]
+    }
   }
 ]

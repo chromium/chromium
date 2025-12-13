@@ -78,8 +78,8 @@ class VideoFrameFactoryImplTest : public testing::Test {
         features::NeedThreadSafeAndroidMedia()
             ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
             : nullptr);
-    auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-        0, nullptr, nullptr, true);
+    auto texture_owner =
+        base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
     auto codec_buffer_wait_coordinator =
         base::MakeRefCounted<CodecBufferWaitCoordinator>(
             std::move(texture_owner),
@@ -201,8 +201,7 @@ TEST_F(VideoFrameFactoryImplTest,
   // Also provide a non-null TextureOwner to it.
   scoped_refptr<CodecSurfaceBundle> surface_bundle =
       base::MakeRefCounted<CodecSurfaceBundle>(
-          base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(0, nullptr,
-                                                                nullptr, true),
+          base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(),
           features::NeedThreadSafeAndroidMedia()
               ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
               : nullptr);

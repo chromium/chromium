@@ -10,7 +10,7 @@ found in the LICENSE file.
         <item name="android:statusBarColor">@macro/default_bg_color</item>
         <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
         <item name="android:navigationBarColor">@macro/default_bg_color</item>
-        <item name="android:navigationBarDividerColor">@macro/divider_line_bg_color</item>
+        <item name="android:navigationBarDividerColor">@color/divider_color</item>
         <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
     </style>
 </resources>

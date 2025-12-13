@@ -70,10 +70,14 @@ void SignInFunctions::SignInFromSettings(
       settings_tab,
       base::StringPrintf(
           kSettingsScriptWrapperFormat,
-          "settings.SyncBrowserProxyImpl.getInstance().startSignIn();")));
+          "settings.SyncBrowserProxyImpl.getInstance()."
+          "startSignIn(settings.ChromeSigninAccessPoint.SETTINGS);")));
   signin_tab_waiter.Wait();
-  SignInFromCurrentPage(browser->tab_strip_model()->GetActiveWebContents(),
-                        test_account, previously_signed_in_accounts);
+  // Ensure the gaia login tab is loaded before proceeding.
+  auto* gaia_login_tab = browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(gaia_login_tab));
+  SignInFromCurrentPage(gaia_login_tab, test_account,
+                        previously_signed_in_accounts);
 }
 
 void SignInFunctions::SignInFromCurrentPage(
@@ -139,7 +143,8 @@ void SignInFunctions::StartSignInFromSettings() {
       settings_tab,
       base::StringPrintf(
           kSettingsScriptWrapperFormat,
-          "settings.SyncBrowserProxyImpl.getInstance().startSignIn();")));
+          "settings.SyncBrowserProxyImpl.getInstance()."
+          "startSignIn(settings.ChromeSigninAccessPoint.SETTINGS);")));
   signin_tab_waiter.Wait();
   login_ui_test_utils::WaitForSigninPageToLoad(
       browser->tab_strip_model()->GetActiveWebContents());

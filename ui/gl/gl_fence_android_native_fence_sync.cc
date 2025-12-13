@@ -4,8 +4,6 @@
 
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
 
-#include <sync/sync.h>
-
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

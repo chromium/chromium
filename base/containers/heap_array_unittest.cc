@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -68,6 +69,44 @@ TEST(HeapArray, FromOwningPointer) {
       HeapArray<uint32_t>::FromOwningPointer(new uint32_t[3], 3u));
   EXPECT_EQ(vec.size(), 3u);
   EXPECT_NE(vec.data(), nullptr);
+}
+
+TEST(HeapArray, FromOwningPointerWithDeleter) {
+  struct Deleter {
+    explicit Deleter(bool* flag) : was_called_flag_(flag) {}
+    Deleter(Deleter&&) = default;
+    Deleter& operator=(Deleter&& other) = default;
+    Deleter(const Deleter&) = delete;
+    Deleter& operator=(const Deleter&) = delete;
+
+    void operator()(uint32_t* buffer) {
+      if (was_called_flag_) {
+        *was_called_flag_ = true;
+      };
+      delete[] buffer;
+    }
+    raw_ptr<bool> was_called_flag_ = nullptr;
+  };
+
+  bool deleter_was_called = false;
+  {
+    auto vec = UNSAFE_BUFFERS(HeapArray<uint32_t, Deleter>::FromOwningPointer(
+        new uint32_t[3], 3u, Deleter(&deleter_was_called)));
+    EXPECT_EQ(vec.size(), 3u);
+    EXPECT_NE(vec.data(), nullptr);
+    EXPECT_FALSE(deleter_was_called);
+  }
+  EXPECT_TRUE(deleter_was_called);
+
+  deleter_was_called = false;
+  {
+    auto vec = UNSAFE_BUFFERS(HeapArray<uint32_t, Deleter>::FromOwningPointer(
+        nullptr, 0, Deleter(&deleter_was_called)));
+    EXPECT_EQ(vec.size(), 0);
+    EXPECT_EQ(vec.data(), nullptr);
+    EXPECT_FALSE(deleter_was_called);
+  }
+  EXPECT_FALSE(deleter_was_called);
 }
 
 TEST(HeapArray, MoveConstructor) {

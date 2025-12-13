@@ -12,7 +12,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -128,7 +128,7 @@ TEST(UpdateManifestTest, ParsesManifestWithAdditionalKeys) {
   EXPECT_THAT(update_manifest.versions(),
               ElementsAre<UpdateManifest::VersionEntry>(
                   {GURL("https://example.com"),
-                   base::Version("1.2.3"),
+                   *IwaVersion::Create("1.2.3"),
                    {*UpdateChannel::Create("default")}}));
 }
 
@@ -146,7 +146,7 @@ TEST(UpdateManifestTest, ParsesManifestWithVersion) {
   EXPECT_THAT(update_manifest.versions(),
               ElementsAre<UpdateManifest::VersionEntry>(
                   {GURL("https://example.com"),
-                   base::Version("1.2.3"),
+                   *IwaVersion::Create("1.2.3"),
                    {*UpdateChannel::Create("default")}}));
 }
 
@@ -168,10 +168,10 @@ TEST(UpdateManifestTest, ParsesManifestWithRelativeSrc) {
       update_manifest.versions(),
       ElementsAre(
           UpdateManifest::VersionEntry{GURL("https://c.de/sub/foo/bar"),
-                                       base::Version("1.2.3"),
+                                       *IwaVersion::Create("1.2.3"),
                                        {*UpdateChannel::Create("default")}},
           UpdateManifest::VersionEntry{GURL("https://c.de/foo/bar"),
-                                       base::Version("2.3.4"),
+                                       *IwaVersion::Create("2.3.4"),
                                        {*UpdateChannel::Create("default")}}));
 }
 
@@ -188,7 +188,7 @@ TEST(UpdateManifestTest, ParsesManifestWithRelativeSrc2) {
   EXPECT_THAT(update_manifest.versions(),
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://c.de/foo/bar"),
-                  base::Version("1.2.3"),
+                  *IwaVersion::Create("1.2.3"),
                   {*UpdateChannel::Create("default")}}));
 }
 
@@ -208,7 +208,7 @@ TEST(UpdateManifestTest, IgnoresVersionsWithoutUrl) {
   EXPECT_THAT(update_manifest.versions(),
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://example2.com"),
-                  base::Version("2.0.0"),
+                  *IwaVersion::Create("2.0.0"),
                   {*UpdateChannel::Create("default")}}));
 }
 
@@ -228,7 +228,7 @@ TEST(UpdateManifestTest, IgnoresVersionsWithoutSrc) {
   EXPECT_THAT(update_manifest.versions(),
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://example2.com"),
-                  base::Version("2.0.0"),
+                  *IwaVersion::Create("2.0.0"),
                   {*UpdateChannel::Create("default")}}));
 }
 
@@ -247,7 +247,7 @@ TEST(UpdateManifestTest, ParsesManifestWithAdditionalVersionKeys) {
   EXPECT_THAT(update_manifest.versions(),
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://example.com"),
-                  base::Version("1.2.3"),
+                  *IwaVersion::Create("1.2.3"),
                   {*UpdateChannel::Create("default")}}));
 }
 
@@ -273,11 +273,11 @@ TEST(UpdateManifestTest, ParsesManifestWithVersionChannels) {
       update_manifest.versions(),
       ElementsAre(
           UpdateManifest::VersionEntry{GURL("https://example.com"),
-                                       base::Version("1.2.3"),
+                                       *IwaVersion::Create("1.2.3"),
                                        {*UpdateChannel::Create("beta"),
                                         *UpdateChannel::Create("stable")}},
           UpdateManifest::VersionEntry{
-              GURL("https://example.com"), base::Version("1.2.4"),
+              GURL("https://example.com"), *IwaVersion::Create("1.2.4"),
               // If the Update Manifest contains "channels: []", then we
               // do _not_ automatically add "default" to it.
               /*channels=*/{}}));
@@ -314,7 +314,7 @@ TEST(UpdateManifestTest, IgnoresChannelOrder) {
       update_manifest1.versions(),
       ElementsAre(UpdateManifest::VersionEntry{
           GURL("https://example.com"),
-          base::Version("1.2.3"),
+          *IwaVersion::Create("1.2.3"),
           // Order should not matter here, because it is a set.
           {*UpdateChannel::Create("stable"), *UpdateChannel::Create("beta")}}));
 }
@@ -353,10 +353,10 @@ TEST(UpdateManifestTest, ParsesManifestWithMultipleVersions) {
       update_manifest.versions(),
       ElementsAre(
           UpdateManifest::VersionEntry{GURL("https://example.com"),
-                                       base::Version("1.2.3"),
+                                       *IwaVersion::Create("1.2.3"),
                                        {*UpdateChannel::Create("default")}},
           UpdateManifest::VersionEntry{GURL("http://localhost"),
-                                       base::Version("3.0.0"),
+                                       *IwaVersion::Create("3.0.0"),
                                        {*UpdateChannel::Create("default")}}));
 }
 
@@ -387,10 +387,10 @@ TEST(UpdateManifestTest, OverwritesRepeatedEntriesWithSameVersion) {
       update_manifest.versions(),
       ElementsAre(
           UpdateManifest::VersionEntry{GURL("https://v3-3.com"),
-                                       base::Version("3.0.0"),
+                                       *IwaVersion::Create("3.0.0"),
                                        {*UpdateChannel::Create("default")}},
           UpdateManifest::VersionEntry{GURL("https://v5-2.com"),
-                                       base::Version("5.0.0"),
+                                       *IwaVersion::Create("5.0.0"),
                                        {*UpdateChannel::Create("default")}}));
 }
 
@@ -411,7 +411,7 @@ TEST_P(UpdateManifestValidVersionTest, ParsesValidVersion) {
   EXPECT_THAT(update_manifest.versions(),
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://example.com"),
-                  base::Version(GetParam()),
+                  *IwaVersion::Create(GetParam()),
                   {*UpdateChannel::Create("default")}}));
 }
 
@@ -438,7 +438,7 @@ TEST_P(UpdateManifestInvalidVersionTest, IgnoresEntriesWithInvalidVersions) {
   EXPECT_THAT(update_manifest.versions(),
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://example.com"),
-                  base::Version("99.99.99"),
+                  *IwaVersion::Create("99.99.99"),
                   {*UpdateChannel::Create("default")}}));
 }
 
@@ -461,7 +461,7 @@ TEST_P(UpdateManifestValidSrcTest, ParsesValidSrc) {
   EXPECT_THAT(update_manifest.versions(),
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL(GetParam()),
-                  base::Version("1.0.0"),
+                  *IwaVersion::Create("1.0.0"),
                   {*UpdateChannel::Create("default")}}));
 }
 
@@ -491,7 +491,7 @@ TEST_P(UpdateManifestInvalidSrcTest, IgnoresEntriesWithInvalidSrc) {
   EXPECT_THAT(update_manifest.versions(),
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://example.com"),
-                  base::Version("99.99.99"),
+                  *IwaVersion::Create("99.99.99"),
                   {*UpdateChannel::Create("default")}}));
 }
 
@@ -539,7 +539,7 @@ TEST_F(UpdateManifestSecureOriginAllowlistTest, CanSetHttpOriginsAsTrusted) {
     EXPECT_THAT(update_manifest.versions(),
                 ElementsAre(UpdateManifest::VersionEntry{
                     GURL("http://example.com"),
-                    base::Version("1.0.0"),
+                    *IwaVersion::Create("1.0.0"),
                     {*UpdateChannel::Create("default")}}));
   }
 }
@@ -571,7 +571,7 @@ TEST(GetLatestVersionTest, CalculatesLatestVersionCorrectly) {
       update_manifest.GetLatestVersion(*UpdateChannel::Create("default")),
       Optional(Eq(
           UpdateManifest::VersionEntry{GURL("https://v10.com"),
-                                       base::Version("10.11.0"),
+                                       *IwaVersion::Create("10.11.0"),
                                        {*UpdateChannel::Create("default")}})));
 
   EXPECT_THAT(
@@ -612,7 +612,7 @@ TEST(GetLatestVersionTest, CalculatesLatestVersionForChannel) {
       update_manifest.GetLatestVersion(*UpdateChannel::Create("default")),
       Optional(Eq(
           UpdateManifest::VersionEntry{GURL("https://v10.com"),
-                                       base::Version("10.11.0"),
+                                       *IwaVersion::Create("10.11.0"),
                                        {*UpdateChannel::Create("default")}})));
 
   EXPECT_THAT(
@@ -622,9 +622,11 @@ TEST(GetLatestVersionTest, CalculatesLatestVersionForChannel) {
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelsMissing) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "versions": []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_OK_AND_ASSIGN(
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
@@ -644,10 +646,12 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelsMissing) {
 
 TEST(UpdateManifestParsesChannelMetadataTest, EmptyChannelMetadata) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "channels": {},
     "versions": []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_OK_AND_ASSIGN(
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
@@ -667,10 +671,12 @@ TEST(UpdateManifestParsesChannelMetadataTest, EmptyChannelMetadata) {
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelsNotADict) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "channels": [],
     "versions": []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_THAT(
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")),
       ErrorIs(Eq(UpdateManifest::JsonFormatError::kChannelsNotADictionary)));
@@ -678,12 +684,14 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelsNotADict) {
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelNotADict) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "channels": {
       "default": []
     },
     "versions": []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_THAT(
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")),
       ErrorIs(Eq(UpdateManifest::JsonFormatError::kChannelNotADictionary)));
@@ -691,12 +699,14 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelNotADict) {
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelMetadataWithoutName) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "channels": {
       "default": {}
     },
     "versions": []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_OK_AND_ASSIGN(
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
@@ -713,14 +723,16 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelMetadataWithoutName) {
 TEST(UpdateManifestParsesChannelMetadataTest,
      ChannelMetadataWithAdditionalField) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "channels": {
       "default": {
         "flubber": "blubber"
       }
     },
     "versions": []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_OK_AND_ASSIGN(
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
@@ -734,7 +746,8 @@ TEST(UpdateManifestParsesChannelMetadataTest,
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelName) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "channels": {
       "default": {
         "name": "default channel"
@@ -746,7 +759,8 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelName) {
       }
     },
     "versions" : []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_OK_AND_ASSIGN(
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));

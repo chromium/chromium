@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/child_process_service.h"
+
 #include <optional>
 
 #include "base/android/jni_array.h"
@@ -17,38 +19,16 @@
 #include "base/process_launcher_jni/ChildProcessService_jni.h"
 
 using base::android::JavaIntArrayToIntVector;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace base {
 namespace android {
 
-void JNI_ChildProcessService_RegisterFileDescriptors(
-    JNIEnv* env,
-    const JavaParamRef<jobjectArray>& j_keys,
-    const JavaParamRef<jintArray>& j_ids,
-    const JavaParamRef<jintArray>& j_fds,
-    const JavaParamRef<jlongArray>& j_offsets,
-    const JavaParamRef<jlongArray>& j_sizes) {
-  std::vector<std::optional<std::string>> keys;
-  JavaObjectArrayReader<jstring> keys_array(j_keys);
-  keys.reserve(checked_cast<size_t>(keys_array.size()));
-  for (auto str : keys_array) {
-    std::optional<std::string> key;
-    if (str) {
-      key = base::android::ConvertJavaStringToUTF8(env, str);
-    }
-    keys.push_back(std::move(key));
-  }
-
-  std::vector<int> ids;
-  base::android::JavaIntArrayToIntVector(env, j_ids, &ids);
-  std::vector<int> fds;
-  base::android::JavaIntArrayToIntVector(env, j_fds, &fds);
-  std::vector<int64_t> offsets;
-  base::android::JavaLongArrayToInt64Vector(env, j_offsets, &offsets);
-  std::vector<int64_t> sizes;
-  base::android::JavaLongArrayToInt64Vector(env, j_sizes, &sizes);
-
+void RegisterFileDescriptors(std::vector<std::optional<std::string>>& keys,
+                             std::vector<int>& ids,
+                             std::vector<int>& fds,
+                             std::vector<int64_t>& offsets,
+                             std::vector<int64_t>& sizes) {
   DCHECK_EQ(keys.size(), ids.size());
   DCHECK_EQ(ids.size(), fds.size());
   DCHECK_EQ(fds.size(), offsets.size());
@@ -69,7 +49,36 @@ void JNI_ChildProcessService_RegisterFileDescriptors(
   }
 }
 
-void JNI_ChildProcessService_ExitChildProcess(JNIEnv* env) {
+static void JNI_ChildProcessService_RegisterFileDescriptors(
+    JNIEnv* env,
+    const JavaRef<jobjectArray>& j_keys,
+    const JavaRef<jintArray>& j_ids,
+    const JavaRef<jintArray>& j_fds,
+    const JavaRef<jlongArray>& j_offsets,
+    const JavaRef<jlongArray>& j_sizes) {
+  std::vector<std::optional<std::string>> keys;
+  JavaObjectArrayReader<jstring> keys_array(j_keys);
+  keys.reserve(checked_cast<size_t>(keys_array.size()));
+  for (auto str : keys_array) {
+    std::optional<std::string> key;
+    if (str) {
+      key = base::android::ConvertJavaStringToUTF8(env, str);
+    }
+    keys.push_back(std::move(key));
+  }
+
+  std::vector<int> ids;
+  base::android::JavaIntArrayToIntVector(env, j_ids, &ids);
+  std::vector<int> fds;
+  base::android::JavaIntArrayToIntVector(env, j_fds, &fds);
+  std::vector<int64_t> offsets;
+  base::android::JavaLongArrayToInt64Vector(env, j_offsets, &offsets);
+  std::vector<int64_t> sizes;
+  base::android::JavaLongArrayToInt64Vector(env, j_sizes, &sizes);
+  RegisterFileDescriptors(keys, ids, fds, offsets, sizes);
+}
+
+static void JNI_ChildProcessService_ExitChildProcess(JNIEnv* env) {
   VLOG(0) << "ChildProcessService: Exiting child process.";
   base::android::LibraryLoaderExitHook();
   _exit(0);
@@ -78,14 +87,24 @@ void JNI_ChildProcessService_ExitChildProcess(JNIEnv* env) {
 // Make sure this isn't inlined so it shows up in stack traces.
 // the function body unique by adding a log line, so it doesn't get merged
 // with other functions by link time optimizations (ICF).
-NOINLINE void JNI_ChildProcessService_DumpProcessStack(JNIEnv* env) {
+NOINLINE static void JNI_ChildProcessService_DumpProcessStack(JNIEnv* env) {
+  DumpProcessStack();
+}
+
+void DumpProcessStack() {
   LOG(ERROR) << "Dumping as requested.";
   base::debug::DumpWithoutCrashing();
 }
 
-void JNI_ChildProcessService_OnSelfFreeze(JNIEnv* env) {
+static void JNI_ChildProcessService_OnSelfFreeze(JNIEnv* env) {
+  OnSelfFreeze();
+}
+
+void OnSelfFreeze() {
   SelfCompactionManager::OnSelfFreeze();
 }
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(ChildProcessService)

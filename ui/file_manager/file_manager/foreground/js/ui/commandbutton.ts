@@ -123,6 +123,8 @@ export class CommandButton extends CrButtonElement {
         assert(this.command_);
         this.setLabel(this.command_.label);
         break;
+      default:
+        break;
     }
   }
 }

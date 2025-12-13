@@ -50,11 +50,13 @@ struct WebTextCheckingResult {
       WebTextDecorationType decoration,
       int location,
       int length,
-      const std::vector<WebString>& replacements = std::vector<WebString>())
+      const std::vector<WebString>& replacements = std::vector<WebString>(),
+      bool should_hide_suggestion_menu = false)
       : decoration(decoration),
         location(location),
         length(length),
-        replacements(replacements) {}
+        replacements(replacements),
+        should_hide_suggestion_menu(should_hide_suggestion_menu) {}
 
 #if INSIDE_BLINK
   operator TextCheckingResult() const;
@@ -64,6 +66,7 @@ struct WebTextCheckingResult {
   int location;
   int length;
   std::vector<WebString> replacements;
+  bool should_hide_suggestion_menu;
 };
 
 }  // namespace blink

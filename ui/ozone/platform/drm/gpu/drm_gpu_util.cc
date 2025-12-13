@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 
 #include <fcntl.h>
@@ -15,6 +10,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -166,12 +162,13 @@ bool GetDrmPropertyForName(DrmWrapper* drm,
                            const std::string& name,
                            DrmWrapper::Property* property) {
   for (uint32_t i = 0; i < properties->count_props; ++i) {
-    ScopedDrmPropertyPtr drm_property(drm->GetProperty(properties->props[i]));
+    ScopedDrmPropertyPtr drm_property(
+        drm->GetProperty(UNSAFE_TODO(properties->props[i])));
     if (name != drm_property->name)
       continue;
 
     property->id = drm_property->prop_id;
-    property->value = properties->prop_values[i];
+    property->value = UNSAFE_TODO(properties->prop_values[i]);
     if (property->id)
       return true;
   }
@@ -209,8 +206,8 @@ ScopedDrmColorLutPtr CreateLutBlob(const display::GammaCurve& source,
   drm_color_lut* p = lut.get();
   for (size_t i = 0; i < size; ++i) {
     // Be robust to `size` being 1, since some tests do this.
-    source.Evaluate(i / std::max(size - 1.f, 1.f), p[i].red, p[i].green,
-                    p[i].blue);
+    source.Evaluate(i / std::max(size - 1.f, 1.f), UNSAFE_TODO(p[i]).red,
+                    UNSAFE_TODO(p[i]).green, UNSAFE_TODO(p[i]).blue);
   }
   return lut;
 }
@@ -226,9 +223,9 @@ bool ParseLutBlob(const void* data, size_t size, display::GammaCurve& result) {
   const drm_color_lut* entries = reinterpret_cast<const drm_color_lut*>(data);
   std::vector<display::GammaRampRGBEntry> lut(entry_count);
   for (size_t i = 0; i < entry_count; ++i) {
-    lut[i].r = entries[i].red;
-    lut[i].g = entries[i].green;
-    lut[i].b = entries[i].blue;
+    lut[i].r = UNSAFE_TODO(entries[i]).red;
+    lut[i].g = UNSAFE_TODO(entries[i]).green;
+    lut[i].b = UNSAFE_TODO(entries[i]).blue;
   }
   result = display::GammaCurve(std::move(lut));
   return true;
@@ -239,17 +236,17 @@ ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix,
   ScopedDrmColorCtmPtr ctm(
       static_cast<drm_color_ctm*>(drmMalloc(sizeof(drm_color_ctm))));
   for (size_t i = 0; i < 9; ++i) {
-    float value = color_matrix.vals[i / 3][i % 3];
+    float value = UNSAFE_TODO(color_matrix.vals[i / 3])[i % 3];
     if (value < 0) {
       if (negative_values_broken) {
-        ctm->matrix[i] = 0;
+        UNSAFE_TODO(ctm->matrix[i]) = 0;
       } else {
-        ctm->matrix[i] =
+        UNSAFE_TODO(ctm->matrix[i]) =
             static_cast<uint64_t>(-value * kCtmValueScale) & kCtmValueMask;
-        ctm->matrix[i] |= kCtmSignMask;
+        UNSAFE_TODO(ctm->matrix[i]) |= kCtmSignMask;
       }
     } else {
-      ctm->matrix[i] =
+      UNSAFE_TODO(ctm->matrix[i]) =
           static_cast<uint64_t>(value * kCtmValueScale) & kCtmValueMask;
     }
   }
@@ -266,9 +263,9 @@ bool ParseCTMBlob(const void* data, size_t size, skcms_Matrix3x3& result) {
   }
   const uint64_t* data_u64 = reinterpret_cast<const uint64_t*>(data);
   for (size_t i = 0; i < 9; ++i) {
-    float sign = (data_u64[i] & kCtmSignMask) ? -1.f : 1.f;
-    float value = (data_u64[i] & kCtmValueMask) / kCtmValueScale;
-    result.vals[i / 3][i % 3] = sign * value;
+    float sign = (UNSAFE_TODO(data_u64[i]) & kCtmSignMask) ? -1.f : 1.f;
+    float value = (UNSAFE_TODO(data_u64[i]) & kCtmValueMask) / kCtmValueScale;
+    UNSAFE_TODO(result.vals[i / 3])[i % 3] = sign * value;
   }
   return true;
 }
@@ -365,7 +362,7 @@ void ApplyCrtcColorSpaceConversion(DrmWrapper* drm,
   if (degamma_blob) {
     display::GammaCurve curve;
     if (ParseLutBlob(degamma_blob->data, degamma_blob->length, curve)) {
-      curve.Evaluate(rgb);
+      curve.Evaluate(UNSAFE_TODO(base::span<float, 3>(rgb, rgb + 3u)));
     }
   }
 
@@ -377,11 +374,11 @@ void ApplyCrtcColorSpaceConversion(DrmWrapper* drm,
       float temp[3] = {0, 0, 0};
       for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
-          temp[i] += ctm.vals[i][j] * rgb[j];
+          UNSAFE_TODO(temp[i] += ctm.vals[i][j] * rgb[j]);
         }
       }
       for (int i = 0; i < 3; ++i) {
-        rgb[i] = temp[i];
+        UNSAFE_TODO(rgb[i]) = UNSAFE_TODO(temp[i]);
       }
     }
   }
@@ -391,7 +388,7 @@ void ApplyCrtcColorSpaceConversion(DrmWrapper* drm,
   if (gamma_blob) {
     display::GammaCurve curve;
     if (ParseLutBlob(gamma_blob->data, gamma_blob->length, curve)) {
-      curve.Evaluate(rgb);
+      curve.Evaluate(UNSAFE_TODO(base::span<float, 3>(rgb, rgb + 3u)));
     }
   }
 }

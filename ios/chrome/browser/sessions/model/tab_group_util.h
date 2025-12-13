@@ -10,8 +10,6 @@
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/sessions/model/proto/tab_group.pb.h"
 
-@class SessionTabGroup;
-
 // Utility methods to serialize / deserialize tab groups.
 namespace tab_group_util {
 
@@ -25,12 +23,11 @@ struct DeserializedGroup {
 
 // Returns the `DeserializedGroup` for the given serialized `group`.
 DeserializedGroup FromSerializedValue(ios::proto::TabGroupStorage group);
-// Legacy version.
-DeserializedGroup FromSerializedValue(SessionTabGroup* group);
 
 // Returns the corresponding serialized `color_id`.
 ios::proto::TabGroupColorId ColorForStorage(
     tab_groups::TabGroupColorId color_id);
+
 // Returns the corresponding serialized `tab_group_id`.
 void TabGroupIdForStorage(tab_groups::TabGroupId tab_group_id,
                           ios::proto::TabGroupId& storage);
@@ -38,6 +35,7 @@ void TabGroupIdForStorage(tab_groups::TabGroupId tab_group_id,
 // Returns the corresponding deserialized `color_id`.
 tab_groups::TabGroupColorId ColorFromStorage(
     ios::proto::TabGroupColorId color_id);
+
 // Returns the corresponding deserialized `tab_group_id`.
 tab_groups::TabGroupId TabGroupIdFromStorage(
     ios::proto::TabGroupId tab_group_id);

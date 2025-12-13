@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_UNDERLYING_SOURCE_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_UNDERLYING_SOURCE_BASE_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -78,8 +79,7 @@ class UnderlyingPullAlgorithm final : public StreamAlgorithm {
       : source_(source) {}
 
   ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) final;
+                                  base::span<v8::Local<v8::Value>> argv) final;
   void Trace(Visitor* visitor) const final;
 
  private:
@@ -92,8 +92,7 @@ class UnderlyingCancelAlgorithm final : public StreamAlgorithm {
       : source_(source) {}
 
   ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) final;
+                                  base::span<v8::Local<v8::Value>> argv) final;
   void Trace(Visitor* visitor) const final;
 
  private:

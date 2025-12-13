@@ -1,0 +1,33 @@
+rootWebArea name='Material Design Version Information'
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading name='Material Design Version Information'
+++++++++staticText name='Material Design Version Information'
+++++++++++inlineTextBox name='Material Design Version Information'
+++++++genericContainer name='Version information'
+++++++++genericContainer
+++++++++++staticText name='Material Web Components Library: 2.3.0'
+++++++++++++inlineTextBox name='Material Web Components Library: 2.3.0'
+++++++++genericContainer
+++++++++++staticText name='Material Design Info: Material Design Components v2.3.0'
+++++++++++++inlineTextBox name='Material Design Info: Material Design Components v2.3.0'
+++++++++genericContainer
+++++++++++staticText name='Lit Framework: 3.1.0'
+++++++++++++inlineTextBox name='Lit Framework: 3.1.0'
+++++++++genericContainer
+++++++++++staticText name='Source: third_party/material_web_components'
+++++++++++++inlineTextBox name='Source: third_party/material_web_components'
+++++++genericContainer name='Ready'
+++++++genericContainer
+++++++++none ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++genericContainer
+++++++++none ignored invisible
+++++++++none ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++button name='Test Button'
+++++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='Test Button'
+++++++++++++++++inlineTextBox name='Test Button'

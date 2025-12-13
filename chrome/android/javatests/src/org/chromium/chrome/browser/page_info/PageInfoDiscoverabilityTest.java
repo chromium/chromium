@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.page_info;
 
 import static org.chromium.components.permissions.PermissionDialogDelegate.getRequestTypeEnumSize;
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 
 import android.Manifest;
 import android.content.Context;
@@ -33,7 +34,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -50,10 +50,9 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -296,10 +295,11 @@ public class PageInfoDiscoverabilityTest {
                 /* javascriptToExecute= */ null,
                 /* missingPermissionPromptTextId= */ 0);
 
-        Assert.assertEquals(ContentSettingsType.GEOLOCATION, mMediator.getLastPermission());
+        Assert.assertEquals(getGeolocationType(), mMediator.getLastPermission());
     }
 
     /** Tests omnibox permission when permission is blocked by the user. */
+    // Disabled on android.emulator_12l_landscape - crbug.com/442769979.
     @Test
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
@@ -328,7 +328,7 @@ public class PageInfoDiscoverabilityTest {
                 /* javascriptToExecute= */ null,
                 /* missingPermissionPromptTextId= */ 0);
 
-        Assert.assertEquals(ContentSettingsType.GEOLOCATION, mMediator.getLastPermission());
+        Assert.assertEquals(getGeolocationType(), mMediator.getLastPermission());
     }
 
     @Test
@@ -344,7 +344,6 @@ public class PageInfoDiscoverabilityTest {
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
     @ParameterAnnotations.UseMethodParameter(RequestTypeTestParams.class)
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     @DisabledTest(message = "Flaky - crbug.com/422700100")
     public void testPermissionRequestTypes(
             @ContentSettingsType.EnumType int contentSettingsType, boolean isInSiteSettings) {
@@ -360,7 +359,7 @@ public class PageInfoDiscoverabilityTest {
                     mMediator.onDialogResult(
                             sPermissionTestRule.getActivity().getWindowAndroid(),
                             permissions,
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
         Assert.assertEquals(
                 isInSiteSettings ? contentSettingsType : ContentSettingsType.DEFAULT,

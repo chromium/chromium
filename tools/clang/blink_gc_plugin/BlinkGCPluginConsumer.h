@@ -11,21 +11,20 @@
 #include "Config.h"
 #include "DiagnosticsReporter.h"
 #include "clang/AST/AST.h"
-#include "clang/AST/ASTConsumer.h"
 #include "clang/Basic/Diagnostic.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Pragma.h"
+#include "tools/clang/plugins/FilteredASTConsumer.h"
 
 class JsonWriter;
 class RecordInfo;
 
 // Main class containing checks for various invariants of the Blink
 // garbage collection infrastructure.
-class BlinkGCPluginConsumer : public clang::ASTConsumer {
+class BlinkGCPluginConsumer : public FilteredASTConsumer {
  public:
   BlinkGCPluginConsumer(clang::CompilerInstance& instance,
                         const BlinkGCPluginOptions& options);
-  ~BlinkGCPluginConsumer();
 
   void HandleTranslationUnit(clang::ASTContext& context) override;
 
@@ -75,7 +74,7 @@ class BlinkGCPluginConsumer : public clang::ASTConsumer {
 
   bool IsIgnoredClass(RecordInfo* info);
 
-  bool InIgnoredDirectoryOrFile(RecordInfo* info);
+  bool InIgnoredDirectory(RecordInfo* info);
 
   bool InCheckedNamespaceOrDirectory(RecordInfo* info);
 
@@ -86,7 +85,6 @@ class BlinkGCPluginConsumer : public clang::ASTConsumer {
   BlinkGCPluginOptions options_;
   RecordCache cache_;
   JsonWriter* json_;
-  std::unique_ptr<clang::PragmaHandler> pragma_handler_;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_BLINK_GC_PLUGIN_CONSUMER_H_

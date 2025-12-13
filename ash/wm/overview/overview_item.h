@@ -13,6 +13,7 @@
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/cancelable_callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/scoped_window_event_targeting_blocker.h"
@@ -263,13 +264,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   // Disable animations on the contained window while it is being managed by the
   // overview item.
   wm::ScopedAnimationDisabler animation_disabler_;
-
-  // Force `OverviewItem` to be visible while overview is in progress. This is
-  // to ensure that overview items are properly marked as visible during all
-  // parts of their animation (e.g. overview enter). This is only required
-  // if those item's windows won't have snapshots.
-  std::optional<aura::WindowOcclusionTracker::ScopedForceVisible>
-      scoped_force_visible_;
 
   base::WeakPtrFactory<OverviewItem> weak_ptr_factory_{this};
 };

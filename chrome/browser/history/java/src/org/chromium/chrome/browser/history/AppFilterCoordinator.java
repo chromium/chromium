@@ -51,11 +51,11 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
 
     /** Data class for individual app item in the filter list. */
     public static class AppInfo {
-        public final String id;
+        public final @Nullable String id;
         public final @Nullable Drawable icon;
         public final CharSequence label;
 
-        public AppInfo(String id, @Nullable Drawable icon, CharSequence label) {
+        public AppInfo(@Nullable String id, @Nullable Drawable icon, CharSequence label) {
             this.id = id;
             this.icon = icon;
             this.label = label;
@@ -129,7 +129,7 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
         PropertyModelChangeProcessor.create(
                 mCloseButtonModel, closeButton, AppFilterViewBinder::bind);
 
-        mMediator = new AppFilterMediator(context, listItems, appInfoList, this::closeSheet);
+        mMediator = new AppFilterMediator(listItems, appInfoList, this::closeSheet);
         mAppCount = listItems.size();
     }
 
@@ -179,7 +179,7 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
         mItemListView.setLayoutParams(layoutParams);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static int calculateSheetHeight(int rowHeight, int baseViewHeight, int rowCount) {
         int maxHeight = (int) (baseViewHeight * MAX_SHEET_HEIGHT_RATIO);
         int visibleRowCount = Math.min(rowCount, MAX_VISIBLE_ITEM_COUNT);
@@ -201,10 +201,6 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
 
     void clickCloseButtonForTesting() {
         mCloseButtonModel.get(AppFilterProperties.CLOSE_BUTTON_CALLBACK).onClick(null); // IN-TEST
-    }
-
-    void setCurrentAppForTesting(String appId) {
-        mMediator.setCurrentAppForTesting(appId); // IN-TEST
     }
 
     @Nullable String getCurrentAppIdForTesting() {

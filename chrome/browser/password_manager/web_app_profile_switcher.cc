@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
@@ -43,6 +44,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> MakeInstallInfoFromApp(
   install_info->manifest_url = web_app.manifest_url();
   install_info->scope = web_app.scope();
   install_info->manifest_icons = web_app.manifest_icons();
+  install_info->trusted_icons = web_app.trusted_icons();
   install_info->display_mode = web_app.display_mode();
   return install_info;
 }
@@ -112,11 +114,11 @@ void WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile(
            web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     // The web app is already installed and can be launched, or foregrounded,
     // if it's already launched.
-    Browser* launched_app =
+    BrowserWindowInterface* launched_app =
         web_app::AppBrowserController::FindForWebApp(*new_profile_, app_id_);
     debug_value.Set("launched_app", !!launched_app);
     if (launched_app) {
-      launched_app->window()->Activate();
+      launched_app->GetWindow()->Activate();
       RunCompletionCallback();
     } else {
       LaunchAppWithId(app_id_,
@@ -135,7 +137,7 @@ void WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile(
 }
 
 void WebAppProfileSwitcher::InstallAndLaunchWebApp(
-    web_app::IconBitmaps icon_bitmaps) {
+    web_app::WebAppIconManager::WebAppBitmaps icon_bitmaps) {
   web_app::WebAppProvider* active_profile_provider =
       web_app::WebAppProvider::GetForWebApps(&active_profile_.get());
   if (!active_profile_provider->registrar_unsafe().IsInstallState(
@@ -151,7 +153,8 @@ void WebAppProfileSwitcher::InstallAndLaunchWebApp(
       active_profile_provider->registrar_unsafe().GetAppById(app_id_);
   DCHECK(web_app);
   auto install_info = MakeInstallInfoFromApp(*web_app);
-  install_info->icon_bitmaps = std::move(icon_bitmaps);
+  install_info->icon_bitmaps = std::move(icon_bitmaps.manifest_icons);
+  install_info->trusted_icon_bitmaps = std::move(icon_bitmaps.trusted_icons);
 
   web_app::WebAppInstallParams install_params;
   install_params.add_to_desktop = true;
@@ -184,7 +187,6 @@ void WebAppProfileSwitcher::LaunchAppWithId(
       ->scheduler()
       .LaunchApp(app_id, *base::CommandLine::ForCurrentProcess(),
                  /*current_directory=*/base::FilePath(),
-                 /*url_handler_launch_url=*/std::nullopt,
                  /*protocol_handler_launch_url=*/std::nullopt,
                  /*file_launch_url=*/std::nullopt, /*launch_files=*/{},
                  base::IgnoreArgs<base::WeakPtr<Browser>,

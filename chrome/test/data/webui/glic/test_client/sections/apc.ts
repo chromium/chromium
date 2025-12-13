@@ -6,7 +6,7 @@ import {getBrowser, logMessage, readStream} from '../client.js';
 import {$} from '../page_element_types.js';
 
 $.copyAPCToClipboardBtn.addEventListener('click', async () => {
-  let annotatedPageContent: Uint8Array|undefined = undefined;
+  let annotatedPageContent: Uint8Array<ArrayBuffer>|undefined;
   try {
     const pageContent = await getBrowser()!.getContextFromFocusedTab!
                         ({annotatedPageContent: true});

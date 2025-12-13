@@ -4,12 +4,11 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {PrivacyGuideHistorySyncFragmentElement} from 'chrome://settings/lazy_load.js';
-import type {SyncPrefs} from 'chrome://settings/settings.js';
-import {MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, Router, routes, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, loadTimeData, PrivacyGuideSettingsStates, Router, routes, SignedInState, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -29,7 +28,6 @@ suite('HistorySyncFragment', function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     syncBrowserProxy = new TestSyncBrowserProxy();
-    syncBrowserProxy.testSyncStatus = null;
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     fragment = document.createElement('privacy-guide-history-sync-fragment');
@@ -47,7 +45,7 @@ suite('HistorySyncFragment', function() {
     changeSetting: boolean,
     expectedMetric: PrivacyGuideSettingsStates,
   }) {
-    setSyncStatus({
+    setSyncPrefs({
       syncAllDataTypes: historySyncStartOn,
       typedUrlsSynced: historySyncStartOn,
       passwordsSynced: historySyncStartOn,
@@ -76,6 +74,16 @@ suite('HistorySyncFragment', function() {
   }
 
   function setSyncStatus({
+    signedInState,
+  }: {
+    signedInState: SignedInState,
+  }) {
+    const event: SyncStatus = {} as unknown as SyncStatus;
+    event.signedInState = signedInState;
+    webUIListenerCallback('sync-status-changed', event);
+  }
+
+  function setSyncPrefs({
     syncAllDataTypes,
     typedUrlsSynced,
     passwordsSynced,
@@ -99,16 +107,42 @@ suite('HistorySyncFragment', function() {
     webUIListenerCallback('sync-prefs-changed', event);
   }
 
+    function setSyncTypes({
+    typedUrlsSynced,
+    tabsSynced,
+    savedTabGroupsSynced,
+  }: {
+    typedUrlsSynced: boolean,
+    tabsSynced: boolean,
+    savedTabGroupsSynced: boolean,
+  }) {
+    const event: SyncPrefs = {} as unknown as SyncPrefs;
+    for (const datatype of syncPrefsIndividualDataTypes) {
+      (event as unknown as {[key: string]: boolean})[datatype] = true;
+    }
+    // Overwrite datatypes needed in tests.
+    event.typedUrlsSynced = typedUrlsSynced;
+    event.tabsSynced = tabsSynced;
+    event.savedTabGroupsSynced = savedTabGroupsSynced;
+    webUIListenerCallback('sync-prefs-changed', event);
+  }
+
   async function assertSyncBrowserProxyCall({
     syncAllDatatypesExpected,
     typedUrlsSyncedExpected,
+    tabsSyncedExpected,
+    savedTabGroupsSyncedExpected,
   }: {
     syncAllDatatypesExpected: boolean,
     typedUrlsSyncedExpected: boolean,
+    tabsSyncedExpected: boolean,
+    savedTabGroupsSyncedExpected: boolean,
   }) {
     const syncPrefs = await syncBrowserProxy.whenCalled('setSyncDatatypes');
     assertEquals(syncAllDatatypesExpected, syncPrefs.syncAllDataTypes);
     assertEquals(typedUrlsSyncedExpected, syncPrefs.typedUrlsSynced);
+    assertEquals(tabsSyncedExpected, syncPrefs.tabsSynced);
+    assertEquals(savedTabGroupsSyncedExpected, syncPrefs.savedTabGroupsSynced);
     syncBrowserProxy.resetResolver('setSyncDatatypes');
   }
 
@@ -145,7 +179,7 @@ suite('HistorySyncFragment', function() {
   });
 
   test('syncAllOnDisableReenableHistorySync', async function() {
-    setSyncStatus({
+    setSyncPrefs({
       syncAllDataTypes: true,
       typedUrlsSynced: true,
       passwordsSynced: true,
@@ -154,6 +188,8 @@ suite('HistorySyncFragment', function() {
     await assertSyncBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: false,
+      tabsSyncedExpected: true,
+      savedTabGroupsSyncedExpected: true,
     });
 
     // Re-enabling history sync re-enables sync all if sync all was on before
@@ -162,11 +198,13 @@ suite('HistorySyncFragment', function() {
     return assertSyncBrowserProxyCall({
       syncAllDatatypesExpected: true,
       typedUrlsSyncedExpected: true,
+      tabsSyncedExpected: true,
+      savedTabGroupsSyncedExpected: true,
     });
   });
 
   test('syncAllOnDisableReenableHistorySyncOtherDatatypeOff', async function() {
-    setSyncStatus({
+    setSyncPrefs({
       syncAllDataTypes: true,
       typedUrlsSynced: true,
       passwordsSynced: true,
@@ -175,10 +213,12 @@ suite('HistorySyncFragment', function() {
     await assertSyncBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: false,
+      tabsSyncedExpected: true,
+      savedTabGroupsSyncedExpected: true,
     });
 
     // The user disables another datatype in a different tab.
-    setSyncStatus({
+    setSyncPrefs({
       syncAllDataTypes: false,
       typedUrlsSynced: false,
       passwordsSynced: false,
@@ -190,11 +230,13 @@ suite('HistorySyncFragment', function() {
     return assertSyncBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: true,
+      tabsSyncedExpected: true,
+      savedTabGroupsSyncedExpected: true,
     });
   });
 
   test('syncAllOnDisableReenableHistorySyncWithNavigation', async function() {
-    setSyncStatus({
+    setSyncPrefs({
       syncAllDataTypes: true,
       typedUrlsSynced: true,
       passwordsSynced: true,
@@ -203,6 +245,8 @@ suite('HistorySyncFragment', function() {
     await assertSyncBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: false,
+      tabsSyncedExpected: true,
+      savedTabGroupsSyncedExpected: true,
     });
 
     // The user navigates to another card, then back to the history sync card.
@@ -219,11 +263,13 @@ suite('HistorySyncFragment', function() {
     return assertSyncBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: true,
+      tabsSyncedExpected: true,
+      savedTabGroupsSyncedExpected: true,
     });
   });
 
   test('syncAllOffDisableReenableHistorySync', async function() {
-    setSyncStatus({
+    setSyncPrefs({
       syncAllDataTypes: false,
       typedUrlsSynced: true,
       passwordsSynced: true,
@@ -232,6 +278,8 @@ suite('HistorySyncFragment', function() {
     await assertSyncBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: false,
+      tabsSyncedExpected: true,
+      savedTabGroupsSyncedExpected: true,
     });
 
     // Re-enabling history sync doesn't re-enable sync all if sync all wasn't on
@@ -240,11 +288,13 @@ suite('HistorySyncFragment', function() {
     return assertSyncBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: true,
+      tabsSyncedExpected: true,
+      savedTabGroupsSyncedExpected: true,
     });
   });
 
   test('syncAllOffEnableHistorySync', function() {
-    setSyncStatus({
+    setSyncPrefs({
       syncAllDataTypes: false,
       typedUrlsSynced: false,
       passwordsSynced: true,
@@ -253,6 +303,187 @@ suite('HistorySyncFragment', function() {
     return assertSyncBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: true,
+      tabsSyncedExpected: true,
+      savedTabGroupsSyncedExpected: true,
     });
+  });
+
+  test('syncingUserInitialToggleValue', function() {
+    setSyncStatus({
+      signedInState: SignedInState.SYNCING,
+    });
+    setSyncTypes({
+      typedUrlsSynced: false,
+      tabsSynced: false,
+      savedTabGroupsSynced: false,
+    });
+    // The toggle is only set based on history sync state.
+    assertFalse(fragment.$.historyToggle.checked);
+    setSyncTypes({
+      typedUrlsSynced: false,
+      tabsSynced: true,
+      savedTabGroupsSynced: true,
+    });
+    assertFalse(fragment.$.historyToggle.checked);
+    setSyncTypes({
+      typedUrlsSynced: true,
+      tabsSynced: false,
+      savedTabGroupsSynced: false,
+    });
+    assertTrue(fragment.$.historyToggle.checked);
+  });
+
+  test('syncingUserToggleOn', function() {
+    setSyncStatus({
+      signedInState: SignedInState.SYNCING,
+    });
+    setSyncTypes({
+      typedUrlsSynced: false,
+      tabsSynced: false,
+      savedTabGroupsSynced: false,
+    });
+    assertFalse(fragment.$.historyToggle.checked);
+    // Toggle on.
+    fragment.$.historyToggle.click();
+    return assertSyncBrowserProxyCall({
+      syncAllDatatypesExpected: false,
+      typedUrlsSyncedExpected: true,
+      tabsSyncedExpected: false,
+      savedTabGroupsSyncedExpected: false,
+    });
+  });
+
+  test('syncingUserToggleOff', function() {
+    setSyncStatus({
+      signedInState: SignedInState.SYNCING,
+    });
+    setSyncTypes({
+      typedUrlsSynced: true,
+      tabsSynced: true,
+      savedTabGroupsSynced: true,
+    });
+    assertTrue(fragment.$.historyToggle.checked);
+    // Toggle off.
+    fragment.$.historyToggle.click();
+    return assertSyncBrowserProxyCall({
+      syncAllDatatypesExpected: false,
+      typedUrlsSyncedExpected: false,
+      tabsSyncedExpected: true,
+      savedTabGroupsSyncedExpected: true,
+    });
+  });
+
+  test('signedInUserInitialToggleValue', function() {
+    setSyncStatus({
+      signedInState: SignedInState.SIGNED_IN,
+    });
+    setSyncTypes({
+      typedUrlsSynced: false,
+      tabsSynced: false,
+      savedTabGroupsSynced: false,
+    });
+    // The toggle is set if any of (history, tabs, saved tab groups) types is
+    // enabled.
+    assertFalse(fragment.$.historyToggle.checked);
+    setSyncTypes({
+      typedUrlsSynced: true,
+      tabsSynced: false,
+      savedTabGroupsSynced: false,
+    });
+    assertTrue(fragment.$.historyToggle.checked);
+    setSyncTypes({
+      typedUrlsSynced: false,
+      tabsSynced: true,
+      savedTabGroupsSynced: false,
+    });
+    assertTrue(fragment.$.historyToggle.checked);
+    setSyncTypes({
+      typedUrlsSynced: false,
+      tabsSynced: false,
+      savedTabGroupsSynced: true,
+    });
+    assertTrue(fragment.$.historyToggle.checked);
+  });
+
+  test('signedInUserToggleOn', function() {
+    setSyncStatus({
+      signedInState: SignedInState.SIGNED_IN,
+    });
+    setSyncTypes({
+      typedUrlsSynced: false,
+      tabsSynced: false,
+      savedTabGroupsSynced: false,
+    });
+    assertFalse(fragment.$.historyToggle.checked);
+    // Toggle on.
+    fragment.$.historyToggle.click();
+    return assertSyncBrowserProxyCall({
+      syncAllDatatypesExpected: false,
+      typedUrlsSyncedExpected: true,
+      tabsSyncedExpected: true,
+      savedTabGroupsSyncedExpected: true,
+    });
+  });
+
+  test('signedInUserToggleOff', function() {
+    setSyncStatus({
+      signedInState: SignedInState.SIGNED_IN,
+    });
+    setSyncTypes({
+      typedUrlsSynced: true,
+      tabsSynced: true,
+      savedTabGroupsSynced: true,
+    });
+    assertTrue(fragment.$.historyToggle.checked);
+    // Toggle off.
+    fragment.$.historyToggle.click();
+    return assertSyncBrowserProxyCall({
+      syncAllDatatypesExpected: false,
+      typedUrlsSyncedExpected: false,
+      tabsSyncedExpected: false,
+      savedTabGroupsSyncedExpected: false,
+    });
+  });
+
+  test('stringUpdatesOnSyncStateChange', async function() {
+    function getCardHeader() {
+      return fragment.shadowRoot!
+          .querySelector('.settings-fragment-header-label')!.textContent.trim();
+    }
+    function getFeatureDescription1() {
+      return fragment.shadowRoot!.querySelector('.icon-bulleted-list li')!
+          .querySelector('.secondary')!.textContent.trim();
+    }
+
+    // The user is syncing.
+    setSyncStatus({
+      signedInState: SignedInState.SYNCING,
+    });
+    await flushTasks();
+    assertEquals(
+        getCardHeader(),
+        loadTimeData.getString('privacyGuideHistorySyncCardHeader'));
+    assertEquals(
+        fragment.$.historyToggle.label,
+        loadTimeData.getString('privacyGuideHistorySyncSettingLabel'));
+    assertEquals(
+        getFeatureDescription1(),
+        loadTimeData.getString('privacyGuideHistorySyncFeatureDescription1'));
+
+    // The user is signed in non-syncing.
+    setSyncStatus({
+      signedInState: SignedInState.SIGNED_IN,
+    });
+    await flushTasks();
+    assertEquals(
+        getCardHeader(),
+        loadTimeData.getString('privacyGuideHistoryAndTabsSyncCardHeader'));
+    assertEquals(
+        fragment.$.historyToggle.label,
+        loadTimeData.getString('privacyGuideHistoryAndTabsSyncSettingLabel'));
+    assertEquals(
+        getFeatureDescription1(),
+        loadTimeData.getString(
+            'privacyGuideHistoryAndTabsSyncFeatureDescription1'));
   });
 });

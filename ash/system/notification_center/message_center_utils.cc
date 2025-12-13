@@ -22,9 +22,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/view.h"
@@ -111,7 +111,8 @@ size_t GetNotificationCount() {
         // `PrivacyIndicatorsTrayItemView` or `CameraMicTrayItemView` to show
         // indicators on the systray.
         if (notifier == kPrivacyIndicatorsNotifierId ||
-            notifier == kVmCameraMicNotifierId) {
+            notifier == kVmCameraMicNotifierId ||
+            notifier == kPrivacyIndicatorsMultiCaptureNotifierId) {
           return false;
         }
 
@@ -171,7 +172,7 @@ GetActiveNotificationViewControllerForNotificationView(
     views::View* notification_view) {
   aura::Window* window = notification_view->GetWidget()->GetNativeWindow();
   auto display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+      display::Screen::Get()->GetDisplayNearestWindow(window).id();
 
   return GetActiveNotificationViewControllerForDisplay(display_id);
 }
@@ -180,7 +181,7 @@ NotificationGroupingController* GetGroupingControllerForNotificationView(
     views::View* notification_view) {
   aura::Window* window = notification_view->GetWidget()->GetNativeWindow();
   auto display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+      display::Screen::Get()->GetDisplayNearestWindow(window).id();
 
   RootWindowController* root_window_controller =
       Shell::GetRootWindowControllerWithDisplayId(display_id);
@@ -207,8 +208,8 @@ void FadeInView(views::View* view,
                 const std::string& animation_histogram_name) {
   // If we are in testing with animation (non zero duration), we shouldn't have
   // delays so that we can properly track when animation is completed in test.
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
     delay_in_ms = 0;
   }
 
@@ -239,8 +240,8 @@ void FadeOutView(views::View* view,
                  const std::string& animation_histogram_name) {
   // If we are in testing with animation (non zero duration), we shouldn't have
   // delays so that we can properly track when animation is completed in test.
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
     delay_in_ms = 0;
   }
 
@@ -277,8 +278,8 @@ void SlideOutView(views::View* view,
                   const std::string& animation_histogram_name) {
   // If we are in testing with animation (non zero duration), we shouldn't have
   // delays so that we can properly track when animation is completed in test.
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
     delay_in_ms = 0;
   }
 

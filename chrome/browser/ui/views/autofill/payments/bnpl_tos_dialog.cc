@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/strings/grit/components_strings.h"
@@ -77,7 +78,7 @@ BnplTosDialog::BnplTosDialog(
       controller_->GetApproveText(), /*text_link_info=*/std::nullopt,
       vector_icons::kReceiptLongIcon));
 
-  TextWithLink link_text = controller_->GetLinkText();
+  payments::TextWithLink link_text = controller_->GetLinkText();
   TextLinkInfo link_info;
   link_info.offset = link_text.offset;
   link_info.callback = base::BindRepeating(link_opener_, link_text.url);

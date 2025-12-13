@@ -55,10 +55,6 @@
 #include "third_party/blink/public/web/web_navigation_timings.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 
-#if INSIDE_BLINK
-#include "base/memory/scoped_refptr.h"
-#endif
-
 namespace base {
 class TickClock;
 }
@@ -569,9 +565,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // For each document, the browser passes along state for each
   // renderer-enforced content setting.
   mojom::RendererContentSettingsPtr content_settings;
-
-  // The cookie deprecation label for cookie deprecation facilitated testing.
-  WebString cookie_deprecation_label;
 
   // The :visited link hashtable is stored in shared memory and contains salted
   // hashes for all visits. Each salt corresponds to a unique origin, and

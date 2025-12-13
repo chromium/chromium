@@ -11,30 +11,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
 /** ColorProvider implementation used for normal profiles. */
+@NullMarked
 public final class CustomTabColorProviderImpl implements ColorProvider {
     private static final String TAG = "CustomTabColorPrvdr";
 
     private final boolean mHasCustomToolbarColor;
     private final int mToolbarColor;
     private final int mBottomBarColor;
-    @Nullable private final Integer mNavigationBarColor;
-    @Nullable private final Integer mNavigationBarDividerColor;
+    private final @Nullable Integer mNavigationBarColor;
+    private final @Nullable Integer mNavigationBarDividerColor;
     private final int mInitialBackgroundColor;
 
-    private static @NonNull CustomTabColorSchemeParams getColorSchemeParams(
-            Intent intent, int colorScheme) {
+    private static CustomTabColorSchemeParams getColorSchemeParams(Intent intent, int colorScheme) {
         if (colorScheme == COLOR_SCHEME_SYSTEM) {
             assert false
                     : "Color scheme passed to IntentDataProvider should not be "
@@ -78,8 +78,7 @@ public final class CustomTabColorProviderImpl implements ColorProvider {
             CustomTabColorSchemeParams schemeParams,
             Context context,
             boolean hasCustomToolbarColor) {
-        int defaultColor =
-                SurfaceColorUpdateUtils.getDefaultThemeColor(context, /* isIncognito= */ false);
+        int defaultColor = ChromeColors.getDefaultThemeColor(context, /* isIncognito= */ false);
         int color = hasCustomToolbarColor ? schemeParams.toolbarColor : defaultColor;
         return ColorUtils.getOpaqueColor(color);
     }

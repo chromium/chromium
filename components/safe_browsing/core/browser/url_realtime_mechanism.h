@@ -14,7 +14,6 @@
 #include "components/safe_browsing/core/browser/database_manager_mechanism.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/hash_realtime_mechanism.h"
-#include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
@@ -23,6 +22,8 @@
 #include "url/gurl.h"
 
 namespace safe_browsing {
+
+class RealTimeUrlLookupServiceBase;
 
 // This performs the real-time URL Safe Browsing check.
 class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {

@@ -56,7 +56,7 @@ ScriptPromise<IDLUndefined> PeriodicSyncManager::registerPeriodicSync(
 
   GetBackgroundSyncServiceRemote()->Register(
       std::move(sync_registration), registration_->RegistrationId(),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &PeriodicSyncManager::RegisterCallback, WrapPersistent(this))));
 
   return promise;
@@ -89,8 +89,8 @@ ScriptPromise<IDLSequence<IDLString>> PeriodicSyncManager::getTags(
     GetBackgroundSyncServiceRemote()->GetRegistrations(
         registration_->RegistrationId(),
         resolver->WrapCallbackInScriptScope(
-            WTF::BindOnce(&PeriodicSyncManager::GetRegistrationsCallback,
-                          WrapPersistent(this))));
+            BindOnce(&PeriodicSyncManager::GetRegistrationsCallback,
+                     WrapPersistent(this))));
   }
   return promise;
 }
@@ -119,7 +119,7 @@ ScriptPromise<IDLUndefined> PeriodicSyncManager::unregister(
 
   GetBackgroundSyncServiceRemote()->Unregister(
       registration_->RegistrationId(), tag,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &PeriodicSyncManager::UnregisterCallback, WrapPersistent(this))));
   return promise;
 }
@@ -174,7 +174,7 @@ void PeriodicSyncManager::RegisterCallback(
 void PeriodicSyncManager::GetRegistrationsCallback(
     ScriptPromiseResolver<IDLSequence<IDLString>>* resolver,
     mojom::blink::BackgroundSyncError error,
-    WTF::Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations) {
+    Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations) {
   switch (error) {
     case mojom::blink::BackgroundSyncError::NONE: {
       Vector<String> tags;

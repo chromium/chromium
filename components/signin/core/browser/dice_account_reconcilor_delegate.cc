@@ -266,10 +266,37 @@ ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
   // regardless of the consent.
   // TODO(https://crbug.com.1464264): Migrate away from `ConsentLevel::kSync`
   // on desktop platforms.
-  return signin_client_->IsClearPrimaryAccountAllowed(
-             identity_manager_->HasPrimaryAccount(ConsentLevel::kSync))
-             ? ConsentLevel::kSync
-             : ConsentLevel::kSignin;
+  return signin_client_->IsClearPrimaryAccountAllowed() ? ConsentLevel::kSync
+                                                        : ConsentLevel::kSignin;
+}
+
+void DiceAccountReconcilorDelegate::OnReconcileError(
+    const GoogleServiceAuthError& error) {
+  if (error.state() != GoogleServiceAuthError::State::SERVICE_ERROR) {
+    return;
+  }
+  // Reconcilor will end up in a `GoogleServiceAuthError::State::SERVICE_ERROR`
+  // if the OAuthMultilogin call fails with a persistent error (i.e. retrying
+  // with the same parameters won't help).
+  if (identity_manager_->AllBoundTokensShareSameBindingKey()) {
+    return;
+  }
+  // If the source of the error is LSTs bound to different keys, revoke all
+  // secondary tokens and invalidate the refresh token for the primary account
+  // to avoid having Chrome in an inconsistent state.
+  //
+  // TODO(https://crbug.com/443200058): Consider applying the same logic for all
+  // persistent errors no matter the source.
+  RevokeAllSecondaryTokens(
+      identity_manager_, GetConsentLevelForPrimaryAccount(),
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceAccountReconcilorDelegate_RefreshTokensBoundToDifferentKeys,
+      signin_metrics::ProfileSignout::kAccountReconcilorReconcile,
+      /*revoke_only_if_in_error=*/false);
+  identity_manager_->GetAccountsMutator()
+      ->InvalidateRefreshTokenForPrimaryAccount(
+          signin_metrics::SourceForRefreshTokenOperation::
+              kDiceAccountReconcilorDelegate_RefreshTokensBoundToDifferentKeys);
 }
 
 bool DiceAccountReconcilorDelegate::ShouldRevokeTokensBeforeMultilogin(

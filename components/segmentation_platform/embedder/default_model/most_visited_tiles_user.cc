@@ -14,7 +14,6 @@
 namespace segmentation_platform {
 
 BASE_FEATURE(kSegmentationPlatformMostVisitedTilesUser,
-             "SegmentationPlatformMostVisitedTilesUser",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
@@ -41,8 +40,9 @@ constexpr int64_t kMinSignalCollectionLength = 7;
 constexpr int64_t kResultTTLDays = 7;
 
 // InputFeatures.
-constexpr std::array<MetadataWriter::UMAFeature, 1> kUMAFeatures = {
-    MetadataWriter::UMAFeature::FromUserAction("MobileNTPMostVisited", 28),
+constexpr FeaturePair<MostVisitedTilesUser::Feature> kFeatures[] = {
+    {MostVisitedTilesUser::kFeatureMobileNTPMostVisited,
+     features::UserAction("MobileNTPMostVisited", 28)},
 };
 
 }  // namespace
@@ -83,7 +83,7 @@ MostVisitedTilesUser::GetModelConfig() {
       /*default_ttl=*/kResultTTLDays, proto::TimeUnit::DAY);
 
   // Set features.
-  writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
+  writer.AddFeatures<Feature>(kFeatures);
 
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }
@@ -92,14 +92,14 @@ void MostVisitedTilesUser::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != kUMAFeatures.size()) {
+  if (inputs.size() != kFeatureCount) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
   float result = 0;
-  const int mvt_usage = inputs[0];
+  const int mvt_usage = inputs[kFeatureMobileNTPMostVisited];
 
   if (mvt_usage >= 8) {
     result = RANK(MvtUserBin::kHigh);

@@ -32,6 +32,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
@@ -39,7 +40,6 @@
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
-#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
@@ -99,21 +99,12 @@ class ScrollingCoordinator;
 class ScrollbarTheme;
 class Settings;
 class SpatialNavigationController;
-class SVGResourceDocumentCache;
+class SVGDocumentResourceTracker;
 class TopDocumentRootScrollerController;
 class ValidationMessageClient;
 class VisualViewport;
 
 typedef uint64_t LinkHash;
-
-// When calculating storage access for a partitioned popin the
-// `top_frame_origin` is needed to calculate the storage key and the
-// `site_for_cookies` is needed to properly filter cookie access.
-// https://explainers-by-googlers.github.io/partitioned-popins/
-struct PartitionedPopinOpenerProperties {
-  scoped_refptr<SecurityOrigin> top_frame_origin;
-  net::SiteForCookies site_for_cookies;
-};
 
 // A Page roughly corresponds to a tab or popup window in a browser. It owns a
 // tree of frames (a blink::FrameTree). The root frame is called the main frame.
@@ -138,15 +129,13 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
       Page* opener,
       AgentGroupScheduler& agent_group_scheduler,
       const base::UnguessableToken& browsing_context_group_token,
-      const ColorProviderColorMaps* color_provider_colors,
-      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params);
+      const ColorProviderColorMaps* color_provider_colors);
 
   Page(base::PassKey<Page>,
        ChromeClient& chrome_client,
        AgentGroupScheduler& agent_group_scheduler,
        const base::UnguessableToken& browsing_context_group_token,
        const ColorProviderColorMaps* color_provider_colors,
-       blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
        bool is_ordinary);
   Page(const Page&) = delete;
   Page& operator=(const Page&) = delete;
@@ -259,7 +248,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   DragController& GetDragController() const { return *drag_controller_; }
   FocusController& GetFocusController() const { return *focus_controller_; }
   SpatialNavigationController& GetSpatialNavigationController();
-  SVGResourceDocumentCache& GetSVGResourceDocumentCache();
+  SVGDocumentResourceTracker& GetSVGDocumentResourceTracker();
   ContextMenuController& GetContextMenuController() const {
     return *context_menu_controller_;
   }
@@ -426,6 +415,11 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     should_prepare_paint_tree_on_prerender_ =
         should_prepare_paint_tree_on_prerender;
   }
+  void SetShouldPauseJavaScriptExecutionOnPrerender(
+      bool should_pause_javascript_execution_on_prerender) {
+    should_pause_javascript_execution_on_prerender_ =
+        should_pause_javascript_execution_on_prerender;
+  }
   bool IsPrerendering() const { return is_prerendering_; }
   const String& PrerenderMetricSuffix() const {
     return prerender_metric_suffix_;
@@ -435,6 +429,11 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   }
   bool ShouldPreparePaintTreeOnPrerender() const {
     return should_prepare_paint_tree_on_prerender_;
+  }
+  // Whether the trigger of this prerendering page wants to pause JavaScript
+  // execution until activation.
+  bool ShouldPauseJavaScriptExecutionOnPrerender() const {
+    return should_pause_javascript_execution_on_prerender_;
   }
 
   void SetTextAutosizerPageInfo(
@@ -539,16 +538,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // related pages will include the new page instead of the old page, etc.
   void TakePropertiesForLocalMainFrameSwap(Page* old_page);
 
-  // This is true if this page is a partitioned popin.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  bool IsPartitionedPopin() const;
-
-  // If this Page is a partitioned popin then this returns the properties
-  // struct, otherwise this function CHECKs. See
-  // https://explainers-by-googlers.github.io/partitioned-popins/
-  const PartitionedPopinOpenerProperties& GetPartitionedPopinOpenerProperties()
-      const;
-
  private:
   friend class ScopedPagePauser;
   class CloseTaskHandler;
@@ -611,7 +600,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   const Member<VisualViewport> visual_viewport_;
   const Member<LinkHighlight> link_highlight_;
   Member<SpatialNavigationController> spatial_navigation_controller_;
-  Member<SVGResourceDocumentCache> svg_resource_document_cache_;
+  Member<SVGDocumentResourceTracker> svg_document_resource_tracker_;
 
   Member<PluginData> plugin_data_;
 
@@ -703,13 +692,16 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // this Page. Once initialized, it can only transition from true to false on
   // prerender activation; it does not go from false to true.
   bool is_prerendering_ = false;
-  String prerender_metric_suffix_;
 
+  // TODO(crbug.com/428500219): Do not flatten these params.
+  String prerender_metric_suffix_;
   // If true, warms up compositor on `WebLocalFrameImpl::DidCommitLoad` if the
   // page is under prerendering.
   bool should_warm_up_compositor_on_prerender_ = false;
   // If true, prepares the paint tree if the page is under prerendering.
   bool should_prepare_paint_tree_on_prerender_ = false;
+  // If true, pauses JavaScript execution until the page is activated.
+  bool should_pause_javascript_execution_on_prerender_ = false;
 
   // Whether the the Page's main document is a Fenced Frame document. This is
   // only set for the MPArch implementation and is true when the corresponding
@@ -737,14 +729,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
       network::mojom::AttributionSupport::kUnset;
 
   Member<CloseTaskHandler> close_task_handler_;
-
-  // When the renderer opens a view representing a Partitioned Popin, the
-  // entire frame tree is partitioned as though it was an iframe in the opener.
-  // These properties are used in document.cc to calculate parameters critical
-  // for access to storage.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  std::optional<PartitionedPopinOpenerProperties>
-      partitioned_popin_opener_properties_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;

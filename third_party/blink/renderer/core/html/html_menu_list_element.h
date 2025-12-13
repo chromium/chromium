@@ -6,20 +6,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_MENU_LIST_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/core/html/menu_item_list.h"
+#include "third_party/blink/renderer/core/html/html_menu_owner_element.h"
 
 namespace blink {
 
-class HTMLMenuListElement final : public HTMLElement {
+class CORE_EXPORT HTMLMenuListElement final : public HTMLMenuOwnerElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   explicit HTMLMenuListElement(Document&);
-
-  bool IsValidBuiltinCommand(HTMLElement& invoker,
+  bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
-  // This returns an iterable list of menuitems whose owner is this.
-  MenuItemList GetItemList() const { return MenuItemList(*this); }
 };
 
 }  // namespace blink

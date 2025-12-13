@@ -7,8 +7,9 @@
 #include <string_view>
 
 #include "base/containers/contains.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "third_party/boringssl/src/pki/input.h"
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
@@ -41,12 +42,10 @@ struct EVMetadata {
 #endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 }  // namespace
 
-static base::LazyInstance<EVRootCAMetadata>::Leaky g_ev_root_ca_metadata =
-    LAZY_INSTANCE_INITIALIZER;
-
 // static
 EVRootCAMetadata* EVRootCAMetadata::GetInstance() {
-  return g_ev_root_ca_metadata.Pointer();
+  static base::NoDestructor<EVRootCAMetadata> ev_root_ca_metadata;
+  return ev_root_ca_metadata.get();
 }
 
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
@@ -69,7 +68,8 @@ std::string OIDStringToDER(std::string_view policy) {
 }  // namespace
 
 bool EVRootCAMetadata::IsEVPolicyOID(bssl::der::Input policy_oid) const {
-  return policy_oids_.find(policy_oid.AsStringView()) != policy_oids_.end();
+  return policy_oids_.find(base::as_string_view(policy_oid)) !=
+         policy_oids_.end();
 }
 
 bool EVRootCAMetadata::HasEVPolicyOID(const SHA256HashValue& fingerprint,

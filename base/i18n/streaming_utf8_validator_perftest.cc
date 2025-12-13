@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // All data that is passed through a WebSocket with type "Text" needs to be
 // validated as UTF8. Since this is done on the IO thread, it needs to be
 // reasonably fast.
@@ -22,6 +17,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/cstring_view.h"
@@ -162,18 +159,16 @@ void RunSomeTests(
     int num_bytes,
     base::cstring_view type,
     base::RepeatingCallback<std::string(size_t length)> construct_test_string,
-    const TestFunctionDescription* test_functions,
-    size_t test_count) {
+    base::span<const TestFunctionDescription> test_functions) {
   for (auto length : kTestLengths) {
     const std::string test_string = construct_test_string.Run(length);
     const int real_length = static_cast<int>(test_string.length());
     const int times = (1 << 24) / real_length;
-    for (size_t test_index = 0; test_index < test_count; ++test_index) {
-      EXPECT_TRUE(
-          RunTest(StringPrintf("%s: bytes=%d %s length=%d repeat=%d",
-                               test_functions[test_index].function_name,
-                               num_bytes, type.c_str(), real_length, times),
-                  test_functions[test_index].function, test_string, times));
+    for (const auto& test_function : test_functions) {
+      EXPECT_TRUE(RunTest(StringPrintf("%s: bytes=%d %s length=%d repeat=%d",
+                                       test_function.function_name, num_bytes,
+                                       type.c_str(), real_length, times),
+                          test_function.function, test_string, times));
     }
   }
 }
@@ -182,35 +177,35 @@ TEST(StreamingUtf8ValidatorPerfTest, OneByteRepeated) {
   RunSomeTests(
       1, "repeated",
       base::BindRepeating(ConstructRepeatedTestString, kOneByteSeqRangeStart),
-      kTestFunctions, 3);
+      kTestFunctions);
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, OneByteRange) {
   RunSomeTests(1, "ranged",
                base::BindRepeating(ConstructRangedTestString,
                                    kOneByteSeqRangeStart, kOneByteSeqRangeEnd),
-               kTestFunctions, 3);
+               kTestFunctions);
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, TwoByteRepeated) {
   RunSomeTests(
       2, "repeated",
       base::BindRepeating(ConstructRepeatedTestString, kTwoByteSeqRangeStart),
-      kTestFunctions, 2);
+      base::span(kTestFunctions).first(2u));
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, TwoByteRange) {
   RunSomeTests(2, "ranged",
                base::BindRepeating(ConstructRangedTestString,
                                    kTwoByteSeqRangeStart, kTwoByteSeqRangeEnd),
-               kTestFunctions, 2);
+               base::span(kTestFunctions).first(2u));
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, ThreeByteRepeated) {
   RunSomeTests(
       3, "repeated",
       base::BindRepeating(ConstructRepeatedTestString, kThreeByteSeqRangeStart),
-      kTestFunctions, 2);
+      base::span(kTestFunctions).first(2u));
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, ThreeByteRange) {
@@ -218,14 +213,14 @@ TEST(StreamingUtf8ValidatorPerfTest, ThreeByteRange) {
       3, "ranged",
       base::BindRepeating(ConstructRangedTestString, kThreeByteSeqRangeStart,
                           kThreeByteSeqRangeEnd),
-      kTestFunctions, 2);
+      base::span(kTestFunctions).first(2u));
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, FourByteRepeated) {
   RunSomeTests(
       4, "repeated",
       base::BindRepeating(ConstructRepeatedTestString, kFourByteSeqRangeStart),
-      kTestFunctions, 2);
+      base::span(kTestFunctions).first(2u));
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, FourByteRange) {
@@ -233,7 +228,7 @@ TEST(StreamingUtf8ValidatorPerfTest, FourByteRange) {
       4, "ranged",
       base::BindRepeating(ConstructRangedTestString, kFourByteSeqRangeStart,
                           kFourByteSeqRangeEnd),
-      kTestFunctions, 2);
+      base::span(kTestFunctions).first(2u));
 }
 
 }  // namespace

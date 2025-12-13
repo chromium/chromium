@@ -140,6 +140,15 @@ const char kVariationsSeedDate[] = "variations_seed_date";
 // Digital signature of the binary variations seed data, base64-encoded.
 const char kVariationsSeedSignature[] = "variations_seed_signature";
 
+// The serial number of the latest seed fetched.
+const char kVariationsSeedSerialNumber[] = "variations_seed_serial_number";
+
+// Studies with sticky activation and their group names, as a single string in
+// the format of "Study1/Group1/Study2/Group2". On a subsequent startup, any
+// study with activation type STICKY_AFTER_QUERY will start active if it's
+// found in this list with a matching group name.
+const char kVariationsStickyStudies[] = "variations_sticky_studies";
+
 // Stores the list of field trials forced by field-trial-internals.
 const char kVariationsForcedFieldTrials[] = "variations_forced_field_trials";
 

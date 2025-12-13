@@ -18,11 +18,11 @@
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_drag_security_info.h"
-#include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_view_delegate.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/drop_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
@@ -171,7 +171,14 @@ class CONTENT_EXPORT WebContentsViewAura
       WebContentsViewAuraTest,
       EmptyTextWithUrlInDropDataIsEmptyInOSExchangeDataGetString);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           RejectDragFromHiddenWebContents);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, RejectDragFromOutsideView);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            UrlInDropDataReturnsUrlInOSExchangeDataGetString);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           IgnoreInputs_OngoingDropGetsCleared);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           EndDragIsCalledAfterAsyncDrop);
 
   class WindowObserver;
 
@@ -211,6 +218,8 @@ class CONTENT_EXPORT WebContentsViewAura
   void FocusThroughTabTraversal(bool reverse) override;
   DropData* GetDropData() const override;
   gfx::Rect GetViewBounds() const override;
+  void Resize(const gfx::Rect& new_bounds) override;
+  gfx::Size GetSize() const override;
   void CreateView(gfx::NativeView context) override;
   RenderWidgetHostViewBase* CreateViewForWidget(
       RenderWidgetHost* render_widget_host) override;
@@ -331,7 +340,7 @@ class CONTENT_EXPORT WebContentsViewAura
 
   // Run when drop callback completes to ensure |drag_in_progess_| is
   // flipped to false before EndDrag runs.
-  void OnDropExit(base::ScopedClosureRunner end_drag_runner);
+  void OnDropExit();
 
   // For unit testing, registers a callback for when a drop operation
   // completes.

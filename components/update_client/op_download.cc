@@ -32,6 +32,7 @@
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/update_client_metrics.h"
 #include "components/update_client/update_engine.h"
+#include "components/update_client/utils.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -165,6 +166,7 @@ void HandleAvailableSpace(
   }
   scoped_refptr<CrxDownloader> crx_downloader =
       config->GetCrxDownloaderFactory()->MakeCrxDownloader(
+          config->GetProdId(),
           CanDoBackgroundDownload(is_foreground,
                                   config->EnabledBackgroundDownloader(), size));
   crx_downloader->set_progress_callback(progress_callback);
@@ -199,13 +201,20 @@ base::OnceClosure DownloadOperation(
           [](base::RepeatingCallback<int64_t(const base::FilePath&)>
                  get_available_space) {
             base::ScopedTempDir temp_dir;
-            return temp_dir.CreateUniqueTempDir()
+            return CreateScopedTempDirectory(temp_dir)
                        ? get_available_space.Run(temp_dir.GetPath())
                        : int64_t{0};
           },
           get_available_space),
       base::BindOnce(&HandleAvailableSpace, config, id, cancellation,
-                     is_foreground, urls, size, hash, progress_callback,
+                     is_foreground, urls, size, hash,
+                     base::BindRepeating(
+                         [](CrxDownloader::ProgressCallback progress_callback,
+                            int64_t file_size, int64_t downloaded_bytes,
+                            int64_t /*content_length*/) {
+                           progress_callback.Run(downloaded_bytes, file_size);
+                         },
+                         progress_callback, size),
                      event_adder, std::move(callback)));
   return base::BindOnce(&Cancellation::Cancel, cancellation);
 }

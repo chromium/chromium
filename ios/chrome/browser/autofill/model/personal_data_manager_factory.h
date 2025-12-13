@@ -29,9 +29,9 @@ class PersonalDataManagerFactory : public ProfileKeyedServiceFactoryIOS {
   PersonalDataManagerFactory();
   ~PersonalDataManagerFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace autofill

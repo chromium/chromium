@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_COMMERCE_CORE_INTERNALS_COMMERCE_INTERNALS_UI_BASE_H_
 #define COMPONENTS_COMMERCE_CORE_INTERNALS_COMMERCE_INTERNALS_UI_BASE_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/commerce/core/internals/commerce_internals_handler.h"
 #include "components/commerce/core/internals/mojom/commerce_internals.mojom.h"

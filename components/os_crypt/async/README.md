@@ -14,16 +14,11 @@ instance that's accessible from `g_browser_process` using `os_crypt_async()`
 method.
 
 `GetInstance` can be called as many times as necessary to obtain instances of
-`Encryptor` that should be used for encryption operations. Note that
-`GetInstance` returns a `base::CallbackListSubscription` whose destruction will
-cause the callback to never run. This should be stored with the same lifetime as
-the callback to ensure correct function. See documentation for
-`base::CallbackList` for more on this.
-
-When calling `GetInstance` an Encryptor hint can be supplied. This can change
-the Encryption behavior of the resulting Encryptor instance, see `encryptor.h`
-for details and see below. Note that all `Encryptor` returned from the same
-instance of `OSCryptAsync` will always be able to decrypt each other's data.
+`Encryptor` that should be used for encryption operations. When calling
+`GetInstance` an Encryptor hint can be supplied. This can change the Encryption
+behavior of the resulting Encryptor instance, see `encryptor.h` for details and
+see below. Note that all `Encryptor` returned from the same instance of
+`OSCryptAsync` will always be able to decrypt each other's data.
 
 `common/` can be included by any code in any process and allows `Encryptor`
 instances to perform encrypt/decrypt operations. These `EncryptString` and
@@ -52,8 +47,10 @@ There are a few considerations that are important for integrators:
 1.  `GetInstance()` must be called on the same sequence that it was created on,
     which, if you are using the instance managed by \/\/chrome is the UI thread.
     Therefore, plan for your `GetInstance` calls to be made on this sequence.
-    Callbacks will also arrive on this sequence. Once you have an `Encryptor` it
-    can be safely passed and used on another sequence, though.
+    Callbacks will also arrive on this sequence, and note that the callback
+    might be executed before `GetInstance` returns, if the Encryptor is already
+    available. Once you have an `Encryptor` it can be safely passed and used on
+    another sequence, though.
 2.  Care should be taken during the rollout of any integration. In particular,
     the following three phase approach is recommended, although you might want
     to shorten this depending on your risk profile. Bear in mind that

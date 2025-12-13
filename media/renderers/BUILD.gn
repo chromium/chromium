@@ -56,6 +56,7 @@ source_set("renderers") {
     "//media/base",
     "//media/filters",
     "//media/video",
+    "//third_party/fp16",
     "//third_party/libyuv",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
@@ -76,14 +77,10 @@ source_set("renderers") {
       "win/media_foundation_renderer.cc",
       "win/media_foundation_renderer.h",
       "win/media_foundation_renderer_extension.h",
-      "win/media_foundation_rendering_mode.cc",
-      "win/media_foundation_rendering_mode.h",
       "win/media_foundation_source_wrapper.cc",
       "win/media_foundation_source_wrapper.h",
       "win/media_foundation_stream_wrapper.cc",
       "win/media_foundation_stream_wrapper.h",
-      "win/media_foundation_texture_pool.cc",
-      "win/media_foundation_texture_pool.h",
       "win/media_foundation_video_stream.cc",
       "win/media_foundation_video_stream.h",
     ]
@@ -146,6 +143,7 @@ source_set("unit_tests") {
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fp16",
     "//third_party/libyuv",
     "//ui/gfx",
     "//ui/gl",
@@ -156,7 +154,7 @@ source_set("unit_tests") {
     sources += [
       "win/media_foundation_renderer_integration_test.cc",
       "win/media_foundation_renderer_unittest.cc",
-      "win/media_foundation_texture_pool_unittest.cc",
+      "win/media_foundation_stream_wrapper_unittest.cc",
     ]
     deps += [ "//media/test:pipeline_integration_test_base" ]
     libs = [

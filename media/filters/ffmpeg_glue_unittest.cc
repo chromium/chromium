@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/ffmpeg_glue.h"
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/check.h"
@@ -43,7 +39,7 @@ class MockProtocol : public FFmpegURLProtocol {
 
   virtual ~MockProtocol() = default;
 
-  MOCK_METHOD2(Read, int(int size, uint8_t* data));
+  MOCK_METHOD1(Read, int(base::span<uint8_t> data));
   MOCK_METHOD1(GetPosition, bool(int64_t* position_out));
   MOCK_METHOD1(SetPosition, bool(int64_t position));
   MOCK_METHOD1(GetSize, bool(int64_t* size_out));
@@ -72,9 +68,9 @@ class FFmpegGlueTest : public ::testing::Test {
     glue_.reset();
   }
 
-  int ReadPacket(int size, uint8_t* data) {
-    return glue_->format_context()->pb->read_packet(protocol_.get(), data,
-                                                    size);
+  int ReadPacket(base::span<uint8_t> data) {
+    return glue_->format_context()->pb->read_packet(
+        protocol_.get(), data.data(), static_cast<int>(data.size()));
   }
 
   int64_t Seek(int64_t offset, int whence) {
@@ -158,20 +154,19 @@ TEST_F(FFmpegGlueTest, Write) {
 // Test both successful and unsuccessful reads pass through correctly.
 TEST_F(FFmpegGlueTest, Read) {
   const int kBufferSize = 16;
-  uint8_t buffer[kBufferSize];
+  std::array<uint8_t, kBufferSize> buffer;
+  std::ranges::fill(buffer, 42);
+  base::span<uint8_t> span(buffer);
 
   // Reads are for the most part straight-through calls to Read().
   InSequence s;
-  EXPECT_CALL(*protocol_, Read(0, buffer))
-      .WillOnce(Return(0));
-  EXPECT_CALL(*protocol_, Read(kBufferSize, buffer))
-      .WillOnce(Return(kBufferSize));
-  EXPECT_CALL(*protocol_, Read(kBufferSize, buffer))
-      .WillOnce(Return(AVERROR(EIO)));
+  EXPECT_CALL(*protocol_, Read(span.first(0u))).WillOnce(Return(0));
+  EXPECT_CALL(*protocol_, Read(span)).WillOnce(Return(kBufferSize));
+  EXPECT_CALL(*protocol_, Read(span)).WillOnce(Return(AVERROR(EIO)));
 
-  EXPECT_EQ(0, ReadPacket(0, buffer));
-  EXPECT_EQ(kBufferSize, ReadPacket(kBufferSize, buffer));
-  EXPECT_EQ(AVERROR(EIO), ReadPacket(kBufferSize, buffer));
+  EXPECT_EQ(0, ReadPacket(span.first(0u)));
+  EXPECT_EQ(kBufferSize, ReadPacket(buffer));
+  EXPECT_EQ(AVERROR(EIO), ReadPacket(buffer));
 }
 
 // Test a variety of seek operations.
@@ -276,14 +271,15 @@ TEST_F(FFmpegGlueDestructionTest, WithOpenWithStreams) {
 TEST_F(FFmpegGlueDestructionTest, WithOpenWithOpenStreams) {
   Initialize("bear-320x240.webm");
   ASSERT_TRUE(glue_->OpenContext());
-  ASSERT_GT(glue_->format_context()->nb_streams, 0u);
+  const auto streams = AVFormatContextToSpan(glue_->format_context());
+  ASSERT_GT(streams.size(), 0u);
 
   // Use ScopedPtrAVFreeContext to ensure |context| is closed, and use scoping
   // and ordering to ensure |context| is destructed before |glue_|.
   // Pick the audio stream (1) so this works when the ffmpeg video decoders are
   // disabled.
   std::unique_ptr<AVCodecContext, ScopedPtrAVFreeContext> context(
-      AVStreamToAVCodecContext(glue_->format_context()->streams[1]));
+      AVStreamToAVCodecContext(streams[1]));
   ASSERT_NE(nullptr, context.get());
   ASSERT_EQ(0, avcodec_open2(context.get(),
                              avcodec_find_decoder(context->codec_id), nullptr));

@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/webauthn/local_authentication_token.h"
-#include "crypto/scoped_lacontext.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"

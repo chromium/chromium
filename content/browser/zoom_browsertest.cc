@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, DISABLED_ZoomPreservedOnReload) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
   ASSERT_FALSE(loaded_url.is_empty());
-  EXPECT_EQ(top_level_host, loaded_url.host());
+  EXPECT_EQ(top_level_host, loaded_url.GetHost());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
                             ->GetPrimaryFrameTree()
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, DISABLED_SubframesZoomProperly) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
   ASSERT_FALSE(loaded_url.is_empty());
-  EXPECT_EQ(top_level_host, loaded_url.host());
+  EXPECT_EQ(top_level_host, loaded_url.GetHost());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
                             ->GetPrimaryFrameTree()
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesDontZoomIndependently) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
   ASSERT_FALSE(loaded_url.is_empty());
-  EXPECT_EQ(top_level_host, loaded_url.host());
+  EXPECT_EQ(top_level_host, loaded_url.GetHost());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
                             ->GetPrimaryFrameTree()
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
   ASSERT_FALSE(loaded_url.is_empty());
-  EXPECT_EQ(top_level_host, loaded_url.host());
+  EXPECT_EQ(top_level_host, loaded_url.GetHost());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
                             ->GetPrimaryFrameTree()
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, MAYBE_SiblingFramesZoom) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
   ASSERT_FALSE(loaded_url.is_empty());
-  EXPECT_EQ(top_level_host, loaded_url.host());
+  EXPECT_EQ(top_level_host, loaded_url.GetHost());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
                             ->GetPrimaryFrameTree()
@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframeRetainsZoomOnNavigation) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
   ASSERT_FALSE(loaded_url.is_empty());
-  EXPECT_EQ(top_level_host, loaded_url.host());
+  EXPECT_EQ(top_level_host, loaded_url.GetHost());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
                             ->GetPrimaryFrameTree()
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
   ASSERT_FALSE(loaded_url.is_empty());
-  EXPECT_EQ(top_level_host, loaded_url.host());
+  EXPECT_EQ(top_level_host, loaded_url.GetHost());
 
   // The following calls must be made when the page's scale factor = 1.0.
   double main_frame_window_border = GetMainframeWindowBorder(web_contents());

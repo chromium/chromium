@@ -15,6 +15,20 @@
 /// Informs that the unfocused (steady state) omnibox moved to `toolbarType`.
 - (void)steadyStateOmniboxMovedToToolbar:(ToolbarType)toolbarType;
 
+/// Sets the height of the bottom omnibox when it is attached to the keyboard.
+- (void)setKeyboardAttachedBottomOmniboxHeight:
+    (CGFloat)keyboardAttachedBottomOmniboxHeight;
+
+/// Sets whether the underlying page is NTP.
+- (void)setIsNTP:(BOOL)isNTP;
+
+/// Sets the preferred omnibox position.
+- (void)setPreferredOmniboxPosition:(ToolbarType)preferredOmniboxPosition;
+
+/// Sets the offset to be applied in the bottom of the popup when using the
+/// bottom omnibox.
+- (void)setBottomOmniboxOffsetForPopup:(CGFloat)bottomOffset;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_PUBLIC_TOOLBAR_OMNIBOX_CONSUMER_H_

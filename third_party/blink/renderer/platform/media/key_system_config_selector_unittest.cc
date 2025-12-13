@@ -316,7 +316,7 @@ class FakeKeySystems : public media::KeySystems {
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* hw_secure_requirement) const override {
-    // TODO(crbug.com/1204284): Remove the `hw_secure_requirement` parameter.
+    // TODO(crbug.com/40179944): Remove the `hw_secure_requirement` parameter.
     // This only exists as a temporary solution until a larger refactoring is
     // done. We are only testing the explicit thing it is fixing here.
     if (hw_secure_requirement && *hw_secure_requirement &&
@@ -471,12 +471,12 @@ class KeySystemConfigSelectorTest : public testing::Test {
     web_frame_delegate_ = std::make_unique<FakeWebLocalFrameDelegate>();
 
     key_system_config_selector.SetIsSupportedMediaTypeCBForTesting(
-        WTF::BindRepeating(&IsSupportedMediaType));
+        BindRepeating(&IsSupportedMediaType));
 
     key_system_config_selector.SelectConfig(
         key_system_, configs_,
-        WTF::BindOnce(&KeySystemConfigSelectorTest::OnConfigSelected,
-                      WTF::Unretained(this)));
+        BindOnce(&KeySystemConfigSelectorTest::OnConfigSelected,
+                 Unretained(this)));
   }
 
   void SelectConfigReturnsConfig() {

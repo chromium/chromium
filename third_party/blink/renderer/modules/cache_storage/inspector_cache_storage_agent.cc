@@ -76,7 +76,7 @@ namespace {
 String BuildCacheId(const String& storage_key,
                     const std::optional<String>& storage_bucket_name,
                     const String& cache_name) {
-  DCHECK(storage_key.find('|') == WTF::kNotFound);
+  DCHECK(storage_key.find('|') == kNotFound);
   StringBuilder id;
   id.Append(storage_key);
   if (storage_bucket_name.has_value()) {
@@ -215,7 +215,7 @@ class RequestCallbackWrapper
   }
 
   base::OnceCallback<void(ProtocolResponse)> GetFailureCallback() {
-    return WTF::BindOnce(
+    return blink::BindOnce(
         [](scoped_refptr<RequestCallbackWrapper<RequestCallback>>
                callback_wrapper,
            ProtocolResponse response) {
@@ -262,7 +262,7 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
       for (auto& request : old_requests) {
         String urlPath(request->url.GetPath().ToString());
         if (urlPath.DeprecatedFindIgnoringCase(params_.path_filter) ==
-            WTF::kNotFound) {
+            kNotFound) {
           continue;
         }
         requests.push_back(std::move(request));
@@ -297,7 +297,7 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
           std::move(request), mojom::blink::CacheQueryOptions::New(),
           /*in_related_fetch_event=*/false, /*in_range_fetch_event=*/false,
           trace_id,
-          WTF::BindOnce(
+          blink::BindOnce(
               [](scoped_refptr<ResponsesAccumulator> accumulator,
                  mojom::blink::FetchAPIRequestPtr request,
                  mojom::blink::CacheStorageCache::MatchResult result) {
@@ -343,8 +343,7 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
 
     std::sort(responses_.begin(), responses_.end(),
               [](const RequestResponse& a, const RequestResponse& b) {
-                return WTF::CodeUnitCompareLessThan(a.request_url,
-                                                    b.request_url);
+                return CodeUnitCompareLessThan(a.request_url, b.request_url);
               });
     size_t returned_entries_count = responses_.size();
     if (params_.skip_count > 0) {
@@ -431,7 +430,7 @@ class GetCacheKeysForRequestData {
         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
     cache_remote_->Keys(
         nullptr /* request */, mojom::blink::CacheQueryOptions::New(), trace_id,
-        WTF::BindOnce(
+        BindOnce(
             [](DataRequestParams params,
                std::unique_ptr<GetCacheKeysForRequestData> self,
                mojom::blink::CacheStorageCache::KeysResult result) {
@@ -586,7 +585,7 @@ InspectorCacheStorageAgent::GetCacheStorageRemote(
     if (storage_bucket) {
       DummyExceptionStateForTesting exception_state;
       return storage_bucket->caches(exception_state)
-          ->GetRemoteForDevtools(WTF::BindOnce(
+          ->GetRemoteForDevtools(blink::BindOnce(
               std::move(on_failure_callback),
               ProtocolResponse::ServerError("Couldn't retreive caches")));
     }
@@ -671,11 +670,11 @@ void InspectorCacheStorageAgent::requestCacheNames(
       callback->sendSuccess(std::make_unique<protocol::Array<ProtocolCache>>());
       return;
     }
-    storage_key = WTF::String(
+    storage_key = String(
         StorageKey::CreateFirstParty(sec_origin->ToUrlOrigin()).Serialize());
   }
 
-  std::optional<WTF::String> bucket_name;
+  std::optional<String> bucket_name;
   if (maybe_storage_bucket && maybe_storage_bucket->hasName()) {
     bucket_name = maybe_storage_bucket->getName("");
   }
@@ -693,9 +692,9 @@ void InspectorCacheStorageAgent::requestCacheNames(
 
   cache_storage.value()->Keys(
       trace_id,
-      WTF::BindOnce(
+      blink::BindOnce(
           [](String security_origin, String storage_key,
-             std::optional<WTF::String> bucket_name,
+             std::optional<String> bucket_name,
              std::unique_ptr<protocol::Storage::StorageBucket>
                  maybe_storage_bucket,
              int64_t trace_id,
@@ -756,7 +755,7 @@ void InspectorCacheStorageAgent::requestEntries(
 
   cache_storage.value()->Open(
       cache_name, trace_id,
-      WTF::BindOnce(
+      blink::BindOnce(
           [](scoped_refptr<RequestCallbackWrapper<RequestEntriesCallback>>
                  callback_wrapper,
              DataRequestParams params,
@@ -798,7 +797,7 @@ void InspectorCacheStorageAgent::deleteCache(
   }
   cache_storage.value()->Delete(
       cache_name, trace_id,
-      WTF::BindOnce(
+      blink::BindOnce(
           [](scoped_refptr<RequestCallbackWrapper<DeleteCacheCallback>>
                  callback_wrapper,
              mojom::blink::CacheStorageError error) {
@@ -835,7 +834,7 @@ void InspectorCacheStorageAgent::deleteEntry(
   }
   cache_storage.value()->Open(
       cache_name, trace_id,
-      WTF::BindOnce(
+      blink::BindOnce(
           [](String request, int64_t trace_id,
              scoped_refptr<RequestCallbackWrapper<DeleteEntryCallback>>
                  callback_wrapper,
@@ -861,7 +860,7 @@ void InspectorCacheStorageAgent::deleteEntry(
               auto* cache = cache_remote.get();
               cache->Batch(
                   std::move(batch_operations), trace_id,
-                  WTF::BindOnce(
+                  blink::BindOnce(
                       [](mojo::AssociatedRemote<mojom::blink::CacheStorageCache>
                              cache_remote,
                          scoped_refptr<RequestCallbackWrapper<
@@ -925,7 +924,7 @@ void InspectorCacheStorageAgent::requestCachedResponse(
       std::move(request), std::move(multi_query_options),
       /*in_related_fetch_event=*/false,
       /*in_range_fetch_event=*/false, trace_id,
-      WTF::BindOnce(
+      blink::BindOnce(
           [](scoped_refptr<RequestCallbackWrapper<
                  RequestCachedResponseCallback>> callback_wrapper,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner,

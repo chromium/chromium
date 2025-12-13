@@ -20,7 +20,7 @@ std::u16string PrefixPrintTitle(const std::u16string& title) {
 PrintingTask::PrintingTask(content::WebContents* web_contents)
     : RendererTask(
           PrefixPrintTitle(RendererTask::GetTitleFromWebContents(web_contents)),
-          RendererTask::GetFaviconFromWebContents(web_contents),
+          RendererTask::GetFaviconFromWebContents(web_contents).get(),
           web_contents) {}
 
 PrintingTask::~PrintingTask() = default;

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"

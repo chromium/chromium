@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item_snapshot_and_favicon_data_source.h"
@@ -33,7 +34,7 @@
 namespace {
 
 // The number of sections for the pinned collection view.
-NSInteger kNumberOfSectionsInPinnedCollection = 1;
+constexpr NSInteger kNumberOfSectionsInPinnedCollection = 1;
 
 // Pinned cell identifier.
 NSString* const kCellIdentifier = @"PinnedCellIdentifier";
@@ -208,7 +209,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self dragSessionEnabled:NO];
 }
 
-- (LegacyGridTransitionLayout*)transitionLayout {
+- (LegacyGridTransitionLayout*)legacyTransitionLayout {
   [self.collectionView layoutIfNeeded];
 
   LegacyGridTransitionActiveItem* activeItem;
@@ -238,7 +239,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // If the active item is the last inserted item, it needs to be animated
     // differently.
     if (selectedCell.pinnedItemIdentifier == _lastInsertedItemID) {
-      activeItem.isAppearing = YES;
+      activeItem.shouldUseBVCSnapshot = YES;
     }
 
     selectionItem = [LegacyGridTransitionItem
@@ -249,6 +250,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return [LegacyGridTransitionLayout layoutWithInactiveItems:@[]
                                                   activeItem:activeItem
                                                selectionItem:selectionItem];
+}
+
+- (TabGridTransitionLayout*)transitionLayout {
+  return [TabGridTransitionLayout
+      layoutWithActiveCell:self.transitionItemForActiveCell
+                activeGrid:nil];
 }
 
 - (TabGridTransitionItem*)transitionItemForActiveCell {
@@ -433,8 +440,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
                  cellForItemAtIndexPath:(NSIndexPath*)indexPath {
   NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
-  // TODO(crbug.com/40683330): Remove this when the issue is closed.
-  // This is a preventive fix related to the issue above.
+  // This is a preventive fix related to crbug.com/40683330.
   // Presumably this is a race condition where an item has been deleted at the
   // same time as the collection is doing layout. The assumption is that there
   // will be another, correct layout shortly after the incorrect one.

@@ -56,7 +56,7 @@ void ArcGhostWindowDelegate::OnStateChanged(
     return;
 
   display::Display display;
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
   auto display_existed = screen->GetDisplayWithDisplayId(display_id_, &display);
   DCHECK(display_existed);
 
@@ -102,7 +102,7 @@ void ArcGhostWindowDelegate::OnBoundsChanged(
     return;
 
   display::Display target_display;
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
 
   if (!screen->GetDisplayWithDisplayId(display_id, &target_display))
     return;

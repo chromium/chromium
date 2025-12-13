@@ -35,6 +35,8 @@ SK_API sk_sp<SkTypeface> MakeTypefaceFromName(const char* name,
 // Returns a font using DefaultTypeface()
 SK_API SkFont DefaultFont();
 
+SK_API void InitializeFontRendering();
+
 }  // namespace skia
 
 #endif  // SKIA_EXT_FONT_UTILS_H_

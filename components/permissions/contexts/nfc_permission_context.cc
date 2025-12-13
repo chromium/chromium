@@ -8,6 +8,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_id.h"
+#include "content/public/browser/permission_result.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace permissions {
@@ -36,19 +37,21 @@ void NfcPermissionContext::DecidePermission(
     std::unique_ptr<PermissionRequestData> request_data,
     BrowserPermissionCallback callback) {
   if (!request_data->user_gesture) {
-    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
   permissions::ContentSettingPermissionContextBase::DecidePermission(
       std::move(request_data), std::move(callback));
 }
 
-void NfcPermissionContext::UpdateTabContext(const PermissionRequestID& id,
-                                            const GURL& requesting_frame,
-                                            bool allowed) {
+void NfcPermissionContext::UpdateTabContext(
+    const PermissionRequestData& request_data,
+    bool allowed) {
   auto* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          id.global_render_frame_host_id());
+          request_data.id.global_render_frame_host_id());
   if (!content_settings)
     return;
 

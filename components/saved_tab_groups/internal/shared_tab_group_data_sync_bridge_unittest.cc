@@ -63,6 +63,7 @@ void PrintTo(const SavedTabGroupTab& tab, std::ostream* os) {
 namespace {
 
 using base::test::EqualsProto;
+using syncer::CollaborationId;
 using tab_groups::test::HasSharedGroupMetadata;
 using tab_groups::test::HasTabMetadata;
 using testing::_;
@@ -70,7 +71,6 @@ using testing::AllOf;
 using testing::Each;
 using testing::ElementsAre;
 using testing::Eq;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::IsNull;
@@ -643,7 +643,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnClientTag) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldCallModelReadyToSync) {
-  EXPECT_CALL(mock_processor(), ModelReadyToSync).WillOnce(Invoke([]() {}));
+  EXPECT_CALL(mock_processor(), ModelReadyToSync).WillOnce([]() {});
 
   // This already invokes RunUntilIdle, so the call above is expected to happen.
   ASSERT_TRUE(InitializeBridgeAndModel());
@@ -1170,11 +1170,11 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedGroupMetadata) {
 
   syncer::EntityData captured_entity_data;
   EXPECT_CALL(mock_processor(), Put)
-      .WillOnce(WithArg<1>(
-          Invoke([&captured_entity_data](
-                     std::unique_ptr<syncer::EntityData> entity_data) {
+      .WillOnce(
+          WithArg<1>([&captured_entity_data](
+                         std::unique_ptr<syncer::EntityData> entity_data) {
             captured_entity_data = std::move(*entity_data);
-          })));
+          }));
   tab_groups::TabGroupVisualData visual_data(
       u"new title", tab_groups::TabGroupColorId::kYellow);
   model()->UpdateVisualDataLocally(group.local_group_id().value(),
@@ -1205,11 +1205,11 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewLocalTab) {
 
   syncer::EntityData captured_entity_data;
   EXPECT_CALL(mock_processor(), Put)
-      .WillOnce(WithArg<1>(
-          Invoke([&captured_entity_data](
-                     std::unique_ptr<syncer::EntityData> entity_data) {
+      .WillOnce(
+          WithArg<1>([&captured_entity_data](
+                         std::unique_ptr<syncer::EntityData> entity_data) {
             captured_entity_data = std::move(*entity_data);
-          })));
+          }));
   model()->AddTabToGroupLocally(group.saved_guid(), new_tab);
 
   EXPECT_THAT(
@@ -1260,11 +1260,11 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedLocalTab) {
 
   syncer::EntityData captured_entity_data;
   EXPECT_CALL(mock_processor(), Put)
-      .WillOnce(WithArg<1>(
-          Invoke([&captured_entity_data](
-                     std::unique_ptr<syncer::EntityData> entity_data) {
+      .WillOnce(
+          WithArg<1>([&captured_entity_data](
+                         std::unique_ptr<syncer::EntityData> entity_data) {
             captured_entity_data = std::move(*entity_data);
-          })));
+          }));
   tab_to_update.SetURL(GURL("http://google.com/updated"));
   tab_to_update.SetTitle(u"updated tab");
   model()->UpdateTabInGroup(group.saved_guid(), tab_to_update,
@@ -2035,9 +2035,9 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldStoreLocalIdOnRemoteUpdate) {
 
   // Simulate a reentrant call during applying remote updates.
   EXPECT_CALL(mock_model_observer(), SavedTabGroupAddedFromSync)
-      .WillOnce(Invoke([this, &kLocalGroupId](const base::Uuid& group_guid) {
+      .WillOnce([this, &kLocalGroupId](const base::Uuid& group_guid) {
         model()->OnGroupOpenedInTabStrip(group_guid, kLocalGroupId);
-      }));
+      });
   ApplySingleEntityChange(CreateAddEntityChange(
       MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::RED),
       kCollaborationId));

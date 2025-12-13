@@ -12,7 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -57,6 +57,14 @@ class ArcAuthService : public KeyedService,
  public:
   using GetGoogleAccountsInArcCallback =
       base::OnceCallback<void(std::vector<mojom::ArcAccountInfoPtr>)>;
+
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Opens the settings app for Arc auth.
+    virtual void OpenSettingsAppWithPeopleSection() = 0;
+  };
 
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -103,6 +111,9 @@ class ArcAuthService : public KeyedService,
   void HandleUpdateCredentialsRequest(const std::string& email) override;
 
   static void EnsureFactoryBuilt();
+
+  // Overrides the Delegate behavior for testing.
+  void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
 
  private:
   friend class ArcAuthServiceTest;
@@ -211,6 +222,8 @@ class ArcAuthService : public KeyedService,
 
   // Response for |mojom::GetMainAccountResolutionStatus|.
   void OnMainAccountResolutionStatus(mojom::MainAccountResolutionStatus status);
+
+  std::unique_ptr<Delegate> delegate_;
 
   // Non-owning pointers.
   const raw_ptr<Profile> profile_;

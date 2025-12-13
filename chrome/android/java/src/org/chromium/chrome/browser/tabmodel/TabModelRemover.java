@@ -13,7 +13,6 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -37,6 +36,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Common class for performing actions on a {@link TabModel} that will remove tabs or tab groups. If

@@ -6,8 +6,7 @@
 #define COMPONENTS_SYNC_SERVICE_SYNC_CLIENT_H_
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/extensions_activity.h"
 
@@ -58,18 +57,6 @@ class SyncClient {
 
   // Returns whether custom passphrase is allowed for the current user.
   virtual bool IsCustomPassphraseAllowed() = 0;
-
-  // Necessary but not sufficient condition for password sync to be enabled,
-  // i.e. it influences the value of SyncUserSettings::GetSelectedTypes().
-  // TODO(crbug.com/328190573): Remove this and SetPasswordSyncAllowedChangeCb()
-  // below when the local UPM migration is gone.
-  virtual bool IsPasswordSyncAllowed() = 0;
-
-  // Causes `cb` to be invoked whenever the value of IsPasswordSyncAllowed()
-  // changes. Spurious invocations can occur too. This method must be called at
-  // most once.
-  virtual void SetPasswordSyncAllowedChangeCb(
-      const base::RepeatingClosure& cb) = 0;
 
   // Registers synthetic field trials corresponding to autoupgrading users to
   // trusted vault passphrase type. `group` must be valid. Must be invoked at

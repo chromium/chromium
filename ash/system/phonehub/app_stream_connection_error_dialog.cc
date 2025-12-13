@@ -43,7 +43,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_shadow.h"
 #include "ui/views/window/dialog_delegate.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -86,12 +86,12 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
       layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     }
 
+    layer()->SetFillsBoundsOpaquely(false);
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(kDialogRoundedCornerRadius));
 
-    SetBackground(views::CreateRoundedRectBackground(
-        static_cast<ui::ColorId>(cros_tokens::kCrosSysBaseElevated),
-        kDialogRoundedCornerRadius));
+    SetBackground(views::CreateSolidBackground(
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysBaseElevated)));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kDialogRoundedCornerRadius,
         views::HighlightBorder::Type::kHighlightBorder1));
@@ -111,9 +111,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
         ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
     icon_ = icon_row->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            kPhoneHubEcheErrorStatusIcon,
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorWarning),
+            kPhoneHubEcheErrorStatusIcon, cros_tokens::kIconColorWarning,
             kIconSize)));
 
     // Add dialog title.
@@ -157,8 +155,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     body_->SetText(body_text);
 
     views::StyledLabel::RangeStyleInfo style;
-    style.override_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    style.override_color_id = cros_tokens::kTextColorPrimary;
     body_->AddStyleRange(gfx::Range(0, offset), style);
 
     views::StyledLabel::RangeStyleInfo link_style =
@@ -167,13 +164,11 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
             base::Unretained(this),
             base::BindRepeating(
                 &NewWindowDelegate::OpenUrl,
-                base::Unretained(NewWindowDelegate::GetPrimary()),
+                base::Unretained(NewWindowDelegate::GetInstance()),
                 GURL(phonehub::kPhoneHubLearnMoreLink),
                 NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                 NewWindowDelegate::Disposition::kNewForegroundTab)));
-    const SkColor link_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonLabelColorBlue);
-    link_style.override_color = link_color;
+    link_style.override_color_id = cros_tokens::kTextColorProminent;
     body_->AddStyleRange(gfx::Range(offset, offset + learn_more_link.length()),
                          link_style);
 

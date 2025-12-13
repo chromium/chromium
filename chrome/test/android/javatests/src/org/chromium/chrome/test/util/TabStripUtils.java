@@ -34,18 +34,6 @@ public class TabStripUtils {
      * @param activity The main activity that contains the TabStrips.
      * @return The TabStrip for the specified model.
      */
-    public static StripLayoutHelper getActiveStripLayoutHelper(ChromeTabbedActivity activity) {
-        StripLayoutHelperManager manager = getStripLayoutHelperManager(activity);
-        if (manager != null) {
-            return manager.getActiveStripLayoutHelper();
-        }
-        return null;
-    }
-
-    /**
-     * @param activity The main activity that contains the TabStrips.
-     * @return The TabStrip for the specified model.
-     */
     public static StripLayoutHelperManager getStripLayoutHelperManager(
             ChromeTabbedActivity activity) {
         StripLayoutHelperManager manager =

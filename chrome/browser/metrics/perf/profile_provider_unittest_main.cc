@@ -190,7 +190,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     ash::DBusThreadManager::Shutdown();
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
   }
 
   void AssertProfileData(SampledProfile::TriggerEvent trigger_event) {

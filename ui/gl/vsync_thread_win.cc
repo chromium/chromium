@@ -5,16 +5,12 @@
 #include "ui/gl/vsync_thread_win.h"
 
 #include "base/functional/bind.h"
-#include "base/logging.h"
-#include "base/memory/singleton.h"
 #include "base/memory/stack_allocated.h"
 #include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/synchronization/lock_subtle.h"
 #include "base/time/time.h"
-#include "base/trace_event/typed_macros.h"
 #include "base/win/windows_version.h"
-#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/vsync_thread_win_dcomp.h"
 #include "ui/gl/vsync_thread_win_dxgi.h"
@@ -31,14 +27,7 @@ VSyncThreadWin* VSyncThreadWin::GetInstance() {
     if (features::UseCompositorClockVSyncInterval()) {
       return new VSyncThreadWinDComp();
     } else {
-      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device(
-          GetDirectCompositionD3D11Device());
-      if (!d3d11_device) {
-        return nullptr;
-      }
-      Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-      CHECK_EQ(d3d11_device.As(&dxgi_device), S_OK);
-      return new VSyncThreadWinDXGI(std::move(dxgi_device));
+      return new VSyncThreadWinDXGI();
     }
   }();
   return vsync_thread;

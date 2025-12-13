@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -156,24 +157,28 @@ base::Value GetWebApps::GetInstalledWebApps() {
 
 base::Value GetWebApps::GetOpenWebApps() {
   base::flat_map<std::string, base::Value::List> open_apps;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->type() != Browser::Type::TYPE_APP) {
-      continue;
-    }
-    std::string app_profile_base_name =
-        browser->profile()->GetBaseName().AsUTF8Unsafe();
-    if (!profile_base_name_.empty() &&
-        profile_base_name_.AsUTF8Unsafe() != app_profile_base_name) {
-      continue;
-    }
-    base::Value::Dict web_app_info;
-    web_app_info.Set("id", browser->app_controller()->app_id());
-    web_app_info.Set("name", base::UTF16ToUTF8(
-                                 browser->app_controller()->GetAppShortName()));
-    auto iter_and_inserted =
-        open_apps.emplace(app_profile_base_name, base::Value::List());
-    iter_and_inserted.first->second.Append(std::move(web_app_info));
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &open_apps](BrowserWindowInterface* browser) {
+        if (browser->GetType() != BrowserWindowInterface::TYPE_APP) {
+          return true;
+        }
+        std::string app_profile_base_name =
+            browser->GetProfile()->GetBaseName().AsUTF8Unsafe();
+        if (!profile_base_name_.empty() &&
+            profile_base_name_.AsUTF8Unsafe() != app_profile_base_name) {
+          return true;
+        }
+        base::Value::Dict web_app_info;
+        const web_app::AppBrowserController* const app_controller =
+            web_app::AppBrowserController::From(browser);
+        web_app_info.Set("id", app_controller->app_id());
+        web_app_info.Set("name",
+                         base::UTF16ToUTF8(app_controller->GetAppShortName()));
+        auto iter_and_inserted =
+            open_apps.emplace(app_profile_base_name, base::Value::List());
+        iter_and_inserted.first->second.Append(std::move(web_app_info));
+        return true;
+      });
   base::Value::List open_apps_list;
   for (auto& item : open_apps) {
     base::Value::Dict item_info;

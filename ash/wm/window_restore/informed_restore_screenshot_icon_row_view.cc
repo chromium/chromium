@@ -12,6 +12,7 @@
 #include "ash/wm/window_restore/informed_restore_constants.h"
 #include "ash/wm/window_restore/informed_restore_item_view.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -19,6 +20,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 

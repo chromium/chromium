@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill::autofill_metrics {
 
@@ -72,8 +73,9 @@ void LogBnplIssuerSelection(IssuerId issuer_id) {
                                 issuer_id);
 }
 
-void LogBnplSuggestionNotShownReason(BnplSuggestionNotShownReason reason) {
-  base::UmaHistogramEnumeration("Autofill.Bnpl.SuggestionNotShownReason",
+void LogBnplSuggestionUnavailableReason(
+    BnplSuggestionUnavailableReason reason) {
+  base::UmaHistogramEnumeration("Autofill.Bnpl.SuggestionUnavailableReason",
                                 reason);
 }
 
@@ -104,6 +106,20 @@ void LogBnplPopupWindowLatency(base::TimeDelta duration,
 
 void LogBnplFormEvent(BnplFormEvent event) {
   base::UmaHistogramEnumeration("Autofill.FormEvents.CreditCard.Bnpl", event);
+}
+
+void LogBnplSuggestionShown(ukm::SourceId ukm_source_id) {
+  LogBnplFormEvent(BnplFormEvent::kBnplSuggestionShown);
+  ukm::builders::Autofill_BnplSuggestionShown(ukm_source_id)
+      .SetShown(true)
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void LogBnplSuggestionAccepted(ukm::SourceId ukm_source_id) {
+  LogBnplFormEvent(BnplFormEvent::kBnplSuggestionAccepted);
+  ukm::builders::Autofill_BnplSuggestionAccepted(ukm_source_id)
+      .SetAccepted(true)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void LogFormFilledWithBnplVcn(IssuerId issuer_id) {

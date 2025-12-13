@@ -8,11 +8,11 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_mediator_items_provider.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_view_controller_mutator.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_page_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
@@ -25,6 +25,7 @@ class Browser;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsConfigurationProvider;
 @protocol GridToolbarsMutator;
+@class SelectedGridItems;
 @protocol SharedTabGroupLastTabAlertCommands;
 @protocol TabCollectionConsumer;
 @protocol TabGridCommands;
@@ -102,6 +103,9 @@ class WebState;
 
 // The mode holder.
 @property(nonatomic, readonly) TabGridModeHolder* modeHolder;
+
+// Items selected for editing.
+@property(nonatomic, readonly) SelectedGridItems* selectedEditingItems;
 
 // Disconnects the mediator.
 - (void)disconnect NS_REQUIRES_SUPER;

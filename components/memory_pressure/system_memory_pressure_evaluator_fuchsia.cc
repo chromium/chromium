@@ -15,17 +15,17 @@ namespace memory_pressure {
 
 namespace {
 
-base::MemoryPressureListener::MemoryPressureLevel
-FuchsiaToBaseMemoryPressureLevel(fuchsia::memorypressure::Level level) {
+base::MemoryPressureLevel FuchsiaToBaseMemoryPressureLevel(
+    fuchsia::memorypressure::Level level) {
   switch (level) {
     case fuchsia::memorypressure::Level::NORMAL:
-      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+      return base::MEMORY_PRESSURE_LEVEL_NONE;
 
     case fuchsia::memorypressure::Level::WARNING:
-      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+      return base::MEMORY_PRESSURE_LEVEL_MODERATE;
 
     case fuchsia::memorypressure::Level::CRITICAL:
-      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+      return base::MEMORY_PRESSURE_LEVEL_CRITICAL;
   };
 }
 
@@ -53,25 +53,25 @@ void SystemMemoryPressureEvaluatorFuchsia::OnLevelChanged(
     OnLevelChangedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  renotify_current_vote_timer_.Stop();
+
   VLOG(1) << "OnLevelChanged: level=" << static_cast<uint32_t>(level);
 
-  base::MemoryPressureListener::MemoryPressureLevel new_level =
-      FuchsiaToBaseMemoryPressureLevel(level);
+  base::MemoryPressureLevel old_vote = current_vote();
+  base::MemoryPressureLevel new_level = FuchsiaToBaseMemoryPressureLevel(level);
 
   VLOG(1) << "MemoryPressureLevel: " << new_level;
 
   // Set the new vote, and determine whether to notify listeners.
   SetCurrentVote(new_level);
   switch (new_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-      // By convention no notifications are sent when returning to NONE level.
-      SendCurrentVote(false);
-      renotify_current_vote_timer_.Stop();
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
+      // Only notify when transitioning to no pressure.
+      SendCurrentVote(old_vote != base::MEMORY_PRESSURE_LEVEL_NONE);
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       SendCurrentVote(true);
-      // This will reset the timer if already running.
       renotify_current_vote_timer_.Start(
           FROM_HERE, kRenotifyVotePeriod,
           base::BindRepeating(

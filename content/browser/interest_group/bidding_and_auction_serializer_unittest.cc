@@ -8,9 +8,13 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_features.h"
+#include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
 
 namespace content {
@@ -81,6 +85,19 @@ scoped_refptr<StorageInterestGroups> CreateInterestGroups(url::Origin owner) {
 
 class BiddingAndAuctionSerializerTest : public testing::Test {
  public:
+  BiddingAndAuctionSerializerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kFledgeConsiderKAnonymity,
+                              blink::features::kFledgeEnforceKAnonymity,
+                              blink::features::
+                                  kFledgeEnableSampleDebugReportOnCookieSetting,
+                              features::kFledgeSendDebugReportCooldownsToBandA},
+        /*disabled_features=*/{
+            // We don't want CookieDeprecationFacilitatedTesting since it
+            // prevents coverage of KAnon code.
+            features::kCookieDeprecationFacilitatedTesting});
+  }
+
   void AddGroupsToSerializer(BiddingAndAuctionSerializer& serializer) {
     for (const auto& owner : {kOriginA, kOriginB, kOriginC, kOriginD}) {
       serializer.AddGroups(owner, CreateInterestGroups(owner));
@@ -88,6 +105,8 @@ class BiddingAndAuctionSerializerTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   const GURL kUrlA = GURL(kOriginStringA);
   const url::Origin kOriginA = url::Origin::Create(kUrlA);
   const GURL kUrlB = GURL(kOriginStringB);
@@ -179,7 +198,10 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithSmallRequestSize) {
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithTooSmallRequestSize) {
   base::HistogramTester histogram_tester;
 
-  const size_t kRequestSize = 220;
+  // This is large enough that the initial attempt w/groups fits, and there is
+  // enough left over to try to fit some groups with compression...
+  // unsuccessfully.
+  const size_t kRequestSize = 310;
   blink::mojom::AuctionDataConfigPtr config =
       blink::mojom::AuctionDataConfig::New();
   config->request_size = kRequestSize;
@@ -197,8 +219,8 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithTooSmallRequestSize) {
   std::optional<BiddingAndAuctionData> data = serializer.Build();
   ASSERT_FALSE(data.has_value());
 
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.NumIterations", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.ServerAuction.Request.NumIterations", 3);
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 0);
 }

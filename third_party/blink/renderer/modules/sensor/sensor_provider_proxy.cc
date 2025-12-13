@@ -21,8 +21,8 @@ void SensorProviderProxy::InitializeIfNeeded() {
       sensor_provider_.BindNewPipeAndPassReceiver(
           GetSupplementable()->GetTaskRunner(TaskType::kSensor)));
   sensor_provider_.set_disconnect_handler(
-      WTF::BindOnce(&SensorProviderProxy::OnSensorProviderConnectionError,
-                    WrapWeakPersistent(this)));
+      BindOnce(&SensorProviderProxy::OnSensorProviderConnectionError,
+               WrapWeakPersistent(this)));
 }
 
 // static

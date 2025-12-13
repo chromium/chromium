@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EVENT_MODEL_READER_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EVENT_MODEL_READER_H_
 
-#include <map>
 #include <string>
 
 #include "base/time/time.h"

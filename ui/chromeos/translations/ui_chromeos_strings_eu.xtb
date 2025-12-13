@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Generoa</translation>
 <translation id="1254593899333212300">Interneteko konexio zuzena</translation>
 <translation id="1272293450992660632">PIN kodeak ez datoz bat.</translation>
+<translation id="1279040297980392566">Azterketa amaitzeko zain. Saiatu berriro geroago</translation>
 <translation id="1280820357415527819">Sare mugikorren bila</translation>
 <translation id="1293556467332435079">Fitxategiak</translation>
 <translation id="1297922636971898492">Une honetan, Google Drive ez dago erabilgarri. Erabilgarri dagoenean, automatikoki hasiko da berriro kargatzen.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Fitxategi bat hautatu da</translation>
 <translation id="3817579325494460411">Ez da zehaztu</translation>
 <translation id="3819448694985509187">PINa okerra da. Saiakera bat gelditzen zaizu.</translation>
-<translation id="3822559385185038546">Administratzaileak ezartzen du proxya</translation>
 <translation id="3830674330436234648">Ez dago erreprodukziorik</translation>
 <translation id="383652340667548381">Serbiarra</translation>
 <translation id="3839045880592694915">Operadoreak ez dio eman konektatzeko baimenik modemari. Xehetasun gehiago lortzeko, jarri operadorearekin harremanetan.</translation>
@@ -379,7 +379,7 @@
 <translation id="4040753847560036377">Okerreko PUKa</translation>
 <translation id="4057991113334098539">Aktibatzen…</translation>
 <translation id="4092890906744441904">Irlandarra</translation>
-<translation id="4101601646343868113">Hasi saioa sare mugikorrean eta berretsi mugikorrerako datu-tarifa aktibo daukazula</translation>
+<translation id="4101601646343868113">Hasi saioa sare mugikorrean eta berretsi datu-konexioaren tarifa aktibo daukazula</translation>
 <translation id="4124731372776320263">Drive-ko fitxategi bat sinkronizatzen</translation>
 <translation id="4124935795427217608">Adarbakarra</translation>
 <translation id="4131235941541910880">Eraman zaborrontzira behar ez dituzun elementuak</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5602622065581044566">Bulgariarra, teklatu fonetikoarekin</translation>
 <translation id="5605830556594064952">Dvorak estatubatuarra</translation>
+<translation id="560739212255190568">Administratzaileak proxya ordezteko arauak ezarri ditu, proxy hau aplikatzeaz gain</translation>
 <translation id="5618330573454123917">macOS sistema eragilea darabilen ordenagailu baterako diseinatuta dago fitxategia. Gailua Chrome OS-koa denez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="5625294776298156701">Tamildarra, Tamil99 teklatuarekin</translation>
 <translation id="5633226425545095130">Elementu hau mugituz gero, "<ph name="DESTINATION_NAME" />" karpeta partekatua ikus dezakeen edonorekin partekatuko da.</translation>
@@ -680,7 +681,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Konektatu.</translation>
 <translation id="6269630227984243955">Malaysiarra</translation>
 <translation id="6271903698064569429">Ezin dira kargatu fitxategiak, <ph name="SHARED_DRIVE_NAME" /> unitate partekatuko biltegian ez dagoelako behar adina toki.</translation>
-<translation id="6279140785485544797">Agian iraungita dago mugikorrerako datu-tarifa. Laguntza jasotzeko, jarri operadorearekin harremanetan.</translation>
+<translation id="6279140785485544797">Agian iraungita dago datu-konexioaren tarifa. Laguntza jasotzeko, jarri operadorearekin harremanetan.</translation>
 <translation id="6287852322318138013">Hautatu fitxategia irekitzeko aplikazioa</translation>
 <translation id="6295542640242147836">Blokeatu SIMa</translation>
 <translation id="6296410173147755564">PUKak ez du balio</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Xehetasunak.</translation>
 <translation id="8545476925160229291">Ingelesa (AEB)</translation>
 <translation id="854655314928502177">Web-proxyaren hautemate automatikoaren URLa:</translation>
+<translation id="8547747809824590510">Administratzaileak proxya ordezteko arauak ezarri ditu</translation>
 <translation id="8549186985808798022">Italiarra</translation>
 <translation id="8551494947769799688">Letoniarra</translation>
 <translation id="8560515948038859357">Kantondarra</translation>
@@ -1004,7 +1006,7 @@
 <translation id="8569764466147087991">Hautatu irekitzeko fitxategi bat</translation>
 <translation id="8577897833047451336">Kroaziarra</translation>
 <translation id="8578308463707544055">Indonesiarra</translation>
-<translation id="8600173386174225982">Irudi txikiko ikuspegira aldatu da fitxategi-zerrenda.</translation>
+<translation id="8600173386174225982">Irudi txikien ikuspegira aldatu da fitxategi-zerrenda.</translation>
 <translation id="8601932370724196034">Crostini motako irudi-fitxategia</translation>
 <translation id="8609695766746872526">Islandiarra</translation>
 <translation id="8630384863424041081">Idatzi zure SIM txartelaren PINa edo operadoreak emandako PIN lehenetsia. Laguntza jasotzeko, jarri operadorearekin harremanetan.</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" izena duen fitxategia bazegoen lehendik ere. Aukeratu beste izen bat.</translation>
 <translation id="9046895021617826162">Ezin izan da konektatu</translation>
 <translation id="9065512565307033593">Egiaztapena gauzatzen ez baduzu, desgaitu egingo da sarerako sarbidea.</translation>
+<translation id="9079844694307518094">Administratzaileak proxy hau aplikatu du</translation>
 <translation id="908378762078012445">Errusiarra, AATSEEL teklatu fonetikoarekin</translation>
 <translation id="9086302186042011942">Sinkronizatzen</translation>
 <translation id="9099674669267916096">Orri kopurua</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Hasi da instalazioa.</translation>
 <translation id="9219103736887031265">Irudiak</translation>
 <translation id="9219908252191632183">Ilargia</translation>
+<translation id="931652069802536959">Gidalerroak blokeatu du sarea</translation>
 <translation id="938470336146445890">Instalatu erabiltzaile-ziurtagiri bat.</translation>
 <translation id="939736085109172342">Karpeta berria</translation>
 <translation id="943972244133411984">Aldaketaren egilea:</translation>

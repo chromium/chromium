@@ -7,7 +7,11 @@
 #include <aaudio/AAudio.h>
 
 #include <array>
+#include <optional>
+#include <string_view>
 
+#include "base/android/device_info.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -16,6 +20,7 @@
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/android/audio_device.h"
+#include "media/audio/android/audio_device_id.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
 
@@ -24,9 +29,37 @@
 
 namespace media {
 
+namespace {
+
+constexpr char kAAudioBufferSizeInFramesMetricsPrefix[] =
+    "Media.Audio.Android.AAudioBufferSizeInFrames.";
+constexpr char kAAudioFramesPerDataCallbackMetricsPrefix[] =
+    "Media.Audio.Android.AAudioFramesPerDataCallback.";
+constexpr char kAAudioFramesPerBurstMetricsPrefix[] =
+    "Media.Audio.Android.AAudioFramesPerBurst.";
+constexpr char kAAudioFramesPerBurstChangedMetricsPrefix[] =
+    "Media.Audio.Android.AAudioFramesPerBurstChanged.";
+
+std::string_view StreamTypeToStringView(AAudioStreamWrapper::StreamType type) {
+  return type == AAudioStreamWrapper::StreamType::kInput ? "Input" : "Output";
+}
+
+void LogSparseHistogram(std::string_view prefix,
+                        AAudioStreamWrapper::StreamType type,
+                        AudioLatency::Type latency_tag,
+                        int32_t value) {
+  const std::string_view direction = StreamTypeToStringView(type);
+  base::UmaHistogramSparse(base::StrCat({prefix, direction}), value);
+  base::UmaHistogramSparse(base::StrCat({prefix, direction, ".",
+                                         AudioLatency::ToString(latency_tag)}),
+                           value);
+}
+
+}  // namespace
+
 // Used to circumvent issues where the AAudio thread callbacks continue
 // after AAudioStream_requestStop() completes. See crbug.com/1183255.
-class REQUIRES_ANDROID_API(AAUDIO_MIN_API) LOCKABLE AAudioDestructionHelper {
+class LOCKABLE AAudioDestructionHelper {
  public:
   explicit AAudioDestructionHelper(AAudioStreamWrapper* wrapper)
       : wrapper_(wrapper) {}
@@ -60,11 +93,11 @@ class REQUIRES_ANDROID_API(AAUDIO_MIN_API) LOCKABLE AAudioDestructionHelper {
   bool is_closing_ GUARDED_BY(lock_) = false;
 };
 
-static REQUIRES_ANDROID_API(AAUDIO_MIN_API) aaudio_data_callback_result_t
-    OnAudioDataRequestedCallback(AAudioStream* stream,
-                                 void* user_data,
-                                 void* audio_data,
-                                 int32_t num_frames) {
+static aaudio_data_callback_result_t OnAudioDataRequestedCallback(
+    AAudioStream* stream,
+    void* user_data,
+    void* audio_data,
+    int32_t num_frames) {
   AAudioDestructionHelper* destruction_helper =
       reinterpret_cast<AAudioDestructionHelper*>(user_data);
 
@@ -80,10 +113,9 @@ static REQUIRES_ANDROID_API(AAUDIO_MIN_API) aaudio_data_callback_result_t
   return result;
 }
 
-static REQUIRES_ANDROID_API(AAUDIO_MIN_API) void OnStreamErrorCallback(
-    AAudioStream* stream,
-    void* user_data,
-    aaudio_result_t error) {
+static void OnStreamErrorCallback(AAudioStream* stream,
+                                  void* user_data,
+                                  aaudio_result_t error) {
   AAudioDestructionHelper* destruction_helper =
       reinterpret_cast<AAudioDestructionHelper*>(user_data);
 
@@ -115,7 +147,8 @@ static constexpr REQUIRES_ANDROID_API(
 
 REQUIRES_ANDROID_API(AAUDIO_CHANNEL_MASK_MIN_API)
 std::optional<aaudio_channel_mask_t> ChannelMaskFromChannelLayout(
-    ChannelLayout layout) {
+    ChannelLayout layout,
+    int channels) {
   // Note: ChannelLayout comments define mono as Front Center, but AAudio's
   // AAUDIO_CHANNEL_MONO constant define it as Front Left. Returning Front
   // Center here breaks mono playback, so prefer AAudio's definition.
@@ -126,6 +159,44 @@ std::optional<aaudio_channel_mask_t> ChannelMaskFromChannelLayout(
   // Fast path for common case.
   if (layout == CHANNEL_LAYOUT_STEREO) {
     return AAUDIO_CHANNEL_STEREO;
+  }
+
+  // Map to canonical AAUDIO_CHANNEL_QUAD channel mask for 4-channel
+  // PCM MediaCodec decoded audio. This ensures compatibility with
+  // Android devices for signaling 4-channel output.
+  if (layout == CHANNEL_LAYOUT_QUAD) {
+    return AAUDIO_CHANNEL_QUAD;
+  }
+
+  // Map to canonical AAUDIO_CHANNEL_PENTA channel mask for 5-channel
+  // PCM MediaCodec decoded audio. This ensures compatibility with
+  // Android devices for signaling 5-channel output.
+  if (layout == CHANNEL_LAYOUT_5_0) {
+    return AAUDIO_CHANNEL_PENTA;
+  }
+
+  // Map to canonical AAUDIO_CHANNEL_5POINT1 channel mask for 6-channel
+  // PCM MediaCodec decoded audio. This ensures compatibility with
+  // Android devices for signaling 6-channel output.
+  if (layout == CHANNEL_LAYOUT_5_1) {
+    return AAUDIO_CHANNEL_5POINT1;
+  }
+
+  if (layout == CHANNEL_LAYOUT_DISCRETE) {
+    switch (channels) {
+      case 10:
+        // Map to canonical AAUDIO_CHANNEL_5POINT1POINT4 channel mask for
+        // 10-channel PCM MediaCodec decoded audio. This ensures
+        // compatibility with Android devices for signaling 10-channel output.
+        return AAUDIO_CHANNEL_5POINT1POINT4;
+      case 12:
+        // Map to canonical AAUDIO_CHANNEL_7POINT1POINT4 channel mask for
+        // 12-channel PCM MediaCodec decoded audio. This ensures
+        // compatibility with Android devices for signaling 12-channel output.
+        return AAUDIO_CHANNEL_7POINT1POINT4;
+      default:
+        return std::nullopt;
+    }
   }
 
   aaudio_channel_mask_t mask = 0;
@@ -149,7 +220,7 @@ REQUIRES_ANDROID_API(AAUDIO_CHANNEL_MASK_MIN_API)
 void SetChannelMask(AAudioStreamBuilder* builder,
                     const AudioParameters& params) {
   std::optional<aaudio_channel_mask_t> channel_mask =
-      ChannelMaskFromChannelLayout(params.channel_layout());
+      ChannelMaskFromChannelLayout(params.channel_layout(), params.channels());
 
   if (channel_mask.has_value()) {
     AAudioStreamBuilder_setChannelMask(builder, channel_mask.value());
@@ -164,7 +235,7 @@ AAudioStreamWrapper::AAudioStreamWrapper(DataCallback* callback,
                                          android::AudioDevice device,
                                          aaudio_usage_t usage)
     : params_(params),
-      device_(std::move(device)),
+      requested_device_(std::move(device)),
       stream_type_(stream_type),
       usage_(usage),
       callback_(callback),
@@ -181,7 +252,15 @@ AAudioStreamWrapper::AAudioStreamWrapper(DataCallback* callback,
       performance_mode_ = AAUDIO_PERFORMANCE_MODE_LOW_LATENCY;
       break;
     case AudioLatency::Type::kPlayback:
-      performance_mode_ = AAUDIO_PERFORMANCE_MODE_POWER_SAVING;
+      // For multichannel PCM playback, do not use power saving
+      // mode to allow direct multichannel PCM outputs to be opened
+      // where available. Limit this to automotive devices only.
+      if (params_.channels() > 2 &&
+          base::android::device_info::is_automotive()) {
+        performance_mode_ = AAUDIO_PERFORMANCE_MODE_NONE;
+      } else {
+        performance_mode_ = AAUDIO_PERFORMANCE_MODE_POWER_SAVING;
+      }
       break;
     case AudioLatency::Type::kUnknown:
       performance_mode_ = AAUDIO_PERFORMANCE_MODE_NONE;
@@ -241,7 +320,8 @@ bool AAudioStreamWrapper::Open() {
   AAudioStreamBuilder_setPerformanceMode(builder, performance_mode_);
   AAudioStreamBuilder_setFramesPerDataCallback(builder,
                                                params_.frames_per_buffer());
-  AAudioStreamBuilder_setDeviceId(builder, device_.GetId().ToAAudioDeviceId());
+  AAudioStreamBuilder_setDeviceId(builder,
+                                  requested_device_.GetId().ToAAudioDeviceId());
 
   if (__builtin_available(android AAUDIO_CHANNEL_MASK_MIN_API, *)) {
     SetChannelMask(builder, params_);
@@ -282,10 +362,11 @@ bool AAudioStreamWrapper::Open() {
 
   CHECK_EQ(AAUDIO_FORMAT_PCM_FLOAT, AAudioStream_getFormat(aaudio_stream_));
 
-  if (!device_.GetId().IsDefault()) {
+  if (!requested_device_.GetId().IsDefault()) {
     // `AAudioStreamBuilder_setDeviceId` is not guaranteed to set the specified
     // device.
-    const int32_t expected_device_id = device_.GetId().ToAAudioDeviceId();
+    const int32_t expected_device_id =
+        requested_device_.GetId().ToAAudioDeviceId();
     const int32_t actual_device_id = AAudioStream_getDeviceId(aaudio_stream_);
     bool device_id_matches = expected_device_id == actual_device_id;
     EmitSetDeviceIdResultToHistogram(device_id_matches);
@@ -299,7 +380,9 @@ bool AAudioStreamWrapper::Open() {
   // After opening the stream, sets the effective buffer size to 3X the burst
   // size to prevent glitching if the burst is small (e.g. < 128). On some
   // devices you can get by with 1X or 2X, but 3X is safer.
-  int32_t frames_per_burst = AAudioStream_getFramesPerBurst(aaudio_stream_);
+  const int32_t frames_per_burst =
+      AAudioStream_getFramesPerBurst(aaudio_stream_);
+  frames_per_burst_on_open_ = frames_per_burst;
   int32_t size_requested = frames_per_burst * (frames_per_burst < 128 ? 3 : 2);
   AAudioStream_setBufferSizeInFrames(aaudio_stream_, size_requested);
 
@@ -307,12 +390,29 @@ bool AAudioStreamWrapper::Open() {
                params_.AsHumanReadableString(), "requested buffer size",
                size_requested);
 
+  const int32_t buffer_size =
+      AAudioStream_getBufferSizeInFrames(aaudio_stream_);
+  LogSparseHistogram(kAAudioBufferSizeInFramesMetricsPrefix, stream_type_,
+                     params_.latency_tag(), buffer_size);
+
+  const int32_t frames_per_data_callback =
+      AAudioStream_getFramesPerDataCallback(aaudio_stream_);
+  LogSparseHistogram(kAAudioFramesPerDataCallbackMetricsPrefix, stream_type_,
+                     params_.latency_tag(), frames_per_data_callback);
+
+  LogSparseHistogram(kAAudioFramesPerBurstMetricsPrefix, stream_type_,
+                     params_.latency_tag(), frames_per_burst);
+
   return true;
 }
 
 void AAudioStreamWrapper::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_closed_);
+
+  if (aaudio_stream_) {
+    LogFramesPerBurstChangesToUma();
+  }
 
   Stop();
 
@@ -366,6 +466,24 @@ bool AAudioStreamWrapper::Stop() {
                                            &next_state, kTimeoutNanoseconds);
 
   return true;
+}
+
+std::optional<android::AudioDeviceId> AAudioStreamWrapper::GetActualDeviceId() {
+  if (!aaudio_stream_) {
+    return std::nullopt;
+  }
+  int32_t raw_id = AAudioStream_getDeviceId(aaudio_stream_);
+
+  std::optional<android::AudioDeviceId> id =
+      android::AudioDeviceId::NonDefault(raw_id);
+  if (!id.has_value()) {
+    // Empirically, `AAudioStream_getDeviceId` is not expected to fail to
+    // determine the actual device ID, but this is not guaranteed by the API.
+    LOG(WARNING) << "AAudioStream_getDeviceId failed to return a non-default "
+                    "device ID. Requested device ID: "
+                 << requested_device_.GetId().ToAAudioDeviceId();
+  }
+  return id;
 }
 
 base::TimeDelta AAudioStreamWrapper::GetOutputDelay(
@@ -460,7 +578,26 @@ void AAudioStreamWrapper::EmitSetDeviceIdResultToHistogram(bool success) {
   std::string histogram_name =
       base::StrCat({"Media.Audio.Android.AAudioSetDeviceId.", direction_string,
                     ".", success_string});
-  base::UmaHistogramEnumeration(histogram_name, device_.GetType());
+  base::UmaHistogramEnumeration(histogram_name, requested_device_.GetType());
+}
+
+void AAudioStreamWrapper::LogFramesPerBurstChangesToUma() {
+  const int32_t frames_per_burst_on_close =
+      AAudioStream_getFramesPerBurst(aaudio_stream_);
+  const std::string_view audio_direction = StreamTypeToStringView(stream_type_);
+
+  const bool frames_per_burst_changed =
+      frames_per_burst_on_close != frames_per_burst_on_open_;
+
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {kAAudioFramesPerBurstChangedMetricsPrefix, audio_direction}),
+      frames_per_burst_changed);
+
+  base::UmaHistogramBoolean(
+      base::StrCat({kAAudioFramesPerBurstChangedMetricsPrefix, audio_direction,
+                    ".", AudioLatency::ToString(params_.latency_tag())}),
+      frames_per_burst_changed);
 }
 
 }  // namespace media

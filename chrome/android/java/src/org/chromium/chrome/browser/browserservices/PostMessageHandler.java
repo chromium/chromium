@@ -16,7 +16,6 @@ import androidx.browser.customtabs.PostMessageBackend;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TerminationStatus;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -88,8 +87,6 @@ public class PostMessageHandler implements OriginVerificationListener {
                     }
                     assumeNonNull(messagePayload.getAsString());
                     mPostMessageBackend.onPostMessage(messagePayload.getAsString(), bundle);
-                    RecordHistogram.recordBooleanHistogram(
-                            "CustomTabs.PostMessage.OnMessage", true);
                 };
     }
 
@@ -100,7 +97,7 @@ public class PostMessageHandler implements OriginVerificationListener {
      * @param webContents The new {@link WebContents} that the session got associated with. If this
      *                    is null, the handler disconnects and unbinds from service.
      */
-    public void reset(final WebContents webContents) {
+    public void reset(final @Nullable WebContents webContents) {
         if (webContents == null || webContents.isDestroyed()) {
             disconnectChannel();
             return;

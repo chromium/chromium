@@ -75,20 +75,26 @@ mojom::blink::ColorScheme ColorSchemeForSVGElement(
 
 }  // namespace
 
-SVGColorProperty::SVGColorProperty(const String& color_string)
-    : style_color_(StyleColor::CurrentColor()) {
-  Color color;
-  if (CSSParser::ParseColor(color, color_string.StripWhiteSpace(),
-                            /*strict=*/false)) {
-    style_color_ = StyleColor(color);
-  }
-}
-
 String SVGColorProperty::ValueAsString() const {
   return style_color_.IsCurrentColor()
              ? "currentColor"
              : cssvalue::CSSColor::SerializeAsCSSComponentValue(
                    style_color_.GetColor());
+}
+
+SVGParsingError SVGColorProperty::SetValueAsString(const String& value) {
+  Color parsed_color;
+  const String trimmed_value = value.StripWhiteSpace();
+  if (CSSParser::ParseColor(parsed_color, trimmed_value,
+                            /*strict=*/false)) {
+    style_color_ = StyleColor(parsed_color);
+    return SVGParseStatus::kNoError;
+  }
+  if (EqualIgnoringASCIICase(trimmed_value, "currentColor")) {
+    style_color_ = StyleColor::CurrentColor();
+    return SVGParseStatus::kNoError;
+  }
+  return SVGParseStatus::kParsingFailed;
 }
 
 void SVGColorProperty::Add(const SVGPropertyBase* other,

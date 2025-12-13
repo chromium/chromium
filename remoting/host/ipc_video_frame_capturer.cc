@@ -114,8 +114,8 @@ void IpcVideoFrameCapturer::OnCaptureResult(mojom::CaptureResultPtr result) {
 
   std::unique_ptr<webrtc::DesktopFrame> frame =
       std::make_unique<webrtc::SharedMemoryDesktopFrame>(
-          desktop_frame->size, desktop_frame->stride,
-          new IpcSharedBuffer(shared_buffer_core));
+          desktop_frame->size, desktop_frame->stride, webrtc::FOURCC_ARGB,
+          std::make_unique<IpcSharedBuffer>(shared_buffer_core));
   frame->set_capture_time_ms(desktop_frame->capture_time_ms);
   frame->set_dpi(desktop_frame->dpi);
   frame->set_capturer_id(desktop_frame->capturer_id);

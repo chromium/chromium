@@ -15,13 +15,15 @@
 #include "base/types/expected.h"
 #include "build/android_buildflags.h"
 #include "build/buildflag.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
+#include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class DesktopMediaList;
 
@@ -115,7 +117,22 @@ class DesktopMediaPicker {
     // picker.
     blink::mojom::PreferredDisplaySurface preferred_display_surface =
         blink::mojom::PreferredDisplaySurface::NO_PREFERENCE;
-    // Indicates the source of the request. This is useful for UMA that
+    // `includable_web_contents_filter` is used to restrict any
+    // DesktopMediaList::Type::kWebContents sources. It should return true if a
+    // given WebContents is a valid target, or false if it should be excluded.
+    DesktopMediaList::WebContentsFilter includable_web_contents_filter;
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, this indicates that this is a request to share the current
+    // tab.
+    bool capture_this_tab = false;
+    // On Android, this indicates that the current tab should be excluded.
+    bool exclude_self_browser_surface = false;
+    // On Android, this indicates that screen sharing should be excluded.
+    bool exclude_monitor_type_surfaces = false;
+    // On Android, this indicates the allowed capture level for this request.
+    AllowedScreenCaptureLevel allowed_capture_level =
+        AllowedScreenCaptureLevel::kUnrestricted;
+#endif
     // track the result of the picker, because the behavior with the
     // Extension API is different, and could therefore lead to mismeasurement.
     RequestSource request_source = RequestSource::kUnknown;

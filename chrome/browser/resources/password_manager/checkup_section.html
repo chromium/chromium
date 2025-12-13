@@ -42,6 +42,13 @@
 
   #refreshButton {
     margin-inline-end: 10px;
+    --cr-icon-button-fill-color: var(--google-grey-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #refreshButton {
+      --cr-icon-button-fill-color: var(--google-grey-300);
+    }
   }
 
   #retryButton {
@@ -65,6 +72,13 @@
     --cr-link-row-start-icon-color: var(--google-red-600);
   }
 
+  .secondary-text-on-surface {
+    /* Change the color of the sublabel. It's sadly not exposed as its own
+       variable in the <cr-link-row>, so we override this existing variable,
+       which is close enough. */
+    --cr-secondary-text-color: var(--google-grey-700);
+  }
+
   @media (prefers-color-scheme: dark) {
     cr-link-row {
       --cr-link-row-start-icon-color: var(--google-green-300);
@@ -76,6 +90,11 @@
 
     cr-link-row[show-red-icon] {
       --cr-link-row-start-icon-color: var(--google-red-300);
+    }
+
+    .secondary-text-on-surface {
+      /* Change the color of the sublabel, see above. */
+      --cr-secondary-text-color: var(--google-grey-400);
     }
   }
 </style>
@@ -110,7 +129,7 @@
     </div>
   </div>
   <div id="checkupResult" hidden="[[!showCheckupResult_(status_)]]">
-    <cr-link-row id="compromisedRow" class="hr"
+    <cr-link-row id="compromisedRow" class="hr secondary-text-on-surface"
         start-icon="[[getIcon_(compromisedPasswords_, 'true', status_)]]"
         label="[[getCompromisedSectionLabel_(status_, compromisedPasswordsText_)]]"
         sub-label="[[getCompromisedSectionSublabel_(
@@ -121,16 +140,18 @@
         on-click="onCompromisedClick_" role-description="button"
         aria-show-label aria-show-sublabel>
     </cr-link-row>
-    <cr-link-row id="reusedRow" start-icon="[[getIcon_(reusedPasswords_)]]"
-        label="[[reusedPasswordsText_]]" class="hr"
+    <cr-link-row id="reusedRow" class="hr secondary-text-on-surface"
+        start-icon="[[getIcon_(reusedPasswords_)]]"
+        label="[[reusedPasswordsText_]]"
         sub-label="[[getReusedSectionSublabel_(reusedPasswords_)]]"
         show-yellow-icon$="[[hasIssues_(reusedPasswords_)]]"
         non-clickable$="[[!hasIssues_(reusedPasswords_)]]"
         on-click="onReusedClick_" role-description="button"
         aria-show-label aria-show-sublabel>
     </cr-link-row>
-    <cr-link-row id="weakRow" start-icon="[[getIcon_(weakPasswords_)]]"
-        label="[[weakPasswordsText_]]" class="hr"
+    <cr-link-row id="weakRow" class="hr secondary-text-on-surface"
+        start-icon="[[getIcon_(weakPasswords_)]]"
+        label="[[weakPasswordsText_]]"
         sub-label="[[getWeakSectionSublabel_(weakPasswords_)]]"
         show-yellow-icon$="[[hasIssues_(weakPasswords_)]]"
         non-clickable$="[[!hasIssues_(weakPasswords_)]]"

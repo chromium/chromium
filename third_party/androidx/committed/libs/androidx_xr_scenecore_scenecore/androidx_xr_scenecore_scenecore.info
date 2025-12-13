@@ -14,12 +14,5 @@ manifest_package = "androidx.xr.scenecore"
 resources = [
   "res/values/values.xml"
 ]
-subjar_tuples = [
-  [
-    "androidx.xr.extensions",
-    "libs/androidx.xr.extensions.jar"
-  ]
-]
-subjars = [
-  "libs/androidx.xr.extensions.jar"
-]
+subjar_tuples = []
+subjars = []

@@ -38,7 +38,7 @@ bool CanFloatWindowInClamshell(aura::Window* window) {
   CHECK(window);
 
   const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+      display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
   const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
   if (minimum_size.width() > work_area.width() - 2 * kFloatedWindowPaddingDp ||
       minimum_size.height() >
@@ -56,7 +56,7 @@ bool CanFloatWindowInTablet(aura::Window* window) {
 
 bool IsLandscapeOrientationForWindow(aura::Window* window) {
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
   const OrientationType orientation = RotationToOrientation(
       GetDisplayNaturalOrientation(display), display.rotation());
   return IsLandscapeOrientation(orientation);
@@ -71,7 +71,7 @@ gfx::Size GetFloatedWindowTabletSize(aura::Window* window) {
   }
 
   const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+      display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
   const bool landscape = IsLandscapeOrientationForWindow(window);
 
   const gfx::Size preferred_size =
@@ -139,7 +139,7 @@ bool CanFloatWindow(aura::Window* window) {
     return false;
   }
 
-  return display::Screen::GetScreen()->InTabletMode()
+  return display::Screen::Get()->InTabletMode()
              ? CanFloatWindowInTablet(window)
              : CanFloatWindowInClamshell(window);
 }

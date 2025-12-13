@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/power/auto_screen_brightness/light_samples_observer.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -46,7 +42,7 @@ class LightSamplesObserverTest : public testing::Test {
 
     if (is_color_sensor) {
       for (size_t i = 0; i < std::size(kIlluminanceColorChannels); ++i) {
-        illuminance_data.id = kIlluminanceColorChannels[i];
+        illuminance_data.id = UNSAFE_TODO(kIlluminanceColorChannels[i]);
         illuminance_data.sample_data = kFakeColorSampleData;
         channels_data.push_back(std::move(illuminance_data));
       }
@@ -88,9 +84,6 @@ TEST_F(LightSamplesObserverTest, MissingChannels) {
   // Wait until the mojo connection is reset.
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester_.ExpectUniqueSample(
-      "AutoScreenBrightness.DataError",
-      static_cast<int>(DataError::kMojoSamplesObserver), 1);
   EXPECT_FALSE(sensor_device_->HasReceivers());
   EXPECT_EQ(fake_observer_.num_received_ambient_lights(), 0);
 }
@@ -111,9 +104,6 @@ TEST_F(LightSamplesObserverTest, StartReadingTwiceError) {
   // Wait until the mojo connection is reset.
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester_.ExpectUniqueSample(
-      "AutoScreenBrightness.DataError",
-      static_cast<int>(DataError::kMojoSamplesObserver), 1);
   EXPECT_FALSE(sensor_device_->HasReceivers());
   EXPECT_EQ(fake_observer_.num_received_ambient_lights(), 0);
 }

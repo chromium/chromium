@@ -5,19 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PRESENTATION_DELEGATE_H_
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PRESENTATION_DELEGATE_H_
 
-#import <UIKit/UIKit.h>
-
-/**
- * The `HomeCustomizationBackgroundPickerPresentationDelegate` protocol is used
- * to inform the delegate when the user interacts with the
- * `HomeCustomizationBackgroundPickerCell` and requests options to customize the
- * background.
- */
+// Protocol for all presentation events for background picker views.
 @protocol HomeCustomizationBackgroundPickerPresentationDelegate <NSObject>
 
 // Presents a background picker alert with options such as gallery, camera roll,
 // or color selection.
-- (void)showBackgroundPickerOptions;
+- (void)showBackgroundPickerOptionsFromSourceView:(UIView*)sourceView;
+
+// Dismiss the background picker after a successful change, dismissing the
+// entire customization menu.
+- (void)dismissBackgroundPicker;
+
+// Cancel background picker presentation, returning to the main customiztion
+// menu.
+- (void)cancelBackgroundPicker;
 
 @end
 

@@ -1,0 +1,54 @@
+Tests that Network emulation commands correctly handle various override scenarios.
+
+
+--- Testing command: Network.emulateNetworkConditions ---
+Capturing initial state...
+
+Applying full override with valid values...
+Verifying state after full override:
+  rtt is within expected range [2000, 3000]? true
+  effectiveType is slow-2g
+  downlink is constrained (<= 5)? true
+
+Applying partial override with downloadThroughput = -1...
+Verifying state after partial override with -1:
+  rtt is 200
+  effectiveType is 4g
+  downlink is un-constrained (> 5)? true
+
+Applying partial override with downloadThroughput = 0...
+Verifying state after partial override with 0:
+  rtt is within expected range [200, 400]? true
+  effectiveType is 3g
+  downlink is 0
+
+Disabling all overrides to reset to initial state...
+
+Final state matches initial state? true
+
+
+--- Testing command: Network.overrideNetworkState ---
+Capturing initial state...
+
+Applying full override with valid values...
+Verifying state after full override:
+  rtt is within expected range [2000, 3000]? true
+  effectiveType is slow-2g
+  downlink is constrained (<= 5)? true
+
+Applying partial override with downloadThroughput = -1...
+Verifying state after partial override with -1:
+  rtt is 200
+  effectiveType is 4g
+  downlink is un-constrained (> 5)? true
+
+Applying partial override with downloadThroughput = 0...
+Verifying state after partial override with 0:
+  rtt is within expected range [200, 400]? true
+  effectiveType is 3g
+  downlink is 0
+
+Disabling all overrides to reset to initial state...
+
+Final state matches initial state? true
+

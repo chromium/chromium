@@ -58,9 +58,6 @@ class CORE_EXPORT OptionListIterator final {
   bool operator==(const OptionListIterator& other) const {
     return current_ == other.current_;
   }
-  bool operator!=(const OptionListIterator& other) const {
-    return !(*this == other);
-  }
 
  private:
   void Advance(HTMLOptionElement* current);
@@ -99,11 +96,6 @@ class OptionList final {
                                              bool inclusive = false) {
     return FindFocusableOption(option, /*forward*/ false, inclusive);
   }
-
-  // This method calls IsKeyboardFocusableSlow with
-  // Element::UpdateBehavior::kAssertNoLayoutUpdates on each option until it
-  // finds a focusable one, then returns it.
-  HTMLOptionElement* FirstKeyboardFocusableOption();
 
  private:
   HTMLOptionElement* FindFocusableOption(HTMLOptionElement& option,

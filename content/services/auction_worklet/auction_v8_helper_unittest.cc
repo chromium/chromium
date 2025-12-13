@@ -31,6 +31,7 @@
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
+#include "v8/include/v8-initialization.h"
 #include "v8/include/v8-wasm.h"
 
 using testing::ElementsAre;
@@ -540,6 +541,43 @@ TEST_F(AuctionV8HelperTest, NoTime) {
   EXPECT_THAT(error_msgs[0], StartsWith("https://foo.test/:1"));
   EXPECT_THAT(error_msgs[0], HasSubstr("ReferenceError"));
   EXPECT_THAT(error_msgs[0], HasSubstr("Date"));
+}
+
+// Make sure the when CreateContext() is used, there's no access to the time,
+// which mitigates Specter-style attacks.
+TEST_F(AuctionV8HelperTest, NoTemporal) {
+  // Force on Temporal support in V8 to avoid false negative test result.
+  v8::V8::SetFlagsFromString("--harmony_temporal");
+  v8::Local<v8::Context> context = helper_->CreateContext();
+  v8::Context::Scope context_scope(context);
+
+  // Make sure Date() is not accessible.
+  v8::Local<v8::UnboundScript> script;
+  std::optional<std::string> compile_error;
+  ASSERT_TRUE(helper_
+                  ->Compile("function foo() { return Temporal.Now.instant();}",
+                            GURL("https://foo.test/"),
+                            /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                            compile_error)
+                  .ToLocal(&script));
+  EXPECT_FALSE(compile_error.has_value());
+  std::vector<std::string> error_msgs;
+  v8::MaybeLocal<v8::Value> maybe_result;
+  ASSERT_EQ(helper_->RunScript(context, script,
+                               /*debug_id=*/nullptr,
+                               /*script_timeout=*/nullptr, error_msgs),
+            AuctionV8Helper::Result::kSuccess);
+  ASSERT_EQ(helper_->CallFunction(context, /*debug_id=*/nullptr,
+                                  helper_->FormatScriptName(script), "foo",
+                                  base::span<v8::Local<v8::Value>>(),
+                                  /*script_timeout=*/nullptr, maybe_result,
+                                  error_msgs),
+            AuctionV8Helper::Result::kFailure);
+  EXPECT_TRUE(maybe_result.IsEmpty());
+  ASSERT_EQ(1u, error_msgs.size());
+  EXPECT_THAT(error_msgs[0], StartsWith("https://foo.test/:1"));
+  EXPECT_THAT(error_msgs[0], HasSubstr("ReferenceError"));
+  EXPECT_THAT(error_msgs[0], HasSubstr("Temporal"));
 }
 
 // A script that doesn't compile.

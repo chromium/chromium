@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -42,10 +43,13 @@ public final class ChromiumExecutorServiceFactoryTest {
 
     private ListeningScheduledExecutorService mExecutor;
     private final Runnable mSlowRunnable =
-            () -> {
-                mMockRunnable.run();
-                shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(8));
-            };
+            spy(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(8));
+                        }
+                    });
 
     @Before
     public void setUp() {
@@ -66,7 +70,7 @@ public final class ChromiumExecutorServiceFactoryTest {
 
     @Test
     public void submit_executesRunnable() {
-        mExecutor.submit(mMockRunnable);
+        var unused = mExecutor.submit(mMockRunnable);
         verifyNoInteractions(mMockRunnable);
         shadowOf(Looper.getMainLooper()).idle();
         verify(mMockRunnable).run();
@@ -169,18 +173,18 @@ public final class ChromiumExecutorServiceFactoryTest {
 
     @Test
     public void scheduleAtFixedRate_slowRunnable() {
-        mExecutor.scheduleAtFixedRate(mSlowRunnable, 5, 10, SECONDS);
+        var unused = mExecutor.scheduleAtFixedRate(mSlowRunnable, 5, 10, SECONDS);
         shadowOf(Looper.getMainLooper()).idle();
-        verify(mMockRunnable, never()).run();
+        verify(mSlowRunnable, never()).run();
 
         advanceTimeBy(5 * 1000);
-        verify(mMockRunnable, times(1)).run();
+        verify(mSlowRunnable, times(1)).run();
 
         advanceTimeBy(10 * 1000);
-        verify(mMockRunnable, times(2)).run();
+        verify(mSlowRunnable, times(2)).run();
 
         advanceTimeBy(10 * 1000);
-        verify(mMockRunnable, times(3)).run();
+        verify(mSlowRunnable, times(3)).run();
     }
 
     @Test
@@ -212,23 +216,23 @@ public final class ChromiumExecutorServiceFactoryTest {
 
     @Test
     public void scheduleWithFixedDelay_slowRunnable() {
-        mExecutor.scheduleWithFixedDelay(mSlowRunnable, 5, 10, SECONDS);
+        var unused = mExecutor.scheduleWithFixedDelay(mSlowRunnable, 5, 10, SECONDS);
         shadowOf(Looper.getMainLooper()).idle();
-        verify(mMockRunnable, never()).run();
+        verify(mSlowRunnable, never()).run();
 
         advanceTimeBy(5 * 1000);
-        verify(mMockRunnable, times(1)).run();
+        verify(mSlowRunnable, times(1)).run();
 
         advanceTimeBy(5 * 1000);
-        verify(mMockRunnable, times(1)).run();
+        verify(mSlowRunnable, times(1)).run();
 
         advanceTimeBy(5 * 1000);
-        verify(mMockRunnable, times(2)).run();
+        verify(mSlowRunnable, times(2)).run();
 
         advanceTimeBy(5 * 1000);
-        verify(mMockRunnable, times(2)).run();
+        verify(mSlowRunnable, times(2)).run();
 
         advanceTimeBy(5 * 1000);
-        verify(mMockRunnable, times(3)).run();
+        verify(mSlowRunnable, times(3)).run();
     }
 }

@@ -30,9 +30,9 @@ class TailoredSecurityServiceFactory : public ProfileKeyedServiceFactoryIOS {
   TailoredSecurityServiceFactory();
   ~TailoredSecurityServiceFactory() override = default;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_TAILORED_SECURITY_TAILORED_SECURITY_SERVICE_FACTORY_H_

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
+
 namespace blink {
 
 MenuItemListIterator::MenuItemListIterator(const HTMLElement& owner_menu,
@@ -28,14 +29,41 @@ MenuItemListIterator::MenuItemListIterator(const HTMLElement& owner_menu,
   }
 }
 
+HTMLMenuItemElement& MenuItemListIterator::operator*() {
+  DCHECK(current_);
+  return *current_;
+}
+
+HTMLMenuItemElement* MenuItemListIterator::operator->() {
+  return current_;
+}
+
+MenuItemListIterator& MenuItemListIterator::operator++() {
+  if (current_) {
+    Advance(current_);
+  }
+  return *this;
+}
+
+MenuItemListIterator& MenuItemListIterator::operator--() {
+  if (current_) {
+    Retreat(current_);
+  }
+  return *this;
+}
+
+MenuItemListIterator::operator bool() const {
+  return current_;
+}
+
+bool MenuItemListIterator::operator==(const MenuItemListIterator& other) const {
+  return current_ == other.current_;
+}
+
 void MenuItemListIterator::Advance(HTMLMenuItemElement* previous) {
   Element* current;
   if (previous) {
-    if (IsA<HTMLMenuBarElement>(owner_menu_)) {
-      DCHECK_EQ(previous->OwnerMenuBarElement(), owner_menu_);
-    } else if (IsA<HTMLMenuListElement>(owner_menu_)) {
-      DCHECK_EQ(previous->OwnerMenuListElement(), owner_menu_);
-    }
+    DCHECK_EQ(previous->OwningMenuElement(), owner_menu_);
     current = ElementTraversal::NextSkippingChildren(*previous, &owner_menu_);
   } else {
     current = ElementTraversal::FirstChild(owner_menu_);
@@ -59,11 +87,7 @@ void MenuItemListIterator::Advance(HTMLMenuItemElement* previous) {
 void MenuItemListIterator::Retreat(HTMLMenuItemElement* next) {
   Element* current;
   if (next) {
-    if (IsA<HTMLMenuBarElement>(owner_menu_)) {
-      DCHECK_EQ(next->OwnerMenuBarElement(), owner_menu_);
-    } else if (IsA<HTMLMenuListElement>(owner_menu_)) {
-      DCHECK_EQ(next->OwnerMenuListElement(), owner_menu_);
-    }
+    DCHECK_EQ(next->OwningMenuElement(), owner_menu_);
     current = ElementTraversal::Previous(*next, &owner_menu_);
   } else {
     current = ElementTraversal::LastChild(owner_menu_);
@@ -91,6 +115,34 @@ void MenuItemListIterator::Retreat(HTMLMenuItemElement* next) {
   current_ = nullptr;
 }
 
+MenuItemListIterator MenuItemList::begin() {
+  return Iterator(owner_menu_, Iterator::StartingPoint::kStart);
+}
+
+MenuItemListIterator MenuItemList::end() {
+  return Iterator(owner_menu_, Iterator::StartingPoint::kEnd);
+}
+
+MenuItemListIterator MenuItemList::last() {
+  return Iterator(owner_menu_, Iterator::StartingPoint::kLast);
+}
+
+bool MenuItemList::Empty() {
+  return !Iterator(owner_menu_, Iterator::StartingPoint::kStart);
+}
+
+HTMLMenuItemElement* MenuItemList::NextFocusableMenuItem(
+    HTMLMenuItemElement& menuitem,
+    bool inclusive) {
+  return FindFocusableMenuItem(menuitem, /*forward*/ true, inclusive);
+}
+
+HTMLMenuItemElement* MenuItemList::PreviousFocusableMenuItem(
+    HTMLMenuItemElement& menuitem,
+    bool inclusive) {
+  return FindFocusableMenuItem(menuitem, /*forward*/ false, inclusive);
+}
+
 unsigned MenuItemList::size() const {
   unsigned count = 0;
   auto iterator =
@@ -106,11 +158,7 @@ HTMLMenuItemElement* MenuItemList::FindFocusableMenuItem(
     HTMLMenuItemElement& menuitem,
     bool forward,
     bool inclusive) {
-  if (IsA<HTMLMenuBarElement>(owner_menu_)) {
-    DCHECK_EQ(menuitem.OwnerMenuBarElement(), owner_menu_);
-  } else if (IsA<HTMLMenuListElement>(owner_menu_)) {
-    DCHECK_EQ(menuitem.OwnerMenuListElement(), owner_menu_);
-  }
+  DCHECK_EQ(menuitem.OwningMenuElement(), owner_menu_);
   DCHECK(!Empty());
   MenuItemListIterator menu_item_list_iterator = begin();
   while (menu_item_list_iterator && *menu_item_list_iterator != menuitem) {

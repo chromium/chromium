@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -62,7 +63,6 @@ enum class InSessionPasswordSyncEvent {
 
 constexpr int kGetAuthCodeNetworkRetry = 1;
 constexpr int kMaxResponseSize = 5 * 1024;
-const char kAccessTokenFetchId[] = "sync_token_fetcher";
 
 const char kErrorKey[] = "error";
 const char kErrorDescription[] = "message";
@@ -161,16 +161,9 @@ void PasswordSyncTokenFetcher::StartAccessTokenFetch() {
       IdentityManagerFactory::GetForProfile(profile_);
   DCHECK(identity_manager);
 
-  // Now we can request the token, knowing that it will be immediately requested
-  // if the refresh token is available, or that it will be requested once the
-  // refresh token is available for the primary account.
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
-  scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          kAccessTokenFetchId, identity_manager, scopes,
+          signin::OAuthConsumerId::kPasswordSyncTokenFetcher, identity_manager,
           base::BindOnce(&PasswordSyncTokenFetcher::OnAccessTokenFetchComplete,
                          weak_ptr_factory_.GetWeakPtr()),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
@@ -280,7 +273,7 @@ void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
 }
 
 void PasswordSyncTokenFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {

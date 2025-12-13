@@ -38,8 +38,6 @@ class AppTimeController;
 }  // namespace app_time
 
 // Facade that exposes child user related functionality on Chrome OS.
-// TODO(crbug.com/40106527): Migrate ConsumerStatusReportingService,
-// EventBasedStatusReporting and ScreenTimeController to ChildUserService.
 class ChildUserService : public KeyedService,
                          public app_time::AppTimeLimitInterface,
                          public app_time::AppActivityReportInterface {

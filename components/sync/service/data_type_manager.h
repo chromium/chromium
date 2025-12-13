@@ -14,6 +14,7 @@
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/service/data_type_status_table.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_error.h"
 #include "components/sync/service/type_status_map_for_debugging.h"
@@ -84,9 +85,6 @@ class DataTypeManager {
   // started again. No-op if the type's state didn't actually change.
   virtual void DataTypePreconditionChanged(DataType type) = 0;
 
-  // Resets all data type error state.
-  virtual void ResetDataTypeErrors() = 0;
-
   virtual void PurgeForMigration(DataTypeSet undesired_types) = 0;
 
   // Synchronously stops all registered data types. If called after Configure()
@@ -103,10 +101,9 @@ class DataTypeManager {
   // not tied to sync-the-feature).
   virtual DataTypeSet GetDataTypesForTransportOnlyMode() const = 0;
 
-  // Get the set of current active data types (those chosen or configured by the
-  // user which have not also encountered a runtime error). Note that during
-  // configuration, this will the the empty set. Once the configuration
-  // completes the set will be updated.
+  // Get the set of current active data types, as reported by their controllers.
+  // Note that this may, in some edge cases, temporarily include types that are
+  // not enabled/chosen by the user.
   virtual DataTypeSet GetActiveDataTypes() const = 0;
 
   // Returns the datatypes that are stopped, with or without having cleared
@@ -126,6 +123,9 @@ class DataTypeManager {
   // Returns the datatypes with datatype errors (e.g. errors while loading from
   // the disk).
   virtual DataTypeSet GetDataTypesWithPermanentErrors() const = 0;
+
+  // Returns the map of data types with errors.
+  virtual DataTypeStatusTable::TypeErrorMap GetDataTypeErrors() const = 0;
 
   // Returns the datatypes which have local changes that have not yet been
   // synced with the server.

@@ -26,9 +26,39 @@ class CommentsServiceBridge : public base::SupportsUserData::Data {
 
   // Methods called from Java via JNI.
   bool IsInitialized(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& j_caller);
+                     const base::android::JavaRef<jobject>& j_caller);
   bool IsEmptyService(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& j_caller);
+                      const base::android::JavaRef<jobject>& j_caller);
+  base::android::ScopedJavaLocalRef<jstring> AddComment(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& j_caller,
+      const base::android::JavaRef<jstring>& j_collaboration_id,
+      const base::android::JavaRef<jobject>& j_url,
+      const base::android::JavaRef<jstring>& j_content,
+      const base::android::JavaRef<jstring>& j_parent_comment_id,
+      const base::android::JavaRef<jobject>& j_success_callback);
+  void EditComment(JNIEnv* env,
+                   const base::android::JavaRef<jobject>& j_caller,
+                   const base::android::JavaRef<jstring>& j_comment_id,
+                   const base::android::JavaRef<jstring>& j_new_content,
+                   const base::android::JavaRef<jobject>& j_success_callback);
+  void DeleteComment(JNIEnv* env,
+                     const base::android::JavaRef<jobject>& j_caller,
+                     const base::android::JavaRef<jstring>& j_comment_id,
+                     const base::android::JavaRef<jobject>& j_success_callback);
+  void QueryComments(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& j_caller,
+      const base::android::JavaRef<jobject>& j_filter_criteria,
+      const base::android::JavaRef<jobject>& j_pagination_criteria,
+      const base::android::JavaRef<jobject>& j_callback);
+  void AddObserver(JNIEnv* env,
+                   const base::android::JavaRef<jobject>& j_caller,
+                   const base::android::JavaRef<jobject>& j_observer,
+                   const base::android::JavaRef<jobject>& j_filter_criteria);
+  void RemoveObserver(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& j_caller,
+                      const base::android::JavaRef<jobject>& j_observer);
 
   // Returns the companion Java object for this bridge.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

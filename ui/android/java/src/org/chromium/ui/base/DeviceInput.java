@@ -40,6 +40,9 @@ public class DeviceInput implements InputDeviceListener {
     /** See {@link #setSupportsAlphabeticKeyboardForTesting(boolean)}. */
     private static @Nullable Boolean sSupportsAlphabeticKeyboardForTesting;
 
+    /** See {@link #setSupportsKeyboardForTesting(boolean)}. */
+    private static @Nullable Boolean sSupportsKeyboardForTesting;
+
     /** See {@link #setSupportsPrevisionPointerForTesting(boolean)}. */
     private static @Nullable Boolean sSupportsPrecisionPointerForTesting;
 
@@ -67,7 +70,7 @@ public class DeviceInput implements InputDeviceListener {
     }
 
     /** Returns a lazily instantiated singleton instance. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static DeviceInput getInstance() {
         ThreadUtils.assertOnUiThread();
         return LazyInit.sInstance;
@@ -85,6 +88,13 @@ public class DeviceInput implements InputDeviceListener {
     public static boolean supportsAlphabeticKeyboard() {
         ThreadUtils.assertOnUiThread();
         return getInstance().supportsAlphabeticKeyboardImpl();
+    }
+
+    /** Modifies the output of {@link #supportsKeyboard()} for testing. */
+    public static void setSupportsKeyboardForTesting(Boolean supportsKeyboard) {
+        sSupportsKeyboardForTesting = supportsKeyboard;
+        // Register a callback to reset this value after every test method completes.
+        ResettersForTesting.register(() -> sSupportsKeyboardForTesting = null);
     }
 
     /**
@@ -112,6 +122,10 @@ public class DeviceInput implements InputDeviceListener {
     /** Implementation of {@link #supportsKeyboard()}. */
     public boolean supportsKeyboardImpl() {
         ThreadUtils.assertOnUiThread();
+        if (sSupportsKeyboardForTesting != null) {
+            return sSupportsKeyboardForTesting;
+        }
+
         for (int i = 0; i < mDeviceSnapshotsById.size(); i++) {
             if (mDeviceSnapshotsById.valueAt(i).supportsKeyboard) {
                 return true;

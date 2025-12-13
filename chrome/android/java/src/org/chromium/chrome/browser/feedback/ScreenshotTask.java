@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feedback;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,27 +19,30 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 /** A utility class to take a feedback-formatted screenshot of an {@link Activity}. */
 @JNINamespace("chrome::android")
+@NullMarked
 public final class ScreenshotTask implements ScreenshotSource {
     /**
-     * Maximum dimension for the screenshot to be sent to the feedback handler.  This size
-     * ensures the size of bitmap < 1MB, which is a requirement of the handler.
+     * Maximum dimension for the screenshot to be sent to the feedback handler. This size ensures
+     * the size of bitmap < 1MB, which is a requirement of the handler.
      */
     private static final int MAX_FEEDBACK_SCREENSHOT_DIMENSION = 600;
 
     private final Activity mActivity;
 
     private boolean mDone;
-    private Bitmap mBitmap;
-    private Runnable mCallback;
+    private @Nullable Bitmap mBitmap;
+    private @Nullable Runnable mCallback;
     private final @ScreenshotMode int mScreenshotMode;
 
     /**
@@ -97,7 +102,7 @@ public final class ScreenshotTask implements ScreenshotSource {
     }
 
     @Override
-    public Bitmap getScreenshot() {
+    public @Nullable Bitmap getScreenshot() {
         return mBitmap;
     }
 
@@ -125,7 +130,7 @@ public final class ScreenshotTask implements ScreenshotSource {
         ScreenshotTaskJni.get()
                 .grabWindowSnapshotAsync(
                         this,
-                        ((ChromeActivity) activity).getWindowAndroid(),
+                        assumeNonNull(((ChromeActivity) activity).getWindowAndroid()),
                         rect.width(),
                         rect.height());
 
@@ -157,15 +162,17 @@ public final class ScreenshotTask implements ScreenshotSource {
         if (!(activity instanceof ChromeActivity)) return false;
 
         ChromeActivity chromeActivity = (ChromeActivity) activity;
+        WindowAndroid windowAndroid = chromeActivity.getWindowAndroid();
+        if (windowAndroid == null) return false;
         Tab currentTab = chromeActivity.getActivityTab();
 
         // If the bottom sheet is currently open, then do not use the Compositor based screenshot
         // so that the Android View for the bottom sheet will be captured.
         // TODO(crbug.com/40573072): When the sheet is partially opened both the compositor
         // and Android views should be captured in the screenshot.
-        if (BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()).isSheetOpen()) {
-            return false;
-        }
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        if (bottomSheetController != null && bottomSheetController.isSheetOpen()) return false;
 
         // If the grid tab switcher is in use, do not use the compositor, it will snapshot the last
         // active tab instead of the current screen if we try to use it.

@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -53,7 +54,7 @@ public class OpenDownloadDialog {
             Context context,
             ModalDialogManager modalDialogManager,
             boolean autoOpenEnabled,
-            String appName,
+            @Nullable String appName,
             Callback<Integer> callback) {
         var controller =
                 new ModalDialogProperties.Controller() {

@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/install_static/install_util.h"

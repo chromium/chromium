@@ -16,7 +16,6 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/common/pref_names.h"
@@ -29,7 +28,6 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -289,7 +287,7 @@ TEST_P(ConnectorsManagerConnectorPoliciesTest, NormalPref) {
   auto settings_from_cache =
       cached_settings.at(connector())
           .at(0)
-          .GetAnalysisSettings(GURL(url()), DataRegion::NO_PREFERENCE);
+          ->GetAnalysisSettings(GURL(url()), DataRegion::NO_PREFERENCE);
   ASSERT_EQ(expect_settings_, settings_from_cache.has_value());
   if (settings_from_cache.has_value())
     ValidateSettings(settings_from_cache.value());
@@ -622,12 +620,13 @@ TEST_P(ConnectorsManagerConnectorPoliciesSourceDestinationTest, NormalPref) {
   ASSERT_EQ(1u, cached_settings.count(connector()));
   ASSERT_EQ(1u, cached_settings.at(connector()).size());
 
-  auto settings_from_cache =
-      cached_settings.at(connector())
-          .at(0)
-          .GetAnalysisSettings(profile_, source_volume_url(),
-                               destination_volume_url(),
-                               DataRegion::NO_PREFERENCE);
+  auto* analysis_service_settings = static_cast<AnalysisServiceSettings*>(
+      cached_settings.at(connector()).at(0).get());
+
+  auto settings_from_cache = analysis_service_settings->GetAnalysisSettings(
+      profile_, source_volume_url(), destination_volume_url(),
+      DataRegion::NO_PREFERENCE);
+
   ASSERT_EQ(expect_settings_, settings_from_cache.has_value());
   if (settings_from_cache.has_value())
     ValidateSettings(settings_from_cache.value());
@@ -697,8 +696,8 @@ TEST_P(ConnectorsManagerAnalysisConnectorsTest, DynamicPolicies) {
 
     auto settings = cached_settings.at(connector())
                         .at(0)
-                        .GetAnalysisSettings(GURL(kDlpAndMalwareUrl),
-                                             DataRegion::NO_PREFERENCE);
+                        ->GetAnalysisSettings(GURL(kDlpAndMalwareUrl),
+                                              DataRegion::NO_PREFERENCE);
     ASSERT_TRUE(settings.has_value());
     expected_block_until_verdict_ = BlockUntilVerdict::kBlock;
     expected_block_password_protected_files_ = true;
@@ -805,11 +804,13 @@ TEST_P(ConnectorsManagerAnalysisConnectorsSourceDestinationTest,
     ASSERT_EQ(1u, cached_settings.count(connector()));
     ASSERT_EQ(1u, cached_settings.at(connector()).size());
 
-    auto settings = cached_settings.at(connector())
-                        .at(0)
-                        .GetAnalysisSettings(profile_, source_volume_url(),
-                                             destination_volume_url(),
-                                             DataRegion::NO_PREFERENCE);
+    auto* analysis_service_settings = static_cast<AnalysisServiceSettings*>(
+        cached_settings.at(connector()).at(0).get());
+
+    auto settings = analysis_service_settings->GetAnalysisSettings(
+        profile_, source_volume_url(), destination_volume_url(),
+        DataRegion::NO_PREFERENCE);
+
     ASSERT_TRUE(settings.has_value());
     expected_block_until_verdict_ = BlockUntilVerdict::kBlock;
     expected_block_password_protected_files_ = true;
@@ -877,8 +878,8 @@ TEST_P(ConnectorsManagerLocalAnalysisConnectorTest, DynamicPolicies) {
 
     auto settings = cached_settings.at(connector())
                         .at(0)
-                        .GetAnalysisSettings(GURL(kDlpAndMalwareUrl),
-                                             DataRegion::NO_PREFERENCE);
+                        ->GetAnalysisSettings(GURL(kDlpAndMalwareUrl),
+                                              DataRegion::NO_PREFERENCE);
     ASSERT_TRUE(settings.has_value());
     expected_block_until_verdict_ = BlockUntilVerdict::kBlock;
     expected_block_password_protected_files_ = true;
@@ -904,8 +905,8 @@ TEST_P(ConnectorsManagerLocalAnalysisConnectorTest, DynamicPolicies) {
 
     settings = cached_settings.at(connector())
                    .at(0)
-                   .GetAnalysisSettings(GURL(kDlpAndMalwareUrl),
-                                        DataRegion::NO_PREFERENCE);
+                   ->GetAnalysisSettings(GURL(kDlpAndMalwareUrl),
+                                         DataRegion::NO_PREFERENCE);
     ASSERT_TRUE(settings.has_value());
     expected_block_until_verdict_ = BlockUntilVerdict::kBlock;
     expected_block_password_protected_files_ = true;

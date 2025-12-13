@@ -139,7 +139,8 @@ void CloudHostStarter::OnApiAccessTokenRetrieved(const HttpStatus& status) {
     HandleError("Token response is empty.", Result::OAUTH_ERROR);
     return;
   }
-  auto token_payload = base::JSONReader::Read(status.response_body());
+  auto token_payload = base::JSONReader::Read(
+      status.response_body(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!token_payload.has_value()) {
     HandleError("Token response was not valid JSON.", Result::OAUTH_ERROR);
     return;

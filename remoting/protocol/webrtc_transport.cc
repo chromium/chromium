@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -394,7 +395,7 @@ class WebrtcTransport::PeerConnectionWrapper
       transport_->OnIceGatheringChange(new_state);
     }
   }
-  void OnIceCandidate(const webrtc::IceCandidateInterface* candidate) override {
+  void OnIceCandidate(const webrtc::IceCandidate* candidate) override {
     if (transport_) {
       transport_->OnIceCandidate(candidate);
     }
@@ -420,9 +421,7 @@ WebrtcTransport::WebrtcTransport(
     scoped_refptr<TransportContext> transport_context,
     std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
     EventHandler* event_handler)
-    : transport_context_(transport_context),
-      event_handler_(event_handler),
-      handshake_hmac_(crypto::HMAC::SHA256) {
+    : transport_context_(transport_context), event_handler_(event_handler) {
   auto create_port_allocator_result =
       transport_context_->port_allocator_factory()->CreatePortAllocator(
           transport_context_, weak_factory_.GetWeakPtr());
@@ -462,7 +461,8 @@ WebrtcAudioModule* WebrtcTransport::audio_module() {
 std::unique_ptr<MessagePipe> WebrtcTransport::CreateOutgoingChannel(
     const std::string& name) {
   webrtc::DataChannelInit config;
-  config.reliable = true;
+  // We don't set maxRetransmits or maxRetransmitTime,
+  // so the channel is reliable.
   auto result = peer_connection()->CreateDataChannelOrError(name, &config);
   if (!result.ok()) {
     LOG(ERROR) << "CreateDataChannelOrError() failed: "
@@ -498,9 +498,7 @@ void WebrtcTransport::Start(
 
   send_transport_info_callback_ = std::move(send_transport_info_callback);
 
-  if (!handshake_hmac_.Init(authenticator->GetAuthKey())) {
-    LOG(FATAL) << "HMAC::Init() failed.";
-  }
+  hmac_key_ = base::ToVector(base::as_byte_span(authenticator->GetAuthKey()));
 
   event_handler_->OnWebrtcTransportConnecting();
 
@@ -545,13 +543,13 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
 
     SdpMessage sdp_message(raw_sdp);
 
-    std::string signature_base64 =
-        session_description->Attr(QName(std::string(), "signature"));
-    std::string signature;
-    if (!base::Base64Decode(signature_base64, &signature) ||
-        !handshake_hmac_.Verify(
-            type_string + " " + sdp_message.NormalizedForSignature(),
-            signature)) {
+    std::optional<std::vector<uint8_t>> signature = base::Base64Decode(
+        session_description->Attr(QName(std::string(), "signature")));
+    crypto::hmac::HmacVerifier verifier(crypto::hash::kSha256, hmac_key_);
+    verifier.Update(base::as_byte_span(type_string));
+    verifier.Update(base::byte_span_from_cstring(" "));
+    verifier.Update(base::as_byte_span(sdp_message.NormalizedForSignature()));
+    if (!signature || !verifier.Finish(*signature)) {
       static constexpr char kErrorDetails[] =
           "Received session-description with invalid signature.";
       bool ignore_error = false;
@@ -614,9 +612,8 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     }
 
     webrtc::SdpParseError error;
-    std::unique_ptr<webrtc::IceCandidateInterface> candidate(
-        webrtc::CreateIceCandidate(sdp_mid, sdp_mlineindex, candidate_str,
-                                   &error));
+    std::unique_ptr<webrtc::IceCandidate> candidate(webrtc::CreateIceCandidate(
+        sdp_mid, sdp_mlineindex, candidate_str, &error));
     if (!candidate) {
       LOG(ERROR) << "Failed to parse incoming candidate: " << error.description
                  << " line: " << error.line;
@@ -812,6 +809,7 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   }
   description_sdp = sdp_message.ToString();
   webrtc::SdpParseError parse_error;
+
   description = webrtc::CreateSessionDescription(description->GetType(),
                                                  description_sdp, &parse_error);
   if (!description) {
@@ -831,20 +829,27 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   offer_tag->SetAttr(QName(std::string(), "type"), description->type());
   offer_tag->SetBodyText(description_sdp);
 
-  std::string digest;
-  digest.resize(handshake_hmac_.DigestLength());
-  CHECK(handshake_hmac_.Sign(
-      description->type() + " " + sdp_message.NormalizedForSignature(),
-      reinterpret_cast<uint8_t*>(&(digest[0])), digest.size()));
-  std::string digest_base64 = base::Base64Encode(digest);
-  offer_tag->SetAttr(QName(std::string(), "signature"), digest_base64);
+  crypto::hmac::HmacSigner signer(crypto::hash::kSha256, hmac_key_);
+  signer.Update(base::as_byte_span(description->type()));
+  signer.Update(base::byte_span_from_cstring(" "));
+  signer.Update(base::as_byte_span(sdp_message.NormalizedForSignature()));
+  std::array<uint8_t, crypto::hash::kSha256Size> digest;
+  signer.Finish(digest);
+
+  offer_tag->SetAttr(QName(std::string(), "signature"),
+                     base::Base64Encode(digest));
 
   send_transport_info_callback_.Run(std::move(transport_info));
 
-  peer_connection()->SetLocalDescription(
-      SetSessionDescriptionObserver::Create(base::BindOnce(
-          &WebrtcTransport::OnLocalDescriptionSet, weak_factory_.GetWeakPtr())),
-      description.release());
+  {
+    // Addresses an issue reported on ChromeOS M140 with DCHECKs enabled.
+    ScopedAllowSyncPrimitivesForWebRtcTransport allow_sync_primitives;
+    peer_connection()->SetLocalDescription(
+        SetSessionDescriptionObserver::Create(
+            base::BindOnce(&WebrtcTransport::OnLocalDescriptionSet,
+                           weak_factory_.GetWeakPtr())),
+        description.release());
+  }
 }
 
 void WebrtcTransport::OnLocalDescriptionSet(bool success,
@@ -1003,14 +1008,13 @@ void WebrtcTransport::OnIceGatheringChange(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void WebrtcTransport::OnIceCandidate(
-    const webrtc::IceCandidateInterface* candidate) {
+void WebrtcTransport::OnIceCandidate(const webrtc::IceCandidate* candidate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::unique_ptr<XmlElement> candidate_element(
       new XmlElement(QName(kTransportNamespace, "candidate")));
-  std::string candidate_str;
-  if (!candidate->ToString(&candidate_str)) {
+  std::string candidate_str = candidate->ToString();
+  if (candidate_str.empty()) {
     LOG(ERROR) << "Failed to serialize local candidate.";
     return;
   }

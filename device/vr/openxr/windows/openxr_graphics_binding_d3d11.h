@@ -30,21 +30,16 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
   bool Initialize(XrInstance instance, XrSystemId system) override;
   const void* GetSessionCreateInfo() const override;
   int64_t GetSwapchainFormat(XrSession session) const override;
-  XrResult EnumerateSwapchainImages(
-      const XrSwapchain& color_swapchain) override;
-  void ClearSwapchainImages() override;
-  base::span<SwapChainInfo> GetSwapChainImages() override;
-  base::span<const SwapChainInfo> GetSwapChainImages() const override;
+  XrResult EnumerateSwapchainImages(OpenXrCompositionLayer& layer) override;
   bool CanUseSharedImages() const override;
-  void CreateSharedImages(gpu::SharedImageInterface* sii) override;
-  const SwapChainInfo& GetActiveSwapchainImage() override;
-  bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
-  bool Render(
-      const scoped_refptr<viz::ContextProvider>& context_provider) override;
+  void ResizeSharedBuffer(OpenXrCompositionLayer&,
+                          OpenXrSwapchainInfo& swap_chain_info,
+                          gpu::SharedImageInterface* sii) override;
+  void OnSwapchainImageSizeChanged(OpenXrCompositionLayer&) override;
+  void OnSwapchainImageActivated(OpenXrCompositionLayer&,
+                                 gpu::SharedImageInterface* sii) override;
   void CleanupWithoutSubmit() override;
-  bool ShouldFlipSubmittedImage() const override;
-  void SetOverlayAndWebXrVisibility(bool overlay_visible,
-                                    bool webxr_visible) override;
+  void OnSetOverlayAndWebXrVisibility() override;
   void SetWebXrTexture(mojo::PlatformHandle texture_handle,
                        const gpu::SyncToken& sync_token,
                        const gfx::RectF& left,
@@ -53,15 +48,25 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
                          const gpu::SyncToken& sync_token,
                          const gfx::RectF& left,
                          const gfx::RectF& right) override;
+  gfx::Size GetMaxTextureSize() override;
 
- private:
-  void OnSwapchainImageSizeChanged() override;
-  void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) override;
+ protected:
+  // OpenXrGraphicsBinding
+  bool RenderLayer(
+      OpenXrCompositionLayer& layer,
+      const scoped_refptr<viz::ContextProvider>& context_provider) override;
+  void CreateSharedImages(OpenXrCompositionLayer& layer,
+                          gpu::SharedImageInterface* sii) override;
+  bool WaitOnFence(OpenXrCompositionLayer& layer,
+                   gfx::GpuFence& gpu_fence) override;
+  bool ShouldFlipSubmittedImage(OpenXrCompositionLayer& layer) const override;
+  bool SupportsLayers() const override;
+  std::unique_ptr<OpenXrCompositionLayer::GraphicsBindingData>
+  CreateLayerGraphicsBindingData() const override;
 
   bool initialized_ = false;
   std::unique_ptr<D3D11TextureHelper> texture_helper_;
   base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper_;
-  std::vector<SwapChainInfo> color_swapchain_images_;
 
   XrGraphicsBindingD3D11KHR binding_{XR_TYPE_GRAPHICS_BINDING_D3D11_KHR,
                                      nullptr, nullptr};

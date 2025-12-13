@@ -1,6 +1,6 @@
 Name: play-services-auth-blockstore
 Short Name: play-services-auth-blockstore
-URL: https://developers.google.com/android/guides/setup
+URL: https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-auth-blockstore/16.4.0/play-services-auth-blockstore-16.4.0.aar
 Version: 16.4.0
 Update Mechanism: Autoroll
 License: Android Software Development Kit License

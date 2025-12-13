@@ -75,12 +75,12 @@
 
 - (void)accountPickerListTableViewController:
             (AccountPickerSelectionScreenTableViewController*)viewController
-                 didSelectIdentityWithGaiaID:(NSString*)gaiaID {
+                 didSelectIdentityWithGaiaID:(const GaiaId&)gaiaID {
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
 
   id<SystemIdentity> identity =
-      accountManagerService->GetIdentityOnDeviceWithGaiaID(GaiaId(gaiaID));
+      accountManagerService->GetIdentityOnDeviceWithGaiaID(gaiaID);
   DCHECK(identity);
   _mediator.selectedIdentity = identity;
   [self.delegate accountPickerSelectionScreenCoordinatorIdentitySelected:self];

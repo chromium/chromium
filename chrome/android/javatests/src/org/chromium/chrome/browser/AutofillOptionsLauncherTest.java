@@ -26,9 +26,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -51,7 +49,6 @@ public class AutofillOptionsLauncherTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)
     public void testLauncherStartsAutofillOptionsFragment() {
         setAutofillOptionsDeepLinkPref(true);
         launchActivity();
@@ -65,7 +62,6 @@ public class AutofillOptionsLauncherTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)
     public void testAutofillOptionsFragmentNotStartedWithDeepLinkFeatureOff() {
         setAutofillOptionsDeepLinkPref(false);
         launchActivity();

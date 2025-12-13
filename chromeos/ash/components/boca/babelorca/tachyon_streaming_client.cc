@@ -119,7 +119,7 @@ void TachyonStreamingClient::OnComplete(bool success) {
   base::UmaHistogramEnumeration(kStreamEndReasonUma,
                                 StreamEndReason::kConnectionClosedError);
   HandleResponse(std::move(url_loader_), std::move(request_data_),
-                 std::move(auth_failure_cb_), /*response_body=*/nullptr);
+                 std::move(auth_failure_cb_), /*response_body=*/std::nullopt);
 }
 
 void TachyonStreamingClient::OnRetry(base::OnceClosure start_retry) {

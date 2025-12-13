@@ -113,3 +113,5 @@ void AwSupervisedUserBlockingPage::PopulateInterstitialStrings(
                      l10n_util::GetStringUTF16(IDS_SUPERVISED_USER_LEARN_MORE));
 }
 }  // namespace android_webview
+
+DEFINE_JNI(AwSupervisedUserHelper)

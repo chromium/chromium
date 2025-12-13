@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 
 #include <algorithm>
@@ -41,6 +40,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -165,8 +165,12 @@ class BaseTest : public testing::Test {
     profile_ = profile_manager_.CreateTestingProfile("test-user");
     ContentAnalysisDelegate::DisableUIForTesting();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{safe_browsing::kEnhancedFieldsForSecOps,
-                              kEnterpriseIframeDlpRulesSupport},
+        /*enabled_features=*/
+        {
+            safe_browsing::kEnhancedFieldsForSecOps,
+            kEnterpriseIframeDlpRulesSupport,
+            kDlpScanPastedImages,
+        },
         /*disabled_features=*/{});
   }
 
@@ -521,7 +525,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareEnabledWithPatterns) {
   ValidateIsEnabled("custom://google.com", /*dlp*/ false, /*malware*/ false);
   ValidateIsEnabled("custom://version", /*dlp*/ false, /*malware*/ false);
   ValidateIsEnabled("devtools://devtools/bundled/inspector.html", /*dlp*/ false,
-                    /*malware*/ true);
+                    /*malware*/ false);
   ValidateIsEnabled("custom://devtools/bundled/inspector.html", /*dlp*/ false,
                     /*malware*/ false);
   ValidateIsEnabled("http://google.com/a/specific/path/", /*dlp*/ false,
@@ -1230,9 +1234,9 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, ImageDataCloudScan) {
                  &called));
   RunUntilDone();
 
-  // There shouldn't be any image request made when the policy is set to do
+  // There should be an image request made when the policy is set to do
   // cloud scanning.
-  EXPECT_EQ(0,
+  EXPECT_EQ(1,
             test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
@@ -1292,8 +1296,9 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, TextAndImageDataCloudScan) {
                  &called));
   RunUntilDone();
 
-  // Only the text data is scanned for cloud scans.
-  EXPECT_EQ(1,
+  // Both text and image data are scanned for cloud scans.
+
+  EXPECT_EQ(2,
             test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
@@ -1521,7 +1526,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, EmptyWait) {
 class ContentAnalysisDelegateResultHandlingTest
     : public BaseTest,
       public testing::WithParamInterface<
-          std::tuple<safe_browsing::BinaryUploadService::Result, bool, bool>> {
+          std::tuple<ScanRequestUploadResult, bool, bool>> {
  public:
   ContentAnalysisDelegateResultHandlingTest() = default;
 
@@ -1549,9 +1554,7 @@ class ContentAnalysisDelegateResultHandlingTest
         ResetStaticDialogFlagsAndTotalRequestsCount();
   }
 
-  safe_browsing::BinaryUploadService::Result result() const {
-    return std::get<0>(GetParam());
-  }
+  ScanRequestUploadResult result() const { return std::get<0>(GetParam()); }
 
   bool is_cloud() const { return std::get<1>(GetParam()); }
 
@@ -1575,17 +1578,13 @@ class ContentAnalysisDelegateResultHandlingTest
   ScopedSetDMToken scoped_dm_token_{
       policy::DMToken::CreateValidToken(kDmToken)};
 
-  bool ResultIsFailClosed(safe_browsing::BinaryUploadService::Result result) {
-    return result ==
-               safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE ||
-           result == safe_browsing::BinaryUploadService::Result::TIMEOUT ||
-           result == safe_browsing::BinaryUploadService::Result::
-                         FAILED_TO_GET_TOKEN ||
-           result ==
-               safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS ||
-           result == safe_browsing::BinaryUploadService::Result::UNKNOWN ||
-           result ==
-               safe_browsing::BinaryUploadService::Result::INCOMPLETE_RESPONSE;
+  bool ResultIsFailClosed(ScanRequestUploadResult result) {
+    return result == ScanRequestUploadResult::kUploadFailure ||
+           result == ScanRequestUploadResult::kTimeout ||
+           result == ScanRequestUploadResult::kFailedToGetToken ||
+           result == ScanRequestUploadResult::kTooManyRequests ||
+           result == ScanRequestUploadResult::kUnknown ||
+           result == ScanRequestUploadResult::kIncompleteResponse;
   }
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -1646,18 +1645,16 @@ TEST_P(ContentAnalysisDelegateResultHandlingTest, Test) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     ContentAnalysisDelegateResultHandlingTest,
-    testing::Combine(
-        testing::Values(
-            safe_browsing::BinaryUploadService::Result::UNKNOWN,
-            safe_browsing::BinaryUploadService::Result::SUCCESS,
-            safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE,
-            safe_browsing::BinaryUploadService::Result::TIMEOUT,
-            safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE,
-            safe_browsing::BinaryUploadService::Result::FAILED_TO_GET_TOKEN,
-            safe_browsing::BinaryUploadService::Result::UNAUTHORIZED,
-            safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED),
-        testing::Bool(),
-        testing::Bool()));
+    testing::Combine(testing::Values(ScanRequestUploadResult::kUnknown,
+                                     ScanRequestUploadResult::kSuccess,
+                                     ScanRequestUploadResult::kUploadFailure,
+                                     ScanRequestUploadResult::kTimeout,
+                                     ScanRequestUploadResult::kFileTooLarge,
+                                     ScanRequestUploadResult::kFailedToGetToken,
+                                     ScanRequestUploadResult::kUnauthorized,
+                                     ScanRequestUploadResult::kFileEncrypted),
+                     testing::Bool(),
+                     testing::Bool()));
 
 // The following tests should only be executed on the OS that support LCAC.
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)

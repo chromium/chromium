@@ -17,7 +17,7 @@
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "content/public/browser/web_contents.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -69,7 +69,7 @@ void ChromeWebAuthnCredentialsDelegate::LaunchSecurityKeyOrHybridFlow() {
 #else
   if (WebAuthnRequestDelegateAndroid* delegate =
           WebAuthnRequestDelegateAndroid::GetRequestDelegate(web_contents_)) {
-    delegate->ShowHybridSignIn();
+    delegate->OnHybridSignInSelected();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -101,8 +101,6 @@ void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
   if (passkey_selected_callback_) {
     // The user tapped on another passkey while the enclave was loading. Ignore
     // the tap.
-    // TODO(crbug.com/344950143): Disable the rows that are not supposed to be
-    // clicked.
     return;
   }
   passkey_selected_callback_ = std::move(callback);

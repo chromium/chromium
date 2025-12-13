@@ -24,40 +24,6 @@ extern const struct xdg_toplevel_interface kMockXdgToplevelImpl;
 extern const struct zxdg_surface_v6_interface kMockZxdgSurfaceV6Impl;
 extern const struct zxdg_toplevel_v6_interface kMockZxdgToplevelV6Impl;
 
-class MockXdgTopLevel;
-
-// Manage xdg_surface, zxdg_surface_v6 and zxdg_toplevel for providing desktop
-// UI.
-class MockXdgSurface : public ServerObject {
- public:
-  MockXdgSurface(wl_resource* resource, wl_resource* surface);
-
-  MockXdgSurface(const MockXdgSurface&) = delete;
-  MockXdgSurface& operator=(const MockXdgSurface&) = delete;
-
-  ~MockXdgSurface() override;
-
-  MOCK_METHOD1(AckConfigure, void(uint32_t serial));
-  MOCK_METHOD1(SetWindowGeometry, void(const gfx::Rect&));
-
-  void set_xdg_toplevel(std::unique_ptr<MockXdgTopLevel> xdg_toplevel) {
-    xdg_toplevel_ = std::move(xdg_toplevel);
-  }
-  MockXdgTopLevel* xdg_toplevel() const { return xdg_toplevel_.get(); }
-
-  void set_xdg_popup(TestXdgPopup* xdg_popup) { xdg_popup_ = xdg_popup; }
-  TestXdgPopup* xdg_popup() const { return xdg_popup_; }
-
- private:
-  // Has either toplevel role..
-  std::unique_ptr<MockXdgTopLevel> xdg_toplevel_;
-  // Or popup role.
-  raw_ptr<TestXdgPopup, DanglingUntriaged> xdg_popup_ = nullptr;
-
-  // MockSurface that is the ground for this xdg_surface.
-  raw_ptr<wl_resource> surface_ = nullptr;
-};
-
 // Manage zxdg_toplevel for providing desktop UI.
 class MockXdgTopLevel : public ServerObject {
  public:
@@ -99,6 +65,43 @@ class MockXdgTopLevel : public ServerObject {
 
   std::string title_;
   std::string app_id_;
+};
+
+// Manage xdg_surface, zxdg_surface_v6 and zxdg_toplevel for providing desktop
+// UI.
+class MockXdgSurface : public ServerObject {
+ public:
+  MockXdgSurface(wl_resource* resource, wl_resource* surface);
+
+  MockXdgSurface(const MockXdgSurface&) = delete;
+  MockXdgSurface& operator=(const MockXdgSurface&) = delete;
+
+  ~MockXdgSurface() override;
+
+  MOCK_METHOD1(AckConfigure, void(uint32_t serial));
+  MOCK_METHOD1(SetWindowGeometry, void(const gfx::Rect&));
+
+  void set_xdg_toplevel(std::unique_ptr<MockXdgTopLevel> xdg_toplevel) {
+    xdg_toplevel_ = std::move(xdg_toplevel);
+  }
+  MockXdgTopLevel* xdg_toplevel() const { return xdg_toplevel_.get(); }
+
+  void set_xdg_popup(TestXdgPopup* xdg_popup) { xdg_popup_ = xdg_popup; }
+  TestXdgPopup* xdg_popup() const { return xdg_popup_; }
+
+  base::WeakPtr<MockXdgSurface> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  // Has either toplevel role..
+  std::unique_ptr<MockXdgTopLevel> xdg_toplevel_;
+  // Or popup role.
+  raw_ptr<TestXdgPopup> xdg_popup_ = nullptr;
+
+  // MockSurface that is the ground for this xdg_surface.
+  raw_ptr<wl_resource> surface_ = nullptr;
+  base::WeakPtrFactory<MockXdgSurface> weak_ptr_factory_{this};
 };
 
 }  // namespace wl

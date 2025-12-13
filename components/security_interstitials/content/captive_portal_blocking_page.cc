@@ -138,7 +138,8 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
 
   std::u16string paragraph;
   if (login_url_.is_empty() ||
-      login_url_.spec() == captive_portal::CaptivePortalDetector::kDefaultURL) {
+      login_url_.spec() ==
+          captive_portal::CaptivePortalDetector::GetDefaultUrl()) {
     // Don't show the login url when it's empty or is the portal detection URL.
     // login_url_ can be empty when:
     // - The captive portal intercepted requests without HTTP redirects, in
@@ -158,7 +159,8 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
   } else {
     // Portal redirection was done with HTTP redirects, so show the login URL.
     // If |languages| is empty, punycode in |login_host| will always be decoded.
-    std::u16string login_host = url_formatter::IDNToUnicode(login_url_.host());
+    std::u16string login_host =
+        url_formatter::IDNToUnicode(login_url_.GetHost());
     if (base::i18n::IsRTL())
       base::i18n::WrapStringWithLTRFormatting(&login_host);
 

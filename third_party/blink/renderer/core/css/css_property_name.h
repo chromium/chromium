@@ -49,9 +49,6 @@ class CORE_EXPORT CSSPropertyName {
   }
 
   bool operator==(const CSSPropertyName&) const;
-  bool operator!=(const CSSPropertyName& other) const {
-    return !(*this == other);
-  }
 
   CSSPropertyID Id() const {
     DCHECK(!IsEmptyValue() && !IsDeletedValue());

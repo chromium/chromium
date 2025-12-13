@@ -37,6 +37,8 @@
 #include "third_party/icu/source/common/unicode/umachine.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_utils.h"
 

@@ -16,7 +16,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"

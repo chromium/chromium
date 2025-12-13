@@ -11,7 +11,6 @@ import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityM
 
 import android.content.res.Resources;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -22,6 +21,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyObservable;
+
+import java.util.function.Supplier;
 
 /**
  * Shows the Trusted Web Activity disclosure when appropriate and notifies of its acceptance.
@@ -101,7 +102,7 @@ public class DisclosureInfobar
         String action = mResources.getString(R.string.ok);
         return Snackbar.make(title, mSnackbarController, type, code)
                 .setAction(action, null)
-                .setSingleLine(false);
+                .setDefaultLines(false);
     }
 
     public void showIfNeeded() {

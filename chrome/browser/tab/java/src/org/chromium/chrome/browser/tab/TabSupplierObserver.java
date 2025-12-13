@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -23,7 +24,7 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public class TabSupplierObserver extends EmptyTabObserver implements Destroyable {
     /** A handle to the tab supplier. */
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
 
     /** An observer to watch for a changing tab and move this tab observer. */
     private final Callback<@Nullable Tab> mTabObserver;
@@ -31,7 +32,7 @@ public class TabSupplierObserver extends EmptyTabObserver implements Destroyable
     /** The current tab. */
     private @Nullable Tab mTab;
 
-    public TabSupplierObserver(ObservableSupplier<@Nullable Tab> tabSupplier) {
+    public TabSupplierObserver(NullableObservableSupplier<Tab> tabSupplier) {
         this(tabSupplier, false);
     }
 
@@ -43,8 +44,7 @@ public class TabSupplierObserver extends EmptyTabObserver implements Destroyable
      * @param shouldTrigger Whether the observer should be triggered for the initial tab after
      *     creation.
      */
-    public TabSupplierObserver(
-            ObservableSupplier<@Nullable Tab> tabSupplier, boolean shouldTrigger) {
+    public TabSupplierObserver(NullableObservableSupplier<Tab> tabSupplier, boolean shouldTrigger) {
         mTabSupplier = tabSupplier;
         mTabObserver =
                 (tab) -> {

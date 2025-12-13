@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser.safe_browsing.settings;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RadioGroup;
 
 import androidx.core.content.ContextCompat;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.Initializer;
@@ -18,27 +20,25 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
 /**
- * <p>
  * A radio button group used for Safe Browsing. Currently, it has 3 options: Enhanced Protection,
  * Standard Protection and No Protection. When the Enhanced Protection flag is disabled, the
  * Enhanced Protection option will be removed.
- * </p>
  *
- * <p>
- * This preference also provides an interface {@link
+ * <p>This preference also provides an interface {@link
  * RadioButtonGroupSafeBrowsingPreference.OnSafeBrowsingModeDetailsRequested} that is triggered when
  * more information of a Safe Browsing mode is requested.
- * </p>
  */
 @NullMarked
-public class RadioButtonGroupSafeBrowsingPreference extends Preference
+public class RadioButtonGroupSafeBrowsingPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener,
                 RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
     /** Interface that will subscribe to Safe Browsing mode details requested events. */
@@ -49,6 +49,9 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
          */
         void onSafeBrowsingModeDetailsRequested(@SafeBrowsingState int safeBrowsingState);
     }
+
+    private static final int HIGHLIGHT_ANIMATION_DELAY_MS = 3000;
+    private static final int HIGHLIGHT_ANIMATION_DURATION_MS = 1000;
 
     private RadioButtonWithDescriptionAndAuxButton mEnhancedProtection;
     private RadioButtonWithDescriptionAndAuxButton mStandardProtection;
@@ -99,6 +102,28 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
         if (mAccessPoint == SettingsAccessPoint.SURFACE_EXPLORER_PROMO_SLINGER) {
             mEnhancedProtection.setBackgroundColor(
                     ContextCompat.getColor(getContext(), R.color.preference_highlighted_bg_color));
+        } else if (mAccessPoint == SettingsAccessPoint.TIPS_NOTIFICATIONS_PROMO) {
+            int highlightColor = SemanticColorUtils.getSettingsBackgroundColor(getContext());
+            int defaultColor = SemanticColorUtils.getDefaultBgColor(getContext());
+            mEnhancedProtection.setBackgroundColor(highlightColor);
+
+            // Add a post delayed task to make the highlight fade out after a period of time.
+            new Handler()
+                    .postDelayed(
+                            () -> {
+                                if (!mEnhancedProtection.isAttachedToWindow()) return;
+
+                                ValueAnimator colorAnimation =
+                                        ValueAnimator.ofObject(
+                                                new ArgbEvaluator(), highlightColor, defaultColor);
+                                colorAnimation.setDuration(HIGHLIGHT_ANIMATION_DURATION_MS);
+                                colorAnimation.addUpdateListener(
+                                        animator ->
+                                                mEnhancedProtection.setBackgroundColor(
+                                                        (int) animator.getAnimatedValue()));
+                                colorAnimation.start();
+                            },
+                            HIGHLIGHT_ANIMATION_DELAY_MS);
         }
         mEnhancedProtection.setVisibility(View.VISIBLE);
         mEnhancedProtection.setAuxButtonClickedListener(this);

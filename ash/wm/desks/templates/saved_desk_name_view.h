@@ -10,6 +10,7 @@
 
 #include "ash/wm/desks/desk_textfield.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 

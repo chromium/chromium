@@ -19,7 +19,7 @@ import {NetworkTestRunner} from 'network_test_runner';
   var resultsOutput = [];
   const requests = NetworkTestRunner.networkRequests();
   for (const request of requests) {
-    const content = await TestRunner.NetworkAgent.getResponseBody(request.requestId());
+    const {body: content} = await TestRunner.NetworkAgent.invoke_getResponseBody({requestId: request.requestId()});
     var output = [];
     output.push(request.url());
     output.push('resource.type: ' + request.resourceType());

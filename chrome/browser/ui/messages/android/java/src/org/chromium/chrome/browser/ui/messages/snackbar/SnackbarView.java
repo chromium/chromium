@@ -17,7 +17,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -33,10 +32,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.ui.messages.R;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.interpolators.Interpolators;
 
@@ -49,6 +48,7 @@ import org.chromium.ui.interpolators.Interpolators;
 @NullMarked
 public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private static final int MAX_LINES = 5;
+    private static final int DEFAULT_LINES = 2;
 
     private final @Nullable WindowAndroid mWindowAndroid;
     protected final ViewGroup mContainerView;
@@ -91,8 +91,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
      * Creates an instance of the {@link SnackbarView}.
      *
      * @param activity The activity that displays the snackbar.
-     * @param listener An {@link OnClickListener} that will be called when the action button is
-     *     clicked.
+     * @param manager The {@link SnackbarManager} that manages this view.
      * @param snackbar The snackbar to be displayed.
      * @param parentView The ViewGroup used to display this snackbar.
      * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
@@ -100,20 +99,19 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
      */
     public SnackbarView(
             Activity activity,
-            OnClickListener listener,
+            SnackbarManager manager,
             Snackbar snackbar,
             ViewGroup parentView,
             @Nullable WindowAndroid windowAndroid,
             boolean isTablet) {
-        this(activity, listener, snackbar, parentView, windowAndroid, null, isTablet);
+        this(activity, manager, snackbar, parentView, windowAndroid, null, isTablet);
     }
 
     /**
      * Creates an instance of the {@link SnackbarView}.
      *
      * @param activity The activity that displays the snackbar.
-     * @param listener An {@link OnClickListener} that will be called when the action button is
-     *     clicked.
+     * @param manager The {@link SnackbarManager} that manages this view.
      * @param snackbar The snackbar to be displayed.
      * @param parentView The ViewGroup used to display this snackbar.
      * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
@@ -123,7 +121,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
      */
     public SnackbarView(
             Activity activity,
-            OnClickListener listener,
+            SnackbarManager manager,
             Snackbar snackbar,
             ViewGroup parentView,
             @Nullable WindowAndroid windowAndroid,
@@ -146,6 +144,12 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
 
         // Make sure clicks are not consumed by content beneath the container view.
         mContainerView.setClickable(true);
+        mContainerView.setOnClickListener((event) -> manager.resetSnackbarTimeout());
+        mContainerView.setOnTouchListener(
+                (view, event) -> {
+                    mContainerView.performClick();
+                    return true;
+                });
 
         mSnackbarView = mContainerView.findViewById(R.id.snackbar);
         mAnimationDuration =
@@ -153,9 +157,11 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         mMessageView =
                 (TemplatePreservingTextView) mContainerView.findViewById(R.id.snackbar_message);
         mActionButtonView = (TextView) mContainerView.findViewById(R.id.snackbar_button);
-        mActionButtonView.setOnClickListener(listener);
+        mActionButtonView.setOnClickListener(manager);
         mProfileImageView = (ImageView) mContainerView.findViewById(R.id.snackbar_profile_image);
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        // TODO(crbug.com/451807932): Replace with a custom pad adjuster to account for inset
+        //  changes.
         if (SnackbarManager.isFloatingSnackbarEnabled()) {
             // Add bottom margin to extend the snackbar view into the bottom window inset. This
             // margin has to be applied to the snackbar view itself to avoid weird visual clipping
@@ -252,7 +258,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
             int prevGravity = lp.gravity;
 
             if (SnackbarManager.isFloatingSnackbarEnabled()) {
-                // If floating snackbar is enabled, set a max width of 600dp for both mobile and
+                // If floating snackbar is enabled, set a max width of 480dp for both mobile and
                 // tablet.
                 int maxWidth =
                         mParent.getResources().getDimensionPixelSize(R.dimen.snackbar_width_max);
@@ -394,7 +400,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private boolean updateInternal(Snackbar snackbar, boolean animate) {
         if (mSnackbar == snackbar) return false;
         mSnackbar = snackbar;
-        mMessageView.setMaxLines(snackbar.getSingleLine() ? 1 : MAX_LINES);
+        mMessageView.setMaxLines(snackbar.getDefaultLines() ? DEFAULT_LINES : MAX_LINES);
         mMessageView.setTemplate(snackbar.getTemplateText());
         setViewText(mMessageView, snackbar.getText(), animate);
 

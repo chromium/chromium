@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"

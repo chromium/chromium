@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_raster_invalidator.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -147,25 +146,21 @@ static bool ShouldSkipForRasterInvalidation(
     const PaintChunkIterator& chunk_it,
     const EffectPaintPropertyNode* parent_effect) {
   if (!chunk_it->DrawsContent()) {
-    if (RuntimeEnabledFeatures::EmptyReferenceFilterInvalidationEnabled()) {
-      // Skipping an empty chunk with a reference filter can lead to under
-      // invalidation when the effect is decomposed. To avoid that, we override
-      // the result of DrawsContent() in that scenario. Note that this isn't
-      // always optimal as a chunk that is effectively_invisible (near-zero
-      // opacity) will return false for DrawsContent() and this check will
-      // override it.
-      bool has_reference_filter = false;
-      for (const auto* node = &chunk_it->properties.Effect().Unalias();
-           node != parent_effect; node = node->UnaliasedParent()) {
-        if (node->HasReferenceFilter()) {
-          has_reference_filter = true;
-          break;
-        }
+    // Skipping an empty chunk with a reference filter can lead to under
+    // invalidation when the effect is decomposed. To avoid that, we override
+    // the result of DrawsContent() in that scenario. Note that this isn't
+    // always optimal as a chunk that is effectively_invisible (near-zero
+    // opacity) will return false for DrawsContent() and this check will
+    // override it.
+    bool has_reference_filter = false;
+    for (const auto* node = &chunk_it->properties.Effect().Unalias();
+         node != parent_effect; node = node->UnaliasedParent()) {
+      if (node->HasReferenceFilter()) {
+        has_reference_filter = true;
+        break;
       }
-      if (!has_reference_filter) {
-        return true;
-      }
-    } else {
+    }
+    if (!has_reference_filter) {
       return true;
     }
   }

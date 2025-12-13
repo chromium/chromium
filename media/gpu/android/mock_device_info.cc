@@ -4,7 +4,7 @@
 
 #include "media/gpu/android/mock_device_info.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -13,13 +13,10 @@ namespace media {
 
 MockDeviceInfo::MockDeviceInfo() {
   ON_CALL(*this, SdkVersion())
-      .WillByDefault(Return(base::android::SDK_VERSION_MARSHMALLOW));
+      .WillByDefault(
+          Return(base::android::android_info::SDK_VERSION_MARSHMALLOW));
   ON_CALL(*this, IsVp8DecoderAvailable()).WillByDefault(Return(true));
-  ON_CALL(*this, IsVp9DecoderAvailable()).WillByDefault(Return(true));
-  ON_CALL(*this, IsAv1DecoderAvailable()).WillByDefault(Return(true));
   ON_CALL(*this, IsDecoderKnownUnaccelerated(_)).WillByDefault(Return(false));
-  ON_CALL(*this, IsSetOutputSurfaceSupported()).WillByDefault(Return(true));
-  ON_CALL(*this, SupportsOverlaySurfaces()).WillByDefault(Return(true));
   ON_CALL(*this, CodecNeedsFlushWorkaround(_)).WillByDefault(Return(false));
 }
 

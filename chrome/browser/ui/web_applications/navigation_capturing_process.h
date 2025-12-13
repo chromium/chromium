@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/web_applications/navigation_capturing_metrics.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -21,11 +20,64 @@
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
+class Profile;
 struct NavigateParams;
 
 namespace web_app {
 
+class NavigationCapturingProcess;
 class NavigationCapturingSettings;
+
+// Describes the set of parameter overrides to be applied to `NavigateParams` in
+// `browser_navigator.cc`. See the description of the
+// `NavigationCapturingProcess` below for more details on the inner workings of
+// navigation capturing.
+class NavigationCapturingOverride {
+ public:
+  // Current navigation will be aborted.
+  static NavigationCapturingOverride CreateForCancelNavigation(
+      base::PassKey<NavigationCapturingProcess>);
+
+  // Current navigation will proceed in the given `browser`.
+  static NavigationCapturingOverride CreateForNavigateNew(
+      base::PassKey<NavigationCapturingProcess>,
+      Browser* browser);
+
+  // Current navigation will be aborted; the target URL will be enqueued in
+  // `window.launchQueue` for the given `web_contents`.
+  static NavigationCapturingOverride CreateForFocusExisting(
+      base::PassKey<NavigationCapturingProcess>,
+      content::WebContents* web_contents);
+
+  // Current navigation will proceed in WebContents* that corresponds to
+  // `tab_index` in the given `browser`. This WebContents* instance is
+  // guaranteed to exist.
+  static NavigationCapturingOverride CreateForNavigateExisting(
+      base::PassKey<NavigationCapturingProcess>,
+      Browser* browser,
+      int tab_index);
+
+  ~NavigationCapturingOverride();
+
+  NavigationCapturingOverride(const NavigationCapturingOverride& other) =
+      default;
+  NavigationCapturingOverride& operator=(
+      const NavigationCapturingOverride& other) = default;
+
+  Browser* browser() const { return browser_; }
+  const std::optional<int>& tab_index() const { return tab_index_; }
+
+ private:
+  explicit NavigationCapturingOverride(
+      Browser* browser,
+      std::optional<int> tab_index = std::nullopt);
+
+  // `browser` will always be used to override `params.browser`.
+  raw_ptr<Browser> browser_ = nullptr;
+
+  // The overrides below will only be applied if they're explicitly set.
+  std::optional<int> tab_index_;
+};
 
 // This class encompasses all of the logic for navigations in the browser to be
 // captured into installed web app launches.
@@ -45,11 +97,14 @@ class NavigationCapturingSettings;
 class NavigationCapturingProcess
     : public content::NavigationHandleUserData<NavigationCapturingProcess> {
  public:
+  using MaybeNavigationCapturingOverride =
+      std::optional<NavigationCapturingOverride>;
+
   // Returns null if navigation capturing is disabled for this navigation. This
   // returning non-null however does not mean that navigation capturing will
   // definitely happen for this navigation; the logic in
-  // `GetInitialBrowserAndTabOverrideForNavigation()` can still decide that no
-  // capturing should apply to this navigation.
+  // `GetInitialNavigationParamsOverrideForNavigation()` can still decide that
+  // no capturing should apply to this navigation.
   static std::unique_ptr<NavigationCapturingProcess> MaybeHandleAppNavigation(
       const NavigateParams& navigate_params);
 
@@ -61,23 +116,22 @@ class NavigationCapturingProcess
   // means that no overriding should happen (but the navigation could still be
   // captured on later redirects). A null `Browser*` means that the navigation
   // should be aborted.
-  using BrowserAndTabOverride = std::optional<std::tuple<Browser*, int>>;
-  BrowserAndTabOverride GetInitialBrowserAndTabOverrideForNavigation(
+  MaybeNavigationCapturingOverride GetInitialNavigationParamsOverride(
       const NavigateParams& params);
 
   // Called by `browesr_navigator.cc` after the WebContents and optionally
   // NavigationHandle are known for the navigation it handled. Will CHECK-fail
-  // if called before `GetInitialBrowserAndTabOverrideForNavigation()`.
+  // if called before `GetInitialNavigationParamsOverrideForNavigation()`.
   static void AfterWebContentsCreation(
       std::unique_ptr<NavigationCapturingProcess> process,
       content::WebContents& web_contents,
       content::NavigationHandle* navigation_handle);
 
-  // Attaches this NavigationCapturing process to a specific navigation. Will
-  // CHECK-fail if called before
-  // `GetInitialBrowserAndTabOverrideForNavigation()` is called. If that method
-  // decided no navigation capturing should apply to this navigation, this will
-  // destroy `user_data` rather than attach it.
+  // Attaches this NavigationCapturing process to a specific navigation.
+  // Will CHECK-fail if called before
+  // `GetInitialNavigationParamsOverrideForNavigation()` is called. If that
+  // method decided no navigation capturing should apply to this navigation,
+  // this will destroy `user_data` rather than attach it.
   static void AttachToNavigationHandle(
       content::NavigationHandle& navigation_handle,
       std::unique_ptr<NavigationCapturingProcess> user_data);
@@ -114,8 +168,16 @@ class NavigationCapturingProcess
 
   explicit NavigationCapturingProcess(const NavigateParams& params);
 
-  BrowserAndTabOverride HandleIsolatedWebAppNavigation(
+  std::optional<NavigationCapturingOverride> HandleIsolatedWebAppNavigation(
       const NavigateParams& params);
+
+  // Checks if a newly created `WebContents` was programmatically opened by an
+  // Isolated Web App and notifies the `IsolatedWebAppsOpenedTabsCounterService`
+  // so it can be tracked. The opener is identified via the opener chain or the
+  // navigation's initiator origin. Standard link clicks are ignored.
+  void MaybeNotifyIwaTabCounterService(
+      content::WebContents& web_contents,
+      content::NavigationHandle* navigation_handle);
 
   // Returns true if based on the NavigateParams this instance was created with
   // the navigation capturing reimpl experiment is enabled.
@@ -149,27 +211,29 @@ class NavigationCapturingProcess
       const webapps::AppId& app_id,
       const GURL& target_url);
 
-  // Helper methods for `GetInitialBrowserAndTabOverrideForNavigation()` that
+  // Helper methods for `GetInitialNavigationParamsOverrideForNavigation()` that
   // return the correct return value and update internal state of this class
   // with the corresponding outcome.
-  BrowserAndTabOverride CapturingDisabled();
-  BrowserAndTabOverride CancelInitialNavigation(
+  MaybeNavigationCapturingOverride CapturingDisabled();
+  MaybeNavigationCapturingOverride CancelInitialNavigation(
       NavigationCapturingInitialResult result);
-  BrowserAndTabOverride NoCapturingOverrideBrowser(Browser* browser);
-  BrowserAndTabOverride AuxiliaryContext();
-  BrowserAndTabOverride AuxiliaryContextInAppWindow(Browser* app_browser);
-  BrowserAndTabOverride NoInitialActionRedirectionHandlingEligible();
-  BrowserAndTabOverride ForcedNewAppContext(
+  MaybeNavigationCapturingOverride NoCapturingOverrideBrowser(Browser* browser);
+  MaybeNavigationCapturingOverride AuxiliaryContext();
+  MaybeNavigationCapturingOverride AuxiliaryContextInAppWindow(
+      Browser* app_browser);
+  MaybeNavigationCapturingOverride NoInitialActionRedirectionHandlingEligible();
+  MaybeNavigationCapturingOverride ForcedNewAppContext(
       blink::mojom::DisplayMode app_display_mode,
       Browser* host_browser);
-  BrowserAndTabOverride CapturedNewClient(
+  MaybeNavigationCapturingOverride CapturedNewClient(
       blink::mojom::DisplayMode app_display_mode,
       Browser* host_browser);
-  BrowserAndTabOverride CapturedNavigateExisting(Browser* app_browser,
-                                                 int browser_tab);
-  BrowserAndTabOverride CapturedFocusExisting(Browser* browser,
-                                              int browser_tab,
-                                              const GURL& url);
+  MaybeNavigationCapturingOverride CapturedNavigateExisting(
+      Browser* app_browser,
+      int browser_tab);
+  MaybeNavigationCapturingOverride CapturedFocusExisting(Browser* browser,
+                                                         int browser_tab,
+                                                         const GURL& url);
 
   // Updates the `launched_app_id_` field, and if this process as already been
   // attached to a `NavigationHandle`, also creates or updates the
@@ -226,7 +290,7 @@ class NavigationCapturingProcess
 
   // The app that ended up being launched as a result of the navigation being
   // captured. This is initially set by
-  // `GetInitialBrowserAndTabOverrideForNavigation()` and can be cleared or
+  // `GetInitialNavigationParamsOverrideForNavigation()` and can be cleared or
   // reset by `HandleRedirect()` if the redirect results in a different app
   // handling the launch.
   bool force_iph_off_ = false;

@@ -71,6 +71,7 @@ class AnimationTimeline;
 class Layer;
 class PaintRecord;
 enum class PaintHoldingCommitTrigger;
+enum class PropertyChangeForcesCommitCriteria;
 struct PaintBenchmarkResult;
 }
 
@@ -80,6 +81,10 @@ class SizeF;
 
 namespace ui {
 class Cursor;
+}
+
+namespace viz {
+class FrameTimingDetails;
 }
 
 namespace blink {
@@ -183,7 +188,6 @@ class CORE_EXPORT LocalFrameView final
     can_have_scrollbars_ = can_have_scrollbars;
   }
   bool CanHaveScrollbars() const { return can_have_scrollbars_; }
-  bool VisualViewportSuppliesScrollbars();
 
   void SetLayoutOverflowSize(const gfx::Size&);
 
@@ -281,6 +285,22 @@ class CORE_EXPORT LocalFrameView final
   bool LayoutSizeFixedToFrameSize() const {
     return layout_size_fixed_to_frame_size_;
   }
+
+  // The natural size should be computed with a consistent ICB, to mitigate the
+  // risk of layout loops. This class sets up the ICB to be consistent for the
+  // natural size. The destructor restores it.
+  class NaturalSizeLayoutScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit NaturalSizeLayoutScope(LocalFrameView*);
+    ~NaturalSizeLayoutScope();
+
+   public:
+    LocalFrameView* view_ = nullptr;
+    bool is_fixed_to_frame_size_ = false;
+    int height_ = 0;
+  };
 
   std::optional<NaturalSizingInfo> GetNaturalDimensions() const override;
 
@@ -786,7 +806,7 @@ class CORE_EXPORT LocalFrameView final
   void EnqueueStartOfLifecycleTask(base::OnceClosure);
 
   // For testing way to steal the start-of-lifecycle tasks.
-  WTF::Vector<base::OnceClosure> TakeStartOfLifecycleTasksForTest() {
+  Vector<base::OnceClosure> TakeStartOfLifecycleTasksForTest() {
     return std::move(start_of_lifecycle_tasks_);
   }
 
@@ -840,7 +860,18 @@ class CORE_EXPORT LocalFrameView final
       ScrollMarkerGroupPseudoElement* scroll_marker_group);
   void ExecutePendingScrollMarkerSelectionUpdates();
 
-  void RecordNaturalDimensions();
+  // True if the recorded value has changed.
+  bool RecordNaturalDimensions();
+
+  void RequestSameDocumentNavigationPresentationTime(
+      base::OnceCallback<void(const viz::FrameTimingDetails&)>);
+
+  // Return true if this frame, or any of its sub-frames, has an anchor-
+  // positioned element that is anchored against something with a transform, AND
+  // the transform is currently being animated. This means that a transform on
+  // one element may affect layout of another element, which means that the main
+  // thread needs to be involved during the animation.
+  bool HasRunningAnchorTransformAnimation() const;
 
  protected:
   void FrameRectsChanged(const gfx::Rect&) override;
@@ -861,6 +892,8 @@ class CORE_EXPORT LocalFrameView final
   void EnqueueScrollEvents();
 
  private:
+  friend class NaturalSizeLayoutScope;
+
   LocalFrameView(LocalFrame&, gfx::Rect);
 
 #if DCHECK_IS_ON()
@@ -948,6 +981,8 @@ class CORE_EXPORT LocalFrameView final
 
   LayoutSVGRoot* EmbeddedReplacedContent() const;
 
+  cc::PropertyChangeForcesCommitCriteria ForceCommitCriteria() const;
+
   void PrepareForLifecycleUpdateRecursive();
 
   // Returns whether the lifecycle was successfully updated to the
@@ -1025,12 +1060,19 @@ class CORE_EXPORT LocalFrameView final
 
   void ForAllRemoteFrameViews(base::FunctionRef<void(RemoteFrameView&)>);
 
-  bool UpdateViewportIntersectionsForSubtree(
+  // Recomputes the values returned by HasActiveIntersectionObservations() and
+  // NeedsOcclusionTracking().
+  void UpdateIntersectionObserverStatus() override;
+  bool HasActiveIntersectionObservations() const override;
+  bool NeedsOcclusionTracking() const override;
+  void UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
       ComputeIntersectionsContext&) override;
   void DeliverSynchronousIntersectionObservations();
 
-  bool RunScrollSnapshotClientSteps();
+  // https://drafts.csswg.org/cssom-view/#post-layout-snapshot
+  bool RunSnapshotPostLayoutStateSteps();
+
   bool ShouldDeferLayoutSnap() const;
 
   bool NotifyResizeObservers();
@@ -1047,7 +1089,8 @@ class CORE_EXPORT LocalFrameView final
   // again before proceeding.
   bool RunPostLayoutIntersectionObserverSteps();
   // This is a recursive helper for determining intersection observations which
-  // need to happen in post-layout.
+  // need to happen in post-layout. Returns true if there are any active
+  // post-layout observations.
   void ComputePostLayoutIntersections(unsigned parent_flags,
                                       ComputeIntersectionsContext&);
 
@@ -1071,7 +1114,7 @@ class CORE_EXPORT LocalFrameView final
 
   // Append view transition requests from this view into the given vector.
   void AppendViewTransitionRequests(
-      WTF::Vector<std::unique_ptr<ViewTransitionRequest>>&);
+      Vector<std::unique_ptr<ViewTransitionRequest>>&);
 
   bool AnyFrameIsPrintingOrPaintingPreview();
 
@@ -1130,6 +1173,7 @@ class CORE_EXPORT LocalFrameView final
 
   Member<PaginationState> pagination_state_;
   gfx::Size layout_size_;
+  std::optional<int> layout_height_for_natural_size_;
   bool layout_size_fixed_to_frame_size_;
 
   bool needs_update_geometries_;
@@ -1178,6 +1222,12 @@ class CORE_EXPORT LocalFrameView final
 #endif
 
   IntersectionObservationState intersection_observation_state_;
+  // True if this FrameView or any descendant FrameView has active
+  // IntersectionObservers.
+  bool has_active_intersection_observations_ = false;
+  // True if this FrameView or any descendant FrameView has active
+  // IntersectionObservers for which observer->trackVisibility() is true.
+  bool needs_occlusion_tracking_ = false;
   gfx::Vector2dF accumulated_scroll_delta_since_last_intersection_update_;
   // Used only if the frame is the local root.
   HeapTaskRunnerTimer<LocalFrameView> delayed_intersection_timer_;
@@ -1253,7 +1303,7 @@ class CORE_EXPORT LocalFrameView final
   std::unique_ptr<StickyAdDetector> sticky_ad_detector_;
 
   // These tasks will be run at the beginning of the next lifecycle.
-  WTF::Vector<base::OnceClosure> start_of_lifecycle_tasks_;
+  Vector<base::OnceClosure> start_of_lifecycle_tasks_;
 
   // Filter used for inverting the document background for forced darkening.
   std::unique_ptr<DarkModeFilter> dark_mode_filter_;
@@ -1294,9 +1344,19 @@ class CORE_EXPORT LocalFrameView final
   Member<GCedHeapHashMap<Member<ScrollMarkerGroupPseudoElement>, bool>>
       pending_scroll_marker_selection_updates_;
 
+  // This is a callback requested when a same document navigation was committed.
+  // We only record this once (if RecordSameDocumentPresentationTimeOnce is
+  // enabled). We do this within the lifecycle before the commit step.
+  base::OnceCallback<void(const viz::FrameTimingDetails&)>
+      same_document_presentation_time_callback_;
+
 #if DCHECK_IS_ON()
   bool is_updating_descendant_dependent_flags_;
   bool is_updating_layout_;
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  bool needs_accessibility_xr_hit_test_update_ = false;
 #endif
 
   FRIEND_TEST_ALL_PREFIXES(FrameThrottlingTest, ForAllThrottledLocalFrameViews);

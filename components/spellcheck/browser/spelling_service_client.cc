@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -26,6 +28,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/google_api_keys.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -315,7 +318,7 @@ SpellingServiceClient::TextCheckCallbackData::~TextCheckCallbackData() =
 void SpellingServiceClient::OnSimpleLoaderComplete(
     SpellCheckLoaderList::iterator it,
     base::TimeTicks request_start,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   UMA_HISTOGRAM_TIMES("SpellCheck.SpellingService.RequestDuration",
                       base::TimeTicks::Now() - request_start);
 

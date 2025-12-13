@@ -6,8 +6,11 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/mediastream/media_devices.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
@@ -18,11 +21,6 @@ MediaDevices* SubCaptureTarget::GetMediaDevices(
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-#if BUILDFLAG(IS_ANDROID)
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Unsupported.");
-  return nullptr;
-#else
   if (!script_state || !script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid state.");
@@ -66,7 +64,6 @@ MediaDevices* SubCaptureTarget::GetMediaDevices(
   }
 
   return media_devices;
-#endif
 }
 
 SubCaptureTarget::SubCaptureTarget(Type type, String id)

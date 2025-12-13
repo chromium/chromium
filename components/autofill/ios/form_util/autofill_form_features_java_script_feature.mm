@@ -43,6 +43,15 @@ void AutofillFormFeaturesJavaScriptFeature::SetAutofillAcrossIframes(
       base::Value::List().Append(enabled));
 }
 
+void AutofillFormFeaturesJavaScriptFeature::
+    SetAutofillDisallowMoreHyphenLikeLabels(web::WebFrame* frame,
+                                            bool enabled) {
+  CHECK(frame);
+  frame->CallJavaScriptFunction(
+      "autofill_form_features.setAutofillDisallowMoreHyphenLikeLabels",
+      base::Value::List().Append(enabled));
+}
+
 void AutofillFormFeaturesJavaScriptFeature::SetAutofillDisallowSlashDotLabels(
     web::WebFrame* frame,
     bool enabled) {

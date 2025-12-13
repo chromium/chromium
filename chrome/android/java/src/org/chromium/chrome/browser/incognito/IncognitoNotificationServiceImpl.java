@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.incognito;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityManager.RecentTaskInfo;
@@ -20,8 +22,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
@@ -33,7 +37,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Service that handles the action of clicking on the incognito notification. */
-public class IncognitoNotificationServiceImpl extends IncognitoNotificationService.Impl {
+@NullMarked
+public class IncognitoNotificationServiceImpl extends SplitCompatIntentService.Impl {
     private static final String ACTION_CLOSE_ALL_INCOGNITO =
             "com.google.android.apps.chrome.incognito.CLOSE_ALL_INCOGNITO";
 
@@ -69,8 +74,10 @@ public class IncognitoNotificationServiceImpl extends IncognitoNotificationServi
                     if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
                         if (ProfileManager.getLastUsedRegularProfile().hasPrimaryOtrProfile()) {
                             ProfileManager.destroyWhenAppropriate(
-                                    ProfileManager.getLastUsedRegularProfile()
-                                            .getPrimaryOtrProfile(/* createIfNeeded= */ false));
+                                    assumeNonNull(
+                                            ProfileManager.getLastUsedRegularProfile()
+                                                    .getPrimaryOtrProfile(
+                                                            /* createIfNeeded= */ false)));
                         }
                     }
                 });

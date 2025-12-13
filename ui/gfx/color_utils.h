@@ -165,9 +165,6 @@ BlendResult BlendForMinContrast(
 // Invert a color.
 COMPONENT_EXPORT(GFX_COLOR_UTILS) SkColor InvertColor(SkColor color);
 
-// Gets a Windows system color as a SkColor
-COMPONENT_EXPORT(GFX_COLOR_UTILS) SkColor GetSysSkColor(int which);
-
 // Derives a color for icons on a UI surface based on the text color on the same
 // surface.
 COMPONENT_EXPORT(GFX_COLOR_UTILS)

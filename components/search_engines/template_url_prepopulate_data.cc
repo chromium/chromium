@@ -84,8 +84,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetOverriddenTemplateURLData(
 
 std::unique_ptr<TemplateURLData> FindPrepopulatedEngineInternal(
     PrefService& prefs,
-    std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
-        regional_prepopulated_engines,
+    const std::vector<const PrepopulatedEngine*>& regional_prepopulated_engines,
     int prepopulated_id,
     bool use_first_as_fallback) {
   // This could be more efficient. We load all URLs but keep only one.
@@ -101,6 +100,39 @@ std::unique_ptr<TemplateURLData> FindPrepopulatedEngineInternal(
 
   if (use_first_as_fallback) {
     return std::move(prepopulated_engines[0]);
+  }
+
+  return nullptr;
+}
+
+// Returns the first prepopulated search engine matching `engine_matcher` from
+// the full list of known prepopulated search engines, or `nullptr` if it's not
+// known there.
+//
+// - `engine_matcher` is a predicate accepting a `const PrepopulatedEngine*` and
+//   returning `bool`, that will be passed to `std::ranges::find_if()`.
+// - `regional_prepopulated_engines` is optional, and when present, is used to
+//   ensure we prioritise returning a search engine relevant for the given
+//   country, for cases where the matcher could be associated with multiple
+//   country-specific variants.
+template <typename EngineMatcher>
+constexpr const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInDataImpl(
+    EngineMatcher engine_matcher,
+    const std::vector<const PrepopulatedEngine*>&
+        regional_prepopulated_engines) {
+  // Locate region-specific search engine first to avoid more thorough
+  // scanning. In most cases this should offer the correct match.
+  if (auto iter =
+          std::ranges::find_if(regional_prepopulated_engines, engine_matcher);
+      iter != regional_prepopulated_engines.end()) {
+    return *iter;
+  }
+
+  // Fallback: just grab the first matching entry from the complete list.
+  // This is fine as keywords are unique.
+  if (auto iter = std::ranges::find_if(kAllEngines, engine_matcher);
+      iter != kAllEngines.end()) {
+    return *iter;
   }
 
   return nullptr;
@@ -124,7 +156,7 @@ int GetDataVersion(PrefService* prefs) {
 
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     PrefService& prefs,
-    std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+    const std::vector<const PrepopulatedEngine*>&
         regional_prepopulated_engines) {
   // If there is a set of search engines in the preferences file, it overrides
   // the built-in set.
@@ -140,8 +172,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
 
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(
     PrefService& prefs,
-    std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
-        regional_prepopulated_engines,
+    const std::vector<const PrepopulatedEngine*>& regional_prepopulated_engines,
     int prepopulated_id) {
   return FindPrepopulatedEngineInternal(prefs, regional_prepopulated_engines,
                                         prepopulated_id,
@@ -159,11 +190,10 @@ std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(
     return std::vector<std::unique_ptr<TemplateURLData>>();
   }
 
-  return base::ToVector(
-      regional_capabilities::GetPrepopulatedEngines(
-          country_id, prefs,
-          regional_capabilities::SearchEngineListType::kTopFive),
-      &PrepopulatedEngineToTemplateURLData);
+  return base::ToVector(regional_capabilities::GetPrepopulatedEngines(
+                            country_id, prefs,
+                            regional_capabilities::SearchEngineListType::kTopN),
+                        &PrepopulatedEngineToTemplateURLData);
 }
 
 #endif
@@ -172,35 +202,27 @@ const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
     int prepopulated_id,
     const std::vector<const PrepopulatedEngine*>&
         regional_prepopulated_engines) {
-  auto engine_matcher = [&](const PrepopulatedEngine* engine) {
-    return engine->id == prepopulated_id;
-  };
+  return GetPrepopulatedEngineFromBuiltInDataImpl(
+      [prepopulated_id](const PrepopulatedEngine* engine) {
+        return engine->id == prepopulated_id;
+      },
+      regional_prepopulated_engines);
+}
 
-  // We look in the regional set first. This is intended to help using the right
-  // entry for the case where we have multiple ones in the full list that share
-  // a same prepopulated id.
-  if (auto iter =
-          std::ranges::find_if(regional_prepopulated_engines, engine_matcher);
-      iter != regional_prepopulated_engines.end()) {
-    return *iter;
-  }
-
-  // Fallback: just grab the first matching entry from the complete list.
-  // In case of IDs shared across multiple entries, we might be returning
-  // the wrong one for the profile country. We can look into better
-  // heuristics in future work.
-  if (auto iter = std::ranges::find_if(kAllEngines, engine_matcher);
-      iter != kAllEngines.end()) {
-    return *iter;
-  }
-
-  return nullptr;
+const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
+    std::u16string_view keyword,
+    const std::vector<const PrepopulatedEngine*>&
+        regional_prepopulated_engines) {
+  return GetPrepopulatedEngineFromBuiltInDataImpl(
+      [keyword](const PrepopulatedEngine* engine) {
+        return keyword == engine->keyword;
+      },
+      regional_prepopulated_engines);
 }
 
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     PrefService& prefs,
-    std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
-        regional_prepopulated_engines,
+    const std::vector<const PrepopulatedEngine*>& regional_prepopulated_engines,
     int prepopulated_id) {
   // TODO(crbug.com/40940777): Refactor to better share code with
   // `GetPrepopulatedEngine()`.
@@ -233,7 +255,7 @@ void ClearPrepopulatedEnginesInPrefs(PrefService* prefs) {
 
 std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
     PrefService& prefs,
-    std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+    const std::vector<const PrepopulatedEngine*>&
         regional_prepopulated_engines) {
   return FindPrepopulatedEngineInternal(prefs, regional_prepopulated_engines,
                                         google.id,

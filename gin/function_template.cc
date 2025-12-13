@@ -6,6 +6,7 @@
 
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
+#include "gin/public/gin_embedders.h"
 
 namespace gin {
 
@@ -30,7 +31,9 @@ void CallbackHolderBase::DisposeObserver::OnDisposed() {
 }
 
 CallbackHolderBase::CallbackHolderBase(v8::Isolate* isolate)
-    : v8_ref_(isolate, v8::External::New(isolate, this)),
+    : v8_ref_(
+          isolate,
+          v8::External::New(isolate, this, kGinInternalCallbackHolderBaseTag)),
       dispose_observer_(PerIsolateData::From(isolate), this) {
   v8_ref_.SetWeak(this, &CallbackHolderBase::FirstWeakCallback,
                   v8::WeakCallbackType::kParameter);

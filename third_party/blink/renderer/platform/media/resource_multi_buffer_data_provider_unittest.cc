@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/media/testing/mock_resource_fetch_context.h"
 #include "third_party/blink/renderer/platform/media/testing/mock_web_associated_url_loader.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -95,8 +96,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
     url_data_->set_etag(kEtag);
     DCHECK(url_data_);
     url_data_->OnRedirect(
-        WTF::BindOnce(&ResourceMultiBufferDataProviderTest::RedirectCallback,
-                      WTF::Unretained(this)));
+        blink::BindOnce(&ResourceMultiBufferDataProviderTest::RedirectCallback,
+                        Unretained(this)));
 
     first_position_ = first_position;
 

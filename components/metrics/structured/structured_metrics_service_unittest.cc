@@ -35,6 +35,8 @@ namespace {
 
 using events::v2::test_project_one::TestEventOne;
 using events::v2::test_project_six::TestEventSeven;
+using ::testing::ElementsAre;
+using ::testing::SizeIs;
 
 // The name hash of "TestProjectOne".
 constexpr uint64_t kProjectOneHash = UINT64_C(16881314472396226433);
@@ -55,6 +57,21 @@ class TestRecorder : public StructuredMetricsClient::RecordingDelegate {
   bool IsReadyToRecord() const override { return true; }
 };
 
+class TestMetricsProvider : public metrics::MetricsProvider {
+ public:
+  TestMetricsProvider() = default;
+  ~TestMetricsProvider() override = default;
+
+  void ProvideSystemProfileMetrics(
+      SystemProfileProto* system_profile) override {}
+
+  void ProvideSystemProfileMetricsWithLogCreationTime(
+      base::TimeTicks log_creation_time,
+      SystemProfileProto* system_profile) override {
+    system_profile->add_field_trial()->set_name_id(1);
+    system_profile->add_field_trial()->set_name_id(2);
+  }
+};
 }  // namespace
 
 class StructuredMetricsServiceTest : public testing::Test {
@@ -80,8 +97,6 @@ class StructuredMetricsServiceTest : public testing::Test {
 
   void TearDown() override {
     StructuredMetricsClient::Get()->UnsetDelegate();
-    service_.reset();
-    Wait();
   }
 
   void Init() {
@@ -182,20 +197,34 @@ class StructuredMetricsServiceTest : public testing::Test {
     task_environment_.AdvanceClock(base::Hours(hours));
   }
 
- protected:
-  std::unique_ptr<StructuredMetricsService> service_;
-  metrics::TestMetricsServiceClient client_;
-
  private:
+  // Test resources must be declared before TaskEnvironment so they outlive
+  // the tasks that TaskEnvironment flushes during its destruction.
+  base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple prefs_;
 
-  TestRecorder test_recorder_;
-  base::ScopedTempDir temp_dir_;
-
+  // The TaskEnvironment is the manager for the test's threads and tasks. It
+  // must be declared after the resources that its tasks may access. Its
+  // destructor will block and flush all tasks, ensuring they can safely use
+  // the resources above before they are destroyed.
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  // TestRecorder is a delegate for the process-wide StructuredMetricsClient
+  // singleton. Its lifetime is managed by Set/UnsetDelegate in
+  // SetUp/TearDown.
+  TestRecorder test_recorder_;
+
+ protected:
+  // The service holds a raw pointer to this client, so `client_` must be
+  // destroyed after `service_`.
+  metrics::TestMetricsServiceClient client_;
+
+  // The service under test. Declared last so it is destroyed first, before
+  // its dependencies and before the TaskEnvironment that manages its tasks.
+  std::unique_ptr<StructuredMetricsService> service_;
 };
 
 TEST_F(StructuredMetricsServiceTest, PurgeInMemory) {
@@ -280,6 +309,27 @@ TEST_F(StructuredMetricsServiceTest, SystemProfileFilled) {
   const SystemProfileProto& system_profile = uma_proto.system_profile();
   EXPECT_EQ(system_profile.channel(), client_.GetChannel());
   EXPECT_EQ(system_profile.app_version(), client_.GetVersionString());
+}
+
+TEST_F(StructuredMetricsServiceTest, MetricsProviderDataInSystemProfile) {
+  Init();
+
+  service().RegisterMetricsProvider(std::make_unique<TestMetricsProvider>());
+
+  EnableRecording();
+  EnableReporting();
+
+  StructuredMetricsClient::Record(
+      std::move(TestEventOne().SetTestMetricTwo(1)));
+  Wait();
+
+  service_->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+
+  const auto uma_proto = GetPersistedLog();
+  EXPECT_TRUE(uma_proto.has_system_profile());
+  EXPECT_THAT(uma_proto.system_profile().field_trial(), SizeIs(2));
+  EXPECT_EQ(uma_proto.system_profile().field_trial(0).name_id(), 1u);
+  EXPECT_EQ(uma_proto.system_profile().field_trial(1).name_id(), 2u);
 }
 
 TEST_F(StructuredMetricsServiceTest, DoesNotRecordWhenRecordingDisabled) {

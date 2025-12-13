@@ -49,7 +49,6 @@ public class ManifestHWATest {
             } catch (ClassNotFoundException e) {
                 // Some test-only manifest entries exist only to test intent behavior and do not
                 // represent real Activities (and should never be launched).
-                continue;
             }
         }
     }

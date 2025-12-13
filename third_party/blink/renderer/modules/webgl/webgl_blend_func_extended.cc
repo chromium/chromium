@@ -9,7 +9,8 @@
 namespace blink {
 
 WebGLBlendFuncExtended::WebGLBlendFuncExtended(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_EXT_blend_func_extended");
@@ -24,7 +25,7 @@ bool WebGLBlendFuncExtended::Supported(WebGLRenderingContextBase* context) {
   // as the validating decoder may expose the extension string.
   DCHECK(context->GetDrawingBuffer());
   if (!context->GetDrawingBuffer()
-           ->GetGraphicsInfo()
+           ->ContextInfo()
            .using_passthrough_command_decoder) {
     return false;
   }

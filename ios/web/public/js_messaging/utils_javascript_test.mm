@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#import <array>
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -15,7 +12,8 @@
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
 
-NSString* kUtilsSampleMessageHandlerName = @"UtilsSampleMessageHandlerName";
+NSString* const kUtilsSampleMessageHandlerName =
+    @"UtilsSampleMessageHandlerName";
 
 // A WKScriptMessageHandler which stores the last received WKScriptMessage;
 @interface FakeScriptMessageHandler : NSObject <WKScriptMessageHandler>
@@ -61,7 +59,9 @@ TEST_F(UtilsJavaScriptTest, RemoveQueryAndReferenceFromURL) {
   struct TestData {
     NSString* input_url;
     NSString* expected_output;
-  } test_data[] = {
+  };
+
+  const auto kTestData = std::to_array<TestData>({
       {@"http://foo1.com/bar", @"http://foo1.com/bar"},
       {@"http://foo2.com/bar#baz", @"http://foo2.com/bar"},
       {@"http://foo3.com/bar?baz", @"http://foo3.com/bar"},
@@ -75,18 +75,18 @@ TEST_F(UtilsJavaScriptTest, RemoveQueryAndReferenceFromURL) {
       // Non-http protocols.
       {@"data:abc", @"data:abc"},
       {@"javascript:login()", @"javascript:login()"},
-  };
-  for (size_t i = 0; i < std::size(test_data); i++) {
+  });
+
+  for (const TestData& data : kTestData) {
     LoadHtml(@"<p>");
-    TestData& data = test_data[i];
     id result = web::test::ExecuteJavaScript(
         web_view(),
-        [NSString
-            stringWithFormat:
-                @"__gCrWeb.utils_tests.removeQueryAndReferenceFromURL('%@')",
-                data.input_url]);
+        [NSString stringWithFormat:
+                      @"__gCrWeb.getRegisteredApi('utils_tests').getFunction('"
+                      @"removeQueryAndReferenceFromURL')('%@')",
+                      data.input_url]);
     EXPECT_NSEQ(data.expected_output, result)
-        << " in test " << i << ": " << base::SysNSStringToUTF8(data.input_url);
+        << " with input: " << base::SysNSStringToUTF8(data.input_url);
   }
 }
 
@@ -100,8 +100,8 @@ TEST_F(
   web::test::ExecuteJavaScriptInWebView(
       web_view(), @"window.URL = function() { return { weird_field: 1 }; };");
 
-  NSString* apiCall =
-      @"__gCrWeb.utils_tests.removeQueryAndReferenceFromURL('%@')";
+  NSString* apiCall = @"__gCrWeb.getRegisteredApi('utils_tests').getFunction('"
+                      @"removeQueryAndReferenceFromURL')('%@')";
   NSString* url = @"http://foo1.com/bar";
   NSString* js = [NSString stringWithFormat:apiCall, url];
   id result = web::test::ExecuteJavaScript(web_view(), js);
@@ -118,8 +118,8 @@ TEST_F(UtilsJavaScriptTest,
       web_view(), @"window.URL = function() { return {"
                    "origin: 'o', path: 'pa', protocol: 3 }; };");
 
-  NSString* apiCall =
-      @"__gCrWeb.utils_tests.removeQueryAndReferenceFromURL('%@')";
+  NSString* apiCall = @"__gCrWeb.getRegisteredApi('utils_tests').getFunction('"
+                      @"removeQueryAndReferenceFromURL')('%@')";
   NSString* url = @"http://foo1.com/bar";
   NSString* js = [NSString stringWithFormat:apiCall, url];
   id result = web::test::ExecuteJavaScript(web_view(), js);
@@ -132,22 +132,24 @@ TEST_F(UtilsJavaScriptTest, RemoveQueryAndReferenceFromURL_InvalidInput) {
   struct TestData {
     NSString* input;
     NSString* expected_output;
-  } test_data[] = {
+  };
+
+  const auto kTestData = std::to_array<TestData>({
       {@"undefined", @""},
       {@"null", @""},
       {@"function() {}", @""},
       {@"'stringButNotURL'", @""},
-  };
-  for (size_t i = 0; i < std::size(test_data); i++) {
-    TestData& data = test_data[i];
+  });
+
+  for (const TestData& data : kTestData) {
     NSString* js = [NSString
-        stringWithFormat:
-            @"__gCrWeb.utils_tests.removeQueryAndReferenceFromURL(%@)",
-            data.input];
+        stringWithFormat:@"__gCrWeb.getRegisteredApi('utils_tests')."
+                         @"getFunction('removeQueryAndReferenceFromURL')(%@)",
+                         data.input];
     id result = web::test::ExecuteJavaScript(web_view(), js);
 
     EXPECT_NSEQ(data.expected_output, result)
-        << " in test " << i << ": " << base::SysNSStringToUTF8(data.input);
+        << " with input: " << base::SysNSStringToUTF8(data.input);
   }
 }
 
@@ -156,21 +158,24 @@ TEST_F(UtilsJavaScriptTest, SendWebKitMessage) {
   struct TestData {
     NSString* input;
     id expected_output;
-  } test_data[] = {
+  };
+
+  const auto kTestData = std::to_array<TestData>({
       {@"1", @1},
       {@"1.5", @1.5},
       {@"'String data'", @"String data"},
       {@"['a', 'b', 'c']", @[ @"a", @"b", @"c" ]},
       {@"{'a' : 'x', 'b' : 'y', 'c' : 'z'}",
        @{@"a" : @"x", @"b" : @"y", @"c" : @"z"}},
-  };
-  for (size_t i = 0; i < std::size(test_data); i++) {
-    TestData& data = test_data[i];
+  });
+
+  for (const TestData& data : kTestData) {
     // Reset value to ensure wait below stops at correct time.
     handler_.lastReceivedMessage = nil;
 
     NSString* js = [NSString
-        stringWithFormat:@"__gCrWeb.utils_tests.sendWebKitMessage('%@', %@)",
+        stringWithFormat:@"__gCrWeb.getRegisteredApi('utils_tests')."
+                         @"getFunction('sendWebKitMessage')('%@', %@)",
                          kUtilsSampleMessageHandlerName, data.input];
     web::test::ExecuteJavaScriptInWebView(web_view(), js);
 
@@ -180,7 +185,7 @@ TEST_F(UtilsJavaScriptTest, SendWebKitMessage) {
         }));
 
     EXPECT_NSEQ(data.expected_output, handler_.lastReceivedMessage.body)
-        << " in test " << i << ": " << base::SysNSStringToUTF8(data.input);
+        << " with input: " << base::SysNSStringToUTF8(data.input);
   }
 }
 
@@ -189,23 +194,26 @@ TEST_F(UtilsJavaScriptTest, Trim) {
   struct TestData {
     NSString* input_string;
     NSString* expected_output;
-  } test_data[] = {
+  };
+
+  const auto kTestData = std::to_array<TestData>({
       {@"'  content'", @"content"},
       {@"'content  '", @"content"},
       {@"'  content  '", @"content"},
       {@"'  cont   ent  '", @"cont   ent"},
       {@"null", @""},
       {@"undefined", @""},
-  };
-  for (size_t i = 0; i < std::size(test_data); i++) {
-    TestData& data = test_data[i];
+  });
+
+  for (const TestData& data : kTestData) {
     NSString* js = [NSString
-        stringWithFormat:@"__gCrWeb.utils_tests.trim(%@)", data.input_string];
+        stringWithFormat:
+            @"__gCrWeb.getRegisteredApi('utils_tests').getFunction('trim')(%@)",
+            data.input_string];
     id result = web::test::ExecuteJavaScript(web_view(), js);
 
     EXPECT_NSEQ(data.expected_output, result)
-        << " in test " << i << ": "
-        << base::SysNSStringToUTF8(data.input_string);
+        << " with input: " << base::SysNSStringToUTF8(data.input_string);
   }
 }
 
@@ -220,6 +228,7 @@ TEST_F(UtilsJavaScriptTest, IsTextField) {
     // True if this is expected to be a text field.
     const bool expected_is_text_field;
   };
+
   LoadHtml(@"<html><body>"
             "<input type='text' name='firstname'>"
             "<input type='text' name='lastname'>"
@@ -247,21 +256,31 @@ TEST_F(UtilsJavaScriptTest, IsTextField) {
             "<input type='submit' name='submit' value='Submit'>"
             "</body></html>");
 
-  static const struct TextFieldTestElement testElements[] = {
-      {"firstname", 0, true}, {"lastname", 0, true},
-      {"email", 0, true},     {"phone", 0, true},
-      {"blog", 0, true},      {"expected number of clicks", 0, true},
-      {"pwd", 0, true},       {"vehicle", 0, false},
-      {"vehicle", 1, false},  {"vehicle", 2, false},
-      {"boolean", 0, false},  {"boolean", 1, false},
-      {"boolean", 2, false},  {"state", 0, false},
-      {"cars", 0, false},     {"submit", 0, false}};
-  for (size_t i = 0; i < std::size(testElements); ++i) {
-    TextFieldTestElement element = testElements[i];
+  const auto kTestElements = std::to_array<TextFieldTestElement>({
+      {"firstname", 0, true},
+      {"lastname", 0, true},
+      {"email", 0, true},
+      {"phone", 0, true},
+      {"blog", 0, true},
+      {"expected number of clicks", 0, true},
+      {"pwd", 0, true},
+      {"vehicle", 0, false},
+      {"vehicle", 1, false},
+      {"vehicle", 2, false},
+      {"boolean", 0, false},
+      {"boolean", 1, false},
+      {"boolean", 2, false},
+      {"state", 0, false},
+      {"cars", 0, false},
+      {"submit", 0, false},
+  });
+
+  for (const TextFieldTestElement& element : kTestElements) {
     id result = web::test::ExecuteJavaScript(
         web_view(),
         [NSString
-            stringWithFormat:@"__gCrWeb.utils_tests.isTextField("
+            stringWithFormat:@"__gCrWeb.getRegisteredApi('utils_tests')."
+                             @"getFunction('isTextField')("
                               "window.document.getElementsByName('%s')[%d])",
                              element.element_name, element.element_index]);
     EXPECT_NSEQ(element.expected_is_text_field ? @YES : @NO, result)

@@ -16,7 +16,8 @@
 
 namespace content {
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
+#if BUILDFLAG(IS_ANDROID) && (BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT) || \
+                              BUILDFLAG(INCLUDE_BOTH_V8_SNAPSHOTS))
 namespace {
 void registerContextSnapshotAndroid(
     std::map<std::string, std::variant<base::FilePath, base::ScopedFD>>&

@@ -335,6 +335,9 @@ bool CastConfigControllerMediaRouter::IsAccessCodeCastFreezeUiEnabled() {
 
 void CastConfigControllerMediaRouter::
     StopObservingMirroringMediaControllerHosts() {
+  if (!device_cache_ || devices_.empty() || !GetMediaRouter()) {
+    return;
+  }
   for (const auto& device : devices_) {
     auto route_id = device.route.id;
     if (route_id.size() > 0) {

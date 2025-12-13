@@ -35,6 +35,10 @@
 
 namespace content {
 
+// When enabled, we check that DSNs have a value other than -1.
+// This is enforced at several points in the navigation flow.
+BASE_FEATURE(kCheckDocumentSequenceNumber, base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // Overridden time for unit tests. Should be accessed only from the main thread.
@@ -81,6 +85,12 @@ BackForwardCacheMetrics::CreateOrReuseBackForwardCacheMetricsForNavigation(
     NavigationEntryImpl* previous_entry,
     bool is_main_frame_navigation,
     int64_t committing_document_sequence_number) {
+  // TODO(https://crbug.com/445585641): Make this enforceable on Android.
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(kCheckDocumentSequenceNumber)) {
+    CHECK_NE(committing_document_sequence_number, -1);
+  }
+#endif
   if (!previous_entry) {
     // There is no previous NavigationEntry, so we must create a new metrics
     // object.
@@ -134,14 +144,8 @@ void BackForwardCacheMetrics::DidCommitNavigation(
   if (!navigation->IsInPrimaryMainFrame() || navigation->IsSameDocument())
     return;
 
-  // TODO(https://crbug.com/427426299): Remove this and several below.
-  // The stack trace for this crash does not identify a line of code.
-  SCOPED_CRASH_KEY_BOOL("crbug/427426299", "navigation", !!navigation);
-
   // Record metrics for history navigation, if applicable.
   if (IsCrossDocumentMainFrameHistoryNavigation(navigation)) {
-    SCOPED_CRASH_KEY_BOOL("crbug/427426299", "page_store_result_",
-                          !!page_store_result_);
     // We have to update not restored reasons even though we already did in
     // |SendCommitNavigation()|, because the NavigationEntry and
     // the BackForwardCacheMetrics object might not exist anymore, e.g. when the
@@ -176,9 +180,6 @@ void BackForwardCacheMetrics::DidCommitNavigation(
       CaptureTraceForNavigationDebugScenario(
           DebugScenario::kDebugBackForwardCacheMetricsMismatch);
     }
-
-    SCOPED_CRASH_KEY_BOOL("crbug/427426299", "sfbnm",
-                          served_from_bfcache_not_match);
 
     // TODO(crbug.com/40229455): Remove this.
     if (served_from_bfcache_not_match) {
@@ -224,6 +225,8 @@ void BackForwardCacheMetrics::DidCommitNavigation(
       SCOPED_CRASH_KEY_STRING256(
           "BFCacheMismatch", "previous_url",
           navigation->GetPreviousPrimaryMainFrameURL().spec());
+      // TODO(https://crbug.com/40229455): Reenable this when known cases are
+      // fixed.
       // base::debug::DumpWithoutCrashing();
     }
 
@@ -231,7 +234,6 @@ void BackForwardCacheMetrics::DidCommitNavigation(
                  page_store_result_->ToString());
     RecordHistoryNavigationUMA(navigation, back_forward_cache_allowed);
     RecordHistoryNavigationUKM(navigation);
-    SCOPED_CRASH_KEY_BOOL("crbug/427426299", "pstr", !!page_store_tree_result_);
     if (!navigation->IsServedFromBackForwardCache()) {
       devtools_instrumentation::BackForwardCacheNotUsed(
           navigation, page_store_result_.get(), page_store_tree_result_.get());
@@ -242,12 +244,10 @@ void BackForwardCacheMetrics::DidCommitNavigation(
           std::move(page_store_tree_result_));
     }
   }
-  SCOPED_CRASH_KEY_BOOL("crbug/427426299", "before_gni", true);
   // Save the information about the last cross-document main frame navigation
   // that uses this metrics object.
   last_committed_cross_document_main_frame_navigation_id_ =
       navigation->GetNavigationId();
-  SCOPED_CRASH_KEY_BOOL("crbug/427426299", "after_gni", true);
 
   // BackForwardCacheMetrics can be reused in some cases. Reset fields for UKM
   // for the next navigation.

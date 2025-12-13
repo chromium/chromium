@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MAX_SPEECH_LENGTH, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, MAX_SPEECH_LENGTH, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent} from './common.js';
@@ -95,6 +95,7 @@ suite('SpeechUsesMaxTextLength', () => {
     SpeechBrowserProxyImpl.setInstance(speech);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
+    ContentController.setInstance(new ContentController());
 
     app = await createApp();
     maxSpeechLength = MAX_SPEECH_LENGTH;
@@ -152,10 +153,14 @@ suite('SpeechUsesMaxTextLength', () => {
       'long sentence with few commas with remote voice uses last comma and ' +
           'then max length',
       async () => {
-        const expectedFirstText = longSentenceWithFewCommas.substring(
-            0, longSentenceWithFewCommas.lastIndexOf(','));
+        const lastComma =
+            longSentenceWithFewCommas.substring(0, maxSpeechLength)
+                .lastIndexOf(', ');
+        const expectedFirstText =
+            longSentenceWithFewCommas.substring(0, lastComma);
+        const remainingText = longSentenceWithFewCommas.substring(lastComma);
         const expectedNumSegments =
-            Math.ceil(longSentence.length / maxSpeechLength) - 1;
+            Math.ceil(remainingText.length / maxSpeechLength);
         setContentWithText(longSentenceWithFewCommas);
         emitEvent(
             app, ToolbarEvent.VOICE, {detail: {selectedVoice: remoteVoice}});
@@ -186,8 +191,12 @@ suite('SpeechUsesMaxTextLength', () => {
       'long sentence with late commas with remote voice uses comma before max' +
           ' length',
       () => {
+        // Since there are no commas within the first `maxSpeechLength`
+        // characters, this will break on a word boundary. It's hard to know
+        // exactly how many segments there will be, so just verify it's more
+        // than one.
         const expectedNumSegments =
-            Math.ceil(longSentence.length / maxSpeechLength);
+            Math.ceil(longSentenceWithLateComma.length / maxSpeechLength);
         setContentWithText(longSentenceWithLateComma);
         emitEvent(
             app, ToolbarEvent.VOICE, {detail: {selectedVoice: remoteVoice}});

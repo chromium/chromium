@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/back_forward_cache_disabling_feature_tracker.h"
 
 #include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_base.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 namespace scheduler {
@@ -12,14 +13,16 @@ namespace scheduler {
 BackForwardCacheDisablingFeatureTracker::
     BackForwardCacheDisablingFeatureTracker(
         TraceableVariableController* tracing_controller,
+        perfetto::Track parent_track,
         ThreadSchedulerBase* scheduler)
-    : opted_out_from_back_forward_cache_{false,
-                                         MakeNamedTrack(
-                                             "FrameScheduler."
-                                             "OptedOutFromBackForwardCache",
-                                             this),
-                                         tracing_controller,
-                                         YesNoStateToString},
+    : parent_track_(parent_track),
+      opted_out_from_back_forward_cache_{
+          false,
+          perfetto::NamedTrack::FromPointer("FrameScheduler."
+                                            "OptedOutFromBackForwardCache",
+                                            this,
+                                            parent_track_),
+          tracing_controller, YesNoStateToString},
       scheduler_{scheduler} {}
 
 void BackForwardCacheDisablingFeatureTracker::SetDelegate(
@@ -35,15 +38,11 @@ void BackForwardCacheDisablingFeatureTracker::SetDelegate(
 
 void BackForwardCacheDisablingFeatureTracker::Reset() {
   for (const auto& it : back_forward_cache_disabling_feature_counts_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "renderer.scheduler", "ActiveSchedulerTrackedFeature",
-        TRACE_ID_LOCAL(reinterpret_cast<intptr_t>(this) ^
-                       static_cast<int>(it.first)));
+    auto track = GetTrackForFeature(it.first);
+    TRACE_EVENT_END("renderer.scheduler", track);
   }
 
   back_forward_cache_disabling_feature_counts_.clear();
-  back_forward_cache_disabling_features_.reset();
-  last_uploaded_bfcache_disabling_features_ = 0;
   non_sticky_features_and_js_locations_.Clear();
   sticky_features_and_js_locations_.Clear();
   last_reported_non_sticky_.Clear();
@@ -52,12 +51,25 @@ void BackForwardCacheDisablingFeatureTracker::Reset() {
 
 void BackForwardCacheDisablingFeatureTracker::AddFeatureInternal(
     SchedulingPolicy::Feature feature) {
-  ++back_forward_cache_disabling_feature_counts_[feature];
-  back_forward_cache_disabling_features_.set(static_cast<size_t>(feature));
+  if (back_forward_cache_disabling_feature_counts_[feature]++ == 0) {
+    auto track = GetTrackForFeature(feature);
+    TRACE_EVENT_BEGIN(
+        "renderer.scheduler",
+        perfetto::StaticString(FeatureToHumanReadableString(feature)), track);
+  }
   opted_out_from_back_forward_cache_ = true;
 
   NotifyDelegateAboutFeaturesAfterCurrentTask(
       BackForwardCacheDisablingFeatureTracker::TracingType::kBegin, feature);
+}
+
+perfetto::NamedTrack
+BackForwardCacheDisablingFeatureTracker::GetTrackForFeature(
+    SchedulingPolicy::Feature traced_feature) const {
+  return perfetto::NamedTrack(
+      "ActiveSchedulerTrackedFeature",
+      reinterpret_cast<intptr_t>(this) ^ static_cast<int>(traced_feature),
+      parent_track_);
 }
 
 void BackForwardCacheDisablingFeatureTracker::AddNonStickyFeature(
@@ -95,8 +107,8 @@ void BackForwardCacheDisablingFeatureTracker::Remove(
   DCHECK_GT(back_forward_cache_disabling_feature_counts_[feature], 0);
   auto it = back_forward_cache_disabling_feature_counts_.find(feature);
   if (it->second == 1) {
+    TRACE_EVENT_END("renderer.scheduler", GetTrackForFeature(feature));
     back_forward_cache_disabling_feature_counts_.erase(it);
-    back_forward_cache_disabling_features_.reset(static_cast<size_t>(feature));
   } else {
     --it->second;
   }
@@ -109,10 +121,9 @@ void BackForwardCacheDisablingFeatureTracker::Remove(
       BackForwardCacheDisablingFeatureTracker::TracingType::kEnd, feature);
 }
 
-WTF::HashSet<SchedulingPolicy::Feature>
-BackForwardCacheDisablingFeatureTracker::
+HashSet<SchedulingPolicy::Feature> BackForwardCacheDisablingFeatureTracker::
     GetActiveFeaturesTrackedForBackForwardCacheMetrics() {
-  WTF::HashSet<SchedulingPolicy::Feature> result;
+  HashSet<SchedulingPolicy::Feature> result;
   for (const auto& it : back_forward_cache_disabling_feature_counts_) {
     result.insert(it.first);
   }
@@ -140,21 +151,6 @@ void BackForwardCacheDisablingFeatureTracker::
     scheduler_->ExecuteAfterCurrentTask(base::BindOnce(
         &BackForwardCacheDisablingFeatureTracker::ReportFeaturesToDelegate,
         weak_factory_.GetWeakPtr()));
-  }
-  switch (tracing_type) {
-    case TracingType::kBegin:
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-          "renderer.scheduler", "ActiveSchedulerTrackedFeature",
-          TRACE_ID_LOCAL(reinterpret_cast<intptr_t>(this) ^
-                         static_cast<int>(traced_feature)),
-          "feature", FeatureToHumanReadableString(traced_feature));
-      break;
-    case TracingType::kEnd:
-      TRACE_EVENT_NESTABLE_ASYNC_END0(
-          "renderer.scheduler", "ActiveSchedulerTrackedFeature",
-          TRACE_ID_LOCAL(reinterpret_cast<intptr_t>(this) ^
-                         static_cast<int>(traced_feature)));
-      break;
   }
 }
 

@@ -35,7 +35,7 @@ void SearchHostToURLsMap::Add(TemplateURL* template_url,
   if (!url.is_valid() || !url.has_host())
     return;
 
-  host_to_urls_map_[url.host()].insert(template_url);
+  host_to_urls_map_[url.GetHost()].insert(template_url);
 }
 
 void SearchHostToURLsMap::Remove(const TemplateURL* template_url) {

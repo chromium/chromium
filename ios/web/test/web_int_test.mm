@@ -5,6 +5,7 @@
 #import "ios/web/test/web_int_test.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/memory/ptr_util.h"
 #import "base/scoped_observation.h"
@@ -110,7 +111,7 @@ void WebIntTest::TearDown() {
   // Make sure that all display observers are removed at the end of each
   // test.
   display::ScreenBase* screen =
-      static_cast<display::ScreenBase*>(display::Screen::GetScreen());
+      static_cast<display::ScreenBase*>(display::Screen::Get());
   DCHECK(!screen->HasDisplayObservers());
 #endif
 }

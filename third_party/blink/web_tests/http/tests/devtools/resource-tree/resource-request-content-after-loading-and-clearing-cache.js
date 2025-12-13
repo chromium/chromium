@@ -25,8 +25,8 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
   await TestRunner.waitForUISourceCode('dynamic-script.js');
 
   TestRunner.addResult('Clearing memory cache: ');
-  await TestRunner.NetworkAgent.setCacheDisabled(true);
-  await TestRunner.NetworkAgent.setCacheDisabled(false);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true});
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: false});
   TestRunner.addResult('Requesting content: ');
   var resource = ApplicationTestRunner.resourceMatchingURL('dynamic-script.js');
   var { content } = await resource.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent);

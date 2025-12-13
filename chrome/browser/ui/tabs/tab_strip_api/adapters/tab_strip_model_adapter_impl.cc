@@ -7,18 +7,35 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tree_builder/mojo_tree_builder.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
+#include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_strip_collection.h"
+#include "content/public/browser/web_contents.h"
 
 namespace tabs_api {
 
-void TabStripModelAdapterImpl::AddObserver(TabStripModelObserver* observer) {
-  tab_strip_model_->AddObserver(observer);
+void TabStripModelAdapterImpl::AddModelObserver(
+    TabStripModelObserver* tab_strip_model_observer) {
+  tab_strip_model_->AddObserver(tab_strip_model_observer);
 }
 
-void TabStripModelAdapterImpl::RemoveObserver(TabStripModelObserver* observer) {
+void TabStripModelAdapterImpl::RemoveModelObserver(
+    TabStripModelObserver* observer) {
   tab_strip_model_->RemoveObserver(observer);
+}
+
+void TabStripModelAdapterImpl::AddCollectionObserver(
+    tabs::TabCollectionObserver* collection_observer) {
+  tab_strip_model_->Root()->AddObserver(collection_observer);
+}
+
+void TabStripModelAdapterImpl::RemoveCollectionObserver(
+    tabs::TabCollectionObserver* collection_observer) {
+  tab_strip_model_->Root()->RemoveObserver(collection_observer);
 }
 
 std::vector<tabs::TabHandle> TabStripModelAdapterImpl::GetTabs() const {
@@ -33,12 +50,28 @@ TabRendererData TabStripModelAdapterImpl::GetTabRendererData(int index) const {
   return TabRendererData::FromTabInModel(tab_strip_model_, index);
 }
 
+converters::TabStates TabStripModelAdapterImpl::GetTabStates(
+    tabs::TabHandle handle) const {
+  CHECK(handle.Get() != nullptr);
+  return {
+      .is_active = handle.Get()->IsActivated(),
+      .is_selected = handle.Get()->IsSelected(),
+  };
+}
+
+const ui::ColorProvider& TabStripModelAdapterImpl::GetColorProvider() const {
+  content::WebContents* active_contents =
+      tab_strip_model_->GetActiveWebContents();
+  CHECK(active_contents);
+  return active_contents->GetColorProvider();
+}
+
 void TabStripModelAdapterImpl::CloseTab(size_t tab_index) {
   tab_strip_model_->CloseWebContentsAt(tab_index, TabCloseTypes::CLOSE_NONE);
 }
 
 std::optional<int> TabStripModelAdapterImpl::GetIndexForHandle(
-    tabs::TabHandle tab_handle) {
+    tabs::TabHandle tab_handle) const {
   auto idx = tab_strip_model_->GetIndexOfTab(tab_handle.Get());
   return idx != TabStripModel::kNoTab ? std::make_optional(idx) : std::nullopt;
 }
@@ -129,26 +162,142 @@ void TabStripModelAdapterImpl::MoveCollection(const NodeId& id,
       tab_strip_model_->MoveGroupTo(group_id.value(), to_position);
       break;
     }
+    case tabs::TabCollection::Type::SPLIT: {
+      const tabs::SplitTabCollection* split_collection =
+          static_cast<const tabs::SplitTabCollection*>(collection);
+      const split_tabs::SplitTabId split_id = split_collection->GetSplitTabId();
+      const int to_position =
+          tab_strip_model_->IndexOfFirstNonPinnedTab() + position.index();
+      // TODO(crbug.com/412709271): Currently only moves within the unpinned
+      // collection.
+      tab_strip_model_->MoveSplitTo(split_id, to_position, false /* pinned */,
+                                    std::nullopt);
+      break;
+    }
     case tabs::TabCollection::Type::PINNED:
     case tabs::TabCollection::Type::UNPINNED:
     case tabs::TabCollection::Type::TABSTRIP:
-    // TODO(412709271). Implement moving a SplitTab collection.
-    case tabs::TabCollection::Type::SPLIT:
       NOTIMPLEMENTED();
       return;
   }
 }
 
-tabs_api::mojom::TabCollectionContainerPtr
-TabStripModelAdapterImpl::GetTabStripTopology() {
-  return MojoTreeBuilder(tab_strip_model_).Build();
+tabs_api::mojom::ContainerPtr TabStripModelAdapterImpl::GetTabStripTopology(
+    tabs::TabCollection::Handle root) const {
+  return MojoTreeBuilder(tab_strip_model_).Build(root);
 }
 
 std::optional<const tab_groups::TabGroupId>
 TabStripModelAdapterImpl::FindGroupIdFor(
-    const tabs::TabCollection::Handle& collection_handle) {
+    const tabs::TabCollection::Handle& collection_handle) const {
   return tab_strip_model_->FindGroupIdFor(
       collection_handle, base::PassKey<TabStripModelAdapterImpl>());
+}
+
+void TabStripModelAdapterImpl::UpdateTabGroupVisuals(
+    const tab_groups::TabGroupId& group,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  tab_strip_model_->ChangeTabGroupVisuals(group, visual_data,
+                                          false /*is_customized*/);
+}
+
+void TabStripModelAdapterImpl::SetTabSelection(
+    const std::vector<tabs::TabHandle>& handles_to_select,
+    tabs::TabHandle to_activate) {
+  // TODO: we should have input validation to ensure that all handles can be
+  // exchanged to indices.
+  auto active_index = GetIndexForHandle(to_activate);
+  CHECK(active_index.has_value());
+
+  std::vector<size_t> tab_indices;
+  for (auto& handle : handles_to_select) {
+    auto index = GetIndexForHandle(handle);
+    CHECK(index.has_value());
+    tab_indices.push_back(index.value());
+  }
+
+  ui::ListSelectionModel selection;
+  for (auto& tab_index : tab_indices) {
+    selection.AddIndexToSelection(tab_index);
+  }
+  selection.set_active(active_index.value());
+
+  tab_strip_model_->SetSelectionFromModel(selection);
+}
+
+std::optional<tab_groups::TabGroupId>
+TabStripModelAdapterImpl::GetTabGroupForTab(int index) const {
+  return tab_strip_model_->GetTabGroupForTab(index);
+}
+
+tabs::TabCollectionHandle
+TabStripModelAdapterImpl::GetCollectionHandleForTabGroupId(
+    tab_groups::TabGroupId group_id) const {
+  const TabGroup* tab_group =
+      tab_strip_model_->group_model()->GetTabGroup(group_id);
+  return tab_group->GetCollectionHandle();
+}
+
+tabs_api::Position TabStripModelAdapterImpl::GetPositionForAbsoluteIndex(
+    int absolute_index) const {
+  const auto tab_group_id = GetTabGroupForTab(absolute_index);
+  int relative_index =
+      absolute_index - tab_strip_model_->IndexOfFirstNonPinnedTab();
+  std::optional<tabs_api::NodeId> parent_id =
+      NodeId::FromTabCollectionHandle(GetUnpinnedTabsCollectionHandle());
+
+  if (absolute_index < tab_strip_model_->IndexOfFirstNonPinnedTab()) {
+    relative_index = absolute_index;
+    parent_id =
+        NodeId::FromTabCollectionHandle(GetPinnedTabsCollectionHandle());
+  } else if (tab_group_id.has_value()) {
+    const TabGroup* tab_group =
+        tab_strip_model_->group_model()->GetTabGroup(tab_group_id.value());
+    relative_index = absolute_index - tab_group->ListTabs().start();
+    parent_id = NodeId::FromTabCollectionHandle(
+        GetCollectionHandleForTabGroupId(tab_group_id.value()));
+  }
+
+  return tabs_api::Position(relative_index, parent_id);
+}
+
+InsertionParams TabStripModelAdapterImpl::CalculateInsertionParams(
+    const std::optional<tabs_api::Position>& pos) const {
+  tabs_api::InsertionParams params;
+  if (pos.has_value()) {
+    params.index = pos->index();
+    const std::optional<tabs_api::NodeId>& parent_id = pos->parent_id();
+    if (parent_id.has_value()) {
+      if (parent_id.value() ==
+          NodeId::FromTabCollectionHandle(GetPinnedTabsCollectionHandle())) {
+        params.pinned = true;
+      } else {
+        std::optional<tabs::TabCollectionHandle> collection_handle =
+            parent_id.value().ToTabCollectionHandle();
+        if (collection_handle.has_value()) {
+          params.group_id = FindGroupIdFor(collection_handle.value());
+        }
+      }
+    }
+  }
+
+  return params;
+}
+
+const tabs::TabCollection* TabStripModelAdapterImpl::GetRoot() const {
+  return tab_strip_model_->Root();
+}
+
+tabs::TabCollectionHandle
+TabStripModelAdapterImpl::GetPinnedTabsCollectionHandle() const {
+  return tab_strip_model_->GetPinnedTabsCollectionHandle(
+      base::PassKey<TabStripModelAdapterImpl>());
+}
+
+tabs::TabCollectionHandle
+TabStripModelAdapterImpl::GetUnpinnedTabsCollectionHandle() const {
+  return tab_strip_model_->GetUnpinnedTabsCollectionHandle(
+      base::PassKey<TabStripModelAdapterImpl>());
 }
 
 }  // namespace tabs_api

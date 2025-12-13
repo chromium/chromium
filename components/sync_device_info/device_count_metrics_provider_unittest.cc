@@ -23,7 +23,8 @@ class DeviceCountMetricsProviderTest : public testing::Test {
             base::BindRepeating(&DeviceCountMetricsProviderTest::GetTrackers,
                                 base::Unretained(this))) {}
 
-  void AddTracker(const std::map<DeviceInfo::FormFactor, int>& count) {
+  void AddTracker(
+      const absl::flat_hash_map<DeviceInfo::FormFactor, int>& count) {
     auto tracker = std::make_unique<FakeDeviceInfoTracker>();
     tracker->OverrideActiveDeviceCount(count);
     trackers_.emplace_back(std::move(tracker));

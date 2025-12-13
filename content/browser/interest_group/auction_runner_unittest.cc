@@ -78,6 +78,7 @@
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/cpp/test_bid_builder.h"
@@ -119,6 +120,10 @@
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 using auction_worklet::TestDevToolsAgentClient;
 using testing::HasSubstr;
@@ -3045,9 +3050,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   }
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override {
     return network::mojom::ClientSecurityState::New();
-  }
-  std::optional<std::string> GetCookieDeprecationLabel() override {
-    return std::nullopt;
   }
   void GetTrustedKeyValueServerKey(
       const url::Origin& scope_origin,
@@ -14419,7 +14421,11 @@ TEST_F(AuctionRunnerTest, ExecutionModeGroupByOriginClickiness) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{network::features::kAdAuctionEventRegistration,
                             blink::features::kFledgeClickiness},
-      /*disabled_features=*/{});
+      // The balancing thread selector will split same-origin same-execution
+      // mode across multiple worklets, which messes with the results of this
+      // test.
+      /*disabled_features=*/{
+          features::kFledgeBidderUseBalancingThreadSelector});
   // Test of group-by-origin execution mode at AuctionRunner level;
   // this primarily shows that the sorting actually groups things, and that
   // distinct groups are kept separate.
@@ -18170,7 +18176,7 @@ TEST_F(AuctionRunnerTest,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::kFledgeConsiderKAnonymity,
                             blink::features::kFledgeEnforceKAnonymity},
-      /*disabled_features=*/{});
+      /*disabled_features=*/{features::kCookieDeprecationFacilitatedTesting});
 
   // Only one bidder participating the auction, to keep things simple.
   interest_group_buyers_ = {{kBidder1}};
@@ -21772,7 +21778,7 @@ TEST_F(AuctionRunnerTest, ModelingSignalsPassed) {
     EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 
     ASSERT_EQ(result_.report_urls.size(), 1u);
-    std::string_view query = result_.report_urls[0].query_piece();
+    std::string_view query = result_.report_urls[0].query();
     std::vector<std::string_view> split = base::SplitStringPiece(
         query, "=", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(split.size(), 2u);
@@ -21897,7 +21903,7 @@ TEST_F(AuctionRunnerTest, JoinCountPassedToReportWin) {
     EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 
     ASSERT_EQ(result_.report_urls.size(), 1u);
-    std::string_view query = result_.report_urls[0].query_piece();
+    std::string_view query = result_.report_urls[0].query();
     std::vector<std::string_view> split = base::SplitStringPiece(
         query, "=", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(split.size(), 2u);
@@ -21914,6 +21920,14 @@ TEST_F(AuctionRunnerTest, JoinCountPassedToReportWin) {
 }
 
 TEST_F(AuctionRunnerTest, RecencyPassedReportWin) {
+// TODO(crbug.com/433968045): This test fails on macOS 26 due to
+// a test timeout. Re-enable once the timeout is fixed.
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   // Due to noising, recency is only correctly passed 99% of the time.
   //
   // Since the noising pseudorandom number generator is uniform, in 30 runs, the
@@ -21973,7 +21987,7 @@ TEST_F(AuctionRunnerTest, RecencyPassedReportWin) {
     EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 
     ASSERT_EQ(result_.report_urls.size(), 1u);
-    std::string_view query = result_.report_urls[0].query_piece();
+    std::string_view query = result_.report_urls[0].query();
     std::vector<std::string_view> split = base::SplitStringPiece(
         query, "=", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(split.size(), 2u);
@@ -25346,7 +25360,21 @@ class AuctionRunnerKAnonTest : public AuctionRunnerTest,
       : AuctionRunnerTest(
             /*should_enable_private_aggregation=*/true,
             kanon_mode()) {
-    feature_list_.InitAndEnableFeature(blink::features::kFledgeMultiBid);
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    switch (kanon_mode()) {
+      case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
+      case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
+        disabled_features.push_back(
+            features::kCookieDeprecationFacilitatedTesting);
+        break;
+      case auction_worklet::mojom::KAnonymityBidMode::kNone:
+        break;
+    }
+
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kFledgeMultiBid},
+        disabled_features);
   }
 
   using KAnonMode = auction_worklet::mojom::KAnonymityBidMode;
@@ -28748,6 +28776,11 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsSplitBatchedRequests) {
 }
 
 TEST_F(AuctionRunnerTest, TrustedScoringSignalsJointBatchedRequests) {
+  // Requesting signals one at a time interferes with batching, so disable it
+  // for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kFledgeSellerSignalsRequestsOneAtATime);
   url_loader_factory_.ClearResponses();
   trusted_scoring_signals_url_ =
       GURL("https://adstuff.publisher1.com/seller_signals");

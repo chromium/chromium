@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/x/x11_clipboard_helper.h"
 
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
@@ -335,9 +331,9 @@ XClipboardHelper::TargetList XClipboardHelper::GetTargetList(
       // Some apps return an |out_type| of "TARGETS". (crbug.com/377893)
       if (out_type == x11::Atom::ATOM || out_type == x11::GetAtom(kTargets)) {
         const x11::Atom* atom_array =
-            reinterpret_cast<const x11::Atom*>(data.data());
+            UNSAFE_TODO(reinterpret_cast<const x11::Atom*>(data.data()));
         for (size_t i = 0; i < data.size() / sizeof(x11::Atom); ++i) {
-          out.push_back(atom_array[i]);
+          out.push_back(UNSAFE_TODO(atom_array[i]));
         }
       }
     } else {

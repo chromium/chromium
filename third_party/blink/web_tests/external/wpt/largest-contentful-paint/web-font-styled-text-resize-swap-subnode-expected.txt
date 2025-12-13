@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] LCP should be updated if the web font styled text resizes to be larger during the swap period
+  assert_equals: There should be 2 LCP entries. The 1st one corresponds to the system font and the 2nd the web font. expected 2 but got 1
+Harness: the test ran to completion.

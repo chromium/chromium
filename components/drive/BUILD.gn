@@ -31,7 +31,7 @@ component("drive") {
     "//components/keyed_service/core",
     "//google_apis",
     "//services/device/public/mojom",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/leveldatabase",
     "//third_party/re2",
   ]
@@ -80,7 +80,7 @@ static_library("test_support") {
     "//base",
     "//google_apis/common:test_support",
     "//google_apis/drive",
-    "//net:net",
+    "//net",
   ]
 }
 

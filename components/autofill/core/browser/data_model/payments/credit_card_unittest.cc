@@ -89,6 +89,15 @@ std::u16string GetYearInTheFuture() {
   return base::NumberToString16(now.year + 4);
 }
 
+bool ShouldUseNewFopDisplay() {
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableNewFopDisplayDesktop);
+#endif
+}
+
 TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
   const std::u16string digits = u"1235";
   const std::u16string expected =
@@ -103,6 +112,12 @@ TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
 // of different possible summary strings.  Variations occur based on the
 // existence of credit card number, month, and year fields.
 TEST(CreditCardTest, LabelSummary) {
+  if (ShouldUseNewFopDisplay()) {
+    // Tests for New FOP display have been covered by *LabelPieces_WithNickname
+    // and *LabelPieces_WithoutNickname tests. Skip here.
+    return;
+  }
+
   std::u16string valid_nickname = u"My Visa Card";
 
   // Case 0: empty credit card.
@@ -1164,6 +1179,40 @@ TEST(CreditCardTest, CompareCardInfoRetrievalEnrollmentState) {
   EXPECT_EQ(0, a.Compare(b));
 }
 
+TEST(CreditCardTest, CompareCardCreationSource) {
+  CreditCard a(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               std::string());
+  CreditCard b(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               std::string());
+
+  // Empty cards are the same.
+  EXPECT_EQ(0, a.Compare(b));
+
+  a.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceChromePayments);
+  b.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceNonChromePayments);
+  EXPECT_NE(0, a.Compare(b));
+
+  a.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceUnspecified);
+  b.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceChromePayments);
+  EXPECT_NE(0, a.Compare(b));
+
+  a.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceUnspecified);
+  b.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceUnspecified);
+  EXPECT_EQ(0, a.Compare(b));
+
+  a.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceChromePayments);
+  b.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceChromePayments);
+  EXPECT_EQ(0, a.Compare(b));
+}
+
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceId_NewFopDisplayOff) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1815,9 +1864,10 @@ TEST(CreditCardTest, IsDeletable) {
 }
 
 TEST(CreditCardTest, LabelPieces_WithNickname) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableNewFopDisplayDesktop);
+  if (!ShouldUseNewFopDisplay()) {
+    // Tests for New FOP display only.
+    return;
+  }
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                   "https://www.example.com/");
   // Set the card as Mastercard.
@@ -1833,9 +1883,10 @@ TEST(CreditCardTest, LabelPieces_WithNickname) {
 }
 
 TEST(CreditCardTest, LabelPieces_WithoutNickname) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableNewFopDisplayDesktop);
+  if (!ShouldUseNewFopDisplay()) {
+    // Tests for New FOP display only.
+    return;
+  }
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                   "https://www.example.com/");
   // Set the card as Mastercard.
@@ -2114,82 +2165,6 @@ TEST(CreditCardTestForKeyboardAccessory, GetObfuscatedStringForCardDigits) {
                           /*obfuscation_length=*/2, digits));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-enum Expectation { GREATER, LESS };
-
-struct VirtualCardRankingTestCase {
-  const std::string guid_a;
-  const int use_count_a;
-  const base::Time use_date_a;
-  const std::string guid_b;
-  const int use_count_b;
-  const base::Time use_date_b;
-  Expectation expectation;
-};
-
-base::Time current_time = base::Time::Now();
-
-class VirtualCardRankingTest
-    : public testing::TestWithParam<VirtualCardRankingTestCase> {};
-
-TEST_P(VirtualCardRankingTest, HasGreaterRankingThan) {
-  // Enable kAutofillEnableRankingFormulaCreditCards so that it uses new formula
-  // instead of frecency.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableRankingFormulaCreditCards);
-
-  auto test_case = GetParam();
-
-  CreditCard model_a = test::GetVirtualCard();
-  model_a.set_guid(test_case.guid_a);
-  model_a.usage_history().set_use_count(test_case.use_count_a);
-  model_a.usage_history().set_use_date(test_case.use_date_a);
-
-  CreditCard model_b = test::GetCreditCard();
-  model_b.set_guid(test_case.guid_b);
-  model_b.usage_history().set_use_count(test_case.use_count_b);
-  model_b.usage_history().set_use_date(test_case.use_date_b);
-
-  EXPECT_EQ(test_case.expectation == GREATER,
-            model_a.HasGreaterRankingThan(model_b, current_time));
-  EXPECT_NE(test_case.expectation == GREATER,
-            model_b.HasGreaterRankingThan(model_a, current_time));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    CreditCardTest,
-    VirtualCardRankingTest,
-    testing::Values(
-        // Same days since last use and use count, but model A is a virtual card
-        // and ranked higher.
-        VirtualCardRankingTestCase{"guid_a", 10, current_time, "guid_b", 10,
-                                   current_time, GREATER},
-        // Same days since last use and although model A has a smaller use
-        // count, it is a virtual card and ranked higher.
-        VirtualCardRankingTestCase{"guid_a", 1, current_time, "guid_b", 10,
-                                   current_time, GREATER},
-        // Model A has a larger use count but smaller days since last use. model
-        // A is ranked higher due to virtual card boost.
-        VirtualCardRankingTestCase{"guid_a", 10, current_time - base::Days(10),
-                                   "guid_b", 5, current_time, GREATER},
-        // Model A has a larger use count but also a much larger days since last
-        // use. Due to this, model B is ranked higher despite the virtual card
-        // boost and greater use count of model A.
-        VirtualCardRankingTestCase{"guid_a", 10, current_time - base::Days(40),
-                                   "guid_b", 3, current_time, LESS},
-        // Model A only has a use count of 1 but due to its virtual card bost
-        // and much smaller days since last use it is ranked higher than model
-        // B.
-        VirtualCardRankingTestCase{"guid_a", 1, current_time - base::Days(30),
-                                   "guid_b", 300, current_time - base::Days(90),
-                                   GREATER},
-        // Model B only has a use count of 1 but due to its much smaller day
-        // since last use it is ranked higher than model A despite its virtual
-        // card boost and much higher use count.
-        VirtualCardRankingTestCase{"guid_a", 300, current_time - base::Days(90),
-                                   "guid_b", 1, current_time - base::Days(30),
-                                   LESS}));
 
 }  // namespace
 }  // namespace autofill

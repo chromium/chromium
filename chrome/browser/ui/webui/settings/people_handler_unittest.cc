@@ -42,7 +42,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -51,6 +50,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -78,6 +78,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chromeos/constants/pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -87,7 +88,6 @@ using signin_util::SignedInState;
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::Const;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Mock;
 using ::testing::Return;
@@ -175,9 +175,7 @@ std::string GetConfiguration(SyncAllDataConfig sync_all,
   result.Set("typedUrlsSynced",
              types.Has(syncer::UserSelectableType::kHistory));
 
-  std::string args;
-  base::JSONWriter::Write(result, &args);
-  return args;
+  return base::WriteJson(result).value_or("");
 }
 
 // Checks whether the passed |dictionary| contains a |key| with the given
@@ -568,9 +566,11 @@ TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
                            signin_metrics::AccessPoint::kSettings,
                            signin_metrics::PromoAction::
                                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT));
-  handler_->HandleStartSignin(base::Value::List());
+  base::Value::List args;
+  args.Append(0);
+  handler_->HandleStartSignin(args);
 
-  // Sync setup hands off control to the gaia login tab.
+  // The sign-in flow setup hands off control to the gaia login tab.
   EXPECT_EQ(
       nullptr,
       LoginUIServiceFactory::GetForProfile(profile())->current_login_ui());
@@ -1204,7 +1204,6 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST(PeopleHandlerDiceTest, StoredAccountsList) {
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
   content::BrowserTaskEnvironment task_environment;
 
   network::TestURLLoaderFactory url_loader_factory =
@@ -1418,7 +1417,6 @@ TEST(PeopleHandlerWebOnlySigninTest, ChromeSigninUserAvailableOnWebSignin) {
   // -- Test Setup start
 
   // Needed to enable setting a proper account signed in on the web.
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
   content::BrowserTaskEnvironment task_environment;
 
   network::TestURLLoaderFactory url_loader_factory =
@@ -1588,15 +1586,16 @@ TEST_F(PeopleHandlerTest, HandleStartSigninManaged) {
       kManagedEmail, ConsentLevel::kSignin);
   SetExplicitSignin(true);
   // Make the account managed and disallow signout.
-  account.hosted_domain = "managedchrome.com";
+  account = AccountInfo::Builder(account)
+                .SetHostedDomain("managedchrome.com")
+                .Build();
   AccountCapabilitiesTestMutator(&account.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(account);
   SigninClient* client = ChromeSigninClientFactory::GetForProfile(profile());
   client->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
-  ASSERT_FALSE(
-      client->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  ASSERT_FALSE(client->IsClearPrimaryAccountAllowed());
   TriggerPrimaryAccountInPersistentError();
   CreatePeopleHandler();
   // This should not crash.
@@ -1605,7 +1604,9 @@ TEST_F(PeopleHandlerTest, HandleStartSigninManaged) {
       ShowReauthUI(profile(), kManagedEmail, /*enable_sync=*/false,
                    signin_metrics::AccessPoint::kSettings,
                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
-  web_ui_.HandleReceivedMessage("SyncSetupStartSignIn", base::Value::List());
+  base::Value::List args;
+  args.Append(0);
+  web_ui_.HandleReceivedMessage("SyncSetupStartSignIn", args);
 }
 
 TEST_F(PeopleHandlerTest, SigninPendingValueWithSync) {
@@ -1978,7 +1979,8 @@ TEST_F(PeopleHandlerWithCookiesSyncTest, SyncCookiesSupported) {
 
   // Feature flag enabled, policy set to false.
   {
-    profile()->GetPrefs()->SetBoolean(prefs::kFloatingSsoEnabled, false);
+    profile()->GetPrefs()->SetBoolean(chromeos::prefs::kFloatingSsoEnabled,
+                                      false);
 
     const base::Value::Dict& sync_status_values =
         handler_->GetSyncStatusDictionary();
@@ -1990,7 +1992,8 @@ TEST_F(PeopleHandlerWithCookiesSyncTest, SyncCookiesSupported) {
 
   // Feature flag enabled, policy set to true.
   {
-    profile()->GetPrefs()->SetBoolean(prefs::kFloatingSsoEnabled, true);
+    profile()->GetPrefs()->SetBoolean(chromeos::prefs::kFloatingSsoEnabled,
+                                      true);
 
     const base::Value::Dict& sync_status_values =
         handler_->GetSyncStatusDictionary();

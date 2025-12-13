@@ -29,7 +29,7 @@ MockLibraryCdm::MockLibraryCdm(HostInterface* host,
 }
 
 MockLibraryCdm::~MockLibraryCdm() {
-  DCHECK(g_mock_library_cdm);
+  CHECK(g_mock_library_cdm);
   g_mock_library_cdm = nullptr;
 }
 
@@ -49,13 +49,14 @@ void* CreateMockLibraryCdm(int cdm_interface_version,
                            GetCdmHostFunc get_cdm_host_func,
                            void* user_data) {
   DVLOG(1) << __func__;
-  DCHECK(!g_mock_library_cdm);
+  CHECK(!g_mock_library_cdm);
 
   std::string key_system_string(key_system, key_system_size);
 
-  // We support CDM_10 and CDM_11.
+  // We support CDM_10, CDM_11 and CDM_12.
   using CDM_10 = cdm::ContentDecryptionModule_10;
   using CDM_11 = cdm::ContentDecryptionModule_11;
+  using CDM_12 = cdm::ContentDecryptionModule_12;
 
   if (cdm_interface_version == CDM_10::kVersion) {
     CDM_10::Host* host = static_cast<CDM_10::Host*>(
@@ -77,6 +78,18 @@ void* CreateMockLibraryCdm(int cdm_interface_version,
     DVLOG(1) << __func__ << ": Create ClearKeyCdm with CDM_11::Host.";
     g_mock_library_cdm = new MockLibraryCdm(host, key_system_string);
     return static_cast<CDM_11*>(g_mock_library_cdm);
+  }
+
+  if (cdm_interface_version == CDM_12::kVersion) {
+    CDM_12::Host* host = static_cast<CDM_12::Host*>(
+        get_cdm_host_func(CDM_12::Host::kVersion, user_data));
+    if (!host) {
+      return nullptr;
+    }
+
+    DVLOG(1) << __func__ << ": Create ClearKeyCdm with CDM_12::Host.";
+    g_mock_library_cdm = new MockLibraryCdm(host, key_system_string);
+    return static_cast<CDM_12*>(g_mock_library_cdm);
   }
 
   return nullptr;

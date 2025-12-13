@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 
@@ -14,7 +17,6 @@ import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,6 +29,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -99,12 +102,12 @@ public class TabFaviconTest {
 
     @Test
     public void testOnFaviconAvailable_ReturnsBitmap() {
-        Assert.assertNull(TabFavicon.getBitmap(mTab));
+        assertNull(TabFavicon.getBitmap(mTab));
 
         onFaviconAvailable(makeBitmap(1, Color.GREEN));
         Bitmap bitmap = TabFavicon.getBitmap(mTab);
-        Assert.assertNotNull(bitmap);
-        Assert.assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+        assertNotNull(bitmap);
+        assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
     }
 
     @Test
@@ -115,8 +118,8 @@ public class TabFaviconTest {
         onFaviconAvailable(makeBitmap(IDEAL_SIZE * 2, Color.BLUE));
 
         Bitmap bitmap = TabFavicon.getBitmap(mTab);
-        Assert.assertNotNull(bitmap);
-        Assert.assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+        assertNotNull(bitmap);
+        assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
     }
 
     @Test
@@ -128,7 +131,16 @@ public class TabFaviconTest {
         onFaviconAvailable(makeBitmap(1, Color.GREEN));
 
         Bitmap bitmap = TabFavicon.getBitmap(mTab);
-        Assert.assertNotNull(bitmap);
-        Assert.assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+        assertNotNull(bitmap);
+        assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+    }
+
+    @Test
+    public void testGetBitmap_frozenTabWithPendingLoad() {
+        // A frozen tab can have a pending load but no WebContents.
+        doReturn(null).when(mTab).getWebContents();
+        doReturn(new LoadUrlParams("foo.com")).when(mTab).getPendingLoadParams();
+
+        assertNull(TabFavicon.getBitmap(mTab));
     }
 }

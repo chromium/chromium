@@ -14,7 +14,14 @@ config("tensorflow-text-config") {
 }
 
 config("tensorflow-text-flags") {
-  cflags = [ "-Wno-comment" ]
+  cflags = [
+    "-Wno-comment",
+
+    # Avoids an error pulling in a TFLite use of tsl::mutex. This is here
+    # rather than as a public config in TFLite's BUILD.gn to avoid propagating
+    # this disable into more Chrome code than is necessary.
+    "-Wno-deprecated-declarations",
+  ]
 }
 
 static_library("tensorflow-text") {
@@ -49,34 +56,40 @@ flatbuffer("bert_model_schemas") {
   ]
 }
 
-static_library("shimed_bert_model_ops") {
-  sources = [
-    "src/tensorflow_text/core/kernels/darts_clone_trie_wrapper.h",
-    "src/tensorflow_text/core/kernels/fast_bert_normalizer.h",
-    "src/tensorflow_text/core/kernels/fast_bert_normalizer_kernel_template.h",
-    "src/tensorflow_text/core/kernels/fast_bert_normalizer_tflite.h",
-    "src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer.cc",
-    "src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer.h",
-    "src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_kernel_template.h",
-    "src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_tflite.h",
-    "src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_utils.h",
-  ]
+if (!is_fuchsia) {
+  static_library("shimed_bert_model_ops") {
+    sources = [
+      "src/tensorflow_text/core/kernels/darts_clone_trie_wrapper.h",
+      "src/tensorflow_text/core/kernels/fast_bert_normalizer.h",
+      "src/tensorflow_text/core/kernels/fast_bert_normalizer_kernel_template.h",
+      "src/tensorflow_text/core/kernels/fast_bert_normalizer_tflite.cc",
+      "src/tensorflow_text/core/kernels/fast_bert_normalizer_tflite.h",
+      "src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer.cc",
+      "src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer.h",
+      "src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_kernel_template.h",
+      "src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_tflite.cc",
+      "src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_tflite.h",
+      "src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_utils.h",
+    ]
 
-  deps = [
-    ":bert_model_schemas",
-    ":tensorflow-text",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/flatbuffers",
-    "//third_party/icu",
-    "//third_party/re2",
-    "//third_party/tflite",
-  ]
+    deps = [
+      ":bert_model_schemas",
+      ":tensorflow-text",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/flatbuffers",
+      "//third_party/icu",
+      "//third_party/re2",
+      "//third_party/tflite",
+    ]
 
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    ":tensorflow-text-flags",
-    "//build/config/compiler:no_chromium_code",
-  ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      ":tensorflow-text-flags",
+      "//build/config/compiler:no_chromium_code",
+      "//third_party/ml_dtypes:ml_dtypes-includes",
+      "//third_party/tflite:tflite_config",
+    ]
 
-  public_configs = [ ":tensorflow-text-config" ]
+    public_configs = [ ":tensorflow-text-config" ]
+  }
 }

@@ -39,11 +39,9 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_element_hit_test_region.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_context_attributes.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
-#include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/core/layout/content_change_type.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -74,6 +72,7 @@ namespace blink {
 
 class AcceleratedStaticBitmapImage;
 class CanvasResourceProvider;
+class CanvasSnapshotProvider;
 class EXTDisjointTimerQuery;
 class EXTDisjointTimerQueryWebGL2;
 class Element;
@@ -141,10 +140,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   HTMLCanvasElement* canvas() const;
 
-  const UkmParameters GetUkmParameters() const {
-    return Host()->GetUkmParameters();
-  }
-
   virtual String ContextName() const = 0;
   virtual void RegisterContextExtensions() = 0;
 
@@ -155,21 +150,23 @@ class MODULES_EXPORT WebGLRenderingContextBase
   static std::unique_ptr<WebGraphicsContext3DProvider>
   CreateWebGraphicsContext3DProvider(CanvasRenderingContextHost*,
                                      const CanvasContextCreationAttributesCore&,
-                                     Platform::ContextType context_type,
-                                     Platform::GraphicsInfo* graphics_info);
+                                     Platform::WebGLContextType context_type,
+                                     Platform::WebGLContextInfo* context_info);
   static void ForceNextWebGLContextCreationToFail();
 
-  Platform::ContextType ContextType() const { return context_type_; }
+  Platform::WebGLContextType ContextType() const { return context_type_; }
 
   int drawingBufferWidth() const;
   int drawingBufferHeight() const;
   GLenum drawingBufferFormat() const;
-  V8PredefinedColorSpace drawingBufferColorSpace() const;
-  void setDrawingBufferColorSpace(const V8PredefinedColorSpace& color_space,
+  V8PredefinedColorSpace drawingBufferColorSpace(ScriptState*) const;
+  void setDrawingBufferColorSpace(ScriptState*,
+                                  const V8PredefinedColorSpace& color_space,
                                   ExceptionState&);
 
-  V8PredefinedColorSpace unpackColorSpace() const;
-  void setUnpackColorSpace(const V8PredefinedColorSpace& color_space,
+  V8PredefinedColorSpace unpackColorSpace(ScriptState*) const;
+  void setUnpackColorSpace(ScriptState*,
+                           const V8PredefinedColorSpace& color_space,
                            ExceptionState&);
 
   void activeTexture(GLenum texture);
@@ -428,7 +425,32 @@ class MODULES_EXPORT WebGLRenderingContextBase
                     Element* element,
                     ExceptionState& exception_state);
 
-  void setHitTestRegions(VectorOf<CanvasElementHitTestRegion> hit_test_regions,
+  void texElement2D(GLenum target,
+                    GLint level,
+                    GLint internalformat,
+                    GLsizei width,
+                    GLsizei height,
+                    GLenum format,
+                    GLenum type,
+                    Element* element,
+                    ExceptionState& exception_state);
+
+  void texElementImage2D(GLenum target,
+                         GLint level,
+                         GLint internalformat,
+                         GLenum format,
+                         GLenum type,
+                         Element* element,
+                         ExceptionState& exception_state);
+
+  void texElementImage2D(GLenum target,
+                         GLint level,
+                         GLint internalformat,
+                         GLsizei width,
+                         GLsizei height,
+                         GLenum format,
+                         GLenum type,
+                         Element* element,
                          ExceptionState& exception_state);
 
   void texParameterf(GLenum target, GLenum pname, GLfloat param);
@@ -606,8 +628,9 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   void Trace(Visitor*) const override;
 
-  // Returns approximate gpu memory allocated per pixel.
-  int AllocatedBufferCountPerPixel() override;
+  // Returns approximate gpu memory allocated.
+  base::ByteCount AllocatedBufferSize() const override;
+  int AllocatedBufferCountPerPixel() const override { NOTREACHED(); }
 
   // Returns the drawing buffer size after it is, probably, has scaled down
   // to the maximum supported canvas size.
@@ -632,7 +655,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   SkAlphaType GetAlphaType() const override;
   viz::SharedImageFormat GetSharedImageFormat() const override;
   gfx::ColorSpace GetColorSpace() const override;
-  scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override;
+  scoped_refptr<StaticBitmapImage> GetImage() override;
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) override;
 
   V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
@@ -697,34 +720,33 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   WebGLRenderingContextBase(CanvasRenderingContextHost*,
                             std::unique_ptr<WebGraphicsContext3DProvider>,
-                            const Platform::GraphicsInfo& graphics_info,
+                            const Platform::WebGLContextInfo&,
                             const CanvasContextCreationAttributesCore&,
-                            Platform::ContextType);
+                            Platform::WebGLContextType);
   scoped_refptr<DrawingBuffer> CreateDrawingBuffer(
       std::unique_ptr<WebGraphicsContext3DProvider>,
-      const Platform::GraphicsInfo& graphics_info);
+      const Platform::WebGLContextInfo&);
   void SetupFlags();
-  bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
+  bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProviderSharedImage*,
                                              SourceDrawingBuffer);
 
   // CanvasRenderingContext implementation.
   bool IsComposited() const override { return true; }
-  bool IsAccelerated() const override;
-  bool UsingSwapChain() const override;
-  bool CanUseDrawingBufferSIWithoutCopyForLowLatency();
   void PageVisibilityChanged() override;
   void SizeChanged() override;
-  std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider();
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
-      SourceDrawingBuffer source_buffer,
-      FlushReason reason) override;
+      SourceDrawingBuffer source_buffer) override;
   void ClearMarkedCanvasDirty() override { marked_canvas_dirty_ = false; }
   scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
-      bool was_dirty,
-      bool has_dispatcher,
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;
 
+  scoped_refptr<StaticBitmapImage>
+  CopyRenderingResultsToUnacceleratedStaticBitmapImage(
+      SourceDrawingBuffer source_buffer,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      GrSurfaceOrigin origin);
   bool CopyRenderingResultsToVideoFrame(
       WebGraphicsContext3DVideoFramePool*,
       SourceDrawingBuffer,
@@ -890,14 +912,14 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   Vector<GLenum> compressed_texture_formats_;
 
-  // Fixed-size cache of reusable resource providers for image and video
+  // Fixed-size cache of reusable snapshot providers for image and video
   // texImage2D calls.
-  class LRUCanvasResourceProviderCache {
+  class LRUCanvasSnapshotProviderCache {
    public:
     enum class CacheType { kImage, kVideo };
-    LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type);
+    LRUCanvasSnapshotProviderCache(wtf_size_t capacity, CacheType type);
     // The pointer returned is owned by the image buffer map.
-    CanvasResourceProvider* GetCanvasResourceProvider(
+    CanvasSnapshotProvider* GetCanvasSnapshotProvider(
         gfx::Size size,
         viz::SharedImageFormat format,
         SkAlphaType alpha_type,
@@ -907,16 +929,16 @@ class MODULES_EXPORT WebGLRenderingContextBase
     void BubbleToFront(wtf_size_t idx);
     const wtf_size_t capacity_;
     const CacheType type_;
-    Vector<std::unique_ptr<CanvasResourceProvider>> resource_providers_;
-    // The returned CanvasResourceProvider may have a different format from the
+    Vector<std::unique_ptr<CanvasSnapshotProvider>> snapshot_providers_;
+    // The returned CanvasSnapshotProvider may have a different format from the
     // one requested (e.g, BGRA vs RGBA). Ensure this doesn't cause cache
     // misses by recording also the requested format.
     Vector<viz::SharedImageFormat> requested_formats_;
   };
-  LRUCanvasResourceProviderCache generated_image_cache_{
-      4, LRUCanvasResourceProviderCache::CacheType::kImage};
-  LRUCanvasResourceProviderCache generated_video_cache_{
-      4, LRUCanvasResourceProviderCache::CacheType::kVideo};
+  LRUCanvasSnapshotProviderCache generated_image_cache_{
+      4, LRUCanvasSnapshotProviderCache::CacheType::kImage};
+  LRUCanvasSnapshotProviderCache generated_video_cache_{
+      4, LRUCanvasSnapshotProviderCache::CacheType::kVideo};
 
   GLint max_texture_size_;
   GLint max_cube_map_texture_size_;
@@ -998,7 +1020,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
     bool MatchesName(const String&) const;
 
-    virtual WebGLExtension* GetExtension(WebGLRenderingContextBase*) = 0;
+    virtual WebGLExtension* GetExtension(WebGLRenderingContextBase*,
+                                         ExecutionContext*) = 0;
     virtual bool Supported(WebGLRenderingContextBase*) const = 0;
     virtual const char* ExtensionName() const = 0;
     virtual void LoseExtension(bool) = 0;
@@ -1022,9 +1045,10 @@ class MODULES_EXPORT WebGLRenderingContextBase
     explicit TypedExtensionTracker(ExtensionFlags flags)
         : ExtensionTracker(flags) {}
 
-    WebGLExtension* GetExtension(WebGLRenderingContextBase* context) override {
+    WebGLExtension* GetExtension(WebGLRenderingContextBase* context,
+                                 ExecutionContext* execution_context) override {
       if (!extension_) {
-        extension_ = MakeGarbageCollected<T>(context);
+        extension_ = MakeGarbageCollected<T>(context, execution_context);
       }
 
       return extension_.Get();
@@ -1070,7 +1094,9 @@ class MODULES_EXPORT WebGLRenderingContextBase
   }
 
   bool ExtensionSupportedAndAllowed(const ExtensionTracker*);
-  WebGLExtension* EnableExtensionIfSupported(const String& name);
+  WebGLExtension* EnableExtensionIfSupported(
+      const String& name,
+      ExecutionContext* execution_context);
 
   bool TimerQueryExtensionsEnabled();
 
@@ -1907,10 +1933,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
                                       HTMLImageElement*,
                                       ExceptionState&);
 
-  void DrawElementImage(scoped_refptr<Image> image,
-                        TexImageParams params,
-                        ExceptionState& exception_state);
-
   void TexImageHelperCanvasRenderingContextHost(const SecurityOrigin*,
                                                 TexImageParams params,
                                                 CanvasRenderingContextHost*,
@@ -1950,23 +1972,25 @@ class MODULES_EXPORT WebGLRenderingContextBase
   WebGLRenderingContextBase(CanvasRenderingContextHost*,
                             scoped_refptr<base::SingleThreadTaskRunner>,
                             std::unique_ptr<WebGraphicsContext3DProvider>,
-                            const Platform::GraphicsInfo& graphics_info,
+                            const Platform::WebGLContextInfo&,
                             const CanvasContextCreationAttributesCore&,
-                            Platform::ContextType);
+                            Platform::WebGLContextType);
   static std::unique_ptr<WebGraphicsContext3DProvider>
   CreateContextProviderInternal(CanvasRenderingContextHost*,
                                 const CanvasContextCreationAttributesCore&,
-                                Platform::ContextType context_type,
-                                Platform::GraphicsInfo* graphics_info);
+                                Platform::WebGLContextType,
+                                Platform::WebGLContextInfo*);
 
   scoped_refptr<ExternalCanvasResource> ExportLowLatencyCanvasResource(
-      SourceDrawingBuffer source_buffer,
-      bool export_only_if_update);
+      SourceDrawingBuffer source_buffer);
 
-  CanvasResourceProvider* GetOrCreateCanvasResourceProvider();
+  CanvasResourceProviderSharedImage* GetSharedImageResourceProvider();
+
+  // Attempts to paint the most recent rendering results into a
+  // CanvasResourceProvider. Returns the CanvasResourceProvider if the paint
+  // succeeded; otherwise returns nullptr.
   CanvasResourceProvider* PaintRenderingResultsToResourceProvider(
-      SourceDrawingBuffer source_buffer,
-      bool* resource_provider_was_updated = nullptr);
+      SourceDrawingBuffer source_buffer);
   void TexImageHelperMediaVideoFrame(
       TexImageParams,
       WebGLTexture*,
@@ -1981,7 +2005,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
                       WebGLRenderingContextBase*);
   bool CanUseTexImageViaGPU(const TexImageParams&);
 
-  const Platform::ContextType context_type_;
+  const Platform::WebGLContextType context_type_;
 
   bool IsPaintable() const final { return GetDrawingBuffer(); }
 
@@ -1990,13 +2014,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
   static void InitializeWebGLContextLimits(
       WebGraphicsContext3DProvider* context_provider);
   static unsigned CurrentMaxGLContexts();
-
-  void RecordIdentifiableGLParameterDigest(GLenum pname,
-                                           IdentifiableToken value);
-
-  void RecordShaderPrecisionFormatForStudy(GLenum shader_type,
-                                           GLenum precision_type,
-                                           WebGLShaderPrecisionFormat* format);
 
   void Dispose() override;
 
@@ -2007,7 +2024,31 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // ExtenralCanvasResource.
   bool PushFrameNoCopy();
 
-  std::unique_ptr<CanvasResourceProvider> resource_provider_;
+  void TexElementImage2DInternal(GLenum target,
+                                 GLint level,
+                                 GLint internalformat,
+                                 std::optional<GLsizei> width,
+                                 std::optional<GLsizei> height,
+                                 GLenum format,
+                                 GLenum type,
+                                 Element* element,
+                                 ExceptionState& exception_state);
+
+  // Used to provide accelerated snapshots and CanvasResources holding the
+  // current content.
+  std::unique_ptr<CanvasResourceProviderSharedImage> resource_provider_;
+
+  // Whether `resource_provider_` has fresh content that should be sent to the
+  // compositor in response to a PushFrame() call.
+  bool resource_provider_has_content_for_frame_push_ = false;
+
+  // If PaintRenderingResultsToSnapshot() is unable to create
+  // `resource_provider_`, it will attempt to create an unaccelerated snapshot
+  // directly. If it is successful in doing this, it will cache the created
+  // snapshot in `cached_snapshot_` to avoid readback on subsequent calls.
+  // At most one of `resource_provider_` or `cached_snapshot_` will be non-
+  // null.
+  scoped_refptr<StaticBitmapImage> cached_snapshot_;
   static bool webgl_context_limits_initialized_;
   static unsigned max_active_webgl_contexts_;
   static unsigned max_active_webgl_contexts_on_worker_;

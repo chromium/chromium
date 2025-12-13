@@ -27,7 +27,6 @@
 
 using ::testing::_;
 using ::testing::InSequence;
-using ::testing::Invoke;
 
 namespace media {
 
@@ -294,11 +293,11 @@ TEST_F(MojoVideoEncodeAcceleratorTest, EncodeOneFrame) {
     // The remote end of the mojo Pipe doesn't receive |video_frame| itself.
     EXPECT_CALL(*mock_mojo_vea(), DoEncode(_, is_keyframe));
     EXPECT_CALL(*mock_vea_client, BitstreamBufferReady(kBitstreamBufferId, _))
-        .WillOnce(Invoke([is_keyframe, &video_frame](
-                             int32_t, const BitstreamBufferMetadata& metadata) {
+        .WillOnce([is_keyframe, &video_frame](
+                      int32_t, const BitstreamBufferMetadata& metadata) {
           EXPECT_EQ(is_keyframe, metadata.key_frame);
           EXPECT_EQ(metadata.timestamp, video_frame->timestamp());
-        }));
+        });
 
     mojo_vea()->Encode(video_frame, is_keyframe);
     base::RunLoop().RunUntilIdle();

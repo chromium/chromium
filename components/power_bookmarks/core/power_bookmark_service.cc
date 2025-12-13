@@ -47,14 +47,6 @@ PowerBookmarkService::~PowerBookmarkService() {
   backend_task_runner_->DeleteSoon(FROM_HERE, std::move(backend_));
 }
 
-std::unique_ptr<syncer::DataTypeControllerDelegate>
-PowerBookmarkService::CreateSyncControllerDelegate() {
-  return std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-      backend_task_runner_,
-      base::BindRepeating(&PowerBookmarkBackend::GetSyncControllerDelegate,
-                          base::Unretained(backend_.get())));
-}
-
 void PowerBookmarkService::GetPowersForURL(
     const GURL& url,
     const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,

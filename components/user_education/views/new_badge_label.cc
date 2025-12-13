@@ -15,6 +15,7 @@
 #include "ui/views/badge_painter.h"
 #include "ui/views/border.h"
 #include "ui/views/metadata/type_conversion.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -68,7 +69,7 @@ void NewBadgeLabel::SetDisplayNewBadgeImpl(bool display_new_badge) {
     ClearProperty(views::kInternalPaddingKey);
   }
 
-  OnPropertyChanged(&display_new_badge_, views::kPropertyEffectsLayout);
+  OnPropertyChanged(&display_new_badge_, views::PropertyEffects::kLayout);
 }
 
 void NewBadgeLabel::SetPadAfterNewBadge(bool pad_after_new_badge) {
@@ -77,7 +78,7 @@ void NewBadgeLabel::SetPadAfterNewBadge(bool pad_after_new_badge) {
 
   pad_after_new_badge_ = pad_after_new_badge;
   UpdatePaddingForNewBadge();
-  OnPropertyChanged(&pad_after_new_badge_, views::kPropertyEffectsLayout);
+  OnPropertyChanged(&pad_after_new_badge_, views::PropertyEffects::kLayout);
 }
 
 void NewBadgeLabel::SetBadgePlacement(BadgePlacement badge_placement) {
@@ -86,7 +87,7 @@ void NewBadgeLabel::SetBadgePlacement(BadgePlacement badge_placement) {
 
   badge_placement_ = badge_placement;
   UpdatePaddingForNewBadge();
-  OnPropertyChanged(&badge_placement_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&badge_placement_, views::PropertyEffects::kPaint);
 }
 
 gfx::Size NewBadgeLabel::CalculatePreferredSize(

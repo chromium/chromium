@@ -8,7 +8,8 @@
 
 namespace blink {
 
-WebGLProvokingVertex::WebGLProvokingVertex(WebGLRenderingContextBase* context)
+WebGLProvokingVertex::WebGLProvokingVertex(WebGLRenderingContextBase* context,
+                                           ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_ANGLE_provoking_vertex");

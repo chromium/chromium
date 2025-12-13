@@ -83,7 +83,7 @@ suite('CrComponentsBluetoothPairingRequestCodePageTest', function() {
         assertEquals(
             bluetoothPairingRequestCodePage.i18n(
                 'bluetoothEnterPin', deviceName),
-            message!.textContent!.trim());
+            message!.textContent.trim());
 
         // Test button states.
         assertEquals(ButtonState.DISABLED, getPairButtonState());

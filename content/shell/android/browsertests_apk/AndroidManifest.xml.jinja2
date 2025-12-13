@@ -76,6 +76,10 @@ found in the LICENSE file.
         <provider
             android:name="androidx.startup.InitializationProvider"
             tools:node="remove" />
+
+        <service android:name="org.chromium.build.gtest_apk.ProcessKeepaliveService"
+            android:process=":test_process"
+            android:exported="false" />
     </application>
 
     <instrumentation android:name="org.chromium.build.gtest_apk.NativeTestInstrumentationTestRunner"

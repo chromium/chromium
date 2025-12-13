@@ -31,4 +31,7 @@ NSString* const kEnterpriseLoadingScreenAccessibilityIdentifier =
 NSString* const kBestFeaturesMainScreenAccessibilityIdentifier =
     @"bestFeaturesMainScreenAccessibilityIdentifier";
 
+NSString* const kAnimatedLensPromoAccessibilityIdentifier =
+    @"animatedLensPromoAccessibilityIdentifier";
+
 }  // namespace first_run

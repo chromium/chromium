@@ -158,7 +158,8 @@ class ContextMenuChipController implements View.OnClickListener {
                 .setMaxWidth(getChipTextMaxWidthPx(chipRenderParams.isRemoveIconHidden));
 
         if (chipRenderParams.iconResourceId != 0) {
-            mChipView.setIcon(chipRenderParams.iconResourceId, false);
+            mChipView.setIconWithTint(
+                    chipRenderParams.iconResourceId, /* tintWithTextColor= */ false);
         }
 
         if (!chipRenderParams.isRemoveIconHidden) {

@@ -68,6 +68,7 @@ class ImmersiveModeTester : public ImmersiveModeController::Observer {
   ImmersiveModeTester& operator=(const ImmersiveModeTester&) = delete;
   ~ImmersiveModeTester() override;
 
+  ImmersiveModeController* GetController();
   BrowserView* GetBrowserView();
 
   // Runs the given command, verifies that a reveal happens and the expected tab

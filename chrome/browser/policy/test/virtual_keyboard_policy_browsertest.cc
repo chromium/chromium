@@ -4,7 +4,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -14,10 +13,14 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/fake_text_input_client.h"
@@ -107,6 +110,30 @@ void WaitUntilKeyboardHidden(ChromeKeyboardControllerClient* client) {
 
 class VirtualKeyboardPolicyTest : public PolicyTest {};
 
+class VirtualKeyboardPolicyTestWithServer : public PolicyTest {
+ public:
+  VirtualKeyboardPolicyTestWithServer()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+  ~VirtualKeyboardPolicyTestWithServer() override = default;
+
+  void SetUpOnMainThread() override {
+    PolicyTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.ServeFilesFromSourceDirectory(
+        base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+    content::SetupCrossSiteRedirector(&https_server_);
+    net::test_server::RegisterDefaultHandlers(&https_server_);
+    ASSERT_TRUE(https_server_.Start());
+  }
+
+ protected:
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  net::EmbeddedTestServer https_server_;
+};
+
 IN_PROC_BROWSER_TEST_F(VirtualKeyboardPolicyTest,
                        VirtualKeyboardSmartVisibilityEnabledDefault) {
   auto* keyboard_client = GetEnabledKeyboardClient();
@@ -177,6 +204,39 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardPolicyTest,
   EXPECT_FALSE(keyboard_client->is_keyboard_visible());
 }
 
+IN_PROC_BROWSER_TEST_F(VirtualKeyboardPolicyTestWithServer,
+                       VirtualKeyboardShowAfterCrossOriginNavigation) {
+  GURL first_url(
+      https_server()->GetURL("a.test", "/virtual_keyboard_policy.html"));
+  GURL second_url(https_server()->GetURL("xorigin.a.test",
+                                         "/virtual_keyboard_policy.html"));
+
+  auto* keyboard_client = GetEnabledKeyboardClient();
+  ASSERT_TRUE(keyboard_client);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Give the frame user activation.
+  EXPECT_TRUE(content::ExecJs(web_contents, "() => {}"));
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents, "navigator.userActivation.isActive",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // The cross-origin renderer-initiated navigation will clear user activation.
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, second_url));
+  EXPECT_EQ(false,
+            content::EvalJs(web_contents, "navigator.userActivation.isActive",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // The virtual keyboard should still show without user activation because the
+  // previously navigated page had sticky user activation.
+  EXPECT_TRUE(content::ExecJs(web_contents, "navigator.virtualKeyboard.show();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  WaitUntilKeyboardShown(keyboard_client);
+}
 #endif
 
 }  // namespace policy

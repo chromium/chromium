@@ -227,6 +227,11 @@ void InitDiagnosticLoggingDelegateFunction(
   }
 }
 
+void ResetDiagnosticLoggingDelegateFunction() {
+  CHECK(g_logging_delegate_function);
+  g_logging_delegate_function = NULL;
+}
+
 void SetExtraLoggingInit(
     void (*function)(void (*delegate)(const std::string&))) {
   CHECK(function);

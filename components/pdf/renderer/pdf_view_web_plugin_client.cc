@@ -107,8 +107,9 @@ void PdfViewWebPluginClient::PostMessage(base::Value::Dict message) {
   v8::Local<v8::Value> converted_message =
       v8_value_converter_->ToV8Value(message, context);
 
-  plugin_container_->EnqueueMessageEvent(
+  blink::WebDOMMessageEvent dom_message(
       blink::WebSerializedScriptValue::Serialize(isolate_, converted_message));
+  plugin_container_->EnqueueMessageEvent(dom_message);
 }
 
 void PdfViewWebPluginClient::Invalidate() {

@@ -5,18 +5,17 @@
 import("//chromecast/chromecast.gni")
 
 cast_source_set("service") {
+  public = [ "create_mojo_media_client.h" ]
   sources = [
     "cast_mojo_media_client.cc",
     "cast_mojo_media_client.h",
     "cast_renderer.cc",
     "cast_renderer.h",
   ]
-
   public_deps = [
     "//media/mojo/mojom",
     "//media/mojo/services",
   ]
-
   deps = [
     ":video_geometry_setter_service",
     "//base",
@@ -28,6 +27,21 @@ cast_source_set("service") {
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
+
+  if (enable_starboard_media) {
+    sources += [
+      "cast_starboard_mojo_media_client.cc",
+      "cast_starboard_mojo_media_client.h",
+      "create_mojo_media_client_starboard.cc",
+    ]
+    deps += [
+      "//chromecast/base/metrics",
+      "//chromecast/starboard/media/media:starboard_api_wrapper",
+      "//chromecast/starboard/media/renderer:starboard_renderer",
+    ]
+  } else {
+    sources += [ "create_mojo_media_client_cast.cc" ]
+  }
 }
 
 cast_source_set("video_geometry_setter_service") {
@@ -39,5 +53,20 @@ cast_source_set("video_geometry_setter_service") {
     "//base",
     "//chromecast/media/service/mojom",
     "//mojo/public/cpp/bindings",
+  ]
+}
+
+cast_source_set("unittests") {
+  testonly = true
+  sources = [ "create_mojo_media_client_starboard_test.cc" ]
+  deps = [
+    ":service",
+    ":video_geometry_setter_service",
+    "//base/test:test_support",
+    "//chromecast/media/api:test_support",
+    "//chromecast/public",
+    "//chromecast/public/media",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

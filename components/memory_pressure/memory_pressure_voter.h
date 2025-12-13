@@ -8,7 +8,6 @@
 #include <array>
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -25,7 +24,7 @@ class MemoryPressureVoter {
   virtual ~MemoryPressureVoter() = default;
 
   // Called to set a vote / change a vote.
-  virtual void SetVote(base::MemoryPressureListener::MemoryPressureLevel level,
+  virtual void SetVote(base::MemoryPressureLevel level,
                        bool notify_listeners) = 0;
 };
 
@@ -38,8 +37,6 @@ class MemoryPressureVoteAggregator {
  public:
   class Delegate;
 
-  using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
-
   explicit MemoryPressureVoteAggregator(Delegate* delegate);
   ~MemoryPressureVoteAggregator();
 
@@ -51,12 +48,12 @@ class MemoryPressureVoteAggregator {
   // Voter must not out-live the Aggregator.
   std::unique_ptr<MemoryPressureVoter> CreateVoter();
 
-  void OnVoteForTesting(std::optional<MemoryPressureLevel> old_vote,
-                        std::optional<MemoryPressureLevel> new_vote);
+  void OnVoteForTesting(std::optional<base::MemoryPressureLevel> old_vote,
+                        std::optional<base::MemoryPressureLevel> new_vote);
 
   void NotifyListenersForTesting();
 
-  base::MemoryPressureListener::MemoryPressureLevel EvaluateVotesForTesting();
+  base::MemoryPressureLevel EvaluateVotesForTesting();
   void SetVotesForTesting(size_t none_votes,
                           size_t moderate_votes,
                           size_t critical_votes);
@@ -68,8 +65,8 @@ class MemoryPressureVoteAggregator {
   // used so a voter can pass null as |old_vote| if this is their first vote, or
   // null as |new_vote| if they are removing their vote (e.g. when the voter is
   // being destroyed). |old_vote| and |new_vote| should never both be null.
-  void OnVote(std::optional<MemoryPressureLevel> old_vote,
-              std::optional<MemoryPressureLevel> new_vote);
+  void OnVote(std::optional<base::MemoryPressureLevel> old_vote,
+              std::optional<base::MemoryPressureLevel> new_vote);
 
   // Triggers a notification of the MemoryPressureMonitor's current pressure
   // level, allowing each of the various sources of input on MemoryPressureLevel
@@ -80,10 +77,10 @@ class MemoryPressureVoteAggregator {
 
   // Returns the highest index of |votes_| with a non-zero value, as a
   // MemoryPressureLevel.
-  MemoryPressureLevel EvaluateVotes() const;
+  base::MemoryPressureLevel EvaluateVotes() const;
 
-  MemoryPressureLevel current_pressure_level_ =
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  base::MemoryPressureLevel current_pressure_level_ =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
 
   const raw_ptr<Delegate> delegate_;
 
@@ -94,9 +91,7 @@ class MemoryPressureVoteAggregator {
   // value to the MemoryPressureLevel enum as adding another value would require
   // changing every instance of switch(MemoryPressureLevel) in Chromium, and the
   // MemoryPressureLevel system will be changing soon regardless.
-  std::array<size_t,
-             base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL + 1>
-      votes_ = {};
+  std::array<size_t, base::MEMORY_PRESSURE_LEVEL_CRITICAL + 1> votes_ = {};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -110,7 +105,7 @@ class MemoryPressureVoteAggregator::Delegate {
 
   // Invoked when the aggregate vote has changed.
   virtual void OnMemoryPressureLevelChanged(
-      base::MemoryPressureListener::MemoryPressureLevel level) = 0;
+      base::MemoryPressureLevel level) = 0;
 
   // Invoked when a voter has determined that a notification of the current
   // pressure level is necessary.

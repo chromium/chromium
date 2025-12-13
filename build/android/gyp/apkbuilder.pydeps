@@ -4,7 +4,6 @@
 ../../gn_helpers.py
 ../../zip_helpers.py
 apkbuilder.py
-finalize_apk.py
 util/__init__.py
 util/build_utils.py
 util/diff_utils.py

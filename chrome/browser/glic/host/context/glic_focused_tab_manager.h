@@ -12,10 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/glic/host/context/glic_focused_tab_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -24,55 +26,45 @@ class Page;
 class WebContents;
 }  // namespace content
 
-namespace views {
-class Widget;
-}  // namespace views
-
 class BrowserWindowInterface;
 
 namespace glic {
 
-class GlicSharingManagerImpl;
+class GlicFocusedBrowserManager;
 
 // Responsible for managing which tab is considered "focused" and for accessing
 // its WebContents. This is an implementation detail of GlicKeyedService and
 // others should rely on the interface that GlicKeyedService exposes for
 // observing state changes.
-class GlicFocusedTabManager : public BrowserListObserver,
+class GlicFocusedTabManager : public GlicFocusedTabManagerInterface,
                               public content::WebContentsObserver,
-                              public GlicWindowController::StateObserver,
-                              public views::WidgetObserver {
+                              public TabStripModelObserver {
  public:
-  GlicFocusedTabManager(GlicWindowController* window_controller,
-                        GlicSharingManagerImpl* sharing_manager);
+  explicit GlicFocusedTabManager(
+      GlicFocusedBrowserManager* focused_browser_manager);
   ~GlicFocusedTabManager() override;
 
   GlicFocusedTabManager(const GlicFocusedTabManager&) = delete;
   GlicFocusedTabManager& operator=(const GlicFocusedTabManager&) = delete;
 
-  // Returns the currently focused tab data or an error reason stating why one
-  // was not available. This may also contain a tab candidate along with details
-  // as to why it cannot be focused. Virtual for testing.
-  virtual FocusedTabData GetFocusedTabData();
-
-  // BrowserListObserver
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // GlicFocusedTabManagerInterface implementation.
+  using FocusedTabChangedCallback =
+      base::RepeatingCallback<void(const FocusedTabData&)>;
+  base::CallbackListSubscription AddFocusedTabChangedCallback(
+      FocusedTabChangedCallback callback) override;
+  FocusedTabData GetFocusedTabData() override;
+  using FocusedTabDataChangedCallback =
+      base::RepeatingCallback<void(const glic::mojom::TabData*)>;
+  base::CallbackListSubscription AddFocusedTabDataChangedCallback(
+      FocusedTabDataChangedCallback callback) override;
+  bool IsTabFocused(tabs::TabHandle tab_handle) const override;
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
 
-  // GlicWindowController::StateObserver
-  void PanelStateChanged(const glic::mojom::PanelState& panel_state,
-                         Browser*) override;
+  // TabStripModelObserver
+  void OnSplitTabChanged(const SplitTabChange& change) override;
 
-  // Callback for changes to focused tab. If no tab is in focus an error reason
-  // is returned indicating why and maybe a tab candidate with details as to
-  // why it cannot be focused.
-  using FocusedTabChangedCallback =
-      base::RepeatingCallback<void(const FocusedTabData&)>;
-  base::CallbackListSubscription AddFocusedTabChangedCallback(
-      FocusedTabChangedCallback callback);
 
   // Callback for changes to the `WebContents` comprising the focused tab. Only
   // fired when the `WebContents` for the focused tab changes to/from nullptr or
@@ -90,17 +82,6 @@ class GlicFocusedTabManager : public BrowserListObserver,
   base::CallbackListSubscription
   AddFocusedTabOrCandidateInstanceChangedCallback(
       FocusedTabOrCandidateInstanceChangedCallback callback);
-
-  // Callback for changes to the tab data rejresentation of the focused tab.
-  // This includes any event that changes tab data -- e.g. favicon/title change
-  // events (where the container does not change), as well as container changed
-  // events.
-  using FocusedTabDataChangedCallback =
-      base::RepeatingCallback<void(const glic::mojom::TabData*)>;
-  base::CallbackListSubscription AddFocusedTabDataChangedCallback(
-      FocusedTabDataChangedCallback callback);
-
-  bool IsTabFocused(tabs::TabHandle tab_handle) const;
 
  private:
   // Data provided when there is no focused tab.
@@ -179,54 +160,17 @@ class GlicFocusedTabManager : public BrowserListObserver,
     base::WeakPtr<content::WebContents> focused_tab;
   };
 
-  // Returns whether `a` and `b` both point to the same object.
-  // Note that if both `a` and `b` are invalidated, this returns true, even if
-  // the object they once pointed to is different. For our purposes, this is OK.
-  // This code helps address focus state changes from an old state that's since
-  // been invalidated to a new state that is now nullptr (we want to treat this
-  // as a "focus changed" scenario and notify).
-  template <typename T>
-  static bool IsWeakPtrSame(const base::WeakPtr<T>& a,
-                            const base::WeakPtr<T>& b) {
-    return std::make_pair(a.get(), a.WasInvalidated()) ==
-           std::make_pair(b.get(), b.WasInvalidated());
-  }
+  void Initialize();
 
   static FocusedTabDataImpl GetFocusedTabData(
       const GlicFocusedTabManager::FocusedTabState& focused_state);
 
-  // True if the mutable attributes of `browser` are valid for Glic focus.
-  // Active browsers with invalid state are observed for state changes.
-  bool IsBrowserStateValid(BrowserWindowInterface* browser_interface);
-
-  // True if the immutable attributes of `web_contents` are valid for Glic
-  // focus.
-  bool IsTabValid(content::WebContents* web_contents);
-
-  // True if the mutable attributes of `web_contents` are valid for Glic focus.
-  bool IsTabStateValid(content::WebContents* web_contents);
-
-  // Observes the active tab for `browser` if valid.
-  void MaybeObserveActiveTab(BrowserWindowInterface* browser_interface);
-
   // Updates focused tab if a new one is computed. Notifies if updated or if
-  // `force_notify` is true (for any call within the duration of the optional
-  // debouncing).
-  void MaybeUpdateFocusedTab(bool force_notify = false, bool debounce = false);
-
-  // Updates focused tab if a new one is computed without debouncing. Use
-  // `MaybeUpdateFocusedTab` instead of calling this directly.
-  void PerformMaybeUpdateFocusedTab(bool force_notify = false);
+  // `force_notify` is true.
+  void MaybeUpdateFocusedTab(bool force_notify = false);
 
   // Computes the currently focused tab.
   struct FocusedTabState ComputeFocusedTabState();
-
-  // Computes the current browser candidate for focus (if any).
-  BrowserWindowInterface* ComputeBrowserCandidate();
-
-  // Computes the current tab candidate for focus (if any) for a given browser.
-  content::WebContents* ComputeTabCandidate(
-      BrowserWindowInterface* browser_interface);
 
   // Calls all registered focused tab changed callbacks.
   void NotifyFocusedTabChanged();
@@ -239,35 +183,17 @@ class GlicFocusedTabManager : public BrowserListObserver,
       const FocusedTabData& focused_tab_data);
 
   // Calls all registered focused tab data changed callbacks.
-  void NotifyFocusedTabDataChanged(glic::mojom::TabDataPtr tab_data);
+  void NotifyFocusedTabDataChanged(TabDataChange change);
 
-  // Callback for active browser changes from BrowserWindowInterface.
-  void OnBrowserBecameActive(BrowserWindowInterface* browser_interface);
-  void OnBrowserBecameInactive(BrowserWindowInterface* browser_interface);
+  // Callback for changes to focused browser.
+  void OnFocusedBrowserChanged(BrowserWindowInterface* candidate_browser,
+                               BrowserWindowInterface* focused_browser);
 
   // Callback for active tab changes from BrowserWindowInterface.
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
 
-  // Callback for Glic Window activation changes.
-  void OnGlicWindowActivationChanged(bool active);
-
-  // Callback for browser window minimization changes. Required because on Mac
-  // OS minimization status defaults to changing after browser's active state
-  // because of animation.
-  void OnWidgetShowStateChanged(views::Widget* widget) override;
-
-  // Callback for browser window visibility changes (e.g. cmd+h on Mac).
-  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
-
-  // Callback for visibility on screen changes (e.g. Spaces on Mac).
-  void OnWidgetVisibilityOnScreenChanged(views::Widget* widget,
-                                         bool visible) override;
-
-  // Callback for browser window widget being destroyed.
-  void OnWidgetDestroyed(views::Widget* widget) override;
-
   // Callback for tab data changes to focused tab.
-  void FocusedTabDataChanged(glic::mojom::TabDataPtr tab_data);
+  void FocusedTabDataChanged(TabDataChange change);
 
   FocusedTabData ImplToPublic(FocusedTabDataImpl impl);
 
@@ -288,18 +214,17 @@ class GlicFocusedTabManager : public BrowserListObserver,
   base::RepeatingCallbackList<void(const glic::mojom::TabData*)>
       focused_data_callback_list_;
 
-  // The Glic window controller.
-  raw_ref<GlicWindowController> window_controller_;
-
-  // Enables access to information about other sharing modes and common sharing
-  // functionality.
-  raw_ptr<GlicSharingManagerImpl> sharing_manager_;
+  // Manages which browser window is considered "focused".
+  raw_ptr<GlicFocusedBrowserManager> focused_browser_manager_;
 
   // The currently focused tab data.
-  FocusedTabDataImpl focused_tab_data_;
+  FocusedTabDataImpl focused_tab_data_{NoFocusedTabData()};
 
   // `TabDataObserver` for the currently focused tab (if one exists).
   std::unique_ptr<TabDataObserver> focused_tab_data_observer_;
+
+  // Callback subscription for listening to changes to the focused browser.
+  base::CallbackListSubscription focused_browser_subscription_;
 
   // The last known focused tab state.
   struct FocusedTabState focused_tab_state_;
@@ -308,21 +233,90 @@ class GlicFocusedTabManager : public BrowserListObserver,
   // activation changes.
   base::CallbackListSubscription window_activation_subscription_;
 
-  // Callback subscription for listening to changes from compliant browsers.
-  std::map<BrowserWindowInterface*, std::vector<base::CallbackListSubscription>>
-      browser_subscriptions_;
+  // The focused browser and subscriptions related to it.
+  // These should be updated together.
+  base::WeakPtr<BrowserWindowInterface> subscribed_browser_;
+  base::CallbackListSubscription active_tab_subscription_;
+};
 
-  // WidgetObserver for triggering window minimization/maximization changes.
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
+// Applies the proxy pattern to focused tab manager to inject pinning as the
+// source of truth for context-sharing.
+//
+// Behaves just like the default detached focused tab manager above, with one
+// caveat: if the would-be focused tab is not currently pinned for sharing, then
+// it is returned as the focus candidate instead of the focused tab.
+//
+// Useful for multi-instance, where we want the signal approximating "active
+// tab", but without turning on actual context sharing (controlled by pinning).
+class GlicPinAwareDetachedFocusedTabManager
+    : public GlicFocusedTabManagerInterface {
+ public:
+  explicit GlicPinAwareDetachedFocusedTabManager(
+      GlicSharingManager* sharing_manager,
+      GlicFocusedBrowserManager* focused_browser_manager);
+  ~GlicPinAwareDetachedFocusedTabManager() override;
 
-  // One shot time used to debounce focus notifications.
-  base::OneShotTimer debouncer_;
+  // GlicFocusedTabManagerInterface implementation.
+  using FocusedTabChangedCallback =
+      base::RepeatingCallback<void(const FocusedTabData&)>;
+  base::CallbackListSubscription AddFocusedTabChangedCallback(
+      FocusedTabChangedCallback callback) override;
+  FocusedTabData GetFocusedTabData() override;
+  using FocusedTabDataChangedCallback =
+      base::RepeatingCallback<void(const glic::mojom::TabData*)>;
+  base::CallbackListSubscription AddFocusedTabDataChangedCallback(
+      FocusedTabDataChangedCallback callback) override;
+  bool IsTabFocused(tabs::TabHandle tab_handle) const override;
 
-  // Cached force_notify state for carrying over across debounces. If any call
-  // to MaybeUpdateFocusedTab has a forced notify, this will be set to true
-  // until debouncing resolves.
-  bool cached_force_notify_ = false;
+ private:
+  // Returns the focused_tab_data unless there is a focused tab that isn't also
+  // pinned -- in which case it moves the focused tab to the candidate.
+  FocusedTabData GetPinAwareFocusedTabData(
+      const FocusedTabData& focused_tab_data);
+
+  // Callback for our real focused tab manager changes to be proxied.
+  void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);
+
+  // Callback for our real focused tab manager data changes to be proxied.
+  void OnFocusedTabDataChanged(const glic::mojom::TabData* focused_tab_data);
+
+  // Callback for pinning status changes.
+  void OnTabPinningStatusChanged(tabs::TabInterface* tab, bool status);
+
+  // Register internal subscription callbacks.
+  void InitializeSubscriptions();
+
+  // Notifies subscribers of a change to the focused tab.
+  void NotifyFocusedTabChanged(const FocusedTabData& focused_tab);
+
+  // Notifies subscribers of a change to the focused tab data.
+  void NotifyFocusedTabDataChanged(
+      const glic::mojom::TabData* focused_tab_data);
+
+  // Subscription for changes to focused tab.
+  base::CallbackListSubscription focused_tab_changed_subscription_;
+
+  // Subscription for changes to focused tab data.
+  base::CallbackListSubscription focused_tab_data_changed_subscription_;
+
+  // Subscription for changes to tab pinning status.
+  base::CallbackListSubscription tab_pinning_status_changed_subscription_;
+
+  // List of callbacks to fire when the focused tab changes.
+  base::RepeatingCallbackList<void(const FocusedTabData&)>
+      focused_tab_changed_callback_list_;
+
+  // List of callbacks to fire when the focused tab data changes.
+  base::RepeatingCallbackList<void(const glic::mojom::TabData*)>
+      focused_tab_data_changed_callback_list_;
+
+  // Source of truth for pinned tabs.
+  // TODO(crbug.com/452150693): Split up the sharing manager interface so we can
+  // specify just the pinning portion here.
+  raw_ptr<GlicSharingManager> sharing_manager_;
+
+  // Proxied focused tab manager.
+  GlicFocusedTabManager focused_tab_manager_;
 };
 
 }  // namespace glic

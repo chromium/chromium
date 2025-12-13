@@ -20,15 +20,14 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store.h"
+#include "components/policy/core/common/policy_logger.h"
 
 namespace policy {
 
 namespace {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kRetryWithKeyReset,
-             "RetryWithKeyReset",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRetryWithKeyReset, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 base::Clock* clock_for_testing_ = nullptr;
@@ -457,8 +456,8 @@ void CloudPolicyRefreshScheduler::UpdateLastRefresh() {
 
 void CloudPolicyRefreshScheduler::OnPolicyRefreshed(bool success) {
   // Next policy fetch is scheduled in OnPolicyFetched() callback.
-  VLOG(1) << "Scheduled policy refresh "
-          << (success ? "successful" : "unsuccessful");
+  VLOG_POLICY(1, POLICY_FETCHING) << "Scheduled policy refresh "
+                                  << (success ? "successful" : "unsuccessful");
 }
 
 // static

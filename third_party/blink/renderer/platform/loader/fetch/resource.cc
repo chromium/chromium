@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
-#include "third_party/blink/renderer/platform/loader/unencoded_digest.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -90,8 +89,8 @@ void GetSharedBufferMemoryDump(SharedBuffer* buffer,
   WebMemoryAllocatorDump* dump =
       memory_dump->CreateMemoryAllocatorDump(StrCat({dump_prefix, dump_name}));
   dump->AddScalar("size", "bytes", dump_size);
-  memory_dump->AddSuballocation(
-      dump->Guid(), String(WTF::Partitions::kAllocatedObjectPoolName));
+  memory_dump->AddSuballocation(dump->Guid(),
+                                String(Partitions::kAllocatedObjectPoolName));
 }
 
 // These response headers are not copied from a revalidated response to the
@@ -154,11 +153,12 @@ Resource::Resource(const ResourceRequestHead& request,
       options_(options),
       response_timestamp_(Now()),
       resource_request_(request),
-      overhead_size_(CalculateOverheadSize()) {
+      overhead_size_(CalculateOverheadSize()),
+      memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kResource,
+          this) {
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceCounter);
-
-  if (IsMainThread())
-    MemoryPressureListenerRegistry::Instance().RegisterClient(this);
 }
 
 Resource::~Resource() {
@@ -172,7 +172,10 @@ void Resource::Trace(Visitor* visitor) const {
   visitor->Trace(finished_clients_);
   visitor->Trace(finish_observers_);
   visitor->Trace(options_);
-  MemoryPressureListener::Trace(visitor);
+}
+
+void Resource::Dispose() {
+  memory_pressure_listener_registration_.Dispose();
 }
 
 void Resource::SetLoader(ResourceLoader* loader) {
@@ -200,9 +203,9 @@ void Resource::CheckResourceIntegrity() {
   // Otherwise, fall through to validating SRI.
   const FeatureContext* feature_context =
       loader_ ? loader_->GetFeatureContext() : nullptr;
-  auto unencoded_digest = GetResponse().UnencodedDigest(feature_context);
-  if (unencoded_digest.has_value() && !unencoded_digest->DoesMatch(Data())) {
-    DCHECK(RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context));
+  if (RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context) &&
+      !SubresourceIntegrity::CheckUnencodedDigests(
+          GetResponse().GetUnencodedDigests(), Data())) {
     integrity_disposition_ =
         ResourceIntegrityDisposition::kFailedUnencodedDigest;
     integrity_report_.AddConsoleErrorMessage(StrCat(
@@ -337,9 +340,8 @@ void Resource::TriggerNotificationForFinishObservers(
           std::move(finish_observers_));
   finish_observers_.clear();
 
-  task_runner->PostTask(
-      FROM_HERE,
-      WTF::BindOnce(&NotifyFinishObservers, WrapPersistent(new_collections)));
+  task_runner->PostTask(FROM_HERE, BindOnce(&NotifyFinishObservers,
+                                            WrapPersistent(new_collections)));
 
   DidRemoveClientOrObserver();
 }
@@ -403,8 +405,8 @@ void Resource::FinishAsError(const ResourceError& error,
   // So if this is an immediate failure (i.e., before NotifyStartLoad()),
   // post a task if the Resource::Type supports it.
   if (failed_during_start && !NeedsSynchronousCacheHit(GetType(), options_)) {
-    task_runner->PostTask(FROM_HERE, WTF::BindOnce(&Resource::NotifyFinished,
-                                                   WrapWeakPersistent(this)));
+    task_runner->PostTask(FROM_HERE, blink::BindOnce(&Resource::NotifyFinished,
+                                                     WrapWeakPersistent(this)));
   } else {
     NotifyFinished();
   }
@@ -427,10 +429,7 @@ AtomicString Resource::HttpContentType() const {
 }
 
 bool Resource::ForceIntegrityChecks() const {
-  const FeatureContext* feature_context =
-      loader_ ? loader_->GetFeatureContext() : nullptr;
-  return IsLinkPreload() ||
-         GetResponse().UnencodedDigest(feature_context).has_value();
+  return IsLinkPreload() || !GetResponse().GetUnencodedDigests().empty();
 }
 
 bool Resource::MustRefetchDueToIntegrityMetadata(
@@ -448,11 +447,10 @@ const scoped_refptr<const SecurityOrigin>& Resource::GetOrigin() const {
 void Resource::DidDownloadToBlob(scoped_refptr<BlobDataHandle>) {}
 
 static base::TimeDelta CurrentAge(const ResourceResponse& response,
-                                  base::Time response_timestamp,
-                                  UseCounter& use_counter) {
+                                  base::Time response_timestamp) {
   // RFC2616 13.2.3
   // No compensation for latency as that is not terribly important in practice
-  std::optional<base::Time> date_value = response.Date(use_counter);
+  std::optional<base::Time> date_value = response.Date();
   base::TimeDelta apparent_age;
   if (date_value && response_timestamp >= date_value.value())
     apparent_age = response_timestamp - date_value.value();
@@ -464,8 +462,7 @@ static base::TimeDelta CurrentAge(const ResourceResponse& response,
 }
 
 static base::TimeDelta FreshnessLifetime(const ResourceResponse& response,
-                                         base::Time response_timestamp,
-                                         UseCounter& use_counter) {
+                                         base::Time response_timestamp) {
 #if !BUILDFLAG(IS_ANDROID)
   // On desktop, local files should be reloaded in case they change.
   if (response.CurrentRequestUrl().IsLocalFile())
@@ -481,12 +478,12 @@ static base::TimeDelta FreshnessLifetime(const ResourceResponse& response,
   std::optional<base::TimeDelta> max_age_value = response.CacheControlMaxAge();
   if (max_age_value)
     return max_age_value.value();
-  std::optional<base::Time> expires = response.Expires(use_counter);
-  std::optional<base::Time> date = response.Date(use_counter);
+  std::optional<base::Time> expires = response.Expires();
+  std::optional<base::Time> date = response.Date();
   base::Time creation_time = date ? date.value() : response_timestamp;
   if (expires)
     return expires.value() - creation_time;
-  std::optional<base::Time> last_modified = response.LastModified(use_counter);
+  std::optional<base::Time> last_modified = response.LastModified();
   if (last_modified)
     return (creation_time - last_modified.value()) * 0.1;
   // If no cache headers are present, the specification leaves the decision to
@@ -494,12 +491,12 @@ static base::TimeDelta FreshnessLifetime(const ResourceResponse& response,
   return base::TimeDelta();
 }
 
-base::TimeDelta Resource::FreshnessLifetime(UseCounter& use_counter) const {
+base::TimeDelta Resource::FreshnessLifetime() const {
   base::TimeDelta lifetime =
-      blink::FreshnessLifetime(GetResponse(), response_timestamp_, use_counter);
+      blink::FreshnessLifetime(GetResponse(), response_timestamp_);
   for (const auto& redirect : redirect_chain_) {
     base::TimeDelta redirect_lifetime = blink::FreshnessLifetime(
-        redirect.redirect_response_, response_timestamp_, use_counter);
+        redirect.redirect_response_, response_timestamp_);
     lifetime = std::min(lifetime, redirect_lifetime);
   }
   return lifetime;
@@ -507,8 +504,7 @@ base::TimeDelta Resource::FreshnessLifetime(UseCounter& use_counter) const {
 
 static bool CanUseResponse(const ResourceResponse& response,
                            bool allow_stale,
-                           base::Time response_timestamp,
-                           UseCounter& use_counter) {
+                           base::Time response_timestamp) {
   if (response.IsNull())
     return false;
 
@@ -524,18 +520,17 @@ static bool CanUseResponse(const ResourceResponse& response,
   if (response.HttpStatusCode() == 302 || response.HttpStatusCode() == 307) {
     // Default to not cacheable unless explicitly allowed.
     bool has_max_age = response.CacheControlMaxAge() != std::nullopt;
-    bool has_expires = response.Expires(use_counter) != std::nullopt;
+    bool has_expires = response.Expires() != std::nullopt;
     // TODO: consider catching Cache-Control "private" and "public" here.
     if (!has_max_age && !has_expires)
       return false;
   }
 
-  base::TimeDelta max_life =
-      FreshnessLifetime(response, response_timestamp, use_counter);
+  base::TimeDelta max_life = FreshnessLifetime(response, response_timestamp);
   if (allow_stale)
     max_life += response.CacheControlStaleWhileRevalidate();
 
-  return CurrentAge(response, response_timestamp, use_counter) <= max_life;
+  return CurrentAge(response, response_timestamp) <= max_life;
 }
 
 const ResourceRequestHead& Resource::LastResourceRequest() const {
@@ -670,8 +665,8 @@ void Resource::AddClient(ResourceClient* client,
     if (!async_finish_pending_clients_task_.IsActive()) {
       async_finish_pending_clients_task_ =
           PostCancellableTask(*task_runner, FROM_HERE,
-                              WTF::BindOnce(&Resource::FinishPendingClients,
-                                            WrapWeakPersistent(this)));
+                              blink::BindOnce(&Resource::FinishPendingClients,
+                                              WrapWeakPersistent(this)));
     }
     return;
   }
@@ -904,8 +899,10 @@ void Resource::Prune() {
   DestroyDecodedDataIfPossible();
 }
 
-void Resource::OnPurgeMemory() {
-  if (base::FeatureList::IsEnabled(
+void Resource::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL &&
+      base::FeatureList::IsEnabled(
           features::kReleaseResourceDecodedDataOnMemoryPressure)) {
     Prune();
   }
@@ -944,7 +941,7 @@ void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
     while (ResourceClient* client = walker3.Next())
       client_names.push_back(StrCat({"(finished) ", client->DebugName()}));
     std::sort(client_names.begin(), client_names.end(),
-              WTF::CodeUnitCompareLessThan);
+              CodeUnitCompareLessThan);
 
     StringBuilder builder;
     for (wtf_size_t i = 0;
@@ -967,8 +964,8 @@ void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
   WebMemoryAllocatorDump* overhead_dump =
       memory_dump->CreateMemoryAllocatorDump(overhead_name);
   overhead_dump->AddScalar("size", "bytes", OverheadSize());
-  memory_dump->AddSuballocation(
-      overhead_dump->Guid(), String(WTF::Partitions::kAllocatedObjectPoolName));
+  memory_dump->AddSuballocation(overhead_dump->Guid(),
+                                String(Partitions::kAllocatedObjectPoolName));
 }
 
 String Resource::GetMemoryDumpName() const {
@@ -1017,6 +1014,7 @@ void Resource::RevalidationFailed() {
   integrity_report_.Clear();
   DestroyDecodedDataForFailedRevalidation();
   revalidation_status_ = RevalidationStatus::kNoRevalidatingOrFailed;
+  memory_cache_hit_count_ = 0;
 }
 
 void Resource::MarkAsPreload() {
@@ -1029,10 +1027,10 @@ void Resource::MatchPreload(const FetchParameters& params) {
   is_unused_preload_ = false;
 }
 
-bool Resource::CanReuseRedirectChain(UseCounter& use_counter) const {
+bool Resource::CanReuseRedirectChain() const {
   for (auto& redirect : redirect_chain_) {
     if (!CanUseResponse(redirect.redirect_response_, false /*allow_stale*/,
-                        response_timestamp_, use_counter)) {
+                        response_timestamp_)) {
       return false;
     }
     if (redirect.request_.CacheControlContainsNoCache() ||
@@ -1067,37 +1065,34 @@ bool Resource::MustReloadDueToVaryHeader(
   return false;
 }
 
-bool Resource::MustRevalidateDueToCacheHeaders(bool allow_stale,
-                                               UseCounter& use_counter) const {
-  return !CanUseResponse(GetResponse(), allow_stale, response_timestamp_,
-                         use_counter) ||
+bool Resource::MustRevalidateDueToCacheHeaders(bool allow_stale) const {
+  return !CanUseResponse(GetResponse(), allow_stale, response_timestamp_) ||
          GetResourceRequest().CacheControlContainsNoCache() ||
          GetResourceRequest().CacheControlContainsNoStore();
 }
 
 static bool ShouldRevalidateStaleResponse(const ResourceResponse& response,
-                                          base::Time response_timestamp,
-                                          UseCounter& use_counter) {
+                                          base::Time response_timestamp) {
   base::TimeDelta staleness = response.CacheControlStaleWhileRevalidate();
   if (staleness.is_zero())
     return false;
 
-  return CurrentAge(response, response_timestamp, use_counter) >
-         FreshnessLifetime(response, response_timestamp, use_counter);
+  return CurrentAge(response, response_timestamp) >
+         FreshnessLifetime(response, response_timestamp);
 }
 
-bool Resource::ShouldRevalidateStaleResponse(UseCounter& use_counter) const {
+bool Resource::ShouldRevalidateStaleResponse() const {
   for (auto& redirect : redirect_chain_) {
     // Use |response_timestamp_| since we don't store the timestamp
     // of each redirect response.
-    if (blink::ShouldRevalidateStaleResponse(
-            redirect.redirect_response_, response_timestamp_, use_counter)) {
+    if (blink::ShouldRevalidateStaleResponse(redirect.redirect_response_,
+                                             response_timestamp_)) {
       return true;
     }
   }
 
   return blink::ShouldRevalidateStaleResponse(GetResponse(),
-                                              response_timestamp_, use_counter);
+                                              response_timestamp_);
 }
 
 bool Resource::StaleRevalidationRequested() const {
@@ -1297,6 +1292,7 @@ void Resource::SetIsAdResource() {
 
 void Resource::UpdateMemoryCacheLastAccessedTime() {
   memory_cache_last_accessed_ = base::TimeTicks::Now();
+  IncrementMemoryCacheHitCount();
 }
 
 std::unique_ptr<BackgroundResponseProcessorFactory>

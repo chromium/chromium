@@ -48,4 +48,23 @@ const char kUserSecuritySignalsReporting[] =
 const char kUserSecurityAuthenticatedReporting[] =
     "enterprise_reporting.user_security_signals.authenticated";
 
+// Initially false, and flips to true when we fetch policies WITH the
+// &profileid= query param.
+//
+// This is temporarily needed on iOS for the migration from no-profile-reporting
+// to profile reporting, to avoid uploading failing reports and causing a spike
+// in errors on the server side.
+//
+// TODO(crbug.com/385175028): Clean up and delete this pref after April 2026.
+const char kPoliciesEverFetchedWithProfileId[] =
+    "enterprise_reporting.policies_ever_fetched_with_profile_id";
+
+// List of domains for which SaaS reporting is enabled for browser.
+const char kSaaSReportDomainUrlsForBrowser[] =
+    "enterprise_reporting.saas_report_domain_urls_for_browser";
+
+// List of domains for which SaaS reporting is enabled for profile.
+const char kSaaSReportDomainUrlsForProfile[] =
+    "enterprise_reporting.saas_report_domain_urls_for_profile";
+
 }  // namespace enterprise_reporting

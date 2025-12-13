@@ -4,30 +4,26 @@
 
 package org.chromium.chrome.browser.download;
 
-import android.Manifest.permission;
-
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.ui.base.MimeTypeUtils;
-import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
 /** Java counterpart of android DownloadController. Owned by native. */
+@NullMarked
 public class DownloadController {
     /**
      * Called to download the given URL triggered from a tab.
@@ -36,7 +32,6 @@ public class DownloadController {
      * @param tab Tab triggering the download.
      */
     public static void downloadUrl(String url, Tab tab) {
-        assert hasFileAccess(tab.getWindowAndroid());
         DownloadControllerJni.get().downloadUrl(url, tab.getWebContents());
     }
 
@@ -47,11 +42,14 @@ public class DownloadController {
     @CalledByNative
     private static void onDownloadCompleted(
             @Nullable Tab tab, DownloadInfo downloadInfo, boolean isDownloadSafe) {
-        MediaStoreHelper.addImageToGalleryOnSDCard(
-                downloadInfo.getFilePath(), downloadInfo.getMimeType());
+        String fileName = downloadInfo.getFileName();
+        String filePath = downloadInfo.getFilePath();
+        String mimeType = downloadInfo.getMimeType();
+        assert fileName != null && filePath != null && mimeType != null;
+        MediaStoreHelper.addImageToGalleryOnSDCard(filePath, mimeType);
         if (tab == null
                 || !PdfUtils.shouldOpenPdfInline(tab.isIncognito())
-                || !downloadInfo.getMimeType().equals(MimeTypeUtils.PDF_MIME_TYPE)
+                || !mimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)
                 || !downloadInfo.getIsTransient()) {
             return;
         }
@@ -62,47 +60,9 @@ public class DownloadController {
         // The PdfPage may become a FrozenNativePage while downloading.
         // Need to check before cast to PdfPage.
         if (nativePage instanceof PdfPage) {
-            ((PdfPage) nativePage)
-                    .onDownloadComplete(
-                            downloadInfo.getFileName(), downloadInfo.getFilePath(), isDownloadSafe);
+            ((PdfPage) nativePage).onDownloadComplete(fileName, filePath, isDownloadSafe);
             tab.updateTitle();
         }
-    }
-
-    /**
-     * Returns whether file access is allowed.
-     *
-     * @return true if allowed, or false otherwise.
-     */
-    @CalledByNative
-    private static boolean hasFileAccess(WindowAndroid windowAndroid) {
-        if (DownloadCollectionBridge.supportsDownloadCollection()) return true;
-        AndroidPermissionDelegate delegate = windowAndroid;
-        return delegate == null ? false : delegate.hasPermission(permission.WRITE_EXTERNAL_STORAGE);
-    }
-
-    /**
-     * Requests the storage permission. This should be called from the native code.
-     * @param callbackId ID of native callback to notify the result.
-     * @param windowAndroid The {@link WindowAndroid} associated with the tab.
-     */
-    @CalledByNative
-    private static void requestFileAccess(final long callbackId, WindowAndroid windowAndroid) {
-        if (windowAndroid == null) {
-            DownloadControllerJni.get()
-                    .onAcquirePermissionResult(
-                            callbackId, /* granted= */ false, /* permissionToUpdate= */ "");
-            return;
-        }
-        FileAccessPermissionHelper.requestFileAccessPermissionHelper(
-                windowAndroid,
-                result -> {
-                    DownloadControllerJni.get()
-                            .onAcquirePermissionResult(
-                                    callbackId,
-                                    result.first,
-                                    result.second == null ? "" : result.second);
-                });
     }
 
     /**
@@ -175,14 +135,10 @@ public class DownloadController {
 
     @NativeMethods
     interface Natives {
-        void onAcquirePermissionResult(
-                long callbackId,
-                boolean granted,
-                @JniType("std::string") String permissionToUpdate);
-
-        void downloadUrl(@JniType("std::string") String url, WebContents webContents);
+        void downloadUrl(@JniType("std::string") String url, @Nullable WebContents webContents);
 
         void cancelDownload(
-                @JniType("Profile*") Profile profile, @JniType("std::string") String downloadGuid);
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") @Nullable String downloadGuid);
     }
 }

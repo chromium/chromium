@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
               "builder_group": "chromium.dawn",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
@@ -45,7 +44,43 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
+              "builder_group": "chromium.dawn",
+              "execution_mode": "TEST",
+              "legacy_android_config": {
+                "config": "base_config"
+              },
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 64,
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android",
+                  "dawn_top_of_tree"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Dawn Android arm64 Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Dawn Android arm64 Release (Pixel 10)",
+              "project": "chromium"
+            },
+            "builder_spec": {
               "builder_group": "chromium.dawn",
               "execution_mode": "TEST",
               "legacy_android_config": {
@@ -83,7 +118,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
               "builder_group": "chromium.dawn",
               "execution_mode": "TEST",
               "legacy_android_config": {
@@ -121,7 +155,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
               "builder_group": "chromium.dawn",
               "execution_mode": "TEST",
               "legacy_android_config": {
@@ -169,6 +202,11 @@
         },
         {
           "bucket": "ci",
+          "builder": "Dawn Android arm64 Release (Pixel 10)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "Dawn Android arm64 Release (Pixel 6)",
           "project": "chromium"
         },
@@ -184,6 +222,10 @@
           "group": "tryserver.chromium.dawn"
         },
         {
+          "builder": "android-dawn-arm64-p10-rel",
+          "group": "tryserver.chromium.dawn"
+        },
+        {
           "builder": "android-dawn-arm64-rel",
           "group": "tryserver.chromium.dawn"
         },
@@ -192,7 +234,8 @@
           "group": "tryserver.chromium.dawn"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Android arm64 Builder/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Dawn Android arm64 Builder/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

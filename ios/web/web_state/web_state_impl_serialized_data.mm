@@ -18,14 +18,12 @@ namespace web {
 WebStateImpl::SerializedData::SerializedData(
     WebStateImpl* owner,
     BrowserState* browser_state,
-    NSString* stable_identifier,
     WebStateID unique_identifier,
     proto::WebStateMetadataStorage metadata,
     WebStateStorageLoader storage_loader,
     NativeSessionFetcher session_fetcher)
     : owner_(owner),
       browser_state_(browser_state),
-      stable_identifier_(stable_identifier),
       unique_identifier_(unique_identifier),
       creation_time_(TimeFromProto(metadata.creation_time())),
       last_active_time_(TimeFromProto(metadata.last_active_time())),
@@ -50,17 +48,6 @@ void WebStateImpl::SerializedData::TearDown() {
   for (auto& observer : policy_deciders()) {
     observer.ResetWebState();
   }
-}
-
-CRWSessionStorage* WebStateImpl::SerializedData::GetSessionStorage() const {
-  DCHECK(session_storage_);
-  return session_storage_;
-}
-
-void WebStateImpl::SerializedData::SetSessionStorage(
-    CRWSessionStorage* storage) {
-  session_storage_ = storage;
-  DCHECK(session_storage_);
 }
 
 void WebStateImpl::SerializedData::SerializeMetadataToProto(
@@ -119,10 +106,6 @@ base::Time WebStateImpl::SerializedData::GetCreationTime() const {
 
 BrowserState* WebStateImpl::SerializedData::GetBrowserState() const {
   return browser_state_;
-}
-
-NSString* WebStateImpl::SerializedData::GetStableIdentifier() const {
-  return stable_identifier_;
 }
 
 WebStateID WebStateImpl::SerializedData::GetUniqueIdentifier() const {

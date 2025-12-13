@@ -33,12 +33,12 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
-#include "components/plus_addresses/fake_plus_address_service.h"
-#include "components/plus_addresses/features.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/plus_address_prefs.h"
-#include "components/plus_addresses/plus_address_test_utils.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/fake_plus_address_service.h"
+#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/core/browser/plus_address_test_utils.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
+#include "components/plus_addresses/core/common/features.h"
+#include "components/plus_addresses/core/common/plus_address_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -105,10 +105,6 @@ std::unique_ptr<KeyedService> BuildFakePlusAddressService(
 class MockAutofillClient : public TestContentAutofillClient {
  public:
   using autofill::TestContentAutofillClient::TestContentAutofillClient;
-  MOCK_METHOD(void,
-              OfferPlusAddressCreation,
-              (const url::Origin&, bool, PlusAddressCallback),
-              (override));
   MOCK_METHOD(url::Origin,
               GetLastCommittedPrimaryMainFrameOrigin,
               (),
@@ -369,66 +365,6 @@ TEST_F(AddressAccessoryControllerTest,
                 .Build());
 }
 
-TEST_F(AddressAccessoryControllerTest,
-       NoAffiliatedPlusAddresses_AppendsCreatePlusAddressAction) {
-  MockAffiliatedPlusProfilesProvider provider;
-  EXPECT_CALL(provider, AddObserver);
-  controller()->RegisterPlusProfilesProvider(provider.GetWeakPtr());
-
-  EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::span<const PlusProfile, 0>()));
-  EXPECT_CALL(filling_source_observer_,
-              Run(controller(), IsFillingSourceAvailable(false)));
-  controller()->RefreshSuggestions();
-
-  // Plus address creation can't be supported while plus address filling is
-  // disabled.
-  plus_address_service().set_is_plus_address_filling_enabled(true);
-  plus_address_service().set_should_offer_plus_address_creation(true);
-
-  EXPECT_EQ(
-      controller()->GetSheetData(),
-      AddressAccessorySheetDataBuilder(addresses_empty_str(),
-                                       /*plusAddressTitle=*/std::u16string())
-          .AppendFooterCommand(
-              l10n_util::GetStringUTF16(
-                  IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
-              AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET)
-          .Build());
-}
-
-TEST_F(AddressAccessoryControllerTest,
-       HasAffiliatedPlusAddresses_NoCreatePlusAddressAction) {
-  MockAffiliatedPlusProfilesProvider provider;
-  EXPECT_CALL(provider, AddObserver);
-  controller()->RegisterPlusProfilesProvider(provider.GetWeakPtr());
-
-  std::vector<PlusProfile> profiles{plus_addresses::test::CreatePlusProfile()};
-  EXPECT_CALL(filling_source_observer_,
-              Run(controller(), IsFillingSourceAvailable(true)));
-  EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::span(profiles)));
-  controller()->RefreshSuggestions();
-
-  // Plus address creation can't be supported while plus address filling is
-  // disabled.
-  plus_address_service().set_is_plus_address_filling_enabled(true);
-  plus_address_service().set_should_offer_plus_address_creation(true);
-
-  // Although the plus address creation is supported, the user has an affiliated
-  // plus address for the current domain. The "Create plus address" action
-  // should not be displayed.
-  EXPECT_EQ(controller()->GetSheetData(),
-            AddressAccessorySheetDataBuilder(/*userInfoTitle=*/std::u16string(),
-                                             plus_addresses_title())
-                .AddPlusAddressInfo("https://foo.com", u"plus+foo@plus.plus")
-                .AppendFooterCommand(
-                    l10n_util::GetStringUTF16(
-                        IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
-                    AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET)
-                .Build());
-}
-
 TEST_F(AddressAccessoryControllerTest, AppendsPlusAddressesSection) {
   MockAffiliatedPlusProfilesProvider provider;
   EXPECT_CALL(provider, AddObserver);
@@ -501,31 +437,6 @@ TEST_F(AddressAccessoryControllerTest,
                   IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
               AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET)
           .Build());
-}
-
-TEST_F(AddressAccessoryControllerTest, TriggersPlusAddressCreationBottomSheet) {
-  base::UserActionTester user_action_tester;
-  FieldGlobalId field_id = test::MakeFieldGlobalId();
-  EXPECT_CALL(mock_manual_filling_controller_, GetLastFocusedFieldId)
-      .WillOnce(Return(field_id));
-  EXPECT_CALL(mock_manual_filling_controller_, Hide);
-  const std::string plus_address = "example@gmail.com";
-  EXPECT_CALL(autofill_client(),
-              OfferPlusAddressCreation(_, /*is_manual_fallback=*/true, _))
-      .WillOnce([&plus_address](const url::Origin&, bool,
-                                PlusAddressCallback callback) {
-        std::move(callback).Run(plus_address);
-      });
-  EXPECT_CALL(main_frame_autofill_driver(),
-              ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
-                               mojom::ActionPersistence::kFill, field_id,
-                               base::UTF8ToUTF16(plus_address)));
-  controller()->OnOptionSelected(
-      AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET);
-  EXPECT_EQ(
-      user_action_tester.GetActionCount(
-          "PlusAddresses.CreateSuggestionOnAddressManualFallbackSelected"),
-      1);
 }
 
 TEST_F(AddressAccessoryControllerTest, TriggersManagePlusAddress) {

@@ -4,6 +4,19 @@
 
 module ntp_promo.mojom;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Records the decision made by the NTP on whether to show NTP promos.
+//
+// LINT.IfChange(show_ntp_promos_result_enum)
+enum ShowNtpPromosResult {
+  kShown = 0,
+  kNotShownNoPromos = 1,
+  kNotShownDueToPolicy = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:show_ntp_promos_result_enum)
+
 // These are the promo IDs shown on initial load of the NTP, in show order.
 // Subsequent changes / updates to displayed promos should NOT be reported,
 // so as to avoid over-counting metrics.
@@ -27,6 +40,20 @@ interface NtpPromoHandler {
 
   // Called when the user clicks an action button for `promo_id`.
   OnPromoClicked(string promo_id);
+
+  // Specifies that the setup list should be snoozed.
+  SnoozeSetupList();
+
+  // Specifies that the setup list should be unsnoozed. (This is a recovery
+  // state after snoozing.)
+  UnsnoozeSetupList();
+
+  // Specifies that the setup list should be permanently disabled.
+  DisableSetupList();
+
+  // Specifies that the setup list should be un-disabled. (This is a recovery
+  // state after disabling.)
+  UndisableSetupList();
 };
 
 struct Promo {

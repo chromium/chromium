@@ -1,0 +1,23 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsAr}"
+    search-label="$i18n{siteSettingsAllSitesFilter}"
+    search-icon="settings20:filter-list"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsArDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.AR]]"
+      allow-option-label="$i18n{siteSettingsArAsk}"
+      allow-option-icon="privacy:cardboard"
+      block-option-label="$i18n{siteSettingsArBlock}"
+      block-option-icon="privacy:cardboard-off">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.AR]]"
+      read-only-list
+      allow-header="$i18n{siteSettingsArAllowedExceptions}"
+      block-header="$i18n{siteSettingsArBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

@@ -62,6 +62,15 @@ inline constexpr char kStudentHeartbeatUrlTemplate[] =
 inline constexpr char kNotifyGetActiveSession[] =
     "v1/teachers/$1/sessions/$2/students:notifyGetActiveSession";
 
+inline constexpr char kGetKioskReceiverWithoutConnectionIdUrlTemplate[] =
+    "/v1/receivers/$1";
+
+inline constexpr char kGetKioskReceiverUrlTemplate[] =
+    "/v1/receivers/$1?connectionId=$2";
+
+inline constexpr char kStartKioskReceiverUrlTemplate[] =
+    "/v1/receivers/$1:start";
+
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
 inline constexpr char kRoster[] = "roster";
@@ -86,6 +95,7 @@ inline constexpr char kTranslationsEnabled[] = "translationsEnabled";
 inline constexpr char kStudentStatus[] = "studentStatuses";
 inline constexpr char kStudentStatusState[] = "state";
 inline constexpr char kDeviceStatusState[] = "state";
+inline constexpr char kReceiverConnectionState[] = "receiverConnectionState";
 inline constexpr char kUrl[] = "url";
 inline constexpr char kTitle[] = "title";
 inline constexpr char kFavIcon[] = "faviconUrl";
@@ -100,6 +110,7 @@ inline constexpr char kNanos[] = "nanos";
 inline constexpr char kRequestTime[] = "requestTime";
 inline constexpr char kActivities[] = "activities";
 inline constexpr char kActiveTab[] = "activeTab";
+inline constexpr char kDevice[] = "device";
 inline constexpr char kDevices[] = "devices";
 inline constexpr char kDeviceId[] = "deviceId";
 inline constexpr char kActivity[] = "activity";
@@ -122,6 +133,12 @@ inline constexpr char kServiceAccount[] = "serviceAccount";
 inline constexpr char kStudentGroupId[] = "studentGroupId";
 inline constexpr char kViewScreenConfig[] = "viewScreenConfig";
 inline constexpr char kViewScreenState[] = "viewScreenState";
+inline constexpr char kRobotEmail[] = "robotEmail";
+inline constexpr char kConnection[] = "connection";
+inline constexpr char kConnectionId[] = "connectionId";
+inline constexpr char kConnectionCode[] = "connectionCode";
+inline constexpr char kInitiator[] = "initiator";
+inline constexpr char kPresenter[] = "presenter";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("boca_server_integration", R"(

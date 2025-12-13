@@ -228,7 +228,7 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
       break;
   }
   params["full_url"] = source.spec();
-  params["url"] = source.path();
+  params["url"] = source.GetPath();
   params["src"] = source.spec();
   if (error_report->line_number) {
     params["line"] = base::NumberToString(*error_report->line_number);

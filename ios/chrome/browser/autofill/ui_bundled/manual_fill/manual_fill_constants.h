@@ -16,6 +16,10 @@ namespace manual_fill {
 // Accessibility identifier of the password button.
 extern NSString* const kAccessoryPasswordAccessibilityIdentifier;
 
+// Accessibility identifier for the favicon shown in a password cell of the
+// expanded manual fill view.
+extern NSString* const kExpandedManualFillPasswordFaviconID;
+
 // Accessibility Identifier for the done button in the select password sheet.
 extern NSString* const kPasswordDoneButtonAccessibilityIdentifier;
 
@@ -42,9 +46,6 @@ extern NSString* const kMaskedPasswordButtonText;
 
 // Payments
 
-// Accessibility identifier of the address button.
-extern NSString* const kAccessoryAddressAccessibilityIdentifier;
-
 // Accessibility identifier for the GPay logo shown in the payment manual fill
 // cells when the corresponding card is a server card.
 extern NSString* const kPaymentManualFillGPayLogoID;
@@ -59,9 +60,6 @@ extern NSString* const kManagePaymentMethodsAccessibilityIdentifier;
 extern NSString* const kAddPaymentMethodAccessibilityIdentifier;
 
 // Addresses
-
-// Accessibility identifier of the credit card button.
-extern NSString* const kAccessoryCreditCardAccessibilityIdentifier;
 
 // Accessibility identifier for the address manual fill view.
 extern NSString* const kAddressTableViewAccessibilityIdentifier;
@@ -79,6 +77,10 @@ extern NSString* const kCreatePlusAddressAccessibilityIdentifier;
 
 // Accessibility identifier for the select plus address action.
 extern NSString* const kSelectPlusAddressAccessibilityIdentifier;
+
+// Accessibility identifier for the favicon shown in a plus address cell of the
+// expanded manual fill view.
+extern NSString* const kExpandedManualFillPlusAddressFaviconID;
 
 // Accessibility identifier for the overflow menu in plus address cell.
 extern NSString* const kExpandedManualFillPlusAddressOverflowMenuID;

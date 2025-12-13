@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -19,6 +20,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "content/browser/webid/metrics.h"
+#include "content/browser/webid/network_request_manager.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
 #include "content/common/features.h"
 #include "content/public/browser/manifest_icon_downloader.h"
@@ -49,22 +52,20 @@
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
-using IdpClientMetadata = content::IdpNetworkRequestManager::ClientMetadata;
-using TokenResult = content::IdpNetworkRequestManager::TokenResult;
-using Endpoints = content::IdpNetworkRequestManager::Endpoints;
-using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
-using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
-using AccountsRequestCallback =
-    content::IdpNetworkRequestManager::AccountsRequestCallback;
 using LoginState = content::IdentityRequestAccount::LoginState;
-using AccountsResponseInvalidReason =
-    content::IdpNetworkRequestManager::AccountsResponseInvalidReason;
-using ErrorDialogType = content::IdpNetworkRequestManager::FedCmErrorDialogType;
-using ErrorUrlType = content::IdpNetworkRequestManager::FedCmErrorUrlType;
-using TokenResponseType =
-    content::IdpNetworkRequestManager::FedCmTokenResponseType;
 
-namespace content {
+namespace content::webid {
+
+using IdpClientMetadata = IdpNetworkRequestManager::ClientMetadata;
+using TokenResult = IdpNetworkRequestManager::TokenResult;
+using Endpoints = IdpNetworkRequestManager::Endpoints;
+using AccountsRequestCallback =
+    IdpNetworkRequestManager::AccountsRequestCallback;
+using AccountsResponseInvalidReason =
+    IdpNetworkRequestManager::AccountsResponseInvalidReason;
+using ErrorDialogType = IdpNetworkRequestManager::FedCmErrorDialogType;
+using ErrorUrlType = IdpNetworkRequestManager::FedCmErrorUrlType;
+using TokenResponseType = IdpNetworkRequestManager::FedCmTokenResponseType;
 
 namespace {
 
@@ -85,6 +86,7 @@ constexpr char kTestDisconnectEndpoint[] =
     "https://idp.test/revocation_endpoint";
 constexpr char kTestLocalHostTokenEndpoint[] =
     "http://localhost/token_endpoint";
+constexpr char kWellKnownPath[] = ".well-known/web-identity";
 
 constexpr char kSingleAccountEndpointValidJson[] = R"({
   "accounts" : [
@@ -306,10 +308,10 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     FetchStatus fetch_status;
     TokenResult token_result;
     base::RunLoop run_loop;
-    auto callback =
-        base::BindLambdaForTesting([&](FetchStatus status, TokenResult result) {
+    auto callback = base::BindLambdaForTesting(
+        [&](FetchStatus status, TokenResult&& result) {
           fetch_status = status;
-          token_result = result;
+          token_result = std::move(result);
           run_loop.Quit();
         });
 
@@ -318,7 +320,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
                               std::move(callback), base::DoNothing(),
                               CreateErrorMetricsCallback(run_loop));
     run_loop.Run();
-    return {fetch_status, token_result};
+    return {std::move(fetch_status), std::move(token_result)};
   }
 
   IdpClientMetadata SendClientMetadataRequestAndWaitForResponse(
@@ -329,7 +331,9 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     std::string url_string =
         client_id_endpoint.spec() + "?client_id=" + client_id;
     if (top_level_origin) {
-      url_string += std::string("&top_frame_origin=") + top_level_origin;
+      url_string +=
+          std::string("&top_frame_origin=") +
+          base::EscapeQueryParamValue(top_level_origin, /*use_plus=*/false);
     }
     AddResponse(GURL(url_string), net::HTTP_OK, "application/json", response);
 
@@ -460,6 +464,9 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kFedCmAlternativeIdentifiers);
+
   {
     base::HistogramTester histogram_tester;
     std::string test_account_missing_account_id_json =
@@ -515,6 +522,9 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFieldNonEmpty) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kFedCmAlternativeIdentifiers);
+
   {
     base::HistogramTester histogram_tester;
     const auto* test_accounts_json = R"({
@@ -821,17 +831,15 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabelHints) {
 
 TEST_F(IdpNetworkRequestManagerTest, ComputeWellKnownUrl) {
   EXPECT_EQ("https://localhost:8000/.well-known/web-identity",
-            IdpNetworkRequestManager::ComputeWellKnownUrl(
-                GURL("https://localhost:8000/test/"))
-                ->spec());
+            ComputeWellKnownUrl(GURL("https://localhost:8000/test/"),
+                                kWellKnownPath));
 
   EXPECT_EQ("https://google.com/.well-known/web-identity",
-            IdpNetworkRequestManager::ComputeWellKnownUrl(
-                GURL("https://www.google.com:8000/test/"))
-                ->spec());
+            ComputeWellKnownUrl(GURL("https://www.google.com:8000/test/"),
+                                kWellKnownPath));
 
-  EXPECT_EQ(std::nullopt, IdpNetworkRequestManager::ComputeWellKnownUrl(
-                              GURL("https://192.101.0.1/test/")));
+  EXPECT_EQ(std::nullopt, ComputeWellKnownUrl(GURL("https://192.101.0.1/test/"),
+                                              kWellKnownPath));
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseUsername) {
@@ -969,6 +977,119 @@ TEST_F(IdpNetworkRequestManagerTest, DownloadAndDecodeCachedImage) {
   EXPECT_TRUE(expected_isolation_info.IsEqualForTesting(
       resource_request.trusted_params->isolation_info));
 }
+
+// Test that the request destination is set to kWebIdentity.
+TEST_F(IdpNetworkRequestManagerTest, FetchWellKnownRequestDestination) {
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(network::mojom::RequestDestination::kWebIdentity,
+                  request.destination);
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+
+  SendWellKnownRequestAndWaitForResponse(R"({
+  "provider_urls": ["https://idp.test/fedcm.json"]
+  })");
+  EXPECT_TRUE(called);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, FetchConfigRequestDestination) {
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(network::mojom::RequestDestination::kWebIdentity,
+                  request.destination);
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+
+  SendConfigRequestAndWaitForResponse(R"({})");
+  EXPECT_TRUE(called);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, AccountsRequestDestination) {
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(network::mojom::RequestDestination::kWebIdentity,
+                  request.destination);
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+
+  SendAccountsRequestAndWaitForResponse(kSingleAccountEndpointValidJson);
+  EXPECT_TRUE(called);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, TokenRequestDestination) {
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(network::mojom::RequestDestination::kWebIdentity,
+                  request.destination);
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+
+  SendTokenRequestAndWaitForResponse("account", "request");
+  EXPECT_TRUE(called);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ClientMetadataRequestDestination) {
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(network::mojom::RequestDestination::kWebIdentity,
+                  request.destination);
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+
+  SendClientMetadataRequestAndWaitForResponse("xxx");
+  EXPECT_TRUE(called);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ImageRequestDestination) {
+  base::RunLoop run_loop;
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(network::mojom::RequestDestination::kWebIdentity,
+                  request.destination);
+        run_loop.Quit();
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->DownloadAndDecodeImage(GURL("https://idp.test/image.png"),
+                                  base::DoNothing());
+  run_loop.Run();
+  EXPECT_TRUE(called);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, CachedImageRequestDestination) {
+  base::RunLoop run_loop;
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(network::mojom::RequestDestination::kWebIdentity,
+                  request.destination);
+        run_loop.Quit();
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  url::Origin idp_origin = url::Origin::Create(GURL(kTestIdpUrl));
+  GURL picture_url("https://idp.cdn.test/profile/1234");
+  manager->DownloadAndDecodeCachedImage(
+      idp_origin, picture_url, base::DoNothingAs<void(const gfx::Image&)>());
+  run_loop.Run();
+  EXPECT_TRUE(called);
+}
 // Test that IdpNetworkRequestManager::FetchWellKnown() fails when the
 // identity provider domain is empty.
 TEST_F(IdpNetworkRequestManagerTest, FetchWellKnownIllegalDomainFails) {
@@ -991,8 +1112,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchWellKnownIllegalDomainFails) {
       [&](FetchStatus fetch_status,
           const IdpNetworkRequestManager::WellKnown& well_known) {
         EXPECT_EQ(ParseStatus::kHttpNotFoundError, fetch_status.parse_status);
-        // We receive OK here because
-        // IdpNetworkRequestManager::ComputeWellKnownUrl() fails.
+        // We receive OK here because ComputeWellKnownUrl() fails.
         EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
         run_loop.Quit();
       });
@@ -1809,8 +1929,103 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestWithCORSError) {
 
   EXPECT_EQ(ParseStatus::kNoResponseError, fetch_status.parse_status);
   EXPECT_EQ(net::ERR_FAILED, fetch_status.response_code);
-  ASSERT_EQ("", token_result.token);
+  ASSERT_FALSE(token_result.token.has_value());
   ASSERT_EQ(true, fetch_status.cors_error);
+}
+
+// Test that flexible token formats (JSON objects, primitives) are
+// properly handled
+TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestJsonObjectToken) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNonStringToken);
+
+  FetchStatus fetch_status;
+  TokenResult token_result;
+
+  // Test JSON object token
+  const char* json_object_response = R"({
+    "token": {
+      "access_token": "abc123",
+      "token_type": "Bearer",
+      "expires_in": 3600
+    }
+  })";
+
+  std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
+      "account", "request", net::HTTP_OK, "application/json",
+      json_object_response);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_TRUE(token_result.token.has_value() &&
+              (token_result.token->is_dict()));
+  const base::Value::Dict& value = token_result.token->GetDict();
+
+  const base::Value* access_token = value.Find("access_token");
+  ASSERT_TRUE(access_token && access_token->is_string());
+  EXPECT_EQ("abc123", access_token->GetString());
+
+  const base::Value* token_type = value.Find("token_type");
+  ASSERT_TRUE(token_type && token_type->is_string());
+  EXPECT_EQ("Bearer", token_type->GetString());
+
+  const base::Value* expires_in = value.Find("expires_in");
+  ASSERT_TRUE(expires_in && expires_in->is_int());
+  EXPECT_EQ(3600, expires_in->GetInt());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestNumberToken) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNonStringToken);
+
+  FetchStatus fetch_status;
+  TokenResult token_result;
+
+  const char* number_response = R"({"token": 12345})";
+
+  std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
+      "account", "request", net::HTTP_OK, "application/json", number_response);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_TRUE(
+      token_result.token.has_value() &&
+      (token_result.token->is_int() && token_result.token->GetInt() == 12345));
+}
+
+TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestBooleanToken) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNonStringToken);
+
+  FetchStatus fetch_status;
+  TokenResult token_result;
+
+  const char* boolean_response = R"({"token": true})";
+
+  std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
+      "account", "request", net::HTTP_OK, "application/json", boolean_response);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_TRUE(token_result.token.has_value() && token_result.token->is_bool() &&
+              token_result.token->GetBool() == true);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestNullToken) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNonStringToken);
+
+  FetchStatus fetch_status;
+  TokenResult token_result;
+
+  const char* null_response = R"({"token": null})";
+
+  std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
+      "account", "request", net::HTTP_OK, "application/json", null_response);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_TRUE(token_result.token.has_value() && token_result.token->is_none());
 }
 
 // Tests the client metadata implementation.
@@ -1833,19 +2048,63 @@ TEST_F(IdpNetworkRequestManagerTest, ClientMetadata) {
   ASSERT_EQ(GURL(), data.privacy_policy_url);
   ASSERT_EQ(GURL(), data.terms_of_service_url);
   ASSERT_EQ(GURL(), data.brand_icon_url);
-  ASSERT_FALSE(data.client_matches_top_frame_origin.has_value());
+  EXPECT_FALSE(data.client_is_third_party_to_top_frame_origin);
 }
 
-// Tests the "matches top frame" boolean.
-TEST_F(IdpNetworkRequestManagerTest, ClientMatchesTopFrameOrigin) {
+// Tests client_is_third_party_to_top_frame_origin: true
+TEST_F(IdpNetworkRequestManagerTest, ClientIsThirdPartyToTopFrameOrigin) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmIframeOrigin);
 
   IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
-      "clientid", R"({"client_matches_top_frame_origin": false})",
+      "clientid", R"({"client_is_third_party_to_top_frame_origin": true})",
       "https://toplevel.example");
-  ASSERT_TRUE(data.client_matches_top_frame_origin.has_value());
-  EXPECT_FALSE(*data.client_matches_top_frame_origin);
+  EXPECT_TRUE(data.client_is_third_party_to_top_frame_origin);
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.CrossSiteIframeType",
+      webid::CrossSiteIframeType::kIframeIsThirdParty, 1);
+}
+
+// Tests client_is_third_party_to_top_frame_origin: false
+TEST_F(IdpNetworkRequestManagerTest, ClientIsSamePartyToTopFrameOrigin) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
+
+  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+      "clientid", R"({"client_is_third_party_to_top_frame_origin": false})",
+      "https://toplevel.example");
+  EXPECT_FALSE(data.client_is_third_party_to_top_frame_origin);
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.CrossSiteIframeType",
+      webid::CrossSiteIframeType::kIframeIsSameParty, 1);
+}
+
+// Tests client_is_third_party_to_top_frame_origin is not sent
+TEST_F(IdpNetworkRequestManagerTest,
+       ClientIsThirdPartyToTopFrameOriginNotSent) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
+
+  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+      "clientid", R"({})", "https://toplevel.example");
+  EXPECT_FALSE(data.client_is_third_party_to_top_frame_origin);
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.CrossSiteIframeType",
+      webid::CrossSiteIframeType::kNoValueReceived, 1);
+}
+
+// Tests that we don't record the histogram for
+// client_is_third_party_to_top_frame_origin if there is no cross-site iframe.
+TEST_F(IdpNetworkRequestManagerTest,
+       ClientIsThirdPartyToTopFrameOriginNoIframe) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
+
+  // We pass no top_level_origin here.
+  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+      "clientid", R"({"client_is_third_party_to_top_frame_origin": true})");
+  EXPECT_FALSE(data.client_is_third_party_to_top_frame_origin);
+  histogram_tester()->ExpectTotalCount("Blink.FedCm.CrossSiteIframeType", 0);
 }
 
 // Tests that we correctly records metrics regarding approved_clients.
@@ -2100,7 +2359,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionWrongMimeType) {
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "text/html");
-  EXPECT_EQ("", token_result.token);
+  ASSERT_FALSE(token_result.token.has_value());
   EXPECT_EQ(ParseStatus::kInvalidContentTypeError, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
 }
@@ -2116,7 +2375,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
 
   base::RunLoop run_loop;
   auto callback = base::BindLambdaForTesting(
-      [&](FetchStatus status, TokenResult result) {});
+      [&](FetchStatus status, TokenResult&& result) {});
 
   auto on_continue = base::BindLambdaForTesting([&](FetchStatus status,
                                                     const GURL& url) {
@@ -2206,7 +2465,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnCanBeRelativeUrl) {
 
   base::RunLoop run_loop;
   auto callback = base::BindLambdaForTesting(
-      [&](FetchStatus status, TokenResult result) {});
+      [&](FetchStatus status, TokenResult&& result) {});
 
   auto on_continue = base::BindLambdaForTesting([&](FetchStatus status,
                                                     const GURL& url) {
@@ -2228,7 +2487,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithProperField) {
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": "https://idp.test/error"
         }
       })");
@@ -2251,7 +2510,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithRelativePath) {
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": "/error"
         }
       })");
@@ -2274,7 +2533,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithCrossSiteUrl) {
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": "https://cross-site-idp.test/error"
         }
       })");
@@ -2298,7 +2557,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": "https://cross-origin.idp.test/error"
         }
       })");
@@ -2322,7 +2581,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": "http://idp.test/error"
         }
       })");
@@ -2345,7 +2604,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithEmptyUrl) {
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": ""
         }
       })");
@@ -2392,7 +2651,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithLocalHostUrl) {
     std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
         "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": "http://localhost/error"
         }
       })",
@@ -2472,7 +2731,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithErrorAndHttpError) {
       "account", "request", net::HTTP_SERVICE_UNAVAILABLE, "application/json",
       R"({
         "error": {
-          "code": "temporarily_unavailable",
+          "error": "temporarily_unavailable",
           "url": "https://idp.test/error"
         }
       })");
@@ -2497,7 +2756,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithTokenAndHttpError) {
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_FORBIDDEN);
 
-  EXPECT_EQ("", token_result.token);
+  ASSERT_FALSE(token_result.token.has_value());
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("", token_result.error->code);
   EXPECT_EQ("", token_result.error->url);
@@ -2568,4 +2827,4 @@ TEST_F(IdpNetworkRequestManagerTest, DisconnectRequest) {
 
 }  // namespace
 
-}  // namespace content
+}  // namespace content::webid

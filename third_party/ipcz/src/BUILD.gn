@@ -25,7 +25,10 @@ shared_library("ipcz_shared") {
     "//third_party/abseil-cpp:absl",
   ]
   public_deps = [ ":ipcz_header" ]
-  defines = [ "IPCZ_SHARED_LIBRARY" ]
+  defines = [
+    "IPCZ_SHARED_LIBRARY",
+    "IPCZ_STANDALONE",
+  ]
   public_configs = [ ":ipcz_include_dir" ]
   configs += [ ":ipcz_include_src_dir" ]
 }
@@ -184,7 +187,7 @@ ipcz_source_set("reference_drivers") {
   }
 
   if (is_android) {
-    deps += [ "//third_party/ashmem" ]
+    deps += [ "//base/android/linker:ashmem" ]
   }
 }
 
@@ -198,6 +201,7 @@ ipcz_source_set("util") {
     "util/stack_trace.h",
     "util/strong_alias.h",
     "util/unique_ptr_comparator.h",
+    "util/unsafe_buffers.h",
   ]
 
   sources = [ "util/ref_counted.cc" ]
@@ -354,6 +358,10 @@ ipcz_source_set("ipcz_test_support") {
     ":reference_drivers",
     ":util",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs = [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 ipcz_source_set("ipcz_tests_sources") {

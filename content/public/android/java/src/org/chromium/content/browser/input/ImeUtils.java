@@ -15,21 +15,29 @@ import android.view.inputmethod.EditorInfo;
 
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
+import org.chromium.base.FileUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.blink_public.web.WebTextInputFlags;
 import org.chromium.blink_public.web.WebTextInputMode;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ime.TextInputAction;
 import org.chromium.ui.base.ime.TextInputType;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
 import java.util.Locale;
 
 /** Utilities for IME such as computing outAttrs, and dumping object information. */
 @NullMarked
 public class ImeUtils {
+    private static final String TAG = "Ime";
+
     /**
-     * Compute {@link EditorInfo} based on the given parameters. This is needed for
-     * {@link View#onCreateInputConnection(EditorInfo)}.
+     * Compute {@link EditorInfo} based on the given parameters. This is needed for {@link
+     * View#onCreateInputConnection(EditorInfo)}.
      *
      * @param inputType Type defined in {@link TextInputType}.
      * @param inputFlags Flags defined in {@link WebTextInputFlags}.
@@ -269,5 +277,27 @@ public class ImeUtils {
     /** Check that the current thread is UI thread, and raise an error if it is not. */
     static void checkOnUiThread() {
         checkCondition("Should be on UI thread.", ThreadUtils.runningOnUiThread());
+    }
+
+    /** Synthesize the data Url from the content Uri and mimeType. */
+    static String getDataUrlFromContentUri(@Nullable InputStream inputStream, String mimeType) {
+        assert !ThreadUtils.runningOnUiThread();
+        if (inputStream == null) return "";
+        String dataUrl = "";
+        try {
+            dataUrl =
+                    "data:"
+                            + mimeType
+                            + ";base64,"
+                            + Base64.getEncoder().encodeToString(FileUtils.readStream(inputStream));
+        } catch (Throwable e) {
+            Log.e(TAG, "I/O error while processing the stream.", e);
+        }
+        try {
+            inputStream.close();
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to close input or output stream.");
+        }
+        return dataUrl;
     }
 }

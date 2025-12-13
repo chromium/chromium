@@ -410,6 +410,10 @@ std::string PlatformFontMac::GetActualFontName() const {
       base::apple::CFToNSPtrCast(ct_font_.get()).familyName);
 }
 
+std::vector<std::string> PlatformFontMac::GetActualFontNames() const {
+  return {GetActualFontName()};
+}
+
 int PlatformFontMac::GetFontSize() const {
   return font_spec_.size;
 }

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""XCode test log parser."""
+"""Xcode test log parser."""
 
 import json
 import logging

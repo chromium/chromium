@@ -22,6 +22,7 @@ namespace collaboration::comments {
 using CollaborationId = data_sharing::GroupId;
 using CommentId = base::Uuid;
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.collaboration.comments
 enum class AttributionLevel {
   kUrl,
   kContent,
@@ -84,6 +85,7 @@ struct OrderKey {
   uint64_t local_sequence;
 };
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.collaboration.comments
 enum class CommentType {
   kComment,
 };

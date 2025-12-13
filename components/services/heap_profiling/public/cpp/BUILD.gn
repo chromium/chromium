@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//base/allocator/allocator.gni")
-import("//build/config/features.gni")
 
 static_library("cpp") {
   sources = [

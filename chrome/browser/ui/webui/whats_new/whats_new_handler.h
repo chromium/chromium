@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_HANDLER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new.mojom.h"
 #include "components/user_education/webui/whats_new_registry.h"
@@ -39,6 +40,8 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest, SurveyIsTriggeredWithOverride);
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest,
                            SurveyIsNotTriggeredForPreviouslyUsedEdition);
+  FRIEND_TEST_ALL_PREFIXES(WhatsNewRefreshHandlerTest, GetServerUrl);
+  FRIEND_TEST_ALL_PREFIXES(WhatsNewRefreshHandlerTest, SurveyIsTriggered);
 
   void RecordTimeToLoadContent(base::Time time) override;
   void RecordVersionPageLoaded(bool is_auto_open) override;
@@ -69,6 +72,14 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
       const std::string& module_name,
       whats_new::mojom::ModulePosition position) override;
   void RecordBrowserCommandExecuted() override;
+  void RecordQrCodeToggled(bool expanded) override;
+  void RecordNavClick() override;
+  void RecordFeatureTileNavigation() override;
+  void RecordCarouselScrollButtonClick() override;
+  void RecordExpandMediaToggled(const std::string& module_name,
+                                bool expanded) override;
+  void RecordCtaClick() override;
+  void RecordNextButtonClick() override;
 
   // Makes a request to show a HaTS survey.
   void TryShowHatsSurveyWithTimeout();

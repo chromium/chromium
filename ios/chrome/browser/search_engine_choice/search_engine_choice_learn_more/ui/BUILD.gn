@@ -1,0 +1,26 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "search_engine_choice_learn_more_view_controller.h",
+    "search_engine_choice_learn_more_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/strings",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/search_engine_choice/search_engine_choice_learn_more/ui/resources",
+    "//ios/chrome/browser/search_engine_choice/ui:constants",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/button_stack:utils",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style:utils",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

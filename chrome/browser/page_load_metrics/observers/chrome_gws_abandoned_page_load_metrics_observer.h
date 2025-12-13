@@ -16,8 +16,6 @@ extern const char kSuffixResponseFromCache[];
 class ChromeGWSAbandonedPageLoadMetricsObserver
     : public GWSAbandonedPageLoadMetricsObserver {
  public:
-  static const char* GetSuffixForRTT(std::optional<base::TimeDelta> rtt);
-
   ChromeGWSAbandonedPageLoadMetricsObserver();
   ~ChromeGWSAbandonedPageLoadMetricsObserver() override;
 

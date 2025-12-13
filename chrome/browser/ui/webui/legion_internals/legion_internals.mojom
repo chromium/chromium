@@ -1,0 +1,24 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module legion_internals.mojom;
+
+// Return value of SendRequest. Contains either a response or an error.
+struct LegionResponse {
+  string? response;
+  string? error;
+};
+
+// PageHandler for LegionInternals page.
+interface LegionInternalsPageHandler {
+  // Connect to the specified URL. Needs to be called before other methods that
+  // require a "current connection".
+  Connect(string url, string api_key) => ();
+  // Closes the current connection.
+  Close() => ();
+  // Sends a request over the current connection. Request and Response are plain
+  // text that is send and received from a server. Chrome must not parse or
+  // interpret this data e.g. by treating it as html.
+  SendRequest(string feature_name, string request) => (LegionResponse response);
+};

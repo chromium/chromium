@@ -33,12 +33,12 @@ class PrefsInternalsSource : public web::URLDataSourceIOS {
   // content::URLDataSource:
   std::string GetSource() const override { return kChromeUIPrefsInternalsHost; }
 
-  std::string GetMimeType(const std::string& path) const override {
+  std::string GetMimeType(std::string_view path) const override {
     return "text/plain";
   }
 
   void StartDataRequest(
-      const std::string& path,
+      std::string_view path,
       web::URLDataSourceIOS::GotDataCallback callback) override {
     // TODO(crbug.com/40099982): Properly disable this webui provider for
     // incognito profiles.

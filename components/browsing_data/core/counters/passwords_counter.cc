@@ -25,10 +25,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace browsing_data {
 namespace {
 
@@ -38,26 +34,7 @@ bool IsProfilePasswordSyncEnabled(PrefService* pref_service,
 #if BUILDFLAG(IS_ANDROID)
   // After login db deprecation there won't be any more users syncing passwords
   // from the profile store. All users will have split stores.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid)) {
-    return false;
-  }
-
-  // If UsesSplitStoresAndUPMForLocal() is true, the profile store is never
-  // synced, only the account store is.
-  if (password_manager::UsesSplitStoresAndUPMForLocal(pref_service)) {
-    return false;
-  }
-
-  // TODO(crbug.com/344640768): The IsGmsCoreUpdateRequired() check isn't
-  // perfect, it causes the string to say "synced" in cases when it shouldn't.
-  if (password_manager::IsGmsCoreUpdateRequired(pref_service, sync_service)) {
-    return false;
-  }
-
-  return sync_service &&
-         sync_service->GetUserSettings()->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kPasswords);
+  return false;
 #else
   // TODO(crbug.com/40067058): Clean this up once Sync-the-feature is gone on
   // all platforms.
@@ -178,7 +155,7 @@ void PasswordStoreFetcher::OnGetPasswordStoreResults(
         result->url,
         net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
     if (domain.empty())
-      domain = result->url.host();
+      domain = result->url.GetHost();
     sorted_domains.emplace_back(domain);
   }
   // Only consecutive duplicates are removed below. Since we're only listing two

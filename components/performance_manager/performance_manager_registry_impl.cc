@@ -264,7 +264,7 @@ PerformanceManagerRegistryImpl::GetBrowserChildProcessWatcherForTesting() {
   return browser_child_process_watcher_;
 }
 
-void PerformanceManagerRegistryImpl::OnRenderProcessHostCreated(
+void PerformanceManagerRegistryImpl::OnRenderProcessLaunched(
     content::RenderProcessHost* host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

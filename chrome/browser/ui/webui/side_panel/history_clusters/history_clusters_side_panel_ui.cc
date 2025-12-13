@@ -34,7 +34,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 HistoryClustersSidePanelUIConfig::HistoryClustersSidePanelUIConfig()
@@ -100,13 +99,6 @@ void HistoryClustersSidePanelUI::SetBrowserWindowInterface(
 }
 
 void HistoryClustersSidePanelUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
-}
-
-void HistoryClustersSidePanelUI::BindInterface(
     mojo::PendingReceiver<history_clusters::mojom::PageHandler>
         pending_page_handler) {
   history_clusters_handler_ =
@@ -166,7 +158,7 @@ void HistoryClustersSidePanelUI::DidFinishNavigation(
     return;
   }
 
-  if (navigation_handle->GetURL().host_piece() !=
+  if (navigation_handle->GetURL().host() !=
       chrome::kChromeUIHistoryClustersSidePanelHost) {
     return;
   }

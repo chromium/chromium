@@ -9,7 +9,10 @@
 #include "chrome/browser/device_notifications/device_system_tray_icon_renderer.h"
 #include "chrome/browser/profiles/profile_attributes_storage_observer.h"
 #include "chrome/browser/status_icons/status_icon.h"
-#include "chrome/browser/ui/chrome_pages.h"
+
+namespace chrome {
+enum class HelpSource;
+}
 
 class DeviceStatusIconRenderer : public DeviceSystemTrayIconRenderer,
                                  public StatusIconMenuModel::Delegate,

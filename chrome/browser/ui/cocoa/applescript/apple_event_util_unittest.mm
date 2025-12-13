@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "chrome/browser/ui/cocoa/applescript/apple_event_util.h"
 
 #include <CoreServices/CoreServices.h>
@@ -226,16 +221,18 @@ TEST_F(AppleEventUtilTest, ValueToAppleEventDescriptor) {
        typeAEList},
   };
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    std::optional<base::Value> value =
-        base::JSONReader::Read(cases[i].json_input);
+  int i = 0;
+  for (const auto& test_case : cases) {
+    std::optional<base::Value> value = base::JSONReader::Read(
+        test_case.json_input, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     NSAppleEventDescriptor* descriptor =
         chrome::mac::ValueToAppleEventDescriptor(value.value());
 
-    EXPECT_EQ(cases[i].expected_aedesc_dump, AEDescToString(descriptor.aeDesc))
+    EXPECT_EQ(test_case.expected_aedesc_dump, AEDescToString(descriptor.aeDesc))
         << "i: " << i;
-    EXPECT_EQ(cases[i].expected_aedesc_type, descriptor.descriptorType)
+    EXPECT_EQ(test_case.expected_aedesc_type, descriptor.descriptorType)
         << "i: " << i;
+    ++i;
   }
 
   // Test boolean values separately because boolean NSAppleEventDescriptors

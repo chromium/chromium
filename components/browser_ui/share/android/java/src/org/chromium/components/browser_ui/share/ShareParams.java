@@ -21,6 +21,9 @@ import java.util.ArrayList;
 /** A container object for passing share parameters to {@link ShareHelper}. */
 @NullMarked
 public class ShareParams {
+    /** Origin of the share action. Defined when the action comes from within Chrome. */
+    public static final String EXTRA_SHARE_ORIGIN = "org.chromium.chrome.browser.share_origin";
+
     /** The window that triggered the share action. */
     private final WindowAndroid mWindow;
 
@@ -34,7 +37,7 @@ public class ShareParams {
     private final @Nullable String mTextFormat;
 
     /** The URL of the page to be shared. */
-    private String mUrl;
+    private @Nullable String mUrl;
 
     /** The common MIME type of the files to be shared. A wildcard if they have differing types. */
     private final @Nullable String mFileContentType;
@@ -72,6 +75,9 @@ public class ShareParams {
     /** A format to be used when sharing |mPreviewText|. */
     private final @Nullable String mPreviewTextFormat;
 
+    /** Origin of the share action within Chrome. */
+    private final int mOrigin;
+
     /**
      * Optional callback to be called when user makes a choice. Will not be called if receiving a
      * response when the user makes a choice is not supported (on older Android versions).
@@ -94,7 +100,8 @@ public class ShareParams {
             @Nullable TargetChosenCallback callback,
             @Nullable Boolean linkToTextSuccessful,
             @Nullable String previewText,
-            @Nullable String previewTextFormat) {
+            @Nullable String previewTextFormat,
+            int origin) {
         mWindow = window;
         mTitle = title;
         mText = text;
@@ -111,6 +118,7 @@ public class ShareParams {
         mLinkToTextSuccessful = linkToTextSuccessful;
         mPreviewText = previewText;
         mPreviewTextFormat = previewTextFormat;
+        mOrigin = origin;
     }
 
     /** @return The window that triggered share. */
@@ -149,16 +157,25 @@ public class ShareParams {
     }
 
     /** @return The URL of the page to be shared. */
-    public String getUrl() {
+    public @Nullable String getUrl() {
         return mUrl;
     }
 
     /** @param url set URL to be shared. */
-    public void setUrl(String url) {
+    public void setUrl(@Nullable String url) {
         mUrl = url;
     }
 
-    /** @return The MIME type to the arbitrary files to be shared. */
+    /**
+     * @return The origin of the share action.
+     */
+    public int getOrigin() {
+        return mOrigin;
+    }
+
+    /**
+     * @return The MIME type to the arbitrary files to be shared.
+     */
     public @Nullable String getFileContentType() {
         return mFileContentType;
     }
@@ -261,6 +278,7 @@ public class ShareParams {
         private @Nullable Boolean mLinkToTextSuccessful;
         private @Nullable String mPreviewText;
         private @Nullable String mPreviewTextFormat;
+        private int mOrigin;
         // TODO(https://crbug/1415082): Remove when DomDistillerUrlUtil is removed from below.
         private boolean mBypassFixingDomDistillerUrl;
 
@@ -353,7 +371,18 @@ public class ShareParams {
             return this;
         }
 
-        /** @return A fully constructed {@link ShareParams} object. */
+        /**
+         * Sets the origin of the share action within Chrome. Undefined if the action comes from
+         * outside.
+         */
+        public Builder setOrigin(int origin) {
+            mOrigin = origin;
+            return this;
+        }
+
+        /**
+         * @return A fully constructed {@link ShareParams} object.
+         */
         public ShareParams build() {
             if (!TextUtils.isEmpty(mUrl) && !mBypassFixingDomDistillerUrl) {
                 mUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(mUrl);
@@ -374,26 +403,28 @@ public class ShareParams {
                     mCallback,
                     mLinkToTextSuccessful,
                     mPreviewText,
-                    mPreviewTextFormat);
+                    mPreviewTextFormat,
+                    mOrigin);
         }
     }
 
     /** Callback interface for when a target is chosen. */
-    public static interface TargetChosenCallback {
+    public interface TargetChosenCallback {
         /**
          * Called when the user chooses a target in the share dialog. When this is called when a
          * custom action is selected on the system share sheet (e.g. Copy, Edit), the
          * |chosenComponent| can be null.
          *
-         * Note that if the user cancels the share dialog, this callback is never called.
+         * <p>Note that if the user cancels the share dialog, this callback is never called.
          */
-        public void onTargetChosen(@Nullable ComponentName chosenComponent);
+        void onTargetChosen(@Nullable ComponentName chosenComponent);
 
         /**
          * Called when the user cancels the share dialog.
          *
-         * Guaranteed that either this, or onTargetChosen (but not both) will be called, eventually.
+         * <p>Guaranteed that either this, or onTargetChosen (but not both) will be called,
+         * eventually.
          */
-        public void onCancel();
+        void onCancel();
     }
 }

@@ -221,7 +221,7 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   if (url_str)
     url = *url_str;
 
-  std::string host(GURL(url).host());
+  std::string host(GURL(url).GetHost());
   if (host.empty())
     host = "_";
   if (!name || name->empty())

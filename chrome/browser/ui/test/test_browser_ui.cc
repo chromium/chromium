@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/test/test_browser_ui.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_switches.h"
@@ -118,6 +120,14 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
     views::View* view,
     const std::string& screenshot_prefix,
     const std::string& screenshot_name) {
+  return VerifyPixelUi(view, {}, screenshot_prefix, screenshot_name);
+}
+
+ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
+    views::View* view,
+    const ScreenshotOptions& options,
+    const std::string& screenshot_prefix,
+    const std::string& screenshot_name) {
 #ifdef SUPPORTS_PIXEL_TEST
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kVerifyPixels)) {
@@ -133,6 +143,7 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
   // do this unless necessary, since it will close transient UI like menus,
   // which interferes with tests attempting to verify such UI.
   if (auto* const focus_manager = view->GetWidget()->GetFocusManager();
+      options.focus == ScreenshotFocusMode::kClearFocus &&
       focus_manager->GetFocusedView()) {
     focus_manager->ClearFocus();
   }
@@ -145,8 +156,34 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
   ui::DrawWaiterForTest::WaitForCompositingEnded(compositor);
 
   views::ViewSkiaGoldPixelDiff pixel_diff(screenshot_prefix);
-  bool success = pixel_diff.CompareViewScreenshot(screenshot_name, view,
-                                                  GetPixelMatchAlgorithm());
+
+  // Calculate the snapshot bounds in the widget's coordinates.
+  gfx::Rect window_rect = view->GetBoundsInScreen();
+  const views::Widget* widget = view->GetWidget();
+  gfx::Rect bounds_in_screen = widget->GetRootView()->GetBoundsInScreen();
+  gfx::Rect bounds = widget->GetRootView()->bounds();
+  window_rect.Offset(bounds.x() - bounds_in_screen.x(),
+                     bounds.y() - bounds_in_screen.y());
+
+  if (options.region) {
+    const gfx::Rect& region = options.region.value();
+    // Further narrow the rectangle to the targeted region.
+    auto region_rect = window_rect;
+    region_rect.Offset(region.OffsetFromOrigin());
+    region_rect.set_size(region.size());
+    region_rect.Intersect(window_rect);
+    if (region_rect.IsEmpty()) {
+      LOG(ERROR) << "Specified screenshot region (" << region.ToString()
+                 << ") is outside targeted view size ("
+                 << window_rect.size().ToString() << ")";
+      return ui::test::ActionResult::kFailed;
+    }
+    window_rect = region_rect;
+  }
+
+  const bool success = pixel_diff.CompareNativeWindowScreenshot(
+      screenshot_name, widget->GetNativeWindow(), window_rect,
+      GetPixelMatchAlgorithm());
   return success ? ui::test::ActionResult::kSucceeded
                  : ui::test::ActionResult::kFailed;
 #else
@@ -167,7 +204,8 @@ void TestBrowserUi::ShowAndVerifyUi() {
   if (!IsInteractiveUi() &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceDarkMode) &&
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+      ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+          ui::NativeTheme::PreferredColorScheme::kDark) {
     GTEST_SKIP() << "Host is in dark mode; skipping test";
   }
 #endif  // BUILDFLAG(IS_WIN)

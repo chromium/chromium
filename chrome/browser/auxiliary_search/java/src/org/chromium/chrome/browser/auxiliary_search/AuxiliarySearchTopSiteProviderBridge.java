@@ -12,7 +12,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
@@ -44,9 +43,7 @@ public class AuxiliarySearchTopSiteProviderBridge {
      * @param profile The Profile to retrieve the corresponding information.
      */
     public AuxiliarySearchTopSiteProviderBridge(Profile profile) {
-        if ((!ChromeFeatureList.sAndroidAppIntegration.isEnabled()
-                        && !ChromeFeatureList.sAndroidAppIntegrationV2.isEnabled())
-                || profile.isOffTheRecord()) {
+        if (profile.isOffTheRecord()) {
             mNativeBridge = 0;
         } else {
             mNativeBridge = AuxiliarySearchTopSiteProviderBridgeJni.get().init(profile);

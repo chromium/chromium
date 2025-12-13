@@ -13,7 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
-#include "base/memory/safety_checks.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -25,7 +25,6 @@
 #include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_sender.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -45,15 +44,14 @@
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "third_party/jni_zero/jni_zero.h"
 #endif
 
 class GURL;
+class SkBitmap;
 
 namespace network {
 class PermissionsPolicy;
@@ -74,6 +72,7 @@ class MediaPlayerAction;
 
 namespace gfx {
 class Point;
+class Rect;
 class Size;
 }  // namespace gfx
 
@@ -153,6 +152,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // Returns nullptr if the IDs do not correspond to a live RenderFrameHost.
   static RenderFrameHost* FromID(const GlobalRenderFrameHostId& id);
   static RenderFrameHost* FromID(int render_process_id, int render_frame_id);
+  static RenderFrameHost* FromID(ChildProcessId render_process_id,
+                                 int render_frame_id);
 
   // Returns the RenderFrameHost given its global frame token. Returns nullptr
   // if the frame token does not correspond to a live RenderFrameHost.
@@ -160,7 +161,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
       const GlobalRenderFrameHostToken& frame_token);
 
   // Globally allows for injecting JavaScript into the main world. This feature
-  // is present only to support Android WebView, WebLayer, Fuchsia web.Contexts,
+  // is present only to support Android WebView, Fuchsia web.Contexts,
   // and CastOS content shell. It must not be used in other configurations.
   static void AllowInjectingJavaScript();
 
@@ -191,6 +192,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the RenderFrameHost object associated with a Java native pointer.
+  // Note: It is recommended to use jni_zero::FromJniType<RenderFrameHost*>()
+  // instead of this method. This enables the use of @JniType for automatic
+  // conversion in Java.
   static RenderFrameHost* FromJavaRenderFrameHost(
       const base::android::JavaRef<jobject>& jrender_frame_host_android);
 #endif
@@ -835,8 +839,16 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
       int max_length) = 0;
 
   // Generates an intervention report in this frame.
+  //
+  // The report is associated with this frame unless `child_frame` is provided.
+  // If `child_frame` is provided, `message` may be modified to include
+  // additional information about `child_frame`.
+  //
+  // Prerequisite: If `child_frame` is provided, it must be a direct child frame
+  // of this frame.
   virtual void SendInterventionReport(const std::string& id,
-                                      const std::string& message) = 0;
+                                      const std::string& message,
+                                      RenderFrameHost* child_frame) = 0;
 
   // Returns the WebUI object associated wit this RenderFrameHost or nullptr
   // otherwise.
@@ -856,6 +868,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the Java object of this instance.
+  // Note: It is recommended to use jni_zero::ToJniType() instead. This enables
+  // the use of @JniType for automatic conversion in Java.
   virtual jni_zero::ScopedJavaLocalRef<jobject> GetJavaRenderFrameHost() = 0;
 
   // Returns an InterfaceProvider for Java-implemented interfaces that are
@@ -946,9 +960,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // embedding frame.
   virtual bool IsSandboxed(network::mojom::WebSandboxFlags flags) = 0;
 
-  // Calls |FlushForTesting()| on Network Service and FrameNavigationControl
-  // related interfaces to make sure all in-flight mojo messages have been
-  // received by the other end. For test use only.
+  // Calls |FlushForTesting()| on Network Service related interfaces to make
+  // sure all in-flight mojo messages have been received by the other end. For
+  // test use only.
   //
   // It is usually an error to call this method when the frame doesn't have any
   // NetworkService connection.  OTOH, tests that can't easily tell when this
@@ -1008,7 +1022,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // Returns true if this frame has fired DOMContentLoaded.
   virtual bool IsDOMContentLoaded() = 0;
 
-  // Update whether the frame is considered an ad frame by Ad Tagging.
+  // Update or retrieve whether the frame is considered an ad frame by Ad
+  // Tagging.
   //
   // Note: This ad status is currently maintained and updated *outside* content.
   // This is used to ensure the render frame proxies are in sync (since they
@@ -1016,6 +1031,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // this somewhat (maybe //content would be responsible for maintaining the
   // state, with some content client method used to update it).
   virtual void UpdateIsAdFrame(bool is_ad_frame) = 0;
+  virtual bool IsAdFrame() const = 0;
 
   // Tells the host that this is part of setting up a WebXR DOM Overlay. This
   // starts a short timer that permits entering fullscreen mode, similar to a
@@ -1164,12 +1180,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   virtual const network::CrossOriginEmbedderPolicy&
   GetCrossOriginEmbedderPolicy() const = 0;
 
-  // Returns true if this RenderFrameHost is in a partitioned popin and is not
-  // within a fenced frame (as this prevents the popin from impacting
-  // partitioning).
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  virtual bool ShouldPartitionAsPopin() const = 0;
-
   // Returns true if this RenderFrameHost has access to cookies.
   virtual bool IsFullCookieAccessAllowed() = 0;
 
@@ -1187,5 +1197,24 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
 };
 
 }  // namespace content
+
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+
+// @JniType conversion function.
+template <>
+inline content::RenderFrameHost* FromJniType<content::RenderFrameHost*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_obj) {
+  return content::RenderFrameHost::FromJavaRenderFrameHost(j_obj);
+}
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
+                                             content::RenderFrameHost* obj) {
+  return obj->GetJavaRenderFrameHost();
+}
+
+}  // namespace jni_zero
+#endif
 
 #endif  // CONTENT_PUBLIC_BROWSER_RENDER_FRAME_HOST_H_

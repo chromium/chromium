@@ -144,21 +144,17 @@ void EventRewriterControllerImpl::Initialize(
     AddEventRewriter(std::move(filter_keys_event_rewriter));
   }
   AddEventRewriter(std::move(keyboard_device_id_event_rewriter));
-  if (features::IsKeyboardRewriterFixEnabled()) {
-    auto keyboard_modifier_event_rewriter =
-        std::make_unique<ui::KeyboardModifierEventRewriter>(
-            std::make_unique<KeyboardModifierEventRewriterDelegateImpl>(
-                event_rewriter_delegate),
-            ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
-            Shell::Get()->keyboard_capability(),
-            ash::input_method::InputMethodManager::Get()->GetImeKeyboard());
-    AddEventRewriter(std::move(keyboard_modifier_event_rewriter));
-  }
+  auto keyboard_modifier_event_rewriter =
+      std::make_unique<ui::KeyboardModifierEventRewriter>(
+          std::make_unique<KeyboardModifierEventRewriterDelegateImpl>(
+              event_rewriter_delegate),
+          ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
+          Shell::Get()->keyboard_capability(),
+          ash::input_method::InputMethodManager::Get()->GetImeKeyboard());
+  AddEventRewriter(std::move(keyboard_modifier_event_rewriter));
   // CapsLock event rewriter must come after modifier rewriting as it can effect
-  // its result. This means with the rewritter fix enabled, it must come before
-  // EventRewriterAsh, but with the fix disabled, it must come after.
-  if (features::IsKeyboardRewriterFixEnabled() &&
-      features::IsModifierSplitEnabled()) {
+  // its result.
+  if (features::IsModifierSplitEnabled()) {
     AddEventRewriter(std::make_unique<ui::CapsLockEventRewriter>(
         ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
         Shell::Get()->keyboard_capability(),
@@ -174,13 +170,6 @@ void EventRewriterControllerImpl::Initialize(
   AddEventRewriter(std::move(accessibility_event_rewriter));
   AddEventRewriter(std::move(keyboard_driven_event_rewriter));
   AddEventRewriter(std::move(event_rewriter_ash));
-  if (!features::IsKeyboardRewriterFixEnabled() &&
-      features::IsModifierSplitEnabled()) {
-    AddEventRewriter(std::make_unique<ui::CapsLockEventRewriter>(
-        ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
-        Shell::Get()->keyboard_capability(),
-        ash::input_method::InputMethodManager::Get()->GetImeKeyboard()));
-  }
   if (features::IsModifierSplitEnabled()) {
     AddEventRewriter(std::make_unique<ui::DiscardKeyEventRewriter>());
   }
@@ -226,6 +215,19 @@ void EventRewriterControllerImpl::CaptureAllKeysForSpokenFeedback(
 
 void EventRewriterControllerImpl::SetSendMouseEvents(bool value) {
   accessibility_event_rewriter_->set_send_mouse_events(value);
+}
+
+void EventRewriterControllerImpl::ProcessPendingSpokenFeedbackEvent(
+    unsigned int id,
+    bool propagate) {
+  accessibility_event_rewriter_->ProcessPendingSpokenFeedbackEvent(id,
+                                                                   propagate);
+}
+
+void EventRewriterControllerImpl::SetSpokenFeedbackMv3KeyHandlingEnabled(
+    bool enabled) {
+  accessibility_event_rewriter_->SetSpokenFeedbackMv3KeyHandlingEnabled(
+      enabled);
 }
 
 void EventRewriterControllerImpl::SetAltDownRemappingEnabled(bool enabled) {

@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "components/subresource_filter/tools/ruleset_converter/ruleset_converter.h"
 
 namespace {
@@ -56,7 +52,7 @@ const char kHelpMsg[] = R"(
 )";
 
 void PrintHelp() {
-  printf("%s\n\n", kHelpMsg);
+  UNSAFE_TODO(printf("%s\n\n", kHelpMsg));
 }
 
 }  // namespace

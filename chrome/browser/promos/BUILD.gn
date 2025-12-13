@@ -5,10 +5,11 @@
 source_set("utils") {
   sources = [
     "promos_pref_names.h",
-    "promos_types.h",
     "promos_utils.cc",
     "promos_utils.h",
   ]
+
+  public_deps = [ "//components/desktop_to_mobile_promos" ]
 
   deps = [
     "//base",

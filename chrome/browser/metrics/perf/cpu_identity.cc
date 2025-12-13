@@ -59,17 +59,20 @@ const CpuUarchTableEntry kCpuUarchTable[] = {
     {"06_5C", "Goldmont"},
     {"06_5E", "Skylake"},
     {"06_5F", "Goldmont"},    // Denverton
+    {"06_66", "CannonLake"},
     {"06_7A", "GoldmontPlus"},
     {"06_7E", "IceLake"},
     {"06_8C", "Tigerlake"},
     {"06_8D", "Tigerlake"},
     {"06_8E", "Kabylake"},
+    {"06_96", "Tremont"},     // Elkhart Lake
     {"06_97", "AlderLake"},
     {"06_9A", "AlderLake"},
     {"06_9C", "Tremont"},     // Jasperlake
     {"06_9E", "Kabylake"},
     {"06_A5", "CometLake"},
     {"06_A6", "CometLake"},
+    {"06_A7", "RocketLake"},
     {"06_B7", "RaptorLake"},
     {"06_BA", "RaptorLake"},
     {"06_BE", "Gracemont"},   // Alderlake-N
@@ -83,10 +86,12 @@ const CpuUarchTableEntry kCpuUarchTable[] = {
     {"10_04", "K10"},
     {"10_05", "K10"},
     {"10_06", "K10"},
+    {"10_0A", "K10"},
     {"12_01", "Llano"},
     {"14_01", "Bobcat"},
     {"14_02", "Bobcat"},
     {"15_01", "Bulldozer"},
+    {"15_02", "Piledriver"},  // AMD Abu Dhabi / Warsaw
     {"15_10", "Piledriver"},  // AMD Trinity
     {"15_13", "Piledriver"},  // AMD Richland
     {"15_30", "Steamroller"}, // AMD Kaveri
@@ -105,7 +110,11 @@ const CpuUarchTableEntry kCpuUarchTable[] = {
     {"17_68", "Zen2"},        // AMD Lucienne
     {"17_71", "Zen2"},        // AMD Matisse
     {"17_A0", "Zen2"},        // AMD Mendocino
+    {"19_21", "Zen3"},        // AMD Vermeer
+    {"19_44", "Zen3+"},       // AMD Rembrandt
     {"19_50", "Zen3"},        // AMD Cezanne
+    {"19_61", "Zen4"},        // AMD Dragon Range
+    {"19_74", "Zen4"},        // AMD Phoenix
     // clang-format on
 };
 

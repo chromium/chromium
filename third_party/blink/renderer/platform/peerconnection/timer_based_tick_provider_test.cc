@@ -14,7 +14,6 @@ namespace blink {
 namespace {
 
 using ::testing::InSequence;
-using ::testing::Invoke;
 
 class TimerBasedTickProviderTest : public ::testing::Test {
  public:
@@ -63,9 +62,9 @@ TEST_F(TimerBasedTickProviderTest, InvokesRequestedCallbackOnTick) {
   auto start_time = base::TimeTicks::Now();
   auto expected_run_time = SnapToNextTick(start_time);
   EXPECT_EQ(expected_run_time, start_time);
-  EXPECT_CALL(callback, Run).WillOnce(Invoke([&] {
+  EXPECT_CALL(callback, Run).WillOnce([&] {
     EXPECT_EQ(base::TimeTicks::Now(), expected_run_time);
-  }));
+  });
   tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardUntilNoTasksRemain();
 }
@@ -76,9 +75,9 @@ TEST_F(TimerBasedTickProviderTest, InvokesRequestedCallbackAfterTickElapsed) {
   auto start_time = base::TimeTicks::Now();
   auto expected_run_time = SnapToNextTick(start_time);
   EXPECT_GT(expected_run_time, start_time);
-  EXPECT_CALL(callback, Run).WillOnce(Invoke([&] {
+  EXPECT_CALL(callback, Run).WillOnce([&] {
     EXPECT_EQ(base::TimeTicks::Now(), expected_run_time);
-  }));
+  });
   tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardUntilNoTasksRemain();
 }
@@ -87,9 +86,9 @@ TEST_F(TimerBasedTickProviderTest, InvokesTwoCallbacksOnSameTick) {
   base::MockOnceCallback<void()> callback;
   EnsureTickJustElapsed();
   auto expected_run_time = SnapToNextTick(base::TimeTicks::Now());
-  EXPECT_CALL(callback, Run).Times(2).WillRepeatedly(Invoke([&] {
+  EXPECT_CALL(callback, Run).Times(2).WillRepeatedly([&] {
     EXPECT_EQ(base::TimeTicks::Now(), expected_run_time);
-  }));
+  });
   tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardBy(kTickPeriod / 2);
   tick_provider()->RequestCallOnNextTick(callback.Get());
@@ -101,12 +100,12 @@ TEST_F(TimerBasedTickProviderTest,
   base::MockOnceCallback<void()> callback;
   auto expected_run_time = SnapToNextTick(base::TimeTicks::Now());
   bool first_callback_invoke = true;
-  EXPECT_CALL(callback, Run).Times(2).WillRepeatedly(Invoke([&] {
+  EXPECT_CALL(callback, Run).Times(2).WillRepeatedly([&] {
     if (first_callback_invoke)
       tick_provider()->RequestCallOnNextTick(callback.Get());
     first_callback_invoke = false;
     EXPECT_EQ(base::TimeTicks::Now(), expected_run_time);
-  }));
+  });
   tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardUntilNoTasksRemain();
 }
@@ -118,13 +117,13 @@ TEST_F(TimerBasedTickProviderTest,
       SnapToNextTick(base::TimeTicks::Now()) + base::Microseconds(1));
 
   InSequence s;
-  EXPECT_CALL(callback, Run).WillOnce(Invoke([&] {
+  EXPECT_CALL(callback, Run).WillOnce([&] {
     task_environment_.AdvanceClock(base::Microseconds(1));
     tick_provider()->RequestCallOnNextTick(callback.Get());
-  }));
-  EXPECT_CALL(callback, Run).WillOnce(Invoke(([&] {
+  });
+  EXPECT_CALL(callback, Run).WillOnce(([&] {
     EXPECT_EQ(base::TimeTicks::Now(), expected_run_time);
-  })));
+  }));
   tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardUntilNoTasksRemain();
 }
@@ -142,12 +141,12 @@ TEST_F(TimerBasedTickProviderTest, MultipleTickProvidersAreAligned) {
   tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardBy(base::Microseconds(1));
   tick_provider2->RequestCallOnNextTick(callback.Get());
-  EXPECT_CALL(callback, Run).Times(2).WillRepeatedly(Invoke([&] {
+  EXPECT_CALL(callback, Run).Times(2).WillRepeatedly([&] {
     if (!callback_time.has_value())
       callback_time = base::TimeTicks::Now();
     else
       EXPECT_EQ(*callback_time, base::TimeTicks::Now());
-  }));
+  });
   task_environment_.FastForwardUntilNoTasksRemain();
 }
 

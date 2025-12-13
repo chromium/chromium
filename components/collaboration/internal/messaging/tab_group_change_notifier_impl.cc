@@ -490,14 +490,12 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
 
   std::vector<tab_groups::SavedTabGroupTab> removed_tabs =
       GetRemovedTabs(before, after, source, identity_manager_);
-  if (removed_tabs.size() > 0) {
+  if (!removed_tabs.empty()) {
     for (auto& observer : observers_) {
       for (auto& tab : removed_tabs) {
-        bool is_selected = tab.local_tab_id()
-                               ? base::Contains(last_selected_tabs_,
-                                                tab.local_tab_id().value())
-                               : false;
-
+        bool is_selected =
+            tab.local_tab_id().has_value() &&
+            base::Contains(last_selected_tabs_, tab.local_tab_id().value());
         observer.OnTabRemoved(tab, source, is_selected);
       }
     }
@@ -506,14 +504,12 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
   std::vector<
       std::pair<tab_groups::SavedTabGroupTab, tab_groups::SavedTabGroupTab>>
       updated_tab_pairs = GetUpdatedTabs(before, after);
-  if (updated_tab_pairs.size() > 0) {
+  if (!updated_tab_pairs.empty()) {
     for (auto& observer : observers_) {
       for (auto& [before_tab, after_tab] : updated_tab_pairs) {
-        bool is_selected =
-            after_tab.local_tab_id()
-                ? base::Contains(last_selected_tabs_,
-                                 after_tab.local_tab_id().value())
-                : false;
+        bool is_selected = after_tab.local_tab_id().has_value() &&
+                           base::Contains(last_selected_tabs_,
+                                          after_tab.local_tab_id().value());
         observer.OnTabUpdated(before_tab, after_tab, source, is_selected);
       }
     }

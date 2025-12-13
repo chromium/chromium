@@ -16,7 +16,7 @@
 #include "chromeos/ash/services/keymanagement/public/mojom/cert_store_types.mojom.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/keypair.h"
 #include "net/cert/scoped_nss_types.h"
 
 class Profile;
@@ -32,7 +32,7 @@ namespace arc {
 // This class is basically a value holder associating metadata relevant to an
 // NSS CERTCertificate.
 struct CertDescription {
-  CertDescription(crypto::RSAPrivateKey* placeholder_key,
+  CertDescription(crypto::keypair::PrivateKey placeholder_key,
                   CERTCertificate* nss_cert,
                   keymanagement::mojom::ChapsSlot slot,
                   std::string label,
@@ -44,7 +44,7 @@ struct CertDescription {
   ~CertDescription();
 
   // The dummy key to be installed in ARC as a placeholder for |nss_cert|.
-  std::unique_ptr<crypto::RSAPrivateKey> placeholder_key;
+  crypto::keypair::PrivateKey placeholder_key;
   // The NSS certificate that corresponds to this object.
   net::ScopedCERTCertificate nss_cert;
   // The chaps slot where this key is stored.

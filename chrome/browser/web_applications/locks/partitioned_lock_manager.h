@@ -11,7 +11,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -20,35 +19,17 @@
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/locks/partitioned_lock.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_holder.h"
 #include "chrome/browser/web_applications/locks/partitioned_lock_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace base {
 class Value;
 }
 
 namespace web_app {
-
-// Used to receive and hold locks from a PartitionedLockManager. This struct
-// enables the PartitionedLock objects to always live in the destination of the
-// caller's choosing (as opposed to having the locks be an argument in the
-// callback, where they could be owned by the task scheduler).
-//
-// This class must be used and destructed on the same sequence as the
-// PartitionedLockManager.
-struct PartitionedLockHolder : public base::SupportsUserData {
-  PartitionedLockHolder();
-  PartitionedLockHolder(const PartitionedLockHolder&) = delete;
-  PartitionedLockHolder& operator=(const PartitionedLockHolder&) = delete;
-  ~PartitionedLockHolder() override;
-
-  base::WeakPtr<PartitionedLockHolder> AsWeakPtr() {
-    return weak_factory.GetWeakPtr();
-  }
-
-  std::vector<PartitionedLock> locks;
-  base::WeakPtrFactory<PartitionedLockHolder> weak_factory{this};
-};
 
 // Holds locks of the scopes system. Granted locks are represented by the
 // |PartitionedLock| class.
@@ -63,6 +44,7 @@ struct PartitionedLockHolder : public base::SupportsUserData {
 class PartitionedLockManager {
  public:
   using LocksAcquiredCallback = base::OnceClosure;
+  using PassKey = base::PassKey<PartitionedLockManager>;
 
   // Shared locks can share access to a lock id, while exclusive locks
   // require that they are the only lock for their lock id.
@@ -92,10 +74,26 @@ class PartitionedLockManager {
   // granted. Locks are requested and granted in order according to the sorting
   // order of `lock_id` in the request, where requesting the next lock does not
   // occur until the previous lock is granted.
+  //
+  // Note: this will CHECK-fail if any requested locks ids are 'less than',
+  // locks already held in the holder. This is to prevent circular dependency
+  // deadlocks.
   void AcquireLocks(base::flat_set<PartitionedLockRequest> lock_requests,
                     PartitionedLockHolder& locks_holder,
                     LocksAcquiredCallback callback,
                     const base::Location& location = FROM_HERE);
+
+  // Upgrades the given lock to exclusive access. This will CHECK-fail if:
+  // - The lock is not held.
+  // - The lock id is not in the holder
+  //
+  // The `upgrade_complete` callback is guaranteed to be called asynchronously.
+  // If the lock is already exclusively held, then this is a NOOP and the
+  // callback will be called.
+  void UpgradeToExclusive(PartitionedLockHolder& locks_holder,
+                          const PartitionedLockId& lock_id,
+                          base::OnceClosure upgrade_complete,
+                          const base::Location& location);
 
   enum class TestLockResult { kLocked, kFree };
   // Tests to see if the given lock request can be acquired.
@@ -159,11 +157,11 @@ class PartitionedLockManager {
     }
 
     int acquired_count = 0;
-    base::flat_set<base::Location> request_locations;
+    absl::flat_hash_map<base::Location, int> request_locations;
     LockType lock_mode = LockType::kShared;
     std::list<LockRequest> queue;
   };
-  using LocksMap = base::flat_map<PartitionedLockId, Lock>;
+  using LocksMap = absl::flat_hash_map<PartitionedLockId, Lock>;
 
   // This must not add or remove from the `locks_` storage.
   void AcquireNextLockOrPostCompletion(

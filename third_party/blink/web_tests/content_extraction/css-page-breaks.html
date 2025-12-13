@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="./resources/consistent-rendering.css" rel="stylesheet" />
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="./resources/content-extraction-test-helpers.js"></script>
+  <script src="../resources/ahem.js"></script>
+
+  <script>
+      function runTest() {
+        finishTest(dumpContentNodeTree(document));
+      }
+  </script>
+</head>
+
+<body onload="runTest()">
+  <!--
+  Expected fragmentation:
+  Page 1: [ABC DEF GHI]
+  Page 2: [JKL MNO PQR]
+  -->
+  <p style="width: 120px;">ABC DEF GHI JKL MNO PQR</p>
+</body>
+</html>

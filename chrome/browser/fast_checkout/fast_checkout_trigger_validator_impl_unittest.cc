@@ -37,7 +37,7 @@ class MockAutofillClient : public autofill::TestContentAutofillClient {
   using autofill::TestContentAutofillClient::TestContentAutofillClient;
   MOCK_METHOD(autofill::LogManager*, GetCurrentLogManager, (), (override));
   MOCK_METHOD(bool, IsContextSecure, (), (const override));
-  MOCK_METHOD(GeoIpCountryCode,
+  MOCK_METHOD(autofill::GeoIpCountryCode,
               GetVariationConfigCountryCode,
               (),
               (const override));
@@ -102,7 +102,7 @@ class FastCheckoutTriggerValidatorTest
         .WillByDefault(Return(&pdm()));
     ON_CALL(*autofill_client(), IsContextSecure).WillByDefault(Return(true));
     ON_CALL(*autofill_client(), GetVariationConfigCountryCode)
-        .WillByDefault(Return(GeoIpCountryCode("US")));
+        .WillByDefault(Return(autofill::GeoIpCountryCode("US")));
 
     pdm().test_address_data_manager().SetAutofillProfileEnabled(true);
     pdm().test_payments_data_manager().SetAutofillPaymentMethodsEnabled(true);

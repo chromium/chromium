@@ -1,0 +1,4 @@
+Tests oopif target info properties.
+one child frame in the tree: true
+oopif parentFrameId matches: true
+

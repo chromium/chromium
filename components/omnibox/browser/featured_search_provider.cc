@@ -13,11 +13,13 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -30,6 +32,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -183,11 +186,12 @@ bool IsEnterpriseSearchAggregatorTemplateURLEnabled(const TemplateURL& turl,
 }  // namespace
 
 FeaturedSearchProvider::FeaturedSearchProvider(
-    AutocompleteProviderClient* client)
+    AutocompleteProviderClient* client,
+    bool show_iph_matches)
     : AutocompleteProvider(AutocompleteProvider::TYPE_FEATURED_SEARCH),
-      client_(client) {
-  template_url_service_ = client->GetTemplateURLService();
-}
+      client_(client),
+      template_url_service_(client->GetTemplateURLService()),
+      show_iph_matches_(show_iph_matches) {}
 
 void FeaturedSearchProvider::Start(const AutocompleteInput& input,
                                    bool minimal_changes) {
@@ -203,26 +207,28 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
       keyword_turl && keyword_turl->starter_pack_id() ==
                           template_url_starter_pack_data::kHistory;
 
-  if (is_history_scope) {
-    if (ShouldShowHistoryEmbeddingsDisclaimerIphMatch()) {
-      AddHistoryEmbeddingsDisclaimerIphMatch();
-    } else if (ShouldShowHistoryEmbeddingsSettingsPromoIphMatch()) {
-      AddHistoryEmbeddingsSettingsPromoIphMatch();
+  if (show_iph_matches_) {
+    if (is_history_scope) {
+      if (ShouldShowHistoryEmbeddingsDisclaimerIphMatch()) {
+        AddHistoryEmbeddingsDisclaimerIphMatch();
+      } else if (ShouldShowHistoryEmbeddingsSettingsPromoIphMatch()) {
+        AddHistoryEmbeddingsSettingsPromoIphMatch();
+      }
+      return;
     }
-    return;
-  }
 
-  if (input.IsZeroSuggest()) {
-    if (ShouldShowEnterpriseSearchAggregatorIPHMatch()) {
-      AddEnterpriseSearchAggregatorIPHMatch();
-    } else if (ShouldShowFeaturedEnterpriseSiteSearchIPHMatch()) {
-      AddFeaturedEnterpriseSiteSearchIPHMatch();
-    } else if (ShouldShowGeminiIPHMatch()) {
-      AddGeminiIPHMatch();
-    } else if (ShouldShowHistoryScopePromoIphMatch()) {
-      AddHistoryScopePromoIphMatch();
-    } else if (ShouldShowHistoryEmbeddingsScopePromoIphMatch()) {
-      AddHistoryEmbeddingsScopePromoIphMatch();
+    if (input.IsZeroSuggest()) {
+      if (ShouldShowEnterpriseSearchAggregatorIPHMatch()) {
+        AddEnterpriseSearchAggregatorIPHMatch();
+      } else if (ShouldShowFeaturedEnterpriseSiteSearchIPHMatch()) {
+        AddFeaturedEnterpriseSiteSearchIPHMatch();
+      } else if (ShouldShowGeminiIPHMatch()) {
+        AddGeminiIPHMatch();
+      } else if (ShouldShowHistoryScopePromoIphMatch()) {
+        AddHistoryScopePromoIphMatch();
+      } else if (ShouldShowHistoryEmbeddingsScopePromoIphMatch()) {
+        AddHistoryEmbeddingsScopePromoIphMatch();
+      }
     }
   }
 
@@ -289,27 +295,34 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
   for (TemplateURL* turl : turls) {
     if (turl->starter_pack_id() > 0 &&
         turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
-      // Don't add the expanded set of starter pack engines unless the feature
-      // is enabled.
-      if ((turl->starter_pack_id() == template_url_starter_pack_data::kGemini &&
-           !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
-          (turl->starter_pack_id() == template_url_starter_pack_data::kPage &&
-           !omnibox_feature_configs::ContextualSearch::Get()
-                .starter_pack_page)) {
+      // Skip @gemini if feature disabled.
+      if (turl->starter_pack_id() == template_url_starter_pack_data::kGemini &&
+          !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) {
+        continue;
+      }
+      // Skip @page if feature disabled.
+      if (turl->starter_pack_id() == template_url_starter_pack_data::kPage &&
+          !omnibox_feature_configs::ContextualSearch::Get().starter_pack_page) {
+        continue;
+      }
+      // Skip @aimode if feature disabled.
+      if (turl->starter_pack_id() == template_url_starter_pack_data::kAiMode &&
+          !OmniboxFieldTrial::IsAimStarterPackEnabled(
+              client_->GetAimEligibilityService())) {
         continue;
       }
       // The history starter pack engine is disabled in incognito mode.
-      if (client_->IsOffTheRecord() &&
-          turl->starter_pack_id() == template_url_starter_pack_data::kHistory) {
+      if (turl->starter_pack_id() == template_url_starter_pack_data::kHistory &&
+          client_->IsOffTheRecord()) {
         continue;
       }
       AddStarterPackMatch(*turl, input);
-      // Don't add enterprise search aggregator engines in incognito mode.
     } else if (turl->featured_by_policy() &&
                IsEnterpriseSearchAggregatorTemplateURLEnabled(
                    *turl, client_->IsOffTheRecord()) &&
                turl->is_active() == TemplateURLData::ActiveStatus::kTrue &&
                enterprise_count < kMaxEnterpriseSuggestions) {
+      // Don't add enterprise search aggregator engines in incognito mode.
       AddFeaturedEnterpriseSearchMatch(*turl, input);
       enterprise_count++;
     }
@@ -360,6 +373,7 @@ void FeaturedSearchProvider::AddIPHMatch(IphType iph_type,
                                          const GURL& iph_link_url,
                                          int relevance,
                                          bool deletable) {
+  CHECK(show_iph_matches_);
   AutocompleteMatch match(this, relevance, deletable,
                           AutocompleteMatchType::NULL_RESULT_MESSAGE);
 
@@ -527,7 +541,7 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSiteSearchIPHMatch() {
   for (const TemplateURL* turl :
        template_url_service_->GetFeaturedEnterpriseSiteSearchEngines()) {
     if (turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
-      sites.push_back(url_formatter::StripWWW(GURL(turl->url()).host()));
+      sites.push_back(url_formatter::StripWWW(GURL(turl->url()).GetHost()));
     }
   }
   std::ranges::sort(sites);

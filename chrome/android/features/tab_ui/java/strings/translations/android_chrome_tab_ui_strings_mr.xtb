@@ -1,17 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
-<translation id="1036348656032585052">बंद करा</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> आठवड्यापूर्वी तयार केला आहे}other{<ph name="NUM_WEEKS_MANY" /> आठवड्यांपूर्वी तयार केला आहे}}</translation>
 <translation id="1063300264396686489">इतर डिव्हाइसवरून टॅब गट आपोआप उघडा</translation>
 <translation id="1075622780330595106">तुमच्या <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> वर्षापूर्वी तयार केला आहे}other{<ph name="NUM_YEARS_MANY" /> वर्षांपूर्वी तयार केला आहे}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{इनॅक्टिव्ह टॅब आणि गट १ महिन्यानंतर बंद केले जातील}other{इनॅक्टिव्ह टॅब आणि गट <ph name="MONTH_COUNT_MANY" /> महिन्यांनंतर बंद केले जातील}}</translation>
 <translation id="1173894706177603556">नाव बदला</translation>
-<translation id="1197088940767939838">नारिंगी</translation>
+<translation id="1203747227183434426">मीडिया रेकॉर्ड करत आहे</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> <ph name="TAB_COUNT2" /> टॅबसह उघडा}other{<ph name="TITLE_OF_GROUP" /> <ph name="TAB_COUNT2" /> टॅबसह उघडा}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> टॅब गटाशी संबंधित पर्याय</translation>
 <translation id="1300188005269437765">टॅब आणि टॅब गट आपोआप इनॅक्टिव्ह विभागामध्ये कधी हलवले जावेत हे निवडा.</translation>
+<translation id="1321004960118052490">तुमचे इनॅक्टिव्ह आयटम जमा होणार नाहीत</translation>
 <translation id="1329584516321524826">नुकतेच अपडेट केले</translation>
 <translation id="1340839264183302272">गट सोडा</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग, <ph name="CARD_LABEL" /> लेबल असलेल्या, <ph name="TITLE_OF_GROUP" /> या शेअर केलेल्या टॅब गटाचा विस्तार करा.}other{<ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग, <ph name="CARD_LABEL" /> लेबल असलेल्या, <ph name="TITLE_OF_GROUP" /> या शेअर केलेल्या टॅब गटाचा विस्तार करा.}}</translation>
@@ -20,23 +20,25 @@
 <translation id="1499635324672558517">सर्व गुप्त टॅब बंद करायचे आहेत का?</translation>
 <translation id="1501480321619201731">गट हटवा</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{इनॅक्टिव्ह असलेला <ph name="TABS_COUNT_ONE" /> आयटम}other{इनॅक्टिव्ह असलेले <ph name="TABS_COUNT_MANY" /> आयटम}}</translation>
-<translation id="1555130319947370107">निळा</translation>
-<translation id="161042844686301425">निळसर</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> टॅब गटबद्ध केले आहेत</translation>
 <translation id="1657719826150349398">टॅब खाली हलवा</translation>
+<translation id="1670942869417022142">म्यूट केलेला ऑडिओ</translation>
 <translation id="1697284962337958118">यामध्ये जोडा</translation>
 <translation id="1713541401465507417">सर्व टॅब आणि गट बंद करा</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> हा टॅब गट आता उपलब्ध नाही}other{<ph name="TAB_GROUPS_COUNT_MANY" /> हे टॅब गट आता उपलब्ध नाहीत}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> टॅब गटबद्ध केला आहे</translation>
+<translation id="1844381456014878100">७ दिवस इनॅक्टिव्ह राहिल्यानंतर</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
 <translation id="1909810060368225529">नोटिस: शेअर केलेल्या या टॅब गट मधील बदल प्रत्येकासाठी दृश्यमान आहेत. सर्वजण तुमच्या शेअर केलेल्या टॅब गटांमध्ये बदल करू शकतात</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{टॅब पिन करा}other{टॅब पिन करा}}</translation>
 <translation id="1982637982196732906">इनॅक्टिव्ह विभागामध्ये हलवा</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब बुकमार्क करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब बुकमार्क करा}}</translation>
 <translation id="2055057176188061528">टॅब गट निवडा किंवा नवीन टॅब गट तयार करा</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{तुम्ही <ph name="AUTO_DELETE_DELAY_ONE" /> महिन्यामध्ये न वापरलेले इनॅक्टिव्ह विभागामधील आयटम Chrome आपोआप बंद करते. तुम्ही आताच किंवा कधीही सेटिंग्ज मध्ये हे बंद करू शकता.}other{तुम्ही <ph name="AUTO_DELETE_DELAY_MANY" /> महिन्यांमध्ये न वापरलेले इनॅक्टिव्ह विभागामधील आयटम Chrome आपोआप बंद करते. तुम्ही आताच किंवा कधीही सेटिंग्ज मध्ये हे बंद करू शकता.}}</translation>
+<translation id="2074527029802029717">टॅब अनपिन करा</translation>
 <translation id="2118649612461486615">स्टोअरची माहिती</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{तुमचे बंद केलेले टॅब आणि गट हे अलीकडील टॅब या विभागामधून व टॅब गट या विभागामधून पुन्हा उघडले जाऊ शकतात. तुमचा गुप्त टॅब उपलब्ध नसेल.}other{तुमचे बंद केलेले टॅब आणि गट हे अलीकडील टॅब या विभागामधून व टॅब गट या विभागामधून पुन्हा उघडले जाऊ शकतात. तुमचे # गुप्त टॅब उपलब्ध नसतील.}}</translation>
+<translation id="2153899164605463849">{TAB_COUNT,plural, =1{साइट अनम्यूट करा}other{साइट अनम्यूट करा}}</translation>
 <translation id="2162620598375156287">आता <ph name="SOURCE_WEBSITE" /> वर <ph name="CURRENT_PRICE" /> मध्ये आहे</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{टॅब गटामधून काढून टाका}other{टॅब गटामधून काढून टाका}}</translation>
 <translation id="2271452184061378400">तुमचे टॅब गट इथे सेव्ह केलेले आहेत</translation>
@@ -61,7 +63,10 @@
 <translation id="2801787514987684416">स्टोअरची माहिती पाहायची आहे का?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> टॅब बंद केला}other{<ph name="MANY_CLOSED" /> टॅब बंद केले}}</translation>
 <translation id="2894757982205307093">गटामधील नवीन टॅब</translation>
+<translation id="2918484639460781603">सेटिंग्ज वर जा</translation>
 <translation id="2928243913527329289">Google | या स्टोअरबद्दल</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> निवडला आहे}other{<ph name="ITEMS_COUNT_MANY" /> निवडले आहेत}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{टॅब पिन करा}other{टॅब पिन करा}}</translation>
 <translation id="3008554597174452548">उत्पादनाचा माग ठेवणे थांबवा</translation>
 <translation id="3026391124054406831">तुमचे टॅब व्यवस्थापित करण्यासाठी गट तयार करा.</translation>
 <translation id="3051031624272448591">तुम्ही कधीही ते इतिहासामध्ये पुन्हा मिळवू शकता</translation>
@@ -78,20 +83,24 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{आयटम बंद करा}other{आयटम बंद करा}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">शेअर शीट पूर्वावलोकनाची थंबनेल</translation>
+<translation id="3776329373944672717">टॅब गटाचे शीर्षक <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{टॅब अनपिन करा}other{टॅब अनपिन करा}}</translation>
 <translation id="3940195383040445971">टॅबवर किमती ट्रॅक करा</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> नवीन टॅब, <ph name="ANY_CLOSED" /> बंद केला आहे}other{<ph name="MANY_ADDED" /> नवीन टॅब, <ph name="ANY_CLOSED" /> बंद केले आहेत}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{गट टॅब}other{गट टॅब}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब अनपिन करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब अनपिन करा}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> दिवसापूर्वी तयार केला आहे}other{<ph name="NUM_DAYS_MANY" /> दिवसांपूर्वी तयार केला आहे}}</translation>
 <translation id="4076226664360336092">टॅब गट सूची, पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> टॅब संबंधित वाटतात. त्यांचा गट बनवायचा का?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> गट <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}other{<ph name="TITLE_OF_GROUP" /> गट <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}}</translation>
-<translation id="4159784952369912983">जांभळा</translation>
 <translation id="4203448675570432781">टॅब ऑटोमॅटिक-डिलीट करा याबद्दलच्या बदलांची सूचना बंद केली आहे.</translation>
 <translation id="427987768447457592">नवीन टॅब गट</translation>
 <translation id="4371591986692297148">इनॅक्टिव्ह आहे</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{आयटम रिस्टोअर करा}other{आयटम रिस्टोअर करा}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> दिवसापूर्वी अपडेट केला आहे}other{<ph name="NUM_DAYS_MANY" /> दिवसांपूर्वी अपडेट केला आहे}}</translation>
+<translation id="4496868141611329150">टॅब गट डावीकडे हलवा</translation>
+<translation id="4653140634010630594">{TAB_COUNT,plural, =1{साइट म्यूट करा}other{साइट म्यूट करा}}</translation>
 <translation id="4686942373615810936">आता तयार केला आहे</translation>
 <translation id="4783638485675352219">ऑपरेटिंग सिस्टीमसह या डिव्हाइसमधील उघड्या टॅबची शीर्षके आणि URLs शेअर करा</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> परीक्षण)}other{(<ph name="REVIEWS_COUNT_MANY" /> परीक्षणे)}}</translation>
@@ -103,17 +112,19 @@
 <translation id="4871719318659334896">गट बंद करा</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब आणि <ph name="COLOR_NAME" /> रंग असलेला <ph name="TITLE_OF_GROUP" /> हा टॅब गट रिस्टोअर करा व उघडा.}other{<ph name="TABS_COUNT_MANY" /> टॅब आणि <ph name="COLOR_NAME" /> रंग असलेला <ph name="TITLE_OF_GROUP" /> हा टॅब गट रिस्टोअर करा व उघडा.}}</translation>
 <translation id="4881695831933465202">उघडा</translation>
+<translation id="4894777338623123366">टॅब स्क्रीन शेअर करत आहे</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{टॅब बंद करा}other{टॅब बंद करा}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> गट सेव्ह केले आहेत (टॅब बंद करून गट हटवेल)</translation>
 <translation id="492284538114688557">किमतीतील घट आढळली</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग, <ph name="CARD_LABEL" /> लेबल असलेल्या, शेअर केलेल्या टॅब गटाचा विस्तार करा.}other{<ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग, <ph name="CARD_LABEL" /> लेबल असलेल्या, शेअर केलेल्या टॅब गटाचा विस्तार करा.}}</translation>
 <translation id="5007392906805964215">पुनरावलोकन करा</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{टॅब नवीन विंडोवर हलवा}other{टॅब दुसऱ्या विंडोवर हलवा}}</translation>
 <translation id="5073204694187207510">फुलस्क्रीन ग्रिड लपवा</translation>
 <translation id="5076161749301278626">स्टोअरशी संबंधित पुनरावलोकने पहायची आहेत का?</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome <ph name="AUTO_DELETE_DELAY_ONE" /> महिन्यानंतर इनॅक्टिव्ह टॅब आणि टॅब गट आपोआप बंद करते. तुम्ही हे सेटिंग्‍जमध्‍ये बदलू शकता.}other{Chrome <ph name="AUTO_DELETE_DELAY_MANY" /> महिन्यांनंतर इनॅक्टिव्ह टॅब आणि टॅब गट आपोआप बंद करते. तुम्ही हे सेटिंग्‍जमध्‍ये बदलू शकता.}}</translation>
 <translation id="5339733443032484186">तुमचा शेवटचा टॅब</translation>
 <translation id="5380159289133845234">डुप्लिकेट टॅब संग्रहित करा</translation>
-<translation id="5400836586163650660">राखाडी</translation>
 <translation id="5446043142172831860">टॅब काढून टाका आणि गटातून बाहेर पडा</translation>
 <translation id="5490235265819901748">टॅब गटाचा विस्तार केला आहे</translation>
 <translation id="5494920125229734069">सर्व निवडा</translation>
@@ -121,22 +132,24 @@
 <translation id="5556417849629758491">स्टोअरची माहिती पहा, पर्याय स्क्रीनच्या सर्वात वर उपलब्ध आहे</translation>
 <translation id="5627941783489838464">टॅब अपडेट नाहीत</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome वरील <ph name="TABS_COUNT_ONE" /> लिंक}other{Chrome वरील <ph name="TABS_COUNT_MANY" /> लिंक}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{टॅब डावीकडे हलवा}other{टॅब डावीकडे हलवा}}</translation>
 <translation id="5746204836956568669">अधिक जलद काम करण्यासाठी <ph name="NUMBER_OF_TABS" /> टॅबचा गट करायचा आहे का?</translation>
 <translation id="5773295109010386583">इनॅक्टिव्ह आयटम आपोआप बंद करा</translation>
 <translation id="58326064309361797">त्यांचा गट बनवण्यासाठी टॅबना ड्रॅग करा</translation>
-<translation id="5901630391730855834">पिवळा</translation>
 <translation id="5972844218283131174">सर्व निवड रद्द करा</translation>
-<translation id="6017514345406065928">हिरवा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6051432659151380973">तुमचे टॅब गट आपोआप सेव्ह होतात</translation>
 <translation id="6054741997831917303">या आयटमची किंमत अलीकडे <ph name="PREVIOUS_PRICE" /> वरून <ph name="NEW_PRICE" /> इतकी कमी झाली</translation>
 <translation id="6109251075362363230">सर्वात अलीकडे वापरलेल्या कॉपीचा अपवाद वगळता, सर्व डुप्लिकेट टॅबदेखील आता संग्रहित केले जातील.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> आयटम बंद करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> आयटम बंद करा}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{गट नवीन विंडोवर हलवा}other{गट दुसऱ्या विंडोवर हलवा}}</translation>
-<translation id="6220820548421939212">होय. मी तयार आहे</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{टॅब उजवीकडे हलवा}other{टॅब उजवीकडे हलवा}}</translation>
 <translation id="6228793724645064692">(स्टोअरचे रेटिंग)</translation>
+<translation id="6251046978189636310">ऑडिओ प्ले करत आहे</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{गटामधून टॅब काढून टाका}other{गटामधून टॅब काढून टाका}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{नवीन गटामध्ये टॅब जोडा}other{नवीन गटामध्ये टॅब जोडा}}</translation>
 <translation id="6333260925957816943">या स्टोअरविषयी माहिती</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब पिन करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब पिन करा}}</translation>
 <translation id="6381032505162537930">तुम्हाला तुमचे टॅब गट इथे दिसतील</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब गटामधून काढून टाका}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब गटामधून काढून टाका}}</translation>
 <translation id="6499296376514955580">शेअर केलेल्या टॅब गट मधील बदलांविषयी नोटिस बंद केली आहे</translation>
@@ -153,6 +166,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> नावाच्या गटामध्ये <ph name="TAB_COUNT1" /> टॅबसह जोडा}other{<ph name="TITLE_OF_GROUP" /> नावाच्या गटामध्ये <ph name="TAB_COUNT1" /> टॅबसह जोडा}}</translation>
 <translation id="6818926723028410516">आयटम निवडा</translation>
 <translation id="6856809498882026482">एकाहून अधिक निवड मोड लपवा</translation>
+<translation id="6957436309971790274">२१ दिवस इनॅक्टिव्ह राहिल्यानंतर</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून शेअर केलेल्या <ph name="TITLE_OF_GROUP" /> टॅब गटाचा विस्तार करा.}other{<ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून शेअर केलेल्या <ph name="TITLE_OF_GROUP" /> टॅब गटाचा विस्तार करा.}}</translation>
 <translation id="709473454666962555">टॅब गट निवडा</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{टॅब शेअर करा}other{टॅब शेअर करा}}</translation>
@@ -163,8 +177,10 @@
 <translation id="7326879924029668159">रिटर्न धोरण आणि आणखी बरेच काही पहा</translation>
 <translation id="7352298686197644113">तुमच्या उघड्या असलेल्या टॅबमध्ये कोणत्या आयटमची किंमत आणखी कमी आहे ते पहा</translation>
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" हा टॅब गट आता उपलब्ध नाही</translation>
+<translation id="7402375256128852434">अलीकडील टॅब जोडा</translation>
 <translation id="7452985128687107478">टॅब गट आपोआप सेव्ह होतात आणि तुमच्या सर्व डिव्हाइसवर अपडेट होतात</translation>
 <translation id="747459581954555080">सर्व पुनर्संचयित करा</translation>
+<translation id="7489558427602531799">टॅब गट उजवीकडे हलवा</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> आयटम}other{<ph name="TABS_COUNT_MANY" /> आयटम}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> आयटम रिस्टोअर करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> आयटम रिस्टोअर करा}}</translation>
 <translation id="753732157349120914">टॅब स्विचर</translation>
@@ -183,9 +199,8 @@
 <translation id="7853202427316060426">गतिविधी</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_ONE" /> परीक्षण}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> परीक्षणे}}</translation>
 <translation id="7885132941432959125">टॅब उजवीकडे हलवा</translation>
-<translation id="788914896430720926">तुमचे इनॅक्टिव्ह विभाग व्यवस्थित ठेवायचे आहेत का?</translation>
+<translation id="7887334752153342268">डुप्लिकेट</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> निवडलेला नाही</translation>
-<translation id="7942349550061667556">लाल</translation>
 <translation id="7961015016161918242">कधीही नाही</translation>
 <translation id="7966321538264951561">सूचना डिसमिस करा.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{टॅब नवीन विंडोवर हलवा}other{टॅब दुसर्‍या विंडोवर हलवा}}</translation>
@@ -193,7 +208,9 @@
 <translation id="8029301326595421733">या स्टोअरविषयी माहिती पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="8053770993984522566">टॅब गट सूची, अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{गटामध्ये टॅब जोडा}other{गटामध्ये टॅब जोडा}}</translation>
+<translation id="8138067144082174140">१४ दिवस इनॅक्टिव्ह राहिल्यानंतर</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> टॅब गटाचा <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}other{<ph name="TITLE_OF_GROUP" /> टॅब गटाचा <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{टॅब अनपिन करा}other{टॅब अनपिन करा}}</translation>
 <translation id="8205266828577616993">टॅब वर हलवा</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनिटापूर्वी अपडेट केला आहे}other{<ph name="NUM_MINS_MANY" /> मिनिटांपूर्वी अपडेट केला आहे}}</translation>
 <translation id="8236097722223016103">बुकमार्कमध्ये जोडा</translation>
@@ -206,6 +223,7 @@
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="855081842937141170">टॅब पिन करा</translation>
 <translation id="8633025649649592204">अलीकडील अ‍ॅक्टिव्हिटी</translation>
+<translation id="8635822281281406185">कमाल १० फाइल, टॅब किंवा इमेज जोडा</translation>
 <translation id="8712637175834984815">समजले</translation>
 <translation id="8714939927607906138">आणखी कमी किंमत</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
@@ -221,6 +239,5 @@
 <translation id="9187834032751045001">अर्ध्या उंचीवर टॅब ऑटोमॅटिक-डिलीट करा याबद्दलच्या सूचना.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{टॅब गटाचा <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}other{टॅब गटाचा <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}}</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
-<translation id="992256792861109788">गुलाबी</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{इनॅक्टिव्ह असलेला १ आयटम बंद करा?}other{इनॅक्टिव्ह असलेले <ph name="TAB_COUNT_MANY" /> आयटम बंद करा?}}</translation>
 </translationbundle>

@@ -31,17 +31,18 @@ bool PathOwnedByRoot(const base::FilePath& path) {
 
 }  // namespace
 
-std::optional<int> RemoveUninstalledAppsTask::GetUnregisterReason(
+std::optional<UninstallPingReason>
+RemoveUninstalledAppsTask::GetUnregisterReason(
     const std::string& /*app_id*/,
     const base::FilePath& ecp) const {
   if (ecp.empty()) {
     return std::nullopt;
   }
   if (!base::PathExists(ecp)) {
-    return std::make_optional(kUninstallPingReasonUninstalled);
+    return std::make_optional(UninstallPingReason::kUninstalled);
   }
   if (scope_ == UpdaterScope::kUser && PathOwnedByRoot(ecp)) {
-    return std::make_optional(kUninstallPingReasonUserNotAnOwner);
+    return std::make_optional(UninstallPingReason::kUserNotAnOwner);
   }
   return std::nullopt;
 }

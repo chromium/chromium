@@ -1,0 +1,15 @@
+{
+  "env": {
+    "FIND_BAD_CONSTRUCTS": "-Xclang -add-plugin -Xclang find-bad-constructs -Xclang -plugin-arg-find-bad-constructs -Xclang check-stack-allocated -Xclang -plugin-arg-find-bad-constructs -Xclang check-ipc -Xclang -plugin-arg-find-bad-constructs -Xclang check-blink-data-member-type -Xclang -plugin-arg-find-bad-constructs -Xclang check-layout-object-methods",
+    "RAW_PTR": "-Xclang -add-plugin -Xclang raw-ptr-plugin -Xclang -plugin-arg-raw-ptr-plugin -Xclang check-raw-ptr-to-stack-allocated -Xclang -plugin-arg-raw-ptr-plugin -Xclang disable-check-raw-ptr-to-stack-allocated-error -Xclang -plugin-arg-raw-ptr-plugin -Xclang raw-ptr-exclude-path=../../third_party/dawn/ -Xclang -plugin-arg-raw-ptr-plugin -Xclang raw-ptr-exclude-path=../../build/config/clang/chrome/test/fuzzing/webidl_fuzzing/ -Xclang -plugin-arg-raw-ptr-plugin -Xclang check-raw-ptr-fields -Xclang -plugin-arg-raw-ptr-plugin -Xclang check-span-fields -Xclang -plugin-arg-raw-ptr-plugin -Xclang check-raw-ref-fields",
+    "UNSAFE_BUFFERS": "-DUNSAFE_BUFFERS_BUILD -Xclang -add-plugin -Xclang unsafe-buffers -Xclang -plugin-arg-unsafe-buffers -Xclang ../../build/config/unsafe_buffers_paths.txt",
+    "BLINK_GC": "-Xclang -add-plugin -Xclang blink-gc-plugin"
+  },
+  "configs": {
+    "find bad constructs": {"add": "$FIND_BAD_CONSTRUCTS"},
+    "raw pointers": {"add": "$RAW_PTR"},
+    "unsafe buffers": {"add": "$UNSAFE_BUFFERS"},
+    "blink gc": {"add": "$BLINK_GC"},
+    "all": {"add": "$FIND_BAD_CONSTRUCTS $RAW_PTR $UNSAFE_BUFFERS $BLINK_GC"}
+  }
+}

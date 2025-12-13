@@ -103,8 +103,9 @@ class ChromeWorkerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse> CaptureHeaderHandler(
       const std::string& path,
       const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() != path)
+    if (request.GetURL().GetPath() != path) {
       return nullptr;
+    }
     // Stash the HTTP request headers.
     header_map_ = request.headers;
     std::move(quit_closure_).Run();
@@ -163,13 +164,13 @@ class ChromeWorkerUserAgentBrowserTest : public InProcessBrowserTest {
                 return false;
 
               std::string path = "chrome/test/data/workers";
-              path.append(std::string(params->url_request.url.path_piece()));
+              path.append(std::string(params->url_request.url.path()));
 
               std::string headers = "HTTP/1.1 200 OK\n";
               base::StrAppend(
                   &headers,
                   {"Content-Type: text/",
-                   base::EndsWith(params->url_request.url.path_piece(), ".js")
+                   base::EndsWith(params->url_request.url.path(), ".js")
                        ? "javascript"
                        : "html",
                    "\n"});

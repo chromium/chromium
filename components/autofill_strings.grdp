@@ -38,6 +38,30 @@
       Remove address from Chromium?
     </message>
   </if>
+  <message name="IDS_AUTOFILL_REMOVE_HOME_PROFILE_SUGGESTION_CONFIRMATION_TITLE" desc="Title in a dialog to confirm that the user wants to delete their Home address from Autofill." formatter_data="android_java">
+    Remove home address from Chrome autofill?
+  </message>
+  <message name="IDS_AUTOFILL_REMOVE_HOME_PROFILE_SUGGESTION_CONFIRMATION_BODY" desc="Text in a dialog to confirm that the user wants to delete their Home address from Autofill." formatter_data="android_java">
+    Your home address can help you get things done across Google services, like more relevant Search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK">&lt;link&gt;</ph>in your Google Account <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph><ph name="END_LINK">&lt;/link&gt;</ph>.
+  </message>
+  <message name="IDS_AUTOFILL_REMOVE_WORK_PROFILE_SUGGESTION_CONFIRMATION_TITLE" desc="Title in a dialog to confirm that the user wants to delete their Work address from Autofill." formatter_data="android_java">
+    Remove work address from Chrome autofill?
+  </message>
+  <message name="IDS_AUTOFILL_REMOVE_WORK_PROFILE_SUGGESTION_CONFIRMATION_BODY" desc="Title in a dialog to confirm that the user wants to delete their Work address from Autofill." formatter_data="android_java">
+    Your work address can help you get things done across Google services, like more relevant Search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK">&lt;link&gt;</ph>in your Google Account <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph><ph name="END_LINK">&lt;/link&gt;</ph>.
+  </message>
+  <message name="IDS_AUTOFILL_REMOVE_ACCOUNT_NAME_AND_EMAIL_PROFILE_SUGGESTION_CONFIRMATION_TITLE" desc="Title in a dialog to confirm that the user wants to delete their account name and email from Autofill." formatter_data="android_java">
+    Remove this info from Chrome autofill?
+  </message>
+  <message name="IDS_AUTOFILL_REMOVE_ACCOUNT_NAME_AND_EMAIL_PROFILE_SUGGESTION_CONFIRMATION_BODY" desc="Title in a dialog to confirm that the user wants to delete their account name and email address from Autofill." formatter_data="android_java">
+    You can edit your name in your <ph name="BEGIN_LINK">&lt;link&gt;</ph>Google Account<ph name="END_LINK">&lt;/link&gt;</ph> <ph name="ACCOUNT">$1<ex>example@gmail.com</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON" desc="Text in a remove button for Autofill suggestion." formatter_data="android_java">
+    Remove
+  </message>
+  <message name="IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON" desc="Text in a delete button for Autofill suggestion." formatter_data="android_java">
+    Delete
+  </message>
   <message name="IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP" desc="Tooltip shown when hovering over a small button with a trash-can logo next to an Autocomplete entry in the Autofill popup.">
     Delete entry
   </message>
@@ -46,6 +70,12 @@
   </message>
   <message name="IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT" desc="Voice over text that is read out when the delete button next to an Autocomplete entry is selected.">
     Delete entry <ph name="ENTRY_VOICEOVER">$1<ex>Jane Doe</ex></ph>
+  </message>
+  <message name="IDS_HOME_SUGGESTION_VOICE_OVER" is_accessibility_with_no_ui="true" desc="Voice over text read if the user focuses an autofill home address suggestion.">
+    Home address, <ph name="ADDRESS">$1<ex>123 Main Street Springfield USA</ex></ph>
+  </message>
+  <message name="IDS_WORK_SUGGESTION_VOICE_OVER" is_accessibility_with_no_ui="true" desc="Voice over text read if the user focuses an autofill work address suggestion.">
+    Work address, <ph name="ADDRESS">$1<ex>123 Main Street Springfield USA</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_CC_AMEX" desc="Full American Express credit card name.">
     American Express
@@ -282,11 +312,25 @@
     You can now use addresses from your Google Account
   </message>
   <message name="IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION" desc="IPH bubble for a suggestion item suggesting that home and work account profiles are available to use.">
-    Your home and work addresses are now available in Chrome
+    Autofill your home and work addresses from your Google Account
   </message>
   <message name="IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION_SCREENREADER" is_accessibility_with_no_ui="true" desc="IPH bubble for a suggestion item suggesting that home and work account profiles are available to use.">
-    Your home and work addresses are now available in Chrome
+    Autofill your home and work addresses from your Google Account
   </message>
+  <message name="IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION_TITLE" desc="Title text for IPH bubble for a suggestion item suggesting that home and work account profiles are available to use.">
+    Fill forms faster
+  </message>
+
+  <message name="IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION" desc="IPH bubble for a suggestion item suggesting that name and email account profile is available to use.">
+    Autofill your name and email address from your Google Account
+  </message>
+  <message name="IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION_SCREENREADER" is_accessibility_with_no_ui="true" desc="IPH bubble for a suggestion item suggesting that name and email account profile is available to use.">
+    Autofill your name and email address from your Google Account
+  </message>
+  <message name="IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION_TITLE" desc="Title text for IPH bubble for a suggestion item suggesting that name and email account profile is available to use.">
+    Fill forms faster
+  </message>
+
 
   <!-- Autofill suggestion label separator -->
   <message name="IDS_AUTOFILL_SUGGESTION_LABEL_SEPARATOR" desc="A separator to place between different elements of a suggestion's label. Labels sometimes have more than one type of information, such as a phone number and an email address or a street address, a phone number, and an email address. A symbol, in this case a bullet •, with a white space before it and a white space after it, is used to separate the parts of the label that appear on the same line, e.g. (877) 733-7699 • fanfeedback@redsox.com or 465 Huntington Ave • (617) 267-9300 • matthewt@mfa.org. A bullet • is preferred for separating the label parts; however, if the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
@@ -321,8 +365,14 @@
   <message name="IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether addresses should be saved and forms should be autofilled with them." formatter_data="android_java">
     Includes information like phone numbers, email addresses, and shipping addresses
   </message>
-  <message name="IDS_AUTOFILL_LOCAL_PROFILE_ACCESSIBILITY_LABEL" desc="Accessibility label for icon used to identify user's local address profile"  formatter_data="android_java">
+  <message name="IDS_AUTOFILL_LOCAL_PROFILE_ICON_ACCESSIBILITY_LABEL" desc="Accessibility label for icon used to identify user's local address profile" formatter_data="android_java">
     Local address
+  </message>
+  <message name="IDS_AUTOFILL_HOME_PROFILE_ICON_ACCESSIBILITY_LABEL" desc="Accessibility label for icon used to identify user's home address profile" formatter_data="android_java">
+    Home address
+  </message>
+  <message name="IDS_AUTOFILL_WORK_PROFILE_ICON_ACCESSIBILITY_LABEL" desc="Accessibility label for icon used to identify user's work address profile" formatter_data="android_java">
+    Work address
   </message>
   <message name="IDS_AUTOFILL_ENABLE_CREDIT_CARDS_TOGGLE_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether credit cards should be saved and forms should be autofilled with it." formatter_data="android_java">
     Fills in payment forms with your saved payment methods
@@ -348,6 +398,15 @@
   <message name="IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE" desc="The footer message used to notify user that their address will be saved in their account." formatter_data="android_java">
     You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
   </message>
+  <message name="IDS_AUTOFILL_ADDRESS_HOME_RECORD_TYPE_NOTICE" desc="The footer message used to notify user that their home address won't be modified and a new address will be added to their Google Account.">
+    You can use saved addresses across Google products. This won’t change your existing home address. It’ll be saved in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
+  </message>
+  <message name="IDS_AUTOFILL_ADDRESS_WORK_RECORD_TYPE_NOTICE" desc="The footer message used to notify user that their work address won't be modified and a new address will be added to their Google Account.">
+    You can use saved addresses across Google products. This won’t change your existing work address. It’ll be saved in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
+  </message>
+  <message name="IDS_AUTOFILL_ADDRESS_HOME_AND_WORK_RECORD_TYPE_NOTICE" desc="The footer message used to notify user that their Home/Work address is used to fill forms faster in Chrome." formatter_data="android_java">
+    Info from your Google Account <ph name="ACCOUNT">$1<ex>elisa.beckett@gmail.com</ex></ph> can help you fill forms faster in Chrome
+  </message>
   <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR" desc="The form error message shown to the user in case of a single required field missing.">
     A required field is empty. Fill it before saving.
   </message>
@@ -356,6 +415,15 @@
   </message>
   <message name="IDS_AUTOFILL_LOCAL_ADDRESS_ICON_A11Y_LABEL" desc="The a11y label for the 'no-cloud' address icon in Settings.">
     Address is available only on this device
+  </message>
+  <message name="IDS_AUTOFILL_HOME_ADDRESS_ICON_A11Y_LABEL" desc="The a11y label for the home address icon in Settings.">
+    home address
+  </message>
+  <message name="IDS_AUTOFILL_WORK_ADDRESS_ICON_A11Y_LABEL" desc="The a11y label for the work address icon in Settings.">
+    work address
+  </message>
+  <message name="IDS_AUTOFILL_HOME_WORK_ADDRESS_EDIT_A11Y_LABEL" desc="The a11y label for the edit button for the home/work address in Settings.">
+    Edit, opens new window
   </message>
   <message name="IDS_AUTOFILL_SYNC_TOGGLE_LABEL" desc="The Sync Autofill toggle label on the Autofill Settings page.">
     Use and save Addresses from your Google Account
@@ -366,6 +434,7 @@
   <message name="IDS_AUTOFILL_ADDRESSES_SETTINGS_SUBLABEL" desc="Description shown below the link to the Autofill settings page for managing addresses and more." translateable="false">
     Phone numbers, email addresses, shipping addresses, and plus addresses
   </message>
+  <!-- TODO(crbug.com/447113309): will no longer be used for title, update desc -->
   <message name="IDS_AUTOFILL_PAYMENT_METHODS" desc="Title for the list of saved payment methods that can be used to fill in forms. Also used as the title for the Autofill settings page that allows user to manage their list of saved payment methods and Autofill preferences for payment methods. Sentence-Cased." formatter_data="android_java">
     Payment methods
   </message>
@@ -375,8 +444,14 @@
   <message name="IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_LABEL" desc="Label for a toggle that allows users to control whether addresses should be saved and forms should be autofilled with them. Sentence-Cased." formatter_data="android_java">
     Save and fill addresses
   </message>
+  <message name="IDS_AUTOFILL_DISABLE_SETTINGS_EXPLANATION_TITLE" desc="Title of the card explaining why the settings page was disabled. Sentence-Cased." formatter_data="android_java">
+  Google isn’t your autofill provider
+  </message>
   <message name="IDS_AUTOFILL_DISABLE_SETTINGS_EXPLANATION" desc="Explanation why the settings page was disabled. Sentence-Cased." formatter_data="android_java">
-    Google isn’t your autofill provider. To enable these settings and use payment info from your Google Account, visit <ph name="BEGIN_LINK">&lt;link&gt;</ph>Autofill services settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+    To enable these settings and use payment info from your Google Account, visit autofill services settings.
+  </message>
+  <message name="IDS_AUTOFILL_DISABLE_SETTINGS_BUTTON_LABEL" desc="Button that opens the autofill services settings page. Sentence-Cased." formatter_data="android_java">
+    Autofill services settings
   </message>
   <message name="IDS_AUTOFILL_ENABLE_CREDIT_CARDS_TOGGLE_LABEL" desc="Label for a toggle that allows users to control whether credit cards should be saved and forms should be autofilled with it. Sentence-Cased." formatter_data="android_java">
     Save and fill payment methods
@@ -385,6 +460,12 @@
     Delete address
   </message>
   <if expr="is_android">
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_LABEL" desc="Title for the entry in the address editor with an external link icon which redirects to the edit page." formatter_data="android_java">
+      Edit
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_LABEL_CONTENT_DESCRIPTION" desc="Accessibility label for the entry in the address editor with an external link icon which redirects to the edit page." formatter_data="android_java">
+      Edit, opens a new window
+    </message>
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_ERROR" desc="Validation error message for missing required address field." formatter_data="android_java">
       Enter <ph name="FIELD">$1<ex>ZIP code</ex></ph>
     </message>
@@ -415,9 +496,6 @@
   </if>
 
   <!-- Autofill/Wallet integration preferences -->
-  <message name="IDS_SYNC_DATATYPE_PAYMENTS" desc="Label for the checkbox that controls the Autofill/Payments integration feature used for Autofill Home. 'Google Pay' should not be translated as it is the product name. Sentence-Cased.">
-    Payment methods, offers, and addresses using Google Pay
-  </message>
   <message name="IDS_SYNC_DATATYPE_PAYMENTS_AND_INFO" desc="Label for the checkbox that controls the Autofill/Wallet integration feature used for Autofill. 'Google Wallet' should not be translated as it is the product name. Sentence-Cased.">
     Payment methods and other info from Google Wallet
   </message>
@@ -439,6 +517,12 @@
     <message name="IDS_AUTOFILL_ADDRESS_SHEET_ALL_ADDRESSES_LINK" desc="The text of the link in the address sheet that opens the address management section.">
       Manage addresses
     </message>
+    <message name="IDS_AUTOFILL_ONE_TIME_PASSWORD_VOICE_OVER_A11Y_LABEL" desc="Voice over label for the one time password field.">
+      Verification Code: <ph name="OTP">$1<ex>123456</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_ONE_TIME_PASSWORD" desc="Accessibility announcement for when a one time password is autofilled.">
+      Autofilled code
+    </message>
   </if>
 
   <!-- Explicit save/update address prompt strings -->
@@ -446,6 +530,9 @@
   <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to save a new address.">
     Save
   </message>
+  <message name="IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address which is an extented version of an already existing home or work address.">
+      Save address with more info
+    </message>
   <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_MIGRATION_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to migrate a new address to their Google account.">
     Save in account
   </message>
@@ -454,6 +541,12 @@
   </message>
   <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to update an existing address.">
     Update
+  </message>
+  <message name="IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to add additional info to an existing address.">
+    Add new info to saved address
+  </message>
+  <message name="IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to add new info to an existing address.">
+    Add
   </message>
   <message name="IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user the prompt to migrate the profile to the account.">
     Save in Account
@@ -517,11 +610,17 @@
     <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_TITLE" desc="Title shown in the message that offers the user to proceed with saving a new address." meaning="In Title Case for iOS">
       Save address?
     </message>
+    <message name="IDS_IOS_AUTOFILL_SAVE_HOME_WORK_ADDRESS_MESSAGE_TITLE" desc="Title shown in the message that offers the user to proceed with saving a new address by updating home and work address." meaning="In Title Case for iOS">
+      Save address
+    </message>
    <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_TITLE" desc="Title shown in the message that offers the user to proceed with saving a new address in the google account" meaning="In Title Case for iOS">
       Save address in account?
     </message>
     <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION" desc="Label of the primary action button in the message that offers the user to proceed with saving a new address.">
       Save…
+    </message>
+    <message name="IDS_IOS_AUTOFILL_SAVE_HOME_WORK_ADDRESS_MESSAGE_PRIMARY_ACTION" desc="Label of the primary action button in the message that offers the user to proceed with saving a new address by updating a home or work address.">
+      Save
     </message>
     <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_TITLE" desc="Title shown in the message that offers the user to proceed with updating an existing address." meaning="In Title Case for iOS">
       Update address?
@@ -538,6 +637,9 @@
     <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of modal dialog that offers the user to update an existing address." meaning="In Title Case for iOS">
       Update address
     </message>
+    <message name="IDS_IOS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of modal dialog that offers the user to add info to an existing address." meaning="In Title Case for iOS">
+      Add New Info to Address
+    </message>
     <message name="IDS_IOS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_TITLE" desc="Title shown at the top of modal dialog that offers the user to migrate the profile to account." meaning="In Title Case for iOS">
       Save address in account
     </message>
@@ -549,6 +651,9 @@
     </message>
     <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER" desc="Footer text shown in the save modal for saving a new address profile or migrating it in the Google Account">
       You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>.
+    </message>
+    <message name="IDS_IOS_AUTOFILL_HOME_WORK_PROFILE_FOOTER" desc="Footer text shown in the settings when home and work profile details are shown">
+      Info from your Google Account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph> can help you fill forms faster in Chrome
     </message>
   </if>
   <!-- Used on Desktop: -->
@@ -565,6 +670,9 @@
     <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to update an existing address.">
       Update address?
     </message>
+    <message name="IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the dialog that adds new info to an existing profile.">
+      Cancel
+    </message>
     <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_PROMPT_TITLE" desc="The 'Add new address' bubble title.">
       Fill your address with less typing
     </message>
@@ -579,6 +687,15 @@
     </message>
     <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to update an existing address.">
       No thanks
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address which is a result of a merge between the AccountNameEmail and a Work/Home profile">
+      Use this address in more places
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_OK_BUTTON_LABEL" desc="Label of the save button shown in the prompt that offers the user to save a new address which is a result of a merge between the AccountNameEmail and a Work/Home profile">
+      I'm in
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_CANCEL_BUTTON_LABEL" desc="Label of the cancel button shown in the prompt that offers the user to save a new address which is a result of a merge between the AccountNameEmail and a Work/Home profile">
+      Cancel
     </message>
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE" desc="Title shown at the top of dialog that edits an address before saving it">
       Edit address
@@ -639,7 +756,34 @@
     </message>
     <message name="IDS_AUTOFILL_IPH_LOYALTY_CARD_SUGGESTION_SCREENREADER" is_accessibility_with_no_ui="true" desc="IPH toast for a suggestion item with a loyalty card from Google Wallet.">
     Now you can autofill loyalty cards from Google Wallet
-  </message>
+    </message>
+    <message name="IDS_PASSWORD_MANAGER_UI_PASSWORD_RECOVERY_SHOWN_A11Y_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Text announced after a proactive password recovery popup is shown">
+      Recovery password shown
+    </message>
+    <message name="IDS_AUTOFILL_CONTACT_INFO_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved addresses and Autofill preferences for addresses. Sentence-Cased." formatter_data="android_java">
+      Contact info
+    </message>
+    <message name="IDS_AUTOFILL_PAYMENTS_TITLE" desc="Title for the Autofill settings page that allows user to manage their list of saved payment methods and Autofill preferences for payment methods. Sentence-Cased." formatter_data="android_java">
+      Payments
+    </message>
+    <message name="IDS_AUTOFILL_IDENTITY_DOCS_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved identity documents. Sentence-Cased." formatter_data="android_java">
+      Identity docs
+    </message>
+    <message name="IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Enhanced Autofill for identity docs. Sentence-Cased." formatter_data="android_java">
+      Save and fill identity docs
+    </message>
+    <message name="IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Enhanced Autofill for identity docs. Sentence-Cased." formatter_data="android_java">
+      Includes information such as passports and driver's licenses
+    </message>
+    <message name="IDS_AUTOFILL_TRAVEL_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved travel info. Sentence-Cased." formatter_data="android_java">
+      Travel
+    </message>
+    <message name="IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Enhanced Autofill for travel-related data types. Sentence-Cased." formatter_data="android_java">
+      Save and fill travel info
+    </message>
+    <message name="IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Enhanced Autofill for travel-related data types. Sentence-Cased." formatter_data="android_java">
+      Includes information such as flight bookings and vehicle info
+    </message>
   </if>
 
   <!-- Autofill Address Edit Dialog -->
@@ -661,12 +805,12 @@
   </message>
   </if>
 
-   <!-- Entities -->
+  <!-- Entities -->
   <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Passport”.">
     Driver's license
   </message>
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME" translateable="false">
-    National Id Card
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Identity card”. Important: Avoid translations that refer to a single, specific government document. Instead try to find a general term that is inclusive of all identity cards that meet the definition below, including documents issued by foreign governments. DEFINITION OF “NATIONAL IDENTITY CARD”: The definition we use for this feature is: “An identity document that meets the following criteria: 1) Issued by the government 2) Primary purpose is proving a natural person's identity (as opposed to e.g. their residence) 3) Common form of identification that most people keep with them 4) Not a passport or driver’s license.” EXAMPLES: This definition would include https://www.service-public.fr/particuliers/vosdroits/N358?lang=en. It would not include a United States Social Security Number or https://www.bzst.de/EN/Private_individuals/Tax_identification_number/tax_identification_number_node.html.">
+    Identity card
   </message>
   <message name="IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Driver’s license”.">
     Passport
@@ -674,13 +818,42 @@
   <message name="IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Vehicle”.">
     Vehicle
   </message>
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Known Traveler Number”. This field is designed for Known Traveler Numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
+    Known Traveler Number
+  </message>
+  <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Redress number”. This field is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
+    Redress number
+  </message>
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ENTITY_NAME" desc="The label for something that a user can autofill when filling a form. For context, a user has been able to fill addresses within Chrome for many users. Now a user can also fill a “Flight reservation”.">
+    Flight
+  </message>
+
+  <!-- Titles -->
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSES_TITLE" desc="The title of a chip referring to drivers licenses (IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME) on Your saved info settings page.">
+    Driver's licenses
+  </message>
+   <message name="IDS_AUTOFILL_AI_NATIONAL_IDS_TITLE" desc="The title of a chip referring to national ids (IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME) on Your saved info settings page.">
+    Identity cards
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORTS_TITLE" desc="The title of a chip referring to passports (IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME) on Your saved info settings page.">
+    Passports
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLES_TITLE" desc="The title of a chip referring to vehicles (IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME) on Your saved info settings page.">
+    Vehicles
+  </message>
+    <message name="IDS_AUTOFILL_AI_TRAVEL_INFO_TITLE" desc="The title of a chip referring to travel info (IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME and IDS_AUTOFILL_AI_REDRESS_NUMBER_ENTITY_NAME) on Your saved info settings page.">
+    Travel info
+  </message>
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATIONS_TITLE" desc="The title of a chip referring to flights (IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ENTITY_NAME) on Your saved info settings page.">
+    Flight reservations
+  </message>
 
   <!-- Add entity strings -->
   <message name="IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY" desc="A title of a dialog within Chrome settings that allows a user to explicitly create a driver’s license. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome.">
     Add driver's license
   </message>
-  <message name="IDS_AUTOFILL_AI_ADD_NATIONAL_ID_CARD_ENTITY" translateable="false">
-    Add national id card
+  <message name="IDS_AUTOFILL_AI_ADD_NATIONAL_ID_CARD_ENTITY" desc="A title of a dialog within Chrome settings that allows a user to explicitly create an identity card. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome. Important: Avoid translations that refer to a single, specific government document. Instead try to find a general term that is inclusive of all identity cards that meet the definition below, including documents issued by foreign governments. DEFINITION OF “NATIONAL IDENTITY CARD”: The definition we use for this feature is: “An identity document that meets the following criteria: 1) Issued by the government 2) Primary purpose is proving a natural person's identity (as opposed to e.g. their residence) 3) Common form of identification that most people keep with them 4) Not a passport or driver’s license.” EXAMPLES: This definition would include https://www.service-public.fr/particuliers/vosdroits/N358?lang=en. It would not include a United States Social Security Number or https://www.bzst.de/EN/Private_individuals/Tax_identification_number/tax_identification_number_node.html.">
+    Add identity card
   </message>
   <message name="IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY" desc="A title of a dialog within Chrome settings that allows a user to explicitly create a passport. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome.">
     Add passport
@@ -688,13 +861,19 @@
   <message name="IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY" desc="A title of a dialog within Chrome settings that allows a user to explicitly create a vehicle. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome.">
     Add vehicle
   </message>
+  <message name="IDS_AUTOFILL_AI_ADD_KNOWN_TRAVELER_NUMBER_ENTITY" desc="A title of a dialog within settings that allows a user to explicitly create a nown Traveler Number. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome. This is designed for Known Traveler Numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
+    Add Known Traveler Number
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_REDRESS_NUMBER_ENTITY" desc="A title of a dialog within settings that allows a user to explicitly create a redress number. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome. Now a user can also save a “Redress number”. This is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
+    Add redress number
+  </message>
 
   <!-- Edit entity strings -->
   <message name="IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY" desc="The title of a dialog box that allows the user to edit their information.">
     Edit driver's license
   </message>
-  <message name="IDS_AUTOFILL_AI_EDIT_NATIONAL_ID_CARD_ENTITY" translateable="false">
-    Edit national id card
+  <message name="IDS_AUTOFILL_AI_EDIT_NATIONAL_ID_CARD_ENTITY" desc="The title of a dialog box that allows the user to edit their information. Important: Avoid translations that refer to a single, specific government document. Instead try to find a general term that is inclusive of all identity cards that meet the definition below, including documents issued by foreign governments. DEFINITION OF “NATIONAL IDENTITY CARD”: The definition we use for this feature is: “An identity document that meets the following criteria: 1) Issued by the government 2) Primary purpose is proving a natural person's identity (as opposed to e.g. their residence) 3) Common form of identification that most people keep with them 4) Not a passport or driver’s license.” EXAMPLES: This definition would include https://www.service-public.fr/particuliers/vosdroits/N358?lang=en. It would not include a United States Social Security Number or https://www.bzst.de/EN/Private_individuals/Tax_identification_number/tax_identification_number_node.html.">
+    Edit identity card
   </message>
   <message name="IDS_AUTOFILL_AI_EDIT_PASSPORT_ENTITY" desc="The title of a dialog box that allows the user to edit their information.">
     Edit passport
@@ -702,13 +881,19 @@
   <message name="IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY" desc="The title of a dialog box that allows the user to edit their information.">
     Edit vehicle
   </message>
+  <message name="IDS_AUTOFILL_AI_EDIT_KNOWN_TRAVELER_NUMBER_ENTITY" desc="The title of a dialog box that allows the user to edit their information. This is designed for Known Traveler Numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
+    Edit Known Traveler Number
+  </message>
+  <message name="IDS_AUTOFILL_AI_EDIT_REDRESS_NUMBER_ENTITY" desc="The title of a dialog box that allows the user to edit their information. Now a user can also save a “Redress number”. This is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
+    Edit redress number
+  </message>
 
   <!-- Delete entity strings -->
   <message name="IDS_AUTOFILL_AI_DELETE_DRIVERS_LICENSE_ENTITY" desc="A title of a dialog within settings that allows a user to delete a driver's license. The user opened this dialog by choosing 'Delete' from the more options menu.">
     Delete driver's license
   </message>
-  <message name="IDS_AUTOFILL_AI_DELETE_NATIONAL_ID_CARD_ENTITY" translateable="false">
-    Delete national id card
+  <message name="IDS_AUTOFILL_AI_DELETE_NATIONAL_ID_CARD_ENTITY" desc="A title of a dialog within settings that allows a user to delete an identity card. The user opened this dialog by choosing 'Delete' from the more options menu. Important: Avoid translations that refer to a single, specific government document. Instead try to find a general term that is inclusive of all identity cards that meet the definition below, including documents issued by foreign governments. DEFINITION OF “NATIONAL IDENTITY CARD”: The definition we use for this feature is: “An identity document that meets the following criteria: 1) Issued by the government 2) Primary purpose is proving a natural person's identity (as opposed to e.g. their residence) 3) Common form of identification that most people keep with them 4) Not a passport or driver’s license.” EXAMPLES: This definition would include https://www.service-public.fr/particuliers/vosdroits/N358?lang=en. It would not include a United States Social Security Number or https://www.bzst.de/EN/Private_individuals/Tax_identification_number/tax_identification_number_node.html.">
+    Delete identity card
   </message>
   <message name="IDS_AUTOFILL_AI_DELETE_PASSPORT_ENTITY" desc="A title of a dialog within settings that allows a user to delete a passport. The user opened this dialog by choosing 'Delete' from the more options menu.">
     Delete passport
@@ -716,8 +901,14 @@
   <message name="IDS_AUTOFILL_AI_DELETE_VEHICLE_ENTITY" desc="A title of a dialog within settings that allows a user to delete a vehicle. The user opened this dialog by choosing 'Delete' from the more options menu.">
     Delete vehicle
   </message>
+  <message name="IDS_AUTOFILL_AI_DELETE_KNOWN_TRAVELER_NUMBER_ENTITY" desc="A title of a dialog within settings that allows a user to delete a Known Traveler Number. The user opened this dialog by choosing 'Delete' from the more options menu. This is designed for Known Traveler Numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
+    Delete Known Traveler Number
+  </message>
+  <message name="IDS_AUTOFILL_AI_DELETE_REDRESS_NUMBER_ENTITY" desc="A title of a dialog within settings that allows a user to delete a redress number. The user opened this dialog by choosing 'Delete' from the more options menu.  Now a user can also save a “Redress number”. This is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
+    Delete redress number
+  </message>
 
-    <!-- Attributes of the driver's license entity -->
+  <!-- Attributes of the driver's license entity -->
   <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license name attribute.">
     Name
   </message>
@@ -734,61 +925,81 @@
     Issue date
   </message>
 
+
   <!-- Attributes of the national id card entity -->
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NAME_ATTRIBUTE_NAME" translateable="false">
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with enhanced autofill, we just call the value “Name”.">
     Name
   </message>
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NUMBER_ATTRIBUTE_NAME" translateable="false">
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Id” and Delta might label it “National identity card”. Once the information is saved with enhanced autofill, we just call the value “Number”.">
     Number
   </message>
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME" translateable="false">
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Region” and Delta might label it “Country”. Once the information is saved with enhanced autofill, we just call the value “Country”.">
     Country
   </message>
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_EXPIRATION_DATE_ATTRIBUTE_NAME" translateable="false">
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Expires” and Delta might label it “Date document expires”. Once the information is saved with enhanced autofill, we just call the value “Expiration date”.">
     Expiration date
   </message>
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME" translateable="false">
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Issue” and Delta might label it “Date document issue”. Once the information is saved with enhanced autofill, we just call the value “Issue date”.">
     Issue date
   </message>
 
-  <!-- Attributes of the passport entity -->
-  <message name="IDS_AUTOFILL_AI_PASSPORT_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with Autofill with AI, we just call the value “Name”.">
+  <!-- Attributes of the Known Traveler Number entity -->
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with enhanced autofill, we just call the value “Name”.">
     Name
   </message>
-  <message name="IDS_AUTOFILL_AI_PASSPORT_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Passport” and Delta might label it “Passport number”. Once the information is saved with Autofill with AI, we just call the value “Number”.">
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field “Traveler number” and Delta might label it “Known Traveler Number”. Once the information is saved with enhanced autofill, we just call the value “Number”.">
     Number
   </message>
-  <message name="IDS_AUTOFILL_AI_PASSPORT_COUNTRY_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Region” and Delta might label it “Country”. Once the information is saved with Autofill with AI, we just call the value “Country”.">
-    Country
-  </message>
-  <message name="IDS_AUTOFILL_AI_PASSPORT_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Expires” and Delta might label it “Date passport expires”. Once the information is saved with Autofill with AI, we just call the value “Expiration date”.">
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the Known Traveler Number expiration date attribute.">
     Expiration date
   </message>
-  <message name="IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Issue” and Delta might label it “Date passport issue”. Once the information is saved with Autofill with AI, we just call the value “Issue date”.">
+
+  <!-- Attributes of redress number entity -->
+  <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with enhanced autofill, we just call the value “Name”.">
+    Name
+  </message>
+  <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field “Redress“ and Delta might label it “Redress number”. Once the information is saved with enhanced autofill, we just call the value “Number”.">
+    Number
+  </message>
+
+  <!-- Attributes of the passport entity -->
+  <message name="IDS_AUTOFILL_AI_PASSPORT_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with enhanced autofill, we just call the value “Name”.">
+    Name
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Passport” and Delta might label it “Passport number”. Once the information is saved with enhanced autofill, we just call the value “Number”.">
+    Number
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_COUNTRY_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Region” and Delta might label it “Country”. Once the information is saved with enhanced autofill, we just call the value “Country”.">
+    Country
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Expires” and Delta might label it “Date passport expires”. Once the information is saved with enhanced autofill, we just call the value “Expiration date”.">
+    Expiration date
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Issue” and Delta might label it “Date passport issue”. Once the information is saved with enhanced autofill, we just call the value “Issue date”.">
     Issue date
   </message>
 
   <!-- Attributes of the vehicle entity -->
-  <message name="IDS_AUTOFILL_AI_VEHICLE_MAKE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Type of car” and another might label it “Car make”. Once the information is saved with Autofill with AI, we just call the value “Make”.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_MAKE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Type of car” and another might label it “Car make”. Once the information is saved with enhanced autofill, we just call the value “Make”.">
     Make
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_MODEL_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Model picker” and another might label it “Car model”. Once the information is saved with Autofill with AI, we just call the value “Model”.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_MODEL_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Model picker” and another might label it “Car model”. Once the information is saved with enhanced autofill, we just call the value “Model”.">
     Model
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_YEAR_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Model year” and another might label it “Year of model”. Once the information is saved with Autofill with AI, we just call the value “Year”.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_YEAR_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Model year” and another might label it “Year of model”. Once the information is saved with enhanced autofill, we just call the value “Year”.">
     Year
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Owner’s name” and another might label it “Your name”. Once the information is saved with Autofill with AI, we just call the value “Owner”.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Owner’s name” and another might label it “Your name”. Once the information is saved with enhanced autofill, we just call the value “Owner”.">
     Owner
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_PLATE_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “License” and another might label it “plate number”. Once the information is saved with Autofill with AI, we just call the value “License plater”.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_PLATE_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “License” and another might label it “plate number”. Once the information is saved with enhanced autofill, we just call the value “License plater”.">
     License plate
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_PLATE_STATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “State” and another might label it “Issuing state”. Once the information is saved with Autofill with AI, we just call the value “Plate state”.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_PLATE_STATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “State” and another might label it “Issuing state”. Once the information is saved with enhanced autofill, we just call the value “Plate state”.">
     Plate state
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_VEHICLE_IDENTIFICATION_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field “Registration“ and another might label it “Vehicle Identification Number“. Once the information is saved with Autofill with AI, we just call the value “VIN (Vehicle Identification Number)“. Please use Glossary Manager or look up the official term for your country.">
-    VIN (vehicle identification number)
+  <message name="IDS_AUTOFILL_AI_VEHICLE_VEHICLE_IDENTIFICATION_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field “Registration“ and another might label it “Vehicle Identification Number“. Once the information is saved with enhanced autofill, we just call the value “VIN (Vehicle Identification Number)“. Please use Glossary Manager or look up the official term for your country.">
+    VIN (Vehicle Identification Number)
   </message>
 
   <!-- Manage suggestion -->
@@ -806,36 +1017,39 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_UPDATE_DIALOG_UPDATE_BUTTON" desc="Text displayed on the accept/save button of the update dialog.">
     Update
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_FOOTER_DETAILS" desc="Text displayed on the footer of the save dialog giving users details about how Autofill with AI data is saved.">
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_FOOTER_DETAILS" desc="Text displayed on the footer of the save dialog giving users details about how enhanced autofill data is saved.">
     Saved info and the page from <ph name="WEBSITE">$1<ex>airline.com</ex></ph> are sent to Google and may be seen by human reviewers to improve this feature.
   </message>
 
   <!-- Iph -->
-  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE" desc="The title of a promotional bubble that is likely the user's first engagement with Autofill for AI. Many users are familiar with Chrome Autofill and use it to automatically fill in things like passwords and credit cards. This service promoted on this screen frames the new service as the autofill that users are familiar with but better, because it's powered by AI and can do more for you.">
+  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE" desc="The title of a promotional bubble that is likely the user's first engagement with enhanced autofill. Many users are familiar with Chrome Autofill and use it to automatically fill in things like passwords and credit cards. This service promoted on this screen frames the new service as the autofill that users are familiar with but better, because it's powered by AI and can do more for you.">
     Autofill just got better
   </message>
-  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_BODY" desc="The body text in a promotional bubble that appears beneath the title: “Autofill just got better”. * “Turn on”: This new feature is opt in, so we want to encourage users to click “Go to settings” and turn the feature on. “autofill with AI” is what we're calling this new feature. We want users to associate the new feature with the familiar autofill functionality they're already used to but want to convey how it's different (AI). * “automatically” should feel valuable to users as the autofill service is making tasks for them simpler. * “more fields”: the existing autofill functionality in Chrome covers things like passwords, credit cards, and building addresses. With this new service, we can also cover 1) passports, 2) vehicles, and 3) driver's licenses.">
-    Turn on autofill with AI to automatically fill more fields
+  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_BODY" desc="The body text in a promotional bubble that appears beneath the title: “Autofill just got better”. * “Turn on”: This new feature is opt in, so we want to encourage users to click “Go to settings” and turn the feature on. “enhanced autofill” is what we're calling this new feature. We want users to associate the new feature with the familiar autofill functionality they're already used to but want to convey how it's different (AI). * “automatically” should feel valuable to users as the autofill service is making tasks for them simpler. * “more fields”: the existing autofill functionality in Chrome covers things like passwords, credit cards, and building addresses. With this new service, we can also cover 1) passports, 2) vehicles, and 3) driver's licenses.">
+    Turn on enhanced autofill to automatically fill more fields
   </message>
-  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_SEE_HOW" desc="The right of two buttons that’s the user’s path learning more and turning on Autofill with AI. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
-    See how
-  </message>
-  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TURN_ON" desc="The right of two buttons that’s the user’s path learning more and turning on Autofill with AI. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
+  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TURN_ON" desc="The right of two buttons that’s the user’s path learning more and turning on enhanced autofill. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
     Turn on
   </message>
-    <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TRY_IT" desc="The right of two buttons that’s the user’s path learning more and turning on Autofill with AI. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
-    Try it
-  </message>
-  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_MAYBE_LATER" desc="The left of two buttons that’s essentially the user’s path to not learning more or turning on Autofill with AI. “Maybe later” conveys that the user won’t do it now but that they’ll have the choice to do it later. Localizer has existing translations of this button label.">
+  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_MAYBE_LATER" desc="The left of two buttons that’s essentially the user’s path to not learning more or turning on enhanced autofill. “Maybe later” conveys that the user won’t do it now but that they’ll have the choice to do it later. Localizer has existing translations of this button label.">
     Maybe later
+  </message>
+  <message name="IDS_AUTOFILL_AI_VALUABLES_IPH_TITLE" desc="IPH toast for a suggestion item with an item from Google Wallet.">
+    Now you can autofill more info from Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_VALUABLES_IPH_BODY" desc="IPH toast for a suggestion item with an item from Google Wallet.">
+    Manage your information or turn these suggestions off in Settings
+  </message>
+  <message name="IDS_AUTOFILL_AI_VALUABLES_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="IPH toast for a suggestion item with an item from Google Wallet.">
+    Now you can autofill more info from Google Wallet
   </message>
 
   <!-- Save/ Update dialog-->
   <message name="IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user is renting a car and just filled in info about their driver’s license. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
     Save driver's license?
   </message>
-  <message name="IDS_AUTOFILL_AI_SAVE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE" translateable="false">
-    Save national id card?
+  <message name="IDS_AUTOFILL_AI_SAVE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user is applying for a parking permit with their municipal government and fills out a form that requires their identity information. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome. Important: Avoid translations that refer to a single, specific government document. Instead try to find a general term that is inclusive of all identity cards that meet the definition below, including documents issued by foreign governments. DEFINITION OF “NATIONAL IDENTITY CARD”: The definition we use for this feature is: “An identity document that meets the following criteria: 1) Issued by the government 2) Primary purpose is proving a natural person's identity (as opposed to e.g. their residence) 3) Common form of identification that most people keep with them 4) Not a passport or driver’s license.” EXAMPLES: This definition would include https://www.service-public.fr/particuliers/vosdroits/N358?lang=en. It would not include a United States Social Security Number or https://www.bzst.de/EN/Private_individuals/Tax_identification_number/tax_identification_number_node.html. ">
+    Save identity card?
   </message>
   <message name="IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user is booking a flight and filled in their passport info in a form. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
     Save passport?
@@ -843,12 +1057,18 @@
   <message name="IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user has filled in details related to their car. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
     Save vehicle?
   </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user has filled in details related to their Known Traveler Number. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome. This is designed for Known Traveler Numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
+    Save Known Traveler Number?
+  </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user is booking a flight and is prompted to add their redress number. This field is designed for redress numbers issued by the United States only. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.  This is similar to adding a Credit card to Chrome. Now a user can also save a “Redress number”. This is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
+    Save redress number?
+  </message>
 
   <message name="IDS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their driver’s license. Now, the user is filling out a new form either with additional details associated with the driver’s license or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the driver’s license that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
     Update driver's license?
   </message>
-  <message name="IDS_AUTOFILL_AI_UPDATE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE" translateable="false">
-    Update national id card?
+  <message name="IDS_AUTOFILL_AI_UPDATE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their national identity card. Now, the user is filling out a new form either with additional details associated with the national identity card or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the national identity card that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.  Important: Avoid translations that refer to a single, specific government document. Instead try to find a general term that is inclusive of all identity cards that meet the definition below, including documents issued by foreign governments. DEFINITION OF “NATIONAL IDENTITY CARD”: The definition we use for this feature is: “An identity document that meets the following criteria: 1) Issued by the government 2) Primary purpose is proving a natural person's identity (as opposed to e.g. their residence) 3) Common form of identification that most people keep with them 4) Not a passport or driver’s license.” EXAMPLES: This definition would include https://www.service-public.fr/particuliers/vosdroits/N358?lang=en. It would not include a United States Social Security Number or https://www.bzst.de/EN/Private_individuals/Tax_identification_number/tax_identification_number_node.html">
+    Update identity card?
   </message>
   <message name="IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their passport. Now, the user is filling out a new form either with additional details associated with the passport or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the passport that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
     Update passport?
@@ -856,8 +1076,26 @@
   <message name="IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their car. Now, the user is filling out a new form either with additional details associated with the car or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the vehicle that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
     Update vehicle?
   </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE"  desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their Known Traveler Number. Now, the user is filling out a new form either with additional details associated with the Known Traveler Number or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the vehicle that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome. This is designed for Known Traveler Numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
+    Update Known Traveler Number?
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their known redress number. Now, the user is filling out a new form either with additional details associated with the redress number or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the redress number that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome. Now a user can also save a “Redress number”. This is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
+    Update redress number?
+  </message>
+  <message name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" desc="The name of the Google Wallet product. This is displayed in some enhanced autofill save and update prompts as a link. Upon clicking the user is taken to a their wallet passes pages. For example the user would see 'Your info is saved to Google Wallet for elisa.beckett@gmail.com'">
+    Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_SUBTITLE" desc="A description that appears beneath the Update title prompt asking users whether they want to update their data stored locally. For example, the user previously saved information related to their passport. Now, the user is filling out a new form either with additional details associated with the passport or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the passport that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
+   Saves to your device
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE" desc="A description that appears beneath the Update title prompt asking users whether they want to update their data stored in Google Wallet. For example, the user previously saved information related to their passport. Now, the user is filling out a new form either with additional details associated with the passport or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the passport that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
+    Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE">$1<ex>Google Wallet</ex></ph> for <ph name="ACCOUNT">$2<ex>alexpark@gmail.com</ex></ph>
+  </message>
   <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE" desc="A description that appears beneath the Save title prompt. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Chrome with the promise that Chrome can then help the user fill out forms more quickly using their saved info.">
-    Save your info so that autofill can fill in more fields for you next time
+    Save your information and fill out forms more quickly. Saves to your device.
+  </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE" desc="A description that appears beneath the Save title prompt asking users whether they want to save their data to Google Wallet. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Google Wallet with the promise that Chrome can then help the user fill out forms across devices more quickly using their saved info.">
+    Save your info to get things done faster, across Google products. Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE">$1<ex>Google Wallet</ex></ph> for <ph name="ACCOUNT">$2<ex>alexpark@gmail.com</ex></ph>.
   </message>
   <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME" desc="Used in entity update dialogs, as the accessible names for rows with updated attributes">
     <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph> updated
@@ -867,16 +1105,16 @@
   </message>
 
   <!-- FFR Dialog -->
-  <message name="IDS_AUTOFILL_AI_FFR_WHEN_ON_TITLE" desc="A sub title that highlights the benefits of using ‘autofill with AI’. ‘More fields’ is referring to values in online forms. The user can fill more fields faster because ‘Autofill with AI’ supports more data types than standard autofill, including passports, driver’s licenses, and vehicles.">
+  <message name="IDS_AUTOFILL_AI_FFR_WHEN_ON_TITLE" desc="A sub title that highlights the benefits of using ‘enhanced autofill’. ‘More fields’ is referring to values in online forms. The user can fill more fields faster because ‘enhanced autofill’ supports more data types than standard autofill, including passports, driver’s licenses, and vehicles.">
     Fill more fields faster
   </message>
-  <message name="IDS_AUTOFILL_AI_FFR_WHEN_ON_DESCRIPTION" desc="Body text beneath the “Fill more fields faster” sub title. This conveys the value of using ‘Autofill with AI’.">
-    Autofill with AI understands forms better and can autofill them faster for you
+  <message name="IDS_AUTOFILL_AI_FFR_WHEN_ON_DESCRIPTION" desc="Body text beneath the “Fill more fields faster” sub title. This conveys the value of using ‘enhanced autofill’.">
+    Enhanced autofill understands forms better and can autofill them faster for you
   </message>
-  <message name="IDS_AUTOFILL_AI_FFR_CONSIDER_DESCRIPTION" desc="Body text beneath the “Things to consider” sub title. This describes to users things they might want to weigh before using this feature. Ideally, we lead with ‘To offer suggestions’, because it redefines the value of ‘Autofill with AI’ and offers a rationale for the data use that immediately follows. The data used includes 1) the URL of a page visited and 2) the content of that page. Both are shared from Chrome to a Google service that generates autofill suggestions. Inludes a placeholder for a learn more link, $1 = IDS_AUTOFILL_AI_FFR_CONSIDER_LEARN_MORE">
-    To offer suggestions and improve this feature, the page’s URL and content are shared with Google. Change your mind anytime and <ph name="LEARN_MORE">$1<ex>learn more about autofill with AI in settings</ex></ph>.
+  <message name="IDS_AUTOFILL_AI_FFR_CONSIDER_DESCRIPTION" desc="Body text beneath the “Things to consider” sub title. This describes to users things they might want to weigh before using this feature. Ideally, we lead with ‘To offer suggestions’, because it redefines the value of ‘enhanced autofill’ and offers a rationale for the data use that immediately follows. The data used includes 1) the URL of a page visited and 2) the content of that page. Both are shared from Chrome to a Google service that generates autofill suggestions. Inludes a placeholder for a learn more link, $1 = IDS_AUTOFILL_AI_FFR_CONSIDER_LEARN_MORE">
+    To offer suggestions and improve this feature, the page’s URL and content are shared with Google. Change your mind anytime and <ph name="LEARN_MORE">$1<ex>learn more about enhanced autofill in settings</ex></ph>.
   </message>
-  <message name="IDS_AUTOFILL_AI_FFR_CONSIDER_LEARN_MORE" desc="Link for the Autofill AI settings page to learn more about this feature.">
-    learn more about autofill with AI in settings
+  <message name="IDS_AUTOFILL_AI_FFR_CONSIDER_LEARN_MORE" desc="Link for the enhanced autofill settings page to learn more about this feature.">
+    learn more about enhanced autofill in settings
   </message>
 </grit-part>

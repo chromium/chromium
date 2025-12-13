@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_buffer_android.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_data_type_android.h"
 
 namespace tracing {
@@ -77,11 +73,11 @@ void HprofBuffer::SkipId() {
 }
 
 const char* HprofBuffer::DataPosition() {
-  return reinterpret_cast<const char*>((data_ + offset_).get());
+  return reinterpret_cast<const char*>((UNSAFE_TODO(data_ + offset_)).get());
 }
 
 uint32_t HprofBuffer::SizeOfType(uint32_t index) {
-  uint32_t object_size = kTypeSizes[index];
+  uint32_t object_size = UNSAFE_TODO(kTypeSizes[index]);
 
   // If type is object, return id_size.
   return object_size == 0 ? object_id_size_in_bytes_ : object_size;
@@ -89,7 +85,7 @@ uint32_t HprofBuffer::SizeOfType(uint32_t index) {
 
 unsigned char HprofBuffer::GetByte() {
   DCHECK(HasRemaining());
-  unsigned char byte = data_[offset_];
+  unsigned char byte = UNSAFE_TODO(data_[offset_]);
   ++offset_;
   return byte;
 }

@@ -1,0 +1,22 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsVr}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsVrDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.VR]]"
+      allow-option-label="$i18n{siteSettingsVrAllowed}"
+      allow-option-icon="privacy:cardboard"
+      block-option-label="$i18n{siteSettingsVrBlocked}"
+      block-option-icon="privacy:cardboard-off">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.VR]]"
+      read-only-list
+      allow-header="$i18n{siteSettingsVrAllowedExceptions}"
+      block-header="$i18n{siteSettingsVrBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

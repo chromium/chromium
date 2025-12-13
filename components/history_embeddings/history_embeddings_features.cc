@@ -23,9 +23,7 @@ FeatureParameters& GetFeatureParametersMutable() {
 // disabled, answering functionality will not be available either. This feature
 // is client-side launched on desktop platforms in US only, so it remains
 // disabled by default for other regions.
-BASE_FEATURE(kHistoryEmbeddings,
-             "HistoryEmbeddings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHistoryEmbeddings, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature specifies whether to answer queries using an answerer; it can be
 // considered a toggle for v2 answering functionality. Parameters are all kept
@@ -34,9 +32,7 @@ BASE_FEATURE(kHistoryEmbeddings,
 // Note: This feature has no parameters. Since it entirely depends on the
 // above kHistoryEmbeddings feature, all parameters are owned by that
 // feature to avoid confusion about which feature owns which parameters.
-BASE_FEATURE(kHistoryEmbeddingsAnswers,
-             "HistoryEmbeddingsAnswers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHistoryEmbeddingsAnswers, base::FEATURE_DISABLED_BY_DEFAULT);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -72,10 +68,6 @@ const base::FeatureParam<int> kContextPassagesMinimumWordCount(
 const base::FeatureParam<int> kSearchResultItemCount(&kHistoryEmbeddings,
                                                      "SearchResultItemCount",
                                                      3);
-
-const base::FeatureParam<bool> kAtKeywordAcceleration(&kHistoryEmbeddings,
-                                                      "AtKeywordAcceleration",
-                                                      false);
 
 const base::FeatureParam<double> kContentVisibilityThreshold(
     &kHistoryEmbeddings,
@@ -147,10 +139,10 @@ const base::FeatureParam<bool> kAnswersInOmniboxScoped(&kHistoryEmbeddings,
 
 const base::FeatureParam<bool> kSendQualityLog(&kHistoryEmbeddings,
                                                "SendQualityLog",
-                                               true);
+                                               false);
 const base::FeatureParam<bool> kSendQualityLogV2(&kHistoryEmbeddings,
                                                  "SendQualityLogV2",
-                                                 true);
+                                                 false);
 
 const base::FeatureParam<int> kMaxPassagesPerPage(&kHistoryEmbeddings,
                                                   "MaxPassagesPerPage",
@@ -162,11 +154,6 @@ const base::FeatureParam<bool> kDeleteEmbeddings(&kHistoryEmbeddings,
 const base::FeatureParam<bool> kRebuildEmbeddings(&kHistoryEmbeddings,
                                                   "RebuildEmbeddings",
                                                   true);
-
-const base::FeatureParam<bool> kUseDatabaseBeforeEmbedder(
-    &kHistoryEmbeddings,
-    "UseDatabaseBeforeEmbedder",
-    true);
 
 const base::FeatureParam<bool> kUseUrlFilter(&kHistoryEmbeddings,
                                              "UseUrlFilter",
@@ -247,7 +234,6 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   search_passage_minimum_word_count = kSearchPassageMinimumWordCount.Get();
   context_passages_minimum_word_count = kContextPassagesMinimumWordCount.Get();
   search_result_item_count = kSearchResultItemCount.Get();
-  at_keyword_acceleration = kAtKeywordAcceleration.Get();
   content_visibility_threshold = kContentVisibilityThreshold.Get();
   search_score_threshold = kSearchScoreThreshold.Get();
   search_word_match_score_threshold = kSearchWordMatchScoreThreshold.Get();
@@ -268,7 +254,6 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   max_passages_per_page = kMaxPassagesPerPage.Get();
   delete_embeddings = kDeleteEmbeddings.Get();
   rebuild_embeddings = kRebuildEmbeddings.Get();
-  use_database_before_embedder = kUseDatabaseBeforeEmbedder.Get();
   use_url_filter = kUseUrlFilter.Get();
   enable_side_panel = kEnableSidePanel.Get();
   trim_after_host_in_results = kTrimAfterHostInResults.Get();

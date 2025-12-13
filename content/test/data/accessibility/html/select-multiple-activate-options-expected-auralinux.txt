@@ -1,0 +1,5 @@
+[document web]
+++[section]
+++++[list box] multiselectable
+++++++[list item] name='one' selectable selected
+++++++[list item] name='two' selectable selected

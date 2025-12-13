@@ -1,4 +1,4 @@
-caption: Settings for Autofill with AI
+caption: Settings for enhanced autofill
 
 desc: |-
   Specifies whether users can let <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> use Generative AI to better understand forms and help them fill more fields.
@@ -19,13 +19,13 @@ features:
   dynamic_refresh: true
   per_profile: true
 items:
-- caption: Allow autofill with AI and improve AI models.
+- caption: Allow enhanced autofill and improve AI models.
   name: Allowed
   value: 0
-- caption: Allow autofill with AI without improving AI models.
+- caption: Allow enhanced autofill without improving AI models.
   name: AllowedWithoutLogging
   value: 1
-- caption: Do not allow autofill with AI.
+- caption: Do not allow enhanced autofill.
   name: Disabled
   value: 2
 owners:

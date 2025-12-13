@@ -25,8 +25,6 @@ source_set("identity_manager") {
     "diagnostics_provider_impl.h",
     "gaia_cookie_manager_service.cc",
     "gaia_cookie_manager_service.h",
-    "oauth_consumer_registry.cc",
-    "oauth_consumer_registry.h",
     "oauth_multilogin_helper.cc",
     "oauth_multilogin_helper.h",
     "oauth_multilogin_token_fetcher.cc",
@@ -68,6 +66,7 @@ source_set("identity_manager") {
     "//components/signin/public/identity_manager:tribool",
     "//components/signin/public/webdata",
     "//components/supervised_user/core/common:features",
+    "//components/sync/base:features",
     "//components/unexportable_keys",
     "//components/version_info",
     "//crypto",
@@ -84,7 +83,10 @@ source_set("identity_manager") {
       "profile_oauth2_token_service_delegate_android.cc",
       "profile_oauth2_token_service_delegate_android.h",
     ]
-    deps += [ "//components/signin/public/android:jni_headers" ]
+    deps += [
+      "//components/signin/public/android:jni_headers",
+      "//google_apis/gaia/android:jni_headers",
+    ]
   } else {
     sources += [
       "account_capabilities_fetcher_factory_gaia.cc",
@@ -112,6 +114,7 @@ source_set("identity_manager") {
     ]
     deps += [
       "//ash/constants",
+      "//chromeos/ash/components/account_manager",
       "//components/account_manager_core",
     ]
   }
@@ -169,6 +172,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
+    "//components/os_crypt/async/browser:key_provider_interface",
     "//components/os_crypt/async/browser:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -202,6 +206,7 @@ source_set("unit_tests") {
 
     deps += [
       "//ash/constants",
+      "//chromeos/ash/components/account_manager",
       "//components/account_manager_core:test_support",
     ]
   }
@@ -249,6 +254,11 @@ static_library("test_support") {
     "mock_profile_oauth2_token_service_observer.cc",
     "mock_profile_oauth2_token_service_observer.h",
   ]
+
+  if (is_android) {
+    sources += [ "account_info_serializer.cc" ]
+    deps = [ "//components/signin/public/android:test_support_jni_headers" ]
+  }
 
   if (is_chromeos) {
     sources += [

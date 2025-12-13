@@ -7,22 +7,36 @@
 
 #include <stddef.h>
 
-#include <memory>
-#include <vector>
-
-#include "base/memory/raw_ptr.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_span.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
 
-class AutofillField;
-
-// A helper class for parsing a stream of |AutofillField|'s with lookahead.
+// A helper class for parsing a stream of |FormFieldData|'s with lookahead.
 class AutofillScanner {
+ private:
+  using Iterator = base::raw_span<const FormFieldData>::const_iterator;
+
  public:
-  explicit AutofillScanner(
-      const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields);
-  explicit AutofillScanner(
-      const std::vector<std::unique_ptr<AutofillField>>& fields);
+  // The position of an AutofillScanner can be saved and restored.
+  class Position {
+   public:
+    friend bool operator==(const Position&, const Position&) = default;
+
+   private:
+    friend class AutofillScanner;
+    explicit Position(
+        base::span<const FormFieldData>::const_iterator cursor LIFETIME_BOUND)
+        : cursor_(cursor) {}
+    Iterator cursor_;
+  };
+
+  // The scanner considers only `fields` for which `is_relevant()` is true.
+  explicit AutofillScanner(base::span<const FormFieldData> fields
+                               LIFETIME_BOUND,
+                           bool (*is_relevant)(const FormFieldData&));
 
   AutofillScanner(const AutofillScanner&) = delete;
   AutofillScanner& operator=(const AutofillScanner&) = delete;
@@ -32,47 +46,33 @@ class AutofillScanner {
   // Advances the cursor by one step, if possible.
   void Advance();
 
-  // Returns the current field in the stream, or |NULL| if there are no more
-  // fields in the stream.
-  AutofillField* Cursor() const;
+  // Returns the current field in the stream.
+  const FormFieldData& Cursor() const;
+
+  // Returns the field before Cursor(), or nullptr if there is none.
+  const FormFieldData* Predecessor() const;
 
   // Returns |true| if the cursor has reached the end of the stream.
   bool IsEnd() const;
 
-  // Restores the most recently saved cursor. See also |SaveCursor()|.
-  void Rewind();
+  [[nodiscard]] Position GetPosition() const LIFETIME_BOUND;
+  void Restore(Position position);
 
-  // Repositions the cursor to the specified |index|. See also |SaveCursor()|.
-  void RewindTo(size_t index);
-
-  // Saves and returns the current cursor position. See also |Rewind()| and
-  // |RewindTo()|.
-  size_t SaveCursor();
-
-  // Returns the current cursor position.
-  size_t CursorPosition();
+  // This returns the distance since the beginning.
+  //
+  // Beware: This function takes linear time. Use GetPosition() if possible.
+  size_t GetOffset() const;
 
  private:
-  void Init(
-      const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields);
+  Iterator SkipBackward(Iterator iter) const;
+  Iterator SkipForward(Iterator iter) const;
 
-  // Indicates the current position in the stream, represented as a vector.
-  std::vector<raw_ptr<AutofillField, VectorExperimental>>::const_iterator
-      cursor_;
+  bool (*const is_relevant_)(const FormFieldData&);
 
-  // The most recently saved cursor.
-  std::vector<raw_ptr<AutofillField, VectorExperimental>>::const_iterator
-      saved_cursor_;
+  base::raw_span<const FormFieldData> fields_;
 
-  // The beginning pointer for the stream.
-  std::vector<raw_ptr<AutofillField, VectorExperimental>>::const_iterator
-      begin_;
-
-  // The past-the-end pointer for the stream.
-  std::vector<raw_ptr<AutofillField, VectorExperimental>>::const_iterator end_;
-
-  // The storage of non-owning pointers, used for the unique_ptr constructor.
-  std::vector<raw_ptr<AutofillField, VectorExperimental>> non_owning_;
+  // Indicates the current position in the stream.
+  Iterator cursor_;
 };
 
 }  // namespace autofill

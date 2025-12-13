@@ -5,12 +5,13 @@
 // Returns the intersection of the arrays |a| and |b|, which do not have to be
 // sorted.
 function intersect(a, b) {
-  var result = [];
-  for (var i = 0; i < a.length; i++) {
-    if (b.indexOf(a[i]) >= 0)
+  const result = [];
+  for (let i = 0; i < a.length; i++) {
+    if (b.indexOf(a[i]) >= 0) {
       result.push(a[i]);
+    }
   }
   return result;
-};
+}
 
 exports.$set('intersect', intersect);

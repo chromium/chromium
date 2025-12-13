@@ -150,8 +150,6 @@ void MediaFoundationVideoEncoderSharedState::GetSupportedProfilesInternal() {
   for (auto codec : supported_codecs) {
     auto activates = EnumerateHardwareEncoders(codec);
     if (activates.empty()) {
-      DVLOG(1) << "Hardware encode acceleration is not available for "
-               << GetCodecName(codec);
       continue;
     }
 
@@ -159,7 +157,8 @@ void MediaFoundationVideoEncoderSharedState::GetSupportedProfilesInternal() {
         GetMaxTemporalLayer(codec, activates, workarounds_);
     auto bitrate_mode = VideoEncodeAccelerator::kConstantMode |
                         VideoEncodeAccelerator::kVariableMode;
-    if (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC) {
+    if (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC ||
+        codec == VideoCodec::kAV1 || codec == VideoCodec::kVP9) {
       bitrate_mode |= VideoEncodeAccelerator::kExternalMode;
     }
 

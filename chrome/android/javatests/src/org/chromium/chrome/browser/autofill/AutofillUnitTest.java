@@ -69,8 +69,7 @@ public class AutofillUnitTest {
                             new AutofillPopup(
                                     sActivityTestRule.getActivity(),
                                     anchorView,
-                                    mMockAutofillCallback,
-                                    null);
+                                    mMockAutofillCallback);
                     mAutofillPopup.filterAndShow(new AutofillSuggestion[0], /* isRtl= */ false);
                 });
     }

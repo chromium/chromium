@@ -184,12 +184,11 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     // This may be called multiple times, we must reset the original test
     // browser and its associated window.
     browser_.reset();
-    browser_window_.reset();
 
-    browser_window_ = std::make_unique<TestBrowserWindow>();
+    auto browser_window = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;
-    params.window = browser_window_.get();
+    params.window = browser_window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     chrome_tailored_security_service_ =
         std::make_unique<TestChromeTailoredSecurityService>(profile_);
@@ -221,7 +220,6 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     }
 
     browser_.reset();
-    browser_window_.reset();
     chrome_tailored_security_service_->Shutdown();
     chrome_tailored_security_service_.reset();
 
@@ -288,6 +286,15 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
         original_tailored_security_service_value);
   }
 
+  // Force async tasks to complete. Primarily used to force-trigger the
+  // processing of the notice queue.
+  void FlushEvents() {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -305,7 +312,6 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
       identity_test_env_adaptor_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
-  std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeTailoredSecurityService>
       chrome_tailored_security_service_;
@@ -326,6 +332,7 @@ TEST_F(ChromeTailoredSecurityServiceTest,
 
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
                                                    base::Time::Now());
+  FlushEvents();
 
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed + 1);
@@ -432,11 +439,13 @@ TEST_F(ChromeTailoredSecurityServiceTest,
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
                                                    base::Time::Now());
 
+  FlushEvents();
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed + 1);
   // Then detect that TailoredSecurity was disabled.
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
                                                    base::Time::Now());
+  FlushEvents();
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed + 2);
   EXPECT_FALSE(

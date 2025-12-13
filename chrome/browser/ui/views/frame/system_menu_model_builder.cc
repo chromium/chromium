@@ -9,7 +9,11 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -19,10 +23,10 @@
 #include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
+#include "ash/shell.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -32,7 +36,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 #endif
 
@@ -41,9 +45,11 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #endif
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemMenuModelBuilder,
+                                      kToggleVerticalTabsElementId);
 
 SystemMenuModelBuilder::SystemMenuModelBuilder(
     ui::AcceleratorProvider* provider,
@@ -83,6 +89,12 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
 #endif
   model->AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
   model->AddItemWithStringId(IDC_RESTORE_TAB, IDS_RESTORE_TAB);
+
+  if (features::IsTabGroupMenuMoreEntryPointsEnabled()) {
+    model->AddItemWithStringId(IDC_GROUP_UNGROUPED_TABS,
+                               IDS_GROUP_UNGROUPED_TABS);
+  }
+
   model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
   model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
 #if BUILDFLAG(ENABLE_GLIC)
@@ -97,6 +109,21 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   }
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
+  if (tabs::IsVerticalTabsFeatureEnabled()) {
+    model->AddSeparator(ui::NORMAL_SEPARATOR);
+    if (tabs::VerticalTabStripStateController::From(browser())
+            ->ShouldDisplayVerticalTabs()) {
+      model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
+                                 IDS_SWITCH_TO_HORIZONTAL_TAB);
+    } else {
+      model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
+                                 IDS_SWITCH_TO_VERTICAL_TAB);
+    }
+    model->SetElementIdentifierAt(model->GetItemCount() - 1,
+                                  kToggleVerticalTabsElementId);
+  }
+
   if (chrome::CanOpenTaskManager()) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     model->AddItemWithStringId(IDC_TASK_MANAGER_CONTEXT_MENU, IDS_TASK_MANAGER);
@@ -187,16 +214,19 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
 
 #if BUILDFLAG(IS_CHROMEOS)
 void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
-  gfx::NativeWindow window =
-      menu_delegate_.browser()->window()->GetNativeWindow();
-  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(window)) {
+  auto* const browser = menu_delegate_.browser();
+  // Do not show the move to desks menu if the app is locked for OnTask. Only
+  // relevant for non-web browser scenarios.
+  if (browser->IsLockedForOnTask() ||
+      !chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu()) {
     return;
   }
 
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   move_to_desks_model_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
       std::make_unique<chromeos::MoveToDesksMenuDelegate>(
-          views::Widget::GetWidgetForNativeWindow(window)));
+          views::Widget::GetWidgetForNativeWindow(
+              browser->window()->GetNativeWindow())));
   model->AddSubMenuWithStringId(chromeos::MoveToDesksMenuModel::kMenuCommandId,
                                 IDS_MOVE_TO_DESKS_MENU,
                                 move_to_desks_model_.get());
@@ -232,7 +262,7 @@ void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
 
   // If this does not belong to a profile or there is no window, or the window
   // is not owned by anyone, we don't show the menu addition.
-  auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
+  auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
   const AccountId account_id =
       multi_user_util::GetAccountIdFromProfile(browser()->profile());
   aura::Window* window = browser()->window()->GetNativeWindow();

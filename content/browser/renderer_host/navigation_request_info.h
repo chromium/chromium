@@ -10,12 +10,10 @@
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/referrer.h"
 #include "net/base/isolation_info.h"
 #include "net/filter/source_stream_type.h"
-#include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -46,14 +44,12 @@ struct CONTENT_EXPORT NavigationRequestInfo {
           blob_url_loader_factory,
       const base::UnguessableToken& devtools_navigation_token,
       const base::UnguessableToken& devtools_frame_token,
-      net::HttpRequestHeaders cors_exempt_headers,
       network::mojom::ClientSecurityStatePtr client_security_state,
       const std::optional<std::vector<net::SourceStreamType>>&
           devtools_accepted_stream_types,
       bool is_pdf,
       int initiator_process_id,
       std::optional<blink::DocumentToken> initiator_document_token,
-      const GlobalRenderFrameHostId& previous_render_frame_host_id,
       base::WeakPtr<PrefetchServingPageMetricsContainer>
           prefetch_serving_page_metrics_container,
       bool allow_cookies_from_browser,
@@ -123,8 +119,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
 
   const base::UnguessableToken devtools_frame_token;
 
-  const net::HttpRequestHeaders cors_exempt_headers;
-
   // Specifies the security state applying to the navigation. For iframes, this
   // is the security state of their parent. Nullptr otherwise.
   //
@@ -144,11 +138,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // The initiator document's token and its process ID.
   const int initiator_process_id;
   const std::optional<blink::DocumentToken> initiator_document_token;
-
-  // The previous document's RenderFrameHostId, used for speculation rules
-  // prefetch.
-  // This corresponds to `NavigationRequest::GetPreviousRenderFrameHostId()`.
-  const GlobalRenderFrameHostId previous_render_frame_host_id;
 
   // For per-navigation metrics of speculation rules prefetch.
   base::WeakPtr<PrefetchServingPageMetricsContainer>

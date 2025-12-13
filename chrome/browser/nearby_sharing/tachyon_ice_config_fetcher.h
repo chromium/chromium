@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_TACHYON_ICE_CONFIG_FETCHER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -19,6 +20,7 @@
 
 namespace network {
 class SharedURLLoaderFactory;
+class SimpleURLLoader;
 }  // namespace network
 
 // Fetches a list of ICE servers using the Tachyon API. The lifetime of this
@@ -46,7 +48,7 @@ class TachyonIceConfigFetcher : public ::sharing::mojom::IceConfigFetcher {
       ::sharing::mojom::IceConfigFetcher::GetIceServersCallback callback,
       const std::string& request_id,
       std::unique_ptr<network::SimpleURLLoader> url_loader,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   // Parses the |GetIceServerResponse| proto provided by the Tachyon server and
   // caches a copy of the parsed result before returning it. Returns an empty

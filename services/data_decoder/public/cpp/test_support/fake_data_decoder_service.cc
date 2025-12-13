@@ -50,11 +50,4 @@ void FakeDataDecoderService::BindPixCodeValidator(
   FAIL();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void FakeDataDecoderService::BindBleScanParser(
-    mojo::PendingReceiver<mojom::BleScanParser> receiver) {
-  FAIL();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 }  // namespace data_decoder

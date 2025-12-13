@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -95,13 +96,13 @@ void MockMDnsSocketFactory::CreateSocket(
   sockets->push_back(std::move(new_socket));
 }
 
-void MockMDnsSocketFactory::SimulateReceive(const uint8_t* packet, int size) {
-  DCHECK(recv_buffer_size_ >= size);
+void MockMDnsSocketFactory::SimulateReceive(base::span<const uint8_t> packet) {
+  DCHECK_GE(recv_buffer_size_, static_cast<int>(packet.size()));
   DCHECK(recv_buffer_.get());
   DCHECK(!recv_callback_.is_null());
 
-  UNSAFE_TODO(memcpy(recv_buffer_->data(), packet, size));
-  std::move(recv_callback_).Run(size);
+  recv_buffer_->span().copy_prefix_from(packet);
+  std::move(recv_callback_).Run(packet.size());
 }
 
 int MockMDnsSocketFactory::RecvFromInternal(IOBuffer* buffer,

@@ -114,7 +114,7 @@ suite('InvalidSettingsTest', function() {
           // Print preview should have failed with invalid settings, since
           // FooDevice was set as an invalid printer.
           assertFalse(overlay.classList.contains('invisible'));
-          assertTrue(messageEl.textContent!.includes(expectedMessage));
+          assertTrue(messageEl.textContent.includes(expectedMessage));
           assertEquals(State.ERROR, page.state);
 
           // Verify that the print button is disabled
@@ -143,7 +143,7 @@ suite('InvalidSettingsTest', function() {
           // Message should be gone.
           await microtasksFinished();
           assertTrue(overlay.classList.contains('invisible'));
-          assertFalse(messageEl.textContent!.includes(expectedMessage));
+          assertFalse(messageEl.textContent.includes(expectedMessage));
 
           // Has active print button and successfully 'prints', indicating
           assertFalse(printButton.disabled);

@@ -20,27 +20,27 @@ public interface UntypedHandle extends Handle {
      * @see org.chromium.mojo.system.Handle#pass()
      */
     @Override
-    public UntypedHandle pass();
+    UntypedHandle pass();
 
     /**
      * Returns the underlying handle, as a {@link MessagePipeHandle}, invalidating this
      * representation.
      */
-    public MessagePipeHandle toMessagePipeHandle();
+    MessagePipeHandle toMessagePipeHandle();
 
     /**
      * Returns the underlying handle, as a {@link ConsumerHandle}, invalidating this representation.
      */
-    public ConsumerHandle toDataPipeConsumerHandle();
+    ConsumerHandle toDataPipeConsumerHandle();
 
     /**
      * Returns the underlying handle, as a {@link ProducerHandle}, invalidating this representation.
      */
-    public ProducerHandle toDataPipeProducerHandle();
+    ProducerHandle toDataPipeProducerHandle();
 
     /**
      * Returns the underlying handle, as a {@link SharedBufferHandle}, invalidating this
      * representation.
      */
-    public SharedBufferHandle toSharedBufferHandle();
+    SharedBufferHandle toSharedBufferHandle();
 }

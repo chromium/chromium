@@ -35,3 +35,5 @@ void ExtractCertVerifyResult(const JavaRef<jobject>& result,
 }
 
 }  // namespace net::android
+
+DEFINE_JNI(AndroidCertVerifyResult)

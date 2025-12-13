@@ -26,7 +26,6 @@
 #include "hb-ot.h"
 #include "hb.h"
 #include "skia/ext/skia_utils_base.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -49,7 +48,7 @@
 #endif
 
 namespace blink {
-FontPlatformData::FontPlatformData(WTF::HashTableDeletedValueType)
+FontPlatformData::FontPlatformData(HashTableDeletedValueType)
     : is_hash_table_deleted_value_(true) {}
 
 FontPlatformData::FontPlatformData() = default;
@@ -282,47 +281,6 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
   return font;
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_IOS)
-
-IdentifiableToken FontPlatformData::ComputeTypefaceDigest() const {
-  DCHECK(typeface_);
-  int table_count = typeface_->countTables();
-
-  // If no tables are found, return 0, to make it clearer that no identifiable
-  // information was available.
-  if (!table_count)
-    return 0;
-
-  IdentifiableTokenBuilder builder;
-  builder.AddValue(table_count);
-
-  Vector<SkFontTableTag> all_table_tags(table_count);
-  int tags_copied = typeface_->readTableTags(all_table_tags);
-  DCHECK_EQ(tags_copied, table_count);
-
-  // The tags are probably already sorted, but let's make sure.
-  std::sort(all_table_tags.begin(), all_table_tags.end());
-  for (SkFontTableTag table_tag : all_table_tags) {
-    builder.AddValue(table_tag).AddValue(typeface_->getTableSize(table_tag));
-  }
-
-  // These tables should both be small enough to compute a digest quickly and
-  // varied enough to ensure that different fonts have distinct hashes.
-  constexpr SkFontTableTag kTablesToFullyDigest[] = {
-      SkSetFourByteTag('c', 'm', 'a', 'p'),
-      SkSetFourByteTag('h', 'e', 'a', 'd'),
-      SkSetFourByteTag('n', 'a', 'm', 'e'),
-  };
-  for (SkFontTableTag table_tag : kTablesToFullyDigest) {
-    base::span<const uint8_t> table_data_span;
-    sk_sp<SkData> table_data = typeface_->copyTableData(table_tag);
-    if (table_data) {
-      table_data_span = skia::as_byte_span(*table_data);
-    }
-    builder.AddAtomic(table_data_span);
-  }
-
-  return builder.GetToken();  // hasher.GetHash();
-}
 
 String FontPlatformData::GetPostScriptName() const {
   if (!typeface_)

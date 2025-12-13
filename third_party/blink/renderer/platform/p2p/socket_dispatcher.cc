@@ -95,7 +95,7 @@ void P2PSocketDispatcher::NetworkListChanged(
 
   // TODO(crbug.com/787254): Remove this helper when network_list_observer.h
   // gets moved from blink/public to blink/renderer, and operate over
-  // WTF::Vector.
+  // Vector.
   std::vector<net::NetworkInterface> copy(networks.size());
   for (wtf_size_t i = 0; i < networks.size(); i++)
     copy[i] = networks[i];
@@ -118,7 +118,7 @@ void P2PSocketDispatcher::RequestNetworkEventsIfNecessary() {
   if (network_notification_client_receiver_.is_bound()) {
     // TODO(crbug.com/787254): Remove this helper when network_list_observer.h
     // gets moved from blink/public to blink/renderer, and operate over
-    // WTF::Vector.
+    // blink::Vector.
     std::vector<net::NetworkInterface> copy(networks_.size());
     for (wtf_size_t i = 0; i < networks_.size(); i++)
       copy[i] = networks_[i];

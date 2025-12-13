@@ -114,6 +114,7 @@ bool ShouldIgnoreGeneratedEventForAutomation(
     case AXEventGenerator::Event::CHILDREN_CHANGED:
     case AXEventGenerator::Event::COLLAPSED:
     case AXEventGenerator::Event::CONTROLS_CHANGED:
+    case AXEventGenerator::Event::DEFAULT_ACTION_VERB_CHANGED:
     case AXEventGenerator::Event::DETAILS_CHANGED:
     case AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
     case AXEventGenerator::Event::DESCRIPTION_CHANGED:

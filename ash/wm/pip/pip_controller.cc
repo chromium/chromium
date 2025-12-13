@@ -68,7 +68,7 @@ gfx::Size GetMaxSize(WindowState* pip_window_state) {
 
 gfx::Size GetDefaultSize(WindowState* pip_window_state) {
   gfx::Size work_area_size =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(pip_window_state->window()->GetRootWindow())
           .work_area_size();
 

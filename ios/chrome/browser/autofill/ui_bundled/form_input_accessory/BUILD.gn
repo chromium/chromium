@@ -27,10 +27,11 @@ source_set("form_input_accessory") {
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
     "//components/feature_engagement/public",
+    "//components/omnibox/browser:pref_names",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios",
-    "//components/plus_addresses/resources/strings",
+    "//components/plus_addresses/core/browser/resources/strings",
     "//components/prefs",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -79,7 +80,10 @@ source_set("form_input_accessory") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "form_input_accessory_mediator_unittest.mm" ]
+  sources = [
+    "form_input_accessory_mediator_unittest.mm",
+    "form_input_accessory_view_controller_unittest.mm",
+  ]
   deps = [
     ":form_input_accessory",
     "//base/test:test_support",
@@ -89,13 +93,16 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:form_util_feature",
     "//components/autofill/ios/form_util:test_support",
+    "//components/test/ios",
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/model:model_shared",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/ui_bundled/branding:branding_ui",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
@@ -162,6 +169,7 @@ source_set("eg_app_support+eg2") {
     ":common",
     "//base",
     "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
     "//ios/chrome/test/app:test_support",
   ]
 }

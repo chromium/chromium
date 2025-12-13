@@ -4,8 +4,6 @@
 
 #include "remoting/protocol/frame_stats.h"
 
-#include "remoting/proto/video.pb.h"
-
 namespace remoting::protocol {
 
 ClientFrameStats::ClientFrameStats() = default;
@@ -17,39 +15,6 @@ ClientFrameStats& ClientFrameStats::operator=(const ClientFrameStats&) =
 HostFrameStats::HostFrameStats() = default;
 HostFrameStats::HostFrameStats(const HostFrameStats&) = default;
 HostFrameStats::~HostFrameStats() = default;
-
-// static
-HostFrameStats HostFrameStats::GetForVideoPacket(const VideoPacket& packet) {
-  HostFrameStats result;
-  result.frame_size = packet.data().size();
-  if (packet.has_latest_event_timestamp()) {
-    result.latest_event_timestamp =
-        base::TimeTicks::FromInternalValue(packet.latest_event_timestamp());
-  }
-  if (packet.has_capture_time_ms()) {
-    result.capture_delay = base::Milliseconds(packet.capture_time_ms());
-  }
-  if (packet.has_encode_time_ms()) {
-    result.encode_delay = base::Milliseconds(packet.encode_time_ms());
-  }
-  if (packet.has_capture_pending_time_ms()) {
-    result.capture_pending_delay =
-        base::Milliseconds(packet.capture_pending_time_ms());
-  }
-  if (packet.has_capture_overhead_time_ms()) {
-    result.capture_overhead_delay =
-        base::Milliseconds(packet.capture_overhead_time_ms());
-  }
-  if (packet.has_encode_pending_time_ms()) {
-    result.encode_pending_delay =
-        base::Milliseconds(packet.encode_pending_time_ms());
-  }
-  if (packet.has_send_pending_time_ms()) {
-    result.send_pending_delay =
-        base::Milliseconds(packet.send_pending_time_ms());
-  }
-  return result;
-}
 
 // static
 HostFrameStats HostFrameStats::FromFrameStatsMessage(

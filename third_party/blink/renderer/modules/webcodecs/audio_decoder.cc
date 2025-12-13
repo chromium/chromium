@@ -242,17 +242,14 @@ std::optional<media::AudioType> AudioDecoder::IsValidAudioDecoderConfig(
     return std::nullopt;
   }
 
-  media::AudioCodec codec = media::AudioCodec::kUnknown;
-  bool is_codec_ambiguous = true;
-  const bool parse_succeeded = ParseAudioCodecString(
-      "", config.codec().Utf8(), &is_codec_ambiguous, &codec);
-
-  if (!parse_succeeded || is_codec_ambiguous) {
+  std::optional<media::AudioType> audio_type =
+      media::ParseAudioCodecString("", config.codec().Utf8());
+  if (!audio_type) {
     *js_error_message = "Unknown or ambiguous codec name.";
     return media::AudioType{.codec = media::AudioCodec::kUnknown};
   }
 
-  return media::AudioType{.codec = codec};
+  return audio_type;
 }
 
 // static

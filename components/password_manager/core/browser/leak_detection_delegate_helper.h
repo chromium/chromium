@@ -29,9 +29,8 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   // Type alias for `callback_`.
   using LeakTypeReply = base::OnceCallback<void(PasswordForm::Store,
                                                 IsReused,
-                                                GURL,
-                                                std::u16string,
-                                                std::u16string,
+                                                IsSavedAsBackup,
+                                                PasswordForm,
                                                 std::vector<GURL>)>;
 
   LeakDetectionDelegateHelper(
@@ -47,9 +46,7 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
 
   // Request all credentials with `password` from the store.
   // Results are passed to `OnGetPasswordStoreResults`.
-  void ProcessLeakedPassword(GURL url,
-                             std::u16string username,
-                             std::u16string password);
+  void ProcessLeakedPassword(PasswordForm credentials);
 
  private:
   // PasswordStoreConsumer:
@@ -65,9 +62,7 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   scoped_refptr<PasswordStoreInterface> profile_store_;
   scoped_refptr<PasswordStoreInterface> account_store_;
   LeakTypeReply callback_;
-  GURL url_;
-  std::u16string username_;
-  std::u16string password_;
+  PasswordForm credentials_;
 
   base::RepeatingClosure barrier_closure_;
   std::vector<std::unique_ptr<PasswordForm>> partial_results_;

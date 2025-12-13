@@ -11,6 +11,7 @@ import '/strings.m.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {Log, VersionInfo} from './types.js';
@@ -44,7 +45,16 @@ function displayList() {
   }
   logs.forEach(log => {
     const logMessage = document.createElement('li');
-    logMessage.textContent = `[${log.logSeverity}] ${log.message}`;
+
+    // Use en-CA locale to get a format of YYYY-MM-DD, HH:MM:SS.
+    const timestamp = new Date(log.timestamp).toLocaleString('en-CA', {
+      timeZoneName: 'short',
+      hour12: false,
+    });
+
+    // `log.message` is already escaped on the C++ side with EscapeForHTML().
+    logMessage.innerHTML =
+        sanitizeInnerHtml(`[${log.logSeverity}][${timestamp}] ${log.message}`);
     logMessageContainer.appendChild(logMessage);
   });
 }

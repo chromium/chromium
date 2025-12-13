@@ -13,10 +13,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -47,13 +47,16 @@ public class ChromeCachedFlagsTest {
     // change.
     //
     // DO NOT ADD FLAGS TO THIS LIST.
-    private static final Set<CachedFlag> BASELINE = Set.of(ChromeFeatureList.sSafetyHubMagicStack);
+    private static final Set<CachedFlag> BASELINE = Set.of();
 
     /**
      * Tests that the |defaultValueForTests| in the CachedFlag declaration matches
      * fieldtrial_testing_config.json.
      *
      * <p>Also breaks when the baseline contains unnecessary exceptions.
+     *
+     * <p>TODO(crbug.com/445490091): Write a test to ensure the |defaultValue| in the CachedFlag
+     * declaration matches the default value in native.
      */
     @Test
     @MediumTest
@@ -61,6 +64,10 @@ public class ChromeCachedFlagsTest {
         // In Chrome-branded builds, the fieldtrial_testing_config.json isn't applied, so
         // flag values may differ.
         Assume.assumeTrue(!BuildConfig.IS_CHROME_BRANDED);
+
+        // If the switch --disable-field-trial-config is set, the fieldtrial_testing_config.json
+        // isn't applied either.
+        Assume.assumeTrue(!CommandLine.getInstance().hasSwitch("disable-field-trial-config"));
 
         mCtaTestRule.startOnBlankPage();
 

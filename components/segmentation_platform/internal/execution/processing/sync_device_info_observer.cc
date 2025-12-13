@@ -82,7 +82,6 @@ const char* ConvertOsTypeToString(OsType os_type) {
 }  // namespace
 
 BASE_FEATURE(kSegmentationDeviceCountByOsType,
-             "SegmentationDeviceCountByOsType",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 SyncDeviceInfoObserver::SyncDeviceInfoObserver(

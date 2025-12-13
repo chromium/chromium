@@ -26,6 +26,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/metal_util/hdr_copier_layer.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cocoa/animation_utils.h"
@@ -40,15 +41,12 @@ namespace ui {
 // Transitioning between AVSampleBufferDisplayLayer and CALayer with IOSurface
 // contents can cause flickering.
 // https://crbug.com/1441762
-BASE_FEATURE(kFullscreenLowPowerBackdropMac,
-             "FullscreenLowPowerBackdropMac",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFullscreenLowPowerBackdropMac, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
 // Show borders around RenderPassDrawQuad CALayers. which is the output of a
 // non-root render pass.
 BASE_FEATURE(kShowMacRenderPassDrawQuadBorders,
-             "ShowMacRenderPassDrawQuadBorders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -137,7 +135,7 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
     AVSampleBufferDisplayLayer* av_layer,
     IOSurfaceRef io_surface,
     const gfx::ColorSpace& io_surface_color_space,
-    std::optional<gfx::HDRMetadata> hdr_metadata) {
+    const gfx::HDRMetadata& hdr_metadata) {
   CVReturn cv_return = kCVReturnSuccess;
 
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
@@ -248,7 +246,7 @@ CARendererLayerTree::SolidColorContents::Get(SkColor4f color) {
     return found->second;
 
   const gfx::Size size(kSolidColorContentsSize, kSolidColorContentsSize);
-  gfx::BufferFormat buffer_format = gfx::BufferFormat::BGRA_8888;
+  viz::SharedImageFormat si_format = viz::SinglePlaneFormat::kBGRA_8888;
   SkColorType color_type = kBGRA_8888_SkColorType;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 
@@ -260,7 +258,7 @@ CARendererLayerTree::SolidColorContents::Get(SkColor4f color) {
   }
 
   base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface =
-      CreateIOSurface(size, buffer_format);
+      CreateIOSurface(size, si_format);
   if (!io_surface)
     return nullptr;
   IOSurfaceSetColorSpace(io_surface.get(), color_space);

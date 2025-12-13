@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
+#include "content/public/browser/web_contents.h"
 
 namespace content {
 class BrowserContext;
@@ -36,6 +37,7 @@ class ExtensionInstallUIDesktop : public ExtensionInstallUI {
   // Shows the install bubble UI.
   static void ShowBubble(scoped_refptr<const extensions::Extension> extension,
                          Browser* browser,
+                         Profile* profile,
                          const SkBitmap& icon);
 };
 

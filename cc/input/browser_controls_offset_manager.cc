@@ -14,6 +14,7 @@
 #include "base/types/optional_ref.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
+#include "cc/input/browser_controls_state.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/offset_tag.h"
@@ -280,19 +281,27 @@ void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
                                      old_bottom_height / BottomControlsHeight()
                                : BottomControlsShownRatio();
   if (!animate_changes) {
-    // If the controls were fully shown, we want to keep them fully shown even
-    // after the heights changed. If either heights changed when the controls
-    // were at the min-height, the shown ratios need to be snapped to the new
-    // min-shown-ratio to keep the controls at the min height. For any other
-    // cases, we should update the shown ratio so the visible height remains the
-    // same.
-    if (TopControlsShownRatio() == 1.f) {
+    // 1. If browser controls params were updated when permitted_state_ is
+    // hidden, we are always snapping the controls to the min-height.
+    // 2. If the controls were already fully shown, we want to keep them fully
+    // shown even after the heights changed.
+    // 3. If either heights changed when the controls were at the min-height,
+    // the shown ratios need to be snapped to the new min-shown-ratio to keep
+    // the controls at the min height.
+    // 4. For any other cases, we should update the shown ratio so the visible
+    // height remains the same.
+    bool hide_controls = (permitted_state_ == BrowserControlsState::kHidden);
+    if (hide_controls) {
+      new_top_ratio = TopControlsMinShownRatio();
+    } else if (TopControlsShownRatio() == 1.f) {
       new_top_ratio = 1.f;
     } else if (TopControlsShownRatio() == OldTopControlsMinShownRatio()) {
       new_top_ratio = TopControlsMinShownRatio();
     }
 
-    if (BottomControlsShownRatio() == 1.f) {
+    if (hide_controls) {
+      new_bottom_ratio = BottomControlsMinShownRatio();
+    } else if (BottomControlsShownRatio() == 1.f) {
       new_bottom_ratio = 1.f;
     } else if (BottomControlsShownRatio() == OldBottomControlsMinShownRatio()) {
       new_bottom_ratio = BottomControlsMinShownRatio();

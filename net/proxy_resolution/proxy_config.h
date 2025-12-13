@@ -7,15 +7,13 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/base/proxy_server.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -23,12 +21,13 @@ class ProxyInfo;
 
 // ProxyConfig describes a user's proxy settings.
 //
-// There are two categories of proxy settings:
-//   (1) Automatic (indicates the methods to obtain a PAC script)
-//   (2) Manual (simple set of proxy servers per scheme, and bypass patterns)
+// There are three categories of proxy settings:
+// (1) Override rules (enterprise administrator-configured hosts and conditions)
+// (2) Automatic (indicates the methods to obtain a PAC script)
+// (3) Manual (simple set of proxy servers per scheme, and bypass patterns)
 //
-// When both automatic and manual settings are specified, the Automatic ones
-// take precedence over the manual ones.
+// When multiple settings types are specified, the above ordering is used for
+// precedence.
 //
 // For more details see:
 // http://www.chromium.org/developers/design-documents/network-stack/proxy-settings-fallback
@@ -125,7 +124,7 @@ class NET_EXPORT ProxyConfig {
     }
 
     // Exceptions for when not to use a proxy.
-    ProxyBypassRules bypass_rules;
+    ProxyHostMatchingRules bypass_rules;
 
     // Reverse the meaning of |bypass_rules|.
     bool reverse_bypass = false;
@@ -157,6 +156,60 @@ class NET_EXPORT ProxyConfig {
     const ProxyList* GetProxyListForWebSocketScheme() const;
   };
 
+  // `ProxyOverrideRule` represents an entry in the "ProxyOverrideRules" policy.
+  // For the rule's override logic to be applied, the `destination_matchers`
+  // field must match the provided hostname and every condition in
+  // `dns_conditions` must be met. If `dns_conditions` is empty, only
+  // `destination_matchers` has to be matched for the rule to apply.
+  //
+  // This is currently a distinct class from `ProxyRules` since it aims to cover
+  // different functionality (ex. having its logic applied before PAC scripts,
+  // supporting DNS resolution conditions). If both classes end up supporting
+  // the same set of functionality, they can be merged and simply populate
+  // different data members of `ProxyConfig` to correctly apply precedence
+  // between override rules and manual settings.
+  struct NET_EXPORT ProxyOverrideRule {
+    // Represents a DNS condition to be met by the rule for its `proxy_list` to
+    // be used. Each condition includes a `host` to try to resolve, and the rule
+    // only applies if host resolution matches the expected `result`.
+    struct NET_EXPORT DnsProbeCondition {
+      enum Result { kNotFound, kResolved };
+
+      bool operator==(const DnsProbeCondition& other) const;
+
+      // Creates a Value::Dict dump of this condition.
+      base::Value::Dict ToDict() const;
+
+      url::SchemeHostPort host;
+      Result result = kNotFound;
+    };
+
+    ProxyOverrideRule();
+    ProxyOverrideRule(const ProxyOverrideRule& other);
+    ProxyOverrideRule& operator=(const ProxyOverrideRule& other);
+    ProxyOverrideRule(ProxyOverrideRule&& other);
+    ProxyOverrideRule& operator=(ProxyOverrideRule&& other);
+    ~ProxyOverrideRule();
+
+    // Returns true if `this` has the same serialized list of rules as `other`.
+    bool operator==(const ProxyOverrideRule& other) const;
+
+    // Creates a Value::Dict dump of this override rule.
+    base::Value::Dict ToDict() const;
+
+    // Returns true if `url` matches `destination_matchers` without matching
+    // `exclude_destination_matchers`. This should be used instead of directly
+    // accessing the matcher members for evaluating if the rule is applicable or
+    // not.
+    bool MatchesDestination(const GURL& url) const;
+
+    ProxyHostMatchingRules destination_matchers;
+    ProxyHostMatchingRules exclude_destination_matchers;
+    std::vector<DnsProbeCondition> dns_conditions;
+
+    ProxyList proxy_list;
+  };
+
   ProxyConfig();
   ProxyConfig(const ProxyConfig& config);
   ProxyConfig(ProxyConfig&& config);
@@ -175,6 +228,14 @@ class NET_EXPORT ProxyConfig {
 
   // Creates a Value dump of this configuration.
   base::Value ToValue() const;
+
+  const std::vector<ProxyOverrideRule>& proxy_override_rules() const {
+    return proxy_override_rules_;
+  }
+
+  void set_proxy_override_rules(std::vector<ProxyOverrideRule> rules) {
+    proxy_override_rules_ = std::move(rules);
+  }
 
   ProxyRules& proxy_rules() { return proxy_rules_; }
 
@@ -227,6 +288,12 @@ class NET_EXPORT ProxyConfig {
   }
 
  private:
+  // Rules set by the "ProxyOverrideRules" policy. These are checked in order
+  // until one matches, in which case its `proxy_list` is used. This field is
+  // checked before the other fields in this class, see the comment on top of
+  // `ProxyConfig` for more details.
+  std::vector<ProxyOverrideRule> proxy_override_rules_;
+
   // True if the proxy configuration should be auto-detected.
   bool auto_detect_ = false;
 

@@ -15,6 +15,7 @@
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_shadow.h"
@@ -23,6 +24,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -44,6 +46,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -95,11 +98,20 @@ ActionButtonContainerView::ErrorView::ErrorView()
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetInsideBorderInsets(kErrorViewBorderInsets);
 
-  SetBackground(views::CreateRoundedRectBackground(
-      cros_tokens::kCrosSysSystemBaseElevated,
-      gfx::RoundedCornersF(kErrorViewCornerRadius)));
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kErrorViewCornerRadius));
+
+  SetBackground(views::CreateSolidBackground(
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque));
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
+
   shadow_->SetRoundedCornerRadius(kErrorViewCornerRadius);
   capture_mode_util::SetHighlightBorder(
       this, kErrorViewCornerRadius,

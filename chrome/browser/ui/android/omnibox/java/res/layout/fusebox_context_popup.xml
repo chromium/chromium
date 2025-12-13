@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="16dp"
+        tools:ignore="MissingConstraints">
+        <!--
+        Horizontal placement constraints supplied by styles for uniformity.
+        -->
+        <org.chromium.ui.widget.ButtonCompat
+            style="@style/Fusebox.PopupMenu.Item"
+            android:id="@+id/fusebox_add_current_tab"
+            android:visibility="gone"
+            android:text="@string/fusebox_add_current_tab"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <!--
+        TODO(crbug.com/436888404): either drop clipboard or use proper strings.
+        -->
+        <org.chromium.ui.widget.ButtonCompat
+            style="@style/Fusebox.PopupMenu.Item"
+            android:id="@+id/fusebox_paste_from_clipboard_button"
+            android:visibility="gone"
+            android:drawableStart="@drawable/ic_content_copy"
+            android:text="@string/clipboard_permission_title"
+            app:layout_constraintTop_toBottomOf="@id/fusebox_add_current_tab"/>
+
+        <org.chromium.ui.widget.ButtonCompat
+            style="@style/Fusebox.PopupMenu.Item"
+            android:id="@+id/fusebox_pick_tabs_button"
+            android:visibility="gone"
+            android:drawableStart="@drawable/ic_tabs_24dp"
+            android:text="@string/omnibox_navattach_tabs"
+            android:contentDescription="@string/accessibility_omnibox_add_tabs"
+            app:layout_constraintTop_toBottomOf="@id/fusebox_paste_from_clipboard_button"/>
+
+        <org.chromium.ui.widget.ButtonCompat
+            style="@style/Fusebox.PopupMenu.Item"
+            android:id="@+id/fusebox_camera_button"
+            android:drawableStart="@drawable/ic_photo_camera"
+            android:text="@string/photo_picker_camera"
+            android:contentDescription="@string/accessibility_omnibox_add_camera_picture"
+            app:layout_constraintTop_toBottomOf="@id/fusebox_pick_tabs_button"/>
+
+        <org.chromium.ui.widget.ButtonCompat
+            style="@style/Fusebox.PopupMenu.Item"
+            android:id="@+id/fusebox_pick_picture_button"
+            android:drawableStart="@drawable/ic_collections_grey"
+            android:text="@string/omnibox_navattach_gallery"
+            android:contentDescription="@string/accessibility_omnibox_add_images"
+            app:layout_constraintTop_toBottomOf="@id/fusebox_camera_button"/>
+
+        <org.chromium.ui.widget.ButtonCompat
+            style="@style/Fusebox.PopupMenu.Item"
+            android:id="@+id/fusebox_pick_file_button"
+            android:drawableStart="@drawable/ic_attach_file_24dp"
+            android:text="@string/omnibox_navattach_files"
+            android:contentDescription="@string/accessibility_omnibox_add_files"
+            app:layout_constraintTop_toBottomOf="@id/fusebox_pick_picture_button"/>
+
+        <View
+            style="@style/Fusebox.PopupMenu.Divider"
+            android:id="@+id/fusebox_request_type_divider"
+            app:layout_constraintTop_toBottomOf="@id/fusebox_pick_file_button"/>
+
+        <org.chromium.ui.widget.ButtonCompat
+            style="@style/Fusebox.PopupMenu.Item"
+            android:id="@+id/fusebox_ai_mode_button"
+            android:drawableStart="@drawable/search_spark_black_24dp"
+            android:text="@string/ai_mode_entrypoint_label"
+            android:contentDescription="@string/accessibility_omnibox_enable_ai_mode"
+            app:layout_constraintTop_toBottomOf="@id/fusebox_request_type_divider"/>
+
+        <org.chromium.ui.widget.ButtonCompat
+            style="@style/Fusebox.PopupMenu.Item"
+            android:id="@+id/fusebox_create_image_button"
+            android:drawableStart="@drawable/create_image_24dp"
+            android:text="@string/omnibox_create_image"
+            android:contentDescription="@string/accessibility_omnibox_create_image"
+            app:layout_constraintTop_toBottomOf="@id/fusebox_ai_mode_button"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

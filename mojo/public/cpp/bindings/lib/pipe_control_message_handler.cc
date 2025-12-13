@@ -5,6 +5,7 @@
 #include "mojo/public/cpp/bindings/pipe_control_message_handler.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
@@ -27,6 +28,37 @@ void PipeControlMessageHandler::SetDescription(const std::string& description) {
 // static
 bool PipeControlMessageHandler::IsPipeControlMessage(const Message* message) {
   return !IsValidInterfaceId(message->interface_id());
+}
+
+// static
+std::optional<InterfaceId>
+PipeControlMessageHandler::IsPeerAssociatedEndpointClosedEvent(
+    const Message& message) {
+  if (!IsPipeControlMessage(&message)) {
+    return std::nullopt;
+  }
+  if (message.name() != pipe_control::kRunOrClosePipeMessageId) {
+    return std::nullopt;
+  }
+  // The APIs to deserialize a mojo::Message need a non-const message, since
+  // they may need to take ownership of things like embedded handles. In this
+  // case we don't want to modify the Message, so only deserialize the payload.
+  // This works since the only messages we're interested in don't contain any
+  // handles.
+  pipe_control::RunOrClosePipeMessageParamsPtr params_ptr;
+  if (!pipe_control::RunOrClosePipeMessageParams::Deserialize(
+          message.payload(), message.payload_num_bytes(), &params_ptr)) {
+    return std::nullopt;
+  }
+  // Deserialize will report success for an empty payload, so explicitly check
+  // if we actually deserialized parameters.
+  if (!params_ptr ||
+      !params_ptr->input->is_peer_associated_endpoint_closed_event()) {
+    return std::nullopt;
+  }
+  const auto& event =
+      params_ptr->input->get_peer_associated_endpoint_closed_event();
+  return event->id;
 }
 
 bool PipeControlMessageHandler::Accept(Message* message) {

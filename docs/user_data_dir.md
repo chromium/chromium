@@ -44,11 +44,12 @@ The default location is in the local app data folder:
 
 * [Chrome] `%LOCALAPPDATA%\Google\Chrome\User Data`
 * [Chrome Beta] `%LOCALAPPDATA%\Google\Chrome Beta\User Data`
+* [Chrome Dev] `%LOCALAPPDATA%\Google\Chrome Dev\User Data`
 * [Chrome Canary] `%LOCALAPPDATA%\Google\Chrome SxS\User Data`
 * [Chrome for Testing] `%LOCALAPPDATA%\Google\Chrome for Testing\User Data`
 * [Chromium] `%LOCALAPPDATA%\Chromium\User Data`
 
-(The canary channel suffix is determined using
+(The channel suffix is determined using
 [`InstallConstants::install_suffix`](https://cs.chromium.org/chromium/src/chrome/install_static/install_constants.h?q=install_suffix).)
 
 ### Mac OS X
@@ -57,11 +58,12 @@ The default location is in the `Application Support` folder:
 
 * [Chrome] `~/Library/Application Support/Google/Chrome`
 * [Chrome Beta] `~/Library/Application Support/Google/Chrome Beta`
+* [Chrome Dev] `~/Library/Application Support/Google/Chrome Dev`
 * [Chrome Canary] `~/Library/Application Support/Google/Chrome Canary`
 * [Chrome for Testing] `~/Library/Application Support/Google/Chrome for Testing`
 * [Chromium] `~/Library/Application Support/Chromium`
 
-(The canary channel suffix is determined using the `CrProductDirName` key in the
+(The channel suffix is determined using the `CrProductDirName` key in the
 browser app's `Info.plist`.)
 
 ### Linux
@@ -71,11 +73,13 @@ The default location is in `~/.config`:
 * [Chrome Stable] `~/.config/google-chrome`
 * [Chrome Beta] `~/.config/google-chrome-beta`
 * [Chrome Dev] `~/.config/google-chrome-unstable`
+* [Chrome Canary] `~/.config/google-chrome-canary`
 * [Chrome for Testing] `~/.config/google-chrome-for-testing`
 * [Chromium] `~/.config/chromium`
 
-(The beta and dev channel suffixes are determined from `$CHROME_VERSION_EXTRA`,
-which is passed by the [launch wrapper script](https://cs.chromium.org/chromium/src/chrome/installer/linux/common/wrapper?q=CHROME_VERSION_EXTRA).)
+(The beta, dev, and canary channel suffixes are determined from
+`$CHROME_VERSION_EXTRA`, which is passed by the
+[launch wrapper script](https://cs.chromium.org/chromium/src/chrome/installer/linux/common/wrapper?q=CHROME_VERSION_EXTRA).)
 
 The `~/.config` portion of the default location can be overridden by
 `$CHROME_CONFIG_HOME` (since M61) or by `$XDG_CONFIG_HOME`.

@@ -29,6 +29,7 @@
 #include "components/user_education/common/feature_promo/impl/messaging_coordinator.h"
 #include "components/user_education/common/feature_promo/impl/precondition_list_provider.h"
 #include "components/user_education/common/product_messaging_controller.h"
+#include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
@@ -118,6 +119,7 @@ struct FeaturePromoController25::PromoData {
   std::optional<Priority> pending_priority;
 
   FeaturePromoParams& params() { return eligible_promo->promo_params; }
+  UserEducationContextPtr& context() { return eligible_promo->promo_context; }
 
   ui::TrackedElement* GetAnchorElement() {
     return eligible_promo
@@ -185,12 +187,13 @@ FeaturePromoController25::~FeaturePromoController25() {
 }
 
 FeaturePromoResult FeaturePromoController25::CanShowPromo(
-    const FeaturePromoParams& params) const {
+    const FeaturePromoParams& params,
+    const UserEducationContextPtr& context) const {
   auto* const spec = registry()->GetParamsForFeature(*params.feature);
   if (!spec) {
     return FeaturePromoResult::kError;
   }
-  auto result = private_->queues.CanShow(*spec, params);
+  auto result = private_->queues.CanShow(*spec, params, context);
   if (result && !private_->tracker_->WouldTriggerHelpUI(*params.feature)) {
     // This can happen if a non-IPH promo is showing.
     // These are strongly advised against but they can happen.
@@ -200,11 +203,13 @@ FeaturePromoResult FeaturePromoController25::CanShowPromo(
 }
 
 void FeaturePromoController25::MaybeShowStartupPromo(
-    FeaturePromoParams params) {
-  MaybeShowPromo(std::move(params));
+    FeaturePromoParams params,
+    UserEducationContextPtr context) {
+  MaybeShowPromo(std::move(params), std::move(context));
 }
 
-void FeaturePromoController25::MaybeShowPromo(FeaturePromoParams params) {
+void FeaturePromoController25::MaybeShowPromo(FeaturePromoParams params,
+                                              UserEducationContextPtr context) {
   auto* const spec = registry()->GetParamsForFeature(*params.feature);
   if (!spec) {
     PostShowPromoResult(std::move(params.show_promo_result_callback),
@@ -216,6 +221,13 @@ void FeaturePromoController25::MaybeShowPromo(FeaturePromoParams params) {
       current_promo()->iph_feature() == &params.feature.get()) {
     PostShowPromoResult(std::move(params.show_promo_result_callback),
                         FeaturePromoResult::kAlreadyQueued);
+    return;
+  }
+
+  // If the context is not valid, it should abort immediately.
+  if (!context->IsValid()) {
+    PostShowPromoResult(std::move(params.show_promo_result_callback),
+                        FeaturePromoResult::kAnchorNotVisible);
     return;
   }
 
@@ -242,12 +254,13 @@ void FeaturePromoController25::MaybeShowPromo(FeaturePromoParams params) {
       weak_ptr_factory_.GetWeakPtr(), params.feature->name,
       std::move(params.show_promo_result_callback));
 
-  private_->queues.TryToQueue(*spec, std::move(params));
+  private_->queues.TryToQueue(*spec, std::move(params), std::move(context));
   MaybePostUpdate();
 }
 
 void FeaturePromoController25::MaybeShowPromoForDemoPage(
-    FeaturePromoParams params) {
+    FeaturePromoParams params,
+    UserEducationContextPtr context) {
   auto* const spec = registry()->GetParamsForFeature(*params.feature);
   if (!spec) {
     PostShowPromoResult(std::move(params.show_promo_result_callback),
@@ -260,7 +273,7 @@ void FeaturePromoController25::MaybeShowPromoForDemoPage(
     EndPromo(*feature, FeaturePromoClosedReason::kOverrideForDemo);
   }
   private_->demo_queue.FailAll(FeaturePromoResult::kCanceled);
-  private_->demo_queue.TryToQueue(*spec, std::move(params));
+  private_->demo_queue.TryToQueue(*spec, std::move(params), std::move(context));
 
   // This can happen immediately since the message to show the promo will come
   // in on a (mostly) fresh call stack.
@@ -368,6 +381,8 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
       std::move(promo_data.params().screen_reader_params);
   build_params.title_format = std::move(promo_data.params().title_params);
   build_params.can_snooze = promo_data.GetLifecycle()->CanSnooze();
+  build_params.arrow =
+      build_params.spec->GetBubbleArrow(build_params.anchor_element);
 
   // If the session policy allows overriding the current promo, abort it.
   if (current_promo()) {
@@ -403,7 +418,8 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
   set_current_promo(std::move(lifecycle));
 
   // Try to show the bubble and bail out if we cannot.
-  auto bubble = ShowPromoBubbleImpl(std::move(build_params));
+  auto bubble = ShowPromoBubbleImpl(std::move(build_params),
+                                    std::move(promo_data.context()));
   if (!bubble) {
     set_current_promo(nullptr);
     if (!promo_data.for_demo) {
@@ -538,8 +554,12 @@ void FeaturePromoController25::AddDemoPreconditionProviders(
     to_add_to.AddProvider(base::BindRepeating(
         [](base::WeakPtr<FeaturePromoController25> controller,
            const FeaturePromoSpecification& spec,
-           const FeaturePromoParams& params) {
+           const FeaturePromoParams& params,
+           const UserEducationContextPtr& context) {
           FeaturePromoPreconditionList list;
+          // Ensure the surface is not gone.
+          list.AddPrecondition(
+              std::make_unique<ContextValidPrecondition>(context));
           if (auto* const ptr = controller.get()) {
             list.AddPrecondition(std::make_unique<LifecyclePrecondition>(
                 ptr->CreateLifecycleFor(spec, params), /*for_demo=*/true));
@@ -550,7 +570,8 @@ void FeaturePromoController25::AddDemoPreconditionProviders(
   } else {
     to_add_to.AddProvider(base::BindRepeating(
         [](base::WeakPtr<FeaturePromoController25> controller,
-           const FeaturePromoSpecification& spec, const FeaturePromoParams&) {
+           const FeaturePromoSpecification& spec, const FeaturePromoParams&,
+           const UserEducationContextPtr& context) {
           FeaturePromoPreconditionList list;
           if (auto* const ptr = controller.get()) {
             // In demos, when repeating the same repeating promo to test it, the
@@ -562,7 +583,7 @@ void FeaturePromoController25::AddDemoPreconditionProviders(
                 ptr->current_promo() &&
                 ptr->current_promo()->iph_feature() == spec.feature();
             list.AddPrecondition(std::make_unique<AnchorElementPrecondition>(
-                spec, ptr->GetAnchorContext(), pre_increment));
+                spec, context->GetElementContext(), pre_increment));
           }
           return list;
         },
@@ -578,7 +599,8 @@ void FeaturePromoController25::AddPreconditionProviders(
     to_add_to.AddProvider(base::BindRepeating(
         [](base::WeakPtr<FeaturePromoController25> controller,
            const FeaturePromoSpecification& spec,
-           const FeaturePromoParams& params) {
+           const FeaturePromoParams& params,
+           const UserEducationContextPtr& context) {
           FeaturePromoPreconditionList list;
           if (auto* const ptr = controller.get()) {
             // First ensure that the feature is enabled.
@@ -595,7 +617,7 @@ void FeaturePromoController25::AddPreconditionProviders(
             list.AddPrecondition(
                 std::make_unique<MeetsFeatureEngagementCriteriaPrecondition>(
                     *params.feature, *ptr->feature_engagement_tracker()));
-            // Finally, verify that the promo is eligible to show based on
+            // Next, verify that the promo is eligible to show based on
             // session policy.
             list.AddPrecondition(std::make_unique<SessionPolicyPrecondition>(
                 ptr->session_policy(),
@@ -604,6 +626,9 @@ void FeaturePromoController25::AddPreconditionProviders(
                   return std::optional<
                       FeaturePromoPriorityProvider::PromoPriorityInfo>();
                 })));
+            // Finally, ensure the target surface is still present.
+            list.AddPrecondition(
+                std::make_unique<ContextValidPrecondition>(context));
           }
           return list;
         },
@@ -611,14 +636,15 @@ void FeaturePromoController25::AddPreconditionProviders(
   } else {
     to_add_to.AddProvider(base::BindRepeating(
         [](base::WeakPtr<FeaturePromoController25> controller,
-           const FeaturePromoSpecification& spec, const FeaturePromoParams&) {
+           const FeaturePromoSpecification& spec, const FeaturePromoParams&,
+           const UserEducationContextPtr& context) {
           FeaturePromoPreconditionList list;
           if (auto* const ptr = controller.get()) {
             list.AddPrecondition(
                 std::make_unique<ForwardingFeaturePromoPrecondition>(
                     ptr->private_->get_tracker_precondition()));
             list.AddPrecondition(std::make_unique<AnchorElementPrecondition>(
-                spec, controller->GetAnchorContext(), false));
+                spec, context->GetElementContext(), false));
             // Wait-for state *does* take the current promo into account, since
             // a higher-weight promo might block a lower-weight promo.
             list.AddPrecondition(std::make_unique<SessionPolicyPrecondition>(

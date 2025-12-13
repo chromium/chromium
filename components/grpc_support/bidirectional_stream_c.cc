@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/grpc_support/include/bidirectional_stream_c.h"
 
 #include <stdbool.h>
@@ -15,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -80,8 +76,8 @@ HeadersArray::HeadersArray(const quiche::HttpHeaderBlock& header_block)
   headers = new bidirectional_stream_header[count];
   size_t i = 0;
   for (const auto& it : headers_strings_) {
-    headers[i].key = it.first.c_str();
-    headers[i].value = it.second.c_str();
+    UNSAFE_TODO(headers[i]).key = it.first.c_str();
+    UNSAFE_TODO(headers[i]).value = it.second.c_str();
     ++i;
   }
 }
@@ -267,8 +263,8 @@ int bidirectional_stream_start(bidirectional_stream* stream,
   net::HttpRequestHeaders request_headers;
   if (headers) {
     for (size_t i = 0; i < headers->count; ++i) {
-      std::string name(headers->headers[i].key);
-      std::string value(headers->headers[i].value);
+      std::string name(UNSAFE_TODO(headers->headers[i]).key);
+      std::string value(UNSAFE_TODO(headers->headers[i]).value);
       if (!net::HttpUtil::IsValidHeaderName(name) ||
           !net::HttpUtil::IsValidHeaderValue(value)) {
         DLOG(ERROR) << "Invalid Header " << name << "=" << value;

@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
@@ -36,6 +37,7 @@
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -44,7 +46,9 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace policy {
@@ -77,14 +81,18 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     lock_to_single_user_manager_ = std::make_unique<LockToSingleUserManager>();
     scoped_feature_list_.InitAndEnableFeature(features::kPluginVm);
 
+    browser_controller_.emplace();
+
     BrowserWithTestWindowTest::SetUp();
 
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     arc::ArcSessionManager::SetUiEnabledForTesting(false);
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
+    arc_dlc_installer_ = std::make_unique<arc::ArcDlcInstaller>();
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
-            base::BindRepeating(arc::FakeArcSession::Create)));
+            base::BindRepeating(arc::FakeArcSession::Create)),
+        arc_dlc_installer_.get());
 
     arc_service_manager_->set_browser_context(profile());
     arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
@@ -104,6 +112,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc_session_manager_->Shutdown();
     arc_session_manager_.reset();
 
+    arc_dlc_installer_.reset();
+
     // Must reset browser context reference before profile destruction.
     arc_service_manager_->set_browser_context(nullptr);
 
@@ -115,6 +125,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     // ArcBridgeService, which is owned by ArcServiceManager. Thus
     // ArcServiceManager must still be alive at this line.
     BrowserWithTestWindowTest::TearDown();
+
+    browser_controller_.reset();
 
     arc_service_manager_.reset();
     ash::VmPluginDispatcherClient::Shutdown();
@@ -144,6 +156,10 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), GaiaId("1234567890")));
     fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
+    session_manager::SessionManager::Get()->CreateSession(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+        /*new_user=*/false,
+        /*has_active_session=*/false);
     fake_user_manager_->LoginUser(account_id);
     // This step should be part of LoginUser(). There's a TODO to add it there,
     // but it breaks many tests.
@@ -214,7 +230,9 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
       new ash::FakeChromeUserManager()};
   user_manager::ScopedUserManager scoped_user_manager_{
       base::WrapUnique(fake_user_manager_.get())};
+  std::optional<ash::BrowserControllerImpl> browser_controller_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
+  std::unique_ptr<arc::ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;

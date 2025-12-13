@@ -343,7 +343,7 @@ SnapGroupController::GetWindowPairForSnapToReplaceWithKeyboardShortcut() {
   }
 
   aura::Window* root_window = window_util::GetRootWindowAt(
-      display::Screen::GetScreen()->GetCursorScreenPoint());
+      display::Screen::Get()->GetCursorScreenPoint());
   aura::Window::Windows windows = GetActiveDeskAppWindowsInZOrder(root_window);
   for (size_t i = 0; i < windows.size(); i++) {
     aura::Window* window = windows[i];
@@ -428,7 +428,7 @@ void SnapGroupController::OnFloatUnfloatCompleted(aura::Window* window) {
 }
 
 void SnapGroupController::OnOverviewModeStarting() {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return;
   }
 
@@ -439,7 +439,7 @@ void SnapGroupController::OnOverviewModeStarting() {
 
 void SnapGroupController::OnOverviewModeEnding(
     OverviewSession* overview_session) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return;
   }
 
@@ -456,7 +456,7 @@ void SnapGroupController::OnOverviewModeEnding(
 }
 
 void SnapGroupController::OnOverviewModeEndingAnimationComplete(bool canceled) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return;
   }
 
@@ -491,7 +491,7 @@ bool SnapGroupController::MaybeSnapToReplace(
   // 1. In tablet mode;
   // 2. `to_be_snapped_window` belongs to a snap group, this can happen when
   // moving a snap group to another desk with snap groups.
-  if (display::Screen::GetScreen()->InTabletMode() ||
+  if (display::Screen::Get()->InTabletMode() ||
       GetSnapGroupForGivenWindow(to_be_snapped_window)) {
     return false;
   }

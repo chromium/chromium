@@ -54,6 +54,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -160,18 +161,16 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   SetPaintToLayer();
   layer()->SetName("WindowCycleView");
   layer()->SetMasksToBounds(true);
-  if (features::IsBackgroundBlurEnabled() &&
-      chromeos::features::IsSystemBlurEnabled()) {
+  if (chromeos::features::IsSystemBlurEnabled()) {
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 
-  SetBackground(views::CreateRoundedRectBackground(
+  SetBackground(views::CreateSolidBackground(
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysScrim2
-          : cros_tokens::kCrosSysSystemBaseElevatedOpaque,
-      kBackgroundCornerRadius));
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBackgroundCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));

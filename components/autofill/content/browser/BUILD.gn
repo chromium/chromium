@@ -24,12 +24,16 @@ static_library("browser") {
     "content_autofill_shared_storage_handler.h",
     "content_identity_credential_delegate.cc",
     "content_identity_credential_delegate.h",
+    "email_verifier_delegate.cc",
+    "email_verifier_delegate.h",
+    "integrators/glic/autofill_annotations_provider_impl.cc",
+    "integrators/glic/autofill_annotations_provider_impl.h",
     "renderer_forms_from_browser_form.cc",
     "renderer_forms_from_browser_form.h",
     "risk/fingerprint.cc",
     "risk/fingerprint.h",
-    "scoped_autofill_managers_observation.cc",
-    "scoped_autofill_managers_observation.h",
+    "suggestions/identity_credential_suggestion_generator.cc",
+    "suggestions/identity_credential_suggestion_generator.h",
   ]
 
   public_deps = [
@@ -39,6 +43,7 @@ static_library("browser") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/keyed_service/content",
+    "//components/optimization_guide/content/browser",
     "//components/services/storage",
     "//content/public/common",
     "//mojo/public/cpp/bindings",
@@ -48,8 +53,8 @@ static_library("browser") {
   deps = [
     ":autofill_shared_storage_proto",
     "//base:i18n",
+    "//components/autofill/core/browser/integrators/password_manager",
     "//components/credential_management:browser",
-    "//components/os_crypt/sync",
     "//components/prefs",
     "//components/profile_metrics",
     "//components/resources",
@@ -96,12 +101,18 @@ source_set("test_support") {
     "test_autofill_client_injector.h",
     "test_autofill_driver_injector.cc",
     "test_autofill_driver_injector.h",
-    "test_autofill_manager_injector.cc",
-    "test_autofill_manager_injector.h",
     "test_content_autofill_client.cc",
     "test_content_autofill_client.h",
     "test_content_autofill_driver.h",
   ]
+
+  # iOS port provides its own versions of test_autofill_manager_injector.h/mm.
+  if (!is_ios) {
+    sources += [
+      "test_autofill_manager_injector.cc",
+      "test_autofill_manager_injector.h",
+    ]
+  }
 
   public_deps = [
     ":browser",
@@ -121,7 +132,9 @@ source_set("unit_tests") {
     "content_autofill_driver_factory_unittest.cc",
     "content_autofill_driver_unittest.cc",
     "content_identity_credential_delegate_unittest.cc",
-    "scoped_autofill_managers_observation_unittest.cc",
+    "email_verifier_delegate_unittest.cc",
+    "integrators/glic/autofill_annotations_provider_impl_unittest.cc",
+    "suggestions/identity_credential_suggestion_generator_unittest.cc",
   ]
 
   deps = [

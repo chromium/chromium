@@ -8,6 +8,9 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static androidx.browser.trusted.TrustedWebActivityIntentBuilder.EXTRA_SPLASH_SCREEN_PARAMS;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -23,13 +26,16 @@ import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.browser.trusted.splashscreens.SplashScreenParamKey;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashDelegate;
 import org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.util.ColorUtils;
+
+import java.util.function.Supplier;
 
 /**
  * Orchestrates the flow of showing and removing splash screens for apps based on Trusted Web
@@ -56,6 +62,7 @@ import org.chromium.ui.util.ColorUtils;
  * <p>Lifecycle: this class is resolved only once when CustomTabActivity is launched, and is gc-ed
  * when it finishes its job.
  */
+@NullMarked
 public class TwaSplashController implements SplashDelegate {
     // TODO(pshmakov): move this to AndroidX.
     private static final String KEY_SHOWN_IN_CLIENT =
@@ -75,14 +82,14 @@ public class TwaSplashController implements SplashDelegate {
 
         long splashHideAnimationDurationMs =
                 IntentUtils.safeGetInt(
-                        getSplashScreenParamsFromIntent(),
+                        assertNonNull(getSplashScreenParamsFromIntent()),
                         SplashScreenParamKey.KEY_FADE_OUT_DURATION_MS,
                         0);
-        mSplashController.setConfig(this, splashHideAnimationDurationMs);
+        mSplashController.setConfigAndShowSplash(this, splashHideAnimationDurationMs);
     }
 
     @Override
-    public View buildSplashView() {
+    public @Nullable View buildSplashView() {
         Bitmap bitmap = SplashImageHolder.getInstance().takeImage(mIntentDataProvider.getSession());
         if (bitmap == null) {
             return null;
@@ -104,6 +111,7 @@ public class TwaSplashController implements SplashDelegate {
 
     private void applyCustomizationsToSplashScreenView(ImageView imageView) {
         Bundle params = getSplashScreenParamsFromIntent();
+        assert params != null;
 
         int backgroundColor =
                 IntentUtils.safeGetInt(
@@ -131,8 +139,9 @@ public class TwaSplashController implements SplashDelegate {
         imageView.setImageMatrix(matrix);
     }
 
-    private Bundle getSplashScreenParamsFromIntent() {
-        return mIntentDataProvider.getIntent().getBundleExtra(EXTRA_SPLASH_SCREEN_PARAMS);
+    private @Nullable Bundle getSplashScreenParamsFromIntent() {
+        return assumeNonNull(mIntentDataProvider.getIntent())
+                .getBundleExtra(EXTRA_SPLASH_SCREEN_PARAMS);
     }
 
     /** Returns true if the intent corresponds to a TWA with a splash screen. */
@@ -157,6 +166,7 @@ public class TwaSplashController implements SplashDelegate {
         Bundle params =
                 IntentUtils.safeGetBundleExtra(
                         intent, TrustedWebActivityIntentBuilder.EXTRA_SPLASH_SCREEN_PARAMS);
+        assert params != null;
         boolean shownInClient = IntentUtils.safeGetBoolean(params, KEY_SHOWN_IN_CLIENT, true);
         // shownInClient is "true" by default for the following reasons:
         // - For compatibility with older clients which don't use this bundle key.

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/android/jni_string.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
 #include "content/public/browser/browser_thread.h"
@@ -18,6 +19,12 @@ NativeContextualSearchContext::NativeContextualSearchContext(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
   java_object_.Reset(env, obj);
+
+  bool use_snippet_as_subtitle =
+      base::FeatureList::IsEnabled(chrome::android::kTouchToSearchCallout) &&
+      chrome::android::kTouchToSearchCalloutSnippetAsSubtitle.Get();
+
+  ContextualSearchContext::SetUseSnippetAsSubtitle(use_snippet_as_subtitle);
 }
 
 NativeContextualSearchContext::~NativeContextualSearchContext() = default;
@@ -85,10 +92,12 @@ void NativeContextualSearchContext::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jlong JNI_ContextualSearchContext_Init(
+static jlong JNI_ContextualSearchContext_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+    const base::android::JavaRef<jobject>& obj) {
   NativeContextualSearchContext* context =
       new NativeContextualSearchContext(env, obj);
   return reinterpret_cast<intptr_t>(context);
 }
+
+DEFINE_JNI(ContextualSearchContext)

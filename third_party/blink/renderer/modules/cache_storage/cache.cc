@@ -13,6 +13,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -81,7 +82,8 @@ bool HasJavascriptMimeType(const Response* response) {
 void ValidateRequestForPut(const Request* request,
                            ExceptionState& exception_state) {
   const KURL& url = request->url();
-  if (!url.ProtocolIsInHTTPFamily()) {
+  if (!url.ProtocolIsInHTTPFamily() &&
+      !CommonSchemeRegistry::IsIsolatedAppScheme(url.Protocol().Ascii())) {
     exception_state.ThrowTypeError(
         StrCat({"Request scheme '", url.Protocol(), "' is unsupported"}));
     return;
@@ -270,7 +272,7 @@ class Cache::BarrierCallbackForPutResponse final
   const HeapVector<Member<Request>> request_list_;
   const int64_t trace_id_;
   HeapVector<Member<Response>> response_list_;
-  WTF::Vector<scoped_refptr<BlobDataHandle>> blob_list_;
+  Vector<scoped_refptr<BlobDataHandle>> blob_list_;
   size_t num_complete_ = 0;
   bool stopped_ = false;
 };
@@ -404,7 +406,7 @@ class Cache::BarrierCallbackForPutComplete final
     // executed.
     cache_->cache_remote_->Batch(
         std::move(batch_operations_), trace_id_,
-        resolver_->WrapCallbackInScriptScope(WTF::BindOnce(
+        resolver_->WrapCallbackInScriptScope(blink::BindOnce(
             [](const String& method_name, base::TimeTicks start_time,
                int operation_count, int64_t trace_id, Cache* _,
                ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -913,7 +915,7 @@ ScriptPromise<V8UnionResponseOrUndefined> Cache::MatchImpl(
   cache_remote_->Match(
       std::move(mojo_request), std::move(mojo_options), in_related_fetch_event,
       in_range_fetch_event, trace_id,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
              int64_t trace_id, Cache* self,
              ScriptPromiseResolver<V8UnionResponseOrUndefined>* resolver,
@@ -1009,7 +1011,7 @@ ScriptPromise<IDLSequence<Response>> Cache::MatchAllImpl(
   // executed.
   cache_remote_->MatchAll(
       std::move(fetch_api_request), std::move(mojo_options), trace_id,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
              int64_t trace_id, Cache* _,
              ScriptPromiseResolver<IDLSequence<Response>>* resolver,
@@ -1129,7 +1131,7 @@ ScriptPromise<IDLBoolean> Cache::DeleteImpl(ScriptState* script_state,
   // executed.
   cache_remote_->Batch(
       std::move(batch_operations), trace_id,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
              int64_t trace_id, Cache* _,
              ScriptPromiseResolver<IDLBoolean>* resolver,
@@ -1169,7 +1171,7 @@ void Cache::PutImpl(ScriptPromiseResolver<IDLUndefined>* resolver,
                     const String& method_name,
                     const HeapVector<Member<Request>>& requests,
                     const HeapVector<Member<Response>>& responses,
-                    const WTF::Vector<scoped_refptr<BlobDataHandle>>& blob_list,
+                    const Vector<scoped_refptr<BlobDataHandle>>& blob_list,
                     ExceptionState& exception_state,
                     int64_t trace_id) {
   DCHECK_EQ(requests.size(), responses.size());
@@ -1253,7 +1255,7 @@ ScriptPromise<IDLSequence<Request>> Cache::KeysImpl(
   // executed.
   cache_remote_->Keys(
       std::move(fetch_api_request), std::move(mojo_options), trace_id,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
              int64_t trace_id, Cache* _,
              ScriptPromiseResolver<IDLSequence<Request>>* resolver,

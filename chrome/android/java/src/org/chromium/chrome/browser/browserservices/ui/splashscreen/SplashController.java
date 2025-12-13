@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browserservices.ui.splashscreen;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.graphics.PixelFormat;
@@ -13,11 +15,12 @@ import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -34,8 +37,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
 import java.lang.reflect.Method;
+import java.util.function.Supplier;
 
 /** Shows and hides splash screen for Webapps, WebAPKs and TWAs. */
+@NullMarked
 public class SplashController extends CustomTabTabObserver
         implements InflationObserver, DestroyObserver {
     private static class SingleShotOnDrawListener implements ViewTreeObserver.OnDrawListener {
@@ -70,14 +75,14 @@ public class SplashController extends CustomTabTabObserver
     private final CustomTabActivityTabProvider mTabProvider;
     private final Supplier<CompositorViewHolder> mCompositorViewHolder;
 
-    private SplashDelegate mDelegate;
+    private @Nullable SplashDelegate mDelegate;
 
     /** View to which the splash screen is added. */
-    private ViewGroup mParentView;
+    private @MonotonicNonNull ViewGroup mParentView;
 
-    @Nullable private View mSplashView;
+    private @Nullable View mSplashView;
 
-    @Nullable private ViewPropertyAnimator mFadeOutAnimator;
+    private @Nullable ViewPropertyAnimator mFadeOutAnimator;
 
     /** The duration of the splash hide animation. */
     private long mSplashHideAnimationDurationMs;
@@ -119,10 +124,32 @@ public class SplashController extends CustomTabTabObserver
         mTabObserverRegistrar.registerActivityTabObserver(this);
     }
 
-    public void setConfig(SplashDelegate delegate, long splashHideAnimationDurationMs) {
+    public void setConfigAndShowSplash(
+            SplashDelegate delegate, long splashHideAnimationDurationMs) {
         mDelegate = delegate;
         mSplashHideAnimationDurationMs = splashHideAnimationDurationMs;
-        showSplash();
+        mSplashShownTimestamp = SystemClock.elapsedRealtime();
+        try (TraceEvent te = TraceEvent.scoped("SplashScreen.build")) {
+            mSplashView = mDelegate.buildSplashView();
+        }
+        if (mSplashView == null) {
+            mTabObserverRegistrar.unregisterActivityTabObserver(this);
+            mLifecycleDispatcher.unregister(this);
+            if (mIsWindowInitiallyTranslucent) {
+                removeTranslucency();
+            }
+            return;
+        }
+
+        mParentView = mActivity.findViewById(android.R.id.content);
+        mParentView.addView(mSplashView);
+
+        recordTraceEventsShowedSplash();
+
+        // If the client's activity is opaque, finishing the activities one after another may lead
+        // to bottom activity showing itself in a short flash. The problem can be solved by bottom
+        // activity killing the whole task.
+        mFinishHandler.setShouldAttemptFinishingTask(true);
     }
 
     /**
@@ -132,13 +159,15 @@ public class SplashController extends CustomTabTabObserver
     public void bringSplashBackToFront() {
         if (mSplashView == null) return;
 
+        assumeNonNull(mParentView);
+
         if (mSplashView.getParent() != null) {
             mParentView.removeView(mSplashView);
         }
         mParentView.addView(mSplashView);
     }
 
-    public View getSplashScreenForTests() {
+    public @Nullable View getSplashScreenForTests() {
         return mSplashView;
     }
 
@@ -197,32 +226,8 @@ public class SplashController extends CustomTabTabObserver
         hideSplash(tab, /* loadFailed= */ true);
     }
 
-    private void showSplash() {
-        mSplashShownTimestamp = SystemClock.elapsedRealtime();
-        try (TraceEvent te = TraceEvent.scoped("SplashScreen.build")) {
-            mSplashView = mDelegate.buildSplashView();
-        }
-        if (mSplashView == null) {
-            mTabObserverRegistrar.unregisterActivityTabObserver(this);
-            mLifecycleDispatcher.unregister(this);
-            if (mIsWindowInitiallyTranslucent) {
-                removeTranslucency();
-            }
-            return;
-        }
-
-        mParentView = mActivity.findViewById(android.R.id.content);
-        mParentView.addView(mSplashView);
-
-        recordTraceEventsShowedSplash();
-
-        // If the client's activity is opaque, finishing the activities one after another may lead
-        // to bottom activity showing itself in a short flash. The problem can be solved by bottom
-        // activity killing the whole task.
-        mFinishHandler.setShouldAttemptFinishingTask(true);
-    }
-
     private boolean canHideSplashScreen() {
+        assumeNonNull(mDelegate);
         return !mDelegate.shouldWaitForSubsequentPageLoadToHideSplash();
     }
 
@@ -243,6 +248,7 @@ public class SplashController extends CustomTabTabObserver
             // force an opacity change back to non-opaque.
             mActivity.getWindow().setFormat(PixelFormat.TRANSPARENT);
 
+            assumeNonNull(mParentView);
             mParentView.invalidate();
         }
 
@@ -304,6 +310,8 @@ public class SplashController extends CustomTabTabObserver
             hideSplashNow(tab);
             return;
         }
+
+        assumeNonNull(mSplashView);
         mFadeOutAnimator =
                 mSplashView
                         .animate()
@@ -316,6 +324,9 @@ public class SplashController extends CustomTabTabObserver
     }
 
     private void hideSplashNow(Tab tab) {
+        assumeNonNull(mParentView);
+        assumeNonNull(mSplashView);
+        assumeNonNull(mDelegate);
         mParentView.removeView(mSplashView);
 
         long splashHiddenTimestamp = SystemClock.elapsedRealtime();
@@ -357,6 +368,7 @@ public class SplashController extends CustomTabTabObserver
         mObservers.clear();
     }
 
+    @RequiresNonNull("mParentView")
     private void recordTraceEventsShowedSplash() {
         SingleShotOnDrawListener.install(
                 mParentView,
@@ -369,6 +381,7 @@ public class SplashController extends CustomTabTabObserver
         TraceEvent.startAsync("SplashScreen.hidingAnimation", hashCode());
     }
 
+    @RequiresNonNull("mParentView")
     private void recordTraceEventsFinishedHidingSplash() {
         TraceEvent.finishAsync("SplashScreen.hidingAnimation", hashCode());
         SingleShotOnDrawListener.install(

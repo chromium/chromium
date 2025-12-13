@@ -18,7 +18,10 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
@@ -83,14 +86,14 @@ class TopLevelStorageAccessPermissionContextTest
       bool user_gesture,
       const GURL& requester_url,
       const GURL& embedding_url) {
-    base::test::TestFuture<PermissionStatus> future;
+    base::test::TestFuture<content::PermissionResult> future;
     permission_context->DecidePermissionForTesting(
         std::make_unique<permissions::PermissionRequestData>(
             std::make_unique<permissions::ContentSettingPermissionResolver>(
                 ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS),
             CreateFakeID(), user_gesture, requester_url, embedding_url),
         future.GetCallback());
-    return future.Get();
+    return future.Get().status;
   }
 
   void TearDown() override {
@@ -223,6 +226,9 @@ class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
              net::FirstPartySetEntry(top_level, net::SiteType::kPrimary)},
         },
         /*aliases=*/{}));
+
+    profile()->GetPrefs()->SetBoolean(
+        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   }
 
  private:

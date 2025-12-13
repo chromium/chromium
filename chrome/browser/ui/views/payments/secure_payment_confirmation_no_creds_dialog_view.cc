@@ -94,6 +94,10 @@ bool SecurePaymentConfirmationNoCredsDialogView::ClickOptOutForTesting() {
   return true;
 }
 
+bool SecurePaymentConfirmationNoCredsDialogView::AcceptDialogForTesting() {
+  return views::DialogDelegateView::Accept();
+}
+
 bool SecurePaymentConfirmationNoCredsDialogView::ShouldShowCloseButton() const {
   return false;
 }
@@ -109,6 +113,8 @@ void SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed() {
     return;
   }
 
+  // Only one callback should be called.
+  opt_out_callback_.Reset();
   std::move(callback).Run();
   HideDialog();
 
@@ -120,6 +126,8 @@ void SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed() {
 void SecurePaymentConfirmationNoCredsDialogView::OnOptOutClicked() {
   DCHECK(model_->opt_out_visible());
 
+  // Only one callback should be called.
+  response_callback_.Reset();
   std::move(opt_out_callback_).Run();
 
   if (observer_for_test_) {

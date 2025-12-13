@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CHANNEL_ENUM_TABLE_H_
 #define COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CHANNEL_ENUM_TABLE_H_
 
@@ -18,6 +13,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 
@@ -292,7 +288,7 @@ class EnumTable {
                    << *found;
 
     const auto int_max_value = static_cast<int32_t>(max_value);
-    DCHECK(data.end()[-1].value == int_max_value)
+    DCHECK(UNSAFE_TODO(data.end()[-1].value) == int_max_value)
         << "Missing entry for enum value " << int_max_value;
 #endif  // NDEBUG
   }
@@ -318,7 +314,7 @@ class EnumTable {
     if (is_sorted_) {
       const std::size_t index = static_cast<std::size_t>(value);
       if (ANALYZER_ASSUME_TRUE(index < data_.size())) {
-        const auto& entry = data_.begin()[index];
+        const auto& entry = UNSAFE_TODO(data_.begin()[index]);
         if (ANALYZER_ASSUME_TRUE(entry.has_str())) {
           return entry.str();
         }
@@ -382,8 +378,8 @@ class EnumTable {
 
     for (std::size_t i = 0; i < data.size(); i++) {
       for (std::size_t j = i + 1; j < data.size(); j++) {
-        const Entry& ei = data.begin()[i];
-        const Entry& ej = data.begin()[j];
+        const Entry& ei = UNSAFE_TODO(data.begin()[i]);
+        const Entry& ej = UNSAFE_TODO(data.begin()[j]);
         DCHECK(ei.value != ej.value)
             << "Found duplicate enum values at indices " << i << " and " << j;
         DCHECK(!(ei.has_str() && ej.has_str() && ei.str() == ej.str()))

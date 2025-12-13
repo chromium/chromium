@@ -18,10 +18,10 @@ namespace payments {
 namespace android {
 
 // static
-jlong JNI_PaymentHandlerHost_Init(
+static jlong JNI_PaymentHandlerHost_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& web_contents,
-    const base::android::JavaParamRef<jobject>& listener) {
+    const base::android::JavaRef<jobject>& web_contents,
+    const base::android::JavaRef<jobject>& listener) {
   return reinterpret_cast<intptr_t>(
       new PaymentHandlerHost(web_contents, listener));
 }
@@ -30,15 +30,15 @@ jlong JNI_PaymentHandlerHost_Init(
 base::WeakPtr<payments::PaymentHandlerHost>
 PaymentHandlerHost::FromJavaPaymentHandlerHost(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& payment_handler_host) {
+    const base::android::JavaRef<jobject>& payment_handler_host) {
   return reinterpret_cast<PaymentHandlerHost*>(
              Java_PaymentHandlerHost_getNativeBridge(env, payment_handler_host))
       ->payment_handler_host_.AsWeakPtr();
 }
 
 PaymentHandlerHost::PaymentHandlerHost(
-    const base::android::JavaParamRef<jobject>& web_contents,
-    const base::android::JavaParamRef<jobject>& listener)
+    const base::android::JavaRef<jobject>& web_contents,
+    const base::android::JavaRef<jobject>& listener)
     : listener_(listener),
       payment_handler_host_(
           content::WebContents::FromJavaWebContents(web_contents),
@@ -57,7 +57,7 @@ void PaymentHandlerHost::Destroy(JNIEnv* env) {
 
 void PaymentHandlerHost::UpdateWith(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& response_buffer) {
+    const base::android::JavaRef<jobject>& response_buffer) {
   mojom::PaymentRequestDetailsUpdatePtr response;
   auto span = base::android::JavaByteBufferToSpan(env, response_buffer);
   bool success = mojom::PaymentRequestDetailsUpdate::Deserialize(
@@ -72,3 +72,5 @@ void PaymentHandlerHost::OnPaymentDetailsNotUpdated(JNIEnv* env) {
 
 }  // namespace android
 }  // namespace payments
+
+DEFINE_JNI(PaymentHandlerHost)

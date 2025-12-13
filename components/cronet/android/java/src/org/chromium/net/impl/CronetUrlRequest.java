@@ -523,9 +523,14 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
         }
     }
 
+    // The metrics are available once a terminal callback has started executing.
+    public CronetMetrics getFinishedRequestTimings() {
+        return mMetrics;
+    }
+
     /**
-     * Helper method to set final status of CronetUrlRequest and clean up the
-     * native request adapter.
+     * Helper method to set final status of CronetUrlRequest and clean up the native request
+     * adapter.
      */
     @GuardedBy("mUrlRequestAdapterLock")
     private void destroyRequestAdapterLocked(
@@ -802,6 +807,15 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     @SuppressWarnings("unused")
     @CalledByNative
     private void onCanceled() {
+        if (mMetrics == null) {
+            // It's possible for a race condition to happen where the user cancels the request
+            // before we've created the native adapter. This means that the native metrics
+            // does not even exist. So instead of not reporting anything, we'll report
+            // metrics with sentinel values.
+            //
+            // See crbug.com/328065446 for more details.
+            mMetrics = CronetMetrics.empty();
+        }
         Runnable task =
                 new Runnable() {
                     @Override
@@ -839,19 +853,19 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     @SuppressWarnings("unused")
     @CalledByNative
     private void onMetricsCollected(
-            long requestStartMs,
-            long dnsStartMs,
-            long dnsEndMs,
-            long connectStartMs,
-            long connectEndMs,
-            long sslStartMs,
-            long sslEndMs,
-            long sendingStartMs,
-            long sendingEndMs,
-            long pushStartMs,
-            long pushEndMs,
-            long responseStartMs,
-            long requestEndMs,
+            long requestStartMicros,
+            long dnsStartMicros,
+            long dnsEndMicros,
+            long connectStartMicros,
+            long connectEndMicros,
+            long sslStartMicros,
+            long sslEndMicros,
+            long sendingStartMicros,
+            long sendingEndMicros,
+            long pushStartMicros,
+            long pushEndMicros,
+            long responseStartMicros,
+            long requestEndMicros,
             boolean socketReused,
             long sentByteCount,
             long receivedByteCount,
@@ -862,19 +876,19 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
         }
         mMetrics =
                 new CronetMetrics(
-                        requestStartMs,
-                        dnsStartMs,
-                        dnsEndMs,
-                        connectStartMs,
-                        connectEndMs,
-                        sslStartMs,
-                        sslEndMs,
-                        sendingStartMs,
-                        sendingEndMs,
-                        pushStartMs,
-                        pushEndMs,
-                        responseStartMs,
-                        requestEndMs,
+                        requestStartMicros,
+                        dnsStartMicros,
+                        dnsEndMicros,
+                        connectStartMicros,
+                        connectEndMicros,
+                        sslStartMicros,
+                        sslEndMicros,
+                        sendingStartMicros,
+                        sendingEndMicros,
+                        pushStartMicros,
+                        pushEndMicros,
+                        responseStartMicros,
+                        requestEndMicros,
                         socketReused,
                         sentByteCount,
                         receivedByteCount);
@@ -899,6 +913,14 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 if (mException == null) {
                     return;
                 }
+            }
+            if (mMetrics == null) {
+                // there's no way to get the metrics once the native adapter has been destroyed.
+                // So if it was never reported from the native side which could happen for
+                // several reasons (e.g. failure before setting up the underlying request), then
+                // create the default empty sentinel valued metric object.
+                // See crbug.com/328065446 for more details.
+                mMetrics = CronetMetrics.empty();
             }
             Runnable task =
                     new Runnable() {
@@ -1100,7 +1122,11 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 failureReason,
                 mMetrics.getSocketReused(),
                 ImplVersion.getCronetVersion(),
-                NativeCronetEngineBuilderImpl.getCronetSource());
+                NativeCronetEngineBuilderImpl.getCronetSource(),
+                mMetrics.getDnsDurationInMicroseconds(),
+                mMetrics.getSSLDurationInMicroseconds(),
+                mMetrics.getConnectDurationInMicroseconds(),
+                mMetrics.getTimeToWriteFirstByteInMicroseconds());
     }
 
     // Maybe report metrics. This method should only be called on Callback's executor thread and
@@ -1109,12 +1135,9 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
         final RefCountDelegate inflightCallbackCount =
                 new RefCountDelegate(() -> mRequestContext.onRequestFinished());
         try {
-            // If the native adapter was never started, onMetricsCollected() was not called and so
-            // we have no metrics to report.
-            // TODO: https://issuetracker.google.com/328065446 - we should really prevent this from
-            // happening because we will end up not logging the metrics, and the user may end up
-            // waiting forever for a request finished callback that will never come.
-            if (mMetrics == null) return;
+            if (mMetrics == null) {
+                throw new IllegalStateException("The metrics should have been initialized.");
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {

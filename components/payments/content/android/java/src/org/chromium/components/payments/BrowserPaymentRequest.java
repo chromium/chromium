@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The browser part of the PaymentRequest implementation. The browser here can be either the
- * Android Chrome browser or the WebLayer "browser".
+ * The browser part of the PaymentRequest implementation. The browser here is the Android Chrome
+ * browser but other content embedders may be supported in the future.
  */
 @NullMarked
 public interface BrowserPaymentRequest {
@@ -205,10 +205,14 @@ public interface BrowserPaymentRequest {
         return true;
     }
 
-    /** @return The selected payment app. */
-    PaymentApp getSelectedPaymentApp();
+    /**
+     * @return The selected payment app.
+     */
+    @Nullable PaymentApp getSelectedPaymentApp();
 
-    /** @return All of the available payment apps. */
+    /**
+     * @return All of the available payment apps.
+     */
     List<PaymentApp> getPaymentApps();
 
     /**

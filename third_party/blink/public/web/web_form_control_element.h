@@ -93,6 +93,8 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   void DispatchFocusEvent();
   // Triggers the emission of a blur event.
   void DispatchBlurEvent();
+  // Triggers the emission of a verified event.
+  void DispatchEmailVerifiedEvent(const WebString& presentation_token);
   // Returns value of element. For select element, it returns the value of
   // the selected option if present. If no selected option, an empty string
   // is returned. If element doesn't fall into input element, textarea element

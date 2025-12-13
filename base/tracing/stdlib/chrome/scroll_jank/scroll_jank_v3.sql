@@ -4,13 +4,12 @@
 
 -- Hardware info is useful when using sql metrics for analysis
 -- in BTP.
-INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
 INCLUDE PERFETTO MODULE chrome.metadata;
 
 INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3_cause;
+INCLUDE PERFETTO MODULE chrome.event_latency;
 
-INCLUDE PERFETTO MODULE chrome.scroll_jank.utils;
 
 -- Given a slice id, returns the name of the slice.
 CREATE PERFETTO FUNCTION _slice_name_from_id(

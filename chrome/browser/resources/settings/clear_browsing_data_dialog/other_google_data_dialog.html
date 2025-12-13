@@ -22,7 +22,7 @@
     padding: 4px 16px;
   }
 
-  .first-link-row {
+  cr-link-row:first-of-type {
     border-bottom-left-radius: var(--dbd-container-stacked-border-radius);
     border-bottom-right-radius: var(--dbd-container-stacked-border-radius);
     border-top-left-radius: var(--dbd-container-border-radius);
@@ -30,7 +30,7 @@
     margin-bottom: 2px;
   }
 
-  .last-link-row {
+  cr-link-row:last-of-type {
     border-bottom-left-radius: var(--dbd-container-border-radius);
     border-bottom-right-radius: var(--dbd-container-border-radius);
     border-top-left-radius: var(--dbd-container-stacked-border-radius);
@@ -38,14 +38,18 @@
     margin-bottom: 0;
   }
 
-  .middle-link-row {
+  cr-link-row:not(:first-of-type):not(:last-of-type) {
     border-radius: var(--dbd-container-stacked-border-radius);
     margin-bottom: 2px;
   }
 
-  .only-link-row {
+  cr-link-row:only-of-type {
     border-radius: var(--dbd-container-border-radius);
     margin-bottom: 0;
+  }
+
+  cr-link-row.hide-icon::part(icon) {
+    display: none;
   }
 
   div[slot="title"] {
@@ -68,40 +72,48 @@
     <div id="subpageDescription">$i18n{otherDataDescription}
     </div>
     <div class="link-rows-block">
-      <cr-link-row external using-slotted-label
-          class$="[[getPasswordsLinkCssClass_(syncStatus_, isGoogleDse_)]]"
+      <cr-link-row id="passwordManagerLink" external using-slotted-label
           sub-label="$i18n{manageInGooglePasswordManager}"
-          id="passwordManagerLink" on-click="onPasswordManagerClick_">
+          on-click="onPasswordManagerClick_">
         <div slot="label" class="label">$i18n{passwordsAndPasskeys}</div>
       </cr-link-row>
-      <cr-link-row id="googleSearchHistoryLink" class="middle-link-row"
-          external hidden="[[!shouldShowGoogleSearchHistoryLink_(
-              syncStatus_, isGoogleDse_)]]"
-          on-click="onGoogleSearchHistoryLinkClick_"
-          sub-label="$i18n{manageInYourGoogleAccount}" using-slotted-label>
-        <div slot="label" class="label">$i18n{searchHistory}</div>
-      </cr-link-row>
-      <cr-link-row id="myActivityLink" external using-slotted-label
-          class$="[[getMyActivityLinkCssClass_(isGoogleDse_)]]"
-          hidden="[[!shouldShowMyActivityLink_(syncStatus_)]]"
-          sub-label="$i18n{manageInYourGoogleAccount}"
-          on-click="onMyActivityLinkClick_">
-        <div slot="label" class="label">$i18n{myActivity}</div>
-      </cr-link-row>
-      <div id="nonGoogleSearchHistoryLink" class="cr-row first last-link-row"
-          hidden="[[isGoogleDse_]]">
-        <div class="flex cr-padded-text">
-          <div class="label">$i18n{searchHistory}</div>
-          <div class="secondary">
-            [[nonGoogleSearchHistorySubLabel_]]
-          </div>
-        </div>
-      </div>
+      <template is="dom-if"
+          if="[[shouldShowGoogleSearchHistoryLink_(syncStatus_, isGoogleDse_)]]"
+          restamp>
+        <cr-link-row id="googleSearchHistoryLink" external using-slotted-label
+            sub-label="$i18n{manageInYourGoogleAccount}"
+            on-click="onGoogleSearchHistoryLinkClick_">
+          <div slot="label" class="label">$i18n{searchHistory}</div>
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[shouldShowMyActivityLink_(syncStatus_)]]"
+          restamp>
+        <cr-link-row id="myActivityLink" external using-slotted-label
+            sub-label="$i18n{manageInYourGoogleAccount}"
+            on-click="onMyActivityLinkClick_">
+          <div slot="label" class="label">$i18n{myActivity}</div>
+        </cr-link-row>
+      </template>
+      <template is="dom-if"
+          if="[[shouldShowGeminiAppsActivityLink_(syncStatus_)]]" restamp>
+        <cr-link-row id="geminiAppsActivityLink" external using-slotted-label
+            sub-label="$i18n{manageInYourGeminiAppsActivity}"
+            on-click="onGeminiAppsActivityClick_">
+          <div slot="label" class="label">$i18n{geminiAppsActivity}</div>
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[!isGoogleDse_]]" restamp>
+        <cr-link-row id="nonGoogleSearchHistoryLink" external
+            using-slotted-label class="hide-icon"
+            sub-label="[[nonGoogleSearchHistorySubLabel_]]">
+          <div slot="label" class="label">$i18n{searchHistory}</div>
+        </cr-link-row>
+      </template>
     </div>
   </div>
   <div slot="button-container">
     <cr-button class="cancel-button" on-click="onBackOrCancelClick_">
-      $i18n{cancel}
+      $i18n{done}
     </cr-button>
   </div>
 </cr-dialog>

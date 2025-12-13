@@ -4,10 +4,8 @@
 
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -61,10 +59,15 @@ class IsolatedWebAppFileHandlingBrowserTest
     params.launch_files = launch_files;
     params.override_url = url;
 
-    content::WebContents* web_contents =
-        apps::AppServiceProxyFactory::GetForProfile(profile())
-            ->BrowserAppLauncher()
-            ->LaunchAppWithParamsForTesting(std::move(params));
+    web_app::WebAppProvider* provider =
+        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile());
+    base::test::TestFuture<base::WeakPtr<Browser>,
+                           base::WeakPtr<content::WebContents>,
+                           apps::LaunchContainer>
+        future;
+    provider->scheduler().LaunchAppWithCustomParams(std::move(params),
+                                                    future.GetCallback());
+    auto* web_contents = future.template Get<1>().get();
 
     content::WaitForLoadStop(web_contents);
 

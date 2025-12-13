@@ -38,8 +38,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   SourcesTestRunner.startDebuggerTest(step1);
 
   function step1() {
-    TestRunner.DebuggerAgent.setPauseOnExceptions(
-        SDK.DebuggerModel.PauseOnExceptionsState.PauseOnAllExceptions);
+    TestRunner.DebuggerAgent.invoke_setPauseOnExceptions(
+        {state: SDK.DebuggerModel.PauseOnExceptionsState.PauseOnAllExceptions});
     SourcesTestRunner.showScriptSource('test.js', step2);
   }
 
@@ -52,8 +52,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   }
 
   function step3() {
-    TestRunner.DebuggerAgent.setPauseOnExceptions(
-        SDK.DebuggerModel.PauseOnExceptionsState.DontPauseOnExceptions);
+    TestRunner.DebuggerAgent.invoke_setPauseOnExceptions(
+        {state: SDK.DebuggerModel.PauseOnExceptionsState.DontPauseOnExceptions});
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_ZUCCHINI_SUFFIX_ARRAY_H_
 #define COMPONENTS_ZUCCHINI_SUFFIX_ARRAY_H_
 
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 
 namespace zucchini {
@@ -186,8 +182,9 @@ class InducedSuffixSort {
       // Occurrence of every unique character is counted in |buckets|
       std::vector<size_type> buckets(static_cast<size_type>(key_bound));
 
-      for (auto it = str; it != str + length; ++it)
+      for (auto it = str; it != UNSAFE_TODO(str + length); UNSAFE_TODO(++it)) {
         ++buckets[*it];
+      }
       return buckets;
     }
 
@@ -452,28 +449,84 @@ std::vector<typename StrRng::size_type> MakeSuffixArray(const StrRng& str,
 }
 
 // Type requirements:
-// |SARng| is an input random access range.
-// |StrIt1| is a random access iterator.
-// |StrIt2| is a forward iterator.
-template <class SARng, class StrIt1, class StrIt2>
-// Lexicographical lower bound using binary search for
-// [|str2_first|, |str2_last|) in the suffix array |suffix_array| of a string
-// starting at |str1_first|. This does not necessarily return the index of
-// the longest matching substring.
-auto SuffixLowerBound(const SARng& suffix_array,
-                      StrIt1 str1_first,
-                      StrIt2 str2_first,
-                      StrIt2 str2_last) -> decltype(std::begin(suffix_array)) {
-  using size_type = typename SARng::value_type;
+// |SARange| is an input random access range.
+// |StrIt| is a random access iterator.
+// |KeyStrIt| is a forward iterator.
+template <class SARange, class StrIt, class KeyStrIt>
+// Lexicographical lower bound using binary search for [|key_first|, |key_last|)
+// in |suffix_array| of a string starting at |str_first|. This only returns the
+// index *near* the longest prefix match. For example, the sorted non-empty
+// suffices of "foot" are
+//     foot
+//     oot
+//     ot
+//     t
+// Lower-bound query of "fooa" yields "foot" (best match), but "fooz" yields
+// "oot"! Therefore longest prefix match will need some adjacency search.
+auto SuffixLowerBound(const SARange& suffix_array,
+                      StrIt str_first,
+                      KeyStrIt key_first,
+                      KeyStrIt key_last) -> decltype(std::begin(suffix_array)) {
+  using size_type = typename SARange::value_type;
+  using SAIt = decltype(std::begin(suffix_array));
+  using diff_type = typename std::iterator_traits<SAIt>::difference_type;
 
-  size_t n = std::end(suffix_array) - std::begin(suffix_array);
-  auto it = std::lower_bound(
-      std::begin(suffix_array), std::end(suffix_array), str2_first,
-      [str1_first, str2_last, n](size_type a, StrIt2 b) {
-        return std::lexicographical_compare(str1_first + a, str1_first + n, b,
-                                            str2_last);
-      });
-  return it;
+  const size_t n = std::end(suffix_array) - std::begin(suffix_array);
+  const size_t m = key_last - key_first;
+
+  if (n == 0) {
+    return std::begin(suffix_array);
+  }
+
+  // Helper to lexicographically compare str suffix (given by |suffix_offset|)
+  // and key, skipping the first |lcp| (Longest Common Prefix) characters.
+  auto compare_suffix = [&](size_type suffix_offset, size_t lcp) {
+    StrIt str_suffix = str_first + suffix_offset;
+    size_t suffix_len = n - suffix_offset;
+    size_t lcp_lim = std::min(m, suffix_len);
+    for (; lcp < lcp_lim; ++lcp) {
+      if (*(str_suffix + lcp) != *(key_first + lcp)) {
+        int sign = (*(str_suffix + lcp) < *(key_first + lcp)) ? -1 : 1;
+        return std::make_pair(sign, lcp);
+      }
+    }
+    if (lcp == m) {
+      // key is a prefix of, or is equal to str suffix.
+      return std::make_pair(m < suffix_len ? 1 : 0, lcp);
+    }
+    // str suffix is a prefix of key.
+    return std::make_pair(-1, lcp);
+  };
+
+  // Check boundaries to establish initial LCPs and handle edge cases.
+  auto cmp_first = compare_suffix(suffix_array[0], 0);
+  if (cmp_first.first >= 0) {
+    return std::begin(suffix_array);
+  }
+
+  auto cmp_last = compare_suffix(suffix_array[n - 1], 0);
+  if (cmp_last.first < 0) {
+    return std::end(suffix_array);
+  }
+
+  diff_type lo = 0;      // str suffix at |lo| < key.
+  diff_type hi = n - 1;  // str suffix at |hi| >= key.
+  size_t lcp_lo = cmp_first.second;
+  size_t lcp_hi = cmp_last.second;
+
+  // Binary search over [lo, hi] using LCP information.
+  while (hi - lo > 1) {
+    diff_type mid = lo + (hi - lo) / 2;
+    auto cmp_mid = compare_suffix(suffix_array[mid], std::min(lcp_lo, lcp_hi));
+    if (cmp_mid.first < 0) {
+      lo = mid;
+      lcp_lo = cmp_mid.second;
+    } else {
+      hi = mid;
+      lcp_hi = cmp_mid.second;
+    }
+  }
+  return std::begin(suffix_array) + hi;
 }
 
 }  // namespace zucchini

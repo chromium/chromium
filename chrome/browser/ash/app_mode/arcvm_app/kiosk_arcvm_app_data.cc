@@ -27,10 +27,10 @@ KioskArcvmAppData::KioskArcvmAppData(PrefService* local_state,
                                      std::string intent,
                                      AccountId account_id,
                                      std::string name)
-    : KioskAppDataBase(kArcvmKioskDictionaryName,
+    : KioskAppDataBase(local_state,
+                       kArcvmKioskDictionaryName,
                        std::move(app_id),
                        std::move(account_id)),
-      local_state_(local_state),
       package_name_(std::move(package_name)),
       activity_(std::move(activity)),
       intent_(std::move(intent)) {
@@ -71,7 +71,7 @@ void KioskArcvmAppData::SetCache(const std::string& name,
 
   SaveIcon(*icon_.bitmap(), cache_dir);
 
-  ScopedDictPrefUpdate dict_update(local_state_, dictionary_name());
+  ScopedDictPrefUpdate dict_update(&local_state_.get(), dictionary_name());
 
   SaveToDictionary(dict_update);
 }

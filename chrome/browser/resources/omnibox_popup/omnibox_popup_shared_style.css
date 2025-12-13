@@ -1,0 +1,27 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --color-composebox-file-carousel-divider: var(--color-omnibox-composebox-divider);
+  --color-composebox-file-chip-background: var(--color-omnibox-composebox-chip-background);
+  --color-composebox-file-chip-favicon-background: var(--color-omnibox-composebox-favicon-background);
+  --color-composebox-file-chip-text: var(--color-omnibox-text);
+  --cr-composebox-font-size: 14px;
+
+  --color-searchbox-results-background-hovered: var(--color-omnibox-results-background-hovered);
+  --color-searchbox-results-focus-indicator: var(--color-omnibox-results-focus-indicator);
+  --color-searchbox-results-foreground: var(--color-omnibox-text);
+  --color-searchbox-results-icon-focused-outline: var(--color-omnibox-results-focus-indicator);
+  --color-searchbox-results-icon-selected: var(--color-omnibox-results-icon-selected);
+
+  /* Closely resembles the views Omnibox input font size.
+   * TODO(crbug.com/450640041): Investigate webUI blink & views rendering
+   * difference. */
+  --omnibox-font-size: 14.3px;
+}

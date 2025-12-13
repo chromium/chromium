@@ -33,6 +33,13 @@ class WebStateID;
                                       (const std::set<web::WebStateID>&)
                                           identifiers NS_DESIGNATED_INITIALIZER;
 
+// Initializer that creates a new group by inserting a new NTP.
+- (instancetype)initEmptyTabGroupCreationWithBaseViewController:
+                    (UIViewController*)viewController
+                                                        browser:
+                                                            (Browser*)browser
+    NS_DESIGNATED_INITIALIZER;
+
 // Initializer when you edit an existing `tabGroup` passed in parameters.
 // `tabGroup` should not be nil.
 - (instancetype)

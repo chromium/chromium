@@ -20,7 +20,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
 
@@ -116,12 +115,6 @@ void UntrustedProjectorUI::BindInterface(
     receiver_.reset();
   }
   receiver_.Bind(std::move(factory));
-}
-
-void UntrustedProjectorUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void UntrustedProjectorUI::Create(

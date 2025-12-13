@@ -4,15 +4,6 @@
 
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "base/feature_list.h"
-#include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens_handler.h"
-#include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets_handler.h"
-#include "chrome/browser/ui/webui/sanitized_image_source.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "content/public/browser/url_data_source.h"
-#endif
-
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler.h"
@@ -28,6 +19,15 @@
 #include "privacy_sandbox_internals_ui.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens_handler.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets_handler.h"
+#include "chrome/browser/ui/webui/sanitized_image_source.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "content/public/browser/url_data_source.h"
+#endif
 
 namespace privacy_sandbox_internals {
 

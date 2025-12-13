@@ -5,8 +5,7 @@
 package org.chromium.base.task;
 
 import org.chromium.build.annotations.NullMarked;
-
-import java.util.concurrent.Executor;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A task queue that posts Java tasks onto the C++ browser scheduler, if loaded. Otherwise this will
@@ -14,7 +13,7 @@ import java.util.concurrent.Executor;
  * provides no guarantee over the order or the thread on which the task will be executed.
  */
 @NullMarked
-public interface TaskRunner extends Executor {
+public interface TaskRunner extends LocationAwareExecutor {
 
     /**
      * Posts a task to run after a specified delay.
@@ -22,5 +21,15 @@ public interface TaskRunner extends Executor {
      * @param task The task to be run.
      * @param delay The delay in milliseconds before the task can be run.
      */
-    void postDelayedTask(Runnable task, long delay);
+    default void postDelayedTask(Runnable task, long delay) {
+        postDelayedTask(task, delay, null);
+    }
+
+    /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #postDelayedTask(Runnable, long)} instead.
+     *
+     * <p>Overload of {@link #postDelayedTask(Runnable, long)} for the Java location rewriter.
+     */
+    void postDelayedTask(Runnable task, long delay, @Nullable Location location);
 }

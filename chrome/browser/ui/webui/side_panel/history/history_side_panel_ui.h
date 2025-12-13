@@ -16,16 +16,11 @@
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/history/history.mojom-forward.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
 class BrowsingHistoryHandler;
-
-namespace ui {
-class ColorChangeHandler;
-}
 
 namespace history_clusters {
 class HistoryClustersHandler;
@@ -66,9 +61,6 @@ class HistorySidePanelUI : public TopChromeWebUIController {
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<history::mojom::PageHandler> pending_page_handler);
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          pending_receiver);
   void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
                          pending_page_handler);
   void BindInterface(
@@ -94,7 +86,6 @@ class HistorySidePanelUI : public TopChromeWebUIController {
 
  private:
   std::unique_ptr<BrowsingHistoryHandler> browsing_history_handler_;
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<history_clusters::HistoryClustersHandler>
       history_clusters_handler_;
   std::unique_ptr<page_image_service::ImageServiceHandler>

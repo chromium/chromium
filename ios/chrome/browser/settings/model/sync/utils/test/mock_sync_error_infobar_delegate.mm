@@ -8,13 +8,13 @@
 
 MockSyncErrorInfoBarDelegate::MockSyncErrorInfoBarDelegate(
     ProfileIOS* profile,
-    id<SyncPresenter> presenter,
+    id<SyncPresenterCommands> sync_presenter_handler,
     std::u16string title_text,
     std::u16string message_text,
     std::u16string button_label_text,
     bool use_icon_background_tint,
     SyncErrorInfoBarTrigger trigger)
-    : SyncErrorInfoBarDelegate(profile, presenter, trigger) {
+    : SyncErrorInfoBarDelegate(profile, sync_presenter_handler, trigger) {
   ON_CALL(*this, GetTitleText).WillByDefault(testing::Return(title_text));
   ON_CALL(*this, GetMessageText).WillByDefault(testing::Return(message_text));
   ON_CALL(*this, GetButtonLabel)

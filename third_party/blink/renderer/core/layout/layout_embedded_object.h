@@ -68,6 +68,8 @@ class LayoutEmbeddedObject final : public LayoutEmbeddedContent {
     NOT_DESTROYED();
     return false;
   }
+  PhysicalRect ReplacedContentRectFrom(
+      const PhysicalRect& base_content_rect) const override;
 
   PluginAvailability plugin_availability_ = kPluginAvailable;
   String unavailable_plugin_replacement_text_;

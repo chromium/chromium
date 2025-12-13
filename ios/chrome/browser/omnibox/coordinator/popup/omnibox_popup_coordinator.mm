@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item_menu_provider.h"
-#import "ios/chrome/browser/omnibox/ui/popup/content_providing.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_view_controller.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -69,6 +68,8 @@
   OmniboxDebuggerMediator* _omniboxDebuggerMediator;
   /// The omnibox image fetcher.
   OmniboxImageFetcher* _omniboxImageFetcher;
+  /// The context in which the omnibox is presented.
+  OmniboxPresentationContext _presentationContext;
 }
 
 #pragma mark - Public
@@ -78,14 +79,18 @@
                     autocompleteController:
                         (AutocompleteController*)autocompleteController
              omniboxAutocompleteController:
-                 (OmniboxAutocompleteController*)omniboxAutocompleteController {
+                 (OmniboxAutocompleteController*)omniboxAutocompleteController
+                       presentationContext:
+                           (OmniboxPresentationContext)presentationContext {
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
     DCHECK(autocompleteController);
     _autocompleteController = autocompleteController;
-    _popupViewController = [[OmniboxPopupViewController alloc] init];
+    _popupViewController = [[OmniboxPopupViewController alloc]
+        initWithPresentationContext:presentationContext];
     _KeyboardDelegate = _popupViewController;
     _omniboxAutocompleteController = omniboxAutocompleteController;
+    _presentationContext = presentationContext;
   }
   return self;
 }
@@ -144,13 +149,16 @@
 
   self.mediator.applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
+  self.mediator.omniboxCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   self.mediator.incognito = isIncognito;
   self.mediator.sceneState = self.browser->GetSceneState();
   self.mediator.presenter = [[OmniboxPopupPresenter alloc]
       initWithPopupPresenterDelegate:self.presenterDelegate
                  popupViewController:self.popupViewController
                    layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)
-                           incognito:isIncognito];
+                           incognito:isIncognito
+                 presentationContext:_presentationContext];
 
   if (experimental_flags::IsOmniboxDebuggingEnabled()) {
     [self setupDebug];
@@ -159,9 +167,15 @@
 
 - (void)stop {
   [_omniboxDebuggerMediator disconnect];
+  _omniboxDebuggerMediator = nil;
 
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
+
+  self.popupViewController = nil;
+  self.mediator = nil;
+  self.autocompleteController = nullptr;
+  _omniboxImageFetcher = nil;
 }
 
 - (BOOL)isOpen {

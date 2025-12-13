@@ -20,15 +20,13 @@ struct HDRMetadata;
 // the key kCVImageBufferContentLightLevelInfoKey or for rendering content using
 // a CAMetalLayer via CAEDRMetadata.
 COLOR_SPACE_EXPORT base::apple::ScopedCFTypeRef<CFDataRef>
-GenerateContentLightLevelInfo(
-    const std::optional<gfx::HDRMetadata>& hdr_metadata);
+GenerateContentLightLevelInfo(const gfx::HDRMetadata& hdr_metadata);
 
 // This can be used for rendering content using AVSampleBufferDisplayLayer via
 // the key kCVImageBufferMasteringDisplayColorVolumeKey or for rendering content
 // using a CAMetalLayer via CAEDRMetadata.
 COLOR_SPACE_EXPORT base::apple::ScopedCFTypeRef<CFDataRef>
-GenerateMasteringDisplayColorVolume(
-    const std::optional<gfx::HDRMetadata>& hdr_metadata);
+GenerateMasteringDisplayColorVolume(const gfx::HDRMetadata& hdr_metadata);
 
 // This can be used for rendering content using AVSampleBufferDisplayLayer via
 // the key "AmbientViewingEnvironment" or for rendering content using a

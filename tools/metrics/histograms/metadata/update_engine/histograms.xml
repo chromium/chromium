@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.Number" units="count"
-    expires_after="2025-12-31">
+    expires_after="2026-05-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.Result" enum="UpdateEngineAttemptResult"
-    expires_after="2025-12-31">
+    expires_after="2026-05-10">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.TimeSinceLastAttemptMinutes"
-    units="minutes" expires_after="2025-12-31">
+    units="minutes" expires_after="2026-05-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -224,7 +224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.CertificateCheck.Download"
-    enum="UpdateEngineCertificateCheckStatus" expires_after="2025-12-31">
+    enum="UpdateEngineCertificateCheckStatus" expires_after="2026-03-01">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Check.Reaction" enum="UpdateEngineCheckReaction"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -284,7 +284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Check.Result" enum="UpdateEngineCheckResult"
-    expires_after="2025-12-31">
+    expires_after="2026-05-10">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -299,9 +299,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Check.RollbackTargetVersion"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2025-03-02">
-  <owner>mpolzer@google.com</owner>
-  <owner>crisguerrero@chromium.org</owner>
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-05-03">
+  <owner>vsavu@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     First section of the ChromeOS target version set by device policy and sent
@@ -315,12 +314,15 @@ chromium-metrics-reviews@google.com.
     policy is set and rollback is enabled.
 
     This metric is specific to ChromeOS.
+
+    There is a gap in the histogram values because this metric was expired
+    between 2025-03-02 and 2025-12-13.
   </summary>
 </histogram>
 
 <histogram name="UpdateEngine.Check.TargetVersion"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2025-12-31">
-  <owner>mpolzer@google.com</owner>
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-05-03">
+  <owner>vsavu@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     First section of the Chrome OS target version set by device policy and sent
@@ -337,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Check.TimeSinceLastCheckMinutes" units="minutes"
-    expires_after="2025-12-31">
+    expires_after="2026-05-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -391,8 +393,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.ConsumerAutoUpdate" enum="BooleanOptedOut"
-    expires_after="2025-04-13">
-  <owner>yuanpengni@chromium.org</owner>
+    expires_after="2026-05-10">
+  <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
     This records if the eligible user has opted out the consumer auto update.
@@ -403,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Daily.OSAgeDays" units="days"
-    expires_after="2025-12-31">
+    expires_after="2026-05-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -416,9 +418,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.EnterpriseRollback.BlockedByFSI"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-01-01">
-  <owner>mpolzer@google.com</owner>
-  <owner>crisguerrero@chromium.org</owner>
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-05-03">
+  <owner>vsavu@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     First section of the ChromeOS version to which an enterprise rollback
@@ -450,7 +451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.FailedUpdateCount" units="count"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -547,7 +548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.DownloadSourcesUsed"
-    enum="UpdateEngineDownloadSources" expires_after="2025-12-31">
+    enum="UpdateEngineDownloadSources" expires_after="2026-03-01">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -574,7 +575,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.PayloadType"
-    enum="UpdateEnginePayloadFormat" expires_after="2025-12-31">
+    enum="UpdateEnginePayloadFormat" expires_after="2026-05-10">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -601,7 +602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.TotalDurationMinutes"
-    units="minutes" expires_after="2025-12-31">
+    units="minutes" expires_after="2026-05-10">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>

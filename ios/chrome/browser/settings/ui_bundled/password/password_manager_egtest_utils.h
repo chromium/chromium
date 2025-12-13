@@ -62,9 +62,18 @@ id<GREYMatcher> PasswordDetailPassword();
 // Matcher for the "Edit" button of the navigation bar.
 id<GREYMatcher> NavigationBarEditButton();
 
-// Matcher for the "Done" button of the navigation bar that's showing when in
-// edit mode.
+// Matcher for the "Done" button that's showing when in edit mode.
+// This button can be on the navigation bar or the bottom toolbar.
+// It can appear to to be a text button with a label "Done" or a button with a
+// checkmark symbol.
 id<GREYMatcher> EditDoneButton();
+
+// Matcher for the "Select" button of the bottom toolbar.
+id<GREYMatcher> ToolbarSelectButton();
+
+// Matcher for the "Done" button of the toolbar that's showing when in
+// edit mode.
+id<GREYMatcher> ToolbarEditDoneButton();
 
 // Matcher for the "Save Password" button the confirmation dialog that pops up
 // in the password details page after editing a password.
@@ -143,11 +152,21 @@ void SaveExamplePasskeyToStore(
     NSString* username = kDefaultUsername,
     NSString* userDisplayName = kDefaultUserDisplayName);
 
+// Saves a hidden passkey to the store.
+void SaveHiddenPasskeyToStore(
+    NSString* rpId = kDefaultRpId,
+    NSString* userId = kDefaultUserId,
+    NSString* username = kDefaultUsername,
+    NSString* userDisplayName = kDefaultUserDisplayName);
+
 // Opens the Password Manager page from the NTP.
 void OpenPasswordManager();
 
 // Taps the "Edit" button of the navigation bar.
 void TapNavigationBarEditButton();
+
+// Taps the "Select" button of the bottom toolbar.
+void TapToolbarSelectButton();
 
 // Deletes the credential with given `username` and `password` from the details
 // page.

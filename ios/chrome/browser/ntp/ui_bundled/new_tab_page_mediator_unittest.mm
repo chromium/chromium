@@ -14,26 +14,28 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/feed/core/v2/public/common_enums.h"
+#import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/test/test_sync_service.h"
-#import "ios/chrome/browser/browser_view/model/browser_view_visibility_audience.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -89,7 +91,6 @@ class NewTabPageMediatorTest : public PlatformTest {
         std::make_unique<ToolbarTestNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     initial_web_state_ = CreateWebStateWithURL(GURL("chrome://newtab"), 0.0);
-    logo_vendor_ = OCMProtocolMock(@protocol(LogoVendor));
 
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
@@ -100,9 +101,9 @@ class NewTabPageMediatorTest : public PlatformTest {
         BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser_.get());
     // Set up discover feed.
     DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser_.get());
-    DiscoverFeedVisibilityBrowserAgent* discover_feed_visibility_browser_agent =
+    discover_feed_visibility_browser_agent_ =
         DiscoverFeedVisibilityBrowserAgent::FromBrowser(browser_.get());
-    discover_feed_visibility_browser_agent->SetEnabled(true);
+    discover_feed_visibility_browser_agent_->SetEnabled(true);
     TestDiscoverFeedService* test_discover_feed_service =
         static_cast<TestDiscoverFeedService*>(
             DiscoverFeedServiceFactory::GetForProfile(profile_.get()));
@@ -111,17 +112,30 @@ class NewTabPageMediatorTest : public PlatformTest {
 
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
-    ChromeAccountManagerService* account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     image_updater_ = OCMProtocolMock(@protocol(UserAccountImageUpdateDelegate));
     test_discover_feed_service_ = static_cast<TestDiscoverFeedService*>(
         DiscoverFeedServiceFactory::GetForProfile(profile_.get()));
     prefs_ = profile_->GetPrefs();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+    aim_eligibility_service_ =
+        std::make_unique<testing::StrictMock<MockAimEligibilityService>>(
+            *profile_->GetPrefs(),
+            ios::TemplateURLServiceFactory::GetForProfile(profile_.get()),
+            nullptr, identity_manager_);
+  }
+
+  /// Creates mediator with optional `aim_eligibility_service`.
+  void CreateMediator(bool with_aim_eligibility_service = false) {
+    ChromeAccountManagerService* account_manager_service =
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     HomeBackgroundCustomizationService* background_customization_service =
         HomeBackgroundCustomizationServiceFactory::GetForProfile(
             profile_.get());
     image_fetcher::ImageFetcherService* image_fetcher_service =
         ImageFetcherServiceFactory::GetForProfile(profile_.get());
+    UserUploadedImageManager* user_uploaded_image_manager =
+        UserUploadedImageManagerFactory::GetForProfile(profile_.get());
+
     mediator_ = [[NewTabPageMediator alloc]
                 initWithTemplateURLService:ios::TemplateURLServiceFactory::
                                                GetForProfile(profile_.get())
@@ -138,10 +152,14 @@ class NewTabPageMediatorTest : public PlatformTest {
                        profile_.get())
             backgroundCustomizationService:background_customization_service
                        imageFetcherService:image_fetcher_service
+                  userUploadedImageManager:user_uploaded_image_manager
              browserViewVisibilityNotifier:browser_view_visibility_notifier_
         discoverFeedVisibilityBrowserAgent:
-            discover_feed_visibility_browser_agent
-                  featureEngagementTracker:&mock_tracker_];
+            discover_feed_visibility_browser_agent_
+                  featureEngagementTracker:&mock_tracker_
+                     aimEligibilityService:with_aim_eligibility_service
+                                               ? aim_eligibility_service_.get()
+                                               : nullptr];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
     visibility_observer_ =
@@ -192,11 +210,12 @@ class NewTabPageMediatorTest : public PlatformTest {
   id header_consumer_;
   id visibility_observer_;
   id image_updater_;
-  id logo_vendor_;
   FeedMetricsRecorder* feed_metrics_recorder_;
+  raw_ptr<DiscoverFeedVisibilityBrowserAgent>
+      discover_feed_visibility_browser_agent_;
   FakeDiscoverFeedEligibilityHandler* eligibility_handler_;
   NewTabPageMediator* mediator_;
-  raw_ptr<ToolbarTestNavigationManager> navigation_manager_;
+  raw_ptr<ToolbarTestNavigationManager, DanglingUntriaged> navigation_manager_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   raw_ptr<BrowserViewVisibilityNotifierBrowserAgent>
       browser_view_visibility_notifier_;
@@ -206,12 +225,15 @@ class NewTabPageMediatorTest : public PlatformTest {
   raw_ptr<TestDiscoverFeedService> test_discover_feed_service_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<MockAimEligibilityService> aim_eligibility_service_;
 };
 
 // Tests that the consumer has the right value set up.
 TEST_F(NewTabPageMediatorTest, TestConsumerSetup) {
   // Setup.
-  OCMExpect([header_consumer_ setLogoIsShowing:YES]);
+  CreateMediator();
+  OCMExpect(
+      [header_consumer_ setSearchEngineLogoState:SearchEngineLogoState::kLogo]);
 
   // Action.
   [mediator_ setUp];
@@ -224,6 +246,7 @@ TEST_F(NewTabPageMediatorTest, TestConsumerSetup) {
 // Tests that the feed visibility depends on the visibility of the discover
 // visibility browser agent.
 TEST_F(NewTabPageMediatorTest, TestShowAndHideFeed) {
+  CreateMediator();
   [mediator_ setUp];
   EXPECT_TRUE([mediator_ isFeedHeaderVisible]);
   [eligibility_handler_
@@ -237,8 +260,7 @@ TEST_F(NewTabPageMediatorTest, TestShowAndHideFeed) {
 // Tests that the mediator updates the Discover feed with the visibility state
 // of the feed.
 TEST_F(NewTabPageMediatorTest, TestUpdateVisibilityStateOfFeed) {
-  using enum BrowserViewVisibilityState;
-
+  CreateMediator();
   [mediator_ setUp];
 
   UICollectionView* collection_view = [[UICollectionView alloc]
@@ -246,39 +268,42 @@ TEST_F(NewTabPageMediatorTest, TestUpdateVisibilityStateOfFeed) {
       collectionViewLayout:[[UICollectionViewLayout alloc] init]];
   mediator_.contentCollectionView = collection_view;
 
-  id<BrowserViewVisibilityAudience> audience =
-      browser_view_visibility_notifier_->GetBrowserViewVisibilityAudience();
+  BrowserViewVisibilityStateChangedCallback callback =
+      browser_view_visibility_notifier_->GetNotificationCallback();
 
   // User is on new tab page.
   mediator_.NTPVisible = YES;
-  [audience browserViewDidTransitionToVisibilityState:kAppearing
-                                            fromState:kNotInViewHierarchy];
+  callback.Run(BrowserViewVisibilityState::kAppearing,
+               BrowserViewVisibilityState::kNotInViewHierarchy);
   EXPECT_EQ(test_discover_feed_service_->collection_view(), collection_view);
-  EXPECT_EQ(test_discover_feed_service_->visibility_state(), kAppearing);
+  EXPECT_EQ(test_discover_feed_service_->visibility_state(),
+            BrowserViewVisibilityState::kAppearing);
 
   // User turns off the feed.
   eligibility_handler_.enabled = false;
-  [audience browserViewDidTransitionToVisibilityState:kVisible
-                                            fromState:kAppearing];
-  EXPECT_EQ(test_discover_feed_service_->visibility_state(), kAppearing);
+  callback.Run(BrowserViewVisibilityState::kVisible,
+               BrowserViewVisibilityState::kAppearing);
+  EXPECT_EQ(test_discover_feed_service_->visibility_state(),
+            BrowserViewVisibilityState::kAppearing);
 
   // User turns the feed back on.
   eligibility_handler_.enabled = true;
-  [audience browserViewDidTransitionToVisibilityState:kCoveredByOmniboxPopup
-                                            fromState:kVisible];
+  callback.Run(BrowserViewVisibilityState::kCoveredByOmniboxPopup,
+               BrowserViewVisibilityState::kVisible);
   EXPECT_EQ(test_discover_feed_service_->visibility_state(),
-            kCoveredByOmniboxPopup);
+            BrowserViewVisibilityState::kCoveredByOmniboxPopup);
 
   // User has navigated away.
   mediator_.NTPVisible = NO;
-  [audience browserViewDidTransitionToVisibilityState:kVisible
-                                            fromState:kCoveredByOmniboxPopup];
+  callback.Run(BrowserViewVisibilityState::kVisible,
+               BrowserViewVisibilityState::kCoveredByOmniboxPopup);
   EXPECT_EQ(test_discover_feed_service_->visibility_state(),
-            kCoveredByOmniboxPopup);
+            BrowserViewVisibilityState::kCoveredByOmniboxPopup);
 }
 
 // Tests that -notifyLensBadgeDisplayed correctly notifies the tracker.
 TEST_F(NewTabPageMediatorTest, TestNotifyLensBadgeDisplayed) {
+  CreateMediator();
   EXPECT_CALL(
       mock_tracker_,
       Dismissed(testing::Ref(feature_engagement::kIPHiOSHomepageLensNewBadge)));
@@ -287,6 +312,7 @@ TEST_F(NewTabPageMediatorTest, TestNotifyLensBadgeDisplayed) {
 
 // Tests that -notifyCustomizationBadgeDisplayed correctly notifies the tracker.
 TEST_F(NewTabPageMediatorTest, TestNotifyCustomizationBadgeDisplayed) {
+  CreateMediator();
   EXPECT_CALL(mock_tracker_,
               Dismissed(testing::Ref(
                   feature_engagement::kIPHiOSHomepageCustomizationNewBadge)));
@@ -296,6 +322,7 @@ TEST_F(NewTabPageMediatorTest, TestNotifyCustomizationBadgeDisplayed) {
 // Tests that -checkNewBadgeEligibility notifies the feature engagement tracker
 // only when the first run was not recent.
 TEST_F(NewTabPageMediatorTest, TestCheckNewBadgeEligibilityNotifiesTracker) {
+  CreateMediator();
   // First Run is 1 day old, so the tracker should be notified.
   ForceFirstRunRecency(1);
   EXPECT_CALL(
@@ -311,6 +338,7 @@ TEST_F(NewTabPageMediatorTest, TestCheckNewBadgeEligibilityNotifiesTracker) {
 // tracker if it is the First Run.
 TEST_F(NewTabPageMediatorTest,
        TestCheckNewBadgeEligibilityDoesNotNotifyTrackerOnFirstRun) {
+  CreateMediator();
   // It is the First Run, so the tracker should not be notified.
   ResetFirstRunSentinel();
   EXPECT_CALL(
@@ -319,4 +347,145 @@ TEST_F(NewTabPageMediatorTest,
           feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed))
       .Times(0);
   [mediator_ checkNewBadgeEligibility];
+}
+
+// Tests that the AIM is disabled if the user is not eligible.
+TEST_F(NewTabPageMediatorTest, TestAIMNotEligible) {
+  scoped_feature_list_.InitAndEnableFeature(kAIMNTPEntrypointTablet);
+  // Setup with non eligible.
+  EXPECT_CALL(*aim_eligibility_service_,
+              RegisterEligibilityChangedCallback(testing::_))
+      .WillOnce(testing::Return(base::CallbackListSubscription()));
+  CreateMediator(/*with_aim_eligibility_service=*/true);
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
+      .WillRepeatedly(testing::Return(false));
+  OCMExpect(
+      [header_consumer_ setSearchEngineLogoState:SearchEngineLogoState::kLogo]);
+
+  // Consumer should be notified.
+  id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
+  mediator_.consumer = ntp_consumer;
+  OCMExpect([ntp_consumer setAIMAllowed:NO]);
+  OCMExpect([header_consumer_ setAIMAllowed:NO]);
+  [mediator_ setUp];
+
+  EXPECT_OCMOCK_VERIFY(header_consumer_);
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
+}
+
+// Tests that the AIM is enabled if the user is eligible.
+TEST_F(NewTabPageMediatorTest, TestAIMEligible) {
+  scoped_feature_list_.InitAndEnableFeature(kAIMNTPEntrypointTablet);
+  // Setup with eligible.
+  EXPECT_CALL(*aim_eligibility_service_,
+              RegisterEligibilityChangedCallback(testing::_))
+      .WillOnce(testing::Return(base::CallbackListSubscription()));
+  CreateMediator(/*with_aim_eligibility_service=*/true);
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
+      .WillRepeatedly(testing::Return(true));
+  OCMExpect(
+      [header_consumer_ setSearchEngineLogoState:SearchEngineLogoState::kLogo]);
+
+  // Consumer should be notified.
+  id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
+  mediator_.consumer = ntp_consumer;
+  OCMExpect([ntp_consumer setAIMAllowed:YES]);
+  OCMExpect([header_consumer_ setAIMAllowed:YES]);
+  [mediator_ setUp];
+
+  EXPECT_OCMOCK_VERIFY(header_consumer_);
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
+}
+
+// Tests that NTP modules are not updated if AIM eligibility changes before
+// setup.
+TEST_F(NewTabPageMediatorTest, TestAIMBecomeEligibleBeforeSetUp) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_featured=*/{kAIMEligibilityRefreshNTPModules,
+                            kAIMNTPEntrypointTablet},
+      /*disabled_features=*/{});
+  // Setup with non eligible.
+  base::RepeatingClosure callback;
+  EXPECT_CALL(*aim_eligibility_service_,
+              RegisterEligibilityChangedCallback(testing::_))
+      .WillOnce([&](base::RepeatingClosure c) {
+        callback = c;
+        return base::CallbackListSubscription();
+      });
+
+  bool is_eligible = false;
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible()).WillRepeatedly([&]() {
+    return is_eligible;
+  });
+
+  CreateMediator(/*with_aim_eligibility_service=*/true);
+
+  id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
+  mediator_.consumer = ntp_consumer;
+  id ntp_content_delegate =
+      OCMProtocolMock(@protocol(NewTabPageContentDelegate));
+  mediator_.NTPContentDelegate = ntp_content_delegate;
+
+  // Eligibility changes to true before setup.
+  is_eligible = true;
+  OCMReject([ntp_content_delegate updateModuleVisibility]);
+  OCMExpect([ntp_consumer setAIMAllowed:YES]);
+  OCMExpect([header_consumer_ setAIMAllowed:YES]);
+  callback.Run();
+  // Consumer are updated but modules are not.
+  EXPECT_OCMOCK_VERIFY(ntp_content_delegate);
+
+  // Consumer are updated during setup.
+  OCMExpect(
+      [header_consumer_ setSearchEngineLogoState:SearchEngineLogoState::kLogo]);
+  OCMExpect([ntp_consumer setAIMAllowed:YES]);
+  OCMExpect([header_consumer_ setAIMAllowed:YES]);
+  [mediator_ setUp];
+
+  EXPECT_OCMOCK_VERIFY(header_consumer_);
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
+}
+
+// Tests that NTP modules are updated if AIM eligibility changes after setup.
+TEST_F(NewTabPageMediatorTest, TestAIMBecomeEligibleAfterSetUp) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_featured=*/{kAIMEligibilityRefreshNTPModules,
+                            kAIMNTPEntrypointTablet},
+      /*disabled_features=*/{});
+  // Setup with non eligible.
+  base::RepeatingClosure callback;
+  EXPECT_CALL(*aim_eligibility_service_,
+              RegisterEligibilityChangedCallback(testing::_))
+      .WillOnce([&](base::RepeatingClosure c) {
+        callback = c;
+        return base::CallbackListSubscription();
+      });
+
+  bool is_eligible = false;
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible()).WillRepeatedly([&]() {
+    return is_eligible;
+  });
+
+  CreateMediator(/*with_aim_eligibility_service=*/true);
+  OCMExpect(
+      [header_consumer_ setSearchEngineLogoState:SearchEngineLogoState::kLogo]);
+
+  // Setup with non eligible.
+  id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
+  mediator_.consumer = ntp_consumer;
+  id ntp_content_delegate =
+      OCMProtocolMock(@protocol(NewTabPageContentDelegate));
+  mediator_.NTPContentDelegate = ntp_content_delegate;
+  [mediator_ setUp];
+
+  // Becomes eligible after setup, modules should be updated.
+  is_eligible = true;
+  OCMExpect([ntp_consumer setAIMAllowed:YES]);
+  OCMExpect([header_consumer_ setAIMAllowed:YES]);
+  OCMExpect([ntp_content_delegate updateModuleVisibility]);
+  callback.Run();
+
+  EXPECT_OCMOCK_VERIFY(header_consumer_);
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
+  EXPECT_OCMOCK_VERIFY(ntp_content_delegate);
 }

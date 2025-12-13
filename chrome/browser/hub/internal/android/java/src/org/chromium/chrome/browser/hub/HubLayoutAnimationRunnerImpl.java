@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -14,10 +16,10 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.hub.HubLayoutAnimationRunner.AnimationState;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Deque;
 
 /** Implementation of {@link HubLayoutAnimationRunner}. */
 @NullMarked
@@ -28,7 +30,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
     private @HubLayoutAnimationType int mAnimationType;
     private boolean mWasForcedToFinish;
 
-    private @Nullable LinkedList<HubLayoutAnimationListener> mListeners;
+    private @Nullable Deque<HubLayoutAnimationListener> mListeners;
 
     /**
      * Creates a {@link HubLayoutAnimatorRunnerImpl}.
@@ -59,7 +61,8 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
         mAnimationState = AnimationState.WAITING_FOR_ANIMATOR;
         SyncOneshotSupplier<HubLayoutAnimator> animatorSupplier =
                 mAnimatorProvider.getAnimatorSupplier();
-        if (animatorSupplier.hasValue()) {
+        HubLayoutAnimator animator = animatorSupplier.get();
+        if (animator != null) {
             // Post the callback so we don't run immediately and any other setup work can complete
             // first.
             animatorSupplier.onAvailable(this::postOnAnimatorReady);
@@ -90,8 +93,8 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
         mWasForcedToFinish = true;
         SyncOneshotSupplier<HubLayoutAnimator> animatorSupplier =
                 mAnimatorProvider.getAnimatorSupplier();
-        if (animatorSupplier.hasValue()) {
-            HubLayoutAnimator animator = animatorSupplier.get();
+        HubLayoutAnimator animator = animatorSupplier.get();
+        if (animator != null) {
             if (mAnimationState == AnimationState.STARTED) {
                 animator.getAnimatorSet().end();
             } else {
@@ -108,7 +111,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
         assert mAnimationState == AnimationState.INITIALIZING
                 : "Attempting to add an HubLayoutAnimationListener that may not be called.";
         ensureListenersList();
-        mListeners.add(animationListener);
+        mListeners.addLast(animationListener);
     }
 
     private void onWaitForAnimatorTimeout() {
@@ -124,13 +127,13 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
 
         SyncOneshotSupplier<HubLayoutAnimator> animatorSupplier =
                 mAnimatorProvider.getAnimatorSupplier();
-        assert animatorSupplier.hasValue()
+        assert animatorSupplier.get() != null
                 : "HubAnimatorProvider#supplyAnimatorNow() failed to provide an animation for "
                         + getAnimationType();
 
         // Don't rely on the observable supplier here as we might post when the value is set. Call
         // the onAnimatorReady method directly (repeat calls will be dropped).
-        onAnimatorReady(animatorSupplier.get());
+        onAnimatorReady(assumeNonNull(animatorSupplier.get()));
     }
 
     private void postOnAnimatorReady(HubLayoutAnimator animator) {
@@ -195,7 +198,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
     @EnsuresNonNull("mListeners")
     private void ensureListenersList() {
         if (mListeners == null) {
-            mListeners = new LinkedList<>();
+            mListeners = new ArrayDeque<>();
         }
     }
 }

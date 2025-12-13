@@ -25,6 +25,10 @@ class Profile;
 class ReloadButton;
 class LocationBarModel;
 
+namespace content {
+class WebContents;
+}
+
 namespace views {
 class WebView;
 class Widget;
@@ -98,8 +102,8 @@ class SimpleWebViewDialog : public views::View,
   void UpdateReload(bool is_loading, bool force);
 
   // Implements ChromeWebModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // Implements web_modal::WebContentsModalDialogHost:
   gfx::NativeView GetHostView() const override;

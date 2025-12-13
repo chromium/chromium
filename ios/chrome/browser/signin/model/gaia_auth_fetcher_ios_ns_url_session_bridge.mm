@@ -11,8 +11,8 @@
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/core/browser/chrome_connected_header_helper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/net/cookies/system_cookie_util.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_client.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/http/http_request_headers.h"
@@ -96,8 +96,8 @@ GaiaAuthFetcherIOSNSURLSessionBridge::Request::Request(
 
 GaiaAuthFetcherIOSNSURLSessionBridge::GaiaAuthFetcherIOSNSURLSessionBridge(
     GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate* delegate,
-    web::BrowserState* browser_state)
-    : GaiaAuthFetcherIOSBridge(delegate), browser_state_(browser_state) {
+    ProfileIOS* profile)
+    : GaiaAuthFetcherIOSBridge(delegate), profile_(profile) {
   url_session_delegate_ = [[GaiaAuthFetcherIOSURLSessionDelegate alloc] init];
   url_session_delegate_.bridge = this;
 }
@@ -114,8 +114,7 @@ void GaiaAuthFetcherIOSNSURLSessionBridge::Fetch(
   DCHECK(!request_.pending);
 
   request_ = Request(url, headers, body, should_use_xml_http_request);
-  network::mojom::CookieManager* cookie_manager =
-      browser_state_->GetCookieManager();
+  network::mojom::CookieManager* cookie_manager = profile_->GetCookieManager();
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(
@@ -181,8 +180,7 @@ void GaiaAuthFetcherIOSNSURLSessionBridge::SetCanonicalCookiesFromResponse(
   NSArray* cookies =
       [NSHTTPCookie cookiesWithResponseHeaderFields:response.allHeaderFields
                                              forURL:response.URL];
-  network::mojom::CookieManager* cookie_manager =
-      browser_state_->GetCookieManager();
+  network::mojom::CookieManager* cookie_manager = profile_->GetCookieManager();
   for (NSHTTPCookie* cookie : cookies) {
     std::unique_ptr<net::CanonicalCookie> canonical_cookie =
         net::CanonicalCookieFromSystemCookie(cookie, base::Time::Now());

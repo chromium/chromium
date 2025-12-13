@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
+#include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 
 namespace blink {
@@ -34,8 +35,17 @@ InterpolationValue CSSDefaultInterpolationType::MaybeConvertSingle(
   }
 
   css_value = environment.Resolve(GetProperty(), css_value, tree_scope);
-  if (!css_value)
-    return nullptr;
+  if (!css_value) {
+    // Custom property cycle. CSSDefaultInterpolationType *must* succeed
+    // at creating a value (for non-neutral keyframes), since this
+    // interpolation type is the "last resort". To stay consistent with
+    // handling in CSSVarCycleInterpolationType, we use "unset" for cycles.
+    // We should likely be using CSSInvalidVariableValue here instead,
+    // although the correct behavior isn't actually specified.
+    //
+    // TODO(crbug.com/40753334): Figure out the correct behavior.
+    css_value = cssvalue::CSSUnsetValue::Create();
+  }
 
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(0),

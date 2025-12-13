@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/win/media_foundation_audio_decoder.h"
 
 #include <mfapi.h>
@@ -15,10 +10,12 @@
 #include <wmcodecdsp.h>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
@@ -28,6 +25,7 @@
 #include "media/base/limits.h"
 #include "media/base/status.h"
 #include "media/base/timestamp_constants.h"
+#include "media/base/win/hresults.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
 
@@ -201,10 +199,18 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
   config_ = config;
   output_cb_ = output_cb;
 
-  base::BindPostTaskToCurrentDefault(std::move(init_cb))
-      .Run(CreateDecoder()
-               ? DecoderStatus(OkStatus())
-               : DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec));
+  HRESULT hr = CreateDecoder();
+  if (FAILED(hr)) {
+    if (config_.profile() == AudioCodecProfile::kXHE_AAC) {
+      base::UmaHistogramSparse(
+          "Media.MediaFoundationAudioDecoder.CreateDecoderFailure.XheAac", hr);
+    }
+    base::BindPostTaskToCurrentDefault(std::move(init_cb))
+        .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec));
+    return;
+  }
+
+  base::BindPostTaskToCurrentDefault(std::move(init_cb)).Run(OkStatus());
 }
 
 void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -286,7 +292,7 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
-  current_buffer_time_info_ = buffer->time_info();
+  current_buffer_time_info_ = AudioDiscardHelper::TimeInfo::FromBuffer(*buffer);
 
   bool decoded_frame_this_loop = false;
   OutputStatus rc;
@@ -326,13 +332,16 @@ bool MediaFoundationAudioDecoder::NeedsBitstreamConversion() const {
   return false;
 }
 
-bool MediaFoundationAudioDecoder::CreateDecoder() {
+HRESULT MediaFoundationAudioDecoder::CreateDecoder() {
   auto type_info = GetTypeInfo(config_);
+  if (!type_info) {
+    return E_NOTIMPL;
+  }
 
   // This shouldn't be possible outside of tests since production code will use
   // the MediaFoundationAudioDecoder::Create() which enforces this.
-  if (!type_info || !InitializeMediaFoundation()) {
-    return false;
+  if (!InitializeMediaFoundation()) {
+    return kErrorInitializeMediaFoundation;
   }
 
   // Find the decoder factory.
@@ -341,54 +350,55 @@ bool MediaFoundationAudioDecoder::CreateDecoder() {
   // for a codec pump), but alas MFT_ENUM_FLAG_ASYNC_MFT returns no matches :(
   base::win::ScopedCoMem<IMFActivate*> acts;
   UINT32 acts_num = 0;
-  MFTEnumEx(MFT_CATEGORY_AUDIO_DECODER,
-            MFT_ENUM_FLAG_SYNCMFT | MFT_ENUM_FLAG_LOCALMFT |
-                MFT_ENUM_FLAG_SORTANDFILTER,
-            &type_info.value(), nullptr, &acts, &acts_num);
+  RETURN_IF_FAILED(MFTEnumEx(MFT_CATEGORY_AUDIO_DECODER,
+                             MFT_ENUM_FLAG_SYNCMFT | MFT_ENUM_FLAG_LOCALMFT |
+                                 MFT_ENUM_FLAG_SORTANDFILTER,
+                             &type_info.value(), nullptr, &acts, &acts_num));
+
   if (acts_num < 1) {
-    return false;
+    return MF_E_TOPO_CODEC_NOT_FOUND;
   }
 
-  // Create the decoder from the factory. Activate the first MFT object.
-  RETURN_ON_HR_FAILURE(acts[0]->ActivateObject(IID_PPV_ARGS(&decoder_)),
-                       "Failed to activate MFT", false);
+  // Create the decoder from the factory. Activate the first MFT object. We need
+  // to release acts regardless of success/failure hre.
+  HRESULT hr = acts[0]->ActivateObject(IID_PPV_ARGS(&decoder_));
 
-  // Release all activated and unactivated object after creating the decoder
-  for (UINT32 curr_act = 0; curr_act < acts_num; ++curr_act) {
-    acts[curr_act]->Release();
+  // SAFETY:
+  // https://learn.microsoft.com/en-us/windows/win32/api/mfapi/nf-mfapi-mftenumex
+  // The documentation states that `acts` points to a pointer array and
+  // `acts_num` returns the number of elements in the array.
+  for (auto* curr_act : UNSAFE_BUFFERS(base::span(acts.get(), acts_num))) {
+    curr_act->Release();
   }
+  RETURN_IF_FAILED(hr);
 
   Microsoft::WRL::ComPtr<IMFMediaType> input_type;
-  auto hr = E_NOTIMPL;
   if (config_.codec() == AudioCodec::kAAC) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    hr = GetAacAudioType(config_, &input_type);
+    RETURN_IF_FAILED(GetAacAudioType(config_, &input_type));
+#else
+    return E_NOTIMPL;
 #endif
   } else {
-    hr = GetDefaultAudioType(config_, &input_type);
+    RETURN_IF_FAILED(GetDefaultAudioType(config_, &input_type));
   }
 
-  RETURN_ON_HR_FAILURE(hr, "Failed to create IMFMediaType for input data",
-                       false);
-  RETURN_ON_HR_FAILURE(decoder_->SetInputType(0, input_type.Get(), 0),
-                       "Failed to set input type for IMFTransform", false);
-
+  RETURN_IF_FAILED(decoder_->SetInputType(0, input_type.Get(), 0));
   return ConfigureOutput();
 }
 
-bool MediaFoundationAudioDecoder::ConfigureOutput() {
+HRESULT MediaFoundationAudioDecoder::ConfigureOutput() {
   // Reset sample staging buffer before configure output, in case stream
   // configuration changed.
   output_sample_.Reset();
   Microsoft::WRL::ComPtr<IMFMediaType> output_type;
-  for (uint32_t i = 0;
-       SUCCEEDED(decoder_->GetOutputAvailableType(0, i, &output_type)); ++i) {
+  for (uint32_t i = 0;; ++i) {
+    RETURN_IF_FAILED(decoder_->GetOutputAvailableType(0, i, &output_type));
+
     GUID out_type;
-    RETURN_ON_HR_FAILURE(output_type->GetGUID(MF_MT_MAJOR_TYPE, &out_type),
-                         "Failed to get output main type", false);
+    RETURN_IF_FAILED(output_type->GetGUID(MF_MT_MAJOR_TYPE, &out_type));
     GUID out_subtype;
-    RETURN_ON_HR_FAILURE(output_type->GetGUID(MF_MT_SUBTYPE, &out_subtype),
-                         "Failed to get output subtype", false);
+    RETURN_IF_FAILED(output_type->GetGUID(MF_MT_SUBTYPE, &out_subtype));
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     // Configuration specific to DTS Sound Unbound MFT v1.3.0
@@ -401,22 +411,19 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
         ((config_.codec() == AudioCodec::kDTS && i == DTS_5_1) ||
          (config_.codec() == AudioCodec::kDTSE && i == DTS_5_1) ||
          (config_.codec() == AudioCodec::kDTSXP2 && i == DTSX_5_1_DOWNMIX))) {
-      RETURN_ON_HR_FAILURE(decoder_->SetOutputType(0, output_type.Get(), 0),
-                           "Failed to set output type IMFTransform", false);
+      RETURN_IF_FAILED(decoder_->SetOutputType(0, output_type.Get(), 0));
 
-      RETURN_ON_HR_FAILURE(
-          output_type->GetUINT32(MF_MT_AUDIO_NUM_CHANNELS, &channel_count_),
-          "Failed to get output channel count", false);
+      RETURN_IF_FAILED(
+          output_type->GetUINT32(MF_MT_AUDIO_NUM_CHANNELS, &channel_count_));
 
       MFT_OUTPUT_STREAM_INFO info = {0};
-      RETURN_ON_HR_FAILURE(decoder_->GetOutputStreamInfo(0, &info),
-                           "Failed to get output stream info", false);
+      RETURN_IF_FAILED(decoder_->GetOutputStreamInfo(0, &info));
 
       if (channel_count_ == 6) {
         output_sample_ =
             CreateEmptySampleWithBuffer(info.cbSize, info.cbAlignment);
         RETURN_ON_FAILURE(!!output_sample_, "Failed to create staging sample",
-                          false);
+                          E_OUTOFMEMORY);
       }
     }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
@@ -425,22 +432,18 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
         out_subtype == MFAudioFormat_Float) {
       base::win::ScopedCoMem<WAVEFORMATEX> wave_format;
       UINT32 wave_format_size;
-      RETURN_ON_HR_FAILURE(
-          MFCreateWaveFormatExFromMFMediaType(output_type.Get(), &wave_format,
-                                              &wave_format_size),
-          "Failed to get waveformat for media type", false);
+      RETURN_IF_FAILED(MFCreateWaveFormatExFromMFMediaType(
+          output_type.Get(), &wave_format, &wave_format_size));
       if (CodecSupportsFormat(config_, *wave_format)) {
-        RETURN_ON_HR_FAILURE(decoder_->SetOutputType(0, output_type.Get(), 0),
-                             "Failed to set output type IMFTransform", false);
+        RETURN_IF_FAILED(decoder_->SetOutputType(0, output_type.Get(), 0));
 
         MFT_OUTPUT_STREAM_INFO info = {0};
-        RETURN_ON_HR_FAILURE(decoder_->GetOutputStreamInfo(0, &info),
-                             "Failed to get output stream info", false);
+        RETURN_IF_FAILED(decoder_->GetOutputStreamInfo(0, &info));
 
         output_sample_ =
             CreateEmptySampleWithBuffer(info.cbSize, info.cbAlignment);
         RETURN_ON_FAILURE(!!output_sample_, "Failed to create staging sample",
-                          false);
+                          E_OUTOFMEMORY);
 
         channel_count_ = wave_format->nChannels;
       }
@@ -453,40 +456,41 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
 
     // Check the optional channel mask argument.
     ChannelConfig mask = 0u;
-    auto hr = output_type->GetUINT32(MF_MT_AUDIO_CHANNEL_MASK, &mask);
+    HRESULT hr = output_type->GetUINT32(MF_MT_AUDIO_CHANNEL_MASK, &mask);
     if (hr == MF_E_ATTRIBUTENOTFOUND) {
       channel_layout_ = GuessChannelLayout(channel_count_);
     } else {
-      RETURN_ON_HR_FAILURE(hr, "Failed to get output channel mask", false);
+      RETURN_IF_FAILED(hr);
       channel_layout_ = ChannelConfigToChannelLayout(mask);
 
-      RETURN_ON_FAILURE(static_cast<uint32_t>(ChannelLayoutToChannelCount(
-                            channel_layout_)) == channel_count_ ||
-                            channel_layout_ == CHANNEL_LAYOUT_DISCRETE,
-                        "Channel layout and channel count don't match", false);
+      RETURN_ON_FAILURE(
+          static_cast<uint32_t>(ChannelLayoutToChannelCount(channel_layout_)) ==
+                  channel_count_ ||
+              channel_layout_ == CHANNEL_LAYOUT_DISCRETE,
+          "Channel layout and channel count don't match", E_UNEXPECTED);
     }
 
     const auto current_sample_rate = sample_rate_;
-    RETURN_ON_HR_FAILURE(
-        output_type->GetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, &sample_rate_),
-        "Failed to get output sample rate", false);
+    RETURN_IF_FAILED(
+        output_type->GetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, &sample_rate_));
 
     RETURN_ON_FAILURE(
         channel_count_ > 0 && channel_count_ <= limits::kMaxChannels,
-        "Channel count is not supported", false);
+        "Channel count is not supported", E_UNEXPECTED);
 
     RETURN_ON_FAILURE(sample_rate_ >= limits::kMinSampleRate &&
                           sample_rate_ <= limits::kMaxSampleRate,
-                      "Sample rate is not supported", false);
+                      "Sample rate is not supported", E_UNEXPECTED);
 
     if (current_sample_rate != sample_rate_) {
       ResetTimestampState();
     }
-    decoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, 0);
-    return true;
+    RETURN_IF_FAILED(
+        decoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, 0));
+    return S_OK;
   }
 
-  return false;
+  NOTREACHED();
 }
 
 MediaFoundationAudioDecoder::OutputStatus
@@ -505,7 +509,7 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
 
   if (hr == MF_E_TRANSFORM_STREAM_CHANGE &&
       pump_state != PumpState::kStreamChange) {
-    if (!ConfigureOutput()) {
+    if (FAILED(ConfigureOutput())) {
       return OutputStatus::kFailed;
     }
 

@@ -18,11 +18,14 @@
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_urls.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

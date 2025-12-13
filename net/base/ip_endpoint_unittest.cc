@@ -10,6 +10,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/containers/span.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -78,13 +79,13 @@ uint32_t FakeNameToIndexFunc(const char* name) {
   return index;
 }
 
-char* FakeIndexToNameFunc(unsigned int index, char* ifname) {
+char* FakeIndexToNameFunc(unsigned int index, base::span<char>ifname) {
   if (index > kMaxFakeInterfaceIndex) {
     return nullptr;
   }
   std::string name = base::NumberToString(index);
   ifname[0] = name[0];
-  return ifname;
+  return ifname.data();
 }
 
 struct TestData {

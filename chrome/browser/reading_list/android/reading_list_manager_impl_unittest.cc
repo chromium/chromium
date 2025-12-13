@@ -26,7 +26,7 @@
 
 using BookmarkNode = bookmarks::BookmarkNode;
 
-namespace {
+namespace reading_list {
 
 constexpr char kURL[] = "https://www.example.com";
 constexpr char kURL1[] = "https://www.anotherexample.com";
@@ -340,9 +340,10 @@ TEST_F(ReadingListManagerImplTest, ReadStatus) {
 TEST_F(ReadingListManagerImplTest, ReadingListDidAddEntry) {
   GURL url(kURL);
   EXPECT_CALL(*observer(), ReadingListChanged()).RetiresOnSaturation();
-  reading_list_model()->AddOrReplaceEntry(
-      url, kTitle, reading_list::ADDED_VIA_SYNC,
-      /*estimated_read_time=*/base::TimeDelta());
+  reading_list_model()->AddOrReplaceEntry(url, kTitle,
+                                          reading_list::ADDED_VIA_SYNC,
+                                          /*estimated_read_time=*/std::nullopt,
+                                          /*creation_time=*/std::nullopt);
 
   const auto* node = manager()->Get(url);
   EXPECT_TRUE(node);
@@ -398,4 +399,4 @@ TEST_F(ReadingListManagerImplTest, EmptyBatchUpdatesDontTriggerObserver) {
   update.reset();
 }
 
-}  // namespace
+}  // namespace reading_list

@@ -31,6 +31,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -45,6 +46,8 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 

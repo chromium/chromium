@@ -38,7 +38,8 @@ bool LogReplaySocket::Connect(const GURL& url) {
 }
 
 bool LogReplaySocket::Send(const std::string& message) {
-  std::optional<base::Value> json = base::JSONReader::Read(message);
+  std::optional<base::Value> json =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   max_id_ = json->GetDict().FindInt("id").value();
   return true;
 }

@@ -5,6 +5,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/background/background_contents_test_waiter.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
@@ -63,6 +64,12 @@ class BackgroundContentsTagTest : public extensions::ExtensionBrowserTest {
     command_line->AppendSwitch(embedder_support::kDisablePopupBlocking);
     command_line->AppendSwitch(extensions::switches::kAllowHTTPBackgroundPage);
   }
+
+ private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 // Tests that loading an extension that has a background contents will result in

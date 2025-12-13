@@ -42,23 +42,23 @@ class EmbeddedTestServerAndroid {
 
   base::android::ScopedJavaLocalRef<jstring> GetURL(
       JNIEnv* jenv,
-      const base::android::JavaParamRef<jstring>& jrelative_url) const;
+      const base::android::JavaRef<jstring>& jrelative_url) const;
 
   base::android::ScopedJavaLocalRef<jstring> GetURLWithHostName(
       JNIEnv* jenv,
-      const base::android::JavaParamRef<jstring>& jhostname,
-      const base::android::JavaParamRef<jstring>& jrelative_url) const;
+      const base::android::JavaRef<jstring>& jhostname,
+      const base::android::JavaRef<jstring>& jrelative_url) const;
 
   std::vector<std::string> GetRequestHeadersForUrl(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jrelative_url);
+      const base::android::JavaRef<jstring>& jrelative_url);
   int GetRequestCountForUrl(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jrelative_url);
+      const base::android::JavaRef<jstring>& jrelative_url);
 
   void AddDefaultHandlers(
       JNIEnv* jenv,
-      const base::android::JavaParamRef<jstring>& jdirectory_path);
+      const base::android::JavaRef<jstring>& jdirectory_path);
 
   void SetSSLConfig(JNIEnv* jenv, jint jserver_certificate);
 
@@ -66,7 +66,7 @@ class EmbeddedTestServerAndroid {
 
   void ServeFilesFromDirectory(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jdirectory_path);
+      const base::android::JavaRef<jstring>& jdirectory_path);
 
  private:
   // Connection listener forwarding notifications to EmbeddedTestServerAndroid.
@@ -78,8 +78,6 @@ class EmbeddedTestServerAndroid {
     std::unique_ptr<StreamSocket> AcceptedSocket(
         std::unique_ptr<StreamSocket> socket) override;
     void ReadFromSocket(const StreamSocket& socket, int rv) override;
-    void OnResponseCompletedSuccessfully(
-        std::unique_ptr<StreamSocket> socket) override;
 
    private:
     raw_ptr<EmbeddedTestServerAndroid> test_server_android_;

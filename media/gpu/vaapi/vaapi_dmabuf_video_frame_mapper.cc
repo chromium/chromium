@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/vaapi_dmabuf_video_frame_mapper.h"
 
 #include <sys/mman.h>
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -62,10 +58,11 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
   std::vector<ColorPlaneLayout> planes(kNumPlanes);
   std::array<uint8_t*, VideoFrame::kMaxPlanes> addrs = {};
   for (size_t i = 0; i < kNumPlanes; i++) {
-    planes[i].stride = va_image->image()->pitches[i];
-    planes[i].offset = va_image->image()->offsets[i];
-    addrs[i] = static_cast<uint8_t*>(va_image->va_buffer()->data()) +
-               va_image->image()->offsets[i];
+    planes[i].stride = UNSAFE_TODO(va_image->image()->pitches[i]);
+    planes[i].offset = UNSAFE_TODO(va_image->image()->offsets[i]);
+    addrs[i] =
+        UNSAFE_TODO(static_cast<uint8_t*>(va_image->va_buffer()->data()) +
+                    va_image->image()->offsets[i]);
   }
 
   // The size of each plane is not given by VAImage. We compute the size to be
@@ -85,9 +82,13 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
     VLOGF(1) << "Failed to create VideoFrameLayout for VAImage";
     return nullptr;
   }
+  // TODO(crbug.com/40285824): spanify this usage.
   auto video_frame = VideoFrame::WrapExternalYuvDataWithLayout(
       *mapped_layout, src_video_frame->visible_rect(),
-      src_video_frame->visible_rect().size(), addrs[0], addrs[1], addrs[2],
+      src_video_frame->visible_rect().size(),
+      UNSAFE_TODO(base::span(addrs[0], mapped_layout->planes()[0].size)),
+      UNSAFE_TODO(base::span(addrs[1], mapped_layout->planes()[1].size)),
+      base::span<uint8_t>(), // kNumPlanes = 2. third plane doesn't exist
       src_video_frame->timestamp());
   if (!video_frame)
     return nullptr;

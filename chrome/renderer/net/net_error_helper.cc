@@ -220,7 +220,7 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
         error.reason(), error.domain(), error.url(), is_failed_post,
         error.resolve_error_info().is_secure_network_error,
         error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-        IsIncognitoProcess(), IsAutoFetchFeatureEnabled(),
+        process_state::IsIncognitoProcess(), IsAutoFetchFeatureEnabled(),
         IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
         IsExtensionExtendedErrorCode(error.extended_reason()),
         &error_page_params_);
@@ -246,13 +246,12 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
       error.reason(), error.domain(), error.url(), is_failed_post,
       error.resolve_error_info().is_secure_network_error,
       error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-      IsIncognitoProcess(), IsAutoFetchFeatureEnabled(),
+      process_state::IsIncognitoProcess(), IsAutoFetchFeatureEnabled(),
       IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
       IsExtensionExtendedErrorCode(error.extended_reason()),
       &error_page_params_);
 
-  std::string json;
-  base::JSONWriter::Write(page_state.strings, &json);
+  std::string json = base::WriteJson(page_state.strings).value_or("");
 
   std::string js = "if (window.updateForDnsProbe) "
                    "updateForDnsProbe(" + json + ");";

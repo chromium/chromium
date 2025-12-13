@@ -8,6 +8,7 @@
 #include <limits>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
@@ -80,32 +81,9 @@ TaskGroup::TaskGroup(
       process_id_(proc_id),
       is_running_in_vm_(is_running_in_vm),
       on_background_calculations_done_(on_background_calculations_done),
-      worker_thread_sampler_(nullptr),
       shared_sampler_(shared_sampler),
-#if BUILDFLAG(IS_CHROMEOS)
-      arc_shared_sampler_(nullptr),
-#endif  // BUILDFLAG(IS_CHROMEOS)
       expected_on_bg_done_flags_(kBackgroundRefreshTypesMask),
-      current_on_bg_done_flags_(0),
-      platform_independent_cpu_usage_(std::numeric_limits<double>::quiet_NaN()),
-      swapped_mem_bytes_(-1),
-      memory_footprint_(-1),
-      gpu_memory_(-1),
-      per_process_network_usage_rate_(-1),
-      cumulative_per_process_network_usage_(0),
-#if BUILDFLAG(IS_WIN)
-      gdi_current_handles_(-1),
-      gdi_peak_handles_(-1),
-      user_current_handles_(-1),
-      user_peak_handles_(-1),
-      hard_faults_per_second_(-1),
-#endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-      open_fd_count_(-1),
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-      idle_wakeups_per_second_(-1),
-      gpu_memory_has_duplicates_(false),
-      is_backgrounded_(false) {
+      current_on_bg_done_flags_(0) {
   if (process_id_ != base::kNullProcessId && !is_running_in_vm_) {
     worker_thread_sampler_ = base::MakeRefCounted<TaskGroupSampler>(
         base::Process::Open(process_id_), blocking_pool_runner,
@@ -164,8 +142,9 @@ void TaskGroup::Refresh(const gpu::VideoMemoryUsageStats& gpu_memory_stats,
       TaskManagerObserver::IsResourceRefreshEnabled(REFRESH_TYPE_NETWORK_USAGE,
                                                     refresh_flags);
 
-  per_process_network_usage_rate_ = network_usage_refresh_enabled ? 0 : -1;
-  cumulative_per_process_network_usage_ = 0;
+  per_process_network_usage_rate_ =
+      network_usage_refresh_enabled ? base::ByteCount(0) : base::ByteCount(-1);
+  cumulative_per_process_network_usage_ = base::ByteCount(0);
   for (Task* task : tasks_) {
     task->Refresh(update_interval, refresh_flags);
     if (network_usage_refresh_enabled) {
@@ -241,12 +220,12 @@ void TaskGroup::RefreshGpuMemory(
     const gpu::VideoMemoryUsageStats& gpu_memory_stats) {
   auto itr = gpu_memory_stats.process_map.find(process_id_);
   if (itr == gpu_memory_stats.process_map.end()) {
-    gpu_memory_ = -1;
+    gpu_memory_ = base::ByteCount(-1);
     gpu_memory_has_duplicates_ = false;
     return;
   }
 
-  gpu_memory_ = itr->second.video_memory;
+  gpu_memory_ = base::ByteCount(itr->second.video_memory);
   gpu_memory_has_duplicates_ = itr->second.has_duplicates;
 }
 
@@ -273,10 +252,10 @@ void TaskGroup::OnCpuRefreshDone(double cpu_usage) {
   OnBackgroundRefreshTypeFinished(REFRESH_TYPE_CPU);
 }
 
-void TaskGroup::OnSwappedMemRefreshDone(int64_t swapped_mem_bytes) {
+void TaskGroup::OnSwappedMemRefreshDone(base::ByteCount swapped_mem_bytes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  swapped_mem_bytes_ = swapped_mem_bytes;
+  swapped_mem_ = swapped_mem_bytes;
   OnBackgroundRefreshTypeFinished(REFRESH_TYPE_SWAPPED_MEM);
 }
 
@@ -325,8 +304,9 @@ void TaskGroup::OnSamplerRefreshDone(
 #if BUILDFLAG(IS_CHROMEOS)
 void TaskGroup::OnArcSamplerRefreshDone(
     std::optional<ArcSharedSampler::MemoryFootprintBytes> memory_footprint) {
-  if (memory_footprint)
-    set_footprint_bytes(*memory_footprint);
+  if (memory_footprint.has_value()) {
+    set_footprint(base::ByteCount(memory_footprint.value()));
+  }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

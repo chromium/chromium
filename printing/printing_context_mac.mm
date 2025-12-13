@@ -31,11 +31,25 @@
 #include "printing/units.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+#include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
 #endif
 
 namespace printing {
+
+// Not in an anonymous namespace so it can be friends with
+// base::ScopedAllowBlocking.
+base::FilePath GetAbsoluteSystemDestinationLocation(
+    const base::FilePath& file_path) {
+  // Since `file_path` is a path that the user just picked, it likely will not
+  // block for too long.
+  base::ScopedAllowBlocking allow_blocking;
+  // Capture the absolute path to resolve symlinks. Otherwise
+  // ApplySystemDestination() will fail when it passes a symlink into macOS.
+  return base::MakeAbsoluteFilePath(file_path);
+}
 
 namespace {
 
@@ -142,28 +156,36 @@ base::expected<std::vector<uint8_t>, mojom::ResultCode> CaptureSystemPageFormat(
 base::expected<base::apple::ScopedCFTypeRef<CFStringRef>, mojom::ResultCode>
 CaptureSystemDestinationFormat(PMPrintSession& print_session,
                                PMPrintSettings& print_settings) {
-  CFStringRef destination_format_ref = nullptr;
+  base::apple::ScopedCFTypeRef<CFStringRef> destination_format_ref;
   OSStatus status = PMSessionCopyDestinationFormat(
-      print_session, print_settings, &destination_format_ref);
+      print_session, print_settings, destination_format_ref.InitializeInto());
   if (status != noErr) {
     OSSTATUS_LOG(ERROR, status) << "Failed to get printing destination format";
     return base::unexpected(mojom::ResultCode::kFailed);
   }
-  return base::apple::ScopedCFTypeRef<CFStringRef>(destination_format_ref);
+  return destination_format_ref;
 }
 
 base::expected<base::apple::ScopedCFTypeRef<CFURLRef>, mojom::ResultCode>
 CaptureSystemDestinationLocation(PMPrintSession& print_session,
                                  PMPrintSettings& print_settings) {
-  CFURLRef destination_location_ref = nullptr;
+  base::apple::ScopedCFTypeRef<CFURLRef> destination_location_ref;
   OSStatus status = PMSessionCopyDestinationLocation(
-      print_session, print_settings, &destination_location_ref);
+      print_session, print_settings, destination_location_ref.InitializeInto());
   if (status != noErr) {
     OSSTATUS_LOG(ERROR, status)
         << "Failed to get printing destination location";
     return base::unexpected(mojom::ResultCode::kFailed);
   }
-  return base::apple::ScopedCFTypeRef<CFURLRef>(destination_location_ref);
+  base::FilePath file_path =
+      base::apple::CFURLToFilePath(destination_location_ref.get());
+  if (!file_path.empty()) {
+    file_path = GetAbsoluteSystemDestinationLocation(file_path);
+    if (!file_path.empty()) {
+      return base::apple::FilePathToCFURL(file_path);
+    }
+  }
+  return destination_location_ref;
 }
 
 mojom::ResultCode CaptureSystemPrintDialogData(NSPrintInfo* print_info,

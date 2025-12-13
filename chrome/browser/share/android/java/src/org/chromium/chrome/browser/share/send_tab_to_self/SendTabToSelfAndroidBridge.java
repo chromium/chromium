@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Bridge to interface with send_tab_to_self_android_bridge which interacts with the corresponding
@@ -81,11 +80,9 @@ public class SendTabToSelfAndroidBridge {
         SendTabToSelfAndroidBridgeJni.get().updateActiveWebContents(webContents);
     }
 
-    public static Optional</*@EntryPointDisplayReason*/ Integer> getEntryPointDisplayReason(
+    public static @Nullable @EntryPointDisplayReason Integer getEntryPointDisplayReason(
             Profile profile, String url) {
-        Integer reason =
-                SendTabToSelfAndroidBridgeJni.get().getEntryPointDisplayReason(profile, url);
-        return reason == null ? Optional.empty() : Optional.of(reason.intValue());
+        return SendTabToSelfAndroidBridgeJni.get().getEntryPointDisplayReason(profile, url);
     }
 
     @NativeMethods

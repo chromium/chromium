@@ -6,6 +6,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -114,7 +115,7 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
   if (!manifest_id && !install_url) {
     GetService()->Install(
         /*options=*/nullptr,
-        WTF::BindOnce(&blink::OnInstallResponse, WrapPersistent(resolver)));
+        BindOnce(&blink::OnInstallResponse, WrapPersistent(resolver)));
     return promise;
   }
 
@@ -140,9 +141,8 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
     options->manifest_id = resolved_id;
   }
 
-  GetService()->Install(
-      std::move(options),
-      WTF::BindOnce(&blink::OnInstallResponse, WrapPersistent(resolver)));
+  GetService()->Install(std::move(options), BindOnce(&blink::OnInstallResponse,
+                                                     WrapPersistent(resolver)));
   return promise;
 }
 
@@ -171,7 +171,7 @@ NavigatorWebInstall::GetService() {
             context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
     // In case the other endpoint gets disconnected, we want to reset our end of
     // the pipe as well so that we don't remain connected to a half-open pipe.
-    service_.set_disconnect_handler(WTF::BindOnce(
+    service_.set_disconnect_handler(BindOnce(
         &NavigatorWebInstall::OnConnectionError, WrapWeakPersistent(this)));
   }
   return service_;
@@ -184,6 +184,8 @@ void NavigatorWebInstall::OnConnectionError() {
 bool NavigatorWebInstall::CheckPreconditionsMaybeThrow(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
+
   if (!ExecutionContext::From(script_state)
            ->IsFeatureEnabled(
                network::mojom::PermissionsPolicyFeature::kWebAppInstallation)) {

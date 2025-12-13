@@ -11,9 +11,12 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_layout_state.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -52,6 +55,8 @@ struct TestCase {
   int active_index = 0;
   int tabstrip_width = 0;
   std::set<int> split_tabs;
+  std::vector<std::optional<tab_groups::TabGroupId>> tab_groups;
+  std::optional<tab_groups::TabGroupId> focused_group;
 };
 
 constexpr int kStandardWidth = 256;
@@ -83,8 +88,20 @@ std::vector<gfx::Rect> CalculateTabBounds(TestCase test_case) {
   std::vector<TabWidthConstraints> tab_states;
   for (int tab_index = 0; tab_index < test_case.num_tabs; tab_index++) {
     const bool is_split = test_case.split_tabs.contains(tab_index);
+
+    bool is_collapsed = false;
+    if (test_case.focused_group.has_value()) {
+      const auto& tab_group =
+          (static_cast<size_t>(tab_index) < test_case.tab_groups.size())
+              ? test_case.tab_groups[tab_index]
+              : std::nullopt;
+      if (tab_group != test_case.focused_group) {
+        is_collapsed = true;
+      }
+    }
+
     TabLayoutState ideal_animation_state = TabLayoutState(
-        TabOpen::kOpen,
+        is_collapsed ? TabOpen::kClosed : TabOpen::kOpen,
         tab_index < test_case.num_pinned_tabs ? TabPinned::kPinned
                                               : TabPinned::kUnpinned,
         tab_index == test_case.active_index ? TabActive::kActive
@@ -373,4 +390,61 @@ TEST(TabStripLayoutTest, ExactlyEnoughSpaceAllPinnedTabs) {
   // Validate that the tabstrip width is indeeed exactly enough to hold two
   // pinned tabs.
   ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
+}
+
+TEST(TabStripLayoutTest, FocusedGroupCollapsesOtherTabs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  const tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
+  const tab_groups::TabGroupId group2 = tab_groups::TabGroupId::GenerateNew();
+
+  TestCase test_case;
+  test_case.tabstrip_width = 1000;
+  test_case.num_tabs = 4;
+  test_case.active_index = 0;
+  test_case.tab_groups = {group1, group1, group2, group2};
+  test_case.focused_group = group1;
+
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("256 256 18 18", TabWidthsAsString(bounds));
+  EXPECT_EQ("0 238 476 476", TabXPositionsAsString(bounds));
+}
+
+TEST(TabStripLayoutTest, FocusedGroupCollapsesLeadingTabs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  const tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
+  const tab_groups::TabGroupId group2 = tab_groups::TabGroupId::GenerateNew();
+
+  TestCase test_case;
+  test_case.tabstrip_width = 1000;
+  test_case.num_tabs = 4;
+  test_case.active_index = 2;
+  test_case.tab_groups = {group1, group1, group2, group2};
+  test_case.focused_group = group2;
+
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("18 18 256 256", TabWidthsAsString(bounds));
+  EXPECT_EQ("0 0 0 238", TabXPositionsAsString(bounds));
+}
+
+TEST(TabStripLayoutTest, NoFocusedGroupWithGroupedTabs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  const tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
+  const tab_groups::TabGroupId group2 = tab_groups::TabGroupId::GenerateNew();
+
+  TestCase test_case;
+  test_case.tabstrip_width = 1000;
+  test_case.num_tabs = 4;
+  test_case.active_index = 0;
+  test_case.tab_groups = {group1, group1, group2, group2};
+  test_case.focused_group = std::nullopt;
+
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("256 256 256 256", TabWidthsAsString(bounds));
+  EXPECT_EQ("0 238 476 714", TabXPositionsAsString(bounds));
 }

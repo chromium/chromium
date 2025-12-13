@@ -90,7 +90,7 @@ class PLATFORM_EXPORT RWBuffer {
  * the caller must instantiate a local iterator, as the memory is stored in 1 or
  * more contiguous blocks.
  */
-class PLATFORM_EXPORT ROBuffer : public WTF::ThreadSafeRefCounted<ROBuffer> {
+class PLATFORM_EXPORT ROBuffer : public ThreadSafeRefCounted<ROBuffer> {
  public:
   /**
    * Return the logical length of the data owned/shared by this buffer. It may
@@ -124,7 +124,7 @@ class PLATFORM_EXPORT ROBuffer : public WTF::ThreadSafeRefCounted<ROBuffer> {
   };
 
  private:
-  friend class WTF::ThreadSafeRefCounted<ROBuffer>;
+  friend class ThreadSafeRefCounted<ROBuffer>;
   ROBuffer(const RWBuffer::BufferHead* head,
            size_t available,
            const RWBuffer::BufferBlock* tail);

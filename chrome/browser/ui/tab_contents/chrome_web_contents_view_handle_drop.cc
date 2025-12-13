@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -17,6 +16,7 @@
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
@@ -150,6 +150,9 @@ void HandleOnPerformingDrop(
     content::WebContentsViewDelegate::DropCompletionCallback callback) {
   CHECK(callback);
   absl::Cleanup cleanup = [&] {
+    if (web_contents->GetDelegate()) {
+      web_contents->GetDelegate()->HandleDragEnded();
+    }
     std::move(callback).Run(std::move(drop_data));
   };
 
@@ -178,8 +181,9 @@ void HandleOnPerformingDrop(
   data.reason = enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP;
 
   // Collect the data that needs to be scanned.
-  if (!drop_data.url_title.empty()) {
-    data.text.push_back(base::UTF16ToUTF8(drop_data.url_title));
+  if (!drop_data.url_infos.empty() &&
+      !drop_data.url_infos.front().title.empty()) {
+    data.text.push_back(base::UTF16ToUTF8(drop_data.url_infos.front().title));
   }
   if (drop_data.text) {
     data.text.push_back(base::UTF16ToUTF8(*drop_data.text));

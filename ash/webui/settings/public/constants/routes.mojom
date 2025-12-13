@@ -104,8 +104,8 @@ enum Subpage {
   // 506 was used for kWallpaperImages. Do not reuse.
   // 507 was used for kDarkMode. Do not reuse.
 
-  // Search and Assistant section.
-  kAssistant = 600,
+  // Search section.
+  // 600 was used for kAssistant. Do not reuse.
   kSearch = 601,
 
   // Apps section.
@@ -126,7 +126,8 @@ enum Subpage {
   kCrostiniManageSharedFolders = 801,
   kCrostiniUsbPreferences = 802,
   kCrostiniBackupAndRestore = 803,
-  kCrostiniDevelopAndroidApps = 804,
+  // Note: Value 804 was for deprecated kCrostiniDevelopAndroidApps.
+  // Do not reuse.
   kCrostiniPortForwarding = 805,
   kCrostiniExtraContainers = 806,
   kBruschettaDetails = 850,
@@ -255,8 +256,7 @@ const string kCustomizePenButtonsSubpagePath =
 // Personalization section.
 const string kPersonalizationSectionPath = "personalization";
 
-// Search and Assistant section.
-const string kAssistantSubpagePath = "googleAssistant";
+// Search section.
 const string kSearchSubpagePath = "osSearch/search";
 
 // Apps section.
@@ -280,7 +280,6 @@ const string kCrostiniDetailsSubpagePath = "crostini/details";
 const string kCrostiniManageSharedFoldersSubpagePath = "crostini/sharedPaths";
 const string kCrostiniUsbPreferencesSubpagePath = "crostini/sharedUsbDevices";
 const string kCrostiniBackupAndRestoreSubpagePath = "crostini/exportImport";
-const string kCrostiniDevelopAndroidAppsSubpagePath = "crostini/androidAdb";
 const string kCrostiniPortForwardingSubpagePath = "crostini/portForwarding";
 const string kCrostiniExtraContainersSubpagePath = "crostini/extraContainers";
 const string kBruschettaDetailsSubpagePath = "bruschetta/details";

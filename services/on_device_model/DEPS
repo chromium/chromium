@@ -7,4 +7,6 @@ include_rules = [
   "+third_party/skia",
   "+components/crash/core/common/crash_key.h",
   "+components/optimization_guide/core/optimization_guide_features.h",
+  "+components/optimization_guide/core/optimization_guide_util.h",
+  "+components/optimization_guide/proto",
 ]

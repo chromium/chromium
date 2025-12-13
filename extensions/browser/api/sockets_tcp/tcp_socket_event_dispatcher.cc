@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/sockets_tcp/tcp_socket_event_dispatcher.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/containers/to_vector.h"
@@ -18,7 +19,7 @@
 #include "net/base/net_errors.h"
 
 namespace {
-int kDefaultBufferSize = 4096;
+constexpr int kDefaultBufferSize = 4096;
 }
 
 namespace extensions {
@@ -143,9 +144,9 @@ void TCPSocketEventDispatcher::ReadCallback(
     receive_info.data =
         base::ToVector(io_buffer->first(static_cast<size_t>(bytes_read)));
     auto args = sockets_tcp::OnReceive::Create(receive_info);
-    std::unique_ptr<Event> event(new Event(events::SOCKETS_TCP_ON_RECEIVE,
-                                           sockets_tcp::OnReceive::kEventName,
-                                           std::move(args)));
+    auto event = std::make_unique<Event>(events::SOCKETS_TCP_ON_RECEIVE,
+                                         sockets_tcp::OnReceive::kEventName,
+                                         std::move(args));
     PostEvent(params, std::move(event));
 
     // Post a task to delay the read until the socket is available, as

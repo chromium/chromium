@@ -194,9 +194,9 @@ TEST(CSPContextTest, SanitizeDataForUseInCspViolation) {
     EXPECT_EQ(context.violations()[0]->source_location->line, 10u);
     EXPECT_EQ(context.violations()[0]->source_location->column, 20u);
     EXPECT_EQ(context.violations()[0]->console_message,
-              "Refused to frame 'http://a.com/login?password=1234' because it "
-              "violates the following Content Security Policy directive: "
-              "\"frame-src a.com/iframe\".\n");
+              "Framing 'http://a.com/login?password=1234' violates the "
+              "following Content Security Policy directive: \"frame-src "
+              "a.com/iframe\". The request has been blocked.\n");
   }
 
   // When the |blocked_url| and |source_location| aren't sensitive information,
@@ -212,10 +212,9 @@ TEST(CSPContextTest, SanitizeDataForUseInCspViolation) {
     EXPECT_EQ(context.violations()[1]->source_location->line, 10u);
     EXPECT_EQ(context.violations()[1]->source_location->column, 20u);
     EXPECT_EQ(context.violations()[1]->console_message,
-              "Refused to send form data to 'http://b.com/login?password=1234' "
-              "because it "
+              "Sending form data to 'http://b.com/login?password=1234' "
               "violates the following Content Security Policy directive: "
-              "\"form-action a.com/form\".\n");
+              "\"form-action a.com/form\". The request has been blocked.\n");
   }
 
   context.set_sanitize_data_for_use_in_csp_violation(true);
@@ -233,9 +232,9 @@ TEST(CSPContextTest, SanitizeDataForUseInCspViolation) {
     EXPECT_EQ(context.violations()[2]->source_location->line, 0u);
     EXPECT_EQ(context.violations()[2]->source_location->column, 0u);
     EXPECT_EQ(context.violations()[2]->console_message,
-              "Refused to frame 'http://a.com/' because it violates the "
-              "following Content Security Policy directive: \"frame-src "
-              "a.com/iframe\".\n");
+              "Framing 'http://a.com/' violates the following Content Security "
+              "Policy directive: \"frame-src a.com/iframe\". The request has "
+              "been blocked.\n");
   }
 }
 
@@ -262,11 +261,11 @@ TEST(CSPContextTest, MultipleInfringement) {
       false));
   ASSERT_EQ(2u, context.violations().size());
   const char console_message_a[] =
-      "Refused to frame 'http://c.com/' because it violates the following "
-      "Content Security Policy directive: \"frame-src a.com\".\n";
+      "Framing 'http://c.com/' violates the following Content Security Policy "
+      "directive: \"frame-src a.com\". The request has been blocked.\n";
   const char console_message_b[] =
-      "Refused to frame 'http://c.com/' because it violates the following "
-      "Content Security Policy directive: \"frame-src b.com\".\n";
+      "Framing 'http://c.com/' violates the following Content Security Policy "
+      "directive: \"frame-src b.com\". The request has been blocked.\n";
   EXPECT_EQ(console_message_a, context.violations()[0]->console_message);
   EXPECT_EQ(console_message_b, context.violations()[1]->console_message);
 }
@@ -299,13 +298,13 @@ TEST(CSPContextTest, CheckCSPDisposition) {
       CSPContext::CHECK_ALL_CSP, false));
   ASSERT_EQ(2u, context.violations().size());
   const char console_message_a[] =
-      "Refused to frame 'https://not-example.com/' because it violates the "
-      "following "
-      "Content Security Policy directive: \"frame-src example.com\".\n";
+      "Framing 'https://not-example.com/' violates the following Content "
+      "Security Policy directive: \"frame-src example.com\". The request has "
+      "been blocked.\n";
   const char console_message_b[] =
-      "[Report Only] Refused to frame 'https://not-example.com/' because it "
-      "violates the following "
-      "Content Security Policy directive: \"default-src example.com\". Note "
+      "Framing 'https://not-example.com/' violates the following report-only "
+      "Content Security Policy directive: \"default-src example.com\". The "
+      "violation has been logged, but no further action has been taken. Note "
       "that 'frame-src' was not explicitly set, so 'default-src' is used as a "
       "fallback.\n";
   // Both console messages must appear in the reported violations.
@@ -346,13 +345,13 @@ TEST(CSPContextTest, BlockedDespiteWildcard) {
                                       GURL(), false, SourceLocation(),
                                       CSPContext::CHECK_ALL_CSP, false));
   EXPECT_EQ(context.violations().size(), 1u);
-  EXPECT_EQ(context.violations()[0]->console_message,
-            "Refused to frame 'data:text/html,<html></html>' because it "
-            "violates the following Content Security Policy directive: "
-            "\"frame-src *\". Note that '*' matches only URLs with network "
-            "schemes ('http', 'https', 'ws', 'wss'), or URLs whose scheme "
-            "matches `self`'s scheme. The scheme 'data:' must be added "
-            "explicitly.\n");
+  EXPECT_EQ(
+      context.violations()[0]->console_message,
+      "Framing 'data:text/html,<html></html>' violates the following Content "
+      "Security Policy directive: \"frame-src *\". The request has been "
+      "blocked. Note that '*' matches only URLs with network schemes ('http', "
+      "'https', 'ws', 'wss'), or URLs whose scheme matches `self`'s scheme. "
+      "The scheme 'data:' must be added explicitly.\n");
 }
 
 }  // namespace network

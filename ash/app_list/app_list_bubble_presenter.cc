@@ -20,7 +20,6 @@
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/shelf/home_button.h"
@@ -37,7 +36,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -50,8 +48,6 @@
 
 namespace ash {
 namespace {
-
-using assistant::AssistantExitPoint;
 
 // Maximum amount of time to spend refreshing zero state search results before
 // opening the launcher.
@@ -66,7 +62,7 @@ constexpr int kExtraTopOfScreenSpacing = 16;
 
 gfx::Rect GetWorkAreaForBubble(aura::Window* root_window) {
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+      display::Screen::Get()->GetDisplayNearestWindow(root_window);
   gfx::RectF work_area(display.work_area());
 
   // Subtract the shelf's bounds from the work area, since the shelf should
@@ -236,9 +232,6 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
         std::make_unique<AppListEventTargeter>(controller_));
     bubble_view_ = bubble_widget_->SetContentsView(
         std::make_unique<AppListBubbleView>(controller_));
-    // Some of Assistant UIs have to be initialized explicitly. See details in
-    // the comment of AppListBubbleView::InitializeUIForBubbleView.
-    bubble_view_->InitializeUIForBubbleView();
     // Arrow left/right and up/down triggers the same focus movement as
     // tab/shift+tab.
     bubble_widget_->widget_delegate()->SetEnableArrowKeyTraversal(true);
@@ -331,9 +324,6 @@ void AppListBubblePresenter::Dismiss() {
                        weak_factory_.GetWeakPtr()));
   }
   controller_->OnVisibilityChanged(/*visible=*/false, display_id);
-
-  // Clean up assistant if it is showing.
-  controller_->ScheduleCloseAssistant();
 }
 
 aura::Window* AppListBubblePresenter::GetWindow() const {
@@ -344,19 +334,6 @@ aura::Window* AppListBubblePresenter::GetWindow() const {
 
 bool AppListBubblePresenter::IsShowing() const {
   return is_target_visibility_show_;
-}
-
-bool AppListBubblePresenter::IsShowingEmbeddedAssistantUI() const {
-  if (!is_target_visibility_show_)
-    return false;
-
-  // Bubble view is null while the bubble widget is being initialized for show.
-  // In this case, return true iff the app list will show the assistant page
-  // when initialized.
-  if (!bubble_view_)
-    return target_page_ == AppListBubblePage::kAssistant;
-
-  return bubble_view_->IsShowingEmbeddedAssistantUI();
 }
 
 void AppListBubblePresenter::UpdateContinueSectionVisibility() {
@@ -379,17 +356,6 @@ void AppListBubblePresenter::UpdateForNewSortingOrder(
 
   bubble_view_->UpdateForNewSortingOrder(new_order, animate,
                                          std::move(update_position_closure));
-}
-
-void AppListBubblePresenter::ShowEmbeddedAssistantUI() {
-  DVLOG(1) << __PRETTY_FUNCTION__;
-  target_page_ = AppListBubblePage::kAssistant;
-  // `bubble_view_` does not exist while waiting for zero-state results.
-  // OnZeroStateSearchDone() sets the page in that case.
-  if (bubble_view_) {
-    DCHECK(bubble_widget_);
-    bubble_view_->ShowEmbeddedAssistantUI();
-  }
 }
 
 void AppListBubblePresenter::OnWidgetDestroying(views::Widget* widget) {
@@ -475,7 +441,7 @@ void AppListBubblePresenter::OnPressOutsideBubble(
 int64_t AppListBubblePresenter::GetDisplayId() const {
   if (!is_target_visibility_show_ || !bubble_widget_)
     return display::kInvalidDisplayId;
-  return display::Screen::GetScreen()
+  return display::Screen::Get()
       ->GetDisplayNearestView(bubble_widget_->GetNativeView())
       .id();
 }
@@ -486,8 +452,6 @@ void AppListBubblePresenter::OnHideAnimationEnded() {
   // close the bubble in response.
   auto lock = TrayBackgroundView::DisableCloseBubbleOnWindowActivated();
   bubble_widget_->Hide();
-
-  controller_->MaybeCloseAssistant();
 }
 
 int AppListBubblePresenter::GetPreferredBubbleWidth(

@@ -10,7 +10,10 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "pdf/page_character_index.h"
+#include "pdf/pdf_accessibility_constants.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -73,12 +76,14 @@ enum class AccessibilityTextDirection {
 
 struct AccessibilityTextRunInfo {
   AccessibilityTextRunInfo();
-  AccessibilityTextRunInfo(uint32_t len,
+  AccessibilityTextRunInfo(uint32_t start_index,
+                           uint32_t len,
                            const std::string& tag_type,
                            const gfx::RectF& bounds,
                            AccessibilityTextDirection direction,
                            const AccessibilityTextStyleInfo& style);
-  AccessibilityTextRunInfo(uint32_t len,
+  AccessibilityTextRunInfo(uint32_t start_index,
+                           uint32_t len,
                            const std::string& tag_type,
                            const gfx::RectF& bounds,
                            AccessibilityTextDirection direction,
@@ -87,9 +92,11 @@ struct AccessibilityTextRunInfo {
   AccessibilityTextRunInfo(const AccessibilityTextRunInfo& other);
   ~AccessibilityTextRunInfo();
 
+  uint32_t start_index = 0;
   uint32_t len = 0;
   // One of various types defined in a PDF tag, such as "Span", "P", "H1", "LI",
   // etc.
+  // TODO(crbug.com/40707542): Remove in favor of AccessibilityStructureElement.
   std::string tag_type;
   gfx::RectF bounds;
   AccessibilityTextDirection direction = AccessibilityTextDirection::kNone;
@@ -107,6 +114,7 @@ struct AccessibilityImageInfo {
   ~AccessibilityImageInfo();
 
   // Alternate text for the image provided by PDF.
+  // TODO(crbug.com/40707542): Remove in favor of AccessibilityStructureElement.
   std::string alt_text;
 
   // We anchor the image to a char index, this denotes the text run before
@@ -121,17 +129,46 @@ struct AccessibilityImageInfo {
   int32_t page_object_index;
 };
 
+// Represents a node in the PDF's structure tree. This tree represents the
+// logical organization of the text inside the PDF, e.g. when data is placed in
+// a table, or points are placed inside a bulleted list. This should result in
+// additional “structural nodes” to be added to the accessibility tree or
+// existing nodes to get new accessibility roles / attributes.
+struct AccessibilityStructureElement {
+  AccessibilityStructureElement();
+  AccessibilityStructureElement(const AccessibilityStructureElement&) = delete;
+  AccessibilityStructureElement& operator=(
+      const AccessibilityStructureElement&) = delete;
+  ~AccessibilityStructureElement();
+
+  // Trailing comments indicate corresponding PDF spec dictionary keys.
+  PdfTagType type = PdfTagType::kNone;  // /S
+  std::string language;                 // /Lang
+  std::string alt_text;                 // /Alt
+  std::string abbreviation_expansion;   // /E
+  std::string actual_text;              // /ActualText
+
+  std::vector<raw_ptr<AccessibilityTextRunInfo, VectorExperimental>>
+      associated_text_runs_if_available;
+
+  std::unique_ptr<AccessibilityImageInfo> associated_image_if_available;
+
+  std::vector<std::unique_ptr<AccessibilityStructureElement>> children;
+  raw_ptr<AccessibilityStructureElement> parent = nullptr;
+};
+
 struct AccessibilityDocInfo {
   AccessibilityDocInfo();
   AccessibilityDocInfo(const AccessibilityDocInfo&) = delete;
   AccessibilityDocInfo& operator=(const AccessibilityDocInfo&) = delete;
   ~AccessibilityDocInfo();
 
-  bool operator==(const AccessibilityDocInfo& other) const;
-  bool operator!=(const AccessibilityDocInfo& other) const;
+  friend bool operator==(const AccessibilityDocInfo&,
+                         const AccessibilityDocInfo&) = default;
 
   uint32_t page_count = 0;
   bool is_tagged = false;
+  std::unique_ptr<AccessibilityStructureElement> structure_tree_root;
   bool text_accessible = false;
   bool text_copyable = false;
 };

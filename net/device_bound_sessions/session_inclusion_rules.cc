@@ -10,11 +10,13 @@
 #include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/device_bound_sessions/host_patterns.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session.h"
+#include "net/device_bound_sessions/session_error.h"
 
 namespace net::device_bound_sessions {
 
@@ -97,7 +99,7 @@ SessionInclusionRules::Create(const url::Origin& origin,
 
   if (scope_params.include_site && !rules.may_include_site_) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kInvalidScopeIncludeSite});
+        SessionError{SessionError::kInvalidScopeIncludeSite});
   }
 
   rules.SetIncludeSite(scope_params.include_site);
@@ -107,9 +109,10 @@ SessionInclusionRules::Create(const url::Origin& origin,
         spec.type == SessionParams::Scope::Specification::Type::kExclude
             ? SessionInclusionRules::InclusionResult::kExclude
             : SessionInclusionRules::InclusionResult::kInclude;
-    if (!rules.AddUrlRuleIfValid(inclusion_result, spec.domain, spec.path)) {
-      return base::unexpected(
-          SessionError{SessionError::ErrorType::kInvalidScopeRule});
+    SessionError::ErrorType add_url_rule_result =
+        rules.AddUrlRuleIfValid(inclusion_result, spec.domain, spec.path);
+    if (add_url_rule_result != SessionError::kSuccess) {
+      return base::unexpected(SessionError{add_url_rule_result});
     }
   }
 
@@ -119,7 +122,8 @@ SessionInclusionRules::Create(const url::Origin& origin,
     // don't return an error if the rule is not valid or add a CHECK, because a
     // refresh URL is allowed to be outside an origin-scoped session.
     rules.AddUrlRuleIfValid(SessionInclusionRules::InclusionResult::kExclude,
-                            refresh_endpoint.host(), refresh_endpoint.path());
+                            refresh_endpoint.GetHost(),
+                            refresh_endpoint.GetPath());
   }
 
   return rules;
@@ -148,21 +152,22 @@ void SessionInclusionRules::SetIncludeSite(bool include_site) {
   include_site_ = SchemefulSite(origin_);
 }
 
-bool SessionInclusionRules::AddUrlRuleIfValid(InclusionResult rule_type,
-                                              const std::string& host_pattern,
-                                              const std::string& path_prefix) {
+SessionError::ErrorType SessionInclusionRules::AddUrlRuleIfValid(
+    InclusionResult rule_type,
+    const std::string& host_pattern,
+    const std::string& path_prefix) {
   if (path_prefix.empty() || path_prefix.front() != '/') {
-    return false;
+    return SessionError::kInvalidScopeRulePath;
   }
 
   if (!IsValidHostPattern(host_pattern)) {
-    return false;
+    return SessionError::kInvalidScopeRuleHostPattern;
   }
 
   // Return early if the rule can't match anything. For origin-scoped
   // sessions, the origin must match the host pattern.
   if (!include_site_ && !MatchesHostPattern(host_pattern, origin_.host())) {
-    return false;
+    return SessionError::kScopeRuleOriginScopedHostPatternMismatch;
   }
 
   // For site-scoped sessions, either the site itself matches the
@@ -184,12 +189,12 @@ bool SessionInclusionRules::AddUrlRuleIfValid(InclusionResult rule_type,
             origin_, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 
     if (hostlike_part_domain != domain_and_registry) {
-      return false;
+      return SessionError::kScopeRuleSiteScopedHostPatternMismatch;
     }
   }
 
   url_rules_.emplace_back(rule_type, host_pattern, path_prefix);
-  return true;
+  return SessionError::kSuccess;
 }
 
 SessionInclusionRules::InclusionResult
@@ -209,8 +214,7 @@ SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
     // port here, because in the !may_include_site_ case that's already covered
     // by being same-origin, and in the may_include_site_ case it's ok for the
     // port to differ.
-    if (rule.MatchesHostAndPath(url) &&
-        url.scheme_piece() == origin_.scheme()) {
+    if (rule.MatchesHostAndPath(url) && url.scheme() == origin_.scheme()) {
       return rule.rule_type;
     }
   }
@@ -232,11 +236,11 @@ bool SessionInclusionRules::AllowsRefreshForInitiator(
 }
 
 bool SessionInclusionRules::UrlRule::MatchesHostAndPath(const GURL& url) const {
-  if (!MatchesHostPattern(host_pattern, url.host())) {
+  if (!MatchesHostPattern(host_pattern, url.GetHost())) {
     return false;
   }
 
-  std::string_view url_path = url.path_piece();
+  std::string_view url_path = url.path();
   if (!url_path.starts_with(path_prefix)) {
     return false;
   }

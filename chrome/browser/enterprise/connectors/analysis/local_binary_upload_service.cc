@@ -26,14 +26,14 @@ namespace {
 
 // Build a content analysis SDK client config based on the request being sent.
 content_analysis::sdk::Client::Config SDKConfigFromRequest(
-    const safe_browsing::BinaryUploadService::Request* request) {
+    const BinaryUploadRequest* request) {
   return {request->cloud_or_local_settings().local_path(),
           request->cloud_or_local_settings().user_specific()};
 }
 
 // Build a content analysis SDK client config based on the ack being sent.
 content_analysis::sdk::Client::Config SDKConfigFromAck(
-    const safe_browsing::BinaryUploadService::Ack* ack) {
+    const BinaryUploadAck* ack) {
   return {ack->cloud_or_local_settings().local_path(),
           ack->cloud_or_local_settings().user_specific()};
 }
@@ -41,7 +41,7 @@ content_analysis::sdk::Client::Config SDKConfigFromAck(
 // Build a content analysis SDK client config based on the cancel requests being
 // sent.
 content_analysis::sdk::Client::Config SDKConfigFromCancel(
-    const safe_browsing::BinaryUploadService::CancelRequests* cancel) {
+    const BinaryUploadCancelRequests* cancel) {
   return {cancel->cloud_or_local_settings().local_path(),
           cancel->cloud_or_local_settings().user_specific()};
 }
@@ -208,7 +208,7 @@ void DumpAnalysisResponse(const char* prefix,
 }  // namespace
 
 LocalBinaryUploadService::RequestInfo::RequestInfo(
-    std::unique_ptr<LocalBinaryUploadService::Request> request,
+    std::unique_ptr<BinaryUploadRequest> request,
     base::OnceClosure closure)
     : request(std::move(request)) {
   started_at = base::TimeTicks::Now();
@@ -235,7 +235,7 @@ LocalBinaryUploadService::~LocalBinaryUploadService() {
 }
 
 void LocalBinaryUploadService::MaybeUploadForDeepScanning(
-    std::unique_ptr<Request> request) {
+    std::unique_ptr<BinaryUploadRequest> request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Builds a request context to keep track of this request.  This starts
@@ -264,16 +264,17 @@ void LocalBinaryUploadService::MaybeUploadForDeepScanning(
   }
 }
 
-void LocalBinaryUploadService::MaybeAcknowledge(std::unique_ptr<Ack> ack) {
+void LocalBinaryUploadService::MaybeAcknowledge(
+    std::unique_ptr<BinaryUploadAck> ack) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  Ack* ack_ptr = ack.get();
+  auto ack_ptr = ack.get();
   DoSendAck(
       ContentAnalysisSdkManager::Get()->GetClient(SDKConfigFromAck(ack_ptr)),
       std::move(ack));
 }
 
 void LocalBinaryUploadService::MaybeCancelRequests(
-    std::unique_ptr<CancelRequests> cancel) {
+    std::unique_ptr<BinaryUploadCancelRequests> cancel) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Cancel all pending requests.
@@ -281,8 +282,9 @@ void LocalBinaryUploadService::MaybeCancelRequests(
     if (it->request->user_action_id() == cancel->get_user_action_id()) {
       // This does not calls the `FinishRequest()` method because it would
       // invalidate the iterator.
-      it->request->FinishRequest(Result::UPLOAD_FAILURE,
-                                 ContentAnalysisResponse());
+      it->request->FinishRequest(
+          enterprise_connectors::ScanRequestUploadResult::kUploadFailure,
+          ContentAnalysisResponse());
       it = pending_requests_.erase(it);
     } else {
       ++it;
@@ -423,9 +425,10 @@ void LocalBinaryUploadService::ResetClient(
   is_agent_verified_.erase(config);
 }
 
-void LocalBinaryUploadService::DoLocalContentAnalysis(Request::Id id,
-                                                      Result result,
-                                                      Request::Data data) {
+void LocalBinaryUploadService::DoLocalContentAnalysis(
+    Request::Id id,
+    enterprise_connectors::ScanRequestUploadResult result,
+    Request::Data data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DVLOG(1) << __func__ << ": id=" << id;
 
@@ -520,7 +523,8 @@ void LocalBinaryUploadService::HandleResponse(
 #endif
 
     auto response = ConvertSDKResponseToChromeResponse(sdk_response.value());
-    FinishRequest(id, Result::SUCCESS, std::move(response));
+    FinishRequest(id, enterprise_connectors::ScanRequestUploadResult::kSuccess,
+                  std::move(response));
     ProcessNextPendingRequest();
   } else {
     DVLOG(1) << __func__
@@ -530,7 +534,7 @@ void LocalBinaryUploadService::HandleResponse(
 
 void LocalBinaryUploadService::DoSendAck(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-    std::unique_ptr<safe_browsing::BinaryUploadService::Ack> ack) {
+    std::unique_ptr<BinaryUploadAck> ack) {
   if (!wrapped || !wrapped->client()) {
     return;
   }
@@ -547,8 +551,7 @@ void LocalBinaryUploadService::DoSendAck(
 
 void LocalBinaryUploadService::DoSendCancel(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-    std::unique_ptr<safe_browsing::BinaryUploadService::CancelRequests>
-        cancel) {
+    std::unique_ptr<BinaryUploadCancelRequests> cancel) {
   if (!wrapped || !wrapped->client()) {
     return;
   }
@@ -578,7 +581,7 @@ void LocalBinaryUploadService::HandleAckResponse(
 
 void LocalBinaryUploadService::HandleCancelResponse(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-    std::unique_ptr<safe_browsing::BinaryUploadService::CancelRequests> cancel,
+    std::unique_ptr<BinaryUploadCancelRequests> cancel,
     int status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -640,9 +643,10 @@ bool LocalBinaryUploadService::ProcessRequest(Request::Id id) {
   return true;
 }
 
-void LocalBinaryUploadService::FinishRequest(Request::Id id,
-                                             Result result,
-                                             ContentAnalysisResponse response) {
+void LocalBinaryUploadService::FinishRequest(
+    Request::Id id,
+    enterprise_connectors::ScanRequestUploadResult result,
+    ContentAnalysisResponse response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 #if defined(_DEBUG)
   DumpAnalysisResponse(__func__, id, response);
@@ -705,10 +709,12 @@ void LocalBinaryUploadService::OnTimeout(Request::Id id) {
 
   if (active_requests_.count(id) > 0) {
     const auto& info = active_requests_.at(id);
-    RecordRequestMetrics(info, Result::TIMEOUT, ContentAnalysisResponse());
+    RecordRequestMetrics(
+        info, enterprise_connectors::ScanRequestUploadResult::kTimeout,
+        ContentAnalysisResponse());
 
-    std::unique_ptr<Ack> ack =
-        std::make_unique<Ack>(info.request->cloud_or_local_settings());
+    auto ack = std::make_unique<BinaryUploadAck>(
+        info.request->cloud_or_local_settings());
     ack->set_request_token(info.request->request_token());
     ack->set_status(
         enterprise_connectors::ContentAnalysisAcknowledgement::TOO_LATE);
@@ -717,7 +723,7 @@ void LocalBinaryUploadService::OnTimeout(Request::Id id) {
               std::move(ack));
   }
 
-  FinishRequest(id, BinaryUploadService::Result::TIMEOUT,
+  FinishRequest(id, enterprise_connectors::ScanRequestUploadResult::kTimeout,
                 ContentAnalysisResponse());
   ProcessNextPendingRequest();
 }
@@ -754,9 +760,10 @@ void LocalBinaryUploadService::RetryActiveRequestsSoonOrFailAllRequests(
   if (fail_requests) {
     for (auto it = pending_requests_.begin(); it != pending_requests_.end();
          it = pending_requests_.begin()) {
-      FinishRequest(it->request->id(),
-                    BinaryUploadService::Result::UPLOAD_FAILURE,
-                    ContentAnalysisResponse());
+      FinishRequest(
+          it->request->id(),
+          enterprise_connectors::ScanRequestUploadResult::kUploadFailure,
+          ContentAnalysisResponse());
     }
   } else {
     StartConnectionRetry();
@@ -796,7 +803,7 @@ bool LocalBinaryUploadService::ConnectionRetryInProgress() {
 
 void LocalBinaryUploadService::RecordRequestMetrics(
     const RequestInfo& info,
-    Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     const enterprise_connectors::ContentAnalysisResponse& response) {
   base::UmaHistogramEnumeration("SafeBrowsing.LocalBinaryUploadRequest.Result",
                                 result);

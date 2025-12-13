@@ -30,6 +30,7 @@
 #include "ui/views/border.h"
 #include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -53,8 +54,7 @@ class CircularImageView : public views::ImageView {
 void CircularImageView::OnPaint(gfx::Canvas* canvas) {
   // Display the avatar picture as a circle.
   gfx::Rect bounds(GetImageBounds());
-  SkPath circular_mask;
-  circular_mask.addCircle(
+  const SkPath circular_mask = SkPath::Circle(
       SkIntToScalar(bounds.x() + bounds.right()) / 2,
       SkIntToScalar(bounds.y() + bounds.bottom()) / 2,
       SkIntToScalar(std::min(bounds.height(), bounds.width())) / 2);

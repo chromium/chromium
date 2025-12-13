@@ -21,11 +21,11 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_service.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -145,8 +145,7 @@ class KerberosCredentialsManagerTest : public testing::Test {
   using Account = kerberos::Account;
   using Accounts = std::vector<Account>;
 
-  KerberosCredentialsManagerTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {
+  KerberosCredentialsManagerTest() {
     SessionManagerClient::InitializeFakeInMemory();
     KerberosClient::InitializeFake();
     client_test_interface()->SetTaskDelay(base::TimeDelta());
@@ -167,8 +166,8 @@ class KerberosCredentialsManagerTest : public testing::Test {
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile_.get());
 
-    mgr_ = std::make_unique<KerberosCredentialsManager>(local_state_.Get(),
-                                                        profile_.get());
+    mgr_ = std::make_unique<KerberosCredentialsManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(), profile_.get());
 
     mgr_->AddObserver(&observer_);
   }
@@ -189,7 +188,7 @@ class KerberosCredentialsManagerTest : public testing::Test {
   }
 
   void SetPref(const char* name, base::Value value) {
-    local_state_.Get()->SetManagedPref(
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
         name, std::make_unique<base::Value>(std::move(value)));
   }
 
@@ -357,7 +356,6 @@ class KerberosCredentialsManagerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingLocalState local_state_;
   user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
       std::make_unique<FakeChromeUserManager>()};
   std::unique_ptr<TestingProfile> profile_;
@@ -690,7 +688,8 @@ TEST_F(KerberosCredentialsManagerTest,
 TEST_F(KerberosCredentialsManagerTest,
        RemoveAccountRemoveLastAccountDeletesKerberosFiles) {
   auto files_handler = std::make_unique<MockKerberosFilesHandler>(
-      *local_state_.Get(), mgr_->GetGetKerberosFilesCallbackForTesting());
+      *TestingBrowserProcess::GetGlobal()->local_state(),
+      mgr_->GetGetKerberosFilesCallbackForTesting());
   EXPECT_CALL(*files_handler, DeleteFiles());
   mgr_->SetKerberosFilesHandlerForTesting(std::move(files_handler));
   AddAccountAndAuthenticate(kPrincipal, kUnmanaged, kerberos::ERROR_NONE,

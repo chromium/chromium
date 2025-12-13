@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -92,7 +93,7 @@ bool SurfacelessGlRenderer::BufferWrapper::Initialize(
   glGenFramebuffersEXT(1, &gl_fb_);
   glGenTextures(1, &gl_tex_);
 
-  gfx::BufferFormat format = display::DisplaySnapshot::PrimaryFormat();
+  auto format = display::DisplaySnapshot::PrimaryFormat();
   pixmap_ = OzonePlatform::GetInstance()
                 ->GetSurfaceFactoryOzone()
                 ->CreateNativePixmap(widget, nullptr, size, format,

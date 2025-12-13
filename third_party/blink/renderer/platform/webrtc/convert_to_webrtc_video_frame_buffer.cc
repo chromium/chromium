@@ -31,12 +31,6 @@ namespace blink {
 // that have VideoTrackAdapterSettings or gfx::Size parameters across threads.
 //
 // [1] third_party/blink/renderer/platform/wtf/cross_thread_copier.h.
-template <>
-struct CrossThreadCopier<scoped_refptr<webrtc::VideoFrameBuffer>>
-    : public CrossThreadCopierPassThrough<
-          scoped_refptr<webrtc::VideoFrameBuffer>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
 
 }  // namespace blink
 
@@ -274,7 +268,7 @@ bool CanConvertToWebRtcVideoFrameBuffer(const media::VideoFrame* frame) {
           base::Contains(GetPixelFormatsMappableToWebRtcVideoFrameBuffer(),
                          frame->format())) ||
          frame->storage_type() ==
-             media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER ||
+             media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE ||
          frame->HasSharedImage();
 }
 
@@ -306,7 +300,7 @@ webrtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
   };
 
   if (video_frame->storage_type() ==
-      media::VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
+      media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE) {
     auto converted_frame =
         shared_resources
             ? shared_resources->ConstructVideoFrameFromGpu(video_frame)

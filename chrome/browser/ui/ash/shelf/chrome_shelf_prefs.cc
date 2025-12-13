@@ -13,7 +13,6 @@
 #include <set>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
@@ -427,10 +426,6 @@ void AddNotebookLmAppPinIfNeeded(
 // NotebookLM, when Mall is enabled.
 void AddMallPinIfNeeded(Profile* profile,
                         app_list::AppListSyncableService* syncable_service) {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kCrosMall)) {
-    return;
-  }
-
   // When Mall SWA is enabled, pin the Mall SWA once, and use a synced pref to
   // make sure it doesn't pin a second time. Users have the option to unpin the
   // SWA.
@@ -915,10 +910,6 @@ void ChromeShelfPrefs::AttachProfile(Profile* profile) {
 
 std::string ChromeShelfPrefs::GetPromisePackageIdForSyncItem(
     const std::string& app_id) {
-  if (!ash::features::ArePromiseIconsEnabled()) {
-    return std::string();
-  }
-
   auto* syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
 

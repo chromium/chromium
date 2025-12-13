@@ -10,11 +10,13 @@
 
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/optimization_guide/core/model_execution/feature_keys.h"
+#import "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #import "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
-#import "components/optimization_guide/core/optimization_guide_model_executor.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #import "components/optimization_guide/proto/features/enhanced_calendar.pb.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/constants/error_strings.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/web_state.h"
@@ -88,6 +91,11 @@ void EnhancedCalendarServiceImpl::ExecuteEnhancedCalendarRequest(
   request.set_selected_text(request_params->selected_text);
   request.set_surrounding_text(request_params->surrounding_text);
 
+  // Set the user locale.
+  const std::string locale =
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  request.set_user_locale(locale);
+
   // Set the prompt, if it exists.
   if (request_params->optional_prompt.has_value() &&
       !request_params->optional_prompt.value().empty()) {
@@ -128,7 +136,7 @@ void EnhancedCalendarServiceImpl::OnPageContextGenerated(
 
   service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kEnhancedCalendar, request,
-      kEnhancedCalendarRequestTimeout,
+      {.execution_timeout = kEnhancedCalendarRequestTimeout},
       base::BindOnce(&EnhancedCalendarServiceImpl::OnEnhancedCalendarResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }

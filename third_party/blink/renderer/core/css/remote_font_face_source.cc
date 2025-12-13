@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/remote_font_face_source.h"
 
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
@@ -61,6 +62,16 @@ RemoteFontFaceSource::ComputeFontDisplayAutoPeriod() const {
   }
 
   if (is_intervention_triggered_) {
+    return kSwapPeriod;
+  }
+
+  auto* window =
+      DynamicTo<LocalDOMWindow>(font_selector_->GetExecutionContext());
+  if (window && window->document() && window->document()->Printing()) {
+    // If the page is printing, the font won't finish loading until the page is
+    // resumed. There are problems discussed in crbug.com/346799729.
+    // Currently, to avoid printing invisible text, enter the swap period
+    // immediately, and render with a fallback fontface.
     return kSwapPeriod;
   }
 
@@ -346,11 +357,11 @@ const SimpleFontData* RemoteFontFaceSource::CreateFontData(
 
 const SimpleFontData* RemoteFontFaceSource::CreateLoadingFallbackFontData(
     const FontDescription& font_description) {
-  // This temporary font is not retained and should not be returned.
-  FontCachePurgePreventer font_cache_purge_preventer;
   const SimpleFontData* temporary_font =
       FontCache::Get().GetLastResortFallbackFont(font_description);
   if (!temporary_font) {
+    SCOPED_CRASH_KEY_STRING256("FontFallback", "requested_description",
+                               font_description.ToString().Utf8());
     DUMP_WILL_BE_NOTREACHED();
     return nullptr;
   }

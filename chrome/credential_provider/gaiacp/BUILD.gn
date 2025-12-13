@@ -41,9 +41,13 @@ source_set("common") {
     "//components/crash/core/app",
     "//components/crash/core/common",
     "//components/version_info",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 config("common_config") {
@@ -94,10 +98,14 @@ source_set("util") {
     "//build:branding_buildflags",
     "//chrome/common:version_header",
     "//chrome/installer/launcher_support",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//third_party/re2",
-    "//url:url",
+    "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 config("util_config") {
@@ -132,6 +140,10 @@ component("policies") {
     "//components/policy/proto",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("mdm_utils") {
@@ -145,7 +157,7 @@ source_set("mdm_utils") {
     ":util",
     "//base",
     "//build:branding_buildflags",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -206,7 +218,7 @@ source_set("gaiacp_lib") {
     "//chrome/common:version_header",
     "//chrome/credential_provider/gaiacp/mojom",
     "//chrome/installer/launcher_support",
-    "//components/crash/core/app:app",
+    "//components/crash/core/app",
     "//components/crash/core/app:crash_export_thunks",
     "//components/crash/core/app:run_as_crashpad_handler",
     "//content/public/browser",
@@ -223,6 +235,10 @@ source_set("gaiacp_lib") {
     "setupapi.lib",
     "wevtapi.lib",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 config("gaiacp_config") {
@@ -298,6 +314,10 @@ shared_library("gaia1_0") {
     "//content/public/browser",
   ]
   configs += [ "//build/config/win:windowed" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # String Resource targets for the credential provider dll.

@@ -28,15 +28,16 @@
           <ph name="ADVANCED_TITLE" /> 'ਤੇ ਜਾ ਕੇ
           "<ph name="NO_PREFETCH_DESCRIPTION" />" ਨੂੰ ਅਣ-ਚੁਣਿਆ ਕਰੋ।
          ਜੇਕਰ ਇਸ ਨਾਲ ਸਮੱਸਿਆ ਹੱਲ ਨਹੀਂ ਹੁੰਦੀ , ਤਾਂ ਅਸੀਂ ਬਿਹਤਰ ਕਾਰਗੁਜ਼ਾਰੀ ਲਈ ਇਸ ਚੋਣ ਨੂੰ ਦੁਬਾਰਾ ਚੁਣਨ ਦੀ ਸਲਾਹ ਦਿੰਦੇ ਹਾਂ।</translation>
-<translation id="6855094794438142393">Chrome ਮੀਨੂ&gt;
+<translation id="6581867098636731226">Chrome
+          ਮੀਨੂ 'ਤੇ ਜਾਓ &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          LAN ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾ ਕੇ
-          "ਆਪਣੇ LAN ਲਈ ਇੱਕ ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਵਰਤੋ" ਨੂੰ ਅਣ-ਚੁਣਿਆ ਕਰੋ।</translation>
+          ਨੈੱਟਵਰਕ ਅਤੇ ਇੰਟਰਨੈੱਟ &gt; ਪ੍ਰੌਕਸੀ
+          ਅਤੇ "ਸੈਟਿੰਗਾਂ ਦਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪਤਾ ਲਗਾਓ" ਨੂੰ ਅਣ-ਚੁਣਿਆ ਕਰੋ।</translation>
 <translation id="7230956101631259640">ਤੁਸੀਂ ਇੱਕ ਸੁਰੱਖਿਅਤ Chrome ਪੰਨਾ ਦੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="8232971017369963250">Chrome ਨੂੰ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਪ੍ਰੋਜੈਕਟ ਦੀ ਮਦਦ ਨਾਲ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="8279509328145658601">Chrome ਨੂੰ ਹੋਰ <ph name="BEGIN_LINK_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_OSS" /> ਦੀ ਮਦਦ ਨਾਲ ਵੀ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>

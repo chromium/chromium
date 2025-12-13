@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
@@ -99,6 +98,7 @@ class NET_EXPORT CertVerifyProc
     std::optional<network_time::TimeTracker> time_tracker;
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     std::optional<net::ChromeRootStoreData> root_store_data;
+    std::optional<net::ChromeRootStoreMtcMetadata> root_store_mtc_metadata;
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
     bool use_chrome_root_store;
@@ -222,6 +222,7 @@ class NET_EXPORT CertVerifyProc
       std::unique_ptr<CTVerifier> ct_verifier,
       scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
       const ChromeRootStoreData* root_store_data,
+      const ChromeRootStoreMtcMetadata* root_store_mtc_metadata,
       const InstanceParams instance_params,
       std::optional<network_time::TimeTracker> time_tracker);
 #endif
@@ -268,7 +269,7 @@ class NET_EXPORT CertVerifyProc
       base::span<const uint8_t> tls_cert,
       const NetLogWithSource& net_log);
 
-  // TODO(crbug.com/392931070): remove this (make internal to
+  // TODO(crbug.com/436300895): remove this (make internal to
   // CertVerifyProcBuiltin), since it is only used internally by
   // Verify2QwacBinding.
   // Performs 2-QWAC verification, if implemented by the subclass. The default

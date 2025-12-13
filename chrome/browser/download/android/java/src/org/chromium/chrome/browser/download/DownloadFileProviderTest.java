@@ -12,10 +12,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Batch;
@@ -49,13 +51,13 @@ public class DownloadFileProviderTest {
     private static final String EXTERNAL_SD_CARD_DOWNLOAD_PATH =
             EXTERNAL_SD_CARD_DOWNLOAD_DIRECTORY_PATH + "/app-wise-release.apk";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private DownloadDirectoryProvider.Delegate mMockDirectoryDelegate;
 
     private SecondaryStorageInfo mSecondaryStorageInfo;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(new File(PRIMARY_STORAGE_DOWNLOAD_DIRECTORY_PATH))
                 .when(mMockDirectoryDelegate)
                 .getPrimaryDownloadDirectory();

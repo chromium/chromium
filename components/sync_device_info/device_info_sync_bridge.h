@@ -12,8 +12,10 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/sync/base/sync_mode.h"
@@ -23,6 +25,10 @@
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "components/sync_device_info/local_device_info_util.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace sync_pb {
 class DeviceInfoSpecifics;
@@ -39,12 +45,17 @@ class DeviceInfoPrefs;
 class DeviceInfoSyncBridge : public DataTypeSyncBridge,
                              public DeviceInfoTracker {
  public:
+  // `pulse_task_tunner` is used to schedule SendLocalData pulses. It must run
+  // tasks in the same sequence DeviceInfoSyncBridge is created on, but can have
+  // different TaskTraits. For instance when the bridge runs on the main thread,
+  // this could be a task runner for the same thread with BEST_EFFORT priority.
   DeviceInfoSyncBridge(
       std::unique_ptr<MutableLocalDeviceInfoProvider>
           local_device_info_provider,
       OnceDataTypeStoreFactory store_factory,
       std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
-      std::unique_ptr<DeviceInfoPrefs> device_info_prefs);
+      std::unique_ptr<DeviceInfoPrefs> device_info_prefs,
+      scoped_refptr<base::SequencedTaskRunner> pulse_task_runner);
 
   DeviceInfoSyncBridge(const DeviceInfoSyncBridge&) = delete;
   DeviceInfoSyncBridge& operator=(const DeviceInfoSyncBridge&) = delete;
@@ -95,7 +106,7 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
   std::vector<const DeviceInfo*> GetAllChromeDeviceInfo() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  std::map<DeviceInfo::FormFactor, int> CountActiveDevicesByType()
+  absl::flat_hash_map<DeviceInfo::FormFactor, int> CountActiveDevicesByType()
       const override;
   bool IsRecentLocalCacheGuid(const std::string& cache_guid) const override;
 
@@ -178,40 +189,50 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
   // Deletes locally old data and metadata entries without issuing tombstones.
   void ExpireOldEntries();
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   const std::unique_ptr<MutableLocalDeviceInfoProvider>
       local_device_info_provider_;
 
-  std::string local_cache_guid_;
-  ClientIdToDeviceInfo all_data_;
+  std::string local_cache_guid_ GUARDED_BY_CONTEXT(sequence_checker_);
+  ClientIdToDeviceInfo all_data_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  LocalDeviceNameInfo local_device_name_info_;
+  LocalDeviceNameInfo local_device_name_info_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::optional<SyncMode> sync_mode_;
+  std::optional<SyncMode> sync_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to restrict reuploads of local device info on incoming tombstones.
   // This is necessary to prevent uncontrolled commits based on incoming
   // updates.
-  bool reuploaded_on_tombstone_ = false;
+  bool reuploaded_on_tombstone_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Registered observers, not owned.
-  base::ObserverList<Observer, true>::Unchecked observers_;
+  base::ObserverList<Observer, true>::Unchecked observers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.
-  std::unique_ptr<DataTypeStore> store_;
+  std::unique_ptr<DataTypeStore> store_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to update our local device info once every pulse interval.
-  base::OneShotTimer pulse_timer_;
+  base::OneShotTimer pulse_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Callback that's set by ForcePulseForTest() to run after `pulse_timer_`
+  // fires. This lets the test wait until the pulse finishes.
+  base::OnceClosure done_pulse_timer_callback_for_test_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to force upload of local device info after initialization. Used in
   // tests only.
-  bool force_reupload_for_test_ = false;
+  bool force_reupload_for_test_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-  std::vector<base::OnceClosure> device_info_synced_callback_list_;
+  std::vector<base::OnceClosure> device_info_synced_callback_list_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Called when a new interested data type list has been committed. Only newly
   // enabled data types will be passed. May be empty.
   base::RepeatingCallback<void(const DataTypeSet&)>
-      new_interested_data_types_callback_;
+      new_interested_data_types_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   const std::unique_ptr<DeviceInfoPrefs> device_info_prefs_;
 

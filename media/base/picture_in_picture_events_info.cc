@@ -6,6 +6,7 @@
 
 #include <array>
 #include <string>
+#include <string_view>
 
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -26,6 +27,8 @@ std::string PictureInPictureEventsInfo::AutoPipReasonToString(
       return "VideoConferencing";
     case AutoPipReason::kMediaPlayback:
       return "MediaPlayback";
+    case AutoPipReason::kBrowserInitiated:
+      return "BrowserInitiated";
   }
 
   NOTREACHED() << "Invalid auto_pip_reason provided: "
@@ -35,7 +38,7 @@ std::string PictureInPictureEventsInfo::AutoPipReasonToString(
 // static
 std::string PictureInPictureEventsInfo::AutoPipInfoToString(
     AutoPipInfo auto_pip_info) {
-  constexpr std::array<std::string, 2> bool_to_string{"false", "true"};
+  constexpr std::array<std::string_view, 2> bool_to_string{"false", "true"};
   return base::StringPrintf(
       "{reason: %s, has audio focus: %s, is_playing: %s, was recently audible: "
       "%s, has safe url: %s, meets media engagement conditions: %s, blocked "

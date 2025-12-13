@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -12,12 +14,31 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Set;
 
 /** Interface for getting tab groups for the tabs in the {@link TabModel}. */
+// TODO(crbug.com/463685717): Consider merging with TabModel.
 @NullMarked
 public interface TabGroupModelFilter extends SupportsTabModelObserver {
+
+    @IntDef({
+        MergeNotificationType.DONT_NOTIFY,
+        MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP,
+        MergeNotificationType.NOTIFY_ALWAYS
+    })
+    @Target(ElementType.TYPE_USE)
+    @Retention(RetentionPolicy.SOURCE)
+    @interface MergeNotificationType {
+        int DONT_NOTIFY = 0;
+        int NOTIFY_IF_NOT_NEW_GROUP = 1;
+        int NOTIFY_ALWAYS = 2;
+    }
+
     /**
      * This method adds a {@link TabGroupModelFilterObserver} to be notified on {@link
      * TabGroupModelFilter} changes.
@@ -174,25 +195,53 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
      * @param destinationTab The destination {@link Tab} to be append to.
      * @param notify Whether or not to notify observers about the merging events.
      */
-    void mergeListOfTabsToGroup(List<Tab> tabs, Tab destinationTab, boolean notify);
+    default void mergeListOfTabsToGroup(
+            List<Tab> tabs, Tab destinationTab, @MergeNotificationType int notify) {
+        mergeListOfTabsToGroup(tabs, destinationTab, /* index=InGroup */ null, notify);
+    }
+
+    /**
+     * This method merges a list of {@link Tab}s into the destination group that contains the
+     * {@code} destinationTab.
+     *
+     * @param tabs List of {@link Tab}s to be merged. The ordering of this list is preserved.
+     * @param destinationTab The destination {@link Tab}. If not in a group, a new group will be
+     *     created.
+     * @param indexInGroup The index within the destination group to insert the tabs.
+     *     <ul>
+     *       <li>0 - inserts at the front.
+     *       <li>`null` or an index >= group size - inserts at the back.
+     *       <li>Any other value is clamped to the valid range [0, group_size].
+     *     </ul>
+     *
+     * @param notify Whether or not to notify observers about the merging events.
+     */
+    void mergeListOfTabsToGroup(
+            List<Tab> tabs,
+            Tab destinationTab,
+            @Nullable Integer indexInGroup,
+            @MergeNotificationType int notify);
 
     /** Returns a utility interface to help with that ungrouping tabs from a tab group. */
     TabUngrouper getTabUngrouper();
 
     // TODO(crbug.com/372068933): This method should probably have more restricted access.
     /**
-     * This method undo the given grouped {@link Tab}.
+     * Undoes a group operation performed by this TabGroupModelFilter.
      *
-     * @param tab undo this grouped {@link Tab}.
-     * @param originalIndex The tab index before grouped.
-     * @param originalRootId The rootId before grouped.
-     * @param originalTabGroupId The tabGroupId before grouped.
+     * @param undoGroupMetadata Metadata to undo the operation provided by {@link
+     *     TabGroupModelFilterObserver#showUndoGroupSnackbar}.
      */
-    void undoGroupedTab(
-            Tab tab,
-            int originalIndex,
-            @TabId int originalRootId,
-            @Nullable Token originalTabGroupId);
+    void performUndoGroupOperation(UndoGroupMetadata undoGroupMetadata);
+
+    /**
+     * Notifies that the undo window for a group operation performed by this TabGroupModelFilter has
+     * expired.
+     *
+     * @param undoGroupMetadata Metadata to undo the operation provided by {@link
+     *     TabGroupModelFilterObserver#showUndoGroupSnackbar}.
+     */
+    void undoGroupOperationExpired(UndoGroupMetadata undoGroupMetadata);
 
     /** Get all tab group IDs that are associated with tab groups. */
     Set<Token> getAllTabGroupIds();
@@ -238,29 +287,11 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
      */
     @Nullable String getTabGroupTitle(Tab groupedTab);
 
-    /**
-     * @deprecated Use {@link #getTabGroupTitle(Token)} instead.
-     */
-    @Deprecated
-    @Nullable String getTabGroupTitle(@TabId int rootId);
-
     /** Stores the given title for the tab group. */
     void setTabGroupTitle(Token tabGroupId, @Nullable String title);
 
-    /**
-     * @deprecated Use {@link #setTabGroupTitle(Token, String)} instead.
-     */
-    @Deprecated
-    void setTabGroupTitle(@TabId int rootId, @Nullable String title);
-
     /** Deletes the stored title for the tab group, defaulting it back to "N tabs." */
     void deleteTabGroupTitle(Token tabGroupId);
-
-    /**
-     * @deprecated Use {@link #deleteTabGroupTitle(Token)} instead.
-     */
-    @Deprecated
-    void deleteTabGroupTitle(@TabId int rootId);
 
     /**
      * This method fetches tab group colors id for the specified tab group. It will be a {@link
@@ -268,12 +299,6 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
      * is no color entry for the group.
      */
     int getTabGroupColor(Token tabGroupId);
-
-    /**
-     * @deprecated Use {@link #getTabGroupColor(Token)} instead.
-     */
-    @Deprecated
-    int getTabGroupColor(@TabId int rootId);
 
     /**
      * This method fetches tab group colors for the related tab group root ID. If the color does not
@@ -294,39 +319,14 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
     @TabGroupColorId
     int getTabGroupColorWithFallback(Tab groupedTab);
 
-    /**
-     * @deprecated Use {@link #getTabGroupColorWithFallback(Token)} instead.
-     */
-    @Deprecated
-    @TabGroupColorId
-    int getTabGroupColorWithFallback(@TabId int rootId);
-
     /** Stores the given color for the tab group. */
     void setTabGroupColor(Token tabGroupId, @TabGroupColorId int color);
-
-    /**
-     * @deprecated Use {@link #setTabGroupColor(Token, int)} instead.
-     */
-    @Deprecated
-    void setTabGroupColor(@TabId int rootId, @TabGroupColorId int color);
 
     /** Deletes the color that was recorded for the group. */
     void deleteTabGroupColor(Token tabGroupId);
 
-    /**
-     * @deprecated Use {@link #deleteTabGroupColor(Token)} instead.
-     */
-    @Deprecated
-    void deleteTabGroupColor(@TabId int rootId);
-
     /** Returns whether the tab group is expanded or collapsed. */
     boolean getTabGroupCollapsed(Token tabGroupId);
-
-    /**
-     * @deprecated Use {@link #getTabGroupCollapsed(Token)} instead.
-     */
-    @Deprecated
-    boolean getTabGroupCollapsed(@TabId int rootId);
 
     /** Sets whether the tab group is expanded or collapsed. */
     default void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed) {
@@ -336,35 +336,6 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
     /** Sets whether the tab group is expanded or collapsed, with optional animation. */
     void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate);
 
-    /**
-     * @deprecated Use {@link #setTabGroupCollapsed(Token, boolean)} instead.
-     */
-    @Deprecated
-    default void setTabGroupCollapsed(@TabId int rootId, boolean isCollapsed) {
-        setTabGroupCollapsed(rootId, isCollapsed, /* animate= */ false);
-    }
-
-    /**
-     * @deprecated Use {@link #setTabGroupCollapsed(Token, boolean, boolean)} instead.
-     */
-    @Deprecated
-    void setTabGroupCollapsed(@TabId int rootId, boolean isCollapsed, boolean animate);
-
     /** Deletes the record that the group is collapsed, setting it to expanded. */
     void deleteTabGroupCollapsed(Token tabGroupId);
-
-    /**
-     * @deprecated Use {@link #deleteTabGroupCollapsed(Token)} instead.
-     */
-    @Deprecated
-    void deleteTabGroupCollapsed(@TabId int rootId);
-
-    /** Delete the title, color and collapsed state of a tab group. */
-    void deleteTabGroupVisualData(Token tabGroupId);
-
-    /**
-     * @deprecated Use {@link #deleteTabGroupVisualData(Token)} instead.
-     */
-    @Deprecated
-    void deleteTabGroupVisualData(@TabId int rootId);
 }

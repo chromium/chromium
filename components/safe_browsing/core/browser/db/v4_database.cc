@@ -11,10 +11,10 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -39,12 +39,16 @@ constexpr base::TimeDelta kUmaMaxTime = base::Hours(5);
 constexpr int kUmaNumBuckets = 50;
 
 // The factory that controls the creation of the V4Database object.
-base::LazyInstance<std::unique_ptr<V4DatabaseFactory>>::Leaky g_db_factory =
-    LAZY_INSTANCE_INITIALIZER;
+std::unique_ptr<V4DatabaseFactory>& GetDatabaseFactory() {
+  static base::NoDestructor<std::unique_ptr<V4DatabaseFactory>> db_factory;
+  return *db_factory;
+}
 
 // The factory that controls the creation of V4Store objects.
-base::LazyInstance<std::unique_ptr<V4StoreFactory>>::Leaky g_store_factory =
-    LAZY_INSTANCE_INITIALIZER;
+std::unique_ptr<V4StoreFactory>& GetStoreFactory() {
+  static base::NoDestructor<std::unique_ptr<V4StoreFactory>> store_factory;
+  return *store_factory;
+}
 
 // Verifies the checksums on a collection of stores.
 // Returns the IDs of stores whose checksums failed to verify.
@@ -121,8 +125,9 @@ void V4Database::CreateOnTaskRunner(
     NewDatabaseReadyCallback new_db_callback) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
 
-  if (!g_store_factory.Get())
-    g_store_factory.Get() = std::make_unique<V4StoreFactory>();
+  if (!GetStoreFactory()) {
+    GetStoreFactory() = std::make_unique<V4StoreFactory>();
+  }
 
   if (!base::CreateDirectory(base_path)) {
     return;
@@ -141,17 +146,18 @@ void V4Database::CreateOnTaskRunner(
 
     const base::FilePath store_path = base_path.AppendASCII(it.filename());
     V4StorePtr store =
-        g_store_factory.Get()->CreateV4Store(db_task_runner, store_path);
+        GetStoreFactory()->CreateV4Store(db_task_runner, store_path);
     base::UmaHistogramBoolean("SafeBrowsing.V4Store.ReadyOnStartup",
                               store->HasValidData());
     store_map->insert({it.list_id(), std::move(store)});
   }
 
-  if (!g_db_factory.Get())
-    g_db_factory.Get() = std::make_unique<V4DatabaseFactory>();
+  if (!GetDatabaseFactory()) {
+    GetDatabaseFactory() = std::make_unique<V4DatabaseFactory>();
+  }
 
   std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> v4_database =
-      g_db_factory.Get()->Create(db_task_runner, std::move(store_map));
+      GetDatabaseFactory()->Create(db_task_runner, std::move(store_map));
 
   // Database is done loading, pass it to the new_db_callback on the caller's
   // thread. This would unblock resource loads.
@@ -163,13 +169,13 @@ void V4Database::CreateOnTaskRunner(
 // static
 void V4Database::RegisterDatabaseFactoryForTest(
     std::unique_ptr<V4DatabaseFactory> factory) {
-  g_db_factory.Get() = std::move(factory);
+  GetDatabaseFactory() = std::move(factory);
 }
 
 // static
 void V4Database::RegisterStoreFactoryForTest(
     std::unique_ptr<V4StoreFactory> factory) {
-  g_store_factory.Get() = std::move(factory);
+  GetStoreFactory() = std::move(factory);
 }
 
 V4Database::V4Database(

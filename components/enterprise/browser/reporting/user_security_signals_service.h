@@ -9,9 +9,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/wall_clock_timer.h"
 #include "components/enterprise/browser/reporting/security_signals_service.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+
+namespace policy {
+class PolicyMap;
+}  // namespace policy
 
 class PrefService;
 
@@ -20,7 +26,8 @@ namespace enterprise_reporting {
 // Service in charge of the scheduling, and triggering, generation and upload of
 // user security signals reports.
 class UserSecuritySignalsService : public SecuritySignalsService,
-                                   public network::mojom::CookieChangeListener {
+                                   public network::mojom::CookieChangeListener,
+                                   public policy::PolicyService::Observer {
  public:
   class Delegate {
    public:
@@ -32,7 +39,9 @@ class UserSecuritySignalsService : public SecuritySignalsService,
     virtual network::mojom::CookieManager* GetCookieManager() = 0;
   };
 
-  UserSecuritySignalsService(PrefService* profile_prefs, Delegate* delegate);
+  UserSecuritySignalsService(PrefService* profile_prefs,
+                             Delegate* delegate,
+                             policy::PolicyService* policy_service);
   ~UserSecuritySignalsService() override;
 
   UserSecuritySignalsService(const UserSecuritySignalsService&) = delete;
@@ -51,6 +60,11 @@ class UserSecuritySignalsService : public SecuritySignalsService,
 
   // mojom::CookieChangeListener:
   void OnCookieChange(const net::CookieChangeInfo& change) override;
+
+  // policy::PolicyService::Observer
+  void OnPolicyUpdated(const policy::PolicyNamespace& ns,
+                       const policy::PolicyMap& previous,
+                       const policy::PolicyMap& current) override;
 
  private:
   friend class UserSecuritySignalsServiceTest;
@@ -72,11 +86,19 @@ class UserSecuritySignalsService : public SecuritySignalsService,
   // to `trigger`.
   void TriggerReport(SecurityReportTrigger trigger);
 
+  // Start the observation of the policy service.
+  void StartPolicyObservation();
+
+  // Stop the observation of the policy service.
+  void StopPolicyObservation();
+
   const raw_ptr<PrefService> profile_prefs_;
   const raw_ptr<Delegate> delegate_;
+  const raw_ptr<policy::PolicyService> policy_service_;
   PrefChangeRegistrar pref_change_registrar_;
   base::WallClockTimer timer_;
   bool initialized_{false};
+  bool is_observing_policy_service_{false};
 
   // Connection to the CookieManager that signals when the GAIA cookies change.
   mojo::Receiver<network::mojom::CookieChangeListener>

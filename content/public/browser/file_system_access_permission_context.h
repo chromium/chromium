@@ -18,7 +18,6 @@
 #include "content/public/browser/file_system_access_write_item.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 #include "url/origin.h"
 
 class GURL;
@@ -233,6 +232,19 @@ class FileSystemAccessPermissionContext {
   virtual void NotifyEntryMoved(const url::Origin& origin,
                                 const PathInfo& old_path,
                                 const PathInfo& new_path) = 0;
+
+  // Called after a file has been modified (e.g. through a write or move
+  // operation) to restore read access that might have been revoked after a
+  // `remove()` call.
+  // See https://crbug.com/421690393.
+  virtual void NotifyEntryModified(const url::Origin& origin,
+                                   const PathInfo& path) = 0;
+
+  // Notifies that the underlying file or directory has been removed and updates
+  // permission grants accordingly.
+  // See https://crbug.com/421690393.
+  virtual void NotifyEntryRemoved(const url::Origin& origin,
+                                  const PathInfo& path) = 0;
 
   // Invoked on file creation events originating from
   // `window.showSaveFilePicker()`.

@@ -9,15 +9,6 @@ import org.chromium.build.annotations.NullMarked;
 /** This interface is responsible for handling UI logic for the safety check fragment's view. */
 @NullMarked
 public interface SafetyCheckComponentUi {
-
-    /**
-     * Used to figure out whether the UI related to the local storage password check should be
-     * displayed.
-     *
-     * @return true if local password storage is used.
-     */
-    boolean isLocalPasswordStorageUsed();
-
     /**
      * Used to figure out whether the UI related to the account storage password check should be
      * displayed.

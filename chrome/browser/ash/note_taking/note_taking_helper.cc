@@ -157,8 +157,7 @@ std::string GetAppName(Profile* profile, const std::string& app_id) {
   if (!name.empty())
     return name;
 
-  // TODO(crbug.com/40758396): Remove once Chrome Apps are gone or Lacros
-  // launches, as note-taking Chrome Apps will not be supported in Lacros.
+  // TODO(crbug.com/40758396): Remove once Chrome Apps are gone.
   const extensions::Extension* chrome_app =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
           app_id);
@@ -500,8 +499,9 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
     cache.ForOneApp(id, [&app_ids](const apps::AppUpdate& update) {
       if (!apps_util::IsInstalled(update.Readiness()))
         return;
-      if (!base::Contains(kNoteTakingAppTypes, update.AppType()))
+      if (!base::Contains(kNoteTakingAppTypes, update.AppType())) {
         return;
+      }
       DCHECK(!base::Contains(app_ids, update.AppId()));
       app_ids.push_back(update.AppId());
     });
@@ -510,10 +510,12 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
   cache.ForEachApp([&app_ids](const apps::AppUpdate& update) {
     if (!apps_util::IsInstalled(update.Readiness()))
       return;
-    if (base::Contains(app_ids, update.AppId()))
+    if (base::Contains(app_ids, update.AppId())) {
       return;
-    if (!base::Contains(kNoteTakingAppTypes, update.AppType()))
+    }
+    if (!base::Contains(kNoteTakingAppTypes, update.AppType())) {
       return;
+    }
     if (HasNoteTakingIntentFilter(update.IntentFilters())) {
       app_ids.push_back(update.AppId());
     }
@@ -639,8 +641,9 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
 }
 
 void NoteTakingHelper::OnAppUpdate(const apps::AppUpdate& update) {
-  if (!base::Contains(kNoteTakingAppTypes, update.AppType()))
+  if (!base::Contains(kNoteTakingAppTypes, update.AppType())) {
     return;
+  }
   // App was added, removed, enabled, or disabled.
   if (!update.ReadinessChanged())
     return;

@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/themes/ntp_background_service.h"
@@ -133,8 +134,12 @@ class CustomizeChromePageHandler
       side_panel::mojom::ChromeWebStoreCollection collection) override;
   void OpenChromeWebStoreHomePage() override;
   void OpenNtpManagedByPage() override;
-  void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
+  void SetMostVisitedSettings(const std::vector<ntp_tiles::TileType>& types,
+                              bool visible,
+                              bool personal_shortcuts_visible) override;
   void UpdateMostVisitedSettings() override;
+  void SetToolChipsVisible(bool visible) override;
+  void UpdateToolChipsSettings() override;
   void SetFooterVisible(bool visible) override;
   void UpdateFooterSettings() override;
   void SetModulesVisible(bool visible) override;
@@ -146,9 +151,15 @@ class CustomizeChromePageHandler
 
  private:
   void LogEvent(NTPLoggingEventType event);
+  void UpdatePrefAndLogEvent(const char* pref_name,
+                             bool new_value,
+                             NTPLoggingEventType event);
 
-  bool IsCustomLinksEnabled() const;
+  std::set<ntp_tiles::TileType> GetTileTypes() const;
   bool IsShortcutsVisible() const;
+  bool IsPersonalShortcutsVisible() const;
+  bool IsEnterpriseShortcutsVisible() const;
+  bool IsEnterpriseShortcutsEmpty() const;
 
   // Returns the type of New Tab Page the SidePanel is attached to.
   side_panel::mojom::NewTabPageType GetNewTabPageType(const GURL& url);

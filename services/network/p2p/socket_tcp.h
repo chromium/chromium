@@ -45,10 +45,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
 
   ~P2PSocketTcpBase() override;
 
-  // The TCP socket is deleted on errors; in this case, false is returned.
-  [[nodiscard]] bool InitAccepted(const net::IPEndPoint& remote_address,
-                                  std::unique_ptr<net::StreamSocket> socket);
-
   // P2PSocket overrides.
   void Init(
       const net::IPEndPoint& local_address,

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
-
 static_library("storage_configuration") {
   sources = [
     "storage_configuration.cc",
@@ -164,8 +162,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/reporting/compression:compression_module",
     "//components/reporting/compression:test_support",
+    "//components/reporting/encryption",
     "//components/reporting/encryption:decryption",
-    "//components/reporting/encryption:encryption",
     "//components/reporting/encryption:encryption_module",
     "//components/reporting/encryption:encryption_module_interface",
     "//components/reporting/encryption:test_support",

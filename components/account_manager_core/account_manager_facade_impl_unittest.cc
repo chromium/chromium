@@ -8,7 +8,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -679,7 +678,7 @@ TEST_F(AccountManagerFacadeImplTest,
 
   auto mock_access_token_fetcher = std::make_unique<MockAccessTokenFetcher>();
   EXPECT_CALL(*mock_access_token_fetcher.get(), Start(_, _))
-      .WillOnce(WithArgs<1>(Invoke(&AccessTokenFetchSuccess)));
+      .WillOnce(WithArgs<1>(&AccessTokenFetchSuccess));
   account_manager().SetMockAccessTokenFetcher(
       std::move(mock_access_token_fetcher));
   MockOAuthConsumer consumer;
@@ -723,7 +722,7 @@ TEST_F(AccountManagerFacadeImplTest, AccessTokenFetchSucceeds) {
 
   auto mock_access_token_fetcher = std::make_unique<MockAccessTokenFetcher>();
   EXPECT_CALL(*mock_access_token_fetcher.get(), Start(_, _))
-      .WillOnce(WithArgs<1>(Invoke(&AccessTokenFetchSuccess)));
+      .WillOnce(WithArgs<1>(&AccessTokenFetchSuccess));
   account_manager().SetMockAccessTokenFetcher(
       std::move(mock_access_token_fetcher));
   MockOAuthConsumer consumer;
@@ -746,7 +745,7 @@ TEST_F(AccountManagerFacadeImplTest, AccessTokenFetchErrorResponse) {
 
   auto mock_access_token_fetcher = std::make_unique<MockAccessTokenFetcher>();
   EXPECT_CALL(*mock_access_token_fetcher.get(), Start(_, _))
-      .WillOnce(WithArgs<1>(Invoke(&AccessTokenFetchServiceError)));
+      .WillOnce(WithArgs<1>(&AccessTokenFetchServiceError));
   account_manager().SetMockAccessTokenFetcher(
       std::move(mock_access_token_fetcher));
   MockOAuthConsumer consumer;
@@ -856,7 +855,7 @@ TEST_F(AccountManagerFacadeImplTest,
 
   auto mock_access_token_fetcher = std::make_unique<MockAccessTokenFetcher>();
   EXPECT_CALL(*mock_access_token_fetcher.get(), Start(_, _))
-      .WillOnce(WithArgs<1>(Invoke(&AccessTokenFetchSuccess)));
+      .WillOnce(WithArgs<1>(&AccessTokenFetchSuccess));
   account_manager().SetMockAccessTokenFetcher(
       std::move(mock_access_token_fetcher));
 

@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -127,7 +128,7 @@ struct WaylandEventSource::TouchPoint {
   TouchPoint(gfx::PointF location, WaylandWindow* current_window);
   ~TouchPoint() = default;
 
-  raw_ptr<WaylandWindow, DanglingUntriaged> window;
+  raw_ptr<WaylandWindow> window;
   gfx::PointF last_known_location;
 };
 
@@ -336,6 +337,13 @@ void WaylandEventSource::OnPointerFocusChanged(
     // Save new pointer location.
     pointer_location_ = location;
     window_manager_->SetPointerFocusedWindow(window);
+  } else {
+    // The compositor may swallow the release event for any buttons that are
+    // pressed when the window loses focus, e.g. when right-clicking the
+    // titlebar to open the system menu on GNOME.
+    if (!connection_->IsDragInProgress()) {
+      ReleasePressedPointerButtons(window, ui::EventTimeForNow());
+    }
   }
 
   auto closure = focused ? base::NullCallback()

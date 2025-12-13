@@ -1,0 +1,399 @@
+actions {
+  new_idb_factory {
+    id: 0
+  }
+}
+actions {
+  run_thread {
+    id: Bucket
+  }
+}
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    reset {
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_commit {
+      m_num_errors_handled: 0
+    }
+  }
+}
+actions {
+  idb_factory_remote_action {
+    id: 0
+    m_open {
+      m_client: 0
+      m_database_callbacks: 0
+      m_name {
+        new {
+          id: 0
+          m_data {
+            values { value: 100 } # 'd'
+            values { value: 98 }  # 'b'
+          }
+        }
+      }
+      m_version: 1
+      m_version_change_transaction_receiver: 0
+      m_transaction_id: 1
+      m_priority: 0
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_create_object_store {
+      m_object_store_id: 1
+      m_name {
+        new {
+          id: 0
+          m_data {
+            values { value: 115 } # 's'
+            values { value: 116 } # 't'
+            values { value: 111 } # 'o'
+            values { value: 114 } # 'r'
+            values { value: 101 } # 'e'
+          }
+        }
+      }
+      m_key_path {
+        new {
+          id: 0
+          m_data {
+            new {
+              id: 0
+              m_string {
+                new {
+                  id: 0
+                  m_data {
+                    values { value: 107 } # 'k'
+                    values { value: 101 } # 'e'
+                    values { value: 121 } # 'y'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      m_auto_increment: false
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_put {
+      m_object_store_id: 1
+      m_value {
+        new {
+          id: 0
+          m_bits {
+            new {
+              id: 0
+              m_bytes {
+                values { value: 1 } # Dummy data
+              }
+            }
+          }
+          m_external_objects {
+          }
+        }
+      }
+      m_key {
+        new {
+          id: 0
+          m_string {
+            new {
+              id: 0
+              m_data {
+                values { value: 107 } # 'k'
+                values { value: 49 }  # '1'
+              }
+            }
+          }
+        }
+      }
+      m_mode: 0 # AddOrUpdate
+      m_index_keys {
+      }
+    }
+  }
+}
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    m_create_index {
+      m_transaction_id: 1
+      m_object_store_id: 1
+      m_index {
+        new {
+          id: 0
+          m_id: 100
+          m_name {
+            new {
+              id: 0
+              m_data {
+                values { value: 105 } # 'i'
+                values { value: 100 } # 'd'
+                values { value: 120 } # 'x'
+              }
+            }
+          }
+          m_key_path {
+            new {
+              id: 0
+              m_data {
+                new {
+                  id: 0
+                  m_string {
+                    new {
+                      id: 0
+                      m_data {
+                        values { value: 105 } # 'i'
+                        values { value: 100 } # 'd'
+                        values { value: 120 } # 'x'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          m_unique: false
+          m_multi_entry: false
+        }
+      }
+    }
+  }
+}
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    m_open_cursor {
+      m_transaction_id: 1
+      m_object_store_id: 1
+      m_index_id: -1
+      m_key_range {
+        new {
+          id: 0
+          m_lower {
+            new {
+              id: 0
+              m_other_none: true
+            }
+          }
+          m_upper {
+            new {
+              id: 0
+              m_other_none: true
+            }
+          }
+          m_lower_open: false
+          m_upper_open: false
+        }
+      }
+      m_direction: 0 # Next
+      m_key_only: false
+      m_task_type: 1 # Preemptive
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_set_index_keys {
+      m_object_store_id: 1
+      m_primary_key {
+        new {
+          id: 0
+          m_string {
+            new {
+              id: 0
+              m_data {
+                values { value: 107 } # 'k'
+                values { value: 49 }  # '1'
+              }
+            }
+          }
+        }
+      }
+      m_index_keys {
+        new {
+          id: 0
+          m_index_id: 100
+          m_index_keys {
+            values {
+              value {
+                new {
+                  id: 0
+                  m_string {
+                    new {
+                      id: 0
+                      m_data {
+                        values { value: 105 } # 'i'
+                        values { value: 49 }  # '1'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_set_index_keys_done {
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_put {
+      m_object_store_id: 1
+      m_value {
+        new {
+          id: 0
+          m_bits {
+            new {
+              id: 0
+              m_bytes {
+                values { value: 2 } # Dummy data 2
+              }
+            }
+          }
+          m_external_objects {
+          }
+        }
+      }
+      m_key {
+        new {
+          id: 0
+          m_string {
+            new {
+              id: 0
+              m_data {
+                values { value: 107 } # 'k'
+                values { value: 50 }  # '2'
+              }
+            }
+          }
+        }
+      }
+      m_mode: 0 # AddOrUpdate
+      m_index_keys {
+        values {
+          value {
+            new {
+              id: 0
+              m_index_id: 100
+              m_index_keys {
+                values {
+                  value {
+                    new {
+                      id: 0
+                      m_string {
+                        new {
+                          id: 0
+                          m_data {
+                            values { value: 105 } # 'i'
+                            values { value: 50 }  # '2'
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    m_get {
+      m_transaction_id: 1
+      m_object_store_id: 1
+      m_index_id: 100
+      m_key_range {
+        new {
+          id: 0
+          m_lower {
+            new {
+              id: 0
+              m_string {
+                new {
+                  id: 0
+                  m_data {
+                    values { value: 105 } # 'i'
+                    values { value: 49 }  # '1'
+                  }
+                }
+              }
+            }
+          }
+          m_upper {
+            new {
+              id: 0
+              m_string {
+                new {
+                  id: 0
+                  m_data {
+                    values { value: 105 } # 'i'
+                    values { value: 50 }  # '2'
+                  }
+                }
+              }
+            }
+          }
+          m_lower_open: false
+          m_upper_open: false
+        }
+      }
+      m_key_only: false
+    }
+  }
+}
+sequences {
+  action_indexes: 0
+  action_indexes: 4
+  action_indexes: 1
+  action_indexes: 5
+  action_indexes: 1
+  action_indexes: 6
+  action_indexes: 1
+  action_indexes: 7
+  action_indexes: 1
+  action_indexes: 8
+  action_indexes: 1
+  action_indexes: 9
+  action_indexes: 1
+  action_indexes: 10
+  action_indexes: 1
+  action_indexes: 11
+  action_indexes: 1
+  action_indexes: 12
+  action_indexes: 1
+  action_indexes: 3
+  action_indexes: 1
+  action_indexes: 2
+}
+sequence_indexes: 0
+in_memory: false
+use_sqlite: false

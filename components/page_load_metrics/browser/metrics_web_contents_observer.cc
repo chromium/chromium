@@ -19,7 +19,6 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/page_load_metrics/browser/metrics_lifecycle_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
-#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -32,6 +31,7 @@
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -44,6 +44,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
@@ -250,21 +251,9 @@ void MetricsWebContentsObserver::FrameDeleted(
 
 void MetricsWebContentsObserver::RenderFrameDeleted(
     content::RenderFrameHost* rfh) {
-  if (auto* memory_tracker = GetMemoryTracker()) {
-    memory_tracker->OnRenderFrameDeleted(rfh, this);
-  }
-
   if (PageLoadTracker* tracker = GetPageLoadTracker(rfh)) {
     tracker->RenderFrameDeleted(rfh);
   }
-
-  content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
-  auto new_end_it = std::remove_if(queued_memory_updates_.begin(),
-                                   queued_memory_updates_.end(),
-                                   [rfh_id](const MemoryUpdate& update) {
-                                     return update.routing_id == rfh_id;
-                                   });
-  queued_memory_updates_.erase(new_end_it, queued_memory_updates_.end());
 
   // PageLoadTracker and smoothness data can be associated only with a main
   // frame.
@@ -289,17 +278,19 @@ void MetricsWebContentsObserver::MediaStartedPlaying(
   }
 }
 
-void MetricsWebContentsObserver::WillStartNavigationRequest(
+void MetricsWebContentsObserver::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Same-document navigations should never go through
-  // WillStartNavigationRequest.
-  CHECK(!navigation_handle->IsSameDocument());
-
-  if (!navigation_handle->IsInMainFrame()) {
+  if (navigation_handle->IsSameDocument() ||
+      !navigation_handle->NeedsUrlLoader() ||
+      !navigation_handle->IsInMainFrame()) {
+    // Skip non-main frame and same-document navigations because we only care
+    // about page loads / main frame navigations. Also skip cases without
+    // URLLoaders (about:blank, srcdoc, etc) to not pollute the performance
+    // metrics.
     return;
   }
 
-  WillStartNavigationRequestImpl(navigation_handle);
+  DidStartNavigationImpl(navigation_handle);
   has_navigated_ = true;
 }
 
@@ -322,7 +313,7 @@ MetricsWebContentsObserver::MetricsWebContentsObserver(
   RegisterInputEventObserver(web_contents->GetPrimaryMainFrame());
 }
 
-void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
+void MetricsWebContentsObserver::DidStartNavigationImpl(
     content::NavigationHandle* navigation_handle) {
   UserInitiatedInfo user_initiated_info(
       CreateUserInitiatedInfo(navigation_handle));
@@ -393,9 +384,12 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
   auto insertion_result = provisional_loads_.insert(std::make_pair(
       navigation_handle,
       std::make_unique<PageLoadTracker>(
-          in_foreground, embedder_interface_.get(), currently_committed_url,
-          !has_navigated_, navigation_handle, user_initiated_info, source_id,
-          parent_tracker)));
+          PageLoadTracker::InForegroundBool{in_foreground},
+          embedder_interface_.get(), currently_committed_url,
+          PageLoadTracker::IsFirstNavigationInWebContentsBool{!has_navigated_},
+          PageLoadTracker::IsReloadAfterDiscardBool{
+              navigation_handle->ExistingDocumentWasDiscarded()},
+          navigation_handle, user_initiated_info, source_id, parent_tracker)));
   CHECK(insertion_result.second)
       << "provisional_loads_ already contains NavigationHandle.";
   for (auto& observer : lifecycle_observers_) {
@@ -483,7 +477,7 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
     content::RenderFrameHost* render_frame_host,
     const content::GlobalRequestID& request_id,
     const blink::mojom::ResourceLoadInfo& resource_load_info) {
-  if (!ShouldTrackScheme(resource_load_info.final_url.scheme_piece())) {
+  if (!ShouldTrackScheme(resource_load_info.final_url.scheme())) {
     return;
   }
 
@@ -496,7 +490,7 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
     //     was_cached ? 0
     //                : data_reduction_proxy::util::EstimateOriginalBodySize(
     //                      request, lofi_decider);
-    int original_content_length = 0;
+    base::ByteCount original_content_length;
 
     const blink::mojom::CommonNetworkInfoPtr& network_info =
         resource_load_info.network_info;
@@ -618,6 +612,11 @@ const PageLoadMetricsObserverDelegate&
 MetricsWebContentsObserver::GetDelegateForCommittedLoad() {
   CHECK(primary_page_);
   return *primary_page_.get();
+}
+
+const PageLoadMetricsObserverDelegate*
+MetricsWebContentsObserver::GetDelegateForCommittedLoadOrNull() {
+  return primary_page_.get();
 }
 
 void MetricsWebContentsObserver::ReadyToCommitNavigation(
@@ -835,19 +834,6 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
     }
   }
 
-  // Send queued memory updates for the tracker.
-  content::GlobalRenderFrameHostId rfh_id = render_frame_host->GetGlobalId();
-  auto first_update_for_rfh = std::partition(
-      queued_memory_updates_.begin(), queued_memory_updates_.end(),
-      [rfh_id](const MemoryUpdate& update) {
-        return update.routing_id != rfh_id;
-      });
-  if (first_update_for_rfh != queued_memory_updates_.end()) {
-    raw_tracker->OnV8MemoryChanged(std::vector<MemoryUpdate>(
-        first_update_for_rfh, queued_memory_updates_.end()));
-    queued_memory_updates_.erase(first_update_for_rfh,
-                                 queued_memory_updates_.end());
-  }
 }
 
 void MetricsWebContentsObserver::MaybeStorePageLoadTrackerForBackForwardCache(
@@ -1222,7 +1208,7 @@ bool MetricsWebContentsObserver::DoesTimingUpdateHaveError(
     return true;
   }
 
-  if (!ShouldTrackScheme(tracker->GetUrl().scheme_piece())) {
+  if (!ShouldTrackScheme(tracker->GetUrl().scheme())) {
     RecordInternalError(ERR_IPC_FROM_BAD_URL_SCHEME);
     return true;
   }
@@ -1307,12 +1293,14 @@ bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
   }
 
   const GURL& url = navigation_handle->GetURL();
-  if (embedder_interface_->IsNonTabWebUI(url) ||
-      embedder_interface_->IsNewTabPageUrl(url)) {
+  if (embedder_interface_->IsNewTabPageUrl(url) ||
+      (embedder_interface_->HasWebUIConfig(url) &&
+       !embedder_interface_->IsInternalWebUI(url)) ||
+      embedder_interface_->IsNonTabWebUI(url)) {
     return true;
   }
 
-  return ShouldTrackSchemeForNonWebUI(url.scheme_piece());
+  return ShouldTrackSchemeForNonWebUI(url.scheme());
 }
 
 bool MetricsWebContentsObserver::ShouldTrackScheme(
@@ -1361,34 +1349,6 @@ void MetricsWebContentsObserver::OnPrefetchLikely() {
   // work only on behalf of a primary page.
   if (primary_page_) {
     primary_page_->OnPrefetchLikely();
-  }
-}
-
-void MetricsWebContentsObserver::OnV8MemoryChanged(
-    const std::vector<MemoryUpdate>& memory_updates) {
-  std::map<PageLoadTracker*, std::vector<MemoryUpdate>> per_tracker_updates;
-  for (const MemoryUpdate& update : memory_updates) {
-    content::RenderFrameHost* rfh =
-        content::RenderFrameHost::FromID(update.routing_id);
-    if (!rfh) {
-      continue;
-    }
-    PageLoadTracker* tracker = GetPageLoadTracker(rfh);
-    if (tracker) {
-      per_tracker_updates[tracker].push_back(update);
-    } else {
-      // If the load hasn't committed yet, then memory updates can't be sent
-      // at this time, but will still need to be sent later. Queue the updates
-      // in case `tracker` is null due to the navigation having not yet
-      // completed, in which case the queued updates will be sent when
-      // HandleCommittedNavigationForTrackedLoad is called.  Otherwise, they
-      // will be ignored and cleared when `rfh` is deleted.
-      queued_memory_updates_.push_back(update);
-    }
-  }
-
-  for (const auto& map_pair : per_tracker_updates) {
-    map_pair.first->OnV8MemoryChanged(map_pair.second);
   }
 }
 
@@ -1543,12 +1503,6 @@ PageLoadTracker* MetricsWebContentsObserver::GetAncestralAlivePageLoadTracker(
   }
 
   return nullptr;
-}
-
-PageLoadMetricsMemoryTracker* MetricsWebContentsObserver::GetMemoryTracker()
-    const {
-  return embedder_interface_->GetMemoryTrackerForBrowserContext(
-      web_contents()->GetBrowserContext());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MetricsWebContentsObserver);

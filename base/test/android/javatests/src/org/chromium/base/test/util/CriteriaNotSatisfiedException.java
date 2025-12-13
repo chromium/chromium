@@ -5,7 +5,7 @@
 package org.chromium.base.test.util;
 
 /** Exception indicating that a Criteria did not match expectations. */
-public class CriteriaNotSatisfiedException extends AssertionError {
+public class CriteriaNotSatisfiedException extends RuntimeException {
     /**
      * @param msg The reason the criteria was not met.
      */

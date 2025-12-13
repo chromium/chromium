@@ -396,7 +396,15 @@ void WaylandKeyboard::ProcessKey(uint32_t serial,
                                  uint32_t key,
                                  uint32_t state,
                                  KeyEventKind kind) {
-  bool down = state == WL_KEYBOARD_KEY_STATE_PRESSED;
+  // If we receive a Repeat event while repeat info != 0,
+  // we shouldn't dispatch it.
+  if (state == WL_KEYBOARD_KEY_STATE_REPEATED &&
+      auto_repeat_handler_.IsAutoRepeatEnabled()) {
+    LOG(WARNING) << "Received key repeat event while repeat rate is non-zero";
+    return;
+  }
+
+  bool down = state != WL_KEYBOARD_KEY_STATE_RELEASED;
   if (down) {
     connection_->serial_tracker().UpdateSerial(wl::SerialType::kKeyPress,
                                                serial);
@@ -418,9 +426,11 @@ void WaylandKeyboard::ProcessKey(uint32_t serial,
     return;
   }
 
-  DispatchKey(
-      key, 0 /*scan_code*/, down, false /*repeat*/, std::make_optional(serial),
-      wl::EventMillisecondsToTimeTicks(time), device_id(), EF_NONE, kind);
+  DispatchKey(key, 0 /*scan_code*/, down,
+              state == WL_KEYBOARD_KEY_STATE_REPEATED /*repeat*/,
+              std::make_optional(serial),
+              wl::EventMillisecondsToTimeTicks(time), device_id(), EF_NONE,
+              kind);
 }
 
 void WaylandKeyboard::DispatchKey(unsigned int key,

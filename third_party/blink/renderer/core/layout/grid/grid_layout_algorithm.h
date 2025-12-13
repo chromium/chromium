@@ -43,12 +43,6 @@ class CORE_EXPORT GridLayoutAlgorithm
       const LogicalSize& border_box_size,
       GridItemData* out_of_flow_item);
 
-  // Helper that computes tracks sizes in a given range.
-  static Vector<std::div_t> ComputeTrackSizesInRange(
-      const GridLayoutTrackCollection& track_collection,
-      wtf_size_t range_starting_set_index,
-      wtf_size_t range_set_count);
-
  private:
   friend class GridLayoutAlgorithmTest;
 
@@ -188,19 +182,27 @@ class CORE_EXPORT GridLayoutAlgorithm
       GridTrackSizingDirection track_direction,
       std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt) const;
 
-  // Layout the |grid_items|, and add them to the builder.
+  // Layout the `grid_items`, and add them to the builder.
   //
-  // If |out_grid_items_placement_data| is present determine the offset for
-  // each of the |grid_items| but *don't* add the resulting fragment to the
+  // If `out_grid_items_placement_data` is present determine the offset for
+  // each of the `grid_items` but *don't* add the resulting fragment to the
   // builder.
   //
   // This is used for fragmentation which requires us to know the final offset
   // of each item before fragmentation occurs.
+  //
+  // Similarly, if `out_unfragmented_gap_geometry` is present compute the
+  // offsets of all gaps in an unfragmented context but don't add the result
+  // to the builder. `out_track_idx_to_set_idx` is present to tell us which
+  // set a particular track index belongs to, which is needed for knowing the
+  // row offset adjustments for each track during fragmentation.
   void PlaceGridItems(
       const GridItems& grid_items,
       const GridLayoutSubtree& layout_subtree,
       Vector<EBreakBetween>* out_row_break_between,
-      Vector<GridItemPlacementData>* out_grid_items_placement_data = nullptr);
+      Vector<GridItemPlacementData>* out_grid_items_placement_data = nullptr,
+      const GapGeometry** out_unfragmented_gap_geometry = nullptr,
+      Vector<wtf_size_t>* out_track_idx_to_set_idx = nullptr);
 
   // Layout the |grid_items| for fragmentation (when there is a known
   // fragmentainer size).
@@ -211,10 +213,15 @@ class CORE_EXPORT GridLayoutAlgorithm
       const GridItems& grid_items,
       const GridLayoutSubtree& layout_subtree,
       const Vector<EBreakBetween>& row_break_between,
+      const GapGeometry* full_gap_geometry,
+      const Vector<wtf_size_t>* track_idx_to_set_idx,
+      Vector<wtf_size_t>* column_gaps_segment_ranges_start_indices,
       Vector<GridItemPlacementData>* grid_item_placement_data,
       Vector<LayoutUnit>* row_offset_adjustments,
       LayoutUnit* intrinsic_block_size,
-      LayoutUnit* offset_in_stitched_container);
+      LayoutUnit* offset_in_stitched_container,
+      LayoutUnit* cumulative_gap_offset_adjustment,
+      wtf_size_t* first_unprocessed_row_gap_idx);
 
   // Computes the static position, grid area and its offset of out of flow
   // elements in the grid (as provided by `oof_children`).

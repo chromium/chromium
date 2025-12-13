@@ -26,6 +26,7 @@
 #include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -40,6 +41,7 @@
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/socket_performance_watcher.h"
+#include "net/socket/socket_pool_additional_capacity.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/transport_client_socket.h"
@@ -116,8 +118,14 @@ class MockConnectCompleter {
 
   ~MockConnectCompleter();
 
+  // Wait for a connection attempt.
+  void WaitForConnect();
+
   // Completes Connect() with `result`.
   void Complete(int result);
+
+  // Convenience function that combines WaitForConnect() and Complete().
+  void WaitForConnectAndComplete(int result);
 
  private:
   friend class MockTCPClientSocket;
@@ -129,6 +137,7 @@ class MockConnectCompleter {
   void SetCallback(CompletionOnceCallback callback);
 
   CompletionOnceCallback callback_;
+  base::RunLoop run_loop_;
 };
 
 struct MockConnect {
@@ -551,6 +560,10 @@ class StaticSocketDataProvider : public SocketDataProvider {
   void Pause();
   void Resume();
 
+  // EXPECTs that all data has been consumed, printing any un-consumed data.
+  void ExpectAllReadDataConsumed() const;
+  void ExpectAllWriteDataConsumed() const;
+
   // From SocketDataProvider:
   MockRead OnRead() override;
   MockWriteResult OnWrite(const std::string& data) override;
@@ -633,7 +646,12 @@ struct SSLSocketDataProvider {
   std::optional<bool> expected_ignore_certificate_errors;
   std::optional<NetworkAnonymizationKey> expected_network_anonymization_key;
   std::optional<std::vector<uint8_t>> expected_ech_config_list;
+  // If not nullopt, expects a (possibly empty) trust anchors extension with the
+  // specified value.
   std::optional<std::vector<uint8_t>> expected_trust_anchor_ids;
+  // Expects no trust anchors extension. This is a separate field to avoid a
+  // confusing double-optional.
+  bool expect_no_trust_anchor_ids = false;
 
   bool is_connect_data_consumed = false;
   bool is_confirm_data_consumed = false;
@@ -1532,6 +1550,20 @@ bool CanGetTaggedBytes();
 // |expected_tag| for our UID.  Return the count of received bytes.
 uint64_t GetTaggedBytes(int32_t expected_tag);
 #endif
+
+// This should be kept in sync with the field trial config's default pool.
+const SocketPoolAdditionalCapacity kFieldTrialPool =
+    SocketPoolAdditionalCapacity::CreateForTest(0.000001, 256, 0.01, 0.2);
+
+// The goal of this test is to walk a pool back and forth between being
+// capped and uncapped, tracking at what point the transition occurs
+// and using that data to validate expected behavior. We take this walk
+// about 100 times as there is randomization in the transition points.
+void ValidateAdditionalCapacityForSocketPool(
+    base::RepeatingCallback<SocketPoolState()> request_socket,
+    base::RepeatingCallback<void()> wait_for_socket_initialization,
+    base::RepeatingCallback<SocketPoolState()> release_socket,
+    base::RepeatingCallback<size_t()> sockets_in_use);
 
 }  // namespace net
 

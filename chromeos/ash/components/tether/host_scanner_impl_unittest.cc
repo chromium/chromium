@@ -31,6 +31,7 @@
 #include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -188,7 +189,8 @@ class HostScannerImplTest : public testing::Test {
         std::make_unique<device_sync::FakeDeviceSyncClient>();
     fake_secure_channel_client_ =
         std::make_unique<secure_channel::FakeSecureChannelClient>();
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
     fake_tether_host_fetcher_ =
         std::make_unique<FakeTetherHostFetcher>(test_devices_[0]);
     mock_tether_host_response_recorder_ =

@@ -42,6 +42,9 @@ class OverlayWindowLiveCaptionDialog : public views::View {
   views::ToggleButton* live_translate_button_for_testing() const {
     return live_translate_button_;
   }
+  views::Combobox* target_language_combobox_for_testing() const {
+    return target_language_combobox_;
+  }
 
  private:
   const raw_ptr<Profile> profile_;

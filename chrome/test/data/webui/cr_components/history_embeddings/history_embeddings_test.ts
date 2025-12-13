@@ -116,14 +116,14 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       const headingEl = element.shadowRoot.querySelector('.results-heading');
       assertTrue(!!headingEl);
       assertEquals(
-          'loading results for "my query"', headingEl.textContent!.trim());
+          'loading results for "my query"', headingEl.textContent.trim());
       await handler.whenCalled('search');
       await microtasksFinished();
       if (enableAnswers) {
         assertEquals(
-            'searched with answers enabled', headingEl.textContent!.trim());
+            'searched with answers enabled', headingEl.textContent.trim());
       } else {
-        assertEquals('searched for "my query"', headingEl.textContent!.trim());
+        assertEquals('searched for "my query"', headingEl.textContent.trim());
       }
     });
 
@@ -839,7 +839,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       const answerElement = getAnswer();
       assertTrue(!!answerElement);
       assertFalse(answerElement.hasAttribute('is-error'));
-      assertEquals('some answer', answerElement.textContent!.trim());
+      assertEquals('some answer', answerElement.textContent.trim());
     });
 
     test('DisplaysAnswerSource', async () => {

@@ -1,0 +1,16 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("sessions") {
+  sources = [
+    "session_restore.h",
+    "session_restore_observer.h",
+    "session_service_base_observer.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/sessions",
+    "//ui/base:types",
+  ]
+}

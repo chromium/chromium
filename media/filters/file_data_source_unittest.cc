@@ -60,7 +60,7 @@ TEST(FileDataSourceTest, ReadData) {
   ReadCBHandler handler;
   EXPECT_CALL(handler, ReadCB(10));
   data_source.Read(
-      0, 10, ten_bytes,
+      0, ten_bytes,
       base::BindOnce(&ReadCBHandler::ReadCB, base::Unretained(&handler)));
   EXPECT_EQ('0', ten_bytes[0]);
   EXPECT_EQ('5', ten_bytes[5]);
@@ -68,18 +68,18 @@ TEST(FileDataSourceTest, ReadData) {
 
   EXPECT_CALL(handler, ReadCB(1));
   data_source.Read(
-      9, 1, ten_bytes,
+      9, base::span(ten_bytes).first<1u>(),
       base::BindOnce(&ReadCBHandler::ReadCB, base::Unretained(&handler)));
   EXPECT_EQ('9', ten_bytes[0]);
 
   EXPECT_CALL(handler, ReadCB(0));
   data_source.Read(
-      10, 10, ten_bytes,
+      10, ten_bytes,
       base::BindOnce(&ReadCBHandler::ReadCB, base::Unretained(&handler)));
 
   EXPECT_CALL(handler, ReadCB(5));
   data_source.Read(
-      5, 10, ten_bytes,
+      5, ten_bytes,
       base::BindOnce(&ReadCBHandler::ReadCB, base::Unretained(&handler)));
   EXPECT_EQ('5', ten_bytes[0]);
 

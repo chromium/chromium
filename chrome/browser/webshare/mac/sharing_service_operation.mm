@@ -191,7 +191,7 @@ void SharingServiceOperation::ShowSharePicker(
   }
 
   web_contents->GetRenderWidgetHostView()->ShowSharePicker(
-      title, text, url.spec(), file_paths_as_utf8, std::move(callback));
+      title, text, url, file_paths_as_utf8, std::move(callback));
 }
 
 // static

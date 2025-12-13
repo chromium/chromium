@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/svg/svg_fe_convolve_matrix_element.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_boolean.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_integer.h"
@@ -31,7 +32,7 @@
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -56,12 +57,10 @@ class SVGAnimatedOrder : public SVGAnimatedIntegerOptionalInteger {
                                           svg_names::kOrderAttr,
                                           3) {}
 
-  SVGParsingError AttributeChanged(const String&) override;
+  SVGParsingError AttributeChanged(const String& value) override;
 
  protected:
-  static SVGParsingError CheckValue(SVGParsingError parse_status, int value) {
-    if (parse_status != SVGParseStatus::kNoError)
-      return parse_status;
+  static SVGParsingError CheckValue(int value) {
     if (value < 0)
       return SVGParseStatus::kNegativeValue;
     if (value == 0)
@@ -71,13 +70,15 @@ class SVGAnimatedOrder : public SVGAnimatedIntegerOptionalInteger {
 };
 
 SVGParsingError SVGAnimatedOrder::AttributeChanged(const String& value) {
-  SVGParsingError parse_status =
-      SVGAnimatedIntegerOptionalInteger::AttributeChanged(value);
-  // Check for semantic errors.
-  parse_status = CheckValue(parse_status, FirstInteger()->BaseValue()->Value());
-  parse_status =
-      CheckValue(parse_status, SecondInteger()->BaseValue()->Value());
-  return parse_status;
+  return UpdateBaseValueFromAttribute(
+      *BaseValue(), value, [](const SVGIntegerOptionalInteger& base_value) {
+        SVGParsingError parse_status =
+            CheckValue(base_value.FirstInteger()->Value());
+        if (parse_status != SVGParseStatus::kNoError) {
+          return parse_status;
+        }
+        return CheckValue(base_value.SecondInteger()->Value());
+      });
 }
 
 SVGFEConvolveMatrixElement::SVGFEConvolveMatrixElement(Document& document)
@@ -168,17 +169,9 @@ gfx::Point SVGFEConvolveMatrixElement::TargetPoint() const {
 float SVGFEConvolveMatrixElement::ComputeDivisor() const {
   if (divisor_->IsSpecified())
     return divisor_->CurrentValue()->Value();
-  if (RuntimeEnabledFeatures::SvgFeConvolveMatrixZeroDivisorBehaviorEnabled()) {
-    // If the divisor is not set, then return zero to get the sum-of-matrix
-    // behavior (see FEColorMatrix::ComputeDivisor).
-    return 0;
-  }
-  float divisor_value = 0;
-  SVGNumberList* kernel_matrix = kernel_matrix_->CurrentValue();
-  uint32_t kernel_matrix_size = kernel_matrix->length();
-  for (uint32_t i = 0; i < kernel_matrix_size; ++i)
-    divisor_value += kernel_matrix->at(i)->Value();
-  return divisor_value ? divisor_value : 1;
+  // If the divisor is not set, then return zero to get the sum-of-matrix
+  // behavior (see FEColorMatrix::ComputeDivisor).
+  return 0;
 }
 
 bool SVGFEConvolveMatrixElement::SetFilterEffectAttribute(
@@ -226,6 +219,7 @@ void SVGFEConvolveMatrixElement::SvgAttributeChanged(
 FilterEffect* SVGFEConvolveMatrixElement::Build(
     SVGFilterBuilder* filter_builder,
     Filter* filter) {
+  UseCounter::Count(GetDocument(), WebFeature::kSVGFEConvolveMatrixElement);
   FilterEffect* input1 = filter_builder->GetEffectById(
       AtomicString(in1_->CurrentValue()->Value()));
   DCHECK(input1);

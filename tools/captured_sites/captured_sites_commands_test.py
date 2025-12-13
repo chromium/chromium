@@ -100,66 +100,65 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         [
             'wpr', ['record', 'google'],
             ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rec'
-             'ord --http_port=8080 --https_port=8081 --inject_scripts=third_par'
-             'ty/catapult/web_page_replay_go/deterministic.js,chrome/test/data/'
-             'web_page_replay_go_helper_scripts/automation_helper.js --https_ce'
-             'rt_file=components/test/data/autofill/web_page_replay_support_fil'
-             'es/ecdsa_cert.pem,components/test/data/autofill/web_page_replay_s'
-             'upport_files/wpr_cert.pem --https_key_file=components/test/data/a'
-             'utofill/web_page_replay_support_files/ecdsa_key.pem,components/te'
-             'st/data/autofill/web_page_replay_support_files/wpr_key.pem chrome'
-             '/test/data/autofill/captured_sites/artifacts/google.wpr')
+             'ord --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+             'no_archive_certificates --https_cert_file=components/test/data/au'
+             'tofill/web_page_replay_support_files/ecdsa_cert.pem,components/te'
+             'st/data/autofill/web_page_replay_support_files/wpr_cert.pem --htt'
+             'ps_key_file=components/test/data/autofill/web_page_replay_support'
+             '_files/ecdsa_key.pem,components/test/data/autofill/web_page_repla'
+             'y_support_files/wpr_key.pem chrome/test/data/autofill/captured_si'
+             'tes/artifacts/google.wpr')
         ],
         [
             'wpr', ['record', '-c', 'rsa', 'google'],
             ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rec'
-             'ord --http_port=8080 --https_port=8081 --inject_scripts=third_par'
-             'ty/catapult/web_page_replay_go/deterministic.js,chrome/test/data/'
-             'web_page_replay_go_helper_scripts/automation_helper.js --https_ce'
-             'rt_file=components/test/data/autofill/web_page_replay_support_fil'
-             'es/wpr_cert.pem --https_key_file=components/test/data/autofill/we'
-             'b_page_replay_support_files/wpr_key.pem chrome/test/data/autofill'
-             '/captured_sites/artifacts/google.wpr')
+             'ord --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+             'no_archive_certificates --https_cert_file=components/test/data/au'
+             'tofill/web_page_replay_support_files/wpr_cert.pem --https_key_fil'
+             'e=components/test/data/autofill/web_page_replay_support_files/wpr'
+             '_key.pem chrome/test/data/autofill/captured_sites/artifacts/googl'
+             'e.wpr')
         ],
         [
             'wpr', ['replay', 'google'],
             ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rep'
-             'lay --http_port=8080 --https_port=8081 --inject_scripts=third_par'
-             'ty/catapult/web_page_replay_go/deterministic.js,chrome/test/data/'
-             'web_page_replay_go_helper_scripts/automation_helper.js --serve_re'
-             'sponse_in_chronological_sequence --https_cert_file=components/tes'
-             't/data/autofill/web_page_replay_support_files/ecdsa_cert.pem,comp'
-             'onents/test/data/autofill/web_page_replay_support_files/wpr_cert.'
-             'pem --https_key_file=components/test/data/autofill/web_page_repla'
-             'y_support_files/ecdsa_key.pem,components/test/data/autofill/web_p'
-             'age_replay_support_files/wpr_key.pem chrome/test/data/autofill/ca'
-             'ptured_sites/artifacts/google.wpr')
+             'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+             'no_archive_certificates --serve_response_in_chronological_sequenc'
+             'e --https_cert_file=components/test/data/autofill/web_page_replay'
+             '_support_files/ecdsa_cert.pem,components/test/data/autofill/web_p'
+             'age_replay_support_files/wpr_cert.pem --https_key_file=components'
+             '/test/data/autofill/web_page_replay_support_files/ecdsa_key.pem,c'
+             'omponents/test/data/autofill/web_page_replay_support_files/wpr_ke'
+             'y.pem chrome/test/data/autofill/captured_sites/artifacts/google.w'
+             'pr')
         ],
         [
             'wpr', ['replay', 'sign_in_pass', 'google'],
             ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rep'
-             'lay --http_port=8080 --https_port=8081 --inject_scripts=third_par'
-             'ty/catapult/web_page_replay_go/deterministic.js,chrome/test/data/'
-             'web_page_replay_go_helper_scripts/automation_helper.js --serve_re'
-             'sponse_in_chronological_sequence --https_cert_file=components/tes'
-             't/data/autofill/web_page_replay_support_files/ecdsa_cert.pem,comp'
-             'onents/test/data/autofill/web_page_replay_support_files/wpr_cert.'
-             'pem --https_key_file=components/test/data/autofill/web_page_repla'
-             'y_support_files/ecdsa_key.pem,components/test/data/autofill/web_p'
-             'age_replay_support_files/wpr_key.pem chrome/test/data/password/ca'
-             'ptured_sites/artifacts/sign_in_pass/google.wpr')
+             'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+             'no_archive_certificates --serve_response_in_chronological_sequenc'
+             'e --https_cert_file=components/test/data/autofill/web_page_replay'
+             '_support_files/ecdsa_cert.pem,components/test/data/autofill/web_p'
+             'age_replay_support_files/wpr_cert.pem --https_key_file=components'
+             '/test/data/autofill/web_page_replay_support_files/ecdsa_key.pem,c'
+             'omponents/test/data/autofill/web_page_replay_support_files/wpr_ke'
+             'y.pem chrome/test/data/password/captured_sites/artifacts/sign_in_'
+             'pass/google.wpr')
         ],
         [
             'wpr', ['replay', '-c', 'rsa', 'google'],
             ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rep'
-             'lay --http_port=8080 --https_port=8081 --inject_scripts=third_par'
-             'ty/catapult/web_page_replay_go/deterministic.js,chrome/test/data/'
-             'web_page_replay_go_helper_scripts/automation_helper.js --serve_re'
-             'sponse_in_chronological_sequence --https_cert_file=components/tes'
-             't/data/autofill/web_page_replay_support_files/wpr_cert.pem --http'
-             's_key_file=components/test/data/autofill/web_page_replay_support_'
-             'files/wpr_key.pem chrome/test/data/autofill/captured_sites/artifa'
-             'cts/google.wpr')
+             'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+             'no_archive_certificates --serve_response_in_chronological_sequenc'
+             'e --https_cert_file=components/test/data/autofill/web_page_replay'
+             '_support_files/wpr_cert.pem --https_key_file=components/test/data'
+             '/autofill/web_page_replay_support_files/wpr_key.pem chrome/test/d'
+             'ata/autofill/captured_sites/artifacts/google.wpr')
         ],
     ]
     self.helpCompareInputsToExpected(actual_input_and_output)

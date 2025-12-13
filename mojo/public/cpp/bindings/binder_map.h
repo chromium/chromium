@@ -12,9 +12,12 @@
 
 #include "base/component_export.h"
 #include "base/containers/contains.h"
+#include "base/containers/variant_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/pass_key.h"
+#include "build/chromecast_buildflags.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/lib/binder_map_internal.h"
 
@@ -39,6 +42,8 @@ namespace mojo {
 template <typename ContextType>
 class BinderMapWithContext {
  public:
+  using PassKey = base::PassKey<BinderMapWithContext>;
+
   using Traits = internal::BinderContextTraits<ContextType>;
   using ContextValueType = typename Traits::ValueType;
   using GenericBinderType = typename Traits::GenericBinderType;
@@ -49,7 +54,8 @@ class BinderMapWithContext {
   template <typename Interface>
   using FuncType = typename Traits::template FuncType<Interface>;
 
-  BinderMapWithContext() = default;
+  BinderMapWithContext() : binders_(PassKey()) {}
+
   BinderMapWithContext(const BinderMapWithContext&) = default;
   BinderMapWithContext(BinderMapWithContext&&) = default;
   ~BinderMapWithContext() = default;
@@ -113,8 +119,9 @@ class BinderMapWithContext {
                   "TryBind() must be called with a context value when "
                   "ContextType is non-void.");
     auto it = binders_.find(*receiver->interface_name());
-    if (it == binders_.end())
+    if (it == binders_.end()) {
       return false;
+    }
 
     it->second.BindInterface(receiver->PassPipe());
     return true;
@@ -128,13 +135,19 @@ class BinderMapWithContext {
                   "TryBind() must be called without a context value when "
                   "ContextType is void.");
     auto it = binders_.find(*receiver->interface_name());
-    if (it == binders_.end())
+    if (it == binders_.end()) {
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
       return default_binder_ && default_binder_.Run(context, *receiver);
+#else
+      return false;
+#endif
+    }
 
     it->second.BindInterface(std::move(context), receiver->PassPipe());
     return true;
   }
 
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   // DO NOT USE. This sets a generic default handler for any receiver that
   // doesn't match a registered binder. It's a transitional API to help migrate
   // some older code to BinderMap. Reliance on this mechanism makes security
@@ -146,6 +159,7 @@ class BinderMapWithContext {
   void SetDefaultBinderDeprecated(DefaultBinder binder) {
     default_binder_ = std::move(binder);
   }
+#endif
 
   void GetInterfacesForTesting(std::vector<std::string>& out) {
     for (const auto& [key, _] : binders_) {
@@ -169,10 +183,13 @@ class BinderMapWithContext {
     binders_.try_emplace(key, std::move(binder));
   }
 
-  std::map<std::string_view,
-           internal::GenericCallbackBinderWithContext<ContextType>>
+  base::VariantMap<std::string_view,
+                   internal::GenericCallbackBinderWithContext<ContextType>>
       binders_;
+
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   DefaultBinder default_binder_;
+#endif
 };
 
 // Common alias for BinderMapWithContext that has no context. Binders added to

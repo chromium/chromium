@@ -120,11 +120,7 @@ enum EncryptionType {
 };
 
 // See media/base/svc_scalability_mode.h for description.
-// This mojo enum only list hardware codec supported scalability mode.
 enum SVCScalabilityMode {
-  // kUnsupportedMode is used to handle the enum differ of C++ and Mojo
-  // SVCScalabilityMode in ToMojom, should not be used in other place.
-  kUnsupportedMode,
   kL1T1,
   kL1T2,
   kL1T3,
@@ -134,18 +130,34 @@ enum SVCScalabilityMode {
   kL3T1,
   kL3T2,
   kL3T3,
-  kL2T1Key,
-  kL2T2Key,
-  kL2T3Key,
-  kL3T1Key,
-  kL3T2Key,
-  kL3T3Key,
+  kL2T1h,
+  kL2T2h,
+  kL2T3h,
   kS2T1,
   kS2T2,
   kS2T3,
+  kS2T1h,
+  kS2T2h,
+  kS2T3h,
   kS3T1,
   kS3T2,
   kS3T3,
+  kS3T1h,
+  kS3T2h,
+  kS3T3h,
+  kL2T1Key,
+  kL2T2Key,
+  kL2T2KeyShift,
+  kL2T3Key,
+  kL2T3KeyShift,
+  kL3T1Key,
+  kL3T2Key,
+  kL3T2KeyShift,
+  kL3T3Key,
+  kL3T3KeyShift,
+  kL3T1h,
+  kL3T2h,
+  kL3T3h,
 };
 
 // This mojo enum only list hardware codec supported scalability mode.
@@ -223,7 +235,7 @@ struct VideoDecoderConfig {
   array<uint8> extra_data;
   EncryptionScheme encryption_scheme;
   VideoColorSpace color_space_info;
-  gfx.mojom.HDRMetadata? hdr_metadata;
+  gfx.mojom.HDRMetadata hdr_metadata;
 };
 
 // Native struct media::SubsampleEntry;
@@ -350,6 +362,12 @@ enum EffectState {
   kEnabled = 2
 };
 
+// See media/base/capture_version.h for a description of fields.
+struct CaptureVersion {
+  uint32 source;
+  uint32 sub_capture;
+};
+
 // See media/base/video_frame_metadata.h for a description of fields.
 // TODO(crbug.com/40489779): Remove |has_*| values and use nullable types.
 struct VideoFrameMetadata {
@@ -366,7 +384,7 @@ struct VideoFrameMetadata {
   gfx.mojom.Size? source_size;
 
   gfx.mojom.Rect? region_capture_rect;
-  uint32 sub_capture_target_version;
+  CaptureVersion capture_version;
 
   bool copy_required;
 
@@ -458,14 +476,13 @@ struct VideoFrame {
   VideoFrameMetadata metadata;
 
   gfx.mojom.ColorSpace color_space;
-  gfx.mojom.HDRMetadata? hdr_metadata;
+  gfx.mojom.HDRMetadata hdr_metadata;
 };
 
 // Possible choices for storing VideoFrame data.
 union VideoFrameData {
   EosVideoFrameData eos_data;
   SharedMemoryVideoFrameData shared_memory_data;
-  GpuMemoryBufferSharedImageVideoFrameData gpu_memory_buffer_shared_image_data;
   SharedImageVideoFrameData shared_image_data;
   OpaqueVideoFrameData opaque_data;
   [EnableIf=is_chromeos|is_linux]
@@ -487,19 +504,11 @@ struct SharedMemoryVideoFrameData {
   array<uint32> offsets;
 };
 
-struct GpuMemoryBufferSharedImageVideoFrameData {
-  gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
-  gpu.mojom.ExportedSharedImage? shared_image;
-  gpu.mojom.SyncToken sync_token;
-};
-
 // This defines video frame data stored in texture shared images.
 struct SharedImageVideoFrameData {
   gpu.mojom.ExportedSharedImage shared_image;
   gpu.mojom.SyncToken sync_token;
-  // TODO(crbug.com/40263579): Remove this bool once all VideoFrame
-  // clients use MappableSI.
-  bool is_mappable_si_enabled;
+  bool is_mappable;
   // |ycbcr_data| is present on Android when the
   // video is hardware decoded and the display compositor uses Vulkan.
   [EnableIf=is_android]
@@ -628,6 +637,7 @@ enum InputStreamErrorCode {
   kUnknown = 0,
   kSystemPermissions = 1,
   kDeviceInUse = 2,
+  kSocketError = 3,
 };
 
 // See media/base/renderer.h for description.
@@ -698,6 +708,7 @@ enum AutoPipReason {
   kUnknown = 0,
   kVideoConferencing = 1,
   kMediaPlayback = 2,
+  kBrowserInitiated = 3,
 };
 
 // See media/base/picture_in_picture_events_info.h for description. Typemapped

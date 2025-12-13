@@ -70,7 +70,6 @@ class RevokedPermissionsResultTest
     enabled_features.push_back(
         content_settings::features::
             kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions);
-    enabled_features.push_back(features::kSafetyHub);
     if (ShouldSetupDisruptiveSites()) {
       enabled_features.push_back(
           features::kSafetyHubDisruptiveNotificationRevocation);

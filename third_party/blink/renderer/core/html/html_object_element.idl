@@ -24,9 +24,9 @@
 [
     Exposed=Window,
     LegacyOverrideBuiltIns,
-    ActiveScriptWrappable,
-    HTMLConstructor
+    ActiveScriptWrappable
 ] interface HTMLObjectElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, RaisesException=Setter, URL] attribute (TrustedScriptURL or USVString) data;
     [CEReactions, Reflect] attribute DOMString type;
     [CEReactions, Reflect] attribute DOMString name;
@@ -39,7 +39,7 @@
     [CheckSecurity=ReturnValue] readonly attribute Document? contentDocument;
     // TODO(shanmuga.m): The spec uses the WindowProxy type for this attribute.
     readonly attribute Window? contentWindow;
-    [CheckSecurity=ReturnValue, RaisesException] Document? getSVGDocument();
+    [CheckSecurity=ReturnValue] Document? getSVGDocument();
 
     readonly attribute boolean willValidate;
     readonly attribute ValidityState validity;

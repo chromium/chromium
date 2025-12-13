@@ -22,3 +22,11 @@ class ARIAReader(object):
 
     def attributes_list(self):
         return {'data': [item[u'name'] for item in self._data['attributes']]}
+
+    def attributes(self):
+        """Return list of ARIA attribute property dictionaries."""
+        return self._data['attributes']
+
+    def roles(self):
+        """Return list of all ARIA roles."""
+        return self._data['roles']

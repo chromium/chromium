@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/common/audio_data_s16_converter.h"
 
 #include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
@@ -60,7 +56,7 @@ TEST_F(AudioDataS16ConverterTest, ConvertToAudioDataS16_MONO) {
 
   // Compare.
   for (int i = 0; i < result->frame_count; i++) {
-    ASSERT_EQ(kTestVectorContents[i], result->data[i]);
+    UNSAFE_TODO(ASSERT_EQ(kTestVectorContents[i], result->data[i]));
   }
 }
 

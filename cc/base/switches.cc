@@ -68,6 +68,13 @@ const char kCompositedLayerBorders[] = "layer";
 const char kLogOnUIDoubleBackgroundBlur[] = "log-on-ui-double-background-blur";
 #endif
 
+// Save CompositorFrame data in both renderer and gpu process for TreesInViz
+// and TreeAnimationsInViz. This doesn't work without --no-sandbox.
+// If no parameters are specified, by default, it records frame 1 - 10.
+// If --dump-compositor-frame=begin,end is specified, it records frame
+// [begin, end] inclusive.
+const char kDumpCompositorFrame[] = "dump-compositor-frame";
+
 // Draws a heads-up-display showing Frames Per Second as well as GPU memory
 // usage. If you also use --enable-logging=stderr --vmodule="head*=1" then FPS
 // will also be output to the console log.
@@ -91,10 +98,6 @@ const char kUIShowSurfaceDamageRects[] = "ui-show-surface-damage-rects";
 // layer.
 const char kShowScreenSpaceRects[] = "show-screenspace-rects";
 const char kUIShowScreenSpaceRects[] = "ui-show-screenspace-rects";
-
-// Highlights layers that can't use lcd text. Layers containing no text won't
-// be highlighted. See DebugColors::NonLCDTextHighlightColor() for the colors.
-const char kHighlightNonLCDTextLayers[] = "highlight-non-lcd-text-layers";
 
 // Allows scaling clipped images in GpuImageDecodeCache. Note that this may
 // cause color-bleeding.

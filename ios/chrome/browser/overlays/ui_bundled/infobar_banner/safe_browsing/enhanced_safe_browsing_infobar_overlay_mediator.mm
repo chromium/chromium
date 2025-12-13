@@ -4,14 +4,13 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/safe_browsing/enhanced_safe_browsing_infobar_overlay_mediator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/browser/safe_browsing/model/enhanced_safe_browsing_infobar_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/grit/ios_branded_strings.h"
-#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface EnhancedSafeBrowsingBannerOverlayMediator ()
@@ -54,9 +53,9 @@
     return;
   }
 
-  [self dismissOverlay];
-
-  delegate->ShowSafeBrowsingSettings();
+  if (delegate->Accept()) {
+    [self dismissOverlay];
+  }
 }
 
 @end
@@ -64,24 +63,33 @@
 @implementation EnhancedSafeBrowsingBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  NSString* title = l10n_util::GetNSString(
-      IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INFOBAR_TITLE);
-  NSString* subtitle = l10n_util::GetNSString(
-      IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INFOBAR_DESCRIPTION);
-  NSString* buttonText = l10n_util::GetNSString(
-      IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INFOBAR_BUTTON_TEXT);
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  UIImage* gIcon =
-      CustomSymbolWithPointSize(kGoogleShieldSymbol, kInfobarSymbolPointSize);
-#else
-  UIImage* gIcon =
+  EnhancedSafeBrowsingInfobarDelegate* delegate =
+      self.enhancedSafeBrowsingInfobarDelegate;
+  if (!delegate) {
+    return;
+  }
+
+  NSString* title = base::SysUTF16ToNSString(delegate->GetTitleText());
+  NSString* subtitle = base::SysUTF16ToNSString(delegate->GetMessageText());
+  NSString* buttonText = base::SysUTF16ToNSString(
+      delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
+
+  // Default to the info icon.
+  UIImage* icon =
       DefaultSymbolWithPointSize(kInfoCircleSymbol, kInfobarSymbolPointSize);
+
+  // Use the shield icon only for the shield type on branded builds.
+  if (delegate->GetIconType() == EnhancedSafeBrowsingIconType::kShield) {
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+    icon =
+        CustomSymbolWithPointSize(kGoogleShieldSymbol, kInfobarSymbolPointSize);
 #endif
+  }
 
   [self.consumer setTitleText:title];
   [self.consumer setSubtitleText:subtitle];
   [self.consumer setButtonText:buttonText];
-  [self.consumer setIconImage:gIcon];
+  [self.consumer setIconImage:icon];
   [self.consumer setPresentsModal:NO];
 }
 

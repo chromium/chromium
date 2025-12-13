@@ -16,7 +16,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_platform.h"
@@ -26,20 +26,6 @@
 namespace gtk {
 
 namespace {
-
-// Get IME KeyEvent's target window. Assumes root aura::Window is set to
-// Event::target(), otherwise returns null.
-GdkWindow* GetTargetWindow(const ui::KeyEvent& key_event) {
-  if (!key_event.target()) {
-    return nullptr;
-  }
-
-  aura::Window* window = static_cast<aura::Window*>(key_event.target());
-  DCHECK(window) << "KeyEvent target window not set.";
-
-  auto window_id = window->GetHost()->GetAcceleratedWidget();
-  return GtkUi::GetPlatform()->GetGdkWindow(window_id);
-}
 
 int GetKeyEventProperty(const ui::KeyEvent& key_event,
                         const char* property_key) {
@@ -128,9 +114,25 @@ GdkEventKey* GdkEventFromImeKeyEvent(const ui::KeyEvent& key_event) {
 
 }  // namespace
 
+// Get IME KeyEvent's target window. Assumes root aura::Window is set to
+// Event::target(), otherwise returns null.
+GdkWindow* InputMethodContextImplGtk::GetTargetWindow(
+    const ui::KeyEvent& key_event) {
+  if (!key_event.target()) {
+    return nullptr;
+  }
+
+  aura::Window* window = static_cast<aura::Window*>(key_event.target());
+  DCHECK(window) << "KeyEvent target window not set.";
+
+  auto window_id = window->GetHost()->GetAcceleratedWidget();
+  return platform_->GetGdkWindow(window_id);
+}
+
 InputMethodContextImplGtk::InputMethodContextImplGtk(
-    ui::LinuxInputMethodContextDelegate* delegate)
-    : delegate_(delegate) {
+    ui::LinuxInputMethodContextDelegate* delegate,
+    const GtkUiPlatform* platform)
+    : delegate_(delegate), platform_(platform) {
   CHECK(delegate_);
 
   gtk_context_ = TakeGObject(gtk_im_multicontext_new());
@@ -161,7 +163,7 @@ InputMethodContextImplGtk::InputMethodContextImplGtk(
   gtk_simple_context_ = TakeGObject(gtk_im_context_simple_new());
 
   auto connect = [&](const char* detailed_signal, auto receiver) {
-    for (auto context : {gtk_context_, gtk_simple_context_}) {
+    for (const auto& context : {gtk_context_, gtk_simple_context_}) {
       // Unretained() is safe since InputMethodContextImplGtk will own the
       // ScopedGSignal.
       signals_.emplace_back(

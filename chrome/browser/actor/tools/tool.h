@@ -9,9 +9,13 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/safe_ref.h"
-#include "chrome/browser/actor/task_id.h"
+#include "base/memory/raw_ref.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
 namespace optimization_guide::proto {
@@ -22,18 +26,13 @@ namespace actor {
 
 class ActorTask;
 class AggregatedJournal;
-class ObservationDelayController;
 
 // Interface all actor tools implement. A tool is held by the ToolController and
 // validated and invoked from there. The controller makes no guarantees about
 // when the tool will be destroyed.
 class Tool {
  public:
-  // NOTE: Let's rename this to `ToolCallback`, move to a shared header, and
-  // eliminate the other redundant definitions.
-  using ValidateCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
-  using InvokeCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
-  Tool(TaskId task_id, AggregatedJournal& journal);
+  Tool(TaskId task_id, ToolDelegate& tool_delegate);
   virtual ~Tool();
 
   // Not copyable or movable.
@@ -44,7 +43,7 @@ class Tool {
   // invoked by the tool when validation is completed. If the result given to
   // the callback indicates success, the framework will call Invoke. Otherwise,
   // the tool will be destroyed.
-  virtual void Validate(ValidateCallback callback) = 0;
+  virtual void Validate(ToolCallback callback) = 0;
 
   // Perform any synchronous time-of-use checks just before invoking the tool.
   // These are typically TOCTOU (time-of-check/time-of-use) validations that the
@@ -57,7 +56,15 @@ class Tool {
 
   // Perform the action of the tool. The given callback must be invoked when the
   // tool has finished its actions.
-  virtual void Invoke(InvokeCallback callback) = 0;
+  virtual void Invoke(ToolCallback callback) = 0;
+
+  // Cancels execution of the tool.
+  //
+  // This is a hook tools can use to stop their progress and clean up any
+  // intermediate state they're in, but the ActorTask progresses without delay.
+  //
+  // The tool will be deleted synchronously after this method returns.
+  virtual void Cancel();
 
   // Provides a human readable description of the tool useful for log and
   // debugging purposes.
@@ -74,29 +81,32 @@ class Tool {
   // Returns an optional delay object that can be used to delay completion of
   // the tool until some external conditions are met, typically waiting on a
   // loading navigation to settle.
-  virtual std::unique_ptr<ObservationDelayController> GetObservationDelayer()
-      const = 0;
+  virtual std::unique_ptr<ObservationDelayController> GetObservationDelayer(
+      ObservationDelayController::PageStabilityConfig
+          page_stability_config) = 0;
 
-  // TODO(crbug.com/411462297): These need to be reshaped and made callable from
-  // ExecutionEngine to enable better integration with UI. This will require
-  // some plumbing through ToolController to make this possible.
   // Gives the tool an opportunity to update the task's state before being
   // invoked.
   virtual void UpdateTaskBeforeInvoke(ActorTask& task,
-                                      InvokeCallback callback) const;
+                                      ToolCallback callback) const;
 
   // Gives the tool an opportunity to update the task's state after being
   // invoked.
   virtual void UpdateTaskAfterInvoke(ActorTask& task,
-                                     InvokeCallback callback) const;
+                                     mojom::ActionResultPtr result,
+                                     ToolCallback callback) const;
+
+  // Returns the tab handle for the tab that this tool targets, if any.
+  virtual tabs::TabHandle GetTargetTab() const = 0;
 
  protected:
   TaskId task_id() const { return task_id_; }
-  AggregatedJournal& journal() { return *journal_; }
+  AggregatedJournal& journal() { return tool_delegate().GetJournal(); }
+  ToolDelegate& tool_delegate() { return *tool_delegate_; }
 
  private:
   TaskId task_id_;
-  base::SafeRef<AggregatedJournal> journal_;
+  raw_ref<ToolDelegate> tool_delegate_;
 };
 
 }  // namespace actor

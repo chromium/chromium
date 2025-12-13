@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#import "google_apis/gaia/gaia_id.h"
 
 namespace {
 
@@ -20,7 +21,7 @@ NSString* const kCoderUserCapabilityKey = @"CapabilityKey";
 }  // namespace
 
 @implementation TestAccountInfo {
-  NSString* _gaiaID;
+  GaiaId _gaiaID;
   NSString* _userEmail;
   NSString* _userFullName;
   NSString* _userGivenName;
@@ -79,11 +80,11 @@ NSString* const kCoderUserCapabilityKey = @"CapabilityKey";
 }
 
 + (instancetype)testAccountInfoWithUserEmail:(NSString*)userEmail {
-  return [self testAccountInfoWithUserEmail:userEmail gaiaID:nil];
+  return [self testAccountInfoWithUserEmail:userEmail gaiaID:GaiaId()];
 }
 
 + (instancetype)testAccountInfoWithUserEmail:(NSString*)userEmail
-                                      gaiaID:(NSString*)gaiaID {
+                                      gaiaID:(const GaiaId&)gaiaID {
   return [[self alloc] initWithUserEmail:userEmail
                                   gaiaID:gaiaID
                             userFullName:nil
@@ -92,20 +93,20 @@ NSString* const kCoderUserCapabilityKey = @"CapabilityKey";
 }
 
 - (instancetype)initWithUserEmail:(NSString*)userEmail
-                           gaiaID:(NSString*)gaiaID
+                           gaiaID:(const GaiaId&)gaiaID
                      userFullName:(NSString*)userFullName
                     userGivenName:(NSString*)userGivenName
                      capabilities:
                          (NSDictionary<NSString*, NSNumber*>*)capabilities {
   if ((self = [super init])) {
     _userEmail = userEmail;
-    if (gaiaID.length > 0) {
+    if (!gaiaID.empty()) {
       _gaiaID = gaiaID;
     } else {
       // GaiaID cannot look like an email address.
       NSString* withoutAtSign =
           [userEmail stringByReplacingOccurrencesOfString:@"@" withString:@"_"];
-      _gaiaID = [NSString stringWithFormat:@"%@_GAIAID", withoutAtSign];
+      _gaiaID = GaiaId([NSString stringWithFormat:@"%@_GAIAID", withoutAtSign]);
     }
     NSArray* split = [userEmail componentsSeparatedByString:@"@"];
     DCHECK_EQ(split.count, 2ul);
@@ -130,7 +131,7 @@ NSString* const kCoderUserCapabilityKey = @"CapabilityKey";
 
 #pragma mark - Properties
 
-- (NSString*)gaiaID {
+- (GaiaId)gaiaID {
   return _gaiaID;
 }
 
@@ -153,7 +154,7 @@ NSString* const kCoderUserCapabilityKey = @"CapabilityKey";
 #pragma mark - NSSecureCoding
 
 - (void)encodeWithCoder:(NSCoder*)coder {
-  [coder encodeObject:_gaiaID forKey:kCoderGaiaIDKey];
+  [coder encodeObject:_gaiaID.ToNSString() forKey:kCoderGaiaIDKey];
   [coder encodeObject:self.userEmail forKey:kCoderUserEmailKey];
   [coder encodeObject:self.userFullName forKey:kCoderUserFullNameKey];
   [coder encodeObject:self.userGivenName forKey:kCoderUserGivenNameKey];
@@ -161,8 +162,8 @@ NSString* const kCoderUserCapabilityKey = @"CapabilityKey";
 }
 
 - (id)initWithCoder:(NSCoder*)coder {
-  NSString* gaiaID = [coder decodeObjectOfClass:[NSString class]
-                                         forKey:kCoderGaiaIDKey];
+  GaiaId gaiaID = GaiaId([coder decodeObjectOfClass:[NSString class]
+                                             forKey:kCoderGaiaIDKey]);
   NSString* userEmail = [coder decodeObjectOfClass:[NSString class]
                                             forKey:kCoderUserEmailKey];
   NSString* userFullName = [coder decodeObjectOfClass:[NSString class]
@@ -174,8 +175,8 @@ NSString* const kCoderUserCapabilityKey = @"CapabilityKey";
   NSDictionary<NSString*, NSNumber*>* capabilities =
       [coder decodeObjectOfClasses:capabilityClasses
                             forKey:kCoderUserCapabilityKey];
-  return [self initWithUserEmail:gaiaID
-                          gaiaID:userEmail
+  return [self initWithUserEmail:userEmail
+                          gaiaID:gaiaID
                     userFullName:userFullName
                    userGivenName:userGivenName
                     capabilities:capabilities];

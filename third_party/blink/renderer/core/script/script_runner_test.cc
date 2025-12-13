@@ -121,7 +121,7 @@ class ScriptRunnerTest : public testing::Test {
   std::unique_ptr<DummyPageHolder> page_holder_;
   Persistent<Document> document_;
   Persistent<ScriptRunner> script_runner_;
-  WTF::Vector<int> order_;
+  blink::Vector<int> order_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
 };
@@ -550,8 +550,8 @@ class PostTaskWithLowPriorityUntilTimeoutTest : public testing::Test {
 
 TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunTaskOnce) {
   int counter = 0;
-  base::OnceClosure task = WTF::BindOnce([](int* counter) { (*counter)++; },
-                                         WTF::Unretained(&counter));
+  base::OnceClosure task = blink::BindOnce([](int* counter) { (*counter)++; },
+                                           blink::Unretained(&counter));
 
   PostTaskWithLowPriorityUntilTimeoutForTesting(
       FROM_HERE, std::move(task), base::Seconds(1),
@@ -568,8 +568,8 @@ TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunTaskOnce) {
 
 TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnLowerPriorityTaskRunner) {
   int counter = 0;
-  base::OnceClosure task = WTF::BindOnce([](int* counter) { (*counter)++; },
-                                         WTF::Unretained(&counter));
+  base::OnceClosure task = blink::BindOnce([](int* counter) { (*counter)++; },
+                                           blink::Unretained(&counter));
 
   PostTaskWithLowPriorityUntilTimeoutForTesting(
       FROM_HERE, std::move(task), base::Seconds(1),
@@ -585,8 +585,8 @@ TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnLowerPriorityTaskRunner) {
 
 TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnNormalPriorityTaskRunner) {
   int counter = 0;
-  base::OnceClosure task = WTF::BindOnce([](int* counter) { (*counter)++; },
-                                         WTF::Unretained(&counter));
+  base::OnceClosure task = blink::BindOnce([](int* counter) { (*counter)++; },
+                                           blink::Unretained(&counter));
 
   PostTaskWithLowPriorityUntilTimeoutForTesting(
       FROM_HERE, std::move(task), base::Seconds(1),

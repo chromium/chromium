@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_REPORTING_STORAGE_STORAGE_H_
 #define COMPONENTS_REPORTING_STORAGE_STORAGE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>

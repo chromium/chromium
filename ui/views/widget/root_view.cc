@@ -221,7 +221,7 @@ class PreEventDispatchHandler : public ui::EventHandler {
       v = owner_->GetFocusManager()->GetFocusedView();
     }
     // Special case to handle keyboard-triggered context menus.
-    if (v && v->GetEnabled() &&
+    if (v && v->GetEnabledInViewsSubtree() &&
         ((event->key_code() == ui::VKEY_APPS) ||
          (event->key_code() == ui::VKEY_F10 && event->IsShiftDown()))) {
       // Clamp the menu location within the visible bounds of each ancestor view
@@ -265,6 +265,9 @@ class PostEventDispatchHandler : public ui::EventHandler {
     }
 
     View* target = static_cast<View*>(event->target());
+    if (!target->GetEnabledInViewsSubtree()) {
+      return;
+    }
 
     gfx::Point location = event->location();
     if (touch_dnd_enabled_ &&
@@ -538,7 +541,6 @@ bool RootView::OnMousePressed(const ui::MouseEvent& event) {
        mouse_pressed_handler_ = mouse_pressed_handler_->parent()) {
     DVLOG(1) << "OnMousePressed testing "
              << mouse_pressed_handler_->GetClassName();
-    DCHECK(mouse_pressed_handler_->GetEnabled());
 
     // See if this view wants to handle the mouse press.
     ui::MouseEvent mouse_pressed_event(event, static_cast<View*>(this),
@@ -776,7 +778,10 @@ void RootView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
   widget_->ViewHierarchyChanged(details);
 
-  if (!details.is_add && !details.move_view) {
+  const bool is_removal = !details.is_add && !details.move_view;
+  const bool is_moved_to_another_tree =
+      !details.is_add && !Contains(details.move_view);
+  if (is_removal || is_moved_to_another_tree) {
     if (mouse_pressed_handler_ == details.child) {
       SetMouseHandler(nullptr);
     }
@@ -860,7 +865,7 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
   // disabled while handling moves, it's wrong to suddenly send
   // EventType::kMouseExited and EventType::kMouseEntered events, because the
   // mouse hasn't actually exited yet.
-  if (mouse_move_handler_ && !mouse_move_handler_->GetEnabled() &&
+  if (mouse_move_handler_ && !mouse_move_handler_->GetEnabledInViewsSubtree() &&
       v->Contains(mouse_move_handler_)) {
     v = mouse_move_handler_;
   }

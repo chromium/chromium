@@ -209,6 +209,17 @@ inline internal::ErrorIsMatcher<typename std::decay_t<T>> ErrorIs(T&& matcher) {
 
 }  // namespace base::test
 
+// Macros for testing the results of functions that return expected<T, E>
+// (for any type T and E).
+//
+// Example:
+//   EXPECT_OK(MaybeGetValue(arg));
+//   ASSERT_OK(MaybeGetValue(arg));
+//
+// Analogous to ABSL_{EXPECT,ASSERT}_OK macros for absl::Status(Or).
+#define EXPECT_OK(expression) EXPECT_THAT(expression, ::base::test::HasValue())
+#define ASSERT_OK(expression) ASSERT_THAT(expression, ::base::test::HasValue())
+
 // Executes an expression that returns an `expected<T, E>` or
 // `std::optional<T>`, and assigns the contained `T` to `lhs` if the result is a
 // value. If the result is an error, generates a test failure and returns from

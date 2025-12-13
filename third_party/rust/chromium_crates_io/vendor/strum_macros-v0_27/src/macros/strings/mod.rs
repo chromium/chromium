@@ -23,7 +23,7 @@ where
         Fields::Unnamed(f) if f.unnamed.len() == 1 => {
             let ident = &quote! { field0 };
             let ref_kw = match f.unnamed.last().unwrap().ty {
-                syn::Type::Reference(..) => quote! { },
+                syn::Type::Reference(..) => quote! {},
                 _ => quote! { ref },
             };
 
@@ -33,7 +33,7 @@ where
         Fields::Named(f) if f.named.len() == 1 => {
             let field = f.named.last().unwrap();
             let ref_kw = match field.ty {
-                syn::Type::Reference(..) => quote! { },
+                syn::Type::Reference(..) => quote! {},
                 _ => quote! { ref },
             };
 

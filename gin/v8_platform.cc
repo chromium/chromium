@@ -20,16 +20,15 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/scoped_blocking_call_internal.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 #include "gin/converter.h"
 #include "gin/per_isolate_data.h"
 #include "gin/thread_isolation.h"
+#include "gin/v8_platform_page_allocator.h"
 #include "gin/v8_platform_thread_isolated_allocator.h"
 #include "partition_alloc/buildflags.h"
-#include "v8_platform_page_allocator.h"
 
 namespace gin {
 
@@ -330,6 +329,12 @@ v8::TracingController* V8Platform::GetTracingController() {
 }
 
 v8::Platform::StackTracePrinter V8Platform::GetStackTracePrinter() {
+#if BUILDFLAG(IS_WIN)
+  // Sandboxed processes in release builds cannot symbolize stacks.
+  if (!base::debug::InProcessStackDumpingEnabled()) {
+    return nullptr;
+  }
+#endif
   return PrintStackTrace;
 }
 

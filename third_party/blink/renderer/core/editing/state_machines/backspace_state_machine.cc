@@ -7,6 +7,7 @@
 #include <array>
 #include <ostream>
 
+#include "third_party/blink/renderer/core/editing/state_machines/state_machine_util.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -103,8 +104,9 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
         return MoveToNextState(BackspaceState::kOddNumberedRIS);
       if (Character::IsModifier(code_point))
         return MoveToNextState(BackspaceState::kBeforeEmojiModifier);
-      if (Character::IsEmoji(code_point))
+      if (IsExtendedPictographicGb11(code_point)) {
         return MoveToNextState(BackspaceState::kBeforeZWJEmoji);
+      }
       if (code_point == uchar::kCombiningEnclosingKeycap) {
         return MoveToNextState(BackspaceState::kBeforeKeycap);
       }
@@ -151,7 +153,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       }
       return Finish();
     case BackspaceState::kBeforeVS:
-      if (Character::IsEmoji(code_point)) {
+      if (IsExtendedPictographicGb11(code_point)) {
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
         return MoveToNextState(BackspaceState::kBeforeZWJEmoji);
       }
@@ -164,7 +166,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
                  ? MoveToNextState(BackspaceState::kBeforeZWJ)
                  : Finish();
     case BackspaceState::kBeforeZWJ:
-      if (Character::IsEmoji(code_point)) {
+      if (IsExtendedPictographicGb11(code_point)) {
         code_units_to_be_deleted_ += U16_LENGTH(code_point) + 1;  // +1 for ZWJ
         return Character::IsModifier(code_point)
                    ? MoveToNextState(BackspaceState::kBeforeEmojiModifier)
@@ -177,8 +179,9 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       }
       return Finish();
     case BackspaceState::kBeforeVSAndZWJ:
-      if (!Character::IsEmoji(code_point))
+      if (!IsExtendedPictographicGb11(code_point)) {
         return Finish();
+      }
 
       DCHECK_GT(last_seen_vs_code_units_, 0);
       DCHECK_LE(last_seen_vs_code_units_, 2);

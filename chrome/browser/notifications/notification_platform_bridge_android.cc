@@ -15,6 +15,8 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -55,11 +57,11 @@
 #include "chrome/android/chrome_jni_headers/NotificationPlatformBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertJavaStringToUTF16;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
@@ -72,9 +74,9 @@ enum NotificationActionType {
   TEXT
 };
 
-ScopedJavaLocalRef<jobject> JNI_NotificationPlatformBridge_ConvertToJavaBitmap(
-    JNIEnv* env,
-    const gfx::Image& icon) {
+static ScopedJavaLocalRef<jobject>
+JNI_NotificationPlatformBridge_ConvertToJavaBitmap(JNIEnv* env,
+                                                   const gfx::Image& icon) {
   SkBitmap skbitmap = icon.AsBitmap();
   ScopedJavaLocalRef<jobject> j_bitmap;
   if (!skbitmap.drawsNothing())
@@ -112,7 +114,7 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaActionInfos(
     env->SetObjectArrayElement(actions, i, action_info.obj());
   }
 
-  return ScopedJavaLocalRef<jobjectArray>(env, actions);
+  return ScopedJavaLocalRef<jobjectArray>::Adopt(env, actions);
 }
 
 constexpr jint NotificationTypeToJava(
@@ -174,7 +176,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
     jboolean incognito,
     std::string& webapk_package,
     jint java_action_index,
-    const JavaParamRef<jstring>& java_reply) {
+    const JavaRef<jstring>& java_reply) {
   std::optional<std::u16string> reply;
   if (java_reply)
     reply = ConvertJavaStringToUTF16(env, java_reply);
@@ -200,7 +202,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
           &NotificationDisplayServiceImpl::ProfileLoadedCallback,
           NotificationOperation::kClick, notification_type, origin,
           notification_id, std::move(action_index), std::move(reply),
-          std::nullopt /* by_user */,
+          std::nullopt /* by_user */, std::nullopt /* is_suspicious */,
           base::BindOnce(
               &NotificationPlatformBridgeAndroid::OnNotificationProcessed,
               weak_factory_.GetWeakPtr(), notification_id)));
@@ -243,7 +245,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
           &NotificationDisplayServiceImpl::ProfileLoadedCallback,
           NotificationOperation::kClose, notification_type, GURL(origin),
           notification_id, std::nullopt /* action index */,
-          std::nullopt /* reply */, by_user,
+          std::nullopt /* reply */, by_user, std::nullopt /* is_suspicious */,
           base::BindOnce(
               &NotificationPlatformBridgeAndroid::OnNotificationProcessed,
               weak_factory_.GetWeakPtr(), notification_id)));
@@ -255,7 +257,8 @@ void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
     jint java_notification_type,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito) {
+    jboolean incognito,
+    jboolean is_suspicious) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   DCHECK(profile_manager);
 
@@ -268,7 +271,8 @@ void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
                      NotificationOperation::kDisablePermission,
                      notification_type, GURL(origin), notification_id,
                      std::nullopt /* action index */, std::nullopt /* reply */,
-                     std::nullopt /* by_user */, base::DoNothing()));
+                     std::nullopt /* by_user */, is_suspicious,
+                     base::DoNothing()));
 }
 
 void NotificationPlatformBridgeAndroid::SetIsSuspiciousParameterForTesting(
@@ -294,7 +298,7 @@ void NotificationPlatformBridgeAndroid::OnReportNotificationAsSafe(
                      NotificationHandler::Type::WEB_PERSISTENT, GURL(origin),
                      notification_id, std::nullopt /* action index */,
                      std::nullopt /* reply */, std::nullopt /* by_user */,
-                     base::DoNothing()));
+                     std::nullopt /* is_suspicious */, base::DoNothing()));
 }
 
 void NotificationPlatformBridgeAndroid::OnReportWarnedNotificationAsSpam(
@@ -313,7 +317,7 @@ void NotificationPlatformBridgeAndroid::OnReportWarnedNotificationAsSpam(
                      NotificationHandler::Type::WEB_PERSISTENT, GURL(origin),
                      notification_id, std::nullopt /* action index */,
                      std::nullopt /* reply */, std::nullopt /* by_user */,
-                     base::DoNothing()));
+                     std::nullopt /* is_suspicious */, base::DoNothing()));
 }
 
 void NotificationPlatformBridgeAndroid::OnReportUnwarnedNotificationAsSpam(
@@ -332,12 +336,12 @@ void NotificationPlatformBridgeAndroid::OnReportUnwarnedNotificationAsSpam(
                      NotificationHandler::Type::WEB_PERSISTENT, GURL(origin),
                      notification_id, std::nullopt /* action index */,
                      std::nullopt /* reply */, std::nullopt /* by_user */,
-                     base::DoNothing()));
+                     std::nullopt /* is_suspicious */, base::DoNothing()));
 }
 
 void NotificationPlatformBridgeAndroid::OnNotificationShowOriginalNotification(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_object,
+    const base::android::JavaRef<jobject>& java_object,
     std::string& origin,
     std::string& profile_id,
     jboolean incognito) {
@@ -351,7 +355,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationShowOriginalNotification(
                      NotificationHandler::Type::WEB_PERSISTENT, GURL(origin),
                      /*notification_id=*/"", std::nullopt /* action index */,
                      std::nullopt /* reply */, std::nullopt /* by_user */,
-                     base::DoNothing()));
+                     std::nullopt /* is_suspicious */, base::DoNothing()));
 }
 
 void NotificationPlatformBridgeAndroid::OnNotificationAlwaysAllowFromOrigin(
@@ -392,6 +396,15 @@ void NotificationPlatformBridgeAndroid::Display(
   if (!scope_url.is_valid())
     scope_url = origin_url;
 
+  bool skip_ua_buttons = persistent_notification_metadata
+                             ? persistent_notification_metadata->skip_ua_buttons
+                             : false;
+  // Extension notifications never show UA buttons like "Unsubscribe" or
+  // "Site Settings".
+  if (notification_type == NotificationHandler::Type::EXTENSION) {
+    skip_ua_buttons = true;
+  }
+
   ScopedJavaLocalRef<jobject> android_profile = profile->GetJavaObject();
 
   SkBitmap image_bitmap = notification.image().AsBitmap();
@@ -422,9 +435,7 @@ void NotificationPlatformBridgeAndroid::Display(
           : (persistent_notification_metadata
                  ? persistent_notification_metadata->is_suspicious
                  : false),
-      persistent_notification_metadata
-          ? persistent_notification_metadata->skip_ua_buttons
-          : false);
+      skip_ua_buttons);
 
   regenerated_notification_infos_[notification.id()] =
       RegeneratedNotificationInfo(scope_url, std::nullopt);
@@ -576,3 +587,6 @@ NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
 
 NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
     ~RegeneratedNotificationInfo() = default;
+
+DEFINE_JNI(ActionInfo)
+DEFINE_JNI(NotificationPlatformBridge)

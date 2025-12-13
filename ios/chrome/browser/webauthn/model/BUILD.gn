@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/build/chrome_build.gni")
+
 source_set("model") {
   sources = [
     "ios_passkey_model_factory.cc",
@@ -11,12 +13,41 @@ source_set("model") {
     "//base",
     "//components/affiliations/core/browser:affiliations",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/browser/ui:credential_ui_entry",
     "//components/sync/model",
     "//components/webauthn/core/browser",
+    "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/web/public",
   ]
+}
+
+source_set("ios_chrome_passkey_client") {
+  sources = [
+    "ios_chrome_passkey_client.h",
+    "ios_chrome_passkey_client.mm",
+  ]
+  deps = [
+    "//components/metrics:metrics_pref_names",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/ios",
+    "//components/webauthn/ios",
+    "//components/webauthn/ios:features",
+    "//ios/chrome/browser/credential_provider/model:buildflags",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/common/credential_provider:passkey_keychain_provider_chrome",
+    "//ios/web/public",
+  ]
+
+  if (ios_enable_credential_provider_extension) {
+    deps += [ "//ios/chrome/browser/credential_provider/model" ]
+  }
 }

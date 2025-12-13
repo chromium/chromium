@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 @class TrackingPriceViewController;
-@protocol TrackingPriceViewControllerDelegate;
 
 // Delegate for presentation events related to
 // TrackingPriceViewController.
@@ -30,10 +29,6 @@
 // Presentation delegate.
 @property(nonatomic, weak) id<TrackingPriceViewControllerPresentationDelegate>
     presentationDelegate;
-
-// Delegate for view controller to send responses to model.
-@property(nonatomic, weak) id<TrackingPriceViewControllerDelegate>
-    modelDelegate;
 
 @end
 

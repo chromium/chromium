@@ -7,7 +7,6 @@
 #include <variant>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

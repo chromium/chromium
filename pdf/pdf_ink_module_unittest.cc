@@ -26,6 +26,7 @@
 #include "base/types/zip.h"
 #include "base/values.h"
 #include "pdf/page_orientation.h"
+#include "pdf/pdf_caret.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_conversions.h"
@@ -33,6 +34,8 @@
 #include "pdf/pdf_ink_module_client.h"
 #include "pdf/pdf_ink_transform.h"
 #include "pdf/pdfium/pdfium_ink_reader.h"
+#include "pdf/test/input_event_util.h"
+#include "pdf/test/mock_pdf_caret_client.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "pdf/test/test_helpers.h"
@@ -40,6 +43,8 @@
 #include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/ink/src/ink/brush/brush.h"
@@ -52,6 +57,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -156,11 +162,11 @@ constexpr auto kTwoPageVerticalLayoutHorzLinePage1Inputs =
 // brushes and "Light Yellow" for highlighter brushes.
 constexpr SkColor kYellow = SkColorSetRGB(0xFD, 0xD6, 0x63);
 
-// Commonly used test brush message params. The color corresponds to "Red 1" for
-// pen brushes and "Light Red" for highlighter brushes.
-constexpr TestAnnotationBrushMessageParams kRedBrushParams{
-    SkColorSetRGB(0xF2, 0x8B, 0x82),
-    /*size=*/6.0};
+// Commonly used test brush color and message params. The color corresponds to
+// "Red 1" for pen brushes and "Light Red" for highlighter brushes.
+constexpr SkColor kRedColor = SkColorSetRGB(0xF2, 0x8B, 0x82);
+constexpr TestAnnotationBrushMessageParams kRedBrushParams{kRedColor,
+                                                           /*size=*/6.0};
 
 // Matcher for ink::Stroke objects against their expected brush and inputs.
 MATCHER_P(InkStrokeEq, expected_brush, "") {
@@ -183,16 +189,14 @@ MATCHER_P(InkStrokeBrushSizeEq, expected_size, "") {
 
 // Matcher for ink::Stroke objects against an expected drawing brush type.
 // A pen is opaque while a highlighter has transparency, so a drawing
-// brush type can be deduced from the ink::Stroke's brush coat.
+// brush type can be deduced from the ink::Stroke's brush.
 MATCHER_P(InkStrokeDrawingBrushTypeEq, expected_type, "") {
-  const ink::Brush& ink_brush = arg.GetBrush();
-  const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
-  float opacity = coat.tip.opacity_multiplier;
+  const float opacity = GetOpacityMultiplierFromBrush(arg.GetBrush());
   if (expected_type == PdfInkBrush::Type::kPen) {
     return opacity == 1.0f;
   }
 
-  CHECK(expected_type == PdfInkBrush::Type::kHighlighter);
+  CHECK_EQ(expected_type, PdfInkBrush::Type::kHighlighter);
   return opacity == 0.4f;
 }
 
@@ -202,20 +206,19 @@ MATCHER_P(CursorBitmapImageSizeEq, dimensions, "") {
          arg.custom_bitmap().dimensions() == dimensions;
 }
 
-blink::WebMouseEvent CreateMouseMoveEventAtPoint(const gfx::PointF& point) {
-  return MouseEventBuilder()
-      .SetType(blink::WebInputEvent::Type::kMouseMove)
-      .SetPosition(point)
-      .Build();
-}
-
-blink::WebMouseEvent CreateMouseMoveWithLeftButtonEventAtPoint(
-    const gfx::PointF& point) {
-  return MouseEventBuilder()
-      .SetType(blink::WebInputEvent::Type::kMouseMove)
-      .SetPosition(point)
-      .SetButton(blink::WebPointerProperties::Button::kLeft)
-      .Build();
+// Matcher for keyboard events against the expected key and modifiers.
+MATCHER_P2(WebKeyboardEventEq, key, modifiers, "") {
+  if (arg.windows_key_code != key) {
+    *result_listener << "Expected key: " << key
+                     << " actual: " << arg.windows_key_code;
+    return false;
+  }
+  if (arg.GetModifiers() != modifiers) {
+    *result_listener << "Expected modifiers: " << modifiers
+                     << " actual: " << arg.GetModifiers();
+    return false;
+  }
+  return true;
 }
 
 base::Value::Dict CreateGetAnnotationBrushMessage(
@@ -271,11 +274,18 @@ class FakeClient : public PdfInkModuleClient {
               (const gfx::PointF& point),
               (override));
 
+  MOCK_METHOD(gfx::Transform,
+              GetCanonicalToPdfTransform,
+              (int page_index),
+              (override));
+
   MOCK_METHOD(ui::Cursor, GetCursor, (), (override));
 
   PageOrientation GetOrientation() const override { return orientation_; }
 
-  MOCK_METHOD(std::vector<gfx::Rect>, GetSelectionRects, (), (override));
+  MOCK_METHOD(PdfCaret*, GetPdfCaret, (), (override));
+
+  MOCK_METHOD(SelectionRectMap, GetSelectionRectMap, (), (override));
 
   gfx::Size GetThumbnailSize(int page_index) override {
     CHECK_GE(page_index, 0);
@@ -421,6 +431,20 @@ class FakeClient : public PdfInkModuleClient {
   gfx::Vector2dF viewport_origin_offset_;
   float zoom_ = 1.0f;
   std::vector<gfx::Rect> invalidations_;
+};
+
+class MockPdfCaret : public PdfCaret {
+ public:
+  explicit MockPdfCaret(PdfCaretClient* client) : PdfCaret(client) {}
+  MockPdfCaret(const MockPdfCaret&) = delete;
+  MockPdfCaret& operator=(const MockPdfCaret&) = delete;
+  ~MockPdfCaret() override = default;
+
+  // PdfCaret:
+  MOCK_METHOD(bool,
+              OnKeyDown,
+              (const blink::WebKeyboardEvent& event),
+              (override));
 };
 
 class PdfInkModuleMetricsTestBase {
@@ -637,7 +661,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
   EXPECT_EQ(1.0f, coat.tip.corner_rounding);
-  EXPECT_EQ(1.0f, coat.tip.opacity_multiplier);
+  EXPECT_EQ(1.0f, GetOpacityMultiplierFromBrush(ink_brush));
 }
 
 // Verify that a set highlighter message sets the annotation brush to a
@@ -661,7 +685,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
   EXPECT_EQ(0.0f, coat.tip.corner_rounding);
-  EXPECT_EQ(0.4f, coat.tip.opacity_multiplier);
+  EXPECT_EQ(0.4f, GetOpacityMultiplierFromBrush(ink_brush));
 }
 
 // Verify that brushes with zero color values can be set as the annotation
@@ -685,7 +709,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
   EXPECT_EQ(1.0f, coat.tip.corner_rounding);
-  EXPECT_EQ(1.0f, coat.tip.opacity_multiplier);
+  EXPECT_EQ(1.0f, GetOpacityMultiplierFromBrush(ink_brush));
 }
 
 TEST_P(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
@@ -1064,9 +1088,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     {
       // Start a drawing or erase action.
       blink::WebMouseEvent mouse_down_event =
-          MouseEventBuilder()
-              .CreateLeftClickAtPosition(kMouseDownPoint)
-              .Build();
+          CreateLeftClickWebMouseEventAtPosition(kMouseDownPoint);
       EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
       // Simulate scenario where another view has taken the focus and consumed
@@ -1074,11 +1096,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
       // left mouse button being pressed.  This should be handled, as it treats
       // it as a signal to terminate the prior stroke.
       blink::WebMouseEvent mouse_move_event =
-          MouseEventBuilder()
-              .SetType(blink::WebInputEvent::Type::kMouseMove)
-              .SetPosition(kMouseMovePoint)
-              .SetButton(blink::WebPointerProperties::Button::kNoButton)
-              .Build();
+          CreateMoveWebMouseEventToPosition(kMouseMovePoint);
       EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
     }
 
@@ -1087,26 +1105,18 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
       // since there is no longer any active drawing or erasing.
       constexpr gfx::PointF kMouseMovePoint2 = gfx::PointF(21.0f, 26.0f);
       blink::WebMouseEvent mouse_move_event =
-          MouseEventBuilder()
-              .SetType(blink::WebInputEvent::Type::kMouseMove)
-              .SetPosition(kMouseMovePoint2)
-              .SetButton(blink::WebPointerProperties::Button::kNoButton)
-              .Build();
+          CreateMoveWebMouseEventToPosition(kMouseMovePoint2);
       EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
     }
 
     {
       // Start another stroke with a new mouse down event, which is handled.
       blink::WebMouseEvent mouse_down_event =
-          MouseEventBuilder()
-              .CreateLeftClickAtPosition(kMouseDownPoint)
-              .Build();
+          CreateLeftClickWebMouseEventAtPosition(kMouseDownPoint);
       EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
       blink::WebMouseEvent mouse_up_event =
-          MouseEventBuilder()
-              .CreateLeftMouseUpAtPosition(kMouseUpPoint)
-              .Build();
+          CreateLeftClickWebMouseUpEventAtPosition(kMouseUpPoint);
       EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
     }
   }
@@ -1182,6 +1192,14 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
 
   void ExpectNoUpdateStrokeActive() {
     EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+  }
+
+  void ExpectStrokeCounts(int started,
+                          int modified_finished,
+                          int unmodified_finished) {
+    EXPECT_EQ(started, client().stroke_started_count());
+    EXPECT_EQ(modified_finished, client().modified_stroke_finished_count());
+    EXPECT_EQ(unmodified_finished, client().unmodified_stroke_finished_count());
   }
 
   const std::vector<int>& updated_ink_thumbnail_page_indices() const {
@@ -1300,8 +1318,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         const ink::StrokeInputBatch& input_batch = stroke.stroke.GetInputs();
         StrokeInputPoints stroke_points;
         stroke_points.reserve(input_batch.Size());
-        for (size_t i = 0; i < input_batch.Size(); ++i) {
-          ink::StrokeInput stroke_input = input_batch.Get(i);
+        for (ink::StrokeInput stroke_input : input_batch) {
           stroke_points.emplace_back(stroke_input.position.x,
                                      stroke_input.position.y);
         }
@@ -1317,19 +1334,19 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
       const gfx::PointF& mouse_up_point,
       bool expect_mouse_events_handled) {
     blink::WebMouseEvent mouse_down_event =
-        MouseEventBuilder().CreateLeftClickAtPosition(mouse_down_point).Build();
+        CreateLeftClickWebMouseEventAtPosition(mouse_down_point);
     EXPECT_EQ(expect_mouse_events_handled,
               ink_module().HandleInputEvent(mouse_down_event));
 
     for (const gfx::PointF& mouse_move_point : mouse_move_points) {
       blink::WebMouseEvent mouse_move_event =
-          CreateMouseMoveWithLeftButtonEventAtPoint(mouse_move_point);
+          CreateLeftClickWebMouseMoveEventAtPosition(mouse_move_point);
       EXPECT_EQ(expect_mouse_events_handled,
                 ink_module().HandleInputEvent(mouse_move_event));
     }
 
     blink::WebMouseEvent mouse_up_event =
-        MouseEventBuilder().CreateLeftMouseUpAtPosition(mouse_up_point).Build();
+        CreateLeftClickWebMouseUpEventAtPosition(mouse_up_point);
     EXPECT_EQ(expect_mouse_events_handled,
               ink_module().HandleInputEvent(mouse_up_event));
   }
@@ -1543,20 +1560,17 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithMouseInterruptedByPenEvents) {
   InitializeSimpleSinglePageBasicLayout();
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder().CreateLeftClickAtPosition(kMouseDownPoint).Build();
+      CreateLeftClickWebMouseEventAtPosition(kMouseDownPoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kMouseMovePoint);
+      CreateLeftClickWebMouseMoveEventAtPosition(kMouseMovePoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   // Per manual testing on a Windows laptop, pen input causes mouse events to
   // lose their left-button down state while the pen is active.
   blink::WebMouseEvent mouse_move_no_left_button_event =
-      MouseEventBuilder()
-          .SetType(blink::WebInputEvent::Type::kMouseMove)
-          .SetPosition(kMouseMovePoint)
-          .Build();
+      CreateMoveWebMouseEventToPosition(kMouseMovePoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_no_left_button_event));
 
   const std::vector<base::span<const gfx::PointF>> all_move_points{
@@ -1572,12 +1586,11 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithMouseInterruptedByPenEvents) {
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
 
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder().CreateLeftMouseUpAtPosition(kMouseUpPoint).Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kMouseUpPoint);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_up_event));
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_EQ(2, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
   EXPECT_EQ(0, GetInputOfTypeCountForPage(
@@ -1596,7 +1609,7 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithPenIgnoresMouseEvents) {
   EXPECT_TRUE(ink_module().HandleInputEvent(pen_start_event));
 
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kMouseMovePoint);
+      CreateLeftClickWebMouseMoveEventAtPosition(kMouseMovePoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   blink::WebTouchEvent pen_end_event =
@@ -1604,9 +1617,8 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithPenIgnoresMouseEvents) {
                      base::span_from_ref(kMouseUpPoint));
   EXPECT_TRUE(ink_module().HandleInputEvent(pen_end_event));
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
   EXPECT_EQ(0, GetInputOfTypeCountForPage(
@@ -1648,13 +1660,13 @@ TEST_P(PdfInkModuleStrokeTest, BasicLayoutInvalidationsFromStroke) {
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   // The default brush param size is 3.0.
-  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(4.0f, 4.0f));
-  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(14.0f, 14.0f));
-  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
-                                           gfx::Size(14.0f, 12.0f));
-  const gfx::Rect kInvalidationAreaFinishedStroke(8.0f, 13.0f, 25.0f, 7.0f);
+  constexpr gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8, 13),
+                                                 gfx::Size(4, 4));
+  constexpr gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8, 13),
+                                                 gfx::Size(14, 14));
+  constexpr gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18, 15),
+                                               gfx::Size(14, 12));
+  constexpr gfx::Rect kInvalidationAreaFinishedStroke(7, 12, 27, 9);
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -1677,13 +1689,13 @@ TEST_P(PdfInkModuleStrokeTest, TransformedLayoutInvalidationsFromStroke) {
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   // The default brush param size is 3.0.
-  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(4.0f, 4.0f));
-  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(14.0f, 14.0f));
-  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
-                                           gfx::Size(14.0f, 12.0f));
-  const gfx::Rect kInvalidationAreaFinishedStroke(7.0f, 12.0f, 27.0f, 9.0f);
+  constexpr gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8, 13),
+                                                 gfx::Size(4, 4));
+  constexpr gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8, 13),
+                                                 gfx::Size(14, 14));
+  constexpr gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18, 15),
+                                               gfx::Size(14, 12));
+  constexpr gfx::Rect kInvalidationAreaFinishedStroke(6, 11, 29, 11);
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -1804,9 +1816,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStroke) {
   EXPECT_THAT(
       VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Stroke with the eraser tool.
@@ -1816,9 +1827,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStroke) {
   // Now there are no visible strokes left.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing increments the modified stroke count.
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke again. The stroke that have already been erased should stay erased.
@@ -1828,9 +1838,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStroke) {
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Nothing got erased, so the modified count stays the same, and the
   // unmodified stroke count goes up by 1 instead.
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // PDF thumbnail never needed to be updated.
@@ -1851,9 +1860,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseOnPageWithoutStrokes) {
   // Verify there are still no visible strokes and the StrokeFinished() call is
   // for being unmodified.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(0, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/0,
+                     /*unmodified_finished=*/1);
   EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
 }
 
@@ -1865,9 +1873,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
   EXPECT_THAT(
       VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Stroke with the eraser tool outside of the page.
@@ -1881,9 +1888,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
   EXPECT_THAT(
       VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 }
 
@@ -1905,9 +1911,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   const auto kVisibleStrokesMatcher = ElementsAre(
       Pair(0, ElementsAre(ElementsAreArray(kMousePoints), kStroke2Matcher)));
   EXPECT_THAT(VisibleStrokeInputPositions(), kVisibleStrokesMatcher);
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke with the eraser tool at `kMouseMovePoint`, where it should
@@ -1921,9 +1926,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   // the strokes. This third stroke causes the unmodified stroke finished count
   // to go up by 1.
   EXPECT_THAT(VisibleStrokeInputPositions(), kVisibleStrokesMatcher);
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke with the eraser tool again, but follow the stroke inputs. This will
@@ -1939,9 +1943,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
 
   // Check that there are now no visible strokes.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
-  EXPECT_EQ(5, client().stroke_started_count());
-  EXPECT_EQ(4, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/5, /*modified_finished=*/4,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0, 0));
 }
 
@@ -1951,9 +1954,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
 
   // Start out without any strokes.
   EXPECT_TRUE(StrokeInputPositions().empty());
-  EXPECT_EQ(0, client().stroke_started_count());
-  EXPECT_EQ(0, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/0, /*modified_finished=*/0,
+                     /*unmodified_finished=*/0);
   EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
 
   ExpectStrokesAdded(/*strokes_affected=*/2);
@@ -1965,9 +1967,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
       kTwoPageVerticalLayoutPoint3InsidePage0);
   EXPECT_THAT(StrokeInputPositions(), ElementsAre(Pair(0, SizeIs(1))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // A stroke in the second page generates a stroke only for that page.
@@ -1977,9 +1978,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
       kTwoPageVerticalLayoutPoint3InsidePage1);
   EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, SizeIs(1)), Pair(1, SizeIs(1))));
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 1));
 
   // Erasing across the two pages should erase everything.
@@ -1993,9 +1993,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
                                kTwoPageVerticalLayoutPoint1InsidePage1},
       kTwoPageVerticalLayoutPoint3InsidePage1);
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(3, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/3,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 1, 0, 1));
 }
 
@@ -2018,9 +2017,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
                           kTwoPageVerticalLayoutPageExitAndReentrySegment1),
                       ElementsAreArray(
                           kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Select the eraser tool and call ApplyStrokeWithMouseAtPoints() again with
@@ -2041,9 +2039,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
                           kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing increments the modified stroke count.
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 }
 
@@ -2055,9 +2052,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
   EXPECT_THAT(
       VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Stroke with the eraser tool.
@@ -2072,9 +2068,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
   // Now there are no visible strokes left.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing increments the modified stroke count.
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke again. The stroke that have already been erased should stay erased.
@@ -2086,9 +2081,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Nothing got erased, so the modified count stays the same, and the
   // unmodified stroke count goes up by 1 instead.
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke again with the mouse gets the same results.
@@ -2098,9 +2092,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Nothing got erased, so the modified count stays the same, and the
   // unmodified stroke count goes up by 1 instead.
-  EXPECT_EQ(4, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(2, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/4, /*modified_finished=*/2,
+                     /*unmodified_finished=*/2);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 }
 
@@ -2112,9 +2105,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
   EXPECT_THAT(
       VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Stroke with the eraser tool.
@@ -2129,9 +2121,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
   // Now there are no visible strokes left.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing increments the modified stroke count.
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke again. The stroke that have already been erased should stay erased.
@@ -2143,9 +2134,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Nothing got erased, so the modified count stays the same, and the
   // unmodified stroke count goes up by 1 instead.
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke again with the mouse gets the same results.
@@ -2155,9 +2145,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Nothing got erased, so the modified count stays the same, and the
   // unmodified stroke count goes up by 1 instead.
-  EXPECT_EQ(4, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(2, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/4, /*modified_finished=*/2,
+                     /*unmodified_finished=*/2);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 }
 
@@ -2166,11 +2155,11 @@ TEST_P(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseDown) {
   InitializeSimpleSinglePageBasicLayout();
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder().CreateLeftClickAtPosition(kMouseDownPoint).Build();
+      CreateLeftClickWebMouseEventAtPosition(kMouseDownPoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kMouseMovePoint);
+      CreateLeftClickWebMouseMoveEventAtPosition(kMouseMovePoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   // If the mouse up event went missing during stroking, the next mouse down
@@ -2202,11 +2191,11 @@ TEST_P(PdfInkModuleStrokeTest, StrokeWithNoEndEventThenTouchStart) {
   InitializeSimpleSinglePageBasicLayout();
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder().CreateLeftClickAtPosition(kMouseDownPoint).Build();
+      CreateLeftClickWebMouseEventAtPosition(kMouseDownPoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kMouseMovePoint);
+      CreateLeftClickWebMouseMoveEventAtPosition(kMouseMovePoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   // If the mouse up event has yet to happen, the next touch start event
@@ -2229,16 +2218,13 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
   SelectBrushTool(PdfInkBrush::Type::kPen, black_pen_message_params);
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kLeftVerticalStrokePoint1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // While the stroke is still in progress, change the pen color.  This has no
   // immediate effect on the in-progress stroke.
-  TestAnnotationBrushMessageParams red_pen_message_params{
-      SkColorSetRGB(0xF2, 0x8B, 0x82),
-      /*size=*/3.0};
+  TestAnnotationBrushMessageParams red_pen_message_params{kRedColor,
+                                                          /*size=*/3.0};
   SelectBrushTool(PdfInkBrush::Type::kPen, red_pen_message_params);
   VerifyAndClearExpectations();
 
@@ -2248,21 +2234,17 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
   EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
                                     InkStrokeBrushColorEq(SK_ColorBLACK)));
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kLeftVerticalStrokePoint2);
+      CreateLeftClickWebMouseMoveEventAtPosition(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kLeftVerticalStrokePoint2)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
   VerifyAndClearExpectations();
 
   // Do another stroke.  Notice that the changed pen color is in effect for
   // the new stroke that is added.
-  EXPECT_CALL(
-      client(),
-      StrokeAdded(kPageIndex, InkStrokeId(1),
-                  InkStrokeBrushColorEq(SkColorSetRGB(0xF2, 0x8B, 0x82))));
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1),
+                                    InkStrokeBrushColorEq(kRedColor)));
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
@@ -2283,9 +2265,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
   SelectBrushTool(PdfInkBrush::Type::kPen, message_params);
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kLeftVerticalStrokePoint1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // While the stroke is still in progress, change the pen size.  This has no
@@ -2307,12 +2287,10 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
                 UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(8, 8))));
   }
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kLeftVerticalStrokePoint2);
+      CreateLeftClickWebMouseMoveEventAtPosition(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kLeftVerticalStrokePoint2)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
   VerifyAndClearExpectations();
 
@@ -2335,9 +2313,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeToEraserDuringDrawing) {
   EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1), _));
   EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kRightVerticalStrokePoint1)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kRightVerticalStrokePoint1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // While the stroke is still in progress, change to the eraser tool.  This
@@ -2352,12 +2328,10 @@ TEST_P(PdfInkModuleStrokeTest, ChangeToEraserDuringDrawing) {
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
   EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kRightVerticalStrokePoint2);
+      CreateLeftClickWebMouseMoveEventAtPosition(kRightVerticalStrokePoint2);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kRightVerticalStrokePoint2)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kRightVerticalStrokePoint2);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_up_event));
   VerifyAndClearExpectations();
 
@@ -2397,9 +2371,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
   EXPECT_CALL(client(), UpdateStrokeActive(kPageIndex, InkStrokeId(0), _));
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kLeftVerticalStrokePoint1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // While the stroke is still in progress, change the input tool type to a
@@ -2418,12 +2390,10 @@ TEST_P(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
   EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kRightVerticalStrokePoint2);
+      CreateLeftClickWebMouseMoveEventAtPosition(kRightVerticalStrokePoint2);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kRightVerticalStrokePoint1)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kRightVerticalStrokePoint1);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_up_event));
   VerifyAndClearExpectations();
 
@@ -2451,9 +2421,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
   SelectBrushTool(PdfInkBrush::Type::kPen, pen_message_params);
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kLeftVerticalStrokePoint1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // While the stroke is still in progress, change the input tool type to a
@@ -2479,12 +2447,10 @@ TEST_P(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
                 UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(10, 10))));
   }
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kLeftVerticalStrokePoint2);
+      CreateLeftClickWebMouseMoveEventAtPosition(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kLeftVerticalStrokePoint2)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
   VerifyAndClearExpectations();
 
@@ -2502,11 +2468,11 @@ TEST_P(PdfInkModuleStrokeTest, EventWithPastTimeStamp) {
   InitializeSimpleSinglePageBasicLayout();
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder().CreateLeftClickAtPosition(kMouseDownPoint).Build();
+      CreateLeftClickWebMouseEventAtPosition(kMouseDownPoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kMouseMovePoint);
+      CreateLeftClickWebMouseMoveEventAtPosition(kMouseMovePoint);
   // Simulate a condition from https://crbug.com/421120183 where the event time
   // stamp goes backwards in time. This should not crash.
   mouse_move_event.SetTimeStamp(mouse_move_event.TimeStamp() -
@@ -2514,7 +2480,7 @@ TEST_P(PdfInkModuleStrokeTest, EventWithPastTimeStamp) {
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder().CreateLeftMouseUpAtPosition(kMouseUpPoint).Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kMouseUpPoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
   EXPECT_EQ(2, GetInputOfTypeCountForPage(
@@ -2564,18 +2530,16 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
   // RunStrokeCheckTest() performed the only stroke.
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   PerformUndo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Undo/redo here and below do not trigger StrokeFinished().
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Spurious undo message is a no-op.
@@ -2585,9 +2549,8 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   PerformUndo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   VerifyAndClearExpectations();
@@ -2596,9 +2559,8 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   PerformRedo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0));
 
   // Spurious redo message is a no-op.
@@ -2608,9 +2570,8 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   PerformRedo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0));
 }
 
@@ -2620,17 +2581,17 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsBasic) {
 
   // The default brush param size is 3.0.  Invalidation areas are in screen
   // coordinates.
-  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(4.0f, 4.0f));
-  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(14.0f, 14.0f));
-  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
-                                           gfx::Size(14.0f, 12.0f));
+  constexpr gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8, 13),
+                                                 gfx::Size(4, 4));
+  constexpr gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8, 13),
+                                                 gfx::Size(14, 14));
+  constexpr gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18, 15),
+                                               gfx::Size(14, 12));
   // This size is smaller than the area of the merged invalidation constants
   // above because InkStrokeModeler modeled the "V" shaped input into an input
   // with a much gentler line slope.
-  const gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(8.0f, 13.0f),
-                                                gfx::Size(25.0f, 7.0f));
+  constexpr gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(7, 12),
+                                                    gfx::Size(27, 9));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -2660,17 +2621,17 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsScaledRotated90) {
 
   // The default brush param size is 3.0.  Invalidation areas are in screen
   // coordinates.
-  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(4.0f, 4.0f));
-  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(14.0f, 14.0f));
-  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
-                                           gfx::Size(14.0f, 12.0f));
+  constexpr gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8, 13),
+                                                 gfx::Size(4, 4));
+  constexpr gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8, 13),
+                                                 gfx::Size(14, 14));
+  constexpr gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18, 15),
+                                               gfx::Size(14, 12));
   // This size is smaller than the area of the merged invalidation constants
   // above because InkStrokeModeler modeled the "V" shaped input into an input
   // with a much gentler line slope.
-  const gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(7.0f, 12.0f),
-                                                gfx::Size(27.0f, 9.0f));
+  constexpr gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(6, 11),
+                                                    gfx::Size(29, 11));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -2701,30 +2662,27 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoAnnotationModeDisabled) {
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
   // RunStrokeCheckTest() performed the only stroke.
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Disable annotation mode. Undo/redo should still work.
   EXPECT_TRUE(ink_module().OnMessage(
       CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kOff)));
-  EXPECT_EQ(false, ink_module().enabled());
+  EXPECT_FALSE(ink_module().enabled());
 
   PerformUndo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   PerformRedo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0));
 }
 
@@ -3189,7 +3147,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizePen) {
   histograms().ExpectUniqueSample(kPenSizeMetric,
                                   StrokeMetricBrushSize::kMedium, 1);
 
-  TestAnnotationBrushMessageParams params = {SkColorSetRGB(0xF2, 0x8B, 0x82),
+  TestAnnotationBrushMessageParams params = {kRedColor,
                                              /*size=*/1.0};
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
@@ -3213,7 +3171,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizeHighlighter) {
   InitializeSimpleSinglePageBasicLayout();
 
   // Draw a stroke with medium size.
-  TestAnnotationBrushMessageParams params = {SkColorSetRGB(0xF2, 0x8B, 0x82),
+  TestAnnotationBrushMessageParams params = {kRedColor,
                                              /*size=*/8.0};
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
@@ -3393,6 +3351,8 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
  protected:
   // Helper method for running a simple text highlighting test using text
   // selected by mouse with a single selection rect on page zero.
+  // `selection_rect` is in screen coordinates, so it is easier to see the
+  // relationship between `selection_rect` and `expected_inputs`.
   void RunSingleSelectionWithMouseTest(
       const gfx::Rect& selection_rect,
       base::span<const PdfInkInputData> expected_inputs,
@@ -3407,9 +3367,40 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
   }
 
   // Sets the selection rects that will be given by the client.
-  void SetSelectionRects(base::span<const gfx::Rect> selection_rects) {
-    EXPECT_CALL(client(), GetSelectionRects())
-        .WillRepeatedly(Return(base::ToVector(selection_rects)));
+  // `selection_map` uses screen coordinates.
+  void SetSelectionRectMap(
+      const std::map<int, std::vector<gfx::Rect>>& selection_map) {
+    // Do screen to PDF coordinate conversion. Set GetCanonicalToPdfTransform()
+    // to return an identity transform to simplify testing. Now a screen to
+    // canonical conversion is sufficient.
+    ON_CALL(client(), GetCanonicalToPdfTransform(_))
+        .WillByDefault(Return(gfx::Transform()));
+
+    PdfInkModuleClient::SelectionRectMap pdf_selection_map;
+    for (const auto& [page_index, selection_rects] : selection_map) {
+      const gfx::Transform transform = GetEventToCanonicalTransform(
+          client().GetOrientation(), client().GetPageContentsRect(page_index),
+          client().GetZoom());
+      std::vector<PdfRect>& pdf_rects = pdf_selection_map[page_index];
+      pdf_rects.reserve(selection_rects.size());
+      for (const gfx::Rect& selection_rect : selection_rects) {
+        gfx::RectF mapped_rect = transform.MapRect(gfx::RectF(selection_rect));
+        pdf_rects.push_back(PdfRect(mapped_rect));
+      }
+    }
+
+    ON_CALL(client(), GetSelectionRectMap())
+        .WillByDefault(Return(pdf_selection_map));
+  }
+
+  // Wrapper for SetSelectionRectMap() that puts all the rects on page 0.
+  // `selection_rects` uses screen coordinates.
+  void SetSelectionRectsOnFirstPage(
+      base::span<const gfx::Rect> selection_rects) {
+    // Call `SetSelectionRectMap({})` if there are no selections at all.
+    CHECK(!selection_rects.empty());
+
+    SetSelectionRectMap({{0, base::ToVector(selection_rects)}});
   }
 
   // Sets `points` as selectable text areas. Any points not included will be
@@ -3431,7 +3422,7 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
 
     SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
-    SetSelectionRects(base::span_from_ref(selection_rect));
+    SetSelectionRectsOnFirstPage(base::span_from_ref(selection_rect));
     SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
     EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
@@ -3444,9 +3435,8 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
   void VerifySingleSelectionTest(
       base::span<const PdfInkInputData> expected_inputs,
       float expected_size) {
-    EXPECT_EQ(1, client().stroke_started_count());
-    EXPECT_EQ(1, client().modified_stroke_finished_count());
-    EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+    ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                       /*unmodified_finished=*/0);
     EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
     std::optional<ink::StrokeInputBatch> expected_batch =
@@ -3464,12 +3454,10 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
     const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
     ASSERT_TRUE(brush);
     const ink::Brush& ink_brush = brush->ink_brush();
-    ASSERT_EQ(1u, ink_brush.CoatCount());
-    const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
 
     EXPECT_EQ(kOrangeColor, GetSkColorFromInkBrush(ink_brush));
     EXPECT_EQ(6.0f, ink_brush.GetSize());
-    EXPECT_EQ(0.4f, coat.tip.opacity_multiplier);
+    EXPECT_EQ(0.4f, GetOpacityMultiplierFromBrush(ink_brush));
   }
 
   void ClickTextAtPoint(const gfx::PointF& point, int click_count) {
@@ -3498,7 +3486,7 @@ TEST_P(PdfInkModuleTextHighlightTest, PenDoesNotSelectText) {
   // Select the pen tool with a "Light Red" color.
   SelectBrushTool(PdfInkBrush::Type::kPen, kRedBrushParams);
 
-  EXPECT_CALL(client(), GetSelectionRects()).Times(0);
+  EXPECT_CALL(client(), GetSelectionRectMap()).Times(0);
   SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(_, _)).Times(0);
@@ -3508,9 +3496,8 @@ TEST_P(PdfInkModuleTextHighlightTest, PenDoesNotSelectText) {
   ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
                                kEndPointInsidePage0);
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // The stroke inputs should match exactly.
@@ -3652,7 +3639,8 @@ TEST_P(PdfInkModuleTextHighlightTest, MultipleSelection) {
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
-  SetSelectionRects({kHorizontalSelection, gfx::Rect(15, 25, 10, 5)});
+  SetSelectionRectsOnFirstPage(
+      {kHorizontalSelection, gfx::Rect(15, 25, 10, 5)});
   constexpr gfx::PointF kEndPoint2InsidePage0{25.0, 30.0};
   SetTextAreaPoints({kStartPointInsidePage0, kEndPoint2InsidePage0});
 
@@ -3664,9 +3652,8 @@ TEST_P(PdfInkModuleTextHighlightTest, MultipleSelection) {
   ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPoint2InsidePage0},
                                kEndPoint2InsidePage0);
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   std::optional<ink::StrokeInputBatch> expected_selection0_batch =
@@ -3674,8 +3661,8 @@ TEST_P(PdfInkModuleTextHighlightTest, MultipleSelection) {
                            PdfInkInputData(gfx::PointF(35.0, 20.0))});
   ASSERT_TRUE(expected_selection0_batch.has_value());
   std::optional<ink::StrokeInputBatch> expected_selection1_batch =
-      CreateInkInputBatch({PdfInkInputData(gfx::PointF(17.5, 27.0)),
-                           PdfInkInputData(gfx::PointF(22.5, 27.0))});
+      CreateInkInputBatch({PdfInkInputData(gfx::PointF(17.5, 27.5)),
+                           PdfInkInputData(gfx::PointF(22.5, 27.5))});
   ASSERT_TRUE(expected_selection1_batch.has_value());
 
   std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
@@ -3712,7 +3699,7 @@ TEST_P(PdfInkModuleTextHighlightTest, OneClickCount) {
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   // There will be no text selection rects.
-  SetSelectionRects({});
+  SetSelectionRectMap({});
   SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
@@ -3721,9 +3708,8 @@ TEST_P(PdfInkModuleTextHighlightTest, OneClickCount) {
 
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(0, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/0,
+                     /*unmodified_finished=*/1);
   EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
 
   EXPECT_TRUE(CollectVisibleStrokes().empty());
@@ -3739,7 +3725,7 @@ TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
 
   // The second text click will select the word.
-  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/2));
@@ -3752,9 +3738,8 @@ TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   std::optional<ink::StrokeInputBatch> expected_batch =
@@ -3773,16 +3758,13 @@ TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
   // Mousemove and mouseup events will be handled but will not result in any
   // additional strokes.
   EXPECT_TRUE(ink_module().HandleInputEvent(
-      CreateMouseMoveWithLeftButtonEventAtPoint(kStartPointInsidePage0)));
+      CreateLeftClickWebMouseMoveEventAtPosition(kStartPointInsidePage0)));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
@@ -3794,12 +3776,12 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
 
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
 
-  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
   // The third text click will remove the original word text highlight and
   // select the line.
-  SetSelectionRects(base::span_from_ref(gfx::Rect(5, 15, 45, 12)));
+  SetSelectionRectsOnFirstPage(base::span_from_ref(gfx::Rect(5, 15, 45, 12)));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/3));
@@ -3817,9 +3799,8 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
   // One unmodified stroke: From the single-click.
   // Three ink thumbnail updates: one from the double-click rect, one from the
   // undo, and another from the triple-click rect.
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0));
 
   std::optional<ink::StrokeInputBatch> expected_batch =
@@ -3838,16 +3819,13 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
   // Mousemove and mouseup events will be handled but will not result in any
   // additional strokes.
   EXPECT_TRUE(ink_module().HandleInputEvent(
-      CreateMouseMoveWithLeftButtonEventAtPoint(kStartPointInsidePage0)));
+      CreateLeftClickWebMouseMoveEventAtPosition(kStartPointInsidePage0)));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
@@ -3863,32 +3841,27 @@ TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
                                               /*click_count=*/1));
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   VerifyAndClearExpectations();
 
   // Move and end in a non-text area. Make the mock selection rect smaller than
   // the distance between the mousedown and mouseup points.
-  SetSelectionRects(base::span_from_ref(gfx::Rect(10, 15, 2, 10)));
+  SetSelectionRectsOnFirstPage(base::span_from_ref(gfx::Rect(10, 15, 2, 10)));
 
   EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
 
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kEndPointInsidePage0);
+      CreateLeftClickWebMouseMoveEventAtPosition(kEndPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kEndPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kEndPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   std::optional<ink::StrokeInputBatch> expected_batch =
@@ -3919,14 +3892,13 @@ TEST_P(PdfInkModuleTextHighlightTest, MultiplePages) {
                                               /*click_count=*/1));
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // Move to page 1. Select rects from both pages.
   constexpr gfx::Rect kHorizontalSelectionInPage1{10, 75, 15, 14};
-  SetSelectionRects({kHorizontalSelection, kHorizontalSelectionInPage1});
+  SetSelectionRectMap(
+      {{0, {kHorizontalSelection}}, {1, {kHorizontalSelectionInPage1}}});
   EXPECT_CALL(client(),
               PageIndexFromPoint(gfx::PointF(kHorizontalSelection.origin())))
       .WillRepeatedly(Return(0));
@@ -3938,20 +3910,18 @@ TEST_P(PdfInkModuleTextHighlightTest, MultiplePages) {
               ExtendSelectionByPoint(kTwoPageVerticalLayoutPoint1InsidePage1));
 
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(
+      CreateLeftClickWebMouseMoveEventAtPosition(
           kTwoPageVerticalLayoutPoint1InsidePage1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kTwoPageVerticalLayoutPoint1InsidePage1)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(
+          kTwoPageVerticalLayoutPoint1InsidePage1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
   // All the selection strokes are considered one stroke.
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 1));
 
   std::optional<ink::StrokeInputBatch> expected_page0_batch =
@@ -3983,13 +3953,10 @@ TEST_P(PdfInkModuleTextHighlightTest,
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
-  SetSelectionRects(base::span_from_ref(gfx::Rect(9, 14, 5, 10)));
+  SetSelectionRectsOnFirstPage(base::span_from_ref(gfx::Rect(9, 14, 5, 10)));
   EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
       .WillRepeatedly(Return(true));
-
-  // There should not be any text selection extension after the miss, as the
-  // initial text selection has been terminated.
-  EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
+  EXPECT_CALL(client(), ExtendSelectionByPoint(kMouseUpPoint));
 
   RunStrokeMissedEndEventThenMouseMoveTest();
 }
@@ -4015,7 +3982,7 @@ TEST_P(PdfInkModuleTextHighlightTest, TouchOneClickCount) {
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   // There will be no text selection rects.
-  SetSelectionRects({});
+  SetSelectionRectMap({});
   SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
@@ -4031,9 +3998,8 @@ TEST_P(PdfInkModuleTextHighlightTest, TouchOneClickCount) {
                                  base::span_from_ref(kStartPointInsidePage0));
   EXPECT_TRUE(ink_module().HandleInputEvent(touch_event));
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(0, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/0,
+                     /*unmodified_finished=*/1);
   EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
 
   EXPECT_TRUE(CollectVisibleStrokes().empty());
@@ -4074,7 +4040,7 @@ TEST_P(PdfInkModuleTextHighlightTest, PenOneClickCount) {
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   // There will be no text selection rects.
-  SetSelectionRects({});
+  SetSelectionRectMap({});
   SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
@@ -4090,9 +4056,8 @@ TEST_P(PdfInkModuleTextHighlightTest, PenOneClickCount) {
                              base::span_from_ref(kStartPointInsidePage0));
   EXPECT_TRUE(ink_module().HandleInputEvent(pen_event));
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(0, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/0,
+                     /*unmodified_finished=*/1);
   EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
 
   EXPECT_TRUE(CollectVisibleStrokes().empty());
@@ -4114,7 +4079,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMove) {
 
   // Move to a text position. The cursor should remain as the custom pen cursor.
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveEventAtPoint(kEndPointInsidePage0);
+      CreateMoveWebMouseEventToPosition(kEndPointInsidePage0);
   // The event will be considered not handled, but the cursor will still update.
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
 
@@ -4132,7 +4097,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMove) {
   // Move to a text position. The cursor should be an I-beam.
   EXPECT_CALL(client(),
               UpdateInkCursor(ui::Cursor(ui::mojom::CursorType::kIBeam)));
-  mouse_move_event = CreateMouseMoveEventAtPoint(kStartPointInsidePage0);
+  mouse_move_event = CreateMoveWebMouseEventToPosition(kStartPointInsidePage0);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
 
   VerifyAndClearExpectations();
@@ -4146,7 +4111,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMove) {
     EXPECT_CALL(client(),
                 UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(10, 10))));
   }
-  mouse_move_event = CreateMouseMoveEventAtPoint(kEndPointInsidePage0);
+  mouse_move_event = CreateMoveWebMouseEventToPosition(kEndPointInsidePage0);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
 }
 
@@ -4168,7 +4133,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileTextSelecting) {
   EXPECT_CALL(client(),
               UpdateInkCursor(ui::Cursor(ui::mojom::CursorType::kIBeam)));
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveEventAtPoint(kStartPointInsidePage0);
+      CreateMoveWebMouseEventToPosition(kStartPointInsidePage0);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
 
   VerifyAndClearExpectations();
@@ -4177,12 +4142,10 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileTextSelecting) {
   // remain as an I-beam.
   EXPECT_CALL(client(), UpdateInkCursor(_)).Times(0);
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
   mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kEndPointInsidePage0);
+      CreateLeftClickWebMouseMoveEventAtPosition(kEndPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   VerifyAndClearExpectations();
@@ -4192,9 +4155,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileTextSelecting) {
   EXPECT_CALL(client(),
               UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(8, 8))));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kEndPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kEndPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
 
@@ -4216,7 +4177,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileBrushDrawing) {
   // highlighter cursor.
   EXPECT_CALL(client(), UpdateInkCursor(_)).Times(0);
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveEventAtPoint(kStartPointInsidePage0);
+      CreateMoveWebMouseEventToPosition(kStartPointInsidePage0);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
 
   VerifyAndClearExpectations();
@@ -4225,12 +4186,10 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileBrushDrawing) {
   // custom highlighter cursor.
   EXPECT_CALL(client(), UpdateInkCursor(_)).Times(0);
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
   mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(kEndPointInsidePage0);
+      CreateLeftClickWebMouseMoveEventAtPosition(kEndPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   VerifyAndClearExpectations();
@@ -4239,20 +4198,492 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileBrushDrawing) {
   EXPECT_CALL(client(),
               UpdateInkCursor(ui::Cursor(ui::mojom::CursorType::kIBeam)));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kEndPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kEndPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
 
-class PdfInkModuleTextHighlightMetricsTest
-    : public PdfInkModuleMetricsTestBase,
-      public PdfInkModuleTextHighlightTest {
+TEST_P(PdfInkModuleTextHighlightTest, IgnoreVerySmallTextSelection) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+
+  static constexpr PdfRect kVerySmallSelectionRect(
+      kStartPointInsidePage0.x(), kStartPointInsidePage0.y(),
+      kStartPointInsidePage0.x() + 1.0f, kStartPointInsidePage0.y() + 0.001f);
+  PdfInkModuleClient::SelectionRectMap pdf_selection_map;
+  pdf_selection_map[0].push_back(kVerySmallSelectionRect);
+  EXPECT_CALL(client(), GetSelectionRectMap())
+      .WillRepeatedly(Return(pdf_selection_map));
+  SetTextAreaPoints({kStartPointInsidePage0, kEndPointInsidePage0});
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+
+  // The test case should not crash. Instead, the very small text selection
+  // simply gets ignored.
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
+  EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
+  EXPECT_TRUE(CollectVisibleStrokes().empty());
+}
+
+TEST_P(PdfInkModuleTextHighlightTest,
+       TextHighlightMissedEndEventThenMouseDown) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/1))
+      .Times(2);
+  EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+
+  blink::WebMouseEvent mouse_down_event =
+      CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  blink::WebMouseEvent mouse_move_event =
+      CreateLeftClickWebMouseMoveEventAtPosition(kEndPointInsidePage0);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  // If the mouse up event went missing during stroking, the next mouse down
+  // event should not cause a crash.
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest,
+       TextHighlightWithNoEndEventThenTouchStart) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/1))
+      .Times(2);
+  EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+
+  blink::WebMouseEvent mouse_down_event =
+      CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  blink::WebMouseEvent mouse_move_event =
+      CreateLeftClickWebMouseMoveEventAtPosition(kEndPointInsidePage0);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  // If the mouse up event has yet to happen, the next touch start event
+  // should not cause a crash.
+  EXPECT_TRUE(ink_module().HandleInputEvent(
+      CreateTouchEvent(blink::WebInputEvent::Type::kTouchStart,
+                       base::span_from_ref(kStartPointInsidePage0))));
+
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
+}
+
+class PdfInkModuleTextHighlightToolChangeTest
+    : public PdfInkModuleTextHighlightTest {
+ protected:
+  static constexpr int kPageIndex = 0;
+
+  void StartOrangeTextHighlight() {
+    SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+
+    SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
+    SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
+
+    EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                                /*click_count=*/1));
+    EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+
+    EXPECT_TRUE(ink_module().HandleInputEvent(
+        CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0)));
+    EXPECT_TRUE(ink_module().HandleInputEvent(
+        CreateLeftClickWebMouseMoveEventAtPosition(kEndPointInsidePage0)));
+    VerifyAndClearExpectations();
+  }
+
+  void FinishOrangeTextHighlight() {
+    constexpr gfx::PointF kNoTextPointInsidePage0{15.0f, 15.0f};
+    EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
+                                      InkStrokeBrushColorEq(kOrangeColor)));
+    EXPECT_CALL(client(), ExtendSelectionByPoint(kNoTextPointInsidePage0));
+    EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+
+    EXPECT_TRUE(ink_module().HandleInputEvent(
+        CreateLeftClickWebMouseMoveEventAtPosition(kNoTextPointInsidePage0)));
+    EXPECT_TRUE(ink_module().HandleInputEvent(
+        CreateLeftClickWebMouseUpEventAtPosition(kEndPointInsidePage0)));
+    VerifyAndClearExpectations();
+  }
+};
+
+TEST_P(PdfInkModuleTextHighlightToolChangeTest,
+       ChangeBrushParamsDuringHighlight) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  StartOrangeTextHighlight();
+
+  // While the text highlight is still in progress, change the color to red.
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kRedBrushParams);
+
+  FinishOrangeTextHighlight();
+
+  // Do another text highlight. The color should be red.
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1),
+                                    InkStrokeBrushColorEq(kRedColor)));
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/1));
+  EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+}
+
+TEST_P(PdfInkModuleTextHighlightToolChangeTest,
+       ChangeBrushToPenDuringHighlight) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  StartOrangeTextHighlight();
+
+  // While the text highlight is still in progress, change to a pen.
+  SelectBrushTool(PdfInkBrush::Type::kPen, kRedBrushParams);
+
+  FinishOrangeTextHighlight();
+
+  // Do a stroke. The brush type should be a pen.
+  EXPECT_CALL(
+      client(),
+      StrokeAdded(kPageIndex, InkStrokeId(1),
+                  InkStrokeDrawingBrushTypeEq(PdfInkBrush::Type::kPen)));
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+}
+
+TEST_P(PdfInkModuleTextHighlightToolChangeTest,
+       ChangeBrushToEraserDuringHighlight) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  StartOrangeTextHighlight();
+
+  // While the text highlight is still in progress, change to an eraser. The
+  // text highlight will end.
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
+                                    InkStrokeBrushColorEq(kOrangeColor)));
+  SelectEraserTool();
+
+  constexpr gfx::PointF kStartStrokeInputPoint{15.0f, 20.0f};
+  constexpr gfx::PointF kEndStrokeInputPoint{35.0f, 20.0f};
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(
+                  0, ElementsAre(ElementsAreArray(
+                         {kStartStrokeInputPoint, kEndStrokeInputPoint})))));
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
+
+  // Mousemove and mouseup events are ignored.
+  EXPECT_FALSE(ink_module().HandleInputEvent(
+      CreateLeftClickWebMouseMoveEventAtPosition(kStartPointInsidePage0)));
+  EXPECT_FALSE(ink_module().HandleInputEvent(
+      CreateLeftClickWebMouseUpEventAtPosition(kEndPointInsidePage0)));
+
+  // Do a stroke. The brush type should be an eraser.
+  ApplyStrokeWithMouseAtPoints(kStartStrokeInputPoint, {kEndStrokeInputPoint},
+                               kEndStrokeInputPoint);
+
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
+}
+
+class PdfInkModuleTextHighlightCaretTest
+    : public PdfInkModuleTextHighlightTest {
+ protected:
+  static constexpr gfx::Rect kTestSelectionRect{22, 15, 12, 12};
+  static constexpr PdfInkInputData kExpectedInkInputData{
+      .position = gfx::PointF(28.0f, 21.0f)};
+  static constexpr float kExpectedBrushSize = 12.0f;
+
+  PdfInkModuleTextHighlightCaretTest() : caret_(&caret_client_) {}
+
+  MockPdfCaret* caret() { return &caret_; }
+
+  // PdfInkModuleTextHighlightTest:
+  void SetUp() override {
+    PdfInkModuleTextHighlightTest::SetUp();
+    EnableDrawAnnotationMode();
+    InitializeSimpleSinglePageBasicLayout();
+  }
+
+  // Sets up and enables the caret.
+  void SetUpCaret() {
+    SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+    ON_CALL(client(), GetPdfCaret()).WillByDefault(Return(caret()));
+    caret()->SetEnabled(true);
+  }
+
+  // Returns whether `PdfInkModule` handled the keyboard event or not.
+  bool HandleKeyboardEvent(const blink::WebKeyboardEvent& event) {
+    return ink_module().HandleInputEvent(event);
+  }
+
+  // Expects `PdfInkModule` to handle `event` and for it to forward the event to
+  // the caret.
+  void HandleKeyboardEventAndExpectCaret(const blink::WebKeyboardEvent& event) {
+    EXPECT_CALL(*caret(), OnKeyDown(WebKeyboardEventEq(event.windows_key_code,
+                                                       event.GetModifiers())))
+        .WillOnce(Return(true));
+
+    EXPECT_TRUE(HandleKeyboardEvent(event));
+  }
+
+  // Returns a keydown event for `key` with `modifiers`.
+  blink::WebKeyboardEvent GenerateKeyDownEvent(ui::KeyboardCode key,
+                                               int modifiers) {
+    blink::WebKeyboardEvent event(
+        blink::WebInputEvent::Type::kKeyDown, modifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    event.windows_key_code = key;
+    return event;
+  }
+
+  // Runs a test that checks that the arrow key events are not handled when the
+  // highlighter brush is not selected or when the PDF caret does not exist or
+  // is disabled.
+  void RunUnhandledArrowKeyTest(ui::KeyboardCode key) {
+    blink::WebKeyboardEvent arrow_event = GenerateKeyDownEvent(
+        key, blink::WebInputEvent::Modifiers::kNoModifiers);
+    blink::WebKeyboardEvent shift_arrow_event =
+        GenerateKeyDownEvent(key, blink::WebInputEvent::Modifiers::kShiftKey);
+
+    // Highlighter not selected.
+    EXPECT_FALSE(HandleKeyboardEvent(arrow_event));
+    EXPECT_FALSE(HandleKeyboardEvent(shift_arrow_event));
+
+    SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+    ON_CALL(client(), GetPdfCaret()).WillByDefault(Return(nullptr));
+
+    // Caret does not exist yet.
+    EXPECT_FALSE(HandleKeyboardEvent(arrow_event));
+    EXPECT_FALSE(HandleKeyboardEvent(shift_arrow_event));
+
+    ON_CALL(client(), GetPdfCaret()).WillByDefault(Return(caret()));
+
+    // Caret not enabled yet.
+    EXPECT_FALSE(HandleKeyboardEvent(arrow_event));
+    EXPECT_FALSE(HandleKeyboardEvent(shift_arrow_event));
+  }
+
+  // Runs a test that checks that the arrow key events are handled and highlight
+  // text.
+  void RunHandledArrowKeyTest(ui::KeyboardCode key) {
+    SetUpCaret();
+
+    // When not yet text highlighting, arrow key events without modifiers are
+    // passed directly to `PdfCaret`.
+    InSequence seq;
+    SetSelectionRectMap({});
+
+    blink::WebKeyboardEvent arrow_event = GenerateKeyDownEvent(
+        key, blink::WebInputEvent::Modifiers::kNoModifiers);
+    HandleKeyboardEventAndExpectCaret(arrow_event);
+
+    EXPECT_EQ(0, client().stroke_started_count());
+
+    blink::WebKeyboardEvent shift_arrow_event =
+        GenerateKeyDownEvent(key, blink::WebInputEvent::Modifiers::kShiftKey);
+
+    // Start text highlight.
+    TestKeyEventTextHighlights(shift_arrow_event,
+                               /*test_selection_rect=*/{10, 15, 12, 12});
+    // Continue text highlight.
+    TestKeyEventTextHighlights(shift_arrow_event,
+                               /*test_selection_rect=*/kTestSelectionRect);
+    TestKeyEventEndsTextHighlight(arrow_event,
+                                  /*expected_event_handled=*/true,
+                                  base::span_from_ref(kExpectedInkInputData),
+                                  kExpectedBrushSize);
+  }
+
+  // Tests that `event` is passed to `PdfCaret` and starts or continues text
+  // highlighting. The selection rect after text highlighting will be set to
+  // `text_selection_rect`.
+  void TestKeyEventTextHighlights(const blink::WebKeyboardEvent& event,
+                                  const gfx::Rect& test_selection_rect) {
+    SetSelectionRectsOnFirstPage(base::span_from_ref(test_selection_rect));
+    HandleKeyboardEventAndExpectCaret(event);
+
+    ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/0,
+                       /*unmodified_finished=*/0);
+  }
+
+  // Tests that `event` ends an existing text highlight.
+  // `expected_event_handled` indicates whether `event` should be considered
+  // handled or not by `PdfInkModule`. `expected_inputs` is the expected brush
+  // inputs, and `expected_size` is the expected brush size.
+  void TestKeyEventEndsTextHighlight(
+      const blink::WebKeyboardEvent& event,
+      bool expected_event_handled,
+      base::span<const PdfInkInputData> expected_inputs,
+      float expected_size) {
+    if (expected_event_handled) {
+      EXPECT_CALL(*caret(), OnKeyDown(WebKeyboardEventEq(event.windows_key_code,
+                                                         event.GetModifiers())))
+          .WillOnce(Return(true));
+    }
+
+    EXPECT_EQ(expected_event_handled, HandleKeyboardEvent(event));
+
+    ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                       /*unmodified_finished=*/0);
+    EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
+
+    std::optional<ink::StrokeInputBatch> expected_batch =
+        CreateInkInputBatch(expected_inputs);
+    ASSERT_TRUE(expected_batch.has_value());
+
+    const PdfInkBrush expected_brush(PdfInkBrush::Type::kHighlighter,
+                                     kOrangeColor, /*size=*/expected_size);
+    EXPECT_THAT(
+        CollectVisibleStrokes(),
+        ElementsAre(Pair(0, Pointwise(InkStrokeEq(expected_brush.ink_brush()),
+                                      {expected_batch.value()}))));
+  }
+
+  // `caret_client_` must be declared before `caret_`.
+  MockPdfCaretClient caret_client_;
+  MockPdfCaret caret_;
+};
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, UnhandledArrowKeyLeft) {
+  RunUnhandledArrowKeyTest(ui::KeyboardCode::VKEY_LEFT);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, UnhandledArrowKeyRight) {
+  RunUnhandledArrowKeyTest(ui::KeyboardCode::VKEY_RIGHT);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, UnhandledArrowKeyUp) {
+  RunUnhandledArrowKeyTest(ui::KeyboardCode::VKEY_UP);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, UnhandledArrowKeyDown) {
+  RunUnhandledArrowKeyTest(ui::KeyboardCode::VKEY_DOWN);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, HandledArrowKeyLeft) {
+  RunHandledArrowKeyTest(ui::KeyboardCode::VKEY_LEFT);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, HandledArrowKeyRight) {
+  RunHandledArrowKeyTest(ui::KeyboardCode::VKEY_RIGHT);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, HandledArrowKeyUp) {
+  RunHandledArrowKeyTest(ui::KeyboardCode::VKEY_UP);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, HandledArrowKeyDown) {
+  RunHandledArrowKeyTest(ui::KeyboardCode::VKEY_DOWN);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, ControlPEndsTextHighlight) {
+  SetUpCaret();
+  InSequence seq;
+  TestKeyEventTextHighlights(
+      GenerateKeyDownEvent(ui::KeyboardCode::VKEY_LEFT,
+                           blink::WebInputEvent::Modifiers::kShiftKey),
+      kTestSelectionRect);
+  TestKeyEventEndsTextHighlight(
+      GenerateKeyDownEvent(ui::KeyboardCode::VKEY_P,
+                           blink::WebInputEvent::Modifiers::kControlKey),
+      /*expected_event_handled=*/false,
+      base::span_from_ref(kExpectedInkInputData), kExpectedBrushSize);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, ControlSEndsTextHighlight) {
+  SetUpCaret();
+  InSequence seq;
+  TestKeyEventTextHighlights(
+      GenerateKeyDownEvent(ui::KeyboardCode::VKEY_LEFT,
+                           blink::WebInputEvent::Modifiers::kShiftKey),
+      kTestSelectionRect);
+  TestKeyEventEndsTextHighlight(
+      GenerateKeyDownEvent(ui::KeyboardCode::VKEY_S,
+                           blink::WebInputEvent::Modifiers::kControlKey),
+      /*expected_event_handled=*/false,
+      base::span_from_ref(kExpectedInkInputData), kExpectedBrushSize);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, UnhandledKeyEvents) {
+  blink::WebKeyboardEvent a_event = GenerateKeyDownEvent(
+      ui::KeyboardCode::VKEY_A, blink::WebInputEvent::Modifiers::kNoModifiers);
+  blink::WebKeyboardEvent control_p_event = GenerateKeyDownEvent(
+      ui::KeyboardCode::VKEY_P, blink::WebInputEvent::Modifiers::kControlKey);
+  blink::WebKeyboardEvent control_s_event = GenerateKeyDownEvent(
+      ui::KeyboardCode::VKEY_S, blink::WebInputEvent::Modifiers::kControlKey);
+
+  // Highlighter not selected.
+  EXPECT_FALSE(HandleKeyboardEvent(a_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_p_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_s_event));
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  ON_CALL(client(), GetPdfCaret()).WillByDefault(Return(nullptr));
+
+  // Caret does not exist yet.
+  EXPECT_FALSE(HandleKeyboardEvent(a_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_p_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_s_event));
+
+  ON_CALL(client(), GetPdfCaret()).WillByDefault(Return(caret()));
+
+  // Caret not enabled yet.
+  EXPECT_FALSE(HandleKeyboardEvent(a_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_p_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_s_event));
+
+  caret()->SetEnabled(true);
+
+  // `PdfInkModule` ignores these key events.
+  EXPECT_FALSE(HandleKeyboardEvent(a_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_p_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_s_event));
+}
+
+class PdfInkModuleTextHighlightMetricsTestBase
+    : public PdfInkModuleMetricsTestBase {
  protected:
   static constexpr char kTextHighlightColorMetric[] =
       "PDF.Ink2TextHighlighterColor";
   static constexpr char kTextHighlightInputDeviceMetric[] =
       "PDF.Ink2TextHighlightInputDeviceType";
+
+  // Validates the the total counts of all relevant text highlight metrics.
+  void ValidateHighlightMetricCounts(int expected_metric_count) {
+    histograms().ExpectTotalCount(kTextHighlightColorMetric,
+                                  expected_metric_count);
+    histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric,
+                                  expected_metric_count);
+  }
+};
+
+class PdfInkModuleTextHighlightMetricsTest
+    : public PdfInkModuleTextHighlightMetricsTestBase,
+      public PdfInkModuleTextHighlightTest {
+ protected:
   static constexpr base::TimeDelta kOneMs = base::Milliseconds(1);
   static constexpr base::TimeDelta kTextSelectionClickTimeMs =
       base::Milliseconds(ui::kDoubleClickTimeMs);
@@ -4261,7 +4692,7 @@ class PdfInkModuleTextHighlightMetricsTest
   // `click_count` clicks.
   void MouseMoveAndUpAtPoint(const gfx::PointF& point, int click_count) {
     EXPECT_TRUE(ink_module().HandleInputEvent(
-        CreateMouseMoveWithLeftButtonEventAtPoint(point)));
+        CreateLeftClickWebMouseMoveEventAtPosition(point)));
 
     blink::WebMouseEvent mouse_up_event =
         MouseEventBuilder()
@@ -4269,14 +4700,6 @@ class PdfInkModuleTextHighlightMetricsTest
             .SetClickCount(click_count)
             .Build();
     EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
-  }
-
-  // Validates the the total counts of all relevant text highlight metrics.
-  void ValidateHighlightMetricCounts(int expected_metric_count) {
-    histograms().ExpectTotalCount(kTextHighlightColorMetric,
-                                  expected_metric_count);
-    histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric,
-                                  expected_metric_count);
   }
 };
 
@@ -4288,9 +4711,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest,
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   ValidateHighlightMetricCounts(0);
 }
 
@@ -4321,17 +4743,15 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest,
        PdfInkInputData(gfx::PointF(35.0, 20.0))},
       /*expected_size=*/10.0);
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   ValidateHighlightMetricCounts(1);
 
   PerformUndo();
   PerformRedo();
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   ValidateHighlightMetricCounts(1);
 }
 
@@ -4343,7 +4763,7 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, Color) {
 
   histograms().ExpectTotalCount(kTextHighlightColorMetric, 0);
 
-  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
   SetTextAreaPoints({kStartPointInsidePage0, kEndPointInsidePage0});
 
   ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
@@ -4356,9 +4776,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, Color) {
   ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
                                kEndPointInsidePage0);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   histograms().ExpectBucketCount(kTextHighlightColorMetric,
                                  StrokeMetricHighlighterColor::kOrange, 1);
   histograms().ExpectTotalCount(kTextHighlightColorMetric, 2);
@@ -4372,7 +4791,7 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, InputDevice) {
 
   histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric, 0);
 
-  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
   SetTextAreaPoints({kStartPointInsidePage0, kEndPointInsidePage0});
 
   // Apply a text highlight stroke with mouse.
@@ -4387,9 +4806,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, InputDevice) {
                                {base::span_from_ref(kEndPointInsidePage0)},
                                base::span_from_ref(kEndPointInsidePage0));
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   histograms().ExpectBucketCount(kTextHighlightInputDeviceMetric,
                                  StrokeMetricInputDeviceType::kTouch, 1);
   histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric, 2);
@@ -4399,9 +4817,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, InputDevice) {
                              {base::span_from_ref(kEndPointInsidePage0)},
                              base::span_from_ref(kEndPointInsidePage0));
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(3, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/3,
+                     /*unmodified_finished=*/0);
   histograms().ExpectBucketCount(kTextHighlightInputDeviceMetric,
                                  StrokeMetricInputDeviceType::kPen, 1);
   histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric, 3);
@@ -4416,28 +4833,25 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickDelay) {
 
   // Click twice.
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
-  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Fast forward to just one ms before the timer should fire.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs - kOneMs);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Fast forward by one ms so the timer fires.
   GetPdfTestTaskEnvironment().FastForwardBy(kOneMs);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 }
 
@@ -4452,7 +4866,7 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMove) {
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
 
   // Click the second time, but without mouseup.
-  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
   blink::WebMouseEvent mouse_event =
       MouseEventBuilder()
           .CreateLeftClickAtPosition(kStartPointInsidePage0)
@@ -4460,33 +4874,29 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMove) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_event));
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 
   // Now move and release at a new position.
   MouseMoveAndUpAtPoint(kEndPointInsidePage0, /*click_count=*/2);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 }
 
@@ -4500,12 +4910,11 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMoveHighlight) {
 
   // Click twice.
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
-  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Text highlight elsewhere.
@@ -4517,17 +4926,15 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMoveHighlight) {
 
   // There should be reports for the double-click highlight and the new
   // highlight.
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(2);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(2);
 }
 
@@ -4540,36 +4947,32 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickDelay) {
 
   // Click twice.
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
-  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Fast forward to just one ms before the timer would fire.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs - kOneMs);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Click the third time.
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/3);
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 }
 
@@ -4582,12 +4985,11 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickMove) {
 
   // Click twice.
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
-  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Click the third time, but without mouseup.
@@ -4598,26 +5000,104 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickMove) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_event));
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 
   // Now move and release at a new position.
   MouseMoveAndUpAtPoint(kEndPointInsidePage0, /*click_count=*/3);
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
+}
+
+class PdfInkModuleTextHighlightCaretMetricsTest
+    : public PdfInkModuleTextHighlightMetricsTestBase,
+      public PdfInkModuleTextHighlightCaretTest {
+ protected:
+  void ApplySampleTextHighlight() {
+    SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
+    InSequence seq;
+    HandleKeyboardEventAndExpectCaret(
+        GenerateKeyDownEvent(ui::KeyboardCode::VKEY_RIGHT,
+                             blink::WebInputEvent::Modifiers::kShiftKey));
+    HandleKeyboardEventAndExpectCaret(
+        GenerateKeyDownEvent(ui::KeyboardCode::VKEY_RIGHT,
+                             blink::WebInputEvent::Modifiers::kNoModifiers));
+  }
+};
+
+TEST_P(PdfInkModuleTextHighlightCaretMetricsTest,
+       TextHighlightUndoRedoDoesNotAffectMetrics) {
+  SetUpCaret();
+
+  ValidateHighlightMetricCounts(0);
+
+  RunHandledArrowKeyTest(ui::KeyboardCode::VKEY_RIGHT);
+
+  ValidateHighlightMetricCounts(1);
+
+  PerformUndo();
+  PerformRedo();
+
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
+  ValidateHighlightMetricCounts(1);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretMetricsTest, Color) {
+  SetUpCaret();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kRedBrushParams);
+
+  histograms().ExpectTotalCount(kTextHighlightColorMetric, 0);
+
+  ApplySampleTextHighlight();
+
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
+  histograms().ExpectUniqueSample(kTextHighlightColorMetric,
+                                  StrokeMetricHighlighterColor::kLightRed, 1);
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  ApplySampleTextHighlight();
+
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
+  histograms().ExpectBucketCount(kTextHighlightColorMetric,
+                                 StrokeMetricHighlighterColor::kOrange, 1);
+  histograms().ExpectTotalCount(kTextHighlightColorMetric, 2);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretMetricsTest, InputDevice) {
+  SetUpCaret();
+
+  histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric, 0);
+
+  ApplySampleTextHighlight();
+
+  // Apply a text highlight stroke with keyboard.
+  histograms().ExpectUniqueSample(kTextHighlightInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kKeyboard, 1);
+
+  // Apply a text highlight stroke with mouse.
+  SetTextAreaPoints({kStartPointInsidePage0, kEndPointInsidePage0});
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+
+  histograms().ExpectBucketCount(kTextHighlightInputDeviceMetric,
+                                 StrokeMetricInputDeviceType::kMouse, 1);
+  histograms().ExpectBucketCount(kTextHighlightInputDeviceMetric,
+                                 StrokeMetricInputDeviceType::kKeyboard, 1);
+  histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric, 2);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -4641,7 +5121,19 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
 INSTANTIATE_TEST_SUITE_P(
     All,
+    PdfInkModuleTextHighlightToolChangeTest,
+    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PdfInkModuleTextHighlightCaretTest,
+    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
     PdfInkModuleTextHighlightMetricsTest,
+    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PdfInkModuleTextHighlightCaretMetricsTest,
     testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
 
 }  // namespace chrome_pdf

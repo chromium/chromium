@@ -13,8 +13,7 @@ suite('LanguageToast', () => {
   let toast: LanguageToastElement;
 
   function getTitle(): string {
-    return toast.$.toast.querySelector<HTMLElement>('#toastTitle')!.textContent!
-        ;
+    return toast.$.toast.querySelector<HTMLElement>('#toastTitle')!.textContent;
   }
 
   setup(() => {
@@ -41,6 +40,23 @@ suite('LanguageToast', () => {
   test('does not show toast if not newly downloaded', async () => {
     const lang = 'pt-br';
     toast.notify(NotificationType.DOWNLOADED, lang);
+    await microtasksFinished();
+
+    assertFalse(toast.$.toast.open);
+  });
+
+  test('does not show toast if still downloading', async () => {
+    const lang = 'pt-br';
+    toast.notify(NotificationType.DOWNLOADING, lang);
+    await microtasksFinished();
+
+    assertFalse(toast.$.toast.open);
+  });
+
+  test('does not show toast if error while downloading', async () => {
+    const lang = 'pt-br';
+    toast.notify(NotificationType.DOWNLOADING, lang);
+    toast.notify(NotificationType.NO_INTERNET, lang);
     await microtasksFinished();
 
     assertFalse(toast.$.toast.open);

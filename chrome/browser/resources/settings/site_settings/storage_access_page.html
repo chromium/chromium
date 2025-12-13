@@ -1,0 +1,33 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsStorageAccess}"
+    search-label="$i18n{siteSettingsAllSitesFilter}"
+    search-icon="settings20:filter-list"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{storageAccessDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.STORAGE_ACCESS]]"
+      allow-option-label="$i18n{storageAccessAllowed}"
+      allow-option-icon="privacy:storage-access"
+      block-option-label="$i18n{storageAccessBlocked}"
+      block-option-icon="privacy:storage-access-off">
+  </settings-category-default-radio-group>
+  <!-- Exceptions section. -->
+  <div class="content-settings-header">
+    <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
+    <div class="cr-secondary-text">
+      $i18n{siteSettingsCustomizedBehaviorsDescription}
+    </div>
+  </div>
+  <storage-access-site-list
+      category-subtype="[[contentSettingEnum_.BLOCK]]"
+      category-header="$i18n{storageAccessBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </storage-access-site-list>
+  <storage-access-site-list
+      category-subtype="[[contentSettingEnum_.ALLOW]]"
+      category-header="$i18n{storageAccessAllowedExceptions}"
+      search-filter="[[searchTerm]]">
+  </storage-access-site-list>
+</settings-subpage>

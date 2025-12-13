@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/prefs/testing_pref_service.h"
@@ -35,10 +33,9 @@ class ReadingListBrowserAgentUnitTest : public PlatformTest {
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_entries;
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(
-        ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::move(initial_entries)));
+    builder.AddTestingFactory(ReadingListModelFactory::GetInstance(),
+                              ReadingListModelTestingFactoryWithFakeStorage(
+                                  std::move(initial_entries)));
 
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());

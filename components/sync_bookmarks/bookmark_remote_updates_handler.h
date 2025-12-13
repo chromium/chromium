@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_REMOTE_UPDATES_HANDLER_H_
 #define COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_REMOTE_UPDATES_HANDLER_H_
 
-#include <map>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -46,6 +45,16 @@ class BookmarkRemoteUpdatesHandler {
   void Process(const syncer::UpdateResponseDataList& updates,
                bool got_new_encryption_requirements);
 
+  // Returns the tracked entity that should be affected by a remote change, or
+  // null if there is none (e.g. indicating a remote creation).
+  // |should_ignore_update| must not be null and it can be marked as true if the
+  // function reports that the update should not be processed further (e.g. it
+  // is invalid).
+  static const SyncedBookmarkTrackerEntity* DetermineLocalTrackedEntityToUpdate(
+      const SyncedBookmarkTracker* bookmark_tracker,
+      const syncer::EntityData& update_entity,
+      bool* should_ignore_update);
+
   // Public for testing.
   static std::vector<const syncer::UpdateResponseData*>
   ReorderValidUpdatesForTest(const syncer::UpdateResponseDataList* updates);
@@ -62,15 +71,6 @@ class BookmarkRemoteUpdatesHandler {
   // |updates|. In this process, invalid updates are filtered out.
   static std::vector<const syncer::UpdateResponseData*> ReorderValidUpdates(
       const syncer::UpdateResponseDataList* updates);
-
-  // Returns the tracked entity that should be affected by a remote change, or
-  // null if there is none (e.g. indicating a remote creation).
-  // |should_ignore_update| must not be null and it can be marked as true if the
-  // function reports that the update should not be processed further (e.g. it
-  // is invalid).
-  const SyncedBookmarkTrackerEntity* DetermineLocalTrackedEntityToUpdate(
-      const syncer::EntityData& update_entity,
-      bool* should_ignore_update);
 
   // Given a remote update entity, it returns the parent bookmark node of the
   // corresponding node. It returns null if the parent node cannot be found.

@@ -14,13 +14,14 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
+#include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/bubble/bubble_border.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/types/pass_key.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager_uma_helper.h"
+#include "ui/views/bubble/bubble_border.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
@@ -75,7 +76,6 @@ class PictureInPictureWindowManager {
   content::PictureInPictureResult EnterVideoPictureInPicture(
       content::WebContents*);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Shows a PIP window using the window controller for document picture in
   // picture.
   //
@@ -86,7 +86,6 @@ class PictureInPictureWindowManager {
   // it doesn't have a failure state.
   void EnterDocumentPictureInPicture(content::WebContents* parent_web_contents,
                                      content::WebContents* child_web_contents);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Shows a PIP window with an explicitly provided window controller. This is
   // used by ChromeOS ARC windows which do not have a WebContents as the source.
@@ -165,14 +164,14 @@ class PictureInPictureWindowManager {
   // minimum (|GetMinimumInnerWindowSize|).
   gfx::Rect CalculateOuterWindowBounds(
       const blink::mojom::PictureInPictureWindowOptions& pip_options,
-      const display::Display& display,
       const gfx::Size& minimum_window_size,
       const gfx::Size& excluded_margin);
 
-  // Update the most recent window bounds for the pip window in the cache.  Call
+  // Update the most recent window bounds for the pip window in the cache. Call
   // this when the pip window moves or resizes, though it's okay if not every
   // update makes it here.
-  void UpdateCachedBounds(const gfx::Rect& most_recent_bounds);
+  void UpdateCachedBounds(const gfx::Rect& most_recent_bounds,
+                          const display::Display& pip_display);
 
   // Clears the picture-in-picture window cached bounds.
   void ClearCachedBounds();
@@ -273,7 +272,6 @@ class PictureInPictureWindowManager {
  private:
   friend struct base::DefaultSingletonTraits<PictureInPictureWindowManager>;
   class VideoWebContentsObserver;
-#if !BUILDFLAG(IS_ANDROID)
   class DocumentWebContentsObserver;
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -293,6 +291,7 @@ class PictureInPictureWindowManager {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:PictureInPictureDisallowedTypeEnum)
 
+#if !BUILDFLAG(IS_ANDROID)
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
@@ -322,10 +321,8 @@ class PictureInPictureWindowManager {
   // This is suffixed with "Internal" to keep consistency with the method above.
   void CloseWindowInternal();
 
-#if !BUILDFLAG(IS_ANDROID)
   // Called when the document PiP parent web contents is being destroyed.
   void DocumentWebContentsDestroyed();
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Exits picture in picture soon, but not before this call returns.  If
   // picture in picture closes between now and then, that's okay.  Intended as a
@@ -369,9 +366,9 @@ class PictureInPictureWindowManager {
   base::ObserverList<Observer> observers_;
 
   std::unique_ptr<VideoWebContentsObserver> video_web_contents_observer_;
-#if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
 
+  std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<PictureInPictureOcclusionTracker> occlusion_tracker_;
 
   // The number of `ScopedDisallowPictureInPicture` objects currently in
@@ -395,6 +392,10 @@ class PictureInPictureWindowManager {
 
   std::unique_ptr<PictureInPictureWindowManagerUmaHelper> uma_helper_;
 #endif  //! BUILDFLAG(IS_ANDROID)
+
+  // The display of the opener window, cached during
+  // `CalculateInitialPictureInPictureWindowBounds`.
+  std::optional<display::Display> opener_display_;
 
   raw_ptr<content::PictureInPictureWindowController, DanglingUntriaged>
       pip_window_controller_ = nullptr;

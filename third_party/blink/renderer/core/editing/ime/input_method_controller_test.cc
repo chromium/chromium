@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_list.h"
@@ -46,6 +48,7 @@ class InputMethodControllerTest : public EditingTestBase {
   Element* InsertHTMLElement(const char* element_code, const char* element_id);
   void CreateHTMLWithCompositionInputEventListeners();
   void CreateHTMLWithCompositionEndEventListener(const SelectionType);
+  int TextInputFlags(const char* html);
 };
 
 Element* InputMethodControllerTest::InsertHTMLElement(const char* element_code,
@@ -124,6 +127,13 @@ void InputMethodControllerTest::CreateHTMLWithCompositionEndEventListener(
   GetDocument().body()->AppendChild(script);
   UpdateAllLifecyclePhasesForTest();
   editable->Focus();
+}
+
+int InputMethodControllerTest::TextInputFlags(const char* html) {
+  GetDocument().write(html);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  To<Element>(GetDocument().body()->lastChild())->Focus();
+  return Controller().TextInputFlags();
 }
 
 TEST_F(InputMethodControllerTest, BackspaceFromEndOfInput) {
@@ -1094,9 +1104,7 @@ TEST_F(InputMethodControllerTest, ReplaceTextAndDoNotChangeSelection) {
   // Select "world!".
   Controller().SetEditableSelectionOffsets(PlainTextRange(6, 12));
   // Replace "Hello" with "Hi".
-  Controller().ReplaceTextAndMoveCaret(
-      "Hi", PlainTextRange(0, 5),
-      InputMethodController::MoveCaretBehavior::kDoNotMove);
+  Controller().ReplaceTextAndKeepSelection("Hi", PlainTextRange(0, 5));
   EXPECT_EQ("Hi world!", input->Value());
   // The selection is still "world!".
   EXPECT_EQ(3u, Controller().GetSelectionOffsets().Start());
@@ -1109,9 +1117,7 @@ TEST_F(InputMethodControllerTest, ReplaceTextAndDoNotChangeSelection) {
   // Select "Hello".
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 5));
   // Replace "Hello" with "Hi".
-  Controller().ReplaceTextAndMoveCaret(
-      "Hi", PlainTextRange(0, 5),
-      InputMethodController::MoveCaretBehavior::kDoNotMove);
+  Controller().ReplaceTextAndKeepSelection("Hi", PlainTextRange(0, 5));
   EXPECT_EQ("Hi world!", input->Value());
 
   // The new selection is "Hi".
@@ -1125,17 +1131,14 @@ TEST_F(InputMethodControllerTest, ReplaceTextAndDoNotChangeSelection) {
   // Select "Hello".
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 5));
   // Replace "He" with "Hi".
-  Controller().ReplaceTextAndMoveCaret(
-      "Hi", PlainTextRange(0, 2),
-      InputMethodController::MoveCaretBehavior::kDoNotMove);
+  Controller().ReplaceTextAndKeepSelection("Hi", PlainTextRange(0, 2));
   EXPECT_EQ("Hillo world!", input->Value());
   // The selection is still "Hillo".
   EXPECT_EQ(0u, Controller().GetSelectionOffsets().Start());
   EXPECT_EQ(5u, Controller().GetSelectionOffsets().End());
 }
 
-TEST_F(InputMethodControllerTest,
-       ReplaceTextAndMoveCursorAfterTheReplacementText) {
+TEST_F(InputMethodControllerTest, ReplaceTextAndMoveCaret) {
   auto* input =
       To<HTMLInputElement>(InsertHTMLElement("<input id='sample'>", "sample"));
 
@@ -1149,9 +1152,7 @@ TEST_F(InputMethodControllerTest,
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 4));
   // Replace "morning" with "night". The replaced range does not overlap with
   // the selection range.
-  Controller().ReplaceTextAndMoveCaret(
-      "night", PlainTextRange(5, 12),
-      InputMethodController::MoveCaretBehavior::kMoveCaretAfterText);
+  Controller().ReplaceTextAndMoveCaret("night", PlainTextRange(5, 12), 0);
   EXPECT_EQ("Good night!", input->Value());
   // The caret should be after "night".
   EXPECT_EQ(10u, Controller().GetSelectionOffsets().Start());
@@ -1164,9 +1165,7 @@ TEST_F(InputMethodControllerTest,
   Controller().SetEditableSelectionOffsets(PlainTextRange(5, 12));
   // Replace "morning" with "night". The replaced range is the same as the
   // selection range.
-  Controller().ReplaceTextAndMoveCaret(
-      "night", PlainTextRange(5, 12),
-      InputMethodController::MoveCaretBehavior::kMoveCaretAfterText);
+  Controller().ReplaceTextAndMoveCaret("night", PlainTextRange(5, 12), 0);
   EXPECT_EQ("Good night!", input->Value());
   // The caret should be after "night".
   EXPECT_EQ(10u, Controller().GetSelectionOffsets().Start());
@@ -1179,13 +1178,24 @@ TEST_F(InputMethodControllerTest,
   Controller().SetEditableSelectionOffsets(PlainTextRange(3, 7));
   // Replace "morning" with "night". The replaced range partially overlaps with
   // the selection range.
-  Controller().ReplaceTextAndMoveCaret(
-      "night", PlainTextRange(5, 12),
-      InputMethodController::MoveCaretBehavior::kMoveCaretAfterText);
+  Controller().ReplaceTextAndMoveCaret("night", PlainTextRange(5, 12), 0);
   EXPECT_EQ("Good night!", input->Value());
   // The caret should be after "night".
   EXPECT_EQ(10u, Controller().GetSelectionOffsets().Start());
   EXPECT_EQ(10u, Controller().GetSelectionOffsets().End());
+
+  input->SetValue("Good morning!");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_EQ("Good morning!", input->Value());
+  // Select "d mo".
+  Controller().SetEditableSelectionOffsets(PlainTextRange(3, 7));
+  // Replace "morning" with "night". The replaced range partially overlaps with
+  // the selection range.
+  Controller().ReplaceTextAndMoveCaret("night", PlainTextRange(5, 12), -4);
+  EXPECT_EQ("Good night!", input->Value());
+  // The caret should be after "night".
+  EXPECT_EQ(6u, Controller().GetSelectionOffsets().Start());
+  EXPECT_EQ(6u, Controller().GetSelectionOffsets().End());
 }
 
 TEST_F(InputMethodControllerTest, SetCompositionForInputWithNewCaretPositions) {
@@ -3588,6 +3598,30 @@ TEST_F(InputMethodControllerTest, AutocapitalizeTextInputFlags) {
   }
 }
 
+TEST_F(InputMethodControllerTest, AutoCompleteTextInputFlags) {
+  constexpr int default_flags = kWebTextInputFlagAutocapitalizeSentences;
+  EXPECT_EQ(TextInputFlags("<input autocomplete=off>"),
+            kWebTextInputFlagAutocompleteOff | default_flags);
+  EXPECT_EQ(TextInputFlags("<input autocomplete=OFF>"),
+            kWebTextInputFlagAutocompleteOff | default_flags);
+  EXPECT_EQ(TextInputFlags("<input autocomplete=on>"),
+            kWebTextInputFlagAutocompleteOn | default_flags);
+  EXPECT_EQ(TextInputFlags("<input autocomplete=ON>"),
+            kWebTextInputFlagAutocompleteOn | default_flags);
+}
+
+TEST_F(InputMethodControllerTest, AutoCorrectTextInputFlags) {
+  constexpr int default_flags = kWebTextInputFlagAutocapitalizeSentences;
+  EXPECT_EQ(TextInputFlags("<input autocorrect=off>"),
+            kWebTextInputFlagAutocorrectOff | default_flags);
+  EXPECT_EQ(TextInputFlags("<input autocorrect=OFF>"),
+            kWebTextInputFlagAutocorrectOff | default_flags);
+  EXPECT_EQ(TextInputFlags("<input autocorrect=on>"),
+            kWebTextInputFlagAutocorrectOn | default_flags);
+  EXPECT_EQ(TextInputFlags("<input autocorrect=ON>"),
+            kWebTextInputFlagAutocorrectOn | default_flags);
+}
+
 TEST_F(InputMethodControllerTest, VerticalTextInputFlags) {
   Vector<std::pair<String, int>> element_html_and_expected_flags = {
       {"<div contenteditable='true'></div>", 0},
@@ -3806,4 +3840,65 @@ TEST_F(InputMethodControllerTest, EditContextCanvasHasEditableType) {
   editable_canvas->Focus();
   EXPECT_EQ(kWebTextInputTypeContentEditable, Controller().TextInputType());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(InputMethodControllerTest, SetImeTextSpanForSpellcheckSpellingMarkers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kAndroidSpellcheckFullApiBlink);
+  Element* div = InsertHTMLElement(
+      "<div id='sample' contenteditable>hello world</div>", "sample");
+  Node* text = div->firstChild();
+
+  GetDocument().Markers().AddSpellingMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)), "hi!\nhello!");
+
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(Position(text, 0), Position(text, 1))
+          .Build(),
+      SetSelectionOptions());
+
+  const std::vector<ui::ImeTextSpan>& ime_text_spans =
+      Controller().TextInputInfo().ime_text_spans;
+
+  EXPECT_EQ(1u, ime_text_spans.size());
+  EXPECT_EQ(0u, ime_text_spans[0].start_offset);
+  EXPECT_EQ(5u, ime_text_spans[0].end_offset);
+  EXPECT_EQ(2u, ime_text_spans[0].suggestions.size());
+  EXPECT_EQ("hi!", ime_text_spans[0].suggestions[0]);
+  EXPECT_EQ("hello!", ime_text_spans[0].suggestions[1]);
+  EXPECT_EQ(ui::ImeTextSpan::Type::kMisspellingSuggestion,
+            ime_text_spans[0].type);
+}
+
+TEST_F(InputMethodControllerTest, SetImeTextSpanForSpellcheckGrammarMarkers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kAndroidSpellcheckFullApiBlink);
+  Element* div = InsertHTMLElement(
+      "<div id='sample' contenteditable>hello world</div>", "sample");
+  Node* text = div->firstChild();
+
+  GetDocument().Markers().AddGrammarMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)), "hi!\nhello!");
+
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(Position(text, 0), Position(text, 1))
+          .Build(),
+      SetSelectionOptions());
+
+  const std::vector<ui::ImeTextSpan>& ime_text_spans =
+      Controller().TextInputInfo().ime_text_spans;
+
+  EXPECT_EQ(1u, ime_text_spans.size());
+  EXPECT_EQ(0u, ime_text_spans[0].start_offset);
+  EXPECT_EQ(5u, ime_text_spans[0].end_offset);
+  EXPECT_EQ(2u, ime_text_spans[0].suggestions.size());
+  EXPECT_EQ("hi!", ime_text_spans[0].suggestions[0]);
+  EXPECT_EQ("hello!", ime_text_spans[0].suggestions[1]);
+  EXPECT_EQ(ui::ImeTextSpan::Type::kGrammarSuggestion, ime_text_spans[0].type);
+}
+#endif
 }  // namespace blink

@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
+
 import android.Manifest;
 import android.text.TextUtils;
 
@@ -15,6 +20,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -32,9 +40,11 @@ import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.Runtim
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.hats.SurveyClient;
+import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.EmbeddedPermissionDialogMediator;
 import org.chromium.components.permissions.PermissionDialogController;
@@ -67,11 +77,18 @@ public class EmbeddedPermissionPromptTest {
     private static final int TEST_TIMEOUT = 10000;
     private static final int TEST_POLLING = 1000;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock SurveyClient mSurveyClient;
+    @Mock SurveyClientFactory mSurveyClientFactory;
+
     @Rule public PermissionTestRule mActivityTestRule = new PermissionTestRule();
     private TestAndroidPermissionDelegate mTestAndroidPermissionDelegate;
 
     @Before
     public void setUp() throws Exception {
+        SurveyClientFactory.setInstanceForTesting(mSurveyClientFactory);
+        doReturn(mSurveyClient).when(mSurveyClientFactory).createClient(any(), any(), any(), any());
         mActivityTestRule.getEmbeddedTestServerRule().setServerPort(12345);
         mActivityTestRule.setUpActivity();
     }
@@ -86,32 +103,43 @@ public class EmbeddedPermissionPromptTest {
     private void setNativeContentSetting(
             @ContentSettingsType.EnumType int type,
             final String origin,
-            @ContentSettingValues int value) {
+            @ContentSetting int value) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    WebsitePreferenceBridgeJni.get()
-                            .setPermissionSettingForOrigin(
-                                    ProfileManager.getLastUsedRegularProfile(),
-                                    type,
-                                    origin,
-                                    origin,
-                                    value);
+                    if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                        WebsitePreferenceBridgeJni.get()
+                                .setGeolocationSettingForOrigin(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        type,
+                                        origin,
+                                        origin,
+                                        value,
+                                        value);
+                    } else {
+                        WebsitePreferenceBridgeJni.get()
+                                .setPermissionSettingForOrigin(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        type,
+                                        origin,
+                                        origin,
+                                        value);
+                    }
                 });
     }
 
     private void checkPermission(
             @ContentSettingsType.EnumType int type, String title, ChromeActivity activity)
             throws Exception {
-        final Tab tab = activity.getActivityTab();
+        final Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
         final PermissionUpdateWaiter permissionUpdateWaiter =
                 new PermissionUpdateWaiter(title, activity);
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(permissionUpdateWaiter));
         switch (type) {
-            case ContentSettingsType.GEOLOCATION -> {
+            case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS -> {
                 mActivityTestRule.runJavaScriptCodeInCurrentTab("checkGeolocation();");
             }
             default -> {
-                assert false : "Unreached";
+                throw new AssertionError("Unreached");
             }
         }
         permissionUpdateWaiter.waitForNumUpdates(0);
@@ -119,7 +147,7 @@ public class EmbeddedPermissionPromptTest {
     }
 
     private void waitForTitleUpdate(String title, ChromeActivity activity) throws Exception {
-        final Tab tab = activity.getActivityTab();
+        final Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
         final PermissionUpdateWaiter permissionUpdateWaiter =
                 new PermissionUpdateWaiter(title, activity);
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(permissionUpdateWaiter));
@@ -137,7 +165,7 @@ public class EmbeddedPermissionPromptTest {
             final String page,
             final String nodeId,
             @ContentSettingsType.EnumType int type,
-            @ContentSettingValues int value,
+            @ContentSetting int value,
             final String expectedPromptText,
             final String expectedPositiveButtonText,
             final String expectedPositiveEphemeralButtonText,
@@ -155,7 +183,7 @@ public class EmbeddedPermissionPromptTest {
                 expectedPositiveEphemeralButtonText,
                 expectedNegativeButtonText,
                 /*expectedPermission*/ "",
-                "dismiss");
+                "promptdismiss");
     }
 
     /**
@@ -187,7 +215,7 @@ public class EmbeddedPermissionPromptTest {
             final String page,
             final String nodeId,
             @ContentSettingsType.EnumType int type,
-            @ContentSettingValues int value,
+            @ContentSetting int value,
             final EmbeddedPermissiontResponse response,
             final String expectedPromptText,
             final String expectedPositiveButtonText,
@@ -262,7 +290,7 @@ public class EmbeddedPermissionPromptTest {
                             PermissionTestRule.PromptDecision.ALLOW_ONCE, activity);
                 }
                 default -> {
-                    assert false : "Unexpected response ";
+                    throw new AssertionError("Unexpected response ");
                 }
             }
             waitForTitleUpdate(expectedTitle, activity);
@@ -270,7 +298,7 @@ public class EmbeddedPermissionPromptTest {
                 checkPermission(type, expectedPermission, activity);
             }
         } finally {
-            setNativeContentSetting(type, url, ContentSettingValues.DEFAULT);
+            setNativeContentSetting(type, url, ContentSetting.DEFAULT);
         }
     }
 
@@ -286,7 +314,9 @@ public class EmbeddedPermissionPromptTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         final String expectedTitle =
-                (response == EmbeddedPermissiontResponse.NEGATIVE) ? "dismiss" : "resolve";
+                (response == EmbeddedPermissiontResponse.NEGATIVE)
+                        ? "promptdismiss"
+                        : "promptaction";
         final String expectedPermission =
                 (response == EmbeddedPermissiontResponse.NEGATIVE) ? "prompt" : "granted";
         runTest(
@@ -294,7 +324,7 @@ public class EmbeddedPermissionPromptTest {
                 TEST_PAGE,
                 "geolocation",
                 stringToContentSettingsType("geolocation"),
-                ContentSettingValues.ASK,
+                ContentSetting.ASK,
                 response,
                 LOOPBACK_ADDRESS + " wants to use your device's location",
                 "Allow while visiting the site",
@@ -316,7 +346,9 @@ public class EmbeddedPermissionPromptTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         final String expectedTitle =
-                (response == EmbeddedPermissiontResponse.NEGATIVE) ? "resolve" : "dismiss";
+                (response == EmbeddedPermissiontResponse.NEGATIVE)
+                        ? "promptaction"
+                        : "promptdismiss";
         final String expectedPermission =
                 (response == EmbeddedPermissiontResponse.NEGATIVE) ? "granted" : "denied";
         runTest(
@@ -324,7 +356,7 @@ public class EmbeddedPermissionPromptTest {
                 TEST_PAGE,
                 "geolocation",
                 stringToContentSettingsType("geolocation"),
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 response,
                 "You previously didn't allow location for this site",
                 "Continue not allowing",
@@ -346,7 +378,9 @@ public class EmbeddedPermissionPromptTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         final String expectedTitle =
-                (response == EmbeddedPermissiontResponse.NEGATIVE) ? "resolve" : "dismiss";
+                (response == EmbeddedPermissiontResponse.NEGATIVE)
+                        ? "promptaction"
+                        : "promptdismiss";
         final String expectedPermission =
                 (response == EmbeddedPermissiontResponse.NEGATIVE) ? "denied" : "granted";
         runTest(
@@ -354,7 +388,7 @@ public class EmbeddedPermissionPromptTest {
                 TEST_PAGE,
                 "geolocation",
                 stringToContentSettingsType("geolocation"),
-                ContentSettingValues.ALLOW,
+                ContentSetting.ALLOW,
                 response,
                 "You have allowed location on " + LOOPBACK_ADDRESS,
                 "Continue allowing",
@@ -376,11 +410,10 @@ public class EmbeddedPermissionPromptTest {
             case "microphone":
                 return ContentSettingsType.MEDIASTREAM_MIC;
             case "geolocation":
-                return ContentSettingsType.GEOLOCATION;
+                return getGeolocationType();
             default:
-                assert false : "Unreached";
+                throw new AssertionError("Unreached");
         }
-        return ContentSettingsType.DEFAULT;
     }
 
     @Test
@@ -401,7 +434,7 @@ public class EmbeddedPermissionPromptTest {
                 TEST_PAGE,
                 "geolocation",
                 stringToContentSettingsType("geolocation"),
-                ContentSettingValues.ASK,
+                ContentSetting.ASK,
                 LOOPBACK_ADDRESS + " wants to use your device's location",
                 "Allow while visiting the site",
                 "Allow this time",
@@ -426,7 +459,7 @@ public class EmbeddedPermissionPromptTest {
                 TEST_PAGE,
                 "geolocation",
                 stringToContentSettingsType("geolocation"),
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 "You previously didn't allow location for this site",
                 "Continue not allowing",
                 /* expectedPositiveEphemeralButtonText */ "",
@@ -451,7 +484,7 @@ public class EmbeddedPermissionPromptTest {
                 TEST_PAGE,
                 "geolocation",
                 stringToContentSettingsType("geolocation"),
-                ContentSettingValues.ALLOW,
+                ContentSetting.ALLOW,
                 "You have allowed location on " + LOOPBACK_ADDRESS,
                 "Continue allowing",
                 /* expectedPositiveEphemeralButtonText */ "",
@@ -480,7 +513,7 @@ public class EmbeddedPermissionPromptTest {
                 TEST_PAGE,
                 "geolocation",
                 stringToContentSettingsType("geolocation"),
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 "To use your location on this site, give " + productName + " access",
                 "Android settings",
                 /* expectedPositiveEphemeralButtonText */ "",
@@ -502,7 +535,7 @@ public class EmbeddedPermissionPromptTest {
                 TEST_PAGE,
                 "geolocation",
                 stringToContentSettingsType("geolocation"),
-                ContentSettingValues.ALLOW,
+                ContentSetting.ALLOW,
                 "To use your location on this site, give " + productName + " access",
                 "Android settings",
                 /* expectedPositiveEphemeralButtonText */ "",

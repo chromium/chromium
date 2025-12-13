@@ -14,6 +14,9 @@ export function getHtml(this: AppElement) {
     clear-label="clear"
     role="banner"
     show-search="${this.showSearch_}">
+  <cr-button @click="${this.onExportToJsonClick_}">
+    $i18n{exportToJsonButton}
+  </cr-button>
 </cr-toolbar>
 
 <div class="container">

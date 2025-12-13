@@ -8,7 +8,8 @@
 
 #include <iterator>
 
-#include "third_party/jni_zero/jni_zero_internal.h"
+#include "overridden/jni_zero_internal.h"
+
 
 extern const int64_t kJniZeroHashWhole = 2249885413155022725LL;
 extern const int64_t kJniZeroHashPriority = 0LL;
@@ -40,9 +41,6 @@ JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleProxyEdgeCases_array
     JNIEnv* env,
     jobject a,
     jobject b);
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTest(JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTesting(JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTests(JNIEnv* env);
 JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_foo__weirdly__escaped_name1(
     JNIEnv* env);
 JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(
@@ -58,6 +56,9 @@ JNI_ZERO_MUXED_ENTRYPOINT jboolean Muxed_org_jni_1zero_SampleProxyEdgeCases_setS
 JNI_ZERO_MUXED_ENTRYPOINT jint Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(
     JNIEnv* env,
     jint sb);
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTest(JNIEnv* env);
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTesting(JNIEnv* env);
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTests(JNIEnv* env);
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(
     JNIEnv* env,
     jlong nativeInstance);
@@ -69,13 +70,13 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_V(JNIEnv* env, jclass jcaller, jint switc
   JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 4);
   switch (switch_num) {
     case 0:
-      return Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTest(env);
-    case 1:
-      return Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTesting(env);
-    case 2:
-      return Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTests(env);
-    case 3:
       return Muxed_org_jni_1zero_SampleProxyEdgeCases_foo__weirdly__escaped_name1(env);
+    case 1:
+      return Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTest(env);
+    case 2:
+      return Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTesting(env);
+    case 3:
+      return Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTests(env);
     default:
       __builtin_unreachable();
   }

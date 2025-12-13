@@ -11,12 +11,13 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/memory/memory.h"
-#include "absl/types/optional.h"
+#include "absl/strings/string_view.h"
 #include "google/protobuf/compiler/cpp/field.h"
 #include "google/protobuf/compiler/cpp/field_generators/generators.h"
 #include "google/protobuf/compiler/cpp/helpers.h"
@@ -41,7 +42,7 @@ using Sub = ::google::protobuf::io::Printer::Sub;
 using Semantic = ::google::protobuf::io::AnnotationCollector::Semantic;
 
 // For encodings with fixed sizes, returns that size in bytes.
-absl::optional<size_t> FixedSize(FieldDescriptor::Type type) {
+std::optional<size_t> FixedSize(FieldDescriptor::Type type) {
   switch (type) {
     case FieldDescriptor::TYPE_INT32:
     case FieldDescriptor::TYPE_INT64:
@@ -54,7 +55,7 @@ absl::optional<size_t> FixedSize(FieldDescriptor::Type type) {
     case FieldDescriptor::TYPE_BYTES:
     case FieldDescriptor::TYPE_GROUP:
     case FieldDescriptor::TYPE_MESSAGE:
-      return absl::nullopt;
+      return std::nullopt;
 
     case FieldDescriptor::TYPE_FIXED32:
       return WireFormatLite::kFixed32Size;
@@ -76,7 +77,7 @@ absl::optional<size_t> FixedSize(FieldDescriptor::Type type) {
   }
 
   ABSL_LOG(FATAL) << "Can't get here.";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<Sub> Vars(const FieldDescriptor* field, const Options& options) {
@@ -289,6 +290,7 @@ void SingularPrimitive::GenerateByteSize(io::Printer* p) const {
   )cc");
 }
 
+
 class RepeatedPrimitive final : public FieldGeneratorBase {
  public:
   RepeatedPrimitive(const FieldDescriptor* field, const Options& opts,
@@ -478,6 +480,9 @@ void RepeatedPrimitive::GenerateInlineAccessorDefinitions(
     }
   )cc");
   p->Emit(R"cc(
+    //~ Note: no need to set hasbit in set_$name$(int index). Hasbits only need
+    //~ to be updated if a new element is (potentially) added, not if an
+    //~ existing element is mutated.
     inline void $Msg$::set_$name$(int index, $Type$ value) {
       $WeakDescriptorSelfPin$;
       $annotate_set$;
@@ -490,6 +495,7 @@ void RepeatedPrimitive::GenerateInlineAccessorDefinitions(
       $WeakDescriptorSelfPin$;
       $TsanDetectConcurrentMutation$;
       _internal_mutable_$name_internal$()->Add(value);
+      $set_hasbit$;
       $annotate_add$;
       // @@protoc_insertion_point(field_add:$pkg.Msg.field$)
     }
@@ -507,6 +513,7 @@ void RepeatedPrimitive::GenerateInlineAccessorDefinitions(
     inline $pb$::RepeatedField<$Type$>* $nonnull$ $Msg$::mutable_$name$()
         ABSL_ATTRIBUTE_LIFETIME_BOUND {
       $WeakDescriptorSelfPin$;
+      $set_hasbit$;
       $annotate_mutable_list$;
       // @@protoc_insertion_point(field_mutable_list:$pkg.Msg.field$)
       $TsanDetectConcurrentMutation$;

@@ -60,14 +60,6 @@ bool StructTraits<viz::mojom::RendererSettingsDataView, viz::RendererSettings>::
     return false;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  if (!data.ReadInitialScreenSize(&out->initial_screen_size))
-    return false;
-
-  if (!data.ReadColorSpace(&out->color_space))
-    return false;
-#endif
-
 #if BUILDFLAG(IS_OZONE)
   if (!data.ReadOverlayStrategies(&out->overlay_strategies))
     return false;

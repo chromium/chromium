@@ -33,8 +33,7 @@ class CORE_EXPORT ImageElementBase : public CanvasImageSource,
                                                const ImageBitmapOptions*,
                                                ExceptionState&) override;
 
-  scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
-                                               SourceImageStatus*,
+  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
                                                const gfx::SizeF&) override;
 
   bool WouldTaintOrigin() const override;
@@ -46,8 +45,6 @@ class CORE_EXPORT ImageElementBase : public CanvasImageSource,
       const RespectImageOrientationEnum) const override;
 
   bool IsAccelerated() const override;
-
-  bool IsSVGSource() const override;
 
   bool IsImageElement() const override;
 

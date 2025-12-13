@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 // Accessory symbol at the leading edge of the cell. These are SF Symbols only.
@@ -17,12 +17,8 @@ typedef NS_ENUM(NSInteger, TableViewDetailTextCellAccessorySymbol) {
   TableViewDetailTextCellAccessorySymbolExternalLink,
 };
 
-// TableViewDetailTextItem contains the model data for a
-// TableViewDetailTextCell.
+// TableViewDetailTextItem contains the model data for a cell with detail text.
 @interface TableViewDetailTextItem : TableViewItem
-
-// Text Alignment for the cell's textLabel. Default is NSTextAlignmentNatural.
-@property(nonatomic, assign) NSTextAlignment textAlignment;
 
 // YES if multiple lines are allowed in the detail text.
 @property(nonatomic, assign) BOOL allowMultilineDetailText;
@@ -46,23 +42,6 @@ typedef NS_ENUM(NSInteger, TableViewDetailTextCellAccessorySymbol) {
 // configurable.
 @property(nonatomic, assign)
     TableViewDetailTextCellAccessorySymbol accessorySymbol;
-
-@end
-
-// TableViewCell that displays two text labels on top of each other. The text
-// labels are displaying on one line if the preferred content size isn't an
-// Accessibility category. Otherwise they are displayed on an unlimited number
-// of lines.
-@interface TableViewDetailTextCell : TableViewCell
-
-// The text to display.
-@property(nonatomic, readonly, strong) UILabel* textLabel;
-
-// The detail text to display.
-@property(nonatomic, readonly, strong) UILabel* detailTextLabel;
-
-// YES if multiple lines are allowed in the detail text.
-@property(nonatomic, assign) BOOL allowMultilineDetailText;
 
 @end
 

@@ -5,11 +5,14 @@
 #include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/calendar/calendar_keyed_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ash/calendar/calendar_keyed_service.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/user_manager/user.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 
@@ -31,7 +34,11 @@ CalendarKeyedServiceFactory::CalendarKeyedServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
+  // LINT.IfChange(Deps)
+  DependsOn(apps::AppServiceProxyFactory::GetInstance());
+  DependsOn(AshPolicyBlocklistServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  // LINT.ThenChange(//chrome/browser/ash/calendar/calendar_keyed_service.h:Deps)
 }
 
 CalendarKeyedService* CalendarKeyedServiceFactory::GetService(
@@ -51,7 +58,15 @@ std::unique_ptr<KeyedService>
   if (!user->HasGaiaAccount())
     return nullptr;
 
-  return std::make_unique<CalendarKeyedService>(profile, user->GetAccountId());
+  apps::AppServiceProxy* app_service_proxy =
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)
+          ? apps::AppServiceProxyFactory::GetForProfile(profile)
+          : nullptr;
+  return std::make_unique<CalendarKeyedService>(
+      user->GetAccountId(), profile->GetPrefs(), app_service_proxy,
+      AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetURLLoaderFactory());
 }
 
 }  // namespace ash

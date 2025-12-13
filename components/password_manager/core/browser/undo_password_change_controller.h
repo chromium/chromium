@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace password_manager {
 
@@ -33,23 +34,6 @@ enum class PasswordRecoveryState {
   kIncludeBackup,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// As opposed `PasswordRecoveryState` above, this enum is only used for metrics.
-//
-// LINT.IfChange(PasswordChangeRecoveryFlowState)
-enum class PasswordChangeRecoveryFlowState {
-  // User clicked the "Trouble signing in" suggestion and entered the flow.
-  kTroubleSigningInClicked = 0,
-  // We detected a failed login and opened a proactive popup.
-  kProactiveRecoveryPopupShown = 1,
-  // User finished the flow and promoted the backup password to primary.
-  kPrimaryPasswordUpdated = 2,
-  kMaxValue = kPrimaryPasswordUpdated
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeRecoveryFlowState)
-
 // Controller class for the password recovery flow.
 // This class is attached to a tab and holds the recovery state of the last
 // filled suggestion. All credentials start with an implicit
@@ -57,7 +41,7 @@ enum class PasswordChangeRecoveryFlowState {
 // state.
 class UndoPasswordChangeController : public PasswordFormManagerObserver {
  public:
-  explicit UndoPasswordChangeController();
+  UndoPasswordChangeController();
   ~UndoPasswordChangeController() override;
 
   // Updates the state of the filled `credential`:
@@ -98,6 +82,14 @@ class UndoPasswordChangeController : public PasswordFormManagerObserver {
 
   void OnSuggestionsHidden();
 
+  // Called when the URL that the user interacts with changes. Resets the flow
+  // if the signon realm changes.
+  void OnNavigation(const url::Origin& url, ukm::SourceId ukm_source_id);
+
+#if defined(UNIT_TEST)
+  std::optional<PasswordForm> failed_login_form() { return failed_login_form_; }
+#endif
+
  private:
   // PasswordFormManagerObserver:
 
@@ -112,12 +104,14 @@ class UndoPasswordChangeController : public PasswordFormManagerObserver {
 
   void FinishObserving();
 
+  url::Origin current_origin_;
   std::u16string current_username_;
   PasswordRecoveryState current_state_ = PasswordRecoveryState::kRegularFlow;
   std::optional<PasswordForm> failed_login_form_;
-  raw_ptr<PasswordManagerDriver> driver_;
+  base::WeakPtr<PasswordManagerDriver> driver_;
   // Keep the pointer to the cache to unsubsribe at destruction
   raw_ptr<PasswordFormCache> password_form_cache_;
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 };
 
 }  // namespace password_manager

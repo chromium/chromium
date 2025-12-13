@@ -27,14 +27,16 @@ struct OldDocumentInfoForCommit : GarbageCollected<OldDocumentInfoForCommit> {
   // e.g. history.state will be copied on same-URL navigations. See also
   // https://github.com/whatwg/html/issues/6213.
   Member<HistoryItem> history_item;
-  // Whether the previous document in the frame had sticky activation before
-  // the commit.
-  bool had_sticky_activation_before_navigation = false;
   // The `unreported_task_time` accumulated by the FrameSchedulerImpl, which
   // needs to be carried over in case of subframe navigations.
   base::TimeDelta frame_scheduler_unreported_task_time;
   // Whether the previous LocalFrame is the focused frame or not.
   bool was_focused_frame = false;
+  // The overlay color used by the previous LocalFrame, if it has an overlay.
+  std::optional<SkColor> overlay_color;
+  // The total processing time spent in the previous page's lifecycle events
+  // (e.g. pagehide, visibilitychange) on navigation commit.
+  base::TimeDelta total_lifecycle_events_processing_time_on_commit;
 };
 
 // Owns the OldDocumentInfoForCommit and exposes it through `info_`

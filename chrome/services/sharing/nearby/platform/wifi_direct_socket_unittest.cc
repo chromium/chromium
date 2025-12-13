@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/sharing/nearby/platform/wifi_direct_socket.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -59,8 +55,8 @@ class FakeStreamSocket : public net::StreamSocket {
     }
 
     auto bytes_to_write = std::max(uint(buf_len), uint(data_to_read_.size()));
-    std::copy(data_to_read_.data(), data_to_read_.data() + bytes_to_write,
-              buf->data());
+    std::copy(data_to_read_.data(),
+              UNSAFE_TODO(data_to_read_.data() + bytes_to_write), buf->data());
     return bytes_to_write;
   }
 
@@ -77,7 +73,8 @@ class FakeStreamSocket : public net::StreamSocket {
       int buf_len,
       net::CompletionOnceCallback callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    write_data_ = std::vector(buf->bytes(), buf->bytes() + buf_len);
+    write_data_ =
+        std::vector(buf->bytes(), UNSAFE_TODO(buf->bytes() + buf_len));
     return buf_len;
   }
 

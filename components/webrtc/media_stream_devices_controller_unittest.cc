@@ -10,6 +10,7 @@
 #include "components/webrtc/media_stream_devices_util.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
@@ -105,8 +106,8 @@ class MockPermissionController : public content::MockPermissionController {
       RequestPermissionsFromCurrentDocument,
       (content::RenderFrameHost * render_frame_host,
        content::PermissionRequestDescription request_description,
-       base::OnceCallback<
-           void(const std::vector<blink::mojom::PermissionStatus>&)> callback));
+       base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
+           callback));
 };
 
 std::vector<std::string> GetIds(const blink::MediaStreamDevices& devices,
@@ -190,17 +191,24 @@ class MediaStreamDevicesControllerTest : public testing::Test {
         .WillOnce(
             [](auto*, auto,
                base::OnceCallback<void(
-                   const std::vector<content::PermissionStatus>&)> callback) {
-              std::move(callback).Run({content::PermissionStatus::GRANTED,
-                                       content::PermissionStatus::GRANTED});
+                   const std::vector<content::PermissionResult>&)> callback) {
+              std::move(callback).Run(
+                  {content::PermissionResult(
+                       content::PermissionStatus::GRANTED,
+                       content::PermissionStatusSource::UNSPECIFIED),
+                   content::PermissionResult(
+                       content::PermissionStatus::GRANTED,
+                       content::PermissionStatusSource::UNSPECIFIED)});
             });
 
     base::test::TestFuture<blink::mojom::MediaStreamRequestResult,
                            blink::mojom::StreamDevicesPtr>
         result_future;
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     webrtc::MediaStreamDevicesController::RequestPermissions(
         content::MediaStreamRequest{
-            /*render_process_id=*/render_frame_host_id_.child_id,
+            /*render_process_id=*/render_frame_host_id_.child_id
+                .GetUnsafeValue(),
             /*render_frame_id=*/render_frame_host_id_.frame_routing_id,
             /*page_request_id=*/0,
             /*url_origin=*/origin_,

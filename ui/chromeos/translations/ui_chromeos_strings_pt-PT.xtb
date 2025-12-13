@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Género</translation>
 <translation id="1254593899333212300">Ligação direta à Internet</translation>
 <translation id="1272293450992660632">Os valores de PIN não correspondem.</translation>
+<translation id="1279040297980392566">A aguardar que a análise termine. Tente mais tarde</translation>
 <translation id="1280820357415527819">A pesquisar redes móveis…</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1297922636971898492">De momento, o Google Drive não está disponível. O carregamento será reiniciado automaticamente assim que o Google Drive voltar a estar disponível.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 ficheiro selecionado</translation>
 <translation id="3817579325494460411">Não fornecido</translation>
 <translation id="3819448694985509187">PIN incorreto. Tem 1 tentativa restante.</translation>
-<translation id="3822559385185038546">Este proxy é imposto pelo gestor</translation>
 <translation id="3830674330436234648">Reprodução não disponível</translation>
 <translation id="383652340667548381">Sérvio</translation>
 <translation id="3839045880592694915">A operadora não permite estabelecer ligação ao modem. Contacte a sua operadora para saber mais detalhes.</translation>
@@ -506,7 +506,7 @@
 <translation id="4973523518332075481">Utilize um nome com, no máximo, <ph name="MAX_LENGTH" /> carateres</translation>
 <translation id="4984616446166309645">Japonês</translation>
 <translation id="4987699874727873250">Inglês (Índia)</translation>
-<translation id="4988205478593450158">Tem a certeza de que quer eliminar "<ph name="FILE_NAME" />"?</translation>
+<translation id="4988205478593450158">Quer mesmo eliminar "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Borboleta vermelha</translation>
 <translation id="4992066212339426712">Reativar o som</translation>
 <translation id="5010406651457630570">Computadores</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5602622065581044566">Búlgaro com teclado fonético</translation>
 <translation id="5605830556594064952">EUA Dvorak</translation>
+<translation id="560739212255190568">O seu administrador definiu regras de substituição de proxy, além de aplicar o seguinte proxy</translation>
 <translation id="5618330573454123917">Este ficheiro foi concebido para computadores com software Macintosh. Não é compatível com o seu dispositivo, pois este tem o ChromeOS instalado. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir ficheiros no ChromeOS.</translation>
 <translation id="5625294776298156701">Tâmil com teclado Tamil99</translation>
 <translation id="5633226425545095130">Se mover este item, partilha-o com todas as pessoas que conseguem ver a pasta partilhada "<ph name="DESTINATION_NAME" />".</translation>
@@ -763,7 +764,7 @@
 <translation id="6943836128787782965">A obtenção de HTTP falhou</translation>
 <translation id="6949408524333579394">Transliteração sérvia</translation>
 <translation id="69548399407432279">Último ano</translation>
-<translation id="6960565108681981554">Não ativada. Contacte o seu operador.</translation>
+<translation id="6960565108681981554">Não ativada. Contacte a sua operadora.</translation>
 <translation id="696203921837389374">Ativar a sincronização através de dados móveis</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Porta</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="8545476925160229291">Inglês (EUA)</translation>
 <translation id="854655314928502177">URL de deteção automática de proxy da Web</translation>
+<translation id="8547747809824590510">O seu administrador definiu regras de substituição de proxy</translation>
 <translation id="8549186985808798022">Italiano</translation>
 <translation id="8551494947769799688">Letão</translation>
 <translation id="8560515948038859357">Cantonês</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">O ficheiro com o nome "<ph name="FILE_NAME" />" já existe. Escolha um nome diferente.</translation>
 <translation id="9046895021617826162">A ligação falhou</translation>
 <translation id="9065512565307033593">Se não validar, o seu acesso à rede será desativado.</translation>
+<translation id="9079844694307518094">O seu administrador está a aplicar o seguinte proxy</translation>
 <translation id="908378762078012445">Russo com teclado AATSEEL fonético</translation>
 <translation id="9086302186042011942">A sincronizar</translation>
 <translation id="9099674669267916096">Contagem de páginas</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">A instalação foi iniciada com êxito.</translation>
 <translation id="9219103736887031265">Imagens</translation>
 <translation id="9219908252191632183">Paisagem lunar</translation>
+<translation id="931652069802536959">A rede está bloqueada pela política</translation>
 <translation id="938470336146445890">Instale um certificado de utilizador.</translation>
 <translation id="939736085109172342">Nova pasta</translation>
 <translation id="943972244133411984">Modificado por</translation>

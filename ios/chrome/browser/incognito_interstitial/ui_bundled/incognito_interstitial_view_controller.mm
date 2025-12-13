@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -84,9 +85,9 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
   self.title = title;
   self.titleText = title;
   self.titleHorizontalMargin = 0;
-  self.primaryActionString = l10n_util::GetNSString(
+  self.configuration.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME_INCOGNITO);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME);
 
   // This needs to be called after parameters of `PromoStyleViewController` have
@@ -201,29 +202,16 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
     [self.navigationBar.topAnchor constraintEqualToAnchor:self.view.topAnchor],
   ]];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-    __weak __typeof(self) weakSelf = self;
-    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                     UITraitCollection* previousCollection) {
-      weakSelf.shouldHideBanner = IsCompactHeight(traitEnvironment);
-      [weakSelf updateNavigationBarAppearance];
-    };
-    [self registerForTraitChanges:traits withHandler:handler];
-  }
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+  __weak __typeof(self) weakSelf = self;
+  UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                   UITraitCollection* previousCollection) {
+    weakSelf.shouldHideBanner = IsCompactHeight(traitEnvironment);
+    [weakSelf updateNavigationBarAppearance];
+  };
+  [self registerForTraitChanges:traits withHandler:handler];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  self.shouldHideBanner = IsCompactHeight(self.traitCollection);
-  [self updateNavigationBarAppearance];
-}
-#endif
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];

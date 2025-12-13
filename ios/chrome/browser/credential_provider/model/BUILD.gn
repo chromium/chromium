@@ -9,6 +9,7 @@ import("//ios/build/chrome_build.gni")
 buildflag_header("buildflags") {
   header = "credential_provider_buildflags.h"
   flags = [
+    "IOS_CREDENTIAL_EXCHANGE_ENABLED=$ios_cpe_enable_credential_exchange",
     "IOS_CREDENTIAL_PROVIDER_ENABLED=$ios_enable_credential_provider_extension",
   ]
 }
@@ -113,7 +114,6 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/browser/shared/model/profile/test",
       "//ios/chrome/browser/shared/model/web_state_list",
       "//ios/chrome/browser/shared/public/commands",
-      "//ios/chrome/browser/shared/public/features",
       "//ios/chrome/browser/signin/model:fake_system_identity",
       "//ios/chrome/browser/signin/model:fake_system_identity_manager",
       "//ios/chrome/browser/signin/model:test_support",
@@ -135,5 +135,6 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
+  deps = [ ":buildflags" ]
   public_deps = [ "//base" ]
 }

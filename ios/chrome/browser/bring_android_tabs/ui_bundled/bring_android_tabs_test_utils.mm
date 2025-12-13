@@ -7,16 +7,18 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_app_interface.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_test_session.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
+#import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -27,10 +29,8 @@ namespace {
 // Timeout in seconds to wait for asynchronous sync operations.
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
-// Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
-// scroll.
-void TapPromoStyleButton(NSString* buttonIdentifier) {
-  id<GREYMatcher> buttonMatcher = grey_accessibilityID(buttonIdentifier);
+// Taps a promo button.
+void TapPromoStyleButton(id<GREYMatcher> buttonMatcher) {
   id<GREYMatcher> scrollViewMatcher =
       grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
   // Needs to scroll slowly to make sure to not miss a cell if it is not
@@ -67,13 +67,15 @@ void SignInViaFREWithHistorySyncEnabled(BOOL enable_history_sync) {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fake_identity];
   // Default browser promo dismissal.
-  TapPromoStyleButton(kPromoStyleSecondaryActionAccessibilityIdentifier);
+  TapPromoStyleButton(chrome_test_util::ButtonStackSecondaryButton());
   // Sign in.
-  TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
+  TapPromoStyleButton(chrome_test_util::ButtonStackPrimaryButton());
   // Enable history/tab sync if appropriate.
   TapPromoStyleButton(enable_history_sync
-                          ? kPromoStylePrimaryActionAccessibilityIdentifier
-                          : kPromoStyleSecondaryActionAccessibilityIdentifier);
+                          ? chrome_test_util::ButtonStackPrimaryButton()
+                          : chrome_test_util::ButtonStackSecondaryButton());
+  // If Safari import landing sheet is displayed, dismiss it.
+  DismissSafariDataImportEntryPoint(/*verify_visibility=*/false);
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 }

@@ -320,9 +320,9 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, CrossSiteSubframe) {
   GURL original_url = original_child_frame->GetLastCommittedURL();
   std::string title = base::UTF16ToUTF8(view_source_contents->GetTitle());
   EXPECT_THAT(title, HasSubstr(content::kViewSourceScheme));
-  EXPECT_THAT(title, HasSubstr(original_url.host()));
-  EXPECT_THAT(title, HasSubstr(original_url.port()));
-  EXPECT_THAT(title, HasSubstr(original_url.path()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetHost()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetPort()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetPath()));
 }
 
 // Tests that "View Source" works fine for pages shown via HTTP POST.
@@ -417,9 +417,9 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInMainframe) {
   EXPECT_THAT(title, Not(HasSubstr("EmbeddedTestServer - EchoAll")));
   GURL original_url = current_main_frame->GetLastCommittedURL();
   EXPECT_THAT(title, HasSubstr(content::kViewSourceScheme));
-  EXPECT_THAT(title, HasSubstr(original_url.host()));
-  EXPECT_THAT(title, HasSubstr(original_url.port()));
-  EXPECT_THAT(title, HasSubstr(original_url.path()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetHost()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetPort()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetPath()));
 }
 
 // Test the case where ViewSource() is called on a top-level RenderFrameHost
@@ -602,9 +602,9 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheTest, HttpPostInSubframe) {
   GURL original_url = original_child_frame->GetLastCommittedURL();
   std::string title = base::UTF16ToUTF8(view_source_contents->GetTitle());
   EXPECT_THAT(title, HasSubstr(content::kViewSourceScheme));
-  EXPECT_THAT(title, HasSubstr(original_url.host()));
-  EXPECT_THAT(title, HasSubstr(original_url.port()));
-  EXPECT_THAT(title, HasSubstr(original_url.path()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetHost()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetPort()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetPath()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

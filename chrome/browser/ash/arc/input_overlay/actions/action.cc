@@ -334,9 +334,6 @@ bool Action::IsOverlapped(const InputElement& input_element) {
 }
 
 const Position& Action::GetCurrentDisplayedPosition() {
-  // TODO(b/229912890): When mouse overlay is involved, `original_positions_`
-  // may be empty. Add the situation for empty `original_positions_` when
-  // supporting mouse.
   DCHECK(!original_positions_.empty());
 
   return (!current_positions_.empty() ? current_positions_[0]
@@ -513,7 +510,7 @@ void Action::UpdateTouchDownPositions() {
   // floating. In this scenario, the parent window of the target
   // window is temporarily set to null when this function is called.
   const float scale = host ? host->device_scale_factor()
-                           : display::Screen::GetScreen()
+                           : display::Screen::Get()
                                  ->GetDisplayNearestWindow(window)
                                  .device_scale_factor();
 

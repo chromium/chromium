@@ -15,19 +15,24 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "crypto/obsolete/md5.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace display {
+
+std::string Md5AsHexForEdid(std::string_view data) {
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(data));
+}
+
 namespace {
 
 constexpr char kParseEdidFailureMetric[] = "Display.ParseEdidFailure";
@@ -251,7 +256,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   const uint32_t serial_number = base::U32FromLittleEndian(serial_number_bytes);
   if (serial_number) {
     block_zero_serial_number_hash_ =
-        base::MD5String(base::NumberToString(serial_number));
+        Md5AsHexForEdid(base::NumberToString(serial_number));
   }
 
   // Constants are taken from "VESA Enhanced EDID Standard" Release A, Revision
@@ -539,7 +544,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
                                 &serial_number_str);
       if (!serial_number_str.empty()) {
         descriptor_block_serial_number_hash_ =
-            base::MD5String(serial_number_str);
+            Md5AsHexForEdid(serial_number_str);
       }
       continue;
     }

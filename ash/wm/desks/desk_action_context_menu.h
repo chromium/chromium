@@ -35,13 +35,6 @@ class DeskActionContextMenu : public views::ContextMenuController,
 
     views::MenuAnchorPosition anchor_position;
 
-    // Identifies the currently selected lacros profile. Only used when lacros
-    // profiles are shown.
-    uint64_t current_lacros_profile_id = 0;
-
-    // Invoked with the lacros profile id if the user picks a profile.
-    base::RepeatingCallback<void(uint64_t)> set_lacros_profile_id;
-
     // If set, the option to save the selected desk as a template is shown.
     std::optional<std::u16string> save_template_target_name;
     base::RepeatingClosure save_template_callback;

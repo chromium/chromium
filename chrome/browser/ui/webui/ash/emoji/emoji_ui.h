@@ -21,13 +21,10 @@
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/ime/text_input_client.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace ui {
-class ColorChangeHandler;
 enum class EmojiPickerCategory;
 enum class EmojiPickerFocusBehavior;
 }  // namespace ui
@@ -59,12 +56,6 @@ class EmojiUI : public TopChromeWebUIController,
                    ui::EmojiPickerFocusBehavior focus_behavior,
                    const std::string& initial_query);
 
-  // Instantiates the implementor of the mojom::PageHandler mojo interface
-  // passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
   void BindInterface(
       mojo::PendingReceiver<emoji_search::mojom::EmojiSearch> receiver);
 
@@ -85,7 +76,6 @@ class EmojiUI : public TopChromeWebUIController,
   static constexpr std::string_view GetWebUIName() { return "Emoji"; }
 
  private:
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<EmojiPageHandler> page_handler_;
   std::unique_ptr<ash::NewWindowProxy> new_window_proxy_;
   std::unique_ptr<EmojiSearchProxy> emoji_search_;

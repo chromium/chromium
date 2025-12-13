@@ -1,7 +1,14 @@
 use crate::prelude::*;
 use crate::{
-    exit_status, off_t, termios, NET_MAC_AWARE, NET_MAC_AWARE_INHERIT, PRIV_AWARE_RESET,
-    PRIV_DEBUG, PRIV_PFEXEC, PRIV_XPOLICY,
+    exit_status,
+    off_t,
+    termios,
+    NET_MAC_AWARE,
+    NET_MAC_AWARE_INHERIT,
+    PRIV_AWARE_RESET,
+    PRIV_DEBUG,
+    PRIV_PFEXEC,
+    PRIV_XPOLICY,
 };
 
 pub type door_attr_t = c_uint;
@@ -55,36 +62,6 @@ s! {
         pub xrs_id: c_ulong,
         pub xrs_ptr: *mut c_char,
     }
-}
-
-s_no_extra_traits! {
-    #[repr(packed)]
-    #[cfg_attr(feature = "extra_traits", allow(missing_debug_implementations))]
-    pub struct door_desc_t__d_data__d_desc {
-        pub d_descriptor: c_int,
-        pub d_id: crate::door_id_t,
-    }
-
-    pub union door_desc_t__d_data {
-        pub d_desc: door_desc_t__d_data__d_desc,
-        d_resv: [c_int; 5], /* Check out /usr/include/sys/door.h */
-    }
-
-    #[cfg_attr(feature = "extra_traits", allow(missing_debug_implementations))]
-    pub struct door_desc_t {
-        pub d_attributes: door_attr_t,
-        pub d_data: door_desc_t__d_data,
-    }
-
-    #[cfg_attr(feature = "extra_traits", allow(missing_debug_implementations))]
-    pub struct door_arg_t {
-        pub data_ptr: *const c_char,
-        pub data_size: size_t,
-        pub desc_ptr: *const door_desc_t,
-        pub dec_num: c_uint,
-        pub rbuf: *const c_char,
-        pub rsize: size_t,
-    }
 
     pub struct utmpx {
         pub ut_user: [c_char; _UTMP_USER_LEN],
@@ -101,45 +78,30 @@ s_no_extra_traits! {
     }
 }
 
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for utmpx {
-            fn eq(&self, other: &utmpx) -> bool {
-                self.ut_type == other.ut_type
-                    && self.ut_pid == other.ut_pid
-                    && self.ut_user == other.ut_user
-                    && self.ut_line == other.ut_line
-                    && self.ut_id == other.ut_id
-                    && self.ut_exit == other.ut_exit
-                    && self.ut_session == other.ut_session
-                    && self.ut_tv == other.ut_tv
-                    && self.ut_syslen == other.ut_syslen
-                    && self.pad == other.pad
-                    && self
-                        .ut_host
-                        .iter()
-                        .zip(other.ut_host.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
+s_no_extra_traits! {
+    #[repr(packed)]
+    pub struct door_desc_t__d_data__d_desc {
+        pub d_descriptor: c_int,
+        pub d_id: crate::door_id_t,
+    }
 
-        impl Eq for utmpx {}
+    pub union door_desc_t__d_data {
+        pub d_desc: door_desc_t__d_data__d_desc,
+        d_resv: [c_int; 5], /* Check out /usr/include/sys/door.h */
+    }
 
-        impl hash::Hash for utmpx {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ut_user.hash(state);
-                self.ut_type.hash(state);
-                self.ut_pid.hash(state);
-                self.ut_line.hash(state);
-                self.ut_id.hash(state);
-                self.ut_host.hash(state);
-                self.ut_exit.hash(state);
-                self.ut_session.hash(state);
-                self.ut_tv.hash(state);
-                self.ut_syslen.hash(state);
-                self.pad.hash(state);
-            }
-        }
+    pub struct door_desc_t {
+        pub d_attributes: door_attr_t,
+        pub d_data: door_desc_t__d_data,
+    }
+
+    pub struct door_arg_t {
+        pub data_ptr: *const c_char,
+        pub data_size: size_t,
+        pub desc_ptr: *const door_desc_t,
+        pub dec_num: c_uint,
+        pub rbuf: *const c_char,
+        pub rsize: size_t,
     }
 }
 

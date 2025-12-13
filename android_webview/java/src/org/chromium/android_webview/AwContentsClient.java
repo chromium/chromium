@@ -32,7 +32,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -97,13 +96,12 @@ public abstract class AwContentsClient {
     /** See {@link android.webkit.WebChromeClient}. */
     public interface CustomViewCallback {
         /** See {@link android.webkit.WebChromeClient}. */
-        public void onCustomViewHidden();
+        void onCustomViewHidden();
     }
 
     // Alllow injection of the callback thread, for testing.
     public AwContentsClient(Looper looper) {
-        try (ScopedSysTraceEvent e =
-                ScopedSysTraceEvent.scoped("AwContentsClient.constructorOneArg")) {
+        try (DualTraceEvent e = DualTraceEvent.scoped("AwContentsClient.constructorOneArg")) {
             mCallbackHelper = new AwContentsClientCallbackHelper(looper, this);
         }
     }

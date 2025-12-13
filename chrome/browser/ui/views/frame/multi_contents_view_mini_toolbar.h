@@ -43,7 +43,13 @@ class MultiContentsViewMiniToolbar : public views::View,
                                ContentsWebView* web_view);
   ~MultiContentsViewMiniToolbar() override;
 
-  void UpdateState(bool is_active);
+  void UpdateState(bool is_active, bool is_highlighted);
+
+  // Trigger an update of the tab data used to populate the mini toolbar.
+  void UpdateContents();
+
+  views::Label* domain_label_for_testing() { return domain_label_; }
+  views::ImageButton* image_button_for_testing() { return image_button_; }
 
  private:
   // TabStripModelObserver:
@@ -52,17 +58,11 @@ class MultiContentsViewMiniToolbar : public views::View,
                     TabChangeType change_type) override;
 
   // View:
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
   void UpdateWebContents(views::WebView* web_view);
   void ClearWebContents(views::WebView*);
-
-  // Returns the bounding path for the MultiContentsViewMiniToolbar. If
-  // |border_stroke_only| then only the part of the path for the border stroke
-  // will be returned. Otherwise, the entire bounding path will be returned.
-  SkPath GetPath(bool border_stroke_only) const;
 
   void RegisterTabAlertSubscription();
   void OnAlertStatusIndicatorChanged(std::optional<tabs::TabAlert> new_alert);
@@ -71,12 +71,14 @@ class MultiContentsViewMiniToolbar : public views::View,
   // Updates the favicon and domain based on the provided |tab_data|.
   void UpdateContents(TabRendererData tab_data);
   void UpdateFavicon(TabRendererData tab_data);
+
   void OpenSplitViewMenu();
+  void CloseCurrentView();
 
   raw_ptr<views::ImageView> favicon_;
   raw_ptr<views::Label> domain_label_;
   raw_ptr<views::ImageView> alert_state_indicator_;
-  raw_ptr<views::ImageButton> menu_button_;
+  raw_ptr<views::ImageButton> image_button_;
   // Model for the split view menu.
   std::unique_ptr<ui::MenuModel> menu_model_;
   // Runner for the split view menu.
@@ -84,7 +86,6 @@ class MultiContentsViewMiniToolbar : public views::View,
 
   raw_ptr<BrowserView> browser_view_;
   raw_ptr<content::WebContents> web_contents_;
-  ui::ColorId stroke_color_ = kColorMulitContentsViewInactiveContentOutline;
   base::CallbackListSubscription web_contents_attached_subscription_;
   base::CallbackListSubscription web_contents_detached_subscription_;
   std::optional<base::CallbackListSubscription> tab_alert_status_subscription_;

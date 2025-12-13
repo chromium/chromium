@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+class GaiaId;
+
 // Protocol for the first screen of Save to Photos settings.
 @protocol SaveToPhotosSettingsAccountConfirmationConsumer <NSObject>
 
@@ -15,7 +17,7 @@
 - (void)setIdentityButtonAvatar:(UIImage*)avatar
                            name:(NSString*)name
                           email:(NSString*)email
-                         gaiaID:(NSString*)gaiaID
+                         gaiaID:(const GaiaId&)gaiaID
            askEveryTimeSwitchOn:(BOOL)on;
 
 // Displays the Save to Photos UI in the Downloads settings menu.

@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("identity") {
+  sources = [
+    "iwa_identity_validator.cc",
+    "iwa_identity_validator.h",
+  ]
+
+  deps = [
+    "//components/webapps/isolated_web_apps:iwa_client",
+    "//components/webapps/isolated_web_apps/public",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/web_package",
+  ]
+}

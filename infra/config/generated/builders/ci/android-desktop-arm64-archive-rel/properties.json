@@ -60,7 +60,8 @@
           "group": "tryserver.chromium.android"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-desktop-arm64-archive-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/android-desktop-arm64-archive-rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {
@@ -83,5 +84,11 @@
     ]
   },
   "builder_group": "chromium",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "android"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "android"
+  ]
 }

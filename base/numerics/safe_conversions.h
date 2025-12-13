@@ -22,7 +22,7 @@
 #endif
 
 namespace base {
-namespace internal {
+namespace numerics_internal {
 
 #if !BASE_HAS_OPTIMIZED_SAFE_CONVERSIONS
 template <typename Dst, typename Src>
@@ -83,10 +83,11 @@ template <typename Dst, typename Src>
 constexpr bool IsValueInRangeForNumericType(Src value) {
   using SrcType = UnderlyingType<Src>;
   const auto underlying_value = static_cast<SrcType>(value);
-  return internal::IsValueInRangeFastOp<Dst, SrcType>::is_supported
-             ? internal::IsValueInRangeFastOp<Dst, SrcType>::Do(
+  return numerics_internal::IsValueInRangeFastOp<Dst, SrcType>::is_supported
+             ? numerics_internal::IsValueInRangeFastOp<Dst, SrcType>::Do(
                    underlying_value)
-             : internal::DstRangeRelationToSrcRange<Dst>(underlying_value)
+             : numerics_internal::DstRangeRelationToSrcRange<Dst>(
+                   underlying_value)
                    .IsValid();
 }
 
@@ -94,7 +95,7 @@ constexpr bool IsValueInRangeForNumericType(Src value) {
 // except that it CHECKs that the specified numeric conversion will not
 // overflow or underflow. NaN source will always trigger a CHECK.
 template <typename Dst,
-          class CheckHandler = internal::CheckOnFailure,
+          class CheckHandler = numerics_internal::CheckOnFailure,
           typename Src>
   requires(IsNumeric<Src> && std::is_arithmetic_v<Dst> &&
            std::numeric_limits<Dst>::lowest() < std::numeric_limits<Dst>::max())
@@ -311,7 +312,7 @@ constexpr StrictNumeric<UnderlyingType<T>> MakeStrictNum(const T value) {
 
 #define BASE_NUMERIC_COMPARISON_OPERATORS(CLASS, NAME, OP)                    \
   template <typename L, typename R>                                           \
-    requires(internal::Is##CLASS##Op<L, R>)                                   \
+    requires(numerics_internal::Is##CLASS##Op<L, R>)                          \
   constexpr bool operator OP(L lhs, R rhs) {                                  \
     return SafeCompare<NAME, UnderlyingType<L>, UnderlyingType<R>>(lhs, rhs); \
   }
@@ -323,19 +324,19 @@ BASE_NUMERIC_COMPARISON_OPERATORS(Strict, IsGreaterOrEqual, >=)
 BASE_NUMERIC_COMPARISON_OPERATORS(Strict, IsEqual, ==)
 BASE_NUMERIC_COMPARISON_OPERATORS(Strict, IsNotEqual, !=)
 
-}  // namespace internal
+}  // namespace numerics_internal
 
-using internal::as_signed;
-using internal::as_unsigned;
-using internal::checked_cast;
-using internal::IsValueInRangeForNumericType;
-using internal::IsValueNegative;
-using internal::kIsTypeInRangeForNumericType;
-using internal::MakeStrictNum;
-using internal::SafeUnsignedAbs;
-using internal::saturated_cast;
-using internal::strict_cast;
-using internal::StrictNumeric;
+using numerics_internal::as_signed;
+using numerics_internal::as_unsigned;
+using numerics_internal::checked_cast;
+using numerics_internal::IsValueInRangeForNumericType;
+using numerics_internal::IsValueNegative;
+using numerics_internal::kIsTypeInRangeForNumericType;
+using numerics_internal::MakeStrictNum;
+using numerics_internal::SafeUnsignedAbs;
+using numerics_internal::saturated_cast;
+using numerics_internal::strict_cast;
+using numerics_internal::StrictNumeric;
 
 // Explicitly make a shorter size_t alias for convenience.
 using SizeT = StrictNumeric<size_t>;

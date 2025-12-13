@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -68,7 +69,7 @@ SkPath MakePath(const AccessibilityFocusRing& input_ring,
     }
   }
 
-  SkPath path;
+  SkPathBuilder path;
   gfx::Point p = ring.points[0] - offset;
   path.moveTo(SkIntToScalar(p.x()), SkIntToScalar(p.y()));
   for (int i = 0; i < 12; i++) {
@@ -83,7 +84,7 @@ SkPath MakePath(const AccessibilityFocusRing& input_ring,
                 SkIntToScalar(p2.x()), SkIntToScalar(p2.y()));
   }
 
-  return path;
+  return path.detach();
 }
 
 }  // namespace
@@ -98,8 +99,7 @@ void AccessibilityFocusRingLayer::Set(const AccessibilityFocusRing& ring) {
   ring_ = ring;
 
   gfx::Rect bounds = ring.GetBounds();
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds);
+  display::Display display = display::Screen::Get()->GetDisplayMatching(bounds);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
   aura::Window* container = Shell::GetContainer(
       root_window, kShellWindowId_AccessibilityBubbleContainer);

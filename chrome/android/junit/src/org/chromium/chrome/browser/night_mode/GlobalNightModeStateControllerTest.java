@@ -60,16 +60,12 @@ public class GlobalNightModeStateControllerTest {
 
     private SystemNightModeMonitor.Observer mSystemNightModeObserver;
 
-    @Mock private PowerSavingModeMonitor mPowerSavingMonitor;
-
-    private Runnable mPowerModeObserver;
-
     @Before
     public void setUp() {
         captureObservers();
 
         SystemNightModeMonitor.setInstanceForTesting(mSystemNightModeMonitor);
-        mGlobalNightModeStateController = new GlobalNightModeStateController(mPowerSavingMonitor);
+        mGlobalNightModeStateController = new GlobalNightModeStateController();
 
         mGlobalNightModeStateController.onApplicationStateChange(HAS_RUNNING_ACTIVITIES);
 
@@ -91,33 +87,11 @@ public class GlobalNightModeStateControllerTest {
                                         observer -> mSystemNightModeObserver = null))
                 .when(mSystemNightModeMonitor)
                 .removeObserver(any());
-
-        doAnswer(answerVoid((VoidAnswer1<Runnable>) observer -> mPowerModeObserver = observer))
-                .when(mPowerSavingMonitor)
-                .addObserver(any());
-        doAnswer(answerVoid((VoidAnswer1<Runnable>) observer -> mPowerModeObserver = null))
-                .when(mPowerSavingMonitor)
-                .removeObserver(any());
     }
 
     @After
     public void tearDown() {
         ChromeSharedPreferences.getInstance().removeKey(UI_THEME_SETTING);
-    }
-
-    @Test
-    public void testUpdateNightMode_PowerSaveMode_DefaultsToSystem() {
-        // Set preference to system default and verify that the night mode isn't enabled.
-        ChromeSharedPreferences.getInstance().writeInt(UI_THEME_SETTING, ThemeType.SYSTEM_DEFAULT);
-        assertFalse(mGlobalNightModeStateController.isInNightMode());
-
-        // Enable power save mode and verify night mode is enabled.
-        setIsPowerSaveMode(true);
-        assertTrue(mGlobalNightModeStateController.isInNightMode());
-
-        // Disable power save mode and verify night mode is disabled.
-        setIsPowerSaveMode(false);
-        assertFalse(mGlobalNightModeStateController.isInNightMode());
     }
 
     @Test
@@ -145,9 +119,7 @@ public class GlobalNightModeStateControllerTest {
         ChromeSharedPreferences.getInstance().writeInt(UI_THEME_SETTING, ThemeType.LIGHT);
         assertFalse(mGlobalNightModeStateController.isInNightMode());
 
-        // Regardless of power save mode and system night mode, night mode is disabled with light
-        // theme preference.
-        setIsPowerSaveMode(true);
+        // Regardless of system night mode, night mode is disabled with light theme preference.
         assertFalse(mGlobalNightModeStateController.isInNightMode());
 
         setSystemNightMode(true);
@@ -159,7 +131,6 @@ public class GlobalNightModeStateControllerTest {
         // Simulate to stop listening to night mode state changes. Verify that night mode state is
         // not changed.
         mGlobalNightModeStateController.onApplicationStateChange(HAS_STOPPED_ACTIVITIES);
-        setIsPowerSaveMode(true);
         assertFalse(mGlobalNightModeStateController.isInNightMode());
 
         setSystemNightMode(true);
@@ -170,15 +141,11 @@ public class GlobalNightModeStateControllerTest {
 
         // Simulate to start listening to night mode state changes. Verify that
         //   1. Night mode state is updated after #start().
-        //   2. Night mode state is updated on power save mode, system night mode, or preference
-        //      changes.
+        //   2. Night mode state is updated on system night mode or preference changes.
         mGlobalNightModeStateController.onApplicationStateChange(HAS_RUNNING_ACTIVITIES);
         assertTrue(mGlobalNightModeStateController.isInNightMode());
 
         ChromeSharedPreferences.getInstance().writeInt(UI_THEME_SETTING, ThemeType.SYSTEM_DEFAULT);
-        assertTrue(mGlobalNightModeStateController.isInNightMode());
-
-        setIsPowerSaveMode(false);
         assertTrue(mGlobalNightModeStateController.isInNightMode());
 
         setSystemNightMode(false);
@@ -191,16 +158,6 @@ public class GlobalNightModeStateControllerTest {
 
         // Verify that observer is called on night mode state changed from false to true.
         ChromeSharedPreferences.getInstance().writeInt(UI_THEME_SETTING, ThemeType.DARK);
-        assertTrue(mGlobalNightModeStateController.isInNightMode());
-        verify(mObserver, times(1)).onNightModeStateChanged();
-
-        // Verify that observer is not called when night mode state is not changed.
-        setIsPowerSaveMode(true);
-        assertTrue(mGlobalNightModeStateController.isInNightMode());
-        verify(mObserver, times(1)).onNightModeStateChanged();
-
-        // Verify that observer is not called when night mode state is not changed.
-        setIsPowerSaveMode(false);
         assertTrue(mGlobalNightModeStateController.isInNightMode());
         verify(mObserver, times(1)).onNightModeStateChanged();
 
@@ -217,18 +174,8 @@ public class GlobalNightModeStateControllerTest {
     }
 
     /**
-     * Simulates setting power save mode, and notifies the change.
-     * @param isPowerSaveMode Whether power save mode is enabled or not.
-     */
-    private void setIsPowerSaveMode(boolean isPowerSaveMode) {
-        when(mPowerSavingMonitor.powerSavingIsOn()).thenReturn(isPowerSaveMode);
-        if (mPowerModeObserver != null) {
-            mPowerModeObserver.run();
-        }
-    }
-
-    /**
      * Simulates setting system night mode, and notifies the change.
+     *
      * @param isSystemNightModeOn Whether system night mode is enabled or not.
      */
     private void setSystemNightMode(boolean isSystemNightModeOn) {

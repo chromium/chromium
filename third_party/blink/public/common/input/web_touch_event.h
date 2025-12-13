@@ -46,10 +46,17 @@ class BLINK_COMMON_EXPORT WebTouchEvent : public WebInputEvent {
   // increase monotonically. Zero means an unknown id.
   uint32_t unique_touch_event_id = 0;
 
-  WebTouchEvent() = default;
+  WebTouchEvent()
+      : WebInputEvent(Type::kUndefined,
+                      Type::kTouchTypeFirst,
+                      Type::kTouchTypeLast) {}
 
   WebTouchEvent(Type type, int modifiers, base::TimeTicks time_stamp)
-      : WebInputEvent(type, modifiers, time_stamp) {}
+      : WebInputEvent(type,
+                      Type::kTouchTypeFirst,
+                      Type::kTouchTypeLast,
+                      modifiers,
+                      time_stamp) {}
 
   std::unique_ptr<WebInputEvent> Clone() const override;
   bool CanCoalesce(const WebInputEvent& event) const override;

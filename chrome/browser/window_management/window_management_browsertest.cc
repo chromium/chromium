@@ -151,7 +151,7 @@ class MAYBE_WindowManagementTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
   SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* local_child =
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
   screen_.display_list().AddDisplay({2, gfx::Rect(901, 100, 803, 804)},
                                     display::DisplayList::Type::PRIMARY);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   auto* await_screens_change = R"(
       (async () => {
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
   screen_.display_list().RemoveDisplay(1);
   EXPECT_EQ(screen_.display_list().displays().size(), 1u);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   {
     auto result = content::ListValueOf(803);
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
   screen_.display_list().AddDisplay({4, gfx::Rect(0, 4, 804, 600)},
                                     display::DisplayList::Type::NOT_PRIMARY);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   {
     auto result = content::ListValueOf(803, 804);
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
   screen_.display_list().AddDisplay({2, gfx::Rect(901, 100, 803, 802)},
                                     display::DisplayList::Type::NOT_PRIMARY);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
           ->tab_strip_model()
           ->GetActiveWebContents()
           ->GetRenderWidgetHostView(),
-      display::Screen::GetScreen()->GetScreenInfosNearestDisplay(2));
+      display::Screen::Get()->GetScreenInfosNearestDisplay(2));
 
 #endif
 #endif
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
   screen_.display_list().AddDisplay({2, gfx::Rect(901, 100, 802, 803)},
                                     display::DisplayList::Type::NOT_PRIMARY);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest,
   display.set_depth_per_component(10);
   screen_.display_list().UpdateDisplay(display,
                                        display::DisplayList::Type::PRIMARY);
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();

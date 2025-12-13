@@ -292,6 +292,30 @@ DefaultWebClientState IsDefaultHandlerForUTType(const std::string& type) {
   return NOT_DEFAULT;
 }
 
+std::string GetDirectLaunchUrlScheme() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!chrome::IsSideBySideCapable()) {
+    // If the current Chrome build is not capable of side-by-side installation
+    // (e.g., it's a standard stable release), then its URL scheme should
+    // simply be "google-chrome" without any channel suffix.
+    return "google-chrome";
+  }
+  switch (chrome::GetChannel()) {
+    case version_info::Channel::CANARY:
+      return "google-chrome-canary";
+    case version_info::Channel::DEV:
+      return "google-chrome-dev";
+    case version_info::Channel::BETA:
+      return "google-chrome-beta";
+    case version_info::Channel::STABLE:
+    case version_info::Channel::UNKNOWN:
+      return "google-chrome";
+  }
+#else
+  return "chromium";
+#endif
+}
+
 namespace internal {
 
 DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(

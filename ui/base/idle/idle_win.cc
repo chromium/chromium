@@ -7,12 +7,40 @@
 #include <windows.h>
 
 #include <limits.h>
+#include <powrprof.h>
 
+#include "base/callback_list.h"
+#include "base/no_destructor.h"
 #include "ui/base/idle/idle_internal.h"
 #include "ui/base/win/lock_state.h"
+#include "ui/base/win/session_change_observer.h"
 
 namespace ui {
+
 namespace {
+
+base::RepeatingCallbackList<void(bool)>& GetScreenLockCallbacks();
+
+void OnSessionChange(WPARAM wparam, const bool* is_current_session) {
+  if (wparam != WTS_SESSION_LOCK && wparam != WTS_SESSION_UNLOCK) {
+    return;
+  }
+
+  bool locked = wparam == WTS_SESSION_LOCK;
+  GetScreenLockCallbacks().Notify(locked);
+}
+
+// Keep a SessionChangeObserver around, creating it on first use.
+SessionChangeObserver* GetSessionChangeObserver() {
+  static base::NoDestructor<SessionChangeObserver> observer(
+      base::BindRepeating(&OnSessionChange));
+  return observer.get();
+}
+
+base::RepeatingCallbackList<void(bool)>& GetScreenLockCallbacks() {
+  static base::NoDestructor<base::RepeatingCallbackList<void(bool)>> callbacks;
+  return *callbacks;
+}
 
 DWORD CalculateIdleTimeInternal() {
   LASTINPUTINFO last_input_info = {0};
@@ -47,6 +75,14 @@ bool IsScreensaverRunning() {
 }
 
 }  // namespace
+
+base::CallbackListSubscription AddScreenLockCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  if (GetScreenLockCallbacks().empty()) {
+    GetSessionChangeObserver();
+  }
+  return GetScreenLockCallbacks().Add(std::move(callback));
+}
 
 int CalculateIdleTime() {
   return static_cast<int>(CalculateIdleTimeInternal());

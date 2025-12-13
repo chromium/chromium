@@ -29,18 +29,19 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.util.XrUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,9 +74,12 @@ public class HubToolbarCoordinatorUnitTest {
 
     private final ObservableSupplierImpl<Pane> mFocusedPaneSupplier =
             new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createNullable();
     private HubToolbarCoordinator mCoordinator;
     private HubToolbarView mHubToolbarView;
     private MenuButton mMenuButton;
+    private ObservableSupplierImpl<Boolean> mBottomToolbarVisibilitySupplier;
 
     @Mock private PaneManager mPaneManager;
     @Mock private PaneOrderController mPaneOrderController;
@@ -84,14 +88,16 @@ public class HubToolbarCoordinatorUnitTest {
     @Mock private SearchActivityClient mSearchActivityClient;
     @Mock private HubColorMixer mHubColorMixer;
     @Mock private UserEducationHelper mUserEducationHelper;
+    @Mock private Runnable mExitHubRunnable;
 
     @Before
     public void setUp() {
-        XrUtils.setXrDeviceForTesting(mIsXrDevice);
+        DeviceInfo.setIsXrForTesting(mIsXrDevice);
 
         when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
         when(mPaneManager.getPaneOrderController()).thenReturn(mPaneOrderController);
         when(mPaneOrderController.getPaneOrder()).thenReturn(ImmutableSet.of());
+        mBottomToolbarVisibilitySupplier = spy(new ObservableSupplierImpl<>());
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
@@ -113,11 +119,13 @@ public class HubToolbarCoordinatorUnitTest {
                         mSearchActivityClient,
                         mHubColorMixer,
                         mUserEducationHelper,
-                        mIsAnimatingSupplier);
+                        mIsAnimatingSupplier,
+                        mBottomToolbarVisibilitySupplier,
+                        mCurrentTabSupplier,
+                        mExitHubRunnable);
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
     public void isIphTriggered() {
         verify(mIsAnimatingSupplier).addSyncObserver(any());
         mIsAnimatingSupplier.set(false);
@@ -125,5 +133,17 @@ public class HubToolbarCoordinatorUnitTest {
 
         verify(mUserEducationHelper).requestShowIph(any());
         verify(mIsAnimatingSupplier).removeObserver(any());
+    }
+
+    @Test
+    public void testBottomToolbarVisibilitySupplier() {
+        // Verify that observer was added to the bottom toolbar visibility supplier
+        verify(mBottomToolbarVisibilitySupplier).addObserver(any());
+
+        // Destroy coordinator
+        mCoordinator.destroy();
+
+        // Verify that observer was removed from the bottom toolbar visibility supplier
+        verify(mBottomToolbarVisibilitySupplier).removeObserver(any());
     }
 }

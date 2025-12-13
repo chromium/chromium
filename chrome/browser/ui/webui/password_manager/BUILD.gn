@@ -1,0 +1,47 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "password_manager.mojom" ]
+  webui_module_path = "/"
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+}
+
+source_set("password_manager_ui_handler") {
+  sources = [
+    "password_manager_ui_handler.cc",
+    "password_manager_ui_handler.h",
+  ]
+  deps = [
+    ":mojo_bindings",
+    "//chrome/browser/extensions",
+    "//chrome/browser/sync",
+    "//components/password_manager/core/browser",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "password_manager_ui_handler_unittest.cc" ]
+  deps = [
+    ":password_manager_ui_handler",
+    "//base/test:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/test:test_support",
+    "//components/affiliations/core/browser:test_support",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -148,7 +148,7 @@ TEST_F(PipTest, ShortcutNavigation) {
 TEST_F(PipTest, PipInitialPositionAvoidsObstacles) {
   UpdateDisplay("500x400");
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(100, 300, 100, 100)));
+      CreateTestWindowInShell({.bounds = {100, 300, 100, 100}}));
   WindowState* window_state = WindowState::Get(window.get());
   const WMEvent enter_pip(WM_EVENT_PIP);
   window_state->OnWMEvent(&enter_pip);
@@ -177,7 +177,7 @@ TEST_F(PipTest, TargetBoundsAffectedByWorkAreaChange) {
   keyboard_window->SetBounds(gfx::Rect(0, 300, 400, 100));
 
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(100, 300, 100, 100)));
+      CreateTestWindowInShell({.bounds = {100, 300, 100, 100}}));
   WindowState* window_state = WindowState::Get(window.get());
   const WMEvent enter_pip(WM_EVENT_PIP);
   window_state->OnWMEvent(&enter_pip);
@@ -193,7 +193,7 @@ TEST_F(PipTest, PipRestoresToPreviousBoundsOnMovementAreaChangeIfTheyExist) {
   ForceHideShelvesForTest();
   UpdateDisplay("500x400");
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(200, 200, 100, 100)));
+      CreateTestWindowInShell({.bounds = {200, 200, 100, 100}}));
   WindowState* window_state = WindowState::Get(window.get());
   const WMEvent enter_pip(WM_EVENT_PIP);
   window_state->OnWMEvent(&enter_pip);
@@ -295,7 +295,7 @@ TEST_F(PipTest, PipSnappedToEdgeWhenSavingSnapFraction) {
   ForceHideShelvesForTest();
   UpdateDisplay("500x400");
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(200, 200, 100, 100)));
+      CreateTestWindowInShell({.bounds = {200, 200, 100, 100}}));
   WindowState* window_state = WindowState::Get(window.get());
   const WMEvent enter_pip(WM_EVENT_PIP);
   window_state->OnWMEvent(&enter_pip);

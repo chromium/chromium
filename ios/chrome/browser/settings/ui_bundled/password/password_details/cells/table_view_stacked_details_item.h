@@ -25,8 +25,9 @@
 
 @end
 
-// TableViewCell displaying a title and multiple single-line details texts.
-@interface TableViewStackedDetailsCell : TableViewCell
+// LegacyTableViewCell displaying a title and multiple single-line details
+// texts.
+@interface TableViewStackedDetailsCell : LegacyTableViewCell
 
 @property(nonatomic, strong, readonly) UILabel* titleLabel;
 @property(nonatomic, strong, readonly) NSArray<UILabel*>* detailLabels;

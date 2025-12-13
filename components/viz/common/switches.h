@@ -9,7 +9,6 @@
 
 #include <optional>
 
-#include "base/feature_list.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace switches {

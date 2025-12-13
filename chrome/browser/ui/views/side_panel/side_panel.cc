@@ -10,7 +10,6 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -18,6 +17,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_resize_area.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
@@ -26,7 +28,9 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -55,8 +59,7 @@ namespace {
 // This thickness includes the solid-color background and the inner round-rect
 // border-color stroke. It does not include the outer-color separator.
 int GetBorderThickness() {
-  return (lens::features::IsLensOverlayEnabled() ? 8 : 16) +
-         views::Separator::kThickness;
+  return 8 + views::Separator::kThickness;
 }
 
 // This is how many units of the toolbar are essentially expected to be
@@ -64,17 +67,30 @@ int GetBorderThickness() {
 constexpr int kOverlapFromToolbar = 4;
 
 // We want the border to visually look like GetBorderThickness() units on all
-// sides. On the top side, background is drawn on top of the top-content
-// separator and some units of background inside the toolbar (or bookmarks bar)
-// itself. Subtract both of those to not get visually-excessive padding.
+// sides except the top. On the top side, background is drawn on top of the
+// top-content separator and some units of background inside the toolbar (or
+// bookmarks bar) itself. Subtract both of those to not get visually-excessive
+// padding.
 gfx::Insets GetBorderInsets() {
   int border_thickness = GetBorderThickness();
-  return gfx::Insets::TLBR(
-      border_thickness - views::Separator::kThickness - kOverlapFromToolbar,
-      border_thickness, border_thickness, border_thickness);
+  return gfx::Insets::TLBR(-kOverlapFromToolbar, border_thickness,
+                           border_thickness, border_thickness);
 }
 
-constexpr int kAnimationDurationMs = 450;
+SidePanel::HorizontalAlignment GetHorizontalAlignment(
+    PrefService* pref_service,
+    SidePanelEntry::PanelType type) {
+  bool is_right_aligned =
+      pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
+  is_right_aligned = type == SidePanelEntry::PanelType::kToolbar &&
+                             features::kSidePanelRelativeAlignment.Get() ==
+                                 features::SidePanelRelativeAlignment::
+                                     kShowPanelsOnOppositeSides
+                         ? !is_right_aligned
+                         : is_right_aligned;
+  return is_right_aligned ? SidePanel::HorizontalAlignment::kRight
+                          : SidePanel::HorizontalAlignment::kLeft;
+}
 
 // This border paints the toolbar color around the side panel content and draws
 // a roundrect viewport around the side panel content. The border can have
@@ -93,6 +109,8 @@ class SidePanelBorder : public views::Border {
   void SetBorderRadii(const gfx::RoundedCornersF& radii) {
     border_radii_ = radii;
   }
+
+  void SetOutlineVisibility(bool visible) { outline_visible_ = visible; }
 
   // views::Border:
   void Paint(const views::View& view, gfx::Canvas* canvas) override {
@@ -130,15 +148,14 @@ class SidePanelBorder : public views::Border {
       gfx::ScopedCanvas scoped_rescale(canvas);
       canvas->Scale(dsf, dsf);
 
-      const SkScalar border_radii[8] = {
-          border_radii_.upper_left(),  border_radii_.upper_left(),
-          border_radii_.upper_right(), border_radii_.upper_right(),
-          border_radii_.lower_right(), border_radii_.lower_right(),
-          border_radii_.lower_left(),  border_radii_.lower_left()};
+      const SkVector border_radii[4] = {
+          {border_radii_.upper_left(), border_radii_.upper_left()},
+          {border_radii_.upper_right(), border_radii_.upper_right()},
+          {border_radii_.lower_right(), border_radii_.lower_right()},
+          {border_radii_.lower_left(), border_radii_.lower_left()}};
 
-      SkPath rounded_border_path;
-      rounded_border_path.addRoundRect(gfx::RectToSkRect(view.GetLocalBounds()),
-                                       border_radii, SkPathDirection::kCW);
+      const SkPath rounded_border_path = SkPath::RRect(SkRRect::MakeRectRadii(
+          gfx::RectToSkRect(view.GetLocalBounds()), border_radii));
 
       // Add another clip to the canvas that rounds the outer corners of the
       // border. This is done in DIPs because for some device scale factors, the
@@ -153,14 +170,27 @@ class SidePanelBorder : public views::Border {
     // Paint the inner border around SidePanel content. Since half the stroke
     // gets painted in the clipped area, make this twice as thick, and scale
     // the thickness by device scale factor since we're working in pixels.
-    const float stroke_thickness = views::Separator::kThickness * 2 * dsf;
+    const float stroke_thickness =
+        outline_visible_
+            ? views::Separator::kThickness * 2 * dsf
+            // TODO(crbug.com/463994274): Avoid drawing a hairline stroke.
+            : 0;
 
     cc::PaintFlags flags;
     flags.setStrokeWidth(stroke_thickness);
     flags.setColor(color().ResolveToSkColor(view.GetColorProvider()));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setAntiAlias(true);
-
+    if (!outline_visible_) {
+      // TODO(crbug.com/463994274): Zero stroke width still draws a hairline. We
+      // can't remove this rectangle, or we get some visual artifacts, so
+      // instead just draw it in the background color.
+      std::optional<SkColor> bg_color =
+          TopContainerBackground::GetBackgroundColor(&view, browser_view_);
+      if (bg_color) {
+        flags.setColor(*bg_color);
+      }
+    }
     canvas->sk_canvas()->drawRRect(rect, flags);
   }
 
@@ -171,7 +201,7 @@ class SidePanelBorder : public views::Border {
     // there is a header we want to increase the top inset to give room for the
     // header to paint on top of the border area.
     int top_inset =
-        views::Separator::kThickness + header_height_ - GetBorderThickness();
+        views::Separator::kThickness + header_height_ - GetBorderInsets().top();
     return GetBorderInsets() + gfx::Insets::TLBR(top_inset, 0, 0, 0);
   }
   gfx::Size GetMinimumSize() const override {
@@ -181,10 +211,81 @@ class SidePanelBorder : public views::Border {
  private:
   int header_height_ = 0;
   gfx::RoundedCornersF border_radii_;
+  bool outline_visible_ = true;
   const raw_ptr<BrowserView> browser_view_;
 };
 
-class BorderView : public views::View {
+// ContentParentView is the parent view for views hosted in the
+// side panel.
+class ContentParentView : public views::View, public views::ViewObserver {
+  METADATA_HEADER(ContentParentView, views::View)
+
+ public:
+  explicit ContentParentView(bool should_round_corners,
+                             SidePanelEntry::PanelType type)
+      : should_round_corners_(should_round_corners), type_(type) {
+    SetUseDefaultFillLayout(true);
+    SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kUnbounded));
+    // If corners should be rounded, observe this view to round corners of
+    // children as they are added.
+    if (should_round_corners_) {
+      view_observation_.Observe(this);
+    }
+  }
+
+  ~ContentParentView() override = default;
+
+ private:
+  void AddedToWidget() override {
+    SetBackground(views::CreateRoundedRectBackground(kColorSidePanelBackground,
+                                                     GetRoundedCorners()));
+  }
+
+  void OnChildViewAdded(views::View* observed_view,
+                        views::View* child) override {
+    // We must use ViewObserver::OnChildViewAdded instead of
+    // View::ViewHierarchyChanged here because setting rounded corners on a
+    // WebView's holder requires the NativeViewHost's native_wrapper_ to be set
+    // and this gets set in View::ViewHierarchyChanged which OnChildViewAdded
+    // will be called after View::ViewHierarchyChanged.
+    // If the child is a WebView or paints to a layer, round its corners.
+    if (views::IsViewClass<views::WebView>(child)) {
+      views::AsViewClass<views::WebView>(child)->holder()->SetCornerRadii(
+          GetRoundedCorners());
+    }
+    if (child->layer()) {
+      child->layer()->SetRoundedCornerRadius(GetRoundedCorners());
+      child->layer()->SetIsFastRoundedCorner(true);
+    }
+  }
+
+  gfx::RoundedCornersF GetRoundedCorners() {
+    return should_round_corners_ && GetLayoutProvider()
+               ? gfx::RoundedCornersF(
+                     GetLayoutProvider()->GetCornerRadiusMetric(
+                         type_ == SidePanelEntry::PanelType::kToolbar
+                             ? views::ShapeContextTokens::
+                                   kToolbarHeightSidePanelContentRadius
+                             : views::ShapeContextTokens::
+                                   kSidePanelContentRadius))
+               : gfx::RoundedCornersF();
+  }
+
+  bool should_round_corners_ = false;
+  SidePanelEntry::PanelType type_;
+  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
+      this};
+};
+
+BEGIN_METADATA(ContentParentView)
+END_METADATA
+
+}  // namespace
+
+class SidePanel::BorderView : public views::View {
   METADATA_HEADER(BorderView, views::View)
 
  public:
@@ -201,6 +302,11 @@ class BorderView : public views::View {
   void HeaderViewChanged(views::View* header_view) {
     border_->SetHeaderHeight(
         header_view ? header_view->GetPreferredSize().height() : 0);
+  }
+
+  void SetOutlineVisibilty(bool visible) {
+    border_->SetOutlineVisibility(visible);
+    SchedulePaint();
   }
 
   void SetBorderRadii(const gfx::RoundedCornersF& radii) {
@@ -226,31 +332,8 @@ class BorderView : public views::View {
   raw_ptr<SidePanelBorder> border_;
 };
 
-BEGIN_METADATA(BorderView)
+BEGIN_METADATA(SidePanel, BorderView)
 END_METADATA
-
-// ContentParentView is the parent view for views hosted in the
-// side panel.
-class ContentParentView : public views::View {
-  METADATA_HEADER(ContentParentView, views::View)
-
- public:
-  ContentParentView() {
-    SetUseDefaultFillLayout(true);
-    SetBackground(views::CreateSolidBackground(kColorSidePanelBackground));
-    SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kUnbounded));
-  }
-
-  ~ContentParentView() override = default;
-};
-
-BEGIN_METADATA(ContentParentView)
-END_METADATA
-
-}  // namespace
 
 // Ensures immediate children of the SidePanel have their layers clipped to
 // their visible bounds to prevent incorrect clipping during animation.
@@ -302,36 +385,57 @@ class SidePanel::VisibleBoundsViewClipper : public views::ViewObserver {
 };
 
 SidePanel::SidePanel(BrowserView* browser_view,
-                     HorizontalAlignment horizontal_alignment)
-    : views::AnimationDelegateViews(this),
-      browser_view_(browser_view),
-      horizontal_alignment_(horizontal_alignment) {
-  if (lens::features::IsLensOverlayEnabled()) {
-    visible_bounds_view_clipper_ =
-        std::make_unique<VisibleBoundsViewClipper>(this);
+                     SidePanelEntry::PanelType type,
+                     bool has_border)
+    : browser_view_(browser_view),
+      type_(type),
+      visible_bounds_view_clipper_(
+          std::make_unique<VisibleBoundsViewClipper>(this)) {
+  horizontal_alignment_ =
+      GetHorizontalAlignment(browser_view->GetProfile()->GetPrefs(), type_);
+
+  // The default z-order is the order in which children were added to the
+  // parent view. content_parent_view_ is added first so it exists behind
+  // border_view_ and resize_area_.
+  content_parent_view_ = AddChildView(std::make_unique<ContentParentView>(
+      /*should_round_corners=*/!has_border, type));
+  content_parent_view_->SetVisible(false);
+
+  if (has_border) {
+    std::unique_ptr<BorderView> border_view =
+        std::make_unique<BorderView>(browser_view);
+    border_view_ = border_view.get();
+    AddChildView(std::move(border_view));
   }
-  std::unique_ptr<BorderView> border_view =
-      std::make_unique<BorderView>(browser_view);
-  border_view_ = border_view.get();
-  AddChildView(std::move(border_view));
 
   std::unique_ptr<views::SidePanelResizeArea> resize_area =
       std::make_unique<views::SidePanelResizeArea>(this);
   resize_area_ = resize_area.get();
   AddChildView(std::move(resize_area));
+  resize_area_->InsertBeforeInFocusList(content_parent_view_);
 
   pref_change_registrar_.Init(browser_view->GetProfile()->GetPrefs());
 
-  // base::Unretained is safe since the side panel must be attached to some
-  // BrowserView. Deleting BrowserView will also delete the SidePanel.
   pref_change_registrar_.Add(
       prefs::kSidePanelHorizontalAlignment,
-      base::BindRepeating(&BrowserView::UpdateSidePanelHorizontalAlignment,
-                          base::Unretained(browser_view)));
+      base::BindRepeating(&SidePanel::UpdateHorizontalAlignment,
+                          base::Unretained(this)));
 
-  animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
+  animation_coordinator_ =
+      std::make_unique<SidePanelAnimationCoordinator>(this);
+  animation_coordinator_->AddObserver(
+      SidePanelAnimationCoordinator::AnimationType::kOpen, this);
+  animation_coordinator_->AddObserver(
+      SidePanelAnimationCoordinator::AnimationType::kClose, this);
+  animation_coordinator_->AddObserver(
+      SidePanelAnimationCoordinator::AnimationType::kOpenWithContentTransition,
+      this);
 
-  animation_.SetSlideDuration(base::Milliseconds(kAnimationDurationMs));
+  animation_coordinator_->AddObserver(kSidePanelBoundsAnimation, this);
+
+  animation_coordinator_->AddObserver(kSidePanelContentOpacityAnimation, this);
+  animation_coordinator_->AddObserver(kSidePanelContentCornerRadiusAnimation,
+                                      this);
 
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -340,15 +444,29 @@ SidePanel::SidePanel(BrowserView* browser_view,
   // default.
   SetPanelWidth(GetMinimumSize().width());
 
-  SetBorder(views::CreateEmptyBorder(GetBorderInsets()));
+  if (has_border) {
+    SetBorder(views::CreateEmptyBorder(GetBorderInsets()));
+  }
 
   SetProperty(views::kElementIdentifierKey, kSidePanelElementId);
-
-  content_parent_view_ = AddChildView(std::make_unique<ContentParentView>());
-  content_parent_view_->SetVisible(false);
 }
 
-SidePanel::~SidePanel() = default;
+SidePanel::~SidePanel() {
+  animation_coordinator_->RemoveObserver(
+      SidePanelAnimationCoordinator::AnimationType::kOpen, this);
+  animation_coordinator_->RemoveObserver(
+      SidePanelAnimationCoordinator::AnimationType::kClose, this);
+  animation_coordinator_->RemoveObserver(
+      SidePanelAnimationCoordinator::AnimationType::kOpenWithContentTransition,
+      this);
+
+  animation_coordinator_->RemoveObserver(kSidePanelBoundsAnimation, this);
+
+  animation_coordinator_->RemoveObserver(kSidePanelContentOpacityAnimation,
+                                         this);
+  animation_coordinator_->RemoveObserver(kSidePanelContentCornerRadiusAnimation,
+                                         this);
+}
 
 void SidePanel::SetPanelWidth(int width) {
   // Only the width is used by BrowserViewLayout.
@@ -364,10 +482,8 @@ bool SidePanel::ShouldRestrictMaxWidth() const {
   if (!side_panel_ui) {
     return true;
   }
-  std::optional<SidePanelEntry::Id> side_panel_entry_id =
-      side_panel_ui->GetCurrentEntryId();
-  return !side_panel_entry_id.has_value() ||
-         side_panel_entry_id.value() != SidePanelEntryId::kReadAnything;
+  return !side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kReadAnything));
 }
 
 void SidePanel::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
@@ -376,9 +492,11 @@ void SidePanel::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
   }
   background_radii_ = radii;
 
-  // Since the border_view paints the background, by adding rounded
-  // corners to border will paint a rounded background for the side panel.
-  static_cast<BorderView*>(border_view_)->SetBorderRadii(background_radii_);
+  if (border_view_) {
+    // Since the border_view paints the background, by adding rounded
+    // corners to border will paint a rounded background for the side panel.
+    border_view_->SetBorderRadii(background_radii_);
+  }
 }
 
 void SidePanel::UpdateWidthOnEntryChanged() {
@@ -389,7 +507,7 @@ void SidePanel::UpdateWidthOnEntryChanged() {
   }
 
   std::optional<SidePanelEntry::Id> current_entry =
-      side_panel_ui->GetCurrentEntryId();
+      side_panel_ui->GetCurrentEntryId(type_);
   if (!current_entry) {
     return;
   }
@@ -408,21 +526,13 @@ void SidePanel::UpdateWidthOnEntryChanged() {
   if (std::optional<int> width_from_pref = dict.FindInt(panel_id)) {
     SetPanelWidth(width_from_pref.value());
   } else {
-    SetPanelWidth(side_panel_ui->GetCurrentEntryDefaultContentWidth() +
+    SetPanelWidth(side_panel_ui->GetCurrentEntryDefaultContentWidth(type_) +
                   GetBorderInsets().width());
   }
 }
 
-void SidePanel::SetHorizontalAlignment(HorizontalAlignment alignment) {
-  horizontal_alignment_ = alignment;
-}
-
-SidePanel::HorizontalAlignment SidePanel::GetHorizontalAlignment() {
-  return horizontal_alignment_;
-}
-
-bool SidePanel::IsRightAligned() {
-  return GetHorizontalAlignment() == HorizontalAlignment::kRight;
+bool SidePanel::IsRightAligned() const {
+  return horizontal_alignment() == HorizontalAlignment::kRight;
 }
 
 gfx::Size SidePanel::GetMinimumSize() const {
@@ -433,23 +543,80 @@ gfx::Size SidePanel::GetMinimumSize() const {
 }
 
 bool SidePanel::IsClosing() {
-  return animation_.IsClosing();
+  return animation_coordinator_->IsClosing();
+}
+
+gfx::Rect SidePanel::GetContentAnimationBounds(
+    const gfx::Rect& side_panel_final_bounds) {
+  CHECK(content_starting_bounds_.has_value());
+  gfx::Rect content_starting_bounds = content_starting_bounds_.value();
+  // Inset the final bounds to get the content's final bounds.
+  gfx::Rect final_bounds = side_panel_final_bounds;
+  final_bounds.Inset(GetInsets());
+
+  gfx::Rect animating_bounds;
+  double top_bound_animation_value =
+      GetAnimationValueFor(kSidePanelContentTopBoundAnimation);
+  animating_bounds.set_y(gfx::Tween::IntValueBetween(
+      top_bound_animation_value, content_starting_bounds.y(),
+      final_bounds.y()));
+  double bottom_bound_animation_value =
+      GetAnimationValueFor(kSidePanelContentBottomBoundAnimation);
+  animating_bounds.set_height(
+      gfx::Tween::IntValueBetween(bottom_bound_animation_value,
+                                  content_starting_bounds.bottom(),
+                                  final_bounds.bottom()) -
+      animating_bounds.y());
+  double left_bound_animation_value =
+      GetAnimationValueFor(kSidePanelContentLeftBoundAnimation);
+  animating_bounds.set_x(gfx::Tween::IntValueBetween(
+      left_bound_animation_value, content_starting_bounds.x(),
+      final_bounds.x()));
+  double width_bound_animation_value =
+      GetAnimationValueFor(kSidePanelContentWidthBoundAnimation);
+  animating_bounds.set_width(gfx::Tween::IntValueBetween(
+      width_bound_animation_value, content_starting_bounds.width(),
+      final_bounds.width()));
+  return animating_bounds;
 }
 
 void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
   // If a header view already exists make sure we remove it so that it is
   // replaced.
   if (header_view_) {
-    RemoveChildView(header_view_);
+    auto header_view = RemoveChildViewT(header_view_);
+    header_view_ = nullptr;
   }
   header_view_ = view.get();
   AddChildView(std::move(view));
-  static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
+  header_view_->InsertAfterInFocusList(resize_area_);
+  header_view_->DeprecatedLayoutImmediately();
+  if (border_view_) {
+    border_view_->HeaderViewChanged(header_view_);
+  }
   // Update the border so that the insets include space for the header to be
   // placed on top of the border area.
-  int top_inset = header_view_->height() - GetBorderThickness();
+  int top_inset = header_view_->height() - GetBorderInsets().top();
   SetBorder(views::CreateEmptyBorder(GetBorderInsets() +
                                      gfx::Insets::TLBR(top_inset, 0, 0, 0)));
+}
+
+void SidePanel::RemoveHeaderView() {
+  SetBorder(views::CreateEmptyBorder(GetBorderInsets().set_top(0)));
+  if (border_view_) {
+    border_view_->HeaderViewChanged(nullptr);
+  }
+  if (header_view_) {
+    auto header_view = RemoveChildViewT(header_view_);
+    header_view_ = nullptr;
+  }
+}
+
+void SidePanel::SetOutlineVisibility(bool visible) {
+  if (!border_view_) {
+    return;
+  }
+  border_view_->SetOutlineVisibilty(visible);
 }
 
 gfx::Size SidePanel::GetContentSizeUpperBound() const {
@@ -469,74 +636,65 @@ void SidePanel::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 }
 
 double SidePanel::GetAnimationValue() const {
-  if (ShouldShowAnimation()) {
-    return animation_.GetCurrentValue();
+  return GetAnimationValueFor(kSidePanelBoundsAnimation);
+}
+
+void SidePanel::OnAnimationSequenceProgressed(
+    const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
+    double animation_value) {
+  if (animation_id == kSidePanelContentCornerRadiusAnimation) {
+    CHECK(browser_view_->GetSidePanelAnimationContent());
+    CHECK(browser_view_->GetSidePanelAnimationContent()->layer());
+    const gfx::RoundedCornersF kRoundedCorners{
+        gfx::Tween::FloatValueBetween(animation_value, 0, 16)};
+    browser_view_->GetSidePanelAnimationContent()
+        ->layer()
+        ->SetRoundedCornerRadius(kRoundedCorners);
+  } else if (animation_id == kSidePanelContentOpacityAnimation) {
+    CHECK(browser_view_->GetSidePanelAnimationContent());
+    CHECK(browser_view_->GetSidePanelAnimationContent()->layer());
+    browser_view_->GetSidePanelAnimationContent()->layer()->SetOpacity(
+        gfx::Tween::DoubleValueBetween(animation_value, 0.5, 1));
+  } else if (animation_id == kSidePanelBoundsAnimation) {
+    InvalidateLayout();
   } else {
-    return 1;
+    NOTREACHED() << "Observed animation id is not handled";
   }
 }
 
-void SidePanel::OnChildViewAdded(View* observed_view, View* child) {
-  if (observed_view != this || child == border_view_ || child == resize_area_) {
-    return;
-  }
-  if (child != header_view_) {
-    content_view_observations_.AddObservation(child);
-  }
-
-  // Reorder `border_view_` to be last so that it gets painted on top, even if
-  // an added child also paints to a layer.
-  ReorderChildView(border_view_, children().size());
-
-  // Reorder `header_view_` if it exists to get painted on top of the border
-  // view.
-  if (header_view_) {
-    ReorderChildView(header_view_, children().size());
-  }
-  // Reorder `resize_area_` to be last so that it gets painted on top of
-  // `border_view_`, for displaying the resize handle.
-  ReorderChildView(resize_area_, children().size());
-
-  if (header_view_) {
-    // The header view should come before all other side panel children except
-    // the resize area in focus order.
-    header_view_->InsertBeforeInFocusList(GetChildrenFocusList().front());
-  }
-  // The resize area should come before all other side panel children in focus
-  // order.
-  resize_area_->InsertBeforeInFocusList(GetChildrenFocusList().front());
-}
-
-void SidePanel::OnChildViewRemoved(View* observed_view, View* child) {
-  if (observed_view != this) {
-    return;
-  }
-  if (content_view_observations_.IsObservingSource(child)) {
-    content_view_observations_.RemoveObservation(child);
+void SidePanel::OnAnimationTypeStarted(
+    SidePanelAnimationCoordinator::AnimationType type) {
+  if (type == SidePanelAnimationCoordinator::AnimationType::
+                  kOpenWithContentTransition) {
+    views::View* animation_content =
+        browser_view_->GetSidePanelAnimationContent();
+    CHECK(animation_content);
+    CHECK(animation_content->layer());
+    animation_content->layer()->SetOpacity(0.5);
   }
 }
 
-void SidePanel::AnimationProgressed(const gfx::Animation* animation) {
-  base::TimeDelta step_time =
-      base::TimeTicks::Now() - last_animation_step_timestamp_;
-  last_animation_step_timestamp_ = base::TimeTicks::Now();
-  if (!largest_animation_step_time_.has_value() ||
-      largest_animation_step_time_ < step_time) {
-    largest_animation_step_time_ = step_time;
-  }
-  InvalidateLayout();
-}
-
-void SidePanel::AnimationEnded(const gfx::Animation* animation) {
-  if (animation->GetCurrentValue() == 0) {
-    SetVisible(false);
-    state_ = State::kClosed;
-  } else {
-    state_ = State::kOpen;
-  }
-  if (largest_animation_step_time_.has_value()) {
-    SidePanelUtil::RecordSidePanelAnimationMetrics(
-        largest_animation_step_time_.value());
+void SidePanel::OnAnimationTypeEnded(
+    SidePanelAnimationCoordinator::AnimationType type) {
+  switch (type) {
+    case SidePanelAnimationCoordinator::AnimationType::
+        kOpenWithContentTransition:
+      if (browser_view_->GetSidePanelAnimationContent()) {
+        content_parent_view_->AddChildView(
+            browser_view_->GetSidePanelAnimationContent());
+        browser_view_->SetSidePanelAnimationContent(nullptr);
+      }
+      content_starting_bounds_.reset();
+      [[fallthrough]];
+    case SidePanelAnimationCoordinator::AnimationType::kOpen:
+      state_ = State::kOpen;
+      break;
+    case SidePanelAnimationCoordinator::AnimationType::kClose:
+      state_ = State::kClosed;
+      SetVisible(false);
+      break;
+    default:
+      NOTREACHED() << "Observed animation type is not handled";
   }
   InvalidateLayout();
 }
@@ -571,16 +729,13 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
   }
 
   if (width() != proposed_width) {
-    if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
-      if (SidePanelUI* side_panel_ui =
-              browser_view_->browser()->GetFeatures().side_panel_ui()) {
-        if (std::optional<SidePanelEntry::Id> entry =
-                side_panel_ui->GetCurrentEntryId()) {
-          std::string current_panel_id =
-              SidePanelEntryIdToString(entry.value());
-          // Update the pref with the new width.
-          UpdateSidePanelWidthPref(current_panel_id, proposed_width);
-        }
+    if (SidePanelUI* side_panel_ui =
+            browser_view_->browser()->GetFeatures().side_panel_ui()) {
+      if (std::optional<SidePanelEntry::Id> entry =
+              side_panel_ui->GetCurrentEntryId(type_)) {
+        std::string current_panel_id = SidePanelEntryIdToString(entry.value());
+        // Update the pref with the new width.
+        UpdateSidePanelWidthPref(current_panel_id, proposed_width);
       }
     }
 
@@ -596,7 +751,8 @@ void SidePanel::RecordMetricsIfResized() {
     if (!side_panel_ui) {
       return;
     }
-    std::optional<SidePanelEntry::Id> id = side_panel_ui->GetCurrentEntryId();
+    std::optional<SidePanelEntry::Id> id =
+        side_panel_ui->GetCurrentEntryId(type_);
     if (!id.has_value()) {
       return;
     }
@@ -604,7 +760,7 @@ void SidePanel::RecordMetricsIfResized() {
     int side_panel_contents_width = width() - GetBorderInsets().width();
     int browser_window_width = browser_view_->width();
     SidePanelUtil::RecordSidePanelResizeMetrics(
-        id.value(), side_panel_contents_width, browser_window_width);
+        type_, id.value(), side_panel_contents_width, browser_window_width);
     did_resize_ = false;
   }
 }
@@ -615,6 +771,17 @@ void SidePanel::Open(bool animated) {
 
 void SidePanel::Close(bool animated) {
   UpdateVisibility(/*should_be_open=*/false, animated);
+}
+
+void SidePanel::ResetSidePanelAnimationContent() {
+  if (browser_view_->GetSidePanelAnimationContent()) {
+    CHECK(content_parent_view_->children().size() == 0);
+    content_parent_view_->AddChildView(
+        browser_view_->GetSidePanelAnimationContent());
+    browser_view_->SetSidePanelAnimationContent(nullptr);
+    animation_coordinator_->Reset(SidePanelAnimationCoordinator::AnimationType::
+                                      kOpenWithContentTransition);
+  }
 }
 
 views::View* SidePanel::GetContentParentView() {
@@ -648,14 +815,15 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
   // TODO(pbos): Should layer visibility/painting be automatically tied to
   // parent visibility? I.e. the difference between GetVisible() and IsDrawn().
   bool side_panel_open_or_closing = GetVisible() || should_be_open;
-  if (side_panel_open_or_closing != border_view_->GetVisible()) {
+  if (border_view_ &&
+      side_panel_open_or_closing != border_view_->GetVisible()) {
     border_view_->SetVisible(side_panel_open_or_closing);
     if (side_panel_open_or_closing) {
       border_view_->SetPaintToLayer();
       border_view_->layer()->SetFillsBoundsOpaquely(false);
-      if (header_view_) {
-        static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
-        int top_inset = header_view_->height() - GetBorderThickness();
+      if (header_view_ && header_view_->GetVisible()) {
+        border_view_->HeaderViewChanged(header_view_);
+        int top_inset = header_view_->height() - GetBorderInsets().top();
         SetBorder(views::CreateEmptyBorder(
             GetBorderInsets() + gfx::Insets::TLBR(top_inset, 0, 0, 0)));
       }
@@ -671,25 +839,54 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
         view->SetVisible(false);
       }
       SetVisible(should_be_open);
-      largest_animation_step_time_.reset();
-      last_animation_step_timestamp_ = base::TimeTicks::Now();
-      animation_.Show();
+      if (content_starting_bounds_.has_value()) {
+        CHECK(content_parent_view_->children().size() == 1);
+        browser_view_->SetSidePanelAnimationContent(
+            content_parent_view_->children()[0]);
+        animation_coordinator_->Start(
+            SidePanelAnimationCoordinator::AnimationType::
+                kOpenWithContentTransition);
+      } else {
+        animation_coordinator_->Start(
+            SidePanelAnimationCoordinator::AnimationType::kOpen);
+      }
     } else if (GetVisible() && !IsClosing()) {
-      largest_animation_step_time_.reset();
-      last_animation_step_timestamp_ = base::TimeTicks::Now();
-      animation_.Hide();
+      animation_coordinator_->Start(
+          SidePanelAnimationCoordinator::AnimationType::kClose);
     }
   } else {
     // Set the animation value so that it accurately reflects what state the
     // side panel should be in for layout.
-    animation_.Reset(should_be_open ? 1 : 0);
+    animation_coordinator_->Reset(
+        should_be_open ? SidePanelAnimationCoordinator::AnimationType::kOpen
+                       : SidePanelAnimationCoordinator::AnimationType::kClose);
+
     SetVisible(should_be_open);
   }
 }
 
+double SidePanel::GetAnimationValueFor(
+    const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id)
+    const {
+  if (ShouldShowAnimation()) {
+    return animation_coordinator_->GetAnimationValueFor(animation_id);
+  } else {
+    return 1;
+  }
+}
+
 bool SidePanel::ShouldShowAnimation() const {
-  return lens::features::IsLensOverlayEnabled() &&
-         gfx::Animation::ShouldRenderRichAnimation() && !animations_disabled_;
+  bool should_show_animations =
+      gfx::Animation::ShouldRenderRichAnimation() && !animations_disabled_;
+#if BUILDFLAG(IS_WIN)
+  // Don't show open/close animations for the toolbar height panel on Windows
+  // due to jank. The "show from" animation should still run which is the only
+  // time |content_starting_bounds_| has a value.
+  if (type_ == SidePanelEntry::PanelType::kToolbar) {
+    should_show_animations &= content_starting_bounds_.has_value();
+  }
+#endif
+  return should_show_animations;
 }
 
 void SidePanel::AnnounceResize() {
@@ -716,6 +913,13 @@ void SidePanel::AnnounceResize() {
       IDS_SIDE_PANEL_RESIZE_ACCESSIBLE_ALERT, web_contents_side_text,
       base::FormatPercent(web_contents_percentage), side_panel_side_text,
       base::FormatPercent(side_panel_percentage)));
+}
+
+void SidePanel::UpdateHorizontalAlignment() {
+  horizontal_alignment_ =
+      GetHorizontalAlignment(browser_view_->GetProfile()->GetPrefs(), type_);
+
+  InvalidateLayout();
 }
 
 BEGIN_METADATA(SidePanel)

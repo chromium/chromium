@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
-#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
@@ -49,12 +48,12 @@ class BrowserAppMenuButton;
 class Browser;
 class ExtensionsToolbarButton;
 class ExtensionsToolbarContainer;
-class ChromeLabsButton;
 class HomeButton;
 class IntentChipButton;
 class ExtensionsToolbarCoordinator;
 class MediaToolbarButtonView;
 class ReloadButton;
+class ReloadButtonWebView;
 class PinnedToolbarActionsContainer;
 class ToolbarButton;
 class AvatarToolbarButtonBrowserTest;
@@ -81,10 +80,10 @@ class ToolbarView : public views::AccessiblePaneView,
  public:
   // Types of display mode this toolbar can have.
   enum class DisplayMode {
-    NORMAL,     // Normal toolbar with buttons, etc.
-    LOCATION,   // Slimline toolbar showing only compact location
+    kNormal,    // Normal toolbar with buttons, etc.
+    kLocation,  // Slimline toolbar showing only compact location
                 // bar, used for popups.
-    CUSTOM_TAB  // Custom tab bar, used in PWAs when a location
+    kCustomTab  // Custom tab bar, used in PWAs when a location
                 // needs to be displayed.
   };
 
@@ -142,14 +141,6 @@ class ToolbarView : public views::AccessiblePaneView,
   // Accessors.
   Browser* browser() const { return browser_; }
   views::Button* GetChromeLabsButton() const;
-
-  // NOTE: Use of the above method `GetChromeLabsButton` is preferred while the
-  // Chrome Labs button is migrated to PinnedActionToolbarButton.
-  // TODO(b/353385180): Remove once Chrome Labs button migration is complete.
-  ChromeLabsButton* chrome_labs_button() const { return chrome_labs_button_; }
-  ChromeLabsModel* chrome_labs_model() const {
-    return chrome_labs_model_.get();
-  }
   ExtensionsToolbarContainer* extensions_container() const {
     return extensions_container_;
   }
@@ -254,10 +245,12 @@ class ToolbarView : public views::AccessiblePaneView,
   views::AccessiblePaneView* GetAsAccessiblePaneView() override;
   views::View* GetAnchorView(
       std::optional<actions::ActionId> action_id) override;
+  views::BubbleAnchor GetBubbleAnchor(
+      std::optional<actions::ActionId> action_id) override;
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
   AvatarToolbarButton* GetAvatarToolbarButton() override;
   ToolbarButton* GetBackButton() override;
-  ReloadButton* GetReloadButton() override;
+  ReloadControl* GetReloadButton() override;
   IntentChipButton* GetIntentChipButton() override;
   ToolbarButton* GetDownloadButton() override;
 
@@ -280,14 +273,29 @@ class ToolbarView : public views::AccessiblePaneView,
 
   void OnTouchUiChanged();
 
-  void UpdateClipPath();
+  void UpdateClipPath(int leading_corner_radius, int trailing_corner_radius);
 
   // Called when active state for the window changes.
   void ActiveStateChanged();
 
   void NewTabButtonPressed(const ui::Event& event);
 
-  void UpdateRecedingCornerRadius();
+  // Determines how corners are painted. Return value is how to paint leading
+  // and/or trailing corners, respectively. See comments on `leading_curve_` and
+  // `trailing_curve_` for more.
+  enum class CornerStyle {
+    // Hard corner. Used when tabstrip is next to other elements of the same
+    // color, or against a flat edge of the window.
+    kSquare,
+    // Curved corner. Used when tabstrip goes all the way to the upper corner of
+    // the browser window.
+    kRounded,
+    // Fake curved corner, with tabstrip color behind. Used when the toolbar is
+    // directly next to or below a background region of the tabstrip or the
+    // titlebar.
+    kTabstripCurve,
+  };
+  std::pair<CornerStyle, CornerStyle> GetCornerStyles() const;
 
   gfx::SlideAnimation size_animation_{this};
 
@@ -297,13 +305,13 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<ToolbarButton> back_ = nullptr;
   raw_ptr<ToolbarButton> forward_ = nullptr;
   raw_ptr<ReloadButton> reload_ = nullptr;
+  raw_ptr<ReloadButtonWebView> reload_webview_ = nullptr;
   raw_ptr<HomeButton> home_ = nullptr;
   raw_ptr<SplitTabsToolbarButton> split_tabs_ = nullptr;
   raw_ptr<CustomTabBarView> custom_tab_bar_ = nullptr;
   raw_ptr<LocationBarView> location_bar_ = nullptr;
   raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
   raw_ptr<views::View> toolbar_divider_ = nullptr;
-  raw_ptr<ChromeLabsButton> chrome_labs_button_ = nullptr;
   raw_ptr<BatterySaverButton> battery_saver_button_ = nullptr;
   raw_ptr<PerformanceInterventionButton> performance_intervention_button_ =
       nullptr;
@@ -322,7 +330,6 @@ class ToolbarView : public views::AccessiblePaneView,
 
   AppMenuIconController app_menu_icon_controller_;
 
-  std::unique_ptr<ChromeLabsModel> chrome_labs_model_;
   std::unique_ptr<ExtensionsToolbarCoordinator> extensions_toolbar_coordinator_;
 
   BooleanPrefMember show_forward_button_;
@@ -347,11 +354,10 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // container_view_ is transparent with the same dimensions as ToolbarView.
   // All children are added to container_view_ and layout_manager_ applies to
-  // container_view_. The reason for this layer of indiretion is because
+  // container_view_. The reason for this layer of indirection is because
   // container_view_ has a clip path set in UpdateClipPath() which adds rounded
   // corners. This leaves some unpainted pixels, which are painted by
-  // background_view_left_ and background_view_right_.
-  // the future.
+  // leading_curve_ and trailing_curve_.
   raw_ptr<ContainerView> container_view_ = nullptr;
 
   // A chevron button that indicates some toolbar elements have overflowed
@@ -360,18 +366,20 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<OverflowButton> overflow_button_ = nullptr;
 
   // The toolbar's top corners recede lower into the toolbar bounds, and need to
-  // have the frame's color painted into it. The receding_corner_radius_ is the
-  // size of the corner radius that's clipped out, and the background_view_left_
-  //  background_view_right_ are the area painted behind the toolbar which give
-  // the effect of the toolbar raising up into the tabstrip region.
-  // The receding_corner_radius_ can change based on whether if WebUiTabStrip is
-  // being used and if the first tab is active or not.
-  int receding_corner_radius_ = 0;
-  raw_ptr<View> background_view_left_ = nullptr;
-  raw_ptr<View> background_view_right_ = nullptr;
+  // have the frame's color painted into it. Similarly, in vertical tabstrip
+  // mode, the top of the tabstrip edge (when adjacent to the toolbar) curves
+  // int it.
+  //
+  // The `leading_curve_` and `trailing_curve_` are the area
+  // painted behind the toolbar which give the melding effect of the toolbar
+  // raising up into the tabstrip region or blending with the vertical tabstrip.
+  //
+  // These views will either be shown or hidden based on visual need.
+  raw_ptr<View> leading_curve_ = nullptr;
+  raw_ptr<View> trailing_curve_ = nullptr;
 
-  // Listens to changes to window active state to update background_view_right_
-  // and background_view_left_, as their background depends on active state.
+  // Listens to changes to window active state to update trailing_curve_
+  // and leading_curve_, as their background depends on active state.
   base::CallbackListSubscription active_state_subscription_;
 };
 

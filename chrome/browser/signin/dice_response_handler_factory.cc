@@ -7,13 +7,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
+#include "chrome/browser/signin/binding_key_registration_token_helper.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/dice_response_handler.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/binding_key_registration_token_helper.h"
 #include "components/signin/public/base/signin_switches.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"  // nogncheck
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -82,7 +83,8 @@ DiceResponseHandlerFactory::BuildServiceInstanceForBrowserContext(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   registration_token_helper_factory = CreateRegistrationTokenHelperFactory(
       profile->GetPrefs(),
-      UnexportableKeyServiceFactory::GetForProfile(profile));
+      UnexportableKeyServiceFactory::GetForProfileAndPurpose(
+          profile, unexportable_keys::KeyPurpose::kRefreshTokenBinding));
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   return std::make_unique<DiceResponseHandler>(
       ChromeSigninClientFactory::GetForProfile(profile),

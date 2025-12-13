@@ -1,0 +1,23 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'AimEligibilityResponseProto';
+
+package omnibox;
+
+// AIM Eligibility Response.
+// Next ID: 7
+message AimEligibilityResponse {
+  optional bool is_eligible = 1;
+  optional bool is_pdf_upload_eligible = 2;
+  optional bool is_deep_search_eligible = 3;
+  optional bool is_canvas_eligible = 4;
+  optional bool is_image_generation_eligible = 6;
+  // The session index of the user.
+  optional int32 session_index = 5;
+}

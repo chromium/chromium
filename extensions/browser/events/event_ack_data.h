@@ -38,6 +38,7 @@ class EventAckData {
   void IncrementInflightEvent(content::ServiceWorkerContext* context,
                               int render_process_id,
                               int64_t version_id,
+                              int worker_thread_id,
                               int event_id,
                               base::TimeTicks dispatch_start_time,
                               EventDispatchSource dispatch_source,
@@ -49,12 +50,23 @@ class EventAckData {
   void DecrementInflightEvent(content::ServiceWorkerContext* context,
                               int render_process_id,
                               int64_t version_id,
+                              int worker_thread_id,
                               int event_id,
                               bool worker_stopped,
                               base::OnceClosure failure_callback);
 
   // Removes any `unacked_events_` for `render_process_id`.
   void ClearUnackedEventsForRenderProcess(int render_process_id);
+
+  // Removes any `unacked_events_` for a specific service worker instance. This
+  // should be called when it's known that the worker will not send an ack
+  // (e.g., because it has been shut down). If `context` is provided, also calls
+  // `FinishedExternalRequest` for each event to ensure the external request ref
+  // count is properly managed.
+  void ClearUnackedEventsForWorker(content::ServiceWorkerContext* context,
+                                   int render_process_id,
+                                   int64_t version_id,
+                                   int worker_thread_id);
 
   bool HasUnackedEventForTesting(int event_id);
 
@@ -64,6 +76,8 @@ class EventAckData {
     EventInfo(
         const base::Uuid& request_uuid,
         int render_process_id,
+        int64_t version_id,
+        int worker_thread_id,
         bool start_ok,
         content::ServiceWorkerExternalRequestResult external_request_result,
         base::TimeTicks dispatch_start_time,
@@ -80,6 +94,10 @@ class EventAckData {
     base::Uuid request_uuid;
     // RenderProcessHost id.
     int render_process_id;
+    // Service worker version id.
+    int64_t version_id;
+    // Service worker thread id.
+    int worker_thread_id;
     // Whether or not StartExternalRequest succeeded.
     bool start_ok;
     // The status returned for StartExternalRequest.

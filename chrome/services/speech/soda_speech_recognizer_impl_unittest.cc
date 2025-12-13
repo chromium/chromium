@@ -125,6 +125,12 @@ class SodaSpeechRecognizerImplTest
         base::BindOnce([](bool continue_recognition) {}));
   }
 
+  void OnSpeechRecognitionRecognitionEventPartial() {
+    recognizer_->OnSpeechRecognitionRecognitionEvent(
+        media::SpeechRecognitionResult("Quokkas", /*is_final=*/false),
+        base::BindOnce([](bool) {}));
+  }
+
   void OnSpeechRecognitionError() { recognizer_->OnSpeechRecognitionError(); }
 
   void AddAudio() {
@@ -139,7 +145,8 @@ class SodaSpeechRecognizerImplTest
   }
 
  protected:
-  base::test::TaskEnvironment environment_;
+  base::test::TaskEnvironment environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   mojo::Receiver<media::mojom::SpeechRecognitionSessionClient> session_client_{
       this};
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizer>
@@ -209,6 +216,27 @@ TEST_P(SodaSpeechRecognizerImplTest, EngineError) {
   EXPECT_TRUE(recognition_ended_);
   CheckEventsConsistency();
   CheckFinalEventsConsistency();
+}
+
+TEST_P(SodaSpeechRecognizerImplTest, StopCaptureWithNoFinalResult) {
+  base::RunLoop().RunUntilIdle();  // EVENT_START processing.
+  EXPECT_TRUE(recognition_started_);
+
+  AddAudio();
+  base::RunLoop().RunUntilIdle();  // EVENT_AUDIO_DATA processing.
+  EXPECT_TRUE(audio_started_);
+  CheckEventsConsistency();
+
+  OnSpeechRecognitionRecognitionEventPartial();
+  base::RunLoop().RunUntilIdle();  // EVENT_ENGINE_RESULT processing.
+  EXPECT_TRUE(result_received_);
+  CheckEventsConsistency();
+
+  StopCapture();
+  base::RunLoop().RunUntilIdle();  // EVENT_STOP_CAPTURE processing.
+  EXPECT_FALSE(recognition_ended_);
+  environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(recognition_ended_);
 }
 
 TEST_P(SodaSpeechRecognizerImplTest, UpdateRecognitionContext) {

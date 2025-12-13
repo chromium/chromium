@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <if expr="not is_android">
+  <if expr="not is_android and not is_ios">
     <message name="IDS_GEOLOCATION_INFOBAR_TEXT" desc="Text requesting permission for a site to access the user's physical location">
       <ph name="URL">$1<ex>maps.google.com</ex></ph> wants to use your computer's location
     </message>
   </if>
-  <if expr="is_android">
+  <if expr="is_android or is_ios">
     <message name="IDS_GEOLOCATION_INFOBAR_TEXT" desc="Mobile: Text requesting permission for a site to access the user's physical location">
       <ph name="URL">$1<ex>maps.google.com</ex></ph> wants to use your device's location
     </message>
@@ -40,13 +40,13 @@
       Notifications are automatically blocked for all sites except ones you allow
     </message>
     <message name="IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_PREDICTION_SERVICE_MESSAGE" desc="Text used as notification message when requesting permission for Web Notifications via a notification. Used when the prediction service has decided that the user will be very unlikely to grant this permission.">
-      Notifications were automatically blocked because you usually don't allow them
+      Chrome thinks you don't want notifications from this site. So, requests are hidden to reduce interruptions.
     </message>
     <message name="IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI" desc="Text used as notification message when requesting Gelocation permission. Used when quiet UI is enabled in settings.">
       Location requests are automatically blocked for all sites except ones you allow
     </message>
     <message name="IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_PREDICTION_SERVICE" desc="Text used as notification message when requesting permission for Geolocation. Used when the prediction service has decided that the user will be very unlikely to grant this permission.">
-      This site was blocked from knowing your precise location because you usually don't allow this
+      Chrome thinks you don't want to use your location on this site. So, requests are hidden to reduce interruptions.
     </message>
     <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_INFOBAR_TEXT" desc="Text requesting permission for a site to access the computer's microphone.">
       <ph name="HOST">$1<ex>html5rocks.com</ex></ph> wants to use your microphone
@@ -100,7 +100,7 @@
     <message name="IDS_WINDOW_MANAGEMENT_INFOBAR_TEXT" desc="Text requesting permission for a site that wants to manage windows.">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to manage windows on all your displays
     </message>
-</if>
+  </if>
   <if expr="is_android or is_chromeos or is_win">
     <message name="IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's protected media identifier.">
       Know your unique device identifier
@@ -204,16 +204,16 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_PERMISSION_DENY" desc="Label on button to deny a permissions request.">
     Block
   </message>
-  <message name="IDS_PERMISSION_ALLOW_THIS_TIME" desc="Label on button to one time grant in a one-time granting use case">
+  <message name="IDS_PERMISSION_ALLOW_THIS_TIME" desc="Label on button to one time grant in a one-time granting use case" formatter_data="android_java">
     Allow this time
   </message>
-  <message name="IDS_PERMISSION_ALLOW_EVERY_VISIT" desc="Label on button to permanent grant in a one-time granting use case">
+  <message name="IDS_PERMISSION_ALLOW_EVERY_VISIT" desc="Label on button to permanent grant in a one-time granting use case" formatter_data="android_java">
     Allow on every visit
   </message>
   <message name="IDS_PERMISSION_ALLOW_WHILE_VISITING" desc="Label on button to grant a permission to a site to do X permanently, that is, on the user's current visit and subsequent visits. This contrasts with the temporary grant through a button labeled [Allow this time], which only allows the site to do X on the current visit. The context for this choice is a prompt that says [The site wants to do X]. Therefore, for some languages it might be possible to drop the _the site_ suffix if it is evident from this context and its absensce does not feel dangling in the language.">
     Allow while visiting the site
   </message>
-  <message name="IDS_PERMISSION_DONT_ALLOW" desc="Label on button to permanent deny in a one-time granting use case">
+  <message name="IDS_PERMISSION_DONT_ALLOW" desc="Label on button to permanent deny in a one-time granting use case" formatter_data="android_java">
     Don't allow
   </message>
   <message name="IDS_PERMISSION_NEVER_ALLOW" desc="(Alternative label, to compare) label on button to permanent deny in a one-time granting use case.">
@@ -304,13 +304,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
   <message name="IDS_USB_DEVICE_CHOOSER_LOADING_LABEL_TOOLTIP" desc="Tooltip for the label that the browser is loading the list of USB devices.">
     Finding USB devices...
-  </message>
-
-  <message name="IDS_PRIVATE_NETWORK_DEVICE_CHOOSER_PROMPT_ORIGIN" desc="Text on a popup permission prompt asking the user whether they want to allow the site to access a private network device.">
-    <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to access a device on your network:
-  </message>
-  <message name="IDS_PRIVATE_NETWORK_DEVICE_CHOOSER_CONNECT_BUTTON_TEXT" desc="Label on the button that closes the private network chooser popup and connects the selected device.">
-    Connect
   </message>
 
   <if expr="not is_android">
@@ -495,7 +488,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </if>
   <if expr="is_chromeos">
     <message name="IDS_SMART_CARD_PERMISSION_PROMPT" desc="Text on dialog that asks the user for permission to access a smart card reader device and the card inserted in it (or presented to it, if contactless).">
-      Control authentication devices named <ph name="ReaderName">$1<ex>HID Omnikey</ex></ph> and smart cards used with them
+      Control authentication devices of type <ph name="ReaderName">$1<ex>HID Omnikey</ex></ph> and smart cards accessible to them
     </message>
     <message name="IDS_SMART_CARD_PERMISSION_ALWAYS_ALLOW" desc="Label on button to always allow access to this smart card reader and any card inserted in (or presented to) it.">
       Always allow, with any card
@@ -597,4 +590,15 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name ="IDS_PERMISSION_PROMPT_SURVEY_CUSTOM_INVITATION" desc="The invitation shown to a user, which allows the user to accept taking a survey.">
       A website just asked for access to your <ph name="request_type">$1<ex>camera</ex></ph>. Help us improve how websites ask for access by taking this 1-minute survey.
   </message>
+  <if expr="is_android">
+   <message name="IDS_NOTIFICATION_TITLE_MESSAGE_UI" desc="Title text representing a request for showing notifications from a website. Displayed on a dialog on Android.">
+      Get notifications?
+   </message>
+    <message name="IDS_NOTIFICATION_DESCRIPTION_MESSAGE_UI" desc="Description text representing a request for showing notifications from a website. Displayed on a dialog on Android.">
+      From <ph name="site">$1<ex>mail.google.com</ex></ph>
+    </message>
+   <message name="IDS_NOTIFICATION_CTA_MESSAGE_UI" desc="Label used on a button that allows the user to open a new UI surface where they can manage their permissions including the currently requested notifications permission from a website. Displayed on a dialog on Android.">
+      Manage
+   </message>
+  </if>
 </grit-part>

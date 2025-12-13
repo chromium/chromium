@@ -33,7 +33,7 @@ class Profile;
 #if BUILDFLAG(IS_ANDROID)
 class TabModel;
 #else
-class Browser;
+class BrowserWindowInterface;
 #endif
 
 namespace content {
@@ -107,7 +107,100 @@ class TabStatsTracker :
 
   // The UmaStatsReportingDelegate is responsible for delivering statistics
   // reported by the TabStatsTracker via UMA.
-  class UmaStatsReportingDelegate;
+  class UmaStatsReportingDelegate {
+   public:
+    // The name of the histogram that records the number of tabs total at resume
+    // from sleep/hibernate.
+    static const char kNumberOfTabsOnResumeHistogramName[];
+
+    // The name of the histogram that records the maximum number of tabs opened
+    // in a day.
+    static const char kMaxTabsInADayHistogramName[];
+
+    // The name of the histogram that records the maximum number of tabs opened
+    // in the same window in a day.
+    static const char kMaxTabsPerWindowInADayHistogramName[];
+
+    // The name of the histogram that records the maximum number of windows
+    // opened in a day.
+    static const char kMaxWindowsInADayHistogramName[];
+
+    // The name of the histograms that records the current number of
+    // tabs/windows.
+    static const char kTabCountHistogramName[];
+    static const char kWindowCountHistogramName[];
+
+    // The name of the histogram that records each window's width, in DIPs.
+    static const char kWindowWidthHistogramName[];
+
+    // The names of the histograms that record daily discard/reload counts
+    // caused for each discard reason.
+    static const char kDailyDiscardsExternalHistogramName[];
+    static const char kDailyDiscardsUrgentHistogramName[];
+    static const char kDailyDiscardsProactiveHistogramName[];
+    static const char kDailyDiscardsSuggestedHistogramName[];
+    static const char kDailyDiscardsFrozenWithGrowingMemoryHistogramName[];
+    static const char kDailyReloadsExternalHistogramName[];
+    static const char kDailyReloadsUrgentHistogramName[];
+    static const char kDailyReloadsProactiveHistogramName[];
+    static const char kDailyReloadsSuggestedHistogramName[];
+    static const char kDailyReloadsFrozenWithGrowingMemoryHistogramName[];
+
+    // The names of the histograms that record duplicate tab data.
+    static const char kTabDuplicateCountSingleWindowHistogramName[];
+    static const char kTabDuplicateCountAllProfileWindowsHistogramName[];
+    static const char kTabDuplicatePercentageSingleWindowHistogramName[];
+    static const char kTabDuplicatePercentageAllProfileWindowsHistogramName[];
+    static const char
+        kTabDuplicateExcludingFragmentsCountSingleWindowHistogramName[];
+    static const char
+        kTabDuplicateExcludingFragmentsCountAllProfileWindowsHistogramName[];
+    static const char
+        kTabDuplicateExcludingFragmentsPercentageSingleWindowHistogramName[];
+    static const char
+        kTabDuplicateExcludingFragmentsPercentageAllProfileWindowsHistogramName
+            [];
+
+    UmaStatsReportingDelegate() = default;
+
+    UmaStatsReportingDelegate(const UmaStatsReportingDelegate&) = delete;
+    UmaStatsReportingDelegate& operator=(const UmaStatsReportingDelegate&) =
+        delete;
+
+    virtual ~UmaStatsReportingDelegate() = default;
+
+    // Called at resume from sleep/hibernate.
+    void ReportTabCountOnResume(size_t tab_count);
+
+    // Called once per day to report the metrics.
+    void ReportDailyMetrics(const TabStatsDataStore::TabsStats& tab_stats);
+
+    // Report the tab heartbeat metrics.
+    void ReportHeartbeatMetrics(const TabStatsDataStore::TabsStats& tab_stats);
+
+    // Calculate and report the metrics related to tab duplicates, which are
+    // re-calculated each time rather than cached like the other metrics due to
+    // their complexity. |exclude_fragments| will treat two tabs with the same
+    // URL apart from trailing fragments as duplicates, otherwise will only
+    // treat exact URL matches as duplicates.
+    void ReportTabDuplicateMetrics(bool exclude_fragments);
+
+   protected:
+    // Checks if Chrome is running in background with no visible windows,
+    // virtual for unittesting.
+    virtual bool IsChromeBackgroundedWithoutWindows();
+
+   private:
+    struct DuplicateData {
+      DuplicateData();
+      DuplicateData(const DuplicateData&);
+      ~DuplicateData();
+
+      int duplicate_count;
+      int tab_count;
+      std::set<GURL> seen_urls;
+    };
+  };
 
   // The observer that's used by |daily_event_| to report the metrics.
   class TabStatsDailyObserver : public DailyEvent::Observer {
@@ -172,8 +265,7 @@ class TabStatsTracker :
   // resource_coordinator::LifecycleUnitObserver:
   void OnLifecycleUnitStateChanged(
       resource_coordinator::LifecycleUnit* lifecycle_unit,
-      ::mojom::LifecycleUnitState previous_state,
-      ::mojom::LifecycleUnitStateChangeReason reason) override;
+      ::mojom::LifecycleUnitState previous_state) override;
 #endif
 
   // Functions to call when a tab strip (or the Android equivalent) is added,
@@ -246,10 +338,12 @@ class TabStatsTracker::TabStripInterface {
   const TabModel* tab_model() const { return model_.get(); }
   TabModel* tab_model() { return model_.get(); }
 #else
-  using PlatformModel = Browser;
+  using PlatformModel = BrowserWindowInterface;
 
-  const Browser* browser() const { return model_.get(); }
-  Browser* browser() { return model_.get(); }
+  const BrowserWindowInterface* browser_window_interface() const {
+    return model_.get();
+  }
+  BrowserWindowInterface* browser_window_interface() { return model_.get(); }
 #endif
 
   explicit TabStripInterface(PlatformModel* model);
@@ -294,100 +388,6 @@ class TabStatsTracker::TabStripInterface {
 
  private:
   raw_ptr<PlatformModel> model_;
-};
-
-// The reporting delegate, which reports metrics via UMA.
-class TabStatsTracker::UmaStatsReportingDelegate {
- public:
-  // The name of the histogram that records the number of tabs total at resume
-  // from sleep/hibernate.
-  static const char kNumberOfTabsOnResumeHistogramName[];
-
-  // The name of the histogram that records the maximum number of tabs opened in
-  // a day.
-  static const char kMaxTabsInADayHistogramName[];
-
-  // The name of the histogram that records the maximum number of tabs opened in
-  // the same window in a day.
-  static const char kMaxTabsPerWindowInADayHistogramName[];
-
-  // The name of the histogram that records the maximum number of windows
-  // opened in a day.
-  static const char kMaxWindowsInADayHistogramName[];
-
-  // The name of the histograms that records the current number of tabs/windows.
-  static const char kTabCountHistogramName[];
-  static const char kWindowCountHistogramName[];
-
-  // The name of the histogram that records each window's width, in DIPs.
-  static const char kWindowWidthHistogramName[];
-
-  // The names of the histograms that record daily discard/reload counts caused
-  // for each discard reason.
-  static const char kDailyDiscardsExternalHistogramName[];
-  static const char kDailyDiscardsUrgentHistogramName[];
-  static const char kDailyDiscardsProactiveHistogramName[];
-  static const char kDailyDiscardsSuggestedHistogramName[];
-  static const char kDailyDiscardsFrozenWithGrowingMemoryHistogramName[];
-  static const char kDailyReloadsExternalHistogramName[];
-  static const char kDailyReloadsUrgentHistogramName[];
-  static const char kDailyReloadsProactiveHistogramName[];
-  static const char kDailyReloadsSuggestedHistogramName[];
-  static const char kDailyReloadsFrozenWithGrowingMemoryHistogramName[];
-
-  // The names of the histograms that record duplicate tab data.
-  static const char kTabDuplicateCountSingleWindowHistogramName[];
-  static const char kTabDuplicateCountAllProfileWindowsHistogramName[];
-  static const char kTabDuplicatePercentageSingleWindowHistogramName[];
-  static const char kTabDuplicatePercentageAllProfileWindowsHistogramName[];
-  static const char
-      kTabDuplicateExcludingFragmentsCountSingleWindowHistogramName[];
-  static const char
-      kTabDuplicateExcludingFragmentsCountAllProfileWindowsHistogramName[];
-  static const char
-      kTabDuplicateExcludingFragmentsPercentageSingleWindowHistogramName[];
-  static const char
-      kTabDuplicateExcludingFragmentsPercentageAllProfileWindowsHistogramName[];
-
-  UmaStatsReportingDelegate() = default;
-
-  UmaStatsReportingDelegate(const UmaStatsReportingDelegate&) = delete;
-  UmaStatsReportingDelegate& operator=(const UmaStatsReportingDelegate&) =
-      delete;
-
-  virtual ~UmaStatsReportingDelegate() = default;
-
-  // Called at resume from sleep/hibernate.
-  void ReportTabCountOnResume(size_t tab_count);
-
-  // Called once per day to report the metrics.
-  void ReportDailyMetrics(const TabStatsDataStore::TabsStats& tab_stats);
-
-  // Report the tab heartbeat metrics.
-  void ReportHeartbeatMetrics(const TabStatsDataStore::TabsStats& tab_stats);
-
-  // Calculate and report the metrics related to tab duplicates, which are
-  // re-calculated each time rather than cached like the other metrics due to
-  // their complexity. |exclude_fragments| will treat two tabs with the same
-  // URL apart from trailing fragments as duplicates, otherwise will only treat
-  // exact URL matches as duplicates.
-  void ReportTabDuplicateMetrics(bool exclude_fragments);
-
- protected:
-  // Checks if Chrome is running in background with no visible windows, virtual
-  // for unittesting.
-  virtual bool IsChromeBackgroundedWithoutWindows();
-
- private:
-  struct DuplicateData {
-    DuplicateData();
-    DuplicateData(const DuplicateData&);
-    ~DuplicateData();
-
-    int duplicate_count;
-    int tab_count;
-    std::set<GURL> seen_urls;
-  };
 };
 
 }  // namespace metrics

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_RENDER_PASS_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_RENDER_PASS_ENCODER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
@@ -52,6 +53,24 @@ class GPURenderPassEncoder : public DawnObject<wgpu::RenderPassEncoder>,
     std::string label = markerLabel.Utf8();
     GetHandle().InsertDebugMarker(label.c_str());
   }
+  void setImmediates(uint32_t range_offset,
+                     const DOMArrayBufferBase* data,
+                     uint64_t data_offset,
+                     ExceptionState& exception_state);
+  void setImmediates(uint32_t range_offset,
+                     const DOMArrayBufferBase* data,
+                     uint64_t data_offset,
+                     uint64_t size,
+                     ExceptionState& exception_state);
+  void setImmediates(uint32_t range_offset,
+                     const MaybeShared<DOMArrayBufferView>& data,
+                     uint64_t data_offset,
+                     ExceptionState& exception_state);
+  void setImmediates(uint32_t range_offset,
+                     const MaybeShared<DOMArrayBufferView>& data,
+                     uint64_t data_offset,
+                     uint64_t size,
+                     ExceptionState& exception_state);
   void setPipeline(const DawnObject<wgpu::RenderPipeline>* pipeline) {
     GetHandle().SetPipeline(pipeline->GetHandle());
   }

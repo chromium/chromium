@@ -10,7 +10,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 /**
- * Client for facilitated payment APIs, such as PIX. The default implementation cannot invoke
+ * Client for facilitated payment APIs, such as Pix. The default implementation cannot invoke
  * payments. An implementing subclass must provide a factory that builds its instances. Example
  * usage:
  *
@@ -44,18 +44,6 @@ public class FacilitatedPaymentsApiClient {
      *          FacilitatedPaymentsApiClient.create(renderFrameHost, delegate);
      */
     protected interface Factory {
-        /**
-         * Builds an instance of facilitated payment API client.
-         * TODO(https://crbug.com/329108444): Remove this method.
-         *
-         * @param delegate The delegate to notify of payment result.
-         * @return An object that can invoke a facilitated payment API.
-         */
-        @Deprecated
-        default FacilitatedPaymentsApiClient factoryCreate(Delegate delegate) {
-            return new FacilitatedPaymentsApiClient(delegate);
-        }
-
         /**
          * Builds an instance of facilitated payment API client.
          *
@@ -94,14 +82,6 @@ public class FacilitatedPaymentsApiClient {
          * @param purchaseActionResult The result of the purchase action.
          */
         default void onPurchaseActionResultEnum(@PurchaseActionResult int purchaseActionResult) {}
-
-        /**
-         * Notifies the delegate whether the facilitated payment was successful.
-         *
-         * @param isPurchaseActionSuccessful Whether the purchase action was successful.
-         * @deprecated TODO(b/300335735): Remove this method.
-         */
-        default void onPurchaseActionResult(boolean isPurchaseActionSuccessful) {}
     }
 
     /**
@@ -179,16 +159,6 @@ public class FacilitatedPaymentsApiClient {
      * @deprecated TODO(https://crbug.com/329108444): Remove this method.
      */
     public void invokePurchaseAction(CoreAccountInfo primaryAccount, byte[] actionToken) {
-        mDelegate.onPurchaseActionResultEnum(PurchaseActionResult.COULD_NOT_INVOKE);
-    }
-
-    /**
-     * Initiates the payment flow UI. Will invoke a delegate callback with the result.
-     *
-     * @param actionToken An opaque token used for invoking the purchase action.
-     * @deprecated TODO(https://crbug.com/329108444): Remove this method.
-     */
-    public void invokePurchaseAction(byte[] actionToken) {
         mDelegate.onPurchaseActionResultEnum(PurchaseActionResult.COULD_NOT_INVOKE);
     }
 }

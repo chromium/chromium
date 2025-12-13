@@ -95,7 +95,7 @@ KURL DOMFileSystemBase::CreateFileSystemRootURL(
   else
     return KURL();
 
-  String result = "filesystem:" + origin + "/" + type_string + "/";
+  String result = StrCat({"filesystem:", origin, "/", type_string, "/"});
   return KURL(result);
 }
 
@@ -131,8 +131,8 @@ KURL DOMFileSystemBase::CreateFileSystemURL(const String& full_path) const {
   DCHECK(!filesystem_root_url_.IsEmpty());
   KURL url = filesystem_root_url_;
   // Remove the extra leading slash.
-  url.SetPath(url.GetPath() +
-              EncodeWithURLEscapeSequences(full_path.Substring(1)));
+  url.SetPath(StrCat(
+      {url.GetPath(), EncodeWithURLEscapeSequences(full_path.Substring(1))}));
   return url;
 }
 

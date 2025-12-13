@@ -29,25 +29,32 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // MakeCredential attempts to create a new WebAuthn credential on behalf of
   // `caller_origin` using the supplied `options` and invokes `callback` with
   // the result.
+  //
+  // The optional `payment_options` is inserted into the asserted
+  // `clientDataJson` when payment data has been set by the internal
+  // authenticator for clients such as Secure Payment Confirmation. Only the
+  // browser bound public key is included.
   virtual void MakeCredential(
       url::Origin caller_origin,
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
+      blink::mojom::PaymentOptionsPtr payment_options,
       blink::mojom::Authenticator::MakeCredentialCallback callback) = 0;
 
   // GetCredential attempts to generate a WebAuthn assertion on behalf of
   // `caller_origin` using the supplied `options` and invokes `callback` with
   // the result.
   //
-  // The optional `payment` is inserted into the asserted `clientDataJson` after
-  // the browser displays the Secure Payment Confirmation dialog to the user.
+  // The optional `payment_options` is inserted into the asserted
+  // `clientDataJson` after the browser displays the Secure Payment Confirmation
+  // dialog to the user.
   //
-  // Depending on the `options.requested_credential_type_flags`, the callback
-  // may be called with a `CredentialInfo`. For WebAuthn assertions the
-  // `callback` will be called with a `GetAssertionResponse`.
+  // Depending on the `options.password`, the callback may be called with a
+  // `CredentialInfo`. For WebAuthn assertions the `callback` will be called
+  // with a `GetAssertionResponse`.
   virtual void GetCredential(
       url::Origin caller_origin,
-      blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-      blink::mojom::PaymentOptionsPtr payment,
+      blink::mojom::GetCredentialOptionsPtr options,
+      blink::mojom::PaymentOptionsPtr payment_options,
       blink::mojom::Authenticator::GetCredentialCallback callback) = 0;
 
   // Invokes `callback` with a boolean indicating whether a user-verifying

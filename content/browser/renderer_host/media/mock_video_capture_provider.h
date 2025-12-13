@@ -10,12 +10,7 @@
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#endif
 
 namespace content {
 
@@ -57,13 +52,7 @@ class MockVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
                base::WeakPtr<media::VideoFrameReceiver> receiver,
                base::OnceClosure connection_lost_cb,
                Callbacks* callbacks,
-               base::OnceClosure done_cb,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-               mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-                   video_effects_processor,
-#endif
-               mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-                   readonly_video_effects_manager),
+               base::OnceClosure done_cb),
               (override));
 
   MOCK_METHOD(void, AbortLaunch, ());

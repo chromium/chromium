@@ -1274,6 +1274,10 @@ impl Builder {
         }
         // Look for and set the universal starting states.
         dfa.set_universal_starts();
+        dfa.tt.table.shrink_to_fit();
+        dfa.st.table.shrink_to_fit();
+        dfa.ms.slices.shrink_to_fit();
+        dfa.ms.pattern_ids.shrink_to_fit();
         Ok(dfa)
     }
 
@@ -2340,10 +2344,17 @@ impl<'a> DFA<&'a [u32]> {
         // table, match states and accelerators below. If any validation fails,
         // then we return an error.
         let (dfa, nread) = unsafe { DFA::from_bytes_unchecked(slice)? };
+        // Note that validation order is important here:
+        //
+        // * `MatchState::validate` can be called with an untrusted DFA.
+        // * `TransistionTable::validate` uses `dfa.ms` through `match_len`.
+        // * `StartTable::validate` needs a valid transition table.
+        //
+        // So... validate the match states first.
+        dfa.accels.validate()?;
+        dfa.ms.validate(&dfa)?;
         dfa.tt.validate(&dfa)?;
         dfa.st.validate(&dfa)?;
-        dfa.ms.validate(&dfa)?;
-        dfa.accels.validate()?;
         // N.B. dfa.special doesn't have a way to do unchecked deserialization,
         // so it has already been validated.
         for state in dfa.states() {
@@ -2466,6 +2477,19 @@ impl<'a> DFA<&'a [u32]> {
         nw += self.accels.write_to::<E>(&mut dst[nw..])?;
         nw += self.quitset.write_to::<E>(&mut dst[nw..])?;
         Ok(nw)
+    }
+}
+
+/// Other routines that work for all `T`.
+impl<T> DFA<T> {
+    /// Set or unset the prefilter attached to this DFA.
+    ///
+    /// This is useful when one has deserialized a DFA from `&[u8]`.
+    /// Deserialization does not currently include prefilters, so if you
+    /// want prefilter acceleration, you'll need to rebuild it and attach
+    /// it here.
+    pub fn set_prefilter(&mut self, prefilter: Option<Prefilter>) {
+        self.pre = prefilter
     }
 }
 
@@ -2810,7 +2834,7 @@ impl OwnedDFA {
         }
 
         // Collect all our non-DEAD start states into a convenient set and
-        // confirm there is no overlap with match states. In the classicl DFA
+        // confirm there is no overlap with match states. In the classical DFA
         // construction, start states can be match states. But because of
         // look-around, we delay all matches by a byte, which prevents start
         // states from being match states.
@@ -2824,8 +2848,8 @@ impl OwnedDFA {
             }
             assert!(
                 !matches.contains_key(&start_id),
-                "{:?} is both a start and a match state, which is not allowed",
-                start_id,
+                "{start_id:?} is both a start and a match state, \
+                 which is not allowed",
             );
             is_start.insert(start_id);
         }
@@ -3085,7 +3109,7 @@ impl<T: AsRef<[u32]>> fmt::Debug for DFA<T> {
             } else {
                 self.to_index(state.id())
             };
-            write!(f, "{:06?}: ", id)?;
+            write!(f, "{id:06?}: ")?;
             state.fmt(f)?;
             write!(f, "\n")?;
         }
@@ -3101,11 +3125,11 @@ impl<T: AsRef<[u32]>> fmt::Debug for DFA<T> {
                     Anchored::No => writeln!(f, "START-GROUP(unanchored)")?,
                     Anchored::Yes => writeln!(f, "START-GROUP(anchored)")?,
                     Anchored::Pattern(pid) => {
-                        writeln!(f, "START_GROUP(pattern: {:?})", pid)?
+                        writeln!(f, "START_GROUP(pattern: {pid:?})")?
                     }
                 }
             }
-            writeln!(f, "  {:?} => {:06?}", sty, id)?;
+            writeln!(f, "  {sty:?} => {id:06?}")?;
         }
         if self.pattern_len() > 1 {
             writeln!(f, "")?;
@@ -3116,13 +3140,13 @@ impl<T: AsRef<[u32]>> fmt::Debug for DFA<T> {
                 } else {
                     self.to_index(id)
                 };
-                write!(f, "MATCH({:06?}): ", id)?;
+                write!(f, "MATCH({id:06?}): ")?;
                 for (i, &pid) in self.ms.pattern_id_slice(i).iter().enumerate()
                 {
                     if i > 0 {
                         write!(f, ", ")?;
                     }
-                    write!(f, "{:?}", pid)?;
+                    write!(f, "{pid:?}")?;
                 }
                 writeln!(f, "")?;
             }
@@ -3461,7 +3485,7 @@ impl TransitionTable<Vec<u32>> {
         // Normally, to get a fresh state identifier, we would just
         // take the index of the next state added to the transition
         // table. However, we actually perform an optimization here
-        // that premultiplies state IDs by the stride, such that they
+        // that pre-multiplies state IDs by the stride, such that they
         // point immediately at the beginning of their transitions in
         // the transition table. This avoids an extra multiplication
         // instruction for state lookup at search time.
@@ -3512,8 +3536,8 @@ impl TransitionTable<Vec<u32>> {
     ///
     /// Both id1 and id2 must point to valid states, otherwise this panics.
     fn swap(&mut self, id1: StateID, id2: StateID) {
-        assert!(self.is_valid(id1), "invalid 'id1' state: {:?}", id1);
-        assert!(self.is_valid(id2), "invalid 'id2' state: {:?}", id2);
+        assert!(self.is_valid(id1), "invalid 'id1' state: {id1:?}");
+        assert!(self.is_valid(id2), "invalid 'id2' state: {id2:?}");
         // We only need to swap the parts of the state that are used. So if the
         // stride is 64, but the alphabet length is only 33, then we save a lot
         // of work.
@@ -4264,7 +4288,7 @@ impl<T: AsMut<[u32]>> StartTable<T> {
                 let len = self
                     .pattern_len
                     .expect("start states for each pattern enabled");
-                assert!(pid < len, "invalid pattern ID {:?}", pid);
+                assert!(pid < len, "invalid pattern ID {pid:?}");
                 self.stride
                     .checked_mul(pid)
                     .unwrap()
@@ -4515,7 +4539,7 @@ impl<T: AsRef<[u32]>> MatchStates<T> {
         + (self.pattern_ids().len() * PatternID::SIZE)
     }
 
-    /// Valides that the match state info is itself internally consistent and
+    /// Validates that the match state info is itself internally consistent and
     /// consistent with the recorded match state region in the given DFA.
     fn validate(&self, dfa: &DFA<T>) -> Result<(), DeserializeError> {
         if self.len() != dfa.special.match_len(dfa.stride()) {
@@ -4773,7 +4797,7 @@ impl<'a, T: AsRef<[u32]>> Iterator for StateIter<'a, T> {
 
 /// An immutable representation of a single DFA state.
 ///
-/// `'a` correspondings to the lifetime of a DFA's transition table.
+/// `'a` corresponding to the lifetime of a DFA's transition table.
 pub(crate) struct State<'a> {
     id: StateID,
     stride2: usize,
@@ -4855,9 +4879,9 @@ impl<'a> fmt::Debug for State<'a> {
                 write!(f, ", ")?;
             }
             if start == end {
-                write!(f, "{:?} => {:?}", start, id)?;
+                write!(f, "{start:?} => {id:?}")?;
             } else {
-                write!(f, "{:?}-{:?} => {:?}", start, end, id)?;
+                write!(f, "{start:?}-{end:?} => {id:?}")?;
             }
         }
         Ok(())
@@ -5122,7 +5146,7 @@ impl core::fmt::Display for BuildError {
         match self.kind() {
             BuildErrorKind::NFA(_) => write!(f, "error building NFA"),
             BuildErrorKind::Unsupported(ref msg) => {
-                write!(f, "unsupported regex feature for DFAs: {}", msg)
+                write!(f, "unsupported regex feature for DFAs: {msg}")
             }
             BuildErrorKind::TooManyStates => write!(
                 f,
@@ -5154,11 +5178,10 @@ impl core::fmt::Display for BuildError {
             ),
             BuildErrorKind::DFAExceededSizeLimit { limit } => write!(
                 f,
-                "DFA exceeded size limit of {:?} during determinization",
-                limit,
+                "DFA exceeded size limit of {limit:?} during determinization",
             ),
             BuildErrorKind::DeterminizeExceededSizeLimit { limit } => {
-                write!(f, "determinization exceeded size limit of {:?}", limit)
+                write!(f, "determinization exceeded size limit of {limit:?}")
             }
         }
     }
@@ -5217,5 +5240,21 @@ mod tests {
         let expected = MatchError::quit(0xCE, 3);
         let got = dfa.try_search_rev(&input);
         assert_eq!(Err(expected), got);
+    }
+
+    // This panics in `TransitionTable::validate` if the match states are not
+    // validated first.
+    //
+    // See: https://github.com/rust-lang/regex/pull/1295
+    #[test]
+    fn regression_validation_order() {
+        let mut dfa = DFA::new("abc").unwrap();
+        dfa.ms = MatchStates {
+            slices: vec![],
+            pattern_ids: vec![],
+            pattern_len: 1,
+        };
+        let (buf, _) = dfa.to_bytes_native_endian();
+        DFA::from_bytes(&buf).unwrap_err();
     }
 }

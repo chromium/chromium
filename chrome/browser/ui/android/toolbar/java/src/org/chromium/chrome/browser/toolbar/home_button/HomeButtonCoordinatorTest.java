@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.toolbar.home_button;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -26,8 +28,11 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** Unit tests for HomeButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -38,6 +43,9 @@ public class HomeButtonCoordinatorTest {
     @Mock private HomeButton mHomeButton;
     @Mock private android.content.res.Resources mResources;
     @Mock private View.OnKeyListener mOnKeyListener;
+    @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private IncognitoStateProvider mIncognitoStateProvider;
+    @Mock private ColorStateList mColorStateList;
 
     private boolean mIsHomeButtonMenuDisabled;
     private HomeButtonCoordinator mHomeButtonCoordinator;
@@ -56,7 +64,9 @@ public class HomeButtonCoordinatorTest {
                         mHomeButton,
                         (view) -> {},
                         (context) -> {},
-                        () -> mIsHomeButtonMenuDisabled);
+                        () -> mIsHomeButtonMenuDisabled,
+                        mThemeColorProvider,
+                        mIncognitoStateProvider);
     }
 
     @Test
@@ -93,6 +103,13 @@ public class HomeButtonCoordinatorTest {
     public void testGetVisibility() {
         when(mHomeButton.getVisibility()).thenReturn(View.INVISIBLE);
         assertEquals(View.INVISIBLE, mHomeButtonCoordinator.getVisibility());
+    }
+
+    @Test
+    public void testOnTintChanged() {
+        mHomeButtonCoordinator.onTintChanged(
+                mColorStateList, mColorStateList, BrandedColorScheme.APP_DEFAULT);
+        verify(mHomeButton).setImageTintList(eq(mColorStateList));
     }
 
     @Test

@@ -66,6 +66,17 @@ class StyleChangeReasonForTracing;
 class TreeScope;
 class TimelineRange;
 
+// This should be kept in sync with the `BlinkAnimationType` histogram.
+enum class BlinkAnimationType : int {
+  kAllAnimations = 0,
+  kSvgAnimations = 1,
+  kNonCompositedAnimations = 2,
+  kCompositedAnimations = 3,
+  kSvgNonCompositedAnimations = 4,
+  kSvgCompositedAnimations = 5,
+  kAnimationTypeEnumMax = 6
+};
+
 class CORE_EXPORT Animation : public EventTarget,
                               public ActiveScriptWrappable<Animation>,
                               public ExecutionContextLifecycleObserver,
@@ -354,6 +365,8 @@ class CORE_EXPORT Animation : public EventTarget,
 
   int CompositorGroup() const { return compositor_group_; }
 
+  static bool CompareAnimations(const Member<Animation>& left,
+                                const Member<Animation>& right);
   static bool HasLowerCompositeOrdering(
       const Animation* animation1,
       const Animation* animation2,
@@ -366,6 +379,7 @@ class CORE_EXPORT Animation : public EventTarget,
                                 const StyleChangeReasonForTracing&);
   void InvalidateEffectTargetStyle();
   void InvalidateNormalizedTiming();
+  void InvalidateEffect() { effect()->Invalidate(); }
 
   void Trace(Visitor*) const override;
 
@@ -455,6 +469,9 @@ class CORE_EXPORT Animation : public EventTarget,
 
   void SetPausedForTrigger(bool paused_for_trigger) {
     paused_for_trigger_ = paused_for_trigger;
+    if (effect()) {
+      effect()->SetPausedForTrigger(paused_for_trigger);
+    }
   }
   bool PausedForTrigger() const { return paused_for_trigger_; }
   void ResetPlayback();
@@ -469,6 +486,12 @@ class CORE_EXPORT Animation : public EventTarget,
 
   void AddTrigger(AnimationTrigger* trigger);
   void RemoveTrigger(AnimationTrigger* trigger);
+  const HeapHashSet<WeakMember<AnimationTrigger>>& GetTriggersForTest();
+
+  // Playback rate that will take effect once any pending tasks are resolved.
+  // If there are no pending tasks, then the effective playback rate equals the
+  // active playback rate.
+  double EffectivePlaybackRate() const;
 
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
@@ -487,10 +510,6 @@ class CORE_EXPORT Animation : public EventTarget,
   AnimationTimeDelta EffectEnd() const;
   bool Limited(std::optional<AnimationTimeDelta> current_time) const;
 
-  // Playback rate that will take effect once any pending tasks are resolved.
-  // If there are no pending tasks, then the effective playback rate equals the
-  // active playback rate.
-  double EffectivePlaybackRate() const;
   void ApplyPendingPlaybackRate();
 
   std::optional<AnimationTimeDelta> CalculateStartTime(
@@ -760,7 +779,11 @@ class CORE_EXPORT Animation : public EventTarget,
                            NoCompositeWithoutCompositedElementId);
   FRIEND_TEST_ALL_PREFIXES(AnimationAnimationTestNoCompositing,
                            PendingActivityWithFinishedEventListener);
-  friend class ScriptedAnimationTriggerTest;
+  friend class ScriptedTimelineTriggerTest;
+  FRIEND_TEST_ALL_PREFIXES(CSSAnimationsTriggerTest, ChangeTriggerName);
+  FRIEND_TEST_ALL_PREFIXES(CSSAnimationsTriggerTest, ChangeTriggerAttachments);
+  FRIEND_TEST_ALL_PREFIXES(CSSAnimationsTriggerTest,
+                           SameTriggerNameDifferentSource);
 };
 
 }  // namespace blink

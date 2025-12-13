@@ -8,8 +8,10 @@ import android.os.Handler;
 import android.os.Looper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /**
@@ -17,9 +19,9 @@ import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
  * tells the {@link ViewResourceAdapter} to generate a resource.
  */
 @NullMarked
-public class ConstraintsChecker implements Callback<Integer> {
+public class ConstraintsChecker implements Callback<@Nullable Integer> {
     private final ViewResourceAdapter mViewResourceAdapter;
-    private final ObservableSupplier<Integer> mConstraintsSupplier;
+    private final NullableObservableSupplier<@BrowserControlsState Integer> mConstraintsSupplier;
     private final Handler mHandler;
 
     /**
@@ -29,7 +31,7 @@ public class ConstraintsChecker implements Callback<Integer> {
      */
     public ConstraintsChecker(
             ViewResourceAdapter viewResourceAdapter,
-            ObservableSupplier<Integer> constraintsSupplier,
+            NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
             Looper looper) {
         mViewResourceAdapter = viewResourceAdapter;
         mConstraintsSupplier = constraintsSupplier;
@@ -60,7 +62,7 @@ public class ConstraintsChecker implements Callback<Integer> {
     }
 
     @Override
-    public void onResult(Integer result) {
+    public void onResult(@Nullable Integer result) {
         if (!areControlsLocked()) {
             mConstraintsSupplier.removeObserver(this);
             mHandler.post(mViewResourceAdapter::onResourceRequested);

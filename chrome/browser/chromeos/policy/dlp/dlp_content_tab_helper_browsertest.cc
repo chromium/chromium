@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 
 #include "base/path_service.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_observer.h"
@@ -61,6 +62,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBrowserTest, PlatformApp) {
   content::CreateAndLoadWebContentsObserver app_loaded_observer;
   const extensions::Extension* extension = InstallPlatformApp("dlp_test");
   ASSERT_TRUE(extension);
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      extension->id());
 
   // Restrict screenshot for Platform App
   GURL kUrl = GURL("chrome-extension://" + extension->id() + "/index.html");

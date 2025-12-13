@@ -7,18 +7,21 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/first_run/ui_bundled/interactive_lens/ui/lens_interactive_promo_results_page_presenter.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 // Delegate for actions on the Interactive Lens screen.
 @protocol InteractiveLensPromoDelegate <NSObject>
 
-// Called when the user tapped on the "continue" button.
-- (void)didTapContinueButton;
+// Called when the user tapped on the "continue" button. `interaction` is YES if
+// the user has interacted with the Lens view of the screen.
+- (void)didTapContinueButtonWithInteraction:(BOOL)interaction;
 
 @end
 
 // View controller for the Interactive Lens screen in the First Run Experience.
-@interface InteractiveLensOverlayPromoViewController : UIViewController
+@interface InteractiveLensOverlayPromoViewController
+    : UIViewController <LensInteractivePromoResultsPagePresenterDelegate>
 
 // Delegate for actions on the Interactive Lens screen.
 @property(nonatomic, weak) id<InteractiveLensPromoDelegate> delegate;

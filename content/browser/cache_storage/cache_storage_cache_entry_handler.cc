@@ -197,7 +197,7 @@ int CacheStorageCacheEntryHandler::DiskCacheBlobEntry::Read(
                                      bytes_to_read, std::move(callback));
 }
 
-int CacheStorageCacheEntryHandler::DiskCacheBlobEntry::GetSize(
+int64_t CacheStorageCacheEntryHandler::DiskCacheBlobEntry::GetSize(
     CacheStorageCache::EntryIndex disk_cache_index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!disk_cache_entry_)

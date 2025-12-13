@@ -38,32 +38,34 @@ class FieldClassificationModelExecutorTest : public testing::Test {
                            .AppendASCII("autofill")
                            .AppendASCII("ml_model")
                            .AppendASCII("autofill_model-fold-one.tflite");
-    execution_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     model_executor_ = std::make_unique<FieldClassificationModelExecutor>();
     model_executor_->InitializeAndMoveToExecutionThread(
         /*model_inference_timeout=*/std::nullopt,
         optimization_guide::proto::
             OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
-        execution_task_runner_, base::SequencedTaskRunner::GetCurrentDefault());
+        /*model_loading_task_runner=*/task_runner_,
+        /*execution_task_runner=*/task_runner_,
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   void TearDown() override {
-    execution_task_runner_->DeleteSoon(FROM_HERE, std::move(model_executor_));
+    task_runner_->DeleteSoon(FROM_HERE, std::move(model_executor_));
     task_environment_.RunUntilIdle();
   }
 
  protected:
   test::AutofillUnitTestEnvironment autofill_environment_;
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::FilePath model_file_path_;
   std::unique_ptr<FieldClassificationModelExecutor> model_executor_;
 };
 
 TEST_F(FieldClassificationModelExecutorTest, ExecuteModel) {
   // Update model file.
-  execution_task_runner_->PostTask(
+  task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ModelExecutor::UpdateModelFile,
                                 model_executor_->GetWeakPtrForExecutionThread(),
                                 model_file_path_));
@@ -93,7 +95,7 @@ TEST_F(FieldClassificationModelExecutorTest, ExecuteModel) {
   base::test::TestFuture<
       const std::optional<FieldClassificationModelEncoder::ModelOutput>&>
       predictions;
-  execution_task_runner_->PostTask(
+  task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ModelExecutor::SendForExecution,
                                 model_executor_->GetWeakPtrForExecutionThread(),
                                 predictions.GetCallback(),

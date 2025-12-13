@@ -8,7 +8,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/token.mojom";
 
 // NOTE: we use a CropIdBoundsPair instead of a map below due to our need
-// to serialize to blink objects, where WTF::HashMap only allows a very
+// to serialize to blink objects, where blink::HashMap only allows a very
 // limited set of objects to be used as a key. The pair includes a crop id
 // corresponding to an HTMLElement that has region capture data, and its
 // associated bounds translated to the coordinate space of the outputted

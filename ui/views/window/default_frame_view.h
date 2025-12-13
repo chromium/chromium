@@ -12,7 +12,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_buttons.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 namespace views {
 
@@ -22,22 +22,22 @@ class Widget;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// DefaultNonClientFrameView
+// DefaultFrameView
 //
 //  Provides a fallback frame view that manually renders its frame, caption, and
 //  controls. Used on all platforms when no other frame view is specified.
 //
 ////////////////////////////////////////////////////////////////////////////////
-class VIEWS_EXPORT DefaultFrameView : public NonClientFrameView {
+class VIEWS_EXPORT DefaultFrameView : public FrameView {
  public:
-  explicit DefaultFrameView(Widget* frame);
+  explicit DefaultFrameView(Widget* widget);
 
   DefaultFrameView(const DefaultFrameView&) = delete;
   DefaultFrameView& operator=(const DefaultFrameView&) = delete;
 
   ~DefaultFrameView() override;
 
-  // Overridden from NonClientFrameView:
+  // Overridden from FrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
@@ -133,7 +133,7 @@ class VIEWS_EXPORT DefaultFrameView : public NonClientFrameView {
   gfx::Rect title_bounds_;
 
   // Not owned.
-  const raw_ptr<Widget> frame_;
+  const raw_ptr<Widget> widget_;
 
   // The icon of this window. May be NULL.
   raw_ptr<ImageButton> window_icon_ = nullptr;
@@ -153,7 +153,7 @@ class VIEWS_EXPORT DefaultFrameView : public NonClientFrameView {
   int maximum_title_bar_x_ = -1;
 
   base::CallbackListSubscription paint_as_active_subscription_ =
-      frame_->RegisterPaintAsActiveChangedCallback(
+      widget_->RegisterPaintAsActiveChangedCallback(
           base::BindRepeating(&DefaultFrameView::SchedulePaint,
                               base::Unretained(this)));
 };

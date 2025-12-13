@@ -7,12 +7,18 @@
 
 #include "base/task/sequenced_task_runner.h"
 
+class ApplicationLocaleStorage;
+class PrefService;
+
 namespace ash {
 namespace input_method {
 
 class InputMethodManager;
 
-void Initialize();
+// The instances of `local_state` and `application_locale_storage` must be
+// non-null and must be valid until input_method::Shutdown() is called.
+void Initialize(PrefService* local_state,
+                ApplicationLocaleStorage* application_locale_storage);
 
 // Similar to Initialize(), but can inject an alternative InputMethodManager
 // such as MockInputMethodManager for testing. The injected object will be

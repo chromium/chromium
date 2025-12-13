@@ -20,7 +20,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/service/display_embedder/output_presenter_gl.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
@@ -226,10 +225,6 @@ class MockPresenter : public gl::Presenter {
       gl::OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override {
-    return true;
-  }
-
-  bool ScheduleCALayer(const ui::CARendererLayerParams& params) override {
     return true;
   }
 

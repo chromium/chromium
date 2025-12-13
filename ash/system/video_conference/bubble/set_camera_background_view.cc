@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -42,6 +43,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash::video_conference {
 
@@ -204,7 +206,7 @@ class RecentlyUsedImageButton : public views::ImageButton {
     const auto height = this->height();
     const auto radius = kSetCameraBackgroundViewRadius;
 
-    return SkPath()
+    return SkPathBuilder()
         // Start just before the curve of the top-right corner.
         .moveTo(width - radius, 0.f)
         // Move to left before the curve.
@@ -231,7 +233,8 @@ class RecentlyUsedImageButton : public views::ImageButton {
         .lineTo(width, 16)
         // Draw top-right curve.
         .rCubicTo(0, -8.84f, -7.16f, -16, -16, -16)
-        .close();
+        .close()
+        .detach();
   }
 
   bool selected_ = false;

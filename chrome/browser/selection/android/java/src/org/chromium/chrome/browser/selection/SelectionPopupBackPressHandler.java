@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.selection;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -19,14 +21,14 @@ import org.chromium.content_public.browser.SelectionPopupController;
 
 /**
  * {@link BackPressHandler} of {@link SelectionPopupController}. This listens to the change of tab
- * model and notifies whether the current selection popup controller is going to intercept the
- * back press.
+ * model and notifies whether the current selection popup controller is going to intercept the back
+ * press.
  */
 @NullMarked
 public class SelectionPopupBackPressHandler extends EmptyTabObserver
         implements BackPressHandler, TabModelObserver, Destroyable {
-    private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final Callback<Boolean> mCallback = this::onActionBarShowingChanged;
 
     private @Nullable SelectionPopupController mPopupController;
@@ -60,18 +62,13 @@ public class SelectionPopupBackPressHandler extends EmptyTabObserver
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressChangedSupplier;
     }
 
     @Override
-    public void didSelectTab(Tab tab, int type, int lastId) {
+    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
         mBackPressChangedSupplier.set(false);
-        updatePopupControllerObserving(tab);
-    }
-
-    @Override
-    public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
         updatePopupControllerObserving(tab);
     }
 

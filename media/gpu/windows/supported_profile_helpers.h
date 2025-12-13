@@ -7,6 +7,8 @@
 
 #include <initguid.h>
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/video_codecs.h"
@@ -143,7 +145,7 @@ GetOutputDXGIFormat(uint8_t bitdepth, VideoChromaSampling chroma_sampling);
 struct SupportedResolutionRange {
   gfx::Size min_resolution;
   gfx::Size max_landscape_resolution;
-  gfx::Size max_portrait_resolution;
+  std::optional<gfx::Size> max_portrait_resolution;
 };
 
 using SupportedResolutionRangeMap =

@@ -65,8 +65,7 @@ suite('<account-manager-settings-card>', () => {
     assert(accountFullNameEl);
     assert(managedAccount);
     assertTrue(isVisible(accountFullNameEl));
-    assertEquals(
-        managedAccount.fullName, accountFullNameEl.textContent!.trim());
+    assertEquals(managedAccount.fullName, accountFullNameEl.textContent.trim());
   });
 
   test('account email is correct and visible', () => {
@@ -76,7 +75,7 @@ suite('<account-manager-settings-card>', () => {
     assert(accountEmailEl);
     assert(managedAccount);
     assertTrue(isVisible(accountEmailEl));
-    assertEquals(managedAccount.email, accountEmailEl.textContent!.trim());
+    assertEquals(managedAccount.email, accountEmailEl.textContent.trim());
   });
 });
 

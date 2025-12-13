@@ -11,7 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc.mojom.h"
@@ -25,13 +25,8 @@ namespace IPC {
 
 class UrgentMessageObserver;
 
-// Incoming legacy IPCs have always been dispatched to one of two threads: the
-// IO thread (when an installed MessageFilter handles the message), or the
-// thread which owns the corresponding ChannelProxy receiving the message. There
-// were no other places to route legacy IPC messages, so when a message arrived
-// the legacy IPC system would run through its MessageFilters and if the message
-// was still unhandled, it would be posted to the ChannelProxy thread for
-// further processing.
+// Incoming legacy IPCs are now always dispatched to the thread which owns
+// the corresponding ChannelProxy receiving the message.
 //
 // Mojo on the other hand allows for mutually associated endpoints (that is,
 // endpoints which locally share the same message pipe) to span any number of
@@ -103,7 +98,7 @@ class COMPONENT_EXPORT(IPC) MojoBootstrap {
   // mode as specified by |mode|. The result is passed to |delegate|.
   static std::unique_ptr<MojoBootstrap> Create(
       mojo::ScopedMessagePipeHandle handle,
-      Channel::Mode mode,
+      IPC::Channel::Mode mode,
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
       const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner);
 

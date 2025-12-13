@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<link rel="help" href="https://issues.chromium.org/issues/467297219">
+<script type="routemap">
+  {
+    "routes": [
+      {
+        "name": "initial-route",
+        "pattern": { "pathname": "/activate-me" }
+      }
+    ]
+  }
+</script>
+
+PASS
+
+<script>
+  const DYNAMIC_JSON = JSON.stringify({
+    "routes": [
+      {
+        "name": "dynamic-route",
+        "pattern": { "pathname": "/dynamic-path" }
+      }
+    ]
+  });
+
+  const route = document.routeMap.get('initial-route');
+  route.addEventListener('activate', (e) => {
+    const script = document.createElement('script');
+    script.type = "routemap";
+    script.textContent = DYNAMIC_JSON;
+    document.head.appendChild(script);
+  });
+  history.pushState({}, '', '/activate-me');
+</script>

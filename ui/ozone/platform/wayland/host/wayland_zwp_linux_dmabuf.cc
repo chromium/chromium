@@ -7,9 +7,11 @@
 #include <drm_fourcc.h>
 #include <fcntl.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
+#include <sys/mman.h>
 #include <xf86drm.h>
 
 #include <algorithm>
+#include <cstring>
 
 #include "base/logging.h"
 #include "base/notimplemented.h"
@@ -98,6 +100,10 @@ WaylandZwpLinuxDmabuf::WaylandZwpLinuxDmabuf(
 
 WaylandZwpLinuxDmabuf::~WaylandZwpLinuxDmabuf() = default;
 
+WaylandZwpLinuxDmabuf::Tranche::Tranche() = default;
+
+WaylandZwpLinuxDmabuf::Tranche::~Tranche() = default;
+
 void WaylandZwpLinuxDmabuf::CreateBuffer(const base::ScopedFD& fd,
                                          const gfx::Size& size,
                                          const std::vector<uint32_t>& strides,
@@ -149,25 +155,23 @@ void WaylandZwpLinuxDmabuf::AddSupportedFourCCFormatAndModifier(
     uint32_t fourcc_format,
     std::optional<uint64_t> modifier) {
   // Return on not supported fourcc formats.
-  if (!IsValidBufferFormat(fourcc_format))
+  if (!IsValidBufferFormat(fourcc_format)) {
     return;
-
-  uint64_t format_modifier = modifier.value_or(DRM_FORMAT_MOD_INVALID);
+  }
 
   // If the buffer format has already been stored, it must be another supported
   // modifier sent by the Wayland compositor.
   gfx::BufferFormat format = GetBufferFormatFromFourCCFormat(fourcc_format);
   auto it = supported_buffer_formats_with_modifiers_.find(format);
-  if (it != supported_buffer_formats_with_modifiers_.end()) {
-    if (format_modifier != DRM_FORMAT_MOD_INVALID)
-      it->second.emplace_back(format_modifier);
-    return;
-  } else {
+  if (it == supported_buffer_formats_with_modifiers_.end()) {
     std::vector<uint64_t> modifiers;
-    if (format_modifier != DRM_FORMAT_MOD_INVALID)
-      modifiers.emplace_back(format_modifier);
+    if (modifier.has_value()) {
+      modifiers.emplace_back(modifier.value());
+    }
     supported_buffer_formats_with_modifiers_.emplace(format,
                                                      std::move(modifiers));
+  } else if (modifier.has_value()) {
+    it->second.emplace_back(modifier.value());
   }
 }
 
@@ -191,7 +195,7 @@ void WaylandZwpLinuxDmabuf::OnModifiers(void* data,
                                         uint32_t modifier_lo) {
   if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data)) {
     uint64_t modifier = static_cast<uint64_t>(modifier_hi) << 32 | modifier_lo;
-    self->AddSupportedFourCCFormatAndModifier(format, {modifier});
+    self->AddSupportedFourCCFormatAndModifier(format, modifier);
   }
 }
 
@@ -233,7 +237,51 @@ void WaylandZwpLinuxDmabuf::OnFormatTable(
     zwp_linux_dmabuf_feedback_v1* feedback,
     int32_t fd,
     uint32_t size) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data);
+  if (!self) {
+    return;
+  }
+
+  // If the compositor wants to change the available formats later, it must
+  // send a new format table and resend all feedback parameters. Clean up any
+  // existing table and formats to make room for the new ones.
+  self->format_table_.clear();
+  self->supported_buffer_formats_with_modifiers_.clear();
+
+  void* format_ptr = mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd, 0);
+  if (format_ptr == MAP_FAILED) {
+    LOG(ERROR) << "Failed to map zwp_linux_dmabuf_feedback_v1 format table";
+    return;
+  }
+
+  CHECK_EQ(size % 16, 0UL);
+  // SAFETY: The display server provides the format table as a memory-mappable
+  // file that is meant to be mapped in read-only private mode. The display
+  // server is not allowed to mutate the table, and must send a new one. The
+  // CHECK_EQ above ensures size is a multiple of 16 bytes which we will
+  // address below as sets of 4 uint32's.
+  uint32_t* formats = UNSAFE_BUFFERS(static_cast<uint32_t*>(format_ptr));
+  uint32_t count = size / 4;
+
+  // The format table is a tightly packed array of native-endianness
+  // format/modifier pairs:
+  //
+  //    [ 32-bit format | 32-bit padding | 64-bit modifier ]
+  //
+  for (uint32_t idx = 0; idx < count; idx += 4) {
+    FormatModifierPair pair;
+
+    // SAFETY: We have tested the length above to ensure that there will be 16
+    // bytes (4 uint32_t's) available to read, and the protocol defines these
+    // as native-endianness, most easily read through memcpy.
+    UNSAFE_BUFFERS({
+      pair.format = formats[idx];
+      memcpy(&pair.modifier, &formats[idx + 2], sizeof(uint64_t));
+    });
+    self->format_table_.push_back(pair);
+  }
+
+  munmap(format_ptr, size);
 }
 
 void WaylandZwpLinuxDmabuf::OnMainDevice(void* data,
@@ -248,9 +296,13 @@ void WaylandZwpLinuxDmabuf::OnMainDevice(void* data,
   CHECK_EQ(device->size, sizeof(dev_t));
   // SAFETY: wl_array is managed by wayland connection that invokes this
   // listener, and the CHECK above ensures there is 1 element in the wl_array.
-  dev_t main_device = UNSAFE_BUFFERS(reinterpret_cast<dev_t*>(device->data)[0]);
+  self->main_dev_ = UNSAFE_BUFFERS(reinterpret_cast<dev_t*>(device->data)[0]);
   drmDevicePtr raw_device;
-  drmGetDeviceFromDevId(main_device, 0, &raw_device);
+  int ret = drmGetDeviceFromDevId(self->main_dev_, 0, &raw_device);
+  if (ret < 0) {
+    PLOG(ERROR) << "drmGetDeviceFromDevId() returned an error";
+    return;
+  }
   ScopedDrmDevice drm_device(raw_device);
 
   if (!drm_device || !(drm_device->available_nodes & 1 << DRM_NODE_RENDER)) {
@@ -264,27 +316,73 @@ void WaylandZwpLinuxDmabuf::OnMainDevice(void* data,
   base::ScopedFD drm_fd(open(drm_device_path, O_RDWR));
 
   self->connection_->SetRenderNodePath(drm_fd, drm_device_path);
+
+  // Prepare to receive new formats and modifiers
+  self->supported_buffer_formats_with_modifiers_.clear();
 #endif  // defined(WAYLAND_GBM)
 }
 
 void WaylandZwpLinuxDmabuf::OnTrancheDone(
     void* data,
     zwp_linux_dmabuf_feedback_v1* feedback) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data);
+  if (!self) {
+    return;
+  }
+
+  if (self->pending_tranche_.target_device == self->main_dev_) {
+    for (const auto& table_index : self->pending_tranche_.formats) {
+      CHECK_LE(table_index, self->format_table_.size());
+      auto format_pair = self->format_table_[table_index];
+      self->AddSupportedFourCCFormatAndModifier(format_pair.format,
+                                                {format_pair.modifier});
+    }
+  }
+
+  self->pending_tranche_ = {};
 }
 
 void WaylandZwpLinuxDmabuf::OnTrancheTargetDevice(
     void* data,
     zwp_linux_dmabuf_feedback_v1* feedback,
     struct wl_array* device) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data);
+  if (!self) {
+    return;
+  }
+
+  CHECK_EQ(device->size, sizeof(dev_t));
+  // SAFETY: wl_array is managed by wayland connection that invokes this
+  // listener, and the CHECK above ensures there is 1 element in the wl_array.
+  dev_t dev = UNSAFE_BUFFERS(reinterpret_cast<dev_t*>(device->data)[0]);
+  self->pending_tranche_.target_device = dev;
 }
 
 void WaylandZwpLinuxDmabuf::OnTrancheFormats(
     void* data,
     zwp_linux_dmabuf_feedback_v1* feedback,
     struct wl_array* indices) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data);
+  if (!self) {
+    return;
+  }
+
+  if (indices->size == 0) {
+    return;
+  }
+
+  CHECK_EQ(indices->size % sizeof(uint16_t), 0UL);
+  // SAFETY: wl_array is managed by wayland connection that invokes this
+  // listener, the length of the array is checked above to be positive and the
+  // CHECK_EQ ensures that it contains an integer number of uint16_t indices.
+  size_t count = indices->size / sizeof(uint16_t);
+  uint16_t* is = UNSAFE_BUFFERS(static_cast<uint16_t*>(indices->data));
+  for (size_t idx = 0; idx < count; idx++) {
+    // SAFETY: We have validated the length to contain an integer number of
+    // uint16_t's
+    uint16_t table_index = UNSAFE_BUFFERS(is[idx]);
+    self->pending_tranche_.formats.push_back(table_index);
+  }
 }
 
 void WaylandZwpLinuxDmabuf::OnTrancheFlags(

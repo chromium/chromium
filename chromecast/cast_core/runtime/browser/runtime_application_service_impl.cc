@@ -21,6 +21,7 @@
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 #include "chromecast/common/feature_constants.h"
 #include "components/cast_receiver/browser/public/content_window_controls.h"
+#include "components/cast_receiver/browser/public/runtime_application.h"
 
 namespace chromecast {
 namespace {
@@ -28,8 +29,11 @@ namespace {
 class CastContentWindowControls : public cast_receiver::ContentWindowControls,
                                   public CastContentWindow::Observer {
  public:
-  explicit CastContentWindowControls(CastContentWindow& content_window)
-      : content_window_(content_window) {
+  explicit CastContentWindowControls(
+      CastContentWindow& content_window,
+      cast_receiver::RuntimeApplication& runtime_application)
+      : content_window_(content_window),
+        runtime_application_(runtime_application) {
     content_window_->AddObserver(this);
   }
 
@@ -84,9 +88,17 @@ class CastContentWindowControls : public cast_receiver::ContentWindowControls,
     }
   }
 
+  void OnWindowDestroyed() override {
+    LOG(INFO) << "Application window closed by system.";
+    runtime_application_->Stop(base::BindOnce([](cast_receiver::Status status) {
+      VLOG(1) << "Application stopped with status: " << status;
+    }));
+  }
+
   bool was_window_created_ = false;
 
   raw_ref<CastContentWindow> content_window_;
+  raw_ref<cast_receiver::RuntimeApplication> runtime_application_;
 };
 
 cast::common::StopReason::Type ToProtoType(
@@ -638,8 +650,8 @@ RuntimeApplicationServiceImpl::GetContentWindowControls() {
   }
 
   if (!content_window_controls_) {
-    content_window_controls_ =
-        std::make_unique<CastContentWindowControls>(*cast_web_view_->window());
+    content_window_controls_ = std::make_unique<CastContentWindowControls>(
+        *cast_web_view_->window(), *runtime_application_);
   }
 
   return content_window_controls_.get();

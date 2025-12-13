@@ -9,10 +9,17 @@
 
 #include "ui/gfx/buffer_types.h"
 
+namespace viz {
+class SharedImageFormat;
+}  // namespace viz
+
 namespace ui {
 
 int GetFourCCFormatFromBufferFormat(gfx::BufferFormat format);
+int GetFourCCFormatFromSharedImageFormat(const viz::SharedImageFormat& format);
+
 gfx::BufferFormat GetBufferFormatFromFourCCFormat(int format);
+viz::SharedImageFormat GetSharedImageFormatFromFourCCFormat(int format);
 
 // Returns true if the fourcc format is known.
 bool IsValidBufferFormat(uint32_t current_format);
@@ -23,4 +30,4 @@ const char* DrmFormatToString(uint32_t format);
 
 }  // namespace ui
 
-#endif  // UI_GFX_LINUX_DRM_UTIL_LINUX_H__
+#endif  // UI_GFX_LINUX_DRM_UTIL_LINUX_H_

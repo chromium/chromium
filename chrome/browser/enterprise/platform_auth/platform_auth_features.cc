@@ -8,8 +8,11 @@
 
 namespace enterprise_auth {
 
-BASE_FEATURE(kEnableExtensibleEnterpriseSSO,
-             "EnableExtensibleEnterpriseSSO",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableExtensibleEnterpriseSSO, base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_MAC)
+// Enables native SSO support with Okta services.
+BASE_FEATURE(kOktaSSO, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 }  // namespace enterprise_auth

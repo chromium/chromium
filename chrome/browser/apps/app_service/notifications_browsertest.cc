@@ -17,7 +17,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
-#include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -291,7 +290,7 @@ class AppNotificationsWebNotificationTest
     return std::make_unique<message_center::Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
         std::u16string(), std::u16string(), ui::ImageModel(),
-        base::UTF8ToUTF16(origin.host()), origin,
+        base::UTF8ToUTF16(origin.GetHost()), origin,
         message_center::NotifierId(origin),
         message_center::RichNotificationData(), nullptr);
   }
@@ -819,9 +818,11 @@ class AppNotificationsArcNotificationTest
         std::make_unique<FakeArcNotificationManagerDelegate>(),
         EmptyAccountId(), message_center::MessageCenter::Get());
 
+    // TODO(crbug.com/450429333): Avoid directly talking to ArcApps.
     ash::ArcNotificationsHostInitializer::Observer* observer =
-        apps::ArcAppsFactory::GetInstance()->GetForProfile(profile());
-    observer->OnSetArcNotificationsInstance(arc_notification_manager_.get());
+        apps::ArcApps::GetForTesting(profile());
+    observer->OnArcNotificationManagerInitialized(
+        arc_notification_manager_.get());
   }
 
   void TearDownOnMainThread() override {

@@ -41,7 +41,7 @@ namespace autofill {
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kOfferNotificationBubbleElementId);
 
 OfferNotificationBubbleViews::OfferNotificationBubbleViews(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     content::WebContents* web_contents,
     OfferNotificationBubbleController* controller)
     : AutofillLocationBarBubble(anchor_view,

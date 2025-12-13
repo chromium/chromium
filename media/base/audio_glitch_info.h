@@ -29,7 +29,7 @@ struct MEDIA_EXPORT AudioGlitchInfo {
 
   class MEDIA_EXPORT Accumulator;
 
-  enum class Direction { kRender, kCapture };
+  enum class Direction { kRender, kCapture, kLoopback };
 
  private:
   friend class AUHALStream;
@@ -39,6 +39,8 @@ struct MEDIA_EXPORT AudioGlitchInfo {
   friend class WASAPIAudioInputStream;
   friend class WASAPIAudioOutputStream;
   friend class AudioGlitchInfoTester;
+  friend class CatapAudioInputStream;
+  friend class GlitchHelper;
 
   // Creates a glitch with duration clamped to between 0 and 1 seconds. Also
   // logs the glitch duration to a UMA-histogram. This should only be used in OS

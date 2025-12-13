@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/sessions/model/test_session_service.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -444,7 +443,7 @@ TEST_F(BrowserActionFactoryTest, SaveImageInGooglePhotosAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* expectedImage =
       CustomSymbolWithPointSize(kGooglePhotosSymbol, kSymbolActionPointSize);
 #else

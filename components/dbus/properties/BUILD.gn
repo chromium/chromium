@@ -9,13 +9,12 @@ source_set("properties") {
     "dbus_properties.h",
     "success_barrier_callback.cc",
     "success_barrier_callback.h",
-    "types.cc",
-    "types.h",
   ]
   defines = [ "IS_COMPONENTS_DBUS_IMPL" ]
   deps = [
     "//base",
     "//base:i18n",
+    "//components/dbus/utils",
   ]
   public_deps = [ "//dbus" ]
 }
@@ -23,10 +22,7 @@ source_set("properties") {
 source_set("unit_tests") {
   testonly = true
   visibility = [ "//components/dbus:unit_tests" ]
-  sources = [
-    "success_barrier_callback_unittest.cc",
-    "types_unittest.cc",
-  ]
+  sources = [ "success_barrier_callback_unittest.cc" ]
   deps = [
     ":properties",
     "//base",

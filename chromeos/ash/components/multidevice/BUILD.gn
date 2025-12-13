@@ -72,6 +72,7 @@ static_library("test_support") {
   deps = [
     "//base",
     "//chromeos/ash/services/device_sync/proto",
+    "//crypto",
   ]
 }
 

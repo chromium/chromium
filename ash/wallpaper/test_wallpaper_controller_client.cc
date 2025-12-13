@@ -120,7 +120,7 @@ void TestWallpaperControllerClient::FetchDailyGooglePhotosPhoto(
     const std::string& album_id,
     FetchGooglePhotosPhotoCallback callback) {
   std::string photo_id = album_id;
-  std::reverse(photo_id.begin(), photo_id.end());
+  std::ranges::reverse(photo_id);
   FetchGooglePhotosPhoto(account_id, photo_id, std::move(callback));
 }
 

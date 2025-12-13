@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #include "components/segmentation_platform/internal/metadata/feature_query.h"

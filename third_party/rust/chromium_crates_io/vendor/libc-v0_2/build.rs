@@ -1,5 +1,11 @@
-use std::process::{Command, Output};
-use std::{env, str};
+use std::process::{
+    Command,
+    Output,
+};
+use std::{
+    env,
+    str,
+};
 
 // List of cfgs this build script is allowed to set. The list is needed to support check-cfg, as we
 // need to know all the possible cfgs that this script will set. If you need to set another cfg
@@ -17,14 +23,11 @@ const ALLOWED_CFGS: &[&str] = &[
     "gnu_file_offset_bits64",
     // Corresponds to `_TIME_BITS=64` in glibc
     "gnu_time_bits64",
-    // FIXME(ctest): this config shouldn't be needed but ctest can't parse `const extern fn`
-    "libc_const_extern_fn",
     "libc_deny_warnings",
-    "libc_thread_local",
-    "libc_ctest",
     // Corresponds to `__USE_TIME_BITS64` in UAPI
     "linux_time_bits64",
     "musl_v1_2_3",
+    "vxworks_lt_25_09",
 ];
 
 // Extra values to allow for check-cfg.
@@ -50,7 +53,6 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
 
     let (rustc_minor_ver, _is_nightly) = rustc_minor_nightly();
-    let rustc_dep_of_std = env::var("CARGO_FEATURE_RUSTC_DEP_OF_STD").is_ok();
     let libc_ci = env::var("LIBC_CI").is_ok();
     let target_env = env::var("CARGO_CFG_TARGET_ENV").unwrap_or_default();
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
@@ -58,7 +60,7 @@ fn main() {
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap_or_default();
 
     // The ABI of libc used by std is backward compatible with FreeBSD 12.
-    // The ABI of libc from crates.io is backward compatible with FreeBSD 11.
+    // The ABI of libc from crates.io is backward compatible with FreeBSD 12.
     //
     // On CI, we detect the actual FreeBSD version and match its ABI exactly,
     // running tests to ensure that the ABI is correct.
@@ -69,11 +71,9 @@ fn main() {
         println!("cargo:warning=setting FreeBSD version to {vers}");
         vers
     } else if libc_ci {
-        which_freebsd().unwrap_or(11)
-    } else if rustc_dep_of_std {
-        12
+        which_freebsd().unwrap_or(12)
     } else {
-        11
+        12
     };
 
     match which_freebsd {
@@ -92,10 +92,16 @@ fn main() {
         _ => (),
     }
 
+    match vxworks_version_code() {
+        Some(v) if (v < (25, 9)) => set_cfg("vxworks_lt_25_09"),
+        // VxWorks version >= 25.09
+        _ => (),
+    }
+
     let musl_v1_2_3 = env::var("RUST_LIBC_UNSTABLE_MUSL_V1_2_3").is_ok();
     println!("cargo:rerun-if-env-changed=RUST_LIBC_UNSTABLE_MUSL_V1_2_3");
     // loongarch64 and ohos have already updated
-    if musl_v1_2_3 || target_os == "loongarch64" || target_env == "ohos" {
+    if musl_v1_2_3 || target_arch == "loongarch64" || target_env == "ohos" {
         // FIXME(musl): enable time64 api as well
         set_cfg("musl_v1_2_3");
     }
@@ -112,58 +118,51 @@ fn main() {
         && target_arch != "riscv32"
         && target_arch != "x86_64"
     {
-        match env::var("RUST_LIBC_UNSTABLE_GNU_TIME_BITS") {
-            Ok(val) if val == "64" => {
-                set_cfg("gnu_file_offset_bits64");
-                set_cfg("linux_time_bits64");
-                set_cfg("gnu_time_bits64");
-            }
-            Ok(val) if val != "32" => {
-                panic!("RUST_LIBC_UNSTABLE_GNU_TIME_BITS may only be set to '32' or '64'")
-            }
-            _ => {
-                match env::var("RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS") {
-                    Ok(val) if val == "64" => {
-                        set_cfg("gnu_file_offset_bits64");
-                    }
-                    Ok(val) if val != "32" => {
-                        panic!("RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS may only be set to '32' or '64'")
-                    }
-                    _ => {}
-                }
-            }
+        let defaultbits = "32".to_string();
+        let (timebits, filebits) = match (
+            env::var("RUST_LIBC_UNSTABLE_GNU_TIME_BITS"),
+            env::var("RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS"),
+        ) {
+            (Ok(_), Ok(_)) => panic!("Do not set both RUST_LIBC_UNSTABLE_GNU_TIME_BITS and RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS"),
+            (Err(_), Err(_)) => (defaultbits.clone(), defaultbits.clone()),
+            (Ok(tb), Err(_)) if tb == "64" => (tb.clone(), tb.clone()),
+            (Ok(tb), Err(_)) if tb == "32" => (tb, defaultbits.clone()),
+            (Ok(_), Err(_)) => panic!("Invalid value for RUST_LIBC_UNSTABLE_GNU_TIME_BITS, must be 32 or 64"),
+            (Err(_), Ok(fb)) if fb == "32" || fb == "64" => (defaultbits.clone(), fb),
+            (Err(_), Ok(_)) => panic!("Invalid value for RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS, must be 32 or 64"),
+        };
+        let valid_bits = ["32", "64"];
+        assert!(
+            valid_bits.contains(&filebits.as_str()) && valid_bits.contains(&timebits.as_str()),
+            "Invalid value for RUST_LIBC_UNSTABLE_GNU_TIME_BITS or RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS, must be 32, 64 or unset"
+        );
+        assert!(
+            !(filebits == "32" && timebits == "64"),
+            "RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS must be 64 or unset if RUST_LIBC_UNSTABLE_GNU_TIME_BITS is 64"
+        );
+        if timebits == "64" {
+            set_cfg("linux_time_bits64");
+            set_cfg("gnu_time_bits64");
+        }
+        if filebits == "64" {
+            set_cfg("gnu_file_offset_bits64");
         }
     }
+
     // On CI: deny all warnings
     if libc_ci {
         set_cfg("libc_deny_warnings");
     }
 
-    // #[thread_local] is currently unstable
-    if rustc_dep_of_std {
-        set_cfg("libc_thread_local");
-    }
-
-    // Set unconditionally when ctest is not being invoked.
-    set_cfg("libc_const_extern_fn");
-
     // Since Rust 1.80, configuration that isn't recognized by default needs to be provided to
     // avoid warnings.
     if rustc_minor_ver >= 80 {
         for cfg in ALLOWED_CFGS {
-            if rustc_minor_ver >= 75 {
-                println!("cargo:rustc-check-cfg=cfg({cfg})");
-            } else {
-                println!("cargo:rustc-check-cfg=values({cfg})");
-            }
+            println!("cargo:rustc-check-cfg=cfg({cfg})");
         }
         for &(name, values) in CHECK_CFG_EXTRA {
             let values = values.join("\",\"");
-            if rustc_minor_ver >= 75 {
-                println!("cargo:rustc-check-cfg=cfg({name},values(\"{values}\"))");
-            } else {
-                println!("cargo:rustc-check-cfg=values({name},\"{values}\")");
-            }
+            println!("cargo:rustc-check-cfg=cfg({name},values(\"{values}\"))");
         }
     }
 }
@@ -286,6 +285,20 @@ fn emcc_version_code() -> Option<u64> {
     let patch = pieces.next().and_then(|x| x.parse().ok()).unwrap_or(0);
 
     Some(major * 10000 + minor * 100 + patch)
+}
+
+/// Retrieve the VxWorks release version from the environment variable set by the VxWorks build
+/// environment, in `(minor, patch)` form. Currently the only major version supported by Rust
+/// is 7.
+fn vxworks_version_code() -> Option<(u32, u32)> {
+    let version = env::var("WIND_RELEASE_ID").ok()?;
+
+    let mut pieces = version.trim().split(['.']);
+
+    let major: u32 = pieces.next().and_then(|x| x.parse().ok()).unwrap_or(0);
+    let minor: u32 = pieces.next().and_then(|x| x.parse().ok()).unwrap_or(0);
+
+    Some((major, minor))
 }
 
 fn set_cfg(cfg: &str) {

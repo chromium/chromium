@@ -106,6 +106,10 @@ UnittestingSystemAppDelegate::GetWebAppInfo() const {
   return info_factory_.Run();
 }
 
+bool UnittestingSystemAppDelegate::ShouldForceReinstall() const {
+  return should_force_reinstall_;
+}
+
 std::vector<std::string>
 UnittestingSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
   return uninstall_and_replace_;
@@ -207,6 +211,10 @@ bool UnittestingSystemAppDelegate::UseSystemThemeColor() const {
 }
 bool UnittestingSystemAppDelegate::ShouldAnimateThemeChanges() const {
   return should_animate_theme_changes_;
+}
+
+void UnittestingSystemAppDelegate::SetShouldForceReinstall(bool value) {
+  should_force_reinstall_ = value;
 }
 
 void UnittestingSystemAppDelegate::SetAppIdsToUninstallAndReplace(
@@ -570,7 +578,7 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
             return info;
           })));
   auto factory = std::make_unique<TestSystemWebAppWebUIControllerFactory>(
-      kInitiatingAppUrl.host());
+      kInitiatingAppUrl.GetHost());
   installation->web_ui_controller_factories_.push_back(std::move(factory));
 
   return base::WrapUnique(installation);

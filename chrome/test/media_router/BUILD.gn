@@ -112,12 +112,6 @@ copy("e2e_test_resources") {
   ]
 }
 
-# Lab performance tests
-group("performance_tests") {
-  testonly = true
-  deps = [ "//chrome/test/media_router/performance:performance_test" ]
-}
-
 # Run separately.  TODO: Documentation on how to run
 if (enable_downstream_media_tests) {
   group("swarming_tests") {

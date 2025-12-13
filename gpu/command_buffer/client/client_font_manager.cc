@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/client/client_font_manager.h"
 
 #include <bit>
 #include <type_traits>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 
 namespace gpu {
 namespace raster {
@@ -23,24 +20,22 @@ namespace {
 
 class Serializer {
  public:
-  Serializer(char* memory, uint32_t memory_size)
-      : memory_(memory), memory_size_(memory_size) {}
+  explicit Serializer(base::span<uint8_t> memory) : memory_(memory) {}
   ~Serializer() = default;
 
   template <typename T>
-  void Write(const T* val) {
+  void Write(const T& val) {
     static_assert(std::is_trivially_copyable_v<T>);
-    WriteData(val, sizeof(T), alignof(T));
+    WriteData(base::byte_span_from_ref(val), alignof(T));
   }
 
-  void WriteData(const void* input, uint32_t bytes, size_t alignment) {
-    AlignMemory(bytes, alignment);
-    if (bytes == 0)
+  void WriteData(base::span<const uint8_t> input, size_t alignment) {
+    AlignMemory(input.size(), alignment);
+    if (input.empty()) {
       return;
+    }
 
-    memcpy(memory_, input, bytes);
-    memory_ += bytes;
-    bytes_written_ += bytes;
+    memory_.take_first(input.size()).copy_from(input);
   }
 
  private:
@@ -48,17 +43,13 @@ class Serializer {
     // Due to the math below, alignment must be a power of two.
     DCHECK(std::has_single_bit(alignment));
 
-    size_t memory = reinterpret_cast<size_t>(memory_.get());
+    size_t memory = reinterpret_cast<size_t>(memory_.data());
     size_t padding = base::bits::AlignUp(memory, alignment) - memory;
-    DCHECK_LE(bytes_written_ + size + padding, memory_size_);
-
-    memory_ += padding;
-    bytes_written_ += padding;
+    DCHECK_LE(size + padding, memory_.size());
+    memory_ = memory_.subspan(padding);
   }
 
-  raw_ptr<char, AllowPtrArithmetic> memory_ = nullptr;
-  uint32_t memory_size_ = 0u;
-  uint32_t bytes_written_ = 0u;
+  base::raw_span<uint8_t> memory_;
 };
 
 }  // namespace
@@ -153,16 +144,16 @@ void ClientFontManager::Serialize() {
   }
 
   // Allocate memory.
-  void* memory = client_->MapFontBuffer(bytes_required);
-  if (!memory) {
+  base::span<uint8_t> memory = client_->MapFontBuffer(bytes_required);
+  if (memory.empty()) {
     // We are likely in a context loss situation if mapped memory allocation
     // for font buffer failed.
     return;
   }
-  Serializer serializer(reinterpret_cast<char*>(memory), bytes_required);
+  Serializer serializer(memory);
 
   // Serialize all new handles.
-  serializer.Write<uint32_t>(&num_handles_created);
+  serializer.Write<uint32_t>(num_handles_created);
   for (SkDiscardableHandleId handle_id = last_serialized_handle_id_ + 1;
        handle_id <= last_allocated_handle_id_; handle_id++) {
     auto it = discardable_handle_map_.find(handle_id);
@@ -174,21 +165,21 @@ void ClientFontManager::Serialize() {
     DCHECK(client_handle.IsValid());
     SerializableSkiaHandle handle(handle_id, client_handle.shm_id(),
                                   client_handle.byte_offset());
-    serializer.Write<SerializableSkiaHandle>(&handle);
+    serializer.Write<SerializableSkiaHandle>(handle);
   }
 
   // Serialize all locked handle ids, so the raster unlocks them when done.
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(locked_handles_.size()));
   const uint32_t num_locked_handles = locked_handles_.size();
-  serializer.Write<uint32_t>(&num_locked_handles);
+  serializer.Write<uint32_t>(num_locked_handles);
   for (auto handle_id : locked_handles_)
-    serializer.Write<SkDiscardableHandleId>(&handle_id);
+    serializer.Write<SkDiscardableHandleId>(handle_id);
 
   // Serialize skia data.
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(strike_data.size()));
   const uint32_t skia_data_size = strike_data.size();
-  serializer.Write<uint32_t>(&skia_data_size);
-  serializer.WriteData(strike_data.data(), strike_data.size(), 16);
+  serializer.Write<uint32_t>(skia_data_size);
+  serializer.WriteData(strike_data, 16);
 
   // Reset all state for what has been serialized.
   last_serialized_handle_id_ = last_allocated_handle_id_;

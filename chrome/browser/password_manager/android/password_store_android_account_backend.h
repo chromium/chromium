@@ -23,19 +23,14 @@ class AffiliatedMatchHelper;
 class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
                                            public PasswordStoreAndroidBackend {
  public:
-  // `is_account_store` allows to control whether the backend is used by profile
-  // or account password store.
-  PasswordStoreAndroidAccountBackend(
-      PrefService* prefs,
-      password_manager::IsAccountStore is_account_store);
+  PasswordStoreAndroidAccountBackend();
 
   PasswordStoreAndroidAccountBackend(
       base::PassKey<class PasswordStoreAndroidAccountBackendTest>,
       std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
       std::unique_ptr<PasswordSyncControllerDelegateAndroid>
-          sync_controller_delegate,
-      PrefService* prefs);
+          sync_controller_delegate);
   ~PasswordStoreAndroidAccountBackend() override;
 
   // PasswordStoreBackend implementation.

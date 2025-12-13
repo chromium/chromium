@@ -31,6 +31,7 @@
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/lock.h"
 #include "chrome/updater/persisted_data.h"
@@ -206,7 +207,7 @@ class AppUninstall : public App {
   [[nodiscard]] int Initialize() override;
   void FirstTaskRun() override;
 
-  void UninstallAll(int reason);
+  void UninstallAll(UninstallPingReason reason);
 
   // Inter-process lock taken by AppInstall, AppUninstall, and AppUpdate. May
   // be null if the setup lock wasn't acquired.
@@ -228,7 +229,7 @@ int AppUninstall::Initialize() {
   return kErrorOk;
 }
 
-void AppUninstall::UninstallAll(int reason) {
+void AppUninstall::UninstallAll(UninstallPingReason reason) {
   update_client::CrxComponent uninstall_data;
   uninstall_data.ap = config_->GetUpdaterPersistedData()->GetAP(kUpdaterAppId);
   uninstall_data.app_id = kUpdaterAppId;
@@ -243,10 +244,26 @@ void AppUninstall::UninstallAll(int reason) {
     uninstall_data.version = base::Version(kUpdaterVersion);
   }
 
+  // A history log entry is created regardless of EULA status.
+  base::OnceCallback<void(int)> shutdown_callback =
+      base::BindOnce(
+          [](UninstallEndEvent event, int exit_code) {
+            if (exit_code != 0) {
+              event.AddError({.code = exit_code});
+            }
+            event.WriteAsync();
+            return exit_code;
+          },
+          UninstallStartEvent()
+              .SetAppId(kUpdaterAppId)
+              .SetVersion(uninstall_data.version.GetString())
+              .SetReason(reason)
+              .WriteAsyncAndReturnEndEvent())
+          .Then(base::BindOnce(&AppUninstall::Shutdown, this));
+
   // If the terms of service have not been accepted, don't ping.
   if (config_->GetUpdaterPersistedData()->GetEulaRequired()) {
-    UninstallInThreadPool(updater_scope(),
-                          base::BindOnce(&AppUninstall::Shutdown, this));
+    UninstallInThreadPool(updater_scope(), std::move(shutdown_callback));
     return;
   }
 
@@ -256,7 +273,7 @@ void AppUninstall::UninstallAll(int reason) {
       {.event_type = update_client::protocol_request::kEventUninstall,
        .result = update_client::protocol_request::kEventResultSuccess,
        .error_code = 0,
-       .extra_code1 = reason},
+       .extra_code1 = static_cast<int>(reason)},
       base::BindOnce(
           [](base::OnceCallback<void(int)> shutdown, UpdaterScope scope,
              update_client::Error uninstall_ping_error) {
@@ -264,7 +281,7 @@ void AppUninstall::UninstallAll(int reason) {
                 << "Uninstall ping failed: " << uninstall_ping_error;
             UninstallInThreadPool(scope, std::move(shutdown));
           },
-          base::BindOnce(&AppUninstall::Shutdown, this), updater_scope()));
+          std::move(shutdown_callback), updater_scope()));
 }
 
 void AppUninstall::FirstTaskRun() {
@@ -290,7 +307,7 @@ void AppUninstall::FirstTaskRun() {
       base::CommandLine::ForCurrentProcess();
 
   if (command_line->HasSwitch(kUninstallSwitch)) {
-    UninstallAll(kUninstallPingReasonUninstalled);
+    UninstallAll(UninstallPingReason::kUninstalled);
     return;
   }
 
@@ -301,8 +318,8 @@ void AppUninstall::FirstTaskRun() {
                         global_prefs_->CountServerStarts(), had_apps);
     VLOG(1) << "ShouldUninstall returned: " << should_uninstall;
     if (should_uninstall) {
-      UninstallAll(had_apps ? kUninstallPingReasonNoAppsRemain
-                            : kUninstallPingReasonNeverHadApps);
+      UninstallAll(had_apps ? UninstallPingReason::kNoAppsRemain
+                            : UninstallPingReason::kNeverHadApps);
     } else {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&AppUninstall::Shutdown, this, 0));

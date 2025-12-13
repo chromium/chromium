@@ -57,7 +57,7 @@ TEST_F(LobsterCandidateResizerTest, InflateImageCallsSnapperProvider) {
                /*num_outputs=*/1, /*use_query_rewriter=*/true,
                /*use_i18n=*/true)),
            testing::_, testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const manta::proto::Request& request,
              net::NetworkTrafficAnnotationTag traffic_annotation,
              manta::MantaProtoResponseCallback done_callback) {
@@ -68,7 +68,7 @@ TEST_F(LobsterCandidateResizerTest, InflateImageCallsSnapperProvider) {
                                    kFullImageDimensionLength)),
                      {.status_code = manta::MantaStatusCode::kOk,
                       .message = ""});
-          }));
+          });
 
   base::test::TestFuture<const ash::LobsterResult&> future;
 
@@ -105,7 +105,7 @@ TEST_F(LobsterCandidateResizerTest,
                /*num_outputs=*/1, /*use_query_rewriter=*/true,
                /*use_i18n=*/true)),
            testing::_, testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const manta::proto::Request& request,
              net::NetworkTrafficAnnotationTag traffic_annotation,
              manta::MantaProtoResponseCallback done_callback) {
@@ -116,7 +116,7 @@ TEST_F(LobsterCandidateResizerTest,
                                    kFullImageDimensionLength)),
                      {.status_code = manta::MantaStatusCode::kGenericError,
                       .message = "dummy error"});
-          }));
+          });
 
   base::test::TestFuture<const ash::LobsterResult&> future;
 
@@ -150,7 +150,7 @@ TEST_F(LobsterCandidateResizerTest,
                /*num_outputs=*/1, /*use_query_rewriter=*/true,
                /*use_i18n=*/true)),
            testing::_, testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const manta::proto::Request& request,
              net::NetworkTrafficAnnotationTag traffic_annotation,
              manta::MantaProtoResponseCallback done_callback) {
@@ -161,7 +161,7 @@ TEST_F(LobsterCandidateResizerTest,
                                    kFullImageDimensionLength)),
                      {.status_code = manta::MantaStatusCode::kOk,
                       .message = ""});
-          }));
+          });
 
   base::test::TestFuture<const ash::LobsterResult&> future;
 

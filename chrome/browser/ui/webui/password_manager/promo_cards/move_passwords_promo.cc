@@ -96,8 +96,7 @@ bool MovePasswordsPromo::ShouldShowPromo() const {
   CHECK(profile_);
   syncer::SyncService* sync_service = GetSyncService(profile_);
   if (!sync_service ||
-      !password_manager::features_util::IsAccountStorageEnabled(
-          profile_->GetPrefs(), sync_service) ||
+      !password_manager::features_util::IsAccountStorageEnabled(sync_service) ||
       !sync_service->IsEngineInitialized()) {
     return false;
   }

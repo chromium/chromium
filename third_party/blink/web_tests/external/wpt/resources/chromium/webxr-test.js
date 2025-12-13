@@ -6,10 +6,10 @@ import {GamepadHand, GamepadMapping} from '/gen/device/gamepad/public/mojom/game
 // https://github.com/immersive-web/webxr-test-api
 
 const defaultMojoFromStage = {
-  matrix: [1, 0,     0, 0,
-           0, 1,     0, 0,
-           0, 0,     1, 0,
-           0, -1.65, 0, 1]
+  data: { matrix: [1, 0,     0, 0,
+                   0, 1,     0, 0,
+                   0, 0,     1, 0,
+                   0, -1.65, 0, 1] }
 };
 const default_stage_parameters = {
   mojoFromStage: defaultMojoFromStage,
@@ -57,7 +57,7 @@ function getPoseFromTransform(transform) {
 }
 
 function composeGFXTransform(fakeTransformInit) {
-  return {matrix: getMatrixFromTransform(fakeTransformInit)};
+  return {data: {matrix: getMatrixFromTransform(fakeTransformInit)}};
 }
 
 // Value equality for camera image init objects - they must contain `width` &
@@ -382,6 +382,7 @@ class MockRuntime {
     this.send_mojo_space_reset_ = false;
     this.stageParameters_ = null;
     this.stageParametersId_ = 1;
+    this.nextVisibilityMaskId_ = 1;
 
     this.service_ = service;
 
@@ -533,7 +534,7 @@ class MockRuntime {
 
     // floorOrigin is passed in as mojoFromStage.
     this.stageParameters_.mojoFromStage =
-        {matrix: getMatrixFromTransform(floorOrigin)};
+        {data: {matrix: getMatrixFromTransform(floorOrigin)}};
 
     this._onStageParametersUpdated();
   }
@@ -886,6 +887,18 @@ class MockRuntime {
         break;
     }
 
+    let visibilityMask = null;
+    if (fakeXRViewInit.visibilityMask) {
+      let maskInit = fakeXRViewInit.visibilityMask;
+      visibilityMask = {
+        unvalidatedIndices: maskInit.indices,
+        vertices: []
+      };
+      for (let i = 0; i + 1 < maskInit.vertices.length; i+= 2) {
+        visibilityMask.vertices.push( { x: maskInit.vertices[i], y: maskInit.vertices[i+1]});
+      }
+    }
+
     return {
       eye: viewEye,
       geometry: {
@@ -902,8 +915,11 @@ class MockRuntime {
       height: fakeXRViewInit.resolution.height
       },
       isFirstPersonObserver: fakeXRViewInit.isFirstPersonObserver ? true : false,
-      viewOffset: composeGFXTransform(fakeXRViewInit.viewOffset)
+      viewOffset: composeGFXTransform(fakeXRViewInit.viewOffset),
+      visibilityMask: visibilityMask,
+      visibilityMaskId: { idValue : this.nextVisibilityMaskId_++ }
     };
+
   }
 
   _setFeatures(supportedFeatures) {
@@ -1052,15 +1068,13 @@ class MockRuntime {
     if (!this.supportedModes_.includes(xrSessionMojom.XRSessionMode.kImmersiveAr)) {
       // Reject outside of AR.
       return Promise.resolve({
-        result : vrMojom.SubscribeToHitTestResult.FAILURE_GENERIC,
-        subscriptionId : 0n
+        subscriptionId : null
       });
     }
 
     if (!this._nativeOriginKnown(nativeOriginInformation)) {
       return Promise.resolve({
-        result : vrMojom.SubscribeToHitTestResult.FAILURE_GENERIC,
-        subscriptionId : 0n
+        subscriptionId : null
       });
     }
 
@@ -1077,13 +1091,11 @@ class MockRuntime {
           this.hitTestSubscriptions_.set(id, { nativeOriginInformation, entityTypes, ray, controller });
 
           return Promise.resolve({
-            result : vrMojom.SubscribeToHitTestResult.SUCCESS,
-            subscriptionId : id
+            subscriptionId : { idValue : id }
           });
         } else {
           return Promise.resolve({
-            result : vrMojom.SubscribeToHitTestResult.FAILURE_GENERIC,
-            subscriptionId : 0n
+            subscriptionId : null
           });
         }
       });
@@ -1093,8 +1105,7 @@ class MockRuntime {
     if (!this.supportedModes_.includes(xrSessionMojom.XRSessionMode.kImmersiveAr)) {
       // Reject outside of AR.
       return Promise.resolve({
-        result : vrMojom.SubscribeToHitTestResult.FAILURE_GENERIC,
-        subscriptionId : 0n
+        subscriptionId : null
       });
     }
 
@@ -1112,26 +1123,25 @@ class MockRuntime {
           this.transientHitTestSubscriptions_.set(id, { profileName, entityTypes, ray, controller });
 
           return Promise.resolve({
-            result : vrMojom.SubscribeToHitTestResult.SUCCESS,
-            subscriptionId : id
+            subscriptionId : { idValue : id }
           });
         } else {
           return Promise.resolve({
-            result : vrMojom.SubscribeToHitTestResult.FAILURE_GENERIC,
-            subscriptionId : 0n
+            subscriptionId : null
           });
         }
       });
   }
 
   unsubscribeFromHitTest(subscriptionId) {
+    let id = subscriptionId.idValue;
     let controller = null;
-    if(this.transientHitTestSubscriptions_.has(subscriptionId)){
-      controller = this.transientHitTestSubscriptions_.get(subscriptionId).controller;
-      this.transientHitTestSubscriptions_.delete(subscriptionId);
-    } else if(this.hitTestSubscriptions_.has(subscriptionId)){
-      controller = this.hitTestSubscriptions_.get(subscriptionId).controller;
-      this.hitTestSubscriptions_.delete(subscriptionId);
+    if(this.transientHitTestSubscriptions_.has(id)){
+      controller = this.transientHitTestSubscriptions_.get(id).controller;
+      this.transientHitTestSubscriptions_.delete(id);
+    } else if(this.hitTestSubscriptions_.has(id)){
+      controller = this.hitTestSubscriptions_.get(id).controller;
+      this.hitTestSubscriptions_.delete(id);
     }
 
     if(controller) {
@@ -1139,12 +1149,11 @@ class MockRuntime {
     }
   }
 
-  createAnchor(nativeOriginInformation, nativeOriginFromAnchor) {
+  createAnchor(nativeOriginInformation, nativeOriginFromAnchor, planeId) {
     return new Promise((resolve) => {
       if(this.anchor_creation_callback_ == null) {
         resolve({
-          result : vrMojom.CreateAnchorResult.FAILURE,
-          anchorId : 0n
+          anchorId : null
         });
 
         return;
@@ -1153,8 +1162,7 @@ class MockRuntime {
       const mojoFromNativeOrigin = this._getMojoFromNativeOrigin(nativeOriginInformation);
       if(mojoFromNativeOrigin == null) {
         resolve({
-          result : vrMojom.CreateAnchorResult.FAILURE,
-          anchorId : 0n
+          anchorId : null
         });
 
         return;
@@ -1183,36 +1191,23 @@ class MockRuntime {
                 anchorController.id = anchor_id;
 
                 resolve({
-                  result : vrMojom.CreateAnchorResult.SUCCESS,
-                  anchorId : anchor_id
+                  anchorId : {
+                    idValue: anchor_id
+                  }
                 });
               } else {
                 // The test has rejected anchor creation.
                 resolve({
-                  result : vrMojom.CreateAnchorResult.FAILURE,
-                  anchorId : 0n
+                  anchorId : null
                 });
               }
             })
             .catch(() => {
               // The test threw an error, treat anchor creation as failed.
               resolve({
-                result : vrMojom.CreateAnchorResult.FAILURE,
-                anchorId : 0n
+                anchorId : null
               });
             });
-    });
-  }
-
-  createPlaneAnchor(planeFromAnchor, planeId) {
-    return new Promise((resolve) => {
-
-      // Not supported yet.
-
-      resolve({
-        result : vrMojom.CreateAnchorResult.FAILURE,
-        anchorId : 0n,
-      });
     });
   }
 
@@ -1397,11 +1392,11 @@ class MockRuntime {
 
     frameData.anchorsData = {allAnchorsIds: [], updatedAnchorsData: []};
     for(const [id, controller] of this.anchor_controllers_) {
-      frameData.anchorsData.allAnchorsIds.push(id);
+      frameData.anchorsData.allAnchorsIds.push({ idValue : id });
 
       // Send the entire anchor data over if there was a change since last GetFrameData().
       if(controller.dirty) {
-        const anchorData = {id};
+        const anchorData = { id : { idValue : id }};
         if(!controller.paused) {
           anchorData.mojoFromAnchor = getPoseFromTransform(
               XRMathHelper.decomposeRigidTransform(
@@ -1583,10 +1578,10 @@ class MockRuntime {
       this.depthSensingData_.height,
       MockRuntime._depthDataFormatToMojoMap[this.depthSensingData_.depthFormat],
       sourceProjectionMatrix,
-      sourceViewOffset.matrix,
+      sourceViewOffset.data.matrix,
       this.depthConfiguration_.depthDataFormat,
       targetProjectionMatrix,
-      targetViewOffset.matrix
+      targetViewOffset.data.matrix
     )};
   }
 
@@ -1685,14 +1680,14 @@ class MockRuntime {
 
       const results = this._hitTestWorld(mojo_ray_origin, mojo_ray_direction, subscription.entityTypes);
       frameData.hitTestSubscriptionResults.results.push(
-          {subscriptionId: id, hitTestResults: results});
+          {subscriptionId: { idValue: id }, hitTestResults: results});
     }
 
     // Transient hit test:
     const mojo_from_viewer = this._getMojoFromViewer();
 
     for (const [id, subscription] of this.transientHitTestSubscriptions_) {
-      const result = {subscriptionId: id,
+      const result = {subscriptionId: { idValue: id },
                       inputSourceIdToHitTestResults: new Map()};
 
       // Find all input sources that match the profile name:
@@ -1860,7 +1855,7 @@ class MockRuntime {
           return null;
         }
 
-        const hitResult = {planeId: 0n};
+        const hitResult = {};
         hitResult.distance = distance;  // Extend the object with additional information used by higher layers.
                                         // It will not be serialized over mojom.
 
@@ -1913,7 +1908,7 @@ class MockRuntime {
   }
 
   _getMojoFromViewerWithOffset(viewOffset) {
-    return { matrix: XRMathHelper.mul4x4(this._getMojoFromViewer(), viewOffset.matrix) };
+    return {data: { matrix: XRMathHelper.mul4x4(this._getMojoFromViewer(), viewOffset.data.matrix) }};
   }
 
   _getMojoFromNativeOrigin(nativeOriginInformation) {
@@ -1935,7 +1930,7 @@ class MockRuntime {
             console.warn("Standing transform not available.");
             return null;
           }
-          return this.stageParameters_.mojoFromStage.matrix;
+          return this.stageParameters_.mojoFromStage.data.matrix;
         case vrMojom.XRReferenceSpaceType.kViewer:
           return mojo_from_viewer;
         case vrMojom.XRReferenceSpaceType.kBoundedFloor:
@@ -2238,7 +2233,7 @@ class MockXRInputSource {
           // that. If we don't, then we'll just set the pointer offset directly,
           // using identity as set above.
           if (this.mojo_from_input_) {
-            mojo_from_input = this.mojo_from_input_.matrix;
+            mojo_from_input = this.mojo_from_input_.data.matrix;
           }
           break;
         default:
@@ -2251,8 +2246,9 @@ class MockXRInputSource {
       // multiplying.
       let input_from_mojo = XRMathHelper.inverse(mojo_from_input);
       input_desc.inputFromPointer = {};
-      input_desc.inputFromPointer.matrix =
-        XRMathHelper.mul4x4(input_from_mojo, this.mojo_from_pointer_.matrix);
+      input_desc.inputFromPointer.data = {
+        matrix : XRMathHelper.mul4x4(input_from_mojo,
+                                     this.mojo_from_pointer_.data.matrix)};
 
       input_desc.profiles = this.profiles_;
 
@@ -2356,7 +2352,7 @@ class MockXRInputSource {
   }
 
   _getMojoFromInputSource(mojo_from_viewer) {
-    return this.mojo_from_pointer_.matrix;
+    return this.mojo_from_pointer_.data.matrix;
   }
 }
 
@@ -2421,7 +2417,7 @@ class MockXRPresentationProvider {
 
   submitFrameWithTextureHandle(frameId, texture, syncToken) {}
 
-  submitFrameDrawnIntoTexture(frameId, syncToken, timeWaited) {}
+  submitFrameDrawnIntoTexture(frameId, layer_ids, syncToken, timeWaited) {}
 
   // Utility methods
   _close() {

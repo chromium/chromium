@@ -144,84 +144,6 @@ TEST(PdfiumSearchifyTest, CalculateWordMoveMatrix) {
   }
 }
 
-TEST(PdfiumSearchifyTest, GetSpaceRect) {
-  // Horizontal, Left to Right.
-  {
-    gfx::Rect before(10, 10, 100, 10);
-    gfx::Rect after(120, 10, 50, 10);
-    gfx::Rect expected(110, 10, 10, 10);
-
-    EXPECT_EQ(GetSpaceRectForTesting(before, after), expected);
-  }
-
-  // Horizontal, Right To Left.
-  {
-    gfx::Rect before(120, 10, 50, 10);
-    gfx::Rect after(10, 10, 100, 10);
-    gfx::Rect expected(110, 10, 10, 10);
-
-    EXPECT_EQ(GetSpaceRectForTesting(before, after), expected);
-  }
-
-  // Vertical, Top to Bottom.
-  {
-    gfx::Rect before(10, 10, 10, 100);
-    gfx::Rect after(10, 120, 10, 50);
-    gfx::Rect expected(10, 110, 10, 10);
-
-    EXPECT_EQ(GetSpaceRectForTesting(before, after), expected);
-  }
-
-  // Vertical, Bottom to Top.
-  {
-    gfx::Rect before(10, 120, 10, 50);
-    gfx::Rect after(10, 10, 10, 100);
-    gfx::Rect expected(10, 110, 10, 10);
-
-    EXPECT_EQ(GetSpaceRectForTesting(before, after), expected);
-  }
-
-  // Empty rect.
-  {
-    gfx::Rect before(10, 10, 10, 10);
-    gfx::Rect after;
-
-    EXPECT_TRUE(GetSpaceRectForTesting(before, after).IsEmpty());
-  }
-
-  // Touching rects.
-  {
-    gfx::Rect before(10, 10, 10, 10);
-    gfx::Rect after(20, 10, 10, 10);
-
-    EXPECT_TRUE(GetSpaceRectForTesting(before, after).IsEmpty());
-  }
-
-  // Colliding rects.
-  {
-    gfx::Rect before(10, 10, 10, 10);
-    gfx::Rect after(15, 10, 10, 10);
-
-    EXPECT_TRUE(GetSpaceRectForTesting(before, after).IsEmpty());
-  }
-
-  // Covering rects, first in second.
-  {
-    gfx::Rect before(10, 10, 10, 10);
-    gfx::Rect after(0, 0, 20, 20);
-
-    EXPECT_TRUE(GetSpaceRectForTesting(before, after).IsEmpty());
-  }
-
-  // Covering rects, second in first.
-  {
-    gfx::Rect before(0, 0, 20, 20);
-    gfx::Rect after(10, 10, 10, 10);
-
-    EXPECT_TRUE(GetSpaceRectForTesting(before, after).IsEmpty());
-  }
-}
-
 TEST(PdfiumSearchifyTest, AddingSpaceRects) {
   // No words.
   {
@@ -237,13 +159,14 @@ TEST(PdfiumSearchifyTest, AddingSpaceRects) {
     words.emplace_back(screen_ai::mojom::WordBox::New());
     words.back()->word = "word1";
     words.back()->bounding_box = gfx::Rect(0, 0, 50, 10);
-    words.back()->has_space_after = true;
+    words.back()->whitespace_bounding_box = gfx::Rect(50, 0, 10, 10);
 
     std::vector<screen_ai::mojom::WordBox> words_and_spaces =
         GetWordsAndSpacesForTesting(words);
 
-    ASSERT_EQ(words_and_spaces.size(), 1u);
+    ASSERT_EQ(words_and_spaces.size(), 2u);
     EXPECT_EQ(words_and_spaces[0].word, words[0]->word);
+    EXPECT_EQ(words_and_spaces[1].word, " ");
   }
 
   // Two words with space between them.
@@ -252,12 +175,12 @@ TEST(PdfiumSearchifyTest, AddingSpaceRects) {
     words.emplace_back(screen_ai::mojom::WordBox::New());
     words.back()->word = "word1";
     words.back()->bounding_box = gfx::Rect(0, 0, 50, 10);
-    words.back()->has_space_after = true;
+    words.back()->whitespace_bounding_box = gfx::Rect(50, 0, 10, 10);
 
     words.emplace_back(screen_ai::mojom::WordBox::New());
     words.back()->word = "word2";
     words.back()->bounding_box = gfx::Rect(60, 0, 50, 10);
-    words.back()->has_space_after = false;
+    words.back()->whitespace_bounding_box = gfx::Rect(0, 0);
 
     std::vector<screen_ai::mojom::WordBox> words_and_spaces =
         GetWordsAndSpacesForTesting(words);
@@ -274,75 +197,12 @@ TEST(PdfiumSearchifyTest, AddingSpaceRects) {
     words.emplace_back(screen_ai::mojom::WordBox::New());
     words.back()->word = "word1";
     words.back()->bounding_box = gfx::Rect(0, 0, 50, 10);
-    words.back()->has_space_after = false;
+    words.back()->whitespace_bounding_box = gfx::Rect(0, 0);
 
     words.emplace_back(screen_ai::mojom::WordBox::New());
     words.back()->word = "word2";
     words.back()->bounding_box = gfx::Rect(60, 0, 50, 10);
-    words.back()->has_space_after = true;
-
-    std::vector<screen_ai::mojom::WordBox> words_and_spaces =
-        GetWordsAndSpacesForTesting(words);
-
-    ASSERT_EQ(words_and_spaces.size(), 2u);
-    EXPECT_EQ(words_and_spaces[0].word, words[0]->word);
-    EXPECT_EQ(words_and_spaces[1].word, words[1]->word);
-  }
-
-  // Two words with space between them and touching boundaries.
-  {
-    std::vector<screen_ai::mojom::WordBoxPtr> words;
-    words.emplace_back(screen_ai::mojom::WordBox::New());
-    words.back()->word = "word1";
-    words.back()->bounding_box = gfx::Rect(0, 0, 50, 10);
-    words.back()->has_space_after = true;
-
-    words.emplace_back(screen_ai::mojom::WordBox::New());
-    words.back()->word = "word2";
-    words.back()->bounding_box = gfx::Rect(50, 0, 50, 10);
-    words.back()->has_space_after = true;
-
-    std::vector<screen_ai::mojom::WordBox> words_and_spaces =
-        GetWordsAndSpacesForTesting(words);
-
-    ASSERT_EQ(words_and_spaces.size(), 2u);
-    EXPECT_EQ(words_and_spaces[0].word, words[0]->word);
-    EXPECT_EQ(words_and_spaces[1].word, words[1]->word);
-  }
-
-  // Two words with space between them, first one with empty bounding box.
-  {
-    std::vector<screen_ai::mojom::WordBoxPtr> words;
-    words.emplace_back(screen_ai::mojom::WordBox::New());
-    words.back()->word = "word1";
-    words.back()->bounding_box = gfx::Rect(0, 0, 0, 0);
-    words.back()->has_space_after = true;
-
-    words.emplace_back(screen_ai::mojom::WordBox::New());
-    words.back()->word = "word2";
-    words.back()->bounding_box = gfx::Rect(60, 0, 50, 10);
-    words.back()->has_space_after = false;
-
-    std::vector<screen_ai::mojom::WordBox> words_and_spaces =
-        GetWordsAndSpacesForTesting(words);
-
-    ASSERT_EQ(words_and_spaces.size(), 2u);
-    EXPECT_EQ(words_and_spaces[0].word, words[0]->word);
-    EXPECT_EQ(words_and_spaces[1].word, words[1]->word);
-  }
-
-  // Two words with space between them, second one with empty bounding box.
-  {
-    std::vector<screen_ai::mojom::WordBoxPtr> words;
-    words.emplace_back(screen_ai::mojom::WordBox::New());
-    words.back()->word = "word1";
-    words.back()->bounding_box = gfx::Rect(0, 0, 50, 10);
-    words.back()->has_space_after = true;
-
-    words.emplace_back(screen_ai::mojom::WordBox::New());
-    words.back()->word = "word2";
-    words.back()->bounding_box = gfx::Rect(0, 0, 0, 0);
-    words.back()->has_space_after = false;
+    words.back()->whitespace_bounding_box = gfx::Rect(0, 0);
 
     std::vector<screen_ai::mojom::WordBox> words_and_spaces =
         GetWordsAndSpacesForTesting(words);

@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -100,7 +101,7 @@ struct TestScenario {
       if (i > 0) {
         out << ", ";
       }
-      out << durations_in_ms[i];
+      out << UNSAFE_TODO(durations_in_ms[i]);
     }
     return out.str();
   }
@@ -129,9 +130,10 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario>,
     const base::TimeDelta frame_duration = audio_encoder_->GetFrameDuration();
 
     for (size_t i = 0; i < scenario.num_durations; ++i) {
-      const bool simulate_missing_data = scenario.durations_in_ms[i] < 0;
-      const base::TimeDelta duration =
-          base::Milliseconds(std::abs(scenario.durations_in_ms[i]));
+      const bool simulate_missing_data =
+          UNSAFE_TODO(scenario.durations_in_ms[i]) < 0;
+      const base::TimeDelta duration = base::Milliseconds(
+          std::abs(UNSAFE_TODO(scenario.durations_in_ms[i])));
       receiver_->SetCaptureTimeBounds(NowTicks() - frame_duration,
                                       NowTicks() + duration);
       if (!simulate_missing_data) {

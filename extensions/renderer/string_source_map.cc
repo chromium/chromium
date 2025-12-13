@@ -20,8 +20,9 @@ v8::Local<v8::String> StringSourceMap::GetSource(
     v8::Isolate* isolate,
     const std::string& name) const {
   const auto& iter = sources_.find(name);
-  if (iter == sources_.end())
+  if (iter == sources_.end()) {
     return v8::Local<v8::String>();
+  }
   return gin::StringToV8(isolate, iter->second);
 }
 
@@ -32,8 +33,8 @@ bool StringSourceMap::Contains(const std::string& name) const {
 void StringSourceMap::RegisterModule(const std::string& name,
                                      const std::string& source,
                                      bool gzipped) {
-  CHECK_EQ(0u, sources_.count(name)) << "A module for '" << name
-                                     << "' already exists.";
+  CHECK_EQ(0u, sources_.count(name))
+      << "A module for '" << name << "' already exists.";
   if (!gzipped) {
     sources_[name] = source;
     return;

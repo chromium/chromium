@@ -25,6 +25,7 @@
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/compositor_timing_history.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
@@ -68,6 +69,14 @@ Scheduler::Scheduler(
 
 Scheduler::~Scheduler() {
   SetBeginFrameSource(nullptr);
+}
+
+void Scheduler::TearDown() {
+  DCHECK(stopped_);
+
+  // CFRC is owned by the LayerTreeHostImpl, which gets destroyed before the
+  // scheduler. Must clear it to avoid a dangling ptr.
+  compositor_frame_reporting_controller_ = nullptr;
 }
 
 void Scheduler::Stop() {
@@ -190,7 +199,11 @@ void Scheduler::DidSubmitCompositorFrame(SubmitInfo& submit_info) {
 }
 
 void Scheduler::DidReceiveCompositorFrameAck() {
-  DCHECK_GT(state_machine_.pending_submit_frames(), 0);
+  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+    NOTREACHED();
+  } else {
+    DCHECK_GT(state_machine_.pending_submit_frames(), 0);
+  }
   state_machine_.DidReceiveCompositorFrameAck();
   ProcessScheduledActions();
 }
@@ -361,6 +374,7 @@ void Scheduler::OnBeginFrameSourcePausedChanged(bool paused) {
     TRACE_EVENT_INSTANT1("cc", "Scheduler::SetBeginFrameSourcePaused",
                          TRACE_EVENT_SCOPE_THREAD, "paused", paused);
     state_machine_.SetBeginFrameSourcePaused(paused);
+    client_->DidChangeBeginFrameSourcePaused(paused);
   }
   ProcessScheduledActions();
 }

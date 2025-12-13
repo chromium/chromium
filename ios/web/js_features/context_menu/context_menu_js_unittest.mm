@@ -32,7 +32,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
-// Request id used for __gCrWeb.findElementAtPoint call.
+// Request id used for `findElementAtPoint` call.
 const char kRequestId[] = "UNIQUE_IDENTIFIER";
 
 // The base url for loaded web pages.
@@ -194,8 +194,8 @@ NSString* ImageHtmlWithSource(std::string source) {
 
 namespace web {
 
-// Test fixture to test __gCrWeb.findElementAtPoint function defined in
-// context_menu.js.
+// Test fixture to test `findElementAtPoint` function defined in
+// main_frame_context_menu.ts.
 class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
  public:
   ContextMenuJsFindElementAtPointTest()
@@ -215,7 +215,6 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
 
     AddGCrWebScript();
     AddCommonScript();
-    AddMessageScript();
     AddUserScript(@"all_frames_context_menu");
     AddUserScript(@"main_frame_context_menu");
   }
@@ -305,12 +304,13 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
   // Returns the test page URL.
   NSURL* GetTestURL() { return net::NSURLWithGURL(GURL(kTestUrl)); }
 
-  // Executes __gCrWeb.findElementAtPoint script with the given `point` in the
+  // Executes `findElementAtPoint` script with the given `point` in the
   // web view viewport's coordinate space.
   id ExecuteFindElementFromPointJavaScript(CGPoint point) {
     CGFloat scale = web_view().scrollView.zoomScale;
     NSString* script = [NSString
-        stringWithFormat:@"__gCrWeb.contextMenu.findElementAtPoint('%"
+        stringWithFormat:@"__gCrWeb.getRegisteredApi('contextMenu')."
+                         @"getFunction('findElementAtPoint')('%"
                          @"s', %g, %g)",
                          kRequestId, point.x / scale, point.y / scale];
 
@@ -381,16 +381,18 @@ TEST_F(ContextMenuJsFindElementAtPointTest, ExtractSurroundingText) {
           elementId];
   ASSERT_TRUE(LoadHtml(html));
 
-  NSString* script = [NSString
-      stringWithFormat:
-          @"(function (){\n"
-          @"var range = document.createRange();\n"
-          @"var node = document.getElementById('%@').childNodes[0];\n"
-          @"range.setStart(node, 0);\n"
-          @"range.setEnd(node, 0);\n"
-          @"return __gCrWeb.contextMenuAllFrames.getSurroundingText(range);\n"
-          @"})();",
-          elementId];
+  NSString* script =
+      [NSString stringWithFormat:
+                    @"(function (){\n"
+                    @"var range = document.createRange();\n"
+                    @"var node = document.getElementById('%@').childNodes[0];\n"
+                    @"range.setStart(node, 0);\n"
+                    @"range.setEnd(node, 0);\n"
+                    @"return "
+                    @"__gCrWeb.getRegisteredApi('contextMenuAllFrames')."
+                    @"getFunction('getSurroundingText')(range);\n"
+                    @"})();",
+                    elementId];
 
   NSDictionary* body = web::test::ExecuteJavaScript(web_view(), script);
   ASSERT_TRUE(body);
@@ -815,7 +817,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, TextAreaStopsProximity) {
   CheckElementResult(kPointOnImage, expected_value);
 }
 
-// Tests that __gCrWeb.findElementAtPoint reports "never" as the referrer
+// Tests that `findElementAtPoint` reports "never" as the referrer
 // policy for pages that have an unsupported policy in a meta tag.
 // TODO(crbug.com/351951385): Fix the flakiness in this test and re-enable.
 TEST_F(ContextMenuJsFindElementAtPointTest,
@@ -833,7 +835,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   EXPECT_STREQ("never", policy->c_str());
 }
 
-// Tests that __gCrWeb.findElementAtPoint finds an element at the bottom of a
+// Tests that `findElementAtPoint` finds an element at the bottom of a
 // very long page.
 // TODO(crbug.com/40772520): Fix on iOS 15 and reenable. This test appears to
 // fail flakily if the webview is not in the view hierarchy.
@@ -870,7 +872,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, DISABLED_LinkOfTextFromTallPage) {
   CheckElementResult(CGPointMake(50.0, content_height - 100), expected_value);
 }
 
-// Tests that __gCrWeb.findElementAtPoint finds a link inside shadow DOM
+// Tests that `findElementAtPoint` finds a link inside shadow DOM
 // content.
 TEST_F(ContextMenuJsFindElementAtPointTest, ShadowDomLink) {
   const char link[] = "http://destination/";

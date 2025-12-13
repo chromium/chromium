@@ -23,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -47,7 +46,6 @@ public class IsReadyToPayServiceHelperTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private IBinder mBinderMock;
     @Spy private IsReadyToPayService.Default mServiceSpy;
 
     private boolean mErrorReceived;

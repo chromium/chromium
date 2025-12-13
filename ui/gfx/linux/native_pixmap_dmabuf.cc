@@ -11,7 +11,7 @@
 namespace gfx {
 
 NativePixmapDmaBuf::NativePixmapDmaBuf(const gfx::Size& size,
-                                       gfx::BufferFormat format,
+                                       viz::SharedImageFormat format,
                                        gfx::NativePixmapHandle handle)
     : size_(size), format_(format), handle_(std::move(handle)) {}
 
@@ -52,7 +52,7 @@ uint64_t NativePixmapDmaBuf::GetBufferFormatModifier() const {
   return handle_.modifier;
 }
 
-gfx::BufferFormat NativePixmapDmaBuf::GetBufferFormat() const {
+viz::SharedImageFormat NativePixmapDmaBuf::GetSharedImageFormat() const {
   return format_;
 }
 

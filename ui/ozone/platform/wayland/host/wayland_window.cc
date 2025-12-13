@@ -40,7 +40,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/common/features.h"
@@ -485,6 +485,11 @@ void WaylandWindow::OnChannelDestroyed() {
 void WaylandWindow::OnFontScaleFactorChanged() {
   CHECK(connection_->IsUiScaleEnabled());
   UpdateWindowScale(/*update_bounds=*/false);
+}
+
+void WaylandWindow::OnDisplayColorSpacesChanged(
+    scoped_refptr<gfx::DisplayColorSpacesRef> display_color_spaces) {
+  delegate_->OnDisplayColorSpacesChanged(std::move(display_color_spaces));
 }
 
 void WaylandWindow::DumpState(std::ostream& out) const {
@@ -941,7 +946,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   if (state.bounds_dip.IsEmpty()) {
     // If bounds are not specified, place the window on the appropriate display,
     // if supported.
-    auto* screen = display::Screen::GetScreen();
+    auto* screen = display::Screen::Get();
     DCHECK(screen) << "A TestScreen must be instantiated for tests creating "
                       "windows with no initial bounds.";
     state.bounds_dip = gfx::Rect({0, 0}, {1, 1});
@@ -1137,7 +1142,7 @@ bool WaylandWindow::CommitOverlays(
   }
 
   // Wayland submits from front to back. A simple reverse can avoid a full sort.
-  std::reverse(overlays.begin(), overlays.end());
+  std::ranges::reverse(overlays);
   if (!std::is_sorted(overlays.begin(), overlays.end(),
                       OverlayStackOrderCompare)) {
     // |overlays| is sorted from bottom to top.
@@ -1318,9 +1323,10 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
 
   // If we get a configure which is immediately applied and latched (meaning
   // that the configure does nothing), we will have immediately acked it, and we
-  // can immediately commit it. See crbug.com/340500574.
+  // can immediately commit it if the window is already mapped. See
+  // crbug.com/340500574.
   if (state == applied_state_ && state == latched_state_ &&
-      in_flight_requests_.empty()) {
+      in_flight_requests_.empty() && root_surface()->has_buffer()) {
     root_surface_->Commit(/*flush=*/true);
   }
 }

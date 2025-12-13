@@ -18,7 +18,7 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_consumer.h"
@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_suggestion_view.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -261,8 +260,9 @@ class FormSuggestionControllerTest
   void SetUp() override {
     PlatformTest::SetUp();
 
-    if (IsStateless()) {
-      scoped_feature_list_.InitAndEnableFeature(
+    if (!IsStateless()) {
+      scoped_feature_list_.InitAndDisableFeature(
+
           kStatelessFormSuggestionController);
     }
 
@@ -693,6 +693,69 @@ TEST_P(
   ASSERT_EQ(0, provider.pendingRequestsCount);
   ASSERT_EQ(1u, received_suggestions_.count);
 
+  // Verify that only the latest concurrent request is
+  // handled, so one request.
+  EXPECT_EQ(1, provider.askForSuggestionsCount);
+
+  // Briefly verify that the returned suggestion corresponds to what the
+  // provider provides.
+  FormSuggestion* suggestion = [received_suggestions_ objectAtIndex:0];
+  EXPECT_NSEQ(@"foo", suggestion.value);
+}
+
+// TODO(crbug.com/396159046): Make a variant of this test for the KA mediator
+// which also has its own logic for handling concurrent requests.
+// Tests that with dedupping disabled, concurrent requests can be handled when
+// suggestions are offered.
+TEST_P(
+    FormSuggestionControllerTest,
+    FormActivityShouldRetrieveSuggestions_SuggestionsAddedToAccessoryView_Concurrency_WithoutDedupping) {
+  base::test::ScopedFeatureList scoped_featurelist;
+  scoped_featurelist.InitAndDisableFeature(
+      kStatelessFormSuggestionControllerWithRequestDeduping);
+
+  autofill::FormActivityParams params;
+  params.form_name = "form";
+  params.field_identifier = "field_id";
+  params.field_type = "text";
+  params.type = "type";
+  params.value = "value";
+  params.input_missing = false;
+
+  AsyncTestSuggestionProvider* provider =
+      [[AsyncTestSuggestionProvider alloc] initWithSuggestions:@[]];
+
+  NSArray* suggestions = @[ [FormSuggestion
+              copy:[FormSuggestion
+                       suggestionWithValue:@"foo"
+                        displayDescription:nil
+                                      icon:nil
+                                      type:autofill::SuggestionType::
+                                               kAutocompleteEntry
+                                   payload:autofill::Suggestion::Payload()
+                            requiresReauth:NO]
+      andSetParams:params
+          provider:provider] ];
+  [provider setSuggestions:suggestions];
+
+  SetUpController(@[ provider ]);
+  GURL url("http://foo.com");
+  fake_web_state_.SetCurrentURL(url);
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
+
+  // Start 2 concurrent suggestions retrieval requests.
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  ASSERT_EQ(2, provider.pendingRequestsCount);
+
+  // Run the async requests that were dispatched.
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(0, provider.pendingRequestsCount);
+  ASSERT_EQ(1u, received_suggestions_.count);
+
   if (IsStateless()) {
     EXPECT_EQ(2, provider.askForSuggestionsCount);
   } else {
@@ -789,9 +852,6 @@ TEST_P(FormSuggestionControllerTest, AutofillSuggestionIPH) {
 
 // Tests that password generation suggestions always have an icon.
 TEST_P(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
-  base::test::ScopedFeatureList feature_list(
-      kIOSKeyboardAccessoryUpgradeForIPad);
-
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
 
   NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];
@@ -823,15 +883,6 @@ TEST_P(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
       suggestionWithValue:@""
        displayDescription:nil
                      icon:nil
-                     type:autofill::SuggestionType::kCreateNewPlusAddress
-                  payload:autofill::Suggestion::Payload()
-           requiresReauth:NO];
-  [suggestions addObject:suggestion];
-
-  suggestion = [FormSuggestion
-      suggestionWithValue:@""
-       displayDescription:nil
-                     icon:nil
                      type:autofill::SuggestionType::kFillExistingPlusAddress
                   payload:autofill::Suggestion::Payload()
            requiresReauth:NO];
@@ -841,7 +892,6 @@ TEST_P(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
       [suggestion_controller_ copyAndAdjustSuggestions:suggestions];
   EXPECT_EQ(adjusted_suggestions.count, suggestions.count);
   EXPECT_TRUE(adjusted_suggestions[0].icon);
-  EXPECT_TRUE(adjusted_suggestions[1].icon);
 }
 
 std::string ParamToString(const testing::TestParamInfo<bool>& params_info) {

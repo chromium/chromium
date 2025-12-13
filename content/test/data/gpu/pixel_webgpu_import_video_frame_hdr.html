@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>WebGPU importExternalTexture videoFrame test</title>
+  <style type="text/css">
+    .nomargin {
+      margin: 0px auto;
+    }
+  </style>
+  <script type="text/javascript" src="webcodecs/webcodecs_common.js"></script>
+  <script type="text/javascript">
+    var g_swapsBeforeAck = 15;
+
+    async function main() {
+      const gpuCanvas = document.getElementById('canvas_webgpu');
+      const [gpuDevice, gpuContext] = await webGpuUtilsForHdrVideoFrame.init(gpuCanvas);
+
+      if (!gpuDevice || !gpuContext) {
+        console.error("Failed to initialize WebGPU - skipping test");
+        domAutomationController.send("FAILURE");
+        return;
+      }
+
+      const urlSearchParams = new URLSearchParams(window.location.search);
+
+      let source = await createFrameSource(urlSearchParams.get("sourceType"), gpuCanvas.width, gpuCanvas.height);
+      if (!source) {
+        console.error("Cannot get valid video frame - skipping test");
+        domAutomationController.send("FAILURE");
+        return;
+      }
+
+      let frame = await source.getNextFrame();
+
+      const renderCallback = function () {
+        // The HDR VideoFrame will be rendered to a rgba8unorm WebGPU canvas by manually multiplying
+        // a value to make sure values are in SDR range, the brightest value in HDR VideoFrame is 10.0
+        // so that we multiply with 0.08, and the center part is expected to be 0xCCCCCCFF in SDR.
+        webGpuUtilsForHdrVideoFrame.importExternalTextureTest(gpuDevice, gpuContext, frame);
+        frame.close();
+        waitForFinish();
+      };
+
+      window.requestAnimationFrame(renderCallback);
+    }
+
+    function waitForFinish() {
+      if (g_swapsBeforeAck == 0) {
+        domAutomationController.send("SUCCESS");
+      } else {
+        g_swapsBeforeAck--;
+        window.requestAnimationFrame(waitForFinish);
+      }
+    }
+
+    const webGpuUtilsForHdrVideoFrame = function () {
+      const outputFormat = 'rgba8unorm';
+      const srgbLinearMaxValue = 10.0;
+
+      // Use shader to scale down HDR colors to fit in SDR range.
+      // The multiplier 0.8 is to make sure the brightest color in HDR video
+      // (which is 10.0 in linear space) is mapped to a value below 1.0 in
+      // sRGB space, so that we can test the value of Gold image to tell the
+      // HDR colors are preserved (scaled down by shader). 
+      const hdrColorMultiplier = 0.8 / srgbLinearMaxValue;
+
+      const wgslShader = `
+struct VertexOutput {
+    @builtin(position) position: vec4f,
+    @location(0) texCoord: vec2f
+};
+
+@vertex
+fn vertexMain(
+    @builtin(vertex_index) vertexIndex: u32
+) -> VertexOutput {
+    // Full-screen quad vertices
+    var pos: array<vec2f, 6> = array(
+        vec2f(-1.0, -1.0),  // Bottom-left
+        vec2f(1.0, -1.0),   // Bottom-right
+        vec2f(-1.0, 1.0),   // Top-left
+        vec2f(-1.0, 1.0),   // Top-left
+        vec2f(1.0, -1.0),   // Bottom-right
+        vec2f(1.0, 1.0)     // Top-right
+    );
+
+    // UV coordinates for texture mapping
+    var uv: array<vec2f, 6> = array(
+        vec2f(0.0, 1.0),
+        vec2f(1.0, 1.0),
+        vec2f(0.0, 0.0),
+        vec2f(0.0, 0.0),
+        vec2f(1.0, 1.0),
+        vec2f(1.0, 0.0)
+    );
+
+    var output: VertexOutput;
+    output.position = vec4f(pos[vertexIndex], 0.0, 1.0);
+    output.texCoord = uv[vertexIndex];
+
+    return output;
+}
+
+@group(0) @binding(0) var textureSampler: sampler;
+@group(0) @binding(1) var imageTexture: texture_external;
+
+@fragment
+fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
+    let c = textureSampleBaseClampToEdge(
+        imageTexture,
+        textureSampler,
+        input.texCoord
+    );
+    return vec4f(c.rgb * ${hdrColorMultiplier}, c.a);
+}
+`;
+
+      return {
+        init: async function (gpuCanvas, has_alpha = true) {
+          const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
+          if (!adapter) {
+            console.error('navigator.gpu && navigator.gpu.requestAdapter failed');
+            return null;
+          }
+
+          const device = await adapter.requestDevice();
+          if (!device) {
+            console.error('adapter.requestDevice() failed');
+            return null;
+          }
+
+          const context = gpuCanvas.getContext('webgpu');
+          if (!context) {
+            console.error('getContext(webgpu) failed');
+            return null;
+          }
+
+          context.configure({
+            device: device,
+            format: outputFormat,
+            usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC,
+            alphaMode: has_alpha ? "premultiplied" : "opaque",
+            colorSpace: 'srgb'
+          });
+
+          return [device, context];
+        },
+
+        importExternalTextureTest: function (
+          device, context, video) {
+          const shaderModule = device.createShaderModule({
+            code: wgslShader
+          });
+
+          const blitPipeline = device.createRenderPipeline({
+            layout: 'auto',
+            vertex: {
+              module: shaderModule,
+              entryPoint: "vertexMain"
+            },
+            fragment: {
+              module: shaderModule,
+              entryPoint: "fragmentMain",
+              targets: [{ format: outputFormat }]
+            },
+            primitive: {
+              topology: "triangle-list"
+            },
+          });
+
+          const sampler = device.createSampler({
+            magFilter: 'linear',
+            minFilter: 'linear',
+            addressModeU: 'clamp-to-edge',
+            addressModeV: 'clamp-to-edge'
+          });
+
+          const externalTextureDescriptor = {
+            source: video,
+            colorSpace: 'srgb-linear' // VideoFrame has HDR color space
+          };
+
+          const externalTexture =
+            device.importExternalTexture(externalTextureDescriptor);
+
+          const bindGroup = device.createBindGroup({
+            layout: blitPipeline.getBindGroupLayout(0),
+            entries: [
+              {
+                binding: 0,
+                resource: sampler,
+              },
+              {
+                binding: 1,
+                resource: externalTexture,
+              },
+            ],
+          });
+
+          const renderPassDescriptor = {
+            colorAttachments: [
+              {
+                view: context.getCurrentTexture().createView(),
+                loadOp: 'clear',
+                clearValue: { r: 0.0, g: 0.0, b: 0.0, a: 1.0 },
+                storeOp: 'store',
+              },
+            ],
+          };
+
+          const commandEncoder = device.createCommandEncoder();
+          const passEncoder =
+            commandEncoder.beginRenderPass(renderPassDescriptor);
+          passEncoder.setPipeline(blitPipeline);
+          passEncoder.setBindGroup(0, bindGroup);
+          passEncoder.draw(6, 1, 0, 0);
+          passEncoder.end();
+
+          device.queue.submit([commandEncoder.finish()]);
+        },
+      };
+    }();
+
+  </script>
+</head>
+
+<body onload="main()">
+  <canvas id="canvas_webgpu" width="200" height="200" class="nomargin"></canvas>
+</body>
+
+</html>

@@ -7,8 +7,8 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <variant>
 #include <vector>
@@ -193,6 +193,9 @@ class PageHandler : public DevToolsDomainHandler,
                                const Binary& data) override;
 
   Response SetPrerenderingAllowed(bool is_allowed) override;
+  void GetAnnotatedPageContent(
+      std::optional<bool> include_actionable_information,
+      std::unique_ptr<GetAnnotatedPageContentCallback> callback) override;
 
   Response AssureTopLevelActiveFrame();
 

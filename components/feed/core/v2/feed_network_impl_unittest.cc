@@ -268,7 +268,7 @@ class FeedNetworkTest : public testing::Test {
  protected:
   signin::IdentityTestEnvironment identity_test_env_;
   TestDelegate delegate_{&identity_test_env_};
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<FeedNetwork> feed_network_;
   RequestMetadata request_metadata_;
@@ -674,7 +674,7 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithAuthHeader) {
                                    GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
 
-  ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
+  ASSERT_EQ("www.newhost.com", GetPendingRequestURL().GetHost());
 
   response_headers_ = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(
@@ -695,9 +695,9 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithPath) {
                                    GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
 
-  ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
+  ASSERT_EQ("www.newhost.com", GetPendingRequestURL().GetHost());
   ASSERT_EQ("/testpath/httpservice/retry/TrellisClankService/FeedQuery",
-            GetPendingRequestURL().path());
+            GetPendingRequestURL().GetPath());
 }
 
 TEST_F(FeedNetworkTest, TestHostOverrideWithPathTrailingSlash) {
@@ -708,9 +708,9 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithPathTrailingSlash) {
                                    GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
 
-  ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
+  ASSERT_EQ("www.newhost.com", GetPendingRequestURL().GetHost());
   ASSERT_EQ("/testpath/httpservice/retry/TrellisClankService/FeedQuery",
-            GetPendingRequestURL().path());
+            GetPendingRequestURL().GetPath());
 }
 
 TEST_F(FeedNetworkTest, SendApiRequest_UploadActions) {

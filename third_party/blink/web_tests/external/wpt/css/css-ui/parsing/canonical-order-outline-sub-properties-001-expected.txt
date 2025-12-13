@@ -1,10 +1,10 @@
 This is a testharness.js-based test.
 [FAIL] testing outline: blue
-  assert_equals: expected "0px none rgb(0, 0, 255)" but got "rgb(0, 0, 255) none 0px"
+  assert_equals: expected "3px none rgb(0, 0, 255)" but got "rgb(0, 0, 255) none 3px"
 [FAIL] testing outline: invert
-  assert_equals: expected "0px none invert" but got "rgb(0, 0, 255) none 0px"
+  assert_equals: expected "3px none invert" but got "rgb(0, 0, 255) none 3px"
 [FAIL] testing outline: 4px
-  assert_equals: expected "0px none invert" but got "rgb(0, 0, 0) none 0px"
+  assert_equals: expected "4px none invert" but got "rgb(0, 0, 0) none 4px"
 [FAIL] testing outline: solid
   assert_equals: expected "3px solid invert" but got "rgb(0, 0, 0) solid 3px"
 [FAIL] testing outline: solid 5px
@@ -20,13 +20,13 @@ This is a testharness.js-based test.
 [FAIL] testing outline: invert solid
   assert_equals: expected "3px solid invert" but got "rgb(0, 0, 255) solid 3px"
 [FAIL] testing outline: black 4px
-  assert_equals: expected "0px none rgb(0, 0, 0)" but got "rgb(0, 0, 0) none 0px"
+  assert_equals: expected "4px none rgb(0, 0, 0)" but got "rgb(0, 0, 0) none 4px"
 [FAIL] testing outline: invert 4px
-  assert_equals: expected "0px none invert" but got "rgb(0, 0, 0) none 0px"
+  assert_equals: expected "4px none invert" but got "rgb(0, 0, 0) none 4px"
 [FAIL] testing outline: 5px blue
-  assert_equals: expected "0px none rgb(0, 0, 255)" but got "rgb(0, 0, 255) none 0px"
+  assert_equals: expected "5px none rgb(0, 0, 255)" but got "rgb(0, 0, 255) none 5px"
 [FAIL] testing outline: 5px invert
-  assert_equals: expected "0px none invert" but got "rgb(0, 0, 255) none 0px"
+  assert_equals: expected "5px none invert" but got "rgb(0, 0, 255) none 5px"
 [FAIL] testing outline: black solid 6px
   assert_equals: expected "6px solid rgb(0, 0, 0)" but got "rgb(0, 0, 0) solid 6px"
 [FAIL] testing outline: invert solid 6px

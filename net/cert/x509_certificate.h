@@ -14,6 +14,7 @@
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/hash_value.h"
@@ -157,7 +158,9 @@ class NET_EXPORT X509Certificate
   void Persist(base::Pickle* pickle) const;
 
   // The serial number, DER encoded, possibly including a leading 00 byte.
-  const std::string& serial_number() const { return parsed_.serial_number_; }
+  base::span<const uint8_t> serial_number() const {
+    return parsed_.serial_number_;
+  }
 
   // The subject of the certificate.  For HTTPS server certificates, this
   // represents the web server.  The common name of the subject should match
@@ -247,17 +250,26 @@ class NET_EXPORT X509Certificate
   // object.
   //
   // To access the CRYPTO_BUFFER's bytes, use `cert_span()` above.
-  CRYPTO_BUFFER* cert_buffer() const { return cert_buffer_.get(); }
+  CRYPTO_BUFFER* cert_buffer() const { return cert_buffers_.front().get(); }
 
   // Returns the associated intermediate certificates that were specified
   // during creation of this object, if any. The intermediates are not
   // guaranteed to be valid DER or to encode valid Certificate objects.
   // Ownership follows the "get" rule: it is the caller's responsibility to
   // retain the elements of the result.
-  const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>& intermediate_buffers()
+  const base::span<const bssl::UniquePtr<CRYPTO_BUFFER>> intermediate_buffers()
       const {
-    return intermediate_ca_certs_;
+    return base::span(cert_buffers_).subspan(1u);
   }
+
+  // Returns the full list of certificate buffers specified for this object.
+  // In other words, `cert_buffer()` followed by `intermediate_buffers()`.
+  const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>& cert_buffers() const {
+    return cert_buffers_;
+  }
+
+  // Returns a copy of the full list of certificate buffers.
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> CopyCertBuffers() const;
 
   // Creates all possible CRYPTO_BUFFERs from |data| encoded in a specific
   // |format|. Returns an empty collection on failure.
@@ -307,8 +319,9 @@ class NET_EXPORT X509Certificate
     // This certificate is not valid after |valid_expiry_|
     base::Time valid_expiry_;
 
-    // The serial number of this certificate, DER encoded.
-    std::string serial_number_;
+    // The serial number of this certificate, DER encoded. References data
+    // owned by `cert_buffer`.
+    base::raw_span<const uint8_t> serial_number_;
   };
 
   // Construct an X509Certificate from a CRYPTO_BUFFER containing the
@@ -335,15 +348,15 @@ class NET_EXPORT X509Certificate
                              const std::vector<std::string>& cert_san_dns_names,
                              const std::vector<std::string>& cert_san_ip_addrs);
 
-  // Fields that were parsed from |cert_buffer_|.
+  // Handles to the DER encoded certificate data.
+  // The first element is the certificate represented by this object with the
+  // following elements representing the intermediates/chain, if any.
+  const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_buffers_;
+
+  // Fields that were parsed from `cert_buffers_.front()`. Needs to be after
+  // `cert_buffers_` as it references data owned by that, and thus needs
+  // to be destroyed first.
   const ParsedFields parsed_;
-
-  // A handle to the DER encoded certificate data.
-  const bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer_;
-
-  // Untrusted intermediate certificates associated with this certificate
-  // that may be needed for chain building.
-  const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediate_ca_certs_;
 };
 
 }  // namespace net

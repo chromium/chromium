@@ -23,6 +23,19 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ContextualCueingCueType">
+  <variant name="" summary="All cues"/>
+  <variant name=".Dynamic" summary="Cues that are contextual to the page"/>
+  <variant name=".Static" summary="Static cues"/>
+</variants>
+
+<variants name="ContextualCueingGlicSuggestionsEngagementType">
+  <variant name="" summary="All requests"/>
+  <variant name=".FRE" summary="When suggestions are fetched for the FRE"/>
+  <variant name=".Reengagement"
+      summary="When suggestions are fetched for reengagement"/>
+</variants>
+
 <!-- LINT.IfChange(OptType) -->
 
 <variants name="ContextualCueingOptimizationType">
@@ -31,21 +44,32 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_helper.cc:OptType) -->
 
-<histogram name="ContextualCueing.GlicSuggestions.MesFetchLatency" units="ms"
-    expires_after="2025-11-16">
-  <owner>zekunjiang@google.com</owner>
-  <owner>rajendrant@google.com</owner>
+<histogram
+    name="ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions"
+    enum="Boolean" expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Recorded every time a request for suggestions for focused tab is requested.
+    Records whether the page type of the focused tab is eligible for contextual
+    suggestions.
+  </summary>
+</histogram>
+
+<histogram name="ContextualCueing.GlicSuggestions.MesFetchLatency" units="ms"
+    expires_after="2026-05-24">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
   <summary>
     Recorded every time a suggestion response is received from Model Execution
-    Service. Records the amount of time it takes to receivd the response, from
+    Service. Records the amount of time it takes to receive the response, from
     when the corresponding suggestion request is sent.
   </summary>
 </histogram>
 
 <histogram
     name="ContextualCueing.GlicSuggestions.PageContextFetchlatency.{PageContextType}"
-    units="ms" expires_after="2025-11-16">
+    units="ms" expires_after="2026-05-24">
   <owner>zekunjiang@google.com</owner>
   <owner>rajendrant@google.com</owner>
   <owner>sophiechang@chromium.org</owner>
@@ -67,15 +91,42 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ContextualCueing.GlicSuggestions.SuggestionsFetchLatency.{ResultType}"
-    units="ms" expires_after="2025-11-16">
-  <owner>zekunjiang@google.com</owner>
-  <owner>rajendrant@google.com</owner>
+    name="ContextualCueing.GlicSuggestions.PageContextIneligibilityReason{EngagementType}"
+    enum="ContextualCueingZeroStateSuggestionsPageContextIneligibilityType"
+    expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Recorded every time a request for Glic suggestions is made. Records the
+    reason for why the page context for the request may have been ineligible.
+    The histogram is split by engagement type (FRE v. reengagement).
+  </summary>
+  <token key="EngagementType"
+      variants="ContextualCueingGlicSuggestionsEngagementType"/>
+</histogram>
+
+<histogram
+    name="ContextualCueing.GlicSuggestions.PinnedTabsEligibleForSuggestions"
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Recorded every time a request for suggestions for pinned tabs is requested.
+    Records whether the request is eligible for contextual suggestions based on
+    the page types of all pinned tabs.
+  </summary>
+</histogram>
+
+<histogram
+    name="ContextualCueing.GlicSuggestions.SuggestionsFetchLatency.{ResultType}{EngagementType}"
+    units="ms" expires_after="2026-05-24">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
   <summary>
     Recorded every time something is returned as a result of invoking the
     suggestions fetch API. The results are split by the type of results returned
-    (e.g. results with no suggestions vs results with valid suggestions).
+    (e.g. results with no suggestions vs results with valid suggestions) and
+    engagement type (FRE v reengagement).
   </summary>
   <token key="ResultType">
     <variant name="EmptySuggestions"
@@ -85,13 +136,15 @@ chromium-metrics-reviews@google.com.
         summary="When valid suggestions are returned as a result of a
                  suggestions fetch"/>
   </token>
+  <token key="EngagementType"
+      variants="ContextualCueingGlicSuggestionsEngagementType"/>
 </histogram>
 
 <histogram
     name="ContextualCueing.NudgeDecision.{ContextualCueingOptimizationType}"
-    enum="ContextualCueingNudgeDecision" expires_after="2026-01-04">
+    enum="ContextualCueingNudgeDecision" expires_after="2026-05-10">
   <owner>sophiechang@chromium.org</owner>
-  <owner>rajendrant@google.com</owner>
+  <owner>zekunjiang@google.com</owner>
   <summary>
     The nudge decision for {ContextualCueingOptimizationType}. Recorded once per
     page load when the document has loaded.
@@ -100,14 +153,15 @@ chromium-metrics-reviews@google.com.
       variants="ContextualCueingOptimizationType"/>
 </histogram>
 
-<histogram name="ContextualCueing.NudgeInteraction"
-    enum="ContextualCueingNudgeInteraction" expires_after="2026-01-04">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>rajendrant@google.com</owner>
+<histogram name="ContextualCueing.NudgeInteraction{CueType}"
+    enum="ContextualCueingNudgeInteraction" expires_after="2026-05-10">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
   <summary>
     The user interaction for a Contextual Cueing Nudge. Recorded when a user is
     shown or interacts with a contextual nudge.
   </summary>
+  <token key="CueType" variants="ContextualCueingCueType"/>
 </histogram>
 
 </histograms>

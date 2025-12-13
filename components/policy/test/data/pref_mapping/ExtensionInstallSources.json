@@ -5,7 +5,7 @@
       "linux",
       "mac",
       "chromeos",
-      "fuchsia"
+      "desktop_android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "extensions.allowed_install_sites",

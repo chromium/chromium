@@ -12,8 +12,8 @@ static_library("cryptauth") {
     "client_app_metadata_provider_service.h",
     "client_app_metadata_provider_service_factory.cc",
     "client_app_metadata_provider_service_factory.h",
-    "cryptauth_device_id_provider_impl.cc",
-    "cryptauth_device_id_provider_impl.h",
+    "cryptauth_device_id_provider.cc",
+    "cryptauth_device_id_provider.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

@@ -30,46 +30,15 @@
 
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/worker_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 
 namespace blink {
 
-WorkerGlobalScopePerformance::WorkerGlobalScopePerformance(
-    WorkerGlobalScope& worker_global_scope)
-    : Supplement<WorkerGlobalScope>(worker_global_scope) {}
-
-const char WorkerGlobalScopePerformance::kSupplementName[] =
-    "WorkerGlobalScopePerformance";
-
-WorkerGlobalScopePerformance& WorkerGlobalScopePerformance::From(
-    WorkerGlobalScope& worker_global_scope) {
-  WorkerGlobalScopePerformance* supplement =
-      Supplement<WorkerGlobalScope>::From<WorkerGlobalScopePerformance>(
-          worker_global_scope);
-  if (!supplement) {
-    supplement =
-        MakeGarbageCollected<WorkerGlobalScopePerformance>(worker_global_scope);
-    ProvideTo(worker_global_scope, supplement);
-  }
-  return *supplement;
-}
-
 WorkerPerformance* WorkerGlobalScopePerformance::performance(
     WorkerGlobalScope& worker_global_scope) {
-  return From(worker_global_scope).performance(&worker_global_scope);
-}
-
-WorkerPerformance* WorkerGlobalScopePerformance::performance(
-    WorkerGlobalScope* worker_global_scope) {
-  if (!performance_)
-    performance_ = MakeGarbageCollected<WorkerPerformance>(worker_global_scope);
-  return performance_.Get();
-}
-
-void WorkerGlobalScopePerformance::Trace(Visitor* visitor) const {
-  visitor->Trace(performance_);
-  Supplement<WorkerGlobalScope>::Trace(visitor);
+  return GlobalPerformance::performance(worker_global_scope);
 }
 
 }  // namespace blink

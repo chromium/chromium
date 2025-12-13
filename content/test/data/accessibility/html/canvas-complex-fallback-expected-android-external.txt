@@ -5,7 +5,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++++TextView text:"\n    " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++++View viewIdResName:"container" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++++++TextView text:"\n      " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++++++TextView text:"Here we list the contents:" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++++++TextView text:"Here we list the contents:" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
 ++++++++TextView text:"\n      " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++++++ListView CollectionInfo:[rows=3, cols=1] actions:[AX_FOCUS] bundle:[chromeRole="list"]
 ++++++++++TextView text:"\n        " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

@@ -29,7 +29,6 @@ class GPU_IPC_SERVICE_EXPORT RasterCommandBufferStub final
   // CommandBufferStub current, so the GpuChannel can initialize
   // the gpu::Capabilities.
   gpu::ContextResult Initialize(
-      CommandBufferStub* share_group,
       const mojom::CreateCommandBufferParams& init_params,
       base::UnsafeSharedMemoryRegion shared_state_shm) override;
   MemoryTracker* GetContextGroupMemoryTracker() const override;

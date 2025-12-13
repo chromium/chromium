@@ -28,10 +28,6 @@
 #include <tuple>
 
 #include "build/build_config.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -48,7 +44,6 @@
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_event.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_voice.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {
 
@@ -103,29 +98,7 @@ void SpeechSynthesis::OnSetVoiceList(
 const HeapVector<Member<SpeechSynthesisVoice>>& SpeechSynthesis::getVoices() {
   // Kick off initialization here to ensure voice list gets populated.
   std::ignore = TryEnsureMojomSynthesis();
-  RecordVoicesForIdentifiability();
   return voice_list_;
-}
-
-void SpeechSynthesis::RecordVoicesForIdentifiability() const {
-  constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
-      IdentifiableSurface::Type::kWebFeature,
-      WebFeature::kSpeechSynthesis_GetVoices_Method);
-  if (!IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface))
-    return;
-  if (!GetSupplementable()->GetFrame())
-    return;
-
-  IdentifiableTokenBuilder builder;
-  for (const auto& voice : voice_list_) {
-    builder.AddToken(IdentifiabilityBenignStringToken(voice->voiceURI()));
-    builder.AddToken(IdentifiabilityBenignStringToken(voice->lang()));
-    builder.AddToken(IdentifiabilityBenignStringToken(voice->name()));
-    builder.AddToken(voice->localService());
-  }
-  IdentifiabilityMetricBuilder(GetSupplementable()->UkmSourceID())
-      .Add(surface, builder.GetToken())
-      .Record(GetSupplementable()->UkmRecorder());
 }
 
 bool SpeechSynthesis::Speaking() const {
@@ -169,7 +142,8 @@ void SpeechSynthesis::speak(ScriptState* script_state,
     Deprecation::CountDeprecation(
         GetSupplementable(),
         WebFeature::kTextToSpeech_SpeakDisallowedByAutoplay);
-    FireErrorEvent(utterance, 0 /* char_index */, "not-allowed");
+    FireErrorEvent(utterance, 0 /* char_index */,
+                   V8SpeechSynthesisErrorCode::Enum::kNotAllowed);
     return;
   }
 
@@ -290,9 +264,6 @@ void SpeechSynthesis::HandleSpeakingCompleted(
 
   // https://wicg.github.io/speech-api/#speechsynthesiserrorevent-attributes
   // The below errors are matched with SpeechSynthesisErrorCode values.
-  static constexpr char kErrorCanceled[] = "canceled";
-  static constexpr char kErrorInterrupted[] = "interrupted";
-  static constexpr char kErrorSynthesisFailed[] = "synthesis-failed";
 
   // Always fire the event, because the platform may have asynchronously
   // sent an event on an utterance before it got the message that we
@@ -300,15 +271,17 @@ void SpeechSynthesis::HandleSpeakingCompleted(
   // happened.
   switch (error_code) {
     case mojom::blink::SpeechSynthesisErrorCode::kInterrupted:
-      FireErrorEvent(utterance, 0, kErrorInterrupted);
+      FireErrorEvent(utterance, 0,
+                     V8SpeechSynthesisErrorCode::Enum::kInterrupted);
       break;
     case mojom::blink::SpeechSynthesisErrorCode::kCancelled:
-      FireErrorEvent(utterance, 0, kErrorCanceled);
+      FireErrorEvent(utterance, 0, V8SpeechSynthesisErrorCode::Enum::kCanceled);
       break;
     case mojom::blink::SpeechSynthesisErrorCode::kErrorOccurred:
       // TODO(csharrison): Actually pass the correct message. For now just use a
       // generic error.
-      FireErrorEvent(utterance, 0, kErrorSynthesisFailed);
+      FireErrorEvent(utterance, 0,
+                     V8SpeechSynthesisErrorCode::Enum::kSynthesisFailed);
       break;
     case mojom::blink::SpeechSynthesisErrorCode::kNoError:
       FireEvent(event_type_names::kEnd, utterance, 0, 0, String());
@@ -340,7 +313,7 @@ void SpeechSynthesis::FireEvent(const AtomicString& type,
 
 void SpeechSynthesis::FireErrorEvent(SpeechSynthesisUtterance* utterance,
                                      uint32_t char_index,
-                                     const String& error) {
+                                     V8SpeechSynthesisErrorCode::Enum error) {
   double millis;
   if (!GetElapsedTimeMillis(&millis))
     return;

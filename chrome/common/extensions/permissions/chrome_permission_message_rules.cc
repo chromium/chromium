@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

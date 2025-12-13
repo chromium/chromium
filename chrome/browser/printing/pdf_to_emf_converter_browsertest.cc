@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/printing/pdf_to_emf_converter.h"
 
 #include <windows.h>
@@ -30,6 +25,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "crypto/hash.h"
 #include "printing/emf_win.h"
 #include "printing/metafile.h"
 #include "printing/pdf_render_settings.h"
@@ -112,9 +108,8 @@ void CompareEmfHeaders(const ENHMETAHEADER& expected_header,
   EXPECT_EQ(expected_header.bOpenGL, actual_header.bOpenGL);
 }
 
-std::string HashData(const char* data, size_t len) {
-  return base::HexEncode(
-      base::SHA1Hash(base::span(reinterpret_cast<const uint8_t*>(data), len)));
+std::string HashData(base::span<const uint8_t> data) {
+  return base::HexEncode(crypto::hash::Sha256(data));
 }
 
 class PdfToEmfConverterBrowserTest
@@ -215,9 +210,10 @@ class PdfToEmfConverterBrowserTest
     ASSERT_EQ(expected_current_emf_data_.size(),
               actual_current_emf_data_.size());
     ASSERT_GT(expected_current_emf_data_.size(), kHeaderSize);
-    size_t size = expected_current_emf_data_.size() - kHeaderSize;
-    EXPECT_EQ(HashData(expected_current_emf_data_.data() + kHeaderSize, size),
-              HashData(actual_current_emf_data_.data() + kHeaderSize, size));
+    auto expected_span = base::as_byte_span(expected_current_emf_data_);
+    auto actual_span = base::as_byte_span(actual_current_emf_data_);
+    EXPECT_EQ(HashData(expected_span.subspan(kHeaderSize)),
+              HashData(actual_span.subspan(kHeaderSize)));
   }
 
  private:

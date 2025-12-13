@@ -28,14 +28,9 @@ BASE_DECLARE_FEATURE(kJourneysImages);
 // Enables images to cover the full container for Journeys in UI.
 extern const base::FeatureParam<bool> kJourneysImagesCover;
 
-// Enables the Journeys Omnibox Action chip. `kJourneys` must also be enabled
-// for this to take effect.
-BASE_DECLARE_FEATURE(kOmniboxAction);
-
 // Enables the `HistoryClusterProvider` to surface Journeys as a suggestion row
-// instead of an action chip. Enabling this won't actually disable
-// `kOmniboxAction` but for user experiments, the intent is to only have 1
-// enabled. `kJourneys` must also be enabled for this to take effect.
+// instead of an action chip. `kJourneys` must also be enabled for this to take
+// effect.
 BASE_DECLARE_FEATURE(kOmniboxHistoryClusterProvider);
 
 // Enables debug info in non-user-visible surfaces, like Chrome Inspector.
@@ -48,9 +43,6 @@ BASE_DECLARE_FEATURE(kUserVisibleDebug);
 
 // Enables the history clusters internals page.
 BASE_DECLARE_FEATURE(kHistoryClustersInternalsPage);
-
-// Enables use of additional keyword filtering operations on clusters.
-BASE_DECLARE_FEATURE(kHistoryClustersKeywordFiltering);
 
 // Enables experimentation for how to dedupe visits in clusters.
 BASE_DECLARE_FEATURE(kHistoryClustersVisitDeduping);

@@ -18,8 +18,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
@@ -85,10 +83,7 @@ class VideoConferenceAshfeatureClientTest : public InProcessBrowserTest {
 
   // Returns current VideoConferenceMediaState in the VideoConferenceManagerAsh
   VideoConferenceMediaState GetMediaStateInVideoConferenceManagerAsh() {
-    return crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->video_conference_manager_ash()
-        ->GetAggregatedState();
+    return ash::VideoConferenceManagerAsh::Get()->GetAggregatedState();
   }
 
  protected:
@@ -238,18 +233,12 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAshfeatureClientTest,
                        HandleDeviceUsedWhileDisabled) {
   // Notify disabling state of camera and microphone from
   // video_conference_manager_ash.
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->SetSystemMediaDeviceStatus(
-          crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-          /*disabled=*/true);
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->SetSystemMediaDeviceStatus(
-          crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-          /*disabled=*/true);
+  ash::VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+      /*enabled=*/false);
+  ash::VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+      /*enabled=*/false);
 
   FakeVideoConferenceTrayController* fake_try_controller =
       static_cast<FakeVideoConferenceTrayController*>(

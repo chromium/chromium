@@ -7,8 +7,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/history_embeddings/history_embeddings_features.h"
-#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/history_query_intent.pb.h"
@@ -18,7 +18,7 @@ namespace history_embeddings {
 
 namespace {
 
-using optimization_guide::MockOptimizationGuideModelExecutor;
+using optimization_guide::MockOnDeviceCapability;
 using optimization_guide::MockSession;
 using optimization_guide::
     OptimizationGuideModelExecutionResultStreamingCallback;
@@ -74,16 +74,15 @@ class MockClassifierSession : public MockSession {
   Any any_metadata_;
 };
 
-class MockExecutor : public MockOptimizationGuideModelExecutor {
+class MockExecutor : public MockOnDeviceCapability {
  public:
-  MockExecutor() {
-  }
+  MockExecutor() {}
 };
 
 class HistoryEmbeddingsMlIntentClassifierTest : public testing::Test {
  public:
   void SetUp() override {
-    ON_CALL(executor_, StartSession(_, _)).WillByDefault([&] {
+    ON_CALL(executor_, StartSession(_, _, _)).WillByDefault([&] {
       return std::make_unique<NiceMock<MockSession>>(&session_);
     });
   }
@@ -131,8 +130,8 @@ TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ExecutionFails) {
 }
 
 TEST_F(HistoryEmbeddingsMlIntentClassifierTest, FailToCreateSession) {
-  MockOptimizationGuideModelExecutor executor;
-  EXPECT_CALL(executor, StartSession(_, _)).WillRepeatedly([] {
+  MockOnDeviceCapability executor;
+  EXPECT_CALL(executor, StartSession(_, _, _)).WillRepeatedly([] {
     return nullptr;
   });
   MlIntentClassifier intent_classifier(&executor);
@@ -152,9 +151,9 @@ TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ScoreTrue) {
 
   // Above threshold.
   ON_CALL(session_, Score(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
-                  callback) { std::move(callback).Run(0.6); })));
+                  callback) { std::move(callback).Run(0.6); }));
 
   MlIntentClassifier intent_classifier(&executor_);
   {
@@ -174,9 +173,9 @@ TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ScoreFalse) {
 
   // below threshold.
   ON_CALL(session_, Score(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
-                  callback) { std::move(callback).Run(0.4); })));
+                  callback) { std::move(callback).Run(0.4); }));
 
   MlIntentClassifier intent_classifier(&executor_);
   {
@@ -196,9 +195,9 @@ TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ScoreFailure) {
 
   // Null score
   ON_CALL(session_, Score(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
-                  callback) { std::move(callback).Run(std::nullopt); })));
+                  callback) { std::move(callback).Run(std::nullopt); }));
 
   MlIntentClassifier intent_classifier(&executor_);
   {

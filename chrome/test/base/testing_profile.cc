@@ -51,6 +51,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
@@ -64,6 +65,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile_key.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
@@ -101,7 +103,6 @@
 #include "content/public/browser/cookie_store_factory.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "content/public/test/test_utils.h"
@@ -121,15 +122,17 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_prefs_observer.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/switches.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "components/guest_view/browser/guest_view_manager.h"
-#include "extensions/browser/extension_system.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -254,7 +257,6 @@ TestingProfile::TestingProfile(
       prefs_(std::move(prefs)),
       original_profile_(parent),
       guest_session_(guest_session),
-      allows_browser_windows_(allows_browser_windows),
       is_new_profile_(is_new_profile),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       extension_special_storage_policy_(extension_policy),
@@ -266,6 +268,7 @@ TestingProfile::TestingProfile(
           override_policy_connector_is_managed),
       policy_service_(std::move(policy_service)),
       url_loader_factory_(url_loader_factory) {
+  set_allows_browser_windows_for_testing(allows_browser_windows);
 #if BUILDFLAG(IS_CHROMEOS)
   user_cloud_policy_manager_ = std::move(policy_manager);
 #else
@@ -353,7 +356,7 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  signin::SetUpMockAccountManagerFacade();
+  signin::SetUpFakeAccountManagerFacade();
 #endif
 
   // Normally this would happen during browser startup, but for tests
@@ -579,10 +582,6 @@ void TestingProfile::SetIsNewProfile(bool is_new_profile) {
   is_new_profile_ = is_new_profile;
 }
 
-base::FilePath TestingProfile::GetPath() {
-  return profile_path_;
-}
-
 base::FilePath TestingProfile::GetPath() const {
   return profile_path_;
 }
@@ -704,10 +703,6 @@ bool TestingProfile::IsChild() const {
   return supervised_user::IsSubjectToParentalControls(*GetPrefs());
 }
 
-bool TestingProfile::AllowsBrowserWindows() const {
-  return allows_browser_windows_;
-}
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void TestingProfile::SetExtensionSpecialStoragePolicy(
     scoped_refptr<ExtensionSpecialStoragePolicy>
@@ -738,7 +733,8 @@ void TestingProfile::CreateTestingPrefService() {
       /*managed_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       /*supervised_user_prefs=*/
       supervised_user::CreateTestingPrefStore(
-          SupervisedUserSettingsServiceFactory::GetForKey(key_.get())),
+          SupervisedUserSettingsServiceFactory::GetForKey(key_.get()),
+          SupervisedUserContentFiltersServiceFactory::GetForKey(key_.get())),
       /*extension_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       /*user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       /*recommended_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
@@ -760,8 +756,8 @@ void TestingProfile::CreateIncognitoPrefService() {
 }
 
 void TestingProfile::CreateProfilePolicyConnector() {
-  schema_registry_service_ =
-      BuildSchemaRegistryServiceForProfile(this, policy::Schema(), nullptr);
+  schema_registry_service_ = BuildSchemaRegistryServiceForProfile(
+      this, policy::Schema(), policy::Schema(), nullptr);
 
   if (!policy_service_) {
     std::vector<

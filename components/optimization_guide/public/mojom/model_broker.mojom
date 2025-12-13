@@ -7,24 +7,18 @@ module optimization_guide.mojom;
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
 
-enum ModelBasedCapabilityKey {
-  kCompose = 1,
-  kTabOrganization = 2,
-  kWallpaperSearch = 3,
-  kTest = 4,
-  kTextSafety = 5,
-  kPromptApi = 6,
-  kHistorySearch = 7,
-  kSummarize = 8,
-  kHistoryQueryIntent = 12,
-  kBlingPrototyping = 13,
-  kPasswordChangeSubmission = 14,
-  kScamDetection = 15,
-  kPermissionsAi = 17,
-  kWritingAssistanceApi = 18,
-  kFormsClassifications = 20,
-  kEnhancedCalendar = 23,
-  kZeroStateSuggestions = 24,
+enum OnDeviceFeature {
+  kCompose,
+  kTest,
+  kPromptApi,
+  kHistorySearch,
+  kSummarize,
+  kHistoryQueryIntent,
+  kScamDetection,
+  kPermissionsAi,
+  kWritingAssistanceApi,
+  kOnDeviceSpeechRecognition,
+  kProofreaderApi,
 };
 
 // Describes how a particular set of models can be used to implement a
@@ -43,15 +37,14 @@ interface ModelSolution {
   // Creates a session for the language model described by the
   // ModelSolutionConfig. The session receiver will be bound in the ODM
   // process.
-  CreateSession(
-    pending_receiver<on_device_model.mojom.Session> session,
-    on_device_model.mojom.SessionParams params);
+  CreateSession(pending_receiver<on_device_model.mojom.Session> session,
+                on_device_model.mojom.SessionParams params);
 
   // Creates a session for the text-safety model described by the
   // ModelSolutionConfig. The session receiver will be bound in the ODM
   // process.
   CreateTextSafetySession(
-    pending_receiver<on_device_model.mojom.TextSafetySession> session);
+      pending_receiver<on_device_model.mojom.TextSafetySession> session);
 
   // Report to the broker that model execution worked correctly.
   ReportHealthyCompletion();
@@ -69,9 +62,9 @@ enum ModelUnavailableReason {
   kPendingUsage = 4,
 };
 
-// A consumer that needs to the current configs and models for some model based
-// capability. The receiver end may be held by any process, the remote will be
-// in the browser process.
+// A consumer that needs to the current configs and models for some feature.
+// The receiver end may be held by any process, the remote will be in the
+// browser process.
 interface ModelSubscriber {
   // Indicates that a model solution is currently unavailable and whether it is
   // expected to become available. A disconnect may be sent shortly if the
@@ -82,20 +75,19 @@ interface ModelSubscriber {
   // how to use it. The solution may still become unavailable later or be
   // replaced with a different solution.
   Available(
-    ModelSolutionConfig config, pending_remote<ModelSolution> capability);
+      ModelSolutionConfig config, pending_remote<ModelSolution> solution);
 };
 
 // Options for ModelBroker::Subscribe
 struct ModelSubscriptionOptions {
-  ModelBasedCapabilityKey id;
+  OnDeviceFeature feature;
   bool mark_used;
 };
 
 // Broker for using the on-device models. The remote end may be held by any
 // process, the receiver should be in the browser process.
 interface ModelBroker {
-  // Starts listening for models that provide the requested capability.
-  Subscribe(
-    ModelSubscriptionOptions opts,
-    pending_remote<ModelSubscriber> client);
+  // Starts listening for models that provide the requested feature.
+  Subscribe(ModelSubscriptionOptions options,
+            pending_remote<ModelSubscriber> subcriber);
 };

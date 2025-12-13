@@ -22,15 +22,14 @@
 namespace autofill {
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaIntArray;
 
-void JNI_AutofillProvider_Init(JNIEnv* env,
-                               const JavaParamRef<jobject>& jcaller,
-                               const JavaParamRef<jobject>& jweb_contents) {
+static void JNI_AutofillProvider_Init(JNIEnv* env,
+                                      const JavaRef<jobject>& jcaller,
+                                      const JavaRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 
@@ -199,14 +198,14 @@ void AndroidAutofillProviderBridgeImpl::OnFormSubmitted(
                                         static_cast<int>(submission_source));
 }
 
-void AndroidAutofillProviderBridgeImpl::OnDidFillAutofillFormData() {
+void AndroidAutofillProviderBridgeImpl::OnDidAutofillForm() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null()) {
     return;
   }
 
-  Java_AutofillProvider_onDidFillAutofillFormData(env, obj);
+  Java_AutofillProvider_onDidAutofillForm(env, obj);
 }
 
 void AndroidAutofillProviderBridgeImpl::CancelSession() {
@@ -271,3 +270,5 @@ void AndroidAutofillProviderBridgeImpl::OnTriggerPasskeyRequest(JNIEnv* env) {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillProvider)

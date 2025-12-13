@@ -54,7 +54,9 @@ class PasskeyCredential {
                     Username username = Username(""),
                     DisplayName display_name = DisplayName(""),
                     // Must be provided for kAndroidPhone credentials.
-                    std::optional<base::Time> creation_time = std::nullopt);
+                    std::optional<base::Time> creation_time = std::nullopt,
+                    std::optional<base::Time> last_used_time = std::nullopt,
+                    bool hidden = false);
   ~PasskeyCredential();
 
   PasskeyCredential(const PasskeyCredential&);
@@ -80,6 +82,10 @@ class PasskeyCredential {
   const std::optional<base::Time>& creation_time() const {
     return creation_time_;
   }
+  const std::optional<base::Time>& last_used_time() const {
+    return last_used_time_;
+  }
+  bool hidden() const { return hidden_; }
 
  private:
   std::u16string GetAuthenticatorLabelBySourceType() const;
@@ -116,6 +122,14 @@ class PasskeyCredential {
   // The time when the credential was created. Used for display in management
   // UIs. This value is not available for passkeys from some sources.
   std::optional<base::Time> creation_time_;
+
+  // The time when the credential was last used, when known.
+  std::optional<base::Time> last_used_time_;
+
+  // Indicates that the credential was marked for deletion (e.g. by a website)
+  // and should be marked as such in management surfaces and hidden from
+  // authentication surfaces.
+  bool hidden_ = false;
 };
 
 bool operator==(const PasskeyCredential& lhs, const PasskeyCredential& rhs);

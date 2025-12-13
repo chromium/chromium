@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/win/audio_manager_win.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 
 namespace media {

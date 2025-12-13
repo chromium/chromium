@@ -17,7 +17,6 @@ class MockDesktopViewManager : public DesktopViewManagerInterface {
   MockDesktopViewManager();
   ~MockDesktopViewManager() override;
 
-  MOCK_METHOD(NavigationHandler*, GetNavigationHandler, (), (override));
   MOCK_METHOD(void,
               HandleChromeOwnedPageNavigation,
               (BrowserWindowInterface* browser_interface),
@@ -29,9 +28,6 @@ class MockDesktopViewManager : public DesktopViewManagerInterface {
               (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
-
- private:
-  std::unique_ptr<NavigationHandler> test_navigation_handler_;
 };
 
 }  // namespace privacy_sandbox

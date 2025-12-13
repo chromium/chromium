@@ -11,7 +11,6 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/sequence_id.h"
-#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/command_buffer_id.h"
@@ -21,6 +20,7 @@ class SyncPointManager;
 class SharedImageManager;
 struct GpuFeatureInfo;
 struct GpuPreferences;
+class SharedContextState;
 
 // This class holds ownership of data structure that is only used on the gpu
 // thread. This class is expected to be 1:1 relationship with the display

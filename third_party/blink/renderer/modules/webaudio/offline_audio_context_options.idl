@@ -7,4 +7,5 @@ dictionary OfflineAudioContextOptions {
     unsigned long numberOfChannels = 1;
     required unsigned long length;
     required float sampleRate;
+    [RuntimeEnabled=WebAudioConfigurableRenderQuantum] (AudioContextRenderSizeCategory or unsigned long) renderSizeHint = "default";
 };

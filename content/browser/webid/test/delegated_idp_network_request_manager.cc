@@ -42,13 +42,13 @@ void DelegatedIdpNetworkRequestManager::FetchClientMetadata(
                                  std::move(callback));
 }
 
-void DelegatedIdpNetworkRequestManager::SendAccountsRequest(
+bool DelegatedIdpNetworkRequestManager::SendAccountsRequest(
     const url::Origin& idp_origin,
     const GURL& accounts_url,
     const std::string& client_id,
     AccountsRequestCallback callback) {
-  delegate_->SendAccountsRequest(idp_origin, accounts_url, client_id,
-                                 std::move(callback));
+  return delegate_->SendAccountsRequest(idp_origin, accounts_url, client_id,
+                                        std::move(callback));
 }
 
 void DelegatedIdpNetworkRequestManager::SendTokenRequest(
@@ -80,7 +80,7 @@ void DelegatedIdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
 void DelegatedIdpNetworkRequestManager::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
     bool did_show_ui,
-    MetricsEndpointErrorCode error_code) {
+    webid::MetricsEndpointErrorCode error_code) {
   delegate_->SendFailedTokenRequestMetrics(metrics_endpoint_url, did_show_ui,
                                            error_code);
 }

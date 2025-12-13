@@ -8,8 +8,6 @@ assert(is_android)
 
 source_set("fast_checkout") {
   sources = [
-    "fast_checkout_accessibility_service.h",
-    "fast_checkout_accessibility_service_impl.h",
     "fast_checkout_capabilities_fetcher.h",
     "fast_checkout_capabilities_fetcher_factory.h",
     "fast_checkout_capabilities_fetcher_impl.h",
@@ -34,7 +32,6 @@ source_set("fast_checkout") {
 
 source_set("impl") {
   sources = [
-    "fast_checkout_accessibility_service_impl.cc",
     "fast_checkout_capabilities_fetcher_factory.cc",
     "fast_checkout_capabilities_fetcher_impl.cc",
     "fast_checkout_client_impl.cc",
@@ -78,7 +75,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "fast_checkout_accessibility_service_impl_unittest.cc",
     "fast_checkout_capabilities_fetcher_impl_unittest.cc",
     "fast_checkout_client_impl_unittest.cc",
     "fast_checkout_delegate_impl_unittest.cc",
@@ -96,7 +92,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/browser:test_support",
-    "//components/unified_consent:unified_consent",
+    "//components/unified_consent",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

@@ -11,17 +11,16 @@
 
 #import "base/containers/circular_deque.h"
 #import "base/memory/raw_ptr.h"
+#import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_metrics.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_observer.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/web_state_observer.h"
 
-class PrerenderService;
 class SessionRestorationService;
 class WebStateList;
 
@@ -31,8 +30,7 @@ class WebState;
 
 // Reports usage about the lifecycle of a single Browser's tabs.
 class TabUsageRecorderBrowserAgent
-    : public BrowserObserver,
-      public BrowserUserData<TabUsageRecorderBrowserAgent>,
+    : public BrowserUserData<TabUsageRecorderBrowserAgent>,
       public web::WebStateObserver,
       public WebStateListObserver,
       public SessionRestorationObserver {
@@ -103,9 +101,6 @@ class TabUsageRecorderBrowserAgent
   friend class BrowserUserData<TabUsageRecorderBrowserAgent>;
 
   explicit TabUsageRecorderBrowserAgent(Browser* browser);
-
-  // BrowserObserver methods
-  void BrowserDestroyed(Browser* browser) override;
 
   // Clear out all state regarding a current evicted tab.
   void ResetEvictedTab();
@@ -200,16 +195,17 @@ class TabUsageRecorderBrowserAgent
   std::map<web::WebState*, tab_usage_recorder::TabStateWhenSelected>
       evicted_web_states_;
 
-  // The WebStateList containing all the monitored tabs.
-  raw_ptr<WebStateList> web_state_list_;  // weak
-
-  // The PrerenderService used to check whether a tab is pre-rendering. May
-  // be null during unit testing.
-  raw_ptr<PrerenderService> prerender_service_;
+  // Observation for WebStateList.
+  base::ScopedObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
 
   // Observation for SessionRestorationService events.
   base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
       session_restoration_service_observation_{this};
+
+  // Observation of the WebStates.
+  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
+      web_state_observations_{this};
 
   // Observers for NSNotificationCenter notifications.
   __strong id<NSObject> application_backgrounding_observer_;

@@ -59,8 +59,6 @@ kidsmanagement::ListMembersResponse CreateFamilyWithOneMember(
 }
 }  // namespace
 
-// TODO(b/280772872): Integrate AsyncURLChecker to test
-// supervised_user::SupervisedUserURLFilter::WebFilterType::kTryToBlockMatureSites.
 class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
     : public testing::TestWithParam<supervised_user::WebFilterType> {
  public:
@@ -92,9 +90,7 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
   std::string GetFeedbackValue(std::string feedback_tag) {
     const base::android::JavaRef<jstring>& j_value =
         Java_FamilyInfoFeedbackSourceTestBridge_getValue(
-            env_,
-            base::android::JavaParamRef<jobject>(env_,
-                                                 j_feedback_source_.obj()),
+            env_, j_feedback_source_,
             base::android::ConvertUTF8ToJavaString(env_, feedback_tag));
     return base::android::ConvertJavaStringToUTF8(env_, j_value);
   }
@@ -108,9 +104,8 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
   // Creates a new instance of FamilyInfoFeedbackSource that is destroyed on
   // completion of OnGetFamilyMembers* methods.
   base::WeakPtr<FamilyInfoFeedbackSource> CreateFamilyInfoFeedbackSource() {
-    FamilyInfoFeedbackSource* source = new FamilyInfoFeedbackSource(
-        base::android::JavaParamRef<jobject>(env_, j_feedback_source_.obj()),
-        profile_.get());
+    FamilyInfoFeedbackSource* source =
+        new FamilyInfoFeedbackSource(j_feedback_source_, profile_.get());
     return source->weak_factory_.GetWeakPtr();
   }
 
@@ -223,9 +218,7 @@ class FamilyInfoFeedbackSourceTest
   std::string GetFeedbackValue() {
     const base::android::JavaRef<jstring>& j_value =
         Java_FamilyInfoFeedbackSourceTestBridge_getValue(
-            env_,
-            base::android::JavaParamRef<jobject>(env_,
-                                                 j_feedback_source_.obj()),
+            env_, j_feedback_source_,
             base::android::ConvertUTF8ToJavaString(
                 env_, supervised_user::kFamilyMemberRoleFeedbackTag));
     return base::android::ConvertJavaStringToUTF8(env_, j_value);
@@ -248,9 +241,8 @@ class FamilyInfoFeedbackSourceTest
   // Creates a new instance of FamilyInfoFeedbackSource that is destroyed on
   // completion of OnGetFamilyMembers* methods.
   base::WeakPtr<FamilyInfoFeedbackSource> CreateFamilyInfoFeedbackSource() {
-    FamilyInfoFeedbackSource* source = new FamilyInfoFeedbackSource(
-        base::android::JavaParamRef<jobject>(env_, j_feedback_source_.obj()),
-        profile_.get());
+    FamilyInfoFeedbackSource* source =
+        new FamilyInfoFeedbackSource(j_feedback_source_, profile_.get());
     return source->weak_factory_.GetWeakPtr();
   }
 
@@ -368,3 +360,5 @@ INSTANTIATE_TEST_SUITE_P(AllFamilyMemberRoles,
                                            kidsmanagement::PARENT));
 
 }  // namespace chrome::android
+
+DEFINE_JNI(FamilyInfoFeedbackSourceTestBridge)

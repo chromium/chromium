@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.UrlSimilarityScorer.MatchResult;
@@ -32,8 +33,9 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
             Profile profile,
             NativePageHost host,
             TabModelSelector tabModelSelector,
-            Tab tab) {
-        super(activity, profile, host, tabModelSelector, tab);
+            Tab tab,
+            MultiInstanceManager multiInstanceManager) {
+        super(activity, profile, host, tabModelSelector, tab, multiInstanceManager);
     }
 
     /**
@@ -47,7 +49,7 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
         LoadUrlParams loadUrlParams = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
         if (inGroup) {
             assert windowOpenDisposition != WindowOpenDisposition.NEW_WINDOW
-                    : "Tabs in groups cannot be opened in a new window.";
+                    : "Tabs in groups cannot be opened in another window.";
             openUrlInGroup(windowOpenDisposition, loadUrlParams);
         } else {
             openUrl(windowOpenDisposition, loadUrlParams);

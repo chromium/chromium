@@ -18,6 +18,8 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
@@ -36,6 +38,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -49,6 +52,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/cookies/cookie_change_dispatcher.h"
@@ -63,12 +67,13 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/signin/internal/identity_manager/test_profile_oauth2_token_service_delegate_chromeos.h"
 #endif
 
 namespace signin {
 namespace {
+
+using ::testing::IsEmpty;
 
 // Subclass of FakeOAuth2AccessTokenManager with bespoke behavior.
 class CustomFakeOAuth2AccessTokenManager : public FakeOAuth2AccessTokenManager {
@@ -177,8 +182,8 @@ class TestIdentityManagerDiagnosticsObserver
   const CoreAccountId& token_requestor_account_id() {
     return token_requestor_account_id_;
   }
-  const std::string& token_requestor_consumer_id() {
-    return token_requestor_consumer_id_;
+  const std::string& token_requestor_consumer_name() {
+    return token_requestor_consumer_name_;
   }
   const ScopeSet& token_requestor_scopes() { return token_requestor_scopes_; }
   const CoreAccountId& token_remover_account_id() {
@@ -201,10 +206,10 @@ class TestIdentityManagerDiagnosticsObserver
  private:
   // IdentityManager::DiagnosticsObserver:
   void OnAccessTokenRequested(const CoreAccountId& account_id,
-                              const std::string& consumer_id,
+                              const std::string& consumer_name,
                               const ScopeSet& scopes) override {
     token_requestor_account_id_ = account_id;
-    token_requestor_consumer_id_ = consumer_id;
+    token_requestor_consumer_name_ = consumer_name;
     token_requestor_scopes_ = scopes;
 
     if (on_access_token_requested_callback_) {
@@ -237,7 +242,7 @@ class TestIdentityManagerDiagnosticsObserver
   base::OnceClosure on_access_token_requested_callback_;
   base::OnceClosure on_access_token_request_completed_callback_;
   CoreAccountId token_requestor_account_id_;
-  std::string token_requestor_consumer_id_;
+  std::string token_requestor_consumer_name_;
   CoreAccountId token_remover_account_id_;
   ScopeSet token_requestor_scopes_;
   ScopeSet token_remover_scopes_;
@@ -254,8 +259,6 @@ class IdentityManagerTest : public testing::Test {
   IdentityManagerTest(const IdentityManagerTest&) = delete;
   IdentityManagerTest& operator=(const IdentityManagerTest&) = delete;
 
-  const std::string kTestConsumerId = "dummy_consumer";
-  const std::string kTestConsumerId2 = "dummy_consumer 2";
   const GaiaId kTestGaiaId = GaiaId("dummyId");
   const GaiaId kTestGaiaId2 = GaiaId("dummyId2");
   const GaiaId kTestGaiaId3 = GaiaId("dummyId3");
@@ -365,25 +368,15 @@ class IdentityManagerTest : public testing::Test {
             &test_url_loader_factory_));
     ash_account_manager->SetPrefService(&pref_service_);
 
-    auto* ash_account_manager_mojo_service =
-        GetAccountManagerFactory()->GetAccountManagerMojoService(
+    auto* account_manager_facade =
+        GetAccountManagerFactory()->GetAccountManagerFacade(
             temp_profile_dir_.GetPath().value());
-
-    mojo::Remote<crosapi::mojom::AccountManager> remote;
-    ash_account_manager_mojo_service->BindReceiver(
-        remote.BindNewPipeAndPassReceiver());
-    account_manager_facade_ =
-        std::make_unique<account_manager::AccountManagerFacadeImpl>(
-            std::move(remote),
-            /*remote_version=*/std::numeric_limits<uint32_t>::max(),
-            /*account_manager_for_tests=*/
-            ash_account_manager->GetWeakPtr());
 
     auto token_service = std::make_unique<CustomFakeProfileOAuth2TokenService>(
         &pref_service_,
         std::make_unique<TestProfileOAuth2TokenServiceDelegateChromeOS>(
             &signin_client_, account_tracker_service.get(),
-            ash_account_manager_mojo_service,
+            account_manager_facade,
             /*is_regular_profile=*/true));
 #else
     auto token_service =
@@ -447,7 +440,7 @@ class IdentityManagerTest : public testing::Test {
         primary_account_manager.get(), &pref_service_);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-    init_params.account_manager_facade = account_manager_facade_.get();
+    init_params.account_manager_facade = account_manager_facade;
 #endif
     init_params.signin_client = &signin_client_;
     init_params.account_fetcher_service = std::move(account_fetcher_service);
@@ -507,8 +500,6 @@ class IdentityManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 #if BUILDFLAG(IS_CHROMEOS)
   ash::AccountManagerFactory account_manager_factory_;
-  std::unique_ptr<account_manager::AccountManagerFacadeImpl>
-      account_manager_facade_;
 #endif
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -1169,6 +1160,66 @@ TEST_F(IdentityManagerTest,
                 ->ErrorFromErrorStateOfRefreshTokenUpdatedCallback());
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(IdentityManagerTest,
+       GetWrappedBindingKeyReturnsEmptyVectorIfNoAccountIsBound) {
+  // Set a refresh token for the primary account.
+  SetRefreshTokenForAccount(
+      identity_manager(),
+      identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
+      "refresh_token_1");
+  // Add a secondary account and set a refresh token for it.
+  account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
+  SetRefreshTokenForAccount(
+      identity_manager(),
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id,
+      "refresh_token_2");
+
+  EXPECT_THAT(identity_manager()->GetWrappedBindingKey(), IsEmpty());
+}
+
+TEST_F(IdentityManagerTest,
+       GetWrappedBindingKeyReturnsTheWrappedBindingKeyOfThePrimaryAccount) {
+  const std::vector<uint8_t> primary_account_wrapped_binding_key = {1, 2, 3};
+  // Set a refresh token for the primary account.
+  SetRefreshTokenForAccount(
+      identity_manager(),
+      identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
+      "refresh_token_1", primary_account_wrapped_binding_key);
+  // Add a secondary account and set a refresh token for it.
+  account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
+  // NOTE: This should NOT happen in production as all accounts are supposed to
+  // use the same wrapped binding key.
+  const std::vector<uint8_t> secondary_account_wrapped_binding_key = {4, 5, 6};
+  SetRefreshTokenForAccount(
+      identity_manager(),
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id,
+      "refresh_token_2", secondary_account_wrapped_binding_key);
+
+  EXPECT_EQ(identity_manager()->GetWrappedBindingKey(),
+            primary_account_wrapped_binding_key);
+}
+
+TEST_F(IdentityManagerTest,
+       GetWrappedBindingKeyReturnsTheWrappedBindingKeyOfTheSecondaryAccount) {
+  // Set a refresh token for the primary account.
+  SetRefreshTokenForAccount(
+      identity_manager(),
+      identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
+      "refresh_token_1");
+  // Add a secondary account and set a refresh token for it.
+  account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
+  const std::vector<uint8_t> secondary_account_wrapped_binding_key = {1, 2, 3};
+  SetRefreshTokenForAccount(
+      identity_manager(),
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id,
+      "refresh_token_2", secondary_account_wrapped_binding_key);
+
+  EXPECT_EQ(identity_manager()->GetWrappedBindingKey(),
+            secondary_account_wrapped_binding_key);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 TEST_F(IdentityManagerTest, GetErrorStateOfRefreshTokenForAccount) {
   CoreAccountInfo primary_account_info =
       identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
@@ -1281,7 +1332,6 @@ TEST_F(IdentityManagerTest, GetErrorStateOfRefreshTokenForAccount) {
 }
 
 TEST_F(IdentityManagerTest, RemoveAccessTokenFromCache) {
-  std::set<std::string> scopes{"scope"};
   std::string access_token = "access_token";
 
   identity_manager()->GetAccountTrackerService()->SeedAccountInfo(kTestGaiaId,
@@ -1293,11 +1343,12 @@ TEST_F(IdentityManagerTest, RemoveAccessTokenFromCache) {
                             "refresh_token");
 
   base::RunLoop run_loop;
+  ScopeSet scopes = {GaiaConstants::kChromeSyncOAuth2Scope};
   token_service()->set_on_access_token_invalidated_info(
       primary_account_id(), scopes, access_token, run_loop.QuitClosure());
 
-  identity_manager()->RemoveAccessTokenFromCache(primary_account_id(), scopes,
-                                                 access_token);
+  identity_manager()->RemoveAccessTokenFromCache(
+      primary_account_id(), signin::OAuthConsumerId::kSync, access_token);
 
   run_loop.Run();
 
@@ -1311,13 +1362,12 @@ TEST_F(IdentityManagerTest, RemoveAccessTokenFromCache) {
 }
 
 TEST_F(IdentityManagerTest, CreateAccessTokenFetcher) {
-  std::set<std::string> scopes{"scope"};
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
       [](GoogleServiceAuthError error, AccessTokenInfo access_token_info) {});
   std::unique_ptr<AccessTokenFetcher> token_fetcher =
       identity_manager()->CreateAccessTokenFetcherForAccount(
           identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync),
-          kTestConsumerId, scopes, std::move(callback),
+          signin::OAuthConsumerId::kSync, std::move(callback),
           AccessTokenFetcher::Mode::kImmediate);
   EXPECT_TRUE(token_fetcher);
 }
@@ -1336,7 +1386,6 @@ TEST_F(IdentityManagerTest,
   SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
                             "refresh_token");
 
-  std::set<std::string> scopes{"scope"};
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
       [](GoogleServiceAuthError error, AccessTokenInfo access_token_info) {});
 
@@ -1348,8 +1397,9 @@ TEST_F(IdentityManagerTest,
           &test_url_loader_factory));
   std::unique_ptr<AccessTokenFetcher> token_fetcher =
       identity_manager()->CreateAccessTokenFetcherForAccount(
-          primary_account_id(), kTestConsumerId, test_shared_url_loader_factory,
-          scopes, std::move(callback), AccessTokenFetcher::Mode::kImmediate);
+          primary_account_id(), signin::OAuthConsumerId::kSync,
+          test_shared_url_loader_factory, std::move(callback),
+          AccessTokenFetcher::Mode::kImmediate);
 
   run_loop.Run();
 
@@ -1366,8 +1416,8 @@ TEST_F(IdentityManagerTest,
       primary_account_id(),
       identity_manager_diagnostics_observer()->token_requestor_account_id());
   EXPECT_EQ(
-      kTestConsumerId,
-      identity_manager_diagnostics_observer()->token_requestor_consumer_id());
+      "sync",
+      identity_manager_diagnostics_observer()->token_requestor_consumer_name());
 
   // Cancel the pending request in preparation to check that creating an
   // AccessTokenFetcher without a custom factory works as expected as well.
@@ -1386,12 +1436,11 @@ TEST_F(IdentityManagerTest,
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id;
   SetRefreshTokenForAccount(identity_manager(), account_id2, "refresh_token");
 
-  // No changes to the declared scopes, we can reuse it.
   callback = base::BindOnce(
       [](GoogleServiceAuthError error, AccessTokenInfo access_token_info) {});
   std::unique_ptr<AccessTokenFetcher> token_fetcher2 =
       identity_manager()->CreateAccessTokenFetcherForAccount(
-          account_id2, kTestConsumerId2, scopes, std::move(callback),
+          account_id2, signin::OAuthConsumerId::kSync, std::move(callback),
           AccessTokenFetcher::Mode::kImmediate);
 
   run_loop2.Run();
@@ -1413,8 +1462,8 @@ TEST_F(IdentityManagerTest,
       account_id2,
       identity_manager_diagnostics_observer()->token_requestor_account_id());
   EXPECT_EQ(
-      kTestConsumerId2,
-      identity_manager_diagnostics_observer()->token_requestor_consumer_id());
+      "sync",
+      identity_manager_diagnostics_observer()->token_requestor_consumer_name());
 }
 
 TEST_F(IdentityManagerTest, ObserveAccessTokenFetch) {
@@ -1430,13 +1479,12 @@ TEST_F(IdentityManagerTest, ObserveAccessTokenFetch) {
   SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
                             "refresh_token");
 
-  std::set<std::string> scopes{"scope"};
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
       [](GoogleServiceAuthError error, AccessTokenInfo access_token_info) {});
   std::unique_ptr<AccessTokenFetcher> token_fetcher =
       identity_manager()->CreateAccessTokenFetcherForAccount(
           identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync),
-          kTestConsumerId, scopes, std::move(callback),
+          signin::OAuthConsumerId::kSync, std::move(callback),
           AccessTokenFetcher::Mode::kImmediate);
 
   run_loop.Run();
@@ -1445,9 +1493,9 @@ TEST_F(IdentityManagerTest, ObserveAccessTokenFetch) {
       primary_account_id(),
       identity_manager_diagnostics_observer()->token_requestor_account_id());
   EXPECT_EQ(
-      kTestConsumerId,
-      identity_manager_diagnostics_observer()->token_requestor_consumer_id());
-  EXPECT_EQ(scopes,
+      "sync",
+      identity_manager_diagnostics_observer()->token_requestor_consumer_name());
+  EXPECT_EQ(ScopeSet({GaiaConstants::kChromeSyncOAuth2Scope}),
             identity_manager_diagnostics_observer()->token_requestor_scopes());
 }
 
@@ -1457,14 +1505,13 @@ TEST_F(IdentityManagerTest,
   identity_manager_diagnostics_observer()
       ->set_on_access_token_request_completed_callback(run_loop.QuitClosure());
 
-  std::set<std::string> scopes{"scope"};
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
       [](GoogleServiceAuthError error, AccessTokenInfo access_token_info) {});
   // Account has no refresh token.
   std::unique_ptr<AccessTokenFetcher> token_fetcher =
       identity_manager()->CreateAccessTokenFetcherForAccount(
           identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync),
-          kTestConsumerId, scopes, std::move(callback),
+          signin::OAuthConsumerId::kSync, std::move(callback),
           AccessTokenFetcher::Mode::kImmediate);
 
   run_loop.Run();
@@ -1477,6 +1524,7 @@ TEST_F(IdentityManagerTest,
 
 TEST_F(IdentityManagerTest,
        ObserveAccessTokenRequestCompletionWithRefreshToken) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   identity_manager_diagnostics_observer()
       ->set_on_access_token_request_completed_callback(run_loop.QuitClosure());
@@ -1490,14 +1538,13 @@ TEST_F(IdentityManagerTest,
                             "refresh_token");
   token_service()->set_auto_post_fetch_response_on_message_loop(true);
 
-  std::set<std::string> scopes{"scope"};
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
       [](GoogleServiceAuthError error, AccessTokenInfo access_token_info) {});
   // This should result in a request for an access token without an error.
   std::unique_ptr<AccessTokenFetcher> token_fetcher =
       identity_manager()->CreateAccessTokenFetcherForAccount(
           identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync),
-          kTestConsumerId, scopes, std::move(callback),
+          signin::OAuthConsumerId::kSync, std::move(callback),
           AccessTokenFetcher::Mode::kImmediate);
 
   run_loop.Run();
@@ -1506,18 +1553,20 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(primary_account_id(),
             identity_manager_diagnostics_observer()
                 ->on_access_token_request_completed_account_id());
-  EXPECT_EQ(kTestConsumerId,
+  EXPECT_EQ("sync", identity_manager_diagnostics_observer()
+                        ->on_access_token_request_completed_consumer_id());
+  EXPECT_EQ(ScopeSet({GaiaConstants::kChromeSyncOAuth2Scope}),
             identity_manager_diagnostics_observer()
-                ->on_access_token_request_completed_consumer_id());
-  EXPECT_EQ(scopes, identity_manager_diagnostics_observer()
-                        ->on_access_token_request_completed_scopes());
+                ->on_access_token_request_completed_scopes());
   EXPECT_EQ(GoogleServiceAuthError(GoogleServiceAuthError::NONE),
             identity_manager_diagnostics_observer()
                 ->on_access_token_request_completed_error());
+  histogram_tester.ExpectUniqueSample("Signin.AccessTokenFetch.Success", 0, 1);
 }
 
 TEST_F(IdentityManagerTest,
        ObserveAccessTokenRequestCompletionAfterRevokingRefreshToken) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   identity_manager_diagnostics_observer()
       ->set_on_access_token_request_completed_callback(run_loop.QuitClosure());
@@ -1527,13 +1576,12 @@ TEST_F(IdentityManagerTest,
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id;
   SetRefreshTokenForAccount(identity_manager(), account_id2, "refresh_token");
 
-  std::set<std::string> scopes{"scope"};
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
       [](GoogleServiceAuthError error, AccessTokenInfo access_token_info) {});
   // This should result in a request for an access token.
   std::unique_ptr<AccessTokenFetcher> token_fetcher =
       identity_manager()->CreateAccessTokenFetcherForAccount(
-          account_id2, kTestConsumerId2, scopes, std::move(callback),
+          account_id2, signin::OAuthConsumerId::kSync, std::move(callback),
           AccessTokenFetcher::Mode::kImmediate);
 
   // Revoke the refresh token result cancelling access token request.
@@ -1545,6 +1593,8 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP),
             identity_manager_diagnostics_observer()
                 ->on_access_token_request_completed_error());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccessTokenFetch.Failure.UserNotSignedUp", 0, 1);
 }
 
 TEST_F(IdentityManagerTest, GetAccountsCookieMutator) {
@@ -2176,6 +2226,16 @@ TEST_F(IdentityManagerTest,
             identity_manager_observer()->BatchChangeRecords().at(0).at(0));
 }
 
+// Verifies that passing an empty access token does not crash.
+TEST_F(IdentityManagerTest, RevokeEmptyAccessToken) {
+  account_tracker()->SeedAccountInfo(kTestGaiaId, kTestEmail);
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      primary_account_id(), ConsentLevel::kSync,
+      signin_metrics::AccessPoint::kUnknown);
+  identity_manager()->RemoveAccessTokenFromCache(
+      primary_account_id(), signin::OAuthConsumerId::kSync, std::string());
+}
+
 // Check that FindExtendedAccountInfo returns a valid account info iff the
 // account is known, and all the extended information is available.
 TEST_F(IdentityManagerTest, FindExtendedAccountInfo) {
@@ -2198,12 +2258,8 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfo) {
       account_tracker()->SeedAccountInfo(account_info.gaia, account_info.email);
   ASSERT_EQ(account_info.account_id, account_id);
 
-  // The refresh token is not available.
-  EXPECT_TRUE(
-      identity_manager()->FindExtendedAccountInfo(account_info).IsEmpty());
-
   // FindExtendedAccountInfo() returns extended account information if the
-  // account is known and the token is available.
+  // account is known.
   SetRefreshTokenForAccount(identity_manager(), account_info.account_id,
                             "token");
   const AccountInfo extended_account_info =
@@ -2229,16 +2285,9 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfoByAccountId) {
           account_info.account_id);
   EXPECT_TRUE(maybe_account_info.IsEmpty());
 
-  // Refresh token is not available.
+  // Account is known.
   const CoreAccountId account_id =
       account_tracker()->SeedAccountInfo(account_info.gaia, account_info.email);
-  maybe_account_info = identity_manager()->FindExtendedAccountInfoByAccountId(
-      account_info.account_id);
-  EXPECT_TRUE(maybe_account_info.IsEmpty());
-
-  // Account with refresh token.
-  SetRefreshTokenForAccount(identity_manager(), account_info.account_id,
-                            "token");
   maybe_account_info = identity_manager()->FindExtendedAccountInfoByAccountId(
       account_info.account_id);
   EXPECT_FALSE(maybe_account_info.IsEmpty());
@@ -2262,17 +2311,9 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfoByEmailAddress) {
           account_info.email);
   EXPECT_TRUE(maybe_account_info.IsEmpty());
 
-  // Refresh token is not available.
+  // Account is known.
   const CoreAccountId account_id =
       account_tracker()->SeedAccountInfo(account_info.gaia, account_info.email);
-  maybe_account_info =
-      identity_manager()->FindExtendedAccountInfoByEmailAddress(
-          account_info.email);
-  EXPECT_TRUE(maybe_account_info.IsEmpty());
-
-  // Account with refresh token.
-  SetRefreshTokenForAccount(identity_manager(), account_info.account_id,
-                            "token");
   maybe_account_info =
       identity_manager()->FindExtendedAccountInfoByEmailAddress(
           account_info.email);
@@ -2296,16 +2337,9 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfoByGaiaId) {
       identity_manager()->FindExtendedAccountInfoByGaiaId(account_info.gaia);
   EXPECT_TRUE(maybe_account_info.IsEmpty());
 
-  // Refresh token is not available.
+  // Account is known.
   const CoreAccountId account_id =
       account_tracker()->SeedAccountInfo(account_info.gaia, account_info.email);
-  maybe_account_info =
-      identity_manager()->FindExtendedAccountInfoByGaiaId(account_info.gaia);
-  EXPECT_TRUE(maybe_account_info.IsEmpty());
-
-  // Account with refresh token.
-  SetRefreshTokenForAccount(identity_manager(), account_info.account_id,
-                            "token");
   maybe_account_info =
       identity_manager()->FindExtendedAccountInfoByGaiaId(account_info.gaia);
   EXPECT_FALSE(maybe_account_info.IsEmpty());
@@ -2425,7 +2459,7 @@ TEST_F(IdentityManagerTest, RefreshAccountInfoIfStale) {
   EXPECT_EQ(account_info.account_id, refreshed_account_info.account_id);
   EXPECT_EQ(account_info.email, refreshed_account_info.email);
   EXPECT_EQ(account_info.gaia, refreshed_account_info.gaia);
-  EXPECT_EQ(kTestHostedDomain, refreshed_account_info.hosted_domain);
+  EXPECT_EQ(kTestHostedDomain, refreshed_account_info.GetHostedDomain());
   EXPECT_EQ(kTestFullName, refreshed_account_info.full_name);
   EXPECT_EQ(kTestGivenName, refreshed_account_info.given_name);
   EXPECT_EQ(kTestLocale, refreshed_account_info.locale);

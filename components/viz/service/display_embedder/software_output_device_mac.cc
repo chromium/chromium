@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display_embedder/software_output_device_mac.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/apple/foundation_util.h"
+#include "base/compiler_specific.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/ca_layer_params.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -95,8 +92,8 @@ void SoftwareOutputDeviceMac::UpdateAndCopyBufferDamage(
     const SkIRect& rect = it.rect();
     current_paint_canvas_->writePixels(
         SkImageInfo::MakeN32Premul(rect.width(), rect.height()),
-        pixels + bytes_per_element * rect.x() + stride * rect.y(), stride,
-        rect.x(), rect.y());
+        UNSAFE_TODO(pixels + bytes_per_element * rect.x() + stride * rect.y()),
+        stride, rect.x(), rect.y());
   }
 
   {
@@ -134,7 +131,7 @@ SkCanvas* SoftwareOutputDeviceMac::BeginPaint(
   if (!current_paint_buffer_) {
     std::unique_ptr<Buffer> new_buffer(new Buffer);
     new_buffer->io_surface =
-        gfx::CreateIOSurface(pixel_size_, gfx::BufferFormat::BGRA_8888);
+        gfx::CreateIOSurface(pixel_size_, SinglePlaneFormat::kBGRA_8888);
     if (!new_buffer->io_surface)
       return nullptr;
     // Set the initial damage to be the full buffer.

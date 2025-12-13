@@ -20,16 +20,16 @@ void NoTokenType() {
 }
 
 void OneTokenType() {
-  MultiToken<FooToken> token;  // expected-error {{constraints not satisfied for class template 'MultiToken' [with Tokens = <base::TokenType<blink::FooTokenTag>>]}}
+  MultiToken<FooToken> token;  // expected-error-re {{constraints not satisfied for class template 'MultiToken' [with Tokens = <{{FooToken|base::TokenType<blink::FooTokenTag>}}>]}}
 }
 
 void DuplicateTokenType() {
-  MultiToken<FooToken, FooToken> token;  // expected-error {{constraints not satisfied for class template 'MultiToken' [with Tokens = <base::TokenType<blink::FooTokenTag>, base::TokenType<blink::FooTokenTag>>]}}
+  MultiToken<FooToken, FooToken> token;  // expected-error-re {{constraints not satisfied for class template 'MultiToken' [with Tokens = <{{FooToken, FooToken|base::TokenType<blink::FooTokenTag>, base::TokenType<blink::FooTokenTag>}}>]}}
 }
 
 void NonCompatibleMultiTokenConstruction() {
   MultiToken<FooToken, BarToken, BazToken> foo_bar_baz_token;
-  MultiToken<FooToken, BarToken> foo_bar_token(foo_bar_baz_token);  // expected-error {{no matching constructor for initialization of 'MultiToken<FooToken, BarToken>' (aka 'MultiToken<TokenType<class FooTokenTag>, TokenType<class BarTokenTag>>')}}
+  MultiToken<FooToken, BarToken> foo_bar_token(foo_bar_baz_token);  // expected-error-re {{no matching constructor for initialization of 'MultiToken<FooToken, BarToken>' (aka 'MultiToken<{{(base::)?}}TokenType<class FooTokenTag>, {{(base::)?}}TokenType<class BarTokenTag>>')}}
 }
 
 void NonCompatibleMultiTokenAssignment() {

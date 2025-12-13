@@ -27,7 +27,7 @@
 
 PasskeyDeletedConfirmationView::PasskeyDeletedConfirmationView(
     content::WebContents* web_contents,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     DisplayReason display_reason)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,

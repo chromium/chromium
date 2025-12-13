@@ -33,6 +33,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
@@ -213,8 +214,12 @@ void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
   }
 
   if (signin_util::IsForceSigninEnabled()) {
-    if (!CanBeManaged())
+    if ((!base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos) ||
+         GetSigninState() == SigninState::kNotSignedIn) &&
+        !CanBeManaged()) {
       SetBool(kForceSigninProfileLockedKey, true);
+    }
   } else {
     // Reset the locked state to avoid a profile being locked after the force
     // signin policy has been disabled.

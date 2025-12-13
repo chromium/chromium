@@ -5,14 +5,13 @@
 #ifndef MEDIA_GPU_ANDROID_CODEC_IMAGE_GROUP_H_
 #define MEDIA_GPU_ANDROID_CODEC_IMAGE_GROUP_H_
 
-#include <unordered_set>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/gpu/android/codec_image.h"
 #include "media/gpu/android/promotion_hint_aggregator.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -69,7 +68,7 @@ class MEDIA_GPU_EXPORT CodecImageGroup
   scoped_refptr<CodecSurfaceBundle> surface_bundle_;
 
   // All the images that use |surface_bundle_|.
-  std::unordered_set<raw_ptr<CodecImage, CtnExperimental>> images_;
+  absl::flat_hash_set<raw_ptr<CodecImage, CtnExperimental>> images_;
 
   // Task runner for everything.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -31,17 +31,13 @@ enum class NTPMIAEntrypointVariation {
   // The entrypoint is shown inside the enlarged fake omnibox without incognito
   // shortcut.
   kEnlargedFakeboxNoIncognito = 4,
-  kMaxValue = kEnlargedFakeboxNoIncognito,
+  // The entrypoint is shown as a quick actions button, with enlarged fake
+  // omnibox
+  kAIMInQuickAction = 5,
+  kMaxValue = kAIMInQuickAction,
 };
 
 #pragma mark - Feature declarations
-
-// Feature flag to enable static resource serving for the Discover feed.
-// TODO(crbug.com/40246814): Remove this.
-BASE_DECLARE_FEATURE(kEnableDiscoverFeedStaticResourceServing);
-
-// Feature flag to enable discofeed endpoint for the Discover feed.
-BASE_DECLARE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint);
 
 // Feature flag to fix the NTP view hierarchy if it is broken before applying
 // constraints.
@@ -59,15 +55,8 @@ BASE_DECLARE_FEATURE(kOverrideFeedSettings);
 // Feature flag to enable sending discover feedback to an updated target
 BASE_DECLARE_FEATURE(kWebFeedFeedbackReroute);
 
-// Feature flag to enable signed out user view demotion.
-BASE_DECLARE_FEATURE(kEnableSignedOutViewDemotion);
-
 // Feature flag to enable ghost cards on the iPad feeds.
 BASE_DECLARE_FEATURE(kEnableiPadFeedGhostCards);
-
-// Feature flag to enable account-switching UI when tapping the NTP identity
-// disc.
-BASE_DECLARE_FEATURE(kIdentityDiscAccountMenu);
 
 // Feature flag to enable in-product help for swipe action on the Feed.
 BASE_DECLARE_FEATURE(kFeedSwipeInProductHelp);
@@ -75,6 +64,10 @@ BASE_DECLARE_FEATURE(kFeedSwipeInProductHelp);
 // Feature flag to handle feed eligibility and state in the new Discover
 // eligibility service instead of the new tab page mediator.
 BASE_DECLARE_FEATURE(kUseFeedEligibilityService);
+
+// iOS counterpart for `chrome::android::kMostVisitedTilesCustomization`;
+// enables customizable most visited tiles when enabled.
+BASE_DECLARE_FEATURE(kMostVisitedTilesCustomizationIOS);
 
 #pragma mark - Feature parameters
 
@@ -105,19 +98,6 @@ extern const char kFeedSettingTimeoutThresholdAfterClearBrowsingData[];
 // A parameter value for the feed referrer.
 extern const char kFeedSettingDiscoverReferrerParameter[];
 
-// Parameters for the `kDeprecateFeedHeader` feature.
-//
-// A parameter to indicate whether the label should be removed from the discover
-// feed header.
-extern const char kDeprecateFeedHeaderParameterRemoveLabel[];
-// A parameter to indicate whether we should enlarge the Doodle and the fakebox.
-extern const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[];
-// Parameters controlling the padding/spacing between NTP elements.
-extern const char kDeprecateFeedHeaderParameterTopPadding[];
-extern const char kDeprecateFeedHeaderParameterSearchFieldTopMargin[];
-extern const char kDeprecateFeedHeaderParameterSpaceBetweenModules[];
-extern const char kDeprecateFeedHeaderParameterHeaderBottomPadding[];
-
 // Parameter to indicate which arm of feature kFeedSwipeInProductHelp is
 // enabled.
 extern const char kFeedSwipeInProductHelpArmParam[];
@@ -136,21 +116,8 @@ bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);
 // YES if discover feedback is going to be sent to the updated target.
 bool IsWebFeedFeedbackRerouteEnabled();
 
-// YES if the signed out user view demotion is enabled.
-bool IsSignedOutViewDemotionEnabled();
-
 // Whether ghost cards are enabled on the iPad feeds.
 bool IsiPadFeedGhostCardsEnabled();
-
-// YES if the NTP and feed header elements should be re-positioned as described.
-bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine);
-bool ShouldEnlargeLogoAndFakebox();
-
-// If feed header should be deprecated, retrieve the value for `param_name` for
-// the `kDeprecateFeedHeader`. Otherwise, return the default value.
-double GetDeprecateFeedHeaderParameterValueAsDouble(
-    const std::string& param_name,
-    double default_value);
 
 // Returns the enabled variation of feature kFeedSwipeInProductHelp.
 FeedSwipeIPHVariation GetFeedSwipeIPHVariation();
@@ -170,5 +137,8 @@ bool ShouldShowQuickActionsRow();
 
 // Whether a MIA variation should increase the size of the fakebox.
 bool ShouldEnlargeNTPFakeboxForMIA();
+
+// Whether customized most visited tiles is enabled on Chrome on iOS.
+bool IsContentSuggestionsCustomizable();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_

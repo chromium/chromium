@@ -17,7 +17,7 @@ message CastLogsProto {
   // Next tag: 8
   message CastDeviceInfo {
     // The product type of Cast device sent from Cast-enabled devices.
-    // Next tag: 14
+    // Next tag: 15
     enum CastProductType {
       CAST_PRODUCT_TYPE_UNKNOWN = 0;
 
@@ -34,6 +34,7 @@ message CastLogsProto {
       CAST_PRODUCT_TYPE_ANDROID_TABLET = 11;
       CAST_PRODUCT_TYPE_ANDROID_AUTOMOTIVE = 12;
       CAST_PRODUCT_TYPE_ANDROID = 13;
+      CAST_PRODUCT_TYPE_AOSP_TV = 14;
     }
 
     optional CastProductType type = 1;
@@ -96,7 +97,7 @@ message CastLogsProto {
 
   // Information about Cast V2 API connection between sender application and
   // Cast-enabled device.
-  // Next tag: 4
+  // Next tag: 5
   message CastConnectionInfo {
     optional fixed32 transport_connection_id = 1;
 
@@ -180,6 +181,15 @@ message CastLogsProto {
     }
 
     optional SenderInfo sender_info = 3;
+
+    enum V2ConnectionType {
+      V2_CONNECTION_TYPE_STRONG = 0;
+      V2_CONNECTION_TYPE_WEAK = 1;
+      V2_CONNECTION_TYPE_INVISIBLE = 2;
+      V2_CONNECTION_TYPE_UNKNOWN = 3;
+    }
+
+    optional V2ConnectionType v2_connection_type = 4;
   }
 
   // Virtual connection established between sender application and Cast device.

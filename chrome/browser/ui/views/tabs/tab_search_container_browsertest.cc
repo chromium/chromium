@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/tabs/tab_search_container.h"
+
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -9,12 +11,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,6 +31,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -50,12 +54,9 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
-  TabStrip* tab_strip() { return browser_view()->tabstrip(); }
-
   TabSearchContainer* tab_search_container() {
-    return browser_view()
-        ->tab_strip_region_view()
-        ->tab_search_container_for_testing();
+    return BrowserElementsViews::From(browser())->GetViewAs<TabSearchContainer>(
+        kTabSearchContainerElementId);
   }
 
   // Returns an assertion result that the expansion animation is closing.
@@ -136,11 +137,10 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        MAYBE_TogglesActionUIStateOnlyInCorrectBrowser) {
-  const Browser* const second_browser = CreateBrowser(browser()->profile());
+  Browser* const second_browser = CreateBrowser(browser()->profile());
   TabSearchContainer* const second_search_container =
-      BrowserView::GetBrowserViewForBrowser(second_browser)
-          ->tab_strip_region_view()
-          ->tab_search_container_for_testing();
+      BrowserElementsViews::From(second_browser)
+          ->GetViewAs<TabSearchContainer>(kTabSearchContainerElementId);
 
   ASSERT_FALSE(second_search_container->animation_session_for_testing());
 

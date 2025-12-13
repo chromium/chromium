@@ -77,10 +77,9 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
         GURL(kTestURL2), kTestTitle2, base::Time::Now()));
 
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(
-        ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::move(initial_entries)));
+    builder.AddTestingFactory(ReadingListModelFactory::GetInstance(),
+                              ReadingListModelTestingFactoryWithFakeStorage(
+                                  std::move(initial_entries)));
 
     profile_ = std::move(builder).Build();
 
@@ -180,7 +179,8 @@ TEST_F(ReadingListSpotlightManagerTest, testAddEntry) {
 
   model_->AddOrReplaceEntry(GURL(kTestURL3), kTestTitle3,
                             reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
 
   // We expect that we call indexSearchableItems spotlight api when adding a new
   // entry in reading list.

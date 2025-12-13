@@ -14,53 +14,33 @@ component("ipc") {
   sources = [
     # These are the param_traits sources needed by all platforms,
     # including ios. The rest are added in a conditional block below.
-    "ipc_channel.cc",
-    "ipc_message_utils.cc",
-    "ipc_message_utils.h",
-    "ipc_mojo_param_traits.cc",
-    "ipc_mojo_param_traits.h",
-    "param_traits_log_macros.h",
+    "mojo_param_traits.cc",
+    "mojo_param_traits.h",
     "param_traits_macros.h",
     "param_traits_read_macros.h",
+    "param_traits_utils.cc",
+    "param_traits_utils.h",
     "param_traits_write_macros.h",
-    "tracing_helpers.h",
-    "tracing_helpers_internal.h",
   ]
 
   if (use_blink) {
     sources += [
       # Most sources go here since ios only needs the param_traits
       # code.
+      "ipc_channel.cc",
       "ipc_channel.h",
-      "ipc_channel_common.cc",
       "ipc_channel_factory.cc",
       "ipc_channel_factory.h",
-      "ipc_channel_handle.h",
-      "ipc_channel_mojo.cc",
-      "ipc_channel_mojo.h",
       "ipc_channel_proxy.cc",
       "ipc_channel_proxy.h",
-      "ipc_channel_reader.cc",
-      "ipc_channel_reader.h",
       "ipc_listener.cc",
       "ipc_listener.h",
-      "ipc_message_macros.h",
       "ipc_message_pipe_reader.cc",
       "ipc_message_pipe_reader.h",
-      "ipc_message_start.h",
-      "ipc_message_templates.h",
-      "ipc_message_templates_impl.h",
       "ipc_mojo_bootstrap.cc",
       "ipc_mojo_bootstrap.h",
-      "ipc_sender.h",
       "ipc_sync_channel.cc",
       "ipc_sync_channel.h",
-      "message_filter.cc",
-      "message_filter.h",
-      "message_filter_router.cc",
-      "message_filter_router.h",
-      "trace_ipc_message.cc",
-      "trace_ipc_message.h",
       "urgent_message_observer.h",
     ]
   }
@@ -71,7 +51,6 @@ component("ipc") {
     ":message_support",
     ":mojom",
     ":mojom_constants",
-    ":native_handle_type_converters",
     ":param_traits",
     "//base",
     "//mojo/public/cpp/base",
@@ -100,10 +79,6 @@ component("message_support") {
     "ipc_mojo_handle_attachment.h",
     "ipc_mojo_message_helper.cc",
     "ipc_mojo_message_helper.h",
-    "ipc_platform_file.cc",
-    "ipc_platform_file.h",
-    "ipc_sync_message.cc",
-    "ipc_sync_message.h",
   ]
 
   if (is_win) {
@@ -153,23 +128,6 @@ component("message_support") {
   }
 }
 
-source_set("native_handle_type_converters") {
-  sources = [
-    "native_handle_type_converters.cc",
-    "native_handle_type_converters.h",
-  ]
-  public_deps = [
-    ":message_support",
-    "//mojo/public/interfaces/bindings:bindings_headers",
-  ]
-}
-
-mojom("test_mojom") {
-  testonly = true
-  sources = [ "ipc_channel_mojo_unittest.test-mojom" ]
-  public_deps = [ "//mojo/public/mojom/base" ]
-}
-
 mojom_component("mojom") {
   output_prefix = "ipc_mojom"
   macro_prefix = "IPC_MOJOM"
@@ -215,32 +173,16 @@ mojom("test_interfaces") {
 # This is provided as a separate target so other targets can provide param
 # traits implementations without necessarily linking to all of IPC.
 source_set("param_traits") {
-  public = [ "ipc_param_traits.h" ]
+  public = [ "param_traits.h" ]
 }
 
 # This is provided as a separate target so other targets can use IPC without
 # necessarily linking to protobuf.
 source_set("protobuf_support") {
-  public = [ "ipc_message_protobuf_utils.h" ]
+  public = [ "param_traits_protobuf_utils.h" ]
   public_deps = [
     ":ipc",
     "//third_party/protobuf:protobuf_lite",
-  ]
-}
-
-static_library("test_sink") {
-  testonly = true
-  sources = [
-    "ipc_security_test_util.cc",
-    "ipc_security_test_util.h",
-    "ipc_test_sink.cc",
-    "ipc_test_sink.h",
-  ]
-  public_deps = [ ":ipc" ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//mojo/core/test:test_support",
   ]
 }
 
@@ -266,30 +208,20 @@ if (use_blink) {
 
   test("ipc_tests") {
     sources = [
-      "ipc_channel_mojo_unittest.cc",
-      "ipc_channel_proxy_unittest.cc",
-      "ipc_channel_reader_unittest.cc",
-      "ipc_fuzzing_tests.cc",
-      "ipc_message_protobuf_utils_unittest.cc",
+      "ipc_channel_unittest.cc",
       "ipc_message_unittest.cc",
-      "ipc_message_utils_unittest.cc",
       "ipc_mojo_bootstrap_unittest.cc",
       "ipc_sync_channel_unittest.cc",
-      "ipc_sync_message_unittest.cc",
-      "ipc_sync_message_unittest.h",
-      "sync_socket_unittest.cc",
-      "tracing_helpers_unittest.cc",
+      "param_traits_protobuf_utils_unittest.cc",
+      "param_traits_utils_unittest.cc",
     ]
 
     if (is_posix || is_fuchsia) {
       sources += [ "ipc_message_attachment_set_posix_unittest.cc" ]
-      if (!is_ios) {
-        sources += [ "ipc_send_fds_test.cc" ]
-      }
     }
 
     if (is_win) {
-      sources += [ "ipc_handle_unittest.cc" ]
+      sources += [ "handle_win_unittest.cc" ]
     }
 
     deps = [
@@ -297,9 +229,7 @@ if (use_blink) {
       ":protobuf_support",
       ":run_all_unittests",
       ":test_interfaces",
-      ":test_mojom",
       ":test_proto",
-      ":test_support",
       "//base",
       "//base:i18n",
       "//base/test:test_support",
@@ -319,8 +249,6 @@ if (use_blink) {
     sources = [
       "ipc_cpu_perftest.cc",
       "ipc_mojo_perftest.cc",
-      "ipc_perftest_messages.cc",
-      "ipc_perftest_messages.h",
       "ipc_perftest_util.cc",
       "ipc_perftest_util.h",
       "run_all_perftests.cc",
@@ -329,33 +257,12 @@ if (use_blink) {
     deps = [
       ":ipc",
       ":test_interfaces",
-      ":test_support",
       "//base",
       "//base:i18n",
       "//base/test:test_support",
       "//mojo/core/embedder",
       "//mojo/core/test:test_support",
       "//mojo/core/test:test_support_impl",
-      "//testing/gtest",
-    ]
-  }
-
-  static_library("test_support") {
-    testonly = true
-    sources = [
-      "ipc_test_base.cc",
-      "ipc_test_base.h",
-      "ipc_test_channel_listener.cc",
-      "ipc_test_channel_listener.h",
-    ]
-    public_deps = [
-      ":ipc",
-      ":test_sink",
-    ]
-    deps = [
-      "//base",
-      "//base/test:test_support",
-      "//mojo/core/test:test_support",
       "//testing/gtest",
     ]
   }

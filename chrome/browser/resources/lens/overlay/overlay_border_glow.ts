@@ -27,7 +27,7 @@ export class OverlayBorderGlowElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      selectionOverlayRect: {type: DOMRect},
+      selectionOverlayRect: {type: Object},
     };
   }
 

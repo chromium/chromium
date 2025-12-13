@@ -13,13 +13,13 @@
         ...TestRunner.stabilizeNames, 'connectionId', 'timing', 'connectTiming',
         'wallTime', 'responseTime', 'securityDetails', 'remoteIPAddress',
         'Date', 'ETag', 'Last-Modified', 'User-Agent', 'X-Powered-By',
-        'headersText'
+        'headersText', 'encodedDataLength',
       ] :
       [
         ...TestRunner.stabilizeNames, 'wallTime', 'requestTime', 'responseTime',
         'Date', 'receiveHeadersStart', 'receiveHeadersEnd', 'sendStart',
         'sendEnd', 'ETag', 'Last-Modified', 'User-Agent', 'headersText',
-        'connectionId', 'X-Powered-By'
+        'connectionId', 'X-Powered-By', 'encodedDataLength',
       ];
 
   await dp.Network.enable();

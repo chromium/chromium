@@ -49,7 +49,7 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
     manifest.Set(extensions::manifest_keys::kDescription, "Test app");
     manifest.SetByDottedPath("author.email", "Someone");
 
-    std::string error;
+    std::u16string error;
     correct_extension_ = extensions::Extension::Create(
         base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
         manifest, extensions::Extension::NO_FLAGS, kTestAppName, &error);
@@ -86,7 +86,8 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
 // message).
 TEST_F(IdleAppNameNotificationViewTest, CheckTooEarlyDestruction) {
   // Create a message which is visible for 10ms and fades in/out for 5ms.
-  std::make_unique<IdleAppNameNotificationView>(10, 5, correct_extension());
+  std::ignore =
+      std::make_unique<IdleAppNameNotificationView>(10, 5, correct_extension());
 }
 
 // Check that the message gets created and it destroys itself after time.

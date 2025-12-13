@@ -9,12 +9,15 @@
 
 namespace android_webview {
 
-jboolean JNI_TrafficStatsTestUtil_CanGetTaggedBytes(JNIEnv* env) {
+static jboolean JNI_TrafficStatsTestUtil_CanGetTaggedBytes(JNIEnv* env) {
   return net::CanGetTaggedBytes();
 }
 
-jlong JNI_TrafficStatsTestUtil_GetTaggedBytes(JNIEnv* env, jint jexpected_tag) {
+static jlong JNI_TrafficStatsTestUtil_GetTaggedBytes(JNIEnv* env,
+                                                     jint jexpected_tag) {
   return net::GetTaggedBytes(jexpected_tag);
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(TrafficStatsTestUtil)

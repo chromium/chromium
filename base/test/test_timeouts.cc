@@ -82,8 +82,8 @@ void InitializeTimeout(const char* switch_name,
   constexpr int kTimeoutMultiplier = 3;
 #elif !defined(NDEBUG) && BUILDFLAG(IS_CHROMEOS)
   constexpr int kTimeoutMultiplier = kAshBaseMultiplier;
-#elif !defined(NDEBUG) && BUILDFLAG(IS_MAC)
-  // A lot of browser_tests on Mac debug time out.
+#elif !defined(NDEBUG) && (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+  // A lot of browser_tests on Mac and Linux debug time out.
   constexpr int kTimeoutMultiplier = 2;
 #elif BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
   // For test running on ChromeOS device/VM, they could be slower. We should not

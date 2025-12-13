@@ -92,7 +92,7 @@ class SidePanelWebUIViewT : public SidePanelWebUIView {
     return contents_wrapper_.get();
   }
 
- private:
+ protected:
   std::unique_ptr<WebUIContentsWrapperT<T>> contents_wrapper_;
 };
 

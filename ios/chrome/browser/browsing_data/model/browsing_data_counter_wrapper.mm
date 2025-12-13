@@ -19,7 +19,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
-#import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/browsing_data/model/cache_counter.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"

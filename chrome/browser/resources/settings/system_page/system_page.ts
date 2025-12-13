@@ -35,6 +35,7 @@ import {SystemPageBrowserProxyImpl} from './system_page_browser_proxy.js';
 export interface SettingsSystemPageElement {
   $: {
     proxy: HTMLElement,
+    proxyMultipleSources: HTMLElement,
     hardwareAcceleration: SettingsToggleButtonElement,
   };
 }
@@ -60,6 +61,7 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
 
       isProxyEnforcedByPolicy_: Boolean,
       isProxyDefault_: Boolean,
+      isProxyEnforcedByMultipleSources_: Boolean,
 
       // <if expr="_google_chrome and is_win">
       showFeatureNotificationsSetting_: {
@@ -76,12 +78,17 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
   static get observers() {
     return [
       'observeProxyPrefChanged_(prefs.proxy.*)',
+      'observeProxyPrefChanged_(prefs.proxy_override_rules.*)',
     ];
   }
 
-  declare prefs: {proxy: chrome.settingsPrivate.PrefObject};
+  declare prefs: {
+    proxy: chrome.settingsPrivate.PrefObject,
+    proxy_override_rules: chrome.settingsPrivate.PrefObject,
+  };
   declare private isProxyEnforcedByPolicy_: boolean;
   declare private isProxyDefault_: boolean;
+  declare private isProxyEnforcedByMultipleSources_: boolean;
   // <if expr="_google_chrome and is_win">
   declare private showFeatureNotificationsSetting_: boolean;
   // </if>
@@ -93,6 +100,14 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
         pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED &&
         pref.controlledBy === chrome.settingsPrivate.ControlledBy.USER_POLICY;
     this.isProxyDefault_ = !this.isProxyEnforcedByPolicy_ && !pref.extensionId;
+
+    // The only case where the multiple sources UI must NOT be shown while
+    // `proxy_override_rules` is set is when the other source controlling
+    // proxies is also a proxy policy.
+    this.isProxyEnforcedByMultipleSources_ = this.prefs.proxy_override_rules &&
+        this.prefs.proxy_override_rules.value &&
+        this.prefs.proxy_override_rules.value.length !== 0 &&
+        !this.isProxyEnforcedByPolicy_;
   }
 
   private onExtensionDisable_() {

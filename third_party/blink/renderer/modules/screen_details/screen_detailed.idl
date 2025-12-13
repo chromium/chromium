@@ -10,25 +10,25 @@
 ] interface ScreenDetailed : Screen {
   // Distance from a multi-screen origin (e.g. primary screen top left) to the
   // left edge of the screen area.
-  [HighEntropy=Direct, Measure] readonly attribute long left;
+  [Measure] readonly attribute long left;
 
   // Distance from a multi-screen origin (e.g. primary screen top left) to the
   // top edge of the screen area.
-  [HighEntropy=Direct, Measure] readonly attribute long top;
+  [Measure] readonly attribute long top;
 
   // Whether this screen is designated as the 'primary' screen by the OS
   // (otherwise it is a 'secondary' screen).
-  [HighEntropy=Direct, Measure] readonly attribute boolean isPrimary;
+  [Measure] readonly attribute boolean isPrimary;
 
   // Whether this screen is an 'internal' panel built into the device, like a
   // laptop display (otherwise it is 'external', like a wired monitor).
-  [HighEntropy=Direct, Measure] readonly attribute boolean isInternal;
+  [Measure] readonly attribute boolean isInternal;
 
   // Specifies the ratio between physical and logical pixels.
-  [HighEntropy=Direct, Measure] readonly attribute float devicePixelRatio;
+  [Measure] readonly attribute float devicePixelRatio;
 
   // A user-friendly label for the screen, determined by the user agent and OS.
-  [HighEntropy=Direct, Measure] readonly attribute DOMString label;
+  [Measure] readonly attribute DOMString label;
 
   // The HDR headroom of the screen. This is the base 2 log of the ratio of peak
   // luminance to HDR reference white luminance.

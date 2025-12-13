@@ -260,3 +260,28 @@ std::optional<SafetyCheckNotificationType> ParseSafetyCheckNotificationType(
 
   return std::nullopt;
 }
+
+std::set<SafetyCheckNotificationType> GetResolvedSafetyCheckTypes(
+    UpdateChromeSafetyCheckState update_chrome_state,
+    SafeBrowsingSafetyCheckState safe_browsing_state,
+    PasswordSafetyCheckState password_state) {
+  std::set<SafetyCheckNotificationType> notification_types_to_remove;
+
+  if (password_state == PasswordSafetyCheckState::kSignedOut ||
+      password_state == PasswordSafetyCheckState::kSafe) {
+    notification_types_to_remove.insert(
+        SafetyCheckNotificationType::kPasswords);
+  }
+
+  if (safe_browsing_state == SafeBrowsingSafetyCheckState::kSafe) {
+    notification_types_to_remove.insert(
+        SafetyCheckNotificationType::kSafeBrowsing);
+  }
+
+  if (update_chrome_state == UpdateChromeSafetyCheckState::kUpToDate) {
+    notification_types_to_remove.insert(
+        SafetyCheckNotificationType::kUpdateChrome);
+  }
+
+  return notification_types_to_remove;
+}

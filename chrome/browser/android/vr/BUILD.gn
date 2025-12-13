@@ -20,7 +20,7 @@ static_library("vr_android") {
     "//device/vr:vr_base",
     "//device/vr:vr_util",
     "//device/vr/android:vr_android",
-    "//device/vr/buildflags:buildflags",
+    "//device/vr/buildflags",
   ]
 
   if (enable_arcore) {
@@ -62,8 +62,8 @@ test("vr_android_unittests") {
     ":vr_android",
     "//base/test:test_support",
     "//chrome/browser",
-    "//components/translate/core/language_detection:language_detection",
-    "//components/webxr:webxr",
+    "//components/translate/core/language_detection",
+    "//components/webxr",
     "//device/vr:vr_fakes",
     "//device/vr/android:vr_android",
     "//device/vr/public/mojom:isolated_xr_service",

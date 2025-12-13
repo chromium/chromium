@@ -53,7 +53,7 @@ public class ProfileDataCacheUnitTest {
         IdentityManagerImplJni.setInstanceForTesting(mIdentityManagerNativeMock);
         mProfileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                        RuntimeEnvironment.application.getApplicationContext());
+                        RuntimeEnvironment.application.getApplicationContext(),mIdentityManager );
 
         // Add an observer for IdentityManager::onExtendedAccountInfoUpdated.
         mAccountManagerTestRule.observeIdentityManager(mIdentityManager);

@@ -59,7 +59,7 @@ void ScrollMarkerGroupPseudoElement::ActivatePrevScrollMarker() {
 void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
     ScrollMarkerPseudoElement* scroll_marker,
     bool apply_snap_alignment) {
-  if (!scroll_marker || scroll_marker == Selected()) {
+  if (!scroll_marker) {
     return;
   }
   // parentElement is ::column for column scroll marker and
@@ -71,25 +71,44 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
       std::move(params), &UltimateOriginatingElement(),
       /* include_self = */ scroll_marker->UltimateOriginatingElement() ==
           UltimateOriginatingElement());
-  GetDocument().SetFocusedElement(scroll_marker,
-                                  FocusParams(SelectionBehaviorOnFocus::kNone,
-                                              mojom::blink::FocusType::kNone,
-                                              /*capabilities=*/nullptr));
+  const bool tabs_mode =
+      ScrollMarkerGroupMode() == ScrollMarkerGroup::ScrollMarkerMode::kTabs;
+  const bool links_mode =
+      ScrollMarkerGroupMode() == ScrollMarkerGroup::ScrollMarkerMode::kLinks;
+  // If the scroller's scroll-marker-group property is set to `tabs`,
+  // we retain focus on the ::scroll-marker.
+  if (tabs_mode ||
+      !RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
+    GetDocument().SetFocusedElement(scroll_marker,
+                                    FocusParams(SelectionBehaviorOnFocus::kNone,
+                                                mojom::blink::FocusType::kNone,
+                                                /*capabilities=*/nullptr));
+  }
+  if (links_mode &&
+      RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
+    // If the scroller's scroll-marker-group property is set to `links`,
+    // we lose focus from ::scroll-marker upon activation.
+    GetDocument().ClearFocusedElement();
+  }
   SetSelected(*scroll_marker, apply_snap_alignment);
-  // - per https://drafts.csswg.org/css-overflow-5/#scroll-target-focus
+  // If the scroller's scroll-marker-group property is set to `links`,
+  // per https://drafts.csswg.org/css-overflow-5/#scroll-target-focus
   // we want to start our search from scroll target of ::scroll-marker,
   // which is ultimate originating element for regular scroll marker
   // and TODO(378698659): the first element in ::column's view for column
   // scroll marker, but it's not clear yet what how to implement that.
-  GetDocument().SetSequentialFocusNavigationStartingPoint(
-      &scroll_marker->UltimateOriginatingElement());
+  if (links_mode ||
+      !RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
+    GetDocument().SetSequentialFocusNavigationStartingPoint(
+        &scroll_marker->UltimateOriginatingElement());
+  }
 }
 
-bool ScrollMarkerGroupPseudoElement::SetSelected(
+void ScrollMarkerGroupPseudoElement::SetSelected(
     ScrollMarkerPseudoElement& scroll_marker,
     bool apply_snap_alignment) {
-  return scroll_marker_group_data_->SetSelected(&scroll_marker,
-                                                apply_snap_alignment);
+  return scroll_marker_group_data_->MaybeSetPendingSelectedMarker(
+      &scroll_marker, apply_snap_alignment);
 }
 
 ScrollMarkerPseudoElement* ScrollMarkerGroupPseudoElement::Selected() const {
@@ -109,6 +128,24 @@ bool ScrollMarkerGroupPseudoElement::SelectedMarkerIsPinned() const {
   return scroll_marker_group_data_->SelectedMarkerIsPinned();
 }
 
+ScrollMarkerPseudoElement* ScrollMarkerGroupPseudoElement::First() const {
+  HeapVector<Member<Element>>& focus_group =
+      scroll_marker_group_data_->ScrollMarkers();
+  if (!focus_group.size()) {
+    return nullptr;
+  }
+  return To<ScrollMarkerPseudoElement>(focus_group.front().Get());
+}
+
+ScrollMarkerPseudoElement* ScrollMarkerGroupPseudoElement::Last() const {
+  HeapVector<Member<Element>>& focus_group =
+      scroll_marker_group_data_->ScrollMarkers();
+  if (!focus_group.size()) {
+    return nullptr;
+  }
+  return To<ScrollMarkerPseudoElement>(focus_group.back().Get());
+}
+
 void ScrollMarkerGroupPseudoElement::Dispose() {
   HeapVector<Member<Element>> focus_group =
       scroll_marker_group_data_->ScrollMarkers();
@@ -117,7 +154,6 @@ void ScrollMarkerGroupPseudoElement::Dispose() {
   }
   if (ScrollMarkerPseudoElement* selected = Selected()) {
     selected->SetSelected(false);
-    scroll_marker_group_data_->SetSelected(nullptr);
   }
   scroll_marker_group_data_->ClearFocusGroup();
   if (GetLayoutBox() && GetLayoutBox()->GetFrameView()) {
@@ -152,7 +188,6 @@ void ScrollMarkerGroupPseudoElement::DetachLayoutTree(
     To<ScrollMarkerPseudoElement>(scroll_marker)
         ->DetachLayoutTree(performing_reattach);
   }
-  scroll_marker_group_data_->SetSelected(nullptr);
   scroll_marker_group_data_->ClearFocusGroup();
   PseudoElement::DetachLayoutTree(performing_reattach);
 }

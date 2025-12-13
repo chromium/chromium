@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 //
 // META: --screen-info={1600x1200}
-// META: --wndow-size=800,600
+// META: --window-size=800,600
 
 (async function(testRunner) {
   const {dp} =

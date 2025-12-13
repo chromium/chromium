@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "cc/base/math_util.h"
 #include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/layer_impl.h"

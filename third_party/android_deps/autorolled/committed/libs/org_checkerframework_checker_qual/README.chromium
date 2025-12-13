@@ -1,7 +1,7 @@
 Name: Checker Qual
 Short Name: checker-qual
-URL: https://checkerframework.org/
-Version: 3.49.5
+URL: https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.52.1/checker-qual-3.52.1.jar
+Version: 3.52.1
 Update Mechanism: Autoroll
 License: Apache-2.0, MIT, GPL-2.0-with-classpath-exception
 License File: LICENSE
@@ -11,6 +11,9 @@ Shipped: yes
 
 Description:
 checker-qual contains annotations (type qualifiers) that a programmerwrites to specify Java code for type-checking by the Checker Framework.
+
+See also: https://checkerframework.org/
+
 
 Local Modifications:
 No modifications.

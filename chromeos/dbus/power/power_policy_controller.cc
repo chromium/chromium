@@ -25,6 +25,11 @@ namespace {
 
 PowerPolicyController* g_power_policy_controller = nullptr;
 
+// See crbug.com/439382852 - if the policy for screen lock delay is set but no
+// value is specified we should use the system defaults.
+const int kDefaultACScreenlockDelayMs = 510000;
+const int kDefaultBatteryScreenlockDelayMs = 390000;
+
 // Appends a description of |field|, a field within |delays|, a
 // power_manager::PowerManagementPolicy::Delays object, to |str|, an
 // std::string, if the field is set.  |name| is a char* describing the
@@ -586,11 +591,22 @@ void PowerPolicyController::ApplyPrefs(const PrefValues& values) {
 }
 
 base::TimeDelta PowerPolicyController::GetMaxPolicyAutoScreenLockDelay() {
-  if (!prefs_were_set_ || !auto_screen_lock_enabled_) {
+  if (!auto_screen_lock_enabled_) {
     return base::TimeDelta();
   }
-  int ac_delay = prefs_policy_.ac_delays().screen_lock_ms();
-  int battery_delay = prefs_policy_.battery_delays().screen_lock_ms();
+
+  int ac_delay = kDefaultACScreenlockDelayMs;
+  if (prefs_policy_.ac_delays().has_screen_lock_ms() &&
+      prefs_policy_.ac_delays().screen_lock_ms() >= 0) {
+    ac_delay = prefs_policy_.ac_delays().screen_lock_ms();
+  }
+
+  int battery_delay = kDefaultBatteryScreenlockDelayMs;
+  if (prefs_policy_.battery_delays().has_screen_lock_ms() &&
+      prefs_policy_.battery_delays().screen_lock_ms() >= 0) {
+    battery_delay = prefs_policy_.battery_delays().screen_lock_ms();
+  }
+
   return base::Milliseconds(std::max(ac_delay, battery_delay));
 }
 

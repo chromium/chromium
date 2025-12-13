@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/test/fullscreen_test_util.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -47,16 +46,11 @@ namespace {
 class MAYBE_PopupMultiScreenTest : public PopupTestBase,
                                    public ::testing::WithParamInterface<bool> {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PopupTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
   void SetUpOnMainThread() override {
     if (!SetUpVirtualDisplays()) {
       GTEST_SKIP() << "Skipping test; unavailable multi-screen support.";
     }
-    ASSERT_GE(display::Screen::GetScreen()->GetNumDisplays(), 2);
+    ASSERT_GE(display::Screen::Get()->GetNumDisplays(), 2);
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     content::WebContents* web_contents =
@@ -78,11 +72,11 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
   // testing multi-screen functionality. Not all platforms and OS versions are
   // supported. Returns false if virtual displays could not be created.
   bool SetUpVirtualDisplays() {
-    if (display::Screen::GetScreen()->GetNumDisplays() > 1) {
+    if (display::Screen::Get()->GetNumDisplays() > 1) {
       return true;
     }
     if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
-             display::Screen::GetScreen()))) {
+             display::Screen::Get()))) {
       virtual_display_util_->AddDisplay(
           display::test::VirtualDisplayUtil::k1024x768);
       return true;
@@ -100,7 +94,7 @@ INSTANTIATE_TEST_SUITE_P(, MAYBE_PopupMultiScreenTest, ::testing::Bool());
 IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, Basic) {
   // Copy the display vector so references are not invalidated while looping.
   std::vector<display::Display> displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
     ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());
@@ -128,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, Basic) {
 IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, OpenOnAnotherScreen) {
   // Copy the display vector so references are not invalidated while looping.
   std::vector<display::Display> displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
     ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());
@@ -165,7 +159,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest,
   content::WebContents* opener_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Copy the display vector so references are not invalidated while looping.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   std::vector<display::Display> displays = screen->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
@@ -219,7 +213,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest,
 // Tests opening a popup on another screen from a cross-origin iframe.
 IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, CrossOriginIFrame) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetCertHostnames({"a.com", "b.com"});
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   content::SetupCrossSiteRedirector(&https_server);
   ASSERT_TRUE(https_server.Start());
@@ -249,7 +243,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, CrossOriginIFrame) {
 
   // Copy the display vector so references are not invalidated while looping.
   std::vector<display::Display> displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
     ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());

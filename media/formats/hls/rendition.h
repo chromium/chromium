@@ -11,23 +11,22 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
-#include "media/formats/hls/rendition_group.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
 
 namespace media::hls {
 
+class RenditionGroup;
+
 class MEDIA_EXPORT Rendition {
  public:
   struct CtorArgs;
 
-  using Group = RenditionGroup;
-  explicit Rendition(base::PassKey<Group>, CtorArgs args);
+  explicit Rendition(base::PassKey<RenditionGroup>, CtorArgs args);
   static Rendition CreateRenditionForTesting(CtorArgs args);
 
   Rendition(const Rendition&) = delete;

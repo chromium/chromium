@@ -260,7 +260,7 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
       registry_observation_{this};
 
   // Helper to bridge tasks to a sequence which allows file IO.
-  std::unique_ptr<const FileSequenceBridge> file_sequence_bridge_;
+  std::unique_ptr<FileSequenceBridge> file_sequence_bridge_;
 
   // Guaranteed to be valid through-out the lifetime of this instance.
   const raw_ptr<ExtensionPrefs> prefs_;

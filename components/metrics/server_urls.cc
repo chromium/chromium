@@ -64,4 +64,10 @@ GURL GetDwaServerUrl() {
   return *url;
 }
 
+GURL GetPrivateMetricsServerUrl() {
+  static const base::NoDestructor<GURL> url(
+      GetUrl(IDS_PRIVATE_METRICS_SERVER_URL));
+  return *url;
+}
+
 }  // namespace metrics

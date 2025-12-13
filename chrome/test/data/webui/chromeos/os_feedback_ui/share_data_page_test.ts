@@ -53,7 +53,7 @@ suite('shareDataPageTestSuite', () => {
 
   function getElementContent(selector: string): string {
     const element = page.shadowRoot!.querySelector(selector);
-    return element!.textContent!.trim();
+    return element!.textContent.trim();
   }
 
   function verifyRecordPreSubmitActionCallCount(
@@ -238,12 +238,12 @@ suite('shareDataPageTestSuite', () => {
     assertEquals(2, emailDropdown.options.length);
 
     const firstOption = emailDropdown.options.item(0) as HTMLOptionElement;
-    assertEquals('test.user2@test.com', firstOption.textContent!.trim());
+    assertEquals('test.user2@test.com', firstOption.textContent.trim());
     assertEquals('test.user2@test.com', firstOption.value.trim());
 
     const secondOption = emailDropdown.options.item(1);
     assertEquals(
-        'Don\'t include email address', secondOption!.textContent!.trim());
+        'Don\'t include email address', secondOption!.textContent.trim());
     assertEquals('', secondOption!.value.trim());
 
     // The user email section should be visible.
@@ -510,94 +510,6 @@ suite('shareDataPageTestSuite', () => {
     const report = (await clickSendAndWait(page)).detail.report;
 
     assertEquals(0, report!.feedbackContext.traceId);
-  });
-
-  /**
-   * Test that when the send button is clicked, an on-continue is fired.
-   * Case 7: Report won't have assistant log flags if isInternalAccount
-   * and fromAssistant flag in feedbackContext is false.
-   */
-  test('ReportWillNotHaveAssistantLogIfFromAssistantSetFalse', async () => {
-    await initializePage();
-    page.feedbackContext = fakeFeedbackContext;
-
-    // The report should not have assistant logs by default.
-    strictQuery('#assistantLogsContainer', page.shadowRoot, HTMLElement)
-        .hidden = true;
-    assertTrue(strictQuery(
-                   '#assiatantLogsCheckbox', page.shadowRoot, CrCheckboxElement)
-                   .checked);
-    const report = (await clickSendAndWait(page)).detail.report;
-
-    assertFalse(report!.feedbackContext.assistantDebugInfoAllowed);
-    assertFalse(report!.feedbackContext.fromAssistant);
-  });
-
-  /**
-   * Test that when the send button is clicked, an on-continue is fired.
-   * Case 8: Send assistant log if assistant log checkbox is checked,
-   * the report should show assistant Debug Info allowed.
-   */
-  test('SendAssistantLogWithReport', async () => {
-    await initializePage();
-    page.feedbackContext = fakeInternalUserFeedbackContext;
-
-    assertTrue(
-        !!strictQuery('#assistantLogsContainer', page.shadowRoot, HTMLElement));
-    strictQuery('#assistantLogsContainer', page.shadowRoot, HTMLElement)
-        .hidden = false;
-    strictQuery('#assiatantLogsCheckbox', page.shadowRoot, CrCheckboxElement)
-        .checked = true;
-
-    const report = (await clickSendAndWait(page)).detail.report;
-    assertTrue(report!.feedbackContext.assistantDebugInfoAllowed);
-    assertTrue(report!.feedbackContext.fromAssistant);
-  });
-
-  /**
-   * Test that when the send button is clicked, an on-continue is fired.
-   * Case 9: Don't include assistant log if assistant log checkbox is unchecked,
-   * the report should show assistant Debug Info not allowed.
-   */
-  test('SendAssistantLogWithReport', async () => {
-    await initializePage();
-    page.feedbackContext = fakeInternalUserFeedbackContext;
-
-    assertTrue(
-        !!strictQuery('#assistantLogsContainer', page.shadowRoot, HTMLElement));
-    strictQuery('#assistantLogsContainer', page.shadowRoot, HTMLElement)
-        .hidden = false;
-
-    // Uncheck the assistant logs checkbox.
-    strictQuery('#assiatantLogsCheckbox', page.shadowRoot, CrCheckboxElement)
-        .checked = false;
-
-    const report = (await clickSendAndWait(page)).detail.report;
-
-    assertFalse(report!.feedbackContext.assistantDebugInfoAllowed);
-    assertTrue(report!.feedbackContext.fromAssistant);
-  });
-
-  /**
-   * Case 10: Test when user using internal account but feedback is not called
-   * from Assistant, and the report should not have fromAssistant and
-   * assistantDebugInfoAllowed flags set true.
-   */
-  test('SendReportWithInternalAccountButNotFromAssistant', async () => {
-    await initializePage();
-    page.feedbackContext = fakeInternalUserFeedbackContext;
-    page.feedbackContext.fromAssistant = false;
-
-    assertTrue(isVisible(
-        strictQuery('#assistantLogsContainer', page.shadowRoot, HTMLElement)));
-    assertTrue(strictQuery(
-                   '#assiatantLogsCheckbox', page.shadowRoot, CrCheckboxElement)
-                   .checked);
-
-    const report = (await clickSendAndWait(page)).detail.report;
-
-    assertFalse(report!.feedbackContext.assistantDebugInfoAllowed);
-    assertFalse(report!.feedbackContext.fromAssistant);
   });
 
   /**
@@ -1245,36 +1157,6 @@ suite('shareDataPageTestSuite', () => {
     strictQuery(
         '#linkCrossDeviceDogfoodFeedbackInfoLink', page.shadowRoot,
         HTMLAnchorElement)
-        .click();
-    assertTrue(isVisible(closeDialogButton));
-
-    // The preview dialog's close icon button is focused.
-    assertEquals(closeDialogButton, getDeepActiveElement());
-
-    // Press enter should close the preview dialog.
-    closeDialogButton.dispatchEvent(
-        new KeyboardEvent('keydown', {key: 'Enter'}));
-    await flushTasks();
-
-    // The preview dialog's close icon button is not visible now.
-    assertFalse(isVisible(closeDialogButton));
-  });
-
-  /**
-   * Test that clicking the #assistantLogsLink will open the dialog and set the
-   * focus on the close dialog icon button.
-   */
-  test('openAssistantLogsDialog', async () => {
-    await initializePage();
-    page.feedbackContext = fakeFeedbackContext;
-
-    // The assistant dialog is not visible as default.
-    const closeDialogButton = strictQuery(
-        '#assistantDialogDoneButton', page.shadowRoot, CrButtonElement);
-    assertFalse(isVisible(closeDialogButton));
-
-    // After clicking the #bluetoothLogsLink, the dialog pops up.
-    strictQuery('#assistantLogsLink', page.shadowRoot, HTMLAnchorElement)
         .click();
     assertTrue(isVisible(closeDialogButton));
 

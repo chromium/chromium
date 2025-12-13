@@ -15,13 +15,13 @@ namespace lens {
 class RefCountedLensOverlayClientLogs
     : public base::RefCountedThreadSafe<RefCountedLensOverlayClientLogs> {
  public:
-  RefCountedLensOverlayClientLogs() = default;
+  RefCountedLensOverlayClientLogs();
 
   lens::LensOverlayClientLogs& client_logs() { return client_logs_; }
 
  private:
   friend class base::RefCountedThreadSafe<RefCountedLensOverlayClientLogs>;
-  ~RefCountedLensOverlayClientLogs() = default;
+  ~RefCountedLensOverlayClientLogs();
 
   lens::LensOverlayClientLogs client_logs_;
 };

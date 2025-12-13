@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.view.View;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -40,6 +41,16 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ContextMenuChipControllerTest {
+    // Epsilon value for assertions. Comparing raw pixel values can be error-prone due to
+    // float-to-int conversions and rounding. Using an epsilon accounts for these minor
+    // discrepancies. For example, calculating a total size by summing rounded parts can differ from
+    // rounding the sum of the parts:
+    //
+    // round(3 dp * 1.2) + round(4 dp * 1.2) = round(3.6) + round(4.8) = 4 + 5 = 9 px
+    // vs
+    // round((3 dp + 4 dp) * 1.2) = round(7dp + 1.2) = round(8.4) = 8 px
+    private static final float EPSILON_PX = 2.0f;
+
     // This is the combination of the expected vertical margins and the chip height.
     private static final int EXPECTED_VERTICAL_DP = 80;
     // Computed by taking the 338dp max width and subtracting:
@@ -84,6 +95,8 @@ public class ContextMenuChipControllerTest {
                     sActivity.setContentView(R.layout.context_menu_fullscreen_container);
                     mAnchorView = sActivity.findViewById(R.id.context_menu_chip_anchor_point);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @Test
@@ -145,6 +158,8 @@ public class ContextMenuChipControllerTest {
                     chipController.clickChipForTesting();
                 });
 
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
         verify(mMockDismissRunnable, times(1)).run();
         verify(mMockChipClickRunnable, times(1)).run();
         assertNotNull("Anchor view was not initialized.", mAnchorView);
@@ -163,8 +178,9 @@ public class ContextMenuChipControllerTest {
                 new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
         assertEquals(
                 "Vertical px is not matching the expectation",
-                (int) Math.round(EXPECTED_VERTICAL_DP * mMeasuredDeviceDensity),
-                chipController.getVerticalPxNeededForChip());
+                EXPECTED_VERTICAL_DP * mMeasuredDeviceDensity,
+                chipController.getVerticalPxNeededForChip(),
+                EPSILON_PX);
     }
 
     @Test
@@ -174,8 +190,9 @@ public class ContextMenuChipControllerTest {
                 new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
         assertEquals(
                 "Chip width px is not matching the expectation",
-                (int) Math.round(EXPECTED_CHIP_WIDTH_DP * mMeasuredDeviceDensity),
-                chipController.getChipTextMaxWidthPx(false));
+                EXPECTED_CHIP_WIDTH_DP * mMeasuredDeviceDensity,
+                chipController.getChipTextMaxWidthPx(false),
+                EPSILON_PX);
     }
 
     @Test
@@ -185,7 +202,8 @@ public class ContextMenuChipControllerTest {
                 new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
         assertEquals(
                 "Chip width px is not matching the expectation",
-                (int) Math.round(EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP * mMeasuredDeviceDensity),
-                chipController.getChipTextMaxWidthPx(true));
+                EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP * mMeasuredDeviceDensity,
+                chipController.getChipTextMaxWidthPx(true),
+                EPSILON_PX);
     }
 }

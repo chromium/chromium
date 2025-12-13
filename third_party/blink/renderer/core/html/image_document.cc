@@ -404,7 +404,8 @@ void ImageDocument::ImageClicked(int x, int y) {
 
     GetFrame()->View()->LayoutViewport()->SetScrollOffset(
         ScrollOffset(scroll_x, scroll_y),
-        mojom::blink::ScrollType::kProgrammatic);
+        mojom::blink::ScrollType::kProgrammatic,
+        cc::ScrollSourceType::kStationaryScroll);
   }
 }
 
@@ -504,15 +505,17 @@ int ImageDocument::CalculateDivWidth() {
   // * Images taller than the viewport are initially aligned with the top of
   //   of the frame.
   // * Images smaller in either dimension are centered along that axis.
-  int viewport_width =
-      GetFrame()->GetPage()->GetVisualViewport().Size().width() /
+  int width =
+      (RuntimeEnabledFeatures::ImageDocumentUseLayoutWidthEnabled()
+           ? View()->GetLayoutSize().width()
+           : GetFrame()->GetPage()->GetVisualViewport().Size().width()) /
       GetFrame()->LayoutZoomFactor();
 
   // For huge images, minimum-scale=0.1 is still too big on small screens.
   // Set the <div> width so that the image will shrink to fit the width of the
   // screen when the scale is minimum.
-  int max_width = std::min(ImageSize().width(), viewport_width * 10);
-  return std::max(viewport_width, max_width);
+  int max_width = std::min(ImageSize().width(), width * 10);
+  return std::max(width, max_width);
 }
 
 void ImageDocument::WindowSizeChanged() {

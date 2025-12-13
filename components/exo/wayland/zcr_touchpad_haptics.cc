@@ -30,9 +30,6 @@ class WaylandTouchpadHapticsDelegate {
   ~WaylandTouchpadHapticsDelegate() = default;
 
   void UpdateTouchpadHapticsState() {
-    if (!base::FeatureList::IsEnabled(ash::features::kExoHapticFeedbackSupport))
-      return;
-
     ui::InputController* controller =
         ui::OzonePlatform::GetInstance()->GetInputController();
     if (!controller) {
@@ -76,8 +73,6 @@ void touchpad_haptics_play(wl_client* client,
                            wl_resource* resource,
                            uint32_t effect,
                            int32_t strength) {
-  if (!base::FeatureList::IsEnabled(ash::features::kExoHapticFeedbackSupport))
-    return;
   GetUserDataAs<WaylandTouchpadHapticsDelegate>(resource)->Play(effect,
                                                                 strength);
 }

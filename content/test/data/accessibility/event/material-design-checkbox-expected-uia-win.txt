@@ -1,0 +1,8 @@
+AriaProperties changed on role=checkbox, name=Test Checkbox
+ToggleToggleState changed on role=checkbox, name=Test Checkbox
+=== Start Continuation ===
+AriaProperties changed on role=checkbox, name=Test Checkbox
+ToggleToggleState changed on role=checkbox, name=Test Checkbox
+=== Start Continuation ===
+AriaProperties changed on role=checkbox, name=Test Checkbox
+ToggleToggleState changed on role=checkbox, name=Test Checkbox

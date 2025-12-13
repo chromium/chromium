@@ -32,11 +32,11 @@
   [RuntimeEnabled=WebXRImageTracking, RaisesException, MeasureAs=XRFrameGetImageTrackingResults]
   FrozenArray<XRImageTrackingResult> getImageTrackingResults();
 
-  [RuntimeEnabled=WebXRHandInput, RaisesException, MeasureAs=XRFrameGetJointPose]
+  [RuntimeEnabled=WebXR, RaisesException, MeasureAs=XRFrameGetJointPose]
   XRJointPose? getJointPose(XRJointSpace joint, XRSpace baseSpace);
-  [RuntimeEnabled=WebXRHandInput, RaisesException, MeasureAs=XRFrameFillJointRadii]
+  [RuntimeEnabled=WebXR, RaisesException, MeasureAs=XRFrameFillJointRadii]
   boolean fillJointRadii(sequence<XRJointSpace> jointSpaces, Float32Array radii);
-  [RuntimeEnabled=WebXRHandInput, RaisesException, MeasureAs=XRFrameFillPoses]
+  [RuntimeEnabled=WebXR, RaisesException, MeasureAs=XRFrameFillPoses]
   boolean fillPoses(sequence<XRSpace> spaces, XRSpace baseSpace, Float32Array transforms);
 
   // More details about the real-world understanding APIs can be found here:

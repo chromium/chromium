@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_TEST_ENUMS_TO_STRING_H_
 #define COMPONENTS_PERMISSIONS_TEST_ENUMS_TO_STRING_H_
 
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 
@@ -18,6 +19,9 @@ std::string_view ToString(
     permissions::PermissionUiSelector::QuietUiReason ui_reason);
 
 std::string_view ToString(permissions::RequestType request_type);
+
+std::string_view ToString(
+    permissions::PermissionRequestRelevance request_relevance);
 
 }  // namespace test
 

@@ -113,10 +113,10 @@ ECSigningKeyProvider::FromWrappedSigningKeySlowly(
              : nullptr;
 }
 
-bool ECSigningKeyProvider::DeleteSigningKeySlowly(
-    base::span<const uint8_t> wrapped_key) {
+crypto::StatefulUnexportableKeyProvider*
+ECSigningKeyProvider::AsStatefulUnexportableKeyProvider() {
   // Software keys are stateless.
-  return true;
+  return nullptr;
 }
 
 }  // namespace enterprise_connectors

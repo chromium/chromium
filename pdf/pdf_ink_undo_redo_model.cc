@@ -156,16 +156,14 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Undo() {
     }
     case CommandsType::kDraw: {
       EraseCommands result;
-      for (IdType id : GetDrawCommands(commands).value()) {
-        result->insert(id);
-      }
+      auto draw_commands = GetDrawCommands(commands).value();
+      result->insert(draw_commands.begin(), draw_commands.end());
       return result;
     }
     case CommandsType::kErase: {
       DrawCommands result;
-      for (IdType id : GetEraseCommands(commands).value()) {
-        result->insert(id);
-      }
+      auto erase_commands = GetEraseCommands(commands).value();
+      result->insert(erase_commands.begin(), erase_commands.end());
       return result;
     }
   }

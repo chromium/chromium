@@ -104,8 +104,6 @@ typedef NS_ENUM(NSInteger, ReminderNotificationsDatePickerRowType) {
       // Date row
       cell = [tableView dequeueReusableCellWithIdentifier:kDatePickerCellReuseID
                                              forIndexPath:indexPath];
-      cell.separatorInset =
-          UIEdgeInsetsMake(0, kReminderNotificationsTableSeparatorInset, 0, 0);
       NSString* formattedDate = [_dateFormatter stringFromDate:_date];
       [cell configureWithLabel:l10n_util::GetNSString(
                                    IDS_IOS_REMINDER_NOTIFICATIONS_DATE_LABEL)
@@ -116,7 +114,6 @@ typedef NS_ENUM(NSInteger, ReminderNotificationsDatePickerRowType) {
       // Time row
       cell = [tableView dequeueReusableCellWithIdentifier:kTimePickerCellReuseID
                                              forIndexPath:indexPath];
-      cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, CGFLOAT_MAX);
       NSString* formattedTime = [_timeFormatter stringFromDate:_date];
       [cell configureWithLabel:l10n_util::GetNSString(
                                    IDS_IOS_REMINDER_NOTIFICATIONS_TIME_LABEL)

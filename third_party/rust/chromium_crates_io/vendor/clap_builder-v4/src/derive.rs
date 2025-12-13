@@ -3,6 +3,7 @@
 
 use crate::builder::PossibleValue;
 use crate::{ArgMatches, Command, Error};
+use std::convert::Infallible;
 
 use std::ffi::OsString;
 
@@ -386,4 +387,67 @@ impl<T: Subcommand> Subcommand for Box<T> {
 fn format_error<I: CommandFactory>(err: Error) -> Error {
     let mut cmd = I::command();
     err.format(&mut cmd)
+}
+
+impl FromArgMatches for () {
+    fn from_arg_matches(_matches: &ArgMatches) -> Result<Self, Error> {
+        Ok(())
+    }
+
+    fn update_from_arg_matches(&mut self, _matches: &ArgMatches) -> Result<(), Error> {
+        Ok(())
+    }
+}
+
+impl Args for () {
+    fn augment_args(cmd: Command) -> Command {
+        cmd
+    }
+
+    fn augment_args_for_update(cmd: Command) -> Command {
+        cmd
+    }
+}
+
+impl Subcommand for () {
+    fn augment_subcommands(cmd: Command) -> Command {
+        cmd
+    }
+
+    fn augment_subcommands_for_update(cmd: Command) -> Command {
+        cmd
+    }
+
+    fn has_subcommand(_name: &str) -> bool {
+        false
+    }
+}
+
+impl FromArgMatches for Infallible {
+    fn from_arg_matches(_matches: &ArgMatches) -> Result<Self, Error> {
+        Err(Error::raw(
+            crate::error::ErrorKind::MissingSubcommand,
+            "a subcommand is required but one was not provided",
+        ))
+    }
+
+    fn update_from_arg_matches(&mut self, _matches: &ArgMatches) -> Result<(), Error> {
+        unreachable!(
+            "there will never be an instance of Infallible and thus &mut self can never be called"
+        );
+    }
+}
+
+impl Subcommand for Infallible {
+    fn augment_subcommands(cmd: Command) -> Command {
+        cmd
+    }
+
+    fn augment_subcommands_for_update(cmd: Command) -> Command {
+        cmd
+    }
+
+    fn has_subcommand(_name: &str) -> bool {
+        false
+    }
 }

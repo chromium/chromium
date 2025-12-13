@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/test/base/test_switches.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/test/browser_test.h"
@@ -29,7 +30,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
@@ -97,7 +98,7 @@ class InteractiveBrowserTestBrowsertest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, DumpElements) {
   auto* const incog = CreateIncognitoBrowser();
   RunTestSequence(InstrumentTab(kWebContentsId),
-                  InContext(incog->window()->GetElementContext(),
+                  InContext(BrowserElements::From(incog)->GetContext(),
                             PressButton(kToolbarAppMenuButtonElementId)),
                   DumpElements());
 }
@@ -122,6 +123,35 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
       RunTestSequence(InstrumentTab(kWebContentsId),
                       NavigateWebContents(kWebContentsId, url),
                       EnsureNotPresent(kWebContentsId, DeepQuery{"#select"})));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, EnsureNotVisible) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      // Element that is set to display: none.
+      ExecuteJsAt(kWebContentsId, DeepQuery{"#select"},
+                  "el => el.style.display = 'none'"),
+      EnsureNotVisible(kWebContentsId, DeepQuery({"#select"})),
+      // Element that has zero size.
+      ExecuteJsAt(kWebContentsId, DeepQuery{"p"},
+                  "el => { el.style.width = '0'; el.style.height = '0'; }"),
+      EnsureNotVisible(kWebContentsId, DeepQuery({"p"})),
+      // Element that is not present at all.
+      EnsureNotVisible(kWebContentsId, DeepQuery{"#doesNotExist"}));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       EnsureNotVisible_Fails) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequence(InstrumentTab(kWebContentsId),
+                      NavigateWebContents(kWebContentsId, url),
+                      EnsureNotVisible(kWebContentsId, DeepQuery{"#select"})));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, EnsurePresent_Fails) {
@@ -524,13 +554,13 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
       // Instrument the next tab in any browser, then insert the tab and verify
       // it's there.
       InstrumentNextTab(kIncognito1Id, AnyBrowser()),
-      NameView(kIncognitoNtbName,
-               base::BindLambdaForTesting([incognito_browser]() {
-                 return AsView(
-                     ui::ElementTracker::GetElementTracker()->GetUniqueElement(
-                         kNewTabButtonElementId,
-                         incognito_browser->window()->GetElementContext()));
-               })),
+      NameView(
+          kIncognitoNtbName, base::BindLambdaForTesting([incognito_browser]() {
+            return AsView(
+                ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                    kNewTabButtonElementId,
+                    BrowserElements::From(incognito_browser)->GetContext()));
+          })),
       PressButton(kIncognitoNtbName),
       InAnyContext(verify_is_at_tab_index(incognito_browser, kIncognito1Id, 1)),
 
@@ -1265,5 +1295,5 @@ IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestDialogBrowsertest,
           CheckElement(
               InteractiveBrowserTestDialog::kElementId,
               [](ui::TrackedElement* el) { return el->context(); },
-              browser()->window()->GetElementContext())));
+              private_test_impl().default_context())));
 }

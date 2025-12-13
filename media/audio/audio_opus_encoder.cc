@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/channel_mixer.h"
@@ -35,9 +36,21 @@ constexpr int kOpusPreferredSamplingRate = 48000;
 // For Opus, 20ms is the suggested default.
 constexpr base::TimeDelta kDefaultOpusBufferDuration = base::Milliseconds(20);
 
+constexpr base::TimeDelta kMinFrameDuration = base::Microseconds(2500);
+
+// Keep this in reverse order as `ComputeCompatibleFrameDuration` grabs the
+// largest compatible frame greedily.
+constexpr std::array<base::TimeDelta, 6> kStandardDurations = {
+    base::Milliseconds(60), base::Milliseconds(40), base::Milliseconds(20),
+    base::Milliseconds(10), base::Milliseconds(5),  base::Microseconds(2500)};
+
 // Deletes the libopus encoder instance pointed to by |encoder_ptr|.
 inline void OpusEncoderDeleter(OpusEncoder* encoder_ptr) {
   opus_encoder_destroy(encoder_ptr);
+}
+
+inline void OpusRepacketizerDeleter(OpusRepacketizer* repacketizer_ptr) {
+  opus_repacketizer_destroy(repacketizer_ptr);
 }
 
 base::TimeDelta GetFrameDuration(
@@ -80,11 +93,36 @@ AudioParameters CreateOpusCompatibleParams(const AudioParameters& params,
   return result;
 }
 
+// Check if the duration is explicitly 2.5ms, 5, 10, 20, 40, 60.
+bool IsStandardFrameDuration(base::TimeDelta frame_duration) {
+  return std::ranges::find(kStandardDurations, frame_duration) !=
+         kStandardDurations.end();
+}
+
+// Checks that we are only giving Valid Frame durations.
+bool IsValidFrameDuration(base::TimeDelta frame_duration) {
+  return frame_duration <= base::Milliseconds(120) &&
+         frame_duration >= kMinFrameDuration &&
+         (frame_duration % kMinFrameDuration).is_zero();
+}
+
+// Finds an appropriate standard duration based on the given `frame_duration`
+// The current implementation is merely finding the largest standard duration
+// that is divisible by the given frame duration.
+base::TimeDelta ComputeCompatibleFrameDuration(base::TimeDelta frame_duration) {
+  auto is_divisible = [frame_duration](base::TimeDelta duration) {
+    return (frame_duration % duration).is_zero();
+  };
+
+  auto result = std::ranges::find_if(kStandardDurations, is_divisible);
+  return *result;
+}
+
 }  // namespace
 
-
 AudioOpusEncoder::AudioOpusEncoder()
-    : opus_encoder_(nullptr, OpusEncoderDeleter) {}
+    : opus_encoder_(nullptr, OpusEncoderDeleter),
+      opus_repacketizer_(nullptr, OpusRepacketizerDeleter) {}
 
 void AudioOpusEncoder::Initialize(const Options& options,
                                   OutputCB output_callback,
@@ -104,22 +142,60 @@ void AudioOpusEncoder::Initialize(const Options& options,
   }
 
   options_ = options;
-  const base::TimeDelta frame_duration = GetFrameDuration(options_.opus);
-  input_params_ = CreateInputParams(options, frame_duration);
+
+  final_frame_duration_ = GetFrameDuration(options_.opus);
+  auto intermediate_frame_duration = final_frame_duration_;
+  if (!IsValidFrameDuration(final_frame_duration_)) {
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                      "Invalid frame duration."));
+    return;
+  }
+
+  if (!IsStandardFrameDuration(final_frame_duration_)) {
+    // If it is a valid duration but not one of the "standard" durations, we
+    // will need to use the repacketizer.
+    intermediate_frame_duration =
+        ComputeCompatibleFrameDuration(final_frame_duration_);
+
+    max_packets_in_repacketizer_ =
+        final_frame_duration_ / intermediate_frame_duration;
+
+    pending_packets_.resize(max_packets_in_repacketizer_);
+    for (auto& v : pending_packets_) {
+      v = EncodingBuffer::Uninit(kOpusMaxDataBytes);
+    }
+
+    opus_repacketizer_ = OwnedOpusRepacketizer(opus_repacketizer_create(),
+                                               OpusRepacketizerDeleter);
+    if (!opus_repacketizer_) {
+      std::move(done_cb).Run(
+          EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                        "Failed to create Opus repacketizer."));
+      return;
+    }
+  }
+
+  input_params_ = CreateInputParams(options, final_frame_duration_);
   if (!input_params_.IsValid()) {
     std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializationError);
     return;
   }
 
-  converted_params_ = CreateOpusCompatibleParams(input_params_, frame_duration);
-  if (!converted_params_.IsValid()) {
-    std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializationError);
-    return;
-  }
+  // We use `intermediate_params_` to correctly initialize the FIFO to handle
+  // the compatible frame durations. In the case of no repacketizer, this will
+  // be the same as `converted_params_`.
+  auto intermediate_params =
+      CreateOpusCompatibleParams(input_params_, intermediate_frame_duration);
+  DCHECK(intermediate_params.IsValid());
+
+  intermediate_frame_count_ = intermediate_params.frames_per_buffer();
 
   fifo_ =
-      std::make_unique<ConvertingAudioFifo>(input_params_, converted_params_);
+      std::make_unique<ConvertingAudioFifo>(input_params_, intermediate_params);
 
+  converted_params_ =
+      CreateOpusCompatibleParams(input_params_, final_frame_duration_);
   timestamp_tracker_ =
       std::make_unique<AudioTimestampHelper>(converted_params_.sample_rate());
   buffer_.resize(converted_params_.channels() *
@@ -250,6 +326,18 @@ void AudioOpusEncoder::Flush(EncoderStatusCB done_cb) {
     fifo_->Flush();
     DrainFifoOutput();
     fifo_has_data_ = false;
+
+    // Add silence in order to flush remaining frames in repacketizer as a
+    // full packet.
+    if (packets_in_repacketizer_ > 0) {
+      waiting_for_output_ = true;
+      auto silent_padding = AudioBus::Create(converted_params_.channels(),
+                                             intermediate_frame_count_);
+      silent_padding->Zero();
+      while (waiting_for_output_ && current_done_cb_) {
+        DoEncode(silent_padding.get());
+      }
+    }
   }
 
   timestamp_tracker_->Reset();
@@ -267,6 +355,16 @@ void AudioOpusEncoder::DrainFifoOutput() {
   }
 }
 
+base::span<uint8_t> AudioOpusEncoder::GetEncoderDestination() {
+  if (!opus_repacketizer_) {
+    return encoding_buffer_;
+  }
+
+  // Get the next free packet.
+  CHECK_LT(packets_in_repacketizer_, max_packets_in_repacketizer_);
+  return pending_packets_[packets_in_repacketizer_];
+}
+
 void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
   audio_bus->ToInterleaved<Float32SampleTypeTraits>(audio_bus->frames(),
                                                     buffer_.data());
@@ -274,9 +372,11 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
   if (!current_done_cb_)
     return;
 
+  auto buffer = GetEncoderDestination();
+
   auto result = opus_encode_float(opus_encoder_.get(), buffer_.data(),
-                                  converted_params_.frames_per_buffer(),
-                                  encoding_buffer_.data(), kOpusMaxDataBytes);
+                                  intermediate_frame_count_, buffer.data(),
+                                  kOpusMaxDataBytes);
 
   if (result < 0) {
     DCHECK(current_done_cb_);
@@ -284,41 +384,64 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
         .Run(EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
                            opus_strerror(result)));
     return;
+  } else if (result <= 1) {
+    // If |result| in {0,1}, do nothing; the documentation says that a return
+    // value of zero or one means the packet does not need to be transmitted.
+    return;
   }
 
-  size_t encoded_data_size = result;
-  // If |result| in {0,1}, do nothing; the documentation says that a return
-  // value of zero or one means the packet does not need to be transmitted.
-  if (encoded_data_size > 1) {
-    std::optional<CodecDescription> desc;
-    if (need_to_emit_extra_data_) {
-      desc = PrepareExtraData();
-      need_to_emit_extra_data_ = false;
-    }
+  if (!opus_repacketizer_) {
+    EmitEncodedBuffer(result);
+    return;
+  }
 
-    auto ts = base::TimeTicks() + timestamp_tracker_->GetTimestamp();
+  int status =
+      opus_repacketizer_cat(opus_repacketizer_.get(), buffer.data(), result);
 
-    auto duration = timestamp_tracker_->GetFrameDuration(
-        converted_params_.frames_per_buffer());
+  if (status != OPUS_OK) {
+    DCHECK(current_done_cb_);
+    std::move(current_done_cb_)
+        .Run(EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+                           "Failed to add to Repacketizer."));
+    return;
+  }
 
-    // `timestamp_tracker_` will return base::TimeDelta() if the timestamps
-    // overflow.
-    if (duration.is_zero()) {
-      DCHECK(current_done_cb_);
+  ++packets_in_repacketizer_;
+
+  if (packets_in_repacketizer_ == max_packets_in_repacketizer_) {
+    auto encoded_data_size = opus_repacketizer_out(
+        opus_repacketizer_.get(), encoding_buffer_.data(), kOpusMaxDataBytes);
+    if (encoded_data_size < 0) {
       std::move(current_done_cb_)
           .Run(EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
-                             "Invalid computed duration."));
+                             "Failed to read from Repacketizer."));
       return;
     }
-
-    EncodedAudioBuffer encoded_buffer(
-        converted_params_,
-        base::HeapArray<uint8_t>::CopiedFrom(
-            base::span(encoding_buffer_).first(encoded_data_size)),
-        ts, duration);
-    output_cb_.Run(std::move(encoded_buffer), desc);
+    EmitEncodedBuffer(encoded_data_size);
+    opus_repacketizer_init(opus_repacketizer_.get());
+    packets_in_repacketizer_ = 0;
   }
-  timestamp_tracker_->AddFrames(converted_params_.frames_per_buffer());
+  DCHECK_LT(packets_in_repacketizer_, max_packets_in_repacketizer_);
+}
+
+void AudioOpusEncoder::EmitEncodedBuffer(size_t encoded_data_size) {
+  std::optional<CodecDescription> desc;
+  if (need_to_emit_extra_data_) {
+    desc = PrepareExtraData();
+    need_to_emit_extra_data_ = false;
+  }
+
+  auto ts = base::TimeTicks() + timestamp_tracker_->GetTimestamp();
+
+  EncodedAudioBuffer encoded_buffer(
+      converted_params_,
+      base::HeapArray<uint8_t>::CopiedFrom(
+          base::span(encoding_buffer_).first(encoded_data_size)),
+      ts, final_frame_duration_);
+  output_cb_.Run(std::move(encoded_buffer), desc);
+  timestamp_tracker_->AddFrames(AudioTimestampHelper::TimeToFrames(
+      final_frame_duration_, converted_params_.sample_rate()));
+  waiting_for_output_ = false;
 }
 
 // Creates and returns the libopus encoder instance. Returns nullptr if the

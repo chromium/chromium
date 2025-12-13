@@ -14,7 +14,7 @@
 namespace {
 
 std::string NormalizeHost(std::string_view host) {
-  return GURL(base::StrCat({url::kHttpScheme, "://", host})).host();
+  return GURL(base::StrCat({url::kHttpScheme, "://", host})).GetHost();
 }
 
 }  // namespace

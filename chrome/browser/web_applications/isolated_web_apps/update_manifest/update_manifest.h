@@ -17,8 +17,8 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
-#include "base/version.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -85,7 +85,7 @@ class UpdateManifest {
         const GURL& update_manifest_url);
 
     VersionEntry(GURL src,
-                 base::Version version,
+                 IwaVersion version,
                  base::flat_set<UpdateChannel> channels);
 
     VersionEntry(const VersionEntry& other);
@@ -94,7 +94,7 @@ class UpdateManifest {
     ~VersionEntry();
 
     GURL src() const;
-    base::Version version() const;
+    IwaVersion version() const;
 
     // Each version contains to a set of update channels, which are defined by
     // the IWA's developer. While the field is optional in the spec, it is
@@ -105,24 +105,8 @@ class UpdateManifest {
    private:
     friend bool operator==(const VersionEntry& a, const VersionEntry& b);
 
-    static base::expected<base::Version, std::monostate>
-    ParseAndValidateVersion(
-        base::optional_ref<const base::Value> version_value);
-
-    static base::expected<GURL, std::monostate> ParseAndValidateSrc(
-        base::optional_ref<const base::Value> src_value,
-        const GURL& update_manifest_url);
-
-    // Parses the `channels` field value of a version entry and either returns a
-    // set of channels on success or an error on failure. If `channels` is not
-    // set (i.e., `channels_value` is `std::nullopt`), then a set containing
-    // just the "default" channel is returned.
-    static base::expected<base::flat_set<UpdateChannel>, std::monostate>
-    ParseAndValidateChannels(
-        base::optional_ref<const base::Value> channels_value);
-
     GURL src_;
-    base::Version version_;
+    IwaVersion version_;
     base::flat_set<UpdateChannel> channels_;
   };
 
@@ -152,7 +136,7 @@ class UpdateManifest {
 
   // Returns version entry for given version and channel. If there is no entry
   // matching the criteria, then it returns `std::nullopt'.
-  std::optional<VersionEntry> GetVersion(const base::Version& version,
+  std::optional<VersionEntry> GetVersion(const IwaVersion& version,
                                          const UpdateChannel& channel) const;
 
   // Returns channel metadata for a provided update channel ID. If no metadata

@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/hash/sha1.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "crypto/obsolete/sha1.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,8 +91,8 @@ class ScreensaverImageDownloaderTest : public testing::Test {
   }
 
   base::FilePath GetExpectedFilePath(const std::string& url) {
-    auto hash = base::SHA1Hash(base::as_byte_span(url));
-    const std::string encoded_hash = base::HexEncode(hash);
+    const std::string encoded_hash = base::HexEncode(
+        crypto::obsolete::Sha1::HashForTesting(base::as_byte_span(url)));
     return test_download_folder_.AppendASCII(encoded_hash + kCacheFileExt);
   }
 

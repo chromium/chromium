@@ -94,6 +94,10 @@ bool GestureProviderAura::RequiresDoubleTapGestureEvents() const {
   return gesture_consumer_->RequiresDoubleTapGestureEvents();
 }
 
+void GestureProviderAura::OnUnconfirmedTapConvertedToTap() {
+  filtered_gesture_provider_.OnUnconfirmedTapConvertedToTap();
+}
+
 std::vector<std::unique_ptr<GestureEvent>>
 GestureProviderAura::GetAndResetPendingGestures() {
   std::vector<std::unique_ptr<GestureEvent>> result;
@@ -101,12 +105,11 @@ GestureProviderAura::GetAndResetPendingGestures() {
   return result;
 }
 
-void GestureProviderAura::OnTouchEnter(int pointer_id, float x, float y) {
+void GestureProviderAura::OnTouchEnter(const ui::TouchEvent& event) {
   auto touch_event = std::make_unique<TouchEvent>(
       EventType::kTouchPressed, gfx::Point(), ui::EventTimeForNow(),
-      PointerDetails(ui::EventPointerType::kTouch, pointer_id),
-      EF_IS_SYNTHESIZED);
-  gfx::PointF point(x, y);
+      event.pointer_details(), EF_IS_SYNTHESIZED);
+  gfx::PointF point(event.x(), event.y());
   touch_event->set_location_f(point);
   touch_event->set_root_location_f(point);
 

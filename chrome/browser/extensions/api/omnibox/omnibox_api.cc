@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/omnibox/omnibox_input_watcher_factory.h"
 #include "chrome/browser/omnibox/omnibox_suggestions_watcher_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,11 +34,13 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/icon_util.h"
 #include "extensions/browser/install_prefs_helper.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace extensions {
 
@@ -379,8 +380,6 @@ ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
             // The image data should have been verified by the pre-validation
             // param update.
             CHECK(!image_data.empty());
-            // TODO(crbug.com/408069174): Move ParseIconFromCanvasDictionary
-            // outside `ExtensionAction` into a common file.
             if (extensions::ParseIconFromCanvasDictionary(image_data,
                                                           &image_skia) !=
                 extensions::IconParseResult::kSuccess) {

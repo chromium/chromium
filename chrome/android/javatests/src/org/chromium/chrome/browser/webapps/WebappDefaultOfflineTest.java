@@ -12,6 +12,7 @@ import android.graphics.Color;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,7 +32,7 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappDefaultOfflineTest {
-    public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
+    @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
     @Before
     public void setUp() {

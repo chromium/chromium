@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
@@ -446,7 +447,7 @@ class GraphImplTflite::ComputeResources {
 };
 
 // static
-base::expected<std::unique_ptr<GraphImplTflite>, mojom::ErrorPtr>
+base::expected<scoped_refptr<GraphImplTflite>, mojom::ErrorPtr>
 GraphImplTflite::CreateAndBuild(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
@@ -475,11 +476,12 @@ GraphImplTflite::CreateAndBuild(
   auto compute_resources_state =
       base::MakeRefCounted<QueueableResourceState<ComputeResources>>(
           std::move(compute_resources));
-  return base::WrapUnique(new GraphImplTflite(
+  return base::MakeRefCounted<GraphImplTflite>(
       std::move(receiver), std::move(compute_resource_info),
       std::move(result.input_name_to_index),
       std::move(result.output_name_to_index),
-      std::move(compute_resources_state), context, std::move(devices)));
+      std::move(compute_resources_state), context->AsWeakPtr(),
+      std::move(devices));
 }
 
 GraphImplTflite::~GraphImplTflite() = default;
@@ -491,10 +493,10 @@ GraphImplTflite::GraphImplTflite(
     base::flat_map<std::string, int> output_name_to_index,
     scoped_refptr<QueueableResourceState<ComputeResources>>
         compute_resources_state,
-    ContextImplTflite* context,
+    base::WeakPtr<WebNNContextImpl> context,
     std::vector<mojom::Device> devices)
     : WebNNGraphImpl(std::move(receiver),
-                     context,
+                     std::move(context),
                      std::move(compute_resource_info),
                      std::move(devices)),
       compute_resources_state_(std::move(compute_resources_state)),
@@ -502,8 +504,10 @@ GraphImplTflite::GraphImplTflite(
       output_name_to_index_(std::move(output_name_to_index)) {}
 
 void GraphImplTflite::DispatchImpl(
-    const base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
-    const base::flat_map<std::string, WebNNTensorImpl*> named_outputs) {
+    const base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+        named_inputs,
+    const base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+        named_outputs) {
   ScopedTrace scoped_trace("GraphImplTflite::DispatchImpl");
 
   std::vector<
@@ -514,14 +518,14 @@ void GraphImplTflite::DispatchImpl(
 
   // The caller guarantees that all expected tensors have been provided.
   for (const auto& [name, tensor] : named_inputs) {
-    input_buffer_states.emplace_back(
-        input_name_to_index_.at(name),
-        static_cast<TensorImplTflite*>(tensor)->GetBufferState());
+    auto* tflite_tensor = static_cast<TensorImplTflite*>(tensor.get());
+    input_buffer_states.emplace_back(input_name_to_index_.at(name),
+                                     tflite_tensor->GetBufferState());
   }
   for (const auto& [name, tensor] : named_outputs) {
-    output_buffer_states.emplace_back(
-        output_name_to_index_.at(name),
-        static_cast<TensorImplTflite*>(tensor)->GetBufferState());
+    auto* tflite_tensor = static_cast<TensorImplTflite*>(tensor.get());
+    output_buffer_states.emplace_back(output_name_to_index_.at(name),
+                                      tflite_tensor->GetBufferState());
   }
 
   // Input tensors will be read from while the graph is executing, so lock them

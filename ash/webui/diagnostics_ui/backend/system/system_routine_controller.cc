@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/diagnostics_ui/backend/system/system_routine_controller.h"
 
 #include <optional>
@@ -17,11 +12,14 @@
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/common/routine_properties.h"
 #include "ash/webui/diagnostics_ui/backend/system/cros_healthd_helpers.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -200,7 +198,7 @@ void SystemRoutineController::OnAvailableRoutinesFetched(
   base::flat_set<healthd::DiagnosticRoutineEnum> healthd_routines(
       available_routines);
   for (size_t i = 0; i < kRoutinePropertiesLength; i++) {
-    const RoutineProperties& routine = kRoutineProperties[i];
+    const RoutineProperties& routine = UNSAFE_TODO(kRoutineProperties[i]);
     if (base::Contains(healthd_routines, routine.healthd_type)) {
       supported_routines_.push_back(routine.type);
     }
@@ -582,21 +580,13 @@ void SystemRoutineController::OnPowerRoutineResultFetched(
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      file_contents,
-      base::BindOnce(&SystemRoutineController::OnPowerRoutineJsonParsed,
-                     weak_factory_.GetWeakPtr(), routine_type));
-  return;
-}
-
-void SystemRoutineController::OnPowerRoutineJsonParsed(
-    mojom::RoutineType routine_type,
-    data_decoder::DataDecoder::ValueOrError result) {
+  std::optional<base::Value> result = base::JSONReader::Read(
+      file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!result.has_value()) {
     OnPowerRoutineResult(routine_type,
                          mojom::StandardRoutineResult::kExecutionError,
                          /*percent_change=*/0, /*seconds_elapsed=*/0);
-    DVLOG(2) << "JSON parsing failed: " << result.error();
+    DVLOG(2) << "JSON parsing failed";
     return;
   }
 

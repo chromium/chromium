@@ -4,6 +4,7 @@
 
 #include "chrome/updater/installer.h"
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <utility>
@@ -92,7 +93,8 @@ Installer::Installer(
     bool update_disabled,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
     scoped_refptr<PersistedData> persisted_data,
-    crx_file::VerifierFormat crx_verifier_format)
+    crx_file::VerifierFormat crx_verifier_format,
+    std::optional<std::vector<uint8_t>> crx_public_key_hash)
     : updater_scope_(GetUpdaterScope()),
       app_id_(app_id),
       client_install_data_(client_install_data),
@@ -107,6 +109,7 @@ Installer::Installer(
       policy_same_version_update_(policy_same_version_update),
       persisted_data_(persisted_data),
       crx_verifier_format_(crx_verifier_format),
+      crx_public_key_hash_(crx_public_key_hash),
       app_info_(AppInfo(GetUpdaterScope(), app_id, {}, {}, {}, {}, {})) {}
 
 Installer::~Installer() = default;
@@ -143,6 +146,9 @@ void Installer::MakeCrxComponentFromAppInfo(
   component.action_handler = MakeActionHandler();
   component.requires_network_encryption = false;
   component.crx_format_requirement = crx_verifier_format_;
+  if (crx_public_key_hash_) {
+    component.pk_hash = *crx_public_key_hash_;
+  }
   component.app_id = app_id_;
 
   // Query server for install data only when the client does not specify one.
@@ -194,14 +200,20 @@ Installer::Result Installer::InstallHelper(
                   kErrorMissingInstallParams);
   }
 
+  const base::FilePath installer_path =
+      unpack_path.AppendUTF8(install_params->run);
+  if (installer_path.ReferencesParent()) {
+    return Result(GOOPDATEINSTALL_E_FILENAME_INVALID,
+                  kErrorPathReferencesParent);
+  }
+
   // Assume the install params are ASCII for now.
   // Upon success, when the control flow returns back to the |update_client|,
   // the prefs are updated asynchronously with the new |pv| and |fingerprint|.
   // The task sequencing guarantees that the prefs will be updated by the
   // time another CrxDataCallback is invoked, which needs updated values.
   return RunApplicationInstaller(
-      app_info_, unpack_path.AppendUTF8(install_params->run),
-      install_params->arguments,
+      app_info_, installer_path, install_params->arguments,
       WriteInstallerDataToTempFile(unpack_path,
                                    client_install_data_.empty()
                                        ? install_params->server_install_data
@@ -220,11 +232,20 @@ void Installer::InstallWithSyncPrimitives(
                                                 base::BlockingType::WILL_BLOCK);
   const auto result = InstallHelper(unpack_path, std::move(install_params),
                                     std::move(progress_callback));
+  if (result.result.category != update_client::ErrorCategory::kNone) {
+    for (const auto& log_file :
+         GetFilesWithPredicate(unpack_path, [](const base::FilePath& item) {
+           return item.MatchesFinalExtension(FILE_PATH_LITERAL(".log"));
+         })) {
+      VLOG(2) << "===== Begin log file: " << log_file;
+      std::string log;
+      if (base::ReadFileToString(log_file, &log)) {
+        VLOG(2) << log;
+      }
+      VLOG(2) << "===== End log file: " << log_file;
+    }
+  }
   std::move(callback).Run(result);
-}
-
-void Installer::OnUpdateError(int error) {
-  LOG(ERROR) << "updater error: " << error << " for " << app_id_;
 }
 
 void Installer::Install(const base::FilePath& unpack_path,

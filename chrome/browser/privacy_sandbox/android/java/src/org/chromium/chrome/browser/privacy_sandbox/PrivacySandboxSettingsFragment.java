@@ -6,15 +6,19 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 /** Settings fragment for privacy sandbox settings. */
 @NullMarked
@@ -95,4 +99,20 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
     }
+
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    PrivacySandboxSettingsFragment.class.getName(),
+                    R.xml.privacy_sandbox_preferences) {
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    PrivacySandboxBridge bridge = new PrivacySandboxBridge(profile);
+
+                    if (bridge.isPrivacySandboxRestricted()) {
+                        indexData.removeEntry(getUniqueId(TOPICS_PREF));
+                        indexData.removeEntry(getUniqueId(FLEDGE_PREF));
+                    }
+                }
+            };
 }

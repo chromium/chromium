@@ -37,9 +37,9 @@ void InitializeRedirectStat(RedirectStat* redirect,
                             int consecutive_misses,
                             bool include_scheme,
                             bool include_port) {
-  redirect->set_url(url.host());
+  redirect->set_url(url.GetHost());
   if (include_scheme)
-    redirect->set_url_scheme(url.scheme());
+    redirect->set_url_scheme(url.GetScheme());
   if (include_port)
     redirect->set_url_port(url.EffectiveIntPort());
   redirect->set_number_of_hits(number_of_hits);

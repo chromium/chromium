@@ -17,7 +17,7 @@
 
 #include "base/functional/callback.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
@@ -40,7 +40,7 @@ class ContextFactory;
 namespace views {
 
 class NativeWidget;
-class NonClientFrameView;
+class FrameView;
 class Widget;
 
 #if defined(USE_AURA)
@@ -147,13 +147,12 @@ class VIEWS_EXPORT ViewsDelegate {
   virtual gfx::ImageSkia* GetDefaultWindowIcon() const;
 #endif
 
-  // Creates a default NonClientFrameView to be used for windows that don't
+  // Creates a default FrameView to be used for windows that don't
   // specify their own and where no platform frame view is specified.
   //
   // Defaults to `DefaultFrameView`. This method should never return null, as a
   // fallback is needed on all platforms.
-  virtual std::unique_ptr<NonClientFrameView> CreateDefaultNonClientFrameView(
-      Widget* widget);
+  virtual std::unique_ptr<FrameView> CreateDefaultFrameView(Widget* widget);
 
   // AddRef/ReleaseRef are invoked while a menu is visible. They are used to
   // ensure we don't attempt to exit while a menu is showing.

@@ -30,13 +30,13 @@ class ChromeConstrainedWindowViewsClient
   web_modal::ModalDialogHost* GetModalDialogHost(
       gfx::NativeWindow parent) override {
     // Get the browser dialog management and hosting components from |parent|.
-    Browser* browser = chrome::FindBrowserWithWindow(parent);
+    Browser* const browser = chrome::FindBrowserWithWindow(parent);
     if (browser) {
-      ChromeWebModalDialogManagerDelegate* manager = browser;
-      return manager->GetWebContentsModalDialogHost();
+      return browser->GetWebContentsModalDialogHostForWindow();
     }
     return nullptr;
   }
+
   gfx::NativeView GetDialogHostView(gfx::NativeWindow parent) override {
     return platform_util::GetViewForWindow(parent);
   }

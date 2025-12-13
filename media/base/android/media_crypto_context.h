@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "media/base/android/android_util.h"
 #include "media/base/media_export.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace media {
 
@@ -36,9 +36,9 @@ class MEDIA_EXPORT MediaCryptoContext {
   // |requires_secure_video_codec| - true if secure video decoder is required.
   //                                 Should be ignored if |media_crypto|
   //                                 contains null MediaCrypto object.
-  using MediaCryptoReadyCB =
-      base::OnceCallback<void(JavaObjectPtr media_crypto,
-                              bool requires_secure_video_codec)>;
+  using MediaCryptoReadyCB = base::OnceCallback<void(
+      jni_zero::ScopedJavaGlobalRef<jobject> media_crypto,
+      bool requires_secure_video_codec)>;
   virtual void SetMediaCryptoReadyCB(
       MediaCryptoReadyCB media_crypto_ready_cb) = 0;
 };

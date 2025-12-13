@@ -32,7 +32,7 @@ bool IsLinkLikelyPersonalized(const GURL& url) {
       };
 
   for (const auto& [domain, path_prefix] : kBlocklist) {
-    if (url.DomainIs(domain) && base::StartsWith(url.path(), path_prefix)) {
+    if (url.DomainIs(domain) && base::StartsWith(url.GetPath(), path_prefix)) {
       return true;
     }
   }
@@ -53,6 +53,7 @@ void QuickInsertLinkSuggester::GetSuggestedLinks(
   CHECK(history_service);
   history::QueryOptions options;
   options.max_count = max_links;
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.SetRecentDayRange(kRecentDayRange);
   history_service->QueryHistory(
       std::u16string(), options,

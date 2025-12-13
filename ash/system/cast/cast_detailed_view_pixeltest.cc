@@ -9,26 +9,34 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ui/views/view.h"
 
 namespace ash {
 namespace {
 
-class CastDetailedViewPixelTest : public AshTestBase {
+class CastDetailedViewPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
-  CastDetailedViewPixelTest() = default;
-
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 
   TestCastConfigController cast_config_;
 };
 
-TEST_F(CastDetailedViewPixelTest, Basics) {
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    CastDetailedViewPixelTest,
+    testing::Bool());
+
+TEST_P(CastDetailedViewPixelTest, Basics) {
   // Set up the cast view with "Connect with a code", an inactive sink, and an
   // active sink so that all the possible UI elements show.
   cast_config_.set_access_code_casting_enabled(true);
@@ -60,8 +68,9 @@ TEST_F(CastDetailedViewPixelTest, Basics) {
           ->GetDetailedViewForTest<TrayDetailedView>();
   ASSERT_TRUE(detailed_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "check_view",
-      /*revision_number=*/12, detailed_view));
+      GenerateScreenshotName("check_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 0,
+      detailed_view));
 }
 
 }  // namespace

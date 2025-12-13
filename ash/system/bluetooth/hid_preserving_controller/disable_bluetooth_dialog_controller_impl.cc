@@ -21,6 +21,7 @@
 #include "ui/views/controls/bulleted_label_list/bulleted_label_list_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"

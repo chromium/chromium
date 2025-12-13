@@ -129,13 +129,21 @@ void AutofillWebDataService::AddOrUpdateEntityInstance(
                      std::move(on_success)));
 }
 
+void AutofillWebDataService::UpdateEntityMetadata(
+    const EntityInstance& entity) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::UpdateEntityMetadata,
+                     autofill_backend_, entity));
+}
+
 void AutofillWebDataService::RemoveEntityInstance(
-    base::Uuid guid,
+    EntityInstance entity,
     base::OnceCallback<void(EntityInstanceChange)> on_success) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::RemoveEntityInstance,
-                     autofill_backend_, std::move(guid),
+                     autofill_backend_, std::move(entity),
                      std::move(on_success)));
 }
 
@@ -289,12 +297,21 @@ void AutofillWebDataService::ClearLocalCvcs() {
                                 autofill_backend_));
 }
 
-void AutofillWebDataService::CleanupForCrbug411681430() {
+void AutofillWebDataService::ClearLocalCvcsUpToMay2025() {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::CleanupForCrbug411681430,
+      base::BindOnce(&AutofillWebDataBackendImpl::ClearLocalCvcsUpToMay2025,
                      autofill_backend_));
 }
+
+#if BUILDFLAG(IS_IOS)
+void AutofillWebDataService::CleanupForCrbug445879524() {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::CleanupForCrbug445879524,
+                     autofill_backend_));
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 WebDataServiceBase::Handle AutofillWebDataService::GetCreditCards(
     WebDataServiceRequestCallback consumer) {
@@ -436,7 +453,7 @@ void AutofillWebDataService::RemoveObserver(
   }
 }
 
-base::SupportsUserData* AutofillWebDataService::GetDBUserData() {
+base::SupportsUserData& AutofillWebDataService::GetDBUserData() {
   return autofill_backend_->GetDBUserData();
 }
 

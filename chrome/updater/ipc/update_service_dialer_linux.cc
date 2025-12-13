@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/updater/ipc/update_service_dialer.h"
 
 #include <sys/socket.h>
@@ -15,6 +10,7 @@
 #include <cstdio>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -43,8 +39,8 @@ bool DialUpdateService(UpdaterScope scope) {
 
   struct sockaddr_un remote;
   remote.sun_family = AF_UNIX;
-  snprintf(remote.sun_path, sizeof(remote.sun_path), "%s",
-           activation_socket_path.AsUTF8Unsafe().c_str());
+  UNSAFE_TODO(snprintf(remote.sun_path, sizeof(remote.sun_path), "%s",
+                       activation_socket_path.AsUTF8Unsafe().c_str()));
   int len = strlen(remote.sun_path) + sizeof(remote.sun_family);
   if (connect(sock_fd.get(), (struct sockaddr*)&remote, len) == -1) {
     VPLOG(1) << "Could not connect to activation socket";

@@ -85,6 +85,8 @@
 #include <numbers>
 
 #include "base/check_op.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/cpu.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -278,10 +280,10 @@ void SincResampler::SetRatio(double io_sample_rate_ratio) {
   }
 }
 
-void SincResampler::Resample(int frames, float* destination) {
+void SincResampler::Resample(base::span<float> destination) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("audio"), "SincResampler::Resample",
                "io sample rate ratio", io_sample_rate_ratio_);
-  int remaining_frames = frames;
+  int remaining_frames = destination.size();
 
   // Step (1) -- Prime the input buffer at the start of the input stream.
   if (!buffer_primed_ && remaining_frames) {
@@ -290,6 +292,7 @@ void SincResampler::Resample(int frames, float* destination) {
   }
 
   // Step (2) -- Resample!
+  auto dest_iter = destination.begin();
   while (remaining_frames) {
     // Silent audio can contain non-zero samples small enough to result in
     // subnormals internally. Disabling subnormals can be significantly faster.
@@ -320,8 +323,8 @@ void SincResampler::Resample(int frames, float* destination) {
         // Figure out how much to weight each kernel's "convolution".
         const double kernel_interpolation_factor =
             virtual_offset_idx - offset_idx;
-        *destination++ = convolve_proc_(kernel_size_, input_ptr, k1, k2,
-                                        kernel_interpolation_factor);
+        *dest_iter++ = convolve_proc_(
+            kernel_size_, input_ptr, k1, k2, kernel_interpolation_factor);
 
         // Advance the virtual index.
         virtual_source_idx_ += io_sample_rate_ratio_;

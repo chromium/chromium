@@ -28,7 +28,7 @@ public class InterfaceControlMessagesHelper {
      * InterfaceControlMessagesHelper#sendRunMessage}.
      */
     interface SendRunMessageCallback {
-        public void call(RunResponseMessageParams params);
+        void call(RunResponseMessageParams params);
     }
 
     /**

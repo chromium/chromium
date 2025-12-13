@@ -31,13 +31,12 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "chrome/browser/platform_util_internal.h"
-#include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
 #include "components/dbus/xdg/request.h"
 #include "content/public/browser/browser_thread.h"
 #include "dbus/bus.h"
-#include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "url/gurl.h"
 
@@ -208,8 +207,9 @@ class ShowItemHelper {
           kFreedesktopPortalName, dbus::ObjectPath(kFreedesktopPortalPath));
     }
 
-    DbusDictionary options;
-    options.PutAs(kActivationTokenKey, DbusString(activation_token));
+    dbus_xdg::Dictionary options;
+    options[kActivationTokenKey] =
+        dbus_utils::Variant::Wrap<"s">(activation_token);
     // In the rare occasion that another request comes in before the response is
     // received, we will end up overwriting this request object with the new one
     // and the response from the first request will not be handled in that case.
@@ -218,18 +218,17 @@ class ShowItemHelper {
     // effort basis.
     portal_open_directory_request_ = std::make_unique<dbus_xdg::Request>(
         bus_, portal_object_proxy_, kFreedesktopPortalOpenURI,
-        kMethodOpenDirectory,
-        MakeDbusParameters(DbusString(""), DbusUnixFd(std::move(fd))),
-        std::move(options),
+        kMethodOpenDirectory, std::move(options),
         base::BindOnce(&ShowItemHelper::ShowItemUsingPortalResponse,
                        // Unretained is safe, the ShowItemHelper instance is
                        // never destroyed.
-                       base::Unretained(this), full_path));
+                       base::Unretained(this), full_path),
+        std::string(), std::move(fd));
   }
 
   void ShowItemUsingPortalResponse(
       const base::FilePath& full_path,
-      base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
+      base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     portal_open_directory_request_.reset();
     if (!results.has_value()) {
@@ -250,26 +249,22 @@ class ShowItemHelper {
                                dbus::ObjectPath(kFreedesktopFileManagerPath));
     }
 
-    dbus::MethodCall show_items_call(kFreedesktopFileManagerName,
-                                     kMethodShowItems);
-    dbus::MessageWriter writer(&show_items_call);
-
-    writer.AppendArrayOfStrings(
-        {"file://" + full_path.value()});  // List of file(s) to highlight.
-    writer.AppendString({});               // startup-id
-
-    file_manager_object_proxy_->CallMethod(
-        &show_items_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+    std::vector<std::string> file_to_highlight{"file://" + full_path.value()};
+    dbus_utils::CallMethod<"ass", "">(
+        file_manager_object_proxy_, kFreedesktopFileManagerName,
+        kMethodShowItems,
         base::BindOnce(&ShowItemHelper::ShowItemUsingFileManagerResponse,
                        // Unretained is safe, the ShowItemHelper instance is
                        // never destroyed.
-                       base::Unretained(this), full_path));
+                       base::Unretained(this), full_path),
+        std::move(file_to_highlight), /*startup-id=*/"");
   }
 
-  void ShowItemUsingFileManagerResponse(const base::FilePath& full_path,
-                                        dbus::Response* response) {
+  void ShowItemUsingFileManagerResponse(
+      const base::FilePath& full_path,
+      dbus_utils::CallMethodResultSig<""> response) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (!response) {
+    if (!response.has_value()) {
       // If the bus call fails, at least open the parent folder.
       OpenParentFolderFallback(full_path);
     }

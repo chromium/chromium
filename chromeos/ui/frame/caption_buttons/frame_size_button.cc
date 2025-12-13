@@ -15,13 +15,14 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "chromeos/utils/haptics_util.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
@@ -29,6 +30,7 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/animation/compositor_animation_runner.h"
 #include "ui/views/widget/widget.h"
@@ -126,8 +128,8 @@ class FrameSizeButton::PieAnimationView : public views::View,
     // example, if we are 1/4 through the animation when pressed, then we want
     // the remaining animation to only take 3/4 of the full long press duration.
     animation_.SetSlideDuration(
-        ui::ScopedAnimationDurationScaleMode::duration_multiplier() * duration *
-        (1 - animation_value));
+        gfx::ScopedAnimationDurationScaleMode::duration_multiplier() *
+        duration * (1 - animation_value));
     animation_.Show();
   }
 
@@ -152,12 +154,14 @@ class FrameSizeButton::PieAnimationView : public views::View,
     const SkScalar start_angle = -90.f;
     const SkScalar sweep_angle = 360.f * animation_value;
 
-    SkPath path;
     const gfx::Rect bounds = GetLocalBounds();
-    path.moveTo(bounds.CenterPoint().x(), bounds.CenterPoint().y());
-    path.arcTo(gfx::RectToSkRect(bounds), start_angle, sweep_angle,
-               /*forceMoveTo=*/false);
-    path.close();
+    const SkPath path =
+        SkPathBuilder()
+            .moveTo(bounds.CenterPoint().x(), bounds.CenterPoint().y())
+            .arcTo(gfx::RectToSkRect(bounds), start_angle, sweep_angle,
+                   /*forceMoveTo=*/false)
+            .close()
+            .detach();
 
     cc::PaintFlags flags;
     flags.setColor(
@@ -257,7 +261,7 @@ bool FrameSizeButton::IsMultitaskMenuShown() const {
 }
 
 void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
-  CHECK(!display::Screen::GetScreen()->InTabletMode());
+  CHECK(!display::Screen::Get()->InTabletMode());
   RecordMultitaskMenuEntryType(entry_type);
   // Owned by the bubble which contains this view. If there is an existing
   // bubble, it will be deactivated and then close and destroy itself.
@@ -278,7 +282,7 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
 }
 
 void FrameSizeButton::ToggleMultitaskMenu() {
-  CHECK(!display::Screen::GetScreen()->InTabletMode());
+  CHECK(!display::Screen::Get()->InTabletMode());
   if (!multitask_menu_widget_) {
     ShowMultitaskMenu(MultitaskMenuEntryType::kAccel);
   } else {
@@ -342,7 +346,7 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
   if (event->type() == ui::EventType::kGestureTapDown && delegate_->CanSnap() &&
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !display::Screen::Get()->InTabletMode()) {
     StartLongTapDelayTimer(*event);
 
     // Go through FrameCaptionButton's handling so that the button gets pressed.
@@ -440,7 +444,7 @@ void FrameSizeButton::StartLongTapDelayTimer(const ui::LocatedEvent& event) {
 
 void FrameSizeButton::StartPieAnimation(base::TimeDelta duration,
                                         MultitaskMenuEntryType entry_type) {
-  if (display::Screen::GetScreen()->InTabletMode() || IsMultitaskMenuShown()) {
+  if (display::Screen::Get()->InTabletMode() || IsMultitaskMenuShown()) {
     return;
   }
 
@@ -457,7 +461,7 @@ void FrameSizeButton::AnimateButtonsToSnapMode() {
 
 void FrameSizeButton::SetButtonsToSnapMode(
     FrameSizeButtonDelegate::Animate animate) {
-  DCHECK(!display::Screen::GetScreen()->InTabletMode());
+  DCHECK(!display::Screen::Get()->InTabletMode());
   in_snap_mode_ = true;
 
   // When using a right-to-left layout the close button is left of the size

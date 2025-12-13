@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -677,4 +678,18 @@ TEST_F(ActionFactoryTest, DeleteSharedTabGroup) {
   EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(UIMenuElementAttributesDestructive, action.attributes);
+}
+
+// Tests that the open image in Gemini action has the correct attributes.
+TEST_F(ActionFactoryTest, OpenImageInGemini) {
+  ActionFactory* factory =
+      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
+
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_GEMINI_IMAGE_CONTEXT_MENU_ENTRY_POINT);
+
+  UIAction* action = [factory actionToOpenImageInGeminiWithBlock:nil];
+
+  EXPECT_NSEQ(expectedTitle, action.title);
+  EXPECT_NE(nil, action.image);
 }

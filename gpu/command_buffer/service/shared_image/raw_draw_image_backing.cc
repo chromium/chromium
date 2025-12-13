@@ -8,7 +8,6 @@
 #include "base/notimplemented.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/paint_op_buffer.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"

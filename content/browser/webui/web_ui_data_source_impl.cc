@@ -50,6 +50,9 @@
 
 namespace content {
 
+// The path to the generated strings.m.js file.
+constexpr char kStringsJsPath[] = "strings.m.js";
+
 // static
 WebUIDataSource* WebUIDataSource::CreateAndAdd(BrowserContext* browser_context,
                                                const std::string& source_name) {
@@ -155,8 +158,9 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
   bool AllowCaching() override { return false; }
   std::string GetContentSecurityPolicy(
       network::mojom::CSPDirectiveName directive) override {
-    if (parent_->csp_overrides_.contains(directive)) {
-      return parent_->csp_overrides_.at(directive);
+    if (auto it = parent_->csp_overrides_.find(directive);
+        it != parent_->csp_overrides_.end()) {
+      return it->second;
     } else if (directive == network::mojom::CSPDirectiveName::FrameAncestors) {
       std::string frame_ancestors;
       if (parent_->frame_ancestors_.size() == 0)
@@ -400,6 +404,28 @@ url::Origin WebUIDataSourceImpl::GetOrigin() {
   return result;
 }
 
+void WebUIDataSourceImpl::SetResourcePathToResponse(std::string_view path,
+                                                    std::string_view content) {
+  CHECK(path != kStringsJsPath);
+  path_to_response_map_[std::string(path)] = std::string(content);
+}
+
+void WebUIDataSourceImpl::PopulateWebUIResources(
+    base::flat_map<std::string, std::string>& resource_map) const {
+  CHECK(!resource_map.contains(kStringsJsPath));
+  for (const auto& [path, content] : path_to_response_map_) {
+    resource_map[path] = content;
+  }
+
+  // Set strings last so that it won't be overridden by any other resources.
+  if (use_strings_js_) {
+    std::string generated_js;
+    webui::AppendJsonJS(localized_strings_, &generated_js,
+                        /*from_js_module=*/true);
+    resource_map[kStringsJsPath] = std::move(generated_js);
+  }
+}
+
 void WebUIDataSourceImpl::SetSupportedScheme(std::string_view scheme) {
   CHECK(!supported_scheme_.has_value());
 
@@ -407,7 +433,7 @@ void WebUIDataSourceImpl::SetSupportedScheme(std::string_view scheme) {
 }
 
 std::string WebUIDataSourceImpl::GetMimeType(const GURL& url) const {
-  const std::string_view file_path = url.path_piece();
+  const std::string_view file_path = url.path();
 
   if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
     return "text/css";
@@ -521,7 +547,7 @@ bool WebUIDataSourceImpl::ShouldReplaceI18nInJS() const {
 }
 
 int WebUIDataSourceImpl::URLToIdrOrDefault(const GURL& url) const {
-  const std::string path(url.path_piece().substr(1));
+  const std::string path(url.path().substr(1));
   auto it = path_to_idr_map_.find(path);
   if (it != path_to_idr_map_.end())
     return it->second;

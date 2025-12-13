@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "extensions/browser/api/system_cpu/cpu_info_provider.h"
 
 #include <inttypes.h>
@@ -15,6 +10,7 @@
 #include <cstdio>
 #include <sstream>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 
@@ -59,10 +55,10 @@ bool CpuInfoProvider::QueryCpuTimePerProcessor(
 
     uint64_t user = 0, nice = 0, sys = 0, idle = 0;
     uint32_t pindex = 0;
-    int vals =
-        sscanf(line.c_str(),
-               "cpu%" SCNu32 " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64,
-               &pindex, &user, &nice, &sys, &idle);
+    int vals = UNSAFE_TODO(sscanf(line.c_str(),
+                                  "cpu%" SCNu32 " %" SCNu64 " %" SCNu64
+                                  " %" SCNu64 " %" SCNu64,
+                                  &pindex, &user, &nice, &sys, &idle));
     if (vals != 5 || pindex >= infos->size()) {
       // TODO(b/326303922): This fires in internal integration tests, reevaluate
       // whether this should be (and can be made) unreachable or handle it.

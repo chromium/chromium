@@ -4,7 +4,7 @@
  *
  *   User-selectable configuration macros (specification only).
  *
- * Copyright (C) 1996-2024 by
+ * Copyright (C) 1996-2025 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -158,12 +158,12 @@ FT_BEGIN_HEADER
 
   /**************************************************************************
    *
-   * If this macro is defined, try to use an inlined assembler version of the
-   * @FT_MulFix function, which is a 'hotspot' when loading and hinting
-   * glyphs, and which should be executed as fast as possible.
+   * If this macro is defined, try to use an inlined 64-bit or assembler
+   * version of the @FT_MulFix function, which is a 'hotspot' when loading
+   * and hinting glyphs, and which should be executed as fast as possible.
    *
-   * Note that if your compiler or CPU is not supported, this will default to
-   * the standard and portable implementation found in `ftcalc.c`.
+   * If your compiler is not C99-compliant or CPU assembly is not supported,
+   * you can disable this option.
    */
 #define FT_CONFIG_OPTION_INLINE_MULFIX
 
@@ -273,7 +273,8 @@ FT_BEGIN_HEADER
    *   options set by those programs have precedence, overwriting the value
    *   here with the configured one.
    */
-#define FT_CONFIG_OPTION_USE_PNG
+/* Not needed since PDFs do not support fonts with PNGs. */
+/* #define FT_CONFIG_OPTION_USE_PNG */
 
 
   /**************************************************************************
@@ -605,7 +606,8 @@ FT_BEGIN_HEADER
    * outlines (from the 'COLR'/'CPAL' tables) in all formats using the 'sfnt'
    * module (namely TrueType~& OpenType).
    */
-#define TT_CONFIG_OPTION_COLOR_LAYERS
+/* Not needed since PDFs do not support any of the color font formats. */
+/* #define TT_CONFIG_OPTION_COLOR_LAYERS */
 
 
   /**************************************************************************
@@ -761,7 +763,13 @@ FT_BEGIN_HEADER
   /**************************************************************************
    *
    * Define `TT_CONFIG_OPTION_BDF` if you want to include support for an
-   * embedded 'BDF~' table within SFNT-based bitmap formats.
+   * embedded 'BDF~' table within an SFNT-based `.otb` font file.  This table
+   * is an extension used by X11 to preserve BDF properties after conversion
+   * to SFNT containers.  See
+   *
+   *   https://fontforge.org/docs/techref/non-standard.html#non-standard-bdf
+   *
+   * for more details.
    */
 /* #define TT_CONFIG_OPTION_BDF */
 

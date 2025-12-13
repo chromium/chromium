@@ -58,7 +58,7 @@ ExistingBaseSubMenuModel::MenuItemInfo::~MenuItemInfo() = default;
 
 void ExistingBaseSubMenuModel::Build(
     int new_text,
-    std::vector<MenuItemInfo> menu_item_infos) {
+    const std::vector<MenuItemInfo>& menu_item_infos) {
   AddItemWithStringId(min_command_id_, new_text);
   AddSeparator(ui::NORMAL_SEPARATOR);
 
@@ -66,6 +66,11 @@ void ExistingBaseSubMenuModel::Build(
   int command_id = min_command_id_ + 1;
   for (size_t i = 0; i < menu_item_infos.size(); ++i) {
     const MenuItemInfo& item = menu_item_infos[i];
+
+    if (item.has_separator_before) {
+      AddSeparator(ui::NORMAL_SEPARATOR);
+    }
+
     if (command_id > min_command_id_ + static_cast<int>(max_size)) {
       break;
     }

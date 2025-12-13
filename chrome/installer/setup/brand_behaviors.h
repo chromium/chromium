@@ -20,12 +20,9 @@ class Version;
 
 namespace installer {
 
-// Communicates a change in install status to the updater. |archive_type|, if
-// not UNKNOWN_ARCHIVE_TYPE, indicates what type of install/update is being
-// applied. |install_status|, if not UNKNOWN_STATUS, indicates the result of the
-// install/update.
-void UpdateInstallStatus(installer::ArchiveType archive_type,
-                         installer::InstallStatus install_status);
+// Updates the updater's view of "ap" to match current norms.
+// TODO(crbug.com/441478433): Delete this cleanup some time in 2027.
+void UpdateInstallStatus();
 
 // Returns an opaque string holding data relating to the browser being
 // uninstalled. This function is called before the product's Clients key is

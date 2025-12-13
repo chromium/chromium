@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/numerics/ranges.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -29,6 +30,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 #include "content/browser/web_contents/web_contents_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -374,15 +376,10 @@ class FactoryForTesting : public BackForwardTransitionAnimator::Factory {
 class BackForwardTransitionAnimationManagerBrowserTest
     : public ContentBrowserTest {
  public:
-  BackForwardTransitionAnimationManagerBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {blink::features::kBackForwardTransitions, {}},
-        {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
-         {}}};
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        enabled_features,
-        /*disabled_features=*/{});
-  }
+  BackForwardTransitionAnimationManagerBrowserTest()
+      : min_required_physical_rm_mb_auto_reset_(
+            NavigationTransitionConfig::SetMinRequiredPhysicalRamMbForTesting(
+                0)) {}
   ~BackForwardTransitionAnimationManagerBrowserTest() override = default;
 
   void SetUp() override {
@@ -403,9 +400,6 @@ class BackForwardTransitionAnimationManagerBrowserTest
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
-
-    ASSERT_TRUE(
-        base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions));
 
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -623,8 +617,10 @@ class BackForwardTransitionAnimationManagerBrowserTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram;
+
+ private:
+  base::AutoReset<int> min_required_physical_rm_mb_auto_reset_;
 };
 
 // Test parameter to run tests either with default device-scale-factor==1 or a
@@ -651,15 +647,7 @@ class BackForwardTransitionAnimationManagerBothEdgeBrowserTest
     : public BackForwardTransitionAnimationManagerBrowserTest,
       public WithParamInterface<DirectionDSF> {
  public:
-  BackForwardTransitionAnimationManagerBothEdgeBrowserTest() {
-    scoped_feature_list_.Reset();
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {blink::features::kBackForwardTransitions, {}},
-        {ui::kMirrorBackForwardGesturesInRTL, {}}};
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        enabled_features,
-        /*disabled_features=*/{});
-  }
+  BackForwardTransitionAnimationManagerBothEdgeBrowserTest() = default;
   ~BackForwardTransitionAnimationManagerBothEdgeBrowserTest() override =
       default;
 
@@ -3291,7 +3279,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
   web_contents()->GetWebContentsAndroid()->SetTopLevelNativeWindow(
       /*env=*/nullptr,
-      /*jwindow_android=*/base::android::JavaParamRef<jobject>(nullptr));
+      /*jwindow_android=*/base::android::JavaRef<jobject>(nullptr));
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
 }
@@ -4508,11 +4496,7 @@ class BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding
     : public BackForwardTransitionAnimationManagerBrowserTest {
  public:
   BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding() {
-    scoped_feature_list_.Reset();
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {blink::features::kBackForwardTransitions, {}},
-        {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
-         {}},
         {features::kRenderDocument,
          {{kRenderDocumentLevelParameterName,
            GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames)}}}};
@@ -4522,6 +4506,9 @@ class BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding
   }
   ~BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding() override =
       default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 }  // namespace
 

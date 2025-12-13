@@ -31,6 +31,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -52,7 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Service that is responsible for uploading crash minidumps to the Google crash server. */
 @NullMarked
-public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
+public class MinidumpUploadServiceImpl extends SplitCompatIntentService.Impl {
     private static final String TAG = "MinidmpUploadService";
 
     // Intent actions

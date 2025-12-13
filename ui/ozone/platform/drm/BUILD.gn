@@ -11,6 +11,10 @@ import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
 import("//ui/gl/features.gni")
 
+# This is ChromeOS-only.
+assert(is_chromeos, "Ozone DRM platform is ChromeOS-only")
+assert(!is_castos, "Ozone DRM platform no longer supports CastOS")
+
 visibility = [ "//ui/ozone/*" ]
 
 source_set("gbm") {
@@ -122,6 +126,7 @@ source_set("gbm") {
   deps = [
     "//base",
     "//build/config/linux/libdrm",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/vulkan:buildflags",
     "//ipc",
     "//media:media_buildflags",
@@ -150,23 +155,22 @@ source_set("gbm") {
     "//ui/gfx/linux:drm",
     "//ui/gfx/linux:gbm",
     "//ui/gl",
+    "//ui/ozone:native_pixmap_usage",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
     "//ui/ozone/platform/drm/mojom",
     "//ui/platform_window",
   ]
 
-  if (!is_castos && !use_static_angle) {
+  deps += [
+    "//ash/constants",
+    "//ui/base/ime/ash",
+  ]
+
+  if (!use_static_angle) {
     data_deps = [
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
-    ]
-  }
-
-  if (is_chromeos) {
-    deps += [
-      "//ash/constants",
-      "//ui/base/ime/ash",
     ]
   }
 
@@ -219,6 +223,7 @@ source_set("gbm_unittests") {
   deps = [
     ":gbm",
     "//base/test:test_support",
+    "//components/viz/common/resources:shared_image_format",
     "//skia",
     "//testing/gtest",
 
@@ -255,7 +260,7 @@ source_set("drm_integration_tests") {
     "//base/test:test_support",
     "//build/config/linux/libdrm",
     "//skia",
-    "//ui/display/types:types",
+    "//ui/display/types",
     "//ui/gfx/linux:gbm",
     "//ui/gfx/linux:test_support",
     "//ui/ozone:platform",

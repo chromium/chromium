@@ -29,6 +29,7 @@
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/core/common/features.h"
 #include "components/version_info/version_info.h"
+#include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -195,9 +196,7 @@ class RealtimeReportingJobConfigurationTest
   }
 
   static std::string CreateResponseString(const base::Value::Dict& response) {
-    std::string response_string;
-    base::JSONWriter::Write(response, &response_string);
-    return response_string;
+    return base::WriteJson(response).value_or("");
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -257,8 +256,8 @@ TEST_P(RealtimeReportingJobConfigurationTest, ValidatePayload) {
           extension_event.extension_action_type());
     }
   } else {
-    std::optional<base::Value> payload =
-        base::JSONReader::Read(configuration_->GetPayload());
+    std::optional<base::Value> payload = base::JSONReader::Read(
+        configuration_->GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_TRUE(payload.has_value());
     const base::Value::Dict& payload_dict = payload->GetDict();
     EXPECT_EQ(kDummyToken, *payload_dict.FindStringByDottedPath(
@@ -454,8 +453,8 @@ TEST_P(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
     EXPECT_EQ(kIds[1], request.events(0).event_id());
   } else {
     // If using the JSON format, validate the request.
-    std::optional<base::Value> payload =
-        base::JSONReader::Read(configuration_->GetPayload());
+    std::optional<base::Value> payload = base::JSONReader::Read(
+        configuration_->GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     base::Value::List* events = payload->GetDict().FindList(
         RealtimeReportingJobConfiguration::kEventListKey);
     EXPECT_EQ(1u, events->size());

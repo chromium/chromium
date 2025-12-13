@@ -6,6 +6,7 @@
 
 #include <limits.h>
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -48,8 +49,9 @@ const char* HistoryCounter::GetPrefName() const {
 }
 
 history::WebHistoryService* HistoryCounter::GetWebHistoryService() {
-  if (web_history_service_callback_)
+  if (web_history_service_callback_) {
     return web_history_service_callback_.Run();
+  }
   return nullptr;
 }
 
@@ -73,12 +75,14 @@ void HistoryCounter::Count() {
   // kDbdRevampDesktop is launched.
   history_service_->GetHistoryCount(
       GetPeriodStart(), GetPeriodEnd(),
+      history::VisitQuery404sPolicy::kInclude404s,
       base::BindOnce(&HistoryCounter::OnGetLocalHistoryCount,
                      weak_ptr_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);
 
   history_service_->GetUniqueDomainsVisited(
       GetPeriodStart(), GetPeriodEnd(),
+      history::VisitQuery404sPolicy::kInclude404s,
       base::BindOnce(&HistoryCounter::OnGetUniqueDomains,
                      weak_ptr_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);
@@ -145,26 +149,26 @@ void HistoryCounter::OnGetLocalHistoryCount(
 
 void HistoryCounter::OnGetWebHistoryCount(
     history::WebHistoryService::Request* request,
-    base::optional_ref<const base::Value::Dict> result) {
+    base::optional_ref<const history::WebHistoryService::QueryHistoryResult>
+        result) {
   // Ensure that all callbacks are on the same thread, so that we do not need
   // a mutex for `MergeResults`.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If the timeout for this request already fired, ignore the result.
-  if (!web_history_timeout_.IsRunning())
+  if (!web_history_timeout_.IsRunning()) {
     return;
+  }
 
   web_history_timeout_.Stop();
 
   // If the query failed, err on the safe side and inform the user that they
   // may have history items stored in Sync. Otherwise, we expect at least one
-  // entry in the "event" list.
+  // entry in the "events" list.
   if (!result.has_value()) {
     has_synced_visits_ = true;
-  } else if (const base::Value::List* events = result->FindList("event")) {
-    has_synced_visits_ = !events->empty();
   } else {
-    has_synced_visits_ = false;
+    has_synced_visits_ = !result->events.empty();
   }
   web_counting_finished_ = true;
   MergeResults();

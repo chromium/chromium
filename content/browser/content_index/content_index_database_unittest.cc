@@ -373,10 +373,9 @@ TEST_F(ContentIndexDatabaseTest, DeleteNonExistentEntry) {
 TEST_F(ContentIndexDatabaseTest, ProviderUpdated) {
   {
     std::unique_ptr<ContentIndexEntry> out_entry;
-    EXPECT_CALL(*provider(), OnContentAdded(_))
-        .WillOnce(testing::Invoke([&](auto entry) {
-          out_entry = std::make_unique<ContentIndexEntry>(std::move(entry));
-        }));
+    EXPECT_CALL(*provider(), OnContentAdded(_)).WillOnce([&](auto entry) {
+      out_entry = std::make_unique<ContentIndexEntry>(std::move(entry));
+    });
     EXPECT_EQ(AddEntry(CreateDescription("id")),
               blink::mojom::ContentIndexError::NONE);
 
@@ -443,10 +442,9 @@ TEST_F(ContentIndexDatabaseTest, GetEntries) {
 
   std::unique_ptr<ContentIndexEntry> added_entry;
   {
-    EXPECT_CALL(*provider(), OnContentAdded(_))
-        .WillOnce(testing::Invoke([&](auto entry) {
-          added_entry = std::make_unique<ContentIndexEntry>(std::move(entry));
-        }));
+    EXPECT_CALL(*provider(), OnContentAdded(_)).WillOnce([&](auto entry) {
+      added_entry = std::make_unique<ContentIndexEntry>(std::move(entry));
+    });
     EXPECT_EQ(AddEntry(CreateDescription("id")),
               blink::mojom::ContentIndexError::NONE);
     base::RunLoop().RunUntilIdle();

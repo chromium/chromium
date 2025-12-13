@@ -23,9 +23,9 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -117,7 +117,11 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(tabList, mTab1, true);
+        verify(mTabGroupModelFilter)
+                .mergeListOfTabsToGroup(
+                        tabList,
+                        mTab1,
+                        TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback).onTabMoved();
         verify(mOnClickRunnable).run();
     }
@@ -130,7 +134,11 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab1, true);
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(
+                        mTabs,
+                        mTab1,
+                        TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
@@ -144,7 +152,11 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab1, true);
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(
+                        mTabs,
+                        mTab1,
+                        TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }

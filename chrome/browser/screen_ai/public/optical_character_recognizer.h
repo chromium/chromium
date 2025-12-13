@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -92,10 +93,10 @@ class OpticalCharacterRecognizer
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Sets the OCR to light or normal mode.
-  void SetOCRLightMode(bool enabled);
+  virtual void SetOCRLightMode(bool enabled);
 
   // Tells if OCR is busy (has another connected client) or not.
-  void IsOCRBusy(mojom::ScreenAIAnnotator::IsOCRBusyCallback callback);
+  virtual void IsOCRBusy(mojom::ScreenAIAnnotator::IsOCRBusyCallback callback);
 
   // Ensures all posted tasks are completed in tests.
   virtual void FlushForTesting() {}

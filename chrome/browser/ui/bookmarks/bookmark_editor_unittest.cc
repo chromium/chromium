@@ -343,4 +343,18 @@ TEST(BookmarkEditorTest, ApplyEditsPersistOrderAfterMove) {
                           Pointer(account_node2), Pointer(account_node3)));
 }
 
+// Make sure tab group to folder creates a bookmark folder.
+TEST(BookmarkEditorTest, TabGroupToFolder) {
+  std::unique_ptr<BookmarkModel> model(
+      bookmarks::TestBookmarkClient::CreateModel());
+  const BookmarkNode* bookmarkbar = InitBookmarkBar(model.get());
+
+  std::u16string title = u"tab group";
+  BookmarkEditor::EditDetails detail(
+      BookmarkEditor::EditDetails::TabGroupToFolder(bookmarkbar, 1, title));
+  BookmarkEditor::ApplyEdits(model.get(), bookmarkbar, detail, title,
+                             GURL(std::string()));
+  EXPECT_EQ(title, bookmarkbar->children()[1]->GetTitle());
+}
+
 }  // namespace

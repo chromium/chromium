@@ -26,34 +26,13 @@ namespace autofill {
 //   web_state() has become null).
 class AutofillClientIOS : public AutofillClient {
  public:
-  // A function pointer rather than a base::RepeatingCallback to facilitate
-  // insertion into a set.
-  using FromWebStateImpl = AutofillClientIOS* (*)(web::WebState*);
-
   // Returns the `AutofillClientIOS` that is associated with `web_state`, if any
   // exists.
   static AutofillClientIOS* FromWebState(web::WebState* web_state);
 
   // At most one `AutofillClientIOS` may exist per `web_state` at any point in
-  // time.
-  //
-  // Callers must guarantee that after construction of an
-  // `AutofillClientIOS(from_web_state_impl, web_state, bridge)`,
-  // `from_web_state_impl(web_state)` returns a pointer to this
-  // AutofillClientIOS.
-  // If and when that is the case, `FromWebState(web_state)` returns the
-  // AutofillClientIOS.
-  //
-  // Typically, `from_web_state_impl` is identical for all instances of a
-  // specific subclass of AutofillClientIOS.
-  //
-  // For example, ChromeAutofillClientIOS is owned by AutofillTabHelper, which
-  // is WebStateUserData. Therefore, all ChromeAutofillClientIOS instances pass
-  // a pointer to the function calls AutofillTabHelper::FromWebContents() and
-  // then returns the AutofillTabHelper's AutofillClientIOS.
-  // Similarly for WebViewAutofillClientIOS and other implementations.
-  AutofillClientIOS(FromWebStateImpl from_web_state_impl,
-                    web::WebState* web_state,
+  // time. This is enforced by this constructor.
+  AutofillClientIOS(web::WebState* web_state,
                     id<AutofillDriverIOSBridge> bridge);
   AutofillClientIOS(const AutofillClientIOS&) = delete;
   AutofillClientIOS& operator=(const AutofillClientIOS&) = delete;

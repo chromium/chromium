@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/types/expected.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {

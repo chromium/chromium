@@ -1,0 +1,17 @@
+// Copyright 2025 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://drafts.csswg.org/web-animations-2/#the-animationtrigger-interface
+
+[
+    Exposed=Window,
+    RuntimeEnabled=TimelineTrigger
+] interface TimelineTrigger : AnimationTrigger {
+  [CallWith=ExecutionContext, MeasureAs=V8AnimationTrigger_Constructor, RaisesException] constructor(optional TimelineTriggerOptions options = {});
+  readonly attribute AnimationTimeline? timeline;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeStart;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeEnd;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeStart;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeEnd;
+};

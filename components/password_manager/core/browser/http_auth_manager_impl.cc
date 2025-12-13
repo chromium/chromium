@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -35,6 +37,9 @@ HttpAuthManagerImpl::HttpAuthManagerImpl(PasswordManagerClient* client,
 HttpAuthManagerImpl::~HttpAuthManagerImpl() {
   if (observer_) {
     observer_->OnLoginModelDestroying();
+  }
+  if (authenticator_) {
+    authenticator_->Cancel();
   }
 }
 
@@ -75,14 +80,57 @@ void HttpAuthManagerImpl::ProvisionallySaveForm(
   }
 }
 
-void HttpAuthManagerImpl::Autofill(
-    const PasswordForm& preferred_match,
-    const PasswordFormManagerForUI* form_manager) const {
-  DCHECK_NE(PasswordForm::Scheme::kHtml, preferred_match.scheme);
-  if (observer_ && (form_manager_.get() == form_manager) &&
-      client_->IsFillingEnabled(form_manager_->GetURL())) {
+void HttpAuthManagerImpl::Autofill(const PasswordForm& preferred_match,
+                                   const PasswordFormManagerForUI* form_manager,
+                                   base::OnceClosure on_filling_complete) {
+  CHECK_NE(PasswordForm::Scheme::kHtml, preferred_match.scheme);
+  if (!observer_ || form_manager_.get() != form_manager) {
+    return;
+  }
+
+  if (!client_->IsFillingEnabled(form_manager_->GetURL())) {
+    return;
+  }
+
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
+      client_->GetDeviceAuthenticator();
+
+  // Biometric filling is disabled, notify observers and invoke callback.
+  if (!client_->IsReauthBeforeFillingRequired(authenticator.get())) {
     observer_->OnAutofillDataAvailable(preferred_match.username_value,
                                        preferred_match.password_value);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_filling_complete));
+    return;
+  }
+
+  auto filling_callback = base::BindOnce(
+      &HttpAuthManagerImpl::OnReauthCompleted, weak_ptr_factory_.GetWeakPtr(),
+      preferred_match.username_value, preferred_match.password_value,
+      std::move(on_filling_complete));
+  if (authenticator_) {
+    authenticator_->Cancel();
+  }
+  authenticator_ = std::move(authenticator);
+
+  std::u16string message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  const std::u16string origin = base::UTF8ToUTF16(
+      GetShownOrigin(url::Origin::Create(client_->GetLastCommittedURL())));
+  message =
+      l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  authenticator_->AuthenticateWithMessage(message, std::move(filling_callback));
+}
+
+void HttpAuthManagerImpl::OnReauthCompleted(
+    const std::u16string& username,
+    const std::u16string& password,
+    base::OnceClosure on_filling_complete,
+    bool auth_result) {
+  if (observer_ && auth_result) {
+    observer_->OnAutofillDataAvailable(username, password);
+    std::move(on_filling_complete).Run();
   }
 }
 

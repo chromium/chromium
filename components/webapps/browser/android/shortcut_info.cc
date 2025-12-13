@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/android/build_info.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

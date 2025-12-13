@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "components/optimization_guide/core/delivery/prediction_manager.h"
+
 #import "base/containers/contains.h"
 #import "base/files/file_util.h"
+#import "base/task/thread_pool.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
@@ -19,12 +22,13 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/variations/hashing.h"
 #import "components/variations/scoped_variations_ids_provider.h"
-#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
+#import "ios/chrome/browser/profile/model/test_with_profile.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/profile/scoped_profile_keep_alive_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -101,13 +105,12 @@ enum class PredictionModelsFetcherRemoteResponseType {
 
 }  // namespace
 
-class PredictionManagerTestBase : public PlatformTest {
+class PredictionManagerTestBase : public TestWithProfile {
  public:
   void SetUp() override {
-    PlatformTest::SetUp();
+    TestWithProfile::SetUp();
 
     InitializeFeatureList();
-    OptimizationGuideServiceFactory::InitializePredictionModelStore();
 
     download::BackgroundDownloadTaskHelper::SetIgnoreLocalSSLErrorForTesting(
         true);
@@ -137,38 +140,19 @@ class PredictionManagerTestBase : public PlatformTest {
         models_server_->GetURL("/additional_file_doesnt_exist.crx3");
     SetUpCommandLine(scoped_command_line_.GetProcessCommandLine());
 
-    auto testing_prefs =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterProfilePrefs(testing_prefs->registry());
-    TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(
-        OptimizationGuideServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](web::BrowserState* context) -> std::unique_ptr<KeyedService> {
-              TestingApplicationContext::GetGlobal()->SetSharedURLLoaderFactory(
-                  context->GetSharedURLLoaderFactory());
-              return OptimizationGuideServiceFactory::GetDefaultFactory().Run(
-                  context);
-            }));
-    builder.SetPrefService(std::move(testing_prefs));
-    profile_ = std::move(builder).Build();
-  }
-
-  void CreateOffTheRecordProfile() {
-    profile_->CreateOffTheRecordProfileWithTestingFactories(
-        {TestProfileIOS::TestingFactory{
-            OptimizationGuideServiceFactory::GetInstance(),
-            OptimizationGuideServiceFactory::GetDefaultFactory()}});
+    scoped_profile_ = CreateProfile("foo");
+    TestingApplicationContext::GetGlobal()
+        ->GetOptimizationGuideGlobalState()
+        ->prediction_manager()
+        .SetUrlLoaderFactoryForTesting(
+            scoped_profile_.profile()->GetSharedURLLoaderFactory());
   }
 
   void TearDown() override {
     download::BackgroundDownloadTaskHelper::SetIgnoreLocalSSLErrorForTesting(
         false);
-    // Reinitialize the store, so that tests do not use state from the
-    // previous test.
-    optimization_guide::IOSChromePredictionModelStore::GetInstance()
-        ->ResetForTesting();
-    PlatformTest::TearDown();
+    scoped_profile_.Reset();
+    TestWithProfile::TearDown();
   }
 
   void SetResponseType(
@@ -177,10 +161,13 @@ class PredictionManagerTestBase : public PlatformTest {
   }
 
   void RegisterWithKeyedService(ModelFileObserver* model_file_observer) {
-    OptimizationGuideServiceFactory::GetForProfile(profile_.get())
+    OptimizationGuideServiceFactory::GetForProfile(scoped_profile_.profile())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            std::nullopt, model_file_observer);
+            std::nullopt,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            model_file_observer);
   }
 
   void SetComponentUpdatesEnabled(bool enabled) {
@@ -204,7 +191,7 @@ class PredictionManagerTestBase : public PlatformTest {
     auto* variations_ids_provider =
         variations::VariationsIdsProvider::GetInstance();
     ASSERT_TRUE(variations_ids_provider != nullptr);
-    variations_ids_provider->ForceVariationIds({}, {"4"});
+    variations_ids_provider->ForceVariationIdsForTesting({}, {"4"});
     cmd->AppendSwitch("append-variations-headers-to-localhost");
   }
 
@@ -271,11 +258,8 @@ class PredictionManagerTestBase : public PlatformTest {
   GURL https_url_with_content_;
   GURL https_url_without_content_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::MainThreadType::IO};
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestProfileIOS> profile_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  ScopedProfileKeepAliveIOS scoped_profile_;
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedCommandLine scoped_command_line_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -303,7 +287,7 @@ TEST_F(PredictionManagerTest, ComponentUpdatesEnabledPrefDisabled) {
   SetComponentUpdatesEnabled(false);
   base::HistogramTester histogram_tester;
   RegisterWithKeyedService(&model_file_observer);
-  task_environment_.RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
 
   // Should not have made fetch request.
   histogram_tester.ExpectTotalCount(
@@ -374,11 +358,14 @@ class PredictionManagerModelDownloadingBrowserTest
   }
 
   void RegisterModelFileObserverWithProfile(ProfileIOS* profile = nullptr) {
-    OptimizationGuideServiceFactory::GetForProfile(profile ? profile
-                                                           : profile_.get())
+    OptimizationGuideServiceFactory::GetForProfile(
+        profile ? profile : scoped_profile_.profile())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/std::nullopt, model_file_observer_.get());
+            /*model_metadata=*/std::nullopt,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            model_file_observer_.get());
   }
 
   // Sets up the model observer to receive valid ModelInfo.
@@ -438,79 +425,6 @@ class PredictionManagerModelDownloadingBrowserTest
  protected:
   std::unique_ptr<ModelFileObserver> model_file_observer_;
 };
-
-TEST_F(PredictionManagerModelDownloadingBrowserTest,
-       TestIncognitoUsesModelFromRegularProfile) {
-  SetResponseType(
-      PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
-
-  // Set up model download with regular profile.
-  {
-    base::HistogramTester histogram_tester;
-
-    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    SetUpValidModelInfoReceival(run_loop.get());
-    RegisterModelFileObserverWithProfile();
-
-    // Wait until the observer receives the file. We increase the timeout to 60
-    // seconds here since the file is on the larger side.
-    {
-      base::test::ScopedRunLoopTimeout file_download_timeout(FROM_HERE,
-                                                             base::Seconds(60));
-      run_loop->Run();
-    }
-    task_environment_.RunUntilIdle();
-
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
-        optimization_guide::PredictionModelDownloadStatus::kSuccess, 1);
-
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad",
-        kSuccessfulModelVersion, 1);
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad",
-        kSuccessfulModelVersion, 1);
-  }
-
-  // Now set up model download with incognito profile. Download should not
-  // happen, but the OnModelUpdated callback should be triggered.
-  {
-    base::HistogramTester otr_histogram_tester;
-    CreateOffTheRecordProfile();
-    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    SetUpValidModelInfoReceival(run_loop.get());
-    RegisterModelFileObserverWithProfile(profile_->GetOffTheRecordProfile());
-    task_environment_.RunUntilIdle();
-    otr_histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
-    otr_histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
-  }
-}
-
-TEST_F(PredictionManagerModelDownloadingBrowserTest,
-       TestIncognitoDoesntFetchModels) {
-  base::HistogramTester histogram_tester;
-  CreateOffTheRecordProfile();
-
-  SetResponseType(PredictionModelsFetcherRemoteResponseType::
-                      kSuccessfulWithInvalidModelFile);
-
-  // Registering should not initiate the fetch and the model updated callback
-  // should not be triggered too.
-  SetUpNoModelInfoReceival();
-  RegisterModelFileObserverWithProfile(profile_->GetOffTheRecordProfile());
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester, "OptimizationGuide.PredictionManager.StoreInitialized",
-      1);
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
-}
 
 TEST_F(PredictionManagerModelDownloadingBrowserTest,
        TestDownloadUrlAcceptedByDownloadServiceButInvalid) {
@@ -627,7 +541,7 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
   RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 1);
-  task_environment_.RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
 
   // The additional file does not exist.
   histogram_tester.ExpectUniqueSample(

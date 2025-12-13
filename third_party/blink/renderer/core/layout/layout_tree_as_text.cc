@@ -110,7 +110,7 @@ static String GetTagName(Node* n) {
   if (const auto* element = DynamicTo<Element>(n)) {
     const AtomicString& pseudo = element->ShadowPseudoId();
     if (!pseudo.empty())
-      return "::" + pseudo;
+      return StrCat({"::", pseudo});
   }
   return n->nodeName();
 }
@@ -766,6 +766,10 @@ String CounterValueForElement(Element* element) {
   if (LayoutObject* picker_icon =
           element->PseudoElementLayoutObject(kPseudoIdPickerIcon)) {
     WriteCounterValuesFromChildren(stream, picker_icon, is_first_counter);
+  }
+  if (LayoutObject* interest_hint =
+          element->PseudoElementLayoutObject(kPseudoIdInterestHint)) {
+    WriteCounterValuesFromChildren(stream, interest_hint, is_first_counter);
   }
   return stream.ReleaseString();
 }

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog_utils.h"
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/typography.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/link.h"
 
@@ -121,9 +121,7 @@ void AddLearnMoreLink(const std::u16string& text,
   learn_more_link->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody1));
-  learn_more_link->SetEnabledColor(
-      ash::ColorProvider::Get()->GetContentLayerColor(
-          ash::ColorProvider::ContentLayerType::kTextColorURL));
+  learn_more_link->SetEnabledColor(cros_tokens::kLinkColor);
   learn_more_link->GetViewAccessibility().SetName(accessible_name);
 }
 

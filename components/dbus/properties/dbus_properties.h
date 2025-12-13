@@ -9,7 +9,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/dbus/properties/types.h"
+#include "components/dbus/utils/signature.h"
+#include "components/dbus/utils/variant.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
 
@@ -30,35 +31,36 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusProperties {
 
   void RegisterInterface(const std::string& interface);
 
-  template <typename T>
+  template <dbus_utils::SignatureLiteral Signature>
   void SetProperty(const std::string& interface,
                    const std::string& name,
-                   T&& value,
-                   bool emit_signal = true,
-                   bool send_change = true) {
+                   dbus_utils::internal::ParseDBusSignature<Signature> value,
+                   bool emit_signal = true) {
     auto interface_it = properties_.find(interface);
     DCHECK(interface_it != properties_.end());
-    auto property_it = interface_it->second.find(name);
-    DbusVariant new_value = MakeDbusVariant(std::forward<T>(value));
-    const bool send_signal =
-        emit_signal && (property_it == interface_it->second.end() ||
-                        property_it->second != new_value);
-    (interface_it->second)[name] = std::move(new_value);
-    if (send_signal)
-      PropertyUpdated(interface, name, send_change);
+    auto& properties = interface_it->second;
+    auto property_it = properties.find(name);
+    auto new_value = dbus_utils::Variant::Wrap<Signature>(std::move(value));
+    const bool value_changed =
+        property_it == properties.end() || property_it->second != new_value;
+    properties[name] = std::move(new_value);
+    if (emit_signal && value_changed) {
+      PropertyUpdated(interface, name, /*deleted=*/false);
+    }
   }
 
-  DbusVariant* GetProperty(const std::string& interface,
-                           const std::string& property_name);
-
-  // If emitting a PropertiesChangedSignal is desired, this should be called
-  // after an existing property is modified through any means other than
-  // SetProperty().
-  void PropertyUpdated(const std::string& interface,
-                       const std::string& property_name,
-                       bool send_change = true);
+  // Deletes the property if it exists.  Returns the deleted property value, or
+  // std::nullopt if the property did not exist.
+  std::optional<dbus_utils::Variant> DeleteProperty(
+      const std::string& interface,
+      const std::string& property_name,
+      bool emit_signal);
 
  private:
+  void PropertyUpdated(const std::string& interface,
+                       const std::string& property_name,
+                       bool deleted);
+
   void OnExported(const std::string& interface_name,
                   const std::string& method_name,
                   bool success);
@@ -78,7 +80,7 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusProperties {
 
   // A map from interface name to a map of properties.  The properties map is
   // from property name to property value.
-  std::map<std::string, std::map<std::string, DbusVariant>> properties_;
+  std::map<std::string, std::map<std::string, dbus_utils::Variant>> properties_;
 
   base::WeakPtrFactory<DbusProperties> weak_factory_{this};
 };

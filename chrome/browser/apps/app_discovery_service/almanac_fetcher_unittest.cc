@@ -29,13 +29,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/resources/grit/ui_resources.h"
 
 namespace apps {
 namespace {
 using testing::_;
-using ::testing::Invoke;
 
 constexpr char kOneApp[] =
     R"pb(app_groups: {
@@ -357,12 +357,11 @@ TEST_F(AlmanacFetcherTest, GetIconSuccess) {
   std::string icon_url = "https://icon";
   gfx::Image expected_image = GetTestImage(IDR_DEFAULT_FAVICON);
   EXPECT_CALL(*icon_cache_, GetIcon(GURL(icon_url), _))
-      .WillOnce(
-          Invoke([&expected_image](
-                     const GURL&,
-                     base::OnceCallback<void(const gfx::Image&)> callback) {
-            std::move(callback).Run(expected_image);
-          }));
+      .WillOnce([&expected_image](
+                    const GURL&,
+                    base::OnceCallback<void(const gfx::Image&)> callback) {
+        std::move(callback).Run(expected_image);
+      });
   almanac_fetcher()->GetIcon(
       icon_url, /*size_hint_in_dip=*/32,
       result.GetCallback<const gfx::ImageSkia&, apps::DiscoveryError>());
@@ -380,11 +379,10 @@ TEST_F(AlmanacFetcherTest, GetIconError) {
   base::test::TestFuture<gfx::ImageSkia, apps::DiscoveryError> result;
   std::string icon_url = "https://icon";
   EXPECT_CALL(*icon_cache_, GetIcon(GURL(icon_url), _))
-      .WillOnce(
-          Invoke([&](const GURL&,
-                     base::OnceCallback<void(const gfx::Image&)> callback) {
-            std::move(callback).Run(gfx::Image());
-          }));
+      .WillOnce([&](const GURL&,
+                    base::OnceCallback<void(const gfx::Image&)> callback) {
+        std::move(callback).Run(gfx::Image());
+      });
   almanac_fetcher()->GetIcon(
       icon_url, /*size_hint_in_dip=*/32,
       result.GetCallback<const gfx::ImageSkia&, apps::DiscoveryError>());

@@ -25,7 +25,7 @@
 #include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace {
 
@@ -103,17 +103,15 @@ class DataSharingLiveTest : public signin::test::LiveTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {});
+        {data_sharing::features::kDataSharingFeature}, {});
     constexpr char SYNC_URL[] =
         "https://chrome-sync.sandbox.google.com/chrome-sync/alpha";
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII("sync-url",
                                                               SYNC_URL);
     LiveTest::SetUp();
     // Always disable animation for stability.
-    ui::ScopedAnimationDurationScaleMode disable_animation(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   }
 
   signin::IdentityManager* identity_manager() {
@@ -182,9 +180,7 @@ class DataSharingLiveTest : public signin::test::LiveTest {
 
   void WaitForSDKToLoad() {
     content::WebContents* web_contents =
-        browser()
-            ->GetFeatures()
-            .data_sharing_bubble_controller()
+        DataSharingBubbleController::From(browser())
             ->BubbleViewForTesting()
             ->get_contents_wrapper_for_testing()
             ->web_contents();
@@ -213,13 +209,14 @@ IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ShareUnsharedTabGroup) {
 
   data_sharing::RequestInfo request_info(tab_group_id.value(),
                                          data_sharing::FlowType::kShare);
-  browser()->GetFeatures().data_sharing_bubble_controller()->Show(request_info);
+  DataSharingBubbleController::From(browser())->Show(request_info);
 
   WaitForSDKToLoad();
 }
 
 // Open the manage dialog of a shared tab group.
-IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ManageSharedTabGroup) {
+// TODO(crbug.com/451733093): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, DISABLED_ManageSharedTabGroup) {
   SignInAndTurnOnSync();
 
   const std::u16string shared_group_title = u"TEST SHARED GROUP";
@@ -232,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ManageSharedTabGroup) {
   // Share the group.
   data_sharing::RequestInfo request_info(tab_group_id.value(),
                                          data_sharing::FlowType::kShare);
-  auto* controller = browser()->GetFeatures().data_sharing_bubble_controller();
+  auto* controller = DataSharingBubbleController::From(browser());
   controller->Show(request_info);
 
   // Manage the group.

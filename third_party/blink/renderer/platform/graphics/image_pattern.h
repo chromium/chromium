@@ -14,7 +14,7 @@ class Image;
 
 class PLATFORM_EXPORT ImagePattern final : public Pattern {
  public:
-  static scoped_refptr<ImagePattern> Create(scoped_refptr<Image>, RepeatMode);
+  static std::unique_ptr<ImagePattern> Create(scoped_refptr<Image>, RepeatMode);
 
   bool IsTextureBacked() const override;
 

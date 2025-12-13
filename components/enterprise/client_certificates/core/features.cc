@@ -4,22 +4,24 @@
 
 #include "components/enterprise/client_certificates/core/features.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "crypto/features.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace client_certificates::features {
 
 BASE_FEATURE(kManagedBrowserClientCertificateEnabled,
-             "ManagedBrowserClientCertificateEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsManagedBrowserClientCertificateEnabled() {
   return base::FeatureList::IsEnabled(kManagedBrowserClientCertificateEnabled);
 }
 
+BASE_FEATURE(kEnableClientCertificateProvisioningOnAndroid,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsClientCertificateProvisioningOnAndroidEnabled() {
+  return base::FeatureList::IsEnabled(
+      kEnableClientCertificateProvisioningOnAndroid);
+}
+
 BASE_FEATURE(kManagedUserClientCertificateInPrefs,
-             "ManagedUserClientCertificateInPrefs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsManagedUserClientCertificateInPrefsEnabled() {
@@ -27,15 +29,10 @@ bool IsManagedUserClientCertificateInPrefsEnabled() {
 }
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kWindowsSoftwareKeysEnabled,
-             "WindowsSoftwareKeysEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWindowsSoftwareKeysEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool AreWindowsSoftwareKeysEnabled() {
-  // Windows Software keys depend on a fix in the //crypto layer.
-  return base::FeatureList::IsEnabled(
-             crypto::features::kIsHardwareBackedFixEnabled) &&
-         base::FeatureList::IsEnabled(kWindowsSoftwareKeysEnabled);
+  return base::FeatureList::IsEnabled(kWindowsSoftwareKeysEnabled);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

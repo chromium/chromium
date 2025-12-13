@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/window_properties.h"
+#include "third_party/blink/renderer/core/url/dom_origin_utils.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -47,13 +48,16 @@ struct BlinkTransferableMessage;
 // TODO(tkent): Rename DOMWindow to Window. The class was named as 'DOMWindow'
 // because WebKit already had KJS::Window.  We have no reasons to avoid
 // blink::Window now.
-class CORE_EXPORT DOMWindow : public WindowProperties {
+class CORE_EXPORT DOMWindow : public WindowProperties, public DOMOriginUtils {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   enum class CrossDocumentAccessPolicy { kAllowed, kDisallowed };
 
   ~DOMWindow() override;
+
+  // DOMOriginUtils overrides:
+  DOMOrigin* GetDOMOrigin(LocalDOMWindow* accessing_window) const override;
 
   Frame* GetFrame() const {
     // A Frame is typically reused for navigations. If |frame_| is not null,
@@ -171,14 +175,6 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
   void RecordWindowProxyAccessMetrics(
       mojom::blink::WindowProxyAccessType access_type) const;
 
-  // We need to check proxy access to see if it's blocked, and if so whether
-  // it's for COOP-RP issues or Partitioned Popin issues.
-  enum class ProxyAccessBlockedReason { kCoopRp, kPartitionedPopins };
-  std::optional<ProxyAccessBlockedReason> GetProxyAccessBlockedReason(
-      v8::Isolate* isolate) const;
-  static String GetProxyAccessBlockedExceptionMessage(
-      ProxyAccessBlockedReason reason);
-
  protected:
   explicit DOMWindow(Frame&);
 
@@ -239,7 +235,7 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
     HeapMojoRemote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
         reporter;
     bool endpoint_defined;
-    WTF::String reported_window_url;
+    String reported_window_url;
   };
   HeapVector<Member<CoopAccessMonitor>> coop_access_monitor_;
   // Mutable: only used to downsample metrics, no change to observable state.

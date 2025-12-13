@@ -153,10 +153,8 @@ void LogoutButtonTray::UpdateButtonTextAndImage() {
     button_->GetViewAccessibility().SetName(GetLoginStatusString());
     button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(
-            kShelfLogoutIcon,
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary)));
+        ui::ImageModel::FromVectorIcon(kShelfLogoutIcon,
+                                       cros_tokens::kIconColorPrimary));
     button_->SetMinSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   }
   UpdateVisibility();

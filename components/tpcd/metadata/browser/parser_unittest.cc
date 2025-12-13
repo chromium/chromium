@@ -26,7 +26,7 @@
 #include "third_party/zlib/google/compression_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 namespace tpcd::metadata {
@@ -85,8 +85,8 @@ class ParserTest : public ::testing::Test {
   // https://source.chromium.org/chromium/chromium/src/+/main:base/test/test_suite.cc;l=633;drc=b24613adfd8336234c263d1cc8315752368ce7b5.
   bool ShouldSkipTest() {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
-    return base::android::BuildInfo::GetInstance()->sdk_int() <=
-           base::android::SDK_VERSION_NOUGAT;
+    return base::android::android_info::sdk_int() <=
+           base::android::android_info::SDK_VERSION_NOUGAT;
     // This test type are also unreliable on Fuchsia.
 #elif BUILDFLAG(IS_FUCHSIA)
     return true;

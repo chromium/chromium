@@ -388,7 +388,6 @@ std::u16string MediaGalleryPrefInfo::GetGalleryDisplayName() const {
     if (!display_name.empty())
       return display_name;
 
-#if BUILDFLAG(IS_CHROMEOS)
     // See chrome/browser/ash/fileapi/file_system_backend.cc
     base::FilePath download_path;
     if (base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,
@@ -398,9 +397,6 @@ std::u16string MediaGalleryPrefInfo::GetGalleryDisplayName() const {
         return relative.LossyDisplayName();
     }
     return absolute_path.BaseName().LossyDisplayName();
-#else
-    return absolute_path.LossyDisplayName();
-#endif
   }
 
   StorageInfo info(device_id,
@@ -663,8 +659,9 @@ base::FilePath MediaGalleriesPreferences::LookUpGalleryPathForExtension(
   DCHECK(IsInitialized());
   DCHECK(extension);
   if (!include_unpermitted_galleries &&
-      !base::Contains(GalleriesForExtension(*extension), gallery_id))
+      !base::Contains(GalleriesForExtension(*extension), gallery_id)) {
     return base::FilePath();
+  }
 
   MediaGalleriesPrefInfoMap::const_iterator it =
       known_galleries_.find(gallery_id);
@@ -968,8 +965,9 @@ void MediaGalleriesPreferences::EraseOrBlocklistGalleryById(
       prefs, prefs::kMediaGalleriesRememberedGalleries);
   base::Value::List& list = update->Get();
 
-  if (!base::Contains(known_galleries_, id))
+  if (!base::Contains(known_galleries_, id)) {
     return;
+  }
 
   for (auto iter = list.begin(); iter != list.end(); ++iter) {
     MediaGalleryPrefId iter_id;

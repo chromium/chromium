@@ -24,6 +24,7 @@
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace {
 

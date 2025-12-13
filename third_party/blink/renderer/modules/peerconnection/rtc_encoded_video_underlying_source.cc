@@ -27,7 +27,7 @@ const int RTCEncodedVideoUnderlyingSource::kMinQueueDesiredSize = -60;
 
 RTCEncodedVideoUnderlyingSource::RTCEncodedVideoUnderlyingSource(
     ScriptState* script_state,
-    WTF::CrossThreadOnceClosure disconnect_callback)
+    CrossThreadOnceClosure disconnect_callback)
     : blink::RTCEncodedVideoUnderlyingSource(
           script_state,
           std::move(disconnect_callback),
@@ -37,7 +37,7 @@ RTCEncodedVideoUnderlyingSource::RTCEncodedVideoUnderlyingSource(
 
 RTCEncodedVideoUnderlyingSource::RTCEncodedVideoUnderlyingSource(
     ScriptState* script_state,
-    WTF::CrossThreadOnceClosure disconnect_callback,
+    CrossThreadOnceClosure disconnect_callback,
     bool enable_frame_restrictions,
     base::UnguessableToken owner_id,
     ReadableStreamDefaultControllerWithScriptScope* override_controller)

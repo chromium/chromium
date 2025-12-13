@@ -167,7 +167,6 @@ source_set("impl") {
   deps = [
     ":task_manager",
     "//base",
-    "//base",
     "//base:i18n",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
@@ -200,6 +199,9 @@ source_set("impl") {
     "//url",
   ]
 
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
   if (is_win) {
     sources += [ "sampling/shared_sampler_win.cc" ]
   } else {

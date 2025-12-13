@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 
+#import "base/functional/callback_helpers.h"
+#import "base/run_loop.h"
+#import "base/test/bind.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
@@ -13,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
@@ -55,6 +59,7 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
     OverlayRequestQueue::CreateForWebState(web_state.get());
     BlockedPopupTabHelper::GetOrCreateForWebState(web_state.get());
     SnapshotTabHelper::CreateForWebState(web_state.get());
+    SnapshotSourceTabHelper::CreateForWebState(web_state.get());
     web_state->GetNavigationManager()->LoadURLWithParams(load_params);
 
     WebStateList* web_state_list = browser_->GetWebStateList();
@@ -191,4 +196,40 @@ TEST_F(WebStateDelegateBrowserAgentTest, GetJavaScriptDialogPresenter) {
   OverlayRequest* request = queue->front_request();
   EXPECT_TRUE(request);
   EXPECT_TRUE(request->GetConfig<JavaScriptAlertDialogRequest>());
+}
+
+// Tests that copy is allowed by default for non-enterprise profiles.
+TEST_F(WebStateDelegateBrowserAgentTest, ShouldAllowCopy) {
+  web::WebState* web_state = InsertNewWebState(GURL(kURL1));
+  base::RunLoop run_loop;
+  delegate()->ShouldAllowCopy(web_state,
+                              base::BindLambdaForTesting([&](bool allowed) {
+                                EXPECT_TRUE(allowed);
+                                run_loop.Quit();
+                              }));
+  run_loop.Run();
+}
+
+// Tests that paste is allowed by default for non-enterprise profiles.
+TEST_F(WebStateDelegateBrowserAgentTest, ShouldAllowPaste) {
+  web::WebState* web_state = InsertNewWebState(GURL(kURL1));
+  base::RunLoop run_loop;
+  delegate()->ShouldAllowPaste(web_state,
+                               base::BindLambdaForTesting([&](bool allowed) {
+                                 EXPECT_TRUE(allowed);
+                                 run_loop.Quit();
+                               }));
+  run_loop.Run();
+}
+
+// Tests that cut is allowed by default for non-enterprise profiles.
+TEST_F(WebStateDelegateBrowserAgentTest, ShouldAllowCut) {
+  web::WebState* web_state = InsertNewWebState(GURL(kURL1));
+  base::RunLoop run_loop;
+  delegate()->ShouldAllowCut(web_state,
+                             base::BindLambdaForTesting([&](bool allowed) {
+                               EXPECT_TRUE(allowed);
+                               run_loop.Quit();
+                             }));
+  run_loop.Run();
 }

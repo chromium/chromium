@@ -58,7 +58,8 @@ std::optional<base::Value> PerInstallValue::Get() {
     return {};
   }
 
-  return base::JSONReader::Read(base::WideToUTF8(value_string));
+  return base::JSONReader::Read(base::WideToUTF8(value_string),
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 void PerInstallValue::Delete() {

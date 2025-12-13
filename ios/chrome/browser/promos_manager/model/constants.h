@@ -38,24 +38,25 @@ enum class Promo {
   PostRestoreDefaultBrowserAlert =
       8,  // Post Restore Default Browser (native iOS alert)
   DefaultBrowserRemindMeLater = 9,  // Remind me later for default browser.
-  // OmniboxPosition = 10,          // Obsolete. Choose between top and bottom
-  // omnibox.
+  // OmniboxPosition = 10,  // Obsolete. Choose between top and bottom omnibox.
   DockingPromo = 11,               // Docking Promo.
   DockingPromoRemindMeLater = 12,  // Docking Promo (Remind Me Later version).
   AllTabsDefaultBrowser = 13,      // "All Tabs" default browser promo.
   MadeForIOSDefaultBrowser = 14,   // "Made For iOS" default browser promo.
   StaySafeDefaultBrowser = 15,     // "Stay Safe" default browser promo.
   PostDefaultAbandonment = 16,     // Post-default browser abandonment alert.
-  SigninFullscreen = 17,           // Sign-in fullscreen promo.
+  FullscreenSignin = 17,           // Fullscreen sign-in promo.
   WelcomeBack = 18,                // Welcome Back promo.
   BWGPromo = 19,                   // BWG promo.
   SafariImportRemindMeLater =
-      20,  // Reminder for the Safari import entry point.
-  kMaxValue = SafariImportRemindMeLater,
+      20,                       // Reminder for the Safari import entry point.
+  DefaultBrowserOffCycle = 21,  // Off-cycle fullscreen default browser promo.
+  kMaxValue = DefaultBrowserOffCycle,
 };
 // LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.cc)
 // Also update IOSPromosManagerPromo in
-// (/tools/metrics/histograms/metadata/ios/enums.xml).
+// (/tools/metrics/histograms/metadata/ios/enums.xml) and PromosManagerPromo in
+// (/tools/metrics/histograms/metadata/ios/histograms.xml).
 
 // Enum for IOS.PromosManager.Promo.Type histogram.
 // Entries should not be renumbered and numeric values should never be reused.
@@ -91,6 +92,16 @@ std::string_view ShortNameForPromo(Promo promo);
 std::optional<Promo> PromoForName(std::string_view promo);
 
 std::optional<Impression> ImpressionFromDict(const base::Value::Dict& dict);
+
+// Represents distinct outcomes of the promo registration lifecycle.
+// LINT.IfChange(PromoRegistrationState)
+enum class PromoRegistrationState {
+  kRegistration = 0,
+  kDeregistrationBeforePromoDisplay = 1,
+  kDeregistrationAfterPromoDisplay = 2,
+  kMaxValue = kDeregistrationAfterPromoDisplay,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSPromoRegistrationState)
 
 }  // namespace promos_manager
 

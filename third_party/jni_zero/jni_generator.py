@@ -46,6 +46,7 @@ class NativeMethod:
         and proxy.needs_implicit_array_element_class_param(self.return_type))
 
     if self.is_proxy:
+      class_without_prefix = java_class.class_without_prefix
       # Signature with all reference types changed to "Object".
       self.proxy_signature = self.signature.to_proxy()
       if self.needs_implicit_array_element_class_param:
@@ -58,11 +59,12 @@ class NativeMethod:
       # "native" prefix to not conflict with interface method names.
       self.per_file_name = f'native{self.capitalized_name}'
       # Method name within the GEN_JNI class.
-      self.proxy_name = f'{java_class.to_cpp()}_{self.name}'
+      self.proxy_name = f'{class_without_prefix.to_cpp()}_{self.name}'
       # Method name within the J class (when is_hashing=True).
       # TODO(agrieve): No need to mangle before hashing.
       self.hashed_name = proxy.hashed_name(
-          common.jni_mangle(f'{java_class.full_name_with_slashes}/{self.name}'),
+          common.jni_mangle(
+              f'{class_without_prefix.full_name_with_slashes}/{self.name}'),
           self.is_test_only)
       # Method name within the J class (when is_muxing=True).
       self.muxed_name = proxy.muxed_name(self.muxed_signature)
@@ -243,17 +245,17 @@ class JniObject:
     else:
       self.jni_namespace = parsed_file.jni_namespace or default_namespace
 
-    natives = []
-    for parsed_method in parsed_file.proxy_methods:
-      natives.append(
-          NativeMethod(parsed_method, java_class=self.java_class,
-                       is_proxy=True))
+    natives = [
+        NativeMethod(m, java_class=self.java_class, is_proxy=True)
+        for m in parsed_file.proxy_methods
+    ]
+    # Natives are already sorted by name, but we want ForTesting methods to
+    # come at the end so that they do not contribute to switch number ordering.
+    natives.sort(key=lambda n: n.is_test_only)
 
-    for parsed_method in parsed_file.non_proxy_methods:
-      natives.append(
-          NativeMethod(parsed_method,
-                       java_class=self.java_class,
-                       is_proxy=False))
+    natives.extend(
+        NativeMethod(m, java_class=self.java_class, is_proxy=False)
+        for m in parsed_file.non_proxy_methods)
 
     self.natives = natives
 
@@ -317,22 +319,32 @@ def _CollectReferencedClasses(jni_obj):
   return sorted(ret)
 
 
-def _generate_header(jni_mode, jni_obj, extra_includes, gen_jni_class, *,
-                     enable_definition_macros):
+def _generate_header(jni_mode,
+                     jni_obj,
+                     gen_jni_class,
+                     *,
+                     enable_definition_macros,
+                     include_path_prefix,
+                     extra_includes=None,
+                     add_natives_macro_definition=True):
+  user_includes = [f'{include_path_prefix}jni_zero_internal.h']
+  if extra_includes:
+    user_includes += extra_includes
   preamble, epilogue = header_common.header_preamble(
       GetScriptName(),
       jni_obj.java_class,
       system_includes=['jni.h'],
-      user_includes=['third_party/jni_zero/jni_export.h'] + extra_includes)
+      user_includes=user_includes)
   sb = common.StringBuilder()
   sb(preamble)
 
-  natives_header.natives_macro_definition(
-      sb,
-      jni_mode,
-      jni_obj,
-      gen_jni_class,
-      enable_definition_macros=enable_definition_macros)
+  if add_natives_macro_definition:
+    natives_header.natives_macro_definition(
+        sb,
+        jni_mode,
+        jni_obj,
+        gen_jni_class,
+        enable_definition_macros=enable_definition_macros)
 
   java_classes = _CollectReferencedClasses(jni_obj)
   if java_classes:
@@ -509,17 +521,22 @@ def _WriteHeaders(jni_mode,
                   jni_objs,
                   output_names,
                   output_dir,
-                  extra_includes,
+                  *,
+                  include_path_prefix,
                   gen_jni_class=None,
-                  enable_definition_macros=False):
+                  enable_definition_macros=False,
+                  extra_includes=None,
+                  add_natives_macro_definition=True):
   for jni_obj, header_name in zip(jni_objs, output_names):
     output_file = os.path.join(output_dir, header_name)
     content = _generate_header(
         jni_mode,
         jni_obj,
-        extra_includes,
         gen_jni_class,
-        enable_definition_macros=enable_definition_macros)
+        enable_definition_macros=enable_definition_macros,
+        include_path_prefix=include_path_prefix,
+        extra_includes=extra_includes,
+        add_natives_macro_definition=add_natives_macro_definition)
 
     with common.atomic_output(output_file, 'w') as f:
       f.write(content)
@@ -535,7 +552,10 @@ def GenerateFromSource(parser, args, jni_mode):
     parsed_files = [
         parse.parse_java_file(f,
                               package_prefix=args.package_prefix,
-                              package_prefix_filter=args.package_prefix_filter)
+                              package_prefix_filter=args.package_prefix_filter,
+                              enable_legacy_natives=args.enable_legacy_natives,
+                              allow_private_called_by_natives=args.
+                              allow_private_called_by_natives)
         for f in args.input_files
     ]
     jni_objs = [
@@ -558,9 +578,10 @@ def GenerateFromSource(parser, args, jni_mode):
                 jni_objs,
                 args.output_names,
                 args.output_dir,
-                args.extra_includes,
-                gen_jni_class,
-                enable_definition_macros=args.enable_definition_macros)
+                include_path_prefix=args.include_path_prefix,
+                gen_jni_class=gen_jni_class,
+                enable_definition_macros=args.enable_definition_macros,
+                extra_includes=args.extra_includes)
 
   jni_objs_with_proxy_natives = [x for x in jni_objs if x.proxy_natives]
   # Write .srcjar
@@ -610,5 +631,10 @@ def GenerateFromJar(parser, args, jni_mode):
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 
-  _WriteHeaders(jni_mode, jni_objs, args.output_names, args.output_dir,
-                args.extra_includes)
+  _WriteHeaders(jni_mode,
+                jni_objs,
+                args.output_names,
+                args.output_dir,
+                include_path_prefix=args.include_path_prefix,
+                extra_includes=args.extra_includes,
+                add_natives_macro_definition=False)

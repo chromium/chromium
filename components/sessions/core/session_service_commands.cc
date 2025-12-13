@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/sessions/core/session_service_commands.h"
 
 #include <stdint.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -1055,7 +1051,7 @@ std::unique_ptr<SessionCommand> CreateSessionCommandForPayload(
     SessionCommand::id_type id,
     const Payload& payload) {
   auto command = std::make_unique<SessionCommand>(id, sizeof(payload));
-  memcpy(command->contents(), &payload, sizeof(payload));
+  UNSAFE_TODO(memcpy(command->contents(), &payload, sizeof(payload)));
   return command;
 }
 
@@ -1104,7 +1100,7 @@ std::unique_ptr<SessionCommand> CreateTabClosedCommand(const SessionID tab_id) {
   // Because of what appears to be a compiler bug setting payload to {0} doesn't
   // set the padding to 0, resulting in Purify reporting an UMR when we write
   // the structure to disk. To avoid this we explicitly memset the struct.
-  memset(&payload, 0, sizeof(payload));
+  UNSAFE_TODO(memset(&payload, 0, sizeof(payload)));
   payload.id = tab_id.id();
   payload.close_time = base::Time::Now().ToInternalValue();
   return CreateSessionCommandForPayload(kCommandTabClosed, payload);
@@ -1114,7 +1110,7 @@ std::unique_ptr<SessionCommand> CreateWindowClosedCommand(
     const SessionID window_id) {
   ClosedPayload payload;
   // See comment in CreateTabClosedCommand as to why we do this.
-  memset(&payload, 0, sizeof(payload));
+  UNSAFE_TODO(memset(&payload, 0, sizeof(payload)));
   payload.id = window_id.id();
   payload.close_time = base::Time::Now().ToInternalValue();
   return CreateSessionCommandForPayload(kCommandWindowClosed, payload);

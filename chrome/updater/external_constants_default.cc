@@ -4,9 +4,12 @@
 
 #include "chrome/updater/external_constants_default.h"
 
+#include <cstdint>
 #include <optional>
+#include <string_view>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -20,6 +23,13 @@
 
 namespace updater {
 namespace {
+
+constexpr std::optional<std::vector<uint8_t>> GetCrxPublicKeyHash() {
+  if constexpr (std::string_view(CRX_PKHASH).empty()) {
+    return std::nullopt;
+  }
+  return base::Base64Decode(CRX_PKHASH);
+}
 
 class DefaultExternalConstants : public ExternalConstants {
  public:
@@ -48,6 +58,10 @@ class DefaultExternalConstants : public ExternalConstants {
 
   crx_file::VerifierFormat CrxVerifierFormat() const override {
     return crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
+  }
+
+  std::optional<std::vector<uint8_t>> CrxPublicKeyHash() const override {
+    return GetCrxPublicKeyHash();
   }
 
   base::Value::Dict DictPolicies() const override {

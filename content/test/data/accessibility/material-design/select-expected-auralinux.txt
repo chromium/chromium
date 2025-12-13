@@ -1,0 +1,279 @@
+[document web] name='Material Web Select'
+++[section] name='Ready'
+++++[combo box] name='Filled select'
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Filled select'
+++++++++++++[section]
+++++++++++++++[static] name='%C2%A0'
+++++++++++[section]
+++++++++++++[image]
+++++[combo box] name='Outlined select'
+++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[static] name='Outlined select'
+++++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[static] name='Banana'
+++++++++++[section]
+++++++++++++[image]
+++++[combo box] name='Required select'
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Required select*'
+++++++++++++[section]
+++++++++++++++[static] name='%C2%A0'
+++++++++++[section]
+++++++++++++[image]
+++++[combo box] name='Disabled select'
+++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Disabled select'
+++++++++++++[section]
+++++++++++++++[static] name='%C2%A0'
+++++++++++[section]
+++++++++++++[image]
+=== Start Continuation ===
+[document web] name='Material Web Select'
+++[section] name='Ready'
+++++[combo box] name='Filled select'
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Filled select'
+++++++++++++[section]
+++++++++++++++[static] name='Option 2'
+++++++++++[section]
+++++++++++++[image]
+++++[combo box] name='Outlined select'
+++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[static] name='Outlined select'
+++++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[static] name='Banana'
+++++++++++[section]
+++++++++++++[image]
+++++[combo box] name='Required select'
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Required select*'
+++++++++++++[section]
+++++++++++++++[static] name='%C2%A0'
+++++++++++[section]
+++++++++++++[image]
+++++[combo box] name='Disabled select'
+++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Disabled select'
+++++++++++++[section]
+++++++++++++++[static] name='%C2%A0'
+++++++++++[section]
+++++++++++++[image]
+++++[section]
+++++++[static] name='Option 2 Selected'
+=== Start Continuation ===
+[document web] name='Material Web Select'
+++[section] name='Ready'
+++++[combo box] name='Filled select'
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Filled select'
+++++++++++++[section]
+++++++++++++++[static] name='Option 3'
+++++++++++[section]
+++++++++++++[image]
+++++[combo box] name='Outlined select'
+++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[static] name='Outlined select'
+++++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[static] name='Banana'
+++++++++++[section]
+++++++++++++[image]
+++++[combo box] name='Required select'
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Required select*'
+++++++++++++[section]
+++++++++++++++[static] name='%C2%A0'
+++++++++++[section]
+++++++++++++[image]
+++++[combo box] name='Disabled select'
+++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Disabled select'
+++++++++++++[section]
+++++++++++++++[static] name='%C2%A0'
+++++++++++[section]
+++++++++++++[image]
+++++[section]
+++++++[static] name='Option 2 Selected'
+++++[section]
+++++++[static] name='Option 3 Selected'
+=== Start Continuation ===
+[document web] name='Material Web Select'
+++[section] name='Ready'
+++++[combo box] name='Filled select'
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Filled select'
+++++++++++++[section]
+++++++++++++++[static] name='Option 1'
+++++++++++[section]
+++++++++++++[image]
+++++[combo box] name='Outlined select'
+++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[static] name='Outlined select'
+++++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[static] name='Banana'
+++++++++++[section]
+++++++++++++[image]
+++++[combo box] name='Required select'
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Required select*'
+++++++++++++[section]
+++++++++++++++[static] name='%C2%A0'
+++++++++++[section]
+++++++++++++[image]
+++++[combo box] name='Disabled select'
+++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Disabled select'
+++++++++++++[section]
+++++++++++++++[static] name='%C2%A0'
+++++++++++[section]
+++++++++++++[image]
+++++[section]
+++++++[static] name='Option 2 Selected'
+++++[section]
+++++++[static] name='Option 3 Selected'
+++++[section]
+++++++[static] name='Option 1 Selected'

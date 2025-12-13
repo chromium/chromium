@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/containers/queue.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/default_tick_clock.h"

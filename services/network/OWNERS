@@ -8,7 +8,6 @@ ricea@chromium.org
 
 # Secondary
 horo@chromium.org
-cduvall@chromium.org
 dschinazi@chromium.org
 ericorth@chromium.org
 kinuko@chromium.org
@@ -38,6 +37,7 @@ per-file sec_header_helpers*=file://third_party/blink/SECURITY_OWNERS
 
 # WebTransport
 per-file web_transport*=file://net/OWNERS
+per-file web_transport*=file://net/quic/OWNERS
 
 # Device Bound Session Credentials
 per-file device_bound_session_manager*=file://net/device_bound_sessions/OWNERS

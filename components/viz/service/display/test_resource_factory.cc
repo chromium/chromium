@@ -53,7 +53,7 @@ TestResourceFactory::TestResourceFactory() {
   lock_set_for_external_use_.emplace(display_resource_provider_.get(),
                                      output_surface_.get());
 
-  client_context_provider_ = TestContextProvider::Create();
+  client_context_provider_ = TestContextProvider::CreateGLES();
   client_context_provider_->BindToCurrentSequence();
   client_resource_provider_ = std::make_unique<ClientResourceProvider>();
 }
@@ -83,8 +83,10 @@ ResourceId TestResourceFactory::CreateResource(
   resource_ids_to_transfer.push_back(resource_id);
   std::vector<TransferableResource> list;
 
+  CHECK(client_context_provider_);
   client_resource_provider_->PrepareSendToParent(
-      resource_ids_to_transfer, &list, client_context_provider_.get());
+      resource_ids_to_transfer, &list,
+      client_context_provider_->SharedImageInterface());
   display_resource_provider_->ReceiveFromChild(child_id, list);
 
   // Delete it in the child so it won't be leaked, and will be released once

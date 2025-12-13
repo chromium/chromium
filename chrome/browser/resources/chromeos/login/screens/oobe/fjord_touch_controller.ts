@@ -33,12 +33,11 @@ export class FjordTouchControllerScreen extends
     this.initializeLoginScreen('FjordTouchControllerScreen');
   }
 
-
   /**
    * Returns the control which should receive initial focus.
    */
   override get defaultControl(): HTMLElement|null {
-    return this.shadowRoot!.querySelector('#setupScreen');
+    return this.shadowRoot!.querySelector('#oobeFrame');
   }
 }
 

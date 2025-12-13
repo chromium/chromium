@@ -25,7 +25,9 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -35,7 +37,9 @@
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/menu_model_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -43,10 +47,15 @@
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/service/data_type_controller.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_sessions/session_sync_service_impl.h"
 #include "components/sync_sessions/synced_session.h"
@@ -179,12 +188,11 @@ class RecentTabsSubMenuModelTest : public InProcessBrowserTest {
   }
 
   Browser* AddBrowser(Browser* browser, const GURL& url) {
-    ui_test_utils::BrowserChangeObserver new_browser_observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ui_test_utils::NavigateToURLWithDisposition(
         browser, url, WindowOpenDisposition::NEW_WINDOW,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-    Browser* new_browser = new_browser_observer.Wait();
+    Browser* new_browser = browser_created_observer.Wait();
     ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
     return new_browser;
   }
@@ -266,6 +274,32 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   recent_tab_sub_menu_model.ExecuteCommand(
       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS, 0);
   EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
+
+  // Check that we arrive at the expected page.
+  EXPECT_EQ(GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kPeopleSubPage),
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
+                       LogMenuMetricsForRecentTabsSeeDeviceTabs) {
+  Init();
+  FakeIconDelegate fake_delegate;
+  AppMenuIconController app_menu_icon_controller(browser()->profile(),
+                                                 &fake_delegate);
+  TestLogMetricsAppMenuModel app_menu_model(nullptr, browser(),
+                                            &app_menu_icon_controller);
+  app_menu_model.Init();
+  RecentTabsSubMenuModel recent_tab_sub_menu_model(nullptr, browser());
+  recent_tab_sub_menu_model.RegisterLogMenuMetricsCallback(
+      base::BindRepeating(&TestLogMetricsAppMenuModel::CallLogMenuMetrics,
+                          base::Unretained(&app_menu_model)));
+  recent_tab_sub_menu_model.ExecuteCommand(IDC_RECENT_TABS_SEE_DEVICE_TABS, 0);
+  EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
+
+  // Check that we arrive at the expected page.
+  EXPECT_EQ(GURL(chrome::kChromeUIHistoryURL)
+                .Resolve(chrome::kChromeUIHistorySyncedTabs),
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
 // Test disabled "Recently closed" header with no foreign tabs.
@@ -283,8 +317,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest, NoTabs) {
       {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
       {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
       {ui::MenuModel::TYPE_TITLE, false},     // Your devices
-      {ui::MenuModel::TYPE_COMMAND,
-       true},  // Sign in to see tabs from other devices
+      {ui::MenuModel::TYPE_COMMAND, true},    // See tabs from other devices
 
   };
 
@@ -314,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   RecentTabsSubMenuModel model(nullptr, browser());
 
   std::vector<ModelData> kData;
-  EXPECT_TRUE(browser()->GetFeatures().side_panel_coordinator() != nullptr);
+  EXPECT_TRUE(browser()->GetFeatures().side_panel_ui());
   kData = {
       {ui::MenuModel::TYPE_COMMAND, true},    // History
       {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster
@@ -657,3 +690,57 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
           model.GetSubmenuModelAt(model.GetItemCount() - 1)->GetLabelAt(2),
           model.GetSubmenuModelAt(model.GetItemCount() - 1)->GetLabelAt(3)));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest, OtherDevicesAvailability) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    GTEST_SKIP();
+  }
+
+  std::vector<ModelData> kDataWithOtherDevices = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, false},   // Recent Tabs
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Your devices
+      {ui::MenuModel::TYPE_SUBMENU, true}     // session 0 submenu
+  };
+
+  std::vector<ModelData> kDataWithoutOtherDevices = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, false}    // Recent Tabs
+  };
+
+  Init();
+  EnableSync();
+  RecentTabsBuilderTestHelper recent_tabs_builder;
+  recent_tabs_builder.AddSession();
+  recent_tabs_builder.AddWindow(0);
+  recent_tabs_builder.AddTab(0, 0);
+  RegisterRecentTabs(&recent_tabs_builder);
+
+  // Default state.
+  VerifyModel(RecentTabsSubMenuModel(nullptr, browser()),
+              kDataWithOtherDevices);
+
+  // Signed in.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "test@gmail.com",
+                                      signin::ConsentLevel::kSignin);
+  VerifyModel(RecentTabsSubMenuModel(nullptr, browser()),
+              kDataWithOtherDevices);
+
+  // History sync explicitly disabled: tabs from other devices are not shown.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(browser()->profile());
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, false);
+  VerifyModel(RecentTabsSubMenuModel(nullptr, browser()),
+              kDataWithoutOtherDevices);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)

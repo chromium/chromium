@@ -277,8 +277,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListFiltersIncognitoPolicyExceptions) {
   policy_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString(test_url),
       ContentSettingsPattern::Wildcard(), kContentTypeCookies,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{});
   policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(map, std::move(policy_provider),
                                                 ProviderType::kPolicyProvider);
@@ -300,8 +299,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListFiltersIncognitoPolicyExceptions) {
   incognito_policy_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString(test_url),
       ContentSettingsPattern::Wildcard(), kContentTypeCookies,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{});
   incognito_policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       incognito_map, std::move(incognito_policy_provider),
@@ -500,8 +498,7 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
   policy_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString(star_google_com),
       ContentSettingsPattern::Wildcard(), kContentType,
-      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{});
   policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(map, std::move(policy_provider),
                                                 ProviderType::kPolicyProvider);
@@ -519,8 +516,7 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
   extension_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString(drive_google_com),
       ContentSettingsPattern::Wildcard(), kContentType,
-      base::Value(CONTENT_SETTING_ASK), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_ASK), /*constraints=*/{});
   extension_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(extension_provider),
@@ -597,8 +593,7 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   extension_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromURL(origin),
       ContentSettingsPattern::FromURL(origin), kContentType,
-      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{});
   extension_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(extension_provider),
@@ -613,8 +608,7 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   policy_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromURL(origin),
       ContentSettingsPattern::FromURL(origin), kContentType,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{});
   policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(map, std::move(policy_provider),
                                                 ProviderType::kPolicyProvider);
@@ -988,8 +982,6 @@ TEST_F(SiteSettingsHelperTest, AutomaticFullscreenVisibility) {
   TestingProfile profile;
   profile.SetPermissionControllerDelegate(
       permissions::GetPermissionControllerDelegate(&profile));
-  base::test::ScopedFeatureList feature_list{
-      features::kAutomaticFullscreenContentSetting};
   const ContentSettingsType type = ContentSettingsType::AUTOMATIC_FULLSCREEN;
 
   // Automatic Fullscreen is visible for non-origin-specific lists.
@@ -1014,8 +1006,7 @@ TEST_F(SiteSettingsHelperTest, AutomaticFullscreenVisibility) {
   policy_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString(kAllowed),
       ContentSettingsPattern::FromString(kAllowed), type,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{});
   policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(map, std::move(policy_provider),
                                                 ProviderType::kPolicyProvider);
@@ -1058,8 +1049,7 @@ TEST_F(SiteSettingsHelperTest, WebPrintingVisibility) {
   policy_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString(kAllowed),
       ContentSettingsPattern::FromString(kAllowed), type,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{});
   content_settings::TestUtils::OverrideProvider(
       HostContentSettingsMapFactory::GetForProfile(&profile),
       std::move(policy_provider), ProviderType::kPolicyProvider);
@@ -1158,7 +1148,8 @@ class SiteSettingsHelperChooserExceptionTest : public testing::Test {
                                            *ephemeral_device_info);
 
     // Add the policy granted permissions for testing.
-    auto policy_value = base::JSONReader::Read(kUsbPolicySetting);
+    auto policy_value = base::JSONReader::Read(
+        kUsbPolicySetting, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     DCHECK(policy_value);
     profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
                                std::move(*policy_value));
@@ -1604,8 +1595,6 @@ TEST_F(SiteSettingsHelperIsolatedWebAppTest,
 }
 
 TEST_F(SiteSettingsHelperIsolatedWebAppTest, AutomaticFullscreenVisibility) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutomaticFullscreenContentSetting};
   const ContentSettingsType type = ContentSettingsType::AUTOMATIC_FULLSCREEN;
   web_app::IsolatedWebAppUrlInfo app_url_info = InstallIsolatedWebApp(kAppName);
 

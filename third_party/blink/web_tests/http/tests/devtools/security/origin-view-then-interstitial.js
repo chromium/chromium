@@ -21,7 +21,7 @@ import * as Security from 'devtools/panels/security/security.js';
   TestRunner.addResult('Before selecting origin view:');
   TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.SecurityPanel.instance().visibleView.contentElement);
 
-  Security.SecurityPanel.SecurityPanel.instance().sidebarTree.elementsByOrigin.get('http://foo.test').select();
+  Security.SecurityPanel.SecurityPanel.instance().sidebar.elementsByOrigin().get('http://foo.test').select(undefined, true);
 
   TestRunner.addResult('Panel on origin view before interstitial:');
   TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.SecurityPanel.instance().visibleView.contentElement);

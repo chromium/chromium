@@ -6,6 +6,9 @@
 
 #include "chrome/browser/extensions/chrome_app_icon_service.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

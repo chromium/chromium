@@ -32,7 +32,7 @@ found in the LICENSE file.
       <div class="checkbox-row">
         <label>
           <span class="checkbox-wrapper">
-            <input type="checkbox" id="native"
+            <input type="checkbox" autocomplete="off" id="native"
                    aria-describedby="native_secondary">
           </span>
           Native accessibility API support
@@ -46,7 +46,7 @@ found in the LICENSE file.
       <div class="checkbox-row">
         <label>
           <span class="checkbox-wrapper">
-            <input type="checkbox" id="web"
+            <input type="checkbox" autocomplete="off" id="web"
                    aria-describedby="web_secondary">
           </span>
           Web accessibility
@@ -59,7 +59,7 @@ found in the LICENSE file.
       <div class="checkbox-row">
         <label>
           <span class="checkbox-wrapper">
-            <input type="checkbox" id="text"
+            <input type="checkbox" autocomplete="off" id="text"
                    aria-describedby="text_secondary">
           </span>
           Text metrics
@@ -73,7 +73,7 @@ found in the LICENSE file.
       <div class="checkbox-row">
         <label>
           <span class="checkbox-wrapper">
-            <input type="checkbox" id="extendedProperties"
+            <input type="checkbox" autocomplete="off" id="extendedProperties"
                    aria-describedby="extended_properties_secondary">
           </span>
           Extended properties
@@ -84,10 +84,10 @@ found in the LICENSE file.
         technologies.
       </div>
 
-        <div class="checkbox-row">
+      <div class="checkbox-row">
         <label>
           <span class="checkbox-wrapper">
-            <input type="checkbox" id="screenReader"
+            <input type="checkbox" autocomplete="off" id="screenReader"
                    aria-describedby="screen_reader_secondary">
           </span>
           Screen reader
@@ -100,7 +100,7 @@ found in the LICENSE file.
       <div class="checkbox-row">
         <label>
           <span class="checkbox-wrapper">
-            <input type="checkbox" id="html"
+            <input type="checkbox" autocomplete="off" id="html"
                    aria-describedby="html_secondary">
           </span>
           HTML
@@ -110,7 +110,6 @@ found in the LICENSE file.
         Exposes HTML tag names and attributes via accessibility APIs.
       </div>
 
-    <div class="column">
       <h2>Active assistive technology</h2>
       <div>
         Active assistive technology:
@@ -120,8 +119,17 @@ found in the LICENSE file.
         Is the active AT a screen reader:
         <span id="active_at_is_screen_reader"></span>
       </div>
+
+      <if expr="is_win">
+        <h2>Accessible node counters</h2>
+        <div>Number of accessible nodes available to accessibility tools (ATs):
+          <span id="dormantCount"></span>.</div>
+        <div>Number of accessible nodes referenced by one or more ATs:
+          <span id="liveCount"></span>.</div>
+        <div>Number of previously active nodes no longer available in the
+          browser: <span id="ghostCount"></span>.</div>
+      </if>
     </div>
-  </div>
     <div class="column">
       <h2>
         Locking the accessibility mode from being changed by other
@@ -134,7 +142,7 @@ found in the LICENSE file.
       <div class="checkbox-row">
         <label>
           <span class="checkbox-wrapper">
-            <input type="checkbox" id="isolate"
+            <input type="checkbox" autocomplete="off" id="isolate"
                    aria-describedby="isolate_secondary">
           </span>
           Suppress automatic accessibility enablement from platform API
@@ -148,7 +156,7 @@ found in the LICENSE file.
       <div class="checkbox-row">
         <label>
           <span class="checkbox-wrapper">
-            <input type="checkbox" id="locked"
+            <input type="checkbox" autocomplete="off" id="locked"
                    aria-describedby="locked_secondary">
           </span>
           Lock the current accessibility mode from being changed
@@ -176,64 +184,65 @@ found in the LICENSE file.
     </div>
   </div>
 
-  <div class="columns">
-    <div class="column">
-      <h2>Accessibility tree viewing options:</h2>
-      <div class="api-type-wrapper">
-        <label>API type shown in the tree:
-          <select id="apiType">
-            <option>Error: Not able to load options</option>
-          </select>
-          <label>
-      </div>
-      <h3>Filters:</h3>
-      <p>
-        Use filters to match the attributes and attribute values you want
-        included in the output. Filters can contain simple wildcards (*) only,
-        they're not regular expressions. Attributes are separated by spaces.
-      </p>
+  <div>
+    <h2>Accessibility tree viewing options:</h2>
+    <div class="api-type-wrapper">
+      <label>API type shown in the tree:
+        <select id="apiType">
+          <option>Error: Not able to load options</option>
+        </select>
+        <label>
+    </div>
+    <h3>Filters:</h3>
+    <p>
+      Use filters to match the attributes and attribute values you want
+      included in the output. Filters can contain simple wildcards (*) only,
+      they're not regular expressions. Attributes are separated by spaces.
+    </p>
 
-      <div>
-        <label for="filter-allow">
-          Allow:
-        </label>
-        <input id="filter-allow" aria-describedby="allow_secondary">
-      </div>
-      <div id="allow_secondary" class="secondary">
-        Include these attributes. Empty attributes are skipped.
-      </div>
+    <div>
+      <label>
+        Allow:
+        <input id="filter-allow" autocomplete="off"
+               aria-describedby="allow_secondary">
+      </label>
+    </div>
+    <div id="allow_secondary" class="secondary">
+      Include these attributes. Empty attributes are skipped.
+    </div>
 
-      <div>
-        <label for="filter-allow-empty">
-          Allow empty:
-        </label>
-        <input id="filter-allow-empty"
+    <div>
+      <label>
+        Allow empty:
+        <input id="filter-allow-empty" autocomplete="off"
                aria-describedby="allow-empty_secondary">
-      </div>
-      <div id="allow-empty_secondary" class="secondary">
-        Include these attributes, even if they are empty.
-      </div>
+      </label>
+    </div>
+    <div id="allow-empty_secondary" class="secondary">
+      Include these attributes, even if they are empty.
+    </div>
 
-      <div>
-        <label for="filter-deny">
-          Deny:
-        </label>
-        <input id="filter-deny" aria-describedby="deny_secondary">
-      </div>
-      <div id="deny_secondary" class="secondary">
-        Exclude these attributes.
-      </div>
+    <div>
+      <label>
+        Deny:
+        <input id="filter-deny" autocomplete="off"
+               aria-describedby="deny_secondary">
+      </label>
+    </div>
+    <div id="deny_secondary" class="secondary">
+      Exclude these attributes.
     </div>
   </div>
 
   <h2>Chrome Native UI:</h2>
   <div id="browsers" class="list">
-    <label for="native-ui-delay">
+    <label>
       Set a delay, in milliseconds, before getting the native accessibility
       tree:
+      <div></div>
+      <input id="native-ui-delay" autocomplete="off" type="number" value="0">
+      ms
     </label>
-    <div></div>
-    <input id="native-ui-delay" type="number" value="0"> ms
   </div>
 
   <h2>Pages:</h2>

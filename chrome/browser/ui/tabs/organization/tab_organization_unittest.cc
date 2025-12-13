@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organization/logging_util.h"
@@ -36,7 +37,7 @@
 
 namespace {
 
-int kMinimumValidTabs = 2;
+constexpr int kMinimumValidTabs = 2;
 
 class FakeModelQualityLogEntry
     : public optimization_guide::ModelQualityLogEntry {
@@ -56,10 +57,14 @@ class TabOrganizationTest : public testing::Test {
   };
 
   TabOrganizationTest() {
-    ON_CALL(browser_window_interface_, GetTabStripModel)
+    ON_CALL(browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(&tab_strip_model_));
     ON_CALL(browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(::testing::ReturnRef(user_data_host_));
+    ON_CALL(browser_window_interface_, GetFeatures())
+        .WillByDefault(::testing::ReturnRef(browser_window_features_));
+    ON_CALL(::testing::Const(browser_window_interface_), GetFeatures())
+        .WillByDefault(::testing::ReturnRef(browser_window_features_));
     delegate_.SetBrowserWindowInterface(&browser_window_interface_);
   }
 
@@ -162,7 +167,8 @@ class TabOrganizationTest : public testing::Test {
   TestTabStripModelDelegate delegate_;
   TabStripModel tab_strip_model_{&delegate_, &profile_};
   ui::UnownedUserDataHost user_data_host_;
-  MockBrowserWindowInterface browser_window_interface_;
+  BrowserWindowFeatures browser_window_features_;
+  ::testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
@@ -229,7 +235,7 @@ TEST_F(TabOrganizationTest, TabDataOnTabStripModelDestroyed) {
   std::unique_ptr<TabStripModel> new_tab_strip_model =
       std::make_unique<TabStripModel>(delegate(), profile());
 
-  ON_CALL(*browser_window_interface(), GetTabStripModel)
+  ON_CALL(*browser_window_interface(), GetTabStripModel())
       .WillByDefault(::testing::Return(new_tab_strip_model.get()));
 
   // Create a tab data that should be listening to the tabstrip model.
@@ -424,12 +430,12 @@ TEST_F(TabOrganizationTest, TabOrganizationIDs) {
 
 TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
   TabOrganization organization({}, {u"default_name"});
-  EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 0);
+  EXPECT_EQ(organization.tab_datas().size(), 0u);
   tabs::TabInterface* tab = AddTab();
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
 
   organization.AddTabData(std::move(tab_data));
-  EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 1);
+  EXPECT_EQ(organization.tab_datas().size(), 1u);
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationRemovingTabData) {
@@ -438,10 +444,10 @@ TEST_F(TabOrganizationTest, TabOrganizationRemovingTabData) {
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
   TabData::TabID tab_data_id = tab_data->tab_id();
   organization.AddTabData(std::move(tab_data));
-  EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 1);
+  EXPECT_EQ(organization.tab_datas().size(), 1u);
 
   organization.RemoveTabData(tab_data_id);
-  EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 0);
+  EXPECT_EQ(organization.tab_datas().size(), 0u);
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationChangingCurrentName) {
@@ -449,12 +455,12 @@ TEST_F(TabOrganizationTest, TabOrganizationChangingCurrentName) {
   std::u16string name_1 = u"name_1";
   TabOrganization organization({}, {name_0, name_1});
   EXPECT_TRUE(std::holds_alternative<size_t>(organization.current_name()));
-  EXPECT_EQ(static_cast<int>(std::get<size_t>(organization.current_name())), 0);
+  EXPECT_EQ(std::get<size_t>(organization.current_name()), 0u);
   EXPECT_EQ(organization.GetDisplayName(), name_0);
 
   organization.SetCurrentName(1u);
   EXPECT_TRUE(std::holds_alternative<size_t>(organization.current_name()));
-  EXPECT_EQ(static_cast<int>(std::get<size_t>(organization.current_name())), 1);
+  EXPECT_EQ(std::get<size_t>(organization.current_name()), 1u);
   EXPECT_EQ(organization.GetDisplayName(), name_1);
 
   std::u16string custom_name = u"custom_name";

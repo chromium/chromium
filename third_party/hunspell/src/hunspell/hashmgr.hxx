@@ -109,7 +109,7 @@ class HashMgr {
   int langnum;
   std::string enc;
   std::string lang;
-  struct cs_info* csconv;
+  const struct cs_info* csconv;
   std::string ignorechars;
   std::vector<w_char> ignorechars_utf16;
   std::vector<unsigned short*> aliasf; // flag vector `compression' with aliases

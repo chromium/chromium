@@ -57,9 +57,8 @@ public class SearchEnginesFeatureUtils {
      * <p>This can be controlled by starting chrome with the <code>
      * --enable-choice-apis-fake-backend</code> command line flag.
      *
-     * <p>In "fake backend" mode, if the "ClayBlocking" feature's "dialog_timeout_millis" param is
-     * set, it is also used to simulate a long-running backend query. It will respond that blocking
-     * is required after {@code min(3000, paramValue("dialog_timeout_millis"))} milliseconds.
+     * <p>The "fake backend" mode, simulates a long-running backend query. It will respond that
+     * blocking is required after `FakeSearchEngineCountryDelegate#CHOICE_REQUIRED_DELAY_MS`.
      */
     public boolean isChoiceApisFakeBackendEnabled() {
         return CommandLine.getInstance().hasSwitch(ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH);

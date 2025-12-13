@@ -4,10 +4,12 @@
 
 #include "chrome/browser/android/vr/arcore_device/fake_arcore.h"
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/containers/contains.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "device/vr/public/mojom/anchor_id.h"
+#include "device/vr/public/mojom/hit_test_subscription_id.h"
+#include "device/vr/public/mojom/plane_id.h"
 
 namespace {}
 
@@ -249,14 +251,15 @@ bool FakeArCore::RequestHitTest(
   return true;
 }
 
-std::optional<uint64_t> FakeArCore::SubscribeToHitTest(
+std::optional<HitTestSubscriptionId> FakeArCore::SubscribeToHitTest(
     mojom::XRNativeOriginInformationPtr nativeOriginInformation,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
   NOTREACHED();
 }
 
-std::optional<uint64_t> FakeArCore::SubscribeToHitTestForTransientInput(
+std::optional<HitTestSubscriptionId>
+FakeArCore::SubscribeToHitTestForTransientInput(
     const std::string& profile_name,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
@@ -270,7 +273,7 @@ FakeArCore::GetHitTestSubscriptionResults(
   return nullptr;
 }
 
-void FakeArCore::UnsubscribeFromHitTest(uint64_t subscription_id) {
+void FakeArCore::UnsubscribeFromHitTest(HitTestSubscriptionId subscription_id) {
   NOTREACHED();
 }
 
@@ -287,16 +290,16 @@ mojom::XRPlaneDetectionDataPtr FakeArCore::GetDetectedPlanesData() {
   vertices.push_back(mojom::XRPlanePointData::New(0.3, -0.3));
 
   result.push_back(
-      mojom::XRPlaneData::New(1, device::mojom::XRPlaneOrientation::HORIZONTAL,
-                              pose, std::move(vertices)));
+      mojom::XRPlaneData::New(PlaneId(1), mojom::XRPlaneOrientation::HORIZONTAL,
+                              pose, std::nullopt, std::move(vertices)));
 
-  return mojom::XRPlaneDetectionData::New(std::vector<uint64_t>{1},
+  return mojom::XRPlaneDetectionData::New(std::vector<PlaneId>{PlaneId(1)},
                                           std::move(result));
 }
 
 mojom::XRAnchorsDataPtr FakeArCore::GetAnchorsData() {
   std::vector<mojom::XRAnchorDataPtr> result;
-  std::vector<uint64_t> result_ids;
+  std::vector<AnchorId> result_ids;
 
   for (auto& anchor_id_and_data : anchors_) {
     device::Pose pose(anchor_id_and_data.second.position,
@@ -344,20 +347,12 @@ mojom::XRDepthDataPtr FakeArCore::GetDepthData() {
   return nullptr;
 }
 
-void FakeArCore::CreatePlaneAttachedAnchor(
-    const mojom::XRNativeOriginInformation& native_origin_information,
-    const device::Pose& native_origin_from_anchor,
-    uint64_t plane_id,
-    CreateAnchorCallback callback) {
-  // TODO(crbug.com/41475117): Fix this when implementing tests.
-  std::move(callback).Run(mojom::CreateAnchorResult::FAILURE, 0);
-}
-
 void FakeArCore::CreateAnchor(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const device::Pose& native_origin_from_anchor,
+    const std::optional<PlaneId>& plane_id,
     CreateAnchorCallback callback) {
-  std::move(callback).Run(mojom::CreateAnchorResult::FAILURE, 0);
+  std::move(callback).Run(std::nullopt);
 }
 
 void FakeArCore::ProcessAnchorCreationRequests(
@@ -367,7 +362,7 @@ void FakeArCore::ProcessAnchorCreationRequests(
   // No-op - nothing gets deferred so far.
 }
 
-void FakeArCore::DetachAnchor(uint64_t anchor_id) {
+void FakeArCore::DetachAnchor(AnchorId anchor_id) {
   auto count = anchors_.erase(anchor_id);
   DCHECK_EQ(1u, count);
 }

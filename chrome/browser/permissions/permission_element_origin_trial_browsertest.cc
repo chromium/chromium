@@ -152,7 +152,7 @@ class PermissionElementOriginTrialBrowserTest
     // Setting up origin trial header.
     std::string headers =
         "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
-    if (params->url_request.url.path() == "/origin_trial") {
+    if (params->url_request.url.GetPath() == "/origin_trial") {
       base::StrAppend(&headers, {"Origin-Trial: ", kOriginTrialToken, "\n"});
     }
     headers += '\n';

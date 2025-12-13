@@ -200,6 +200,10 @@ def _GetTypemapImport(typemap):
   return Path(typemap['converter_import']).with_suffix('.js').name
 
 
+def _NameToFieldTag(name):
+  return generator.ToUpperSnakeCase(name)
+
+
 class TypeScriptStylizer(generator.Stylizer):
   def StylizeConstant(self, mojom_name):
     return generator.ToUpperSnakeCase(mojom_name)
@@ -272,6 +276,7 @@ class Generator(generator.Generator):
         "ts_type": self._TypescriptType,
         "ts_type_maybe_nullable": self._TypescriptTypeMaybeNullable,
         "sanitize_identifier": self._TypeScriptSanitizeIdentifier,
+        "to_union_field_tag_name": _NameToFieldTag,
     }
     return ts_filters
 
@@ -397,13 +402,11 @@ class Generator(generator.Generator):
         return name
       if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
         return name + "Remote"
-      if mojom.IsPendingReceiverKind(kind):
+      if mojom.IsPendingReceiverKind(
+          kind) or mojom.IsPendingAssociatedReceiverKind(kind):
         return name + "PendingReceiver"
-      # TODO(calamity): Support associated interfaces properly.
-      if mojom.IsPendingAssociatedRemoteKind(kind):
-        return "object"
       # TODO(calamity): Support associated interface requests properly.
-      if mojom.IsPendingAssociatedReceiverKind(kind):
+      if mojom.IsPendingAssociatedRemoteKind(kind):
         return "object"
 
       raise Exception("Type is not supported yet.")
@@ -470,6 +473,8 @@ class Generator(generator.Generator):
     if (mojom.IsEnumKind(kind) or mojom.IsStructKind(kind)
         or mojom.IsUnionKind(kind)):
       imports = [make_import(kind.name, 'Spec')]
+      # if the type is typemapped, the typemap import will replace the
+      # mojo type, so no need to import it here.
       if not kind.qualified_name in self.typemap:
         imports += [make_import(kind.name)]
       return imports

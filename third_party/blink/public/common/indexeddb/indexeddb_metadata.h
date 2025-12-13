@@ -16,7 +16,7 @@
 namespace blink {
 
 struct BLINK_COMMON_EXPORT IndexedDBIndexMetadata {
-  static const int64_t kInvalidId = -1;
+  inline static const int64_t kInvalidId = -1;
 
   IndexedDBIndexMetadata();
   IndexedDBIndexMetadata(const std::u16string& name,
@@ -39,7 +39,7 @@ struct BLINK_COMMON_EXPORT IndexedDBIndexMetadata {
 };
 
 struct BLINK_COMMON_EXPORT IndexedDBObjectStoreMetadata {
-  static const int64_t kInvalidId = -1;
+  inline static const int64_t kInvalidId = -1;
 
   IndexedDBObjectStoreMetadata();
   IndexedDBObjectStoreMetadata(const std::u16string& name,
@@ -86,6 +86,7 @@ struct BLINK_COMMON_EXPORT IndexedDBDatabaseMetadata {
   std::map<int64_t, IndexedDBObjectStoreMetadata> object_stores;
 
   bool was_cold_open = true;
+  bool is_sqlite = false;
 };
 
 }  // namespace blink

@@ -52,7 +52,7 @@ public class ModuleInterfaceProcessor extends AbstractProcessor {
             Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
         // Do nothing on an empty round.
         if (annotations.isEmpty()) {
-            return true;
+            return false;
         }
 
         for (Element e : roundEnvironment.getElementsAnnotatedWith(MODULE_INTERFACE_CLASS)) {
@@ -73,7 +73,7 @@ public class ModuleInterfaceProcessor extends AbstractProcessor {
             }
         }
 
-        return true;
+        return false;
     }
 
     private TypeSpec createModuleClassSpec(

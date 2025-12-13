@@ -42,6 +42,7 @@ component("constants") {
   ]
   deps = [
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//chromeos/components/libsegmentation:buildflags",
   ]
 }

@@ -35,7 +35,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -47,9 +47,9 @@ namespace {
 // same domain but with "www.", this returns true if |page_url| is secure and in
 // the same origin as |app_url| with "www.".
 bool IsSameHostAndPort(const GURL& app_url, const GURL& page_url) {
-  return (app_url.host_piece() == page_url.host_piece() ||
-          std::string("www.") + app_url.host() == page_url.host_piece()) &&
-         app_url.port() == page_url.port();
+  return (app_url.host() == page_url.host() ||
+          std::string("www.") + app_url.GetHost() == page_url.host()) &&
+         app_url.GetPort() == page_url.GetPort();
 }
 
 }  // namespace
@@ -200,10 +200,6 @@ void HostedAppBrowserController::Uninstall(
 
 bool HostedAppBrowserController::IsInstalled() const {
   return GetExtension();
-}
-
-bool HostedAppBrowserController::IsHostedApp() const {
-  return true;
 }
 
 void HostedAppBrowserController::OnExtensionUninstallDialogClosed(

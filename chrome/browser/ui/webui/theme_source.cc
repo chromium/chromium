@@ -161,7 +161,7 @@ void ThemeSource::StartDataRequest(
 }
 
 std::string ThemeSource::GetMimeType(const GURL& url) {
-  const std::string_view file_path = url.path_piece();
+  const std::string_view file_path = url.path();
 
   if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
     return "text/css";
@@ -240,21 +240,16 @@ void ThemeSource::SendColorsCss(
   base::ElapsedTimer timer;
   const ui::ColorProvider& color_provider = wc_getter.Run()->GetColorProvider();
 
+  auto get_bool_param = [&](std::string_view key) {
+    std::string value;
+    return net::GetValueForKeyInQuery(url, key, &value) &&
+           base::ToLowerASCII(value) == "true";
+  };
+
+  const bool generate_rgb_vars = get_bool_param("generate_rgb_vars");
+  const bool shadow_host = get_bool_param("shadow_host");
+
   std::string sets_param;
-  std::vector<std::string_view> color_id_sets;
-  bool generate_rgb_vars = false;
-  std::string generate_rgb_vars_query_value;
-  if (net::GetValueForKeyInQuery(url, "generate_rgb_vars",
-                                 &generate_rgb_vars_query_value)) {
-    generate_rgb_vars =
-        base::ToLowerASCII(generate_rgb_vars_query_value) == "true";
-  }
-  bool shadow_host = false;
-  std::string shadow_host_query_value;
-  if (net::GetValueForKeyInQuery(url, "shadow_host",
-                                 &shadow_host_query_value)) {
-    shadow_host = base::ToLowerASCII(shadow_host_query_value) == "true";
-  }
   if (!net::GetValueForKeyInQuery(url, "sets", &sets_param)) {
     LOG(ERROR)
         << "colors.css requires a 'sets' query parameter to specify the color "
@@ -262,100 +257,96 @@ void ThemeSource::SendColorsCss(
     std::move(callback).Run(nullptr);
     return;
   }
-  color_id_sets = base::SplitStringPiece(sets_param, ",", base::TRIM_WHITESPACE,
-                                         base::SPLIT_WANT_ALL);
 
-  using ColorIdCSSCallback = base::RepeatingCallback<std::string(ui::ColorId)>;
-  auto generate_color_mapping =
-      [&color_id_sets, &color_provider, &generate_rgb_vars](
-          std::string set_name, ui::ColorId start, ui::ColorId end,
-          ColorIdCSSCallback color_css_name) {
-        // Only return these mappings if specified in the query parameter.
-        auto it = std::ranges::find(color_id_sets, set_name);
-        if (it == color_id_sets.end()) {
-          return std::string();
-        }
-        color_id_sets.erase(it);
-        std::string css_string;
-        for (ui::ColorId id = start; id < end; ++id) {
-          const SkColor color = color_provider.GetColor(id);
-          std::string css_id_to_color_mapping =
-              base::StringPrintf("%s:%s;", color_css_name.Run(id).c_str(),
-                                 ui::ConvertSkColorToCSSColor(color).c_str());
-          base::StrAppend(&css_string, {css_id_to_color_mapping});
-          if (generate_rgb_vars) {
-            // Also generate a r,g,b string for each color so apps can construct
-            // colors with their own opacities in css.
-            const std::string css_rgb_color_str =
-                color_utils::SkColorToRgbString(color);
-            const std::string css_id_to_rgb_color_mapping =
-                base::StringPrintf("%s-rgb:%s;", color_css_name.Run(id).c_str(),
-                                   css_rgb_color_str.c_str());
-            base::StrAppend(&css_string, {css_id_to_rgb_color_mapping});
-          }
-        }
-        return css_string;
-      };
+  std::vector<std::string_view> color_id_sets = base::SplitStringPiece(
+      sets_param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  // Convenience lambda for wrapping
-  // |ConvertColorProviderColorIdToCSSColorId|.
-  auto generate_color_provider_mapping = [&generate_color_mapping](
-                                             std::string set_name,
-                                             ui::ColorId start, ui::ColorId end,
-                                             std::string (*color_id_name)(
-                                                 ui::ColorId)) {
-    auto color_id_to_css_name = base::BindRepeating(
-        [](std::string (*color_id_name)(ui::ColorId), ui::ColorId id) {
-          return ui::ConvertColorProviderColorIdToCSSColorId(color_id_name(id));
-        },
-        color_id_name);
-    return generate_color_mapping(set_name, start, end, color_id_to_css_name);
+  // Define the logic for each set. This allows us to validate input before
+  // generating the CSS string.
+  struct ColorSetDefinition {
+    std::string_view name;
+    ui::ColorId start;
+    ui::ColorId end;
+    // Callback converts ColorId to CSS variable name.
+    base::RepeatingCallback<std::string(ui::ColorId)> name_mapper;
   };
 
-  std::string css_selector;
+  // Helper to adapt ui::ColorIdName to the CSS mapping callback format.
+  auto to_css_id = [](std::string (*name_func)(ui::ColorId), ui::ColorId id) {
+    return ui::ConvertColorProviderColorIdToCSSColorId(name_func(id));
+  };
+
+  const std::vector<ColorSetDefinition> definitions = {
+      {"ui", ui::kUiColorsStart, ui::kUiColorsEnd,
+       base::BindRepeating(to_css_id, ui::ColorIdName)},
+      {"chrome", kChromeColorsStart, kChromeColorsEnd,
+       base::BindRepeating(to_css_id, &ChromeColorIdName)},
+#if BUILDFLAG(IS_CHROMEOS)
+      {"ref", cros_tokens::kCrosRefColorsStart, cros_tokens::kCrosRefColorsEnd,
+       base::BindRepeating(cros_tokens::ColorIdName)},
+      {"sys", cros_tokens::kCrosSysColorsStart, cros_tokens::kCrosSysColorsEnd,
+       base::BindRepeating(cros_tokens::ColorIdName)},
+      {"legacy", cros_tokens::kLegacySemanticColorsStart,
+       cros_tokens::kLegacySemanticColorsEnd,
+       base::BindRepeating(cros_tokens::ColorIdName)},
+#endif
+  };
+
+  // Validate only valid `color_id_sets` were requested.
+  for (const auto& set_name : color_id_sets) {
+    bool is_valid = std::ranges::any_of(
+        definitions, [&](const auto& def) { return def.name == set_name; });
+    if (!is_valid) {
+      LOG(ERROR) << "Unrecognized color set specified: " << set_name;
+      std::move(callback).Run(nullptr);
+      return;
+    }
+  }
+
+  // Generate the CSS. Pre-calculate selector and theme info.
+  std::string css_header;
   if (shadow_host) {
-    css_selector = ":host";
+    css_header = ":host{";
   } else {
-    // This selector requires more specificity than other existing CSS
-    // selectors that define variables. We increase the specifity by adding
-    // a pseudoselector.
-    css_selector = "html:not(#z)";
+    css_header = "html:not(#z){";
   }
 
   const auto* theme_service =
       ThemeServiceFactory::GetForProfile(profile_->GetOriginalProfile());
-  std::string theme_id;
   if (theme_service->GetIsGrayscale()) {
-    theme_id = "--user-color-source: baseline-grayscale;";
+    base::StrAppend(&css_header, {"--user-color-source:baseline-grayscale;"});
   } else if (theme_service->GetIsBaseline()) {
-    theme_id = "--user-color-source: baseline-default;";
+    base::StrAppend(&css_header, {"--user-color-source:baseline-default;"});
   }
 
-  std::string css_string = base::StrCat(
-      {css_selector, "{", theme_id,
-       generate_color_provider_mapping("ui", ui::kUiColorsStart,
-                                       ui::kUiColorsEnd, ui::ColorIdName),
-       generate_color_provider_mapping("chrome", kChromeColorsStart,
-                                       kChromeColorsEnd, &ChromeColorIdName),
-#if BUILDFLAG(IS_CHROMEOS)
-       generate_color_mapping("ref", cros_tokens::kCrosRefColorsStart,
-                              cros_tokens::kCrosRefColorsEnd,
-                              base::BindRepeating(cros_tokens::ColorIdName)),
-       generate_color_mapping("sys", cros_tokens::kCrosSysColorsStart,
-                              cros_tokens::kCrosSysColorsEnd,
-                              base::BindRepeating(cros_tokens::ColorIdName)),
-       generate_color_mapping("legacy", cros_tokens::kLegacySemanticColorsStart,
-                              cros_tokens::kLegacySemanticColorsEnd,
-                              base::BindRepeating(cros_tokens::ColorIdName)),
-#endif  // BUILDFLAG(IS_CHROMEOS)
-       "}"});
-  if (!color_id_sets.empty()) {
-    LOG(ERROR)
-        << "Unrecognized color set(s) specified for chrome://theme/colors.css: "
-        << base::JoinString(color_id_sets, ",");
-    std::move(callback).Run(nullptr);
-    return;
+  // Reserve memory to reduce reallocations. 75KB is a reasonable heuristic for
+  // a full theme dump, minimizing string resizing during the loop.
+  std::string css_string;
+  css_string.reserve(75000);
+  css_string.append(css_header);
+
+  for (const auto& def : definitions) {
+    if (!base::Contains(color_id_sets, def.name)) {
+      continue;
+    }
+
+    for (ui::ColorId id = def.start; id < def.end; ++id) {
+      const SkColor color = color_provider.GetColor(id);
+      const std::string var_name = def.name_mapper.Run(id);
+      const std::string color_str = ui::ConvertSkColorToCSSColor(color);
+
+      // Format: --var-name: #RRGGBBAA;
+      base::StrAppend(&css_string, {var_name, ":", color_str, ";"});
+
+      if (generate_rgb_vars) {
+        // Format: --var-name-rgb: R,G,B;
+        const std::string rgb_str = color_utils::SkColorToRgbString(color);
+        base::StrAppend(&css_string, {var_name, "-rgb:", rgb_str, ";"});
+      }
+    }
   }
+
+  css_string.push_back('}');
 
   std::move(callback).Run(
       base::MakeRefCounted<base::RefCountedString>(std::move(css_string)));

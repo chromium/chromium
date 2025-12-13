@@ -13,12 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
-#include "components/signin/internal/identity_manager/oauth_consumer_registry.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
+#include "components/signin/public/base/oauth_consumer.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
@@ -84,11 +84,6 @@ struct AccessTokenInfo;
 //     // AccessTokenFetchers directly themselves rather than introducing
 //     // wrapper API surfaces.
 //     MyClass::StartAccessTokenRequestForAccount(CoreAccountId account_id) {
-//       // Choose scopes to obtain for the access token.
-//       ScopeSet scopes;
-//       scopes.insert(GaiaConstants::kMyFirstScope);
-//       scopes.insert(GaiaConstants::kMySecondScope);
-
 //       // Choose the mode in which to fetch the access token:
 //       // see AccessTokenFetcher::Mode below for definitions.
 //       auto mode = signin::AccessTokenFetcher::Mode::kImmediate;
@@ -96,8 +91,7 @@ struct AccessTokenInfo;
 //       // Create the fetcher via |identity_manager_|.
 //       access_token_fetcher_ =
 //           identity_manager_->CreateAccessTokenFetcherForAccount(
-//               account_id, /*consumer_name=*/"MyClass",
-//               scopes,
+//               account_id, OAuthConsumerId::MyFeatureId,
 //               base::BindOnce(&MyClass::OnAccessTokenRequestCompleted,
 //                              // It is safe to use base::Unretained as
 //                              // |this| owns |access_token_fetcher_|.
@@ -210,6 +204,7 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   // is not called.
   AccessTokenFetcher(const CoreAccountId& account_id,
                      OAuthConsumerId oauth_consumer_id,
+                     const OAuthConsumer& oauth_consumer,
                      ProfileOAuth2TokenService* token_service,
                      PrimaryAccountManager* primary_account_manager,
                      TokenCallback callback,
@@ -226,6 +221,7 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   AccessTokenFetcher(
       const CoreAccountId& account_id,
       OAuthConsumerId oauth_consumer_id,
+      const OAuthConsumer& oauth_consumer,
       ProfileOAuth2TokenService* token_service,
       PrimaryAccountManager* primary_account_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -240,17 +236,6 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   ~AccessTokenFetcher() override;
 
  private:
-  AccessTokenFetcher(
-      const CoreAccountId& account_id,
-      const OAuthConsumer& oauth_consumer,
-      ProfileOAuth2TokenService* token_service,
-      PrimaryAccountManager* primary_account_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      TokenCallback callback,
-      Mode mode,
-      bool require_sync_consent_for_scope_verification,
-      Source token_source = Source::kProfile);
-
   // Returns true iff a refresh token is available for |account_id_|. Should
   // only be called in mode |kWaitUntilAvailable|.
   bool IsRefreshTokenAvailable() const;

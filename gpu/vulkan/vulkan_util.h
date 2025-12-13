@@ -163,11 +163,6 @@ std::vector<VkDrmFormatModifierPropertiesEXT>
 QueryVkDrmFormatModifierPropertiesEXT(VkPhysicalDevice physical_device,
                                       VkFormat format);
 
-COMPONENT_EXPORT(VULKAN)
-void PopulateVkDrmFormatsAndModifiers(
-    VulkanDeviceQueue* device_queue,
-    base::flat_map<uint32_t, std::vector<uint64_t>>& drm_formats_and_modifiers);
-
 }  // namespace gpu
 
 #endif  // GPU_VULKAN_VULKAN_UTIL_H_

@@ -1,0 +1,84 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+import("//build/config/compiler/compiler.gni")
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//testing/test.gni")
+
+source_set("read_anything") {
+  sources = [
+    "read_anything_controller.cc",
+    "read_anything_controller.h",
+    "read_anything_entry_point_controller.cc",
+    "read_anything_entry_point_controller.h",
+    "read_anything_immersive_overlay_view.cc",
+    "read_anything_immersive_overlay_view.h",
+    "read_anything_immersive_web_view.cc",
+    "read_anything_immersive_web_view.h",
+    "read_anything_lifecycle_observer.h",
+    "read_anything_prefs.cc",
+    "read_anything_prefs.h",
+    "read_anything_service.cc",
+    "read_anything_service.h",
+    "read_anything_service_factory.cc",
+    "read_anything_service_factory.h",
+    "read_anything_side_panel_controller.cc",
+    "read_anything_side_panel_controller.h",
+    "read_anything_side_panel_controller_utils.cc",
+    "read_anything_side_panel_controller_utils.h",
+    "read_anything_side_panel_navigation_throttle.cc",
+    "read_anything_side_panel_navigation_throttle.h",
+    "read_anything_side_panel_web_view.cc",
+    "read_anything_side_panel_web_view.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:primitives",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/webui_browser:headers",
+    "//chrome/common",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/dom_distiller",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/interaction",
+    "//chrome/browser/ui/views/page_action",
+    "//chrome/browser/ui/views/side_panel",
+    "//components/accessibility:reading",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//services/metrics/public/cpp:metrics_cpp",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "immersive_read_anything_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/test:test_support_ui",
+    "//testing/gtest",
+    "//ui/views",
+  ]
+}

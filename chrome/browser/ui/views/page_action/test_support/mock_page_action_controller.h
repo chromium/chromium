@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/action_id.h"
 
@@ -44,6 +45,10 @@ class MockPageActionController : public PageActionController {
               OverrideImage,
               (actions::ActionId, const ui::ImageModel&),
               (override));
+  MOCK_METHOD(void,
+              OverrideImage,
+              (actions::ActionId, const ui::ImageModel&, PageActionColorSource),
+              (override));
   MOCK_METHOD(void, ClearOverrideImage, (actions::ActionId), (override));
   MOCK_METHOD(void,
               OverrideTooltip,
@@ -80,6 +85,9 @@ class MockPageActionController : public PageActionController {
                PageActionView*),
               (override));
   MOCK_METHOD(void, DecrementActivityCounter, (actions::ActionId), (override));
+
+ private:
+  MockPageActionModel model_;
 };
 
 }  // namespace page_actions

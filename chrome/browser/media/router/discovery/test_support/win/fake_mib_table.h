@@ -9,6 +9,7 @@
 
 #include <iphlpapi.h>
 
+#include <cstdint>
 #include <vector>
 
 namespace media_router {

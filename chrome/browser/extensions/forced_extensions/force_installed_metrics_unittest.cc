@@ -31,6 +31,7 @@
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/updater/safe_manifest_parser.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/switches.h"
@@ -51,7 +52,10 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 
@@ -1603,6 +1607,79 @@ INSTANTIATE_TEST_SUITE_P(
                     policy::EnterpriseManagementAuthority::COMPUTER_LOCAL,
                     policy::EnterpriseManagementAuthority::CLOUD,
                     policy::EnterpriseManagementAuthority::CLOUD_DOMAIN));
+
+class GreylistedForceInstalledMetricsTest
+    : public ForceInstalledMetricsTest,
+      public testing::WithParamInterface<
+          std::tuple<policy::EnterpriseManagementAuthority, bool>> {
+ public:
+  GreylistedForceInstalledMetricsTest() {
+    std::tie(management_authority_, enabled_) = GetParam();
+  }
+
+ protected:
+  policy::EnterpriseManagementAuthority management_authority_;
+  bool enabled_;
+};
+
+TEST_P(GreylistedForceInstalledMetricsTest,
+       ReportsEnabledStateForGreylistedExtension) {
+  SetupForceList(ExtensionOrigin::kWebStore);
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      management_authority_);
+  scoped_refptr<const Extension> extension = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::kPending);
+  // Greylist the extension by setting a non-malware blocklist state.
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      kExtensionId1, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      ExtensionPrefs::Get(profile()));
+  if (enabled_) {
+    registry()->AddEnabled(extension.get());
+  } else {
+    registry()->AddDisabled(extension.get());
+  }
+
+  // Create a second extension with loaded status to trigger the
+  // OnForceInstalledExtensionsLoaded() callback which invokes the
+  // ReportMetrics() that logs the greylist histograms.
+  scoped_refptr<const Extension> extension2 = CreateNewExtension(
+      kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
+
+  // ForceInstalledMetrics should still keep running as kExtensionId1 is
+  // installed but not loaded.
+  EXPECT_TRUE(fake_timer_->IsRunning());
+  fake_timer_->Fire();
+
+  std::string trust_level;
+  switch (management_authority_) {
+    case policy::EnterpriseManagementAuthority::NONE:
+    case policy::EnterpriseManagementAuthority::COMPUTER_LOCAL:
+      trust_level = "LowTrust";
+      break;
+    case policy::EnterpriseManagementAuthority::DOMAIN_LOCAL:
+    case policy::EnterpriseManagementAuthority::CLOUD:
+    case policy::EnterpriseManagementAuthority::CLOUD_DOMAIN:
+      trust_level = "HighTrust";
+      break;
+  }
+  histogram_tester_.ExpectUniqueSample(
+      "Extensions.GreylistedForceInstalled." + trust_level + ".Enabled",
+      enabled_, 1);
+}
+
+// Note: It should not be possible for greylisted force installed extensions
+// to be disabled in high trust environments. If we see the metric being logged
+// in this case, it indicates a bug and should be investigated.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GreylistedForceInstalledMetricsTest,
+    testing::Combine(
+        testing::Values(policy::EnterpriseManagementAuthority::NONE,
+                        policy::EnterpriseManagementAuthority::COMPUTER_LOCAL,
+                        policy::EnterpriseManagementAuthority::CLOUD,
+                        policy::EnterpriseManagementAuthority::CLOUD_DOMAIN),
+        testing::Bool()));
 #endif
 
 }  // namespace extensions

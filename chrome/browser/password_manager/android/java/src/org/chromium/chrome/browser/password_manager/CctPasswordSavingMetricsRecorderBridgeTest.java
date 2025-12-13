@@ -54,11 +54,11 @@ public class CctPasswordSavingMetricsRecorderBridgeTest {
         recorderBridge.onPotentialSaveFormSubmitted();
         assertNotNull(
                 CctPasswordSavingMetricsRecorderBridge.KEY.retrieveDataFromHost(
-                        mWindowAndroid.getUnownedUserDataHost()));
+                        mUnownedUserDataHost));
         recorderBridge.destroy();
         assertNull(
                 CctPasswordSavingMetricsRecorderBridge.KEY.retrieveDataFromHost(
-                        mWindowAndroid.getUnownedUserDataHost()));
+                        mUnownedUserDataHost));
     }
 
     @Test

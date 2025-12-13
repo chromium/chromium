@@ -27,8 +27,6 @@ class CORE_EXPORT TimelineInset {
     return start_ == o.start_ && end_ == o.end_;
   }
 
-  bool operator!=(const TimelineInset& o) const { return !(*this == o); }
-
  private:
   Length start_;
   Length end_;

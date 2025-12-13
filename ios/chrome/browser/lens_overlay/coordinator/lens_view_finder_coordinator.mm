@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
@@ -44,6 +45,10 @@ LensViewFinderTransition TransitionFromPresentationStyle(
     ChromeLensViewFinderDelegate,
     UIViewControllerTransitioningDelegate,
     UIAdaptivePresentationControllerDelegate>
+
+// Whether post capture view is shown.
+@property(nonatomic, assign) BOOL postCaptureShown;
+
 @end
 
 @implementation LensViewFinderCoordinator {
@@ -92,43 +97,25 @@ LensViewFinderTransition TransitionFromPresentationStyle(
           searchImageWithLens:command.image
                    entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu
       initialPresentationBase:_baseViewController
+      resultsPresenterFactory:nil
                    completion:nil];
 }
 
 - (void)openLensInputSelection:(OpenLensInputSelectionCommand*)command {
-  LensOverlayConfigurationFactory* configurationFactory =
-      [[LensOverlayConfigurationFactory alloc] init];
-  LensConfiguration* configuration =
-      [configurationFactory configurationForLensEntrypoint:command.entryPoint
-                                                   profile:self.profile];
-
-  _transitionManager = [[LensViewFinderTransitionManager alloc]
-      initWithLVFTransitionType:TransitionFromPresentationStyle(
-                                    command.presentationStyle)];
-
-  _lensViewController =
-      ios::provider::NewChromeLensViewFinderController(configuration);
-  if (!_lensViewController) {
-    return;
-  }
-
-  [_lensViewController setLensViewFinderDelegate:self];
-
-  _lensViewController.transitioningDelegate = _transitionManager;
-  _lensViewController.modalPresentationStyle =
-      UIModalPresentationOverCurrentContext;
-  _lensViewController.modalTransitionStyle =
-      UIModalTransitionStyleCrossDissolve;
-
-  [_metricsRecorder recordLensViewFinderOpened];
-  [self.baseViewController
-      presentViewController:_lensViewController
-                   animated:YES
-                 completion:command.presentationCompletion];
+  __weak __typeof(self) weakSelf = self;
+  // As a new Lens sessions starts, cleanup any inactive post capture before
+  // presenting the input selection UI.
+  [self destroyInactivePostCaptureSessionsWithCompletion:^{
+    [weakSelf presentLensInputSelectionUIForCommand:command];
+  }];
 }
 
 - (void)lensOverlayWillDismissWithCause:
     (LensOverlayDismissalCause)dismissalCause {
+  if (!self.postCaptureShown) {
+    return;
+  }
+
   // If it was a swipe down of the bottom sheet, restart capturing.
   if (dismissalCause == LensOverlayDismissalCauseSwipeDownFromSelection) {
     [_lensViewController buildCaptureInfrastructureForSelection];
@@ -142,6 +129,11 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 
 - (void)lensOverlayDidDismissWithCause:
     (LensOverlayDismissalCause)dismissalCause {
+  if (!self.postCaptureShown) {
+    return;
+  }
+
+  self.postCaptureShown = NO;
   if (dismissalCause != LensOverlayDismissalCauseSwipeDownFromSelection &&
       dismissalCause != LensOverlayDismissalCauseSwipeDownFromTranslate) {
     // All other dismissal sources cause the UI to shut down.
@@ -192,13 +184,66 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 - (void)lensControllerWillDisappear:
     (id<ChromeLensViewFinderController>)lensController {
   [self lockOrientationPortrait:NO];
+  self.postCaptureShown = NO;
 }
 
 #pragma mark - Private
 
+- (void)presentLensInputSelectionUIForCommand:
+    (OpenLensInputSelectionCommand*)command {
+  [self cancelOmniboxEdit];
+  [self prepareLensViewControllerForCommand:command];
+
+  if (!_lensViewController) {
+    return;
+  }
+
+  [_lensViewController setLensViewFinderDelegate:self];
+  [_metricsRecorder recordLensViewFinderOpened];
+  [self.baseViewController
+      presentViewController:_lensViewController
+                   animated:YES
+                 completion:command.presentationCompletion];
+}
+
+- (void)prepareLensViewControllerForCommand:
+    (OpenLensInputSelectionCommand*)command {
+  LensOverlayConfigurationFactory* configurationFactory =
+      [[LensOverlayConfigurationFactory alloc] init];
+  LensConfiguration* configuration =
+      [configurationFactory configurationForLensEntrypoint:command.entryPoint
+                                                   profile:self.profile];
+
+  _transitionManager = [[LensViewFinderTransitionManager alloc]
+      initWithLVFTransitionType:TransitionFromPresentationStyle(
+                                    command.presentationStyle)];
+
+  _lensViewController =
+      ios::provider::NewChromeLensViewFinderController(configuration);
+
+  _lensViewController.transitioningDelegate = _transitionManager;
+  _lensViewController.modalPresentationStyle =
+      UIModalPresentationOverCurrentContext;
+  _lensViewController.modalTransitionStyle =
+      UIModalTransitionStyleCrossDissolve;
+
+  [_lensViewController setLensViewFinderDelegate:nil];
+}
+
+- (void)destroyInactivePostCaptureSessionsWithCompletion:
+    (ProceduralBlock)completion {
+  id<LensOverlayCommands> lensOverlayCommands = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), LensOverlayCommands);
+  [lensOverlayCommands
+      destroyLensUI:NO
+             reason:lens::LensOverlayDismissalSource::kSearchWithCameraRequested
+         completion:completion];
+}
+
 - (void)exitLensViewFinderAnimated:(BOOL)animated
                         completion:(ProceduralBlock)completion {
-  if (self.baseViewController.presentedViewController == _lensViewController) {
+  if (_lensViewController &&
+      self.baseViewController.presentedViewController == _lensViewController) {
     [self.baseViewController dismissViewControllerAnimated:animated
                                                 completion:completion];
   } else if (completion) {
@@ -235,12 +280,25 @@ LensViewFinderTransition TransitionFromPresentationStyle(
       imageMetadata.isCameraImage ? LensOverlayEntrypoint::kLVFCameraCapture
                                   : LensOverlayEntrypoint::kLVFImagePicker;
 
+  __weak __typeof(self) weakSelf = self;
   id<LensOverlayCommands> lensOverlayCommands = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), LensOverlayCommands);
   [lensOverlayCommands searchWithLensImageMetadata:imageMetadata
                                         entrypoint:entrypoint
                            initialPresentationBase:_lensViewController
-                                        completion:nil];
+                                        completion:^(BOOL) {
+                                          weakSelf.postCaptureShown = YES;
+                                        }];
+}
+
+// Cancel any editing before presenting the Lens View Finder experience to
+// prevent the omnibox popup from obscuring the view.
+- (void)cancelOmniboxEdit {
+  Browser* browser = self.browser;
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  id<OmniboxCommands> omniboxCommandsHandler =
+      HandlerForProtocol(dispatcher, OmniboxCommands);
+  [omniboxCommandsHandler cancelOmniboxEdit];
 }
 
 @end

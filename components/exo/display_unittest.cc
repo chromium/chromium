@@ -120,12 +120,12 @@ TEST_F(DisplayTest, DISABLED_CreateLinuxDMABufBuffer) {
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
           ->CreateNativePixmap(gfx::kNullAcceleratedWidget, VK_NULL_HANDLE,
-                               buffer_size, gfx::BufferFormat::RGBA_8888,
+                               buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
                                gfx::BufferUsage::GPU_READ);
   gfx::NativePixmapHandle native_pixmap_handle = pixmap->ExportHandle();
-  std::unique_ptr<Buffer> buffer1 =
-      display.CreateLinuxDMABufBuffer(buffer_size, gfx::BufferFormat::RGBA_8888,
-                                      std::move(native_pixmap_handle), false);
+  std::unique_ptr<Buffer> buffer1 = display.CreateLinuxDMABufBuffer(
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
+      std::move(native_pixmap_handle), false);
   EXPECT_TRUE(buffer1);
 
   // Create a handle without a file descriptor.
@@ -133,9 +133,9 @@ TEST_F(DisplayTest, DISABLED_CreateLinuxDMABufBuffer) {
   native_pixmap_handle.planes[0].fd.reset();
 
   // Creating a prime buffer using an invalid fd should fail.
-  std::unique_ptr<Buffer> buffer2 =
-      display.CreateLinuxDMABufBuffer(buffer_size, gfx::BufferFormat::RGBA_8888,
-                                      std::move(native_pixmap_handle), false);
+  std::unique_ptr<Buffer> buffer2 = display.CreateLinuxDMABufBuffer(
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
+      std::move(native_pixmap_handle), false);
   EXPECT_FALSE(buffer2);
 }
 

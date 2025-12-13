@@ -87,7 +87,7 @@
       {
         "id": "ExtensionPanel",
         "type": "object",
-        "description": "Represents a panel created by extension.",
+        "description": "Represents a panel created by an extension.",
         "functions": [
           {
             "name": "createStatusBarButton",
@@ -110,6 +110,11 @@
               }
             ],
             "returns": { "$ref": "Button" }
+          },
+          {
+            "name": "show",
+            "description": "Shows the panel by activating the corresponding tab.",
+            "parameters": []
           }
         ],
         "events": [
@@ -288,6 +293,18 @@
             "description": "Fired when the button is clicked."
           }
         ]
+      },
+      {
+        "id": "Theme",
+        "type": "string",
+        "description": "Theme used by DevTools.",
+        "enum": [{
+          "name": "default",
+          "description": "Default DevTools theme. This is always the light theme."
+        }, {
+          "name": "dark",
+          "description": "Dark theme."
+        }]
       }
     ],
     "properties": {
@@ -391,6 +408,26 @@
             "type": "function",
             "optional": true,
             "description": "A function that is called when the resource has been successfully loaded."
+          }
+        ]
+      },
+      {
+        "name": "setThemeChangeHandler",
+        "type": "function",
+        "description": "Specifies the function to be called when the current theme changes in DevTools. To unset the handler, either call the method with no parameters or pass <code>null</code> as the parameter.",
+        "parameters": [
+          {
+            "name": "callback",
+            "type": "function",
+            "optional": true,
+            "description": "A function that is called when the current theme changes in DevTools.",
+            "parameters": [
+              {
+                "name": "theme",
+                "$ref": "Theme",
+                "description": "Current theme in DevTools."
+              }
+            ]
           }
         ]
       }

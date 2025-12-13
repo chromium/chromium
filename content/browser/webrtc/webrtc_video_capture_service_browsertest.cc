@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -213,8 +209,7 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
          gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
          kOpaque_SkAlphaType,
          gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-             gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
+             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
          "TestLabel"},
         gpu::kNullSurfaceHandle);
 
@@ -333,7 +328,7 @@ class SharedMemoryDeviceExerciser : public VirtualDeviceExerciser,
     const uint8_t dummy_value = frame_count % 256;
 
     // Reset the whole buffer to 0
-    memset(outgoing_buffer.memory(), 0, outgoing_buffer.size());
+    UNSAFE_TODO(memset(outgoing_buffer.memory(), 0, outgoing_buffer.size()));
 
     // Set all bytes affecting |info->visible_rect| to |dummy_value|.
     const int kYStride = info->strides ? info->strides->stride_by_plane[0]
@@ -389,19 +384,19 @@ class SharedMemoryDeviceExerciser : public VirtualDeviceExerciser,
         row_count - visible_row_count - rows_to_skip_at_start;
 
     // Skip rows at start
-    (*write_ptr) += col_count * rows_to_skip_at_start;
+    UNSAFE_TODO((*write_ptr) += col_count * rows_to_skip_at_start);
     // Fill rows
     for (int i = 0; i < visible_row_count; i++) {
       // Skip cols at start
-      (*write_ptr) += cols_to_skip_at_start;
+      UNSAFE_TODO((*write_ptr) += cols_to_skip_at_start);
       // Fill visible bytes
-      memset(*write_ptr, fill_value, visible_col_count);
-      (*write_ptr) += visible_col_count;
+      UNSAFE_TODO(memset(*write_ptr, fill_value, visible_col_count));
+      UNSAFE_TODO((*write_ptr) += visible_col_count);
       // Skip cols at end
-      (*write_ptr) += kColsToSkipAtEnd;
+      UNSAFE_TODO((*write_ptr) += kColsToSkipAtEnd);
     }
     // Skip rows at end
-    (*write_ptr) += col_count * kRowsToSkipAtEnd;
+    UNSAFE_TODO((*write_ptr) += col_count * kRowsToSkipAtEnd);
   }
 
   media::mojom::PlaneStridesPtr strides_;

@@ -180,6 +180,20 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unknown"/>
 </enum>
 
+<!-- LINT.IfChange(MainFrameProcessReuseBlockReason) -->
+
+<enum name="MainFrameProcessReuseBlockReason">
+  <int value="0" label="Not blocked"/>
+  <int value="1" label="Process reuse is disabled"/>
+  <int value="2" label="DevTools was ever attached"/>
+  <int value="3" label="Does not require dedicated process"/>
+  <int value="4" label="Localhost or IP address based host"/>
+  <int value="5" label="Scheme is not http(s)"/>
+  <int value="6" label="Embedder disallowed reuse for URL"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/render_frame_host_manager.cc:MainFrameProcessReuseBlockReason) -->
+
 <!-- LINT.IfChange -->
 
 <enum name="MerchantTrustInteraction">
@@ -308,15 +322,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="AllowedByPolicyWarn"/>
   <int value="4" label="BlockedByLoadOption"/>
   <int value="5" label="BlockedByPolicyBlock"/>
-  <int value="6" label="AllowedByTargetIpAddressSpace"/>
-  <int value="7" label="BlockedByTargetIpAddressSpace"/>
-  <int value="8" label="BlockedByPolicyPreflightWarn"/>
-  <int value="9" label="BlockedByPolicyPreflightBlock"/>
-  <int value="10" label="AllowedByPolicyPreflightWarn"/>
+  <int value="6" label="(Deprecated) AllowedByTargetIpAddressSpace"/>
+  <int value="7" label="(Deprecated) BlockedByTargetIpAddressSpace"/>
+  <int value="8" label="(Deprecated) BlockedByPolicyPreflightWarn"/>
+  <int value="9" label="(Deprecated) BlockedByPolicyPreflightBlock"/>
+  <int value="10" label="(Deprecated) AllowedByPolicyPreflightWarn"/>
   <int value="11" label="BlockedByInconsistentIpAddressSpace"/>
   <int value="12" label="AllowedPotentiallyTrustworthySameOrigin"/>
   <int value="13" label="LNAPermissionRequired"/>
   <int value="14" label="LNAAllowedByPolicyWarn"/>
+  <int value="15" label="BlockedByRequiredIpAddressSpaceMismatch"/>
 </enum>
 
 <!-- LINT.ThenChange(/services/network/public/cpp/private_network_access_check_result.h:PrivateNetworkAccessCheckResult) -->
@@ -328,16 +343,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="[Deprecated] Device ID invalid"/>
   <int value="4" label="Device name missing"/>
   <int value="5" label="Device name invalid"/>
-</enum>
-
-<enum name="ProcessPerSiteWithMainFrameThresholdBlockReason">
-  <int value="0" label="Not blocked"/>
-  <int value="1" label="Process reuse is disabled"/>
-  <int value="2" label="DevTools was ever attached"/>
-  <int value="3" label="Does not require dedicated process"/>
-  <int value="4" label="Localhost or IP address based host"/>
-  <int value="5" label="Scheme is not http(s)"/>
-  <int value="6" label="Embedder disallowed reuse for URL"/>
 </enum>
 
 <enum name="ReusePendingOrCommittedSiteEnum">

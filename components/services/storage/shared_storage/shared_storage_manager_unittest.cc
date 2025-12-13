@@ -61,7 +61,6 @@ using StorageKeyPolicyMatcherFunction =
 using DBOperation = TestDatabaseOperationReceiver::DBOperation;
 using Type = DBOperation::Type;
 using DBType = SharedStorageTestDBType;
-using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 
 const int kBitBudget = 8;
 const int kInitialPurgeIntervalHours = 4;
@@ -504,7 +503,7 @@ class SharedStorageManagerTest : public testing::Test {
     EXPECT_TRUE(GetManager()->database());
   }
 
-  void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) {
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
     DCHECK(GetManager());
     DCHECK(receiver_);
 
@@ -514,7 +513,8 @@ class SharedStorageManagerTest : public testing::Test {
             {TestDatabaseOperationReceiver::SerializeMemoryPressureLevel(
                 memory_pressure_level)}),
         base::BindLambdaForTesting([&]() { memory_trimmed_ = true; }));
-    GetManager()->OnMemoryPressure(std::move(callback), memory_pressure_level);
+    GetManager()->HandleMemoryPressure(std::move(callback),
+                                       memory_pressure_level);
   }
 
   void Get(url::Origin context_origin,
@@ -1995,7 +1995,7 @@ TEST_P(SharedStorageManagerParamTest, AsyncOperations) {
        {Type::DB_GET, kOrigin1, {u"key1"}},
        {Type::DB_ON_MEMORY_PRESSURE,
         {TestDatabaseOperationReceiver::SerializeMemoryPressureLevel(
-            MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL)}}});
+            base::MEMORY_PRESSURE_LEVEL_CRITICAL)}}});
 
   SetExpectedOperationList(std::move(operation_list));
   ASSERT_TRUE(GetManager());
@@ -2054,7 +2054,7 @@ TEST_P(SharedStorageManagerParamTest, AsyncOperations) {
   Get(kOrigin1, u"key1", &value6);
 
   EXPECT_FALSE(memory_trimmed_);
-  OnMemoryPressure(MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   WaitForOperations();
   EXPECT_TRUE(is_finished());

@@ -83,8 +83,9 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
   void GetStringAtPoint(const gfx::Point& point_in_local_root,
                         GetStringAtPointCallback callback) override;
 #endif
-  void EnableDeviceEmulation(
-      const blink::DeviceEmulationParams& parameters) override {}
+  void EnableDeviceEmulation(const blink::DeviceEmulationParams& parameters,
+                             const blink::mojom::DeviceEmulationCacheBehavior
+                                 cache_behavior) override {}
   void DisableDeviceEmulation() override {}
   void BindWidgetCompositor(
       mojo::PendingReceiver<blink::mojom::WidgetCompositor> receiver) override {

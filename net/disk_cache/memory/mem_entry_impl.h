@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/containers/linked_list.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -104,14 +103,14 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   void Close() override;
   std::string GetKey() const override;
   base::Time GetLastUsed() const override;
-  int32_t GetDataSize(int index) const override;
+  int64_t GetDataSize(int index) const override;
   int ReadData(int index,
-               int offset,
+               int64_t offset,
                IOBuffer* buf,
                int buf_len,
                CompletionOnceCallback callback) override;
   int WriteData(int index,
-                int offset,
+                int64_t offset,
                 IOBuffer* buf,
                 int buf_len,
                 CompletionOnceCallback callback,

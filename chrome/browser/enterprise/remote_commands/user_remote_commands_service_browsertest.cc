@@ -43,6 +43,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -77,8 +78,11 @@ std::unique_ptr<KeyedService> BuildFakeProfileInvalidationProvider(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<invalidation::ProfileInvalidationProvider>(
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
       std::make_unique<invalidation::ProfileIdentityProvider>(
           IdentityManagerFactory::GetForProfile(profile)),
+      profile->GetPrefs(),
       base::BindRepeating(&CreateInvalidationListenerForProjectNumber));
 }
 
@@ -125,7 +129,7 @@ class UserRemoteCommandsServiceTest
   void CreateIdentityTestEnv() {
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_env_->MakePrimaryAccountAvailable(
-        kTestUser, signin::ConsentLevel::kSync);
+        kTestUser, signin::ConsentLevel::kSignin);
   }
 
   policy::UserCloudPolicyManager* InitCloudPolicyManager() {

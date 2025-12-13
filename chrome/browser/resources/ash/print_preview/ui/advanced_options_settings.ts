@@ -10,12 +10,8 @@ import './settings_section.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="not is_chromeos">
-import type {Destination} from '../data/destination.js';
-// </if>
-// <if expr="is_chromeos">
+
 import type {Destination} from '../data/destination_cros.js';
-// </if>
 import type {Settings} from '../data/model.js';
 
 import {getTemplate} from './advanced_options_settings.html.js';

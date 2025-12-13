@@ -8,6 +8,7 @@
 
 #import <string_view>
 
+#import "base/notimplemented.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/init/web_main_parts.h"
 #import "url/gurl.h"
@@ -129,5 +130,21 @@ bool WebClient::IsInsecureFormWarningEnabled(
 
 void WebClient::BuildEditMenu(web::WebState* web_state,
                               id<UIMenuBuilder>) const {}
+
+bool WebClient::CanRunOpenPanel(web::WebState* web_state) const
+    API_AVAILABLE(ios(18.4)) {
+  return false;
+}
+
+void WebClient::RunOpenPanel(
+    web::WebState* web_state,
+    WKOpenPanelParameters* parameters,
+    WKFrameInfo* frame,
+    base::OnceCallback<void(NSArray<NSURL*>*)> completion) const
+    API_AVAILABLE(ios(18.4)) {
+  NOTIMPLEMENTED() << "WebClient::RunOpenPanel() is not implemented.\n"
+                      "If a subclass returns true from CanRunOpenPanel(),"
+                      "then it must override RunOpenPanel().";
+}
 
 }  // namespace web

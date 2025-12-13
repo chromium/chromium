@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "build/build_config.h"
+#include "media/base/audio_parameters.h"
 #include "media/base/sample_format.h"
 #include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/webrtc/constants.h"
@@ -17,11 +18,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_settings_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_audio.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
-#include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
 namespace blink {
 
@@ -80,6 +81,10 @@ void InputDeviceInfo::SetAudioInputCapabilities(
                  audio_input_capabilities->latency.InSecondsF()),
         std::max(fallback_latency,
                  audio_input_capabilities->latency.InSecondsF())};
+    platform_capabilities_.echo_cancellation =
+        GetSupportedEchoCancellationModes(
+            audio_input_capabilities->parameters.effects(),
+            mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE);
   }
 }
 
@@ -97,10 +102,20 @@ MediaTrackCapabilities* InputDeviceInfo::getCapabilities() const {
   capabilities->setGroupId(groupId());
 
   if (DeviceType() == mojom::blink::MediaDeviceType::kMediaAudioInput) {
-    capabilities->setEchoCancellation(
-        {MakeGarbageCollected<V8UnionBooleanOrString>(true),
-         MakeGarbageCollected<V8UnionBooleanOrString>(false)});
-
+    HeapVector<Member<V8UnionBooleanOrString>> echo_cancellation;
+    // Use known supported echo cancellation modes assuming no hardware effects
+    // if capabilities are not known. Necessary on platforms that are not
+    // queried for capabilities. See crbug.com/40945999.
+    const Vector<EchoCancellationMode>& echo_cancellation_modes =
+        platform_capabilities_.echo_cancellation.empty()
+            ? GetSupportedEchoCancellationModes(
+                  media::AudioParameters::PlatformEffectsMask::NO_EFFECTS,
+                  mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE)
+            : platform_capabilities_.echo_cancellation;
+    for (EchoCancellationMode mode : echo_cancellation_modes) {
+      echo_cancellation.push_back(EchoCancellationModeToBooleanOrString(mode));
+    }
+    capabilities->setEchoCancellation(std::move(echo_cancellation));
     capabilities->setAutoGainControl({true, false});
     capabilities->setNoiseSuppression({true, false});
     capabilities->setVoiceIsolation({true, false});

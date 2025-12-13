@@ -10,7 +10,8 @@ import android.app.Activity;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -52,8 +53,8 @@ public class TabListEditorManager {
     private final TabContentManager mTabContentManager;
     private final TabListCoordinator mTabListCoordinator;
     private final @TabListMode int mMode;
-    private final ObservableSupplierImpl<TabListEditorController> mControllerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableObservableSupplier<TabListEditorController> mControllerSupplier =
+            ObservableSuppliers.createMonotonic();
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
@@ -148,7 +149,8 @@ public class TabListEditorManager {
                             mEdgeToEdgeSupplier,
                             CreationMode.FULL_SCREEN,
                             /* undoBarExplicitTrigger= */ null,
-                            /* componentName= */ null);
+                            /* componentName= */ null,
+                            TabListEditorCoordinator.UNLIMITED_SELECTION);
             mControllerSupplier.set(mTabListEditorCoordinator.getController());
         }
     }
@@ -170,23 +172,14 @@ public class TabListEditorManager {
                             ShowMode.MENU_ONLY,
                             ButtonType.ICON_AND_TEXT,
                             IconPosition.START));
-            if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
-                mTabListEditorActions.add(
-                        TabListEditorAddToGroupAction.createAction(
-                                mActivity,
-                                mTabGroupCreationDialogManager,
-                                ShowMode.MENU_ONLY,
-                                ButtonType.ICON_AND_TEXT,
-                                IconPosition.START));
-            } else {
-                mTabListEditorActions.add(
-                        TabListEditorLegacyGroupAction.createAction(
-                                mActivity,
-                                mTabGroupCreationDialogManager,
-                                ShowMode.MENU_ONLY,
-                                ButtonType.ICON_AND_TEXT,
-                                IconPosition.START));
-            }
+
+            mTabListEditorActions.add(
+                    TabListEditorAddToGroupAction.createAction(
+                            mActivity,
+                            mTabGroupCreationDialogManager,
+                            ShowMode.MENU_ONLY,
+                            ButtonType.ICON_AND_TEXT,
+                            IconPosition.START));
             mTabListEditorActions.add(
                     TabListEditorBookmarkAction.createAction(
                             mActivity,
@@ -207,6 +200,14 @@ public class TabListEditorManager {
                             ShowMode.MENU_ONLY,
                             ButtonType.ICON_AND_TEXT,
                             IconPosition.START));
+            if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
+                mTabListEditorActions.add(
+                        TabListEditorPinAction.createAction(
+                                mActivity,
+                                ShowMode.MENU_ONLY,
+                                ButtonType.ICON_AND_TEXT,
+                                IconPosition.START));
+            }
         }
 
         var controller = mControllerSupplier.get();

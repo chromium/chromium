@@ -15,7 +15,10 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/image/image_skia.h"
+
+namespace gfx {
+class ImageSkia;
+}
 
 namespace web_app {
 

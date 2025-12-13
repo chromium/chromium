@@ -37,7 +37,7 @@ class SingleThreadTaskRunner;
 }
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace cc {
@@ -84,6 +84,7 @@ class SchedulerClient {
   virtual void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                   FrameSkippedReason reason) = 0;
   virtual void WillNotReceiveBeginFrame() = 0;
+  virtual void DidChangeBeginFrameSourcePaused(bool paused) = 0;
   virtual void SendBeginMainFrameNotExpectedSoon() = 0;
   virtual void ScheduledActionBeginMainFrameNotExpectedUntil(
       base::TimeTicks time) = 0;
@@ -108,9 +109,12 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   Scheduler& operator=(const Scheduler&) = delete;
 
-  // This is needed so that the scheduler doesn't perform spurious actions while
-  // the compositor is being torn down.
+  // This is needed so that the scheduler doesn't perform scheduled actions
+  // while the compositor is being torn down.
   void Stop();
+
+  // Cleans up references to other objects just before being destroyed.
+  void TearDown();
 
   // BeginFrameObserverBase
   void OnBeginFrameSourcePausedChanged(bool paused) override;
@@ -307,7 +311,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   // Owned by LayerTreeHostImpl and is destroyed when LayerTreeHostImpl is
   // destroyed.
-  raw_ptr<CompositorFrameReportingController, AcrossTasksDanglingUntriaged>
+  raw_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
 
   // What the latest deadline was, and when it was scheduled.

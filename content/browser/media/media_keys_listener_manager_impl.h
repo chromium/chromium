@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"

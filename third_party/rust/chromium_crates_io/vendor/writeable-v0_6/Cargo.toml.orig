@@ -5,14 +5,14 @@
 [package]
 name = "writeable"
 description = "A more efficient alternative to fmt::Display"
-version = "0.6.1"
+version = "0.6.2"
 
 authors.workspace = true
 edition.workspace = true
 include.workspace = true
 license.workspace = true
 repository.workspace = true
-rust-version.workspace = true
+rust-version = "1.82"
 
 [package.metadata.workspaces]
 independent = true
@@ -31,7 +31,9 @@ rand = { workspace = true, features = ["small_rng"] }
 criterion = { workspace = true }
 
 [features]
+default = ["alloc"]
 either = ["dep:either"]
+alloc = []
 
 [lib]
 bench = false  # This option is required for Benchmark CI

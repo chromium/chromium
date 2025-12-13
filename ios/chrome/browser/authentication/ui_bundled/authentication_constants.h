@@ -26,7 +26,4 @@ extern const CGFloat kAuthenticationSeparatorHeight;
 // Accessibility identifier for the Signin/Sync screen.
 extern NSString* const kSigninSyncScreenAccessibilityIdentifier;
 
-// Accessibility identifier for the 'Undo' button in signin snackbar.
-extern NSString* const kSigninSnackbarUndo;
-
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_AUTHENTICATION_CONSTANTS_H_

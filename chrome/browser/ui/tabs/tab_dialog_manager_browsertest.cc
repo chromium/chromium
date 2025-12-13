@@ -9,12 +9,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -255,6 +259,49 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
       InAnyContext(EnsurePresent(kWidgetContentsViewElementId)));
 }
 
+// Tests that the widget becomes active when `should_show_inactive` is false.
+IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
+                       Params_should_show_inactive_false) {
+  std::unique_ptr<views::Widget> widget;
+
+  RunTestSequence(
+      ObserveState(views::test::kCurrentWidgetFocus), Do([&, this]() {
+        widget = CreateWidgetWithNoNonClientView();
+        TabDialogManager* manager = GetTabDialogManager();
+        auto params = std::make_unique<tabs::TabDialogManager::Params>();
+        params->should_show_inactive = false;
+        manager->ShowDialog(widget.get(), std::move(params));
+      }),
+      InAnyContext(WaitForShow(kWidgetContentsViewElementId)),
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   [&]() { return widget.get(); }),
+      CheckResult([&]() { return widget && widget->IsVisible(); }, true,
+                  "Verify widget is visible"),
+      CheckResult([&]() { return widget && widget->IsActive(); }, true,
+                  "Verify widget is active"));
+}
+
+// Tests that the widget does not become active when `should_show_inactive` is
+// true.
+IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
+                       Params_should_show_inactive_true) {
+  std::unique_ptr<views::Widget> widget;
+
+  RunTestSequence(Do([&, this]() {
+                    widget = CreateWidgetWithNoNonClientView();
+                    TabDialogManager* manager = GetTabDialogManager();
+                    auto params =
+                        std::make_unique<tabs::TabDialogManager::Params>();
+                    params->should_show_inactive = true;
+                    manager->ShowDialog(widget.get(), std::move(params));
+                  }),
+                  InAnyContext(WaitForShow(kWidgetContentsViewElementId)),
+                  CheckResult([&]() { return widget && widget->IsVisible(); },
+                              true, "Verify widget is visible"),
+                  CheckResult([&]() { return widget && widget->IsActive(); },
+                              false, "Verify widget is not active"));
+}
+
 // Tests that the widget is repositioned after its preferred size is changed.
 IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
                        ChangePreferredSizeAfterShow) {
@@ -291,6 +338,40 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
           "Verify origin is updated"));
 }
 
+// Tests that the widget is repositioned after a split is created.
+IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
+                       ChangePreferredSizeAfterSplitViewCreated) {
+  std::unique_ptr<views::Widget> widget;
+  // `kInitialSize` is the same as the size defined in CreateAutoresizeWidget().
+  const gfx::Size kInitialSize(500, 500);
+  gfx::Point initial_origin;
+
+  RunTestSequence(
+      Do([&, this]() {
+        widget = CreateAutoresizeWidget();
+        GetTabDialogManager()->ShowDialog(
+            widget.get(), std::make_unique<tabs::TabDialogManager::Params>());
+      }),
+      InAnyContext(WaitForShow(kWidgetContentsViewElementId)),
+      CheckResult([&]() { return widget && widget->IsVisible(); }, true,
+                  "Verify widget is visible"),
+      CheckResult(
+          [&]() { return widget->GetClientAreaBoundsInScreen().size(); },
+          kInitialSize, "Verify initial size"),
+      Do([=, this]() {
+        browser()->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
+                                                     true);
+      }),
+      WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+      PressButton(kToolbarSplitTabsToolbarButtonElementId),
+      Check(
+          [&]() {
+            return widget->GetClientAreaBoundsInScreen().origin() !=
+                   initial_origin;
+          },
+          "Verify origin is updated"));
+}
+
 // Tests that the widget is repositioned after its preferred size is changed
 // when `Params::animated` is true.
 IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest, AnimatedBoundsChange) {
@@ -316,9 +397,8 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest, AnimatedBoundsChange) {
           [&]() { return widget->GetClientAreaBoundsInScreen().size(); },
           kInitialSize, "Verify initial size"),
       Do([&]() { initial_bounds = widget->GetClientAreaBoundsInScreen(); }),
-      PollState(
-          kWidgetBoundsState,
-          [&widget]() { return widget->GetClientAreaBoundsInScreen(); }),
+      PollState(kWidgetBoundsState,
+                [&widget]() { return widget->GetClientAreaBoundsInScreen(); }),
       Do([&]() {
         widget->GetContentsView()->SetPreferredSize(kNewSize);
         // With animated=true and autosize=false, we must manually update
@@ -331,6 +411,7 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest, AnimatedBoundsChange) {
                                       &gfx::Rect::origin,
                                       testing::Ne(initial_bounds.origin())))));
 }
+
 class TabDialogManagerPixelTest : public DialogBrowserTest {
  public:
   TabDialogManagerPixelTest() = default;

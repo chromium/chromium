@@ -19,19 +19,14 @@ buildflag_header("buildflags") {
 }
 
 source_set("webnn_switches") {
-  sources = [ "webnn_switches.h" ]
-  deps = [ ":buildflags" ]
-}
-
-# Public WebNN native headers so they can be visible for dependencies
-# of webnn native.
-source_set("webnn_headers") {
   sources = [
-    # Backend headers must be included here so that dependent targets can
-    # still include them, even if the backends are disabled.
-    "d3d12_backend.h",
+    "webnn_switches.cc",
+    "webnn_switches.h",
   ]
-  public_deps = [ "//base" ]
+  deps = [
+    ":buildflags",
+    "//base",
+  ]
 }
 
 component("webnn_service") {
@@ -39,6 +34,10 @@ component("webnn_service") {
 
   sources = [
     "error.h",
+    "scoped_gpu_sequence.cc",
+    "scoped_gpu_sequence.h",
+    "sequence_deleter.cc",
+    "sequence_deleter.h",
     "webnn_constant_operand.cc",
     "webnn_constant_operand.h",
     "webnn_context_impl.cc",
@@ -60,14 +59,15 @@ component("webnn_service") {
 
   deps = [
     ":buildflags",
-    ":webnn_headers",
     ":webnn_switches",
     "//base",
     "//gpu/command_buffer/service",
     "//gpu/command_buffer/service:gles2",
     "//gpu/config",
     "//mojo/public/cpp/bindings",
+    "//services/viz/privileged/mojom/gl",
     "//services/webnn/public/mojom",
+    "//third_party/tflite:buildflags",
   ]
 
   if (is_win) {
@@ -152,8 +152,8 @@ component("webnn_service") {
 
     deps += [
       "//third_party/flatbuffers",
+      "//third_party/fp16",
       "//third_party/tflite",
-      "//third_party/tflite:buildflags",
       "//third_party/tflite:tflite_builtin_op_resolver",
       "//third_party/tflite:tflite_public_headers",
     ]
@@ -171,12 +171,12 @@ component("webnn_service") {
 
   if (is_win) {
     sources += [
-      "ort/buffer_content_ort.cc",
-      "ort/buffer_content_ort.h",
       "ort/context_impl_ort.cc",
       "ort/context_impl_ort.h",
       "ort/context_provider_ort.cc",
       "ort/context_provider_ort.h",
+      "ort/device_allocator.cc",
+      "ort/device_allocator.h",
       "ort/environment.cc",
       "ort/environment.h",
       "ort/external_weights_manager.cc",
@@ -185,6 +185,8 @@ component("webnn_service") {
       "ort/graph_builder_ort.h",
       "ort/graph_impl_ort.cc",
       "ort/graph_impl_ort.h",
+      "ort/logging.cc",
+      "ort/logging.h",
       "ort/model_editor.cc",
       "ort/model_editor.h",
       "ort/ort_data_type.cc",
@@ -193,26 +195,54 @@ component("webnn_service") {
       "ort/ort_session_options.h",
       "ort/ort_status.cc",
       "ort/ort_status.h",
-      "ort/ort_tensor.cc",
-      "ort/ort_tensor.h",
       "ort/platform_functions_ort.cc",
       "ort/platform_functions_ort.h",
       "ort/scoped_ort_types.h",
       "ort/tensor_impl_ort.cc",
       "ort/tensor_impl_ort.h",
     ]
-    deps += [ "//third_party/onnxruntime_headers" ]
+    deps += [ "//third_party/windows_app_sdk_headers" ]
 
     libs += [ "runtimeobject.lib" ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
-  if (is_mac || webnn_use_tflite) {
+  if (is_apple || webnn_use_tflite) {
     sources += [
       "queueable_resource_state.h",
       "queueable_resource_state_base.cc",
       "queueable_resource_state_base.h",
       "resource_task.cc",
       "resource_task.h",
+    ]
+  }
+}
+
+source_set("webnn_test_support") {
+  testonly = true
+  sources = [
+    "webnn_test_environment.cc",
+    "webnn_test_environment.h",
+  ]
+
+  deps = [
+    ":webnn_service",
+    "//base",
+    "//base/test:test_support",
+    "//gpu/command_buffer/service",
+    "//gpu/config",
+    "//mojo/public/cpp/bindings",
+    "//services/viz/privileged/mojom/gl",
+    "//services/webnn/public/mojom",
+  ]
+
+  if (is_win) {
+    deps += [
+      "//services/webnn/host",
+      "//ui/gfx/mojom",
     ]
   }
 }
@@ -260,8 +290,8 @@ source_set("tests") {
 
   deps = [
     ":buildflags",
-    ":webnn_headers",
     ":webnn_service",
+    ":webnn_test_support",
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
@@ -290,6 +320,7 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
       [ "webnn_graph_mojolpm_fuzzer_seed_corpus/simple.textproto" ]
   deps = [
     ":webnn_service",
+    ":webnn_test_support",
     "//base",
     "//base/test:test_support",
     "//content/test/fuzzer:mojolpm_fuzzer_support",

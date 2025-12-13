@@ -38,7 +38,7 @@ public class NetworkChangeNotifier {
      * The alert is fired on the UI thread.
      */
     public interface ConnectionTypeObserver {
-        public void onConnectionTypeChanged(int connectionType);
+        void onConnectionTypeChanged(int connectionType);
     }
 
     private final ArrayList<Long> mNativeChangeNotifiers;

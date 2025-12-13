@@ -1,0 +1,67 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "welcome_back_coordinator.h",
+    "welcome_back_coordinator.mm",
+    "welcome_back_mediator.h",
+    "welcome_back_mediator.mm",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/welcome_back/ui",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/first_run/public:best_features_item",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
+    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/first_run/ui_bundled/best_features/coordinator",
+    "//ios/chrome/browser/instructions_bottom_sheet/ui",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:constants",
+    "//ios/chrome/browser/welcome_back/model",
+    "//ios/chrome/browser/welcome_back/model:features",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "welcome_back_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//components/feature_engagement/test:test_support",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/first_run/public:best_features_item",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/welcome_back/model",
+    "//ios/chrome/browser/welcome_back/model:features",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

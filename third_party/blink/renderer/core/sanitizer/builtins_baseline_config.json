@@ -1,7 +1,21 @@
 {
-  "comments": true,
-  "dataAttributes": true,
   "removeElements": [
+    {
+      "namespace": "http://www.w3.org/1999/xhtml",
+      "name": "embed"
+    },
+    {
+      "namespace": "http://www.w3.org/1999/xhtml",
+      "name": "frame"
+    },
+    {
+      "namespace": "http://www.w3.org/1999/xhtml",
+      "name": "iframe"
+    },
+    {
+      "namespace": "http://www.w3.org/1999/xhtml",
+      "name": "object"
+    },
     {
       "namespace": "http://www.w3.org/1999/xhtml",
       "name": "script"
@@ -9,15 +23,21 @@
     {
       "namespace": "http://www.w3.org/2000/svg",
       "name": "script"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "use"
     }
   ],
   "removeAttributes": [
     "onabort",
     "onactivate",
     "onafterprint",
+    "onanimationcancel",
     "onanimationend",
     "onanimationiteration",
     "onanimationstart",
+    "onautofill",
     "onauxclick",
     "onbeforecopy",
     "onbeforecut",
@@ -72,6 +92,7 @@
     "onloadeddata",
     "onloadedmetadata",
     "onloadstart",
+    "onlocation",
     "onlostpointercapture",
     "onmessage",
     "onmessageerror",

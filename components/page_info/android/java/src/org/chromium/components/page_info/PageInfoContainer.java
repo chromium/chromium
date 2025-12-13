@@ -68,6 +68,7 @@ public class PageInfoContainer extends FrameLayout {
 
     private ElidedUrlTextView mExpandedUrlTitle;
     private TextView mTruncatedUrlTitle;
+    private boolean mPageChangeInProgress;
 
     private final ViewGroup mWrapper;
     private final ViewGroup mContent;
@@ -127,7 +128,8 @@ public class PageInfoContainer extends FrameLayout {
         boolean showExpanded = mExpandedUrlTitle.getVisibility() != VISIBLE;
         mExpandedUrlTitle.setVisibility(showExpanded ? VISIBLE : GONE);
         mTruncatedUrlTitle.setVisibility(showExpanded ? GONE : VISIBLE);
-        announceForAccessibility(
+        ViewCompat.setAccessibilityPaneTitle(
+                this,
                 getResources()
                         .getString(
                                 showExpanded
@@ -143,10 +145,12 @@ public class PageInfoContainer extends FrameLayout {
             @Nullable View view,
             @Nullable CharSequence subPageTitle,
             @Nullable Runnable onPreviousPageRemoved) {
+        mPageChangeInProgress = true;
         if (mCurrentView == null) {
             // Don't animate if there is no current view.
             assert onPreviousPageRemoved == null;
             replaceContentView(view, subPageTitle);
+            mPageChangeInProgress = false;
             return;
         }
         // Create "fade-through" animation.
@@ -177,6 +181,7 @@ public class PageInfoContainer extends FrameLayout {
                                                 if (onPreviousPageRemoved != null) {
                                                     onPreviousPageRemoved.run();
                                                 }
+                                                mPageChangeInProgress = false;
                                             });
                         });
     }
@@ -192,6 +197,12 @@ public class PageInfoContainer extends FrameLayout {
                 this,
                 subPageTitle != null
                         ? subPageTitle
-                        : getResources().getString(R.string.accessibility_toolbar_btn_site_info));
+                        : getResources()
+                                .getString(R.string.accessibility_toolbar_btn_site_info_dialog));
+    }
+
+    /** Returns true if replacing the content view is still in progress. */
+    public boolean isPageChangeInProgress() {
+        return mPageChangeInProgress;
     }
 }

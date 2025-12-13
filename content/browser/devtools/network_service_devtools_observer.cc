@@ -17,6 +17,7 @@
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
+#include "services/network/public/mojom/unencoded_digest.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
@@ -73,14 +74,16 @@ void NetworkServiceDevToolsObserver::OnRawRequest(
     std::vector<network::mojom::HttpRawHeaderPairPtr> request_headers,
     base::TimeTicks timestamp,
     network::mojom::ClientSecurityStatePtr security_state,
-    network::mojom::OtherPartitionInfoPtr other_partition_info) {
+    network::mojom::OtherPartitionInfoPtr other_partition_info,
+    const std::optional<base::UnguessableToken>&
+        applied_network_conditions_id) {
   auto* host = GetDevToolsAgentHost();
   if (!host)
     return;
-  DispatchToAgents(host,
-                   &protocol::NetworkHandler::OnRequestWillBeSentExtraInfo,
-                   devtools_request_id, request_cookie_list, request_headers,
-                   timestamp, security_state, other_partition_info);
+  DispatchToAgents(
+      host, &protocol::NetworkHandler::OnRequestWillBeSentExtraInfo,
+      devtools_request_id, request_cookie_list, request_headers, timestamp,
+      security_state, other_partition_info, applied_network_conditions_id);
 }
 
 void NetworkServiceDevToolsObserver::OnRawResponse(
@@ -295,54 +298,6 @@ void NetworkServiceDevToolsObserver::OnOrbError(
   devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, std::move(issue));
 }
 
-void NetworkServiceDevToolsObserver::OnSubresourceWebBundleMetadata(
-    const std::string& devtools_request_id,
-    const std::vector<GURL>& urls) {
-  auto* host = GetDevToolsAgentHost();
-  if (!host)
-    return;
-  DispatchToAgents(host,
-                   &protocol::NetworkHandler::OnSubresourceWebBundleMetadata,
-                   devtools_request_id, urls);
-}
-
-void NetworkServiceDevToolsObserver::OnSubresourceWebBundleMetadataError(
-    const std::string& devtools_request_id,
-    const std::string& error_message) {
-  auto* host = GetDevToolsAgentHost();
-  if (!host)
-    return;
-  DispatchToAgents(
-      host, &protocol::NetworkHandler::OnSubresourceWebBundleMetadataError,
-      devtools_request_id, error_message);
-}
-
-void NetworkServiceDevToolsObserver::OnSubresourceWebBundleInnerResponse(
-    const std::string& inner_request_devtools_id,
-    const GURL& url,
-    const std::optional<std::string>& bundle_request_devtools_id) {
-  auto* host = GetDevToolsAgentHost();
-  if (!host)
-    return;
-  DispatchToAgents(
-      host, &protocol::NetworkHandler::OnSubresourceWebBundleInnerResponse,
-      inner_request_devtools_id, url, bundle_request_devtools_id);
-}
-
-void NetworkServiceDevToolsObserver::OnSubresourceWebBundleInnerResponseError(
-    const std::string& inner_request_devtools_id,
-    const GURL& url,
-    const std::string& error_message,
-    const std::optional<std::string>& bundle_request_devtools_id) {
-  auto* host = GetDevToolsAgentHost();
-  if (!host)
-    return;
-  DispatchToAgents(
-      host, &protocol::NetworkHandler::OnSubresourceWebBundleInnerResponseError,
-      inner_request_devtools_id, url, error_message,
-      bundle_request_devtools_id);
-}
-
 namespace {
 
 protocol::String BuildSharedDictionaryError(
@@ -376,6 +331,8 @@ protocol::String BuildSharedDictionaryError(
       return SharedDictionaryErrorEnum::WriteErrorInvalidMatchField;
     case SharedDictionaryError::kWriteErrorInvalidStructuredHeader:
       return SharedDictionaryErrorEnum::WriteErrorInvalidStructuredHeader;
+    case SharedDictionaryError::kWriteErrorInvalidTTLField:
+      return SharedDictionaryErrorEnum::WriteErrorInvalidTTLField;
     case SharedDictionaryError::kWriteErrorNavigationRequest:
       return SharedDictionaryErrorEnum::WriteErrorNavigationRequest;
     case SharedDictionaryError::kWriteErrorNoMatchField:
@@ -400,6 +357,8 @@ protocol::String BuildSharedDictionaryError(
       return SharedDictionaryErrorEnum::WriteErrorTooLongIdField;
     case SharedDictionaryError::kWriteErrorUnsupportedType:
       return SharedDictionaryErrorEnum::WriteErrorUnsupportedType;
+    case SharedDictionaryError::kWriteErrorNonIntegerTTLField:
+      return SharedDictionaryErrorEnum::WriteErrorNonIntegerTTLField;
   }
 }
 
@@ -463,6 +422,23 @@ protocol::String ConvertToDevtoolsEnum(
       return SRIMessageSignatureErrorEnum::ValidationFailedInvalidLength;
     case SRIMessageSignatureError::kValidationFailedIntegrityMismatch:
       return SRIMessageSignatureErrorEnum::ValidationFailedIntegrityMismatch;
+  }
+}
+
+protocol::String ConvertToDevtoolsEnum(
+    network::mojom::UnencodedDigestIssue error) {
+  using network::mojom::UnencodedDigestIssue;
+  namespace UnencodedDigestErrorEnum =
+      protocol::Audits::UnencodedDigestErrorEnum;
+  switch (error) {
+    case UnencodedDigestIssue::kMalformedDictionary:
+      return UnencodedDigestErrorEnum::MalformedDictionary;
+    case UnencodedDigestIssue::kUnknownAlgorithm:
+      return UnencodedDigestErrorEnum::UnknownAlgorithm;
+    case UnencodedDigestIssue::kIncorrectDigestType:
+      return UnencodedDigestErrorEnum::IncorrectDigestType;
+    case UnencodedDigestIssue::kIncorrectDigestLength:
+      return UnencodedDigestErrorEnum::IncorrectDigestLength;
   }
 }
 
@@ -535,6 +511,35 @@ void NetworkServiceDevToolsObserver::OnSRIMessageSignatureIssue(
     devtools_instrumentation::ReportBrowserInitiatedIssue(
         rfhi, std::move(devtools_issue));
   }
+}
+
+void NetworkServiceDevToolsObserver::OnUnencodedDigestError(
+    const std::string& devtool_request_id,
+    const GURL& url,
+    network::mojom::UnencodedDigestIssue issue) {
+  RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);
+  if (!rfhi) {
+    return;
+  }
+  auto affected_request = protocol::Audits::AffectedRequest::Create()
+                              .SetRequestId(devtool_request_id)
+                              .SetUrl(url.spec())
+                              .Build();
+  auto issue_details = protocol::Audits::UnencodedDigestIssueDetails::Create()
+                           .SetError(ConvertToDevtoolsEnum(issue))
+                           .SetRequest(std::move(affected_request))
+                           .Build();
+  auto details = protocol::Audits::InspectorIssueDetails::Create()
+                     .SetUnencodedDigestIssueDetails(std::move(issue_details))
+                     .Build();
+  auto devtools_issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(
+              protocol::Audits::InspectorIssueCodeEnum::UnencodedDigestIssue)
+          .SetDetails(std::move(details))
+          .Build();
+  devtools_instrumentation::ReportBrowserInitiatedIssue(
+      rfhi, std::move(devtools_issue));
 }
 
 void NetworkServiceDevToolsObserver::Clone(

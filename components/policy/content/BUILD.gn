@@ -19,7 +19,9 @@ source_set("safe_sites_navigation_throttle") {
 
   deps = [
     "//base",
-    "//components/keyed_service/content:content",
+    "//components/captive_portal/content",
+    "//components/captive_portal/core:buildflags",
+    "//components/keyed_service/content",
     "//components/policy/core/browser",
     "//components/safe_search_api",
     "//components/safe_search_api:safe_search_client",
@@ -30,34 +32,38 @@ source_set("safe_sites_navigation_throttle") {
 }
 
 source_set("content") {
-  sources = [
-    "policy_blocklist_navigation_throttle.cc",
-    "policy_blocklist_navigation_throttle.h",
-    "policy_blocklist_service.cc",
-    "policy_blocklist_service.h",
-  ]
-  if (is_win || is_mac || is_linux || is_chromeos) {
-    sources += [
-      "password_manager_blocklist_policy.cc",
-      "password_manager_blocklist_policy.h",
+  # TODO(crbug.com/452575535): Disable policy_blocklist_navigation_throttle.cc/h
+  # until the iOS-specific implementation of PolicyBlocklistService is resolved.
+  # The PolicyBlocklistService is currently duplicated in
+  # `ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h`.
+  if (!is_ios) {
+    sources = [
+      "policy_blocklist_navigation_throttle.cc",
+      "policy_blocklist_navigation_throttle.h",
     ]
   }
+
   deps = [
     ":safe_sites_navigation_throttle",
-    "//components/keyed_service/content:content",
+    "//components/keyed_service/content",
     "//components/policy/core/browser",
     "//components/prefs",
-    "//components/user_prefs:user_prefs",
+    "//components/user_prefs",
     "//content/public/browser",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "policy_blocklist_navigation_throttle_unittest.cc",
-    "proceed_until_response_navigation_throttle_unittest.cc",
-  ]
+  sources = [ "proceed_until_response_navigation_throttle_unittest.cc" ]
+
+  # TODO(crbug.com/452575535): Disable policy_blocklist_navigation_throttle_unittests.cc
+  # as well until the iOS-specific implementation of PolicyBlocklistService is
+  # resolved. The PolicyBlocklistService is currently duplicated in
+  # `ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h`.
+  if (!is_ios) {
+    sources += [ "policy_blocklist_navigation_throttle_unittest.cc" ]
+  }
 
   deps = [
     ":content",
@@ -69,7 +75,7 @@ source_set("unit_tests") {
     "//components/safe_search_api:safe_search_client",
     "//components/safe_search_api:test_support",
     "//components/sync_preferences:test_support",
-    "//components/user_prefs:user_prefs",
+    "//components/user_prefs",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gtest",

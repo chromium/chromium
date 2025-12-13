@@ -36,9 +36,8 @@ OpenXrUnboundedSpaceProviderAndroidFactory::GetRequestedExtensions() const {
 }
 
 std::set<device::mojom::XRSessionFeature>
-OpenXrUnboundedSpaceProviderAndroidFactory::GetSupportedFeatures(
-    const OpenXrExtensionEnumeration* extension_enum) const {
-  if (!IsEnabled(extension_enum)) {
+OpenXrUnboundedSpaceProviderAndroidFactory::GetSupportedFeatures() const {
+  if (!IsEnabled()) {
     return {};
   }
 
@@ -46,9 +45,9 @@ OpenXrUnboundedSpaceProviderAndroidFactory::GetSupportedFeatures(
 }
 
 std::unique_ptr<OpenXrUnboundedSpaceProvider>
-OpenXrUnboundedSpaceProviderAndroidFactory::CreateUnboundedSpaceProvider(
-    const OpenXrExtensionHelper& extension_helper) const {
-  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
+OpenXrUnboundedSpaceProviderAndroidFactory::CreateUnboundedSpaceProvider()
+    const {
+  bool is_supported = IsEnabled();
   DVLOG(2) << __func__ << " is_supported=" << is_supported;
   if (is_supported) {
     return std::make_unique<OpenXrUnboundedSpaceProviderAndroid>();

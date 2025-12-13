@@ -11,6 +11,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -19,15 +22,10 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
-
-namespace {
 
 using metrics::OmniboxEventProto;
 using ui_test_utils::WaitForAutocompleteDone;
@@ -48,7 +46,7 @@ class OmniboxMetricsTest : public InProcessBrowserTest {
 
     // Prevent the stop timer from killing the hints fetch early, which might
     // cause test flakiness due to timeout.
-    controller()->SetStartStopTimerDurationForTesting(base::Seconds(30));
+    controller()->config_.stop_timer_duration = base::Seconds(30);
   }
 
  protected:
@@ -56,17 +54,18 @@ class OmniboxMetricsTest : public InProcessBrowserTest {
     return browser()
         ->window()
         ->GetLocationBar()
-        ->GetOmniboxView()
-        ->controller()
+        ->GetOmniboxController()
         ->autocomplete_controller();
   }
 
   OmniboxEditModel* model() {
-    return browser()->window()->GetLocationBar()->GetOmniboxView()->model();
+    return browser()
+        ->window()
+        ->GetLocationBar()
+        ->GetOmniboxController()
+        ->edit_model();
   }
 };
-
-}  // namespace
 
 IN_PROC_BROWSER_TEST_F(OmniboxMetricsTest, LogSearchEngineUsed) {
   AutocompleteInput input(
@@ -86,7 +85,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxMetricsTest, LogSearchEngineUsed) {
 
   base::HistogramTester histogram_tester;
   model()->SetPopupSelection(OmniboxPopupSelection(0));
-  model()->OpenSelection(base::TimeTicks(), WindowOpenDisposition::CURRENT_TAB);
+  model()->OpenSelectionForTesting(base::TimeTicks(),
+                                   WindowOpenDisposition::CURRENT_TAB);
   WaitForAutocompleteDone(browser());
   EXPECT_TRUE(controller()->done());
 

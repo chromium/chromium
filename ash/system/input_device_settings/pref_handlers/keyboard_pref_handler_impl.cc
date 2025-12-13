@@ -793,7 +793,8 @@ void InitializeKeyboardSettingsImpl(
       keyboard->settings->f12 = keyboard_policies.f12_key_policy->value;
     }
   }
-  if (keyboard_policies.home_and_end_keys_policy &&
+  if (keyboard->settings->six_pack_key_remappings &&
+      keyboard_policies.home_and_end_keys_policy &&
       keyboard_policies.home_and_end_keys_policy->policy_status ==
           mojom::PolicyStatus::kManaged) {
     keyboard->settings->six_pack_key_remappings->home =
@@ -802,7 +803,8 @@ void InitializeKeyboardSettingsImpl(
         keyboard_policies.home_and_end_keys_policy->value;
   }
 
-  if (keyboard_policies.page_up_and_page_down_keys_policy &&
+  if (keyboard->settings->six_pack_key_remappings &&
+      keyboard_policies.page_up_and_page_down_keys_policy &&
       keyboard_policies.page_up_and_page_down_keys_policy->policy_status ==
           mojom::PolicyStatus::kManaged) {
     keyboard->settings->six_pack_key_remappings->page_up =
@@ -811,14 +813,16 @@ void InitializeKeyboardSettingsImpl(
         keyboard_policies.page_up_and_page_down_keys_policy->value;
   }
 
-  if (keyboard_policies.delete_key_policy &&
+  if (keyboard->settings->six_pack_key_remappings &&
+      keyboard_policies.delete_key_policy &&
       keyboard_policies.delete_key_policy->policy_status ==
           mojom::PolicyStatus::kManaged) {
     keyboard->settings->six_pack_key_remappings->del =
         keyboard_policies.delete_key_policy->value;
   }
 
-  if (keyboard_policies.insert_key_policy &&
+  if (keyboard->settings->six_pack_key_remappings &&
+      keyboard_policies.insert_key_policy &&
       keyboard_policies.insert_key_policy->policy_status ==
           mojom::PolicyStatus::kManaged) {
     keyboard->settings->six_pack_key_remappings->insert =

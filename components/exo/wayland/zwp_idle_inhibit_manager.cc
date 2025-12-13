@@ -29,15 +29,13 @@ namespace {
 
 class IdleInhibitor {
  public:
-  IdleInhibitor(
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner)
+  explicit IdleInhibitor(
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
       : power_save_blocker_(std::make_unique<device::PowerSaveBlocker>(
             /*type=*/device::mojom::WakeLockType::kPreventDisplaySleep,
             /*reason=*/device::mojom::WakeLockReason::kOther,
             kPowerSaveBlockerDescription,
-            ui_task_runner,
-            blocking_task_runner)) {}
+            ui_task_runner)) {}
 
   IdleInhibitor(const IdleInhibitor&) = delete;
   IdleInhibitor& operator=(const IdleInhibitor&) = delete;
@@ -59,21 +57,17 @@ const struct zwp_idle_inhibitor_v1_interface
 class IdleInhibitManager {
  public:
   IdleInhibitManager()
-      : ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-        blocking_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
+      : ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   IdleInhibitManager(const IdleInhibitManager&) = delete;
   IdleInhibitManager& operator=(const IdleInhibitManager&) = delete;
 
   std::unique_ptr<IdleInhibitor> CreateInhibitor() {
-    return std::make_unique<IdleInhibitor>(ui_task_runner_,
-                                           blocking_task_runner_);
+    return std::make_unique<IdleInhibitor>(ui_task_runner_);
   }
 
  private:
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner_;
 };
 
 void zwp_idle_inhibit_manager_destroy(wl_client* client,

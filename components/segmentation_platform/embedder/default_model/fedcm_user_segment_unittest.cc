@@ -8,8 +8,9 @@
 
 namespace segmentation_platform {
 
+using Feature = FedCmUserModel::Feature;
+
 const char kFedCmUserLoudLabel[] = "FedCmUserLoud";
-const char kFedCmUserQuietLabel[] = "FedCmUserQuiet";
 
 class FedCmUserModelTest : public DefaultModelTestBase {
  public:
@@ -29,14 +30,34 @@ TEST_F(FedCmUserModelTest, ExecuteModelWithInput) {
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
   // FedCM Loud UI.
-  ExpectClassifierResults(/*input=*/{0, 0, 0, 0}, {kFedCmUserLoudLabel});
-  ExpectClassifierResults(/*input=*/{1, 1, 0, 0}, {kFedCmUserLoudLabel});
-  ExpectClassifierResults(/*input=*/{1, 0, 1, 0}, {kFedCmUserLoudLabel});
-  ExpectClassifierResults(/*input=*/{1, 0, 3, 1}, {kFedCmUserLoudLabel});
+  ExpectClassifierResults(ModelProvider::Request(Feature::kFeatureCount, 0),
+                          {kFedCmUserLoudLabel});
+  ModelProvider::Request input1(Feature::kFeatureCount, 0);
+  input1[Feature::kFeatureAccountsDialogShown] = 1;
+  input1[Feature::kFeatureRequestIdToken] = 1;
+  ExpectClassifierResults(input1, {kFedCmUserLoudLabel});
 
-  // FedCM Quiet UI.
-  ExpectClassifierResults(/*input=*/{1, 0, 3, 0}, {kFedCmUserQuietLabel});
-  ExpectClassifierResults(/*input=*/{2, 0, 5, 0}, {kFedCmUserQuietLabel});
+  ModelProvider::Request input2(Feature::kFeatureCount, 0);
+  input2[Feature::kFeatureAccountsDialogShown] = 1;
+  input2[Feature::kFeatureCancelReason] = 1;
+  ExpectClassifierResults(input2, {kFedCmUserLoudLabel});
+
+  ModelProvider::Request input3(Feature::kFeatureCount, 0);
+  input3[Feature::kFeatureAccountsDialogShown] = 1;
+  input3[Feature::kFeatureCancelReason] = 3;
+  input3[Feature::kFeatureIsSignInUser] = 1;
+  ExpectClassifierResults(input3, {kFedCmUserLoudLabel});
+
+  // All inputs should result in FedCM Loud UI.
+  ModelProvider::Request input4(Feature::kFeatureCount, 0);
+  input4[Feature::kFeatureAccountsDialogShown] = 1;
+  input4[Feature::kFeatureCancelReason] = 3;
+  ExpectClassifierResults(input4, {kFedCmUserLoudLabel});
+
+  ModelProvider::Request input5(Feature::kFeatureCount, 0);
+  input5[Feature::kFeatureAccountsDialogShown] = 2;
+  input5[Feature::kFeatureCancelReason] = 5;
+  ExpectClassifierResults(input5, {kFedCmUserLoudLabel});
 }
 
 }  // namespace segmentation_platform

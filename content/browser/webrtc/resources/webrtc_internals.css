@@ -53,6 +53,10 @@
   font-weight: bold;
 }
 
+.stats-table-rtp-inactive {
+  color: darkgrey;
+}
+
 body {
   font-family: 'Lucida Grande', sans-serif;
 }

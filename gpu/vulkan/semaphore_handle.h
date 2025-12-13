@@ -56,11 +56,7 @@ class COMPONENT_EXPORT(VULKAN) SemaphoreHandle {
   VkExternalSemaphoreHandleTypeFlagBits vk_handle_type() { return type_; }
 
   bool is_valid() const {
-#if BUILDFLAG(IS_WIN)
-    return handle_.IsValid();
-#else
     return handle_.is_valid();
-#endif
   }
 
   // Returns underlying platform-specific handle for the semaphore. is_valid()

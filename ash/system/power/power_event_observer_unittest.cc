@@ -26,8 +26,8 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -383,12 +383,8 @@ TEST_F(PowerEventObserverTest, ImmediateLockAnimations) {
   EXPECT_FALSE(lock_state_test_api.is_animating_lock());
 }
 
-// Tests that displays will not be considered ready to suspend until the
-// animated wallpaper change finishes (if the wallpaper is being animated to
-// another wallpaper after the screen is locked).
-// Flaky: https://crbug.com/1293178
 TEST_F(PowerEventObserverTest,
-       DISABLED_DisplaysNotReadyForSuspendUntilWallpaperAnimationEnds) {
+       DisplaysNotReadyForSuspendUntilWallpaperAnimationEnds) {
   chromeos::FakePowerManagerClient* client =
       chromeos::FakePowerManagerClient::Get();
   ASSERT_EQ(0, client->num_pending_suspend_readiness_callbacks());
@@ -398,8 +394,8 @@ TEST_F(PowerEventObserverTest,
 
   // Set up animation state so wallpaper widget animations are not ended on
   // their creation.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Lock screen - this is expected to start wallpaper change (e.g. to a
   // widget with a blurred wallpaper).
@@ -449,8 +445,8 @@ TEST_F(PowerEventObserverTest, EndWallpaperAnimationOnSuspendWhileLocked) {
 
   // Set up animation state so wallpaper widget animations are not ended on
   // their creation.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Lock screen - this is expected to start wallpaper change (e.g. to a
   // widget with a blurred wallpaper).
@@ -491,8 +487,8 @@ TEST_F(PowerEventObserverTest, EndWallpaperAnimationOnSuspendWhileLocking) {
 
   // Set up animation state so wallpaper widget animations are not ended on
   // their creation.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Lock screen - this is expected to start wallpaper change (e.g. to a
   // widget with a blurred wallpaper).
@@ -534,8 +530,8 @@ TEST_F(PowerEventObserverTest, EndWallpaperAnimationAfterLockDueToSuspend) {
 
   // Set up animation state so wallpaper widget animations are not ended on
   // their creation.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Start suspend (which should start screen lock) - verify that wallpaper is
   // not animating after the screen lock animations are reported as complete.
@@ -575,8 +571,8 @@ TEST_F(PowerEventObserverTest, DisplayRemovedDuringWallpaperAnimation) {
 
   // Set up animation state so wallpaper widget animations are not ended on
   // their creation.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Lock screen - this is expected to start wallpaper change (e.g. to a
   // widget with a blurred wallpaper).

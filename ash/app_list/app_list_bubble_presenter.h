@@ -70,12 +70,6 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver,
   // Returns true if the bubble is showing on any display.
   bool IsShowing() const;
 
-  // Returns true if the assistant page is showing.
-  bool IsShowingEmbeddedAssistantUI() const;
-
-  // Switches to the assistant page. Requires the bubble to be open.
-  void ShowEmbeddedAssistantUI();
-
   // Updates the continue section visibility based on user preference.
   void UpdateContinueSectionVisibility();
 

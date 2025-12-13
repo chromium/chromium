@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Mixins work inside layers
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+[FAIL] Mixins work inside layers (anonymous)
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+[FAIL] Mixins in stronger layer wins
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+[FAIL] Mixins in stronger layer wins (source order matching layer order)
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+Harness: the test ran to completion.
+

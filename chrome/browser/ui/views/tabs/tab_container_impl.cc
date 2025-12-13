@@ -9,6 +9,7 @@
 
 #include "base/bits.h"
 #include "base/containers/adapters.h"
+#include "base/i18n/rtl.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
-#include "chrome/browser/ui/views/tabs/tab_scrolling_animation.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_animation_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -34,12 +34,12 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/scroll_view.h"
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view_utils.h"
@@ -78,6 +78,7 @@ TabContainerImpl::RemoveTabDelegate::RemoveTabDelegate(
 
 void TabContainerImpl::RemoveTabDelegate::AnimationEnded(
     const gfx::Animation* animation) {
+  StopObserving();
   tab_container()->OnTabCloseAnimationCompleted(static_cast<Tab*>(slot_view()));
 }
 
@@ -90,13 +91,11 @@ TabContainerImpl::TabContainerImpl(
     TabContainerController& controller,
     TabHoverCardController* hover_card_controller,
     TabDragContextBase* drag_context,
-    TabSlotController& tab_slot_controller,
-    views::View* scroll_contents_view)
+    TabSlotController& tab_slot_controller)
     : controller_(controller),
       hover_card_controller_(hover_card_controller),
       drag_context_(drag_context),
       tab_slot_controller_(tab_slot_controller),
-      scroll_contents_view_(scroll_contents_view),
       overall_bounds_view_(*AddChildView(std::make_unique<views::View>())),
       bounds_animator_(this),
       layout_helper_(std::make_unique<TabStripLayoutHelper>(
@@ -120,6 +119,11 @@ TabContainerImpl::TabContainerImpl(
 }
 
 TabContainerImpl::~TabContainerImpl() {
+  // Cancel Animation may destroy objects that are in the zorder_cache. since
+  // there are no more paints needed, just clear this cache first to prevent
+  // dangling pointers.
+  z_ordered_children_cache_.clear();
+
   // The animations may reference the tabs or group views. Shut down the
   // animation before we destroy any animated views.
   CancelAnimation();
@@ -196,11 +200,23 @@ void TabContainerImpl::RemoveTab(int model_index, bool was_active) {
   UpdateClosingModeOnRemovedTab(model_index, was_active);
 
   Tab* const tab = GetTabAtModelIndex(model_index);
+  if (!tab) {
+    return;
+  }
+
   tab->SetClosing(true);
 
   CloseTabInViewModel(model_index);
 
-  StartRemoveTabAnimation(tab, model_index);
+  MarkZOrderCacheDirty();
+
+  if (controller_->IsBrowserClosing()) {
+    // If all tabs are closing, we should not animated to tab close, but instead
+    // immediately close tabs.
+    OnTabCloseAnimationCompleted(tab);
+  } else {
+    StartRemoveTabAnimation(tab, model_index);
+  }
 
   UpdateAccessibleTabIndices();
 }
@@ -234,6 +250,7 @@ void TabContainerImpl::SetActiveTab(std::optional<size_t> prev_active_index,
   maybe_update_group_visuals(new_active_index);
 
   layout_helper_->SetActiveTab(prev_active_index, new_active_index);
+  MarkZOrderCacheDirty();
 
   if (layout_helper_->layout_domain() ==
       LayoutDomain::kInactiveWidthEqualsActiveWidth) {
@@ -254,11 +271,6 @@ void TabContainerImpl::SetActiveTab(std::optional<size_t> prev_active_index,
     // affected the desired bounds of the tabs, but since we're in a steady
     // state we can just snap to the new bounds.
     CompleteAnimationAndLayout();
-  }
-
-  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip) &&
-      new_active_index.has_value()) {
-    ScrollTabToVisible(new_active_index.value());
   }
 }
 
@@ -318,67 +330,12 @@ void TabContainerImpl::ReturnTabSlotView(TabSlotView* view) {
   }
 }
 
-void TabContainerImpl::ScrollTabToVisible(int model_index) {
-  std::optional<gfx::Rect> visible_content_rect = GetVisibleContentRect();
-
-  if (!visible_content_rect.has_value()) {
-    return;
-  }
-
-  // If the tab strip won't be scrollable after the current tabstrip animations
-  // complete, scroll animation wouldn't be meaningful.
-  if (tabs_view_model_.ideal_bounds(GetTabCount() - 1).right() <=
-      GetAvailableWidthForTabContainer()) {
-    return;
-  }
-
-  gfx::Rect active_tab_ideal_bounds =
-      tabs_view_model_.ideal_bounds(model_index);
-
-  if ((active_tab_ideal_bounds.x() >= visible_content_rect->x()) &&
-      (active_tab_ideal_bounds.right() <= visible_content_rect->right())) {
-    return;
-  }
-
-  bool scroll_left = active_tab_ideal_bounds.x() < visible_content_rect->x();
-  if (scroll_left) {
-    // Scroll the left edge of `visible_content_rect` to show the left edge of
-    // the tab at `model_index`. We can leave the width entirely up to the
-    // ScrollView.
-    int start_left_edge(visible_content_rect->x());
-    int target_left_edge(active_tab_ideal_bounds.x());
-
-    AnimateScrollToShowXCoordinate(start_left_edge, target_left_edge);
-  } else {
-    // Scroll the right edge of `visible_content_rect` to show the right edge
-    // of the tab at `model_index`. We can leave the width entirely up to the
-    // ScrollView.
-    int start_right_edge(visible_content_rect->right());
-    int target_right_edge(active_tab_ideal_bounds.right());
-    AnimateScrollToShowXCoordinate(start_right_edge, target_right_edge);
-  }
-}
-
-void TabContainerImpl::ScrollTabContainerByOffset(int offset) {
-  std::optional<gfx::Rect> visible_content_rect = GetVisibleContentRect();
-  if (!visible_content_rect.has_value() || offset == 0) {
-    return;
-  }
-
-  // If tabcontainer is scrolled towards trailing tab, the start edge should
-  // have the x coordinate of the right bound. If it is scrolled towards the
-  // leading tab it should have the x coordinate of the left bound.
-  int start_edge =
-      (offset > 0) ? visible_content_rect->right() : visible_content_rect->x();
-
-  AnimateScrollToShowXCoordinate(start_edge, start_edge + offset);
-}
-
 void TabContainerImpl::OnGroupCreated(const tab_groups::TabGroupId& group) {
   auto group_view = std::make_unique<TabGroupViews>(
       this, drag_context_, *tab_slot_controller_, group);
   layout_helper_->InsertGroupHeader(group, group_view->header());
   group_views_[group] = std::move(group_view);
+  MarkZOrderCacheDirty();
 }
 
 void TabContainerImpl::OnGroupEditorOpened(
@@ -452,8 +409,10 @@ void TabContainerImpl::ToggleTabGroup(
             ? CloseTabSource::kFromMouse
             : CloseTabSource::kFromTouch;
 
+    // Use actual last tab bounds instead of ideal_bounds to match
+    // current_group_width timing.
     EnterTabClosingMode(
-        tabs_view_model_.ideal_bounds(GetTabCount() - 1).right() -
+        tabs_view_model_.view_at(GetTabCount() - 1)->bounds().right() -
             current_group_width + collapsed_group_width,
         source);
   } else {
@@ -463,6 +422,15 @@ void TabContainerImpl::ToggleTabGroup(
 
 void TabContainerImpl::OnGroupClosed(const tab_groups::TabGroupId& group) {
   bounds_animator_.StopAnimatingView(group_views_.at(group).get()->header());
+
+  // The ZOrder cache holds pointers to the group views, however on deletion
+  // the views in the cache will have to be recalculated and reordered. Marking
+  // the cache dirty does not evict the group view pointers, and so a dangling
+  // pointer would be created if the cache were not also cleared. This is why
+  // the cache must also be evicted.
+  MarkZOrderCacheDirty();
+  z_ordered_children_cache_.clear();
+
   layout_helper_->RemoveGroupHeader(group);
   group_views_.erase(group);
 
@@ -495,6 +463,7 @@ void TabContainerImpl::OnSplitCreated(const std::vector<int>& indices) {
     tab->UpdateInsets();
   }
 
+  MarkZOrderCacheDirty();
   AnimateToIdealBounds();
 }
 
@@ -510,6 +479,7 @@ void TabContainerImpl::OnSplitRemoved(const std::vector<int>& indices) {
     tab->UpdateInsets();
   }
 
+  MarkZOrderCacheDirty();
   AnimateToIdealBounds();
 }
 
@@ -518,6 +488,13 @@ void TabContainerImpl::OnSplitContentsChanged(const std::vector<int>& indices) {
     Tab* const tab = GetTabAtModelIndex(index);
     CHECK(tab->split().has_value());
     tab->UpdateInsets();
+
+    // Tab shape may change due to reordering (eg. reversing split tabs). We
+    // should repaint the focus ring to ensure the highlight path matches the
+    // new shape.
+    if (auto* focus_ring = views::FocusRing::Get(tab)) {
+      focus_ring->SchedulePaint();
+    }
   }
 }
 
@@ -714,8 +691,7 @@ void TabContainerImpl::CompleteAnimationAndLayout() {
 
 int TabContainerImpl::GetAvailableWidthForTabContainer() const {
   // Falls back to views::View::GetAvailableSize() when
-  // `available_width_callback_` is not defined, e.g. when tab scrolling is
-  // disabled.
+  // `available_width_callback_` is not defined.
   return available_width_callback_
              ? available_width_callback_.Run()
              : parent()->GetAvailableSize(this).width().value();
@@ -758,9 +734,10 @@ void TabContainerImpl::SetTabSlotVisibility() {
   bool last_tab_visible = false;
   std::optional<tab_groups::TabGroupId> last_tab_group = std::nullopt;
   std::vector<Tab*> tabs = layout_helper_->GetTabs();
-  for (Tab* tab : base::Reversed(tabs)) {
-    std::optional<tab_groups::TabGroupId> current_group = tab->group();
-    if (current_group != last_tab_group && last_tab_group.has_value()) {
+  for (auto it = tabs.rbegin(); true; ++it) {
+    Tab* tab = it != tabs.rend() ? *it : nullptr;
+    if (last_tab_group.has_value() &&
+        (!tab || tab->group() != last_tab_group)) {
       TabGroupViews* group_view = group_views_.at(last_tab_group.value()).get();
 
       // If we change the visibility of a group header, we must recalculate that
@@ -768,14 +745,20 @@ void TabContainerImpl::SetTabSlotVisibility() {
       if (last_tab_visible != group_view->header()->GetVisible()) {
         visibility_changed_groups.insert(last_tab_group.value());
       }
-
       group_view->header()->SetVisible(last_tab_visible);
+
       // Hide underlines if they would underline an invisible tab, but don't
       // show underlines if they're hidden during a header drag session.
       if (!group_view->header()->dragging()) {
         group_view->underline()->MaybeSetVisible(last_tab_visible);
       }
     }
+
+    if (!tab) {
+      break;
+    }
+
+    std::optional<tab_groups::TabGroupId> current_group = tab->group();
     last_tab_visible = ShouldTabBeVisible(tab);
     last_tab_group = tab->closing() ? std::nullopt : current_group;
 
@@ -793,7 +776,6 @@ void TabContainerImpl::SetTabSlotVisibility() {
     if (should_be_visible != tab->GetVisible() && tab->group().has_value()) {
       visibility_changed_groups.insert(tab->group().value());
     }
-
     tab->SetVisible(should_be_visible);
   }
 
@@ -860,20 +842,14 @@ void TabContainerImpl::PaintChildren(const views::PaintInfo& paint_info) {
   // added or removed, and in particular can be called while we are partway
   // through creating a tab group and are not in a self-consistent state.
 
-  std::vector<ZOrderableTabContainerElement> orderable_children;
-  for (views::View* child : children()) {
-    if (!ZOrderableTabContainerElement::CanOrderView(child)) {
-      continue;
-    }
-    orderable_children.emplace_back(child);
-  }
-
-  // Sort in ascending order by z-value. Stable sort breaks ties by child index.
-  std::stable_sort(orderable_children.begin(), orderable_children.end());
-
-  for (const ZOrderableTabContainerElement& child : orderable_children) {
+  UpdateZOrderCacheIfDirty();
+  for (const auto& child : z_ordered_children_cache_) {
     child.view()->Paint(paint_info);
   }
+}
+
+void TabContainerImpl::UpdateZOrderCacheForTesting() {
+  UpdateZOrderCacheIfDirty();
 }
 
 gfx::Size TabContainerImpl::GetMinimumSize() const {
@@ -912,6 +888,14 @@ gfx::Size TabContainerImpl::CalculatePreferredSize(
 
 views::View* TabContainerImpl::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
+  if (!GetVisible()) {
+    // TODO(crbug.com/468100896): Remove this once the parent view is destroyed
+    // instead of hidden. From crbug.com/467968232, early return if the view is
+    // hidden to avoid race condition between the horizontal and vertical tab
+    // strip.
+    return nullptr;
+  }
+
   if (!HitTestPoint(point)) {
     return nullptr;
   }
@@ -1174,16 +1158,6 @@ views::ViewModelT<Tab>* TabContainerImpl::GetTabsViewModel() {
   return &tabs_view_model_;
 }
 
-std::optional<gfx::Rect> TabContainerImpl::GetVisibleContentRect() {
-  views::ScrollView* scroll_container =
-      views::ScrollView::GetScrollViewForContents(scroll_contents_view_);
-  if (!scroll_container) {
-    return std::nullopt;
-  }
-
-  return scroll_container->GetVisibleRect();
-}
-
 void TabContainerImpl::AnimateViewTo(
     View* view,
     const gfx::Rect& target,
@@ -1191,21 +1165,6 @@ void TabContainerImpl::AnimateViewTo(
   bounds_animator_.SetAnimationDuration(
       gfx::Animation::RichAnimationDuration(base::Milliseconds(200)));
   bounds_animator_.AnimateViewTo(view, target, std::move(delegate));
-}
-
-void TabContainerImpl::AnimateScrollToShowXCoordinate(const int start_edge,
-                                                      const int target_edge) {
-  if (tab_scrolling_animation_) {
-    tab_scrolling_animation_->Stop();
-  }
-
-  gfx::Rect start_rect(start_edge, 0, 0, 0);
-  gfx::Rect target_rect(target_edge, 0, 0, 0);
-
-  tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
-      scroll_contents_view_, bounds_animator_.container(), start_rect,
-      target_rect);
-  tab_scrolling_animation_->Start();
 }
 
 void TabContainerImpl::AnimateTabSlotViewTo(TabSlotView* tab_slot_view,
@@ -1422,6 +1381,14 @@ void TabContainerImpl::OnTabCloseAnimationCompleted(Tab* tab) {
   DCHECK(tab->closing());
   OnTabRemoved(tab);
 
+  // The ZOrder cache holds pointers to the tab view, however on deletion the
+  // views in the cache will have to be recalculated and reordered. Marking the
+  // cache dirty does not evict the tab view pointer, and so a dangling pointer
+  // would be created if the cache were not also cleared. This is why the cache
+  // must also be evicted.
+  MarkZOrderCacheDirty();
+  z_ordered_children_cache_.clear();
+
   // Delete `tab`.
   tab->parent()->RemoveChildViewT(tab);
 }
@@ -1583,6 +1550,7 @@ void TabContainerImpl::OrderTabSlotView(TabSlotView* slot_view) {
   }
 
   ReorderChildView(slot_view, view_index);
+  MarkZOrderCacheDirty();
 }
 
 bool TabContainerImpl::IsPointInTab(
@@ -1635,17 +1603,6 @@ Tab* TabContainerImpl::FindTabHitByPoint(const gfx::Point& point) {
 }
 
 bool TabContainerImpl::ShouldTabBeVisible(const Tab* tab) const {
-  // When the tabstrip is scrollable, it can grow to accommodate any number of
-  // tabs, so tabs can never become clipped.
-  // N.B. Tabs can still be not-visible because they're in a collapsed group,
-  // but that's handled elsewhere.
-  // N.B. This is separate from the tab being potentially scrolled offscreen -
-  // this solely determines whether the tab should be clipped for the
-  // pre-scrolling overflow behavior.
-  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
-    return true;
-  }
-
   // Detached tabs should always be invisible (as they close).
   if (tab->detached()) {
     return false;
@@ -1751,7 +1708,7 @@ gfx::Rect TabContainerImpl::GetDropBounds(int drop_index,
                         g_drop_indicator_height);
 
   // If the rect doesn't fit on the monitor, push the arrow to the bottom.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   display::Display display = screen->GetDisplayMatching(drop_bounds);
   *is_beneath = !display.bounds().Contains(drop_bounds);
   if (*is_beneath) {
@@ -1807,6 +1764,23 @@ void TabContainerImpl::UpdateAccessibleTabIndices() {
 
 bool TabContainerImpl::IsValidModelIndex(int model_index) const {
   return controller_->IsValidModelIndex(model_index);
+}
+
+void TabContainerImpl::UpdateZOrderCacheIfDirty() {
+  if (!z_order_cache_dirty_) {
+    return;
+  }
+  z_ordered_children_cache_.clear();
+  z_ordered_children_cache_.reserve(children().size());
+  for (views::View* child : children()) {
+    if (!ZOrderableTabContainerElement::CanOrderView(child)) {
+      continue;
+    }
+    z_ordered_children_cache_.emplace_back(child);
+  }
+  std::stable_sort(z_ordered_children_cache_.begin(),
+                   z_ordered_children_cache_.end());
+  z_order_cache_dirty_ = false;
 }
 
 BEGIN_METADATA(TabContainerImpl)

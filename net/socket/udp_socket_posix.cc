@@ -25,6 +25,8 @@
 #include <memory>
 
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -61,6 +63,7 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "net/base/apple/guarded_fd.h"
+#include "net/socket/socket_apple.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_MAC)
@@ -152,7 +155,9 @@ int UDPSocketPosix::AdoptOpenedSocket(AddressFamily address_family,
 int UDPSocketPosix::ConfigureOpenedSocket() {
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_IOS_TVOS)
   // https://crbug.com/41271555: Guard against a file descriptor being closed
-  // out from underneath the socket.
+  // out from underneath the socket. The change_fdguard_np() and related APIs
+  // are undocumented, except for comments in the Darwin kernel source code:
+  // http://fxr.watson.org/fxr/source/bsd/kern/kern_guarded.c?v=xnu-8792;im=10#L451
   guardid_t guardid = reinterpret_cast<guardid_t>(this);
   PCHECK(change_fdguard_np(socket_, nullptr, 0, &guardid,
                            GUARD_CLOSE | GUARD_DUP, nullptr) == 0);
@@ -208,6 +213,8 @@ void UDPSocketPosix::Close() {
   // https://crbug.com/41271555: Guard against a file descriptor being closed
   // out from underneath the socket.
   guardid_t guardid = reinterpret_cast<guardid_t>(this);
+  // See the comment in ConfigureOpenedSocket(), above, for information about
+  // guarded_close_np().
   if (IGNORE_EINTR(guarded_close_np(socket_, &guardid)) != 0) {
     // There is a bug in the Mac OS kernel that it can return an ENOTCONN or
     // EPROTOTYPE error. In this case we don't know whether the file descriptor
@@ -215,7 +222,35 @@ void UDPSocketPosix::Close() {
     // because it may have been reused by another thread in the meantime. We may
     // leak file handles here and cause a crash indirectly later. See
     // https://crbug.com/40732798.
-    PCHECK(errno == ENOTCONN || errno == EPROTOTYPE);
+
+    // Temporary workaround to investigate EINVAL return values.
+    // TODO(https://crbug.com/437414746): Remove this or update it once we have
+    // information.
+    if (errno == EINVAL) {
+      int fdflags = 0;
+      // This call should be a successful no-op. If it fails, we know the state
+      // of the filehandle is not what we're expecting.
+      const int retval = HANDLE_EINTR(
+          change_fdguard_np(socket_, &guardid, GUARD_CLOSE | GUARD_DUP,
+                            &guardid, GUARD_CLOSE | GUARD_DUP, &fdflags));
+      // We have seen the case
+      //   retval == -1
+      //   errno == EBADF
+      //   fdflags == 0
+      // many times and we don't need any more dumps for it. Only gather dumps
+      // for novel cases.
+      if (retval != -1 || errno != EBADF || fdflags != 0) {
+        SCOPED_CRASH_KEY_NUMBER("UdpSocketPosix", "change_fdguard_retval",
+                                retval);
+        SCOPED_CRASH_KEY_NUMBER("UdpSocketPosix", "change_fdguard_errno",
+                                errno);
+        SCOPED_CRASH_KEY_NUMBER("UdpSocketPosix", "change_fdguard_fdflags",
+                                fdflags);
+        base::debug::DumpWithoutCrashing();
+      }
+    } else if (errno != ENOTCONN && errno != EPROTOTYPE) {
+      PLOG(FATAL) << "Unexpected errno from guarded_close_np";
+    }
   }
 #else
   PCHECK(IGNORE_EINTR(close(socket_)) == 0);
@@ -815,12 +850,26 @@ int UDPSocketPosix::InternalSendTo(IOBuffer* buf,
     }
   }
 
-  int result = HANDLE_EINTR(sendto(socket_, buf->data(), buf_len, sendto_flags_,
-                                   addr, storage.addr_len));
-  if (result < 0)
+#if !defined(WORK_AROUND_CRBUG_40064248)
+  ssize_t result = HANDLE_EINTR(sendto(socket_, buf->data(), buf_len,
+                                       sendto_flags_, addr, storage.addr_len));
+#else   // !WORK_AROUND_CRBUG_40064248
+  ssize_t result = HANDLE_EINTR(SendtoAndDetectBogusReturnValue(
+      socket_, buf->data(), buf_len, sendto_flags_, addr, storage.addr_len));
+  if (result == kSendBogusReturnValueDetected) {
+    // https://crbug.com/40064248 is known to occur as a result of certain
+    // network configuration changes.
+    result = ERR_NETWORK_CHANGED;
+  } else
+#endif  // !WORK_AROUND_CRBUG_40064248
+  if (result < 0) {
     result = MapSystemError(errno);
-  if (result != ERR_IO_PENDING)
+  } else {
+    CHECK_LE(result, buf_len);
+  }
+  if (result != ERR_IO_PENDING) {
     LogWrite(result, buf->data(), address);
+  }
   return result;
 }
 

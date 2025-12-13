@@ -20,6 +20,11 @@
                 "include_events": []
             },
             {
+                "domain": "Emulation",
+                "include": ["getScreenInfos", "addScreen", "removeScreen" ],
+                "include_events": []
+            },
+            {
                 "domain": "HeadlessExperimental",
                 "async": ["beginFrame"]
             },

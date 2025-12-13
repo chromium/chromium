@@ -1,0 +1,137 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview 'security-keys-subpage' is a settings subpage
+ * containing operations on security keys.
+ */
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared.css.js';
+import './security_keys_credential_management_dialog.js';
+import './security_keys_bio_enroll_dialog.js';
+import './security_keys_set_pin_dialog.js';
+import './security_keys_reset_dialog.js';
+
+import {assert} from 'chrome://resources/js/assert.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
+
+import {getTemplate} from './security_keys_subpage.html.js';
+
+export interface SecurityKeysSubpageElement {
+  $: {
+    setPINButton: HTMLElement,
+    resetButton: HTMLElement,
+  };
+}
+
+const SecurityKeysSubpageElementBase = SettingsViewMixin(PolymerElement);
+
+export class SecurityKeysSubpageElement extends SecurityKeysSubpageElementBase {
+  static get is() {
+    return 'security-keys-subpage';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      enableBioEnrollment_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.getBoolean('enableSecurityKeysBioEnrollment');
+        },
+      },
+
+      showSetPINDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showCredentialManagementDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showResetDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showBioEnrollDialog_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  declare private enableBioEnrollment_: boolean;
+  declare private showSetPINDialog_: boolean;
+  declare private showCredentialManagementDialog_: boolean;
+  declare private showResetDialog_: boolean;
+  declare private showBioEnrollDialog_: boolean;
+
+  private onSetPin_() {
+    this.showSetPINDialog_ = true;
+  }
+
+  private onSetPinDialogClosed_() {
+    this.showSetPINDialog_ = false;
+    focusWithoutInk(this.$.setPINButton);
+  }
+
+  private onCredentialManagement_() {
+    this.showCredentialManagementDialog_ = true;
+  }
+
+  private onCredentialManagementDialogClosed_() {
+    this.showCredentialManagementDialog_ = false;
+    const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
+        '#credentialManagementButton');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
+  }
+
+  private onReset_() {
+    this.showResetDialog_ = true;
+  }
+
+  private onResetDialogClosed_() {
+    this.showResetDialog_ = false;
+    focusWithoutInk(this.$.resetButton);
+  }
+
+  private onBioEnroll_() {
+    this.showBioEnrollDialog_ = true;
+  }
+
+  private onBioEnrollDialogClosed_() {
+    this.showBioEnrollDialog_ = false;
+    const toFocus =
+        this.shadowRoot!.querySelector<HTMLElement>('#bioEnrollButton');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'security-keys-subpage': SecurityKeysSubpageElement;
+  }
+}
+
+customElements.define(
+    SecurityKeysSubpageElement.is, SecurityKeysSubpageElement);

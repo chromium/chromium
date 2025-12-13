@@ -10,7 +10,6 @@
 # win tool. The script assumes that the root build directory is the current dir
 # and the files will be written to the current directory.
 
-
 import errno
 import json
 import os
@@ -23,6 +22,8 @@ import gn_helpers
 
 SCRIPT_DIR = os.path.dirname(__file__)
 SDK_VERSION = '10.0.26100.0'
+MSVC_DIR = re.compile('^.*/VC/Tools/MSVC/[^/]+/include$')
+WINDOWS_KITS_DIR = re.compile(r'^(.*/Windows Kits/\d+/Include/[^/]+)/.*')
 
 
 def _ExtractImportantEnvironment(output_of_set):
@@ -92,8 +93,10 @@ def _LoadEnvFromBat(args):
   """Given a bat command, runs it and returns env vars set by it."""
   args = args[:]
   args.extend(('&&', 'set'))
-  popen = subprocess.Popen(
-      args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  popen = subprocess.Popen(args,
+                           shell=True,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT)
   variables, _ = popen.communicate()
   if popen.returncode != 0:
     raise Exception('"%s" failed with error %d' % (args, popen.returncode))
@@ -147,9 +150,8 @@ def _LoadToolchainEnv(cpu, toolchain_root, sdk_dir, target_store):
     if 'GYP_MSVS_OVERRIDE_PATH' not in os.environ:
       os.environ['GYP_MSVS_OVERRIDE_PATH'] = _DetectVisualStudioPath()
     # We only support x64-hosted tools.
-    script_path = os.path.normpath(os.path.join(
-                                       os.environ['GYP_MSVS_OVERRIDE_PATH'],
-                                       'VC/vcvarsall.bat'))
+    script_path = os.path.normpath(
+        os.path.join(os.environ['GYP_MSVS_OVERRIDE_PATH'], 'VC/vcvarsall.bat'))
     if not os.path.exists(script_path):
       # vcvarsall.bat for VS 2017 fails if run after running vcvarsall.bat from
       # VS 2013 or VS 2015. Fix this by clearing the vsinstalldir environment
@@ -166,9 +168,9 @@ def _LoadToolchainEnv(cpu, toolchain_root, sdk_dir, target_store):
           del os.environ['LIB']
         if 'LIBPATH' in os.environ:
           del os.environ['LIBPATH']
-      other_path = os.path.normpath(os.path.join(
-                                        os.environ['GYP_MSVS_OVERRIDE_PATH'],
-                                        'VC/Auxiliary/Build/vcvarsall.bat'))
+      other_path = os.path.normpath(
+          os.path.join(os.environ['GYP_MSVS_OVERRIDE_PATH'],
+                       'VC/Auxiliary/Build/vcvarsall.bat'))
       if not os.path.exists(other_path):
         raise Exception('%s is missing - make sure VC++ tools are installed.' %
                         script_path)
@@ -177,7 +179,10 @@ def _LoadToolchainEnv(cpu, toolchain_root, sdk_dir, target_store):
     if (cpu != 'x64'):
       # x64 is default target CPU thus any other CPU requires a target set
       cpu_arg += '_' + cpu
-    args = [script_path, cpu_arg, ]
+    args = [
+        script_path,
+        cpu_arg,
+    ]
     # Store target must come before any SDK version declaration
     if (target_store):
       args.append('store')
@@ -254,6 +259,8 @@ def main():
   vc_bin_dir = ''
   include = ''
   lib = ''
+  windows_kits_dir = ''
+  msvc_dir = ''
 
   def relflag(s):  # Make s relative to builddir when cwd and sdk on same drive.
     try:
@@ -279,6 +286,14 @@ def main():
 
       lib = [p.replace('"', r'\"') for p in env['LIB'].split(';') if p]
       lib = list(map(relflag, lib))
+
+      for i in include:
+        msvc_match = MSVC_DIR.match(i)
+        if msvc_match is not None:
+          msvc_dir = msvc_match.group(0)
+        windows_kits_match = WINDOWS_KITS_DIR.match(i)
+        if windows_kits_match is not None:
+          windows_kits_dir = windows_kits_match.group(1)
 
       include_I = ['/I' + i for i in include]
       include_imsvc = ['-imsvc' + i for i in include]
@@ -318,6 +333,9 @@ def main():
   else:
     print(f'libpath_lldlink_flags = {ListToArgString(libpath_flags)}')
     print(f'libpath_lldlink_flags_list = {ListToArgList(libpath_flags)}')
+
+  print(f'msvc_dir = {gn_helpers.ToGNString(msvc_dir)}')
+  print(f'windows_kits_dir = {gn_helpers.ToGNString(windows_kits_dir)}')
 
 
 if __name__ == '__main__':

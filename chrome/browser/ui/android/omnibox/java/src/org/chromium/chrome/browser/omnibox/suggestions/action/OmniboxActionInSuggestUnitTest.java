@@ -29,13 +29,15 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.EntityInfoProto;
+import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.List;
 
@@ -45,11 +47,13 @@ import java.util.List;
 public class OmniboxActionInSuggestUnitTest {
     private static final List<Integer> sKnownActionTypes =
             List.of(
-                    EntityInfoProto.ActionInfo.ActionType.CALL_VALUE,
-                    EntityInfoProto.ActionInfo.ActionType.DIRECTIONS_VALUE,
-                    EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE);
-    private static final EntityInfoProto.ActionInfo EMPTY_INFO =
-            EntityInfoProto.ActionInfo.getDefaultInstance();
+                    SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
+                    SuggestTemplateInfo.TemplateAction.ActionType.DIRECTIONS_VALUE,
+                    SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                    SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
+                    SuggestTemplateInfo.TemplateAction.ActionType.CHROME_TAB_SWITCH_VALUE);
+    private static final SuggestTemplateInfo.TemplateAction EMPTY_INFO =
+            SuggestTemplateInfo.TemplateAction.getDefaultInstance();
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     private @Mock OmniboxActionDelegate mDelegate;
@@ -60,18 +64,31 @@ public class OmniboxActionInSuggestUnitTest {
     public void creation_usesCustomIconForKnownActionTypes() {
         for (var kesemActionType : sKnownActionTypes) {
             var action =
-                    new OmniboxActionInSuggest(0, "hint", "accessibility", kesemActionType, "");
+                    new OmniboxActionInSuggest(
+                            0,
+                            "hint",
+                            "accessibility",
+                            kesemActionType,
+                            "",
+                            /* tabId= */ 0,
+                            /* showAsActionButton= */ false);
             assertNotEquals(OmniboxAction.DEFAULT_ICON, action.icon);
         }
     }
 
     @Test
     public void creation_usesFallbackIconForUnknownActionTypes() {
-        for (var kesemActionType : EntityInfoProto.ActionInfo.ActionType.values()) {
+        for (var kesemActionType : SuggestTemplateInfo.TemplateAction.ActionType.values()) {
             if (sKnownActionTypes.contains(kesemActionType.getNumber())) continue;
             var action =
                     new OmniboxActionInSuggest(
-                            0, "hint", "accessibility", kesemActionType.getNumber(), "");
+                            0,
+                            "hint",
+                            "accessibility",
+                            kesemActionType.getNumber(),
+                            "",
+                            /* tabId= */ 0,
+                            /* showAsActionButton= */ false);
             assertEquals(OmniboxAction.DEFAULT_ICON, action.icon);
         }
     }
@@ -82,7 +99,13 @@ public class OmniboxActionInSuggestUnitTest {
                 AssertionError.class,
                 () ->
                         new OmniboxActionInSuggest(
-                                0, null, "", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
+                                0,
+                                null,
+                                "",
+                                SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
+                                "",
+                                /* tabId= */ 0,
+                                /* showAsActionButton= */ false));
     }
 
     @Test
@@ -91,7 +114,13 @@ public class OmniboxActionInSuggestUnitTest {
                 AssertionError.class,
                 () ->
                         new OmniboxActionInSuggest(
-                                0, "", "", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
+                                0,
+                                "",
+                                "",
+                                SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
+                                "",
+                                /* tabId= */ 0,
+                                /* showAsActionButton= */ false));
     }
 
     @Test
@@ -111,7 +140,9 @@ public class OmniboxActionInSuggestUnitTest {
                                         "hint",
                                         "accessibility",
                                         null,
-                                        R.style.TextAppearance_ChipText) {
+                                        R.style.TextAppearance_ChipText,
+                                        /* showAsActionButton= */ false,
+                                        WindowOpenDisposition.CURRENT_TAB) {
                                     @Override
                                     public void execute(OmniboxActionDelegate d) {}
                                 }));
@@ -125,15 +156,24 @@ public class OmniboxActionInSuggestUnitTest {
                                 0,
                                 "hint",
                                 "accessibility",
-                                EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE,
-                                ""));
+                                SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                                "",
+                                /* tabId= */ 0,
+                                /* showAsActionButton= */ false));
     }
 
     /** Create Action in Suggest with a supplied definition. */
     private OmniboxAction buildActionInSuggest(
-            EntityInfoProto.ActionInfo.ActionType type, Intent intent) {
+            SuggestTemplateInfo.TemplateAction.ActionType type, Intent intent) {
         var uri = intent.toUri(Intent.URI_INTENT_SCHEME);
-        return new OmniboxActionInSuggest(0, "wink", "accessibility", type.getNumber(), uri);
+        return new OmniboxActionInSuggest(
+                0,
+                "wink",
+                "accessibility",
+                type.getNumber(),
+                uri,
+                /* tabId= */ 0,
+                /* showAsActionButton= */ false);
     }
 
     @Test
@@ -142,7 +182,7 @@ public class OmniboxActionInSuggestUnitTest {
         doReturn(true).when(mDelegate).startActivity(any());
 
         buildActionInSuggest(
-                        EntityInfoProto.ActionInfo.ActionType.DIRECTIONS,
+                        SuggestTemplateInfo.TemplateAction.ActionType.DIRECTIONS,
                         new Intent("Magic Intent Action"))
                 .execute(mDelegate);
 
@@ -167,7 +207,7 @@ public class OmniboxActionInSuggestUnitTest {
         var intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
 
-        buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.DIRECTIONS, intent)
+        buildActionInSuggest(SuggestTemplateInfo.TemplateAction.ActionType.DIRECTIONS, intent)
                 .execute(mDelegate);
 
         verify(mDelegate, times(1)).isIncognito();
@@ -194,7 +234,7 @@ public class OmniboxActionInSuggestUnitTest {
         var intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
 
-        buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.DIRECTIONS, intent)
+        buildActionInSuggest(SuggestTemplateInfo.TemplateAction.ActionType.DIRECTIONS, intent)
                 .execute(mDelegate);
 
         verify(mDelegate, times(1)).isIncognito();
@@ -220,7 +260,7 @@ public class OmniboxActionInSuggestUnitTest {
         doReturn(true).when(mDelegate).startActivity(any());
 
         buildActionInSuggest(
-                        EntityInfoProto.ActionInfo.ActionType.CALL, new Intent(Intent.ACTION_CALL))
+                        SuggestTemplateInfo.TemplateAction.ActionType.CALL, new Intent(Intent.ACTION_CALL))
                 .execute(mDelegate);
 
         verify(mDelegate, times(1)).isIncognito();
@@ -247,7 +287,7 @@ public class OmniboxActionInSuggestUnitTest {
         var intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
 
-        buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.CALL, intent).execute(mDelegate);
+        buildActionInSuggest(SuggestTemplateInfo.TemplateAction.ActionType.CALL, intent).execute(mDelegate);
 
         verify(mDelegate, times(1)).isIncognito();
         verify(mDelegate, times(1)).startActivity(any());
@@ -265,7 +305,7 @@ public class OmniboxActionInSuggestUnitTest {
         var intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
 
-        buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.REVIEWS, intent)
+        buildActionInSuggest(SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS, intent)
                 .execute(mDelegate);
 
         verify(mDelegate, times(1)).isIncognito();
@@ -286,5 +326,52 @@ public class OmniboxActionInSuggestUnitTest {
         assertNotNull(url);
         assertEquals(UrlConstants.CHROME_DINO_URL, url);
         verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void executeActionInSuggest_executeAim() {
+        var intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Omnibox.ActionInSuggest.IntentResult",
+                        OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS);
+
+        buildActionInSuggest(SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM, intent)
+                .execute(mDelegate);
+
+        verify(mDelegate, times(1)).isIncognito();
+
+        histogramWatcher.assertExpected();
+
+        verify(mDelegate, times(1)).loadPageInCurrentTab(mUrlCaptor.capture());
+
+        var url = mUrlCaptor.getValue();
+        assertNotNull(url);
+        assertEquals(UrlConstants.CHROME_DINO_URL, url);
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void getDisposition() {
+        for (var actionType : sKnownActionTypes) {
+            var action =
+                    new OmniboxActionInSuggest(
+                            0,
+                            "hint",
+                            "accessibility",
+                            actionType,
+                            "",
+                            /* tabId= */ 0,
+                            /* showAsActionButton= */ false);
+            assertEquals(
+                    actionType
+                                    == SuggestTemplateInfo.TemplateAction.ActionType
+                                            .CHROME_TAB_SWITCH_VALUE
+                            ? WindowOpenDisposition.SWITCH_TO_TAB
+                            : WindowOpenDisposition.CURRENT_TAB,
+                    action.disposition);
+        }
     }
 }

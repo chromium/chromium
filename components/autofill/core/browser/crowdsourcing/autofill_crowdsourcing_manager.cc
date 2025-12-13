@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -36,6 +37,7 @@
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -62,6 +64,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
@@ -116,13 +119,13 @@ constexpr char kGoogEncodeResponseIfExecutable[] =
 // The default number of days after which to reset the registry of autofill
 // events for which an upload has been sent.
 const base::FeatureParam<int> kAutofillUploadThrottlingPeriodInDays(
-    &features::test::kAutofillUploadThrottling,
+    &features::debug::kAutofillUploadThrottling,
     switches::kAutofillUploadThrottlingPeriodInDays,
     28);
 
 // The maximum number of attempts for a given autofill request.
 const base::FeatureParam<int> kAutofillMaxServerAttempts(
-    &features::test::kAutofillServerCommunication,
+    &features::debug::kAutofillServerCommunication,
     "max-attempts",
     5);
 
@@ -156,7 +159,7 @@ GURL GetAutofillServerURL() {
   // use it, otherwise use the default.
   const std::string autofill_server_url_str =
       base::FeatureParam<std::string>(
-          &features::test::kAutofillServerCommunication,
+          &features::debug::kAutofillServerCommunication,
           switches::kAutofillServerURL, kDefaultAutofillServerURL)
           .Get();
 
@@ -164,7 +167,7 @@ GURL GetAutofillServerURL() {
 
   if (!autofill_server_url.is_valid()) {
     LOG(ERROR) << "Invalid URL param for "
-               << features::test::kAutofillServerCommunication.name << "/"
+               << features::debug::kAutofillServerCommunication.name << "/"
                << switches::kAutofillServerURL << ": "
                << autofill_server_url_str;
     return GURL();
@@ -709,7 +712,7 @@ AutofillCrowdsourcingManager::~AutofillCrowdsourcingManager() = default;
 bool AutofillCrowdsourcingManager::IsEnabled() const {
   return autofill_server_url_.is_valid() &&
          base::FeatureList::IsEnabled(
-             features::test::kAutofillServerCommunication);
+             features::debug::kAutofillServerCommunication);
 }
 
 bool AutofillCrowdsourcingManager::StartQueryRequest(
@@ -800,7 +803,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
       upload_contents[0].structural_form_signature());
   const FormSignature throttled_form_signature =
       base::FeatureList::IsEnabled(
-          features::kUseStructuralSignatureInsteadOfSecondary)
+          features::kAutofillUseStructuralSignatureInsteadOfSecondary)
           ? structural_form_signature
           : secondary_form_signature;
   // Autofill vote uploads are limited via throttling so that only one vote is
@@ -814,7 +817,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
       !ShouldThrottleUpload(form_signature, UploadType::kVote,
                             throttle_reset_period_, prefs,
                             form_submission_source) ||
-      !base::FeatureList::IsEnabled(features::test::kAutofillUploadThrottling);
+      !base::FeatureList::IsEnabled(features::debug::kAutofillUploadThrottling);
 
   AutofillMetrics::LogUploadEvent(form_submission_source, allow_upload);
 
@@ -1059,7 +1062,7 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
     std::list<std::unique_ptr<network::SimpleURLLoader>>::iterator it,
     FormRequestData request_data,
     base::TimeTicks request_start,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Move the loader out of the active loaders list.
   std::unique_ptr<network::SimpleURLLoader> simple_loader = std::move(*it);
   url_loaders_.erase(it);
@@ -1074,7 +1077,7 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
   // Even if the server does not fill the response body when responding, the
   // corresponding response string will be at least instantiated and empty.
   // Having the response body a nullptr probably reflects a problem.
-  const bool success = IsHttpSuccess(response_code) && response_body != nullptr;
+  const bool success = IsHttpSuccess(response_code) && response_body;
   loader_backoff_.InformOfRequest(success);
 
   // Log the HTTP response or error code and request duration.
@@ -1094,8 +1097,6 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
   }
 
   if (!success) {
-    std::string error_message =
-        (response_body != nullptr) ? *response_body : "";
     base::UmaHistogramCounts100000(
         GetMetricName(request_data.request_type, "FailingPayloadSize"),
         request_data.payload.length());
@@ -1133,7 +1134,7 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
   if (request_data.callback) {
     std::move(request_data.callback)
         .Release()
-        .Run(QueryResponse(std::move(*response_body),
+        .Run(QueryResponse(std::move(response_body).value(),
                            std::move(request_data.form_signatures)));
   }
 }

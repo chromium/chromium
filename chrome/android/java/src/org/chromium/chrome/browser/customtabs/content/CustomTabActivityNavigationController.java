@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.OTHER;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.REPARENTING;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.USER_NAVIGATION;
@@ -18,8 +20,6 @@ import android.provider.Browser;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.ContextUtils;
@@ -29,8 +29,11 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
@@ -67,6 +70,7 @@ import java.lang.annotation.Target;
 import java.util.function.Predicate;
 
 /** Responsible for navigating to new pages and going back to previous pages. */
+@NullMarked
 public class CustomTabActivityNavigationController
         implements StartStopWithNativeObserver, BackPressHandler, OnSystemNavigationObserver {
     static final String HISTOGRAM_FINISH_REASON = "CustomTabs.Navigation.FinishReason";
@@ -120,10 +124,10 @@ public class CustomTabActivityNavigationController
     private final CustomTabObserver mCustomTabObserver;
     private final CloseButtonNavigator mCloseButtonNavigator;
     private final Activity mActivity;
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
-            new ObservableSupplierImpl<>(false);
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
+            ObservableSuppliers.createNonNull(false);
 
-    @Nullable private FinishHandler mFinishHandler;
+    private @Nullable FinishHandler mFinishHandler;
 
     private boolean mIsFinishing;
 
@@ -136,12 +140,12 @@ public class CustomTabActivityNavigationController
     private final CustomTabActivityTabProvider.Observer mTabObserver =
             new CustomTabActivityTabProvider.Observer() {
                 @Override
-                public void onInitialTabCreated(@NonNull Tab tab, int mode) {
+                public void onInitialTabCreated(Tab tab, int mode) {
                     mBackPressStateSupplier.set(shouldInterceptBackPress());
                 }
 
                 @Override
-                public void onTabSwapped(@NonNull Tab tab) {
+                public void onTabSwapped(Tab tab) {
                     mBackPressStateSupplier.set(shouldInterceptBackPress());
                 }
 
@@ -162,10 +166,8 @@ public class CustomTabActivityNavigationController
 
     /** Whether the feature of predictive back gesture is supported. */
     public static boolean supportsPredictiveBackGesture() {
-        boolean isAtLeastB =
-                (sVersionForTesting == null ? Build.VERSION.SDK_INT : sVersionForTesting)
-                        >= Build.VERSION_CODES.BAKLAVA;
-        return isAtLeastB && ChromeFeatureList.sCctPredictiveBackGesture.isEnabled();
+        return (sVersionForTesting == null ? Build.VERSION.SDK_INT : sVersionForTesting)
+                >= Build.VERSION_CODES.BAKLAVA;
     }
 
     public CustomTabActivityNavigationController(
@@ -215,7 +217,7 @@ public class CustomTabActivityNavigationController
             mCustomTabObserver.trackNextPageLoadForLaunch(tab, sourceIntent);
         }
 
-        IntentHandler.addReferrerAndHeaders(params, mIntentDataProvider.getIntent());
+        IntentHandler.addReferrerAndHeaders(params, assertNonNull(mIntentDataProvider.getIntent()));
 
         // Launching a TWA, WebAPK or a standalone-mode homescreen shortcut counts as a TOPLEVEL
         // transition since it opens up an app-like experience, and should count towards site
@@ -230,7 +232,7 @@ public class CustomTabActivityNavigationController
 
         params.setTransitionType(
                 IntentHandler.getTransitionTypeFromIntent(
-                        mIntentDataProvider.getIntent(), transition));
+                        assertNonNull(mIntentDataProvider.getIntent()), transition));
 
         // The sender of an intent can't be trusted, so we navigate from an opaque Origin to
         // avoid sending same-site cookies.
@@ -239,9 +241,8 @@ public class CustomTabActivityNavigationController
         // Notifies PreloadingImpl that a navigation to CCT is happening. This is used to calculate
         // the recall of CCT prefetch's attempt. Please see
         // PreloadingData::setIsNavigationInDomainCallback for more details.
-        if (ChromeFeatureList.sPrefetchBrowserInitiatedTriggers.isEnabled()
-                && ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
-            WebContents webContents = mTabProvider.getTab().getWebContents();
+        if (ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
+            WebContents webContents = tab.getWebContents();
             if (webContents != null) {
                 PreloadingDataBridge.setIsNavigationInDomainCallbackForCct(webContents);
             }
@@ -255,7 +256,7 @@ public class CustomTabActivityNavigationController
         if (!ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()) return false;
 
         boolean separateTask =
-                (mIntentDataProvider.getIntent().getFlags()
+                (assumeNonNull(mIntentDataProvider.getIntent()).getFlags()
                                 & (Intent.FLAG_ACTIVITY_NEW_TASK
                                         | Intent.FLAG_ACTIVITY_NEW_DOCUMENT))
                         != 0;
@@ -299,7 +300,7 @@ public class CustomTabActivityNavigationController
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressStateSupplier;
     }
 
@@ -392,7 +393,7 @@ public class CustomTabActivityNavigationController
             mActivity.startActivity(intent, startActivityOptions);
             finish(FinishReason.OPEN_IN_BROWSER);
         } else if (canFinishActivity && willChromeHandleIntent) {
-            Activity adjacentActivity = MultiWindowUtils.getAdjacentWindowActivity(mActivity);
+            Activity adjacentActivity = MultiWindowUtils.getForegroundWindowActivity(mActivity);
             if (adjacentActivity != null) {
                 openInAdjacentActivity(tab, adjacentActivity);
             } else {
@@ -415,7 +416,7 @@ public class CustomTabActivityNavigationController
                                 Toast.LENGTH_LONG)
                         .show();
                 // TODO(crbug.com/384992232): Clean up the histogram.
-                boolean isPdf = tab.isNativePage() && tab.getNativePage().isPdf();
+                boolean isPdf = tab.isNativePage() && assumeNonNull(tab.getNativePage()).isPdf();
                 RecordHistogram.recordBooleanHistogram(
                         "Android.CustomTab.CannotOpenUrlInBrowser.IsPdf", isPdf);
                 openedInBrowser = false;
@@ -494,7 +495,7 @@ public class CustomTabActivityNavigationController
     }
 
     // Debug log dump for https://crbug.com/374871254.
-    private void assertUrlNotNullForOpenInBrowser(String url, @NonNull Tab tab) {
+    private void assertUrlNotNullForOpenInBrowser(@Nullable String url, Tab tab) {
         if (url != null) return;
 
         String tabInfo =
@@ -541,7 +542,7 @@ public class CustomTabActivityNavigationController
         return mTabObserver;
     }
 
-    public Integer getVersionForTesting() {
+    public @Nullable Integer getVersionForTesting() {
         return sVersionForTesting;
     }
 

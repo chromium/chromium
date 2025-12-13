@@ -4,16 +4,19 @@
 
 package org.chromium.chrome.browser.browserservices.trustedwebactivityui.sharing;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
 import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
 
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
@@ -29,6 +32,7 @@ import java.util.Locale;
 import java.util.function.Function;
 
 /** Handles sharing intents coming to Trusted Web Activities. */
+@NullMarked
 public class TwaSharingController {
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabActivityNavigationController mNavigationController;
@@ -61,6 +65,7 @@ public class TwaSharingController {
             return Promise.fulfilled(false);
         }
         Intent intent = intentDataProvider.getIntent();
+        assert intent != null;
 
         return mVerifierDelegate
                 .verify(shareTarget.getAction())
@@ -88,7 +93,7 @@ public class TwaSharingController {
      * TODO(pshmakov): pull WebApkShareTarget out of WebApkInfo and rename to
      * ShareTargetInternal. Also, replace WebApkInfo.ShareData with ShareData from TWA API.
      */
-    private WebApkShareTarget toShareTargetInternal(@Nullable ShareTarget shareTarget) {
+    private @Nullable WebApkShareTarget toShareTargetInternal(@Nullable ShareTarget shareTarget) {
         if (shareTarget == null) return null;
 
         ShareTarget.Params params = shareTarget.params;
@@ -121,7 +126,7 @@ public class TwaSharingController {
             return false;
         }
         return WebApkPostShareTargetNavigator.navigateIfPostShareTarget(
-                target.getAction(), target, shareData, tab.getWebContents());
+                target.getAction(), target, shareData, assertNonNull(tab.getWebContents()));
     }
 
     // Copy of HostBrowserLauncherParams#computeStartUrlForGETShareTarget().

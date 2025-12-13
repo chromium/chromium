@@ -26,6 +26,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
@@ -103,12 +104,65 @@ public class NonCardPaymentMethodsManagementFragmentTest {
                             specs.getResolvedIconUrl(FINANCIAL_ACCOUNT_DISPLAY_ICON_URL),
                             FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP);
                     getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, true);
+                    // Set the A2A flow to have been shown at least once.
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE, true);
                 });
     }
 
     @After
     public void tearDown() throws TimeoutException {
         mAutofillTestHelper.clearAllDataForTesting();
+    }
+
+    // Test that when the A2A flow has been triggered at least once, the A2A preference toggle is
+    // shown.
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testA2aFlowTriggeredAtLeastOnce_a2aSwitchShown() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE, true);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        ChromeSwitchPreference a2aSwitch = getA2aSwitchPreference(activity);
+        assertThat(a2aSwitch).isNotNull();
+    }
+
+    // Test that when the A2A flow has never been triggered, the A2A preference toggle is not shown.
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testA2aFlowNeverTriggered_a2aSwitchNotShown() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService()
+                            .setBoolean(Pref.FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE, false);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        ChromeSwitchPreference a2aSwitch = getA2aSwitchPreference(activity);
+        assertThat(a2aSwitch).isNull();
+    }
+
+    // Test that when the A2A flow has been triggered at least once, but the A2A experiment flag is
+    // off, the A2A preference toggle is not shown.
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testA2aFlowTriggeredAtLeastOnce_a2aFlagOff_a2aSwitchNotShown() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE, true);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        ChromeSwitchPreference a2aSwitch = getA2aSwitchPreference(activity);
+        assertThat(a2aSwitch).isNull();
     }
 
     // Test that when eWallet accounts are available the eWallet preference toggle is shown.
@@ -129,6 +183,36 @@ public class NonCardPaymentMethodsManagementFragmentTest {
         // Verify that the switch preference for eWallet is not displayed.
         ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
         assertThat(eWalletSwitch).isNull();
+    }
+
+    // Test that when the A2A preference is set to true, the A2A toggle is checked.
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testA2aPrefEnabled_a2aSwitchEnabled() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_A2A_ENABLED, true);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        ChromeSwitchPreference a2aSwitch = getA2aSwitchPreference(activity);
+        assertThat(a2aSwitch.isChecked()).isTrue();
+    }
+
+    // Test that when the A2A preference is set to false, the A2A toggle is not checked.
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testA2aPrefDisabled_a2aSwitchDisabled() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_A2A_ENABLED, false);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        ChromeSwitchPreference a2aSwitch = getA2aSwitchPreference(activity);
+        assertThat(a2aSwitch.isChecked()).isFalse();
     }
 
     // Test that when eWallet preference is set to true, the eWallet toggle is checked.
@@ -176,6 +260,54 @@ public class NonCardPaymentMethodsManagementFragmentTest {
                 .isEqualTo(R.layout.autofill_server_data_label);
         assertThat(((BitmapDrawable) eWalletPref.getIcon()).getBitmap())
                 .isEqualTo(FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP);
+    }
+
+    // Test that the A2A toggle correctly sets the underlying preference.
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testA2aToggle_updatesPrefCorrectly() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_A2A_ENABLED, true);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        ChromeSwitchPreference a2aSwitch = getA2aSwitchPreference(activity);
+        assertThat(a2aSwitch.isChecked()).isTrue();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    a2aSwitch.performClick();
+                    assertThat(getPrefService().getBoolean(Pref.FACILITATED_PAYMENTS_A2A_ENABLED))
+                            .isFalse();
+                    a2aSwitch.performClick();
+                    assertThat(getPrefService().getBoolean(Pref.FACILITATED_PAYMENTS_A2A_ENABLED))
+                            .isTrue();
+                });
+    }
+
+    // Test that the eWallet toggle correctly sets the underlying preference.
+    @Test
+    @MediumTest
+    public void testEwalletToggle_updatesPrefCorrectly() throws Exception {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, true);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        ChromeSwitchPreference ewalletSwitch = getEwalletSwitchPreference(activity);
+        assertThat(ewalletSwitch.isChecked()).isTrue();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ewalletSwitch.performClick();
+                    assertThat(getPrefService().getBoolean(Pref.FACILITATED_PAYMENTS_EWALLET))
+                            .isFalse();
+                    ewalletSwitch.performClick();
+                    assertThat(getPrefService().getBoolean(Pref.FACILITATED_PAYMENTS_EWALLET))
+                            .isTrue();
+                });
     }
 
     // Test that eWallet accounts are removed when the eWallet toggle is turned
@@ -227,6 +359,55 @@ public class NonCardPaymentMethodsManagementFragmentTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testA2aToggleTurnedOn_histogramLogged() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_A2A_ENABLED, false);
+                });
+        var a2aToggleEnabledHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        NonCardPaymentMethodsManagementFragment
+                                .NON_CARD_PAYMENT_METHODS_A2A_TOGGLE_UPDATED_HISTOGRAM,
+                        true);
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        ChromeSwitchPreference a2aSwitch = getA2aSwitchPreference(activity);
+        assertThat(a2aSwitch.isChecked()).isFalse();
+
+        // Set the A2A toggle to on.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    a2aSwitch.performClick();
+                });
+
+        a2aToggleEnabledHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testA2aToggleTurnedOff_histogramLogged() throws TimeoutException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_A2A_ENABLED, true);
+                });
+        var a2aToggleEnabledHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        NonCardPaymentMethodsManagementFragment
+                                .NON_CARD_PAYMENT_METHODS_A2A_TOGGLE_UPDATED_HISTOGRAM,
+                        false);
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        ChromeSwitchPreference a2aSwitch = getA2aSwitchPreference(activity);
+        assertThat(a2aSwitch.isChecked()).isTrue();
+
+        // Set the A2A toggle to off.
+        rule.clickOnPreferenceAndWait(a2aSwitch);
+
+        a2aToggleEnabledHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
     @RequiresRestart("crbug.com/344671557")
     public void testEwalletToggleTurnedOn_histogramLogged() {
         AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
@@ -274,6 +455,12 @@ public class NonCardPaymentMethodsManagementFragmentTest {
 
     private static PrefService getPrefService() {
         return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+    }
+
+    private static ChromeSwitchPreference getA2aSwitchPreference(SettingsActivity activity) {
+        return (ChromeSwitchPreference)
+                getPreferenceScreen(activity)
+                        .findPreference(NonCardPaymentMethodsManagementFragment.PREFERENCE_KEY_A2A);
     }
 
     private static ChromeSwitchPreference getEwalletSwitchPreference(SettingsActivity activity) {

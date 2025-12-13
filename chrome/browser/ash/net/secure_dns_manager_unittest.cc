@@ -186,6 +186,8 @@ class SecureDnsManagerTest : public testing::Test {
                                                 SecureDnsConfig::kModeOff);
     local_state_.registry()->RegisterStringPref(::prefs::kDnsOverHttpsTemplates,
                                                 "");
+    local_state_.registry()->RegisterBooleanPref(
+        ::prefs::kDnsOverHttpsAutomaticModeFallbackToDoh, false);
     local_state_.registry()->RegisterStringPref(
         ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS, "");
     local_state_.registry()->RegisterListPref(
@@ -527,9 +529,9 @@ TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
       std::make_unique<MockDoHTemplatesUriResolver>();
 
   ON_CALL(*template_uri_resolver, Update(_, _))
-      .WillByDefault(testing::Invoke([&actual_uri_template_update_count]() {
+      .WillByDefault([&actual_uri_template_update_count]() {
         actual_uri_template_update_count++;
-      }));
+      });
   EXPECT_CALL(*template_uri_resolver, GetDohWithIdentifiersActive())
       .WillRepeatedly(testing::Return(true));
 
@@ -620,9 +622,9 @@ TEST_F(SecureDnsManagerTest, NoDuplicateShillPropertyUpdateRequests) {
       std::make_unique<MockDoHTemplatesUriResolver>();
 
   ON_CALL(*template_uri_resolver, Update(_, _))
-      .WillByDefault(testing::Invoke([&actual_uri_template_update_count]() {
+      .WillByDefault([&actual_uri_template_update_count]() {
         actual_uri_template_update_count++;
-      }));
+      });
   EXPECT_CALL(*template_uri_resolver, GetDohWithIdentifiersActive())
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*template_uri_resolver, GetEffectiveTemplates())

@@ -8,6 +8,7 @@
 #include "base/base64url.h"
 #include "google_apis/gaia/gaia_auth_test_util.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_id_literal.h"
 #include "google_apis/gaia/list_accounts_response.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,37 +18,7 @@ namespace gaia {
 
 namespace {
 
-constexpr GaiaId::Literal kGaiaId("fake_gaia_id");
-
-ListedAccount ValidListedAccount(const std::string& raw_email,
-                                 const GaiaId& gaia_id) {
-  gaia::ListedAccount result;
-  result.email = CanonicalizeEmail(raw_email);
-  result.gaia_id = gaia_id;
-  result.raw_email = raw_email;
-  return result;
-}
-
-ListedAccount InvalidListedAccount(const std::string& raw_email,
-                                   const GaiaId& gaia_id) {
-  gaia::ListedAccount result = ValidListedAccount(raw_email, gaia_id);
-  result.valid = false;
-  return result;
-}
-
-ListedAccount SignedOutListedAccount(const std::string& raw_email,
-                                     const GaiaId& gaia_id) {
-  gaia::ListedAccount result = ValidListedAccount(raw_email, gaia_id);
-  result.signed_out = true;
-  return result;
-}
-
-ListedAccount NonverifiedListedAccount(const std::string& raw_email,
-                                       const GaiaId& gaia_id) {
-  gaia::ListedAccount result = ValidListedAccount(raw_email, gaia_id);
-  result.verified = false;
-  return result;
-}
+constexpr GaiaIdLiteral kGaiaId("fake_gaia_id");
 
 std::string CreateBinaryListAccountsData(const ListAccountsResponse& response) {
   std::string serialized_response;
@@ -205,126 +176,6 @@ TEST(GaiaAuthUtilTest, HasGaiaSchemeHostPort) {
 
   // Invalid/empty URL.
   EXPECT_FALSE(HasGaiaSchemeHostPort(GURL()));
-}
-
-TEST(GaiaAuthUtilTest, ParseListAccountsData) {
-  std::vector<ListedAccount> accounts;
-  ASSERT_FALSE(ParseListAccountsData("", &accounts));
-  ASSERT_EQ(0u, accounts.size());
-
-  ASSERT_FALSE(ParseListAccountsData("1", &accounts));
-  ASSERT_EQ(0u, accounts.size());
-
-  ASSERT_FALSE(ParseListAccountsData("[]", &accounts));
-  ASSERT_EQ(0u, accounts.size());
-
-  ASSERT_FALSE(ParseListAccountsData("[\"foo\", \"bar\"]", &accounts));
-  ASSERT_EQ(0u, accounts.size());
-
-  ASSERT_TRUE(ParseListAccountsData("[\"foo\", []]", &accounts));
-  ASSERT_EQ(0u, accounts.size());
-
-  ASSERT_TRUE(ParseListAccountsData(
-      "[\"foo\", [[\"bar\", 0, \"name\", 0, \"photo\", 0, 0, 0]]]", &accounts));
-  ASSERT_EQ(0u, accounts.size());
-
-  ASSERT_TRUE(ParseListAccountsData(
-      "[\"foo\", "
-      "[[\"bar\", 0, \"name\", \"u@g.c\", \"p\", 0, 0, 0, 0, 1, \"45\"]]]",
-      &accounts));
-  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("u@g.c", GaiaId("45"))));
-
-  ASSERT_TRUE(ParseListAccountsData(
-      "[\"foo\", "
-      "[[\"bar1\",0,\"name1\",\"u1@g.c\",\"photo1\",0,0,0,0,1,\"45\"], "
-      "[\"bar2\",0,\"name2\",\"u2@g.c\",\"photo2\",0,0,0,0,1,\"6\"]]]",
-      &accounts));
-  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("u1@g.c", GaiaId("45")),
-                                    ValidListedAccount("u2@g.c", GaiaId("6"))));
-
-  ASSERT_TRUE(ParseListAccountsData(
-      "[\"foo\", "
-      "[[\"b1\", 0,\"name1\",\"U1@g.c\",\"photo1\",0,0,0,0,1,\"45\"], "
-      "[\"b2\",0,\"name2\",\"u.2@g.c\",\"photo2\",0,0,0,0,1,\"46\"]]]",
-      &accounts));
-  ASSERT_THAT(accounts,
-              ElementsAre(ValidListedAccount("U1@g.c", GaiaId("45")),
-                          ValidListedAccount("u.2@g.c", GaiaId("46"))));
-}
-
-TEST(GaiaAuthUtilTest, ParseListAccountsDataValidSession) {
-  std::vector<ListedAccount> accounts;
-
-  // Valid session is true means: return account.
-  ASSERT_TRUE(ParseListAccountsData(
-      "[\"foo\", [[\"b\",0,\"n\",\"u@g.c\",\"photo\",0,0,0,0,1,\"45\"]]]",
-      &accounts));
-  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("u@g.c", GaiaId("45"))));
-
-  // Valid session is false means: return account with valid bit false.
-  ASSERT_TRUE(ParseListAccountsData(
-      "[\"foo\", [[\"b\",0,\"n\",\"u@g.c\",\"photo\",0,0,0,0,0,\"45\"]]]",
-      &accounts));
-  ASSERT_THAT(accounts,
-              ElementsAre(InvalidListedAccount("u@g.c", GaiaId("45"))));
-}
-
-TEST(GaiaAuthUtilTest, ParseListAccountsDataGaiaId) {
-  std::vector<ListedAccount> accounts;
-
-  // Missing gaia id means: do not return account.
-  ASSERT_TRUE(ParseListAccountsData(
-      "[\"foo\", [[\"b\", 0, \"n\", \"u@g.c\", \"photo\", 0, 0, 0, 0, 1]]]",
-      &accounts));
-  ASSERT_EQ(0u, accounts.size());
-
-  // Valid gaia session means: return gaia session
-  ASSERT_TRUE(ParseListAccountsData(
-      "[\"foo\", "
-      "[[\"b\",0,\"n\",\"u@g.c\",\"photo\",0,0,0,0,1,\"9863\"]]]",
-      &accounts));
-  ASSERT_THAT(accounts,
-              ElementsAre(ValidListedAccount("u@g.c", GaiaId("9863"))));
-}
-
-TEST(GaiaAuthUtilTest, ParseListAccountsWithSignedOutAccounts) {
-  std::vector<ListedAccount> accounts;
-
-  ASSERT_TRUE(ParseListAccountsData(
-      "[\"foo\","
-      "[[\"b\",0,\"n\",\"u@g.c\",\"photo\",0,0,0,0,1,\"45\"],"
-      "[\"c\",0,\"n\",\"u.2@g.c\",\"photo\",0,0,0,0,1,\"46\","
-      "null,null,null,1]]]",
-      &accounts));
-  ASSERT_THAT(accounts,
-              ElementsAre(ValidListedAccount("u@g.c", GaiaId("45")),
-                          SignedOutListedAccount("u.2@g.c", GaiaId("46"))));
-}
-
-TEST(GaiaAuthUtilTest, ParseListAccountsVerifiedAccounts) {
-  std::vector<ListedAccount> accounts;
-
-  ASSERT_TRUE(ParseListAccountsData(
-      "[\"foo\","
-      "[[\"a\",0,\"n\",\"a@g.c\",\"photo\",0,0,0,0,1,\"45\"],"
-      "[\"b\",0,\"n\",\"b@g.c\",\"photo\",0,0,0,0,1,\"46\","
-      "null,null,null,null,0],"
-      "[\"c\",0,\"n\",\"c@g.c\",\"photo\",0,0,0,0,1,\"47\","
-      "null,null,null,null,1]]]",
-      &accounts));
-  ASSERT_THAT(accounts,
-              ElementsAre(ValidListedAccount("a@g.c", GaiaId("45")),
-                          NonverifiedListedAccount("b@g.c", GaiaId("46")),
-                          ValidListedAccount("c@g.c", GaiaId("47"))));
-}
-
-TEST(GaiaAuthUtilTest, ParseListAccountsAcceptsNull) {
-  ASSERT_TRUE(ParseListAccountsData(
-      "[\"foo\","
-      "[[\"b\",0,\"n\",\"u@g.c\",\"photo\",0,0,0,0,1,\"45\"],"
-      "[\"c\",0,\"n\",\"u.2@g.c\",\"photo\",0,0,0,0,1,\"45\","
-      "null,null,null,1]]]",
-      nullptr));
 }
 
 TEST(GaiaAuthUtilTest, ParseBinaryListAccountsData) {

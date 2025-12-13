@@ -3,6 +3,7 @@ Short name: Wuffs
 URL: https://github.com/google/wuffs-mirror-release-c
 Version: 0.3.3
 Revision: e3f919ccfe3ef542cfc983a82146070258fb57f8
+Update Mechanism: Manual
 Security critical: yes
 License: Apache-2.0
 License File: src/LICENSE

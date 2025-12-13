@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -60,7 +59,7 @@ class MockAudioDebugFileWriter : public AudioDebugFileWriter {
     EXPECT_EQ(reference_data_->channels(), data.channels());
     EXPECT_EQ(reference_data_->frames(), data.frames());
     for (int ch = 0; ch < data.channels(); ++ch) {
-      EXPECT_EQ(data.channel_span(ch), reference_data_->channel_span(ch));
+      EXPECT_EQ(data.channel(ch), reference_data_->channel(ch));
     }
     DoWrite(data);
   }

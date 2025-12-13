@@ -8,13 +8,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -28,7 +28,7 @@ class FontsHolder : public GarbageCollected<FontsHolder> {
 };
 }  // namespace
 
-class TextMetricsTest : public FontTestBase {
+class TextMetricsTest : public testing::Test {
  public:
   enum FontType {
     kLatinFont = 0,
@@ -62,7 +62,7 @@ class TextMetricsTest : public FontTestBase {
 
   const Font* GetFont(FontType type) const { return fonts_holder->fonts[type]; }
 
-  FontCachePurgePreventer font_cache_purge_preventer;
+  test::TaskEnvironment task_environment_;
   Persistent<FontsHolder> fonts_holder;
 };
 
@@ -232,9 +232,7 @@ TEST_P(CaretPositionForOffsetBidiTest, CaretPositionForOffsetsBidi) {
       GetFont(test_data.font), test_data.direction,
       V8CanvasTextBaseline::Enum::kAlphabetic, V8CanvasTextAlign::Enum::kLeft,
       text_string,
-      RuntimeEnabledFeatures::CanvasTextNgEnabled(nullptr)
-          ? MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas)
-          : nullptr);
+      *MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas));
 
   for (wtf_size_t i = 0; i < test_data.points.size(); ++i) {
     EXPECT_EQ(test_data.positions[i],

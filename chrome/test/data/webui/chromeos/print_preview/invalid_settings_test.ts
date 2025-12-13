@@ -8,9 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-// <if expr="is_chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate, getDefaultMediaSize, getDefaultOrientation} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
@@ -42,9 +40,7 @@ suite('InvalidSettingsTest', function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
     setNativeLayerCrosInstance();
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
@@ -122,7 +118,7 @@ suite('InvalidSettingsTest', function() {
           // Print preview should have failed with invalid settings, since
           // FooDevice was set as an invalid printer.
           assertFalse(overlay.classList.contains('invisible'));
-          assertTrue(messageEl.textContent!.includes(expectedMessage));
+          assertTrue(messageEl.textContent.includes(expectedMessage));
           assertEquals(State.ERROR, page.state);
 
           // Verify that the print button is disabled
@@ -150,7 +146,7 @@ suite('InvalidSettingsTest', function() {
         .then(function() {
           // Message should be gone.
           assertTrue(overlay.classList.contains('invisible'));
-          assertFalse(messageEl.textContent!.includes(expectedMessage));
+          assertFalse(messageEl.textContent.includes(expectedMessage));
 
           // Has active print button and successfully 'prints', indicating
           assertFalse(printButton.disabled);

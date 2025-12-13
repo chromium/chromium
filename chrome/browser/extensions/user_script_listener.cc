@@ -17,10 +17,13 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/scripting_utils.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::NavigationThrottle;
 

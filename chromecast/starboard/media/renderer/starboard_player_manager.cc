@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/starboard/media/media/drm_util.h"
 #include "chromecast/starboard/media/renderer/chromium_starboard_conversions.h"
 
@@ -20,10 +21,11 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
     ::media::DemuxerStream* audio_stream,
     ::media::DemuxerStream* video_stream,
     ::media::RendererClient* client,
+    chromecast::metrics::CastMetricsHelper* cast_metrics_helper,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     bool enable_buffering) {
   if ((!audio_stream && !video_stream) || !starboard || !client ||
-      !media_task_runner) {
+      !cast_metrics_helper || !media_task_runner) {
     return nullptr;
   }
 
@@ -40,9 +42,7 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
   creation_param.output_mode =
       StarboardPlayerOutputMode::kStarboardPlayerOutputModePunchOut;
 
-  // This will be set below if audio or video is encrypted.
-  creation_param.drm_system = nullptr;
-
+  bool stream_encrypted = false;
   if (audio_stream) {
     audio_stream->EnableBitstreamConverter();
     audio_config = audio_stream->audio_decoder_config();
@@ -58,8 +58,7 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
     creation_param.audio_sample_info = *audio_sample_info;
 
     if (audio_config.is_encrypted()) {
-      creation_param.drm_system =
-          StarboardDrmWrapper::GetInstance().GetDrmSystem();
+      stream_encrypted = true;
     }
   }
 
@@ -87,21 +86,42 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
     }
 
     if (video_config.is_encrypted()) {
-      creation_param.drm_system =
-          StarboardDrmWrapper::GetInstance().GetDrmSystem();
+      stream_encrypted = true;
     }
   }
 
   std::optional<StarboardDrmWrapper::DrmSystemResource> drm_resource;
-  if (creation_param.drm_system != nullptr) {
+  const bool cdm_exists = StarboardDrmWrapper::GetInstance().HasClients();
+  if (stream_encrypted || cdm_exists) {
+    if (stream_encrypted && !cdm_exists) {
+      // This case might happen if there's a race between the JS app creating a
+      // MediaKeys object and playback starting.
+      LOG(WARNING) << "Content is encrypted, but no CDM exists. Passing an "
+                      "SbDrmSystem to SbPlayerCreate regardless";
+    } else if (!stream_encrypted && cdm_exists) {
+      // This case might happen if ads play before the main content.
+      LOG(WARNING) << "Content is not encrypted, but a CDM exists. Passing an "
+                      "SbDrmSystem to SbPlayerCreate regardless";
+    } else {
+      // Standard case.
+      LOG(INFO)
+          << "Content is encrypted and a CDM exists. Using an SbDrmSystem.";
+    }
+
     drm_resource.emplace();
+    creation_param.drm_system =
+        StarboardDrmWrapper::GetInstance().GetDrmSystem();
+  } else {
+    LOG(INFO) << "Content is not encrypted and no CDM exists. Passing a null "
+                 "SbDrmSystem to SbPlayerCreate";
+    creation_param.drm_system = nullptr;
   }
 
   // base::WrapUnique is necessary because we're calling a private ctor.
   auto starboard_player_manager = base::WrapUnique(new StarboardPlayerManager(
       std::move(drm_resource), starboard, audio_stream, video_stream,
       std::move(audio_sample_info), std::move(video_sample_info), client,
-      std::move(media_task_runner)));
+      cast_metrics_helper, std::move(media_task_runner)));
 
   starboard->EnsureInitialized();
   void* sb_player = starboard->CreatePlayer(
@@ -111,7 +131,21 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
     LOG(ERROR) << "Could not create SbPlayer";
     return nullptr;
   }
+
+  base::RepeatingCallback<base::TimeDelta()> get_media_time =
+      base::BindRepeating(
+          [](StarboardApiWrapper* starboard, void* sb_player) {
+            StarboardPlayerInfo player_info = {};
+            starboard->GetPlayerInfo(sb_player, &player_info);
+            return base::Microseconds(
+                player_info.current_media_timestamp_micros);
+          },
+          starboard, sb_player);
+
   starboard_player_manager->player_ = sb_player;
+  starboard_player_manager->buffering_tracker_.emplace(
+      std::move(get_media_time), cast_metrics_helper);
+
   return starboard_player_manager;
 }
 
@@ -123,13 +157,14 @@ StarboardPlayerManager::StarboardPlayerManager(
     std::optional<StarboardAudioSampleInfo> audio_sample_info,
     std::optional<StarboardVideoSampleInfo> video_sample_info,
     ::media::RendererClient* client,
+    chromecast::metrics::CastMetricsHelper* cast_metrics_helper,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner)
     :  // base::Unretained(this) is safe here because demuxer_stream_reader_
        // will be destroyed before `this`.
       drm_resource_(std::move(drm_resource)),
       starboard_(starboard),
       client_(client),
-      stats_tracker_(client),
+      stats_tracker_(client, cast_metrics_helper),
       task_runner_(std::move(media_task_runner)),
       demuxer_stream_reader_(
           audio_stream,
@@ -141,10 +176,13 @@ StarboardPlayerManager::StarboardPlayerManager(
                               base::Unretained(this)),
           base::BindRepeating(&StarboardPlayerManager::PushEos,
                               base::Unretained(this)),
-          client_) {
+          client_,
+          cast_metrics_helper),
+      cast_metrics_helper_(cast_metrics_helper) {
   CHECK(starboard_);
   CHECK(client_);
   CHECK(task_runner_);
+  CHECK(cast_metrics_helper_);
   // player_ is set later in the factory function to create
   // StarboardPlayerManager.
 }
@@ -175,6 +213,7 @@ void StarboardPlayerManager::PushBuffer(
       << "Attempted to insert a buffer that already exists, at address: "
       << sample_info.buffer;
 
+  buffering_tracker_->OnBufferPush();
   UpdateStats(sample_info);
 }
 
@@ -206,6 +245,7 @@ void StarboardPlayerManager::StartPlayingFrom(base::TimeDelta time) {
   // after a flush, ensure that we have the correct rate set before seeking.
   starboard_->SetPlaybackRate(player_, playback_rate_);
   starboard_->SeekTo(player_, time.InMicroseconds(), ++seek_ticket_);
+  buffering_tracker_->SetPlaybackRate(playback_rate_);
 }
 
 void StarboardPlayerManager::Flush() {
@@ -213,8 +253,10 @@ void StarboardPlayerManager::Flush() {
   CHECK(player_);
   LOG(INFO) << "StarboardPlayerManager::Flush";
   flushing_ = true;
+
   // Setting the playback rate to 0 pauses playback.
   starboard_->SetPlaybackRate(player_, 0.0);
+  buffering_tracker_->SetPlaybackRate(0.0);
 
   StarboardPlayerInfo player_info = {};
   starboard_->GetPlayerInfo(player_, &player_info);
@@ -230,6 +272,7 @@ void StarboardPlayerManager::SetPlaybackRate(double playback_rate) {
   LOG(INFO) << "SetPlaybackRate: " << playback_rate;
   playback_rate_ = playback_rate;
   starboard_->SetPlaybackRate(player_, playback_rate);
+  buffering_tracker_->SetPlaybackRate(playback_rate);
 }
 
 void StarboardPlayerManager::SetVolume(float volume) {
@@ -306,13 +349,23 @@ void StarboardPlayerManager::OnPlayerStatus(
 
   DCHECK_EQ(player, player_);
   LOG(INFO) << "Received SbPlayer state: " << state;
-  if (state == StarboardPlayerState::kStarboardPlayerStateEndOfStream) {
-    client_->OnEnded();
-  } else if (state == StarboardPlayerState::kStarboardPlayerStatePresenting) {
-    client_->OnBufferingStateChange(
-        ::media::BufferingState::BUFFERING_HAVE_ENOUGH,
-        ::media::BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+  switch (state) {
+    case StarboardPlayerState::kStarboardPlayerStateEndOfStream: {
+      client_->OnEnded();
+      break;
+    }
+    case StarboardPlayerState::kStarboardPlayerStatePresenting: {
+      client_->OnBufferingStateChange(
+          ::media::BufferingState::BUFFERING_HAVE_ENOUGH,
+          ::media::BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+      break;
+    }
+    default: {
+      break;
+    }
   }
+
+  buffering_tracker_->OnPlayerStatus(state);
 }
 
 void StarboardPlayerManager::OnPlayerError(
@@ -330,7 +383,23 @@ void StarboardPlayerManager::OnPlayerError(
   DCHECK_EQ(player, player_);
   LOG(ERROR) << "Received SbPlayer error " << error
              << ", with message: " << message;
-  client_->OnError(::media::PIPELINE_ERROR_COULD_NOT_RENDER);
+
+  // PIPELINE_ERROR_HARDWARE_CONTEXT_RESET roughly corresponds to Starboard's
+  // kSbPlayerErrorCapabilityChanged. It signifies that the system should
+  // recreate the renderer instead of just giving up (since capabilities
+  // changed, e.g. due to a hardware change like unplugging an external GPU).
+  //
+  // See
+  // https://source.chromium.org/chromium/chromium/src/+/main:media/base/pipeline_impl.cc;l=986;drc=1fb4c56b03b105b03c45627871b15b8933ed8a11
+  // and
+  // https://github.com/youtube/cobalt/blob/6a2df0d123c68a3a29555dedf25fdbc5d161b3c9/starboard/player.h#L69
+  const ::media::PipelineStatusCodes pipeline_error =
+      error == StarboardPlayerError::kStarboardPlayerErrorDecode
+          ? ::media::PIPELINE_ERROR_DECODE
+          : ::media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
+  cast_metrics_helper_->RecordApplicationEventWithValue("Cast.Platform.Error",
+                                                        pipeline_error);
+  client_->OnError(pipeline_error);
 }
 
 void StarboardPlayerManager::CallOnDecoderStatus(

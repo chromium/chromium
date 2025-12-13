@@ -149,7 +149,7 @@ suite('acceleratorEditViewTest', function() {
   test('DetectShortcutConflict', async () => {
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: {data: [1]},
+      shortcutName: '1',
     };
 
     provider.setFakeReplaceAcceleratorResult(fakeResult);
@@ -219,7 +219,7 @@ suite('acceleratorEditViewTest', function() {
   test('CancelError', async () => {
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: {data: [1]},
+      shortcutName: '1',
     };
 
     provider.setFakeReplaceAcceleratorResult(fakeResult);
@@ -270,7 +270,7 @@ suite('acceleratorEditViewTest', function() {
   test('PressKeyToResetError', async () => {
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: {data: [1]},
+      shortcutName: '1',
     };
 
     provider.setFakeReplaceAcceleratorResult(fakeResult);
@@ -343,7 +343,7 @@ suite('acceleratorEditViewTest', function() {
         '#container',
         editViewElement!.shadowRoot!.querySelector('#status')!.shadowRoot,
         HTMLDivElement);
-    assertEquals(expectedHintMessage, statusMessageElement.textContent!.trim());
+    assertEquals(expectedHintMessage, statusMessageElement.textContent.trim());
   });
 
   test('ClickCancelButton', async () => {

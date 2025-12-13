@@ -8,6 +8,7 @@ android_resources("java_resources") {
   deps = [ "//ui/android:ui_java_resources" ]
   sources = [
     "java/res/drawable-night/touch_to_fill_default_header_image.xml",
+    "java/res/drawable/touch_to_fill_bnpl_issuer_linked_background.xml",
     "java/res/drawable/touch_to_fill_credential_background.xml",
     "java/res/drawable/touch_to_fill_credential_background_modern.xml",
     "java/res/drawable/touch_to_fill_credential_background_modern_rounded_all.xml",
@@ -15,6 +16,7 @@ android_resources("java_resources") {
     "java/res/drawable/touch_to_fill_credential_background_modern_rounded_up.xml",
     "java/res/drawable/touch_to_fill_default_header_image.xml",
     "java/res/layout/touch_to_fill_fill_button.xml",
+    "java/res/layout/touch_to_fill_text_button.xml",
     "java/res/values/dimens.xml",
   ]
 }
@@ -68,7 +70,7 @@ robolectric_library("junit") {
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",

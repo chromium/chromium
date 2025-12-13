@@ -24,6 +24,8 @@ import java.time.Instant;
 public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate {
     private static final String TAG = "SearchEngineDelefake";
 
+    private static final int CHOICE_REQUIRED_DELAY_MS = 3000;
+
     private final boolean mEnableLogging;
     private @Nullable ObservableSupplierImpl<Boolean> mIsChoiceRequired;
 
@@ -133,7 +135,7 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
                         }
                         assumeNonNull(mIsChoiceRequired).set(true);
                     },
-                    3000);
+                    CHOICE_REQUIRED_DELAY_MS);
 
             if (mEnableLogging) {
                 mIsChoiceRequired.addObserver(

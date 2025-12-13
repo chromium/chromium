@@ -13,7 +13,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -67,8 +66,6 @@ class PrefetchBrowserTest : public InProcessBrowserTest {
     // Set a dummy variation ID to send X-Client-Data header to Google hosts
     // in RedirectedPrefetch test.
     command_line->AppendSwitchASCII("force-variation-ids", "42");
-    // Need to ignore cert errors to use a HTTPS server for the test domains.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   void SetPreference(prefetch::PreloadPagesState value) {
@@ -159,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, RedirectedPrefetch) {
           response->set_code(net::HTTP_MOVED_PERMANENTLY);
           response->AddCustomHeader(
               "Location", base::StringPrintf("https://example.com:%s%s",
-                                             request.GetURL().port().c_str(),
+                                             request.GetURL().GetPort().c_str(),
                                              kRedirectedPrefetchUrl));
           return response;
         } else if (request.relative_url ==
@@ -171,6 +168,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, RedirectedPrefetch) {
       }));
 
   https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  https_server.SetCertHostnames({"www.google.com", "example.com"});
   ASSERT_TRUE(https_server.Start());
 
   GURL url = https_server.GetURL("www.google.com", kRedirectPrefetchPage);

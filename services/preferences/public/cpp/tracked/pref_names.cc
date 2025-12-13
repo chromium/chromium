@@ -10,6 +10,9 @@ namespace user_prefs {
 // a preference was reset.
 const char kPreferenceResetTime[] = "prefs.preference_reset_time";
 
+// A dictionary of all the tracked preferences that have been reset.
+const char kTrackedPreferencesReset[] = "prefs.tracked_preferences_reset";
+
 // Pref that can be set to trigger a write of the preference file to disk. It
 // stores a string representation of the time of the last scheduled flush.
 const char kScheduleToFlushToDisk[] = "schedule_to_flush_to_disk";

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/wake_lock/power_save_blocker/power_save_blocker.h"
-
 #include <string>
 
 #include "base/check.h"
@@ -11,9 +9,11 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
+#include "services/device/wake_lock/power_save_blocker/power_save_blocker.h"
 
 namespace device {
 
@@ -36,26 +36,23 @@ chromeos::PowerPolicyController::WakeLockReason GetWakeLockReason(
 
 }  // namespace
 
-class PowerSaveBlocker::Delegate
-    : public base::RefCountedThreadSafe<PowerSaveBlocker::Delegate> {
+class PowerSaveBlocker::Delegate {
  public:
   Delegate(mojom::WakeLockType type,
            mojom::WakeLockReason reason,
-           const std::string& description,
-           scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
-      : type_(type),
-        reason_(reason),
-        description_(description),
-        block_id_(0),
-        ui_task_runner_(ui_task_runner) {}
+           const std::string& description)
+      : type_(type), reason_(reason), description_(description), block_id_(0) {}
 
   Delegate(const Delegate&) = delete;
   const Delegate& operator=(const Delegate&) = delete;
 
+  ~Delegate() = default;
+
   void ApplyBlock() {
-    DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-    if (!chromeos::PowerPolicyController::IsInitialized())
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!chromeos::PowerPolicyController::IsInitialized()) {
       return;
+    }
 
     auto* controller = chromeos::PowerPolicyController::Get();
     switch (type_) {
@@ -77,17 +74,15 @@ class PowerSaveBlocker::Delegate
   }
 
   void RemoveBlock() {
-    DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-    if (!chromeos::PowerPolicyController::IsInitialized())
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!chromeos::PowerPolicyController::IsInitialized()) {
       return;
+    }
 
     chromeos::PowerPolicyController::Get()->RemoveWakeLock(block_id_);
   }
 
  private:
-  friend class base::RefCountedThreadSafe<Delegate>;
-  virtual ~Delegate() {}
-
   mojom::WakeLockType type_;
   mojom::WakeLockReason reason_;
   std::string description_;
@@ -95,25 +90,20 @@ class PowerSaveBlocker::Delegate
   // ID corresponding to the block request in PowerPolicyController.
   int block_id_;
 
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 PowerSaveBlocker::PowerSaveBlocker(
     mojom::WakeLockType type,
     mojom::WakeLockReason reason,
     const std::string& description,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner)
-    : delegate_(new Delegate(type, reason, description, ui_task_runner)),
-      ui_task_runner_(ui_task_runner),
-      blocking_task_runner_(blocking_task_runner) {
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(&Delegate::ApplyBlock, delegate_));
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : delegate_(ui_task_runner, type, reason, description) {
+  delegate_.AsyncCall(&Delegate::ApplyBlock);
 }
 
 PowerSaveBlocker::~PowerSaveBlocker() {
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(&Delegate::RemoveBlock, delegate_));
+  delegate_.AsyncCall(&Delegate::RemoveBlock);
 }
 
 }  // namespace device

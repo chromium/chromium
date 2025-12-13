@@ -13,6 +13,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -142,24 +144,29 @@ public class ExpandablePaymentHandlerTest {
         mClock = new FakeClock();
     }
 
-    private PaymentHandlerCoordinator createPaymentHandlerAndShow() throws Throwable {
+    private PaymentHandlerCoordinator createPaymentHandlerAndShow(ChromeTabbedActivity cta)
+            throws Throwable {
         PaymentHandlerCoordinator paymentHandler = new PaymentHandlerCoordinator();
         paymentHandler.setInputProtectorForTest(new InputProtector(mClock));
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         paymentHandler.show(
-                                mDefaultActivity.getCurrentWebContents(),
+                                cta.getCurrentWebContents(),
                                 defaultPaymentAppUrl(),
                                 defaultUiObserver()));
         return paymentHandler;
+    }
+
+    private PaymentHandlerCoordinator createPaymentHandlerAndShow() throws Throwable {
+        return createPaymentHandlerAndShow(mDefaultActivity);
     }
 
     private String getOrigin(EmbeddedTestServer server) {
         String longOrigin = server.getURL("/");
         String begin = "https://";
         String end = "/";
-        assert longOrigin.startsWith(begin);
-        assert longOrigin.endsWith(end);
+        assertThat(longOrigin).startsWith(begin);
+        assertThat(longOrigin).endsWith(end);
         return longOrigin.substring(begin.length(), longOrigin.length() - end.length());
     }
 
@@ -319,8 +326,12 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testIncognitoTrue() throws Throwable {
         startDefaultServer();
-        mRule.loadUrlInNewTab(UrlConstants.ABOUT_URL, true);
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
+        WebPageStation webPage =
+                mStartingPage
+                        .openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(UrlConstants.ABOUT_URL);
+        PaymentHandlerCoordinator paymentHandler =
+                createPaymentHandlerAndShow(webPage.getActivity());
         waitForUiShown();
 
         Assert.assertTrue(paymentHandler.getWebContentsForTest().isIncognito());

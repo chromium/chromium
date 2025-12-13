@@ -343,6 +343,24 @@ void HeadlessCommandHandler::ProcessCommands(
 }
 
 void HeadlessCommandHandler::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  // Expose DevTools protocol to the target.
+  base::Value::Dict expose_params;
+  expose_params.Set("targetId", devtools_client_.GetTargetId());
+  browser_devtools_client_.SendCommand(
+      "Target.exposeDevToolsProtocol", std::move(expose_params),
+      base::BindOnce(&HeadlessCommandHandler::OnDevToolsProtocolExposed,
+                     base::Unretained(this)));
+}
+
+void HeadlessCommandHandler::OnDevToolsProtocolExposed(base::Value::Dict) {
+  // Set up Inspector domain.
+  devtools_client_.AddEventHandler(
+      "Inspector.targetCrashed",
+      base::BindRepeating(&HeadlessCommandHandler::OnTargetCrashed,
+                          base::Unretained(this)));
+  devtools_client_.SendCommand("Inspector.enable");
+
+  // Prepare headless commands.
   base::Value::Dict commands;
   if (!GetCommandDictAndOutputPaths(&commands, &pdf_file_path_,
                                     &screenshot_file_path_) ||
@@ -353,21 +371,7 @@ void HeadlessCommandHandler::DocumentOnLoadCompletedInPrimaryMainFrame() {
 
   commands.Set("targetUrl", target_url_.spec());
 
-  // Expose DevTools protocol to the target.
-  base::Value::Dict expose_params;
-  expose_params.Set("targetId", devtools_client_.GetTargetId());
-  browser_devtools_client_.SendCommand("Target.exposeDevToolsProtocol",
-                                       std::move(expose_params));
-
-  // Set up Inspector domain.
-  devtools_client_.AddEventHandler(
-      "Inspector.targetCrashed",
-      base::BindRepeating(&HeadlessCommandHandler::OnTargetCrashed,
-                          base::Unretained(this)));
-  devtools_client_.SendCommand("Inspector.enable");
-
-  std::string json_commands;
-  base::JSONWriter::Write(commands, &json_commands);
+  std::string json_commands = base::WriteJson(commands).value_or("");
   std::string script = "executeCommands(JSON.parse('" + json_commands + "'))";
 
   base::Value::Dict params;

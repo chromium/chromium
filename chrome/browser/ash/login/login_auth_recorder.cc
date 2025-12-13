@@ -155,8 +155,8 @@ void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {prefix, "Used.",
-           (display::Screen::GetScreen()->InTabletMode() ? "TabletMode"
-                                                         : "ClamShellMode")}),
+           (display::Screen::Get()->InTabletMode() ? "TabletMode"
+                                                   : "ClamShellMode")}),
       method);
 
   if (last_auth_method_ != method) {

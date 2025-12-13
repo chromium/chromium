@@ -26,6 +26,7 @@ component("cpp") {
     "//base",
     "//skia",
     "//ui/base",
+    "//ui/base/interaction",
     "//ui/gfx",
     "//ui/strings",
     "//url",

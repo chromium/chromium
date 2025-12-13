@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   base::HistogramTester histogram_tester;
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   const GURL page_url = chrome::GetTargetTabUrl(
-      browser()->session_id(), browser()->tab_strip_model()->active_index());
+      browser(), browser()->tab_strip_model()->active_index());
   const GURL expected_url(base::StrCat(
       {ash::kChromeUIOSFeedbackUrl, "/?page_url=",
        base::EscapeQueryParamValue(page_url.spec(), /*use_plus=*/false)}));
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
       ->InstallSystemAppsForTesting();
   std::string unused;
   const GURL page_url = chrome::GetTargetTabUrl(
-      browser()->session_id(), browser()->tab_strip_model()->active_index());
+      browser(), browser()->tab_strip_model()->active_index());
   const std::string extra_diagnostics = "extra diagnostics param";
   const std::string description_template = "Q1: Question one?";
   const std::string description_placeholder_text =
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(
       ->InstallSystemAppsForTesting();
   std::string unused;
   const GURL page_url = chrome::GetTargetTabUrl(
-      browser()->session_id(), browser()->tab_strip_model()->active_index());
+      browser(), browser()->tab_strip_model()->active_index());
   const std::string extra_diagnostics = "extra diagnostics param";
   const std::string description_template = "Q1: Question one?";
   const std::string description_placeholder_text =
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(
       ->InstallSystemAppsForTesting();
   std::string unused;
   const GURL page_url = chrome::GetTargetTabUrl(
-      browser()->session_id(), browser()->tab_strip_model()->active_index());
+      browser(), browser()->tab_strip_model()->active_index());
   const std::string extra_diagnostics = "extra diagnostics param";
   const std::string description_template = "Q1: Question one fingerprint?";
   const std::string description_placeholder_text =
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
       ->InstallSystemAppsForTesting();
   std::string unused;
   const GURL page_url = chrome::GetTargetTabUrl(
-      browser()->session_id(), browser()->tab_strip_model()->active_index());
+      browser(), browser()->tab_strip_model()->active_index());
   const std::string extra_diagnostics = "extra diagnostics param";
   const std::string description_template = "Q1: Question one?";
   const std::string description_placeholder_text =
@@ -294,8 +294,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   const std::string category_tag = "category tag param";
   base::Value::Dict autofill_metadata = base::test::ParseJsonDict(
       R"({"form_signature": "123", "source_url": "test url"})");
-  std::string expected_autofill_metadata;
-  base::JSONWriter::Write(autofill_metadata, &expected_autofill_metadata);
+  std::string expected_autofill_metadata =
+      base::WriteJson(autofill_metadata).value_or("");
 
   GURL expected_url(base::StrCat(
       {ash::kChromeUIOSFeedbackUrl, "/?extra_diagnostics=",

@@ -11,14 +11,11 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Insets;
 import android.graphics.drawable.BitmapDrawable;
@@ -51,20 +48,17 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.display.DisplayUtil;
-import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TabUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -124,12 +118,9 @@ public class TabUtilsUnitTest {
     @Mock private NavigationController mNavigationController;
     @Mock private Profile mProfile;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private Resources mResources;
-    @Mock private Configuration mConfiguration;
-    @Mock private DisplayMetrics mDisplayMetrics;
 
     private boolean mRdsDefault;
-    private @ContentSettingValues int mRdsException;
+    private @ContentSetting int mRdsException;
     private boolean mIsGlobal;
     private boolean mUseDesktopUserAgent;
     private @TabUserAgent int mTabUserAgent;
@@ -198,22 +189,18 @@ public class TabUtilsUnitTest {
     @Test
     public void testSwitchUserAgent() {
         // Test non-native tab.
-        TabUtils.switchUserAgent(mTab, false, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(false, true, UseDesktopUserAgentCaller.OTHER);
+        TabUtils.switchUserAgent(mTab, false);
+        verify(mNavigationController).setUseDesktopUserAgent(false, true, true);
 
-        TabUtils.switchUserAgent(mTab, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(true, true, UseDesktopUserAgentCaller.OTHER);
+        TabUtils.switchUserAgent(mTab, true);
+        verify(mNavigationController).setUseDesktopUserAgent(true, true, true);
 
         // Test native tab.
-        TabUtils.switchUserAgent(mTabNative, false, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(false, false, UseDesktopUserAgentCaller.OTHER);
+        TabUtils.switchUserAgent(mTabNative, false);
+        verify(mNavigationController).setUseDesktopUserAgent(false, false, true);
 
-        TabUtils.switchUserAgent(mTabNative, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(true, false, UseDesktopUserAgentCaller.OTHER);
+        TabUtils.switchUserAgent(mTabNative, true);
+        verify(mNavigationController).setUseDesktopUserAgent(true, false, true);
     }
 
     @Test
@@ -227,107 +214,6 @@ public class TabUtilsUnitTest {
         mUseDesktopUserAgent = true;
         Assert.assertTrue(
                 "Should get RDS from WebContents.", TabUtils.isUsingDesktopUserAgent(mWebContents));
-    }
-
-    @Test
-    public void testGetTabUserAgent_UpgradePath() {
-        mTabUserAgent = TabUserAgent.UNSET;
-        mUseDesktopUserAgent = false;
-        Assert.assertEquals(
-                "TabUserAgent is not set up correctly for upgrade path.",
-                TabUserAgent.DEFAULT,
-                TabUtils.getTabUserAgent(mTab));
-        verify(mTab).setUserAgent(TabUserAgent.DEFAULT);
-
-        mTabUserAgent = TabUserAgent.UNSET;
-        mUseDesktopUserAgent = true;
-        Assert.assertEquals(
-                "TabUserAgent is not set up correctly for upgrade path.",
-                TabUserAgent.DESKTOP,
-                TabUtils.getTabUserAgent(mTab));
-        verify(mTab).setUserAgent(TabUserAgent.DESKTOP);
-    }
-
-    @Test
-    public void testGetTabUserAgent_Mobile() {
-        mTabUserAgent = TabUserAgent.MOBILE;
-        mUseDesktopUserAgent = false;
-        Assert.assertEquals(
-                "Read unexpected TabUserAgent value.",
-                TabUserAgent.MOBILE,
-                TabUtils.getTabUserAgent(mTab));
-
-        mUseDesktopUserAgent = true;
-        Assert.assertEquals(
-                "Read unexpected TabUserAgent value.",
-                TabUserAgent.MOBILE,
-                TabUtils.getTabUserAgent(mTab));
-
-        verify(mTab, never()).setUserAgent(anyInt());
-    }
-
-    @Test
-    public void testGetTabUserAgent_Desktop() {
-        mTabUserAgent = TabUserAgent.DESKTOP;
-        mUseDesktopUserAgent = false;
-        Assert.assertEquals(
-                "Read unexpected TabUserAgent value.",
-                TabUserAgent.DESKTOP,
-                TabUtils.getTabUserAgent(mTab));
-
-        mUseDesktopUserAgent = true;
-        Assert.assertEquals(
-                "Read unexpected TabUserAgent value.",
-                TabUserAgent.DESKTOP,
-                TabUtils.getTabUserAgent(mTab));
-
-        verify(mTab, never()).setUserAgent(anyInt());
-    }
-
-    @Test
-    public void testReadRequestDesktopSiteContentSettings() {
-        GURL gurl = JUnitTestGURLs.EXAMPLE_URL;
-
-        // Site level setting is Mobile.
-        mRdsException = ContentSettingValues.BLOCK;
-        Assert.assertFalse(
-                "The result should be false when there is no url",
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, null));
-        Assert.assertFalse(
-                "The result should match RDS site level setting.",
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
-
-        // Site level setting is Desktop.
-        mRdsException = ContentSettingValues.ALLOW;
-        Assert.assertFalse(
-                "The result should be false when there is no url",
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, null));
-        Assert.assertTrue(
-                "The result should match RDS site level setting.",
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
-    }
-
-    @Test
-    public void testIsRequestDesktopSiteContentSettingsGlobal() {
-        GURL gurl = JUnitTestGURLs.EXAMPLE_URL;
-
-        // Content setting is global setting.
-        mIsGlobal = true;
-        Assert.assertTrue(
-                "The result should be true when there is no url",
-                TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, null));
-        Assert.assertTrue(
-                "Content setting is global setting.",
-                TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, gurl));
-
-        // Content setting is NOT global setting.
-        mIsGlobal = false;
-        Assert.assertTrue(
-                "The result should be true when there is no url",
-                TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, null));
-        Assert.assertFalse(
-                "Content setting is domain setting.",
-                TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, gurl));
     }
 
     @Test

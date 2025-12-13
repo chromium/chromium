@@ -20,7 +20,6 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -33,6 +32,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/hid_test_util.h"
+#include "services/device/public/cpp/test/scoped_usb_device_manager_overrider.h"
 #include "services/device/public/cpp/test/test_report_descriptors.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,10 +50,16 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #endif
 
 namespace {
@@ -67,6 +73,12 @@ using ::testing::UnorderedElementsAre;
 constexpr std::string_view kDefaultTestUrl{"https://www.google.com"};
 constexpr std::string_view kCrossOriginTestUrl{"https://www.chromium.org"};
 constexpr char kTestUserEmail[] = "user@example.com";
+
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr GaiaId::Literal kTestUserGaiaId("1111111111");
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr std::string_view kPrivilegedExtensionId{
@@ -206,26 +218,12 @@ class ChromeHidTestHelper {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  const user_manager::User* SetUpUserManager() {
-    // On ChromeOS a user account is needed in order to check whether the user
-    // account is affiliated with the device owner for the purposes of applying
-    // enterprise policy.
-    constexpr GaiaId::Literal kTestUserGaiaId("1111111111");
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* fake_user_manager_ptr = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
-
-    auto account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
-    const user_manager::User* user = fake_user_manager_ptr->AddUser(account_id);
-
-    fake_user_manager_ptr->LoginUser(account_id);
-
-    return user;
+  void LogIn(const AccountId& account_id) {
+    CHECK(user_manager::TestHelper(user_manager_.Get())
+              .AddRegularUser(account_id));
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   }
-
-  void TearDownUserManager() { scoped_user_manager_.reset(); }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -847,7 +845,7 @@ class ChromeHidTestHelper {
   }
 
  protected:
-  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   GURL origin_url_;
   raw_ptr<MockHidConnectionTracker, DanglingUntriaged> hid_connection_tracker_ =
       nullptr;
@@ -858,7 +856,13 @@ class ChromeHidTestHelper {
  private:
   std::unique_ptr<device::FakeHidManager> hid_manager_;
 #if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  // On ChromeOS a user account is needed in order to check whether the user
+  // account is affiliated with the device owner for the purposes of applying
+  // enterprise policy.
+  user_manager::ScopedUserManager user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<user_manager::FakeUserManagerDelegate>(),
+          TestingBrowserProcess::GetGlobal()->GetTestingLocalState())};
 #endif
   scoped_refptr<const extensions::Extension> extension_;
   MockHidManagerClient hid_manager_client_;
@@ -869,32 +873,12 @@ class ChromeHidDelegateRenderFrameTestBase
       public ChromeHidTestHelper {
  public:
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-#if BUILDFLAG(IS_CHROMEOS)
-    const user_manager::User* user = SetUpUserManager();
-    TestingProfile::Builder builder;
-    testing_profile_ = builder.Build();
-    profile_ = testing_profile_.get();
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, profile_.get());
-#else
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    // TODO(crbug.com/40249783): Pass testing factory when creating profile.
-    // Ideally, we should be able to pass testing factory when calling profile
-    // manager's CreateTestingProfile. However, due to the fact that:
-    // 1) TestingProfile::TestingProfile(...) will call BrowserContextShutdown
-    // as part of setting testing factory.
-    // 2) HidConnectionTrackerFactory::BrowserContextShutdown() at some point
-    // need valid profile_metrics::GetBrowserProfileType() as part of
-    // HidConnectionTrackerFactory::GetForProfile().
-    // It will hit failure in profile_metrics::GetBrowserProfileType() because
-    // the profile is not initialized properly before setting testing factory.
-    // As a result, here create a profile then call SetTestingFactory to inject
-    // MockHidConnectionTracker.
-    profile_ = profile_manager_->CreateTestingProfile(kTestUserEmail);
-#endif
+
+    ChromeRenderViewHostTestHarness::SetUp();
+
     HidConnectionTrackerFactory::GetInstance()->SetTestingFactory(
         profile_, GetHidConnectionTrackerTestingFactory());
 
@@ -910,16 +894,55 @@ class ChromeHidDelegateRenderFrameTestBase
 
   void TearDown() override {
     DeleteContents();
+
 #if BUILDFLAG(IS_CHROMEOS)
-    testing_profile_.reset();
-    TearDownUserManager();
-#else
-    profile_manager_->DeleteAllTestingProfiles();
-    profile_manager_.reset();
+    // Notify User's profile is going to be destroyed soon.
+    user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
+        kTestAccountId);
 #endif
     profile_ = nullptr;
+    profile_manager_->DeleteAllTestingProfiles();
+
     ChromeRenderViewHostTestHarness::TearDown();
+
+    profile_manager_.reset();
     hid_connection_tracker_ = nullptr;
+  }
+
+  std::unique_ptr<TestingProfile> CreateTestingProfile() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    // LogIn must happen before profile creation.
+    LogIn(kTestAccountId);
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            kTestAccountId);
+#endif
+    // TODO(crbug.com/40249783): Pass testing factory when creating profile.
+    // Ideally, we should be able to pass testing factory when calling profile
+    // manager's CreateTestingProfile. However, due to the fact that:
+    // 1) TestingProfile::TestingProfile(...) will call BrowserContextShutdown
+    // as part of setting testing factory.
+    // 2) HidConnectionTrackerFactory::BrowserContextShutdown() at some point
+    // need valid profile_metrics::GetBrowserProfileType() as part of
+    // HidConnectionTrackerFactory::GetForProfile().
+    // It will hit failure in profile_metrics::GetBrowserProfileType() because
+    // the profile is not initialized properly before setting testing factory.
+    // As a result, here create a profile then call SetTestingFactory to inject
+    // MockHidConnectionTracker.
+    profile_ = profile_manager_->CreateTestingProfile(kTestUserEmail);
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // Notify ChromeOS User that its profile is created.
+    user_manager::UserManager::Get()->OnUserProfileCreated(
+        kTestAccountId, profile_->GetPrefs());
+#endif
+
+    // The ownership is still held by ProfileManager, so do not return the
+    // instance.
+    return nullptr;
+  }
+
+  content::BrowserContext* GetBrowserContext() override {
+    return profile_.get();
   }
 
   // ChromeHidTestHelper
@@ -987,11 +1010,7 @@ class ChromeHidDelegateRenderFrameTestBase
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<TestingProfile> testing_profile_;
-#else
   std::unique_ptr<TestingProfileManager> profile_manager_;
-#endif
 };
 
 class ChromeHidDelegateRenderFrameTest
@@ -1006,9 +1025,6 @@ class ChromeHidDelegateServiceWorkerTestBase
  public:
   void SetUp() override {
     content::EmbeddedWorkerInstanceTestHarness::SetUp();
-#if BUILDFLAG(IS_CHROMEOS)
-    SetUpUserManager();
-#endif
     SetUpHidConnectionTracker();
     BindHidManager();
     SetUpOriginUrl();
@@ -1017,9 +1033,7 @@ class ChromeHidDelegateServiceWorkerTestBase
 
   void TearDown() override {
     StopWorker();
-#if BUILDFLAG(IS_CHROMEOS)
-    TearDownUserManager();
-#endif
+    profile_ = nullptr;
     content::EmbeddedWorkerInstanceTestHarness::TearDown();
   }
 
@@ -1042,9 +1056,18 @@ class ChromeHidDelegateServiceWorkerTestBase
 
   // content::EmbeddedWorkerInstanceTestHarness
   std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    // In ChromeOS, User seession needs to be created for web browser profile.
+    LogIn(kTestAccountId);
+#endif
+
     auto builder = TestingProfile::Builder();
     auto testing_profile = builder.Build();
     profile_ = testing_profile.get();
+#if BUILDFLAG(IS_CHROMEOS)
+    // Tie the created Profile and the logged-in User for ChromeOS.
+    ash::AnnotatedAccountId::Set(profile_.get(), kTestAccountId);
+#endif
     // TODO(crbug.com/40249783): Pass testing factory when creating profile.
     // Ideally, we should use TestingProfile::Builder::AddTestingFactory to
     // inject MockHidConnectionTracker. However, due to the fact that:
@@ -1063,8 +1086,9 @@ class ChromeHidDelegateServiceWorkerTestBase
   }
 
  private:
-  ScopedTestingLocalState testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
+  // EmbeddedWorkerInstanceTestHarness initializes the full device service.
+  // Override the UsbDeviceManager to prevent access to real devices.
+  device::ScopedUsbDeviceManagerOverrider usb_device_manager_overrider_;
 };
 
 class ChromeHidDelegateServiceWorkerTest

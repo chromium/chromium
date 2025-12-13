@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">apelsīni</translation>
 <translation id="1275718070701477396">Atlasīta</translation>
 <translation id="1290331692326790741">Vājš signāls</translation>
+<translation id="1292474106138697109">Lietotnes Klases rīki displejs</translation>
 <translation id="1300115153046603471">APN veids ir “noklusējums” un “<ph name="ATTACH" />”.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Pārveidojums</translation>
@@ -329,7 +330,7 @@
 <translation id="2276999893457278469">Populārākais palīdzības saturs</translation>
 <translation id="2277631741861284101">Ērta audio ierakstīšana un kopīgošana</translation>
 <translation id="2279051792571591988">Atjaunot noklusējuma iestatījumus</translation>
-<translation id="2286454467119466181">Vienkārša</translation>
+<translation id="2286454467119466181">Vienkāršs</translation>
 <translation id="2287186687001756809">Nav pieejams neviens attēls. Lai pievienotu fotoattēlus, pārejiet uz vietni <ph name="LINK" />.</translation>
 <translation id="2294577623958216786">Pašreizējais grafiks: <ph name="SUNRISE" />–<ph name="SUNSET" />. Lai automātiski atjauninātu saulrieta un saullēkta grafiku, ieslēdziet sistēmas piekļuvi atrašanās vietas datiem.</translation>
 <translation id="2305172810646967500">melnā krāsā</translation>
@@ -744,6 +745,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> attēls(-i)</translation>
 <translation id="4300272766492248925">Atvērt lietotni</translation>
 <translation id="430786093962686457">šifons</translation>
+<translation id="4309762678330556039">Automātiski veidojiet transkripcijas un meklējiet audio. Varat izveidot ierakstus pat tad, ja nav savienojuma ar internetu.</translation>
 <translation id="4310735698903592804">Jaunākās fona tapetes, ko nodrošina Google MI</translation>
 <translation id="4320904097188876154">neona rozā</translation>
 <translation id="432961742358282111">Noklikšķiniet ar peles labo pogu vai nospiediet un turiet, lai iegūtu definīcijas, tulkojumus vai konvertētu vērtības citās mērvienībās. Lai pārvaldītu šo funkciju, izmantojiet kreiso vai labo bultiņu.</translation>
@@ -1033,6 +1035,7 @@
 <translation id="5596627076506792578">Citas opcijas</translation>
 <translation id="5600027863942488546">Taustiņš “<ph name="KEY_NAME" />” ir pārbaudīts</translation>
 <translation id="5606865426897221650">Tabulēšanas taustiņš</translation>
+<translation id="5612205513582918357">Lietotnē Klases rīki jūsu ekrāns tiek kopīgots ar displeju “<ph name="RECEIVER_NAME" />”.</translation>
 <translation id="5613201299517339763">Jūs tikāt izrakstīts</translation>
 <translation id="5620281292257375798">Tikai iekšējai lietošanai</translation>
 <translation id="5628106863521633649">Pieejamās valodas</translation>
@@ -1166,7 +1169,6 @@
 <translation id="6205145102504628069">Mākoņu plūsma</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nav pieejams neviens skeneris</translation>
-<translation id="6231648282154119906">Jūsu izvēlētās uzlabotās aizsardzības funkcija “Google droša pārlūkošana” automātiski pārbaudīs aizdomīgus failus.</translation>
 <translation id="6232017090690406397">Akumulators</translation>
 <translation id="6234024205316847054">Rādīt kontūras</translation>
 <translation id="6243280677745499710">Šobrīd iestatīta</translation>

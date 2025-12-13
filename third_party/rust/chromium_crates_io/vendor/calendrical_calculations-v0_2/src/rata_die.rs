@@ -70,8 +70,31 @@ impl RataDie {
     }
 
     /// Calculate the number of days between two `RataDie` in a const-friendly way
-    pub const fn until(self, rhs: Self) -> i64 {
+    ///
+    /// ```
+    /// use calendrical_calculations::julian::fixed_from_julian;
+    ///
+    /// assert_eq!(
+    ///     fixed_from_julian(1930, 2, 2).since(fixed_from_julian(1930, 1, 1)),
+    ///     32
+    /// );
+    /// ```
+    pub const fn since(self, rhs: Self) -> i64 {
         self.0 - rhs.0
+    }
+
+    /// Calculate the number of days between two `RataDie` in a const-friendly way
+    ///
+    /// ```
+    /// use calendrical_calculations::julian::fixed_from_julian;
+    ///
+    /// assert_eq!(
+    ///     fixed_from_julian(1930, 1, 1).until(fixed_from_julian(1930, 2, 2)),
+    ///     32
+    /// );
+    /// ```
+    pub const fn until(self, rhs: Self) -> i64 {
+        rhs.0 - self.0
     }
 
     /// Adds a number of days to this `RataDie` in a const-friendly way
@@ -91,7 +114,7 @@ impl RataDie {
 impl fmt::Debug for RataDie {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let rd = self.0;
-        if let Ok((y, m, d)) = crate::iso::iso_from_fixed(*self) {
+        if let Ok((y, m, d)) = crate::gregorian::gregorian_from_fixed(*self) {
             write!(f, "{rd} R.D. ({y}-{m:02}-{d:02})")
         } else {
             write!(f, "{rd} R.D. (out of bounds)")
@@ -134,7 +157,7 @@ impl SubAssign<i64> for RataDie {
 impl Sub for RataDie {
     type Output = i64;
     fn sub(self, rhs: Self) -> Self::Output {
-        self.until(rhs)
+        self.since(rhs)
     }
 }
 

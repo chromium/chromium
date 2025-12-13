@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/history/core/browser/history_types.h"
 
 #include <algorithm>
 #include <limits>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -48,6 +44,24 @@ VisitRow::VisitRow(URLID arg_url_id,
 VisitRow::~VisitRow() = default;
 
 VisitRow::VisitRow(const VisitRow&) = default;
+
+// VisitedURLInfo
+// --------------------------------------------------------------------
+
+VisitedURLInfo::VisitedURLInfo() = default;
+
+VisitedURLInfo::VisitedURLInfo(URLRow url_row,
+                               VisitRow visit_row,
+                               VisitResponseCodeCategory response_code_category,
+                               std::optional<int64_t> local_navigation_id)
+    : url_row(std::move(url_row)),
+      visit_row(std::move(visit_row)),
+      response_code_category(response_code_category),
+      local_navigation_id(local_navigation_id) {}
+
+VisitedURLInfo::~VisitedURLInfo() = default;
+
+VisitedURLInfo::VisitedURLInfo(const VisitedURLInfo& other) = default;
 
 // QueryResults ----------------------------------------------------------------
 
@@ -129,7 +143,7 @@ void QueryResults::DeleteRange(size_t begin, size_t end) {
          match++) {
       if (found->second[match] >= begin && found->second[match] <= end) {
         // Remove this reference from the list.
-        found->second.erase(found->second.begin() + match);
+        found->second.erase(UNSAFE_TODO(found->second.begin() + match));
         match--;
       }
     }
@@ -214,6 +228,24 @@ QueryURLResult::QueryURLResult(QueryURLResult&&) noexcept = default;
 QueryURLResult& QueryURLResult::operator=(const QueryURLResult&) = default;
 
 QueryURLResult& QueryURLResult::operator=(QueryURLResult&&) noexcept = default;
+
+// QueryURLAndVisitsResult ----------------------------------------------------
+
+QueryURLAndVisitsResult::QueryURLAndVisitsResult() = default;
+
+QueryURLAndVisitsResult::~QueryURLAndVisitsResult() = default;
+
+QueryURLAndVisitsResult::QueryURLAndVisitsResult(
+    const QueryURLAndVisitsResult&) = default;
+
+QueryURLAndVisitsResult::QueryURLAndVisitsResult(
+    QueryURLAndVisitsResult&&) noexcept = default;
+
+QueryURLAndVisitsResult& QueryURLAndVisitsResult::operator=(
+    const QueryURLAndVisitsResult&) = default;
+
+QueryURLAndVisitsResult& QueryURLAndVisitsResult::operator=(
+    QueryURLAndVisitsResult&&) noexcept = default;
 
 // MostVisitedURL --------------------------------------------------------------
 
@@ -304,9 +336,10 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          ui::PAGE_TRANSITION_LINK,
                          false,
                          SOURCE_BROWSED,
+                         VisitResponseCodeCategory::kNot404,
                          false,
                          true,
-                         false,
+                         VisitContextEphemerality::kNotEphemeral,
                          std::nullopt,
                          std::nullopt,
                          std::nullopt,
@@ -326,16 +359,18 @@ HistoryAddPageArgs::HistoryAddPageArgs(
     ui::PageTransition transition,
     bool hidden,
     VisitSource source,
+    VisitResponseCodeCategory response_code_category,
     bool did_replace_entry,
     bool consider_for_ntp_most_visited,
-    bool is_ephemeral,
+    VisitContextEphemerality visit_context_ephemerality,
     std::optional<std::u16string> title,
     std::optional<GURL> top_level_url,
     std::optional<GURL> frame_url,
     std::optional<Opener> opener,
     std::optional<int64_t> bookmark_id,
     std::optional<std::string> app_id,
-    std::optional<VisitContextAnnotations::OnVisitFields> context_annotations)
+    std::optional<VisitContextAnnotations::OnVisitFields> context_annotations,
+    std::optional<int32_t> actor_task_id)
     : url(url),
       time(time),
       context_id(context_id),
@@ -346,16 +381,18 @@ HistoryAddPageArgs::HistoryAddPageArgs(
       transition(transition),
       hidden(hidden),
       visit_source(source),
+      response_code_category(response_code_category),
       did_replace_entry(did_replace_entry),
       consider_for_ntp_most_visited(consider_for_ntp_most_visited),
-      is_ephemeral(is_ephemeral),
+      visit_context_ephemerality(visit_context_ephemerality),
       title(title),
       top_level_url(top_level_url),
       frame_url(frame_url),
       opener(opener),
       bookmark_id(bookmark_id),
       app_id(app_id),
-      context_annotations(std::move(context_annotations)) {}
+      context_annotations(std::move(context_annotations)),
+      actor_task_id(actor_task_id) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const HistoryAddPageArgs& other) =
     default;

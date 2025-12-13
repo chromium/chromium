@@ -173,11 +173,11 @@ _ENUMERATE_DISABLED_TESTS_OUTPUT = """
 }
 """
 
-class XCodebuildRunnerTest(test_runner_test.TestCase):
+class XcodebuildRunnerTest(test_runner_test.TestCase):
   """Test case to test xcodebuild_runner."""
 
   def setUp(self):
-    super(XCodebuildRunnerTest, self).setUp()
+    super(XcodebuildRunnerTest, self).setUp()
     self.mock(os.path, 'exists', lambda _: True)
     self.mock(os, 'listdir', lambda _: ['any_egtests.xctest'])
     self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: False)
@@ -195,7 +195,8 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
     self.mock(test_runner.DeviceTestRunner, 'tear_down', lambda _: None)
     self.mock(xcodebuild_runner.subprocess,
               'Popen', lambda cmd, env, stdout, stderr: 'fake-out')
-    self.mock(test_runner, 'print_process_output', lambda _, timeout: [])
+    self.mock(test_runner, 'print_process_output',
+              lambda _, timeout, exception_checker: [])
     self.mock(xcode_util, 'xctest_path', lambda _: 'fake-path')
     self.mock(os.path, 'isfile', lambda _: True)
     self.mock(xcodebuild_runner.SimulatorParallelTestRunner,
@@ -204,7 +205,7 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
     self.mock(xcode_util, 'using_xcode_16_or_higher', lambda: False)
 
   def tearDown(self):
-    super(XCodebuildRunnerTest, self).tearDown()
+    super(XcodebuildRunnerTest, self).tearDown()
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   def testLaunchCommand_restartCrashed1stAttempt(self, mock_collect_results):
@@ -220,7 +221,12 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
         ])
     ]
     launch_command = xcodebuild_runner.LaunchCommand(
-        egtests, _DESTINATION, clones=1, retries=3, readline_timeout=180)
+        egtests,
+        _DESTINATION,
+        clones=1,
+        retries=3,
+        readline_timeout=180,
+        exception_checker=None)
     overall_result = launch_command.launch()
     self.assertFalse(overall_result.crashed)
     self.assertEqual(len(overall_result.all_test_names()), 2)
@@ -237,10 +243,20 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
     ])
     mock_collect_results.side_effect = [collection]
     launch_command = xcodebuild_runner.LaunchCommand(
-        egtests, _DESTINATION, clones=1, retries=3, readline_timeout=180)
+        egtests,
+        _DESTINATION,
+        clones=1,
+        retries=3,
+        readline_timeout=180,
+        exception_checker=None)
     launch_command.launch()
     xcodebuild_runner.LaunchCommand(
-        egtests, _DESTINATION, clones=1, retries=3, readline_timeout=180)
+        egtests,
+        _DESTINATION,
+        clones=1,
+        retries=3,
+        readline_timeout=180,
+        exception_checker=None)
     self.assertEqual(1, len(mock_collect_results.mock_calls))
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
@@ -258,7 +274,12 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
         ])
     ]
     launch_command = xcodebuild_runner.LaunchCommand(
-        egtests, _DESTINATION, clones=1, retries=3, readline_timeout=180)
+        egtests,
+        _DESTINATION,
+        clones=1,
+        retries=3,
+        readline_timeout=180,
+        exception_checker=None)
     overall_result = launch_command.launch()
     self.assertEqual(len(overall_result.all_test_names()), 2)
     self.assertEqual(overall_result.expected_tests(),
@@ -274,7 +295,12 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
     crashed_collection.crashed = True
     mock_collect_results.return_value = crashed_collection
     launch_command = xcodebuild_runner.LaunchCommand(
-        egtests, _DESTINATION, clones=1, retries=3, readline_timeout=180)
+        egtests,
+        _DESTINATION,
+        clones=1,
+        retries=3,
+        readline_timeout=180,
+        exception_checker=None)
     overall_result = launch_command.launch()
     self.assertEqual(len(overall_result.all_test_names()), 0)
     self.assertEqual(overall_result.expected_tests(), set([]))
@@ -297,10 +323,16 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
         clones=1,
         retries=3,
         readline_timeout=180,
-        test_plugin_service=mock_plugin_service)
+        test_plugin_service=mock_plugin_service,
+        exception_checker=None)
     launch_command.launch()
     xcodebuild_runner.LaunchCommand(
-        egtests, _DESTINATION, clones=1, retries=3, readline_timeout=180)
+        egtests,
+        _DESTINATION,
+        clones=1,
+        retries=3,
+        readline_timeout=180,
+        exception_checker=None)
     self.assertEqual(1, len(mock_collect_results.mock_calls))
     mock_plugin_service.reset.assert_called_once_with()
 
@@ -329,7 +361,8 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
     self.mock(os, 'listdir', lambda _: [])
     self.mock(xcodebuild_runner.subprocess,
               'Popen', lambda cmd, env, stdout, stderr: 'fake-out')
-    self.mock(test_runner, 'print_process_output', lambda _, timeout: [])
+    self.mock(test_runner, 'print_process_output',
+              lambda _, timeout, exception_checker: [])
     self.mock(test_runner.TestRunner, 'start_proc', lambda self, cmd: 0)
     self.mock(test_runner.DeviceTestRunner, 'get_installed_packages',
               lambda self: [])
@@ -464,7 +497,8 @@ class SimulatorParallelTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
               'Popen', lambda cmd, env, stdout, stderr: 'fake-out')
     self.mock(xcodebuild_runner.subprocess,
               'Popen', lambda cmd, env, stdout, stderr: 'fake-out')
-    self.mock(test_runner, 'print_process_output', lambda _, timeout: [])
+    self.mock(test_runner, 'print_process_output',
+              lambda _, timeout, exception_checker: [])
     self.mock(test_runner.TestRunner, 'start_proc', lambda self, cmd: 0)
     self.mock(test_runner.TestRunner, 'retrieve_derived_data', lambda _: None)
     self.mock(test_runner.TestRunner, 'process_xcresult_dir', lambda _: None)

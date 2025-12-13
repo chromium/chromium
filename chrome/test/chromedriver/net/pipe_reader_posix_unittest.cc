@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "chrome/test/chromedriver/net/pipe_reader_posix.h"
 
 #include <cmath>
 #include <string>
@@ -14,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
@@ -23,7 +19,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "chrome/test/chromedriver/net/pipe_reader_posix.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -86,7 +81,7 @@ class PipeReaderPosixTest : public testing::Test {
         break;
       }
       received_message.insert(received_message.end(), buffer->data(),
-                              buffer->data() + rv);
+                              UNSAFE_TODO(buffer->data() + rv));
     }
     return std::make_pair(std::move(received_message), rv);
   }

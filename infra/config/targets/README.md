@@ -6,6 +6,31 @@ chromium_tests recipe module for executing tests. This includes most builders
 that build and run tests. Builders running PRESUBMIT.py tests and builders
 running fuzz tests are not included.
 
+## lucicfg package
+
+This directory exposes the "@chromium-targets" lucicfg package so that the
+target declarations can be used from other lucicfg packages.
+
+To use @chromium-targets in your package, add the following to your PACKAGE.star
+```
+pkg.depend(
+    name = "@chromium-targets",
+    source = pkg.source.googlesource(
+        host = "chromium",
+        repo = "src",
+        ref = "refs/heads/main",
+        path = "infra/config/targets",
+        revision = <current chromium/src revision>,
+    ),
+)
+```
+
+Somewhere in your package, add the following to actually add the target
+declarations to your configs
+```
+exec("@chromium-targets//declarations.star")
+```
+
 ## Files
 
 * [basic_suites.star](./basic_suites.star) - This contains definitions of basic
@@ -46,6 +71,11 @@ running fuzz tests are not included.
   compound suites, which specify basic suites to collect into a larger suite.
   These suites can set as a test suite for a builder in
   [waterfalls.pyl][waterfalls.pyl].
+* [declarations.star](./declarations.star) - The entrypoint of the lucicfg
+  package. This file executes all the rest of the starlark files in this
+  directory so that other lucicfg packages can just execute this file to execute
+  the entire package. When you add or remove new starlark files in this
+  directory, please update the entries in this file as well.
 * [matrix_compound_suites.star](./matrix_compound_suites.star) - This contains
   definitions of matrix compound suites, which specify basic suites to collect
   into a larger suite, optionally applying mixins to all the tests of a basic

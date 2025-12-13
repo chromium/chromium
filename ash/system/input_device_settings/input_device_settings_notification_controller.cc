@@ -498,7 +498,7 @@ void ShowPointingStickSettings() {
 }
 
 void OnLearnMoreClicked() {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kKeyboardSettingsLearnMoreLink),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);

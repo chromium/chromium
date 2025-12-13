@@ -28,6 +28,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/core/window_util.h"
 
@@ -73,7 +74,7 @@ void WindowMiniViewBase::UpdateFocusState(bool focus) {
   is_focused_ = focus;
 
   // Notify all other subscriptions of the change.
-  OnPropertyChanged(&is_focused_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&is_focused_, views::PropertyEffects::kPaint);
 
   views::FocusRing::Get(this)->SchedulePaint();
 }
@@ -130,14 +131,12 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
   if (!backdrop_view_) {
     // Always put the backdrop view under other children.
     backdrop_view_ = AddChildViewAt(std::make_unique<views::View>(), 0);
-    backdrop_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-
-    ui::Layer* layer = backdrop_view_->layer();
-    layer->SetName("BackdropView");
-
-    layer->SetRoundedCornerRadius(gfx::RoundedCornersF(
-        0.f, 0.f, kWindowMiniViewCornerRadius, kWindowMiniViewCornerRadius));
-    layer->SetIsFastRoundedCorner(true);
+    gfx::RoundedCornersF backdrop_radii(0.f, 0.f, kWindowMiniViewCornerRadius,
+                                        kWindowMiniViewCornerRadius);
+    backdrop_view_->SetBackground(views::CreateLayerBasedRoundedBackground(
+        cros_tokens::kCrosSysScrim, backdrop_radii));
+    backdrop_view_->background()->SetInternalName(
+        "WindowMiniView/BackdropView");
     backdrop_view_->SetCanProcessEventsWithinSubtree(false);
     DeprecatedLayoutImmediately();
   }
@@ -177,15 +176,6 @@ void WindowMiniView::ResetRoundedCorners() {
   preview_view_rounded_corners_.reset();
   exposed_rounded_corners_.reset();
   OnRoundedCornersSet();
-}
-
-void WindowMiniView::OnThemeChanged() {
-  View::OnThemeChanged();
-
-  if (backdrop_view_) {
-    backdrop_view_->layer()->SetColor(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysScrim));
-  }
 }
 
 bool WindowMiniView::Contains(aura::Window* window) const {

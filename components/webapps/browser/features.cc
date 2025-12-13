@@ -12,18 +12,21 @@ namespace features {
 #if BUILDFLAG(IS_ANDROID)
 // Enables WebAPK Install Failure Notification.
 BASE_FEATURE(kWebApkInstallFailureNotification,
-             "WebApkInstallFailureNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidMinimalUiLargeScreen,
-             "AndroidMinimalUiLargeScreen",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidWebAppMenuButton, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidTWAOriginDisplay, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidWebAppHeaderForStandaloneMode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidAutoMintedTWA, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Do not remove this feature flag, since it serves as a kill-switch for the ML
 // promotion model. Kill switches are required for all ML model-backed features.
 BASE_FEATURE(kWebAppsEnableMLModelForPromotion,
-             "WebAppsEnableMLModelForPromotion",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
@@ -45,8 +48,6 @@ extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage(
 // Checking if a web app is installed in Chrome Android ultimately leads to a
 // long, UI-thread Binder call. Enabling this flag makes the web app
 // installation check on Clank async.
-BASE_FEATURE(kCheckWebAppExistenceAsync,
-             "CheckWebAppExistenceAsync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCheckWebAppExistenceAsync, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 }  // namespace webapps

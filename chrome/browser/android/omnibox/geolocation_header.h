@@ -11,9 +11,6 @@
 class Profile;
 class GURL;
 
-// Whether the user has given Chrome location permission.
-bool HasGeolocationPermission();
-
 // Gives the full string of the entire Geolocation header if it can be added for
 // a request to |url|. Does not prompt for permission.
 std::optional<std::string> GetGeolocationHeaderIfAllowed(const GURL& url,

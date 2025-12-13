@@ -4,13 +4,13 @@
 
 #include "media/gpu/chromeos/gl_image_processor_backend.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -101,22 +101,15 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
     return nullptr;
   }
 
-  auto buffer_format =
-      VideoPixelFormatToGfxBufferFormat(frame->layout().format());
-  if (!buffer_format) {
-    LOG(ERROR) << "Unexpected video frame format";
-    return nullptr;
-  }
-
   if (!should_split_planes) {
     auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-        frame->coded_size(), *buffer_format,
+        frame->coded_size(), viz::MultiPlaneFormat::kNV12,
         std::move(gpu_memory_buffer_handle).native_pixmap_handle());
     DCHECK(native_pixmap->AreDmaBufFdsValid());
 
     // Import the NativePixmap into GL.
     return GetCurrentGLOzone().ImportNativePixmap(
-        std::move(native_pixmap), gfx::BufferFormat::YUV_420_BIPLANAR,
+        std::move(native_pixmap), viz::MultiPlaneFormat::kNV12,
         gfx::BufferPlane::DEFAULT, frame->coded_size(), gfx::ColorSpace(),
         target, texture_id);
   }
@@ -138,8 +131,8 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
       plane ? gfx::Size(uv_width.ValueOrDie(), uv_height.ValueOrDie())
             : frame->coded_size();
 
-  const gfx::BufferFormat plane_format =
-      plane ? gfx::BufferFormat::RG_88 : gfx::BufferFormat::R_8;
+  const auto plane_format =
+      plane ? viz::SinglePlaneFormat::kRG_88 : viz::SinglePlaneFormat::kR_8;
 
   auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
       plane_size, plane_format,
@@ -309,7 +302,7 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   // GetCurrentGLOzone().ImportNativePixmap() for NV12 frames, so we should
   // ensure that's supported.
   if (!GetCurrentGLOzone().CanImportNativePixmap(
-          gfx::BufferFormat::YUV_420_BIPLANAR)) {
+          viz::MultiPlaneFormat::kNV12)) {
     LOG(ERROR) << "Importing NV12 buffers is not supported";
     done->Signal();
     return;

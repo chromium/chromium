@@ -6,6 +6,7 @@
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "ui/aura/window_event_dispatcher.h"
@@ -48,6 +49,9 @@ class DesktopNativeWidgetAura;
 
 class VIEWS_EXPORT DesktopWindowTreeHost {
  public:
+  using WindowTreeHosts =
+      std::set<raw_ptr<aura::WindowTreeHost, SetExperimental>>;
+
   virtual ~DesktopWindowTreeHost() = default;
 
   static DesktopWindowTreeHost* Create(
@@ -63,10 +67,6 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
 
   // Called from DesktopNativeWidgetAura::OnWidgetInitDone().
   virtual void OnWidgetInitDone() = 0;
-
-  virtual void OnWidgetThemeChanged(
-      ui::ColorProviderKey::ColorMode color_mode,
-      std::optional<SkColor> background_color) = 0;
 
   // Called from DesktopNativeWidgetAura::OnWindowActivated().
   // `active`: if `DesktopNativeWidgetAura::content_window()` contains the
@@ -93,6 +93,9 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual void CloseNow() = 0;
 
   virtual aura::WindowTreeHost* AsWindowTreeHost() = 0;
+
+  // Gets all the owned WindowTreeHosts of this host.
+  virtual WindowTreeHosts GetOwnedWindowTreeHosts();
 
   // There are two distinct ways for DesktopWindowTreeHosts's to be shown:
   // 1. This function is called. As this function is specific to
@@ -169,7 +172,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
 
   virtual void SetVisibilityChangedAnimationsEnabled(bool value) = 0;
 
-  virtual std::unique_ptr<NonClientFrameView> CreateNonClientFrameView() = 0;
+  virtual std::unique_ptr<FrameView> CreateFrameView() = 0;
 
   // Determines whether the window should use native title bar and borders.
   virtual bool ShouldUseNativeFrame() const = 0;
@@ -186,6 +189,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual bool IsFullscreen() const = 0;
 
   virtual void SetOpacity(float opacity) = 0;
+
+  virtual void SetBackgroundColor(SkColor background_color) = 0;
 
   // See NativeWidgetPrivate::SetAspectRatio for more information about what
   // `excluded_margin` does.

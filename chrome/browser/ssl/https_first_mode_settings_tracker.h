@@ -25,17 +25,13 @@ namespace base {
 class Clock;
 }
 
-namespace site_engagement {
-class SiteEngagementService;
-}
-
-class StatefulSSLHostStateDelegate;
-
 // The set of valid states of the user-controllable HTTPS-First Mode setting.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Must be kept in sync with the HttpsFirstModeSetting enums located in
-// chrome/browser/resources/settings/privacy_page/security_page.ts and enums.xml
+// chrome/browser/resources/settings/privacy_page/security_page.ts,
+// chrome/browser/resources/settings/privacy_page/security/security_page_v2.ts,
+// and enums.xml
 // LINT.IfChange
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ssl
@@ -47,7 +43,11 @@ enum class HttpsFirstModeSetting {
   kEnabledBalanced = 3,
   kMaxValue = kEnabledBalanced,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/security/enums.xml)
+// LINT.ThenChange(
+//      /chrome/browser/resources/settings/privacy_page/security/security_page.ts,
+//      /chrome/browser/resources/settings/privacy_page/security/security_page_v2.ts:HttpsFirstModeSetting,
+//      /tools/metrics/histograms/metadata/security/enums.xml
+// )
 
 // A `KeyedService` that tracks changes to the HTTPS-First Mode pref for each
 // profile. This is currently used for:
@@ -121,13 +121,6 @@ class HttpsFirstModeService
   // auto-enable HFM pref, but updates the fallback events, evicting old ones.
   bool IsUserTypicallySecure();
 
-  // Check the Site Engagement scores of the hostname of `url` and enable
-  // HFM on the hostname if the HTTPS score is high enough. `url` should have a
-  // default port.
-  void MaybeEnableHttpsFirstModeForUrl(
-      const GURL& url,
-      site_engagement::SiteEngagementService* engagement_service,
-      StatefulSSLHostStateDelegate* state);
   // Called after getting the engaged sites list from Site Engagement service.
   // Calls `done_callback` before returning.
   void ProcessEngagedSitesList(

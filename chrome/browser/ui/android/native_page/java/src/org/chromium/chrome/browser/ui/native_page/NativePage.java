@@ -64,6 +64,15 @@ public interface NativePage {
     int getBackgroundColor();
 
     /**
+     * Returns whether to use a light tint on icons of the toolbar and status bar for this tab. For
+     * example, new tab page can use a light tint icons on icons of toolbar and status bar when a
+     * customized background image is applied.
+     */
+    default boolean useLightIconTint() {
+        return false;
+    }
+
+    /**
      * @param defaultColor Default color if not customized.
      * @return The color of the toolbar textbox background.
      */
@@ -88,9 +97,22 @@ public interface NativePage {
      */
     boolean needsToolbarShadow();
 
-    /** Whether the native page supports drawing edge to edge. */
+    /** Whether the native page supports drawing edge to edge into the bottom system bar insets. */
     default boolean supportsEdgeToEdge() {
         return false;
+    }
+
+    /**
+     * Whether the native page supports drawing edge to edge into the top system bar insets e.g.
+     * status bar.
+     */
+    default boolean supportsEdgeToEdgeOnTop() {
+        return false;
+    }
+
+    /** Returns the top inset of the native page. */
+    default int getTopInset() {
+        return 0;
     }
 
     /** Updates the native page based on the given url. */
@@ -158,7 +180,7 @@ public interface NativePage {
         NativePageType.PDF
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface NativePageType {
+    @interface NativePageType {
         int NONE = 0;
         int CANDIDATE = 1;
         int NTP = 2;
@@ -199,23 +221,7 @@ public interface NativePage {
      * @param hasPdfDownload Whether the page has an associated pdf download.
      * @return Type of the native page defined in {@link NativePageType}.
      */
-    // TODO(crbug.com/40549331) - Convert to using GURL.
     static @NativePageType int nativePageType(
-            String url, NativePage candidatePage, boolean isIncognito, boolean hasPdfDownload) {
-        if (url == null) return NativePageType.NONE;
-
-        GURL gurl = new GURL(url);
-        return nativePageType(gurl, candidatePage, isIncognito, hasPdfDownload);
-    }
-
-    /**
-     * @param url The URL to be checked.
-     * @param candidatePage NativePage to return as result if the url is matched.
-     * @param isIncognito Whether the page will be displayed in incognito mode.
-     * @param hasPdfDownload Whether the page has an associated pdf download.
-     * @return Type of the native page defined in {@link NativePageType}.
-     */
-    private static @NativePageType int nativePageType(
             GURL url,
             @Nullable NativePage candidatePage,
             boolean isIncognito,

@@ -39,7 +39,7 @@ class PageActionIconController : public PageActionIconViewObserver,
             PageActionIconContainer* icon_container);
 
   PageActionIconView* GetIconView(PageActionIconType type);
-  PageActionIconType GetIconType(PageActionIconView* view);
+  PageActionIconType GetIconType(const PageActionIconView* view) const;
 
   // Updates the visual state of all enabled page action icons.
   void UpdateAll();

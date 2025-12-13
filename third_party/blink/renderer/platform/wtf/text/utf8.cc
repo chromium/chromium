@@ -233,16 +233,18 @@ bool IsLegalUtf8(const base::span<const uint8_t> source) {
             return false;
           break;
         case 0xED:
-          if (a > 0x9F)
+          if (a < 0x80 || a > 0x9F) {
             return false;
+          }
           break;
         case 0xF0:
           if (a < 0x90)
             return false;
           break;
         case 0xF4:
-          if (a > 0x8F)
+          if (a < 0x80 || a > 0x8F) {
             return false;
+          }
           break;
         default:
           if (a < 0x80)
@@ -261,100 +263,108 @@ bool IsLegalUtf8(const base::span<const uint8_t> source) {
   return true;
 }
 
-// Magic values subtracted from a buffer value during UTF8 conversion.
-// This table contains as many values as there might be trailing bytes
-// in a UTF-8 sequence.
-static constexpr std::array<UChar32, 6> kOffsetsFromUtf8 = {
-    0x00000000UL,
-    0x00003080UL,
-    0x000E2080UL,
-    0x03C82080UL,
-    static_cast<UChar32>(0xFA082080UL),
-    static_cast<UChar32>(0x82082080UL)};
-
 inline UChar32 ReadUtf8Sequence(base::span<const uint8_t> source,
                                 size_t length) {
-  UChar32 character = 0;
-  size_t sequence_cursor = 0;
+  DCHECK_LT(0u, length);
+  DCHECK_GT(5u, length);
 
-  switch (length) {
-    case 6:
-      character += source[sequence_cursor++];
-      character <<= 6;
-      [[fallthrough]];
-    case 5:
-      character += source[sequence_cursor++];
-      character <<= 6;
-      [[fallthrough]];
-    case 4:
-      character += source[sequence_cursor++];
-      character <<= 6;
-      [[fallthrough]];
-    case 3:
-      character += source[sequence_cursor++];
-      character <<= 6;
-      [[fallthrough]];
-    case 2:
-      character += source[sequence_cursor++];
-      character <<= 6;
-      [[fallthrough]];
-    case 1:
-      character += source[sequence_cursor++];
+  if (length == 1) {
+    return source[0];
   }
 
-  return character - kOffsetsFromUtf8[length - 1];
+  const uint8_t b0 = source[0];
+  const uint8_t b1 = source[1];
+
+  if (length == 2) {
+    // 2-byte sequence: 110xxxxx 10xxxxxx
+    return ((b0 & 0x1F) << 6) | (b1 & 0x3F);
+  }
+
+  const uint8_t b2 = source[2];
+  if (length == 3) {
+    // 3-byte sequence: 1110xxxx 10xxxxxx 10xxxxxx
+    return ((b0 & 0x0F) << 12) | ((b1 & 0x3F) << 6) | (b2 & 0x3F);
+  }
+
+  // 4-byte sequence: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+  const uint8_t b3 = source[3];
+  return ((b0 & 0x07) << 18) | ((b1 & 0x3F) << 12) | ((b2 & 0x3F) << 6) |
+         (b3 & 0x3F);
 }
 
 ConversionStatus ConvertUtf8ToUtf16Internal(base::span<const uint8_t>& source,
                                             base::span<UChar>& target,
                                             bool strict) {
   ConversionStatus status = kConversionOK;
-  size_t target_cursor = 0;
-  size_t target_end = target.size();
+
+  using MachineWord = uintptr_t;
+  constexpr size_t kWordWidth = sizeof(MachineWord);
+  constexpr MachineWord kAsciiMask =
+      (kWordWidth == 8) ? 0x8080808080808080ULL : 0x80808080UL;
+  constexpr uintptr_t kMachineWordAlignmentMask = kWordWidth - 1;
 
   while (!source.empty()) {
-    size_t utf8_sequence_length = InlineUtf8SequenceLength(source[0]);
+    // Attempt the fast path if we have enough data for a full, aligned word.
+    if (source.size() >= kWordWidth && target.size() >= kWordWidth &&
+        !(reinterpret_cast<uintptr_t>(source.data()) &
+          kMachineWordAlignmentMask)) {
+      const MachineWord word =
+          *reinterpret_cast<const MachineWord*>(source.data());
+
+      if ((word & kAsciiMask) == 0) {
+        // All bytes in the aligned word are ASCII. Convert them in a simple
+        // loop.
+        for (size_t i = 0; i < kWordWidth; ++i) {
+          target[i] = source[i];
+        }
+        source = source.subspan(kWordWidth);
+        target = target.subspan(kWordWidth);
+        continue;
+      }
+    }
+
+    // Process one character using the scalar path.
+    const size_t utf8_sequence_length = InlineUtf8SequenceLength(source[0]);
     if (source.size() < utf8_sequence_length) {
       status = kSourceExhausted;
       break;
     }
+
     // Do this check whether lenient or strict
     if (!IsLegalUtf8(source.first(utf8_sequence_length))) {
       status = kSourceIllegal;
       break;
     }
 
-    auto original_source = source;
-    UChar32 character = ReadUtf8Sequence(source, utf8_sequence_length);
-    source = source.subspan(utf8_sequence_length);
-
-    if (target_cursor >= target_end) {
-      source = original_source;  // Back up source index!
-      status = kTargetExhausted;
-      break;
-    }
+    const UChar32 character = ReadUtf8Sequence(source, utf8_sequence_length);
 
     if (U_IS_BMP(character)) {
-      // UTF-16 surrogate values are illegal in UTF-32
-      if (U_IS_SURROGATE(character)) {
-        if (strict) {
-          source = original_source;  // return to the illegal value itself
-          status = kSourceIllegal;
-          break;
-        }
-        target[target_cursor++] = blink::uchar::kReplacementCharacter;
-      } else {
-        target[target_cursor++] = static_cast<UChar>(character);  // normal case
-      }
-    } else if (U_IS_SUPPLEMENTARY(character)) {
-      // target is a character in range 0xFFFF - 0x10FFFF
-      if (target_cursor + 1 >= target_end) {
-        source = original_source;  // Back up source index!
+      if (target.empty()) {
         status = kTargetExhausted;
         break;
       }
-      target[target_cursor++] = U16_LEAD(character);
-      target[target_cursor++] = U16_TRAIL(character);
+      // UTF-16 surrogate values are illegal in UTF-32
+      if (U_IS_SURROGATE(character)) {
+        if (strict) {
+          status = kSourceIllegal;
+          break;
+        }
+        target[0] = blink::uchar::kReplacementCharacter;
+      } else {
+        target[0] = static_cast<UChar>(character);
+      }
+      source = source.subspan(utf8_sequence_length);
+      target = target.subspan(1u);
+    } else if (U_IS_SUPPLEMENTARY(character)) {
+      // target is a character in range 0xFFFF - 0x10FFFF
+      if (target.size() < 2u) {
+        status = kTargetExhausted;
+        break;
+      }
+      target[0] = U16_LEAD(character);
+      target[1] = U16_TRAIL(character);
+      source = source.subspan(utf8_sequence_length);
+      target = target.subspan(2u);
     } else {
       // This should never happen; InlineUTF8SequenceLength() can never return
       // a value higher than 4, and a 4-byte UTF-8 sequence can never encode
@@ -362,7 +372,6 @@ ConversionStatus ConvertUtf8ToUtf16Internal(base::span<const uint8_t>& source,
       NOTREACHED();
     }
   }
-  target = target.subspan(target_cursor);
 
   return status;
 }

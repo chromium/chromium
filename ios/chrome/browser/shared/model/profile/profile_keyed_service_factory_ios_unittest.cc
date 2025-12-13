@@ -41,9 +41,9 @@ class DummyServiceFactory final : public ProfileKeyedServiceFactoryIOS {
     return GetServiceForProfileAs<DummyService>(profile, false);
   }
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const final {
+      ProfileIOS* profile) const final {
     return std::make_unique<DummyService>();
   }
 };
@@ -105,7 +105,6 @@ class ProfileKeyedServiceFactoryIOSTest : public testing::TestWithParam<Param> {
                                std::get<ServiceCreation>(GetParam()),
                                std::get<TestingCreation>(GetParam())) {
     test_profile_ = TestProfileIOS::Builder().Build();
-    test_profile_->CreateOffTheRecordBrowserStateWithTestingFactories();
   }
 
   DummyServiceFactory& factory() { return dummy_service_factory_; }

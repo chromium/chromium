@@ -16,7 +16,7 @@ import("//tools/grit/grit_rule.gni")
 
 group("resources") {
   public_deps = [
-    ":launchscreen_xib",
+    ":launchscreen",
     ":quick_action_icons",
     ":system_strings",
     "//ios/chrome/app/resources:packed_resources",
@@ -75,8 +75,10 @@ repack("repack_unscaled_resources") {
     "$root_gen_dir/components/ntp_tiles_internals_resources.pak",
     "$root_gen_dir/components/optimization_guide_internals_resources.pak",
     "$root_gen_dir/components/policy_resources.pak",
+    "$root_gen_dir/components/regional_capabilities_internals_resources.pak",
     "$root_gen_dir/components/signin_internals_resources.pak",
     "$root_gen_dir/components/sync_service_sync_internals_resources.pak",
+    "$root_gen_dir/components/translate_internals_resources.pak",
     "$root_gen_dir/components/ukm_resources.pak",
     "$root_gen_dir/components/user_actions_ui_resources.pak",
     "$root_gen_dir/components/version_ui_resources.pak",
@@ -98,6 +100,7 @@ repack("repack_unscaled_resources") {
     "//components/policy/resources/webui:resources",
     "//components/resources",
     "//components/sync/service/resources",
+    "//components/translate/translate_internals:resources",
     "//components/ukm/debug:resources",
     "//components/webui/chrome_urls/resources",
     "//ios/chrome/app/resources/profile_internals:resources",
@@ -151,6 +154,21 @@ bundle_data_xcassets("chromium_icons_legacy") {
   ]
 }
 
+bundle_data_xcassets("chromium_icons") {
+  catalog = "ChromiumIcons.xcassets"
+  sources = [
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/2.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/3.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/5.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/blue.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/cr.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/donut.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/pill.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/ring.png",
+    "ChromiumIcons.xcassets/AppIcon.icon/icon.json",
+  ]
+}
+
 bundle_data_xcassets("launchscreen_assets") {
   catalog = "Launchscreen.xcassets"
   sources = [
@@ -179,8 +197,13 @@ bundle_data_storyboard_file("base_scene_storyboard") {
   ]
 }
 
-bundle_data_xib_file("launchscreen_xib") {
-  source = "LaunchScreen.xib"
+bundle_data_storyboard_file("launchscreen") {
+  source = "LaunchScreen.storyboard"
+  bundle_files = [
+    "Info.plist",
+    "Y6W-OH-hqX-view-5EZ-qb-Rvc.nib",
+    "UIViewController-Y6W-OH-hqX.nib",
+  ]
   deps = [ ios_launchscreen_assets_target ]
 }
 

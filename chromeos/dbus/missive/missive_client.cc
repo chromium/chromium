@@ -52,9 +52,7 @@ namespace chromeos {
 // default because this is a bug fix. Only putting it behind a feature flag for
 // kill switch in case of emergency.
 // TODO(b/339059662): remove feature flag once retries are in stable channel.
-BASE_FEATURE(kEnableRetryEnqueueRecord,
-             "EnableRetryEnqueueRecord",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableRetryEnqueueRecord, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Number of seconds we'll retry to enqueue a record if Missive is unavailable.
 // If `kEnableRetryEnqueueRecord` is not enabled, the parameter is not set, or

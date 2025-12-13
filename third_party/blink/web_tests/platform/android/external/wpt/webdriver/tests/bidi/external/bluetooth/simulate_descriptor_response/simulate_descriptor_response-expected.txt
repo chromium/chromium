@@ -1,0 +1,7 @@
+This is a wdspec test.
+[ERROR] test_simulate_descriptor_write_event
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_simulate_characteristic_read_event
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+Harness: the test ran to completion.
+

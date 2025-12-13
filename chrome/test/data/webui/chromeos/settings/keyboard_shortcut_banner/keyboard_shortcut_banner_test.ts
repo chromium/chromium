@@ -11,7 +11,6 @@ import type {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortc
 import type {ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {MetaKey, Modifier} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {AcceleratorKeyState} from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -102,7 +101,7 @@ suite('<keyboard-shortcut-banner>', () => {
         'Press Ctrl+Shift+Space to switch to the next input method',
         secondDesc!.textContent);
     const dismissButton = banner.shadowRoot!.querySelector('cr-button');
-    assertEquals('Dismiss', dismissButton!.textContent!.trim());
+    assertEquals('Dismiss', dismissButton!.textContent.trim());
   });
 
   test('displays the correct <kbd> elements', () => {
@@ -132,7 +131,7 @@ suite('<keyboard-shortcut-banner>', () => {
     banner.set('showCustomizedShortcut_', true);
     flush();
     const expectedAcceleratorProperties: ShortcutLabelProperties[] = [{
-      keyDisplay: stringToMojoString16('m'),
+      keyDisplay: 'm',
       accelerator: {
         modifiers: Modifier.CONTROL,
         keyCode: VKey.kKeyM,

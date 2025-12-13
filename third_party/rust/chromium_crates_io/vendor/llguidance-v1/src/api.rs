@@ -47,6 +47,13 @@ pub struct LLGuidanceOptions {
     /// This is very unlikely what you need.
     #[serde(default)]
     pub allow_invalid_utf8: bool,
+
+    /// If set, the grammar will allow the %ignore lexeme at the start of the grammar.
+    /// Otherwise, it will only be allowed after the first non-ignored lexeme.
+    /// This option (like the other options here) will apply to the entire grammar,
+    /// including nested sub-grammars.
+    #[serde(default)]
+    pub allow_initial_skip: bool,
 }
 
 impl LLGuidanceOptions {
@@ -56,6 +63,9 @@ impl LLGuidanceOptions {
         }
         if other.allow_invalid_utf8 {
             self.allow_invalid_utf8 = true;
+        }
+        if other.allow_initial_skip {
+            self.allow_initial_skip = true;
         }
     }
 }
@@ -258,6 +268,11 @@ pub struct ParserLimits {
     /// the time it takes to construct the lexer.
     /// Default: true
     pub precompute_large_lexemes: bool,
+
+    /// If true, include parser state (including tokens so far) and grammar in
+    /// errors.
+    /// Default: true
+    pub verbose_errors: bool,
 }
 
 impl Default for ParserLimits {
@@ -270,6 +285,7 @@ impl Default for ParserLimits {
             max_grammar_size: 500_000,     // fhir schema => 200k
             step_max_items: 50_000,        //
             precompute_large_lexemes: true,
+            verbose_errors: true,
         }
     }
 }

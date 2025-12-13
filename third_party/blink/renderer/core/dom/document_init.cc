@@ -156,16 +156,22 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
     LocalFrame* frame,
     const String& mime_type,
     bool* is_for_external_handler) {
-  if (frame && frame->InViewSourceMode())
+  if (frame && frame->InViewSourceMode()) {
     return Type::kViewSource;
+  }
 
   // Plugins cannot take HTML and XHTML from us, and we don't even need to
   // initialize the plugin database for those.
-  if (mime_type == "text/html")
+  if (mime_type == "text/html") {
     return Type::kHTML;
-
-  if (mime_type == "application/xhtml+xml")
+  }
+  if (mime_type == "application/xhtml+xml") {
     return Type::kXHTML;
+  }
+
+  if (mime_type == "image/svg+xml") {
+    return Type::kSVG;
+  }
 
   // multipart/x-mixed-replace is only supported for images.
   if (MIMETypeRegistry::IsSupportedImageResourceMIMEType(mime_type) ||
@@ -173,10 +179,12 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
     return Type::kImage;
   }
 
-  if (HTMLMediaElement::GetSupportsType(ContentType(mime_type)))
+  if (HTMLMediaElement::GetSupportsType(ContentType(mime_type))) {
     return Type::kMedia;
+  }
 
-  if (frame && frame->GetPage() && frame->Loader().AllowPlugins()) {
+  if (frame && frame->GetPage() && frame->Loader().AllowPlugins())
+      [[unlikely]] {
     PluginData* plugin_data = GetPluginData(frame);
 
     // Everything else except text/plain can be overridden by plugins.
@@ -194,7 +202,6 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
           *is_for_external_handler = true;
         return Type::kHTML;
       }
-
       return Type::kPlugin;
     }
   }
@@ -205,11 +212,9 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
     return Type::kText;
   }
 
-  if (mime_type == "image/svg+xml")
-    return Type::kSVG;
-
-  if (MIMETypeRegistry::IsXMLMIMEType(mime_type))
+  if (MIMETypeRegistry::IsXMLMIMEType(mime_type)) {
     return Type::kXML;
+  }
 
   return Type::kHTML;
 }

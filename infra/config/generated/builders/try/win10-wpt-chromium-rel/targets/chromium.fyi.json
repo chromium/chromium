@@ -20,6 +20,8 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:headless_shell_wpt",
+        "module_scheme": "webtest",
         "name": "headless_shell_wpt_tests_inverted",
         "resultdb": {
           "enable": true,

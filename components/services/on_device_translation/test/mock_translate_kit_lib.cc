@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // This file implements the ABI of libtranslatekit only for testing. It is not
 // used in production.
 // This mock implementation runs as follows:
@@ -35,6 +30,7 @@
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/to_string.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -196,7 +192,7 @@ TRANSLATE_KIT_EXPORT bool GetTranslateKitVersion(TranslateKitVersion* version) {
 
   // Always return a maximum version.
   constexpr char kMaxVersion[] = "9999.99.99.99";
-  strncpy(version->buffer, kMaxVersion, sizeof(kMaxVersion));
+  UNSAFE_TODO(strncpy(version->buffer, kMaxVersion, sizeof(kMaxVersion)));
   version->buffer_size = sizeof(kMaxVersion) - 1;
   return true;
 }
@@ -317,5 +313,27 @@ DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslatorTranslate(
   callback(TranslateKitOutputText(output.data(), output.size()), user_data);
   return true;
 }
+
+#ifdef TRANSLATE_KIT_SPLIT_SENTENCES
+typedef void (*SentenceSplitCallbackFn)(TranslateKitOutputText, std::uintptr_t);
+DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslateKitSplitSentences(
+    TranslateKitInputText input,
+    TranslateKitLanguage source_lang,
+    SentenceSplitCallbackFn callback,
+    std::uintptr_t user_data) {
+  std::string_view input_string(input.input_text, input.input_text_size);
+  if (input_string == "SIMULATE_ERROR") {
+    return false;
+  }
+
+  std::vector<std::string_view> sentences = base::SplitStringPiece(
+      input_string, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const auto& sentence : sentences) {
+    callback(TranslateKitOutputText(sentence.data(), sentence.size()),
+             user_data);
+  }
+  return true;
+}
+#endif
 
 }  // extern C

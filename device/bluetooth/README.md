@@ -62,16 +62,17 @@ See also the [Refactoring meta issue](https://crbug.com/580406).
 ## Android
 
 The android implementation requires crossing from C++ to Java using
-[__JNI__](https://www.chromium.org/developers/design-documents/android-jni).
+[JNI](https://www.chromium.org/developers/design-documents/android-jni).
 
 Object ownership is rooted in the C++ classes, starting with the Adapter, which
-owns Devices, Services, etc. Java counter parts interface with the Android
+owns Devices, Services, etc. Java counterparts interface with the Android
 Bluetooth objects. E.g.
 
 For testing, the Android objects are __wrapped__ in:
-`android/java/src/org/chromium/device/bluetooth/wrapper/`. <br>
+* `android/java/src/org/chromium/device/bluetooth/wrapper/`.
+
 and __fakes__ implemented in:
-`test/android/java/src/org/chromium/device/bluetooth/Fakes.java`.
+* `test/android/java/src/org/chromium/device/bluetooth/Fakes.java`.
 
 Thus:
 
@@ -112,7 +113,7 @@ from Bluez to Fluoride. This project is titled [Floss](https://sites.google.com/
 Various Bluetooth UI surfaces in ChromeOS perform their operations by using APIs defined in
 [CrosBluetoothConfig] (https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/cros_bluetooth_config.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f)
 
-CrosBluetoothConfig in turn utilizes classes in this directory to interact with the Bluetooth stack. It is usually preferrerd to use CrosBluetoothConfig API for performing Bluetooth related operations and direct interaction with adapters in this directory should only be necessary if more granular functionality is required.
+CrosBluetoothConfig in turn utilizes classes in this directory to interact with the Bluetooth stack. It is usually preferred to use CrosBluetoothConfig API for performing Bluetooth related operations and direct interaction with adapters in this directory should only be necessary if more granular functionality is required.
 
 ## Testing
 See [test/README.md](test/README.md)

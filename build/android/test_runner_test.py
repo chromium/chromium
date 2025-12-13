@@ -123,13 +123,13 @@ class TestRunnerHelperTest(unittest.TestCase):
 
     # gtest
     t_instance_mock.TestType.return_value = 'gtest'
-    test_id = 'foo.bar.class.test1[28]'
+    test_id = 'FooTest.DoesBar'
     t_result_mock.GetNameForResultSink.return_value = test_id
     test_dict = test_runner._CreateStructuredTestDict(t_instance_mock,
                                                       t_result_mock)
     self.assertIsNone(test_dict['coarseName'])
-    self.assertEqual(test_dict['fineName'], 'foo_suite')
-    self.assertTrue(test_id in test_dict['caseNameComponents'])
+    self.assertEqual(test_dict['fineName'], 'FooTest')
+    self.assertTrue('DoesBar' in test_dict['caseNameComponents'])
     # pylint: disable=protected-access
 
 

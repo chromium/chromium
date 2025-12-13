@@ -45,8 +45,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 namespace tab_groups {
 namespace {
@@ -169,23 +169,32 @@ class SharedTabGroupDataErrorChecker : public SingleClientStatusChangeChecker {
   }
 };
 
-class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
+class SingleClientSharedTabGroupDataSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientSharedTabGroupDataSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientSharedTabGroupDataSyncTest() : SyncTest(SINGLE_CLIENT) {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        data_sharing::features::kDataSharingFeature};
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+    feature_overrides_.InitWithFeatures(enabled_features, {});
+  }
   ~SingleClientSharedTabGroupDataSyncTest() override = default;
 
   void SetUp() override {
-    feature_overrides_.InitWithFeatures(
-        {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {});
 #if BUILDFLAG(IS_ANDROID)
-    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    if (base::android::device_info::is_automotive()) {
       // TODO(crbug.com/399444939): Re-enable once automotive is supported.
       GTEST_SKIP() << "Test shouldn't run on automotive builders.";
     }
 #endif
     SyncTest::SetUp();
+  }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
   }
 
   void RegisterCollaboration(const syncer::CollaborationId& collaboration_id) {
@@ -263,7 +272,7 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
 
   void InjectTombstoneToFakeServer(
       const sync_pb::SharedTabGroupDataSpecifics& shared_group_specifics,
-      const CollaborationId& collaboration_id) {
+      const syncer::CollaborationId& collaboration_id) {
     const syncer::ClientTagHash shared_group_client_tag_hash =
         syncer::ClientTagHash::FromUnhashed(
             syncer::SHARED_TAB_GROUP_DATA,
@@ -306,18 +315,23 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
     SyncTest::SetUpOnMainThread();
   }
 
- protected:
+ private:
   base::test::ScopedFeatureList feature_overrides_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientSharedTabGroupDataSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
                        ShouldInitializeDataType) {
   ASSERT_TRUE(SetupSync());
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::SHARED_TAB_GROUP_DATA));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
                        ShouldDownloadGroupsAndTabsAtInitialSync) {
   const base::Uuid group_guid = base::Uuid::GenerateRandomV4();
   const syncer::CollaborationId kCollaborationId("collaboration");
@@ -367,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
 #define MAYBE_ShouldTransitionSavedToSharedTabGroup \
   ShouldTransitionSavedToSharedTabGroup
 #endif
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
                        MAYBE_ShouldTransitionSavedToSharedTabGroup) {
   syncer::CollaborationId kCollaborationId("collaboration");
 
@@ -453,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
 #define MAYBE_ShouldTransitionSavedToSharedGroupRemotely \
   ShouldTransitionSavedToSharedGroupRemotely
 #endif
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
                        MAYBE_ShouldTransitionSavedToSharedGroupRemotely) {
   const GURL kUrl = embedded_test_server()->GetURL(kDefaultURLPath);
   const syncer::CollaborationId kCollaborationId("collaboration");
@@ -522,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
                        ShouldIgnoreOriginatingSavedGroupAfterTransition) {
   const syncer::CollaborationId kCollaborationId("collaboration");
   const GURL kUrl = embedded_test_server()->GetURL(kDefaultURLPath);
@@ -573,11 +587,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
                   "title", TabGroupColorId::kCyan, kCollaborationId)));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
                        ShouldIgnoreTabGroupWithSameGuid) {
   ASSERT_TRUE(SetupSync());
 
-  const CollaborationId kCollaborationId("collaboration");
+  const syncer::CollaborationId kCollaborationId("collaboration");
   const base::Uuid kGroupGuid = base::Uuid::GenerateRandomV4();
 
   // Add a saved tab group locally and simulate a remote creation of a shared
@@ -625,11 +639,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
                   HasTabMetadata("Saved tab 2", "http://google.com/saved_2")));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
                        ShouldIgnoreTabUpdatesWithGuidOfSavedGroup) {
   ASSERT_TRUE(SetupSync());
 
-  const CollaborationId kCollaborationId("collaboration");
+  const syncer::CollaborationId kCollaborationId("collaboration");
 
   tab_groups::SavedTabGroup saved_group(u"Saved Title", TabGroupColorId::kGrey,
                                         /*urls=*/{}, /*position=*/0);
@@ -679,10 +693,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
 //    tombstones).
 // 5. Device #2 receives the tombstones and applies the deletion of the shared
 //    tab group. The originating saved tab group should be restored.
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
                        ShouldRestoreOriginatingSavedGroupOnShareFailure) {
   const GURL kUrl = embedded_test_server()->GetURL(kDefaultURLPath);
-  const CollaborationId kCollaborationId("collaboration");
+  const syncer::CollaborationId kCollaborationId("collaboration");
 
   ASSERT_TRUE(SetupClients());
   RegisterCollaboration(kCollaborationId);
@@ -740,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
       ElementsAre(HasSavedGroupMetadata(u"title", TabGroupColorId::kBlue)));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
                        ShouldFailDataTypeForCrossCollaborationUpdates) {
   ASSERT_TRUE(SetupSync());
 
@@ -777,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
 
 // Android doesn't support PRE_ tests.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
                        PRE_ShouldReloadDataOnBrowserRestart) {
   const base::Uuid group_guid = base::Uuid::GenerateRandomV4();
   const syncer::CollaborationId kCollaborationId("collaboration");
@@ -807,7 +821,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
   ASSERT_THAT(GetAllTabGroups(), SizeIs(1));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
                        ShouldReloadDataOnBrowserRestart) {
   const syncer::CollaborationId kCollaborationId("collaboration");
   ASSERT_TRUE(SetupClients());
@@ -825,15 +839,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
 class SingleClientSharedTabGroupVersioningSyncTest
     : public SingleClientSharedTabGroupDataSyncTest {
  public:
-  SingleClientSharedTabGroupVersioningSyncTest() = default;
-  ~SingleClientSharedTabGroupVersioningSyncTest() override = default;
-
-  void SetUp() override {
-    SetupFeatures();
-    SyncTest::SetUp();
-  }
-
-  void SetupFeatures() {
+  SingleClientSharedTabGroupVersioningSyncTest() {
     // The test is consists of 4 sessions.
     // Session 1: Version up-to-date.
     // Session 2: Version out of date.
@@ -841,32 +847,29 @@ class SingleClientSharedTabGroupVersioningSyncTest
     // Session 4: Version updated.
     // Setting the update chrome feature accordingly.
     bool version_out_of_date =
-        IsSpecificTest(
+        IsSpecificTestWithPrefix(
             "PRE_PRE_"
             "ShouldShowVersioningMessagesAfterRestart") ||
-        IsSpecificTest(
+        IsSpecificTestWithPrefix(
             "PRE_"
             "ShouldShowVersioningMessagesAfterRestart");
     if (version_out_of_date) {
       feature_overrides_.InitWithFeatures(
-          {data_sharing::features::kDataSharingFeature,
-           tab_groups::kTabGroupSyncServiceDesktopMigration,
-           data_sharing::features::kDataSharingEnableUpdateChromeUI,
+          {data_sharing::features::kDataSharingEnableUpdateChromeUI,
            data_sharing::features::kSharedDataTypesKillSwitch},
           {});
     } else {
       feature_overrides_.InitWithFeatures(
-          {data_sharing::features::kDataSharingFeature,
-           tab_groups::kTabGroupSyncServiceDesktopMigration},
-          {data_sharing::features::kSharedDataTypesKillSwitch,
-           data_sharing::features::kDataSharingEnableUpdateChromeUI});
+          {}, {data_sharing::features::kSharedDataTypesKillSwitch,
+               data_sharing::features::kDataSharingEnableUpdateChromeUI});
     }
   }
+  ~SingleClientSharedTabGroupVersioningSyncTest() override = default;
 
-  bool IsSpecificTest(const std::string& target_test_name) {
+  bool IsSpecificTestWithPrefix(const std::string& target_test_name_prefix) {
     std::string current_test_name =
         ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    return current_test_name == target_test_name;
+    return base::StartsWith(current_test_name, target_test_name_prefix);
   }
 
   bool ExpectMessageUiShouldBeShown(
@@ -885,10 +888,18 @@ class SingleClientSharedTabGroupVersioningSyncTest
     run_loop.Run();
     return actual_value;
   }
+
+ private:
+  base::test::ScopedFeatureList feature_overrides_;
 };
 
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientSharedTabGroupVersioningSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
 // Versioning test with version up-to-date.
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupVersioningSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupVersioningSyncTest,
                        PRE_PRE_PRE_ShouldShowVersioningMessagesAfterRestart) {
   const base::Uuid group_guid = base::Uuid::GenerateRandomV4();
   const syncer::CollaborationId kCollaborationId("collaboration");
@@ -930,7 +941,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupVersioningSyncTest,
 }
 
 // Versioning test with version out-of-date after restart.
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupVersioningSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupVersioningSyncTest,
                        PRE_PRE_ShouldShowVersioningMessagesAfterRestart) {
   // Restart chrome with chrome version out-of-date.
   const syncer::CollaborationId kCollaborationId("collaboration");
@@ -962,7 +973,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupVersioningSyncTest,
 }
 
 // Versioning test: Restart again with version out-of-date.
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupVersioningSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupVersioningSyncTest,
                        PRE_ShouldShowVersioningMessagesAfterRestart) {
   // Restart chrome with chrome version out-of-date.
   const syncer::CollaborationId kCollaborationId("collaboration");
@@ -994,7 +1005,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupVersioningSyncTest,
 }
 
 // Versioning test with version updated just now.
-IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupVersioningSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupVersioningSyncTest,
                        ShouldShowVersioningMessagesAfterRestart) {
   // Restart chrome with version updated.
   const base::Uuid group_guid = base::Uuid::GenerateRandomV4();

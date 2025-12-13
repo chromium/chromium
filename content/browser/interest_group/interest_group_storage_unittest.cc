@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -53,6 +54,10 @@
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace content {
 namespace {
@@ -4105,6 +4110,14 @@ class InterestGroupStorageWithNoIdleFastForwardTest
 };
 
 TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
   AdAuctionEventRecord record_view;
@@ -4128,7 +4141,7 @@ TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire) {
             storage->CheckViewClickCountsForProviderAndEligibleInDbForTesting(
                 kViewClickProviderOrigin1, kViewClickEligibleOrigin1));
 
-  // Quickly fast fordward by 91 days (not 90 to account for rounding),
+  // Quickly fast forward by 91 days (not 90 to account for rounding),
   // then a bit more to get maintenance to happen with that much time elapsed.
   FastForwardWithoutIdlingBy(task_environment(), *storage, base::Days(91));
   task_environment().FastForwardBy(kIdlePeriod);
@@ -4166,6 +4179,38 @@ TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire) {
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
 }
 
+// Regression check for no failures if compaction has to remove multiple rows.
+TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire2) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record_view;
+  record_view.type = AdAuctionEventRecord::Type::kView;
+  record_view.providing_origin = kViewClickProviderOrigin1;
+  record_view.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_view.IsValid());
+
+  // View from another provider.
+  AdAuctionEventRecord record_view2;
+  record_view2.type = AdAuctionEventRecord::Type::kView;
+  record_view2.providing_origin = kViewClickProviderOrigin2;
+  record_view2.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_view2.IsValid());
+
+  base::Time start_time = base::Time::Now();
+
+  storage->RecordViewClick(record_view);
+  storage->RecordViewClick(record_view2);
+
+  // Quickly fast forward by 91 days (not 90 to account for rounding),
+  // then a bit more to get maintenance to happen with that much time elapsed.
+  FastForwardWithoutIdlingBy(task_environment(), *storage, base::Days(91));
+  task_environment().FastForwardBy(kIdlePeriod);
+
+  // Check that maintenance (and therefore compaction) has occurred.
+  EXPECT_LE(start_time + base::Days(91),
+            storage->GetLastMaintenanceTimeForTesting());
+}
+
 // Like InterestGroupStorage.ExpirationDeletesMetadata, but it also checks edge
 // cases near the expiration point.
 //
@@ -4180,6 +4225,14 @@ TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire) {
 // enforced by maintenance, and when re-joining without maintenance.
 TEST_F(InterestGroupStorageWithNoIdleFastForwardTest,
        ExpirationDeletesMetadata_LargeLifetimes) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   base::HistogramTester histograms;
 
   // NOTE: These must be large enough for the fast forwards and maintenance

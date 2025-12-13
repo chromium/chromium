@@ -18,7 +18,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"

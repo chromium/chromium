@@ -10,14 +10,16 @@ import android.view.View;
 import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.ScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -28,10 +30,13 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
+import java.util.function.Supplier;
+
 /**
  * The coordinator for a status indicator that is positioned below the status bar and is persistent.
  * Typically used to relay status, e.g. indicate user is offline.
  */
+@NullMarked
 public class StatusIndicatorCoordinator implements TopControlLayer {
 
     /** An observer that will be notified of the changes to the status indicator, e.g. height. */
@@ -61,7 +66,7 @@ public class StatusIndicatorCoordinator implements TopControlLayer {
     private final ResourceManager mResourceManager;
     private boolean mResourceRegistered;
     private final Activity mActivity;
-    private final Callback<Runnable> mRequestRender;
+    private final Callback<@Nullable Runnable> mRequestRender;
     private boolean mInitialized;
     private final TopControlsStacker mTopControlsStacker;
 
@@ -88,7 +93,7 @@ public class StatusIndicatorCoordinator implements TopControlLayer {
             TabObscuringHandler tabObscuringHandler,
             Supplier<Integer> statusBarColorWithoutStatusIndicatorSupplier,
             Supplier<Boolean> canAnimateNativeBrowserControls,
-            Callback<Runnable> requestRender,
+            Callback<@Nullable Runnable> requestRender,
             TopControlsStacker topControlsStacker) {
         mActivity = activity;
         mResourceManager = resourceManager;
@@ -123,8 +128,8 @@ public class StatusIndicatorCoordinator implements TopControlLayer {
      * @param iconTint Status icon tint.
      */
     public void show(
-            @NonNull String statusText,
-            Drawable statusIcon,
+            String statusText,
+            @Nullable Drawable statusIcon,
             @ColorInt int backgroundColor,
             @ColorInt int textColor,
             @ColorInt int iconTint) {
@@ -152,8 +157,8 @@ public class StatusIndicatorCoordinator implements TopControlLayer {
      * @param animationCompleteCallback The callback that will be run once the animations end.
      */
     public void updateContent(
-            @NonNull String statusText,
-            Drawable statusIcon,
+            String statusText,
+            @Nullable Drawable statusIcon,
             @ColorInt int backgroundColor,
             @ColorInt int textColor,
             @ColorInt int iconTint,
@@ -197,13 +202,14 @@ public class StatusIndicatorCoordinator implements TopControlLayer {
         return StatusIndicatorSceneLayer.class;
     }
 
+    @Initializer
     private void initialize() {
         final ViewStub stub = mActivity.findViewById(R.id.status_indicator_stub);
         final ViewResourceFrameLayout root = (ViewResourceFrameLayout) stub.inflate();
         mResourceId = root.getId();
         mSceneLayer.setResourceId(mResourceId);
         mResourceAdapter = root.getResourceAdapter();
-        Callback<Runnable> invalidateCompositorView =
+        Callback<@Nullable Runnable> invalidateCompositorView =
                 callback -> {
                     mResourceAdapter.invalidate(null);
                     mRequestRender.onResult(callback);
@@ -261,6 +267,11 @@ public class StatusIndicatorCoordinator implements TopControlLayer {
     @Override
     public @TopControlVisibility int getTopControlVisibility() {
         return mIsShowing ? TopControlVisibility.VISIBLE : TopControlVisibility.HIDDEN;
+    }
+
+    @Override
+    public @ScrollBehavior int getScrollBehavior() {
+        return ScrollBehavior.NEVER_SCROLLABLE;
     }
 
     StatusIndicatorMediator getMediatorForTesting() {

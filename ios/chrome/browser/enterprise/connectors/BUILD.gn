@@ -13,7 +13,6 @@ source_set("connectors") {
   ]
 
   deps = [
-    ":features",
     ":util",
     "//base",
     "//components/enterprise",
@@ -22,7 +21,7 @@ source_set("connectors") {
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
-    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/enterprise/common",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
@@ -47,6 +46,7 @@ source_set("interstitials") {
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/security_interstitials/core",
+    "//ios/chrome/browser/enterprise/common",
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/enterprise/connectors/reporting:util",
     "//ios/chrome/browser/safe_browsing/model",
@@ -64,7 +64,6 @@ source_set("util") {
   ]
 
   deps = [
-    ":features",
     "//base",
     "//components/enterprise",
     "//components/enterprise/common/proto:connectors_proto",
@@ -73,6 +72,7 @@ source_set("util") {
     "//components/policy/core/common",
     "//components/profile_metrics",
     "//components/security_interstitials/core:unsafe_resource",
+    "//ios/chrome/browser/enterprise/common",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
@@ -80,15 +80,6 @@ source_set("util") {
     "//ios/web/common:user_agent",
     "//ios/web/public",
   ]
-}
-
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-
-  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -102,7 +93,6 @@ source_set("unit_tests") {
 
   deps = [
     ":connectors",
-    ":features",
     ":interstitials",
     "//base",
     "//components/enterprise:test_support",
@@ -117,6 +107,7 @@ source_set("unit_tests") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//ios/chrome/browser/enterprise/common/test",
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",

@@ -36,7 +36,7 @@ suite('LanguagesPage', function() {
     assertTrue(!!i18nString);
     const menuItems = actionMenu.querySelectorAll<T>('.dropdown-item');
     const menuItem = Array.from(menuItems).find(
-        item => item.textContent!.trim() === i18nString);
+        item => item.textContent.trim() === i18nString);
     assertTrue(!!menuItem, 'Menu item "' + i18nKey + '" not found');
     return menuItem;
   }

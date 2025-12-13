@@ -152,7 +152,6 @@ void BindingKeyRegistrationTokenHelper::SignHeaderAndPayload(
 
   unexportable_key_service_->SignSlowlyAsync(
       *binding_key, base::as_byte_span(*header_and_payload), kTaskPriority,
-      /*max_retries=*/0,
       base::BindOnce(
           &BindingKeyRegistrationTokenHelper::CreateRegistrationToken,
           weak_ptr_factory_.GetWeakPtr(), std::string(*header_and_payload),
@@ -171,9 +170,11 @@ void BindingKeyRegistrationTokenHelper::CreateRegistrationToken(
 
   crypto::SignatureVerifier::SignatureAlgorithm algorithm =
       *unexportable_key_service_->GetAlgorithm(binding_key);
+  std::vector<uint8_t> pubkey =
+      *unexportable_key_service_->GetSubjectPublicKeyInfo(binding_key);
   std::optional<std::string> registration_token =
       signin::AppendSignatureToHeaderAndPayload(header_and_payload, algorithm,
-                                                *signature);
+                                                pubkey, *signature);
   if (!registration_token.has_value()) {
     std::move(callback).Run(base::unexpected(Error::kAppendSignatureFailure));
     return;

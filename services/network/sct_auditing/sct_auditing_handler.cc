@@ -214,18 +214,15 @@ std::optional<std::string> SCTAuditingHandler::SerializeData() {
     reports.Append(std::move(report_entry));
   }
 
-  std::string output;
-  if (!base::JSONWriter::Write(reports, &output)) {
-    return std::nullopt;
-  }
-  return output;
+  return base::WriteJson(reports);
 }
 
 void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
   // Parse the serialized reports.
-  std::optional<base::Value> value = base::JSONReader::Read(serialized);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(serialized, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value || !value->is_list()) {
     base::UmaHistogramCounts100(
         "Security.SCTAuditing.NumPersistedReportsLoaded", 0);

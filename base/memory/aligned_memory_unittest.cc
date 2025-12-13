@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/memory/aligned_memory.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,25 +42,25 @@ TEST(AlignedMemoryTest, DynamicAllocation) {
   void* p = AlignedAlloc(8, 8);
   ASSERT_TRUE(p);
   EXPECT_TRUE(IsAligned(p, 8));
-  memset(p, 0, 8);  // Fill to check allocated size under ASAN.
+  UNSAFE_TODO(memset(p, 0, 8));  // Fill to check allocated size under ASAN.
   AlignedFree(p);
 
   p = AlignedAlloc(8, 16);
   ASSERT_TRUE(p);
   EXPECT_TRUE(IsAligned(p, 16));
-  memset(p, 0, 8);  // Fill to check allocated size under ASAN.
+  UNSAFE_TODO(memset(p, 0, 8));  // Fill to check allocated size under ASAN.
   AlignedFree(p);
 
   p = AlignedAlloc(8, 256);
   ASSERT_TRUE(p);
   EXPECT_TRUE(IsAligned(p, 256));
-  memset(p, 0, 8);  // Fill to check allocated size under ASAN.
+  UNSAFE_TODO(memset(p, 0, 8));  // Fill to check allocated size under ASAN.
   AlignedFree(p);
 
   p = AlignedAlloc(8, 4096);
   ASSERT_TRUE(p);
   EXPECT_TRUE(IsAligned(p, 4096));
-  memset(p, 0, 8);  // Fill to check allocated size under ASAN.
+  UNSAFE_TODO(memset(p, 0, 8));  // Fill to check allocated size under ASAN.
   AlignedFree(p);
 }
 

@@ -14,7 +14,6 @@ import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-thresh
 import type {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import type {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -44,7 +43,7 @@ function getPlaceholders(): GooglePhotosPhotosRow[] {
     return {
       id: PLACEHOLDER_ID,
       name: '',
-      date: {data: []},
+      date: '',
       url: {url: ''},
       dedupKey: null,
       location: null,
@@ -475,7 +474,7 @@ export class GooglePhotosPhotosElement extends WithPersonalizationStore {
     const sections: GooglePhotosPhotosSection[] = [];
 
     photos.forEach((photo, i) => {
-      const date = mojoString16ToString(photo.date);
+      const date = photo.date;
 
       // Find/create the appropriate |section| in which to insert |photo|.
       let section = sections[sections.length - 1];
@@ -560,7 +559,7 @@ export class GooglePhotosPhotosElement extends WithPersonalizationStore {
     if (!photo || photo.id === PLACEHOLDER_ID) {
       return undefined;
     }
-    return mojoString16ToString(photo.date);
+    return photo.date;
   }
 
   /** Returns the aria posinset index for the photo at index |i|. */

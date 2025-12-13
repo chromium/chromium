@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/web/model/sad_tab_tab_helper_delegate.h"
 
 @protocol OverscrollActionsControllerDelegate;
+@class ContextMenuConfigurationProvider;
 
 // Coordinator that displays a SadTab view.
 @interface SadTabCoordinator : ChromeCoordinator <SadTabTabHelperDelegate>
@@ -19,6 +20,9 @@
     overscrollDelegate;
 
 @property(nonatomic, readonly) UIViewController* viewController;
+
+@property(nonatomic, strong)
+    ContextMenuConfigurationProvider* contextMenuProvider;
 
 // YES if page load for this URL has failed more than once.
 @property(nonatomic) BOOL repeatedFailure;

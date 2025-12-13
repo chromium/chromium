@@ -34,6 +34,7 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "build/buildflag.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/features.h"
@@ -63,6 +64,9 @@ namespace {
 
 void RecordSharedWorkerUsage(LocalDOMWindow* window) {
   UseCounter::Count(window, WebFeature::kSharedWorkerStart);
+#if BUILDFLAG(IS_ANDROID)
+  UseCounter::Count(window, WebFeature::kSharedWorkerStartOnAndroid);
+#endif
 
   if (window->IsCrossSiteSubframe())
     UseCounter::Count(window, WebFeature::kThirdPartySharedWorker);
@@ -86,7 +90,8 @@ SharedWorker* SharedWorker::Create(
     const V8UnionSharedWorkerOptionsOrString* name_or_options,
     ExceptionState& exception_state) {
   String compliant_url = TrustedTypesCheckForScriptURL(
-      url, context, "SharedWorker", "create", exception_state);
+      url, context, trusted_types_names::kSharedWorker,
+      trusted_types_names::kCreate, exception_state);
   if (exception_state.HadException()) {
     return 0;
   }
@@ -140,8 +145,8 @@ SharedWorker* SharedWorker::CreateImpl(
   worker->port_->SetIsSharedWorkerPort(true);
   if (!window->GetSecurityOrigin()->CanAccessSharedWorkers()) {
     exception_state.ThrowSecurityError(
-        "Access to shared workers is denied to origin '" +
-        window->GetSecurityOrigin()->ToString() + "'.");
+        StrCat({"Access to shared workers is denied to origin '",
+                window->GetSecurityOrigin()->ToString(), "'."}));
     return nullptr;
   } else if (window->GetSecurityOrigin()->IsLocal()) {
     UseCounter::Count(window, WebFeature::kFileAccessedSharedWorker);
@@ -237,8 +242,8 @@ SharedWorker* SharedWorker::CreateImpl(
 
   SharedWorkerClientHolder::From(*window)->Connect(
       worker, std::move(remote_port), script_url, std::move(blob_url_token),
-      std::move(options), same_site_cookies, context->UkmSourceID(),
-      connector_override, extended_lifetime);
+      std::move(options), same_site_cookies, connector_override,
+      extended_lifetime);
 
   return worker;
 }

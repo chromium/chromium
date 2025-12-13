@@ -74,9 +74,9 @@ class AwPrefetchManager {
   int StartPrefetchRequest(
       JNIEnv* env,
       const std::string& url,
-      const base::android::JavaParamRef<jobject>& prefetch_params,
-      const base::android::JavaParamRef<jobject>& callback,
-      const base::android::JavaParamRef<jobject>& callback_executor);
+      const base::android::JavaRef<jobject>& prefetch_params,
+      const base::android::JavaRef<jobject>& callback,
+      const base::android::JavaRef<jobject>& callback_executor);
 
   void CancelPrefetch(JNIEnv* env, jint prefetch_key);
 

@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -36,6 +37,7 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -507,7 +509,8 @@ void SynchronousLayerTreeFrameSink::InvokeComposite(
   client_->OnDraw(adjusted_transform, gfx::Rect(viewport.size()),
                   in_software_draw_, false /*skip_draw*/);
 
-  if (did_submit_frame_) {
+  if (did_submit_frame_ &&
+      !base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
     // This must happen after unwinding the stack and leaving the compositor.
     // Usually it is a separate task but we just defer it until OnDraw
     // completes instead.
@@ -616,10 +619,10 @@ void SynchronousLayerTreeFrameSink::OnNeedsBeginFrames(
     bool needs_begin_frames) {
   if (needs_begin_frames_ != needs_begin_frames) {
     if (needs_begin_frames) {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames",
-                                        this);
+      TRACE_EVENT_BEGIN("cc,benchmark", "NeedsBeginFrames",
+                        perfetto::Track::FromPointer(this));
     } else {
-      TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
+      TRACE_EVENT_END("cc,benchmark", perfetto::Track::FromPointer(this));
     }
   }
   needs_begin_frames_ = needs_begin_frames;

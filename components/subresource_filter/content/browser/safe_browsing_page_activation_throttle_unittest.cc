@@ -31,7 +31,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client_request.h"
 #include "components/subresource_filter/content/browser/throttle_manager_test_support.h"
-#include "components/subresource_filter/content/shared/browser/utils.h"
+#include "components/subresource_filter/content/browser/utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
@@ -54,6 +54,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
@@ -95,7 +96,7 @@ class TestSafeBrowsingActivationThrottleDelegate
       mojom::ActivationLevel effective_level,
       ActivationDecision* decision) override {
     CHECK(handle->IsInMainFrame());
-    if (allowlisted_hosts_.count(handle->GetURL().host())) {
+    if (allowlisted_hosts_.count(handle->GetURL().GetHost())) {
       if (effective_level ==
           subresource_filter::mojom::ActivationLevel::kEnabled) {
         *decision = subresource_filter::ActivationDecision::URL_ALLOWLISTED;
@@ -107,7 +108,7 @@ class TestSafeBrowsingActivationThrottleDelegate
 
   void AllowlistInCurrentWebContents(const GURL& url) {
     ASSERT_TRUE(url.SchemeIsHTTPOrHTTPS());
-    allowlisted_hosts_.insert(url.host());
+    allowlisted_hosts_.insert(url.GetHost());
   }
 
   void ClearAllowlist() { allowlisted_hosts_.clear(); }

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -15,7 +14,7 @@
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -25,7 +24,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Mock;
 using testing::StrictMock;
 
@@ -91,39 +89,33 @@ TEST_F(SessionDataServiceTest, StartCleanup) {
 }
 
 TEST_F(SessionDataServiceTest, CleanupOnWindowClosed) {
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
-  auto new_window = CreateBrowserWindow();
-  auto new_browser =
-      CreateBrowser(profile(), Browser::TYPE_NORMAL, false, new_window.get());
-  EXPECT_EQ(2U, browser_list->size());
+  auto new_browser = CreateBrowser(profile(), Browser::TYPE_NORMAL, false);
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
 
   new_browser.reset();
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   Mock::VerifyAndClearExpectations(deleter());
 
   bool skip_session_cookies = browser_defaults::kBrowserAliveWithNoWindows;
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(skip_session_cookies, _));
-  set_browser(nullptr);
-  EXPECT_EQ(0U, browser_list->size());
+  release_browser();
+  EXPECT_EQ(0U, chrome::GetTotalBrowserCount());
   Mock::VerifyAndClearExpectations(deleter());
 }
 
 TEST_F(SessionDataServiceTest, CleanupOnWindowClosedWithOtherProfileOpen) {
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   auto* new_profile = profile_manager()->CreateTestingProfile("second_profile");
-  auto new_window = CreateBrowserWindow();
-  auto new_browser =
-      CreateBrowser(new_profile, Browser::TYPE_NORMAL, false, new_window.get());
-  EXPECT_EQ(2U, browser_list->size());
+  auto new_browser = CreateBrowser(new_profile, Browser::TYPE_NORMAL, false);
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
 
   bool skip_session_cookies = browser_defaults::kBrowserAliveWithNoWindows;
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(skip_session_cookies, _));
-  set_browser(nullptr);
-  EXPECT_EQ(1U, browser_list->size());
+  release_browser();
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   Mock::VerifyAndClearExpectations(deleter());
 }
 
@@ -131,7 +123,7 @@ TEST_F(SessionDataServiceTest, RepeatCleanupAfterNewWindowOpened) {
   // Close browser and expect cleanup.
   bool skip_session_cookies = browser_defaults::kBrowserAliveWithNoWindows;
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(skip_session_cookies, _));
-  set_browser(nullptr);
+  release_browser();
   Mock::VerifyAndClearExpectations(deleter());
 
   // Additional requests for cleanup will be ignored.
@@ -139,9 +131,7 @@ TEST_F(SessionDataServiceTest, RepeatCleanupAfterNewWindowOpened) {
   Mock::VerifyAndClearExpectations(deleter());
 
   // Unless a new browser is opened.
-  auto new_window = CreateBrowserWindow();
-  auto new_browser =
-      CreateBrowser(profile(), Browser::TYPE_NORMAL, false, new_window.get());
+  auto new_browser = CreateBrowser(profile(), Browser::TYPE_NORMAL, false);
   Mock::VerifyAndClearExpectations(deleter());
 
   // And another cleanup is started.
@@ -186,13 +176,13 @@ TEST_F(SessionDataServiceTest, ContinueUnfinishedDeletions) {
   // Deletion is not marked as finished, so it will continue on restart.
   auto new_deleter = CreateDeleter();
   EXPECT_CALL(*new_deleter, DeleteSessionOnlyData(true, _))
-      .WillOnce(Invoke(&RunCallback));
+      .WillOnce(&RunCallback);
   RestartService(std::move(new_deleter));
   Mock::VerifyAndClearExpectations(deleter());
 
   // At shutdown, another deletion is started. This time it finishes.
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(false, _))
-      .WillOnce(Invoke(&RunCallback));
+      .WillOnce(&RunCallback);
   service()->StartCleanup();
   Mock::VerifyAndClearExpectations(deleter());
 

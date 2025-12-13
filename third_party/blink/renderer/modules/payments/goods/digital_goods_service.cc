@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/digital_goods/mojom/digital_goods.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -116,7 +117,7 @@ ScriptPromise<IDLSequence<ItemDetails>> DigitalGoodsService::getDetails(
   }
 
   mojo_service_->GetDetails(
-      item_ids, WTF::BindOnce(&OnGetDetailsResponse, WrapPersistent(resolver)));
+      item_ids, BindOnce(&OnGetDetailsResponse, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -127,8 +128,8 @@ ScriptPromise<IDLSequence<PurchaseDetails>> DigitalGoodsService::listPurchases(
           script_state);
   auto promise = resolver->Promise();
 
-  mojo_service_->ListPurchases(WTF::BindOnce(&ResolveWithPurchaseReferenceList,
-                                             WrapPersistent(resolver)));
+  mojo_service_->ListPurchases(
+      BindOnce(&ResolveWithPurchaseReferenceList, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -139,8 +140,8 @@ DigitalGoodsService::listPurchaseHistory(ScriptState* script_state) {
           script_state);
   auto promise = resolver->Promise();
 
-  mojo_service_->ListPurchaseHistory(WTF::BindOnce(
-      &ResolveWithPurchaseReferenceList, WrapPersistent(resolver)));
+  mojo_service_->ListPurchaseHistory(
+      BindOnce(&ResolveWithPurchaseReferenceList, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -157,8 +158,7 @@ ScriptPromise<IDLUndefined> DigitalGoodsService::consume(
   }
 
   mojo_service_->Consume(
-      purchase_token,
-      WTF::BindOnce(&OnConsumeResponse, WrapPersistent(resolver)));
+      purchase_token, BindOnce(&OnConsumeResponse, WrapPersistent(resolver)));
   return promise;
 }
 

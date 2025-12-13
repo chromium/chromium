@@ -28,16 +28,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
-namespace performance_manager {
-
-namespace v8_memory {
+namespace performance_manager::v8_memory {
 
 using WebMemoryImplPMTest = V8MemoryPerformanceManagerTestHarness;
 
 class WebMemoryImplTest : public WebMemoryTestHarness {
  protected:
-  void MeasureAndVerify(FrameNodeImpl* frame,
-                        base::flat_map<std::string, Bytes> expected);
+  void MeasureAndVerify(
+      FrameNodeImpl* frame,
+      base::flat_map<std::string, std::optional<base::ByteCount>> expected);
 };
 
 class FakeSecurityChecker : public WebMeasureMemorySecurityChecker {
@@ -54,14 +53,14 @@ class FakeSecurityChecker : public WebMeasureMemorySecurityChecker {
 
 void WebMemoryImplTest::MeasureAndVerify(
     FrameNodeImpl* frame,
-    base::flat_map<std::string, Bytes> expected) {
+    base::flat_map<std::string, std::optional<base::ByteCount>> expected) {
   bool measurement_done = false;
   WebMemoryMeasurer web_memory(
       frame->GetFrameToken(),
       V8DetailedMemoryRequest::MeasurementMode::kDefault,
       base::BindLambdaForTesting([&measurement_done, &expected](
                                      mojom::WebMemoryMeasurementPtr result) {
-        base::flat_map<std::string, Bytes> actual;
+        base::flat_map<std::string, std::optional<base::ByteCount>> actual;
         for (const auto& entry : result->breakdown) {
           EXPECT_EQ(1u, entry->attribution.size());
           std::string attribution_tag =
@@ -70,7 +69,7 @@ void WebMemoryImplTest::MeasureAndVerify(
                   ? *entry->attribution[0]->url
                   : *entry->attribution[0]->src;
           actual[attribution_tag] =
-              entry->memory ? Bytes{entry->memory->bytes} : std::nullopt;
+              entry->memory.has_value() ? entry->memory : std::nullopt;
         }
         EXPECT_EQ(expected, actual);
         measurement_done = true;
@@ -81,35 +80,36 @@ void WebMemoryImplTest::MeasureAndVerify(
 }
 
 TEST_F(WebMemoryImplTest, MeasurerIncludesSameOriginRelatedFrames) {
-  auto* main = AddFrameNode("http://foo.com/", Bytes{10u});
+  auto* main = AddFrameNode("http://foo.com/", base::ByteCount(10));
 
-  AddFrameNode("http://foo.com/iframe", Bytes{20}, main);
+  AddFrameNode("http://foo.com/iframe", base::ByteCount(20), main);
 
   MeasureAndVerify(main, {
-                             {"http://foo.com/", Bytes{10u}},
-                             {"http://foo.com/iframe", Bytes{20u}},
+                             {"http://foo.com/", base::ByteCount(10)},
+                             {"http://foo.com/iframe", base::ByteCount(20)},
                          });
 }
 
 TEST_F(WebMemoryImplTest, MeasurerIncludesCrossOriginFrames) {
-  auto* main = AddFrameNode("http://foo.com", Bytes{10u});
+  auto* main = AddFrameNode("http://foo.com", base::ByteCount(10));
 
-  AddFrameNode("http://bar.com/iframe", Bytes{20}, main, "bar_id",
+  AddFrameNode("http://bar.com/iframe", base::ByteCount(20), main, "bar_id",
                "http://bar.com/iframe_src");
 
-  MeasureAndVerify(main, {{"http://foo.com/", Bytes{10u}},
+  MeasureAndVerify(main, {{"http://foo.com/", base::ByteCount(10)},
                           {
                               "http://bar.com/iframe_src",
-                              Bytes{20},
+                              base::ByteCount(20),
                           }});
 }
 
 TEST_F(WebMemoryImplTest, MeasurerSkipsCrossBrowserContextGroupFrames) {
-  auto* main = AddFrameNode("http://foo.com", Bytes{10u});
+  auto* main = AddFrameNode("http://foo.com", base::ByteCount(10));
 
-  AddCrossBrowsingInstanceFrameNode("http://foo.com/unrelated", Bytes{20});
+  AddCrossBrowsingInstanceFrameNode("http://foo.com/unrelated",
+                                    base::ByteCount(20));
 
-  MeasureAndVerify(main, {{"http://foo.com/", Bytes{10u}}});
+  MeasureAndVerify(main, {{"http://foo.com/", base::ByteCount(10)}});
 }
 
 TEST_F(WebMemoryImplPMTest, WebMeasureMemory) {
@@ -125,8 +125,8 @@ TEST_F(WebMemoryImplPMTest, WebMeasureMemory) {
         const auto& entry = result->breakdown[0];
         EXPECT_EQ(1u, entry->attribution.size());
         EXPECT_EQ(kMainFrameUrl, *(entry->attribution[0]->url));
-        ASSERT_TRUE(entry->memory);
-        EXPECT_EQ(1001u, entry->memory->bytes);
+        ASSERT_TRUE(entry->memory.has_value());
+        EXPECT_EQ(base::ByteCount(1001), entry->memory);
         run_loop.Quit();
       });
   auto bad_message_callback =
@@ -148,7 +148,8 @@ TEST_F(WebMemoryImplPMTest, WebMeasureMemory) {
   MockV8DetailedMemoryReporter mock_reporter;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    AddIsolateMemoryUsage(frame_token, 1001u, data->isolates[0].get());
+    AddIsolateMemoryUsage(frame_token, base::ByteCount(1001),
+                          data->isolates[0].get());
     ExpectBindAndRespondToQuery(&mock_reporter, std::move(data),
                                 main_process_id());
   }
@@ -189,7 +190,8 @@ TEST_F(WebMemoryImplPMTest, MeasurementInterrupted) {
     ExpectBindReceiver(&mock_reporter, child_process_id());
 
     auto data = NewPerProcessV8MemoryUsage(1);
-    AddIsolateMemoryUsage(frame_token, 1001u, data->isolates[0].get());
+    AddIsolateMemoryUsage(frame_token, base::ByteCount(1001),
+                          data->isolates[0].get());
     ExpectQueryAndDelayReply(&mock_reporter, base::Seconds(10),
                              std::move(data));
   }
@@ -232,6 +234,4 @@ TEST_F(WebMemoryImplPMTest, MeasurementDisallowed) {
   run_loop.Run();
 }
 
-}  // namespace v8_memory
-
-}  // namespace performance_manager
+}  // namespace performance_manager::v8_memory

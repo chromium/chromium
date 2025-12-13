@@ -557,12 +557,14 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestName, " missing or invalid."});
   }
+  std::u16string title_string;
   if (!base::UTF8ToUTF16(name_string->data(), name_string->size(),
-                         &app_info->title) ||
-      app_info->title.empty()) {
+                         &title_string) ||
+      title_string.empty()) {
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestName, " invalid: ", *name_string});
   }
+  app_info->title = std::move(title_string);
 
   // scope
   const std::string* scope_string =
@@ -576,7 +578,8 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestScope, " invalid: ", *scope_string});
   }
-  if (!base::StartsWith(app_info->start_url().path(), app_info->scope.path(),
+  if (!base::StartsWith(app_info->start_url().GetPath(),
+                        app_info->scope.GetPath(),
                         base::CompareCase::SENSITIVE)) {
     return base::StrCat(
         {file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", kOfflineManifestScope,

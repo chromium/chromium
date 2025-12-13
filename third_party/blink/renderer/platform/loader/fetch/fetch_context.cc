@@ -58,12 +58,7 @@ void FetchContext::UpgradeResourceRequestForLoader(
     ResourceRequest&,
     const ResourceLoaderOptions&) {}
 
-bool FetchContext::StartSpeculativeImageDecode(Resource* resource,
-                                               base::OnceClosure callback) {
-  return false;
-}
-
-bool FetchContext::SpeculativeDecodeRequestInFlight() const {
+bool FetchContext::StartSpeculativeImageDecode(Resource* resource) {
   return false;
 }
 

@@ -54,7 +54,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string request_serialized = serializer->Serialize(request);
 
   // Any request we serialize should be valid JSON.
-  CHECK(base::JSONReader::Read(request_serialized));
+  CHECK(base::JSONReader::Read(request_serialized,
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   return 0;
 }
 }  // namespace update_client

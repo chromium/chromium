@@ -35,22 +35,6 @@ constexpr internal::MappedType<Map>* FindOrNull(Map& map, const Key& key) {
   return it != map.end() ? &it->second : nullptr;
 }
 
-// Returns the const pointer value associated with the given key. If none is
-// found, null is returned. The function is designed to be used with a map of
-// keys to pointers or smart pointers.
-//
-// This function does not distinguish between a missing key and a key mapped
-// to a null value.
-template <typename Map,
-          typename Key = Map::key_type,
-          typename MappedElementType =
-              std::pointer_traits<internal::MappedType<Map>>::element_type>
-constexpr const MappedElementType* FindPtrOrNull(const Map& map,
-                                                 const Key& key) {
-  auto it = map.find(key);
-  return it != map.end() ? base::to_address(it->second) : nullptr;
-}
-
 // Returns the pointer value associated with the given key. If none is found,
 // null is returned. The function is designed to be used with a map of keys to
 // pointers or smart pointers.
@@ -61,7 +45,7 @@ template <typename Map,
           typename Key = Map::key_type,
           typename MappedElementType =
               std::pointer_traits<internal::MappedType<Map>>::element_type>
-constexpr MappedElementType* FindPtrOrNull(Map& map, const Key& key) {
+constexpr MappedElementType* FindPtrOrNull(const Map& map, const Key& key) {
   auto it = map.find(key);
   return it != map.end() ? base::to_address(it->second) : nullptr;
 }
@@ -85,7 +69,7 @@ constexpr MappedElementType* FindPtrOrNull(Map& map, const Key& key) {
 // TODO(crbug.com/376532871): This can be removed once map::operator[] and
 // map::insert_or_assign support heterogenous key overloads, in C++26.
 template <typename Map,
-          typename Key,
+          typename Key = Map::key_type,
           typename MappedElementType =
               std::pointer_traits<internal::MappedType<Map>>::element_type>
 Map::iterator InsertOrAssign(Map& map,

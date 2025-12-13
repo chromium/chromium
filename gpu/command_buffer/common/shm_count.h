@@ -8,6 +8,7 @@
 #include <atomic>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
@@ -66,6 +67,9 @@ class GPU_COMMAND_BUFFER_COMMON_EXPORT GpuProcessShmCount
   virtual void Increment();
   virtual void Decrement();
 };
+
+// Ref counted GpuProcessShmCount
+using RefCountedGpuProcessShmCount = base::RefCountedData<GpuProcessShmCount>;
 
 // Provides read-only access to the count for the browser process.
 // GpuProcessHostShmCount will initialize a new mojo shared buffer. The

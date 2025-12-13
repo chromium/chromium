@@ -35,8 +35,7 @@ WGSLLanguageFeatures::IterationSource::IterationSource(
 
 bool WGSLLanguageFeatures::IterationSource::FetchNextItem(
     ScriptState* script_state,
-    String& value,
-    ExceptionState& exception_state) {
+    String& value) {
   if (iter_ == features_.end()) {
     return false;
   }

@@ -92,7 +92,7 @@ void UpdateProcessTypeAndTitles(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (!is_webui && extension_set) {
-    const Extension* extension = extension_set->GetByID(page_url.host());
+    const Extension* extension = extension_set->GetByID(page_url.GetHost());
     if (extension) {
       process.titles.push_back(base::UTF8ToUTF16(extension->name()));
       process.renderer_type = ProcessMemoryInformation::RENDERER_EXTENSION;
@@ -354,17 +354,24 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
   if (memory_instrumentation) {
     memory_instrumentation->RequestPrivateMemoryFootprint(
         base::kNullProcessId,
-        base::BindOnce(&MemoryDetails::DidReceiveMemoryDump, this));
+        base::BindOnce(
+            [](scoped_refptr<MemoryDetails> details,
+               memory_instrumentation::mojom::RequestOutcome outcome,
+               std::unique_ptr<memory_instrumentation::GlobalMemoryDump>
+                   global_dump) {
+              details->DidReceiveMemoryDump(outcome, std::move(global_dump));
+            },
+            scoped_refptr<MemoryDetails>(this)));
   } else {
-    DidReceiveMemoryDump(false, nullptr);
+    DidReceiveMemoryDump(/*outcome=*/std::nullopt, /*dump=*/nullptr);
   }
 }
 
 void MemoryDetails::DidReceiveMemoryDump(
-    bool success,
+    std::optional<memory_instrumentation::mojom::RequestOutcome> outcome,
     std::unique_ptr<memory_instrumentation::GlobalMemoryDump> global_dump) {
   ProcessData* const chrome_browser = ChromeBrowser();
-  if (success) {
+  if (outcome == memory_instrumentation::mojom::RequestOutcome::kSuccess) {
     for (const memory_instrumentation::GlobalMemoryDump::ProcessDump& dump :
          global_dump->process_dumps()) {
       base::ProcessId dump_pid = dump.pid();

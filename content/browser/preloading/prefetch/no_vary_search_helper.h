@@ -9,8 +9,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
 #include "url/gurl.h"
@@ -29,38 +30,33 @@ class RenderFrameHost;
 // `prefetches` to find matching `PrefetchContainer`s.
 namespace no_vary_search {
 
-// See comments inside `IterateCandidates()` for requirements for `PrefetchKey`.
-template <typename PrefetchKey>
+// See comments inside `IterateCandidates()` for requirements for `KeyType`.
+template <typename KeyType>
 class PrefetchKeyTraits;
 
 template <>
 class PrefetchKeyTraits<GURL> {
  public:
-  using PrefetchKey = GURL;
-  static const GURL& GetURL(const PrefetchKey& key) { return key; }
-  static PrefetchKey KeyWithNewURL(const PrefetchKey& old_key,
-                                   const GURL& new_url) {
+  using KeyType = GURL;
+  static const GURL& GetURL(const KeyType& key) { return key; }
+  static KeyType KeyWithNewURL(const KeyType& old_key, const GURL& new_url) {
     return new_url;
   }
-  static bool NonUrlPartIsSame(const PrefetchKey& key1,
-                               const PrefetchKey& key2) {
+  static bool NonUrlPartIsSame(const KeyType& key1, const KeyType& key2) {
     return true;
   }
 };
 
 template <>
-class PrefetchKeyTraits<PrefetchContainer::Key> {
+class PrefetchKeyTraits<PrefetchKey> {
  public:
-  static const GURL& GetURL(const PrefetchContainer::Key& key) {
-    return key.url();
-  }
-  static PrefetchContainer::Key KeyWithNewURL(
-      const PrefetchContainer::Key& old_key,
-      const GURL& new_url) {
+  static const GURL& GetURL(const PrefetchKey& key) { return key.url(); }
+  static PrefetchKey KeyWithNewURL(const PrefetchKey& old_key,
+                                   const GURL& new_url) {
     return old_key.WithNewUrl(new_url);
   }
-  static bool NonUrlPartIsSame(const PrefetchContainer::Key& key1,
-                               const PrefetchContainer::Key& key2) {
+  static bool NonUrlPartIsSame(const PrefetchKey& key1,
+                               const PrefetchKey& key2) {
     return key1.NonUrlPartIsSame(key2);
   }
 };
@@ -88,10 +84,10 @@ enum class IterateCandidateResult { kContinue, kFinish };
 // 1. Exact match (`MatchType::kExact`).
 // 2. No-Vary-Search matches (`MatchType::kNoVarySearch`), or
 //    URLs with the same non-ref/query part as `url` (`MatchType::kOther`).
-template <typename PrefetchKey, typename Value>
+template <typename KeyType, typename Value>
 void IterateCandidates(
-    const PrefetchKey& key,
-    const std::map<PrefetchKey, Value>& prefetches,
+    const KeyType& key,
+    const std::map<KeyType, Value>& prefetches,
     base::RepeatingCallback<IterateCandidateResult(const Value&, MatchType)>
         callback) {
   auto it_exact_match = prefetches.find(key);
@@ -105,7 +101,7 @@ void IterateCandidates(
   GURL::Replacements replacements;
   replacements.ClearRef();
   replacements.ClearQuery();
-  const GURL& key_url = PrefetchKeyTraits<PrefetchKey>::GetURL(key);
+  const GURL& key_url = PrefetchKeyTraits<KeyType>::GetURL(key);
   GURL url_with_no_query = key_url.ReplaceComponents(replacements);
 
   // `std::map<GURL, ...>` is sorted by lexicographical string order of
@@ -118,7 +114,7 @@ void IterateCandidates(
   // encountered.
   //
   // This is possible because URLs with the same prefix are in consecutively
-  // placed in the `std::map<PrefetchKey, ...>` iteration order. `GURL` and
+  // placed in the `std::map<KeyType, ...>` iteration order. `GURL` and
   // `std::pair<T, GURL>` satisfies this requirement and thus corresponding
   // `PrefetchKeyTraits` are defined, while e.g. `std::pair<GURL, T>` wouldn't
   // work.
@@ -128,14 +124,13 @@ void IterateCandidates(
   // An additional check of `DocumentToken` is needed to ensure we still
   // iterating URLs within the same `DocumentToken`, which is done in
   // `NonUrlPartIsSame()`.
-  for (auto it =
-           prefetches.lower_bound(PrefetchKeyTraits<PrefetchKey>::KeyWithNewURL(
-               key, url_with_no_query));
+  for (auto it = prefetches.lower_bound(
+           PrefetchKeyTraits<KeyType>::KeyWithNewURL(key, url_with_no_query));
        it != prefetches.end(); ++it) {
     const GURL& prefetch_container_url =
-        PrefetchKeyTraits<PrefetchKey>::GetURL(it->first);
+        PrefetchKeyTraits<KeyType>::GetURL(it->first);
 
-    if (!PrefetchKeyTraits<PrefetchKey>::NonUrlPartIsSame(key, it->first) ||
+    if (!PrefetchKeyTraits<KeyType>::NonUrlPartIsSame(key, it->first) ||
         !prefetch_container_url.possibly_invalid_spec().starts_with(
             url_with_no_query.possibly_invalid_spec())) {
       break;
@@ -181,10 +176,10 @@ void IterateCandidates(
 // - Via exact match, or
 // - Via No-Vary-Search information if exact match is not found, the feature is
 // enabled and `SetNoVarySearchData()` is called for such `PrefetchContainer`s.
-template <typename PrefetchKey, typename Value>
+template <typename KeyType, typename Value>
 base::WeakPtr<PrefetchContainer> MatchUrl(
-    const PrefetchKey& key,
-    const std::map<PrefetchKey, Value>& prefetches) {
+    const KeyType& key,
+    const std::map<KeyType, Value>& prefetches) {
   base::WeakPtr<PrefetchContainer> result = nullptr;
   IterateCandidates(
       key, prefetches,
@@ -212,11 +207,11 @@ base::WeakPtr<PrefetchContainer> MatchUrl(
 // Return the (URL,PrefetchContainer) pairs for a specific Url without
 // query and reference. Allow as input urls with query and/or reference
 // for ease of use (remove query/reference during lookup).
-template <typename PrefetchKey, typename Value>
+template <typename KeyType, typename Value>
 std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
 GetAllForUrlWithoutRefAndQueryForTesting(
-    const PrefetchKey& key,
-    const std::map<PrefetchKey, Value>& prefetches) {
+    const KeyType& key,
+    const std::map<KeyType, Value>& prefetches) {
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> result;
 
   IterateCandidates(

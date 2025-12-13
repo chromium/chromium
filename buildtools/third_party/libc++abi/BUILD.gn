@@ -13,20 +13,16 @@ target(libcxxabi_target_type, "libc++abi") {
     visibility = [ "//buildtools/third_party/libc++" ]
   }
 
-  deps = []
+  deps = [
+    "//buildtools/third_party/libc++:custom_headers",
+    "//buildtools/third_party/libc++:libcxx_headers",
+  ]
 
   # Fuchsia builds don't link against any libraries that provide stack
   # unwinding symbols, unlike Linux does with glibc (same applies for Android).
   # Build and link against libunwind manually to get this functionality.
   if (use_custom_libunwind) {
     deps += [ "//buildtools/third_party/libunwind" ]
-  }
-
-  if (use_clang_modules) {
-    deps += [
-      "//buildtools/third_party/libc++:copy_custom_headers",
-      "//buildtools/third_party/libc++:copy_libcxx_headers",
-    ]
   }
 
   # TODO(crbug.com/40273848): Move this build file to third_party/libc++/BUILD.gn once submodule migration is done

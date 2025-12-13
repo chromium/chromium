@@ -439,7 +439,7 @@ void Data(perfetto::TracedValue context,
           v8::Isolate*,
           LocalFrame*,
           const String& url,
-          const WTF::TextPosition&);
+          const TextPosition&);
 }
 
 namespace inspector_target_rundown_event {
@@ -474,7 +474,7 @@ struct V8ConsumeCacheResult {
 
 void Data(perfetto::TracedValue context,
           const String& url,
-          const WTF::TextPosition&,
+          const TextPosition&,
           std::optional<V8ConsumeCacheResult>,
           bool eager,
           bool streamed,
@@ -484,7 +484,7 @@ void Data(perfetto::TracedValue context,
 namespace inspector_produce_script_cache_event {
 void Data(perfetto::TracedValue context,
           const String& url,
-          const WTF::TextPosition&,
+          const TextPosition&,
           int cache_size);
 }
 

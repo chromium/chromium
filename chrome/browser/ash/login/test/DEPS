@@ -29,6 +29,7 @@ include_rules = [
   "+chrome/browser/lifetime",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/webui/ash/login",
   "+chrome/browser/ui/webui/signin",
   "+chrome/common/chrome_paths.h",

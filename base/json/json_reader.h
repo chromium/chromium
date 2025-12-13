@@ -105,30 +105,28 @@ class BASE_EXPORT JSONReader {
   // If |json| is not a properly formed JSON string, returns std::nullopt.
   static std::optional<Value> Read(
       std::string_view json,
-      int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
+      int options,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Reads and parses |json|, returning a Value::Dict.
   // If |json| is not a properly formed JSON dict string, returns std::nullopt.
   static std::optional<Value::Dict> ReadDict(
       std::string_view json,
-      int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
+      int options,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Reads and parses |json|, returning a Value::List.
   // If |json| is not a properly formed JSON list string, returns std::nullopt.
   static std::optional<Value::List> ReadList(
       std::string_view json,
-      int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
+      int options,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Reads and parses |json| like Read(). On success returns a Value as the
   // expected value. Otherwise, it returns an Error instance, populated with a
   // formatted error message, an error code, and the error location if
   // appropriate as the error value of the expected type.
-  static Result ReadAndReturnValueWithError(
-      std::string_view json,
-      int options = JSON_PARSE_CHROMIUM_EXTENSIONS);
+  static Result ReadAndReturnValueWithError(std::string_view json, int options);
 };
 
 }  // namespace base

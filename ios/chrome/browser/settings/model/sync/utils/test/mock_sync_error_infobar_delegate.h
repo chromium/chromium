@@ -15,14 +15,14 @@
 #import "ui/base/models/image_model.h"
 
 class ProfileIOS;
-@protocol SyncPresenter;
+@protocol SyncPresenterCommands;
 
 // Mock version of SyncErrorInfoBarDelegate.
 class MockSyncErrorInfoBarDelegate : public SyncErrorInfoBarDelegate {
  public:
   MockSyncErrorInfoBarDelegate(
       ProfileIOS* profile,
-      id<SyncPresenter> presenter,
+      id<SyncPresenterCommands> sync_presenter_handler,
       std::u16string title_text = u"",
       std::u16string message_text = u"",
       std::u16string button_label_text = u"",

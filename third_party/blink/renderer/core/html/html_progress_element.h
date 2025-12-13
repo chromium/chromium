@@ -54,7 +54,6 @@ class CORE_EXPORT HTMLProgressElement final : public HTMLElement {
   void Trace(Visitor*) const override;
 
  private:
-  bool AreAuthorShadowsAllowed() const override { return false; }
   bool ShouldAppearIndeterminate() const override;
   bool IsLabelable() const override { return true; }
 

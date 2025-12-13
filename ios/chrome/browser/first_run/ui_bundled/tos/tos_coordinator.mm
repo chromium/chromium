@@ -10,12 +10,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/first_run/ui_bundled/tos/tos_view_controller.h"
-#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/web_view_creation_util.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -26,7 +26,7 @@
 @end
 
 @implementation TOSCoordinator {
-  AlertCoordinator* _alertCoordinator;
+  UIAlertController* _alertController;
   TOSViewController* _viewController;
   UINavigationController* _navigationController;
 }
@@ -45,12 +45,11 @@
 }
 
 - (void)stop {
+  [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController.delegate = nil;
   _viewController = nil;
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
 }
 
 #pragma mark - Private
@@ -106,32 +105,36 @@
 
 // If the page can’t be loaded, show an Alert stating "No Internet".
 - (void)failedToLoad {
-  if (_alertCoordinator) {
+  if (_alertController) {
     // If the alert is already displayed, don’t display a second one.
     // It should never occurs as long as the ToS don’t include external files.
     return;
   }
   NSString* alertMessage =
       l10n_util::GetNSString(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED);
-  _alertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:_viewController
-                                                   browser:self.browser
-                                                     title:alertMessage
-                                                   message:nil];
+  _alertController =
+      [UIAlertController alertControllerWithTitle:alertMessage
+                                          message:nil
+                                   preferredStyle:UIAlertControllerStyleAlert];
 
   __weak __typeof(self) weakSelf = self;
-  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                               action:^{
-                                 [weakSelf stopAlertAndTos];
-                               }
-                                style:UIAlertActionStyleDefault];
+  UIAlertAction* okAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
+                               style:UIAlertActionStyleDefault
+                             handler:^(UIAlertAction* action) {
+                               [weakSelf stopAlertAndTos];
+                             }];
+  [_alertController addAction:okAction];
 
-  [_alertCoordinator start];
+  [_viewController presentViewController:_alertController
+                                animated:YES
+                              completion:nil];
 }
 
 - (void)stopAlertAndTos {
-  [_alertCoordinator stop];
-  _alertCoordinator = nil;
+  [_alertController.presentingViewController dismissViewControllerAnimated:YES
+                                                                completion:nil];
+  _alertController = nil;
   [self closeTOSPage];
 }
 

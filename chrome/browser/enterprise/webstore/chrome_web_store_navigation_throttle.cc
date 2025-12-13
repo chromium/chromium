@@ -36,7 +36,7 @@ ChromeWebStoreNavigationThrottle::WillRedirectRequest() {
 content::NavigationThrottle::ThrottleCheckResult
 ChromeWebStoreNavigationThrottle::MaybeAppendHeaders() {
   if (!navigation_handle()->GetURL().DomainIs(
-          extension_urls::GetNewWebstoreLaunchURL().host())) {
+          extension_urls::GetNewWebstoreLaunchURL().GetHost())) {
     return content::NavigationThrottle::PROCEED;
   }
 

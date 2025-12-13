@@ -90,10 +90,6 @@ class DownloadBubbleSecurityView
       delete;
   ~DownloadBubbleSecurityView() override;
 
-  // Returns this to an uninitialized state, where this is not associated with
-  // a particular download. Called when navigating away from the security view.
-  void Reset();
-
   // Whether this view is properly associated with a download. The rest of the
   // public method calls on this view do not make sense if not initialized.
   bool IsInitialized() const;
@@ -184,9 +180,6 @@ class DownloadBubbleSecurityView
   raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
   raw_ptr<DownloadBubblePasswordPromptView> password_prompt_ = nullptr;
 
-  // Records the last time this was shown or updated for a new download. Used
-  // for metrics.
-  std::optional<base::Time> warning_time_;
   // Tracks whether metrics were logged for this impression, to avoid
   // double-logging.
   bool did_log_action_ = false;

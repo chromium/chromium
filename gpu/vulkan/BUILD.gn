@@ -76,7 +76,7 @@ if (enable_vulkan) {
       ":vulkan_function_pointers",
       "//base",
       "//third_party/vulkan_memory_allocator",
-      "//ui/gfx:gfx",
+      "//ui/gfx",
     ]
   }
 
@@ -130,8 +130,8 @@ if (enable_vulkan) {
     deps = [
       ":buildflags",
       "//base",
-      "//build:android_buildflags",
       "//components/crash/core/common:crash_key",
+      "//components/viz/common/resources:shared_image_format",
       "//third_party/vulkan_memory_allocator",
       "//ui/base:ozone_buildflags",
       "//ui/gfx",
@@ -166,15 +166,6 @@ if (enable_vulkan) {
         "vulkan_image_win.cc",
         "vulkan_util_win32.cc",
       ]
-    }
-
-    if (use_ozone) {
-      sources += [
-        "drm_modifiers_filter_vulkan.cc",
-        "drm_modifiers_filter_vulkan.h",
-      ]
-
-      deps += [ "//ui/ozone:drm_modifiers_filter" ]
     }
 
     if (is_chromeos) {
@@ -228,6 +219,10 @@ if (enable_vulkan) {
       sources += [ "tests/native_window_android.cc" ]
       deps += [ "//ui/gl" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   # TODO(penghuang): support more platforms
@@ -251,7 +246,7 @@ if (enable_vulkan) {
 
       deps = [
         ":test_support",
-        "//base:base",
+        "//base",
         "//base/test:test_support",
         "//components/viz/common:vulkan_context_provider",
         "//gpu/ipc/service",
@@ -270,10 +265,12 @@ if (enable_vulkan) {
       }
 
       if (use_ozone) {
-        sources += [ "drm_modifiers_filter_vulkan_unittest.cc" ]
-
         deps += [ "//ui/ozone" ]
       }
+
+      # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+      # enable the diagnostic by removing this line.
+      configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     }
   }
 }

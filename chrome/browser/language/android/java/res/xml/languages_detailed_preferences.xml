@@ -7,7 +7,8 @@ found in the LICENSE file.
 
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <PreferenceCategory
         android:key="app_language_section"
@@ -24,31 +25,36 @@ found in the LICENSE file.
       android:order="2"
       app:allowDividerAbove="true">
 
-      <org.chromium.chrome.browser.language.settings.ContentLanguagesPreference
-          android:key="content_languages_preference"
-          android:layout="@layout/languages_preference"
-          android:widgetLayout="@layout/accept_languages_list" />
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:key="languages_list_description_preference"
+            android:order="3"
+            android:summary="@string/languages_list_description" />
+
+        <org.chromium.chrome.browser.language.settings.ContentLanguagesPreference
+            android:key="content_languages_preference"
+            android:layout="@layout/languages_preference"
+            android:order="4"
+            android:widgetLayout="@layout/accept_languages_list"
+            tools:ignore="LineLength" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="translation_settings_section"
-        android:order="3"
+        android:order="5"
         android:title="@string/languages_settings_translation_title"
         app:allowDividerAbove="true"
         app:allowDividerBelow="false">
 
         <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
             android:key="translate_switch"
-            android:summaryOn="@string/languages_send_translate_switch"
-            android:summaryOff="@string/languages_send_translate_switch"
+            android:title="@string/languages_send_translate_switch"
             app:allowDividerAbove="false"
             app:allowDividerBelow="true"/>
 
         <PreferenceCategory
             android:key="translation_advanced_settings_section"
-            android:layout="@layout/preference_category_no_title_or_padding"
-            app:initialExpandedChildrenCount="0"
+            android:title="@string/languages_settings_advanced"
             app:allowDividerAbove="true"
             app:allowDividerBelow="false">
 

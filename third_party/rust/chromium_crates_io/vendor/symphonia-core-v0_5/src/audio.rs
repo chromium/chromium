@@ -340,7 +340,7 @@ impl<S: Sample> AudioBuffer<S> {
     /// Note: This is not a cheap operation for audio buffers with > 8 channels. It is advisable
     /// that this call is only used when operating on large batches of frames. Generally speaking,
     /// it is almost always better to use `chan()` to selectively choose the plane to read instead.
-    pub fn planes(&self) -> AudioPlanes<S> {
+    pub fn planes(&self) -> AudioPlanes<'_, S> {
         // Fill the audio planes structure with references to the written portion of each audio
         // plane.
         let mut planes = AudioPlanes::new(self.spec.channels);
@@ -358,7 +358,7 @@ impl<S: Sample> AudioBuffer<S> {
     /// that this call is only used when modifying large batches of frames. Generally speaking,
     /// it is almost always better to use `render()`, `fill()`, `chan_mut()`, and `chan_pair_mut()`
     /// to modify the buffer instead.
-    pub fn planes_mut(&mut self) -> AudioPlanesMut<S> {
+    pub fn planes_mut(&mut self) -> AudioPlanesMut<'_, S> {
         // Fill the audio planes structure with references to the written portion of each audio
         // plane.
         let mut planes = AudioPlanesMut::new(self.spec.channels);
@@ -429,7 +429,7 @@ pub enum AudioBufferRef<'a> {
     F64(Cow<'a, AudioBuffer<f64>>),
 }
 
-impl<'a> AudioBufferRef<'a> {
+impl AudioBufferRef<'_> {
     /// Gets the signal specification for the buffer.
     pub fn spec(&self) -> &SignalSpec {
         impl_audio_buffer_ref_func!(self, buf, buf.spec())
@@ -472,13 +472,13 @@ impl<'a> AudioBufferRef<'a> {
 /// `AudioBufferRef`.
 pub trait AsAudioBufferRef {
     /// Get an `AudioBufferRef` reference.
-    fn as_audio_buffer_ref(&self) -> AudioBufferRef;
+    fn as_audio_buffer_ref(&self) -> AudioBufferRef<'_>;
 }
 
 macro_rules! impl_as_audio_buffer_ref {
     ($fmt:ty, $ref:path) => {
         impl AsAudioBufferRef for AudioBuffer<$fmt> {
-            fn as_audio_buffer_ref(&self) -> AudioBufferRef {
+            fn as_audio_buffer_ref(&self) -> AudioBufferRef<'_> {
                 $ref(Cow::Borrowed(self))
             }
         }

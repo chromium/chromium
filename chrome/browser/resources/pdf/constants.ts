@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <if expr="enable_pdf_ink2 or enable_ink">
+// <if expr="enable_pdf_ink2">
 export enum AnnotationMode {
   OFF = 'off',
   DRAW = 'draw',
-  // <if expr="enable_pdf_ink2">
   TEXT = 'text',
-  // </if>
 }
-// </if>
 
-// <if expr="enable_pdf_ink2">
 // The different types of annotation brushes.
 export enum AnnotationBrushType {
   ERASER = 'eraser',
@@ -84,7 +80,7 @@ export interface TextBoxRect {
   locationY: number;
   width: number;
 }
-// </if>
+// </if> enable_pdf_ink2
 
 export interface Attachment {
   name: string;
@@ -141,20 +137,13 @@ export interface NamedDestinationMessageData {
   namedDestinationView?: string;
 }
 
-/**
- * Enumeration of save message request types. Must match `SaveRequestType` in
- * pdf/pdf_view_web_plugin.h.
- */
-export enum SaveRequestType {
-  ANNOTATION,
-  ORIGINAL,
-  EDITED,
-  SEARCHIFIED,  // Saves the PDF with extracted text.
-}
-
 export interface Point {
   x: number;
   y: number;
+}
+
+export interface ScrollData extends Point {
+  forceSmoothScroll: boolean;
 }
 
 export interface Rect {
@@ -168,3 +157,23 @@ export type ExtendedKeyEvent = KeyboardEvent&{
   fromScriptingAPI?: boolean,
   fromPlugin?: boolean,
 };
+
+// <if expr="enable_pdf_save_to_drive">
+export enum SaveToDriveState {
+  UNINITIALIZED = 'uninitialized',
+  UPLOADING = 'uploading',
+  SUCCESS = 'success',
+  CONNECTION_ERROR = 'connection-error',
+  STORAGE_FULL_ERROR = 'storage-full-error',
+  SESSION_TIMEOUT_ERROR = 'session-timeout-error',
+  UNKNOWN_ERROR = 'unknown-error',
+}
+
+export enum SaveToDriveBubbleRequestType {
+  CANCEL_UPLOAD = 'cancel-upload',
+  MANAGE_STORAGE = 'manage-storage',
+  OPEN_IN_DRIVE = 'open-in-drive',
+  RETRY = 'retry',
+  DIALOG_CLOSED = 'dialog-closed',
+}
+// </if>

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
@@ -24,6 +23,8 @@ source_set("extensions") {
     "api/extension_hooks_delegate.cc",
     "api/notifications_native_handler.cc",
     "api/notifications_native_handler.h",
+    "api/page_capture_custom_bindings.cc",
+    "api/page_capture_custom_bindings.h",
     "api/tabs_hooks_delegate.cc",
     "chrome_extensions_renderer_client.cc",
     "chrome_resource_request_policy_delegate.cc",
@@ -69,10 +70,6 @@ source_set("extensions") {
       "api/app_hooks_delegate.cc",
       "api/app_hooks_delegate.h",
       "api/identity_hooks_delegate.cc",
-      "api/media_galleries_custom_bindings.cc",
-      "api/media_galleries_custom_bindings.h",
-      "api/page_capture_custom_bindings.cc",
-      "api/page_capture_custom_bindings.h",
       "api/sync_file_system_custom_bindings.cc",
       "api/sync_file_system_custom_bindings.h",
     ]
@@ -96,6 +93,8 @@ source_set("extensions") {
         "api/file_browser_handler_custom_bindings.h",
         "api/file_manager_private_custom_bindings.cc",
         "api/file_manager_private_custom_bindings.h",
+        "api/media_galleries_custom_bindings.cc",
+        "api/media_galleries_custom_bindings.h",
         "api/platform_keys_natives.cc",
         "api/platform_keys_natives.h",
       ]

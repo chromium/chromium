@@ -65,9 +65,10 @@ void CreateTrialFromStudyFuzzer(const Study& study) {
   ProcessedStudy processed_study;
   VariationsLayers layers;
   if (processed_study.Init(&study)) {
-    VariationsSeedProcessor().CreateTrialFromStudy(
-        processed_study, override_callback.callback(), entropy_providers,
-        layers, &feature_list);
+    StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+    VariationsSeedProcessor(sticky_activation_manager)
+        .CreateTrialFromStudy(processed_study, override_callback.callback(),
+                              entropy_providers, layers, &feature_list);
   }
 }
 

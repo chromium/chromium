@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gtk/nav_button_provider_gtk.h"
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "ui/base/glib/glib_cast.h"
 #include "ui/base/glib/scoped_gobject.h"
@@ -116,17 +112,22 @@ gfx::Size LoadNavButtonIcon(ui::NavButtonProvider::FrameButtonDisplayType type,
     auto* snapshot = gtk_snapshot_new();
     gdk_paintable_snapshot(paintable, snapshot, width, height);
     auto* node = gtk_snapshot_free_to_node(snapshot);
+
     size_t nbytes = width * height * sizeof(SkColor);
-    SkColor* pixels = reinterpret_cast<SkColor*>(g_malloc(nbytes));
-    memset(pixels, 0, nbytes);
+    void* pixels = g_malloc(nbytes);
+    UNSAFE_TODO(memset(pixels, 0, nbytes));
     size_t stride = sizeof(SkColor) * width;
-    if (GdkTexture* texture = GetTextureFromRenderNode(node)) {
-      gdk_texture_download(texture, reinterpret_cast<guchar*>(pixels), stride);
-    }
+
+    CairoSurface surface(pixels, width, height);
+    cairo_t* cr = surface.cairo();
+    gsk_render_node_draw(node, cr);
+
     SkColor fg = GtkStyleContextGetColor(button_context);
-    for (int i = 0; i < width * height; ++i) {
-      pixels[i] = SkColorSetA(fg, SkColorGetA(pixels[i]));
-    }
+    cairo_set_source_rgba(cr, SkColorGetR(fg) / 255.0, SkColorGetG(fg) / 255.0,
+                          SkColorGetB(fg) / 255.0, SkColorGetA(fg) / 255.0);
+    cairo_set_operator(cr, CAIRO_OPERATOR_IN);
+    cairo_paint(cr);
+
     icon->texture = TakeGObject(
         gdk_memory_texture_new(width, height, GDK_MEMORY_B8G8R8A8,
                                g_bytes_new_take(pixels, nbytes), stride));

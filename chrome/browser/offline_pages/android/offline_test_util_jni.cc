@@ -30,7 +30,7 @@
 
 namespace offline_pages {
 namespace {
-using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::base::android::ScopedJavaLocalRef;
 using ::offline_pages::android::OfflinePageBridge;
@@ -73,12 +73,6 @@ void OnGetVisualsDoneExtractThumbnail(
   ScopedJavaLocalRef<jbyteArray> j_bytes =
       base::android::ToJavaByteArray(env, visuals->thumbnail);
   base::android::RunObjectCallbackAndroid(j_callback_obj, j_bytes);
-}
-
-void OnDeletePageDone(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
-                      OfflinePageModel::DeletePageResult result) {
-  base::android::RunIntCallbackAndroid(j_callback_obj,
-                                       static_cast<int32_t>(result));
 }
 
 std::string RequestListToString(
@@ -168,16 +162,16 @@ class NetworkConnectionObserver
 
 }  // namespace
 
-void JNI_OfflineTestUtil_GetRequestsInQueue(
+static void JNI_OfflineTestUtil_GetRequestsInQueue(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_callback_obj) {
+    const JavaRef<jobject>& j_callback_obj) {
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
 
   RequestCoordinator* coordinator = GetRequestCoordinator();
 
   if (!coordinator) {
     // Callback with null to signal that results are unavailable.
-    const JavaParamRef<jobject> empty_result(nullptr);
+    const JavaRef<jobject> empty_result(nullptr);
     base::android::RunObjectCallbackAndroid(j_callback_obj, empty_result);
     return;
   }
@@ -186,10 +180,10 @@ void JNI_OfflineTestUtil_GetRequestsInQueue(
       base::BindOnce(&OnGetAllRequestsDone, std::move(j_callback_ref)));
 }
 
-void JNI_OfflineTestUtil_GetAllPages(
+static void JNI_OfflineTestUtil_GetAllPages(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_result_obj,
-    const JavaParamRef<jobject>& j_callback_obj) {
+    const JavaRef<jobject>& j_result_obj,
+    const JavaRef<jobject>& j_callback_obj) {
   DCHECK(j_result_obj);
   DCHECK(j_callback_obj);
 
@@ -199,10 +193,10 @@ void JNI_OfflineTestUtil_GetAllPages(
       &OnGetAllPagesDone, std::move(j_result_ref), std::move(j_callback_ref)));
 }
 
-void JNI_OfflineTestUtil_GetRawThumbnail(
+static void JNI_OfflineTestUtil_GetRawThumbnail(
     JNIEnv* env,
     jlong j_offline_id,
-    const JavaParamRef<jobject>& j_callback_obj) {
+    const JavaRef<jobject>& j_callback_obj) {
   DCHECK(j_offline_id);
 
   GetOfflinePageModel()->GetVisualsByOfflineId(
@@ -211,31 +205,15 @@ void JNI_OfflineTestUtil_GetRawThumbnail(
                      ScopedJavaGlobalRef<jobject>(j_callback_obj)));
 }
 
-void JNI_OfflineTestUtil_DeletePagesByOfflineId(
-    JNIEnv* env,
-    const JavaParamRef<jlongArray>& j_offline_ids_array,
-    const JavaParamRef<jobject>& j_callback_obj) {
-  ScopedJavaGlobalRef<jobject> j_callback_ref(env, j_callback_obj);
-
-  std::vector<int64_t> offline_ids;
-  base::android::JavaLongArrayToInt64Vector(env, j_offline_ids_array,
-                                            &offline_ids);
-
-  PageCriteria criteria;
-  criteria.offline_ids = std::move(offline_ids);
-  GetOfflinePageModel()->DeletePagesWithCriteria(
-      criteria, base::BindOnce(&OnDeletePageDone, std::move(j_callback_ref)));
-}
-
-JNI_EXPORT void JNI_OfflineTestUtil_StartRequestCoordinatorProcessing(
+static JNI_EXPORT void JNI_OfflineTestUtil_StartRequestCoordinatorProcessing(
     JNIEnv* env) {
   GetRequestCoordinator()->StartImmediateProcessing(base::DoNothing());
 }
 
-void JNI_OfflineTestUtil_InterceptWithOfflineError(
+static void JNI_OfflineTestUtil_InterceptWithOfflineError(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jobject>& j_ready_callback) {
+    const JavaRef<jstring>& j_url,
+    const JavaRef<jobject>& j_ready_callback) {
   if (!g_interceptor)
     g_interceptor = new Interceptor;
   const std::string url = base::android::ConvertJavaStringToUTF8(env, j_url);
@@ -245,14 +223,14 @@ void JNI_OfflineTestUtil_InterceptWithOfflineError(
                                     env, j_ready_callback)));
 }
 
-void JNI_OfflineTestUtil_ClearIntercepts(JNIEnv* env) {
+static void JNI_OfflineTestUtil_ClearIntercepts(JNIEnv* env) {
   delete g_interceptor;
   g_interceptor = nullptr;
 }
 
-void JNI_OfflineTestUtil_DumpRequestCoordinatorState(
+static void JNI_OfflineTestUtil_DumpRequestCoordinatorState(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_callback) {
   auto wrap_callback = base::BindOnce(
       [](base::android::ScopedJavaGlobalRef<jobject> j_callback,
          std::string dump) {
@@ -264,10 +242,10 @@ void JNI_OfflineTestUtil_DumpRequestCoordinatorState(
   DumpRequestCoordinatorState(std::move(wrap_callback));
 }
 
-void JNI_OfflineTestUtil_WaitForConnectivityState(
+static void JNI_OfflineTestUtil_WaitForConnectivityState(
     JNIEnv* env,
     jboolean connected,
-    const base::android::JavaParamRef<jobject>& callback) {
+    const base::android::JavaRef<jobject>& callback) {
   network::mojom::ConnectionType type =
       connected ? network::mojom::ConnectionType::CONNECTION_UNKNOWN
                 : network::mojom::ConnectionType::CONNECTION_NONE;
@@ -276,3 +254,5 @@ void JNI_OfflineTestUtil_WaitForConnectivityState(
 }
 
 }  // namespace offline_pages
+
+DEFINE_JNI(OfflineTestUtil)

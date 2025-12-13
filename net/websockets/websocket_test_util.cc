@@ -94,19 +94,20 @@ std::string WebSocketStandardRequestWithCookies(
   std::stringstream request_headers;
 
   request_headers << base::StringPrintf("GET %s HTTP/1.1\r\n", path.c_str());
-  headers.SetHeader("Host", host);
-  headers.SetHeader("Connection", "Upgrade");
-  headers.SetHeader("Pragma", "no-cache");
-  headers.SetHeader("Cache-Control", "no-cache");
+  headers.SetHeader(net::HttpRequestHeaders::kHost, host);
+  headers.SetHeader(net::HttpRequestHeaders::kConnection, "Upgrade");
+  headers.SetHeader(net::HttpRequestHeaders::kPragma, "no-cache");
+  headers.SetHeader(net::HttpRequestHeaders::kCacheControl, "no-cache");
   for (const auto& [key, value] : send_additional_request_headers)
     headers.SetHeader(key, value);
   headers.SetHeader("Upgrade", "websocket");
-  headers.SetHeader("Origin", origin.Serialize());
+  headers.SetHeader(net::HttpRequestHeaders::kOrigin, origin.Serialize());
   headers.SetHeader("Sec-WebSocket-Version", "13");
-  if (!headers.HasHeader("User-Agent"))
-    headers.SetHeader("User-Agent", "");
-  headers.SetHeader("Accept-Encoding", "gzip, deflate");
-  headers.SetHeader("Accept-Language", "en-us,fr");
+  if (!headers.HasHeader(net::HttpRequestHeaders::kUserAgent)) {
+    headers.SetHeader(net::HttpRequestHeaders::kUserAgent, "");
+  }
+  headers.SetHeader(net::HttpRequestHeaders::kAcceptEncoding, "gzip, deflate");
+  headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage, "en-us,fr");
   for (const auto& [key, value] : cookies)
     headers.SetHeader(key, value);
   headers.SetHeader("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==");
@@ -130,16 +131,19 @@ std::string WebSocketStandardResponse(const std::string& extra_headers) {
 
 HttpRequestHeaders WebSocketCommonTestHeaders() {
   HttpRequestHeaders request_headers;
-  request_headers.SetHeader("Host", "www.example.org");
-  request_headers.SetHeader("Connection", "Upgrade");
-  request_headers.SetHeader("Pragma", "no-cache");
-  request_headers.SetHeader("Cache-Control", "no-cache");
+  request_headers.SetHeader(net::HttpRequestHeaders::kHost, "www.example.org");
+  request_headers.SetHeader(net::HttpRequestHeaders::kConnection, "Upgrade");
+  request_headers.SetHeader(net::HttpRequestHeaders::kPragma, "no-cache");
+  request_headers.SetHeader(net::HttpRequestHeaders::kCacheControl, "no-cache");
   request_headers.SetHeader("Upgrade", "websocket");
-  request_headers.SetHeader("Origin", "http://origin.example.org");
+  request_headers.SetHeader(net::HttpRequestHeaders::kOrigin,
+                            "http://origin.example.org");
   request_headers.SetHeader("Sec-WebSocket-Version", "13");
-  request_headers.SetHeader("User-Agent", "");
-  request_headers.SetHeader("Accept-Encoding", "gzip, deflate");
-  request_headers.SetHeader("Accept-Language", "en-us,fr");
+  request_headers.SetHeader(net::HttpRequestHeaders::kUserAgent, "");
+  request_headers.SetHeader(net::HttpRequestHeaders::kAcceptEncoding,
+                            "gzip, deflate");
+  request_headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage,
+                            "en-us,fr");
   return request_headers;
 }
 
@@ -270,8 +274,12 @@ void WebSocketTestURLRequestContextHost::SetProxyConfig(
       std::move(proxy_resolution_service));
 }
 
-void DummyConnectDelegate::OnURLRequestConnected(URLRequest* request,
-                                                 const TransportInfo& info) {}
+int DummyConnectDelegate::OnURLRequestConnected(
+    URLRequest* request,
+    const TransportInfo& info,
+    CompletionOnceCallback callback) {
+  return OK;
+}
 
 int DummyConnectDelegate::OnAuthRequired(
     const AuthChallengeInfo& auth_info,

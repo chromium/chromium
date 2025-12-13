@@ -4,8 +4,6 @@
 
 #import "ios/chrome/app/profile/identity_confirmation_profile_agent.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/logging.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"
@@ -30,8 +28,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -112,21 +110,33 @@
 
 #pragma mark - Private
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// Whether the identity confirmation snackbar should be shown. If not, the
+// reason why it should not. These values are persisted to logs. Entries should
+// not be renumbered and numeric values should never be reused.
 // LINT.IfChange
 enum class IdentityConfirmationSnackbarDecision {
+  // The snackbar should be shown.
   kShouldShow = 0,
+  // The user is signed-out, so no identity to display.
   kDontShowNoAccount = 1,
+  // The user has a single account on the device, so no need to remind them that
+  // they are currently using this account.
   kDontShowSingleAccount = 2,
+  // The user has a personal account, and `self` is not executing on top of
+  // Bling Start. Then no need to display a identity reminder.
   kDontShowNotOnStartPage = 3,
+  // The reminder was shown recently, no need to show it again.
   kDontShowShownRecently = 4,
+  // The reminder was shown enough time already, we won’t display it anymore.
   kDontShowImpressionLimitReached = 5,
+  // Not used anymore.
   kDontShowFeatureDisabled = 6,
   kMaxValue = kDontShowFeatureDisabled
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
+// Whether the identity snackbar should be displayed. If not, the reason for it
+// not to be displayed.
 - (IdentityConfirmationSnackbarDecision)
     shouldShowIdentityConfirmationSnackbarWithBrowser:(Browser*)browser {
   ProfileIOS* profile = browser->GetProfile();
@@ -134,12 +144,15 @@ enum class IdentityConfirmationSnackbarDecision {
       AuthenticationServiceFactory::GetForProfile(profile);
   if (!authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
+    // As the user is signed-out, don’t show the identity snackbar.
     return IdentityConfirmationSnackbarDecision::kDontShowNoAccount;
   }
 
   NSArray<id<SystemIdentity>>* identitiesOnDevice =
       signin::GetIdentitiesOnDevice(profile);
   if ([identitiesOnDevice count] <= 1) {
+    // As the user has a single account on the device, it’s not necessary to
+    // remind them which account they are currently using.
     return IdentityConfirmationSnackbarDecision::kDontShowSingleAccount;
   }
 
@@ -161,16 +174,13 @@ enum class IdentityConfirmationSnackbarDecision {
   if (displayCount == 0) {
     // Wait 1 day before the first reminder.
     // Note: lastPrompted in this case is equal to kLastSigninTimestamp.
-    identityConfirmationMinDisplayInterval =
-        kIdentityConfirmationMinDisplayInterval1.Get();
+    identityConfirmationMinDisplayInterval = base::Days(1);
   } else if (displayCount == 1) {
     // Wait 7 days before the second reminder.
-    identityConfirmationMinDisplayInterval =
-        kIdentityConfirmationMinDisplayInterval2.Get();
+    identityConfirmationMinDisplayInterval = base::Days(7);
   } else if (displayCount == 2) {
     // Wait 30 days before the third reminder.
-    identityConfirmationMinDisplayInterval =
-        kIdentityConfirmationMinDisplayInterval3.Get();
+    identityConfirmationMinDisplayInterval = base::Days(30);
   } else {
     // Stop showing after the third reminder.
     return IdentityConfirmationSnackbarDecision::
@@ -190,13 +200,11 @@ enum class IdentityConfirmationSnackbarDecision {
   localState->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
                       base::Time::Now());
 
-  if (!base::FeatureList::IsEnabled(kIdentityConfirmationSnackbar)) {
-    return IdentityConfirmationSnackbarDecision::kDontShowFeatureDisabled;
-  }
-
   return IdentityConfirmationSnackbarDecision::kShouldShow;
 }
 
+// Checks whether the identity confirmation snackbar should be displayed, log
+// the decision and its reason, and display it if it’s relevant.
 - (void)maybeShowIdentityConfirmationSnackbarWithBrowser:(Browser*)browser {
   IdentityConfirmationSnackbarDecision decision =
       [self shouldShowIdentityConfirmationSnackbarWithBrowser:browser];
@@ -211,32 +219,22 @@ enum class IdentityConfirmationSnackbarDecision {
   [self showSnackbarMessageWithBrowser:browser];
 }
 
+// Shows a snackbar reminding the user which account Chrome is currently using.
 - (void)showSnackbarMessageWithBrowser:(Browser*)browser {
   ProfileIOS* profile = browser->GetProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> systemIdentity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  DCHECK(systemIdentity);
-  UIImage* avatar = ChromeAccountManagerServiceFactory::GetForProfile(profile)
-                        ->GetIdentityAvatarWithIdentity(
-                            systemIdentity, IdentityAvatarSize::Regular);
-  PrefService* prefService = profile->GetPrefs();
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(profile);
-  ManagementState managementState =
-      GetManagementState(identityManager, authenticationService, prefService);
+  CHECK(systemIdentity, base::NotFatalUntil::M151);
 
-  MDCSnackbarMessage* snackbarTitle =
-      [[IdentitySnackbarMessage alloc] initWithName:systemIdentity.userGivenName
-                                              email:systemIdentity.userEmail
-                                             avatar:avatar
-                                    managementState:managementState];
+  SnackbarMessage* message =
+      CreateIdentitySnackbarMessage(systemIdentity, browser);
 
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:snackbarTitle];
+  [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:message];
 }
 
 - (BOOL)isStartSurfaceWithBrowser:(Browser*)browser {

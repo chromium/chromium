@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/x/xproto_internal.h"
 
 #include <stdint.h>
 #include <xcb/xcb.h>
 #include <xcb/xcbext.h>
+
+#include "base/compiler_specific.h"
 
 namespace x11 {
 
@@ -37,11 +34,11 @@ OffsetRefCountedMemory::OffsetRefCountedMemory(
 OffsetRefCountedMemory::~OffsetRefCountedMemory() = default;
 
 void* OffsetRefCountedMemory::data() {
-  return memory_->bytes() + offset_;
+  return UNSAFE_TODO(memory_->bytes() + offset_);
 }
 
 const void* OffsetRefCountedMemory::data() const {
-  return memory_->bytes() + offset_;
+  return UNSAFE_TODO(memory_->bytes() + offset_);
 }
 
 UnretainedRefCountedMemory::UnretainedRefCountedMemory(void* data)

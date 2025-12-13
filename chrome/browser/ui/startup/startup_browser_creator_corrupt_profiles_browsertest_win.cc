@@ -23,6 +23,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -49,10 +50,12 @@ void CreateAndSwitchToProfile(const std::string& basepath) {
 
 void CheckBrowserWindows(const std::vector<std::string>& expected_basepaths) {
   std::vector<std::string> actual_basepaths;
-  for (const Browser* browser : *BrowserList::GetInstance()) {
-    actual_basepaths.push_back(
-        browser->profile()->GetBaseName().AsUTF8Unsafe());
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&actual_basepaths](BrowserWindowInterface* browser) {
+        actual_basepaths.push_back(
+            browser->GetProfile()->GetBaseName().AsUTF8Unsafe());
+        return true;
+      });
 
   if (!std::ranges::is_permutation(actual_basepaths, expected_basepaths)) {
     ADD_FAILURE()

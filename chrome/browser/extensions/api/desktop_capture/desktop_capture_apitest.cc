@@ -14,12 +14,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/desktop_capture/desktop_capture_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/switches.h"
@@ -29,6 +28,8 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "ui/base/ozone_buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -53,6 +54,17 @@ class DesktopCaptureApiTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+    // Ensure DesktopCaptureAccessHandler doesn't block requests.
+    MediaCaptureDevicesDispatcher::GetInstance()
+        ->desktop_capture_access_handler_for_test()
+        ->SetRequestApprovedForTest(true);
+  }
+
+  void TearDownOnMainThread() override {
+    MediaCaptureDevicesDispatcher::GetInstance()
+        ->desktop_capture_access_handler_for_test()
+        ->SetRequestApprovedForTest(false);
+    ExtensionApiTest::TearDownOnMainThread();
   }
 
  protected:
@@ -175,6 +187,9 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_ChooseDesktopMedia) {
   ASSERT_TRUE(RunExtensionTest("desktop_capture")) << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/405218400): Port to desktop Android when getUserMedia() is
+// supported (see DesktopCaptureAccessHandler).
 // TODO(crbug.com/40805704): Fails on the linux-wayland-rel bot.
 // TODO(crbug.com/40805725): Fails on Mac.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND)
@@ -196,8 +211,8 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_Delegation) {
   const Extension* extension = LoadExtension(extension_path);
   ASSERT_TRUE(extension);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetURLForPath("localhost", "/example.com.html")));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GetURLForPath("localhost", "/example.com.html")));
 
   FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
       {.expect_screens = true,
@@ -216,8 +231,7 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_Delegation) {
   };
   picker_factory_.SetTestFlags(test_flags, std::size(test_flags));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   EXPECT_EQ(true, content::EvalJs(web_contents, "getStream()"));
 
@@ -233,6 +247,7 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_Delegation) {
   destroyed_watcher.Wait();
   EXPECT_TRUE(test_flags[2].picker_deleted);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Not specifying a tab defaults to the extension's background page.
 // Service worker-based extensions don't have one, so they must specify
@@ -315,8 +330,8 @@ void DesktopCaptureApiMediaPickerOptionsBaseTest::FromServiceWorker(
   // Open a tab to capture.
   embedded_test_server()->ServeFilesFromDirectory(GetTestResourcesParentDir());
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetURLForPath("localhost", "/test_file.html")));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GetURLForPath("localhost", "/test_file.html")));
 
   FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
       {.expect_tabs = true, .picker_result = MakeFakeWebContentsMediaId(true)},

@@ -1,0 +1,43 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Legion internals</title>
+    <link rel="stylesheet" href="legion_internals.css">
+    <script type="module" src="legion_internals.js"></script>
+  </head>
+  <body>
+    <div>
+      <label>
+        Server URL:
+        <input type="text" id="legionServerUrl" value="$i18n{default_url}">
+      </label>
+    </div>
+    <div>
+      <label>
+        API Key:
+        <input type="text" id="legionServerApiKey"
+               value="$i18n{default_api_key}">
+      </label>
+    </div>
+
+    <button id="create-connection-button">Connect</button>
+
+    <div id="console" class="hidden">
+      <div id="console-header" class="console-header">Debug console</div>
+      <div id="console-container">
+      </div>
+      <div id="input-container">
+        <textarea id="request-input"
+               placeholder="Type your request..."></textarea>
+        <button id="send-button">Send</button>
+      </div>
+    </div>
+  </body>
+</html>

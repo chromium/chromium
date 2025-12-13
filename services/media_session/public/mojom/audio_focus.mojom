@@ -14,7 +14,7 @@ import "services/media_session/public/mojom/media_session.mojom";
 enum EnforcementMode {
   // This will default to whatever enforcement mode is configured through
   // feature flags.
-  kDefault,
+  [Default] kDefault,
 
   // This will allow all sessions to play, without the enforcement of a single
   // media session.

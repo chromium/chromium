@@ -4,7 +4,7 @@
   manipulating DOM elements.
 - `AutofillAgent` is instantiated per `content::RenderFrame`.
 - `AutofillAgent` owns `PasswordAutofillAgent` and
-  `PasswortGenerationAgent`.
+  `PasswordGenerationAgent`.
 
 # Terminology
 

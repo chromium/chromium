@@ -14,7 +14,6 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
@@ -46,7 +45,7 @@ public class FindToolbarPhone extends FindToolbar {
 
     @Override
     protected void updateVisualsForTabModel(boolean isIncognito) {
-        setBackgroundColor(SurfaceColorUpdateUtils.getDefaultThemeColor(getContext(), isIncognito));
+        setBackgroundColor(ChromeColors.getDefaultThemeColor(getContext(), isIncognito));
         final ColorStateList color = ChromeColors.getPrimaryIconTint(getContext(), isIncognito);
         ImageViewCompat.setImageTintList(mFindNextButton, color);
         ImageViewCompat.setImageTintList(mFindPrevButton, color);
@@ -61,7 +60,7 @@ public class FindToolbarPhone extends FindToolbar {
         } else {
             queryTextColorId = R.color.default_text_color_list;
             queryHintTextColorId = R.color.find_in_page_query_default_hint_color;
-            mDivider.setBackgroundColor(SemanticColorUtils.getDividerLineBgColor(getContext()));
+            mDivider.setBackgroundColor(SemanticColorUtils.getDividerColor(getContext()));
         }
         mFindQuery.setTextColor(
                 AppCompatResources.getColorStateList(getContext(), queryTextColorId));

@@ -13,7 +13,7 @@ import android.widget.ScrollView;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,7 +44,7 @@ public class PriceInsightsBottomSheetCoordinator {
          * @param tab Tab whose current URL is checked against.
          * @return The supplier for price tracking state.
          */
-        ObservableSupplier<Boolean> getPriceTrackingStateSupplier(Tab tab);
+        NonNullObservableSupplier<Boolean> getPriceTrackingStateSupplier(Tab tab);
 
         /**
          * Set price tracking state for a {@link Tab}.
@@ -61,10 +61,9 @@ public class PriceInsightsBottomSheetCoordinator {
          * @param info The price insights info data.
          * @return The view of the price history chart.
          */
-        View getPriceHistoryChartForPriceInsightsInfo(PriceInsightsInfo info);
+        @Nullable View getPriceHistoryChartForPriceInsightsInfo(PriceInsightsInfo info);
     }
 
-    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
 
     private @Nullable PriceInsightsBottomSheetContent mBottomSheetContent;
@@ -85,18 +84,17 @@ public class PriceInsightsBottomSheetCoordinator {
             TabModelSelector tabModelSelector,
             ShoppingService shoppingService,
             PriceInsightsDelegate priceInsightsDelegate) {
-        mContext = context;
         mBottomSheetController = bottomSheetController;
         PropertyModel propertyModel =
                 new PropertyModel(PriceInsightsBottomSheetProperties.ALL_KEYS);
         mPriceInsightsView =
-                LayoutInflater.from(mContext)
+                LayoutInflater.from(context)
                         .inflate(R.layout.price_insights_container, /* root= */ null);
         PropertyModelChangeProcessor.create(
                 propertyModel, mPriceInsightsView, PriceInsightsBottomSheetViewBinder::bind);
         mBottomSheetMediator =
                 new PriceInsightsBottomSheetMediator(
-                        mContext,
+                        context,
                         tab,
                         tabModelSelector,
                         shoppingService,
@@ -108,7 +106,7 @@ public class PriceInsightsBottomSheetCoordinator {
                     @Override
                     public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
                         if (mSheetOpenTimeMs != null) {
-                            Long durationMs = SystemClock.elapsedRealtime() - mSheetOpenTimeMs;
+                            long durationMs = SystemClock.elapsedRealtime() - mSheetOpenTimeMs;
                             RecordHistogram.recordTimesHistogram(
                                     "Commerce.PriceInsights.BottomSheetBrowsingTime", durationMs);
                             mSheetOpenTimeMs = null;

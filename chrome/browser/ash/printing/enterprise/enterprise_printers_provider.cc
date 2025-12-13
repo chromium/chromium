@@ -10,10 +10,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/hash/md5.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/printing/enterprise/calculators_policies_binder.h"
@@ -30,8 +31,15 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
+#include "crypto/obsolete/md5.h"
 
 namespace ash {
+
+namespace printing {
+std::string PolicyPrinterId(const std::string& json) {
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(json));
+}
+}  // namespace printing
 
 namespace {
 
@@ -142,7 +150,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
       // Policy printers don't have id's but the ids only need to be locally
       // unique so we'll hash the record.  This will not collide with the
       // UUIDs generated for user entries.
-      std::string id = base::MD5String(printer_json);
+      std::string id = printing::PolicyPrinterId(printer_json);
       base::Value::Dict& printer_dictionary = printer_value.value().GetDict();
       printer_dictionary.Set(chromeos::kPrinterId, id);
 

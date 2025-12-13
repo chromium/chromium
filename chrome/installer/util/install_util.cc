@@ -586,11 +586,6 @@ std::wstring InstallUtil::GetShortcutName() {
 }
 
 // static
-std::wstring InstallUtil::GetChromeShortcutDirNameDeprecated() {
-  return GetShortcutName();
-}
-
-// static
 std::wstring InstallUtil::GetChromeAppsShortcutDirName() {
   // IDS_APP_SHORTCUTS_SUBDIR_NAME is automatically mapped to the mode-specific
   // dir name; see MODE_SPECIFIC_STRINGS in prebuild/create_string_rc.py.

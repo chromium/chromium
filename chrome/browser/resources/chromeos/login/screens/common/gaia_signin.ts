@@ -30,6 +30,7 @@ import type {GaiaDialog} from '../../components/gaia_dialog.js';
 import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
 import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
 import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LoginOrUnlock, recordUmaHistogramForSamlRedirectEvent, SamlRedirectEvent} from '../../components/online_auth_utils.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import type {SecurityTokenPin} from '../../components/security_token_pin.js';
 import {Oobe} from '../../cr_ui.js';
@@ -428,6 +429,13 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     // button to let user go to GAIA page and keep original GAIA buttons
     // hidden.
     this.isSaml = doSamlRedirect;
+    if (doSamlRedirect) {
+      recordUmaHistogramForSamlRedirectEvent(
+          LoginOrUnlock.LOGIN,
+          this.authenticatorParams.ssoProfile ?
+              SamlRedirectEvent.START_WITH_SSO_PROFILE :
+              SamlRedirectEvent.START_WITH_DOMAIN);
+    }
     this.authenticator.load(AuthMode.DEFAULT, this.authenticatorParams);
   }
 
@@ -980,6 +988,9 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
   private onSamlPageChangeAccount() {
     // The user requests to change the account so the default gaia
     // page must be shown.
+    recordUmaHistogramForSamlRedirectEvent(
+        LoginOrUnlock.LOGIN,
+        SamlRedirectEvent.CHANGE_TO_DEFAULT_GOOGLE_SIGN_IN);
     this.userActed(['reloadGaia', /*force_default_gaia_page*/ true]);
   }
 

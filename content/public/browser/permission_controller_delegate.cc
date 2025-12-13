@@ -18,17 +18,9 @@ PermissionControllerDelegate::~PermissionControllerDelegate() {
 
 bool PermissionControllerDelegate::IsPermissionOverridable(
     blink::PermissionType permission,
-    const std::optional<url::Origin>& origin) {
+    base::optional_ref<const url::Origin> requesting_origin,
+    base::optional_ref<const url::Origin> embedding_origin) {
   return true;
-}
-
-PermissionResult
-PermissionControllerDelegate::GetPermissionResultForCurrentDocument(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    RenderFrameHost* render_frame_host,
-    bool should_include_device_status) {
-  return PermissionResult(PermissionStatus::DENIED,
-                          PermissionStatusSource::UNSPECIFIED);
 }
 
 std::optional<gfx::Rect>

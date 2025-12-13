@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace webauthn::user_actions {
 

@@ -341,7 +341,7 @@ impl Builder {
 ///
 /// The `PikeVM` is generally the most "powerful" regex engine in this crate.
 /// "Powerful" in this context means that it can handle any regular expression
-/// that is parseable by `regex-syntax` and any size haystack. Regretably,
+/// that is parseable by `regex-syntax` and any size haystack. Regrettably,
 /// the `PikeVM` is also simultaneously often the _slowest_ regex engine in
 /// practice. This results in an annoying situation where one generally tries
 /// to pick any other regex engine (or perhaps none at all) before being
@@ -1290,7 +1290,7 @@ impl PikeVM {
                 // the only thing in 'curr'. So we might as well just skip
                 // ahead until we find something that we know might advance us
                 // forward.
-                if let Some(ref pre) = pre {
+                if let Some(pre) = pre {
                     let span = Span::from(at..input.end());
                     match pre.find(input.haystack(), span) {
                         None => break,
@@ -1344,7 +1344,7 @@ impl PikeVM {
             // search. If we re-computed it at every position, we would be
             // simulating an unanchored search when we were tasked to perform
             // an anchored search.
-            if (!hm.is_some() || allmatches)
+            if (hm.is_none() || allmatches)
                 && (!anchored || at == input.start())
             {
                 // Since we are adding to the 'curr' active states and since
@@ -2294,9 +2294,9 @@ impl Counters {
         let mut set_counts =
             self.state_sets.iter().collect::<Vec<(&Vec<StateID>, &u64)>>();
         set_counts.sort_by_key(|(_, &count)| core::cmp::Reverse(count));
-        trace!("## PikeVM frequency of state sets (top {})", LIMIT);
+        trace!("## PikeVM frequency of state sets (top {LIMIT})");
         for (set, count) in set_counts.iter().take(LIMIT) {
-            trace!("{:?}: {}", set, count);
+            trace!("{set:?}: {count}");
         }
         if set_counts.len() > LIMIT {
             trace!(
@@ -2332,7 +2332,7 @@ impl Counters {
 
         trace!("");
         trace!("## NFA debug display");
-        trace!("{:?}", nfa);
+        trace!("{nfa:?}");
         trace!("===== END PikeVM Instrumentation Output =====");
     }
 

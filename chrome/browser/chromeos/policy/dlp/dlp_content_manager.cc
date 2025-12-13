@@ -28,6 +28,7 @@
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "content/public/browser/browser_thread.h"
@@ -132,8 +133,9 @@ DlpContentManager* DlpContentManager::Get() {
 
 DlpContentRestrictionSet DlpContentManager::GetConfidentialRestrictions(
     content::WebContents* web_contents) const {
-  if (!base::Contains(confidential_web_contents_, web_contents))
+  if (!base::Contains(confidential_web_contents_, web_contents)) {
     return DlpContentRestrictionSet();
+  }
   return confidential_web_contents_.at(web_contents);
 }
 
@@ -516,17 +518,17 @@ DlpContentManager::GetWebContentsInfo() const {
 
 DlpContentManager::DlpContentManager() {
   // Start observing tab strip models for all browsers.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list)
-    browser->tab_strip_model()->AddObserver(this);
-  browser_list->AddObserver(this);
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser_window_interface) {
+        // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
+        browser_window_interface->GetTabStripModel()->AddObserver(this);
+        return true;
+      });
+  BrowserList::GetInstance()->AddObserver(this);
 }
 
 DlpContentManager::~DlpContentManager() {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  browser_list->RemoveObserver(this);
-  for (Browser* browser : *browser_list)
-    browser->tab_strip_model()->RemoveObserver(this);
+  BrowserList::GetInstance()->RemoveObserver(this);
 }
 
 // static
@@ -764,7 +766,6 @@ void DlpContentManager::CheckRunningScreenShares() {
                   info.restriction_info.level, reporting_manager_);
     }
 
-    // TODO(crbug.com/1326541): Fix for new tab shares.
     if (screen_share->GetLatestRestriction() == info.restriction_info &&
         screen_share->GetConfidentialContents() == info.confidential_contents) {
       // No change in restrictions that apply to this screen share.
@@ -932,7 +933,6 @@ void DlpContentManager::OnDlpWarnDialogReply(
 void DlpContentManager::MaybeReportEvent(
     const RestrictionLevelAndUrl& restriction_info,
     DlpRulesManager::Restriction restriction) {
-  // TODO(crbug.com/1260302): Add reporting and metrics for WARN restrictions.
   if (IsReported(restriction_info) && reporting_manager_) {
     ReportEvent(restriction_info.url, restriction, restriction_info.level,
                 reporting_manager_);

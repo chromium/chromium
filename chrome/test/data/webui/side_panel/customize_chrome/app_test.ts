@@ -5,7 +5,6 @@
 import 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 
 import type {AppElement} from 'chrome://customize-chrome-side-panel.top-chrome/app.js';
-import {CustomizeChromeImpression} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {BackgroundCollection, CustomizeChromePageRemote, ManagementNoticeState} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromeSection, NewTabPageType} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
@@ -14,9 +13,8 @@ import type {CustomizeToolbarHandlerInterface} from 'chrome://customize-chrome-s
 import {CustomizeToolbarApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar/customize_toolbar_api_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
@@ -39,40 +37,6 @@ suite('AppTest', () => {
     customizeChromeApp = document.createElement('customize-chrome-app');
     document.body.appendChild(customizeChromeApp);
     return microtasksFinished();
-  });
-
-  suite('Metrics', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        'extensionsCardEnabled': true,
-      });
-    });
-
-    test('rendering extensions card section sets metric', async () => {
-      const metrics = fakeMetricsPrivate();
-      window.dispatchEvent(new Event('load'));
-      const eventPromise = eventToPromise(
-          'detect-extensions-card-section-impression', customizeChromeApp);
-      assertEquals(
-          0, metrics.count('NewTabPage.CustomizeChromeSidePanelImpression'));
-      assertEquals(
-          0,
-          metrics.count(
-              'NewTabPage.CustomizeChromeSidePanelImpression',
-              CustomizeChromeImpression.EXTENSIONS_CARD_SECTION_DISPLAYED));
-
-      customizeChromeApp.shadowRoot.querySelector('#extensions')!
-          .scrollIntoView({'behavior': 'instant'});
-      await eventPromise;
-
-      assertEquals(
-          1, metrics.count('NewTabPage.CustomizeChromeSidePanelImpression'));
-      assertEquals(
-          1,
-          metrics.count(
-              'NewTabPage.CustomizeChromeSidePanelImpression',
-              CustomizeChromeImpression.EXTENSIONS_CARD_SECTION_DISPLAYED));
-    });
   });
 
   test('app changes pages', async () => {
@@ -229,6 +193,36 @@ suite('AppTest', () => {
       });
     });
   });
+
+  // Testing Tool Chips visibility on initial flag load values.
+  [true, false].forEach(
+      (aimPolicyEnabled) => [true, false].forEach(
+          (ntpNextFeaturesEnabled) => suite(
+              'Render Tool Chips with aimPolicyEnabled: ' + aimPolicyEnabled +
+                  ' and ntpNextFeaturesEnabled: ' + ntpNextFeaturesEnabled,
+              () => {
+                // Arrange
+                const expectedVisibility =
+                    ntpNextFeaturesEnabled && aimPolicyEnabled;
+                suiteSetup(() => {
+                  loadTimeData.overrideValues({
+                    'ntpNextFeaturesEnabled': ntpNextFeaturesEnabled,
+                    'aimPolicyEnabled': aimPolicyEnabled,
+                  });
+                });
+
+                // Assert
+                test(
+                    `Expected for tool chips settings to ${
+                        expectedVisibility ? 'show' : 'not show'} in the ` +
+                        'Customize Chrome side panel',
+                    () => {
+                      assertEquals(
+                          !!customizeChromeApp.shadowRoot.querySelector(
+                              '#tools'),
+                          expectedVisibility);
+                    });
+              })));
 
   test('source tab type should update the cards', async () => {
     const idsControlledByIsSourceTabFirstPartyNtp = [

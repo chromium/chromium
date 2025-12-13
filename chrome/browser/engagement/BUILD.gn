@@ -1,0 +1,12 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("engagement") {
+  sources = [ "site_engagement_service_factory.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/site_engagement/content",
+  ]
+}

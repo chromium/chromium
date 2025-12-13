@@ -1,0 +1,43 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("password_change") {
+  sources = [
+    "successful_password_change_bubble_controller.cc",
+    "successful_password_change_bubble_controller.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/passwords/bubble_controllers",
+  ]
+  deps = [
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/favicon",
+    "//components/favicon/core",
+    "//components/favicon_base",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [ "successful_password_change_bubble_controller_unittest.cc" ]
+    deps += [
+      ":password_change",
+      "//base/test:test_support",
+      "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui/passwords:test_support_ui",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

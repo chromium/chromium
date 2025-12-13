@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_RADIO_NODE_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_RADIO_NODE_LIST_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/dom/live_node_list.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 

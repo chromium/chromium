@@ -17,13 +17,18 @@ using ReadyForProfileSwitchingCompletion =
     base::OnceCallback<void(ChangeProfileContinuation)>;
 
 @class SceneState;
+@protocol SystemIdentity;
 
 // Handles callbacks for the end of the sign-in flow.
 @protocol AuthenticationFlowDelegate <NSObject>
 
 // Called at the end of the sign-in if the profile has not changed.
-- (void)authenticationFlowDidSignInInSameProfileWithResult:
-    (SigninCoordinatorResult)result;
+- (void)
+    authenticationFlowDidSignInInSameProfileWithCancelationReason:
+        (signin_ui::CancelationReason)cancelationReason
+                                                         identity:
+                                                             (id<SystemIdentity>)
+                                                                 identity;
 
 // Called when the profile switching is going to happen. The delegate can
 // update the UI if needed before the profile switching.

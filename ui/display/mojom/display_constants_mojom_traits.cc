@@ -4,6 +4,8 @@
 
 #include "ui/display/mojom/display_constants_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 display::mojom::DisplayConnectionType EnumTraits<

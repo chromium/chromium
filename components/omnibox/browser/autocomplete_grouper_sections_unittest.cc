@@ -274,6 +274,29 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSection) {
             88,
         });
   }
+  {
+    SCOPED_TRACE("Up to 5 contextual search suggestions should be added.");
+    test(
+        {
+            CreateMatch(90, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(89, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(88, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(87, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(86, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(85, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(84, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(83, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(82, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(81, omnibox::GROUP_CONTEXTUAL_SEARCH),
+        },
+        {
+            90,
+            89,
+            88,
+            87,
+            86,
+        });
+  }
 }
 
 // Tests the groups, limits, and rules for the Desktop NTP ZPS section.
@@ -770,6 +793,41 @@ TEST(AutocompleteGrouperSectionsTest, IosNTPZpsSectionWithMIA) {
             {82, omnibox::GROUP_TRENDS},
             {81, omnibox::GROUP_TRENDS},
         });
+  }
+}
+
+TEST(AutocompleteGrouperSectionsTest, IOSComposeboxZpsSection) {
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(std::make_unique<IOSComposeboxZpsSection>(
+        group_configs, /*max_suggestions=*/5u,
+        /*max_aim_suggestions=*/5u,
+        /*max_contextual_suggestions=*/5u));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+  {
+    SCOPED_TRACE("Given no matches, should return no matches.");
+    test({}, {});
+  }
+  {
+    SCOPED_TRACE("ZPS personalized zero suggest and aim suggestions only");
+    test(
+        {
+            CreateMatch(103, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(102, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(101, omnibox::GROUP_MIA_RECOMMENDATIONS),
+            CreateMatch(99, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(98, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_MIA_RECOMMENDATIONS),
+            CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(94, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
+            CreateMatch(93, omnibox::GROUP_CONTEXTUAL_SEARCH),
+        },
+        // Nothing but personalized zero suggest and aim recommendations.
+        {103, 102, 97, 101, 96});
   }
 }
 
@@ -2385,6 +2443,37 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsContextualSuggestionsOnly) {
         {96, 95, 93});
   }
 }
+
+TEST(AutocompleteGrouperSectionsTest, DesktopComposeboxZpsSection) {
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(std::make_unique<DesktopComposeboxZpsSection>(
+        group_configs, /*max_suggestions=*/5u,
+        /*max_aim_suggestions=*/5u,
+        /*max_contextual_suggestions=*/5u));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+  {
+    SCOPED_TRACE("ZPS personalized zero suggest and aim suggestions only");
+    test(
+        {
+            CreateMatch(103, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(102, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(101, omnibox::GROUP_MIA_RECOMMENDATIONS),
+            CreateMatch(99, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(98, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_MIA_RECOMMENDATIONS),
+            CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(94, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
+            CreateMatch(93, omnibox::GROUP_CONTEXTUAL_SEARCH),
+        },
+        // Nothing but personalized zero suggest and aim recommendations.
+        {103, 102, 97, 101, 96});
+  }
+}
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 
 // Test that (on Android) sections are grouped by Search vs URL.
@@ -2498,183 +2587,34 @@ TEST(AutocompleteGrouperSectionsTest,
   }
 }
 
-TEST(AutocompleteGrouperSectionsTest,
-     AndroidNonZPSSection_richCardInFirstPosition) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxAnswerActions,
-      {{OmniboxFieldTrial::kAnswerActionsShowRichCard.name, "true"}});
+TEST(AutocompleteGrouperSectionsTest, AndroidComposeboxZpsSection) {
   auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
-    AndroidNonZPSSection::set_num_visible_matches(5);
-    sections.push_back(
-        std::make_unique<AndroidNonZPSSection>(false, group_configs));
+    sections.push_back(std::make_unique<AndroidComposeboxZpsSection>(
+        group_configs, /*max_suggestions=*/5u,
+        /*max_aim_suggestions=*/5u,
+        /*max_contextual_suggestions=*/5u));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
-
-  auto make_search = [](int score) {
-    auto match = CreateMatch(score, omnibox::GROUP_SEARCH);
-    match.type = AutocompleteMatchType::SEARCH_HISTORY;
-    return match;
-  };
-
-  auto make_url = [](int score) {
-    auto match = CreateMatch(score, omnibox::GROUP_OTHER_NAVS);
-    match.type = AutocompleteMatchType::NAVSUGGEST;
-    return match;
-  };
-
-  auto make_rich_card = [](int score) {
-    auto match = CreateMatch(score, omnibox::GROUP_MOBILE_RICH_ANSWER);
-    match.type = AutocompleteMatchType::SEARCH_HISTORY;
-    return match;
-  };
-
   {
-    SCOPED_TRACE("No matches, no crashes.");
-    test({}, {});
+    SCOPED_TRACE("ZPS personalized zero suggest and aim suggestions only");
+    test(
+        {
+            CreateMatch(103, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(102, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(101, omnibox::GROUP_MIA_RECOMMENDATIONS),
+            CreateMatch(99, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(98, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_MIA_RECOMMENDATIONS),
+            CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(94, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
+            CreateMatch(93, omnibox::GROUP_CONTEXTUAL_SEARCH),
+        },
+        // Nothing but personalized zero suggest and aim recommendations.
+        {103, 102, 97, 101, 96});
   }
-
-  SCOPED_TRACE("Card in first position");
-  test(
-      {
-          make_rich_card(20),
-          make_url(19),
-          make_url(18),
-          make_search(10),
-          make_search(9),
-      },
-      // 20     -- rich answer card
-      // 10, 9  -- top searches.
-      // 19, 18 -- top URLs.
-      {20, 10, 9, 19, 18});
 }
-
-TEST(AutocompleteGrouperSectionsTest,
-     AndroidNonZPSSection_richCardAboveKeyboard) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxAnswerActions,
-      {{OmniboxFieldTrial::kAnswerActionsShowRichCard.name, "true"},
-       {OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.name, "true"},
-       {OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.name, "true"}});
-  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
-    PSections sections;
-    omnibox::GroupConfigMap group_configs;
-    AndroidNonZPSSection::set_num_visible_matches(5);
-    sections.push_back(
-        std::make_unique<AndroidNonZPSSection>(false, group_configs));
-    auto out_matches = Section::GroupMatches(std::move(sections), matches);
-    VerifyMatches(out_matches, expected_relevances);
-  };
-
-  auto make_search = [](int score) {
-    auto match = CreateMatch(score, omnibox::GROUP_SEARCH);
-    match.type = AutocompleteMatchType::SEARCH_HISTORY;
-    return match;
-  };
-
-  auto make_url = [](int score) {
-    auto match = CreateMatch(score, omnibox::GROUP_OTHER_NAVS);
-    match.type = AutocompleteMatchType::NAVSUGGEST;
-    return match;
-  };
-
-  auto make_rich_card = [](int score) {
-    auto match = CreateMatch(score, omnibox::GROUP_MOBILE_RICH_ANSWER);
-    match.type = AutocompleteMatchType::SEARCH_HISTORY;
-    omnibox::RichAnswerTemplate answer_template;
-    match.answer_template = answer_template;
-    return match;
-  };
-
-  {
-    SCOPED_TRACE("No matches, no crashes.");
-    test({}, {});
-  }
-
-  SCOPED_TRACE("Card in last position of visible matches");
-  test(
-      {
-          make_url(19),
-          make_url(18),
-          make_rich_card(20),
-          make_search(10),
-          make_search(9),
-          make_search(8),
-          make_search(7),
-      },
-      // 19     -- default match url
-      // 10, 9  -- top searches.
-      // 18 -- remaining URL.
-      // 20 -- rich answer card
-      // 8, 7 -- below the fold matches
-      {19, 10, 9, 18, 20, 8, 7});
-}
-
-TEST(AutocompleteGrouperSectionsTest,
-     AndroidNonZPSSection_hideCardWhenUrlsPresent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxAnswerActions,
-      {{OmniboxFieldTrial::kAnswerActionsShowRichCard.name, "true"},
-       {OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.name, "true"},
-       {OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.name, "false"}});
-
-  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
-    PSections sections;
-    omnibox::GroupConfigMap group_configs;
-    AndroidNonZPSSection::set_num_visible_matches(5);
-    sections.push_back(
-        std::make_unique<AndroidNonZPSSection>(false, group_configs));
-    auto out_matches = Section::GroupMatches(std::move(sections), matches);
-    VerifyMatches(out_matches, expected_relevances);
-  };
-
-  auto make_search = [](int score) {
-    auto match = CreateMatch(score, omnibox::GROUP_SEARCH);
-    match.type = AutocompleteMatchType::SEARCH_HISTORY;
-    return match;
-  };
-
-  auto make_url = [](int score) {
-    auto match = CreateMatch(score, omnibox::GROUP_OTHER_NAVS);
-    match.type = AutocompleteMatchType::NAVSUGGEST;
-    return match;
-  };
-
-  auto make_rich_card = [](int score) {
-    auto match = CreateMatch(score, omnibox::GROUP_MOBILE_RICH_ANSWER);
-    match.type = AutocompleteMatchType::SEARCH_HISTORY;
-    omnibox::RichAnswerTemplate answer_template;
-    match.answer_template = answer_template;
-    return match;
-  };
-
-  {
-    SCOPED_TRACE("No matches, no crashes.");
-    test({}, {});
-  }
-
-  SCOPED_TRACE("Card in last position of visible matches");
-  test(
-      {
-          make_url(19),
-          make_url(18),
-          make_rich_card(20),
-          make_search(10),
-          make_search(9),
-          make_search(8),
-          make_search(7),
-      },
-      // 19     -- default match url
-      // 20, 10 -- top searches.
-      // Answer(20) counts as a plain search due to presence of urls.
-      // 18 -- remaining URL.
-      // 9, 8, 7 -- below the fold matches
-      {19, 20, 10, 18, 9, 8, 7});
-}
-
 #endif

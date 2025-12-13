@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
 import("../tools/build_webui.gni")
 
 include_polymer = !is_android && !is_ios
@@ -37,6 +38,8 @@ build_webui("build") {
     "search_highlight_utils.ts",
     "static_types.ts",
     "store.ts",
+    "tracked_element/tracked_element_manager.ts",
+    "tracked_element/tracked_element_proxy.ts",
     "test_loader.ts",
     "test_loader_util.ts",
     "util.ts",
@@ -58,12 +61,21 @@ build_webui("build") {
     ts_files += [ "browser_command/browser_command_proxy.ts" ]
   }
 
+  if (enable_dice_support) {
+    ts_files += [ "batch_upload_promo/batch_upload_promo_proxy.ts" ]
+  }
+
   mojo_files_deps = [ "./metrics_reporter:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom-webui.ts" ]
 
   if (include_polymer) {
     mojo_files_deps += [ "./browser_command:mojo_bindings_ts__generator" ]
     mojo_files += [ "$root_gen_dir/ui/webui/resources/js/browser_command/browser_command.mojom-webui.ts" ]
+  }
+
+  if (enable_dice_support) {
+    mojo_files_deps += [ "./batch_upload_promo:mojo_bindings_ts__generator" ]
+    mojo_files += [ "$root_gen_dir/ui/webui/resources/js/batch_upload_promo/batch_upload_promo.mojom-webui.ts" ]
   }
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/js"

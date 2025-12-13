@@ -50,9 +50,12 @@ void ContentUriClose(
 bool ContentUriGetFileInfo(const FilePath& content_uri,
                            FileEnumerator::FileInfo* results);
 
-// Returns list of files in `content_uri` directory.
+// Returns list of files in `content_uri` directory. `file_type` is the
+// FileEnumerator::FileType flag that specifies the type of files to be
+// enumerated.
 std::vector<FileEnumerator::FileInfo> ListContentUriDirectory(
-    const FilePath& content_uri);
+    const FilePath& content_uri,
+    int file_type);
 
 // Deletes a content URI.
 bool DeleteContentUri(const FilePath& content_uri);

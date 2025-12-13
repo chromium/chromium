@@ -18,6 +18,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       kLensOverlaySettings,
       static_cast<int>(LensOverlaySettingsPolicyValue::kEnabled));
+  registry->RegisterIntegerPref(kLensOverlayNonBlockingPrivacyNoticeShownCount,
+                                0);
 
   registry->RegisterBooleanPref(kLensSharingPageScreenshotEnabled, false);
   registry->RegisterBooleanPref(kLensSharingPageContentEnabled, false);

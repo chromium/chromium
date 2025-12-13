@@ -152,8 +152,6 @@ void SmsFetchRequestHandler::OnDismiss(
   origins.push_back(top_origin);
   auto* request = GetRequest(origins);
   DCHECK(request);
-  // TODO(crbug.com/40103792): We should have a separate catergory for this type
-  // of failure.
   request->SendFailureMessage(FailureType::kPromptCancelled);
 }
 
@@ -235,3 +233,5 @@ void SmsFetchRequestHandler::Request::SendFailureMessage(
 void SmsFetchRequestHandler::Request::OnFailure(FailureType failure_type) {
   SendFailureMessage(failure_type);
 }
+
+DEFINE_JNI(SmsFetcherMessageHandler)

@@ -384,9 +384,8 @@ void ServiceWorkerUpdatedScriptLoader::OnNetworkDataAvailable(MojoResult) {
 void ServiceWorkerUpdatedScriptLoader::WriteData(
     scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer,
     uint32_t bytes_available) {
-  auto buffer = base::MakeRefCounted<WrappedIOBuffer>(UNSAFE_TODO(
-      base::span(pending_buffer ? pending_buffer->buffer() : nullptr,
-                 pending_buffer ? pending_buffer->size() : 0)));
+  auto buffer = base::MakeRefCounted<WrappedIOBuffer>(
+      pending_buffer ? *pending_buffer : base::span<const char>());
 
   // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
   // next time.

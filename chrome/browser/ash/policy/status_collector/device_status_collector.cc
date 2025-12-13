@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 
 #include <inttypes.h>
@@ -31,6 +26,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -69,9 +65,9 @@
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
@@ -196,16 +192,18 @@ std::vector<em::VolumeInfo> GetVolumeInfo(
       continue;
     }
 
-    int64_t free_size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
-    int64_t total_size = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
-    if (free_size < 0 || total_size < 0) {
+    std::optional<int64_t> free_size =
+        base::SysInfo::AmountOfFreeDiskSpace(mount_path);
+    std::optional<int64_t> total_size =
+        base::SysInfo::AmountOfTotalDiskSpace(mount_path);
+    if (!free_size.has_value() || !total_size.has_value()) {
       LOG(ERROR) << "Unable to get volume status for " << mount_point;
       continue;
     }
     em::VolumeInfo info;
     info.set_volume_id(mount_point);
-    info.set_storage_total(total_size);
-    info.set_storage_free(free_size);
+    info.set_storage_total(*total_size);
+    info.set_storage_free(*free_size);
     result.push_back(info);
   }
   return result;
@@ -279,7 +277,8 @@ bool ReadTemperatureSensorInfo(const base::FilePath& sensor_dir,
     std::string temperature_string;
     int32_t temperature = 0;
     if (base::ReadFileToString(temperature_path, &temperature_string) &&
-        sscanf(temperature_string.c_str(), "%d", &temperature) == 1) {
+        UNSAFE_TODO(sscanf(temperature_string.c_str(), "%d", &temperature)) ==
+            1) {
       has_data = true;
       // CPU temp in millidegree Celsius to Celsius
       temperature /= 1000;
@@ -375,30 +374,30 @@ em::DiskLifetimeEstimation ReadDiskLifeTimeEstimation() {
 em::StatefulPartitionInfo ReadStatefulPartitionInfo() {
   em::StatefulPartitionInfo spi;
   const base::FilePath statefulPartitionPath(kStatefulPartitionPath);
-  const int64_t available_space =
+  const auto available_space =
       base::SysInfo::AmountOfFreeDiskSpace(statefulPartitionPath);
-  const int64_t total_space =
+  const auto total_space =
       base::SysInfo::AmountOfTotalDiskSpace(statefulPartitionPath);
 
-  if (available_space == -1) {
+  if (!available_space) {
     LOG(ERROR) << "ReadStatefulPartitionInfo failed fetching available space.";
     return spi;
   }
 
-  if (total_space == -1) {
+  if (!total_space) {
     LOG(ERROR) << "ReadStatefulPartitionInfo failed fetching total space.";
     return spi;
   }
 
-  spi.set_available_space(available_space);
-  spi.set_total_space(total_space);
+  spi.set_available_space(*available_space);
+  spi.set_total_space(*total_space);
   return spi;
 }
 
 // Collects all the display related information.
 void GetDisplayStatus(em::GraphicsStatus* graphics_status) {
   const std::vector<display::Display> displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   for (const auto& display : displays) {
     em::DisplayInfo* display_info = graphics_status->add_displays();
     display_info->set_resolution_width(display.GetSizeInPixel().width());
@@ -493,10 +492,6 @@ int ConvertWifiSignalStrength(int signal_strength) {
   //
   // To convert back to dBm, we use the inverse of the function above to yield
   // a clamped dBm value in the range of -88 to -44dBm.
-  //
-  // TODO(atwilson): Tunnel the raw dBm signal strength from Shill instead of
-  // doing the conversion here so we can report non-clamped values
-  // (crbug.com/463334).
   DCHECK_GT(signal_strength, 0);
   DCHECK_LE(signal_strength, 100);
   return (signal_strength - 200) * 11 / 25;
@@ -692,6 +687,8 @@ em::TpmVersionInfo_GscVersion ConvertTpmGscDevice(
       return em::TpmVersionInfo::GSC_VERSION_CR50;
     case tpm_manager::GscDevice::GSC_DEVICE_DT:
       return em::TpmVersionInfo::GSC_VERSION_TI50;
+    case tpm_manager::GscDevice::GSC_DEVICE_NT:
+      return em::TpmVersionInfo::GSC_VERSION_NT;
   }
 
   NOTREACHED();
@@ -2016,8 +2013,9 @@ void DeviceStatusCollector::SampleMemoryUsage() {
     return;
   }
 
-  MemoryUsage usage = {base::SysInfo::AmountOfAvailablePhysicalMemory(),
-                       base::Time::Now()};
+  MemoryUsage usage = {
+      base::SysInfo::AmountOfAvailablePhysicalMemory().AsDeprecatedByteCount(),
+      base::Time::Now()};
   memory_usage_.push_back(usage);
 
   if (memory_usage_.size() > kMaxResourceUsageSamples) {
@@ -2062,9 +2060,9 @@ void DeviceStatusCollector::ReceiveCPUStatistics(const std::string& stats) {
     // We only care about the first four numbers: user_time, nice_time,
     // sys_time, and idle_time.
     uint64_t user = 0, nice = 0, system = 0, idle = 0;
-    int vals = sscanf(stats.c_str(),
-                      "cpu %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64, &user,
-                      &nice, &system, &idle);
+    int vals = UNSAFE_TODO(sscanf(
+        stats.c_str(), "cpu %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64,
+        &user, &nice, &system, &idle));
     DCHECK_EQ(4, vals);
 
     // The values returned from /proc/stat are cumulative totals, so calculate
@@ -2336,7 +2334,7 @@ bool DeviceStatusCollector::GetVersionInfo(
     em::DeviceStatusReportRequest* status) {
   status->set_os_version(os_version_);
   status->set_browser_version(std::string(version_info::GetVersionNumber()));
-  status->set_channel(ConvertToProtoChannel(chrome::GetChannel()));
+  status->set_channel(ConvertToProtoChannel(ash::GetChannel()));
 
   // TODO(b/144081278): Remove when resolved.
   // When firmware version is not fetched, report error instead.
@@ -2353,6 +2351,15 @@ bool DeviceStatusCollector::GetVersionInfo(
   tpm_version_info->set_vendor_specific(tpm_version_reply_.vendor_specific());
   tpm_version_info->set_gsc_version(
       ConvertTpmGscDevice(tpm_version_reply_.gsc_device()));
+
+  const std::optional<std::string_view> kernel_key_version =
+      statistics_provider_->GetMachineStatistic(ash::system::kKernelKeyVersion);
+  if (kernel_key_version.has_value()) {
+    tpm_version_info->set_kernel_key_version(kernel_key_version.value());
+  } else {
+    LOG(WARNING) << "Failed to retrieve kernel key version";
+  }
+
   return true;
 }
 
@@ -2409,7 +2416,8 @@ bool DeviceStatusCollector::GetNetworkConfiguration(
     // Determine the type enum constant for |device|.
     size_t type_idx = 0;
     for (; type_idx < std::size(kDeviceTypeMap); ++type_idx) {
-      if ((*device)->type() == kDeviceTypeMap[type_idx].type_string) {
+      if ((*device)->type() ==
+          UNSAFE_TODO(kDeviceTypeMap[type_idx]).type_string) {
         break;
       }
     }
@@ -2421,7 +2429,7 @@ bool DeviceStatusCollector::GetNetworkConfiguration(
     }
 
     em::NetworkInterface* interface = status->add_network_interfaces();
-    interface->set_type(kDeviceTypeMap[type_idx].type_constant);
+    interface->set_type(UNSAFE_TODO(kDeviceTypeMap[type_idx]).type_constant);
     if (!(*device)->mac_address().empty()) {
       interface->set_mac_address((*device)->mac_address());
     }
@@ -2504,8 +2512,10 @@ bool DeviceStatusCollector::GetNetworkStatus(
         em::NetworkState::UNKNOWN;
     const std::string connection_state_string(state->connection_state());
     for (size_t i = 0; i < std::size(kConnectionStateMap); ++i) {
-      if (connection_state_string == kConnectionStateMap[i].state_string) {
-        connection_state_enum = kConnectionStateMap[i].state_constant;
+      if (connection_state_string ==
+          UNSAFE_TODO(kConnectionStateMap[i]).state_string) {
+        connection_state_enum =
+            UNSAFE_TODO(kConnectionStateMap[i]).state_constant;
         break;
       }
     }
@@ -2572,12 +2582,13 @@ bool DeviceStatusCollector::GetUsers(em::DeviceStatusReportRequest* status) {
 bool DeviceStatusCollector::GetMemoryInfo(
     em::DeviceStatusReportRequest* status) {
   status->clear_system_ram_free_infos();
-  status->set_system_ram_total(base::SysInfo::AmountOfPhysicalMemory());
+  status->set_system_ram_total(
+      base::SysInfo::AmountOfPhysicalMemory().InBytes());
 
   for (const MemoryUsage& usage : memory_usage_) {
     em::SystemFreeRamInfo* system_ram_free_info =
         status->add_system_ram_free_infos();
-    system_ram_free_info->set_size_in_bytes(usage.bytes_of_ram_free);
+    system_ram_free_info->set_size_in_bytes(usage.bytes_of_ram_free.InBytes());
     system_ram_free_info->set_timestamp(
         usage.timestamp.InMillisecondsSinceUnixEpoch());
   }

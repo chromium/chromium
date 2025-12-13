@@ -17,9 +17,10 @@
 #include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/lock.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/android_info_jni/AndroidInfo_jni.h"
+#include "base/build_info_jni/AndroidInfo_jni.h"
 
 #if __ANDROID_API__ >= 29
 // .aidl based NDK generation is only available when our min SDK level is 29 or
@@ -27,10 +28,6 @@
 #include "aidl/org/chromium/base/IAndroidInfo.h"
 using aidl::org::chromium::base::IAndroidInfo;
 #endif
-
-namespace base::android::android_info {
-
-namespace {
 
 #if __ANDROID_API__ < 29
 struct IAndroidInfo {
@@ -54,6 +51,10 @@ struct IAndroidInfo {
 };
 #endif
 
+namespace base::android::android_info {
+
+namespace {
+
 static std::optional<IAndroidInfo>& get_holder() {
   static base::NoDestructor<std::optional<IAndroidInfo>> holder;
   return *holder;
@@ -68,6 +69,17 @@ const IAndroidInfo& get_android_info() {
 }
 
 }  // namespace
+
+void Set(const IAndroidInfo& info) {
+  static base::NoDestructor<base::Lock> lock;
+  base::AutoLock l(*lock);
+
+  std::optional<IAndroidInfo>& holder = get_holder();
+  if (holder.has_value()) {
+    return;
+  }
+  holder.emplace(info);
+}
 
 static void JNI_AndroidInfo_FillFields(JNIEnv* env,
                                        std::string& brand,
@@ -86,10 +98,7 @@ static void JNI_AndroidInfo_FillFields(JNIEnv* env,
                                        jint sdkInt,
                                        jboolean isDebugAndroid,
                                        std::string& securityPatch) {
-  std::optional<IAndroidInfo>& holder = get_holder();
-  DCHECK(!holder.has_value());
-  holder.emplace(
-      IAndroidInfo{.abiName = supportedAbis,
+  Set(IAndroidInfo{.abiName = supportedAbis,
                    .androidBuildFp = androidBuildFingerprint,
                    .androidBuildId = buildId,
                    .board = board,
@@ -173,3 +182,5 @@ const std::string& security_patch() {
 }
 
 }  // namespace base::android::android_info
+
+DEFINE_JNI(AndroidInfo)

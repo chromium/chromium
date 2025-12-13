@@ -9,7 +9,7 @@
 
 namespace {
 
-const base::FeatureParam<bool>* GetPageActionMigrationParam(
+const base::FeatureParam<bool>* GetPageActionsMigrationParam(
     PageActionIconType page_action) {
   switch (page_action) {
     case PageActionIconType::kLensOverlay:
@@ -32,8 +32,6 @@ const base::FeatureParam<bool>* GetPageActionMigrationParam(
       return &features::kPageActionsMigrationPriceInsights;
     case PageActionIconType::kDiscounts:
       return &features::kPageActionsMigrationDiscounts;
-    case PageActionIconType::kProductSpecifications:
-      return &features::kPageActionsMigrationProductSpecifications;
     case PageActionIconType::kManagePasswords:
       return &features::kPageActionsMigrationManagePasswords;
     case PageActionIconType::kCookieControls:
@@ -44,6 +42,29 @@ const base::FeatureParam<bool>* GetPageActionMigrationParam(
       return &features::kPageActionsMigrationFind;
     case PageActionIconType::kCollaborationMessaging:
       return &features::kPageActionsMigrationCollaborationMessaging;
+    case PageActionIconType::kPriceTracking:
+      return &features::kPageActionsMigrationPriceTracking;
+    case PageActionIconType::kMandatoryReauth:
+      return &features::kPageActionsMigrationAutofillMandatoryReauth;
+    case PageActionIconType::kClickToCall:
+      return &features::kPageActionsMigrationClickToCall;
+    case PageActionIconType::kSharingHub:
+      return &features::kPageActionsMigrationSharingHub;
+    case PageActionIconType::kAiMode:
+      return &features::kPageActionsMigrationAiMode;
+    case PageActionIconType::kVirtualCardEnroll:
+      return &features::kPageActionsMigrationVirtualCard;
+    case PageActionIconType::kFilledCardInformation:
+      return &features::kPageActionsMigrationFilledCardInformation;
+    case PageActionIconType::kReadingMode:
+      return &features::kPageActionsMigrationReadingMode;
+    case PageActionIconType::kSaveIban:
+    case PageActionIconType::kSaveCard:
+      return &features::kPageActionsMigrationSavePayments;
+    case PageActionIconType::kLensOverlayHomework:
+      return &features::kPageActionsMigrationLensOverlayHomework;
+    case PageActionIconType::kBookmarkStar:
+      return &features::kPageActionsMigrationBookmarkStar;
     default:
       return nullptr;
   }
@@ -52,7 +73,18 @@ const base::FeatureParam<bool>* GetPageActionMigrationParam(
 }  // namespace
 
 bool IsPageActionMigrated(PageActionIconType page_action) {
-  const auto* feature_param = GetPageActionMigrationParam(page_action);
+  if (!base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    return false;
+  }
+
+  // Page actions on the new framework that don't have an implementation on the legacy path
+  // and don't have a feature param.
+  if (page_action == PageActionIconType::kContextualSidePanel ||
+      page_action == PageActionIconType::kJsOptimizations) {
+    return true;
+  }
+
+  const auto* feature_param = GetPageActionsMigrationParam(page_action);
   if (feature_param == nullptr) {
     return false;
   }

@@ -112,7 +112,8 @@
           "group": "tryserver.chromium.enterprise_companion"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/win-enterprise-companion-builder-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/win-enterprise-companion-builder-rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

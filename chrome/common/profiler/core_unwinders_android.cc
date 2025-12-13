@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/common/profiler/core_unwinders.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -72,9 +68,7 @@ extern char __executable_start;
 #endif  // UNWINDING_SUPPORTED
 
 // See `RequestUnwindPrerequisitesInstallation` below.
-BASE_FEATURE(kInstallAndroidUnwindDfm,
-             "InstallAndroidUnwindDfm",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInstallAndroidUnwindDfm, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -102,7 +96,7 @@ class ChromeUnwinderAndroid32Creator {
   std::unique_ptr<base::Unwinder> Create() {
     return std::make_unique<base::ChromeUnwinderAndroid32>(
         base::CreateChromeUnwindInfoAndroid32(
-            {chrome_cfi_file_.data(), chrome_cfi_file_.length()}),
+            UNSAFE_TODO({chrome_cfi_file_.data(), chrome_cfi_file_.length()})),
         /* chrome_module_base_address= */
         reinterpret_cast<uintptr_t>(&__executable_start),
         /* text_section_start_address= */ base::android::kStartOfText);

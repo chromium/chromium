@@ -14,7 +14,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonor.SetDocumentClassVisibilityForPackageCallback;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -102,7 +101,6 @@ public class AuxiliarySearchControllerFactory {
             return null;
         }
 
-        assert ChromeFeatureList.sAndroidAppIntegrationV2.isEnabled();
         if (mSupportMultiDataSource && hostType == AuxiliarySearchHostType.CTA) {
             if (mAuxiliarySearchMultiDataController == null) {
                 mAuxiliarySearchMultiDataController =

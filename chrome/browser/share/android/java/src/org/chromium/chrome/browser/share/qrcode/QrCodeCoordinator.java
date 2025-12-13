@@ -8,9 +8,11 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Creates and represents the QrCode main UI. */
+@NullMarked
 public class QrCodeCoordinator {
     private final QrCodeDialog mDialog;
     private final FragmentManager mFragmentManager;

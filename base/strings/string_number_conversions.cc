@@ -70,6 +70,13 @@ std::u16string NumberToString16(double value) {
   return internal::DoubleToStringT<std::u16string>(value);
 }
 
+std::string NumberToStringWithFixedPrecision(double value, int digits) {
+  return internal::DoubleToStringFixedT<std::string>(value, digits);
+}
+std::u16string NumberToString16WithFixedPrecision(double value, int digits) {
+  return internal::DoubleToStringFixedT<std::u16string>(value, digits);
+}
+
 bool StringToInt(std::string_view input, int* output) {
   return internal::StringToIntImpl(input, *output);
 }
@@ -139,6 +146,21 @@ std::string HexEncode(span<const uint8_t> bytes) {
 
 std::string HexEncode(std::string_view chars) {
   return HexEncode(base::as_byte_span(chars));
+}
+
+std::string HexEncodeLower(base::span<const uint8_t> bytes) {
+  // Each input byte creates two output hex characters.
+  std::string ret;
+  ret.reserve(bytes.size() * 2);
+
+  for (uint8_t byte : bytes) {
+    AppendHexEncodedByte(byte, ret, /*uppercase=*/false);
+  }
+  return ret;
+}
+
+std::string HexEncodeLower(std::string_view chars) {
+  return HexEncodeLower(base::as_byte_span(chars));
 }
 
 bool HexStringToInt(std::string_view input, int* output) {

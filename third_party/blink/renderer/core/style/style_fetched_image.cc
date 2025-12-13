@@ -131,10 +131,6 @@ bool StyleFetchedImage::IsAccessAllowed(String& failing_url) const {
   return false;
 }
 
-bool StyleFetchedImage::IsFromOriginCleanStyleSheet() const {
-  return url_data_->IsFromOriginCleanStyleSheet();
-}
-
 float StyleFetchedImage::ApplyImageResolution(float multiplier) const {
   const Image& image = *image_->GetImage();
   if (image.IsBitmapImage() && override_image_resolution_ > 0.0f) {

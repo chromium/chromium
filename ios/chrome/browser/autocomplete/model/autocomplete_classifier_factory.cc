@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
@@ -19,14 +20,14 @@
 namespace ios {
 namespace {
 
-std::unique_ptr<KeyedService> BuildAutocompleteClassifier(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildAutocompleteClassifier(ProfileIOS* profile) {
   return std::make_unique<AutocompleteClassifier>(
-      base::WrapUnique(new AutocompleteController(
-          base::WrapUnique(new AutocompleteProviderClientImpl(profile)),
-          AutocompleteClassifier::DefaultOmniboxProviders())),
-      base::WrapUnique(new AutocompleteSchemeClassifierImpl));
+      std::make_unique<AutocompleteController>(
+          std::make_unique<AutocompleteProviderClientImpl>(profile),
+          AutocompleteControllerConfig{
+              .provider_types =
+                  AutocompleteClassifier::DefaultOmniboxProviders()}),
+      std::make_unique<AutocompleteSchemeClassifierImpl>());
 }
 
 }  // namespace
@@ -45,9 +46,9 @@ AutocompleteClassifierFactory* AutocompleteClassifierFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+AutocompleteClassifierFactory::TestingFactory
 AutocompleteClassifierFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildAutocompleteClassifier);
+  return base::BindOnce(&BuildAutocompleteClassifier);
 }
 
 AutocompleteClassifierFactory::AutocompleteClassifierFactory()
@@ -63,8 +64,8 @@ AutocompleteClassifierFactory::~AutocompleteClassifierFactory() = default;
 
 std::unique_ptr<KeyedService>
 AutocompleteClassifierFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildAutocompleteClassifier(context);
+    ProfileIOS* profile) const {
+  return BuildAutocompleteClassifier(profile);
 }
 
 }  // namespace ios

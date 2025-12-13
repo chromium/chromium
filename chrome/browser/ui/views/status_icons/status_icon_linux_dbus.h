@@ -14,6 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/views/status_icons/concat_menu_model.h"
+#include "components/dbus/utils/call_method.h"
+#include "components/dbus/utils/export_method.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
@@ -60,11 +62,11 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
   void CheckStatusNotifierWatcherHasOwner();
 
   // Step 1: verify that the StatusNotifierWatcher service is owned.
-  void OnNameHasOwnerResponse(dbus::Response* response);
+  void OnNameHasOwnerResponse(dbus_utils::CallMethodResultSig<"b"> response);
 
   // Step 2: verify with the StatusNotifierWatcher that a StatusNotifierHost is
   // registered.
-  void OnHostRegisteredResponse(dbus::Response* response);
+  void OnHostRegisteredResponse(dbus_utils::CallMethodResultSig<"v"> response);
 
   // Step 3: export methods for the StatusNotifierItem and the properties
   // interface.
@@ -75,7 +77,7 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
   void RegisterStatusNotifierItem();
 
   // Step 5: register the StatusNotifierItem with the StatusNotifierWatcher.
-  void OnRegistered(dbus::Response* response);
+  void OnRegistered(dbus_utils::CallMethodResultSig<""> response);
 
   // Called when the name owner of StatusNotifierWatcher has changed, which
   // can happen when lock/unlock screen.
@@ -88,14 +90,11 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
   // Right-click  -> ContextMenu
   // Scroll       -> Scroll
   // Middle-click -> SecondaryActivate
-  void OnActivate(dbus::MethodCall* method_call,
-                  dbus::ExportedObject::ResponseSender sender);
-  void OnContextMenu(dbus::MethodCall* method_call,
-                     dbus::ExportedObject::ResponseSender sender);
-  void OnScroll(dbus::MethodCall* method_call,
-                dbus::ExportedObject::ResponseSender sender);
-  void OnSecondaryActivate(dbus::MethodCall* method_call,
-                           dbus::ExportedObject::ResponseSender sender);
+  dbus_utils::ExportMethodResult<> OnActivate(int32_t x, int32_t y);
+  dbus_utils::ExportMethodResult<> OnContextMenu(int32_t x, int32_t y);
+  dbus_utils::ExportMethodResult<> OnScroll(int32_t delta,
+                                            std::string orientation);
+  dbus_utils::ExportMethodResult<> OnSecondaryActivate(int32_t x, int32_t y);
 
   void UpdateMenuImpl(ui::MenuModel* model, bool send_signal);
 

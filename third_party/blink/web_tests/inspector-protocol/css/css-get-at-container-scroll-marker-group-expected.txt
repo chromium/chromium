@@ -1,0 +1,90 @@
+Verify that @container rules reported with the correct values.
+Dumping styles for ::scroll-marker-group: [
+    [0] : {
+        matchingSelectors : [
+            [0] : 0
+        ]
+        rule : {
+            containerQueries : [
+                [0] : {
+                    physicalAxes : Horizontal
+                    range : {
+                        endColumn : 26
+                        endLine : 12
+                        startColumn : 11
+                        startLine : 12
+                    }
+                    styleSheetId : <string>
+                    text : (width = 400px)
+                }
+            ]
+            layers : [
+            ]
+            media : [
+            ]
+            origin : regular
+            originTreeScopeNodeId : 5
+            ruleTypes : [
+                [0] : ContainerRule
+            ]
+            scopes : [
+            ]
+            selectorList : {
+                selectors : [
+                    [0] : {
+                        range : {
+                            endColumn : 32
+                            endLine : 13
+                            startColumn : 2
+                            startLine : 13
+                        }
+                        specificity : {
+                            a : 1
+                            b : 0
+                            c : 1
+                        }
+                        text : #scroller::scroll-marker-group
+                    }
+                ]
+                text : #scroller::scroll-marker-group
+            }
+            startingStyles : [
+            ]
+            style : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : --foo
+                        range : {
+                            endColumn : 46
+                            endLine : 13
+                            startColumn : 35
+                            startLine : 13
+                        }
+                        text : --foo: bar;
+                        value : bar
+                    }
+                    [1] : {
+                        name : --foo
+                        value : bar
+                    }
+                ]
+                cssText :  --foo: bar; 
+                range : {
+                    endColumn : 47
+                    endLine : 13
+                    startColumn : 34
+                    startLine : 13
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string>
+            }
+            styleSheetId : <string>
+            supports : [
+            ]
+        }
+    }
+]
+

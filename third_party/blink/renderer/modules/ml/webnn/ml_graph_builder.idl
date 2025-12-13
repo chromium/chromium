@@ -6,6 +6,8 @@
 
 typedef record<USVString, MLOperand> MLNamedOperands;
 
+typedef (bigint or unrestricted double) MLNumber;
+
 enum MLInputOperandLayout { "nchw", "nhwc" };
 
 enum MLConv2dFilterOperandLayout { "oihw", "hwio", "ohwi", "ihwo" };
@@ -148,7 +150,7 @@ enum MLPaddingMode {
 
 dictionary MLPadOptions : MLOperatorOptions {
   MLPaddingMode mode = "constant";
-  float value = 0;
+  MLNumber value = 0;
 };
 
 enum MLRoundingType {
@@ -167,8 +169,8 @@ dictionary MLPool2dOptions : MLOperatorOptions {
 };
 
 dictionary MLClampOptions : MLOperatorOptions {
-  float minValue;
-  float maxValue;
+  MLNumber minValue;
+  MLNumber maxValue;
 };
 
 dictionary MLEluOptions : MLOperatorOptions {
@@ -245,6 +247,11 @@ dictionary MLTriangularOptions : MLOperatorOptions {
     RaisesException
   ] MLOperand constant(MLTensor tensor);
 
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ] MLOperand constant(MLOperandDataType type, MLNumber value);
+
   [RaisesException] MLOperand argMin(MLOperand input, [EnforceRange] unsigned long axis, optional MLArgMinMaxOptions options = {});
   [RaisesException] MLOperand argMax(MLOperand input, [EnforceRange] unsigned long axis, optional MLArgMinMaxOptions options = {});
 
@@ -285,11 +292,14 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [RaisesException] MLOperand floor(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand log(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand neg(MLOperand x, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand roundEven(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand sign(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand sin(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand tan(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand erf(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand identity(MLOperand x, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand isNaN(MLOperand x, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand isInfinite(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand logicalNot(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand reciprocal(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand sqrt(MLOperand x, optional MLOperatorOptions options = {});
@@ -388,8 +398,6 @@ dictionary MLTriangularOptions : MLOperatorOptions {
                                     sequence<[EnforceRange] unsigned long> sizes,
                                     optional MLSliceOptions options = {});
 
-  // TODO: crbug.com/342919187 - Remove the deprecated version once ort-web 1.18.* supporting softmax(input, aixs) is released.
-  [RaisesException] MLOperand softmax(MLOperand input, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand softmax(MLOperand input, [EnforceRange] unsigned long axis, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand softplus(MLOperand input, optional MLOperatorOptions options = {});

@@ -25,3 +25,5 @@ void ShowAdvancedProtectionSettings(ui::WindowAndroid* window) {
 }
 
 }  // namespace safe_browsing
+
+DEFINE_JNI(SafeBrowsingSettingsNavigation)

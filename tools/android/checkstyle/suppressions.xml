@@ -4,7 +4,7 @@
 <suppressions>
   <!-- Code in chrome/ should use SharedPreferencesManager. Ref: crbug.com/1022108 -->
   <suppress id="UseSharedPreferencesManagerFromChromeCheck"
-            files="src/(android_webview|base|chromecast|components|content|device|media|net|remoting|services|testing|third_party|tools|ui|weblayer)/"/>
+            files="src/(android_webview|base|chromecast|components|content|device|media|net|remoting|services|testing|third_party|tools|ui)/"/>
   <!-- FooTest.java, FooTestUtil.java, and FooTestUtils.java do not need to use SharedPreferencesManager. -->
   <suppress id="UseSharedPreferencesManagerFromChromeCheck"
             files="Test(Utils?)?\.java"/>
@@ -23,6 +23,7 @@
   <suppress id="SystemExitCheck" files="src/(build|testing|third_party|tools|base/test)/"/>
   <!-- Generated file has consecutive underscores in constant names. -->
   <suppress id="ConstantNameCheck" files="CronetStatsLog.java"/>
+  <suppress id="FullscreenDialogs" files="Test(Utils?)?\.java"/>
   <!-- jni_generator tests fail some checks. -->
   <suppress checks=".*" files="base/android/jni_generator/.*"/>
   <!-- The accessibility code uses "AX" throughout Chromium, allow in Java for

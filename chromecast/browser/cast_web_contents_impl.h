@@ -16,7 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/platform_shared_memory_region.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -91,7 +91,7 @@ class CastWebContentsImpl : public CastWebContents,
   void EnableBackgroundVideoPlayback(bool enabled) override;
   void AddBeforeLoadJavaScript(uint64_t id, std::string_view script) override;
   void PostMessageToMainFrame(
-      const std::string& target_origin,
+      const std::string& serialized_target_origin,
       const std::string& data,
       std::vector<blink::WebMessagePort> ports) override;
   void ExecuteJavaScript(

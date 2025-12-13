@@ -131,7 +131,7 @@ class FakeSyncEngine final : public SyncEngine {
   CoreAccountId authenticated_account_id_;
   bool started_handling_invalidations_ = false;
   bool is_next_poll_time_in_the_past_ = false;
-  ConfigureReason last_configure_reason_ = CONFIGURE_REASON_UNKNOWN;
+  ConfigureReason last_configure_reason_ = ConfigureReason::kUnknown;
   base::WeakPtrFactory<FakeSyncEngine> weak_ptr_factory_{this};
 };
 

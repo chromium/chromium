@@ -17,6 +17,7 @@
 #include "ui/events/event_observer.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
+#include "ui/views/event_monitor_remote_cocoa.h"
 
 namespace views {
 
@@ -39,8 +40,22 @@ std::unique_ptr<EventMonitor> EventMonitor::CreateWindowMonitor(
     ui::EventObserver* event_observer,
     gfx::NativeWindow target_window,
     const std::set<ui::EventType>& types) {
-  return std::make_unique<EventMonitorMac>(event_observer, target_window,
-                                           types);
+  CHECK(target_window)
+      << "Use CreateApplicationMonitor to observe events to all windows";
+
+  // For Progressive Web App (PWA) windows, we can't use an in-process NSEvent
+  // monitors, as these windows exist in a different process. So depending on
+  // if the target window is local or remote we use a different EventMonitor
+  // implementation.
+  auto* host =
+      views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(target_window);
+  if (host && (host->application_host() || g_use_remote_cocoa_for_testing)) {
+    return std::make_unique<EventMonitorRemoteCocoa>(event_observer,
+                                                     target_window, types);
+  } else {
+    return std::make_unique<EventMonitorMac>(event_observer, target_window,
+                                             types);
+  }
 }
 
 struct EventMonitorMac::ObjCStorage {
@@ -55,18 +70,6 @@ EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
       objc_storage_(std::make_unique<ObjCStorage>()) {
   DCHECK(event_observer);
   NSWindow* target_window = target_native_window.GetNativeNSWindow();
-
-  // For Progressive Web App (PWA) windows, we use a different event monitoring
-  // path. When the target window is inside PWA, we register
-  // `NativeWidgetMacEventMonitor` for remote cocoa. These events are processed
-  // through the NativeWidgetMacEventMonitorOnEvent() method defined below,
-  // bypassing the NSEvent block-based monitoring approach that follows.
-  auto* host = views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
-      target_native_window);
-  if (host && (host->application_host() || g_use_remote_cocoa_for_testing)) {
-    event_monitor_ = host->AddEventMonitor(this);
-    return;
-  }
 
   // Capture a WeakPtr. This allows the block to detect another event monitor
   // for the same event deleting |this|.
@@ -92,23 +95,12 @@ EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
                                             handler:block];
 }
 
-void EventMonitorMac::NativeWidgetMacEventMonitorOnEvent(ui::Event* ui_event,
-                                                         bool* was_handled) {
-  if (*was_handled || !ui_event) {
-    return;
-  }
-
-  if (types_.find(ui_event->type()) != types_.end()) {
-    event_observer_->OnEvent(*ui_event);
-  }
-}
-
 EventMonitorMac::~EventMonitorMac() {
   [NSEvent removeMonitor:objc_storage_->monitor];
 }
 
 gfx::Point EventMonitorMac::GetLastMouseLocation() {
-  return display::Screen::GetScreen()->GetCursorScreenPoint();
+  return display::Screen::Get()->GetCursorScreenPoint();
 }
 
 // static

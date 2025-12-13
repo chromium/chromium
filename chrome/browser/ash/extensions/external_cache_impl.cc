@@ -25,8 +25,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
-#include "chrome/browser/extensions/install_observer.h"
-#include "chrome/browser/extensions/install_tracker.h"
+#include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -34,6 +33,8 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/install_observer.h"
+#include "extensions/browser/install_tracker.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
@@ -126,7 +127,8 @@ void ExternalCacheImpl::AnyInstallFailureObserver::OnProfileAdded(
     observed_profiles_.insert(profile);
   }
 
-  auto* tracker = extensions::InstallTracker::Get(profile);
+  auto* tracker =
+      extensions::InstallTrackerFactory::GetForBrowserContext(profile);
   // Only observe the tracker if it's not already observed - it could be shared
   // between profiles (for example regular & incognito). It's also legal for the
   // tracker not to exist - some profiles (like the CrOS system profile) don't
@@ -138,7 +140,8 @@ void ExternalCacheImpl::AnyInstallFailureObserver::OnProfileAdded(
 
 void ExternalCacheImpl::AnyInstallFailureObserver::OnProfileWillBeDestroyed(
     Profile* profile) {
-  auto* tracker = extensions::InstallTracker::Get(profile);
+  auto* tracker =
+      extensions::InstallTrackerFactory::GetForBrowserContext(profile);
 
   // If we received this notification for a given profile, we must have been
   // observing it to receive the notification in the first place.
@@ -173,11 +176,12 @@ void ExternalCacheImpl::AnyInstallFailureObserver::OnFinishCrxInstall(
 bool ExternalCacheImpl::AnyInstallFailureObserver::
     IsAnyObservedProfileUsingTracker(
         extensions::InstallTracker* tracker) const {
-  return std::find_if(observed_profiles_.begin(), observed_profiles_.end(),
-                      [=](Profile* profile) -> bool {
-                        return extensions::InstallTracker::Get(profile) ==
-                               tracker;
-                      }) != observed_profiles_.end();
+  return std::find_if(
+             observed_profiles_.begin(), observed_profiles_.end(),
+             [=](Profile* profile) -> bool {
+               return extensions::InstallTrackerFactory::GetForBrowserContext(
+                          profile) == tracker;
+             }) != observed_profiles_.end();
 }
 
 ExternalCacheImpl::ExternalCacheImpl(
@@ -251,8 +255,6 @@ void ExternalCacheImpl::OnDamagedFileDetected(const base::FilePath& path) {
 
       // Don't try to DownloadMissingExtensions() from here,
       // since it can cause a fail/retry loop.
-      // TODO(crbug.com/40715565) trigger re-installation mechanism with
-      // exponential back-off.
       return;
     }
   }

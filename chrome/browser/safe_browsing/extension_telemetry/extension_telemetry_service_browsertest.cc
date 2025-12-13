@@ -15,15 +15,20 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/search_hijacking_detector.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -74,6 +79,7 @@ class ExtensionTelemetryServiceBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {kExtensionTelemetryDeclarativeNetRequestActionSignal,
+         kExtensionTelemetrySearchHijackingSignal,
          extensions_features::kIncludeJSCallStackInExtensionApiRequest},
         /*disabled_features=*/{});
     CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &test_extension_dir_));
@@ -588,8 +594,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   EXPECT_EQ(action_detail.redirect_url(), "http://google.com/pages/");
 }
 
+// TODO(crbug.com/444383306): Deflake this test on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DetectsAndReportsTabsApiSignal \
+  DISABLED_DetectsAndReportsTabsApiSignal
+#else
+#define MAYBE_DetectsAndReportsTabsApiSignal DetectsAndReportsTabsApiSignal
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
-                       DetectsAndReportsTabsApiSignal) {
+                       MAYBE_DetectsAndReportsTabsApiSignal) {
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -946,6 +959,75 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
               RemoteHostInfo::CONTENT_SCRIPT);
   }
+}
+
+// TODO(crbug.com/444572871) Fix test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DetectsAndReportsSearchHijackingSignal \
+  DISABLED_DetectsAndReportsSearchHijackingSignal
+#else
+#define MAYBE_DetectsAndReportsSearchHijackingSignal \
+  DetectsAndReportsSearchHijackingSignal
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
+                       MAYBE_DetectsAndReportsSearchHijackingSignal) {
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load a minimal extension.
+  static constexpr char kManifest[] =
+      R"({
+         "name": "Test Extension",
+         "version": "0.1",
+         "manifest_version": 3
+       })";
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  const auto* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ASSERT_NE(telemetry_service(), nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabledForESB());
+
+  // Set up DSE.
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  TemplateURLData data;
+  data.SetShortName(u"Test");
+  data.SetKeyword(u"test");
+  data.SetURL("http://test.com/search?q={searchTerms}");
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+  // Configure the search hijacking detector for testing.
+  SearchHijackingDetector* search_hijacking_detector =
+      telemetry_service()->search_hijacking_detector_for_testing();
+  search_hijacking_detector->SetHeuristicCheckInterval(base::Seconds(0));
+  search_hijacking_detector->SetHeuristicThreshold(5);
+
+  // Simulate search events.
+  AutocompleteMatch match;
+  match.destination_url = GURL("http://test.com/search?q=foo");
+
+  for (int i = 0; i < 10; ++i) {
+    telemetry_service()->OnOmniboxSearch(match);
+  }
+  for (int i = 0; i < 3; ++i) {
+    telemetry_service()->OnDseSerpLoaded();
+  }
+
+  // Manually trigger the heuristic check.
+  search_hijacking_detector->MaybeCheckForHeuristicMatch();
+
+  // Generate telemetry report and verify.
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+  ASSERT_NE(telemetry_report_pb, nullptr);
+  ASSERT_TRUE(telemetry_report_pb->has_search_hijacking_signal());
+  const auto& signal = telemetry_report_pb->search_hijacking_signal();
+  EXPECT_EQ(signal.omnibox_search_count(), 10);
+  EXPECT_EQ(signal.serp_landing_count(), 3);
 }
 
 }  // namespace safe_browsing

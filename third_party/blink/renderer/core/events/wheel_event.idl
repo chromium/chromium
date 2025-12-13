@@ -32,10 +32,10 @@
     readonly attribute double deltaX;
     readonly attribute double deltaY;
     readonly attribute double deltaZ;
-    [HighEntropy=Direct, Measure] readonly attribute unsigned long deltaMode;
+    [Measure] readonly attribute unsigned long deltaMode;
 
     // Non-standard APIs
-    [HighEntropy=Direct, MeasureAs=WheelEventWheelDeltaX] readonly attribute long wheelDeltaX;
-    [HighEntropy=Direct, MeasureAs=WheelEventWheelDeltaY] readonly attribute long wheelDeltaY;
-    [HighEntropy=Direct, MeasureAs=WheelEventWheelDelta] readonly attribute long wheelDelta;
+    [MeasureAs=WheelEventWheelDeltaX] readonly attribute long wheelDeltaX;
+    [MeasureAs=WheelEventWheelDeltaY] readonly attribute long wheelDeltaY;
+    [MeasureAs=WheelEventWheelDelta] readonly attribute long wheelDelta;
 };

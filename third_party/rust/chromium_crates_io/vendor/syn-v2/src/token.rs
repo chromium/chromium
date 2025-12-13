@@ -109,7 +109,7 @@ use proc_macro2::{Delimiter, Ident};
 #[cfg(feature = "parsing")]
 use proc_macro2::{Literal, Punct, TokenTree};
 #[cfg(feature = "printing")]
-use quote::{ToTokens, TokenStreamExt};
+use quote::{ToTokens, TokenStreamExt as _};
 #[cfg(feature = "extra-traits")]
 use std::cmp;
 #[cfg(feature = "extra-traits")]
@@ -143,7 +143,7 @@ pub(crate) mod private {
     /// Support writing `token.span` rather than `token.spans[0]` on tokens that
     /// hold a single span.
     #[repr(transparent)]
-    #[allow(unknown_lints, repr_transparent_external_private_fields)] // False positive: https://github.com/rust-lang/rust/issues/78586#issuecomment-1722680482
+    #[allow(unknown_lints, repr_transparent_non_zst_fields)] // False positive: https://github.com/rust-lang/rust/issues/115922
     pub struct WithSpan {
         pub span: Span,
     }
@@ -324,7 +324,7 @@ macro_rules! define_punctuation_structs {
     ($($token:literal pub struct $name:ident/$len:tt #[doc = $usage:literal])*) => {
         $(
             #[cfg_attr(not(doc), repr(transparent))]
-            #[allow(unknown_lints, repr_transparent_external_private_fields)] // False positive: https://github.com/rust-lang/rust/issues/78586#issuecomment-1722680482
+            #[allow(unknown_lints, repr_transparent_non_zst_fields)] // False positive: https://github.com/rust-lang/rust/issues/115922
             #[doc = concat!('`', $token, '`')]
             ///
             /// Usage:
@@ -1057,8 +1057,9 @@ pub(crate) mod parsing {
 #[doc(hidden)]
 #[cfg(feature = "printing")]
 pub(crate) mod printing {
+    use crate::ext::PunctExt as _;
     use proc_macro2::{Delimiter, Group, Ident, Punct, Spacing, Span, TokenStream};
-    use quote::TokenStreamExt;
+    use quote::TokenStreamExt as _;
 
     #[doc(hidden)]
     pub fn punct(s: &str, spans: &[Span], tokens: &mut TokenStream) {
@@ -1069,14 +1070,10 @@ pub(crate) mod printing {
         let ch = chars.next_back().unwrap();
         let span = spans.next_back().unwrap();
         for (ch, span) in chars.zip(spans) {
-            let mut op = Punct::new(ch, Spacing::Joint);
-            op.set_span(*span);
-            tokens.append(op);
+            tokens.append(Punct::new_spanned(ch, Spacing::Joint, *span));
         }
 
-        let mut op = Punct::new(ch, Spacing::Alone);
-        op.set_span(*span);
-        tokens.append(op);
+        tokens.append(Punct::new_spanned(ch, Spacing::Alone, *span));
     }
 
     pub(crate) fn keyword(s: &str, span: Span, tokens: &mut TokenStream) {

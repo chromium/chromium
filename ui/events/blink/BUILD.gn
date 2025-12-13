@@ -31,11 +31,11 @@ source_set("blink") {
   public_deps = [ ":blink_features" ]
 
   deps = [
-    "//cc:cc",
-    "//services/tracing/public/cpp:cpp",
+    "//cc",
+    "//services/tracing/public/cpp",
     "//third_party/blink/public:blink_headers",
     "//third_party/one_euro_filter",
-    "//ui/base:base",
+    "//ui/base",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",

@@ -581,8 +581,8 @@ bool NeuralStylusPalmDetectionFilter::
 
   // Check the switch string.
 
-  std::optional<base::Value> value =
-      base::JSONReader::Read(ozone_params_switch_string);
+  std::optional<base::Value> value = base::JSONReader::Read(
+      ozone_params_switch_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (value != std::nullopt && !ozone_params_switch_string.empty()) {
     base::Value::Dict* value_dict = value->GetIfDict();
     if (!value_dict) {

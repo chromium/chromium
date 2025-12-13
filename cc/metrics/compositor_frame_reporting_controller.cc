@@ -4,14 +4,18 @@
 
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "cc/base/features.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
+#include "cc/metrics/scroll_jank_v4_processor.h"
 #include "cc/scheduler/scheduler_state_machine.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -26,14 +30,17 @@ using FrameTerminationStatus = CompositorFrameReporter::FrameTerminationStatus;
 CompositorFrameReportingController::CompositorFrameReportingController(
     bool should_report_histograms,
     bool should_report_ukm,
-    int layer_tree_host_id)
+    int layer_tree_host_id,
+    bool is_trees_in_viz_client)
     : should_report_histograms_(should_report_histograms),
       layer_tree_host_id_(layer_tree_host_id),
+      is_trees_in_viz_client_(is_trees_in_viz_client),
       latency_ukm_reporter_(std::make_unique<LatencyUkmReporter>()),
       predictor_jank_tracker_(std::make_unique<PredictorJankTracker>()),
       scroll_jank_dropped_frame_tracker_(
           std::make_unique<ScrollJankDroppedFrameTracker>()),
-      scroll_jank_ukm_reporter_(std::make_unique<ScrollJankUkmReporter>()) {
+      scroll_jank_ukm_reporter_(std::make_unique<ScrollJankUkmReporter>()),
+      scroll_jank_v4_processor_(std::make_unique<ScrollJankV4Processor>()) {
   if (should_report_ukm) {
     // UKM metrics should be reported if and only if `latency_ukm_reporter` is
     // set on `global_trackers_`.
@@ -48,6 +55,7 @@ CompositorFrameReportingController::CompositorFrameReportingController(
   global_trackers_.predictor_jank_tracker = predictor_jank_tracker_.get();
   global_trackers_.scroll_jank_dropped_frame_tracker =
       scroll_jank_dropped_frame_tracker_.get();
+  global_trackers_.scroll_jank_v4_processor = scroll_jank_v4_processor_.get();
 }
 
 CompositorFrameReportingController::~CompositorFrameReportingController() {
@@ -261,8 +269,13 @@ void CompositorFrameReportingController::DidActivate() {
   next_activate_has_invalidation_ = false;
   if (!reporters_[PipelineStage::kCommit])
     return;
-  reporters_[PipelineStage::kCommit]->StartStage(
-      StageType::kEndActivateToSubmitCompositorFrame, Now());
+  if (is_trees_in_viz_client_) {
+    reporters_[PipelineStage::kCommit]->StartStage(
+        StageType::kEndActivateToSubmitUpdateDisplayTree, Now());
+  } else {
+    reporters_[PipelineStage::kCommit]->StartStage(
+        StageType::kEndActivateToSubmitCompositorFrame, Now());
+  }
   AdvanceReporterStage(PipelineStage::kCommit, PipelineStage::kActivate);
 }
 
@@ -291,6 +304,11 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     // The reporter in activate state can be submitted
     main_reporter = std::move(reporters_[PipelineStage::kActivate]);
     last_submitted_frame_id_ = last_activated_frame_id;
+  } else if (current_frame_id.source_id ==
+                 viz::BeginFrameArgs::kManualSourceId &&
+             reporters_[PipelineStage::kActivate]) {
+    main_reporter = std::move(reporters_[PipelineStage::kActivate]);
+    last_submitted_frame_id_ = last_activated_frame_id;
   } else {
     DCHECK(!reporters_[PipelineStage::kActivate]);
   }
@@ -311,8 +329,12 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
   //     stage.
   if (CanSubmitImplFrame(current_frame_id)) {
     auto& reporter = reporters_[PipelineStage::kBeginImplFrame];
-    reporter->StartStage(StageType::kEndActivateToSubmitCompositorFrame,
-                         reporter->impl_frame_finish_time());
+    if (is_trees_in_viz_client_) {
+      reporter->StartStageUpdateDisplayTree(submit_info);
+    } else {
+      reporter->StartStage(StageType::kEndActivateToSubmitCompositorFrame,
+                           reporter->impl_frame_finish_time());
+    }
     AdvanceReporterStage(PipelineStage::kBeginImplFrame,
                          PipelineStage::kActivate);
     impl_reporter = std::move(reporters_[PipelineStage::kActivate]);
@@ -322,8 +344,12 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
       impl_reporter->SetPartialUpdateDecider(partial_update_decider);
   } else if (CanSubmitMainFrame(current_frame_id)) {
     auto& reporter = reporters_[PipelineStage::kBeginMainFrame];
-    reporter->StartStage(StageType::kEndActivateToSubmitCompositorFrame,
-                         reporter->impl_frame_finish_time());
+    if (is_trees_in_viz_client_) {
+      reporter->StartStageUpdateDisplayTree(submit_info);
+    } else {
+      reporter->StartStage(StageType::kEndActivateToSubmitCompositorFrame,
+                           reporter->impl_frame_finish_time());
+    }
     AdvanceReporterStage(PipelineStage::kBeginMainFrame,
                          PipelineStage::kActivate);
     impl_reporter = std::move(reporters_[PipelineStage::kActivate]);
@@ -332,8 +358,12 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     // The method will return nullptr if Impl reporter has been submitted
     // prior to BeginMainFrame.
     if (reporter) {
-      reporter->StartStage(StageType::kEndActivateToSubmitCompositorFrame,
-                           reporter->impl_frame_finish_time());
+      if (is_trees_in_viz_client_) {
+        reporter->StartStageUpdateDisplayTree(submit_info);
+      } else {
+        reporter->StartStage(StageType::kEndActivateToSubmitCompositorFrame,
+                             reporter->impl_frame_finish_time());
+      }
       impl_reporter = std::move(reporter);
     }
   }
@@ -388,9 +418,13 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
   }
 
   if (main_reporter) {
-    main_reporter->StartStage(
-        StageType::kSubmitCompositorFrameToPresentationCompositorFrame,
-        submit_info.time);
+    if (is_trees_in_viz_client_) {
+      main_reporter->StartStagePresentationCompositorFrame(submit_info);
+    } else {
+      main_reporter->StartStage(
+          StageType::kSubmitCompositorFrameToPresentationCompositorFrame,
+          submit_info.time);
+    }
     main_reporter->AddEventsMetrics(
         std::move(submit_info.events_metrics.main_event_metrics));
     main_reporter->set_checkerboarded_needs_raster(
@@ -405,9 +439,13 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
 
   if (impl_reporter) {
     impl_reporter->EnableCompositorOnlyReporting();
-    impl_reporter->StartStage(
-        StageType::kSubmitCompositorFrameToPresentationCompositorFrame,
-        submit_info.time);
+    if (is_trees_in_viz_client_) {
+      impl_reporter->StartStagePresentationCompositorFrame(submit_info);
+    } else {
+      impl_reporter->StartStage(
+          StageType::kSubmitCompositorFrameToPresentationCompositorFrame,
+          submit_info.time);
+    }
     impl_reporter->AddEventsMetrics(
         std::move(submit_info.events_metrics.impl_event_metrics));
     impl_reporter->AddEventsMetrics(

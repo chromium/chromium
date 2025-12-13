@@ -40,7 +40,7 @@ public class LensMetrics {
         LensSupportStatus.DISABLED_FOR_ENTERPRISE_USER
     })
     @Retention(RetentionPolicy.SOURCE)
-    public static @interface LensSupportStatus {
+    public @interface LensSupportStatus {
         int LENS_SEARCH_SUPPORTED = 0;
         int NON_GOOGLE_SEARCH_ENGINE = 1;
         int ACTIVITY_NOT_ACCESSIBLE = 2;
@@ -83,7 +83,7 @@ public class LensMetrics {
         AmbientSearchEntryPoint.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
-    public static @interface AmbientSearchEntryPoint {
+    public @interface AmbientSearchEntryPoint {
         int CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS = 0;
         int CONTEXT_MENU_SEARCH_IMAGE_WITH_WEB = 1;
         int CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS = 2;
@@ -125,7 +125,7 @@ public class LensMetrics {
         CameraOpenEntryPoint.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
-    public static @interface CameraOpenEntryPoint {
+    public @interface CameraOpenEntryPoint {
         int OMNIBOX = 0;
         int NEW_TAB_PAGE = 1;
         int QUICK_ACTION_SEARCH_WIDGET = 2;
@@ -182,6 +182,7 @@ public class LensMetrics {
             case LensEntryPoint.GOOGLE_BOTTOM_BAR:
                 return "CustomTabs.GoogleBottomBar.LensSupportStatus";
             case LensEntryPoint.CONTEXT_MENU_CHIP:
+            case LensEntryPoint.TIPS_NOTIFICATIONS:
             default:
                 assert false : "Method not implemented.";
         }
@@ -228,6 +229,8 @@ public class LensMetrics {
                 return "MobileOmniboxLensShown";
             case LensEntryPoint.TASKS_SURFACE:
                 return "TasksSurface.FakeBox.LensShown";
+            case LensEntryPoint.TIPS_NOTIFICATIONS:
+                return "Notifications.Tips.LensShown";
             case LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_CHIP:
@@ -246,6 +249,8 @@ public class LensMetrics {
                 return "MobileOmniboxLens";
             case LensEntryPoint.TASKS_SURFACE:
                 return "TasksSurface.FakeBox.Lens";
+            case LensEntryPoint.TIPS_NOTIFICATIONS:
+                return "Notifications.Tips.Lens";
             case LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_CHIP:

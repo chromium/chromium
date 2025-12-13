@@ -415,6 +415,7 @@ data/noise-xhe-aac.mp4
 data/nonzero-start-time.webm
 data/npot-video.h264
 data/one_frame_1280x720.mjpeg
+data/opus-test.opus
 data/opus-trimming-test.mp4
 data/opus-trimming-test.ogg
 data/opus-trimming-test.webm
@@ -429,6 +430,7 @@ data/pixel-40x23-yuv420.jpg
 data/pixel-41x22-yuv420.jpg
 data/pixel-41x23-yuv420.jpg
 data/player.html
+data/populated-zero-value-padding.ogg
 data/puppets-1280x720.i420.yuv.webm
 data/puppets-1280x720.nv12.yuv.json
 data/puppets-320x180.nv12.yuv.json
@@ -513,6 +515,8 @@ data/vp8-P-frame-320x240
 data/vp8-corrupt-I-frame
 data/vp9-I-frame-1280x720
 data/vp9-I-frame-320x240
+data/vp9-agtm-country-code-extension.webm
+data/vp9-agtm.webm
 data/vp9-duplicate-frame.webm
 data/vp9-hdr-init-segment.mp4
 data/vp90_2_10_show_existing_frame2.vp9.ivf

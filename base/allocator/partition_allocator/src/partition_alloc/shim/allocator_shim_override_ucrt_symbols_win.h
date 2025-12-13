@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // This header defines symbols to override the same functions in the Visual C++
 // CRT implementation.
 
@@ -46,6 +51,70 @@ PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 SHIM_ALWAYS_EXPORT void* operator new[](size_t size,
                                         const std::nothrow_t&) noexcept {
   return ShimCppNewNoThrow(size);
+}
+
+// Although `operator delete(void*)` is redirected to free(),
+// `operator delete` overloads with `size_t` (sized) and `std::align_val_t`
+// (aligned) must be explicitly overridden here to pass this information to
+// PartitionAlloc.
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete(void* p, size_t size) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithSize(p, size);
+#else
+  ShimCppDelete(p);
+#endif
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete[](void* p, size_t size) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithSize(p, size);
+#else
+  ShimCppDelete(p);
+#endif
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete(void* p,
+                                        size_t size,
+                                        std::align_val_t alignment) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithSizeAndAlignment(p, size, static_cast<size_t>(alignment));
+#else
+  ShimCppDelete(p);
+#endif
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete[](void* p,
+                                          size_t size,
+                                          std::align_val_t alignment) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithSizeAndAlignment(p, size, static_cast<size_t>(alignment));
+#else
+  ShimCppDelete(p);
+#endif
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete(void* p,
+                                        std::align_val_t alignment) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithAlignment(p, static_cast<size_t>(alignment));
+#else
+  ShimCppDelete(p);
+#endif
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete[](void* p,
+                                          std::align_val_t alignment) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithAlignment(p, static_cast<size_t>(alignment));
+#else
+  ShimCppDelete(p);
+#endif
 }
 
 extern "C" {

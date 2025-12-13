@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
-#include "content/common/web_contents_ns_view_bridge.mojom.h"
 
 extern CONTENT_EXPORT const base::FeatureParam<bool>
     kDisplaySleepAndAppHideDetection;

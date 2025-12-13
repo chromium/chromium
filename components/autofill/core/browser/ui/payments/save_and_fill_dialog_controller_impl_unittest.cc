@@ -6,8 +6,10 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_view.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/strings/grit/components_strings.h"
@@ -20,8 +22,8 @@ class SaveAndFillDialogControllerImplTest : public testing::Test {
   SaveAndFillDialogControllerImplTest() = default;
   ~SaveAndFillDialogControllerImplTest() override = default;
 
-  void SetIsUploadSaveAndFill(bool is_upload) {
-    controller_->is_upload_save_and_fill_ = is_upload;
+  void SetDialogState(SaveAndFillDialogState dialog_state) {
+    controller_->dialog_state_ = dialog_state;
   }
 
   void SetUp() override {
@@ -30,15 +32,15 @@ class SaveAndFillDialogControllerImplTest : public testing::Test {
     EXPECT_CALL(create_and_show_view_callback, Run())
         .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
 
-    controller_->ShowDialog(create_and_show_view_callback.Get(),
-                            card_save_and_fill_dialog_callback_.Get());
+    controller_->ShowLocalDialog(create_and_show_view_callback.Get(),
+                                 card_save_and_fill_dialog_callback_.Get());
   }
 
   SaveAndFillDialogControllerImpl* controller() const {
     return controller_.get();
   }
 
- private:
+ protected:
   std::unique_ptr<SaveAndFillDialogControllerImpl> controller_;
   base::MockCallback<
       base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
@@ -79,7 +81,7 @@ TEST_F(SaveAndFillDialogControllerImplTest, CorrectStringsAreReturned) {
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_TITLE));
 
-  SetIsUploadSaveAndFill(false);
+  SetDialogState(SaveAndFillDialogState::kLocalDialog);
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL));
@@ -109,7 +111,7 @@ TEST_F(SaveAndFillDialogControllerImplTest, CorrectStringsAreReturned) {
                 IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_CARD_NUMBER));
 
   // Test for upload Save and Fill explanatory message.
-  SetIsUploadSaveAndFill(true);
+  SetDialogState(SaveAndFillDialogState::kUploadDialog);
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD));
@@ -205,6 +207,169 @@ TEST_F(SaveAndFillDialogControllerImplTest, IsValidNameOnCard) {
   EXPECT_FALSE(controller()->IsValidNameOnCard(u"Invalid@Name"));
   EXPECT_FALSE(
       controller()->IsValidNameOnCard(u"This name is way too long for a card"));
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_LocalDialogAcceptedWithCvc) {
+  base::HistogramTester histogram_tester;
+  payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails details;
+  details.security_code = u"123";
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_,
+              Run(payments::PaymentsAutofillClient::
+                      CardSaveAndFillDialogUserDecision::kAccepted,
+                  testing::_));
+
+  controller()->OnUserAcceptedDialog(details);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kLocalAcceptedWithCvc,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_LocalDialogAcceptedWithoutCvc) {
+  base::HistogramTester histogram_tester;
+  payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails details;
+  details.security_code = u"";
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_,
+              Run(payments::PaymentsAutofillClient::
+                      CardSaveAndFillDialogUserDecision::kAccepted,
+                  testing::_));
+
+  controller()->OnUserAcceptedDialog({});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kLocalAcceptedWithoutCvc,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_LocalDialogCanceled) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_,
+              Run(payments::PaymentsAutofillClient::
+                      CardSaveAndFillDialogUserDecision::kDeclined,
+                  testing::_));
+
+  controller()->OnUserCanceledDialog();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kLocalCanceled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_UploadDialogAcceptedWithCvc) {
+  base::HistogramTester histogram_tester;
+  SetDialogState(SaveAndFillDialogState::kUploadDialog);
+  payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails details;
+  details.security_code = u"123";
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_, Run);
+
+  controller()->OnUserAcceptedDialog(details);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kUploadAcceptedWithCvc,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_UploadDialogAcceptedWithoutCvc) {
+  base::HistogramTester histogram_tester;
+  SetDialogState(SaveAndFillDialogState::kUploadDialog);
+  payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails details;
+  details.security_code = u"";
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_, Run);
+
+  controller()->OnUserAcceptedDialog({});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kUploadAcceptedWithoutCvc,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_UploadDialogCanceled) {
+  base::HistogramTester histogram_tester;
+  SetDialogState(SaveAndFillDialogState::kUploadDialog);
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_, Run);
+
+  controller()->OnUserCanceledDialog();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kUploadCanceled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_PendingDialogCanceled) {
+  base::HistogramTester histogram_tester;
+  SetDialogState(SaveAndFillDialogState::kPendingDialog);
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_, Run);
+
+  controller()->OnUserCanceledDialog();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kPendingCanceled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Local) {
+  base::HistogramTester histogram_tester;
+  auto controller = std::make_unique<SaveAndFillDialogControllerImpl>();
+  base::MockCallback<
+      base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
+      create_and_show_view_callback;
+  base::MockCallback<
+      payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
+      card_save_and_fill_dialog_callback;
+
+  EXPECT_CALL(create_and_show_view_callback, Run())
+      .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
+
+  controller->ShowLocalDialog(create_and_show_view_callback.Get(),
+                              card_save_and_fill_dialog_callback.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogShown2",
+      autofill_metrics::SaveAndFillDialogShown::kLocalDialogShown,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Upload) {
+  base::HistogramTester histogram_tester;
+  auto controller = std::make_unique<SaveAndFillDialogControllerImpl>();
+  base::MockCallback<
+      base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
+      create_and_show_view_callback;
+  base::MockCallback<
+      payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
+      card_save_and_fill_dialog_callback;
+
+  EXPECT_CALL(create_and_show_view_callback, Run())
+      .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
+
+  controller->ShowUploadDialog({}, create_and_show_view_callback.Get(),
+                               card_save_and_fill_dialog_callback.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogShown2",
+      autofill_metrics::SaveAndFillDialogShown::kUploadDialogShown,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace autofill

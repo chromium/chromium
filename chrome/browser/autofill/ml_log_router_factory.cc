@@ -14,31 +14,31 @@
 namespace autofill {
 
 // static
-MLLogRouterFactory* MLLogRouterFactory::GetInstance() {
-  static base::NoDestructor<MLLogRouterFactory> instance;
+MlLogRouterFactory* MlLogRouterFactory::GetInstance() {
+  static base::NoDestructor<MlLogRouterFactory> instance;
   return instance.get();
 }
 
 // static
-autofill::MLLogRouter* MLLogRouterFactory::GetForProfile(Profile* profile) {
-  return static_cast<autofill::MLLogRouter*>(
+MlLogRouter* MlLogRouterFactory::GetForProfile(Profile* profile) {
+  return static_cast<autofill::MlLogRouter*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
-MLLogRouterFactory::MLLogRouterFactory()
+MlLogRouterFactory::MlLogRouterFactory()
     : ProfileKeyedServiceFactory(
-          "MLLogRouter",
+          "MlLogRouter",
           ProfileSelections::Builder()
               // Also provide a log router for guest profiles.
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {}
 
-MLLogRouterFactory::~MLLogRouterFactory() = default;
+MlLogRouterFactory::~MlLogRouterFactory() = default;
 
 std::unique_ptr<KeyedService>
-MLLogRouterFactory::BuildServiceInstanceForBrowserContext(
+MlLogRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<autofill::MLLogRouter>();
+  return std::make_unique<autofill::MlLogRouter>();
 }
 
 }  // namespace autofill

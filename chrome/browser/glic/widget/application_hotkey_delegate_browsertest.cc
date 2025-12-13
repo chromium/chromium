@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/test_support/mock_glic_window_controller.h"
+#include "chrome/browser/glic/test_support/mock_local_hotkey_panel.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -43,7 +43,7 @@ class ApplicationHotkeyDelegateTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    delegate_.emplace(mock_controller_.GetWeakPtr());
+    delegate_.emplace(mock_panel_.GetWeakPtr());
   }
 
   BrowserView* GetBrowserView() {
@@ -54,7 +54,7 @@ class ApplicationHotkeyDelegateTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(b);
   }
 
-  MockGlicWindowController mock_controller_;
+  MockLocalHotkeyPanel mock_panel_;
   std::optional<ApplicationHotkeyDelegate> delegate_;
   base::UserActionTester user_action_tester_;
 };
@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest, GetSupportedHotkeys) {
 
 IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,
                        AcceleratorPressedFocusToggle) {
-  EXPECT_CALL(mock_controller_, FocusIfOpen()).Times(1);
+  EXPECT_CALL(mock_panel_, FocusIfOpen()).Times(1);
 
   EXPECT_TRUE(
       delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kFocusToggle));
@@ -81,10 +81,10 @@ IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,
 IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,
                        AcceleratorPressedControllerNull) {
   // Create a delegate with an invalidated controller WeakPtr.
-  auto controller = std::make_unique<MockGlicWindowController>();
+  auto panel = std::make_unique<MockLocalHotkeyPanel>();
   auto delegate_with_null_controller =
-      std::make_unique<ApplicationHotkeyDelegate>(controller->GetWeakPtr());
-  controller.reset();  // Invalidate the WeakPtr
+      std::make_unique<ApplicationHotkeyDelegate>(panel->GetWeakPtr());
+  panel.reset();  // Invalidate the WeakPtr
 
   EXPECT_FALSE(delegate_with_null_controller->AcceleratorPressed(
       LocalHotkeyManager::Hotkey::kFocusToggle));
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,
 
 IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,
                        MakeApplicationHotkeyManager) {
-  auto manager = MakeApplicationHotkeyManager(mock_controller_.GetWeakPtr());
+  auto manager = MakeApplicationHotkeyManager(mock_panel_.GetWeakPtr());
   EXPECT_TRUE(manager);
 }
 

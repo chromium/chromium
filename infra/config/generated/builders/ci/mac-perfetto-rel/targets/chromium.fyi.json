@@ -8,6 +8,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
@@ -26,6 +28,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
         "name": "browser_tests",
         "swarming": {
           "dimensions": {
@@ -41,6 +45,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//content/test:content_browsertests",
+        "module_scheme": "gtest",
         "name": "content_browsertests",
         "swarming": {
           "dimensions": {
@@ -57,6 +63,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/perfetto:perfetto_unittests",
+        "module_scheme": "gtest",
         "name": "perfetto_unittests",
         "swarming": {
           "dimensions": {
@@ -72,6 +80,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
+        "module_scheme": "gtest",
         "name": "services_unittests",
         "swarming": {
           "dimensions": {

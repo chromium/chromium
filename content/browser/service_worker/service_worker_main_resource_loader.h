@@ -186,7 +186,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
 
   void Fallback(ResponseHeadUpdateParams response_header_params);
 
-  std::string GetInitialServiceWorkerStatusString();
+  std::string_view GetInitialServiceWorkerStatusString();
   std::string GetFrameTreeNodeTypeString();
   bool IsEligibleForRecordingTimingMetrics();
   void RecordFindRegistrationToCompletedTrace();
@@ -272,12 +272,21 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body);
 
+  void OnReceiveRedirectFromSyntheticNetworkRequest(
+      const net::RedirectInfo& redirect_info,
+      network::mojom::URLResponseHeadPtr response_head);
+
   void OnCompleteSyntheticNetworkRequest(
       const network::URLLoaderCompletionStatus& status);
 
   void CreateAndRunCacheMatcher(
       const std::optional<std::string>& cache_name,
       scoped_refptr<ServiceWorkerVersion> active_worker);
+
+  // Returns true if `race-network-and-fetch-handler` router source is used, and
+  // the fetch event is not completed yet, or the data pipe for `fetch()` is not
+  // consumed yet. This is used to decide the timing of the object destruction.
+  bool ShouldDelayDeletion();
 
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
@@ -332,7 +341,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // https://w3c.github.io/ServiceWorker/#fetch-event-clientid
   const std::string fetch_event_client_id_;
 
-  bool has_fetch_event_finished_ = false;
+  bool did_dispatch_event_ = false;
 
   bool is_synthetic_response_used_ = false;
 

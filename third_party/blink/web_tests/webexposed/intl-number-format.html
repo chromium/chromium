@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<pre id="output"></pre>
+<script type="module">
+import { locales } from "./resources/intl-locales.js";
+
+if (window.testRunner) {
+  testRunner.dumpAsText();
+}
+
+const output = document.getElementById('output');
+function print(text) {
+  output.textContent += text + '\n';
+}
+
+print('This test dumps the output of Intl.NumberFormat.prototype.format() for');
+print('some common locales.');
+print('');
+
+for (const [locale, { displayName, currency }] of Object.entries(locales)) {
+  print(`[${locale}] ${displayName}`);
+
+  const formatter = new Intl.NumberFormat(locale);
+    print(`  [default] ${formatter.format(123)}`);
+    print(`  [default] ${formatter.format(1234)}`);
+    print(`  [default] ${formatter.format(12345)}`);
+
+  if (currency) {
+    const formatter = new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency,
+    });
+    print(`  [${currency}] ${formatter.format(12345)}`);
+  }
+
+  print('');
+}
+
+</script>

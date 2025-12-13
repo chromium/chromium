@@ -33,10 +33,10 @@ class UserPolicySigninServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static UserPolicySigninService* GetForProfile(ProfileIOS* profile);
 
  protected:
-  // BrowserStateKeyedServiceFactory implementation:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
-  void RegisterBrowserStatePrefs(
+      ProfileIOS* profile) const override;
+  void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 
  private:

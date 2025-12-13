@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/web_input_event_traits.h"
 
@@ -26,14 +27,18 @@ class QueuedWebMouseWheelEvent : public MouseWheelEventWithLatencyInfo {
                            DispatchToRendererCallback callback)
       : MouseWheelEventWithLatencyInfo(original_event),
         dispatch_callback(std::move(callback)) {
-    TRACE_EVENT_ASYNC_BEGIN0("input", "MouseWheelEventQueue::QueueEvent", this);
+    TRACE_EVENT_BEGIN("input", "MouseWheelEventQueue::QueueEvent",
+                      perfetto::Track::FromPointer(this));
   }
 
   QueuedWebMouseWheelEvent(const QueuedWebMouseWheelEvent&) = delete;
   QueuedWebMouseWheelEvent& operator=(const QueuedWebMouseWheelEvent&) = delete;
 
   ~QueuedWebMouseWheelEvent() {
-    TRACE_EVENT_ASYNC_END0("input", "MouseWheelEventQueue::QueueEvent", this);
+    TRACE_EVENT_END(
+        "input",
+        /* MouseWheelEventQueue::QueueEvent */ perfetto::Track::FromPointer(
+            this));
   }
 
   DispatchToRendererCallback dispatch_callback;

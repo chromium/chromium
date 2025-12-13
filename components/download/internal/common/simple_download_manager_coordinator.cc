@@ -60,9 +60,8 @@ void SimpleDownloadManagerCoordinator::RemoveObserver(Observer* observer) {
 
 void SimpleDownloadManagerCoordinator::DownloadUrl(
     std::unique_ptr<DownloadUrlParameters> parameters) {
-  bool result = simple_download_manager_
-                    ? simple_download_manager_->CanDownload(parameters.get())
-                    : false;
+  bool result = simple_download_manager_ &&
+                simple_download_manager_->CanDownload(parameters.get());
   if (result) {
     simple_download_manager_->DownloadUrl(std::move(parameters));
     return;

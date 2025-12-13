@@ -10,6 +10,8 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/mojom/anr.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -44,10 +46,13 @@ class ArcPowerThrottleObserverTest : public testing::Test {
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
     service_manager_ = std::make_unique<ArcServiceManager>();
-    session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
-            base::BindRepeating(FakeArcSession::Create)));
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
+    session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)),
+        arc_dlc_installer_.get());
     testing_profile_ = std::make_unique<TestingProfile>();
 
     SetArcAvailableCommandLineForTesting(
@@ -61,7 +66,9 @@ class ArcPowerThrottleObserverTest : public testing::Test {
   void TearDown() override {
     testing_profile_.reset();
     session_manager_.reset();
+    arc_dlc_installer_.reset();
     service_manager_.reset();
+    ash::DlcserviceClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -75,6 +82,7 @@ class ArcPowerThrottleObserverTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<ArcServiceManager> service_manager_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> session_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
 };

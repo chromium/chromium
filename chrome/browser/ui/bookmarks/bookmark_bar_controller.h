@@ -63,6 +63,8 @@ class BookmarkBarController : public TabStripModelObserver,
 
   static BookmarkBarController* From(
       BrowserWindowInterface* browser_window_interface);
+  static const BookmarkBarController* From(
+      const BrowserWindowInterface* browser_window_interface);
 
   // Returns the current state of the bookmark bar.
   BookmarkBar::State bookmark_bar_state() const { return bookmark_bar_state_; }
@@ -87,6 +89,7 @@ class BookmarkBarController : public TabStripModelObserver,
       content::NavigationHandle* navigation_handle) override;
 
  private:
+  // Checks whether bookmark bar should be shown for the current browser.
   bool ShouldShowBookmarkBar() const;
 
   const raw_ref<BrowserWindowInterface> browser_;

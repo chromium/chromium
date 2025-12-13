@@ -34,9 +34,8 @@ class RegKey {
                    size_t value_size) const;
   LONG ReadDWValue(const wchar_t* value_name, DWORD* value) const;
 
-  // Write a value to the registry.  SZ |value| must be null-terminated.
+  // Write a value to the registry.
   // Returns ERROR_SUCCESS or an error code.
-  LONG WriteSZValue(const wchar_t* value_name, const wchar_t* value);
   LONG WriteDWValue(const wchar_t* value_name, DWORD value);
 
   // Closes the key if it was open.

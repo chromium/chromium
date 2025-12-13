@@ -104,8 +104,6 @@ Browser* GetBrowserFromInstantMessage(
   }
 
   for (Browser* browser : browsers) {
-    // TODO(crbug.com/375595834): Handle cases where the `local_tab_group_id` is
-    // not set.
     if (!local_tab_group_id.has_value() || use_first_available_browser) {
       // If `local_tab_group_id` is empty, use the first available browser.
       return browser;

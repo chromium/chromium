@@ -6,10 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_NAVIGATION_ID_GENERATOR_H_
 
 #include "base/gtest_prod_util.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 
 namespace blink {
+// The value 0 indicates the absence of a navigation id.
+// It's used for when there's no navigation id, e.g. in service workers.
+inline constexpr uint32_t kNavigationIdAbsentValue = 0;
 
 // Implements the navigationId as specified in
 // https://w3c.github.io/performance-timeline/:
@@ -41,7 +44,7 @@ class CORE_EXPORT NavigationIdGenerator {
   void ResetNavigationId();
 
   FRIEND_TEST_ALL_PREFIXES(NavigationIdGeneratorTest, SoftNavigationsOverflow);
-  uint32_t navigation_id_ = kNavigationIdDefaultValue;
+  uint32_t navigation_id_ = kNavigationIdAbsentValue;
 };
 
 }  // namespace blink

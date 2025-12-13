@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest,
   content::TestNavigationObserver nav_observer(new_url);
   nav_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(content::ExecJs(
-      shell(), content::JsReplace("window.open($1)", new_url.path())));
+      shell(), content::JsReplace("window.open($1)", new_url.GetPath())));
   nav_observer.Wait();
   content::Shell* new_window = shell_observer.GetShell();
   content::WebContents* new_contents = new_window->web_contents();

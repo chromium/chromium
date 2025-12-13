@@ -268,25 +268,6 @@ suite('<settings-system-preferences-page>', () => {
           assertNull(subpage, 'Subpage should not be stamped.');
         });
 
-    test('Assistant subpage is visible if assistant is enabled', async () => {
-      loadTimeData.overrideValues({isAssistantAllowed: true});
-      await createPage();
-
-      await navigateToSubpage(routes.GOOGLE_ASSISTANT);
-      assertSubpageIsVisible('settings-google-assistant-subpage');
-    });
-
-    test(
-        'Assistant subpage is not stamped if assistant is disabled',
-        async () => {
-          loadTimeData.overrideValues({isAssistantAllowed: false});
-          await createPage();
-
-          await navigateToSubpage(routes.GOOGLE_ASSISTANT);
-          const subpage = page.shadowRoot!.querySelector(
-              'settings-google-assistant-subpage');
-          assertNull(subpage, 'Subpage should not be stamped.');
-        });
   });
 
   suite('Startup subsection', () => {

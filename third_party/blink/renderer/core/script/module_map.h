@@ -52,6 +52,8 @@ class CORE_EXPORT ModuleMap final : public GarbageCollected<ModuleMap>,
   // nullptr.
   ModuleScript* GetFetchedModuleScript(const KURL&, ModuleType) const;
 
+  void AddEntry(const KURL& url, ModuleType type, ModuleScript* script);
+
   Modulator* GetModulator() { return modulator_.Get(); }
 
  private:

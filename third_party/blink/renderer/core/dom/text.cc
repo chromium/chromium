@@ -85,7 +85,7 @@ Node* Text::MergeNextSiblingNodesIfPossible() {
     unsigned offset = length();
     String next_text_data = next_text->data();
     String old_text_data = data();
-    SetDataWithoutUpdate(data() + next_text_data);
+    SetDataWithoutUpdate(StrCat({data(), next_text_data}));
     UpdateTextLayoutObject(
         TextDiffRange::Insert(old_text_data.length(), next_text_data.length()));
 
@@ -115,8 +115,8 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
   if (offset > length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The offset " + String::Number(offset) +
-            " is larger than the Text node's length.");
+        StrCat({"The offset ", String::Number(offset),
+                " is larger than the Text node's length."}));
     return nullptr;
   }
 
@@ -134,21 +134,12 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
     return nullptr;
 
   if (LayoutText* layout_text = GetLayoutObject()) {
-    if (RuntimeEnabledFeatures::TextDiffSplitFixEnabled()) {
-      // To avoid |LayoutText| has empty text, we rebuild layout tree.
-      if (ContainsOnlyWhitespaceOrEmpty()) {
-        SetForceReattachLayoutTree();
-      } else {
-        layout_text->SetTextWithOffset(
-            data(), TextDiffRange::Delete(offset, old_str.length() - offset));
-      }
+    // To avoid |LayoutText| has empty text, we rebuild layout tree.
+    if (ContainsOnlyWhitespaceOrEmpty()) {
+      SetForceReattachLayoutTree();
     } else {
       layout_text->SetTextWithOffset(
-          data(), TextDiffRange::Delete(0, old_str.length()));
-      if (ContainsOnlyWhitespaceOrEmpty()) {
-        // To avoid |LayoutText| has empty text, we rebuild layout tree.
-        SetForceReattachLayoutTree();
-      }
+          data(), TextDiffRange::Delete(offset, old_str.length() - offset));
     }
   }
 
@@ -271,8 +262,9 @@ static inline bool CanHaveWhitespaceChildren(
   const LayoutObject& parent = *context.parent;
   if (parent.IsTable() || parent.IsTableRow() || parent.IsTableSection() ||
       parent.IsLayoutTableCol() || parent.IsFrameSet() ||
-      parent.IsFlexibleBox() || parent.IsLayoutGrid() || parent.IsSVGRoot() ||
-      parent.IsSVGContainer() || parent.IsSVGImage() || parent.IsSVGShape()) {
+      parent.IsFlexibleBox() || parent.IsLayoutGridOrGridLanes() ||
+      parent.IsSVGRoot() || parent.IsSVGContainer() || parent.IsSVGImage() ||
+      parent.IsSVGShape()) {
     if (!context.use_previous_in_flow || !context.previous_in_flow ||
         !context.previous_in_flow->IsText())
       return false;

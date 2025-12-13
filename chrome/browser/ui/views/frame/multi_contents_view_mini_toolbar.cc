@@ -9,22 +9,27 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_icon.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_outline.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,7 +39,7 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_util.h"
 #include "ui/views/background.h"
@@ -49,19 +54,24 @@
 #include "ui/views/view_utils.h"
 
 namespace {
-constexpr int kContentOutlineThickness = 1;
 constexpr int kMiniToolbarContentPadding = 4;
-constexpr int kMiniToolbarOutlineCornerRadius = 8;
-
-constexpr gfx::Insets kDefaultInteriorMargins = gfx::Insets::TLBR(
-    kMiniToolbarOutlineCornerRadius + kMiniToolbarContentPadding,
-    kMiniToolbarOutlineCornerRadius * 2,
-    kMiniToolbarContentPadding,
-    kContentOutlineThickness);
+constexpr int kMiniToolbarDomainMaxWidth = 140;
 
 tabs::TabInterface* GetTabInterface(content::WebContents* web_contents) {
-  return web_contents ? tabs::TabInterface::GetFromContents(web_contents)
+  return web_contents ? tabs::TabInterface::MaybeGetFromContents(web_contents)
                       : nullptr;
+}
+
+bool IsNTP(const GURL& url) {
+  return (url.SchemeIs(content::kChromeUIScheme) &&
+          url.GetHost() == chrome::kChromeUINewTabHost) ||
+         search::IsNTPURL(url) || search::IsSplitViewNewTabPage(url);
+}
+
+void SetAccessibleNameAndTooltip(views::View* view, int string_id) {
+  std::u16string string = l10n_util::GetStringUTF16(string_id);
+  view->SetAccessibleName(string);
+  view->SetTooltipText(string);
 }
 }  // namespace
 
@@ -73,7 +83,6 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetInteriorMargin(kDefaultInteriorMargins)
       .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 6))
       .SetIgnoreDefaultMainAxisMargins(true)
       .SetCollapseMargins(true);
@@ -87,39 +96,52 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferredSnapToZero,
                                views::MaximumFlexSizeRule::kPreferred);
   favicon_->SetProperty(views::kFlexBehaviorKey, icon_flex_spec.WithOrder(3));
-  domain_label_ = AddChildView(std::make_unique<views::Label>());
+  domain_label_ = AddChildView(std::make_unique<views::Label>(
+      u"", views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY,
+      gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
   domain_label_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(
           views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
           views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(4));
+  domain_label_->SetMaximumWidthSingleLine(kMiniToolbarDomainMaxWidth);
   domain_label_->SetElideBehavior(gfx::ELIDE_HEAD);
-  domain_label_->SetTruncateLength(20);
   domain_label_->SetSubpixelRenderingEnabled(false);
-  domain_label_->SetEnabledColor(kColorMulitContentsViewMiniToolbarForeground);
+  domain_label_->SetEnabledColor(kColorMultiContentsViewMiniToolbarForeground);
   domain_label_->SetBackgroundColor(kColorToolbar);
   alert_state_indicator_ = AddChildView(std::make_unique<views::ImageView>());
   alert_state_indicator_->SetProperty(views::kFlexBehaviorKey,
                                       icon_flex_spec.WithOrder(2));
-  menu_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-      base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon, 16,
-      kColorMulitContentsViewMiniToolbarForeground));
-  menu_button_->SetProperty(
+  if (features::kSideBySideMiniToolbarActiveConfiguration.Get() ==
+      features::MiniToolbarActiveConfiguration::ShowClose) {
+    image_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
+        base::BindRepeating(&MultiContentsViewMiniToolbar::CloseCurrentView,
+                            base::Unretained(this)),
+        kCloseTabChromeRefreshIcon, 16,
+        kColorMultiContentsViewMiniToolbarForeground));
+    SetAccessibleNameAndTooltip(image_button_, IDS_SPLIT_TAB_CLOSE);
+  } else {
+    image_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
+        base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon, 16,
+        kColorMultiContentsViewMiniToolbarForeground));
+    SetAccessibleNameAndTooltip(
+        image_button_, IDS_ACCNAME_SPLIT_VIEW_MINI_TOOLBAR_MENU_BUTTON);
+    image_button_->SetButtonController(
+        std::make_unique<views::MenuButtonController>(
+            image_button_,
+            base::BindRepeating(
+                &MultiContentsViewMiniToolbar::OpenSplitViewMenu,
+                base::Unretained(this)),
+            std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+                image_button_)));
+  }
+  image_button_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(1));
-  menu_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_SPLIT_VIEW_MINI_TOOLBAR_MENU_BUTTON_TOOLTIP));
-  views::InstallCircleHighlightPathGenerator(menu_button_);
-  menu_button_->SetButtonController(
-      std::make_unique<views::MenuButtonController>(
-          menu_button_,
-          base::BindRepeating(&MultiContentsViewMiniToolbar::OpenSplitViewMenu,
-                              base::Unretained(this)),
-          std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-              menu_button_)));
+  views::InstallCircleHighlightPathGenerator(image_button_);
 
   // Update minitoolbar contents.
   std::optional<TabRendererData> tab_data = GetTabData();
@@ -145,38 +167,45 @@ MultiContentsViewMiniToolbar::~MultiContentsViewMiniToolbar() {
   browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
 }
 
-void MultiContentsViewMiniToolbar::UpdateState(bool is_active) {
+void MultiContentsViewMiniToolbar::UpdateState(bool is_active,
+                                               bool is_highlighted) {
+  const int contents_container_outline_thickness =
+      ContentsContainerOutline::GetThickness(is_highlighted);
+
+  gfx::Insets kInactiveInteriorMargins = gfx::Insets::TLBR(
+      ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
+      ContentsContainerOutline::kCornerRadius * 2,
+      contents_container_outline_thickness,
+      contents_container_outline_thickness);
+
+  // Reduce the margins in the case of showing only the close or menu button.
+  gfx::Insets kActiveInteriorMargins = gfx::Insets::TLBR(
+      ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
+      ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
+      contents_container_outline_thickness,
+      contents_container_outline_thickness);
+
+  static_cast<views::FlexLayout*>(GetLayoutManager())
+      ->SetInteriorMargin(is_active ? kActiveInteriorMargins
+                                    : kInactiveInteriorMargins);
+
   if (features::kSideBySideMiniToolbarActiveConfiguration.Get() ==
       features::MiniToolbarActiveConfiguration::Hide) {
     SetVisible(!is_active);
     return;
   }
 
-  SetVisible(true);
-  stroke_color_ = is_active ? kColorMulitContentsViewActiveContentOutline
-                            : kColorMulitContentsViewInactiveContentOutline;
+  SetVisible(!is_highlighted);
 
-  if (features::kSideBySideMiniToolbarActiveConfiguration.Get() ==
-      features::MiniToolbarActiveConfiguration::ShowMenuOnly) {
-    // Reduce the margins in the case of showing only the menu button.
-    static constexpr gfx::Insets kActiveInteriorMargins = gfx::Insets::TLBR(
-        kMiniToolbarOutlineCornerRadius + kMiniToolbarContentPadding,
-        kMiniToolbarOutlineCornerRadius + kMiniToolbarContentPadding,
-        kMiniToolbarContentPadding, kContentOutlineThickness * 2);
+  favicon_->SetVisible(!is_active);
+  domain_label_->SetVisible(!is_active);
+  alert_state_indicator_->SetVisible(!is_active);
+}
 
-    favicon_->SetVisible(!is_active);
-    domain_label_->SetVisible(!is_active);
-    alert_state_indicator_->SetVisible(!is_active);
-
-    static_cast<views::FlexLayout*>(GetLayoutManager())
-        ->SetInteriorMargin(is_active ? kActiveInteriorMargins
-                                      : kDefaultInteriorMargins);
-
-  } else {
-    DCHECK(features::kSideBySideMiniToolbarActiveConfiguration.Get() ==
-           features::MiniToolbarActiveConfiguration::ShowAll);
-    // Schedule paint since the stroke color has been updated.
-    SchedulePaint();
+void MultiContentsViewMiniToolbar::UpdateContents() {
+  std::optional<TabRendererData> tab_data = GetTabData();
+  if (tab_data.has_value()) {
+    UpdateContents(tab_data.value());
   }
 }
 
@@ -207,24 +236,9 @@ void MultiContentsViewMiniToolbar::TabChangedAt(content::WebContents* contents,
   UpdateContents(tab_data);
 }
 
-void MultiContentsViewMiniToolbar::OnBoundsChanged(
-    const gfx::Rect& previous_bounds) {
-  // Clip the curved inner side of the mini toolbar.
-  SetClipPath(GetPath(/*border_stroke_only=*/false));
-}
-
 void MultiContentsViewMiniToolbar::OnPaint(gfx::Canvas* canvas) {
   // Paint the mini toolbar background to match the toolbar.
   TopContainerBackground::PaintBackground(canvas, this, browser_view_);
-
-  // Draw the bordering stroke.
-  cc::PaintFlags flags;
-  flags.setStrokeWidth(kContentOutlineThickness * 2);
-  flags.setColor(GetColorProvider()->GetColor(stroke_color_));
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setAntiAlias(true);
-  SkPath path = GetPath(/*border_stroke_only=*/true);
-  canvas->DrawPath(path, flags);
 }
 
 void MultiContentsViewMiniToolbar::OnThemeChanged() {
@@ -234,47 +248,16 @@ void MultiContentsViewMiniToolbar::OnThemeChanged() {
     UpdateFavicon(tab_data.value());
   }
   if (auto* interface = GetTabInterface(web_contents_)) {
-    auto* tab_alert_controller =
-        interface->GetTabFeatures()->tab_alert_controller();
-    OnAlertStatusIndicatorChanged(tab_alert_controller->GetAlertToShow());
+    auto* tab_alert_controller = tabs::TabAlertController::From(interface);
+    if (tab_alert_controller) {
+      OnAlertStatusIndicatorChanged(tab_alert_controller->GetAlertToShow());
+    }
   }
-}
-
-SkPath MultiContentsViewMiniToolbar::GetPath(bool border_stroke_only) const {
-  const float corner_radius = kMiniToolbarOutlineCornerRadius;
-  const gfx::Rect local_bounds = GetLocalBounds();
-  SkPath path;
-  path.moveTo(0, local_bounds.height() - kContentOutlineThickness);
-  path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCCW, corner_radius,
-             local_bounds.height() - corner_radius);
-  path.lineTo(corner_radius, corner_radius * 2);
-  path.arcTo(corner_radius, corner_radius, 270.0f, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCW, corner_radius * 2, corner_radius);
-  path.lineTo(local_bounds.width() - corner_radius, corner_radius);
-  path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCCW,
-             local_bounds.width() - kContentOutlineThickness, 0);
-  if (!border_stroke_only) {
-    path.lineTo(local_bounds.width(), 0);
-    path.lineTo(local_bounds.width(), local_bounds.height());
-    path.lineTo(0, local_bounds.height());
-    path.lineTo(0, local_bounds.height() - kContentOutlineThickness);
-  }
-  if (base::i18n::IsRTL()) {
-    // Mirror if in RTL.
-    gfx::Point center = local_bounds.CenterPoint();
-    SkMatrix flip;
-    flip.setScale(-1, 1, center.x(), center.y());
-    path.transform(flip);
-  }
-  return path;
 }
 
 void MultiContentsViewMiniToolbar::RegisterTabAlertSubscription() {
   if (auto* interface = GetTabInterface(web_contents_)) {
-    auto* tab_alert_controller =
-        interface->GetTabFeatures()->tab_alert_controller();
+    auto* tab_alert_controller = tabs::TabAlertController::From(interface);
     OnAlertStatusIndicatorChanged(tab_alert_controller->GetAlertToShow());
     tab_alert_status_subscription_ =
         tab_alert_controller->AddAlertToShowChangedCallback(base::BindRepeating(
@@ -292,7 +275,7 @@ void MultiContentsViewMiniToolbar::OnAlertStatusIndicatorChanged(
     alert_state_indicator_->SetImage(
         tabs::GetAlertImageModel(new_alert.value(), color));
     alert_state_indicator_->SetTooltipText(
-        GetTabAlertStateText(new_alert.value()));
+        tabs::TabAlertController::GetTabAlertStateText(new_alert.value()));
   } else {
     alert_state_indicator_->SetImage(ui::ImageModel());
     alert_state_indicator_->SetTooltipText(std::u16string());
@@ -318,7 +301,9 @@ void MultiContentsViewMiniToolbar::UpdateContents(TabRendererData tab_data) {
   }
   // Create the formatted domain, this will match the hover card domain.
   std::u16string domain;
-  if (domain_url.SchemeIsFile()) {
+  if (IsNTP(domain_url)) {
+    domain = u"";
+  } else if (domain_url.SchemeIsFile()) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_FILE_URL_SOURCE);
   } else if (domain_url.SchemeIsBlob()) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
@@ -326,12 +311,18 @@ void MultiContentsViewMiniToolbar::UpdateContents(TabRendererData tab_data) {
     domain = url_formatter::FormatUrl(
         domain_url,
         url_formatter::kFormatUrlOmitDefaults |
-            url_formatter::kFormatUrlOmitHTTPS |
             url_formatter::kFormatUrlOmitTrivialSubdomains |
+            url_formatter::kFormatUrlOmitHTTPS |
             url_formatter::kFormatUrlTrimAfterHost,
-        base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
   }
   domain_label_->SetText(domain);
+  domain_label_->SetElideBehavior(domain_url.IsStandard() &&
+                                          !domain_url.SchemeIsFile() &&
+                                          !domain_url.SchemeIsFileSystem()
+                                      ? gfx::ELIDE_HEAD
+                                      : gfx::ELIDE_TAIL);
+  domain_label_->SetCustomTooltipText(base::ASCIIToUTF16(domain_url.spec()));
 
   UpdateFavicon(tab_data);
 }
@@ -366,12 +357,29 @@ void MultiContentsViewMiniToolbar::OpenSplitViewMenu() {
       SplitTabMenuModel::MenuSource::kMiniToolbar, index);
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);
-  menu_runner_->RunMenuAt(menu_button_->GetWidget(),
+  menu_runner_->RunMenuAt(image_button_->GetWidget(),
                           static_cast<views::MenuButtonController*>(
-                              menu_button_->button_controller()),
-                          menu_button_->GetAnchorBoundsInScreen(),
+                              image_button_->button_controller()),
+                          image_button_->GetAnchorBoundsInScreen(),
                           views::MenuAnchorPosition::kBubbleTopLeft,
                           ui::mojom::MenuSourceType::kNone);
+}
+
+void MultiContentsViewMiniToolbar::CloseCurrentView() {
+  base::RecordAction(
+      base::UserMetricsAction("DesktopSplitView_MiniToolbarCloseView"));
+
+  TabStripModel* const model = browser_view_->browser()->tab_strip_model();
+  const int index = model->GetIndexOfWebContents(web_contents_);
+
+  if (index == TabStripModel::kNoTab) {
+    // Only close the WebContents if it exists. crbug.com/459828484
+    return;
+  }
+
+  model->CloseWebContentsAt(index,
+                            TabCloseTypes::CLOSE_USER_GESTURE |
+                                TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 BEGIN_METADATA(MultiContentsViewMiniToolbar)

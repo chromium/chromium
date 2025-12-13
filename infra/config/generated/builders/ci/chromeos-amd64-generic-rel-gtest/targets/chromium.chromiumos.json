@@ -9,7 +9,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ui/aura:aura_unittests",
+        "module_scheme": "gtest",
         "name": "aura_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -40,7 +43,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
         "name": "base_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -73,7 +79,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//media/capture:capture_unittests",
+        "module_scheme": "gtest",
         "name": "capture_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -104,7 +113,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//cc:cc_unittests",
+        "module_scheme": "gtest",
         "name": "cc_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -135,7 +147,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:chromeos_integration_tests",
+        "module_scheme": "gtest",
         "name": "chromeos_integration_tests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -166,7 +181,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//crypto:crypto_unittests",
+        "module_scheme": "gtest",
         "name": "crypto_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -197,7 +215,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ui/display:display_unittests",
+        "module_scheme": "gtest",
         "name": "display_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -235,7 +256,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest",
+        "module_scheme": "gtest",
         "name": "fake_libva_driver_unittest",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -266,7 +290,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//google_apis:google_apis_unittests",
+        "module_scheme": "gtest",
         "name": "google_apis_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -297,7 +324,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ipc:ipc_tests",
+        "module_scheme": "gtest",
         "name": "ipc_tests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -328,7 +358,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ui/latency:latency_unittests",
+        "module_scheme": "gtest",
         "name": "latency_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -354,44 +387,16 @@
       },
       {
         "args": [
-          "--magic-vm-cache=magic_cros_vm_cache"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "libcups_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "kvm": "1",
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests"
-          },
-          "named_caches": [
-            {
-              "name": "cros_vm",
-              "path": "magic_cros_vm_cache"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "cros_vm"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "libcups_unittests",
-        "test_id_prefix": "ninja://chrome/services/cups_proxy:libcups_unittests/"
-      },
-      {
-        "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.media_unittests.filter",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//media:media_unittests",
+        "module_scheme": "gtest",
         "name": "media_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -422,7 +427,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//media/midi:midi_unittests",
+        "module_scheme": "gtest",
         "name": "midi_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -453,7 +461,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//mojo:mojo_unittests",
+        "module_scheme": "gtest",
         "name": "mojo_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -486,7 +497,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//net:net_unittests",
+        "module_scheme": "gtest",
         "name": "net_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "cipd_packages": [
             {
@@ -536,7 +550,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ui/ozone/gl:ozone_gl_unittests",
+        "module_scheme": "gtest",
         "name": "ozone_gl_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -567,7 +584,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ui/ozone:ozone_unittests",
+        "module_scheme": "gtest",
         "name": "ozone_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -598,7 +618,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//pdf:pdf_unittests",
+        "module_scheme": "gtest",
         "name": "pdf_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -629,7 +652,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//printing:printing_unittests",
+        "module_scheme": "gtest",
         "name": "printing_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -662,7 +688,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/browser/metrics/perf:profile_provider_unittest",
+        "module_scheme": "gtest",
         "name": "profile_provider_unittest",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -693,7 +722,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//testing/rust_gtest_interop:rust_gtest_interop_unittests",
+        "module_scheme": "gtest",
         "name": "rust_gtest_interop_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -724,7 +756,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//sql:sql_unittests",
+        "module_scheme": "gtest",
         "name": "sql_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -755,7 +790,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//url:url_unittests",
+        "module_scheme": "gtest",
         "name": "url_unittests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -794,7 +832,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//media/gpu/vaapi:vaapi_unittest",
+        "module_scheme": "gtest",
         "name": "vaapi_unittest",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -835,7 +876,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//media/gpu/test:video_decode_accelerator_tests",
+        "module_scheme": "gtest",
         "name": "video_decode_accelerator_tests_fake_vaapi_av1",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -876,7 +920,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//media/gpu/test:video_decode_accelerator_tests",
+        "module_scheme": "gtest",
         "name": "video_decode_accelerator_tests_fake_vaapi_vp8",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -916,7 +963,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//media/gpu/test:video_decode_accelerator_tests",
+        "module_scheme": "gtest",
         "name": "video_decode_accelerator_tests_fake_vaapi_vp9",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -954,11 +1004,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_perf_unittests",
+        "module_scheme": "pyunit",
         "name": "telemetry_perf_unittests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -996,11 +1049,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_unittests",
+        "module_scheme": "pyunit",
         "name": "telemetry_unittests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1045,11 +1101,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "flat",
         "name": "webgl_conformance_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",

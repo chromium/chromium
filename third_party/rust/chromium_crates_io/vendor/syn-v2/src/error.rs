@@ -1,5 +1,6 @@
 #[cfg(feature = "parsing")]
 use crate::buffer::Cursor;
+use crate::ext::{PunctExt as _, TokenStreamExt as _};
 use crate::thread::ThreadBound;
 use proc_macro2::{
     Delimiter, Group, Ident, LexError, Literal, Punct, Spacing, Span, TokenStream, TokenTree,
@@ -223,10 +224,11 @@ impl Error {
     /// [`compile_error!`]: std::compile_error!
     /// [`parse_macro_input!`]: crate::parse_macro_input!
     pub fn to_compile_error(&self) -> TokenStream {
-        self.messages
-            .iter()
-            .map(ErrorMessage::to_compile_error)
-            .collect()
+        let mut tokens = TokenStream::new();
+        for msg in &self.messages {
+            ErrorMessage::to_compile_error(msg, &mut tokens);
+        }
+        tokens
     }
 
     /// Render the error as an invocation of [`compile_error!`].
@@ -273,53 +275,52 @@ impl Error {
 }
 
 impl ErrorMessage {
-    fn to_compile_error(&self) -> TokenStream {
+    fn to_compile_error(&self, tokens: &mut TokenStream) {
         let (start, end) = match self.span.get() {
             Some(range) => (range.start, range.end),
             None => (Span::call_site(), Span::call_site()),
         };
 
         // ::core::compile_error!($message)
-        TokenStream::from_iter([
-            TokenTree::Punct({
-                let mut punct = Punct::new(':', Spacing::Joint);
-                punct.set_span(start);
-                punct
-            }),
-            TokenTree::Punct({
-                let mut punct = Punct::new(':', Spacing::Alone);
-                punct.set_span(start);
-                punct
-            }),
-            TokenTree::Ident(Ident::new("core", start)),
-            TokenTree::Punct({
-                let mut punct = Punct::new(':', Spacing::Joint);
-                punct.set_span(start);
-                punct
-            }),
-            TokenTree::Punct({
-                let mut punct = Punct::new(':', Spacing::Alone);
-                punct.set_span(start);
-                punct
-            }),
-            TokenTree::Ident(Ident::new("compile_error", start)),
-            TokenTree::Punct({
-                let mut punct = Punct::new('!', Spacing::Alone);
-                punct.set_span(start);
-                punct
-            }),
-            TokenTree::Group({
-                let mut group = Group::new(Delimiter::Brace, {
-                    TokenStream::from_iter([TokenTree::Literal({
-                        let mut string = Literal::string(&self.message);
-                        string.set_span(end);
-                        string
-                    })])
-                });
-                group.set_span(end);
-                group
-            }),
-        ])
+        tokens.append(TokenTree::Punct(Punct::new_spanned(
+            ':',
+            Spacing::Joint,
+            start,
+        )));
+        tokens.append(TokenTree::Punct(Punct::new_spanned(
+            ':',
+            Spacing::Alone,
+            start,
+        )));
+        tokens.append(TokenTree::Ident(Ident::new("core", start)));
+        tokens.append(TokenTree::Punct(Punct::new_spanned(
+            ':',
+            Spacing::Joint,
+            start,
+        )));
+        tokens.append(TokenTree::Punct(Punct::new_spanned(
+            ':',
+            Spacing::Alone,
+            start,
+        )));
+        tokens.append(TokenTree::Ident(Ident::new("compile_error", start)));
+        tokens.append(TokenTree::Punct(Punct::new_spanned(
+            '!',
+            Spacing::Alone,
+            start,
+        )));
+        tokens.append(TokenTree::Group({
+            let mut group = Group::new(
+                Delimiter::Brace,
+                TokenStream::from({
+                    let mut string = Literal::string(&self.message);
+                    string.set_span(end);
+                    TokenTree::Literal(string)
+                }),
+            );
+            group.set_span(end);
+            group
+        }));
     }
 }
 

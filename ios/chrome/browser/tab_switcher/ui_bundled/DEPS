@@ -21,7 +21,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
   "+ios/chrome/browser/policy/model/policy_util.h",
   "+ios/chrome/browser/reading_list/model/reading_list_browser_agent.h",
-  "+ios/chrome/browser/recent_tabs/ui_bundled",
+  "+ios/chrome/browser/recent_tabs/coordinator",
   "+ios/chrome/browser/saved_tab_groups/favicon/coordinator",
   "+ios/chrome/browser/saved_tab_groups/favicon/ui",
   "+ios/chrome/browser/saved_tab_groups/model",
@@ -42,8 +42,8 @@ include_rules = [
   "+ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h",
   "+ios/chrome/browser/authentication/ui_bundled",
 
-  # Use ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h instead
-  "-ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h",
+  # Use ios/chrome/browser/authentication/test/signin_earl_grey.h instead
+  "-ios/chrome/browser/authentication/test/signin_earl_grey_app_interface.h",
   # use ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h instead
   "-ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_app_interface.h",
 ]

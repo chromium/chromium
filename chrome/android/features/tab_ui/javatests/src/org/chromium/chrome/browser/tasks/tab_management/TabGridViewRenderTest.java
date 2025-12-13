@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabCardHighlightState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -123,7 +124,8 @@ public class TabGridViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testCardView_Highlighted() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(() -> mTabGridView.setIsHighlighted(true, false));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mTabGridView.setIsHighlighted(TabCardHighlightState.HIGHLIGHTED, false));
         pollForHighlight(true);
 
         mRenderTestRule.render(mTabGridView, "tab_grid_view_highlight");
@@ -133,7 +135,8 @@ public class TabGridViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testCardView_HighlightedIncognito() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(() -> mTabGridView.setIsHighlighted(true, true));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mTabGridView.setIsHighlighted(TabCardHighlightState.HIGHLIGHTED, true));
         pollForHighlight(true);
 
         mRenderTestRule.render(mTabGridView, "tab_grid_view_highlight_incognito");

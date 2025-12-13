@@ -10,6 +10,9 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace infobars {
 class ContentInfoBarManager;

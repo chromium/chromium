@@ -174,7 +174,7 @@ class UserImageManagerImpl : public ProfileDownloaderDelegate {
   int GetDesiredImageSideLength() const override;
   signin::IdentityManager* GetIdentityManager() override;
   network::mojom::URLLoaderFactory* GetURLLoaderFactory() override;
-  std::string GetCachedPictureURL() const override;
+  const GURL& GetCachedPictureURL() const override;
   void OnProfileDownloadSuccess(ProfileDownloader* downloader) override;
   void OnProfileDownloadFailure(
       ProfileDownloader* downloader,

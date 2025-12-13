@@ -17,10 +17,15 @@
 #include "services/audio/public/mojom/debug_recording.mojom.h"
 #include "services/audio/public/mojom/device_notifications.mojom.h"
 #include "services/audio/public/mojom/log_factory_manager.mojom.h"
+#include "services/audio/public/mojom/ml_model_manager.mojom.h"
 #include "services/audio/public/mojom/system_info.mojom.h"
 #include "services/audio/public/mojom/testing_api.mojom.h"
 #include "services/audio/stream_factory.h"
 #include "services/audio/testing_api_binder.h"
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+#include "services/audio/ml_model_manager.h"
+#endif
 
 namespace base {
 class DeferredSequencedTaskRunner;
@@ -100,6 +105,8 @@ class Service final : public mojom::AudioService {
       mojo::PendingReceiver<mojom::LogFactoryManager> receiver) override;
   void BindTestingApi(
       mojo::PendingReceiver<mojom::TestingApi> receiver) override;
+  void BindMlModelManager(
+      mojo::PendingReceiver<mojom::MlModelManager> receiver) override;
 
   // Initializes a platform-specific device monitor for device-change
   // notifications. If the client uses the DeviceNotifier interface to get
@@ -115,6 +122,12 @@ class Service final : public mojom::AudioService {
   base::RepeatingClosure quit_closure_;
 
   mojo::Receiver<mojom::AudioService> receiver_;
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  // Manages Machine Learning models used within the audio
+  // service. It must outlive `stream_factory_`.
+  MlModelManagerImpl ml_model_manager_;
+#endif
   std::unique_ptr<AudioManagerAccessor> audio_manager_accessor_;
   const bool enable_remote_client_support_;
   std::unique_ptr<base::SystemMonitor> system_monitor_;

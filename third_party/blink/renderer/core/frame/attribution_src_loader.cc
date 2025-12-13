@@ -57,9 +57,11 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/html/anchor_element_utils.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
@@ -153,6 +155,15 @@ Vector<KURL> ParseAttributionSrcUrls(AttributionSrcLoader& loader,
                                      HTMLElement* element) {
   CHECK(window);
 
+  // Corresponds to non-WebIDL-based API usage originating from
+  // `<a attributionsrc>`, `<area attributionsrc>`, `<img attributionsrc>`,
+  // `<script attributionsrc>`, `window.open(..., ..., "attributionsrc")`.
+  // TODO(crbug.com/460165751): Report deprecation for presence of
+  // Attribution-Reporting-* headers in responses handled in both this
+  // file and the browser process.
+  Deprecation::CountDeprecation(window,
+                                WebFeature::kAttributionReportingAPIAll);
+
   if (!network::HasAttributionSupport(loader.GetSupport())) {
     LogAuditIssue(window, AttributionReportingIssueType::kNoWebOrOsSupport,
                   element,
@@ -179,9 +190,7 @@ Vector<KURL> ParseAttributionSrcUrls(AttributionSrcLoader& loader,
 
 bool KeepaliveResponsesHandledInBrowser() {
   return base::FeatureList::IsEnabled(
-             blink::features::kKeepAliveInBrowserMigration) &&
-         base::FeatureList::IsEnabled(
-             blink::features::kAttributionReportingInBrowserMigration);
+      blink::features::kKeepAliveInBrowserMigration);
 }
 
 // Keepalive requests will be serviced by `KeepAliveAttributionRequestHelper`
@@ -581,7 +590,8 @@ void AttributionSrcLoader::RegisterFromContextMenuNavigation(
   }
 
   DataHostSharedRemote data_host = std::move(entry->second);
-  DCHECK(data_host.is_bound());
+  // This is required for `DoRegistration()` to work properly.
+  CHECK(data_host.is_bound());
   context_menu_data_hosts_.erase(entry);
 
   const AtomicString& attribution_src =
@@ -592,7 +602,8 @@ void AttributionSrcLoader::RegisterFromContextMenuNavigation(
 
   // Adapted from `HTMLAnchorElementBase::HandleClick()`.
   auto referrer_policy = network::mojom::ReferrerPolicy::kDefault;
-  if (anchor->HasRel(kRelationNoReferrer)) {
+  if (AnchorElementUtils::HasRel(anchor->GetLinkRelations(),
+                                 kRelationNoReferrer)) {
     referrer_policy = network::mojom::ReferrerPolicy::kNever;
   } else if (anchor->FastHasAttribute(html_names::kReferrerpolicyAttr)) {
     SecurityPolicy::ReferrerPolicyFromString(
@@ -617,7 +628,7 @@ bool AttributionSrcLoader::CreateAndSendRequests(
 
   if (Document* document = local_frame_->DomWindow()->document();
       document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+    document->AddPostPrerenderingActivationStep(blink::BindOnce(
         base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
         WrapPersistentIfNeeded(this), std::move(urls), attribution_src_token,
         referrer_policy, std::move(data_host)));
@@ -674,7 +685,7 @@ bool AttributionSrcLoader::DoRegistration(
       local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
           &conversion_host);
 
-      WTF::Vector<scoped_refptr<const blink::SecurityOrigin>> reporting_origins;
+      Vector<scoped_refptr<const blink::SecurityOrigin>> reporting_origins;
       std::ranges::transform(
           urls, std::back_inserter(reporting_origins),
           [](const KURL& url) { return SecurityOrigin::Create(url); });
@@ -871,11 +882,11 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
 
   if (Document* document = local_frame_->DomWindow()->document();
       document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
-        &AttributionSrcLoader::RegisterAttributionHeaders,
-        WrapPersistentIfNeeded(this), *registration_eligibility, support,
-        *std::move(reporting_origin), std::move(headers), *registration_info,
-        response.WasFetchedViaServiceWorker()));
+    document->AddPostPrerenderingActivationStep(
+        BindOnce(&AttributionSrcLoader::RegisterAttributionHeaders,
+                 WrapPersistentIfNeeded(this), *registration_eligibility,
+                 support, *std::move(reporting_origin), std::move(headers),
+                 *registration_info, response.WasFetchedViaServiceWorker()));
   } else {
     RegisterAttributionHeaders(
         *registration_eligibility, support, *std::move(reporting_origin),

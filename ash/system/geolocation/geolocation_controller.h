@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/time/astronomer_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -17,7 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
@@ -55,27 +56,11 @@ struct SimpleGeoposition {
 // TODO(crbug.com/1272178): `GeolocationController` should observe the sleep
 // and update next request time.
 class ASH_EXPORT GeolocationController
-    : public SimpleGeolocationProvider::Observer,
+    : public SystemLocationProvider::Observer,
       public system::TimezoneSettings::Observer,
       public chromeos::PowerManagerClient::Observer,
       public SessionObserver {
  public:
-  // Possible errors for `GetSunsetTime()` and `GetSunriseTime()`.
-  enum class SunRiseSetError {
-    // The current geolocation has no sunrise/sunset (24 hours of daylight or
-    // darkness).
-    kNoSunRiseSet,
-    // Sunrise/set are temporarily unavailable, including the default values of
-    // 6 AM/PM local time. Caller should handle this gracefully and try again
-    // later.
-    kUnavailable
-  };
-
-  static constexpr base::expected<base::Time, SunRiseSetError> kNoSunRiseSet =
-      base::unexpected(SunRiseSetError::kNoSunRiseSet);
-  static constexpr base::expected<base::Time, SunRiseSetError>
-      kSunRiseSetUnavailable = base::unexpected(SunRiseSetError::kUnavailable);
-
   class Observer : public base::CheckedObserver {
    public:
     // Emitted when the Geoposition is updated with
@@ -87,7 +72,7 @@ class ASH_EXPORT GeolocationController
     ~Observer() override = default;
   };
 
-  explicit GeolocationController(SimpleGeolocationProvider* const provider);
+  explicit GeolocationController(SystemLocationProvider* const provider);
   GeolocationController(const GeolocationController&) = delete;
   GeolocationController& operator=(const GeolocationController&) = delete;
   ~GeolocationController() override;
@@ -104,7 +89,7 @@ class ASH_EXPORT GeolocationController
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // SimpleGeolocationProvider::Observer:
+  // SystemLocationProvider::Observer:
   void OnGeolocationPermissionChanged(bool enabled) override;
 
   // system::TimezoneSettings::Observer:
@@ -119,12 +104,7 @@ class ASH_EXPORT GeolocationController
   // Returns sunset and sunrise time calculated from the most recently observed
   // geoposition. If a geoposition has not been observed, defaults to sunset
   // 6 PM and sunrise 6 AM.
-  base::expected<base::Time, SunRiseSetError> GetSunsetTime() const {
-    return GetSunRiseSet(/*sunrise=*/false);
-  }
-  base::expected<base::Time, SunRiseSetError> GetSunriseTime() const {
-    return GetSunRiseSet(/*sunrise=*/true);
-  }
+  base::expected<SunRiseSetTime, SunRiseSetError> GetSunRiseSetTime() const;
 
   static base::TimeDelta GetNextRequestDelayAfterSuccessForTesting();
 
@@ -183,9 +163,9 @@ class ASH_EXPORT GeolocationController
   // being able to retrieve a valid geoposition.
   void StoreCachedGeoposition() const;
 
-  // Points to the `SimpleGeolocationProvider::GetInstance()` throughout the
+  // Points to the `SystemLocationProvider::GetInstance()` throughout the
   // object lifecycle. Overridden in unit tests.
-  raw_ptr<SimpleGeolocationProvider> geolocation_provider_ = nullptr;
+  raw_ptr<SystemLocationProvider> geolocation_provider_ = nullptr;
 
   // May be null if a user has not logged in yet.
   raw_ptr<PrefService> active_user_pref_service_ = nullptr;

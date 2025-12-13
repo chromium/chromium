@@ -411,6 +411,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, ScalingPdf) {
   RunTestCase("ScalingPdf");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest,
+                       ScalingPdfAlignPdfDefaultPrintSettingsWithHTML) {
+  RunTestCase("ScalingPdfAlignPdfDefaultPrintSettingsWithHTML");
+}
+
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, Rasterize) {
   RunTestCase("Rasterize");
@@ -1009,7 +1014,14 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewScalingSettingsTest, SetScaling) {
   RunTestCase("SetScaling");
 }
 
+// TODO(crbug.com/440516024): Fix flakiness on Linux and re-enable.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_InputNotDisabledOnValidityChange \
+  DISABLED_InputNotDisabledOnValidityChange
+#else
+#define MAYBE_InputNotDisabledOnValidityChange InputNotDisabledOnValidityChange
+#endif
 IN_PROC_BROWSER_TEST_F(PrintPreviewScalingSettingsTest,
-                       InputNotDisabledOnValidityChange) {
+                       MAYBE_InputNotDisabledOnValidityChange) {
   RunTestCase("InputNotDisabledOnValidityChange");
 }

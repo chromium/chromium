@@ -49,69 +49,6 @@ namespace autofill {
 //   Country:   <input id=8>                               | field 7 based
 //   CC number: <input id=9>                               | field 5 based
 //   ------------------------------------------------------+-------------------
-//
-// The `kAutofillUseParameterizedSectioning` has boolean feature parameters
-// which assign sections in the following way:
-// a. `kAutofillSectioningModeIgnoreAutocomplete`: Disables condition 1, i.e.
-//    ignores the autocomplete attribute section. Otherwise, conditions 2 to 4
-//    apply.
-//
-//    Example:
-//   ------------------------------------------------------+-------------------
-//       HTML code                                         |      Section
-//   ------------------------------------------------------+-------------------
-//   Name:      <input id=1>                               | field 1 based
-//   Country:   <input id=2>                               | field 1 based
-//   Name:      <input id=3 autocomplete="section-A name"> | field 3 based
-//   Street:    <input id=4>                               | field 3 based
-//   CC number: <input id=5>                               | field 5 based
-//   CC number: <input id=6 style="display:none">          | field 5 based
-//   Name:      <input id=7>                               | field 7 based
-//   Country:   <input id=8>                               | field 7 based
-//   CC number: <input id=9>                               | field 5 based
-//   ------------------------------------------------------+-------------------
-//
-// b. `kAutofillSectioningModeCreateGaps`: The conditions from above apply.
-//    Additionally, in condition 3, intervals are split by fields that were
-//    sectioned based on conditions 1 and 2.
-//
-//    Example:
-//   ------------------------------------------------------+-------------------
-//       HTML code                                         |      Section
-//   ------------------------------------------------------+-------------------
-//   Name:      <input id=1>                               | field 1 based
-//   Country:   <input id=2>                               | field 1 based
-//   Name:      <input id=3 autocomplete="section-A name"> | A
-//   Street:    <input id=4>                               | field 4 based
-//   CC number: <input id=5>                               | field 5 based
-//   CC number: <input id=6 style="display:none">          | field 5 based
-//   Name:      <input id=7>                               | field 7 based
-//   Country:   <input id=8>                               | field 7 based
-//   CC number: <input id=9>                               | field 5 based
-//   ------------------------------------------------------+-------------------
-//
-// c. `kAutofillSectioningModeExpand`: The conditions from above apply.
-//    Additionally, we look at gaps between fields with sections based on
-//    conditions 1 and 2. If the gap is enclosed by the same section, this
-//    section is expanded to all the fields inside the gap. If there are no such
-//    gaps, this mode degenerates to the regular sectioning algorithm.
-//    In the example below, the "Name" and "Country" fields between the last two
-//    credit card fields are affected.
-//
-//    Example:
-//   ------------------------------------------------------+-------------------
-//       HTML code                                         |      Section
-//   ------------------------------------------------------+-------------------
-//   Name:      <input id=1>                               | field 1 based
-//   Country:   <input id=2>                               | field 1 based
-//   Name:      <input id=3 autocomplete="section-A name"> | A
-//   Street:    <input id=4>                               | field 1 based
-//   CC number: <input id=5>                               | field 5 based
-//   CC number: <input id=6 style="display:none">          | field 5 based
-//   Name:      <input id=7>                               | field 5 based
-//   Country:   <input id=8>                               | field 5 based
-//   CC number: <input id=9>                               | field 5 based
-//   ------------------------------------------------------+-------------------
 void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields);
 
 }  // namespace autofill

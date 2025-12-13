@@ -9,7 +9,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process_handle.h"
@@ -17,6 +16,8 @@
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ukm {
 class UkmRecorder;
@@ -52,21 +53,20 @@ class ProcessMemoryMetricsEmitter
   // This must be called on the main thread of the browser process.
   void FetchAndEmitProcessMemoryMetrics();
 
-  // Public for testing.
-  void MarkServiceRequestsInProgress();
-
  protected:
   virtual ~ProcessMemoryMetricsEmitter();
 
   // Virtual for testing. Callback invoked when memory_instrumentation service
-  // is finished taking a memory dump.
+  // is finished taking a memory dump. `process_infos` is info from the
+  // performance_manager for each process.
   virtual void ReceivedMemoryDump(
-      bool success,
+      absl::flat_hash_map<base::ProcessId, ProcessInfo> process_infos,
+      memory_instrumentation::mojom::RequestOutcome outcome,
       std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump);
 
-  // Virtual for testing. Callback invoked when the performance_manager
-  // returns info for each process.
-  virtual void ReceivedProcessInfos(std::vector<ProcessInfo> process_infos);
+  // Virtual for testing. Gets info about each process from performance_manager.
+  virtual absl::flat_hash_map<base::ProcessId, ProcessInfo>
+  GetProcessToPageInfoMap(performance_manager::Graph* graph);
 
   // Virtual for testing.
   virtual ukm::UkmRecorder* GetUkmRecorder();
@@ -77,27 +77,12 @@ class ProcessMemoryMetricsEmitter
 
   // Virtual for testing. Returns the process uptime of the given process. Does
   // not return a value when the process startup time is not set.
-  virtual std::optional<base::TimeDelta> GetProcessUptime(base::TimeTicks now,
-                                                          base::ProcessId pid);
+  virtual std::optional<base::TimeDelta> GetProcessUptime(
+      base::TimeTicks now,
+      const ProcessInfo* process_info);
 
  private:
   friend class base::RefCountedThreadSafe<ProcessMemoryMetricsEmitter>;
-
-  // This class sends two asynchronous service requests, whose results need to
-  // be collated.
-  void CollateResults();
-
-  static std::vector<ProcessInfo> GetProcessToPageInfoMap(
-      performance_manager::Graph* graph);
-
-  // The results of each request are cached. When both requests are finished,
-  // the results are collated.
-  bool memory_dump_in_progress_ = false;
-  std::unique_ptr<memory_instrumentation::GlobalMemoryDump> global_dump_;
-  bool get_process_urls_in_progress_ = false;
-
-  // The key is ProcessInfo::pid.
-  base::flat_map<base::ProcessId, ProcessInfo> process_infos_;
 
   // Specify this pid_scope_ to only record the memory metrics of the specific
   // process.

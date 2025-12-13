@@ -8,10 +8,11 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
 #include "base/unguessable_token.h"
-#include "components/dbus/properties/types.h"
+#include "components/dbus/utils/read_value.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -35,28 +36,20 @@ enum class ResponseCode : uint32_t {
 
 }  // namespace
 
-Request::Request(scoped_refptr<dbus::Bus> bus,
-                 dbus::ObjectProxy* object_proxy,
-                 const std::string& interface_name,
-                 const std::string& method_name,
-                 const DbusType& arguments,
-                 DbusDictionary&& options,
-                 ResponseCallback callback,
-                 const std::string& test_portal_service_name)
-    : bus_(bus),
-      callback_(std::move(callback)),
-      portal_service_name_(test_portal_service_name.empty()
-                               ? kPortalServiceName
-                               : test_portal_service_name) {
-  CHECK(bus_);
-  CHECK(callback_);
+void Request::Initialize(dbus::ObjectProxy* object_proxy,
+                         dbus::MethodCall* method_call,
+                         dbus::MessageWriter* writer,
+                         Dictionary&& options,
+                         const std::string& portal_service_name) {
+  portal_service_name_ =
+      portal_service_name.empty() ? kPortalServiceName : portal_service_name;
 
   auto handle_token = base::UnguessableToken::Create().ToString();
   request_object_path_ =
       dbus::ObjectPath(base::nix::XdgDesktopPortalRequestPath(
-          bus->GetConnectionName(), handle_token));
+          bus_->GetConnectionName(), handle_token));
   auto* request_proxy =
-      bus->GetObjectProxy(portal_service_name_, request_object_path_);
+      bus_->GetObjectProxy(portal_service_name_, request_object_path_);
 
   // Connect to the "Response" signal before making the method call to avoid a
   // race condition.
@@ -67,16 +60,19 @@ Request::Request(scoped_refptr<dbus::Bus> bus,
       base::BindOnce(&Request::OnSignalConnected,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  dbus::MethodCall method_call(interface_name, method_name);
-  dbus::MessageWriter writer(&method_call);
-  arguments.Write(&writer);
-
-  options.PutAs("handle_token", DbusString(handle_token));
-  options.Write(&writer);
+  options["handle_token"] =
+      dbus_utils::Variant::Wrap<"s">(std::move(handle_token));
+  dbus_utils::WriteValue(*writer, options);
   object_proxy->CallMethodWithErrorResponse(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&Request::OnMethodResponse,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+Request::Request(scoped_refptr<dbus::Bus> bus, ResponseCallback callback)
+    : bus_(std::move(bus)), callback_(std::move(callback)) {
+  CHECK(bus_);
+  CHECK(callback_);
 }
 
 Request::~Request() {
@@ -175,14 +171,14 @@ void Request::OnResponseSignal(dbus::Signal* signal) {
       return;
   }
 
-  DbusDictionary results;
-  if (!results.Read(&reader)) {
+  auto results = dbus_utils::ReadValue<Dictionary>(reader);
+  if (!results) {
     LOG(ERROR) << "Failed to read results dictionary.";
     Finish(base::unexpected(ResponseError::kInvalidSignalResponse));
     return;
   }
 
-  Finish(base::ok(std::move(results)));
+  Finish(base::ok(std::move(*results)));
 }
 
 void Request::OnSignalConnected(const std::string& interface_name,
@@ -195,7 +191,7 @@ void Request::OnSignalConnected(const std::string& interface_name,
   }
 }
 
-void Request::Finish(base::expected<DbusDictionary, ResponseError>&& result) {
+void Request::Finish(base::expected<Dictionary, ResponseError>&& result) {
   if (!callback_) {
     return;
   }

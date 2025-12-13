@@ -80,7 +80,7 @@ void FormForest::EraseReferencesTo(
                ? std::get<LocalFrameToken>(frame_or_form) == form.frame_token
                : std::get<FormGlobalId>(frame_or_form) == form;
   };
-  for (std::unique_ptr<FrameData>& some_frame : frame_datas_) {
+  for (const std::unique_ptr<FrameData>& some_frame : frame_datas_) {
     for (FormData& some_form : some_frame->child_forms) {
       size_t num_removed =
           std::erase_if(some_form.mutable_fields(/*pass_key=*/{}),
@@ -585,23 +585,25 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserFields(
             return true;
         }
       };
-      // Fields whose document enables the policy-controlled feature
-      // shared-autofill may be safe to fill.
-      auto HasSharedAutofillPermission =
+      // Fields whose document enables the policy-controlled feature "autofill"
+      // may be safe to fill.
+      auto IsPolicyControlledFeatureAutofillEnabled =
           [&mutable_this](LocalFrameToken frame_token) {
             FrameData* frame = mutable_this.GetFrameData(frame_token);
             return frame && frame->driver &&
-                   frame->driver->HasSharedAutofillPermission();
+                   frame->driver->IsPolicyControlledFeatureAutofillEnabled();
           };
       return security_options.all_origins_are_trusted() ||
              field.origin() == security_options.triggered_origin() ||
              (field.origin() == security_options.main_origin() &&
               !IsSensitiveFieldType(
                   security_options.GetFieldType(field.global_id())) &&
-              HasSharedAutofillPermission(renderer_form->host_frame())) ||
+              IsPolicyControlledFeatureAutofillEnabled(
+                  renderer_form->host_frame())) ||
              (security_options.triggered_origin() ==
                   security_options.main_origin() &&
-              HasSharedAutofillPermission(renderer_form->host_frame()));
+              IsPolicyControlledFeatureAutofillEnabled(
+                  renderer_form->host_frame()));
     };
 
     renderer_form->mutable_fields(/*pass_key=*/{}).push_back(browser_field);

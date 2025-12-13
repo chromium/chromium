@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import org.chromium.blink.mojom.ContactIconBlob;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContactsFetcher.RetrievedContact;
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.List;
 
 /** A class to keep track of the metadata associated with a contact. */
 @NullMarked
-public class ContactDetails implements Comparable<ContactDetails> {
+public class ContactDetails implements RetrievedContact, Comparable<ContactDetails> {
     // The identifier for the information from the signed in user. Must not be a valid id in the
     // context of the Android Contacts list.
     public static final String SELF_CONTACT_ID = "-1";
@@ -85,18 +86,42 @@ public class ContactDetails implements Comparable<ContactDetails> {
         mId = id;
     }
 
+    /**
+     * Constructs ContactDetails from {@link RetrievedContact}. Does not create a new object if the
+     * argument is a ContactDetails.
+     *
+     * @param retrievedContact A {@link RetrievedContact} that ContactDetails is constructed from.
+     * @return A ContactDetails. The same object when retrievedContact is an instance of
+     *     ContactDetails.
+     */
+    public static ContactDetails fromRetrievedContact(RetrievedContact retrievedContact) {
+        if (retrievedContact instanceof ContactDetails contactDetails) {
+            return contactDetails;
+        } else {
+            return new ContactDetails(
+                    retrievedContact.getId(),
+                    retrievedContact.getDisplayName(),
+                    retrievedContact.getEmails(),
+                    retrievedContact.getPhoneNumbers(),
+                    retrievedContact.getAddresses());
+        }
+    }
+
     public List<String> getDisplayNames() {
         return Arrays.asList(mDisplayName);
     }
 
+    @Override
     public List<String> getEmails() {
         return mEmails;
     }
 
+    @Override
     public List<String> getPhoneNumbers() {
         return mPhoneNumbers;
     }
 
+    @Override
     public List<PaymentAddress> getAddresses() {
         return mAddresses;
     }
@@ -105,10 +130,12 @@ public class ContactDetails implements Comparable<ContactDetails> {
         return mIcons;
     }
 
+    @Override
     public String getDisplayName() {
         return mDisplayName;
     }
 
+    @Override
     public String getId() {
         return mId;
     }

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -21,7 +21,7 @@ class WebDatabaseService;
 
 #if BUILDFLAG(USE_BLINK)
 namespace payments {
-class PaymentManifestWebDataService;
+class WebPaymentsWebDataService;
 }  // namespace payments
 #endif
 
@@ -95,8 +95,8 @@ class WebDataServiceWrapper : public KeyedService {
   scoped_refptr<TokenWebData> GetTokenWebData();
 #if BUILDFLAG(USE_BLINK)
   // Virtual for testing.
-  virtual scoped_refptr<payments::PaymentManifestWebDataService>
-  GetPaymentManifestWebData();
+  virtual scoped_refptr<payments::WebPaymentsWebDataService>
+  GetWebPaymentsWebData();
 #endif
 
  protected:
@@ -115,8 +115,7 @@ class WebDataServiceWrapper : public KeyedService {
   scoped_refptr<TokenWebData> token_web_data_;
 
 #if BUILDFLAG(USE_BLINK)
-  scoped_refptr<payments::PaymentManifestWebDataService>
-      payment_manifest_web_data_;
+  scoped_refptr<payments::WebPaymentsWebDataService> web_payments_web_data_;
 #endif
 };
 

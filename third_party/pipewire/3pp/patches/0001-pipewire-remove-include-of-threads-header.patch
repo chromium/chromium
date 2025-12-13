@@ -1,0 +1,12 @@
+diff --git a/spa/plugins/support/loop.c b/spa/plugins/support/loop.c
+index 8af61e7ae..36353642a 100644
+--- a/spa/plugins/support/loop.c
++++ b/spa/plugins/support/loop.c
+@@ -9,7 +9,6 @@
+ #include <stdlib.h>
+ #include <stdio.h>
+ #include <pthread.h>
+-#include <threads.h>
+ #include <stdatomic.h>
+ 
+ #include <spa/support/loop.h>

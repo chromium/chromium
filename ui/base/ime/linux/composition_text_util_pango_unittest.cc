@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/ime/linux/composition_text_util_pango.h"
 
 #include <pango/pango-attributes.h>
@@ -17,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/composition_text.h"
@@ -125,7 +121,7 @@ void CompareImeTextSpan(const ImeTextSpan& a, const ui::ImeTextSpan& b) {
 TEST(CompositionTextUtilPangoTest, ExtractCompositionText) {
   for (size_t i = 0; i < std::size(kTestData); ++i) {
     const char* text = kTestData[i].text;
-    const AttributeInfo* attrs = kTestData[i].attrs;
+    base::span<const AttributeInfo> attrs = kTestData[i].attrs;
     SCOPED_TRACE(testing::Message() << "Testing:" << i
                  << " text:" << text);
 
@@ -153,7 +149,7 @@ TEST(CompositionTextUtilPangoTest, ExtractCompositionText) {
     ui::CompositionText result;
     ui::ExtractCompositionTextFromGtkPreedit(text, pango_attrs, 0, &result);
 
-    const ImeTextSpan* ime_text_spans = kTestData[i].ime_text_spans;
+    base::span<const ImeTextSpan> ime_text_spans = kTestData[i].ime_text_spans;
     for (size_t u = 0;
          ime_text_spans[u].underline_color && u < result.ime_text_spans.size();
          ++u) {

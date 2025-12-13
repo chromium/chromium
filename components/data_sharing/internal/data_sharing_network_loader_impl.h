@@ -38,13 +38,6 @@ class DataSharingNetworkLoaderImpl : public DataSharingNetworkLoader {
 
   // DataSharingNetworkLoader Impl.
   void LoadUrl(const GURL& url,
-               const std::vector<std::string>& scopes,
-               const std::string& post_data,
-               const net::NetworkTrafficAnnotationTag& annotation_tag,
-               NetworkLoaderCallback callback) override;
-
-  void LoadUrl(const GURL& url,
-               const std::vector<std::string>& scopes,
                const std::string& post_data,
                DataSharingRequestType requestType,
                NetworkLoaderCallback callback) override;
@@ -53,7 +46,6 @@ class DataSharingNetworkLoaderImpl : public DataSharingNetworkLoader {
   // This method could be overridden in tests.
   virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
   CreateEndpointFetcher(const GURL& url,
-                        const std::vector<std::string>& scopes,
                         const std::string& post_data,
                         const net::NetworkTrafficAnnotationTag& annotation_tag);
 

@@ -176,13 +176,13 @@ void AV1Decoder::Reset() {
   // skip it and will keep skipping until we get a sequence header.
   current_sequence_header_.reset();
   stream_id_ = 0;
-  stream_ = {};
   on_error_ = false;
 
   state_ = std::make_unique<libgav1::DecoderState>();
   ClearReferenceFrames();
   parser_.reset();
   decrypt_config_.reset();
+  decoder_buffer_.reset();
   secure_handle_ = 0;
 
   buffer_pool_ = std::make_unique<libgav1::BufferPool>(
@@ -192,15 +192,17 @@ void AV1Decoder::Reset() {
       /*callback_private_data=*/nullptr);
 }
 
-void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
+void AV1Decoder::SetStream(int32_t id,
+                           scoped_refptr<DecoderBuffer> decoder_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  stream_ = base::span(decoder_buffer);
+  CHECK(decoder_buffer);
+  decoder_buffer_ = std::move(decoder_buffer);
   stream_id_ = id;
   ClearCurrentFrame();
 
   parser_ = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
-      stream_.data(), stream_.size(), kDefaultOperatingPoint,
-      buffer_pool_.get(), state_.get()));
+      base::span(*decoder_buffer_).data(), decoder_buffer_->size(),
+      kDefaultOperatingPoint, buffer_pool_.get(), state_.get()));
   if (!parser_) {
     on_error_ = true;
     return;
@@ -208,18 +210,20 @@ void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
 
   if (current_sequence_header_)
     parser_->set_sequence_header(*current_sequence_header_);
-  if (decoder_buffer.decrypt_config())
-    decrypt_config_ = decoder_buffer.decrypt_config()->Clone();
-  else
+  if (decoder_buffer_->decrypt_config()) {
+    decrypt_config_ = decoder_buffer_->decrypt_config()->Clone();
+  } else {
     decrypt_config_.reset();
-  if (decoder_buffer.side_data() && decoder_buffer.side_data()->secure_handle) {
-    secure_handle_ = decoder_buffer.side_data()->secure_handle;
+  }
+  if (decoder_buffer_->side_data() &&
+      decoder_buffer_->side_data()->secure_handle) {
+    secure_handle_ = decoder_buffer_->side_data()->secure_handle;
   } else {
     secure_handle_ = 0;
   }
 
   const AV1Accelerator::Status status =
-      accelerator_->SetStream(stream_, decrypt_config_.get());
+      accelerator_->SetStream(*decoder_buffer_, decrypt_config_.get());
   if (status != AV1Accelerator::Status::kOk) {
     on_error_ = true;
     return;
@@ -465,16 +469,10 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
     // Thus we should also extract HDR metadata here in case we
     // miss the information.
     if (current_frame_->hdr_cll_set()) {
-      if (!hdr_metadata_.has_value()) {
-        hdr_metadata_.emplace();
-      }
-      hdr_metadata_->cta_861_3 = ToGfxCta861_3(current_frame_->hdr_cll());
+      hdr_metadata_.cta_861_3 = ToGfxCta861_3(current_frame_->hdr_cll());
     }
     if (current_frame_->hdr_mdcv_set()) {
-      if (!hdr_metadata_.has_value()) {
-        hdr_metadata_.emplace();
-      }
-      hdr_metadata_->smpte_st_2086 =
+      hdr_metadata_.smpte_st_2086 =
           ToGfxSmpteSt2086(current_frame_->hdr_mdcv());
     }
     if (current_frame_->itut_t35_set()) {
@@ -482,15 +480,10 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       auto t35_payload_span = UNSAFE_BUFFERS(base::span<const uint8_t>(
           current_frame_->itut_t35().payload_bytes,
           static_cast<size_t>(current_frame_->itut_t35().payload_size)));
-      const std::optional<gfx::HdrMetadataAgtm> agtm =
-          GetHdrMetadataAgtmFromItutT35(current_frame_->itut_t35().country_code,
-                                        t35_payload_span);
-      if (agtm.has_value()) {
-        if (!hdr_metadata_.has_value()) {
-          hdr_metadata_.emplace();
-        }
+      if (auto agtm = GetSerializedAgtmItutT35(
+              current_frame_->itut_t35().country_code, t35_payload_span)) {
         // Overwrite existing AGTM metadata if any.
-        hdr_metadata_->agtm = agtm;
+        hdr_metadata_.setSerializedAgtm(agtm);
       }
     }
 
@@ -512,8 +505,9 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
     // Set the color space for the picture.
     pic->set_colorspace(picture_color_space_);
 
-    if (hdr_metadata_)
+    if (!hdr_metadata_.IsEmpty()) {
       pic->set_hdr_metadata(hdr_metadata_);
+    }
 
     pic->frame_header = frame_header;
     if (decrypt_config_)
@@ -595,7 +589,7 @@ AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pic);
   DCHECK(current_sequence_header_);
-  DCHECK(!stream_.empty());
+  DCHECK(!decoder_buffer_->empty());
   if (!CheckAndCleanUpReferenceFrames()) {
     DLOG(ERROR) << "The states of reference frames are different between "
                 << "|ref_frames_| and |state_|";
@@ -603,7 +597,7 @@ AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
   }
   const AV1Accelerator::Status status =
       accelerator_->SubmitDecode(*pic, *current_sequence_header_, ref_frames_,
-                                 tile_buffers, base::span(stream_));
+                                 tile_buffers, *decoder_buffer_);
   if (status != AV1Accelerator::Status::kOk) {
     if (status == AV1Accelerator::Status::kTryAgain)
       pending_pic_ = std::move(pic);
@@ -623,7 +617,7 @@ AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
   return AV1Accelerator::Status::kOk;
 }
 
-std::optional<gfx::HDRMetadata> AV1Decoder::GetHDRMetadata() const {
+gfx::HDRMetadata AV1Decoder::GetHDRMetadata() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return hdr_metadata_;
 }

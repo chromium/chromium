@@ -4,7 +4,6 @@
 
 #include "components/collaboration/internal/collaboration_controller.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -220,7 +219,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   // added in sync.
   SavedTabGroup tab_group(std::u16string(u"title"),
                           tab_groups::TabGroupColorId::kGrey, {});
-  tab_group.SetCollaborationId(tab_groups::CollaborationId(kGroupId.value()));
+  tab_group.SetCollaborationId(syncer::CollaborationId(kGroupId.value()));
   std::vector<SavedTabGroup> all_tab_groups;
   EXPECT_CALL(*tab_group_sync_service_, GetAllGroups())
       .WillRepeatedly(Return(all_tab_groups));
@@ -434,7 +433,7 @@ TEST_F(CollaborationControllerTest, ManageFlowManagedAccountSharingDisabled) {
   SavedTabGroup tab_group(std::u16string(u"title"),
                           tab_groups::TabGroupColorId::kGrey, {});
   tab_group.SetLocalGroupId(local_id);
-  tab_group.SetCollaborationId(tab_groups::CollaborationId(kGroupId.value()));
+  tab_group.SetCollaborationId(syncer::CollaborationId(kGroupId.value()));
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
       .WillRepeatedly(Return(tab_group));
 
@@ -935,7 +934,7 @@ TEST_F(CollaborationControllerTest, CheckingFlowRequirementsManageFlow) {
                           tab_groups::TabGroupColorId::kGrey, {});
   tab_group.SetLocalGroupId(local_id);
   // Simulate that the tab group exists locally and is a shared tab group.
-  tab_group.SetCollaborationId(tab_groups::CollaborationId(kGroupId.value()));
+  tab_group.SetCollaborationId(syncer::CollaborationId(kGroupId.value()));
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
       .WillRepeatedly(Return(tab_group));
 
@@ -1027,7 +1026,7 @@ TEST_F(CollaborationControllerTest, LeaveFlow) {
   SavedTabGroup tab_group(std::u16string(u"title"),
                           tab_groups::TabGroupColorId::kGrey, {});
   tab_group.SetLocalGroupId(local_id);
-  tab_group.SetCollaborationId(tab_groups::CollaborationId(kGroupId.value()));
+  tab_group.SetCollaborationId(syncer::CollaborationId(kGroupId.value()));
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
       .WillRepeatedly(Return(tab_group));
   InitializeController(base::DoNothing(),

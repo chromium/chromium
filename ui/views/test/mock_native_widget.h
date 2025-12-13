@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/color/color_provider_key.h"
@@ -29,10 +30,7 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
 
   MOCK_METHOD(void, ReparentNativeViewImpl, (gfx::NativeView), (override));
 
-  MOCK_METHOD(std::unique_ptr<NonClientFrameView>,
-              CreateNonClientFrameView,
-              (),
-              (override));
+  MOCK_METHOD(std::unique_ptr<FrameView>, CreateFrameView, (), (override));
 
   MOCK_METHOD(bool, ShouldUseNativeFrame, (), (const override));
   MOCK_METHOD(bool, ShouldWindowContentsBeTransparent, (), (const override));
@@ -75,10 +73,7 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
               InitModalType,
               (ui::mojom::ModalType modal_type),
               (override));
-  MOCK_METHOD(void,
-              OnWidgetThemeChanged,
-              (ui::ColorProviderKey::ColorMode, std::optional<SkColor>),
-              (override));
+  MOCK_METHOD(void, SetBackgroundColor, (SkColor background_color), (override));
   MOCK_METHOD(gfx::Rect, GetWindowBoundsInScreen, (), (const override));
   MOCK_METHOD(gfx::Rect, GetClientAreaBoundsInScreen, (), (const override));
   MOCK_METHOD(gfx::Rect, GetRestoredBounds, (), (const override));

@@ -12,6 +12,7 @@
 #include "content/public/common/content_constants.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -63,6 +64,12 @@ void NoStatePrefetchURLLoaderThrottle::WillStartRequest(
           blink::features::kRemovePurposeHeaderForPrefetch)) {
     request->cors_exempt_headers.SetHeader(
         blink::kPurposeHeaderName, blink::kSecPurposePrefetchHeaderValue);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSecPurposePrefetchHeaderNoStatePrefetch)) {
+    request->headers.SetHeader(blink::kSecPurposeHeaderName,
+                               blink::kSecPurposePrefetchHeaderValue);
   }
 
   request_destination_ = request->destination;

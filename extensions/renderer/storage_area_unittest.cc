@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "components/version_info/channel.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -19,6 +20,8 @@
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

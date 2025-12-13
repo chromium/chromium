@@ -29,6 +29,9 @@ class {{export_attribute|append_space_if_nonempty}}{{interface.name}}
   static constexpr base::Token Uuid_{ {{interface.uuid[0]}}ULL,
                                       {{interface.uuid[1]}}ULL };
 {%-  endif %}
+{%- if interface.direct_receiver %}
+  static constexpr bool kSupportsDirectReceiver = true;
+{%- endif %}
 {%- if interface.service_sandbox %}
 {%- set sandbox_enum = "%s"|format(interface.service_sandbox.GetSpec()|replace(".","::")) %}
   static constexpr auto kServiceSandbox = {{ sandbox_enum }};

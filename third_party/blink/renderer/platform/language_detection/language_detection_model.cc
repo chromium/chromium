@@ -26,7 +26,7 @@ void LanguageDetectionModel::LoadModelFile(
     CreateLanguageDetectionModelCallback callback) {
   language_detection_model_.UpdateWithFileAsync(
       std::move(model_file),
-      WTF::BindOnce(
+      blink::BindOnce(
           [](LanguageDetectionModel* model,
              CreateLanguageDetectionModelCallback callback) {
             if (!model || !model->language_detection_model_.IsAvailable()) {
@@ -43,7 +43,7 @@ void LanguageDetectionModel::Trace(Visitor* visitor) const {}
 
 void LanguageDetectionModel::DetectLanguage(
     scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    const WTF::String& text,
+    const String& text,
     DetectLanguageCallback on_complete) {
   if (!language_detection_model_.IsAvailable()) {
     std::move(on_complete)
@@ -52,19 +52,19 @@ void LanguageDetectionModel::DetectLanguage(
   }
   task_runner->PostTask(
       FROM_HERE,
-      WTF::BindOnce(&LanguageDetectionModel::DetectLanguageImpl,
-                    WrapPersistent(this), text, std::move(on_complete)));
+      blink::BindOnce(&LanguageDetectionModel::DetectLanguageImpl,
+                      WrapPersistent(this), text, std::move(on_complete)));
 }
 
 void LanguageDetectionModel::DetectLanguageImpl(
-    const WTF::String& text,
+    const String& text,
     DetectLanguageCallback on_complete) {
-  WTF::String text_16 = text;
+  String text_16 = text;
   text_16.Ensure16Bit();
   auto score_by_language =
       language_detection_model_.PredictWithScan(text_16.View16());
 
-  WTF::Vector<LanguagePrediction> predictions;
+  Vector<LanguagePrediction> predictions;
   predictions.reserve(static_cast<wtf_size_t>(score_by_language.size()));
   for (const auto& it : score_by_language) {
     predictions.emplace_back(it.language, it.score);

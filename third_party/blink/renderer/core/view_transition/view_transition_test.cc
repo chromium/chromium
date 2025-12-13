@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
@@ -238,7 +239,7 @@ TEST_P(ViewTransitionTest, LayoutShift) {
   // resolving.
   test::RunPendingTasks();
   auto start_requests =
-      ViewTransitionSupplement::From(GetDocument())->TakePendingRequests();
+      GetDocument().GetViewTransitions().TakePendingRequests();
   EXPECT_FALSE(start_requests.empty());
   EXPECT_EQ(GetState(transition), State::kAnimating);
 
@@ -250,13 +251,13 @@ TEST_P(ViewTransitionTest, LayoutShift) {
       kPseudoIdViewTransitionGroup, AtomicString("shared"));
   ASSERT_TRUE(container_pseudo);
   auto* container_box = To<LayoutBox>(container_pseudo->GetLayoutObject());
-  EXPECT_EQ(PhysicalSize(100, 100), container_box->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), container_box->StitchedSize());
 
   // View transition elements should not cause a layout shift.
   auto* target = To<LayoutBox>(
       GetDocument().getElementById(AtomicString("target"))->GetLayoutObject());
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(PhysicalSize(100, 100), target->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), target->StitchedSize());
 
   FinishTransition();
   finished_tester.WaitUntilSettled();
@@ -434,8 +435,8 @@ TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-        auto* data =
-            static_cast<Data*>(info.Data().As<v8::External>()->Value());
+        auto* data = static_cast<Data*>(info.Data().As<v8::External>()->Value(
+            gin::kViewTransitionTestDataTag));
         data->document.getElementById(AtomicString("e1"))
             ->setAttribute(html_names::kStyleAttr, g_empty_atom);
         data->document.getElementById(AtomicString("e3"))
@@ -447,7 +448,8 @@ TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
       };
   auto start_setup_callback =
       v8::Function::New(script_state->GetContext(), start_setup_lambda,
-                        v8::External::New(script_state->GetIsolate(), &data))
+                        v8::External::New(script_state->GetIsolate(), &data,
+                                          gin::kViewTransitionTestDataTag))
           .ToLocalChecked();
 
   ViewTransitionSupplement::startViewTransition(
@@ -583,7 +585,8 @@ TEST_P(ViewTransitionTest, ScopedElementRemoved) {
   auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
   auto* callback = V8ViewTransitionCallback::Create(
       v8::Function::New(script_state->GetContext(), lambda,
-                        v8::External::New(script_state->GetIsolate(), document))
+                        v8::External::New(script_state->GetIsolate(), document,
+                                          gin::kViewTransitionTestDocumentTag))
           .ToLocalChecked());
 
   auto* transition = ScopedViewTransition::startViewTransition(
@@ -897,7 +900,7 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     for (const auto& matched_rules : parent_resolver.PseudoElementRules()) {
       if (matched_rules->pseudo_id != test_case.pseudo_id)
         continue;
-      if (matched_rules->view_transition_name == "root") {
+      if (matched_rules->pseudo_argument == "root") {
         EXPECT_FALSE(found_rule_for_root);
         found_rule_for_root = true;
         continue;
@@ -911,7 +914,7 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     // Pseudo-elements which are generated for each tag should include the root
     // by default.
     EXPECT_EQ(found_rule_for_root, test_case.uses_tags);
-    EXPECT_EQ(matched_rules_for_pseudo->view_transition_name,
+    EXPECT_EQ(matched_rules_for_pseudo->pseudo_argument,
               test_case.uses_tags ? AtomicString("foo") : g_null_atom);
 
     auto pseudo_element_rules = matched_rules_for_pseudo->matched_rules;
@@ -1100,7 +1103,8 @@ TEST_P(ViewTransitionTest, PseudoAwareChildTraversal) {
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
         auto* document =
-            static_cast<Document*>(info.Data().As<v8::External>()->Value());
+            static_cast<Document*>(info.Data().As<v8::External>()->Value(
+                gin::kViewTransitionTestDocumentTag));
         document->documentElement()->classList().Add(
             AtomicString("transitioned"));
       };
@@ -1109,7 +1113,8 @@ TEST_P(ViewTransitionTest, PseudoAwareChildTraversal) {
   auto start_setup_callback =
       v8::Function::New(
           script_state->GetContext(), start_setup_lambda,
-          v8::External::New(script_state->GetIsolate(), &GetDocument()))
+          v8::External::New(script_state->GetIsolate(), &GetDocument(),
+                            gin::kViewTransitionTestDocumentTag))
           .ToLocalChecked();
 
   ViewTransitionSupplement::startViewTransition(
@@ -1418,9 +1423,9 @@ TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
       mojom::blink::NavigationTypeForNavigationApi::kPush;
   ViewTransitionSupplement::SnapshotDocumentForNavigation(
       GetDocument(), blink::ViewTransitionToken(), std::move(page_swap_params),
-      base::BindOnce([](const ViewTransitionState&) {}));
+      BindOnce([](const ViewTransitionState&) {}));
 
-  ASSERT_TRUE(ViewTransitionSupplement::From(GetDocument())->GetTransition());
+  ASSERT_TRUE(GetDocument().GetViewTransitions().GetTransition());
 
   bool callback_issued = false;
 
@@ -1428,13 +1433,15 @@ TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
         auto* callback_issued =
-            static_cast<bool*>(info.Data().As<v8::External>()->Value());
+            static_cast<bool*>(info.Data().As<v8::External>()->Value(
+                gin::kViewTransitionTestBoolTag));
         *callback_issued = true;
       };
   auto start_setup_callback =
       v8::Function::New(
           script_state->GetContext(), start_setup_lambda,
-          v8::External::New(script_state->GetIsolate(), &callback_issued))
+          v8::External::New(script_state->GetIsolate(), &callback_issued,
+                            gin::kViewTransitionTestBoolTag))
           .ToLocalChecked();
   DOMViewTransition* script_transition =
       ViewTransitionSupplement::startViewTransition(
@@ -1533,7 +1540,8 @@ TEST_P(ViewTransitionTest, ReplaceDocumentElement) {
   ScriptState::Scope scope(script_state);
 
   auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-    auto* doc = static_cast<Document*>(info.Data().As<v8::External>()->Value());
+    auto* doc = static_cast<Document*>(info.Data().As<v8::External>()->Value(
+        gin::kViewTransitionTestDocumentTag));
     auto* new_root = doc->CreateElementForBinding(AtomicString("html"));
     new_root->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <body>
@@ -1547,7 +1555,8 @@ TEST_P(ViewTransitionTest, ReplaceDocumentElement) {
   };
   auto* callback = V8ViewTransitionCallback::Create(
       v8::Function::New(script_state->GetContext(), lambda,
-                        v8::External::New(script_state->GetIsolate(), document))
+                        v8::External::New(script_state->GetIsolate(), document,
+                                          gin::kViewTransitionTestDocumentTag))
           .ToLocalChecked());
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
@@ -1577,7 +1586,8 @@ TEST_P(ViewTransitionTest, ReplaceBody) {
   ScriptState::Scope scope(script_state);
 
   auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-    auto* doc = static_cast<Document*>(info.Data().As<v8::External>()->Value());
+    auto* doc = static_cast<Document*>(info.Data().As<v8::External>()->Value(
+        gin::kViewTransitionTestDocumentTag));
     doc->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <body>
         <style>
@@ -1589,7 +1599,8 @@ TEST_P(ViewTransitionTest, ReplaceBody) {
   };
   auto* callback = V8ViewTransitionCallback::Create(
       v8::Function::New(script_state->GetContext(), lambda,
-                        v8::External::New(script_state->GetIsolate(), document))
+                        v8::External::New(script_state->GetIsolate(), document,
+                                          gin::kViewTransitionTestDocumentTag))
           .ToLocalChecked());
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
@@ -1607,6 +1618,59 @@ TEST_P(ViewTransitionTest, ReplaceBody) {
 
   EXPECT_FALSE(
       document->IsUseCounted(WebFeature::kViewTransitionChangeRootElement));
+}
+
+TEST_P(ViewTransitionTest, ViewTransitionDelayLayerTreeViewDeletion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kDelayLayerTreeViewDeletionOnLocalSwap);
+
+  bool callback_ran = false;
+  ViewTransition::ViewTransitionStateCallback callback = base::BindOnce(
+      [](bool* callback_ran, const ViewTransitionState& state) {
+        EXPECT_TRUE(state.IsDelayLayerTreeViewDeletionEnabled());
+        *callback_ran = true;
+      },
+      &callback_ran);
+
+  auto page_swap_params = mojom::blink::PageSwapEventParams::New();
+  page_swap_params->url = KURL("http://test.com");
+  page_swap_params->navigation_type =
+      mojom::blink::NavigationTypeForNavigationApi::kPush;
+  ViewTransitionSupplement::SnapshotDocumentForNavigation(
+      GetDocument(), blink::ViewTransitionToken(), std::move(page_swap_params),
+      std::move(callback));
+  ASSERT_TRUE(GetDocument().GetViewTransitions().GetTransition());
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  EXPECT_TRUE(callback_ran);
+}
+
+TEST_P(ViewTransitionTest,
+       ViewTransitionDelayLayerTreeViewDeletion_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kDelayLayerTreeViewDeletionOnLocalSwap);
+
+  bool callback_ran = false;
+  ViewTransition::ViewTransitionStateCallback callback = base::BindOnce(
+      [](bool* callback_ran, const ViewTransitionState& state) {
+        EXPECT_FALSE(state.IsDelayLayerTreeViewDeletionEnabled());
+        *callback_ran = true;
+      },
+      &callback_ran);
+
+  auto page_swap_params = mojom::blink::PageSwapEventParams::New();
+  page_swap_params->url = KURL("http://test.com");
+  page_swap_params->navigation_type =
+      mojom::blink::NavigationTypeForNavigationApi::kPush;
+  ViewTransitionSupplement::SnapshotDocumentForNavigation(
+      GetDocument(), blink::ViewTransitionToken(), std::move(page_swap_params),
+      std::move(callback));
+  ASSERT_TRUE(GetDocument().GetViewTransitions().GetTransition());
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  EXPECT_TRUE(callback_ran);
 }
 
 }  // namespace blink

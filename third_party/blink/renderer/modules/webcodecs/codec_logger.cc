@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "media/base/media_log.h"
 #include "media/base/media_log_events.h"
@@ -30,8 +31,9 @@ std::string SanitizeStringProperty(WebString value) {
 
 void SendPlayerNameInformationInternal(media::MediaLog* media_log,
                                        const ExecutionContext& context,
-                                       std::string loadedAs) {
-  media_log->AddEvent<media::MediaLogEvent::kLoad>("Webcodecs::" + loadedAs);
+                                       std::string_view name) {
+  media_log->AddEvent<media::MediaLogEvent::kLoad>(
+      base::StrCat({"WebCodecs::", name}));
   WebString frame_title;
   if (context.IsWindow()) {
     const auto& dom_context = To<LocalDOMWindow>(context);

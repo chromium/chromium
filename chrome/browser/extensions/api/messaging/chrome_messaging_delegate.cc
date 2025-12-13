@@ -20,11 +20,14 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/api/messaging/native_message_port.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -66,8 +69,9 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
           pref_names::kNativeMessagingAllowlist)) {
     const base::Value::List& allowlist =
         pref_service->GetList(pref_names::kNativeMessagingAllowlist);
-    if (base::Contains(allowlist, name_value))
+    if (base::Contains(allowlist, name_value)) {
       return allow_result;
+    }
   }
 
   return PolicyPermission::DISALLOW;

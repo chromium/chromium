@@ -35,7 +35,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -59,6 +60,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.function.Supplier;
+
 /** Unit test for {@link PriceTrackingButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -69,7 +72,7 @@ public class PriceTrackingButtonControllerUnitTest {
     private Activity mActivity;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
-    private ObservableSupplierImpl<Tab> mTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private ObservableSupplierImpl<Boolean> mPriceTrackingStateSupplier;
     @Mock private Tab mMockTab;
     @Mock private Supplier<TabBookmarker> mMockTabBookmarkerSupplier;
@@ -91,7 +94,7 @@ public class PriceTrackingButtonControllerUnitTest {
         mPriceTrackingStateSupplier = new ObservableSupplierImpl<>(false);
         mProfileSupplier = new ObservableSupplierImpl<>(mMockProfile);
         mBookmarkModelSupplier = new ObservableSupplierImpl<>(mMockBookmarkModel);
-        mTabSupplier = new ObservableSupplierImpl<>(mMockTab);
+        mTabSupplier = ObservableSuppliers.createNullable(mMockTab);
         when(mMockTab.getContext()).thenReturn(mActivity);
         when(mMockTabBookmarkerSupplier.get()).thenReturn(mMockTabBookmarker);
     }

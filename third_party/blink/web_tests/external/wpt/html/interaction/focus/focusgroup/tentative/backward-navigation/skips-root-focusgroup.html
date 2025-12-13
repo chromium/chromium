@@ -10,15 +10,15 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="../resources/focusgroup-utils.js"></script>
 
-<div focusgroup=wrap>
+<div focusgroup="toolbar wrap">
   <span id=item1 tabindex=0>item1</span>
   <div>
-    <div focusgroup>
-      <span id=item2 tabindex=-1>item2</span>
-      <span id=item3 tabindex=-1>item3</span>
+    <div focusgroup="toolbar">
+      <span id=item2 tabindex=0>item2</span>
+      <span id=item3 tabindex=0>item3</span>
     </div>
   </div>
-  <span id=item4 tabindex=-1>item4</span>
+  <span id=item4 tabindex=0>item4</span>
 </div>
 
 <script>
@@ -32,6 +32,6 @@
 
     await focusAndKeyPress(item4, kArrowLeft);
     assert_equals(document.activeElement, item1);
-  }, "When the focus is set on the last item of a focusgroup and the previous item is located past an other (non-extending) focusgroup subtree, a backward arrow key press should move the focus to that previous item without getting stuck in the other focusgroup.");
+  }, "When the focus is set on the last item of a focusgroup and the previous item is located past an other focusgroup subtree, a backward arrow key press should move the focus to that previous item without getting stuck in the other focusgroup.");
 
 </script>

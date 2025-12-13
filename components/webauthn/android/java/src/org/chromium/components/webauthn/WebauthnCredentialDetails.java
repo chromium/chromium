@@ -28,5 +28,8 @@ public final class WebauthnCredentialDetails {
     /** Whether the credential is enabled for Secure Payment Confirmation. */
     public boolean mIsPayment;
 
+    /** Last used time in UNIX epoch milliseconds. */
+    public long mLastUsedTimeMs;
+
     public WebauthnCredentialDetails() {}
 }

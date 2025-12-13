@@ -11,7 +11,7 @@ namespace base {
 
 namespace {
 
-constexpr FilePath::CharType kScopedDirPrefix[] =
+constexpr FilePath::CharType kDefaultScopedDirPrefix[] =
     FILE_PATH_LITERAL("scoped_dir");
 
 }  // namespace
@@ -35,21 +35,22 @@ ScopedTempDir::~ScopedTempDir() {
   }
 }
 
-bool ScopedTempDir::CreateUniqueTempDir() {
+bool ScopedTempDir::CreateUniqueTempDir(FilePath::StringViewType prefix) {
   if (!path_.empty()) {
     return false;
   }
 
-  // This "scoped_dir" prefix is only used on Windows and serves as a template
-  // for the unique name.
-  if (!CreateNewTempDirectory(kScopedDirPrefix, &path_)) {
+  // The `prefix` serves as a template for the unique name.
+  if (!CreateNewTempDirectory(prefix, &path_)) {
     return false;
   }
 
   return true;
 }
 
-bool ScopedTempDir::CreateUniqueTempDirUnderPath(const FilePath& base_path) {
+bool ScopedTempDir::CreateUniqueTempDirUnderPath(
+    const FilePath& base_path,
+    FilePath::StringViewType prefix) {
   if (!path_.empty()) {
     return false;
   }
@@ -60,7 +61,7 @@ bool ScopedTempDir::CreateUniqueTempDirUnderPath(const FilePath& base_path) {
   }
 
   // Create a new, uniquely named directory under |base_path|.
-  if (!CreateTemporaryDirInDir(base_path, kScopedDirPrefix, &path_)) {
+  if (!CreateTemporaryDirInDir(base_path, prefix, &path_)) {
     return false;
   }
 
@@ -108,8 +109,8 @@ bool ScopedTempDir::IsValid() const {
 }
 
 // static
-const FilePath::CharType* ScopedTempDir::GetTempDirPrefix() {
-  return kScopedDirPrefix;
+const FilePath::CharType* ScopedTempDir::GetDefaultTempDirPrefix() {
+  return kDefaultScopedDirPrefix;
 }
 
 }  // namespace base

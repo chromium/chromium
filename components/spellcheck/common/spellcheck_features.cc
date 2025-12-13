@@ -41,16 +41,14 @@ ScopedDisableBrowserSpellCheckerForTesting::
   g_browser_spell_checker_enabled = previous_value_;
 }
 
-BASE_FEATURE(kWinDelaySpellcheckServiceInit,
-             "WinDelaySpellcheckServiceInit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 bool IsAndroidSpellCheckFeatureEnabled() {
   return !base::SysInfo::IsLowEndDevice();
 }
+
+BASE_FEATURE(kAndroidGrammarCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)

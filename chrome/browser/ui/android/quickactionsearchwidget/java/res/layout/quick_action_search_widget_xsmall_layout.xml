@@ -73,7 +73,7 @@ found in the LICENSE file.
             style="@style/QuickActionSearchWidgetXSmallButton"
             android:layout_marginHorizontal="@dimen/quick_action_search_widget_xsmall_button_horizontal_margin"
             android:contentDescription="@string/button_new_incognito_tab"
-            android:src="@drawable/incognito_simple" />
+            android:src="@drawable/ic_incognito_fill_24dp" />
 
         <ImageButton
             android:id="@+id/lens_quick_action_button"

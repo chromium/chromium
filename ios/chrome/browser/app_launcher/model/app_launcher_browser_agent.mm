@@ -156,25 +156,18 @@ RequestCauseFromActionCause(AppLauncherAlertCause cause) {
 
 AppLauncherBrowserAgent::AppLauncherBrowserAgent(Browser* browser)
     : BrowserUserData(browser), tab_helper_delegate_(browser) {
-  StartObserving(browser->GetWebStateList(), Policy::kAccordingToFeature);
-  browser->AddObserver(this);
+  StartObserving(browser_, Policy::kAccordingToFeature);
   app_launcher_scene_state_observer_ = [[AppLauncherSceneStateObserver alloc]
       initWithTransitionCallback:
           base::BindRepeating(&AppLauncherBrowserAgent::TabHelperDelegate::
                                   SceneActivationLevelChanged,
                               tab_helper_delegate_.AsWeakPtr())];
-  [browser->GetSceneState() addObserver:app_launcher_scene_state_observer_];
+  [browser_->GetSceneState() addObserver:app_launcher_scene_state_observer_];
 }
 
 AppLauncherBrowserAgent::~AppLauncherBrowserAgent() {
+  [browser_->GetSceneState() removeObserver:app_launcher_scene_state_observer_];
   StopObserving();
-}
-
-#pragma mark - BrowserObserver
-
-void AppLauncherBrowserAgent::BrowserDestroyed(Browser* browser) {
-  [browser->GetSceneState() removeObserver:app_launcher_scene_state_observer_];
-  browser->RemoveObserver(this);
 }
 
 #pragma mark - TabsDependencyInstaller

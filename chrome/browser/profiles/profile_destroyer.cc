@@ -5,6 +5,7 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <utility>
 
@@ -116,10 +117,25 @@ class OriginalProfileDestroyer : public ProfileDestroyer {
 };
 
 // static
+std::optional<base::TimeDelta>
+    ProfileDestroyer::destroy_profile_timeout_override_;
+
+// static
+void ProfileDestroyer::SetDestroyProfileTimeoutForTesting(  // IN-TEST
+    base::TimeDelta timeout) {
+  destroy_profile_timeout_override_ = timeout;
+}
+
+// static
+base::TimeDelta ProfileDestroyer::GetDestroyProfileTimeout() {
+  return destroy_profile_timeout_override_.value_or(
+      base::Seconds(kTimerDelaySeconds));
+}
+
 void ProfileDestroyer::DestroyOriginalProfileWhenAppropriate(
     std::unique_ptr<Profile> profile) {
-  DestroyOriginalProfileWhenAppropriateWithTimeout(
-      std::move(profile), base::Seconds(kTimerDelaySeconds));
+  DestroyOriginalProfileWhenAppropriateWithTimeout(std::move(profile),
+                                                   GetDestroyProfileTimeout());
 }
 
 void ProfileDestroyer::DestroyOriginalProfileWhenAppropriateWithTimeout(
@@ -153,8 +169,8 @@ void ProfileDestroyer::DestroyOriginalProfileWhenAppropriateWithTimeout(
 }
 
 void ProfileDestroyer::DestroyOTRProfileWhenAppropriate(Profile* profile) {
-  DestroyOTRProfileWhenAppropriateWithTimeout(
-      profile, base::Seconds(kTimerDelaySeconds));
+  DestroyOTRProfileWhenAppropriateWithTimeout(profile,
+                                              GetDestroyProfileTimeout());
 }
 
 void ProfileDestroyer::DestroyOTRProfileImmediately(Profile* profile) {

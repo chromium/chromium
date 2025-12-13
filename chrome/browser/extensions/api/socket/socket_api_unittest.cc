@@ -29,8 +29,7 @@ class SocketUnitTest : public ExtensionApiUnittest {
     ExtensionApiUnittest::SetUp();
 
     ApiResourceManager<Socket>::GetFactoryInstance()->SetTestingFactoryAndUse(
-        browser()->profile(),
-        base::BindRepeating(&ApiResourceManagerTestFactory));
+        profile(), base::BindRepeating(&ApiResourceManagerTestFactory));
   }
 };
 

@@ -25,6 +25,9 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 // The delegate for this table view text edit item.
 @property(nonatomic, weak) id<TableViewTextEditItemDelegate> delegate;
 
+// The delegate for the textfield.
+@property(nonatomic, weak) id<UITextFieldDelegate> textFieldDelegate;
+
 // Name of the text field.
 // Displayed in a label next to the text field.
 @property(nonatomic, copy) NSString* fieldNameLabelText;
@@ -92,9 +95,9 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 
 @end
 
-// TableViewTextEditCell implements an TableViewCell subclass containing a label
-// and a text field.
-@interface TableViewTextEditCell : TableViewCell
+// TableViewTextEditCell implements an LegacyTableViewCell subclass containing a
+// label and a text field.
+@interface TableViewTextEditCell : LegacyTableViewCell
 
 // Label at the leading edge of the cell. It displays the item's
 // fieldNameLabelText.

@@ -7,7 +7,6 @@
 
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
-#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/common/zygote/zygote_buildflags.h"

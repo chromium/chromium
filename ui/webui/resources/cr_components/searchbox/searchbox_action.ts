@@ -2,108 +2,85 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_shared_style.css.js';
-
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './searchbox_action.html.js';
-import type {Action} from './searchbox.mojom-webui.js';
-import {decodeString16} from './utils.js';
+import {getCss} from './searchbox_action.css.js';
+import {getHtml} from './searchbox_action.html.js';
 
-// Displays an action associated with AutocompleteMatch (i.e. Clear
-// Browsing History, etc.)
-class SearchboxActionElement extends PolymerElement {
+// Displays a UI chip for an `AutocompleteMatch`. E.g. for keywords ('Search
+// YouTube') or actions ('Clear browsing data').
+export class SearchboxActionElement extends CrLitElement {
   static get is() {
     return 'cr-searchbox-action';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      //========================================================================
-      // Public properties
-      //========================================================================
-      action: {
-        type: Object,
-      },
+      hint: {type: String},
 
-      /**
-       * Index of the action in the autocomplete result. Used to inform handler
-       * of action that was selected.
-       */
-      actionIndex: {
-        type: Number,
-        value: -1,
-      },
-
-      /**
-       * Index of the match in the autocomplete result. Used to inform embedder
-       * of events such as click, keyboard events etc.
-       */
-      matchIndex: {
-        type: Number,
-        value: -1,
-      },
-
-      //========================================================================
-      // Private properties
-      //========================================================================
-      actionIconStyle_: {
-        type: String,
-        computed: `computeActionIconStyle_(action)`,
-      },
-
-      /** Element's 'aria-label' attribute. */
-      ariaLabel: {
-        type: String,
-        computed: `computeAriaLabel_(action)`,
-        reflectToAttribute: true,
-      },
-
-      /** Rendered hint from action. */
       hintHtml_: {
+        state: true,
         type: String,
-        computed: `computeHintHtml_(action)`,
       },
 
-      /** Rendered tooltip from action. */
-      tooltip_: {
+      suggestionContents: {type: String},
+
+      iconPath: {type: String},
+
+      iconStyle_: {
+        state: true,
         type: String,
-        computed: `computeTooltip_(action)`,
       },
+
+      ariaLabel: {type: String},
+
+      // Index of the action in the autocomplete result. Used to inform handler
+      // of action that was selected.
+      actionIndex: {type: Number},
     };
   }
 
-  declare action: Action;
-  declare actionIndex: number;
-  declare matchIndex: number;
-  declare ariaLabel: string;
-  declare private hintHtml_: TrustedHTML;
-  declare private tooltip_: string;
-  declare private actionIconStyle_;
+  accessor hint: string = '';
+  protected accessor hintHtml_: TrustedHTML = window.trustedTypes!.emptyHTML;
+  accessor suggestionContents: string = '';
+  accessor iconPath: string = '';
+  protected accessor iconStyle_: string = '';
+  override accessor ariaLabel: string = '';
+  accessor actionIndex: number = -1;
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.addEventListener('click', (event) => this.onActionClick_(event));
     this.addEventListener('keydown', (event) => this.onActionKeyDown_(event));
     this.addEventListener(
         'mousedown', (event) => this.onActionMouseDown_(event));
   }
 
-  private onActionClick_(e: MouseEvent|KeyboardEvent) {
-    this.dispatchEvent(new CustomEvent('execute-action', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        event: e,
-        actionIndex: this.actionIndex,
-      },
-    }));
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('hint')) {
+      this.hintHtml_ = this.computeHintHtml_();
+    }
+    if (changedProperties.has('iconPath')) {
+      this.iconStyle_ = this.computeActionIconStyle_();
+    }
+  }
+
+  private onActionClick_(e: PointerEvent|KeyboardEvent) {
+    this.fire('execute-action', {
+      event: e,
+      actionIndex: this.actionIndex,
+    });
 
     e.preventDefault();   // Prevents default browser action (navigation).
     e.stopPropagation();  // Prevents <iron-selector> from selecting the match.
@@ -123,35 +100,27 @@ class SearchboxActionElement extends PolymerElement {
   // Helpers
   //============================================================================
 
-  private computeActionIconStyle_(): string {
-    // If this is a custom icon, shouldn't follow the standard theming given to
-    // all other action icons.
-    if (this.action.iconPath.startsWith('data:image/')) {
-      return `background-image: url(${this.action.iconPath})`;
-    } else {
-      return `-webkit-mask-image: url(${this.action.iconPath})`;
-    }
-  }
-
-  private computeAriaLabel_(): string {
-    if (this.action.a11yLabel) {
-      return decodeString16(this.action.a11yLabel);
-    }
-    return '';
-  }
-
   private computeHintHtml_(): TrustedHTML {
-    if (this.action.hint) {
-      return sanitizeInnerHtml(decodeString16(this.action.hint));
+    if (this.hint) {
+      return sanitizeInnerHtml(this.hint);
     }
     return window.trustedTypes!.emptyHTML;
   }
 
-  private computeTooltip_(): string {
-    if (this.action.suggestionContents) {
-      return decodeString16(this.action.suggestionContents);
+  private computeActionIconStyle_(): string {
+    // If this is a custom icon, shouldn't follow the standard theming given to
+    // all other action icons.
+    if (this.iconPath.startsWith('data:image/')) {
+      return `background-image: url(${this.iconPath})`;
     }
-    return '';
+
+    return `-webkit-mask-image: url(${this.iconPath})`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-searchbox-action': SearchboxActionElement;
   }
 }
 

@@ -12,7 +12,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "device/vr/public/mojom/anchor_id.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
+#include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "ui/display/display.h"
@@ -134,7 +136,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
   // along with passed in ray to compute the hit test results as of latest
   // frame. The passed in |entity_types| will be used to filter out the results
   // that do not match anything in the vector.
-  virtual std::optional<uint64_t> SubscribeToHitTest(
+  virtual std::optional<HitTestSubscriptionId> SubscribeToHitTest(
       mojom::XRNativeOriginInformationPtr native_origin_information,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       mojom::XRRayPtr ray) = 0;
@@ -145,7 +147,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
   // to the location of transient input source). The passed in |entity_types|
   // will be used to filter out the results that do not match anything in the
   // vector.
-  virtual std::optional<uint64_t> SubscribeToHitTestForTransientInput(
+  virtual std::optional<HitTestSubscriptionId>
+  SubscribeToHitTestForTransientInput(
       const std::string& profile_name,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       mojom::XRRayPtr ray) = 0;
@@ -155,31 +158,25 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
       const gfx::Transform& mojo_from_viewer,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state) = 0;
 
-  virtual void UnsubscribeFromHitTest(uint64_t subscription_id) = 0;
+  virtual void UnsubscribeFromHitTest(
+      HitTestSubscriptionId subscription_id) = 0;
 
   using CreateAnchorCallback =
-      base::OnceCallback<void(device::mojom::CreateAnchorResult,
-                              uint64_t anchor_id)>;
+      base::OnceCallback<void(const std::optional<AnchorId>&)>;
 
-  // Creates free-floating anchor. This call will be deferred and the actual
-  // call may be postponed until ARCore is in correct state and the pose of
-  // native origin is known. The anchor pose passed in
-  // |native_origin_from_anchor| is expressed relative to a native origin passed
-  // in |native_origin_information|. The native origin will only be used to
-  // determine most up-to-date pose (i.e. it will *not* be used to create
-  // anchors attached to planes even if the native origin information describes
-  // a plane).
+  // Creates an anchor. This call will be deferred and the actual call may be
+  // postponed until ARCore is in correct state and the pose of the native
+  // origin is known. The anchor pose passed in |native_origin_from_anchor| is
+  // expressed relative to a native origin passed in
+  // |native_origin_information|. The native origin will only be used to
+  // determine most up-to-date pose. An anchor will only be attached to a plane
+  // if the optional |plane_id| is set. This |plane_id| *could* be different
+  // from the plane in the |native_origin_information|, as they serve different
+  // purposes.
   virtual void CreateAnchor(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const device::Pose& native_origin_from_anchor,
-      CreateAnchorCallback callback) = 0;
-  // Creates plane-attached anchor. This call will be deferred and the actual
-  // call may be postponed until ARCore is in correct state and the pose of
-  // the plane is known.
-  virtual void CreatePlaneAttachedAnchor(
-      const mojom::XRNativeOriginInformation& native_origin_information,
-      const device::Pose& native_origin_from_anchor,
-      uint64_t plane_id,
+      const std::optional<PlaneId>& plane_id,
       CreateAnchorCallback callback) = 0;
 
   // Starts processing anchor creation requests created by calls to
@@ -195,7 +192,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
       const std::vector<mojom::XRInputSourceStatePtr>& input_state,
       const base::TimeTicks& frame_time) = 0;
 
-  virtual void DetachAnchor(uint64_t anchor_id) = 0;
+  virtual void DetachAnchor(AnchorId anchor_id) = 0;
 
   virtual void Pause() = 0;
   virtual void Resume() = 0;

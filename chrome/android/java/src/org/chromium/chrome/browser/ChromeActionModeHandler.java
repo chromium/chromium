@@ -7,7 +7,6 @@ package org.chromium.chrome.browser;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
 import android.os.Handler;
@@ -23,7 +22,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -44,6 +42,7 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
+import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -51,6 +50,7 @@ import org.chromium.url.GURL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** A class that handles selection action mode for the active {@link Tab}. */
 @NullMarked
@@ -245,16 +245,10 @@ public class ChromeActionModeHandler {
         }
 
         @Override
-        public boolean onDropdownItemClicked(
-                int groupId,
-                int id,
-                @Nullable Intent intent,
-                View.@Nullable OnClickListener clickListener) {
+        public boolean onDropdownItemClicked(SelectionMenuItem item, boolean closeMenu) {
             boolean res =
-                    handleItemClick(id)
-                            || mHelper.onDropdownItemClicked(groupId, id, intent, clickListener);
-            // We will always dismiss the drop-down menu here.
-            mHelper.dismissMenu();
+                    handleItemClick(item.id) || mHelper.onDropdownItemClicked(item, closeMenu);
+            if (closeMenu) mHelper.dismissMenu();
             return res;
         }
 

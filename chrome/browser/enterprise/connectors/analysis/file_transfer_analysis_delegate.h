@@ -9,11 +9,11 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/content_analysis_delegate_base.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 class Profile;
@@ -173,13 +173,14 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
   std::string tab_title() const override;
   std::string user_action_id() const override;
   std::string email() const override;
-  std::string url() const override;
+  const GURL& url() const override;
   const GURL& tab_url() const override;
   ContentAnalysisRequest::Reason reason() const override;
   google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
   referrer_chain() const override;
   google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
       const override;
+  content::WebContents* web_contents() const override;
 
  protected:
   // For `block_until_verdict == 0`, the `destination_url` has to point to the

@@ -26,7 +26,7 @@ bool PositionTryFallback::Matches(const PositionTryFallback& other) const {
     other_name = other.position_try_name_->GetName();
   }
   return tactic_list_ == other.tactic_list_ && name == other_name &&
-         position_area_ == other.position_area_;
+         position_area_.Matches(other.position_area_);
 }
 
 void PositionTryFallback::Trace(Visitor* visitor) const {

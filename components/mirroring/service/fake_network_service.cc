@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/mirroring/service/fake_network_service.h"
 
 #include <algorithm>
 #include <memory>
-// #include "media/cast/test/utility/net_utility.h"
+
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
@@ -79,10 +75,8 @@ void MockUdpSocket::Send(
 
 void MockUdpSocket::OnReceivedPacket(const media::cast::Packet& packet) {
   if (num_ask_for_receive_) {
-    listener_->OnReceived(
-        net::OK, std::nullopt,
-        base::span<const uint8_t>(
-            reinterpret_cast<const uint8_t*>(packet.data()), packet.size()));
+    listener_->OnReceived(net::OK, std::nullopt,
+                          base::span<const uint8_t>(packet));
     ASSERT_LT(0, num_ask_for_receive_);
     --num_ask_for_receive_;
   }

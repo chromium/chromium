@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   // so it will be loaded in a new renderer process. Page scale value should be
   // preserved.
   GURL url2 = embedded_test_server()->GetURL("localhost", kWaitSizePath);
-  EXPECT_NE(url.host(), url2.host());
+  EXPECT_NE(url.GetHost(), url2.GetHost());
   EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
                                        fuchsia::web::LoadUrlParams(),
                                        url2.spec()));

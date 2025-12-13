@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
 namespace blink {
 
@@ -48,13 +49,17 @@ String SVGNumber::ValueAsString() const {
 }
 
 template <typename CharType>
-SVGParsingError SVGNumber::Parse(const CharType* ptr, const CharType* end) {
+SVGParsingError SVGNumber::Parse(base::span<const CharType> span) {
+  const size_t start_size = span.size();
   float value = 0;
-  const CharType* start = ptr;
-  if (!ParseNumber(ptr, end, value, kAllowLeadingAndTrailingWhitespace))
-    return SVGParsingError(SVGParseStatus::kExpectedNumber, ptr - start);
-  if (ptr != end)
-    return SVGParsingError(SVGParseStatus::kTrailingGarbage, ptr - start);
+  if (!ParseNumber(span, value, kAllowLeadingAndTrailingWhitespace)) {
+    return SVGParsingError(SVGParseStatus::kExpectedNumber,
+                           start_size - span.size());
+  }
+  if (!span.empty()) {
+    return SVGParsingError(SVGParseStatus::kTrailingGarbage,
+                           start_size - span.size());
+  }
   value_ = value;
   return SVGParseStatus::kNoError;
 }
@@ -65,9 +70,7 @@ SVGParsingError SVGNumber::SetValueAsString(const String& string) {
   if (string.empty())
     return SVGParseStatus::kNoError;
 
-  return VisitCharacters(string, [&](auto chars) {
-    return Parse(chars.data(), chars.data() + chars.size());
-  });
+  return VisitCharacters(string, [&](auto chars) { return Parse(chars); });
 }
 
 void SVGNumber::Add(const SVGPropertyBase* other, const SVGElement*) {
@@ -105,19 +108,20 @@ SVGNumber* SVGNumberAcceptPercentage::Clone() const {
 }
 
 template <typename CharType>
-static SVGParsingError ParseNumberOrPercentage(const CharType*& ptr,
-                                               const CharType* end,
+static SVGParsingError ParseNumberOrPercentage(base::span<const CharType> span,
                                                float& number) {
-  const CharType* start = ptr;
-  if (!ParseNumber(ptr, end, number, kAllowLeadingWhitespace))
+  const size_t start_size = span.size();
+  if (!ParseNumber(span, number, kAllowLeadingWhitespace)) {
     return SVGParsingError(SVGParseStatus::kExpectedNumberOrPercentage,
-                           ptr - start);
-  if (ptr < end && *ptr == '%') {
-    number /= 100;
-    UNSAFE_TODO(ptr++);
+                           start_size - span.size());
   }
-  if (SkipOptionalSVGSpaces(ptr, end))
-    return SVGParsingError(SVGParseStatus::kTrailingGarbage, ptr - start);
+  if (SkipExactly<CharType>(span, '%')) {
+    number /= 100;
+  }
+  if (SkipOptionalSVGSpaces(span)) {
+    return SVGParsingError(SVGParseStatus::kTrailingGarbage,
+                           start_size - span.size());
+  }
   return SVGParseStatus::kNoError;
 }
 
@@ -130,8 +134,7 @@ SVGParsingError SVGNumberAcceptPercentage::SetValueAsString(
 
   float number = 0;
   SVGParsingError error = VisitCharacters(string, [&](auto chars) {
-    const auto* start = chars.data();
-    return ParseNumberOrPercentage(start, start + chars.size(), number);
+    return ParseNumberOrPercentage(chars, number);
   });
   if (error == SVGParseStatus::kNoError)
     value_ = number;

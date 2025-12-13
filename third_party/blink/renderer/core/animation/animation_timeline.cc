@@ -6,14 +6,18 @@
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
-#include "third_party/blink/renderer/core/animation/animation_trigger.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
+#include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/named_animation_trigger_map.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
+#include "third_party/blink/renderer/core/style/style_trigger_attachment.h"
 
 namespace blink {
 
@@ -24,11 +28,13 @@ AnimationTimeline::AnimationTimeline(Document* document)
 
 void AnimationTimeline::AnimationAttached(Animation* animation) {
   DCHECK(!animations_.Contains(animation));
+  DCHECK(!in_trigger_attachments_update_);
   animations_.insert(animation);
   animation->ResolveTimelineOffsets(GetTimelineRange());
 }
 
 void AnimationTimeline::AnimationDetached(Animation* animation) {
+  DCHECK(!in_trigger_attachments_update_);
   animations_.erase(animation);
   animations_needing_update_.erase(animation);
   if (animation->Outdated())
@@ -214,19 +220,18 @@ void AnimationTimeline::MarkPendingIfCompositorPropertyAnimationChanges(
   }
 }
 
-void AnimationTimeline::AddAnimationTrigger(AnimationTrigger* trigger) {
-  DCHECK(trigger && trigger->GetTimelineInternal() == this);
+void AnimationTimeline::AddTrigger(TimelineTrigger* trigger) {
   triggers_.insert(trigger);
   update_triggers_ = true;
 }
 
-void AnimationTimeline::RemoveAnimationTrigger(AnimationTrigger* trigger) {
+void AnimationTimeline::RemoveTrigger(TimelineTrigger* trigger) {
   DCHECK(trigger && trigger->GetTimelineInternal() == this);
   triggers_.erase(trigger);
 }
 
-void AnimationTimeline::ServiceAnimationTriggers() {
-  DCHECK(RuntimeEnabledFeatures::AnimationTriggerEnabled());
+void AnimationTimeline::ServiceTriggers() {
+  DCHECK(RuntimeEnabledFeatures::TimelineTriggerEnabled());
   PhaseAndTime current_phase_and_time = CurrentPhaseAndTime();
 
   if (last_current_phase_and_time_ != current_phase_and_time) {
@@ -234,12 +239,35 @@ void AnimationTimeline::ServiceAnimationTriggers() {
   }
 
   if (update_triggers_) {
-    for (AnimationTrigger* trigger : triggers_) {
+    for (TimelineTrigger* trigger : triggers_) {
       trigger->Update();
     }
   }
 
   update_triggers_ = false;
+}
+
+void AnimationTimeline::UpdateAnimationTriggerAttachments() {
+  DCHECK(RuntimeEnabledFeatures::AnimationTriggerEnabled());
+  if (!GetDocument() || !GetDocument()->View()) {
+    return;
+  }
+  base::AutoReset<bool> in_trigger_attachments_update(
+      &in_trigger_attachments_update_, true);
+  for (Animation* animation : animations_) {
+    CSSAnimation* css_animation = DynamicTo<CSSAnimation>(animation);
+    if (!css_animation) {
+      continue;
+    }
+
+    auto attach_function = [&](AnimationTrigger& trigger,
+                               const StyleTriggerAttachment& attachment) {
+      attachment.Attach(trigger, *css_animation);
+    };
+
+    GetDocument()->GetDocumentAnimations().UpdateTriggerAttachment(
+        *css_animation, attach_function);
+  }
 }
 
 void AnimationTimeline::Trace(Visitor* visitor) const {

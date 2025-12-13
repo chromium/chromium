@@ -25,11 +25,11 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.memory.MemoryPressureMonitor;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
@@ -51,17 +51,20 @@ import org.chromium.components.embedder_support.application.FontPreloadingWorkar
 import org.chromium.components.module_installer.util.ModuleUtil;
 import org.chromium.ui.base.ResourceBundle;
 
+import java.util.function.Supplier;
+
 /**
  * Application base class which will call through to the given {@link Impl}. Application classes
  * which extend this class should also extend {@link Impl}, and call {@link #setImpl(Impl)} before
  * calling {@link attachBaseContext(Context)}.
  *
- * This is the base class of all Chrome applications. Logic specific to isolated splits should go in
- * {@link SplitChromeApplication}.
+ * <p>This is the base class of all Chrome applications. Logic specific to isolated splits should go
+ * in {@link SplitChromeApplication}.
  */
 @NullMarked
 public class SplitCompatApplication extends Application {
     public static final String CHROME_SPLIT_NAME = "chrome";
+    public static final String ON_DEMAND_SPLIT_NAME = "on_demand";
     private static final String TAG = "SplitCompatApp";
     private static final String COMMAND_LINE_FILE = "chrome-command-line";
     private static final String ATTACH_BASE_CONTEXT_EVENT = "ChromeApplication.attachBaseContext";
@@ -74,11 +77,6 @@ public class SplitCompatApplication extends Application {
 
     private Supplier<Impl> mImplSupplier;
     private @Nullable Impl mImpl;
-    private @Nullable ServiceTracingProxyProvider mServiceTracingProxyProvider;
-    // This doesn't work in Monochrome, since we try to load the WebView library as well when
-    // loading Chrome's library, and WebView requires attachBaseContext to have finished before
-    // you may attempt to load it's library. See crbug.com/390730928.
-    protected boolean mPreloadLibraryAttachBaseContext = true;
 
     /**
      * Holds the implementation of application logic. Will be called by {@link
@@ -88,7 +86,7 @@ public class SplitCompatApplication extends Application {
         private SplitCompatApplication mApplication;
 
         @Initializer
-        private final void setApplication(SplitCompatApplication application) {
+        private void setApplication(SplitCompatApplication application) {
             mApplication = application;
         }
 
@@ -141,8 +139,6 @@ public class SplitCompatApplication extends Application {
         if (isBrowserProcess) {
             UmaUtils.recordMainEntryPointTime();
 
-            // Register Service tracing early as some services are used below in this function.
-            mServiceTracingProxyProvider = ServiceTracingProxyProvider.create(context);
             // *** The Application Context should not be used before the locale override is set ***
             if (GlobalAppLocaleController.getInstance().init(context)) {
                 // If the app locale override preference is set, create a new override
@@ -199,14 +195,31 @@ public class SplitCompatApplication extends Application {
         }
 
         maybeInitProcessType();
+        LibraryLoader.getInstance().setLinkerImplementation(ProductConfig.USE_CHROMIUM_LINKER);
+        ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
 
-        if (isBrowserProcess && !ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled()) {
+        // Renderer and GPU processes have command line passed to them via IPC
+        // (see ChildProcessService.java).
+        if (isBrowserProcess && ChromeFeatureList.sLoadNativeEarly.isEnabled()) {
+            CommandLineInitUtil.initCommandLine(
+                    COMMAND_LINE_FILE, SplitCompatApplication::shouldUseDebugFlags);
+        }
+
+        if (isBrowserProcess
+                && ChromeFeatureList.sLoadNativeEarly.isEnabled()
+                && ChromeFeatureList.sInitFeatureListEarly.getValue()) {
+            PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
+            // Register for activity lifecycle callbacks. Must be done before any activities are
+            // created and is needed only by processes that use the ApplicationStatus api (which
+            // for Chrome is just the browser process).
+            ApplicationStatus.initialize(this);
+        }
+
+        if (isBrowserProcess) {
             performBrowserProcessPreloading(context);
         }
 
         AsyncTask.takeOverAndroidThreadPool();
-        ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
-        LibraryLoader.getInstance().setLinkerImplementation(ProductConfig.USE_CHROMIUM_LINKER);
 
         if (!isBrowserProcess) {
             EarlyTraceEvent.earlyEnableInChildWithoutCommandLine();
@@ -215,11 +228,17 @@ public class SplitCompatApplication extends Application {
             checkAppBeingReplaced();
             DexFixer.scheduleDexFix();
 
-            PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
+            if (!ChromeFeatureList.sLoadNativeEarly.isEnabled()
+                    || !ChromeFeatureList.sInitFeatureListEarly.getValue()) {
+                PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
+            }
+
             // Renderer and GPU processes have command line passed to them via IPC
             // (see ChildProcessService.java).
-            CommandLineInitUtil.initCommandLine(
-                    COMMAND_LINE_FILE, SplitCompatApplication::shouldUseDebugFlags);
+            if (!ChromeFeatureList.sLoadNativeEarly.isEnabled()) {
+                CommandLineInitUtil.initCommandLine(
+                        COMMAND_LINE_FILE, SplitCompatApplication::shouldUseDebugFlags);
+            }
 
             TraceEvent.maybeEnableEarlyTracing(/* readCommandLine= */ true);
             TraceEvent.begin(ATTACH_BASE_CONTEXT_EVENT);
@@ -227,7 +246,11 @@ public class SplitCompatApplication extends Application {
             // Register for activity lifecycle callbacks. Must be done before any activities are
             // created and is needed only by processes that use the ApplicationStatus api (which
             // for Chrome is just the browser process).
-            ApplicationStatus.initialize(this);
+            if (!ChromeFeatureList.sLoadNativeEarly.isEnabled()
+                    || !ChromeFeatureList.sInitFeatureListEarly.getValue()) {
+                ApplicationStatus.initialize(this);
+            }
+
             ColdStartTracker.initialize();
 
             // Register and initialize application status listener for crashes, this needs to be
@@ -269,11 +292,11 @@ public class SplitCompatApplication extends Application {
             CustomAssertionHandler.installPreNativeHandler(factory);
         }
 
-        // Skipping tests since some use "--disable-native-initialization", and some tests manually
-        // test loading the native library themselves.
-        if (mPreloadLibraryAttachBaseContext) {
-            maybeInitChromeSplitAndPreloadNativeLibrary();
+        ApplicationInitHook initHook = ServiceLoaderUtil.maybeCreate(ApplicationInitHook.class);
+        if (initHook != null) {
+            initHook.onAttachBaseContext(isBrowserProcess, isIsolatedProcess);
         }
+
         TraceEvent.end(ATTACH_BASE_CONTEXT_EVENT);
     }
 
@@ -284,19 +307,7 @@ public class SplitCompatApplication extends Application {
         // they use under-the-hood) does not work until after it returns.
         FontPreloadingWorkaround.maybeInstallWorkaround(this);
         MemoryPressureMonitor.INSTANCE.registerComponentCallbacks();
-        if (!mPreloadLibraryAttachBaseContext) {
-            maybeInitChromeSplitAndPreloadNativeLibrary();
-        }
         getImpl().onCreate();
-    }
-
-    private void maybeInitChromeSplitAndPreloadNativeLibrary() {
-        if (isBrowserProcess()
-                && ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled()
-                && !BuildConfig.IS_FOR_TEST) {
-            new Thread(() -> LibraryLoader.getInstance().loadNow()).start();
-            performBrowserProcessPreloading(this, true);
-        }
     }
 
     @Override
@@ -316,18 +327,6 @@ public class SplitCompatApplication extends Application {
         getImpl().startActivity(intent, options);
     }
 
-    // Note that we do not need to (and can't) override getSystemService(Class<T>) as internally
-    // that just gets the name of the Service and calls getSystemService(String) for backwards
-    // compatibility with overrides like this one.
-    @Override
-    public Object getSystemService(String name) {
-        Object service = super.getSystemService(name);
-        if (mServiceTracingProxyProvider != null) {
-            mServiceTracingProxyProvider.traceSystemServices();
-        }
-        return service;
-    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -339,8 +338,6 @@ public class SplitCompatApplication extends Application {
      * as early as possible to maximize preload time.
      */
     protected void performBrowserProcessPreloading(Context context) {}
-
-    protected void performBrowserProcessPreloading(Context context, boolean blockingLoad) {}
 
     public boolean isWebViewProcess() {
         return false;

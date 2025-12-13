@@ -17,9 +17,6 @@
 
 namespace {
 
-static base::LazyInstance<UsbBlocklist>::Leaky g_singleton =
-    LAZY_INSTANCE_INITIALIZER;
-
 constexpr uint16_t kMaxVersion = 0xffff;
 
 // Returns true if the passed string is exactly 4 digits long and only contains
@@ -115,7 +112,8 @@ UsbBlocklist::~UsbBlocklist() = default;
 
 // static
 UsbBlocklist& UsbBlocklist::Get() {
-  return g_singleton.Get();
+  static base::NoDestructor<UsbBlocklist> singleton;
+  return *singleton;
 }
 
 bool UsbBlocklist::IsExcluded(const Entry& entry) const {

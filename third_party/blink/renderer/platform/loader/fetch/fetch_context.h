@@ -163,6 +163,14 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return ResourceRequestBlockedReason::kOther;
   }
 
+  // Check for policy on the resource and report if necessary, per the explainer
+  // here: https://aka.ms/webembeddedperf
+  virtual void CheckGuardrailsPolicyForRequest(
+      ResourceType resource_type,
+      mojom::blink::RequestContextType request_context,
+      const ResourceResponse& response,
+      const KURL& url) {}
+
   // Called from RequestResource() to upgrade insecure ResourceRequests if
   // necessary and prepare them for checking CSP. A mutable ResourceRequest is
   // passed as the URL may be modified. After this call returns, it is not
@@ -191,9 +199,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
       ResourceRequest&,
       const ResourceLoaderOptions&);
 
-  virtual bool StartSpeculativeImageDecode(Resource* resource,
-                                           base::OnceClosure callback);
-  virtual bool SpeculativeDecodeRequestInFlight() const;
+  virtual bool StartSpeculativeImageDecode(Resource* resource);
 
   // Called when the underlying context is detached. Note that some
   // FetchContexts continue working after detached (e.g., for fetch() operations
@@ -214,11 +220,14 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // which case it checks the latter. If `out_rule` is non-null and the
   // SubresourceFilter identifies the current resource as an ad based on its
   // URL, then `out_rule` will be populated with the matching filterlist rule.
+  // `scan_stack_for_ads` should be true once per request, and should be called
+  // while the v8 stack that triggered this request is still available.
   virtual bool CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
       base::optional_ref<const KURL> alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info,
+      bool scan_stack_for_ads,
       subresource_filter::ScopedRule* out_rule) {
     return false;
   }
@@ -266,6 +275,8 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   virtual void AddCSPHashReport(
       const String& url,
       const HashMap<HashAlgorithm, String>& integrity_hashes) {}
+
+  virtual String GetSVGCacheIdentifier() const { return String(); }
 
  protected:
   const Vector<KURL> empty_unused_preloads_;

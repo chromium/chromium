@@ -204,9 +204,12 @@ class HeadlessDevToolsNetworkBlockedUrlTest
     SendCommandSync(devtools_client_, "Page.enable");
 
     base::Value::List urls;
-    urls.Append("dom_tree_test.css");
+    base::Value::Dict url_pattern;
+    url_pattern.Set("urlPattern", "*://*:*/hello.html");
+    url_pattern.Set("block", true);
+    urls.Append(std::move(url_pattern));
     devtools_client_.SendCommand("Network.setBlockedURLs",
-                                 Param("urls", std::move(urls)));
+                                 Param("urlPatterns", std::move(urls)));
 
     devtools_client_.SendCommand(
         "Page.navigate",
@@ -216,7 +219,7 @@ class HeadlessDevToolsNetworkBlockedUrlTest
 
   std::string GetUrlPath(const std::string& url) const {
     GURL gurl(url);
-    return gurl.path();
+    return gurl.GetPath();
   }
 
   void OnRequestWillBeSent(const base::Value::Dict& params) {
@@ -237,13 +240,15 @@ class HeadlessDevToolsNetworkBlockedUrlTest
   }
 
   void OnLoadEventFired(const base::Value::Dict&) {
-    EXPECT_THAT(
-        requests_to_be_sent_,
-        testing::UnorderedElementsAre("/dom_tree_test.html",
-                                      "/dom_tree_test.css", "/iframe.html"));
+    EXPECT_THAT(requests_to_be_sent_,
+                testing::UnorderedElementsAre(
+                    "/dom_tree_test.html", "/dom_tree_test.css", "/iframe.html",
+                    "/Ahem.ttf", "/hello.html"));
     EXPECT_THAT(responses_received_,
-                ElementsAre("/dom_tree_test.html", "/iframe.html"));
-    EXPECT_THAT(failures_, ElementsAre("/dom_tree_test.css"));
+                testing::UnorderedElementsAre("/dom_tree_test.html",
+                                              "/dom_tree_test.css",
+                                              "/iframe.html", "/Ahem.ttf"));
+    EXPECT_THAT(failures_, ElementsAre("/hello.html"));
 
     FinishAsynchronousTest();
   }
@@ -684,7 +689,7 @@ class DevtoolsInterceptionWithAuthProxyTest
                                     std::move(auth_challenge_response));
     } else {
       GURL url(DictString(params, "params.request.url"));
-      files_loaded_.insert(url.path());
+      files_loaded_.insert(url.GetPath());
     }
 
     devtools_client_.SendCommand("Network.continueInterceptedRequest",
@@ -694,8 +699,9 @@ class DevtoolsInterceptionWithAuthProxyTest
   void OnLoadEventFired(const base::Value::Dict&) {
     EXPECT_TRUE(auth_challenge_seen_);
     EXPECT_THAT(files_loaded_,
-                ElementsAre("/Ahem.ttf", "/dom_tree_test.css",
-                            "/dom_tree_test.html", "/iframe.html"));
+                testing::UnorderedElementsAre("/Ahem.ttf", "/dom_tree_test.css",
+                                              "/dom_tree_test.html",
+                                              "/iframe.html", "/hello.html"));
 
     FinishAsynchronousTest();
   }

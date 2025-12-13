@@ -14,10 +14,9 @@ TestHooks::TestHooks() = default;
 
 TestHooks::~TestHooks() = default;
 
-DrawResult TestHooks::PrepareToDrawOnThread(
-    LayerTreeHostImpl* host_impl,
-    LayerTreeHostImpl::FrameData* frame_data,
-    DrawResult draw_result) {
+DrawResult TestHooks::PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
+                                            FrameData* frame_data,
+                                            DrawResult draw_result) {
   return draw_result;
 }
 

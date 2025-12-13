@@ -37,9 +37,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -94,9 +92,6 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
-    })
     public void testOnNonSensitiveHistoryDataAvailable_EmptyList() {
         Runnable runnableMock = Mockito.mock(Runnable.class);
         long now = TimeUtils.uptimeMillis();
@@ -122,7 +117,6 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON})
     public void testOnNonSensitiveHistoryDataAvailable() {
         long now = TimeUtils.uptimeMillis();
         int timeDelta = 50;

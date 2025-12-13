@@ -22,6 +22,7 @@ class FakeDesktopMediaList : public DesktopMediaList {
 
   void AddSource(int id);
   void AddSourceByFullMediaID(content::DesktopMediaID media_id);
+  void AddChromiumWindowSource(int id);
   void RemoveSource(int index);
   void MoveSource(int old_index, int new_index);
   void SetSourceThumbnail(int index);

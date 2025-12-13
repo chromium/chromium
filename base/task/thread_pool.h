@@ -12,11 +12,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/is_callback.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/post_task_and_reply_with_result_internal.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_runner.h"
@@ -26,6 +25,8 @@
 #include "build/build_config.h"
 
 namespace base {
+
+class SequencedTaskRunner;
 
 // This is the interface to post tasks to base's thread pool.
 //
@@ -97,8 +98,6 @@ class BASE_EXPORT ThreadPool {
   // Though RepeatingCallback is convertible to OnceCallback, we need a
   // CallbackType template since we can not use template deduction and object
   // conversion at once on the overload resolution.
-  // TODO(crbug.com/40516732): Update all callers of the RepeatingCallback
-  // version to use OnceCallback and remove the CallbackType template.
   template <template <typename> class CallbackType,
             typename TaskReturnType,
             typename ReplyArgType>
@@ -147,8 +146,6 @@ class BASE_EXPORT ThreadPool {
   // Though RepeatingCallback is convertible to OnceCallback, we need a
   // CallbackType template since we can not use template deduction and object
   // conversion at once on the overload resolution.
-  // TODO(crbug.com/40516732): Update all callers of the RepeatingCallback
-  // version to use OnceCallback and remove the CallbackType template.
   template <template <typename> class CallbackType,
             typename TaskReturnType,
             typename ReplyArgType>

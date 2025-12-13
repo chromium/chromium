@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier;
 
 /**
  * Control drawing using the Android Edge to Edge Feature. This allows drawing under Android System

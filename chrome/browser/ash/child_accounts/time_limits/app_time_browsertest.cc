@@ -112,8 +112,7 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
   }
 
   void UpdatePerAppTimeLimitsPolicy(const base::Value::Dict& policy) {
-    std::string policy_value;
-    base::JSONWriter::Write(policy, &policy_value);
+    std::string policy_value = base::WriteJson(policy).value_or("");
 
     logged_in_user_mixin_.GetUserPolicyMixin()
         ->RequestPolicyUpdate()

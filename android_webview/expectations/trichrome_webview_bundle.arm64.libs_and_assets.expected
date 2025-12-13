@@ -1,5 +1,5 @@
-apk_path=lib/arm64-v8a/libcrashpad_handler_trampoline.so, compress=False, alignment=16384
-apk_path=lib/arm64-v8a/libmonochrome.so, compress=False, alignment=16384
+apk_path=lib/arm64-v8a/libcrashpad_handler_trampoline.so, compress=False
+apk_path=lib/arm64-v8a/libmonochrome.so, compress=False
 apk_path=assets/chrome_100_percent.pak, compress=False, alignment=4
 apk_path=assets/resources.pak, compress=False, alignment=4
 apk_path=assets/snapshot_blob_64.bin, compress=False, alignment=4

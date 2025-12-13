@@ -21,9 +21,15 @@ auto AsSpan(const T& collection) {
   return collection.AsSpan();
 }
 
-base::span<const GamepadTouchVector::ValueType> AsSpan(
-    const GamepadTouchVector& collection) {
-  return base::span(collection);
+template <size_t N>
+Vector<int> GetSetBitIndexes(const std::bitset<N>& bitset) {
+  Vector<int> set_bits;
+  for (size_t i = 0; i < bitset.size(); ++i) {
+    if (bitset.test(i)) {
+      set_bits.push_back(static_cast<int>(i));
+    }
+  }
+  return set_bits;
 }
 
 template <typename Collection,
@@ -46,7 +52,7 @@ bool Compare(const Collection* old_array,
 
 // static
 bool GamepadComparisons::HasUserActivation(
-    const HeapVector<Member<Gamepad>> gamepads) {
+    const HeapVector<Member<Gamepad>>& gamepads) {
   // A button press counts as a user activation if the button's value is greater
   // than the activation threshold. A threshold is used so that analog buttons
   // or triggers do not generate an activation from a light touch.
@@ -74,8 +80,8 @@ void GamepadComparisons::HasGamepadConnectionChanged(bool old_connected,
 }
 
 GamepadStateCompareResult::GamepadStateCompareResult(
-    const HeapVector<Member<Gamepad>> old_gamepads,
-    const HeapVector<Member<Gamepad>> new_gamepads,
+    const HeapVector<Member<Gamepad>>& old_gamepads,
+    const HeapVector<Member<Gamepad>>& new_gamepads,
     bool compare_all_axes,
     bool compare_all_buttons) {
   any_change_ = CompareGamepads(old_gamepads, new_gamepads, compare_all_axes,
@@ -94,6 +100,11 @@ bool GamepadStateCompareResult::IsGamepadConnected(size_t pad_index) const {
 bool GamepadStateCompareResult::IsGamepadDisconnected(size_t pad_index) const {
   DCHECK_LT(pad_index, device::Gamepads::kItemsLengthCap);
   return gamepad_disconnected_.test(pad_index);
+}
+
+bool GamepadStateCompareResult::HasGamepadInputChanged(size_t pad_index) const {
+  DCHECK_LT(pad_index, device::Gamepads::kItemsLengthCap);
+  return gamepad_input_changed_.test(pad_index);
 }
 
 bool GamepadStateCompareResult::IsAxisChanged(size_t pad_index,
@@ -124,9 +135,16 @@ bool GamepadStateCompareResult::IsButtonUp(size_t pad_index,
   return button_up_[pad_index].test(button_index);
 }
 
+bool GamepadStateCompareResult::IsTouchChanged(size_t pad_index,
+                                               size_t touch_index) const {
+  CHECK_LT(pad_index, device::Gamepads::kItemsLengthCap);
+  CHECK_LT(touch_index, device::Gamepad::kTouchEventsLengthCap);
+  return touch_changed_[pad_index].test(touch_index);
+}
+
 bool GamepadStateCompareResult::CompareGamepads(
-    const HeapVector<Member<Gamepad>> old_gamepads,
-    const HeapVector<Member<Gamepad>> new_gamepads,
+    const HeapVector<Member<Gamepad>>& old_gamepads,
+    const HeapVector<Member<Gamepad>>& new_gamepads,
     bool compare_all_axes,
     bool compare_all_buttons) {
   bool any_change = false;
@@ -151,12 +169,16 @@ bool GamepadStateCompareResult::CompareGamepads(
         CompareAxes(old_gamepad, new_gamepad, i, compare_all_axes);
     bool any_button_updated =
         CompareButtons(old_gamepad, new_gamepad, i, compare_all_buttons);
-    bool any_touch_updated = CompareTouches(old_gamepad, new_gamepad);
+    bool any_touch_updated = CompareTouches(old_gamepad, new_gamepad, i);
 
     if (newly_connected)
       gamepad_connected_.set(i);
     if (newly_disconnected)
       gamepad_disconnected_.set(i);
+    if ((!newly_connected && !newly_disconnected) &&
+        (any_axis_updated || any_button_updated || any_touch_updated)) {
+      gamepad_input_changed_.set(i);
+    }
     if (newly_connected || newly_disconnected || any_axis_updated ||
         any_button_updated || any_touch_updated) {
       any_change = true;
@@ -251,7 +273,8 @@ bool GamepadStateCompareResult::CompareButtons(Gamepad* old_gamepad,
 }
 
 bool GamepadStateCompareResult::CompareTouches(Gamepad* old_gamepad,
-                                               Gamepad* new_gamepad) {
+                                               Gamepad* new_gamepad,
+                                               size_t gamepad_index) {
   if (!new_gamepad) {
     return false;
   }
@@ -259,23 +282,66 @@ bool GamepadStateCompareResult::CompareTouches(Gamepad* old_gamepad,
   const auto* new_touches = new_gamepad->touchEvents();
   const auto* old_touches = old_gamepad ? old_gamepad->touchEvents() : nullptr;
 
-  return Compare(old_touches, new_touches,
-                 [](const Member<GamepadTouch>& new_touch,
-                    const Member<GamepadTouch>& old_touch) {
-                   return new_touch->touchId() == old_touch->touchId() &&
-                          new_touch->surfaceId() == old_touch->surfaceId() &&
-                          new_touch->HasSurfaceDimensions() ==
-                              old_touch->HasSurfaceDimensions() &&
-                          !Compare(new_touch->surfaceDimensions().Get(),
-                                   old_touch->surfaceDimensions().Get()) &&
-                          !Compare(new_touch->position().Get(),
-                                   old_touch->position().Get());
-                 });
+  // No touches on either gamepad: nothing changed.
+  if (!new_touches && !old_touches) {
+    return false;
+  }
+
+  // One has touches and the other does not: considered different.
+  if (!new_touches != !old_touches) {
+    return true;
+  }
+
+  // Different number of touches: considered different.
+  if (new_touches->size() != old_touches->size()) {
+    return true;
+  }
+
+  // Compare individual touches.
+  for (wtf_size_t i = 0; i < new_touches->size(); ++i) {
+    const auto& new_touch = new_touches->at(i);
+    const auto& old_touch = old_touches->at(i);
+
+    if (new_touch->touchId() != old_touch->touchId() ||
+        new_touch->surfaceId() != old_touch->surfaceId() ||
+        Compare(new_touch->surfaceDimensions().Get(),
+                old_touch->surfaceDimensions().Get()) ||
+        Compare(new_touch->position().Get(), old_touch->position().Get())) {
+      touch_changed_[gamepad_index].set(i);
+      return touch_changed_[gamepad_index].any();
+    }
+  }
+
+  return false;
+}
+
+Vector<int> GamepadStateCompareResult::GetChangedAxes(size_t pad_index) const {
+  return GetSetBitIndexes(axis_changed_[pad_index]);
+}
+
+Vector<int> GamepadStateCompareResult::GetChangedButtons(
+    size_t pad_index) const {
+  return GetSetBitIndexes(button_changed_[pad_index]);
+}
+
+Vector<int> GamepadStateCompareResult::GetButtonsPressed(
+    size_t pad_index) const {
+  return GetSetBitIndexes(button_down_[pad_index]);
+}
+
+Vector<int> GamepadStateCompareResult::GetButtonsReleased(
+    size_t pad_index) const {
+  return GetSetBitIndexes(button_up_[pad_index]);
+}
+
+Vector<int> GamepadStateCompareResult::GetChangedTouches(
+    size_t pad_index) const {
+  return GetSetBitIndexes(touch_changed_[pad_index]);
 }
 
 GamepadStateCompareResult GamepadComparisons::Compare(
-    const HeapVector<Member<Gamepad>> old_gamepads,
-    const HeapVector<Member<Gamepad>> new_gamepads,
+    const HeapVector<Member<Gamepad>>& old_gamepads,
+    const HeapVector<Member<Gamepad>>& new_gamepads,
     bool compare_all_axes,
     bool compare_all_buttons) {
   return GamepadStateCompareResult(old_gamepads, new_gamepads, compare_all_axes,

@@ -684,6 +684,85 @@
             "description": "Disables all zooming in the webview. The content will revert to the default zoom level, and all attempted zoom changes will be ignored."
           }
         ]
+      },
+      {
+        "id": "StopFindingAction",
+        "type": "string",
+        "description": "Determines what to do with the active match after the find session has ended. <code>clear</code> will clear the highlighting over the active match; <code>keep</code> will keep the active match highlighted; <code>activate</code> will keep the active match highlighted and simulate a user click on that match. The default action is <code>keep</code>.",
+        "enum": [
+          "clear",
+          "keep",
+          "activate"
+        ]
+      },
+      {
+        "id": "DialogMessageType",
+        "type": "string",
+        "description": "The type of modal dialog requested by the guest.",
+        "enum": [
+          "alert",
+          "confirm",
+          "prompt"
+        ]
+      },
+      {
+        "id": "ExitReason",
+        "type": "string",
+        "description": "String indicating the reason for the exit.",
+        "enum": [
+                  "normal",
+                  "abnormal",
+                  "crashed",
+                  "killed",
+                  "oom killed",
+                  "oom",
+                  "failed to launch",
+                  "integrity failure"
+                ]
+      },
+      {
+        "id": "LoadAbortReason",
+        "type": "string",
+        "description": "String indicating what type of abort occurred. This string is <em>not</em> guaranteed to remain backwards compatible between releases. You must not parse and act based upon its content. It is also possible that, in some cases, an error not listed here could be reported.",
+        "enum": [
+          "ERR_ABORTED",
+          "ERR_INVALID_URL",
+          "ERR_DISALLOWED_URL_SCHEME",
+          "ERR_BLOCKED_BY_CLIENT",
+          "ERR_ADDRESS_UNREACHABLE",
+          "ERR_EMPTY_RESPONSE",
+          "ERR_FILE_NOT_FOUND",
+          "ERR_UNKNOWN_URL_SCHEME"
+        ]
+      },
+      {
+        "id": "WindowOpenDisposition",
+        "type": "string",
+        "description": "The requested disposition of the new window.",
+        "enum": [
+          "ignore",
+          "save_to_disk",
+          "current_tab",
+          "new_background_tab",
+          "new_foreground_tab",
+          "new_window",
+          "new_popup"
+        ]
+      },
+      {
+        "id": "PermissionType",
+        "type": "string",
+        "description": "The type of permission being requested.",
+        "enum": [
+          "media",
+          "geolocation",
+          "pointerLock",
+          "download",
+          "loadplugin",
+          "filesystem",
+          "fullscreen",
+          "hid"
+        ]
       }
     ],
     "functions": [
@@ -1098,11 +1177,10 @@
         "description": "Ends the current find session (clearing all highlighting) and cancels all find requests in progress.",
         "parameters": [
           {
-            "type": "string",
-            "name": "action",
-            "description": "Determines what to do with the active match after the find session has ended. <code>clear</code> will clear the highlighting over the active match; <code>keep</code> will keep the active match highlighted; <code>activate</code> will keep the active match highlighted and simulate a user click on that match. The default action is <code>keep</code>.",
-            "optional": true,
-            "enum": ["clear", "keep", "activate"]
+                "$ref": "StopFindingAction",
+                "name": "action",
+                "description": "Determines what to do with the active match after the find session has ended. <code>clear</code> will clear the highlighting over the active match; <code>keep</code> will keep the active match highlighted; <code>activate</code> will keep the active match highlighted and simulate a user click on that match. The default action is <code>keep</code>.",
+                "optional": true
           }
         ]
       },
@@ -1212,8 +1290,7 @@
         "parameters": [
           {
             "name": "messageType",
-            "type": "string",
-            "enum": ["alert", "confirm", "prompt"],
+            "$ref": "DialogMessageType",
             "description": "The type of modal dialog requested by the guest."
           },
           {
@@ -1234,15 +1311,18 @@
         "description": "Fired when the process rendering the guest web content has exited.<p>The following example code will show a farewell message whenever the guest page crashes:</p><pre>webview.addEventListener('exit', function(e) {\r  if (e.reason === 'crash') {\r    webview.src = 'data:text/plain,Goodbye, world!';\r  }\r});</pre>",
         "parameters": [
           {
-            "name": "processID",
-            "description": "Chrome's internal ID of the process that exited.",
-            "type": "integer"
-          },
-          {
-            "name": "reason",
-            "description": "String indicating the reason for the exit.",
-            "type": "string",
-            "enum": ["normal", "abnormal", "crash", "kill"]
+            "type": "object",
+            "name": "details",
+            "properties": {
+              "processID": {
+                "description": "Chrome's internal ID of the process that exited.",
+                "type": "integer"
+              },
+              "reason": {
+                "$ref": "ExitReason",
+                "description": "String indicating the reason for the exit."
+              }
+            }
           }
         ]
       },
@@ -1305,9 +1385,8 @@
           },
           {
             "name": "reason",
-            "description": "String indicating what type of abort occurred. This string is <em>not</em> guaranteed to remain backwards compatible between releases. You must not parse and act based upon its content. It is also possible that, in some cases, an error not listed here could be reported.",
-            "type": "string",
-            "enum": ["ERR_ABORTED", "ERR_INVALID_URL", "ERR_DISALLOWED_URL_SCHEME", "ERR_BLOCKED_BY_CLIENT", "ERR_ADDRESS_UNREACHABLE", "ERR_EMPTY_RESPONSE", "ERR_FILE_NOT_FOUND", "ERR_UNKNOWN_URL_SCHEME"]
+            "$ref": "LoadAbortReason",
+            "description": "String indicating what type of abort occurred. This string is <em>not</em> guaranteed to remain backwards compatible between releases. You must not parse and act based upon its content. It is also possible that, in some cases, an error not listed here could be reported."
           }
         ]
       },
@@ -1405,9 +1484,8 @@
           },
           {
             "name": "windowOpenDisposition",
-            "description": "The requested disposition of the new window.",
-            "type": "string",
-            "enum": ["ignore", "save_to_disk", "current_tab", "new_background_tab", "new_foreground_tab", "new_window", "new_popup"]
+            "$ref": "WindowOpenDisposition",
+            "description": "The requested disposition of the new window."
           }
         ]
       },
@@ -1418,9 +1496,8 @@
         "parameters": [
           {
             "name": "permission",
-            "description": "The type of permission being requested.",
-            "type": "string",
-            "enum": ["media", "geolocation", "pointerLock", "download", "loadplugin", "filesystem", "fullscreen", "hid"]
+            "$ref": "PermissionType",
+            "description": "The type of permission being requested."
           },
           {
             "name": "request",

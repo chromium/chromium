@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/client/frame_evictor.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_image_transport_factory.h"
@@ -106,8 +107,9 @@ TEST_F(DelegatedFrameHostTest, NoCopyOutputRequestWithNoValidSurface) {
       /*src_subrect=*/gfx::Rect(),
       /*output_size=*/gfx::Size(),
       base::BindOnce(
-          [](base::RepeatingClosure quit_closure, const SkBitmap& bitmap) {
-            EXPECT_TRUE(bitmap.empty());
+          [](base::RepeatingClosure quit_closure,
+             const viz::CopyOutputBitmapWithMetadata& result) {
+            EXPECT_TRUE(result.bitmap.empty());
             quit_closure.Run();
           },
           run_loop.QuitClosure()));

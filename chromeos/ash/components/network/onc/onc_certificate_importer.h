@@ -28,23 +28,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporter {
 
   virtual ~CertificateImporter() {}
 
-  // This is intended for user-initiated ONC imports.
-  // Permanently imports server, authority and client certificates from
-  // |certificates|. Certificates will be given web trust if requested.
-  // If the "Remove" field of a certificate is enabled, then removes the
-  // certificate from the store instead of importing.
-  // When the import is completed, |done_callback| will be called with |success|
-  // equal to true if all certificates were imported successfully.
-  // Never calls |done_callback| after this importer is destructed.
-  virtual void ImportAllCertificatesUserInitiated(
-      const std::vector<
-          chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate>&
-          server_or_authority_certificates,
-      const std::vector<
-          chromeos::onc::OncParsedCertificates::ClientCertificate>&
-          client_certificates,
-      DoneCallback done_callback) = 0;
-
   // Permanently imports the client certificates given by |client_certificates|.
   // When the import is completed, |done_callback| will be called with |success|
   // equal to true if all certificates were imported successfully.

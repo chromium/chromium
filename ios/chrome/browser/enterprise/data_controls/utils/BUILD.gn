@@ -1,0 +1,56 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("utils") {
+  sources = [
+    "clipboard_utils.h",
+    "clipboard_utils.mm",
+    "data_controls_utils.h",
+    "data_controls_utils.mm",
+    "ios_clipboard_context.h",
+    "ios_clipboard_context.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/strings",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
+    "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/web/public",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "clipboard_utils_unittest.mm",
+    "data_controls_utils_unittest.mm",
+  ]
+  deps = [
+    ":utils",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/keyed_service/core",
+    "//components/strings",
+    "//ios/chrome/browser/enterprise/common/test",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
+    "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//url",
+  ]
+}

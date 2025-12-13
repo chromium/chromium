@@ -180,22 +180,30 @@ void FullscreenMediator::FullscreenModelScrollEventEnded(
     } else {
       AnimateWithStyle(FullscreenAnimatorStyle::ENTER_FULLSCREEN);
     }
-  } else {
-    if (model_->enabled() && model_->is_scrolled_to_bottom() &&
-        AreCGFloatsEqual(model_->progress(), 0.0) &&
-        model_->can_collapse_toolbar()) {
+    return;
+  }
+  bool scrolled_to_bottom = model_->enabled() &&
+                            model_->is_scrolled_to_bottom() &&
+                            AreCGFloatsEqual(model_->progress(), 0.0) &&
+                            model_->can_collapse_toolbar();
+  if (scrolled_to_bottom) {
+    if (has_reached_bottom_once_) {
+      // Subsequent times reaching the bottom: exit fullscreen.
       fullscreen_exit_reason_ = FullscreenExitReason::kBottomReached;
       AnimateWithStyle(FullscreenAnimatorStyle::EXIT_FULLSCREEN);
     } else {
-      fullscreen_exit_reason_ =
-          FullscreenExitReason::kUserInitiatedFinishedByCode;
-      AnimateWithStyle(
-          AnimatorStyleFromScrollDirection(model_->GetLastScrollDirection()));
+      // First time reaching the bottom.
+      has_reached_bottom_once_ = true;
     }
+  } else {
+    has_reached_bottom_once_ = false;
+    AnimateWithStyle(
+        AnimatorStyleFromScrollDirection(model_->GetLastScrollDirection()));
   }
 }
 
 void FullscreenMediator::FullscreenModelWasReset(FullscreenModel* model) {
+  has_reached_bottom_once_ = false;
   // Stop any in-progress animations.  Don't update the model because this
   // callback occurs after the model's state is reset, and updating the model
   // the with active animator's current value would overwrite the reset value.
@@ -296,9 +304,12 @@ FullscreenAnimatorStyle FullscreenMediator::AnimatorStyleFromScrollDirection(
     FullscreenModelScrollDirection direction) {
   switch (direction) {
     case FullscreenModelScrollDirection::kUp:
+      fullscreen_exit_reason_ =
+          FullscreenExitReason::kUserInitiatedFinishedByCode;
       return FullscreenAnimatorStyle::EXIT_FULLSCREEN;
     case FullscreenModelScrollDirection::kNone:
       // Leave in fullscreen, if still in fullscreen.
+      fullscreen_exit_reason_ = FullscreenExitReason::kNoChange;
       return AreCGFloatsEqual(model_->progress(), 0.0)
                  ? FullscreenAnimatorStyle::ENTER_FULLSCREEN
                  : FullscreenAnimatorStyle::EXIT_FULLSCREEN;
@@ -328,6 +339,8 @@ FullscreenMediator::ConvertFullscreenExitReasonToTransitionReason(
       return FullscreenModeTransitionReason::kForcedByCode;
     case FullscreenExitReason::kUserInitiatedFinishedByCode:
       return FullscreenModeTransitionReason::kUserInitiatedFinishedByCode;
+    case FullscreenExitReason::kNoChange:
+      return FullscreenModeTransitionReason::kNoChange;
     case FullscreenExitReason::kUserControlled:
       NOTREACHED();
   }

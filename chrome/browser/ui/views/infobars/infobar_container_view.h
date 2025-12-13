@@ -8,14 +8,14 @@
 #include <stddef.h>
 
 #include "base/memory/raw_ptr.h"
-#include "components/infobars/core/infobar_container.h"
+#include "components/infobars/core/infobar_container_with_priority.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/view_targeter_delegate.h"
 
 // The views-specific implementation of InfoBarContainer.
 class InfoBarContainerView : public views::AccessiblePaneView,
-                             public infobars::InfoBarContainer {
+                             public infobars::InfoBarContainerWithPriority {
   METADATA_HEADER(InfoBarContainerView, views::AccessiblePaneView)
 
  public:

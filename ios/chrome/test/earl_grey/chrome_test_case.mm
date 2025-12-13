@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 
 #import <objc/runtime.h>
 
 #import <memory>
 
+#import "GREYConstants.h"
 #import "base/apple/bundle_locations.h"
 #import "base/base_paths.h"
 #import "base/command_line.h"
+#import "base/containers/heap_array.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/free_deleter.h"
 #import "base/path_service.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -29,6 +27,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case_app_interface.h"
 #import "ios/chrome/test/earl_grey/scoped_allow_crash_on_startup.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOClientService.h"
@@ -42,7 +41,7 @@ namespace {
 // case.
 bool gExecutedSetUpForTestCase = false;
 
-bool gIsMockAuthenticationDisabled = false;
+BOOL gIsMockAuthenticationDisabled = NO;
 
 // YES the test is for startup.
 bool gStartupTest = false;
@@ -51,6 +50,18 @@ NSString* const kFlakyEarlGreyTestTargetSuffix =
     @"_flaky_eg2tests_module-Runner";
 NSString* const kMultitaskingEarlGreyTestTargetName =
     @"ios_chrome_multitasking_eg2tests_module-Runner";
+
+// Returns a base::HeapArray<...> of methods in `klass`.
+base::HeapArray<Method, base::FreeDeleter> GetMethodList(Class klass) {
+  unsigned int count = 0;
+  Method* methods = class_copyMethodList(klass, &count);
+
+  // SAFETY: class_copyMethodList(...) sets `count` to the number of items
+  // in the returned array `methods`.
+  return UNSAFE_BUFFERS(
+      base::HeapArray<Method, base::FreeDeleter>::FromOwningPointer(methods,
+                                                                    count));
+}
 
 // Returns a list of test names that run in multitasking test suite.
 NSArray* multitaskingTests() {
@@ -151,8 +162,8 @@ void ResetAuthentication() {
 
   std::unique_ptr<net::EmbeddedTestServer> _testServer;
 
-  // The orientation of the device when entering these tests.
-  UIDeviceOrientation _originalOrientation;
+  // The orientation of the interface when entering these tests.
+  UIInterfaceOrientation _originalOrientation;
 }
 
 // Cleans up mock authentication.
@@ -225,8 +236,6 @@ void ResetAuthentication() {
 
   [self resetAppState];
 
-  ResetAuthentication();
-
   // Reset any remaining sign-in state from previous tests.
   if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey killWebKitNetworkProcess];
@@ -237,7 +246,9 @@ void ResetAuthentication() {
   }
   _executedTestMethodSetUp = YES;
 
-  [ChromeTestCaseAppInterface blockSigninIPH];
+  if (![[self class] loadMinimalAppUI]) {
+    [ChromeTestCaseAppInterface blockSigninIPH];
+  }
 }
 
 - (void)tearDownHelper {
@@ -282,20 +293,28 @@ void ResetAuthentication() {
       [ChromeEarlGreyUI dismissContextMenuIfPresent];
       [[self class] removeAnyOpenMenusAndInfoBars];
     }
-    [[self class] closeAllTabs];
+    if (![[self class] loadMinimalAppUI]) {
+      [[self class] closeAllTabs];
+    }
 
     // Clear testing policies to make sure they don't change the browser's
     // behavior in follow-up tests.
     policy_test_utils::ClearPolicies();
   }
 
-  if ([[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] orientation] !=
-      _originalOrientation) {
+  UIInterfaceOrientation currentOrientation =
+      [ChromeEarlGrey interfaceOrientation];
+  if (currentOrientation != _originalOrientation) {
+    // Synchronization off due to an infinite spinner if the keyboard is
+    // visible.
+    ScopedSynchronizationDisabler disabler;
+
     // Rotate the device back to the original orientation, since some tests
     // attempt to run in other orientations.
-    [EarlGrey rotateDeviceToOrientation:_originalOrientation error:nil];
+    [EarlGrey rotateInterfaceToOrientation:_originalOrientation error:nil];
   }
   _executedTestMethodSetUp = NO;
+  _testServer = nil;
   [super tearDown];
 }
 
@@ -396,12 +415,11 @@ void ResetAuthentication() {
 }
 
 + (NSArray*)testNamesWithPrefix:(NSString*)prefix {
-  unsigned int count = 0;
-  Method* methods = class_copyMethodList(self, &count);
   NSMutableArray* testNames = [NSMutableArray array];
-  for (unsigned int i = 0; i < count; i++) {
-    SEL selector = method_getName(methods[i]);
-    if (base::StartsWith(sel_getName(selector), prefix.UTF8String)) {
+  for (const Method& method : GetMethodList(self)) {
+    SEL selector = method_getName(method);
+    if (base::StartsWith(sel_getName(selector),
+                         base::SysNSStringToUTF8(prefix))) {
       NSMethodSignature* methodSignature =
           [self instanceMethodSignatureForSelector:selector];
       NSInvocation* invocation =
@@ -410,16 +428,13 @@ void ResetAuthentication() {
       [testNames addObject:invocation];
     }
   }
-  free(methods);
   return testNames;
 }
 
 + (NSArray*)multitaskingTestNames {
-  unsigned int count = 0;
-  Method* methods = class_copyMethodList(self, &count);
   NSMutableArray* multitaskingTestNames = [NSMutableArray array];
-  for (unsigned int i = 0; i < count; i++) {
-    SEL selector = method_getName(methods[i]);
+  for (const Method& method : GetMethodList(self)) {
+    SEL selector = method_getName(method);
     if ([multitaskingTests()
             containsObject:base::SysUTF8ToNSString(sel_getName(selector))]) {
       NSMethodSignature* methodSignature =
@@ -430,7 +445,6 @@ void ResetAuthentication() {
       [multitaskingTestNames addObject:invocation];
     }
   }
-  free(methods);
   return multitaskingTestNames;
 }
 
@@ -453,7 +467,8 @@ void ResetAuthentication() {
   [ChromeEarlGrey setPopupPrefValue:CONTENT_SETTING_DEFAULT];
 
   // Enforce the assumption that the tests are runing in portrait.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
 
   // Clear multiwindow root and any extra windows. Once in `setUpForTestCase`
   // (in case of crashes) and on every `tearDown`.
@@ -464,14 +479,16 @@ void ResetAuthentication() {
 // Resets the application state.
 // Called at the start of a test and when the app is relaunched.
 - (void)resetAppState {
-  [[self class] disableMockAuthentication];
-  [[self class] enableMockAuthentication];
+  if (![[self class] loadMinimalAppUI]) {
+    [[self class] disableMockAuthentication];
+    [[self class] enableMockAuthentication];
+    ResetAuthentication();
 
-  [ChromeEarlGrey resetDesktopContentSetting];
+    [ChromeEarlGrey resetDesktopContentSetting];
+  }
 
-  gIsMockAuthenticationDisabled = NO;
   _tearDownHandler = nil;
-  _originalOrientation = [[XCUIDevice sharedDevice] orientation];
+  _originalOrientation = [ChromeEarlGrey interfaceOrientation];
 }
 
 // Returns the method name, e.g. "testSomething" of the test that is currently
@@ -512,8 +529,6 @@ void ResetAuthentication() {
     // method starts.
     if (_executedTestMethodSetUp) {
       [self resetAppState];
-
-      ResetAuthentication();
 
       if (![ChromeTestCase forceRestartAndWipe]) {
         // Reset any remaining sign-in state from previous tests.

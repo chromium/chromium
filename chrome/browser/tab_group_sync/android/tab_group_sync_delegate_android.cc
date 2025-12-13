@@ -24,8 +24,7 @@ TabGroupSyncDelegateAndroid::TabGroupSyncDelegateAndroid(
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env,
                   Java_TabGroupSyncDelegate_create(
-                      env, reinterpret_cast<int64_t>(this), j_delegate_deps)
-                      .obj());
+                      env, reinterpret_cast<int64_t>(this), j_delegate_deps));
 }
 
 TabGroupSyncDelegateAndroid::~TabGroupSyncDelegateAndroid() {
@@ -97,3 +96,5 @@ TabGroupSyncDelegateAndroid::CreateSavedTabGroupFromLocalGroup(
 }
 
 }  // namespace tab_groups
+
+DEFINE_JNI(TabGroupSyncDelegate)

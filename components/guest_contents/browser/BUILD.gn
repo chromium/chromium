@@ -38,3 +38,22 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "guest_contents_security_browsertest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/guest_contents/common:mojom",
+    "//components/network_session_configurator/common",
+    "//content/shell:content_shell_lib",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}

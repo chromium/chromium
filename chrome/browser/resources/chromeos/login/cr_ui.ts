@@ -47,8 +47,6 @@ export class Oobe extends DisplayManager {
 
   /**
    * Shows the given screen.
-   * TODO(b/322313099): Either update data type to use some base screen data
-   * class or make `showScreen` to have only screen id as a parameter.
    */
   static showScreen(screen: {id: string, data: any}): void {
     Oobe.getInstance().showScreen(screen);
@@ -117,6 +115,8 @@ export class Oobe extends DisplayManager {
   static loginForTesting(
       username: string, password: string, gaiaId: string,
       enterpriseEnroll: boolean = false): void {
+    assert(
+        Oobe.readyForTesting, 'OOBE must be ready for testing before calling!');
     // Helper method that runs |fn| after |screenName| is visible.
     function waitForOobeScreen(screenName: string, fn: () => void) {
       const currentScreen = Oobe.getInstance().currentScreen;

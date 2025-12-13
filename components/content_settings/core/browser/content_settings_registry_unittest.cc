@@ -31,7 +31,8 @@ using ::testing::ElementsAre;
 class ContentSettingsRegistryTest : public testing::Test {
  protected:
   ContentSettingsRegistryTest()
-      : registry_(&permission_settings_registry_, &website_settings_registry_) {
+      : permission_settings_registry_(&website_settings_registry_),
+        registry_(&permission_settings_registry_, &website_settings_registry_) {
   }
 
   ContentSettingsRegistry* registry() { return &registry_; }
@@ -74,7 +75,7 @@ TEST_F(ContentSettingsRegistryTest, Properties) {
       registry()->Get(ContentSettingsType::COOKIES);
   ASSERT_TRUE(info);
 
-  EXPECT_THAT(info->allowlisted_primary_schemes(),
+  EXPECT_THAT(info->permission_settings_info()->allowlisted_primary_schemes(),
               ElementsAre("chrome", "devtools"));
   EXPECT_THAT(info->third_party_cookie_allowed_secondary_schemes(),
               ElementsAre("devtools", "chrome-extension"));
@@ -107,20 +108,6 @@ TEST_F(ContentSettingsRegistryTest, Properties) {
   // Check the WebsiteSettingsInfo is registered correctly.
   EXPECT_EQ(website_settings_registry()->Get(ContentSettingsType::COOKIES),
             website_settings_info);
-
-  // Check that PRIVATE_NETWORK_GUARD is registered correctly.
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  info = registry()->Get(ContentSettingsType::PRIVATE_NETWORK_GUARD);
-  ASSERT_TRUE(info);
-
-  // Check the other properties are populated correctly.
-  EXPECT_TRUE(info->IsSettingValid(CONTENT_SETTING_BLOCK));
-  EXPECT_TRUE(info->IsSettingValid(CONTENT_SETTING_ASK));
-  EXPECT_FALSE(info->IsSettingValid(CONTENT_SETTING_SESSION_ONLY));
-  EXPECT_FALSE(info->IsSettingValid(CONTENT_SETTING_ALLOW));
-  EXPECT_EQ(ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-            info->incognito_behavior());
-#endif
 }
 
 TEST_F(ContentSettingsRegistryTest, Iteration) {
@@ -166,15 +153,6 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
     // they should be marked as INHERIT_IN_INCOGNITO.
     if (info->IsSettingValid(CONTENT_SETTING_ALLOW) &&
         info->GetInitialDefaultSetting() == CONTENT_SETTING_ALLOW) {
-      // Top-level 3pcd origin trial content settings are a special case that
-      // should not be inherited in incognito, despite being ALLOW-by-default.
-      if (info->website_settings_info()->type() ==
-          ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL) {
-        EXPECT_EQ(info->incognito_behavior(),
-                  ContentSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
-        continue;
-      }
-
       EXPECT_EQ(info->incognito_behavior(),
                 ContentSettingsInfo::INHERIT_IN_INCOGNITO);
       continue;
@@ -213,9 +191,6 @@ TEST_F(ContentSettingsRegistryTest, IsDefaultSettingValid) {
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   info = registry()->Get(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
-  EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
-
-  info = registry()->Get(ContentSettingsType::PRIVATE_NETWORK_GUARD);
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 #endif
 }
@@ -262,6 +237,28 @@ TEST_F(ContentSettingsRegistryTest, SettingsHaveAHistogramMapping) {
   }
   // Validate that values are unique.
   EXPECT_EQ(count, values.size());
+}
+
+TEST_F(ContentSettingsRegistryTest, DelegateStateChecks) {
+  auto* info = registry()
+                   ->Get(ContentSettingsType::MEDIASTREAM_MIC)
+                   ->permission_settings_info();
+
+  EXPECT_FALSE(info->delegate().IsAnyPermissionAllowed(CONTENT_SETTING_ASK));
+  EXPECT_TRUE(info->delegate().IsAnyPermissionAllowed(CONTENT_SETTING_ALLOW));
+  EXPECT_FALSE(info->delegate().IsAnyPermissionAllowed(CONTENT_SETTING_BLOCK));
+  EXPECT_TRUE(
+      info->delegate().IsAnyPermissionAllowed(CONTENT_SETTING_SESSION_ONLY));
+
+  EXPECT_TRUE(info->delegate().IsUndecided(CONTENT_SETTING_ASK));
+  EXPECT_FALSE(info->delegate().IsUndecided(CONTENT_SETTING_ALLOW));
+  EXPECT_FALSE(info->delegate().IsUndecided(CONTENT_SETTING_BLOCK));
+  EXPECT_FALSE(info->delegate().IsUndecided(CONTENT_SETTING_SESSION_ONLY));
+
+  EXPECT_FALSE(info->delegate().IsBlocked(CONTENT_SETTING_ASK));
+  EXPECT_FALSE(info->delegate().IsBlocked(CONTENT_SETTING_ALLOW));
+  EXPECT_TRUE(info->delegate().IsBlocked(CONTENT_SETTING_BLOCK));
+  EXPECT_FALSE(info->delegate().IsBlocked(CONTENT_SETTING_SESSION_ONLY));
 }
 
 }  // namespace content_settings

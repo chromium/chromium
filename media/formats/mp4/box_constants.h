@@ -5,7 +5,7 @@
 #ifndef MEDIA_FORMATS_MP4_BOX_CONSTANTS_H_
 #define MEDIA_FORMATS_MP4_BOX_CONSTANTS_H_
 
-#include <cstdint>
+#include "media/formats/mp4/box_reader.h"
 
 namespace media {
 
@@ -23,7 +23,7 @@ namespace media {
 // specifies the fixed-point value of the zoom or depth of the video frames.
 // This value is equal to 1.0 in decimal notation, meaning that there
 // is no zoom or depth applied to the video frames.
-inline constexpr int32_t kDisplayIdentityMatrix[9] = {
+inline constexpr mp4::DisplayMatrix kDisplayIdentityMatrix = {
     0x00010000, 0, 0, 0, 0x00010000, 0, 0, 0, 0x40000000};
 
 }  // namespace media

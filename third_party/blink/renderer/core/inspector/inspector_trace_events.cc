@@ -47,6 +47,8 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
+#include "third_party/blink/renderer/core/timing/worker_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h"
@@ -1201,6 +1203,12 @@ void inspector_target_rundown_event::Data(perfetto::TracedValue context,
   if (!frame) {
     return;
   }
+
+  ThreadDebugger* thread_debugger = ThreadDebugger::From(isolate);
+  if (!thread_debugger) {
+    return;
+  }
+
   auto dict = std::move(context).WriteDictionary();
   String frameType = "page";
   if (frame->Parent() || frame->IsFencedFrameRoot()) {
@@ -1209,11 +1217,8 @@ void inspector_target_rundown_event::Data(perfetto::TracedValue context,
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("frameType", frameType);
   dict.Add("url", window->Url().GetString());
-  ThreadDebugger* thread_debugger = ThreadDebugger::From(isolate);
-  DCHECK(thread_debugger);
-  v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
-  DCHECK(inspector);
-  dict.Add("isolate", inspector->isolateId());
+  dict.Add("isolate",
+           String::Number(thread_debugger->GetV8Inspector()->isolateId()));
 
   // ExecutionContext related info
   DOMWrapperWorld& world = scriptState->World();
@@ -1322,17 +1327,19 @@ void inspector_function_call_event::Data(
   if (function.IsEmpty())
     return;
 
+  ThreadDebugger* thread_debugger = ThreadDebugger::From(context->GetIsolate());
+  if (!thread_debugger) {
+    return;
+  }
+
   v8::Local<v8::Function> original_function = GetBoundFunction(function);
   v8::Local<v8::Value> function_name = original_function->GetDebugName();
   if (!function_name.IsEmpty() && function_name->IsString()) {
     dict.Add("functionName", ToCoreString(context->GetIsolate(),
                                           function_name.As<v8::String>()));
   }
-  ThreadDebugger* thread_debugger = ThreadDebugger::From(context->GetIsolate());
-  DCHECK(thread_debugger);
-  v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
-  DCHECK(inspector);
-  dict.Add("isolate", inspector->isolateId());
+  dict.Add("isolate",
+           String::Number(thread_debugger->GetV8Inspector()->isolateId()));
   SourceLocation* location =
       CaptureSourceLocation(context->GetIsolate(), original_function);
   dict.Add("scriptId", String::Number(location->ScriptId()));
@@ -1499,18 +1506,29 @@ void inspector_time_stamp_event::Data(perfetto::TracedValue trace_context,
                                       const v8::LocalVector<v8::Value>& args) {
   auto dict = std::move(trace_context).WriteDictionary();
   dict.Add("message", message);
-  LocalFrame* frame = FrameForExecutionContext(context);
-  if (!frame) {
+
+  v8::Isolate* isolate = nullptr;
+  Performance* performance = nullptr;
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    LocalFrame* frame = window->GetFrame();
+    dict.Add("frame", IdentifiersFactory::FrameId(frame));
+    isolate = frame->DomWindow()->GetIsolate();
+    performance = DOMWindowPerformance::performance(*window);
+  } else if (auto* worker_global_scope =
+                 DynamicTo<WorkerGlobalScope>(context)) {
+    dict.Add("worker", ToHexString(worker_global_scope));
+    isolate = worker_global_scope->GetIsolate();
+    performance =
+        WorkerGlobalScopePerformance::performance(*worker_global_scope);
+  }
+
+  if (!isolate || !performance) {
     return;
   }
 
-  auto* window = frame->DomWindow();
-  v8::Isolate* isolate = frame->DomWindow()->GetIsolate();
-  Performance* performance = DOMWindowPerformance::performance(*window);
   uint64_t sample_trace_id = InspectorTraceEvents::GetNextSampleTraceId();
   v8::CpuProfiler::CpuProfiler::CollectSample(isolate, sample_trace_id);
   dict.Add("sampleTraceId", sample_trace_id);
-  dict.Add("frame", IdentifiersFactory::FrameId(frame));
   static constexpr std::array<const char*, 7> kNames = {
       "name", "start", "end", "track", "trackGroup", "color", "devtools"};
   for (size_t i = 0; i < args.size() && i < std::size(kNames); ++i) {

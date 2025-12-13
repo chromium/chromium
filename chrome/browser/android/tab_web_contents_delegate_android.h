@@ -107,6 +107,11 @@ class TabWebContentsDelegateAndroid
       content::PreloadingTriggerType trigger_type) override;
   device::mojom::GeolocationContext* GetInstalledWebappGeolocationContext()
       override;
+  void RequestPointerLock(content::WebContents* web_contents,
+                          bool user_gesture,
+                          bool last_unlocked_by_target) override;
+
+  void LostPointerLock() override;
 
 #if BUILDFLAG(ENABLE_PRINTING)
   void PrintCrossProcessSubframe(
@@ -143,6 +148,10 @@ class TabWebContentsDelegateAndroid
   bool IsModalContextMenu() const;
   bool IsDynamicSafeAreaInsetsEnabled() const;
   bool OpenInAppOrChromeFromCct(GURL url);
+
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) override;
 
  private:
   std::unique_ptr<device::mojom::GeolocationContext>

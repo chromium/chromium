@@ -130,7 +130,8 @@ bool WillDispatchDeviceEvent(
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     std::optional<base::Value::List>& event_args_out,
-    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
+    mojom::EventFilteringInfoPtr& event_filtering_info_out,
+    bool* dispatch_separate_event_out) {
   if (device_manager && extension) {
     return device_manager->HasPermission(extension, device_info, false);
   }

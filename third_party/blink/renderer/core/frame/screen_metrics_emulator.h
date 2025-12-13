@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/widget/device_emulation_params.mojom-blink.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -68,7 +69,10 @@ class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
   void DisableAndApply();
 
   // Sets new parameters and applies them to the WebFrameWidgetImpl.
-  void ChangeEmulationParams(const DeviceEmulationParams& params);
+  void ChangeEmulationParams(
+      const DeviceEmulationParams& params,
+      const mojom::blink::DeviceEmulationCacheBehavior& cache_behavior =
+          mojom::blink::DeviceEmulationCacheBehavior::kClearCache);
 
   void UpdateVisualProperties(const VisualProperties& visual_properties);
 
@@ -84,7 +88,8 @@ class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
   }
 
   // Applies emulated values to the WidgetBase.
-  void Apply();
+  void Apply(const mojom::blink::DeviceEmulationCacheBehavior& cache_behavior =
+                 mojom::blink::DeviceEmulationCacheBehavior::kClearCache);
 
   Member<WebFrameWidgetImpl> const frame_widget_;
 

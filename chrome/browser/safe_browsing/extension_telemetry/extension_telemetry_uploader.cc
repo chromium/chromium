@@ -5,10 +5,13 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -166,21 +169,21 @@ void ExtensionTelemetryUploader::SendRequest(const std::string& access_token) {
 }
 
 void ExtensionTelemetryUploader::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = 0;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();
 
-  RetryOrFinish(url_loader_->NetError(), response_code, *response_body.get());
+  RetryOrFinish(url_loader_->NetError(), response_code, response_body);
 }
 
 void ExtensionTelemetryUploader::RetryOrFinish(
     int net_error,
     int response_code,
-    const std::string& response_data) {
+    base::optional_ref<std::string> response_data) {
   RecordNetworkResponseCodeOrError(net_error == net::OK ? response_code
                                                         : net_error);
-  if (net_error == net::OK && response_code == net::HTTP_OK) {
+  if (net_error == net::OK && response_code == net::HTTP_OK && response_data) {
     RecordUploadSuccess(/*success*/ true);
     RecordUploadRetries(num_upload_retries_);
     RecordUploadDuration(/*success*/ true,

@@ -35,30 +35,23 @@
 
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 
-#include <string.h>
-
-#include <array>
-
-#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/third_party/double_conversion/double-conversion/double-conversion.h"
-#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 
 namespace blink {
 
 namespace {
 
-double ParseDoubleFromLongString(const UChar* string,
-                                 size_t length,
+double ParseDoubleFromLongString(base::span<const UChar> string,
                                  size_t& parsed_length) {
-  wtf_size_t conversion_length = base::checked_cast<wtf_size_t>(length);
-  auto conversion_buffer = std::make_unique<LChar[]>(conversion_length);
-  for (wtf_size_t i = 0; i < conversion_length; ++i) {
-    conversion_buffer[i] =
-        IsASCII(UNSAFE_TODO(string[i])) ? UNSAFE_TODO(string[i]) : 0;
+  size_t conversion_length = string.size();
+  auto conversion_buffer = base::HeapArray<LChar>::Uninit(conversion_length);
+  for (size_t i = 0; i < conversion_length; ++i) {
+    conversion_buffer[i] = IsASCII(string[i]) ? string[i] : 0;
   }
-  return ParseDouble(UNSAFE_TODO(base::span(conversion_buffer.get(), length)),
-                     parsed_length);
+  return ParseDouble(base::span(conversion_buffer), parsed_length);
 }
 
 const double_conversion::StringToDoubleConverter& GetDoubleConverter() {
@@ -71,61 +64,67 @@ const double_conversion::StringToDoubleConverter& GetDoubleConverter() {
 
 }  // namespace
 
-const char* NumberToString(double d, NumberToStringBuffer buffer) {
-  double_conversion::StringBuilder builder(buffer, kNumberToStringBufferLength);
+base::span<const LChar> DoubleToStringConverter::ToString(double d) {
+  double_conversion::StringBuilder builder(buffer_.data(), kBufferSize);
   const double_conversion::DoubleToStringConverter& converter =
       double_conversion::DoubleToStringConverter::EcmaScriptConverter();
   converter.ToShortest(d, &builder);
-  return builder.Finalize();
+  base::span<char> result =
+      base::span(buffer_).first(static_cast<size_t>(builder.position()));
+  builder.Finalize();
+  return base::as_byte_span(result);
 }
 
-static inline const char* FormatStringTruncatingTrailingZerosIfNeeded(
-    NumberToStringBuffer buffer,
+static inline base::span<const char>
+FormatStringTruncatingTrailingZerosIfNeeded(
+    base::span<char, DoubleToStringConverter::kBufferSize> buffer,
     double_conversion::StringBuilder& builder) {
-  int length = builder.position();
+  size_t length = static_cast<size_t>(builder.position());
+  builder.Finalize();
+  base::span<char> result = buffer.first(length);
 
   // If there is an exponent, stripping trailing zeros would be incorrect.
   // FIXME: Zeros should be stripped before the 'e'.
-  if (UNSAFE_TODO(memchr(buffer, 'e', length))) {
-    return builder.Finalize();
+  if (std::ranges::find(result, 'e') != result.end()) {
+    return result;
   }
 
-  int decimal_point_position = 0;
+  size_t decimal_point_position = 0;
   for (; decimal_point_position < length; ++decimal_point_position) {
-    if (UNSAFE_TODO(buffer[decimal_point_position]) == '.') {
+    if (buffer[decimal_point_position] == '.') {
       break;
     }
   }
 
-  if (decimal_point_position == length)
-    return builder.Finalize();
+  if (decimal_point_position == length) {
+    return result;
+  }
 
-  int truncated_length = length - 1;
+  size_t truncated_length = length - 1;
   for (; truncated_length > decimal_point_position; --truncated_length) {
-    if (UNSAFE_TODO(buffer[truncated_length]) != '0') {
+    if (result[truncated_length] != '0') {
       break;
     }
   }
 
   // No trailing zeros found to strip.
-  if (truncated_length == length - 1)
-    return builder.Finalize();
+  if (truncated_length == length - 1) {
+    return result;
+  }
 
   // If we removed all trailing zeros, remove the decimal point as well.
   if (truncated_length == decimal_point_position) {
-    DCHECK_GT(truncated_length, 0);
+    DCHECK_GT(truncated_length, 0u);
     --truncated_length;
   }
 
-  // Truncate the StringBuilder, and return the final result.
-  char* result = builder.Finalize();
-  UNSAFE_TODO(result[truncated_length + 1]) = '\0';
-  return result;
+  // Truncate the buffer, and return the final result.
+  return result.first(truncated_length + 1);
 }
 
-const char* NumberToFixedPrecisionString(double d,
-                                         unsigned significant_figures,
-                                         NumberToStringBuffer buffer) {
+base::span<const LChar> DoubleToStringConverter::ToStringWithFixedPrecision(
+    double d,
+    unsigned significant_figures) {
   // Mimic String::format("%.[precision]g", ...), but use dtoas rounding
   // facilities.
   // "g": Signed value printed in f or e format, whichever is more compact for
@@ -136,19 +135,20 @@ const char* NumberToFixedPrecisionString(double d,
   // it.
   // "precision": The precision specifies the maximum number of significant
   // digits printed.
-  double_conversion::StringBuilder builder(buffer, kNumberToStringBufferLength);
+  double_conversion::StringBuilder builder(buffer_.data(), kBufferSize);
   const double_conversion::DoubleToStringConverter& converter =
       double_conversion::DoubleToStringConverter::EcmaScriptConverter();
   converter.ToPrecision(d, significant_figures, &builder);
   // FIXME: Trailing zeros should never be added in the first place. The
   // current implementation does not strip when there is an exponent, eg.
   // 1.50000e+10.
-  return FormatStringTruncatingTrailingZerosIfNeeded(buffer, builder);
+  return base::as_byte_span(
+      FormatStringTruncatingTrailingZerosIfNeeded(buffer_, builder));
 }
 
-const char* NumberToFixedWidthString(double d,
-                                     unsigned decimal_places,
-                                     NumberToStringBuffer buffer) {
+base::span<const LChar> DoubleToStringConverter::ToStringWithFixedWidth(
+    double d,
+    unsigned decimal_places) {
   // Mimic String::format("%.[precision]f", ...), but use dtoas rounding
   // facilities.
   // "f": Signed value having the form [ - ]dddd.dddd, where dddd is one or more
@@ -158,11 +158,14 @@ const char* NumberToFixedWidthString(double d,
   // "precision": The precision value specifies the number of digits after the
   // decimal point.  If a decimal point appears, at least one digit appears
   // before it.  The value is rounded to the appropriate number of digits.
-  double_conversion::StringBuilder builder(buffer, kNumberToStringBufferLength);
+  double_conversion::StringBuilder builder(buffer_.data(), kBufferSize);
   const double_conversion::DoubleToStringConverter& converter =
       double_conversion::DoubleToStringConverter::EcmaScriptConverter();
   converter.ToFixed(d, decimal_places, &builder);
-  return builder.Finalize();
+  base::span<char> result =
+      base::span(buffer_).first(static_cast<size_t>(builder.position()));
+  builder.Finalize();
+  return base::as_byte_span(result);
 }
 
 double ParseDouble(base::span<const LChar> string, size_t& parsed_length) {
@@ -178,7 +181,7 @@ double ParseDouble(base::span<const UChar> string, size_t& parsed_length) {
   const size_t kConversionBufferSize = 64;
   const size_t length = string.size();
   if (length > kConversionBufferSize) {
-    return ParseDoubleFromLongString(string.data(), length, parsed_length);
+    return ParseDoubleFromLongString(string, parsed_length);
   }
   std::array<LChar, kConversionBufferSize> conversion_buffer;
   for (size_t i = 0; i < length; ++i) {

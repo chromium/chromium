@@ -4,6 +4,8 @@
 
 #include "content/public/browser/oop_video_decoder_factory.h"
 
+#include <utility>
+
 #include "base/containers/queue.h"
 #include "components/viz/common/switches.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -12,10 +14,12 @@
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/browser/service_process_host_passkeys.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/mojom/video_decoder_factory_process.mojom.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/viz/public/mojom/gpu.mojom.h"
 
 namespace content {
 
@@ -40,19 +44,22 @@ class OOPVideoDecoderFactoryProcessLauncher final
       const OOPVideoDecoderFactoryProcessLauncher&) = delete;
 
   void LaunchWhenGpuFeatureInfoIsKnown(
-      mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
+      mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver,
+      mojo::PendingRemote<viz::mojom::Gpu> gpu_remote) {
     if (gpu_preferences_.disable_accelerated_video_decode) {
       return;
     }
     if (ui_thread_task_runner_->RunsTasksInCurrentSequence()) {
-      LaunchWhenGpuFeatureInfoIsKnownOnUIThread(std::move(receiver));
+      LaunchWhenGpuFeatureInfoIsKnownOnUIThread(std::move(receiver),
+                                                std::move(gpu_remote));
       return;
     }
     // base::Unretained(this) is safe because *|this| is never destroyed.
     ui_thread_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&OOPVideoDecoderFactoryProcessLauncher::
                                       LaunchWhenGpuFeatureInfoIsKnownOnUIThread,
-                                  base::Unretained(this), std::move(receiver)));
+                                  base::Unretained(this), std::move(receiver),
+                                  std::move(gpu_remote)));
   }
 
  private:
@@ -86,28 +93,32 @@ class OOPVideoDecoderFactoryProcessLauncher final
     }
     gpu_feature_info_ = manager->GetGpuFeatureInfo();
 
-    while (!pending_factory_receivers_.empty()) {
-      auto factory_receiver = std::move(pending_factory_receivers_.front());
-      pending_factory_receivers_.pop();
-      LaunchOnUIThread(std::move(factory_receiver));
+    while (!pending_factory_receivers_with_gpu_remotes_.empty()) {
+      auto [factory_receiver, gpu_remote] =
+          std::move(pending_factory_receivers_with_gpu_remotes_.front());
+      pending_factory_receivers_with_gpu_remotes_.pop();
+      LaunchOnUIThread(std::move(factory_receiver), std::move(gpu_remote));
     }
   }
 
   void LaunchWhenGpuFeatureInfoIsKnownOnUIThread(
-      mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
+      mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver,
+      mojo::PendingRemote<viz::mojom::Gpu> gpu_remote) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
     if (gpu_feature_info_) {
-      LaunchOnUIThread(std::move(receiver));
+      LaunchOnUIThread(std::move(receiver), std::move(gpu_remote));
       return;
     }
-    pending_factory_receivers_.emplace(std::move(receiver));
+    pending_factory_receivers_with_gpu_remotes_.emplace(
+        std::make_pair(std::move(receiver), std::move(gpu_remote)));
     GpuDataManagerImpl::GetInstance()->AddObserver(this);
     OnGpuInfoUpdateOnUIThread();
   }
 
   void LaunchOnUIThread(
-      mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
+      mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver,
+      mojo::PendingRemote<viz::mojom::Gpu> gpu_remote) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
     if (gpu_feature_info_
@@ -120,8 +131,8 @@ class OOPVideoDecoderFactoryProcessLauncher final
     ServiceProcessHost::Launch(
         process.BindNewPipeAndPassReceiver(),
         ServiceProcessHost::Options().WithDisplayName("Video Decoder").Pass());
-    process->InitializeVideoDecoderFactory(*gpu_feature_info_,
-                                           std::move(receiver));
+    process->InitializeVideoDecoderFactory(
+        *gpu_feature_info_, std::move(receiver), std::move(gpu_remote));
     processes_.Add(std::move(process));
   }
 
@@ -149,8 +160,10 @@ class OOPVideoDecoderFactoryProcessLauncher final
 
   // This member holds onto any requests for an InterfaceFactory until
   // the gpu::GpuFeatureInfo is known.
-  base::queue<mojo::PendingReceiver<media::mojom::InterfaceFactory>>
-      pending_factory_receivers_ GUARDED_BY_CONTEXT(ui_sequence_checker_);
+  base::queue<std::pair<mojo::PendingReceiver<media::mojom::InterfaceFactory>,
+                        mojo::PendingRemote<viz::mojom::Gpu>>>
+      pending_factory_receivers_with_gpu_remotes_
+          GUARDED_BY_CONTEXT(ui_sequence_checker_);
 };
 
 }  // namespace
@@ -158,10 +171,12 @@ class OOPVideoDecoderFactoryProcessLauncher final
 #endif  // BUILDFLAG(ALLOW_HOSTING_OOP_VIDEO_DECODER)
 
 void LaunchOOPVideoDecoderFactory(
-    mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
+    mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver,
+    mojo::PendingRemote<viz::mojom::Gpu> gpu_remote) {
 #if BUILDFLAG(ALLOW_HOSTING_OOP_VIDEO_DECODER)
   OOPVideoDecoderFactoryProcessLauncher::Instance()
-      .LaunchWhenGpuFeatureInfoIsKnown(std::move(receiver));
+      .LaunchWhenGpuFeatureInfoIsKnown(std::move(receiver),
+                                       std::move(gpu_remote));
 #endif
 }
 

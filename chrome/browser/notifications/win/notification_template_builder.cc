@@ -26,6 +26,7 @@
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/libxml/chromium/xml_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
@@ -52,8 +53,6 @@ const char kBindingElementTemplateAttribute[] = "template";
 const char kContent[] = "content";
 const char kContextMenu[] = "contextMenu";
 const char kCritical[] = "Critical";
-const char kDuration[] = "duration";
-const char kDurationLong[] = "long";
 const char kForeground[] = "foreground";
 const char kHero[] = "hero";
 const char kHintButtonStyle[] = "hint-buttonStyle";
@@ -116,14 +115,9 @@ void StartToastElement(XmlWriter* xml_writer,
     xml_writer->AddAttribute(kScenario, kIncomingCall);
     xml_writer->AddAttribute(kUseButtonStyle, kTrue);
   } else if (notification.never_timeout()) {
-    if (base::FeatureList::IsEnabled(
-            features::kNotificationDurationLongForRequireInteraction)) {
-      xml_writer->AddAttribute(kDuration, kDurationLong);
-    } else {
-      // Note: If the notification doesn't include a button, then Windows will
-      // ignore the Reminder flag. See EnsureReminderHasButton below.
-      xml_writer->AddAttribute(kScenario, kReminder);
-    }
+    // Note: If the notification doesn't include a button, then Windows will
+    // ignore the Reminder flag. See EnsureReminderHasButton below.
+    xml_writer->AddAttribute(kScenario, kReminder);
   }
 
   if (notification.timestamp().is_null())
@@ -362,9 +356,7 @@ void AddContextMenu(XmlWriter* xml_writer,
 void EnsureReminderHasButton(XmlWriter* xml_writer,
                              const message_center::Notification& notification,
                              NotificationLaunchId copied_launch_id) {
-  if (!notification.never_timeout() || !notification.buttons().empty() ||
-      base::FeatureList::IsEnabled(
-          features::kNotificationDurationLongForRequireInteraction)) {
+  if (!notification.never_timeout() || !notification.buttons().empty()) {
     return;
   }
 

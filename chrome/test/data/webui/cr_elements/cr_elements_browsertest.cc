@@ -219,4 +219,9 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLoadingGradient) {
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrFeedbackButtons) {
   RunTest("cr_elements/cr_feedback_buttons_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, DomIf) {
+  RunTest("cr_elements/dom_if_test.js", "mocha.run()");
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)

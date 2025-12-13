@@ -18,7 +18,7 @@ enum class ContentSuggestionsModuleType {
   kInvalid = -1,
   kMostVisited = 0,
   kShortcuts = 1,
-  kSetUpListSync = 2,
+  // Removed: kSetUpListSync = 2,
   kSetUpListDefaultBrowser = 3,
   kSetUpListAutofill = 4,
   kCompactedSetUpList = 5,
@@ -27,7 +27,7 @@ enum class ContentSuggestionsModuleType {
   // Removed: kSafetyCheckMultiRow = 8,
   // Removed: kSafetyCheckMultiRowOverflow = 9,
   kTabResumption = 10,
-  kParcelTracking = 11,
+  // Removed: kParcelTracking = 11,
   // Removed: kParcelTrackingSeeMore = 12,
   kSetUpListNotifications = 13,
   kPlaceholder = 14,
@@ -43,7 +43,9 @@ enum class ContentSuggestionsModuleType {
   // Removed: kSetUpListDocking = 19,
   // Removed: kSetUpListAddressBar = 20,
   kShopCard = 21,
-  kMaxValue = kShopCard,
+  kAppBundlePromo = 22,
+  kDefaultBrowser = 23,
+  kMaxValue = kDefaultBrowser,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
@@ -102,10 +104,7 @@ extern const CGFloat kMagicStackFaviconWidth;
 ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
     SetUpListItemType type);
 
-// Returns true if the module type is one of the SetUpList types.
-bool IsSetUpListModuleType(ContentSuggestionsModuleType type);
-
-// Returns true if the module type is one of the Tips types.
+// Returns true if the module type is one of the Tips card types.
 bool IsTipsModuleType(ContentSuggestionsModuleType type);
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CONTENT_SUGGESTIONS_CONSTANTS_H_

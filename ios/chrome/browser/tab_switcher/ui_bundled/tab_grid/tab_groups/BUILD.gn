@@ -43,7 +43,6 @@ source_set("tab_groups") {
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/first_run/public:best_features_item",
-    "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/policy/model:policy_util",
@@ -86,6 +85,8 @@ source_set("tab_groups") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars:toolbars_ui",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ios/chrome/browser/welcome_back/model:features",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/favicon",
@@ -190,7 +191,6 @@ source_set("tab_groups_ui") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_view_delegate",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:tab_group_grid_ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars:toolbars_ui",
-    "//ios/chrome/browser/toolbar/ui_bundled/tab_groups:features_utils",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/favicon",
@@ -233,6 +233,8 @@ source_set("tab_group_creation_ui") {
 
 source_set("snapshots_view") {
   sources = [
+    "grid_empty_thumbnail_view.h",
+    "grid_empty_thumbnail_view.mm",
     "group_tab_view.h",
     "group_tab_view.mm",
     "tab_group_snapshots_view.h",
@@ -241,13 +243,16 @@ source_set("snapshots_view") {
   deps = [
     ":tab_groups_constant",
     "//base",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tab_switcher/ui_bundled:items",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
+    "//ui/base",
   ]
 }
 
@@ -327,6 +332,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:snapshot_source",
     "//ios/chrome/browser/tab_switcher/ui_bundled",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_mode",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_toolbars_mutator",
@@ -386,7 +392,7 @@ source_set("eg2_tests") {
     "//components/strings",
     "//components/sync/base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/share_kit/model:test_constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -397,7 +403,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs:inactive_tabs_constants",
     "//ios/chrome/browser/tab_switcher/ui_bundled/test:utils",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
-    "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

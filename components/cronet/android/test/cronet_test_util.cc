@@ -34,19 +34,19 @@ namespace {
 
 using ::base::MessagePump;
 using ::base::MessagePumpType;
-using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
 using ::base::sequence_manager::SequenceManager;
 
 SequenceManager* g_sequence_manager = nullptr;
 
 }  // namespace
 
-jint JNI_CronetTestUtil_GetLoadFlags(JNIEnv* env,
-                                     const jlong jurl_request_adapter) {
+static jint JNI_CronetTestUtil_GetLoadFlags(JNIEnv* env,
+                                            const jlong jurl_request_adapter) {
   return TestUtil::GetURLRequest(jurl_request_adapter)->load_flags();
 }
 
-jboolean JNI_CronetTestUtil_URLRequestContextExistsForTesting(
+static jboolean JNI_CronetTestUtil_URLRequestContextExistsForTesting(
     JNIEnv* env,
     jlong jcontext_adapter,
     jlong jnetwork_handle) {
@@ -54,7 +54,7 @@ jboolean JNI_CronetTestUtil_URLRequestContextExistsForTesting(
       ->contains(jnetwork_handle);
 }
 
-jni_zero::ScopedJavaLocalRef<jobjectArray>
+static jni_zero::ScopedJavaLocalRef<jobjectArray>
 JNI_CronetTestUtil_GetClientConnectionOptions(JNIEnv* env,
                                               jlong jcontext_adapter) {
   std::vector<std::string> quic_tags;
@@ -65,7 +65,7 @@ JNI_CronetTestUtil_GetClientConnectionOptions(JNIEnv* env,
   return base::android::ToJavaArrayOfStrings(env, std::move(quic_tags));
 }
 
-jni_zero::ScopedJavaLocalRef<jobjectArray>
+static jni_zero::ScopedJavaLocalRef<jobjectArray>
 JNI_CronetTestUtil_GetConnectionOptions(JNIEnv* env, jlong jcontext_adapter) {
   std::vector<std::string> quic_tags;
   for (auto tag : TestUtil::GetDefaultURLRequestQuicParams(jcontext_adapter)
@@ -165,8 +165,8 @@ static void PrepareNetworkThreadOnNetworkThread(jlong jcontext_adapter) {
 // the corresponding static tables in libcronet_test.so.  Fix this by
 // initializing a MessageLoop and SingleThreadTaskRunner in libcronet_test.so
 // for these threads.  Called from Java CronetTestUtil class.
-void JNI_CronetTestUtil_PrepareNetworkThread(JNIEnv* env,
-                                             jlong jcontext_adapter) {
+static void JNI_CronetTestUtil_PrepareNetworkThread(JNIEnv* env,
+                                                    jlong jcontext_adapter) {
   TestUtil::GetTaskRunner(jcontext_adapter)
       ->PostTask(FROM_HERE, base::BindOnce(&PrepareNetworkThreadOnNetworkThread,
                                            jcontext_adapter));
@@ -179,18 +179,21 @@ static void CleanupNetworkThreadOnNetworkThread() {
 }
 
 // Called from Java CronetTestUtil class.
-void JNI_CronetTestUtil_CleanupNetworkThread(JNIEnv* env,
-                                             jlong jcontext_adapter) {
+static void JNI_CronetTestUtil_CleanupNetworkThread(JNIEnv* env,
+                                                    jlong jcontext_adapter) {
   TestUtil::RunAfterContextInit(
       jcontext_adapter, base::BindOnce(&CleanupNetworkThreadOnNetworkThread));
 }
 
-jboolean JNI_CronetTestUtil_CanGetTaggedBytes(JNIEnv* env) {
+static jboolean JNI_CronetTestUtil_CanGetTaggedBytes(JNIEnv* env) {
   return net::CanGetTaggedBytes();
 }
 
-jlong JNI_CronetTestUtil_GetTaggedBytes(JNIEnv* env, jint jexpected_tag) {
+static jlong JNI_CronetTestUtil_GetTaggedBytes(JNIEnv* env,
+                                               jint jexpected_tag) {
   return net::GetTaggedBytes(jexpected_tag);
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(CronetTestUtil)

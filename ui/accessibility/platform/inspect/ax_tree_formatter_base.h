@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterBase
   void SetPropertyFilters(const std::vector<AXPropertyFilter>& property_filters,
                           PropertyFilterSet default_filters_set) override;
   void SetNodeFilters(const std::vector<AXNodeFilter>& node_filters) override;
+  void SetSubtreePattern(const std::string& pattern) override;
   void set_show_ids(bool show_ids) override;
   std::string DumpInternalAccessibilityTree(
       AXTreeID tree_id,
@@ -122,7 +123,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterBase
  private:
   void RecursiveFormatTree(const base::Value::Dict& tree_node,
                            std::string* contents,
-                           int depth = 0) const;
+                           int depth = 0,
+                           bool* found_subtree = nullptr,
+                           int* subtree_depth = nullptr) const;
 
   bool MatchesPropertyFilters(const std::string& text,
                               bool default_result) const;
@@ -136,6 +139,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterBase
   // Any node which matches a node wilder will be skipped, along with all its
   // children.
   std::vector<AXNodeFilter> node_filters_;
+
+  // Pattern to match for dumping only a subtree. When set, only the subtree
+  // starting from the first node matching this pattern will be dumped.
+  std::string subtree_pattern_;
 
   // Whether or not node ids should be included in the dump.
   bool show_ids_ = false;

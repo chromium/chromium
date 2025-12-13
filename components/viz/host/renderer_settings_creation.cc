@@ -69,15 +69,18 @@ RendererSettings CreateRendererSettings() {
                         &renderer_settings.slow_down_compositing_scale_factor);
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   // Used finch experiment to determine the best value. See b:330617490 for
   // details.
   renderer_settings.occlusion_culler_settings.quad_split_limit = 12;
-  renderer_settings.occlusion_culler_settings
-      .generate_complex_occluder_for_rounded_corners = true;
 #else
   renderer_settings.occlusion_culler_settings.quad_split_limit =
       features::DrawQuadSplitLimit();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  renderer_settings.occlusion_culler_settings
+      .generate_complex_occluder_for_rounded_corners = true;
 #endif
 
 #if BUILDFLAG(IS_OZONE)

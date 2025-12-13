@@ -17,6 +17,9 @@ const char kIsAllowlistedByUserKey[] = "is-allowlisted-by-user";
 
 const char kSuspiciousNotificationIdsKey[] = "suspicious-notification-ids";
 
+const char kSuspiciousNotificationShowOriginalKey[] =
+    "suspicious-notification-show-original";
+
 const char kNotificationContentDetectionMetadataDictionaryKey[] =
     "content-detection";
 const char kMetadataSuspiciousScoreKey[] = "suspicious-score";

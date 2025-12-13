@@ -31,8 +31,9 @@ class OffscreenChromeVoxState {
 
   static init(): void {
     if (OffscreenChromeVoxState.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenChromeVoxState.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'OffscreenChromeVoxState.');
     }
     OffscreenChromeVoxState.instance = new OffscreenChromeVoxState();
   }
@@ -40,57 +41,6 @@ class OffscreenChromeVoxState {
   static isReady(): boolean {
     return this.instance?.ready || false;
   };
-}
-
-/**
- * Handles keydown and keyup events on the document and sends serialized key
- * event data to be processed in the service worker's BackgroundKeyboardHandler.
- */
-class OffscreenBackgroundKeyboardHandler {
-  static instance?: OffscreenBackgroundKeyboardHandler;
-
-  constructor() {
-    document.addEventListener(
-        'keydown', (event) => this.onKeyDown_(event), false);
-    document.addEventListener('keyup', (event) => this.onKeyUp_(event), false);
-  }
-
-  static init(): void {
-    if (OffscreenBackgroundKeyboardHandler.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'BackgroundKeyboardHandler.';
-    }
-    OffscreenBackgroundKeyboardHandler.instance =
-        new OffscreenBackgroundKeyboardHandler();
-  }
-
-  /**
-   * Handles key down events using the offscreen DOM and forwards them to the
-   * ChromeVox service worker.
-   */
-  private async onKeyDown_(evt: KeyboardEvent): Promise<void> {
-    const internalEvt = new InternalKeyEvent(evt);
-    const stopPropagation =
-        await BackgroundBridge.BackgroundKeyboardHandler.onKeyDown(internalEvt);
-    if (stopPropagation) {
-      evt.preventDefault();
-      evt.stopPropagation();
-    }
-  }
-
-  /**
-   * Handles key up events using the offscreen DOM and forwards them to the
-   * ChromeVox service worker.
-   */
-  private async onKeyUp_(evt: KeyboardEvent): Promise<void> {
-    const internalEvt = new InternalKeyEvent(evt);
-    const stopPropagation =
-        await BackgroundBridge.BackgroundKeyboardHandler.onKeyUp(internalEvt);
-    if (stopPropagation) {
-      evt.preventDefault();
-      evt.stopPropagation();
-    }
-  }
 }
 
 /**
@@ -110,8 +60,9 @@ class OffscreenLearnModeKeyboardHandler {
 
   static init(): void {
     if (OffscreenLearnModeKeyboardHandler.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenLearnModeKeyboardHandler.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'OffscreenLearnModeKeyboardHandler.');
     }
     OffscreenLearnModeKeyboardHandler.instance =
         new OffscreenLearnModeKeyboardHandler();
@@ -174,8 +125,9 @@ class OffscreenClipboardHandler {
 
   static init(): void {
     if (OffscreenClipboardHandler.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenClipboardHandler.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'OffscreenClipboardHandler.');
     }
     OffscreenClipboardHandler.instance = new OffscreenClipboardHandler();
   }
@@ -240,8 +192,9 @@ class OffscreenSpeechSynthesis {
 
   static init(): void {
     if (OffscreenSpeechSynthesis.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenSpeechSynthesis.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'OffscreenSpeechSynthesis.');
     }
     OffscreenSpeechSynthesis.instance = new OffscreenSpeechSynthesis();
   }
@@ -268,8 +221,9 @@ class OffscreenBrailleDisplayManager {
 
   static init(): void {
     if (OffscreenBrailleDisplayManager.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenBrailleDisplayManager.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'OffscreenBrailleDisplayManager.');
     }
     OffscreenBrailleDisplayManager.instance =
         new OffscreenBrailleDisplayManager();
@@ -315,8 +269,9 @@ class OffscreenMathHandler {
 
   static init(): void {
     if (OffscreenMathHandler.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenMathHandler.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'OffscreenMathHandler.');
     }
     OffscreenMathHandler.instance = new OffscreenMathHandler();
   }
@@ -335,7 +290,6 @@ class OffscreenMathHandler {
 // finishes initialization.
 OffscreenChromeVoxState.init();
 
-OffscreenBackgroundKeyboardHandler.init();
 OffscreenLearnModeKeyboardHandler.init();
 OffscreenClipboardHandler.init();
 OffscreenSpeechSynthesis.init();

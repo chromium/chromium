@@ -83,11 +83,11 @@ source_set("internal") {
     "//components/services/quarantine",
     "//mojo/public/c/system",
     "//net",
-    "//services/device/public/mojom:mojom",
+    "//services/device/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
-    "//services/service_manager/public/cpp:cpp",
+    "//services/service_manager/public/cpp",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

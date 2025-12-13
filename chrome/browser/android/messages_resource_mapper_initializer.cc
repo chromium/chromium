@@ -8,7 +8,9 @@
 
 // Sets up a callback for MessageDispatcherBridge additional initialization. For
 // example, the ResourceMapper from chrome can be bound for use in components.
-void JNI_MessagesResourceMapperInitializer_Init(JNIEnv* env) {
+static void JNI_MessagesResourceMapperInitializer_Init(JNIEnv* env) {
   messages::MessageDispatcherBridge::Get()->Initialize(
       base::BindRepeating(&ResourceMapper::MapToJavaDrawableId));
 }
+
+DEFINE_JNI(MessagesResourceMapperInitializer)

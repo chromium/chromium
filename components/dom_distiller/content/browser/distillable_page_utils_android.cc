@@ -13,7 +13,6 @@
 #include "components/dom_distiller/content/browser/android/jni_headers/DistillablePageUtils_jni.h"
 #include "url/android/gurl_android.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 
@@ -31,7 +30,7 @@ class JniDistillabilityObserverWrapper
   JniDistillabilityObserverWrapper& operator=(
       const JniDistillabilityObserverWrapper&) = delete;
 
-  void SetCallback(JNIEnv* env, const JavaParamRef<jobject>& callback) {
+  void SetCallback(JNIEnv* env, const JavaRef<jobject>& callback) {
     callback_ = ScopedJavaGlobalRef<jobject>(env, callback);
   }
 
@@ -58,8 +57,8 @@ class JniDistillabilityObserverWrapper
 
 static void JNI_DistillablePageUtils_SetDelegate(
     JNIEnv* env,
-    const JavaParamRef<jobject>& webContents,
-    const JavaParamRef<jobject>& callback) {
+    const JavaRef<jobject>& webContents,
+    const JavaRef<jobject>& callback) {
   content::WebContents* web_contents(
       content::WebContents::FromJavaWebContents(webContents));
   if (!web_contents) {
@@ -79,3 +78,5 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(JniDistillabilityObserverWrapper);
 
 }  // namespace android
 }  // namespace dom_distiller
+
+DEFINE_JNI(DistillablePageUtils)

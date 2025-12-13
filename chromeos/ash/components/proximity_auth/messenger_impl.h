@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -19,6 +20,9 @@ namespace proximity_auth {
 // Concrete implementation of the Messenger interface.
 class MessengerImpl : public Messenger,
                       public ash::secure_channel::ClientChannel::Observer {
+  // TODO(crbug.com/392028938): Remove this macro once the bug gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // Constructs a messenger that sends and receives messages.
   //

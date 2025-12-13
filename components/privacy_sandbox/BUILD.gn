@@ -13,7 +13,7 @@ static_library("privacy_sandbox_prefs") {
 
   deps = [
     ":tracking_protection_prefs",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
   ]
 
@@ -46,8 +46,8 @@ source_set("tracking_protection_onboarding") {
   deps = [
     ":features",
     ":tracking_protection_prefs",
-    "//components/keyed_service/core:core",
-    "//components/pref_registry:pref_registry",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/version_info",
   ]
@@ -69,11 +69,13 @@ source_set("tracking_protection_settings") {
     ":tracking_protection_prefs",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
-    "//components/keyed_service/core:core",
+    "//components/keyed_service/core",
     "//components/policy/core/common",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
-    "//url:url",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//url",
   ]
 
   public_deps = [ "//base" ]
@@ -86,7 +88,7 @@ static_library("tracking_protection_prefs") {
   ]
 
   deps = [
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
   ]
 
@@ -101,16 +103,17 @@ source_set("tpcd") {
   ]
 
   deps = [
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
   ]
 
   public_deps = [ "//base" ]
 }
 
-# These sources depend on targets from "//content/browser", which means they can't be
-# loaded on ios.
-# TOOD(b/301947962): Delete this check after CookieSettings is removed from iOS.
+# These sources depend on targets from "//content/browser", which means they can only
+# be loaded on Blink builds.
+# NOTE: If/when targets used on iOS are refactored into a separate BUILD file, this
+# check can be removed.
 if (use_blink) {
   source_set("privacy_sandbox_settings_headers") {
     sources = [
@@ -126,13 +129,13 @@ if (use_blink) {
 
     deps = [
       ":tracking_protection_settings",
-      "//components/browsing_topics/common:common",
-      "//components/keyed_service/core:core",
-      "//components/pref_registry:pref_registry",
+      "//components/browsing_topics/common",
+      "//components/keyed_service/core",
+      "//components/pref_registry",
       "//components/prefs",
       "//content/public/browser",
       "//third_party/blink/public/common",
-      "//url:url",
+      "//url",
     ]
 
     public_deps = [ "//base" ]
@@ -149,22 +152,22 @@ if (use_blink) {
       ":privacy_sandbox_prefs",
       ":privacy_sandbox_survey_service",
       ":tracking_protection_settings",
-      "//components/browsing_topics/common:common",
+      "//components/browsing_topics/common",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/browser:cookie_settings",
       "//components/content_settings/core/common",
-      "//components/keyed_service/core:core",
-      "//components/metrics/dwa:dwa",
+      "//components/keyed_service/core",
       "//components/metrics/dwa:dwa_builders",
-      "//components/pref_registry:pref_registry",
+      "//components/metrics/private_metrics",
+      "//components/pref_registry",
       "//components/prefs",
       "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/strings:components_strings_grit",
       "//content/public/browser",
-      "//net:net",
+      "//net",
       "//third_party/blink/public/common",
-      "//ui/base:base",
-      "//url:url",
+      "//ui/base",
+      "//url",
     ]
 
     public_deps = [
@@ -186,11 +189,11 @@ if (use_blink) {
       ":privacy_sandbox_prefs",
       "//base/test:test_support",
       "//components/browsing_topics:test_support",
-      "//components/content_settings/core/browser:browser",
-      "//components/content_settings/core/common:common",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
       "//components/content_settings/core/test:test_support",
-      "//components/metrics/dwa:dwa",
       "//components/metrics/dwa:dwa_builders",
+      "//components/metrics/private_metrics",
       "//components/prefs:test_support",
       "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
@@ -198,16 +201,19 @@ if (use_blink) {
       "//content/test:test_support",
       "//net",
       "//testing/gmock",
-      "//testing/gtest:gtest",
-      "//ui/base:base",
-      "//url:url",
+      "//testing/gtest",
+      "//ui/base",
+      "//url",
     ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "tracking_protection_onboarding_unittest.cc" ]
+  sources = [
+    "tracking_protection_onboarding_unittest.cc",
+    "tracking_protection_settings_unittest.cc",
+  ]
 
   data = [ "//tools/metrics/histograms/metadata/privacy/histograms.xml" ]
 
@@ -218,9 +224,13 @@ source_set("unit_tests") {
     ":tracking_protection_prefs",
     ":tracking_protection_settings",
     "//base/test:test_support",
+    "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/content_settings/core/test:test_support",
+    "//components/policy/core/common",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//components/version_info",
     "//testing/gtest",
@@ -232,15 +242,12 @@ source_set("unit_tests") {
       "privacy_sandbox_settings_impl_unittest.cc",
       "privacy_sandbox_test_util_unittest.cc",
       "tpcd_experiment_eligibility_unittest.cc",
-      "tracking_protection_settings_unittest.cc",
     ]
 
     deps += [
       ":privacy_sandbox",
       ":test_support",
       "//components/browsing_topics:test_support",
-      "//components/content_settings/core/browser:browser",
-      "//components/content_settings/core/test:test_support",
       "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/strings:components_strings_grit",

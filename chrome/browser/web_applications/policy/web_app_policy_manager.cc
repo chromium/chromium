@@ -20,8 +20,8 @@
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/metrics/histogram_functions.h"
@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
@@ -135,7 +136,6 @@ GetPreinstalledWebAppsMappingForTesting() {
 namespace web_app {
 
 BASE_FEATURE(kDesktopPWAsForceUnregisterOSIntegration,
-             "DesktopPWAsForceUnregisterOSIntegration",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -168,11 +168,21 @@ void WebAppPolicyManager::Start(
 
   policy_settings_and_force_installs_applied_ =
       std::move(policy_settings_and_force_installs_applied);
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(
-                     &WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(
+          base::features::kScopedBestEffortExecutionFenceForTaskQueue)) {
+    // ScopedBestEffortExecutionFenceForTaskQueue can delay the execution of
+    // BEST_EFFORT tasks for a longer period after startup. The policy for
+    // force-installed apps must be available quickly so with this feature the
+    // registry should be initialized immediately.
+    InitChangeRegistrarAndRefreshPolicy();
+  } else {
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void WebAppPolicyManager::Shutdown() {
@@ -298,10 +308,10 @@ std::vector<std::string> WebAppPolicyManager::GetPolicyIds(
   WebAppRegistrar& web_app_registrar =
       WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
 
-  if (web_app_registrar.IsIsolated(app_id) &&
-      web_app_registrar.IsInstalledByPolicy(app_id)) {
+  if (web_app_registrar.AppMatches(
+          app_id, WebAppFilter::PolicyInstalledIsolatedWebApp())) {
     // This is an IWA - and thus, web_bundle_id == policy_id == URL hostname
-    return {web_app.start_url().host()};
+    return {web_app.start_url().GetHost()};
   }
 
   std::vector<std::string> policy_ids;
@@ -368,6 +378,11 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy() {
   RefreshPolicyInstalledApps(
       /*allow_close_and_relaunch=*/base::FeatureList::IsEnabled(
           features::kForcedAppRelaunchOnPlaceholderUpdate));
+  pref_change_registrar_.Add(
+      prefs::kDefaultHandlersForFileExtensions,
+      base::BindRepeating(
+          &WebAppPolicyManager::SynchronizeOsWithPolicyDefinedFileHandlers,
+          weak_ptr_factory_.GetWeakPtr()));
 #else
   RefreshPolicyInstalledApps(/*allow_close_and_relaunch=*/false);
 #endif
@@ -552,6 +567,11 @@ void WebAppPolicyManager::ParsePolicySettings() {
 void WebAppPolicyManager::RefreshPolicySettings() {
   ParsePolicySettings();
   ApplyPolicySettings();
+}
+
+void WebAppPolicyManager::SynchronizeOsWithPolicyDefinedFileHandlers() {
+  provider_->scheduler().SynchronizeOsIntegrationForAllApps(
+      WebAppFilter::InstalledInChrome(), base::DoNothing());
 }
 
 void WebAppPolicyManager::ApplyPolicySettings() {
@@ -739,8 +759,8 @@ void WebAppPolicyManager::RefreshPolicySettingsForTesting() {
 void WebAppPolicyManager::OverrideManifest(
     const GURL& custom_values_key,
     blink::mojom::ManifestPtr& manifest) const {
-  const CustomManifestValues& custom_values =
-      custom_manifest_values_by_url_.at(custom_values_key);
+  const CustomManifestValues& custom_values = CHECK_DEREF(
+      base::FindOrNull(custom_manifest_values_by_url_, custom_values_key));
   if (custom_values.name) {
     manifest->name = custom_values.name.value();
   }
@@ -775,8 +795,10 @@ void WebAppPolicyManager::MaybeOverrideManifest(
     if (base::Contains(policy_installed_apps, app_id)) {
       DCHECK_GT(policy_installed_apps[app_id].size(), 0UL);
       for (const GURL& policy_install_url : policy_installed_apps[app_id]) {
-        if (base::Contains(custom_manifest_values_by_url_, policy_install_url))
+        if (base::Contains(custom_manifest_values_by_url_,
+                           policy_install_url)) {
           OverrideManifest(policy_install_url, manifest);
+        }
       }
       return;
     }
@@ -791,8 +813,9 @@ void WebAppPolicyManager::MaybeOverrideManifest(
   if (!pre_redirect)
     return;
   GURL install_url = pre_redirect->last_url();
-  if (base::Contains(custom_manifest_values_by_url_, install_url))
+  if (base::Contains(custom_manifest_values_by_url_, install_url)) {
     OverrideManifest(install_url, manifest);
+  }
 }
 
 // TODO(crbug.com/329823863): This method should be placed somewhere else, as it
@@ -1025,6 +1048,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
         break;
       case policy::SystemFeature::kGoogleChat:
         disabled_web_apps_.insert(ash::kGoogleChatAppId);
+        disabled_web_apps_.insert(ash::kOldGoogleChatAppId);
         break;
       case policy::SystemFeature::kYoutube:
         disabled_web_apps_.insert(ash::kYoutubeAppId);
@@ -1034,6 +1058,9 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
         break;
       case policy::SystemFeature::kCalculator:
         disabled_web_apps_.insert(ash::kCalculatorAppId);
+        break;
+      case policy::SystemFeature::kVids:
+        disabled_web_apps_.insert(ash::kVidsAppId);
         break;
       case policy::SystemFeature::kUnknownSystemFeature:
       case policy::SystemFeature::kBrowserSettings:

@@ -1,0 +1,49 @@
+[document web] name='Material Web Input Chips'
+++[section] name='Ready'
+++++[tool bar] horizontal
+++++++[panel]
+++++++++[section]
+++++++++++[push button] name='Input chip'
+++++++++++[push button] name='Remove Input chip'
+++++++[section]
+++++++++[section]
+++++++++++[push button] name='With avatar'
+++++++++++[push button] name='Remove With avatar'
+++++++[section]
+++++++++[section]
+++++++++++[static] name='Removable'
+++++++++++[push button] name='Remove Removable'
+=== Start Continuation ===
+[document web] name='Material Web Input Chips'
+++[section] name='Ready'
+++++[tool bar] horizontal
+++++++[panel]
+++++++++[section]
+++++++++++[push button] name='Input chip'
+++++++++++[push button] name='Remove Input chip'
+++++++[section]
+++++++++[section]
+++++++++++[push button] name='With avatar'
+++++++++++[push button] name='Remove With avatar'
+++++++[section]
+++++++++[section]
+++++++++++[static] name='Removable'
+++++++++++[push button] name='Remove Removable'
+++++[section]
+++++++[static] name='Input Chip Selected'
+=== Start Continuation ===
+[document web] name='Material Web Input Chips'
+++[section] name='Ready'
+++++[tool bar] horizontal
+++++++[panel]
+++++++++[section]
+++++++++++[push button] name='Input chip'
+++++++++++[push button] name='Remove Input chip'
+++++++[section]
+++++++++[section]
+++++++++++[push button] name='With avatar'
+++++++++++[push button] name='Remove With avatar'
+++++[section]
+++++++[static] name='Input Chip Selected'
+++++[section]
+++++++[static] name='Input Chip Removed'

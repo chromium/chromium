@@ -240,7 +240,7 @@ bool ChromeKeyboardBoundsObserver::ShouldEnableInsets(aura::Window* window) {
       !ChromeKeyboardControllerClient::Get()->IsKeyboardOverscrollEnabled()) {
     return false;
   }
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   return screen->GetDisplayNearestWindow(window).id() ==
          screen->GetDisplayNearestWindow(keyboard_window_).id();
 }

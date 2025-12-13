@@ -15,12 +15,10 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"

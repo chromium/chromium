@@ -10,9 +10,9 @@
 #include <string_view>
 
 #include "base/logging.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
 #include "net/cert/asn1_util.h"

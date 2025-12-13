@@ -27,14 +27,14 @@ inline constexpr size_t kMaxPhoneNumberSize = 40;
 // Return true if the given `phone_number` object is likely to be a phone number
 // This method uses IsPossibleNumber from libphonenumber, instead of
 // IsValidNumber. IsPossibleNumber does a less strict check, it will not try to
-// check for carrier code validility.
+// check for carrier code validity.
 bool IsPossiblePhoneNumber(
     const ::i18n::phonenumbers::PhoneNumber& phone_number);
 
 // Return true if the given `phone_number` is likely to be a phone number for
 // the `country_code`. This method uses IsPossibleNumber from libphonenumber,
 // instead of IsValidNumber. IsPossibleNumber does a less strict check, it
-// will not try to check for carrier code validility.
+// will not try to check for carrier code validity.
 bool IsPossiblePhoneNumber(std::string_view phone_number,
                            const std::string& country_code);
 
@@ -131,6 +131,7 @@ class PhoneObject final {
   const std::u16string& GetFormattedNumber() const;
   std::u16string GetNationallyFormattedNumber() const;
   const std::u16string& GetWholeNumber() const;
+  std::string GetRegionCode() const;
 
 
   bool IsValidNumber() const { return i18n_number_ != nullptr; }

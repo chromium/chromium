@@ -27,6 +27,7 @@
 #include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -412,8 +413,8 @@ void PrivateAggregationBindings::AttachToContext(
     return;
   }
 
-  v8::Local<v8::External> v8_this =
-      v8::External::New(v8_helper_->isolate(), this);
+  v8::Local<v8::External> v8_this = v8::External::New(
+      v8_helper_->isolate(), this, gin::kPrivateAggregationBindingsTag);
 
   v8::Local<v8::Object> private_aggregation =
       v8::Object::New(v8_helper_->isolate());
@@ -489,7 +490,8 @@ void PrivateAggregationBindings::ContributeToHistogram(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   PrivateAggregationBindings* bindings =
       static_cast<PrivateAggregationBindings*>(
-          v8::External::Cast(*args.Data())->Value());
+          v8::External::Cast(*args.Data())
+              ->Value(gin::kPrivateAggregationBindingsTag));
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
   v8::Isolate* isolate = v8_helper->isolate();
 
@@ -576,7 +578,8 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   PrivateAggregationBindings* bindings =
       static_cast<PrivateAggregationBindings*>(
-          v8::External::Cast(*args.Data())->Value());
+          v8::External::Cast(*args.Data())
+              ->Value(gin::kPrivateAggregationBindingsTag));
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
   v8::Isolate* isolate = v8_helper->isolate();
 
@@ -708,7 +711,8 @@ void PrivateAggregationBindings::EnableDebugMode(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   PrivateAggregationBindings* bindings =
       static_cast<PrivateAggregationBindings*>(
-          v8::External::Cast(*args.Data())->Value());
+          v8::External::Cast(*args.Data())
+              ->Value(gin::kPrivateAggregationBindingsTag));
 
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
   v8::Isolate* isolate = v8_helper->isolate();

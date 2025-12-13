@@ -47,6 +47,9 @@
 //    * `absl::Span` has no static extent template parameter, nor constructors
 //      which exist only because of the static extent parameter.
 //    * `absl::Span` has an explicit mutable-reference constructor
+//    * `absl::Span::subspan(pos, len)` always truncates `len` to
+//      `size() - pos`, whereas `std::span::subspan()` only truncates when the
+//      `len` parameter is defaulted.
 //
 // For more information, see the class comments below.
 #ifndef ABSL_TYPES_SPAN_H_
@@ -91,10 +94,10 @@ ABSL_NAMESPACE_END
 #if defined(__cpp_lib_ranges) && __cpp_lib_ranges >= 201911L
 #include <ranges>  // NOLINT(build/c++20)
 template <typename T>
- // NOLINTNEXTLINE(build/c++20)
+// NOLINTNEXTLINE(build/c++20)
 inline constexpr bool std::ranges::enable_view<absl::Span<T>> = true;
 template <typename T>
- // NOLINTNEXTLINE(build/c++20)
+// NOLINTNEXTLINE(build/c++20)
 inline constexpr bool std::ranges::enable_borrowed_range<absl::Span<T>> = true;
 #endif
 
@@ -449,6 +452,11 @@ class ABSL_ATTRIBUTE_VIEW Span {
   // will be trimmed to at most size() - `pos`. A default `len` value of `npos`
   // ensures the returned subspan continues until the end of the span.
   //
+  // Note that trimming behavior differs from `std::span::subspan()`.
+  // `std::span::subspan()` requires `len == npos || pos + len <= size()`.
+  // In other words, `std::span::subspan()` only trims `len` when its value is
+  // defaulted.
+  //
   // Examples:
   //
   //   std::vector<int> vec = {10, 11, 12, 13};
@@ -726,24 +734,38 @@ ABSL_INTERNAL_CONSTEXPR_SINCE_CXX20 bool operator>=(Span<T> a, const U& b) {
 //   }
 //
 template <int&... ExplicitArgumentBarrier, typename T>
-constexpr Span<T> MakeSpan(T* absl_nullable ptr, size_t size) noexcept {
+constexpr Span<T> MakeSpan(T* absl_nullable ptr ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                           size_t size) noexcept {
   return Span<T>(ptr, size);
 }
 
 template <int&... ExplicitArgumentBarrier, typename T>
-Span<T> MakeSpan(T* absl_nullable begin, T* absl_nullable end) noexcept {
+Span<T> MakeSpan(T* absl_nullable begin ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                 T* absl_nullable end) noexcept {
   ABSL_HARDENING_ASSERT(begin <= end);
   return Span<T>(begin, static_cast<size_t>(end - begin));
 }
 
 template <int&... ExplicitArgumentBarrier, typename C>
 constexpr auto MakeSpan(C& c) noexcept  // NOLINT(runtime/references)
-    -> decltype(absl::MakeSpan(span_internal::GetData(c), c.size())) {
+    -> std::enable_if_t<span_internal::IsView<C>::value,
+                        decltype(absl::MakeSpan(span_internal::GetData(c),
+                                                c.size()))> {
+  return MakeSpan(span_internal::GetData(c), c.size());
+}
+
+template <int&... ExplicitArgumentBarrier, typename C>
+constexpr auto MakeSpan(
+    C& c ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept  // NOLINT(runtime/references)
+    -> std::enable_if_t<!span_internal::IsView<C>::value,
+                        decltype(absl::MakeSpan(span_internal::GetData(c),
+                                                c.size()))> {
   return MakeSpan(span_internal::GetData(c), c.size());
 }
 
 template <int&... ExplicitArgumentBarrier, typename T, size_t N>
-constexpr Span<T> MakeSpan(T (&array)[N]) noexcept {
+constexpr Span<T> MakeSpan(
+    T (&array ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) noexcept {
   return Span<T>(array, N);
 }
 
@@ -772,25 +794,36 @@ constexpr Span<T> MakeSpan(T (&array)[N]) noexcept {
 //   ProcessInts(absl::MakeConstSpan(std::vector<int>{ 0, 0, 0 }));
 //
 template <int&... ExplicitArgumentBarrier, typename T>
-constexpr Span<const T> MakeConstSpan(T* absl_nullable ptr,
-                                      size_t size) noexcept {
+constexpr Span<const T> MakeConstSpan(
+    T* absl_nullable ptr ABSL_ATTRIBUTE_LIFETIME_BOUND, size_t size) noexcept {
   return Span<const T>(ptr, size);
 }
 
 template <int&... ExplicitArgumentBarrier, typename T>
-Span<const T> MakeConstSpan(T* absl_nullable begin,
+Span<const T> MakeConstSpan(T* absl_nullable begin
+                                ABSL_ATTRIBUTE_LIFETIME_BOUND,
                             T* absl_nullable end) noexcept {
   ABSL_HARDENING_ASSERT(begin <= end);
   return Span<const T>(begin, end - begin);
 }
 
 template <int&... ExplicitArgumentBarrier, typename C>
-constexpr auto MakeConstSpan(const C& c) noexcept -> decltype(MakeSpan(c)) {
+constexpr auto MakeConstSpan(const C& c) noexcept
+    -> std::enable_if_t<span_internal::IsView<C>::value,
+                        decltype(MakeSpan(c))> {
+  return MakeSpan(c);
+}
+
+template <int&... ExplicitArgumentBarrier, typename C>
+constexpr auto MakeConstSpan(const C& c ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept
+    -> std::enable_if_t<!span_internal::IsView<C>::value,
+                        decltype(MakeSpan(c))> {
   return MakeSpan(c);
 }
 
 template <int&... ExplicitArgumentBarrier, typename T, size_t N>
-constexpr Span<const T> MakeConstSpan(const T (&array)[N]) noexcept {
+constexpr Span<const T> MakeConstSpan(
+    const T (&array ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) noexcept {
   return Span<const T>(array, N);
 }
 ABSL_NAMESPACE_END

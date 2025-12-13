@@ -6,8 +6,11 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/ios/block_types.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
+#import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_cell.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_action_delegate.h"
@@ -40,8 +43,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 // Table view header/footer height.
-CGFloat kSectionHeaderHeight = 8.;
-CGFloat kSectionFooterHeight = 8.;
+constexpr CGFloat kSectionHeaderHeight = 8.;
+constexpr CGFloat kSectionFooterHeight = 8.;
 
 }  // namespace
 
@@ -80,9 +83,56 @@ CGFloat kSectionFooterHeight = 8.;
       DCHECK(identityItem);
       base::RecordAction(base::UserMetricsAction(
           "Signin_BottomSheet_IdentityChooser_Selected"));
-      [self.actionDelegate
-          consistencyAccountChooserTableViewController:self
-                           didSelectIdentityWithGaiaID:identityItem.gaiaID];
+
+      // Find index of the previously selected identity.
+      NSIndexPath* previousIndexPath = nil;
+      NSInteger section = [self.tableViewModel
+          sectionForSectionIdentifier:IdentitySectionIdentifier];
+      for (int i = 0; i < [self.tableViewModel numberOfItemsInSection:section];
+           i++) {
+        NSIndexPath* path = [NSIndexPath indexPathForRow:i inSection:section];
+        TableViewIdentityItem* currentItem =
+            base::apple::ObjCCastStrict<TableViewIdentityItem>(
+                [self.tableViewModel itemAtIndexPath:path]);
+        if (currentItem.selected) {
+          previousIndexPath = path;
+          break;
+        }
+      }
+
+      // Deselect the previous identity and update the cell.
+      if (previousIndexPath) {
+        TableViewIdentityItem* previousIdentityItem =
+            base::apple::ObjCCastStrict<TableViewIdentityItem>(
+                [self.tableViewModel itemAtIndexPath:previousIndexPath]);
+        previousIdentityItem.selected = NO;
+        LegacyTableViewCell* oldCell =
+            [self.tableView cellForRowAtIndexPath:previousIndexPath];
+        if (oldCell) {
+          [previousIdentityItem configureCell:oldCell withStyler:self.styler];
+        }
+      }
+
+      // Select the new identity and update the cell.
+      identityItem.selected = YES;
+      LegacyTableViewCell* newCell =
+          [self.tableView cellForRowAtIndexPath:indexPath];
+      __weak ConsistencyAccountChooserTableViewController* weakSelf = self;
+      ProceduralBlock completionBlock = ^{
+        [weakSelf.actionDelegate
+            consistencyAccountChooserTableViewController:weakSelf
+                             didSelectIdentityWithGaiaID:GaiaId(identityItem
+                                                                    .gaiaID)];
+      };
+      if (newCell) {
+        [identityItem configureCell:newCell
+                         withStyler:self.styler
+                         completion:completionBlock];
+      } else {
+        // The cell is not visible, so the animation will not be seen.
+        // The completion can be called immediately.
+        completionBlock();
+      }
       break;
     }
     case AddAccountItemType:
@@ -142,6 +192,7 @@ CGFloat kSectionFooterHeight = 8.;
     TableViewIdentityItem* item =
         [[TableViewIdentityItem alloc] initWithType:IdentityItemType];
     item.identityViewStyle = IdentityViewStyleConsistency;
+    item.accessibilityTraits |= UIAccessibilityTraitButton;
     [configurator configureIdentityChooser:item];
     [model addItem:item toSectionWithIdentifier:IdentitySectionIdentifier];
   }
@@ -156,6 +207,8 @@ CGFloat kSectionFooterHeight = 8.;
   item.title = l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_ADD_ACCOUNT);
   item.accessibilityIdentifier = kConsistencyAccountChooserAddAccountIdentifier;
   item.textColor = [UIColor colorNamed:kBlueColor];
+  item.isAccessibilityElement = YES;
+  item.accessibilityTraits |= UIAccessibilityTraitButton;
   [model addItem:item toSectionWithIdentifier:AddAccountSectionIdentifier];
 }
 
@@ -214,7 +267,7 @@ CGFloat kSectionFooterHeight = 8.;
     TableViewIdentityItem* item =
         base::apple::ObjCCastStrict<TableViewIdentityItem>(
             [model itemAtIndexPath:path]);
-    if ([item.gaiaID isEqualToString:configurator.gaiaID]) {
+    if (item.gaiaID == configurator.gaiaID) {
       [configurator configureIdentityChooser:item];
       [self reconfigureCellsForItems:@[ item ]];
       [self.tableView reloadRowsAtIndexPaths:@[ path ]

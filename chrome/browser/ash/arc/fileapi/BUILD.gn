@@ -66,6 +66,7 @@ static_library("fileapi") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/arc:arc_util",
+    "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fileapi",
@@ -83,7 +84,7 @@ static_library("fileapi") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//third_party/re2",
-    "//ui/shell_dialogs:shell_dialogs",
+    "//ui/shell_dialogs",
     "//url",
 
     # TODO(crbug.com/353449539): Use //chrome/browser/ui instead after cyclic dependency from

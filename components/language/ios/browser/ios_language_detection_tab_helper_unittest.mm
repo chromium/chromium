@@ -4,12 +4,10 @@
 
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 
-#import "base/files/file_util.h"
 #import "base/metrics/metrics_hashes.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/values.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
@@ -31,8 +29,6 @@ class IOSLanguageDetectionTabHelperTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        {translate::kTFLiteLanguageDetectionEnabled}, {});
 
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web::ContentWorld content_world =
@@ -49,7 +45,6 @@ class IOSLanguageDetectionTabHelperTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   TestingPrefServiceSimple pref_service_;
   translate::LanguageDetectionModel model_{

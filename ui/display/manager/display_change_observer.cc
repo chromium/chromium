@@ -139,32 +139,6 @@ float GetExternalDisplayScaleFactor(const gfx::Size& physical_size,
   return 1.0f;
 }
 
-// Returns a list of display modes for the given |output| that doesn't exclude
-// any mode. The returned list is sorted by size, then by refresh rate, then by
-// is_interlaced.
-ManagedDisplayInfo::ManagedDisplayModeList GetModeListWithAllRefreshRates(
-    const DisplaySnapshot& output) {
-  ManagedDisplayInfo::ManagedDisplayModeList display_mode_list;
-  for (const auto& mode_info : output.modes()) {
-    display_mode_list.emplace_back(
-        mode_info->size(), mode_info->refresh_rate(),
-        mode_info->is_interlaced(), output.native_mode() == mode_info.get(),
-        GetExternalDisplayScaleFactor(output.physical_size(),
-                                      mode_info->size()));
-  }
-
-  std::sort(
-      display_mode_list.begin(), display_mode_list.end(),
-      [](const ManagedDisplayMode& lhs, const ManagedDisplayMode& rhs) {
-        return std::forward_as_tuple(lhs.size().width(), lhs.size().height(),
-                                     lhs.refresh_rate(), lhs.is_interlaced()) <
-               std::forward_as_tuple(rhs.size().width(), rhs.size().height(),
-                                     rhs.refresh_rate(), rhs.is_interlaced());
-      });
-
-  return display_mode_list;
-}
-
 std::optional<gfx::RoundedCornersF> ParsePanelRadiiFromCommandLine() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisplayProperties)) {
@@ -173,7 +147,8 @@ std::optional<gfx::RoundedCornersF> ParsePanelRadiiFromCommandLine() {
 
   std::optional<base::Value> display_switch_value = base::JSONReader::Read(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kDisplayProperties));
+          switches::kDisplayProperties),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!display_switch_value.has_value()) {
     return std::nullopt;
@@ -201,69 +176,26 @@ DisplayChangeObserver::GetInternalManagedDisplayModeList(
 ManagedDisplayInfo::ManagedDisplayModeList
 DisplayChangeObserver::GetExternalManagedDisplayModeList(
     const DisplaySnapshot& output) {
-  if (display::features::IsListAllDisplayModesEnabled())
-    return GetModeListWithAllRefreshRates(output);
-
-  struct SizeComparator {
-    constexpr bool operator()(const gfx::Size& lhs,
-                              const gfx::Size& rhs) const {
-      return std::forward_as_tuple(lhs.width(), lhs.height()) <
-             std::forward_as_tuple(rhs.width(), rhs.height());
-    }
-  };
-
-  using DisplayModeMap =
-      std::map<gfx::Size, ManagedDisplayMode, SizeComparator>;
-  DisplayModeMap display_mode_map;
-
-  ManagedDisplayMode native_mode;
+  // Returns a list of display modes for the given |output| that doesn't exclude
+  // any mode. The returned list is sorted by size, then by refresh rate, then
+  // by is_interlaced.
+  ManagedDisplayInfo::ManagedDisplayModeList display_mode_list;
   for (const auto& mode_info : output.modes()) {
-    const gfx::Size size = mode_info->size();
-
-    ManagedDisplayMode display_mode(
+    display_mode_list.emplace_back(
         mode_info->size(), mode_info->refresh_rate(),
         mode_info->is_interlaced(), output.native_mode() == mode_info.get(),
         GetExternalDisplayScaleFactor(output.physical_size(),
                                       mode_info->size()));
-    if (display_mode.native())
-      native_mode = display_mode;
-
-    // Add the display mode if it isn't already present and override interlaced
-    // display modes with non-interlaced ones. We prioritize having non
-    // interlaced mode over refresh rate. A mode having lower refresh rate
-    // but is not interlaced will be picked over a mode having high refresh
-    // rate but is interlaced.
-    auto display_mode_it = display_mode_map.find(size);
-    if (display_mode_it == display_mode_map.end()) {
-      display_mode_map.emplace(size, display_mode);
-    } else if (display_mode_it->second.is_interlaced() &&
-               !display_mode.is_interlaced()) {
-      display_mode_it->second = std::move(display_mode);
-    } else if (!display_mode.is_interlaced() &&
-               display_mode_it->second.refresh_rate() <
-                   display_mode.refresh_rate()) {
-      display_mode_it->second = std::move(display_mode);
-    }
   }
 
-  if (output.native_mode()) {
-    const gfx::Size size = native_mode.size();
-
-    auto it = display_mode_map.find(size);
-    CHECK(it != display_mode_map.end())
-        << "Native mode must be part of the mode list.";
-
-    // If the native mode was replaced (e.g. by a mode with similar size but
-    // higher refresh rate), we overwrite that mode with the native mode. The
-    // native mode will always be chosen as the best mode for this size (see
-    // DisplayConfigurator::FindDisplayModeMatchingSize()).
-    if (!it->second.native())
-      it->second = native_mode;
-  }
-
-  ManagedDisplayInfo::ManagedDisplayModeList display_mode_list;
-  for (const auto& display_mode_pair : display_mode_map)
-    display_mode_list.push_back(std::move(display_mode_pair.second));
+  std::sort(
+      display_mode_list.begin(), display_mode_list.end(),
+      [](const ManagedDisplayMode& lhs, const ManagedDisplayMode& rhs) {
+        return std::forward_as_tuple(lhs.size().width(), lhs.size().height(),
+                                     lhs.refresh_rate(), lhs.is_interlaced()) <
+               std::forward_as_tuple(rhs.size().width(), rhs.size().height(),
+                                     rhs.refresh_rate(), rhs.is_interlaced());
+      });
 
   return display_mode_list;
 }
@@ -285,8 +217,7 @@ MultipleDisplayState DisplayChangeObserver::GetStateForDisplayIds(
     return MULTIPLE_DISPLAY_STATE_SINGLE;
   DisplayIdList list =
       GenerateDisplayIdList(display_states, &DisplaySnapshot::display_id);
-  return display_manager_->ShouldSetMirrorModeOn(
-             list, /*should_check_hardware_mirroring=*/true)
+  return display_manager_->ShouldSetMirrorModeOn(list)
              ? MULTIPLE_DISPLAY_STATE_MULTI_MIRROR
              : MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED;
 }

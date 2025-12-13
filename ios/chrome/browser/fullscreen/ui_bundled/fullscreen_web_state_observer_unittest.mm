@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/security/ssl_status.h"
@@ -25,6 +26,7 @@ class FullscreenWebStateObserverTest : public PlatformTest {
   FullscreenWebStateObserverTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+    ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     TestFullscreenController::CreateForBrowser(browser_.get());
     TestFullscreenController* controller =
         TestFullscreenController::FromBrowser(browser_.get());

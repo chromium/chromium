@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/app_types_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/arc_util.h"

@@ -30,7 +30,10 @@ static_library("instance_throttle") {
     "arcvm_kiosk_mode_throttle_observer.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/sessions",
+  ]
 
   deps = [
     "//ash/public/cpp",
@@ -93,6 +96,8 @@ source_set("unit_tests") {
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc/mojom",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//services/device/public/cpp:test_support",

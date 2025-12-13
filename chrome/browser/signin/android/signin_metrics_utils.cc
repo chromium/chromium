@@ -46,3 +46,5 @@ static void JNI_SigninMetricsUtils_LogSigninOffered(JNIEnv* env,
       static_cast<signin_metrics::AccessPoint>(access_point),
       static_cast<signin_metrics::PromoAction>(signin_promo_action));
 }
+
+DEFINE_JNI(SigninMetricsUtils)

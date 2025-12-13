@@ -6,14 +6,11 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_VISIBLE;
 
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
-import android.view.ViewStub;
 import android.widget.LinearLayout;
 
 import androidx.test.annotation.UiThreadTest;
@@ -25,7 +22,6 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -47,9 +43,6 @@ public final class MostVisitedTilesViewBinderUnitTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
-
-    private ViewStub mNoMvPlaceholderStub;
-    private View mNoMvPlaceholder;
     private LinearLayout mMvTilesContainerLayout;
     private MostVisitedTilesLayout mMvTilesLayout;
     private TileView mFirstChildView;
@@ -57,8 +50,6 @@ public final class MostVisitedTilesViewBinderUnitTest {
     private TileView mThirdChildView;
 
     private PropertyModel mModel;
-
-    @Mock private MostVisitedTilesLayout mMockMvTilesLayout;
 
     @BeforeClass
     public static void setupSuite() {
@@ -78,15 +69,8 @@ public final class MostVisitedTilesViewBinderUnitTest {
                     mMvTilesLayout.addView(mSecondChildView);
                     mMvTilesLayout.addView(mThirdChildView);
 
-                    mNoMvPlaceholder = new View(sActivity);
-                    mNoMvPlaceholder.setId(R.id.tile_grid_placeholder);
-                    mNoMvPlaceholderStub = new ViewStub(sActivity);
-                    mNoMvPlaceholderStub.setId(R.id.mv_tiles_placeholder_stub);
-                    mNoMvPlaceholderStub.setInflatedId(R.id.tile_grid_placeholder);
-
                     mMvTilesContainerLayout = new LinearLayout(sActivity);
                     mMvTilesContainerLayout.addView(mMvTilesLayout);
-                    mMvTilesContainerLayout.addView(mNoMvPlaceholderStub);
                     sActivity.setContentView(mMvTilesContainerLayout);
 
                     mModel = new PropertyModel(MostVisitedTilesProperties.ALL_KEYS);
@@ -101,27 +85,11 @@ public final class MostVisitedTilesViewBinderUnitTest {
     @UiThreadTest
     @SmallTest
     public void testContainerVisibilitySet() {
-        mModel.set(IS_CONTAINER_VISIBLE, true);
+        mModel.set(IS_VISIBLE, true);
         Assert.assertEquals(View.VISIBLE, mMvTilesContainerLayout.getVisibility());
 
-        mModel.set(IS_CONTAINER_VISIBLE, false);
+        mModel.set(IS_VISIBLE, false);
         Assert.assertEquals(View.GONE, mMvTilesContainerLayout.getVisibility());
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
-    public void testMvTilesLayoutAndPlaceholderVisibilitySet() {
-        mModel.set(PLACEHOLDER_VIEW, mNoMvPlaceholder);
-        Assert.assertNotNull(mModel.get(PLACEHOLDER_VIEW));
-
-        mModel.set(IS_MVT_LAYOUT_VISIBLE, true);
-        Assert.assertEquals(View.VISIBLE, mMvTilesLayout.getVisibility());
-        Assert.assertEquals(View.GONE, mNoMvPlaceholder.getVisibility());
-
-        mModel.set(IS_MVT_LAYOUT_VISIBLE, false);
-        Assert.assertEquals(View.GONE, mMvTilesLayout.getVisibility());
-        Assert.assertEquals(View.VISIBLE, mNoMvPlaceholder.getVisibility());
     }
 
     @Test

@@ -93,7 +93,8 @@ void SimpleDevToolsProtocolClient::DispatchProtocolMessage(
 
   std::string_view str_message(
       reinterpret_cast<const char*>(json_message.data()), json_message.size());
-  base::Value message_value = *base::JSONReader::Read(str_message);
+  base::Value message_value = *base::JSONReader::Read(
+      str_message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::Dict& message = message_value.GetDict();
 
   if (const std::string* session_id = message.FindString("sessionId")) {
@@ -177,8 +178,8 @@ void SimpleDevToolsProtocolClient::SendProtocolMessage(
 
   VLOG(kVLogLevel) << "\n[CDP SEND] " << message.DebugString();
 
-  std::string json_message;
-  base::JSONWriter::Write(base::Value(std::move(message)), &json_message);
+  std::string json_message =
+      base::WriteJson(base::Value(std::move(message))).value_or("");
   agent_host_->DispatchProtocolMessage(this, base::as_byte_span(json_message));
 }
 

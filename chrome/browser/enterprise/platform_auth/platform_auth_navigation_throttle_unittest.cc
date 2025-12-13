@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -18,6 +19,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/platform_auth/mock_platform_auth_provider.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "chrome/browser/enterprise/platform_auth/scoped_set_provider_for_testing.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -39,7 +41,6 @@
 
 using content::NavigationThrottle;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace {
@@ -290,6 +291,47 @@ TEST_F(PlatformAuthNavigationThrottleTest, DataReceived) {
   EXPECT_EQ(NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest().action());
 }
+
+#if BUILDFLAG(IS_MAC)
+// TODO: crbug.com/461709143 - Cleanup user agent spoofing unit test.
+TEST_F(PlatformAuthNavigationThrottleTest, SpoofsUserAgentForOktaDomains) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(enterprise_auth::kOktaSSO);
+
+  EnableManager(manager(), true);
+  EXPECT_TRUE(manager().IsEnabled());
+  ScopedSetProviderForTesting _(TakeProvider());
+
+  content::MockNavigationHandle test_handle(GURL("https://www.okta.com/"),
+                                            main_frame());
+  auto registry = CreateRegistryWithThrottle(&test_handle);
+  ASSERT_EQ(registry->throttles().size(), 1u);
+
+  {  // Test spoofing after starting a request.
+    std::string new_user_agent;
+    EXPECT_CALL(test_handle, SetRequestHeader("User-Agent", testing::_))
+        .WillOnce(testing::SaveArg<1>(&new_user_agent));
+
+    EXPECT_EQ(NavigationThrottle::PROCEED,
+              registry->throttles().back()->WillStartRequest().action());
+
+    EXPECT_TRUE(new_user_agent.find("Chrome") == std::string::npos);
+    EXPECT_FALSE(new_user_agent.find("Safari") == std::string::npos);
+  }
+
+  {  // Test spoofing after redirecting a request.
+    std::string new_user_agent;
+    EXPECT_CALL(test_handle, SetRequestHeader("User-Agent", testing::_))
+        .WillOnce(testing::SaveArg<1>(&new_user_agent));
+
+    EXPECT_EQ(NavigationThrottle::PROCEED,
+              registry->throttles().back()->WillRedirectRequest().action());
+
+    EXPECT_TRUE(new_user_agent.find("Chrome") == std::string::npos);
+    EXPECT_FALSE(new_user_agent.find("Safari") == std::string::npos);
+  }
+}
+#endif
 
 class PlatformAuthNavigationNoOriginFilteringThrottleTest
     : public PlatformAuthNavigationThrottleTest {

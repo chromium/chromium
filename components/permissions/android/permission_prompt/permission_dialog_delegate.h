@@ -10,9 +10,10 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/favicon_base/favicon_callback.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/web_contents_observer.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 class WebContents;
@@ -105,6 +106,10 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   // end if a permission flow and Java side can perform next task, such as
   // update permission icon or showing next dialog.
   void NotifyPermissionAllowed();
+
+  void OnGeolocationAccuracySelected(JNIEnv* env, jint accuracy);
+
+  jint GetInitialGeolocationAccuracySelection(JNIEnv* env) const;
 
  private:
   // On navigation or page destruction, hide the dialog.

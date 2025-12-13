@@ -19,7 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::StrictMock;
 
 namespace ash {
@@ -63,10 +62,10 @@ TEST_F(AttestationFlowTypeDeciderTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(server_proxy_, CheckIfAnyProxyPresent(_))
-      .WillOnce(Invoke([](ServerProxy::ProxyPresenceCallback callback) {
+      .WillOnce([](ServerProxy::ProxyPresenceCallback callback) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), false));
-      }));
+      });
   reporter_ = std::make_unique<AttestationFlowStatusReporter>();
   AttestationFlowTypeDecider checker;
   checker.CheckType(&server_proxy_, reporter_.get(),
@@ -87,10 +86,10 @@ TEST_F(AttestationFlowTypeDeciderTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(server_proxy_, CheckIfAnyProxyPresent(_))
-      .WillOnce(Invoke([](ServerProxy::ProxyPresenceCallback callback) {
+      .WillOnce([](ServerProxy::ProxyPresenceCallback callback) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), true));
-      }));
+      });
   reporter_ = std::make_unique<AttestationFlowStatusReporter>();
   AttestationFlowTypeDecider checker;
   checker.CheckType(&server_proxy_, reporter_.get(),

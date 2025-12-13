@@ -13,8 +13,11 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/system_display.h"
 #include "ui/display/display_observer.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace display {
 class Display;

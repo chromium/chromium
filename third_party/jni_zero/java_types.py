@@ -119,11 +119,14 @@ class JavaClass:
     return JavaClass(f'{self.package_with_slashes}/{self.outer_class_name}',
                      self._prefix)
 
+  def is_prefixed(self):
+    return bool(self._prefix)
+
   def is_system_class(self):
     return self._fqn.startswith(('android/', 'java/'))
 
   def to_java(self, type_resolver=None):
-    # Empty resolver used to shorted java.lang classes.
+    # Empty resolver used to shorten java.lang classes.
     type_resolver = type_resolver or _EMPTY_TYPE_RESOLVER
     return type_resolver.contextualize(self)
 
@@ -344,17 +347,32 @@ class JavaSignature:
 class TypeResolver:
   """Converts type names to fully qualified names."""
 
-  def __init__(self, java_class, null_marked=False):
+  def __init__(self,
+               java_class,
+               null_marked=False,
+               package_prefix=None,
+               package_prefix_filter=None):
     self.java_class = java_class
     self.null_marked = null_marked
     self.imports = []
     self.nested_classes = []
+    self.package_prefix = package_prefix
+    self.package_prefix_filter = package_prefix_filter
+
+    assert java_class == self._maybe_prefix(java_class.class_without_prefix)
+
+  def _maybe_prefix(self, java_class):
+    if (not java_class.is_prefixed()
+        and self.package_prefix and common.should_prefix_package(
+            java_class.package_with_dots, self.package_prefix_filter)):
+      java_class = java_class.make_prefixed(self.package_prefix)
+    return java_class
 
   def add_import(self, java_class):
-    self.imports.append(java_class)
+    self.imports.append(self._maybe_prefix(java_class))
 
   def add_nested_class(self, java_class):
-    self.nested_classes.append(java_class)
+    self.nested_classes.append(self._maybe_prefix(java_class))
 
   def contextualize(self, java_class):
     """Return the shortest string that resolves to the given class."""

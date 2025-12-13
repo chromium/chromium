@@ -6,13 +6,14 @@ package org.chromium.components.browser_ui.media;
 
 import android.util.SparseArray;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 /**
- * A class that manages the services/notifications for various media types.
- * Each notification is associated with a different {@link MediaNotificationController}.
+ * A class that manages the services/notifications for various media types. Each notification is
+ * associated with a different {@link MediaNotificationController}.
  */
 @NullMarked
 public class MediaNotificationManager {

@@ -32,6 +32,31 @@ using RemoteHostContactedInfo = safe_browsing::
     ExtensionTelemetryReportRequest_SignalInfo_RemoteHostContactedInfo;
 using TabsApiInfo =
     safe_browsing::ExtensionTelemetryReportRequest_SignalInfo_TabsApiInfo;
+using Report = safe_browsing::ExtensionTelemetryReportRequest_Report;
+
+#ifndef COPY_IF_SET
+#define COPY_IF_SET(source, dest_ptr, field)   \
+  if ((source).has_##field()) {                \
+    (dest_ptr)->set_##field((source).field()); \
+  }
+#endif  // COPY_IF_SET
+
+void CopyExtensionInfo(const ExtensionInfo& original_extension,
+                       Report* redacted_report) {
+  ExtensionInfo* redacted_extension = redacted_report->mutable_extension();
+  COPY_IF_SET(original_extension, redacted_extension, id);
+  COPY_IF_SET(original_extension, redacted_extension, name);
+  COPY_IF_SET(original_extension, redacted_extension, version);
+  COPY_IF_SET(original_extension, redacted_extension, install_location);
+  COPY_IF_SET(original_extension, redacted_extension, is_from_store);
+  if (original_extension.file_infos_size() > 0) {
+    for (const auto& file_info : original_extension.file_infos()) {
+      auto* redacted_file_info = redacted_extension->add_file_infos();
+      COPY_IF_SET(file_info, redacted_file_info, name);
+      COPY_IF_SET(file_info, redacted_file_info, hash);
+    }
+  }
+}
 
 base::Value::Dict CreateExtensionInfoDict(const ExtensionInfo& extension_info) {
   base::Value::Dict dict;
@@ -59,6 +84,26 @@ base::Value::Dict CreateExtensionInfoDict(const ExtensionInfo& extension_info) {
   }
 
   return dict;
+}
+
+void CopyCookiesGetAllArgsInfo(const CookiesGetAllInfo& cookies_get_all_info,
+                               Report* redacted_report) {
+  CookiesGetAllInfo* redacted_cookies_get_all_info =
+      redacted_report->add_signals()->mutable_cookies_get_all_info();
+
+  for (const auto& get_all_args_info :
+       cookies_get_all_info.get_all_args_info()) {
+    CookiesGetAllInfo::GetAllArgsInfo* redacted_get_all_args_info =
+        redacted_cookies_get_all_info->add_get_all_args_info();
+    COPY_IF_SET(get_all_args_info, redacted_get_all_args_info, domain);
+    COPY_IF_SET(get_all_args_info, redacted_get_all_args_info, name);
+    COPY_IF_SET(get_all_args_info, redacted_get_all_args_info, path);
+    COPY_IF_SET(get_all_args_info, redacted_get_all_args_info, secure);
+    COPY_IF_SET(get_all_args_info, redacted_get_all_args_info, store_id);
+    COPY_IF_SET(get_all_args_info, redacted_get_all_args_info, url);
+    COPY_IF_SET(get_all_args_info, redacted_get_all_args_info, is_session);
+    COPY_IF_SET(get_all_args_info, redacted_get_all_args_info, count);
+  }
 }
 
 base::Value::Dict CreateCookiesGetAllInfoDict(
@@ -93,6 +138,20 @@ base::Value::Dict CreateCookiesGetAllInfoDict(
   return signal_dict;
 }
 
+void CopyCookiesGetInfo(const CookiesGetInfo& cookies_get_info,
+                        Report* redacted_report) {
+  CookiesGetInfo* redacted_cookies_get_info =
+      redacted_report->add_signals()->mutable_cookies_get_info();
+  for (const auto& get_args_info : cookies_get_info.get_args_info()) {
+    CookiesGetInfo::GetArgsInfo* redacted_get_args_info =
+        redacted_cookies_get_info->add_get_args_info();
+    COPY_IF_SET(get_args_info, redacted_get_args_info, name);
+    COPY_IF_SET(get_args_info, redacted_get_args_info, url);
+    COPY_IF_SET(get_args_info, redacted_get_args_info, store_id);
+    COPY_IF_SET(get_args_info, redacted_get_args_info, count);
+  }
+}
+
 base::Value::Dict CreateCookiesGetInfoDict(
     const CookiesGetInfo& cookies_get_info) {
   base::Value::List get_args_list;
@@ -114,6 +173,23 @@ base::Value::Dict CreateCookiesGetInfoDict(
   signal_dict.Set(ExtensionTelemetryEventRouter::kKeyGetArgsInfo,
                   std::move(get_args_list));
   return signal_dict;
+}
+
+void CopyRemoteHostContactedInfo(
+    const RemoteHostContactedInfo& remote_host_contacted_info,
+    Report* redacted_report) {
+  RemoteHostContactedInfo* redacted_remote_host_contacted_info =
+      redacted_report->add_signals()->mutable_remote_host_contacted_info();
+  for (const auto& remote_host_info :
+       remote_host_contacted_info.remote_host()) {
+    RemoteHostContactedInfo::RemoteHostInfo* redacted_remote_host_info =
+        redacted_remote_host_contacted_info->add_remote_host();
+    COPY_IF_SET(remote_host_info, redacted_remote_host_info, url);
+    COPY_IF_SET(remote_host_info, redacted_remote_host_info,
+                connection_protocol);
+    COPY_IF_SET(remote_host_info, redacted_remote_host_info, contacted_by);
+    COPY_IF_SET(remote_host_info, redacted_remote_host_info, contact_count);
+  }
 }
 
 base::Value::Dict CreateRemoteHostContactedInfoDict(
@@ -144,6 +220,20 @@ base::Value::Dict CreateRemoteHostContactedInfoDict(
   return signal_dict;
 }
 
+void CopyTabsApiInfo(const TabsApiInfo& tabs_api_info,
+                     Report* redacted_report) {
+  TabsApiInfo* redacted_tabs_api_info =
+      redacted_report->add_signals()->mutable_tabs_api_info();
+  for (const auto& call_detail : tabs_api_info.call_details()) {
+    TabsApiInfo::CallDetails* redacted_call_details =
+        redacted_tabs_api_info->add_call_details();
+    COPY_IF_SET(call_detail, redacted_call_details, method);
+    COPY_IF_SET(call_detail, redacted_call_details, new_url);
+    COPY_IF_SET(call_detail, redacted_call_details, current_url);
+    COPY_IF_SET(call_detail, redacted_call_details, count);
+  }
+}
+
 base::Value::Dict CreateTabsApiInfoDict(const TabsApiInfo& tabs_api_info) {
   base::Value::List tabs_api_info_list;
   for (const auto& call_detail : tabs_api_info.call_details()) {
@@ -164,6 +254,37 @@ base::Value::Dict CreateTabsApiInfoDict(const TabsApiInfo& tabs_api_info) {
   signal_dict.Set(ExtensionTelemetryEventRouter::kKeyCallDetails,
                   std::move(tabs_api_info_list));
   return signal_dict;
+}
+
+std::unique_ptr<ExtensionTelemetryReportRequest>
+CreateRedactedExtensionTelemetryReportRequestProto(
+    const ExtensionTelemetryReportRequest* request) {
+  auto redacted_request = std::make_unique<ExtensionTelemetryReportRequest>();
+
+  redacted_request->set_creation_timestamp_msec(
+      request->creation_timestamp_msec());
+
+  for (const auto& report : request->reports()) {
+    Report* redacted_report = redacted_request->add_reports();
+
+    CopyExtensionInfo(report.extension(), redacted_report);
+
+    // Copy select subset of signals.
+    for (const auto& signal : report.signals()) {
+      if (signal.has_cookies_get_all_info()) {
+        CopyCookiesGetAllArgsInfo(signal.cookies_get_all_info(),
+                                  redacted_report);
+      } else if (signal.has_cookies_get_info()) {
+        CopyCookiesGetInfo(signal.cookies_get_info(), redacted_report);
+      } else if (signal.has_remote_host_contacted_info()) {
+        CopyRemoteHostContactedInfo(signal.remote_host_contacted_info(),
+                                    redacted_report);
+      } else if (signal.has_tabs_api_info()) {
+        CopyTabsApiInfo(signal.tabs_api_info(), redacted_report);
+      }
+    }
+  }
+  return redacted_request;
 }
 
 base::Value::Dict CreateExtensionTelemetryReportDict(
@@ -303,7 +424,8 @@ void ExtensionTelemetryEventRouter::UploadTelemetryReport(
     chrome::cros::reporting::proto::ExtensionTelemetryEvent
         extension_telemetry_event;
     *extension_telemetry_event.mutable_extension_telemetry_report() =
-        *telemetry_report_request;
+        *CreateRedactedExtensionTelemetryReportRequestProto(
+            telemetry_report_request.get());
     extension_telemetry_event.set_profile_identifier(
         reporting_client->GetProfileIdentifier());
     extension_telemetry_event.set_profile_user_name(
@@ -319,5 +441,7 @@ void ExtensionTelemetryEventRouter::UploadTelemetryReport(
         CreateExtensionTelemetryReportRequestDict(*telemetry_report_request));
   }
 }
+
+#undef COPY_IF_SET
 
 }  // namespace enterprise_connectors

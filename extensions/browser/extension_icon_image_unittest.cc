@@ -123,8 +123,9 @@ class ExtensionIconImageTest : public ExtensionsTest,
       return nullptr;
     }
 
+    std::u16string utf16_error;
     return Extension::Create(test_file, location, *valid_dict,
-                             Extension::NO_FLAGS, &error);
+                             Extension::NO_FLAGS, &utf16_error);
   }
 
   // IconImage::Delegate overrides:

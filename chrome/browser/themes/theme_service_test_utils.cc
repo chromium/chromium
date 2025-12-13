@@ -4,6 +4,7 @@
 
 #include "chrome/browser/themes/theme_service_test_utils.h"
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -43,13 +44,13 @@ scoped_refptr<extensions::Extension> MakeThemeExtension(
   source.Set(extensions::manifest_keys::kTheme, base::Value::Dict());
   source.Set(extensions::manifest_keys::kUpdateURL, update_url);
   source.Set(extensions::manifest_keys::kVersion, "0.0.0.0");
-  std::string error;
+  std::u16string error;
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(extension_path, location, source,
                                     extensions::Extension::NO_FLAGS, id,
                                     &error);
   EXPECT_TRUE(extension.get());
-  EXPECT_EQ("", error);
+  EXPECT_EQ(u"", error);
   return extension;
 }
 

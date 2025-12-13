@@ -19,21 +19,24 @@
 
 namespace gcm {
 class GCMDriver;
-}
+}  // namespace gcm
 
 namespace instance_id {
 class InstanceIDDriver;
-}
+}  // namespace instance_id
 
 namespace ash::boca {
-
-class InvalidationsListener;
 
 // An interface to observe changes on FCM registration token.
 class FCMRegistrationTokenObserver : public base::CheckedObserver {
  public:
   // Called on each change of FCM registration token.
   virtual void OnFCMRegistrationTokenChanged() = 0;
+
+  // Called on token fetch failed if the fetch is not for validation. FCM token
+  // may get fetched after this failure because of a retry and
+  // `OnFCMRegistrationTokenChanged` will be called in this case.
+  virtual void OnFCMTokenFetchFailed() {}
 };
 
 // This class provides an interface to handle received invalidations.
@@ -43,55 +46,81 @@ class InvalidationsListener : public base::CheckedObserver {
   virtual void OnInvalidationReceived(const std::string& payload) = 0;
 };
 
-// This handler is used to register with FCM and to process incoming messages.
-class FCMHandler : public gcm::GCMAppHandler {
+class FCMHandler {
  public:
-  FCMHandler(gcm::GCMDriver* gcm_driver,
-             instance_id::InstanceIDDriver* instance_id_driver,
-             const std::string& sender_id,
-             const std::string& app_id);
-  ~FCMHandler() override;
   FCMHandler(const FCMHandler&) = delete;
   FCMHandler& operator=(const FCMHandler&) = delete;
+
+  virtual ~FCMHandler() = default;
 
   // Used to start handling incoming invalidations from the server and to obtain
   // an FCM token. This method gets called after data types are configured.
   // Before StartListening() is called for the first time, the FCM registration
   // token will be null.
-  void StartListening();
+  virtual void StartListening() = 0;
 
   // Stop handling incoming invalidations. It doesn't cleanup the FCM
   // registration token and doesn't unsubscribe from FCM. All incoming
   // invalidations will be dropped. This method gets called during browser
   // shutdown.
-  void StopListening();
+  virtual void StopListening() = 0;
 
   // Stop handling incoming invalidations and delete Instance ID. It clears the
   // FCM registration token. This method gets called during sign-out.
-  void StopListeningPermanently();
+  virtual void StopListeningPermanently() = 0;
 
   // Returns if the handler is listening for incoming invalidations.
-  bool IsListening() const;
+  virtual bool IsListening() const = 0;
 
   // Add a new |listener| which will be notified on each new incoming
   // invalidation. |listener| must not be nullptr. Does nothing if the
   // |listener| has already been added before. When a new |listener| is added,
   // previously received messages will be immediately replayed.
-  void AddListener(InvalidationsListener* listener);
+  virtual void AddListener(InvalidationsListener* listener) = 0;
 
   // Returns whether `listener` was added before.
-  bool HasListener(InvalidationsListener* listener);
+  virtual bool HasListener(InvalidationsListener* listener) = 0;
 
   // Removes |listener|, does nothing if it wasn't added before. |listener| must
   // not be nullptr.
-  void RemoveListener(InvalidationsListener* listener);
+  virtual void RemoveListener(InvalidationsListener* listener) = 0;
 
   // Add or remove an FCM token change observer. |observer| must not be nullptr.
-  void AddTokenObserver(FCMRegistrationTokenObserver* observer);
-  void RemoveTokenObserver(FCMRegistrationTokenObserver* observer);
+  virtual void AddTokenObserver(FCMRegistrationTokenObserver* observer) = 0;
+  virtual void RemoveTokenObserver(FCMRegistrationTokenObserver* observer) = 0;
 
   // Used to get an obtained FCM token. Returns null if it doesn't have a token.
-  const std::optional<std::string>& GetFCMRegistrationToken() const;
+  virtual const std::optional<std::string>& GetFCMRegistrationToken() const = 0;
+
+ protected:
+  FCMHandler() = default;
+};
+
+// This handler is used to register with FCM and to process incoming messages.
+class FCMHandlerImpl : public FCMHandler, public gcm::GCMAppHandler {
+ public:
+  FCMHandlerImpl();
+  FCMHandlerImpl(gcm::GCMDriver* gcm_driver,
+                 instance_id::InstanceIDDriver* instance_id_driver);
+  ~FCMHandlerImpl() override;
+  FCMHandlerImpl(const FCMHandlerImpl&) = delete;
+  FCMHandlerImpl& operator=(const FCMHandlerImpl&) = delete;
+
+  void Init(gcm::GCMDriver* gcm_driver,
+            instance_id::InstanceIDDriver* instance_id_driver);
+  bool IsInitialized() const;
+
+  // FCMHandler:
+  void StartListening() override;
+  void StopListening() override;
+  void StopListeningPermanently() override;
+  bool IsListening() const override;
+  void AddListener(InvalidationsListener* listener) override;
+  bool HasListener(InvalidationsListener* listener) override;
+  void RemoveListener(InvalidationsListener* listener) override;
+  void AddTokenObserver(FCMRegistrationTokenObserver* observer) override;
+  void RemoveTokenObserver(FCMRegistrationTokenObserver* observer) override;
+  const std::optional<std::string>& GetFCMRegistrationToken() const override;
 
   // GCMAppHandler overrides.
   void ShutdownHandler() override;
@@ -103,6 +132,8 @@ class FCMHandler : public gcm::GCMAppHandler {
                    const gcm::GCMClient::SendErrorDetails& details) override;
   void OnSendAcknowledged(const std::string& app_id,
                           const std::string& message_id) override;
+
+  std::string GetAppIdForTesting();
 
  private:
   // Called when a subscription token is obtained from the GCM server.
@@ -119,8 +150,6 @@ class FCMHandler : public gcm::GCMAppHandler {
 
   raw_ptr<gcm::GCMDriver> gcm_driver_ = nullptr;
   raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_ = nullptr;
-  const std::string sender_id_;
-  const std::string app_id_;
 
   // Contains an FCM registration token. Token is null if the experiment is off
   // or we don't have a valid token yet and contains valid token otherwise.
@@ -141,7 +170,9 @@ class FCMHandler : public gcm::GCMAppHandler {
                      /*allow_reentrancy=*/false>
       token_observers_;
 
-  base::WeakPtrFactory<FCMHandler> weak_ptr_factory_{this};
+  bool initialized_ = false;
+
+  base::WeakPtrFactory<FCMHandlerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::boca

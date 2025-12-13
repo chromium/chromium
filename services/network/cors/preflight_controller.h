@@ -7,15 +7,16 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/component_export.h"
-#include "base/containers/enum_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_cache.h"
 #include "services/network/cors/preflight_result.h"
@@ -37,39 +38,10 @@ class NetworkService;
 
 namespace cors {
 
-// Dictates how the PreflightController should treat PNA preflights.
-//
-// TODO(crbug.com/40204695): Remove this once enforcement is always on.
-enum class PrivateNetworkAccessPreflightBehavior {
-  // Enforce the presence of PNA headers for PNA preflights.
-  kEnforce,
-
-  // Check for PNA headers, but do not fail the request in case of error.
-  // Instead, only report a warning to DevTools.
-  kWarn,
-
-  // Same as `kWarn`, also apply a short timeout to PNA preflights.
-  kWarnWithTimeout,
-};
 // A class to manage CORS-preflight, making a CORS-preflight request, checking
 // its result, and owning a CORS-preflight cache.
 class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
  public:
-  // Indicate whether the current preflight is for CORS or PNA or both.
-  enum class PreflightType {
-    kMinValue = 0,
-
-    kCors = kMinValue,
-    kPrivateNetworkAccess = 1,
-
-    kMaxValue = kPrivateNetworkAccess,
-  };
-
-  using PreflightMode =
-      base::EnumSet<PreflightController::PreflightType,
-                    PreflightController::PreflightType::kMinValue,
-                    PreflightController::PreflightType::kMaxValue>;
-
   // Called with the result of `PerformPreflightCheck()`.
   //
   // `net_error` is the overall result of the operation.
@@ -95,10 +67,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   using WithTrustedHeaderClient =
       base::StrongAlias<class WithTrustedHeaderClientTag, bool>;
 
-  // TODO(crbug.com/40204695): Remove this once enforcement is always on.
-  using EnforcePrivateNetworkAccessHeader =
-      base::StrongAlias<class EnforcePrivateNetworkAccessHeaderTag, bool>;
-
   // Creates a CORS-preflight ResourceRequest for a specified `request` for a
   // URL that is originally requested.
   static std::unique_ptr<ResourceRequest> CreatePreflightRequestForTesting(
@@ -111,7 +79,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const mojom::URLResponseHead& head,
       const ResourceRequest& original_request,
       bool tainted,
-      PrivateNetworkAccessPreflightBehavior private_network_access_behavior,
       std::optional<CorsErrorStatus>* detected_error_status);
 
   // Checks CORS aceess on the CORS-preflight response parameters for testing.
@@ -135,10 +102,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   // synchronously or asynchronously.
   void PerformPreflightCheck(
       CompletionCallback callback,
+      int32_t request_id,
       const ResourceRequest& resource_request,
       WithTrustedHeaderClient with_trusted_header_client,
       NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
-      PrivateNetworkAccessPreflightBehavior private_network_access_behavior,
       bool tainted,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       mojom::URLLoaderFactory* loader_factory,
@@ -148,8 +115,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const net::NetLogWithSource& net_log,
       bool acam_preflight_spec_conformant,
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
-          url_loader_network_service_observer,
-      const PreflightMode& preflight_mode);
+          url_loader_network_service_observer);
 
   // Clears the CORS preflight cache. The time range is always "all time" as
   // the preflight cache max age is capped to 2hrs. in Chrome.
@@ -166,7 +132,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   void AppendToCache(const url::Origin& origin,
                      const GURL& url,
                      const net::NetworkIsolationKey& network_isolation_key,
-                     mojom::IPAddressSpace target_ip_address_space,
                      std::unique_ptr<PreflightResult> result);
 
   NetworkService* network_service() { return network_service_; }

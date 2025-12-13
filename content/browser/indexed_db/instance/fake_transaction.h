@@ -22,10 +22,10 @@ class FakeTransaction : public BackingStore::Transaction {
   FakeTransaction(const FakeTransaction&) = delete;
   FakeTransaction& operator=(const FakeTransaction&) = delete;
 
-  Status CommitPhaseOne(BlobWriteCallback) override;
+  Status Begin(std::vector<PartitionedLock> locks) override;
+  Status CommitPhaseOne(BlobWriteCallback, SerializeFsaCallback) override;
   Status CommitPhaseTwo() override;
   void Rollback() override;
-  void Begin(std::vector<PartitionedLock> locks) override;
   Status SetDatabaseVersion(int64_t version) override;
   Status CreateObjectStore(int64_t object_store_id,
                            const std::u16string& name,
@@ -91,7 +91,9 @@ class FakeTransaction : public BackingStore::Transaction {
       int64_t index_id,
       const blink::IndexedDBKeyRange& key_range,
       blink::mojom::IDBCursorDirection) override;
-  blink::mojom::IDBValuePtr BuildMojoValue(IndexedDBValue value) override;
+  blink::mojom::IDBValuePtr BuildMojoValue(
+      IndexedDBValue value,
+      DeserializeFsaCallback deserialize_fsa_handle) override;
 
  private:
   Status result_;

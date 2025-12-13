@@ -13,6 +13,7 @@
 #include "base/supports_user_data.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "components/data_sharing/migration/public/context_id.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/share_url_interception_context.h"
@@ -275,6 +276,9 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   virtual void SetSDKDelegate(
       std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) = 0;
 
+  // Get the current SDK Delegate instance.
+  virtual DataSharingSDKDelegate* GetSDKDelegate() = 0;
+
   // Sets the current DataSharingUIDelegate instance.
   virtual void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) = 0;
@@ -298,6 +302,11 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // Called when a collaboration group is removed by the user locally. This
   // happens when user leaves or deletes a group.
   virtual void OnCollaborationGroupRemoved(const GroupId& group_id) = 0;
+
+  // Returns synchronous whether the `context_id` is shared based on local data.
+  // If a migration is ongoing, return the last stable state (e.g. If a
+  // migration is ongoing from private to shared, then it would return false).
+  virtual bool IsContextIdShared(const ContextId& context_id) = 0;
 };
 
 }  // namespace data_sharing

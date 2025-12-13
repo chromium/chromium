@@ -196,8 +196,8 @@ class CORE_EXPORT HTMLPreloadScanner final {
       HTMLParserOptions options,
       TokenPreloadScanner::ScannerType scanner_type);
 
-  using TakePreloadFn = WTF::CrossThreadRepeatingFunction<void(
-      std::unique_ptr<PendingPreloadData>)>;
+  using TakePreloadFn =
+      CrossThreadRepeatingFunction<void(std::unique_ptr<PendingPreloadData>)>;
 
   // Creates a HTMLPreloadScanner which will be bound to |task_runner|.
   struct Deleter {

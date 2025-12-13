@@ -85,13 +85,30 @@ public class TabListHubLayoutAnimatorProvider implements HubLayoutAnimatorProvid
 
     @Override
     public void supplyAnimatorNow() {
-        if (mAnimatorSupplier.hasValue()) return;
+        if (mAnimatorSupplier.get() != null) return;
         supplyFallbackAnimator();
     }
 
     private void maybeSupplyAnimation() {
-        if (mAnimatorSupplier.hasValue() || !mAnimationDataSupplier.hasValue()) return;
-        supplyAnimator();
+        var animator = mAnimatorSupplier.get();
+        List<View> views = mAnimationDataSupplier.get();
+        if (animator != null || views == null) return;
+
+        AnimatorSet animatorSet = buildAnimatorSet(views);
+        HubLayoutAnimationListener listener =
+                new HubLayoutAnimationListener() {
+                    @Override
+                    public void beforeStart() {
+                        resetState(true);
+                    }
+
+                    @Override
+                    public void onEnd(boolean wasForcedToFinish) {
+                        resetState(false);
+                    }
+                };
+
+        mAnimatorSupplier.set(new HubLayoutAnimator(mAnimationType, animatorSet, listener));
     }
 
     private void supplyFallbackAnimator() {
@@ -109,27 +126,6 @@ public class TabListHubLayoutAnimatorProvider implements HubLayoutAnimatorProvid
             mAnimatorSupplier.set(
                     new HubLayoutAnimator(HubLayoutAnimationType.NONE, new AnimatorSet(), null));
         }
-    }
-
-    private void supplyAnimator() {
-        assert !mAnimatorSupplier.hasValue() && mAnimationDataSupplier.hasValue();
-
-        List<View> views = mAnimationDataSupplier.get();
-        AnimatorSet animatorSet = buildAnimatorSet(views);
-        HubLayoutAnimationListener listener =
-                new HubLayoutAnimationListener() {
-                    @Override
-                    public void beforeStart() {
-                        resetState(true);
-                    }
-
-                    @Override
-                    public void onEnd(boolean wasForcedToFinish) {
-                        resetState(false);
-                    }
-                };
-
-        mAnimatorSupplier.set(new HubLayoutAnimator(mAnimationType, animatorSet, listener));
     }
 
     private void onAnimationDataAvailable(List<View> animationData) {

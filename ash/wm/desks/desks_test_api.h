@@ -55,8 +55,6 @@ class DesksTestApi {
       Desk* desk);
   static views::Label* GetDeskShortcutLabel(DeskMiniView* mini_view);
   static bool IsDeskShortcutViewVisible(DeskMiniView* mini_view);
-  static DeskProfilesButton* GetDeskProfileButton(DeskMiniView* mini_view);
-  static bool HasVerticalDotsButton();
   static bool DesksControllerHasDesk(Desk* desk);
   static bool DesksControllerCanUndoDeskRemoval();
 

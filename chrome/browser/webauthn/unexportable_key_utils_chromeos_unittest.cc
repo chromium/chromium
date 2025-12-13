@@ -131,8 +131,8 @@ INSTANTIATE_TEST_SUITE_P(UnexportableKeyUtils,
 
 TEST_P(UserVerifyingKeyUtilsCrosTest,
        UserVerifyingKeyProvider_GeneratedKeyCanBeImported) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(1, nullptr));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 1});
   std::unique_ptr<crypto::UserVerifyingKeyProvider> provider =
       GetWebAuthnUserVerifyingKeyProvider(MakeKeyProviderConfig(window.get()));
   ASSERT_TRUE(provider);
@@ -158,8 +158,8 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
 
 TEST_P(UserVerifyingKeyUtilsCrosTest,
        UserVerifyingKeyProvider_SigningShowsInSessionAuthChallenge) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(1, nullptr));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 1});
   std::unique_ptr<crypto::UserVerifyingKeyProvider> provider =
       GetWebAuthnUserVerifyingKeyProvider(MakeKeyProviderConfig(window.get()));
   ASSERT_TRUE(provider);
@@ -200,8 +200,8 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
 
 TEST_P(UserVerifyingKeyUtilsCrosTest,
        UserVerifyingKeyProvider_SigningWithoutUvYieldsNullopt) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(1, nullptr));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 1});
   std::unique_ptr<crypto::UserVerifyingKeyProvider> provider =
       GetWebAuthnUserVerifyingKeyProvider(MakeKeyProviderConfig(window.get()));
   ASSERT_TRUE(provider);
@@ -240,8 +240,8 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
 }
 
 TEST_P(UserVerifyingKeyUtilsCrosTest, UserVerifyingKeyProvider_DeleteIsANoOp) {
-  std::unique_ptr<aura::Window> w1(
-      aura::test::CreateTestWindowWithId(1, nullptr));
+  std::unique_ptr<aura::Window> w1 =
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 1});
   std::unique_ptr<crypto::UserVerifyingKeyProvider> provider =
       GetWebAuthnUserVerifyingKeyProvider(MakeKeyProviderConfig(w1.get()));
   ASSERT_TRUE(provider);

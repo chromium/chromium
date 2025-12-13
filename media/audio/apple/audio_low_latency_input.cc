@@ -35,6 +35,7 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/data_buffer.h"
 #include "media/base/media_switches.h"
+#include "media/base/sample_format.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "media/audio/mac/core_audio_util_mac.h"
@@ -72,6 +73,11 @@ constexpr base::TimeDelta kMaxErrorTimeout = base::Seconds(1);
 // Media.Audio.InputStartupSuccessMac is then updated where true is added
 // if input callbacks have started, and false otherwise.
 constexpr base::TimeDelta kInputCallbackStartTimeout = base::Seconds(5);
+
+// TODO(crbug.com/354625679): For now, our pipeline is set for only
+// kSampleFormatS16 only. We plan to implement changes to take higher bit depths
+// such as 24bit or 32bit float.
+constexpr SampleFormat kSampleFormat = kSampleFormatS16;
 
 // Returns true if the format flags in |format_flags| has the "non-interleaved"
 // flag (kAudioFormatFlagIsNonInterleaved) cleared (set to 0).
@@ -133,7 +139,8 @@ AUAudioInputStream::AUAudioInputStream(
       fifo_(input_params.channels(),
             input_params.frames_per_buffer(),
             kNumberOfBlocksBufferInFifo),
-      glitch_reporter_(SystemGlitchReporter::StreamType::kCapture),
+      glitch_helper_(input_params.sample_rate(),
+                     AudioGlitchInfo::Direction::kCapture),
       peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
                                          base::Unretained(manager_),
                                          /*trace_start=*/true)),
@@ -167,7 +174,6 @@ AUAudioInputStream::AUAudioInputStream(
     }
   }
 #endif
-  const SampleFormat kSampleFormat = kSampleFormatS16;
 
   // Set up the desired (output) format specified by the client.
   format_.mSampleRate = input_params.sample_rate();
@@ -1061,8 +1067,7 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
                                      const AudioTimeStamp* time_stamp) {
   TRACE_EVENT1("audio", "AUAudioInputStream::Provide", "number_of_frames",
                number_of_frames);
-  UpdateCaptureTimestamp(time_stamp);
-  last_number_of_frames_ = number_of_frames;
+  glitch_helper_.OnFramesReceived(*time_stamp, number_of_frames);
 
   // TODO(grunell): We'll only care about the first buffer size change, any
   // further changes will be ignored. This is in line with output side stats.
@@ -1115,12 +1120,10 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
   capture_time -= AudioTimestampHelper::FramesToTime(fifo_.GetAvailableFrames(),
                                                      format_.mSampleRate);
 
-  const int bytes_per_sample = format_.mBitsPerChannel / 8;
-
-  peak_detector_.FindPeak(audio_data_span, bytes_per_sample);
+  peak_detector_.FindPeak(audio_data_span, kSampleFormat);
 
   // Copy captured (and interleaved) data into FIFO.
-  fifo_.Push(audio_data_span, number_of_frames, bytes_per_sample);
+  fifo_.Push(audio_data_span, number_of_frames, kSampleFormat);
 
   // Consume and deliver the data when the FIFO has a block of available data.
   while (fifo_.available_blocks()) {
@@ -1129,7 +1132,7 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
               static_cast<int>(input_params_.frames_per_buffer()));
 
     sink_->OnData(audio_bus, capture_time, normalized_volume,
-                  glitch_accumulator_.GetAndReset());
+                  glitch_helper_.ConsumeGlitchInfo());
 
     // Move the capture time forward for each vended block.
     capture_time += AudioTimestampHelper::FramesToTime(audio_bus->frames(),
@@ -1179,11 +1182,11 @@ void AUAudioInputStream::HandleError(OSStatus err,
 }
 
 void AUAudioInputStream::SetInputCallbackIsActive(bool enabled) {
-  base::subtle::Release_Store(&input_callback_is_active_, enabled);
+  input_callback_is_active_.store(enabled, std::memory_order_release);
 }
 
 bool AUAudioInputStream::GetInputCallbackIsActive() {
-  return (base::subtle::Acquire_Load(&input_callback_is_active_) != false);
+  return input_callback_is_active_.load(std::memory_order_acquire);
 }
 
 void AUAudioInputStream::CheckInputStartupSuccess() {
@@ -1217,55 +1220,18 @@ void AUAudioInputStream::CloseAudioUnit() {
   audio_unit_ = 0;
 }
 
-void AUAudioInputStream::UpdateCaptureTimestamp(
-    const AudioTimeStamp* timestamp) {
-  if ((timestamp->mFlags & kAudioTimeStampSampleTimeValid) == 0)
-    return;
-
-  if (last_sample_time_) {
-    DCHECK_NE(0U, last_number_of_frames_);
-    UInt32 sample_time_diff =
-        static_cast<UInt32>(timestamp->mSampleTime - last_sample_time_);
-    DCHECK_GE(sample_time_diff, last_number_of_frames_);
-    UInt32 lost_frames = sample_time_diff - last_number_of_frames_;
-    base::TimeDelta lost_audio_duration = AudioTimestampHelper::FramesToTime(
-        lost_frames, input_params_.sample_rate());
-    glitch_reporter_.UpdateStats(lost_audio_duration);
-    if (lost_audio_duration.is_positive()) {
-      glitch_accumulator_.Add(AudioGlitchInfo::SingleBoundedSystemGlitch(
-          lost_audio_duration, AudioGlitchInfo::Direction::kCapture));
-    }
-  }
-
-  // Store the last sample time for use next time we get called back.
-  last_sample_time_ = timestamp->mSampleTime;
-}
-
 void AUAudioInputStream::ReportAndResetStats() {
-  if (last_sample_time_ == 0)
-    return;  // No stats gathered to report.
-
-  // A value of 0 indicates that we got the buffer size we asked for.
-  base::UmaHistogramCounts10000("Media.Audio.Capture.FramesProvided",
-                                number_of_frames_provided_);
-
-  SystemGlitchReporter::Stats stats =
-      glitch_reporter_.GetLongTermStatsAndReset();
-
-  std::string log_message = base::StringPrintf(
-      "AU in: (num_glitches_detected=[%d], cumulative_audio_lost=[%llu ms], "
-      "largest_glitch=[%llu ms])",
-      stats.glitches_detected, stats.total_glitch_duration.InMilliseconds(),
-      stats.largest_glitch_duration.InMilliseconds());
-
-  log_callback_.Run(log_message);
-  if (stats.glitches_detected != 0) {
-    DLOG(WARNING) << log_message;
+  std::optional<std::string> log_message = glitch_helper_.LogAndReset("AU in");
+  if (log_message) {
+    log_callback_.Run(*log_message);
   }
 
+  if (number_of_frames_provided_) {
+    // A value of 0 indicates that we got the buffer size we asked for.
+    base::UmaHistogramCounts10000("Media.Audio.Capture.FramesProvided",
+                                  number_of_frames_provided_);
+  }
   number_of_frames_provided_ = 0;
-  last_sample_time_ = 0;
-  last_number_of_frames_ = 0;
 }
 
 // TODO(ossu): Ideally, we'd just use the mono stream directly. However, since

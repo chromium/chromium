@@ -8,10 +8,13 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace blink {
 

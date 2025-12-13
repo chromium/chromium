@@ -28,13 +28,13 @@ class SharedWorkerReportingProxy final
 
   // WorkerReportingProxy methods:
   void CountFeature(WebFeature) override;
-  void ReportException(const WTF::String&,
-                       SourceLocation*,
+  void ReportException(const String&,
+                       const SourceLocation*,
                        int exception_id) override;
   void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
                             const String& message,
-                            SourceLocation*) override;
+                            const SourceLocation*) override;
   void DidFailToFetchClassicScript() override;
   void DidFailToFetchModuleScript() override;
   void DidEvaluateTopLevelScript(bool success) override;
@@ -49,6 +49,7 @@ class SharedWorkerReportingProxy final
   WebSharedWorkerImpl* worker_;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
+  bool script_evaluated_ = false;
 };
 
 }  // namespace blink

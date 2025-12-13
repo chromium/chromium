@@ -41,10 +41,6 @@
   return NO;
 }
 
-- (BOOL)isSearchWithAim {
-  return NO;
-}
-
 - (NSNumber*)suggestionGroupId {
   return nil;
 }

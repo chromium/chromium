@@ -27,3 +27,5 @@ base::android::ScopedJavaLocalRef<jobject> JavaBookmarkIdCreateBookmarkId(
 
 }  // namespace android
 }  // namespace bookmarks
+
+DEFINE_JNI(BookmarkId)

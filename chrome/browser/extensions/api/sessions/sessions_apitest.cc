@@ -202,7 +202,7 @@ void ExtensionSessionsTest::CreateSessionModels() {
   request.authenticated_gaia_id = GaiaId("SomeGaiaId");
 
   sync_sessions::SessionSyncService* service =
-      SessionSyncServiceFactory::GetForProfile(browser()->profile());
+      SessionSyncServiceFactory::GetForProfile(GetProfile());
 
   base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
       sync_start_future;
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetDevices) {
   base::Value::List result =
       utils::ToList(utils::RunFunctionAndReturnSingleResult(
           CreateFunction<SessionsGetDevicesFunction>(true).get(),
-          "[{\"maxResults\": 0}]", browser()->profile()));
+          "[{\"maxResults\": 0}]", GetProfile()));
   EXPECT_TRUE(CheckSessionModels(result, 0u));
 }
 
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetDevicesMaxResults) {
   base::Value::List result =
       utils::ToList(utils::RunFunctionAndReturnSingleResult(
           CreateFunction<SessionsGetDevicesFunction>(true).get(), "[]",
-          browser()->profile()));
+          GetProfile()));
   EXPECT_TRUE(CheckSessionModels(result, 1u));
 }
 
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetDevicesListEmpty) {
   base::Value::List devices(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(
           CreateFunction<SessionsGetDevicesFunction>(true).get(), "[]",
-          browser()->profile())));
+          GetProfile())));
 
   EXPECT_TRUE(devices.empty());
 }
@@ -293,12 +293,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
   const base::Value::Dict restored_window_session =
       utils::ToDict(utils::RunFunctionAndReturnSingleResult(
           CreateFunction<SessionsRestoreFunction>(true).get(), "[\"tag3.3\"]",
-          browser()->profile(), api_test_utils::FunctionMode::kIncognito));
+          GetProfile(), api_test_utils::FunctionMode::kIncognito));
 
   base::Value::List windows(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(
           CreateFunction<WindowsGetAllFunction>(true).get(), "[]",
-          browser()->profile())));
+          GetProfile())));
 
   EXPECT_EQ(2u, windows.size());
   const base::Value::Dict restored_window =
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionInvalidId) {
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
           CreateFunction<SessionsRestoreFunction>(true).get(), "[\"tag3.0\"]",
-          browser()->profile()),
+          GetProfile()),
       "Invalid session id: \"tag3.0\"."));
 }
 
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
   // Set up a browser with a non-editable tabstrip, simulating one in the midst
   // of a tab dragging session.
   Browser* non_editable_browser =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(GetProfile(), true));
   non_editable_browser->window()->SetTabStripNotEditableForTesting();
 
   EXPECT_TRUE(base::MatchPattern(
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
   {
     std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
         CreateFunction<SessionsGetRecentlyClosedFunction>(true).get(), "[]",
-        browser()->profile());
+        GetProfile());
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
     EXPECT_EQ(kTabCount, result->GetList().size());
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
   {
     std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
         CreateFunction<SessionsGetRecentlyClosedFunction>(true).get(),
-        "[{\"maxResults\": 0}]", browser()->profile());
+        "[{\"maxResults\": 0}]", GetProfile());
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
     EXPECT_EQ(0u, result->GetList().size());
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
   {
     std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
         CreateFunction<SessionsGetRecentlyClosedFunction>(true).get(),
-        "[{\"maxResults\": 2}]", browser()->profile());
+        "[{\"maxResults\": 2}]", GetProfile());
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
     EXPECT_EQ(2u, result->GetList().size());
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, CheckActiveTabStatus) {
   const base::Value::List result =
       utils::ToList(utils::RunFunctionAndReturnSingleResult(
           CreateFunction<SessionsGetDevicesFunction>(true).get(), "[]",
-          browser()->profile()));
+          GetProfile()));
 
   ASSERT_FALSE(result.empty()) << "No devices found.";
 

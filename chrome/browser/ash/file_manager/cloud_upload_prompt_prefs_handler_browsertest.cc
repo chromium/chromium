@@ -56,7 +56,6 @@ class CloudUploadPromptPrefsHandlerTestBase : public InProcessBrowserTest {
   CloudUploadPromptPrefsHandlerTestBase() {
     feature_list_.InitWithFeatures(
         {chromeos::features::kUploadOfficeToCloud,
-         chromeos::features::kUploadOfficeToCloudForEnterprise,
          chromeos::features::kUploadOfficeToCloudSync},
         {});
   }

@@ -7,24 +7,17 @@ source_set("prerender_pref") {
 }
 
 source_set("model") {
-  public = [
-    "preload_controller_delegate.h",
-    "prerender_service.h",
-    "prerender_service_factory.h",
-  ]
   sources = [
-    "preload_controller.h",
-    "preload_controller.mm",
-    "prerender_service_factory.mm",
-    "prerender_service_impl.h",
-    "prerender_service_impl.mm",
+    "prerender_browser_agent.h",
+    "prerender_browser_agent.mm",
+    "prerender_browser_agent_delegate.h",
+    "prerender_tab_helper.h",
+    "prerender_tab_helper.mm",
+    "prerender_tab_helper_delegate.h",
   ]
-
-  friend = [ ":unit_tests" ]
-
-  public_deps = [ "//base" ]
   deps = [
     ":prerender_pref",
+    "//base",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/signin/ios/browser",
@@ -38,8 +31,6 @@ source_set("model") {
     "//ios/chrome/browser/itunes_urls/model",
     "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/ntp/model:util",
-    "//ios/chrome/browser/sessions/model:session_restoration_service",
-    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
@@ -56,22 +47,10 @@ source_set("model") {
   ]
 }
 
-source_set("test_support") {
-  sources = [
-    "fake_prerender_service.h",
-    "fake_prerender_service.mm",
-  ]
-
-  deps = [ ":model" ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "preload_controller_unittest.mm",
-    "prerender_service_impl_unittest.mm",
-  ]
+  sources = [ "prerender_browser_agent_unittest.mm" ]
   deps = [
     ":model",
     ":prerender_pref",
@@ -83,10 +62,14 @@ source_set("unit_tests") {
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common:features",
     "//components/supervised_user/test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//net:test_support",

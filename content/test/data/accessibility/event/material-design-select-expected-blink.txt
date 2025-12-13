@@ -1,0 +1,398 @@
+=== Accessibility tree before go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Select Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-select'
+++++++++++genericContainer ignored
+++++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Test Select' value='Test Select Option 1'
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++++staticText name='Test Select'
+++++++++++++++++++++++++++++inlineTextBox name='Test Select'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++staticText name='Option 1'
+++++++++++++++++++++++++++++inlineTextBox name='Option 1'
+++++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++image htmlTag='svg'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Select Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-select'
+++++++++++genericContainer ignored
+++++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Test Select' value='Test Select Option 1'
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++++staticText name='Test Select'
+++++++++++++++++++++++++++++inlineTextBox name='Test Select'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++staticText name='Option 2' <<<<<< CHANGED
+++++++++++++++++++++++++++++inlineTextBox name='Option 2' <<<<<< CHANGED
+++++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++image htmlTag='svg'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Select Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-select'
+++++++++++genericContainer ignored
+++++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Test Select' value='Test Select Option 1'
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++++staticText name='Test Select'
+++++++++++++++++++++++++++++inlineTextBox name='Test Select'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++staticText name='Option 2'
+++++++++++++++++++++++++++++inlineTextBox name='Option 2'
+++++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++image htmlTag='svg'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Select Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-select'
+++++++++++genericContainer ignored
+++++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Test Select' value='Test Select Option 1'
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++++staticText name='Test Select'
+++++++++++++++++++++++++++++inlineTextBox name='Test Select'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++staticText name='Option 3' <<<<<< CHANGED
+++++++++++++++++++++++++++++inlineTextBox name='Option 3' <<<<<< CHANGED
+++++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++image htmlTag='svg'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Select Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-select'
+++++++++++genericContainer ignored
+++++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Test Select' value='Test Select Option 1'
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++++staticText name='Test Select'
+++++++++++++++++++++++++++++inlineTextBox name='Test Select'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++staticText name='Option 3'
+++++++++++++++++++++++++++++inlineTextBox name='Option 3'
+++++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++image htmlTag='svg'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Select Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-select'
+++++++++++genericContainer ignored
+++++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Test Select' value='Test Select Option 1'
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++++staticText name='Test Select'
+++++++++++++++++++++++++++++inlineTextBox name='Test Select'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++staticText name='Option 1' <<<<<< CHANGED
+++++++++++++++++++++++++++++inlineTextBox name='Option 1' <<<<<< CHANGED
+++++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++image htmlTag='svg'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===

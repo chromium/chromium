@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">କମଳା</translation>
 <translation id="1275718070701477396">ଚୟନ କରାଯାଇଛି</translation>
 <translation id="1290331692326790741">ଦୁର୍ବଳ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
+<translation id="1292474106138697109">କ୍ଲାସ ଟୁଲ ଡିସପ୍ଲେ</translation>
 <translation id="1300115153046603471">APN ପ୍ରକାର ଡିଫଲ୍ଟ ଏବଂ <ph name="ATTACH" /> ଅଟେ।</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">କନଭର୍ଟ କରନ୍ତୁ</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />ଟି ଛବି</translation>
 <translation id="4300272766492248925">ଆପ ଖୋଲନ୍ତୁ</translation>
 <translation id="430786093962686457">ସିଫନ</translation>
+<translation id="4309762678330556039">ସ୍ୱତଃ ଟ୍ରାନ୍ସକ୍ରିପସନଗୁଡ଼ିକ ତିଆରି କରନ୍ତୁ ଏବଂ ଅଡିଓ ସର୍ଚ୍ଚ କରନ୍ତୁ। ଆପଣ ଇଣ୍ଟର୍ନେଟ ସହ କନେକ୍ଟ ନଥିବା ବେଳେ ମଧ୍ୟ ରେକର୍ଡିଂ ତିଆରି କରିପାରିବେ।</translation>
 <translation id="4310735698903592804">Google AI ଦ୍ୱାରା ପରିଚାଳିତ ବର୍ତ୍ତମାନର ୱାଲପେପରଗୁଡ଼ିକ</translation>
 <translation id="4320904097188876154">ନିଅନ ପିଙ୍କ</translation>
 <translation id="432961742358282111">ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ କନଭର୍ସନଗୁଡ଼ିକ ପାଇବା ପାଇଁ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ କିମ୍ବା ଦବାଇ ଧରି ରଖନ୍ତୁ। ଏହି ଫିଚରକୁ ପରିଚାଳନା କରିବା ପାଇଁ ବାମ କିମ୍ବା ଡାହାଣ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> କୀ'କୁ ପରୀକ୍ଷା କରାଯାଇଛି</translation>
 <translation id="5606865426897221650">ଟାବ</translation>
+<translation id="5612205513582918357">କ୍ଲାସ ଟୁଲ ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ <ph name="RECEIVER_NAME" />ଙ୍କ ସହ ସେୟାର କରୁଛି</translation>
 <translation id="5613201299517339763">ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରାଯାଇଛି</translation>
 <translation id="5620281292257375798">କେବଳ ଇଣ୍ଟର୍ନଲ୍</translation>
 <translation id="5628106863521633649">ଉପଲବ୍ଧ ଭାଷା</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">କ୍ଲାଉଡ ଫ୍ଲୋ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">କୌଣସି ସ୍କାନର୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
-<translation id="6231648282154119906">ଆପଣ ବାଛିଥିବା ଉନ୍ନତ ସୁରକ୍ଷାର ଅଂଶ ଭାବରେ Google ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ଦ୍ୱାରା ସନ୍ଦେହଜନକ ଫାଇଲଗୁଡ଼ିକ ସ୍ୱତଃ ସ୍କାନ ହେବ</translation>
 <translation id="6232017090690406397">ବେଟେରୀ</translation>
 <translation id="6234024205316847054">ଆଉଟଲାଇନ ଦେଖାନ୍ତୁ</translation>
 <translation id="6243280677745499710">ବର୍ତ୍ତମାନ ସେଟ୍ ହୋଇଛି</translation>

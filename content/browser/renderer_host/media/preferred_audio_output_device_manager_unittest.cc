@@ -30,7 +30,7 @@ constexpr char kRawDeviceId[] = "Speaker (High Definition Audio)";
 class MockAudioOutputDeviceSwitcher : public AudioOutputDeviceSwitcher {
  public:
   MockAudioOutputDeviceSwitcher(
-      int render_process_id,
+      ChildProcessId render_process_id,
       int render_frame_id,
       const GlobalRenderFrameHostToken& main_frame_token,
       PreferredAudioOutputDeviceManagerImpl* preferred_device_manager)
@@ -52,7 +52,7 @@ class MockAudioOutputDeviceSwitcher : public AudioOutputDeviceSwitcher {
   }
 
  private:
-  int render_process_id_;
+  ChildProcessId render_process_id_;
   int render_frame_id_;
   const GlobalRenderFrameHostToken main_frame_token_;
   raw_ptr<PreferredAudioOutputDeviceManagerImpl> preferred_device_manager_;

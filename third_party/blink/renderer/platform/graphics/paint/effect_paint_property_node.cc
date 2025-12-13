@@ -55,6 +55,8 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
     const AnimationState& animation_state) const {
   if (local_transform_space != other.local_transform_space ||
       output_clip != other.output_clip || blend_mode != other.blend_mode ||
+      direct_compositing_reasons != other.direct_compositing_reasons ||
+      compositor_element_id != other.compositor_element_id ||
       view_transition_element_resource_id !=
           other.view_transition_element_resource_id ||
       self_or_ancestor_participates_in_view_transition !=
@@ -84,23 +86,10 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
 
-  bool non_reraster_values_changed =
-      direct_compositing_reasons != other.direct_compositing_reasons ||
-      compositor_element_id != other.compositor_element_id;
-  bool simple_values_changed =
-      opacity_change_is_simple &&
-      !animation_state.is_running_opacity_animation_on_compositor;
-  if (non_reraster_values_changed && simple_values_changed) {
-    // Both simple change and non-reraster change is upgraded to value change
-    // to avoid loss of non-reraster change when PaintPropertyTreeBuilder
-    // downgrades kChangedOnlySimpleValues to kChangedOnlyCompositedValues
-    // after a successful direct update.
-    return PaintPropertyChangeType::kChangedOnlyValues;
-  }
-  if (non_reraster_values_changed)
-    return PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
-  if (simple_values_changed)
+  if (opacity_change_is_simple &&
+      !animation_state.is_running_opacity_animation_on_compositor) {
     return PaintPropertyChangeType::kChangedOnlySimpleValues;
+  }
 
   if (opacity_changed ||
       filter_changed != PaintPropertyChangeType::kUnchanged ||

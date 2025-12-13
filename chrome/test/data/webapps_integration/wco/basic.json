@@ -12,7 +12,8 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/webapps_integration/wco/basic.html",
-  "scope": "/web_apps/wco/",
+  "id": "/webapps_integration/wco/basic.html",
+  "start_url": "/webapps_integration/wco/basic.html?manifest=basic.json",
+  "scope": "/webapps_integration/wco/",
   "display": "standalone"
 }

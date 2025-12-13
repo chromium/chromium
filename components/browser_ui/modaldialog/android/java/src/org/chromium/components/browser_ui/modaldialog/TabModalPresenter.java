@@ -292,4 +292,8 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
     public @Nullable View getDialogContainerForTest() {
         return mDialogContainer;
     }
+
+    public @Nullable ModalDialogView getDialogViewForTest() {
+        return mDialogView;
+    }
 }

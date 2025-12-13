@@ -28,7 +28,6 @@
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
-#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -93,7 +92,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
-#include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
+#include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -167,10 +166,7 @@ void SetSafeAreaMaxEnvVariables(
 }  // namespace
 
 // Function defined in third_party/blink/public/web/blink.h.
-void ResetPluginCache(bool reload_pages) {
-  // At this point we already know that the browser has refreshed its list, so
-  // it is not necessary to force it to be regenerated.
-  DCHECK(!reload_pages);
+void ResetPluginCache() {
   Page::ResetPluginData();
 }
 
@@ -212,7 +208,6 @@ Page* Page::CreateNonOrdinary(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
       /*browsing_context_group_token=*/base::UnguessableToken::Create(),
       color_provider_colors,
-      /*partitioned_popin_params=*/nullptr,
       /*is_ordinary=*/false);
 }
 
@@ -221,12 +216,11 @@ Page* Page::CreateOrdinary(
     Page* opener,
     AgentGroupScheduler& agent_group_scheduler,
     const base::UnguessableToken& browsing_context_group_token,
-    const ColorProviderColorMaps* color_provider_colors,
-    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params) {
+    const ColorProviderColorMaps* color_provider_colors) {
   Page* page = MakeGarbageCollected<Page>(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
       browsing_context_group_token, color_provider_colors,
-      std::move(partitioned_popin_params), /*is_ordinary=*/true);
+      /*is_ordinary=*/true);
   page->opener_ = opener;
 
   OrdinaryPages().insert(page);
@@ -250,7 +244,6 @@ Page::Page(base::PassKey<Page>,
            AgentGroupScheduler& agent_group_scheduler,
            const base::UnguessableToken& browsing_context_group_token,
            const ColorProviderColorMaps* color_provider_colors,
-           blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
            bool is_ordinary)
     : SettingsDelegate(std::make_unique<Settings>()),
       main_frame_(nullptr),
@@ -295,12 +288,6 @@ Page::Page(base::PassKey<Page>,
           MakeGarbageCollected<
               v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>()),
       browsing_context_group_token_(browsing_context_group_token) {
-  if (partitioned_popin_params) {
-    partitioned_popin_opener_properties_ = PartitionedPopinOpenerProperties(
-        SecurityOrigin::CreateFromUrlOrigin(
-            partitioned_popin_params->opener_top_frame_origin),
-        partitioned_popin_params->opener_site_for_cookies);
-  }
   DCHECK(!AllPages().Contains(this));
   AllPages().insert(this);
 
@@ -376,9 +363,8 @@ void Page::CloseSoon() {
   if (!close_task_handler_ && MainFrame()) {
     close_task_handler_ = MakeGarbageCollected<Page::CloseTaskHandler>(this);
     GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner()->PostTask(
-        FROM_HERE,
-        WTF::BindOnce(&Page::CloseTaskHandler::DoDeferredClose,
-                      WrapWeakPersistent(close_task_handler_.Get())));
+        FROM_HERE, BindOnce(&Page::CloseTaskHandler::DoDeferredClose,
+                            WrapWeakPersistent(close_task_handler_.Get())));
   }
 }
 
@@ -511,7 +497,7 @@ void Page::TakePropertiesForLocalMainFrameSwap(Page* old_page) {
 
   // If the previous page is an opener for other pages, make sure that the
   // openees point to the new page instead.
-  for (auto page : RelatedPages()) {
+  for (auto& page : RelatedPages()) {
     if (page->opener_ == old_page) {
       page->opener_ = this;
     }
@@ -521,22 +507,6 @@ void Page::TakePropertiesForLocalMainFrameSwap(Page* old_page) {
   // renderer-side opener is only set during construction and might be stale.
   // When we create the new page, we get the latest opener frame token, so the
   // new page's opener should be the most up-to-date opener.
-}
-
-bool Page::IsPartitionedPopin() const {
-  // The feature must be enabled if a popin site for cookies was set.
-  CHECK(RuntimeEnabledFeatures::PartitionedPopinsEnabled() ||
-        !partitioned_popin_opener_properties_);
-
-  return !!partitioned_popin_opener_properties_;
-}
-
-const PartitionedPopinOpenerProperties&
-Page::GetPartitionedPopinOpenerProperties() const {
-  // This function is only usable if we are in a popin.
-  CHECK(IsPartitionedPopin());
-
-  return *partitioned_popin_opener_properties_;
 }
 
 LocalFrame* Page::DeprecatedLocalMainFrame() const {
@@ -568,13 +538,15 @@ SpatialNavigationController& Page::GetSpatialNavigationController() {
   return *spatial_navigation_controller_;
 }
 
-SVGResourceDocumentCache& Page::GetSVGResourceDocumentCache() {
-  if (!svg_resource_document_cache_) {
-    svg_resource_document_cache_ =
-        MakeGarbageCollected<SVGResourceDocumentCache>(
-            GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner());
+SVGDocumentResourceTracker& Page::GetSVGDocumentResourceTracker() {
+  if (!svg_document_resource_tracker_) {
+    svg_document_resource_tracker_ =
+        MakeGarbageCollected<SVGDocumentResourceTracker>(
+            GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner(),
+            SVGDocumentResourceTracker::MakeCacheIdentifier(
+                String(BrowsingContextGroupToken().ToString())));
   }
-  return *svg_resource_document_cache_;
+  return *svg_document_resource_tracker_;
 }
 
 void Page::UsesOverlayScrollbarsChanged() {
@@ -849,7 +821,7 @@ void Page::SetVisibilityState(
   if (is_initial_state)
     return;
 
-  for (auto observer : page_visibility_observer_set_) {
+  for (auto& observer : page_visibility_observer_set_) {
     observer->PageVisibilityChanged();
   }
 
@@ -1026,9 +998,7 @@ void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
     applied_safe_area_insets_ = scaled_max_safe_area_insets_;
     SetSafeAreaEnvVariables(setter, scaled_max_safe_area_insets_);
   }
-  if (RuntimeEnabledFeatures::CSSSafeAreaMaxInsetEnabled()) {
-    SetSafeAreaMaxEnvVariables(setter, scaled_max_safe_area_insets_);
-  }
+  SetSafeAreaMaxEnvVariables(setter, scaled_max_safe_area_insets_);
 }
 
 void Page::SettingsChanged(ChangeType change_type) {
@@ -1079,9 +1049,7 @@ void Page::SettingsChanged(ChangeType change_type) {
       }
       break;
     case ChangeType::kFontScaleFactor:
-      if (!RuntimeEnabledFeatures::CSSPreferredTextScaleEnabled()) {
-        break;
-      }
+
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
         LocalFrame* local_frame = DynamicTo<LocalFrame>(frame);
@@ -1239,8 +1207,12 @@ void Page::SettingsChanged(ChangeType change_type) {
       break;
     }
     case ChangeType::kVisionDeficiency: {
-      if (auto* main_local_frame = DynamicTo<LocalFrame>(MainFrame()))
-        main_local_frame->GetDocument()->VisionDeficiencyChanged();
+      for (Frame* frame = MainFrame(); frame;
+           frame = frame->Tree().TraverseNext()) {
+        if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+          local_frame->GetDocument()->VisionDeficiencyChanged();
+        }
+      }
       break;
     }
     case ChangeType::kForcedColors: {
@@ -1307,10 +1279,10 @@ void Page::DidCommitLoad(LocalFrame* frame) {
     // would update the previous history item, Page::didCommitLoad is called
     // after a new history item is created in FrameLoader.
     // See crbug.com/642279
-    GetVisualViewport().SetScrollOffset(ScrollOffset(),
-                                        mojom::blink::ScrollType::kProgrammatic,
-                                        mojom::blink::ScrollBehavior::kInstant,
-                                        ScrollableArea::ScrollCallback());
+    GetVisualViewport().SetScrollOffset(
+        ScrollOffset(), mojom::blink::ScrollType::kProgrammatic,
+        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant,
+        ScrollableArea::ScrollCallback());
   }
   // crbug/1312107: If DevTools has "Highlight ad frames" checked when the
   // main frame is refreshed or the ad frame is navigated to a different
@@ -1364,7 +1336,7 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(visual_viewport_);
   visitor->Trace(link_highlight_);
   visitor->Trace(spatial_navigation_controller_);
-  visitor->Trace(svg_resource_document_cache_);
+  visitor->Trace(svg_document_resource_tracker_);
   visitor->Trace(main_frame_);
   visitor->Trace(previous_main_frame_for_local_swap_);
   visitor->Trace(plugin_data_);
@@ -1422,8 +1394,8 @@ void Page::WillBeDestroyed() {
     next_related_page_ = nullptr;
   }
 
-  if (svg_resource_document_cache_) {
-    svg_resource_document_cache_->WillBeDestroyed();
+  if (svg_document_resource_tracker_) {
+    svg_document_resource_tracker_->WillBeDestroyed();
   }
 
   if (scrolling_coordinator_)
@@ -1434,7 +1406,7 @@ void Page::WillBeDestroyed() {
     validation_message_client_->WillBeDestroyed();
   main_frame_ = nullptr;
 
-  for (auto observer : page_visibility_observer_set_) {
+  for (auto& observer : page_visibility_observer_set_) {
     observer->ObserverSetWillBeCleared();
   }
   page_visibility_observer_set_.clear();

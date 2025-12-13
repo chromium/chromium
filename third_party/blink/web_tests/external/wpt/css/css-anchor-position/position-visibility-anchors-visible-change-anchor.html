@@ -33,13 +33,12 @@
   #target {
     position-anchor: --a2;
     position-visibility: anchors-visible;
-    position-area: bottom;
+    position-area: bottom center;
     width: 100px;
     height: 100px;
     background: green;
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
   }
 </style>
 
@@ -62,7 +61,9 @@
       scroller.scrollTop = 100;
       // #target should still be visible because it is anchored to #anchor1,
       // which is still visible.
-      takeScreenshot();
+      waitForAtLeastOneFrame().then(() => {
+        takeScreenshot();
+      });
     });
   });
 </script>

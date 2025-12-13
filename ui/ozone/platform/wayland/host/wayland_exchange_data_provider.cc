@@ -139,7 +139,7 @@ void AddFiles(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
 
     url::RawCanonOutputT<char16_t> unescaped;
     url::DecodeURLEscapeSequences(
-        url.path_piece(), url::DecodeURLMode::kUTF8OrIsomorphic, &unescaped);
+        url.path(), url::DecodeURLMode::kUTF8OrIsomorphic, &unescaped);
 
     const base::FilePath path(base::UTF16ToUTF8(unescaped.view()));
     filenames.emplace_back(path, path.BaseName());
@@ -276,8 +276,9 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
                                               std::string* out_content) const {
   DCHECK(out_content);
   DCHECK(IsMimeTypeSupported(mime_type));
-  if (std::optional<ui::OSExchangeData::UrlInfo> url_info;
-      mime_type == ui::kMimeTypeMozillaUrl &&
+  if (std::optional<ui::OSExchangeDataProvider::UrlInfo> url_info;
+      (mime_type == ui::kMimeTypeMozillaUrl ||
+       mime_type == ui::kMimeTypeUriList) &&
       (url_info = GetURLAndTitle(kFilenameToURLPolicy)).has_value()) {
     out_content->append(url_info->url.spec());
     return true;

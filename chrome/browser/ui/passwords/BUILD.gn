@@ -1,0 +1,362 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("passwords") {
+  sources = [
+    "account_avatar_fetcher.h",
+    "manage_passwords_state.h",
+    "password_manager_navigation_throttle.h",
+    "ui_utils.h",
+    "well_known_change_password_navigation_throttle.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/bitmap_fetcher",
+    "//components/password_manager/core/browser",
+    "//content/public/browser",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/network/public/mojom",
+    "//ui/gfx",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "credential_leak_dialog_controller.h",
+      "credential_leak_dialog_controller_impl.h",
+      "credential_manager_dialog_controller.h",
+      "credential_manager_dialog_controller_impl.h",
+      "manage_passwords_icon_view.h",
+      "manage_passwords_ui_controller.h",
+      "password_base_dialog_controller.h",
+      "password_dialog_prompts.h",
+      "password_generation_popup_controller.h",
+      "password_generation_popup_controller_impl.h",
+      "password_generation_popup_observer.h",
+      "password_generation_popup_view.h",
+      "passwords_client_ui_delegate.h",
+      "passwords_leak_dialog_delegate.h",
+      "passwords_model_delegate.h",
+    ]
+    public_deps += [
+      "//build:branding_buildflags",
+      "//chrome/browser:primitives",
+      "//chrome/common:buildflags",
+      "//components/password_manager/core/browser/ui",
+      "//components/password_manager/core/common",
+      "//components/zoom",
+      "//ui/views",
+      "//url",
+    ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [
+      "password_cross_domain_confirmation_popup_controller_impl.h",
+      "password_cross_domain_confirmation_popup_controller_interface.h",
+      "password_cross_domain_confirmation_popup_view.h",
+    ]
+  }
+
+  deps = [ "//chrome/browser/ui:browser_navigator_params_headers" ]
+}
+
+source_set("impl") {
+  sources = [
+    "account_avatar_fetcher.cc",
+    "manage_passwords_state.cc",
+    "password_manager_navigation_throttle.cc",
+    "ui_utils.cc",
+    "well_known_change_password_navigation_throttle.cc",
+  ]
+  deps = [
+    ":passwords",
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/affiliations",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/common",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/autofill/core/browser",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:metrics_util",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/well_known_change_password",
+    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//components/sync/service",
+    "//components/url_formatter",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/metrics/public/cpp:gen_ukm_builders",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom:url_loader_base",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "credential_leak_dialog_controller_impl.cc",
+      "credential_manager_dialog_controller_impl.cc",
+      "manage_passwords_ui_controller.cc",
+      "password_change_ui_controller.cc",
+      "password_generation_popup_controller_impl.cc",
+      "passwords_client_ui_delegate.cc",
+      "passwords_model_delegate.cc",
+
+      # TODO(crbug.com/437811373): Move this header to `:passwords` target above
+      # when the following headers get componentized:
+      # - c/b/password_manager/password_change_delegate.h
+      # - c/b/ui/views/passwords/password_change/password_change_toast.h
+      "password_change_ui_controller.h",
+    ]
+
+    deps += [
+      "//chrome/app:command_ids",
+      "//chrome/browser/actor",
+      "//chrome/browser/password_manager/factories:password_factory_headers",
+      "//chrome/browser/password_manager/password_change",
+      "//chrome/browser/promos:utils",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/autofill",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/promos:service",
+      "//chrome/browser/ui/promos:utils",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/web_applications",
+      "//components/browsing_data/content",
+      "//components/constrained_window",
+      "//components/desktop_to_mobile_promos",
+      "//components/password_manager/core/browser/features:password_features",
+    ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "password_cross_domain_confirmation_popup_controller_impl.cc" ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [
+      "manage_passwords_test.cc",
+      "manage_passwords_test.h",
+    ]
+
+    public_deps = [
+      "//base/test:test_support",
+      "//components/autofill/core/common",
+      "//components/keyed_service/content",
+      "//testing/gmock",
+    ]
+
+    deps += [
+      ":passwords",
+      "//chrome/app:command_ids",
+      "//chrome/browser/actor",
+      "//chrome/browser/actor:test_support",
+      "//chrome/browser/optimization_guide",
+      "//chrome/browser/password_manager/factories:password_factory_headers",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support_ui",
+      "//components/affiliations/core/browser:test_support",
+      "//components/autofill/core/common:test_support",
+      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:metrics_util",
+      "//components/password_manager/core/browser:test_support",
+      "//components/password_manager/core/browser/password_store:test_support",
+      "//components/password_manager/core/common:features",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
+      "//content/test:test_support",
+    ]
+  }
+}
+
+source_set("test_support_ui") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [
+      "credential_manager_dialog_controller_mock.cc",
+      "credential_manager_dialog_controller_mock.h",
+      "passwords_leak_dialog_delegate_mock.cc",
+      "passwords_leak_dialog_delegate_mock.h",
+      "passwords_model_delegate_mock.cc",
+      "passwords_model_delegate_mock.h",
+    ]
+
+    public_deps = [
+      ":passwords",
+      "//base",
+      "//testing/gmock",
+    ]
+
+    deps += [ "//components/signin/public/identity_manager" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "display_account_info_unittest.cc",
+    "manage_passwords_state_unittest.cc",
+  ]
+  deps = [
+    ":passwords",
+    "//base",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "credential_leak_dialog_controller_impl_unittest.cc",
+      "credential_manager_dialog_controller_impl_unittest.cc",
+      "manage_passwords_ui_controller_unittest.cc",
+      "password_cross_domain_confirmation_popup_controller_impl_unittest.cc",
+      "password_generation_popup_controller_impl_unittest.cc",
+      "password_manager_navigation_throttle_unittest.cc",
+      "well_known_change_password_navigation_throttle_unittest.cc",
+    ]
+    deps += [
+      ":test_support_ui",
+      "//base:i18n",
+      "//chrome/app:generated_resources",
+      "//chrome/browser",
+      "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui/autofill",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/test:test_support",
+      "//components/affiliations/core/browser:test_support",
+      "//components/autofill/content/browser",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
+      "//components/device_reauth",
+      "//components/device_reauth:test_support",
+      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:metrics_util",
+      "//components/password_manager/core/browser/features:password_features",
+      "//components/password_manager/core/browser/password_store:password_store_interface",
+      "//components/password_manager/core/browser/password_store:test_support",
+      "//components/password_manager/core/common:features",
+      "//components/prefs",
+      "//components/signin/public/identity_manager",
+      "//components/ukm:test_support",
+      "//components/variations:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//services/metrics/public/cpp:gen_ukm_builders",
+      "//services/metrics/public/cpp:metrics_cpp",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//third_party/blink/public/common:headers",
+      "//ui/base",
+      "//ui/gfx/geometry",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "password_change_ui_controller_browsertest.cc",
+      "password_generation_popup_view_browsertest.cc",
+      "well_known_change_password_navigation_throttle_browsertest.cc",
+    ]
+    deps = [
+      ":passwords",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:generated_resources",
+      "//chrome/browser",
+      "//chrome/browser/affiliations",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/affiliations/core/browser:affiliations",
+      "//components/affiliations/core/browser:test_support",
+      "//components/keyed_service/content",
+      "//components/password_manager/content/browser",
+      "//components/password_manager/core/browser/well_known_change_password",
+      "//components/password_manager/core/common:features",
+      "//components/sync:test_support",
+      "//components/tabs:public",
+      "//components/ukm:test_support",
+      "//content/test:test_support",
+      "//net",
+      "//net:test_support",
+      "//services/metrics/public/cpp:gen_ukm_builders",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//services/network:test_support",
+      "//services/network/public/cpp",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/accessibility",
+      "//ui/accessibility:ax_base",
+      "//ui/accessibility:ax_enums_mojo_shared",
+      "//ui/base",
+      "//ui/events",
+      "//ui/events:test_support",
+      "//ui/events/types:headers",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//ui/views",
+      "//ui/views:test_support",
+      "//url",
+
+      # TODO(crbug.com/437811373): Remove this dependency when
+      # c/b/ui/passwords/password_change_ui_controller.h gets built from `//c/b/ui/passwords:passwords`.
+      ":impl",
+    ]
+  }
+}

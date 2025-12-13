@@ -79,8 +79,7 @@ public class AuthTabTest {
     public void testCustomSchemeSuccess() throws TimeoutException {
         launchAuthTab();
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                mCustomTabActivityTestRule.getActivity().getCurrentWebContents(),
-                JS_CLICK_AUTH_BUTTON);
+                mCustomTabActivityTestRule.getWebContents(), JS_CLICK_AUTH_BUTTON);
         mAuthResultCallbackHelper.waitForNext();
         assertEquals(AuthTabIntent.RESULT_OK, mLastAuthResult.resultCode);
         assertEquals("sometoken", mLastAuthResult.resultUri.getQueryParameter("token"));

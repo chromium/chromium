@@ -240,12 +240,6 @@ inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
 // Creates a `FormData` with a single unclassified field.
 [[nodiscard]] FormData CreateTestUnclassifiedFormData();
 
-MATCHER_P(DeepEqualsFormData,
-          form_data,
-          negation ? "does not equal" : "equals") {
-  return FormData::DeepEqual(arg, form_data);
-}
-
 }  // namespace test
 
 }  // namespace autofill

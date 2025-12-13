@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
@@ -47,7 +48,8 @@ void NotificationContentDetectionService::
     OnCheckUrlForHighConfidenceAllowlist(
         notification_data_copy, base::TimeTicks::Now(), origin,
         is_allowlisted_by_user, std::move(model_verdict_callback),
-        IsDomainInNotificationsGlobalCacheList(origin), std::nullopt);
+        ShouldSkipNotificationProtectionsDueToGlobalCacheList(origin),
+        std::nullopt);
   } else {
     database_manager_->CheckUrlForHighConfidenceAllowlist(
         origin,

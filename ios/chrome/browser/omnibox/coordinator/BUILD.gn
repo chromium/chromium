@@ -10,8 +10,6 @@ source_set("coordinator") {
     "omnibox_mediator.h",
     "omnibox_mediator.mm",
     "omnibox_mediator_delegate.h",
-    "zero_suggest_prefetch_helper.h",
-    "zero_suggest_prefetch_helper.mm",
   ]
   deps = [
     "//base",
@@ -21,6 +19,7 @@ source_set("coordinator") {
     "//components/search_engines",
     "//components/strings",
     "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
@@ -60,27 +59,5 @@ source_set("coordinator") {
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/web/public",
     "//ios/web/public/navigation",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "zero_suggest_prefetch_helper_unittest.mm" ]
-  deps = [
-    ":coordinator",
-    "//base/test:test_support",
-    "//components/omnibox/browser",
-    "//components/omnibox/browser:test_support",
-    "//components/search_engines",
-    "//ios/chrome/browser/main/model",
-    "//ios/chrome/browser/omnibox/model",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
-    "//ios/web/public/test/fakes",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/ocmock",
   ]
 }

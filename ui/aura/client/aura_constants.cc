@@ -72,6 +72,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ui::mojom::WindowShowState,
                              kRestoreShowStateKey,
                              ui::mojom::WindowShowState::kNormal)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsRestoringKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kRemoveStandardFrame, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSkipImeProcessing, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kTitleKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kTopViewInset, 0)

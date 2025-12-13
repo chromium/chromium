@@ -9,7 +9,7 @@ Tests that execution contexts are reported for iframes that don't have src attri
                 type : default
             }
             id : <number>
-            name : 
+            name :
             origin : http://devtools.test:8000
         }
     }
@@ -25,7 +25,7 @@ Tests that execution contexts are reported for iframes that don't have src attri
                 type : default
             }
             id : <number>
-            name : 
+            name :
             origin : http://devtools.test:8000
         }
     }

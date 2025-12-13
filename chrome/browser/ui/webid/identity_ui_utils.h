@@ -9,12 +9,9 @@
 
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "content/public/browser/webid/identity_request_account.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
-
-namespace content {
-class IdentityRequestAccount;
-}  // namespace content
 
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
@@ -43,24 +40,28 @@ inline constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
 inline constexpr double kDisabledAvatarOpacity = 0.38;
 
 // This enum is used for histograms. Do not remove or modify existing values,
-// but you may add new values at the end and increase COUNT. This enum should
-// be kept in sync with FedCmSheetType in tools/metrics/histograms/enums.xml.
+// but you may add new values at the end.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
-enum SheetType {
-  ACCOUNT_SELECTION = 0,
-  VERIFYING = 1,
-  AUTO_REAUTHN = 2,
-  SIGN_IN_TO_IDP_STATIC = 3,
-  SIGN_IN_ERROR = 4,
-  LOADING = 5,
-  COUNT = 6
+// LINT.IfChange(SheetType)
+
+enum class SheetType {
+  kAccountSelection = 0,
+  kVerifying = 1,
+  kAutoReauthn = 2,
+  kSignInToIdpStatic = 3,
+  kSignInError = 4,
+  kLoading = 5,
+  kMaxValue = kLoading
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmSheetType)
 
 // This enum describes the outcome of the account chooser and is used for
 // histograms. Do not remove or modify existing values, but you may add new
-// values at the end. This enum should be kept in sync with
-// FedCmAccountChooserResult in tools/metrics/histograms/enums.xml.
+// values at the end.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
+// LINT.IfChange(AccountChooserResult)
+
 enum class AccountChooserResult {
   kAccountRow = 0,
   kCancelButton = 1,
@@ -72,15 +73,18 @@ enum class AccountChooserResult {
   kBackPress = 5,
   // Android-specific
   kTapScrim = 6,
-
   kMaxValue = kTapScrim
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmAccountChooserResult)
 
 // This enum describes the outcome of the loading dialog and is used for
 // histograms. Do not remove or modify existing values, but you may add new
 // values at the end. This enum should be kept in sync with
 // FedCmLoadingDialogResult in tools/metrics/histograms/enums.xml.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
+// LINT.IfChange(LoadingDialogResult)
+
 enum class LoadingDialogResult {
   kProceed = 0,
   kCancel = 1,
@@ -92,15 +96,17 @@ enum class LoadingDialogResult {
   kBackPress = 5,
   // Android-specific
   kTapScrim = 6,
-
   kMaxValue = kTapScrim
 };
 
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmLoadingDialogResult)
+
 // This enum describes the outcome of the disclosure dialog and is used for
 // histograms. Do not remove or modify existing values, but you may add new
-// values at the end. This enum should be kept in sync with
-// FedCmDisclosureDialogResult in tools/metrics/histograms/enums.xml.
+// values at the end.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
+// LINT.IfChange(DisclosureDialogResult)
+
 enum class DisclosureDialogResult {
   kContinue = 0,
   kCancel = 1,
@@ -112,9 +118,10 @@ enum class DisclosureDialogResult {
   kBackPress = 5,
   // Android-specific
   kTapScrim = 6,
-
   kMaxValue = kTapScrim
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmDisclosureDialogResult)
 
 // Extracts the initial letter from the provided string.
 std::u16string GetInitialLetterAsUppercase(const std::string& utf8_string);

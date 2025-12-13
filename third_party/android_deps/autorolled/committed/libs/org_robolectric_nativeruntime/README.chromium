@@ -1,7 +1,7 @@
 Name: nativeruntime
 Short Name: nativeruntime
-URL: https://robolectric.org
-Version: 4.15.1
+URL: https://repo.maven.apache.org/maven2/org/robolectric/nativeruntime/4.16/nativeruntime-4.16.jar
+Version: 4.16
 Update Mechanism: Autoroll
 License: Apache-2.0, MIT
 License File: LICENSE
@@ -11,6 +11,9 @@ Shipped: no
 
 Description:
 An alternative Android testing framework.
+
+See also: https://robolectric.org
+
 
 Local Modifications:
 No modifications.

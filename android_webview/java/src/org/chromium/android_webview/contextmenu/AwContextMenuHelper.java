@@ -10,6 +10,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwSettings.HyperlinkContextMenuItems;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -32,8 +34,7 @@ public class AwContextMenuHelper {
     }
 
     @CalledByNative
-    @VisibleForTesting
-    public static AwContextMenuHelper create(WebContents webContents) {
+    private static AwContextMenuHelper create(WebContents webContents) {
         return new AwContextMenuHelper(webContents);
     }
 
@@ -80,9 +81,18 @@ public class AwContextMenuHelper {
         boolean usePopupWindow =
                 isDragDropEnabled || ContextMenuUtils.isMouseOrHighlightPopup(params);
 
+        AwContents awContents = AwContents.fromWebContents(mWebContents);
+        @HyperlinkContextMenuItems
+        int hyperlinkMenuItems = getHyperlinkContextMenuItems(awContents);
+
         mCurrentContextMenu =
                 new AwContextMenuCoordinator(
-                        windowAndroid, mWebContents, params, isDragDropEnabled, usePopupWindow);
+                        windowAndroid,
+                        mWebContents,
+                        params,
+                        isDragDropEnabled,
+                        usePopupWindow,
+                        hyperlinkMenuItems);
 
         mCurrentContextMenu.displayMenu();
         return true;
@@ -98,5 +108,9 @@ public class AwContextMenuHelper {
             mCurrentContextMenu.dismiss();
             mCurrentContextMenu = null;
         }
+    }
+
+    protected @HyperlinkContextMenuItems int getHyperlinkContextMenuItems(AwContents awContents) {
+        return awContents.getSettings().getHyperlinkContextMenuItems();
     }
 }

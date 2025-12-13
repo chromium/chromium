@@ -81,7 +81,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
@@ -91,6 +90,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -182,7 +182,7 @@ void ReportFadeOutAnimationSmoothness(int smoothness) {
 // Returns the id of the display on which |view| is shown.
 int64_t GetDisplayIdForView(const View* view) {
   aura::Window* window = view->GetWidget()->GetNativeWindow();
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+  return display::Screen::Get()->GetDisplayNearestWindow(window).id();
 }
 
 // Whether |item_view| is a ShelfAppButton and its state is STATE_DRAGGING.
@@ -360,7 +360,7 @@ ShelfView::ShelfView(ShelfModel* model,
   shelf_->AddObserver(this);
   bounds_animator_->AddObserver(this);
   bounds_animator_->SetAnimationDuration(
-      ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
+      gfx::ScopedAnimationDurationScaleMode::duration_multiplier() *
       ShelfConfig::Get()->shelf_animation_duration());
   set_context_menu_controller(this);
   set_allow_deactivate_on_esc(true);
@@ -768,10 +768,11 @@ void ShelfView::ButtonPressed(views::Button* sender,
       base::Milliseconds(100));
 
   // Slow down activation animations if Control key is pressed.
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> slowing_animations;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> slowing_animations;
   if (event.IsControlDown()) {
-    slowing_animations = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-        ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+    slowing_animations =
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   }
 
   // Collect usage statistics before we decide what to do with the click.
@@ -1401,9 +1402,8 @@ void ShelfView::AnimateDragImageLayer(
     }
 
     // |target_layer| bounds are in display coordinates.
-    display::Display display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(
-            GetWidget()->GetNativeWindow());
+    display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+        GetWidget()->GetNativeWindow());
     current_bounds.Offset(display.bounds().OffsetFromOrigin());
 
     const gfx::Transform transform = gfx::TransformBetweenRects(
@@ -2014,7 +2014,7 @@ gfx::Rect ShelfView::GetMenuAnchorRect(const views::View& source,
 
   gfx::Rect shelf_bounds_in_screen;
   if (ShelfConfig::Get()->is_in_app() &&
-      display::Screen::GetScreen()->InTabletMode()) {
+      display::Screen::Get()->InTabletMode()) {
     // Use the shelf widget background as the menu anchor point in tablet mode
     // and in app.
     ShelfWidget* shelf_widget = shelf_->shelf_widget();
@@ -2191,10 +2191,6 @@ void ShelfView::OnGestureEvent(ui::GestureEvent* event) {
 void ShelfView::MaybeDuplicatePromiseAppForRemoval(
     ShelfAppButton* promise_app_view,
     const ShelfItem& item) {
-  if (!ash::features::ArePromiseIconsEnabled()) {
-    return;
-  }
-
   if (!promise_app_view || !promise_app_view->is_promise_app()) {
     return;
   }
@@ -2533,7 +2529,7 @@ void ShelfView::OnPinnedStateChanged(aura::Window* pinned_window) {
   // Close context menus in locked fullscreen mode to prevent users from exiting
   // this mode.
   if ((GetWindowPinType(pinned_window) ==
-       chromeos::WindowPinType::kTrustedPinned) &&
+       chromeos::WindowPinType::kLockedFullscreen) &&
       IsShowingMenu()) {
     shelf_menu_model_adapter_->Cancel();
   }
@@ -2643,7 +2639,7 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
       source_type,
       base::BindOnce(&ShelfView::OnMenuClosed, base::Unretained(this),
                      base::UnsafeDangling(source)),
-      display::Screen::GetScreen()->InTabletMode(),
+      display::Screen::Get()->InTabletMode(),
       /*for_application_menu_items*/ !context_menu);
   shelf_menu_model_adapter_->Run(
       GetMenuAnchorRect(*source, click_point, context_menu),
@@ -2835,7 +2831,6 @@ void ShelfView::EndDragCallback(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
-  // TODO(b/271601288): Hook up drop animation with the drag image icon.
   output_drag_op = ui::mojom::DragOperation::kMove;
   drag_image_layer_ = std::move(drag_image_layer_owner);
   EndDrag(false);

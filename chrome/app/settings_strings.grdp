@@ -131,9 +131,6 @@
   <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_TRANSLATE_SUBTITLE" desc="Description text for Live Translate feature.">
     Automatically translates live captions. Captions are sent to Google for translation.
   </message>
-  <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_ENGLISH_ONLY" desc="Description text for Live Caption feature. When audio or video is playing, the user will see captions on the screen. Currently only works for English media.">
-    Automatically creates captions for English audio and video. Audio and captions never leave your device.
-  </message>
   <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE" desc="Description text for Live Caption feature. When audio or video is playing, the user will see captions on the screen.">
     Automatically creates captions for supported languages. Audio never leaves your device.
   </message>
@@ -240,8 +237,16 @@
   <message name="IDS_SETTINGS_RESET_TO_DEFAULT" desc="Name of the control which resets a browser setting back to the default value">
     Reset to default
   </message>
+  <if expr="not is_linux">
+    <message name="IDS_SETTINGS_RESET_TO_DEFAULT_THEME" desc="Accessibility label of the button which resets the browser theme back to the default value">
+      Reset to default theme
+    </message>
+  </if>
   <message name="IDS_SETTINGS_CUSTOMIZE_TOOLBAR" desc="Text of the button which allows you to customize your toolbar.">
     Customize your toolbar
+  </message>
+  <message name="IDS_SETTINGS_RESET_TOOLBAR_TO_DEFAULT" desc="Accessibility label of the button which resets toolbar customizations to default settings">
+    Reset toolbar to default settings
   </message>
   <message name="IDS_SETTINGS_CHROME_COLORS" desc="Text of the label describing 'Chrome Colors' theme.">
     Chrome Colors
@@ -254,6 +259,12 @@
   </message>
   <message name="IDS_SETTINGS_SHOW_BOOKMARKS_BAR" desc="Label for the checkbox which enables or disables showing the bookmarks bar in the toolbar.">
     Show bookmarks bar
+  </message>
+  <message name="IDS_SETTINGS_TAB_STRIP_POSITION" desc="Title for the side panel section. Allows the user to toggle which side the tab strip is displayed on.">
+    Tab strip position
+  </message>
+  <message name="IDS_SETTINGS_ALLOW_SPLIT_VIEW_DRAG_AND_DROP" desc="Label for the checkbox which enables or disables drag and drop for split view.">
+    Allow split view drag-and-drop on left or right edge of window
   </message>
   <message name="IDS_SETTINGS_SHOW_TAB_GROUPS_IN_BOOKMARKS_BAR" desc="Label for the checkbox which enables or disables showing saved tab groups in bookmarks bar.">
     Show tab groups in bookmarks bar
@@ -284,6 +295,12 @@
   </message>
   <message name="IDS_SETTINGS_UI_FEATURE_ALIGN_RIGHT" desc="Label for the button that configures a feature to appear on the right side of the browser. Translate this verbatim, do not localize for RTL languages.">
     Show on right
+  </message>
+  <message name="IDS_SETTINGS_UI_FEATURE_ALIGN_SIDE" desc="Label for the button that configures a feature to appear on the side of the browser.">
+    Side
+  </message>
+  <message name="IDS_SETTINGS_UI_FEATURE_ALIGN_TOP" desc="Label for the button that configures a feature to appear on the top of the browser.">
+    Top
   </message>
   <message name="IDS_SETTINGS_HOME_PAGE_NTP" desc="Description of the New Tab Page when set as the home page.">
     New Tab page
@@ -397,6 +414,27 @@
   <message name="IDS_SETTINGS_AUTOFILL_AND_PASSWORDS" desc="Name of the settings page which allows managing passwords, payment methods and addresses settings.">
     Autofill and passwords
   </message>
+  <message name="IDS_SETTINGS_YOUR_SAVED_INFO" desc="Name of the settings page which allows managing data saved by users in chrome.">
+    Your saved info
+  </message>
+  <message name="IDS_IDENTITY_DOCS_SUBMENU_OPTION" desc="Text label of the Identity docs item in the Your saved info 3-dot submenu">
+    Identity docs
+  </message>
+  <message name="IDS_TRAVEL_SUBMENU_OPTION" desc="Text label of the Travel item in the Your saved info 3-dot submenu">
+    Travel
+  </message>
+  <message name="IDS_SETTINGS_YOUR_SAVED_INFO_DESCRIPTION" desc="Description of the 'Your saved info' page.">
+    Manage your autofill info for faster browsing &#x2014; info like passwords, payment methods, addresses, and ID cards
+  </message>
+  <message name="IDS_SETTINGS_YOUR_SAVED_INFO_AUTOFILL_SETTINGS_LABEL" desc="Title of the Autofill settings section on 'Your saved info' page.">
+    Autofill settings
+  </message>
+  <message name="IDS_SETTINGS_YOUR_SAVED_INFO_AUTOFILL_SETTINGS_DESCRIPTION" desc="Description of the Autofill settings section on 'Your saved info' page.">
+    Settings that affect how autofill works across different types of info
+  </message>
+  <message name="IDS_SETTINGS_RELATED_SERVICES_TITLE" desc="Title of the section allowing the user to access any related google services from the 'Your saved info' page.">
+    Related Google services
+  </message>
   <message name="IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX" desc="Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message. Text for the dialog box that prompts the user for the biometric authentication before replacing passwords during Import.">
     replace existing passwords
   </message>
@@ -442,6 +480,12 @@
   <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_CREDIT_CARD_WITH_CVC" desc="The (accessibility) title of a button, which brings up a menu of actions that can be taken on a stored credit card. The credit card is described by the credit card nickname or the credit card network and last 4 digits of the card number along with appending the CVC saved tag.">
     More actions for <ph name="CARD_DESCRIPTION">$1<ex>My main card</ex></ph>, CVC saved
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_HOME_ADDRESS" desc="The (accessibility) title of a button, which brings up a menu of options that can be taken on a stored autofill home address. The home address is described by the name of the recipient and usually the beginning of the address (i.e. street name and building number). The name and the address are separated by comma.">
+    More options for <ph name="ADDRESS_SUMMARY">$1<ex>John Doe, 123 Main Street</ex></ph> home address
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_WORK_ADDRESS" desc="The (accessibility) title of a button, which brings up a menu of options that can be taken on a stored autofill work address. The work address is described by the name of the recipient and usually the beginning of the address (i.e. street name and building number). The name and the address are separated by comma.">
+    More options for <ph name="ADDRESS_SUMMARY">$1<ex>John Doe, 123 Main Street</ex></ph> work address
+  </message>
   <message name="IDS_AUTOFILL_ADD_VIRTUAL_CARD" desc="The text shown in the secondary action menu button to enroll a card in the virtual card feature. Virtual cards are credit cards generated from the actual cards and provide extra security.">
     Turn on virtual card
   </message>
@@ -484,11 +528,20 @@
   <message name="IDS_SETTINGS_PAYMENTS_MANAGE_CREDIT_CARDS" desc="Shown in the payments section of settings. Descriptive text to inform the user that credit cards can be accessed online. Has a link.">
    To add or manage Google Pay payment methods, visit your <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Google Account<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_SETTINGS_GOOGLE_WALLET" desc="Label used to differentiate when an Autofill AI entity (such as vehicle information) is stored in Google Wallet.">
+    Google Wallet
+  </message>
   <message name="IDS_SETTINGS_PAYMENTS_MANAGE_LOYALTY_CARDS_AND_PAYMENT_METHODS" desc="Shown in the payments section of settings. Descriptive text to inform the user that payment methods and loyalty cards can be accessed via link. Google Wallet should not be translated because it is the product name. Has two links that opens different pages on Google Wallet.">
    Visit Google Wallet to add or manage <ph name="BEGIN_LINK_LOYALTY_CARDS">&lt;a href="$1" target="_blank"&gt;</ph>loyalty cards<ph name="END_LINK_LOYALTY_CARDS">&lt;/a&gt;</ph> or Google Pay <ph name="BEGIN_LINK_PAYMENT_METHODS">&lt;a href="$2" target="_blank"&gt;</ph>payment methods<ph name="END_LINK_PAYMENT_METHODS">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_SETTINGS_REMOTE_WALLET_PASSES_LINK_LABEL" desc="The title and ARIA (accessibility) label for a link in Chrome settings that opens the payment methods settings on https://wallet.google.com/wallet/passes. Note that the ARIA role and the link icon already convey that this is a link that will be opened when you click on it. Therefore, the message does not contain a verb.">
+    Your Google Wallet passes
+  </message>
   <message name="IDS_SETTINGS_PAYMENTS_SAVED_TO_THIS_DEVICE_ONLY" desc="Shown in the payments section of settings. Descriptive text to inform the user that this credit card will be saved to local device only.">
    This card will be saved to this device only
+  </message>
+  <message name="IDS_SETTINGS_CREDIT_AND_DEBIT_CARD_TITLE" desc="Title of a payment cards chip on Your Saved Info page in settings.">
+    Credit &amp; debit cards
   </message>
   <message name="IDS_SETTINGS_ADD_CREDIT_CARD_TITLE" desc="The title for the dialog that's shown when entering the information for a new card. This can be either credit, debit, or prepaid card.">
     Add card
@@ -577,6 +630,9 @@
   <message name="IDS_SETTINGS_PAYMENT_METHODS_NONE" desc="Placeholder that is shown when there are no payment methods in the list of saved payment methods.">
     Saved payment methods will appear here
   </message>
+  <message name="IDS_AUTOFILL_PASSKEYS_TITLE" desc="Title for the passkeys chip on the 'Your saved info' page directing the user to manage their passkeys in the Password Manager.">
+    Passkeys
+  </message>
   <message name="IDS_SETTINGS_PASSKEYS_LENGTH_ERROR" desc="Error message in the passkey edit dialog when the user inputs an empty username.">
     Enter your username
   </message>
@@ -625,31 +681,28 @@
       =1 {1 reused password}
       other {{NUM_REUSED} reused passwords}}
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE" desc="The title of the page in Settings that allows managing the Autofill AI settings.">
-    Autofill with AI
+  <message name="IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE" desc="The title of the page in Settings that allows managing the enhanced autofill settings.">
+    Enhanced autofill
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_SAVED_INFO" desc="Bullet 1 of 2 that appears beneath the 'When on' title. 'Autofill': the user is on the 'Autofill with AI' feature page, but we want to frame this new type of autofill as just 'Autofill'. 'Can offer to save info when you submit forms': we want to convey that the user has the choice, each time a form is submitted, whether they want their info saved to Chrome for the purposes of Autofill. 'Like your driver's license or passport number': Today, supported data types for 'Autofill with AI' include 1) driver's licenses, 2) passports, and 3) vehicles. Eventually we'll support more, but this example needs to mention these types of data and not others.">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_SAVED_INFO" desc="Bullet 1 of 2 that appears beneath the 'When on' title. 'Autofill': the user is on the 'enhanced autofill' feature page, but we want to frame this new type of autofill as just 'Autofill'. 'Can offer to save info when you submit forms': we want to convey that the user has the choice, each time a form is submitted, whether they want their info saved to Chrome for the purposes of Autofill. 'Like your driver's license or passport number': Today, supported data types for 'enhanced autofill' include 1) driver's licenses, 2) passports, and 3) vehicles. Eventually we'll support more, but this example needs to mention these types of data and not others.">
     Autofill can offer to save info when you submit forms, like your driver's license or passport number
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE" desc="Bullet 1 of 2 that appears beneath the 'Things to consider' title. The point of this bullet is to convey to the user the types of data that get shared with Google to support this feature. There are 2 data types: 1) 'the page’s URL' and 2) 'content', by which we mean the words, visuals, and layout of the pages the user visits. This notion that Google is considering 'page content' is new. We want to lead with 'To offer suggestions' even though it might be a bit grammatically awkward, because we want to express the need / value before explaining the data that gets shared.">
     To offer suggestions and improve this feature, the page’s URL and content are shared with Google
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_STORAGE" desc="Bullet 2 of 2 that appears beneath the 'Things to consider' title. This statement isn't immediately relevant to how Autofill with AI works, but it's intended as a reassuring statement.">
-    Your saved information is stored on your device
-  </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_ENTERPRISE_LOGGING_MANAGED_DISABLED" desc="Text only seen by enterprise users (Google services provided for a company). Users should understand that their content saved with autofill won't be used to improve AI, neither AI features specifically or AI models generally.">
     Your content will not be used to improve AI. Your organization may change these settings at any time.
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_ENTITY_INSTANCES_HEADER" desc="Header of the entity instance list on the Autofill with AI settings page.">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ENTITY_INSTANCES_HEADER" desc="Header of the entity instance list on the enhanced autofill settings page.">
     Saved information
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_ENTITY_INSTANCES_NONE" desc="Placeholder for empty entity instance list on the Autofill with AI settings page.">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ENTITY_INSTANCES_NONE" desc="Placeholder for empty entity instance list on the enhanced autofill settings page.">
     Saved information will appear here
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_MORE_ACTIONS_FOR_ENTITY_INSTANCE" desc="The accessibility label of the More options menu. Options in the menu include 'Edit' and 'Delete'. If including specific verbs in your language adds undo complexity, it's also acceptable to use something like: 'More options for 'label', 'sublabel''. Examples of 'label' and 'sublabel' include 'Toyota Corolla, Vehicle'.">
     More options to edit or delete <ph name="ENTITY_INSTANCE_LABEL">$1<ex>Toyota</ex></ph>, <ph name="ENTITY_INSTANCE_SUBLABEL">$2<ex>Car</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_DELETE_ENTITY_INSTANCE_DIALOG_TEXT" desc="The body text of the delete entity instance confirmation dialog, on the Autofill AI settings page.">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_DELETE_ENTITY_INSTANCE_DIALOG_TEXT" desc="The text that appears beneath a 'Delete object' title. We want the 'Autofill' keyword to be as prominent as possible because that word captures the value of saved information. 'On this device': helps the user understand that information is saved locally, not in the Cloud.">
     Autofill won't have this info on this device to help fill out forms
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_MONTH_DROPDOWN" desc="The accessibility label on the month dropdown of a date field, to let users know the dropdown corresponds to the month.">
@@ -722,6 +775,40 @@
   </message>
   <message name="IDS_SETTINGS_PASSWORD_HIDE_PASSWORD_A11Y" desc="The ARIA (accessibility) message for the 'Hide Password' button, which sits in every row of the password list. For this row does not include a password, only information of the account. Hides password when clicked.">
     Hide password for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
+  </message>
+
+  <message name="IDS_SETTINGS_HOME_AND_WORK_ADDRESS_EDIT" desc="Label for a context menu item that provides the edit option for the selected home and work address.">
+    Edit in Google Account
+  </message>
+  <message name="IDS_SETTINGS_HOME_AND_WORK_ADDRESS_REMOVE" desc="Label for a context menu item that removes the selected home and work address from Chrome.">
+    Remove from Chrome
+  </message>
+  <message name="IDS_SETTINGS_HOME_ADDRESS_REMOVE_CONFIRMATION_DIALOG_TITLE" desc="Title for the dialog that asks for confirmation to remove the selected home address from Chrome.">
+    Remove your home address from Chrome autofill?
+  </message>
+  <message name="IDS_SETTINGS_WORK_ADDRESS_REMOVE_CONFIRMATION_DIALOG_TITLE" desc="Title for the dialog that asks for confirmation to remove the selected work address from Chrome.">
+    Remove your work address from Chrome autofill?
+  </message>
+  <message name="IDS_SETTINGS_NAME_EMAIL_ADDRESS_REMOVE_CONFIRMATION_DIALOG_TITLE" desc="Title for the dialog that asks for confirmation to remove the selected name and email address from Chrome.">
+    Remove this info from Chrome autofill?
+  </message>
+  <message name="IDS_SETTINGS_HOME_ADDRESS_REMOVE_CONFIRMATION_DIALOG_NOTICE" desc="Body for the dialog that asks for confirmation to remove the selected home address from Chrome.">
+    Your home address can help you get things done across Google services, like more relevant Search results and directions in Google Maps. You can edit or delete your address in your <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;</ph>Google Account <ph name="USERNAME">$2<ex>example@gmail.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_SETTINGS_WORK_ADDRESS_REMOVE_CONFIRMATION_DIALOG_NOTICE" desc="Body for the dialog that asks for confirmation to remove the selected work address from Chrome.">
+    Your work address can help you get things done across Google services, like more relevant Search results and directions in Google Maps. You can edit or delete your address in your <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;</ph>Google Account <ph name="USERNAME">$2<ex>example@gmail.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_SETTINGS_NAME_EMAIL_ADDRESS_REMOVE_CONFIRMATION_DIALOG_NOTICE" desc="Body for the dialog that asks for confirmation to remove the selected name and email address from Chrome.">
+    You can edit your name in your <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;</ph>Google Account<ph name="END_LINK">&lt;/a&gt;</ph> <ph name="USERNAME">$2<ex>example@gmail.com</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_HOME_AND_WORK_ADDRESS_REMOVE_CONFIRMATION_DIALOG_ACTION_OK" desc="Okay action for the dialog that asks for confirmation to remove the selected home and work address from Chrome.">
+    Remove
+  </message>
+  <message name="IDS_SETTINGS_HOME_AND_WORK_ADDRESS_REMOVED_MESSAGE" desc="Hidden text that is read to screen readers to confirm that a home and work address was removed.">
+    Address removed
+  </message>
+  <message name="IDS_SETTINGS_NAME_EMAIL_ADDRESS_REMOVED_MESSAGE" desc="Hidden text that is read to screen readers to confirm that a name email address was removed.">
+    Info removed
   </message>
 
   <!-- Default Browser Page -->
@@ -837,6 +924,12 @@
   <message name="IDS_SETTINGS_MANAGE_IN_YOUR_GOOGLE_ACCOUNT" desc="Description for the MyActivity and Search History linkouts in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog. This lets users know that this data can be managed and deleted in their Google account.">
     Manage in your Google Account
   </message>
+  <message name="IDS_SETTINGS_MANAGE_IN_YOUR_GEMINI_APPS_ACTIVITY" desc="Description for the Gemini Apps Activity linkout.">
+    Manage your Gemini Apps activity
+</message>
+<message name="IDS_SETTINGS_GEMINI_APPS_ACTIVITY" desc="Title for the Gemini Apps Activity section in Other Data.">
+    Gemini Apps activity
+</message>
   <message name="IDS_SETTINGS_PASSWORDS_AND_PASSKEYS" desc="Label for the 'Passwords and Passkeys' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This linkout is specifically for passwords and passkeys stored in Google password manager.">
     Passwords and passkeys
   </message>
@@ -869,6 +962,12 @@
   </message>
   <message name="IDS_SETTINGS_MANAGE_OTHER_DATA_SUB_LABEL" desc="Sub-label for the 'Manage other Google Data' option in the 'Delete Browsing Data' dialog, explaining to the user that search history and passwords can be deleted outside of Chrome in their respective management settings.">
     Search history and passwords can be deleted in their management settings
+  </message>
+   <message name="IDS_SETTINGS_MANAGE_PASSWORDS_SUB_LABEL" desc="Sub-label for the 'Manage other Data' subpage entrypoint in the 'Delete Browsing Data' dialog, explaining to the user that passwords can only be deleted in their management settings.">
+    Passwords can be deleted in their management settings
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_GEMINI_PASSWORDS_OTHER_DATA_SUB_LABEL" desc="Sub-label for the 'Manage Other Google Data' option in the 'Delete Browsing Data' dialog, explaining to the user that search history, Gemini history, and passwords can be deleted outside of Chrome in their respective management settings.">
+    Search history, Gemini history, and passwords can be deleted in their management settings
   </message>
   <message name="IDS_SETTINGS_OTHER_DATA_DESCRIPTION" desc="Description text at the top of the 'Other Google data' subpage in the 'Delete browsing data' settings dialog. It informs users that data linked in this page are not managed or deleted in Chrome.">
     To delete this data, go to its management settings
@@ -1560,11 +1659,20 @@
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_CARD_HEADER" desc="Header of the history sync card in the 'Privacy Guide'.">
     Choose whether to sync history
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_AND_TABS_SYNC_CARD_HEADER" desc="Header of the history sync card in the 'Privacy Guide'.">
+    Choose whether to sync history and tabs
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_SETTING_LABEL" desc="Label of the history sync settings toggle in the 'Privacy Guide'.">
     History sync
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_AND_TABS_SYNC_SETTING_LABEL" desc="Label of the history and tabs sync settings toggles in the 'Privacy Guide'.">
+    Sync history and tabs
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_FEATURE_DESCRIPTION1" desc="A part of the feature description of history sync in the 'Privacy guide'.">
     You'll have your history on all your synced devices so you can continue what you were doing
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_AND_TABS_SYNC_FEATURE_DESCRIPTION1" desc="A part of the feature description of history and tabs sync in the 'Privacy guide'.">
+    You’ll have your history and tabs on all your devices so you can continue what you were doing
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_FEATURE_DESCRIPTION2" desc="A part of the feature description of history sync in the 'Privacy guide'.">
     If Google is also your default search engine, you'll see better, contextually relevant suggestions
@@ -1574,33 +1682,6 @@
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_HEADER" desc="Header of the cookies card in the 'Privacy guide'.">
     Choose your third-party cookie preferences
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_INCOGNITO_SUBHEADER" desc="A subheader for the cookies card of the 'Privacy guide', for blocking third party cookies in incognito.">
-    Block third-party cookies in Incognito
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_INCOGNITO_FEATURE_DESCRIPTION1" desc="A part of the feature description of the third party cookie blocking in incognito section of the cookies card in the 'Privacy guide'.">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_INCOGNITO_FEATURE_DESCRIPTION2" desc="A part of the feature description of the third party cookie blocking in incognito section of the cookies card in the 'Privacy guide'.">
-    Features on some sites may not work in Incognito
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_INCOGNITO_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the third party cookie blocking in incognito section of the cookies card in the 'Privacy guide'.">
-    Sites can use cookies to see your browsing activity across different sites, for example, to personalize ads
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_INCOGNITO_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of the third party cookie blocking in incognito section of the cookies card in the 'Privacy guide'.">
-    When you’re in Incognito mode, sites can only use cookies to see your browsing activity on their own site. Cookies are deleted at the end of the Incognito session.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_SUBHEADER" desc="A subheader for the cookies card of the 'Privacy guide', for blocking third party cookies.">
-    Block all third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_FEATURE_DESCRIPTION1" desc="A part of the feature description of the third party cookie blocking section of the cookies card in the 'Privacy guide'.">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_FEATURE_DESCRIPTION2" desc="A part of the feature description of the third party cookie blocking section of the cookies card in the 'Privacy guide'.">
-    Features on some sites may not work
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the third party cookie blocking section of the cookies card in the 'Privacy guide'.">
-    Sites can only use cookies to see your browsing activity on their own site
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_HEADER" desc="Header of the safe browsing card in the 'Privacy guide'.">
     Choose your Safe Browsing protection
@@ -1884,6 +1965,80 @@
     Provides Google’s strongest account security for people at risk of targeted attacks
   </message>
 
+  <!-- Bundled Security Settings (chrome://settings/security) -->
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_RESET_TO_DEFAULTS_BUTTON_LABEL" desc="Label of button which resets security-settings-bundle to default settings">
+    Reset to defaults
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_TITLE" desc="Name of security page header">
+    Browsing protection
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_STANDARD_BUNDLE_TITLE" desc="Name of standard bundle">
+    Standard
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_ENHANCED_BUNDLE_TITLE" desc="Name of enhanced bundle">
+    Enhanced
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_TITLE" desc="Name of Safe Browsing security setting">
+    Google Safe Browsing
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_DESCRIPTION" desc="Description of the Safe Browsing security setting">
+    Protects you from dangerous sites, downloads, and extensions
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_STANDARD_TITLE" desc="Name of Safe Browsing standard protection">
+    Standard Protection
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_STANDARD_SUBTITLE" desc="Description of Safe Browsing standard protection">
+    Protects you from sites, downloads, and extensions that are known to be dangerous
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_STANDARD_WHAT_IT_DOES_HEADING" desc="Heading of the Safe Browsing standard protection column describing what it does">
+    What it does
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_STANDARD_WHAT_IT_DOES_CONTENT" desc="Content of the Safe Browsing standard protection column describing what it does">
+    Warns you about sites, downloads, and extensions that are known to be dangerous. You can turn off these warnings at any time. If you see a warning for legitimate content, you can <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://safebrowsing.google.com/safebrowsing/report_error/"&gt;</ph>report an error<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_STANDARD_HOW_IT_WORKS_HEADING" desc="Heading of the Safe Browsing standard protection column describing how it works">
+    How it works
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_STANDARD_BULLET_ONE" desc="First bullet point under the security settings standard bundle section">
+    Uses on-device methods to detect threats
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_STANDARD_BULLET_TWO" desc="Second bullet point under the security settings standard bundle section">
+    Warns you about insecure connections on the open internet
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_STANDARD_BULLET_THREE" desc="Third bullet point under the security settings standard bundle section">
+    Prioritizes site speed over enhanced security features
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_ENHANCED_TITLE" desc="Name of Safe Browsing enhanced protection">
+    Enhanced Protection
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_ENHANCED_SUBTITLE" desc="Description of Safe Browsing enhanced protection">
+    Real-time, proactive protection by sending more information to Google Safe Browsing
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_ONE" desc="First bullet point under the security settings enhanced bundle section">
+    Sends the URL and page content to Google to detect threats faster
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_TWO" desc="Second bullet point under the security settings enhanced bundle section">
+    Warns you about all insecure connections
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_THREE" desc="Third bullet point under the security settings enhanced bundle section">
+    Slows down some unfamiliar sites to block common attacks
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_ENHANCED" desc="The state text denoting that a security feature is in the enhanced state.">
+    Enhanced
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_STANDARD" desc="The state text denoting that a security feature is in the standard state.">
+    Standard
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_OFF" desc="The state text denoting that a security feature is in the off state.">
+    Off
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_ACCOUNT_AND_NETWORK_SECTION_TITLE" desc="Name of the security page's 'account and network protection' section.">
+    Account and network protection
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_PASSWORDS_LEAK_DETECTION_TITLE" desc="Label for a toggle that allows users to choose whether chrome should check if credentials have been part of a leak.">
+    Compromised password detection
+  </message>
+
   <!-- Secure Connections -->
   <message name="IDS_SETTINGS_SECURE_CONNECTIONS_SECTION_TITLE" desc="Title of the Secure Connections section in Security settings">
     Secure connections
@@ -1926,6 +2081,26 @@
   </message>
   <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_BALANCED_SUBLABEL" desc="Secondary, continued explanation for the less strict form of HTTPS-First Mode">
     Doesn’t warn you for private sites, such as your company’s intranet
+  </message>
+
+  <!-- Secure Connections (in bundled version of security settings page) -->
+  <message name="IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_TOGGLE_LABEL" desc="Label for the HTTPS-First Mode toggle in the Security settings page">
+    Secure connections
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_TOGGLE_SUBLABEL" desc="Sublabel explaining HTTPS-First Mode in the Security settings page">
+    Upgrades connections to HTTPS when possible and warns you before making insecure connections
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_BALANCED_LABEL" desc="Label for radio button to enable the less-strict form of HTTPS-First Mode">
+    On open internet connections
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_BALANCED_SUBLABEL" desc="Sublabel explaining the less-strict form of HTTPS-First Mode">
+    Warns you about insecure connections on the open internet
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_STRICT_LABEL" desc="Label for radio button to enable the stricter form of HTTPS-First Mode">
+    On all connections
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_STRICT_SUBLABEL" desc="Sublabel explaining the stricter form of HTTPS-First Mode">
+    Warns you about all insecure connections, including private intranets
   </message>
 
   <message name="IDS_SETTINGS_MANAGE_CERTIFICATES" desc="Text for manage certificates button in Privacy options">
@@ -2073,6 +2248,24 @@
   <message name="IDS_SETTINGS_RESET_LEARN_MORE_ACCESSIBILITY_TEXT" desc="Accessibility label for a 'Learn more' link that links out to a help article about resetting settings.">
     Learn more about resetting settings
   </message>
+  <message name="IDS_SETTINGS_RESET_AUTOMATED_DIALOG_V2_TITLE" desc="The title of the dialog informing the user that automated resetting of some settings occurred.">
+    Chrome reset these settings
+  </message>
+  <message name="IDS_SETTINGS_RESET_AUTOMATED_DIALOG_V2_BODY" desc="The body of the dialog informing the user that automated resetting of some settings occurred.">
+    These settings were changed from outside of Chrome. To protect you, Chrome reset them.
+  </message>
+  <message name="IDS_SETTINGS_RESET_PINNED_TABS" desc="A string that is used to describe the pinned tabs setting.">
+    Pinned tabs
+  </message>
+  <message name="IDS_SETTINGS_RESET_EXTENSIONS" desc="A string that is used to describe the extensions setting.">
+    Extension(s)
+  </message>
+  <message name="IDS_SETTINGS_RESET_HOMEPAGE" desc="A string that is used to describe the homepage setting.">
+    Homepage
+  </message>
+  <message name="IDS_SETTINGS_RESET_DSE" desc="A string that is used to describe the DSE setting.">
+    Default Search Engine (DSE)
+  </message>
 
   <!-- Reset card title and Chrome Cleanup item on Windows -->
   <if expr="is_win and _google_chrome">
@@ -2109,7 +2302,7 @@
     You can use shortcuts in the address bar to quickly search a specific site or to use a different search engine
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH" desc="Label for a text input placeholder allowing the user to search/filter the displayed search engines">
-    Search
+    Filter sites on page
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SUBTITLE_FOR_POLICY" desc="Subtitle for a dialog that allows editing/viewing an existing search engine that is created by policy.">
     This setting is managed by your administrator
@@ -2242,7 +2435,10 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_DESCRIPTION" desc="Label for the button linking to the All Sites page.">
     View permissions and data stored across sites
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SEARCH" desc="Placeholder text for the search text box that allows the user to filter the All Sites list with their search query.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_FILTER" desc="Placeholder text for the search text box that allows the user to filter the All Sites list with their search query.">
+    Filter sites on page
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SEARCH" desc="Placeholder text for the filter text box that allows the user to filter the All Sites list with their search query.">
     Search
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SORT" desc="Label on a selection menu to choose the sorting method to display the All Sites list by.">
@@ -2524,17 +2720,17 @@
   <message name="IDS_SITE_SETTINGS_SMART_CARD_READERS" desc="Main heading for the Smart Card Readers section in settings.">
     Smart card readers
   </message>
-  <message name="IDS_SITE_SETTINGS_SMART_CARD_READERS_DESCRIPTION" desc="Description of how Isolated Web Apps interact with smart card readers.">
-    Isolated Web Apps control smart card readers to gain access to smart cards that are inserted or presented to them. Smart cards usually contain identities that are used to authenticate or authorize operations, log into services, etc.
+  <message name="IDS_SITE_SETTINGS_SMART_CARD_READERS_DESCRIPTION" desc="Description of how isolated web apps interact with smart card readers.">
+    Isolated web apps control authentication devices and smart cards accessible to them. Smart cards usually contain identifiers used to authenticate you.
   </message>
   <message name="IDS_SITE_SETTINGS_SMART_CARDS_DEFAULT_DESCRIPTION" desc="Label indicating the default behavior for smart card access.">
-    Isolated Web Apps automatically follow this setting
+    Isolated web apps automatically follow this setting
   </message>
-  <message name="IDS_SITE_SETTINGS_SMART_CARDS_ALLOWED" desc="Option to allow Isolated Web Apps to control smart card readers.">
-    Isolated Web Apps can ask to control smart card readers. Apps will gain access to smart cards presented to readers under their control.
+  <message name="IDS_SITE_SETTINGS_SMART_CARDS_ALLOWED" desc="Option to allow isolated web apps to control smart card readers.">
+    Isolated web apps can ask to control smart card readers
   </message>
-  <message name="IDS_SITE_SETTINGS_SMART_CARDS_BLOCKED" desc="Option to block Isolated Web Apps from controlling smart card readers.">
-    Isolated Web Apps cannot control smart card readers. Apps won't gain access to any smart card.
+  <message name="IDS_SITE_SETTINGS_SMART_CARDS_BLOCKED" desc="Option to block isolated web apps from controlling smart card readers.">
+    Isolated web apps can’t control smart card readers
   </message>
   <message name="IDS_SITE_SETTINGS_NO_SMART_CARD_READERS_FOUND" desc="No smart card readers were found.">
     No smart card readers found
@@ -2585,19 +2781,25 @@
     Not allowed to use JavaScript
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_ALLOWED" desc="Label for the enabled option of the JavaScript optimizer content setting.">
-    Sites can use the V8 optimizer
+    Sites can use JavaScript optimization
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED" desc="Label for the disabled option of the JavaScript optimizer content setting.">
-    Don’t allow sites to use the V8 optimizer
+    Don’t allow sites to use JavaScript optimization
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the JavaScript optimizer content setting.">
-    Reduces performance but makes V8 more resistant to attacks
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED_UNFAMILIAR_SITES" desc="Label for option where JavaScript optimizer is disabled for sites which are unfamiliar to the user. Familiarity is determined using a heuristic based on the user's Chrome history.">
+    Automatically disable JavaScript optimizers on unfamiliar sites
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED_UNFAMILIAR_SITES_SUB_LABEL" desc="Sublabel for option where JavaScript optimizer is disabled for sites which are unfamiliar to the user.">
+    Block access to the JavaScript optimizer on newly visited sites
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED_UNFAMILIAR_SITES_SAFE_BROWSING_OFF_SUB_LABEL" desc="Sublabel for option where JavaScript optimizer is disabled for sites which are unfamiliar to the user.">
+    Block access to the JavaScript optimizer on newly visited sites. Requires Safe Browsing
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the JavaScript optimizer content setting.">
-    Always allowed to use the V8 optimizer
+    Always allowed to use JavaScript optimization
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the JavaScript optimizer content setting.">
-    Not allowed to use V8 optimizer
+    Not allowed to use JavaScript optimization
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_DESCRIPTION" desc="Description of the keyboard lock content setting.">
     Sites use this feature to override the input of your keyboard, like for games or remote desktop apps
@@ -2936,24 +3138,6 @@
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DESCRIPTION" desc="An explanation of what third-party cookies are that appear beneath the page title: 'Third-party cookies'. * 'embed': A site you visit uses HTML to construct the page. HTML tags include references to images, like img src='filename.jpg', that are used to show an image. 'filename.jpg' can be a local file owned by the site you visit or a site can embed an external file with something like img src='www.third-party-site.com/images/filename.jpg'. This image is embedded into the site you visit and www.third-party-site.com can set a third-party cookie onto your device.">
     A site you visit can embed content from other sites, for example, images, ads, and text. Cookies set by these other sites are called third-party cookies.
   </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DEFAULT_BEHAVIOR_HEADING" desc="A label on a permissions page. For example, see the Microphone permission at chrome://settings/content/microphone.">
-    Default behavior
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_ALIGNED_PAGE_DESCRIPTION" desc="Descriptive text on the 'Third-party cookies' settings page explaining that controls on the page are for managing information sites can use for tracking.">
-    Manage the types of information sites can use to track you as you browse.
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DEFAULT_BEHAVIOR_DESCRIPTION" desc="A description of what 'Default behavior' means. For example, see the Microphone permission at chrome://settings/content/microphone.">
-    Sites automatically follow this setting when you visit them
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_CUSTOMIZED_BEHAVIOR_HEADING" desc="A label on a permissions page. For example, see the Microphone permission at chrome://settings/content/microphone.">
-    Customized behaviors
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_CUSTOMIZED_BEHAVIOR_DESCRIPTION" desc="A description of 'customized behaviors' that appear beneath the 'Customized behaviors' title. For example, see the Microphone permission at chrome://settings/content/microphone.">
-    Sites listed below follow a custom setting instead of the default
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ALLOW_EXCEPTIONS_SUB_HEADING" desc="A description of an exception bucket">
-    Allowed to use third-party cookies
-  </message>
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_TITLE" desc="The title of a new page. Today, Chrome has a 'Cookies and other site data' page at chrome://settings/cookies. As part of the Privacy Sandbox project (see below), Chrome is deprecating third-party cookies but maintaining first-party cookies. As a step towards the ultimate deprecation of third-party cookies, we're first separating them from other forms of 'site data', making it easier to eventually remove this page completely. Cookies are often used for honorable objectives, and the difference between first and third-party cookies is important (see any of the many resources online such as https://termly.io/resources/articles/first-party-cookies-vs-third-party-cookies/.">
     Third-party cookies
   </message>
@@ -2963,50 +3147,14 @@
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_ENABLED" desc="1 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label.">
     Third-party cookies are allowed
   </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED_INCOGNITO" desc="2 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label.">
-    Third-party cookies are blocked in Incognito mode
-  </message>
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED" desc="3 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label.">
     Third-party cookies are blocked
   </message>
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ALLOW_RADIO_LABEL" desc="1 of 3 options the user has to configure cookies. See the cookies page for context: chrome://settings/cookies.">
     Allow third-party cookies
   </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ALLOW_EXPAND_A11Y_LABEL" desc="This text is read by screenreaders and helps users find more info about this choice.">
-    More about allowing third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ALLOW_BULLET_1" desc="1 of 2 bullets that describes the 'Allow all cookies' option.">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ALLOW_BULLET_2" desc="2 of 2 bullets that describes the 'Allow all cookies' option. Sites use third-party cookies to 'see your browsing activity across different sites'. Third-party cookies aren't necessarily bad. 1) Personalized ads can be useful to the user (though the tracking that generally accompanies the use of third-party cookies for ads isn't). But 2) third-party cookies are also used for spam protection and for anti-tracking efforts.">
-    Sites can use cookies to see your browsing activity across different sites, for example, to personalize ads
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_INCOGNITO_RADIO_LABEL" desc="2 of 3 options the user has to configure cookies. See the cookies page for context: chrome://settings/cookies. For more about Incognito mode, see Google Chrome's Help Center.">
-    Block third-party cookies in Incognito mode
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_INCOGNITO_EXPAND_A11Y_LABEL" desc="This text is read by screenreaders and helps users find more info about this choice.">
-    More about blocking third-party cookies in Incognito mode
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_INCOGNITO_BULLET_1" desc="1 of 2 bullets that describes the 'Block third-party cookies in Incognito mode' option.">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_INCOGNITO_BULLET_2" desc="2 of 2 bullets that describes the 'Block third-party cookies in Incognito mode' option.">
-    While in Incognito, sites can't use your cookies to see your browsing activity across sites. Your browsing activity isn't used for things like personalizing ads. Features on some sites may not work.
-  </message>
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_LABEL" desc="3 of 3 options the user has to configure cookies. See the cookies page for context: chrome://settings/cookies">
     Block third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_EXPAND_A11Y_LABEL" desc="This text is read by screenreaders and helps users find more info about this choice.">
-    More about blocking third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_BULLET_1" desc="1 of 2 bullets that describes the 'Block third-party cookies' option.">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_BULLET_2" desc="2 of 2 bullets that describe the 'Block third-party cookies' option">
-    Sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_TWO_RWS" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
-    While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalizing ads. Features on some sites may not work.
   </message>
   <message name="IDS_SETTINGS_COOKIES_RELATED_WEBSITE_SETS_TOGGLE_LABEL" desc="Label for the toggle that allows the user to control related website sets enabled sharing between related sites">
     Allow related sites to see your activity in the group
@@ -3095,27 +3243,6 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SHOW_BLOCKED_NOTIFICATIONS_INDICATOR" desc="The label in notifications site settings -- a setting that enables showing a blocked indicator in the address bar when notifications are blocked for all sites. It can be set by the user or automatically set by Chrome when a user has denied notifications several times.">
     Show an indicator in the address bar when notification are blocked
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES_ALLOW" desc="The sub-label for links to manage cookies when the current cookie setting is allow.">
-    {COUNT, plural,
-     =0 {Cookies are allowed}
-     =1 {Cookies are allowed, 1 exception}
-     other {Cookies are allowed, {COUNT} exceptions}}
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES_BLOCK" desc="The sub-label for links to manage cookies when the current cookie setting is allow.">
-    {COUNT, plural,
-     =0 {Cookies are blocked}
-     =1 {Cookies are blocked, 1 exception}
-     other {Cookies are blocked, {COUNT} exceptions}}
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES_BLOCK_THIRD_PARTY" desc="The sub-label for links to manage cookies when the current cookie setting is to block third party cookies.">
-    Third-party cookies are blocked
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO" desc="The sub-label for links to manage cookies when the current cookie setting is to block third party cookies in Incognito.">
-    Third-party cookies are blocked in Incognito mode
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES_ALLOW_SITES" desc="The 'allow cookies' label in site settings.">
-    Allow sites to save and read cookie data
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLERS_ASK_RECOMMENDED" desc="The allow label for protocol handlers in site settings (with the 'recommended' suffix).">
     Allow sites to ask to become default handlers for protocols (recommended)
   </message>
@@ -3160,6 +3287,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLOCK_DEFAULT_MENU" desc="Label for the default menu item to block a permission for a particular site.">
     Block (default)
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ACTION_BLOCK_ON_UNFAMILIAR_SITES_DEFAULT_MENU" desc="Label for the default menu item for blocking permission on sites which the browser thinks are unfamiliar to the user based on the user's chrome history.">
+    Block if site is unfamiliar (default)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MUTE_DEFAULT_MENU" desc="Label for the default menu item to mute sound for a particular site.">
     Mute (default)
@@ -3640,7 +3770,16 @@
       When on, data is saved in your Google Account and can be used on all your devices. When off, data is saved only to this device.
     </message>
     <message name="IDS_SETTINGS_ACCOUNT_SYNC_DISABLED"  desc="Section in the account settings page informing the user when the toggles to save a specific data type to the user's Google Account are disabled as per an Enterprise policy.">
-      Managed by your administrator
+      Managed by your organization
+    </message>
+    <message name="IDS_SETTINGS_ACCOUNT_HISTORY_TOGGLE"  desc="Title of the merged toggle in the account settings page combining the data types history, tabs, and saved tab groups. Shown on next to the toggle that controls whether these data types should be saved in the Google Account and synced across devices.">
+      History and tabs
+    </message>
+    <message name="IDS_SETTINGS_ACCOUNT_HISTORY_TOGGLE_SUB_LABEL_OFF" desc="Subtitle describing the effects of turning on the merged toggle in the account settings page, combining the data types history, tabs, and saved tab groups. Shown on next to the toggle that controls whether these data types should be saved in the Google Account and synced across devices. Shown only if the toggle is off.">
+      Turn on to get your browsing history and tabs from other devices
+    </message>
+    <message name="IDS_SETTINGS_GOOGLE_SERVICES_PAGE_TITLE" desc="Name of the settings page for managing Google services.">
+      Google services
     </message>
   </if>
 
@@ -3704,7 +3843,9 @@
   <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTION_ALWAYS_ASK" desc="One of three options for the setting is called 'Sign in to Chrome when you sign in to other Google services'. When the user chooses this option, the user will be asked whether they want to sign in to Chrome after they sign in to a Google service (like Gmail) using Chrome. The verb tense should be descriptive, not imperative.">
     Ask every time
   </message>
-
+  <message name="IDS_SETTINGS_GOOGLE_ACCOUNT" desc="Label for the section that takes the user to the Google Account website from Related Google services.">
+    Google Account
+  </message>
   <if expr="not use_titlecase">
     <message name="IDS_SETTINGS_MANAGE_GOOGLE_ACCOUNT" desc="Label for the button that takes the user to the Google Account website.">
       Manage your Google Account
@@ -3892,39 +4033,14 @@
     <message name="IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_POLICY_LABEL" desc="Non-interactive label that describes when Chrome's proxy settings are overwritten by policy. This is used in place of IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL above.">
       <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> is using proxy settings from your administrator
     </message>
-  </if>
-
-  <!-- Incompatible Applications Page -->
-  <if expr="is_win and _google_chrome">
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_RESET_CARD_TITLE" desc="The title of the Incompatible Applications section of the settings.">
-      Update or remove incompatible applications
+    <message name="IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_YOUR_ORGANIZATION_LABEL" desc="Non-interactive label that describes when Chrome's proxy settings are overwritten by the user's organization. This is used in place of IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL above.">
+      Your organization
     </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_SUBTITLE" desc="The subtitle shown in the subpage for incompatible applications.">
-      {NUM_APPLICATIONS, plural,
-        =1 {This application could prevent Chrome from working properly.}
-        other {These applications could prevent Chrome from working properly.}}
+    <message name="IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_YOUR_DEVICE_LABEL" desc="Non-interactive label that describes when Chrome's proxy settings are settable by the user's device settings. This is used in place of IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL above.">
+      Your device
     </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_SUBTITLE_NO_ADMIN_RIGHTS" desc="The subtitle shown in the subpage for incompatible applications, when the user does not have administrator rights. This means that these users are incapable of updating or removing incompatible applications by themselves.">
-      {NUM_APPLICATIONS, plural,
-        =1 {To ensure that you can keep browsing the web, ask your administrator to remove this application.}
-        other {To ensure that you can keep browsing the web, ask your administrator to remove these applications.}}
-    </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_LEARN_HOW" desc="Following the subtitle, this is a link to a help center article that explains how to update any program.">
-      <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn how to update applications<ph name="END_LINK">&lt;/a&gt;</ph>
-    </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_LIST_TITLE" desc="This is the title for the list of incompatible applications.">
-      {NUM_APLLICATIONS, plural,
-        =1 {Application}
-        other {Applications}}
-    </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_REMOVE_BUTTON" desc="The label of the button if the recommended action for this application is to uninstall it.">
-      Remove...
-    </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_UPDATE_BUTTON" desc="The label of the button if the recommended action for this application is to update it.">
-      Update
-    </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_DONE" desc="This message is displayed when the Incompatible Applications section is empty. This is possible when the user starts interacting with the section and update/remove the applications in the list.">
-      Done! No incompatible applications found.
+    <message name="IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_MULTIPLE_SOURCES_LABEL" desc="Non-interactive label that describes when Chrome's proxy settings are overwritten by multiple sources. This is used in place of the above IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL or IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL labels in cases where both an enterprise policy or extension are applying settings at the same time.">
+      Browser proxy settings are controlled by multiple sources
     </message>
   </if>
 
@@ -4405,14 +4521,14 @@
   </message>
 
     <!-- Experimental settings - Password Change -->
-  <message name="IDS_SETTINGS_PASSWORD_CHANGE_LABEL" desc="Primary label for password change entry in settings.">
+  <message name="IDS_SETTINGS_PASSWORD_CHANGE_LABEL" desc="Primary label for password change entry in settings. The user is in settings and this string represents the name of the feature. We were careful to choose “automated” and not “automatic” because we don’t want to give the user the impression that this will happen without their knowledge. There is an ‘automated’ process that the user initiates, but the process isn’t ‘automatic’ in the sense that it might be happening behind the scenes without the user’s knowledge.">
     Automated Password Change
   </message>
-  <message name="IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL" desc="Sublabel for password change entry in settings.">
-    When Chrome finds one of your passwords in a data breach, it can offer to change your password for you when you sign in
+  <message name="IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL" desc="Sublabel for password change entry in settings. The description of the feature beneath the “Automated password change” feature title. This and the bullets beneath this paragraph represent the full description of the feature. * “public” does two things: 1) it provides distance between “Chrome” and “data breach”, because we don’t want users to associate the breach with Chrome (Chrome didn’t have a data leak, 2) and related, it might reassure the user to know that Chrome is using public information to establish these lists of compromised passwords. * “Google Password Manager can offer…”: The user has to agree to have this feature update their password for them each time. So Google Password Manager is ‘offering’ to do something for the user.">
+    If Chrome finds one of your passwords in a public data breach, Google Password Manager can offer to change your password for you if you're signed in.
   </message>
-  <message name="IDS_SETTINGS_PASSWORD_CHANGE_DATA_BREACH" desc="One of the bullet points explaining what happens when the feature is used.">
-    When one of your passwords is found in a data breach, Google Password Manager asks if you want it changed to a strong password
+  <message name="IDS_SETTINGS_PASSWORD_CHANGE_DATA_BREACH" desc="Bullet 1 of 2 that appears beneath the “When used” subtitle. This string is repetitive of the feature description, but we want to have a complete description of what happens when the feature is used. * “Google Password Manager asks…”: This part is similar to the general feature description above, but it’s written as if the feature is being used by the user, so we use “asks” and not “can offer”. * “Strong password”: As an existing autofill feature, Google Password Manager can offer to generate and save passwords for the user. These passwords are typically stronger than passwords the user might create on their own">
+    If one of your passwords is found in a data breach, Google Password Manager asks if you want it changed to a strong password
   </message>
   <message name="IDS_SETTINGS_PASSWORD_CHANGE_WHERE_SAVED" desc="One of the bullet points explaining what happens when the feature is used.">
     You don't need to remember the password because it gets saved for you in Google Password Manager
@@ -4421,7 +4537,7 @@
     This feature uses AI and is experimental
   </message>
   <message name="IDS_SETTINGS_PASSWORD_CHANGE_CONTENT" desc="One of the things to consider when using the feature.">
-    Content from this site is sent to Google and may be seen by human reviewers to improve this feature
+    Content from this site, including its URL, is sent to Google and may be seen by human reviewers to improve this feature
   </message>
   <message name="IDS_SETTINGS_PASSWORD_CHANGE_ENCRYPTION" desc="One of the things to consider when using the feature.">
     Your password is encrypted and never seen by anyone
@@ -4436,5 +4552,8 @@
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_OFF_TOAST_MESSAGE" desc="When Chrome shows a toast notification after the user turned off the Enhanced Protection setting, this is the text on the toast letting the user know that the Enhanced Protection setting is off.">
     Enhanced protection is off
+  </message>
+  <message name="IDS_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED_DESCRIPTION" desc="Description of the sync error when the user has exceeded the bookmarks limit.">
+    To save bookmarks in your account, delete your unused bookmarks
   </message>
 </grit-part>

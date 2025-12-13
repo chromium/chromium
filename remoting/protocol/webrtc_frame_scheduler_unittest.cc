@@ -48,7 +48,7 @@ class WebrtcFrameSchedulerTest : public ::testing::Test {
 
   int capture_callback_count_ = 0;
   bool simulate_capture_ = true;
-  BasicDesktopFrame frame_{DesktopSize(1, 1)};
+  BasicDesktopFrame frame_{DesktopSize(1, 1), webrtc::FOURCC_ARGB};
 };
 
 TEST_F(WebrtcFrameSchedulerTest, NoCapturesIfZeroFps) {

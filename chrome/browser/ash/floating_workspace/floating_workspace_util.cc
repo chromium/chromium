@@ -7,7 +7,6 @@
 #include <initializer_list>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -18,6 +17,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/constants/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -26,7 +26,8 @@
 namespace ash::floating_workspace_util {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kFloatingWorkspaceV2Enabled, false);
+  registry->RegisterBooleanPref(chromeos::prefs::kFloatingWorkspaceV2Enabled,
+                                false);
 }
 
 bool IsFloatingWorkspaceV2Enabled() {
@@ -56,7 +57,7 @@ bool IsFloatingWorkspaceEnabled(const Profile* profile) {
   // latter will be used in the next round of testing. Before it starts, we let
   // any of the two policies enable the feature.
   for (const auto& pref_name : {policy::policy_prefs::kFloatingWorkspaceEnabled,
-                                prefs::kFloatingWorkspaceV2Enabled}) {
+                                chromeos::prefs::kFloatingWorkspaceV2Enabled}) {
     const PrefService::Preference* floating_workspace_pref =
         pref_service->FindPreference(pref_name);
 
@@ -67,9 +68,7 @@ bool IsFloatingWorkspaceEnabled(const Profile* profile) {
       return true;
     }
   }
-
-  // TODO(crbug.com/297795546): Remove external ash feature flag.
-  return features::IsFloatingWorkspaceV2Enabled();
+  return false;
 }
 
 bool IsFloatingSsoEnabled(Profile* profile) {

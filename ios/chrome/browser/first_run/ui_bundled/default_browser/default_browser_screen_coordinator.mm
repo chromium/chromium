@@ -23,10 +23,10 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/tos/tos_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/uma/uma_coordinator.h"
+#import "ios/chrome/browser/instructions_bottom_sheet/ui/instructions_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/common/ui/instruction_view/instructions_half_sheet_coordinator.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -42,7 +42,7 @@
   // necessary properties, but only one view is presented.
   DefaultBrowserScreenViewController* _staticViewController;
   DefaultBrowserAnimatedScreenViewController* _animatedViewController;
-  InstructionsHalfSheetCoordinator* _instructionsHalfSheetCoordinator;
+  InstructionsBottomSheetCoordinator* _instructionsCoordinator;
   DefaultBrowserScreenMediator* _mediator;
   __weak id<FirstRunScreenDelegate> _delegate;
   TOSCoordinator* _TOSCoordinator;
@@ -90,7 +90,7 @@
   _mediator.consumer = nil;
   [_mediator disconnect];
   _mediator = nil;
-  _instructionsHalfSheetCoordinator = nil;
+  _instructionsCoordinator = nil;
   [self stopTOSCoordinator];
 
   [super stop];
@@ -104,10 +104,9 @@
   base::UmaHistogramEnumeration(
       first_run::kFirstRunStageHistogram,
       first_run::kDefaultBrowserScreenCompletionWithSettings);
-  [[UIApplication sharedApplication]
-                openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                options:{}
-      completionHandler:nil];
+
+  OpenIOSDefaultBrowserSettingsPage();
+
   [self finishPresenting];
 }
 
@@ -126,22 +125,35 @@
   if (first_run::AnimatedDefaultBrowserPromoInFREExperimentTypeEnabled() ==
       first_run::AnimatedDefaultBrowserPromoInFREExperimentType::
           kAnimationWithShowMeHow) {
-    NSArray* defaultBrowserSteps = @[
-      l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
-      l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
-      l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)
-    ];
+    NSMutableArray* defaultBrowserSteps = [[NSMutableArray alloc] init];
+    if (IsDefaultAppsDestinationAvailable() &&
+        IsUseDefaultAppsDestinationForPromosEnabled()) {
+      [defaultBrowserSteps
+          addObject:
+              l10n_util::GetNSString(
+                  IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_FIRST_STEP)];
+      [defaultBrowserSteps
+          addObject:
+              l10n_util::GetNSString(
+                  IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_SECOND_STEP)];
+    } else {
+      [defaultBrowserSteps
+          addObject:l10n_util::GetNSString(
+                        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP)];
+      [defaultBrowserSteps
+          addObject:l10n_util::GetNSString(
+                        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP)];
+    }
+    [defaultBrowserSteps
+        addObject:l10n_util::GetNSString(
+                      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)];
+    _instructionsCoordinator = [[InstructionsBottomSheetCoordinator alloc]
+        initWithBaseViewController:_animatedViewController
+                           browser:self.browser
+                             title:nil
+                             steps:defaultBrowserSteps];
 
-    _instructionsHalfSheetCoordinator =
-        [[InstructionsHalfSheetCoordinator alloc]
-            initWithBaseViewController:_animatedViewController
-                               browser:self.browser
-                      instructionsList:defaultBrowserSteps];
-
-    [_instructionsHalfSheetCoordinator start];
+    [_instructionsCoordinator start];
   }
 }
 

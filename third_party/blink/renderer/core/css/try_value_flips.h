@@ -37,7 +37,7 @@ class CORE_EXPORT TryValueFlips {
   // the same CSSPropertyValueSet pointer.
   //
   // This will end up in OutOfFlowData::try_tactics_set_.
-  const CSSPropertyValueSet* FlipSet(const TryTacticList&) const;
+  const CSSPropertyValueSet* FlipSet(const TryTacticList&, WritingMode) const;
 
   // If the specified TryTacticTransform affects the CSSValue, returns
   // a rewritten value according to that transform. Otherwise, returns

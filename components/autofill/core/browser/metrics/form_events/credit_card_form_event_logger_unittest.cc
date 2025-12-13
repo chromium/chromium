@@ -15,14 +15,22 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace autofill::autofill_metrics {
 
 using ::autofill::test::CreateTestFormField;
 using ::base::Bucket;
 using ::base::BucketsInclude;
 using ::base::test::RunOnceCallback;
+using ::testing::Each;
 
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
+using UkmBnplSuggestionShownType = ukm::builders::Autofill_BnplSuggestionShown;
+using UkmBnplSuggestionAcceptedType =
+    ukm::builders::Autofill_BnplSuggestionAccepted;
 using UkmSuggestionsShownType = ukm::builders::Autofill_SuggestionsShown;
 using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
 using UkmTextFieldValueChangedType = ukm::builders::Autofill_TextFieldDidChange;
@@ -84,27 +92,6 @@ class CreditCardFormEventLoggerTest : public AutofillMetricsBaseTest,
   }
 };
 
-// Parameterized test class to test
-// kAutofillEnableLogFormEventsToAllParsedFormTypes and ensure form event
-// logging still works in the appropriate histograms when logging to parsed form
-// types on a webpage.
-class CreditCardFormEventLoggerTestWithParsedFormLogging
-    : public CreditCardFormEventLoggerTest,
-      public testing::WithParamInterface<bool> {
- public:
-  CreditCardFormEventLoggerTestWithParsedFormLogging() {
-    feature_list_.InitWithFeatureState(
-        features::kAutofillEnableLogFormEventsToAllParsedFormTypes, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         CreditCardFormEventLoggerTestWithParsedFormLogging,
-                         testing::Bool());
-
 // Tests that the `kBnplSuggestionAccepted` event is logged once when
 // `OnDidAcceptBnplSuggestion()` is called.
 TEST_F(CreditCardFormEventLoggerTest,
@@ -124,6 +111,32 @@ TEST_F(CreditCardFormEventLoggerTest,
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
       /*expected_bucket_count=*/1);
+}
+
+// Tests that the appropriate UKM metrics are logged when a BNPL suggestion is
+// shown and accepted.
+TEST_F(CreditCardFormEventLoggerTest,
+       BnplSuggestionShownAndAccepted_UkmMetricsLogged) {
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
+  autofill_manager().GetCreditCardFormEventLogger().OnDidAcceptBnplSuggestion();
+
+  {
+    using Ukm = UkmBnplSuggestionShownType;
+    EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+                UkmEventsAre({{{Ukm::kShownName, true}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form.main_frame_origin().GetURL()));
+  }
+  {
+    using Ukm = UkmBnplSuggestionAcceptedType;
+    EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+                UkmEventsAre({{{Ukm::kAcceptedName, true}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form.main_frame_origin().GetURL()));
+  }
 }
 
 // Tests that the Bnpl FormFilledOnce event is logged once when
@@ -450,7 +463,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 // Tests that the `kBnplSuggestionShown` event is logged once when
 // `OnBnplSuggestionShown()` is called.
 TEST_F(CreditCardFormEventLoggerTest,
-       OnBnplSuggestionShown_SuggestionAddedLogged) {
+       OnBnplSuggestionShown_SuggestionShownLogged) {
   base::HistogramTester histogram_tester;
 
   autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
@@ -468,9 +481,24 @@ TEST_F(CreditCardFormEventLoggerTest,
       /*expected_bucket_count=*/1);
 }
 
+// Tests that the `UkmBnplSuggestionShownType` event is logged once when
+// `OnBnplSuggestionShown()` is called.
+TEST_F(CreditCardFormEventLoggerTest,
+       OnBnplSuggestionShown_SuggestionShownLogged_Ukm) {
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
+
+  using Ukm = UkmBnplSuggestionShownType;
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+              UkmEventsAre({{{Ukm::kShownName, true}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
+}
+
 // Test that we log parsed form event for credit card forms.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardParsedFormEvents) {
+TEST_F(CreditCardFormEventLoggerTest, CreditCardParsedFormEvents) {
   FormData form =
       CreateForm({CreateTestFormField("Card Number", "card_number", "",
                                       FormControlType::kInputText),
@@ -479,9 +507,9 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                   CreateTestFormField("Verification", "verification", "",
                                       FormControlType::kInputText)});
 
-  std::vector<FieldType> field_types = {CREDIT_CARD_NAME_FULL,
-                                        CREDIT_CARD_EXP_MONTH,
-                                        CREDIT_CARD_VERIFICATION_CODE};
+  const std::vector<FieldType> field_types = {CREDIT_CARD_NAME_FULL,
+                                              CREDIT_CARD_EXP_MONTH,
+                                              CREDIT_CARD_VERIFICATION_CODE};
 
   base::HistogramTester histogram_tester;
   SeeForm(form);
@@ -492,11 +520,10 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
 // Test that events of standalone CVC forms are only logged to
 // Autofill.FormEvents.StandaloneCvc and not to Autofill.FormEvents.CreditCard.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       StandaloneCvcParsedFormEvents) {
+TEST_F(CreditCardFormEventLoggerTest, StandaloneCvcParsedFormEvents) {
   FormData form = CreateForm({CreateTestFormField(
       "Standalone Cvc", "CVC", "", FormControlType::kInputText)});
-  std::vector<FieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
 
   base::HistogramTester histogram_tester;
@@ -509,7 +536,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 }
 
 // Test that we log the FORM_EVENT_INTERACTED_ONCE event for credit cards.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardInteractedFormEventsTriggerOnce) {
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
@@ -522,7 +549,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                                       FORM_EVENT_INTERACTED_ONCE, 1);
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardInteractedFormEventsTriggerTwice) {
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
@@ -538,8 +565,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 }
 
 // Test that we log suggestion shown form events for credit cards.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardShownFormEventShowOnce) {
+TEST_F(CreditCardFormEventLoggerTest, CreditCardShownFormEventShowOnce) {
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -552,8 +578,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                              Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardShownFormEventShowTwice) {
+TEST_F(CreditCardFormEventLoggerTest, CreditCardShownFormEventShowTwice) {
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -568,7 +593,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                              Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardShownFormEventUnrelatedEntries) {
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
@@ -585,8 +610,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
 // Test that we log specific suggestion shown form events for virtual credit
 // cards.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       VirtualCreditCardShownFormEventShowOnce) {
+TEST_F(CreditCardFormEventLoggerTest, VirtualCreditCardShownFormEventShowOnce) {
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
@@ -608,7 +632,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        VirtualCreditCardShownFormEventShowTwice) {
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/true,
@@ -633,7 +657,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        VirtualCreditCardShownFormEventUnrelatedEntries) {
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/true,
@@ -658,7 +682,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 0)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        VirtualCreditCardShownFormEventNoVirtualCard) {
   // Recreate cards *without* a virtual card.
   RecreateCreditCards(/*include_local_credit_card=*/false,
@@ -686,8 +710,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 }
 
 // Test that we log selected form event for credit cards.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardSelectedFormEventsPreviewOnce) {
+TEST_F(CreditCardFormEventLoggerTest, CreditCardSelectedFormEventsPreviewOnce) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
@@ -706,8 +729,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                   Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED_ONCE, 0)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardSelectedFormEventsFillTwice) {
+TEST_F(CreditCardFormEventLoggerTest, CreditCardSelectedFormEventsFillTwice) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
@@ -730,7 +752,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                   Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSelectedFormEventsFillMaskedServerCard) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -751,7 +773,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSelectedFormEventsFillMaskedServerCardTwice) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -776,7 +798,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSelectedFormEventsFillVirtualCard) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -800,7 +822,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                   Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSelectedFormEventsFillVirtualCardTwice) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -830,10 +852,9 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 }
 
 // Test that we log filled form events for credit cards.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardFilledFormEventsPreviewOnly) {
+TEST_F(CreditCardFormEventLoggerTest, CreditCardFilledFormEventsPreviewOnly) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -857,10 +878,9 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                      Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 0)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardFilledFormEventsFill) {
+TEST_F(CreditCardFormEventLoggerTest, CreditCardFilledFormEventsFill) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -884,10 +904,10 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                      Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardFilledFormEventsFillVirtualCard) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -914,10 +934,10 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                   Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardFilledFormEventsFillMaskedServerCard) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -944,10 +964,9 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardFilledFormEventsFillTwice) {
+TEST_F(CreditCardFormEventLoggerTest, CreditCardFilledFormEventsFillTwice) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -976,8 +995,8 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
 // Test to log when an unique local card is autofilled, when other duplicated
 // server and local cards exist.
-TEST_P(
-    CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(
+    CreditCardFormEventLoggerTest,
     CreditCardFilledFormEventsUsingUniqueLocalCardWhenOtherDuplicateServerCardsPresent) {
   // Clearing all the existing cards and creating a local credit card.
   RecreateCreditCards(/*include_local_credit_card=*/true,
@@ -992,7 +1011,7 @@ TEST_P(
        .fields = {{.role = CREDIT_CARD_EXP_MONTH, .value = u""},
                   {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR, .value = u""},
                   {.role = CREDIT_CARD_NUMBER, .value = u""}}});
-  std::vector<FieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
   autofill_manager().AddSeenForm(form, field_types);
@@ -1014,7 +1033,7 @@ TEST_P(
 
 // Test to log when a server card is autofilled and a local card with the same
 // number exists.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardFilledFormEvents_UsingServerCard_WithLocalDuplicate) {
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/true,
@@ -1027,11 +1046,10 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
        .fields = {{.role = CREDIT_CARD_EXP_MONTH, .value = u""},
                   {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR, .value = u""},
                   {.role = CREDIT_CARD_NUMBER, .value = u""}}});
-  std::vector<FieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
   autofill_manager().AddSeenForm(form, field_types);
   // Simulate filling a server card suggestion with a duplicate local card.
   base::HistogramTester histogram_tester;
@@ -1065,7 +1083,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 // Test to log when a unique server card is autofilled and a different server
 // card suggestion has the same number as a local card. That is, for local card
 // A and server card B with the same number, this fills unrelated server card C.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardFilledFormEvents_UsingServerCard_WithoutLocalDuplicate) {
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/true,
@@ -1078,11 +1096,10 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
        .fields = {{.role = CREDIT_CARD_EXP_MONTH, .value = u""},
                   {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR, .value = u""},
                   {.role = CREDIT_CARD_NUMBER, .value = u""}}});
-  std::vector<FieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
   autofill_manager().AddSeenForm(form, field_types);
   // Simulate filling a server card suggestion with a duplicate local card.
   base::HistogramTester histogram_tester;
@@ -1135,7 +1152,7 @@ TEST_F(CreditCardFormEventLoggerTest,
       FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_NO_CARD, 1);
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSubmittedWithoutSelectingSuggestionsWrongSizeCard) {
   // Create a local card for testing, card number is 4111111111111111.
   RecreateCreditCards(/*include_local_credit_card=*/true,
@@ -1144,7 +1161,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
   auto [form, field_types] =
       CreateMonthYearNumberForm(/*number_value=*/"411111111");
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
 
   // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
@@ -1158,7 +1175,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_WRONG_SIZE_CARD, 1);
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSubmittedWithoutSelectingSuggestionsFailLuhnCheckCard) {
   // Create a local card for testing, card number is 4111111111111111.
   RecreateCreditCards(/*include_local_credit_card=*/true,
@@ -1167,7 +1184,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
   auto [form, field_types] =
       CreateMonthYearNumberForm(/*number_value=*/"4444444444444444");
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
 
   // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
@@ -1181,7 +1198,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_FAIL_LUHN_CHECK_CARD, 1);
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSubmittedWithoutSelectingSuggestionsUnknownCard) {
   // Create a local card for testing, card number is 4111111111111111.
   RecreateCreditCards(/*include_local_credit_card=*/true,
@@ -1190,7 +1207,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
   auto [form, field_types] =
       CreateMonthYearNumberForm(/*number_value=*/"5105105105105100");
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
 
   // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
@@ -1204,7 +1221,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_UNKNOWN_CARD, 1);
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSubmittedWithoutSelectingSuggestionsKnownCard) {
   // Create a local card for testing, card number is 4111111111111111.
   RecreateCreditCards(/*include_local_credit_card=*/true,
@@ -1213,7 +1230,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
   auto [form, field_types] =
       CreateMonthYearNumberForm(/*number_value=*/"4111111111111111");
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
 
   // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
@@ -1227,7 +1244,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_KNOWN_CARD, 1);
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        ShouldNotLogSubmitWithoutSelectingSuggestionsIfSuggestionFilled) {
   // Create a local card for testing, card number is 4111111111111111.
   RecreateCreditCards(/*include_local_credit_card=*/true,
@@ -1260,7 +1277,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 }
 
 // Test that we log submitted form events for credit cards.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSubmittedFormEventsNoFilledData) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1280,7 +1297,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                      Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSubmittedFormEventsSuggestionShown) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1300,20 +1317,23 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1),
                      Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 1)));
 
-  VerifyUkm(
-      &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
-      {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-        {UkmTextFieldValueChangedType::kHeuristicTypeName, CREDIT_CARD_NUMBER},
-        {UkmTextFieldValueChangedType::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
-        {UkmSuggestionsShownType::kFieldSignatureName,
-         Collapse(CalculateFieldSignatureForField(form.fields()[2])).value()},
-        {UkmSuggestionsShownType::kFormSignatureName,
-         Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionsShownType;
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+              UkmEventsAre(
+                  {{{Ukm::kMillisecondsSinceFormParsedName, 0},
+                    {Ukm::kHeuristicTypeName, CREDIT_CARD_NUMBER},
+                    {Ukm::kHtmlFieldTypeName, HtmlFieldType::kUnspecified},
+                    {Ukm::kServerTypeName, CREDIT_CARD_NUMBER},
+                    {Ukm::kFieldSignatureName,
+                     Collapse(CalculateFieldSignatureForField(form.fields()[2]))
+                         .value()},
+                    {Ukm::kFormSignatureName,
+                     Collapse(CalculateFormSignature(form)).value()}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSubmittedFormEventsSuggestionShownDriverReset) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1331,27 +1351,30 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                                               form.fields().back().global_id());
   SubmitForm(form);
   // Trigger UploadFormDataAsyncCallback.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
       BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1),
                      Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 1)));
 
-  VerifyUkm(
-      &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
-      {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-        {UkmTextFieldValueChangedType::kHeuristicTypeName, CREDIT_CARD_NUMBER},
-        {UkmTextFieldValueChangedType::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
-        {UkmSuggestionsShownType::kFieldSignatureName,
-         Collapse(CalculateFieldSignatureForField(form.fields()[2])).value()},
-        {UkmSuggestionsShownType::kFormSignatureName,
-         Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionsShownType;
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+              UkmEventsAre(
+                  {{{Ukm::kMillisecondsSinceFormParsedName, 0},
+                    {Ukm::kHeuristicTypeName, CREDIT_CARD_NUMBER},
+                    {Ukm::kHtmlFieldTypeName, HtmlFieldType::kUnspecified},
+                    {Ukm::kServerTypeName, CREDIT_CARD_NUMBER},
+                    {Ukm::kFieldSignatureName,
+                     Collapse(CalculateFieldSignatureForField(form.fields()[2]))
+                         .value()},
+                    {Ukm::kFormSignatureName,
+                     Collapse(CalculateFormSignature(form)).value()}}}));
+  EXPECT_THAT(
+      GetEventUrls(test_ukm_recorder(), UkmSuggestionsShownType::kEntryName),
+      Each(form.main_frame_origin().GetURL()));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSubmittedFormEventsFilledLocalData) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1373,19 +1396,23 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 1),
                      Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 1)));
 
-  VerifyUkm(&test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
-            {{{UkmSuggestionFilledType::kRecordTypeName,
-               base::to_underlying(CreditCard::RecordType::kLocalCard)},
-              {UkmSuggestionFilledType::kIsForCreditCardName, true},
-              {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-              {UkmSuggestionFilledType::kFieldSignatureName,
-               Collapse(CalculateFieldSignatureForField(form.fields().front()))
-                   .value()},
-              {UkmSuggestionFilledType::kFormSignatureName,
-               Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionFilledType;
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+      UkmEventsAre(
+          {{{Ukm::kRecordTypeName, CreditCard::RecordType::kLocalCard},
+            {Ukm::kIsForCreditCardName, true},
+            {Ukm::kMillisecondsSinceFormParsedName, 0},
+            {Ukm::kFieldSignatureName,
+             Collapse(CalculateFieldSignatureForField(form.fields().front()))
+                 .value()},
+            {Ukm::kFormSignatureName,
+             Collapse(CalculateFormSignature(form)).value()}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSubmittedFormEventsFilledVirtualCard) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1412,19 +1439,23 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 1),
           Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE, 1)));
 
-  VerifyUkm(&test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
-            {{{UkmSuggestionFilledType::kRecordTypeName,
-               base::to_underlying(CreditCard::RecordType::kVirtualCard)},
-              {UkmSuggestionFilledType::kIsForCreditCardName, true},
-              {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-              {UkmSuggestionFilledType::kFieldSignatureName,
-               Collapse(CalculateFieldSignatureForField(form.fields().front()))
-                   .value()},
-              {UkmSuggestionFilledType::kFormSignatureName,
-               Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionFilledType;
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+      UkmEventsAre(
+          {{{Ukm::kRecordTypeName, CreditCard::RecordType::kVirtualCard},
+            {Ukm::kIsForCreditCardName, true},
+            {Ukm::kMillisecondsSinceFormParsedName, 0},
+            {Ukm::kFieldSignatureName,
+             Collapse(CalculateFieldSignatureForField(form.fields().front()))
+                 .value()},
+            {Ukm::kFormSignatureName,
+             Collapse(CalculateFormSignature(form)).value()}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSubmittedFormEventsFilledMaskedServerCard) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1447,19 +1478,23 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1),
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1)));
 
-  VerifyUkm(&test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
-            {{{UkmSuggestionFilledType::kRecordTypeName,
-               base::to_underlying(CreditCard::RecordType::kMaskedServerCard)},
-              {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-              {UkmSuggestionFilledType::kIsForCreditCardName, true},
-              {UkmSuggestionFilledType::kFieldSignatureName,
-               Collapse(CalculateFieldSignatureForField(form.fields().back()))
-                   .value()},
-              {UkmSuggestionFilledType::kFormSignatureName,
-               Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionFilledType;
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+      UkmEventsAre(
+          {{{Ukm::kRecordTypeName, CreditCard::RecordType::kMaskedServerCard},
+            {Ukm::kMillisecondsSinceFormParsedName, 0},
+            {Ukm::kIsForCreditCardName, true},
+            {Ukm::kFieldSignatureName,
+             Collapse(CalculateFieldSignatureForField(form.fields().back()))
+                 .value()},
+            {Ukm::kFormSignatureName,
+             Collapse(CalculateFormSignature(form)).value()}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSubmittedFormEventsMultipleSubmissions) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1487,7 +1522,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 0)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardSubmittedFormEventsSuggestionShownNoInteraction) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1513,22 +1548,27 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
                  0)));
 
-  VerifyUkm(
-      &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
-      {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-        {UkmTextFieldValueChangedType::kHeuristicTypeName, CREDIT_CARD_NUMBER},
-        {UkmTextFieldValueChangedType::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
-        {UkmSuggestionsShownType::kFieldSignatureName,
-         Collapse(CalculateFieldSignatureForField(form.fields()[2])).value()},
-        {UkmSuggestionsShownType::kFormSignatureName,
-         Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionsShownType;
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+      UkmEventsAre(
+          {{{Ukm::kMillisecondsSinceFormParsedName, 0},
+            {Ukm::kHeuristicTypeName, CREDIT_CARD_NUMBER},
+            {Ukm::kHtmlFieldTypeName, HtmlFieldType::kUnspecified},
+            {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
+            {Ukm::kFieldSignatureName,
+             Collapse(CalculateFieldSignatureForField(form.fields()[2]))
+                 .value()},
+            {Ukm::kFormSignatureName,
+             Collapse(CalculateFormSignature(form)).value()}}}));
+  EXPECT_THAT(
+      GetEventUrls(test_ukm_recorder(), UkmSuggestionFilledType::kEntryName),
+      Each(form.main_frame_origin().GetURL()));
 }
 
 // Test that we log "will submit" and "submitted" form events for credit
 // cards.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardWillSubmitFormEventsNoFilledData) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1547,7 +1587,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                      Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardWillSubmitFormEventsSuggestionShown) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1568,7 +1608,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                      Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardWillSubmitFormEventsLocalDataFilled) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1591,7 +1631,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                      Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardWillSubmitFormEventsVirtualCardFilled) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1619,7 +1659,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardWillSubmitFormEventsMaskedServerCardFilled) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1642,7 +1682,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardWillSubmitFormEventsMultipleSubmissions) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1669,7 +1709,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 0)));
 }
 
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        CreditCardWillSubmitFormEventsSuggestionShownNoPreviousInteraction) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -1696,8 +1736,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 }
 
 // Test that we log parsed form events for address and cards in the same form.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       MixedParsedFormEvents) {
+TEST_F(CreditCardFormEventLoggerTest, MixedParsedFormEvents) {
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
@@ -1709,7 +1748,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
        CreateTestFormField("Verification", "verification", "",
                            FormControlType::kInputText)});
 
-  std::vector<FieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       ADDRESS_HOME_STATE,          ADDRESS_HOME_CITY,
       ADDRESS_HOME_STREET_ADDRESS, CREDIT_CARD_NAME_FULL,
       CREDIT_CARD_EXP_MONTH,       CREDIT_CARD_VERIFICATION_CODE};
@@ -1728,7 +1767,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 // submit event, while the website actually submitted both. Test that
 // the submit events are recorded for both of Autofill.FormEvents.{Address,
 // CreditCard} after a submit event on the credit card form.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        SeparateCreditCardAndAddressForm_CreditCardSubmitted) {
   base::HistogramTester histogram_tester;
   FormData address_form = CreateForm(
@@ -1760,21 +1799,14 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       credit_card_form, credit_card_form.fields().back().global_id());
   SubmitForm(credit_card_form);
 
-  size_t expected_address_count =
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableLogFormEventsToAllParsedFormTypes)
-          ? 1
-          : 0;
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
       BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 1),
                      Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
-      BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE,
-                            expected_address_count),
-                     Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE,
-                            expected_address_count)));
+      BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
+                     Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0)));
 }
 
 // A site can have two different <form> elements, one for an address and one
@@ -1782,7 +1814,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 // submit event, while the website actually submitted both. Test that
 // the submit events are recorded for both of Autofill.FormEvents.{Address,
 // CreditCard} after a submit event on the Address form.
-TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+TEST_F(CreditCardFormEventLoggerTest,
        SeparateCreditCardAndAddressForm_AddressSubmitted) {
   base::HistogramTester histogram_tester;
   FormData address_form = CreateForm(
@@ -1812,21 +1844,14 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       credit_card_form, credit_card_form.fields().back().global_id());
   SubmitForm(address_form);
 
-  size_t expected_credit_card_count =
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableLogFormEventsToAllParsedFormTypes)
-          ? 1
-          : 0;
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
       BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 1),
                      Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-      BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE,
-                            expected_credit_card_count),
-                     Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE,
-                            expected_credit_card_count)));
+      BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
+                     Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0)));
 }
 
 // Test that we log interacted form event for credit cards only once.
@@ -1913,36 +1938,27 @@ TEST_F(CreditCardFormEventLoggerTest, NonSecureCreditCardForm) {
                                       FormControlType::kInputText),
                   CreateTestFormField("Expiration date", "expdate", "",
                                       FormControlType::kInputText)});
-  std::vector<FieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH,
       CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR};
 
   // Non-https origin.
   GURL frame_origin("http://example_root.com/form.html");
   form.set_main_frame_origin(url::Origin::Create(frame_origin));
-  autofill_driver_->set_url(frame_origin);
+  autofill_driver().set_url(frame_origin);
 
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulate an Autofill query on a credit card field.
-  {
-    base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().front().global_id());
-    EXPECT_EQ(1, user_action_tester.GetActionCount(
-                     "Autofill_PolledCreditCardSuggestions"));
-  }
-
   // Simulate submitting the credit card form.
-  {
-    base::HistogramTester histograms;
-    SubmitForm(form);
-    histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
-                                 FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
-    histograms.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOnlyLocalData",
-        FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
-  }
+  base::HistogramTester histograms;
+  autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields().front().global_id());
+  SubmitForm(form);
+  histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                               FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
+  histograms.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.WithOnlyLocalData",
+      FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
 }
 
 // Tests that credit card form submissions are *not* logged specially when the
@@ -1956,24 +1972,15 @@ TEST_F(CreditCardFormEventLoggerTest,
   auto [form, field_types] = CreateNameNumberYearForm();
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulate an Autofill query on a credit card field.
-  {
-    base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().back().global_id());
-    EXPECT_EQ(1, user_action_tester.GetActionCount(
-                     "Autofill_PolledCreditCardSuggestions"));
-  }
-
   // Simulate submitting the credit card form.
-  {
-    base::HistogramTester histograms;
-    SubmitForm(form);
-    histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
-                                 FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1);
-    histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
-                                 FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
-  }
+  base::HistogramTester histograms;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  SubmitForm(form);
+  histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                               FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1);
+  histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                               FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
 }
 
 }  // namespace autofill::autofill_metrics

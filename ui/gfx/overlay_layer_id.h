@@ -45,6 +45,7 @@ class COMPONENT_EXPORT(GFX) OverlayLayerId {
   enum class VizInternalId : uint32_t {
     kOsCompositorRoot,
     kDelegatedInkTrail,
+    kBackgroundColorLayer,
   };
 
   // Create a named `OverlayLayerId` that is namespaced for internal viz use.

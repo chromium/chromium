@@ -22,7 +22,7 @@
 #include <array>
 #include <string>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX)
@@ -31,12 +31,6 @@
 #endif
 
 namespace viz {
-
-#if BUILDFLAG(IS_ANDROID)
-bool PreferRGB565ResourcesForDisplay() {
-  return base::SysInfo::AmountOfPhysicalMemoryMB() <= 512;
-}
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 bool AlwaysUseWideColorGamut() {
@@ -51,8 +45,7 @@ bool AlwaysUseWideColorGamut() {
 
   // As it takes some work to compute this, cache the result.
   static bool is_always_use_wide_color_gamut_enabled = [] {
-    const std::string& current_model =
-        base::android::BuildInfo::GetInstance()->model();
+    const std::string& current_model = base::android::android_info::model();
     const std::array<std::string, 2> enabled_models = {
         std::string{"Pixel 4"}, std::string{"Pixel 4 XL"}};
     for (const std::string& model : enabled_models) {

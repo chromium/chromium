@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/ash/migrations/adobe_express_oem_to_default_migration.h"
 
 #include "ash/constants/web_app_id_constants.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"

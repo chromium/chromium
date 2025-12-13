@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_SCRIPT_TRANSFORMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_SCRIPT_TRANSFORMER_H_
 
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -54,10 +55,10 @@ class MODULES_EXPORT RTCRtpScriptTransformer : public ScriptWrappable {
 
   // These methods are called when an
   // RTCRtpScriptTransform is assigned to an RTCRtpSender or RTCRtpReceiver.
-  void SetUpAudio(WTF::CrossThreadOnceClosure disconnect_callback_source,
+  void SetUpAudio(CrossThreadOnceClosure disconnect_callback_source,
                   scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
                       encoded_audio_transformer);
-  void SetUpVideo(WTF::CrossThreadOnceClosure disconnect_callback_source,
+  void SetUpVideo(CrossThreadOnceClosure disconnect_callback_source,
                   scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
                       encoded_video_transformer);
 

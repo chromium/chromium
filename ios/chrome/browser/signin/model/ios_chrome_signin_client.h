@@ -54,6 +54,8 @@ class IOSChromeSigninClient : public SigninClient {
   version_info::Channel GetClientChannel() override;
   void OnPrimaryAccountChanged(
       signin::PrimaryAccountChangeEvent event_details) override;
+  signin::OAuthConsumer GetOAuthConsumerFromId(
+      signin::OAuthConsumerId oauth_consumer_id) const override;
 
  private:
   // Helper to delay callbacks until connection becomes online again.
@@ -62,6 +64,8 @@ class IOSChromeSigninClient : public SigninClient {
   raw_ptr<ProfileIOS> profile_;
   // Used to add and remove content settings observers.
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
+  // Used to convert OAuthConsumerIds to OAuthConsumers.
+  const std::unique_ptr<signin::OAuthConsumerRegistry> oauth_consumer_registry_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_IOS_CHROME_SIGNIN_CLIENT_H_

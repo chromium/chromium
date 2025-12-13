@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_PASSWORD_FORM_CONVERSION_UTILS_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_PASSWORD_FORM_CONVERSION_UTILS_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>

@@ -79,6 +79,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
+      const LocalFrameToken& frame_token,
       bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType) override;
   void AudioStateChanged(bool is_audio_playing) override;
@@ -115,7 +116,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // Virtual for testing.
   virtual bool IsWaitingForMainFrameContentfulPaint() const;
   virtual bool IsWaitingForMainFrameMeaningfulPaint() const;
-  virtual bool IsMainFrameLoading() const;
 
   // Return a number of child web frame schedulers for this PageScheduler.
   size_t FrameCount() const;

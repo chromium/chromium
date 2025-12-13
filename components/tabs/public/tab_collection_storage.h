@@ -7,24 +7,15 @@
 
 #include <memory>
 #include <optional>
-#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "components/tabs/public/tab_collection_types.h"
 
 namespace tabs {
 
 class TabInterface;
 class TabCollection;
-
-using Child =
-    std::variant<std::unique_ptr<TabCollection>, std::unique_ptr<TabInterface>>;
-using ChildrenVector = std::vector<Child>;
-
-using ChildPtr = std::variant<tabs::TabInterface*, tabs::TabCollection*>;
-using ChildrenPtrs = std::vector<ChildPtr>;
-using ConstChildPtr =
-    std::variant<const tabs::TabInterface*, const tabs::TabCollection*>;
 
 // Provides reusable functionality useful to most TabCollections for storing
 // and manipulating a vector of child tabs and collections.

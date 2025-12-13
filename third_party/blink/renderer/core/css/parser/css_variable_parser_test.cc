@@ -62,6 +62,7 @@ const char* valid_attr_values[] = {
     "attr(p type(<color>#), red)",
     "attr(p px)",
     "attr(p raw-string)",
+    "attr(p number)",
     "attr(p type(<color>))",
     "attr(p type(<color> ))",
     "attr(p type( <color>))",
@@ -271,8 +272,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(valid_attr_values));
 
 TEST_P(ValidAttrTest, ContainsValidAttr) {
-  ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
-  ScopedCSSAttrRawStringForTest scoped_feature_attr_raw_string(true);
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -293,9 +292,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(invalid_attr_values));
 
 TEST_P(InvalidAttrTest, ContainsInvalidAttr) {
-  ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
-  ScopedCSSAttrRawStringForTest scoped_feature_attr_raw_string(true);
-
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -340,7 +336,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(invalid_auto_base_values));
 
 TEST_P(InvalidAutoBaseTest, ContainsInvalidFunction) {
-  ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
 
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
@@ -492,7 +487,7 @@ TEST_P(CollectDashedFunctionsTest, CollectionTest) {
 
   Vector<AtomicString> actual_result_vector(actual_result);
   std::sort(actual_result_vector.begin(), actual_result_vector.end(),
-            WTF::CodeUnitCompareLessThan);
+            CodeUnitCompareLessThan);
 
   StringBuilder actual_joined;
   for (const AtomicString& a : actual_result_vector) {

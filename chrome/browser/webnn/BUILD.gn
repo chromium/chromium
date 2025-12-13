@@ -1,0 +1,28 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("webnn") {
+  sources = []
+  deps = []
+
+  if (is_win) {
+    sources += [
+      "webnn_prefs.cc",
+      "webnn_prefs.h",
+      "win_app_runtime_installer.cc",
+      "win_app_runtime_installer.h",
+    ]
+
+    deps += [
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//content/public/browser",
+      "//services/webnn/public/cpp",
+      "//services/webnn/public/mojom",
+      "//third_party/windows_app_sdk_headers",
+    ]
+  }
+}

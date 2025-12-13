@@ -21,15 +21,16 @@
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/aead.h"
+#include "crypto/hash.h"
 #include "crypto/hkdf.h"
 #include "crypto/hmac.h"
 #include "crypto/random.h"
-#include "crypto/sha2.h"
+#include "crypto/secure_util.h"
 #include "device/fido/cable/fido_cable_device.h"
 #include "device/fido/cable/noise.h"
 #include "device/fido/cable/v2_handshake.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public/fido_constants.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
@@ -51,33 +52,26 @@ constexpr size_t kClientHelloMessageSize = 58;
 
 constexpr size_t kCableHandshakeMacMessageSize = 16;
 
-std::optional<std::array<uint8_t, kClientHelloMessageSize>>
-ConstructHandshakeMessage(std::string_view handshake_key,
-                          base::span<const uint8_t, 16> client_random_nonce) {
+std::vector<uint8_t> ConstructHandshakeMessage(
+    std::string_view handshake_key,
+    base::span<const uint8_t, 16> client_random_nonce) {
   cbor::Value::MapValue map;
   map.emplace(0, kCableClientHelloMessage);
   map.emplace(1, client_random_nonce);
-  auto client_hello = cbor::Writer::Write(cbor::Value(std::move(map)));
-  DCHECK(client_hello);
+  auto hello = *cbor::Writer::Write(cbor::Value(std::move(map)));
 
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  if (!hmac.Init(handshake_key))
-    return std::nullopt;
+  const auto mac =
+      crypto::hmac::SignSha256(base::as_byte_span(handshake_key), hello);
 
-  std::array<uint8_t, kCableHandshakeMacMessageSize> client_hello_mac;
-  if (!hmac.Sign(base::as_string_view(*client_hello), client_hello_mac.data(),
-                 client_hello_mac.size())) {
-    return std::nullopt;
-  }
+  constexpr size_t kMacOffset =
+      kClientHelloMessageSize - kCableHandshakeMacMessageSize;
 
-  DCHECK_EQ(kClientHelloMessageSize,
-            client_hello->size() + client_hello_mac.size());
-  std::array<uint8_t, kClientHelloMessageSize> handshake_message;
-  std::ranges::copy(*client_hello, handshake_message.begin());
-  std::ranges::copy(client_hello_mac,
-                    handshake_message.begin() + client_hello->size());
+  CHECK_EQ(hello.size(), kMacOffset);
+  hello.resize(kClientHelloMessageSize);
+  auto out_mac = base::span(hello).subspan(kMacOffset);
+  out_mac.copy_from(base::span(mac).first<kCableHandshakeMacMessageSize>());
 
-  return handshake_message;
+  return hello;
 }
 
 }  // namespace
@@ -104,32 +98,28 @@ void FidoCableV1HandshakeHandler::InitiateCableHandshake(
     FidoDevice::DeviceCallback callback) {
   auto handshake_message =
       ConstructHandshakeMessage(handshake_key_, client_session_random_);
-  if (!handshake_message) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
-    return;
-  }
 
   FIDO_LOG(DEBUG) << "Sending the caBLE handshake message";
-  cable_device_->SendHandshakeMessage(
-      fido_parsing_utils::Materialize(*handshake_message), std::move(callback));
+  cable_device_->SendHandshakeMessage(std::move(handshake_message),
+                                      std::move(callback));
 }
 
 bool FidoCableV1HandshakeHandler::ValidateAuthenticatorHandshakeMessage(
     base::span<const uint8_t> response) {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  if (!hmac.Init(handshake_key_))
-    return false;
-
   if (response.size() != kCableAuthenticatorHandshakeMessageSize) {
     return false;
   }
 
-  const auto authenticator_hello = response.first(
-      kCableAuthenticatorHandshakeMessageSize - kCableHandshakeMacMessageSize);
-  if (!hmac.VerifyTruncated(
-          base::as_string_view(authenticator_hello),
-          base::as_string_view(response.subspan(authenticator_hello.size())))) {
+  constexpr size_t kMacOffset =
+      kCableAuthenticatorHandshakeMessageSize - kCableHandshakeMacMessageSize;
+  const auto [authenticator_hello, expected_truncated_mac] =
+      response.split_at(kMacOffset);
+  const auto actual_mac = crypto::hmac::SignSha256(
+      base::as_byte_span(handshake_key_), authenticator_hello);
+
+  const auto actual_truncated_mac =
+      base::span(actual_mac).first(std::size(expected_truncated_mac));
+  if (!crypto::SecureMemEqual(expected_truncated_mac, actual_truncated_mac)) {
     return false;
   }
 
@@ -178,7 +168,7 @@ FidoCableV1HandshakeHandler::GetEncryptionKeyAfterSuccessfulHandshake(
   fido_parsing_utils::Append(&nonce_message, client_session_random_);
   fido_parsing_utils::Append(&nonce_message, authenticator_random_nonce);
   return crypto::HkdfSha256<32>(session_pre_key_,
-                                crypto::SHA256Hash(nonce_message),
+                                crypto::hash::Sha256(nonce_message),
                                 kCableDeviceEncryptionKeyInfo);
 }
 

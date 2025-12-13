@@ -15,34 +15,31 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
-#include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
-#include "components/sessions/core/session_id.h"
-#include "content/public/browser/clipboard_types.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/content_analysis_delegate_base.h"
 #include "url/gurl.h"
 
 class Profile;
 
 namespace content {
 class WebContent;
+struct ClipboardPasteData;
 }  // namespace content
+
+namespace safe_browsing {
+class BinaryUploadService;
+class SafeBrowsingNavigationObserverManager;
+}  // namespace safe_browsing
 
 namespace enterprise_connectors {
 
+class ClipboardRequestHandler;
 class ContentAnalysisDialogController;
 class FilesRequestHandler;
 class PagePrintRequestHandler;
-class ClipboardRequestHandler;
-
-using ReferrerChain =
-    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
 
 // A class that performs deep scans of data (for example malicious or sensitive
 // content checks) before allowing a page to access it.
@@ -280,13 +277,14 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   std::string tab_title() const override;
   std::string user_action_id() const override;
   std::string email() const override;
-  std::string url() const override;
+  const GURL& url() const override;
   const GURL& tab_url() const override;
   ContentAnalysisRequest::Reason reason() const override;
   google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
   referrer_chain() const override;
   google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
       const override;
+  content::WebContents* web_contents() const override;
 
  protected:
   ContentAnalysisDelegate(content::WebContents* web_contents,
@@ -423,9 +421,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   Data data_;
   Result result_;
 
-  // The tab ID of the WebContents that triggered the scan.
-  SessionID tab_id_;
-
   // Indices of warned files.
   std::vector<size_t> warned_file_indices_;
 
@@ -520,6 +515,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // Custom message for rule.
   ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
       custom_rule_message_;
+
+  base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<ContentAnalysisDelegate> weak_ptr_factory_{this};
 };

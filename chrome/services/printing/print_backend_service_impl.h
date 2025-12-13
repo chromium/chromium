@@ -26,7 +26,7 @@
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
 #include "printing/printing_context.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/types/expected.h"
@@ -34,6 +34,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_LINUX)
+#include "printing/printing_context_linux.h"
+#endif
 
 #if !BUILDFLAG(ENABLE_OOP_PRINTING)
 #error "Out-of-process printing must be enabled."
@@ -265,6 +269,11 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   std::unique_ptr<crash_keys::ScopedPrinterInfo> crash_keys_;
 
   scoped_refptr<PrintBackend> print_backend_;
+
+#if BUILDFLAG(IS_LINUX)
+  std::unique_ptr<PrintingContextLinux::PrintDialogFactory>
+      print_dialog_factory_;
+#endif
 
   // Map from a context ID to a printing device context.  Accessed only from
   // the main thread.

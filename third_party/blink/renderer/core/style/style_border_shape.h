@@ -7,6 +7,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -17,8 +18,14 @@ class StyleBorderShape : public GarbageCollected<StyleBorderShape> {
  public:
   // A border shape always has an inner and outer shape, though in case they are
   // identical certain operations such as filling between them can be skipped.
-  explicit StyleBorderShape(BasicShape& outer, BasicShape* inner = nullptr)
-      : outer_(&outer), inner_(inner ? inner : &outer) {}
+  explicit StyleBorderShape(BasicShape& outer,
+                            BasicShape* inner = nullptr,
+                            GeometryBox outer_box = GeometryBox::kBorderBox,
+                            GeometryBox inner_box = GeometryBox::kBorderBox)
+      : outer_(&outer),
+        inner_(inner ? inner : &outer),
+        outer_box_(outer_box),
+        inner_box_(inner_box) {}
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(outer_);
@@ -26,20 +33,26 @@ class StyleBorderShape : public GarbageCollected<StyleBorderShape> {
   }
 
   bool HasSeparateInnerShape() const {
-    return !base::ValuesEquivalent(inner_, outer_);
+    return !base::ValuesEquivalent(inner_, outer_) || inner_box_ != outer_box_;
   }
 
   const BasicShape& OuterShape() const { return *outer_; }
   const BasicShape& InnerShape() const { return *inner_; }
 
+  GeometryBox OuterBox() const { return outer_box_; }
+  GeometryBox InnerBox() const { return inner_box_; }
+
   bool operator==(const StyleBorderShape& o) const {
     return base::ValuesEquivalent(outer_, o.outer_) &&
-           base::ValuesEquivalent(inner_, o.inner_);
+           base::ValuesEquivalent(inner_, o.inner_) &&
+           outer_box_ == o.outer_box_ && inner_box_ == o.inner_box_;
   }
 
  private:
   Member<BasicShape> outer_;
   Member<BasicShape> inner_;
+  GeometryBox outer_box_;
+  GeometryBox inner_box_;
 };
 }  // namespace blink
 

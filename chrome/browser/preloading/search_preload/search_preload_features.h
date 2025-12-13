@@ -23,6 +23,9 @@ namespace features {
 // https://crbug.com/394988793
 BASE_DECLARE_FEATURE(kDsePreload2);
 
+// Enable `PreloadServingMetrics`.
+extern const base::FeatureParam<bool> kDsePreload2UsePreloadServingMetrics;
+
 // The feature is disabled if device memory is smaller than the threshold.
 extern const base::FeatureParam<size_t> kDsePreload2DeviceMemoryThresholdMiB;
 // Pause triggering preloads when on-suggest prefetch failed.

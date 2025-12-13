@@ -10,7 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.text.TextUtils;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.task.AsyncTask;
@@ -55,7 +55,7 @@ public final class DefaultBrowserInfo {
                                 // Store the package label of current application.
                                 menuTitles.add(
                                         getTitleFromPackageLabel(
-                                                context, BuildInfo.getInstance().hostPackageLabel));
+                                                context, ApkInfo.getHostPackageLabel()));
 
                                 PackageManager pm = context.getPackageManager();
                                 ResolveInfo info =

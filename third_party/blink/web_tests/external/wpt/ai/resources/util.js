@@ -225,6 +225,11 @@ function load_iframe(src, permission_policy) {
   return promise;
 }
 
+async function createLanguageModel(options = {}) {
+  await test_driver.bless();
+  return LanguageModel.create(options);
+}
+
 async function createSummarizer(options = {}) {
   await test_driver.bless();
   return await Summarizer.create(options);
@@ -239,6 +244,19 @@ async function createRewriter(options = {}) {
   await test_driver.bless();
   return await Rewriter.create(options);
 }
+
+async function createProofreader(options = {}) {
+  await test_driver.bless();
+  return await Proofreader.create(options);
+}
+
+async function ensureLanguageModel(options = {}) {
+  assert_true(!!LanguageModel);
+  const availability = await LanguageModel.availability(options);
+  assert_in_array(availability, kValidAvailabilities);
+  // Yield PRECONDITION_FAILED if the API is unavailable on this device.
+  assert_implements_optional(availability != 'unavailable', 'API unavailable');
+};
 
 async function testDestroy(t, createMethod, options, instanceMethods) {
   const instance = await createMethod(options);
@@ -268,4 +286,10 @@ async function testCreateAbort(t, createMethod, options, instanceMethods) {
   for (const promise of promises) {
     await promise_rejects_exactly(t, error, promise);
   }
+}
+
+function consumeTransientUserActivation() {
+  const win = window.open('about:blank', '_blank');
+  if (win)
+    win.close();
 }

@@ -5,7 +5,7 @@
 #include "media/base/ipc/media_param_traits.h"
 
 #include "base/strings/stringprintf.h"
-#include "ipc/ipc_message_utils.h"
+#include "ipc/param_traits_utils.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_point.h"
 #include "media/base/encryption_pattern.h"
@@ -70,11 +70,6 @@ bool ParamTraits<AudioParameters>::Read(const base::Pickle* m,
   return r->IsValid();
 }
 
-void ParamTraits<AudioParameters>::Log(const AudioParameters& p,
-                                       std::string* l) {
-  l->append(base::StringPrintf("<AudioParameters>"));
-}
-
 void ParamTraits<AudioParameters::HardwareCapabilities>::Write(
     base::Pickle* m,
     const param_type& p) {
@@ -115,12 +110,6 @@ bool ParamTraits<AudioParameters::HardwareCapabilities>::Read(
   return true;
 }
 
-void ParamTraits<AudioParameters::HardwareCapabilities>::Log(
-    const param_type& p,
-    std::string* l) {
-  l->append(base::StringPrintf("<AudioParameters::HardwareCapabilities>"));
-}
-
 void ParamTraits<media::EncryptionPattern>::Write(base::Pickle* m,
                                                   const param_type& p) {
   WriteParam(m, p.crypt_byte_block());
@@ -140,11 +129,6 @@ bool ParamTraits<media::EncryptionPattern>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<media::EncryptionPattern>::Log(const param_type& p,
-                                                std::string* l) {
-  l->append(base::StringPrintf("<EncryptionPattern>"));
-}
-
 }  // namespace IPC
 
 // Generate param traits write methods.
@@ -156,13 +140,6 @@ namespace IPC {
 
 // Generate param traits read methods.
 #include "ipc/param_traits_read_macros.h"
-namespace IPC {
-#undef MEDIA_BASE_IPC_MEDIA_PARAM_TRAITS_MACROS_H_
-#include "media/base/ipc/media_param_traits_macros.h"
-}  // namespace IPC
-
-// Generate param traits log methods.
-#include "ipc/param_traits_log_macros.h"
 namespace IPC {
 #undef MEDIA_BASE_IPC_MEDIA_PARAM_TRAITS_MACROS_H_
 #include "media/base/ipc/media_param_traits_macros.h"

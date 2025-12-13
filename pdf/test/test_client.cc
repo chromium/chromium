@@ -16,7 +16,8 @@
 
 namespace chrome_pdf {
 
-TestClient::TestClient() = default;
+TestClient::TestClient(bool use_skia_renderer)
+    : use_skia_renderer_(use_skia_renderer) {}
 
 TestClient::~TestClient() = default;
 
@@ -26,6 +27,11 @@ void TestClient::ProposeDocumentLayout(const DocumentLayout& layout) {
   // complexity without much gain. Instead, we can override this behavior just
   // where it matters (like PDFiumEngineTest.ProposeDocumentLayoutWithOverlap).
   engine()->ApplyDocumentLayout(layout.options());
+}
+
+bool TestClient::UseSkiaPremultipliedAlpha() {
+  // In tests, always use premultiplied alpha in skia mode
+  return use_skia_renderer_;
 }
 
 bool TestClient::Confirm(const std::string& message) {

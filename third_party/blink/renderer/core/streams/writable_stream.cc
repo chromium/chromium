@@ -198,7 +198,7 @@ WritableStream* WritableStream::Create(ScriptState* script_state,
       exception_state);
 
   //  8. Return stream.
-  return stream;
+  return exception_state.HadException() ? nullptr : stream;
 }
 
 // static

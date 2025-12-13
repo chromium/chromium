@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/global_keyboard_shortcuts_mac.h"
-
 #include <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#import "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, HistoryNavigation) {
   NSWindow* ns_window =
       browser()->window()->GetNativeWindow().GetNativeNSWindow();
 
-  GURL test_url = ui_test_utils::GetTestUrl(
+  GURL test_url = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
   ASSERT_NE(tab_strip->GetActiveWebContents()->GetLastCommittedURL(), test_url);
 
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, ReopenPreviousTab) {
   EXPECT_EQ(2, tab_strip->count());
 
   // Navigate the active tab to a dummy URL.
-  GURL test_url = ui_test_utils::GetTestUrl(
+  GURL test_url = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), test_url,

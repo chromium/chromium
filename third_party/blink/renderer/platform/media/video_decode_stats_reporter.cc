@@ -40,8 +40,8 @@ VideoDecodeStatsReporter::VideoDecodeStatsReporter(
   DCHECK(get_pipeline_stats_cb_);
   DCHECK_NE(media::VIDEO_CODEC_PROFILE_UNKNOWN, codec_profile_);
 
-  recorder_remote_.set_disconnect_handler(WTF::BindOnce(
-      &VideoDecodeStatsReporter::OnIpcConnectionError, WTF::Unretained(this)));
+  recorder_remote_.set_disconnect_handler(BindOnce(
+      &VideoDecodeStatsReporter::OnIpcConnectionError, Unretained(this)));
   stats_cb_timer_.SetTaskRunner(task_runner);
 }
 

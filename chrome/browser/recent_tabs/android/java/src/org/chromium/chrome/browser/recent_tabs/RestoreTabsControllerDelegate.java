@@ -17,16 +17,16 @@ public interface RestoreTabsControllerDelegate {
      *
      * @param sessions The list of synced foreign sessions for the current profile.
      */
-    public void showPromo(List<ForeignSession> sessions);
+    void showPromo(List<ForeignSession> sessions);
 
     /** Action to perform when the restore tabs promo is done showing. */
-    public void onDismissed();
+    void onDismissed();
 
     /** Get the tab switcher's current tab list model size. */
-    public int getGTSTabListModelSize();
+    int getGTSTabListModelSize();
 
     /**
      * Action to perform at the end of the workflow after the user has restored their chosen tabs.
      */
-    public void scrollGTSToRestoredTabs(int tabListModelSize);
+    void scrollGTSToRestoredTabs(int tabListModelSize);
 }

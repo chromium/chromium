@@ -58,6 +58,12 @@ static struct PyModuleDef module_def = {PyModuleDef_HEAD_INIT,
 // -----------------------------------------------------------------------------
 
 PyUpb_ModuleState* PyUpb_ModuleState_MaybeGet(void) {
+#if PY_VERSION_HEX >= 0x030D0000  // >= 3.13
+  /* Calling `PyState_FindModule` during interpreter shutdown causes a crash. */
+  if (Py_IsFinalizing()) {
+    return NULL;
+  }
+#endif
   PyObject* module = PyState_FindModule(&module_def);
   return module ? PyModule_GetState(module) : NULL;
 }
@@ -219,7 +225,7 @@ typedef struct {
 // unpredictable
 // times.
 static void* upb_trim_allocfunc(upb_alloc* alloc, void* ptr, size_t oldsize,
-                                size_t size) {
+                                size_t size, size_t* actual_size) {
   (void)alloc;
   (void)oldsize;
   if (size == 0) {

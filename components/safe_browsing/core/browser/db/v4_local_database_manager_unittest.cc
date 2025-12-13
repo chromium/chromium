@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -1137,6 +1136,26 @@ TEST_F(V4LocalDatabaseManagerTest, CancelQueued) {
   WaitForTasksOnTaskRunner();
   EXPECT_TRUE(client1.on_check_browse_url_result_called());
   EXPECT_TRUE(client2.on_check_browse_url_result_called());
+}
+
+TEST_F(V4LocalDatabaseManagerTest, ShutdownCancelsQueued) {
+  const GURL url("http://example.com/a/");
+  TestClient client1(SB_THREAT_TYPE_SAFE, url,
+                     v4_local_database_manager_.get());
+  TestClient client2(SB_THREAT_TYPE_SAFE, url);
+  EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
+      url, usual_threat_types_, &client1, CheckBrowseUrlType::kHashDatabase));
+  EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
+      url, usual_threat_types_, &client2, CheckBrowseUrlType::kHashDatabase));
+  EXPECT_EQ(2ul, GetQueuedChecks().size());
+  ShutdownLocalDatabaseManager();
+  EXPECT_TRUE(GetQueuedChecks().empty());
+  WaitForTasksOnTaskRunner();
+  EXPECT_FALSE(client1.on_check_browse_url_result_called());
+  EXPECT_FALSE(client2.on_check_browse_url_result_called());
+  // Client should still be able to cancel checks post-shutdown.
+  v4_local_database_manager_->CancelCheck(&client1);
+  v4_local_database_manager_->CancelCheck(&client2);
 }
 
 TEST_F(V4LocalDatabaseManagerTest, QueuedCheckWithFullHash) {

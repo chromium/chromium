@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/system/sys_info.h"
@@ -111,14 +112,15 @@ void SizeCalculator::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SizeCalculator::NotifySizeCalculated(const int64_t size) {
+void SizeCalculator::NotifySizeCalculated(const std::optional<int64_t> size) {
   calculating_ = false;
 
-  LOG_IF(ERROR, size < 0) << "Got negative size " << size
-                          << " while calculating " << calculation_type_;
+  LOG_IF(ERROR, size.value_or(-1) < 0)
+      << "Got negative size " << size.value_or(-1) << " while calculating "
+      << calculation_type_;
 
   for (Observer& observer : observers_) {
-    observer.OnSizeCalculated(calculation_type_, size);
+    observer.OnSizeCalculated(calculation_type_, size.value_or(-1));
   }
 }
 

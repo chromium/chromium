@@ -13,7 +13,6 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -80,7 +79,8 @@ base::TaskPriority GetReportingAndNelStoreBackgroundSequencePriority() {
 [[nodiscard]] bool NetworkAnonymizationKeyFromString(
     std::string_view string,
     NetworkAnonymizationKey* out_network_anonymization_key) {
-  std::optional<base::Value> value = base::JSONReader::Read(string);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value)
     return false;
 

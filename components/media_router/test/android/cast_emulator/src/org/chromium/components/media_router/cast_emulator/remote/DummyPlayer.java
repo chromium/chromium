@@ -38,7 +38,7 @@ public class DummyPlayer
     private Callback mCallback;
 
     /** Callback interface for the session manager */
-    public static interface Callback {
+    public interface Callback {
         void onError();
 
         void onCompletion();

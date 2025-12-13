@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -181,15 +181,6 @@ class HarfBuzzShaperTest : public FontTestBase {
     return run_font_data[0].font_data_->PlatformData().FontFamilyName();
   }
 
-  StringView MaybeStripFontationsSuffix(const String& font_name) {
-    wtf_size_t found_index = font_name.ReverseFind(" (Fontations)");
-    if (found_index != WTF::kNotFound) {
-      return StringView(font_name, 0, found_index);
-    } else {
-      return font_name;
-    }
-  }
-
   const ShapeResult* SplitRun(ShapeResult* shape_result, unsigned offset) {
     unsigned length = shape_result->NumCharacters();
     const ShapeResult* run2 = shape_result->SubRange(offset, length);
@@ -207,7 +198,6 @@ class HarfBuzzShaperTest : public FontTestBase {
     return result;
   }
 
-  FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
   unsigned start_index_ = 0;
   unsigned num_characters_ = 0;
@@ -795,6 +785,9 @@ TEST_P(ShapeParameterTest, ZeroWidthSpace) {
 }
 
 TEST_F(HarfBuzzShaperTest, IdeographicSpace) {
+  // Noto Sans Mongolian through version 3.002 has U+3001 but not U+3000.
+  // Attempt to avoid this font by falling back to a Japanese font instead.
+  font_description.SetLocale(LayoutLocale::Get(AtomicString("ja")));
   Font* font = MakeGarbageCollected<Font>(font_description);
 
   String string(
@@ -822,18 +815,16 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS15) {
       u"\u2614"
       u"\ufe0e");
   for (String text : {text_default, emoji_default}) {
-    EXPECT_EQ(MaybeStripFontationsSuffix(
-                  GetShapedFontFamilyNameForEmojiVS(*mono_font, text)),
-              String(kNotoEmojiFontName));
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*mono_font, text),
+              StringView(kNotoEmojiFontName)) << text;
     const char* system_mono_font_name = kSystemMonoEmojiFont;
 #if BUILDFLAG(IS_MAC)
     if (text == text_default) {
       system_mono_font_name = kSystemMonoTextDefaultEmojiFont;
     }
 #endif
-    EXPECT_EQ(MaybeStripFontationsSuffix(
-                  GetShapedFontFamilyNameForEmojiVS(*color_font, text)),
-              String(system_mono_font_name));
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*color_font, text),
+              StringView(system_mono_font_name)) << text;
   }
 }
 
@@ -851,12 +842,10 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS16) {
       u"\u2614"
       u"\ufe0f");
   for (String text : {text_default, emoji_default}) {
-    EXPECT_EQ(MaybeStripFontationsSuffix(
-                  GetShapedFontFamilyNameForEmojiVS(*mono_font, text)),
-              kSystemColorEmojiFont);
-    EXPECT_EQ(MaybeStripFontationsSuffix(
-                  GetShapedFontFamilyNameForEmojiVS(*color_font, text)),
-              kNotoColorEmojiFontName);
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*mono_font, text),
+              StringView(kSystemColorEmojiFont)) << text;
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*color_font, text),
+              StringView(kNotoColorEmojiFontName)) << text;
   }
 }
 
@@ -902,12 +891,10 @@ TEST_P(FontVariantEmojiTest, FontVariantEmojiSystemFallback) {
     }
 #endif
 
-    EXPECT_EQ(MaybeStripFontationsSuffix(
-                  GetShapedFontFamilyNameForEmojiVS(*mono_font, text)),
-              String(expected_name_for_mono_requested_font));
-    EXPECT_EQ(MaybeStripFontationsSuffix(
-                  GetShapedFontFamilyNameForEmojiVS(*color_font, text)),
-              String(expected_name_for_color_requested_font));
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*mono_font, text),
+              StringView(expected_name_for_mono_requested_font));
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*color_font, text),
+              StringView(expected_name_for_color_requested_font));
   }
 }
 
@@ -925,15 +912,12 @@ TEST_F(HarfBuzzShaperTest, VSOverrideFontVariantEmoji) {
   const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
   result->GetRunFontData(&run_font_data);
   EXPECT_EQ(run_font_data.size(), 3u);
-  EXPECT_EQ(MaybeStripFontationsSuffix(
-                run_font_data[0].font_data_->PlatformData().FontFamilyName()),
-            kSystemColorEmojiFont);
-  EXPECT_EQ(MaybeStripFontationsSuffix(
-                run_font_data[1].font_data_->PlatformData().FontFamilyName()),
-            kSystemMonoEmojiFont);
-  EXPECT_EQ(MaybeStripFontationsSuffix(
-                run_font_data[2].font_data_->PlatformData().FontFamilyName()),
-            kSystemColorEmojiFont);
+  EXPECT_EQ(run_font_data[0].font_data_->PlatformData().FontFamilyName(),
+            StringView(kSystemColorEmojiFont));
+  EXPECT_EQ(run_font_data[1].font_data_->PlatformData().FontFamilyName(),
+            StringView(kSystemMonoEmojiFont));
+  EXPECT_EQ(run_font_data[2].font_data_->PlatformData().FontFamilyName(),
+            StringView(kSystemColorEmojiFont));
 }
 
 TEST_F(HarfBuzzShaperTest, FontVariantEmojiTextSystemFallback) {
@@ -949,9 +933,8 @@ TEST_F(HarfBuzzShaperTest, FontVariantEmojiTextSystemFallback) {
 #endif
   String text(u"\u26CE");
   Font* color_font = CreateNotoColorEmoji(FontVariantEmoji::kTextVariantEmoji);
-  EXPECT_EQ(MaybeStripFontationsSuffix(
-                GetShapedFontFamilyNameForEmojiVS(*color_font, text)),
-            mono_font_name);
+  EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*color_font, text),
+            StringView(mono_font_name));
 }
 
 #endif
@@ -964,7 +947,7 @@ TEST_F(HarfBuzzShaperTest, NegativeLetterSpacing) {
   ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
   float width = result->Width();
 
-  ShapeResultSpacing<String> spacing(string);
+  ShapeResultSpacing spacing(string);
   FontDescription font_description;
   font_description.SetLetterSpacing(Length::Fixed(-5));
   spacing.SetSpacing(font_description);
@@ -981,7 +964,7 @@ TEST_F(HarfBuzzShaperTest, NegativeLetterSpacingTo0) {
   ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
   float char_width = result->Width() / string.length();
 
-  ShapeResultSpacing<String> spacing(string);
+  ShapeResultSpacing spacing(string);
   FontDescription font_description;
   font_description.SetLetterSpacing(Length::Fixed(-char_width));
   spacing.SetSpacing(font_description);
@@ -998,7 +981,7 @@ TEST_F(HarfBuzzShaperTest, NegativeLetterSpacingToNegative) {
   ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
   float char_width = result->Width() / string.length();
 
-  ShapeResultSpacing<String> spacing(string);
+  ShapeResultSpacing spacing(string);
   FontDescription font_description;
   font_description.SetLetterSpacing(Length::Fixed(-2 * char_width));
   spacing.SetSpacing(font_description);
@@ -2135,68 +2118,6 @@ TEST_F(HarfBuzzShaperTest, ShapeVerticalWithSubpixelPositionIsRounded) {
     EXPECT_EQ(round(position), position)
         << "Position not rounded at offset " << i;
   }
-}
-
-// Broken on Apple platforms: https://crbug.com/1194323
-#if BUILDFLAG(IS_APPLE)
-#define MAYBE_EmojiPercentage DISABLED_EmojiPercentage
-#else
-#define MAYBE_EmojiPercentage EmojiPercentage
-#endif
-TEST_F(HarfBuzzShaperTest, MAYBE_EmojiPercentage) {
-#if BUILDFLAG(IS_WIN)
-  if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN11) {
-    GTEST_SKIP() << "Broken on WIN11 and greater: https://crbug.com/1286133";
-  }
-#endif
-  // This test relies on Noto Color Emoji from the third_party directory to not
-  // contain sequences and single codepoint emoji from Unicode 13 and 13.1 such
-  // as:
-  // * Couple with Heart: Woman, Man, Medium-Light Skin Tone, Medium-Dark Skin
-  // Tone
-  // * Disguised Face U+1F978
-  // * Anatomical Heart U+1FAC0
-  String string(
-      u"aa👩🏼‍❤️‍👨🏾😶👩🏼‍❤️‍👨🏾aa👩"
-      u"🏼"
-      u"‍"
-      u"❤"
-      u"️"
-      u"‍"
-      u"👨"
-      u"🏾"
-      u"😶"
-      u"👩🏼‍❤️‍👨🏾aa🫀🫀🥸🥸😶😶");
-
-  struct Expectation {
-    unsigned expected_clusters;
-    unsigned expected_broken_clusters;
-  };
-
-  auto expectations = std::to_array<Expectation>({{3, 2}, {3, 2}, {6, 4}});
-#if BUILDFLAG(IS_ANDROID)
-  // On Android 11, SDK level 30, fallback occurs to an emoji
-  // font that has coverage for the last segment. Adjust the expectation.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SdkVersion::SDK_VERSION_R) {
-    expectations[2].expected_broken_clusters = 0;
-  }
-#endif
-  unsigned num_calls = 0;
-  HarfBuzzShaper::EmojiMetricsCallback metrics_callback =
-      base::BindLambdaForTesting(
-          [&](unsigned num_clusters, unsigned num_broken_clusters) {
-            CHECK_EQ(num_clusters, expectations[num_calls].expected_clusters);
-            CHECK_EQ(num_broken_clusters,
-                     expectations[num_calls].expected_broken_clusters);
-
-            num_calls++;
-          });
-  HarfBuzzShaper shaper(string, metrics_callback);
-  Font* emoji_font = CreateNotoColorEmoji();
-  shaper.Shape(emoji_font, TextDirection::kLtr);
-  CHECK_EQ(num_calls, std::size(expectations));
 }
 
 // https://crbug.com/1255482

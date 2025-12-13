@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -14,7 +17,7 @@ class ExcludeMatchesManifestTest : public ChromeManifestTest {
 TEST_F(ExcludeMatchesManifestTest, ExcludeMatchPatterns) {
   const Testcase testcases[] = {Testcase("exclude_matches.json"),
                                 Testcase("exclude_matches_empty.json")};
-  RunTestcases(testcases, EXPECT_TYPE_SUCCESS);
+  RunTestcases(testcases, ExpectType::kSuccess);
 
   const Testcase testcases2[] = {
       Testcase("exclude_matches_not_list.json",
@@ -23,7 +26,7 @@ TEST_F(ExcludeMatchesManifestTest, ExcludeMatchPatterns) {
       Testcase("exclude_matches_invalid_host.json",
                "Invalid value for 'content_scripts[0].exclude_matches[0]': "
                "Invalid host wildcard.")};
-  RunTestcases(testcases2, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases2, ExpectType::kError);
 }
 
 }  // namespace extensions

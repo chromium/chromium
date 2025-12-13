@@ -116,9 +116,8 @@ void TranslatePageActionController::UpdatePageAction() {
   } else {
     page_action_controller->Hide(kActionShowTranslate);
     if (TranslateBubbleController* bubble_controller =
-            tab_interface_->GetBrowserWindowInterface()
-                ->GetFeatures()
-                .translate_bubble_controller()) {
+            TranslateBubbleController::From(
+                tab_interface_->GetBrowserWindowInterface())) {
       bubble_controller->CloseBubble();
     }
   }

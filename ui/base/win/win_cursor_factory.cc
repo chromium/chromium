@@ -22,7 +22,7 @@
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/resource/resource_bundle_win.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/icon_util.h"
+#include "ui/gfx/win/icon_util.h"
 #include "ui/resources/grit/ui_unscaled_resources.h"
 
 namespace ui {

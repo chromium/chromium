@@ -544,7 +544,7 @@ storage::FileSystemContext* GetFileSystemContextForSourceURL(
       content::HasWebUIScheme(source_url)
           ? browser_context->GetDefaultStoragePartition()
           : extensions::util::GetStoragePartitionForExtensionId(
-                source_url.host(), browser_context);
+                source_url.GetHost(), browser_context);
   return partition->GetFileSystemContext();
 }
 

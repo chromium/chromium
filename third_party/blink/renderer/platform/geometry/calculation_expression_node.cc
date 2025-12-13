@@ -470,6 +470,14 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
             std::move(children), op);
       }
     }
+    case CalculationOperator::kRandom: {
+      // First value in the array is random base value.
+      // https://drafts.csswg.org/css-values-5/#random-base-value
+      DCHECK_GE(children.size(), 3u);
+      DCHECK_LE(children.size(), 4u);
+      return MakeGarbageCollected<CalculationExpressionOperationNode>(
+          std::move(children), op);
+    }
   }
 }
 
@@ -653,6 +661,18 @@ float CalculationExpressionOperationNode::Evaluate(
               : std::nullopt;
       return EvaluateTrigonometricFunction(operator_, a, b);
     }
+    case CalculationOperator::kRandom: {
+      DCHECK_GE(children_.size(), 3u);
+      DCHECK_LE(children_.size(), 4u);
+      float random_base_value = children_[0]->Evaluate(max_value, input);
+      float min = children_[1]->Evaluate(max_value, input);
+      float max = children_[2]->Evaluate(max_value, input);
+      std::optional<float> step = std::nullopt;
+      if (children_.size() == 4u) {
+        step = children_[3]->Evaluate(max_value, input);
+      }
+      return ComputeCSSRandomValue(random_base_value, min, max, step);
+    }
       // TODO(crbug.com/1284199): Support other math functions.
   }
   NOTREACHED();
@@ -725,7 +745,8 @@ const CalculationExpressionNode* CalculationExpressionOperationNode::Zoom(
     case CalculationOperator::kAcos:
     case CalculationOperator::kAtan:
     case CalculationOperator::kAtan2:
-    case CalculationOperator::kPow: {
+    case CalculationOperator::kPow:
+    case CalculationOperator::kRandom: {
       DCHECK(children_.size());
       HeapVector<Member<const CalculationExpressionNode>> cloned_operands;
       cloned_operands.reserve(children_.size());

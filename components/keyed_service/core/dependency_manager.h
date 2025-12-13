@@ -16,10 +16,6 @@
 
 class KeyedServiceBaseFactory;
 
-namespace base {
-class FilePath;
-}
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -100,16 +96,9 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   void MarkContextLive(void* context);
 
   // Marks |context| as dead (i.e., stale). Calls passing |context| to
-  //|AssertContextWasntDestroyed()| will flag an error until that context is
+  // |AssertContextWasntDestroyed()| will flag an error until that context is
   // marked as live again with MarkContextLive().
   void MarkContextDead(void* context);
-
-#ifndef NDEBUG
-  // Dumps service dependency graph as a Graphviz dot file |dot_file| with a
-  // title |top_level_name|. Helper for |DumpContextDependencies|.
-  void DumpDependenciesAsGraphviz(const std::string& top_level_name,
-                                  const base::FilePath& dot_file) const;
-#endif  // NDEBUG
 
  private:
   friend class KeyedServiceBaseFactory;
@@ -118,11 +107,6 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // depends on the operation to perform (initialisation, destruction, ...).
   using OrderedFactories =
       std::vector<raw_ptr<KeyedServiceBaseFactory, VectorExperimental>>;
-
-#ifndef NDEBUG
-  // Hook for subclass to dump the dependency graph of service for |context|.
-  virtual void DumpContextDependencies(void* context) const = 0;
-#endif  // NDEBUG
 
   // Returns the list of factories in the order they should be initialised.
   OrderedFactories GetConstructionOrder();

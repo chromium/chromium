@@ -40,7 +40,7 @@ class LocalWebMemoryMeasurer : public v8::MeasureMemoryDelegate {
                                WebMemoryMeasurement::Mode,
                                MeasureMemoryController*,
                                WebMemoryAttribution::Scope,
-                               WTF::String attribution_url);
+                               String attribution_url);
 
   // v8::MeasureMemoryDelegate overrides.
   bool ShouldMeasure(v8::Local<v8::Context> context) override;
@@ -49,10 +49,10 @@ class LocalWebMemoryMeasurer : public v8::MeasureMemoryDelegate {
  private:
   LocalWebMemoryMeasurer(MeasureMemoryController*,
                          WebMemoryAttribution::Scope,
-                         WTF::String attribution_url);
+                         String attribution_url);
   Persistent<MeasureMemoryController> controller_;
   WebMemoryAttribution::Scope attribution_scope_;
-  WTF::String attribution_url_;
+  String attribution_url_;
 };
 
 }  // namespace blink

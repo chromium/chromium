@@ -45,11 +45,10 @@
 }
 
 - (void)configureConsumer {
-  GaiaId gaiaID([self primaryIdentity].gaiaID);
   for (auto [item, selection] : _selected) {
     selection = push_notification_settings::
         GetMobileNotificationPermissionStatusForMultipleClients(
-            [self clientIDsForItem:item], gaiaID);
+            [self clientIDsForItem:item], [self primaryIdentity].gaiaId);
     [self.consumer setOptInItem:item enabled:selection];
   }
 }
@@ -65,14 +64,13 @@
 - (void)didTapPrimaryActionButton {
   std::vector<PushNotificationClientId> selectedClientIds;
   std::vector<PushNotificationClientId> deselectedClientIds;
-  const GaiaId gaiaID([self primaryIdentity].gaiaID);
 
   for (auto [item, selection] : _selected) {
     std::vector<PushNotificationClientId> clientIDs =
         [self clientIDsForItem:item];
     BOOL enabled = push_notification_settings::
-        GetMobileNotificationPermissionStatusForMultipleClients(clientIDs,
-                                                                gaiaID);
+        GetMobileNotificationPermissionStatusForMultipleClients(
+            clientIDs, [self primaryIdentity].gaiaId);
     // Only add the clientId if there has been a change from the original opt-in
     // status.
     if (selection && !enabled) {
@@ -138,7 +136,7 @@
 
 // Disables notifications in prefs for the clients in `clientIds`.
 - (void)disableNotifications:(std::vector<PushNotificationClientId>)clientIds {
-  NSString* gaiaID = [self primaryIdentity].gaiaID;
+  GaiaId gaiaID = [self primaryIdentity].gaiaId;
   for (PushNotificationClientId clientId : clientIds) {
     GetApplicationContext()->GetPushNotificationService()->SetPreference(
         gaiaID, clientId, false);

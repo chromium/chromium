@@ -9,9 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "net/base/load_states.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+#include "net/http/alternate_protocol_usage.h"
 #include "net/http/alternative_service.h"
 #include "net/http/http_response_info.h"
 #include "net/log/net_log_source.h"
@@ -129,6 +131,19 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
     virtual void SetPriority(RequestPriority priority) = 0;
   };
 
+  struct CompletionDetails {
+    // Protocol negotiated with the server.
+    NextProto negotiated_protocol = NextProto::kProtoUnknown;
+    // The reason why Chrome uses a specific transport protocol for HTTP
+    // semantics.
+    AlternateProtocolUsage alternate_protocol_usage =
+        AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON;
+    // Indicates whether the request is used an existing H2 or H3 session.
+    std::optional<SessionSource> session_source;
+    // The state of the advertised alternative service.
+    AdvertisedAltSvcState advertised_alt_svc_state;
+  };
+
   // Request will notify `helper` when it's destructed.
   // Thus `helper` is valid for the lifetime of the `this` Request.
   HttpStreamRequest(Helper* helper,
@@ -153,8 +168,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
   void SetPriority(RequestPriority priority);
 
   // Marks completion of the request. Must be called before OnStreamReady().
-  void Complete(NextProto negotiated_protocol,
-                AlternateProtocolUsage alternate_protocol_usage);
+  void Complete(CompletionDetails details);
 
   // Called by |helper_| to record connection attempts made by the socket
   // layer in an attached Job for this stream request.
@@ -170,6 +184,13 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
   // semantics.
   AlternateProtocolUsage alternate_protocol_usage() const;
 
+  // Details of the completion of this request. Should be called after one
+  // of the delegate callback methods. Returns std::nullopt when this didn't
+  // complete successfully.
+  const std::optional<CompletionDetails>& completion_details() const {
+    return completion_details_;
+  }
+
   // Returns socket-layer connection attempts made for this stream request.
   const ConnectionAttempts& connection_attempts() const;
 
@@ -182,7 +203,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
 
   StreamType stream_type() const { return stream_type_; }
 
-  bool completed() const { return completed_; }
+  bool completed() const { return completion_details_.has_value(); }
 
   void SetDnsResolutionTimeOverrides(
       base::TimeTicks dns_resolution_start_time_override,
@@ -218,13 +239,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
       websocket_handshake_stream_create_helper_;
   const NetLogWithSource net_log_;
 
-  bool completed_ = false;
-  // Protocol negotiated with the server.
-  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
-  // The reason why Chrome uses a specific transport protocol for HTTP
-  // semantics.
-  AlternateProtocolUsage alternate_protocol_usage_ =
-      AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON;
+  std::optional<CompletionDetails> completion_details_;
   ConnectionAttempts connection_attempts_;
   const StreamType stream_type_;
 

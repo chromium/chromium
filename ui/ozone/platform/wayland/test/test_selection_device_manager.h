@@ -62,6 +62,7 @@ class TestSelectionDeviceManager : public GlobalObject {
   TestSelectionSource* source() { return source_; }
 
   void set_source(TestSelectionSource* source) { source_ = source; }
+  void set_device(TestSelectionDevice* device) { device_ = device; }
 
   // Protocol object requests:
   static void CreateSource(wl_client* client,
@@ -74,8 +75,8 @@ class TestSelectionDeviceManager : public GlobalObject {
 
  private:
   const std::unique_ptr<Delegate> delegate_;
-  raw_ptr<TestSelectionDevice, DanglingUntriaged> device_ = nullptr;
-  raw_ptr<TestSelectionSource, DanglingUntriaged> source_ = nullptr;
+  raw_ptr<TestSelectionDevice> device_ = nullptr;
+  raw_ptr<TestSelectionSource> source_ = nullptr;
 };
 
 class TestSelectionOffer : public ServerObject {
@@ -131,6 +132,8 @@ class TestSelectionSource : public ServerObject {
   void OnDndAction(uint32_t action);
   void OnDndDropPerformed();
 
+  void set_manager(TestSelectionDeviceManager* manager) { manager_ = manager; }
+
   const std::vector<std::string>& mime_types() const { return mime_types_; }
 
   // Protocol object requests:
@@ -143,6 +146,7 @@ class TestSelectionSource : public ServerObject {
 
   std::vector<std::string> mime_types_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  raw_ptr<TestSelectionDeviceManager> manager_ = nullptr;
 };
 
 class TestSelectionDevice : public ServerObject {

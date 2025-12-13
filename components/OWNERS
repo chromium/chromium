@@ -1,11 +1,17 @@
+# This OWNERS list is a last resort. Please prefer to use more specific OWNERS
+# where possible. Examples of valid cases include the creation of new components
+# or large mechanical changes touching many components.
+
 set noparent
-blundell@chromium.org
-caitkp@google.com
-sdefresne@chromium.org
-tedchoc@chromium.org
+
+blundell@chromium.org  #{LAST_RESORT_SUGGESTION}
+caitkp@google.com  #{LAST_RESORT_SUGGESTION}
+nyquist@google.com  #{LAST_RESORT_SUGGESTION}
+sdefresne@chromium.org  #{LAST_RESORT_SUGGESTION}
+tedchoc@chromium.org  #{LAST_RESORT_SUGGESTION}
 
 # For build configuration things and simple changes.
-thakis@chromium.org
+thakis@chromium.org  #{LAST_RESORT_SUGGESTION}
 
 per-file arc_strings.grdp=file://chromeos/ash/experiences/arc/OWNERS
 per-file android_system_error_page_strings.grdp=file://components/android_system_error_page/OWNERS
@@ -16,6 +22,7 @@ per-file browsing_data_strings.grdp=file://components/browsing_data/OWNERS
 per-file collaboration_strings.grdp=file://components/collaboration/OWNERS
 per-file commerce_strings.grdp=file://components/commerce_strings_grdp/OWNERS
 per-file compose_strings.grdp=file://components/compose_strings_grdp/OWNERS
+per-file contextual_tasks_strings.grdp=file://components/contextual_tasks/OWNERS
 per-file crash_strings.grdp=file://components/crash/OWNERS
 per-file dom_distiller_strings.grdp=file://components/dom_distiller/OWNERS
 per-file enterprise_strings.grdp=file://components/enterprise/OWNERS
@@ -62,8 +69,10 @@ per-file tab_groups_strings.grdp=file://components/tab_groups/OWNERS
 per-file translate_strings.grdp=file://components/translate/OWNERS
 per-file tab_resume_strings.grdp=file://components/visited_url_ranking/OWNERS
 per-file undo_strings.grdp=file://components/undo/OWNERS
+per-file user_data_importer_strings.grdp=file://components/user_data_importer/OWNERS
 per-file user_education_strings.grdp=file://components/user_education/OWNERS
 per-file version_ui_strings.grdp=file://components/webui/version/OWNERS
+per-file wallet_strings.grdp=file://components/wallet/OWNERS
 per-file web_contents_delegate_android_strings.grdp=file://components/embedder_support/android/delegate/OWNERS
 per-file webxr_strings.grdp=file://components/webxr/OWNERS
 
@@ -84,6 +93,7 @@ per-file error_page_strings.grdp=edwardjung@chromium.org
 
 # Autorollers & git submodules
 per-file autofill/core/browser/form_parsing/internal_resources=*
+per-file autofill/core/browser/geo/chrome_alternative_state_name_maps=*
 per-file crash/core/app/internal=*
 per-file metrics/internal=*
 per-file ntp_tiles/resources/internal=*

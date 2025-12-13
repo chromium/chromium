@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contacts_picker;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
@@ -52,8 +53,11 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
 
     public ChromePickerAdapter(Context context, Profile profile) {
         mProfile = profile;
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
         mProfileDataCache =
-                ProfileDataCache.createWithoutBadge(context, R.dimen.contact_picker_icon_size);
+                ProfileDataCache.createWithoutBadge(
+                        context, assertNonNull(identityManager), R.dimen.contact_picker_icon_size);
     }
 
     // Adapter:

@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui_controls {
 
@@ -53,7 +53,6 @@ class UIControlsAura {
 #if BUILDFLAG(IS_WIN)
   virtual bool SendTouchEvents(int action, int num, int x, int y) = 0;
 #elif BUILDFLAG(IS_CHROMEOS)
-  virtual bool SendTouchEvents(int action, int id, int x, int y) = 0;
   virtual bool SendTouchEventsNotifyWhenDone(int action,
                                              int id,
                                              int x,

@@ -10,12 +10,14 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 
+class AutofillClient;
 class AutofillField;
 class EntityInstance;
 
@@ -25,7 +27,7 @@ bool AttributesMeetImportConstraints(EntityType entity_type,
 // Returns import candidates.
 std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     base::span<const std::unique_ptr<AutofillField>> fields,
-    const std::string& app_locale);
+    const AutofillClient& client);
 
 // Returns the localized date value of `attribute`, if its FieldType is a date.
 // Otherwise returns std::nullopt.

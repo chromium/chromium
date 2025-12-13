@@ -59,11 +59,11 @@ mod librustc_parse {
     extern crate rustc_span;
 
     use crate::repo;
-    use rustc_error_messages::FluentBundle;
     use rustc_errors::emitter::Emitter;
     use rustc_errors::registry::Registry;
-    use rustc_errors::translation::Translate;
+    use rustc_errors::translation::Translator;
     use rustc_errors::{DiagCtxt, DiagInner};
+    use rustc_parse::lexer::StripTokens;
     use rustc_session::parse::ParseSess;
     use rustc_span::source_map::{FilePathMapping, SourceMap};
     use rustc_span::FileName;
@@ -78,13 +78,7 @@ mod librustc_parse {
             fn source_map(&self) -> Option<&SourceMap> {
                 None
             }
-        }
-
-        impl Translate for SilentEmitter {
-            fn fluent_bundle(&self) -> Option<&FluentBundle> {
-                None
-            }
-            fn fallback_fluent_bundle(&self) -> &FluentBundle {
+            fn translator(&self) -> &Translator {
                 panic!("silent emitter attempted to translate a diagnostic");
             }
         }
@@ -96,8 +90,13 @@ mod librustc_parse {
             let handler = DiagCtxt::new(emitter);
             let sess = ParseSess::with_dcx(handler, source_map);
             let name = FileName::Custom("bench".to_owned());
-            let mut parser =
-                rustc_parse::new_parser_from_source_str(&sess, name, content.to_owned()).unwrap();
+            let mut parser = rustc_parse::new_parser_from_source_str(
+                &sess,
+                name,
+                content.to_owned(),
+                StripTokens::ShebangAndFrontmatter,
+            )
+            .unwrap();
             if let Err(diagnostic) = parser.parse_crate_mod() {
                 diagnostic.cancel();
                 return Err(());

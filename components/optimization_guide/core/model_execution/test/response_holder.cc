@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,12 +15,8 @@ namespace optimization_guide {
 
 namespace {
 
-std::string GetOutput(const proto::Any& response) {
-  return ParsedAnyMetadata<proto::ComposeResponse>(response)->output();
-}
-
-std::string GetOutput(const StreamingResponse& response) {
-  return GetOutput(response.response);
+std::string GetComposeOutput(const StreamingResponse& response) {
+  return ParsedAnyMetadata<proto::ComposeResponse>(response.response)->output();
 }
 
 }  // namespace
@@ -33,10 +29,6 @@ RemoteResponseHolder::GetCallback() {
   CHECK(!weak_ptr_factory_.HasWeakPtrs());  // Shouldn't be reused.
   return base::BindRepeating(&RemoteResponseHolder::OnResponse,
                              weak_ptr_factory_.GetWeakPtr());
-}
-
-std::string RemoteResponseHolder::GetComposeOutput() {
-  return GetOutput(result_->response.value());
 }
 
 void RemoteResponseHolder::OnResponse(
@@ -61,7 +53,7 @@ void ResponseHolder::OnStreamingResponse(
     OptimizationGuideModelStreamingExecutionResult result) {
   if (result.response.has_value() && !result.response->is_complete) {
     EXPECT_TRUE(result.provided_by_on_device);
-    partial_responses_.push_back(GetOutput(*result.response));
+    partial_responses_.push_back(GetComposeOutput(*result.response));
     return;
   }
   provided_by_on_device_ = result.provided_by_on_device;
@@ -77,7 +69,7 @@ void ResponseHolder::OnStreamingResponse(
     }
   }
   if (!result.response.has_value()) {
-    response_error_ = result.response.error().error();
+    response_error_ = result.response.error();
     final_status_future_.SetValue(false);
     return;
   }
@@ -87,7 +79,7 @@ void ResponseHolder::OnStreamingResponse(
   for (auto partial_response : partial_responses_) {
     full_response += partial_response;
   }
-  full_response += GetOutput(*result.response);
+  full_response += GetComposeOutput(*result.response);
   response_received_ = full_response;
   final_status_future_.SetValue(true);
 }

@@ -103,6 +103,33 @@ export function getBaseName(path: string): string {
 }
 
 /**
+ * @return Returns the scheme part of a URI.
+ */
+export function getScheme(uri: string): string {
+  try {
+    const parsedUri = new URL(uri);
+    // The protocol includes the colon, e.g., "https:". We remove it to return
+    // just the scheme.
+    return parsedUri.protocol.slice(0, -1);
+  } catch (error) {
+    return '';
+  }
+}
+
+/**
+ * For local PPD files, return only the filename;
+ * for remote files, return the full URL.
+ * @return Returns the ppd part to display.
+ */
+export function getDisplayPpd(uri: string): string {
+  if (getScheme(uri) === 'file') {
+    return getBaseName(uri);
+  } else {
+    return uri;
+  }
+}
+
+/**
  * A function used for sorting printer names based on the current locale's
  * collation order.
  */

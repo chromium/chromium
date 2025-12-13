@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 
-#include "base/compiler_specific.h"
+#include <algorithm>
+
+#include "base/containers/span_reader.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -18,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_buffer_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_metadata.h"
@@ -50,8 +54,8 @@ ImageBitmap* ToImageBitmap(V8TestingScope* v8_scope, ScriptValue value) {
 class VideoFrameTest : public testing::Test {
  public:
   void SetUp() override {
-    test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    InitializeSharedGpuContextRaster(test_context_provider_.get());
   }
 
   void TearDown() override { SharedGpuContext::Reset(); }
@@ -114,10 +118,80 @@ TEST_F(VideoFrameTest, ConstructorAndAttributes) {
   EXPECT_EQ(nullptr, blink_frame->frame());
 }
 
-TEST_F(VideoFrameTest, CopyToRGB) {
+TEST_F(VideoFrameTest, ConstructorOddSize) {
   V8TestingScope scope;
 
-  ScopedWebCodecsCopyToRGBForTest feature(true);
+  constexpr auto kOddSize = gfx::Size(61, 21);
+  const auto kOddUVSize = gfx::Size(std::ceil(kOddSize.width() / 2.0),
+                                    std::ceil(kOddSize.height() / 2.0));
+  const size_t allocation_size =
+      kOddSize.Area64() * 2 + kOddUVSize.Area64() * 2;
+
+  auto* array_buffer = DOMArrayBuffer::Create(allocation_size, 1);
+
+  // Fill buffer with random data for hash and extents testing.
+  base::RandBytes(array_buffer->ByteSpan());
+
+  std::string media_frame_hash;
+  {
+    const size_t kYAPlaneByteSize = kOddSize.Area64();
+    const size_t kUVPlaneByteSize = kOddUVSize.Area64();
+    auto src_media_frame = media::VideoFrame::WrapExternalYuvaData(
+        media::PIXEL_FORMAT_I420A, kOddSize, gfx::Rect(kOddSize), kOddSize,
+        kOddSize.width(), kOddUVSize.width(), kOddUVSize.width(),
+        kOddSize.width(), array_buffer->ByteSpan().first(kYAPlaneByteSize),
+        array_buffer->ByteSpan().subspan(kYAPlaneByteSize, kUVPlaneByteSize),
+        array_buffer->ByteSpan().subspan(kYAPlaneByteSize + kUVPlaneByteSize,
+                                         kUVPlaneByteSize),
+        array_buffer->ByteSpan().subspan(
+            kYAPlaneByteSize + kUVPlaneByteSize * 2, kYAPlaneByteSize),
+        base::TimeDelta());
+    ASSERT_TRUE(src_media_frame);
+    media_frame_hash =
+        media::VideoFrame::HexHashOfFrameForTesting(*src_media_frame);
+  }
+
+  auto* init = VideoFrameBufferInit::Create();
+  init->setTimestamp(0);
+  init->setCodedWidth(kOddSize.width());
+  init->setCodedHeight(kOddSize.height());
+  init->setFormat(V8VideoPixelFormat::Enum::kI420A);
+  init->setDisplayWidth(kOddSize.width());
+  init->setDisplayHeight(kOddSize.height());
+
+  // Test non-transfer constructor first then the transfer constructor.
+  for (bool test_transfer : {false, true}) {
+    SCOPED_TRACE(test_transfer);
+    if (test_transfer) {
+      HeapVector<Member<DOMArrayBuffer>> transfer;
+      transfer.push_back(Member<DOMArrayBuffer>(array_buffer));
+      init->setTransfer(std::move(transfer));
+    }
+
+    VideoFrame* blink_frame = VideoFrame::Create(
+        scope.GetScriptState(),
+        MakeGarbageCollected<V8AllowSharedBufferSource>(array_buffer), init,
+        scope.GetExceptionState());
+    ASSERT_TRUE(blink_frame);
+
+    EXPECT_LE(static_cast<unsigned>(kOddSize.width()),
+              blink_frame->codedWidth());
+    EXPECT_LE(static_cast<unsigned>(kOddSize.height()),
+              blink_frame->codedHeight());
+    EXPECT_EQ(static_cast<unsigned>(kOddSize.width()),
+              blink_frame->displayWidth());
+    EXPECT_EQ(static_cast<unsigned>(kOddSize.height()),
+              blink_frame->displayHeight());
+
+    auto blink_media_frame = blink_frame->frame();
+    EXPECT_EQ(media_frame_hash,
+              media::VideoFrame::HexHashOfFrameForTesting(*blink_media_frame));
+    blink_frame->close();
+  }
+}
+
+TEST_F(VideoFrameTest, CopyToRGB) {
+  V8TestingScope scope;
   scoped_refptr<media::VideoFrame> media_frame = CreateBlackMediaVideoFrame(
       base::Microseconds(1000), media::PIXEL_FORMAT_I420,
       /* coded_size= */ gfx::Size(64, 48),
@@ -130,10 +204,8 @@ TEST_F(VideoFrameTest, CopyToRGB) {
   uint32_t buffer_size =
       blink_frame->allocationSize(options, scope.GetExceptionState());
   auto* buffer = DOMArrayBuffer::Create(buffer_size, 1);
-  uint8_t* data = static_cast<uint8_t*>(buffer->Data());
-
   // Set buffer to white pixels.
-  UNSAFE_TODO(memset(data, 0xff, buffer_size));
+  std::ranges::fill(buffer->ByteSpan(), 0xff);
   AllowSharedBufferSource* destination =
       MakeGarbageCollected<AllowSharedBufferSource>(buffer);
 
@@ -145,12 +217,17 @@ TEST_F(VideoFrameTest, CopyToRGB) {
   ASSERT_TRUE(tester.IsFulfilled());
 
   // Check that after copyTo() all the pixels are black.
+  base::SpanReader<const uint8_t> reader(buffer->ByteSpan());
   for (int y = 0; y < media_frame->coded_size().height(); y++) {
     for (int x = 0; x < media_frame->coded_size().width(); x++) {
-      uint8_t* addr = &UNSAFE_TODO(data[y * media_frame->stride(0) + x * 4]);
-      ASSERT_EQ(addr[0], 0) << " R x: " << x << " y: " << y;
-      UNSAFE_TODO(ASSERT_EQ(addr[1], 0)) << " G x: " << x << " y: " << y;
-      UNSAFE_TODO(ASSERT_EQ(addr[2], 0)) << " B x: " << x << " y: " << y;
+      uint8_t r, g, b, a;
+      ASSERT_TRUE(reader.ReadU8BigEndian(r));
+      ASSERT_TRUE(reader.ReadU8BigEndian(g));
+      ASSERT_TRUE(reader.ReadU8BigEndian(b));
+      ASSERT_TRUE(reader.ReadU8BigEndian(a));
+      ASSERT_EQ(r, 0) << " R x: " << x << " y: " << y;
+      ASSERT_EQ(g, 0) << " G x: " << x << " y: " << y;
+      ASSERT_EQ(b, 0) << " B x: " << x << " y: " << y;
     }
   }
 
@@ -400,8 +477,7 @@ TEST_F(VideoFrameTest, VideoFrameFromGPUImageBitmap) {
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
       RasterMode::kGPU, gpu::SharedImageUsageSet());
 
-  scoped_refptr<StaticBitmapImage> bitmap =
-      resource_provider->Snapshot(FlushReason::kTesting);
+  scoped_refptr<StaticBitmapImage> bitmap = resource_provider->Snapshot();
   ASSERT_TRUE(bitmap->IsTextureBacked());
 
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(bitmap);

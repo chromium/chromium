@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
@@ -33,6 +34,7 @@ class TabGridFakeWebStateListDelegate : public FakeWebStateListDelegate {
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override {
     SnapshotTabHelper::CreateForWebState(web_state);
+    SnapshotSourceTabHelper::CreateForWebState(web_state);
   }
 };
 

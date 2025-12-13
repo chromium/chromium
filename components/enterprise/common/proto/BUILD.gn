@@ -13,6 +13,17 @@ fuzzable_proto_library("browser_events_proto") {
   deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
 }
 
+proto_extras("browser_events_proto_extras") {
+  sources = [ "synced/browser_events.proto" ]
+  deps = [
+    ":browser_events_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+  ]
+  extras_deps =
+      [ "//components/safe_browsing/core/common/proto:csd_proto_extras" ]
+  protobuf_full_support = true
+}
+
 fuzzable_proto_library("connectors_proto") {
   proto_in_dir = "//"
   sources = [ "connectors.proto" ]
@@ -27,9 +38,8 @@ proto_extras("connectors_proto_extras") {
     ":connectors_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
   ]
-  extras_deps = [
-    "//components/safe_browsing/core/common/proto:csd_proto_extras",
-  ]
+  extras_deps =
+      [ "//components/safe_browsing/core/common/proto:csd_proto_extras" ]
 
   # The fuzzable_proto_library rule above uses the full protobuf runtime.
   protobuf_full_support = true
@@ -42,6 +52,12 @@ proto_library("dlp_policy_event_proto") {
 fuzzable_proto_library("extension_install_events") {
   proto_in_dir = "//"
   sources = [ "synced/extension_install_events.proto" ]
+}
+
+proto_extras("extension_install_events_extras") {
+  sources = [ "synced/extension_install_events.proto" ]
+  deps = [ ":extension_install_events" ]
+  protobuf_full_support = true
 }
 
 proto_library("extensions_workflow_events_proto") {
@@ -59,10 +75,22 @@ fuzzable_proto_library("policy_validation_report") {
   sources = [ "synced/policy_validation_report.proto" ]
 }
 
+proto_extras("policy_validation_report_extras") {
+  sources = [ "synced/policy_validation_report.proto" ]
+  deps = [ ":policy_validation_report" ]
+  protobuf_full_support = true
+}
+
 # Google3_protos that are not available in the Chromium repository.
 fuzzable_proto_library("google3_protos") {
   proto_in_dir = "//"
   sources = [ "google3_protos.proto" ]
+}
+
+proto_extras("google3_protos_extras") {
+  sources = [ "google3_protos.proto" ]
+  deps = [ ":google3_protos" ]
+  protobuf_full_support = true
 }
 
 fuzzable_proto_library("chrome_reporting_entity") {
@@ -77,6 +105,26 @@ fuzzable_proto_library("chrome_reporting_entity") {
   ]
 }
 
+proto_extras("chrome_reporting_entity_extras") {
+  sources = [ "synced_from_google3/chrome_reporting_entity.proto" ]
+  deps = [
+    ":browser_events_proto",
+    ":chrome_reporting_entity",
+    ":extension_install_events",
+    ":google3_protos",
+    ":policy_validation_report",
+    "//components/reporting/proto:record_proto",
+  ]
+  extras_deps = [
+    ":browser_events_proto_extras",
+    ":extension_install_events_extras",
+    ":google3_protos_extras",
+    ":policy_validation_report_extras",
+    "//components/reporting/proto:record_proto_extras",
+  ]
+  protobuf_full_support = true
+}
+
 fuzzable_proto_library("upload_request_response") {
   proto_in_dir = "//"
   sources = [ "upload_request_response.proto" ]
@@ -84,4 +132,23 @@ fuzzable_proto_library("upload_request_response") {
     ":chrome_reporting_entity",
     ":google3_protos",
   ]
+}
+
+proto_extras("upload_request_response_extras") {
+  sources = [ "upload_request_response.proto" ]
+
+  deps = [
+    ":chrome_reporting_entity",
+    ":google3_protos",
+    ":upload_request_response",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+  ]
+  extras_deps = [
+    ":chrome_reporting_entity_extras",
+    ":google3_protos_extras",
+    "//components/safe_browsing/core/common/proto:csd_proto_extras",
+  ]
+
+  # The fuzzable_proto_library rule above uses the full protobuf runtime.
+  protobuf_full_support = true
 }

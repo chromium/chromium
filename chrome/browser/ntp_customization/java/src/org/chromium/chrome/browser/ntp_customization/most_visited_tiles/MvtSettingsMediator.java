@@ -9,11 +9,12 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.SET_MVT_SWITCH_CONTENT_DESCRIPTION_RES_ID;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -45,12 +46,13 @@ public class MvtSettingsMediator {
 
     /** Returns whether the most visited tiles section are turned on and visible to the user. */
     boolean isMvtTurnedOn() {
-        return NtpCustomizationConfigManager.getInstance().getPrefIsMvtVisible();
+        return NtpCustomizationConfigManager.getInstance().getPrefIsMvtToggleOn();
     }
 
     @VisibleForTesting
     void onMvtSwitchToggled(boolean isEnabled) {
-        NtpCustomizationConfigManager.getInstance().setPrefIsMvtVisible(isEnabled);
+        NtpCustomizationMetricsUtils.recordMvtToggledInBottomSheet(isEnabled);
+        NtpCustomizationConfigManager.getInstance().setPrefIsMvtToggleOn(isEnabled);
     }
 
     void destroy() {

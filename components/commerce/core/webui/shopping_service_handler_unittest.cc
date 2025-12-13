@@ -256,7 +256,7 @@ TEST_F(ShoppingServiceHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
             shopping_service::mojom::PriceInsightsInfo::PriceBucket::kHigh,
             info->bucket);
         ASSERT_EQ(true, info->has_multiple_catalogs);
-        ASSERT_EQ(2, (int)info->history.size());
+        ASSERT_EQ(2u, info->history.size());
         ASSERT_EQ("2021-01-01", info->history[0]->date);
         ASSERT_EQ(3.33f, info->history[0]->price);
         ASSERT_EQ("$3.33", info->history[0]->formatted_price);
@@ -306,7 +306,7 @@ TEST_F(ShoppingServiceHandlerTest, TestGetPriceInsightsInfoForUrl) {
                 shopping_service::mojom::PriceInsightsInfo::PriceBucket::kHigh,
                 info->bucket);
             ASSERT_EQ(true, info->has_multiple_catalogs);
-            ASSERT_EQ(2, (int)info->history.size());
+            ASSERT_EQ(2u, info->history.size());
             ASSERT_EQ("2021-01-01", info->history[0]->date);
             ASSERT_EQ(3.33f, info->history[0]->price);
             ASSERT_EQ("$3.33", info->history[0]->formatted_price);

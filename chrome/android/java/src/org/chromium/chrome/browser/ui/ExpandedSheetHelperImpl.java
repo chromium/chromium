@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -12,6 +11,8 @@ import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.util.TokenHolder;
+
+import java.util.function.Supplier;
 
 /**
  * Handles interaction with other UI's when a bottom sheet goes in and out of expanded mode:

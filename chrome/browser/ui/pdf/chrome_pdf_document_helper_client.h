@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PDF_CHROME_PDF_DOCUMENT_HELPER_CLIENT_H_
 #define CHROME_BROWSER_UI_PDF_CHROME_PDF_DOCUMENT_HELPER_CLIENT_H_
 
+#include "base/callback_list.h"
 #include "components/pdf/browser/pdf_document_helper_client.h"
 
 class ChromePDFDocumentHelperClient : public pdf::PDFDocumentHelperClient {
@@ -19,12 +20,17 @@ class ChromePDFDocumentHelperClient : public pdf::PDFDocumentHelperClient {
 
  private:
   // pdf::PDFDocumentHelperClient:
+  void OnDocumentLoadComplete(
+      content::RenderFrameHost* render_frame_host) override;
   void UpdateContentRestrictions(content::RenderFrameHost* render_frame_host,
                                  int content_restrictions) override;
-  void OnSaveURL(content::WebContents* contents) override;
+  void OnSaveURL() override;
   void SetPluginCanSave(content::RenderFrameHost* render_frame_host,
                         bool can_save) override;
-  void OnSearchifyStarted(content::WebContents* contents) override;
+  void OnSearchifyStarted(content::RenderFrameHost* render_frame_host) override;
+
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
 };
 
 #endif  // CHROME_BROWSER_UI_PDF_CHROME_PDF_DOCUMENT_HELPER_CLIENT_H_

@@ -21,12 +21,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_SYMBOL_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_SYMBOL_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/core/svg/svg_fit_to_view_box.h"
+#include "third_party/blink/renderer/core/svg/svg_viewport_container_element.h"
 
 namespace blink {
 
-class SVGSymbolElement final : public SVGElement, public SVGFitToViewBox {
+class SVGSymbolElement final : public SVGViewportContainerElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -36,10 +35,6 @@ class SVGSymbolElement final : public SVGElement, public SVGFitToViewBox {
 
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
-
-  SVGAnimatedPropertyBase* PropertyFromAttribute(
-      const QualifiedName& attribute_name) const override;
-  void SynchronizeAllSVGAttributes() const override;
 };
 
 }  // namespace blink

@@ -33,8 +33,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.NavigationController;
@@ -52,7 +54,8 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class NavigationSheetTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final int INVALID_NAVIGATION_INDEX = -1;
     private static final int NAVIGATION_INDEX_1 = 1;
@@ -61,10 +64,11 @@ public class NavigationSheetTest {
     private static final int FULL_HISTORY_ENTRY_INDEX = 13;
 
     private BottomSheetController mBottomSheetController;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mBottomSheetController =
                 mActivityTestRule
                         .getActivity()
@@ -162,7 +166,7 @@ public class NavigationSheetTest {
                 history.addEntry(
                         new NavigationEntry(
                                 FULL_HISTORY_ENTRY_INDEX,
-                                new GURL(UrlConstants.HISTORY_URL),
+                                new GURL(UrlConstants.NATIVE_HISTORY_URL),
                                 GURL.emptyGURL(),
                                 GURL.emptyGURL(),
                                 mActivityTestRule
@@ -329,7 +333,7 @@ public class NavigationSheetTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean doesNewTabItemPresent = false;
-                    boolean doesShowFullHisotryItemPresent = false;
+                    boolean doesShowFullHistoryItemPresent = false;
                     for (int i = 0; i < controller.mHistory.getEntryCount(); i++) {
                         ListItem item = (ListItem) listview.getAdapter().getItem(i);
                         String label = item.model.get(ItemProperties.LABEL);
@@ -346,11 +350,11 @@ public class NavigationSheetTest {
                         if (label.equals(regularNtpText)) {
                             doesNewTabItemPresent = true;
                         } else if (label.equals(fullHistoryText)) {
-                            doesShowFullHisotryItemPresent = true;
+                            doesShowFullHistoryItemPresent = true;
                         }
                     }
                     Assert.assertTrue(doesNewTabItemPresent);
-                    Assert.assertTrue(doesShowFullHisotryItemPresent);
+                    Assert.assertTrue(doesShowFullHistoryItemPresent);
                 });
     }
 

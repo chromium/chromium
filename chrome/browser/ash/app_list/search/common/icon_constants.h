@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
+
 using SkColor = uint32_t;
 
 namespace app_list {
@@ -21,8 +24,7 @@ inline constexpr int kAppIconDimension = 32;
 inline constexpr int kImageIconDimension = 28;
 inline constexpr int kImageSearchWidth = 240;
 inline constexpr int kImageSearchHeight = 160;
-
-SkColor GetGenericIconColor();
+inline constexpr ui::ColorId kGenericIconColorId = cros_tokens::kColorPrimary;
 
 }  // namespace app_list
 

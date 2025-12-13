@@ -58,7 +58,7 @@ CdmHostFile::CdmHostFile(const base::FilePath& file_path,
     : file_path_(file_path),
       file_(std::move(file)),
       sig_file_(std::move(sig_file)) {
-  CHECK(!file_path_.empty(), base::NotFatalUntil::M140);
+  CHECK(!file_path_.empty());
 }
 
 }  // namespace media

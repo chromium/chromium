@@ -16,8 +16,6 @@ import androidx.annotation.IntDef;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -27,13 +25,16 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /** List of properties to designate information about a single tab. */
 @NullMarked
 public class TabProperties {
     /** IDs for possible types of UI in the tab list. */
+    @Target(ElementType.TYPE_USE)
     @IntDef({
         UiType.TAB,
         UiType.STRIP,
@@ -71,6 +72,31 @@ public class TabProperties {
         int CLOSABLE = 2;
     }
 
+    /**
+     * States for showing the tab card highlight. Used to prevent showing animations upon a tab card
+     * being recycled and rebound.
+     */
+    @Target(ElementType.TYPE_USE)
+    @IntDef({
+        TabCardHighlightState.TO_BE_HIGHLIGHTED,
+        TabCardHighlightState.HIGHLIGHTED,
+        TabCardHighlightState.NOT_HIGHLIGHTED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TabCardHighlightState {
+        /** The card is not highlighted. Triggers a fade-out animation if previously highlighted. */
+        int NOT_HIGHLIGHTED = 0;
+
+        /**
+         * A transient state that triggers a fade-in animation. The state should be set to {@link
+         * TabCardHighlightState#HIGHLIGHTED} immediately after to represent the final state.
+         */
+        int TO_BE_HIGHLIGHTED = 1;
+
+        /** The card is statically highlighted without any animation. */
+        int HIGHLIGHTED = 2;
+    }
+
     /** The {@link TabActionState} for the view, either CLOSABLE or SELECTABLE. */
     public static final WritableIntPropertyKey TAB_ACTION_STATE = new WritableIntPropertyKey();
 
@@ -85,9 +111,13 @@ public class TabProperties {
 
     public static final WritableObjectPropertyKey<TabActionListener> TAB_LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<TabActionListener> TAB_CONTEXT_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
 
-    public static final WritableBooleanPropertyKey IS_HIGHLIGHTED =
-            new WritableBooleanPropertyKey();
+    // This will be initialized to 0, which is TabCardHighlightState.NOT_HIGHLIGHTED.
+    public static final WritableIntPropertyKey HIGHLIGHT_STATE = new WritableIntPropertyKey();
+
+    public static final WritableBooleanPropertyKey IS_PINNED = new WritableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<TabActionButtonData> TAB_ACTION_BUTTON_DATA =
             new WritableObjectPropertyKey<>();
@@ -170,12 +200,16 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<String> TAB_GROUP_SYNC_ID =
             new WritableObjectPropertyKey<>();
 
+    /** The {@link org.chromium.chrome.browser.tab.TabImpl.MediaState} indicator of the tab. */
+    public static final WritableIntPropertyKey MEDIA_INDICATOR = new WritableIntPropertyKey();
+
     private static final PropertyKey[] COMMON_KEYS_TAB_AND_GROUP_GRID =
             new PropertyKey[] {
                 IS_INCOGNITO,
                 IS_SELECTED,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
+                TAB_CONTEXT_CLICK_LISTENER,
                 TAB_ACTION_BUTTON_DATA,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
@@ -208,7 +242,9 @@ public class TabProperties {
                         SHOULD_SHOW_PRICE_DROP_TOOLTIP,
                         HAS_NOTIFICATION_BUBBLE,
                         TAB_CARD_LABEL_DATA,
-                        IS_HIGHLIGHTED
+                        HIGHLIGHT_STATE,
+                        IS_PINNED,
+                        MEDIA_INDICATOR
                     },
                     COMMON_KEYS_TAB_AND_GROUP_GRID);
 
@@ -238,6 +274,7 @@ public class TabProperties {
                 TAB_ACTION_BUTTON_DATA,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
+                TAB_CONTEXT_CLICK_LISTENER,
                 ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
                 CONTENT_DESCRIPTION_TEXT_RESOLVER,
             };

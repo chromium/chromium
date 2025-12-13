@@ -24,7 +24,7 @@ using WebSchedulerTrackedFeatures =
                   WebSchedulerTrackedFeature::kMinValue,
                   WebSchedulerTrackedFeature::kMaxValue>;
 
-BLINK_COMMON_EXPORT std::string FeatureToHumanReadableString(
+BLINK_COMMON_EXPORT const char* FeatureToHumanReadableString(
     WebSchedulerTrackedFeature feature);
 BLINK_COMMON_EXPORT std::string FeatureToShortString(
     WebSchedulerTrackedFeature feature);

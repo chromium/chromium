@@ -13,7 +13,7 @@
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_android.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
-#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

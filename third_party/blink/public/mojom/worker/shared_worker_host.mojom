@@ -4,8 +4,9 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
+import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
+import "third_party/blink/public/mojom/worker/shared_worker_exception_details.mojom";
 
 // Each shared worker has a corresponding host. The host controls the lifetime
 // of the shared worker. This interface is used by the shared worker to talk to
@@ -29,6 +30,9 @@ interface SharedWorkerHost {
   // If |error_message| is not empty, it will be ptinted in the creator frame's
   // console.
   OnScriptLoadFailed(string error_message);
+
+  // Reports an exception to the creator frame's console.
+  OnReportException(SharedWorkerExceptionDetails details);
 
   // Indicates that the shared worker used a feature. This is intended to be
   // logged by the client-side feature logging infrastructure.

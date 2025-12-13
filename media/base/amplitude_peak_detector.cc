@@ -10,7 +10,9 @@
 #include "base/memory/aligned_memory.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
+#include "media/base/sample_format.h"
 
 namespace media {
 
@@ -76,24 +78,30 @@ void AmplitudePeakDetector::SetIsTracingEnabledForTests(
 }
 
 void AmplitudePeakDetector::FindPeak(base::span<const uint8_t> data,
-                                     size_t bytes_per_sample) {
+                                     SampleFormat sample_format) {
   if (!is_tracing_enabled_) [[likely]] {
     return;
   }
 
+  const size_t bytes_per_sample = SampleFormatToBytesPerChannel(sample_format);
   CHECK_EQ(0u, data.size() % bytes_per_sample);
   CHECK(base::IsAligned(data.data(), bytes_per_sample));
-  switch (bytes_per_sample) {
-    case 1: {
+
+  switch (sample_format) {
+    case kSampleFormatU8: {
       MaybeReportPeak(LoudDetector(data));
       break;
     }
-    case 2: {
+    case kSampleFormatS16: {
       MaybeReportPeak(LoudDetector(ConverterTo<int16_t>(data)));
       break;
     }
-    case 4: {
+    case kSampleFormatS32: {
       MaybeReportPeak(LoudDetector(ConverterTo<int32_t>(data)));
+      break;
+    }
+    case kSampleFormatF32: {
+      MaybeReportPeak(LoudDetector(ConverterTo<float>(data)));
       break;
     }
     default:

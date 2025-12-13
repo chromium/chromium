@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/openscreen_platform/net_udp_socket.h"
 
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "components/openscreen_platform/network_util.h"
@@ -82,7 +78,7 @@ bool NetUdpSocket::HandleRecvFromResult(int result) {
   DCHECK_GT(result, 0);
 
   openscreen::UdpPacket packet(read_buffer_->data(),
-                               read_buffer_->data() + result);
+                               UNSAFE_TODO(read_buffer_->data() + result));
   packet.set_source(openscreen_platform::ToOpenScreenEndPoint(from_address_));
   client_->OnRead(this, std::move(packet));
   return true;
@@ -180,7 +176,7 @@ void NetUdpSocket::SendMessage(openscreen::ByteView data,
   }
 
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
-  memcpy(buffer->data(), data.data(), data.size());
+  UNSAFE_TODO(memcpy(buffer->data(), data.data(), data.size()));
 
   const int result = udp_socket_.SendTo(
       buffer.get(), data.size(), openscreen_platform::ToNetEndPoint(dest),

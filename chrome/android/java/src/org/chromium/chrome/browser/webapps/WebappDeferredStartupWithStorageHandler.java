@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.webapps;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
@@ -20,6 +20,7 @@ import java.util.List;
  * WebappDataStorage} if the WebAPK is not registered. Runs tasks once the {@link WebappDataStorage}
  * has been fetched (and perhaps also created).
  */
+@NullMarked
 public class WebappDeferredStartupWithStorageHandler {
     /** Interface for deferred startup task callbacks. */
     public interface Task {
@@ -71,6 +72,7 @@ public class WebappDeferredStartupWithStorageHandler {
             return;
         }
 
+        assert mWebappId != null;
         WebappRegistry.getInstance()
                 .register(
                         mWebappId,

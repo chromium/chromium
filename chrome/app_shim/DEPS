@@ -12,3 +12,10 @@ include_rules = [
   "+content/public/browser",
   "+mojo/core/embedder",
 ]
+
+specific_include_rules = {
+  r'.*browsertest.*': [
+    "+chrome/browser",
+    "+components/webapps",
+  ]
+}

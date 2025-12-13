@@ -19,6 +19,7 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
+#include "net/ssl/ssl_info.h"
 
 class GURL;
 
@@ -57,7 +58,8 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      std::optional<GURL>* preserve_fragment_on_redirect_url) override;
+      std::optional<GURL>* preserve_fragment_on_redirect_url,
+      const std::optional<net::SSLInfo>& ssl_info) override;
 
   void OnBeforeRedirect(URLRequest* request, const GURL& new_location) override;
 

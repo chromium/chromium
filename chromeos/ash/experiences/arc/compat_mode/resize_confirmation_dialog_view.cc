@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/checkbox_group.h"
 #include "ash/style/pill_button.h"
@@ -30,6 +30,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"

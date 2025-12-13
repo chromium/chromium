@@ -4,13 +4,15 @@
 
 #import "ios/chrome/browser/https_upgrades/model/https_only_mode_upgrade_tab_helper.h"
 
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/prefs/pref_service.h"
 #import "components/security_interstitials/core/https_only_mode_metrics.h"
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
+#import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"
@@ -32,6 +34,21 @@ namespace {
 void RecordUMA(Event event) {
   base::UmaHistogramEnumeration(
       security_interstitials::https_only_mode::kEventHistogram, event);
+}
+
+// Helper that call CancelPrerender() on the PrerenderTabHelper for
+// weak_web_state if possible.
+void CancelPrerender(base::WeakPtr<web::WebState> weak_web_state) {
+  web::WebState* web_state = weak_web_state.get();
+  if (!web_state) {
+    return;
+  }
+
+  if (auto* tab_helper = PrerenderTabHelper::FromWebState(web_state)) {
+    // Calling CancelPrerender() will destroy the WebState. It must not
+    // be accessed after this line.
+    return tab_helper->CancelPrerender();
+  }
 }
 
 }  // namespace
@@ -58,18 +75,16 @@ void HttpsOnlyModeUpgradeTabHelper::ClearAllowlistForTesting() {
 HttpsOnlyModeUpgradeTabHelper::HttpsOnlyModeUpgradeTabHelper(
     web::WebState* web_state,
     PrefService* prefs,
-    PrerenderService* prerender_service,
     HttpsUpgradeService* service)
     : web::WebStatePolicyDecider(web_state),
       web_state_(web_state),
       prefs_(prefs),
-      prerender_service_(prerender_service),
       service_(service) {
   web_state->AddObserver(this);
 }
 
 bool HttpsOnlyModeUpgradeTabHelper::IsHttpAllowedForUrl(const GURL& url) const {
-  return service_->IsHttpAllowedForHost(url.host());
+  return service_->IsHttpAllowedForHost(url.GetHost());
 }
 
 void HttpsOnlyModeUpgradeTabHelper::OnHttpsLoadTimeout() {
@@ -209,16 +224,21 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
       return;
     }
     // If the tab is being prerendered, cancel the HTTP response.
-    if (prerender_service_ &&
-        prerender_service_->IsWebStatePrerendered(web_state())) {
+    if (PrerenderTabHelper::FromWebState(web_state())) {
       RecordUMA(Event::kPrerenderCancelled);
       ResetState();
-      std::move(callback).Run(
-          web::WebStatePolicyDecider::PolicyDecision::Cancel());
-      prerender_service_->CancelPrerender();
-      // IMPORTANT: CancelPrerender() destroys the web state. Do not access
-      // it after here.
-      return;
+
+      // Invoking the callback with Cancel() may destroy the WebState, so
+      // use a callback bound with a weak pointer to the WebState to call
+      // CancelPrerender().
+      //
+      // If invoking the callback does not cause the destruction of the
+      // WebState, calling CancelPrerender() will destroy it. So in all
+      // cases, no other access to the WebState should happen after this
+      // line.
+      return std::move(callback)
+          .Then(base::BindOnce(&CancelPrerender, web_state()->GetWeakPtr()))
+          .Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
     }
     StopToUpgrade(url, item_pending->GetReferrer(), std::move(callback));
     return;

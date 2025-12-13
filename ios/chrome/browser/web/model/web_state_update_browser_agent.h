@@ -44,6 +44,9 @@ class WebStateUpdateBrowserAgent
 
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
+  // Helper taking care of web state lifecycle when a WebState is removed.
+  void WebStateRemoved(web::WebState* web_state);
+
   raw_ptr<WebStateList> web_state_list_ = nullptr;
   // Scoped observations of Browser, WebStateList and WebStates.
   base::ScopedObservation<WebStateList, WebStateListObserver>

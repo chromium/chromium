@@ -56,6 +56,11 @@ TestIdentityManagerObserver::ErrorFromErrorStateOfRefreshTokenUpdatedCallback()
   return error_from_error_state_of_refresh_token_updated_callback_;
 }
 
+signin_metrics::SourceForRefreshTokenOperation TestIdentityManagerObserver::
+    TokenOperationSourceFromErrorStateOfRefreshTokenUpdatedCallback() const {
+  return token_operation_source_from_error_state_of_refresh_token_updated_callback_;
+}
+
 void TestIdentityManagerObserver::SetOnRefreshTokenRemovedCallback(
     base::OnceClosure callback) {
   on_refresh_token_removed_callback_ = std::move(callback);
@@ -161,6 +166,8 @@ void TestIdentityManagerObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   account_from_error_state_of_refresh_token_updated_callback_ = account_info;
   error_from_error_state_of_refresh_token_updated_callback_ = error;
+  token_operation_source_from_error_state_of_refresh_token_updated_callback_ =
+      token_operation_source;
   if (on_error_state_of_refresh_token_updated_callback_) {
     std::move(on_error_state_of_refresh_token_updated_callback_).Run();
   }

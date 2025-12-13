@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/js/action_link.js';
 import './icons.html.js';
 import '/strings.m.js';
@@ -14,8 +15,10 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {TooltipPosition} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -59,6 +62,7 @@ export interface ItemDelegate {
   recordUserAction(metricName: string): void;
   getItemStateChangedTarget():
       ChromeEvent<(data: chrome.developerPrivate.EventData) => void>;
+  showSiteSettings(id: string): void;
 }
 
 export class FakeChromeEvent {
@@ -112,6 +116,7 @@ export class DummyItemDelegate {
   getItemStateChangedTarget() {
     return new FakeChromeEvent();
   }
+  showSiteSettings(_id: string) {}
 }
 
 export interface ExtensionsItemElement {
@@ -156,6 +161,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
 
       // First inspectable view after sorting.
       firstInspectView_: {type: Object},
+      enableToggleTooltipPosition_: {type: String},
     };
   }
 
@@ -167,6 +173,12 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
       createDummyExtensionInfo();
   private accessor firstInspectView_: chrome.developerPrivate.ExtensionView|
       undefined;
+  protected accessor enableToggleTooltipPosition_ = TooltipPosition.LEFT;
+
+  override firstUpdated() {
+    this.enableToggleTooltipPosition_ =
+        isRTL() ? TooltipPosition.RIGHT : TooltipPosition.LEFT;
+  }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -432,6 +444,17 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     // the allowlist warning will still be shown in the item detail view.
     return this.hasAllowlistWarning_() && !this.hasSevereWarnings_() &&
         !this.hasMv2DeprecationWarning_();
+  }
+
+  protected showErrorsAsWarningsButtonLabel_(): boolean {
+    // If there are runtime errors or install warnings, show as errors.
+    if (this.data.runtimeErrors?.length || this.data.installWarnings?.length) {
+      return false;
+    }
+
+    // All manifest errors are considered warnings, so if there are no
+    // runtime/install issues, label is 'Warnings'.
+    return true;
   }
 }
 

@@ -5,11 +5,11 @@
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -23,13 +23,27 @@ namespace {
 
 JavaScriptErrorReport::WindowType GetWindowType(
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser)
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
     return JavaScriptErrorReport::WindowType::kNoBrowser;
-  if (!browser->app_controller())
+  }
+
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
+  if (!browser) {
+    return JavaScriptErrorReport::WindowType::kNoBrowser;
+  }
+
+  const auto* const app_controller =
+      web_app::AppBrowserController::From(browser);
+  if (!app_controller) {
     return JavaScriptErrorReport::WindowType::kRegularTabbed;
-  if (browser->app_controller()->system_app())
+  }
+
+  if (app_controller->system_app()) {
     return JavaScriptErrorReport::WindowType::kSystemWebApp;
+  }
+
   return JavaScriptErrorReport::WindowType::kWebApp;
 }
 

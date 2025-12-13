@@ -24,7 +24,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.ValuesReturned;
-import org.chromium.base.task.test.PausedExecutorTestRule;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.BaseFlagTestRule;
 import org.chromium.components.cached_flags.CachedFlagsSafeMode.Behavior;
@@ -35,7 +35,6 @@ import java.util.List;
 /** Unit Tests for {@link CachedFlagsSafeMode}, the Safe Mode mechanism for {@link CachedFlag}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CachedFeatureFlagsSafeModeUnitTest {
-    @Rule public PausedExecutorTestRule mExecutorRule = new PausedExecutorTestRule();
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
 
@@ -699,7 +698,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
                 List.of(Arrays.asList(mBoolParam, mIntParam, mDoubleParam, mStringParam)));
 
         CachedFlagsSafeMode.getInstance().onEndCheckpoint();
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         assertTrue(
                 CachedFlagsSafeMode.getSafeValuePreferences()

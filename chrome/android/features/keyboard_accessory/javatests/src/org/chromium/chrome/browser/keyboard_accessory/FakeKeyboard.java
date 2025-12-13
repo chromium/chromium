@@ -7,17 +7,16 @@ package org.chromium.chrome.browser.keyboard_accessory;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.ChromeWindow;
 
 import java.lang.ref.WeakReference;
+import java.util.function.Supplier;
 
 /**
  * This class allows to mock the {@link org.chromium.ui.KeyboardVisibilityDelegate} in any given
@@ -25,6 +24,7 @@ import java.lang.ref.WeakReference;
  * keyboard without having to deal with the soft keyboard. To use it, inject its constructor as
  * factory into the {@link org.chromium.chrome.browser.ChromeWindow} before launching an activity.
  * To reset, call {@link ChromeWindow#resetKeyboardVisibilityDelegateFactory()}.
+ *
  * <pre>E.g.{@code
  *    // To force a keyboard open.
  *    ChromeWindow.setKeyboardVisibilityDelegateFactory(FakeKeyboard::new);
@@ -49,7 +49,7 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
     }
 
     @Override
-    public boolean isSoftKeyboardShowing(Context context, View view) {
+    public boolean isSoftKeyboardShowing(View view) {
         return mIsShowing;
     }
 
@@ -64,7 +64,7 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
                         return; // ... unless the keyboard didn't affect it.
                     }
                     if (!keyboardWasVisible) {
-                        notifyListeners(isKeyboardShowing(getActivity(), view));
+                        notifyListeners(isKeyboardShowing(view));
                     }
                     // Pretend a layout change for components listening to the activity directly:
                     View contentView = getActivity().findViewById(android.R.id.content);
@@ -84,7 +84,7 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
                     if (getStaticKeyboardHeight() <= 0) {
                         return; // ... unless the keyboard didn't affect it.
                     }
-                    if (keyboardWasVisible) notifyListeners(isKeyboardShowing(getActivity(), view));
+                    if (keyboardWasVisible) notifyListeners(isKeyboardShowing(view));
                     View contentView = getActivity().findViewById(android.R.id.content);
                     ViewGroup.LayoutParams p = contentView.getLayoutParams();
                     p.height = p.height + getStaticKeyboardHeight();

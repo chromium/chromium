@@ -12,12 +12,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if defined(USE_AURA)
@@ -82,14 +82,12 @@ typedef testing::Test ChromeSelectFilePolicyTest;
 TEST_F(ChromeSelectFilePolicyTest, MAYBE_ExpectAsynchronousListenerCall) {
   content::BrowserTaskEnvironment task_environment;
 
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
-
   std::unique_ptr<FileSelectionUser> file_selection_user(
       new FileSelectionUser());
 
   // Disallow file-selection dialogs.
-  local_state.Get()->SetManagedPref(prefs::kAllowFileSelectionDialogs,
-                                    std::make_unique<base::Value>(false));
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
+      prefs::kAllowFileSelectionDialogs, std::make_unique<base::Value>(false));
 
   file_selection_user->StartFileSelection();
 }

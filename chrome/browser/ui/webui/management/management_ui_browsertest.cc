@@ -98,8 +98,8 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
   std::string unmanaged_json =
       content::EvalJs(contents, javascript).ExtractString();
 
-  std::optional<base::Value> unmanaged_value_ptr =
-      base::JSONReader::Read(unmanaged_json);
+  std::optional<base::Value> unmanaged_value_ptr = base::JSONReader::Read(
+      unmanaged_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   std::map<std::string, std::u16string> expected_unmanaged_values{
       {"browserManagementNotice",
        l10n_util::GetStringFUTF16(
@@ -130,8 +130,8 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
   std::string managed_json =
       content::EvalJs(contents, javascript).ExtractString();
 
-  std::optional<base::Value> managed_value_ptr =
-      base::JSONReader::Read(managed_json);
+  std::optional<base::Value> managed_value_ptr = base::JSONReader::Read(
+      managed_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   std::map<std::string, std::u16string> expected_managed_values{
       {"browserManagementNotice",
        l10n_util::GetStringFUTF16(

@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -37,12 +37,12 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/common/content_features.h"
@@ -71,7 +71,6 @@ using ::testing::AnyNumber;
 using ::testing::Exactly;
 using ::testing::ExplainMatchResult;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::Property;
 using ::testing::VariantWith;
 using Step = IsolatedWebAppInstallerModel::Step;
@@ -83,7 +82,7 @@ MATCHER_P3(WithMetadata, app_id, app_name, version, "") {
       AllOf(Property("app_id", &SignedWebBundleMetadata::app_id, app_id),
             Property("app_name", &SignedWebBundleMetadata::app_name, app_name),
             Property("version", &SignedWebBundleMetadata::version,
-                     base::Version(version))),
+                     *IwaVersion::Create(version))),
       arg, result_listener);
 }
 
@@ -101,15 +100,18 @@ IsolatedWebAppUrlInfo CreateAndWriteTestBundle(
 
 SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
                                        const std::string& version) {
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       web_package::SignedWebBundleId::CreateRandomForProxyMode());
   return SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(base::FilePath()), app_name,
-      base::Version(version), IconBitmaps());
+      *IwaVersion::Create(version), std::move(image_info),
+      /*enterprise_name=*/"Google LLC");
 }
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& iwa_url,
-                                                const base::Version version) {
+                                                const IwaVersion version) {
   auto manifest = blink::mojom::Manifest::New();
   manifest->id = iwa_url;
   manifest->scope = iwa_url.Resolve("/");
@@ -248,10 +250,10 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
         iwa_url.Resolve(kIconPath));
     icon_state.bitmaps = {CreateSquareIcon(32, SK_ColorWHITE)};
 
-    GURL url(
-        base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-                      test::GetDefaultEd25519WebBundleId().id(),
-                      "/.well-known/_generated_install_page.html"}));
+    GURL url(base::StrCat({webapps::kIsolatedAppScheme,
+                           url::kStandardSchemeSeparator,
+                           test::GetDefaultEd25519WebBundleId().id(),
+                           "/.well-known/_generated_install_page.html"}));
     auto& page_state = fake_web_contents_manager.GetOrCreatePageState(url);
 
     page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
@@ -259,13 +261,12 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
     page_state.manifest_url = iwa_url.Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
     page_state.manifest_before_default_processing =
-        CreateDefaultManifest(iwa_url, base::Version(version));
+        CreateDefaultManifest(iwa_url, *IwaVersion::Create(version));
   }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir scoped_temp_dir_;
@@ -452,10 +453,13 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
   MockIconAndPageState(url_info, "1.0");
 
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
-      base::Version("1.0"), IconBitmaps());
+      *IwaVersion::Create("1.0"), std::move(image_info),
+      /*enterprise_name=*/"Google LLC");
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
@@ -486,10 +490,13 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
   MockIconAndPageState(url_info, "1.0");
 
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
-      base::Version("1.0"), IconBitmaps());
+      *IwaVersion::Create("1.0"), std::move(image_info),
+      /*enterprise_name=*/"Google LLC");
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
@@ -528,9 +535,13 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   MockIconAndPageState(url_info, "1.0");
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
+
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
-      base::Version("2.0"), IconBitmaps());
+      *IwaVersion::Create("2.0"), std::move(image_info),
+      /*enterprise_name=*/"Google LLC");
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{

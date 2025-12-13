@@ -32,13 +32,11 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
       //# sourceURL=test.js
     `);
 
-  TestRunner.DebuggerAgent.setAsyncCallStackDepth(200);
+  TestRunner.DebuggerAgent.invoke_setAsyncCallStackDepth({maxDepth: 200});
 
   SourcesTestRunner.startDebuggerTestPromise(/* quiet */ true)
       .then(() => SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise())
-      .then(
-          () => TestRunner.addSnifferPromise(
-              SourcesModule.CallStackSidebarPane.CallStackSidebarPane.prototype, 'updatedForTest'))
+      .then(() => SourcesModule.CallStackSidebarPane.CallStackSidebarPane.instance().updateComplete)
       .then(() => dumpCallStackSidebarPane())
       .then(() => SourcesTestRunner.completeDebuggerTest());
 

@@ -15,11 +15,13 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -38,6 +40,7 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SearchResumptionModuleViewUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private SearchResumptionModuleView mModuleView;
     private View mHeaderView;
@@ -49,7 +52,6 @@ public class SearchResumptionModuleViewUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mPropertyModel = new PropertyModel(SearchResumptionModuleProperties.ALL_KEYS);
     }

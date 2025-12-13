@@ -41,6 +41,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -113,7 +114,7 @@ class PasskeyUpgradeBubbleController : public PasswordBubbleControllerBase {
 
 PasskeyUpgradeBubbleView::PasskeyUpgradeBubbleView(
     content::WebContents* web_contents,
-    views::View* anchor,
+    views::BubbleAnchor anchor,
     DisplayReason display_reason,
     std::string passkey_rp_id)
     : PasswordBubbleViewBase(web_contents,

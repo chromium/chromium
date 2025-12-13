@@ -13,19 +13,28 @@ namespace content {
 class WebContents;
 }
 
+namespace password_manager {
+class PasswordManagerClient;
+}
+
 // A helper class which performs a click on specified element based on
 // `dom_node_id`. Invokes `callback` on completing.
 class ButtonClickHelper {
  public:
-  using ClickResult = base::OnceCallback<void(bool)>;
+  using ClickResult = base::OnceCallback<void(actor::mojom::ActionResultCode)>;
 
   ButtonClickHelper(content::WebContents* web_contents,
+                    password_manager::PasswordManagerClient* client,
                     int dom_node_id,
                     ClickResult callback);
   ~ButtonClickHelper();
 
 #if defined(UNIT_TEST)
-  void SimulateClickResult(bool result) { std::move(callback_).Run(result); }
+  void SimulateClickResult(bool result) {
+    std::move(callback_).Run(
+        result ? actor::mojom::ActionResultCode::kOk
+               : actor::mojom::ActionResultCode::kInvalidDomNodeId);
+  }
 #endif
 
  private:
@@ -34,6 +43,7 @@ class ButtonClickHelper {
   ClickResult callback_;
 
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame_;
+  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
   base::WeakPtrFactory<ButtonClickHelper> weak_ptr_factory_{this};
 };

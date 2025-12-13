@@ -7,13 +7,13 @@ package org.chromium.chrome.browser.webapps;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
@@ -26,22 +26,19 @@ import java.util.List;
 
 /** Static class to update WebAPK data to sync. */
 @JNINamespace("webapk")
+@NullMarked
 public class WebApkSyncService {
     private static final long UNIX_OFFSET_MICROS = 11644473600000000L;
 
     /** Called with update result. */
-    public static interface PwaRestorableListCallback {
+    public interface PwaRestorableListCallback {
         @CalledByNative("PwaRestorableListCallback")
-        public void onRestorableAppsAvailable(
-                boolean success,
-                @NonNull String[] appIds,
-                @NonNull String[] appNames,
-                @NonNull int[] lastUsedInDays,
-                @NonNull List<Bitmap> icons);
+        void onRestorableAppsAvailable(
+                boolean success, String[] appIds, String[] appNames, List<Bitmap> icons);
     }
 
     static void onWebApkUsed(
-            BrowserServicesIntentDataProvider intendDataProvider,
+            @Nullable BrowserServicesIntentDataProvider intendDataProvider,
             WebappDataStorage storage,
             boolean isInstall) {
         WebApkSpecifics specifics =
@@ -55,7 +52,8 @@ public class WebApkSyncService {
         WebApkSyncServiceJni.get().onWebApkUninstalled(manifestId);
     }
 
-    static WebApkSpecifics getWebApkSpecifics(WebappInfo webApkInfo, WebappDataStorage storage) {
+    static @Nullable WebApkSpecifics getWebApkSpecifics(
+            @Nullable WebappInfo webApkInfo, WebappDataStorage storage) {
         if (webApkInfo == null || !webApkInfo.isForWebApk()) {
             return null;
         }

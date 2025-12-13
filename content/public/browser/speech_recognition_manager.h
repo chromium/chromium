@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SPEECH_RECOGNITION_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_SPEECH_RECOGNITION_MANAGER_H_
 
-#include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_audio_forwarder.mojom.h"

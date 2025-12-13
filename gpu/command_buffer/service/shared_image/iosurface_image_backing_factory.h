@@ -43,6 +43,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
                                uint32_t texture_target);
   ~IOSurfaceImageBackingFactory() override;
 
+  static gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
+      const gfx::Size& size,
+      viz::SharedImageFormat format);
+
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
@@ -128,7 +132,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
   const int32_t max_texture_size_;
   const bool angle_texture_usage_;
 
-  const GpuMemoryBufferFormatSet gpu_memory_buffer_formats_;
   base::flat_set<viz::SharedImageFormat> supported_formats_;
 
   // Used to notify the watchdog before a buffer allocation in case it takes

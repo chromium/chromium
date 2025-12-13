@@ -40,6 +40,7 @@ class CloseImageButton;
 class HangUpButton;
 class OverlayControlsFadeAnimation;
 class OverlayWindowBackToTabButton;
+class OverlayWindowLiveCaptionButton;
 class OverlayWindowLiveCaptionDialog;
 class OverlayWindowMinimizeButton;
 class PictureInPictureTucker;
@@ -91,6 +92,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void SetSkipAdButtonVisibility(bool is_visible) override;
   void SetNextTrackButtonVisibility(bool is_visible) override;
   void SetPreviousTrackButtonVisibility(bool is_visible) override;
+  void SetHidePictureInPictureButtonVisibility(bool is_visible) override {}
   void SetMicrophoneMuted(bool muted) override;
   void SetCameraState(bool turned_on) override;
   void SetToggleMicrophoneButtonVisibility(bool is_visible) override;
@@ -159,7 +161,13 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   gfx::Size& GetNaturalSize();
 
-  bool OnGestureEventHandledOrIgnored(ui::GestureEvent* event);
+  // Shows the controls on a gesture tap if they are not already shown. Returns
+  // true if the controls were shown.
+  bool ShowControlsForGestureIfNecessary(ui::GestureEvent* event);
+
+  // Hides the live caption dialog on a gesture tap if it's shown and the tap is
+  // outside of the dialog. Returns true if the dialog was hidden.
+  bool HideLiveCaptionDialogForGestureIfNecessary(ui::GestureEvent* event);
 
   // Returns true if the controls (e.g. close button, play/pause button) are
   // visible.
@@ -185,8 +193,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   gfx::Rect GetToggleMicrophoneButtonBounds();
   gfx::Rect GetToggleCameraButtonBounds();
   gfx::Rect GetHangUpButtonBounds();
-  gfx::Rect GetPreviousSlideControlsBounds();
-  gfx::Rect GetNextSlideControlsBounds();
   gfx::Rect GetProgressViewBounds();
   gfx::Rect GetLiveCaptionButtonBounds();
   gfx::Rect GetLiveCaptionDialogBounds();
@@ -201,13 +207,10 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   ToggleMicrophoneButton* toggle_microphone_button_for_testing() const;
   ToggleCameraButton* toggle_camera_button_for_testing() const;
   HangUpButton* hang_up_button_for_testing() const;
-  SimpleOverlayWindowImageButton* next_slide_controls_view_for_testing() const;
-  SimpleOverlayWindowImageButton* previous_slide_controls_view_for_testing()
-      const;
   global_media_controls::MediaProgressView* progress_view_for_testing() const;
   views::Label* timestamp_for_testing() const;
   views::Label* live_status_for_testing() const;
-  SimpleOverlayWindowImageButton* live_caption_button_for_testing() const;
+  OverlayWindowLiveCaptionButton* live_caption_button_for_testing() const;
   OverlayWindowLiveCaptionDialog* live_caption_dialog_for_testing() const;
   views::ImageView* favicon_view_for_testing() const;
   views::Label* origin_for_testing() const;
@@ -230,6 +233,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
       std::optional<bool> title_and_scrim_visible = std::nullopt);
   void StopForcingControlsVisibleForTesting();
 
+  void FireEnableControlsAfterMoveTimerForTesting();
+
   void set_overlay_view_cb_for_testing(GetOverlayViewCb get_overlay_view_cb) {
     get_overlay_view_cb_ = std::move(get_overlay_view_cb);
   }
@@ -248,6 +253,10 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   void set_minimum_size_for_testing(const gfx::Size& min_size) {
     min_size_ = min_size;
+  }
+
+  void set_meets_user_interaction_for_testing(bool meets_user_interaction) {
+    meets_user_interaction_ = meets_user_interaction;
   }
 
   void FinishTuckAnimationForTesting();
@@ -352,6 +361,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
                             base::TimeDelta duration);
 
   void OnLiveCaptionButtonPressed();
+  void SetLiveCaptionDialogVisibility(bool wanted_visibility);
 
   void OnFaviconReceived(const SkBitmap& image);
   void UpdateFavicon(const gfx::ImageSkia& favicon);
@@ -374,6 +384,14 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   //    * The `MediaSession` routed frame is the primary main frame
   //    * The origin URL has high media engagement or is a file
   bool IsTrustedForMediaPlayback() const;
+
+  // Updates the value of `meets_user_interaction_` if needed.
+  //
+  // `meets_user_interaction_` is only set to true after
+  // `initial_title_hide_timer_` fires and a desired `event` is triggered. If
+  // `event` fires while the `initial_title_hide_timer_` is running, the
+  // `meets_user_interaction_` update is done after the timer finishes.
+  void MaybeUpdateMeetsUserInteraction(const ui::Event& event);
 
   // Not owned; |controller_| owns |this|.
   raw_ptr<content::VideoPictureInPictureWindowController> controller_;
@@ -462,13 +480,10 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<ToggleMicrophoneButton> toggle_microphone_button_ = nullptr;
   raw_ptr<ToggleCameraButton> toggle_camera_button_ = nullptr;
   raw_ptr<HangUpButton> hang_up_button_ = nullptr;
-  raw_ptr<SimpleOverlayWindowImageButton> previous_slide_controls_view_ =
-      nullptr;
-  raw_ptr<SimpleOverlayWindowImageButton> next_slide_controls_view_ = nullptr;
   raw_ptr<global_media_controls::MediaProgressView> progress_view_ = nullptr;
   raw_ptr<views::Label> timestamp_ = nullptr;
   raw_ptr<views::Label> live_status_ = nullptr;
-  raw_ptr<SimpleOverlayWindowImageButton> live_caption_button_ = nullptr;
+  raw_ptr<OverlayWindowLiveCaptionButton> live_caption_button_ = nullptr;
   raw_ptr<OverlayWindowLiveCaptionDialog> live_caption_dialog_ = nullptr;
   raw_ptr<AutoPipSettingOverlayView> overlay_view_ = nullptr;
   raw_ptr<views::View> title_view_ = nullptr;
@@ -533,9 +548,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   // Used for when the title changes visibility. The title and controls top
   // scrim must be animated together.
-  std::unique_ptr<OverlayControlsFadeAnimation> title_fade_animation_;
   std::unique_ptr<OverlayControlsFadeAnimation>
-      controls_top_scrim_fade_animation_;
+      title_and_top_scrim_fade_animation_;
 
   // Callback to get / create an overlay view.  This is a callback to let tests
   // provide alternate implementations.
@@ -543,6 +557,15 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   // Used to animate the Picture-in-Picture window creation.
   std::unique_ptr<PictureInPictureWidgetFadeAnimator> fade_animator_;
+
+  // Set to true when the user has interacted with the overlay window in an
+  // intentional manner. False otherwise. For example, hovering the cursor over
+  // the overlay window is not considered meeting user interaction.
+  bool meets_user_interaction_ = false;
+
+  // Set to true if the user interacts with the window before the
+  // `initial_title_hide_timer_` fires.
+  bool user_interacted_before_timer_fired_ = false;
 
   base::WeakPtrFactory<VideoOverlayWindowViews> weak_factory_{this};
 };

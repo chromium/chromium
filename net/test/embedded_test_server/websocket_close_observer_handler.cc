@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/websocket_connection.h"
@@ -47,7 +48,7 @@ void WebSocketCloseObserverHandler::OnHandshake(const HttpRequest& request) {
 
   std::string role;
   if (!GetValueForKeyInQuery(request.GetURL(), "role", &role)) {
-    DVLOG(1) << "Missing required 'role' parameter.";
+    VLOG(1) << "Missing required 'role' parameter.";
     SendBadRequest("Missing required 'role' parameter.");
     return;
   }
@@ -59,7 +60,7 @@ void WebSocketCloseObserverHandler::OnHandshake(const HttpRequest& request) {
   } else if (role == "observed") {
     role_ = Role::kObserved;
   } else {
-    DVLOG(1) << "Invalid 'role' parameter: " << role;
+    VLOG(1) << "Invalid 'role' parameter: " << role;
     SendBadRequest("Invalid 'role' parameter.");
     return;
   }
@@ -68,7 +69,7 @@ void WebSocketCloseObserverHandler::OnHandshake(const HttpRequest& request) {
 void WebSocketCloseObserverHandler::OnClosingHandshake(
     std::optional<uint16_t> code,
     std::string_view message) {
-  DVLOG(3) << "OnClosingHandshake()";
+  VLOG(3) << "OnClosingHandshake()";
 
   if (role_ == Role::kObserved) {
     g_code = code.value_or(1006);
@@ -79,7 +80,7 @@ void WebSocketCloseObserverHandler::OnClosingHandshake(
 }
 
 void WebSocketCloseObserverHandler::BeObserver() {
-  DVLOG(3) << "BeObserver()";
+  VLOG(3) << "BeObserver()";
   if (g_code) {
     SendCloseCode();
   } else {

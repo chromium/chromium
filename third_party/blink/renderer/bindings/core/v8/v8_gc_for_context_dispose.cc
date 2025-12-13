@@ -46,8 +46,7 @@ namespace {
 size_t GetMemoryUsage(v8::Isolate* isolate) {
   size_t usage =
       base::ProcessMetrics::CreateCurrentProcessMetrics()->GetMallocUsage() +
-      WTF::Partitions::TotalActiveBytes() +
-      ProcessHeap::TotalAllocatedObjectSize();
+      Partitions::TotalActiveBytes() + ProcessHeap::TotalAllocatedObjectSize();
   v8::HeapStatistics v8_heap_statistics;
   isolate->GetHeapStatistics(&v8_heap_statistics);
   usage += v8_heap_statistics.total_heap_size();

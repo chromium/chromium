@@ -31,22 +31,25 @@ bool GetDefaultTabSearchRightAligned() {
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kTabSearchRightAligned,
                                 GetDefaultTabSearchRightAligned());
+  registry->RegisterBooleanPref(
+      prefs::kVerticalTabsEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
-bool GetTabSearchTrailingTabstrip(const Profile* profile) {
-  if (features::IsTabSearchMoving()) {
-    return true;
+TabSearchPosition GetTabSearchPosition(const Profile* profile) {
+  if (features::HasTabSearchToolbarButton()) {
+    return TabSearchPosition::kToolbarButton;
   }
 
   // If this pref has already been read, we need to return the same value.
   if (!g_tab_search_trailing_tabstrip_at_startup.has_value()) {
     g_tab_search_trailing_tabstrip_at_startup =
-        profile && CanShowTabSearchPositionSetting()
-            ? profile->GetPrefs()->GetBoolean(prefs::kTabSearchRightAligned)
-            : GetDefaultTabSearchRightAligned();
+        GetDefaultTabSearchRightAligned();
   }
 
-  return g_tab_search_trailing_tabstrip_at_startup.value();
+  return g_tab_search_trailing_tabstrip_at_startup.value()
+             ? TabSearchPosition::kTrailingTabstrip
+             : TabSearchPosition::kLeadingTabstrip;
 }
 
 void SetTabSearchRightAlignedForTesting(bool is_right_aligned) {

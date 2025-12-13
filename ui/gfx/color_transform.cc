@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/color_transform.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <sstream>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -246,7 +242,7 @@ class ColorTransformMatrix : public ColorTransformStep {
                  size_t num,
                  const ColorTransform::RuntimeOptions& options) const override {
     for (size_t i = 0; i < num; i++) {
-      auto& color = colors[i];
+      auto& color = UNSAFE_TODO(colors[i]);
       SkV4 mapped = matrix_.map(color.x(), color.y(), color.z(), 1);
       color.SetPoint(mapped.x, mapped.y, mapped.z);
     }
@@ -265,7 +261,7 @@ class ColorTransformPerChannelTransferFn : public ColorTransformStep {
                  size_t num,
                  const ColorTransform::RuntimeOptions& options) const override {
     for (size_t i = 0; i < num; i++) {
-      ColorTransform::TriStim& c = colors[i];
+      ColorTransform::TriStim& c = UNSAFE_TODO(colors[i]);
       if (extended_) {
         c.set_x(copysign(Evaluate(abs(c.x())), c.x()));
         c.set_y(copysign(Evaluate(abs(c.y())), c.y()));
@@ -454,11 +450,13 @@ class ColorTransformHLG_OOTF : public ColorTransformStep {
     ComputeHLGToneMapConstants(options, gamma_minus_one);
 
     for (size_t i = 0; i < num; i++) {
-      float L = kLr * color[i].x() + kLg * color[i].y() + kLb * color[i].z();
+      float L = kLr * UNSAFE_TODO(color[i]).x() +
+                kLg * UNSAFE_TODO(color[i]).y() +
+                kLb * UNSAFE_TODO(color[i]).z();
       if (L > 0.f) {
-        color[i].Scale(powf(L, gamma_minus_one));
+        UNSAFE_TODO(color[i]).Scale(powf(L, gamma_minus_one));
         // Scale the result to the full HDR range.
-        color[i].Scale(dst_max_luminance_relative);
+        UNSAFE_TODO(color[i]).Scale(dst_max_luminance_relative);
       }
     }
   }
@@ -488,9 +486,11 @@ class ColorTransformHLG_RefOOTF : public ColorTransformStep {
                  size_t num,
                  const ColorTransform::RuntimeOptions& options) const override {
     for (size_t i = 0; i < num; i++) {
-      float L = kLr * color[i].x() + kLg * color[i].y() + kLb * color[i].z();
+      float L = kLr * UNSAFE_TODO(color[i]).x() +
+                kLg * UNSAFE_TODO(color[i]).y() +
+                kLb * UNSAFE_TODO(color[i]).z();
       if (L > 0.f) {
-        color[i].Scale(powf(L, kGammaMinusOne));
+        UNSAFE_TODO(color[i]).Scale(powf(L, kGammaMinusOne));
       }
     }
   }
@@ -513,9 +513,11 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
     ComputeToneMapConstants(options, a, b);
 
     for (size_t i = 0; i < num; i++) {
-      float maximum = std::max({color[i].x(), color[i].y(), color[i].z()});
+      float maximum =
+          std::max({UNSAFE_TODO(color[i]).x(), UNSAFE_TODO(color[i]).y(),
+                    UNSAFE_TODO(color[i]).z()});
       if (maximum > 0.f) {
-        color[i].Scale((1.f + a * maximum) / (1.f + b * maximum));
+        UNSAFE_TODO(color[i]).Scale((1.f + a * maximum) / (1.f + b * maximum));
       }
     }
   }
@@ -534,8 +536,8 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
                              : hdr_metadata.smpte_st_2086->luminance_max;
     }
     float sdr_white_nits = ColorSpace::kDefaultSDRWhiteLevel;
-    if (options.src_hdr_metadata && options.src_hdr_metadata->ndwl) {
-      sdr_white_nits = options.src_hdr_metadata->ndwl->nits;
+    if (options.src_hdr_metadata.ndwl) {
+      sdr_white_nits = options.src_hdr_metadata.ndwl->nits;
     }
     return src_max_lum_nits / sdr_white_nits;
   }
@@ -574,7 +576,7 @@ class ColorTransformSrcNitsToSdrRelative : public ColorTransformStep {
                  const ColorTransform::RuntimeOptions& options) const override {
     const float factor = ComputeNitsToSdrRelativeFactor(options);
     for (size_t i = 0; i < num; i++) {
-      color[i].Scale(factor);
+      UNSAFE_TODO(color[i]).Scale(factor);
     }
   }
 
@@ -584,8 +586,8 @@ class ColorTransformSrcNitsToSdrRelative : public ColorTransformStep {
     float sdr_white_nits = options.dst_sdr_max_luminance_nits;
     if (use_src_sdr_white_) {
       sdr_white_nits = ColorSpace::kDefaultSDRWhiteLevel;
-      if (options.src_hdr_metadata && options.src_hdr_metadata->ndwl) {
-        sdr_white_nits = options.src_hdr_metadata->ndwl->nits;
+      if (options.src_hdr_metadata.ndwl) {
+        sdr_white_nits = options.src_hdr_metadata.ndwl->nits;
       }
     }
     return unity_nits_ / sdr_white_nits;
@@ -609,7 +611,7 @@ class ColorTransformSdrToDstNitsRelative : public ColorTransformStep {
                  const ColorTransform::RuntimeOptions& options) const override {
     const float factor = ComputeSdrRelativeToNitsFactor(options);
     for (size_t i = 0; i < num; i++) {
-      color[i].Scale(factor);
+      UNSAFE_TODO(color[i]).Scale(factor);
     }
   }
 

@@ -7,6 +7,7 @@
 
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -19,7 +20,11 @@ class MockIdentityCredentialDelegate : public IdentityCredentialDelegate {
 
   MOCK_METHOD(std::vector<Suggestion>,
               GetVerifiedAutofillSuggestions,
-              (const FieldType& field_type),
+              (const FormData& form,
+               const FormStructure* form_structure,
+               const FormFieldData& field,
+               const AutofillField* autofill_field,
+               const AutofillClient& client),
               (const override));
   MOCK_METHOD(void,
               NotifySuggestionAccepted,
@@ -27,6 +32,10 @@ class MockIdentityCredentialDelegate : public IdentityCredentialDelegate {
                bool show_modal,
                OnFederatedTokenReceivedCallback callback),
               (const override));
+  MOCK_METHOD(std::unique_ptr<SuggestionGenerator>,
+              GetIdentityCredentialSuggestionGenerator,
+              (),
+              (override));
 };
 
 }  // namespace autofill

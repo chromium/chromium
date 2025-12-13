@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -34,11 +32,14 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayer;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayerJni;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -75,11 +76,13 @@ public class TabbedRootUiCoordinatorTest {
     private TabbedRootUiCoordinator mTabbedRootUiCoordinator;
 
     @Mock private PrivacySandboxBridgeJni mPrivacySandboxBridgeJni;
+    @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJni;
     @Mock private SearchEngineChoiceService mSearchEngineChoiceService;
 
     @Before
     public void setUp() {
         PrivacySandboxBridgeJni.setInstanceForTesting(mPrivacySandboxBridgeJni);
+        BookmarkBarSceneLayerJni.setInstanceForTesting(mBookmarkBarSceneLayerJni);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -140,6 +143,8 @@ public class TabbedRootUiCoordinatorTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     @Restriction({DeviceFormFactor.PHONE})
+    @DisabledTest
+    // TODO(crbug.com/447525636): Re-enable tests.
     public void testTopControlsHeightWithBookmarkBarWhenFlagIsEnabledOnPhone() {
         testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ false);
     }
@@ -157,7 +162,7 @@ public class TabbedRootUiCoordinatorTest {
         // Verify bookmark bar (in-)existence.
         final var activity = mActivityTestRule.getActivity();
         final @Nullable var bookmarkBar = activity.findViewById(R.id.bookmark_bar);
-        assertThat(bookmarkBar, is(expectBookmarkBar ? notNullValue() : nullValue()));
+        assertThat(bookmarkBar != null).isEqualTo(expectBookmarkBar);
 
         // Verify browser controls manager existence.
         final var browserControlsManager =

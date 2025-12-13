@@ -132,7 +132,7 @@ class ArcInputMethodStateDelegateImpl : public ArcInputMethodState::Delegate {
     const bool is_normal_vk_enabled =
         !profile_->GetPrefs()->GetBoolean(
             ash::prefs::kAccessibilityVirtualKeyboardEnabled) &&
-        display::Screen::GetScreen()->InTabletMode();
+        display::Screen::Get()->InTabletMode();
     return is_command_line_flag_enabled || is_normal_vk_enabled;
   }
 

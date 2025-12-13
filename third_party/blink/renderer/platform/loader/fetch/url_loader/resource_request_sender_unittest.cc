@@ -24,6 +24,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -274,11 +275,15 @@ class DummyCodeCacheHost final : public mojom::blink::CodeCacheHost {
     mojo::PendingRemote<mojom::blink::CodeCacheHost> pending_remote;
     receiver_ = std::make_unique<mojo::Receiver<mojom::blink::CodeCacheHost>>(
         this, pending_remote.InitWithNewPipeAndPassReceiver());
-    host_ = std::make_unique<blink::CodeCacheHost>(
+    host_ = blink::CodeCacheHost::Create(
         mojo::Remote<mojom::blink::CodeCacheHost>(std::move(pending_remote)));
   }
 
   // mojom::blink::CodeCacheHost implementations
+  void GetPendingBackend(mojom::blink::CodeCacheType cache_type,
+                         GetPendingBackendCallback callback) override {
+    std::move(callback).Run(std::nullopt);
+  }
   void DidGenerateCacheableMetadata(mojom::blink::CodeCacheType cache_type,
                                     const KURL& url,
                                     base::Time expected_response_time,
@@ -297,7 +302,7 @@ class DummyCodeCacheHost final : public mojom::blink::CodeCacheHost {
       const KURL& url,
       base::Time expected_response_time,
       mojo_base::BigBuffer data,
-      const WTF::String& cache_storage_cache_name) override {}
+      const String& cache_storage_cache_name) override {}
 
   blink::CodeCacheHost* GetCodeCacheHost() { return host_.get(); }
   bool did_clear_code_cache_entry() const {
@@ -2237,22 +2242,34 @@ TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
   base::HistogramTester histogram_tester;
 
   // Define URLs that support the webui bundled code cache.
-  const GURL test_url_1("chrome://example/script_1.js");
-  const GURL test_url_2("chrome://example/script_2.js");
+  const GURL test_url("chrome://example/script.js");
 
   // Configure the platform to serve webui code cache for only one of the test
   // URLs.
-  platform_->set_webui_bundled_code_cache_url(test_url_1);
-  EXPECT_TRUE(platform_->GetWebUIBundledCodeCacheResourceId(test_url_1));
-  EXPECT_FALSE(platform_->GetWebUIBundledCodeCacheResourceId(test_url_2));
+  platform_->set_webui_bundled_code_cache_url(test_url);
+  EXPECT_TRUE(platform_->GetWebUIBundledCodeCacheResourceId(test_url));
 
   // Assert code cache is fetched for the URL for which the webui bundled code
   // cache is available.
-  LoadResourceAndCheck(test_url_1, /*expect_code_cache=*/true);
-  LoadResourceAndCheck(test_url_2, /*expect_code_cache=*/false);
+  LoadResourceAndCheck(test_url, /*expect_code_cache=*/true);
   histogram_tester.ExpectUniqueSample(
       "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
       true, 1);
+}
+
+TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
+       FetchesCodeCacheFromPlatformWhenUnavailable) {
+  base::HistogramTester histogram_tester;
+
+  // Define URLs that doesn't support the webui bundled code cache.
+  const GURL test_url("chrome://example/script.js");
+
+  EXPECT_FALSE(platform_->GetWebUIBundledCodeCacheResourceId(test_url));
+
+  LoadResourceAndCheck(test_url, /*expect_code_cache=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
+      true, 0);
 }
 
 TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,

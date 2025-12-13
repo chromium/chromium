@@ -157,8 +157,12 @@ void AutofillUiTest::SetUpOnMainThread() {
   // spurious notifications deceive the tests.
   WaitForPersonalDataManagerToBeLoaded(browser()->profile());
 
-  disable_animation_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  // Disable the caret blinking to not generate any compositor frames from just
+  // a blinking cursor.
+  os_settings_provider_.SetCaretBlinkInterval(base::TimeDelta());
+
+  disable_animation_ = std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // If the mouse happened to be over where the suggestions are shown, then
   // the preview will show up and will fail the tests. We need to give it a

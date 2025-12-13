@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/ui/list_model/list_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 
 @class ChromeTableViewStyler;
 
@@ -26,6 +26,10 @@
 // the value of the `accessoryType` property.
 @property(nonatomic, strong) UIView* accessoryView;
 
+// The selection style to be applied to the cell. Default is
+// UITableViewCellSelectionStyleDefault.
+@property(nonatomic, assign) UITableViewCellSelectionStyle selectionStyle;
+
 // Whether custom separator should be used. The separator can replace the
 // separator provided by UITableViewCell. It is a 0.5pt high line. Default is
 // NO.
@@ -37,8 +41,13 @@
 // to specialize. At this level, only accessibility properties are ported from
 // the item to the cell.
 // The cell's class must match cellClass for the given instance.
-- (void)configureCell:(TableViewCell*)cell
+- (void)configureCell:(LegacyTableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler NS_REQUIRES_SUPER;
+
+// Potentially returns a cell for the given `tableView`. Default implementation
+// returns nil. This is used by subclasses to use their own mechanism to return
+// a cell differently.
+- (LegacyTableViewCell*)cellForTableView:(UITableView*)tableView;
 
 @end
 

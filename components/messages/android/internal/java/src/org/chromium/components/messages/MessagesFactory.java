@@ -7,9 +7,10 @@ package org.chromium.components.messages;
 import android.animation.Animator;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.function.Supplier;
 
 /** A factory for constructing different Messages related objects. */
 @NullMarked

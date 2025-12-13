@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_BUBBLE_CONTROLLER_H_
 
-#include "base/memory/weak_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_observer.h"
 
 namespace actions {
@@ -16,7 +16,6 @@ namespace views {
 class BubbleDialogModelHost;
 }
 
-class Browser;
 class BrowserWindowInterface;
 
 namespace memory_saver {
@@ -32,7 +31,7 @@ class MemorySaverBubbleController : MemorySaverBubbleObserver {
 
   // Called by the ActionItem framework when the action is invoked, to show
   // the Memory Saver bubble.
-  void InvokeAction(Browser* browser, actions::ActionItem* item);
+  void InvokeAction(BrowserWindowInterface* bwi, actions::ActionItem* item);
 
   // MemorySaverBubbleObserver:
   void OnBubbleShown() override;
@@ -41,7 +40,7 @@ class MemorySaverBubbleController : MemorySaverBubbleObserver {
   views::BubbleDialogModelHost* bubble_for_testing() { return bubble_; }
 
  private:
-  base::WeakPtr<actions::ActionItem> action_item_;
+  raw_ptr<actions::ActionItem> action_item_;
   raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
 };
 

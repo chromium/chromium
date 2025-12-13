@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   EXPECT_TRUE(
       registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
   SortedSizesPx downloaded_sizes =
-      registrar().GetAppDownloadedIconSizesAny(app_id.value());
+      registrar().GetAppTrustedIconSizesFallbackToUntrusted(app_id.value());
   EXPECT_EQ(1u + kGeneratedSizes.size(), downloaded_sizes.size());
   EXPECT_TRUE(downloaded_sizes.find(kIconSize) != downloaded_sizes.end());
   EXPECT_EQ(kIconColor,
@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   EXPECT_TRUE(
       registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
   SortedSizesPx downloaded_sizes =
-      registrar().GetAppDownloadedIconSizesAny(app_id.value());
+      registrar().GetAppTrustedIconSizesFallbackToUntrusted(app_id.value());
   EXPECT_EQ(1u + kGeneratedSizes.size(), downloaded_sizes.size());
   EXPECT_TRUE(downloaded_sizes.find(kIconSize) != downloaded_sizes.end());
   EXPECT_EQ(kIconColor,

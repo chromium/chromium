@@ -80,6 +80,7 @@ source_set("lib") {
     deps += [
       "//chrome/common/printing",
       "//components/crash/core/common",
+      "//components/printing/common",
       "//ui/gfx",
     ]
 

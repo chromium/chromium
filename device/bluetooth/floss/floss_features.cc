@@ -12,12 +12,10 @@ namespace features {
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables Floss client if supported by platform
 BASE_FEATURE(kFlossEnabled, "Floss", base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kLLPrivacyIsAvailable,
-             "LLPrivacyIsAvailable",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLLPrivacyIsAvailable, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
-const char* kNotLaunchedBoards[] = {
+constexpr const char* kNotLaunchedBoards[] = {
     // Chrome unittests have an empty board name.
     // TODO(b/369038879): Remove this after all unittests could pass with Floss.
     "",

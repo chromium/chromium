@@ -8,73 +8,260 @@ package perfetto.protos;
 import "protos/perfetto/metrics/metrics.proto";
 import "protos/perfetto/metrics/custom_options.proto";
 
+// See
+// https://chromium.googlesource.com/catapult/+/refs/heads/main/tracing/tracing/value/histogram.py#624
+// for supported units.
 message UMAMetrics {
-  repeated double compositing_display_draw_to_swap = 1
-      [(unit) = "ms_smallerIsBetter"];
-  repeated double compositor_latency_total_latency = 2
-      [(unit) = "ms_smallerIsBetter"];
-  repeated double
-      event_latency_first_gesture_scroll_update_touchscreen_total_latency = 3
-      [(unit) = "ms_smallerIsBetter"];
-  repeated double
-      event_latency_gesture_scroll_update_touchscreen_total_latency = 4
-      [(unit) = "ms_smallerIsBetter"];
-  repeated double
-      event_latency_first_gesture_scroll_update_wheel_total_latency = 5
-      [(unit) = "ms_smallerIsBetter"];
-  repeated double event_latency_gesture_scroll_update_wheel_total_latency = 6
-      [(unit) = "ms_smallerIsBetter"];
-  repeated double graphics_smoothness_checkerboarding_compositor_animation = 7
-      [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_checkerboarding_main_thread_animation = 8
-      [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_checkerboarding_pinch_zoom = 9
-      [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_checkerboarding_raf = 10
-      [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_checkerboarding_touch_scroll = 11
-      [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_checkerboarding_wheel_scroll = 12
-      [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_percent_dropped_frames_all_animations = 13
-      [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_percent_dropped_frames_all_interactions =
-      14 [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_percent_dropped_frames_all_sequences = 15
-      [(unit) = "n%_smallerIsBetter"];
-  repeated double
-      graphics_smoothness_percent_dropped_frames_main_thread_main_thread_animation =
-          16 [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_percent_dropped_frames_main_thread_raf =
-      17 [(unit) = "n%_smallerIsBetter"];
-  repeated double
-      graphics_smoothness_percent_dropped_frames_main_thread_touch_scroll = 18
-      [(unit) = "n%_smallerIsBetter"];
-  repeated double
-      graphics_smoothness_percent_dropped_frames_main_thread_wheel_scroll = 19
-      [(unit) = "n%_smallerIsBetter"];
-  repeated double
-      graphics_smoothness_percent_dropped_frames_compositor_thread_compositor_animation =
-          20 [(unit) = "n%_smallerIsBetter"];
-  repeated double
-      graphics_smoothness_percent_dropped_frames_compositor_thread_pinch_zoom =
-          21 [(unit) = "n%_smallerIsBetter"];
-  repeated double
-      graphics_smoothness_percent_dropped_frames_compositor_thread_touch_scroll =
-          22 [(unit) = "n%_smallerIsBetter"];
-  repeated double
-      graphics_smoothness_percent_dropped_frames_compositor_thread_wheel_scroll =
-          23 [(unit) = "n%_smallerIsBetter"];
-  repeated double
-      graphics_smoothness_percent_dropped_frames_scrolling_thread_touch_scroll =
-          24 [(unit) = "n%_smallerIsBetter"];
-  repeated double
-      graphics_smoothness_percent_dropped_frames_scrolling_thread_wheel_scroll =
-          25 [(unit) = "n%_smallerIsBetter"];
-  repeated double memory_gpu_peak_memory_usage_scroll = 26
-      [(unit) = "sizeInBytes_smallerIsBetter"];
-  repeated double memory_gpu_peak_memory_usage_page_load = 27
-      [(unit) = "sizeInBytes_smallerIsBetter"];
+  message Browser {
+    repeated double main_threads_congestion = 1 [(unit) = "ms_smallerIsBetter"];
+  }
+
+  message Compositing {
+    repeated double display_draw_to_swap = 1 [(unit) = "ms_smallerIsBetter"];
+  }
+
+  message CompositorLatency {
+    repeated double total_latency = 1 [(unit) = "ms_smallerIsBetter"];
+    repeated int64 type = 2 [(unit) = "count_smallerIsBetter"];
+  }
+
+  message EventJank {
+    repeated double predictor_janky_frame_percentage2 = 1
+        [(unit) = "n%_smallerIsBetter"];
+    repeated int64
+        scroll_update_fast_scroll_missed_vsync_frame_above_janky_threshold2 = 2
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64
+        scroll_update_fast_scroll_no_missed_vsync_frame_above_janky_threshold2 =
+            3 [(unit) = "count_smallerIsBetter"];
+    repeated int64
+        scroll_update_slow_scroll_missed_vsync_frame_above_janky_threshold2 = 4
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64
+        scroll_update_slow_scroll_no_missed_vsync_frame_above_janky_threshold2 =
+            5 [(unit) = "count_smallerIsBetter"];
+  }
+
+  message EventLatency {
+    repeated double first_gesture_scroll_update_total_latency2 = 1
+        [(unit) = "ms_smallerIsBetter"];
+    repeated double gesture_scroll_update_total_latency2 = 2
+        [(unit) = "ms_smallerIsBetter"];
+    repeated double gesture_scroll_update_touchscreen_total_latency = 3
+        [(unit) = "ms_smallerIsBetter"];
+  };
+
+  message EventScrollJank {
+    repeated double delayed_frames_percentage_fixed_window = 1
+        [(unit) = "n%_smallerIsBetter"];
+    repeated double delayed_frames_percentage_per_scroll = 2
+        [(unit) = "n%_smallerIsBetter"];
+    repeated double missed_vsyncs_percentage_fixed_window = 3
+        [(unit) = "n%_smallerIsBetter"];
+    repeated double missed_vsyncs_percentage_per_scroll = 4
+        [(unit) = "n%_smallerIsBetter"];
+    repeated int64 missed_vsyncs_sum_fixed_window = 5
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64 missed_vsyncs_sum_per_scroll = 6
+        [(unit) = "count_smallerIsBetter"];
+  }
+
+  message GraphicsSmoothness {
+    message PercentDroppedFrames {
+      repeated double all_animations = 1 [(unit) = "n%_smallerIsBetter"];
+      repeated double all_interactions = 2 [(unit) = "n%_smallerIsBetter"];
+      repeated double all_sequences = 3 [(unit) = "n%_smallerIsBetter"];
+    };
+    message Checkerboarding {
+      repeated double all_animations = 1 [(unit) = "n%_smallerIsBetter"];
+      repeated double all_interactions = 2 [(unit) = "n%_smallerIsBetter"];
+      repeated double all_sequences = 3 [(unit) = "n%_smallerIsBetter"];
+      repeated double compositor_thread_scrollbar_scroll = 4
+          [(unit) = "n%_smallerIsBetter"];
+    };
+    message Jank {
+      repeated int64 all_animations = 1 [(unit) = "count_smallerIsBetter"];
+      repeated int64 all_interactions = 2 [(unit) = "count_smallerIsBetter"];
+      repeated int64 all_sequences = 3 [(unit) = "count_smallerIsBetter"];
+    };
+
+    optional PercentDroppedFrames percent_dropped_frames3 = 1;
+    optional PercentDroppedFrames percent_dropped_frames4 = 2;
+    optional Checkerboarding checkerboarding3 = 3;
+    optional Checkerboarding checkerboarding4 = 4;
+    optional Jank jank3 = 5;
+
+    repeated double checkerboarding_need_raster4_all_sequences = 6
+        [(unit) = "n%_smallerIsBetter"];
+    repeated double checkerboarding_need_record4_all_sequences = 7
+        [(unit) = "n%_smallerIsBetter"];
+  }
+
+  message Memory {
+    repeated int64 experimental_renderer2_small_malloc_brp_quarantined = 1
+        [(unit) = "sizeInBytes_smallerIsBetter"];
+    repeated int64 gpu_peak_memory_usage2_page_load = 2
+        [(unit) = "sizeInBytes_smallerIsBetter"];
+    repeated int64 gpu_peak_memory_usage2_scroll = 3
+        [(unit) = "sizeInBytes_smallerIsBetter"];
+  }
+
+  message NewTabPage {
+    repeated int64 load_time_web_ui_ntp = 1 [(unit) = "ms_smallerIsBetter"];
+    repeated int64 main_ui_shown_time = 2 [(unit) = "ms_smallerIsBetter"];
+    repeated int64 modules_shown_time = 3 [(unit) = "ms_smallerIsBetter"];
+  }
+
+  message Omnibox {
+    repeated int64 char_typed_to_repaint_latency_to_paint = 1
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 char_typed_to_repaint_latency = 2
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 paint_time = 3 [(unit) = "ms_smallerIsBetter"];
+    repeated int64 query_time2_0 = 4 [(unit) = "ms_smallerIsBetter"];
+    repeated int64 query_time2_1 = 5 [(unit) = "ms_smallerIsBetter"];
+    repeated int64 query_time2_2 = 6 [(unit) = "ms_smallerIsBetter"];
+  };
+
+  message PageLoad {
+    repeated int64 clients_ads_all_pages_non_ad_network_bytes = 1
+        [(unit) = "sizeInBytes_smallerIsBetter"];
+    repeated double clients_ads_all_pages_percent_network_bytes_ads = 2
+        [(unit) = "n%_smallerIsBetter"];
+    repeated int64 clients_ads_bytes_ad_frames_aggregate_total2 = 3
+        [(unit) = "sizeInBytes_smallerIsBetter"];
+    repeated int64 clients_ads_cpu_ad_frames_aggregate_total_usage2 = 4
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 clients_ads_cpu_full_page_total_usage2 = 5
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 clients_ads_frame_counts_ad_frames_total = 6
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64 clients_ads_resources_bytes_ads2 = 7
+        [(unit) = "sizeInBytes_smallerIsBetter"];
+    repeated int64
+        clients_fenced_frames_paint_timing_navigation_to_first_contentful_paint =
+            8 [(unit) = "ms_smallerIsBetter"];
+    repeated int64
+        clients_third_party_frames_navigation_to_first_contentful_paint3 = 9
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 cpu_total_usage = 10 [(unit) = "ms_smallerIsBetter"];
+    repeated double layout_instability_cumulative_shift_score = 11
+        [(unit) = "unitless_smallerIsBetter"];
+    repeated int64 paint_timing_navigation_to_first_contentful_paint = 12
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 paint_timing_navigation_to_largest_contentful_paint = 13
+        [(unit) = "ms_smallerIsBetter"];
+  }
+
+  message SharedStorage {
+    repeated double document_timing_add_module = 1
+        [(unit) = "ms_smallerIsBetter"];
+    repeated double document_timing_append = 2 [(unit) = "ms_smallerIsBetter"];
+    repeated double document_timing_clear = 3 [(unit) = "ms_smallerIsBetter"];
+    repeated double document_timing_delete = 4 [(unit) = "ms_smallerIsBetter"];
+    repeated double document_timing_run_executed_in_worklet = 5
+        [(unit) = "ms_smallerIsBetter"];
+    repeated double document_timing_run = 6 [(unit) = "ms_smallerIsBetter"];
+    repeated double document_timing_select_url_executed_in_worklet = 7
+        [(unit) = "ms_smallerIsBetter"];
+    repeated double document_timing_select_url = 8
+        [(unit) = "ms_smallerIsBetter"];
+    repeated double document_timing_set = 9 [(unit) = "ms_smallerIsBetter"];
+    repeated double worklet_timing_append = 10 [(unit) = "ms_smallerIsBetter"];
+    repeated double worklet_timing_clear = 11 [(unit) = "ms_smallerIsBetter"];
+    repeated double worklet_timing_delete = 12 [(unit) = "ms_smallerIsBetter"];
+    repeated double worklet_timing_entries_next = 13
+        [(unit) = "ms_smallerIsBetter"];
+    repeated double worklet_timing_get = 14 [(unit) = "ms_smallerIsBetter"];
+    repeated double worklet_timing_keys_next = 15
+        [(unit) = "ms_smallerIsBetter"];
+    repeated double worklet_timing_length = 16 [(unit) = "ms_smallerIsBetter"];
+    repeated double worklet_timing_remaining_budget = 17
+        [(unit) = "ms_smallerIsBetter"];
+    repeated double worklet_timing_set = 18 [(unit) = "ms_smallerIsBetter"];
+    repeated double worklet_timing_values_next = 19
+        [(unit) = "ms_smallerIsBetter"];
+  };
+
+  message SubresourceFilter {
+    repeated int64 page_load_num_subresource_loads_matched_rules = 1
+        [(unit) = "count_smallerIsBetter"];
+  };
+
+  message TabSearch {
+    repeated int64 close_action = 1 [(unit) = "count_smallerIsBetter"];
+    repeated int64 mojo_switch_to_tab_is_overlap = 2
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64 mojo_switch_to_tab = 3 [(unit) = "count_smallerIsBetter"];
+    repeated int64 mojo_tab_updated_is_overlap = 4
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64 mojo_tab_updated = 5 [(unit) = "count_smallerIsBetter"];
+    repeated int64 num_tabs_closed_per_instance = 6
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64 num_tabs_on_open = 7 [(unit) = "count_smallerIsBetter"];
+    repeated int64 num_windows_on_open = 8 [(unit) = "count_smallerIsBetter"];
+    repeated int64 open_action = 9 [(unit) = "count_smallerIsBetter"];
+    repeated int64 page_handler_construction_delay = 10
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 web_ui_initial_tabs_render_time = 11
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 web_ui_load_completed_time = 12
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 web_ui_load_document_time = 13
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 web_ui_search_algorithm_duration = 14
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 web_ui_tab_list_data_received = 15
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 web_ui_tab_list_data_received2_is_overlap = 16
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64 web_ui_tab_list_data_received2 = 17
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 web_ui_tab_switch_action = 18
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64 window_displayed_duration2 = 19
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 window_time_to_show_cached_web_view = 20
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 window_time_to_show_uncached_web_view = 21
+        [(unit) = "ms_smallerIsBetter"];
+  }
+
+  message TabStrip {
+    repeated int64 tab_views_activation_action = 1
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64 tab_web_ui_activation_action = 2
+        [(unit) = "count_smallerIsBetter"];
+  }
+
+  message WebUITabStrip {
+    repeated int64 close_action = 1 [(unit) = "count_smallerIsBetter"];
+    repeated int64 close_tab_action = 2 [(unit) = "count_smallerIsBetter"];
+    repeated int64 load_completed_time = 3 [(unit) = "ms_smallerIsBetter"];
+    repeated int64 load_document_time = 4 [(unit) = "ms_smallerIsBetter"];
+    repeated int64 open_action = 5 [(unit) = "count_smallerIsBetter"];
+    repeated int64 open_duration = 6 [(unit) = "ms_smallerIsBetter"];
+    repeated int64 tab_activation = 7 [(unit) = "count_smallerIsBetter"];
+    repeated int64 tab_creation = 8 [(unit) = "count_smallerIsBetter"];
+    repeated int64 tab_data_received = 9 [(unit) = "ms_smallerIsBetter"];
+  };
+
+  optional Browser browser = 1;
+  optional Compositing compositing = 2;
+  optional CompositorLatency compositor_latency = 3;
+  optional EventJank event_jank = 4;
+  optional EventLatency event_latency = 5;
+  optional EventScrollJank event_scroll_jank = 6;
+  optional GraphicsSmoothness graphics_smoothness = 7;
+  optional Memory memory = 8;
+  optional NewTabPage new_tab_page = 9;
+  optional Omnibox omnibox = 10;
+  optional PageLoad page_load = 11;
+  optional SharedStorage shared_storage = 12;
+  optional SubresourceFilter subresource_filter = 13;
+  optional TabSearch tab_search = 14;
+  optional TabStrip tab_strip = 15;
+  optional WebUITabStrip web_ui_tab_strip = 16;
 }
 
 extend TraceMetrics {

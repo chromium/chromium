@@ -339,13 +339,14 @@ BASE_EXPORT span<uint8_t> CFMutableDataToSpan(CFMutableDataRef data);
 
 }  // namespace base::apple
 
-// Stream operations for CFTypes. They can be used with Objective-C types as
-// well by using the casting methods in base/apple/bridging.h.
+// Stream operations for NS/CF types.
 //
-// For example: LOG(INFO) << base::apple::NSToCFPtrCast(@"foo");
+// operator<< cannot be overloaded for Objective-C types as the compiler cannot
+// distinguish between overloads for id with overloads for void*. Objective-C
+// objects are streamed as the result of calling `-description` on them.
 //
-// operator<<() can not be overloaded for Objective-C types as the compiler
-// cannot distinguish between overloads for id with overloads for void*.
+// operator<< cannot be overloaded for selectors as those are always treated as
+// pointers; stream the result of `NSStringFromSelector()` instead.
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o,
                                             const CFErrorRef err);
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o,
@@ -355,7 +356,6 @@ BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, CFRange);
 #if defined(__OBJC__)
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, id);
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, NSRange);
-BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, SEL);
 
 #if BUILDFLAG(IS_MAC)
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, NSPoint);

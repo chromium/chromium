@@ -31,6 +31,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/base/features.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
+#include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/exported/web_settings_impl.h"
@@ -68,6 +70,7 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/page_popup_client.h"
 #include "third_party/blink/renderer/core/page/page_popup_controller.h"
+#include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -154,6 +157,11 @@ Page* CreatePage(ChromeClient& chrome_client, WebViewImpl& opener_web_view) {
             : "light");
   }
   return page;
+}
+
+WebPagePopup::Handle NextPopupHandle() {
+  static WebPagePopup::Handle::Generator generator;
+  return generator.GenerateNextId();
 }
 
 }  // namespace
@@ -344,10 +352,11 @@ WebPagePopupImpl::WebPagePopupImpl(
           /*hidden=*/false,
           /*never_composited=*/false,
           /*is_embedded=*/false,
-          /*is_for_scalable_page=*/true)) {
+          /*is_for_scalable_page=*/true)),
+      handle_(NextPopupHandle()) {
   DCHECK(popup_client_);
-  popup_widget_host_.set_disconnect_handler(WTF::BindOnce(
-      &WebPagePopupImpl::WidgetHostDisconnected, WTF::Unretained(this)));
+  popup_widget_host_.set_disconnect_handler(blink::BindOnce(
+      &WebPagePopupImpl::WidgetHostDisconnected, blink::Unretained(this)));
   if (auto* main_frame_widget = opener_web_view->MainFrameViewWidget()) {
     if (auto* device_emulator = main_frame_widget->DeviceEmulator()) {
       opener_widget_screen_origin_ = device_emulator->ViewRectOrigin();
@@ -419,9 +428,9 @@ WebPagePopupImpl::WebPagePopupImpl(
 
   popup_owner_client_rect_ =
       popup_client_->OwnerElement().GetBoundingClientRect();
-  popup_widget_host_->ShowPopup(
-      initial_rect_, GetAnchorRectInScreen(),
-      WTF::BindOnce(&WebPagePopupImpl::DidShowPopup, WTF::Unretained(this)));
+  popup_widget_host_->ShowPopup(initial_rect_, GetAnchorRectInScreen(),
+                                blink::BindOnce(&WebPagePopupImpl::DidShowPopup,
+                                                blink::Unretained(this)));
   should_defer_setting_window_rect_ = false;
   widget_base_->SetPendingWindowRect(initial_rect_);
 
@@ -508,12 +517,19 @@ bool WebPagePopupImpl::HasFocus() {
   return widget_base_->has_focus();
 }
 
+WebHitTestResult WebPagePopupImpl::HitTestResultAt(const gfx::PointF& point) {
+  CHECK(page_);
+  HitTestLocation location(point);
+  return MainFrame().View()->HitTestWithThrottlingAllowed(
+      location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
+}
+
 void WebPagePopupImpl::FlushInputProcessedCallback() {
   widget_base_->FlushInputProcessedCallback();
 }
 
-void WebPagePopupImpl::CancelCompositionForPepper() {
-  widget_base_->CancelCompositionForPepper();
+void WebPagePopupImpl::CancelComposition() {
+  widget_base_->CancelComposition();
 }
 
 void WebPagePopupImpl::ApplyVisualProperties(
@@ -633,8 +649,8 @@ void WebPagePopupImpl::SetWindowRect(const gfx::Rect& rect_in_screen) {
   if (!should_defer_setting_window_rect_) {
     widget_base_->SetPendingWindowRect(window_rect);
     popup_widget_host_->SetPopupBounds(
-        window_rect,
-        WTF::BindOnce(&WebPagePopupImpl::DidSetBounds, WTF::Unretained(this)));
+        window_rect, blink::BindOnce(&WebPagePopupImpl::DidSetBounds,
+                                     blink::Unretained(this)));
   } else {
     initial_rect_ = window_rect;
   }
@@ -784,7 +800,23 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
     }
     ScrollOffset scroll_offset(-event.data.scroll_update.delta_x,
                                -event.data.scroll_update.delta_y);
+    cc::ScrollSourceType scroll_source_type =
+        cc::ScrollSourceType::kAbsoluteScroll;
+    bool vertical_scrollbar_thumb_pressed =
+        scrollable->VerticalScrollbar() &&
+        scrollable->VerticalScrollbar()->PressedPart() == kThumbPart;
+    bool horizontal_scrollbar_thumb_pressed =
+        scrollable->HorizontalScrollbar() &&
+        scrollable->HorizontalScrollbar()->PressedPart() == kThumbPart;
+    if (event.SourceDevice() == mojom::blink::GestureDevice::kTouchpad ||
+        event.SourceDevice() == mojom::blink::GestureDevice::kTouchscreen ||
+        (event.SourceDevice() == mojom::blink::GestureDevice::kScrollbar &&
+         !vertical_scrollbar_thumb_pressed &&
+         !horizontal_scrollbar_thumb_pressed)) {
+      scroll_source_type = cc::ScrollSourceType::kRelativeScroll;
+    }
     scrollable->UserScroll(event.data.scroll_update.delta_units, scroll_offset,
+                           scroll_source_type,
                            ScrollableArea::ScrollCallback());
     return WebInputEventResult::kHandledSystem;
   }
@@ -1033,6 +1065,14 @@ WebDocument WebPagePopupImpl::GetDocument() {
   return WebDocument(MainFrame().GetDocument());
 }
 
+WebPagePopup::Handle WebPagePopupImpl::GetHandle() const {
+  if (!page_) {
+    WebPagePopup::Handle();
+  }
+
+  return handle_;
+}
+
 void WebPagePopupImpl::Cancel() {
   if (popup_client_)
     popup_client_->CancelPopup();
@@ -1078,6 +1118,18 @@ void WebPagePopupImpl::EmulatedToScreenRect(gfx::Rect& screen_rect) {
 std::unique_ptr<cc::LayerTreeFrameSink>
 WebPagePopupImpl::AllocateNewLayerTreeFrameSink() {
   return nullptr;
+}
+
+void WebPagePopupImpl::ExecuteEditCommand(const String& command,
+                                          const String& value) {
+  if (LocalFrame* frame = page_->GetFocusController().FocusedFrame()) {
+    frame->GetEditor().ExecuteCommand(command, value);
+  }
+}
+
+Element& WebPagePopupImpl::OwnerElement() {
+  CHECK(popup_client_);
+  return popup_client_->OwnerElement();
 }
 
 // WebPagePopup ----------------------------------------------------------------

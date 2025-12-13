@@ -14,7 +14,18 @@
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/map_data_internal.h"
-#include "mojo/public/cpp/bindings/lib/buffer.h"
+{%- endif %}
+
+{%- if all_enums|length %}
+#include "mojo/public/cpp/bindings/lib/validation_errors.h"
+{%- endif %}
+
+{%- if structs|length %}
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
+{%- endif %}
+
+{%- if unions|length %}
+#include "mojo/public/c/system/macros.h"
 {%- endif %}
 
 {%- for import in imports %}

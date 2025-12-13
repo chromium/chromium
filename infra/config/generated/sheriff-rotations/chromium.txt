@@ -64,11 +64,11 @@ ci/Win Builder (dbg)
 ci/Win x64 Builder
 ci/Win x64 Builder (dbg)
 ci/Win10 Tests x64
+ci/Win10 Tests x64 (dbg)
 ci/Win11 Tests x64
 ci/Windows deterministic
-ci/android-archive-rel
-ci/android-arm64-archive-rel
-ci/android-official
+ci/android-desktop-arm64-official
+ci/android-desktop-x64-official
 ci/chromeos-amd64-generic-asan-rel
 ci/chromeos-amd64-generic-cfi-thin-lto-rel
 ci/chromeos-amd64-generic-dbg
@@ -77,6 +77,7 @@ ci/chromeos-amd64-generic-rel-gtest
 ci/chromeos-arm-generic-dbg
 ci/chromeos-arm-generic-rel
 ci/chromeos-arm64-generic-rel
+ci/chromeos-x64-libfuzzer-asan-rel-tests
 ci/fuchsia-arm64-cast-receiver-rel
 ci/fuchsia-x64-cast-receiver-dbg
 ci/fuchsia-x64-cast-receiver-rel
@@ -107,9 +108,16 @@ ci/linux-v4l2-codec-rel
 ci/linux-wayland-mutter-rel-tests
 ci/linux-wayland-weston-rel-tests
 ci/linux-win-cross-rel
+ci/linux-x64-centipede-asan-rel-tests
+ci/linux-x64-libfuzzer-asan-dbg-tests
+ci/linux-x64-libfuzzer-asan-rel-tests
+ci/linux-x64-libfuzzer-msan-rel-tests
+ci/linux-x64-libfuzzer-ubsan-rel-tests
+ci/linux-x86-libfuzzer-asan-rel-tests
 ci/mac-archive-rel
 ci/mac-arm64-archive-rel
 ci/mac-arm64-dbg
+ci/mac-arm64-libfuzzer-asan-rel-tests
 ci/mac-arm64-on-arm64-rel
 ci/mac-arm64-rel
 ci/mac-official
@@ -124,6 +132,7 @@ ci/win-arm64-rel
 ci/win-asan
 ci/win-official
 ci/win-presubmit
+ci/win-x64-libfuzzer-asan-rel-tests
 ci/win11-arm64-rel-tests
 ci/win32-archive-rel
 ci/win32-official

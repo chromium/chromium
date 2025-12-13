@@ -57,7 +57,7 @@ class PLATFORM_EXPORT ParsedContentType final {
 
   // Note that in the case of multiple values for the same name, the last value
   // is returned.
-  String ParameterValueForName(const String& name) const {
+  String ParameterValueForName(StringView name) const {
     return IsValid() ? parameters_->ParameterValueForName(name) : String();
   }
   const ParsedContentHeaderFieldParameters& GetParameters() const {

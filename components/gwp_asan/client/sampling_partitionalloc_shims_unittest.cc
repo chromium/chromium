@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gwp_asan/client/sampling_partitionalloc_shims.h"
 
 #include <stdlib.h>
@@ -16,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
@@ -138,7 +134,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   CHECK_NE(alloc, nullptr);
 
   constexpr unsigned char kFillChar = 0xff;
-  memset(alloc, kFillChar, base::GetPageSize());
+  UNSAFE_TODO(memset(alloc, kFillChar, base::GetPageSize()));
 
   unsigned char* new_alloc = static_cast<unsigned char*>(
       allocator.root()->Realloc(alloc, base::GetPageSize() + 1, kFakeType));
@@ -146,7 +142,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   CHECK_EQ(GetPartitionAllocGpaForTesting().PointerIsMine(new_alloc), false);
 
   for (size_t i = 0; i < base::GetPageSize(); i++)
-    CHECK_EQ(new_alloc[i], kFillChar);
+    UNSAFE_TODO(CHECK_EQ(new_alloc[i], kFillChar));
 
   allocator.root()->Free(new_alloc);
   return kSuccess;

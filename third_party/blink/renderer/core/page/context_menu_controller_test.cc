@@ -169,8 +169,7 @@ class MockAttributionHost
       : provider_(provider), on_data_host_bound_(base::DoNothing()) {
     provider_->OverrideBinderForTesting(
         mojom::blink::AttributionHost::Name_,
-        WTF::BindRepeating(&MockAttributionHost::BindReceiver,
-                           WTF::Unretained(this)));
+        BindRepeating(&MockAttributionHost::BindReceiver, Unretained(this)));
   }
 
   ~MockAttributionHost() override {
@@ -208,7 +207,7 @@ class MockAttributionHost
       mojo::PendingReceiver<attribution_reporting::mojom::blink::DataHost>,
       attribution_reporting::mojom::RegistrationEligibility,
       bool is_for_background_requests,
-      const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>&
+      const Vector<scoped_refptr<const blink::SecurityOrigin>>&
           reporting_origins) override {}
 
   void RegisterNavigationDataHost(
@@ -2256,6 +2255,18 @@ TEST_F(ContextMenuControllerTest, SelectUnselectableContent) {
   EXPECT_EQ(context_menu_data.selected_text, "A test_all B");
 }
 
+// http://crbug.com/447973114
+TEST_F(ContextMenuControllerTest, FileInputSelectAllShowsContextMenuNoCrash) {
+  Document* document = GetDocument();
+  document->documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<input type=file id=test>");
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  document->GetFrame()->Selection().SelectAll();
+  Element* element = document->getElementById(AtomicString("test"));
+  // Passed without crashing.
+  EXPECT_TRUE(ShowContextMenuForElement(element, kMenuSourceMouse));
+}
+
 class ContextMenuControllerRemoteParentFrameTest : public testing::Test {
  public:
   ContextMenuControllerRemoteParentFrameTest() = default;
@@ -2304,6 +2315,139 @@ TEST_F(ContextMenuControllerRemoteParentFrameTest, ShowContextMenuInChild) {
       child_web_frame_client().host_context_menu_location();
   ASSERT_TRUE(host_context_menu_location.has_value());
   EXPECT_EQ(kPoint, host_context_menu_location.value());
+}
+
+class InterestForTouchscreenTest : public ContextMenuControllerTest {};
+
+TEST_F(InterestForTouchscreenTest, NoInterestFor) {
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"(
+    <button id=button>Button</button>
+    <a id=link>Link</a>
+    <div id=plain interestfor=popover>Plain div</button>
+    <div popover id=popover>Popover</div>
+    )");
+  Document* document = GetDocument();
+  Element* button = document->getElementById(AtomicString("button"));
+  Element* link = document->getElementById(AtomicString("link"));
+  Element* div = document->getElementById(AtomicString("plain"));
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Long-press the button
+  gfx::PointF gesture_location = button->GetBoundingClientRect()->Center();
+  WebGestureEvent gesture_event(
+      WebInputEvent::Type::kGestureLongPress, WebInputEvent::kNoModifiers,
+      base::TimeTicks::Now(), WebGestureDevice::kTouchscreen);
+  gesture_event.SetPositionInWidget(gesture_location);
+  GetWebView()->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(gesture_event, ui::LatencyInfo()));
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_FALSE(context_menu_data.opened_from_interest_for);
+
+  // Long-press the link with interestfor
+  gesture_location = link->GetBoundingClientRect()->Center();
+  WebGestureEvent gesture_event_link(
+      WebInputEvent::Type::kGestureLongPress, WebInputEvent::kNoModifiers,
+      base::TimeTicks::Now(), WebGestureDevice::kTouchscreen);
+  gesture_event_link.SetPositionInWidget(gesture_location);
+  GetWebView()->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(gesture_event_link, ui::LatencyInfo()));
+  ContextMenuData context_menu_data_link =
+      GetWebFrameClient().GetContextMenuData();
+  EXPECT_FALSE(context_menu_data_link.opened_from_interest_for);
+
+  // Long-press the plain div with interestfor
+  gesture_location = div->GetBoundingClientRect()->Center();
+  WebGestureEvent gesture_event_div(
+      WebInputEvent::Type::kGestureLongPress, WebInputEvent::kNoModifiers,
+      base::TimeTicks::Now(), WebGestureDevice::kTouchscreen);
+  gesture_event_div.SetPositionInWidget(gesture_location);
+  GetWebView()->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(gesture_event_div, ui::LatencyInfo()));
+  ContextMenuData context_menu_data_div =
+      GetWebFrameClient().GetContextMenuData();
+  EXPECT_FALSE(context_menu_data_div.opened_from_interest_for);
+}
+
+TEST_F(InterestForTouchscreenTest, ButtonWithInterestFor) {
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"(
+    <button interestfor=target id=button type=button>Button</button>
+    <div id=target>Target</div>
+    )");
+  Document* document = GetDocument();
+  Element* button = document->getElementById(AtomicString("button"));
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_EQ(button->GetInterestState(), Element::InterestState::kNoInterest);
+
+  // Long-press the button
+  gfx::PointF gesture_location = button->GetBoundingClientRect()->Center();
+  WebGestureEvent gesture_event(
+      WebInputEvent::Type::kGestureLongPress, WebInputEvent::kNoModifiers,
+      base::TimeTicks::Now(), WebGestureDevice::kTouchscreen);
+  gesture_event.SetPositionInWidget(gesture_location);
+  GetWebView()->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(gesture_event, ui::LatencyInfo()));
+
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(context_menu_data.opened_from_interest_for);
+  EXPECT_EQ(context_menu_data.link_text, "");
+  EXPECT_EQ(context_menu_data.selected_text, "");
+  EXPECT_EQ(context_menu_data.source_type,
+            WebMenuSourceType::kMenuSourceLongPress);
+  // Interest is shown immediately for buttons.
+  EXPECT_EQ(button->GetInterestState(), Element::InterestState::kFullInterest);
+
+  // Now simulate the pointerup that happens when the touch is released - this
+  // should not lose interest.
+  WebPointerEvent pointerup_event(
+      WebInputEvent::Type::kPointerUp,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kTouch,
+                           WebPointerProperties::Button::kLeft,
+                           gesture_location, gesture_location),
+      1.0f, 1.0f);
+  GetWebView()->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pointerup_event, ui::LatencyInfo()));
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_EQ(button->GetInterestState(), Element::InterestState::kFullInterest);
+}
+
+TEST_F(InterestForTouchscreenTest, LinkWithInterestFor) {
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"(
+    <a href="foo.html" interestfor=target id=link>Link</a>
+    <div target id=target popover>Target</div>
+
+    <!-- Without this, the bounding client rect of `<a id=link>` is 8,8 1.89062x1 -->
+    <style> a {display:block; width: 50px; height: 20px;} </style>
+    )");
+  Document* document = GetDocument();
+  Element* link = document->getElementById(AtomicString("link"));
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_EQ(link->GetInterestState(), Element::InterestState::kNoInterest);
+
+  // Long-press the link
+  gfx::PointF gesture_location = link->GetBoundingClientRect()->Center();
+  WebGestureEvent gesture_event(
+      WebInputEvent::Type::kGestureLongPress, WebInputEvent::kNoModifiers,
+      base::TimeTicks::Now(), WebGestureDevice::kTouchscreen);
+  gesture_event.SetPositionInWidget(gesture_location);
+  GetWebView()->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(gesture_event, ui::LatencyInfo()));
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(context_menu_data.opened_from_interest_for);
+  EXPECT_EQ(context_menu_data.link_text, "Link");
+  EXPECT_EQ(context_menu_data.selected_text, "");
+  EXPECT_EQ(context_menu_data.source_type,
+            WebMenuSourceType::kMenuSourceLongPress);
+  EXPECT_FALSE(context_menu_data.form_control_type.has_value());
+  // Interest is *not* shown immediately for links, because the context menu
+  // shows up.
+  EXPECT_EQ(link->GetInterestState(), Element::InterestState::kNoInterest);
+
+  // Simulate choosing the "Show details" context menu item
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_EQ(link->GetInterestState(), Element::InterestState::kNoInterest);
+  link->ShowInterestNow();
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_EQ(link->GetInterestState(), Element::InterestState::kFullInterest);
 }
 
 }  // namespace blink

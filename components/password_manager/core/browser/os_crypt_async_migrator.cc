@@ -27,14 +27,7 @@ OSCryptAsyncMigrator::~OSCryptAsyncMigrator() = default;
 
 bool OSCryptAsyncMigrator::NeedsCleaning() {
   // Phase 1 of OSCryptMigration is enabled by default since M133.
-  // Phase 2 of OSCryptMigration has to be enabled.
-  if (!base::FeatureList::IsEnabled(features::kUseNewEncryptionMethod)) {
-    return false;
-  }
-  if (!base::FeatureList::IsEnabled(
-          features::kEncryptAllPasswordsWithOSCryptAsync)) {
-    return false;
-  }
+  // Phase 2 of OSCryptMigration is also enabled by default since M137.
   return !prefs_->GetBoolean(store_pref_name_);
 }
 
@@ -42,7 +35,6 @@ void OSCryptAsyncMigrator::StartCleaning(Observer* observer) {
   CHECK(NeedsCleaning());
   CHECK(observer);
   CHECK(!observer_);
-  CHECK(base::FeatureList::IsEnabled(features::kUseNewEncryptionMethod));
   observer_ = observer;
   store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
 }

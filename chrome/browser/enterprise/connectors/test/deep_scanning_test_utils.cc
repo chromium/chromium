@@ -17,8 +17,6 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
@@ -37,10 +35,37 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::SafeBrowsingPrivateEventRouter;
 using ::testing::_;
 
 namespace enterprise_connectors::test {
+
+namespace {
+
+// Namespace alias to reduce verbosity when using event protos.
+namespace proto = ::chrome::cros::reporting::proto;
+
+constexpr char kKeyProfileUserName[] = "profileUserName";
+
+proto::EventResult GetEventResultProto(const std::string& event_result) {
+  if (event_result == "EVENT_RESULT_UNKNOWN") {
+    return proto::EventResult::EVENT_RESULT_UNSPECIFIED;
+  }
+  if (event_result == "EVENT_RESULT_ALLOWED") {
+    return proto::EventResult::EVENT_RESULT_ALLOWED;
+  }
+  if (event_result == "EVENT_RESULT_WARNED") {
+    return proto::EventResult::EVENT_RESULT_WARNED;
+  }
+  if (event_result == "EVENT_RESULT_BLOCKED") {
+    return proto::EventResult::EVENT_RESULT_BLOCKED;
+  }
+  if (event_result == "EVENT_RESULT_BYPASSED") {
+    return proto::EventResult::EVENT_RESULT_BYPASSED;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 using base::test::EqualsProto;
 
@@ -89,7 +114,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
     const std::optional<std::string>& expected_content_transfer_method) {
-  event_key_ = enterprise_connectors::kKeyUnscannedFileEvent;
+  event_key_ = kKeyUnscannedFileEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;
   source_ = expected_source;
@@ -109,6 +134,53 @@ void EventReportValidator::ExpectUnscannedFileEvent(
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
+            if (!done_closure_.is_null()) {
+              done_closure_.Run();
+            }
+          });
+}
+
+void EventReportValidator::ExpectUnscannedFileEvents(
+    chrome::cros::reporting::proto::UnscannedFileEvent
+        expected_unscanned_file_event,
+    const std::vector<std::string>& expected_filenames,
+    const std::vector<std::string>& expected_sha256s,
+    const std::set<std::string>* expected_mimetypes) {
+  DCHECK_EQ(expected_filenames.size(), expected_sha256s.size());
+  base::flat_map<std::string, std::string> filenames_and_hashes;
+  for (size_t i = 0; i < expected_filenames.size(); ++i) {
+    filenames_and_hashes[expected_filenames[i]] = expected_sha256s[i];
+  }
+
+  EXPECT_CALL(*client_, UploadSecurityEvent)
+      .Times(expected_filenames.size())
+      .WillRepeatedly(
+          [this, expected_unscanned_file_event, filenames_and_hashes,
+           expected_mimetypes](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            // There should only be 1 event per test.
+            ASSERT_EQ(1, request.events_size());
+            ASSERT_TRUE(request.events().Get(0).has_unscanned_file_event());
+            auto unscanned_file_event =
+                request.events().Get(0).unscanned_file_event();
+
+            EXPECT_TRUE(base::Contains(*expected_mimetypes,
+                                       unscanned_file_event.content_type()));
+            EXPECT_EQ(filenames_and_hashes.at(unscanned_file_event.file_name()),
+                      unscanned_file_event.download_digest_sha_256());
+
+            // Clear the validated fields, so that the captured proto can match
+            // the expected protos.
+            unscanned_file_event.clear_content_type();
+            unscanned_file_event.clear_file_name();
+            unscanned_file_event.clear_download_digest_sha_256();
+
+            EXPECT_THAT(unscanned_file_event,
+                        EqualsProto(expected_unscanned_file_event));
+
             if (!done_closure_.is_null()) {
               done_closure_.Run();
             }
@@ -136,7 +208,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
     results_[expected_filenames[i]] = expected_result;
   }
 
-  event_key_ = enterprise_connectors::kKeyUnscannedFileEvent;
+  event_key_ = kKeyUnscannedFileEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;
   source_ = expected_source;
@@ -171,7 +243,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
     const std::optional<std::string>& expected_scan_id) {
-  event_key_ = enterprise_connectors::kKeyDangerousDownloadEvent;
+  event_key_ = kKeyDangerousDownloadEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;
   source_ = expected_source;
@@ -199,6 +271,74 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
           });
 }
 
+void EventReportValidator::ExpectSensitiveDataEvents(
+    const std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
+        expected_sensitive_data_events,
+    const std::vector<std::string>& expected_filenames,
+    const std::vector<std::string>& expected_sha256s,
+    const std::vector<std::string>& expected_results,
+    const std::vector<std::string>& expected_scan_ids) {
+  base::flat_map<std::string, ContentAnalysisResponse::Result> dlp_verdicts;
+  base::flat_map<std::string, std::string> results;
+  base::flat_map<std::string, std::string> filenames_and_hashes;
+  base::flat_map<std::string, std::string> scan_ids;
+  base::flat_map<std::string,
+                 chrome::cros::reporting::proto::DlpSensitiveDataEvent>
+      expected_data_event;
+
+  for (size_t i = 0; i < expected_filenames.size(); ++i) {
+    filenames_and_hashes[expected_filenames[i]] = expected_sha256s[i];
+    results[expected_filenames[i]] = expected_results[i];
+    scan_ids[expected_filenames[i]] = expected_scan_ids[i];
+    expected_data_event[expected_filenames[i]] =
+        expected_sensitive_data_events[i];
+  }
+
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      expected_filenames.size(), base::BindOnce(
+                                     [](base::RepeatingClosure closure) {
+                                       if (!closure.is_null()) {
+                                         closure.Run();
+                                       }
+                                     },
+                                     std::move(done_closure_)));
+
+  EXPECT_CALL(*client_, UploadSecurityEvent)
+      .Times(expected_filenames.size())
+      .WillRepeatedly(
+          [expected_data_event, dlp_verdicts, results, filenames_and_hashes,
+           scan_ids, barrier_closure](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            // There should only be 1 event per test.
+            ASSERT_EQ(1, request.events_size());
+            ASSERT_TRUE(request.events().Get(0).has_sensitive_data_event());
+            auto sensitive_data_event =
+                request.events().Get(0).sensitive_data_event();
+
+            const auto filename = sensitive_data_event.file_name();
+            EXPECT_EQ(filenames_and_hashes.at(filename),
+                      sensitive_data_event.download_digest_sha_256());
+            EXPECT_EQ(scan_ids.at(filename), sensitive_data_event.scan_id());
+            EXPECT_EQ(GetEventResultProto(results.at(filename)),
+                      sensitive_data_event.event_result());
+
+            // Clear the validated fields, so that the captured proto can match
+            // the expected protos
+            sensitive_data_event.clear_file_name();
+            sensitive_data_event.clear_scan_id();
+            sensitive_data_event.clear_event_result();
+            sensitive_data_event.clear_download_digest_sha_256();
+
+            EXPECT_THAT(sensitive_data_event,
+                        EqualsProto(expected_data_event.at(filename)));
+
+            barrier_closure.Run();
+          });
+}
+
 void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_url,
     const std::string& expected_tab_url,
@@ -216,7 +356,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_scan_id,
     const std::optional<std::string>& expected_content_transfer_method,
     const std::optional<std::u16string>& expected_user_justification) {
-  event_key_ = enterprise_connectors::kKeySensitiveDataEvent;
+  event_key_ = kKeySensitiveDataEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;
   source_ = expected_source;
@@ -244,49 +384,13 @@ void EventReportValidator::ExpectSensitiveDataEvent(
           });
 }
 
-void EventReportValidator::ExpectDataControlsSensitiveDataEvent(
-    const std::string& expected_url,
-    const std::string& expected_tab_url,
-    const std::string& expected_source,
-    const std::string& expected_destination,
-    const std::set<std::string>* expected_mimetypes,
-    const std::string& expected_trigger,
-    const data_controls::Verdict::TriggeredRules& triggered_rules,
-    const std::string& expected_result,
-    const std::string& expected_profile_username,
-    const std::string& expected_profile_identifier,
-    int64_t expected_content_size) {
-  event_key_ = enterprise_connectors::kKeySensitiveDataEvent;
-  url_ = expected_url;
-  tab_url_ = expected_tab_url;
-  source_ = expected_source;
-  destination_ = expected_destination;
-  data_controls_triggered_rules_ = triggered_rules;
-  mimetypes_ = expected_mimetypes;
-  trigger_ = expected_trigger;
-  content_size_ = expected_content_size;
-  data_controls_result_ = expected_result;
-  username_ = expected_profile_username;
-  profile_identifier_ = expected_profile_identifier;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce(
-          [this](bool include_device_info, base::Value::Dict report,
-                 base::OnceCallback<void(policy::CloudPolicyClient::Result)>
-                     callback) {
-            ValidateReport(&report);
-            if (!done_closure_.is_null()) {
-              done_closure_.Run();
-            }
-          });
-}
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void EventReportValidator::ExpectDataMaskingEvent(
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
     extensions::api::enterprise_reporting_private::DataMaskingEvent
         expected_event) {
-  event_key_ = enterprise_connectors::kKeySensitiveDataEvent;
+  event_key_ = kKeySensitiveDataEvent;
   url_ = expected_event.url;
   tab_url_ = expected_event.url;
   username_ = expected_profile_username;
@@ -332,7 +436,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
     scan_ids_[expected_filenames[i]] = expected_scan_ids[i];
   }
 
-  event_key_ = enterprise_connectors::kKeySensitiveDataEvent;
+  event_key_ = kKeySensitiveDataEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;
   source_ = expected_source;
@@ -365,6 +469,119 @@ void EventReportValidator::ExpectSensitiveDataEvents(
           });
 }
 
+void EventReportValidator::ExpectSensitiveDataEventWarnThenBypass(
+    const std::string& expected_url,
+    const std::string& expected_tab_url,
+    const std::string& expected_source,
+    const std::string& expected_destination,
+    const std::string& expected_filename,
+    const std::string& expected_sha256,
+    const std::string& expected_trigger,
+    const ContentAnalysisResponse::Result& expected_dlp_verdict,
+    const std::set<std::string>* expected_mimetypes,
+    std::optional<int64_t> expected_content_size,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
+    const std::string& expected_scan_id,
+    const std::optional<std::string>& expected_content_transfer_method,
+    const std::vector<std::optional<std::u16string>>&
+        expected_user_justifications) {
+  event_key_ = kKeySensitiveDataEvent;
+  url_ = expected_url;
+  tab_url_ = expected_tab_url;
+  source_ = expected_source;
+  destination_ = expected_destination;
+  dlp_verdicts_[expected_filename] = expected_dlp_verdict;
+  filenames_and_hashes_[expected_filename] = expected_sha256;
+  mimetypes_ = expected_mimetypes;
+  trigger_ = expected_trigger;
+  content_size_ = expected_content_size;
+  results_[expected_filename] = EventResultToString(EventResult::WARNED);
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
+  scan_ids_[expected_filename] = expected_scan_id;
+  content_transfer_method_ = expected_content_transfer_method;
+  user_justification_ = expected_user_justifications[0];
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce([this, expected_filename](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) { ValidateReport(&report); })
+      .WillOnce([this, expected_filename, expected_user_justifications](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) {
+        results_[expected_filename] =
+            EventResultToString(EventResult::BYPASSED);
+        user_justification_ = expected_user_justifications[1];
+        ValidateReport(&report);
+        if (!done_closure_.is_null()) {
+          done_closure_.Run();
+        }
+      });
+}
+
+void EventReportValidator::
+    ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
+        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+            expected_dangerous_download_event,
+        chrome::cros::reporting::proto::DlpSensitiveDataEvent
+            expected_sensitive_data_event,
+        const std::set<std::string>* expected_mimetypes) {
+  EXPECT_CALL(*client_, UploadSecurityEvent)
+      .WillOnce(
+          [expected_dangerous_download_event, expected_mimetypes](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            // There should only be 1 event per test.
+            ASSERT_EQ(1, request.events_size());
+            ASSERT_TRUE(request.events().Get(0).has_dangerous_download_event());
+            auto dangerous_download_event =
+                request.events().Get(0).dangerous_download_event();
+
+            if (expected_mimetypes) {
+              EXPECT_TRUE(
+                  base::Contains(*expected_mimetypes,
+                                 dangerous_download_event.content_type()));
+              // Reset the `content_type` field, so that we can check if the
+              // rest of the fields match.
+              dangerous_download_event.clear_content_type();
+            }
+
+            EXPECT_THAT(dangerous_download_event,
+                        EqualsProto(expected_dangerous_download_event));
+          })
+      .WillOnce(
+          [this, expected_sensitive_data_event, expected_mimetypes](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            // There should only be 1 event per test.
+            ASSERT_EQ(1, request.events_size());
+            ASSERT_TRUE(request.events().Get(0).has_sensitive_data_event());
+            auto sensitive_data_event =
+                request.events().Get(0).sensitive_data_event();
+
+            if (expected_mimetypes) {
+              EXPECT_TRUE(base::Contains(*expected_mimetypes,
+                                         sensitive_data_event.content_type()));
+              // Reset the `content_type` field, so that we can check if the
+              // rest of the fields match.
+              sensitive_data_event.clear_content_type();
+            }
+
+            EXPECT_THAT(sensitive_data_event,
+                        EqualsProto(expected_sensitive_data_event));
+
+            if (!done_closure_.is_null()) {
+              done_closure_.Run();
+            }
+          });
+}
+
 void EventReportValidator::
     ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         const std::string& expected_url,
@@ -383,7 +600,7 @@ void EventReportValidator::
         const std::string& expected_profile_identifier,
         const std::string& expected_scan_id,
         const std::optional<std::string>& expected_content_transfer_method) {
-  event_key_ = enterprise_connectors::kKeyDangerousDownloadEvent;
+  event_key_ = kKeyDangerousDownloadEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;
   source_ = expected_source;
@@ -407,7 +624,7 @@ void EventReportValidator::
                     bool include_device_info, base::Value::Dict report,
                     base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                         callback) {
-        event_key_ = enterprise_connectors::kKeySensitiveDataEvent;
+        event_key_ = kKeySensitiveDataEvent;
         threat_type_ = std::nullopt;
         dlp_verdicts_[expected_filename] = expected_dlp_verdict;
         ValidateReport(&report);
@@ -434,7 +651,7 @@ void EventReportValidator::
         const std::string& expected_profile_username,
         const std::string& expected_profile_identifier,
         const std::string& expected_scan_id) {
-  event_key_ = enterprise_connectors::kKeySensitiveDataEvent;
+  event_key_ = kKeySensitiveDataEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;
   source_ = expected_source;
@@ -457,7 +674,7 @@ void EventReportValidator::
                     bool include_device_info, base::Value::Dict report,
                     base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                         callback) {
-        event_key_ = enterprise_connectors::kKeyDangerousDownloadEvent;
+        event_key_ = kKeyDangerousDownloadEvent;
         threat_type_ = expected_threat_type;
         dlp_verdicts_.erase(expected_filename);
         ValidateReport(&report);
@@ -465,6 +682,41 @@ void EventReportValidator::
           done_closure_.Run();
         }
       });
+}
+
+void EventReportValidator::ExpectDangerousDownloadEvent(
+    chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+        expected_dangerous_download_event,
+    const std::set<std::string>* expected_mimetypes) {
+  EXPECT_CALL(*client_, UploadSecurityEvent)
+      .WillOnce(
+          [this, expected_dangerous_download_event, expected_mimetypes](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            // There should only be 1 event per test.
+            ASSERT_EQ(1, request.events_size());
+            ASSERT_TRUE(request.events().Get(0).has_dangerous_download_event());
+            auto dangerous_download_event =
+                request.events().Get(0).dangerous_download_event();
+
+            if (expected_mimetypes) {
+              EXPECT_TRUE(
+                  base::Contains(*expected_mimetypes,
+                                 dangerous_download_event.content_type()));
+              // Reset the `content_type` field, so that we can check if the
+              // rest of the fields match.
+              dangerous_download_event.clear_content_type();
+            }
+
+            EXPECT_THAT(dangerous_download_event,
+                        EqualsProto(expected_dangerous_download_event));
+
+            if (!done_closure_.is_null()) {
+              done_closure_.Run();
+            }
+          });
 }
 
 void EventReportValidator::ExpectDangerousDownloadEvent(
@@ -479,7 +731,7 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::string& expected_result,
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier) {
-  event_key_ = enterprise_connectors::kKeyDangerousDownloadEvent;
+  event_key_ = kKeyDangerousDownloadEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -510,6 +762,11 @@ void EventReportValidator::ExpectSourceActiveUser(const std::string& user) {
   source_active_content_area_user_ = user;
 }
 
+void EventReportValidator::ExpectFrameUrlChain(
+    const std::vector<std::string>& frame_urls) {
+  frame_urls_ = frame_urls;
+}
+
 void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   DCHECK(report);
 
@@ -525,54 +782,43 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   ASSERT_NE(nullptr, event);
 
   // The event should match the expected values.
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUrl, url_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyTabUrl, tab_url_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeySource, source_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyDestination,
-                destination_);
+  ValidateField(event, kKeyUrl, url_);
+  ValidateField(event, kKeyTabUrl, tab_url_);
+  ValidateField(event, kKeySource, source_);
+  ValidateField(event, kKeyDestination, destination_);
   ValidateFilenameMappedAttributes(event);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyTrigger, trigger_);
+  ValidateField(event, kKeyTrigger, trigger_);
   // `content_size_` needs a conversion since int64 are strings in base::Value.
   std::optional<std::string> size =
       content_size_.has_value()
           ? std::optional<std::string>(base::NumberToString(*content_size_))
           : std::nullopt;
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyContentSize, size);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyThreatType,
-                threat_type_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUnscannedReason,
-                unscanned_reason_);
-  ValidateField(event,
-                SafeBrowsingPrivateEventRouter::kKeyContentTransferMethod,
-                content_transfer_method_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUserJustification,
-                user_justification_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyProfileUserName,
-                username_);
+  ValidateField(event, kKeyContentSize, size);
+  ValidateField(event, kKeyThreatType, threat_type_);
+  ValidateField(event, kKeyUnscannedReason, unscanned_reason_);
+  ValidateField(event, kKeyContentTransferMethod, content_transfer_method_);
+  ValidateField(event, kKeyUserJustification, user_justification_);
+  ValidateField(event, kKeyProfileUserName, username_);
   ValidateField(event, RealtimeReportingClient::kKeyProfileIdentifier,
                 profile_identifier_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyIsFederated,
-                is_federated_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyLoginUserName,
-                login_user_name_);
+  ValidateField(event, kKeyIsFederated, is_federated_);
+  ValidateField(event, kKeyLoginUserName, login_user_name_);
   ValidateField(event, kKeyWebAppSignedInAccount, active_content_area_user_);
   ValidateField(event, kKeySourceWebAppSignedInAccount,
                 source_active_content_area_user_);
   ValidateFederatedOrigin(event);
   ValidateIdentities(event);
   ValidateMimeType(event);
-  ValidateDataControlsAttributes(event);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ValidateDataMaskingAttributes(event);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  ValidateFrameUrlChain(event);
 }
 
 void EventReportValidator::ValidateFederatedOrigin(
     const base::Value::Dict* value) {
-  std::optional<bool> is_federated =
-      value->FindBool(SafeBrowsingPrivateEventRouter::kKeyIsFederated);
-  const std::string* federated_origin =
-      value->FindString(SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin);
+  std::optional<bool> is_federated = value->FindBool(kKeyIsFederated);
+  const std::string* federated_origin = value->FindString(kKeyFederatedOrigin);
   if (is_federated.has_value() && is_federated.value()) {
     EXPECT_NE(nullptr, federated_origin);
     EXPECT_EQ(federated_origin_, *federated_origin);
@@ -614,8 +860,7 @@ void EventReportValidator::ValidateIdentities(const base::Value::Dict* value) {
 }
 
 void EventReportValidator::ValidateMimeType(const base::Value::Dict* value) {
-  const std::string* type =
-      value->FindString(SafeBrowsingPrivateEventRouter::kKeyContentType);
+  const std::string* type = value->FindString(kKeyContentType);
   if (mimetypes_) {
     EXPECT_TRUE(base::Contains(*mimetypes_, *type))
         << *type << " is not an expected mimetype";
@@ -628,7 +873,7 @@ void EventReportValidator::ValidateDlpVerdict(
     const base::Value::Dict* value,
     const ContentAnalysisResponse::Result& result) {
   const base::Value::List* triggered_rules =
-      value->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+      value->FindList(kKeyTriggeredRuleInfo);
   ASSERT_NE(nullptr, triggered_rules);
   ASSERT_EQ(base::checked_cast<size_t>(result.triggered_rules_size()),
             triggered_rules->size());
@@ -641,15 +886,13 @@ void EventReportValidator::ValidateDlpVerdict(
 void EventReportValidator::ValidateDlpRule(
     const base::Value::Dict* value,
     const ContentAnalysisResponse::Result::TriggeredRule& expected_rule) {
-  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
-                expected_rule.rule_name());
+  ValidateField(value, kKeyTriggeredRuleName, expected_rule.rule_name());
   if (expected_rule.rule_id().empty()) {
-    ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
-                  std::optional<int>());
+    ValidateField(value, kKeyTriggeredRuleId, std::optional<int>());
   } else {
     int expected_rule_id = 0;
     ASSERT_TRUE(base::StringToInt(expected_rule.rule_id(), &expected_rule_id));
-    ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+    ValidateField(value, kKeyTriggeredRuleId,
                   std::optional<int>(expected_rule_id));
   }
 }
@@ -657,15 +900,13 @@ void EventReportValidator::ValidateDlpRule(
 void EventReportValidator::ValidateFilenameMappedAttributes(
     const base::Value::Dict* value) {
   if (filenames_and_hashes_.empty()) {
-    ASSERT_FALSE(value->contains(SafeBrowsingPrivateEventRouter::kKeyFileName))
+    ASSERT_FALSE(value->contains(kKeyFileName))
         << "Expected no file name but found "
-        << *value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName);
+        << *value->FindString(kKeyFileName);
   } else {
-    ASSERT_TRUE(
-        value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+    ASSERT_TRUE(value->FindString(kKeyFileName));
 
-    std::string filename =
-        *(value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+    std::string filename = *(value->FindString(kKeyFileName));
     std::string filenames;
     for (const auto& fh : filenames_and_hashes_) {
       filenames += fh.first + "; ";
@@ -684,61 +925,19 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     ASSERT_TRUE(base::Contains(filenames_and_hashes_, filename))
-        << "Mismatch in field " << SafeBrowsingPrivateEventRouter::kKeyFileName
+        << "Mismatch in field " << kKeyFileName
         << "\nActual filename: " << filename << "\nExpected one filename in: { "
         << filenames << "}";
-    ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyEventResult,
-                  results_[filename]);
-    ValidateField(value,
-                  SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256,
+    ValidateField(value, kKeyEventResult, results_[filename]);
+    ValidateField(value, kKeyDownloadDigestSha256,
                   filenames_and_hashes_[filename]);
     if (scan_ids_.count(filename)) {
-      ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyScanId,
-                    scan_ids_[filename]);
+      ValidateField(value, kKeyScanId, scan_ids_[filename]);
     } else {
-      ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyScanId,
-                    std::optional<std::string>());
+      ValidateField(value, kKeyScanId, std::optional<std::string>());
     }
     if (dlp_verdicts_.count(filename)) {
       ValidateDlpVerdict(value, dlp_verdicts_[filename]);
-    }
-  }
-}
-
-void EventReportValidator::ValidateDataControlsAttributes(
-    const base::Value::Dict* event) {
-  if (data_controls_result_) {
-    ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyEventResult,
-                  data_controls_result_);
-
-    ASSERT_FALSE(data_controls_triggered_rules_.empty());
-    const base::Value::List* triggered_rules =
-        event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
-    ASSERT_TRUE(triggered_rules);
-    ASSERT_EQ(data_controls_triggered_rules_.size(), triggered_rules->size());
-    size_t i = 0;
-    for (const base::Value& rule : *triggered_rules) {
-      const std::string* name = rule.GetDict().FindString(
-          SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName);
-      ASSERT_TRUE(name);
-
-      ASSERT_TRUE(data_controls_triggered_rules_.count(i));
-      ASSERT_EQ(data_controls_triggered_rules_[i].rule_name, *name);
-
-      std::optional<int> id = rule.GetDict().FindInt(
-          SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId);
-      if (id) {
-        int expected_rule_id = 0;
-        ASSERT_TRUE(base::StringToInt(data_controls_triggered_rules_[i].rule_id,
-                                      &expected_rule_id));
-        ASSERT_EQ(expected_rule_id, *id);
-      } else {
-        ASSERT_TRUE(data_controls_triggered_rules_[i].rule_id.empty())
-            << " Got rule_id " << data_controls_triggered_rules_[i].rule_id
-            << " instead of nothing.";
-      }
-
-      ++i;
     }
   }
 }
@@ -751,7 +950,7 @@ void EventReportValidator::ValidateDataMaskingAttributes(
                                   .Run()
                                   .triggered_rule_info;
     const base::Value::List* triggered_rules =
-        event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+        event->FindList(kKeyTriggeredRuleInfo);
     ASSERT_TRUE(triggered_rules);
     ASSERT_EQ(data_masking_rules.size(), triggered_rules->size());
     size_t rule_index = 0;
@@ -763,6 +962,23 @@ void EventReportValidator::ValidateDataMaskingAttributes(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+void EventReportValidator::ValidateFrameUrlChain(
+    const base::Value::Dict* value) {
+  const base::Value::List* frame_urls = value->FindList(kKeyIframeUrls);
+  if (!frame_urls_.has_value()) {
+    EXPECT_TRUE(!frame_urls || frame_urls->empty());
+    return;
+  }
+
+  ASSERT_NE(nullptr, frame_urls);
+  std::vector<std::string> actual_urls;
+  for (const auto& url_value : *frame_urls) {
+    actual_urls.push_back(url_value.GetString());
+  }
+
+  EXPECT_THAT(actual_urls, testing::ElementsAreArray(frame_urls_.value()));
+}
+
 EventReportValidatorHelper::EventReportValidatorHelper(Profile* profile,
                                                        bool browser_test)
     : profile_(profile),
@@ -773,23 +989,17 @@ EventReportValidatorHelper::EventReportValidatorHelper(Profile* profile,
   client_->SetDMToken("dm_token");
 
   if (!browser_test) {
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
-        ->SetTestingFactory(
-            profile, base::BindRepeating([](content::BrowserContext* context) {
-              return std::unique_ptr<KeyedService>(
-                  new extensions::SafeBrowsingPrivateEventRouter(context));
-            }));
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
         profile, base::BindRepeating([](content::BrowserContext* context) {
           return std::unique_ptr<KeyedService>(
-              new enterprise_connectors::RealtimeReportingClient(context));
+              new RealtimeReportingClient(context));
         }));
   }
 
   RealtimeReportingClientFactory::GetForProfile(profile)
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
   identity_test_environment_.MakePrimaryAccountAvailable(
-      "test-user@chromium.org", signin::ConsentLevel::kSync);
+      "test-user@chromium.org", signin::ConsentLevel::kSignin);
   RealtimeReportingClientFactory::GetForProfile(profile)
       ->SetIdentityManagerForTesting(
           identity_test_environment_.identity_manager());
@@ -816,7 +1026,8 @@ void SetAnalysisConnector(PrefService* prefs,
     settings_list->clear();
   }
 
-  settings_list->Append(*base::JSONReader::Read(pref_value));
+  settings_list->Append(*base::JSONReader::Read(
+      pref_value, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   prefs->SetInteger(
       AnalysisConnectorScopePref(connector),
       machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);

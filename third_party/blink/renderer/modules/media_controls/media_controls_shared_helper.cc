@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
@@ -55,8 +56,9 @@ bool MediaControlsSharedHelpers::TransitionEventListener::IsAttached() const {
 void MediaControlsSharedHelpers::TransitionEventListener::Invoke(
     ExecutionContext* context,
     Event* event) {
-  if (event->target() != element_)
+  if (event->RawTarget() != element_) {
     return;
+  }
 
   if (event->type() == event_type_names::kTransitionend) {
     callback_.Run();
@@ -109,7 +111,7 @@ String MediaControlsSharedHelpers::FormatTime(double time) {
   if (!std::isfinite(time))
     time = 0;
 
-  int seconds = static_cast<int>(fabs(time));
+  int seconds = base::saturated_cast<int>(fabs(time));
   int minutes = seconds / 60;
   int hours = minutes / 60;
 

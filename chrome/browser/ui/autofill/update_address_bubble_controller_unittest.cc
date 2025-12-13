@@ -79,6 +79,8 @@ class UpdateAddressBubbleControllerTest : public ::testing::Test {
  protected:
   content::WebContents* web_contents() { return web_contents_.get(); }
 
+  std::string GetLocale() { return "en-US"; }
+
  private:
   MockDelegate delegate_;
 
@@ -91,10 +93,11 @@ class UpdateAddressBubbleControllerTest : public ::testing::Test {
 TEST_F(UpdateAddressBubbleControllerTest, UpdatingNonAccountAddress) {
   AutofillProfile profile = test::GetFullProfile();
   AutofillProfile original_profile = test::GetFullProfile();
+  original_profile.SetInfo(EMAIL_ADDRESS, u"", GetLocale());
   auto controller = CreateController(profile, original_profile);
 
   EXPECT_EQ(
-      controller->GetWindowTitle(),
+      controller->GetWindowTitle(/*has_empty_original_values=*/true),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
   EXPECT_TRUE(controller->GetFooterMessage().empty());
 }
@@ -103,6 +106,7 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountAddress) {
   AutofillProfile profile = test::GetFullProfile();
   test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   AutofillProfile original_profile = test::GetFullProfile();
+  original_profile.SetInfo(EMAIL_ADDRESS, u"", GetLocale());
   test_api(original_profile)
       .set_record_type(AutofillProfile::RecordType::kAccount);
   std::u16string email =
@@ -112,12 +116,121 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountAddress) {
   auto controller = CreateController(profile, original_profile);
 
   EXPECT_EQ(
-      controller->GetWindowTitle(),
+      controller->GetWindowTitle(/*has_empty_original_values=*/true),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
   EXPECT_EQ(
       controller->GetFooterMessage(),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE, email));
+}
+
+TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountHomeAddress) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSupportForHomeAndWork);
+  AutofillProfile profile = test::GetFullProfile();
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
+  AutofillProfile original_profile = test::GetFullProfile();
+  original_profile.SetInfo(EMAIL_ADDRESS, u"", GetLocale());
+  test_api(original_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  std::u16string email =
+      base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
+                            web_contents()->GetBrowserContext())
+                            ->email);
+  auto controller = CreateController(profile, original_profile);
+
+  EXPECT_EQ(controller->GetFooterMessage(),
+            l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_ADDRESS_HOME_RECORD_TYPE_NOTICE, email));
+  EXPECT_EQ(controller->GetWindowTitle(/*has_empty_original_values=*/true),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE));
+  EXPECT_EQ(
+      controller->GetPositiveButtonText(/*has_empty_original_values=*/true),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
+  EXPECT_EQ(
+      controller->GetNegativeButtonText(/*has_empty_original_values=*/true),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_CANCEL_BUTTON_LABEL));
+}
+
+TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountWorkAddress) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSupportForHomeAndWork);
+  AutofillProfile profile = test::GetFullProfile();
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
+  AutofillProfile original_profile = test::GetFullProfile();
+  original_profile.SetInfo(EMAIL_ADDRESS, u"", GetLocale());
+  test_api(original_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountWork);
+  std::u16string email =
+      base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
+                            web_contents()->GetBrowserContext())
+                            ->email);
+  auto controller = CreateController(profile, original_profile);
+
+  EXPECT_EQ(controller->GetFooterMessage(),
+            l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_ADDRESS_WORK_RECORD_TYPE_NOTICE, email));
+  EXPECT_EQ(controller->GetWindowTitle(/*has_empty_original_values=*/true),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE));
+  EXPECT_EQ(
+      controller->GetPositiveButtonText(/*has_empty_original_values=*/true),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
+  EXPECT_EQ(
+      controller->GetNegativeButtonText(/*has_empty_original_values=*/true),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_CANCEL_BUTTON_LABEL));
+}
+
+TEST_F(UpdateAddressBubbleControllerTest, AddNewInfoToAccount) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSupportForHomeAndWork);
+  AutofillProfile profile = test::GetFullProfile();
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
+  AutofillProfile original_profile = test::GetFullProfile();
+  original_profile.SetInfo(EMAIL_ADDRESS, u"", GetLocale());
+  test_api(original_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  std::u16string email =
+      base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
+                            web_contents()->GetBrowserContext())
+                            ->email);
+  auto controller = CreateController(profile, original_profile);
+
+  EXPECT_EQ(
+      controller->GetFooterMessage(),
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE, email));
+
+  // has_empty_original_values = true
+  EXPECT_EQ(controller->GetWindowTitle(/*has_empty_original_values=*/true),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE));
+  EXPECT_EQ(
+      controller->GetPositiveButtonText(/*has_empty_original_values=*/true),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL));
+  EXPECT_EQ(
+      controller->GetNegativeButtonText(/*has_empty_original_values=*/true),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_CANCEL_BUTTON_LABEL));
+
+  // has_empty_original_values = false
+  EXPECT_EQ(
+      controller->GetWindowTitle(/*has_empty_original_values=*/false),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
+  EXPECT_EQ(
+      controller->GetPositiveButtonText(/*has_empty_original_values=*/false),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
+  EXPECT_EQ(
+      controller->GetNegativeButtonText(/*has_empty_original_values=*/false),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL));
 }
 
 }  // namespace

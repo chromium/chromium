@@ -16,10 +16,12 @@ namespace android {
 
 static void JNI_LibraryPrefetcher_PrefetchNativeLibraryForWebView(JNIEnv* env) {
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  return NativeLibraryPrefetcher::ForkAndPrefetchNativeLibrary();
+  return NativeLibraryPrefetcher::PrefetchNativeLibrary();
 #endif
 }
 
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(LibraryPrefetcher)

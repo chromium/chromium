@@ -13,4 +13,9 @@ bool InclusionPolicy::ShouldIncludeThreadId(uint32_t thread_id) const {
          ActiveProcesses::Category::kOther;
 }
 
+bool InclusionPolicy::ShouldRecordFileIoEvents(uint32_t thread_id) const {
+  return active_processes_->GetThreadCategory(thread_id) ==
+         ActiveProcesses::Category::kClient;
+}
+
 }  // namespace tracing

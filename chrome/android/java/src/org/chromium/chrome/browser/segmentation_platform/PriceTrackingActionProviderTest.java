@@ -43,7 +43,6 @@ import org.chromium.components.commerce.core.ShoppingService.ProductInfoCallback
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 /** Unit tests for {@link PriceTrackingActionProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -60,8 +59,6 @@ public class PriceTrackingActionProviderTest {
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
 
     @Mock private BookmarkModel mBookmarkModel;
-
-    @Mock private Profile mProfile;
 
     @Before
     public void setUp() {
@@ -85,15 +82,7 @@ public class PriceTrackingActionProviderTest {
 
     private void setIsUrlPriceTrackableResult(boolean hasProductInfo) {
         ProductInfo testProductInfo =
-                new ProductInfo(
-                        null,
-                        null,
-                        Optional.of(12345L),
-                        Optional.empty(),
-                        null,
-                        0,
-                        null,
-                        Optional.empty());
+                new ProductInfo(null, null, 12345L, null, null, 0, null, null);
         doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         Mockito.doAnswer(
                         invocation -> {

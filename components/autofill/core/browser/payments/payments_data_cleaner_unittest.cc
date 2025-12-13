@@ -39,7 +39,7 @@ class PaymentsDataCleanerTest : public PaymentsDataManagerTestBase,
         /*history_service=*/nullptr, &sync_service_,
         /*strike_database=*/nullptr,
         /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr, "en-US",
-        "US");
+        "US", /*autofill_optimization_guide=*/nullptr);
     PersonalDataChangedWaiter(*personal_data_).Wait();
     payments_data_cleaner_ = std::make_unique<PaymentsDataCleaner>(
         &personal_data_->payments_data_manager());

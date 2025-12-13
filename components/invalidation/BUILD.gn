@@ -17,17 +17,49 @@ static_library("invalidation") {
     "profile_invalidation_provider.h",
   ]
 
-  public_deps = [ "//components/invalidation/public" ]
-
   deps = [
     "//base",
     "//base:i18n",
     "//components/gcm_driver",
-    "//components/invalidation/impl",
+    "//components/invalidation:legacy_topics_cleanup",
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
     "//google_apis",
+  ]
+}
+
+static_library("legacy_topics_cleanup") {
+  sources = [
+    "impl/channels_states.h",
+    "impl/per_user_topic_subscription_manager.cc",
+    "impl/per_user_topic_subscription_manager.h",
+    "impl/per_user_topic_subscription_request.cc",
+    "impl/per_user_topic_subscription_request.h",
+    "impl/profile_identity_provider.cc",
+    "impl/profile_identity_provider.h",
+    "impl/status.cc",
+    "impl/status.h",
+    "legacy_topics_cleaner.cc",
+    "legacy_topics_cleaner.h",
+    "public/identity_provider.cc",
+    "public/identity_provider.h",
+    "public/invalidation_util.cc",
+    "public/invalidation_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+    "//net",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
 
@@ -42,7 +74,7 @@ static_library("test_support") {
 
   deps = [
     "//base",
-    "//components/invalidation:invalidation",
+    "//components/invalidation",
   ]
 }
 
@@ -55,10 +87,33 @@ source_set("unit_tests") {
     "//components/gcm_driver/instance_id:test_support",
     "//components/invalidation",
     "//components/invalidation:test_support",
-    "//components/invalidation/impl",
     "//components/sync_preferences:test_support",
     "//google_apis:test_support",
-    "//google_apis/gcm:gcm",
+    "//google_apis/gcm",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("legacy_topics_cleanup_unit_tests") {
+  testonly = true
+  sources = [
+    "impl/per_user_topic_subscription_manager_unittest.cc",
+    "impl/per_user_topic_subscription_request_unittest.cc",
+  ]
+  deps = [
+    ":legacy_topics_cleanup",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//google_apis:test_support",
+    "//google_apis/gcm",
+    "//net",
+    "//net:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

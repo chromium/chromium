@@ -13,8 +13,9 @@
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 
 namespace content {
 class WebContents;
@@ -83,8 +84,7 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
       TriggeredRule::Action dlp_action);
 
   // Sets the BinaryUploadService::Result to use in the next response callback.
-  static void SetResponseResult(
-      safe_browsing::BinaryUploadService::Result result);
+  static void SetResponseResult(ScanRequestUploadResult result);
 
   static void ResetStaticDialogFlagsAndTotalRequestsCount();
   static bool WasDialogShown();
@@ -96,19 +96,18 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
 
   virtual void FakeUploadClipboardDataForDeepScanning(
       ClipboardRequestHandler::Type type,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
+      std::unique_ptr<BinaryUploadRequest> request);
 
  protected:
   // Simulates a response from the binary upload service.  the |path|
   // argument is used to call |status_callback_| to determine if the path
   // should succeed or fail.
-  void Response(
-      std::string contents,
-      base::FilePath path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
-      std::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
-          file_request_callback,
-      bool is_image_request);
+  void Response(std::string contents,
+                base::FilePath path,
+                std::unique_ptr<BinaryUploadRequest> request,
+                std::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
+                    file_request_callback,
+                bool is_image_request);
 
   // ContentAnalysisDelegate overrides.
   bool ShowFinalResultInDialog() override;
@@ -118,14 +117,14 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   // Fake upload callback for deep scanning. Virtual to be overridden by other
   // fakes.
   virtual void FakeUploadFileForDeepScanning(
-      safe_browsing::BinaryUploadService::Result result,
+      ScanRequestUploadResult result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      std::unique_ptr<BinaryUploadRequest> request,
       FakeFilesRequestHandler::FakeFileRequestCallback callback);
   void FakeUploadPageForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
+      std::unique_ptr<BinaryUploadRequest> request);
 
-  static safe_browsing::BinaryUploadService::Result result_;
+  static ScanRequestUploadResult result_;
   static bool dialog_shown_;
   static bool dialog_canceled_;
   static int64_t total_analysis_requests_count_;

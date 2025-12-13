@@ -192,7 +192,8 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
 
     @Override
     public void supplyAnimatorNow() {
-        if (mAnimatorSupplier.hasValue()) return;
+        var animator = mAnimatorSupplier.get();
+        if (animator != null) return;
 
         supplyFallbackAnimator();
     }
@@ -207,7 +208,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     }
 
     private void onAnimationDataAvailable(ShrinkExpandAnimationData animationData) {
-        if (mShrinkExpandImageView == null || mAnimatorSupplier.hasValue()) return;
+        if (mShrinkExpandImageView == null || mAnimatorSupplier.get() != null) return;
 
         // Preserve the bitmap because it might have been supplied before the animation data.
         mShrinkExpandImageView.resetKeepingBitmap(animationData.getInitialRect());
@@ -225,7 +226,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     }
 
     private void maybeSupplyAnimation() {
-        if (mShrinkExpandImageView == null || mAnimatorSupplier.hasValue()) return;
+        if (mShrinkExpandImageView == null || mAnimatorSupplier.get() != null) return;
 
         boolean bitmapSatisfied =
                 mBitmapCallback == null || mShrinkExpandImageView.getBitmap() != null;
@@ -236,7 +237,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
 
     private void supplyFallbackAnimator() {
         if (mAnimationType == HubLayoutAnimationType.EXPAND_NEW_TAB) {
-            assert mAnimationDataSupplier.hasValue()
+            assert mAnimationDataSupplier.get() != null
                     : "For new tab animation the data should already be supplied.";
             // This is only possible if layout fails to happen, still try to use the normal
             // animation since after a draw pass things should catch up.
@@ -264,9 +265,10 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
 
     private void supplyAnimator() {
         // A fallback animation has already triggered.
-        if (mAnimatorSupplier.hasValue()) return;
+        var animator = mAnimatorSupplier.get();
+        if (animator != null) return;
 
-        assert mAnimationDataSupplier.hasValue();
+        assert mAnimationDataSupplier.get() != null;
         ShrinkExpandAnimationData animationData = mAnimationDataSupplier.get();
 
         @Nullable View toolbarView = mHubContainerView.findViewById(R.id.hub_toolbar);
@@ -276,6 +278,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         boolean isShrink = mAnimationType == HubLayoutAnimationType.SHRINK_TAB;
         float initialAlpha;
         float finalAlpha;
+        assumeNonNull(animationData);
         if (animationData.isTopToolbar()) {
             initialAlpha = isShrink ? 0.0f : 1.0f;
             finalAlpha = isShrink ? 1.0f : 0.0f;

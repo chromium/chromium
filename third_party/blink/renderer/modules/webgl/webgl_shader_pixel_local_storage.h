@@ -13,6 +13,7 @@ namespace blink {
 
 class WebGLFramebuffer;
 class WebGLTexture;
+class ExecutionContext;
 
 class WebGLShaderPixelLocalStorage final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
@@ -21,7 +22,7 @@ class WebGLShaderPixelLocalStorage final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLShaderPixelLocalStorage(WebGLRenderingContextBase*);
+  WebGLShaderPixelLocalStorage(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 

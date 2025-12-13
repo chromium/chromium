@@ -13,7 +13,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.url.GURL;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to represent the fields required to show the {@link AutofillVirtualCardEnrollmentDialog}
@@ -21,8 +22,8 @@ import java.util.LinkedList;
 @JNINamespace("autofill")
 @NullMarked
 public class VirtualCardEnrollmentFields {
-    @VisibleForTesting final LinkedList<LegalMessageLine> mGoogleLegalMessages = new LinkedList<>();
-    @VisibleForTesting final LinkedList<LegalMessageLine> mIssuerLegalMessages = new LinkedList<>();
+    @VisibleForTesting final List<LegalMessageLine> mGoogleLegalMessages = new ArrayList<>();
+    @VisibleForTesting final List<LegalMessageLine> mIssuerLegalMessages = new ArrayList<>();
     private final String mCardName;
     private final String mCardNumber;
     private final int mNetworkIconId;
@@ -52,11 +53,11 @@ public class VirtualCardEnrollmentFields {
         return mCardArtUrl;
     }
 
-    public LinkedList<LegalMessageLine> getGoogleLegalMessages() {
+    public List<LegalMessageLine> getGoogleLegalMessages() {
         return mGoogleLegalMessages;
     }
 
-    public LinkedList<LegalMessageLine> getIssuerLegalMessages() {
+    public List<LegalMessageLine> getIssuerLegalMessages() {
         return mIssuerLegalMessages;
     }
 
@@ -94,7 +95,10 @@ public class VirtualCardEnrollmentFields {
      */
     @CalledByNative
     private void addLinkToLastGoogleLegalMessageLine(int start, int end, String url) {
-        mGoogleLegalMessages.getLast().links.add(new LegalMessageLine.Link(start, end, url));
+        mGoogleLegalMessages
+                .get(mGoogleLegalMessages.size() - 1)
+                .links
+                .add(new LegalMessageLine.Link(start, end, url));
     }
 
     /**
@@ -116,6 +120,9 @@ public class VirtualCardEnrollmentFields {
      */
     @CalledByNative
     private void addLinkToLastIssuerLegalMessageLine(int start, int end, String url) {
-        mIssuerLegalMessages.getLast().links.add(new LegalMessageLine.Link(start, end, url));
+        mIssuerLegalMessages
+                .get(mIssuerLegalMessages.size() - 1)
+                .links
+                .add(new LegalMessageLine.Link(start, end, url));
     }
 }

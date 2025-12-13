@@ -50,7 +50,7 @@ with `AutofillAgent` extracting a form from the DOM.
 │   │                       │         │   │                  └──┐ └─▲────────────┘
 │   │owns 1                 │         │   │events               │   │sets types
 │ ┌─┴──────────────────┐    │queries  │ ┌─┴───────────────────┐ │   │owns N
-└─┤ChromeAutofillClient│    └─────────┼─┼AutofillManager      ├─┼───┘
+└─┤ChromeAutofillClient│    └─────────┼─┤AutofillManager      ├─┼───┘
   │1 per WebContents   │              │ │1 per RenderFrameHost│ │
   └─┬──────────────────┘              │ └─▲─────────────────┬─┘ │
     │owns 1                           │   │           events│   │

@@ -1,7 +1,7 @@
 Name: mockito-android
 Short Name: mockito-android
-URL: https://github.com/mockito/mockito
-Version: 5.11.0
+URL: https://repo.maven.apache.org/maven2/org/mockito/mockito-android/5.19.0/mockito-android-5.19.0.jar
+Version: 5.19.0
 Update Mechanism: Manual
 License: MIT
 License File: LICENSE
@@ -11,6 +11,9 @@ Shipped: no
 
 Description:
 Mockito for Android
+
+See also: https://github.com/mockito/mockito
+
 
 Local Modifications:
 No modifications.

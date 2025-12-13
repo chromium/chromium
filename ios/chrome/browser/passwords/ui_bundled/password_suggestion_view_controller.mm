@@ -10,6 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
@@ -26,7 +27,7 @@
 @end
 
 namespace {
-constexpr CGFloat customSpacingBeforeImageIfNoNavigationBar = 24;
+constexpr CGFloat customSpacingBeforeImage = 24;
 constexpr CGFloat customSpacingAfterImage = 1;
 }  // namespace
 
@@ -40,7 +41,21 @@ constexpr CGFloat customSpacingAfterImage = 1;
 - (instancetype)initWithPasswordSuggestion:(NSString*)passwordSuggestion
                                  userEmail:(NSString*)userEmail
                                  proactive:(BOOL)proactivePasswordGeneration {
-  if ((self = [super init])) {
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD);
+  if (proactivePasswordGeneration) {
+    configuration.secondaryActionString =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
+    configuration.secondaryActionImage =
+        DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
+  } else {
+    configuration.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
+  }
+
+  self = [super initWithConfiguration:configuration];
+  if (self) {
     _userEmail = userEmail;
     _passwordSuggestion = passwordSuggestion;
     _proactive = proactivePasswordGeneration;
@@ -52,9 +67,7 @@ constexpr CGFloat customSpacingAfterImage = 1;
   self.image = ios::provider::GetBrandedImage(
       ios::provider::BrandedImage::kPasswordSuggestionKey);
   self.imageHasFixedSize = YES;
-  self.showDismissBarButton = NO;
-  self.customSpacingBeforeImageIfNoNavigationBar =
-      customSpacingBeforeImageIfNoNavigationBar;
+  self.customSpacingBeforeImage = customSpacingBeforeImage;
   self.customSpacingAfterImage = customSpacingAfterImage;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;
@@ -68,16 +81,6 @@ constexpr CGFloat customSpacingAfterImage = 1;
   self.subtitleString = l10n_util::GetNSStringF(
       IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL,
       base::SysNSStringToUTF16(self.userEmail));
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD);
-  if (_proactive) {
-    self.secondaryActionString =
-        l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
-    self.secondaryActionImage =
-        DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
-  } else {
-    self.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
-  }
 
   [super viewDidLoad];
 

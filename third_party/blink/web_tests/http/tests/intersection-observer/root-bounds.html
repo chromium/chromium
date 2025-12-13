@@ -23,7 +23,7 @@ async_test(t => {
       t.step(() => {
 	assert_equals(records.length, 3);
         assert_not_equals(records[0].rootBounds, "null", "First notification reports root bounds");
-        assert_equals(records[1].rootBounds, "null", "Second notification does not report root bounds");
+        assert_not_equals(records[1].rootBounds, "null", "Second notification reports root bounds");
         assert_equals(records[2].rootBounds, "null", "Third notification does not report root bounds");
       });
       t.done();

@@ -71,11 +71,10 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   }
 
  private:
-  void OnHostResolutionComplete(
-      int result,
-      const net::ResolveErrorInfo&,
-      const std::optional<net::AddressList>& resolved_addresses,
-      const std::optional<net::HostResolverEndpointResults>&);
+  void OnHostResolutionComplete(int result,
+                                const net::ResolveErrorInfo&,
+                                const net::AddressList& resolved_addresses,
+                                const net::HostResolverEndpointResults&);
 
   // Attempts the next DNS resolution.
   void AttemptNextResolution();

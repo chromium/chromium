@@ -196,20 +196,10 @@ static void PushLayerPropertiesInternal(Iterator source_layers_begin,
 void TreeSynchronizer::PushLayerProperties(LayerTreeImpl* pending_tree,
                                            LayerTreeImpl* active_tree) {
   const auto& layers = pending_tree->LayersThatShouldPushProperties();
-  const auto& picture_layers = pending_tree->picture_layers();
-  const size_t push_count =
-      layers.size() + (pending_tree->always_push_properties_on_picture_layers()
-                           ? picture_layers.size()
-                           : 0);
+  const size_t push_count = layers.size();
   TRACE_EVENT1("cc", "TreeSynchronizer::PushLayerPropertiesTo.Impl",
                "layer_count", push_count);
   PushLayerPropertiesInternal(layers.begin(), layers.end(), active_tree);
-  if (pending_tree->always_push_properties_on_picture_layers()) {
-    // TODO(crbug.com/40335690): Stop always pushing PictureLayerImpl
-    // properties.
-    PushLayerPropertiesInternal(picture_layers.begin(), picture_layers.end(),
-                                active_tree);
-  }
   pending_tree->ClearLayersThatShouldPushProperties();
 }
 

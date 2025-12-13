@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -137,7 +138,6 @@ void DeriveCommandLine(const GURL& start_url,
       ::switches::kTouchDevices,
       ::switches::kTouchEventFeatureDetection,
       ::switches::kTopChromeTouchUi,
-      ::switches::kTraceToConsole,
       ::switches::kUIDisablePartialSwap,
 #if BUILDFLAG(USE_CRAS)
       ::switches::kUseCras,
@@ -197,7 +197,6 @@ void DeriveCommandLine(const GURL& start_url,
       ::switches::kDisableThreadedAnimation,
       ::switches::kEnableGpuBenchmarking,
       ::switches::kEnableMainFrameBeforeActivation,
-      ::switches::kHighlightNonLCDTextLayers,
       ::switches::kNumRasterThreads,
       ::switches::kShowCompositedLayerBorders,
       ::switches::kShowFPSCounter,
@@ -247,6 +246,7 @@ void DeriveFeatures(base::CommandLine* out_command_line) {
       &::features::kAccessibilityManifestV3EspeakNGTts,
       &::features::kAccessibilityManifestV3GoogleTts,
       &features::kAutoNightLight,
+      &chromeos::features::kFeatureManagementRoundedWindows,
       &ash::features::kSeamlessRefreshRateSwitching,
       &::features::kPluginVm,
       &display::features::kCtmColorManagement,

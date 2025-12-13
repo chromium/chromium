@@ -10,22 +10,21 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/history/ui_bundled/history_entry_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/favicon_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#pragma mark - HistoryEntryItem
+namespace {
+// Number of lines on which to display the title.
+const NSInteger kNumberOfTitleLines = 2;
+}  // namespace
 
-@interface HistoryEntryItem ()
-// Delegate to perform custom accessibility actions.
-@property(nonatomic, weak) id<HistoryEntryItemDelegate> accessibilityDelegate;
-
-// Custom accessibility actions for the history entry cell.
-- (NSArray*)accessibilityActions;
-@end
-
-@implementation HistoryEntryItem
-@synthesize accessibilityDelegate = _accessibilityDelegate;
+@implementation HistoryEntryItem {
+  // Delegate to perform custom accessibility actions.
+  __weak id<HistoryEntryItemDelegate> _accessibilityDelegate;
+}
 @synthesize text = _text;
 @synthesize detailText = _detailText;
 @synthesize timeText = _timeText;
@@ -36,31 +35,44 @@
        accessibilityDelegate:(id<HistoryEntryItemDelegate>)delegate {
   self = [super initWithType:type];
   if (self) {
-    self.cellClass = [TableViewURLCell class];
+    self.cellClass = [LegacyTableViewCell class];
     _accessibilityDelegate = delegate;
   }
   return self;
 }
 
-- (void)configureCell:(TableViewCell*)tableCell
+- (void)configureCell:(LegacyTableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
-  [super configureCell:tableCell withStyler:styler];
+  [super configureCell:cell withStyler:styler];
 
-  TableViewURLCell* cell =
-      base::apple::ObjCCastStrict<TableViewURLCell>(tableCell);
-  cell.cellUniqueIdentifier = self.uniqueIdentifier;
-  cell.titleLabel.text = self.text;
-  cell.URLLabel.text = self.detailText;
-  cell.metadataLabel.text = self.timeText;
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+
+  configuration.title = self.text;
+  configuration.titleNumberOfLines = kNumberOfTitleLines;
+  configuration.subtitle = self.detailText;
+  configuration.trailingText = self.timeText;
+
+  FaviconContentConfiguration* faviconConfiguration =
+      [[FaviconContentConfiguration alloc] init];
+  faviconConfiguration.faviconAttributes = self.faviconAttributes;
+
+  configuration.leadingConfiguration = faviconConfiguration;
+
+  cell.contentConfiguration = configuration;
+
   cell.isAccessibilityElement = YES;
+  cell.accessibilityLabel = configuration.accessibilityLabel;
+  cell.accessibilityValue = configuration.accessibilityValue;
   cell.accessibilityCustomActions =
-      self.accessibilityDelegate.isEditing ? nil : self.accessibilityActions;
+      _accessibilityDelegate.isEditing ? nil : self.accessibilityActions;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
-  [cell configureUILayout];
 }
 
-- (NSString*)uniqueIdentifier {
-  return base::SysUTF8ToNSString(self.URL.host());
+- (LegacyTableViewCell*)cellForTableView:(UITableView*)tableView {
+  [TableViewCellContentConfiguration legacyRegisterCellForTableView:tableView];
+  return
+      [TableViewCellContentConfiguration legacyDequeueTableViewCell:tableView];
 }
 
 #pragma mark - Accessibility
@@ -95,20 +107,19 @@
 }
 
 - (void)deleteHistoryEntry {
-  [self.accessibilityDelegate historyEntryItemDidRequestDelete:self];
+  [_accessibilityDelegate historyEntryItemDidRequestDelete:self];
 }
 
 - (void)openInNewTab {
-  [self.accessibilityDelegate historyEntryItemDidRequestOpenInNewTab:self];
+  [_accessibilityDelegate historyEntryItemDidRequestOpenInNewTab:self];
 }
 
 - (void)openInNewIncognitoTab {
-  [self.accessibilityDelegate
-      historyEntryItemDidRequestOpenInNewIncognitoTab:self];
+  [_accessibilityDelegate historyEntryItemDidRequestOpenInNewIncognitoTab:self];
 }
 
 - (void)copyURL {
-  [self.accessibilityDelegate historyEntryItemDidRequestCopy:self];
+  [_accessibilityDelegate historyEntryItemDidRequestCopy:self];
 }
 
 #pragma mark - NSObject

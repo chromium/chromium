@@ -10,6 +10,9 @@
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "chrome/browser/ash/crosapi/document_scan_ash_type_converters.h"
+#include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 #include "chrome/browser/extensions/api/document_scan/fake_document_scan_ash.h"
@@ -109,10 +112,42 @@ class DocumentScanApiTest : public ExtensionApiTest,
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
 
-    DocumentScanAPIHandler::Get(browser()->profile())
-        ->SetDocumentScanForTesting(&document_scan_ash_);
+    DocumentScanAPIHandler::Get(profile())->SetDocumentScanForTesting(
+        &document_scan_ash_);
 
     document_scan()->SetSmallestMaxReadSize(kRealBackendMinimumReadSize);
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    ExtensionApiTest::SetUpBrowserContextKeyedServices(context);
+    ash::LorgnetteScannerManagerFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<ash::FakeLorgnetteScannerManager>();
+        }));
+  }
+
+  void SetScannerInfoList(std::vector<lorgnette::ScannerInfo> scanners) {
+    auto* scanner_manager = static_cast<ash::FakeLorgnetteScannerManager*>(
+        ash::LorgnetteScannerManagerFactory::GetForBrowserContext(profile()));
+
+    lorgnette::ListScannersResponse response;
+    response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+    for (auto& scanner : scanners) {
+      auto open_response = crosapi::mojom::OpenScannerResponse::New();
+      open_response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+      open_response->scanner_id = scanner.name();
+      open_response->scanner_handle = scanner.name() + "-handle";
+      open_response->options.emplace();
+      open_response->options.value()["option1"] =
+          mojo::ConvertForTesting(CreateTestScannerOption("option1", 5));
+      document_scan()->SetOpenScannerResponse(scanner.name(),
+                                              std::move(open_response));
+
+      response.mutable_scanners()->Add(std::move(scanner));
+    }
+    scanner_manager->SetGetScannerInfoListResponse(response);
   }
 
  protected:
@@ -150,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, StartScan_PermissionDenied) {
   // case it still needs a valid scanner handle, so set the discovery
   // confirmation result.
   ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(true);
-  document_scan()->AddScanner(CreateTestScannerInfo());
+  SetScannerInfoList({CreateTestScannerInfo()});
   base::AutoReset<std::optional<bool>> testing_scope =
       StartScanRunner::SetStartScanConfirmationResultForTesting(false);
   RunTest("start_scan_denied.html");
@@ -160,7 +195,7 @@ IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, PerformScan_PermissionAllowed) {
   ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(true);
   base::AutoReset<std::optional<bool>> testing_scope =
       StartScanRunner::SetStartScanConfirmationResultForTesting(true);
-  document_scan()->AddScanner(CreateTestScannerInfo());
+  SetScannerInfoList({CreateTestScannerInfo()});
   const std::vector<std::string> scan_data = {"img", "data", "img", "data", ""};
   document_scan()->SetReadScanDataResponses(
       scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
@@ -176,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, PerformScan_ExtensionTrusted) {
   ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(false);
   base::AutoReset<std::optional<bool>> testing_scope =
       StartScanRunner::SetStartScanConfirmationResultForTesting(false);
-  document_scan()->AddScanner(CreateTestScannerInfo());
+  SetScannerInfoList({CreateTestScannerInfo()});
   const std::vector<std::string> scan_data = {"img", "data", "img", "data", ""};
   document_scan()->SetReadScanDataResponses(
       scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);

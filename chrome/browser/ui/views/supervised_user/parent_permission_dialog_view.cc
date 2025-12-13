@@ -22,9 +22,9 @@
 #include "chrome/browser/ui/views/extensions/extension_permissions_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -37,6 +37,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -53,7 +54,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -66,6 +67,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -346,10 +348,6 @@ struct ParentPermissionDialogView::Params {
   // The message to show. Ignored if extension is set.
   std::u16string message;
 
-  // Entry point leading to the creation of the dialog.
-  SupervisedUserExtensionParentApprovalEntryPoint
-      extension_approval_entry_point;
-
   // An optional extension whose permissions should be displayed
   raw_ptr<const extensions::Extension, AcrossTasksDanglingUntriaged> extension =
       nullptr;
@@ -416,7 +414,7 @@ void ParentPermissionDialogView::SetRepromptAfterIncorrectCredential(
   }
   reprompt_after_incorrect_credential_ = reprompt;
   OnPropertyChanged(&reprompt_after_incorrect_credential_,
-                    views::kPropertyEffectsNone);
+                    views::PropertyEffects::kNone);
 }
 
 bool ParentPermissionDialogView::GetRepromptAfterIncorrectCredential() const {
@@ -549,8 +547,8 @@ void ParentPermissionDialogView::CreateContents() {
     AddChildViewRaw(permissions_header);
 
     // Create permissions view.
-    auto permissions_view = std::make_unique<ExtensionPermissionsView>();
-    permissions_view->AddPermissions(prompt_permissions_);
+    auto permissions_view =
+        std::make_unique<ExtensionPermissionsView>(prompt_permissions_);
 
     // Add to the section container, so the permissions can scroll, since they
     // can be arbitrarily long.
@@ -619,10 +617,6 @@ void ParentPermissionDialogView::ShowDialog() {
           kOpened);
   if (params_->extension) {
     InitializeExtensionData(params_->extension.get());
-
-    SupervisedUserExtensionsMetricsRecorder::
-        RecordExtensionParentApprovalDialogEntryPointUmaMetrics(
-            params_->extension_approval_entry_point);
   } else {
     ShowDialogInternal();
   }
@@ -643,7 +637,7 @@ void ParentPermissionDialogView::SetSelectedParentPermissionEmail(
   }
   selected_parent_permission_email_ = email_address;
   OnPropertyChanged(&selected_parent_permission_email_,
-                    views::kPropertyEffectsNone);
+                    views::PropertyEffects::kNone);
 }
 
 std::u16string ParentPermissionDialogView::GetSelectedParentPermissionEmail()
@@ -658,7 +652,7 @@ void ParentPermissionDialogView::SetParentPermissionCredential(
   }
   parent_permission_credential_ = credential;
   OnPropertyChanged(&parent_permission_credential_,
-                    views::kPropertyEffectsNone);
+                    views::PropertyEffects::kNone);
 }
 
 std::u16string ParentPermissionDialogView::GetParentPermissionCredential()
@@ -735,12 +729,10 @@ void ParentPermissionDialogView::StartReauthAccessTokenFetch(
     const std::string& parent_credential) {
   // The first step of Reauth is to fetch an OAuth2 access token for the
   // Reauth API scope.
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kAccountsReauthOAuth2Scope);
   oauth2_access_token_fetcher_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-          "chrome_webstore_private_api", scopes,
+          signin::OAuthConsumerId::kParentPermissionDialog,
           base::BindOnce(
               &ParentPermissionDialogView::OnAccessTokenFetchComplete,
               weak_factory_.GetWeakPtr(), parent_obfuscated_gaia_id,
@@ -938,12 +930,9 @@ ParentPermissionDialog::CreateParentPermissionDialogForExtension(
     gfx::NativeWindow window,
     const gfx::ImageSkia& icon,
     const extensions::Extension* extension,
-    SupervisedUserExtensionParentApprovalEntryPoint
-        extension_approval_entry_point,
     ParentPermissionDialog::DoneCallback done_callback) {
   auto params = std::make_unique<ParentPermissionDialogView::Params>();
   params->extension = extension;
-  params->extension_approval_entry_point = extension_approval_entry_point;
   params->icon = icon;
   params->profile = profile;
   params->window = window;

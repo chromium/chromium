@@ -22,13 +22,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/api_test_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/test/test_api.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_paths.h"
@@ -52,6 +53,8 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -224,7 +227,7 @@ bool ExtensionApiTest::OpenTestURL(const GURL& url, bool open_in_incognito) {
 
 // Test that exactly one extension is loaded, and return it.
 const Extension* ExtensionApiTest::GetSingleLoadedExtension() {
-  return api_test_util::GetSingleLoadedExtension(profile(), message_);
+  return api_test_utils::GetSingleLoadedExtension(profile(), message_);
 }
 
 bool ExtensionApiTest::StartEmbeddedTestServer() {
@@ -263,6 +266,16 @@ net::EmbeddedTestServer& ExtensionApiTest::GetWebSocketServer() {
     net::test_server::InstallDefaultWebSocketHandlers(websocket_server_.get());
   }
   return *websocket_server_;
+}
+
+void ExtensionApiTest::InitWebSocketHttpsServer(
+    net::test_server::EmbeddedTestServer::ServerCertificate
+        server_certificate) {
+  CHECK(!websocket_server_);
+  websocket_server_ = std::make_unique<net::test_server::EmbeddedTestServer>(
+      net::test_server::EmbeddedTestServer::Type::TYPE_HTTPS);
+  websocket_server_->SetSSLConfig(server_certificate);
+  net::test_server::InstallDefaultWebSocketHandlers(websocket_server_.get());
 }
 
 bool ExtensionApiTest::StartWebSocketServer(

@@ -96,7 +96,7 @@ TEST(URLRequestFilter, BasicMatching) {
   EXPECT_EQ(0, filter->hit_count());
   auto interceptor2 = std::make_unique<TestURLRequestInterceptor>();
   auto* interceptor2_ptr = interceptor2.get();
-  filter->AddHostnameInterceptor(kUrl1.scheme(), kUrl1.host(),
+  filter->AddHostnameInterceptor(kUrl1.GetScheme(), kUrl1.GetHost(),
                                  std::move(interceptor2));
   {
     std::unique_ptr<URLRequestJob> found =
@@ -110,7 +110,7 @@ TEST(URLRequestFilter, BasicMatching) {
   EXPECT_EQ(1, filter->hit_count());
 
   // Check we can remove hostname matching.
-  filter->RemoveHostnameHandler(kUrl1.scheme(), kUrl1.host());
+  filter->RemoveHostnameHandler(kUrl1.GetScheme(), kUrl1.GetHost());
   EXPECT_FALSE(filter->MaybeInterceptRequest(request1.get()));
   EXPECT_EQ(1, filter->hit_count());
 

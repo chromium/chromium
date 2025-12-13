@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
 
 - (void)setCanDeleteAllCredentials:(BOOL)canDeleteAllCredentials;
 
-- (void)setCanExportPasswords:(BOOL)canExportPasswords;
+- (void)setCanExportCredentials:(BOOL)canExportCredentials;
 
 - (void)setCanBulkMove:(BOOL)canBulkMove localPasswordsCount:(int)count;
 

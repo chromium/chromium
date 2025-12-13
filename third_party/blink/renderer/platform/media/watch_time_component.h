@@ -27,9 +27,10 @@ namespace blink {
 template <typename T>
 class WatchTimeComponent {
  public:
-  // Callback used to convert |current_value_| into a WatchTimeKey which will be
-  // given to WatchTimeRecorder::RecordWatchTime().
-  using ValueToKeyCB = base::RepeatingCallback<media::WatchTimeKey(T value)>;
+  // Callback used to convert |current_value_| into a set of WatchTimeKey which
+  // will be given to WatchTimeRecorder::RecordWatchTime().
+  using ValueToKeyCB =
+      base::RepeatingCallback<Vector<media::WatchTimeKey>(T value)>;
 
   // Mirror of WatchTimeReporter::GetMediaTimeCB to avoid circular dependency.
   using GetMediaTimeCB = base::RepeatingCallback<base::TimeDelta(void)>;
@@ -72,7 +73,7 @@ class WatchTimeComponent {
 
   // If there's no pending finalize, records the amount of watch time which has
   // elapsed between `current_timestamp` and `start_timestamp_` by calling into
-  // mojom::blink::WatchTimeRecorder::RecordWatchTime(). The key to be recorded
+  // mojom::blink::WatchTimeRecorder::RecordWatchTime(). The keys to be recorded
   // to is determined by the |value_to_key_cb_|; or if none is present, all keys
   // in `keys_to_finalize_` are recorded to.
   //

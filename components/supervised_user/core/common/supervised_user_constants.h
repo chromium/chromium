@@ -61,7 +61,7 @@ enum class LocalWebApprovalErrorType : int {
 // user service is in use, and consequently offers "disabled" state for those
 // who are not subject to parental controls.
 // Entries must not be renumbered and numeric values should never be reused.
-// LINT.IfChange(FamilyLinkWebFilterType)
+// LINT.IfChange(SupervisedUserWebFilterType)
 enum class WebFilterType {
   // The web filter is set to "Allow all sites".
   kAllowAllSites = 0,
@@ -83,7 +83,7 @@ enum class WebFilterType {
   // above this comment. Sync with enums.xml.
   kMaxValue = kDisabled,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkWebFilterType)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:SupervisedUserWebFilterType)
 
 // Returns the string equivalent of a Web Filter type. This is a user-visible
 // string included in the user feedback log.
@@ -173,8 +173,6 @@ extern const char kSkipParentApprovalToInstallExtensions[];
 
 // A special supervised user ID used for child accounts.
 extern const char kChildAccountSUID[];
-// A special supervised user ID used for self-managed supervised profiles.
-extern const char kSupervisedProfileSUID[];
 
 // Keys for supervised user shared settings. These can be configured remotely or
 // SupervisedUserPrefMappingService.
@@ -187,8 +185,6 @@ extern const char* const kCustodianInfoPrefs[10];
 
 // Filenames.
 extern const base::FilePath::CharType kSupervisedUserSettingsFilename[];
-
-extern const char kSyncGoogleDashboardURL[];
 
 // Histogram name to log FamilyLink user type segmentation.
 extern const char kFamilyLinkUserLogSegmentHistogramName[];
@@ -235,9 +231,6 @@ extern const char kClassifiedEarlierThanContentResponseHistogramName[];
 
 // Histogram name to track how much throttle delayed the navigation.
 extern const char kClassifiedLaterThanContentResponseHistogramName[];
-
-// Histogram name to track intermediate throttle states.
-extern const char kClassifyUrlThrottleStatusHistogramName[];
 
 // Histogram name to track the final throttle verdict.
 extern const char kClassifyUrlThrottleFinalStatusHistogramName[];

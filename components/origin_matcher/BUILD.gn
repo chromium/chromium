@@ -44,6 +44,7 @@ source_set("origin_matcher") {
     "origin_matcher_internal.cc",
     "origin_matcher_internal.h",
   ]
+  public_deps = [ ":features" ]
   deps = [
     "//base",
     "//net",
@@ -58,6 +59,17 @@ source_set("origin_matcher") {
 
   # origin_matcher_internal is needed by mojom traits and tests.
   friend = [ ":*" ]
+}
+
+component("features") {
+  defines = [ "IS_ORIGIN_MATCHER_IMPL" ]
+
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

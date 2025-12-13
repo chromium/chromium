@@ -62,12 +62,13 @@ RendererSandboxedProcessLauncherDelegateWin::
         const base::CommandLine& cmd_line,
         bool is_pdf_renderer,
         bool is_jit_disabled)
-    : renderer_code_integrity_enabled_(
-          GetContentClient()->browser()->IsRendererCodeIntegrityEnabled()),
-      renderer_app_container_disabled_(
+    : renderer_app_container_disabled_(
           GetContentClient()->browser()->IsAppContainerDisabled(
               sandbox::mojom::Sandbox::kRenderer)),
-      is_pdf_renderer_(is_pdf_renderer) {
+      is_pdf_renderer_(is_pdf_renderer),
+      restrict_core_sharing_(GetContentClient()
+                                 ->browser()
+                                 ->ShouldRestrictCoreSharingOnRenderer()) {
   // PDF renderers must be jitless.
   CHECK(!is_pdf_renderer || is_jit_disabled);
   if (is_jit_disabled) {
@@ -122,9 +123,7 @@ bool RendererSandboxedProcessLauncherDelegateWin::InitializeConfig(
     sandbox::policy::SandboxWin::AddAppContainerPolicy(config, sid.c_str());
   }
 
-  // If the renderer process is protected by code integrity, more
-  // mitigations become available.
-  if (renderer_code_integrity_enabled_ && dynamic_code_can_be_disabled_) {
+  if (dynamic_code_can_be_disabled_) {
     sandbox::MitigationFlags mitigation_flags =
         config->GetDelayedProcessMitigations();
     mitigation_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
@@ -138,10 +137,6 @@ bool RendererSandboxedProcessLauncherDelegateWin::InitializeConfig(
 
   ContentBrowserClient::ChildSpawnFlags flags(
       ContentBrowserClient::ChildSpawnFlags::kChildSpawnFlagNone);
-  if (renderer_code_integrity_enabled_) {
-    flags = ContentBrowserClient::ChildSpawnFlags::
-        kChildSpawnFlagRendererCodeIntegrity;
-  }
   return GetContentClient()->browser()->PreSpawnChild(
       config, sandbox::mojom::Sandbox::kRenderer, flags);
 }
@@ -178,6 +173,10 @@ bool RendererSandboxedProcessLauncherDelegateWin::CetCompatible() {
 bool RendererSandboxedProcessLauncherDelegateWin::
     ShouldUseUntrustedMojoInvitation() {
   return true;
+}
+
+bool RendererSandboxedProcessLauncherDelegateWin::RestrictCoreSharing() {
+  return restrict_core_sharing_;
 }
 
 #endif  // BUILDFLAG(IS_WIN)

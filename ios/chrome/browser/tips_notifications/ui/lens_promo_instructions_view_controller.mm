@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tips_notifications/ui/lens_promo_instructions_view_controller.h"
 
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -16,19 +17,25 @@ NSString* const kLensPromoInstructionsAXID = @"kLensPromoInstructionsAXID";
 
 @implementation LensPromoInstructionsViewController
 
+- (instancetype)init {
+  self =
+      [super initWithTitle:l10n_util::GetNSString(
+                               IDS_IOS_LENS_PROMO_INSTRUCTIONS_TITLE)
+              instructions:@[
+                l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP1),
+                l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP2),
+                l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP3),
+              ]];
+  if (self) {
+    self.configuration.primaryActionString =
+        l10n_util::GetNSString(IDS_IOS_LENS_PROMO_PRIMARY_ACTION);
+  }
+  return self;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  self.titleString =
-      l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_TITLE);
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_LENS_PROMO_PRIMARY_ACTION);
-  self.steps = @[
-    l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP1),
-    l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP2),
-    l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP3),
-  ];
-
   [super viewDidLoad];
   self.view.accessibilityIdentifier = kLensPromoInstructionsAXID;
 }

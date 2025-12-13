@@ -735,6 +735,45 @@ TEST(UrlUtilTest, SimplifyUrlForRequest) {
   }
 }
 
+TEST(UrlUtilTest, RemoveCredentialsFromUrl) {
+  const struct {
+    GURL input_url;
+    GURL output_url;
+  } kTests[] = {
+      {
+          // Everything other than the username/password should be left alone.
+          GURL("http://a.test:78/foobar?query=1#hash"),
+          GURL("http://a.test:78/foobar?query=1#hash"),
+      },
+      {
+          // Strip username/password.
+          GURL("http://user:pass@a.test"),
+          GURL("http://a.test/"),
+      },
+      {
+          // Try an HTTPS URL.
+          GURL("https://user:pass@a.test:80/sup?yo#hash"),
+          GURL("https://a.test:80/sup?yo#hash"),
+      },
+      {
+          // Try an FTP URL. GURL removes references from these, so don't
+          // include one.
+          GURL("ftp://user:pass@a.test:80/sup?yo"),
+          GURL("ftp://a.test:80/sup?yo"),
+      },
+      {
+          // Try a non-special URL. GURL removes references from these, so don't
+          // include one.
+          GURL("foobar://user:pass@a.test:80/sup?yo"),
+          GURL("foobar://a.test:80/sup?yo"),
+      },
+  };
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test.input_url.spec());
+    EXPECT_EQ(test.output_url, RemoveCredentialsFromUrl(test.input_url));
+  }
+}
+
 TEST(UrlUtilTest, ChangeWebSocketSchemeToHttpScheme) {
   struct {
     const char* const input_url;
@@ -911,8 +950,8 @@ TEST(UrlUtilTest, GetIdentityFromURL) {
 TEST(UrlUtilTest, GetIdentityFromURL_UTF8) {
   GURL url(u"http://foo:\x4f60\x597d@blah.com");
 
-  EXPECT_EQ("foo", url.username());
-  EXPECT_EQ("%E4%BD%A0%E5%A5%BD", url.password());
+  EXPECT_EQ("foo", url.GetUsername());
+  EXPECT_EQ("%E4%BD%A0%E5%A5%BD", url.GetPassword());
 
   // Extract the unescaped identity.
   std::u16string username, password;

@@ -4,6 +4,8 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
 
+#include <list>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -17,20 +19,23 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/types/expected.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "net/base/io_buffer.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "services/network/shared_dictionary/shared_dictionary_cache.h"
+#include "services/network/shared_dictionary/shared_dictionary_document_request_metadata_result.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
-#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 #include "url/scheme_host_port.h"
 
 namespace network {
 
 constexpr char kCacheResultHistogramName[] =
     "Network.SharedDictionary.DocumentRequestCacheResult";
+constexpr char kDocumentRequestMetadataResultHistogramName[] =
+    "Network.SharedDictionary.DocumentRequestMetadataResult";
 
 namespace {
 
@@ -73,7 +78,7 @@ std::set<mojom::RequestDestination> ToRequestDestinationSet(
 
 SharedDictionaryStorageOnDisk::WrappedDictionaryInfo::WrappedDictionaryInfo(
     net::SharedDictionaryInfo info,
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher)
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher)
     : net::SharedDictionaryInfo(std::move(info)),
       matcher_(std::move(matcher)),
       match_dest_(ToRequestDestinationSet(match_dest_string())) {}
@@ -89,15 +94,18 @@ SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
     base::WeakPtr<SharedDictionaryManagerOnDisk> manager,
     const net::SharedDictionaryIsolationKey& isolation_key,
     base::ScopedClosureRunner on_deleted_closure_runner,
-    scoped_refptr<SharedDictionaryCache> dictionary_cache)
+    scoped_refptr<SharedDictionaryCache> dictionary_cache,
+    SharedDictionaryStorageEvictionReason previous_eviction_reason)
     : manager_(manager),
       isolation_key_(isolation_key),
       on_deleted_closure_runner_(std::move(on_deleted_closure_runner)),
-      dictionary_cache_(dictionary_cache) {
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
-      base::BindRepeating(&SharedDictionaryStorageOnDisk::OnMemoryPressure,
-                          weak_factory_.GetWeakPtr()));
+      dictionary_cache_(dictionary_cache),
+      previous_eviction_reason_(previous_eviction_reason) {
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kSharedDictionaryStorageOnDisk,
+          this);
   manager_->metadata_store().GetDictionaries(
       isolation_key_,
       base::BindOnce(
@@ -120,24 +128,86 @@ scoped_refptr<net::SharedDictionary>
 SharedDictionaryStorageOnDisk::GetDictionarySync(
     const GURL& url,
     mojom::RequestDestination destination) {
+  scoped_refptr<net::SharedDictionary> dictionary =
+      GetDictionarySyncInternal(url, destination);
+  if (dictionary) {
+    if (destination == mojom::RequestDestination::kDocument) {
+      base::UmaHistogramEnumeration(
+          kDocumentRequestMetadataResultHistogramName,
+          SharedDictionaryDocumentRequestMetadataResult::kMetadataReady);
+    }
+    return dictionary;
+  }
+
+  if (!is_metadata_ready_ &&
+      destination == mojom::RequestDestination::kDocument) {
+    pending_get_dictionary_tasks_.emplace_back(base::BindOnce(
+        [](base::WeakPtr<SharedDictionaryStorageOnDisk> self, GURL url,
+           mojom::RequestDestination destination) {
+          if (!self) {
+            return;
+          }
+          if (self->GetDictionarySyncInternal(url, destination)) {
+            base::UmaHistogramEnumeration(
+                kDocumentRequestMetadataResultHistogramName,
+                SharedDictionaryDocumentRequestMetadataResult::
+                    kMetadataPending);
+          }
+        },
+        weak_factory_.GetWeakPtr(), url, destination));
+  }
+  return nullptr;
+}
+
+scoped_refptr<net::SharedDictionary>
+SharedDictionaryStorageOnDisk::GetDictionarySyncInternal(
+    const GURL& url,
+    mojom::RequestDestination destination) {
   if (!get_dictionary_called_) {
     get_dictionary_called_ = true;
     base::UmaHistogramBoolean(
         "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse",
         is_metadata_ready_);
+
+    if (previous_eviction_reason_ !=
+        SharedDictionaryStorageEvictionReason::kNotEvicted) {
+      base::UmaHistogramBoolean(
+          "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+          "PreviouslyEvicted",
+          is_metadata_ready_);
+      base::UmaHistogramEnumeration(
+          "Net.SharedDictionaryStorageOnDisk.MemoryCache."
+          "PreviousEvictionReason",
+          previous_eviction_reason_);
+    }
+    if (previous_eviction_reason_ ==
+            SharedDictionaryStorageEvictionReason::kMemoryPressureModerate ||
+        previous_eviction_reason_ ==
+            SharedDictionaryStorageEvictionReason::kMemoryPressureCritical) {
+      base::UmaHistogramBoolean(
+          "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+          "PreviouslyEvictedByMemoryPressure",
+          is_metadata_ready_);
+    }
+  }
+
+  if (!is_metadata_ready_) {
+    return nullptr;
   }
 
   if (!manager_) {
     return nullptr;
   }
+
+  std::list<WrappedDictionaryInfo*> expired_entries;
   net::SharedDictionaryInfo* info = GetMatchingDictionaryFromDictionaryInfoMap(
-      dictionary_info_map_, url, destination);
-  if (!info) {
-    return nullptr;
+      dictionary_info_map_, url, destination, expired_entries);
+
+  if (!expired_entries.empty()) {
+    manager_->MaybePostExpiredDictionaryDeletionTask();
   }
 
-  if (info->response_time() + info->expiration() <= base::Time::Now()) {
-    manager_->MaybePostExpiredDictionaryDeletionTask();
+  if (!info) {
     return nullptr;
   }
 
@@ -184,8 +254,7 @@ SharedDictionaryStorageOnDisk::GetDictionarySync(
           weak_factory_.GetWeakPtr(), info->disk_cache_key_token())));
   dictionaries_.emplace(info->disk_cache_key_token(), shared_dictionary.get());
 
-  if (memory_pressure_level_ ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (memory_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_NONE) {
     dictionary_cache_->Put(info->disk_cache_key_token(), destination,
                            shared_dictionary);
   }
@@ -216,7 +285,7 @@ SharedDictionaryStorageOnDisk::CreateWriter(
     const std::string& match,
     const std::set<mojom::RequestDestination>& match_dest,
     const std::string& id,
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher) {
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher) {
   CHECK(matcher);
   if (!manager_) {
     return base::unexpected(
@@ -237,12 +306,14 @@ bool SharedDictionaryStorageOnDisk::UpdateLastFetchTimeIfAlreadyRegistered(
     const std::string& match,
     const std::set<mojom::RequestDestination>& match_dest,
     const std::string& id,
+    const std::optional<base::TimeDelta>& ttl,
     base::Time last_fetch_time) {
   WrappedDictionaryInfo* matched_info = FindRegisteredInDictionaryInfoMap(
       dictionary_info_map_, url, response_time, expiration, match, match_dest,
-      id);
+      id, ttl);
   if (matched_info) {
-    manager_->UpdateDictionaryLastFetchTime(*matched_info, last_fetch_time);
+    manager_->UpdateDictionaryLastFetchTime(*matched_info, last_fetch_time,
+                                            ttl);
     return true;
   }
   return false;
@@ -261,9 +332,9 @@ void SharedDictionaryStorageOnDisk::OnDatabaseRead(
     const url::SchemeHostPort scheme_host_port =
         url::SchemeHostPort(info.url());
     const std::string match = info.match();
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher;
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher;
     auto matcher_create_result =
-        SimpleUrlPatternMatcher::Create(match, info.url());
+        url_pattern::SimpleUrlPatternMatcher::Create(match, &info.url());
     if (!matcher_create_result.has_value()) {
       continue;
     }
@@ -281,7 +352,7 @@ void SharedDictionaryStorageOnDisk::OnDatabaseRead(
 }
 
 void SharedDictionaryStorageOnDisk::OnDictionaryWritten(
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher,
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher,
     net::SharedDictionaryInfo info) {
   WrappedDictionaryInfo wrapped_info(std::move(info), std::move(matcher));
   const url::SchemeHostPort scheme_host_port =
@@ -313,7 +384,12 @@ void SharedDictionaryStorageOnDisk::OnDictionaryDeleted(
 }
 
 void SharedDictionaryStorageOnDisk::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+    base::MemoryPressureLevel level) {
+  // TODO(pmonette): This doesn't handle NONE notifications for historical
+  // reasons. Fix this.
+  if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
   memory_pressure_level_ = level;
 }
 

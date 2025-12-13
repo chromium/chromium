@@ -44,8 +44,8 @@
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
-#include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_cryptohome.h"
@@ -85,7 +85,6 @@
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -767,11 +766,48 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
           LoginPerformer::AuthorizationMode::kExternal &&
       (user_context.GetAccessToken().empty() ||
        user_context.GetAuthFlow() == UserContext::AUTH_FLOW_GAIA_WITH_SAML);
+  if (ash::features::IsRecoveryFlowReorderEnabled()) {
+    has_auth_cookies_ = has_auth_cookies;
+  }
 
   // LoginPerformer instance will delete itself in case of successful auth.
   login_performer_->set_delegate(nullptr);
   std::ignore = login_performer_.release();
 
+  if (MaybeShowPasswordSelectionScreen(user_context)) {
+    return;
+  }
+  FinalizeAuthAndStartSession(user_context, has_auth_cookies);
+}
+
+bool ExistingUserController::MaybeShowPasswordSelectionScreen(
+    const UserContext& user_context) {
+  if (!ash::features::IsRecoveryFlowReorderEnabled() ||
+      auth_mode_ != LoginPerformer::AuthorizationMode::kExternal ||
+      GetLoginDisplayHost()
+              ->GetWizardContext()
+              ->knowledge_factor_setup.auth_setup_flow !=
+          WizardContext::AuthChangeFlow::kRecovery) {
+    return false;
+  }
+  GetLoginDisplayHost()->GetWizardContext()->extra_factors_token =
+      AuthSessionStorage::Get()->Store(
+          std::make_unique<UserContext>(user_context));
+  GetLoginDisplayHost()->GetSigninUI()->ShowPasswordSelectionScreen();
+
+  return true;
+}
+
+void ExistingUserController::FinalizeAuthAndStartSession(
+    const UserContext& user_context) {
+  CHECK(ash::features::IsRecoveryFlowReorderEnabled());
+  CHECK(has_auth_cookies_.has_value());
+  FinalizeAuthAndStartSession(user_context, *has_auth_cookies_);
+}
+
+void ExistingUserController::FinalizeAuthAndStartSession(
+    const UserContext& user_context,
+    const bool has_auth_cookies) {
   const bool is_enterprise_managed =
       ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
@@ -837,10 +873,6 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
         privacy_warnings_enabled) {
       ShowAutoLaunchManagedGuestSessionNotification();
     }
-  }
-  if (is_enterprise_managed) {
-    enterprise_user_session_metrics::RecordSignInEvent(
-        user_context, last_login_attempt_was_auto_login_);
   }
 }
 
@@ -1404,6 +1436,24 @@ void ExistingUserController::ShowError(SigninError error,
   signin_ui->ShowSigninError(error, details);
 }
 
+void ExistingUserController::ShowOobeNotCompletedError() {
+  CHECK(features::IsOobeAutoEnrollmentCheckForcedEnabled())
+      << "ExistingUserController::ShowOobeNotCompletedError() should only be "
+         "called when OobeAutoEnrollmentCheckForced is enabled";
+  auto* signin_ui = GetLoginDisplayHost()->GetSigninUI();
+  if (!signin_ui) {
+    DCHECK(session_manager::SessionManager::Get()->IsInSecondaryLoginScreen());
+    // Silently ignore the error on the secondary login screen. The screen is
+    // being deprecated anyway.
+    return;
+  }
+  GetLoginDisplayHost()
+      ->GetOobeMetricsHelper()
+      ->RecordOobeNotCompletedErrorTrigger(
+          OobeMetricsHelper::OobeNotCompletedTrigger::kExistingUserController);
+  signin_ui->ShowOobeNotCompletedError();
+}
+
 void ExistingUserController::SendAccessibilityAlert(
     const std::string& alert_text) {
   AutomationManagerAura::GetInstance()->HandleAlert(alert_text);
@@ -1518,6 +1568,27 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
     // and refuse to log in.
     ++num_login_attempts_;
     ShowError(SigninError::kOwnerKeyLost, /*details=*/std::string());
+
+    // Re-enable clicking on other windows and the status area. Do not start the
+    // auto-login timer though. Without trusted `cros_settings_`, no auto-login
+    // can succeed.
+    if (GetLoginDisplayHost()->GetWebUILoginView()) {
+      GetLoginDisplayHost()
+          ->GetWebUILoginView()
+          ->SetKeyboardEventsAndSystemTrayEnabled(true);
+    }
+    return;
+  }
+
+  if (features::IsOobeAutoEnrollmentCheckForcedEnabled() &&
+      !StartupUtils::IsOobeCompleted()) {
+    // If OOBE is not yet completed, abort the current login attempt. This
+    // indicates a potential bypass attempt and an error screen is shown.
+    ++num_login_attempts_;
+
+    auto* wizard_controller = GetLoginDisplayHost()->GetWizardController();
+    CHECK(wizard_controller);
+    ShowOobeNotCompletedError();
 
     // Re-enable clicking on other windows and the status area. Do not start the
     // auto-login timer though. Without trusted `cros_settings_`, no auto-login

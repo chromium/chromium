@@ -5,6 +5,24 @@
 #import "ios/chrome/browser/drive/model/drive_list.h"
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
+namespace {
+
+// The size of the drive file picker item icon.
+constexpr CGFloat kDriveFilePickerItemIconSize = 18;
+// Prefix of MIME types associated with images.
+NSString* const kImageMIMETypePrefix = @"image/";
+// Prefix of the icon link for shortcuts.
+NSString* const kShortcutImageLinkPrefix =
+    @"https://drive-thirdparty.googleusercontent.com/64/type/";
+// Prefix of links to icons in the Drive third-party icon repository.
+NSString* const kDriveIconRepositoryPrefix =
+    @"https://drive-thirdparty.googleusercontent.com/";
+// MIME type for folder items.
+NSString* const kFolderMIMEType = @"application/vnd.google-apps.folder";
+
+}  // namespace
 
 #pragma mark - DriveItem
 
@@ -66,6 +84,67 @@ DriveItem& DriveItem::operator=(DriveItem&& other) {
   std::swap(can_download, other.can_download);
   std::swap(md5_checksum, other.md5_checksum);
   return *this;
+}
+
+bool DriveItem::CanBeBrowsed() const {
+  return is_folder || is_shared_drive ||
+         (is_shortcut &&
+          [shortcut_target_mime_type isEqualToString:kFolderMIMEType]);
+}
+
+UIImage* DriveItem::GetPlaceholderImage() const {
+  if (is_shared_drive) {
+    return CustomSymbolWithPointSize(kSharedDrivesSymbol,
+                                     kDriveFilePickerItemIconSize);
+  } else if (is_folder) {
+    return DefaultSymbolWithPointSize(kFolderSymbol,
+                                      kDriveFilePickerItemIconSize);
+  } else if (is_shortcut) {
+    return DefaultSymbolWithPointSize(kArrowUTurnForwardSymbol,
+                                      kDriveFilePickerItemIconSize);
+  } else {
+    return DefaultSymbolWithPointSize(kDocSymbol, kDriveFilePickerItemIconSize);
+  }
+}
+
+DriveItem::ImageType DriveItem::GetImageType() const {
+  if (is_shared_drive) {
+    // If this is a shared drive, the background image link should be fetched.
+    return ImageType::kBackground;
+  } else if ([mime_type hasPrefix:kImageMIMETypePrefix] && thumbnail_link) {
+    return ImageType::kThumbnail;
+  } else if (is_shortcut && shortcut_target_mime_type) {
+    return ImageType::kShortcut;
+  }
+  // Otherwise the icon link should be fetched.
+  return ImageType::kIcon;
+}
+
+NSString* DriveItem::GetImageLink() const {
+  switch (GetImageType()) {
+    case ImageType::kIcon: {
+      // By default drive api provides a 16 resolution icons, replacing 16 by 64
+      // in the icon URLs provide better sized icons e.g. the URL
+      // https://drive-thirdparty.googleusercontent.com/16/type/video/mp4
+      // becomes
+      // https://drive-thirdparty.googleusercontent.com/64/type/video/mp4
+      NSString* target =
+          [kDriveIconRepositoryPrefix stringByAppendingString:@"16"];
+      NSString* replacement =
+          [kDriveIconRepositoryPrefix stringByAppendingString:@"64"];
+      return [icon_link stringByReplacingOccurrencesOfString:target
+                                                  withString:replacement];
+    }
+    case ImageType::kThumbnail:
+      return thumbnail_link;
+    case ImageType::kBackground:
+      return background_image_link;
+    case ImageType::kShortcut:
+      // Icon links are expected to have the following format:
+      // https://drive-thirdparty.googleusercontent.com/64/type/<MIME type>
+      return [kShortcutImageLinkPrefix
+          stringByAppendingString:shortcut_target_mime_type];
+  }
 }
 
 #pragma mark - DriveListResult

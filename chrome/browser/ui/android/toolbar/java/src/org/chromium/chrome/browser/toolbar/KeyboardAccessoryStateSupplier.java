@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.toolbar;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
@@ -19,20 +21,21 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
  * current visibility of the accessory sheet.
  */
 @NullMarked
-public class KeyboardAccessoryStateSupplier extends ObservableSupplierImpl<Integer> {
+public class KeyboardAccessoryStateSupplier {
 
     private final Callback<ManualFillingComponent> mManualFillingAvailableCallback =
             this::onManualFillingComponentAvailable;
     private final ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
-    private final Callback<Integer> mInsetChangeCallback = this::set;
+    private final Callback<Integer> mInsetChangeCallback = this::onInsetChange;
     private @Nullable ManualFillingComponent mManualFillingComponent;
-    private final ObservableSupplierImpl<Boolean> mIsSheetShowingSupplier =
-            new ObservableSupplierImpl<>(false);
+    private final SettableNonNullObservableSupplier<Boolean> mIsSheetShowingSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final View mView;
+    private final SettableNonNullObservableSupplier<Integer> mInsetSupplier =
+            ObservableSuppliers.createNonNull(0);
 
     public KeyboardAccessoryStateSupplier(
             ObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier, View view) {
-        super(0);
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
         mView = view;
         ManualFillingComponent manualFillingComponent =
@@ -42,9 +45,8 @@ public class KeyboardAccessoryStateSupplier extends ObservableSupplierImpl<Integ
         }
     }
 
-    @Override
-    public void set(Integer object) {
-        super.set(object);
+    private void onInsetChange(Integer value) {
+        mInsetSupplier.set(value);
         mIsSheetShowingSupplier.set(
                 mManualFillingComponent != null
                         && mManualFillingComponent.isFillingViewShown(mView));
@@ -60,9 +62,14 @@ public class KeyboardAccessoryStateSupplier extends ObservableSupplierImpl<Integ
         if (mManualFillingComponent != null) {
             mManualFillingComponent.getBottomInsetSupplier().removeObserver(mInsetChangeCallback);
         }
+        mInsetSupplier.destroy();
     }
 
-    public ObservableSupplierImpl<Boolean> getIsSheetShowingSupplier() {
+    public NonNullObservableSupplier<Boolean> getIsSheetShowingSupplier() {
         return mIsSheetShowingSupplier;
+    }
+
+    public NonNullObservableSupplier<Integer> getInsetSupplier() {
+        return mInsetSupplier;
     }
 }

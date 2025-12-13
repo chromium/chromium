@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/tcp_client_socket.h"
@@ -53,14 +53,12 @@ class DefaultClientSocketFactory : public ClientSocketFactory {
   }
 };
 
-static base::LazyInstance<DefaultClientSocketFactory>::Leaky
-    g_default_client_socket_factory = LAZY_INSTANCE_INITIALIZER;
-
 }  // namespace
 
 // static
 ClientSocketFactory* ClientSocketFactory::GetDefaultFactory() {
-  return g_default_client_socket_factory.Pointer();
+  static base::NoDestructor<DefaultClientSocketFactory> factory;
+  return factory.get();
 }
 
 }  // namespace net

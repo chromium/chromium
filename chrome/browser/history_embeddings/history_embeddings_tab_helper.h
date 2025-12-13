@@ -46,7 +46,8 @@ class HistoryEmbeddingsTabHelper
   // Called by `HistoryTabHelper` right after submitting a new navigation for
   // `web_contents()` to HistoryService. We need close coordination with
   // History's conception of the visit lifetime.
-  void OnUpdatedHistoryForNavigation(
+  // Virtual for testing.
+  virtual void OnUpdatedHistoryForNavigation(
       content::NavigationHandle* navigation_handle,
       base::Time timestamp,
       const GURL& url);
@@ -67,8 +68,11 @@ class HistoryEmbeddingsTabHelper
       base::Time visit_time,
       content::WeakDocumentPtr weak_render_frame_host);
 
- private:
+ protected:
+  // `protected` instead of `private` for mocking in tests.
   explicit HistoryEmbeddingsTabHelper(content::WebContents* web_contents);
+
+ private:
   friend class content::WebContentsUserData<HistoryEmbeddingsTabHelper>;
 
   // Utility method to delay passage extraction until tabs are done loading.
@@ -83,7 +87,7 @@ class HistoryEmbeddingsTabHelper
   // cancellation via `weak_factory_`.
   void ExtractPassagesWithHistoryData(
       content::WeakDocumentPtr weak_render_frame_host,
-      history::QueryURLResult result);
+      history::QueryURLAndVisitsResult result);
 
   // Initiates async passage extraction from the given host's main frame.
   // When the extraction completes, the passages will be given to the

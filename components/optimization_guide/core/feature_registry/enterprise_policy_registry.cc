@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 
 #include <string.h>
 
+#include "base/compiler_specific.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -38,6 +35,11 @@ EnterprisePolicyRegistry& EnterprisePolicyRegistry::GetInstance() {
   return *registry;
 }
 
+std::unique_ptr<EnterprisePolicyRegistry>
+EnterprisePolicyRegistry::CreateForTesting() {
+  return base::WrapUnique(new EnterprisePolicyRegistry());
+}
+
 EnterprisePolicyPref EnterprisePolicyRegistry::Register(const char* name) {
   // We shouldn't be registering new policies after the prefs have been
   // registered in the pref service.
@@ -45,7 +47,7 @@ EnterprisePolicyPref EnterprisePolicyRegistry::Register(const char* name) {
   for (const EnterprisePolicyPref& policy : enterprise_policies_) {
     // Make sure there isn't already an enterprise policy registered with that
     // name.
-    CHECK(strcmp(policy.name(), name) != 0);
+    UNSAFE_TODO(CHECK(strcmp(policy.name(), name) != 0));
   }
   enterprise_policies_.emplace_back(name);
   return EnterprisePolicyPref(name);
@@ -63,11 +65,6 @@ void EnterprisePolicyRegistry::RegisterProfilePrefs(
   // From that point on, it's too late to modify the registry as the prefs
   // won't get registered.
   immutable_ = true;
-}
-
-void EnterprisePolicyRegistry::ClearForTesting() {
-  enterprise_policies_.clear();
-  immutable_ = false;
 }
 
 }  // namespace optimization_guide

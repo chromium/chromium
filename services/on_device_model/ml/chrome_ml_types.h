@@ -27,6 +27,10 @@ enum class Token {
   kUser,
   // End a system/model/user section.
   kEnd,
+  // Prefix for tool call (function invocation by the model).
+  kToolCall,
+  // Prefix for tool response (results from tool execution).
+  kToolResponse,
 };
 
 // If an InputPiece holds a `bool`, then the operation should fail. This means

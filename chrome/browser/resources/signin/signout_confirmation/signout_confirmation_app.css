@@ -49,3 +49,24 @@ extensions-section {
   justify-content: flex-start;
 }
 </if>
+
+.delete-button {
+  --cr-button-background-color: var(--google-red-600);
+  --cr-button-text-color: var(--google-grey-50);
+}
+
+.delete-button:hover {
+  --cr-button-background-color: rgba(var(--google-red-600-rgb), .9);
+}
+
+@media (prefers-color-scheme: dark) {
+  .delete-button {
+    --cr-button-background-color: var(--google-red-300);
+    --cr-button-text-color: var(--google-grey-900);
+  }
+
+  .delete-button:hover {
+    --cr-button-background-color: var(--google-red-300)
+        linear-gradient(rgba(0, 0, 0, .08), rgba(0, 0, 0, .08));
+  }
+}

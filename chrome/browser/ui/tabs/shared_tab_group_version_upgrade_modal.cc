@@ -12,6 +12,9 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/versioning_message_controller.h"
@@ -40,7 +43,7 @@ class SharedTabGroupVersionDialogDelegate : public ui::DialogModelDelegate {
   raw_ptr<Browser> browser_;
 };
 
-void ShowSharedTabGroupVersionUpgradeModal(
+void ShowSharedTabGroupVersionOutOfDateModal(
     base::WeakPtr<Browser> browser,
     tab_groups::VersioningMessageController* versioning_message_controller,
     bool should_show) {
@@ -77,11 +80,33 @@ void ShowSharedTabGroupVersionUpgradeModal(
           VERSION_OUT_OF_DATE_INSTANT_MESSAGE);
 }
 
+void ShowSharedTabGroupVersionUpToDateToast(
+    base::WeakPtr<Browser> browser,
+    tab_groups::VersioningMessageController* versioning_message_controller,
+    bool should_show) {
+  if (!browser || !versioning_message_controller || !should_show) {
+    return;
+  }
+
+  ToastController* toast_controller =
+      browser->browser_window_features()->toast_controller();
+  if (!toast_controller) {
+    return;
+  }
+
+  ToastParams params(ToastId::kTabGroupSharingVersionUpToDate);
+  if (toast_controller->MaybeShowToast(std::move(params))) {
+    versioning_message_controller->OnMessageUiShown(
+        tab_groups::VersioningMessageController::MessageType::
+            VERSION_UPDATED_MESSAGE);
+  }
+}
+
 }  // anonymous namespace
 
-void MaybeShowSharedTabGroupVersionUpgradeModal(Browser* browser) {
+void MaybeShowSharedTabGroupVersionOutOfDateModal(Browser* browser) {
   // Only show on normal browser.
-  if (!browser->is_type_normal()) {
+  if (!browser || !browser->is_type_normal()) {
     return;
   }
 
@@ -100,7 +125,32 @@ void MaybeShowSharedTabGroupVersionUpgradeModal(Browser* browser) {
   versioning_message_controller->ShouldShowMessageUiAsync(
       tab_groups::VersioningMessageController::MessageType::
           VERSION_OUT_OF_DATE_INSTANT_MESSAGE,
-      base::BindOnce(&ShowSharedTabGroupVersionUpgradeModal,
+      base::BindOnce(&ShowSharedTabGroupVersionOutOfDateModal,
+                     browser->AsWeakPtr(), versioning_message_controller));
+}
+
+void MaybeShowSharedTabGroupVersionUpToDateToast(Browser* browser) {
+  // Only show on normal browser.
+  if (!browser || !browser->is_type_normal()) {
+    return;
+  }
+
+  tab_groups::TabGroupSyncService* tab_group_sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
+  if (!tab_group_sync_service) {
+    return;
+  }
+
+  tab_groups::VersioningMessageController* versioning_message_controller =
+      tab_group_sync_service->GetVersioningMessageController();
+  if (!versioning_message_controller) {
+    return;
+  }
+
+  versioning_message_controller->ShouldShowMessageUiAsync(
+      tab_groups::VersioningMessageController::MessageType::
+          VERSION_UPDATED_MESSAGE,
+      base::BindOnce(&ShowSharedTabGroupVersionUpToDateToast,
                      browser->AsWeakPtr(), versioning_message_controller));
 }
 

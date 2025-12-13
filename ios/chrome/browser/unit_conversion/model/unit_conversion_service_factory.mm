@@ -30,6 +30,6 @@ UnitConversionServiceFactory::~UnitConversionServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 UnitConversionServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<UnitConversionService>();
 }

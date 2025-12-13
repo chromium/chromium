@@ -28,6 +28,10 @@ extern JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef<jstring>
 extern JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef<jobject>
     g_empty_list;
 extern JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef<jobject> g_empty_map;
+
+// _SEE_JNI_ZERO_README is added as a hint for -Wunused-macros messages.
+#define DEFINE_JNI(className) DEFINE_JNI_FOR_##className##_SEE_JNI_ZERO_README()
+
 }  // namespace jni_zero
 
 #endif  // JNI_ZERO_JNI_ZERO_H_

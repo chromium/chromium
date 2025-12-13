@@ -1,0 +1,31 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "data_controls_dialog_coordinator.h",
+    "data_controls_dialog_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/enterprise/data_controls/utils",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/util",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "data_controls_dialog_coordinator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

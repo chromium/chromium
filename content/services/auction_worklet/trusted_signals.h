@@ -245,7 +245,7 @@ class CONTENT_EXPORT TrustedSignals : public base::RefCounted<TrustedSignals> {
   void AdoptDownload(network::mojom::URLLoaderFactory* url_loader_factory,
                      mojom::InProgressAuctionDownloadPtr download);
 
-  void OnDownloadComplete(std::unique_ptr<std::string> body,
+  void OnDownloadComplete(std::optional<std::string> body,
                           scoped_refptr<net::HttpResponseHeaders> headers,
                           std::optional<std::string> error_msg);
 
@@ -258,7 +258,7 @@ class CONTENT_EXPORT TrustedSignals : public base::RefCounted<TrustedSignals> {
       std::optional<std::set<std::string>> bidding_signals_keys,
       std::optional<std::set<CreativeInfo>> ads,
       std::optional<std::set<CreativeInfo>> ad_components,
-      std::unique_ptr<std::string> body,
+      std::optional<std::string> body,
       scoped_refptr<net::HttpResponseHeaders> headers,
       std::optional<std::string> error_msg,
       scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,

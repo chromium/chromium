@@ -14,7 +14,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
-#include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/test/test_frame_view_ash.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -32,9 +32,9 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -513,8 +513,7 @@ class ResizeShadowWithRoundedWindowsTest : public ResizeShadowAndCursorTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kRoundedWindows,
-         chromeos::features::kFeatureManagementRoundedWindows},
+        {chromeos::features::kFeatureManagementRoundedWindows},
         /*disabled_features=*/{});
     ResizeShadowAndCursorTest::SetUp();
   }
@@ -688,8 +687,8 @@ TEST_F(ResizeShadowAndCursorTest, KeepShadowBeneathFloatWindow) {
   ASSERT_TRUE(multitask_menu);
 
   // Click on the floating window option.
-  ui::ScopedAnimationDurationScaleMode zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   chromeos::MultitaskMenuView* menu_view =
       multitask_menu->multitask_menu_view();
   LeftClickOn(chromeos::MultitaskMenuViewTestApi(menu_view).GetFloatButton());

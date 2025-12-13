@@ -275,8 +275,8 @@ bool CloudPolicyValidatorBase::VerifySignature(const std::string& data,
     default:
       // Treat `em::PolicyFetchRequest::NONE` as unsigned blobs, which is
       // not supported.
-      LOG(ERROR) << "Invalid signature type for verification: "
-                 << signature_type;
+      LOG_POLICY(ERROR, POLICY_FETCHING)
+          << "Invalid signature type for verification: " << signature_type;
       return false;
   }
 
@@ -454,11 +454,12 @@ bool CloudPolicyValidatorBase::CheckNewPublicKeyVerificationSignature() {
     UMA_HISTOGRAM_ENUMERATION(kMetricKeySignatureVerification,
                               MetricKeySignatureVerification::kSuccess);
     // Signature verification succeeded - return success to the caller.
-    DVLOG(1) << "Signature verification succeeded";
+    DVLOG_POLICY(1, POLICY_FETCHING) << "Signature verification succeeded";
     return true;
   }
-  LOG(ERROR) << "Signature verification failed, has data: "
-             << policy_->has_new_public_key_verification_data();
+  LOG_POLICY(ERROR, POLICY_FETCHING)
+      << "Signature verification failed, has data: "
+      << policy_->has_new_public_key_verification_data();
 
   // Fallback to the deprecated signature to check if that works.
   // TODO(b/314810831): Remove the deprecated part when the UMA confirms the new
@@ -484,7 +485,8 @@ bool CloudPolicyValidatorBase::CheckNewPublicKeyVerificationSignature() {
   UMA_HISTOGRAM_ENUMERATION(kMetricKeySignatureVerification,
                             MetricKeySignatureVerification::kDeprecatedSuccess);
   // Signature verification succeeded - return success to the caller.
-  DVLOG(1) << "Deprecated signature verification succeeded";
+  DVLOG_POLICY(1, POLICY_FETCHING)
+      << "Deprecated signature verification succeeded";
   return true;
 }
 

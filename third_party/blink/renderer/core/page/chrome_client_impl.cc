@@ -248,33 +248,30 @@ void ChromeClientImpl::SetWindowRect(const gfx::Rect& requested_rect,
                                                   adjusted_rect);
 }
 
-void ChromeClientImpl::Minimize(LocalFrame&) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void ChromeClientImpl::Minimize(LocalFrame&,
+                                WindowShowStateChangeCallback callback) {
   DCHECK(web_view_);
-  web_view_->Minimize();
-#endif
+  web_view_->Minimize(std::move(callback));
 }
 
-void ChromeClientImpl::Maximize(LocalFrame&) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void ChromeClientImpl::Maximize(LocalFrame&,
+                                WindowShowStateChangeCallback callback) {
   DCHECK(web_view_);
-  web_view_->Maximize();
-#endif
+  web_view_->Maximize(std::move(callback));
 }
 
-void ChromeClientImpl::Restore(LocalFrame&) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void ChromeClientImpl::Restore(LocalFrame&,
+                               WindowShowStateChangeCallback callback) {
   DCHECK(web_view_);
-  web_view_->Restore();
-#endif
+  web_view_->Restore(std::move(callback));
 }
 
 void ChromeClientImpl::SetResizable(bool resizable, LocalFrame& frame) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   DCHECK(web_view_);
   web_view_->SetResizable(resizable);
-#endif
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 gfx::Rect ChromeClientImpl::RootWindowRect(LocalFrame& frame) {
   // The WindowRect() for each WebFrameWidget will be the same rect of the top
@@ -1035,7 +1032,7 @@ DOMWindow* ChromeClientImpl::PagePopupWindowForTesting() const {
   return web_view_->PagePopupWindow();
 }
 
-void ChromeClientImpl::SetUseExternalPopupMenusForTesting(bool value) {
+void ChromeClientImpl::SetUseExternalPopupMenus(bool value) {
   use_external_popup_menus_ = value;
 }
 
@@ -1091,11 +1088,6 @@ void ChromeClientImpl::RequestDecode(LocalFrame* frame,
                                      bool speculative) {
   FrameWidget* widget = frame->GetWidgetForLocalRoot();
   widget->RequestDecode(image, std::move(callback), speculative);
-}
-
-bool ChromeClientImpl::SpeculativeDecodeRequestInFlight(
-    LocalFrame* frame) const {
-  return frame->GetWidgetForLocalRoot()->SpeculativeDecodeRequestInFlight();
 }
 
 void ChromeClientImpl::NotifyPresentationTime(LocalFrame& frame,
@@ -1212,6 +1204,15 @@ void ChromeClientImpl::SetShouldThrottleFrameRate(bool flag,
   }
 
   widget->SetShouldThrottleFrameRate(flag);
+}
+
+void ChromeClientImpl::RequestMainFrameOnCompositorAnimation(
+    LocalFrame& frame,
+    cc::PropertyChangeForcesCommitCriteria criteria,
+    bool force_propagation) {
+  WebFrameWidgetImpl* widget =
+      WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
+  widget->RequestMainFrameOnCompositorAnimation(criteria, force_propagation);
 }
 
 void ChromeClientImpl::SetHasScrollEventHandlers(LocalFrame* frame,
@@ -1552,8 +1553,8 @@ gfx::Rect ChromeClientImpl::AdjustWindowRectForDisplay(
   return window;
 }
 
-void ChromeClientImpl::OnFirstContentfulPaint() {
-  web_view_->OnFirstContentfulPaint();
+void ChromeClientImpl::OnFirstContentfulPaint(const base::TimeDelta& duration) {
+  web_view_->OnFirstContentfulPaint(duration);
 }
 
 }  // namespace blink

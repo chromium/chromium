@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_activate_client_windows
+  assert False
+Harness: the test ran to completion.
+

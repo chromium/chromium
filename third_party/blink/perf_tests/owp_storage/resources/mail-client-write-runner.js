@@ -83,7 +83,8 @@ const markFolderAsRead = async (db, folderId) => {
  * @param {Array} batch The batch of conversation objects to process.
  * @param {Object} folder The folder object containing unread count.
  */
-const processBatch = async (db, batch, folder) => {
+const processBatch =
+    async (db, batch, folder) => {
   // Open a readwrite transaction for the folderStoreName,
   // conversationStoreName, and messageStoreName.
   const transaction = db.transaction(
@@ -116,15 +117,12 @@ const processBatch = async (db, batch, folder) => {
     }
   }
 
-  // Apply updates to messages
-  for (const message of messageUpdates) {
-    await putIDBValue(transaction, messageStoreName, message);
-  }
-
-  // Apply updates to conversations
-  for (const conversation of conversationUpdates) {
-    await putIDBValue(transaction, conversationStoreName, conversation);
-  }
+  // Apply updates
+  await Promise.all([
+    bulkPutIDBValues(transaction.objectStore(messageStoreName), messageUpdates),
+    bulkPutIDBValues(
+        transaction.objectStore(conversationStoreName), conversationUpdates)
+  ]);
 
   // Update the folder unread count
   if (folderUnreadChange !== 0) {
@@ -132,31 +130,27 @@ const processBatch = async (db, batch, folder) => {
     await putIDBValue(transaction, folderStoreName, folder);
   }
 
+  // Abort the transaction so the same database state can be reached in the next
+  // iteration of the test.
+  await new Promise((resolve, reject) => {
+    transaction.onabort = resolve;
+    transaction.oncomplete = reject;
+    transaction.onerror = reject;
+    transaction.abort();
+  });
+
   // Update the read status on the server
-  await updateReadStatusOnMailbox(conversationUpdates, messageUpdates, folder);
-};
+  await updateReadStatusOnMailbox();
+}
 
 /**
- * Simulates updating the read status on the mailbox.
- *
- * @param {Map} conversationUpdates The map of updated conversations.
- * @param {Array} messageUpdates The array of updated messages.
- * @param {Object} folder The folder object containing unread count.
+ * This is where a real mail client would update the status on the server.
+ * For now, this is a no-op.
  */
-const updateReadStatusOnMailbox =
-    async (conversationUpdates, messageUpdates, folder) => {
-  const updateData = {
-    folder: {id: folder.id, unreadCount: folder.unreadCount},
-    conversations: conversationUpdates.map(
-        convo => ({id: convo.id, unreadCount: convo.unreadCount})),
-    messages: messageUpdates.map(
-        message => ({id: message.id, isRead: message.metaData.isRead}))
-  };
-
+const updateReadStatusOnMailbox = async () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve();
     }, 0);
   });
 };
-

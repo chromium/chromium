@@ -14,10 +14,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif
-
 namespace {
 
 // Strings used in alignment properties.
@@ -34,20 +30,6 @@ constexpr char kTilingRepeatY[] = "repeat-y";
 constexpr char kTilingRepeat[] = "repeat";
 
 SkColor GetLightModeColor(int id) {
-#if BUILDFLAG(IS_WIN)
-  const SkColor kDefaultColorNTPBackground =
-      color_utils::GetSysSkColor(COLOR_WINDOW);
-  const SkColor kDefaultColorNTPText =
-      color_utils::GetSysSkColor(COLOR_WINDOWTEXT);
-  const SkColor kDefaultColorNTPLink =
-      color_utils::GetSysSkColor(COLOR_HOTLIGHT);
-#else
-  // TODO(beng): source from theme provider.
-  constexpr SkColor kDefaultColorNTPBackground = SK_ColorWHITE;
-  constexpr SkColor kDefaultColorNTPText = SK_ColorBLACK;
-  constexpr SkColor kDefaultColorNTPLink = SkColorSetRGB(0x06, 0x37, 0x74);
-#endif  // BUILDFLAG(IS_WIN)
-
   switch (id) {
     // Properties stored in theme pack.  If you change these defaults, you must
     // increment the version number in browser_theme_pack.cc.
@@ -71,11 +53,11 @@ SkColor GetLightModeColor(int id) {
     case ThemeProperties::COLOR_TOOLBAR_TEXT:
       return gfx::kGoogleGrey800;
     case ThemeProperties::COLOR_NTP_BACKGROUND:
-      return kDefaultColorNTPBackground;
+      return SK_ColorWHITE;
     case ThemeProperties::COLOR_NTP_TEXT:
-      return kDefaultColorNTPText;
+      return SK_ColorBLACK;
     case ThemeProperties::COLOR_NTP_LINK:
-      return kDefaultColorNTPLink;
+      return SkColorSetRGB(0x06, 0x37, 0x74);
     case ThemeProperties::COLOR_NTP_HEADER:
       return SkColorSetRGB(0x96, 0x96, 0x96);
     case ThemeProperties::COLOR_CONTROL_BUTTON_BACKGROUND:
@@ -116,10 +98,12 @@ SkColor GetLightModeColor(int id) {
         COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_ACTIVE:
     case ThemeProperties::
         COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_INACTIVE:
-      NOTREACHED() << "This color should be queried via its non-incognito "
-                      "equivalent and an appropriate |incognito| value.";
+      NOTREACHED() << "Color " << id
+                   << " should be queried via its non-incognito equivalent and "
+                      "an appropriate |incognito| value.";
     default:
-      NOTREACHED() << "This color should only be queried through ThemeService.";
+      NOTREACHED() << "Color " << id
+                   << " should only be queried through ThemeService.";
   }
 }
 
@@ -153,14 +137,6 @@ std::optional<SkColor> GetIncognitoColor(int id) {
     default:
       return std::nullopt;
   }
-}
-
-std::optional<SkColor> GetDarkModeColor(int id) {
-  // Current UX thinking is to use the same colors for dark mode and incognito,
-  // but this is very subject to change. Additionally, dark mode incognito may
-  // end up having a different look. For now, just call into GetIncognitoColor
-  // for convenience, but maintain a separate interface.
-  return GetIncognitoColor(id);
 }
 
 }  // namespace
@@ -278,19 +254,11 @@ color_utils::HSL ThemeProperties::GetDefaultTint(int id,
 }
 
 // static
-SkColor ThemeProperties::GetDefaultColor(int id,
-                                         bool incognito,
-                                         bool dark_mode) {
+SkColor ThemeProperties::GetDefaultColor(int id, bool incognito) {
   if (incognito) {
     std::optional<SkColor> incognito_color = GetIncognitoColor(id);
     if (incognito_color.has_value()) {
       return incognito_color.value();
-    }
-  }
-  if (dark_mode) {
-    std::optional<SkColor> dark_mode_color = GetDarkModeColor(id);
-    if (dark_mode_color.has_value()) {
-      return dark_mode_color.value();
     }
   }
   return GetLightModeColor(id);

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/zucchini/zucchini_integration.h"
 
 #include <stdint.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "build/build_config.h"
@@ -121,7 +117,7 @@ status::Code ApplyCommon(base::File old_file,
     }
 #if BUILDFLAG(IS_WIN)
     exception_filter_helper.AddRange(
-        {mapped_patch.data(), mapped_patch.length()});
+        UNSAFE_TODO({mapped_patch.data(), mapped_patch.length()}));
 #endif
 
     auto patch_reader = EnsemblePatchReader::Create(mapped_patch.region());
@@ -137,7 +133,8 @@ status::Code ApplyCommon(base::File old_file,
       return status::kStatusFileReadError;
     }
 #if BUILDFLAG(IS_WIN)
-    exception_filter_helper.AddRange({mapped_old.data(), mapped_old.length()});
+    exception_filter_helper.AddRange(
+        UNSAFE_TODO({mapped_old.data(), mapped_old.length()}));
 #endif
 
     PatchHeader header = patch_reader->header();
@@ -154,7 +151,8 @@ status::Code ApplyCommon(base::File old_file,
       mapped_new.Keep();
     }
 #if BUILDFLAG(IS_WIN)
-    exception_filter_helper.AddRange({mapped_new.data(), mapped_new.length()});
+    exception_filter_helper.AddRange(
+        UNSAFE_TODO({mapped_new.data(), mapped_new.length()}));
 #endif
 
     status::Code result =

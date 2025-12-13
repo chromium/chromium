@@ -90,7 +90,7 @@ class ContentStabilityMetricsProvider
                            ExtensionsNotificationObserver);
 
   // content::RenderProcessHostCreationObserver:
-  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+  void OnRenderProcessLaunched(content::RenderProcessHost* host) override;
   void OnRenderProcessHostCreationFailed(
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;

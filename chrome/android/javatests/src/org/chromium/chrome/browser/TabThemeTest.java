@@ -120,7 +120,7 @@ public class TabThemeTest {
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
 
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
 
         ThemeColorWebContentsObserver colorObserver = new ThemeColorWebContentsObserver();
         CallbackHelper themeColorHelper = colorObserver.getCallbackHelper();
@@ -141,7 +141,7 @@ public class TabThemeTest {
 
         // Setting page theme color to white is forbidden.
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                mActivityTestRule.getActivity().getActivityTab().getWebContents(),
+                mActivityTestRule.getActivityTab().getWebContents(),
                 "document.querySelector(meta).setAttribute('content', 'white');");
         themeColorHelper.waitForCallback(curCallCount, 1);
         assertColorsEqual(THEME_COLOR, colorObserver.getColor());
@@ -183,7 +183,7 @@ public class TabThemeTest {
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
 
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
 
         final TopUiThemeColorProvider colorProvider =
                 mActivityTestRule

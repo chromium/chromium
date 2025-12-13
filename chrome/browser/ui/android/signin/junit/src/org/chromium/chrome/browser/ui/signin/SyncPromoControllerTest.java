@@ -22,10 +22,8 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -33,12 +31,10 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
@@ -57,9 +53,7 @@ public class SyncPromoControllerTest {
             SyncPromoController.SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS;
 
     private static final AccountPickerBottomSheetStrings BOTTOM_SHEET_STRINGS =
-            new AccountPickerBottomSheetStrings.Builder(
-                            R.string.signin_account_picker_bottom_sheet_title)
-                    .build();
+            new AccountPickerBottomSheetStrings.Builder("Title").build();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
@@ -81,8 +75,6 @@ public class SyncPromoControllerTest {
 
     @Mock private SyncService mSyncService;
 
-    @Mock private PrefService mPrefService;
-
     @Mock private HistorySyncHelper mHistorySyncHelper;
 
     @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
@@ -97,6 +89,7 @@ public class SyncPromoControllerTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(IdentityServicesProvider.get().getIdentityManager(mProfile))
                 .thenReturn(mIdentityManager);
+        when(mHistorySyncHelper.shouldDisplayHistorySync()).thenReturn(true);
         mSharedPreferencesManager.writeInt(
                 SyncPromoController.getPromoShowCountPreferenceName(
                         SigninAccessPoint.NTP_FEED_TOP_PROMO),
@@ -105,7 +98,6 @@ public class SyncPromoControllerTest {
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, 0L);
         mSharedPreferencesManager.writeLong(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, 0L);
-        when(mPrefService.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_GAIA_ID)).thenReturn("");
 
         mSyncPromoController =
                 new SyncPromoController(
@@ -135,31 +127,6 @@ public class SyncPromoControllerTest {
 
     @Test
     public void shouldShowSyncPromoForNtpWhenNoAccountOnDevice() {
-        Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
-    }
-
-    @Test
-    public void shouldShowPromoForNtpWhenDefaultAccountCannotShowHistoryOptInWithoutRestrictions() {
-        mAccountManagerTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
-        mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
-
-        Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
-    }
-
-    @Test
-    public void shouldShowPromoForNtpWhenDefaultAccountCapabilityIsNotFetched() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
-
-        Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
-    }
-
-    @Test
-    public void
-            shouldShowPromoForNtpWhenSecondaryAccountCannotShowHistoryOptInWithoutRestrictions() {
-        mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
-        mAccountManagerTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
-
         Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
     }
 
@@ -351,7 +318,7 @@ public class SyncPromoControllerTest {
         when(IdentityServicesProvider.get().getSigninManager(mProfile)).thenReturn(mSigninManager);
         doReturn(true).when(mSigninManager).isSigninAllowed();
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
-        when(mHistorySyncHelper.shouldSuppressHistorySync()).thenReturn(true);
+        when(mHistorySyncHelper.shouldDisplayHistorySync()).thenReturn(false);
 
         SyncPromoController syncPromoController =
                 new SyncPromoController(
@@ -367,7 +334,7 @@ public class SyncPromoControllerTest {
         when(IdentityServicesProvider.get().getSigninManager(mProfile)).thenReturn(mSigninManager);
         doReturn(false).when(mSigninManager).isSigninAllowed();
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
-        when(mHistorySyncHelper.shouldSuppressHistorySync()).thenReturn(true);
+        when(mHistorySyncHelper.shouldDisplayHistorySync()).thenReturn(false);
 
         SyncPromoController syncPromoController =
                 new SyncPromoController(

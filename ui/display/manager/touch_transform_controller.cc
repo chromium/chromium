@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -17,8 +18,10 @@
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/touch_device_transform.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace display {
@@ -121,45 +124,159 @@ bool GetCalibratedTransform(
   return true;
 }
 
-// Returns an uncalibrated touch transform.
-gfx::Transform GetUncalibratedTransform(const gfx::Transform& tm,
-                                        const ManagedDisplayInfo& display,
-                                        const ManagedDisplayInfo& touch_display,
-                                        const gfx::SizeF& touch_area,
-                                        const gfx::SizeF& touch_native_size) {
+// Provide the transformation for a rect with size |current_size| to rotate from
+// |current_rotation| to |target_rotation|.
+gfx::Transform GetRotationTransform(gfx::SizeF current_size,
+                                    Display::Rotation target_rotation,
+                                    Display::Rotation current_rotation) {
+  gfx::Transform rtm;
+  // Use positive modulo to deal with negative numbers.
+  switch ((target_rotation - current_rotation + 4) % 4) {
+    case Display::ROTATE_90:
+      rtm.Translate(current_size.width(), 0);
+      rtm.Rotate(90);
+      break;
+    case Display::ROTATE_180:
+      rtm.Translate(current_size.width(), current_size.height());
+      rtm.Rotate(180);
+      break;
+    case Display::ROTATE_270:
+      rtm.Translate(0, current_size.height());
+      rtm.Rotate(270);
+      break;
+    default:
+      break;
+  }
+  return rtm;
+}
+
+// When the touch display has none zero panel orientation, a pre rotation is
+// needed for the transform. When the source display has none zero panel
+// orientation, a post rotation is needed. |touch_area| should be with respect
+// to the logical active rotation of the touch display.
+void GetPanelPreAndPostRotation(const ManagedDisplayInfo& display,
+                                const ManagedDisplayInfo& touch_display,
+                                const gfx::SizeF& touch_area,
+                                gfx::Transform* post_rot,
+                                gfx::Transform* pre_rot) {
   gfx::SizeF current_size(display.bounds_in_native().size());
-  gfx::Transform ctm(tm);
+  const Display::Rotation current_rotation = display.GetLogicalActiveRotation();
+  const Display::Rotation touch_rotation =
+      touch_display.GetLogicalActiveRotation();
+  const display::PanelOrientation source_orientation =
+      display.panel_orientation();
+  const display::PanelOrientation touch_orientation =
+      touch_display.panel_orientation();
+
+  if (source_orientation != PanelOrientation::kNormal) {
+    post_rot->PostConcat(GetRotationTransform(current_size, current_rotation,
+                                              display.GetActiveRotation()));
+  }
+
+  if (touch_orientation != PanelOrientation::kNormal) {
+    pre_rot->PostConcat(GetRotationTransform(
+        touch_area, touch_display.GetActiveRotation(), touch_rotation));
+  }
+}
+
+// Provide the transform to map from |touch_display| to |display| and store it
+// into |ctm|.
+void GetDisplayMappingTransform(gfx::Transform* ctm,
+                                const ManagedDisplayInfo& display,
+                                const ManagedDisplayInfo& touch_display,
+                                const gfx::SizeF& touch_area,
+                                const gfx::SizeF& touch_native_size) {
+  gfx::SizeF current_size(display.bounds_in_native().size());
+  gfx::SizeF actual_size = gfx::SizeF(current_size);
+  gfx::SizeF actual_touch_area = gfx::SizeF(touch_area);
+  const Display::Rotation current_rotation = display.GetLogicalActiveRotation();
+  const Display::Rotation touch_rotation =
+      touch_display.GetLogicalActiveRotation();
+
   // Take care of panel fitting only if supported. Panel fitting is emulated
   // in software mirroring mode (display != touch_display).
   // If panel fitting is enabled then the aspect ratio is preserved and the
   // display is scaled accordingly. In this case blank regions would be present
   // in order to center the displayed area.
+  gfx::Transform post_rotation;
+  gfx::Transform pre_rotation;
   if (display.is_aspect_preserving_scaling() ||
       display.id() != touch_display.id()) {
     float touch_calib_ar =
         touch_native_size.width() / touch_native_size.height();
     float current_ar = current_size.width() / current_size.height();
 
+    // In tablet mode, the transformation will be based on `touch_rotation`
+    // which is the rotation of the mirror display. Apply the necessary rotation
+    // and translation based on the mirroring source display and touch display
+    // rotations.
+    if (Screen::Get()->InTabletMode()) {
+      post_rotation =
+          GetRotationTransform(current_size, current_rotation, touch_rotation);
+      // The aspect ratio of the target display should be flipped.
+      if ((current_rotation - touch_rotation) % 2 != 0) {
+        current_ar = 1.0f / current_ar;
+        actual_size.Transpose();
+      }
+    } else {
+      // In clamshell mode, we want to handle the case where the panel install
+      // orientation is not at 0 degree.
+      const display::PanelOrientation source_orientation =
+          display.panel_orientation();
+      const display::PanelOrientation touch_orientation =
+          touch_display.panel_orientation();
+      if (source_orientation != PanelOrientation::kNormal &&
+          source_orientation != PanelOrientation::kBottomUp) {
+        current_ar = 1.0f / current_ar;
+        actual_size.Transpose();
+      }
+
+      if (touch_orientation != PanelOrientation::kNormal &&
+          touch_orientation != PanelOrientation::kBottomUp) {
+        touch_calib_ar = 1.0f / touch_calib_ar;
+        actual_touch_area.Transpose();
+      }
+
+      GetPanelPreAndPostRotation(display, touch_display, actual_touch_area,
+                                 &post_rotation, &pre_rotation);
+    }
+
     if (current_ar > touch_calib_ar) {  // Letterboxing
-      ctm.Translate(
-          0, (1 - current_ar / touch_calib_ar) * 0.5 * current_size.height());
-      ctm.Scale(1, current_ar / touch_calib_ar);
+      ctm->Translate(
+          0, (1 - current_ar / touch_calib_ar) * 0.5 * actual_size.height());
+      ctm->Scale(1, current_ar / touch_calib_ar);
     } else if (touch_calib_ar > current_ar) {  // Pillarboxing
-      ctm.Translate(
-          (1 - touch_calib_ar / current_ar) * 0.5 * current_size.width(), 0);
-      ctm.Scale(touch_calib_ar / current_ar, 1);
+      ctm->Translate(
+          (1 - touch_calib_ar / current_ar) * 0.5 * actual_size.width(), 0);
+      ctm->Scale(touch_calib_ar / current_ar, 1);
     }
   }
+
+  ctm->PostConcat(post_rotation);
   // Take care of scaling between touchscreen area and display resolution.
-  ctm.Scale(current_size.width() / touch_area.width(),
-            current_size.height() / touch_area.height());
+  ctm->Scale(actual_size.width() / actual_touch_area.width(),
+             actual_size.height() / actual_touch_area.height());
+  ctm->PreConcat(pre_rotation);
+}
+
+// Returns an uncalibrated touch transform.
+gfx::Transform GetUncalibratedTransform(const gfx::Transform& tm,
+                                        const ManagedDisplayInfo& display,
+                                        const ManagedDisplayInfo& touch_display,
+                                        const gfx::SizeF& touch_area,
+                                        const gfx::SizeF& touch_native_size) {
+  gfx::Transform ctm;
+  GetDisplayMappingTransform(&ctm, display, touch_display, touch_area,
+                             touch_native_size);
+  ctm.PostConcat(tm);
   return ctm;
 }
 
 DisplayIdList GetConnectedDisplayIdList(const DisplayManager* display_manager) {
   DCHECK(display_manager->num_connected_displays());
-  if (display_manager->num_connected_displays() == 1)
+  if (display_manager->num_connected_displays() == 1) {
     return DisplayIdList{display_manager->first_display_id()};
+  }
   return display_manager->GetConnectedDisplayIdList();
 }
 
@@ -202,25 +319,27 @@ gfx::Transform TouchTransformController::GetTouchTransform(
     const ui::TouchscreenDevice& touchscreen) const {
   auto current_size = gfx::SizeF(display.bounds_in_native().size());
   auto touch_native_size = gfx::SizeF(touch_display.GetNativeModeSize());
-  auto touch_area = gfx::SizeF(touchscreen.size);
-
+  const auto touch_area = gfx::SizeF(touchscreen.size);
   gfx::Transform ctm;
 
   if (current_size.IsEmpty() || touch_native_size.IsEmpty() ||
       touch_area.IsEmpty() || touchscreen.id == ui::InputDevice::kInvalidId)
     return ctm;
 
-  // Translate the touch so that it falls within the display bounds. This
-  // should not be performed if the displays are mirrored.
-  if (display.id() == touch_display.id()) {
-    ctm.Translate(display.bounds_in_native().x(),
-                  display.bounds_in_native().y());
-  }
-
   // If the device is currently under calibration, then do not return any
   // transform as we want to use the raw native touch input data for calibration
-  if (is_calibrating_)
+  if (is_calibrating_) {
+    if (display.id() == touch_display.id()) {
+      ctm.Translate(display.bounds_in_native().x(),
+                    display.bounds_in_native().y());
+    }
     return ctm;
+  }
+
+  // In extended mode, translate the touch so that it falls within the display
+  // bounds. In mirrored mode, the touch display will be mapped to the mirroring
+  // source display.
+  ctm.Translate(display.bounds_in_native().x(), display.bounds_in_native().y());
 
   TouchCalibrationData calibration_data =
       display_manager_->touch_device_manager()->GetCalibrationData(
@@ -231,38 +350,15 @@ gfx::Transform TouchTransformController::GetTouchTransform(
                                     touch_native_size);
   }
 
-  // The resolution at which the touch calibration was performed.
-  gfx::SizeF touch_calib_size(calibration_data.bounds);
-
   // Any additional transformation that needs to be applied to the display
   // points, before we solve for the final transform.
   gfx::Transform pre_transform;
 
-  if (display.id() != touch_display.id() ||
-      display.is_aspect_preserving_scaling()) {
-    // Case of displays being mirrored or in panel fitting mode.
-    // Aspect ratio of the touch display's resolution during calibration.
-    float calib_ar = touch_calib_size.width() / touch_calib_size.height();
-    // Aspect ratio of the display that is being mirrored.
-    float current_ar = current_size.width() / current_size.height();
+  // The resolution at which the touch calibration was performed.
+  gfx::SizeF touch_calib_size(calibration_data.bounds);
+  GetDisplayMappingTransform(&pre_transform, display, touch_display,
+                             touch_calib_size, touch_calib_size);
 
-    if (current_ar < calib_ar) {
-      pre_transform.Scale(current_size.height() / touch_calib_size.height(),
-                          current_size.height() / touch_calib_size.height());
-      pre_transform.Translate(
-          (current_ar / calib_ar - 1.f) * touch_calib_size.width() * 0.5f, 0);
-    } else {
-      pre_transform.Scale(current_size.width() / touch_calib_size.width(),
-                          current_size.width() / touch_calib_size.width());
-      pre_transform.Translate(
-          0, (calib_ar / current_ar - 1.f) * touch_calib_size.height() * 0.5f);
-    }
-  } else {
-    // Case of current resolution being different from the resolution when the
-    // touch calibration was performed.
-    pre_transform.Scale(current_size.width() / touch_calib_size.width(),
-                        current_size.height() / touch_calib_size.height());
-  }
   // Solve for coefficients and compute transform matrix.
   gfx::Transform stored_ctm;
   if (!GetCalibratedTransform(calibration_data.point_pairs, pre_transform,
@@ -347,7 +443,7 @@ void TouchTransformController::UpdateTouchTransforms(
     std::size_t primary_display_id_index = std::distance(
         display_id_list.begin(),
         std::ranges::find(display_id_list,
-                          Screen::GetScreen()->GetPrimaryDisplay().id()));
+                          Screen::Get()->GetPrimaryDisplay().id()));
 
     for (std::size_t index = 0; index < display_id_list.size(); index++) {
       // In extended but software mirroring mode, there is a WindowTreeHost

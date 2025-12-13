@@ -50,6 +50,12 @@ class DriveUploadTask final : public UploadTask {
   void CreateFolderOrDirectlyUploadFile(
       const DriveFolderResult& folder_search_result);
 
+  // Performs the first and second steps of this upload task i.e. search a
+  // destination Drive folder and create it if it does not exist in a single
+  // operation using `uploader_->FetchSaveToDriveClientFolder(folder_name,
+  // ...)`. The result will be reported to `UploadFile()`;
+  void FetchClientFolderThenUploadFile();
+
   // Performs the third step of this upload task i.e. uploads the
   // file at `file_url` to the folder contained in `folder_result` using
   // `uploader_->UploadFile(file_url, ...)`.

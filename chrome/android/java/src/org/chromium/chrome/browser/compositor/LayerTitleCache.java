@@ -24,10 +24,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.TitleBitmapFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -176,19 +177,23 @@ public class LayerTitleCache {
         // If content view core is null, tab does not have direct access to the favicon, and we
         // will initially show default favicon. But favicons are stored in the history database, so
         // we will fetch favicons asynchronously from database.
-        boolean fetchFaviconFromHistory = tab.isNativePage() || tab.getWebContents() == null;
-
         String titleString = getTitleForTab(tab, defaultTitle);
-        getUpdatedTitleInternal(tab, titleString, fetchFaviconFromHistory);
-        if (fetchFaviconFromHistory) fetchFaviconForTab(tab);
+        Bitmap tabFavicon = TabFavicon.getBitmap(tab);
+        getUpdatedTitleInternal(tab, titleString, tabFavicon);
+        if (tabFavicon == null) fetchFaviconForTab(tab);
         return titleString;
     }
 
     private String getUpdatedTitleInternal(
-            Tab tab, String titleString, boolean fetchFaviconFromHistory) {
+            Tab tab, String titleString, @Nullable Bitmap tabFavicon) {
         final int tabId = tab.getId();
         boolean isDarkTheme = tab.isIncognito();
-        Bitmap originalFavicon = getOriginalFavicon(tab);
+        boolean fetchFaviconFromHistory = tabFavicon == null;
+
+        if (fetchFaviconFromHistory) {
+            tabFavicon = getDefaultFavicon(tab);
+        }
+        assert tabFavicon != null;
 
         TitleBitmapFactory titleBitmapFactory =
                 isDarkTheme ? mDarkTitleBitmapFactory : mStandardTitleBitmapFactory;
@@ -202,7 +207,7 @@ public class LayerTitleCache {
 
         title.set(
                 titleBitmapFactory.getTabTitleBitmap(titleString),
-                titleBitmapFactory.getFaviconBitmap(originalFavicon),
+                titleBitmapFactory.getFaviconBitmap(tabFavicon),
                 fetchFaviconFromHistory);
 
         boolean showBubble = mTabBubbles.contains(tab.getId());
@@ -227,8 +232,6 @@ public class LayerTitleCache {
 
     @CalledByNative
     private void buildUpdatedGroupTitle(Token groupId, boolean incognito) {
-        // TODO(crbug.com/331642736): Investigate if this can be called with a different width than
-        //  what is stored for the corresponding group title.
         TabGroupModelFilter filter =
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
@@ -236,7 +239,7 @@ public class LayerTitleCache {
         assumeNonNull(filter);
         if (!filter.tabGroupExists(groupId)) return;
 
-        String titleString = filter.getTabGroupTitle(groupId);
+        String titleString = TabGroupTitleUtils.getDisplayableTitle(mContext, filter, groupId);
         getUpdatedGroupTitle(groupId, titleString, incognito);
     }
 
@@ -318,9 +321,7 @@ public class LayerTitleCache {
     public void fetchFaviconWithCallback(final Tab tab, FaviconImageCallback callback) {
         if (mFaviconHelper == null) mFaviconHelper = new FaviconHelper();
 
-        if (tab.getTabGroupId() != null
-                && !tab.isOffTheRecord()
-                && ChromeFeatureList.sTabSwitcherForeignFaviconSupport.isEnabled()) {
+        if (tab.getTabGroupId() != null && !tab.isOffTheRecord()) {
             // This mirrors the async tab favicon request implementation for tab list.
             // See TabListFaviconProvider#getFaviconForTabAsync for more detailed notes.
             // TODO(crbug.com/394165786): Unify with the aforementioned TabListFaviconProvider code.
@@ -332,22 +333,17 @@ public class LayerTitleCache {
         }
     }
 
-    /**
-     * Requests a default favicon for the given tab.
-     *
-     * @param tab The {@link Tab} to request the favicon for.
-     * @return The tab's favicon based on its web contents. Otherwise, a default favicon.
-     */
-    public Bitmap getOriginalFavicon(Tab tab) {
+    /** Returns a chrome favicon if the tab is a native page. else returns a default favicon. */
+    public Bitmap getDefaultFavicon(Tab tab) {
         boolean isDarkTheme = tab.isIncognito();
-        Bitmap originalFavicon = TabFavicon.getBitmap(tab);
-        if (originalFavicon == null) {
-            originalFavicon =
-                    mDefaultFaviconHelper.getDefaultFaviconBitmap(
-                            mContext, tab.getUrl(), !isDarkTheme);
-        }
-
-        return originalFavicon;
+        return IncognitoUtils.shouldOpenIncognitoAsWindow() && isDarkTheme
+                ? mDefaultFaviconHelper.getDefaultFaviconBitmap(
+                        mContext,
+                        tab.getUrl(),
+                        /* useDarkIcon= */ false,
+                        /* useIncognitoNtpIcon= */ true)
+                : mDefaultFaviconHelper.getDefaultFaviconBitmap(
+                        mContext, tab.getUrl(), !isDarkTheme, /* useIncognitoNtpIcon= */ false);
     }
 
     private @Nullable ViewResourceAdapter getResourceAdapterFromLoader(int resId) {

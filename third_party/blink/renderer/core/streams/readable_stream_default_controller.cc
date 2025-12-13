@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
@@ -342,7 +343,8 @@ ScriptPromise<IDLUndefined> ReadableStreamDefaultController::CancelSteps(
 
   // 2. Let result be the result of performing this.[[cancelAlgorithm]], passing
   //    reason.
-  auto result = cancel_algorithm_->Run(script_state, 1, &reason);
+  auto result =
+      cancel_algorithm_->Run(script_state, base::span_from_ref(reason));
 
   // 3. Perform ! ReadableStreamDefaultControllerClearAlgorithms(this).
   ClearAlgorithms(this);
@@ -429,8 +431,7 @@ void ReadableStreamDefaultController::CallPullIfNeeded(
 
   // 6. Let pullPromise be the result of performing
   //    controller.[[pullAlgorithm]].
-  auto pull_promise =
-      controller->pull_algorithm_->Run(script_state, 0, nullptr);
+  auto pull_promise = controller->pull_algorithm_->Run(script_state, {});
 
   pull_promise.Then(script_state, controller->resolve_function_.Get(),
                     controller->reject_function_.Get());

@@ -77,6 +77,9 @@ void TestBookmarkModelView::RemoveAllSyncableNodes() {
   wrapped_view_->RemoveAllSyncableNodes();
 }
 
+void TestBookmarkModelView::
+    MaybeRemoveUnderlyingModelDuplicatesUponInitialSync() {}
+
 const bookmarks::BookmarkNode* TestBookmarkModelView::GetNodeByUuid(
     const base::Uuid& uuid) const {
   return wrapped_view_->GetNodeByUuid(uuid);

@@ -6,11 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_ANIMATOR_COMPOSITOR_COORDINATOR_H_
 
 #include <memory>
+
 #include "base/gtest_prod_util.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/animation/scroll_offset_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_client.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
@@ -123,7 +125,9 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
  protected:
   explicit ScrollAnimatorCompositorCoordinator();
 
-  void ScrollOffsetChanged(const ScrollOffset&, mojom::blink::ScrollType);
+  void ScrollOffsetChanged(const ScrollOffset&,
+                           mojom::blink::ScrollType,
+                           cc::ScrollSourceType);
 
   void AdjustImplOnlyScrollOffsetAnimation(const gfx::Vector2d& adjustment);
   gfx::Vector2d ImplOnlyAnimationAdjustmentForTesting() {

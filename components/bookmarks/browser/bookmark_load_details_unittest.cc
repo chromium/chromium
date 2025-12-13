@@ -242,7 +242,31 @@ TEST(BookmarkLoadDetailsTest, ComputeUserFolderStats) {
   UserFolderLoadStats before_stats = details.ComputeUserFolderStats();
   EXPECT_EQ(0, before_stats.total_top_level_folders);
   EXPECT_EQ(0, before_stats.total_folders);
+  EXPECT_EQ(0, before_stats.bookmark_bar_top_level_items);
 
+  // Make the following folder structure:
+  //
+  // (BookmarkBar)
+  //   (400)
+  // (OtherBookmarks)
+  //   (500)
+  // (MobileBookmarks)
+  //   (600)
+  //     (601)
+  //     (602)
+  //       (603 - URL)
+  //   (700)
+  // (100 ACCOUNT BookmarkBar)
+  //   (800)
+  //     (802 - URL)
+  //     (803 - URL)
+  //   (804 - URL)
+  //   (805 - URL)
+  // (200 ACCOUNT OtherBookmarks)
+  //   (900)
+  // (300 ACCOUNT MobileBookmarks)
+  //   (1000)
+  //     (1100)
   AddFolder(/*id=*/400, details.bb_node());
   AddFolder(/*id=*/500, details.other_folder_node());
   BookmarkNode* folder_600 =
@@ -252,15 +276,30 @@ TEST(BookmarkLoadDetailsTest, ComputeUserFolderStats) {
   AddUrl(/*id=*/603, folder_602, GURL("https://www.foo.com"));
   AddFolder(/*id=*/700, details.mobile_folder_node());
 
-  AddFolder(/*id=*/800, details.account_bb_node());
+  BookmarkNode* folder_800 = AddFolder(/*id=*/800, details.account_bb_node());
+  AddUrl(/*id=*/802, folder_800, GURL("https://www.bar.com"));
+  AddUrl(/*id=*/803, folder_800, GURL("https://www.baz.com"));
+  AddUrl(/*id=*/804, details.account_bb_node(), GURL("https://www.foobar.com"));
+  AddUrl(/*id=*/805, details.account_bb_node(), GURL("https://www.barbaz.com"));
+
   AddFolder(/*id=*/900, details.account_other_folder_node());
   BookmarkNode* folder_1000 =
       AddFolder(/*id=*/1000, details.account_mobile_folder_node());
   AddFolder(/*id=*/1100, folder_1000);
 
   UserFolderLoadStats stats = details.ComputeUserFolderStats();
+
+  // This should include top-level folders, account or local, but not the
+  // permanent folders, which are: {400, 500, 600, 700, 800, 900, 1000}.
   EXPECT_EQ(7, stats.total_top_level_folders);
+
+  // This should include all folders, account or local, but not the permanent
+  // folders, which are: {400, 500, 600, 601, 602, 700, 800, 900, 1000, 1100}.
   EXPECT_EQ(10, stats.total_folders);
+
+  // This should only include the top-level items of the account bookmark bar,
+  // which are: {800, 804, 805}.
+  EXPECT_EQ(3, stats.bookmark_bar_top_level_items);
 }
 
 }  // namespace

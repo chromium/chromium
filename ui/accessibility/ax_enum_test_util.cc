@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 
+#include "base/notreached.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 
 namespace ui {

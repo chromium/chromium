@@ -18,6 +18,11 @@
 // Now include the real ATL headers.
 #include <atlbase.h>
 
+// clang-format off
+// TODO(crbug.com/445551452): Remove this.
+// This needs to come before atlcom.h
+#include <utility>
+// clang-format on
 #include <atlcom.h>
 #include <atlcomcli.h>
 #include <atlctl.h>

@@ -4,19 +4,26 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.view.View;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
+import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.RectProvider;
 
 /**
  * Mediator for the extensions menu. This class is responsible for listening to changes in the
@@ -25,22 +32,80 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 class ExtensionsMenuMediator implements Destroyable {
     private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
+    private final Context mContext;
+    private final ChromeAndroidTask mTask;
     private final Runnable mOnUpdateFinishedRunnable;
     private final ExtensionActionsUpdateHelper mExtensionActionsUpdateHelper;
+    private final View mRootView;
 
     public ExtensionsMenuMediator(
-            ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> currentTabSupplier,
+            Context context,
+            ChromeAndroidTask task,
+            NullableObservableSupplier<Tab> currentTabSupplier,
             ModelList extensionModels,
-            Runnable onUpdateFinishedRunnable) {
+            Runnable onUpdateFinishedRunnable,
+            View rootView) {
+        mTask = task;
+
         mOnUpdateFinishedRunnable = onUpdateFinishedRunnable;
+        mContext = context;
+        mRootView = rootView;
 
         mExtensionActionsUpdateHelper =
                 new ExtensionActionsUpdateHelper(
-                        extensionModels,
-                        profileSupplier,
-                        currentTabSupplier,
-                        mActionsUpdateDelegate);
+                        extensionModels, task, currentTabSupplier, mActionsUpdateDelegate);
+    }
+
+    private static class RelativeViewRectProvider extends RectProvider {
+        private final View mAnchorView;
+        private final View mParentView;
+
+        RelativeViewRectProvider(View anchorView, View parentView) {
+            mAnchorView = anchorView;
+            mParentView = parentView;
+        }
+
+        /**
+         * For {@link AnchoredPopupWindow} to correctly place nested popup windows, we have to make
+         * sure to send coordinates relative to the main window of the application, not positions
+         * relative to the parent popup window nor the screen.
+         */
+        @Override
+        public Rect getRect() {
+            int[] anchorLocation = new int[2];
+            mAnchorView.getLocationOnScreen(anchorLocation);
+
+            int[] parentLocation = new int[2];
+            mParentView.getLocationOnScreen(parentLocation);
+
+            int x = anchorLocation[0] - parentLocation[0];
+            int y = anchorLocation[1] - parentLocation[1];
+
+            return new Rect(x, y, x + mAnchorView.getWidth(), y + mAnchorView.getHeight());
+        }
+    }
+
+    private void onPrimaryClick(ListMenuButton buttonView, String actionId) {
+        Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
+        if (currentTab == null) {
+            return;
+        }
+
+        WebContents webContents = currentTab.getWebContents();
+        if (webContents == null) {
+            return;
+        }
+
+        ExtensionActionContextMenuBridge bridge =
+                new ExtensionActionContextMenuBridge(
+                        mTask, actionId, webContents, ContextMenuSource.MENU_ITEM);
+
+        ExtensionActionContextMenuUtils.showContextMenu(
+                mContext,
+                buttonView,
+                bridge,
+                new RelativeViewRectProvider(buttonView, mRootView),
+                mRootView);
     }
 
     @Override
@@ -58,13 +123,22 @@ class ExtensionsMenuMediator implements Destroyable {
                 ExtensionActionsBridge extensionActionsBridge, int tabId, String actionId) {
             ExtensionAction action = extensionActionsBridge.getAction(actionId, tabId);
             assert action != null;
-            Bitmap icon = extensionActionsBridge.getActionIcon(actionId, tabId);
+
+            Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
+            WebContents webContents = currentTab == null ? null : currentTab.getWebContents();
+
+            Bitmap icon =
+                    ExtensionActionIconUtil.getActionIcon(
+                            mContext, extensionActionsBridge, actionId, tabId, webContents);
             assert icon != null;
-            return new ModelListAdapter.ListItem(
+            return new ListItem(
                     0,
                     new PropertyModel.Builder(ExtensionsMenuItemProperties.ALL_KEYS)
                             .with(ExtensionsMenuItemProperties.TITLE, action.getTitle())
                             .with(ExtensionsMenuItemProperties.ICON, icon)
+                            .with(
+                                    ExtensionsMenuItemProperties.CLICK_LISTENER,
+                                    (view) -> onPrimaryClick((ListMenuButton) view, actionId))
                             .build());
         }
 

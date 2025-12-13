@@ -98,6 +98,7 @@ suite('VoiceLanguageController', () => {
     chrome.readingMode.sendUninstallVoiceRequest = (lang) => {
       uninstalledLangs.push(lang);
     };
+    notificationType = null;
     const notificationListener = {
       notify(type: NotificationType, _lang?: string): void {
         notificationType = type;
@@ -512,14 +513,82 @@ suite('VoiceLanguageController', () => {
     voiceLanguageController.enableLang(lang1);
     voiceLanguageController.enableLang(lang2);
     voiceLanguageController.enableLang(lang3);
-
     voiceLanguageController.onTtsEngineInstalled();
+    installedLangs = [];
+
     voiceLanguageController.onVoicesChanged();
 
     assertArrayEquals(['bn', 'hu'], installedLangs);
     assertTrue(onAvailableVoicesChange);
     assertFalse(voiceLanguageController.hasAvailableVoices());
   });
+
+  test(
+      'onVoicesChanged after new tts engine enables page language if no ' +
+          'voices before install',
+      () => {
+        chrome.readingMode.getStoredVoice = () => '';
+        voiceLanguageController.onTtsEngineInstalled();
+        const lang = 'de';
+        chrome.readingMode.baseLanguageForSpeech = lang;
+        voiceLanguageController.onVoicesChanged();
+
+        // onVoicesChanged should request an install for the page language.
+        assertArrayEquals([lang], requestInfoLangs);
+        voiceLanguageController.updateLanguageStatus(lang, 'kNotInstalled');
+        assertEquals(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+            voiceLanguageController.getLocalStatus(lang));
+        assertArrayEquals([lang], installedLangs);
+      });
+
+  test('onTtsEngineInstalled installs enabled google locales', () => {
+    const lang1 = 'bn-bd';
+    const lang2 = 'hu-hu';
+    const lang3 = 'en';
+    voiceLanguageController.enableLang(lang1);
+    voiceLanguageController.enableLang(lang2);
+    voiceLanguageController.enableLang(lang3);
+
+    voiceLanguageController.onTtsEngineInstalled();
+
+    assertArrayEquals(['bn', 'hu'], installedLangs);
+    assertTrue(onAvailableVoicesChange);
+    assertFalse(voiceLanguageController.hasAvailableVoices());
+  });
+
+  test(
+      'onTtsEngineInstalled enables page language if no voices before install',
+      () => {
+        chrome.readingMode.getStoredVoice = () => '';
+        const voice =
+            createSpeechSynthesisVoice({lang: 'de-de', name: 'Google German'});
+        // Change page language to de before any voices are available for it.
+        const lang = 'de';
+        chrome.readingMode.baseLanguageForSpeech = lang;
+        voiceLanguageController.onPageLanguageChanged();
+
+        // onTtsEngineInstalled should request an install for the page language,
+        // but it's not enabled yet.
+        voiceLanguageController.onTtsEngineInstalled();
+        assertFalse(voiceLanguageController.getEnabledLangs().includes(lang));
+        assertTrue(requestInfoLangs.includes(lang));
+
+        // Once the status comes back as not installed, then actually request
+        // the install.
+        voiceLanguageController.updateLanguageStatus(lang, 'kNotInstalled');
+        assertEquals(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+            voiceLanguageController.getLocalStatus(lang));
+        assertArrayEquals([lang], installedLangs);
+
+        // When the install completes, new voices for the requested language
+        // should be available, and the installed status should come back. At
+        // that point, the page language should be enabled.
+        speech.setVoices([voice]);
+        voiceLanguageController.updateLanguageStatus(lang, 'kInstalled');
+        assertTrue(voiceLanguageController.getEnabledLangs().includes('de-de'));
+      });
 
   test('onVoicesChanged restores from prefs on first voices received', () => {
     const lang = 'uk';
@@ -603,6 +672,27 @@ suite('VoiceLanguageController', () => {
         assertEquals(defaultVoice, voiceLanguageController.getCurrentVoice());
       });
 
+  test(
+      'onVoicesChanged gets default voice when current voice unavailable and' +
+          ' no voices for current language',
+      () => {
+        const voice =
+            createSpeechSynthesisVoice({lang: 'zh-CN', name: 'Google Tiger'});
+        const defaultVoice =
+            createSpeechSynthesisVoice({lang: 'en-us', name: 'Google Bear'});
+        speech.setVoices([defaultVoice]);
+        voiceLanguageController.enableLang(voice.lang);
+        voiceLanguageController.setUserPreferredVoice(voice);
+        chrome.readingMode.baseLanguageForSpeech = 'zh-CN';
+        onCurrentVoiceChange = false;
+
+        voiceLanguageController.onVoicesChanged();
+
+        assertTrue(onCurrentVoiceChange);
+        assertTrue(onAvailableVoicesChange);
+        assertEquals(defaultVoice, voiceLanguageController.getCurrentVoice());
+      });
+
   test('onVoicesChanged gets stored voice', () => {
     const voice1 =
         createSpeechSynthesisVoice({lang: 'id', name: 'Google Tiger'});
@@ -652,6 +742,24 @@ suite('VoiceLanguageController', () => {
     assertEquals(lang, voiceLanguageController.getCurrentLanguage());
   });
 
+  test(
+      'onPageLanguageChanged updates current language when natural voices unavailable',
+      () => {
+        chrome.readingMode.getStoredVoice = () => '';
+        const voice1 =
+            createSpeechSynthesisVoice({lang: 'en-us', name: 'Google English'});
+        const voice2 =
+            createSpeechSynthesisVoice({lang: 'de-de', name: 'Google German'});
+        speech.setVoices([voice1, voice2]);
+        voiceLanguageController.onVoicesChanged();
+        const lang = 'de';
+        chrome.readingMode.baseLanguageForSpeech = lang;
+
+        voiceLanguageController.onPageLanguageChanged();
+
+        assertEquals(voice2, voiceLanguageController.getCurrentVoice());
+      });
+
   test('onPageLanguageChanged installs lang if no status', () => {
     const lang = 'en-gb';
     voiceLanguageController.enableLang(lang);
@@ -668,24 +776,24 @@ suite('VoiceLanguageController', () => {
   });
 
   test('onPageLanguageChanged installs lang if not installed', () => {
-    const lang = 'ja';
+    const lang = 'es-ES';
     chrome.readingMode.baseLanguageForSpeech = lang;
     voiceLanguageController.setServerStatus(
         lang, mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled'));
 
 
     voiceLanguageController.onPageLanguageChanged();
-    assertArrayEquals([lang], requestInfoLangs);
+    assertArrayEquals([lang.toLowerCase()], requestInfoLangs);
 
     voiceLanguageController.updateLanguageStatus(lang, 'kNotInstalled');
     assertEquals(
         VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
         voiceLanguageController.getLocalStatus(lang));
-    assertArrayEquals([lang], installedLangs);
+    assertArrayEquals([lang.toLowerCase()], installedLangs);
   });
 
   test('onPageLanguageChanged when previously failed does not install', () => {
-    const lang = 'ja';
+    const lang = 'es-ES';
     chrome.readingMode.baseLanguageForSpeech = lang;
     voiceLanguageController.setServerStatus(
         lang, mojoVoicePackStatusToVoicePackStatusEnum('kOther'));
@@ -698,7 +806,7 @@ suite('VoiceLanguageController', () => {
   });
 
   test('onPageLanguageChanged and already installing does not install', () => {
-    const lang = 'ja';
+    const lang = 'es-ES';
     chrome.readingMode.baseLanguageForSpeech = lang;
     voiceLanguageController.setServerStatus(
         lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalling'));
@@ -711,7 +819,7 @@ suite('VoiceLanguageController', () => {
   });
 
   test('onPageLanguageChanged and already installed does not install', () => {
-    const lang = 'ja';
+    const lang = 'es-ES';
     chrome.readingMode.baseLanguageForSpeech = lang;
     voiceLanguageController.setServerStatus(
         lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
@@ -756,6 +864,19 @@ suite('VoiceLanguageController', () => {
 
     assertTrue(onCurrentVoiceChange);
     assertEquals(otherVoice, voiceLanguageController.getCurrentVoice());
+  });
+
+  test('onPageLanguageChanged with no Google voices, uses system voice', () => {
+    const lang = 'zh-CN';
+    const voice = createSpeechSynthesisVoice({lang, name: 'Conan'});
+    speech.setVoices([voice]);
+    voiceLanguageController.onVoicesChanged();
+    chrome.readingMode.baseLanguageForSpeech = lang;
+
+    voiceLanguageController.onPageLanguageChanged();
+
+    assertTrue(onCurrentVoiceChange);
+    assertEquals(voice, voiceLanguageController.getCurrentVoice());
   });
 
   test(
@@ -923,6 +1044,19 @@ suite('VoiceLanguageController', () => {
     setup(() => {
       voiceLanguageController.enableLang(lang);
       chrome.readingMode.onLanguagePrefChange(lang, true);
+    });
+
+    test('with no lang does nothing', () => {
+      voiceLanguageController.updateLanguageStatus('', 'kInstalled');
+      assertEquals(null, notificationType);
+      assertArrayEquals([], installedLangs);
+    });
+
+    test('with no lang and not reached status notifies of no engine', () => {
+      voiceLanguageController.updateLanguageStatus('', 'kNotReached');
+      assertEquals(
+          NotificationType.GOOGLE_VOICES_UNAVAILABLE, notificationType);
+      assertArrayEquals([], installedLangs);
     });
 
     test('with lang not marked for download does not install', () => {

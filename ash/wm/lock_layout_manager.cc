@@ -98,9 +98,8 @@ void LockLayoutManager::OnDisplayMetricsChanged(const display::Display& display,
     return;
   }
 
-  if (display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(root_window_)
-          .id() != display.id()) {
+  if (display::Screen::Get()->GetDisplayNearestWindow(root_window_).id() !=
+      display.id()) {
     return;
   }
 

@@ -21,6 +21,8 @@ SandboxFeatureTest::SandboxFeatureTest() {
   feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
+SandboxFeatureTest::~SandboxFeatureTest() = default;
+
 IntegrityLevel SandboxFeatureTest::GetExpectedIntegrityLevel() {
   return IntegrityLevel::INTEGRITY_LEVEL_LOW;
 }

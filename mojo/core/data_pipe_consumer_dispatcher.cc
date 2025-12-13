@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/data_pipe_consumer_dispatcher.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -177,9 +173,10 @@ MojoResult DataPipeConsumerDispatcher::ReadData(
         std::min(options_.capacity_num_bytes - read_offset_, bytes_to_read);
     uint32_t head_bytes_to_copy = bytes_to_read - tail_bytes_to_copy;
     if (tail_bytes_to_copy > 0)
-      memcpy(destination, data + read_offset_, tail_bytes_to_copy);
+      UNSAFE_TODO(memcpy(destination, data + read_offset_, tail_bytes_to_copy));
     if (head_bytes_to_copy > 0)
-      memcpy(destination + tail_bytes_to_copy, data, head_bytes_to_copy);
+      UNSAFE_TODO(
+          memcpy(destination + tail_bytes_to_copy, data, head_bytes_to_copy));
   }
   *num_bytes = bytes_to_read;
 
@@ -228,7 +225,7 @@ MojoResult DataPipeConsumerDispatcher::BeginReadData(
   CHECK(data);
 
   in_two_phase_read_ = true;
-  *buffer = data + read_offset_;
+  *buffer = UNSAFE_TODO(data + read_offset_);
   *buffer_num_bytes = bytes_to_read;
   two_phase_max_bytes_read_ = bytes_to_read;
 
@@ -310,8 +307,9 @@ bool DataPipeConsumerDispatcher::EndSerialize(
     ports::PortName* ports,
     PlatformHandle* platform_handles) {
   SerializedState* state = static_cast<SerializedState*>(destination);
-  memcpy(&state->options, &options_, sizeof(MojoCreateDataPipeOptions));
-  memset(state->padding, 0, sizeof(state->padding));
+  UNSAFE_TODO(
+      memcpy(&state->options, &options_, sizeof(MojoCreateDataPipeOptions)));
+  UNSAFE_TODO(memset(state->padding, 0, sizeof(state->padding)));
 
   base::AutoLock lock(lock_);
   DCHECK(in_transit_);

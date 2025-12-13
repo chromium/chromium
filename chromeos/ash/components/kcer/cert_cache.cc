@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/377326291): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/kcer/cert_cache.h"
 
 #include <stdint.h>
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
 #include "chromeos/ash/components/kcer/kcer.h"
@@ -28,8 +24,8 @@ namespace {
 class CmpAdapter {
  public:
   explicit CmpAdapter(const scoped_refptr<const Cert>& cert)
-      : data_(CRYPTO_BUFFER_data(cert->GetX509Cert()->cert_buffer()),
-              CRYPTO_BUFFER_len(cert->GetX509Cert()->cert_buffer())) {}
+      : data_(net::x509_util::CryptoBufferAsSpan(
+            cert->GetX509Cert()->cert_buffer())) {}
   explicit CmpAdapter(const base::span<const uint8_t>& cert) : data_(cert) {}
 
   bool operator<(const CmpAdapter& other) {

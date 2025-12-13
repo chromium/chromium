@@ -57,6 +57,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -327,7 +328,7 @@ TEST(PaintOpBufferTest, SaveSaveLayerFiltersRestore) {
 
   PaintFlags paint_flags;
   EXPECT_TRUE(paint_flags.SupportsFoldingAlpha());
-  buffer.push<SaveLayerFiltersOp>(std::vector<sk_sp<PaintFilter>>{},
+  buffer.push<SaveLayerFiltersOp>(std::vector<sk_sp<PaintFilter>>{}, nullptr,
                                   paint_flags);
   buffer.push<RestoreOp>();
   buffer.push<RestoreOp>();
@@ -597,16 +598,14 @@ TEST(PaintOpBufferTest, SlowPaths) {
   EXPECT_EQ(buffer.num_slow_paths_up_to_min_for_MSAA(), 1);
 
   // Antialiased convex path is not slow.
-  SkPath path;
-  path.addCircle(2, 2, 5);
+  const SkPath path = SkPath::Circle(2, 2, 5);
   EXPECT_TRUE(path.isConvex());
   buffer.push<ClipPathOp>(path, SkClipOp::kIntersect, /*antialias=*/true,
                           UsePaintCache::kDisabled);
   EXPECT_EQ(buffer.num_slow_paths_up_to_min_for_MSAA(), 1);
 
   // Concave paths are slow only when antialiased.
-  SkPath concave = path;
-  concave.addCircle(3, 4, 2);
+  const SkPath concave = SkPathBuilder(path).addCircle(3, 4, 2).detach();
   EXPECT_FALSE(concave.isConvex());
   buffer.push<ClipPathOp>(concave, SkClipOp::kIntersect, /*antialias=*/true,
                           UsePaintCache::kDisabled);
@@ -650,8 +649,7 @@ TEST(PaintOpBufferTest, NonAAPaint) {
     PaintOpBuffer buffer;
     EXPECT_FALSE(buffer.has_non_aa_paint());
 
-    SkPath path;
-    path.addCircle(2, 2, 5);
+    const SkPath path = SkPath::Circle(2, 2, 5);
 
     // ClipPathOp with AA
     buffer.push<ClipPathOp>(path, SkClipOp::kIntersect, /*antialias=*/true,
@@ -686,8 +684,7 @@ TEST(PaintOpBufferTest, NonAAPaint) {
     EXPECT_FALSE(buffer.has_non_aa_paint());
 
     PaintOpBuffer sub_buffer;
-    SkPath path;
-    path.addCircle(2, 2, 5);
+    const SkPath path = SkPath::Circle(2, 2, 5);
     sub_buffer.push<ClipPathOp>(path, SkClipOp::kIntersect,
                                 /*antialias=*/false, UsePaintCache::kDisabled);
     EXPECT_TRUE(sub_buffer.has_non_aa_paint());
@@ -1167,19 +1164,19 @@ std::vector<SkM44> test_matrices = {
 
 std::vector<SkPath> test_paths = {
     [] {
-      SkPath path;
-      path.moveTo(SkIntToScalar(20), SkIntToScalar(20));
-      path.lineTo(SkIntToScalar(80), SkIntToScalar(20));
-      path.lineTo(SkIntToScalar(30), SkIntToScalar(30));
-      path.lineTo(SkIntToScalar(20), SkIntToScalar(80));
-      return path;
+      return SkPathBuilder()
+          .moveTo(SkIntToScalar(20), SkIntToScalar(20))
+          .lineTo(SkIntToScalar(80), SkIntToScalar(20))
+          .lineTo(SkIntToScalar(30), SkIntToScalar(30))
+          .lineTo(SkIntToScalar(20), SkIntToScalar(80))
+          .detach();
     }(),
     [] {
-      SkPath path;
-      path.addCircle(2, 2, 5);
-      path.addCircle(3, 4, 2);
-      path.addArc(SkRect::MakeXYWH(1, 2, 3, 4), 5, 6);
-      return path;
+      return SkPathBuilder()
+          .addCircle(2, 2, 5)
+          .addCircle(3, 4, 2)
+          .addArc(SkRect::MakeXYWH(1, 2, 3, 4), 5, 6)
+          .detach();
     }(),
     SkPath(),
 };
@@ -1299,10 +1296,9 @@ std::vector<PaintImage> test_images = {
 };
 
 #if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
-
-bool kIsSkottieSupported = true;
+constexpr bool kIsSkottieSupported = true;
 #else
-bool kIsSkottieSupported = false;
+constexpr bool kIsSkottieSupported = false;
 #endif
 
 // Writes as many ops in |buffer| as can fit in |output_size| to |output|.
@@ -1886,7 +1882,10 @@ void PushSaveLayerFiltersOps(PaintOpBuffer* buffer) {
   for (size_t i = 0; i < len; ++i) {
     sk_sp<PaintFilter> filter =
         sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr);
-    buffer->push<SaveLayerFiltersOp>(std::array{filter}, test_flags[i]);
+    sk_sp<PaintFilter> backdrop_filter =
+        sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr);
+    buffer->push<SaveLayerFiltersOp>(std::array{filter}, backdrop_filter,
+                                     test_flags[i]);
   }
 
   EXPECT_THAT(*buffer, Each(PaintOpIs<SaveLayerFiltersOp>()));
@@ -2690,6 +2689,28 @@ TEST(PaintOpBufferTest, ValidateSkBlendMode) {
     DrawRectOp draw_rect(test_rects[0], flags);
     EXPECT_EQ(blend_mode <= SkBlendMode::kLastMode, draw_rect.IsValid());
   }
+}
+
+TEST(PaintOpBufferTest, SaveLayerFiltersOpIsValid) {
+  std::vector<sk_sp<PaintFilter>> filters;
+  for (int i = 0; i < SaveLayerFiltersOp::kMaxFiltersPerLayer; ++i) {
+    filters.push_back(sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr));
+  }
+  sk_sp<PaintFilter> backdrop_filter =
+      sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr);
+
+  PaintFlags flags;
+  SaveLayerFiltersOp op_at_limit(filters, nullptr, flags);
+  EXPECT_TRUE(op_at_limit.IsValid());
+  SaveLayerFiltersOp op_at_limit_with_backdrop(filters, backdrop_filter, flags);
+  EXPECT_TRUE(op_at_limit.IsValid());
+
+  filters.push_back(sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr));
+  SaveLayerFiltersOp op_over_limit(filters, nullptr, flags);
+  EXPECT_FALSE(op_over_limit.IsValid());
+  SaveLayerFiltersOp op_over_limit_with_backdrop(filters, backdrop_filter,
+                                                 flags);
+  EXPECT_FALSE(op_over_limit.IsValid());
 }
 
 TEST(PaintOpBufferTest, BoundingRect_DrawImageOp) {
@@ -4419,13 +4440,14 @@ TEST(PaintOpBufferTest, PlaybackDrawRecordNestedNonLocalAndNonLocalCTM) {
 }
 
 TEST(PaintOpBufferTest, PathCaching) {
-  SkPath path;
+  SkPathBuilder path_builder;
   PaintFlags flags;
 
   // Grow path large enough to trigger caching
-  path.moveTo(0, 0);
+  path_builder.moveTo(0, 0);
   for (int x = 1; x < 100; ++x)
-    path.lineTo(x, x % 1);
+    path_builder.lineTo(x, x % 1);
+  const SkPath path = path_builder.detach();
 
   TestOptionsProvider options_provider;
 
@@ -4459,7 +4481,7 @@ TEST(PaintOpBufferTest, ShrinkToFit) {
 
   buffer.push<DrawColorOp>(SkColors::kRed, SkBlendMode::kSrc);
   EXPECT_GT(buffer.bytes_used(), sizeof(PaintOpBuffer) + sizeof(DrawColorOp));
-  const char* data_buffer = buffer.DataBufferForTesting();
+  const uint8_t* data_buffer = buffer.DataBufferForTesting();
   ASSERT_TRUE(data_buffer);
   buffer.ShrinkToFit();
   EXPECT_EQ(sizeof(PaintOpBuffer) + sizeof(DrawColorOp), buffer.bytes_used());
@@ -4483,7 +4505,7 @@ TEST(PaintOpBufferTest, ReleaseAsRecord) {
   buffer.push<DrawColorOp>(SkColors::kRed, SkBlendMode::kSrc);
   size_t old_bytes_used = buffer.bytes_used();
   EXPECT_GT(old_bytes_used, sizeof(PaintOpBuffer) + sizeof(DrawColorOp));
-  const char* data_buffer = buffer.DataBufferForTesting();
+  const uint8_t* data_buffer = buffer.DataBufferForTesting();
   ASSERT_TRUE(data_buffer);
   EXPECT_EQ(1u, buffer.size());
 

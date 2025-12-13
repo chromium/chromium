@@ -87,7 +87,7 @@ void AddEmptyBorder(views::View* password_field) {
 
 PasswordAddUsernameView::PasswordAddUsernameView(
     content::WebContents* web_contents,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     DisplayReason reason)
     : PasswordBubbleViewBase(web_contents, anchor_view, true),
       controller_(PasswordsModelDelegateFromWebContents(web_contents),

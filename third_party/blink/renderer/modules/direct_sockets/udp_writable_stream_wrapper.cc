@@ -145,8 +145,8 @@ ScriptPromise<IDLUndefined> UDPWritableStreamWrapper::Write(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           GetScriptState(), exception_state.GetContext());
 
-  auto callback = WTF::BindOnce(&UDPWritableStreamWrapper::OnSend,
-                                WrapWeakPersistent(this));
+  auto callback =
+      BindOnce(&UDPWritableStreamWrapper::OnSend, WrapWeakPersistent(this));
   if (dest_addr) {
     udp_socket_->get()->SendTo(data, *dest_addr, dns_query_type,
                                std::move(callback));

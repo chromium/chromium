@@ -10,6 +10,7 @@
 
 #include "base/win/shlwapi.h"
 #include "base/win/windows_version.h"
+#include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_RECEIVER_BRIDGE_IMPL_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 
 namespace password_manager {
@@ -37,7 +38,7 @@ class PasswordStoreAndroidBackendReceiverBridgeImpl
   void OnCompleteWithLogins(
       JNIEnv* env,
       jint job_id,
-      const base::android::JavaParamRef<jbyteArray>& passwords);
+      const base::android::JavaRef<jbyteArray>& passwords);
 
   // Implements consumer interface
   // Called via JNI. Called when the api call with `job_id` finished and
@@ -45,7 +46,7 @@ class PasswordStoreAndroidBackendReceiverBridgeImpl
   virtual void OnCompleteWithBrandedLogins(
       JNIEnv* env,
       jint job_id,
-      const base::android::JavaParamRef<jbyteArray>& passwords);
+      const base::android::JavaRef<jbyteArray>& passwords);
 
   // Implements consumer interface
   // Called via JNI. Called when the api call with `job_id` finished and
@@ -53,7 +54,7 @@ class PasswordStoreAndroidBackendReceiverBridgeImpl
   void OnCompleteWithAffiliatedLogins(
       JNIEnv* env,
       jint job_id,
-      const base::android::JavaParamRef<jbyteArray>& passwords);
+      const base::android::JavaRef<jbyteArray>& passwords);
 
   // Called via JNI. Called when the api call with `job_id` finished that could
   // have added, modified or deleted a login.

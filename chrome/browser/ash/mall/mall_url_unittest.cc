@@ -23,6 +23,9 @@
 namespace ash {
 
 class MallUrlTest : public testing::Test {
+ public:
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -30,9 +33,8 @@ class MallUrlTest : public testing::Test {
 TEST_F(MallUrlTest, GetMallLaunchUrl) {
   TestingProfile profile;
 
-  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider;
-  fake_statistics_provider.SetMachineStatistic(ash::system::kHardwareClassKey,
-                                               "SHIBA D0G-F4N-C1UB");
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kHardwareClassKey,
+                                                "SHIBA D0G-F4N-C1UB");
 
   base::test::TestFuture<apps::DeviceInfo> device_info;
   apps::DeviceInfoManager* manager =
@@ -42,10 +44,10 @@ TEST_F(MallUrlTest, GetMallLaunchUrl) {
 
   GURL launch_url = GetMallLaunchUrl(device_info.Get());
 
-  ASSERT_EQ(launch_url.host(), GURL(chromeos::kAppMallBaseUrl).host());
+  ASSERT_EQ(launch_url.GetHost(), GURL(chromeos::kAppMallBaseUrl).GetHost());
 
   std::vector<std::string> query_parts = base::SplitString(
-      launch_url.query(), "=&", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      launch_url.GetQuery(), "=&", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   ASSERT_EQ(query_parts[0], "origin");
   ASSERT_EQ(query_parts[1], "chrome%3A%2F%2Fmall");

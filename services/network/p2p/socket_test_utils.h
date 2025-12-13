@@ -48,15 +48,11 @@ class FakeP2PSocketDelegate : public P2PSocket::Delegate {
   // P2PSocket::Delegate interface.
   void DestroySocket(P2PSocket* socket) override;
   void DumpPacket(base::span<const uint8_t> data, bool incoming) override;
-  void AddAcceptedConnection(std::unique_ptr<P2PSocket> accepted) override;
 
   void ExpectDestruction(std::unique_ptr<P2PSocket> socket);
 
-  std::unique_ptr<P2PSocket> pop_accepted_socket();
-
  private:
   std::vector<std::unique_ptr<P2PSocket>> sockets_to_be_destroyed_;
-  std::list<std::unique_ptr<P2PSocket>> accepted_;
 };
 
 class FakeSocket : public net::StreamSocket {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/gfx/codec/png_codec.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -26,12 +22,10 @@
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "skia/rusty_png_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libpng/png.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
-#include "third_party/zlib/zlib.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_util.h"
 
@@ -143,7 +137,7 @@ void WriteImageData(png_structp png_ptr, png_bytep data, png_size_t length) {
   std::vector<uint8_t>& v =
       *static_cast<std::vector<uint8_t>*>(png_get_io_ptr(png_ptr));
   v.resize(v.size() + length);
-  memcpy(&v[v.size() - length], data, length);
+  UNSAFE_TODO(memcpy(&v[v.size() - length], data, length));
 }
 
 // User flush function; goes with WriteImageData, above.
@@ -427,26 +421,7 @@ void MakeTestA8SkBitmap(int width, int height, SkBitmap* bmp) {
   }
 }
 
-enum class RustFeatureState { kRustEnabled, kRustDisabled };
-
-class PNGCodecTest : public testing::TestWithParam<RustFeatureState> {
- public:
-  PNGCodecTest() {
-    switch (GetParam()) {
-      case RustFeatureState::kRustEnabled:
-        features_.InitAndEnableFeature(skia::kRustyPngFeature);
-        break;
-      case RustFeatureState::kRustDisabled:
-        features_.InitAndDisableFeature(skia::kRustyPngFeature);
-        break;
-    }
-  }
-
- protected:
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_P(PNGCodecTest, EncodeDecodeRGBA) {
+TEST(PNGCodecTest, EncodeDecodeRGBA) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -479,7 +454,7 @@ TEST_P(PNGCodecTest, EncodeDecodeRGBA) {
                                    output->output, COLOR_TYPE_RGBA)));
 }
 
-TEST_P(PNGCodecTest, EncodeDecodeBGRA) {
+TEST(PNGCodecTest, EncodeDecodeBGRA) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -505,7 +480,7 @@ TEST_P(PNGCodecTest, EncodeDecodeBGRA) {
                                    output->output, COLOR_TYPE_BGRA)));
 }
 
-TEST_P(PNGCodecTest, DecodePalette) {
+TEST(PNGCodecTest, DecodePalette) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -530,7 +505,7 @@ TEST_P(PNGCodecTest, DecodePalette) {
                 COLOR_TYPE_RGBA)));
 }
 
-TEST_P(PNGCodecTest, DecodeInterlacedPalette) {
+TEST(PNGCodecTest, DecodeInterlacedPalette) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -555,7 +530,7 @@ TEST_P(PNGCodecTest, DecodeInterlacedPalette) {
                 COLOR_TYPE_RGBA)));
 }
 
-TEST_P(PNGCodecTest, DecodeGrayscale) {
+TEST(PNGCodecTest, DecodeGrayscale) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -578,7 +553,7 @@ TEST_P(PNGCodecTest, DecodeGrayscale) {
                                    output->output, COLOR_TYPE_RGBA)));
 }
 
-TEST_P(PNGCodecTest, DecodeGrayscaleWithAlpha) {
+TEST(PNGCodecTest, DecodeGrayscaleWithAlpha) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -601,7 +576,7 @@ TEST_P(PNGCodecTest, DecodeGrayscaleWithAlpha) {
                 COLOR_TYPE_RGBA)));
 }
 
-TEST_P(PNGCodecTest, DecodeInterlacedGrayscale) {
+TEST(PNGCodecTest, DecodeInterlacedGrayscale) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -624,7 +599,7 @@ TEST_P(PNGCodecTest, DecodeInterlacedGrayscale) {
                                    output->output, COLOR_TYPE_RGBA)));
 }
 
-TEST_P(PNGCodecTest, DecodeInterlacedGrayscaleWithAlpha) {
+TEST(PNGCodecTest, DecodeInterlacedGrayscaleWithAlpha) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -647,7 +622,7 @@ TEST_P(PNGCodecTest, DecodeInterlacedGrayscaleWithAlpha) {
                 COLOR_TYPE_RGBA)));
 }
 
-TEST_P(PNGCodecTest, DecodeInterlacedRGBA) {
+TEST(PNGCodecTest, DecodeInterlacedRGBA) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -671,7 +646,7 @@ TEST_P(PNGCodecTest, DecodeInterlacedRGBA) {
                                    output->output, COLOR_TYPE_RGBA)));
 }
 
-TEST_P(PNGCodecTest, DecodeInterlacedBGR) {
+TEST(PNGCodecTest, DecodeInterlacedBGR) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -694,7 +669,7 @@ TEST_P(PNGCodecTest, DecodeInterlacedBGR) {
                                    output->output, COLOR_TYPE_BGRA)));
 }
 
-TEST_P(PNGCodecTest, DecodeInterlacedBGRA) {
+TEST(PNGCodecTest, DecodeInterlacedBGRA) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -718,7 +693,7 @@ TEST_P(PNGCodecTest, DecodeInterlacedBGRA) {
 
 // Not encoding an interlaced PNG from SkBitmap because we don't do it
 // anywhere, and the ability to do that requires more code changes.
-TEST_P(PNGCodecTest, DecodeInterlacedRGBtoSkBitmap) {
+TEST(PNGCodecTest, DecodeInterlacedRGBtoSkBitmap) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -773,15 +748,15 @@ void DecodeInterlacedRGBAtoSkBitmap(bool use_transparency) {
       ImageSpec(kWidth, kHeight, original, color_type), decoded_bitmap));
 }
 
-TEST_P(PNGCodecTest, DecodeInterlacedRGBAtoSkBitmap_Opaque) {
+TEST(PNGCodecTest, DecodeInterlacedRGBAtoSkBitmap_Opaque) {
   DecodeInterlacedRGBAtoSkBitmap(/*use_transparency=*/false);
 }
 
-TEST_P(PNGCodecTest, DecodeInterlacedRGBAtoSkBitmap_Transparent) {
+TEST(PNGCodecTest, DecodeInterlacedRGBAtoSkBitmap_Transparent) {
   DecodeInterlacedRGBAtoSkBitmap(/*use_transparency=*/true);
 }
 
-TEST_P(PNGCodecTest, EncoderSavesImagesWithAllOpaquePixelsAsOpaque) {
+TEST(PNGCodecTest, EncoderSavesImagesWithAllOpaquePixelsAsOpaque) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -805,7 +780,7 @@ TEST_P(PNGCodecTest, EncoderSavesImagesWithAllOpaquePixelsAsOpaque) {
 }
 
 // Test that corrupted data decompression causes failures.
-TEST_P(PNGCodecTest, DecodeCorrupted) {
+TEST(PNGCodecTest, DecodeCorrupted) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -876,7 +851,7 @@ TEST_P(PNGCodecTest, DecodeCorrupted) {
 // up-scaling (e.g. on high DPI displays), trumping the "two halves should have
 // roughly equal / different brightness" effect. You can view the images at
 // https://nigeltao.github.io/blog/2022/gamma-aware-pixelated-images.html
-TEST_P(PNGCodecTest, DecodeGamma) {
+TEST(PNGCodecTest, DecodeGamma) {
   base::FilePath root_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_dir));
   base::FilePath data_dir = root_dir.AppendASCII("ui")
@@ -887,19 +862,13 @@ TEST_P(PNGCodecTest, DecodeGamma) {
 
   struct SourceFile {
     double gamma;
-    uint8_t min;
-    uint8_t max;
+    uint8_t expected;
     std::string filename;
   };
   const SourceFile kSourceFiles[] = {
-      {1.0, 188, 188, "checkerboard.gamma1dot0.png"},
-      {1.8, 146, 146, "checkerboard.gamma1dot8.png"},
-
-      // This testcase allows both 128 and 129 to reflect that `SkPngRustCodec`
-      // matches the behavior of `blink::PNGImageDecoder` for PNGs with `gAMA`
-      // chunk set to 1/2.2 and with no other color-profile-related chunks.  See
-      // https://crbug.com/388025081 for more details.
-      {2.2, 128, 129, "checkerboard.gamma2dot2.png"},
+      {1.0, 188, "checkerboard.gamma1dot0.png"},
+      {1.8, 146, "checkerboard.gamma1dot8.png"},
+      {2.2, 128, "checkerboard.gamma2dot2.png"},
   };
 
   for (const auto& sf : kSourceFiles) {
@@ -915,14 +884,11 @@ TEST_P(PNGCodecTest, DecodeGamma) {
     ASSERT_TRUE(output);
     ASSERT_GT(output->output.size(), 0u);
 
-    // TODO(https://crbug.com/363052758): Go back to equality-based comparisons
-    // when the `base::Feature` is removed.
-    EXPECT_LE(sf.min, output->output[0]) << "gamma: " << sf.gamma;
-    EXPECT_LE(output->output[0], sf.max) << "gamma: " << sf.gamma;
+    EXPECT_EQ(sf.expected, output->output[0]) << "gamma: " << sf.gamma;
   }
 }
 
-TEST_P(PNGCodecTest, EncodeBGRASkBitmapStridePadded) {
+TEST(PNGCodecTest, EncodeBGRASkBitmapStridePadded) {
   const int kWidth = 20;
   const int kHeight = 20;
   const int kPaddedWidth = 32;
@@ -965,7 +931,7 @@ TEST_P(PNGCodecTest, EncodeBGRASkBitmapStridePadded) {
   }
 }
 
-TEST_P(PNGCodecTest, EncodeBGRASkBitmap) {
+TEST(PNGCodecTest, EncodeBGRASkBitmap) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -995,7 +961,7 @@ TEST_P(PNGCodecTest, EncodeBGRASkBitmap) {
   }
 }
 
-TEST_P(PNGCodecTest, EncodeBGRASkBitmapDiscardTransparency) {
+TEST(PNGCodecTest, EncodeBGRASkBitmapDiscardTransparency) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -1034,7 +1000,7 @@ TEST_P(PNGCodecTest, EncodeBGRASkBitmapDiscardTransparency) {
   }
 }
 
-TEST_P(PNGCodecTest, EncodeWithComment) {
+TEST(PNGCodecTest, EncodeWithComment) {
   constexpr int kWidth = 10;
   constexpr int kHeight = 10;
 
@@ -1068,7 +1034,7 @@ TEST_P(PNGCodecTest, EncodeWithComment) {
             encoded.value().end());
 }
 
-TEST_P(PNGCodecTest, EncodeDecodeWithVaryingCompressionLevels) {
+TEST(PNGCodecTest, EncodeDecodeWithVaryingCompressionLevels) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
@@ -1102,7 +1068,7 @@ TEST_P(PNGCodecTest, EncodeDecodeWithVaryingCompressionLevels) {
   EXPECT_TRUE(BitmapsAreEqual(decoded, original_bitmap));
 }
 
-TEST_P(PNGCodecTest, DecodingTruncatedEXIFChunkIsSafe) {
+TEST(PNGCodecTest, DecodingTruncatedEXIFChunkIsSafe) {
   // Libpng 1.6.37 had a bug which caused it to read two uninitialized bytes of
   // stack memory if a PNG contained an invalid EXIF chunk, when in progressive
   // reading mode. This would manifest as an MSAN error (crbug.com/332475837)
@@ -1133,12 +1099,5 @@ TEST_P(PNGCodecTest, DecodingTruncatedEXIFChunkIsSafe) {
   SkBitmap bitmap = PNGCodec::Decode(kPNGData);
   EXPECT_TRUE(bitmap.isNull());
 }
-
-INSTANTIATE_TEST_SUITE_P(RustEnabled,
-                         PNGCodecTest,
-                         ::testing::Values(RustFeatureState::kRustEnabled));
-INSTANTIATE_TEST_SUITE_P(RustDisabled,
-                         PNGCodecTest,
-                         ::testing::Values(RustFeatureState::kRustDisabled));
 
 }  // namespace gfx

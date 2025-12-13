@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "mojo/public/cpp/base/big_buffer.h"
 
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/rand_util.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/big_buffer.mojom.h"
@@ -22,9 +19,10 @@ namespace big_buffer_unittest {
 
 namespace {
 
-bool BufferEquals(const BigBuffer& a, const BigBuffer& b) {
-  return a.size() == b.size() && std::equal(a.data(), a.data() + a.size(),
-                                            b.data(), b.data() + b.size());
+// Helper to force implicit construction of a span when passed a BigBuffer for
+// equality comparison.
+bool BufferEquals(base::span<const uint8_t> a, base::span<const uint8_t> b) {
+  return a == b;
 }
 
 }  // namespace

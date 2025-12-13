@@ -14,8 +14,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -72,11 +71,10 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
             Context context,
             WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
-            Supplier<@Nullable Tab> tabSupplier,
             View layoutView,
             MerchantTrustMetrics metrics,
             IntentRequestTracker intentRequestTracker,
-            ObservableSupplier<Profile> profileSupplier) {
+            NonNullObservableSupplier<Profile> profileSupplier) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mLayoutView = layoutView;

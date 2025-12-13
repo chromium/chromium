@@ -23,7 +23,7 @@ class Node;
 class PaintLayer;
 
 struct OriginUrlMap {
-  WTF::HashMap<DOMNodeId, String> map;
+  HashMap<DOMNodeId, String> map;
   base::WeakPtrFactory<OriginUrlMap> weak_ptr_factory{this};
 };
 
@@ -84,7 +84,7 @@ class CORE_EXPORT LegacyDOMSnapshotAgent {
 
   struct VectorStringHashTraits;
   using ComputedStylesMap =
-      WTF::HashMap<Vector<String>, int, VectorStringHashTraits>;
+      HashMap<Vector<String>, int, VectorStringHashTraits>;
   using CSSPropertyFilter = Vector<std::pair<String, CSSPropertyID>>;
   using PaintOrderMap = GCedHeapHashMap<Member<PaintLayer>, int>;
 

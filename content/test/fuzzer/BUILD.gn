@@ -37,7 +37,7 @@ fuzzer_test("ad_auction_headers_util_fuzzer") {
   sources = [ "ad_auction_headers_util_fuzzer.cc" ]
   deps = [
     ":fuzzer_support",
-    "//content/browser:browser",
+    "//content/browser",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
   ]
@@ -146,12 +146,13 @@ if (enable_mojom_fuzzer) {
       "mojolpm_fuzzer_support.h",
     ]
 
-    deps = [ "//mojo/core/embedder:embedder" ]
+    deps = [ "//mojo/core/embedder" ]
 
     public_deps = [
       "//base/test:test_support",
       "//content/browser:for_content_tests",
       "//content/test:test_support",
+      "//mojo/public/tools/fuzzers:test_support",
       "//services/network:test_support",
       "//storage/browser:test_support",
       "//third_party/icu:icudata",
@@ -211,6 +212,32 @@ content_mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
   ]
 }
 
+content_mojolpm_fuzzer_test("idb_factory_mojolpm_fuzzer") {
+  sources = [ "idb_factory_mojolpm_fuzzer.cc" ]
+
+  proto_source = "idb_factory_mojolpm_fuzzer.proto"
+  testcase_proto_kind = "content.fuzzing.idb_factory.proto.Testcase"
+
+  deps = [
+    ":mojolpm_fuzzer_support",
+    "//content/browser:for_content_tests",
+    "//content/browser/indexed_db",
+    "//content/browser/indexed_db:unit_tests",
+    "//content/public/browser:browser_sources",
+    "//third_party/blink/public/mojom:mojom_modules_mojolpm",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_modules_mojolpm" ]
+
+  seed_corpus_sources = [
+    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_index_operations.textproto",
+    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_put_get.textproto",
+    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/idb_factory.textproto",
+    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/index_cursor.textproto",
+    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/object_store_cursor.textproto",
+  ]
+}
+
 content_mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
   sources = [ "file_system_manager_mojolpm_fuzzer.cc" ]
 
@@ -264,8 +291,7 @@ fuzzer_test("browser_accessibility_fuzzer") {
   sources = [ "browser_accessibility_fuzzer.cc" ]
   deps = [
     "//content/app:for_content_tests",
-    "//content/browser:browser",
-    "//content/browser:browser",
+    "//content/browser",
     "//content/public/browser:browser_sources",
     "//content/test:test_support",
     "//mojo/core/embedder",
@@ -278,8 +304,10 @@ fuzzer_test("browser_accessibility_fuzzer") {
 source_set("indexed_db_fuzzer_support") {
   public_deps = [
     "//base",
+    "//components/services/storage",
     "//content/browser/indexed_db",
     "//content/public/browser:browser_sources",
+    "//content/test:test_support",
     "//third_party/blink/public/common:headers",
   ]
   testonly = true
@@ -321,7 +349,8 @@ if (use_fuzzing_engine) {
       "//base/test:test_support",
       "//content/browser",
       "//content/public/browser:browser_sources",
-      "//net:net",
+      "//content/test:test_support",
+      "//net",
       "//net:net_fuzzer_test_support",
     ]
     testonly = true
@@ -363,7 +392,7 @@ content_mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
 
   deps = [
     ":mojolpm_fuzzer_support",
-    "//content/browser:browser",
+    "//content/browser",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
     "//third_party/blink/public/mojom:mojom_platform_mojolpm",
@@ -389,7 +418,7 @@ if (is_linux) {
       "//media/capture:capture_lib",
       "//media/capture:test_support",
       "//media/capture/mojom:video_capture_mojolpm",
-      "//third_party/blink/public/common:common",
+      "//third_party/blink/public/common",
     ]
 
     proto_deps = [ "//media/capture/mojom:video_capture_mojolpm" ]
@@ -422,7 +451,7 @@ content_mojolpm_fuzzer_test("presentation_service_mojolpm_fuzzer") {
     ":mojolpm_fuzzer_support",
     "//content/browser:for_content_tests",
     "//third_party/blink/public/mojom:mojom_platform_mojolpm",
-    "//ui/events/devices:devices",
+    "//ui/events/devices",
   ]
 
   proto_deps = [
@@ -438,7 +467,7 @@ content_mojolpm_fuzzer_test("clipboard_host_mojolpm_fuzzer") {
 
   deps = [
     ":mojolpm_fuzzer_support",
-    "//content/browser:browser",
+    "//content/browser",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
     "//third_party/blink/public/mojom:mojom_platform_mojolpm",
@@ -467,7 +496,7 @@ content_mojolpm_fuzzer_test("ad_auction_service_mojolpm_fuzzer") {
   deps = [
     ":ad_auction_service_mojolpm_fuzzer_stringifiers_proto",
     ":mojolpm_fuzzer_support",
-    "//content/browser:browser",
+    "//content/browser",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
     "//content/test:test_support",
@@ -501,7 +530,7 @@ if (enable_mojom_fuzzer) {
     deps = [
       ":controller_presentation_service_delegate_for_fuzzing_proto",
       "//base",
-      "//content/public/browser:browser",
+      "//content/public/browser",
       "//media:test_support",
       "//third_party/blink/public/mojom:mojom_platform_mojolpm",
       "//url/mojom:url_mojom_gurl_mojolpm",

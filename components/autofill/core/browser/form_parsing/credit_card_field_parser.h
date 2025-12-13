@@ -17,7 +17,6 @@
 
 namespace autofill {
 
-class AutofillField;
 class AutofillScanner;
 
 class CreditCardFieldParser : public FormFieldParser {
@@ -29,7 +28,7 @@ class CreditCardFieldParser : public FormFieldParser {
 
   ~CreditCardFieldParser() override;
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
   // Instructions for how to format an expiration date for a text field.
   struct ExpirationDateFormat {
@@ -60,7 +59,7 @@ class CreditCardFieldParser : public FormFieldParser {
   // if there are no hints on what's best. It must be either
   // CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR or CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR.
   static ExpirationDateFormat DetermineExpirationDateFormat(
-      const AutofillField& field,
+      const FormFieldData& field,
       FieldType fallback_type,
       FieldType server_hint,
       FieldType forced_field_type);
@@ -69,7 +68,7 @@ class CreditCardFieldParser : public FormFieldParser {
   // of priority: `forced_field_type` > type derived from heuristically
   // determined signals > `server_hint` > `fallback_type`. The server field
   // types can be UNKOWN_TYPE in which case they are ignored.
-  static FieldType DetermineExpirationYearType(const AutofillField& field,
+  static FieldType DetermineExpirationYearType(const FormFieldData& field,
                                                FieldType fallback_type,
                                                FieldType server_hint,
                                                FieldType forced_field_type);
@@ -82,28 +81,28 @@ class CreditCardFieldParser : public FormFieldParser {
 
   // Returns true if |scanner| points to a field that looks like a month
   // <select>.
-  static bool LikelyCardMonthSelectField(AutofillScanner* scanner);
+  static bool LikelyCardMonthSelectField(AutofillScanner& scanner);
 
   // Returns true if |scanner| points to a field that looks like a year
   // <select> for a credit card. i.e. it contains the current year and
   // the next few years.
-  static bool LikelyCardYearSelectField(ParsingContext* context,
-                                        AutofillScanner* scanner);
+  static bool LikelyCardYearSelectField(ParsingContext& context,
+                                        AutofillScanner& scanner);
 
   // Returns true if |scanner| points to a <select> field that contains credit
   // card type options.
-  static bool LikelyCardTypeSelectField(AutofillScanner* scanner);
+  static bool LikelyCardTypeSelectField(AutofillScanner& scanner);
 
   // Returns true if |scanner| points to a field that is for a gift card number.
   // |scanner| advances if this returns true.
   // Prepaid debit cards do not count as gift cards, since they can be used like
   // a credit card.
   static bool IsGiftCardField(ParsingContext& context,
-                              AutofillScanner* scanner);
+                              AutofillScanner& scanner);
 
   // Parses the expiration month/year/date fields. Returns true if it finds
   // something new.
-  bool ParseExpirationDate(ParsingContext& context, AutofillScanner* scanner);
+  bool ParseExpirationDate(ParsingContext& context, AutofillScanner& scanner);
 
   // For the combined expiration field we return |exp_year_type_|; otherwise if
   // |expiration_year_| is having year with |max_length| of 2-digits we return

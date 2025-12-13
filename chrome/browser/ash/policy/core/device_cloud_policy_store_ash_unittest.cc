@@ -15,11 +15,9 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/device_management/fake_install_attributes_client.h"
@@ -33,8 +31,9 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/test_utils.h"
-#include "crypto/rsa_private_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace em = enterprise_management;
@@ -59,8 +58,7 @@ class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
       const DeviceCloudPolicyStoreAshTest&) = delete;
 
  protected:
-  DeviceCloudPolicyStoreAshTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  DeviceCloudPolicyStoreAshTest() = default;
 
   ~DeviceCloudPolicyStoreAshTest() override = default;
 
@@ -155,7 +153,6 @@ class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
     store_->AddObserver(&observer_);
   }
 
-  ScopedTestingLocalState local_state_;
   std::unique_ptr<ash::InstallAttributes> install_attributes_;
 
   std::unique_ptr<DeviceCloudPolicyStoreAsh> store_;
@@ -313,10 +310,8 @@ TEST_F(DeviceCloudPolicyStoreAshTest, StorePolicyBadDomain) {
 }
 
 TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceIdValidationEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kDeviceIdValidation);
-  local_state_.Get()->SetManagedPref(prefs::kEnrollmentVersionOS,
-                                     base::Value("128"));
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
+      prefs::kEnrollmentVersionOS, base::Value("128"));
   PrepareExistingPolicy();
 
   // Set the device_id created by the policy generator. Expected to be valid.
@@ -333,10 +328,8 @@ TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceIdValidationEnabled) {
 }
 
 TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceIdValidationEnabledError) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kDeviceIdValidation);
-  local_state_.Get()->SetManagedPref(prefs::kEnrollmentVersionOS,
-                                     base::Value("128"));
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
+      prefs::kEnrollmentVersionOS, base::Value("128"));
   PrepareExistingPolicy();
 
   device_policy_->policy_data().mutable_device_id()->assign("bad-device-id");

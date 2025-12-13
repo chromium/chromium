@@ -148,7 +148,6 @@ INSTANTIATE_TEST_SUITE_P(
         GetCardNetworkTestCase{"5112345112345114", kMasterCard, true},
         GetCardNetworkTestCase{"5115915115915118", kMasterCard, true},
         GetCardNetworkTestCase{"6247130048162403", kUnionPay, true},
-        GetCardNetworkTestCase{"6247130048162403", kUnionPay, true},
         GetCardNetworkTestCase{"622384452162063648", kUnionPay, true},
         GetCardNetworkTestCase{"2204883716636153", kMirCard, true},
         GetCardNetworkTestCase{"2200111234567898", kMirCard, true},

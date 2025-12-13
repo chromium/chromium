@@ -22,8 +22,47 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="RegionalCapabilities.ActiveRegionalProgram2"
+    enum="ActiveRegionalProgram" expires_after="2026-06-07">
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records an overall active regional program for the profiles loaded in the
+    current session, at the time the session is finalized. This histogram will
+    be used by the UMA pipeline to tag all metrics in the session log, enabling
+    per-program filtering and analysis.
+
+    Emitted through ProvideCurrentSessionData, when a UMA session record is
+    getting finalized. Is output only based on the currently-loaded profiles,
+    and it is not output if there are zero currently-loaded profiles (context:
+    https://crrev.com/c/7168123).
+  </summary>
+</histogram>
+
+<histogram name="RegionalCapabilities.Debug.HasActiveRegionalProgram"
+    enum="Boolean" expires_after="2026-03-01">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records whether there is any active regional program for any of the loaded
+    profiles. Recorded when a UMA session record is getting finalized. `false`
+    if there are no loaded profiles, `true` otherwise.
+  </summary>
+</histogram>
+
+<histogram name="RegionalCapabilities.Debug.ProgramSpecificExclusion"
+    enum="RegionalProgramSpecificExclusion" expires_after="2026-03-01">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Reports occurrences of some of program specific conditions for which we
+    don't have some dedicated histogram, but want to monitor for debugging
+    purposes. See the individual events for record timing.
+  </summary>
+</histogram>
+
 <histogram name="RegionalCapabilities.FallbackCountryMatching"
-    enum="CountryMatchingStatus" expires_after="2025-12-28">
+    enum="CountryMatchingStatus" expires_after="2026-05-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -38,7 +77,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.FetchedCountryMatching"
-    enum="CountryMatchingStatus" expires_after="2025-12-28">
+    enum="CountryMatchingStatus" expires_after="2026-05-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -51,8 +90,75 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Eligibility) -->
+
+<histogram name="RegionalCapabilities.FunnelStage.Eligibility"
+    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>ljjlee@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records the condition state on profile load for whether the profile is
+    possibly eligible for a search engine choice screen.
+  </summary>
+</histogram>
+
+<!-- LINT.ThenChange(tools/metrics/histograms/metadata/puma/histograms.xml:PUMA.RegionalCapabilities.FunnelStage.Eligibility) -->
+
+<histogram name="RegionalCapabilities.FunnelStage.RegionalPresence"
+    enum="RegionalProgramAndLocationMatch" expires_after="2026-05-31">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Reports on the relative status of the profile country and the Finch latest
+    country, in the context of the selected regional program.
+
+    Recorded when the profile is loaded, for profiles that have been determined
+    to be in-scope for a non-default program. Only one bucket is logged for a
+    profile, the most specific one. This means that &quot;region matches&quot;
+    is not logged when &quot;country matches&quot; is logged.
+  </summary>
+</histogram>
+
+<!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Reported) -->
+
+<histogram name="RegionalCapabilities.FunnelStage.Reported"
+    enum="RegionalCapabilitiesFunnelStage" expires_after="2026-05-24">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Reports on which stage of the regional capabilities funnel a given profile
+    is in. (Internal-only: see go/chrome-taiyaki-metrics-dd for more info)
+
+    Can be recorded by profiles on some key events like profile load or attempt
+    to trigger a choice screen.
+  </summary>
+</histogram>
+
+<!-- LINT.ThenChange(tools/metrics/histograms/metadata/puma/histograms.xml:PUMA.RegionalCapabilities.FunnelStage.Reported) -->
+
+<!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Triggering) -->
+
+<histogram name="RegionalCapabilities.FunnelStage.Triggering"
+    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>ljjlee@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records the condition state at choice screen triggering attempt, for whether
+    we are determining the profile to be eligible for a search engine choice
+    screen. This is recorded every time the dynamic eligibility state is being
+    checked, which might be as often as every page navigation on desktop, or app
+    warm open on iOS. If a profile was deemed ineligible at profile load time
+    (as recorded by the RegionalCapabilities.FunnelStage.Eligibility histogram),
+    this histogram will not be recorded.
+  </summary>
+</histogram>
+
+<!-- LINT.ThenChange(tools/metrics/histograms/metadata/puma/histograms.xml:PUMA.RegionalCapabilities.FunnelStage.Triggering) -->
+
 <histogram name="RegionalCapabilities.LoadedCountrySource"
-    enum="LoadedCapabilitiesCountrySource" expires_after="2025-12-28">
+    enum="LoadedCapabilitiesCountrySource" expires_after="2026-05-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -64,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.PersistedCountryMatching"
-    enum="CountryMatchingStatus" expires_after="2025-12-28">
+    enum="CountryMatchingStatus" expires_after="2026-05-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>

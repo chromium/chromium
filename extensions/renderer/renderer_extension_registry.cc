@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -61,19 +62,21 @@ bool RendererExtensionRegistry::Insert(
     return extensions_.Insert(extension);
   }
 
-  ExtensionsRendererClient* client = ExtensionsRendererClient::Get();
-
+// TODO(crbug.com/456547093): Determine if this can be enabled for ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
   // SW based extensions should always have an activation token, except for
   // incognito processes for a spanning mode extension. The CHECK() for all
   // other worker based extension is performed in
   // Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(). We can't CHECK() for
   // IsIncognitoProcess() == false here because this may be called on renderer
   // process initialization before the boolean for that has been set.
+  ExtensionsRendererClient* client = ExtensionsRendererClient::Get();
   bool is_incognito_spanning = client->IsIncognitoProcess() &&
                                IncognitoInfo::IsSpanningMode(extension.get());
   if (is_incognito_spanning) {
     CHECK(!base::Contains(worker_activation_tokens_, extension->id()));
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   return extensions_.Insert(extension);
 }
@@ -92,6 +95,14 @@ ExtensionId RendererExtensionRegistry::GetExtensionOrAppIDByURL(
 }
 
 const Extension* RendererExtensionRegistry::GetExtensionOrAppByURL(
+    const GURL& url,
+    bool include_guid) const {
+  base::AutoLock lock(lock_);
+  return extensions_.GetExtensionOrAppByURL(url, include_guid);
+}
+
+scoped_refptr<const Extension>
+RendererExtensionRegistry::GetRefCountedExtensionOrAppByURL(
     const GURL& url,
     bool include_guid) const {
   base::AutoLock lock(lock_);

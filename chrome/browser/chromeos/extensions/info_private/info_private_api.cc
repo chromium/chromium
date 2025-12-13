@@ -12,16 +12,19 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "build/config/cuttlefish/buildflags.h"
+#include "build/config/squid/buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
@@ -51,194 +54,211 @@ using ash::NetworkHandler;
 namespace {
 
 // Property not found error message.
-const char kPropertyNotFound[] = "Property '*' does not exist.";
+constexpr std::string_view kPropertyNotFound = "Property '*' does not exist.";
 
 // Key which corresponds to the HWID setting.
-const char kPropertyHWID[] = "hwid";
+constexpr std::string_view kPropertyHWID = "hwid";
 
 // Key which corresponds to the customization ID setting.
-const char kPropertyCustomizationID[] = "customizationId";
+constexpr std::string_view kPropertyCustomizationID = "customizationId";
 
 // Key which corresponds to the oem_device_requisition setting.
-const char kPropertyDeviceRequisition[] = "deviceRequisition";
+constexpr std::string_view kPropertyDeviceRequisition = "deviceRequisition";
 
 // Key which corresponds to the isMeetDevice property in JS.
-const char kPropertyMeetDevice[] = "isMeetDevice";
+constexpr std::string_view kPropertyMeetDevice = "isMeetDevice";
 
 // Key which corresponds to the isCuttlefishDevice property in JS.
-const char kPropertyCuttlefishDevice[] = "isCuttlefishDevice";
+constexpr std::string_view kPropertyCuttlefishDevice = "isCuttlefishDevice";
+
+// Key which corresponds to the isSquidDevice property in JS.
+constexpr std::string_view kPropertySquidDevice = "isSquidDevice";
 
 // Key which corresponds to the home provider property.
-const char kPropertyHomeProvider[] = "homeProvider";
+constexpr std::string_view kPropertyHomeProvider = "homeProvider";
 
 // Key which corresponds to the initial_locale property.
-const char kPropertyInitialLocale[] = "initialLocale";
+constexpr std::string_view kPropertyInitialLocale = "initialLocale";
 
 // Key which corresponds to the board property in JS.
-const char kPropertyBoard[] = "board";
+constexpr std::string_view kPropertyBoard = "board";
 
 // Key which corresponds to the isOwner property in JS.
-const char kPropertyOwner[] = "isOwner";
+constexpr std::string_view kPropertyOwner = "isOwner";
 
 // Key which corresponds to the clientId property in JS.
-const char kPropertyClientId[] = "clientId";
+constexpr std::string_view kPropertyClientId = "clientId";
 
 // Key which corresponds to the timezone property in JS.
-const char kPropertySupportedTimezones[] = "supportedTimezones";
+constexpr std::string_view kPropertySupportedTimezones = "supportedTimezones";
 
 // Key which corresponds to the large cursor A11Y property in JS.
-const char kPropertyLargeCursorEnabled[] = "a11yLargeCursorEnabled";
+constexpr std::string_view kPropertyLargeCursorEnabled =
+    "a11yLargeCursorEnabled";
 
 // Key which corresponds to the sticky keys A11Y property in JS.
-const char kPropertyStickyKeysEnabled[] = "a11yStickyKeysEnabled";
+constexpr std::string_view kPropertyStickyKeysEnabled = "a11yStickyKeysEnabled";
 
 // Key which corresponds to the spoken feedback A11Y property in JS.
-const char kPropertySpokenFeedbackEnabled[] = "a11ySpokenFeedbackEnabled";
+constexpr std::string_view kPropertySpokenFeedbackEnabled =
+    "a11ySpokenFeedbackEnabled";
 
 // Key which corresponds to the high contrast mode A11Y property in JS.
-const char kPropertyHighContrastEnabled[] = "a11yHighContrastEnabled";
+constexpr std::string_view kPropertyHighContrastEnabled =
+    "a11yHighContrastEnabled";
 
 // Key which corresponds to the screen magnifier A11Y property in JS.
-const char kPropertyScreenMagnifierEnabled[] = "a11yScreenMagnifierEnabled";
+constexpr std::string_view kPropertyScreenMagnifierEnabled =
+    "a11yScreenMagnifierEnabled";
 
 // Key which corresponds to the auto click A11Y property in JS.
-const char kPropertyAutoclickEnabled[] = "a11yAutoClickEnabled";
+constexpr std::string_view kPropertyAutoclickEnabled = "a11yAutoClickEnabled";
 
 // Key which corresponds to the auto click A11Y property in JS.
-const char kPropertyVirtualKeyboardEnabled[] = "a11yVirtualKeyboardEnabled";
+constexpr std::string_view kPropertyVirtualKeyboardEnabled =
+    "a11yVirtualKeyboardEnabled";
 
 // Key which corresponds to the caret highlight A11Y property in JS.
-const char kPropertyCaretHighlightEnabled[] = "a11yCaretHighlightEnabled";
+constexpr std::string_view kPropertyCaretHighlightEnabled =
+    "a11yCaretHighlightEnabled";
 
 // Key which corresponds to the cursor highlight A11Y property in JS.
-const char kPropertyCursorHighlightEnabled[] = "a11yCursorHighlightEnabled";
+constexpr std::string_view kPropertyCursorHighlightEnabled =
+    "a11yCursorHighlightEnabled";
 
 // Key which corresponds to the focus highlight A11Y property in JS.
-const char kPropertyFocusHighlightEnabled[] = "a11yFocusHighlightEnabled";
+constexpr std::string_view kPropertyFocusHighlightEnabled =
+    "a11yFocusHighlightEnabled";
 
 // Key which corresponds to the select-to-speak A11Y property in JS.
-const char kPropertySelectToSpeakEnabled[] = "a11ySelectToSpeakEnabled";
+constexpr std::string_view kPropertySelectToSpeakEnabled =
+    "a11ySelectToSpeakEnabled";
 
 // Key which corresponds to the Switch Access A11Y property in JS.
-const char kPropertySwitchAccessEnabled[] = "a11ySwitchAccessEnabled";
+constexpr std::string_view kPropertySwitchAccessEnabled =
+    "a11ySwitchAccessEnabled";
 
 // Key which corresponds to the cursor color A11Y property in JS.
-const char kPropertyCursorColorEnabled[] = "a11yCursorColorEnabled";
+constexpr std::string_view kPropertyCursorColorEnabled =
+    "a11yCursorColorEnabled";
 
 // Key which corresponds to the docked magnifier property in JS.
-const char kPropertyDockedMagnifierEnabled[] = "a11yDockedMagnifierEnabled";
+constexpr std::string_view kPropertyDockedMagnifierEnabled =
+    "a11yDockedMagnifierEnabled";
 
 // Key which corresponds to the send-function-keys property in JS.
-const char kPropertySendFunctionsKeys[] = "sendFunctionKeys";
+constexpr std::string_view kPropertySendFunctionsKeys = "sendFunctionKeys";
 
 // Key which corresponds to the sessionType property in JS.
-const char kPropertySessionType[] = "sessionType";
+constexpr std::string_view kPropertySessionType = "sessionType";
 
 // Key which corresponds to the timezone property in JS.
-const char kPropertyTimezone[] = "timezone";
+constexpr std::string_view kPropertyTimezone = "timezone";
 
 // Key which corresponds to the "kiosk" value of the SessionType enum in JS.
-const char kSessionTypeKiosk[] = "kiosk";
+constexpr std::string_view kSessionTypeKiosk = "kiosk";
 
 // Key which corresponds to the "public session" value of the SessionType enum
 // in JS.
-const char kSessionTypePublicSession[] = "public session";
+constexpr std::string_view kSessionTypePublicSession = "public session";
 
 // Key which corresponds to the "normal" value of the SessionType enum in JS.
-const char kSessionTypeNormal[] = "normal";
+constexpr std::string_view kSessionTypeNormal = "normal";
 
 // Key which corresponds to the playStoreStatus property in JS.
-const char kPropertyPlayStoreStatus[] = "playStoreStatus";
+constexpr std::string_view kPropertyPlayStoreStatus = "playStoreStatus";
 
 // Key which corresponds to the "not available" value of the PlayStoreStatus
 // enum in JS.
-const char kPlayStoreStatusNotAvailable[] = "not available";
+constexpr std::string_view kPlayStoreStatusNotAvailable = "not available";
 
 // Key which corresponds to the "available" value of the PlayStoreStatus enum in
 // JS.
-const char kPlayStoreStatusAvailable[] = "available";
+constexpr std::string_view kPlayStoreStatusAvailable = "available";
 
 // Key which corresponds to the "enabled" value of the PlayStoreStatus enum in
 // JS.
-const char kPlayStoreStatusEnabled[] = "enabled";
+constexpr std::string_view kPlayStoreStatusEnabled = "enabled";
 
 // Key which corresponds to the managedDeviceStatus property in JS.
-const char kPropertyManagedDeviceStatus[] = "managedDeviceStatus";
+constexpr std::string_view kPropertyManagedDeviceStatus = "managedDeviceStatus";
 
 // Value to which managedDeviceStatus property is set for unmanaged devices.
-const char kManagedDeviceStatusNotManaged[] = "not managed";
+constexpr std::string_view kManagedDeviceStatusNotManaged = "not managed";
 
 // Value to which managedDeviceStatus property is set for managed devices.
-const char kManagedDeviceStatusManaged[] = "managed";
+constexpr std::string_view kManagedDeviceStatusManaged = "managed";
 
 // Key which corresponds to the deviceType property in JS.
-const char kPropertyDeviceType[] = "deviceType";
+constexpr std::string_view kPropertyDeviceType = "deviceType";
 
 // Value to which deviceType property is set for Chromebase.
-const char kDeviceTypeChromebase[] = "chromebase";
+constexpr std::string_view kDeviceTypeChromebase = "chromebase";
 
 // Value to which deviceType property is set for Chromebit.
-const char kDeviceTypeChromebit[] = "chromebit";
+constexpr std::string_view kDeviceTypeChromebit = "chromebit";
 
 // Value to which deviceType property is set for Chromebook.
-const char kDeviceTypeChromebook[] = "chromebook";
+constexpr std::string_view kDeviceTypeChromebook = "chromebook";
 
 // Value to which deviceType property is set for Chromebox.
-const char kDeviceTypeChromebox[] = "chromebox";
+constexpr std::string_view kDeviceTypeChromebox = "chromebox";
 
 // Value to which deviceType property is set when the specific type is unknown.
-const char kDeviceTypeChromedevice[] = "chromedevice";
+constexpr std::string_view kDeviceTypeChromedevice = "chromedevice";
 
 // Key which corresponds to the stylusStatus property in JS.
-const char kPropertyStylusStatus[] = "stylusStatus";
+constexpr std::string_view kPropertyStylusStatus = "stylusStatus";
 
 // Value to which stylusStatus property is set when the device does not support
 // stylus input.
-const char kStylusStatusUnsupported[] = "unsupported";
+constexpr std::string_view kStylusStatusUnsupported = "unsupported";
 
 // Value to which stylusStatus property is set when the device supports stylus
 // input, but no stylus has been seen before.
-const char kStylusStatusSupported[] = "supported";
+constexpr std::string_view kStylusStatusSupported = "supported";
 
 // Value to which stylusStatus property is set when the device has a built-in
 // stylus or a stylus has been seen before.
-const char kStylusStatusSeen[] = "seen";
+constexpr std::string_view kStylusStatusSeen = "seen";
 
 // Key which corresponds to the assistantStatus property in JS.
-const char kPropertyAssistantStatus[] = "assistantStatus";
+constexpr std::string_view kPropertyAssistantStatus = "assistantStatus";
 
 // Value to which assistantStatus property is set when the device supports
 // Assistant.
-const char kAssistantStatusSupported[] = "supported";
+constexpr std::string_view kAssistantStatusSupported = "supported";
 
-const struct {
-  const char* api_name;
-  const char* preference_name;
-} kPreferencesMap[] = {
-    {kPropertyLargeCursorEnabled, ash::prefs::kAccessibilityLargeCursorEnabled},
-    {kPropertyStickyKeysEnabled, ash::prefs::kAccessibilityStickyKeysEnabled},
-    {kPropertySpokenFeedbackEnabled,
-     ash::prefs::kAccessibilitySpokenFeedbackEnabled},
-    {kPropertyHighContrastEnabled,
-     ash::prefs::kAccessibilityHighContrastEnabled},
-    {kPropertyScreenMagnifierEnabled,
-     ash::prefs::kAccessibilityScreenMagnifierEnabled},
-    {kPropertyAutoclickEnabled, ash::prefs::kAccessibilityAutoclickEnabled},
-    {kPropertyVirtualKeyboardEnabled,
-     ash::prefs::kAccessibilityVirtualKeyboardEnabled},
-    {kPropertyCaretHighlightEnabled,
-     ash::prefs::kAccessibilityCaretHighlightEnabled},
-    {kPropertyCursorHighlightEnabled,
-     ash::prefs::kAccessibilityCursorHighlightEnabled},
-    {kPropertyFocusHighlightEnabled,
-     ash::prefs::kAccessibilityFocusHighlightEnabled},
-    {kPropertySelectToSpeakEnabled,
-     ash::prefs::kAccessibilitySelectToSpeakEnabled},
-    {kPropertySwitchAccessEnabled,
-     ash::prefs::kAccessibilitySwitchAccessEnabled},
-    {kPropertyCursorColorEnabled, ash::prefs::kAccessibilityCursorColorEnabled},
-    {kPropertyDockedMagnifierEnabled, ash::prefs::kDockedMagnifierEnabled},
-    {kPropertySendFunctionsKeys, ash::prefs::kSendFunctionKeys}};
+constexpr auto kPreferencesMap =
+    base::MakeFixedFlatMap<std::string_view, std::string_view>(
+        {{kPropertyLargeCursorEnabled,
+          ash::prefs::kAccessibilityLargeCursorEnabled},
+         {kPropertyStickyKeysEnabled,
+          ash::prefs::kAccessibilityStickyKeysEnabled},
+         {kPropertySpokenFeedbackEnabled,
+          ash::prefs::kAccessibilitySpokenFeedbackEnabled},
+         {kPropertyHighContrastEnabled,
+          ash::prefs::kAccessibilityHighContrastEnabled},
+         {kPropertyScreenMagnifierEnabled,
+          ash::prefs::kAccessibilityScreenMagnifierEnabled},
+         {kPropertyAutoclickEnabled,
+          ash::prefs::kAccessibilityAutoclickEnabled},
+         {kPropertyVirtualKeyboardEnabled,
+          ash::prefs::kAccessibilityVirtualKeyboardEnabled},
+         {kPropertyCaretHighlightEnabled,
+          ash::prefs::kAccessibilityCaretHighlightEnabled},
+         {kPropertyCursorHighlightEnabled,
+          ash::prefs::kAccessibilityCursorHighlightEnabled},
+         {kPropertyFocusHighlightEnabled,
+          ash::prefs::kAccessibilityFocusHighlightEnabled},
+         {kPropertySelectToSpeakEnabled,
+          ash::prefs::kAccessibilitySelectToSpeakEnabled},
+         {kPropertySwitchAccessEnabled,
+          ash::prefs::kAccessibilitySwitchAccessEnabled},
+         {kPropertyCursorColorEnabled,
+          ash::prefs::kAccessibilityCursorColorEnabled},
+         {kPropertyDockedMagnifierEnabled, ash::prefs::kDockedMagnifierEnabled},
+         {kPropertySendFunctionsKeys, ash::prefs::kSendFunctionKeys}});
 
 bool IsEnterpriseKiosk() {
   if (!IsRunningInForcedAppMode()) {
@@ -256,14 +276,10 @@ std::string GetClientId() {
              : std::string();
 }
 
-const char* GetBoolPrefNameForApiProperty(const char* api_name) {
-  for (const auto& item : kPreferencesMap) {
-    if (UNSAFE_TODO(strcmp(item.api_name, api_name)) == 0) {
-      return item.preference_name;
-    }
-  }
-
-  return nullptr;
+std::optional<std::string_view> GetBoolPrefNameForApiProperty(
+    std::string_view api_name) {
+  auto it = kPreferencesMap.find(api_name);
+  return it != kPreferencesMap.end() ? std::optional(it->second) : std::nullopt;
 }
 
 std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
@@ -305,6 +321,11 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
 #else
     return std::make_unique<base::Value>(false);
 #endif
+  }
+
+  if (property_name == kPropertySquidDevice) {
+    return std::make_unique<base::Value>(
+        policy::EnrollmentRequisitionManager::IsSquidDevice());
   }
 
   if (property_name == kPropertyHomeProvider) {
@@ -419,11 +440,11 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
         base::Value(ash::system::GetTimezoneList()));
   }
 
-  const char* pref_name = GetBoolPrefNameForApiProperty(property_name.c_str());
-  if (pref_name) {
+  if (std::optional<std::string_view> pref_name =
+          GetBoolPrefNameForApiProperty(property_name)) {
     return std::make_unique<base::Value>(
         ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
-            pref_name));
+            *pref_name));
   }
 
   DLOG(ERROR) << "Unknown property request: " << property_name;
@@ -458,11 +479,12 @@ void SetTimezone(const std::string& value) {
 }
 
 bool SetBool(const std::string& property_name, bool value) {
-  const char* pref_name = GetBoolPrefNameForApiProperty(property_name.c_str());
+  std::optional<std::string_view> pref_name =
+      GetBoolPrefNameForApiProperty(property_name);
   if (!pref_name) {
     return false;
   }
-  ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetBoolean(pref_name,
+  ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetBoolean(*pref_name,
                                                                   value);
   return true;
 }
@@ -512,7 +534,7 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
   bool param_value = args()[1].GetBool();
 
   if (!SetBool(param_name_, param_value)) {
-    return RespondNow(Error(kPropertyNotFound, param_name_));
+    return RespondNow(Error(std::string(kPropertyNotFound), param_name_));
   }
   return RespondNow(NoArguments());
 }
@@ -525,8 +547,7 @@ ChromeosInfoPrivateIsTabletModeEnabledFunction::
 
 ExtensionFunction::ResponseAction
 ChromeosInfoPrivateIsTabletModeEnabledFunction::Run() {
-  return RespondNow(
-      WithArguments(display::Screen::GetScreen()->InTabletMode()));
+  return RespondNow(WithArguments(display::Screen::Get()->InTabletMode()));
 }
 
 }  // namespace extensions

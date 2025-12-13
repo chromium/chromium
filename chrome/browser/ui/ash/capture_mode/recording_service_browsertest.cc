@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordWindowMultiDisplay) {
 
   // Moves the browser window to the display at the given |screen_point|.
   auto move_browser_to_display_at_point = [&](const gfx::Point& screen_point) {
-    auto* screen = display::Screen::GetScreen();
+    auto* screen = display::Screen::Get();
     aura::Window* new_root =
         screen->GetWindowAtScreenPoint(screen_point)->GetRootWindow();
     auto* browser_window = GetBrowserWindow();

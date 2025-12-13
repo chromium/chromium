@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">Kérjük, rövidítse le a szöveget legfeljebb <ph name="MAX_CHARACTERS" /> karakterre (jelenleg <ph name="CURRENT_LENGTH" /> karaktert használ).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hét, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. szám</translation>
+<translation id="2500270406326775625">Adat-URL</translation>
 <translation id="2507943997699731163">Kérjük, töltse ki ezt a mezőt.</translation>
 <translation id="2613802280814924224">Kérjük, érvényes értéket adjon meg. A legközelebbi érvényes érték <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Küldés</translation>

@@ -5,15 +5,13 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/with_feature_override.h"
-#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ui/base/device_form_factor.h"
@@ -71,9 +69,6 @@ class PasswordViewControllerTest : public LegacyChromeTableViewControllerTest,
 // 3. "No password items present" message is removed once there are password
 // items to be shown in the view.
 TEST_P(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
-
   PasswordViewController* password_view_controller =
       base::apple::ObjCCastStrict<PasswordViewController>(controller());
 
@@ -141,8 +136,6 @@ TEST_P(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
   // Add an password data item.
   ManualFillCredentialItem* password_item =
       [[ManualFillCredentialItem alloc] initWithCredential:credential
-                                 isConnectedToPreviousItem:NO
-                                     isConnectedToNextItem:NO
                                            contentInjector:nil
                                                menuActions:@[]
                                                  cellIndex:0
@@ -181,9 +174,6 @@ TEST_P(PasswordViewControllerTest, PlusAddressInCredentialSection) {
     return;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
-
   PasswordViewController* password_view_controller =
       base::apple::ObjCCastStrict<PasswordViewController>(controller());
 
@@ -212,8 +202,6 @@ TEST_P(PasswordViewControllerTest, PlusAddressInCredentialSection) {
                                   isBackupCredential:NO];
   ManualFillCredentialItem* password_item =
       [[ManualFillCredentialItem alloc] initWithCredential:credential
-                                 isConnectedToPreviousItem:NO
-                                     isConnectedToNextItem:NO
                                            contentInjector:nil
                                                menuActions:@[]
                                                  cellIndex:0

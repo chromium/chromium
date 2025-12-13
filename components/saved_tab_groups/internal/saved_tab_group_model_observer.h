@@ -76,8 +76,8 @@ class SavedTabGroupModelObserver {
       const std::optional<base::Uuid>& tab_guid) {}
 
   // Called when SavedTabGroupModel::LoadStoredEntries has finished loading.
-  // This is currently used to notify the SavedTabGroupKeyedService to link any
-  // tabs restore through session restore to the corresponding SavedTabGroup
+  // This is used to notify the TabGroupSyncService to link any
+  // tabs restored via session restore to the corresponding SavedTabGroup
   // metadata in the SavedTabGroupModel.
   virtual void SavedTabGroupModelLoaded() {}
 

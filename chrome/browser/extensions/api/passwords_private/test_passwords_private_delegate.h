@@ -13,6 +13,8 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/passwords_private.h"
+#include "components/password_manager/core/browser/ui/passwords_provider.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 namespace extensions {
 // A test PasswordsPrivateDelegate implementation which uses mock data.
@@ -24,6 +26,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   TestPasswordsPrivateDelegate();
 
   // PasswordsPrivateDelegate implementation.
+  password_manager::SavedPasswordsPresenter* GetSavedPasswordsPresenter()
+      override;
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
   CredentialsGroups GetCredentialGroups() override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
@@ -44,6 +48,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void RemoveCredential(
       int id,
       api::passwords_private::PasswordStoreSet from_store) override;
+  void RemoveBackupPassword(int id) override;
   void RemovePasswordException(int id) override;
   // Simplified version of undo logic, only use for testing.
   void UndoRemoveSavedPasswordOrException() override;
@@ -54,6 +59,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void RequestCredentialsDetails(const std::vector<int>& ids,
                                  UiEntriesCallback callback,
                                  content::WebContents* web_contents) override;
+  void CopyPlaintextBackupPassword(
+      int id,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> callback) override;
   void MovePasswordsToAccount(const std::vector<int>& ids,
                               content::WebContents* web_contents) override;
   void FetchFamilyMembers(FetchFamilyResultsCallback callback) override;
@@ -115,7 +124,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   void SetProfile(Profile* profile);
   void SetAccountStorageEnabled(bool enabled);
+  void SetShouldShowAccountStorageSettingToggle(bool enabled);
   void AddCompromisedCredential(int id);
+  void SetSavedPasswordsPresenter(
+      std::unique_ptr<password_manager::SavedPasswordsPresenter> presenter);
 
   void ClearSavedPasswordsList() { current_entries_.clear(); }
   void ResetPlaintextPassword() { plaintext_password_.reset(); }
@@ -162,6 +174,12 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool get_delete_all_password_manager_data_called() const {
     return delete_all_password_manager_data_called_;
   }
+
+  bool copy_plaintext_backup_password() const {
+    return copy_plaintext_backup_password_;
+  }
+
+  bool remove_backup_password() const { return remove_backup_password_; }
 
  protected:
   ~TestPasswordsPrivateDelegate() override;
@@ -232,6 +250,15 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // Used to track whether `DeleteAllPasswordManagerData` was called.
   bool delete_all_password_manager_data_called_ = false;
+
+  // Used to track whether `CopyPlaintextBackupPassword` was called.
+  bool copy_plaintext_backup_password_ = false;
+
+  // Used to track whether `RemoveBackupPassword` was called.
+  bool remove_backup_password_ = false;
+
+  std::unique_ptr<password_manager::SavedPasswordsPresenter>
+      saved_passwords_presenter_;
 
   base::WeakPtrFactory<TestPasswordsPrivateDelegate> weak_ptr_factory_{this};
 };

@@ -244,8 +244,18 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
   }
 
   int SetTos(net::DiffServCodePoint dscp, net::EcnCodePoint ecn) override {
-    NOTIMPLEMENTED();
-    return net::ERR_NOT_IMPLEMENTED;
+    set_tos_call_count_++;
+    if (set_tos_result_ != net::OK) {
+      return set_tos_result_;
+    }
+
+    if (dscp != net::DSCP_NO_CHANGE) {
+      last_sent_dscp_ = dscp;
+    }
+    if (ecn != net::ECN_NO_CHANGE) {
+      last_sent_ecn_ = ecn;
+    }
+    return net::OK;
   }
 
   void DetachFromThread() override { NOTIMPLEMENTED(); }
@@ -258,8 +268,18 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
     }
   }
 
+  net::EcnCodePoint GetLastSentEcn() const { return last_sent_ecn_; }
+  net::DiffServCodePoint GetLastSentDscp() const { return last_sent_dscp_; }
+
+  void SetSetTosResult(int result) { set_tos_result_ = result; }
+  int set_tos_call_count() const { return set_tos_call_count_; }
+
  private:
+  int set_tos_result_ = net::OK;
+  int set_tos_call_count_ = 0;
   bool is_recv_ecn_enabled_ = false;
+  net::DiffServCodePoint last_sent_dscp_ = net::DSCP_DEFAULT;
+  net::EcnCodePoint last_sent_ecn_ = net::ECN_DEFAULT;
   net::IPEndPoint address_;
   raw_ptr<base::circular_deque<UDPPacket>> sent_packets_;
   base::circular_deque<UDPPacket> incoming_packets_;
@@ -537,6 +557,96 @@ TEST_F(P2PSocketUdpTest, SendAfterStunResponseDifferentHost) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(fake_client_->connection_error());
+}
+
+TEST_F(P2PSocketUdpTest, SendPacketWithCustomDscpOrEcn) {
+  // Open for sends to `dest1_`.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+
+  // We'll send four packets.
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(4);
+
+  // Send with defaults.
+  webrtc::AsyncSocketPacketOptions pkt1_options;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt1_options, 0));
+  ASSERT_EQ(1U, sent_packets_.size());
+  EXPECT_EQ(net::ECN_DEFAULT, socket_->GetLastSentEcn());
+  EXPECT_EQ(net::DSCP_DEFAULT, socket_->GetLastSentDscp());
+
+  // Send with ECT(1).
+  webrtc::AsyncSocketPacketOptions pkt2_options;
+  pkt2_options.ect_1 = true;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt2_options, 0));
+  ASSERT_EQ(2U, sent_packets_.size());
+  EXPECT_EQ(net::ECN_ECT1, socket_->GetLastSentEcn());
+  EXPECT_EQ(net::DSCP_DEFAULT, socket_->GetLastSentDscp());
+
+  // Send with DSCP::CS1 and ECT(1).
+  webrtc::AsyncSocketPacketOptions pkt3_options;
+  pkt3_options.ect_1 = true;
+  pkt3_options.dscp = webrtc::DSCP_CS1;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt3_options, 0));
+  ASSERT_EQ(3U, sent_packets_.size());
+  EXPECT_EQ(net::ECN_ECT1, socket_->GetLastSentEcn());
+  EXPECT_EQ(net::DSCP_CS1, socket_->GetLastSentDscp());
+
+  // Send with only DSCP::CS4.
+  webrtc::AsyncSocketPacketOptions pkt4_options;
+  pkt4_options.dscp = webrtc::DSCP_CS4;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt4_options, 0));
+  ASSERT_EQ(4U, sent_packets_.size());
+  EXPECT_EQ(net::ECN_NOT_ECT, socket_->GetLastSentEcn());
+  EXPECT_EQ(net::DSCP_CS4, socket_->GetLastSentDscp());
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(P2PSocketUdpTest, SetTosBackoff) {
+  // Open for sends to `dest1_`.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(4);
+
+  // Fail SetTos and check that we back off.
+  socket_->SetSetTosResult(net::ERR_FAILED);
+  webrtc::AsyncSocketPacketOptions pkt1_options;
+  pkt1_options.dscp = webrtc::DSCP_CS1;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt1_options, 0));
+  EXPECT_EQ(1, socket_->set_tos_call_count());
+
+  // The second send should not trigger a SetTos call.
+  webrtc::AsyncSocketPacketOptions pkt2_options;
+  pkt2_options.dscp = webrtc::DSCP_CS2;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt2_options, 0));
+  EXPECT_EQ(1, socket_->set_tos_call_count());
+
+  // After the backoff timeout we should try setting TOS again.
+  // The backoff policy has an initial delay of 100ms.
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  // Now, make SetTos succeed and check that we don't back off anymore.
+  socket_->SetSetTosResult(net::OK);
+  webrtc::AsyncSocketPacketOptions pkt4_options;
+  pkt4_options.dscp = webrtc::DSCP_CS4;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt4_options, 0));
+  EXPECT_EQ(2, socket_->set_tos_call_count());
+
+  // The backoff has been reset, so this should trigger a SetTos call.
+  webrtc::AsyncSocketPacketOptions pkt5_options;
+  pkt5_options.dscp = webrtc::DSCP_CS5;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt5_options, 0));
+  EXPECT_EQ(3, socket_->set_tos_call_count());
+
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(P2PSocketUdpTest, BatchesSendAfterSendingAllowed) {
@@ -1034,16 +1144,16 @@ class P2PSocketUdpWithInterceptorTest : public P2PSocketUdpTest {
   };
 
   void SetNetworkState(NetworkState state) {
-    std::unique_ptr<NetworkConditions> conditions(new NetworkConditions(
-        state.offline, state.latency.InMillisecondsF(), 0.0, 0.0,
-        state.packet_loss, state.packet_queue_length, false));
-    ThrottlingController::SetConditions(*devtools_token_,
-                                        std::move(conditions));
+    ThrottlingController::SetConditions(
+        *devtools_token_,
+        {{{},
+          NetworkConditions{state.offline, state.latency.InMillisecondsF(), 0.0,
+                            0.0, state.packet_loss, state.packet_queue_length,
+                            false, std::nullopt}}});
   }
 
   void RemoveThrottling() {
-    ThrottlingController::SetConditions(*devtools_token_,
-                                        std::unique_ptr<NetworkConditions>());
+    ThrottlingController::SetConditions(*devtools_token_, {});
   }
 
   void AdvanceClock(base::TimeDelta delta) {

@@ -160,11 +160,7 @@ WebAppManifestSectionTable::GetWebAppManifest(const std::string& web_app) {
     section.id = s.ColumnString(index++);
     section.min_version = s.ColumnInt64(index++);
 
-    std::vector<uint8_t> fingerprints;
-    if (!s.ColumnBlobAsVector(index, &fingerprints)) {
-      manifest.clear();
-      break;
-    }
+    std::vector<uint8_t> fingerprints = s.ColumnBlobAsVector(index);
 
     if (!DeserializeFingerPrints(fingerprints, section.fingerprints)) {
       manifest.clear();

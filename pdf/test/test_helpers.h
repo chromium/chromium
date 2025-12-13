@@ -17,6 +17,7 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "v8/include/v8-forward.h"
 
+class SkBitmap;
 class SkImage;
 class SkSurface;
 
@@ -59,13 +60,17 @@ base::FilePath GetReferenceFilePath(
 // Matches `actual_image` against the PNG at the file path `expected_png_file`.
 // The path must be relative to //pdf/test/data.
 testing::AssertionResult MatchesPngFile(
-    const SkImage* actual_image,
+    const SkImage& actual_image,
     const base::FilePath& expected_png_file);
 
 // Same as MatchesPngFile() above, but with a fuzzy pixel comparator.
 testing::AssertionResult FuzzyMatchesPngFile(
-    const SkImage* actual_image,
+    const SkImage& actual_image,
     const base::FilePath& expected_png_file);
+
+// Returns true if all pixels are blank.
+bool IsBitmapBlank(const SkBitmap& bitmap);
+bool IsImageBlank(const SkImage& image);
 
 // Takes `pdf_data` and loads it using PDFium. Then renders the page at
 // `page_index` to a bitmap of `size_in_points` and checks if it matches

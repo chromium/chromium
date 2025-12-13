@@ -52,9 +52,9 @@ class PipeToEngine::PipeToReadRequest final : public ReadRequest {
         ExecutionContext::From(script_state)->GetAgent()->event_loop();
     v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
     event_loop->EnqueueMicrotask(
-        WTF::BindOnce(&PipeToEngine::ReadRequestChunkStepsBody,
-                      WrapPersistent(instance_.Get()),
-                      WrapPersistent(script_state), std::move(value)));
+        BindOnce(&PipeToEngine::ReadRequestChunkStepsBody,
+                 WrapPersistent(instance_.Get()), WrapPersistent(script_state),
+                 std::move(value)));
   }
 
   void CloseSteps(ScriptState* script_state) const override {

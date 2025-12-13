@@ -9,18 +9,18 @@
 #include <stdint.h>
 
 #include <compare>
-#include <map>
 #include <memory>
 
+#include "base/byte_count.h"
+#include "base/containers/variant_map.h"
 #include "base/functional/callback_forward.h"
+#include "components/performance_manager/public/resource_attribution/process_context.h"
 
 namespace performance_manager {
 class Graph;
 }
 
 namespace resource_attribution {
-
-class ProcessContext;
 
 // A shim that Resource Attribution queries use to request memory measurements.
 // Public so that users of the API can inject a test override by passing a
@@ -29,17 +29,24 @@ class MemoryMeasurementDelegate {
  public:
   class Factory;
 
-  // The minimal results returned for a process memory measurement.
+  // The minimal results returned for a process memory measurement. The default
+  // implementation fills this in from a memory_instrumentation.mojom.OSMemDump.
+  // See the comments in memory_instrumentation.mojom for more details.
+  //
   // MemoryMeasurementProvider will wrap this in a full MemorySummaryResult.
   struct MemorySummaryMeasurement {
-    uint64_t resident_set_size_kb = 0;
-    uint64_t private_footprint_kb = 0;
+    base::ByteCount resident_set_size;
+    base::ByteCount private_footprint;
+
+    // Only populated by default on Linux, ChromeOS and Android.
+    base::ByteCount private_swap;
 
     // Division operator required by SplitResourceAmongFramesAndWorkers().
     constexpr MemorySummaryMeasurement operator/(size_t divisor) {
       return MemorySummaryMeasurement{
-          .resident_set_size_kb = resident_set_size_kb / divisor,
-          .private_footprint_kb = private_footprint_kb / divisor};
+          .resident_set_size = resident_set_size / divisor,
+          .private_footprint = private_footprint / divisor,
+          .private_swap = private_swap / divisor};
     }
 
     friend constexpr auto operator<=>(const MemorySummaryMeasurement&,
@@ -49,7 +56,10 @@ class MemoryMeasurementDelegate {
                                      const MemorySummaryMeasurement&) = default;
   };
 
-  using MemorySummaryMap = std::map<ProcessContext, MemorySummaryMeasurement>;
+  // TODO(crbug.com/433462519): Replace this with a concrete map type after
+  // using VariantMap to measure the performance of various impls.
+  using MemorySummaryMap =
+      base::VariantMap<ProcessContext, MemorySummaryMeasurement>;
 
   // The given `factory` will be used to create a MemoryMeasurementDelegate to
   // measure ProcessNodes in `graph`. The factory object must outlive the graph.
@@ -67,6 +77,11 @@ class MemoryMeasurementDelegate {
   // with the results, or an empty map on error.
   virtual void RequestMemorySummary(
       base::OnceCallback<void(MemorySummaryMap)>) = 0;
+
+ protected:
+  // Allow implementations to use MemoryMeasurementDelegate's passkey to create
+  // MemorySummaryMaps.
+  static MemorySummaryMap CreateMemorySummaryMap();
 };
 
 class MemoryMeasurementDelegate::Factory {

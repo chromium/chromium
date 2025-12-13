@@ -69,6 +69,7 @@ bool PlatformCrashpadInitialization(
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
     const std::vector<std::string>& initial_arguments,
+    const std::vector<base::FilePath>& attachments,
     base::FilePath* database_path) {
   base::FilePath metrics_path;  // Only valid in the browser process.
 
@@ -149,7 +150,8 @@ bool PlatformCrashpadInitialization(
 
     initialized = GetCrashpadClient().StartHandler(
         exe_file, *database_path, metrics_path, url, process_annotations,
-        arguments, /*restartable=*/false, /*asynchronous_start=*/false);
+        arguments, /*restartable=*/false, /*asynchronous_start=*/false,
+        attachments);
 
     if (initialized) {
       // If we're the browser, push the pipe name into the environment so child

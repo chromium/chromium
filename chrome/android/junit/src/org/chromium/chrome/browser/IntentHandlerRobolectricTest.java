@@ -15,6 +15,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Browser;
 import android.view.Display;
@@ -428,15 +429,32 @@ public class IntentHandlerRobolectricTest {
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent = IntentHandler.createTrustedOpenNewTabIntent(context, true);
 
-        Assert.assertEquals(Intent.ACTION_VIEW, intent.getAction());
-        Assert.assertEquals(intent.getData(), Uri.parse(UrlConstants.NTP_URL));
-        Assert.assertTrue(intent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
-        Assert.assertTrue(IntentHandler.wasIntentSenderChrome(intent));
-        Assert.assertTrue(
-                intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
+        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        assertEquals(intent.getData(), Uri.parse(UrlConstants.NTP_URL));
+        assertTrue(intent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
+        assertTrue(IntentHandler.wasIntentSenderChrome(intent));
+        assertTrue(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
 
         intent = IntentHandler.createTrustedOpenNewTabIntent(context, false);
         assertFalse(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testCreateTrustedOpenNewWindowIntent() {
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent intent = IntentHandler.createTrustedOpenNewWindowIntent(context, true);
+
+        assertEquals(
+                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK,
+                intent.getFlags());
+        assertTrue(intent.getBooleanExtra(IntentHandler.EXTRA_PREFER_NEW, false));
+        assertTrue(IntentHandler.wasIntentSenderChrome(intent));
+        assertTrue(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
+
+        intent = IntentHandler.createTrustedOpenNewWindowIntent(context, false);
+        assertFalse(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, true));
     }
 
     /** Test that IntentHandler#shouldIgnoreIntent() returns false for Webapp launch intents. */
@@ -483,6 +501,8 @@ public class IntentHandlerRobolectricTest {
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent = IntentHandler.createTrustedOpenNewTabIntent(context, true);
         assertFalse(IntentHandler.shouldIgnoreIntent(intent, null));
+        intent = IntentHandler.createTrustedOpenNewWindowIntent(context, true);
+        assertFalse(IntentHandler.shouldIgnoreIntent(intent, null));
     }
 
     /** Test that IntentHandler#shouldIgnoreIntent() returns false for Incognito Custom Tab Intents. */
@@ -519,16 +539,20 @@ public class IntentHandlerRobolectricTest {
         intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
         intent.putExtra("key", true);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        assertEquals(intent, IntentHandler.rewriteFromHistoryIntent(intent));
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
-        Intent newIntent = IntentHandler.rewriteFromHistoryIntent(intent);
+        assertEquals(intent, IntentHandler.rewriteFromHistoryIntent(intent, null));
 
         Intent expected = new Intent(intent);
         expected.setAction(Intent.ACTION_MAIN);
         expected.removeExtra("key");
         expected.addCategory(Intent.CATEGORY_LAUNCHER);
         expected.setData(null);
+
+        Intent newIntent = IntentHandler.rewriteFromHistoryIntent(intent, new Bundle());
+        assertEquals(expected.toUri(0), newIntent.toUri(0));
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+        expected.addFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+        newIntent = IntentHandler.rewriteFromHistoryIntent(intent, null);
         assertEquals(expected.toUri(0), newIntent.toUri(0));
     }
 
@@ -621,22 +645,22 @@ public class IntentHandlerRobolectricTest {
                         null,
                         ActivityOptions.makeBasic().setLaunchDisplayId(extDisplayId).toBundle());
         Activity activity = controller.setup().get();
-        ShadowPowerManager mShadowPowerManagerAct =
+        ShadowPowerManager shadowPowerManagerAct =
                 Shadows.shadowOf((PowerManager) activity.getSystemService(Context.POWER_SERVICE));
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
         // Test with main screen on
         mShadowPowerManager.setIsInteractive(true);
-        mShadowPowerManagerAct.setIsInteractive(false);
+        shadowPowerManagerAct.setIsInteractive(false);
         Assert.assertTrue(IntentHandler.shouldIgnoreIntent(intent, activity));
-        mShadowPowerManagerAct.setIsInteractive(true);
+        shadowPowerManagerAct.setIsInteractive(true);
         Assert.assertFalse(IntentHandler.shouldIgnoreIntent(intent, activity));
         // Test with main screen off
         mShadowPowerManager.setIsInteractive(false);
-        mShadowPowerManagerAct.setIsInteractive(false);
+        shadowPowerManagerAct.setIsInteractive(false);
         Assert.assertTrue(IntentHandler.shouldIgnoreIntent(intent, activity));
-        mShadowPowerManagerAct.setIsInteractive(true);
+        shadowPowerManagerAct.setIsInteractive(true);
         Assert.assertFalse(IntentHandler.shouldIgnoreIntent(intent, activity));
     }
 

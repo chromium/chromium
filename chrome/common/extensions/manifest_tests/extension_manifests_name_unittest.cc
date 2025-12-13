@@ -6,7 +6,10 @@
 #include "base/test/values_test_util.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

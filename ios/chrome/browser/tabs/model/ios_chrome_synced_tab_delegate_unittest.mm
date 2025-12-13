@@ -145,8 +145,6 @@ class FakeSyncSessionsClient : public sync_sessions::SyncSessionsClient {
 
 TEST_F(IOSChromeSyncedTabDelegateTest,
        SyncOnlyTabsActiveAfterSigninForManagedAccount) {
-  base::test::ScopedFeatureList scoped_feature_list{kIdentityDiscAccountMenu};
-
   web::WebTaskEnvironment task_environment;
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
 
@@ -176,8 +174,7 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
     // it into the personal profile so that signin becomes possible.
     GetApplicationContext()
         ->GetAccountProfileMapper()
-        ->MoveManagedAccountToPersonalProfileForTesting(
-            GaiaId(identity.gaiaID));
+        ->MoveManagedAccountToPersonalProfileForTesting(identity.gaiaId);
   }
   authentication_service->SignIn(identity,
                                  signin_metrics::AccessPoint::kUnknown);

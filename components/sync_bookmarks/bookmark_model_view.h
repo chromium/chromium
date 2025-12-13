@@ -58,6 +58,15 @@ class BookmarkModelView {
   virtual const bookmarks::BookmarkNode* GetNodeByUuid(
       const base::Uuid& uuid) const = 0;
 
+  // De-duplicates bookmarks after the initial sync merge. This is relevant when
+  // sync is enabled for a profile that already contains local bookmarks. If the
+  // downloaded account data contains duplicates of these pre-existing local
+  // ones, this function removes the local copies so they don't appear twice in
+  // the bookmark model. This may be a no-op depending on the platform or the
+  // view's implementation (e.g. it is a no-op for
+  // BookmarkModelViewUsingLocalOrSyncableNodes).
+  virtual void MaybeRemoveUnderlyingModelDuplicatesUponInitialSync() = 0;
+
   // See bookmarks::BookmarkModel for documentation, as all functions below
   // mimic the same API.
   bool loaded() const;
@@ -130,6 +139,7 @@ class BookmarkModelViewUsingLocalOrSyncableNodes : public BookmarkModelView {
   const bookmarks::BookmarkNode* mobile_node() const override;
   void EnsurePermanentNodesExist() override;
   void RemoveAllSyncableNodes() override;
+  void MaybeRemoveUnderlyingModelDuplicatesUponInitialSync() override;
   const bookmarks::BookmarkNode* GetNodeByUuid(
       const base::Uuid& uuid) const override;
 };
@@ -148,6 +158,7 @@ class BookmarkModelViewUsingAccountNodes : public BookmarkModelView {
   const bookmarks::BookmarkNode* mobile_node() const override;
   void EnsurePermanentNodesExist() override;
   void RemoveAllSyncableNodes() override;
+  void MaybeRemoveUnderlyingModelDuplicatesUponInitialSync() override;
   const bookmarks::BookmarkNode* GetNodeByUuid(
       const base::Uuid& uuid) const override;
 };

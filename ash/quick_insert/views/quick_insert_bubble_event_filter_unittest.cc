@@ -5,9 +5,9 @@
 #include "ash/quick_insert/views/quick_insert_bubble_event_filter.h"
 
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/test/widget_test.h"
 
 namespace ash {
@@ -16,8 +16,9 @@ namespace {
 using QuickInsertBubbleEventFilterTest = AshTestBase;
 
 TEST_F(QuickInsertBubbleEventFilterTest, ClickingOnWidgetDoesNotCloseWidget) {
-  auto widget =
-      TestWidgetBuilder().SetBounds({10, 10, 100, 100}).BuildClientOwnsWidget();
+  auto widget = views::test::TestWidgetBuilder()
+                    .SetBounds({10, 10, 100, 100})
+                    .BuildClientOwnsWidget();
   QuickInsertBubbleEventFilter filter(widget.get());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -29,9 +30,10 @@ TEST_F(QuickInsertBubbleEventFilterTest, ClickingOnWidgetDoesNotCloseWidget) {
 
 TEST_F(QuickInsertBubbleEventFilterTest,
        ClickingOnChildWidgetDoesNotCloseWidget) {
-  auto widget =
-      TestWidgetBuilder().SetBounds({10, 10, 100, 100}).BuildClientOwnsWidget();
-  auto child = TestWidgetBuilder()
+  auto widget = views::test::TestWidgetBuilder()
+                    .SetBounds({10, 10, 100, 100})
+                    .BuildClientOwnsWidget();
+  auto child = views::test::TestWidgetBuilder()
                    .SetBounds({1000, 1000, 100, 100})
                    .SetParent(widget->GetNativeWindow())
                    .SetActivatable(false)
@@ -48,8 +50,9 @@ TEST_F(QuickInsertBubbleEventFilterTest,
 }
 
 TEST_F(QuickInsertBubbleEventFilterTest, ClickingOutsideWidgetClosesWidget) {
-  auto widget =
-      TestWidgetBuilder().SetBounds({10, 10, 100, 100}).BuildClientOwnsWidget();
+  auto widget = views::test::TestWidgetBuilder()
+                    .SetBounds({10, 10, 100, 100})
+                    .BuildClientOwnsWidget();
   QuickInsertBubbleEventFilter filter(widget.get());
 
   // Click above the top left corner.

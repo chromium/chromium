@@ -26,6 +26,9 @@
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/ime/ash/text_input_method.h"
 
+class ApplicationLocaleStorage;
+class PrefService;
+
 namespace ash {
 
 class ComponentExtensionIMEManager;
@@ -38,6 +41,8 @@ struct AssistiveWindow;
 }  // namespace ime
 
 namespace input_method {
+
+class InputMethodPersistence;
 
 // The implementation of InputMethodManager.
 class InputMethodManagerImpl : public InputMethodManager,
@@ -188,7 +193,12 @@ class InputMethodManagerImpl : public InputMethodManager,
   // Constructs an InputMethodManager instance. The client is responsible for
   // calling |SetUISessionState| in response to relevant changes in browser
   // state.
-  InputMethodManagerImpl(std::unique_ptr<InputMethodDelegate> delegate,
+  //
+  // `local_state` must be non-null, and must outlive `this`.
+  // `application_locale_storage` must be non-null, and must outlive `this`.
+  InputMethodManagerImpl(PrefService* local_state,
+                         ApplicationLocaleStorage* application_locale_manager,
+                         std::unique_ptr<InputMethodDelegate> delegate,
                          std::unique_ptr<ComponentExtensionIMEManagerDelegate>
                              component_extension_ime_manager_delegate,
                          bool enable_extension_loading,
@@ -292,7 +302,12 @@ class InputMethodManagerImpl : public InputMethodManager,
   // Request that the virtual keyboard be reloaded.
   void ReloadKeyboard();
 
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+
   std::unique_ptr<InputMethodDelegate> delegate_;
+
+  std::unique_ptr<InputMethodPersistence> persistence_;
 
   // A list of objects that monitor the manager.
   base::ObserverList<InputMethodManager::Observer>::Unchecked observers_;

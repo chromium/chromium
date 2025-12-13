@@ -16,7 +16,6 @@
 
 using testing::_;
 using testing::InSequence;
-using testing::Invoke;
 
 namespace notifications {
 namespace {
@@ -87,9 +86,9 @@ TEST_F(InitAwareNotificationSchedulerTest, FlushCachedCalls) {
   {
     InSequence sequence;
     EXPECT_CALL(*scheduler_impl(), Init(_))
-        .WillOnce(Invoke([](NotificationScheduler::InitCallback cb) {
+        .WillOnce([](NotificationScheduler::InitCallback cb) {
           std::move(cb).Run(true /*success*/);
-        }));
+        });
     EXPECT_CALL(*scheduler_impl(), Schedule(GuidIs(guid)));
 
     // Schedule() call before Init() will be cached.
@@ -107,9 +106,9 @@ TEST_F(InitAwareNotificationSchedulerTest, CallAfterInitSuccess) {
   {
     InSequence sequence;
     EXPECT_CALL(*scheduler_impl(), Init(_))
-        .WillOnce(Invoke([](NotificationScheduler::InitCallback cb) {
+        .WillOnce([](NotificationScheduler::InitCallback cb) {
           std::move(cb).Run(true /*success*/);
-        }));
+        });
     EXPECT_CALL(*scheduler_impl(), Schedule(GuidIs(guid)));
 
     // Schedule() call after Init().
@@ -125,9 +124,9 @@ TEST_F(InitAwareNotificationSchedulerTest, NoFlushOnInitFailure) {
   auto params2 = BuildParams();
 
   EXPECT_CALL(*scheduler_impl(), Init(_))
-      .WillOnce(Invoke([](NotificationScheduler::InitCallback cb) {
+      .WillOnce([](NotificationScheduler::InitCallback cb) {
         std::move(cb).Run(false /*success*/);
-      }));
+      });
   EXPECT_CALL(*scheduler_impl(), Schedule(_)).Times(0);
 
   init_aware_scheduler()->Schedule(std::move(params1));

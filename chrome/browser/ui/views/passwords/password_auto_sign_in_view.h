@@ -19,7 +19,7 @@ class PasswordAutoSignInView : public PasswordBubbleViewBase {
 
  public:
   PasswordAutoSignInView(content::WebContents* web_contents,
-                         views::View* anchor_view);
+                         views::BubbleAnchor anchor_view);
 
   PasswordAutoSignInView(const PasswordAutoSignInView&) = delete;
   PasswordAutoSignInView& operator=(const PasswordAutoSignInView&) = delete;

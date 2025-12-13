@@ -4,21 +4,19 @@
 
 package org.chromium.chrome.browser;
 
-
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Px;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
-import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 
 import java.lang.ref.WeakReference;
+import java.util.function.Supplier;
 
 /**
  * A {@link ActivityKeyboardVisibilityDelegate} that considers UI elements of an {@link Activity}
@@ -43,26 +41,28 @@ public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibility
     @Override
     public boolean hideKeyboard(View view) {
         boolean wasManualFillingViewShowing = false;
-        if (mManualFillingComponentSupplier.hasValue()) {
-            wasManualFillingViewShowing =
-                    mManualFillingComponentSupplier.get().isFillingViewShown(view);
-            mManualFillingComponentSupplier.get().hide();
+        var manualFillingComponent = mManualFillingComponentSupplier.get();
+        if (manualFillingComponent != null) {
+            wasManualFillingViewShowing = manualFillingComponent.isFillingViewShown(view);
+            manualFillingComponent.hide();
         }
         return hideSoftKeyboardOnly(view) || wasManualFillingViewShowing;
     }
 
     @Override
-    public boolean isKeyboardShowing(Context context, View view) {
-        return isSoftKeyboardShowing(context, view)
-                || (mManualFillingComponentSupplier.hasValue()
-                        && mManualFillingComponentSupplier.get().isFillingViewShown(view));
+    public boolean isKeyboardShowing(View view) {
+        ManualFillingComponent manualFillingComponent = mManualFillingComponentSupplier.get();
+        return isSoftKeyboardShowing(view)
+                || (manualFillingComponent != null
+                        && manualFillingComponent.isFillingViewShown(view));
     }
 
     @Override
     public int calculateTotalKeyboardHeight(View rootView) {
         int accessoryHeight = 0;
-        if (mManualFillingComponentSupplier.hasValue()) {
-            accessoryHeight = mManualFillingComponentSupplier.get().getKeyboardExtensionHeight();
+        var manualFillingComponent = mManualFillingComponentSupplier.get();
+        if (manualFillingComponent != null) {
+            accessoryHeight = manualFillingComponent.getKeyboardExtensionHeight();
         }
         return calculateSoftKeyboardHeight(rootView) + accessoryHeight;
     }
@@ -82,10 +82,10 @@ public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibility
     /**
      * Implementation ignoring the Chrome-specific keyboard logic on top of the system keyboard.
      *
-     * @see ManualFillingComponent.SoftKeyboardDelegate#isSoftKeyboardShowing(Context, View)
+     * @see ManualFillingComponent.SoftKeyboardDelegate#isSoftKeyboardShowing(View)
      */
     @Override
-    public boolean isSoftKeyboardShowing(Context context, View view) {
+    public boolean isSoftKeyboardShowing(View view) {
         return KeyboardUtils.isAndroidSoftKeyboardShowing(view);
     }
 

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "extensions/browser/api/messaging/message_port.h"
@@ -20,7 +20,7 @@ class SingleThreadTaskRunner;
 namespace extensions {
 class NativeMessageHost;
 class NativeMessagePortDispatcher;
-struct Message;
+class Message;
 struct PortId;
 
 // A port that manages communication with a native application.

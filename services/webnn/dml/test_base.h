@@ -9,16 +9,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// GTEST_SKIP() will let method return directly.
-#define SKIP_TEST_IF(condition)   \
-  do {                            \
-    if (condition)                \
-      GTEST_SKIP() << #condition; \
-  } while (0)
-
 namespace webnn::dml {
-
-bool UseGPUInTests();
 
 class TestBase : public testing::Test {
  public:

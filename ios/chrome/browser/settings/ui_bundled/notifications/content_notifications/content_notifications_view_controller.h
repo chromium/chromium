@@ -32,10 +32,6 @@
     id<ContentNotificationsViewControllerPresentationDelegate>
         presentationDelegate;
 
-// Delegate for view controller to send responses to model.
-@property(nonatomic, weak) id<ContentNotificationsViewControllerDelegate>
-    modelDelegate;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_NOTIFICATIONS_CONTENT_NOTIFICATIONS_CONTENT_NOTIFICATIONS_VIEW_CONTROLLER_H_

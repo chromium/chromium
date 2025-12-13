@@ -30,11 +30,13 @@ Keyframe::PropertySpecificKeyframe::PropertySpecificKeyframe(
 
 Interpolation* Keyframe::PropertySpecificKeyframe::CreateInterpolation(
     const PropertyHandle& property_handle,
-    const Keyframe::PropertySpecificKeyframe& end) const {
+    const Keyframe::PropertySpecificKeyframe& end,
+    const Keyframe::PropertySpecificKeyframe* final_keyframe) const {
   // const_cast to take refs.
   return MakeGarbageCollected<InvalidatableInterpolation>(
       property_handle, const_cast<PropertySpecificKeyframe*>(this),
-      const_cast<PropertySpecificKeyframe*>(&end));
+      const_cast<PropertySpecificKeyframe*>(&end),
+      const_cast<PropertySpecificKeyframe*>(final_keyframe));
 }
 
 Vector<PropertyHandle> Keyframe::PropertiesVector() const {

@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
+
 #include <string>
 #include <utility>
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -29,9 +31,9 @@ namespace safe_browsing {
 
 class ExtensionTelemetryUploaderTest : public testing::Test {
  public:
-  void OnUploadTestCallback(bool success, const std::string& response_data) {
+  void OnUploadTestCallback(bool success,
+                            base::optional_ref<std::string> response_data) {
     upload_success_ = success;
-    response_data_ = response_data;
   }
 
  protected:
@@ -49,7 +51,6 @@ class ExtensionTelemetryUploaderTest : public testing::Test {
 
   std::string upload_data_;
   bool upload_success_ = false;
-  std::string response_data_;
   base::HistogramTester histograms_;
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;

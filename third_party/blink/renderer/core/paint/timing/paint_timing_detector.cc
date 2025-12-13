@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -29,7 +30,9 @@
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -128,6 +131,23 @@ void ReportImagePixelInaccuracy(HTMLImageElement* image_element) {
   }
 }
 
+const char* ScrollTypeToString(mojom::blink::ScrollType scroll_type) {
+  switch (scroll_type) {
+    case mojom::blink::ScrollType::kUser:
+      return "user";
+    case mojom::blink::ScrollType::kProgrammatic:
+      return "programmatic";
+    case mojom::blink::ScrollType::kClamping:
+      return "clamping";
+    case mojom::blink::ScrollType::kCompositor:
+      return "compositor";
+    case mojom::blink::ScrollType::kAnchoring:
+      return "anchoring";
+    case mojom::blink::ScrollType::kScrollStart:
+      return "scrollstart";
+  }
+}
+
 }  // namespace
 
 PaintTimingDetector::PaintTimingDetector(LocalFrameView* frame_view)
@@ -151,8 +171,7 @@ void PaintTimingDetector::NotifyPaintFinished() {
     visualizer_.reset();
   }
 
-  LocalDOMWindow* window = frame_view_->GetFrame().DomWindow();
-  if (window) {
+  if (LocalDOMWindow* window = DomWindow()) {
     DOMWindowPerformance::performance(*window)->OnPaintFinished();
 
     if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
@@ -223,6 +242,44 @@ bool PaintTimingDetector::NotifyImagePaint(
                    current_paint_chunk_properties, nullptr, image_border);
 }
 
+// static
+void PaintTimingDetector::NotifyFirstVideoFrame(
+    const LayoutObject& object,
+    const gfx::Size& intrinsic_size,
+    const MediaTiming& media_timing,
+    const PropertyTreeStateOrAlias& current_paint_chunk_properties,
+    const gfx::Rect& image_border) {
+  if (NotifyImagePaint(object, intrinsic_size, media_timing,
+                       current_paint_chunk_properties, image_border)) {
+    LocalFrameView* frame_view = object.GetFrameView();
+    CHECK(frame_view);
+    // crbug.com/434659231: Recording this as an LCP candidate and setting the
+    // presentation time (without ReportFirstFrameTimeAsRenderTime) depends on
+    // the next main frame, which we request here. This is flag-guarded for hard
+    // LCP, since it might move metrics; for soft navs, do this unconditionally
+    // since this is still experimental and we want accurate behavior for origin
+    // trial along with attributing video src changes (crbug.com/434215966).
+    if (RuntimeEnabledFeatures::RequestMainFrameAfterFirstVideoFrameEnabled() ||
+        !frame_view->GetPaintTimingDetector()
+             .GetImagePaintTimingDetector()
+             .IsRecordingLargestImagePaint()) {
+      frame_view->ScheduleAnimation();
+    }
+  }
+}
+
+// static
+void PaintTimingDetector::NotifyInteractionTriggeredVideoSrcChange(
+    const LayoutObject& object) {
+  LocalFrameView* frame_view = object.GetFrameView();
+  if (!frame_view) {
+    return;
+  }
+  frame_view->GetPaintTimingDetector()
+      .GetImagePaintTimingDetector()
+      .NotifyInteractionTriggeredVideoSrcChange(object);
+}
+
 void PaintTimingDetector::NotifyImageFinished(const LayoutObject& object,
                                               const MediaTiming* media_timing) {
   if (IgnorePaintTimingScope::ShouldIgnore()) {
@@ -243,7 +300,7 @@ void PaintTimingDetector::NotifyImageRemoved(
 }
 
 void PaintTimingDetector::OnInputOrScroll() {
-  if (LocalDOMWindow* window = frame_view_->GetFrame().DomWindow()) {
+  if (LocalDOMWindow* window = DomWindow()) {
     if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
       heuristics->OnInputOrScroll();
     }
@@ -282,6 +339,10 @@ void PaintTimingDetector::NotifyInputEvent(WebInputEvent::Type type) {
 }
 
 void PaintTimingDetector::NotifyScroll(mojom::blink::ScrollType scroll_type) {
+  // TODO(crbug.com/330709851): Remove once we're sure scroll restoration is
+  // handled properly for soft navs.
+  TRACE_EVENT("loading", "PaintTimingDetector::NotifyScroll", "type",
+              ScrollTypeToString(scroll_type));
   if (scroll_type != mojom::blink::ScrollType::kUser &&
       scroll_type != mojom::blink::ScrollType::kCompositor) {
     return;
@@ -299,14 +360,14 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
     return largest_contentful_paint_calculator_.Get();
   }
 
-  auto* dom_window = frame_view_->GetFrame().DomWindow();
+  auto* dom_window = DomWindow();
   if (!dom_window) {
     return nullptr;
   }
 
   largest_contentful_paint_calculator_ =
       MakeGarbageCollected<LargestContentfulPaintCalculator>(
-          DOMWindowPerformance::performance(*dom_window));
+          DOMWindowPerformance::performance(*dom_window), this);
   return largest_contentful_paint_calculator_.Get();
 }
 
@@ -409,20 +470,29 @@ void PaintTimingDetector::UpdateLcpCandidate() {
   }
 
   lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
-      text_update_result.first, image_update_result.first,
-      /*is_triggered_by_soft_navigation=*/false);
+      text_update_result.first, image_update_result.first);
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {
   text_paint_timing_detector_->ReportLargestIgnoredText();
-  if (image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
-    image_paint_timing_detector_->ReportLargestIgnoredImage();
-  }
+  image_paint_timing_detector_->ReportLargestIgnoredImage();
 }
 
 const LargestContentfulPaintDetails&
 PaintTimingDetector::LatestLcpDetailsForTest() {
   return GetLargestContentfulPaintCalculator()->LatestLcpDetails();
+}
+
+void PaintTimingDetector::EmitPerformanceEntry(
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t paint_size,
+    base::TimeTicks load_time,
+    const AtomicString& id,
+    const String& url,
+    Element* element) {
+  DOMWindowPerformance::performance(CHECK_DEREF(DomWindow()))
+      ->OnLargestContentfulPaintUpdated(paint_timing_info, paint_size,
+                                        load_time, id, url, element);
 }
 
 ScopedPaintTimingDetectorBlockPaintHook*
@@ -482,6 +552,10 @@ void PaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(image_paint_timing_detector_);
   visitor->Trace(frame_view_);
   visitor->Trace(largest_contentful_paint_calculator_);
+}
+
+LocalDOMWindow* PaintTimingDetector::DomWindow() const {
+  return frame_view_->GetFrame().DomWindow();
 }
 
 }  // namespace blink

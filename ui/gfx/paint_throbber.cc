@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -50,8 +51,9 @@ void PaintArc(Canvas* canvas,
   const int inset = SkScalarCeilToInt(*stroke_width / 2.0);
   oval.Inset(inset);
 
-  SkPath path;
-  path.arcTo(RectToSkRect(oval), start_angle, sweep, true);
+  const SkPath path = SkPathBuilder()
+                          .arcTo(RectToSkRect(oval), start_angle, sweep, true)
+                          .detach();
 
   cc::PaintFlags flags;
   flags.setColor(color);

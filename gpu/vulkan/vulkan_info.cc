@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/vulkan/vulkan_info.h"
 
+#include <cstring>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 
 namespace gpu {
@@ -45,7 +42,8 @@ void VulkanInfo::SetEnabledInstanceExtensions(
   for (const auto* const extension : extensions) {
     bool found = false;
     for (const auto& instance_extension : instance_extensions) {
-      if (strcmp(extension, instance_extension.extensionName) == 0) {
+      if (UNSAFE_TODO(strcmp(extension, instance_extension.extensionName)) ==
+          0) {
         enabled_instance_extensions.push_back(instance_extension.extensionName);
         found = true;
         break;

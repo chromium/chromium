@@ -67,9 +67,7 @@ class MediaKeys::PendingAction final
 
   Type GetType() const { return type_; }
 
-  const Persistent<ContentDecryptionModuleResult> Result() const {
-    return result_;
-  }
+  ContentDecryptionModuleResult* Result() const { return result_; }
 
   DOMArrayBuffer* Data() const {
     DCHECK_EQ(Type::kSetServerCertificate, type_);
@@ -196,9 +194,13 @@ class GetStatusForPolicyResultPromise
     if (!IsValidToFulfillPromise())
       return;
 
-    // Report Media.EME.GetStatusForPolicy UKM.
     auto* execution_context = GetExecutionContext();
     if (auto* local_dom_window = DynamicTo<LocalDOMWindow>(execution_context)) {
+      // Report CrossOriginIframeUsage of GetStatusForPolicy.
+      local_dom_window->CountUseOnlyInCrossOriginIframe(
+          WebFeature::kGetStatusForPolicyCrossOriginIframe);
+
+      // Report Media.EME.GetStatusForPolicy UKM.
       Document* document = local_dom_window->document();
       if (document) {
         ukm::builders::Media_EME_GetStatusForPolicy builder(
@@ -289,7 +291,7 @@ MediaKeySession* MediaKeys::createSession(
   //    implementation value does not support sessionType, throw a new
   //    DOMException whose name is NotSupportedError.
   WebEncryptedMediaSessionType session_type =
-      EncryptedMediaUtils::ConvertToSessionType(v8_session_type.AsString());
+      EncryptedMediaUtils::ConvertToSessionType(v8_session_type.AsStringView());
   if (!SessionTypeSupported(session_type)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Unsupported session type.");
@@ -381,6 +383,15 @@ void MediaKeys::SetServerCertificateTask(
   //     new DOMException whose name is the appropriate error name.
   // 5.4 Resolve promise.
   // (These are handled by Chromium and the CDM.)
+
+  // Log the usage of setServerCertificate().
+  // TODO(crbug.com/436274254): `is_persistent_session` is unknown at the time
+  // of setting server certificate. Consider updating `is_persistent_session` to
+  // enum or optional type.
+  EncryptedMediaUtils::ReportUsage(EmeApiType::kSetServerCertificate,
+                                   GetExecutionContext(), config_.key_system,
+                                   config_.use_hardware_secure_codecs,
+                                   /*is_persistent_session=*/false);
 }
 
 ScriptPromise<V8MediaKeyStatus> MediaKeys::getStatusForPolicy(

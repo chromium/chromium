@@ -44,6 +44,7 @@ class ModelExecutor {
   virtual void InitializeAndMoveToExecutionThread(
       std::optional<base::TimeDelta> model_inference_timeout,
       proto::OptimizationTarget optimization_target,
+      scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner,
       scoped_refptr<base::SequencedTaskRunner> execution_task_runner,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) = 0;
 

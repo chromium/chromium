@@ -1,5 +1,6 @@
 include_rules = [
   "+cc",
+  "+gpu/command_buffer/client/client_shared_image.h",
   "+gpu/ipc",
   "+gpu/ipc/common",
   "+skia/public/mojom",

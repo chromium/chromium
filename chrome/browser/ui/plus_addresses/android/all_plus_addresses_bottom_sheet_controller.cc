@@ -8,7 +8,7 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/plus_addresses/android/all_plus_addresses_bottom_sheet_view.h"
-#include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
 #include "content/public/browser/web_contents.h"
 
 namespace plus_addresses {

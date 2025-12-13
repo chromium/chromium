@@ -46,14 +46,14 @@ Testing console.log with required args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -109,14 +109,14 @@ Testing console.debug with required args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -172,14 +172,14 @@ Testing console.info with required args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -235,14 +235,14 @@ Testing console.error with required args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -298,14 +298,14 @@ Testing console.warn with required args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -361,14 +361,14 @@ Testing console.dir with required args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -424,14 +424,14 @@ Testing console.dirxml with required args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -487,14 +487,14 @@ Testing console.table with required args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -550,14 +550,14 @@ Testing console.trace with optional args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -583,14 +583,14 @@ Testing console.trace with optional args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -646,14 +646,14 @@ Testing console.clear with optional args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -679,14 +679,14 @@ Testing console.clear with optional args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -742,14 +742,14 @@ Testing console.group with optional args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -775,14 +775,14 @@ Testing console.group with optional args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -838,14 +838,14 @@ Testing console.groupCollapsed with optional args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -871,14 +871,14 @@ Testing console.groupCollapsed with optional args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -934,14 +934,14 @@ Testing console.groupEnd with optional args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }
@@ -967,14 +967,14 @@ Testing console.groupEnd with optional args while paused
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 [1] : {
                     columnNumber : 0
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }

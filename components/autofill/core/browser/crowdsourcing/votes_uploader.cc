@@ -20,14 +20,18 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/form_qualifiers.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
+#include "components/one_time_tokens/core/browser/one_time_token_service.h"
 
 namespace autofill {
+
+using one_time_tokens::OneTimeToken;
 
 namespace {
 
@@ -200,7 +204,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // is available to use as a baseline.
   std::vector<const AutofillProfile*> profiles =
       client_->GetPersonalDataManager().address_data_manager().GetProfiles();
-  if (observed_submission && form->IsAutofillable()) {
+  if (observed_submission && IsAutofillable(*form)) {
     AutofillMetrics::LogNumberOfProfilesAtAutofillableFormSubmission(
         profiles.size());
   }
@@ -221,8 +225,14 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
     loyalty_cards = valuables_data_manager->GetLoyaltyCards();
   }
 
+  std::vector<OneTimeToken> recent_otps;
+  if (one_time_tokens::OneTimeTokenService* token_service =
+          client_->GetOneTimeTokenService()) {
+    recent_otps = token_service->GetCachedOneTimeTokens();
+  }
+
   if (profiles.empty() && credit_cards.empty() && entities.empty() &&
-      loyalty_cards.empty()) {
+      loyalty_cards.empty() && recent_otps.empty()) {
     return false;
   }
 
@@ -233,13 +243,10 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   }
 
   FormStructure::FormAssociations form_associations;
-  if (form->IsAutofillable()) {
+  if (IsAutofillable(*form)) {
     form_associations = client_->GetFormDataImporter()->GetFormAssociations(
         form->form_signature());
   }
-
-  // Annotate the form with the source language of the page.
-  form->set_current_page_language(current_page_language);
 
   // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
   // |form| with the help of |AlternativeStateNameMap|.
@@ -255,16 +262,18 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
              const std::vector<EntityInstance>& entities,
              const std::vector<LoyaltyCard>& loyalty_cards,
              const std::u16string& last_unlocked_credit_card_cvc,
+             const std::vector<OneTimeToken>& recent_otps,
              const std::string& app_locale, bool observed_submission,
              std::unique_ptr<FormStructure> form,
              std::optional<RandomizedEncoder> randomized_encoder,
+             LanguageCode current_page_language,
              FormStructure::FormAssociations form_associations,
              std::set<FieldGlobalId> fields_that_match_state) {
             std::vector<PossibleTypes> possible_types =
                 DeterminePossibleFieldTypesForUpload(
                     profiles, credit_cards, entities, loyalty_cards,
                     fields_that_match_state, last_unlocked_credit_card_cvc,
-                    app_locale, *form);
+                    recent_otps, app_locale, *form);
 
             for (auto [field, pt] : base::zip(form->fields(), possible_types)) {
               field->set_possible_types(pt.types);
@@ -272,11 +281,12 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
 
             EncodeUploadRequestOptions options;
             options.encoder = std::move(randomized_encoder);
+            options.current_page_language = std::move(current_page_language);
             options.form_associations = std::move(form_associations);
             options.observed_submission = observed_submission;
             options.available_field_types = DetermineAvailableFieldTypes(
                 profiles, credit_cards, entities, loyalty_cards,
-                last_unlocked_credit_card_cvc, app_locale);
+                last_unlocked_credit_card_cvc, recent_otps, app_locale);
             for (auto [field, dates_and_formats] :
                  base::zip(form->fields(), possible_types)) {
               options.fields[field->global_id()].format_strings =
@@ -292,15 +302,15 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
           base::ToVector(profiles, [](const auto* ptr) { return *ptr; }),
           base::ToVector(credit_cards, [](const auto* ptr) { return *ptr; }),
           base::ToVector(entities), std::move(loyalty_cards),
-          last_unlocked_credit_card_cvc, client_->GetAppLocale(),
-          observed_submission, std::move(form),
+          last_unlocked_credit_card_cvc, std::move(recent_otps),
+          client_->GetAppLocale(), observed_submission, std::move(form),
           RandomizedEncoder::Create(client_->GetPrefs()),
-          std::move(form_associations), std::move(fields_that_match_state)),
+          std::move(current_page_language), std::move(form_associations),
+          std::move(fields_that_match_state)),
       base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
                      weak_ptr_factory_.GetWeakPtr(),
                      initial_interaction_timestamp, base::TimeTicks::Now(),
-                     observed_submission, last_unlocked_credit_card_cvc,
-                     ukm_source_id));
+                     observed_submission, ukm_source_id));
   return true;
 }
 
@@ -308,7 +318,6 @@ void VotesUploader::OnFieldTypesDetermined(
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks submission_timestamp,
     bool observed_submission,
-    const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id,
     std::pair<std::unique_ptr<FormStructure>,
               std::vector<AutofillUploadContents>> form_and_upload_contents) {
@@ -318,8 +327,7 @@ void VotesUploader::OnFieldTypesDetermined(
   if (observed_submission) {
     UploadVote(std::move(form), std::move(upload_contents),
                initial_interaction_timestamp, submission_timestamp,
-               observed_submission, last_unlocked_credit_card_cvc,
-               ukm_source_id);
+               observed_submission, ukm_source_id);
     FlushPendingVotesForFrame(frame);
   } else {
     FlushOldestPendingVotesIfNecessary();
@@ -330,8 +338,7 @@ void VotesUploader::OnFieldTypesDetermined(
              &VotesUploader::UploadVote, weak_ptr_factory_.GetWeakPtr(),
              std::move(form), std::move(upload_contents),
              initial_interaction_timestamp, submission_timestamp,
-             observed_submission, last_unlocked_credit_card_cvc,
-             ukm_source_id)});
+             observed_submission, ukm_source_id)});
   }
 }
 
@@ -355,13 +362,12 @@ void VotesUploader::UploadVote(
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks submission_timestamp,
     bool observed_submission,
-    const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id) {
   auto count_types = [&submitted_form](FormType type) {
     return std::ranges::count_if(
         submitted_form->fields(),
         [=](const std::unique_ptr<AutofillField>& field) {
-          return FieldTypeGroupToFormType(field->Type().group()) == type;
+          return field->Type().GetFormTypes().contains(type);
         });
   };
 
@@ -398,21 +404,21 @@ void VotesUploader::UploadVote(
 
   // If the form is submitted, we don't need to send pending votes from blur
   // (un-focus) events.
-  if (submitted_form->ShouldRunHeuristics() ||
-      submitted_form->ShouldRunHeuristicsForSingleFields() ||
-      submitted_form->ShouldBeQueried()) {
+  if (ShouldRunHeuristics(*submitted_form) ||
+      ShouldRunHeuristicsForSingleFields(*submitted_form) ||
+      ShouldBeQueried(*submitted_form)) {
     autofill_metrics::LogQualityMetrics(
         *submitted_form, submitted_form->form_parsed_timestamp(),
         initial_interaction_timestamp, submission_timestamp,
         client_->GetFormInteractionsUkmLogger(), ukm_source_id,
         observed_submission);
   }
-  if (!submitted_form->ShouldBeUploaded()) {
+  if (!ShouldBeUploaded(*submitted_form)) {
     return;
   }
   if (autofill_metrics::ShouldRecordUkm() &&
-      submitted_form->ShouldUploadUkm(
-          /*require_classified_field=*/true)) {
+      ShouldUploadUkm(*submitted_form,
+                      /*require_classified_field=*/true)) {
     AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
         client_->GetUkmRecorder(), ukm_source_id, *submitted_form,
         submission_timestamp);

@@ -1287,6 +1287,27 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
       GetAccessibilityViewByName("a"), ax::mojom::Event::kFocus)));
   EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
       GetAccessibilityViewByName("a"), ax::mojom::Event::kSelection)));
+
+  // On node selection, ensure the focus event is fired before the selection
+  // event.
+  ClearAccessibilityEvents();
+  tree()->SetModel(&model_);
+  tree()->SetSelectedNode(GetNodeByTitle("b"));
+  std::vector<ax::mojom::Event> events;
+  for (const auto& event : accessibility_events()) {
+    if (event.first == GetAccessibilityViewByName("b")) {
+      events.push_back(event.second);
+    }
+  }
+
+  auto focus_it =
+      std::find(events.begin(), events.end(), ax::mojom::Event::kFocus);
+  auto selection_it =
+      std::find(events.begin(), events.end(), ax::mojom::Event::kSelection);
+  ASSERT_NE(focus_it, events.end());
+  ASSERT_NE(selection_it, events.end());
+  EXPECT_LT(std::distance(events.begin(), focus_it),
+            std::distance(events.begin(), selection_it));
 }
 
 }  // namespace views

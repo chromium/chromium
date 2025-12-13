@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit-part>
+  <message name="IDS_IMPORTED_FROM_SAFARI_FOLDER" desc="The title of a folder that contains bookmarks imported from the Safari browser.">
+    Imported from Safari
+  </message>
+  <message name="IDS_IMPORTED_FOLDER" desc="The title of a folder that contains bookmarks imported from another browser.">
+    Imported
+  </message>
+</grit-part>

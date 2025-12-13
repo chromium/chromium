@@ -49,22 +49,6 @@ class WebTestSpellChecker {
   bool IsMultiWordMisspelling(
       const blink::WebString& text,
       std::vector<blink::WebTextCheckingResult>* results);
-
- private:
-  // Initialize the internal resources if we need to initialize it.
-  // Initializing this object may take long time. To prevent from hurting
-  // the performance of test_shell, we initialize this object when
-  // SpellCheckWord() is called for the first time.
-  // To be compliant with SpellCheck:InitializeIfNeeded(), this function
-  // returns true if this object is downloading a dictionary, otherwise
-  // it returns false.
-  bool InitializeIfNeeded();
-
-  // A table that consists of misspelled words.
-  std::vector<std::u16string> misspelled_words_;
-
-  // A flag representing whether or not this object is initialized.
-  bool initialized_ = false;
 };
 
 }  // namespace content

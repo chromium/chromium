@@ -29,19 +29,27 @@ void ControlledFrameExtensionsRendererAPIProvider::AddBindingsSystemHooks(
 
 void ControlledFrameExtensionsRendererAPIProvider::PopulateSourceMap(
     extensions::ResourceBundleSourceMap* source_map) const {
-  source_map->RegisterSource("controlledFrame", IDR_CONTROLLED_FRAME_JS);
-  source_map->RegisterSource("controlledFrameApiMethods",
-                             IDR_CONTROLLED_FRAME_API_METHODS_JS);
-  source_map->RegisterSource("controlledFrameEvents",
-                             IDR_CONTROLLED_FRAME_EVENTS_JS);
-  source_map->RegisterSource("controlledFrameImpl",
-                             IDR_CONTROLLED_FRAME_IMPL_JS);
-  source_map->RegisterSource("controlledFrameInternal",
-                             IDR_CONTROLLED_FRAME_INTERNAL_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("controlledFrameWebRequest",
-                             IDR_CONTROLLED_FRAME_WEB_REQUEST_JS);
-  source_map->RegisterSource("controlledFrameContextMenus",
-                             IDR_CONTROLLED_FRAME_CONTEXT_MENUS_JS);
+  struct RegisterSourceData {
+    std::string_view name;
+    int resource_id;
+  };
+
+  static constexpr RegisterSourceData kSources[] = {
+      {"htmlControlledFrameElement", IDR_HTML_CONTROLLED_FRAME_ELEMENT_JS},
+      {"controlledFrameApiMethods", IDR_CONTROLLED_FRAME_API_METHODS_JS},
+      {"controlledFrameEvents", IDR_CONTROLLED_FRAME_EVENTS_JS},
+      {"controlledFrameImpl", IDR_CONTROLLED_FRAME_IMPL_JS},
+      {"controlledFrameInternal",
+       IDR_CONTROLLED_FRAME_INTERNAL_CUSTOM_BINDINGS_JS},
+      {"controlledFrameWebRequest", IDR_CONTROLLED_FRAME_WEB_REQUEST_JS},
+      {"controlledFrameContextMenus", IDR_CONTROLLED_FRAME_CONTEXT_MENUS_JS},
+      {"controlledFrameURLPatternsHelper",
+       IDR_CONTROLLED_FRAME_URL_PATTERNS_HELPER_JS},
+  };
+
+  for (const auto& source : kSources) {
+    source_map->RegisterSource(source.name, source.resource_id);
+  }
 }
 
 void ControlledFrameExtensionsRendererAPIProvider::
@@ -64,7 +72,7 @@ void ControlledFrameExtensionsRendererAPIProvider::RequireWebViewModules(
     // to be enabled in the same instance. This check confirms that is held.
     CHECK(!context->GetAvailability("chromeWebViewTag").is_available());
 
-    context->module_system()->Require("controlledFrame");
+    context->module_system()->Require("htmlControlledFrameElement");
   }
 }
 

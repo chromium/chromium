@@ -17,7 +17,7 @@
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"

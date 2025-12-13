@@ -38,6 +38,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -67,6 +69,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
         TabListEditorShareActionState.ALL_TABS_FILTERED,
         TabListEditorShareActionState.NUM_ENTRIES
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface TabListEditorShareActionState {
         int UNKNOWN = 0;
         int SUCCESS = 1;
@@ -146,19 +149,18 @@ public class TabListEditorShareAction extends TabListEditorAction {
         assert !tabs.isEmpty() : "Share action should not be enabled for no tabs.";
 
         TabList tabList = getTabGroupModelFilter().getTabModel();
-        List<Integer> sortedTabIndexList = filterTabs(tabs, tabList);
+        List<Tab> sortedTabList = filterTabs(tabs, tabList);
 
-        if (sortedTabIndexList.size() == 0) {
+        if (sortedTabList.size() == 0) {
             TabUiMetricsHelper.recordShareStateHistogram(
                     TabListEditorShareActionState.ALL_TABS_FILTERED);
             return false;
         }
 
-        boolean isOnlyOneTab = (sortedTabIndexList.size() == 1);
-        Tab tab = tabList.getTabAt(sortedTabIndexList.get(0));
+        boolean isOnlyOneTab = (sortedTabList.size() == 1);
+        Tab tab = sortedTabList.get(0);
         assumeNonNull(tab);
-        String tabText =
-                isOnlyOneTab ? "" : getTabListStringForSharing(sortedTabIndexList, tabList);
+        String tabText = isOnlyOneTab ? "" : getTabListStringForSharing(sortedTabList);
         String tabTitle = isOnlyOneTab ? tab.getTitle() : "";
         String tabUrl = isOnlyOneTab ? tab.getUrl().getSpec() : "";
         @TabListEditorActionMetricGroups
@@ -181,8 +183,8 @@ public class TabListEditorShareAction extends TabListEditorAction {
                 Intent.EXTRA_TITLE,
                 resources.getQuantityString(
                         R.plurals.tab_selection_editor_share_sheet_preview_message,
-                        sortedTabIndexList.size(),
-                        sortedTabIndexList.size()));
+                        sortedTabList.size(),
+                        sortedTabList.size()));
         shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         float padding =
@@ -259,29 +261,28 @@ public class TabListEditorShareAction extends TabListEditorAction {
 
     // TODO(crbug.com/40871819): Current filtering does not remove duplicates or show a "Toast" if
     // no shareable URLs are present after filtering.
-    private List<Integer> filterTabs(List<Tab> tabs, TabList tabList) {
+    private List<Tab> filterTabs(List<Tab> tabs, TabList tabList) {
         assert tabs.size() > 0;
-        List<Integer> sortedTabIndexList = new ArrayList<>();
+        List<Tab> sortedTabList = new ArrayList<>();
 
         HashSet<Tab> selectedTabs = new HashSet<>(tabs);
-        for (int i = 0; i < tabList.getCount(); i++) {
-            Tab tab = tabList.getTabAt(i);
-            if (tab == null || !selectedTabs.contains(tab)) continue;
+        for (Tab tab : tabList) {
+            if (!selectedTabs.contains(tab)) continue;
 
             if (!shouldFilterUrl(tab.getUrl())) {
-                sortedTabIndexList.add(i);
+                sortedTabList.add(tab);
             }
         }
-        return sortedTabIndexList;
+        return sortedTabList;
     }
 
-    private String getTabListStringForSharing(List<Integer> sortedTabIndexList, TabList list) {
+    private String getTabListStringForSharing(List<Tab> sortedTabList) {
         StringBuilder sb = new StringBuilder();
 
         // TODO(crbug.com/40871819): Check if this string builder assembles the shareable URLs in
         // accordance with internationalization and translation standards
-        for (int i = 0; i < sortedTabIndexList.size(); i++) {
-            Tab tab = list.getTabAt(sortedTabIndexList.get(i));
+        for (int i = 0; i < sortedTabList.size(); i++) {
+            Tab tab = sortedTabList.get(i);
             assumeNonNull(tab);
             sb.append(i + 1).append(". ").append(tab.getUrl().getSpec()).append("\n");
         }

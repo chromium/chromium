@@ -22,7 +22,7 @@ export function getHtml(this: DownloadsManagerElement) {
   <cr-infinite-list id="downloadsList" .items="${this.items_}"
       role="grid" aria-rowcount="${this.items_.length}"
       ?hidden="${!this.hasDownloads_}" .scrollTarget="${this.listScrollTarget_}"
-      .template=${(item: any, index: number, tabindex: number) => html`
+      .template="${(item: any, index: number, tabindex: number) => html`
   <if expr="_google_chrome">
         <downloads-item .data="${item}" tabindex="${tabindex}"
             .listTabIndex="${tabindex}" .lastFocused="${this.lastFocused_}"
@@ -43,7 +43,7 @@ export function getHtml(this: DownloadsManagerElement) {
         >
   </if>
         </downloads-item>`
-      }>
+      }">
   </cr-infinite-list>
   <div id="no-downloads" ?hidden="${this.hasDownloads_}">
     <div>

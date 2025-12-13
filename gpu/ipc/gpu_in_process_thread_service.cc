@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 
 namespace gpu {
 

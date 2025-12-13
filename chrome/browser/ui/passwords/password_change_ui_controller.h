@@ -38,7 +38,10 @@ enum class PasswordChangeDialogAction {
 enum class PasswordChangeToastEvent {
   kShown = 0,
   kCanceled = 1,
-  kMaxValue = kCanceled,
+  kContinue = 2,
+  kOpenPasswordChangeTab = 3,
+  kRetry = 4,
+  kMaxValue = kRetry,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeToastEvent)
 
@@ -56,6 +59,7 @@ class PasswordChangeUIController {
 #if defined(UNIT_TEST)
   const views::Widget* dialog_widget() const { return dialog_widget_.get(); }
   PasswordChangeToast* toast_view() const { return toast_view_; }
+  void CallOnDialogCanceledForTesting() { OnDialogCanceled(); }
 #endif
 
  private:
@@ -69,10 +73,13 @@ class PasswordChangeUIController {
   void OnToastCanceled();
   void OnDialogCanceled();
   void OpenPasswordChangeTab();
+  void OpenPasswordChangeTabFromDialog();
+  void OpenPasswordChangeTabFromToast();
   void StartPasswordChangeFlow();
   void OnPrivacyNoticeAccepted();
   void ShowPasswordDetails();
   void NavigateToPasswordChangeSettings();
+  void RetryLoginCheck();
 
   // Closes the dialog or widget and logs the `reason`.
   // TODO(crbug.com/407504591): Actually log the reason.

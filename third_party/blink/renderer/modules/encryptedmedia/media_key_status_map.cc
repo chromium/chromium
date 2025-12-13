@@ -47,15 +47,8 @@ class MediaKeyStatusMap::MapEntry final
       return b->KeyId();
 
     // Compare the bytes.
-    int result = UNSAFE_TODO(
-        memcmp(a->KeyId()->Data(), b->KeyId()->Data(),
-               std::min(a->KeyId()->ByteLength(), b->KeyId()->ByteLength())));
-    if (result != 0)
-      return result < 0;
-
-    // KeyIds are equal to the shared length, so the shorter string is <.
-    DCHECK_NE(a->KeyId()->ByteLength(), b->KeyId()->ByteLength());
-    return a->KeyId()->ByteLength() < b->KeyId()->ByteLength();
+    return std::ranges::lexicographical_compare(a->KeyId()->ByteSpan(),
+                                                b->KeyId()->ByteSpan());
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(key_id_); }
@@ -73,8 +66,7 @@ class MapIterationSource final
 
   bool FetchNextItem(ScriptState* script_state,
                      V8BufferSource*& key,
-                     V8MediaKeyStatus& value,
-                     ExceptionState&) override {
+                     V8MediaKeyStatus& value) override {
     // This simply advances an index and returns the next value if any,
     // so if the iterated object is mutated values may be skipped.
     if (current_ >= map_->size())
@@ -149,8 +141,7 @@ V8UnionMediaKeyStatusOrUndefined* MediaKeyStatusMap::get(
 }
 
 MediaKeyStatusMap::IterationSource* MediaKeyStatusMap::CreateIterationSource(
-    ScriptState*,
-    ExceptionState&) {
+    ScriptState*) {
   return MakeGarbageCollected<MapIterationSource>(this);
 }
 

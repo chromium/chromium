@@ -62,8 +62,8 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "net/base/url_util.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "net/proxy_resolution/proxy_config.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/base_type_conversion.h"
@@ -722,9 +722,6 @@ void ArcSettingsServiceImpl::SyncLocationServiceEnabled() const {
       "org.chromium.arc.intent_helper.SET_LOCATION_SERVICE_ENABLED");
 }
 
-// TODO(b/159871128, hugobenichi, acostinas) The current implementation only
-// syncs the global proxy from Chrome's default network settings. ARC has
-// multi-network support so we should sync per-network proxy configuration.
 void ArcSettingsServiceImpl::SyncProxySettings() const {
   std::unique_ptr<ProxyConfigDictionary> proxy_config_dict =
       ash::ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
@@ -784,7 +781,7 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
         // while ARC expects comma [,] delimiter.  Using the wrong delimiter
         // causes loss of network connectivity for many apps in ARC.
         auto bypassed_hosts = base::SplitStringPiece(
-            bypass_list, net::ProxyBypassRules::kBypassListDelimeter,
+            bypass_list, net::ProxyHostMatchingRules::kBypassListDelimeter,
             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
         bypass_list =
             base::JoinString(bypassed_hosts, kArcProxyBypassListDelimiter);

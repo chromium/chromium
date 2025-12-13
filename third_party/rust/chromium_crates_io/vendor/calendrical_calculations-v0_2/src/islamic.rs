@@ -17,6 +17,10 @@ pub const ISLAMIC_EPOCH_FRIDAY: RataDie = crate::julian::fixed_from_julian(622, 
 /// Lisp code reference: <https://github.com/EdReingold/calendar-code2/blob/main/calendar.l#L2066>
 pub const ISLAMIC_EPOCH_THURSDAY: RataDie = crate::julian::fixed_from_julian(622, 7, 15);
 
+// Inline to copy over docs. This can be made into a separate value as per need.
+#[doc(inline)]
+pub use crate::chinese_based::WELL_BEHAVED_ASTRONOMICAL_RANGE;
+
 /// Lisp code reference: <https://github.com/EdReingold/calendar-code2/blob/main/calendar.l#L6898>
 pub const CAIRO: Location = Location {
     latitude: 30.1,
@@ -185,7 +189,7 @@ pub fn saudi_islamic_month_days(year: i32, month: u8) -> u8 {
 
     let diff = next_month_start - month_start;
     debug_assert!(
-        diff <= 30,
+        diff <= 30 || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&month_start),
         "umm-al-qura months must not be more than 30 days"
     );
     u8::try_from(diff).unwrap_or(30)
@@ -222,18 +226,18 @@ mod tests {
     #[test]
     fn test_islamic_epoch_friday() {
         let epoch = ISLAMIC_EPOCH_FRIDAY.to_i64_date();
-        // Iso year of Islamic Epoch
-        let epoch_year_from_fixed = crate::iso::iso_year_from_fixed(RataDie::new(epoch));
-        // 622 is the correct ISO year for the Islamic Epoch
+        // Proleptic Gregorian year of Islamic Epoch
+        let epoch_year_from_fixed = crate::gregorian::year_from_fixed(RataDie::new(epoch)).unwrap();
+        // 622 is the correct proleptic Gregorian year for the Islamic Epoch
         assert_eq!(epoch_year_from_fixed, 622);
     }
 
     #[test]
     fn test_islamic_epoch_thursday() {
         let epoch = ISLAMIC_EPOCH_THURSDAY.to_i64_date();
-        // Iso year of Islamic Epoch
-        let epoch_year_from_fixed = crate::iso::iso_year_from_fixed(RataDie::new(epoch));
-        // 622 is the correct ISO year for the Islamic Epoch
+        // Proleptic Gregorian year of Islamic Epoch
+        let epoch_year_from_fixed = crate::gregorian::year_from_fixed(RataDie::new(epoch)).unwrap();
+        // 622 is the correct proleptic Gregorian year for the Islamic Epoch
         assert_eq!(epoch_year_from_fixed, 622);
     }
 

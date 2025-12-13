@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/ash/input_method/candidate_view.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -67,7 +63,7 @@ class CandidateViewTest : public views::ViewsTestBase {
       CandidateView* candidate = new CandidateView(
           views::Button::PressedCallback(), ui::CandidateWindow::VERTICAL);
       ui::CandidateWindow::Entry entry;
-      entry.value = base::UTF8ToUTF16(kDummyCandidates[i]);
+      entry.value = base::UTF8ToUTF16(UNSAFE_TODO(kDummyCandidates[i]));
       candidate->SetEntry(entry);
       container_->AddChildViewRaw(candidate);
     }

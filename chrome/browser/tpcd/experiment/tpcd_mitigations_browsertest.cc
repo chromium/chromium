@@ -114,12 +114,11 @@ IN_PROC_BROWSER_TEST_P(NativeUnpartitionedStorageAccessWhen3PCOff,
                               "localStorage.getItem(\"UnpartitionedLocal\")"),
               "Hello");
   } else {
-    EXPECT_THAT(
-        content::EvalJs(GetChildFrame(),
-                        "localStorage.getItem(\"UnpartitionedLocal\")")
-            .error,
-        HasSubstr("Error: Failed to read the 'localStorage' property from "
-                  "'Window': Access is denied for this document."));
+    EXPECT_THAT(content::EvalJs(GetChildFrame(),
+                                "localStorage.getItem(\"UnpartitionedLocal\")"),
+                content::EvalJsResult::ErrorIs(HasSubstr(
+                    "Error: Failed to read the 'localStorage' property from "
+                    "'Window': Access is denied for this document.")));
   }
 }
 

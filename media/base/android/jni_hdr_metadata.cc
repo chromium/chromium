@@ -95,3 +95,5 @@ jint JniHdrMetadata::MaxFrameAverageLuminance(JNIEnv* env) {
 }
 
 }  // namespace media
+
+DEFINE_JNI(HdrMetadata)

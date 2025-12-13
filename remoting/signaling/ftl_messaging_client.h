@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/message_tracker.h"
 #include "remoting/signaling/messaging_client.h"
 
@@ -29,8 +30,9 @@ class SharedURLLoaderFactory;
 
 namespace remoting {
 
+class FtlMessageChannelStrategy;
+class MessageChannel;
 class ProtobufHttpClient;
-class MessageReceptionChannel;
 class OAuthTokenGetter;
 class RegistrationManager;
 class ScopedProtobufHttpRequest;
@@ -55,9 +57,8 @@ class FtlMessagingClient final : public MessagingClient {
   // MessagingClient implementations.
   base::CallbackListSubscription RegisterMessageCallback(
       const MessageCallback& callback) override;
-  void SendMessage(const std::string& destination,
-                   const std::string& destination_registration_id,
-                   const ftl::ChromotingMessage& message,
+  void SendMessage(const SignalingAddress& destination_address,
+                   SignalingMessage&& message,
                    DoneCallback on_done) override;
   void StartReceivingMessages(base::OnceClosure on_ready,
                               DoneCallback on_closed) override;
@@ -69,7 +70,8 @@ class FtlMessagingClient final : public MessagingClient {
 
   FtlMessagingClient(std::unique_ptr<ProtobufHttpClient> client,
                      RegistrationManager* registration_manager,
-                     std::unique_ptr<MessageReceptionChannel> channel);
+                     SignalingTracker* signaling_tracker,
+                     std::unique_ptr<FtlMessageChannelStrategy> strategy);
 
   template <typename CallbackFunctor>
   void ExecuteRequest(const net::NetworkTrafficAnnotationTag& tag,
@@ -103,7 +105,7 @@ class FtlMessagingClient final : public MessagingClient {
 
   std::unique_ptr<ProtobufHttpClient> client_;
   raw_ptr<RegistrationManager> registration_manager_;
-  std::unique_ptr<MessageReceptionChannel> reception_channel_;
+  std::unique_ptr<MessageChannel> message_channel_;
   MessageCallbackList callback_list_;
   MessageTracker message_tracker_;
 };

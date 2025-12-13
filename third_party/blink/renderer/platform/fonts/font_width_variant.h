@@ -44,7 +44,7 @@ const unsigned kFontWidthVariantWidth = 2;
 static_assert(kLastFontWidthVariant >> kFontWidthVariantWidth == 0,
               "FontWidthVariantWidth must be correct");
 
-PLATFORM_EXPORT WTF::String ToString(FontWidthVariant);
+PLATFORM_EXPORT String ToString(FontWidthVariant);
 
 }  // namespace blink
 

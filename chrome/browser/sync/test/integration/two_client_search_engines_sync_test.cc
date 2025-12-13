@@ -30,10 +30,23 @@ using search_engines_helper::SearchEnginesMatchChecker;
 using search_engines_helper::ServiceMatchesVerifier;
 using search_engines_helper::TemplateURLBuilder;
 
-class TwoClientSearchEnginesSyncTest : public SyncTest {
+class TwoClientSearchEnginesSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientSearchEnginesSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientSearchEnginesSyncTest() : SyncTest(TWO_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                                syncer::kSeparateLocalAndAccountSearchEngines},
+          /*disabled_features=*/{});
+    }
+  }
   ~TwoClientSearchEnginesSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   bool SetupClients() override {
     if (!SyncTest::SetupClients()) {
@@ -50,7 +63,15 @@ class TwoClientSearchEnginesSyncTest : public SyncTest {
 
     return true;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientSearchEnginesSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
 
 class TwoClientSearchEnginesSyncTestWithVerifier
     : public TwoClientSearchEnginesSyncTest {
@@ -73,7 +94,12 @@ class TwoClientSearchEnginesSyncTestWithVerifier
   }
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Add)) {
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientSearchEnginesSyncTestWithVerifier,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Add)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
@@ -89,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Add)) {
   ASSERT_TRUE(HasSearchEngine(/*profile_index=*/1, kKeyword));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Delete)) {
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Delete)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
@@ -110,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Delete)) {
   ASSERT_FALSE(HasSearchEngine(/*profile_index=*/1, kKeyword));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(AddMultiple)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -127,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTestWithVerifier, Duplicates) {
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTestWithVerifier, Duplicates) {
   ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
@@ -148,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTestWithVerifier, Duplicates) {
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(UpdateKeyword)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -168,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(UpdateUrl)) {
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, E2E_ENABLED(UpdateUrl)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
@@ -187,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(UpdateUrl)) {
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(UpdateName)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -207,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, ConflictKeyword) {
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, ConflictKeyword) {
   ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
@@ -227,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, ConflictKeyword) {
   ASSERT_TRUE(AllServicesMatch());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, MergeMultiple) {
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, MergeMultiple) {
   ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
@@ -255,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, MergeMultiple) {
   ASSERT_TRUE(AllServicesMatch());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTestWithVerifier,
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTestWithVerifier,
                        DisableSync) {
   ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
@@ -263,13 +289,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTestWithVerifier,
   // flakiness due to random GUIDs in prepopulated engines.
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 
-  ASSERT_TRUE(GetClient(1)->DisableSyncForAllDatatypes());
+  ASSERT_TRUE(GetClient(1)->DisableAllSelectableTypes());
   AddSearchEngine(/*profile_index=*/0, "test0");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   ASSERT_TRUE(ServiceMatchesVerifier(0));
   ASSERT_FALSE(ServiceMatchesVerifier(1));
 
-  ASSERT_TRUE(GetClient(1)->EnableSyncForRegisteredDatatypes());
+  ASSERT_TRUE(GetClient(1)->EnableAllSelectableTypes());
   ASSERT_TRUE(AwaitQuiescence());
   ASSERT_TRUE(AllServicesMatch());
 }

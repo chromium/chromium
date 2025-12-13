@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunker.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 #include "ui/gfx/color_utils.h"
 
@@ -120,8 +122,17 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
       DCHECK(chunk.has_text);
     }
   } else if (const auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item)) {
-    if (scrollbar->IsOpaque())
+    if (scrollbar->IsOpaque()) {
       chunk.rect_known_to_be_opaque = item.VisualRect();
+    }
+  } else if (const auto* foreign_item =
+                 DynamicTo<ForeignLayerDisplayItem>(item)) {
+    // Assume all OOP iframes contain text to prevent applying
+    // 2DScaleTransformWithCompositedDescendants on 2D-transformed ancestors,
+    // which can cause text blurriness in iframes.
+    if (foreign_item->GetId().type == DisplayItem::kForeignLayerRemoteFrame) {
+      chunk.has_text = true;
+    }
   }
 
   chunk.raster_effect_outset =
@@ -163,6 +174,22 @@ bool PaintChunker::AddHitTestDataToCurrentChunk(
       wheel_event_rects.push_back(rect);
     }
   }
+#if BUILDFLAG(IS_ANDROID)
+  // TODO: add appropriate condition here to check for interactable or
+  // occluding an interactable.
+  if (blink::features::IsXrDevice()) {
+    DOMNodeId dom_node_id = client.OwnerNodeId(/*is_internal_content=*/false);
+    if (dom_node_id != kInvalidDOMNodeId) {
+      CompositorElementId compositor_element_id =
+          CompositorElementIdFromDOMNodeId(dom_node_id);
+
+      auto& xr_regions = chunk.EnsureHitTestData().xr_regions;
+      if (xr_regions.empty() || xr_regions.back() != compositor_element_id) {
+        xr_regions.push_back(compositor_element_id);
+      }
+    }
+  }
+#endif
   return created_new_chunk;
 }
 

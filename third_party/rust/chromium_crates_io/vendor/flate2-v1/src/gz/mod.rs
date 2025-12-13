@@ -512,7 +512,7 @@ mod tests {
                     if c & 1 != 0 {
                         c = 0xedb88320 ^ (c >> 1);
                     } else {
-                        c = c >> 1;
+                        c >>= 1;
                     }
                 }
                 crc.crc_table[n] = c;
@@ -551,7 +551,7 @@ mod tests {
             .into_header(Compression::fast());
 
         // Add a CRC to the header
-        header[3] = header[3] ^ super::FHCRC;
+        header[3] ^= super::FHCRC;
         let rfc1952_crc = Rfc1952Crc::new();
         let crc32 = rfc1952_crc.crc(&header);
         let crc16 = crc32 as u16;
@@ -574,7 +574,7 @@ mod tests {
 
     #[test]
     fn fields() {
-        let r = vec![0, 2, 4, 6];
+        let r = [0, 2, 4, 6];
         let e = GzBuilder::new()
             .filename("foo.rs")
             .comment("bar")

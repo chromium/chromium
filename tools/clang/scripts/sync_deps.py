@@ -79,7 +79,7 @@ def GetDepsObjectInfo(object_name: str) -> str:
   with tempfile.NamedTemporaryFile() as f:
     DownloadUrl(url, f)
     f.seek(0)
-    sha256sum = hashlib.file_digest(f, 'sha256').hexdigest()
+    sha256sum = hashlib.sha256(f.read()).hexdigest()
 
   return f'{object_name},{sha256sum},{size_bytes},{generation}'
 

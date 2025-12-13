@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
@@ -50,7 +51,7 @@ class BASE_EXPORT StackSampler {
   // if this platform does not support stack sampling.
   static std::unique_ptr<StackSampler> Create(
       SamplingProfilerThreadToken thread_token,
-      std::unique_ptr<StackUnwindData> stack_unwind_data,
+      scoped_refptr<StackUnwindData> stack_unwind_data,
       UnwindersFactory core_unwinders_factory,
       RepeatingClosure record_sample_callback,
       StackSamplerTestDelegate* test_delegate);
@@ -98,7 +99,7 @@ class BASE_EXPORT StackSampler {
   // Create a StackSampler, overriding the platform-specific components.
   static std::unique_ptr<StackSampler> CreateForTesting(
       std::unique_ptr<StackCopier> stack_copier,
-      std::unique_ptr<StackUnwindData> stack_unwind_data,
+      scoped_refptr<StackUnwindData> stack_unwind_data,
       UnwindersFactory core_unwinders_factory,
       RepeatingClosure record_sample_callback = RepeatingClosure(),
       StackSamplerTestDelegate* test_delegate = nullptr);
@@ -121,7 +122,7 @@ class BASE_EXPORT StackSampler {
                            AuxUnwinderInvokedWhileRecordingStackFrames);
 
   StackSampler(std::unique_ptr<StackCopier> stack_copier,
-               std::unique_ptr<StackUnwindData> stack_unwind_data,
+               scoped_refptr<StackUnwindData> stack_unwind_data,
                UnwindersFactory core_unwinders_factory,
                RepeatingClosure record_sample_callback,
                StackSamplerTestDelegate* test_delegate);
@@ -152,9 +153,10 @@ class BASE_EXPORT StackSampler {
 
   scoped_refptr<SequencedTaskRunner> thread_pool_runner_;
 
-  // The StackUnwindData will be in released on the `thread_pool_runner_` if it
-  // is non-null.
-  std::unique_ptr<StackUnwindData> unwind_data_;
+  // The StackUnwindData is ref-counted to ensure it remains valid while being
+  // accessed by worker tasks on the `thread_pool_runner_`, even if the
+  // StackSampler is destroyed.
+  scoped_refptr<StackUnwindData> unwind_data_;
 
   bool was_initialized_ = false;
   bool thread_pool_ready_ = false;

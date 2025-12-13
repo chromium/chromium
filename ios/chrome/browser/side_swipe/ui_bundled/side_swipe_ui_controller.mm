@@ -75,14 +75,19 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
   // The webStateList owned by the current browser.
   raw_ptr<WebStateList> _webStateList;
+
+  // Used to fetch snapshot for tabs.
+  raw_ptr<SnapshotBrowserAgent> _snapshotBrowserAgent;
 }
 
-- (instancetype)initWithFullscreenController:
-                    (FullscreenController*)fullscreenController
-                                webStateList:(WebStateList*)webStateList {
+- (instancetype)
+    initWithFullscreenController:(FullscreenController*)fullscreenController
+                    webStateList:(WebStateList*)webStateList
+            snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent {
   self = [super init];
   if (self) {
     _fullscreenController = fullscreenController;
+    _snapshotBrowserAgent = snapshotBrowserAgent;
     _webStateList = webStateList;
   }
   return self;
@@ -91,6 +96,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
 - (void)disconnect {
   [_tabSideSwipeView disconnect];
   [self removeHorizontalGestureRecognizers];
+  _snapshotBrowserAgent = nullptr;
   _fullscreenController = nullptr;
   _webStateList = nullptr;
 }
@@ -592,7 +598,8 @@ const CGFloat kIpadTabSwipeDistance = 100;
       _tabSideSwipeView =
           [[CardSideSwipeView alloc] initWithFrame:frame
                                          topMargin:headerHeight
-                                      webStateList:_webStateList];
+                                      webStateList:_webStateList
+                              snapshotBrowserAgent:_snapshotBrowserAgent];
       _tabSideSwipeView.toolbarSnapshotProvider = self.toolbarSnapshotProvider;
 
       [_tabSideSwipeView setAutoresizingMask:UIViewAutoresizingFlexibleWidth |

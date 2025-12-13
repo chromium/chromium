@@ -7,9 +7,7 @@
 #import "base/feature_list.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 
-BASE_FEATURE(kAppStoreRating,
-             "AppStoreRating",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAppStoreRating, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAppStoreRatingEnabled() {
   return base::FeatureList::IsEnabled(kAppStoreRating);
@@ -19,7 +17,7 @@ const std::vector<std::string>
 GetCountriesExcludedFromDefaultBrowserCondition() {
   return {
       "at", "be", "bg", "cy", "cz", "de", "dk", "ee", "es", "fi",
-      "fr", "gr", "hr", "hu", "ie", "is", "it", "lt", "lu", "lv",
-      "mt", "nl", "no", "pl", "pt", "ro", "se", "si", "sk",
+      "fr", "gr", "hr", "hu", "ie", "is", "it", "jp", "lt", "lu",
+      "lv", "mt", "nl", "no", "pl", "pt", "ro", "se", "si", "sk",
   };
 }

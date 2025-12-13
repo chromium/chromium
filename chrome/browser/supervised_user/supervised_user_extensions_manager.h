@@ -24,13 +24,6 @@ class ExtensionPrefs;
 class ExtensionSystem;
 class ExtensionRegistry;
 
-// UMA metrics for auto-approved extensions.
-inline constexpr char
-    kInitialLocallyApprovedExtensionCountWinLinuxMacHistogramName[] =
-        "SupervisedUsers.InitialLocallyApprovedExtensionsCountOnWinLinuxMac";
-inline constexpr char kExtensionApprovalsCountOnExtensionToggleHistogramName[] =
-    "SupervisedUsers.ExtensionApprovalsCountOnExtensionToggle";
-
 // This class groups all the functionality to handle extensions
 // for supervised users.
 class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
@@ -107,7 +100,7 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   //    custodian are also allowed.
   // REQUIRE_APPROVAL: if it is installed by the child user and
   //    hasn't been approved by the custodian yet.
-  enum class ExtensionState { BLOCKED, ALLOWED, REQUIRE_APPROVAL };
+  enum class ExtensionState { kBlocked, kAllowed, kRequireApproval };
 
   // Returns the state of an extension whether being BLOCKED, ALLOWED or
   // REQUIRE_APPROVAL from the Supervised User service's point of view.

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CREDIT_CARD_SAVE_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CREDIT_CARD_SAVE_MANAGER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -76,16 +75,16 @@ class CreditCardSaveManager {
     CARD_EXPIRATION_YEAR = 1 << 10,
     // Phone number was found on any address (not currently used).
     PHONE_NUMBER = 1 << 11,
-    // Set if cardholder name was explicitly requested in the offer-to-save
+    // Set if cardholder name will be explicitly requested in the offer-to-save
     // dialog. In general, this should happen when name is conflicting/missing
     // and the user does not have a Google Payments account. On iOS, this is set
     // when cardholder name is conflicting/missing even when the user already
     // has a Google Payments account.
-    USER_PROVIDED_NAME = 1 << 12,
-    // Set if expiration date was explicitly requested in the offer-to-save
+    USER_MUST_PROVIDE_NAME = 1 << 12,
+    // Set if expiration date will be explicitly requested in the offer-to-save
     // dialog. In general, this should happen when expiration date month or year
     // is missing.
-    USER_PROVIDED_EXPIRATION_DATE = 1 << 13,
+    USER_MUST_PROVIDE_EXPIRATION_DATE = 1 << 13,
   };
 
   // An observer class used by browsertests that gets notified whenever
@@ -202,7 +201,7 @@ class CreditCardSaveManager {
           get_details_for_enrollment_response_details);
 
   // Returns the CreditCardSaveStrikeDatabase for |client_|.
-  CreditCardSaveStrikeDatabase* GetCreditCardSaveStrikeDatabase();
+  CreditCardSaveStrikeDatabase* GetCreditCardSaveStrikeDatabase() const;
 
   // Returns the CvcStorageStrikeDatabase for `client_`.
   CvcStorageStrikeDatabase* GetCvcStorageStrikeDatabase();
@@ -351,8 +350,20 @@ class CreditCardSaveManager {
     observer_for_testing_ = observer;
   }
 
+  // Returns true if the CVC-inclusive legal message should be requested from
+  // the server.
+  bool ShouldRequestCvcInclusiveLegalMessage() const;
+
+  // Returns true if the CVC save flow is allowed. This is the case if CVC
+  // storage is enabled and the client supports saving CVC.
+  bool IsCvcSaveFlowAllowed() const;
+
   PaymentsDataManager& payments_data_manager();
   const PaymentsDataManager& payments_data_manager() const;
+
+  payments::PaymentsAutofillClient& payments_autofill_client() {
+    return *client_->GetPaymentsAutofillClient();
+  }
 
   const raw_ref<AutofillClient> client_;
 
@@ -404,7 +415,7 @@ class CreditCardSaveManager {
   // The parsed lines from the legal message returned from GetUploadDetails.
   LegalMessageLines legal_message_lines_;
 
-  std::unique_ptr<CreditCardSaveStrikeDatabase>
+  mutable std::unique_ptr<CreditCardSaveStrikeDatabase>
       credit_card_save_strike_database_;
 
   std::unique_ptr<CvcStorageStrikeDatabase> cvc_storage_strike_database_;

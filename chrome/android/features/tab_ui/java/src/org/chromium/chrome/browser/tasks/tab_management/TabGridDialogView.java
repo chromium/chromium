@@ -128,7 +128,6 @@ public class TabGridDialogView extends FrameLayout {
     private int mTopMargin;
     private int mBottomMargin;
     private int mAppHeaderHeight;
-    private int mOrientation;
     private int mParentHeight;
     private int mParentWidth;
     private int mBackgroundDrawableColor;
@@ -158,6 +157,10 @@ public class TabGridDialogView extends FrameLayout {
         setVisibility(GONE);
     }
 
+    private int getOrientation() {
+        return mContext.getResources().getConfiguration().orientation;
+    }
+
     void forceAnimationToFinish() {
         if (mCurrentDialogAnimator != null) {
             mCurrentDialogAnimator.end();
@@ -167,12 +170,20 @@ public class TabGridDialogView extends FrameLayout {
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            View v = findViewById(R.id.title);
-            if (v != null && v.isFocused()) {
-                Rect rect = new Rect();
-                v.getGlobalVisibleRect(rect);
-                if (!rect.contains((int) event.getRawX(), (int) event.getRawY())) {
-                    v.clearFocus();
+            View title = findViewById(R.id.title);
+
+            if (title != null && title.isFocused()) {
+                Rect viewRect = new Rect();
+                // 1. Get the text view's local bounds (0, 0, width, height)
+                title.getDrawingRect(viewRect);
+
+                // 2. Map those bounds to THIS toolbar's coordinate system
+                // This handles all nesting (LinearLayout inside FrameLayout) automatically.
+                offsetDescendantRectToMyCoords(title, viewRect);
+
+                // 3. Compare with event.getX()/getY() which are also relative to this toolbar
+                if (!viewRect.contains((int) event.getX(), (int) event.getY())) {
+                    title.clearFocus();
                 }
             }
         }
@@ -189,15 +200,14 @@ public class TabGridDialogView extends FrameLayout {
                 () -> {
                     assumeNonNull(mParent);
                     // Skip updating the parent view size caused by keyboard showing.
-                    if (!KeyboardVisibilityDelegate.getInstance()
-                            .isKeyboardShowing(mContext, this)) {
+                    if (!KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this)) {
                         mParentWidth = mParent.getWidth();
                         mParentHeight = mParent.getHeight();
-                        updateDialogWithOrientation(mOrientation);
+                        updateDialogWithOrientation(getOrientation());
                     }
                 };
         mParent.getViewTreeObserver().addOnGlobalLayoutListener(mParentGlobalLayoutListener);
-        updateDialogWithOrientation(mOrientation);
+        updateDialogWithOrientation(getOrientation());
     }
 
     @Override
@@ -891,7 +901,6 @@ public class TabGridDialogView extends FrameLayout {
             // Set params to force requestLayout() to reflect margin immediately.
             mDialogContainerView.setLayoutParams(mContainerParams);
         }
-        mOrientation = orientation;
     }
 
     private int clampMargin(int sizeAdjustedValue, int lowerBound, int upperBound) {
@@ -903,7 +912,7 @@ public class TabGridDialogView extends FrameLayout {
 
     void setAppHeaderHeight(int height) {
         mAppHeaderHeight = height;
-        updateDialogWithOrientation(mOrientation);
+        updateDialogWithOrientation(getOrientation());
     }
 
     private void updateAnimationCardView(@Nullable View view) {
@@ -1176,7 +1185,7 @@ public class TabGridDialogView extends FrameLayout {
      */
     void setSendFeedbackVisible(boolean visible) {
         mSendFeedbackButton.setVisibility(visible ? VISIBLE : GONE);
-        updateDialogWithOrientation(mOrientation);
+        updateDialogWithOrientation(getOrientation());
     }
 
     /** Sets an {@link Runnable} to be invoked when the feedback button is clicked. */

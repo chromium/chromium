@@ -50,7 +50,8 @@ import * as Common from 'devtools/core/common/common.js';
   SourcesTestRunner.startDebuggerTest(step1);
 
   function step1() {
-    TestRunner.DebuggerAgent.setAsyncCallStackDepth(maxAsyncCallStackDepth).then(step2);
+    TestRunner.DebuggerAgent.invoke_setAsyncCallStackDepth({maxDepth: maxAsyncCallStackDepth});
+    step2();
   }
 
   function step2() {

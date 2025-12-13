@@ -315,7 +315,6 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
   MAP_ROLE(ui::kAXCheckBoxClassname, ax::mojom::Role::kCheckBox);
   MAP_ROLE(ui::kAXCheckedTextViewClassname, ax::mojom::Role::kStaticText);
   MAP_ROLE(ui::kAXCompoundButtonClassname, ax::mojom::Role::kCheckBox);
-  MAP_ROLE(ui::kAXDialogClassname, ax::mojom::Role::kDialog);
   MAP_ROLE(ui::kAXGridViewClassname, ax::mojom::Role::kTable);
   MAP_ROLE(ui::kAXHorizontalScrollViewClassname, ax::mojom::Role::kScrollView);
   MAP_ROLE(ui::kAXImageClassname, ax::mojom::Role::kImage);

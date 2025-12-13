@@ -48,9 +48,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".UserInitiated" summary="User initiated priority"/>
 </variants>
 
-<histogram name="History.AttemptedToFixProfileError" units="units"
-    expires_after="2024-02-11">
-  <owner>sky@chromium.org</owner>
+<histogram name="History.AttemptedToFixProfileError"
+    enum="BooleanDatabaseKilled" expires_after="2026-08-21">
+  <owner>etienneb@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -62,6 +62,9 @@ chromium-metrics-reviews@google.com.
     with no history database and nothing will be done to try to fix the error.
     See History.InitializationFailureStep for which particular step of history
     initialization failed.
+
+    Warning: this histogram was expired from 2024-02-11 to 2025-08-21; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -94,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.Duration.ChromeTask.{Task}"
-    units="ms" expires_after="2025-11-16">
+    units="ms" expires_after="2026-05-24">
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <component>1456716</component>
@@ -220,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.Duration.Task.{Task}" units="ms"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <component>1456716</component>
@@ -234,7 +237,6 @@ chromium-metrics-reviews@google.com.
     <variant name="ChannelIds" summary="ChannelIds"/>
     <variant name="CodeCaches" summary="CodeCaches"/>
     <variant name="Conversions" summary="Conversions"/>
-    <variant name="DeferredCookies" summary="DeferredCookies"/>
     <variant name="EmbedderData" summary="EmbedderData"/>
     <variant name="HttpAndMediaCaches" summary="HttpAndMediaCaches"/>
     <variant name="HttpCache" summary="HttpCache"/>
@@ -314,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.ImportantDialogShown"
-    enum="BooleanShown" expires_after="2025-12-14">
+    enum="BooleanShown" expires_after="2026-02-22">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>1456716</component>
@@ -429,7 +431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.InitialState"
-    enum="HistoryClustersInitialState" expires_after="2025-11-16">
+    enum="HistoryClustersInitialState" expires_after="2026-05-24">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
@@ -454,7 +456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.NumQueries"
-    units="number queries made" expires_after="2025-11-16">
+    units="number queries made" expires_after="2026-01-18">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
@@ -800,7 +802,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.QueryAnnotatedVisits.ThreadTime"
-    units="ms" expires_after="2025-11-23">
+    units="ms" expires_after="2026-03-29">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
@@ -1389,7 +1391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseSqliteError" enum="SqliteLoggedResultCode"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>asully@chromium.org</owner>
   <component>1456716</component>
@@ -1399,8 +1401,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.DatabaseTooOld" enum="HistoryDatabaseVersion"
+    expires_after="2026-09-12">
+  <owner>jpgravel@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <component>1456716</component>
+  <summary>
+    The version of the database found on disk if it's too old to be migrated to
+    the current version.
+  </summary>
+</histogram>
+
+<histogram name="History.DatabaseVersion" enum="HistoryDatabaseVersion"
+    expires_after="2026-09-12">
+  <owner>jpgravel@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <component>1456716</component>
+  <summary>
+    The version of the database loaded during initialization. This is the
+    version loaded from disk, before the database is migrated to the current
+    version.
+  </summary>
+</histogram>
+
 <histogram name="History.DomainCount1Day_V2" units="domains"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1408,12 +1433,13 @@ chromium-metrics-reviews@google.com.
   <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Number of unique domains visited by the user within a calendar day in user's
-    local timezone. For each regular profile (not incognito, guest, system,
-    etc.), reported at profile open (which usually happens at startup) for each
-    unreported day (up to 7 days) prior to the current date, and also reported
-    once every 24 hours thereafter for the latest unreported day, while the
-    profile remains open. If no domains are visited in a given day, a count of 0
-    will be reported for that day.
+    local timezone, excluding domains that have only ever had visits with a
+    4XX/5XX HTTP response code. For each regular profile (not incognito, guest,
+    system, etc.), reported at profile open (which usually happens at startup)
+    for each unreported day (up to 7 days) prior to the current date, and also
+    reported once every 24 hours thereafter for the latest unreported day, while
+    the profile remains open. If no domains are visited in a given day, a count
+    of 0 will be reported for that day.
 
     Warning about Android activity types (custom tabs, browser app, etc.): Do
     not look at this data using an activity type filter; when looking at data
@@ -1442,7 +1468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount1Day_V3" units="domains"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1450,12 +1476,54 @@ chromium-metrics-reviews@google.com.
   <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Number of unique domains visited by the user within a calendar day in user's
-    local timezone. For each regular profile (not incognito, guest, system,
-    etc.), reported at profile open (which usually happens at startup) for each
-    unreported day (up to 7 days) prior to the current date, and also reported
-    once every 24 hours thereafter for the latest unreported day, while the
-    profile remains open. If no domains are visited in a given day, a count of 0
-    will be reported for that day.
+    local timezone, excluding domains that have only ever had visits with a
+    4XX/5XX HTTP response code. For each regular profile (not incognito, guest,
+    system, etc.), reported at profile open (which usually happens at startup)
+    for each unreported day (up to 7 days) prior to the current date, and also
+    reported once every 24 hours thereafter for the latest unreported day, while
+    the profile remains open. If no domains are visited in a given day, a count
+    of 0 will be reported for that day.
+
+    Warning about Android activity types (custom tabs, browser app, etc.): Do
+    not look at this data using an activity type filter; when looking at data
+    from Android, use &quot;Android Chrome (All)&quot;. Why? This histogram
+    reflects all usage of the browser. Using a filter such as &quot;Browser
+    App&quot; is not appropriate because it doesn't make sense to ask &quot;how
+    many web sites were visited in Chrome (in any mode) the last week but only
+    tell me if the answer if this current launch was in browser app mode.&quot;
+
+    Warning about delayed data: Chrome may upload logs on a given day without
+    uploading this histogram. This can happen because Chrome uploads logs
+    initially upon startup. This histogram is emitted shortly _after_ startup.
+    In the case of short sessions, it's possible the log with this histogram did
+    not have time to be uploaded. Generally the log will be cached and uploaded
+    the next time the user starts Chrome. We should still get one count per
+    calendar day; it simply may not be on the day the metric was computed.
+    (Exception: on Android before M-91, sometimes these emitted histograms were
+    lost due to lack of robust &quot;background logging&quot;.)
+
+    Note: This histogram attempts to emit every 24 hours that the device is on,
+    but the timer does not increment while the machine is suspended. Prefer the
+    V4 version of this metric which accounts for suspended time.
+  </summary>
+</histogram>
+
+<histogram name="History.DomainCount1Day_V4" units="domains"
+    expires_after="2026-05-10">
+  <owner>mpearson@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <component>1456716</component>
+  <improvement direction="HIGHER_IS_BETTER"/>
+  <summary>
+    Number of unique domains visited by the user within a calendar day in user's
+    local timezone, excluding domains that have only ever had visits with a
+    4XX/5XX HTTP response code. For each regular profile (not incognito, guest,
+    system, etc.), reported at profile open (which usually happens at startup)
+    for each unreported day (up to 7 days) prior to the current date, and also
+    reported once every 24 hours thereafter for the latest unreported day, while
+    the profile remains open. If no domains are visited in a given day, a count
+    of 0 will be reported for that day.
 
     Warning about Android activity types (custom tabs, browser app, etc.): Do
     not look at this data using an activity type filter; when looking at data
@@ -1478,20 +1546,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount28Day_V2" units="domains"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <component>1456716</component>
   <summary>
     Number of unique domains visited by the user within a 28 calendar day period
-    in user's local timezone. For each regular profile (not incognito, guest,
-    system, etc.), reported at profile open (which usually happens at startup)
-    for each unreported 28-day period (up to 7 periods) ending on the current
-    day, current day - 1, current day - 2, etc. Also reported once every 24
-    hours thereafter for the latest unreported period, while the profile remains
-    open. If no domains are visited during a 28-day period, a count of 0 will be
-    reported for that period.
+    in user's local timezone, excluding domains that have only ever had visits
+    with a 4XX/5XX HTTP response code. For each regular profile (not incognito,
+    guest, system, etc.), reported at profile open (which usually happens at
+    startup) for each unreported 28-day period (up to 7 periods) ending on the
+    current day, current day - 1, current day - 2, etc. Also reported once every
+    24 hours thereafter for the latest unreported period, while the profile
+    remains open. If no domains are visited during a 28-day period, a count of 0
+    will be reported for that period.
 
     Warning about Android activity types (custom tabs, browser app, etc.): Do
     not look at this data using an activity type filter; when looking at data
@@ -1520,20 +1589,62 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount28Day_V3" units="domains"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <component>1456716</component>
   <summary>
     Number of unique domains visited by the user within a 28 calendar day period
-    in user's local timezone. For each regular profile (not incognito, guest,
-    system, etc.), reported at profile open (which usually happens at startup)
-    for each unreported 28-day period (up to 7 periods) ending on the current
-    day, current day - 1, current day - 2, etc. Also reported once every 24
-    hours thereafter for the latest unreported period, while the profile remains
-    open. If no domains are visited during a 28-day period, a count of 0 will be
-    reported for that period.
+    in user's local timezone, excluding domains that have only ever had visits
+    with a 4XX/5XX HTTP response code. For each regular profile (not incognito,
+    guest, system, etc.), reported at profile open (which usually happens at
+    startup) for each unreported 28-day period (up to 7 periods) ending on the
+    current day, current day - 1, current day - 2, etc. Also reported once every
+    24 hours thereafter for the latest unreported period, while the profile
+    remains open. If no domains are visited during a 28-day period, a count of 0
+    will be reported for that period.
+
+    Warning about Android activity types (custom tabs, browser app, etc.): Do
+    not look at this data using an activity type filter; when looking at data
+    from Android, use &quot;Android Chrome (All)&quot;. Why? This histogram
+    reflects all usage of the browser. Using a filter such as &quot;Browser
+    App&quot; is not appropriate because it doesn't make sense to ask &quot;how
+    many web sites were visited in Chrome (in any mode) the last week but only
+    tell me if the answer if this current launch was in browser app mode.&quot;
+
+    Warning about delayed data: Chrome may upload logs on a given day without
+    uploading this histogram. This can happen because Chrome uploads logs
+    initially upon startup. This histogram is emitted shortly _after_ startup.
+    In the case of short sessions, it's possible the log with this histogram did
+    not have time to be uploaded. Generally the log will be cached and uploaded
+    the next time the user starts Chrome. We should still get one count per
+    calendar day; it simply may not be on the day the metric was computed.
+    (Exception: on Android before M-91, sometimes these emitted histograms were
+    lost due to lack of robust &quot;background logging&quot;.)
+
+    Note: This histogram attempts to emit every 24 hours that the device is on,
+    but the timer does not increment while the machine is suspended. Prefer the
+    V4 version of this metric which accounts for suspended time.
+  </summary>
+</histogram>
+
+<histogram name="History.DomainCount28Day_V4" units="domains"
+    expires_after="2026-05-24">
+  <owner>mpearson@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <component>1456716</component>
+  <summary>
+    Number of unique domains visited by the user within a 28 calendar day period
+    in user's local timezone, excluding domains that have only ever had visits
+    with a 4XX/5XX HTTP response code. For each regular profile (not incognito,
+    guest, system, etc.), reported at profile open (which usually happens at
+    startup) for each unreported 28-day period (up to 7 periods) ending on the
+    current day, current day - 1, current day - 2, etc. Also reported once every
+    24 hours thereafter for the latest unreported period, while the profile
+    remains open. If no domains are visited during a 28-day period, a count of 0
+    will be reported for that period.
 
     Warning about Android activity types (custom tabs, browser app, etc.): Do
     not look at this data using an activity type filter; when looking at data
@@ -1556,20 +1667,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount7Day_V2" units="domains"
-    expires_after="2025-10-26">
+    expires_after="2026-05-03">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <component>1456716</component>
   <summary>
     Number of unique domains visited by the user within a 7 calendar day period
-    in user's local timezone. For each regular profile (not incognito, guest,
-    system, etc.), reported at profile open (which usually happens at startup)
-    for each unreported 7-day period (up to 7 periods) ending on the current
-    day, current day - 1, current day - 2, etc. Also reported once every 24
-    hours thereafter for the latest unreported period, while the profile remains
-    open. If no domains are visited during a 7-day period, a count 0 will be
-    reported for that period.
+    in user's local timezone, excluding domains that have only ever had visits
+    with a 4XX/5XX HTTP response code. For each regular profile (not incognito,
+    guest, system, etc.), reported at profile open (which usually happens at
+    startup) for each unreported 7-day period (up to 7 periods) ending on the
+    current day, current day - 1, current day - 2, etc. Also reported once every
+    24 hours thereafter for the latest unreported period, while the profile
+    remains open. If no domains are visited during a 7-day period, a count 0
+    will be reported for that period.
 
     Warning about Android activity types (custom tabs, browser app, etc.): Do
     not look at this data using an activity type filter; when looking at data
@@ -1598,20 +1710,62 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount7Day_V3" units="domains"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <component>1456716</component>
   <summary>
     Number of unique domains visited by the user within a 7 calendar day period
-    in user's local timezone. For each regular profile (not incognito, guest,
-    system, etc.), reported at profile open (which usually happens at startup)
-    for each unreported 7-day period (up to 7 periods) ending on the current
-    day, current day - 1, current day - 2, etc. Also reported once every 24
-    hours thereafter for the latest unreported period, while the profile remains
-    open. If no domains are visited during a 7-day period, a count 0 will be
-    reported for that period.
+    in user's local timezone, excluding domains that have only ever had visits
+    with a 4XX/5XX HTTP response code. For each regular profile (not incognito,
+    guest, system, etc.), reported at profile open (which usually happens at
+    startup) for each unreported 7-day period (up to 7 periods) ending on the
+    current day, current day - 1, current day - 2, etc. Also reported once every
+    24 hours thereafter for the latest unreported period, while the profile
+    remains open. If no domains are visited during a 7-day period, a count 0
+    will be reported for that period.
+
+    Warning about Android activity types (custom tabs, browser app, etc.): Do
+    not look at this data using an activity type filter; when looking at data
+    from Android, use &quot;Android Chrome (All)&quot;. Why? This histogram
+    reflects all usage of the browser. Using a filter such as &quot;Browser
+    App&quot; is not appropriate because it doesn't make sense to ask &quot;how
+    many web sites were visited in Chrome (in any mode) the last week but only
+    tell me if the answer if this current launch was in browser app mode.&quot;
+
+    Warning about delayed data: Chrome may upload logs on a given day without
+    uploading this histogram. This can happen because Chrome uploads logs
+    initially upon startup. This histogram is emitted shortly _after_ startup.
+    In the case of short sessions, it's possible the log with this histogram did
+    not have time to be uploaded. Generally the log will be cached and uploaded
+    the next time the user starts Chrome. We should still get one count per
+    calendar day; it simply may not be on the day the metric was computed.
+    (Exception: on Android before M-91, sometimes these emitted histograms were
+    lost due to lack of robust &quot;background logging&quot;.)
+
+    Note: This histogram attempts to emit every 24 hours that the device is on,
+    but the timer does not increment while the machine is suspended. Prefer the
+    V4 version of this metric which accounts for suspended time.
+  </summary>
+</histogram>
+
+<histogram name="History.DomainCount7Day_V4" units="domains"
+    expires_after="2026-05-24">
+  <owner>mpearson@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <component>1456716</component>
+  <summary>
+    Number of unique domains visited by the user within a 7 calendar day period
+    in user's local timezone, excluding domains that have only ever had visits
+    with a 4XX/5XX HTTP response code. For each regular profile (not incognito,
+    guest, system, etc.), reported at profile open (which usually happens at
+    startup) for each unreported 7-day period (up to 7 periods) ending on the
+    current day, current day - 1, current day - 2, etc. Also reported once every
+    24 hours thereafter for the latest unreported period, while the profile
+    remains open. If no domains are visited during a 7-day period, a count 0
+    will be reported for that period.
 
     Warning about Android activity types (custom tabs, browser app, etc.): Do
     not look at this data using an activity type filter; when looking at data
@@ -1682,8 +1836,8 @@ chromium-metrics-reviews@google.com.
     The time spent on the Storage sequence to read existing passages and
     embeddings from the database so it can be used as a cache to avoid
     re-embedding identical passages from the same URL. Logged each time page
-    passages are retrieved when the kUseDatabaseBeforeEmbedder feature parameter
-    is enabled. (This metric includes SQL query time only; no waits.)
+    passages are retrieved. (This metric includes SQL query time only; no
+    waits.)
   </summary>
 </histogram>
 
@@ -1694,8 +1848,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time the HistoryEmbeddingsService waited to receive existing passages
     and embeddings from its database Storage sequence. Logged each time page
-    passages are retrieved when the kUseDatabaseBeforeEmbedder feature parameter
-    is enabled. (This metric includes the SQL query time plus sequence waits.)
+    passages are retrieved. (This metric includes the SQL query time plus
+    sequence waits.)
   </summary>
 </histogram>
 
@@ -1719,8 +1873,7 @@ chromium-metrics-reviews@google.com.
     the URL was retrieved and used as a cache. These passages reuse the
     embedding stored for the identical passage in the database, thus saving the
     embedder this portion of work. Logged regardless of presence/absence of
-    existing data for the URL, as long as the kUseDatabaseBeforeEmbedder feature
-    parameter is enabled.
+    existing data for the URL.
   </summary>
 </histogram>
 
@@ -1748,7 +1901,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.DatabaseInitialized" enum="Boolean"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>orinj@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1826,7 +1979,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.DatabaseStoredAsciiPassages"
-    units="passages" expires_after="2026-02-28">
+    units="passages" expires_after="2026-05-03">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -1854,7 +2007,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.DatabaseStoredNonAsciiPassages"
-    units="passages" expires_after="2026-02-28">
+    units="passages" expires_after="2026-05-03">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -1868,7 +2021,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.CacheHit" enum="Boolean"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -1880,7 +2033,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.CpuUsage2" units="1/100 %"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -1892,7 +2045,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.CpuUsage2.NotRunning"
-    units="1/100 %" expires_after="2026-02-28">
+    units="1/100 %" expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <owner>orinj@chromium.org</owner>
@@ -1905,7 +2058,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.CpuUsage2.Running" units="1/100 %"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <owner>orinj@chromium.org</owner>
@@ -1918,7 +2071,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.CpuUsage2.RunningPartial"
-    units="1/100 %" expires_after="2026-02-28">
+    units="1/100 %" expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <owner>orinj@chromium.org</owner>
@@ -1931,7 +2084,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.EmbeddingsGenerationSucceeded"
-    enum="Boolean" expires_after="2026-02-28">
+    enum="Boolean" expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -1941,7 +2094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.EmbeddingsModelLoadDuration"
-    units="ms" expires_after="2026-02-28">
+    units="ms" expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -1971,7 +2124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.LaunchDuration" units="ms"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>wittman@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -1993,7 +2146,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Embeddings.Embedder.PassageEmbeddingsGenerationDuration"
-    units="ms" expires_after="2026-02-28">
+    units="ms" expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -2004,7 +2157,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Embeddings.Embedder.PassageEmbeddingsGenerationThreadDuration"
-    units="ms" expires_after="2026-02-28">
+    units="ms" expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -2015,7 +2168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.PassageTokenCount" units="tokens"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -2025,7 +2178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.QueryEmbeddingsGenerationDuration"
-    units="ms" expires_after="2026-02-28">
+    units="ms" expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -2048,7 +2201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.SentencePieceModelLoadDuration"
-    units="ms" expires_after="2026-02-28">
+    units="ms" expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -2068,7 +2221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.TokenizationDuration" units="ms"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -2184,7 +2337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Passages.ExtractionTime" units="ms"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2196,7 +2349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Passages.PassageCount" units="passages"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2320,7 +2473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Search.Duration" units="ms"
-    expires_after="2026-02-28">
+    expires_after="2026-05-24">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2354,7 +2507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Search.PassageScanningTime" units="ms"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2366,7 +2519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Search.ScoringTime" units="ms"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2388,7 +2541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Search.TotalSearchTime" units="ms"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2419,7 +2572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.TaskDuration" units="ms"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>wittman@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2429,7 +2582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.TaskDuration.Other" units="ms"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>wittman@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2440,7 +2593,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.TaskDuration.Passive" units="ms"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>wittman@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2462,7 +2615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.TaskDuration.UserInitiated" units="ms"
-    expires_after="2026-02-28">
+    expires_after="2026-05-03">
   <owner>wittman@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2473,7 +2626,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.UserActions{UiSurface}"
-    enum="EmbeddingsUserActions" expires_after="2026-02-28">
+    enum="EmbeddingsUserActions" expires_after="2026-05-03">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2514,7 +2667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsLegacy" units="visits"
-    expires_after="2025-11-16">
+    expires_after="2026-05-10">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -2527,7 +2680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsNotRemapped" units="visits"
-    expires_after="2025-11-16">
+    expires_after="2026-05-10">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -2540,7 +2693,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsRemappableFrom" units="visits"
-    expires_after="2025-11-16">
+    expires_after="2026-05-10">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -2553,7 +2706,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsRemappableOpener" units="visits"
-    expires_after="2025-11-16">
+    expires_after="2026-05-10">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -2566,7 +2719,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsTotal" units="visits"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -2577,7 +2730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.HistoryPageView" enum="HistoryPageView"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>calamity@chromium.org</owner>
   <owner>src/chrome/browser/resources/history/OWNERS</owner>
   <component>1456716</component>
@@ -2591,7 +2744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InitializationFailureStep" enum="HistoryInitStep"
-    expires_after="2025-12-14">
+    expires_after="2026-04-26">
   <owner>sky@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>1456716</component>
@@ -2604,7 +2757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryDBItemCount" units="typed URLs"
-    expires_after="2025-12-14">
+    expires_after="2026-02-22">
   <owner>sky@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <component>1456716</component>
@@ -2618,7 +2771,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryURLHistoryItems" units="items"
-    expires_after="2026-02-09">
+    expires_after="2026-05-24">
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <component>1456716</component>
@@ -2630,7 +2783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Is4XXOr5XXStatusCode" enum="Boolean"
-    expires_after="2026-01-31">
+    expires_after="2026-04-05">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2642,8 +2795,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.MigrateFailureFromVersion" units="units"
-    expires_after="2026-06-25">
+<histogram name="History.MetaTableExists" enum="Boolean"
+    expires_after="2026-09-12">
+  <owner>etienneb@chromium.org</owner>
+  <owner>jpgravel@chromium.org</owner>
+  <component>1456716</component>
+  <summary>
+    Indicates whether an existing history database has a meta table or not.
+    Logged each time the history table is initialized.
+  </summary>
+</histogram>
+
+<histogram name="History.MigrateFailureFromVersion"
+    enum="HistoryDatabaseVersion" expires_after="2026-06-25">
   <owner>etienneb@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>1456716</component>
@@ -2657,7 +2821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MonthlyHostCount" units="hosts"
-    expires_after="2026-01-27">
+    expires_after="2026-05-31">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
@@ -2669,7 +2833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MonthlyURLCount" units="urls"
-    expires_after="2026-01-27">
+    expires_after="2026-05-31">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
@@ -2681,7 +2845,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MostVisitedTilesVisualDeduplication" units="tiles"
-    expires_after="2025-11-30">
+    expires_after="2026-06-07">
   <owner>hitarthkothari@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
@@ -2698,7 +2862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.QueryAppDuration" units="ms"
-    expires_after="2025-11-30">
+    expires_after="2026-04-05">
   <owner>jinsukkim@google.com</owner>
   <owner>chrome-connective-tissue-team@google.com</owner>
   <component>1456716</component>
@@ -2731,7 +2895,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.QueryMostVisitedURLsTime" units="ms"
-    expires_after="2026-03-21">
+    expires_after="2026-05-24">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -2789,7 +2953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.SearchResultClicked.Type" enum="HistoryResultType"
-    expires_after="2025-12-28">
+    expires_after="2026-05-17">
   <owner>orinj@chromium.org</owner>
   <summary>
     Logs the type of the History result clicked from History UI surfaces. Note,
@@ -2823,7 +2987,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.URLTableCount" units="URLs" expires_after="2025-12-28">
+<histogram name="History.URLRowAddedAsHidden" enum="Boolean"
+    expires_after="2026-09-19">
+  <owner>svend@chromium.org</owner>
+  <owner>kyraseevers@chromium.org</owner>
+  <summary>
+    Whether a newly added URLRow is hidden. Emitted when a URLRow is added to
+    the History database. Intended to monitor how much the number of hidden rows
+    added increases when saving page visits with HTTP response code 404 to the
+    History database.
+  </summary>
+</histogram>
+
+<histogram name="History.URLTableCount" units="URLs" expires_after="2026-05-03">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
@@ -2833,8 +3009,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.VisitAddedDueTo404" enum="Boolean"
+    expires_after="2026-09-25">
+  <owner>svend@chromium.org</owner>
+  <owner>kyraseevers@chromium.org</owner>
+  <summary>
+    Whether a page visit recorded in the History DB was added due to a
+    navigation with an HTTP response code of 404. Visits added due to a 404
+    includes a) 404 visits themselves and b) redirects in chains that end in a
+    404 visit. Recorded after a visit is successfully added to the History DB
+    (because this includes redirects, one user-initiated navigation can result
+    in multiple emissions). Intended to monitor what proportion of newly
+    recorded visits are 404s when saving page visits with HTTP response code 404
+    to the History database. See also
+    `History.VisitedLinks.AdditionCausedBy404`.
+  </summary>
+</histogram>
+
+<histogram name="History.VisitedLinks.AdditionCausedBy404" enum="Boolean"
+    expires_after="2026-09-23">
+  <owner>svend@chromium.org</owner>
+  <owner>kyraseevers@chromium.org</owner>
+  <summary>
+    When we attempt to add a VisitedLink to the in-memory partitioned hashtable,
+    records whether that record is added due to a visit with an HTTP response
+    code 404. Recorded on every attempt to write a VisitedLink entry, including
+    those for redirects (i.e., for a redirect chain ending in a 404, there will
+    be one emission per redirect, all emitted as true, since the 404 is what is
+    causing the redirects' addition to the hashtable). Intended to monitor the
+    proportion of VisitedLink entries that are for 404s, after allowing 404
+    visits to be saved to History. See also `History.VisitAddedDueTo404`.
+  </summary>
+</histogram>
+
 <histogram name="History.VisitedLinks.HashTableLengthOnReaderInit"
-    units="entries" expires_after="2025-12-21">
+    units="entries" expires_after="2026-04-26">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2845,7 +3054,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.HashTableSizeOnTableCreate" units="MB"
-    expires_after="2025-12-21">
+    expires_after="2026-04-26">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2855,7 +3064,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.HashTableUsageOnLinkAdded"
-    units="fingerprints" expires_after="2025-12-21">
+    units="fingerprints" expires_after="2026-04-26">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2866,7 +3075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.NumSaltsForNavigationsDuringBuild"
-    units="salts" expires_after="2025-12-28">
+    units="salts" expires_after="2026-03-01">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2880,7 +3089,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.TryToAddFingerprint"
-    enum="AddFingerprint" expires_after="2025-11-23">
+    enum="AddFingerprint" expires_after="2026-03-29">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2895,7 +3104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.VisitLoggedFromMainFrame" enum="Boolean"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2906,7 +3115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.VisitLoggedFromTransition"
-    enum="PageTransitionForVisitedLinks" expires_after="2026-01-04">
+    enum="PageTransitionForVisitedLinks" expires_after="2026-03-08">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2918,7 +3127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinkTableCount" units="VisitedLinks"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <component>1456589</component>
@@ -2929,7 +3138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitTableCount" units="visits"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
@@ -2939,8 +3148,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.WebHistoryMergeResult.{LocalOrRemote}.{VisitAge}"
+    units="visits" expires_after="2026-07-01">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>1456716</component>
+  <summary>
+    Recorded whenever history data is queried for users with history sync
+    enabled, for display on chrome://history (i.e. when the page is opened, when
+    the user scrolls to the bottom of the available list, and when the user
+    changes the search terms). Records the number of {LocalOrRemote} visits from
+    {VisitAge}.
+  </summary>
+  <token key="LocalOrRemote">
+    <variant name="Combined" summary="combined (local and remote)"/>
+    <variant name="LocalOnly" summary="local-only"/>
+    <variant name="RemoteOnly" summary="remote-only"/>
+  </token>
+  <token key="VisitAge">
+    <variant name="PostExpiryThreshold" summary="at most 90 days ago"/>
+    <variant name="PreExpiryThreshold" summary="more than 90 days ago"/>
+  </token>
+</histogram>
+
 <histogram name="History.WeeklyHostCount" units="hosts"
-    expires_after="2026-01-04">
+    expires_after="2026-05-10">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
@@ -2952,7 +3184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.WeeklyURLCount" units="URLs"
-    expires_after="2025-11-30">
+    expires_after="2026-06-07">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
@@ -2960,6 +3192,37 @@ chromium-metrics-reviews@google.com.
     Unique URLs in History database urls table with last-visit times in the last
     7 days. Metrics are logged on initialization of the History DB on one-third
     of starts.
+  </summary>
+</histogram>
+
+<histogram name="HistoryPage.ActorContextMenuActions"
+    enum="VisitContextMenuAction" expires_after="2026-06-01">
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Recorded for each context menu action click on an actor-annotated visit in
+    the chrome://history page.
+  </summary>
+</histogram>
+
+<histogram name="HistoryPage.ActorItemsShown" enum="BooleanVisible"
+    expires_after="2026-06-01">
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Records if actor-annotated visits are contained in the history items shown
+    on the chrome://history page. Recorded every time the history page queries
+    for history.
+  </summary>
+</histogram>
+
+<histogram name="HistoryPage.NonActorContextMenuActions"
+    enum="VisitContextMenuAction" expires_after="2026-06-01">
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Recorded for each context menu action click on a regular (non-actor
+    annotated) visit in the chrome://history page.
   </summary>
 </histogram>
 

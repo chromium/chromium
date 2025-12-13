@@ -71,12 +71,10 @@
   [self.overscrollActionsController setStyle:style];
   [self updateOverscrollActionsState];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateOverscrollActionsState)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateOverscrollActionsState)];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -90,17 +88,6 @@
   [self.scrollView setContentSize:newFrame.size];
 }
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateOverscrollActionsState];
-}
-#endif
-
 #pragma mark - SadTabViewDelegate
 
 - (void)sadTabViewShowReportAnIssue:(SadTabView*)sadTabView {
@@ -110,6 +97,12 @@
 - (void)sadTabView:(SadTabView*)sadTabView
     showSuggestionsPageWithURL:(const GURL&)URL {
   [self.delegate sadTabViewController:self showSuggestionsPageWithURL:URL];
+}
+
+- (UIMenu*)sadTabView:(SadTabView*)sadTabView
+    contextMenuConfigurationForURL:(const GURL&)URL {
+  return [self.delegate sadTabViewController:self
+              contextMenuConfigurationForURL:URL];
 }
 
 - (void)sadTabViewReload:(SadTabView*)sadTabView {

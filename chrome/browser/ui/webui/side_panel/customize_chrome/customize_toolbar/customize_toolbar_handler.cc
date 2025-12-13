@@ -14,12 +14,15 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom-data-view.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -27,6 +30,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/screen.h"
 
 namespace {
@@ -85,6 +89,8 @@ MojoActionForChromeAction(actions::ActionId action_id) {
       return side_panel::customize_chrome::mojom::ActionId::kTabSearch;
     case kActionSplitTab:
       return side_panel::customize_chrome::mojom::ActionId::kSplitTab;
+    case kActionSidePanelShowContextualTasks:
+      return side_panel::customize_chrome::mojom::ActionId::kContextualTasks;
     default:
       return std::nullopt;
   }
@@ -143,6 +149,8 @@ std::optional<actions::ActionId> ChromeActionForMojoAction(
       return kActionTabSearch;
     case side_panel::customize_chrome::mojom::ActionId::kSplitTab:
       return kActionSplitTab;
+    case side_panel::customize_chrome::mojom::ActionId::kContextualTasks:
+      return kActionSidePanelShowContextualTasks;
     default:
       return std::nullopt;
   }
@@ -162,18 +170,28 @@ CustomizeToolbarHandler::CustomizeToolbarHandler(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()))) {
   model_observation_.Observe(model_);
   pref_change_registrar_.Init(prefs());
+
   pref_change_registrar_.Add(
       prefs::kShowHomeButton,
-      base::BindRepeating(&CustomizeToolbarHandler::OnShowHomeButtonChanged,
-                          base::Unretained(this)));
+      base::BindRepeating(&CustomizeToolbarHandler::OnActionPinnedChanged,
+                          base::Unretained(this), kActionHome,
+                          prefs::kShowHomeButton));
   pref_change_registrar_.Add(
       prefs::kShowForwardButton,
-      base::BindRepeating(&CustomizeToolbarHandler::OnShowForwardButtonChanged,
-                          base::Unretained(this)));
+      base::BindRepeating(&CustomizeToolbarHandler::OnActionPinnedChanged,
+                          base::Unretained(this), kActionForward,
+                          prefs::kShowForwardButton));
+  pref_change_registrar_.Add(
+      prefs::kPinContextualTaskButton,
+      base::BindRepeating(&CustomizeToolbarHandler::OnActionPinnedChanged,
+                          base::Unretained(this),
+                          kActionSidePanelShowContextualTasks,
+                          prefs::kPinContextualTaskButton));
   pref_change_registrar_.Add(
       prefs::kPinSplitTabButton,
-      base::BindRepeating(&CustomizeToolbarHandler::OnPinSplitTabButtonChanged,
-                          base::Unretained(this)));
+      base::BindRepeating(&CustomizeToolbarHandler::OnActionPinnedChanged,
+                          base::Unretained(this), kActionSplitTab,
+                          prefs::kPinSplitTabButton));
 }
 
 CustomizeToolbarHandler::~CustomizeToolbarHandler() = default;
@@ -190,7 +208,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   const ui::ColorProvider& provider = web_contents_->GetColorProvider();
   const int icon_color_id = ui::kColorSysOnSurface;
   const float scale_factor =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(web_contents_->GetTopLevelNativeWindow())
           .device_scale_factor();
 
@@ -219,18 +237,35 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   actions.push_back(std::move(home_action));
   actions.push_back(std::move(forward_action));
 
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    auto split_tab_action = side_panel::customize_chrome::mojom::Action::New(
-        MojoActionForChromeAction(kActionSplitTab).value(),
-        base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_PIN_SPLIT_TAB_TOGGLE)),
-        prefs()->GetBoolean(prefs::kPinSplitTabButton), false,
-        side_panel::customize_chrome::mojom::CategoryId::kNavigation,
-        GURL(webui::EncodePNGAndMakeDataURI(
-            ui::ImageModel::FromVectorIcon(kSplitSceneIcon, icon_color_id)
-                .Rasterize(&provider),
-            scale_factor)));
+  auto split_tab_action = side_panel::customize_chrome::mojom::Action::New(
+      MojoActionForChromeAction(kActionSplitTab).value(),
+      base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_PIN_SPLIT_TAB_TOGGLE)),
+      prefs()->GetBoolean(prefs::kPinSplitTabButton), false,
+      side_panel::customize_chrome::mojom::CategoryId::kNavigation,
+      GURL(webui::EncodePNGAndMakeDataURI(
+          ui::ImageModel::FromVectorIcon(kSplitSceneIcon, icon_color_id)
+              .Rasterize(&provider),
+          scale_factor)));
 
-    actions.push_back(std::move(split_tab_action));
+  actions.push_back(std::move(split_tab_action));
+
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+      (contextual_tasks::kShowEntryPoint.Get() ==
+       contextual_tasks::EntryPointOption::kToolbarPermanent)) {
+    auto contextual_task_action =
+        side_panel::customize_chrome::mojom::Action::New(
+            MojoActionForChromeAction(kActionSidePanelShowContextualTasks)
+                .value(),
+            base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE)),
+            prefs()->GetBoolean(prefs::kPinContextualTaskButton), false,
+            side_panel::customize_chrome::mojom::CategoryId::kNavigation,
+            GURL(webui::EncodePNGAndMakeDataURI(
+                ui::ImageModel::FromVectorIcon(kDockToRightSparkIcon,
+                                               icon_color_id)
+                    .Rasterize(&provider),
+                scale_factor)));
+    actions.push_back(std::move(contextual_task_action));
   }
 
   const auto add_action =
@@ -250,6 +285,17 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
               id, action_item->AddActionChangedCallback(base::BindRepeating(
                       &CustomizeToolbarHandler::OnActionItemChanged,
                       base::Unretained(this))));
+        }
+
+        switch (static_cast<actions::ActionPinnableState>(
+            action_item->GetProperty(actions::kActionItemPinnableKey))) {
+          case actions::ActionPinnableState::kNotPinnable:
+            return;
+          case actions::ActionPinnableState::kPinnable:
+          case actions::ActionPinnableState::kEnterpriseControlled:
+            break;
+          default:
+            NOTREACHED();
         }
 
         // If the icon is a vector icon, recolor it to match the spec.
@@ -364,6 +410,9 @@ void CustomizeToolbarHandler::PinAction(
     case kActionForward:
       prefs()->SetBoolean(prefs::kShowForwardButton, pin);
       break;
+    case kActionSidePanelShowContextualTasks:
+      prefs()->SetBoolean(prefs::kPinContextualTaskButton, pin);
+      break;
     case kActionSplitTab:
       prefs()->SetBoolean(prefs::kPinSplitTabButton, pin);
       break;
@@ -395,29 +444,15 @@ void CustomizeToolbarHandler::OnActionsChanged() {
 }
 
 void CustomizeToolbarHandler::OnActionPinnedChanged(actions::ActionId id,
-                                                    bool pinned) {
+                                                    std::string_view pref) {
   const std::optional<side_panel::customize_chrome::mojom::ActionId>
       mojo_action_id = MojoActionForChromeAction(id);
   if (!mojo_action_id.has_value()) {
     return;
   }
 
+  const bool pinned = prefs()->GetBoolean(pref);
   client_->SetActionPinned(mojo_action_id.value(), pinned);
-}
-
-void CustomizeToolbarHandler::OnShowHomeButtonChanged() {
-  OnActionPinnedChanged(kActionHome,
-                        prefs()->GetBoolean(prefs::kShowHomeButton));
-}
-
-void CustomizeToolbarHandler::OnShowForwardButtonChanged() {
-  OnActionPinnedChanged(kActionForward,
-                        prefs()->GetBoolean(prefs::kShowForwardButton));
-}
-
-void CustomizeToolbarHandler::OnPinSplitTabButtonChanged() {
-  OnActionPinnedChanged(kActionSplitTab,
-                        prefs()->GetBoolean(prefs::kPinSplitTabButton));
 }
 
 void CustomizeToolbarHandler::OnActionItemChanged() {

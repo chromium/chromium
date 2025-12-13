@@ -43,7 +43,7 @@ DOMMatrix* CSSMatrixComponent::toMatrix(ExceptionState&) const {
 
 CSSMatrixComponent* CSSMatrixComponent::FromCSSValue(
     const CSSFunctionValue& value) {
-  WTF::Vector<double> entries;
+  Vector<double> entries;
   for (const auto& item : value) {
     std::optional<double> number =
         To<CSSPrimitiveValue>(*item).GetValueIfKnown();

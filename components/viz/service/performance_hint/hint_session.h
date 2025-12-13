@@ -11,6 +11,11 @@
 #include "base/threading/platform_thread.h"
 #include "components/viz/service/viz_service_export.h"
 
+namespace base {
+class TimeDelta;
+class TimeTicks;
+}  // namespace base
+
 namespace viz {
 
 // This is a wrapper for the Android `android.os.PerformanceHintManager` APIs
@@ -22,7 +27,6 @@ class VIZ_SERVICE_EXPORT HintSession {
  public:
   enum class BoostType {
     kDefault,
-    kScrollBoost,
     kWakeUpBoost,
   };
 
@@ -45,6 +49,9 @@ class VIZ_SERVICE_EXPORT HintSession {
 
   virtual void SetThreads(
       const base::flat_set<base::PlatformThreadId>& thread_ids) = 0;
+
+  virtual void NotifyWorkloadReset() = 0;
+  virtual void NotifyWorkloadIncrease() = 0;
 };
 
 class VIZ_SERVICE_EXPORT HintSessionFactory {
@@ -73,6 +80,8 @@ class VIZ_SERVICE_EXPORT HintSessionFactory {
 
   // Issue an early hint to wake up some session.
   virtual void WakeUp() = 0;
+
+  virtual void NotifyWorkloadIncrease() = 0;
 
   // Returns the full list of threads for the given session type.
   // For animation (SessionType::kAnimation) sessions, this is a union of

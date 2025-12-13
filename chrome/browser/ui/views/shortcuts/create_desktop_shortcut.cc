@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check_is_test.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/profiles/profile.h"

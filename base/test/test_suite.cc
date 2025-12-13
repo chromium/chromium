@@ -32,6 +32,7 @@
 #include "base/i18n/icu_util.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/statistics_recorder.h"
@@ -81,6 +82,10 @@
 #include "base/test/test_support_android.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "partition_alloc/tagging.h"  // nogncheck
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 #endif
@@ -96,6 +101,7 @@
 #include <windows.h>
 
 #include "base/debug/handle_hooks_win.h"
+#include "base/win/win_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
@@ -159,8 +165,12 @@ class ResetCommandLineBetweenTests : public testing::EmptyTestEventListener {
 // to initialize them manually.
 class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
  public:
-  FeatureListScopedToEachTest() = default;
-  ~FeatureListScopedToEachTest() override = default;
+  FeatureListScopedToEachTest() {
+    instance_ = this;
+  }
+  ~FeatureListScopedToEachTest() override {
+    instance_ = nullptr;
+  }
 
   FeatureListScopedToEachTest(const FeatureListScopedToEachTest&) = delete;
   FeatureListScopedToEachTest& operator=(const FeatureListScopedToEachTest&) =
@@ -182,9 +192,19 @@ class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
     scoped_feature_list_.Reset();
   }
 
+  static void Reset() {
+    if (instance_) {
+      instance_->scoped_feature_list_.Reset();
+    }
+  }
+
  private:
   test::ScopedFeatureList scoped_feature_list_;
+
+  static FeatureListScopedToEachTest* instance_;
 };
+
+FeatureListScopedToEachTest* FeatureListScopedToEachTest::instance_ = nullptr;
 
 class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
  public:
@@ -444,6 +464,10 @@ void TestSuite::DisableCheckForLeakedGlobals() {
   check_for_leaked_globals_ = false;
 }
 
+void TestSuite::ResetScopedFeatureListInstance() {
+  FeatureListScopedToEachTest::Reset();
+}
+
 void TestSuite::UnitTestAssertHandler(const char* file,
                                       int line,
                                       std::string_view summary,
@@ -591,6 +615,11 @@ void TestSuite::Initialize() {
   // Make sure we run with high resolution timer to minimize differences
   // between production code and test code.
   Time::EnableHighResolutionTimer(true);
+
+  if (!command_line->HasSwitch(
+          ::switches::kDisableStrictHandleCheckingForTesting)) {
+    PCHECK(win::EnableStrictHandleCheckingForCurrentProcess());
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   // In some cases, we do not want to see standard error dialogs.

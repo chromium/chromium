@@ -49,8 +49,14 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
   void ClearNavigations();
 
   // web::WebStateObserver methods.
+  void DidStartLoading(web::WebState* web_state) override;
+  void PageLoaded(
+      web::WebState* web_state,
+      web::PageLoadCompletionStatus load_completion_status) override;
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
@@ -80,7 +86,7 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
       return sub_navigations_;
     }
 
-    bool operator==(const LensResultItem& rhs) {
+    bool operator==(const LensResultItem& rhs) const {
       return this->lens_result_.isTextSelection ==
                  rhs.lens_result_.isTextSelection &&
              CGRectEqualToRect(this->lens_result_.selectionRect,
@@ -128,6 +134,12 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
   raw_ptr<web::WebState> web_state_ = nullptr;
   /// Lens navigation mutator.
   __weak id<LensOverlayNavigationMutator> mutator_;
+  /// The result that is currently loading, or `nil` if none.
+  __weak id<ChromeLensOverlayResult> loading_result_;
+  /// The ID associated to the loading navigation of the current result.
+  int loading_navigation_context_id_;
+  /// The error produced during the loading of the page, or `nil` if no error.
+  NSError* loading_navigation_error_;
 };
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_NAVIGATION_MANAGER_H_

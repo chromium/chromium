@@ -24,18 +24,20 @@
 #include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/discounts_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
-#include "chrome/browser/ui/views/commerce/product_specifications_page_action_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -255,13 +257,10 @@ void CommerceUiTabHelper::TriggerUpdateForIconView() {
 
 void CommerceUiTabHelper::UpdatePriceInsightsIconView() {
   if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
-    tab()
-        .GetTabFeatures()
-        ->commerce_price_insights_page_action_view_controller()
-        ->UpdatePageActionIcon(
-            ShouldShowPriceInsightsIconView(),
-            ShouldExpandPageActionIcon(PageActionIconType::kPriceInsights),
-            GetPriceInsightsIconLabelTypeForPage());
+    PriceInsightsPageActionViewController::From(tab())->UpdatePageActionIcon(
+        ShouldShowPriceInsightsIconView(),
+        ShouldExpandPageActionIcon(PageActionIconType::kPriceInsights),
+        GetPriceInsightsIconLabelTypeForPage());
     return;
   }
 
@@ -433,14 +432,14 @@ void CommerceUiTabHelper::SetPriceTrackingState(
 
 void CommerceUiTabHelper::OnPriceInsightsIconClicked() {
   auto* side_panel_ui = GetSidePanelUI();
-  DCHECK(side_panel_ui &&
-         side_panel_registry_->GetEntryForKey(
-             SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
+  DCHECK(side_panel_ui);
+  SidePanelEntry* const entry = side_panel_registry_->GetEntryForKey(
+      SidePanelEntryKey(SidePanelEntry::Id::kShoppingInsights));
+  DCHECK(entry);
 
-  if (side_panel_ui->IsSidePanelShowing() &&
-      side_panel_ui->GetCurrentEntryId() ==
-          SidePanelEntry::Id::kShoppingInsights) {
-    side_panel_ui->Close();
+  if (side_panel_ui->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntryId::kShoppingInsights))) {
+    side_panel_ui->Close(entry->type());
   } else {
     side_panel_ui->Show(SidePanelEntryId::kShoppingInsights);
     if (price_insights_info_.has_value()) {
@@ -513,22 +512,18 @@ const std::vector<DiscountInfo>& CommerceUiTabHelper::GetDiscounts() {
 }
 
 void CommerceUiTabHelper::UpdatePriceTrackingIconView() {
+  if (IsPageActionMigrated(PageActionIconType::kPriceTracking)) {
+    return;
+  }
+
   UpdatePageActionIconView(PageActionIconType::kPriceTracking);
 }
 
 void CommerceUiTabHelper::UpdateProductSpecificationsIconView() {
-  if (IsPageActionMigrated(PageActionIconType::kProductSpecifications)) {
-    tab()
-        .GetTabFeatures()
-        ->commerce_product_specifications_page_action_view_controller()
-        ->UpdatePageIcon(ShouldShowProductSpecificationsIconView(),
-                         ShouldExpandPageActionIcon(
-                             PageActionIconType::kProductSpecifications),
-                         IsInRecommendedSet(),
-                         GetProductSpecificationsLabel(IsInRecommendedSet()));
+  // Product specification is being removed as part of the migration.
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
     return;
   }
-
   UpdatePageActionIconView(PageActionIconType::kProductSpecifications);
 }
 
@@ -537,22 +532,26 @@ void CommerceUiTabHelper::MakeShoppingInsightsSidePanelAvailable() {
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights),
       base::BindRepeating(&CommerceUiTabHelper::CreateShoppingInsightsWebView,
                           base::Unretained(this)),
-      SidePanelEntry::kSidePanelDefaultContentWidth);
+      /*default_content_width_callback=*/base::NullCallback());
   side_panel_registry_->Register(std::move(entry));
 }
 
 void CommerceUiTabHelper::MakeShoppingInsightsSidePanelUnavailable() {
+  SidePanelEntry* const entry = side_panel_registry_->GetEntryForKey(
+      SidePanelEntryKey(SidePanelEntry::Id::kShoppingInsights));
+
+  if (!entry) {
+    return;
+  }
+
   auto* side_panel_ui = GetSidePanelUI();
-  if (side_panel_ui && side_panel_ui->IsSidePanelShowing() &&
-      side_panel_ui->GetCurrentEntryId() ==
-          SidePanelEntry::Id::kShoppingInsights) {
-    side_panel_ui->Close();
+  if (side_panel_ui && side_panel_ui->IsSidePanelEntryShowing(entry->key())) {
+    side_panel_ui->Close(entry->type());
     base::RecordAction(base::UserMetricsAction(
         "Commerce.PriceInsights.NavigationClosedSidePanel"));
   }
 
-  side_panel_registry_->Deregister(
-      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights));
+  side_panel_registry_->Deregister(entry->key());
 }
 
 std::unique_ptr<views::View> CommerceUiTabHelper::CreateShoppingInsightsWebView(
@@ -600,12 +599,9 @@ void CommerceUiTabHelper::ShowDiscountBubble(
 
 void CommerceUiTabHelper::UpdateDiscountsIconView() {
   if (IsPageActionMigrated(PageActionIconType::kDiscounts)) {
-    tab()
-        .GetTabFeatures()
-        ->commerce_discounts_page_action_view_controller()
-        ->UpdatePageIcon(
-            ShouldShowDiscountsIconView(),
-            ShouldExpandPageActionIcon(PageActionIconType::kDiscounts));
+    DiscountsPageActionViewController::From(tab())->UpdatePageIcon(
+        ShouldShowDiscountsIconView(),
+        ShouldExpandPageActionIcon(PageActionIconType::kDiscounts));
     return;
   }
 

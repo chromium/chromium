@@ -25,6 +25,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "cc/input/event_listener_properties.h"
@@ -42,7 +43,6 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/html/forms/external_date_time_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
@@ -62,6 +62,7 @@
 #undef CreateWindow
 
 namespace cc {
+enum class PropertyChangeForcesCommitCriteria;
 class AnimationHost;
 class AnimationTimeline;
 struct ElementId;
@@ -80,7 +81,7 @@ class Cursor;
 }
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace blink {
@@ -90,6 +91,7 @@ class ColorChooserClient;
 class DateTimeChooser;
 class DateTimeChooserClient;
 class Element;
+class ExternalDateTimeChooser;
 class FileChooser;
 class Frame;
 class FullscreenOptions;
@@ -145,10 +147,13 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void SetWindowRect(const gfx::Rect&, LocalFrame&) = 0;
 
-  virtual void Minimize(LocalFrame&) = 0;
-  virtual void Maximize(LocalFrame&) = 0;
-  virtual void Restore(LocalFrame&) = 0;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  using WindowShowStateChangeCallback = base::OnceCallback<void(bool)>;
+  virtual void Minimize(LocalFrame&, WindowShowStateChangeCallback) = 0;
+  virtual void Maximize(LocalFrame&, WindowShowStateChangeCallback) = 0;
+  virtual void Restore(LocalFrame&, WindowShowStateChangeCallback) = 0;
   virtual void SetResizable(bool resizable, LocalFrame&) = 0;
+#endif
 
   // For non-composited WebViews that exist to contribute to a "parent" WebView
   // painting. This informs the client of the area that needs to be redrawn.
@@ -229,6 +234,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                     cc::PaintHoldingCommitTrigger) = 0;
   virtual void SetShouldThrottleFrameRate(bool flag,
                                           LocalFrame& main_frame) = 0;
+  virtual void RequestMainFrameOnCompositorAnimation(
+      LocalFrame&,
+      cc::PropertyChangeForcesCommitCriteria criteria,
+      bool force_propagation) = 0;
 
   virtual std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
       LocalFrame& main_frame) = 0;
@@ -485,7 +494,9 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void ClosePagePopup(PagePopup*) = 0;
   virtual DOMWindow* PagePopupWindowForTesting() const = 0;
 
-  virtual void SetUseExternalPopupMenusForTesting(bool) {}
+  // Allow overriding whether external popup menus are used.
+  virtual void SetUseExternalPopupMenus(bool) {}
+  virtual bool UseExternalPopupMenus() const { return false; }
 
   virtual void SetBrowserControlsState(float top_height,
                                        float bottom_height,
@@ -576,9 +587,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                              bool speculative) {
     std::move(callback).Run(false);
   }
-  virtual bool SpeculativeDecodeRequestInFlight(LocalFrame* frame) const {
-    return false;
-  }
 
   // The `callback` will be fired when the corresponding renderer frame for the
   // `frame` is presented in the display compositor. If there is no update in
@@ -616,7 +624,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual float ZoomFactorForViewportLayout() { return 1; }
 
-  virtual void OnFirstContentfulPaint() {}
+  virtual void OnFirstContentfulPaint(const base::TimeDelta& duration) {}
 
  protected:
   ChromeClient() = default;

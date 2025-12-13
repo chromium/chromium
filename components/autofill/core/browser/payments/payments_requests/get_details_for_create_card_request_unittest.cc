@@ -24,7 +24,7 @@ std::unique_ptr<GetDetailsForCreateCardRequest> CreateRequest() {
   return std::make_unique<GetDetailsForCreateCardRequest>(
       kUniqueCountryCode, client_behavior_signals, kAppLocale,
       /*callback=*/base::DoNothing(), kUploadPaymentMethodBillableServiceNumber,
-      kBillingCustomerNumber, UploadCardSource::UPSTREAM_SAVE_AND_FILL);
+      kBillingCustomerNumber, UploadCardSource::kUpstreamSaveAndFill);
 }
 
 TEST(GetDetailsForCreateCardRequestTest,

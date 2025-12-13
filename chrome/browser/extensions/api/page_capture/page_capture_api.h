@@ -10,11 +10,13 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/page_capture.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
 #include "storage/browser/blob/shareable_file_reference.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class FilePath;

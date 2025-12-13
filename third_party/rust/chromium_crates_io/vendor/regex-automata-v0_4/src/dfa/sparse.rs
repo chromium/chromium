@@ -299,8 +299,7 @@ impl DFA<Vec<u8>> {
             );
             assert!(
                 transition_len <= 257,
-                "expected transition length {} to be <= 257",
-                transition_len,
+                "expected transition length {transition_len} to be <= 257",
             );
 
             // Fill in the transition length.
@@ -394,6 +393,8 @@ impl DFA<Vec<u8>> {
                 new_state.set_next_at(i, next);
             }
         }
+        new.tt.sparse.shrink_to_fit();
+        new.st.table.shrink_to_fit();
         debug!(
             "created sparse DFA, memory usage: {} (dense memory usage: {})",
             new.memory_usage(),
@@ -1068,6 +1069,19 @@ impl<'a> DFA<&'a [u8]> {
         // Prefilters don't support serialization, so they're always absent.
         let pre = None;
         Ok((DFA { tt, st, special, pre, quitset, flags }, nr))
+    }
+}
+
+/// Other routines that work for all `T`.
+impl<T> DFA<T> {
+    /// Set or unset the prefilter attached to this DFA.
+    ///
+    /// This is useful when one has deserialized a DFA from `&[u8]`.
+    /// Deserialization does not currently include prefilters, so if you
+    /// want prefilter acceleration, you'll need to rebuild it and attach
+    /// it here.
+    pub fn set_prefilter(&mut self, prefilter: Option<Prefilter>) {
+        self.pre = prefilter
     }
 }
 
@@ -1846,6 +1860,12 @@ impl StartTable<Vec<u8>> {
             let new_start_id = remap[dfa.to_index(old_start_id)];
             sl.set_start(anchored, sty, new_start_id);
         }
+        if let Some(ref mut id) = sl.universal_start_anchored {
+            *id = remap[dfa.to_index(*id)];
+        }
+        if let Some(ref mut id) = sl.universal_start_unanchored {
+            *id = remap[dfa.to_index(*id)];
+        }
         Ok(sl)
     }
 }
@@ -2145,7 +2165,7 @@ impl<T: AsMut<[u8]>> StartTable<T> {
                 let len = self
                     .pattern_len
                     .expect("start states for each pattern enabled");
-                assert!(pid < len, "invalid pattern ID {:?}", pid);
+                assert!(pid < len, "invalid pattern ID {pid:?}");
                 self.stride
                     .checked_mul(pid)
                     .unwrap()

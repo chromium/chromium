@@ -8,13 +8,8 @@
 #include "chrome/browser/extensions/api/chrome_device_permissions_prompt.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/buildflags/buildflags.h"
@@ -28,31 +23,10 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
 
 namespace extensions {
 
-void ChromeExtensionsAPIClient::OpenFileUrl(
-    const GURL& file_url,
-    content::BrowserContext* browser_context) {
-  CHECK(file_url.is_valid());
-  CHECK(file_url.SchemeIsFile());
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  NavigateParams navigate_params(profile, file_url,
-                                 ui::PAGE_TRANSITION_FROM_API);
-  navigate_params.disposition = WindowOpenDisposition::CURRENT_TAB;
-  navigate_params.browser =
-      chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
-  Navigate(&navigate_params);
-}
-
 std::unique_ptr<DevicePermissionsPrompt>
 ChromeExtensionsAPIClient::CreateDevicePermissionsPrompt(
     content::WebContents* web_contents) const {
   return std::make_unique<ChromeDevicePermissionsPrompt>(web_contents);
-}
-
-std::unique_ptr<SupervisedUserExtensionsDelegate>
-ChromeExtensionsAPIClient::CreateSupervisedUserExtensionsDelegate(
-    content::BrowserContext* browser_context) const {
-  return std::make_unique<SupervisedUserExtensionsDelegateImpl>(
-      browser_context);
 }
 
 std::unique_ptr<DisplayInfoProvider>

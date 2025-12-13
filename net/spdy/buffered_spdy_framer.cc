@@ -16,7 +16,7 @@ namespace net {
 namespace {
 
 // GOAWAY frame debug data is only buffered up to this many bytes.
-size_t kGoAwayDebugDataMaxSize = 1024;
+constexpr size_t kGoAwayDebugDataMaxSize = 1024;
 
 }  // namespace
 

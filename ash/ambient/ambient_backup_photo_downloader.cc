@@ -26,8 +26,6 @@ namespace ash {
 
 namespace {
 
-// TODO(b/304527743): Ask the server to resize the photo for us if the backend
-// can make the appropriate config changes.
 std::vector<unsigned char> ResizeAndEncode(const gfx::ImageSkia& image,
                                            gfx::Size target_size) {
   static constexpr int kJpegEncodingQuality = 95;

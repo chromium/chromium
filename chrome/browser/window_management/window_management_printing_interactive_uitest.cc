@@ -56,7 +56,8 @@ class WindowManagementTest : public InProcessBrowserTest {
 };
 
 // TODO(crbug.com/40115071): Windows crashes static casting to ScreenWin.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/433855037): Disabling on Mac due to flakiness.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_NoCrashOnEventsDuringHandlerPrint \
   DISABLED_NoCrashOnEventsDuringHandlerPrint
 #else
@@ -73,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-803x600");
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   // Navigate in a new tab to observe the test screen instance as needed.
   const GURL url(https_test_server_->GetURL("/simple.html"));
@@ -103,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
       });
   )";
   content::WebContentsAddedObserver web_contents_added_observer;
-  ASSERT_TRUE(EvalJs(tab, script).error.empty());
+  ASSERT_TRUE(EvalJs(tab, script).is_ok());
 
   // Alter the display to trigger the currentscreenchange event and print().
 #if BUILDFLAG(IS_CHROMEOS)
@@ -114,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
                                        display::DisplayList::Type::PRIMARY);
   EXPECT_EQ(screen_.display_list().displays().size(), 1u);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   content::WebContents* print_preview =
       web_contents_added_observer.GetWebContents();
@@ -131,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
                                     display::DisplayList::Type::NOT_PRIMARY);
   EXPECT_EQ(screen_.display_list().displays().size(), 2u);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   // Cancel print to unfreeze the tab's JS and check that no crash occurred.
   content::WebContentsDestroyedWatcher destroyed_watcher(print_preview);

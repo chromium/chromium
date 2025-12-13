@@ -32,10 +32,6 @@ std::string GetErrorMessageName(PasswordStoreBackendErrorType error_type) {
       return "AuthErrorUnresolvable";
     case PasswordStoreBackendErrorType::kKeyRetrievalRequired:
       return "KeyRetrievalRequired";
-    case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible:
-      return "GMSCoreOutdatedSavingPossible";
-    case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingDisabled:
-      return "GMSCoreOutdatedSavingDisabled";
     case PasswordStoreBackendErrorType::kEmptySecurityDomain:
       return "EmptySecurityDomain";
     case PasswordStoreBackendErrorType::kIrretrievableSecurityDomain:
@@ -76,33 +72,6 @@ void SetVerifyItIsYouMessageContent(
   message->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
       IDR_ANDORID_MESSAGE_PASSWORD_MANAGER_ERROR));
 
-  message->DisableIconTint();
-}
-
-void SetUpdateGmsCoreMessageContent(messages::MessageWrapper* message,
-                                    PasswordStoreBackendErrorType error_type) {
-  CHECK(error_type ==
-            PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible ||
-        error_type ==
-            PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingDisabled);
-
-  message->SetPrimaryButtonText(
-      l10n_util::GetStringUTF16(IDS_UPDATE_GMS_BUTTON_TITLE));
-
-  if (error_type ==
-      PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible) {
-    message->SetTitle(l10n_util::GetStringUTF16(IDS_UPDATE_GMS));
-    message->SetDescription(
-        l10n_util::GetStringUTF16(IDS_UPDATE_GMS_TO_SAVE_PASSWORDS_TO_ACCOUNT));
-    message->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
-        IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
-  } else {
-    message->SetTitle(l10n_util::GetStringUTF16(IDS_UPDATE_TO_SAVE_PASSWORDS));
-    message->SetDescription(
-        l10n_util::GetStringUTF16(IDS_UPDATE_GMS_TO_SAVE_PASSWORDS));
-    message->SetIconResourceId(
-        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_IC_ERROR));
-  }
   message->DisableIconTint();
 }
 
@@ -152,10 +121,6 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
     case PasswordStoreBackendErrorType::kIrretrievableSecurityDomain:
       SetVerifyItIsYouMessageContent(message_.get(), flow_type);
       break;
-    case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible:
-    case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingDisabled:
-      SetUpdateGmsCoreMessageContent(message_.get(), error_type);
-      break;
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
       // Other error types aren't supported.
@@ -178,9 +143,6 @@ bool PasswordManagerErrorMessageDelegate::ShouldShowErrorUI(
     case PasswordStoreBackendErrorType::kEmptySecurityDomain:
     case PasswordStoreBackendErrorType::kIrretrievableSecurityDomain:
       return helper_bridge_->ShouldShowSignInErrorUI(web_contents);
-    case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible:
-    case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingDisabled:
-      return helper_bridge_->ShouldShowUpdateGMSCoreErrorUI(web_contents);
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
       // Other error types aren't supported.
@@ -231,12 +193,8 @@ void PasswordManagerErrorMessageDelegate::HandleActionButtonClicked(
     case PasswordStoreBackendErrorType::kEmptySecurityDomain:
     case PasswordStoreBackendErrorType::kIrretrievableSecurityDomain:
       helper_bridge_->StartTrustedVaultKeyRetrievalFlow(
-          web_contents, syncer::TrustedVaultUserActionTriggerForUMA::
+          web_contents, trusted_vault::TrustedVaultUserActionTriggerForUMA::
                             kPasswordManagerErrorMessage);
-      break;
-    case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible:
-    case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingDisabled:
-      helper_bridge_->LaunchGmsUpdate(web_contents);
       break;
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:

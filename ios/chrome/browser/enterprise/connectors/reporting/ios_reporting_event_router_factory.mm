@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
-#import "ios/web/public/browser_state.h"
 
 namespace enterprise_connectors {
 
@@ -38,8 +37,7 @@ IOSReportingEventRouterFactory::~IOSReportingEventRouterFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSReportingEventRouterFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  auto* profile = ProfileIOS::FromBrowserState(browser_state);
+    ProfileIOS* profile) const {
   return std::make_unique<ReportingEventRouter>(
       IOSRealtimeReportingClientFactory::GetForProfile(profile));
 }

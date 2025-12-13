@@ -73,6 +73,9 @@ class ChromeRequestAdapter : public RequestAdapter {
   virtual void SetDestructionCallback(base::OnceClosure closure) = 0;
 };
 
+// `ResponseAdapter` provides an interface for accessing and modifying
+// properties of a network response. It is used by `HeaderModificationDelegate`
+// to process response headers for sign-in related requests.
 class ResponseAdapter {
  public:
   ResponseAdapter();
@@ -82,15 +85,32 @@ class ResponseAdapter {
 
   virtual ~ResponseAdapter();
 
+  // Returns a getter for the `WebContents` associated with the request that
+  // received this response.
   virtual content::WebContents::Getter GetWebContentsGetter() const = 0;
+  // Returns true if the response is for an outermost main frame request.
   virtual bool IsOutermostMainFrame() const = 0;
+  // Returns the URL of the response. This may be different from the initial
+  // request URL if there were redirects.
   virtual GURL GetUrl() const = 0;
+  // Returns the origin that initiated the request. This may be empty for
+  // browser-initiated requests.
   virtual std::optional<url::Origin> GetRequestInitiator() const = 0;
+  // Returns the top-frame origin of the request. This may be empty for
+  // renderer-initiated requests, as those requests do not set "trusted"
+  // parameters.
   virtual const url::Origin* GetRequestTopFrameOrigin() const = 0;
+  // Returns a pointer to the HTTP response headers.
+  // May return null if a response doesn't have associated headers.
   virtual const net::HttpResponseHeaders* GetHeaders() const = 0;
+  // Removes a header from the HTTP response headers.
   virtual void RemoveHeader(const std::string& name) = 0;
 
+  // Retrieves user data associated with this response.
   virtual base::SupportsUserData::Data* GetUserData(const void* key) const = 0;
+  // Associates user data with this response.
+  // If `data` is `nullptr`, this method removes data previously associated with
+  // the `key`.
   virtual void SetUserData(
       const void* key,
       std::unique_ptr<base::SupportsUserData::Data> data) = 0;

@@ -1,0 +1,25 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package tabs_pb;
+option java_package = "org.chromium.chrome.browser.tabs.proto";
+
+import "chrome/browser/tab/protocol/token.proto";
+
+// Stores the state of a TabStripCollection.
+message TabStripCollectionState {
+  // Contains information about the window associated with this collection.
+  optional int32 window_id = 1;
+
+  // Represents the type of tab model.
+  // Tied to TabModelType in
+  // chrome/browser/android/tab_storage_packager_android.h.
+  optional int32 tab_model_type = 2;
+
+  // The storage id of the active tab in the tab strip.
+  optional Token active_tab_storage_id = 3;
+}

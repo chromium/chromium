@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -52,16 +54,34 @@ int ComputeDialogTitleId(ChromeSignoutConfirmationPromptVariant variant) {
   }
 }
 
-int ComputeDialogSubtitleId(ChromeSignoutConfirmationPromptVariant variant) {
+std::string ComputeDialogSubtitle(
+    ChromeSignoutConfirmationPromptVariant variant,
+    size_t unsynced_data_count) {
   switch (variant) {
     case ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData:
-      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_DATA_BODY;
+      return l10n_util::GetStringUTF8(
+          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_DATA_BODY);
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
-      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY;
+      if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+        CHECK_GT(unsynced_data_count, 0u);
+        return l10n_util::GetPluralStringFUTF8(
+            IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY_WITH_COUNT,
+            unsynced_data_count);
+      }
+      return l10n_util::GetStringUTF8(
+          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY);
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
-      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY;
+      if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+        CHECK_GT(unsynced_data_count, 0u);
+        return l10n_util::GetPluralStringFUTF8(
+            IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY_WITH_COUNT,
+            unsynced_data_count);
+      }
+      return l10n_util::GetStringUTF8(
+          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY);
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
-      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_KIDS_BODY;
+      return l10n_util::GetStringUTF8(
+          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_KIDS_BODY);
     default:
       NOTREACHED();
   }
@@ -102,6 +122,7 @@ int ComputeCancelButtonLabelId(ChromeSignoutConfirmationPromptVariant variant) {
 signout_confirmation::mojom::SignoutConfirmationDataPtr
 ConstructSignoutConfirmationData(
     ChromeSignoutConfirmationPromptVariant variant,
+    size_t unsynced_data_count,
     std::vector<signout_confirmation::mojom::ExtensionInfoPtr>
         extension_infos_mojo) {
   signout_confirmation::mojom::SignoutConfirmationDataPtr
@@ -110,7 +131,7 @@ ConstructSignoutConfirmationData(
   signout_confirmation_mojo->dialog_title =
       l10n_util::GetStringUTF8(ComputeDialogTitleId(variant));
   signout_confirmation_mojo->dialog_subtitle =
-      l10n_util::GetStringUTF8(ComputeDialogSubtitleId(variant));
+      ComputeDialogSubtitle(variant, unsynced_data_count);
   signout_confirmation_mojo->accept_button_label =
       l10n_util::GetStringUTF8(ComputeAcceptButtonLabelId(variant));
   signout_confirmation_mojo->cancel_button_label =
@@ -143,10 +164,6 @@ signout_confirmation::mojom::ExtensionInfoPtr OnExtensionIconLoaded(
 }
 
 bool HasAccountExtensions(Profile* profile) {
-  if (!extensions::sync_util::IsSyncingExtensionsInTransportMode(profile)) {
-    return false;
-  }
-
   extensions::AccountExtensionTracker* tracker =
       extensions::AccountExtensionTracker::Get(profile);
   std::vector<const extensions::Extension*> account_extensions =
@@ -163,9 +180,11 @@ SignoutConfirmationHandler::SignoutConfirmationHandler(
     mojo::PendingRemote<signout_confirmation::mojom::Page> page,
     Browser* browser,
     ChromeSignoutConfirmationPromptVariant variant,
+    size_t unsynced_data_count,
     SignoutConfirmationCallback callback)
     : browser_(browser ? browser->AsWeakPtr() : nullptr),
       variant_(variant),
+      unsynced_data_count_(unsynced_data_count),
       completion_callback_(std::move(callback)),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
@@ -229,13 +248,12 @@ void SignoutConfirmationHandler::ComputeAndSendSignoutConfirmationData(
     std::vector<signout_confirmation::mojom::ExtensionInfoPtr>
         account_extensions_info) {
   page_->SendSignoutConfirmationData(ConstructSignoutConfirmationData(
-      variant_, std::move(account_extensions_info)));
+      variant_, unsynced_data_count_, std::move(account_extensions_info)));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void SignoutConfirmationHandler::ComputeAccountExtensions() {
-  if (!browser_ || !extensions::sync_util::IsSyncingExtensionsInTransportMode(
-                       browser_->profile())) {
+  if (!browser_) {
     ComputeAndSendSignoutConfirmationDataWithoutExtensions();
     return;
   }

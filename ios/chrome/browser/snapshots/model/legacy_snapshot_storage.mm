@@ -9,9 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/functional/bind.h"
-#import "base/functional/callback_forward.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
@@ -92,13 +90,11 @@ LegacySnapshotLRUCache<UIImage*>* CreateDefaultSnapshotLRUCache() {
 }
 
 - (instancetype)initWithLRUCache:(LegacySnapshotLRUCache*)lruCache
-                     storagePath:(const base::FilePath&)storagePath
-                      legacyPath:(const base::FilePath&)legacyPath {
+                     storagePath:(const base::FilePath&)storagePath {
   if ((self = [super init])) {
     _lruCache = lruCache;
     _fileManager =
-        [[LegacyImageFileManager alloc] initWithStoragePath:storagePath
-                                                 legacyPath:legacyPath];
+        [[LegacyImageFileManager alloc] initWithStoragePath:storagePath];
 
     _observers = [SnapshotStorageObservers observers];
 
@@ -117,15 +113,9 @@ LegacySnapshotLRUCache<UIImage*>* CreateDefaultSnapshotLRUCache() {
   return self;
 }
 
-- (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
-                         legacyPath:(const base::FilePath&)legacyPath {
-  return [self initWithLRUCache:CreateDefaultSnapshotLRUCache()
-                    storagePath:storagePath
-                     legacyPath:legacyPath];
-}
-
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath {
-  return [self initWithStoragePath:storagePath legacyPath:base::FilePath()];
+  return [self initWithLRUCache:CreateDefaultSnapshotLRUCache()
+                    storagePath:storagePath];
 }
 
 - (void)dealloc {
@@ -194,12 +184,6 @@ LegacySnapshotLRUCache<UIImage*>* CreateDefaultSnapshotLRUCache() {
                                                   liveSnapshotIDs {
   [_fileManager purgeImagesOlderThan:base::Time::FromNSDate(thresholdDate)
                              keeping:ToSnapshotIDs(liveSnapshotIDs)];
-}
-
-- (void)renameSnapshotsWithOldIDs:(NSArray<NSString*>*)oldIDs
-                           newIDs:(NSArray<SnapshotIDWrapper*>*)newIDs {
-  DCHECK_EQ(oldIDs.count, newIDs.count);
-  [_fileManager renameSnapshotsWithIDs:oldIDs toIDs:ToSnapshotIDs(newIDs)];
 }
 
 - (void)migrateImageWithSnapshotID:(SnapshotIDWrapper*)snapshotIDWrapper

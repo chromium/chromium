@@ -35,7 +35,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
   struct FeatureFlags {
     FeatureFlags();
 
-    GpuMemoryBufferFormatSet gpu_memory_buffer_formats = {
+    gfx::GpuMemoryBufferFormatSet gpu_memory_buffer_formats = {
         gfx::BufferFormat::BGR_565,   gfx::BufferFormat::RGBA_4444,
         gfx::BufferFormat::RGBA_8888, gfx::BufferFormat::RGBX_8888,
         gfx::BufferFormat::YVU_420,   gfx::BufferFormat::YUV_420_BIPLANAR,
@@ -161,8 +161,10 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
   // Initializes the feature information. Needs a current GL context.
   void Initialize(ContextType context_type,
                   bool is_passthrough_cmd_decoder,
-                  const DisallowedFeatures& disallowed_features,
-                  bool force_reinitialize = false);
+                  const DisallowedFeatures& disallowed_features);
+
+  // Same as above, but allows reinitialization.
+  void ForceReinitialize();
 
   // Helper that defaults to no disallowed features and a GLES2 context.
   void InitializeForTesting();

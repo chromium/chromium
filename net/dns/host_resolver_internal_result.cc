@@ -52,9 +52,8 @@ std::string MaybeCanonicalizeName(std::string domain_name) {
   url::StdStringCanonOutput output(&canonicalized);
   url::CanonHostInfo host_info;
 
-  url::CanonicalizeHostVerbose(domain_name.data(),
-                               url::Component(0, domain_name.size()), &output,
-                               &host_info);
+  url::CanonicalizeHostVerbose(
+      domain_name, url::Component(0, domain_name.size()), &output, &host_info);
 
   if (host_info.family == url::CanonHostInfo::Family::NEUTRAL) {
     output.Complete();

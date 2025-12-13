@@ -14,7 +14,7 @@ note: required because it appears within the type `cxx::private::Opaque`
 note: required because it appears within the type `NotThreadSafe`
   --> tests/ui/vector_autotraits.rs:7:14
    |
-7  |         type NotThreadSafe;
+ 7 |         type NotThreadSafe;
    |              ^^^^^^^^^^^^^
    = note: required because it appears within the type `[NotThreadSafe]`
 note: required because it appears within the type `PhantomData<[NotThreadSafe]>`

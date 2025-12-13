@@ -24,3 +24,5 @@ JNI_TestDummyImpl_LoadResource(JNIEnv* env) {
   LOG(INFO) << "Loading dummy native resource: " << resource;
   return base::android::ConvertUTF8ToJavaString(env, resource);
 }
+
+DEFINE_JNI(TestDummyImpl)

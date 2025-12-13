@@ -1,0 +1,23 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer multiline value='1. apple<newline>2. <newline>banana<newline>3. <newline>cherry'
+++++++++list
+++++++++++listItem
+++++++++++++listMarker name='1. ' nextOnLineId=inlineTextBox:"apple"
+++++++++++++++staticText ignored
+++++++++++++staticText name='apple' previousOnLineId=staticText
+++++++++++++++inlineTextBox name='apple' previousOnLineId=staticText
+++++++++++listItem
+++++++++++++listMarker name='2. ' nextOnLineId=inlineTextBox:"banana"
+++++++++++++++staticText ignored
+++++++++++++image ignored invisible
+++++++++++++staticText name='banana' previousOnLineId=staticText
+++++++++++++++inlineTextBox name='banana' previousOnLineId=staticText
+++++++++++listItem
+++++++++++++listMarker name='3. ' nextOnLineId=inlineTextBox:"<newline>"
+++++++++++++++staticText ignored
+++++++++++++lineBreak name='<newline>' previousOnLineId=staticText
+++++++++++++++inlineTextBox name='<newline>' previousOnLineId=staticText
+++++++++++++staticText name='cherry'
+++++++++++++++inlineTextBox name='cherry'

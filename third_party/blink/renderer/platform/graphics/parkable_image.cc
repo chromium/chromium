@@ -28,9 +28,7 @@
 
 namespace blink {
 
-BASE_FEATURE(kDelayParkingImages,
-             "DelayParkingImages",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDelayParkingImages, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -109,7 +107,7 @@ class ParkableImageSegmentReader : public SegmentReader {
   explicit ParkableImageSegmentReader(scoped_refptr<ParkableImage> image);
   size_t size() const override;
   base::span<const uint8_t> GetSomeData(size_t position) const override;
-  sk_sp<SkData> GetAsSkData() const override;
+  sk_sp<const SkData> GetAsSkData() const override;
   void LockData() override;
   void UnlockData() override;
 
@@ -141,7 +139,7 @@ base::span<const uint8_t> ParkableImageSegmentReader::GetSomeData(
   return RWBufferGetSomeData(iter, position_of_block, position);
 }
 
-sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
+sk_sp<const SkData> ParkableImageSegmentReader::GetAsSkData() const {
   if (!parkable_image_) {
     return nullptr;
   }
@@ -195,7 +193,7 @@ void ParkableImageSegmentReader::UnlockData() {
 
 constexpr base::TimeDelta ParkableImageImpl::kParkingDelay;
 
-void ParkableImageImpl::Append(WTF::SharedBuffer* buffer, size_t offset) {
+void ParkableImageImpl::Append(SharedBuffer* buffer, size_t offset) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::AutoLock lock(lock_);
   DCHECK(!is_frozen());
@@ -532,7 +530,7 @@ scoped_refptr<SharedBuffer> ParkableImage::Data() {
   return impl_->Data();
 }
 
-void ParkableImage::Append(WTF::SharedBuffer* buffer, size_t offset) {
+void ParkableImage::Append(SharedBuffer* buffer, size_t offset) {
   DCHECK(impl_);
   impl_->Append(buffer, offset);
 }

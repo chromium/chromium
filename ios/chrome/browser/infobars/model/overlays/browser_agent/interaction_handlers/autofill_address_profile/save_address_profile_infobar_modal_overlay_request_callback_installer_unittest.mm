@@ -6,11 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/uuid.h"
-#import "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
-#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_update_address_profile_delegate_ios.h"
@@ -30,7 +26,6 @@
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
-using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
 // Test fixture for
@@ -78,7 +73,7 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest
   autofill::AutofillProfile profile_{
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
   web::FakeWebState web_state_;
-  raw_ptr<InfoBarIOS> infobar_ = nullptr;
+  raw_ptr<InfoBarIOS, DanglingUntriaged> infobar_ = nullptr;
   raw_ptr<OverlayRequest> request_ = nullptr;
   MockSaveAddressProfileInfobarModalInteractionHandler mock_handler_;
   SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller installer_;
@@ -87,19 +82,10 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest
 };
 
 TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,
-       SaveEditedProfile) {
-  autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  EXPECT_CALL(mock_handler_, SaveEditedProfile(infobar_.get(), &profile));
-  request_->GetCallbackManager()->DispatchResponse(
-      OverlayResponse::CreateWithInfo<EditedProfileSaveAction>(&profile));
-}
-
-TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,
        CancelAction) {
-  BOOL fakeFromEditModal = NO;
-  EXPECT_CALL(mock_handler_, CancelModal(infobar_.get(), fakeFromEditModal));
+  EXPECT_CALL(mock_handler_, CancelModal(infobar_.get()));
   request_->GetCallbackManager()->DispatchResponse(
-      OverlayResponse::CreateWithInfo<CancelViewAction>(fakeFromEditModal));
+      OverlayResponse::CreateWithInfo<CancelViewAction>());
 }
 
 TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,

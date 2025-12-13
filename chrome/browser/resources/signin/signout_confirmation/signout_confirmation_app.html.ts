@@ -25,7 +25,9 @@ export function getHtml(this: SignoutConfirmationAppElement) {
     </extensions-section>
   ` : ``}
   <div id="action-row">
-    <cr-button id="acceptButton" class="action-button"
+    <cr-button id="acceptButton" class="action-button
+        ${this.isUnoPhase2FollowUpEnabled_ && this.data_.hasUnsyncedData ?
+            'delete-button' : ''}"
         @click="${this.onAcceptButtonClick_}" autofocus>
       ${this.data_.acceptButtonLabel}
     </cr-button>

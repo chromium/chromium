@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">โปรดย่อข้อความนี้ให้เหลือไม่เกิน <ph name="MAX_CHARACTERS" /> อักขระ (ขณะนี้ข้อความของคุณมี <ph name="CURRENT_LENGTH" /> อักขระ)</translation>
 <translation id="2247351761944213033">สัปดาห์ที่ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">แทร็ก <ph name="NUMBER" /></translation>
+<translation id="2500270406326775625">URL ข้อมูล</translation>
 <translation id="2507943997699731163">โปรดกรอกฟิลด์นี้</translation>
 <translation id="2613802280814924224">โปรดป้อนค่าที่ถูกต้อง ค่าใกล้เคียงที่สุดที่ถูกต้องคือ <ph name="VALID_VALUE" /></translation>
 <translation id="2653659639078652383">ส่ง</translation>

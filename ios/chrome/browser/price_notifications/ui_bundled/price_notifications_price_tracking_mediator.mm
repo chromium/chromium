@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_price_tracking_mediator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
@@ -17,8 +18,8 @@
 #import "components/power_bookmarks/core/power_bookmark_utils.h"
 #import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/price_insights/coordinator/price_insights_consumer.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_alert_presenter.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
+#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
@@ -335,7 +337,7 @@ using PriceNotificationItems =
 
   // Notify Welcome Back to remove Price Tracking and Insights from the eligible
   // features.
-  if (IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackEnabled()) {
     MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kPriceTrackingAndInsights);
   }
 }

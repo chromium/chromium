@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_view_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -149,9 +151,6 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
         ->GetMenuItemContainerForTesting();
   }
 
-  ChromeLabsModel* chrome_labs_model() {
-    return browser_view()->toolbar()->chrome_labs_model();
-  }
 
   ChromeLabsItemView* first_lab_item() {
     views::View* menu_items = chrome_labs_menu_item_container();
@@ -268,8 +267,9 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
 #endif
 
     browser_view()
-        ->toolbar()
-        ->pinned_toolbar_actions_container()
+        ->browser()
+        ->GetFeatures()
+        .pinned_toolbar_actions_controller()
         ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
 
     std::unique_ptr<ChromeLabsBubbleView> bubble_view =
@@ -281,8 +281,9 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
   }
 
   void TearDown() override {
+    bubble_view_ = nullptr;
+    bubble_widget_.ExtractAsDangling()->CloseNow();
     about_flags::GetCurrentFlagsState()->Reset();
-    bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
     TestWithBrowserView::TearDown();
   }
 
@@ -296,9 +297,6 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
     return chrome_labs_bubble()->GetMenuItemContainerForTesting();
   }
 
-  ChromeLabsModel* chrome_labs_model() {
-    return browser_view()->toolbar()->chrome_labs_model();
-  }
 
   flags_ui::FlagsState* flags_state() {
     return about_flags::GetCurrentFlagsState();
@@ -351,8 +349,8 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
   std::unique_ptr<ChromeLabsViewController> CreateViewController() {
     std::unique_ptr<ChromeLabsViewController> view_controller =
         std::make_unique<ChromeLabsViewController>(
-            chrome_labs_model(), chrome_labs_bubble(),
-            browser_view()->browser(), flags_state(), flags_storage_.get());
+            chrome_labs_bubble(), browser_view()->browser(), flags_state(),
+            flags_storage_.get());
     return view_controller;
   }
 
@@ -362,8 +360,8 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
 
  protected:
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
-  raw_ptr<ChromeLabsBubbleView, DanglingUntriaged> bubble_view_;
-  raw_ptr<views::Widget, DanglingUntriaged> bubble_widget_;
+  raw_ptr<ChromeLabsBubbleView> bubble_view_;
+  raw_ptr<views::Widget> bubble_widget_;
 
  private:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -560,10 +558,7 @@ TEST_F(ChromeLabsViewControllerTest, DISABLED_ShowFeedbackPage) {
 
   views::MdTextButton* feedback_button =
       first_lab_item()->GetFeedbackButtonForTesting();
-  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                   ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi test_api(feedback_button);
-  test_api.NotifyClick(e);
+  views::test::ButtonTestApi(feedback_button).NotifyDefaultMouseClick();
 
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
@@ -594,8 +589,7 @@ TEST_F(ChromeLabsViewControllerTest, CleanUpNewBadgePrefsTest) {
 
   scoped_chrome_labs_model_data_.SetModelDataForTesting(test_experiments);
 
-  UpdateChromeLabsNewBadgePrefs(browser_view()->browser()->profile(),
-                                chrome_labs_model());
+  UpdateChromeLabsNewBadgePrefs(browser_view()->browser()->profile());
   EXPECT_FALSE(new_badge_prefs.contains(kFirstTestFeatureId));
   EXPECT_FALSE(new_badge_prefs.contains(kTestFeatureWithVariationId));
 }

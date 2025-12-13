@@ -14,12 +14,24 @@
 
 namespace user_prefs {
 
+static jboolean JNI_UserPrefs_AreNativePrefsLoaded(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jbrowser_context_handle) {
+  content::BrowserContext* browser_context =
+      content::BrowserContextFromJavaHandle(jbrowser_context_handle);
+  return browser_context && UserPrefs::IsInitialized(browser_context) &&
+         UserPrefs::Get(browser_context)->GetInitializationStatus() ==
+             PrefService::INITIALIZATION_STATUS_SUCCESS;
+}
+
 static base::android::ScopedJavaLocalRef<jobject> JNI_UserPrefs_Get(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jbrowser_context_handle) {
+    const base::android::JavaRef<jobject>& jbrowser_context_handle) {
   return UserPrefs::Get(
              content::BrowserContextFromJavaHandle(jbrowser_context_handle))
       ->GetJavaObject();
 }
 
 }  // namespace user_prefs
+
+DEFINE_JNI(UserPrefs)

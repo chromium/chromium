@@ -4,7 +4,10 @@
 
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_sync_test_utils.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -12,43 +15,10 @@
 
 namespace autofill {
 namespace {
-
 constexpr char kId1[] = "1";
-constexpr char kInvalidId[] = "";
-
-constexpr char kValidProgramLogo[] = "http://foobar.com/logo.png";
-constexpr char kInvalidProgramLogo[] = "logo.png";
-constexpr char kValidCardNumber[] = "80974934820245";
-
-LoyaltyCard TestLoyaltyCard(std::string_view id = kId1) {
-  return LoyaltyCard(ValuableId(std::string(id)), "merchant_name",
-                     "program_name", GURL("http://foobar.com/logo.png"),
-                     kValidCardNumber, {GURL("https://domain.example")});
-}
-
-sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
-    std::string_view id = kId1,
-    std::string_view program_logo = kValidProgramLogo,
-    std::string_view number = kValidCardNumber) {
-  sync_pb::AutofillValuableSpecifics specifics =
-      sync_pb::AutofillValuableSpecifics();
-  specifics.set_id(std::string(id));
-
-  sync_pb::AutofillValuableSpecifics::LoyaltyCard* loyalty_card =
-      specifics.mutable_loyalty_card();
-  loyalty_card->set_merchant_name("merchant_name");
-  loyalty_card->set_program_name("program_name");
-  loyalty_card->set_program_logo(std::string(program_logo));
-  loyalty_card->set_loyalty_card_number(number);
-  *loyalty_card->add_merchant_domains() = "https://domain.example";
-  return specifics;
-}
-
 }  // namespace
 
-class LoyaltyCardSyncUtilTest : public testing::Test {};
-
-TEST_F(LoyaltyCardSyncUtilTest, CreateValuableSpecificsFromLoyaltyCard) {
+TEST(LoyaltyCardSyncUtilTest, CreateValuableSpecificsFromLoyaltyCard) {
   LoyaltyCard card = TestLoyaltyCard();
   sync_pb::AutofillValuableSpecifics specifics =
       CreateSpecificsFromLoyaltyCard(card);
@@ -67,7 +37,7 @@ TEST_F(LoyaltyCardSyncUtilTest, CreateValuableSpecificsFromLoyaltyCard) {
   }
 }
 
-TEST_F(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
+TEST(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
   LoyaltyCard card = TestLoyaltyCard();
   std::unique_ptr<syncer::EntityData> entity_data =
       CreateEntityDataFromLoyaltyCard(card);
@@ -91,40 +61,108 @@ TEST_F(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
   }
 }
 
-TEST_F(LoyaltyCardSyncUtilTest, CreateAutofillLoyaltyCardFromSpecifics) {
+TEST(LoyaltyCardSyncUtilTest, CreateAutofillLoyaltyCardFromSpecifics) {
   EXPECT_EQ(TestLoyaltyCard(), CreateAutofillLoyaltyCardFromSpecifics(
                                    TestLoyaltyCardSpecifics(kId1)));
 }
 
-TEST_F(LoyaltyCardSyncUtilTest, AreAutofillLoyaltyCardSpecificsValid) {
-  EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
-      TestLoyaltyCardSpecifics(kInvalidId)));
-  EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
-      TestLoyaltyCardSpecifics(kId1, kInvalidProgramLogo)));
-  EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
-      TestLoyaltyCardSpecifics(kId1, kInvalidProgramLogo)));
-  EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
-      TestLoyaltyCardSpecifics(kId1, kValidProgramLogo, /*number=*/"")));
-
-  EXPECT_TRUE(
-      AreAutofillLoyaltyCardSpecificsValid(TestLoyaltyCardSpecifics(kId1)));
-
-  sync_pb::AutofillValuableSpecifics specifics = TestLoyaltyCardSpecifics(kId1);
-  specifics.mutable_loyalty_card()->clear_program_logo();
-  EXPECT_TRUE(AreAutofillLoyaltyCardSpecificsValid(specifics));
-  EXPECT_TRUE(AreAutofillLoyaltyCardSpecificsValid(
-      TestLoyaltyCardSpecifics(kId1, /*program_logo=*/"")));
-
-  sync_pb::AutofillValuableSpecifics empty_merchant_name_specifics =
-      TestLoyaltyCardSpecifics(kId1);
-  empty_merchant_name_specifics.mutable_loyalty_card()->clear_merchant_name();
-}
-
-TEST_F(LoyaltyCardSyncUtilTest, TrimAutofillValuableSpecificsDataForCaching) {
+TEST(LoyaltyCardSyncUtilTest, TrimAutofillValuableSpecificsDataForCaching) {
   EXPECT_EQ(TrimAutofillValuableSpecificsDataForCaching(
                 TestLoyaltyCardSpecifics(kId1))
                 .ByteSizeLong(),
             0u);
+}
+
+TEST(VehicleRegistrationSyncUtilTest,
+     TrimAutofillValuableSpecificsDataForCaching) {
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id("some_id");
+  specifics.set_is_editable(true);
+  specifics.mutable_vehicle_registration()->set_vehicle_make("Ford");
+  specifics.mutable_vehicle_registration()->set_vehicle_model("Fiesta");
+  specifics.mutable_vehicle_registration()->set_vehicle_year("2018");
+  specifics.mutable_vehicle_registration()->set_vehicle_identification_number(
+      "VIN123");
+  specifics.mutable_vehicle_registration()->set_vehicle_license_plate("ABC123");
+  specifics.mutable_vehicle_registration()->set_license_plate_region("CA");
+  specifics.mutable_vehicle_registration()->set_license_plate_country("US");
+  specifics.mutable_vehicle_registration()->set_owner_name("John Doe");
+
+  EXPECT_EQ(
+      TrimAutofillValuableSpecificsDataForCaching(specifics).ByteSizeLong(),
+      0u);
+}
+
+TEST(FlightReservationSyncUtilTest,
+     TrimAutofillValuableSpecificsDataForCaching) {
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id("some_id");
+  specifics.set_is_editable(true);
+  specifics.mutable_flight_reservation()->set_flight_number("BA249");
+  specifics.mutable_flight_reservation()->set_flight_ticket_number("12345");
+  specifics.mutable_flight_reservation()->set_flight_confirmation_code(
+      "ABCDEF");
+  specifics.mutable_flight_reservation()->set_passenger_name("Jane Doe");
+  specifics.mutable_flight_reservation()->set_departure_airport("LHR");
+  specifics.mutable_flight_reservation()->set_arrival_airport("AMS");
+  specifics.mutable_flight_reservation()->set_departure_date_unix_epoch_micros(
+      123456789);
+  specifics.mutable_flight_reservation()->set_arrival_date_unix_epoch_micros(
+      987654321);
+  specifics.mutable_flight_reservation()->set_airline_logo("logo_url");
+  specifics.mutable_flight_reservation()->set_carrier_code("BA");
+  specifics.mutable_flight_reservation()
+      ->set_departure_airport_utc_offset_seconds(123456789);
+  specifics.mutable_flight_reservation()
+      ->set_arrival_airport_utc_offset_seconds(987654321);
+
+  EXPECT_EQ(
+      TrimAutofillValuableSpecificsDataForCaching(specifics).ByteSizeLong(),
+      0u);
+}
+
+TEST(EntityInstanceSyncUtilTest, CreateEntityDataFromEntityInstance) {
+  EntityInstance vehicle_entity = test::GetVehicleEntityInstance();
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CreateEntityDataFromEntityInstance(vehicle_entity);
+
+  sync_pb::AutofillValuableSpecifics specifics =
+      entity_data->specifics.autofill_valuable();
+  ASSERT_TRUE(entity_data->specifics.has_autofill_valuable());
+
+  const sync_pb::VehicleRegistration& vehicle_specifics =
+      specifics.vehicle_registration();
+
+  EXPECT_EQ(vehicle_entity.guid().value(), specifics.id());
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleMake))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_make()));
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleModel))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_model()));
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleYear))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_year()));
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleOwner))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.owner_name()));
+  EXPECT_EQ(
+      vehicle_entity
+          .attribute(AttributeType(AttributeTypeName::kVehiclePlateNumber))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_license_plate()));
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleVin))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_identification_number()));
+  EXPECT_EQ(vehicle_entity
+                .attribute(AttributeType(AttributeTypeName::kVehiclePlateState))
+                ->GetCompleteRawInfo(),
+            base::UTF8ToUTF16(vehicle_specifics.license_plate_region()));
 }
 
 }  // namespace autofill

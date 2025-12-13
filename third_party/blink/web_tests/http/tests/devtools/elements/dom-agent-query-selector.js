@@ -28,19 +28,19 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
     TestRunner.runTestSuite([
       function testDocumentQuerySelector(next) {
-        TestRunner.DOMAgent.querySelector(documentId, 'div.foo').then(dumpNodes.bind(null, next));
+        TestRunner.DOMAgent.invoke_querySelector({nodeId: documentId, selector: 'div.foo'}).then(({nodeId}) => dumpNodes(next, [nodeId]));
       },
 
       function testDocumentQuerySelectorAll(next) {
-        TestRunner.DOMAgent.querySelectorAll(documentId, 'div.foo').then(dumpNodes.bind(null, next));
+        TestRunner.DOMAgent.invoke_querySelectorAll({nodeId: documentId, selector: 'div.foo'}).then(({nodeIds}) => dumpNodes(next, nodeIds));
       },
 
       function testQuerySelector(next) {
-        TestRunner.DOMAgent.querySelector(containerId, 'div.foo').then(dumpNodes.bind(null, next));
+        TestRunner.DOMAgent.invoke_querySelector({nodeId: containerId, selector: 'div.foo'}).then(({nodeId}) => dumpNodes(next, [nodeId]));
       },
 
       function testQuerySelectorAll(next) {
-        TestRunner.DOMAgent.querySelectorAll(containerId, 'div.foo').then(dumpNodes.bind(null, next));
+        TestRunner.DOMAgent.invoke_querySelectorAll({nodeId: containerId, selector: 'div.foo'}).then(({nodeIds}) => dumpNodes(next, nodeIds));
       }
     ]);
   }

@@ -1,0 +1,81 @@
+[
+  {
+    "os": [
+      "linux",
+      "win",
+      "android",
+      "chromeos",
+      "mac"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "proxy_override_rules",
+      "default_value": [],
+      "values_to_test": [
+          [
+              {
+                  "DestinationMatchers": [ "https://app1.com", "https://app2.com" ],
+                  "ProxyList": [ "HTTPS proxy.app:443" ]
+              }
+          ],
+          [
+              {
+                  "DestinationMatchers": [ "https://some.app.com" ],
+                  "ProxyList": [ "DIRECT" ],
+                  "Conditions": [
+                      {
+                          "DnsProbe": {
+                              "Host": "corp.ads",
+                              "Result": "resolved"
+                          }
+                      }
+                  ]
+              },
+              {
+                  "DestinationMatchers": [ "https://some.app.com" ],
+                  "ProxyList": [ "HTTPS proxy.app:443" ],
+                  "Conditions": [
+                      {
+                          "DnsProbe": {
+                              "Host": "corp.ads",
+                              "Result": "not_found"
+                          }
+                      }
+                  ]
+              }
+          ]
+      ]
+    },
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ProxyOverrideRules": 12
+        },
+        "prefs": {
+          "proxy_override_rules": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProxyOverrideRules": "some string"
+        },
+        "prefs": {
+          "proxy_override_rules": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProxyOverrideRules": false
+        },
+        "prefs": {
+          "proxy_override_rules": {
+            "default_value": []
+          }
+        }
+      }
+    ]
+  }
+]

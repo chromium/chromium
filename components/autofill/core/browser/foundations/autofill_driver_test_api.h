@@ -22,12 +22,6 @@ class AutofillDriverTestApi {
     driver_->lifecycle_state_ = lifecycle_state;
   }
 
-  void SetLifecycleStateAndNotifyObservers(
-      AutofillDriver::LifecycleState new_state) {
-    test_api(driver_->GetAutofillClient().GetAutofillDriverFactory())
-        .SetLifecycleStateAndNotifyObservers(*driver_, new_state);
-  }
-
   void TriggerFormExtractionInDriverFrame() {
     driver_->TriggerFormExtractionInDriverFrame(/*pass_key=*/{});
   }

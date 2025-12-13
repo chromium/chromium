@@ -287,7 +287,7 @@ TEST_F(BackGestureEventHandlerTest, GoBackInHomeScreenPage) {
 
 TEST_F(BackGestureEventHandlerTest, CancelOnScreenRotation) {
   UpdateDisplay("807x407");
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager,
                                                          display_id);
@@ -395,7 +395,7 @@ TEST_F(BackGestureEventHandlerTest, DragFromSplitViewDivider) {
 // view that is underneath the finger in different screen orientations. And that
 // the snapped window that is underneath should go back to the previous page.
 TEST_F(BackGestureEventHandlerTest, BackGestureInSplitViewMode) {
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager,
                                                          display_id);

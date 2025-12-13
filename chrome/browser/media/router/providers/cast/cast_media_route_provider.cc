@@ -191,8 +191,6 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
                                          CreateRouteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/40561499): Handle mirroring routes, including
-  // mirror-to-Cast transitions.
   const MediaSinkInternal* sink = media_sink_service_->GetSinkById(sink_id);
   if (!sink) {
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,

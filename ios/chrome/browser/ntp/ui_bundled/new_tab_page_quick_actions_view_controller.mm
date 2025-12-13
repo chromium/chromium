@@ -4,10 +4,17 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -27,9 +34,25 @@ const CGFloat kButtonCornerRadius = 24.0;
 // The sise of the quick actions symbols.
 const CGFloat kSymbolPointSize = 18.0;
 
+// The maximum font size for the quick actions button.
+const CGFloat kMaximumFontSize = 20.0;
+
 // The color used to match the fakebox background.
 NSString* const kFakeboxMatchingBackgroundColor =
     @"fake_omnibox_bottom_gradient_color";
+
+// Returns the color needed for the background of the button.
+UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
+  if (GetNTPMIAEntrypointVariation() ==
+      NTPMIAEntrypointVariation::kOmniboxContainedSingleButton) {
+    return colorPalette ? colorPalette.secondaryCellColor
+                        : [UIColor colorNamed:kBackgroundColor];
+  }
+
+  // All other treatments use the same color as the fakebox.
+  return colorPalette ? colorPalette.omniboxColor
+                      : [UIColor colorNamed:kFakeboxMatchingBackgroundColor];
+}
 
 }  // namespace
 
@@ -47,19 +70,40 @@ NSString* const kFakeboxMatchingBackgroundColor =
   [NSLayoutConstraint
       activateConstraints:@[ [_buttonStackView.heightAnchor
                               constraintEqualToConstant:kQuickActionsHeight] ]];
+  BOOL showAIMEntrypoint = GetNTPMIAEntrypointVariation() ==
+                           NTPMIAEntrypointVariation::kAIMInQuickAction;
+  if (showAIMEntrypoint) {
+    _aimButton =
+        [self createButtonWithSymbolName:kMagnifyingglassSparkSymbol
+                                   title:l10n_util::GetNSString(
+                                             IDS_IOS_NTP_QUICK_ACTIONS_AIM)];
+    [_buttonStackView addArrangedSubview:_aimButton];
+  }
 
   BOOL showIncognito = GetNTPMIAEntrypointVariation() !=
                        NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito;
   if (showIncognito) {
-    _incognitoButton = [self createButtonWithSymbolName:kIncognitoSymbol];
+    if (showAIMEntrypoint) {
+      _incognitoButton = [self
+          createButtonWithSymbolName:kIncognitoSymbol
+                               title:l10n_util::GetNSString(
+                                         IDS_IOS_NTP_QUICK_ACTIONS_INCOGNITO)];
+    } else {
+      _incognitoButton = [self createButtonWithSymbolName:kIncognitoSymbol];
+    }
     [_buttonStackView addArrangedSubview:_incognitoButton];
   }
 
-  _voiceSearchButton = [self createButtonWithSymbolName:kVoiceSymbol];
-  _lensButton = [self createButtonWithSymbolName:kCameraLensSymbol];
+  BOOL showVoiceLens = GetNTPMIAEntrypointVariation() !=
+                       NTPMIAEntrypointVariation::kAIMInQuickAction;
 
-  [_buttonStackView addArrangedSubview:_voiceSearchButton];
-  [_buttonStackView addArrangedSubview:_lensButton];
+  if (showVoiceLens) {
+    _voiceSearchButton = [self createButtonWithSymbolName:kVoiceSymbol];
+    _lensButton = [self createButtonWithSymbolName:kCameraLensSymbol];
+
+    [_buttonStackView addArrangedSubview:_voiceSearchButton];
+    [_buttonStackView addArrangedSubview:_lensButton];
+  }
 
   [self setupQuickActionsButtonsAccessibility];
 
@@ -75,6 +119,9 @@ NSString* const kFakeboxMatchingBackgroundColor =
   [_incognitoButton addTarget:self
                        action:@selector(openIncognitoSearch)
              forControlEvents:UIControlEventTouchUpInside];
+  [_aimButton addTarget:self
+                 action:@selector(openAIM)
+       forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (CGSize)preferredContentSize {
@@ -109,14 +156,54 @@ NSString* const kFakeboxMatchingBackgroundColor =
 
 // Creates a new quick action button with the given `icon`.
 - (UIButton*)createButtonWithSymbolName:(NSString*)symbolName {
-  UIButton* button = [[UIButton alloc] init];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.backgroundColor = [self buttonBackgroundColor];
-  button.layer.cornerRadius = kButtonCornerRadius;
-  button.tintColor = [UIColor colorNamed:kGrey700Color];
-  UIImage* icon = CustomSymbolWithPointSize(symbolName, kSymbolPointSize);
-  [button setImage:MakeSymbolMonochrome(icon) forState:UIControlStateNormal];
+  return [self createButtonWithSymbolName:symbolName title:nil];
+}
 
+// Creates a new quick action button with the given `icon` and title.
+- (UIButton*)createButtonWithSymbolName:(NSString*)symbolName
+                                  title:(NSString*)title {
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  configuration.background.backgroundColor = ButtonBackgroundColor(nil);
+  configuration.background.cornerRadius = kButtonCornerRadius;
+  configuration.baseForegroundColor = [UIColor colorNamed:kGrey700Color];
+  UIImage* icon = CustomSymbolWithPointSize(symbolName, kSymbolPointSize);
+  configuration.image = MakeSymbolMonochrome(icon);
+
+  if (title) {
+    UIFont* font = PreferredFontForTextStyle(
+        UIFontTextStyleSubheadline, UIFontWeightRegular, kMaximumFontSize);
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSAttributedString* attributedTitle =
+        [[NSAttributedString alloc] initWithString:title attributes:attributes];
+    configuration.attributedTitle = attributedTitle;
+    configuration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+    configuration.imagePadding = 8;
+  }
+
+  UIButton* button = [[UIButton alloc] init];
+  UIColor* baseTintColor =
+      content_suggestions::DefaultIconTintColorWithAIMAllowed(YES);
+  if (GetNTPMIAEntrypointVariation() ==
+      NTPMIAEntrypointVariation::kOmniboxContainedSingleButton) {
+    button.configurationUpdateHandler =
+        CreateThemedButtonConfigurationUpdateHandler(
+            baseTintColor, ^(NewTabPageColorPalette* palette) {
+              return ButtonBackgroundColor(palette);
+            });
+  } else {
+    // Other variations change the blur background to match the omnibox.
+    button.configurationUpdateHandler =
+        CreateThemedButtonConfigurationUpdateHandler(
+            baseTintColor,
+            ^(NewTabPageColorPalette* palette) {
+              return ButtonBackgroundColor(palette);
+            },
+            UIBlurEffectStyleSystemThickMaterial);
+  }
+
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.configuration = configuration;
   return button;
 }
 
@@ -141,15 +228,8 @@ NSString* const kFakeboxMatchingBackgroundColor =
   [self.NTPShortcutsHandler openIncognitoSearch];
 }
 
-// Returns the color needed for the background of the button.
-- (UIColor*)buttonBackgroundColor {
-  if (GetNTPMIAEntrypointVariation() ==
-      NTPMIAEntrypointVariation::kOmniboxContainedSingleButton) {
-    return [UIColor colorNamed:kBackgroundColor];
-  }
-
-  // All other treatments use the same color as the fakebox.
-  return [UIColor colorNamed:kFakeboxMatchingBackgroundColor];
+- (void)openAIM {
+  [self.NTPShortcutsHandler openMIA];
 }
 
 @end

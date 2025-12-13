@@ -32,10 +32,9 @@ PriceTrackingNotificationBridge::GetForBrowserContext(
 PriceTrackingNotificationBridge::PriceTrackingNotificationBridge(
     Profile* profile) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  java_obj_.Reset(
-      env, Java_PriceTrackingNotificationBridge_create(
-               env, reinterpret_cast<intptr_t>(this), profile->GetJavaObject())
-               .obj());
+  java_obj_.Reset(env, Java_PriceTrackingNotificationBridge_create(
+                           env, reinterpret_cast<intptr_t>(this),
+                           profile->GetJavaObject()));
 }
 
 PriceTrackingNotificationBridge::~PriceTrackingNotificationBridge() = default;
@@ -54,3 +53,5 @@ void PriceTrackingNotificationBridge::OnNotificationPayload(
   Java_PriceTrackingNotificationBridge_showNotification(
       env, java_obj_, base::android::ToJavaByteArray(env, payload.value()));
 }
+
+DEFINE_JNI(PriceTrackingNotificationBridge)

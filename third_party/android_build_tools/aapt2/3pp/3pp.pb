@@ -4,11 +4,14 @@
 
 create {
   source {
-    script { name: "fetch.py" }
+    script {
+      name: "3pp.py"
+      use_fetch_checkout_workflow: true
+    }
   }
 
   build {
-    install: "extract.sh"
+    install: ["3pp.py", "install"]
   }
 }
 

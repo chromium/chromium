@@ -21,8 +21,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Allow websites to make requests to any network endpoint in an insecure manner.
   value: true

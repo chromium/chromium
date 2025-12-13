@@ -6,6 +6,8 @@
 #define COMPONENTS_QUIRKS_QUIRKS_CLIENT_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -44,7 +46,7 @@ class QuirksClient {
   int64_t product_id() const { return product_id_; }
 
  private:
-  void OnDownloadComplete(std::unique_ptr<std::string> response_body);
+  void OnDownloadComplete(std::optional<std::string> response_body);
 
   // Send callback and tell manager to delete |this|.
   void Shutdown(bool success);

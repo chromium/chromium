@@ -26,7 +26,7 @@
 
     window.onload = function () {
       element = document.getElementById("firstH1");
-      shouldBe("getComputedStyle(element).getPropertyValue('text-decoration')", "'none solid rgb(51, 51, 51)'");
+      shouldBe("getComputedStyle(element).getPropertyValue('text-decoration')", "'none'");
 
       element = document.getElementById("textLine");
       shouldBe("getComputedStyle(element).getPropertyValue('font-size')", "'12px'");

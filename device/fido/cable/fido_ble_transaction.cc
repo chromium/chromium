@@ -12,7 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cable/fido_ble_connection.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

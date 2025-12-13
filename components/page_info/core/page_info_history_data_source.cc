@@ -60,13 +60,13 @@ std::u16string PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
 
 void PageInfoHistoryDataSource::GetLastVisitedTimestamp(
     base::OnceCallback<void(std::optional<base::Time>)> callback) {
-  // TODO(crbug.com/40808038): Use the data source in Android implementation.
   base::Time now = base::Time::Now();
   history_service_->GetLastVisitToHost(
-      site_url_.host(), base::Time() /* before_time */, now /* end_time */,
+      site_url_.GetHost(), /*begin_time=*/base::Time(), /*end_time=*/now,
+      history::VisitQuery404sPolicy::kExclude404s,
       base::BindOnce(&PageInfoHistoryDataSource::
                          OnLastVisitBeforeRecentNavigationsComplete,
-                     weak_factory_.GetWeakPtr(), site_url_.host(), now,
+                     weak_factory_.GetWeakPtr(), site_url_.GetHost(), now,
                      std::move(callback)),
       &query_task_tracker_);
 }
@@ -86,7 +86,8 @@ void PageInfoHistoryDataSource::OnLastVisitBeforeRecentNavigationsComplete(
           ? result.last_visit
           : query_start_time - base::Minutes(1);
   history_service_->GetLastVisitToHost(
-      host_name, base::Time() /* before_time */, end_time /* end_time */,
+      host_name, /*begin_time=*/base::Time(), end_time,
+      history::VisitQuery404sPolicy::kExclude404s,
       base::BindOnce(&PageInfoHistoryDataSource::
                          OnLastVisitBeforeRecentNavigationsComplete2,
                      weak_factory_.GetWeakPtr(), std::move(callback)),

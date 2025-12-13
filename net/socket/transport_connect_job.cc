@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -280,13 +281,9 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
 
   if (result != OK) {
     // If hostname resolution failed, record an empty endpoint and the result.
-    connection_attempts_.push_back(ConnectionAttempt(IPEndPoint(), result));
+    connection_attempts_.emplace_back(IPEndPoint(), result);
     return result;
   }
-
-  DCHECK(request_->GetAddressResults());
-  DCHECK(request_->GetDnsAliasResults());
-  DCHECK(request_->GetEndpointResults());
 
   // Invoke callback.  If it indicates |this| may be slated for deletion, then
   // only continue after a PostTask.
@@ -295,7 +292,8 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
     OnHostResolutionCallbackResult callback_result =
         params_->host_resolution_callback().Run(
             ToLegacyDestinationEndpoint(params_->destination()),
-            *request_->GetEndpointResults(), *request_->GetDnsAliasResults());
+            base::ToVector(request_->GetEndpointResults()),
+            request_->GetDnsAliasResults());
     if (callback_result == OnHostResolutionCallbackResult::kMayBeDeletedAsync) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&TransportConnectJob::OnIOComplete,
@@ -308,7 +306,7 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
 }
 
 int TransportConnectJob::DoResolveHostCallbackComplete() {
-  const auto& unfiltered_results = *request_->GetEndpointResults();
+  auto unfiltered_results = request_->GetEndpointResults();
   bool svcb_optional = IsSvcbOptional(unfiltered_results);
   std::set<IPEndPoint> ip_endpoints_seen;
   for (const auto& result : unfiltered_results) {
@@ -333,7 +331,7 @@ int TransportConnectJob::DoResolveHostCallbackComplete() {
       endpoint_results_.push_back(std::move(new_result));
     }
   }
-  dns_aliases_ = *request_->GetDnsAliasResults();
+  dns_aliases_ = request_->GetDnsAliasResults();
 
   // No need to retain `request_` beyond this point.
   request_.reset();

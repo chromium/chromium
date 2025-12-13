@@ -23,12 +23,14 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace chromeos {
 
 const char kMicrosoft365WebAppUrl[] =
     "https://www.microsoft365.com/?from=Homescreen";
+const int kMicrosoft365WebAppIconSize = 192;
 
 namespace {
 constexpr char kMicrosoft365FallbackName[] = "Microsoft 365";
@@ -78,9 +80,9 @@ void InstallMicrosoft365Offline(
     info->scope = GURL("/");
     info->display_mode = web_app::DisplayMode::kStandalone;
 
-    auto image = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+    gfx::Image image = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
         IDR_OFFICE_WEB_APP_ICONS_OFFICE_192_PNG);
-    info->icon_bitmaps.any[192] = image.AsBitmap();
+    info->icon_bitmaps.any[kMicrosoft365WebAppIconSize] = image.AsBitmap();
     info->background_color = 0xFFD53A00;
     info->theme_color = 0xFFD53A00;
     return info;

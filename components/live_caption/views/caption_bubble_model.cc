@@ -5,7 +5,6 @@
 #include "components/live_caption/views/caption_bubble_model.h"
 
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/live_caption/caption_bubble_context.h"
@@ -39,9 +38,7 @@ int GetLongestCommonPrefixLength(const std::string& str1,
 
 namespace captions {
 
-BASE_FEATURE(kLiveCaptionScrollable,
-             "LiveCaptionScrollable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLiveCaptionScrollable, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(size_t,
                    kLiveCaptionScrollableMaxLines,

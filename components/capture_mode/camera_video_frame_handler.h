@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/capture_mode/capture_mode_export.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -137,8 +138,8 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  void OnNewSubCaptureTargetVersion(
-      uint32_t sub_capture_target_version) override;
+  void OnNewCaptureVersion(
+      const media::CaptureVersion& capture_version) override;
   void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;

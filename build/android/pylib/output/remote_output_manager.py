@@ -26,11 +26,11 @@ class RemoteOutputManager(output_manager.OutputManager):
     self._bucket = bucket
 
   #override
-  def _CreateArchivedFile(self, out_filename, out_subdir, datatype):
+  def _CreateArchivedFile(self, out_filename, out_subdir, datatype, package):
     if datatype == output_manager.Datatype.TEXT:
       try:
         logdog_helper.get_logdog_client()
-        return LogdogArchivedFile(out_filename, out_subdir, datatype)
+        return LogdogArchivedFile(out_filename, out_subdir, datatype, package)
       except RuntimeError:
         return noop_output_manager.NoopArchivedFile()
     else:
@@ -42,12 +42,16 @@ class RemoteOutputManager(output_manager.OutputManager):
 
 class LogdogArchivedFile(output_manager.ArchivedFile):
 
-  def __init__(self, out_filename, out_subdir, datatype):
+  def __init__(self, out_filename, out_subdir, datatype, package):
     super().__init__(out_filename, out_subdir, datatype)
     self._stream_name = '%s_%s' % (out_subdir, out_filename)
+    self._package = package
 
   def _Link(self):
-    return logdog_helper.get_viewer_url(self._stream_name)
+    if self._package is None:
+      return logdog_helper.get_viewer_url(self._stream_name)
+    return logdog_helper.get_viewer_url(
+        self._stream_name) + '&format=logcat&package=' + self._package
 
   def _Archive(self):
     with open(self.name, 'r') as f:

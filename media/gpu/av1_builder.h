@@ -164,6 +164,8 @@ struct MEDIA_GPU_EXPORT AV1BitstreamBuilder::FrameHeader {
   bool allow_screen_content_tools = false;
   bool allow_intrabc = false;
   bool reference_select = false;
+  libgav1::InterpolationFilter interpolation_filter =
+      libgav1::InterpolationFilter::kInterpolationFilterEightTap;
 };
 
 }  // namespace media

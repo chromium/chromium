@@ -72,7 +72,6 @@ import tempfile
 # this is helpful.
 
 PATCHES = [
-    'undo-sax-deprecation.patch',
     'remove-getentropy.patch',
     'xml-attr-extra.patch',
     'widen-extra-field-in-_xmlNode-to-an-int.patch',
@@ -86,14 +85,12 @@ PATCHES = [
 # These two sets of options should be in sync. You can check the
 # generated #defines in (win32|mac|linux)/include/libxml/xmlversion.h to confirm
 # this.
-# We would like to disable python but it introduces a host of build errors
 SHARED_XML_CONFIGURE_OPTIONS = [
     # These options are turned ON
     ('--with-html', 'html=yes'),
     ('--with-icu', 'icu=yes'),
     ('--with-output', 'output=yes'),
     ('--with-push', 'push=yes'),
-    ('--with-python', 'python=yes'),
     ('--with-reader', 'reader=yes'),
     ('--with-sax1', 'sax1=yes'),
     ('--with-threads', 'threads=yes'),
@@ -111,6 +108,7 @@ SHARED_XML_CONFIGURE_OPTIONS = [
     ('--without-lzma', 'lzma=no'),
     ('--without-modules', 'modules=no'),
     ('--without-pattern', 'pattern=no'),
+    ('--without-python', 'python=no'),
     ('--without-regexps', 'regexps=no'),
     ('--without-schemas', 'schemas=no'),
     ('--without-schematron', 'schematron=no'),

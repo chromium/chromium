@@ -19,19 +19,7 @@
   <div id="main" route-path="default">
     <settings-card header-text="$i18n{devicePageTitle}">
       <template is="dom-if"
-          if="[[showPointersRow_(hasMouse_, hasPointingStick_,
-                                hasTouchpad_, isDeviceSettingsSplitEnabled_)]]">
-        <cr-link-row id="pointersRow"
-            start-icon="os-settings:device-pointing-stick"
-            label="[[getPointersTitle_(hasMouse_, hasPointingStick_,
-                                      hasTouchpad_)]]"
-            on-click="onPointersClick_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-      </template>
-      <template is="dom-if"
-          if="[[showPerDeviceMouseRow_(mice,
-                                      isDeviceSettingsSplitEnabled_)]]">
+          if="[[showPerDeviceMouseRow_(mice)]]">
         <cr-link-row id="perDeviceMouseRow"
             start-icon="os-settings:device-mouse" label="$i18n{mouseTitle}"
             on-click="onPerDeviceMouseClick_" aria-label="$i18n{mouseTitle}"
@@ -39,8 +27,7 @@
         </cr-link-row>
       </template>
       <template is="dom-if"
-          if="[[showPerDeviceTouchpadRow_(touchpads,
-                                          isDeviceSettingsSplitEnabled_)]]">
+          if="[[showPerDeviceTouchpadRow_(touchpads)]]">
         <cr-link-row id="perDeviceTouchpadRow"
             start-icon="os-settings:device-touchpad"
             aria-label="$i18n{touchpadTitle}"
@@ -49,8 +36,7 @@
         </cr-link-row>
       </template>
       <template is="dom-if"
-          if="[[showPerDevicePointingStickRow_(pointingSticks,
-                                              isDeviceSettingsSplitEnabled_)]]">
+          if="[[showPerDevicePointingStickRow_(pointingSticks)]]">
         <cr-link-row id="perDevicePointingStickRow"
             start-icon="os-settings:device-pointing-stick"
             aria-label="$i18n{pointingStickTitle}"
@@ -59,25 +45,14 @@
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
       </template>
-      <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
-        <cr-link-row id="perDeviceKeyboardRow"
-            start-icon="os-settings:device-keyboard"
-            label="$i18n{keyboardTitle}"
-            aria-label="$i18n{keyboardTitle}"
-            sub-label="[[inputMethodDisplayName_]]"
-            on-click="onPerDeviceKeyboardClick_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-      </template>
-      <template is="dom-if" if="[[!isDeviceSettingsSplitEnabled_]]">
-        <cr-link-row id="keyboardRow"
-            start-icon="os-settings:device-keyboard"
-            label="$i18n{keyboardTitle}"
-            sub-label="[[inputMethodDisplayName_]]"
-            on-click="onKeyboardClick_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-      </template>
+      <cr-link-row id="perDeviceKeyboardRow"
+          start-icon="os-settings:device-keyboard"
+          label="$i18n{keyboardTitle}"
+          aria-label="$i18n{keyboardTitle}"
+          sub-label="[[inputMethodDisplayName_]]"
+          on-click="onPerDeviceKeyboardClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
       <template is="dom-if" if="[[hasStylus_]]">
         <cr-link-row id="stylusRow"
             start-icon="os-settings:device-stylus"

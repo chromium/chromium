@@ -43,10 +43,10 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElementBytes final {
 
   const std::vector<uint8_t>& bytes() const { return bytes_; }
 
-  std::string_view AsStringPiece() const {
-    return std::string_view(reinterpret_cast<const char*>(bytes_.data()),
-                            bytes_.size());
-  }
+  // DEPRECATED. Use AsStringView() instead.
+  std::string_view AsStringPiece() const { return AsStringView(); }
+
+  std::string_view AsStringView() const;
 
   DataElementBytes Clone() const;
 

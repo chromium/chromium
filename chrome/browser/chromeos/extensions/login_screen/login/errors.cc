@@ -27,7 +27,6 @@ const char kNoSharedMGSFound[] = "No shared Managed Guest Session found";
 const char kSharedSessionIsNotActive[] = "Shared session is not active";
 const char kSharedSessionAlreadyLaunched[] =
     "Another shared session has already been launched";
-const char kScryptFailure[] = "Scrypt failed";
 const char kCleanupInProgress[] = "Cleanup is already in progress";
 const char kUnlockFailure[] = "Managed Guest Session unlock failed";
 const char kDeviceRestrictedManagedGuestSessionNotEnabled[] =

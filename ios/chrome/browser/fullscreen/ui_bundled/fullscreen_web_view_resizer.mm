@@ -104,11 +104,14 @@
   CRWWebViewScrollViewProxy* scrollViewProxy = webViewProxy.scrollViewProxy;
 
   if (self.webState->GetContentsMimeType() == "application/pdf") {
-    scrollViewProxy.contentInset = insets;
-    if (!CGRectEqualToRect(webView.frame, webView.superview.bounds)) {
-      webView.frame = webView.superview.bounds;
+    // Below iOS 26, set the content inset for a PDF page.
+    if (!@available(iOS 26, *)) {
+      scrollViewProxy.contentInset = insets;
+      if (!CGRectEqualToRect(webView.frame, webView.superview.bounds)) {
+        webView.frame = webView.superview.bounds;
+      }
+      return;
     }
-    return;
   }
 
   CGRect newFrame = UIEdgeInsetsInsetRect(webView.superview.bounds, insets);
@@ -129,8 +132,7 @@
   // Update the content offset of the scroll view to match the padding
   // that will be included in the frame.
   newContentOffset.y += (insets.top - currentTopInset) / self.model->GetSpeed();
-  if (self.compensateFrameChangeByOffset &&
-      !IsFullscreenTransitionOffsetSet()) {
+  if (self.compensateFrameChangeByOffset) {
     scrollViewProxy.contentOffset = newContentOffset;
   }
 

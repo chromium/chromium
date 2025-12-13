@@ -150,14 +150,16 @@ IN_PROC_BROWSER_TEST_F(ContentCaptureBrowserTest,
           "type":"favicon",
           "url":"https://example.com/favicon.ico"
       }])JSON";
-  std::optional<base::Value> expected = base::JSONReader::Read(expected_json);
+  std::optional<base::Value> expected = base::JSONReader::Read(
+      expected_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   // Verify that the captured data's favicon url from the primary main frame is
   // valid.
   auto* main_frame_receiver =
       provider()->ContentCaptureReceiverForFrameForTesting(main_frame_);
   std::optional<base::Value> main_frame_actual = base::JSONReader::Read(
-      main_frame_receiver->GetContentCaptureFrame().favicon);
+      main_frame_receiver->GetContentCaptureFrame().favicon,
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(main_frame_actual);
   EXPECT_EQ(expected, main_frame_actual);
 
@@ -165,7 +167,8 @@ IN_PROC_BROWSER_TEST_F(ContentCaptureBrowserTest,
   auto* fenced_frame_receiver =
       provider()->ContentCaptureReceiverForFrameForTesting(fenced_frame_);
   EXPECT_FALSE(base::JSONReader::Read(
-      fenced_frame_receiver->GetContentCaptureFrame().favicon));
+      fenced_frame_receiver->GetContentCaptureFrame().favicon,
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Insert the favicon dynamically to the fenced frame.
   ASSERT_TRUE(ExecJs(fenced_frame_.get(),
@@ -177,7 +180,8 @@ IN_PROC_BROWSER_TEST_F(ContentCaptureBrowserTest,
   // Verify that the captured data's favicon url from the fenced frame is still
   // empty.
   EXPECT_FALSE(base::JSONReader::Read(
-      fenced_frame_receiver->GetContentCaptureFrame().favicon));
+      fenced_frame_receiver->GetContentCaptureFrame().favicon,
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 }
 
 }  // namespace content_capture

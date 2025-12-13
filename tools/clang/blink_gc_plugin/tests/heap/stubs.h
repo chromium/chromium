@@ -28,8 +28,6 @@ using conditional_t = conditional<Condition, If, Else>::type;
 #define GC_PLUGIN_IGNORE(reason) \
   __attribute__((annotate("blink_gc_plugin_ignore")))
 
-#define GC_PLUGIN_IGNORE_FILE(reason) _Pragma("blink_gc_plugin_ignore_file")
-
 #define STACK_ALLOCATED_IGNORE(reason) \
   __attribute__((annotate("stack_allocated_ignore")))
 
@@ -58,7 +56,7 @@ template <typename T, typename Traits = void>
 class raw_ref {};
 
 }  // namespace base
-namespace WTF {
+namespace blink {
 
 template<typename T> class RefCounted { };
 
@@ -157,7 +155,7 @@ class HashMap {
 
   ~HashMap() {}
 };
-}
+}  // namespace blink
 
 // Empty namespace declaration to exercise internal
 // handling of namespace equality.
@@ -417,8 +415,6 @@ using CrossThreadWeakPersistent = cppgc::subtle::CrossThreadWeakPersistent<T>;
 
 template <typename T>
 using TraceWrapperV8Reference = v8::TracedReference<T>;
-
-using namespace WTF;
 
 #define DISALLOW_NEW()                                            \
  public:                                                          \

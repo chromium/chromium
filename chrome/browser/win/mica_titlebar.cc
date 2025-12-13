@@ -4,21 +4,22 @@
 
 #include "chrome/browser/win/mica_titlebar.h"
 
+#include <optional>
+
 #include "base/win/windows_version.h"
 #include "ui/color/win/accent_color_observer.h"
 #include "ui/native_theme/native_theme.h"
 
 // Allows the titlebar to be drawn by the system using the Mica material
 // on Windows 11, version 22H2 and above.
-BASE_FEATURE(kWindows11MicaTitlebar,
-             "Windows11MicaTitlebar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWindows11MicaTitlebar, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool ShouldDefaultThemeUseMicaTitlebar() {
   return SystemTitlebarCanUseMicaMaterial() &&
-         !ui::AccentColorObserver::Get()->use_dwm_frame_color() &&
-         !ui::NativeTheme::GetInstanceForNativeUi()
-              ->UserHasContrastPreference();
+         !ui::AccentColorObserver::Get()
+              ->ShouldUseAccentColorForWindowFrame() &&
+         ui::NativeTheme::GetInstanceForNativeUi()->preferred_contrast() ==
+             ui::NativeTheme::PreferredContrast::kNoPreference;
 }
 
 bool SystemTitlebarCanUseMicaMaterial() {

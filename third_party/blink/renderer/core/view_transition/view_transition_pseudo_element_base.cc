@@ -31,10 +31,8 @@ bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(
       return pseudo_id == kPseudoIdViewTransitionGroup;
     case kPseudoIdViewTransitionGroup:
       return pseudo_id == kPseudoIdViewTransitionImagePair ||
-             (pseudo_id == kPseudoIdViewTransitionGroupChildren &&
-              RuntimeEnabledFeatures::NestedViewTransitionEnabled());
+             pseudo_id == kPseudoIdViewTransitionGroupChildren;
     case kPseudoIdViewTransitionGroupChildren:
-      CHECK(RuntimeEnabledFeatures::NestedViewTransitionEnabled());
       return pseudo_id == kPseudoIdViewTransitionGroup;
     case kPseudoIdViewTransitionImagePair:
       return pseudo_id == kPseudoIdViewTransitionOld ||
@@ -47,7 +45,7 @@ bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(
   }
 }
 
-const Vector<AtomicString>&
+const Vector<AtomicString>
 ViewTransitionPseudoElementBase::ViewTransitionClassList() const {
   return style_tracker_->GetViewTransitionClassList(view_transition_name());
 }
@@ -92,6 +90,11 @@ ViewTransitionPseudoElementBase::GetViewTransitionNames() const {
 const Vector<AtomicString>
 ViewTransitionPseudoElementBase::GetContainedViewTransitionNames() const {
   return style_tracker_->ComputeContainedGroupNames(view_transition_name());
+}
+
+const AtomicString& ViewTransitionPseudoElementBase::GetContainingGroupName(
+    const AtomicString& target) const {
+  return style_tracker_->GetContainingGroupName(target);
 }
 
 }  // namespace blink

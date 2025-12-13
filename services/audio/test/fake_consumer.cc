@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/audio/test/fake_consumer.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
@@ -45,10 +41,10 @@ void FakeConsumer::Clear() {
 
 void FakeConsumer::Consume(const media::AudioBus& bus) {
   CHECK_EQ(static_cast<int>(recorded_channel_data_.size()), bus.channels());
-  for (int ch = 0; ch < static_cast<int>(recorded_channel_data_.size()); ++ch) {
-    const float* const src = bus.channel(ch);
+  for (size_t ch = 0; ch < recorded_channel_data_.size(); ++ch) {
+    base::span<const float> src_ch = bus.channel(ch);
     std::vector<float>& samples = recorded_channel_data_[ch];
-    samples.insert(samples.end(), src, src + bus.frames());
+    samples.insert(samples.end(), src_ch.begin(), src_ch.end());
   }
 }
 
@@ -70,8 +66,8 @@ bool FakeConsumer::IsSilentInRange(int channel,
     return true;
   }
   const float value = samples[begin_frame];
-  return std::all_of(samples.data() + begin_frame + 1,
-                     samples.data() + end_frame,
+  return std::all_of(UNSAFE_TODO(samples.data() + begin_frame + 1),
+                     UNSAFE_TODO(samples.data() + end_frame),
                      [&value](float f) { return f == value; });
 }
 
@@ -84,9 +80,10 @@ int FakeConsumer::FindEndOfSilence(int channel, int begin_frame) const {
     return begin_frame;
   }
   const float value = samples[begin_frame];
-  const float* at = std::find_if_not(samples.data() + begin_frame + 1,
-                                     samples.data() + GetRecordedFrameCount(),
-                                     [&value](float f) { return f == value; });
+  const float* at =
+      std::find_if_not(UNSAFE_TODO(samples.data() + begin_frame + 1),
+                       UNSAFE_TODO(samples.data() + GetRecordedFrameCount()),
+                       [&value](float f) { return f == value; });
   return at - samples.data();
 }
 
@@ -132,18 +129,21 @@ void FakeConsumer::SaveToFile(const base::FilePath& path) const {
     task_environment = std::make_unique<base::test::TaskEnvironment>();
   }
 
+  const size_t number_of_samples = recorded_channel_data_[0].size();
+
   const media::AudioParameters params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
       media::ChannelLayoutConfig::Guess(recorded_channel_data_.size()),
-      sample_rate_, recorded_channel_data_[0].size());
+      sample_rate_, number_of_samples);
   base::File file(path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
                             base::File::FLAG_WRITE);
   CHECK(file.IsValid());
   auto writer = media::AudioDebugFileWriter::Create(params, std::move(file));
   auto bus = media::AudioBus::Create(params);
   for (int i = 0; i < params.channels(); ++i) {
-    memcpy(bus->channel(i), recorded_channel_data_[i].data(),
-           sizeof(float) * recorded_channel_data_[i].size());
+    CHECK_EQ(recorded_channel_data_[i].size(), number_of_samples);
+    const std::vector<float>& channel_data = recorded_channel_data_[i];
+    bus->channel(i).copy_from_nonoverlapping(base::span(channel_data));
   }
   writer->Write(*bus);
 }

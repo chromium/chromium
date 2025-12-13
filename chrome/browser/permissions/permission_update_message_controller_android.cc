@@ -11,6 +11,7 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/permissions/android/android_permission_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -39,20 +40,6 @@ void PermissionUpdateMessageController::ShowMessage(
                       std::get<1>(res), std::get<2>(res), std::move(callback));
 }
 
-void PermissionUpdateMessageController::ShowMessage(
-    const std::vector<std::string>& required_android_permissions,
-    int icon_id,
-    int title_id,
-    int description_id,
-    PermissionUpdatedCallback callback) {
-  std::vector<ContentSettingsType> empty_content_settings_types;
-  std::vector<std::string> empty_optional_android_permissions;
-  ShowMessageInternal(required_android_permissions,
-                      empty_optional_android_permissions,
-                      empty_content_settings_types, icon_id, title_id,
-                      description_id, std::move(callback));
-}
-
 void PermissionUpdateMessageController::ShowMessageInternal(
     const std::vector<std::string>& required_android_permissions,
     const std::vector<std::string>& optional_android_permissions,
@@ -61,15 +48,6 @@ void PermissionUpdateMessageController::ShowMessageInternal(
     int title_id,
     int description_id,
     PermissionUpdatedCallback callback) {
-  for (auto& delegate : message_delegates_) {
-    if (delegate->GetTitleId() == title_id) {
-      // Duplicated messages must be filtered out in permission layer, except
-      // Download.
-      DCHECK(title_id == IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE);
-      delegate->AttachAdditionalCallback(std::move(callback));
-      return;
-    }
-  }
   auto delegate = std::make_unique<PermissionUpdateMessageDelegate>(
       &GetWebContents(), required_android_permissions,
       optional_android_permissions, content_settings_types, icon_id, title_id,
@@ -95,7 +73,8 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
   for (ContentSettingsType content_settings_type : content_settings_types) {
     switch (message_id) {
       case -1:
-        if (content_settings_type == ContentSettingsType::GEOLOCATION) {
+        if (content_settings_type ==
+            permissions::PermissionUtil::GetGeolocationType()) {
           message_id = IDS_MESSAGE_MISSING_LOCATION_PERMISSION_TEXT;
         } else if (content_settings_type ==
                    ContentSettingsType::MEDIASTREAM_MIC) {
@@ -126,14 +105,14 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
       case IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT:
         DCHECK(content_settings_type == ContentSettingsType::MEDIASTREAM_MIC);
         return std::make_tuple(
-            IDR_ANDORID_MESSAGE_PERMISSION_VIDEOCAM,
+            IDR_ANDROID_MESSAGE_PERMISSION_VIDEOCAM,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT);
       case IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TEXT:
         DCHECK(content_settings_type ==
                ContentSettingsType::MEDIASTREAM_CAMERA);
         return std::make_tuple(
-            IDR_ANDORID_MESSAGE_PERMISSION_VIDEOCAM,
+            IDR_ANDROID_MESSAGE_PERMISSION_VIDEOCAM,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT);
       default:
@@ -151,11 +130,11 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
                              IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TITLE,
                              IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TEXT);
     case IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT:
-      return std::make_tuple(IDR_ANDORID_MESSAGE_PERMISSION_CAMERA,
+      return std::make_tuple(IDR_ANDROID_MESSAGE_PERMISSION_CAMERA,
                              IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TITLE,
                              IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT);
     case IDS_MESSAGE_MISSING_AR_CAMERA_PERMISSION_TEXT:
-      return std::make_tuple(IDR_ANDORID_MESSAGE_PERMISSION_CAMERA,
+      return std::make_tuple(IDR_ANDROID_MESSAGE_PERMISSION_CAMERA,
                              IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TITLE,
                              IDS_MESSAGE_MISSING_AR_CAMERA_PERMISSION_TEXT);
     case IDS_MESSAGE_MISSING_XR_PERMISSION_TEXT:

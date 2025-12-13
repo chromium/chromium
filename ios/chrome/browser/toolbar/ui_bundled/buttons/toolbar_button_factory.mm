@@ -6,6 +6,7 @@
 
 #import "base/ios/ios_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -29,9 +30,23 @@ namespace {
 // The size of the symbol image.
 const CGFloat kSymbolToolbarPointSize = 24;
 
+// The size of the symbol image with Diamond.
+const CGFloat kDiamondSymbolSize = 18;
+
 // The padding to be added to the bottom of the system share icon to balance
 // the white space on top.
 const CGFloat kShareIconBalancingHeightPadding = 1;
+
+// Size of the button with diamond enabled.
+const CGFloat kDiamondButtonSize = 38;
+// Alpha of the tint color of the button.
+const CGFloat kDiamondTintAlpha = 0.9;
+// Corner radius of the button with diamond.
+const CGFloat kDiamondCornerRadius = 13;
+/// The size for the close button.
+const CGFloat kCloseButtonSize = 30.0f;
+/// The alpha for the close button.
+const CGFloat kCloseButtonAlpha = 0.6f;
 
 }  // namespace
 
@@ -50,15 +65,21 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 - (ToolbarButton*)backButton {
   auto loadImageBlock = ^UIImage* {
-    UIImage* backImage =
-        DefaultSymbolWithPointSize(kBackSymbol, kSymbolToolbarPointSize);
+    UIImage* backImage = DefaultSymbolWithPointSize(
+        kBackSymbol, IsDiamondPrototypeEnabled() ? kDiamondSymbolSize
+                                                 : kSymbolToolbarPointSize);
     return [backImage imageFlippedForRightToLeftLayoutDirection];
   };
 
   ToolbarButton* backButton =
       [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
 
-  [self configureButton:backButton width:kAdaptiveToolbarButtonWidth];
+  if (IsDiamondPrototypeEnabled()) {
+    [self configureButton:backButton width:kDiamondButtonSize];
+    backButton.tintColor = [UIColor colorNamed:kGrey700Color];
+  } else {
+    [self configureButton:backButton width:kAdaptiveToolbarButtonWidth];
+  }
   backButton.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_BACK);
   backButton.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_BACK);
@@ -72,15 +93,21 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 // Returns a forward button without visibility mask configured.
 - (ToolbarButton*)forwardButton {
   auto loadImageBlock = ^UIImage* {
-    UIImage* forwardImage =
-        DefaultSymbolWithPointSize(kForwardSymbol, kSymbolToolbarPointSize);
+    UIImage* forwardImage = DefaultSymbolWithPointSize(
+        kForwardSymbol, IsDiamondPrototypeEnabled() ? kDiamondSymbolSize
+                                                    : kSymbolToolbarPointSize);
     return [forwardImage imageFlippedForRightToLeftLayoutDirection];
   };
 
   ToolbarButton* forwardButton =
       [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
 
-  [self configureButton:forwardButton width:kAdaptiveToolbarButtonWidth];
+  if (IsDiamondPrototypeEnabled()) {
+    [self configureButton:forwardButton width:kDiamondButtonSize];
+    forwardButton.tintColor = [UIColor colorNamed:kGrey700Color];
+  } else {
+    [self configureButton:forwardButton width:kAdaptiveToolbarButtonWidth];
+  }
   forwardButton.visibilityMask =
       self.visibilityConfiguration.forwardButtonVisibility;
   forwardButton.accessibilityLabel =
@@ -124,7 +151,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 - (ToolbarButton*)toolsMenuButton {
   auto loadImageBlock = ^UIImage* {
-    return DefaultSymbolWithPointSize(kMenuSymbol, kSymbolToolbarPointSize);
+    return DefaultSymbolWithPointSize(
+        kMenuSymbol, IsDiamondPrototypeEnabled() ? kDiamondSymbolSize
+                                                 : kSymbolToolbarPointSize);
   };
   UIColor* locationBarBackgroundColor =
       [self.toolbarConfiguration locationBarBackgroundColorWithVisibility:1];
@@ -141,15 +170,37 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
   SetA11yLabelAndUiAutomationName(toolsMenuButton, IDS_IOS_TOOLBAR_SETTINGS,
                                   kToolbarToolsMenuButtonIdentifier);
-  [self configureButton:toolsMenuButton width:kAdaptiveToolbarButtonWidth];
-  [toolsMenuButton.heightAnchor
-      constraintEqualToConstant:kAdaptiveToolbarButtonWidth]
-      .active = YES;
+  if (IsDiamondPrototypeEnabled()) {
+    [self configureButton:toolsMenuButton width:kDiamondButtonSize];
+    [toolsMenuButton.heightAnchor constraintEqualToConstant:kDiamondButtonSize]
+        .active = YES;
+    toolsMenuButton.tintColor =
+        [[UIColor colorNamed:kSolidBlackColor] colorWithAlphaComponent:0.9];
+
+  } else {
+    [self configureButton:toolsMenuButton width:kAdaptiveToolbarButtonWidth];
+    [toolsMenuButton.heightAnchor
+        constraintEqualToConstant:kAdaptiveToolbarButtonWidth]
+        .active = YES;
+  }
   [toolsMenuButton addTarget:self.actionHandler
                       action:@selector(toolsMenuAction)
             forControlEvents:UIControlEventTouchUpInside];
-  toolsMenuButton.visibilityMask =
-      self.visibilityConfiguration.toolsMenuButtonVisibility;
+  if (IsDiamondPrototypeEnabled()) {
+    toolsMenuButton.tintColor = [[UIColor colorNamed:kSolidBlackColor]
+        colorWithAlphaComponent:kDiamondTintAlpha];
+    toolsMenuButton.backgroundColor =
+        [UIColor colorNamed:kTextfieldBackgroundColor];
+    toolsMenuButton.layer.cornerRadius = kDiamondCornerRadius;
+    if (self.visibilityConfiguration.type == ToolbarType::kPrimary) {
+      toolsMenuButton.visibilityMask = ToolbarComponentVisibilityNone;
+    } else {
+      toolsMenuButton.visibilityMask = ToolbarComponentVisibilityAlways;
+    }
+  } else {
+    toolsMenuButton.visibilityMask =
+        self.visibilityConfiguration.toolsMenuButtonVisibility;
+  }
   return toolsMenuButton;
 }
 
@@ -160,17 +211,21 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
     // The system share image has uneven vertical padding. Add a small bottom
     // padding to balance it.
-    // TODO(crbug.com/411039614): Replace UIGraphicsBeginImageContextWithOptions
-    // with UIGraphicsImageRenderer.
-    UIGraphicsBeginImageContextWithOptions(
-        CGSizeMake(image.size.width,
-                   image.size.height + kShareIconBalancingHeightPadding),
-        NO, 0.0);
-    [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
-    UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    UIGraphicsImageRendererFormat* format =
+        [UIGraphicsImageRendererFormat preferredFormat];
+    format.scale = 0.0;
+    format.opaque = NO;
+    UIGraphicsImageRenderer* renderer = [[UIGraphicsImageRenderer alloc]
+        initWithSize:CGSizeMake(
+                         image.size.width,
+                         image.size.height + kShareIconBalancingHeightPadding)
+              format:format];
 
-    return newImage;
+    return
+        [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+          [image
+              drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
+        }];
   };
 
   ToolbarButton* shareButton =
@@ -276,9 +331,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   CHECK(IsDiamondPrototypeEnabled());
 
   auto loadImageBlock = ^UIImage* {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     return MakeSymbolMonochrome(
-        CustomSymbolWithPointSize(kCameraLensSymbol, kSymbolToolbarPointSize));
+        CustomSymbolWithPointSize(kCameraLensSymbol, kDiamondSymbolSize));
 #endif
     return nil;
   };
@@ -295,17 +350,30 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
                              action:@selector(diamondPrototypeAction:)
                    forControlEvents:UIControlEventTouchUpInside];
 
-  [self configureButton:diamondPrototypeButton
-                  width:kAdaptiveToolbarButtonWidth];
+  diamondPrototypeButton.tintColor = [[UIColor colorNamed:kSolidBlackColor]
+      colorWithAlphaComponent:kDiamondTintAlpha];
+  diamondPrototypeButton.backgroundColor =
+      [UIColor colorNamed:kTextfieldBackgroundColor];
+  diamondPrototypeButton.layer.cornerRadius = kDiamondCornerRadius;
+  diamondPrototypeButton.visibilityMask = ToolbarComponentVisibilityAlways;
+
+  [self configureButton:diamondPrototypeButton width:kDiamondButtonSize];
   [diamondPrototypeButton.heightAnchor
-      constraintEqualToConstant:kAdaptiveToolbarButtonWidth]
+      constraintEqualToConstant:kDiamondButtonSize]
       .active = YES;
+
+  diamondPrototypeButton.tintColor =
+      [[UIColor colorNamed:kSolidBlackColor] colorWithAlphaComponent:0.9];
 
   diamondPrototypeButton.visibilityMask = ToolbarComponentVisibilityAlways;
   return diamondPrototypeButton;
 }
 
 - (UIButton*)cancelButton {
+  return [self cancelButtonWithStyle:ToolbarCancelButtonStyle::kCancelLabel];
+}
+
+- (UIButton*)cancelButtonWithStyle:(ToolbarCancelButtonStyle)style {
   UIButton* cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
   cancelButton.tintColor = [UIColor colorNamed:kBlueColor];
   [cancelButton setContentHuggingPriority:UILayoutPriorityRequired
@@ -314,25 +382,42 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
-  UIFont* font = [UIFont systemFontOfSize:kLocationBarFontSize];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc]
-          initWithString:l10n_util::GetNSString(IDS_CANCEL)
-              attributes:attributes];
-  buttonConfiguration.attributedTitle = attributedString;
-  cancelButton.configuration = buttonConfiguration;
+  if (style == ToolbarCancelButtonStyle::kXCircle) {
+    UIImageSymbolConfiguration* symbolConfiguration =
+        [UIImageSymbolConfiguration
+            configurationWithPointSize:kCloseButtonSize
+                                weight:UIImageSymbolWeightRegular
+                                 scale:UIImageSymbolScaleMedium];
+    UIImage* buttonImage =
+        SymbolWithPalette(DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
+                                                         symbolConfiguration),
+                          @[
+                            [[UIColor tertiaryLabelColor]
+                                colorWithAlphaComponent:kCloseButtonAlpha],
+                            [UIColor tertiarySystemFillColor]
+                          ]);
+    [cancelButton setImage:buttonImage forState:UIControlStateNormal];
+  } else {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
+    UIFont* font = [UIFont systemFontOfSize:kLocationBarFontSize];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSMutableAttributedString* attributedString =
+        [[NSMutableAttributedString alloc]
+            initWithString:l10n_util::GetNSString(IDS_CANCEL)
+                attributes:attributes];
+    buttonConfiguration.attributedTitle = attributedString;
+    cancelButton.configuration = buttonConfiguration;
+  }
 
   cancelButton.hidden = YES;
   [cancelButton addTarget:self.actionHandler
                    action:@selector(cancelOmniboxFocusAction)
          forControlEvents:UIControlEventTouchUpInside];
   cancelButton.accessibilityIdentifier =
-      kToolbarCancelOmniboxEditButtonIdentifier;
+      kOmniboxCancelButtonAccessibilityIdentifier;
   return cancelButton;
 }
 

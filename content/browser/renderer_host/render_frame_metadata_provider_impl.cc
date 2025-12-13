@@ -15,9 +15,11 @@ namespace content {
 
 RenderFrameMetadataProviderImpl::RenderFrameMetadataProviderImpl(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    FrameTokenMessageQueue* frame_token_message_queue)
-    : task_runner_(task_runner),
-      frame_token_message_queue_(frame_token_message_queue) {}
+    FrameTokenMessageQueue::Client* client)
+    : task_runner_(task_runner) {
+  CHECK(client);
+  frame_token_message_queue_.Init(client);
+}
 
 RenderFrameMetadataProviderImpl::~RenderFrameMetadataProviderImpl() = default;
 
@@ -105,6 +107,21 @@ void RenderFrameMetadataProviderImpl::SetLastRenderFrameMetadataForTest(
   last_render_frame_metadata_ = metadata;
 }
 
+void RenderFrameMetadataProviderImpl::DidProcessFrame(
+    uint32_t frame_token,
+    base::TimeTicks activation_time) {
+  frame_token_message_queue_.DidProcessFrame(frame_token, activation_time);
+}
+
+void RenderFrameMetadataProviderImpl::ResetFrameTokenMessageQueue() {
+  frame_token_message_queue_.Reset();
+}
+
+base::WeakPtr<RenderFrameMetadataProviderImpl>
+RenderFrameMetadataProviderImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void RenderFrameMetadataProviderImpl::OnRenderFrameMetadataChanged(
     uint32_t frame_token,
     const cc::RenderFrameMetadata& metadata) {
@@ -136,7 +153,7 @@ void RenderFrameMetadataProviderImpl::OnRenderFrameMetadataChanged(
   // Both RenderFrameMetadataProviderImpl and FrameTokenMessageQueue are owned
   // by the same RenderWidgetHostImpl. During shutdown the queue is cleared
   // without running the callbacks.
-  frame_token_message_queue_->EnqueueOrRunFrameTokenCallback(
+  frame_token_message_queue_.EnqueueOrRunFrameTokenCallback(
       frame_token,
       base::BindOnce(&RenderFrameMetadataProviderImpl::
                          OnRenderFrameMetadataChangedAfterActivation,
@@ -145,7 +162,7 @@ void RenderFrameMetadataProviderImpl::OnRenderFrameMetadataChanged(
 
 void RenderFrameMetadataProviderImpl::OnFrameSubmissionForTesting(
     uint32_t frame_token) {
-  frame_token_message_queue_->EnqueueOrRunFrameTokenCallback(
+  frame_token_message_queue_.EnqueueOrRunFrameTokenCallback(
       frame_token, base::BindOnce(&RenderFrameMetadataProviderImpl::
                                       OnFrameTokenFrameSubmissionForTesting,
                                   weak_factory_.GetWeakPtr()));

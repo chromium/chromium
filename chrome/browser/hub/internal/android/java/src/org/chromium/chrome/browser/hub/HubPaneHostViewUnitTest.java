@@ -11,7 +11,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
-import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SNACKBAR_CONTAINER_CALLBACK;
 
@@ -19,7 +18,7 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -34,8 +33,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -58,7 +55,6 @@ public class HubPaneHostViewUnitTest {
 
     private Activity mActivity;
     private HubPaneHostView mPaneHost;
-    private ImageView mHairline;
     private ViewGroup mSnackbarContainer;
     private PropertyModel mPropertyModel;
 
@@ -73,7 +69,6 @@ public class HubPaneHostViewUnitTest {
 
         LayoutInflater inflater = LayoutInflater.from(mActivity);
         mPaneHost = (HubPaneHostView) inflater.inflate(R.layout.hub_pane_host_layout, null, false);
-        mHairline = mPaneHost.findViewById(R.id.pane_top_hairline);
         mSnackbarContainer = mPaneHost.findViewById(R.id.pane_host_view_snackbar_container);
         mActivity.setContentView(mPaneHost);
 
@@ -86,11 +81,14 @@ public class HubPaneHostViewUnitTest {
 
     @Test
     public void testSetRootView() {
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(200, 300);
         View root1 = new View(mActivity);
         View root2 = new View(mActivity);
         View root3 = new View(mActivity);
 
         ViewGroup paneFrame = mPaneHost.findViewById(R.id.pane_frame);
+        paneFrame.setLayoutParams(layoutParams);
+        ShadowLooper.runUiThreadTasks();
         assertEquals(0, paneFrame.getChildCount());
 
         mPropertyModel.set(PANE_ROOT_VIEW, root1);
@@ -132,7 +130,6 @@ public class HubPaneHostViewUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.HUB_SLIDE_ANIMATION)
     public void testSetRootView_translationRestored() {
         View root1 = new View(mActivity);
         View root2 = new View(mActivity);
@@ -148,17 +145,6 @@ public class HubPaneHostViewUnitTest {
     }
 
     @Test
-    public void testHairlineVisibility() {
-        assertEquals(View.GONE, mHairline.getVisibility());
-
-        mPropertyModel.set(HAIRLINE_VISIBILITY, true);
-        assertEquals(View.VISIBLE, mHairline.getVisibility());
-
-        mPropertyModel.set(HAIRLINE_VISIBILITY, false);
-        assertEquals(View.GONE, mHairline.getVisibility());
-    }
-
-    @Test
     public void testSnackbarContainerSupplier() {
         mPropertyModel.set(SNACKBAR_CONTAINER_CALLBACK, mSnackbarContainerCallback);
         verify(mSnackbarContainerCallback).onResult(mSnackbarContainer);
@@ -166,7 +152,7 @@ public class HubPaneHostViewUnitTest {
 
     @Test
     public void testHubColorScheme() {
-        verify(mColorMixer, times(2)).registerBlend(any());
+        verify(mColorMixer, times(1)).registerBlend(any());
     }
 
     /** Order of children does not matter. */

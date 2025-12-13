@@ -294,14 +294,6 @@ class WebMediaPlayer {
   virtual uint64_t AudioDecodedByteCount() const = 0;
   virtual uint64_t VideoDecodedByteCount() const = 0;
 
-  // Returns false if any of the HTTP responses which make up the video data
-  // loaded so far have failed the TAO check as defined by Fetch
-  // (https://fetch.spec.whatwg.org/#tao-check), or true otherwise. Video
-  // streams which do not originate from HTTP responses should return true here.
-  // This check is used to determine if timing information from those responses
-  // may be exposed to the page in Largest Contentful Paint performance entries.
-  virtual bool PassedTimingAllowOriginCheck() const = 0;
-
   // Set the volume multiplier to control audio ducking.
   // Output volume should be set to |player_volume| * |multiplier|. The range
   // of |multiplier| is [0, 1], where 1 indicates normal (non-ducked) playback.
@@ -328,7 +320,9 @@ class WebMediaPlayer {
   virtual bool HasReadableVideoFrame() const = 0;
 
   // Renders the current frame into the provided cc::PaintCanvas.
-  virtual void Paint(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&) = 0;
+  virtual void Paint(cc::PaintCanvas*,
+                     const gfx::Rect&,
+                     const cc::PaintFlags&) = 0;
 
   // Similar to Paint(), but just returns the frame directly instead of trying
   // to upload or convert it. Note: This may kick off a process to update the

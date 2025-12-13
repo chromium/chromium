@@ -142,8 +142,15 @@ void Service::BindStreamFactory(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!stream_factory_) {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
     stream_factory_.emplace(audio_manager_accessor_->GetAudioManager(),
-                            aecdump_recording_manager_.get());
+                            aecdump_recording_manager_.get(),
+                            &ml_model_manager_);
+#else
+    stream_factory_.emplace(audio_manager_accessor_->GetAudioManager(),
+                            aecdump_recording_manager_.get(),
+                            /*ml_model_manager=*/nullptr);
+#endif
   }
   stream_factory_->Bind(std::move(receiver));
 }
@@ -172,6 +179,14 @@ void Service::BindTestingApi(
   auto& binder = GetTestingApiBinder();
   if (binder)
     binder.Run(std::move(receiver));
+}
+
+void Service::BindMlModelManager(
+    mojo::PendingReceiver<mojom::MlModelManager> receiver) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  ml_model_manager_.BindReceiver(std::move(receiver));
+#endif
 }
 
 void Service::InitializeDeviceMonitor() {

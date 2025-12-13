@@ -39,7 +39,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -223,7 +223,7 @@ public class SiteChannelsManagerTest {
                     info.setContentSetting(
                             ProfileManager.getLastUsedRegularProfile()
                                     .getPrimaryOtrProfile(/* createIfNeeded= */ true),
-                            ContentSettingValues.BLOCK);
+                            ContentSetting.BLOCK);
                 });
         List<SiteChannel> siteChannels = getSiteChannels();
         assertThat(siteChannels, hasSize(0));
@@ -248,7 +248,7 @@ public class SiteChannelsManagerTest {
                                             otrProfileId, /* createIfNeeded= */ true);
                     assertNotNull(nonPrimaryOtrProfile);
                     assertTrue(nonPrimaryOtrProfile.isOffTheRecord());
-                    info.setContentSetting(nonPrimaryOtrProfile, ContentSettingValues.BLOCK);
+                    info.setContentSetting(nonPrimaryOtrProfile, ContentSetting.BLOCK);
                 });
         List<SiteChannel> siteChannels = getSiteChannels();
         assertThat(siteChannels, hasSize(0));

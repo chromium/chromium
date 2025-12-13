@@ -27,6 +27,7 @@
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -111,14 +112,12 @@ void V4L2ProcessingTrace(const struct v4l2_buffer* v4l2_buffer, bool start) {
   }
 
   if (start && v4l2_buffer->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTracingCategory, kVideoDecoding,
-                                      TRACE_ID_LOCAL(timestamp), "timestamp",
-                                      timestamp);
+    TRACE_EVENT_BEGIN(kTracingCategory, kVideoDecoding,
+                      perfetto::Track(timestamp), "timestamp", timestamp);
   } else if (!start &&
              v4l2_buffer->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1(kTracingCategory, kVideoDecoding,
-                                    TRACE_ID_LOCAL(timestamp), "timestamp",
-                                    timestamp);
+    TRACE_EVENT_END(kTracingCategory, perfetto::Track(timestamp), "timestamp",
+                    timestamp);
   }
 }
 
@@ -143,7 +142,6 @@ std::vector<base::ScopedFD> GetDmabufsForV4L2Buffer(
     expbuf.plane = i;
     expbuf.flags = O_CLOEXEC;
     if (ioctl_cb.Run(VIDIOC_EXPBUF, &expbuf) != 0) {
-      RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocExpbuf);
       dmabuf_fds.clear();
       break;
     }
@@ -271,7 +269,6 @@ V4L2Buffer::~V4L2Buffer() {
 bool V4L2Buffer::Query() {
   int ret = ioctl_cb_.Run(VIDIOC_QUERYBUF, &v4l2_buffer_);
   if (ret) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocQuerybuf);
     VPLOGF(1) << "VIDIOC_QUERYBUF failed: ";
     return false;
   }
@@ -734,7 +731,7 @@ bool V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<FrameResource> frame,
   }
 
   // TODO(andrescj): consider replacing this by a DCHECK.
-  if (frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER &&
+  if (frame->storage_type() != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE &&
       frame->storage_type() != VideoFrame::STORAGE_DMABUFS) {
     VLOGF(1) << "Only frames with GpuMemoryBuffer and dma-buf are supported";
     return false;
@@ -1106,7 +1103,6 @@ std::optional<struct v4l2_format> V4L2Queue::SetFormat(uint32_t fourcc,
   struct v4l2_format format = BuildV4L2Format(type_, fourcc, size, buffer_size);
   if (ioctl_cb_.Run(VIDIOC_S_FMT, &format) != 0 ||
       format.fmt.pix_mp.pixelformat != fourcc) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSFmt);
     VPQLOGF(2) << "Failed to set format fourcc: " << FourccToString(fourcc);
     return std::nullopt;
   }
@@ -1135,7 +1131,6 @@ std::pair<std::optional<struct v4l2_format>, int> V4L2Queue::GetFormat() {
   memset(&format, 0, sizeof(format));
   format.type = type_;
   if (ioctl_cb_.Run(VIDIOC_G_FMT, &format) != 0) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocGFmt);
     VPQLOGF(2) << "Failed to get format";
     return std::make_pair(std::nullopt, errno);
   }
@@ -1149,7 +1144,6 @@ std::optional<gfx::Rect> V4L2Queue::GetVisibleRect() {
   struct v4l2_selection selection = {.type = type_,
                                      .target = V4L2_SEL_TGT_COMPOSE};
   if (ioctl_cb_.Run(VIDIOC_G_SELECTION, &selection) != 0) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocGSelection);
     VQLOGF(1) << "Failed to get visible rect";
     return std::nullopt;
   }
@@ -1206,7 +1200,6 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
 
   int ret = ioctl_cb_.Run(VIDIOC_REQBUFS, &reqbufs);
   if (ret) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocReqbufs);
     VPQLOGF(1) << "VIDIOC_REQBUFS failed";
     return 0;
   }
@@ -1277,7 +1270,6 @@ bool V4L2Queue::DeallocateBuffers() {
 
   int ret = ioctl_cb_.Run(VIDIOC_REQBUFS, &reqbufs);
   if (ret) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocReqbufs);
     VPQLOGF(1) << "VIDIOC_REQBUFS failed";
     return false;
   }
@@ -1424,7 +1416,6 @@ bool V4L2Queue::QueueBuffer(struct v4l2_buffer* v4l2_buffer,
 
   int ret = ioctl_cb_.Run(VIDIOC_QBUF, v4l2_buffer);
   if (ret) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocQbuf);
     VPQLOGF(1) << "VIDIOC_QBUF failed";
     return false;
   }
@@ -1474,7 +1465,6 @@ std::pair<bool, V4L2ReadableBufferRef> V4L2Queue::DequeueBuffer() {
         schedule_poll_cb_.Run();
         return std::make_pair(true, nullptr);
       default:
-        RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocDqbuf);
         VPQLOGF(1) << "VIDIOC_DQBUF failed";
         return std::make_pair(false, nullptr);
     }
@@ -1520,7 +1510,6 @@ bool V4L2Queue::Streamon() {
   int arg = static_cast<int>(type_);
   int ret = ioctl_cb_.Run(VIDIOC_STREAMON, &arg);
   if (ret) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocStreamon);
     VPQLOGF(1) << "VIDIOC_STREAMON failed";
     return false;
   }
@@ -1540,7 +1529,6 @@ bool V4L2Queue::Streamoff() {
   int arg = static_cast<int>(type_);
   int ret = ioctl_cb_.Run(VIDIOC_STREAMOFF, &arg);
   if (ret) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocStreamoff);
     VPQLOGF(1) << "VIDIOC_STREAMOFF failed";
     return false;
   }
@@ -1747,7 +1735,6 @@ bool V4L2Request::Submit() {
   }
 
   if (HANDLE_EINTR(ioctl(request_fd_.get(), MEDIA_REQUEST_IOC_QUEUE)) != 0) {
-    RecordMediaIoctlUMA(MediaIoctlRequests::kMediaRequestIocQueue);
     return false;
   }
 
@@ -1795,7 +1782,6 @@ bool V4L2Request::Reset() {
 
   // Reinit the request to make sure we can use it for a new submission.
   if (HANDLE_EINTR(ioctl(request_fd_.get(), MEDIA_REQUEST_IOC_REINIT)) < 0) {
-    RecordMediaIoctlUMA(MediaIoctlRequests::kMediaRequestIocReinit);
     VPLOGF(1) << "Failed to reinit request.";
     return false;
   }
@@ -1881,7 +1867,6 @@ std::optional<base::ScopedFD> V4L2RequestsQueue::CreateRequestFD() {
   int ret = HANDLE_EINTR(
       ioctl(media_fd_.get(), MEDIA_IOC_REQUEST_ALLOC, &request_fd));
   if (ret < 0) {
-    RecordMediaIoctlUMA(MediaIoctlRequests::kMediaIocRequestAlloc);
     VPLOGF(1) << "Failed to create request";
     return std::nullopt;
   }

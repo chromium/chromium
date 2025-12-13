@@ -38,9 +38,12 @@ class SpellCheckerSessionBridge {
   // of text, processes these and sends them to the renderer.
   void ProcessSpellCheckResults(
       JNIEnv* env,
-      const base::android::JavaParamRef<jintArray>& offset_array,
-      const base::android::JavaParamRef<jintArray>& length_array,
-      const base::android::JavaParamRef<jobjectArray>& suggestions_array);
+      const base::android::JavaRef<jintArray>& offset_array,
+      const base::android::JavaRef<jintArray>& length_array,
+      const base::android::JavaRef<jobjectArray>& suggestions_array,
+      const base::android::JavaRef<jintArray>& spellcheck_result_decorations,
+      const base::android::JavaRef<jbooleanArray>&
+          hide_suggestion_menu_booleans_array);
 
   // Sets the handle to the Java SpellCheckerSessionBridge object to null,
   // marking the Java object for garbage collection.

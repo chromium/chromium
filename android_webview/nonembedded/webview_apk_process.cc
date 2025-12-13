@@ -7,6 +7,7 @@
 #include "android_webview/common/aw_paths.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "base/base_paths_android.h"
+#include "base/command_line.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_executor.h"
@@ -16,6 +17,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
+#include "components/update_client/protocol_serializer_json.h"
 #include "components/update_client/update_client.h"
 
 namespace android_webview {
@@ -53,6 +55,9 @@ WebViewApkProcess::WebViewApkProcess() {
   // to the java thread the `WebViewApkProcess` is created on.
   main_task_executor_ = std::make_unique<base::SingleThreadTaskExecutor>(
       base::MessagePumpType::JAVA);
+  // WebView is not compatible with new compression protocols.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      update_client::switches::kComponentUpdaterCompatProtocols);
 
   RegisterPathProvider();
   component_updater::RegisterPathProvider(

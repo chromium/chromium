@@ -13,11 +13,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
-#include "build/buildflag.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
@@ -30,11 +28,6 @@
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
-
-#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-#include "components/password_manager/core/browser/password_store/password_data_type_controller_delegate_android.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
 namespace password_manager {
 
@@ -65,11 +58,6 @@ base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
       std::move(metrics_reporter));
 }
 
-std::unique_ptr<os_crypt_async::Encryptor> ConvertToUniquePtr(
-    os_crypt_async::Encryptor encryptor) {
-  return std::make_unique<os_crypt_async::Encryptor>(std::move(encryptor));
-}
-
 // Records in a pref that passwords were deleted via sync. The pref is used to
 // report metrics.
 std::optional<PasswordStoreChangeList> MaybeRecordPasswordDeletionViaSync(
@@ -96,25 +84,18 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior,
     PrefService* prefs,
-    os_crypt_async::OSCryptAsync* os_crypt_async,
-    UnsyncedCredentialsDeletionNotifier notifier)
+    os_crypt_async::OSCryptAsync* os_crypt_async)
     : pref_service_(prefs), os_crypt_async_(os_crypt_async) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(os_crypt_async_);
 
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  // This backend shouldn't be created for the users migrated to UPM with
-  // split stores.
-  CHECK_NE(prefs->GetInteger(
-               password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores),
-           static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
-#endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-
-  background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  background_task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunnerForResource(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+          login_db->db_path());
   DCHECK(background_task_runner_);
   helper_ = std::make_unique<LoginDatabaseAsyncHelper>(
-      std::move(login_db), std::move(notifier),
-      base::SequencedTaskRunner::GetCurrentDefault(),
+      std::move(login_db), base::SequencedTaskRunner::GetCurrentDefault(),
       wipe_model_upon_sync_disabled_behavior);
 }
 
@@ -159,29 +140,7 @@ void PasswordStoreBuiltInBackend::Shutdown(
 }
 
 bool PasswordStoreBuiltInBackend::IsAbleToSavePasswords() {
-#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   return is_database_initialized_successfully_;
-#else
-  CHECK(pref_service_);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid)) {
-    // The login database is being deprecated on Android.
-    // The built-in backend should no longer allow saving passwords to it.
-    return false;
-  }
-  // Database was not initialized siccessfully, disable saving.
-  if (!is_database_initialized_successfully_) {
-    return false;
-  }
-
-  // Login database is not empty continue saving passwords.
-  if (!pref_service_->GetBoolean(prefs::kEmptyProfileStoreLoginDatabase)) {
-    return true;
-  }
-
-  // Login database is empty, disable saving.
-  return false;
-#endif
 }
 
 void PasswordStoreBuiltInBackend::InitBackend(
@@ -193,7 +152,6 @@ void PasswordStoreBuiltInBackend::InitBackend(
   DCHECK(helper_);
   affiliated_match_helper_ = affiliated_match_helper;
 
-#if !BUILDFLAG(IS_ANDROID)
   // To ensure that groups of the kClearUndecryptablePasswords will stay
   // balanced, after the cleanup is done an additional flag check is needed.
   // Users won't reach the flag the normal way since the LoginDB is working
@@ -202,7 +160,6 @@ void PasswordStoreBuiltInBackend::InitBackend(
   if (pref_service_->GetBoolean(prefs::kClearingUndecryptablePasswords)) {
     base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
   }
-#endif
 
   background_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&LoginDatabaseAsyncHelper::CreateSyncBackend,
@@ -213,21 +170,11 @@ void PasswordStoreBuiltInBackend::InitBackend(
       weak_ptr_factory_.GetWeakPtr(), std::move(remote_form_changes_received),
       std::move(sync_enabled_or_disabled_cb), std::move(completion));
 
-  if (!os_crypt_async_) {
-    std::move(init_database_callback).Run(nullptr);
-    return;
-  }
-  os_crypt_async::Encryptor::Option option =
-      base::FeatureList::IsEnabled(features::kUseNewEncryptionMethod)
-          ? os_crypt_async::Encryptor::Option::kNone
-          : os_crypt_async::Encryptor::Option::kEncryptSyncCompat;
-
   os_crypt_async_->GetInstance(
       metrics_util::TimeCallback(
-          base::BindOnce(&ConvertToUniquePtr)
-              .Then(std::move(init_database_callback)),
+          std::move(init_database_callback),
           "PasswordManager.OsCryptAsync.GetInstanceTime"),
-      option);
+      os_crypt_async::Encryptor::Option::kNone);
 }
 
 void PasswordStoreBuiltInBackend::GetAllLoginsAsync(
@@ -386,7 +333,6 @@ SmartBubbleStatsStore* PasswordStoreBuiltInBackend::GetSmartBubbleStatsStore() {
 std::unique_ptr<syncer::DataTypeControllerDelegate>
 PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   DCHECK(helper_);
   // Note that a callback is bound for
   // GetSyncControllerDelegate() because this getter itself
@@ -398,9 +344,6 @@ PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
       background_task_runner_,
       base::BindRepeating(&LoginDatabaseAsyncHelper::GetSyncControllerDelegate,
                           base::Unretained(helper_.get())));
-#else
-  return std::make_unique<PasswordDataTypeControllerDelegateAndroid>();
-#endif  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }
 
 void PasswordStoreBuiltInBackend::OnSyncServiceInitialized(
@@ -480,10 +423,8 @@ void PasswordStoreBuiltInBackend::OnEncryptorReceived(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion,
-    std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
+    os_crypt_async::Encryptor encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::UmaHistogramBoolean("PasswordManager.OnEncryptorReceived.Success",
-                            !encryptor);
 
   // Piggyback on |remote_form_changes_received| to record password deletion
   // coming from sync.
@@ -496,14 +437,10 @@ void PasswordStoreBuiltInBackend::OnEncryptorReceived(
           .Then(std::move(remote_form_changes_received));
 
   auto on_undecryptable_passwords_removed =
-#if BUILDFLAG(IS_ANDROID)
-      base::DoNothing();
-#else
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &PasswordStoreBuiltInBackend::
               SetClearingUndecryptablePasswordsIsEnabledPref,
           weak_ptr_factory_.GetWeakPtr()));
-#endif
 
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -517,7 +454,6 @@ void PasswordStoreBuiltInBackend::OnEncryptorReceived(
                      weak_ptr_factory_.GetWeakPtr(), std::move(completion)));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void PasswordStoreBuiltInBackend::
     SetClearingUndecryptablePasswordsIsEnabledPref(
         IsAccountStore is_account_store) {
@@ -530,7 +466,6 @@ void PasswordStoreBuiltInBackend::
             kDeletingUndecryptablePasswords);
   }
 }
-#endif
 
 void PasswordStoreBuiltInBackend::WritePasswordRemovalReasonPrefs(
     IsAccountStore is_account_store) {

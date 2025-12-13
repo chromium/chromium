@@ -6,11 +6,6 @@
 // proper PAM session. It will generally be run as root and drop privileges to
 // the specified user before running the me2me session script.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Usage: user-session start [--foreground] [--user user] [-- SCRIPT_ARGS...]
 //
 // Options:
@@ -44,9 +39,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -99,7 +94,7 @@ const char* const kPassthroughVariables[] = {
 char gExecutablePath[PATH_MAX] = {};
 
 void PrintUsage() {
-  std::fputs(kUsageMessage, stderr);
+  UNSAFE_TODO(std::fputs(kUsageMessage, stderr));
 }
 
 // Shell-escapes a single argument in a way that is compatible with various
@@ -140,7 +135,7 @@ extern "C" int Converse(int num_messages,
     // This is correct for the PAM included with Linux, OS X, and BSD. However,
     // apparently Solaris and HP/UX require instead `&(*msg)[i]`. That is, they
     // disagree as to which level of indirection contains the array.
-    const pam_message* message = messages[i];
+    const pam_message* message = UNSAFE_TODO(messages[i]);
 
     switch (message->msg_style) {
       case PAM_PROMPT_ECHO_OFF:
@@ -262,11 +257,12 @@ class PamHandle {
 
     base::EnvironmentMap environment_map;
 
-    for (char** variable = environment; *variable != nullptr; ++variable) {
-      char* delimiter = std::strchr(*variable, '=');
+    for (char** variable = environment; *variable != nullptr;
+         UNSAFE_TODO(++variable)) {
+      char* delimiter = UNSAFE_TODO(std::strchr(*variable, '='));
       if (delimiter != nullptr) {
         environment_map[std::string(*variable, delimiter)] =
-            std::string(delimiter + 1);
+            std::string(UNSAFE_TODO(delimiter + 1));
       }
       std::free(*variable);
     }
@@ -299,7 +295,7 @@ void DetermineExecutablePath() {
       readlink(kExeSymlink, gExecutablePath, std::size(gExecutablePath));
   PCHECK(path_size >= 0) << "Failed to determine executable location";
   CHECK(path_size < PATH_MAX) << "Executable path too long";
-  gExecutablePath[path_size] = '\0';
+  UNSAFE_TODO(gExecutablePath[path_size]) = '\0';
   CHECK(gExecutablePath[0] == '/') << "Executable path not absolute";
 }
 
@@ -661,12 +657,12 @@ void WaitForMessagesAndExit(int read_fd, const std::string& log_name) {
     std::string_view line(buffer, line_size);
     if (base::StartsWith(line, kMessagePrefix, base::CompareCase::SENSITIVE)) {
       line.remove_prefix(kMessagePrefix.size());
-      std::fwrite(line.data(), sizeof(char), line.size(), stderr);
+      UNSAFE_TODO(std::fwrite(line.data(), sizeof(char), line.size(), stderr));
     } else if (line == kReady) {
       host_ready = true;
     } else {
-      std::fputs("Unrecognized command: ", stderr);
-      std::fwrite(line.data(), sizeof(char), line.size(), stderr);
+      UNSAFE_TODO(std::fputs("Unrecognized command: ", stderr));
+      UNSAFE_TODO(std::fwrite(line.data(), sizeof(char), line.size(), stderr));
     }
   }
 
@@ -786,43 +782,44 @@ int main(int argc, char** argv) {
 
   // This binary requires elevated privileges.
   if (geteuid() != 0) {
-    std::fprintf(stderr,
-                 "%s not installed setuid root. Host must be started by "
-                 "administrator.\n",
-                 gExecutablePath);
+    UNSAFE_TODO(
+        std::fprintf(stderr,
+                     "%s not installed setuid root. Host must be started by "
+                     "administrator.\n",
+                     gExecutablePath));
     std::exit(EXIT_FAILURE);
   }
 
-  if (argc < 2 || std::strcmp(argv[1], kStartCommand) != 0) {
+  if (argc < 2 || UNSAFE_TODO(std::strcmp(argv[1], kStartCommand)) != 0) {
     PrintUsage();
     std::exit(EXIT_FAILURE);
   }
 
   // Skip initial args
   argc -= 2;
-  argv += 2;
+  UNSAFE_TODO(argv += 2);
 
   bool foreground = false;
   std::optional<std::string> user;
   std::vector<std::string> script_args;
 
   while (argc > 0) {
-    if (std::strcmp(argv[0], kForegroundFlag) == 0) {
+    if (UNSAFE_TODO(std::strcmp(argv[0], kForegroundFlag)) == 0) {
       foreground = true;
       argc -= 1;
-      argv += 1;
-    } else if (std::strcmp(argv[0], kUserFlag) == 0 && argc >= 2) {
-      user = std::string(argv[1]);
+      UNSAFE_TODO(argv += 1);
+    } else if (UNSAFE_TODO(std::strcmp(argv[0], kUserFlag)) == 0 && argc >= 2) {
+      user = std::string(UNSAFE_TODO(argv[1]));
       argc -= 2;
-      argv += 2;
-    } else if (std::strcmp(argv[0], "--") == 0) {
+      UNSAFE_TODO(argv += 2);
+    } else if (UNSAFE_TODO(std::strcmp(argv[0], "--")) == 0) {
       argc -= 1;
-      argv += 1;
+      UNSAFE_TODO(argv += 1);
       // Remaining args get forwarded to python script.
       while (argc > 0) {
         script_args.emplace_back(argv[0]);
         argc -= 1;
-        argv += 1;
+        UNSAFE_TODO(argv += 1);
       }
     } else {
       PrintUsage();
@@ -836,14 +833,15 @@ int main(int argc, char** argv) {
   // user is not allowed to specify an arbitrary target user.
   if (real_uid != 0) {
     if (user) {
-      std::fputs("Target user may not be specified by non-root users.\n",
-                 stderr);
+      UNSAFE_TODO(std::fputs(
+          "Target user may not be specified by non-root users.\n", stderr));
       std::exit(EXIT_FAILURE);
     }
     user = FindCurrentUsername();
   } else {
     if (!user) {
-      std::fputs("Target user must be specified when run as root.\n", stderr);
+      UNSAFE_TODO(std::fputs(
+          "Target user must be specified when run as root.\n", stderr));
       std::exit(EXIT_FAILURE);
     }
   }

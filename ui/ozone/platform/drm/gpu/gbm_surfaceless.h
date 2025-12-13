@@ -5,16 +5,16 @@
 #ifndef UI_OZONE_PLATFORM_DRM_GPU_GBM_SURFACELESS_H_
 #define UI_OZONE_PLATFORM_DRM_GPU_GBM_SURFACELESS_H_
 
-#include <memory>
-#include <vector>
-
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+
+#include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_surface_overlay.h"
 #include "ui/gl/presenter.h"

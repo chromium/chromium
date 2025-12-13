@@ -314,7 +314,12 @@ BOOL ApplicationIsInBackground() {
   // application state know so it can enable the clean exit beacon while work
   // is underway.
   if (ApplicationIsInBackground()) {
-    GetApplicationContext()->OnAppStartedBackgroundProcessing();
+    // Background refresh events can be triggered at odd times in the startup/
+    // shutdown cycle, so always ensure that the app context exists.
+    ApplicationContext* applicationContext = GetApplicationContext();
+    if (applicationContext) {
+      applicationContext->OnAppStartedBackgroundProcessing();
+    }
   }
 }
 
@@ -324,7 +329,12 @@ BOOL ApplicationIsInBackground() {
   // kills the app in the background at this point it should not be a crash for
   // the purposes of metrics or experiments.
   if (ApplicationIsInBackground()) {
-    GetApplicationContext()->OnAppFinishedBackgroundProcessing();
+    // Background refresh events can be triggered at odd times in the startup/
+    // shutdown cycle, so always ensure that the app context exists.
+    ApplicationContext* applicationContext = GetApplicationContext();
+    if (applicationContext) {
+      applicationContext->OnAppFinishedBackgroundProcessing();
+    }
   }
 }
 

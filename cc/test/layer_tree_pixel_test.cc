@@ -84,18 +84,18 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
   if (!use_software_renderer()) {
     compositor_context_provider =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            viz::TestContextType::kSoftwareRaster, /*support_locking=*/false);
+            viz::TestContextType::kRaster, /*support_locking=*/false);
 
     viz::TestContextType worker_ri_type;
     switch (raster_type()) {
       case TestRasterType::kGpu:
-        worker_ri_type = viz::TestContextType::kGpuRaster;
+        worker_ri_type = viz::TestContextType::kRaster;
         break;
       case TestRasterType::kOneCopy:
-        worker_ri_type = viz::TestContextType::kSoftwareRaster;
+        worker_ri_type = viz::TestContextType::kRaster;
         break;
       case TestRasterType::kZeroCopy:
-        worker_ri_type = viz::TestContextType::kSoftwareRaster;
+        worker_ri_type = viz::TestContextType::kRaster;
         break;
       case TestRasterType::kBitmap:
         NOTREACHED();
@@ -119,7 +119,7 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
   } else {
     context_provider_sw_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            viz::TestContextType::kSoftwareRaster, /*support_locking=*/false);
+            viz::TestContextType::kRaster, /*support_locking=*/false);
     gpu::ContextResult result = context_provider_sw_->BindToCurrentSequence();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
 
@@ -149,14 +149,9 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
 void LayerTreePixelTest::DrawLayersOnThread(LayerTreeHostImpl* host_impl) {
   // Verify that we're using Gpu rasterization or not as requested.
   if (!use_software_renderer()) {
-    viz::RasterContextProvider* worker_context_provider =
-        host_impl->layer_tree_frame_sink()->worker_context_provider();
-    viz::RasterContextProvider::ScopedRasterContextLock lock(
-        worker_context_provider);
-    EXPECT_EQ(use_accelerated_raster(),
-              worker_context_provider->ContextCapabilities().gpu_rasterization);
+    EXPECT_EQ(use_accelerated_raster(), host_impl->use_gpu_rasterization());
     EXPECT_EQ(raster_type() == TestRasterType::kGpu,
-              worker_context_provider->ContextCapabilities().gpu_rasterization);
+              host_impl->use_gpu_rasterization());
   } else {
     EXPECT_EQ(TestRasterType::kBitmap, raster_type());
   }

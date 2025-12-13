@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -33,8 +34,8 @@ class RequestVisibilityCallback {
     meets_visibility_ = std::nullopt;
     // base::Unretained() is safe since no further tasks can run after
     // RunLoop::Run() returns.
-    return base::BindOnce(&RequestVisibilityCallback::RequestVisibility,
-                          base::Unretained(this));
+    return BindOnce(&RequestVisibilityCallback::RequestVisibility,
+                    Unretained(this));
   }
 
   void WaitUntilDone() {
@@ -262,7 +263,8 @@ TEST_F(MediaVideoVisibilityTrackerTest, NoViewPortIntersection) {
   EXPECT_CALL(ReportVisibilityCb(), Run(false));
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   CreateAndAttachVideoVisibilityTracker(10000);
 
@@ -777,7 +779,8 @@ TEST_F(MediaVideoVisibilityTrackerTest,
 
   // Scroll page and verify that the visibility threshold is not met.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   EXPECT_CALL(ReportVisibilityCb(), Run(false));
 
   Compositor().BeginFrame();
@@ -818,7 +821,8 @@ TEST_F(MediaVideoVisibilityTrackerTest,
 
   // Scroll page and verify that the visibility threshold is not met.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 600), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 600), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
 
   Compositor().BeginFrame();

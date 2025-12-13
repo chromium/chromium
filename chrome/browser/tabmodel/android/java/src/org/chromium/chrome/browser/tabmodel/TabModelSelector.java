@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.List;
@@ -71,7 +74,7 @@ public interface TabModelSelector {
     int getCurrentTabId();
 
     /** Returns a supplier for the current tab in the current model. */
-    ObservableSupplier<@Nullable Tab> getCurrentTabSupplier();
+    NullableObservableSupplier<Tab> getCurrentTabSupplier();
 
     /**
      * Returns a supplier for the current tab count in the current model. This will update as the
@@ -79,13 +82,13 @@ public interface TabModelSelector {
      * the tab count of a specific model is desired add an observer to that {@link TabModel}
      * directly.
      */
-    ObservableSupplier<Integer> getCurrentModelTabCountSupplier();
+    NonNullObservableSupplier<Integer> getCurrentModelTabCountSupplier();
 
     /**
-     * Convenience function to get the {@link TabModel} for a {@link Tab} specified by
-     * {@code id}.
+     * Convenience function to get the {@link TabModel} for a {@link Tab} specified by {@code id}.
+     *
      * @param id The id of the {@link Tab} to find the {@link TabModel} for.
-     * @return   The {@link TabModel} that owns the {@link Tab} specified by {@code id}.
+     * @return The {@link TabModel} that owns the {@link Tab} specified by {@code id}.
      */
     @Nullable TabModel getModelForTabId(int id);
 
@@ -145,6 +148,9 @@ public interface TabModelSelector {
 
     /** Get total tab count across all tab models */
     int getTotalTabCount();
+
+    /** Get total pinned tab count across all tab models */
+    int getTotalPinnedTabCount();
 
     /**
      * Search all TabModels for a tab with the specified id.
@@ -206,10 +212,13 @@ public interface TabModelSelector {
      * onTabModelSelected event have been notified.
      *
      * @param incognitoReauthDialogDelegate A delegate which takes care of triggering an Incognito
-     *         re-authentication.
+     *     re-authentication.
      */
     void setIncognitoReauthDialogDelegate(
             IncognitoTabModelObserver.IncognitoReauthDialogDelegate incognitoReauthDialogDelegate);
+
+    /** Returns the {@link TabModel} for the associated {@link TabStripCollection}. */
+    @Nullable TabModel getTabModelForTabStripCollection(TabStripCollection tabStripCollection);
 
     /** Destroy all owned {@link TabModel}s and {@link Tab}s referenced by this selector. */
     void destroy();

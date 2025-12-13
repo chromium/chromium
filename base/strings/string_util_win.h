@@ -40,6 +40,10 @@ inline int vsnprintf(char* buffer,
   return length;
 }
 
+// TODO(crbug.com/40284755): implement spanified version.
+// inline int vswprintf(base::span<wchar_t> buffer,
+//                      const wchar_t* format,
+//                      va_list arguments);
 inline int vswprintf(wchar_t* buffer,
                      size_t size,
                      const wchar_t* format,
@@ -180,6 +184,11 @@ BASE_EXPORT bool StartsWith(
 BASE_EXPORT bool EndsWith(
     std::wstring_view str,
     std::wstring_view search_for,
+    CompareCase case_sensitivity = CompareCase::SENSITIVE);
+
+BASE_EXPORT std::optional<std::wstring_view> RemovePrefix(
+    std::wstring_view string,
+    std::wstring_view prefix,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 
 BASE_EXPORT void ReplaceFirstSubstringAfterOffset(

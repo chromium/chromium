@@ -10,6 +10,7 @@
 #import <string>
 #import <string_view>
 
+#import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::autofill_metrics {
@@ -41,6 +42,18 @@ enum class SaveCreditCardPromptResultIOS {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:SaveCreditCardPromptResultIOS)
 
+// LINT.IfChange(SaveCvcPromptResultIOS)
+enum class SaveCvcPromptResultIOS {
+  // CVC save banner accepted.
+  kAccepted = 0,
+  // CVC save banner swiped away.
+  kSwiped = 1,
+  // CVC save banner timed out.
+  kTimedOut = 2,
+  kMaxValue = kTimedOut,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:SaveCvcPromptResultIOS)
+
 // Enum describing the types of overlays displayed for saving a card on iOS.
 enum class SaveCreditCardPromptOverlayType {
   kBanner,
@@ -53,11 +66,31 @@ enum class SaveCreditCardPromptOverlayType {
 // histogram also records the number of strikes (i.e number of times the card
 // has previously been rejected to be saved) and whether a fix flow was required
 // due to missing information (e.g., cardholder name or expiration date).
+// TODO(crbug.com/430588721): Clean up this function once refactored save card
+// metrics have rolled out.
 void LogSaveCreditCardPromptResultIOS(
     SaveCreditCardPromptResultIOS metric,
     bool is_uploading,
     const payments::PaymentsAutofillClient::SaveCreditCardOptions& options,
     SaveCreditCardPromptOverlayType overlay_type);
+
+// Logs whether the save credit card prompt is shown or not.
+void LogSaveCreditCardPromptOfferMetricIos(
+    SaveCardPromptOffer metric,
+    bool is_upload_save,
+    const payments::PaymentsAutofillClient::SaveCreditCardOptions&
+        save_credit_card_options,
+    SaveCreditCardPromptOverlayType overlay_type);
+
+// Logs when a CVC save prompt is offered on iOS.
+void LogSaveCvcPromptOfferedIOS(bool is_uploading);
+
+// Logs events that happen when the prompt to save a security code (locally or
+// to the server) is shown and user's subsequent action for that prompt.
+void LogSaveCvcPromptResultIOS(
+    SaveCvcPromptResultIOS metric,
+    bool is_uploading,
+    const payments::PaymentsAutofillClient::SaveCreditCardOptions& options);
 
 }  // namespace autofill::autofill_metrics
 

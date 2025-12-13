@@ -42,6 +42,7 @@ public class SuggestionLayoutUnitTest {
 
     private final Context mContext = ContextUtils.getApplicationContext();
     private final View mDecorationView = new View(mContext);
+    private final View mActionButtonView = new View(mContext);
     private final View mContentView = new View(mContext);
     private SuggestionLayout mLayout = new SuggestionLayout(mContext);
 
@@ -197,5 +198,23 @@ public class SuggestionLayoutUnitTest {
         assertEquals(
                 mContext.getResources().getDimensionPixelSize(R.dimen.omnibox_simple_card_leadin),
                 mContentView.getLeft());
+    }
+
+    @Test
+    public void testOmniboxSuggestionEndPaddingNoActionButton() {
+        mLayout.addView(
+                mContentView,
+                SuggestionLayout.LayoutParams.forViewType(SuggestionViewType.CONTENT));
+        mLayout.measure(
+                MeasureSpec.makeMeasureSpec(200, MeasureSpec.AT_MOST),
+                MeasureSpec.makeMeasureSpec(48, MeasureSpec.AT_MOST));
+        mLayout.layout(0, 0, 200, 48);
+
+        assertEquals(
+                200
+                        - mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.omnibox_suggestion_end_padding_no_action_button),
+                mContentView.getRight());
     }
 }

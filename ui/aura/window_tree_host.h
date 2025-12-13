@@ -27,10 +27,11 @@
 #include "ui/display/display_observer.h"
 #include "ui/events/event_source.h"
 #include "ui/events/platform_event.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace gfx {
+class DisplayColorSpacesRef;
 class Point;
 class Rect;
 class Size;
@@ -370,6 +371,9 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
+  void OnDisplayColorSpacesChanged(
+      scoped_refptr<gfx::DisplayColorSpacesRef> color_spaces);
+
   // Begins capturing system key events.  Returns true if successful.
   virtual bool CaptureSystemKeyEventsImpl(
       std::optional<base::flat_set<ui::DomCode>> dom_codes) = 0;
@@ -384,9 +388,7 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   virtual gfx::Rect GetTransformedRootWindowBoundsFromPixelSize(
       const gfx::Size& size_in_pixels) const;
 
-  base::ObserverList<WindowTreeHostObserver>::Unchecked& observers() {
-    return observers_;
-  }
+  base::ObserverList<WindowTreeHostObserver>& observers() { return observers_; }
 
   // Called to enabled/disable native window occlusion calculation.
   void SetNativeWindowOcclusionEnabled(bool enable);
@@ -461,7 +463,7 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   // figures this out, so it's cheaper to store the fact here.
   std::optional<bool> on_current_workspace_;
 
-  base::ObserverList<WindowTreeHostObserver>::Unchecked observers_;
+  base::ObserverList<WindowTreeHostObserver> observers_;
 
   display::ScopedDisplayObserver display_observer_{this};
 
@@ -498,6 +500,10 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   bool native_window_occlusion_enabled_ = false;
 
   bool accelerated_widget_made_visible_ = false;
+
+  // The explicitly set display color spaces. If set, this takes precedence over
+  // the color spaces associated with the display for this host.
+  scoped_refptr<const gfx::DisplayColorSpacesRef> display_color_spaces_;
 
   // Number of VideoCaptureLocks that have been created and not destroyed.
   // This is only used when occlusion tracking is always enabled.

@@ -27,9 +27,11 @@
 #include "absl/log/absl_check.h"
 #include "absl/numeric/bits.h"
 #include "absl/strings/str_cat.h"
+#include "absl/types/span.h"
 #include "google/protobuf/arena_test_util.h"
 #include "google/protobuf/internal_visibility_for_testing.h"
 #include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/message.h"
 #include "google/protobuf/unittest.pb.h"
 #include "google/protobuf/unittest_import.pb.h"
 
@@ -39,7 +41,7 @@
 
 namespace google {
 namespace protobuf {
-namespace {
+namespace internal {
 
 using ::proto2_unittest::TestAllTypes;
 using ::proto2_unittest::TestMessageWithManyRepeatedPtrFields;
@@ -48,6 +50,16 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Ge;
 using ::testing::Le;
+
+using String = std::string;
+using SmallMsg = proto2_unittest::ForeignMessage;
+using LargeMsg = proto2_unittest::TestAllTypes;
+
+namespace {
+enum WithArena : bool { kNoArena = false, kArena = true };
+enum AddMode { kIntoNew = 0, kIntoCleared = 1 };
+enum RefMode { kConcrete = 0, kAbstract = 1 };
+}  // namespace
 
 TEST(RepeatedPtrOverPtrsIteratorTest, Traits) {
   using It = RepeatedPtrField<std::string>::pointer_iterator;
@@ -58,7 +70,7 @@ TEST(RepeatedPtrOverPtrsIteratorTest, Traits) {
   static_assert(std::is_same<It::iterator_category,
                              std::random_access_iterator_tag>::value,
                 "");
-#if __cplusplus >= 202002L
+#if PROTOBUF_CPLUSPLUS_MIN(202002L)
   static_assert(
       std::is_same<It::iterator_concept, std::contiguous_iterator_tag>::value,
       "");
@@ -94,7 +106,7 @@ TEST(ConstRepeatedPtrOverPtrsIterator, Traits) {
   static_assert(std::is_same<It::iterator_category,
                              std::random_access_iterator_tag>::value,
                 "");
-#if __cplusplus >= 202002L
+#if PROTOBUF_CPLUSPLUS_MIN(202002L)
   static_assert(
       std::is_same<It::iterator_concept, std::contiguous_iterator_tag>::value,
       "");
@@ -167,7 +179,7 @@ TEST(RepeatedPtrFieldTest, ClearThenReserveMore) {
   // calls here.
   RepeatedPtrField<std::string> field;
   for (int i = 0; i < 32; i++) {
-    *field.Add() = std::string("abcdefghijklmnopqrstuvwxyz0123456789");
+    *field.Add() = "abcdefghijklmnopqrstuvwxyz0123456789";
   }
   EXPECT_EQ(32, field.size());
   field.Clear();
@@ -381,6 +393,7 @@ TEST(RepeatedPtrFieldTest, AddAndAssignRanges) {
   EXPECT_EQ(field.Get(7), "xyzzy");
 }
 
+
 TEST(RepeatedPtrFieldTest, SwapSmallSmall) {
   RepeatedPtrField<std::string> field1;
   RepeatedPtrField<std::string> field2;
@@ -508,6 +521,33 @@ TEST(RepeatedPtrFieldTest, ReserveDoesntLoseAllocated) {
 }
 
 
+// TODO: Re-evaluate if this is still needed once the bug is fixed.
+TEST(RepeatedPtrFieldTest, AddRvalueToCleared) {
+  // Check that an added rvalue correctly overwrites a cleared SOO element.
+  {
+    RepeatedPtrField<std::string> field;
+    field.Add()->assign("foo");
+    ASSERT_THAT(field, ElementsAre("foo"));
+    field.RemoveLast();
+    ASSERT_EQ(field.size(), 0);
+    field.Add(std::string{"bar"});
+    EXPECT_THAT(field, ElementsAre("bar"));
+  }
+  // Check that an added rvalue correctly overwrites a cleared non-SOO element
+  // in the Rep.
+  {
+    RepeatedPtrField<std::string> field;
+    field.Add()->assign("foo");
+    field.Add()->assign("bar");
+    field.Add()->assign("baz");
+    EXPECT_THAT(field, ElementsAre("foo", "bar", "baz"));
+    field.RemoveLast();
+    EXPECT_THAT(field, ElementsAre("foo", "bar"));
+    field.Add(std::string{"qux"});
+    EXPECT_THAT(field, ElementsAre("foo", "bar", "qux"));
+  }
+}
+
 // Test all code paths in AddAllocated().
 TEST(RepeatedPtrFieldTest, AddAllocated) {
   RepeatedPtrField<std::string> field;
@@ -572,6 +612,32 @@ TEST(RepeatedPtrFieldTest, AddAllocatedDifferentArena) {
   Arena arena;
   auto* msg = Arena::Create<TestAllTypes>(&arena);
   field.AddAllocated(msg);
+}
+
+// This test replicates a very specific scenario that used to cause a transient
+// hard-to-debug failure in protoc during development.
+TEST(RepeatedPtrFieldTest, UnsafeArenaAddAllocatedReleaseLastOnBaseField) {
+  using ElemT = TestAllTypes::NestedMessage;
+  using FieldT = RepeatedPtrField<ElemT>;
+  Arena arena;
+  auto* concrete_field = Arena::Create<FieldT>(&arena);
+  ElemT* concrete_elem = concrete_field->Add();
+  concrete_elem->set_bb(123);
+  auto* base_field = reinterpret_cast<RepeatedPtrFieldBase*>(concrete_field);
+  const Message& base_prototype =
+      base_field->Get<GenericTypeHandler<Message>>(0);
+  Message* base_new_elem = base_prototype.New(&arena);
+  ASSERT_NE(base_new_elem, nullptr);
+  ElemT* concrete_new_elem = static_cast<ElemT*>(base_new_elem);
+  concrete_new_elem->set_bb(456);
+  base_field->UnsafeArenaAddAllocated<GenericTypeHandler<Message>>(
+      &arena, base_new_elem);
+  Message* base_new_elem_roundtrip =
+      base_field->UnsafeArenaReleaseLast<GenericTypeHandler<Message>>();
+  ASSERT_NE(base_new_elem_roundtrip, nullptr);
+  ElemT* concrete_new_elem_roundtrip =
+      static_cast<ElemT*>(base_new_elem_roundtrip);
+  EXPECT_EQ(concrete_new_elem_roundtrip->bb(), 456);
 }
 
 TEST(RepeatedPtrFieldTest, MergeFromString) {
@@ -851,10 +917,14 @@ TEST(RepeatedPtrFieldTest, SmallOptimization) {
   // Adding a second object stops sso.
   std::string str2;
   array->UnsafeArenaAddAllocated(&str2);
-  EXPECT_EQ(array->Capacity(), 3);
-  // Backing array and the strings.
-  EXPECT_EQ(array->SpaceUsedExcludingSelf(),
-            (1 + array->Capacity()) * sizeof(void*) + 2 * sizeof(str));
+  // We know we have exited sso if the capacity is greater than 1.
+  EXPECT_GT(array->Capacity(), 1);
+  // Backing array and the strings. sizeof(Rep) = 2 * sizeof(int) for capacity
+  // and allocated_size. Each element of the Rep contributes sizeof(void*),
+  // and each string contributes sizeof(str) to arena memory.
+  EXPECT_EQ(
+      array->SpaceUsedExcludingSelf(),
+      2 * sizeof(int) + array->Capacity() * sizeof(void*) + 2 * sizeof(str));
   // We used some arena space now.
   EXPECT_LT(usage_before, arena.SpaceUsed());
   // And the pointer_begin is not in the sso anymore.
@@ -1719,7 +1789,7 @@ TEST_F(RepeatedPtrFieldInsertionIteratorsTest, MoveProtos) {
 }
 
 
-}  // namespace
+}  // namespace internal
 }  // namespace protobuf
 }  // namespace google
 

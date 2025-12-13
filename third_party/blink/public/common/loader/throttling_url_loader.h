@@ -103,6 +103,15 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // Note that once |client_receiver_delegate| is set, the relevant throttle
   // callbacks like BeforeWillProcessResponse(), WillProcessResponse(), and
   // WillOnCompleteWithError(), will not be triggered by the returned object.
+  //
+  // Note that `CreateLoaderAndStart()` (or equivalently `Start()`) can notify
+  // `client` immediately & synchronously (e.g. via
+  // `URLLoaderThrottle::Delegate::CancelWithError()` inside
+  // `WillStartRequest()`) even before returning the
+  // `std::unique_ptr<ThrottlingURLLoader>`. To avoid this for the short-term,
+  // call `CreateLoader()` then `Start()`.
+  //
+  // TODO(https://crbug.com/433324863): Figure out a longer-term solution.
   static std::unique_ptr<ThrottlingURLLoader> CreateLoaderAndStart(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
@@ -116,6 +125,20 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
           std::nullopt,
       ClientReceiverDelegate* client_receiver_delegate = nullptr,
       const std::vector<int>* initiator_origin_trial_features = nullptr);
+
+  // See the comments at `CreateLoaderAndStart()` above for parameters.
+  static std::unique_ptr<ThrottlingURLLoader> CreateLoader(
+      std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+      network::mojom::URLLoaderClient* client,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      ClientReceiverDelegate* client_receiver_delegate);
+  void Start(scoped_refptr<network::SharedURLLoaderFactory> factory,
+             int32_t request_id,
+             uint32_t options,
+             network::ResourceRequest* url_request,
+             scoped_refptr<base::SequencedTaskRunner> task_runner,
+             std::optional<std::vector<std::string>> cors_exempt_header_list,
+             const std::vector<int>* initiator_origin_trial_features);
 
   ThrottlingURLLoader(const ThrottlingURLLoader&) = delete;
   ThrottlingURLLoader& operator=(const ThrottlingURLLoader&) = delete;
@@ -170,14 +193,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ClientReceiverDelegate* client_receiver_delegate);
 
-  void Start(scoped_refptr<network::SharedURLLoaderFactory> factory,
-             int32_t request_id,
-             uint32_t options,
-             network::ResourceRequest* url_request,
-             scoped_refptr<base::SequencedTaskRunner> task_runner,
-             std::optional<std::vector<std::string>> cors_exempt_header_list,
-             const std::vector<int>* initiator_origin_trial_features);
-
   void StartNow();
   void RestartWithURLResetNow();
 
@@ -228,6 +243,11 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
 
   // Disconnects the client connection and releases the URLLoader.
   void DisconnectClient(std::string_view custom_description);
+
+  void ForwardResponseToClient(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      std::optional<mojo_base::BigBuffer> cached_metadata);
 
   enum DeferredStage {
     DEFERRED_NONE,
@@ -349,6 +369,10 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   GURL response_url_;
 
   bool response_intercepted_ = false;
+
+  // Whether URLLoaderClient's OnReceiveResponse() has been called. It must be
+  // called at most once. It is added to debug crbug.com/463388771.
+  bool has_forwarded_response_ = false;
 
   std::vector<std::string> removed_headers_;
   net::HttpRequestHeaders modified_headers_;

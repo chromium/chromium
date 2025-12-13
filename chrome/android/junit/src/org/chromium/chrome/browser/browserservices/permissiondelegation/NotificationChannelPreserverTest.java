@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.embedder_support.util.Origin;
 
 /** Tests for {@link NotificationChannelPreserverTest}. */
@@ -86,8 +86,7 @@ public class NotificationChannelPreserverTest {
 
         NotificationChannelPreserver.deleteChannelIfNeeded(ORIGIN_WITH_CHANNEL);
 
-        @ContentSettingValues
-        int settingValue = enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+        @ContentSetting int settingValue = enabled ? ContentSetting.ALLOW : ContentSetting.BLOCK;
         verify(mStore)
                 .setPreInstallNotificationPermission(eq(ORIGIN_WITH_CHANNEL), eq(settingValue));
         verify(mSiteChannelsManager).deleteSiteChannel(eq(CHANNEL_ID));
@@ -119,8 +118,7 @@ public class NotificationChannelPreserverTest {
     }
 
     private void testCreatesChannel(boolean enabled) {
-        @ContentSettingValues
-        int settingValue = enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+        @ContentSetting int settingValue = enabled ? ContentSetting.ALLOW : ContentSetting.BLOCK;
         setPreInstallNotificationPermission(ORIGIN_WITH_CHANNEL, settingValue);
         NotificationChannelPreserver.restoreChannelIfNeeded(ORIGIN_WITH_CHANNEL);
         verify(mSiteChannelsManager)
@@ -150,7 +148,7 @@ public class NotificationChannelPreserverTest {
     }
 
     private void setPreInstallNotificationPermission(
-            Origin origin, @ContentSettingValues Integer settingValue) {
+            Origin origin, @ContentSetting Integer settingValue) {
         when(mStore.getAndRemovePreInstallNotificationPermission(origin)).thenReturn(settingValue);
     }
 }

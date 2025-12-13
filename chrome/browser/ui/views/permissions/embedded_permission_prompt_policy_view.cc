@@ -83,7 +83,8 @@ std::vector<EmbeddedPermissionPromptPolicyView::ButtonConfiguration>
 EmbeddedPermissionPromptPolicyView::GetButtonsConfiguration() const {
   std::vector<ButtonConfiguration> buttons;
   buttons.emplace_back(l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL),
-                       ButtonType::kPolicyOK, ui::ButtonStyle::kTonal);
+                       ButtonType::kPolicyOK, ui::ButtonStyle::kTonal,
+                       kOkButtonId);
   return buttons;
 }
 

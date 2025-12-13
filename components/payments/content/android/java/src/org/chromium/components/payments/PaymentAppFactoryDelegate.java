@@ -43,6 +43,11 @@ public interface PaymentAppFactoryDelegate {
             String errorMessage, @AppCreationFailureReason int errorReason) {}
 
     /**
+     * @return Whether the "can make payment" preference is enabled.
+     */
+    boolean prefsCanMakePayment();
+
+    /**
      * Called when the factory has finished creating all payment apps. A factory should call this
      * method exactly once.
      *

@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_change_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_database_table.h"
@@ -23,7 +22,6 @@ class WebDatabase;
 
 namespace autofill {
 
-class AutocompleteChangeLabelSensitive;
 class AutocompleteEntryLabelSensitive;
 
 enum class MatchingType {
@@ -86,7 +84,9 @@ class AutocompleteSearchResultLabelSensitive {
 // autocomplete         This table contains autocomplete history data (not
 //                      structured information).
 //
+//   name               The name of the input as specified in the html.
 //   label              The label of the input as specified in the html.
+//   label_normalized   The label normalized using NormalizeLabel() method.
 //   value              The literal contents of the text field.
 //   value_lower        The contents of the text field made lower_case.
 //   date_created       The date on which the user first entered the string
@@ -95,6 +95,13 @@ class AutocompleteSearchResultLabelSensitive {
 //                      `value` into a field of label `label`.
 //   count              How many times the user has entered the string `value`
 //                      in a field of name `name` and label `label`.
+//
+// Primary key: name, label, value.
+// Indexes:
+// - name, label_normalized, value_lower
+// - label_normalized, value_lower
+// - value, date_last_used
+// - name, label, value
 // -----------------------------------------------------------------------------
 class AutocompleteTableLabelSensitive : public WebDatabaseTable {
  public:
@@ -116,17 +123,15 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
   // Records the form elements in `elements` in the database in the
-  // autocomplete table.  A list of all added and updated autocomplete entries
-  // is returned in the changes out parameter.
-  bool AddFormFieldValues(
-      const std::vector<autofill::FormFieldData>& elements,
-      std::vector<AutocompleteChangeLabelSensitive>* changes);
+  // autocomplete table.
+  [[nodiscard]] bool AddFormFieldValues(
+      const std::vector<autofill::FormFieldData>& elements);
 
   // Retrieves a vector of all values which have been recorded in the
   // autocomplete table as the value in a form element with label `label`, name
   // `name` and which start with `prefix`. The comparison of the prefix is case
   // insensitive.
-  bool GetFormValuesForElementNameAndLabel(
+  [[nodiscard]] bool GetFormValuesForElementNameAndLabel(
       std::u16string_view name,
       std::u16string_view label,
       std::u16string_view prefix,
@@ -139,49 +144,38 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
   // delete_end), but is not entirely contained within the latter range, updates
   // the rows so that their resulting time range [new_date_created,
   // new_date_last_used] lies entirely outside of [delete_begin, delete_end),
-  // updating the count accordingly. A list of all changed keys and whether
-  // each was updater or removed is returned in the changes out parameter.
-  bool RemoveFormElementsAddedBetween(
-      base::Time delete_begin,
-      base::Time delete_end,
-      std::vector<AutocompleteChangeLabelSensitive>& changes);
+  // updating the count accordingly.
+  [[nodiscard]] bool RemoveFormElementsAddedBetween(base::Time delete_begin,
+                                                    base::Time delete_end);
 
   // Removes rows from the autocomplete table if they were last accessed
   // strictly before `AutocompleteEntryLabelSensitive::ExpirationTime()`.
-  bool RemoveExpiredFormElements(
-      std::vector<AutocompleteChangeLabelSensitive>& changes);
+  [[nodiscard]] bool RemoveExpiredFormElements();
 
   // Removes the row from the autocomplete table for the given `name`, `label`
   // and `value` triple.
-  bool RemoveFormElement(std::u16string_view name,
-                         std::u16string_view label,
-                         std::u16string_view value);
+  [[nodiscard]] bool RemoveFormElement(std::u16string_view name,
+                                       std::u16string_view label,
+                                       std::u16string_view value);
 
   // Returns the number of unique values such that for all autocomplete entries
   // with that value, the interval between creation date and last usage is
   // entirely contained between [`begin`, `end`).
-  int GetCountOfValuesContainedBetween(base::Time begin, base::Time end);
+  [[nodiscard]] int GetCountOfValuesContainedBetween(base::Time begin,
+                                                     base::Time end);
 
   // Retrieves all of the entries in the autocomplete table.
-  bool GetAllAutocompleteEntries(
+  [[nodiscard]] bool GetAllAutocompleteEntries(
       std::vector<AutocompleteEntryLabelSensitive>* entries);
 
   // Retrieves a single entry from the autocomplete table.
-  std::optional<AutocompleteEntryLabelSensitive>
+  [[nodiscard]] std::optional<AutocompleteEntryLabelSensitive>
   GetAutocompleteEntryLabelSensitive(const std::u16string_view name,
                                      const std::u16string_view label,
                                      const std::u16string_view value);
 
-  // Replaces existing autocomplete entries with the entries supplied in
-  // the argument. If the entry does not already exist, it will be added.
-  bool UpdateAutocompleteEntries(
-      const std::vector<AutocompleteEntryLabelSensitive>& entries);
-
  private:
-  bool AddFormFieldValueTime(
-      const FormFieldData& element,
-      base::Time time,
-      std::vector<AutocompleteChangeLabelSensitive>* changes);
+  bool AddFormFieldValueTime(const FormFieldData& element, base::Time time);
 
   // Insert a single AutocompleteEntryLabelSensitive into the autocomplete
   // table.

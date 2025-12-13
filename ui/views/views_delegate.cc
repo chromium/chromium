@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/window/default_frame_view.h"
 
@@ -98,8 +99,8 @@ gfx::ImageSkia* ViewsDelegate::GetDefaultWindowIcon() const {
 }
 #endif
 
-std::unique_ptr<NonClientFrameView>
-ViewsDelegate::CreateDefaultNonClientFrameView(Widget* widget) {
+std::unique_ptr<FrameView> ViewsDelegate::CreateDefaultFrameView(
+    Widget* widget) {
   return std::make_unique<DefaultFrameView>(widget);
 }
 
@@ -121,7 +122,7 @@ bool ViewsDelegate::WindowManagerProvidesTitleBar(bool maximized) {
 
 void ViewsDelegate::InitializeViewsAXManager() {
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
-  if (::features::IsAccessibilityTreeForViewsEnabled() &&
+  if (ViewAccessibility::IsViewsAccessibilityTreeEnabled() &&
       !browser_views_ax_manager_handle_) {
     browser_views_ax_manager_handle_ = views::BrowserViewsAXManager::Create();
   }

@@ -25,7 +25,7 @@
 
 namespace blink {
 
-unsigned NumGraphemeClusters(const String& string) {
+unsigned NumGraphemeClusters(const StringView& string) {
   unsigned string_length = string.length();
 
   if (!string_length) {
@@ -33,7 +33,8 @@ unsigned NumGraphemeClusters(const String& string) {
   }
 
   // The only Latin-1 Extended Grapheme Cluster is CR LF
-  if (string.Is8Bit() && !string.Contains('\r')) {
+  if (string.Is8Bit() &&
+      string.Find([](UChar c) { return c == '\r'; }) == kNotFound) {
     return string_length;
   }
 

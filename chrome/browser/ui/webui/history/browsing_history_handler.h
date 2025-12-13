@@ -16,11 +16,14 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/values.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,7 +36,8 @@ class WebContents;
 
 // The handler for Javascript messages related to the "history" view.
 class BrowsingHistoryHandler : public history::mojom::PageHandler,
-                               public ProfileBasedBrowsingHistoryDriver {
+                               public ProfileBasedBrowsingHistoryDriver,
+                               public signin::IdentityManager::Observer {
  public:
   BrowsingHistoryHandler(
       mojo::PendingReceiver<history::mojom::PageHandler> pending_page_handler,
@@ -86,6 +90,15 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   // ProfileBasedBrowsingHistoryDriver implementation.
   Profile* GetProfile() override;
 
+  // history::mojom::PageHandler:
+  void RequestAccountInfo(RequestAccountInfoCallback callback) override;
+  void TurnOnHistorySync() override;
+#if !BUILDFLAG(IS_CHROMEOS)
+  void ShouldShowHistoryPageHistorySyncPromo(
+      ShouldShowHistoryPageHistorySyncPromoCallback callback) override;
+  void IncrementHistoryPageHistorySyncPromoShownCount() override;
+#endif
+
   // For tests. This does not take the ownership of the clock. |clock| must
   // outlive the BrowsingHistoryHandler instance.
   void set_clock(base::Clock* clock) { clock_ = clock; }
@@ -99,6 +112,12 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
     return browsing_history_service_.get();
   }
 
+#if defined(UNIT_TEST)
+  bool is_observing_identity_manager_for_testing() const {
+    return identity_manager_observation_.IsObserving();
+  }
+#endif
+
  protected:
   virtual void SendHistoryQuery(int count,
                                 const std::string& query,
@@ -111,11 +130,19 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
 
   base::WeakPtr<TopChromeWebUIController::Embedder> side_panel_embedder_;
 
+  // signin::IdentityManager::Observer:
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
-
+  // Interface to send information to the web ui page.
   mojo::Remote<history::mojom::Page> page_;
+  // Allows handling received messages from the web ui page.
   mojo::Receiver<history::mojom::PageHandler> page_handler_;
+  const base::raw_ref<signin::IdentityManager> identity_manager_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // The clock used to vend times.
   raw_ptr<base::Clock> clock_;

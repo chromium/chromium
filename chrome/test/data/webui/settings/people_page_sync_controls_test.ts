@@ -9,7 +9,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSyncControlsElement} from 'chrome://settings/lazy_load.js';
 import type {CrRadioButtonElement, CrToggleElement, SyncPrefs} from 'chrome://settings/settings.js';
-import {loadTimeData, Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, Router, resetRouterForTesting, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -18,8 +18,12 @@ import {getSyncAllPrefs, getSyncAllPrefsManaged} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // <if expr="not is_chromeos">
-import {routes, UserSelectableType} from 'chrome://settings/settings.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {PageStatus, routes, UserSelectableType} from 'chrome://settings/settings.js';
 import {waitAfterNextRender, flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {BatchUploadPromoProxyImpl} from 'chrome://settings/lazy_load.js';
+
+import {TestBatchUploadPromoProxy} from './test_batch_upload_promo_browser_proxy.js';
 // </if>
 
 // clang-format on
@@ -37,6 +41,10 @@ suite('SyncControlsTest', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     syncControls = document.createElement('settings-sync-controls');
+    syncControls.syncStatus = {
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.NO_ACTION,
+    };
     document.body.appendChild(syncControls);
 
     // Start with Sync All.
@@ -167,6 +175,18 @@ suite('SyncControlsTest', function() {
     assertFalse(syncControls.hidden);
   });
 
+  // Regression test for crbug.com/467318495.
+  test('SyncNotConfirmed', function() {
+    syncControls.syncStatus = {
+      disabled: false,
+      hasError: true,
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.CONFIRM_SYNC_SETTINGS,
+    };
+    // Controls are not hidden when sync is not yet confirmed.
+    assertFalse(syncControls.hidden);
+  });
+
   // <if expr="is_chromeos">
   test('SyncCookiesSupported', async function() {
     // Sync everything enabled.
@@ -222,6 +242,9 @@ suite('SyncControlsSubpageTest', function() {
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
+    resetRouterForTesting();
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     syncControls = document.createElement('settings-sync-controls');
@@ -273,18 +296,45 @@ suite('SyncControlsSubpageTest', function() {
     const router = Router.getInstance();
     assertEquals(router.getRoutes().SYNC.path, router.getCurrentRoute().path);
   });
+
+  // <if expr="not is_chromeos">
+  test(
+      'NavigateToAccountSettingsWhenReplacingWithSigninPromoAndNotSyncing',
+      function() {
+        loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+        resetRouterForTesting();
+        const router = Router.getInstance();
+        router.navigateTo(routes.SYNC_ADVANCED);
+
+        syncControls.syncStatus = {
+          disabled: false,
+          hasError: false,
+          signedInState: SignedInState.SIGNED_IN,
+          statusAction: StatusAction.NO_ACTION,
+        };
+        flush();
+
+        assertEquals(routes.ACCOUNT, router.getCurrentRoute());
+      });
+  // </if>
 });
 
 // <if expr="not is_chromeos">
 suite('SyncControlsAccountSettingsTest', function() {
   let syncControls: SettingsSyncControlsElement;
   let browserProxy: TestSyncBrowserProxy;
+  let batchUploadPromoProxy: TestBatchUploadPromoProxy;
 
   setup(async function() {
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+    batchUploadPromoProxy = new TestBatchUploadPromoProxy();
+    BatchUploadPromoProxyImpl.setInstance(batchUploadPromoProxy);
+
+    loadTimeData.overrideValues(
+        {replaceSyncPromosWithSignInPromos: true, unoPhase2FollowUp: true});
+    resetRouterForTesting();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const router = Router.getInstance();
@@ -304,6 +354,10 @@ suite('SyncControlsAccountSettingsTest', function() {
     await browserProxy.whenCalled('didNavigateToAccountSettingsPage');
   });
 
+  teardown(function() {
+    resetRouterForTesting();
+  });
+
   async function setupPrefs() {
     const initialPrefs = getSyncAllPrefs();
     initialPrefs.syncAllDataTypes = false;
@@ -312,13 +366,13 @@ suite('SyncControlsAccountSettingsTest', function() {
     await waitAfterNextRender(syncControls);
   }
 
-  function assertControlsDisabled() {
+  function assertControlsEnabled(enabled: boolean) {
     const datatypeControls =
         syncControls.shadowRoot!.querySelectorAll<CrToggleElement>(
             '.list-item:not([hidden]) > cr-toggle');
     assertTrue(datatypeControls.length > 0);
     for (const control of datatypeControls) {
-      assertTrue(control.disabled, 'Control is not disabled.');
+      assertEquals(!enabled, control.disabled);
     }
   }
 
@@ -332,9 +386,18 @@ suite('SyncControlsAccountSettingsTest', function() {
     const policyIndicators = syncControls.shadowRoot!.querySelectorAll(
         'cr-policy-indicator:not(#syncDisabledIndicator)');
     assertTrue(policyIndicators.length > 0);
+
+    // We expect the indicators of the toggles for history, tabs, and saved tab
+    // groups to be always hidden since they are merged into one toggle.
+    const hiddenIndicators = shown ? 3 : policyIndicators.length;
+    let countHiddenIndicators = 0;
     for (const indicator of policyIndicators) {
-      assertEquals(shown, isVisible(indicator));
+      if (!isVisible(indicator)) {
+        countHiddenIndicators++;
+      }
     }
+
+    assertEquals(hiddenIndicators, countHiddenIndicators);
   }
 
   test('SyncEverythingControlsAreHidden', function() {
@@ -349,20 +412,14 @@ suite('SyncControlsAccountSettingsTest', function() {
     assertFalse(isVisible(customizeSync));
   });
 
-  test('SignedIn', function() {
-    setupPrefs();
+  test('SignedIn', async function() {
+    await setupPrefs();
 
     // Controls are shown when signed in and there is no error.
     assertFalse(syncControls.hidden);
 
     // Controls are also not disabled.
-    const datatypeControls =
-        syncControls.shadowRoot!.querySelectorAll<CrToggleElement>(
-            '.list-item:not([hidden]) > cr-toggle');
-    assertTrue(datatypeControls.length > 0);
-    for (const control of datatypeControls) {
-      assertFalse(control.disabled);
-    }
+    assertControlsEnabled(true);
   });
 
   test('SignedInError', function() {
@@ -393,35 +450,172 @@ suite('SyncControlsAccountSettingsTest', function() {
     assertTrue(syncControls.hidden);
   });
 
+  test('SignedInLocalSyncEnabled', async function() {
+    await setupPrefs();
+
+    // Controls are available by default.
+    assertFalse(syncControls.hidden);
+
+    const syncPrefs = getSyncAllPrefs();
+    syncPrefs.localSyncEnabled = true;
+    webUIListenerCallback('sync-prefs-changed', syncPrefs);
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    // Controls are hidden when signed in and local sync is enabled.
+    assertTrue(syncControls.hidden);
+  });
+
   test('ChangeDataTypeToggle', async function() {
-    setupPrefs();
+    await setupPrefs();
 
-    // Make sure that the history toggle is present and can be interacted with.
-    const historyToggle =
+    // Make sure that the autofill toggle is present and can be interacted with.
+    const autofillToggle =
         syncControls.shadowRoot!.querySelector<CrToggleElement>(
-            '#historyToggle');
-    assertTrue(!!historyToggle);
-    assertFalse(historyToggle.disabled);
-    assertTrue(historyToggle.checked);
+            '#autofillCheckbox');
+    assertTrue(!!autofillToggle);
+    assertFalse(autofillToggle.disabled);
+    assertTrue(autofillToggle.checked);
 
-    // Click to disable history sync.
-    historyToggle.click();
-    await historyToggle.updateComplete;
+    // Click to disable autofill sync.
+    autofillToggle.click();
+    await autofillToggle.updateComplete;
 
     let [pref, value] = await browserProxy.whenCalled('setSyncDatatype');
-    assertEquals(pref, UserSelectableType.HISTORY);
+    assertEquals(pref, UserSelectableType.AUTOFILL);
     assertFalse(value);
-    assertFalse(historyToggle.checked);
+    assertFalse(autofillToggle.checked);
 
-    // Re-enable history sync.
+    // Re-enable autofill sync.
     browserProxy.resetResolver('setSyncDatatype');
-    historyToggle.click();
-    await historyToggle.updateComplete;
+    autofillToggle.click();
+    await autofillToggle.updateComplete;
 
     [pref, value] = await browserProxy.whenCalled('setSyncDatatype');
-    assertEquals(pref, UserSelectableType.HISTORY);
+    assertEquals(pref, UserSelectableType.AUTOFILL);
     assertTrue(value);
-    assertTrue(historyToggle.checked);
+    assertTrue(autofillToggle.checked);
+  });
+
+  test(
+      'DisableMergedToggleAndShowPolicyIndicatorWhenHistoryAndTabsManaged',
+      async () => {
+        // Set history and tabs to managed.
+        const syncPrefs = getSyncAllPrefs();
+        syncPrefs.typedUrlsManaged = true;
+        syncPrefs.tabsManaged = true;
+        webUIListenerCallback('sync-prefs-changed', syncPrefs);
+        await flushTasks();
+        await waitAfterNextRender(syncControls);
+
+        // The merged toggle is disabled, but checked because the types are
+        // enabled.
+        const mergedHistoryTabsToggle =
+            syncControls.shadowRoot!.querySelector<CrToggleElement>(
+                '#mergedHistoryTabsToggle');
+        assertTrue(!!mergedHistoryTabsToggle);
+        assertTrue(mergedHistoryTabsToggle.disabled);
+        assertTrue(mergedHistoryTabsToggle.checked);
+
+        // Assert that the merged toggle's policy indicator is shown.
+        const policyIndicator = syncControls.shadowRoot!.querySelector<Element>(
+            '#mergedHistoryTabsToggleIndicator');
+        assertTrue(isVisible(policyIndicator));
+      });
+
+  test(
+      'EnableMergedToggleAndHidePolicyIndicatorWhenOnlyOneDataTypeManaged',
+      async () => {
+        // Set only history to managed. Tabs remain not managed.
+        const syncPrefs = getSyncAllPrefs();
+        syncPrefs.typedUrlsManaged = true;
+        webUIListenerCallback('sync-prefs-changed', syncPrefs);
+        await flushTasks();
+        await waitAfterNextRender(syncControls);
+
+        // The merged toggle is not disabled, and checked because the types are
+        // enabled.
+        const mergedHistoryTabsToggle =
+            syncControls.shadowRoot!.querySelector<CrToggleElement>(
+                '#mergedHistoryTabsToggle');
+        assertTrue(!!mergedHistoryTabsToggle);
+        assertFalse(mergedHistoryTabsToggle.disabled);
+        assertTrue(mergedHistoryTabsToggle.checked);
+
+        // Assert that the merged toggle's policy indicator is not shown.
+        const policyIndicator = syncControls.shadowRoot!.querySelector<Element>(
+            '#mergedHistoryTabsToggleIndicator');
+        assertFalse(isVisible(policyIndicator));
+      });
+
+  test('ChangeMergedHistoryTabsToggle', async function() {
+    // Initially, only history is enabled. Tabs and saved tab groups are not.
+    const syncPrefs = getSyncAllPrefs();
+    syncPrefs.tabsSynced = false;
+    syncPrefs.savedTabGroupsSynced = false;
+    webUIListenerCallback('sync-prefs-changed', syncPrefs);
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    // Override `setSyncDatatype()` in order to collect calls.
+    const originalSetSyncDatatype = browserProxy.setSyncDatatype;
+    type SyncDatatypeCallArgs = [UserSelectableType, boolean];
+    let callsMade: SyncDatatypeCallArgs[] = [];
+    browserProxy.setSyncDatatype = function(
+        pref: UserSelectableType, value: boolean): Promise<PageStatus> {
+      callsMade.push([pref, value]);
+      return Promise.resolve(PageStatus.DONE);
+    };
+
+    // Make sure that the merged history and tabs toggle is present and can  be
+    // interacted with. The toggle is checked, since at least one of the data
+    // types is enabled.
+    const mergedHistoryTabsToggle =
+        syncControls.shadowRoot!.querySelector<CrToggleElement>(
+            '#mergedHistoryTabsToggle');
+    assertTrue(!!mergedHistoryTabsToggle);
+    assertFalse(mergedHistoryTabsToggle.disabled);
+    assertTrue(mergedHistoryTabsToggle.checked);
+
+    assertTrue(syncControls.syncPrefs!.typedUrlsSynced);
+    assertFalse(syncControls.syncPrefs!.tabsSynced);
+    assertFalse(syncControls.syncPrefs!.savedTabGroupsSynced);
+
+    // Click to disable history and tabs.
+    mergedHistoryTabsToggle.click();
+    await mergedHistoryTabsToggle.updateComplete;
+
+    assertEquals(3, callsMade.length);
+    assertTrue(!!callsMade.find(
+        ([pref, value]) =>
+            pref === UserSelectableType.HISTORY && value === false));
+    assertTrue(!!callsMade.find(
+        ([pref, value]) =>
+            pref === UserSelectableType.TABS && value === false));
+    assertTrue(!!callsMade.find(
+        ([pref, value]) =>
+            pref === UserSelectableType.SAVED_TAB_GROUPS && value === false));
+
+    assertFalse(mergedHistoryTabsToggle.checked);
+    callsMade = [];
+
+    // Re-enable history and tabs.
+    mergedHistoryTabsToggle.click();
+    await mergedHistoryTabsToggle.updateComplete;
+
+    assertEquals(3, callsMade.length);
+    assertTrue(!!callsMade.find(
+        ([pref, value]) =>
+            pref === UserSelectableType.HISTORY && value === true));
+    assertTrue(!!callsMade.find(
+        ([pref, value]) => pref === UserSelectableType.TABS && value === true));
+    assertTrue(!!callsMade.find(
+        ([pref, value]) =>
+            pref === UserSelectableType.SAVED_TAB_GROUPS && value === true));
+
+    assertTrue(mergedHistoryTabsToggle.checked);
+
+    browserProxy.setSyncDatatype = originalSetSyncDatatype;
   });
 
   test(
@@ -434,7 +628,7 @@ suite('SyncControlsAccountSettingsTest', function() {
         assertFalse(syncControls.hidden);
 
         // However, they are disabled.
-        assertControlsDisabled();
+        assertControlsEnabled(false);
 
         // Assert that all policy indicators are hidden.
         assertSyncDisabledPolicyIndicatorShown(false);
@@ -442,7 +636,7 @@ suite('SyncControlsAccountSettingsTest', function() {
       });
 
   test('DisableToggleAndHidePolicyIndicatorWhenSyncIsDisabled', async () => {
-    setupPrefs();
+    await setupPrefs();
 
     syncControls.syncStatus = {
       disabled: true,
@@ -456,7 +650,7 @@ suite('SyncControlsAccountSettingsTest', function() {
     assertFalse(syncControls.hidden);
 
     // However, they are disabled.
-    assertControlsDisabled();
+    assertControlsEnabled(false);
 
     // Assert that only the sync disabled policy indicator is shown.
     assertSyncDisabledPolicyIndicatorShown(true);
@@ -473,11 +667,122 @@ suite('SyncControlsAccountSettingsTest', function() {
     assertFalse(syncControls.hidden);
 
     // However, they are disabled.
-    assertControlsDisabled();
+    assertControlsEnabled(false);
 
     // Assert that only individual items' policy indicators are shown.
     assertSyncDisabledPolicyIndicatorShown(false);
     assertIndividualItemPolicyIndicatorsShown(true);
+  });
+
+  // Before crbug.com/433895051, the toggles were not shown before a syncStatus
+  // update or refresh when the user navigated to the account settings page from
+  // a different settings page. This test verifies they are shown directly upon
+  // navigation.
+  test('TogglesVisibilityUpdatedUponNavigation', async () => {
+    const router = Router.getInstance();
+    router.navigateTo(routes.PEOPLE);
+
+    // Create the sync controls before navigating to the account settings page.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    syncControls = document.createElement('settings-sync-controls');
+    document.body.appendChild(syncControls);
+    syncControls.syncStatus = {
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    await waitAfterNextRender(syncControls);
+
+    router.navigateTo(routes.ACCOUNT);
+    assertFalse(syncControls.hidden);
+  });
+
+  test('BatchUploadPromoNotVisibleWithoutLocalData', async () => {
+    await setupPrefs();
+    await flushTasks();
+
+    assertFalse(isChildVisible(syncControls, '#batchUploadPromo'));
+  });
+
+  test('BatchUploadPromoWithLocalDataItemUponInitialization', async () => {
+    batchUploadPromoProxy.handler.setBatchUploadPromoLocalDataCount(5);
+
+    // Create the sync controls again with the initial local data count.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    syncControls = document.createElement('settings-sync-controls');
+    document.body.appendChild(syncControls);
+    syncControls.syncStatus = {
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    await setupPrefs();
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    assertTrue(isChildVisible(syncControls, '#batchUploadPromo'));
+  });
+
+  test('BatchUploadPromoWithOneLocalDataItem', async () => {
+    await setupPrefs();
+
+    // Notify the UI that there is one item to be uploaded and wait for the
+    // batch upload promo to show.
+    batchUploadPromoProxy.page.onLocalDataCountChanged(1);
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    const batchUploadElement =
+        syncControls.shadowRoot!.querySelector(`#batchUploadPromo`);
+    assertTrue(!!batchUploadElement);
+    assertTrue(isVisible(batchUploadElement));
+
+    // Check that the correct version of the string is displayed.
+    const expectedPromoString = '1 item is saved only to this device. ' +
+        'To use it on your other devices, save it in your Google Account.';
+    assertEquals(expectedPromoString, batchUploadElement.textContent);
+  });
+
+  test('BatchUploadPromoWithMultipleLocalDataItems', async () => {
+    await setupPrefs();
+
+    // Notify the UI that there are multiple items to be uploaded and wait for
+    // the batch upload promo to show.
+    batchUploadPromoProxy.page.onLocalDataCountChanged(9);
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    const batchUploadElement =
+        syncControls.shadowRoot!.querySelector(`#batchUploadPromo`);
+    assertTrue(!!batchUploadElement);
+    assertTrue(isVisible(batchUploadElement));
+
+    // Check that the correct version of the string is displayed.
+    const expectedPromoString = '9 items are saved only to this device. ' +
+        'To use them on your other devices, save them in your Google Account.';
+    assertEquals(expectedPromoString, batchUploadElement.textContent);
+  });
+
+  test('BatchUploadPromoClickOpensDialog', async () => {
+    await setupPrefs();
+
+    // Notify the UI that there are multiple items to be uploaded and wait for
+    // the batch upload promo to show.
+    batchUploadPromoProxy.page.onLocalDataCountChanged(9);
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    assertTrue(isChildVisible(syncControls, '#batchUploadPromo'));
+
+    const batchUploadLinkElement =
+        syncControls.shadowRoot!.querySelector<HTMLElement>(
+            '#openBatchUploadLink');
+    assertTrue(!!batchUploadLinkElement);
+    batchUploadLinkElement.click();
+
+    // Make sure the call to open the batch upload dialog is executed.
+    assertEquals(
+        1,
+        batchUploadPromoProxy.handler.getCallCount(
+            'onBatchUploadPromoClicked'));
   });
 });
 // </if>
@@ -494,8 +799,6 @@ suite('SyncControlsManagedTest', function() {
   setup(async function() {
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
-
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     syncControls = document.createElement('settings-sync-controls');
@@ -539,7 +842,8 @@ suite('SyncControlsManagedTest', function() {
     // Assert that all toggles have the policy indicator icon visible when they
     // are all managed.
     const policyIndicators = syncControls.shadowRoot!.querySelectorAll(
-        'cr-policy-indicator:not(#syncDisabledIndicator)');
+        'cr-policy-indicator:not(#syncDisabledIndicator):' +
+        'not(#mergedHistoryTabsToggleIndicator)');
     assertTrue(policyIndicators.length > 0);
     for (const indicator of policyIndicators) {
       assertTrue(isVisible(indicator));
@@ -592,10 +896,12 @@ suite('AutofillAndPaymentsToggles', function() {
     const browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
-
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const syncControls = document.createElement('settings-sync-controls');
+    syncControls.syncStatus = {
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
     document.body.appendChild(syncControls);
 
     webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());

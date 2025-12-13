@@ -4,7 +4,7 @@
 
 module device.mojom;
 
-import "device/vr/public/mojom/browser_test_interfaces.mojom";
+import "device/vr/public/mojom/test/browser_test_interfaces.mojom";
 import "device/vr/public/mojom/vr_service.mojom";
 import "device/vr/public/mojom/xr_device.mojom";
 import "device/vr/public/mojom/xr_session.mojom";

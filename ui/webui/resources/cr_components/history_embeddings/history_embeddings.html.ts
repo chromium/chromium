@@ -75,7 +75,7 @@ ${this.enableAnswers_ ? html`
             <cr-loading-gradient>
               <svg width="100%" height="72" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <clipPath>
-                  <rect width="100%" height="12" rx="4"1></rect>
+                  <rect width="100%" height="12" rx="4"></rect>
                   <rect y="20" width="85%" height="12" rx="4"></rect>
                   <rect y="40" width="75%" height="12" rx="4"></rect>
                   <rect y="60" width="33%" height="12" rx="4"></rect>

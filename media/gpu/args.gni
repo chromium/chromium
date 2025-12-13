@@ -55,9 +55,7 @@ declare_args() {
   use_vaapi_image_codecs = use_vaapi && is_chromeos
 }
 
-declare_args() {
-  use_linux_video_acceleration = use_vaapi || use_v4l2_codec
-}
+use_linux_video_acceleration = use_vaapi || use_v4l2_codec
 
 declare_args() {
   # A platform that is capable of hardware av1 decoding.

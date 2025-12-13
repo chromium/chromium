@@ -12,6 +12,8 @@ import static org.junit.Assert.fail;
 import android.os.ConditionVariable;
 import android.os.StrictMode;
 
+import org.chromium.net.impl.CronetUrlRequest;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -266,6 +268,9 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
     @Override
     public void onSucceeded(UrlRequest request, UrlResponseInfo info) {
         checkExecutorThread();
+        if (request instanceof CronetUrlRequest cronetUrlRequest) {
+            assertThat(cronetUrlRequest.getFinishedRequestTimings()).isNotNull();
+        }
         assertThat(request.isDone()).isTrue();
         assertThat(mResponseStep)
                 .isAnyOf(ResponseStep.ON_RESPONSE_STARTED, ResponseStep.ON_READ_COMPLETED);
@@ -286,6 +291,9 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         // since the request already did.
         if (error.getCause() instanceof InlineExecutionProhibitedException) {
             mAllowDirectExecutor = true;
+        }
+        if (request instanceof CronetUrlRequest cronetUrlRequest) {
+            assertThat(cronetUrlRequest.getFinishedRequestTimings()).isNotNull();
         }
         checkExecutorThread();
         assertThat(request.isDone()).isTrue();
@@ -315,6 +323,9 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
     @Override
     public void onCanceled(UrlRequest request, UrlResponseInfo info) {
         checkExecutorThread();
+        if (request instanceof CronetUrlRequest cronetUrlRequest) {
+            assertThat(cronetUrlRequest.getFinishedRequestTimings()).isNotNull();
+        }
         assertThat(request.isDone()).isTrue();
         // Should happen at most once for a single request.
         assertThat(mOnCanceledCalled).isFalse();

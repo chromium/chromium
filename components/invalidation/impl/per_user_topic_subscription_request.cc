@@ -5,6 +5,8 @@
 #include "components/invalidation/impl/per_user_topic_subscription_request.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -12,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -110,7 +113,7 @@ void PerUserTopicSubscriptionRequest::Start(
 }
 
 void PerUserTopicSubscriptionRequest::OnURLFetchComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = 0;
   if (simple_loader_->ResponseInfo() &&
       simple_loader_->ResponseInfo()->headers) {
@@ -124,7 +127,7 @@ void PerUserTopicSubscriptionRequest::OnURLFetchComplete(
 void PerUserTopicSubscriptionRequest::OnURLFetchCompleteInternal(
     int net_error,
     int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (IsNetworkError(net_error)) {
     RecordRequestStatus(SubscriptionStatus::kNetworkFailure, type_, topic_,
                         net_error, response_code);

@@ -34,14 +34,11 @@ class PwaBottomSheetController {
  public:
   // If possible, shows/expand the PWA Bottom Sheet installer and returns true.
   // Otherwise does nothing and returns false.
-  static bool MaybeShow(
-      content::WebContents* web_contents,
-      const WebAppBannerData& web_app_banner_data,
-      bool expand_sheet,
-      base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                                   const AddToHomescreenParams&)>
-          a2hs_event_callback,
-      std::unique_ptr<AddToHomescreenParams> a2hs_params);
+  static bool MaybeShow(content::WebContents* web_contents,
+                        const WebAppBannerData& web_app_banner_data,
+                        bool expand_sheet,
+                        AddToHomescreenEventCallback a2hs_event_callback,
+                        std::unique_ptr<AddToHomescreenParams> a2hs_params);
 
   PwaBottomSheetController(const PwaBottomSheetController&) = delete;
   PwaBottomSheetController& operator=(const PwaBottomSheetController&) = delete;
@@ -63,17 +60,13 @@ class PwaBottomSheetController {
   void OnSheetExpanded(JNIEnv* env);
 
   // Called from the Java side when the user opts to install.
-  void OnAddToHomescreen(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jweb_contents);
+  void OnAddToHomescreen(JNIEnv* env,
+                         const base::android::JavaRef<jobject>& jweb_contents);
 
  private:
-  PwaBottomSheetController(
-      const WebAppBannerData& web_app_banner_data,
-      std::unique_ptr<AddToHomescreenParams> a2hs_params,
-      base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                                   const AddToHomescreenParams&)>
-          a2hs_event_callback);
+  PwaBottomSheetController(const WebAppBannerData& web_app_banner_data,
+                           std::unique_ptr<AddToHomescreenParams> a2hs_params,
+                           AddToHomescreenEventCallback a2hs_event_callback);
 
   // Shows the Bottom Sheet installer UI for a given |web_contents|.
   void ShowBottomSheetInstaller(content::WebContents* web_contents,
@@ -89,9 +82,7 @@ class PwaBottomSheetController {
   // will be passed to |a2hs_event_callback_| eventually.
   std::unique_ptr<AddToHomescreenParams> a2hs_params_;
   // Called to provide input into the state of the installation process.
-  base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                               const AddToHomescreenParams&)>
-      a2hs_event_callback_;
+  AddToHomescreenEventCallback a2hs_event_callback_;
   // Whether the bottom sheet has been expanded.
   bool sheet_expanded_ = false;
   // Whether the bottom sheet has been closed.

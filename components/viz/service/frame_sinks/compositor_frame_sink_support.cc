@@ -5,17 +5,23 @@
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 
 #include <algorithm>
+#include <limits>
 #include <string>
 #include <utility>
 #include <variant>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -30,6 +36,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/trees_in_viz_timing.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/common/viz_utils.h"
@@ -70,8 +77,9 @@ void AdjustPresentationFeedback(gfx::PresentationFeedback* feedback,
   // Swap start to end breakdown is always reported if ready timestamp is
   // available. The other timestamps are adjusted to assume 0 delay in those
   // stages if the breakdown is not available.
-  if (feedback->ready_timestamp.is_null())
+  if (feedback->ready_timestamp.is_null()) {
     return;
+  }
 
   feedback->available_timestamp =
       std::max(feedback->available_timestamp, swap_start);
@@ -154,10 +162,12 @@ CompositorFrameSinkSupport::~CompositorFrameSinkSupport() {
     surface_manager_->RemoveSurfaceReferences({reference});
   }
 
-  if (last_activated_surface_id_.is_valid())
+  if (last_activated_surface_id_.is_valid()) {
     EvictLastActiveSurface();
-  if (last_created_surface_id_.is_valid())
+  }
+  if (last_created_surface_id_.is_valid()) {
     surface_manager_->MarkSurfaceForDestruction(last_created_surface_id_);
+  }
   frame_sink_manager_->UnregisterCompositorFrameSinkSupport(frame_sink_id_);
   // When we unregister `this` from `frame_sink_manager_` from above,
   // `FrameSinkManagerImpl::DiscardPendingCopyOfOutputRequests` clears out all
@@ -173,8 +183,9 @@ CompositorFrameSinkSupport::~CompositorFrameSinkSupport() {
   // UnregisterCompositorFrameSinkSupport().
   DCHECK(capture_clients_.empty());
 
-  if (begin_frame_source_ && added_frame_observer_)
+  if (begin_frame_source_ && added_frame_observer_) {
     begin_frame_source_->RemoveObserver(this);
+  }
 
   if (bundle_id_.has_value()) {
     if (auto* bundle = frame_sink_manager_->GetFrameSinkBundle(*bundle_id_)) {
@@ -216,8 +227,9 @@ void CompositorFrameSinkSupport::SetBeginFrameSource(
     // OnBeginFrameSourcePausedChanged(false) is not handled here because it's
     // handled in AddObserver() depending on current status of begin frame
     // source.
-    if (!begin_frame_source)
+    if (!begin_frame_source) {
       OnBeginFrameSourcePausedChanged(true);
+    }
     added_frame_observer_ = false;
   }
 
@@ -299,8 +311,9 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   DCHECK(!surface->HasPendingFrame());
 
   pending_surfaces_.erase(surface);
-  if (pending_surfaces_.empty())
+  if (pending_surfaces_.empty()) {
     UpdateNeedsBeginFramesInternal();
+  }
 
   const CompositorFrameMetadata& active_frame_metadata =
       surface->GetActiveFrameMetadata();
@@ -314,8 +327,9 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   SurfaceAnimationManager::ReplaceSharedElementResources(
       surface, view_transition_token_to_animation_manager_);
 
-  if (surface->surface_id() == last_activated_surface_id_)
+  if (surface->surface_id() == last_activated_surface_id_) {
     return;
+  }
 
   Surface* previous_surface =
       surface_manager_->GetSurfaceForId(last_activated_surface_id_);
@@ -363,8 +377,9 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
 }
 
 void CompositorFrameSinkSupport::OnSurfaceWillDraw(Surface* surface) {
-  if (last_drawn_frame_index_ >= surface->GetActiveFrameIndex())
+  if (last_drawn_frame_index_ >= surface->GetActiveFrameIndex()) {
     return;
+  }
   last_drawn_frame_index_ = surface->GetActiveFrameIndex();
 }
 
@@ -408,11 +423,13 @@ std::vector<Thread> CompositorFrameSinkSupport::GetThreads() {
 void CompositorFrameSinkSupport::OnSurfaceDestroyed(Surface* surface) {
   pending_surfaces_.erase(surface);
 
-  if (surface->surface_id() == last_activated_surface_id_)
+  if (surface->surface_id() == last_activated_surface_id_) {
     last_activated_surface_id_ = SurfaceId();
+  }
 
-  if (surface->surface_id() == last_created_surface_id_)
+  if (surface->surface_id() == last_created_surface_id_) {
     last_created_surface_id_ = SurfaceId();
+  }
 
   if (!client_ || surface_returned_resources_.empty()) {
     return;
@@ -459,8 +476,9 @@ void CompositorFrameSinkSupport::UnrefResources(
 
 void CompositorFrameSinkSupport::ReturnResources(
     std::vector<ReturnedResource> resources) {
-  if (resources.empty())
+  if (resources.empty()) {
     return;
+  }
 
   if (layer_context_) {
     // Resource management is delegated to LayerContext when it's in use.
@@ -476,7 +494,7 @@ void CompositorFrameSinkSupport::DoReturnResources(
   // When we attempt to return resources in DidReceiveCompositorFrameAck.
   // However if there are no pending frames then we don't expect that signal
   // soon. In which case we return the resources to the `client_` now.
-  if (pending_frames_.empty() && client_) {
+  if (!pending_frames_ && client_) {
     client_->ReclaimResources(std::move(resources));
     return;
   }
@@ -540,8 +558,9 @@ void CompositorFrameSinkSupport::EvictSurface(const LocalSurfaceId& id) {
 }
 
 void CompositorFrameSinkSupport::MaybeEvictSurfaces() {
-  if (IsEvicted(last_activated_surface_id_.local_surface_id()))
+  if (IsEvicted(last_activated_surface_id_.local_surface_id())) {
     EvictLastActiveSurface();
+  }
   if (IsEvicted(last_created_surface_id_.local_surface_id())) {
     surface_manager_->MarkSurfaceForDestruction(last_created_surface_id_);
     last_created_surface_id_ = SurfaceId();
@@ -550,8 +569,9 @@ void CompositorFrameSinkSupport::MaybeEvictSurfaces() {
 
 void CompositorFrameSinkSupport::EvictLastActiveSurface() {
   SurfaceId to_destroy_surface_id = last_activated_surface_id_;
-  if (last_created_surface_id_ == last_activated_surface_id_)
+  if (last_created_surface_id_ == last_activated_surface_id_) {
     last_created_surface_id_ = SurfaceId();
+  }
   last_activated_surface_id_ = SurfaceId();
   surface_manager_->MarkSurfaceForDestruction(to_destroy_surface_id);
 
@@ -576,6 +596,10 @@ void CompositorFrameSinkSupport::SetWantsAnimateOnlyBeginFrames() {
 
 void CompositorFrameSinkSupport::SetAutoNeedsBeginFrame() {
   auto_needs_begin_frame_ = true;
+}
+
+void CompositorFrameSinkSupport::SetNoCompositorFrameAcks() {
+  no_compositor_frame_acks_ = true;
 }
 
 bool CompositorFrameSinkSupport::WantsAnimateOnlyBeginFrames() const {
@@ -623,10 +647,6 @@ void CompositorFrameSinkSupport::UpdateThreadIdsPostVerification(
   }
 }
 
-bool CompositorFrameSinkSupport::IsRoot() const {
-  return is_root_;
-}
-
 void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
@@ -649,9 +669,10 @@ void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
 
   // If the client doesn't produce a frame, we assume it's no longer interactive
   // for scheduling.
-  if (last_activated_surface_id_.is_valid())
+  if (last_activated_surface_id_.is_valid()) {
     surface_manager_->SurfaceModified(last_activated_surface_id_, modified_ack,
                                       SurfaceObserver::HandleInteraction::kNo);
+  }
 
   if (begin_frame_source_) {
     begin_frame_source_->DidFinishFrame(this);
@@ -719,12 +740,14 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   CHECK(callback_received_receive_ack_);
 
   begin_frame_tracker_.ReceivedAck(frame.metadata.begin_frame_ack);
-  pending_frames_.push_back(FrameData{.local_frame = false});
+  pending_frames_++;
 
   base::TimeTicks now_time = base::TimeTicks::Now();
   pending_received_frame_times_.emplace(
       frame.metadata.frame_token,
-      std::make_unique<PendingFrameDetails>(now_time, surface_manager_));
+      std::make_unique<PendingFrameDetails>(
+          now_time, frame.metadata.trees_in_viz_timing_details,
+          surface_manager_));
 
   // Override the has_damage flag (ignoring invalid data from clients).
   frame.metadata.begin_frame_ack.has_damage = true;
@@ -759,7 +782,8 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
 
   // TODO(crbug.com/40578019): It should be possible to use
   // |frame.metadata.frame_token| instead of maintaining a |last_frame_index_|.
-  uint64_t frame_index = ++last_frame_index_;
+  CHECK_LT(last_frame_index_, std::numeric_limits<uint32_t>::max());
+  uint32_t frame_index = ++last_frame_index_;
 
   if (features::ShouldOnBeginFrameThrottleVideo()) {
     const auto& interval_info =
@@ -851,7 +875,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     const bool has_copy_request_against_prev_surface =
         frame.metadata.screenshot_destination.has_value() && prev_surface;
 
-    current_surface = surface_manager_->CreateSurface(
+    auto create_surface_return = surface_manager_->CreateSurface(
         weak_factory_.GetWeakPtr(), surface_info,
         has_copy_request_against_prev_surface ? last_created_surface_id_
                                               : SurfaceId());
@@ -866,9 +890,13 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     // If that happens, we will rely on the GC of the current surface to remove
     // the reference.
     if (has_copy_request_against_prev_surface) {
+      using ResultDestination = CopyOutputRequest::ResultDestination;
+      auto destination =
+          features::IsBackForwardTransitionsSameDocSharedImageEnabled()
+              ? ResultDestination::kSharedImage
+              : ResultDestination::kSystemMemory;
       auto copy_request = std::make_unique<CopyOutputRequest>(
-          CopyOutputRequest::ResultFormat::RGBA,
-          CopyOutputRequest::ResultDestination::kSystemMemory,
+          CopyOutputRequest::ResultFormat::RGBA, destination,
           base::BindOnce(
               &RemoveSurfaceReferenceAndDispatchCopyOutputRequestCallback,
               frame_sink_manager_->GetWeakPtr(), surface_info.id(),
@@ -891,11 +919,39 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
                                    /*capture_exact_id=*/true));
     }
 
-    if (!current_surface) {
+    if (!create_surface_return.has_value()) {
       TRACE_EVENT_INSTANT0("viz", "Surface belongs to another client",
                            TRACE_EVENT_SCOPE_THREAD);
+
+      static auto* const crash_key_local_surface_id =
+          base::debug::AllocateCrashKeyString(
+              "Local surface id", base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(crash_key_local_surface_id,
+                                     local_surface_id.ToString());
+
+      static auto* const crash_key_last_created_local_surface_id =
+          base::debug::AllocateCrashKeyString(
+              "Last created local surface id",
+              base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(
+          crash_key_last_created_local_surface_id,
+          last_created_surface_id_.local_surface_id().ToString());
+
+      static auto* const crash_key_prev_surface =
+          base::debug::AllocateCrashKeyString(
+              "Prev surface", base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(crash_key_prev_surface,
+                                     prev_surface ? "exist" : "not_exist");
+
+      static auto* const crash_key_create_surface_error =
+          base::debug::AllocateCrashKeyString(
+              "Create surface error", base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(crash_key_create_surface_error,
+                                     create_surface_return.error());
+
       return SubmitResult::SURFACE_OWNED_BY_ANOTHER_CLIENT;
     }
+    current_surface = create_surface_return.value();
     last_created_surface_id_ = SurfaceId(frame_sink_id_, local_surface_id);
 
     surface_manager_->SurfaceDamageExpected(current_surface->surface_id(),
@@ -961,18 +1017,14 @@ SurfaceReference CompositorFrameSinkSupport::MakeTopLevelRootReference(
 }
 
 void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
-  DCHECK(!pending_frames_.empty());
-  // TODO(https://crbug.com/40902503): Drawing from a layer context is indeed
-  // local, but we'll likely want to use a different resource return policy.
-  bool was_local_frame = pending_frames_.front().local_frame || layer_context_;
-  pending_frames_.pop_front();
+  DCHECK_GT(pending_frames_, 0);
+  pending_frames_--;
 
-  if (!client_)
+  if (!client_) {
     return;
+  }
 
-  // If this frame came from viz directly and not from the client, don't send
-  // the client an ack, since it didn't do anything. Just return the resources.
-  if (was_local_frame) {
+  if (no_compositor_frame_acks_) {
     client_->ReclaimResources(std::move(surface_returned_resources_));
     surface_returned_resources_.clear();
     return;
@@ -1016,6 +1068,16 @@ void CompositorFrameSinkSupport::DidPresentCompositorFrame(
       details.presentation_feedback.interval.is_positive()) {
     details.presentation_feedback.interval = begin_frame_interval_;
   }
+
+  details.start_update_display_tree =
+      received_frame_timestamp->second->start_update_display_tree();
+  details.start_prepare_to_draw =
+      received_frame_timestamp->second->start_prepare_to_draw();
+  details.start_draw_layers =
+      received_frame_timestamp->second->start_draw_layers();
+  details.submit_compositor_frame =
+      received_frame_timestamp->second->submit_compositor_frame();
+
   pending_received_frame_times_.erase(received_frame_timestamp);
 
   // We should only ever get one PresentationFeedback per frame_token.
@@ -1038,8 +1100,9 @@ void CompositorFrameSinkSupport::DidRejectCompositorFrame(
                        TRACE_EVENT_SCOPE_THREAD);
   // TODO(eseckler): Should these be stored and attached to the next successful
   // frame submission instead?
-  for (ui::LatencyInfo& info : latency_info)
+  for (ui::LatencyInfo& info : latency_info) {
     info.Terminate();
+  }
 
   std::vector<ReturnedResource> resources =
       TransferableResource::ReturnResources(frame_resource_list);
@@ -1113,14 +1176,16 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
                            args.interval) &&
       (client_ || layer_context_);
   if (should_send_begin_frame) {
-    if (last_activated_surface_id_.is_valid())
+    if (last_activated_surface_id_.is_valid()) {
       surface_manager_->SurfaceDamageExpected(last_activated_surface_id_,
                                               adjusted_args);
+    }
     last_begin_frame_args_ = adjusted_args;
 
     // Force full frame if surface not yet activated to ensure surface creation.
-    if (!last_activated_surface_id_.is_valid())
+    if (!last_activated_surface_id_.is_valid()) {
       adjusted_args.animate_only = false;
+    }
 
     adjusted_args.trace_id = trace_id;
     adjusted_args.frames_throttled_since_last = frames_throttled_since_last_;
@@ -1165,13 +1230,15 @@ const BeginFrameArgs& CompositorFrameSinkSupport::LastUsedBeginFrameArgs()
 }
 
 void CompositorFrameSinkSupport::OnBeginFrameSourcePausedChanged(bool paused) {
-  if (client_)
+  if (client_) {
     client_->OnBeginFramePausedChanged(paused);
+  }
 }
 
 void CompositorFrameSinkSupport::UpdateNeedsBeginFramesInternal() {
-  if (!begin_frame_source_)
+  if (!begin_frame_source_) {
     return;
+  }
 
   // We require a begin frame if there's a callback pending, or if the client
   // requested it, or if the client needs to get some frame timing details, or
@@ -1194,8 +1261,9 @@ void CompositorFrameSinkSupport::UpdateNeedsBeginFramesInternal() {
     return;
   }
 
-  if (needs_begin_frame_ == added_frame_observer_)
+  if (needs_begin_frame_ == added_frame_observer_) {
     return;
+  }
 
   if (needs_begin_frame_) {
     StartObservingBeginFrameSource();
@@ -1222,17 +1290,20 @@ void CompositorFrameSinkSupport::AttachCaptureClient(
     CapturableFrameSink::Client* client) {
   DCHECK(!base::Contains(capture_clients_, client));
   capture_clients_.push_back(client);
-  if (client->IsVideoCaptureStarted())
+  if (client->IsVideoCaptureStarted()) {
     OnClientCaptureStarted();
+  }
 }
 
 void CompositorFrameSinkSupport::DetachCaptureClient(
     CapturableFrameSink::Client* client) {
   const auto it = std::ranges::find(capture_clients_, client);
-  if (it != capture_clients_.end())
+  if (it != capture_clients_.end()) {
     capture_clients_.erase(it);
-  if (client->IsVideoCaptureStarted())
+  }
+  if (client->IsVideoCaptureStarted()) {
     OnClientCaptureStopped();
+  }
 }
 
 void CompositorFrameSinkSupport::OnClientCaptureStarted() {
@@ -1253,8 +1324,9 @@ void CompositorFrameSinkSupport::OnClientCaptureStopped() {
 std::optional<CapturableFrameSink::RegionProperties>
 CompositorFrameSinkSupport::GetRequestRegionProperties(
     const VideoCaptureSubTarget& sub_target) const {
-  if (!last_activated_surface_id_.is_valid())
+  if (!last_activated_surface_id_.is_valid()) {
     return {};
+  }
 
   Surface* current_surface =
       surface_manager_->GetSurfaceForId(last_activated_surface_id_);
@@ -1279,11 +1351,12 @@ CompositorFrameSinkSupport::GetRequestRegionProperties(
   // If we have a region capture crop ID, capture a subsection of the root
   // render pass.
   if (IsRegionCapture(sub_target)) {
-    const auto it = current_capture_bounds_.bounds().find(
-        std::get<RegionCaptureCropId>(sub_target));
-    if (it != current_capture_bounds_.bounds().end() && !it->second.IsEmpty() &&
-        gfx::Rect(out.root_render_pass_size).Contains(it->second)) {
-      out.render_pass_subrect = it->second;
+    const gfx::Rect* rect =
+        base::FindOrNull(current_capture_bounds_.bounds(),
+                         std::get<RegionCaptureCropId>(sub_target));
+    if (rect && !rect->IsEmpty() &&
+        gfx::Rect(out.root_render_pass_size).Contains(*rect)) {
+      out.render_pass_subrect = *rect;
       return out;
     }
 
@@ -1332,8 +1405,9 @@ void CompositorFrameSinkSupport::RequestCopyOfOutput(
 
 const CompositorFrameMetadata*
 CompositorFrameSinkSupport::GetLastActivatedFrameMetadata() {
-  if (!last_activated_surface_id_.is_valid())
+  if (!last_activated_surface_id_.is_valid()) {
     return nullptr;
+  }
   Surface* surface =
       surface_manager_->GetSurfaceForId(last_activated_surface_id_);
   DCHECK(surface);
@@ -1397,7 +1471,7 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
 
     DCHECK(surface);
     DCHECK(surface->HasActiveFrame());
-    uint64_t active_frame_index = surface->GetActiveFrameIndex();
+    uint32_t active_frame_index = surface->GetActiveFrameIndex();
 
     // Since we have an active frame, and frame indexes strictly increase
     // during the lifetime of the CompositorFrameSinkSupport, our active frame
@@ -1427,6 +1501,14 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
   if (!frame_timing_details_.empty() && !should_throttle_as_requested &&
       (!should_throttle_undrawn_frames || !frame_timing_details_all_failed)) {
     return RecordShouldSendBeginFrame("SendFrameTiming", true);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+    const int pending_frames_limit =
+        features::kNumberPendingFramesUntilThrottle.Get();
+    if (pending_frames_ >= pending_frames_limit) {
+      return RecordShouldSendBeginFrame("PendingAck", false);
+    }
   }
 
   if (!client_needs_begin_frame_ && !layer_context_wants_begin_frames_) {
@@ -1468,8 +1550,9 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
 }
 
 void CompositorFrameSinkSupport::CheckPendingSurfaces() {
-  if (pending_surfaces_.empty())
+  if (pending_surfaces_.empty()) {
     return;
+  }
   base::flat_set<raw_ptr<Surface, CtnExperimental>> pending_surfaces(
       pending_surfaces_);
   for (Surface* surface : pending_surfaces) {
@@ -1518,7 +1601,9 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
               frame_sink_manager_->reserved_resource_id_tracker(),
               base::BindOnce(&CompositorFrameSinkSupport::
                                  OnSaveTransitionDirectiveProcessed,
-                             base::Unretained(this)));
+                             base::Unretained(this)),
+              frame_sink_manager_
+                  ->GetViewTransitionResourcesCapturedCallback());
       if (surface_animation_manager_callback_) {
         std::move(surface_animation_manager_callback_).Run();
       }
@@ -1531,8 +1616,22 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
                 transition_token)) {
           return;
         }
-        view_transition_token_to_animation_manager_[transition_token] =
+        std::unique_ptr<SurfaceAnimationManager> surface_animation_manager =
             frame_sink_manager_->TakeSurfaceAnimationManager(transition_token);
+        // Emit how often for cross frame-sink view transitions,
+        // SurfaceAnimationManager is not cached when `kAnimateRenderer` is
+        // requested.
+        base::UmaHistogramBoolean(
+            "Viz.CompositorFrameSinkSupport."
+            "HasSurfaceAnimationManagerOnAnimate",
+            !!surface_animation_manager);
+        // If Frame deadline has passed before Save is completed, there is no
+        // SurfaceAnimationManager in the map.
+        if (!surface_animation_manager) {
+          return;
+        }
+        view_transition_token_to_animation_manager_[transition_token] =
+            std::move(surface_animation_manager);
       }
 
       auto it =
@@ -1685,8 +1784,10 @@ void CompositorFrameSinkSupport::ForAllReservedResourceDelegates(
 
 CompositorFrameSinkSupport::PendingFrameDetails::PendingFrameDetails(
     base::TimeTicks frame_submit_timestamp,
+    TreesInVizTiming timing_details,
     SurfaceManager* surface_manager)
     : frame_submit_timestamp_(frame_submit_timestamp),
+      trees_in_viz_timing_details_(timing_details),
       // Use the submit timestamp as the default value, so that the metrics
       // won't get skewed in case the surface never gets embedded/the surface
       // ID never gets set.

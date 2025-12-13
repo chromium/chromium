@@ -12,7 +12,7 @@ namespace prerender {
 
 namespace {
 
-auto kFinalStatusNames = std::to_array<const char*>({
+constexpr auto kFinalStatusNames = std::to_array<const char*>({
     "Used",
     "Timed Out",
     "Evicted",

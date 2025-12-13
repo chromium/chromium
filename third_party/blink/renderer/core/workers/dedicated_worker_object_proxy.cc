@@ -98,15 +98,16 @@ void DedicatedWorkerObjectProxy::ProcessUnhandledException(
 }
 
 void DedicatedWorkerObjectProxy::ReportException(const String& error_message,
-                                                 SourceLocation* location,
+                                                 const SourceLocation* location,
                                                  int exception_id) {
-  CrossThreadSourceLocation cross_thread_location(location);
+  CrossThreadSourceLocation cross_thread_location =
+      CrossThreadSourceLocation::From(location);
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
       CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DispatchErrorEvent,
                           messaging_proxy_weak_ptr_, error_message,
-                          cross_thread_location, exception_id));
+                          std::move(cross_thread_location), exception_id));
 }
 
 void DedicatedWorkerObjectProxy::DidFailToFetchClassicScript() {

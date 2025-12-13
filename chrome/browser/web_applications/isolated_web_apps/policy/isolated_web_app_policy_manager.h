@@ -11,16 +11,18 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "net/base/backoff_entry.h"
 
 namespace web_app {
@@ -31,14 +33,16 @@ BASE_DECLARE_FEATURE(kIwaPolicyManagerOnDemandComponentUpdate);
 
 // This class is responsible for installing, uninstalling, updating etc.
 // of the policy installed IWAs.
-class IsolatedWebAppPolicyManager
-    : public IwaKeyDistributionInfoProvider::Observer {
+class IsolatedWebAppPolicyManager {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   static void SetOnInstallTaskCompletedCallbackForTesting(
       base::RepeatingCallback<void(web_package::SignedWebBundleId,
                                    IwaInstaller::Result)> callback);
+  // Fired every time policy is processed and does not need reprocessing.
+  static void SetOnPolicyFullyProcessedCallbackForTesting(
+      base::RepeatingClosure callback);
 
   static std::vector<IsolatedWebAppExternalInstallOptions>
   GetIwaInstallForceList(const Profile& profile);
@@ -48,21 +52,20 @@ class IsolatedWebAppPolicyManager
   IsolatedWebAppPolicyManager(const IsolatedWebAppPolicyManager&) = delete;
   IsolatedWebAppPolicyManager& operator=(const IsolatedWebAppPolicyManager&) =
       delete;
-  ~IsolatedWebAppPolicyManager() override;
+  ~IsolatedWebAppPolicyManager();
 
   void Start(base::OnceClosure on_started_callback);
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
-  void Shutdown();
 
   base::Value GetDebugValue() const;
+
+  static void RemoveDelayForBundleCleanupForTesting();
 
  private:
   void StartImpl();
 
   void ConfigureObserversOnSessionStart();
   void CleanupAndProcessPolicyOnSessionStart();
-  int GetPendingInitCount();
-  void SetPendingInitCount(int pending_count);
   void ProcessPolicy();
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
   void OnPolicyProcessed();
@@ -84,13 +87,11 @@ class IsolatedWebAppPolicyManager
 
   void MaybeStartNextInstallTask();
 
-  void CleanupOrphanedBundles(base::OnceClosure finished_closure);
+  void CleanupOrphanedBundles();
 
   void OnPolicyChanged();
 
-  // IwaKeyDistributionInfoProvider::Observer:
-  void OnComponentUpdateSuccess(const base::Version& version,
-                                bool is_preloaded) override;
+  void OnRuntimeDataChanged();
 
   // Keeps track of the last few processing logs for debugging purposes.
   // Automatically discards older logs to keep at most `kMaxEntries`.
@@ -120,16 +121,12 @@ class IsolatedWebAppPolicyManager
 
   net::BackoffEntry install_retry_backoff_entry_;
 
-  base::OnceClosure initial_policy_processing_finished_cb_;
-
   // We must execute install tasks in a queue, because each task uses a
   // `WebContents`, and installing an unbound number of apps in parallel would
   // use too many resources.
   base::queue<std::unique_ptr<IwaInstaller>> install_tasks_;
 
-  base::ScopedObservation<IwaKeyDistributionInfoProvider,
-                          IwaKeyDistributionInfoProvider::Observer>
-      key_distribution_info_observation_{this};
+  base::CallbackListSubscription runtime_data_changed_subscription_;
 
   base::WeakPtrFactory<IsolatedWebAppPolicyManager> weak_ptr_factory_{this};
 };

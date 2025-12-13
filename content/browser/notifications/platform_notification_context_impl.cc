@@ -270,6 +270,11 @@ void PlatformNotificationContextImpl::Shutdown() {
 
   service_proxy_.reset();
 
+  // Notify all services that the context is shutting down before destroying
+  // them.
+  for (auto& service : services_) {
+    service->OnContextShutdown();
+  }
   services_.clear();
 
   // |service_worker_context_| may be NULL in tests.

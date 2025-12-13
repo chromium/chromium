@@ -32,9 +32,6 @@ extern const char kHistogramPrerenderNumInteractions[];
 extern const char
     kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration[];
 extern const char
-    kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDurationIncognito
-        [];
-extern const char
     kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration[];
 
 }  // namespace internal
@@ -53,7 +50,7 @@ enum Error;
 class PrerenderPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  explicit PrerenderPageLoadMetricsObserver(bool is_incognito);
+  PrerenderPageLoadMetricsObserver();
   ~PrerenderPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
@@ -120,9 +117,6 @@ class PrerenderPageLoadMetricsObserver
   // The suffix of a prerender embedder. This value is valid only when
   // PreloadingTriggerType is kEmbedder. Otherwise, it's an empty string.
   std::string embedder_histogram_suffix_;
-
-  // Whether the WebContents being observed is for an Incognito profile.
-  bool is_incognito_;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRERENDER_PAGE_LOAD_METRICS_OBSERVER_H_

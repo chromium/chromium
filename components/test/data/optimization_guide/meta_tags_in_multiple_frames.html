@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <title>meta tags test</title>
+    <meta name="author" content="George" />
+  </head>
+  <body>
+    <!-- This only works if the CrossSiteRedirector is running on the embedded
+     test server, and the host_resolver is set up to handle {b|c}.com. -->
+    <iframe src="/cross-site/a.com/meta_tags.html" id="local_frame0"></iframe>
+    <iframe src="/cross-site/b.com/meta_tags.html" id="remote_frame1"></iframe>
+    <iframe src="/cross-site/c.com/meta_tags.html" id="remote_frame2"></iframe>
+    <iframe src="/cross-site/c.com/meta_tags.html" id="remote_frame3"></iframe>
+  </body>
+</html>

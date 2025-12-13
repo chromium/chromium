@@ -11,6 +11,7 @@
 
 #include "google/protobuf/compiler/java/full/message_field.h"
 
+#include <optional>
 #include <string>
 
 #include "absl/log/absl_check.h"
@@ -43,8 +44,6 @@ void SetMessageVariables(
 
   (*variables)["type"] =
       name_resolver->GetImmutableClassName(descriptor->message_type());
-  (*variables)["mutable_type"] =
-      name_resolver->GetMutableClassName(descriptor->message_type());
   (*variables)["group_or_message"] =
       (GetType(descriptor) == FieldDescriptor::TYPE_GROUP) ? "Group"
                                                            : "Message";
@@ -99,7 +98,7 @@ ImmutableMessageFieldGenerator::ImmutableMessageFieldGenerator(
                       name_resolver_, &variables_, context);
 }
 
-ImmutableMessageFieldGenerator::~ImmutableMessageFieldGenerator() {}
+ImmutableMessageFieldGenerator::~ImmutableMessageFieldGenerator() = default;
 
 int ImmutableMessageFieldGenerator::GetMessageBitIndex() const {
   return message_bit_index_;
@@ -187,7 +186,7 @@ void ImmutableMessageFieldGenerator::PrintNestedBuilderFunction(
     io::Printer* printer, const char* method_prototype,
     const char* regular_case, const char* nested_builder_case,
     const char* trailing_code,
-    absl::optional<io::AnnotationCollector::Semantic> semantic) const {
+    std::optional<io::AnnotationCollector::Semantic> semantic) const {
   printer->Print(variables_, method_prototype);
   printer->Annotate("{", "}", descriptor_, semantic);
   printer->Print(" {\n");
@@ -459,7 +458,8 @@ ImmutableMessageOneofFieldGenerator::ImmutableMessageOneofFieldGenerator(
   SetCommonOneofVariables(descriptor, info, &variables_);
 }
 
-ImmutableMessageOneofFieldGenerator::~ImmutableMessageOneofFieldGenerator() {}
+ImmutableMessageOneofFieldGenerator::~ImmutableMessageOneofFieldGenerator() =
+    default;
 
 void ImmutableMessageOneofFieldGenerator::GenerateMembers(
     io::Printer* printer) const {
@@ -743,7 +743,7 @@ RepeatedImmutableMessageFieldGenerator::RepeatedImmutableMessageFieldGenerator(
                                      builderBitIndex, context) {}
 
 RepeatedImmutableMessageFieldGenerator::
-    ~RepeatedImmutableMessageFieldGenerator() {}
+    ~RepeatedImmutableMessageFieldGenerator() = default;
 
 int RepeatedImmutableMessageFieldGenerator::GetNumBitsForMessage() const {
   return 0;
@@ -856,7 +856,7 @@ void RepeatedImmutableMessageFieldGenerator::PrintNestedBuilderFunction(
     io::Printer* printer, const char* method_prototype,
     const char* regular_case, const char* nested_builder_case,
     const char* trailing_code,
-    absl::optional<io::AnnotationCollector::Semantic> semantic) const {
+    std::optional<io::AnnotationCollector::Semantic> semantic) const {
   printer->Print(variables_, method_prototype);
   printer->Annotate("{", "}", descriptor_, semantic);
   printer->Print(" {\n");

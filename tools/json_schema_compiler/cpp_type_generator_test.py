@@ -90,8 +90,10 @@ class CppTypeGeneratorTest(unittest.TestCase):
                    environment=CppNamespaceEnvironment('%(namespace)s'))
     manager = CppTypeGenerator(m, _FakeSchemaLoader(m))
 
-    self.assertEqual('', manager.GenerateIncludes().Render())
-    self.assertEqual('#include "path/to/tabs.h"',
+    self.assertEqual('#include <string_view>',
+                     manager.GenerateIncludes().Render())
+    self.assertEqual('#include <string_view>\n'
+                     '#include "path/to/tabs.h"',
                      manager.GenerateIncludes(include_soft=True).Render())
     self.assertEqual(
         'namespace tabs {\n'
@@ -125,7 +127,8 @@ class CppTypeGeneratorTest(unittest.TestCase):
     self.assertEqual('', manager.GenerateForwardDeclarations().Render())
     manager = CppTypeGenerator(self.models.get('content_settings'),
                                _FakeSchemaLoader(m))
-    self.assertEqual('', manager.GenerateIncludes().Render())
+    self.assertEqual('#include <string_view>',
+                     manager.GenerateIncludes().Render())
 
   def testGenerateIncludesAndForwardDeclarationsDependencies(self):
     m = model.Model()
@@ -150,7 +153,7 @@ class CppTypeGeneratorTest(unittest.TestCase):
         'int',
         manager.GetCppType(self.tabs.types['Tab'].properties['id'].type_))
     self.assertEqual(
-        'std::string',
+        'TabStatus',
         manager.GetCppType(self.tabs.types['Tab'].properties['status'].type_))
     self.assertEqual(
         'bool',

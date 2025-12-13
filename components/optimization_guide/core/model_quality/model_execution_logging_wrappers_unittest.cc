@@ -9,11 +9,11 @@
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/types/expected.h"
-#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
@@ -29,12 +29,12 @@ using ::testing::An;
 
 class ModelExecutionLoggingWrappersTest : public testing::Test {
  public:
-  optimization_guide::MockOptimizationGuideModelExecutor* model_executor() {
+  optimization_guide::MockRemoteModelExecutor* model_executor() {
     return &model_executor_;
   }
 
  private:
-  testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
+  testing::NiceMock<optimization_guide::MockRemoteModelExecutor>
       model_executor_;
 };
 
@@ -46,19 +46,17 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging) {
   EXPECT_CALL(*model_executor(),
               ExecuteModel(ModelBasedCapabilityKey::kTabOrganization, _, _,
                            An<OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(testing::Invoke(
-          [&response, &model_execution_info](
-              ModelBasedCapabilityKey feature,
-              const google::protobuf::MessageLite& request_metadata,
-              const std::optional<base::TimeDelta>& execution_timeout,
-              OptimizationGuideModelExecutionResultCallback callback) {
-            std::move(callback).Run(
-                OptimizationGuideModelExecutionResult(
-                    AnyWrapProto(response),
-                    std::make_unique<proto::ModelExecutionInfo>(
-                        model_execution_info)),
-                /*log_entry=*/nullptr);
-          }));
+      .WillOnce([&response, &model_execution_info](
+                    ModelBasedCapabilityKey feature,
+                    const google::protobuf::MessageLite& request_metadata,
+                    const ModelExecutionOptions& options,
+                    OptimizationGuideModelExecutionResultCallback callback) {
+        std::move(callback).Run(OptimizationGuideModelExecutionResult(
+                                    AnyWrapProto(response),
+                                    std::make_unique<proto::ModelExecutionInfo>(
+                                        model_execution_info)),
+                                /*log_entry=*/nullptr);
+      });
   proto::TabOrganizationRequest request;
   auto* tabs = request.mutable_tabs();
   auto* tab = tabs->Add();
@@ -86,23 +84,21 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
   EXPECT_CALL(*model_executor(),
               ExecuteModel(ModelBasedCapabilityKey::kTabOrganization, _, _,
                            An<OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(testing::Invoke(
-          [](ModelBasedCapabilityKey feature,
-             const google::protobuf::MessageLite& request_metadata,
-             const std::optional<base::TimeDelta>& execution_timeout,
-             OptimizationGuideModelExecutionResultCallback callback) {
-            std::move(callback).Run(
-                OptimizationGuideModelExecutionResult(
-                    base::unexpected(
-                        OptimizationGuideModelExecutionError::
-                            FromModelExecutionError(
-                                OptimizationGuideModelExecutionError::
-                                    ModelExecutionError::kDisabled)),
-                    // Errors that don't end up making a request to the model
-                    // won't have a ModelExecutionInfo.
-                    nullptr),
-                /*log_entry=*/nullptr);
-          }));
+      .WillOnce([](ModelBasedCapabilityKey feature,
+                   const google::protobuf::MessageLite& request_metadata,
+                   const ModelExecutionOptions& options,
+                   OptimizationGuideModelExecutionResultCallback callback) {
+        std::move(callback).Run(
+            OptimizationGuideModelExecutionResult(
+                base::unexpected(OptimizationGuideModelExecutionError::
+                                     FromModelExecutionError(
+                                         OptimizationGuideModelExecutionError::
+                                             ModelExecutionError::kDisabled)),
+                // Errors that don't end up making a request to the model
+                // won't have a ModelExecutionInfo.
+                nullptr),
+            /*log_entry=*/nullptr);
+      });
   proto::TabOrganizationRequest request;
   auto* tabs = request.mutable_tabs();
   auto* tab = tabs->Add();
@@ -124,121 +120,6 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
   ExecuteModelWithLogging(model_executor(),
                           ModelBasedCapabilityKey::kTabOrganization, request,
                           std::nullopt, std::move(callback));
-}
-
-TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelSessionWithLogging) {
-  testing::NiceMock<MockSession> session;
-
-  proto::ComposeResponse response;
-  response.set_output("foo");
-  proto::ModelExecutionInfo model_execution_info;
-  model_execution_info.set_execution_id("id");
-  EXPECT_CALL(
-      session,
-      ExecuteModel(
-          _, An<OptimizationGuideModelExecutionResultStreamingCallback>()))
-      .WillOnce(testing::Invoke(
-          [&response, &model_execution_info](
-              const google::protobuf::MessageLite& request_metadata,
-              OptimizationGuideModelExecutionResultStreamingCallback callback) {
-            std::move(callback).Run(
-                OptimizationGuideModelStreamingExecutionResult(
-                    StreamingResponse{.response = AnyWrapProto(response),
-                                      .is_complete = true},
-                    /*provided_by_on_device=*/true,
-                    std::make_unique<proto::ModelExecutionInfo>(
-                        model_execution_info)));
-          }));
-  proto::ComposeRequest request;
-  request.mutable_page_metadata()->set_page_url("url");
-  ModelExecutionSessionCallbackWithLogging<proto::ComposeLoggingData> callback =
-      base::BindLambdaForTesting(
-          [&request, &response, &model_execution_info](
-              OptimizationGuideModelStreamingExecutionResult result,
-              std::unique_ptr<proto::ComposeLoggingData>
-                  model_execution_proto) {
-            ASSERT_TRUE(model_execution_proto);
-            EXPECT_THAT(model_execution_proto->request(), EqualsProto(request));
-            EXPECT_THAT(model_execution_proto->response(),
-                        EqualsProto(response));
-            EXPECT_THAT(model_execution_proto->model_execution_info(),
-                        EqualsProto(model_execution_info));
-          });
-  ExecuteModelSessionWithLogging(&session, request, std::move(callback));
-}
-
-TEST_F(ModelExecutionLoggingWrappersTest,
-       ExecuteModelSessionWithLogging_Error) {
-  testing::NiceMock<MockSession> session;
-
-  EXPECT_CALL(
-      session,
-      ExecuteModel(
-          _, An<OptimizationGuideModelExecutionResultStreamingCallback>()))
-      .WillOnce(testing::Invoke(
-          [](const google::protobuf::MessageLite& request_metadata,
-             OptimizationGuideModelExecutionResultStreamingCallback callback) {
-            std::move(callback).Run(
-                OptimizationGuideModelStreamingExecutionResult(
-                    base::unexpected(
-                        OptimizationGuideModelExecutionError::
-                            FromModelExecutionError(
-                                OptimizationGuideModelExecutionError::
-                                    ModelExecutionError::kDisabled)),
-                    /*provided_by_on_device=*/true,
-                    // Errors that don't end up making a request to the model
-                    // won't have a ModelExecutionInfo.
-                    nullptr));
-          }));
-  proto::ComposeRequest request;
-  request.mutable_page_metadata()->set_page_url("url");
-  ModelExecutionSessionCallbackWithLogging<proto::ComposeLoggingData> callback =
-      base::BindLambdaForTesting(
-          [&request](OptimizationGuideModelStreamingExecutionResult result,
-                     std::unique_ptr<proto::ComposeLoggingData>
-                         model_execution_proto) {
-            ASSERT_TRUE(model_execution_proto);
-            EXPECT_THAT(model_execution_proto->request(), EqualsProto(request));
-            EXPECT_EQ(
-                model_execution_proto->model_execution_info()
-                    .model_execution_error_enum(),
-                static_cast<uint32_t>(OptimizationGuideModelExecutionError::
-                                          ModelExecutionError::kDisabled));
-          });
-  ExecuteModelSessionWithLogging(&session, request, std::move(callback));
-}
-
-TEST_F(ModelExecutionLoggingWrappersTest,
-       ExecuteModelSessionWithLogging_IncompleteResponse) {
-  testing::NiceMock<MockSession> session;
-
-  proto::ComposeResponse response;
-  response.set_output("foo");
-  EXPECT_CALL(
-      session,
-      ExecuteModel(
-          _, An<OptimizationGuideModelExecutionResultStreamingCallback>()))
-      .WillOnce(testing::Invoke(
-          [&response](
-              const google::protobuf::MessageLite& request_metadata,
-              OptimizationGuideModelExecutionResultStreamingCallback callback) {
-            std::move(callback).Run(
-                OptimizationGuideModelStreamingExecutionResult(
-                    StreamingResponse{.response = AnyWrapProto(response),
-                                      .is_complete = false},
-                    /*provided_by_on_device=*/true,
-                    // execution_info is not set for incomplete responses.
-                    /*execution_info=*/nullptr));
-          }));
-  proto::ComposeRequest request;
-  request.mutable_page_metadata()->set_page_url("url");
-  ModelExecutionSessionCallbackWithLogging callback =
-      base::BindLambdaForTesting(
-          [](OptimizationGuideModelStreamingExecutionResult result,
-             std::unique_ptr<proto::ComposeLoggingData> model_execution_proto) {
-            ASSERT_FALSE(model_execution_proto);
-          });
-  ExecuteModelSessionWithLogging(&session, request, std::move(callback));
 }
 
 }  // namespace

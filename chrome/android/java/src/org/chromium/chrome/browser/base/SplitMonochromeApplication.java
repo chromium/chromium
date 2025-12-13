@@ -8,7 +8,6 @@ import android.content.Context;
 
 import org.chromium.android_webview.nonembedded.WebViewApkApplication;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 
@@ -28,19 +27,11 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
             if (getApplication().isWebViewProcess()) {
                 WebViewApkApplication.checkForAppRecovery();
             }
-            if (!VersionInfo.isStableBuild() && getApplication().isWebViewProcess()) {
-                WebViewApkApplication.postDeveloperUiLauncherIconTask();
-            }
         }
     }
 
     public SplitMonochromeApplication() {
         super(sImplClassName);
-        // Ensure that we don't try to load the native library until after attachBaseContext, since
-        // Monochrome attempts to call loadWebViewNativeLibraryFromPackage, which will fail until
-        // ActivityThread has an application set on it, which happens after attachBaseContext
-        // finishes. See crbug.com/390730928.
-        mPreloadLibraryAttachBaseContext = false;
     }
 
     @Override

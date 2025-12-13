@@ -15,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 
 namespace enterprise_connectors {
 
@@ -52,7 +51,7 @@ class DeviceAttesterTest : public testing::Test {
 
   void SetupPubkeyExport(bool can_export_pubkey = true) {
     EXPECT_CALL(mock_key_manager_, ExportPublicKeyAsync(_))
-        .WillOnce(Invoke(
+        .WillOnce(
             [&, can_export_pubkey](
                 base::OnceCallback<void(std::optional<std::string>)> callback) {
               if (can_export_pubkey) {
@@ -65,15 +64,16 @@ class DeviceAttesterTest : public testing::Test {
               } else {
                 std::move(callback).Run(std::nullopt);
               }
-            }));
+            });
   }
 
   void SetupSignature(bool can_sign = true) {
     EXPECT_CALL(mock_key_manager_, SignStringAsync(_, _))
-        .WillOnce(Invoke(
-            [&, can_sign](const std::string& str,
-                          base::OnceCallback<void(
-                              std::optional<std::vector<uint8_t>>)> callback) {
+        .WillOnce(
+            [&, can_sign](
+                const std::string& str,
+                base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
+                    callback) {
               if (can_sign) {
                 signature =
                     test_key_pair_->key()->SignSlowly(base::as_byte_span(str));
@@ -81,7 +81,7 @@ class DeviceAttesterTest : public testing::Test {
               } else {
                 std::move(callback).Run(std::nullopt);
               }
-            }));
+            });
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;

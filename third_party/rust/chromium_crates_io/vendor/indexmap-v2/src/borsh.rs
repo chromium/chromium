@@ -3,7 +3,6 @@
 use alloc::vec::Vec;
 use core::hash::BuildHasher;
 use core::hash::Hash;
-use core::mem::size_of;
 
 use borsh::error::ERROR_ZST_FORBIDDEN;
 use borsh::io::{Error, ErrorKind, Read, Result, Write};

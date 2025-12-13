@@ -2,22 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/web_view/internal/utils/nsobject_description_utils.h"
 
 #import <objc/runtime.h>
 
+#import "base/containers/heap_array.h"
+#import "base/memory/free_deleter.h"
+
+namespace {
+
+// Wraps a call to class_copyPropertyList(...) and returns the list of
+// properties as an base::HeapArray<objc_property_t, ...>.
+base::HeapArray<objc_property_t, base::FreeDeleter> GetProperties(Class cls) {
+  unsigned int count = 0;
+  objc_property_t* properties = class_copyPropertyList(cls, &count);
+
+  // SAFETY: class_copyPropertyList(...) sets `count` to the number of
+  // elements in the returned array.
+  return UNSAFE_BUFFERS(
+      base::HeapArray<objc_property_t, base::FreeDeleter>::FromOwningPointer(
+          properties, count));
+}
+
+}  // namespace
+
 NSString* CWVPropertiesDescription(id object) {
   NSMutableArray* properties = [NSMutableArray array];
-  unsigned int outCount;
-  objc_property_t* propertyList =
-      class_copyPropertyList([object class], &outCount);
-  for (unsigned int i = 0; i < outCount; i++) {
-    objc_property_t property = propertyList[i];
+  for (const objc_property_t& property : GetProperties([object class])) {
     NSString* propertyName =
         [[NSString alloc] initWithCString:property_getName(property)
                                  encoding:NSUTF8StringEncoding];
@@ -26,6 +37,5 @@ NSString* CWVPropertiesDescription(id object) {
         [NSString stringWithFormat:@"%@: %@", propertyName, propertyValue];
     [properties addObject:propertyDescription];
   }
-  free(propertyList);
   return [properties componentsJoinedByString:@"\n"];
 }

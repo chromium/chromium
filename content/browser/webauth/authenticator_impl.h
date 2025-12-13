@@ -36,6 +36,11 @@ class CONTENT_EXPORT AuthenticatorImpl
   AuthenticatorImpl(const AuthenticatorImpl&) = delete;
   AuthenticatorImpl& operator=(const AuthenticatorImpl&) = delete;
 
+  static blink::mojom::GetCredentialResponsePtr MakeGetAssertionResponse(
+      blink::mojom::AuthenticatorStatus status,
+      blink::mojom::GetAssertionAuthenticatorResponsePtr assertion,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details);
+
  private:
   friend class AuthenticatorImplTest;
   friend class AuthenticatorImplRequestDelegateTest;
@@ -50,7 +55,7 @@ class CONTENT_EXPORT AuthenticatorImpl
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       MakeCredentialCallback callback) override;
-  void GetCredential(blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+  void GetCredential(blink::mojom::GetCredentialOptionsPtr options,
                      GetCredentialCallback callback) override;
   void GetClientCapabilities(GetClientCapabilitiesCallback callback) override;
   void Report(blink::mojom::PublicKeyCredentialReportOptionsPtr options,

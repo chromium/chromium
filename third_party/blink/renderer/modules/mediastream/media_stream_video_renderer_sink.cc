@@ -161,7 +161,7 @@ void MediaStreamVideoRendererSink::Start() {
   PostCrossThreadTask(
       *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&FrameDeliverer::Start,
-                          WTF::CrossThreadUnretained(frame_deliverer_.get())));
+                          CrossThreadUnretained(frame_deliverer_.get())));
 
   MediaStreamVideoSink::ConnectToTrack(
       WebMediaStreamTrack(video_component_.Get()),
@@ -170,7 +170,7 @@ void MediaStreamVideoRendererSink::Start() {
       // video task runner after sink is disconnected from track.
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &FrameDeliverer::OnVideoFrame,
-          WTF::CrossThreadUnretained(frame_deliverer_.get()))),
+          CrossThreadUnretained(frame_deliverer_.get()))),
       // Local display video rendering is considered a secure link.
       MediaStreamVideoSink::IsSecure::kYes,
       MediaStreamVideoSink::UsesAlpha::kDependsOnOtherSinks);
@@ -201,7 +201,7 @@ void MediaStreamVideoRendererSink::Resume() {
   PostCrossThreadTask(
       *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&FrameDeliverer::Resume,
-                          WTF::CrossThreadUnretained(frame_deliverer_.get())));
+                          CrossThreadUnretained(frame_deliverer_.get())));
 }
 
 void MediaStreamVideoRendererSink::Pause() {
@@ -212,17 +212,17 @@ void MediaStreamVideoRendererSink::Pause() {
   PostCrossThreadTask(
       *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&FrameDeliverer::Pause,
-                          WTF::CrossThreadUnretained(frame_deliverer_.get())));
+                          CrossThreadUnretained(frame_deliverer_.get())));
 }
 
 void MediaStreamVideoRendererSink::OnReadyStateChanged(
     WebMediaStreamSource::ReadyState state) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   if (state == WebMediaStreamSource::kReadyStateEnded && frame_deliverer_) {
-    PostCrossThreadTask(*video_task_runner_, FROM_HERE,
-                        CrossThreadBindOnce(&FrameDeliverer::RenderEndOfStream,
-                                            WTF::CrossThreadUnretained(
-                                                frame_deliverer_.get())));
+    PostCrossThreadTask(
+        *video_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&FrameDeliverer::RenderEndOfStream,
+                            CrossThreadUnretained(frame_deliverer_.get())));
   }
 }
 

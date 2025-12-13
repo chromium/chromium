@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Design Version Information</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+        const components = ["md-filled-button"];
+
+        loadAndWaitForReady(components, () => {
+            Promise.all([
+                fetch("/@material/web/package.json").then(r => r.json()),
+                fetch("/lit/package.json").then(r => r.json())
+            ]).then(([materialWebPkg, litPkg]) => {
+                const materialDesignVersion = materialWebPkg.keywords?.includes("material design")
+                    ? `Material Design Components v${materialWebPkg.version}`
+                    : materialWebPkg.description || "Unknown Material Design version";
+
+                const versionInfo = {
+                    materialWeb: materialWebPkg.version,
+                    materialDesign: materialDesignVersion,
+                    lit: litPkg.version,
+                    source: "third_party/material_web_components"
+                };
+
+                const versionDisplay = document.getElementById("version-display");
+                versionDisplay.innerHTML = `
+                    <div>Material Web Components Library: ${versionInfo.materialWeb}</div>
+                    <div>Material Design Info: ${versionInfo.materialDesign}</div>
+                    <div>Lit Framework: ${versionInfo.lit}</div>
+                    <div>Source: ${versionInfo.source}</div>
+                `;
+
+                const button = document.createElement("md-filled-button");
+                button.textContent = "Test Button";
+                document.body.appendChild(button);
+
+                document.getElementById("status").setAttribute("aria-label", "Ready");
+            }).catch(error => {
+                const versionDisplay = document.getElementById("version-display");
+                versionDisplay.innerHTML = `
+                    <div>Material Web Components Library: Error - ${error.message}</div>
+                    <div>Material Design Info: Error - Cannot fetch package info</div>
+                    <div>Lit Framework: Error - ${error.message}</div>
+                    <div>Source: third_party/material_web_components</div>
+                    <div>Fetch Error: ${error.message}</div>
+                `;
+
+                document.getElementById("status").setAttribute("aria-label", "Ready");
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Material Design Version Information</h1>
+    <div id="version-display" aria-label="Version information"></div>
+    <div id="status" aria-label="Loading"></div>
+</body>
+</html>

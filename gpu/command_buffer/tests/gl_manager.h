@@ -11,14 +11,14 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/client/gpu_control.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/service/feature_info.h"
+#include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
-#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
+#include "gpu/command_buffer/service/shader_translator_cache.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -35,7 +35,6 @@ class GLSurface;
 namespace gpu {
 
 class CommandBufferDirect;
-class GpuMemoryBufferFactory;
 class TransferBuffer;
 
 namespace gles2 {
@@ -109,13 +108,6 @@ class GLManager : private GpuControl {
 
   gl::GLContext* context() { return context_.get(); }
 
-  ServiceDiscardableManager* discardable_manager() {
-    return discardable_manager_.get();
-  }
-  PassthroughDiscardableManager* passthrough_discardable_manager() {
-    return passthrough_discardable_manager_.get();
-  }
-
   const GpuDriverBugWorkarounds& workarounds() const;
   const gpu::GpuPreferences& gpu_preferences() const {
     return gpu_preferences_;
@@ -158,9 +150,6 @@ class GLManager : private GpuControl {
   gpu::GpuPreferences gpu_preferences_;
 
   gles2::TraceOutputter outputter_;
-  std::unique_ptr<ServiceDiscardableManager> discardable_manager_;
-  std::unique_ptr<PassthroughDiscardableManager>
-      passthrough_discardable_manager_;
   std::unique_ptr<gles2::ShaderTranslatorCache> translator_cache_;
   gles2::FramebufferCompletenessCache completeness_cache_;
   scoped_refptr<gl::GLShareGroup> share_group_;
@@ -170,7 +159,6 @@ class GLManager : private GpuControl {
   std::unique_ptr<gles2::GLES2CmdHelper> gles2_helper_;
   std::unique_ptr<TransferBuffer> transfer_buffer_;
   std::unique_ptr<gles2::GLES2Implementation> gles2_implementation_;
-  std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
   SharedImageManager shared_image_manager_;
 
   bool use_iosurface_memory_buffers_ = false;

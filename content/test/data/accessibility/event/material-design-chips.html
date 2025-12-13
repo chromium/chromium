@@ -1,0 +1,78 @@
+<!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@AURALINUX-DENY:PARENT-CHANGED*
+@UIA-WIN-DENY:*StructureChanged*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@WIN-DENY:EVENT_OBJECT_SHOW*
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Material Web Filter Chips Events</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-filter-chip",
+            "md-chip-set"
+        ];
+
+        setupEventTestRunner();
+        window.waitForStable = waitForStable;
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+
+            const chipSet = document.createElement("md-chip-set");
+
+            const chip1 = document.createElement("md-filter-chip");
+            chip1.id = "test-chip-1";
+            chip1.label = "Chip 1";
+
+            const chip2 = document.createElement("md-filter-chip");
+            chip2.id = "test-chip-2";
+            chip2.label = "Chip 2";
+
+            chipSet.appendChild(chip1);
+            chipSet.appendChild(chip2);
+            statusDiv.appendChild(chipSet);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    window.go_passes = [
+        async () => {
+            const chip = document.getElementById("test-chip-1");
+            if (chip) {
+                chip.selected = true;
+                await waitForStable(chip);
+            }
+        },
+
+        async () => {
+            const chip = document.getElementById("test-chip-2");
+            if (chip) {
+                chip.selected = true;
+                await waitForStable(chip);
+            }
+        },
+
+        async () => {
+            const chip = document.getElementById("test-chip-1");
+            if (chip) {
+                chip.selected = false;
+                await waitForStable(chip);
+            }
+        }
+    ];
+</script>
+</html>

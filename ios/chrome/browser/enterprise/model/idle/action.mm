@@ -22,6 +22,7 @@
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/enterprise/idle/metrics.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer.h"
@@ -31,8 +32,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 
 namespace enterprise_idle {
@@ -65,10 +65,9 @@ class SignOutAction : public Action {
 
   // Action:
   void Run(ProfileIOS* profile, Continuation continuation) override {
-    AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForProfile(profile);
-    if (authentication_service->HasPrimaryIdentity(
-            signin::ConsentLevel::kSignin)) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       signout_start_time_ = base::TimeTicks::Now();
       signin::MultiProfileSignOutForProfile(
           profile,
@@ -201,8 +200,9 @@ class ClearBrowsingDataAction : public Action,
 
     for (Browser* browser :
          browser_list_->BrowsersOfType(BrowserList::BrowserType::kAll)) {
-      WebUsageEnablerBrowserAgent::FromBrowser(browser)->SetWebUsageEnabled(
-          enabled);
+      if (auto* agent = WebUsageEnablerBrowserAgent::FromBrowser(browser)) {
+        agent->SetWebUsageEnabled(enabled);
+      }
     }
   }
 

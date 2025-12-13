@@ -51,7 +51,8 @@
         <div id="optimizedChargingLabel">
           $i18n{powerOptimizedChargingLabel}
         </div>
-        <div id="optimizedChargingSublabel" class="cr-secondary-text sub-label">
+        <div id="optimizedChargingSublabel" class="cr-secondary-text sub-label"
+            hidden$="[[adaptiveChargingManaged_]]">
           <span class="sub-label-text">[[optimizedChargingSublabel_]]</span>
         </div>
       </div>
@@ -63,6 +64,7 @@
       </cr-policy-pref-indicator>
     </template>
     <cr-button id="optimizedChargingChangeButton"
+        aria-label="$i18n{powerOptimizedChargingChangeAriaLabel}"
         on-click="makeOptimizedChargingDialogVisible_"
         disabled="[[adaptiveChargingManaged_]]"
         deep-link-focus-id$="[[Setting.kAdaptiveCharging]]
@@ -71,6 +73,8 @@
     </cr-button>
     <div class="separator"></div>
     <settings-toggle-v2 id="optimizedChargingToggle"
+        aria-labelledby="optimizedChargingSublabel"
+        checked="[[optimizedChargingEnabled_]]"
         on-change="onOptimizedChargingToggleChange_"
         disabled="[[adaptiveChargingManaged_]]"
         deep-link-focus-id$="[[Setting.kOptimizedCharging]]">

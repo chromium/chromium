@@ -311,6 +311,57 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NoVarySearchUseResult)
 
+  // Reason why we ended up with status ENTRY_OTHER.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(OtherStatusReason)
+  enum class OtherStatusReason : uint8_t {
+    kNoReason = 0,             // Status was not set to ENTRY_OTHER.
+    kReadingAuthResponse = 1,  // Stopped caching to read auth response body.
+    kNetworkError = 2,         // A network error happened.
+    kResponseValidation = 3,   // Response validation failed.
+    kDeleteFullEntry = 4,      // Need to delete a full entry.
+    kPartialRequest = 5,       // Partial requests are hard to log.
+    kRangeHeaderFound = 6,     // Request had Range header.
+    kTruncatedEntry = 7,       // Cache entry was truncated.
+    kPartialValidation = 8,    // Validating a partial entry.
+    kPreConditionalized = 9,   // Externally conditionalized request.
+    kValidatePartial = 10,     // Validating partial response failed.
+    kIgnoreRangeRequest = 11,  // Very miscellaneous range failure.
+    kBlockedByIpSpace = 12,    // Blocked by Private Network Access.
+    kMaxValue = kBlockedByIpSpace,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpCacheNotCoveredReason)
+
+  // The status of the entry that we are considering to doom.
+  //
+  // LINT.IfChange(HttpCacheEntryRejectionStatus)
+  enum class HttpCacheEntryRejectionStatus {
+    // The cache entry was rejected.
+    kRejection = 0,
+    // The cache entry was not rejected because it is usable.
+    kNoRejectionUsable = 1,
+    // The cache entry was not rejected because the request is for a partial
+    // cache entry.
+    kNoRejectionPartial = 2,
+    // The cache entry was not rejected because the transaction is not in
+    // read-write mode.
+    kNoRejectionNonReadWriteMode = 3,
+    // The cache entry was not rejected because cache validation was skipped.
+    kNoRejectionSkipCacheValidation = 4,
+    // The cache entry was not rejected because the request was loaded only from
+    // cache.
+    kNoRejectionLoadOnlyFromCache = 5,
+    // The cache entry should be rejected, but handled as not rejected because
+    // kHttpCacheSkipUnusableEntry feature is disabled. This is intended to
+    // measure the performance impact of the in-memory unusable flag.
+    kNoRejectionHintDisabled = 6,
+    kMaxValue = kNoRejectionHintDisabled,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpCacheEntryRejectionStatus)
+
   // Runs the state transition loop. Resets and calls |callback_| on exit,
   // unless the return value is ERR_IO_PENDING.
   int DoLoop(int result);
@@ -433,6 +484,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // entry and not attempt to create.
   bool ShouldOpenOnlyMethods() const;
 
+  HttpCacheEntryRejectionStatus GetHttpCacheEntryRejectionStatus(
+      uint8_t in_memory_info);
+
   // Returns true if the resource info MemoryEntryDataHints bit flags in
   // |in_memory_info| and the current request & load flags suggest that
   // the cache entry in question is not actually usable for HTTP
@@ -546,6 +600,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   void UpdateCacheEntryStatus(
       HttpResponseInfo::CacheEntryStatus new_cache_entry_status);
 
+  void UpdateCacheEntryStatusToOther(OtherStatusReason reason);
+
   // Sets the response.cache_entry_status to the current cache_entry_status_.
   void SyncCacheEntryStatusToResponse();
 
@@ -653,7 +709,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   std::string method_;
   RequestPriority priority_;
   NetLogWithSource net_log_;
-  HttpRequestHeaders request_headers_copy_;
   // If extra_headers specified a "if-modified-since" or "if-none-match",
   // `external_validation_` contains the value of those headers.
   std::optional<http_cache_util::ValidationHeaders> external_validation_;
@@ -759,6 +814,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // The result of applying the No-Vary-Search to the request. For UMA.
   NoVarySearchUseResult no_vary_search_use_result_ =
       NoVarySearchUseResult::kNotApplied;
+
+  // The first reason why `cache_entry_status_` ended up set to ENTRY_OTHER.
+  // Logged to UMA on destruction when `cache_entry_status_` is ENTRY_OTHER.
+  OtherStatusReason other_status_reason_ = OtherStatusReason::kNoReason;
 
   // If an entry in the NoVarySearchCache was found to be unhelpful, this
   // handle can be used to erase it. Only set if an entry was found in the

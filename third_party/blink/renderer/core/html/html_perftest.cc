@@ -41,8 +41,8 @@ TEST(HTMLParsePerfTest, Speedometer) {
   std::optional<Vector<char>> serialized =
       test::ReadFromFile(test::CoreTestDataPath(filename));
   CHECK(serialized);
-  std::optional<base::Value> json =
-      base::JSONReader::Read(base::as_string_view(*serialized));
+  std::optional<base::Value> json = base::JSONReader::Read(
+      base::as_string_view(*serialized), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json.has_value()) {
     char msg[256];
     UNSAFE_TODO(snprintf(msg, sizeof(msg),
@@ -63,7 +63,7 @@ TEST(HTMLParsePerfTest, Speedometer) {
     base::ElapsedTimer html_timer;
     for (int i = 0; i < html_parse_iterations; ++i) {
       for (const base::Value& html : json->GetList()) {
-        WTF::String html_wtf(html.GetString());
+        String html_wtf(html.GetString());
         document.body()->SetInnerHTMLWithoutTrustedTypes(html_wtf);
       }
     }

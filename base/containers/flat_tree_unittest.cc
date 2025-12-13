@@ -42,6 +42,7 @@
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 
 namespace base::internal {
 
@@ -1464,6 +1465,21 @@ TYPED_TEST_P(FlatTreeTest, Swap) {
   EXPECT_THAT(y, ElementsAre(4));
 }
 
+TYPED_TEST_P(FlatTreeTest, AbslHash) {
+  using Tree = TypedTree<TypeParam>;
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      // These two are identical.
+      Tree({1, 2, 3, 4}),
+      Tree({1, 2, 3, 4}),
+      // `flat_tree` is ordered, so this is also identical.
+      Tree({4, 3, 2, 1}),
+      // Different content.
+      Tree({1, 2, 3}),
+      Tree({}),
+      Tree({0}),
+  }));
+}
+
 // bool operator==(const flat_tree& lhs, const flat_tree& rhs)
 // bool operator!=(const flat_tree& lhs, const flat_tree& rhs)
 // bool operator<(const flat_tree& lhs, const flat_tree& rhs)
@@ -1576,6 +1592,7 @@ REGISTER_TYPED_TEST_SUITE_P(FlatTreeTest,
                             LowerBound,
                             UpperBound,
                             Swap,
+                            AbslHash,
                             EraseIf,
                             SortedUniqueRangeConstructorDCHECKs,
                             SortedUniqueVectorCopyConstructorDCHECKs,

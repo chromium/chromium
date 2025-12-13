@@ -189,7 +189,7 @@ public class AddToHomescreenAddShortcutTest {
                             getPropertyModelForTesting().get(AddToHomescreenProperties.TYPE));
 
                     // Submit the dialog.
-                    new Handler().post(() -> mDelegate.onAddToHomescreen(mTitle, AppType.SHORTCUT));
+                    new Handler().post(() -> mDelegate.onAddToHomescreen(mTitle));
                 }
             };
         }
@@ -206,7 +206,7 @@ public class AddToHomescreenAddShortcutTest {
         mShortcutHelperDelegate = new TestShortcutHelperDelegate();
         ShortcutHelper.setDelegateForTests(mShortcutHelperDelegate);
         mActivity = mActivityTestRule.getActivity();
-        mTab = mActivity.getActivityTab();
+        mTab = mActivityTestRule.getActivityTab();
     }
 
     @Test
@@ -407,7 +407,14 @@ public class AddToHomescreenAddShortcutTest {
                 });
 
         TabModel tabModel = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-        Assert.assertEquals(0, tabModel.indexOf(mTab));
-        return mActivityTestRule.getActivity().getTabModelSelector().getModel(false).getTabAt(1);
+        int index = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.indexOf(mTab));
+        Assert.assertEquals(0, index);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mActivityTestRule
+                                .getActivity()
+                                .getTabModelSelector()
+                                .getModel(false)
+                                .getTabAt(1));
     }
 }

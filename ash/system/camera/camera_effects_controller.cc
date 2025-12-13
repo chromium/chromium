@@ -507,7 +507,6 @@ void CameraEffectsController::SetBackgroundImageFromContent(
       << "Can't use an image that is larger than 30M as a background";
 
   // Write images to disk;
-  // TODO(b/321122378) remove unnecessary copy of SeaPenImage.
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&WriteImageToBackgroundDir, camera_background_img_dir_,

@@ -26,14 +26,13 @@ namespace views {
 
 namespace {
 
-std::unique_ptr<ClientView> CreateDefaultClientView(WidgetDelegate* delegate,
-                                                    Widget* widget) {
-  return std::make_unique<ClientView>(
-      widget, delegate->TransferOwnershipOfContentsView());
+std::unique_ptr<ClientView> CreateDefaultClientView(
+    Widget* widget,
+    views::View* contents_view) {
+  return std::make_unique<ClientView>(widget, contents_view);
 }
 
-std::unique_ptr<NonClientFrameView> CreateDefaultNonClientFrameView(
-    Widget* widget) {
+std::unique_ptr<FrameView> CreateDefaultFrameView(Widget* widget) {
   return nullptr;
 }
 
@@ -51,10 +50,8 @@ WidgetDelegate::Params::~Params() = default;
 
 WidgetDelegate::WidgetDelegate()
     : widget_initialized_callbacks_(std::make_unique<ClosureVector>()),
-      client_view_factory_(
-          base::BindOnce(&CreateDefaultClientView, base::Unretained(this))),
-      non_client_frame_view_factory_(
-          base::BindRepeating(&CreateDefaultNonClientFrameView)),
+      client_view_factory_(base::BindOnce(&CreateDefaultClientView)),
+      frame_view_factory_(base::BindRepeating(&CreateDefaultFrameView)),
       overlay_view_factory_(base::BindOnce(&CreateDefaultOverlayView)) {}
 
 WidgetDelegate::~WidgetDelegate() {
@@ -266,8 +263,7 @@ bool WidgetDelegate::GetSavedWindowPlacement(
     return false;
   }
   // Try to find a display intersecting the saved bounds.
-  const auto& display =
-      display::Screen::GetScreen()->GetDisplayMatching(*bounds);
+  const auto& display = display::Screen::Get()->GetDisplayMatching(*bounds);
   return display.bounds().Intersects(*bounds);
 }
 
@@ -371,13 +367,14 @@ View* WidgetDelegate::TransferOwnershipOfContentsView() {
 
 ClientView* WidgetDelegate::CreateClientView(Widget* widget) {
   DCHECK(client_view_factory_);
-  return std::move(client_view_factory_).Run(widget).release();
+  return std::move(client_view_factory_)
+      .Run(widget, TransferOwnershipOfContentsView())
+      .release();
 }
 
-std::unique_ptr<NonClientFrameView> WidgetDelegate::CreateNonClientFrameView(
-    Widget* widget) {
-  CHECK(non_client_frame_view_factory_);
-  return non_client_frame_view_factory_.Run(widget);
+std::unique_ptr<FrameView> WidgetDelegate::CreateFrameView(Widget* widget) {
+  CHECK(frame_view_factory_);
+  return frame_view_factory_.Run(widget);
 }
 
 View* WidgetDelegate::CreateOverlayView() {
@@ -550,10 +547,9 @@ void WidgetDelegate::SetClientViewFactory(ClientViewFactory factory) {
   client_view_factory_ = std::move(factory);
 }
 
-void WidgetDelegate::SetNonClientFrameViewFactory(
-    NonClientFrameViewFactory factory) {
+void WidgetDelegate::SetFrameViewFactory(FrameViewFactory factory) {
   DCHECK(!GetWidget());
-  non_client_frame_view_factory_ = std::move(factory);
+  frame_view_factory_ = std::move(factory);
 }
 
 void WidgetDelegate::SetOverlayViewFactory(OverlayViewFactory factory) {

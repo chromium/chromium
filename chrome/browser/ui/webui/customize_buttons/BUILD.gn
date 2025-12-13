@@ -30,7 +30,10 @@ mojom("mojo_bindings") {
   sources = [ "customize_buttons.mojom" ]
   webui_module_path = "/"
 
-  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  public_deps = [
+    "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }
 
 source_set("test_support") {

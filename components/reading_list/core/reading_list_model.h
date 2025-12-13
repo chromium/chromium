@@ -6,11 +6,11 @@
 #define COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -121,11 +121,15 @@ class ReadingListModel : public KeyedService {
   // available only once the observers are notified. Callers may use
   // GetAccountWhereEntryIsSavedTo() to determine whether the result of this
   // operation lead to data being saved to a particular account.
+  // Note: `creation_time` is for advanced cases, like importing data from
+  // another browser. Most callers should specify `nullopt` which maps to the
+  // current time.
   virtual const ReadingListEntry& AddOrReplaceEntry(
       const GURL& url,
       const std::string& title,
       reading_list::EntrySource source,
-      base::TimeDelta estimated_read_time) = 0;
+      std::optional<base::TimeDelta> estimated_read_time,
+      std::optional<base::Time> creation_time) = 0;
 
   // Removes an entry. The removal may be asynchronous, and not happen
   // immediately. |location| is used for logging purposes and investigations.

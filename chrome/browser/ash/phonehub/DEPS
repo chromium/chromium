@@ -15,13 +15,11 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/attestation",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/device_sync",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/multidevice_setup",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/secure_channel",
-  "+chrome/browser/ash/sync",
   "+chrome/browser/download",
   "+chrome/browser/favicon",
   "+chrome/browser/profiles",

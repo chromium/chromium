@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Menu;
@@ -12,12 +14,16 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 
 import java.util.List;
 
 /** The SelectionToolbar for the browsing history UI. */
+@NullMarked
 public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
     private HistoryManager mManager;
     private HistoryManagerMenuDelegate mMenuDelegate;
@@ -50,6 +56,7 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
     /**
      * @param manager The {@link HistoryManager} associated with this toolbar.
      */
+    @Initializer
     public void setManager(HistoryManager manager) {
         mManager = manager;
 
@@ -62,6 +69,7 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
      * @param menuDelegate The {@link HistoryManagerMenuDelegate} that determines the availability
      *     of various menu items.
      */
+    @Initializer
     public void setMenuDelegate(HistoryManagerMenuDelegate menuDelegate) {
         mMenuDelegate = menuDelegate;
         updateMenuItemVisibility();
@@ -95,7 +103,7 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
             }
 
             // The copy link option should only be visible when one item is selected.
-            getItemById(R.id.selection_mode_copy_link).setVisible(numSelected == 1);
+            assumeNonNull(getItemById(R.id.selection_mode_copy_link)).setVisible(numSelected == 1);
 
             if (!wasSelectionEnabled) {
                 mManager.recordSelectionEstablished();
@@ -152,7 +160,7 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
     }
 
     @VisibleForTesting
-    MenuItem getItemById(int menuItemId) {
+    @Nullable MenuItem getItemById(int menuItemId) {
         Menu menu = getMenu();
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);

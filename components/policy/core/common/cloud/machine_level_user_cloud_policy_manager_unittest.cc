@@ -46,22 +46,38 @@ class MachineLevelUserCloudPolicyManagerTest : public ::testing::Test {
   void SetUp() override {
     auto store = std::make_unique<MockMachineLevelUserCloudPolicyStore>();
     store_ = store.get();
+    std::unique_ptr<MockMachineLevelUserCloudPolicyStore>
+        extension_install_store;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    extension_install_store =
+        std::make_unique<MockMachineLevelUserCloudPolicyStore>();
+#endif
+    extension_install_store_ = extension_install_store.get();
     manager_ = std::make_unique<MachineLevelUserCloudPolicyManager>(
-        std::move(store), std::unique_ptr<CloudExternalDataManager>(),
-        base::FilePath(), scoped_refptr<base::SequencedTaskRunner>(),
+        std::move(store), std::move(extension_install_store),
+        std::unique_ptr<CloudExternalDataManager>(), base::FilePath(),
+        scoped_refptr<base::SequencedTaskRunner>(),
         network::TestNetworkConnectionTracker::CreateGetter());
   }
 
   SchemaRegistry schema_registry_;
   raw_ptr<MockMachineLevelUserCloudPolicyStore, DanglingUntriaged> store_ =
       nullptr;
+  raw_ptr<MockMachineLevelUserCloudPolicyStore, DanglingUntriaged>
+      extension_install_store_ = nullptr;
   std::unique_ptr<MachineLevelUserCloudPolicyManager> manager_;
 };
 
 TEST_F(MachineLevelUserCloudPolicyManagerTest, InitManager) {
   EXPECT_CALL(*store_, LoadImmediately());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_CALL(*extension_install_store_, LoadImmediately());
+#endif
   manager_->Init(&schema_registry_);
   ::testing::Mock::VerifyAndClearExpectations(store_);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  ::testing::Mock::VerifyAndClearExpectations(extension_install_store_);
+#endif
 }
 
 }  // namespace policy

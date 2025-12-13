@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -22,6 +21,7 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Helper class for managing the UI flow for bookmarking the active tab and kicking off the backend.
@@ -36,6 +36,7 @@ public class TabBookmarker {
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final BookmarkManagerOpener mBookmarkManagerOpener;
     private final Supplier<PriceDropNotificationManager> mPriceDropNotificationManagerSupplier;
+    private final Supplier<Boolean> mBookmarkBarVisibilitySupplier;
 
     /**
      * Constructor.
@@ -55,13 +56,15 @@ public class TabBookmarker {
             @NonNull Supplier<BottomSheetController> bottomSheetControllerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull BookmarkManagerOpener bookmarkManagerOpener,
-            @NonNull Supplier<PriceDropNotificationManager> priceDropNotificationManagerSupplier) {
+            @NonNull Supplier<PriceDropNotificationManager> priceDropNotificationManagerSupplier,
+            @NonNull Supplier<Boolean> bookmarkBarVisibilitySupplier) {
         mActivity = activity;
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mBookmarkManagerOpener = bookmarkManagerOpener;
         mPriceDropNotificationManagerSupplier = priceDropNotificationManagerSupplier;
+        mBookmarkBarVisibilitySupplier = bookmarkBarVisibilitySupplier;
     }
 
     /**
@@ -172,6 +175,7 @@ public class TabBookmarker {
                 },
                 fromExplicitTrackUi,
                 mBookmarkManagerOpener,
-                mPriceDropNotificationManagerSupplier.get());
+                mPriceDropNotificationManagerSupplier.get(),
+                mBookmarkBarVisibilitySupplier.get());
     }
 }

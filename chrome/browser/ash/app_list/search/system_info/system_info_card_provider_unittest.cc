@@ -860,13 +860,16 @@ TEST_F(SystemInfoCardProviderTest, Storage) {
   // [android files]/Download.
   AddFile("video.ogv", kDownloadsPathBytes, downloads_path);  // ~55.4 KB
 
-  int64_t total_bytes = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
-  int64_t available_bytes = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
+  int64_t total_bytes =
+      base::SysInfo::AmountOfTotalDiskSpace(mount_path).value_or(-1);
+  int64_t available_bytes =
+      base::SysInfo::AmountOfFreeDiskSpace(mount_path).value_or(-1);
   int64_t rounded_total_size = ash::settings::RoundByteSize(total_bytes);
 
   int64_t in_use_bytes = rounded_total_size - available_bytes;
-  std::u16string in_use_size = ui::FormatBytes(in_use_bytes);
-  std::u16string total_size = ui::FormatBytes(rounded_total_size);
+  std::u16string in_use_size = ui::FormatBytes(base::ByteCount(in_use_bytes));
+  std::u16string total_size =
+      ui::FormatBytes(base::ByteCount(rounded_total_size));
   std::u16string result_description = base::StrCat(
       {u"Storage ", in_use_size, u" in use | ", total_size, u" total"});
 

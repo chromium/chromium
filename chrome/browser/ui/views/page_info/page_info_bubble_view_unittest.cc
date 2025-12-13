@@ -59,6 +59,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/test/browser_task_environment.h"
@@ -66,6 +67,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -232,13 +234,6 @@ class PageInfoBubbleViewTestApi {
 
   std::u16string_view GetCookiesSubpageTitle() {
     navigation_handler()->OpenCookiesPage();
-    auto* title_label = bubble_delegate_->GetViewByID(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_SUBPAGE_TITLE);
-    return static_cast<views::Label*>(title_label)->GetText();
-  }
-
-  std::u16string_view GetPrivacyAndSiteDataSubpageTitle() {
-    navigation_handler()->OpenPrivacyAndSiteDataPage();
     auto* title_label = bubble_delegate_->GetViewByID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_SUBPAGE_TITLE);
     return static_cast<views::Label*>(title_label)->GetText();
@@ -454,8 +449,6 @@ class PageInfoBubbleViewTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
-
     // Create after the global features to ensure that there are no
     // dangling pointers during teardown.
     CHECK(!web_contents_helper_);
@@ -1019,7 +1012,6 @@ TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
   PageInfoUI::CookiesInfo cookies;
   cookies.allowed_sites_count = 10;
   cookies.enforcement = CookieControlsEnforcement::kNoEnforcement;
-  cookies.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   // Update the cookies info.
   api_->SetCookieInfo(cookies);
@@ -1254,24 +1246,17 @@ class PageInfoBubbleViewCookiesSubpageTitleTest
     : public PageInfoBubbleViewTest,
       public testing::WithParamInterface<
           testing::tuple<CookieControlsState,
-                         CookieBlocking3pcdStatus,
                          /*is_otr*/ bool>> {
  public:
   PageInfoBubbleViewCookiesSubpageTitleTest() {
-    feature_list_.InitWithFeatures(
-        {content_settings::features::kTrackingProtection3pcd}, {});
-    off_the_record_ = testing::get<2>(GetParam());
+    off_the_record_ = testing::get<1>(GetParam());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(PageInfoBubbleViewCookiesSubpageTitleTest,
        DisplaysCookiesAndSiteDataTitle) {
   PageInfoUI::CookiesInfo cookie_info;
   cookie_info.controls_state = testing::get<0>(GetParam());
-  cookie_info.blocking_status = testing::get<1>(GetParam());
   api_->SetCookieInfo(cookie_info);
   EXPECT_EQ(api_->GetCookiesSubpageTitle(),
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER));
@@ -1282,39 +1267,45 @@ INSTANTIATE_TEST_SUITE_P(
     PageInfoBubbleViewCookiesSubpageTitleTest,
     testing::Combine(testing::Values(CookieControlsState::kAllowed3pc,
                                      CookieControlsState::kBlocked3pc),
-                     testing::Values(CookieBlocking3pcdStatus::kNotIn3pcd,
-                                     CookieBlocking3pcdStatus::kAll),
                      /*is_otr*/ testing::Bool()));
 
-class PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest
-    : public PageInfoBubbleViewTest,
-      public testing::WithParamInterface<CookieControlsState> {
+class PageInfoBubbleViewAutoPipTest : public PageInfoBubbleViewTest {
  public:
-  PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest() {
-    feature_list_.InitWithFeatures(
-        {privacy_sandbox::kActUserBypassUx,
-         privacy_sandbox::kFingerprintingProtectionUx},
-        {});
-    off_the_record_ = true;
+  PageInfoBubbleViewAutoPipTest() {
+    feature_list_.InitAndEnableFeature(
+        media::kAutoPictureInPicturePageInfoDetails);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest,
-       DisplaysPrivacyAndSiteDataTitle) {
-  PageInfoUI::CookiesInfo cookie_info;
-  cookie_info.controls_state = GetParam();
-  api_->SetCookieInfo(cookie_info);
+TEST_F(PageInfoBubbleViewAutoPipTest, CheckSubpageForAutoPictureInPicture) {
+  // Set auto-pip permission to be allowed, so it shows up.
+  HostContentSettingsMapFactory::GetForProfile(web_contents_helper_->profile())
+      ->SetContentSettingDefaultScope(
+          GURL(kUrl), GURL(kUrl), ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+          CONTENT_SETTING_ALLOW);
 
-  EXPECT_EQ(api_->GetPrivacyAndSiteDataButtonTitleText(),
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER));
-  EXPECT_EQ(api_->GetPrivacyAndSiteDataSubpageTitle(),
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER));
+  // Recreate the view to display the permission.
+  api_->CreateView();
+
+  // Verify label matches the auto auto-pip setting.
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_AUTO_PICTURE_IN_PICTURE),
+      api_->GetPermissionLabelTextAt(0));
+
+  // Verify the permission toggle row for auto-pip exists.
+  PermissionToggleRowView* pip_toggle_row = api_->GetPermissionToggleRowAt(0);
+  ASSERT_TRUE(pip_toggle_row);
+
+  // Open the subpage for the auto-pip permission.
+  api_->navigation_handler()->OpenPermissionPage(
+      ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
+  ASSERT_GE(api_->current_view()->children().size(), 2u);
+  auto* page_view = static_cast<PageInfoPermissionContentView*>(
+      api_->current_view()->children()[1]);
+  ASSERT_TRUE(page_view);
+
+  EXPECT_NE(page_view->GetToggleButtonForTesting(), nullptr);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest,
-                         testing::Values(CookieControlsState::kActiveTp,
-                                         CookieControlsState::kPausedTp));

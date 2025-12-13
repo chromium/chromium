@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">橙</translation>
 <translation id="1275718070701477396">已選取</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
+<translation id="1292474106138697109">「課堂工具」螢幕畫面</translation>
 <translation id="1300115153046603471">APN 類型係預設同埋「<ph name="ATTACH" />」。</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">轉換</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
 <translation id="4300272766492248925">開啟應用程式</translation>
 <translation id="430786093962686457">雪紡</translation>
+<translation id="4309762678330556039">自動建立轉錄文字和搜尋音訊。即使沒有互聯網連線，你亦可以錄音。</translation>
 <translation id="4310735698903592804">最近採用 Google AI 技術製作的桌布</translation>
 <translation id="4320904097188876154">螢光粉紅色</translation>
 <translation id="432961742358282111">㩒右鍵或者㩒住畫面就可以取得定義、翻譯或者單位轉換結果。用向左或者向右箭咀掣就可以管理呢個功能。</translation>
@@ -1011,7 +1013,7 @@
 <translation id="5410755018770633464">熱狗</translation>
 <translation id="5423849171846380976">已啟用</translation>
 <translation id="5430931332414098647">即時網絡共享</translation>
-<translation id="5431318178759467895">顏色</translation>
+<translation id="5431318178759467895">彩色</translation>
 <translation id="5457599981699367932">以訪客身分瀏覽</translation>
 <translation id="54609108002486618">受管理</translation>
 <translation id="5461608756903394951"><ph name="LANGUAGE_NAME" />轉錄模型下載中</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5600027863942488546">測試咗 <ph name="KEY_NAME" /> 制</translation>
 <translation id="5606865426897221650">Tab 鍵</translation>
+<translation id="5612205513582918357">「課堂工具」正在與「<ph name="RECEIVER_NAME" />」分享螢幕畫面</translation>
 <translation id="5613201299517339763">你已登出</translation>
 <translation id="5620281292257375798">只供內部使用</translation>
 <translation id="5628106863521633649">可用的語言</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">雲朵動態</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">沒有可用的掃瞄器</translation>
-<translation id="6231648282154119906">由於你選擇強化保護功能，因此「Google 安全瀏覽」會自動掃瞄可疑檔案</translation>
 <translation id="6232017090690406397">電池</translation>
 <translation id="6234024205316847054">顯示大綱</translation>
 <translation id="6243280677745499710">目前設定的桌布</translation>

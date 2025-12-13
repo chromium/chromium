@@ -21,6 +21,7 @@
 namespace web_app {
 class FakeWebAppProvider;
 class WebAppProvider;
+class FakeWebContentsManager;
 }
 
 // Consider to implement web app specific test harness independent of
@@ -72,6 +73,10 @@ class WebAppTest : public content::RenderViewHostTestHarness {
 
   web_app::FakeWebAppProvider& fake_provider() const;
 
+  // If the test sets the web contents manager to be 'real', then this will
+  // check-fail.
+  web_app::FakeWebContentsManager& fake_web_contents_manager() const;
+
   web_app::OsIntegrationTestOverrideImpl& fake_os_integration() const;
 
  protected:
@@ -93,7 +98,7 @@ class WebAppTest : public content::RenderViewHostTestHarness {
 
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_TEST_H_

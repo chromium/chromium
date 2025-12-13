@@ -1,0 +1,148 @@
+rootWebArea htmlTag='#document' name='Material Web Input Chips'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++toolbar horizontal htmlTag='md-chip-set'
+++++++++++genericContainer ignored
+++++++++++++group htmlTag='md-input-chip'
+++++++++++++++genericContainer className='container  has-trailing ' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++button className='primary action' htmlTag='button' name='Input chip'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Input chip'
+++++++++++++++++++++++++inlineTextBox name='Input chip'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++button className='trailing action' htmlTag='button' name='Remove Input chip'
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-input-chip'
+++++++++++++++genericContainer className='container has-trailing has-icon' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++button className='primary action' htmlTag='button' name='With avatar'
+++++++++++++++++++none ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='With avatar'
+++++++++++++++++++++++++inlineTextBox name='With avatar'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++button className='trailing action' htmlTag='button' name='Remove With avatar'
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-input-chip'
+++++++++++++++genericContainer className='container  has-trailing ' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Removable'
+++++++++++++++++++++++++inlineTextBox name='Removable'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++button className='trailing action' htmlTag='button' name='Remove Removable'
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++none ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Input Chips'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++toolbar horizontal htmlTag='md-chip-set'
+++++++++++genericContainer ignored
+++++++++++++group htmlTag='md-input-chip'
+++++++++++++++genericContainer className='container has-trailing selected' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++button className='primary action' htmlTag='button' name='Input chip'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Input chip'
+++++++++++++++++++++++++inlineTextBox name='Input chip'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++button className='trailing action' htmlTag='button' name='Remove Input chip'
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-input-chip'
+++++++++++++++genericContainer className='container has-trailing has-icon' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++button className='primary action' htmlTag='button' name='With avatar'
+++++++++++++++++++none ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='With avatar'
+++++++++++++++++++++++++inlineTextBox name='With avatar'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++button className='trailing action' htmlTag='button' name='Remove With avatar'
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-input-chip'
+++++++++++++++genericContainer className='container  has-trailing ' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Removable'
+++++++++++++++++++++++++inlineTextBox name='Removable'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++button className='trailing action' htmlTag='button' name='Remove Removable'
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++none ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Input Chip Selected'
+++++++++++++inlineTextBox name='Input Chip Selected'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Input Chips'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++toolbar horizontal htmlTag='md-chip-set'
+++++++++++genericContainer ignored
+++++++++++++group htmlTag='md-input-chip'
+++++++++++++++genericContainer className='container has-trailing selected' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++button className='primary action' htmlTag='button' name='Input chip'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Input chip'
+++++++++++++++++++++++++inlineTextBox name='Input chip'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++button className='trailing action' htmlTag='button' name='Remove Input chip'
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-input-chip'
+++++++++++++++genericContainer className='container has-trailing has-icon' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++button className='primary action' htmlTag='button' name='With avatar'
+++++++++++++++++++none ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='With avatar'
+++++++++++++++++++++++++inlineTextBox name='With avatar'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++button className='trailing action' htmlTag='button' name='Remove With avatar'
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Input Chip Selected'
+++++++++++++inlineTextBox name='Input Chip Selected'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Input Chip Removed'
+++++++++++++inlineTextBox name='Input Chip Removed'

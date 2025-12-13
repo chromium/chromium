@@ -26,14 +26,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_HTML_PARSER_SCRIPT_RUNNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_HTML_PARSER_SCRIPT_RUNNER_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_reentry_permit.h"
 #include "third_party/blink/renderer/core/script/pending_script.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
-#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 namespace blink {
@@ -51,6 +48,15 @@ class HTMLParserScriptRunnerHost;
 // executing it when required.
 //
 // An HTMLParserScriptRunner is owned by its host, an HTMLDocumentParser.
+//
+// Design Rationale:
+// Its sole responsibility is to manage scripts that directly interfere with the
+// parser's lifecycle (i.e., parser-blocking and deferred scripts).
+//
+// Asynchronous scripts do not affect the parser's lifecycle. To keep
+// this class's responsibility pure, they are routed directly to
+// Document::ScriptRunner during the preparation phase in ScriptLoader and are
+// never processed by this class.
 class HTMLParserScriptRunner final
     : public GarbageCollected<HTMLParserScriptRunner>,
       public PendingScriptClient,
@@ -105,6 +111,10 @@ class HTMLParserScriptRunner final
     return "HTMLParserScriptRunner";
   }
 
+  // Script execution might be blocked during prerendering, and if so, it will
+  // be unblocked upon prerender activation.
+  void UnblockForPrerenderActivation();
+
  private:
   // PendingScriptClient
   void PendingScriptFinished(PendingScript*) override;
@@ -123,8 +133,6 @@ class HTMLParserScriptRunner final
   }
 
   bool IsParserBlockingScriptReady();
-
-  void PossiblyFetchBlockedDocWriteScript(PendingScript*);
 
   // Takes and returns the first PendingScript from |waiting_scripts| if it is
   // ready for execution. Otherwise, informs it that |this| is a

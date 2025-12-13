@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<title>drawElementImage should support rendering a nested webgl canvas</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="match" href="nested-canvas-ref.html">
+
+<canvas id="webgl_canvas" layoutsubtree="true" width="100" height="100" style="background: red;">
+  <canvas id="nested_webgl_canvas" layoutsubtree="true" width="100" height="100">
+    <div id="inner_div" style="width: 100px; height: 100px; background: radial-gradient(lightgreen, green);"></div>
+  </canvas>
+</canvas>
+<script>
+  function drawWebGLElementImage(canvas, child) {
+    const gl = canvas.getContext('webgl2');
+    const vsSrc = `#version 300 es
+      in vec2 a_pos;
+      in vec2 a_uv;
+      out vec2 v_uv;
+      void main(){
+        gl_Position = vec4(a_pos, 0.0, 1.0);
+        v_uv = a_uv;
+      }`;
+    const fsSrc = `#version 300 es
+      precision mediump float;
+      in vec2 v_uv;
+      uniform sampler2D u_tex;
+      out vec4 fragColor;
+      void main(){
+        fragColor = texture(u_tex, v_uv);
+      }`;
+
+    const vs = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vs, vsSrc);
+    gl.compileShader(vs);
+    const fs = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fs, fsSrc);
+    gl.compileShader(fs);
+
+    const prog = gl.createProgram();
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const vbo = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      -1,-1,0,0,  1,-1,1,0,  -1,1,0,1,
+      -1,1,0,1,   1,-1,1,0,   1,1,1,1
+    ]), gl.STATIC_DRAW);
+
+    const posLoc = gl.getAttribLocation(prog, 'a_pos');
+    const uvLoc = gl.getAttribLocation(prog, 'a_uv');
+    gl.enableVertexAttribArray(posLoc);
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 16, 0);
+    gl.enableVertexAttribArray(uvLoc);
+    gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 16, 8);
+
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    const level = 0;
+    const internalformat = gl.RGBA;
+    const format = gl.RGBA;
+    const type = gl.UNSIGNED_BYTE;
+    gl.texElementImage2D(gl.TEXTURE_2D, level, internalformat, format, type, child);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+    gl.uniform1i(gl.getUniformLocation(prog, 'u_tex'), 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  }
+
+  drawWebGLElementImage(nested_webgl_canvas, inner_div);
+  drawWebGLElementImage(webgl_canvas, nested_webgl_canvas);
+</script>

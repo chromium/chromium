@@ -20,7 +20,7 @@
 #include "content/public/android/content_jni_headers/TtsPlatformImpl_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 
@@ -194,3 +194,5 @@ void TtsPlatformImplAndroid::OnCanSpeakNowChanged() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(TtsPlatformImpl)

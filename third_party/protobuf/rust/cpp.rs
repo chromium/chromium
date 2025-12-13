@@ -7,10 +7,12 @@
 
 // Rust Protobuf runtime using the C++ kernel.
 
-use crate::__internal::{Enum, Private};
+use crate::__internal::{Enum, MatcherEq, Private, SealedInternal};
 use crate::{
-    IntoProxied, Map, MapIter, MapMut, MapView, Message, Mut, ProtoBytes, ProtoStr, ProtoString,
-    Proxied, ProxiedInMapValue, ProxiedInRepeated, Repeated, RepeatedMut, RepeatedView, View,
+    AsMut, AsView, Clear, ClearAndParse, CopyFrom, IntoProxied, Map, MapIter, MapMut, MapView,
+    MergeFrom, Message, MessageMutInterop, Mut, MutProxied, ParseError, ProtoBytes, ProtoStr,
+    ProtoString, Proxied, ProxiedInMapValue, ProxiedInRepeated, Repeated, RepeatedMut,
+    RepeatedView, Serialize, SerializeError, TakeFrom, View,
 };
 use core::fmt::Debug;
 use paste::paste;
@@ -104,7 +106,9 @@ pub struct InnerProtoString {
 extern "C" {
     pub fn proto2_rust_Message_delete(m: RawMessage);
     pub fn proto2_rust_Message_clear(m: RawMessage);
-    pub fn proto2_rust_Message_parse(m: RawMessage, input: SerializedData) -> bool;
+    pub fn proto2_rust_Message_parse(m: RawMessage, input: PtrAndLen) -> bool;
+    pub fn proto2_rust_Message_parse_dont_enforce_required(m: RawMessage, input: PtrAndLen)
+        -> bool;
     pub fn proto2_rust_Message_serialize(m: RawMessage, output: &mut SerializedData) -> bool;
     pub fn proto2_rust_Message_copy_from(dst: RawMessage, src: RawMessage) -> bool;
     pub fn proto2_rust_Message_merge_from(dst: RawMessage, src: RawMessage) -> bool;
@@ -176,7 +180,7 @@ impl PtrAndLen {
     /// Unsafely dereference this slice.
     ///
     /// # Safety
-    /// - `self.ptr` must be dereferencable and immutable for `self.len` bytes
+    /// - `self.ptr` must be dereferenceable and immutable for `self.len` bytes
     ///   for the lifetime `'a`. It can be null or dangling if `self.len == 0`.
     pub unsafe fn as_ref<'a>(self) -> &'a [u8] {
         if self.ptr.is_null() {
@@ -321,30 +325,43 @@ impl From<RustStringRawParts> for String {
 }
 
 extern "C" {
-    fn proto2_rust_utf8_debug_string(msg: RawMessage) -> RustStringRawParts;
+    fn proto2_rust_utf8_debug_string(raw: RawMessage) -> RustStringRawParts;
 }
 
-pub fn debug_string(msg: RawMessage, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+pub fn debug_string(raw: RawMessage, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     // SAFETY:
-    // - `msg` is a valid protobuf message.
-    let dbg_str: String = unsafe { proto2_rust_utf8_debug_string(msg) }.into();
+    // - `raw` is a valid protobuf message.
+    let dbg_str: String = unsafe { proto2_rust_utf8_debug_string(raw) }.into();
     write!(f, "{dbg_str}")
 }
 
 extern "C" {
     /// # Safety
-    /// - `msg1` and `msg2` legally dereferencable MessageLite* pointers.
+    /// - `raw1` and `raw2` legally dereferenceable MessageLite* pointers.
     #[link_name = "proto2_rust_messagelite_equals"]
-    pub fn raw_message_equals(msg1: RawMessage, msg2: RawMessage) -> bool;
+    pub fn raw_message_equals(raw1: RawMessage, raw2: RawMessage) -> bool;
 }
 
 pub type RawMapIter = UntypedMapIterator;
 
-/// The raw contents of every generated message.
 #[derive(Debug)]
 #[doc(hidden)]
-pub struct MessageInner {
-    pub msg: RawMessage,
+#[repr(transparent)]
+pub struct OwnedMessageInner<T> {
+    raw: RawMessage,
+    _phantom: PhantomData<T>,
+}
+
+impl<T: Message> OwnedMessageInner<T> {
+    /// # Safety
+    /// - `raw` must point to a message of type `T` and outlive `Self`.
+    pub unsafe fn wrap_raw(raw: RawMessage) -> Self {
+        OwnedMessageInner { raw, _phantom: PhantomData }
+    }
+
+    pub fn raw(&self) -> RawMessage {
+        self.raw
+    }
 }
 
 /// Mutators that point to their original message use this to do so.
@@ -361,37 +378,77 @@ pub struct MessageInner {
 ///   must be different fields, and not be in the same oneof. As such, a `Mut`
 ///   cannot be `Clone` but *can* reborrow itself with `.as_mut()`, which
 ///   converts `&'b mut Mut<'a, T>` to `Mut<'b, T>`.
-#[derive(Clone, Copy, Debug)]
+#[derive(Debug)]
 #[doc(hidden)]
-pub struct MutatorMessageRef<'msg> {
-    msg: RawMessage,
-    _phantom: PhantomData<&'msg mut ()>,
+#[repr(transparent)]
+pub struct MessageMutInner<'msg, T> {
+    raw: RawMessage,
+    _phantom: PhantomData<(&'msg mut (), T)>,
 }
-impl<'msg> MutatorMessageRef<'msg> {
+
+impl<'msg, T: Message> Clone for MessageMutInner<'msg, T> {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl<'msg, T: Message> Copy for MessageMutInner<'msg, T> {}
+
+impl<'msg, T: Message> MessageMutInner<'msg, T> {
     #[allow(clippy::needless_pass_by_ref_mut)] // Sound construction requires mutable access.
-    pub fn new(msg: &'msg mut MessageInner) -> Self {
-        MutatorMessageRef { msg: msg.msg, _phantom: PhantomData }
+    pub fn mut_of_owned(msg: &'msg mut OwnedMessageInner<T>) -> Self {
+        MessageMutInner { raw: msg.raw, _phantom: PhantomData }
     }
 
     /// # Safety
-    /// - The underlying pointer must be sound and live for the lifetime 'msg.
+    /// - The underlying pointer must be mutable, of type `T` and live for the lifetime 'msg.
     pub unsafe fn wrap_raw(raw: RawMessage) -> Self {
-        MutatorMessageRef { msg: raw, _phantom: PhantomData }
+        MessageMutInner { raw, _phantom: PhantomData }
     }
 
-    pub fn from_parent(
-        _parent_msg: MutatorMessageRef<'msg>,
+    pub fn from_parent<ParentT: Message>(
+        _parent_msg: MessageMutInner<'msg, ParentT>,
         message_field_ptr: RawMessage,
     ) -> Self {
-        Self { msg: message_field_ptr, _phantom: PhantomData }
+        Self { raw: message_field_ptr, _phantom: PhantomData }
     }
 
-    pub fn msg(&self) -> RawMessage {
-        self.msg
+    pub fn raw(&self) -> RawMessage {
+        self.raw
+    }
+}
+
+#[derive(Debug)]
+#[doc(hidden)]
+#[repr(transparent)]
+pub struct MessageViewInner<'msg, T> {
+    raw: RawMessage,
+    _phantom: PhantomData<(&'msg (), T)>,
+}
+
+impl<'msg, T: Message> Clone for MessageViewInner<'msg, T> {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl<'msg, T: Message> Copy for MessageViewInner<'msg, T> {}
+
+impl<'msg, T: Message> MessageViewInner<'msg, T> {
+    /// # Safety
+    /// - The underlying pointer must of type `T` and live for the lifetime 'msg.
+    pub unsafe fn wrap_raw(raw: RawMessage) -> Self {
+        MessageViewInner { raw, _phantom: PhantomData }
     }
 
-    pub fn from_raw_msg(msg: &RawMessage) -> Self {
-        Self { msg: *msg, _phantom: PhantomData }
+    pub fn view_of_owned(msg: &'msg OwnedMessageInner<T>) -> Self {
+        MessageViewInner { raw: msg.raw, _phantom: PhantomData }
+    }
+
+    pub fn view_of_mut(msg: MessageMutInner<'msg, T>) -> Self {
+        MessageViewInner { raw: msg.raw, _phantom: PhantomData }
+    }
+
+    pub fn raw(&self) -> RawMessage {
+        self.raw
     }
 }
 
@@ -488,6 +545,107 @@ impl CppTypeConversions for ProtoBytes {
 
     fn into_insertelem(v: Self) -> CppStdString {
         v.into_inner(Private).into_raw()
+    }
+}
+
+unsafe impl<T> ProxiedInRepeated for T
+where
+    Self: MutProxied + CppGetRawMessage + Message,
+    for<'a> View<'a, Self>:
+        From<MessageViewInner<'a, Self>> + std::default::Default + CppGetRawMessage,
+    for<'a> Mut<'a, Self>: From<MessageMutInner<'a, Self>>,
+{
+    fn repeated_new(_private: Private) -> Repeated<Self> {
+        // SAFETY:
+        // - The thunk returns an unaliased and valid `RepeatedPtrField*`
+        unsafe {
+            Repeated::from_inner(
+                Private,
+                InnerRepeated::from_raw(proto2_rust_RepeatedField_Message_new()),
+            )
+        }
+    }
+
+    unsafe fn repeated_free(_private: Private, f: &mut Repeated<Self>) {
+        // SAFETY
+        // - `f.raw()` is a valid `RepeatedPtrField*`.
+        unsafe { proto2_rust_RepeatedField_Message_free(f.as_view().as_raw(Private)) }
+    }
+
+    fn repeated_len(f: View<Repeated<Self>>) -> usize {
+        // SAFETY: `f.as_raw()` is a valid `RepeatedPtrField*`.
+        unsafe { proto2_rust_RepeatedField_Message_size(f.as_raw(Private)) }
+    }
+
+    unsafe fn repeated_set_unchecked(
+        mut f: Mut<Repeated<Self>>,
+        i: usize,
+        v: impl IntoProxied<Self>,
+    ) {
+        // SAFETY:
+        // - `f.as_raw()` is a valid `RepeatedPtrField*`.
+        // - `i < len(f)` is promised by caller.
+        // - The second argument below is a valid `const Message&`.
+        unsafe {
+            proto2_rust_Message_copy_from(
+                proto2_rust_RepeatedField_Message_get_mut(f.as_raw(Private), i),
+                v.into_proxied(Private).get_raw_message(Private),
+            );
+        }
+    }
+
+    unsafe fn repeated_get_unchecked(f: View<Repeated<Self>>, i: usize) -> View<Self> {
+        // SAFETY:
+        // - `f.as_raw()` is a valid `const RepeatedPtrField&`.
+        // - `i < len(f)` is promised by caller.
+        let msg = unsafe { proto2_rust_RepeatedField_Message_get(f.as_raw(Private), i) };
+        let inner = unsafe { MessageViewInner::wrap_raw(msg) };
+        inner.into()
+    }
+
+    unsafe fn repeated_get_mut_unchecked(mut f: Mut<Repeated<Self>>, i: usize) -> Mut<Self> {
+        // SAFETY:
+        // - `f.as_raw()` is a valid `RepeatedPtrField*`.
+        // - `i < len(f)` is promised by caller.
+        let msg = unsafe { proto2_rust_RepeatedField_Message_get_mut(f.as_raw(Private), i) };
+        let inner = unsafe { MessageMutInner::wrap_raw(msg) };
+        inner.into()
+    }
+
+    fn repeated_clear(mut f: Mut<Repeated<Self>>) {
+        // SAFETY:
+        // - `f.as_raw()` is a valid `RepeatedPtrField*`.
+        unsafe { proto2_rust_RepeatedField_Message_clear(f.as_raw(Private)) };
+    }
+
+    fn repeated_push(mut f: Mut<Repeated<Self>>, v: impl IntoProxied<Self>) {
+        // SAFETY:
+        // - `f.as_raw()` is a valid `RepeatedPtrField*`.
+        // - The second argument below is a valid `const Message&`.
+        unsafe {
+            let prototype =
+                <View<Self> as std::default::Default>::default().get_raw_message(Private);
+            let new_elem = proto2_rust_RepeatedField_Message_add(f.as_raw(Private), prototype);
+            proto2_rust_Message_copy_from(
+                new_elem,
+                v.into_proxied(Private).get_raw_message(Private),
+            );
+        }
+    }
+
+    fn repeated_copy_from(src: View<Repeated<Self>>, mut dest: Mut<Repeated<Self>>) {
+        // SAFETY:
+        // - `dest.as_raw()` is a valid `RepeatedPtrField*`.
+        // - `src.as_raw()` is a valid `const RepeatedPtrField&`.
+        unsafe {
+            proto2_rust_RepeatedField_Message_copy_from(dest.as_raw(Private), src.as_raw(Private));
+        }
+    }
+
+    fn repeated_reserve(mut f: Mut<Repeated<Self>>, additional: usize) {
+        // SAFETY:
+        // - `f.as_raw()` is a valid `RepeatedPtrField*`.
+        unsafe { proto2_rust_RepeatedField_Message_reserve(f.as_raw(Private), additional) }
     }
 }
 
@@ -1271,6 +1429,166 @@ fn protobytes_into_cppstdstring(val: ProtoBytes) -> CppStdString {
 // call.
 fn ptrlen_to_bytes<'msg>(val: PtrAndLen) -> &'msg [u8] {
     unsafe { val.as_ref() }
+}
+
+/// Internal-only trait to support blanket impls that need const access to raw messages
+/// on codegen. Should never be used by application code.
+#[doc(hidden)]
+pub unsafe trait CppGetRawMessage: SealedInternal {
+    fn get_raw_message(&self, _private: Private) -> RawMessage;
+}
+
+// The generated code only implements this trait on View proxies, so we use a blanket
+// implementation for owned messages and Mut proxies.
+unsafe impl<T> CppGetRawMessage for T
+where
+    Self: AsMut + AsView,
+    for<'a> View<'a, <Self as AsView>::Proxied>: CppGetRawMessage,
+{
+    fn get_raw_message(&self, _private: Private) -> RawMessage {
+        self.as_view().get_raw_message(_private)
+    }
+}
+
+/// Internal-only trait to support blanket impls that need mutable access to raw messages
+/// on codegen. Must not be implemented on View proxies. Should never be used by application code.
+#[doc(hidden)]
+pub unsafe trait CppGetRawMessageMut: SealedInternal {
+    fn get_raw_message_mut(&mut self, _private: Private) -> RawMessage;
+}
+
+// The generated code only implements this trait on Mut proxies, so we use a blanket implementation
+// for owned messages.
+unsafe impl<T> CppGetRawMessageMut for T
+where
+    Self: MutProxied,
+    for<'a> Mut<'a, Self>: CppGetRawMessageMut,
+{
+    fn get_raw_message_mut(&mut self, _private: Private) -> RawMessage {
+        self.as_mut().get_raw_message_mut(_private)
+    }
+}
+
+impl<'a, T> MessageMutInterop<'a> for T
+where
+    Self: AsMut + CppGetRawMessageMut + From<MessageMutInner<'a, <Self as AsMut>::MutProxied>>,
+    <Self as AsMut>::MutProxied: Message,
+{
+    unsafe fn __unstable_wrap_raw_message_mut(msg: &'a mut *mut std::ffi::c_void) -> Self {
+        let raw = RawMessage::new(*msg as *mut _).unwrap();
+        let inner = unsafe { MessageMutInner::wrap_raw(raw) };
+        inner.into()
+    }
+    unsafe fn __unstable_wrap_raw_message_mut_unchecked_lifetime(
+        msg: *mut std::ffi::c_void,
+    ) -> Self {
+        let raw = RawMessage::new(msg as *mut _).unwrap();
+        let inner = unsafe { MessageMutInner::wrap_raw(raw) };
+        inner.into()
+    }
+    fn __unstable_as_raw_message_mut(&mut self) -> *mut std::ffi::c_void {
+        self.get_raw_message_mut(Private).as_ptr() as *mut _
+    }
+}
+
+impl<T> MatcherEq for T
+where
+    Self: AsView + Debug,
+    for<'a> View<'a, <Self as AsView>::Proxied>: CppGetRawMessage,
+{
+    fn matches(&self, o: &Self) -> bool {
+        unsafe {
+            raw_message_equals(
+                self.as_view().get_raw_message(Private),
+                o.as_view().get_raw_message(Private),
+            )
+        }
+    }
+}
+
+impl<T: CppGetRawMessageMut> Clear for T {
+    fn clear(&mut self) {
+        unsafe { proto2_rust_Message_clear(self.get_raw_message_mut(Private)) }
+    }
+}
+
+impl<T: CppGetRawMessageMut> ClearAndParse for T {
+    fn clear_and_parse(&mut self, data: &[u8]) -> Result<(), ParseError> {
+        unsafe { proto2_rust_Message_parse(self.get_raw_message_mut(Private), data.into()) }
+            .then_some(())
+            .ok_or(ParseError)
+    }
+
+    fn clear_and_parse_dont_enforce_required(&mut self, data: &[u8]) -> Result<(), ParseError> {
+        unsafe {
+            proto2_rust_Message_parse_dont_enforce_required(
+                self.get_raw_message_mut(Private),
+                data.into(),
+            )
+        }
+        .then_some(())
+        .ok_or(ParseError)
+    }
+}
+
+impl<T: CppGetRawMessage> Serialize for T {
+    fn serialize(&self) -> Result<Vec<u8>, SerializeError> {
+        let mut serialized_data = SerializedData::new();
+        let success = unsafe {
+            proto2_rust_Message_serialize(self.get_raw_message(Private), &mut serialized_data)
+        };
+        if success {
+            Ok(serialized_data.into_vec())
+        } else {
+            Err(SerializeError)
+        }
+    }
+}
+
+impl<T> TakeFrom for T
+where
+    Self: CopyFrom + AsMut,
+    for<'a> Mut<'a, <Self as AsMut>::MutProxied>: Clear,
+{
+    fn take_from(&mut self, mut src: impl AsMut<MutProxied = Self::Proxied>) {
+        let mut src = src.as_mut();
+        // TODO: b/393559271 - Optimize this copy out.
+        CopyFrom::copy_from(self, AsView::as_view(&src));
+        Clear::clear(&mut src);
+    }
+}
+
+impl<T> CopyFrom for T
+where
+    Self: AsMut,
+    for<'a> View<'a, Self::Proxied>: CppGetRawMessage,
+    for<'a> Mut<'a, Self::Proxied>: CppGetRawMessageMut,
+{
+    fn copy_from(&mut self, src: impl AsView<Proxied = Self::Proxied>) {
+        unsafe {
+            proto2_rust_Message_copy_from(
+                self.as_mut().get_raw_message_mut(Private),
+                src.as_view().get_raw_message(Private),
+            );
+        }
+    }
+}
+
+impl<T> MergeFrom for T
+where
+    Self: AsMut,
+    for<'a> View<'a, Self::Proxied>: CppGetRawMessage,
+    for<'a> Mut<'a, Self::Proxied>: CppGetRawMessageMut,
+{
+    fn merge_from(&mut self, src: impl AsView<Proxied = Self::Proxied>) {
+        // SAFETY: self and src are both valid `T`s.
+        unsafe {
+            proto2_rust_Message_merge_from(
+                self.as_mut().get_raw_message_mut(Private),
+                src.as_view().get_raw_message(Private),
+            );
+        }
+    }
 }
 
 #[cfg(test)]

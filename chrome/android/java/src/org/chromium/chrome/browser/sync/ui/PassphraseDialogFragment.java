@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -26,6 +28,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -36,6 +41,7 @@ import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /** Dialog to ask to user to enter their sync passphrase. */
+@NullMarked
 public class PassphraseDialogFragment extends DialogFragment implements OnClickListener {
     private static final String TAG = "Sync_UI";
 
@@ -59,7 +65,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
     private Drawable mErrorBackground;
 
     /** Create a new instanceof of {@link PassphraseDialogFragment} and set its arguments. */
-    public static PassphraseDialogFragment newInstance(Fragment target) {
+    public static PassphraseDialogFragment newInstance(@Nullable Fragment target) {
         PassphraseDialogFragment dialog = new PassphraseDialogFragment();
         if (target != null) {
             dialog.setTargetFragment(target, -1);
@@ -75,8 +81,9 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
         return profile == null ? ProfileManager.getLastUsedRegularProfile() : profile;
     }
 
+    @Initializer
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         assert SyncServiceFactory.getForProfile(getProfile()) != null;
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -109,7 +116,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
         // https://crbug.com/602943 was caused by modifying the Drawable from getBackground()
         // without taking a copy.
         mOriginalBackground = mPassphraseEditText.getBackground();
-        mErrorBackground = mOriginalBackground.getConstantState().newDrawable();
+        mErrorBackground = assumeNonNull(mOriginalBackground.getConstantState()).newDrawable();
         mErrorBackground
                 .mutate()
                 .setColorFilter(
@@ -121,7 +128,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
                         .setView(v)
                         .setPositiveButton(
                                 R.string.submit,
-                                new Dialog.OnClickListener() {
+                                new OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface d, int which) {
                                         // We override the onclick. This is a hack to not dismiss
@@ -165,9 +172,11 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
     }
 
     private SpannableString getPromptText() {
-        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
+        SyncService syncService = assumeNonNull(SyncServiceFactory.getForProfile(getProfile()));
         String accountName =
-                getString(R.string.sync_account_info, syncService.getAccountInfo().getEmail())
+                getString(
+                                R.string.sync_account_info,
+                                assumeNonNull(syncService.getAccountInfo()).getEmail())
                         + "\n\n";
         return new SpannableString(
                 accountName + getString(R.string.sync_enter_passphrase_body_with_email));

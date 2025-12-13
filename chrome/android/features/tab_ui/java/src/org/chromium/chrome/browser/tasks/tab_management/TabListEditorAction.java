@@ -17,7 +17,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -34,6 +33,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Defines the core action of a {@link TabListEditorMenuItem}. */
 @NullMarked
@@ -248,7 +248,7 @@ public abstract class TabListEditorAction {
             @Nullable MotionEventInfo triggeringMotion);
 
     /**
-     * @return Whether to hide the editor after tabking the action.
+     * @return Whether to hide the editor after taking the action.
      */
     public abstract boolean shouldHideEditorAfterAction();
 

@@ -523,7 +523,7 @@ std::optional<gfx::SizeF> ViewTimeline::SubjectSize() const {
   }
 
   if (auto* layout_box = DynamicTo<LayoutBox>(subject_layout_object)) {
-    return gfx::SizeF(layout_box->Size());
+    return gfx::SizeF(layout_box->StitchedSize());
   }
 
   if (auto* layout_inline = DynamicTo<LayoutInline>(subject_layout_object)) {

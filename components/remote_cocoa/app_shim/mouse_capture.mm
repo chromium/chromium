@@ -92,6 +92,17 @@ void CocoaMouseCapture::ActiveEventTap::Init() {
     }
 
     bool handled = weak_ptr->delegate_->PostCapturedEvent(event);
+    // Mac: When the app is inactive, a left click should activate the app and
+    // key a window. Local monitors run before AppKit finishes that default
+    // activation. If we swallow the event here (return nil) while activation is
+    // mid-flight, AppKit can end up in a "half-activated" state where the app
+    // won't fully activate until focus switches to another app and back.
+    // Avoid this limbo by explicitly activating before consuming the first
+    // left-mouse-down while inactive.
+    if (![NSApp isActive] && [event type] == NSEventTypeLeftMouseDown &&
+        handled) {
+      [NSApp activateIgnoringOtherApps:YES];
+    }
     return handled ? nil : event;
   };
   auto global_block = ^void(NSEvent* event) {

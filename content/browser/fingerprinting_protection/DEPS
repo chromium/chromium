@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/fingerprinting_protection_filter/interventions/browser",
-  "+components/fingerprinting_protection_filter/interventions/common",
-]

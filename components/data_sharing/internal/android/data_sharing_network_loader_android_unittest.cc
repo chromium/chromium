@@ -37,17 +37,15 @@ class DataSharingNetworkLoaderAndroidTest : public testing::Test {
 
 TEST_F(DataSharingNetworkLoaderAndroidTest, LoadUrl) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  std::vector<std::string> scopes;
 
   EXPECT_CALL(
       mock_network_loader_,
-      LoadUrl(_, _, _,
+      LoadUrl(_, _,
               DataSharingNetworkLoader::DataSharingRequestType::kTestRequest,
               _))
       .Times(1);
   network_loader_android_->LoadUrl(
       env, url::GURLAndroid::EmptyGURL(env),
-      base::android::ToJavaArrayOfStrings(env, scopes),
       base::android::ToJavaByteArray(env, "foo"),
       static_cast<int>(
           DataSharingNetworkLoader::DataSharingRequestType::kTestRequest),

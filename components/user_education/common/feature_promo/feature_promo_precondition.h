@@ -11,7 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/typed_data.h"
@@ -201,8 +201,21 @@ class ForwardingFeaturePromoPrecondition : public FeaturePromoPrecondition {
   FeaturePromoResult CheckPrecondition(
       ui::UnownedTypedDataCollection& data) const override;
 
+ protected:
+  // Can be called by derived classes to clear out references and avoid UAF.
+  // After calling this method, `CheckPrecondition()` will return an error.
+  void Invalidate();
+
  private:
-  raw_ref<const FeaturePromoPrecondition> source_;
+  // The source precondition. If it becomes invalid, this is reset to null, and
+  // future calls to `CheckPrecondition()` will return an error.
+  raw_ptr<const FeaturePromoPrecondition> source_ = nullptr;
+
+  // Preserves the identifier even after a call to `Invalidate()`.
+  const ui::ElementIdentifier cached_identifier_;
+
+  // Preserves the description even after a call to `Invalidate()`.
+  const std::string cached_description_;
 };
 
 // Represents an ordered list of preconditions which will be checked (see

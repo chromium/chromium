@@ -529,8 +529,8 @@ TEST_F(IntentFilterUtilTest, TestIntentFilterUrlMatchLength) {
     const auto& test = tests[i];
     GURL filter_url(test.filter_url);
     GURL matched_url(test.matched_url);
-    auto filter = MakeFilter(filter_url.scheme(), filter_url.host(),
-                             filter_url.path(), test.pattern_match_type);
+    auto filter = MakeFilter(filter_url.GetScheme(), filter_url.GetHost(),
+                             filter_url.GetPath(), test.pattern_match_type);
     EXPECT_EQ(apps_util::IntentFilterUrlMatchLength(filter, matched_url),
               test.expected)
         << "Test #" << i << " url=" << test.matched_url

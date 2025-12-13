@@ -40,6 +40,7 @@ class ContentShadow : public views::View {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 };
 
 ContentShadow::ContentShadow() {
@@ -63,6 +64,13 @@ void ContentShadow::OnPaint(gfx::Canvas* canvas) {
                                            canvas, GetColorProvider());
 }
 
+void ContentShadow::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  // ContentShadow is a layer, it needs to be manually marked for redraw when
+  // the theme changes.
+  SchedulePaint();
+}
+
 BEGIN_METADATA(ContentShadow)
 END_METADATA
 
@@ -71,7 +79,7 @@ END_METADATA
 constexpr int kSeparatorHeightDip = 1;
 
 InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
-    : infobars::InfoBarContainer(delegate),
+    : infobars::InfoBarContainerWithPriority(delegate),
       content_shadow_(new ContentShadow()) {
   SetID(VIEW_ID_INFO_BAR_CONTAINER);
   AddChildViewRaw(content_shadow_.get());

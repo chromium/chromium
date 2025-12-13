@@ -12,8 +12,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,6 +25,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/image/image.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -54,9 +53,7 @@ class ArcProvisionNotificationServiceFactory
 
  private:
   friend base::DefaultSingletonTraits<ArcProvisionNotificationServiceFactory>;
-  ArcProvisionNotificationServiceFactory() {
-    DependsOn(NotificationDisplayServiceFactory::GetInstance());
-  }
+  ArcProvisionNotificationServiceFactory() = default;
   ~ArcProvisionNotificationServiceFactory() override = default;
 };
 
@@ -114,7 +111,7 @@ void ArcProvisionNotificationService::ShowNotification() {
   message_center::RichNotificationData optional_fields;
   optional_fields.never_timeout = true;
 
-  message_center::Notification notification(
+  auto notification = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, kManagedProvisionNotificationId,
       l10n_util::GetStringUTF16(IDS_ARC_MANAGED_PROVISION_NOTIFICATION_TITLE),
       l10n_util::GetStringFUTF16(IDS_ARC_MANAGED_PROVISION_NOTIFICATION_MESSAGE,
@@ -123,10 +120,11 @@ void ArcProvisionNotificationService::ShowNotification() {
           ui::ResourceBundle::GetSharedInstance().GetImageNamed(
               IDR_ARC_PLAY_STORE_OPTIN_IN_PROGRESS_NOTIFICATION)),
       l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE), GURL(),
-      notifier_id, optional_fields, new message_center::NotificationDelegate());
+      notifier_id, optional_fields,
+      base::MakeRefCounted<message_center::NotificationDelegate>());
 
-  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, notification, /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 void ArcProvisionNotificationService::HideNotification() {
@@ -134,10 +132,8 @@ void ArcProvisionNotificationService::HideNotification() {
     show_on_session_starts_ = false;
     session_observation_.Reset();
   } else {
-    NotificationDisplayServiceFactory::GetForProfile(
-        Profile::FromBrowserContext(context_))
-        ->Close(NotificationHandler::Type::TRANSIENT,
-                kManagedProvisionNotificationId);
+    message_center::MessageCenter::Get()->RemoveNotification(
+        kManagedProvisionNotificationId, /*by_user=*/false);
   }
 }
 

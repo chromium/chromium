@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/quic/web_transport_error.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/web_transport_fingerprint_proof_verifier.h"
@@ -74,6 +75,12 @@ class NET_EXPORT WebTransportClientVisitor {
  public:
   virtual ~WebTransportClientVisitor();
 
+  // Delegating the Local Network Access check to the visitor.
+  //
+  // See https://wicg.github.io/local-network-access/
+  virtual void OnLocalNetworkAccessCheck(const IPEndPoint& server_address,
+                                         CompletionOnceCallback callback) = 0;
+
   // State change notifiers.
   // CONNECTING -> CONNECTED
   virtual void OnBeforeConnect(const IPEndPoint& server_address) = 0;
@@ -93,7 +100,7 @@ class NET_EXPORT WebTransportClientVisitor {
   virtual void OnCanCreateNewOutgoingBidirectionalStream() = 0;
   virtual void OnCanCreateNewOutgoingUnidirectionalStream() = 0;
   virtual void OnDatagramProcessed(
-      std::optional<quic::MessageStatus> status) = 0;
+      std::optional<quic::DatagramStatus> status) = 0;
 };
 
 // Parameters that determine the way WebTransport session is established.

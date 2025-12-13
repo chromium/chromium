@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -29,7 +30,6 @@
 
 using testing::_;
 using testing::Contains;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::SaveArg;
 
@@ -192,9 +192,9 @@ TEST_F(SignalFilterProcessorTest, UkmMetricsConfig) {
 
   EXPECT_CALL(*ukm_data_manager_, StartObservingUkm(_))
       .Times(1)
-      .WillOnce(Invoke([](const UkmConfig& actual_config) {
+      .WillOnce([](const UkmConfig& actual_config) {
         EXPECT_EQ(actual_config, UkmConfig());
-      }));
+      });
   EXPECT_CALL(*history_observer_, SetHistoryBasedSegments(IsEmpty()));
   signal_filter_processor_->OnSignalListUpdated();
 
@@ -214,9 +214,9 @@ TEST_F(SignalFilterProcessorTest, UkmMetricsConfig) {
 
   EXPECT_CALL(*ukm_data_manager_, StartObservingUkm(_))
       .Times(1)
-      .WillOnce(Invoke([&config2](const UkmConfig& actual_config) {
+      .WillOnce([&config2](const UkmConfig& actual_config) {
         EXPECT_EQ(actual_config, config2);
-      }));
+      });
   EXPECT_CALL(*history_observer_,
               SetHistoryBasedSegments(base::flat_set<SegmentId>({kSegmentId})));
   EXPECT_CALL(*signal_storage_config_, OnSignalCollectionStarted(_));

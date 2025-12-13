@@ -45,7 +45,8 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
-import org.chromium.ui.base.ApplicationViewportInsetSupplier;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -70,10 +71,11 @@ public class CustomTabBottomBarDelegateUnitTest {
     @Mock private RemoteViews mRemoteViews;
     @Mock private Intent mIntent;
     @Mock private PendingIntent mRemoteViewsPendingIntent;
-    @Mock private ApplicationViewportInsetSupplier mViewportInsetSupplier;
     @Mock private PendingIntent mSwipeUpPendingIntent;
     @Mock private ImageButton mButtonView;
 
+    private final ApplicationViewportInsetTracker mViewportInsetSupplier =
+            ApplicationViewportInsetTracker.createForTests();
     private Activity mActivity;
     private BrowserServicesIntentDataProvider mIntentDataProvider;
     private CustomTabBottomBarDelegate mBottomBarDelegate;
@@ -90,7 +92,9 @@ public class CustomTabBottomBarDelegateUnitTest {
         when(mIntent.getParcelableExtra(
                         CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION))
                 .thenReturn(mSwipeUpPendingIntent);
-        when(mWindowAndroid.getApplicationBottomInsetSupplier()).thenReturn(mViewportInsetSupplier);
+        when(mWindowAndroid.getApplicationBottomInsetTracker()).thenReturn(mViewportInsetSupplier);
+        when(mWindowAndroid.getKeyboardDelegate())
+                .thenReturn(KeyboardVisibilityDelegate.getInstance());
         mIntentDataProvider =
                 new CustomTabIntentDataProvider(
                         mIntent, mActivity, CustomTabsIntent.COLOR_SCHEME_LIGHT);

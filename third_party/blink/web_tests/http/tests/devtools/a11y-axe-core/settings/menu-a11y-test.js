@@ -17,7 +17,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   const tabbedPane = Settings.SettingsScreen.SettingsScreen.instance().tabbedLocation.tabbedPane();
 
   // force tabs to update
-  tabbedPane.innerUpdateTabElements();
+  tabbedPane.performUpdate();
 
   await AxeCoreTestRunner.runValidation([tabbedPane.headerElement, tabbedPane.tabsElement]);
   TestRunner.completeTest();

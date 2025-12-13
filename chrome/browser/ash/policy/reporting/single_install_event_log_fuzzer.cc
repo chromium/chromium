@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include <unistd.h>
@@ -15,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -32,8 +28,8 @@ base::File CreatePipeFileWithContents(const uint8_t* data, size_t size) {
   base::File pipe_read_end = base::File(base::ScopedFD(pipefd[0]));
   base::File pipe_write_end = base::File(base::ScopedFD(pipefd[1]));
   if (size) {
-    CHECK(pipe_write_end.WriteAtCurrentPos(reinterpret_cast<const char*>(data),
-                                           size));
+    UNSAFE_TODO(CHECK(pipe_write_end.WriteAtCurrentPos(
+        reinterpret_cast<const char*>(data), size)));
   }
   return pipe_read_end;
 }

@@ -14,20 +14,26 @@ found in the LICENSE file.
     android:id="@+id/context_menu_frame"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/menu_bg_tinted"
+    android:background="@drawable/menu_bg_shadow"
     android:layout_marginHorizontal="@dimen/context_menu_lateral_margin"
     android:layout_marginVertical="@dimen/context_menu_vertical_margin"
     android:layout_gravity="center">
-
-    <!-- Setting listSelector to transparent prevents the list items that have
-         selectableItemBackground from having a double highlight effect. -->
-    <org.chromium.chrome.browser.contextmenu.ContextMenuListView
-        android:id="@+id/context_menu_list_view"
-        android:layout_width="@dimen/context_menu_max_width"
+    <FrameLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/context_menu_bottom_padding"
-        android:fadeScrollbars="false"
-        android:divider="@null"
-        android:listSelector="@android:color/transparent"
-        android:clipToPadding="false" />
+        android:background="@drawable/menu_bg_shape"
+        android:clipToOutline="true">
+
+        <!-- Setting listSelector to transparent prevents the list items that have
+            selectableItemBackground from having a double highlight effect. -->
+        <org.chromium.chrome.browser.contextmenu.ContextMenuListView
+            android:id="@+id/context_menu_list_view"
+            android:layout_width="@dimen/context_menu_max_width"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/context_menu_padding"
+            android:fadeScrollbars="false"
+            android:divider="@null"
+            android:listSelector="@android:color/transparent"
+            android:clipToPadding="false" />
+    </FrameLayout>
 </FrameLayout>

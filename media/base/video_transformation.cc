@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/video_transformation.h"
 
 #include <math.h>
@@ -15,6 +10,8 @@
 #include <array>
 #include <cmath>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
@@ -55,9 +52,9 @@ VideoTransformation VideoTransformation::FromFFmpegDisplayMatrix(
     const int32_t* matrix3x3) {
   const int32_t matrix2x2[4] = {
       matrix3x3[0],
-      matrix3x3[1],
-      matrix3x3[3],
-      matrix3x3[4],
+      UNSAFE_TODO(matrix3x3[1]),
+      UNSAFE_TODO(matrix3x3[3]),
+      UNSAFE_TODO(matrix3x3[4]),
   };
   return VideoTransformation(matrix2x2);
 }
@@ -77,7 +74,7 @@ std::array<int32_t, 4> VideoTransformation::GetMatrix() const {
   }
 }
 
-VideoTransformation::VideoTransformation(const int32_t matrix[4]) {
+VideoTransformation::VideoTransformation(base::span<const int32_t, 4> matrix) {
   // Promote to int64_t to avoid abs(int32_min) being undefined.
   const std::array<int64_t, 4> matrix64 = {
       matrix[0],

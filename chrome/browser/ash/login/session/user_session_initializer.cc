@@ -60,7 +60,6 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/services/cros_safety/cros_safety_service.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -250,14 +249,11 @@ void UserSessionInitializer::InitializeCerts(Profile* profile) {
                        base::BindPostTaskToCurrentDefault(
                            base::BindOnce(&OnGotNSSCertDatabaseForUser))));
 
-    if (base::FeatureList::IsEnabled(
-            ::features::kEnableCertManagementUIV2Write)) {
-      net::ServerCertificateDatabaseService* user_cert_db =
-          net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-              profile);
-      CHECK(user_cert_db);
-      NetworkCertLoader::Get()->SetUserServerCertDatabaseService(user_cert_db);
-    }
+    net::ServerCertificateDatabaseService* user_cert_db =
+        net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+            profile);
+    CHECK(user_cert_db);
+    NetworkCertLoader::Get()->SetUserServerCertDatabaseService(user_cert_db);
   }
 }
 
@@ -301,12 +297,6 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
   g_browser_process->platform_part()->InitializePrimaryProfileServices(profile);
 }
 
-void UserSessionInitializer::InitializeScalableIph(Profile* profile) {
-  ScalableIphFactory* scalable_iph_factory = ScalableIphFactory::GetInstance();
-  CHECK(scalable_iph_factory);
-  scalable_iph_factory->InitializeServiceForBrowserContext(profile);
-}
-
 void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
@@ -342,10 +332,6 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     // primary profile.
     phonehub::PhoneHubManagerFactory::GetForProfile(profile);
     eche_app::EcheAppManagerFactory::GetForProfile(profile);
-
-    // `ScalableIph` depends on `PhoneHubManager`. Initialize after
-    // `PhoneHubManager`.
-    InitializeScalableIph(profile);
 
     plugin_vm::PluginVmManager* plugin_vm_manager =
         plugin_vm::PluginVmManagerFactory::GetForProfile(primary_profile_);
@@ -397,9 +383,7 @@ void UserSessionInitializer::OnProfileWillBeDestroyed(Profile* profile) {
   cros_safety_service_.reset();
 
   if (NetworkCertLoader::IsInitialized() &&
-      base::SysInfo::IsRunningOnChromeOS() &&
-      base::FeatureList::IsEnabled(
-          ::features::kEnableCertManagementUIV2Write)) {
+      base::SysInfo::IsRunningOnChromeOS()) {
     NetworkCertLoader::Get()->SetUserServerCertDatabaseService(nullptr);
   }
 }
@@ -407,10 +391,7 @@ void UserSessionInitializer::OnProfileWillBeDestroyed(Profile* profile) {
 void UserSessionInitializer::PreStartSession(bool is_primary_session) {
   if (is_primary_session) {
     NetworkCertLoader::Get()->MarkUserNSSDBWillBeInitialized();
-    if (base::FeatureList::IsEnabled(
-            ::features::kEnableCertManagementUIV2Write)) {
-      NetworkCertLoader::Get()->MarkUserServerCertDatabaseWillBeInitialized();
-    }
+    NetworkCertLoader::Get()->MarkUserServerCertDatabaseWillBeInitialized();
   }
 }
 

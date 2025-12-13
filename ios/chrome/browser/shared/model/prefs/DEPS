@@ -24,25 +24,29 @@ include_rules = [
   "+components/lens/lens_overlay_permission_utils.h",
   "+components/sharing_message/sharing_sync_preference.h",
   "+components/regional_capabilities/regional_capabilities_prefs.h",
+  "+components/themes/pref_names.h",
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h",
   "+ios/chrome/browser/push_notification/model/push_notification_prefs.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_prefs.h",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_prefs.h",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_prefs.h",
-  "+ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h",
+  "+ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/model/price_tracking_promo_prefs.h",
+  "+ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model/safety_check_prefs.h",
+  "+ios/chrome/browser/content_suggestions/ui_bundled/shop_card/model/shop_card_prefs.h",
+  "+ios/chrome/browser/welcome_back/model/welcome_back_prefs.h",
+  "+ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h",
 ]
 
 specific_include_rules = {
   # TODO(crbug.com/40820398): Remove this dependency.
   "^browser_prefs.mm": [
+    "+components/contextual_search/contextual_search_service.h",
+    "+components/omnibox/browser/omnibox_pref_names.h",
     "+ios/chrome/browser/bookmarks/ui_bundled",
-    "-ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h",
+    "-ios/chrome/browser/authentication/test/signin_earl_grey_app_interface.h",
     "+ios/chrome/browser/metrics/model/constants.h",
-    "+ios/chrome/browser/reader_mode/model/reader_mode_prefs.h",
+    "+ios/chrome/browser/reader_mode/model/constants.h",
     "+ios/chrome/browser/upgrade/model/upgrade_constants.h",
+    "+ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h",
   ],
 }

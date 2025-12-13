@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
@@ -24,9 +25,7 @@ namespace base::test {
 namespace {
 
 std::string FormatAsJSON(ValueView value) {
-  std::string json;
-  JSONWriter::Write(value, &json);
-  return json;
+  return WriteJson(value).value_or("");
 }
 
 // Attempts to parse `json` as JSON. Returns resulting Value on success, has an
@@ -119,20 +118,20 @@ void DictionaryHasValueMatcher::DescribeNegationTo(std::ostream* os) const {
 }
 
 DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
-    const Value::Dict& template_value)
-    : template_value_(template_value.Clone()) {}
+    const Value::Dict& template_dict)
+    : template_dict_(template_dict.Clone()) {}
 
 DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
-    Value::Dict&& template_value)
-    : template_value_(std::move(template_value)) {}
+    Value::Dict&& template_dict)
+    : template_dict_(std::move(template_dict)) {}
 
 DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
     const DictionaryHasValuesMatcher& other)
-    : template_value_(other.template_value_.Clone()) {}
+    : template_dict_(other.template_dict_.Clone()) {}
 
 DictionaryHasValuesMatcher& DictionaryHasValuesMatcher::operator=(
     const DictionaryHasValuesMatcher& other) {
-  template_value_ = other.template_value_.Clone();
+  template_dict_ = other.template_dict_.Clone();
   return *this;
 }
 
@@ -152,19 +151,19 @@ bool DictionaryHasValuesMatcher::MatchAndExplain(
     const Value::Dict& dict,
     testing::MatchResultListener* listener) const {
   bool ok = true;
-  for (auto [template_key, template_value] : template_value_) {
+  for (auto [template_key, template_value] : template_dict_) {
     ok &= CheckValue(dict, template_key, template_value, listener);
   }
   return ok;
 }
 
 void DictionaryHasValuesMatcher::DescribeTo(std::ostream* os) const {
-  *os << "contains all key-values from '" << FormatAsJSON(template_value_)
+  *os << "contains all key-values from '" << FormatAsJSON(template_dict_)
       << "'";
 }
 
 void DictionaryHasValuesMatcher::DescribeNegationTo(std::ostream* os) const {
-  *os << "does not contain key-values from '" << FormatAsJSON(template_value_)
+  *os << "does not contain key-values from '" << FormatAsJSON(template_dict_)
       << "'";
 }
 
@@ -403,11 +402,11 @@ Value::Dict ParseJsonDictFromFile(const FilePath& json_file_path) {
 
 expected<void, WriteJsonError> WriteJsonFile(const FilePath& json_file_path,
                                              ValueView root) {
-  std::string json;
-  if (!JSONWriter::Write(root, &json)) {
+  std::optional<std::string> json = WriteJson(root);
+  if (!json.has_value()) {
     return unexpected(WriteJsonError::kGenerateJsonFailure);
   }
-  if (!WriteFile(json_file_path, json)) {
+  if (!WriteFile(json_file_path, json.value())) {
     return unexpected(WriteJsonError::kWriteFileFailure);
   }
   return {};

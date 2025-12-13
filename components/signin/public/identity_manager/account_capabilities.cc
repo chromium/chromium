@@ -12,6 +12,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
@@ -72,6 +73,9 @@ signin::Tribool AccountCapabilities::GetCapabilityByName(
   return iterator->second ? signin::Tribool::kTrue : signin::Tribool::kFalse;
 }
 
+// clang-format off
+// keep-sorted start newline_separated=yes sticky_prefixes=#if group_prefixes=AccountCapabilities,#endif block=yes
+// clang-format on
 signin::Tribool AccountCapabilities::can_fetch_family_member_info() const {
   return GetCapabilityByName(kCanFetchFamilyMemberInfoCapabilityName);
 }
@@ -80,20 +84,23 @@ signin::Tribool AccountCapabilities::can_have_email_address_displayed() const {
   return GetCapabilityByName(kCanHaveEmailAddressDisplayedCapabilityName);
 }
 
-signin::Tribool AccountCapabilities::
-    can_show_history_sync_opt_ins_without_minor_mode_restrictions() const {
-  return GetCapabilityByName(
-      kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName);
+#if !BUILDFLAG(IS_ANDROID)
+signin::Tribool
+AccountCapabilities::can_make_chrome_search_engine_choice_screen_choice()
+    const {
+  return GetCapabilityByName(kCanMakeChromeSearchEngineChoiceScreenChoice);
 }
+#endif
 
 signin::Tribool AccountCapabilities::can_run_chrome_privacy_sandbox_trials()
     const {
   return GetCapabilityByName(kCanRunChromePrivacySandboxTrialsCapabilityName);
 }
 
-signin::Tribool AccountCapabilities::is_opted_in_to_parental_supervision()
-    const {
-  return GetCapabilityByName(kIsOptedInToParentalSupervisionCapabilityName);
+signin::Tribool AccountCapabilities::
+    can_show_history_sync_opt_ins_without_minor_mode_restrictions() const {
+  return GetCapabilityByName(
+      kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName);
 }
 
 signin::Tribool AccountCapabilities::can_toggle_auto_updates() const {
@@ -102,6 +109,16 @@ signin::Tribool AccountCapabilities::can_toggle_auto_updates() const {
 
 signin::Tribool AccountCapabilities::can_use_chrome_ip_protection() const {
   return GetCapabilityByName(kCanUseChromeIpProtectionName);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+signin::Tribool AccountCapabilities::can_use_chromeos_generative_ai() const {
+  return GetCapabilityByName(kCanUseChromeOSGenerativeAi);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+signin::Tribool AccountCapabilities::can_use_copyeditor_feature() const {
+  return GetCapabilityByName(kCanUseCopyEditorFeatureName);
 }
 
 signin::Tribool AccountCapabilities::can_use_devtools_generative_ai_features()
@@ -113,40 +130,21 @@ signin::Tribool AccountCapabilities::can_use_edu_features() const {
   return GetCapabilityByName(kCanUseEduFeaturesCapabilityName);
 }
 
-signin::Tribool AccountCapabilities::can_use_manta_service() const {
-  return GetCapabilityByName(kCanUseMantaServiceName);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+signin::Tribool AccountCapabilities::can_use_gemini_in_chrome() const {
+  // TODO(crbug.com/462697239): The current implementation is a placeholder to
+  // unblock development. Update this with the account capability once it is
+  // available from the server.
+  switch (is_subject_to_parental_controls()) {
+    case signin::Tribool::kTrue:
+      return signin::Tribool::kFalse;
+    case signin::Tribool::kFalse:
+      return signin::Tribool::kTrue;
+    case signin::Tribool::kUnknown:
+      return signin::Tribool::kUnknown;
+  }
 }
-
-signin::Tribool AccountCapabilities::can_use_copyeditor_feature() const {
-  return GetCapabilityByName(kCanUseCopyEditorFeatureName);
-}
-
-signin::Tribool AccountCapabilities::can_use_model_execution_features() const {
-  return GetCapabilityByName(kCanUseModelExecutionFeaturesName);
-}
-
-signin::Tribool AccountCapabilities::is_allowed_for_machine_learning() const {
-  return GetCapabilityByName(kIsAllowedForMachineLearningCapabilityName);
-}
-
-signin::Tribool AccountCapabilities::
-    is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice() const {
-  return GetCapabilityByName(
-      kIsSubjectToChromePrivacySandboxRestrictedMeasurementNotice);
-}
-
-signin::Tribool AccountCapabilities::is_subject_to_enterprise_policies() const {
-  return GetCapabilityByName(kIsSubjectToEnterprisePoliciesCapabilityName);
-}
-
-signin::Tribool AccountCapabilities::is_subject_to_parental_controls() const {
-  return GetCapabilityByName(kIsSubjectToParentalControlsCapabilityName);
-}
-
-signin::Tribool AccountCapabilities::can_use_speaker_label_in_recorder_app()
-    const {
-  return GetCapabilityByName(kCanUseSpeakerLabelInRecorderApp);
-}
+#endif
 
 signin::Tribool AccountCapabilities::can_use_generative_ai_in_recorder_app()
     const {
@@ -158,11 +156,49 @@ signin::Tribool AccountCapabilities::can_use_generative_ai_photo_editing()
   return GetCapabilityByName(kCanUseGenerativeAiPhotoEditing);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-signin::Tribool AccountCapabilities::can_use_chromeos_generative_ai() const {
-  return GetCapabilityByName(kCanUseChromeOSGenerativeAi);
+signin::Tribool AccountCapabilities::can_use_manta_service() const {
+  return GetCapabilityByName(kCanUseMantaServiceName);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+
+signin::Tribool AccountCapabilities::can_use_model_execution_features() const {
+  return GetCapabilityByName(kCanUseModelExecutionFeaturesName);
+}
+
+signin::Tribool AccountCapabilities::can_use_speaker_label_in_recorder_app()
+    const {
+  return GetCapabilityByName(kCanUseSpeakerLabelInRecorderApp);
+}
+
+signin::Tribool AccountCapabilities::is_allowed_for_machine_learning() const {
+  return GetCapabilityByName(kIsAllowedForMachineLearningCapabilityName);
+}
+
+signin::Tribool AccountCapabilities::is_opted_in_to_parental_supervision()
+    const {
+  return GetCapabilityByName(kIsOptedInToParentalSupervisionCapabilityName);
+}
+
+signin::Tribool
+AccountCapabilities::is_subject_to_account_level_enterprise_policies() const {
+  return GetCapabilityByName(
+      kIsSubjectToAccountLevelEnterprisePoliciesCapabilityName);
+}
+
+signin::Tribool AccountCapabilities::
+    is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice() const {
+  return GetCapabilityByName(
+      kIsSubjectToChromePrivacySandboxRestrictedMeasurementNotice);
+}
+
+signin::Tribool AccountCapabilities::is_subject_to_enterprise_features() const {
+  return GetCapabilityByName(kIsSubjectToEnterprisePoliciesCapabilityName);
+}
+
+signin::Tribool AccountCapabilities::is_subject_to_parental_controls() const {
+  return GetCapabilityByName(kIsSubjectToParentalControlsCapabilityName);
+}
+
+// keep-sorted end
 
 bool AccountCapabilities::UpdateWith(const AccountCapabilities& other) {
   bool modified = false;
@@ -227,13 +263,17 @@ AccountCapabilities::ConvertToJavaAccountCapabilities(JNIEnv* env) const {
 }
 #endif
 
-#if BUILDFLAG(IS_IOS)
 AccountCapabilities::AccountCapabilities(
     base::flat_map<std::string, bool> capabilities)
     : capabilities_map_(std::move(capabilities)) {}
 
+#if BUILDFLAG(IS_IOS)
 const base::flat_map<std::string, bool>&
 AccountCapabilities::ConvertToAccountCapabilitiesIOS() {
   return capabilities_map_;
 }
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AccountCapabilities)
 #endif

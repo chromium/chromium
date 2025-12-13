@@ -10,8 +10,8 @@
 #include <string_view>
 
 #include "base/time/time.h"
-#include "components/autofill/core/browser/strike_databases/simple_autofill_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
+#include "components/strike_database/simple_strike_database.h"
+#include "components/strike_database/strike_database.h"
 
 namespace payments::facilitated {
 
@@ -28,7 +28,7 @@ struct PaymentLinkSuggestionStrikeDatabaseTraits {
 
 // Strike database for payment link suggestions.
 using PaymentLinkSuggestionStrikeDatabase =
-    autofill::SimpleAutofillStrikeDatabase<
+    strike_database::SimpleStrikeDatabase<
         PaymentLinkSuggestionStrikeDatabaseTraits>;
 
 }  // namespace payments::facilitated

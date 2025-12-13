@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/profiler/stack_copier.h"
 
 #include <array>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <numeric>
 
+#include "base/compiler_specific.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/register_context_registers.h"
 #include "base/profiler/stack_buffer.h"
@@ -57,12 +53,12 @@ union alignas(StackBuffer::kPlatformStackAlignment) TestStackBuffer {
 TEST(StackCopierTest, RewritePointerIfInOriginalStack_InStack) {
   std::array<uintptr_t, 4> original_stack;
   std::array<uintptr_t, 4> stack_copy;
-  EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack_copy[2]),
-            CopyFunctions::RewritePointerIfInOriginalStack(
-                reinterpret_cast<uint8_t*>(&original_stack[0]),
-                &original_stack[0] + std::size(original_stack),
-                reinterpret_cast<uint8_t*>(&stack_copy[0]),
-                reinterpret_cast<uintptr_t>(&original_stack[2])));
+  UNSAFE_TODO(EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack_copy[2]),
+                        CopyFunctions::RewritePointerIfInOriginalStack(
+                            reinterpret_cast<uint8_t*>(&original_stack[0]),
+                            &original_stack[0] + std::size(original_stack),
+                            reinterpret_cast<uint8_t*>(&stack_copy[0]),
+                            reinterpret_cast<uintptr_t>(&original_stack[2]))));
 }
 
 TEST(StackCopierTest, RewritePointerIfInOriginalStack_NotInStack) {
@@ -72,21 +68,21 @@ TEST(StackCopierTest, RewritePointerIfInOriginalStack_NotInStack) {
   std::array<uintptr_t, 4> original_stack;
   std::array<uintptr_t, 4> stack_copy;
 
-  EXPECT_EQ(reinterpret_cast<uintptr_t>(&non_stack_location),
-            CopyFunctions::RewritePointerIfInOriginalStack(
-                reinterpret_cast<uint8_t*>(&original_stack[0]),
-                &original_stack[0] + std::size(original_stack),
-                reinterpret_cast<uint8_t*>(&stack_copy[0]),
-                reinterpret_cast<uintptr_t>(&non_stack_location)));
+  UNSAFE_TODO(EXPECT_EQ(reinterpret_cast<uintptr_t>(&non_stack_location),
+                        CopyFunctions::RewritePointerIfInOriginalStack(
+                            reinterpret_cast<uint8_t*>(&original_stack[0]),
+                            &original_stack[0] + std::size(original_stack),
+                            reinterpret_cast<uint8_t*>(&stack_copy[0]),
+                            reinterpret_cast<uintptr_t>(&non_stack_location))));
 }
 
 TEST(StackCopierTest, StackCopy) {
   TestStackBuffer original_stack;
   // Fill the stack buffer with increasing uintptr_t values.
-  std::iota(
-      &original_stack.as_uintptr[0],
-      &original_stack.as_uintptr[0] + std::size(original_stack.as_uintptr),
-      100);
+  std::iota(&original_stack.as_uintptr[0],
+            UNSAFE_TODO(&original_stack.as_uintptr[0] +
+                        std::size(original_stack.as_uintptr)),
+            100);
   // Replace the third value with an address within the buffer.
   original_stack.as_uintptr[2] =
       reinterpret_cast<uintptr_t>(&original_stack.as_uintptr[1]);
@@ -94,7 +90,8 @@ TEST(StackCopierTest, StackCopy) {
 
   CopyFunctions::CopyStackContentsAndRewritePointers(
       &original_stack.as_uint8[0],
-      &original_stack.as_uintptr[0] + std::size(original_stack.as_uintptr),
+      UNSAFE_TODO(&original_stack.as_uintptr[0] +
+                  std::size(original_stack.as_uintptr)),
       StackBuffer::kPlatformStackAlignment, &stack_copy.as_uintptr[0]);
 
   EXPECT_EQ(original_stack.as_uintptr[0], stack_copy.as_uintptr[0]);
@@ -109,7 +106,8 @@ TEST(StackCopierTest, StackCopy_NonAlignedStackPointerCopy) {
 
   // Fill the stack buffer with increasing uint16_t values.
   std::iota(&stack_buffer.as_uint16[0],
-            &stack_buffer.as_uint16[0] + std::size(stack_buffer.as_uint16),
+            UNSAFE_TODO(&stack_buffer.as_uint16[0] +
+                        std::size(stack_buffer.as_uint16)),
             100);
 
   // Set the stack bottom to the unaligned location one uint16_t into the
@@ -171,21 +169,22 @@ TEST(StackCopierTest, StackCopy_NonAlignedStackPointerUnalignedRewriteAtStart) {
   // Set the first unaligned pointer-sized value to an address within the stack.
   uintptr_t within_stack_pointer =
       reinterpret_cast<uintptr_t>(&stack_buffer.as_uintptr[2]);
-  std::memcpy(unaligned_stack_bottom, &within_stack_pointer,
-              sizeof(within_stack_pointer));
+  UNSAFE_TODO(std::memcpy(unaligned_stack_bottom, &within_stack_pointer,
+                          sizeof(within_stack_pointer)));
 
   TestStackBuffer stack_copy_buffer = {{0}};
 
   const uint8_t* stack_copy_bottom =
       CopyFunctions::CopyStackContentsAndRewritePointers(
           unaligned_stack_bottom,
-          &stack_buffer.as_uintptr[0] + std::size(stack_buffer.as_uintptr),
+          UNSAFE_TODO(&stack_buffer.as_uintptr[0] +
+                      std::size(stack_buffer.as_uintptr)),
           StackBuffer::kPlatformStackAlignment,
           &stack_copy_buffer.as_uintptr[0]);
 
   uintptr_t copied_within_stack_pointer;
-  std::memcpy(&copied_within_stack_pointer, stack_copy_bottom,
-              sizeof(copied_within_stack_pointer));
+  UNSAFE_TODO(std::memcpy(&copied_within_stack_pointer, stack_copy_bottom,
+                          sizeof(copied_within_stack_pointer)));
 
   // The rewriting should only operate on pointer-aligned values so the
   // unaligned value should be copied verbatim.
@@ -208,22 +207,23 @@ TEST(StackCopierTest,
   // stack.
   uintptr_t within_stack_pointer =
       reinterpret_cast<uintptr_t>(&stack_buffer.as_uintptr[2]);
-  std::memcpy(unaligned_stack_bottom + sizeof(uintptr_t), &within_stack_pointer,
-              sizeof(within_stack_pointer));
+  UNSAFE_TODO(std::memcpy(unaligned_stack_bottom + sizeof(uintptr_t),
+                          &within_stack_pointer, sizeof(within_stack_pointer)));
 
   TestStackBuffer stack_copy_buffer = {{0}};
 
   const uint8_t* stack_copy_bottom =
       CopyFunctions::CopyStackContentsAndRewritePointers(
           unaligned_stack_bottom,
-          &stack_buffer.as_uintptr[0] + std::size(stack_buffer.as_uintptr),
+          UNSAFE_TODO(&stack_buffer.as_uintptr[0] +
+                      std::size(stack_buffer.as_uintptr)),
           StackBuffer::kPlatformStackAlignment,
           &stack_copy_buffer.as_uintptr[0]);
 
   uintptr_t copied_within_stack_pointer;
-  std::memcpy(&copied_within_stack_pointer,
-              stack_copy_bottom + sizeof(uintptr_t),
-              sizeof(copied_within_stack_pointer));
+  UNSAFE_TODO(std::memcpy(&copied_within_stack_pointer,
+                          stack_copy_bottom + sizeof(uintptr_t),
+                          sizeof(copied_within_stack_pointer)));
 
   // The rewriting should only operate on pointer-aligned values so the
   // unaligned value should be copied verbatim.
@@ -247,7 +247,8 @@ TEST(StackCopierTest, StackCopy_NonAlignedStackPointerAlignedRewrite) {
 
   CopyFunctions::CopyStackContentsAndRewritePointers(
       unaligned_stack_bottom,
-      &stack_buffer.as_uintptr[0] + std::size(stack_buffer.as_uintptr),
+      UNSAFE_TODO(&stack_buffer.as_uintptr[0] +
+                  std::size(stack_buffer.as_uintptr)),
       StackBuffer::kPlatformStackAlignment, &stack_copy_buffer.as_uintptr[0]);
 
   // The aligned pointer should have been rewritten to point within the stack
@@ -259,13 +260,13 @@ TEST(StackCopierTest, StackCopy_NonAlignedStackPointerAlignedRewrite) {
 TEST(StackCopierTest, CloneStack) {
   StackBuffer original_stack(kTestStackBufferSize);
   // Fill the stack buffer with increasing uintptr_t values.
-  std::iota(
-      &original_stack.buffer()[0],
-      &original_stack.buffer()[0] + (original_stack.size() / sizeof(uintptr_t)),
-      100);
+  std::iota(&original_stack.buffer()[0],
+            UNSAFE_TODO(&original_stack.buffer()[0] +
+                        (original_stack.size() / sizeof(uintptr_t))),
+            100);
   // Replace the third value with an address within the buffer.
-  original_stack.buffer()[2] =
-      reinterpret_cast<uintptr_t>(&original_stack.buffer()[1]);
+  UNSAFE_TODO(original_stack.buffer()[2]) =
+      reinterpret_cast<uintptr_t>(&UNSAFE_TODO(original_stack.buffer()[1]));
 
   uintptr_t stack_top = reinterpret_cast<uintptr_t>(original_stack.buffer()) +
                         original_stack.size();
@@ -277,10 +278,10 @@ TEST(StackCopierTest, CloneStack) {
       copy_functions.CloneStack(original_stack, &stack_top, &thread_context);
 
   EXPECT_EQ(original_stack.buffer()[0], cloned_stack->buffer()[0]);
-  EXPECT_EQ(original_stack.buffer()[1], cloned_stack->buffer()[1]);
-  EXPECT_EQ(reinterpret_cast<uintptr_t>(&cloned_stack->buffer()[1]),
-            cloned_stack->buffer()[2]);
-  EXPECT_EQ(original_stack.buffer()[3], cloned_stack->buffer()[3]);
+  UNSAFE_TODO(EXPECT_EQ(original_stack.buffer()[1], cloned_stack->buffer()[1]));
+  UNSAFE_TODO(EXPECT_EQ(reinterpret_cast<uintptr_t>(&cloned_stack->buffer()[1]),
+                        cloned_stack->buffer()[2]));
+  UNSAFE_TODO(EXPECT_EQ(original_stack.buffer()[3], cloned_stack->buffer()[3]));
   uintptr_t expected_stack_top =
       reinterpret_cast<uintptr_t>(cloned_stack->buffer()) +
       original_stack.size();

@@ -16,3 +16,5 @@ int CustomDeviceUtils::GetDevicePPI() {
 }
 
 }  // namespace segmentation_platform::processing
+
+DEFINE_JNI(CustomDeviceUtils)

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/pop_up_menu_control.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/clear_browsing_data_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -133,8 +133,8 @@ constexpr CGFloat kChevronLeadingOffset = 5;
   [super setHighlighted:highlighted];
 
   if (highlighted) {
-    self.backgroundColor =
-        [UIColor systemGray4Color];  // Same colour as a selected TableViewCell.
+    // Same colour as a selected LegacyTableViewCell.
+    self.backgroundColor = [UIColor systemGray4Color];
   } else {
     self.backgroundColor = UIColor.clearColor;
   }

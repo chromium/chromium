@@ -19,15 +19,10 @@
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/snapshots/model/constants.h"
 
 // The etension used for all snapshot images.
 constexpr std::string_view kSnapshotImageExtension = ".jpg";
-// The label appended to the snapshot filename for grey snapshot images.
-constexpr std::string_view kGreySnapshotImageIdentifier = "Grey";
-
-// The path, relative to the profile directory, where snapshots are stored.
-const base::FilePath::CharType kSnapshotsPath[] =
-    FILE_PATH_LITERAL("Snapshots");
 
 // The path, relative to the application's Library directory, to WebKit's
 // storage location for website local data .
@@ -47,8 +42,7 @@ struct DirectorySnapshotDetails {
   int64_t total_size_bytes;
 };
 
-DirectorySnapshotDetails CalculateImageMetricsInRoot(bool grey_only,
-                                                     base::FilePath root) {
+DirectorySnapshotDetails CalculateImageMetricsInRoot(base::FilePath root) {
   DirectorySnapshotDetails details;
 
   if (!base::PathExists(root)) {
@@ -63,15 +57,9 @@ DirectorySnapshotDetails CalculateImageMetricsInRoot(bool grey_only,
 
   if (!info.is_directory) {
     if (root.MatchesExtension(kSnapshotImageExtension)) {
-      // Add this snapshot to the total if search for all snapshots or searching
-      // for grey snapshots only and the filename contains
-      // `kGreySnapshotImageIdentifier`.
-      if (!grey_only ||
-          root.BaseName().MaybeAsASCII().find(kGreySnapshotImageIdentifier) !=
-              std::string::npos) {
-        details.snapshot_count += 1;
-        details.total_size_bytes += info.size;
-      }
+      // Add this snapshot to the total.
+      details.snapshot_count += 1;
+      details.total_size_bytes += info.size;
     }
     return details;
   }
@@ -82,7 +70,7 @@ DirectorySnapshotDetails CalculateImageMetricsInRoot(bool grey_only,
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
     DirectorySnapshotDetails child_details =
-        CalculateImageMetricsInRoot(grey_only, root.Append(path.BaseName()));
+        CalculateImageMetricsInRoot(root.Append(path.BaseName()));
     details.snapshot_count += child_details.snapshot_count;
     details.total_size_bytes += child_details.total_size_bytes;
   }
@@ -209,9 +197,7 @@ void LogOptimizationGuideModelDownloadsMetrics(
 // Returns the size of the sessions for `profile_path`, including both the
 // legacy and optimized storage.
 int64_t GetSessionStorageSize(const base::FilePath& profile_path) {
-  return CalculateTotalSize(profile_path.Append(kLegacySessionsDirname)) +
-         CalculateTotalSize(profile_path.Append(kLegacyWebSessionsDirname)) +
-         CalculateTotalSize(profile_path.Append(kSessionRestorationDirname));
+  return CalculateTotalSize(profile_path.Append(kSessionRestorationDirname));
 }
 
 // Logs the total amount of storage used by the regular and OTR tabs for both
@@ -239,30 +225,17 @@ void LogApplicationSupportDirectorySize(
 
 void LogAverageSnapshotSizes(base::FilePath profile_path,
                              scoped_refptr<base::SequencedTaskRunner>) {
-  base::FilePath snapshots_storage_dir = profile_path.Append(kSnapshotsPath);
+  base::FilePath snapshots_storage_dir = profile_path.Append(kSnapshotsDirName);
 
-  DirectorySnapshotDetails grey_snapshot_details =
-      CalculateImageMetricsInRoot(/*grey_only=*/true, snapshots_storage_dir);
-  int64_t grey_average_bytes_size = 0;
-  if (grey_snapshot_details.snapshot_count > 0) {
-    grey_average_bytes_size = grey_snapshot_details.total_size_bytes /
-                              grey_snapshot_details.snapshot_count;
-  }
-  UMA_HISTOGRAM_MEMORY_KB("IOS.SandboxMetrics.AverageGreySnapshotSize",
-                          grey_average_bytes_size / 1024);
-
-  DirectorySnapshotDetails all_snapshot_details =
-      CalculateImageMetricsInRoot(/*grey_only=*/false, snapshots_storage_dir);
-  int64_t color_total_size_bytes = all_snapshot_details.total_size_bytes -
-                                   grey_snapshot_details.total_size_bytes;
-  int color_snapshot_count = all_snapshot_details.snapshot_count -
-                             grey_snapshot_details.snapshot_count;
-  int64_t color_average_bytes_size = 0;
-  if (color_snapshot_count > 0) {
-    color_average_bytes_size = color_total_size_bytes / color_snapshot_count;
+  DirectorySnapshotDetails snapshot_details =
+      CalculateImageMetricsInRoot(snapshots_storage_dir);
+  int64_t average_bytes_size = 0;
+  if (snapshot_details.snapshot_count > 0) {
+    average_bytes_size =
+        snapshot_details.total_size_bytes / snapshot_details.snapshot_count;
   }
   UMA_HISTOGRAM_MEMORY_KB("IOS.SandboxMetrics.AverageColorSnapshotSize",
-                          color_average_bytes_size / 1024);
+                          average_bytes_size / 1024);
 }
 
 // Logs the WebKit tmp directory size and the size of the tmp directory

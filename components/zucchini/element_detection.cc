@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/zucchini/element_detection.h"
 
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "components/zucchini/buildflags.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/disassembler_no_op.h"
+#include "components/zucchini/image_utils.h"
 #include "components/zucchini/version_info.h"
 
 #if BUILDFLAG(ENABLE_DEX)
@@ -195,8 +192,8 @@ ElementFinder::~ElementFinder() = default;
 
 std::optional<Element> ElementFinder::GetNext() {
   for (; pos_ < image_.size(); ++pos_) {
-    ConstBufferView test_image =
-        ConstBufferView::FromRange(image_.begin() + pos_, image_.end());
+    ConstBufferView test_image = ConstBufferView::FromRange(
+        UNSAFE_TODO(image_.begin() + pos_), image_.end());
     std::optional<Element> element = detector_.Run(test_image);
     if (element) {
       element->offset += pos_;

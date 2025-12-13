@@ -51,6 +51,6 @@ source_set("unit_tests") {
     "//components/leveldb_proto:test_support",
     "//components/prefs:test_support",
     "//testing/gmock",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }

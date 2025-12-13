@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
@@ -87,9 +86,6 @@ bool IsArcProvisioned(const Profile* profile);
 // Chrome OS device. Otherwise, it just returns the dummy value set by
 // SetArcBlockedDueToIncompatibleFileSystemForTesting (false by default.)
 bool IsArcBlockedDueToIncompatibleFileSystem(const Profile* profile);
-
-// Sets the ARCVM DLC image availability check result for testing.
-void SetArcvmDlcImageStatusForTesting(std::optional<bool> availability);
 
 // Sets the result of IsArcBlockedDueToIncompatibleFileSystem for testing.
 void SetArcBlockedDueToIncompatibleFileSystemForTesting(bool block);
@@ -174,11 +170,6 @@ void UpdateArcFileSystemCompatibilityPrefIfNeeded(
     const AccountId& account_id,
     const base::FilePath& profile_path,
     base::OnceClosure callback);
-
-// Check if the ARCVM DLC image was installed on the device.
-void CheckArcVmDlcImageExist(base::OnceClosure callback);
-
-void SetArcvmDlcImageStatus(bool availability);
 
 // Returns the supervision transition status as stored in profile prefs.
 ArcManagementTransition GetManagementTransition(const Profile* profile);

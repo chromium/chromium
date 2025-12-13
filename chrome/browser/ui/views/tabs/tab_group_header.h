@@ -7,11 +7,13 @@
 
 #include <string_view>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
@@ -39,6 +41,8 @@ class TabGroupHeader : public TabSlotView,
   METADATA_HEADER(TabGroupHeader, TabSlotView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAttentionIndicatorViewElementId);
+
   TabGroupHeader(TabSlotController& tab_slot_controller,
                  const tab_groups::TabGroupId& group,
                  const TabGroupStyle& style);

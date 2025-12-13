@@ -24,8 +24,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/display/win/dpi.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/win/icon_util.h"
 
 namespace {
 // Helper class to manage lifetime of icon reader service.

@@ -37,8 +37,6 @@ is_debug = false
 
 Note: Only ```target_os = "chromeos"``` is required, the others are recommended
 for a good experience but you can configure Chrome however you like otherwise.
-Note that Native Client is required, so do not put `enable_nacl = false` in
-your file anywhere!
 
 Now build Chrome as usual, e.g.:
 
@@ -108,9 +106,9 @@ TMPDIR=$(mktemp -d)
 gsutil cp gs://chromeos-localmirror/distfiles/espeak-ng-$VERSION.tar.xz $TMPDIR
 mkdir $TMPDIR/extract
 tar -C $TMPDIR/extract -xvf $TMPDIR/espeak-ng-$VERSION.tar.xz
-sudo mkdir -p /usr/share/chromeos-assets/speech_synthesis/espeak-ng/
+sudo mkdir -p /usr/share/chromeos-assets/speech_synthesis/espeak-ng-mv3/
 sudo chown -R $(whoami) /usr/share/chromeos-assets/
-cp -r $TMPDIR/extract/* /usr/share/chromeos-assets/speech_synthesis/espeak-ng
+sudo cp -r $TMPDIR/extract/espeak-ng-mv3/* /usr/share/chromeos-assets/speech_synthesis/espeak-ng-mv3/
 rm -rf $TMPDIR
 ```
 

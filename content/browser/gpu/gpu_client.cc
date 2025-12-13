@@ -12,7 +12,8 @@
 namespace content {
 
 std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> CreateGpuClient(
-    mojo::PendingReceiver<viz::mojom::Gpu> receiver) {
+    mojo::PendingReceiver<viz::mojom::Gpu> receiver,
+    bool enable_extra_handles_validation) {
   // TODO(crbug.com/379869738): Refactor to use client_id without
   // GetUnsafeValue().
   const ChildProcessId client_id =
@@ -23,7 +24,7 @@ std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> CreateGpuClient(
   std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> gpu_client(
       new viz::GpuClient(std::make_unique<BrowserGpuClientDelegate>(),
                          client_id.GetUnsafeValue(), client_tracing_id,
-                         task_runner),
+                         enable_extra_handles_validation, task_runner),
       base::OnTaskRunnerDeleter(task_runner));
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&viz::GpuClient::Add, gpu_client->GetWeakPtr(),

@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"

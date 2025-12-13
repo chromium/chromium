@@ -14,18 +14,22 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/mojom/crosh.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -67,7 +71,7 @@ class MockArcShellExecutionInstance
 };
 
 constexpr char kPrimaryUserProfileName[] = "primary@gmail.com";
-constexpr char KSecondaryUserProfileName[] = "secondary@gmail.com";
+constexpr char kSecondaryUserProfileName[] = "secondary@gmail.com";
 
 class ArcCroshServiceProviderTest : public testing::Test {
  public:
@@ -80,6 +84,7 @@ class ArcCroshServiceProviderTest : public testing::Test {
   void SetUp() override {
     ash::UpstartClient::InitializeFake();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
 
     base::CommandLine* command_line =
         scoped_command_line.GetProcessCommandLine();
@@ -89,34 +94,46 @@ class ArcCroshServiceProviderTest : public testing::Test {
     service_provider_ = std::make_unique<ArcCroshServiceProvider>();
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
-
+    arc_dlc_installer_ = std::make_unique<arc::ArcDlcInstaller>();
     // Make the session manager skip creating UI.
     arc::ArcSessionManager::SetUiEnabledForTesting(/*enabled=*/false);
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
-            base::BindRepeating(arc::FakeArcSession::Create)));
+            base::BindRepeating(arc::FakeArcSession::Create)),
+        arc_dlc_installer_.get());
 
     // Log in as a primary profile to enable ARCVM.
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    const AccountId primary_user_account_id =
-        AccountId::FromUserEmail(kPrimaryUserProfileName);
-    user_manager::User* primary_user =
-        fake_user_manager_->AddUser(primary_user_account_id);
-    primary_username_hash_ = primary_user->username_hash();
-    Profile* primary_user_profile =
-        profile_manager_->CreateTestingProfile(kPrimaryUserProfileName);
+    Profile* primary_user_profile;
+    {
+      const AccountId primary_user_account_id =
+          AccountId::FromUserEmail(kPrimaryUserProfileName);
+      user_manager::User* primary_user =
+          fake_user_manager_->AddUser(primary_user_account_id);
+      primary_username_hash_ = primary_user->username_hash();
+      fake_user_manager_->LoginUser(primary_user_account_id);
 
-    const AccountId secondary_user_account_id =
-        AccountId::FromUserEmail(KSecondaryUserProfileName);
-    user_manager::User* secondary_user =
-        fake_user_manager_->AddUser(secondary_user_account_id);
-    secondary_username_hash_ = secondary_user->username_hash();
-    profile_manager_->CreateTestingProfile(KSecondaryUserProfileName);
+      ash::ScopedAccountIdAnnotator annotator1(
+          profile_manager_->profile_manager(), primary_user_account_id);
+      primary_user_profile =
+          profile_manager_->CreateTestingProfile(kPrimaryUserProfileName);
+    }
 
-    fake_user_manager_->LoginUser(primary_user_account_id);
+    {
+      const AccountId secondary_user_account_id =
+          AccountId::FromUserEmail(kSecondaryUserProfileName);
+      user_manager::User* secondary_user =
+          fake_user_manager_->AddUser(secondary_user_account_id);
+      secondary_username_hash_ = secondary_user->username_hash();
+
+      ash::ScopedAccountIdAnnotator annotator2(
+          profile_manager_->profile_manager(), secondary_user_account_id);
+      profile_manager_->CreateTestingProfile(kSecondaryUserProfileName);
+    }
+
     arc_session_manager_->SetProfile(primary_user_profile);
 
     arc_session_manager_->Initialize();
@@ -140,10 +157,12 @@ class ArcCroshServiceProviderTest : public testing::Test {
         &mock_arc_shell_execution_instance_);
     arc_session_manager_->Shutdown();
     profile_manager_->DeleteTestingProfile(kPrimaryUserProfileName);
-    profile_manager_->DeleteTestingProfile(KSecondaryUserProfileName);
+    profile_manager_->DeleteTestingProfile(kSecondaryUserProfileName);
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
     arc_service_manager_.reset();
     service_provider_.reset();
+    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::UpstartClient::Shutdown();
   }
@@ -186,11 +205,13 @@ class ArcCroshServiceProviderTest : public testing::Test {
   std::unique_ptr<ArcCroshServiceProvider> service_provider_;
   MockArcShellExecutionInstance mock_arc_shell_execution_instance_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
+  std::unique_ptr<arc::ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::string primary_username_hash_;
   std::string secondary_username_hash_;
   base::test::ScopedCommandLine scoped_command_line;

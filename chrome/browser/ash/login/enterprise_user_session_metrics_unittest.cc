@@ -9,7 +9,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -19,22 +18,13 @@
 
 namespace ash {
 
-namespace {
-
-AccountId GetAccountId() {
-  return AccountId::FromUserEmail("fake-email@example.com");
-}
-
-}  // namespace
-
 // Tests enterprise session start/stop metrics recording.
 // TODO(michaelpg): Add browser tests to verify the methods are called at the
 // right times.
 class EnterpriseUserSessionMetricsTest : public testing::Test {
  public:
   EnterpriseUserSessionMetricsTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()),
-        install_attributes_(std::make_unique<ScopedStubInstallAttributes>(
+      : install_attributes_(std::make_unique<ScopedStubInstallAttributes>(
             StubInstallAttributes::CreateCloudManaged("test-domain",
                                                       "FAKE_DEVICE_ID"))) {}
 
@@ -47,87 +37,8 @@ class EnterpriseUserSessionMetricsTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_;
   std::unique_ptr<ScopedStubInstallAttributes> install_attributes_;
 };
-
-// Tests recording a sign-in event with a sign-in event type.
-TEST_F(EnterpriseUserSessionMetricsTest, RecordSignInEvent1) {
-  {
-    SCOPED_TRACE("");
-    base::HistogramTester histogram_tester;
-    enterprise_user_session_metrics::RecordSignInEvent(
-        enterprise_user_session_metrics::SignInEventType::
-            AUTOMATIC_PUBLIC_SESSION);
-    histogram_tester.ExpectUniqueSample(
-        "Enterprise.UserSession.Logins",
-        static_cast<int>(enterprise_user_session_metrics::SignInEventType::
-                             AUTOMATIC_PUBLIC_SESSION),
-        1);
-  }
-  {
-    SCOPED_TRACE("");
-    base::HistogramTester histogram_tester;
-    enterprise_user_session_metrics::RecordSignInEvent(
-        enterprise_user_session_metrics::SignInEventType::MANUAL_KIOSK);
-    histogram_tester.ExpectUniqueSample(
-        "Enterprise.UserSession.Logins",
-        static_cast<int>(
-            enterprise_user_session_metrics::SignInEventType::MANUAL_KIOSK),
-        1);
-  }
-  {
-    SCOPED_TRACE("");
-    base::HistogramTester histogram_tester;
-    enterprise_user_session_metrics::RecordSignInEvent(
-        enterprise_user_session_metrics::SignInEventType::REGULAR_USER);
-    histogram_tester.ExpectUniqueSample(
-        "Enterprise.UserSession.Logins",
-        static_cast<int>(
-            enterprise_user_session_metrics::SignInEventType::REGULAR_USER),
-        1);
-  }
-}
-
-// Tests recording a sign-in event with a user context.
-TEST_F(EnterpriseUserSessionMetricsTest, RecordSignInEvent2) {
-  {
-    SCOPED_TRACE("");
-    base::HistogramTester histogram_tester;
-    enterprise_user_session_metrics::RecordSignInEvent(
-        UserContext(user_manager::UserType::kRegular, GetAccountId()),
-        false /* is_auto_login */);
-    histogram_tester.ExpectUniqueSample(
-        "Enterprise.UserSession.Logins",
-        static_cast<int>(
-            enterprise_user_session_metrics::SignInEventType::REGULAR_USER),
-        1);
-  }
-  {
-    SCOPED_TRACE("");
-    base::HistogramTester histogram_tester;
-    enterprise_user_session_metrics::RecordSignInEvent(
-        UserContext(user_manager::UserType::kPublicAccount, GetAccountId()),
-        false /* is_auto_login */);
-    histogram_tester.ExpectUniqueSample(
-        "Enterprise.UserSession.Logins",
-        static_cast<int>(enterprise_user_session_metrics::SignInEventType::
-                             MANUAL_PUBLIC_SESSION),
-        1);
-  }
-  {
-    SCOPED_TRACE("");
-    base::HistogramTester histogram_tester;
-    enterprise_user_session_metrics::RecordSignInEvent(
-        UserContext(user_manager::UserType::kPublicAccount, GetAccountId()),
-        true /* is_auto_login */);
-    histogram_tester.ExpectUniqueSample(
-        "Enterprise.UserSession.Logins",
-        static_cast<int>(enterprise_user_session_metrics::SignInEventType::
-                             AUTOMATIC_PUBLIC_SESSION),
-        1);
-  }
-}
 
 // Tests recording session length.
 TEST_F(EnterpriseUserSessionMetricsTest, RecordSessionLength) {

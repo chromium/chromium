@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/crash/core/app/crash_export_thunks.h"
 
 #include <algorithm>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -39,7 +35,7 @@ size_t GetCrashReports_ExportThunk(crash_reporter::Report* reports,
 
   size_t to_copy = std::min(reports_size, crash_reports.size());
   for (size_t i = 0; i < to_copy; ++i)
-    reports[i] = crash_reports[i];
+    UNSAFE_TODO(reports[i]) = crash_reports[i];
 
   return crash_reports.size();
 }

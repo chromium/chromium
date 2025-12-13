@@ -24,13 +24,12 @@ source_set("bulk_upload") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/common/ui/reauthentication",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
 

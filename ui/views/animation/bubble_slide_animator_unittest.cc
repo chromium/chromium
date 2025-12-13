@@ -12,6 +12,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -93,9 +94,12 @@ class BubbleSlideAnimatorTest : public test::WidgetTest {
     widget_ = BubbleDialogDelegateView::CreateBubble(bubble_);
     delegate_ = std::make_unique<TestBubbleSlideAnimator>(bubble_);
     delegate_->SetSlideDuration(kSlideDuration);
+    normal_duration_.emplace(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
 
   void TearDown() override {
+    normal_duration_.reset();
     CloseWidget();
     if (anchor_widget_ && !anchor_widget_->IsClosed()) {
       anchor_widget_->CloseNow();
@@ -118,6 +122,7 @@ class BubbleSlideAnimatorTest : public test::WidgetTest {
   raw_ptr<View> view2_;
   raw_ptr<View> view3_;
   std::unique_ptr<TestBubbleSlideAnimator> delegate_;
+  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 TEST_F(BubbleSlideAnimatorTest, InitiateSlide) {

@@ -56,7 +56,6 @@ public class CustomTabHistoryIphControllerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ActivityTabProvider mTabProvider;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private Profile mMockProfile;
     @Mock private AppMenuHandler mAppMenuHandler;
@@ -64,6 +63,7 @@ public class CustomTabHistoryIphControllerUnitTest {
     @Mock private Tab mTab;
 
     @Mock private Activity mActivity;
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private CustomTabHistoryIphController mController;
 
     @Before
@@ -75,7 +75,7 @@ public class CustomTabHistoryIphControllerUnitTest {
         var profileSupplier = new ObservableSupplierImpl<>(mMockProfile);
         mController =
                 new CustomTabHistoryIphController(
-                        mActivity, mTabProvider, profileSupplier, mAppMenuHandler);
+                        mActivity, mActivityTabProvider, profileSupplier, mAppMenuHandler);
         mController.setUserEducationHelperForTesting(mUserEducationHelper);
     }
 
@@ -85,6 +85,7 @@ public class CustomTabHistoryIphControllerUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowsIphOnPageLoad() {
         var tabObserver = mController.getTabObserverForTesting();
         tabObserver.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);

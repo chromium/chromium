@@ -13,6 +13,9 @@ import "services/network/public/mojom/network_anonymization_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "url/mojom/url.mojom";
 
+[EnableIf=is_win]
+import "services/network/public/mojom/proxy_config.mojom";
+
 // Mirror of net::ProxyResolveDnsOperation.
 enum HostResolveOperation {
   DNS_RESOLVE,
@@ -87,4 +90,46 @@ interface ProxyResolverFactoryRequestClient {
              HostResolveOperation operation,
              network.mojom.NetworkAnonymizationKey network_anonymization_key,
              pending_remote<HostResolverRequestClient> client);
+};
+
+// Windows-specific system proxy resolution support. Additional platforms can
+// add their own EnableIf-gated enums and populate SystemProxyResolutionStatus
+// to share a common system proxy resolver interface.
+[EnableIf=is_win]
+// LINT.IfChange(WinHttpStatus)
+enum WinHttpStatus {
+  kOk,
+  kAborted,
+  kWinHttpOpenFailed,
+  kWinHttpSetTimeoutsFailed,
+  kWinHttpSetStatusCallbackFailed,
+  kWinHttpGetIEProxyConfigForCurrentUserFailed,
+  kWinHttpCreateProxyResolverFailed,
+  kWinHttpGetProxyForURLExFailed,
+  kStatusCallbackFailed,
+  kWinHttpGetProxyResultFailed,
+  kEmptyProxyList,
+};
+// LINT.ThenChange(//net/proxy_resolution/win/winhttp_status.h:WinHttpStatus)
+
+// Describes the outcome of a system proxy resolution request. Each platform
+// fills in the optional status field guarded by its EnableIf annotation.
+struct SystemProxyResolutionStatus {
+  bool is_success;
+  int32 os_error;
+
+  [EnableIf=is_win] WinHttpStatus? win_http_status;
+};
+
+[EnableIf=is_win, ServiceSandbox=sandbox.mojom.Sandbox.kProxyResolver]
+// Implemented in the Windows utility process to proxy WinHTTP lookups and
+// invoked from the network service (or Chrome) when --use-system-proxy-resolver
+// is enabled so that proxy resolution happens with the OS configuration.
+interface SystemProxyResolver {
+  // Resolves proxies for `url` using the system configuration. On success the
+  // returned proxy list is populated and `status.os_error` is 0. On failure the
+  // proxy list is empty and the platform-specific status plus `os_error`
+  // describe the failure.
+  GetProxyForUrl(url.mojom.Url url) => (network.mojom.ProxyList proxy_list,
+                                        SystemProxyResolutionStatus status);
 };

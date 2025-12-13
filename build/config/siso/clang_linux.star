@@ -97,6 +97,7 @@ def __step_config(ctx, step_config):
     # source_root is set only for CrOS's chroot builds that use
     # rbe_exec_root="/".
     root = gn_logs_data.get("source_root", "")
+
     step_config["input_deps"].update({
         "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers": [
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
@@ -129,7 +130,7 @@ def __step_config(ctx, step_config):
 
     for cpu in target_cpus:
         __add_sysroot_for_target_cpu(step_config, cpu)
-    step_config["input_deps"].update(clang_all.input_deps)
+    step_config["input_deps"].update(clang_all.input_deps(ctx))
 
     step_config["rules"].extend(clang_unix.rules(ctx))
     if win_sdk.enabled(ctx):

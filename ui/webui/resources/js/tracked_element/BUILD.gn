@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+# The TS and JS files for this mojo is built by //ui/webui/resources/mojo so
+# that it can be shared with other WebUI components.
+mojom("mojo_bindings") {
+  sources = [ "tracked_element.mojom" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/mojom",
+  ]
+
+  webui_module_path =
+      "chrome://resources/mojo/ui/webui/resources/js/tracked_element"
+}

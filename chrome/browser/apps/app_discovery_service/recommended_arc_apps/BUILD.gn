@@ -67,7 +67,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/test:test_support",
     "//chromeos/ash/experiences/arc",
-    "//chromeos/crosapi/mojom:mojom",
+    "//chromeos/crosapi/mojom",
     "//components/user_manager",
     "//content/test:test_support",
     "//gpu/config",

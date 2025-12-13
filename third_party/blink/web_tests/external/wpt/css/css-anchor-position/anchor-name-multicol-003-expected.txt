@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] .target 1
-  assert_equals: \n<div class="target" data-expected-width="70" data-expected-height="50"></div>\nwidth expected 70 but got 40
-Harness: the test ran to completion.
-

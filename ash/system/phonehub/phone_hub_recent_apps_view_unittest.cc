@@ -53,8 +53,7 @@ class RecentAppButtonsViewTest : public AshTestBase {
     AshTestBase::SetUp();
 
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
-                              features::kEcheNetworkConnectionState},
+        /*enabled_features=*/{features::kEcheSWA},
         /*disabled_features=*/{});
 
     phone_hub_recent_apps_view_ = std::make_unique<PhoneHubRecentAppsView>(
@@ -148,33 +147,6 @@ TEST_F(RecentAppButtonsViewTest, TaskViewVisibility) {
   EXPECT_FALSE(GetErrorButton()->GetVisible());
 
   // The feature state is disabled so we should not show all recent apps view.
-  FeatureStateChanged(FeatureState::kDisabledByUser);
-  recent_apps_view()->Update();
-
-  EXPECT_FALSE(recent_apps_view()->GetVisible());
-  EXPECT_FALSE(GetLoadingView()->GetVisible());
-  EXPECT_FALSE(GetErrorButton()->GetVisible());
-}
-
-TEST_F(RecentAppButtonsViewTest,
-       TaskViewVisibility_NetworkConnectionFlagDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA},
-      /*disabled_features=*/{features::kEcheNetworkConnectionState});
-
-  EXPECT_FALSE(recent_apps_view()->GetVisible());
-  EXPECT_FALSE(GetLoadingView()->GetVisible());
-  EXPECT_FALSE(GetErrorButton()->GetVisible());
-
-  FeatureStateChanged(FeatureState::kEnabledByUser);
-  recent_apps_view()->Update();
-
-  EXPECT_TRUE(recent_apps_view()->GetVisible());
-  EXPECT_FALSE(recent_apps_view()->recent_app_buttons_view_->GetVisible());
-  EXPECT_FALSE(GetLoadingView()->GetVisible());
-  EXPECT_FALSE(GetErrorButton()->GetVisible());
-
   FeatureStateChanged(FeatureState::kDisabledByUser);
   recent_apps_view()->Update();
 

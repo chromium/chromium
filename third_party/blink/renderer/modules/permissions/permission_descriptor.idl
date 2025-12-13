@@ -43,6 +43,8 @@ enum PermissionName {
     "fullscreen",
     "web-app-installation",
     "local-network-access",
+    "local-network",
+    "loopback-network",
 };
 
 // The PermissionDescriptor dictionary is a base to describe permissions. Some

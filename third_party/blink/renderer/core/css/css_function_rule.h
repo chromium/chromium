@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_function_parameter.h"
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -14,6 +15,7 @@
 
 namespace blink {
 
+class CSSSyntaxDefinition;
 class StyleRuleFunction;
 class FunctionParameter;
 
@@ -42,6 +44,8 @@ struct DowncastTraits<CSSFunctionRule> {
     return rule.GetType() == CSSRule::kFunctionRule;
   }
 };
+
+void AppendCSSType(const CSSSyntaxDefinition& syntax, StringBuilder& builder);
 
 }  // namespace blink
 

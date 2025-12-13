@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/perfetto/include/perfetto/protozero/proto_utils.h"
 
@@ -37,9 +38,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TracePacketTokenizer {
 
   // Given a chunk of trace data, tokenize as many trace packets as possible
   // (could be zero) and return the result. Note that the tokenized packets have
-  // pointers to |data| as well as |this|, so they won't be valid after another
+  // pointers to `data` as well as `this`, so they won't be valid after another
   // call to Parse().
-  std::vector<perfetto::TracePacket> Parse(const uint8_t* data, size_t size);
+  std::vector<perfetto::TracePacket> Parse(base::span<const uint8_t> data);
 
   // Returns |true| if there is more data left to be consumed in the tokenizer.
   bool has_more() const {

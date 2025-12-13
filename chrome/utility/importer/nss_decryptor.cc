@@ -151,7 +151,8 @@ bool NSSDecryptor::ReadAndParseLogins(
     std::vector<user_data_importer::ImportedPasswordForm>* forms) {
   std::string json_content;
   base::ReadFileToString(json_file, &json_content);
-  std::optional<base::Value> parsed_json = base::JSONReader::Read(json_content);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      json_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json) {
     return false;
   }

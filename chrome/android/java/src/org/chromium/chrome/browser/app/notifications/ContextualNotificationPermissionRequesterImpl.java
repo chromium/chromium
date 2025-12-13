@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.app.notifications;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController;
@@ -16,6 +20,7 @@ import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
  * Implementation of {@link ContextualNotificationPermissionRequester}. Contains the necessary
  * hookups to request permission using the last focused chrome activity.
  */
+@NullMarked
 public class ContextualNotificationPermissionRequesterImpl
         extends ContextualNotificationPermissionRequester {
     private static final String FIELD_TRIAL_ENABLE_CONTEXTUAL_PERMISSION_REQUESTS =
@@ -53,13 +58,14 @@ public class ContextualNotificationPermissionRequesterImpl
         return permissionController.doesAppLevelSettingsAllowSiteNotifications();
     }
 
-    private NotificationPermissionController getNotificationPermissionController() {
+    private @Nullable NotificationPermissionController getNotificationPermissionController() {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         if (!(activity instanceof ChromeTabbedActivity)) return null;
 
         // TODO(shaktisahu): Maybe split out the contextual permission logic out of
         // NotificationPermissionController entirely to serve non-chrome activities.
         ChromeTabbedActivity chromeTabbedActivity = (ChromeTabbedActivity) activity;
-        return NotificationPermissionController.from(chromeTabbedActivity.getWindowAndroid());
+        return NotificationPermissionController.from(
+                assertNonNull(chromeTabbedActivity.getWindowAndroid()));
     }
 }

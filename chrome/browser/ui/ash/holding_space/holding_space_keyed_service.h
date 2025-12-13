@@ -14,6 +14,7 @@
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_observer.h"

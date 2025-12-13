@@ -25,16 +25,8 @@ The second readback happens after the device.lost rpomise resolves.
 If there are three images, they are the source canvas, and two readbacks.
 If there are two images, they are the two readbacks.
 
-The only exception are CaptureStream related tests. CaptureStream tests have
-two images, the first one is source canvas, the second one is the readback after
-device.destroy(). There is no readback after device.lost promise resolves.
-
 The source canvas including onscreen canvas, offscreen canvas and
 onscreen canvas that transferred control to OffScreenCanvas object.
-
-All tests include three types of source canvas except for the following:
-- ToDataURL and CaptureStream are only tested for onscreen canvas.
-- TransferToImageBitmap is only tested for offscreen canvas.
 
 The source canvas should be either green/red or blank.
 Both readbacks should always be blank.

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
+#include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
@@ -2021,7 +2022,7 @@ RefTestData ref_scope_equal_test_data[] = {
     {"@scope (.a, .b) to (.c, .d) { div {} }",
      ":is(.a, .b, .c, .d) div, :is(.a, .b):is(.c, .d):is(div) {}"},
 
-    // TODO(crbug.com/1280240): Many of the following tests current expect
+    // TODO(crbug.com/40208848): Many of the following tests currently expect
     // whole-subtree invalidation, because we don't extract any features from
     // :scope. That should be improved.
 
@@ -2035,15 +2036,15 @@ RefTestData ref_scope_equal_test_data[] = {
     {"@scope (.a, .b) { @scope (.c, :scope .d) { .e {} } }",
      ":is(.a, .b):is(.c, .d) .e, :is(.a, .b):is(.c, .d):is(.e) {}"},
 
-    // &
-    {"@scope (.a) { & {} }", ".a .a {}"},
-    {"@scope (.a) { .b & {} }", ".b .a, .a .a {}"},
-    {"@scope (.a, .b) { & {} }", ":is(.a, .b) :is(.a, .b) {}"},
+    // & - Expectations are identical to the explicit :scope block:
+    {"@scope (.a) { & {} }", ".a *, .a {}"},
+    {"@scope (.a) { .b & {} }", ".a :is(.b *), .b .a {}"},
+    {"@scope (.a, .b) { & {} }", ":is(.a, .b) *, :is(.a, .b) {}"},
 
+    {"@scope (.a) to (&) { .b {} }", ".a .b, .a.b {}"},
+    {"@scope (.a) to (&) { & {} }", ".a *, .a {}"},
     {"@scope (.a, .b) { @scope (.c, & .d) { .e {} } }",
-     ":is(.a, .b, .c, .d) .e, :is(.a, .b), :is(.c, .d) {}"},
-    {"@scope (.a) to (&) { .b {} }", ".a .b, .a {}"},
-    {"@scope (.a) to (&) { & {} }", ".a .a {}"},
+     ":is(.a, .b):is(.c, .d) .e, :is(.a, .b):is(.c, .d):is(.e) {}"},
 
     // Nested @scopes
     {"@scope (.a, .b) { @scope (.c, .d) { .e {} } }",

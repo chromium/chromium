@@ -21,7 +21,6 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/mock_password_manager.h"
@@ -67,6 +66,13 @@ using testing::Not;
 using testing::Property;
 using testing::Return;
 using testing::ReturnRef;
+
+std::u16string GetFreeformFooterText() {
+  return l10n_util::GetStringUTF16(
+      UsesPasswordManagerGoogleBranding()
+          ? IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_BRANDED
+          : IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_NON_BRANDED);
+}
 
 Matcher<Suggestion> EqualsDomainPasswordSuggestion(
     SuggestionType id,
@@ -165,6 +171,7 @@ Matcher<Suggestion> EqualsManagePasswordsSuggestion(
                      Suggestion::Icon::kGooglePasswordManager));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 Matcher<Suggestion> EqualsTroubleSigningInSuggestion(
     const Suggestion::Payload& payload) {
   return AllOf(
@@ -175,6 +182,7 @@ Matcher<Suggestion> EqualsTroubleSigningInSuggestion(
                                  IDS_PASSWORD_MANAGER_UI_TROUBLE_SIGNING_IN),
                              Suggestion::Text::IsPrimary(false))));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 Matcher<Suggestion> EqualsBackupPasswordSuggestion(
     const std::u16string& main_text,
@@ -194,14 +202,19 @@ Matcher<Suggestion> EqualsBackupPasswordSuggestion(
 Matcher<Suggestion> EqualsProactiveRecoverySuggestion(
     const std::u16string& backup_password,
     const Suggestion::Payload& payload) {
-  return AllOf(EqualsSuggestion(
-                   SuggestionType::kBackupPasswordEntry,
-                   l10n_util::GetStringUTF16(
-                       IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_SUGGESTION),
-                   Suggestion::Icon::kRecoveryPassword, payload),
-               Field("additional_label", &Suggestion::additional_label,
-                     std::u16string(backup_password.length(),
-                                    constants::kPasswordReplacementChar)));
+  return AllOf(
+      EqualsSuggestion(
+          SuggestionType::kBackupPasswordEntry,
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_SUGGESTION),
+          Suggestion::Icon::kRecoveryPassword, payload),
+      Field("additional_label", &Suggestion::additional_label,
+            std::u16string(backup_password.length(),
+                           constants::kPasswordReplacementChar)),
+      Field("voice_over", &Suggestion::voice_over,
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_SUGGESTION) +
+                u"\n" + GetFreeformFooterText()));
 }
 
 MATCHER_P(SuggestionHasFaviconDetails, favicon_details, "") {
@@ -216,6 +229,10 @@ MATCHER(FaviconCanBeRequestedFromGoogle, "") {
   EXPECT_TRUE(!!arg_favicon_details);
   return arg_favicon_details &&
          arg_favicon_details->can_be_requested_from_google;
+}
+
+MATCHER(AutofillFieldTypeIsPassword, "") {
+  return arg->Type().GetIdentityCredentialType() == autofill::PASSWORD;
 }
 
 Suggestion::PasswordSuggestionDetails PasswordAndMetadataToSuggestionDetails(
@@ -400,8 +417,7 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
 
   const GURL kExternalURL{"https://example.com"};
   const GURL kGaiaURL{"https://accounts.google.com"};
-  const GURL kPasswordsManagerURL{base::StrCat(
-      {"chrome://", password_manager::kChromeUIPasswordManagerHost})};
+  const GURL kPasswordsManagerURL{"chrome://password-manager"};
 
  private:
   gfx::Image favicon_;
@@ -798,17 +814,21 @@ TEST_F(PasswordSuggestionGeneratorTest, IdentitySuggestions_SingleAccount) {
       IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT,
       base::UTF8ToUTF16(identity_provider_for_display)))});
   suggestion.custom_icon = decoded_picture;
-  auto payload = Suggestion::IdentityCredentialPayload(identity_provider, id);
+  std::map<autofill::FieldType, std::u16string> fields = {
+      {autofill::EMAIL_ADDRESS, u"john@example.com"}};
+  auto payload =
+      Suggestion::IdentityCredentialPayload(identity_provider, id, fields);
   suggestion.payload = payload;
   identity_suggestions.push_back(suggestion);
 
   autofill_client().set_identity_credential_delegate(
       std::make_unique<NiceMock<MockIdentityCredentialDelegate>>());
 
-  ON_CALL(static_cast<MockIdentityCredentialDelegate&>(
-              *autofill_client().GetIdentityCredentialDelegate()),
-          GetVerifiedAutofillSuggestions)
-      .WillByDefault(Return(identity_suggestions));
+  EXPECT_CALL(
+      static_cast<MockIdentityCredentialDelegate&>(
+          *autofill_client().GetIdentityCredentialDelegate()),
+      GetVerifiedAutofillSuggestions(_, _, _, AutofillFieldTypeIsPassword(), _))
+      .WillOnce(Return(identity_suggestions));
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       undo_controller(),
@@ -1413,16 +1433,15 @@ TEST_F(PasswordSuggestionGeneratorTest,
       ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false),
       ShowIdentityCredentials(false));
 
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(
-          EqualsDomainPasswordSuggestion(SuggestionType::kPasswordEntry,
-                                         u"username", password_label(8u),
-                                         /*realm_label=*/u"", favicon()),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManagePasswordsSuggestion(),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(SuggestionType::kPendingStateSignin)));
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsDomainPasswordSuggestion(
+                              SuggestionType::kPasswordEntry, u"username",
+                              password_label(8u),
+                              /*realm_label=*/u"", favicon()),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kPendingStateSignin),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
   histogram_tester.ExpectUniqueSample(
       kReauthPromoHistogramName,
       FillingReauthPromoShown::kShownWithOtherSuggestions, 1);
@@ -1534,6 +1553,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordSuggestionGeneratorTest,
        PasswordRecoveryFlow_AppendsTroubleSigningInSuggestion) {
   base::test::ScopedFeatureList feature_list;
@@ -1563,11 +1583,16 @@ TEST_F(PasswordSuggestionGeneratorTest,
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion()));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordSuggestionGeneratorTest,
        PasswordRecoveryFlow_AppendsBackupPasswordSuggestion) {
   base::test::ScopedFeatureList feature_list;
+#if BUILDFLAG(IS_ANDROID)
+  feature_list.InitAndEnableFeature(features::kFillRecoveryPassword);
+#else
   feature_list.InitAndEnableFeature(features::kShowRecoveryPassword);
+#endif
   autofill::PasswordFormFillData fill_data =
       password_form_fill_data_with_backup();
   autofill::PasswordAndMetadata additional_credential;
@@ -1578,8 +1603,10 @@ TEST_F(PasswordSuggestionGeneratorTest,
   const auto credential = fill_data.preferred_login;
   const auto payload = PasswordAndMetadataToSuggestionDetails(credential);
   // Simulate the user flow to get to the `kIncludeBackup` state.
+#if !BUILDFLAG(IS_ANDROID)
   undo_controller().OnSuggestionSelected(credential);
   undo_controller().OnTroubleSigningInClicked(payload);
+#endif
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       undo_controller(), fill_data, favicon(), /*username_filter=*/u"",
@@ -1601,6 +1628,14 @@ TEST_F(PasswordSuggestionGeneratorTest,
               additional_credential.username_value,
               password_label(additional_credential.password_value.size()),
               /*realm_label=*/u"", favicon()),
+#if BUILDFLAG(IS_ANDROID)
+          // Android displays all backup logins for the domain (not only for the
+          // selected suggestion)
+          EqualsBackupPasswordSuggestion(
+              additional_credential.username_value,
+              additional_credential.backup_password_value.value(),
+              PasswordAndMetadataToSuggestionDetails(additional_credential)),
+#endif
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion()));
 }
@@ -1617,18 +1652,14 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
   EXPECT_THAT(
       suggestions,
-      ElementsAre(
-          EqualsProactiveRecoverySuggestion(
-              credential.backup_password_value.value(), payload),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(
-              SuggestionType::kFreeformFooter,
-              l10n_util::GetStringUTF16(
-                  UsesPasswordManagerGoogleBranding()
-                      ? IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_BRANDED
-                      : IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_NON_BRANDED))));
+      ElementsAre(EqualsProactiveRecoverySuggestion(
+                      credential.backup_password_value.value(), payload),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kFreeformFooter,
+                                   GetFreeformFooterText())));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordSuggestionGeneratorTest,
        PasswordRecoveryFlow_TroubleSigningInIsAppendedLast) {
   base::test::ScopedFeatureList feature_list;
@@ -1667,6 +1698,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion()));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordSuggestionGeneratorTest,
        PasswordRecoveryFlow_NoRecoveryFlowForCredentialWithoutBackupPassword) {
@@ -1701,7 +1733,11 @@ TEST_F(PasswordSuggestionGeneratorTest,
 TEST_F(PasswordSuggestionGeneratorTest,
        PasswordRecoveryFlow_RecoverySuggestionsAreNotShownWhenFlagIsOff) {
   base::test::ScopedFeatureList feature_list;
+#if BUILDFLAG(IS_ANDROID)
+  feature_list.InitAndDisableFeature(features::kFillRecoveryPassword);
+#else
   feature_list.InitAndDisableFeature(features::kShowRecoveryPassword);
+#endif  // BUILDFLAG(IS_ANDROID)
   autofill::PasswordFormFillData fill_data =
       password_form_fill_data_with_backup();
   const autofill::PasswordAndMetadata cred_regular = fill_data.preferred_login;
@@ -1750,5 +1786,163 @@ TEST_F(PasswordSuggestionGeneratorTest,
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion()));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordSuggestionGeneratorTest,
+       GetWebauthnSignInWithAnotherDeviceSuggestion) {
+#if !BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+#endif  // !BUILDFLAG(IS_IOS)
+  const std::vector<PasskeyCredential> passkeys;
+  ON_CALL(credentials_delegate(), GetPasskeys)
+      .WillByDefault(Return(base::ok(&passkeys)));
+  ON_CALL(credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
+      .WillByDefault(Return(true));
+
+  std::optional<Suggestion> suggestion =
+      generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
+  ASSERT_TRUE(suggestion.has_value());
+  EXPECT_THAT(*suggestion,
+              EqualsSuggestion(
+                  SuggestionType::kWebauthnSignInWithAnotherDevice,
+                  l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY),
+                  Suggestion::Icon::kDevice));
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       GetWebauthnSignInWithAnotherDeviceSuggestionWithListedPasskeys) {
+#if !BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+#endif  // !BUILDFLAG(IS_IOS)
+  const std::vector<PasskeyCredential> passkeys = {
+      passkey_credential(PasskeyCredential::Source::kWindowsHello, "username")};
+  ON_CALL(credentials_delegate(), GetPasskeys)
+      .WillByDefault(Return(base::ok(&passkeys)));
+  ON_CALL(credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
+      .WillByDefault(Return(true));
+
+  std::optional<Suggestion> suggestion =
+      generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
+  ASSERT_TRUE(suggestion.has_value());
+  EXPECT_THAT(*suggestion,
+              EqualsSuggestion(SuggestionType::kWebauthnSignInWithAnotherDevice,
+                               l10n_util::GetStringUTF16(
+                                   IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY),
+                               Suggestion::Icon::kDevice));
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       GetWebauthnSignInWithAnotherDeviceSuggestionWhenHybridFlagIsReenabled) {
+#if !BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
+       features::kAutofillReintroduceHybridPasskeyDropdownItem},
+      {});
+#endif  // !BUILDFLAG(IS_IOS)
+  const std::vector<PasskeyCredential> passkeys;
+  ON_CALL(credentials_delegate(), GetPasskeys)
+      .WillByDefault(Return(base::ok(&passkeys)));
+  ON_CALL(credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
+      .WillByDefault(Return(true));
+
+  std::optional<Suggestion> suggestion =
+      generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
+  ASSERT_TRUE(suggestion.has_value());
+  EXPECT_THAT(*suggestion,
+              EqualsSuggestion(
+                  SuggestionType::kWebauthnSignInWithAnotherDevice,
+#if BUILDFLAG(IS_IOS)
+                  l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY),
+#else
+                  l10n_util::GetStringUTF16(
+                      IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE),
+#endif  // BUILDFLAG(IS_IOS)
+                  Suggestion::Icon::kDevice));
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       GetWebauthnSignInWithAnotherDeviceSuggestionWhenHybridFlagIsDisabled) {
+#if !BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {features::kAutofillReintroduceHybridPasskeyDropdownItem,
+           features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu});
+#endif  // !BUILDFLAG(IS_IOS)
+  const std::vector<PasskeyCredential> passkeys;
+  ON_CALL(credentials_delegate(), GetPasskeys)
+      .WillByDefault(Return(base::ok(&passkeys)));
+  ON_CALL(credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
+      .WillByDefault(Return(true));
+
+  std::optional<Suggestion> suggestion =
+      generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
+  ASSERT_TRUE(suggestion.has_value());
+  EXPECT_THAT(*suggestion,
+              EqualsSuggestion(
+                  SuggestionType::kWebauthnSignInWithAnotherDevice,
+                  l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY),
+                  Suggestion::Icon::kDevice));
+}
+
+#if !BUILDFLAG(IS_IOS)
+TEST_F(PasswordSuggestionGeneratorTest,
+       NoWebauthnSignInWithAnotherDeviceSuggestionWhenHybridIsOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+  const std::vector<PasskeyCredential> passkeys;
+  ON_CALL(credentials_delegate(), GetPasskeys)
+      .WillByDefault(Return(base::ok(&passkeys)));
+  ON_CALL(credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
+      .WillByDefault(Return(true));
+
+  std::optional<Suggestion> suggestion =
+      generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
+  EXPECT_FALSE(suggestion.has_value());
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       NoWebauthnSignInWithAnotherDeviceSuggestionWhenNoPasskeys) {
+#if !BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+#endif  // !BUILDFLAG(IS_IOS)
+  ON_CALL(credentials_delegate(), GetPasskeys)
+      .WillByDefault(Return(
+          base::unexpected(WebAuthnCredentialsDelegate::
+                               PasskeysUnavailableReason::kNotReceived)));
+  ON_CALL(credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
+      .WillByDefault(Return(true));
+
+  std::optional<Suggestion> suggestion =
+      generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
+  EXPECT_FALSE(suggestion.has_value());
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       NoWebauthnSignInWithAnotherDeviceSuggestionWhenHybridFlowUnavailable) {
+#if !BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+#endif  // !BUILDFLAG(IS_IOS)
+  const std::vector<PasskeyCredential> passkeys;
+  ON_CALL(credentials_delegate(), GetPasskeys)
+      .WillByDefault(Return(base::ok(&passkeys)));
+  ON_CALL(credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
+      .WillByDefault(Return(false));
+
+  std::optional<Suggestion> suggestion =
+      generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
+  EXPECT_FALSE(suggestion.has_value());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

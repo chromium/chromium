@@ -73,8 +73,6 @@ class CC_EXPORT PictureLayer : public Layer {
   virtual scoped_refptr<RasterSource> CreateRasterSource() const;
 
  private:
-  friend class TestSerializationPictureLayer;
-
   // Called on impl thread
   void DropRecordingSourceContentIfInvalid(int source_frame_number);
 

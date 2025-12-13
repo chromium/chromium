@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/threading/thread_local_storage.h"
 
 #include <algorithm>
@@ -307,13 +302,15 @@ TlsVectorEntry* ConstructTlsVector() {
   // our service is in place. (i.e., don't even call new until after we're
   // setup)
   TlsVectorEntry stack_allocated_tls_data[kThreadLocalStorageSize];
-  memset(stack_allocated_tls_data, 0, sizeof(stack_allocated_tls_data));
+  UNSAFE_TODO(
+      memset(stack_allocated_tls_data, 0, sizeof(stack_allocated_tls_data)));
   // Ensure that any rentrant calls change the temp version.
   SetTlsVectorValue(key, stack_allocated_tls_data, TlsVectorState::kInUse);
 
   // Allocate an array to store our data.
   TlsVectorEntry* tls_data = new TlsVectorEntry[kThreadLocalStorageSize];
-  memcpy(tls_data, stack_allocated_tls_data, sizeof(stack_allocated_tls_data));
+  UNSAFE_TODO(memcpy(tls_data, stack_allocated_tls_data,
+                     sizeof(stack_allocated_tls_data)));
   SetTlsVectorValue(key, tls_data, TlsVectorState::kInUse);
   return tls_data;
 }
@@ -330,7 +327,8 @@ void OnThreadExitInternal(TlsVectorEntry* tls_data) {
   // we have called all g_tls_metadata destructors. (i.e., don't even call
   // delete[] after we're done with destructors.)
   TlsVectorEntry stack_allocated_tls_data[kThreadLocalStorageSize];
-  memcpy(stack_allocated_tls_data, tls_data, sizeof(stack_allocated_tls_data));
+  UNSAFE_TODO(memcpy(stack_allocated_tls_data, tls_data,
+                     sizeof(stack_allocated_tls_data)));
   // Ensure that any re-entrant calls change the temp version.
   PlatformThreadLocalStorage::TLSKey key =
       g_native_tls_key.load(std::memory_order_relaxed);
@@ -346,9 +344,9 @@ void OnThreadExitInternal(TlsVectorEntry* tls_data) {
     std::array<TlsMetadata, kThreadLocalStorageSize> tls_metadata;
     {
       base::AutoLock auto_lock(*GetTLSMetadataLock());
-      memcpy(tls_metadata.data(), g_tls_metadata.data(),
-             (g_tls_metadata.size() *
-              sizeof(decltype(g_tls_metadata)::value_type)));
+      UNSAFE_TODO(memcpy(tls_metadata.data(), g_tls_metadata.data(),
+                         (g_tls_metadata.size() *
+                          sizeof(decltype(g_tls_metadata)::value_type))));
     }
 
     // We destroy slots in reverse order (i.e. destroy the first-created slot
@@ -366,8 +364,9 @@ void OnThreadExitInternal(TlsVectorEntry* tls_data) {
       uint16_t slot;
     } slot_destruction_order[kThreadLocalStorageSize];
     for (uint16_t i = 0; i < kThreadLocalStorageSize; ++i) {
-      slot_destruction_order[i].sequence_num = tls_metadata[i].sequence_num;
-      slot_destruction_order[i].slot = i;
+      UNSAFE_TODO(slot_destruction_order[i]).sequence_num =
+          tls_metadata[i].sequence_num;
+      UNSAFE_TODO(slot_destruction_order[i]).slot = i;
     }
     std::sort(std::begin(slot_destruction_order),
               std::end(slot_destruction_order),
@@ -377,9 +376,9 @@ void OnThreadExitInternal(TlsVectorEntry* tls_data) {
 
     for (const auto& ordered_slot : slot_destruction_order) {
       size_t slot = ordered_slot.slot;
-      void* tls_value = stack_allocated_tls_data[slot].data;
+      void* tls_value = UNSAFE_TODO(stack_allocated_tls_data[slot]).data;
       if (!tls_value || tls_metadata[slot].status == TlsStatus::FREE ||
-          stack_allocated_tls_data[slot].version !=
+          UNSAFE_TODO(stack_allocated_tls_data[slot]).version !=
               tls_metadata[slot].version) {
         continue;
       }
@@ -389,7 +388,8 @@ void OnThreadExitInternal(TlsVectorEntry* tls_data) {
       if (!destructor) {
         continue;
       }
-      stack_allocated_tls_data[slot].data = nullptr;  // pre-clear the slot.
+      UNSAFE_TODO(stack_allocated_tls_data[slot]).data =
+          nullptr;  // pre-clear the slot.
       destructor(tls_value);
       // Any destructor might have called a different service, which then set a
       // different slot to a non-null value. Hence we need to check the whole
@@ -527,10 +527,10 @@ void* ThreadLocalStorage::Slot::Get() const {
   }
   DCHECK_LT(slot_, kThreadLocalStorageSize);
   // Version mismatches means this slot was previously freed.
-  if (tls_data[slot_].version != version_) {
+  if (UNSAFE_TODO(tls_data[slot_]).version != version_) {
     return nullptr;
   }
-  return tls_data[slot_].data;
+  return UNSAFE_TODO(tls_data[slot_]).data;
 }
 
 void ThreadLocalStorage::Slot::Set(void* value) {
@@ -545,8 +545,8 @@ void ThreadLocalStorage::Slot::Set(void* value) {
     tls_data = ConstructTlsVector();
   }
   DCHECK_LT(slot_, kThreadLocalStorageSize);
-  tls_data[slot_].data = value;
-  tls_data[slot_].version = version_;
+  UNSAFE_TODO(tls_data[slot_]).data = value;
+  UNSAFE_TODO(tls_data[slot_]).version = version_;
 }
 
 ThreadLocalStorage::Slot::Slot(TLSDestructorFunc destructor) {

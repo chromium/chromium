@@ -36,10 +36,6 @@ enum class IncognitoModePrefs {
 // policy data in the App Configuration from the platform.
 bool HasPlatformPolicies();
 
-// Returns whether the application is managed through MDM. This
-// checks the key set in the NSUserDefaults by iOS.
-bool IsApplicationManagedByMDM();
-
 // Returns true if IncognitoModeAvailability policy is set by enterprise or
 // custodian.
 bool IsIncognitoPolicyApplied(PrefService* pref_service);

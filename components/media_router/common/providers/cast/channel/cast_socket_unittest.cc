@@ -33,7 +33,7 @@
 #include "components/media_router/common/providers/cast/channel/cast_transport.h"
 #include "components/media_router/common/providers/cast/channel/logger.h"
 #include "content/public/test/browser_task_environment.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/evp.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
@@ -62,7 +62,6 @@ const int64_t kDistantTimeoutMillis = 100000;  // 100 seconds (never hit).
 using ::testing::_;
 using ::testing::A;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::InvokeArgument;
 using ::testing::NotNull;
 using ::testing::Return;
@@ -491,7 +490,7 @@ class SslCastSocketTest : public CastSocketTestBase {
     server_private_key_ = ReadTestKeyFromPEM("self_signed.pem");
     ASSERT_TRUE(server_private_key_);
     server_context_ = CreateSSLServerContext(
-        server_cert_.get(), *server_private_key_, server_ssl_config_);
+        server_cert_.get(), server_private_key_.get(), server_ssl_config_);
 
     tcp_server_socket_ =
         std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
@@ -541,8 +540,7 @@ class SslCastSocketTest : public CastSocketTestBase {
 
   void TcpConnectCallback(int result) { connect_result_ = result; }
 
-  std::unique_ptr<crypto::RSAPrivateKey> ReadTestKeyFromPEM(
-      std::string_view name) {
+  bssl::UniquePtr<EVP_PKEY> ReadTestKeyFromPEM(std::string_view name) {
     base::FilePath key_path = GetTestCertsDirectory().AppendASCII(name);
     std::string pem_data;
     if (!base::ReadFileToString(key_path, &pem_data)) {
@@ -554,11 +552,9 @@ class SslCastSocketTest : public CastSocketTestBase {
     if (!pem_tokenizer.GetNext()) {
       return nullptr;
     }
-    std::vector<uint8_t> key_vector(pem_tokenizer.data().begin(),
-                                    pem_tokenizer.data().end());
-    std::unique_ptr<crypto::RSAPrivateKey> key(
-        crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(key_vector));
-    return key;
+
+    return crypto::evp::PrivateKeyFromBytes(
+        base::as_byte_span(pem_tokenizer.data()));
   }
 
   int ReadExactLength(net::IOBuffer* buffer,
@@ -609,7 +605,7 @@ class SslCastSocketTest : public CastSocketTestBase {
   // CastSocket over a real SSL socket.  The other members below are used to
   // initialize `server_socket_`.
   std::unique_ptr<net::SSLServerContext> server_context_;
-  std::unique_ptr<crypto::RSAPrivateKey> server_private_key_;
+  bssl::UniquePtr<EVP_PKEY> server_private_key_;
   scoped_refptr<net::X509Certificate> server_cert_;
   net::SSLServerConfig server_ssl_config_;
 

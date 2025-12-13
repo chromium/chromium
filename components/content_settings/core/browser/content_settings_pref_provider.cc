@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
@@ -25,10 +26,10 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
-#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
@@ -56,8 +57,19 @@ const char
              "all_screens";
 constexpr char kObsoleteFederatedIdentityActiveSesssionExceptionsPref[] =
     "profile.content_settings.exceptions.fedcm_active_session";
+constexpr char kObsoletePrivateNetworkChooserDataPref[] =
+    "profile.content_settings.exceptions.private_network_chooser_data";
+
+constexpr char kGeolocationMigrateExceptionsPref[] =
+    "profile.content_settings.exceptions.migrate_geolocation";
 
 #if !BUILDFLAG(IS_IOS)
+constexpr char kObsoleteTpcdTrialExceptionsPref[] =
+    "profile.content_settings.exceptions.3pcd_support";
+constexpr char kObsoleteTopLevelTpcdTrialExceptionsPref[] =
+    "profile.content_settings.exceptions.top_level_3pcd_support";
+constexpr char kObsoleteTopLevelTpcdOriginTrialExceptionsPref[] =
+    "profile.content_settings.exceptions.top_level_3pcd_origin_trial";
 // This setting was accidentally bound to a UI surface intended for a different
 // setting (https://crbug.com/364820109). It should not have been settable
 // except via enterprise policy, so it is temporarily cleaned up here to revert
@@ -80,6 +92,7 @@ void PrefProvider::RegisterProfilePrefs(
       prefs::kContentSettingsVersion,
       ContentSettingsPattern::kContentSettingsPatternVersion);
   registry->RegisterBooleanPref(prefs::kInContextCookieControlsOpened, false);
+  registry->RegisterBooleanPref(kGeolocationMigrateExceptionsPref, false);
 
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
@@ -103,7 +116,12 @@ void PrefProvider::RegisterProfilePrefs(
       kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
   registry->RegisterListPref(
       kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
+  registry->RegisterDictionaryPref(kObsoletePrivateNetworkChooserDataPref);
 #if !BUILDFLAG(IS_IOS)
+  registry->RegisterDictionaryPref(kObsoleteTpcdTrialExceptionsPref);
+  registry->RegisterDictionaryPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
+  registry->RegisterDictionaryPref(
+      kObsoleteTopLevelTpcdOriginTrialExceptionsPref);
   // TODO(https://crbug.com/367181093): clean this up.
   registry->RegisterBooleanPref(kBug364820109AlreadyWorkedAroundPref, false);
 #endif  // !BUILDFLAG(IS_IOS)
@@ -138,13 +156,14 @@ PrefProvider::PrefProvider(PrefService* prefs,
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings) {
     content_settings_prefs_.insert(std::make_pair(
-        info->type(),
-        std::make_unique<ContentSettingsPref>(
-            info->type(), prefs_, &pref_change_registrar_, info->pref_name(),
-            info->partitioned_pref_name(), off_the_record_, restore_session,
-            base::BindRepeating(&PrefProvider::Notify,
-                                base::Unretained(this)))));
+        info->type(), std::make_unique<ContentSettingsPref>(
+                          info->type(), prefs_, &pref_change_registrar_,
+                          info->pref_name(), off_the_record_, restore_session,
+                          base::BindRepeating(&PrefProvider::Notify,
+                                              base::Unretained(this)))));
   }
+
+  MigrateGeolocationExceptions();
 
   size_t num_exceptions = 0;
   if (!off_the_record_) {
@@ -170,37 +189,32 @@ PrefProvider::~PrefProvider() {
 
 std::unique_ptr<RuleIterator> PrefProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool off_the_record,
-    const PartitionKey& partition_key) const {
+    bool off_the_record) const {
   if (!supports_type(content_type)) {
     return nullptr;
   }
 
-  return GetPref(content_type)->GetRuleIterator(off_the_record, partition_key);
+  return GetPref(content_type)->GetRuleIterator(off_the_record);
 }
 
-std::unique_ptr<Rule> PrefProvider::GetRule(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    ContentSettingsType content_type,
-    bool off_the_record,
-    const PartitionKey& partition_key) const {
+std::unique_ptr<Rule> PrefProvider::GetRule(const GURL& primary_url,
+                                            const GURL& secondary_url,
+                                            ContentSettingsType content_type,
+                                            bool off_the_record) const {
   if (!supports_type(content_type)) {
     return nullptr;
   }
 
   return GetPref(content_type)
-      ->GetRule(primary_url, secondary_url, off_the_record, partition_key);
+      ->GetRule(primary_url, secondary_url, off_the_record);
 }
 
-// TODO(b/307193732): handle the PartitionKey in all relevant methods.
 bool PrefProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& in_value,
-    const ContentSettingConstraints& constraints,
-    const PartitionKey& partition_key) {
+    const ContentSettingConstraints& constraints) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
@@ -222,7 +236,8 @@ bool PrefProvider::SetWebsiteSetting(
       store_last_modified_ ? clock_->Now() : base::Time();
 
   DCHECK(!constraints.track_last_visit_for_autoexpiration() ||
-         content_settings::CanTrackLastVisit(content_type));
+         content_settings::CanTrackLastVisit(content_type))
+      << content_type;
   // Last visit timestamps can only be tracked for host-specific pattern.
   DCHECK(!constraints.track_last_visit_for_autoexpiration() ||
          !primary_pattern.GetHost().empty());
@@ -245,8 +260,7 @@ bool PrefProvider::SetWebsiteSetting(
   metadata.SetFromConstraints(constraints);
   GetPref(content_type)
       ->SetWebsiteSetting(primary_pattern, secondary_pattern,
-                          std::move(in_value), std::move(metadata),
-                          partition_key);
+                          std::move(in_value), std::move(metadata));
   return true;
 }
 
@@ -254,8 +268,7 @@ bool PrefProvider::SetLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    const base::Time time,
-    const PartitionKey& partition_key) {
+    const base::Time time) {
   return UpdateSetting(
       content_type,
       [&](const Rule& rule) -> bool {
@@ -270,20 +283,18 @@ bool PrefProvider::SetLastVisitTime(
         rule.metadata.set_last_visited(time);
 
         return true;
-      },
-      partition_key);
+      });
 }
 
-bool PrefProvider::UpdateSetting(ContentSettingsType content_type,
-                                 base::FunctionRef<bool(const Rule&)> is_match,
-                                 base::FunctionRef<bool(Rule&)> perform_update,
-                                 const PartitionKey& partition_key) {
+bool PrefProvider::UpdateSetting(
+    ContentSettingsType content_type,
+    base::FunctionRef<bool(const Rule&)> is_match,
+    base::FunctionRef<bool(Rule&)> perform_update) {
   if (!supports_type(content_type)) {
     return false;
   }
 
-  auto it = GetRuleIterator(content_type, off_the_record_,
-                            PartitionKey::WipGetDefault());
+  auto it = GetRuleIterator(content_type, off_the_record_);
   if (!it) {
     return false;
   }
@@ -311,7 +322,7 @@ bool PrefProvider::UpdateSetting(ContentSettingsType content_type,
     GetPref(content_type)
         ->SetWebsiteSetting(std::move(primary_pattern),
                             std::move(secondary_pattern), std::move(value),
-                            std::move(metadata), partition_key);
+                            std::move(metadata));
     return true;
   }
   return false;
@@ -320,8 +331,7 @@ bool PrefProvider::UpdateSetting(ContentSettingsType content_type,
 bool PrefProvider::UpdateLastUsedTime(const GURL& primary_url,
                                       const GURL& secondary_url,
                                       ContentSettingsType content_type,
-                                      const base::Time time,
-                                      const PartitionKey& partition_key) {
+                                      const base::Time time) {
   return UpdateSetting(
       content_type,
       [&](const Rule& rule) -> bool {
@@ -331,34 +341,30 @@ bool PrefProvider::UpdateLastUsedTime(const GURL& primary_url,
       [&](Rule& rule) -> bool {
         rule.metadata.set_last_used(time);
         return true;
-      },
-      partition_key);
+      });
 }
 
 bool PrefProvider::ResetLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const PartitionKey& partition_key) {
+    ContentSettingsType content_type) {
   return SetLastVisitTime(primary_pattern, secondary_pattern, content_type,
-                          base::Time(), partition_key);
+                          base::Time());
 }
 
 bool PrefProvider::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const PartitionKey& partition_key) {
+    ContentSettingsType content_type) {
   return SetLastVisitTime(primary_pattern, secondary_pattern, content_type,
-                          GetCoarseVisitedTime(clock_->Now()), partition_key);
+                          GetCoarseVisitedTime(clock_->Now()));
 }
 
 std::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    std::optional<ContentSetting> setting_to_match,
-    const PartitionKey& partition_key) {
+    std::optional<ContentSetting> setting_to_match) {
   std::optional<base::TimeDelta> delta_to_expiration;
   UpdateSetting(
       content_type,
@@ -386,19 +392,17 @@ std::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
                                                lifetime);
 
         return true;
-      },
-      partition_key);
+      });
   return delta_to_expiration;
 }
 
 void PrefProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type,
-    const PartitionKey& partition_key) {
+    ContentSettingsType content_type) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
   if (supports_type(content_type)) {
-    GetPref(content_type)->ClearAllContentSettingsRules(partition_key);
+    GetPref(content_type)->ClearAllContentSettingsRules();
   }
 }
 
@@ -421,10 +425,8 @@ ContentSettingsPref* PrefProvider::GetPref(ContentSettingsType type) const {
 
 void PrefProvider::Notify(const ContentSettingsPattern& primary_pattern,
                           const ContentSettingsPattern& secondary_pattern,
-                          ContentSettingsType content_type,
-                          const PartitionKey* partition_key) {
-  NotifyObservers(primary_pattern, secondary_pattern, content_type,
-                  partition_key);
+                          ContentSettingsType content_type) {
+  NotifyObservers(primary_pattern, secondary_pattern, content_type);
 }
 
 void PrefProvider::DiscardOrMigrateObsoletePreferences() {
@@ -441,11 +443,67 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(
       kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
   prefs_->ClearPref(kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
+  prefs_->ClearPref(kObsoletePrivateNetworkChooserDataPref);
 
 #if !BUILDFLAG(IS_IOS)
+  prefs_->ClearPref(kObsoleteTpcdTrialExceptionsPref);
+  prefs_->ClearPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
+  prefs_->ClearPref(kObsoleteTopLevelTpcdOriginTrialExceptionsPref);
   // TODO(https://crbug.com/367181093): clean this up.
   prefs_->ClearPref(kBug364820109AlreadyWorkedAroundPref);
 #endif  // !BUILDFLAG(IS_IOS)
+}
+
+void PrefProvider::MigrateGeolocationExceptions() {
+  if (off_the_record_) {
+    return;
+  }
+
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  // Migrate when the feature gets enabled the first time.
+  if (base::FeatureList::IsEnabled(
+          features::kApproximateGeolocationPermission) &&
+      !prefs_->GetBoolean(kGeolocationMigrateExceptionsPref)) {
+    auto* old_pref = GetPref(ContentSettingsType::GEOLOCATION);
+    auto* options_pref = GetPref(ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+    auto it = old_pref->GetRuleIterator(false);
+    while (it && it->HasNext()) {
+      auto rule = it->Next();
+      auto content_setting = ValueToContentSetting(rule->value);
+      auto geolocation_setting =
+          GeolocationSetting{ToPermissionOption(content_setting),
+                             ToPermissionOption(content_setting)};
+      options_pref->SetWebsiteSetting(
+          rule->primary_pattern, rule->secondary_pattern,
+          info->delegate().ToValue(geolocation_setting),
+          std::move(rule->metadata));
+    }
+    it.reset();
+    old_pref->ClearAllContentSettingsRules();
+    prefs_->SetBoolean(kGeolocationMigrateExceptionsPref, true);
+  }
+
+  // Migrate back when the feature is disabled the first time.
+  if (!base::FeatureList::IsEnabled(
+          features::kApproximateGeolocationPermission) &&
+      prefs_->GetBoolean(kGeolocationMigrateExceptionsPref)) {
+    auto* old_pref = GetPref(ContentSettingsType::GEOLOCATION);
+    auto* options_pref = GetPref(ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+    auto it = options_pref->GetRuleIterator(false);
+    while (it && it->HasNext()) {
+      auto rule = it->Next();
+      auto geolocation_setting = std::get<GeolocationSetting>(
+          ValueToPermissionSetting(info, rule->value));
+      old_pref->SetWebsiteSetting(
+          rule->primary_pattern, rule->secondary_pattern,
+          ContentSettingToValue(ToContentSetting(geolocation_setting.precise)),
+          std::move(rule->metadata));
+    }
+    it.reset();
+    options_pref->ClearAllContentSettingsRules();
+    prefs_->SetBoolean(kGeolocationMigrateExceptionsPref, false);
+  }
 }
 
 void PrefProvider::SetClockForTesting(const base::Clock* clock) {

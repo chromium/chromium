@@ -317,7 +317,7 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
   ON_CALL(*sharing_message_sender_,
           SendMessageToDevice(testing::_, testing::_, testing::_, testing::_,
                               testing::_))
-      .WillByDefault(testing::Invoke(run_callback));
+      .WillByDefault(run_callback);
 
   GetSharingService()->SendMessageToDevice(
       device_info, kTimeout, components_sharing_message::SharingMessage(),

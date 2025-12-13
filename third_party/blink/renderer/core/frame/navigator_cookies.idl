@@ -5,6 +5,6 @@
 // https://html.spec.whatwg.org/C/#cookies
 
 interface mixin NavigatorCookies {
-  [HighEntropy=Direct,MeasureAs=NavigatorCookieEnabled]
+  [MeasureAs=NavigatorCookieEnabled]
   readonly attribute boolean cookieEnabled;
 };

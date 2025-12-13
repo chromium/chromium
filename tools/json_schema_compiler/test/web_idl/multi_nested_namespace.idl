@@ -1,0 +1,21 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Schema to test triple nested namespacee names types in IDL (API names with 2
+// dots in them). API should end up on `<Browser>.multi.nested.example`.
+interface Example {
+  static undefined exampleFunction();
+};
+
+partial interface Nested {
+  static attribute Example example;
+};
+
+partial interface Multi {
+  static attribute Nested nested;
+};
+
+partial interface Browser {
+  static attribute Multi multi;
+};

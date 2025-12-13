@@ -37,9 +37,7 @@ SyncInvalidationsServiceFactory::~SyncInvalidationsServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 SyncInvalidationsServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   gcm::GCMDriver* gcm_driver =
       IOSChromeGCMProfileServiceFactory::GetForProfile(profile)->driver();
   instance_id::InstanceIDDriver* instance_id_driver =

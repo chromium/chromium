@@ -17,21 +17,23 @@ class GeolocationSettingDelegate
     : public content_settings::PermissionSettingsInfo::Delegate {
  public:
   bool IsValid(const PermissionSetting& setting) const override;
+  bool IsDefaultSettingValid(const PermissionSetting& setting) const override;
 
-  std::optional<PermissionSetting> InheritInIncognito(
+  PermissionSetting InheritInIncognito(
       const PermissionSetting& setting) const override;
 
-  bool CanBeAutoRevoked(PermissionSetting setting,
-                        bool is_one_time) const override;
+  bool IsAnyPermissionAllowed(const PermissionSetting& setting) const override;
+  bool IsUndecided(const PermissionSetting& setting) const override;
+  bool CanTrackLastVisit() const override;
 
   bool ShouldCoalesceEphemeralState() const override;
-
   PermissionSetting CoalesceEphemeralState(
       const PermissionSetting& persistent_permission_setting,
       const PermissionSetting& ephemeral_permission_setting) const override;
+  PermissionSetting ApplyPermissionEmbargo(
+      const PermissionSetting& setting) const override;
 
   base::Value ToValue(const PermissionSetting& setting) const override;
-
   std::optional<PermissionSetting> FromValue(
       const base::Value& value) const override;
 };

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/check_is_test.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,9 +18,11 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_launch_queue_delegate_impl.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -31,6 +34,7 @@
 #include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/site_instance.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -163,6 +167,11 @@ void WebAppTabHelper::SetIsInAppWindow(
   SetState(app_id(), std::move(window_app_id));
 }
 
+void WebAppTabHelper::NotifyIsFirstWebContentsInAppWindow(
+    base::PassKey<WebAppBrowserController>) {
+  check_preinstall_for_update_on_next_navigation_ = true;
+}
+
 void WebAppTabHelper::SetCallbackToRunOnTabChanges(base::OnceClosure callback) {
   on_tab_details_changed_callback_ = std::move(callback);
 }
@@ -219,6 +228,8 @@ void WebAppTabHelper::PrimaryPageChanged(content::Page& page) {
 
   ReinstallPlaceholderAppIfNecessary(
       page.GetMainDocument().GetLastCommittedURL());
+
+  MaybeSchedulePreinstallUpdate();
 }
 
 void WebAppTabHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
@@ -320,7 +331,8 @@ void WebAppTabHelper::OnAssociatedAppChanged(
     task_manager::WebContentsTags::ClearTag(web_contents());
     task_manager::WebContentsTags::CreateForWebApp(
         web_contents(), new_app_id.value(),
-        provider_->registrar_unsafe().IsIsolated(new_app_id.value()));
+        provider_->registrar_unsafe().AppMatches(
+            new_app_id.value(), WebAppFilter::IsIsolatedApp()));
   } else {
     // case 4:
     if (previous_app_id.has_value() && !previous_app_id->empty()) {
@@ -387,6 +399,45 @@ void WebAppTabHelper::ScheduleManifestAppliedUseCounter() {
   }
   meaure_manifest_applied_use_counter_ = true;
   MaybeRecordManifestAppliedUseCounter();
+}
+
+void WebAppTabHelper::MaybeSchedulePreinstallUpdate() {
+  if (!check_preinstall_for_update_on_next_navigation_) {
+    return;
+  }
+  check_preinstall_for_update_on_next_navigation_ = false;
+
+  const std::optional<PreinstalledAppForUpdating>& app_for_updating =
+      provider_->preinstalled_web_app_manager().preinstalled_app_for_updating();
+  if (!app_for_updating.has_value() ||
+      !base::FeatureList::IsEnabled(
+          features::kWebAppPeriodicPreinstallUpdate)) {
+    return;
+  }
+  if (!is_in_app_window()) {
+    return;
+  }
+  // Currently only a single preinstalled app is supported.
+  if (window_app_id() !=
+      GenerateAppIdFromManifestId(app_for_updating->manifest_id)) {
+    return;
+  }
+  // Only check for possible updates if the navigated-to url is out-of-scope of
+  // the window app.
+  // We explicitly also allow for urls that are in the extended scope to count
+  // as out-of-scope, as currently there is no way to trigger updates from an
+  // extended scope.
+  std::optional<webapps::AppId> in_scope_app =
+      provider_->registrar_unsafe().FindBestAppWithUrlInScope(
+          web_contents()->GetLastCommittedURL(),
+          web_app::WebAppFilter::InstalledInChrome(),
+          {.exclude_scope_extensions = true});
+  if (in_scope_app == window_app_id()) {
+    return;
+  }
+  provider_->scheduler().FetchManifestAndUpdate(app_for_updating->manifest_id,
+                                                app_for_updating->install_url,
+                                                base::DoNothing());
 }
 
 void WebAppTabHelper::MaybeRecordManifestAppliedUseCounter() {

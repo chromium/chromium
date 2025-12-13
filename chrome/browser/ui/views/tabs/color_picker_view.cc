@@ -53,7 +53,7 @@ class ColorPickerHighlightPathGenerator : public views::HighlightPathGenerator {
     gfx::RectF bounds(view->GetContentsBounds());
     bounds.Inset(-2.0f);
     const gfx::PointF center = bounds.CenterPoint();
-    return SkPath().addCircle(center.x(), center.y(), bounds.width() / 2.0f);
+    return SkPath::Circle(center.x(), center.y(), bounds.width() / 2.0f);
   }
 };
 

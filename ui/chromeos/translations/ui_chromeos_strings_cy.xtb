@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Cysylltiad Rhyngrwyd uniongyrchol</translation>
 <translation id="1272293450992660632">Nid yw'r gwerthoedd PIN yn cyfateb.</translation>
+<translation id="1279040297980392566">Wrthi'n aros i'r sgan orffen, rhowch gynnig arall arni yn nes ymlaen</translation>
 <translation id="1280820357415527819">Wrthi'n chwilio am rwydweithiau symudol</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Nid yw Google Drive ar gael ar hyn o bryd. Bydd uwchlwytho yn ailgychwyn yn awtomatig unwaith y bydd Google Drive yn ôl.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Mae 1 ffeil wedi'i dewis</translation>
 <translation id="3817579325494460411">Heb ei roi</translation>
 <translation id="3819448694985509187">PIN anghywir. Mae gennych 1 ymgais ar ôl.</translation>
-<translation id="3822559385185038546">Gorfodir y dirprwy hwn gan eich gweinyddwr</translation>
 <translation id="3830674330436234648">Nid oes chwarae ar gael</translation>
 <translation id="383652340667548381">Serbaidd</translation>
 <translation id="3839045880592694915">Nid yw'ch cludydd yn caniatáu i'ch modem gysylltu. Cysylltwch â'ch cludwr am ragor o fanylion.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Rhagor o ddewisiadau</translation>
 <translation id="5602622065581044566">Bwlgareg gyda bysellfwrdd Seinegol</translation>
 <translation id="5605830556594064952">Dvorak UDA</translation>
+<translation id="560739212255190568">Gosododd eich gweinyddwr reolau diystyru'r dirprwy weinydd yn ogystal â gorfodi'r dirprwy weinydd canlynol</translation>
 <translation id="5618330573454123917">Mae'r ffeil hon wedi'i dylunio ar gyfer cyfrifiadur sy'n defnyddio meddalwedd Macintosh. Nid yw hyn yn gydnaws â'ch dyfais sy'n rhedeg ChromeOS. <ph name="BEGIN_LINK_HELP" />Dysgu rhagor<ph name="END_LINK_HELP" /> am agor ffeiliau ar ChromeOS.</translation>
 <translation id="5625294776298156701">Tamileg gyda bysellfwrdd Tamil99</translation>
 <translation id="5633226425545095130">Bydd symud yr eitem hon yn ei rhannu â phawb sy'n gallu gweld y ffolder gyffredin '<ph name="DESTINATION_NAME" />'.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal<ph name="SIGNAL_STRENGTH" />%, Manylion</translation>
 <translation id="8545476925160229291">Saesneg (UDA)</translation>
 <translation id="854655314928502177">URL Awtoddarganfod Dirpwry Weinydd y We:</translation>
+<translation id="8547747809824590510">Gosododd eich gweinyddwr reolau diystyru'r dirprwy weinydd</translation>
 <translation id="8549186985808798022">Eidaleg</translation>
 <translation id="8551494947769799688">Latfieg</translation>
 <translation id="8560515948038859357">Cantoneg</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Mae ffeil o'r enw "<ph name="FILE_NAME" />" eisoes yn bodoli. Dewiswch enw gwahanol.</translation>
 <translation id="9046895021617826162">Wedi methu cysylltu</translation>
 <translation id="9065512565307033593">Os byddwch yn methu â dilysu, bydd eich mynediad at y rhwydwaith yn cael ei ddiffodd.</translation>
+<translation id="9079844694307518094">Mae eich gweinyddwr yn gorfodi'r dirprwy weinydd canlynol</translation>
 <translation id="908378762078012445">Rwseg gyda bysellfwrdd Seinegol AATSEEL</translation>
 <translation id="9086302186042011942">Wrthi’n cysoni</translation>
 <translation id="9099674669267916096">Cyfrif tudalennau</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Wedi dechrau gosod yn llwyddiannus.</translation>
 <translation id="9219103736887031265">Lluniau</translation>
 <translation id="9219908252191632183">Lleuadol</translation>
+<translation id="931652069802536959">Rhwydwaith wedi'i rwystro gan bolisi</translation>
 <translation id="938470336146445890">Gosodwch dystysgrif defnyddiwr.</translation>
 <translation id="939736085109172342">Ffolder newydd</translation>
 <translation id="943972244133411984">Addaswyd gan</translation>

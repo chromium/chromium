@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolver.h"
-#include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WindowsSystemProxyResolverMojo final
     : public net::WindowsSystemProxyResolver {
  public:
   explicit WindowsSystemProxyResolverMojo(
-      mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
+      mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
           mojo_windows_system_proxy_resolver);
   WindowsSystemProxyResolverMojo(const WindowsSystemProxyResolverMojo&) =
       delete;
@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WindowsSystemProxyResolverMojo final
  private:
   class RequestImpl;
 
-  mojo::Remote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
+  mojo::Remote<proxy_resolver::mojom::SystemProxyResolver>
       mojo_windows_system_proxy_resolver_;
 };
 

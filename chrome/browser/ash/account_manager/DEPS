@@ -15,13 +15,9 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/child_accounts",
-  "+chrome/browser/ash/crosapi",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/net",
-  "+chrome/browser/net",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/webui/ash/edu_coexistence",
   "+chrome/browser/ui/webui/signin/ash",
   "+chrome/test/base",

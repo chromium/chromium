@@ -115,6 +115,13 @@ interface UserEducationInternalsPageHandler {
   GetWhatsNewEditions() =>
     (array<WhatsNewEditionDemoPageInfo> whats_new_editions);
 
+  // Retrieves NTP Promo data.
+  GetNtpPromos() => (array<FeaturePromoDemoPageInfo> ntp_promos);
+
+  // Retrieves NTP Promo preferences.
+  GetNtpPromoPreferences() =>
+    (array<FeaturePromoDemoPageData> ntp_promo_preferences);
+
   // Clears "New" Badge data associated with a particular feature.
   // Returns an error message if the operation fails; empty string on success.
   ClearNewBadgeData(string feature_name) => (string error_message);
@@ -122,6 +129,13 @@ interface UserEducationInternalsPageHandler {
   // Clears What's New data.
   // Returns an error message if the operation fails; empty string on success.
   ClearWhatsNewData() => (string error_message);
+
+  // Clears NTP Promo data for the specified promo ID.
+  // Returns an error message if the operation fails; empty string on success.
+  ClearNtpPromoData(string id) => (string error_message);
+
+  // Clears all NTP promo preferences.
+  ClearNtpPromoPreferences() => (string error_message);
 
   // Launches What's New page with for the staging environment.
   LaunchWhatsNewStaging();

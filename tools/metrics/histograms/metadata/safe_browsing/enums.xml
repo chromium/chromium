@@ -88,14 +88,20 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="NOT_SENT_UNCONSENTED"/>
 </enum>
 
+<!-- LINT.IfChange(ApplicationAdvancedProtectionEvent) -->
+
+<enum name="ApplicationAdvancedProtectionEvent">
+  <int value="0" label="Detector initialized"/>
+  <int value="1" label="Profile added"/>
+  <int value="2" label="Profile removed"/>
+  <int value="3" label="Profile Advanced Protection status changed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/application_advanced_protection_status_detector.h:ApplicationAdvancedProtectionEvent)-->
+
 <enum name="BooleanBackoff">
   <int value="0" label="No backoff"/>
   <int value="1" label="Backoff mode enabled"/>
-</enum>
-
-<enum name="BooleanFreshness">
-  <int value="0" label="Is stale"/>
-  <int value="1" label="Is up to date"/>
 </enum>
 
 <enum name="BooleanHasKey">
@@ -111,11 +117,6 @@ chromium-metrics-reviews@google.com.
 <enum name="BooleanIneligible">
   <int value="0" label="Eligible"/>
   <int value="1" label="Ineligible"/>
-</enum>
-
-<enum name="BooleanIsPrefetch">
-  <int value="0" label="Is not prefetch"/>
-  <int value="1" label="Is prefetch"/>
 </enum>
 
 <enum name="BooleanManagedPref">
@@ -200,6 +201,7 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="URL real-time and hash real-time discrepancy"/>
   <int value="28" label="External app redirect"/>
   <int value="29" label="dangerous download warning (Android)"/>
+  <int value="30" label="Service worker behaviors"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/common/proto/csd.proto:ClientSafeBrowsingReportType) -->
@@ -208,6 +210,21 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Request to display persistent notification"/>
   <int value="1" label="Finished displaying persistent notification"/>
 </enum>
+
+<!-- LINT.IfChange(NotificationRevocationSource) -->
+
+<enum name="NotificationRevocationSource">
+  <int value="0" label="Social engineering blocklist"/>
+  <int value="1" label="Safe Browsing unwanted notification revocation"/>
+  <int value="2" label="Standard one tap unsubscribe"/>
+  <int value="3" label="One tap unsubscribe after suspicious content warning"/>
+  <int value="4" label="Disruptive auto-revocation"/>
+  <int value="5" label="User manually changed site setting"/>
+  <int value="6" label="Unknown"/>
+  <int value="7" label="Suspicious content auto-revocation"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/safe_browsing_metrics_collector.h:NotificationRevocationSource) -->
 
 <enum name="SafeBrowsingAllowlistAsyncMatch">
   <int value="0" label="ASYNC"/>
@@ -600,6 +617,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Malware"/>
 </enum>
 
+<!-- LINT.IfChange(SBExtensionTelemetrySearchVsSerpCount) -->
+
+<enum name="SBExtensionTelemetrySearchVsSerpCount">
+  <int value="0" label="SearchCountIsLessThanSerpCount"/>
+  <int value="1" label="SearchCountEqualsSerpCount"/>
+  <int value="2" label="SearchCountIsGreaterThanSerpCount"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/extension_telemetry/search_hijacking_detector.cc:SearchVsSerpCount) -->
+
 <enum name="SBExtensionTelemetrySignalsSignalType">
   <int value="0" label="TabsExecuteScript"/>
   <int value="1" label="RemoteHostsContacted"/>
@@ -773,6 +800,25 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/hash_prefix_map.cc:WriteError) -->
+
+<!-- LINT.IfChange(V8IframeState) -->
+
+<enum name="V8IframeState">
+  <int value="0"
+      label="v8 optimizer enabled for frame which finished navigation and for
+             topmost frame"/>
+  <int value="1"
+      label="v8 optimizer enabled for frame which finished navigation but
+             disabled for topmost frame"/>
+  <int value="2"
+      label="v8 optimizer disabled for frame which finished navigation but
+             enabled for topmost frame"/>
+  <int value="3"
+      label="v8 optimizer disabled for frame which finished navigation and
+             for topmost frame"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/site_protection/site_protection_metrics.h:IframeV8OptimizerState) -->
 
 </enums>
 

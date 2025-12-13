@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "components/captive_portal/core/captive_portal_types.h"
@@ -26,7 +27,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/navigation/system_entropy.mojom.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -38,6 +38,7 @@
 #endif
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -73,13 +74,16 @@ struct NavigateParams {
 #if BUILDFLAG(IS_ANDROID)
   explicit NavigateParams(
       std::unique_ptr<content::WebContents> contents_to_insert);
-#else
-  NavigateParams(Browser* browser,
+#endif
+
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+  NavigateParams(BrowserWindowInterface* a_browser,
                  const GURL& a_url,
                  ui::PageTransition a_transition);
-  NavigateParams(Browser* browser,
+  NavigateParams(BrowserWindowInterface* a_browser,
                  std::unique_ptr<content::WebContents> contents_to_insert);
 #endif
+
   NavigateParams(Profile* profile,
                  const GURL& a_url,
                  ui::PageTransition a_transition);
@@ -213,21 +217,21 @@ struct NavigateParams {
 
   // Determines if and how the target window should be made visible at the end
   // of the call to Navigate().
-  enum WindowAction {
+  enum class WindowAction {
     // Do not show or activate the browser window after navigating.
-    NO_ACTION,
+    kNoAction,
     // Show and activate the browser window after navigating.
-    SHOW_WINDOW,
+    kShowWindow,
     // Show the browser window after navigating but do not activate.
     // Note: This may cause a space / virtual desktop switch if the window is
     // being shown on a display which is currently showing a fullscreen app.
     // (crbug.com/1315749).
-    SHOW_WINDOW_INACTIVE
+    kShowWindowInactive
   };
-  // Default is NO_ACTION (don't show or activate the window).
+  // WARNING: Default depends on the constructor used.
   // If disposition is NEW_WINDOW or NEW_POPUP, and |window_action| is set to
-  // NO_ACTION, |window_action| will be set to SHOW_WINDOW.
-  WindowAction window_action = NO_ACTION;
+  // kNoAction, |window_action| will be set to kShowWindow.
+  WindowAction window_action = WindowAction::kNoAction;
 
   // Captive portal type for this browser window.
   captive_portal::CaptivePortalWindowType captive_portal_window_type =
@@ -259,21 +263,25 @@ struct NavigateParams {
   };
   PathBehavior path_behavior = RESPECT;
 
-#if !BUILDFLAG(IS_ANDROID)
-  // [in]  Specifies a Browser object where the navigation could occur or the
-  //       tab could be added. Navigate() is not obliged to use this Browser if
-  //       it is not compatible with the operation being performed. This can be
-  //       NULL, in which case |initiating_profile| must be provided.
-  // [out] Specifies the Browser object where the navigation occurred or the
-  //       tab was added. Guaranteed non-NULL unless the disposition did not
-  //       require a navigation, in which case this is set to NULL
-  //       (SAVE_TO_DISK, IGNORE_ACTION).
-  // Note: If |show_window| is set to false and a new Browser is created by
-  //       Navigate(), the caller is responsible for showing it so that its
-  //       window can assume responsibility for the Browser's lifetime (Browser
-  //       objects are deleted when the user closes a visible browser window).
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser = nullptr;
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+  // [in]  Specifies a BrowserWindowInterface object where the navigation
+  //       could occur or the tab could be added. Navigate() is not obliged to
+  //       use this BrowserWindowInterface if it is not compatible with the
+  //       operation being performed. This can be NULL, in which case
+  //       |initiating_profile| must be provided.
+  // [out] Specifies the BrowserWindowInterface object where the navigation
+  //       occurred or the tab was added. Guaranteed non-NULL unless the
+  //       disposition did not require a navigation, in which case this is set
+  //       to NULL (SAVE_TO_DISK, IGNORE_ACTION).
+  // Note: If |show_window| is set to false and a new BrowserWindowInterface is
+  //       created by Navigate(), the caller is responsible for showing it so
+  //       that its window can assume responsibility for the Browser's lifetime
+  //       (Browser objects are deleted when the user closes a visible browser
+  //       window).
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> browser;
+#endif
 
+#if !BUILDFLAG(IS_ANDROID)
   // The group the caller would like the tab to be added to.
   std::optional<tab_groups::TabGroupId> group;
 
@@ -356,12 +364,6 @@ struct NavigateParams {
   // True if the navigation was initiated by typing in the omnibox and the typed
   // text had an explicit http scheme.
   bool url_typed_with_http_scheme = false;
-
-  // Indicates if the page load occurs during a non-optimal performance state.
-  // This value is only suggested based upon the load context, and can be
-  // overridden by other factors.
-  blink::mojom::SystemEntropy suggested_system_entropy =
-      blink::mojom::SystemEntropy::kNormal;
 
   // This option forces PWA navigation capturing (which captures some
   // navigations into PWA windows or tabs) off. This is only recommended to be

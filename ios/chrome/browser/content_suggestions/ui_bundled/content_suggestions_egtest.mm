@@ -14,24 +14,22 @@
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
-#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -79,16 +77,14 @@ void TapView(NSString* accessibility_id) {
 
 // Tap the PromoStyleSecondaryActionButton.
 void TapPromoStyleSecondaryActionButton() {
-  id<GREYMatcher> button =
-      grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier);
+  id<GREYMatcher> button = chrome_test_util::ButtonStackSecondaryButton();
   [[EarlGrey selectElementWithMatcher:button] assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:button] performAction:grey_tap()];
 }
 
 // Tap the ConfirmationAlertSecondaryAction Button.
 void TapSecondaryActionButton() {
-  id<GREYMatcher> button = grey_accessibilityID(
-      kConfirmationAlertSecondaryActionAccessibilityIdentifier);
+  id<GREYMatcher> button = chrome_test_util::ButtonStackSecondaryButton();
   [[EarlGrey selectElementWithMatcher:button] assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:button] performAction:grey_tap()];
 }
@@ -129,9 +125,8 @@ void TapMagicStackEditButton() {
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
     config.features_disabled.push_back(kContentPushNotifications);
-    config.features_disabled.push_back(
-        set_up_list::kSetUpListWithoutSignInItem);
   }
+
   return config;
 }
 
@@ -156,7 +151,7 @@ void TapMagicStackEditButton() {
 
 - (void)setUp {
   [super setUp];
-  [NewTabPageAppInterface disableSetUpList];
+  [NewTabPageAppInterface disableTipsCards];
 }
 
 - (void)tearDownHelper {
@@ -197,10 +192,8 @@ void TapMagicStackEditButton() {
 
   // Check the page has been correctly opened.
   [ChromeEarlGrey selectTabAtIndex:1];
+  [ChromeEarlGrey waitForWebStateVisibleURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          pageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
 }
 
 // Tests the "Open in New Incognito Tab" action of the Most Visited context
@@ -218,10 +211,8 @@ void TapMagicStackEditButton() {
   [ChromeEarlGrey waitForIncognitoTabCount:1];
 
   // Check that the tab has been opened in foreground.
+  [ChromeEarlGrey waitForWebStateVisibleURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          pageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
 
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Test did not switch to incognito");
@@ -249,9 +240,7 @@ void TapMagicStackEditButton() {
 
   // Check the snack bar notifying the user that an element has been removed is
   // displayed.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier")]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on undo.
@@ -341,14 +330,6 @@ void TapMagicStackEditButton() {
   [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
 
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-  [ChromeEarlGreyUI waitForAppToIdle];
-  // The fake signin UI appears. Dismiss it.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthCancelButtonIdentifier)]
-      performAction:grey_tap()];
-
   // Tap the notification item.
   TapView(set_up_list::kContentNotificationItemID);
   // Ensure the Notification opt-in screen is displayed
@@ -389,11 +370,12 @@ void TapMagicStackEditButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Turn off the Set Up list toggle.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_kindOfClassName(@"UISwitch"),
-                            grey_ancestor(grey_accessibilityID(
-                                kCustomizationToggleSetUpListIdentifier)),
-                            nil)] performAction:grey_turnSwitchOn(NO)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_kindOfClassName(@"UISwitch"),
+                                   grey_ancestor(grey_accessibilityID(
+                                       kCustomizationToggleTipsIdentifier)),
+                                   nil)] performAction:grey_turnSwitchOn(NO)];
 
   // Dismiss the menu.
   [[EarlGrey
@@ -408,10 +390,49 @@ void TapMagicStackEditButton() {
       performAction:grey_swipeFastInDirection(kGREYDirectionRight)];
 
   // Assert Set Up List is not there. If it is, it is always the first module.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   [NewTabPageAppInterface setUpListTitle])]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          set_up_list::kSetUpListContainerID)]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the long-press hide action for the Set Up List card removes the
+// card from the Magic Stack.
+- (void)testMagicStackLongPressHide {
+  [self prepareToTestSetUpListInMagicStack];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          set_up_list::kSetUpListContainerID)]
+      performAction:grey_longPress()];
+
+  NSString* setupListHideTitle = l10n_util::GetNSStringF(
+      IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION,
+      l10n_util::GetStringUTF16(IDS_IOS_MAGIC_STACK_TIP_TITLE));
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                         setupListHideTitle),
+                     grey_interactable(), nullptr)] performAction:grey_tap()];
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Assert Set Up List card is not there.
+  if (iOS26_OR_ABOVE()) {
+    ConditionBlock condition = ^{
+      NSError* error = nil;
+      [[EarlGrey
+          selectElementWithMatcher:grey_accessibilityID(
+                                       set_up_list::kSetUpListContainerID)]
+          assertWithMatcher:grey_notVisible()
+                      error:&error];
+      return error == nil;
+    };
+    GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2),
+                                                            condition),
+               @"Timeout waiting for the Set Up List card to dismissing.");
+  } else {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            set_up_list::kSetUpListContainerID)]
+        assertWithMatcher:grey_notVisible()];
+  }
 }
 
 #pragma mark - Test utils

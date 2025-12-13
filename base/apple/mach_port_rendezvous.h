@@ -18,7 +18,6 @@
 #include "base/apple/scoped_mach_port.h"
 #include "base/base_export.h"
 #include "base/containers/buffer_iterator.h"
-#include "base/feature_list.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "build/ios_buildflags.h"

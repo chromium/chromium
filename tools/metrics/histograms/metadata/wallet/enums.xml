@@ -1,0 +1,66 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="WalletablePassOptInFunnelEvents">
+  <int value="0" label="Consent bubble was blocked by frequency cap"/>
+  <int value="1" label="User already opted in"/>
+  <int value="2" label="Consent bubble was shown"/>
+  <int value="3" label="Learn more button was clicked"/>
+  <int value="4" label="Consent bubble was accepted"/>
+  <int value="5" label="Consent bubble was rejected"/>
+  <int value="6" label="Consent bubble was closed"/>
+  <int value="7" label="Consent bubble lost focus"/>
+  <int value="8" label="Consent bubble closed with unknown reason"/>
+  <int value="9" label="Consent bubble was discarded"/>
+</enum>
+
+<enum name="WalletablePassSaveFunnelEvents">
+  <int value="0" label="Save bubble was shown"/>
+  <int value="1" label="Go to Wallet button was clicked"/>
+  <int value="2" label="Save bubble was accepted"/>
+  <int value="3" label="Save bubble was rejected"/>
+  <int value="4" label="Save bubble was closed"/>
+  <int value="5" label="Save bubble lost focus"/>
+  <int value="6" label="Save bubble closed with unknown reason"/>
+  <int value="7" label="Save bubble was discarded"/>
+</enum>
+
+<enum name="WalletablePassServerExtractionFunnelEvents">
+  <int value="0" label="Extraction blocked by save bubble frequency cap"/>
+  <int value="1" label="Get annotated page content failed"/>
+  <int value="2" label="Model execution failed"/>
+  <int value="3" label="Response cannot be parsed"/>
+  <int value="4" label="No pass extracted"/>
+  <int value="5" label="Invalid pass type"/>
+  <int value="6" label="Walletable pass conversion failed"/>
+  <int value="7" label="Extraction succeeded"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

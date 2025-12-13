@@ -128,6 +128,7 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
   
   if (FailedOpen)
   {
+    ErrHandler.SetErrorCode(RARX_OPEN);
     uiMsg(UIERROR_MISSINGVOL,NextName);
     Arc.Open(Arc.FileName,OpenMode);
     Arc.Seek(PosBeforeClose,SEEK_SET);

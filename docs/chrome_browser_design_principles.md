@@ -115,6 +115,13 @@ FooFeature::DoStuff() { DoStuffWith(prefs_); }
           anti-pattern.
     * `BrowserWindowFeatures` (member of `Browser`)
         * example: omnibox, security chip, bookmarks bar, side panel
+        * If a browser feature needs to interact with tabs, it should take into
+          account visibility (whether the tab is in the foreground or
+          background) and activeness (the tab reflected in the omnibox, tracked
+          by `TabStripModel`). These states can be observed on the
+          [TabInterface](https://source.chromium.org/chromium/chromium/src/+/main:components/tabs/public/tab_interface.h;l=115-160?q=TabInterface%20-f:out%2F&ss=chromium).
+          More than one tab can be visible but only one can be active since
+          multiple `content::WebContents` can be visible at once.
     * `BrowserContextKeyedServiceFactory` (functionally a member of `Profile`)
         * Override `ServiceIsCreatedWithBrowserContext` to return `true`. This
           guarantees precise lifetime semantics.
@@ -237,6 +244,9 @@ FooService : public KeyedService {
       on multiple inheritance and makes maintenance challenging. In particular
       do not do this with core controls, as the behaviors of common controls
       should not vary across the product.
+    * Any UI that decorates a WebContents (overlay, dev tools, watermark, etc)
+      should live in `ContentsContainerView`. Each `ContentsContainerView`
+      contains a single `ContentsWebView`.
 * Avoid subclassing Widgets.
 * Avoid self-owned objects/classes for views or controllers.
 

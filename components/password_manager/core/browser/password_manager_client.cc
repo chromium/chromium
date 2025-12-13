@@ -28,6 +28,12 @@ bool PasswordManagerClient::IsFillingEnabled(const GURL& url) const {
   return true;
 }
 
+bool PasswordManagerClient::IsFieldFilledWithOtp(
+    autofill::FormGlobalId form_id,
+    autofill::FieldGlobalId field_id) {
+  return false;
+}
+
 bool PasswordManagerClient::IsAutoSignInEnabled() const {
   return false;
 }
@@ -187,9 +193,6 @@ PasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
 
 void PasswordManagerClient::MarkSharedCredentialsAsNotified(const GURL& url) {}
 
-SmsOtpBackend* PasswordManagerClient::GetSmsOtpBackend() const {
-  return nullptr;
-}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 version_info::Channel PasswordManagerClient::GetChannel() const {
@@ -202,5 +205,16 @@ void PasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded() const {
 
 void PasswordManagerClient::TriggerSignIn(
     signin_metrics::AccessPoint access_point) const {}
+
+UndoPasswordChangeController*
+PasswordManagerClient::GetUndoPasswordChangeController() {
+  return nullptr;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+bool PasswordManagerClient::IsActorTaskActive() {
+  return false;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

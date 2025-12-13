@@ -54,7 +54,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_Software) {
       &resource, &release_callback, /*needs_verified_synctoken=*/false);
 
   EXPECT_TRUE(success);
-  EXPECT_TRUE(resource.is_software);
+  EXPECT_TRUE(resource.GetIsSoftware());
 
   std::move(release_callback)
       .Run(std::move(canvas_resource), gpu::SyncToken(), false);
@@ -80,7 +80,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_PreservesAlphaType) {
 
   ASSERT_TRUE(premul_canvas_resource->PrepareTransferableResource(
       &resource, &release_callback, /*needs_verified_synctoken=*/false));
-  EXPECT_EQ(resource.alpha_type, kPremul_SkAlphaType);
+  EXPECT_EQ(resource.GetAlphaType(), kPremul_SkAlphaType);
 
   scoped_refptr<CanvasResource> unpremul_canvas_resource =
       CanvasResourceSharedImage::Create(
@@ -94,7 +94,11 @@ TEST(CanvasResourceTest, PrepareTransferableResource_PreservesAlphaType) {
 
   ASSERT_TRUE(unpremul_canvas_resource->PrepareTransferableResource(
       &resource, &release_callback, /*needs_verified_synctoken=*/false));
-  EXPECT_EQ(resource.alpha_type, kUnpremul_SkAlphaType);
+  EXPECT_EQ(resource.GetAlphaType(), kUnpremul_SkAlphaType);
+
+  // InitializeSharedGpuContextRaster() requires SharedGpuContext::Reset()
+  // at TearDown().
+  SharedGpuContext::Reset();
 }
 
 }  // namespace blink

@@ -615,161 +615,6 @@ RenderProcessHostBadIpcMessageWaiter::Wait() {
   return static_cast<bad_message::BadMessageReason>(internal_result.value());
 }
 
-CreateNewPopupWidgetInterceptor::CreateNewPopupWidgetInterceptor(
-    RenderFrameHostImpl* rfh,
-    base::OnceCallback<void(RenderWidgetHostImpl*)> did_create_callback)
-    : swapped_impl_(rfh->local_frame_host_receiver_for_testing(), this),
-      did_create_callback_(std::move(did_create_callback)) {}
-
-CreateNewPopupWidgetInterceptor::~CreateNewPopupWidgetInterceptor() = default;
-
-void CreateNewPopupWidgetInterceptor::CreateNewPopupWidget(
-    mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
-        blink_popup_widget_host,
-    mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
-    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
-  class PopupWidgetCreationObserver : public RenderWidgetHostFactory {
-   public:
-    PopupWidgetCreationObserver() { RegisterFactory(this); }
-
-    ~PopupWidgetCreationObserver() override { UnregisterFactory(); }
-
-    // RenderWidgetHostFactory overrides:
-    RenderWidgetHostImpl* CreateSelfOwnedRenderWidgetHost(
-        FrameTree* frame_tree,
-        RenderWidgetHostDelegate* delegate,
-        base::SafeRef<SiteInstanceGroup> site_instance_group,
-        int32_t routing_id,
-        bool hidden) override {
-      CHECK(!last_created_widget_);
-      last_created_widget_ =
-          RenderWidgetHostFactory::CreateSelfOwnedRenderWidgetHost(
-              frame_tree, delegate, std::move(site_instance_group), routing_id,
-              hidden);
-      return last_created_widget_;
-    }
-
-    RenderWidgetHostImpl* TakeLastCreatedWidget() {
-      return std::exchange(last_created_widget_, nullptr);
-    }
-
-   private:
-    raw_ptr<RenderWidgetHostImpl> last_created_widget_;
-  };
-
-  PopupWidgetCreationObserver creation_observer;
-
-  GetForwardingInterface()->CreateNewPopupWidget(
-      std::move(blink_popup_widget_host), std::move(blink_widget_host),
-      std::move(blink_widget));
-
-  if (!did_create_callback_) {
-    return;
-  }
-
-  if (auto* widget = creation_observer.TakeLastCreatedWidget(); widget) {
-    std::move(did_create_callback_).Run(widget);
-  }
-}
-
-blink::mojom::LocalFrameHost*
-CreateNewPopupWidgetInterceptor::GetForwardingInterface() {
-  return swapped_impl_.old_impl();
-}
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::ShowPopupMenuInterceptor(
-    RenderFrameHostImpl* rfh,
-    base::OnceCallback<void(const gfx::Rect&)> did_show_popup_menu_callback)
-    : swapped_impl_(rfh->local_frame_host_receiver_for_testing(), this),
-      did_show_popup_menu_callback_(std::move(did_show_popup_menu_callback)) {}
-
-ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::~ShowPopupMenuInterceptor() =
-    default;
-
-void ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::ShowPopupMenu(
-    mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
-    const gfx::Rect& bounds,
-    double font_size,
-    int32_t selected_item,
-    std::vector<blink::mojom::MenuItemPtr> menu_items,
-    bool right_aligned,
-    bool allow_multiple_selection) {
-  if (did_show_popup_menu_callback_) {
-    std::move(did_show_popup_menu_callback_).Run(bounds);
-    mojo::Remote<blink::mojom::PopupMenuClient>(std::move(popup_client))
-        ->DidCancel();
-    return;
-  }
-
-  GetForwardingInterface()->ShowPopupMenu(
-      std::move(popup_client), bounds, font_size, selected_item,
-      std::move(menu_items), right_aligned, allow_multiple_selection);
-}
-
-blink::mojom::LocalFrameHost*
-ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::GetForwardingInterface() {
-  return swapped_impl_.old_impl();
-}
-#endif
-
-ShowPopupWidgetWaiter::ShowPopupWidgetWaiter(WebContentsImpl* web_contents,
-                                             RenderFrameHostImpl* frame_host)
-    : create_new_popup_widget_interceptor_(
-          frame_host,
-          base::BindOnce(&ShowPopupWidgetWaiter::DidCreatePopupWidget,
-                         base::Unretained(this))),
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-      show_popup_menu_interceptor_(
-          frame_host,
-          base::BindOnce(&ShowPopupWidgetWaiter::DidShowPopupMenu,
-                         base::Unretained(this))),
-#endif
-
-      frame_host_(frame_host) {
-}
-
-ShowPopupWidgetWaiter::~ShowPopupWidgetWaiter() {
-  if (auto* rwhi = RenderWidgetHostImpl::FromID(process_id_, routing_id_)) {
-    std::ignore =
-        rwhi->popup_widget_host_receiver_for_testing().SwapImplForTesting(rwhi);
-  }
-}
-
-void ShowPopupWidgetWaiter::Wait() {
-  run_loop_.Run();
-}
-
-blink::mojom::PopupWidgetHost* ShowPopupWidgetWaiter::GetForwardingInterface() {
-  DCHECK_NE(IPC::mojom::kRoutingIdNone, routing_id_);
-  return RenderWidgetHostImpl::FromID(process_id_, routing_id_);
-}
-
-void ShowPopupWidgetWaiter::ShowPopup(const gfx::Rect& initial_rect,
-                                      const gfx::Rect& initial_anchor_rect,
-                                      ShowPopupCallback callback) {
-  GetForwardingInterface()->ShowPopup(initial_rect, initial_anchor_rect,
-                                      std::move(callback));
-  initial_rect_ = initial_rect;
-  run_loop_.Quit();
-}
-
-void ShowPopupWidgetWaiter::DidCreatePopupWidget(
-    RenderWidgetHostImpl* render_widget_host) {
-  process_id_ = render_widget_host->GetProcess()->GetDeprecatedID();
-  routing_id_ = render_widget_host->GetRoutingID();
-  // Swapped back in destructor from process_id_ and routing_id_ lookup.
-  std::ignore = render_widget_host->popup_widget_host_receiver_for_testing()
-                    .SwapImplForTesting(this);
-}
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-void ShowPopupWidgetWaiter::DidShowPopupMenu(const gfx::Rect& bounds) {
-  initial_rect_ = bounds;
-  run_loop_.Quit();
-}
-#endif
-
 UnresponsiveRendererObserver::UnresponsiveRendererObserver(
     WebContents* web_contents)
     : WebContentsObserver(web_contents) {}
@@ -1068,7 +913,8 @@ void EffectiveURLContentBrowserTestContentBrowserClient::AddTranslation(
   helper_.AddTranslation(url_to_modify, url_to_return);
 }
 
-GURL EffectiveURLContentBrowserTestContentBrowserClient::GetEffectiveURL(
+std::optional<GURL>
+EffectiveURLContentBrowserTestContentBrowserClient::GetEffectiveURL(
     BrowserContext* browser_context,
     const GURL& url) {
   return helper_.GetEffectiveURL(url);
@@ -1154,7 +1000,7 @@ RedirectToTargetOnSecondNavigation(
   }
 
   std::string url_from_query =
-      base::UnescapeBinaryURLComponent(request.GetURL().query_piece());
+      base::UnescapeBinaryURLComponent(request.GetURL().query());
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HttpStatusCode::HTTP_FOUND);
   http_response->AddCustomHeader("Location", url_from_query);

@@ -35,6 +35,7 @@
 #include "components/url_formatter/url_fixer.h"
 #include "components/user_prefs/user_prefs.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -61,6 +62,22 @@
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
+
+namespace {
+
+// Pasting very large text (e.g., >10 MB) into views::Textfield causes severe UI
+// lag, a common issue. Therefore, add OnBeforePaste to TextfieldController so
+// the controller can pre-process clipboard contents and supply them to the
+// Textfield. The Chrome address bar (Omnibox) mitigates this by truncating
+// clipboard input to 500 KB before insertion. Following the Omnibox
+// implementation, BookmarkEditorView limits clipboard content to 500 KB, while
+// keeping other handling consistent with Textfield::Paste.
+
+// https://crbug.com/457203690
+
+static const size_t kMaxClipboardTextLength = 500 * 1024;
+
+}  // namespace
 
 BookmarkEditorView::BookmarkEditorView(
     Profile* profile,
@@ -208,6 +225,31 @@ bool BookmarkEditorView::HandleKeyEvent(views::Textfield* sender,
 
 bool BookmarkEditorView::IsCommandIdChecked(int command_id) const {
   return false;
+}
+
+bool BookmarkEditorView::OnBeforePaste(views::Textfield* sender,
+                                       std::u16string* paste_contents) {
+  // Intercept paste for the URL textfield and provide sanitized clipboard text.
+  // Returning true lets Textfield::Paste() use this content instead of reading
+  // the clipboard directly.
+  if (sender != url_tf_ || !paste_contents) {
+    return false;
+  }
+
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+      paste_contents);
+
+  if (paste_contents->length() > kMaxClipboardTextLength) {
+    // Trim leading and trailing whitespace, validate string length to stay
+    // consistent with TextfieldModel::Paste and prevent cases where the first
+    // 500 KB of pasted content is all whitespace.
+    base::TrimWhitespace(*paste_contents, base::TRIM_ALL, paste_contents);
+
+    *paste_contents = paste_contents->substr(0, kMaxClipboardTextLength);
+  }
+
+  return true;
 }
 
 bool BookmarkEditorView::IsCommandIdEnabled(int command_id) const {
@@ -447,9 +489,21 @@ void BookmarkEditorView::AddLabels() {
     url = details_.existing_node->url();
   } else if (details_.type == EditDetails::NEW_FOLDER) {
     title = l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME);
+  } else if (details_.type == EditDetails::CONVERT_TAB_GROUP_TO_FOLDER) {
+    title = details_.bookmark_data.title.empty()
+                ? l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME)
+                : details_.bookmark_data.title;
   } else if (details_.type == EditDetails::NEW_URL) {
     url = details_.bookmark_data.url.value();
     title = details_.bookmark_data.title;
+  }
+
+  // Add a subtitle to tab group to folder dialog.
+  if (details_.type == EditDetails::CONVERT_TAB_GROUP_TO_FOLDER) {
+    views::Label* subtitle = AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_TO_BOOKMARK_FOLDER_SUBTITLE)));
+    subtitle->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    subtitle->SetMultiLine(true);
   }
 
   auto* labels = AddChildView(std::make_unique<views::View>());

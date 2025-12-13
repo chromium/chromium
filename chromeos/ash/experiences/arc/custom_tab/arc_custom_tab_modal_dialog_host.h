@@ -12,7 +12,7 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace arc {
 class CustomTab;
@@ -51,8 +51,8 @@ class ArcCustomTabModalDialogHost
   void PrimaryMainFrameWasResized(bool width_changed) override;
 
   // web_modal::WebContentsModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // web_modal::WebContentsModalDialogHost:
   gfx::NativeView GetHostView() const override;

@@ -17,6 +17,7 @@
 #include <limits>
 
 #include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 #include "partition_alloc/partition_alloc_check.h"
@@ -129,7 +130,8 @@ void* AlignAllocation(void* ptr, size_t alignment) {
       address + sizeof(AlignedPrefix), alignment);
 
   // Write the prefix.
-  AlignedPrefix* prefix = reinterpret_cast<AlignedPrefix*>(address) - 1;
+  AlignedPrefix* prefix =
+      PA_UNSAFE_TODO(reinterpret_cast<AlignedPrefix*>(address) - 1);
   prefix->original_allocation_offset =
       partition_alloc::internal::base::checked_cast<unsigned int>(
           address - reinterpret_cast<uintptr_t>(ptr));
@@ -141,12 +143,13 @@ void* AlignAllocation(void* ptr, size_t alignment) {
 
 // Return the original allocation from an aligned allocation.
 void* UnalignAllocation(void* ptr) {
-  AlignedPrefix* prefix = reinterpret_cast<AlignedPrefix*>(ptr) - 1;
+  AlignedPrefix* prefix =
+      PA_UNSAFE_TODO(reinterpret_cast<AlignedPrefix*>(ptr) - 1);
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(prefix->magic == AlignedPrefix::kMagic);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
-  void* unaligned =
-      static_cast<uint8_t*>(ptr) - prefix->original_allocation_offset;
+  void* unaligned = PA_UNSAFE_TODO(static_cast<uint8_t*>(ptr) -
+                                   prefix->original_allocation_offset);
   PA_CHECK(unaligned < ptr);
   PA_CHECK(reinterpret_cast<uintptr_t>(ptr) -
                reinterpret_cast<uintptr_t>(unaligned) <=
@@ -206,7 +209,7 @@ void* WinHeapAlignedRealloc(void* ptr, size_t size, size_t alignment) {
   size_t gap =
       reinterpret_cast<uintptr_t>(ptr) - reinterpret_cast<uintptr_t>(unaligned);
   size_t old_size = WinHeapGetSizeEstimate(unaligned) - gap;
-  memcpy(new_ptr, ptr, std::min(size, old_size));
+  PA_UNSAFE_TODO(memcpy(new_ptr, ptr, std::min(size, old_size)));
   WinHeapAlignedFree(ptr);
   return new_ptr;
 }

@@ -14,6 +14,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/passage_embeddings/passage_embedder_model_observer.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
+#include "components/permissions/features.h"
 
 namespace passage_embeddings {
 
@@ -50,7 +51,8 @@ std::unique_ptr<KeyedService>
 PassageEmbedderModelObserverFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(kPassageEmbedder) &&
-      !history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
+      !history_embeddings::IsHistoryEmbeddingsFeatureEnabled() &&
+      !base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4)) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
@@ -59,9 +61,7 @@ PassageEmbedderModelObserverFactory::BuildServiceInstanceForBrowserContext(
   // Observe launched target by default, as the user could opt in at any time.
   return std::make_unique<PassageEmbedderModelObserver>(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      ChromePassageEmbeddingsServiceController::Get(),
-      /*experimental=*/base::FeatureList::IsEnabled(kPassageEmbedder) &&
-          !history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile));
+      ChromePassageEmbeddingsServiceController::Get());
 }
 
 }  // namespace passage_embeddings

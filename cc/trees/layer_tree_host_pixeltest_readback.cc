@@ -165,12 +165,11 @@ class LayerTreeHostReadbackPixelTest
     gfx::ColorSpace color_space = shared_image->color_space();
     EXPECT_EQ(color_space, output_color_space_);
 
-    viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
-        result->TakeSharedImageOwnership();
-    EXPECT_EQ(1u, release_callbacks.size());
+    viz::ReleaseCallback release_callback = result->TakeSharedImageOwnership();
+    ASSERT_TRUE(release_callback);
 
     SkBitmap bitmap = CopyMailboxToBitmap(result->size(), mailbox, color_space);
-    std::move(release_callbacks[0]).Run(gpu::SyncToken(), false);
+    std::move(release_callback).Run(gpu::SyncToken(), false);
 
     ReadbackResultAsBitmap(std::make_unique<viz::CopyOutputSkBitmapResult>(
         result->rect(), std::move(bitmap)));

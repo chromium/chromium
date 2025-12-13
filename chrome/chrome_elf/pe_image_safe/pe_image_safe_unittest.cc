@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/chrome_elf/pe_image_safe/pe_image_safe.h"
 
-#include "base/files/file_util.h"
+#include "base/compiler_specific.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,8 +33,8 @@ bool GetComparisonData(char* buffer, CompareData* data) {
   if (data->dos_header->e_magic != IMAGE_DOS_SIGNATURE)
     return false;
 
-  data->nt_headers = reinterpret_cast<PIMAGE_NT_HEADERS>(
-      reinterpret_cast<char*>(data->dos_header) + data->dos_header->e_lfanew);
+  data->nt_headers = reinterpret_cast<PIMAGE_NT_HEADERS>(UNSAFE_TODO(
+      reinterpret_cast<char*>(data->dos_header) + data->dos_header->e_lfanew));
   if (data->nt_headers->Signature != IMAGE_NT_SIGNATURE)
     return false;
 
@@ -75,7 +72,8 @@ TEST(PEImageSafe, SanityTest) {
 
   std::vector<char> buffer;
   buffer.resize(kPageSize);
-  ASSERT_EQ(file.Read(0, &buffer[0], kPageSize), static_cast<int>(kPageSize));
+  ASSERT_EQ(UNSAFE_TODO(file.Read(0, &buffer[0], kPageSize)),
+            static_cast<int>(kPageSize));
   file.Close();
 
   // Grab some key data out of the pe headers first, NOT using pe_image_safe.

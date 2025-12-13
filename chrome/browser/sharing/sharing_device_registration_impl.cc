@@ -27,7 +27,6 @@
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
-#include "crypto/ec_private_key.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/android/chrome_jni_headers/SharingJNIBridge_jni.h"
@@ -133,8 +132,6 @@ void SharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved(
     return;
   }
 
-  base::UmaHistogramBoolean("Sharing.LocalSharingTargetInfoSupportsSync",
-                            !!sharing_target_info);
   std::set<SharingSpecificFields::EnabledFeatures> enabled_features =
       GetEnabledFeatures();
   syncer::DeviceInfo::SharingInfo sharing_info(
@@ -274,3 +271,7 @@ void SharingDeviceRegistrationImpl::SetEnabledFeaturesForTesting(
     std::set<SharingSpecificFields::EnabledFeatures> enabled_features) {
   enabled_features_testing_value_ = std::move(enabled_features);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(SharingJNIBridge)
+#endif

@@ -10,7 +10,10 @@
 
 namespace content {
 
-class FederatedAuthRequestImpl;
+namespace webid {
+class RequestService;
+}
+
 class RenderFrameHost;
 class RenderFrameHostImpl;
 
@@ -28,8 +31,9 @@ class WebTestFedCmManager
   void GetDialogType(
       blink::test::mojom::FederatedAuthRequestAutomation::GetDialogTypeCallback)
       override;
-  void GetFedCmDialogTitle(blink::test::mojom::FederatedAuthRequestAutomation::
-                               GetFedCmDialogTitleCallback) override;
+  void GetFedCmDialogTitleAndSubtitle(
+      blink::test::mojom::FederatedAuthRequestAutomation::
+          GetFedCmDialogTitleAndSubtitleCallback) override;
   void SelectFedCmAccount(uint32_t account_index,
                           SelectFedCmAccountCallback) override;
   void DismissFedCmDialog(DismissFedCmDialogCallback) override;
@@ -37,9 +41,9 @@ class WebTestFedCmManager
                               ClickFedCmDialogButtonCallback) override;
 
  private:
-  // Returns the active FederatedAuthRequestImpl for the current Page,
+  // Returns the active RequestService for the current Page,
   // or nullptr if there isn't one.
-  FederatedAuthRequestImpl* GetAuthRequestImpl();
+  webid::RequestService* GetAuthRequestService();
 
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
 };

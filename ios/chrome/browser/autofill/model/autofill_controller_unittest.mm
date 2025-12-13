@@ -52,6 +52,7 @@
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
@@ -101,16 +102,36 @@ using base::test::ScopedFeatureList;
           accessoryViewUpdateBlock:
               (FormSuggestionsReadyCompletion)accessoryViewUpdateBlock {
   self.suggestionRetrievalStarted = YES;
+
+  __weak __typeof(self) weakSelf = self;
+  FormSuggestionsReadyCompletion wrappedBlock =
+      ^(NSArray<FormSuggestion*>* suggestions,
+        id<FormInputSuggestionsProvider> provider) {
+        // This is the key change: update the test's state regardless of whether
+        // the controller is stateful or stateless.
+        weakSelf.suggestions = suggestions;
+        weakSelf.suggestionRetrievalComplete = YES;
+
+        // Call the original completion block to ensure the mediator's logic
+        // still runs.
+        if (accessoryViewUpdateBlock) {
+          accessoryViewUpdateBlock(suggestions, provider);
+        }
+      };
+
   [super retrieveSuggestionsForForm:params
                            webState:webState
-           accessoryViewUpdateBlock:accessoryViewUpdateBlock];
+           accessoryViewUpdateBlock:wrappedBlock];
 }
 
+// -updateKeyboardWithSuggestions: is only called in the stateful path.
+// The new wrapped block above handles the stateless path.
 - (void)updateKeyboardWithSuggestions:(NSArray*)suggestions {
   self.suggestions = suggestions;
   self.suggestionRetrievalComplete = YES;
 }
 
+// -onNoSuggestionsAvailable is only called in the stateful path.
 - (void)onNoSuggestionsAvailable {
   self.suggestionRetrievalComplete = YES;
 }
@@ -243,11 +264,15 @@ class AutofillControllerTest : public PlatformTest {
  public:
   AutofillControllerTest() : web_client_(std::make_unique<ChromeWebClient>()) {
     TestProfileIOS::Builder builder;
+
+    scoped_feature_list_2_.InitAndEnableFeature(
+        kStatelessFormSuggestionController);
+
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
-                            web::BrowserState,
-                            password_manager::MockPasswordStoreInterface>));
+        base::BindOnce(
+            &password_manager::BuildPasswordStoreInterface<
+                ProfileIOS, password_manager::MockPasswordStoreInterface>));
     // Profile import requires a PersonalDataManager which itself needs the
     // WebDataService; this is not initialized on a TestProfileIOS by
     // default.
@@ -344,10 +369,12 @@ class AutofillControllerTest : public PlatformTest {
   bool processed_a_task_ = false;
   // Histogram tester for these tests.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  raw_ptr<AutofillBottomSheetTabHelper> bottomsheet_tab_helper_;
+  raw_ptr<AutofillBottomSheetTabHelper, DanglingUntriaged>
+      bottomsheet_tab_helper_;
   id<AutofillCommands> autofill_commands_handler_;
   ScopedFeatureList scoped_feature_list_{
       features::kAutofillLocalSaveCardBottomSheet};
+  ScopedFeatureList scoped_feature_list_2_;
 
  private:
   std::unique_ptr<autofill::AutofillClient> autofill_client_;
@@ -387,11 +414,6 @@ void AutofillControllerTest::SetUp() {
   autofill_client_ =
       std::make_unique<WithFakedFromWebState<ChromeAutofillClientIOS>>(
           profile_.get(), web_state(), infobar_manager, autofill_agent_);
-
-  autofill_client_->GetPersonalDataManager()
-      .address_data_manager()
-      .get_alternative_state_name_map_updater_for_testing()
-      ->set_local_state_for_testing(local_state());
 
   autofill_manager_injector_ =
       std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(

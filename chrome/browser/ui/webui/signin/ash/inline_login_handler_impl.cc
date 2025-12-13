@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/version/version_loader.h"
 #include "components/account_manager_core/account.h"
@@ -305,7 +304,7 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
   params.Set("clientId", gaia_urls->oauth2_chrome_client_id());
 
   const GURL& url = gaia_urls->embedded_setup_chromeos_url();
-  params.Set("gaiaPath", url.path().substr(1));
+  params.Set("gaiaPath", url.GetPath().substr(1));
 
   std::optional<std::string> version = chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_SHORT);
@@ -337,7 +336,8 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
     return;
   }
 
-  GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
+  AccountManagerFactory::Get()
+      ->GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
       ->GetAccounts(
           base::BindOnce(&InlineLoginHandlerImpl::OnGetAccountsToCompleteLogin,
                          weak_factory_.GetWeakPtr(), params));
@@ -428,7 +428,8 @@ void InlineLoginHandlerImpl::GetAccountsInSession(
     const base::Value::List& args) {
   const std::string& callback_id = args[0].GetString();
   const Profile* profile = Profile::FromWebUI(web_ui());
-  GetAccountManagerFacade(profile->GetPath().value())
+  AccountManagerFactory::Get()
+      ->GetAccountManagerFacade(profile->GetPath().value())
       ->GetAccounts(base::BindOnce(&InlineLoginHandlerImpl::OnGetAccounts,
                                    weak_factory_.GetWeakPtr(), callback_id));
 }
@@ -454,7 +455,8 @@ void InlineLoginHandlerImpl::GetAccountsNotAvailableInArc(
   AllowJavascript();
   CHECK_EQ(1u, args.size());
   const std::string& callback_id = args[0].GetString();
-  GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
+  AccountManagerFactory::Get()
+      ->GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
       ->GetAccounts(base::BindOnce(
           &InlineLoginHandlerImpl::ContinueGetAccountsNotAvailableInArc,
           weak_factory_.GetWeakPtr(), callback_id));

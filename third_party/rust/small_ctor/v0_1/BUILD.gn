@@ -24,6 +24,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Armin Ronacher <armin.ronacher@active-4.com>"
   cargo_pkg_name = "small_ctor"
   cargo_pkg_description = "A minimal, dependency free version of the ctor crate"
+  cargo_pkg_repository = "https://github.com/mitsuhiko/small-ctor"
   cargo_pkg_version = "0.1.2"
 
   allow_unsafe = false

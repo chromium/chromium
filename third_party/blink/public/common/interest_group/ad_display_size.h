@@ -24,7 +24,6 @@ struct BLINK_COMMON_EXPORT AdSize {
   AdSize& operator=(const AdSize&);
   AdSize& operator=(AdSize&&);
   bool operator==(const AdSize& other) const;
-  bool operator!=(const AdSize& other) const;
   bool operator<(const AdSize& other) const;
   ~AdSize();
 

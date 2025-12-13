@@ -19,9 +19,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -121,7 +121,7 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
                      IsLensInGalleryEnabled(profile, pref_service));
   source->AddBoolean("pdfReadonly",
                      !pref_service->GetBoolean(prefs::kPdfAnnotationsEnabled));
-  version_info::Channel channel = chrome::GetChannel();
+  version_info::Channel channel = ash::GetChannel();
   source->AddBoolean("colorThemes", true);
   source->AddBoolean("photosAvailableForImage", photos_integration_supported);
   source->AddBoolean("photosAvailableForVideo", photos_integration_supported);

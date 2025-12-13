@@ -21,7 +21,6 @@ using blink::mojom::PresentationConnectionMessage;
 using blink::mojom::PresentationConnectionMessagePtr;
 using media_router::mojom::RouteMessagePtr;
 using ::testing::_;
-using ::testing::Invoke;
 
 namespace media_router {
 

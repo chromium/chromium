@@ -15,11 +15,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/dictation.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -100,7 +102,7 @@ void AccessibilityHandler::RegisterMessages() {
 
 void AccessibilityHandler::HandleShowBrowserAppearanceSettings(
     const base::Value::List& args) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kAppearanceSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);
@@ -184,8 +186,13 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
     return;
   }
 
-  extensions::ExtensionTabUtil::OpenOptionsPage(
-      extension, chrome::FindBrowserWithTab(web_ui()->GetWebContents()));
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForTab(
+          web_ui()->GetWebContents());
+  if (browser) {
+    extensions::ExtensionTabUtil::OpenOptionsPage(extension,
+                                                  &browser->GetBrowser());
+  }
 }
 
 void AccessibilityHandler::MaybeAddSodaInstallerObserver() {

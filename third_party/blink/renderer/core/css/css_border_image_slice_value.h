@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_BORDER_IMAGE_SLICE_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_BORDER_IMAGE_SLICE_VALUE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -37,7 +36,7 @@ class CSSBorderImageSliceValue : public CSSValue {
  public:
   CSSBorderImageSliceValue(CSSQuadValue* slices, bool fill);
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   // TODO(sashab): Change this to a quad of CSSPrimitiveValues, or add separate
   // methods for topSlice(), leftSlice(), etc.

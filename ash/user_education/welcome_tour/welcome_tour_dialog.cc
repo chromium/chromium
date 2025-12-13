@@ -20,6 +20,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 

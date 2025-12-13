@@ -33,7 +33,7 @@ class WebMediaSource;
 // cross-thread and from the registry.
 class CORE_EXPORT MediaSourceAttachment
     : public URLRegistrable,
-      public WTF::ThreadSafeRefCounted<MediaSourceAttachment> {
+      public ThreadSafeRefCounted<MediaSourceAttachment> {
  public:
   // Intended to be set by the MediaSourceRegistry during its singleton
   // initialization on the main thread. Caches the pointer in |registry_|.
@@ -128,7 +128,7 @@ class CORE_EXPORT MediaSourceAttachment
   virtual void OnElementContextDestroyed() = 0;
 
  protected:
-  friend class WTF::ThreadSafeRefCounted<MediaSourceAttachment>;
+  friend class ThreadSafeRefCounted<MediaSourceAttachment>;
   MediaSourceAttachment();
   ~MediaSourceAttachment() override;
 

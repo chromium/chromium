@@ -10,6 +10,7 @@
 #include <iterator>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -379,7 +380,7 @@ bool DocumentProvider::IsDocumentProviderAllowed(
           omnibox::kDocumentProviderEnterpriseEligibility)) {
     const auto& entrprise_account_state =
         client_->GetDocumentSuggestionsService()
-            ->account_is_subject_to_enterprise_policies();
+            ->account_is_workspace_managed();
     is_enterprise_eligible =
         base::FeatureList::IsEnabled(
             omnibox::kDocumentProviderEnterpriseEligibilityWhenUnknown)
@@ -576,7 +577,7 @@ DocumentProvider::~DocumentProvider() = default;
 void DocumentProvider::OnURLLoadComplete(
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(!done_);
   DCHECK_EQ(loader_.get(), source);
 
@@ -586,14 +587,12 @@ void DocumentProvider::OnURLLoadComplete(
                            response_code);
 
   // Also log the response code sliced by the enterprise account capability.
-  const auto& account_is_subject_to_enterprise_policies =
-      signin::TriboolToString(
-          client_->GetDocumentSuggestionsService()
-              ->account_is_subject_to_enterprise_policies());
+  const auto& account_is_workspace_managed = signin::TriboolToString(
+      client_->GetDocumentSuggestionsService()->account_is_workspace_managed());
   base::UmaHistogramSparse(
       base::StringPrintf("Omnibox.DocumentSuggest.HttpResponseCode."
                          "IsSubjectToEnterprisePolicies.%s",
-                         account_is_subject_to_enterprise_policies),
+                         account_is_workspace_managed),
       response_code);
 
   // The following are codes that we believe indicate non-transient failures,
@@ -924,14 +923,14 @@ const GURL DocumentProvider::GetURLForDeduping(const GURL& url) {
   // The below logic handles google.com redirects; e.g., google.com/url/q=<url>
   std::string url_str;
   std::string url_str_host;
-  if (url.host() == "www.google.com" && url.path() == "/url") {
+  if (url.GetHost() == "www.google.com" && url.GetPath() == "/url") {
     if ((!net::GetValueForKeyInQuery(url, "q", &url_str) || url_str.empty()) &&
         (!net::GetValueForKeyInQuery(url, "url", &url_str) || url_str.empty()))
       return GURL();
-    url_str_host = GURL(url_str).host();
+    url_str_host = GURL(url_str).GetHost();
   } else {
     url_str = url.spec();
-    url_str_host = url.host();
+    url_str_host = url.GetHost();
   }
 
   // Recheck the domain, since a google URL could redirect to a non-google URL

@@ -15,22 +15,6 @@ s! {
         __val: [c_ulong; 32],
     }
 
-    pub struct msghdr {
-        pub msg_name: *mut c_void,
-        pub msg_namelen: crate::socklen_t,
-        pub msg_iov: *mut crate::iovec,
-        pub msg_iovlen: c_int,
-        pub msg_control: *mut c_void,
-        pub msg_controllen: crate::socklen_t,
-        pub msg_flags: c_int,
-    }
-
-    pub struct cmsghdr {
-        pub cmsg_len: crate::socklen_t,
-        pub cmsg_level: c_int,
-        pub cmsg_type: c_int,
-    }
-
     pub struct sem_t {
         __val: [c_int; 4],
     }

@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "device/fido/cable/fido_ble_frames.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <vector>
 
-#include "device/fido/cable/fido_ble_frames.h"
-#include "device/fido/fido_constants.h"
+#include "base/compiler_specific.h"
+#include "device/fido/public/fido_constants.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* raw_data, size_t size) {
-  auto data_span = base::span(raw_data, size);
+  auto data_span = UNSAFE_TODO(base::span(raw_data, size));
   std::vector<uint8_t> data(data_span.begin(), data_span.end());
 
   {

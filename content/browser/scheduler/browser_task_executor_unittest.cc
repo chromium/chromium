@@ -33,7 +33,6 @@ namespace content {
 
 using ::base::TaskPriority;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NotNull;
 using ::testing::SizeIs;
@@ -53,10 +52,10 @@ using StrictMockTask =
 TEST_F(BrowserTaskExecutorTest, RunAllPendingTasksForTestingOnUI) {
   StrictMockTask task_1;
   StrictMockTask task_2;
-  EXPECT_CALL(task_1, Run).WillOnce(testing::Invoke([&]() {
+  EXPECT_CALL(task_1, Run).WillOnce([&]() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                                 task_2.Get());
-  }));
+  });
 
   GetUIThreadTaskRunner({})->PostTask(FROM_HERE, task_1.Get());
 
@@ -71,9 +70,9 @@ TEST_F(BrowserTaskExecutorTest, RunAllPendingTasksForTestingOnUI) {
 TEST_F(BrowserTaskExecutorTest, RunAllPendingTasksForTestingOnIO) {
   StrictMockTask task_1;
   StrictMockTask task_2;
-  EXPECT_CALL(task_1, Run).WillOnce(testing::Invoke([&]() {
+  EXPECT_CALL(task_1, Run).WillOnce([&]() {
     GetIOThreadTaskRunner({})->PostTask(FROM_HERE, task_2.Get());
-  }));
+  });
 
   GetIOThreadTaskRunner({})->PostTask(FROM_HERE, task_1.Get());
 
@@ -90,14 +89,14 @@ TEST_F(BrowserTaskExecutorTest, RunAllPendingTasksForTestingOnIOIsReentrant) {
   StrictMockTask task_2;
   StrictMockTask task_3;
 
-  EXPECT_CALL(task_1, Run).WillOnce(Invoke([&]() {
+  EXPECT_CALL(task_1, Run).WillOnce([&]() {
     GetIOThreadTaskRunner({})->PostTask(FROM_HERE, task_2.Get());
     BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(
         BrowserThread::IO);
-  }));
-  EXPECT_CALL(task_2, Run).WillOnce(Invoke([&]() {
+  });
+  EXPECT_CALL(task_2, Run).WillOnce([&]() {
     GetIOThreadTaskRunner({})->PostTask(FROM_HERE, task_3.Get());
-  }));
+  });
 
   GetIOThreadTaskRunner({})->PostTask(FROM_HERE, task_1.Get());
   BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(BrowserThread::IO);

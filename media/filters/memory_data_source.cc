@@ -2,49 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/filters/memory_data_source.h"
 
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 
 namespace media {
 
 MemoryDataSource::MemoryDataSource(std::string data)
-    : data_string_(std::move(data)),
-      data_(reinterpret_cast<const uint8_t*>(data_string_.data())),
-      size_(data_string_.size()) {}
+    : data_string_(std::move(data)), data_(base::as_byte_span(data_string_)) {}
 
-MemoryDataSource::MemoryDataSource(const uint8_t* data, size_t size)
-    : data_(data), size_(size) {}
+MemoryDataSource::MemoryDataSource(base::span<const uint8_t> data)
+    : data_(data) {}
 
 MemoryDataSource::~MemoryDataSource() = default;
 
 void MemoryDataSource::Read(int64_t position,
-                            int size,
-                            uint8_t* data,
+                            base::span<uint8_t> data,
                             DataSource::ReadCB read_cb) {
   DCHECK(read_cb);
 
-  if (is_stopped_ || size < 0 || position < 0 ||
-      static_cast<size_t>(position) > size_) {
+  if (is_stopped_ || position < 0 ||
+      static_cast<size_t>(position) > data_.size()) {
     std::move(read_cb).Run(kReadError);
     return;
   }
+  const auto source = data_.subspan(static_cast<size_t>(position));
 
   // Cap size within bounds.
-  size_t clamped_size = std::min(static_cast<size_t>(size),
-                                 size_ - static_cast<size_t>(position));
+  const size_t clamped_size = std::min(data.size(), source.size());
 
   if (clamped_size > 0) {
-    DCHECK(data);
-    memcpy(data, data_ + base::checked_cast<size_t>(position), clamped_size);
+    data.copy_prefix_from(source.first(clamped_size));
   }
 
   std::move(read_cb).Run(clamped_size);
@@ -57,7 +49,7 @@ void MemoryDataSource::Stop() {
 void MemoryDataSource::Abort() {}
 
 bool MemoryDataSource::GetSize(int64_t* size_out) {
-  *size_out = size_;
+  *size_out = data_.size();
   return true;
 }
 

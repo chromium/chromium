@@ -11,6 +11,8 @@
 
 namespace download {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum DownloadInterruptReason {
   DOWNLOAD_INTERRUPT_REASON_NONE = 0,
 

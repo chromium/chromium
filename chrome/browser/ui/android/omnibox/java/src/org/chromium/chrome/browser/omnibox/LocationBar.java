@@ -13,8 +13,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdow
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tab.Tab;
-
-import java.util.Optional;
+import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 
 /** Container that holds the {@link UrlBar} and SSL state related with the current {@link Tab}. */
 @NullMarked
@@ -101,7 +100,7 @@ public interface LocationBar {
     default void removeOmniboxSuggestionsDropdownScrollListener(
             OmniboxSuggestionsDropdownScrollListener listener) {}
 
-    Optional<OmniboxSuggestionsVisualState> getOmniboxSuggestionsVisualState();
+    @Nullable OmniboxSuggestionsVisualState getOmniboxSuggestionsVisualState();
 
     /**
      * Toggle showing only the origin portion of the URL (as opposed to the default behavior of
@@ -113,11 +112,13 @@ public interface LocationBar {
     default void setUrlBarUsesSmallText(boolean useSmallText) {}
 
     /**
-     * Toggle whether the status icon should be hidden for secure origins. This should only be used
-     * in minimized/reduced presentations of the LocationBar since the status icon has affordances
-     * for page-specific permissions, privacy, etc.
+     * Toggle whether the status icon should be shown/hidden for secure origins in steady state.
+     *
+     * <p>This method should be used to control whether the Status Icon should be shown in the
+     * steady Omnibox state, allowing the alternative presentations (such as the MiniOriginBar) to
+     * reduce the clutter.
      */
-    default void setHideStatusIconForSecureOrigins(boolean hideStatusIconForSecureOrigins) {}
+    default void setShowStatusIconForSecureOrigins(boolean showStatusIconForSecureOrigins) {}
 
     /** Gets the height of the url bar view contained by the location bar. */
     default float getUrlBarHeight() {
@@ -134,6 +135,17 @@ public interface LocationBar {
      * the NTP.
      */
     default void maybeShowOrClearCursorInLocationBar() {}
+
+    /**
+     * Called when the zoom level of the page has changed. Note: The zoom level value is not
+     * represented as a percentage (e.g., 100.0) or a fraction (e.g., 1.0). Instead, it uses an
+     * internal table where a value of `0.0` corresponds to 100% zoom. The default zoom level can
+     * differ if the user has set a preference. For the complete mapping of values to zoom
+     * percentages, see the zoom table variable. Read more at {@link PageZoomUtils}
+     *
+     * @param zoomLevel The new zoom level.
+     */
+    default void onZoomLevelChanged(double zoomLevel) {}
 
     /** Destroys the LocationBar. */
     void destroy();

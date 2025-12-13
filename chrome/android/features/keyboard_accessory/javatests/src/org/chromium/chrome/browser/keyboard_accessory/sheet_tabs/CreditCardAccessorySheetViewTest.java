@@ -58,11 +58,12 @@ import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.url.GURL;
 
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -76,19 +77,21 @@ public class CreditCardAccessorySheetViewTest {
     private static final Bitmap TEST_CARD_ART_IMAGE =
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
 
+    private WebPageStation mPage;
     private AccessorySheetTabItemsModel mModel;
     private final AtomicReference<RecyclerView> mView = new AtomicReference<>();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock AutofillImageFetcher mMockImageFetcher;
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         AutofillImageFetcherFactory.setInstanceForTesting(mMockImageFetcher);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -216,8 +219,7 @@ public class CreditCardAccessorySheetViewTest {
         when(iconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
         // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
         // above url.
-        when(mMockImageFetcher.getImageIfAvailable(any(), any()))
-                .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(TEST_CARD_ART_IMAGE);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -264,7 +266,7 @@ public class CreditCardAccessorySheetViewTest {
         when(iconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
         // Return null to AutofillImageFetcher.getImageIfAvailable to indicate that the image is not
         // present in the cache.
-        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(Optional.empty());
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(null);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -490,7 +492,7 @@ public class CreditCardAccessorySheetViewTest {
         // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
         // above url.
         when(mMockImageFetcher.getImageIfAvailable(eq(kProgramLogo), any()))
-                .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
+                .thenReturn(TEST_CARD_ART_IMAGE);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -547,7 +549,7 @@ public class CreditCardAccessorySheetViewTest {
 
         // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
         // above url.
-        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(Optional.empty());
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(null);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

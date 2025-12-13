@@ -35,7 +35,7 @@ InternalsGetNamedCookie::getNamedCookie(ScriptState* script_state,
   test::mojom::blink::CookieManagerAutomation* raw_cookie_manager =
       cookie_manager.get();
   raw_cookie_manager->GetNamedCookie(
-      name, WTF::BindOnce(
+      name, BindOnce(
                 [](ScriptPromiseResolver<IDLNullable<InternalCookie>>* resolver,
                    ScriptState* script_state,
                    mojo::Remote<test::mojom::blink::CookieManagerAutomation>,

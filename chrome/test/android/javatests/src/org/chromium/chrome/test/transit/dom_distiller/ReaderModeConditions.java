@@ -1,3 +1,7 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package org.chromium.chrome.test.transit.dom_distiller;
 
 import org.chromium.base.test.transit.Condition;
@@ -56,7 +60,7 @@ public class ReaderModeConditions {
 
         @Override
         public String buildDescription() {
-            return "Page's background color is " + mExpectedFontSizeString;
+            return "Page's font size is " + mExpectedFontSizeString;
         }
     }
 

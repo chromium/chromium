@@ -9,8 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/media/cdm_storage_id_key.h"
 #include "chrome/browser/media/media_storage_id_salt.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "media/media_buildflags.h"
 #include "rlz/buildflags/buildflags.h"
 #include "url/origin.h"
@@ -68,15 +67,14 @@ std::vector<uint8_t> CalculateStorageId(
   // Build the identifier as follows:
   // SHA256(machine_id + origin + storage_id_key + profile_salt)
   std::string origin_str = origin.Serialize();
-  std::unique_ptr<crypto::SecureHash> sha256 =
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  sha256->Update(machine_id.data(), machine_id.length());
-  sha256->Update(origin_str.data(), origin_str.length());
-  sha256->Update(storage_id_key.data(), storage_id_key.length());
-  sha256->Update(profile_salt.data(), profile_salt.size());
+  crypto::hash::Hasher sha256(crypto::hash::kSha256);
+  sha256.Update(machine_id);
+  sha256.Update(origin_str);
+  sha256.Update(storage_id_key);
+  sha256.Update(profile_salt);
 
-  std::vector<uint8_t> result(crypto::kSHA256Length);
-  sha256->Finish(result.data(), result.size());
+  std::vector<uint8_t> result(crypto::hash::kSha256Size);
+  sha256.Finish(result);
   return result;
 }
 

@@ -38,11 +38,18 @@
 #include <algorithm>
 
 #include "base/synchronization/lock.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
+#include "third_party/blink/renderer/platform/text/justification_opportunity.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
@@ -58,10 +65,11 @@ UCPTrie* CreateTrie() {
   return trie;
 }
 
-unsigned GetProperty(UChar32 c, CharacterProperty property) {
+inline CharacterProperty GetProperty(UChar32 c) {
   static const UCPTrie* trie = CreateTrie();
-  return UNSAFE_TODO(UCPTRIE_FAST_GET(trie, UCPTRIE_16, c)) &
-         static_cast<CharacterPropertyType>(property);
+  static_assert(sizeof(CharacterProperty) == 2);
+  const auto value = UNSAFE_TODO(UCPTRIE_FAST_GET(trie, UCPTRIE_16, c));
+  return CharacterProperty(value);
 }
 
 base::Lock& GetFreezePatternLock() {
@@ -91,34 +99,29 @@ bool Character::IsUprightInMixedVertical(UChar32 character) {
 }
 
 bool Character::IsCJKIdeographOrSymbolSlow(UChar32 c) {
-  return GetProperty(c, CharacterProperty::kIsCJKIdeographOrSymbol);
+  return GetProperty(c).is_cjk_ideograph_or_symbol;
 }
 
 bool Character::IsPotentialCustomElementNameChar(UChar32 character) {
-  return GetProperty(character,
-                     CharacterProperty::kIsPotentialCustomElementNameChar);
+  return GetProperty(character).is_potential_custom_element_name_char;
 }
 
 bool Character::IsBidiControl(UChar32 character) {
-  return GetProperty(character, CharacterProperty::kIsBidiControl);
+  return GetProperty(character).is_bidi_control;
 }
 
 bool Character::IsHangulSlow(UChar32 character) {
-  return GetProperty(character, CharacterProperty::kIsHangul);
+  return GetProperty(character).is_hangul;
 }
 
 // static
 HanKerningCharType Character::GetHanKerningCharType(UChar32 character) {
-  return static_cast<HanKerningCharType>(
-      GetProperty(character, CharacterProperty::kHanKerningShiftedMask) >>
-      static_cast<unsigned>(CharacterProperty::kHanKerningShift));
+  return GetProperty(character).han_kerning;
 }
 
 // static
 EastAsianSpacingType Character::GetEastAsianSpacingType(UChar32 character) {
-  return static_cast<EastAsianSpacingType>(
-      GetProperty(character, CharacterProperty::kEastAsianSpacingShiftedMask) >>
-      static_cast<unsigned>(CharacterProperty::kEastAsianSpacingShift));
+  return GetProperty(character).east_asian_spacing;
 }
 
 bool Character::MaybeHanKerningOpenSlow(UChar32 ch) {
@@ -136,27 +139,19 @@ bool Character::MaybeHanKerningCloseSlow(UChar32 ch) {
 }
 
 unsigned Character::ExpansionOpportunityCount(
+    TextJustify method,
     base::span<const LChar> characters,
     TextDirection direction,
-    bool& is_after_expansion) {
+    JustificationContext& context) {
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
     for (size_t i = 0; i < characters.size(); ++i) {
-      if (TreatAsSpace(characters[i])) {
-        count++;
-        is_after_expansion = true;
-      } else {
-        is_after_expansion = false;
-      }
+      count += CountJustificationOpportunity8(method, characters[i], context);
     }
   } else {
     for (size_t i = characters.size(); i > 0; --i) {
-      if (TreatAsSpace(characters[i - 1])) {
-        count++;
-        is_after_expansion = true;
-      } else {
-        is_after_expansion = false;
-      }
+      count +=
+          CountJustificationOpportunity8(method, characters[i - 1], context);
     }
   }
 
@@ -164,54 +159,46 @@ unsigned Character::ExpansionOpportunityCount(
 }
 
 unsigned Character::ExpansionOpportunityCount(
+    TextJustify method,
     base::span<const UChar> characters,
     TextDirection direction,
-    bool& is_after_expansion) {
+    JustificationContext& context) {
+  if (characters.size() == 0) {
+    return 0;
+  }
   unsigned count = 0;
-  if (direction == TextDirection::kLtr) {
-    for (size_t i = 0; i < characters.size(); ++i) {
-      UChar32 character = characters[i];
-      if (TreatAsSpace(character)) {
-        count++;
-        is_after_expansion = true;
-        continue;
+
+  if (!RuntimeEnabledFeatures::EmojiJustificationEnabled()) {
+    if (direction == TextDirection::kLtr) {
+      for (size_t i = 0; i < characters.size();) {
+        UChar32 character = CodePointAtAndNext(characters, i);
+        count += CountJustificationOpportunity16(method, character, context);
       }
-      if (U16_IS_LEAD(character) && i + 1 < characters.size() &&
-          U16_IS_TRAIL(characters[i + 1])) {
-        character = U16_GET_SUPPLEMENTARY(character, characters[i + 1]);
-        i++;
-      }
-      if (IsCJKIdeographOrSymbol(character)) {
-        if (!is_after_expansion)
-          count++;
-        count++;
-        is_after_expansion = true;
-        continue;
-      } else if (!IsDefaultIgnorable(character)) {
-        is_after_expansion = false;
+    } else {
+      for (size_t i = characters.size(); i > 0; --i) {
+        UChar32 character = characters[i - 1];
+        if (U16_IS_TRAIL(character) && i > 1 &&
+            U16_IS_LEAD(characters[i - 2])) {
+          character = U16_GET_SUPPLEMENTARY(characters[i - 2], character);
+          i--;
+        }
+        count += CountJustificationOpportunity16(method, character, context);
       }
     }
+    return count;
+  }
+  CharacterBreakIterator iter(characters);
+  if (direction == TextDirection::kLtr) {
+    for (int i = 0; static_cast<size_t>(i) < characters.size();
+         i = iter.Next()) {
+      UChar32 character = CodePointAt(characters, i);
+      count += CountJustificationOpportunity16(method, character, context);
+    }
   } else {
-    for (size_t i = characters.size(); i > 0; --i) {
-      UChar32 character = characters[i - 1];
-      if (TreatAsSpace(character)) {
-        count++;
-        is_after_expansion = true;
-        continue;
-      }
-      if (U16_IS_TRAIL(character) && i > 1 && U16_IS_LEAD(characters[i - 2])) {
-        character = U16_GET_SUPPLEMENTARY(characters[i - 2], character);
-        i--;
-      }
-      if (IsCJKIdeographOrSymbol(character)) {
-        if (!is_after_expansion)
-          count++;
-        count++;
-        is_after_expansion = true;
-        continue;
-      } else if (!IsDefaultIgnorable(character)) {
-        is_after_expansion = false;
-      }
+    for (int i = iter.Preceding(characters.size()); i != kTextBreakDone;
+         i = iter.Preceding(i)) {
+      UChar32 character = CodePointAt(characters, i);
+      count += CountJustificationOpportunity16(method, character, context);
     }
   }
   return count;
@@ -260,6 +247,41 @@ bool Character::CanReceiveTextEmphasis(UChar32 c) {
     return false;
   }
 
+  if (RuntimeEnabledFeatures::TextEmphasisPunctuationExceptionsEnabled()) {
+    // A set of exceptions for punctuation.
+    switch (c) {
+      // List from
+      // https://drafts.csswg.org/css-text-decor/#text-emphasis-style-property
+      case uchar::kNumberSign:
+      case uchar::kPercentSign:
+      case uchar::kAmpersand:
+      case uchar::kCommercialAt:
+      case uchar::kSectionSign:
+      case uchar::kPilcrowSign:
+      case uchar::kArabicIndicPerMilleSign:
+      case uchar::kArabicIndicPerTenThousandSign:
+      case uchar::kArabicPercentSign:
+      case uchar::kPerMilleSign:
+      case uchar::kPerTenThousandSign:
+      case uchar::kTironianSignEt:
+      case uchar::kReversedPilcrowSign:
+      case uchar::kSwungDash:
+      case uchar::kPartAlternationMark:
+      // Characters with NFKD equivalence to the above.
+      case uchar::kSmallNumberSign:
+      case uchar::kSmallAmpersand:
+      case uchar::kSmallPercentSign:
+      case uchar::kSmallCommercialAt:
+      case uchar::kFullwidthNumberSign:
+      case uchar::kFullwidthPercentSign:
+      case uchar::kFullwidthAmpersand:
+      case uchar::kFullwidthCommercialAt:
+        return true;
+      default:
+        break;
+    }
+  }
+
   // Punctuation
   if (category &
       (unicode::kPunctuation_Dash | unicode::kPunctuation_Open |
@@ -268,9 +290,6 @@ bool Character::CanReceiveTextEmphasis(UChar32 c) {
        unicode::kPunctuation_FinalQuote)) {
     return false;
   }
-  // TODO(layout-dev): css/css-text-decor/text-emphasis-punctuation-3.html
-  // requires implementation for the following rule in the specification:
-  // > do not NFKD normalize to any of the following symbols:
 
   return true;
 }
@@ -290,12 +309,38 @@ bool Character::IsEmojiComponent(UChar32 c) {
   return u_hasBinaryProperty(c, UCHAR_EMOJI_COMPONENT);
 }
 
+namespace {
+
+consteval bool MaybeEmojiPresentationForAscii(unsigned char ch) {
+  constexpr auto kCopyRightSign = 0xA9;
+  constexpr auto kRegisteredSign = 0xAE;
+  return ch == kCopyRightSign || ch == kRegisteredSign ||
+         Character::IsEmojiKeycapBase(ch);
+}
+
+template <std::size_t N, typename Function>
+consteval auto GenerateTable(Function&& f) {
+  std::array<bool, N> arr;
+  for (unsigned char i = 0; i < N; ++i) {
+    arr[i] = f(i);
+  }
+  return arr;
+}
+
+static const auto maybe_emoji_presentation_ascii =
+    GenerateTable<128>([](int i) { return MaybeEmojiPresentationForAscii(i); });
+
+}  // namespace
+
 bool Character::MaybeEmojiPresentation(UChar32 c) {
-  return c == uchar::kZeroWidthJoiner || c == 0x00A9 /* copyright sign */ ||
-         c == 0x00AE /* registered sign */ || IsEmojiKeycapBase(c) ||
-         IsInRange(c, 0x203C, 0x2B55) || c == uchar::kVariationSelector15 ||
-         c == 0x3030 || c == 0x303D || c == 0x3297 || c == 0x3299 ||
-         c == uchar::kVariationSelector16 || c >= 65536;
+  if (IsASCII(c)) [[likely]] {
+    return maybe_emoji_presentation_ascii[c];
+  }
+  // Non-ascii characters.
+  return c == uchar::kZeroWidthJoiner || IsInRange(c, 0x203C, 0x2B55) ||
+         c == uchar::kVariationSelector15 || c == 0x3030 || c == 0x303D ||
+         c == 0x3297 || c == 0x3299 || c == uchar::kVariationSelector16 ||
+         c >= 65536;
 }
 
 bool Character::IsCommonOrInheritedScript(UChar32 character) {
@@ -313,13 +358,59 @@ bool Character::IsNonCharacter(UChar32 character) {
   return U_IS_UNICODE_NONCHAR(character);
 }
 
-bool Character::HasDefiniteScript(UChar32 character) {
+bool Character::HasLikelyScript(UChar32 character) {
   ICUError err;
-  UScriptCode hint_char_script = uscript_getScript(character, &err);
+  UScriptCode script = uscript_getScript(character, &err);
+
   if (!U_SUCCESS(err))
     return false;
-  return hint_char_script != USCRIPT_INHERITED &&
-         hint_char_script != USCRIPT_COMMON;
+
+  if (RuntimeEnabledFeatures::ScriptBasedOnUnicodeBlockEnabled()) {
+    if (script == USCRIPT_INHERITED || script == USCRIPT_COMMON) {
+      // For characters whose ICU script is USCRIPT_INHERITED or
+      // USCRIPT_COMMON, infer a likely script based on their Unicode block.
+      // This helps select more accurate fallback fonts for
+      // inherited marks, punctuation, and similar characters.
+      script = GetScriptBasedOnUnicodeBlock(character);
+    }
+  }
+  return script != USCRIPT_COMMON && script != USCRIPT_INHERITED;
+}
+
+// There are a lot of characters in USCRIPT_COMMON that can be covered
+// by fonts for scripts closely related to them. See
+// http://unicode.org/cldr/utility/list-unicodeset.jsp?a=[:Script=Common:]
+// FIXME: make this more efficient with a wider coverage
+UScriptCode Character::GetScriptBasedOnUnicodeBlock(int ucs4) {
+  UBlockCode block = ublock_getCode(ucs4);
+  switch (block) {
+    case UBLOCK_CJK_SYMBOLS_AND_PUNCTUATION:
+      return USCRIPT_HAN;
+    case UBLOCK_HIRAGANA:
+    case UBLOCK_KATAKANA:
+      return USCRIPT_KATAKANA_OR_HIRAGANA;
+    case UBLOCK_ARABIC:
+      return USCRIPT_ARABIC;
+    case UBLOCK_THAI:
+      return USCRIPT_THAI;
+    case UBLOCK_GREEK:
+      return USCRIPT_GREEK;
+    case UBLOCK_DEVANAGARI:
+      // For Danda and Double Danda (U+0964, U+0965), use a Devanagari
+      // font for now although they're used by other scripts as well.
+      // Without a context, we can't do any better.
+      return USCRIPT_DEVANAGARI;
+    case UBLOCK_ARMENIAN:
+      return USCRIPT_ARMENIAN;
+    case UBLOCK_GEORGIAN:
+      return USCRIPT_GEORGIAN;
+    case UBLOCK_KANNADA:
+      return USCRIPT_KANNADA;
+    case UBLOCK_GOTHIC:
+      return USCRIPT_GOTHIC;
+    default:
+      return USCRIPT_COMMON;
+  }
 }
 
 // https://w3c.github.io/mathml-core/#stretchy-operator-axis

@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/language_detection/core/ngram_hash.h"
+
+#include <stdint.h>
 
 #include <string>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "components/language_detection/core/ngram_hash_ops_utils.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flexbuffers.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/util.h"
 #include "third_party/smhasher/src/src/MurmurHash2.h"
+#include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/kernel_util.h"
 #include "third_party/tflite/src/tensorflow/lite/string_util.h"
 
@@ -89,16 +89,9 @@ class NGramHashParams {
     }
     // Obtain and tokenize the input.
     StringRef input_ref = GetString(input_t, /*string_index=*/0);
-    if (lower_case_input_) {
-      std::string lower_cased_str;
-      LowercaseUnicodeStr(input_ref.str, input_ref.len, &lower_cased_str);
-      tokenized_output_ =
-          Tokenize(lower_cased_str.c_str(), input_ref.len, max_splits_,
-                   /*exclude_nonalphaspace_tokens=*/true);
-    } else {
-      tokenized_output_ = Tokenize(input_ref.str, input_ref.len, max_splits_,
-                                   /*exclude_nonalphaspace_tokens=*/true);
-    }
+    tokenized_output_ =
+        Tokenize({input_ref.str, input_ref.len}, max_splits_,
+                 /*exclude_nonalphaspace_tokens=*/true, lower_case_input_);
     return kTfLiteOk;
   }
   uint64_t GetSeed() const { return seed_; }
@@ -129,7 +122,7 @@ std::vector<int> GetIntVector(TypedVector typed_vec) {
   return vec;
 }
 
-void GetNGramHashIndices(NGramHashParams* params, int32_t* data) {
+void GetNGramHashIndices(NGramHashParams* params, base::span<int32_t> data) {
   const int max_unicode_length = params->GetNumTokens();
   const auto ngram_lengths = params->GetNGramLengths();
   const auto vocab_sizes = params->GetVocabSizes();
@@ -158,7 +151,7 @@ void GetNGramHashIndices(NGramHashParams* params, int32_t* data) {
       // limiting to 7, this may truncate the last byte of the input and result
       // in a slightly different hash but impact should be minimal.
       const auto str_hash = MurmurHash64A(
-          tokenized_output.str.c_str() + tokenized_output.tokens[start].first,
+          &tokenized_output.str[tokenized_output.tokens[start].first],
           std::min(num_bytes, 7), seed);
       // Map the hash to an index in the vocab.
       data[ngram * max_unicode_length + start] = (str_hash % vocab_size) + 1;
@@ -202,9 +195,12 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
   TF_LITE_ENSURE(context, output != nullptr);
   if (tflite::IsDynamicTensor(output)) {
     TfLiteIntArray* output_size = TfLiteIntArrayCreate(3);
-    output_size->data[0] = 1;
-    output_size->data[1] = params->GetNumNGrams();
-    output_size->data[2] = params->GetNumTokens();
+    // SAFETY: Without span accessors, we can only trust the
+    // result of `TfLiteIntArrayCreate()`.
+    auto data = UNSAFE_BUFFERS(base::span(output_size->data, 3u));
+    data[0] = 1;
+    data[1] = params->GetNumNGrams();
+    data[2] = params->GetNumTokens();
     TF_LITE_ENSURE_OK(context,
                       context->ResizeTensor(context, output, output_size));
   } else {
@@ -212,7 +208,12 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
     return kTfLiteError;
   }
   if (output->type == kTfLiteInt32) {
-    GetNGramHashIndices(params, output->data.i32);
+    // SAFETY: Without span accessors, we can only trust the size
+    // provided.
+    base::span<int32_t> data =
+        UNSAFE_BUFFERS(base::span(tflite::GetTensorData<int32_t>(output),
+                                  output->bytes / sizeof(int32_t)));
+    GetNGramHashIndices(params, data);
   } else {
     context->ReportError(context, "Output type must be Int32.");
     return kTfLiteError;

@@ -70,17 +70,21 @@ class EphemeralHomeModuleBackendTest : public DefaultModelTestBase {
       : DefaultModelTestBase(
             std::make_unique<EphemeralHomeModuleBackend>(nullptr)) {
     feature_list_.InitWithFeatures(
-        {commerce::kPriceTrackingPromo},
-        {features::kSegmentationPlatformTipsEphemeralCard});
-    HomeModulesCardRegistry::RegisterProfilePrefs(pref_service_.registry());
-    registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+        {}, {features::kSegmentationPlatformTipsEphemeralCard});
+    HomeModulesCardRegistry::RegisterProfilePrefs(
+        profile_pref_service_.registry());
+    HomeModulesCardRegistry::RegisterLocalStatePrefs(
+        local_state_pref_service_.registry());
+    registry_ = std::make_unique<HomeModulesCardRegistry>(
+        &profile_pref_service_, &local_state_pref_service_);
     static_cast<EphemeralHomeModuleBackend*>(model_.get())
         ->set_home_modules_card_registry_for_testing(registry_.get());
   }
   ~EphemeralHomeModuleBackendTest() override = default;
 
  protected:
-  TestingPrefServiceSimple pref_service_;
+  TestingPrefServiceSimple profile_pref_service_;
+  TestingPrefServiceSimple local_state_pref_service_;
   std::unique_ptr<HomeModulesCardRegistry> registry_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -96,8 +100,8 @@ TEST_F(EphemeralHomeModuleBackendTest, ExecuteModelWithInput) {
                            {kNotShownResultValue, kNotShownResultValue});
 #elif BUILDFLAG(IS_ANDROID)
   ExpectExecutionWithInput(
-      {0}, /*expected_error=*/false,
-      /*expected_result=*/{kNotShownResultValue, kNotShownResultValue});
+      std::vector<float>(22, 0), /*expected_error=*/false,
+      /*expected_result=*/std::vector<float>(7, kNotShownResultValue));
 #else
   ExpectExecutionWithInput(/*inputs=*/{}, /*expected_error=*/false,
                            /*expected_result=*/{kNotShownResultValue});
@@ -112,15 +116,16 @@ class EphemeralHomeModuleBackendWithTestCard : public DefaultModelTestBase {
             std::make_unique<EphemeralHomeModuleBackend>(nullptr)) {
     std::vector<std::unique_ptr<CardSelectionInfo>> cards;
     cards.emplace_back(std::make_unique<TestCardInfo>());
-    registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_,
-                                                          std::move(cards));
+    registry_ = std::make_unique<HomeModulesCardRegistry>(
+        &profile_pref_service_, &local_state_pref_service_, std::move(cards));
     static_cast<EphemeralHomeModuleBackend*>(model_.get())
         ->set_home_modules_card_registry_for_testing(registry_.get());
   }
   ~EphemeralHomeModuleBackendWithTestCard() override = default;
 
  protected:
-  TestingPrefServiceSimple pref_service_;
+  TestingPrefServiceSimple profile_pref_service_;
+  TestingPrefServiceSimple local_state_pref_service_;
   std::unique_ptr<HomeModulesCardRegistry> registry_;
 };
 

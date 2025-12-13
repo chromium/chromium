@@ -122,7 +122,6 @@ media/video-layer-crash.html
 media/video-no-audio.html
 media/video-poster-scale.html
 media/video-transformed.html
-transforms/3d/point-mapping/3d-point-mapping-origins.html
 transforms/shadows.html
 transforms/svg-vs-css.xhtml
 
@@ -383,8 +382,6 @@ animations/big-rotation.html
 animations/change-in-animation-frame.html
 animations/change-keyframes.html
 animations/change-one-anim.html
-animations/composition/font-size-composition.html
-animations/composition/x-composition.html
 animations/cross-fade-border-image-source.html
 animations/custom-properties/color-type-interpolation.html
 animations/custom-properties/custom-list-type-interpolation.html
@@ -617,6 +614,8 @@ css3/viewport-percentage-lengths/css3-viewport-percentage-lengths-getStyle.html
 css3/viewport-percentage-lengths/css3-viewport-percentage-lengths-vmax-absolute.html
 css3/viewport-percentage-lengths/viewport-percentage-lengths-page-zoom.html
 cssom/elementfrompoint-scrolloffset.html
+external/wpt/css/css-fonts/animations/font-size-composition.html
+external/wpt/svg/geometry/animations/x-composition.html
 fast/canvas/2d.fillText.gradient.html
 fast/canvas/2d.text.draw.fill.maxWidth.gradient.html
 fast/canvas/OffscreenCanvas-2d-drawImage-no-context.html

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_UTILS_H_
 
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -36,17 +35,20 @@ struct DifferingProfileWithTypeSet {
   bool operator==(const DifferingProfileWithTypeSet& other) const = default;
 };
 
-// kAccount profiles are synced from an external source and have potentially
-// originated from outside of Autofill. In order to determine the added value
-// for Autofill, the `AutofillProfile::RecordType` is further resolved in some
-// metrics.
+// A superset of `AutofillProfile::RecordType` used for metrics. It breaks the
+// kAccount RecordType further down into kAccountChrome and kAccountNonChrome:
+// - kAccountChrome are addresses initially saved to the account by Chrome.
+// - kAccountNonChrome are addresses initially saved to the account by another
+//   integrator and made available to Chrome. Even if they are modified in
+//   Chrome, they remain kAccountNonChrome for metrics purposes.
 enum class AutofillProfileRecordTypeCategory {
   kLocalOrSyncable = 0,
   kAccountChrome = 1,
   kAccountNonChrome = 2,
   kAccountHome = 3,
   kAccountWork = 4,
-  kMaxValue = kAccountWork
+  kAccountNameEmail = 5,
+  kMaxValue = kAccountNameEmail
 };
 
 // Maps the `profile` to its category, depending on the profile's
@@ -58,6 +60,10 @@ AutofillProfileRecordTypeCategory GetCategoryOfProfile(
 // metrics by category.
 const char* GetProfileCategorySuffix(
     AutofillProfileRecordTypeCategory category);
+
+// Converts the `record_type` to the histogram-suffix used for resolving some
+// metrics by record type.
+const char* GetProfileRecordTypeSuffix(AutofillProfile::RecordType record_type);
 
 // These values are persisted to UMA logs. Entries should not be renumbered
 // and numeric values should never be reused. This is the subset of field
@@ -96,6 +102,11 @@ DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
     const FormStructure& form);
 
 // Returns GetFormTypesForLogging() where entries need to correspond to
+// `FormType::kOneTimePasswordForm`.
+DenseSet<FormTypeNameForLogging> GetOneTimePasswordTypesForLogging(
+    const FormStructure& form);
+
+// Returns GetFormTypesForLogging() where entries need to correspond to
 // `FormType::kLoyaltyCardForm`.
 DenseSet<FormTypeNameForLogging> GetLoyaltyFormTypesForLogging(
     const FormStructure& form);
@@ -104,6 +115,11 @@ DenseSet<FormTypeNameForLogging> GetLoyaltyFormTypesForLogging(
 // `FormType::kCreditCardForm` or `FormType::kStandaloneCvcForm`.
 DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
     const FormStructure& form);
+
+// Returns true if `profile` has at least 2 fields of the types
+// `ADDRESS_HOME_CITY`, `ADDRESS_HOME_STATE`, `ADDRESS_HOME_STREET_ADDRESS` or
+// `ADDRESS_HOME_ZIP` set.
+bool IsPostalAddress(const AutofillProfile& profile);
 
 // Returns whether the caller should log autofill suggestions shown metrics.
 // Some suggestions can be "displayed" without a direct user action (i.e. typing

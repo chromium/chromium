@@ -186,7 +186,7 @@ class DownloadToolbarUIController
 
   raw_ptr<BrowserView> browser_view_;
   bool is_primary_partial_view_ = false;
-  base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
+  raw_ptr<actions::ActionItem> action_item_ = nullptr;
   // Controller for the DownloadToolbarButton UI.
   std::unique_ptr<DownloadDisplayController> controller_;
   // Controller for keeping track of items for both main view and partial view.
@@ -228,12 +228,7 @@ class DownloadToolbarUIController
 
 // Overrides whether we are allowed to show the download started animation,
 // may be false in tests.
-#if BUILDFLAG(IS_CHROMEOS)
-  // NOTE: Disabled on ChromeOS to respect its own download renderings.
-  bool show_download_started_animation_ = false;
-#else
   bool show_download_started_animation_ = true;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Tracks the task to automatically close the partial view after some amount
   // of time open, to minimize disruption to the user.
@@ -253,7 +248,7 @@ class DownloadToolbarUIController
   std::map<int, std::u16string> tooltip_texts_;
 
   // Used for holding the top views visible while the download bubble is showing
-  // in immersive mode on ChromeOS and Mac.
+  // in immersive mode on Mac.
   std::unique_ptr<ImmersiveRevealedLock> immersive_revealed_lock_;
 
   std::unique_ptr<BubbleCloser> bubble_closer_;

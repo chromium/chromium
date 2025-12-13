@@ -48,4 +48,12 @@ public interface ContextMenuPopulator {
      * @return A chip delegate responsible for populating chip data and action handling.
      */
     @Nullable ChipDelegate getChipDelegate();
+
+    /**
+     * @return Whether the populator has custom items to show in the context menu. Defaults to false
+     *     and can be overridden by implementations.
+     */
+    default boolean hasCustomItems() {
+        return false;
+    }
 }

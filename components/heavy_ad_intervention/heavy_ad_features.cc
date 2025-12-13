@@ -13,15 +13,16 @@ const char kHeavyAdReportingEnabledParamName[] = "reporting-enabled";
 
 // Enables or disables the intervention that unloads ad iframes with intensive
 // resource usage.
-BASE_FEATURE(kHeavyAdIntervention,
-             "HeavyAdIntervention",
+BASE_FEATURE(kHeavyAdIntervention, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables sending the heavy ad report to the root ad frame's
+// embedder.
+BASE_FEATURE(kHeavyAdInterventionSendReportToEmbedder,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables reporting on the intervention that unloads ad iframes
 // with intensive resource usage.
-BASE_FEATURE(kHeavyAdInterventionWarning,
-             "HeavyAdInterventionWarning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kHeavyAdInterventionWarning, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the privacy mitigations for the heavy ad intervention.
 // This throttles the amount of interventions that can occur on a given host in
@@ -29,9 +30,7 @@ BASE_FEATURE(kHeavyAdInterventionWarning,
 // from the intervention feature so it does not interfere with field trial
 // activation, as this blocklist is created for every user, and noise is decided
 // prior to seeing a heavy ad.
-BASE_FEATURE(kHeavyAdPrivacyMitigations,
-             "HeavyAdPrivacyMitigations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kHeavyAdPrivacyMitigations, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 

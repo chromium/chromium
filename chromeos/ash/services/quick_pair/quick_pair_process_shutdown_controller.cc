@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/quick_pair/quick_pair_process_shutdown_controller.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 
 namespace ash {

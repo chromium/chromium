@@ -4,6 +4,8 @@
 package org.chromium.support_lib_boundary.util;
 
 import android.os.Build;
+import android.util.LruCache;
+import android.util.Pair;
 
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -14,15 +16,28 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 /** A set of utility methods used for calling across the support library boundary. */
-// Although this is not enforced in chromium, this is a requirement enforced when this file is
-// mirrored into AndroidX. See http://b/120770118 for details.
 @NullMarked
+@SuppressWarnings("PatternVariableCanBeUsed") // Not valid in androidx.
 public class BoundaryInterfaceReflectionUtil {
+
+    private static @Nullable LruCache<Pair<Method, @Nullable ClassLoader>, @Nullable Method>
+            sMethodCache;
+    // The boundary interfaces cannot depend on //base, so logging has to be passed in separately.
+    private static @Nullable Consumer<Boolean> sCacheGetResultLogger;
+
+    public static void setMethodCache(
+            LruCache<Pair<Method, @Nullable ClassLoader>, @Nullable Method> methodCache,
+            Consumer<Boolean> getResultLogger) {
+        sMethodCache = methodCache;
+        sCacheGetResultLogger = getResultLogger;
+    }
+
     /**
-     * Check if an object is an instance of {@code className}, resolving {@code className} in
-     * the object's own ClassLoader. This is useful when {@code obj} may have been created in a
+     * Check if an object is an instance of {@code className}, resolving {@code className} in the
+     * object's own ClassLoader. This is useful when {@code obj} may have been created in a
      * ClassLoader other than the current one (in which case {@code obj instanceof Foo} would fail
      * but {@code instanceOfInOwnClassLoader(obj, "Foo")} may succeed).
      */
@@ -44,8 +59,20 @@ public class BoundaryInterfaceReflectionUtil {
      * (package + class + method name + parameters) as a given method defined in another
      * classloader.
      */
-    public static Method dupeMethod(Method method, ClassLoader delegateLoader)
+    public static Method dupeMethod(Method method, @Nullable ClassLoader delegateLoader)
             throws ClassNotFoundException, NoSuchMethodException {
+        if (sMethodCache != null) {
+            Method cachedMethod =
+                    sMethodCache.get(
+                            new Pair<Method, @Nullable ClassLoader>(method, delegateLoader));
+            if (sCacheGetResultLogger != null) {
+                sCacheGetResultLogger.accept(cachedMethod != null);
+            }
+            if (cachedMethod != null) {
+                return cachedMethod;
+            }
+        }
+
         // We're converting one type to another. This is analogous to instantiating the type on the
         // other side of the Boundary, so it makes sense to perform static initialization if it
         // hasn't already happened (initialize = true).
@@ -53,8 +80,15 @@ public class BoundaryInterfaceReflectionUtil {
                 Class.forName(method.getDeclaringClass().getName(), true, delegateLoader);
         // We do not need to convert parameter types across ClassLoaders because we never pass
         // BoundaryInterfaces in methods, but pass InvocationHandlers instead.
-        Class[] parameterClasses = method.getParameterTypes();
-        return declaringClass.getDeclaredMethod(method.getName(), parameterClasses);
+        Class<?>[] parameterClasses = method.getParameterTypes();
+        Method declaredMethod =
+                declaringClass.getDeclaredMethod(method.getName(), parameterClasses);
+        if (sMethodCache != null) {
+            sMethodCache.put(
+                    new Pair<Method, @Nullable ClassLoader>(method, delegateLoader),
+                    declaredMethod);
+        }
+        return declaredMethod;
     }
 
     /**
@@ -70,7 +104,9 @@ public class BoundaryInterfaceReflectionUtil {
     @Contract("_, !null -> !null")
     public static <T> @Nullable T castToSuppLibClass(
             Class<T> clazz, @Nullable InvocationHandler invocationHandler) {
-        if (invocationHandler == null) return null;
+        if (invocationHandler == null) {
+            return null;
+        }
         return clazz.cast(
                 Proxy.newProxyInstance(
                         BoundaryInterfaceReflectionUtil.class.getClassLoader(),
@@ -92,7 +128,9 @@ public class BoundaryInterfaceReflectionUtil {
     @Contract("!null -> !null")
     public static @Nullable InvocationHandler createInvocationHandlerFor(
             @Nullable final Object delegate) {
-        if (delegate == null) return null;
+        if (delegate == null) {
+            return null;
+        }
         return new InvocationHandlerWithDelegateGetter(delegate);
     }
 
@@ -112,7 +150,9 @@ public class BoundaryInterfaceReflectionUtil {
     @Contract("!null -> !null")
     public static @Nullable InvocationHandler @Nullable [] createInvocationHandlersForArray(
             final @Nullable Object @Nullable [] delegates) {
-        if (delegates == null) return null;
+        if (delegates == null) {
+            return null;
+        }
 
         @Nullable InvocationHandler[] handlers = new InvocationHandler[delegates.length];
         for (int i = 0; i < handlers.length; i++) {
@@ -134,7 +174,9 @@ public class BoundaryInterfaceReflectionUtil {
     @Contract("!null -> !null")
     public static @Nullable Object getDelegateFromInvocationHandler(
             @Nullable InvocationHandler invocationHandler) {
-        if (invocationHandler == null) return null;
+        if (invocationHandler == null) {
+            return null;
+        }
         InvocationHandlerWithDelegateGetter objectHolder =
                 (InvocationHandlerWithDelegateGetter) invocationHandler;
         return objectHolder.getDelegate();
@@ -146,6 +188,7 @@ public class BoundaryInterfaceReflectionUtil {
      * objects used as delegates within those InvocationHandlers.
      */
     private static class InvocationHandlerWithDelegateGetter implements InvocationHandler {
+
         private final Object mDelegate;
 
         public InvocationHandlerWithDelegateGetter(final Object delegate) {
@@ -153,6 +196,7 @@ public class BoundaryInterfaceReflectionUtil {
         }
 
         @Override
+        @Nullable
         public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
             final ClassLoader delegateLoader = mDelegate.getClass().getClassLoader();
             try {
@@ -169,10 +213,30 @@ public class BoundaryInterfaceReflectionUtil {
         public Object getDelegate() {
             return mDelegate;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            // Identity is based on the delegate object.
+            if (obj instanceof InvocationHandlerWithDelegateGetter) {
+                InvocationHandlerWithDelegateGetter other =
+                        (InvocationHandlerWithDelegateGetter) obj;
+                return mDelegate.equals(other.mDelegate);
+            }
+            return mDelegate.equals(obj);
+        }
+
+        @Override
+        public int hashCode() {
+            // Identity is based on the delegate object.
+            return mDelegate.hashCode();
+        }
     }
 
     /**
-     * Check if this is a debuggable build of Android. Note: we copy BuildInfo's method because we
+     * Check if this is a debuggable build of Android. Note: we copy ApkInfo's method because we
      * cannot depend on the base-layer here (this folder is mirrored into Android).
      */
     private static boolean isDebuggable() {

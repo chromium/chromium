@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObse
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -200,18 +201,15 @@ public class SearchResumptionModuleMediator
     /** Starts the querying the search suggestions based on the Tab to track. */
     private void start(Profile profile) {
         if (!mUseNewServiceEnabled) {
-            AutocompleteController.getForProfile(profile)
-                    .ifPresent(
-                            controller -> {
-                                mAutoComplete = controller;
-                                mAutoComplete.addOnSuggestionsReceivedListener(this);
-                                int pageClassification = getPageClassification();
-                                mAutoComplete.startZeroSuggest(
-                                        "",
-                                        mTabToTrackSuggestion.getUrl(),
-                                        pageClassification,
-                                        mTabToTrackSuggestion.getTitle());
-                            });
+            mAutoComplete = AutocompleteController.getForProfile(profile);
+            mAutoComplete.addOnSuggestionsReceivedListener(this);
+            int pageClassification = getPageClassification();
+
+            var input = new AutocompleteInput();
+            input.setPageUrl(mTabToTrackSuggestion.getUrl());
+            input.setPageTitle(mTabToTrackSuggestion.getTitle());
+            input.setPageClassification(pageClassification);
+            mAutoComplete.startZeroSuggest(input);
         } else {
             mSearchResumptionModuleBridge = new SearchResumptionModuleBridge(profile);
             mSearchResumptionModuleBridge.fetchSuggestions(

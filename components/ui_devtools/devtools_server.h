@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "components/ui_devtools/devtools_client.h"
@@ -20,8 +21,6 @@
 #include "components/ui_devtools/dom.h"
 #include "components/ui_devtools/forward.h"
 #include "components/ui_devtools/protocol.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/server/http_server_request_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 

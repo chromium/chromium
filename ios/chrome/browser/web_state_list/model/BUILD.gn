@@ -2,17 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("session_metrics") {
-  sources = [
-    "session_metrics.cc",
-    "session_metrics.h",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/shared/model/profile",
-  ]
-}
-
 source_set("model") {
   sources = [
     "web_state_list_favicon_driver_observer.h",
@@ -22,22 +11,20 @@ source_set("model") {
     "//base",
     "//components/favicon/core",
     "//components/favicon/ios",
-    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/tabs/model:dependency_installer",
   ]
   frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "session_metrics_unittest.cc",
-    "web_state_list_favicon_driver_observer_unittest.mm",
-  ]
+  sources = [ "web_state_list_favicon_driver_observer_unittest.mm" ]
   deps = [
     ":model",
-    ":session_metrics",
     "//base/test:test_support",
     "//components/favicon/ios",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",

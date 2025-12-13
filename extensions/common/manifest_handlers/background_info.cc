@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
@@ -36,10 +35,6 @@ namespace values = manifest_values;
 namespace errors = manifest_errors;
 
 namespace {
-
-BASE_FEATURE(kValidateBackgroundScriptMimeType,
-             "ValidateBackgroundScriptMimeType",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kBackground[] = "background";
 
@@ -182,12 +177,9 @@ bool BackgroundInfo::LoadBackgroundScripts(Extension* extension,
     }
 
     std::string mime_type;
-    // TODO(https://crbug.com/40059598): Remove this if-check and always
-    // validate the mime type in M139.
-    if (base::FeatureList::IsEnabled(kValidateBackgroundScriptMimeType) &&
-        (!net::GetWellKnownMimeTypeFromFile(background_script.relative_path(),
-                                            &mime_type) ||
-         !blink::IsSupportedJavascriptMimeType(mime_type))) {
+    if (!net::GetWellKnownMimeTypeFromFile(background_script.relative_path(),
+                                           &mime_type) ||
+        !blink::IsSupportedJavascriptMimeType(mime_type)) {
       // Issue a warning and ignore this file. This is a warning and not a
       // hard-error to preserve both backwards compatibility and potential
       // future-compatibility if mime types change.
@@ -395,7 +387,8 @@ bool BackgroundManifestHandler::Validate(
   const std::vector<ExtensionResource>& background_scripts =
       BackgroundInfo::GetBackgroundScripts(&extension);
   for (const auto& background_script : background_scripts) {
-    if (!base::PathExists(background_script.GetFilePath())) {
+    base::FilePath path = background_script.GetFilePath();
+    if (path.empty() || !base::PathExists(path)) {
       *error = l10n_util::GetStringFUTF8(
           IDS_EXTENSION_LOAD_BACKGROUND_SCRIPT_FAILED,
           background_script.relative_path().AsUTF16Unsafe());
@@ -444,7 +437,7 @@ bool BackgroundManifestHandler::Validate(
 }
 
 bool BackgroundManifestHandler::AlwaysParseForType(Manifest::Type type) const {
-  return type == Manifest::TYPE_PLATFORM_APP;
+  return type == Manifest::Type::kPlatformApp;
 }
 
 base::span<const char* const> BackgroundManifestHandler::Keys() const {

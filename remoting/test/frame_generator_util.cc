@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/test/frame_generator_util.h"
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -30,9 +26,9 @@ void CopyPixelsToBuffer(const SkBitmap& src,
   // Only need to copy the important parts of the row.
   size_t bytes_per_row = src.width() * src.bytesPerPixel();
   for (int y = 0; y < src.height(); ++y) {
-    memcpy(dst_pixels, src_pixels, bytes_per_row);
-    src_pixels += src_stride;
-    dst_pixels += dst_stride;
+    UNSAFE_TODO(memcpy(dst_pixels, src_pixels, bytes_per_row));
+    UNSAFE_TODO(src_pixels += src_stride);
+    UNSAFE_TODO(dst_pixels += dst_stride);
   }
 }
 }  // namespace
@@ -55,8 +51,9 @@ std::unique_ptr<webrtc::DesktopFrame> LoadDesktopFrameFromPng(
   }
   SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(file_content));
   CHECK(!bitmap.isNull());
-  std::unique_ptr<webrtc::DesktopFrame> frame(new webrtc::BasicDesktopFrame(
-      webrtc::DesktopSize(bitmap.width(), bitmap.height())));
+  auto frame = std::make_unique<webrtc::BasicDesktopFrame>(
+      webrtc::DesktopSize(bitmap.width(), bitmap.height()),
+      webrtc::FOURCC_ARGB);
   CopyPixelsToBuffer(bitmap, frame->data(), frame->stride());
   return frame;
 }
@@ -68,7 +65,7 @@ void DrawRect(webrtc::DesktopFrame* frame,
     uint32_t* data = reinterpret_cast<uint32_t*>(
         frame->GetFrameDataAtPos(webrtc::DesktopVector(rect.left(), y)));
     for (int x = 0; x < rect.width(); ++x) {
-      data[x] = color;
+      UNSAFE_TODO(data[x]) = color;
     }
   }
 }

@@ -107,11 +107,17 @@ WebFrameInternal* FakeWebFrameImpl::GetWebFrameInternal() {
 std::string FakeWebFrameImpl::GetFrameId() const {
   return frame_id_;
 }
+
 bool FakeWebFrameImpl::IsMainFrame() const {
   return is_main_frame_;
 }
+
 url::Origin FakeWebFrameImpl::GetSecurityOrigin() const {
   return security_origin_;
+}
+
+GURL FakeWebFrameImpl::GetUrl() const {
+  return GURL();
 }
 
 BrowserState* FakeWebFrameImpl::GetBrowserState() {
@@ -156,8 +162,7 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
       javascript_call += u", ";
     }
     first = false;
-    std::string paramString;
-    base::JSONWriter::Write(param, &paramString);
+    std::string paramString = base::WriteJson(param).value_or("");
     javascript_call += base::UTF8ToUTF16(paramString);
   }
   javascript_call += u"]);";

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/mixer/post_processors/post_processor_unittest.h"
 
 #include <time.h>
@@ -18,6 +13,7 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "chromecast/media/cma/backend/mixer/post_processors/post_processor_wrapper.h"
 
@@ -106,8 +102,9 @@ void TestDelay(AudioPostProcessor2* pp,
   for (int i = 0; i < input_size_frames; i += kBufSizeFrames) {
     pp->ProcessFrames(&data_in[i * num_input_channels], kBufSizeFrames,
                       &metadata);
-    std::memcpy(&data_out[i * status.output_channels * resample_factor],
-                status.output_buffer, output_buf_size);
+    UNSAFE_TODO(
+        std::memcpy(&data_out[i * status.output_channels * resample_factor],
+                    status.output_buffer, output_buf_size));
   }
 
   double max_sum = 0;
@@ -235,7 +232,8 @@ void TestPassthrough(AudioPostProcessor2* pp,
       (status.rendering_delay_frames - delayed_frames) * status.output_channels;
   ASSERT_LE(delay_samples, status.output_channels * kNumFrames);
 
-  CheckArraysEqual(expected.data(), status.output_buffer + delay_samples,
+  CheckArraysEqual(expected.data(),
+                   UNSAFE_TODO(status.output_buffer + delay_samples),
                    data.size() - delay_samples);
 }
 
@@ -294,7 +292,7 @@ template <typename T>
 std::vector<int> CompareArray(const T* expected, const T* actual, size_t size) {
   std::vector<int> diffs;
   for (size_t i = 0; i < size; ++i) {
-    if (std::abs(expected[i] - actual[i]) > kEpsilon) {
+    if (std::abs(UNSAFE_TODO(expected[i] - actual[i])) > kEpsilon) {
       diffs.push_back(i);
     }
   }
@@ -305,7 +303,7 @@ template <typename T>
 std::string ArrayToString(const T* array, size_t size) {
   std::string result;
   for (size_t i = 0; i < size; ++i) {
-    result += ::testing::PrintToString(array[i]) + " ";
+    result += ::testing::PrintToString(UNSAFE_TODO(array[i])) + " ";
   }
   return result;
 }
@@ -313,7 +311,7 @@ std::string ArrayToString(const T* array, size_t size) {
 float SineAmplitude(const float* data, int num_frames) {
   double power = 0;
   for (int i = 0; i < num_frames; ++i) {
-    power += std::pow(data[i], 2);
+    power += std::pow(UNSAFE_TODO(data[i]), 2);
   }
   return std::sqrt(power / num_frames) * sqrt(2);
 }

@@ -28,6 +28,8 @@ AndroidBrowserTest::AndroidBrowserTest() {
   // which sometimes need it. So just override it.
   chrome_test_utils::OverrideChromeTestDataDir();
 
+  InitializeHTTPSTestServer();
+
   CreateTestServer(base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Allow unpacked extensions without developer mode for testing.
@@ -57,7 +59,6 @@ void AndroidBrowserTest::SetUp() {
   SetUpDefaultCommandLine(command_line);
   ASSERT_TRUE(test_launcher_utils::CreateUserDataDir(&temp_user_data_dir_));
 
-  InitializeHTTPSTestServer();
   embedded_https_test_server().AddDefaultHandlers(GetChromeTestDataDir());
 
   ASSERT_TRUE(SetUpUserDataDirectory());
@@ -80,10 +81,18 @@ void AndroidBrowserTest::PreRunTestOnMainThread() {}
 
 void AndroidBrowserTest::PostRunTestOnMainThread() {
   for (TabModel* model : TabModelList::models()) {
+    bool isOtrTabModel = model->IsOffTheRecord();
     if (model->GetTabCount()) {
       model->ForceCloseAllTabs();
     }
-    ASSERT_EQ(0, model->GetTabCount());
+
+    // Off-the-record (incognito) TabModel will be destroyed by
+    // ForceCloseAllTabs() above, so we can't call TabModel::GetTabCount()
+    // again for off-the-record TabModel.
+    // Otherwise, we'll dereference a non-null, but invalid pointer.
+    if (!isOtrTabModel) {
+      ASSERT_EQ(0, model->GetTabCount());
+    }
   }
 
   // Run any shutdown events from closing tabs.

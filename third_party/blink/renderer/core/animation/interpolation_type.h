@@ -115,9 +115,6 @@ class CORE_EXPORT InterpolationType
   bool operator==(const InterpolationType* other) const {
     return this == other;
   }
-  bool operator!=(const InterpolationType* other) const {
-    return this != other;
-  }
 
   virtual void Trace(Visitor* v) const {}
 

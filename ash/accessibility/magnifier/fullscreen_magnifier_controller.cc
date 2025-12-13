@@ -317,7 +317,7 @@ void FullscreenMagnifierController::OnMouseEvent(ui::MouseEvent* event) {
   gfx::Point root_location = event->root_location();
 
   if (event->type() == ui::EventType::kMouseDragged) {
-    auto* screen = display::Screen::GetScreen();
+    auto* screen = display::Screen::Get();
     const gfx::Point cursor_screen_location = screen->GetCursorScreenPoint();
 
     auto* window = screen->GetWindowAtScreenPoint(cursor_screen_location);
@@ -547,7 +547,7 @@ bool FullscreenMagnifierController::RedrawDIP(
   root_layer_settings.SetTransitionDuration(duration);
 
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window_);
+      display::Screen::Get()->GetDisplayNearestWindow(root_window_);
   std::unique_ptr<RootWindowTransformer> transformer(
       CreateRootWindowTransformerForDisplay(display));
 
@@ -826,7 +826,7 @@ bool FullscreenMagnifierController::ProcessGestures() {
       // about scale or translation. We'll take care of the scale below).
       // https://crbug.com/867537.
       const auto display =
-          display::Screen::GetScreen()->GetDisplayNearestWindow(root_window_);
+          display::Screen::Get()->GetDisplayNearestWindow(root_window_);
       gfx::Transform rotation_transform;
       rotation_transform.Rotate(display.PanelRotationAsDegree());
       gfx::Transform rotation_inverse_transform =

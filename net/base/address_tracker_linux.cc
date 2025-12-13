@@ -180,7 +180,8 @@ AddressTrackerLinux::AddressTrackerLinux()
       tracking_(false) {}
 
 AddressTrackerLinux::AddressTrackerLinux(
-    const base::RepeatingClosure& address_callback,
+    const base::RepeatingCallback<
+        void(NetworkChangeNotifier::IPAddressChangeType)>& address_callback,
     const base::RepeatingClosure& link_callback,
     const base::RepeatingClosure& tunnel_callback,
     const std::unordered_set<std::string>& ignored_interfaces,
@@ -366,10 +367,10 @@ void AddressTrackerLinux::DumpInitialAddressesAndWatch() {
 
   // Consume pending message to populate the AddressMap, but don't notify.
   // Sending another request without first reading responses results in EBUSY.
-  bool address_changed;
+  NetworkChangeNotifier::IPAddressChangeType address_change_type;
   bool link_changed;
   bool tunnel_changed;
-  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
+  ReadMessages(&address_change_type, &link_changed, &tunnel_changed);
 
   // Request dump of link state
   request.header.nlmsg_type = RTM_GETLINK;
@@ -384,7 +385,7 @@ void AddressTrackerLinux::DumpInitialAddressesAndWatch() {
   }
 
   // Consume pending message to populate links_online_, but don't notify.
-  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
+  ReadMessages(&address_change_type, &link_changed, &tunnel_changed);
   {
     AddressTrackerAutoLock lock(*this, connection_type_lock_);
     connection_type_initialized_ = true;
@@ -402,11 +403,12 @@ void AddressTrackerLinux::DumpInitialAddressesAndWatch() {
   }
 }
 
-void AddressTrackerLinux::ReadMessages(bool* address_changed,
-                                       bool* link_changed,
-                                       bool* tunnel_changed) {
+void AddressTrackerLinux::ReadMessages(
+    NetworkChangeNotifier::IPAddressChangeType* address_change_type,
+    bool* link_changed,
+    bool* tunnel_changed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  *address_changed = false;
+  *address_change_type = NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE;
   *link_changed = false;
   *tunnel_changed = false;
   bool first_loop = true;
@@ -457,19 +459,35 @@ void AddressTrackerLinux::ReadMessages(bool* address_changed,
         PLOG(ERROR) << "Failed to recv from netlink socket";
         return;
       }
-      HandleMessage(buffer.data(), rv, address_changed, link_changed,
+      HandleMessage(buffer.data(), rv, address_change_type, link_changed,
                     tunnel_changed);
     }
   }
-  if (*link_changed || *address_changed)
+  if (*link_changed ||
+      *address_change_type != NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE) {
     UpdateCurrentConnectionType();
+  }
 }
 
-void AddressTrackerLinux::HandleMessage(const char* buffer,
-                                        int length,
-                                        bool* address_changed,
-                                        bool* link_changed,
-                                        bool* tunnel_changed) {
+// Upgrades |IP_ADDRESS_CHANGE_NONE| to either |IP_ADDRESS_CHANGE_IPV6_TEMPADDR|
+// or |IP_ADDRESS_CHANGE_NORMAL| and possibly upgrades
+// |IP_ADDRESS_CHANGE_IPV6_TEMPADDR| to |IP_ADDRESS_CHANGE_NORMAL|.
+static NetworkChangeNotifier::IPAddressChangeType ModifyAddressChangeType(
+    NetworkChangeNotifier::IPAddressChangeType previous_change_type,
+    const struct ifaddrmsg& msg) {
+  if (msg.ifa_family == AF_INET6 && msg.ifa_flags & IFA_F_TEMPORARY &&
+      previous_change_type != NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL) {
+    return NetworkChangeNotifier::IP_ADDRESS_CHANGE_IPV6_TEMPADDR;
+  }
+  return NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL;
+}
+
+void AddressTrackerLinux::HandleMessage(
+    const char* buffer,
+    int length,
+    NetworkChangeNotifier::IPAddressChangeType* address_change_type,
+    bool* link_changed,
+    bool* tunnel_changed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer);
   // Note that NLMSG_NEXT decrements |length| to reflect the number of bytes
@@ -516,15 +534,19 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           auto it = address_map_.find(address);
           if (it == address_map_.end()) {
             address_map_.insert(it, std::pair(address, msg_copy));
-            *address_changed = true;
+            *address_change_type =
+                ModifyAddressChangeType(*address_change_type, *msg);
             // Unfortunately, `ifaddrmsg` has no equality operator, so have to
             // either do this, or compare every field individually.
           } else if (base::byte_span_from_ref(it->second) !=
                      base::byte_span_from_ref(msg_copy)) {
             it->second = msg_copy;
-            *address_changed = true;
+            *address_change_type =
+                ModifyAddressChangeType(*address_change_type, *msg);
           }
-          if (*address_changed && address_map_diff_.has_value()) {
+          if (*address_change_type !=
+                  NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE &&
+              address_map_diff_.has_value()) {
             (*address_map_diff_)[address] = msg_copy;
           }
         }
@@ -540,7 +562,8 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
         if (GetAddress(header, length, &address, nullptr)) {
           AddressTrackerAutoLock lock(*this, address_map_lock_);
           if (address_map_.erase(address)) {
-            *address_changed = true;
+            *address_change_type =
+                ModifyAddressChangeType(*address_change_type, *msg);
             if (address_map_diff_.has_value()) {
               (*address_map_diff_)[address] = std::nullopt;
             }
@@ -606,15 +629,15 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
 
 void AddressTrackerLinux::OnFileCanReadWithoutBlocking() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool address_changed;
+  NetworkChangeNotifier::IPAddressChangeType address_change_type;
   bool link_changed;
   bool tunnel_changed;
-  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
+  ReadMessages(&address_change_type, &link_changed, &tunnel_changed);
   if (diff_callback_) {
     RunDiffCallback();
   }
-  if (address_changed) {
-    address_callback_.Run();
+  if (address_change_type != NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE) {
+    address_callback_.Run(address_change_type);
   }
   if (link_changed) {
     link_callback_.Run();

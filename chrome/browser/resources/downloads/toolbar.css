@@ -19,3 +19,7 @@
   flex: 1;
   min-width: 0;
 }
+
+#clearAll {
+  white-space: nowrap;
+}

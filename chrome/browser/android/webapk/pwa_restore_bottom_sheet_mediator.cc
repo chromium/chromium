@@ -19,14 +19,14 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webapps/browser/android/pwa_restore_bottom_sheet_mediator_jni_headers/PwaRestoreBottomSheetMediator_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace webapk {
 
 // static
-jlong JNI_PwaRestoreBottomSheetMediator_Initialize(
+static jlong JNI_PwaRestoreBottomSheetMediator_Initialize(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_ref) {
+    const JavaRef<jobject>& java_ref) {
   Profile* profile = ProfileManager::GetLastUsedProfile();
   if (profile == nullptr) {
     return 0;
@@ -41,7 +41,7 @@ jlong JNI_PwaRestoreBottomSheetMediator_Initialize(
 }
 
 PwaRestoreBottomSheetMediator::PwaRestoreBottomSheetMediator(
-    const JavaParamRef<jobject>& java_ref,
+    const JavaRef<jobject>& java_ref,
     WebApkRestoreManager* restore_manager)
     : restore_manager_(restore_manager->GetWeakPtr()) {
   java_ref_.Reset(java_ref);
@@ -58,7 +58,7 @@ void PwaRestoreBottomSheetMediator::Destroy(JNIEnv* env) {
 
 void PwaRestoreBottomSheetMediator::OnRestoreWebapps(
     JNIEnv* env,
-    const JavaParamRef<jobjectArray>& jrestore_app_ids) {
+    const JavaRef<jobjectArray>& jrestore_app_ids) {
   if (!restore_manager_) {
     return;
   }
@@ -70,3 +70,5 @@ void PwaRestoreBottomSheetMediator::OnRestoreWebapps(
 }
 
 }  // namespace webapk
+
+DEFINE_JNI(PwaRestoreBottomSheetMediator)

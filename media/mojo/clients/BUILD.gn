@@ -26,9 +26,9 @@ source_set("clients") {
     # TODO(liberato): can we avoid this?
     "//content/test/*",
     "//third_party/blink/renderer/modules/mediarecorder",
-    "//third_party/blink/renderer/modules/peerconnection:peerconnection",
+    "//third_party/blink/renderer/modules/peerconnection",
     "//third_party/blink/renderer/modules/webcodecs",
-    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform",
   ]
 
   sources = [
@@ -83,7 +83,7 @@ source_set("clients") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/mojom",
-    "//services/viz/public/cpp/gpu:gpu",
+    "//services/viz/public/cpp/gpu",
   ]
 
   deps = [
@@ -94,8 +94,8 @@ source_set("clients") {
 
   if (is_android) {
     deps += [
-      "//gpu/ipc/common:common",
-      "//ui/gl:gl",
+      "//gpu/ipc/common",
+      "//ui/gl",
     ]
   }
   if (is_win) {
@@ -176,7 +176,7 @@ source_set("unit_tests") {
 
     deps += [
       "//content/public/renderer",
-      "//content/renderer:renderer",
+      "//content/renderer",
       "//media",
     ]
   }

@@ -8,56 +8,21 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
-#include "ui/gfx/range/range.h"
 
 namespace autofill::payments {
 
-// Contains a string of text and the location of a substring for a link.
-struct TextWithLink {
-  std::u16string text;
-  gfx::Range offset;
-};
-
-// An enum indicating the elgibility of a BNPL issuer on the current page for
-// the Select BNPL issuer dialog.
-enum class BnplIssuerEligibilityForPage {
-  kUndefined = 0,
-  kIsEligible = 1,
-  // Note: If an issuer is not eligible due to checkout amount and lack of
-  // merchant support, then lack of merchant support takes precedence.
-  kNotEligibleIssuerDoesNotSupportMerchant = 2,
-  kNotEligibleCheckoutAmountTooLow = 3,
-  kNotEligibleCheckoutAmountTooHigh = 4,
-  kMaxValue = kNotEligibleCheckoutAmountTooHigh
-};
-
-// A struct containing a BNPL issuer and the context necessary to display it in
-// the Select BNPL issuer dialog.
-struct BnplIssuerContext {
- public:
-  BnplIssuerContext();
-  BnplIssuerContext(BnplIssuer issuer,
-                    BnplIssuerEligibilityForPage eligibility);
-  BnplIssuerContext(const BnplIssuerContext& other);
-  BnplIssuerContext(BnplIssuerContext&&);
-  BnplIssuerContext& operator=(const BnplIssuerContext& other);
-  BnplIssuerContext& operator=(BnplIssuerContext&&);
-  ~BnplIssuerContext();
-  bool operator==(const BnplIssuerContext&) const;
-
-  // The BNPL issuer to display in the dialog.
-  BnplIssuer issuer;
-
-  // The eligibility of the BNPL issuer on the current page for the Select BNPL
-  // issuer dialog.
-  BnplIssuerEligibilityForPage eligibility =
-      BnplIssuerEligibilityForPage::kUndefined;
-};
+struct BnplIssuerContext;
+struct TextWithLink;
 
 // Interface that exposes controller functionality to the
 // SelectBnplIssuerDialogView.
 class SelectBnplIssuerDialogController {
  public:
+  // Method called by BnplManager when issuer data is ready to dismiss the
+  // throbber and show the issuer dialog.
+  virtual void UpdateDialogWithIssuers(
+      std::vector<BnplIssuerContext> issuer_contexts) = 0;
+
   // Callbacks for the View. When an issuer is selected, it passes the
   // issuer that was selected by the user.
   virtual void OnIssuerSelected(BnplIssuer issuer) = 0;
@@ -67,6 +32,7 @@ class SelectBnplIssuerDialogController {
   virtual std::u16string GetTitle() const = 0;
   virtual std::u16string GetSelectionOptionText(
       autofill::BnplIssuer::IssuerId issuer_id) const = 0;
+
   // List of issuers with their corresponding contexts to be displayed on the
   // Select BNPL issuer dialog.
   virtual const std::vector<BnplIssuerContext>& GetIssuerContexts() const = 0;

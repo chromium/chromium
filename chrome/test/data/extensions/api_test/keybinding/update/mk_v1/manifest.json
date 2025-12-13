@@ -1,12 +1,12 @@
 {
-  "name": "A test for making sure media keys that get reassigned don't get 
+  "name": "A test for making sure media keys that get reassigned don't get
   reinstated during update.",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   },
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "scripting"],
   "commands": {
     "test_mediakeys_update": {
       "suggested_key": {

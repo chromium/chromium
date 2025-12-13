@@ -19,7 +19,7 @@ static_library("hid_detection") {
   ]
 
   deps = [
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
@@ -65,9 +65,10 @@ source_set("unit_tests") {
     "//chromeos/ash/services/bluetooth_config:test_support",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//device/bluetooth:mocks",
     "//mojo/public/cpp/bindings",
-    "//services/device/public/cpp/hid:hid",
+    "//services/device/public/cpp/hid",
     "//testing/gmock",
     "//testing/gtest",
   ]

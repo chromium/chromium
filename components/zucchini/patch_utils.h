@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_ZUCCHINI_PATCH_UTILS_H_
 #define COMPONENTS_ZUCCHINI_PATCH_UTILS_H_
 
@@ -15,6 +10,7 @@
 #include <iterator>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "components/zucchini/image_utils.h"
 #include "components/zucchini/version_info.h"
 
@@ -110,7 +106,7 @@ typename std::iterator_traits<It>::difference_type DecodeVarUInt(It first,
   T val = 0;
   for (auto it = first; it != last;) {
     val |= T(*it & 0x7F) << sh;
-    if (*(it++) < 0x80) {
+    if (*(UNSAFE_TODO(it++)) < 0x80) {
       *value = val;
       return it - first;
     }

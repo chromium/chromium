@@ -93,11 +93,7 @@ public class JavascriptAppModalDialogTest {
 
         Assert.assertEquals(
                 BEFORE_UNLOAD_URL,
-                mActivityTestRule
-                        .getActivity()
-                        .getCurrentWebContents()
-                        .getLastCommittedUrl()
-                        .getSpec());
+                mActivityTestRule.getWebContents().getLastCommittedUrl().getSpec());
         executeJavaScriptAndWaitForDialog("history.back();");
 
         jsDialog = getCurrentDialog();
@@ -110,12 +106,7 @@ public class JavascriptAppModalDialogTest {
         onViewWaiting(withText(R.string.leave), /* checkRootDialog= */ true).perform(click());
         onPageLoaded.waitForCallback(callCount);
         Assert.assertEquals(
-                EMPTY_PAGE,
-                mActivityTestRule
-                        .getActivity()
-                        .getCurrentWebContents()
-                        .getLastCommittedUrl()
-                        .getSpec());
+                EMPTY_PAGE, mActivityTestRule.getWebContents().getLastCommittedUrl().getSpec());
     }
 
     /**
@@ -189,11 +180,7 @@ public class JavascriptAppModalDialogTest {
         onViewWaiting(withText(R.string.cancel)).perform(click());
         Assert.assertEquals(
                 BEFORE_UNLOAD_URL,
-                mActivityTestRule
-                        .getActivity()
-                        .getCurrentWebContents()
-                        .getLastCommittedUrl()
-                        .getSpec());
+                mActivityTestRule.getWebContents().getLastCommittedUrl().getSpec());
 
         // Show it again, it should have the option to suppress subsequent dialogs.
         OnEvaluateJavaScriptResultHelper resultHelper =
@@ -207,11 +194,7 @@ public class JavascriptAppModalDialogTest {
         onViewWaiting(withText(R.string.cancel)).perform(click());
         Assert.assertEquals(
                 BEFORE_UNLOAD_URL,
-                mActivityTestRule
-                        .getActivity()
-                        .getCurrentWebContents()
-                        .getLastCommittedUrl()
-                        .getSpec());
+                mActivityTestRule.getWebContents().getLastCommittedUrl().getSpec());
 
         // Try showing a dialog again and verify it is not shown.
         resultHelper.evaluateJavaScriptForTests(
@@ -258,7 +241,7 @@ public class JavascriptAppModalDialogTest {
                     WebContentsUtils.getGestureListenerManager(mActivityTestRule.getWebContents())
                             .addListener(tapGestureStateListener);
                 });
-        TouchCommon.singleClickView(mActivityTestRule.getActivity().getActivityTab().getView());
+        TouchCommon.singleClickView(mActivityTestRule.getActivityTab().getView());
         tapGestureStateListener.waitForTap(callCount);
     }
 
@@ -276,8 +259,7 @@ public class JavascriptAppModalDialogTest {
      */
     private OnEvaluateJavaScriptResultHelper executeJavaScriptAndWaitForDialog(
             final OnEvaluateJavaScriptResultHelper helper, String script) {
-        helper.evaluateJavaScriptForTests(
-                mActivityTestRule.getActivity().getCurrentWebContents(), script);
+        helper.evaluateJavaScriptForTests(mActivityTestRule.getWebContents(), script);
         assertJavascriptAppModalDialogShownState(true);
         return helper;
     }

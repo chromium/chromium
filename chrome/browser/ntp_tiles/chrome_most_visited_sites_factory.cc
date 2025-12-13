@@ -17,6 +17,7 @@
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ntp_tiles/chrome_custom_links_manager_factory.h"
+#include "chrome/browser/ntp_tiles/chrome_enterprise_shortcuts_manager_factory.h"
 #include "chrome/browser/ntp_tiles/chrome_popular_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -24,6 +25,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/icon_cacher_impl.h"
 #include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/most_visited_sites.h"
@@ -55,6 +57,15 @@ bool ShouldCreateCustomLinksManager() {
 #endif
 }
 
+bool ShouldCreateEnterpriseShortcutsManager() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts);
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 // static
@@ -71,13 +82,10 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 #endif
 
   bool is_default_chrome_app_migrated;
-  bool is_custom_links_mixable;
 #if BUILDFLAG(IS_ANDROID)
   is_default_chrome_app_migrated = false;
-  is_custom_links_mixable = true;
 #else
   is_default_chrome_app_migrated = true;
-  is_custom_links_mixable = false;
 #endif
 
   auto most_visited_sites = std::make_unique<ntp_tiles::MostVisitedSites>(
@@ -92,6 +100,9 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
       ShouldCreateCustomLinksManager()
           ? ChromeCustomLinksManagerFactory::NewForProfile(profile)
           : nullptr,
+      ShouldCreateEnterpriseShortcutsManager()
+          ? ChromeEnterpriseShortcutsManagerFactory::NewForProfile(profile)
+          : nullptr,
       std::make_unique<ntp_tiles::IconCacherImpl>(
           FaviconServiceFactory::GetForProfile(
               profile, ServiceAccessType::IMPLICIT_ACCESS),
@@ -101,6 +112,6 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
               profile->GetDefaultStoragePartition()
                   ->GetURLLoaderFactoryForBrowserProcess()),
           std::move(data_decoder)),
-      is_default_chrome_app_migrated, is_custom_links_mixable);
+      is_default_chrome_app_migrated);
   return most_visited_sites;
 }

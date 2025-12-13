@@ -49,6 +49,14 @@ void DesktopMediaPaneView::SetAudioSharingApprovedByUser(bool is_on) {
   content_pane_view_->SetAudioSharingApprovedByUser(is_on);
 }
 
+bool DesktopMediaPaneView::IsAudioSharingControlEnabled() const {
+  return content_pane_view_->IsAudioSharingControlEnabled();
+}
+
+void DesktopMediaPaneView::SetAudioSharingControlEnabled(bool enabled) {
+  content_pane_view_->SetAudioSharingControlEnabled(enabled);
+}
+
 std::u16string_view DesktopMediaPaneView::GetAudioLabelText() const {
   return content_pane_view_->GetAudioLabelText();
 }
@@ -110,6 +118,14 @@ void DesktopMediaPaneView::MakePermissionPaneView() {
   permission_pane_view_ =
       AddChildView(std::make_unique<DesktopMediaPermissionPaneViewMac>(type_));
   layout_->SetFlexForView(permission_pane_view_, 1);
+}
+
+void DesktopMediaPaneView::SetAudioWarningVisible(bool visible) {
+  content_pane_view_->SetAudioWarningVisible(visible);
+}
+
+bool DesktopMediaPaneView::IsAudioWarningVisible() const {
+  return content_pane_view_->IsAudioWarningVisible();
 }
 #endif  // BUILDFLAG(IS_MAC)
 

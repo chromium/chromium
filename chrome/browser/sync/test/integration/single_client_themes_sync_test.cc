@@ -178,15 +178,40 @@ bool ServerThemeMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   return matches;
 }
 
-class SingleClientThemesSyncTest : public SyncTest {
+class SingleClientThemesSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientThemesSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientThemesSyncTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                                syncer::kSeparateLocalAndAccountThemes,
+                                // `kEnablePreferencesAccountStorage` is used to
+                                // enable themes in transport
+                                // mode alongside some other data types.
+                                switches::kEnablePreferencesAccountStorage},
+          /*disabled_features=*/{});
+    }
+  }
   ~SingleClientThemesSyncTest() override = default;
 
   bool TestUsesSelfNotifications() override { return false; }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, UploadsThemesOnInstall) {
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientThemesSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTest, UploadsThemesOnInstall) {
   ASSERT_TRUE(SetupSync());
 
   ASSERT_FALSE(UsingCustomTheme(GetProfile(0)));
@@ -205,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, UploadsThemesOnInstall) {
   EXPECT_TRUE(ServerThemeMatchChecker(HasDefaultTheme()).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsCustomTheme) {
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTest, DownloadsCustomTheme) {
   ASSERT_TRUE(SetupSync());
 
   GetFakeServer()->InjectEntity(CreateCustomThemeEntity(GetCustomTheme(0)));
@@ -215,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsCustomTheme) {
       ThemePendingInstallChecker(GetProfile(0), GetCustomTheme(0)).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsSystemTheme) {
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTest, DownloadsSystemTheme) {
   // Skip if this platform doesn't distinguish between system and default theme.
   ASSERT_TRUE(SetupClients());
   if (!IsSystemThemeDistinctFromDefaultTheme(GetProfile(0))) {
@@ -235,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsSystemTheme) {
   EXPECT_TRUE(SystemThemeChecker(GetProfile(0)).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsDefaultTheme) {
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTest, DownloadsDefaultTheme) {
   ASSERT_TRUE(SetupSync());
 
   // Set up a custom theme first, so we can then switch back to default.
@@ -253,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsDefaultTheme) {
 // unset. After this, the migration flag should get set to disallow future reads
 // from the syncing theme prefs. The incoming theme is committed to the server
 // with the new fields in the ThemeSpecifics.
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTest,
                        ShouldApplyThemeFromSyncingPrefsIfFlagUnmarked) {
   ASSERT_TRUE(SetupClients());
   // Migration flag is unset.
@@ -315,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
 
 // Simulate pref migration being run in the previous browser session by setting
 // the migration flag.
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTest,
                        PRE_ShouldNotApplyThemeFromSyncingPrefsIfFlagMarked) {
   ASSERT_TRUE(SetupClients());
 
@@ -331,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
 }
 
 // Verifies that the syncing theme prefs are not read if the migration is set.
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTest,
                        ShouldNotApplyThemeFromSyncingPrefsIfFlagMarked) {
   ASSERT_TRUE(SetupClients());
 
@@ -385,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
 // Verifies that syncing theme prefs are not read with the incremental updates.
 // They can only be applied when the prefs sync starts (which will set the
 // migration flag to disallow future reads).
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTest,
                        ShouldNotApplyThemeFromSyncingPrefsAfterSyncHasStarted) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(preferences_helper::GetPrefs(/*index=*/0)
@@ -434,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
 // Verifies that the syncing theme prefs are not applied if the incoming
 // ThemeSpecifics has the new fields, which implies another client has already
 // updated the ThemeSpecifics using the prefs.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientThemesSyncTest,
     ShouldNotApplyThemeFromSyncingPrefsIfReceivedViaSpecifics) {
   ASSERT_TRUE(SetupClients());
@@ -498,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Verifies that the syncing theme prefs are applied if the incoming
 // ThemeSpecifics does not have the new fields.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientThemesSyncTest,
     ShouldApplyThemeFromSyncingPrefsIfNotReceivedViaSpecifics) {
   ASSERT_TRUE(SetupClients());
@@ -564,7 +589,15 @@ class SingleClientThemesSyncTestWithoutAccountThemesSeparation
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithoutAccountThemesSeparation,
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientThemesSyncTestWithoutAccountThemesSeparation,
+    // Themes is not supported in transport mode without account themes
+    // separation.
+    testing::Values(SyncTest::SetupSyncMode::kSyncTheFeature),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithoutAccountThemesSeparation,
                        UploadsPreexistingTheme) {
   ASSERT_TRUE(SetupClients());
 
@@ -586,7 +619,12 @@ class SingleClientThemesSyncTestWithAccountThemesSeparation
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientThemesSyncTestWithAccountThemesSeparation,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
                        ShouldNotUploadPreexistingTheme) {
   ASSERT_TRUE(SetupClients());
 
@@ -607,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
   EXPECT_TRUE(UsingCustomTheme(GetProfile(0)));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
                        ShouldRestoreLocalThemeUponSyncStop) {
   ASSERT_TRUE(SetupClients());
 
@@ -621,14 +659,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
 
   // Disable sync.
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kThemes));
 
   // Original local theme should get re-applied.
   EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
   EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
                        PRE_ShouldPersistSavedLocalThemeOverBrowserRestart) {
   ASSERT_TRUE(SetupClients());
 
@@ -641,22 +679,22 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
   EXPECT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
                        ShouldPersistSavedLocalThemeOverBrowserRestart) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
 
   // Disable sync.
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kThemes));
 
   // Original local theme should get re-applied.
   EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
   EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
                        ShouldNotApplyLocalUpdateOnLocalThemeWhenSignedIn) {
   ASSERT_TRUE(SetupSync());
 
@@ -668,13 +706,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
 
   // Disable syncing of themes.
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kThemes));
 
   // Original local theme is restored.
   EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
                        ShouldNotApplyRemoteUpdateOnLocalTheme) {
   ASSERT_TRUE(SetupClients());
 
@@ -690,16 +728,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
 
   // Disable sync.
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kThemes));
 
   // Original local theme should get re-applied.
   EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
   EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
 }
 
-// Signing out is not supported on ChromeOS, thus excluded from this test suite.
+// Signing out is not supported on ChromeOS, thus excluded from the following
+// tests.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
                        ShouldReturnLocalDataDescriptions) {
   ASSERT_TRUE(SetupClients());
 
@@ -726,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
                   /*domain_count=*/0u));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
                        ShouldBatchUploadAllEntries) {
   ASSERT_TRUE(SetupClients());
 
@@ -770,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
   EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
                        ShouldBatchUploadSomeEntries) {
   ASSERT_TRUE(SetupClients());
 
@@ -835,23 +874,126 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
   EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
 }
 
+IN_PROC_BROWSER_TEST_P(
+    SingleClientThemesSyncTestWithAccountThemesSeparation,
+    PRE_ShouldClearAccountDataOnStartupIfSignInAllowedBitChanged) {
+  ASSERT_TRUE(SetupClients());
+
+  // Set the sign-in allowed bit to true initially.
+  preferences_helper::GetPrefs(/*index=*/0)
+      ->SetBoolean(prefs::kSigninAllowedOnNextStartup, true);
+
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  // Account theme is effective.
+  ASSERT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
+
+  // Simulate turning off the sign-in allowed bit on the settings page.
+  preferences_helper::GetPrefs(/*index=*/0)
+      ->SetBoolean(prefs::kSigninAllowedOnNextStartup, false);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SingleClientThemesSyncTestWithAccountThemesSeparation,
+    ShouldClearAccountDataOnStartupIfSignInAllowedBitChanged) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(SetupClients());
+
+  // Original local theme should get re-applied.
+  // Note: The account theme is not cleared instantaneously upon startup, but
+  // upon themes sync initialization.
+  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+  EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SyncableService.MaybeClearDataIfMetadataEmptyOrInvalid.THEME", true,
+      /*expected_bucket_count=*/1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_P(
+    SingleClientThemesSyncTestWithAccountThemesSeparation,
+    PRE_ShouldClearAccountDataOnStartupIfAccountStateChanged) {
+  ASSERT_TRUE(SetupClients());
+
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  ASSERT_TRUE(SetupSync());
+#else
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Account theme is effective.
+  ASSERT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
+
+  // Simulate a data type error to prevent clearing of account data.
+  GetSyncService(0)->ReportDataTypeErrorForTest(syncer::THEMES);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Disable sync.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kThemes));
+#else
+  // Sign out. Account theme should stay because of the data type error.
+  GetClient(0)->SignOutPrimaryAccount();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  // Local theme is not restored because stop sync is not called when there is a
+  // data type error.
+  ASSERT_TRUE(UsingGrayscaleTheme(GetProfile(0)));
+
+  ExcludeDataTypesFromCheckForDataTypeFailures({syncer::THEMES});
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldClearAccountDataOnStartupIfAccountStateChanged) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(SetupClients());
+
+  // Original local theme should get re-applied.
+  // Note: The account theme is not cleared instantaneously upon startup, but
+  // upon themes sync initialization.
+  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+  EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
+
+  // Clearing happened with StayStoppedAndMaybeClearData() called upon startup.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SyncableService.MaybeClearDataIfMetadataEmptyOrInvalid.THEME", true,
+      /*expected_bucket_count=*/1);
+}
+
+// Signing out is not supported on ChromeOS, thus excluded from this test suite.
+#if !BUILDFLAG(IS_CHROMEOS)
 class SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState
     : public SingleClientThemesSyncTestWithAccountThemesSeparation {
  public:
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override { NOTREACHED(); }
+
   bool HasUnsyncedThemeData() {
     return GetClient(0)
         ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
         .contains(syncer::THEMES);
   }
-
- private:
-  // `kEnablePreferencesAccountStorage` is used to enable themes in transport
-  // mode alongside some other data types.
-  base::test::ScopedFeatureList feature_list_{
-      switches::kEnablePreferencesAccountStorage};
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState,
+    // The tests do not rely on SetupSync and testing only with transport mode
+    // is sufficient.
+    testing::Values(SyncTest::SetupSyncMode::kSyncTransportOnly),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(
     SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState,
     ShouldMarkThemeChangeWhileSigninPendingUnsynced) {
   ASSERT_TRUE(SetupClients());
@@ -884,7 +1026,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState,
     ShouldCommitUnsyncedThemeChangeUponResolve) {
   ASSERT_TRUE(SetupClients());
@@ -921,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(
       ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState,
     PRE_ShouldPersistUnsyncedThemeChangeAcrossRestart) {
   ASSERT_TRUE(SetupClients());
@@ -944,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(HasUnsyncedThemeData());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState,
     ShouldPersistUnsyncedThemeChangeAcrossRestart) {
   ASSERT_TRUE(SetupClients());
@@ -973,104 +1115,7 @@ IN_PROC_BROWSER_TEST_F(
   GetClient(0)->SignOutPrimaryAccount();
   ASSERT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
 }
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesSyncTestWithAccountThemesSeparation,
-    PRE_ShouldClearAccountDataOnStartupIfSignInAllowedBitChanged) {
-  ASSERT_TRUE(SetupClients());
-
-  // Set the sign-in allowed bit to true initially.
-  preferences_helper::GetPrefs(/*index=*/0)
-      ->SetBoolean(prefs::kSigninAllowedOnNextStartup, true);
-
-  UseCustomTheme(GetProfile(0), 0);
-  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
-
-  GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
-
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-
-  // Account theme is effective.
-  ASSERT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
-
-  // Simulate turning off the sign-in allowed bit on the settings page.
-  preferences_helper::GetPrefs(/*index=*/0)
-      ->SetBoolean(prefs::kSigninAllowedOnNextStartup, false);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesSyncTestWithAccountThemesSeparation,
-    ShouldClearAccountDataOnStartupIfSignInAllowedBitChanged) {
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(SetupClients());
-
-  // Original local theme should get re-applied.
-  // Note: The account theme is not cleared instantaneously upon startup, but
-  // upon themes sync initialization.
-  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
-  EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
-
-  histogram_tester.ExpectUniqueSample(
-      "Sync.SyncableService.MaybeClearDataIfMetadataEmptyOrInvalid.THEME", true,
-      /*expected_bucket_count=*/1);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesSyncTestWithAccountThemesSeparation,
-    PRE_ShouldClearAccountDataOnStartupIfAccountStateChanged) {
-  ASSERT_TRUE(SetupClients());
-
-  UseCustomTheme(GetProfile(0), 0);
-  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
-
-  GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
-
-#if BUILDFLAG(IS_CHROMEOS)
-  ASSERT_TRUE(SetupSync());
-#else
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Account theme is effective.
-  ASSERT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
-
-  // Simulate a data type error to prevent clearing of account data.
-  GetSyncService(0)->ReportDataTypeErrorForTest(syncer::THEMES);
-#if BUILDFLAG(IS_CHROMEOS)
-  // Disable sync.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
-#else
-  // Sign out. Account theme should stay because of the data type error.
-  GetClient(0)->SignOutPrimaryAccount();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  // Local theme is not restored because stop sync is not called when there is a
-  // data type error.
-  ASSERT_TRUE(UsingGrayscaleTheme(GetProfile(0)));
-
-  ExcludeDataTypesFromCheckForDataTypeFailures({syncer::THEMES});
-}
-
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
-                       ShouldClearAccountDataOnStartupIfAccountStateChanged) {
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(SetupClients());
-
-  // Original local theme should get re-applied.
-  // Note: The account theme is not cleared instantaneously upon startup, but
-  // upon themes sync initialization.
-  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
-  EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
-
-  // Clearing happened with StayStoppedAndMaybeClearData() called upon startup.
-  histogram_tester.ExpectUniqueSample(
-      "Sync.SyncableService.MaybeClearDataIfMetadataEmptyOrInvalid.THEME", true,
-      /*expected_bucket_count=*/1);
-}
 
 }  // namespace

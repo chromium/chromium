@@ -10,7 +10,7 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.Choreographer;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -234,8 +234,7 @@ public class UpdateMenuItemHelper {
                 // we should show the badge again.
                 showBadge |=
                         !TextUtils.equals(
-                                BuildInfo.getInstance().versionName,
-                                mStatus.latestUnsupportedVersion);
+                                ApkInfo.getPackageVersionName(), mStatus.latestUnsupportedVersion);
 
                 if (showBadge) {
                     mMenuUiState.buttonState = new MenuButtonState();

@@ -5,7 +5,7 @@
 #ifndef GIN_V8_FOREGROUND_TASK_RUNNER_H_
 #define GIN_V8_FOREGROUND_TASK_RUNNER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "gin/v8_foreground_task_runner_base.h"
 
 namespace base {

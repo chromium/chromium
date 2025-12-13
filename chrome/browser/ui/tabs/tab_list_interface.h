@@ -10,11 +10,20 @@
 #include <set>
 #include <vector>
 
+#include "base/scoped_observation_traits.h"
+#include "build/android_buildflags.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
+// BrowserWindowInterface is available on desktop Android, but not other Android
+// builds.
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 class BrowserWindowInterface;
+#endif
+
+class SessionID;
+class TabListInterfaceObserver;
 
 // Interface for supporting a basic set of tab operations on Android and
 // Desktop.
@@ -26,8 +35,16 @@ class TabListInterface {
   TabListInterface(const TabListInterface& other) = delete;
   void operator=(const TabListInterface& other) = delete;
 
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
   // Returns the TabListInterface associated with the given `browser`.
   static TabListInterface* From(BrowserWindowInterface* browser);
+#endif
+
+  // Adds / removes observers from this tab list.
+  virtual void AddTabListInterfaceObserver(
+      TabListInterfaceObserver* observer) = 0;
+  virtual void RemoveTabListInterfaceObserver(
+      TabListInterfaceObserver* observer) = 0;
 
   // Returns the count of tabs within the tab list.
   virtual int GetTabCount() const = 0;
@@ -41,7 +58,7 @@ class TabListInterface {
 
   // Opens a new tab to the given `url`, inserting it at `index` in the tab
   // strip. `index` may be ignored by the implementation if necessary.
-  virtual void OpenTab(const GURL& url, int index) = 0;
+  virtual tabs::TabInterface* OpenTab(const GURL& url, int index) = 0;
 
   // Attempts to discard the renderer for the `tab` from memory.
   //
@@ -49,8 +66,9 @@ class TabListInterface {
   // docs/website/site/chromium-os/chromiumos-design-docs/tab-discarding-and-reloading/index.md
   virtual void DiscardTab(tabs::TabHandle tab) = 0;
 
-  // Duplicates the `tab` to the next adjacent index.
-  virtual void DuplicateTab(tabs::TabHandle tab) = 0;
+  // Duplicates the `tab` to the next adjacent index. Returns the newly-
+  // created tab.
+  virtual tabs::TabInterface* DuplicateTab(tabs::TabHandle tab) = 0;
 
   // Returns the `TabInterface` for the tab at a given `index`. May be `nullptr`
   // if the index is out-of-bounds.
@@ -101,24 +119,40 @@ class TabListInterface {
   // Moves the tab group to `index`. The nearest valid index will be used.
   virtual void MoveGroupTo(tab_groups::TabGroupId group_id, int index) = 0;
 
-  // TODO(crbug.com/415323446): Figure out a memory management model that works
-  // for both Android and Desktop for the following methods.
+  // Moves `tab` from this TabListInterface to the TabListInterface associated
+  // with `destination_window_id`. The tab will be inserted at `index` in the
+  // destination tab list. This will no-op if the tab is not present in this
+  // TabListInterface or the destination window does not exist. `index` may be
+  // adjusted as necessary to ensure the tab is in a valid position.
+  virtual void MoveTabToWindow(tabs::TabHandle tab,
+                               SessionID destination_window_id,
+                               int destination_index) = 0;
 
-  // Detaches the tab at a given `index` allowing the caller to reparent it to a
-  // different tab strip. May return `nullptr` if index is out-of-bounds.
-  // virtual std::unique_ptr<TabInterface> DetachTabAt(int index) = 0;
-
-  // Inserts the given `tab` at the given `index`. The nearest valid index will
-  // be used.
-  // virtual void InsertTabAt(std::unique_ptr<TabInterface>, int index) = 0;
-
-  // Detaches the tab group with the given `group_id` to be attached to a
-  // different window.
-  // virtual std::unique_ptr<TabGroup> DetachTabGroup(TabGroupId group_id) = 0;
-
-  // Inserts a previously deteached `tab_group` to `index`. The nearest valid
-  // index will be used.
-  // virtual std::unique_ptr<TabGroup> DetachTabGroup(TabGroupId group_id) = 0;
+  // Moves the tab group with `group_id` from this TabListInterface to the
+  // TabListInterface associated with `destination_window_id`. The tab group
+  // will be inserted with the first tab at `index` in the destination tab list.
+  // This will no-op if the tab group is not present in this TabListInterface or
+  // the destination window does not exist. `index` may be adjusted as necessary
+  // to ensure the tab group is in a valid position.
+  virtual void MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+                                    SessionID destination_window_id,
+                                    int destination_index) = 0;
 };
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<TabListInterface, TabListInterfaceObserver> {
+  static void AddObserver(TabListInterface* tab_list,
+                          TabListInterfaceObserver* observer) {
+    tab_list->AddTabListInterfaceObserver(observer);
+  }
+  static void RemoveObserver(TabListInterface* tab_list,
+                             TabListInterfaceObserver* observer) {
+    tab_list->RemoveTabListInterfaceObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_LIST_INTERFACE_H_

@@ -21,7 +21,7 @@ static_library("reset") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/search",
-    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/user_manager",
     "//content/public/browser",
     "//ui/base",

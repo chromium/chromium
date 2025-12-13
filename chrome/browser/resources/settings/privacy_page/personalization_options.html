@@ -15,10 +15,10 @@
       }
 
       #chromeSigninUserChoiceSetting {
-        padding: 10px 0px 10px;
+        padding: var(--settings-signin-choice-padding, 10px 0px 10px);
       }
 
-      #label-wrapper {
+      #labelWrapper {
         margin-inline-end: 20px;
       }
 
@@ -28,7 +28,7 @@
     <div id="chromeSigninUserChoiceSetting" class="hr cr-row" role="group"
         hidden="[[!chromeSigninUserChoiceInfo_.shouldShowSettings]]"
         aria-label="$i18n{chromeSigninChoiceTitle}">
-      <div id="label-wrapper" class="flex">
+      <div id="labelWrapper" class="flex">
           <div>
             $i18n{chromeSigninChoiceTitle}
           </div>

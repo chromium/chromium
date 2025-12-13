@@ -20,9 +20,8 @@ ClientTagHash ClientTagHash::FromUnhashed(DataType data_type,
   // handy for delimiter.
   sync_pb::EntitySpecifics serialized_type;
   AddDefaultFieldValue(data_type, &serialized_type);
-  std::string hash_input;
-  serialized_type.AppendToString(&hash_input);
-  hash_input.append(client_tag);
+  const std::string hash_input =
+      serialized_type.SerializeAsString() + std::string(client_tag);
 
   return FromHashed(
       base::Base64Encode(base::SHA1Hash(base::as_byte_span(hash_input))));

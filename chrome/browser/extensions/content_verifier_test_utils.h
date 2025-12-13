@@ -22,6 +22,9 @@
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/updater/extension_downloader_test_delegate.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

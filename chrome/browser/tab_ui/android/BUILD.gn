@@ -34,7 +34,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcherUtils.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabThumbnailView.java",
     "java/src/org/chromium/chrome/browser/tab_ui/ThumbnailProvider.java",
-    "java/src/org/chromium/chrome/browser/tab_ui/VersionUpdateIphHandler.java",
   ]
   deps = [
     ":java_resources",
@@ -42,7 +41,6 @@ android_library("java") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/collaboration:messaging_factory_java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/hub:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
@@ -122,7 +120,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherCustomViewManagerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherGroupSuggestionServiceUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherUtilsUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/tab_ui/VersionUpdateIphHandlerUnitTest.java",
   ]
 
   deps = [
@@ -158,6 +155,7 @@ robolectric_library("junit") {
     "//components/saved_tab_groups/public:java",
     "//components/saved_tab_groups/public:test_support_java",
     "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
     "//components/sync/android:sync_java",
     "//components/tab_groups:tab_groups_java",
     "//components/user_prefs/android:java",
@@ -170,7 +168,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:gendeps_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",

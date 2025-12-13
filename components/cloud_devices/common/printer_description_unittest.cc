@@ -23,9 +23,7 @@ namespace printer {
 // Makes sure that same JSON value represented by same strings to simplify
 // comparison.
 std::string NormalizeJson(const std::string& json) {
-  std::string result;
-  base::JSONWriter::Write(base::test::ParseJson(json), &result);
-  return result;
+  return base::WriteJson(base::test::ParseJson(json)).value_or("");
 }
 
 const char kCdd[] = R"(

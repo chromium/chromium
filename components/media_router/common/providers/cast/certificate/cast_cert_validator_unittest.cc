@@ -204,9 +204,18 @@ base::Time JanuaryFirst2015() {
 // Returns 2037-03-01 00:00:00 UTC.
 //
 // This is so far in the future that the test chains in this unit-test
-// should all be invalid.
+// should all be invalid. However, it may be before the long-term expiry grace
+// period cutoff for those certificates that are long-term.
 base::Time MarchFirst2037() {
   return CreateDate(2037, 3, 1);
+}
+
+// Returns 2052-02-29 00:00:00 UTC.
+//
+// This is so far in the future that the test chains in this unit-test
+// should all be invalid, even considering the long-term expiry grace period.
+base::Time FebruaryTwentyNinth2052() {
+  return CreateDate(2052, 2, 29);
 }
 
 // Tests verifying a valid certificate chain of length 2:
@@ -371,7 +380,7 @@ TEST(VerifyCastDeviceCertTest, Vizio) {
 
 // Tests verifying a valid certificate chain of length 2 using expired
 // time points.
-TEST(VerifyCastDeviceCertTest, ChromecastGen2InvalidTime) {
+TEST(VerifyCastDeviceCertTest, ChromecastGen2ExpiryGracePeriodEnforced) {
   const char* kCertsFile = "chromecast_gen2.pem";
 
   // Control test - certificate should be valid at some time otherwise
@@ -383,9 +392,13 @@ TEST(VerifyCastDeviceCertTest, ChromecastGen2InvalidTime) {
   RunTest(CastCertError::ERR_CERTS_DATE_INVALID, "", CastDeviceCertPolicy::NONE,
           kCertsFile, JanuaryFirst2015(), TRUST_STORE_BUILTIN, "");
 
-  // Use a time after notAfter.
-  RunTest(CastCertError::ERR_CERTS_DATE_INVALID, "", CastDeviceCertPolicy::NONE,
+  // Use a time after notAfter -- but before the long-term expiry grace period.
+  RunTest(CastCertError::OK, "3ZZAK6 FA8FCA3F0D35", CastDeviceCertPolicy::NONE,
           kCertsFile, MarchFirst2037(), TRUST_STORE_BUILTIN, "");
+
+  // Use a time after notAfter and after the long-term expiry grace period.
+  RunTest(CastCertError::ERR_CERTS_DATE_INVALID, "", CastDeviceCertPolicy::NONE,
+          kCertsFile, FebruaryTwentyNinth2052(), TRUST_STORE_BUILTIN, "");
 }
 
 // Tests verifying a valid certificate chain of length 3:

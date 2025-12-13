@@ -21,7 +21,6 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"

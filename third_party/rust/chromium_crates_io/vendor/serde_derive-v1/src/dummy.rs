@@ -22,6 +22,9 @@ pub fn wrap_in_const(serde_path: Option<&syn::Path>, code: TokenStream) -> Token
         )]
         const _: () = {
             #use_serde
+
+            _serde::__require_serde_not_serde_core!();
+
             #code
         };
     }

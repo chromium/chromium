@@ -24,8 +24,11 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
@@ -35,7 +38,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
 namespace {
 
 #define CAST_UNIT(unit) \
@@ -75,6 +77,35 @@ const CSSPrimitiveValue& CreateInitialCSSValue(
       entry.value, static_cast<CSSPrimitiveValue::UnitType>(entry.unit));
 }
 
+bool IsSupportedCSSUnitType(CSSPrimitiveValue::UnitType type) {
+  return (CSSPrimitiveValue::IsLength(type) ||
+          type == CSSPrimitiveValue::UnitType::kNumber ||
+          type == CSSPrimitiveValue::UnitType::kPercentage) &&
+         type != CSSPrimitiveValue::UnitType::kQuirkyEms;
+}
+
+bool IsSupportedCalculationCategory(CalculationResultCategory category) {
+  switch (category) {
+    case kCalcLength:
+    case kCalcNumber:
+    case kCalcPercent:
+    case kCalcLengthFunction:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool AllowedCSSValueForSVGLength(const CSSValue& value) {
+  if (auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(value)) {
+    return IsSupportedCSSUnitType(numeric_value->GetType());
+  }
+  if (auto* math_value = DynamicTo<CSSMathFunctionValue>(value)) {
+    return IsSupportedCalculationCategory(math_value->Category());
+  }
+  return value.IsUnparsedDeclaration();
+}
+
 }  // namespace
 
 SVGLength::SVGLength(SVGLengthMode mode)
@@ -86,9 +117,10 @@ SVGLength::SVGLength(SVGLengthMode mode)
 SVGLength::SVGLength(Initial initial, SVGLengthMode mode)
     : SVGLength(CreateInitialCSSValue(initial), mode) {}
 
-SVGLength::SVGLength(const CSSPrimitiveValue& value, SVGLengthMode mode)
+SVGLength::SVGLength(const CSSValue& value, SVGLengthMode mode)
     : value_(value), unit_mode_(static_cast<unsigned>(mode)) {
   DCHECK_EQ(UnitMode(), mode);
+  DCHECK(AllowedCSSValueForSVGLength(value));
 }
 
 void SVGLength::Trace(Visitor* visitor) const {
@@ -106,22 +138,39 @@ bool SVGLength::operator==(const SVGLength& other) const {
 
 Length SVGLength::ConvertToLength(
     const SVGLengthConversionData& conversion_data) const {
-  return value_->ConvertToLength(conversion_data);
+  const CSSValue* resolved_value =
+      conversion_data.MaybeResolveUnparsedValue(*value_);
+  if (!resolved_value) {
+    return Length::Fixed(0);
+  }
+  return To<CSSPrimitiveValue>(*resolved_value)
+      .ConvertToLength(conversion_data);
 }
 
 float SVGLength::Value(const SVGLengthConversionData& conversion_data,
                        float dimension) const {
-  return FloatValueForLength(value_->ConvertToLength(conversion_data),
-                             dimension);
+  const CSSValue* resolved_value =
+      conversion_data.MaybeResolveUnparsedValue(*value_);
+  if (!resolved_value) {
+    return 0;
+  }
+  return FloatValueForLength(
+      To<CSSPrimitiveValue>(*resolved_value).ConvertToLength(conversion_data),
+      dimension);
 }
 
 float SVGLength::Value(const SVGLengthContext& context) const {
-  if (const auto* math_function = DynamicTo<CSSMathFunctionValue>(*value_)) {
+  const CSSValue* resolved_value = context.MaybeResolveUnparsedValue(*value_);
+  if (!resolved_value) {
+    return 0;
+  }
+  if (const auto* math_function =
+          DynamicTo<CSSMathFunctionValue>(*resolved_value)) {
     return context.ResolveValue(*math_function, UnitMode());
   }
-  return context.ConvertValueToUserUnits(
-      To<CSSNumericLiteralValue>(*value_).DoubleValue(), UnitMode(),
-      NumericLiteralType());
+  const auto& numeric_literal = To<CSSNumericLiteralValue>(*resolved_value);
+  return context.ConvertValueToUserUnits(numeric_literal.DoubleValue(),
+                                         UnitMode(), numeric_literal.GetType());
 }
 
 void SVGLength::SetValueAsNumber(float value) {
@@ -139,27 +188,11 @@ bool SVGLength::IsRelative() const {
     return true;
   // TODO(crbug.com/979895): This is the result of a refactoring, which might
   // have revealed an existing bug with relative units in math functions.
-  return !IsCalculated() &&
-         CSSPrimitiveValue::IsRelativeUnit(NumericLiteralType());
-}
-
-static bool IsSupportedCSSUnitType(CSSPrimitiveValue::UnitType type) {
-  return (CSSPrimitiveValue::IsLength(type) ||
-          type == CSSPrimitiveValue::UnitType::kNumber ||
-          type == CSSPrimitiveValue::UnitType::kPercentage) &&
-         type != CSSPrimitiveValue::UnitType::kQuirkyEms;
-}
-
-static bool IsSupportedCalculationCategory(CalculationResultCategory category) {
-  switch (category) {
-    case kCalcLength:
-    case kCalcNumber:
-    case kCalcPercent:
-    case kCalcLengthFunction:
-      return true;
-    default:
-      return false;
+  if (!IsNumericValue()) {
+    return false;
   }
+
+  return CSSPrimitiveValue::IsRelativeUnit(NumericLiteralType());
 }
 
 namespace {
@@ -190,8 +223,32 @@ SVGParsingError SVGLength::SetValueAsString(const String& string) {
   const CSSValue* parsed = CSSParser::ParseSingleValue(
       CSSPropertyID::kX, string, GetSVGAttributeParserContext());
   const auto* new_value = DynamicTo<CSSPrimitiveValue>(parsed);
-  if (!new_value)
-    return SVGParseStatus::kExpectedLength;
+  if (!new_value) {
+    if (RuntimeEnabledFeatures::SvgLengthResolveUnparsedValueEnabled()) {
+      CSSParserTokenStream stream(string);
+      stream.EnsureLookAhead();
+      bool important = false;
+      CSSVariableData* variable_data =
+          CSSVariableParser::ConsumeUnparsedDeclaration(
+              stream,
+              /*allow_important_annotation=*/true,
+              /*is_animation_tainted=*/false,
+              /*must_contain_variable_reference=*/true,
+              /*restricted_value=*/true, /*comma_ends_declaration=*/false,
+              important, *GetSVGAttributeParserContext());
+      if (!variable_data || important) {
+        return SVGParseStatus::kExpectedLength;
+      }
+
+      auto* unparsed_value = MakeGarbageCollected<CSSUnparsedDeclarationValue>(
+          variable_data, GetSVGAttributeParserContext());
+
+      value_ = unparsed_value;
+      return SVGParseStatus::kNoError;
+    } else {
+      return SVGParseStatus::kExpectedLength;
+    }
+  }
 
   if (const auto* math_value = DynamicTo<CSSMathFunctionValue>(new_value)) {
     if (!IsSupportedCalculationCategory(math_value->Category()))
@@ -207,7 +264,7 @@ SVGParsingError SVGLength::SetValueAsString(const String& string) {
 }
 
 String SVGLength::ValueAsString() const {
-  return value_->CustomCSSText();
+  return value_->CssText();
 }
 
 void SVGLength::NewValueSpecifiedUnits(CSSPrimitiveValue::UnitType type,
@@ -275,7 +332,7 @@ void SVGLength::CalculateAnimatedValue(
   const SVGLength* unit_determining_length =
       (percentage < 0.5) ? from_length : to_length;
   CSSPrimitiveValue::UnitType result_unit =
-      !unit_determining_length->IsCalculated()
+      unit_determining_length->IsNumericValue()
           ? unit_determining_length->NumericLiteralType()
           : CSSPrimitiveValue::UnitType::kUserUnits;
 
@@ -300,7 +357,11 @@ void SVGLength::SetInitial(unsigned initial_value) {
 }
 
 bool SVGLength::IsNegativeNumericLiteral() const {
-  std::optional<double> value = value_->GetValueIfKnown();
+  if (!value_->IsPrimitiveValue()) {
+    return false;
+  }
+  std::optional<double> value =
+      To<CSSPrimitiveValue>(*value_).GetValueIfKnown();
   return value && *value < 0.0;
 }
 

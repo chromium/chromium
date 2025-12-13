@@ -380,8 +380,21 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   // (from 2.1/2.0 depending on eviction algorithm)
   void UpgradeTo3_0();
 
-  // Performs basic checks on the index file. Returns false on failure.
-  bool CheckIndex();
+  enum class CheckIndexResult {
+    kOk,
+    kCorruptIndexFileInIndexLength,
+    kInvalidFileMagic,
+    kInvalidFileVersion,
+    kInvalidTableSize,
+    kCorruptIndexFileInTableLength1,
+    kInvalidCacheSize,
+    kInvalidNumberOfEntries,
+    kFailedOnPreload,
+    kCorruptIndexFileInTableLength2,
+  };
+
+  // Performs basic checks on the index file.
+  CheckIndexResult CheckIndex();
 
   // Part of the self test. Returns the number or dirty entries, or an error.
   int CheckAllEntries();

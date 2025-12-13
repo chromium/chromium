@@ -6,16 +6,17 @@
 var svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
 function assert_matrix_component_numeric(matrix, component) {
-  matrix[component] = matrix;
-  assert_equals(matrix[component], NaN);
+  let original = matrix[component];
+  assert_throws_js(TypeError, function() { matrix[component] = matrix; });
+  assert_equals(matrix[component], original);
   matrix[component] = 0;
   assert_equals(matrix[component], 0);
-  matrix[component] = svgElement;
-  assert_equals(matrix[component], NaN);
+  assert_throws_js(TypeError, function() { matrix[component] = svgElement; });
+  assert_equals(matrix[component], 0);
   matrix[component] = 0;
   assert_equals(matrix[component], 0);
-  matrix[component] = 'aString';
-  assert_equals(matrix[component], NaN);
+  assert_throws_js(TypeError, function() { matrix[component] = 'aString'; });
+  assert_equals(matrix[component], 0);
 }
 
 test(function() {
@@ -96,20 +97,18 @@ test(function() {
   assert_throws_js(TypeError, function() { matrix.translate(true); });
   assert_throws_js(TypeError, function() { matrix.translate(2); });
   assert_throws_js(TypeError, function() { matrix.translate('aString'); });
+  assert_throws_js(TypeError, function() { matrix.translate('aString', 'aString'); });
   assert_throws_js(TypeError, function() { matrix.translate(svgElement); });
-  // The following string and object arguments convert to NaN
-  // per ECMA-262, 9.3, "ToNumber".
-  assert_not_equals(matrix.translate('aString', 'aString'), null);
-  assert_not_equals(matrix.translate(svgElement, svgElement), null);
-  assert_not_equals(matrix.translate(2, 'aString'), null);
-  assert_not_equals(matrix.translate(2, svgElement), null);
-  assert_not_equals(matrix.translate('aString', 2), null);
-  assert_not_equals(matrix.translate(svgElement, 2), null);
+  assert_throws_js(TypeError, function() { matrix.translate(svgElement, svgElement); });
+  assert_throws_js(TypeError, function() { matrix.translate(2, 'aString'); });
+  assert_throws_js(TypeError, function() { matrix.translate(2, svgElement); });
+  assert_throws_js(TypeError, function() { matrix.translate('aString', 2); });
+  assert_throws_js(TypeError, function() { matrix.translate(svgElement, 2); });
 
   // Check calling 'scale' with invalid arguments.
   assert_throws_js(TypeError, function() { matrix.scale(); });
-  assert_not_equals(matrix.scale('aString'), null);
-  assert_not_equals(matrix.scale(svgElement), null);
+  assert_throws_js(TypeError, function() { matrix.scale('aString'); });
+  assert_throws_js(TypeError, function() { matrix.scale(svgElement); });
 
 
   // Check calling 'scaleNonUniform' with invalid arguments.
@@ -118,17 +117,17 @@ test(function() {
   assert_throws_js(TypeError, function() { matrix.scaleNonUniform(2); });
   assert_throws_js(TypeError, function() { matrix.scaleNonUniform('aString'); });
   assert_throws_js(TypeError, function() { matrix.scaleNonUniform(svgElement); });
-  assert_not_equals(matrix.scaleNonUniform('aString', 'aString'), null);
-  assert_not_equals(matrix.scaleNonUniform(svgElement, svgElement), null);
-  assert_not_equals(matrix.scaleNonUniform(2, 'aString'), null);
-  assert_not_equals(matrix.scaleNonUniform(2, svgElement), null);
-  assert_not_equals(matrix.scaleNonUniform('aString', 2), null);
-  assert_not_equals(matrix.scaleNonUniform(svgElement, 2), null);
+  assert_throws_js(TypeError, function() { matrix.scaleNonUniform('aString', 'aString'); });
+  assert_throws_js(TypeError, function() { matrix.scaleNonUniform(svgElement, svgElement); });
+  assert_throws_js(TypeError, function() { matrix.scaleNonUniform(2, 'aString'); });
+  assert_throws_js(TypeError, function() { matrix.scaleNonUniform(2, svgElement); });
+  assert_throws_js(TypeError, function() { matrix.scaleNonUniform('aString', 2); });
+  assert_throws_js(TypeError, function() { matrix.scaleNonUniform(svgElement, 2); });
 
   // Check calling 'rotate' with invalid arguments.
   assert_throws_js(TypeError, function() { matrix.rotate(); });
-  assert_not_equals(matrix.rotate('aString'), null);
-  assert_not_equals(matrix.rotate(svgElement), null);
+  assert_throws_js(TypeError, function() { matrix.rotate('aString'); });
+  assert_throws_js(TypeError, function() { matrix.rotate(svgElement); });
 
   // Check calling 'rotateFromVector' with invalid arguments.
   assert_throws_js(TypeError, function() { matrix.rotateFromVector(); });
@@ -136,21 +135,21 @@ test(function() {
   assert_throws_js(TypeError, function() { matrix.rotateFromVector(2); });
   assert_throws_js(TypeError, function() { matrix.rotateFromVector('aString'); });
   assert_throws_js(TypeError, function() { matrix.rotateFromVector(svgElement); });
-  assert_not_equals(matrix.rotateFromVector('aString', 'aString'), null);
-  assert_not_equals(matrix.rotateFromVector(svgElement, svgElement), null);
-  assert_not_equals(matrix.rotateFromVector(2, 'aString'), null);
-  assert_not_equals(matrix.rotateFromVector(2, svgElement), null);
-  assert_not_equals(matrix.rotateFromVector('aString', 2), null);
-  assert_not_equals(matrix.rotateFromVector(svgElement, 2), null);
+  assert_throws_js(TypeError, function() { matrix.rotateFromVector('aString', 'aString'); });
+  assert_throws_js(TypeError, function() { matrix.rotateFromVector(svgElement, svgElement); });
+  assert_throws_js(TypeError, function() { matrix.rotateFromVector(2, 'aString'); });
+  assert_throws_js(TypeError, function() { matrix.rotateFromVector(2, svgElement); });
+  assert_throws_js(TypeError, function() { matrix.rotateFromVector('aString', 2); });
+  assert_throws_js(TypeError, function() { matrix.rotateFromVector(svgElement, 2); });
 
   // Check calling 'skewX' with invalid arguments.
   assert_throws_js(TypeError, function() { matrix.skewX(); });
-  assert_not_equals(matrix.skewX('aString'), null);
-  assert_not_equals(matrix.skewX(svgElement), null);
+  assert_throws_js(TypeError, function() { matrix.skewX('aString'); });
+  assert_throws_js(TypeError, function() { matrix.skewX(svgElement); });
 
   // Check calling 'skewY' with invalid arguments;
   assert_throws_js(TypeError, function() { matrix.skewY(); });
-  assert_not_equals(matrix.skewY('aString'), null);
-  assert_not_equals(matrix.skewY(svgElement), null);
+  assert_throws_js(TypeError, function() { matrix.skewY('aString'); });
+  assert_throws_js(TypeError, function() { matrix.skewY(svgElement); });
 });
 </script>

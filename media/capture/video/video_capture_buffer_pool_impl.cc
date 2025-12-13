@@ -17,7 +17,6 @@
 #include "media/capture/video/video_capture_buffer_tracker.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_capture_device_client.h"
-#include "ui/gfx/buffer_format_util.h"
 
 namespace media {
 

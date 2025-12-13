@@ -12,6 +12,8 @@ static_library("core") {
     "common_string_util.h",
     "controller_client.cc",
     "controller_client.h",
+    "features.cc",
+    "features.h",
     "https_only_mode_allowlist.cc",
     "https_only_mode_allowlist.h",
     "https_only_mode_enforcelist.cc",
@@ -63,7 +65,7 @@ static_library("core") {
     "//components/policy/core/common",
     "//components/prefs",
     "//components/resources",
-    "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common",
     "//components/ssl_errors",
     "//components/strings",
     "//components/url_formatter",
@@ -120,5 +122,5 @@ source_set("insecure_form_util") {
     "insecure_form_util.cc",
     "insecure_form_util.h",
   ]
-  deps = [ "//services/network/public/cpp:cpp" ]
+  deps = [ "//services/network/public/cpp" ]
 }

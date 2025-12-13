@@ -113,7 +113,7 @@ mod printing {
     use crate::attr::FilterAttrs;
     use crate::file::File;
     use proc_macro2::TokenStream;
-    use quote::{ToTokens, TokenStreamExt};
+    use quote::{ToTokens, TokenStreamExt as _};
 
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for File {

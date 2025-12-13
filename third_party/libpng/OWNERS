@@ -1,1 +1,16 @@
-cblume@chromium.org
+# Product code (e.g. Chrome) does **not** depend on `libpng`
+# (see https://crbug.com/443128323).
+
+# `//build/config/android` depends on `//third_party/libwebp:cwebp` (see
+# handling of `png_to_webp` in `//build/config/android/internal_rules.gni`).
+# `cwebp` depends on `libpng`.  Therefore `//build/android/OWNERS` end up
+# transitively owning `libpng`.
+file://build/android/OWNERS
+
+# `//third_party/weston` is used by `//ui/ozone/platform/wayland` (in test-only
+# configurations - e.g. see `use_bundled_weston` which
+# `//docs/ozone_overview.md` says may be needed, because "Running some test
+# suites requires a Wayland server").  And `//third_party/weston` depends on
+# `//third_party/libpng` through `//third_party/weston:cairo_shared`.
+# Therefore `.../wayland/OWNERS` end up transitively owning `libpng`.
+file://ui/ozone/platform/wayland/OWNERS

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 
 assert(enterprise_data_controls)
@@ -11,17 +10,13 @@ source_set("browser") {
   sources = [
     "last_replaced_clipboard_data.cc",
     "last_replaced_clipboard_data.h",
-    "reporting_service_base.h",
-    "reporting_service_base_factory.h",
-    "rules_service.cc",
-    "rules_service.h",
-    "rules_service_factory.h",
   ]
   deps = [
     "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/data_controls/core/browser:features",
     "//components/prefs",
     "//content/public/browser/",
+    "//ui/base/clipboard",
   ]
 }
 

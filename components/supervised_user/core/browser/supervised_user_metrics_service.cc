@@ -4,11 +4,14 @@
 
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/check.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -31,10 +34,14 @@ std::string GetDeviceFiltersSynthenticFieldTrialGroupName(bool filter_enabled) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// UMA histogram FamilyUser.WebFilterType
 // Reports WebFilterType which indicates web filter behaviour are used for
 // current Family Link user.
-constexpr char kWebFilterTypeHistogramName[] = "FamilyUser.WebFilterType";
+constexpr char kFamilyUserWebFilterTypeHistogramName[] =
+    "FamilyUser.WebFilterType";
+// Reports WebFilterType which indicates web filter behaviour are used for
+// current Supervised User.
+constexpr char kSupervisedUserWebFilterTypeHistogramBaseName[] =
+    "SupervisedUsers.WebFilterType";
 
 // UMA histogram FamilyUser.ManualSiteListType
 // Reports ManualSiteListType which indicates approved list and blocked list
@@ -58,6 +65,19 @@ int GetDayId(base::Time time) {
   return time.LocalMidnight().since_origin().InDaysFloored();
 }
 
+std::string GetWebFilterTypeHistogramName(bool is_family_link,
+                                          bool is_locally_supervised) {
+  CHECK(is_family_link || is_locally_supervised)
+      << "Callsite should assume at least one supervision type";
+  // When the system is recovering from two supervision types available at the
+  // same time to settle in "Family Link", it will record in the target
+  // "FamilyLink" histogram.
+
+  // LINT.IfChange(supervised_user_web_filter_type_user_type)
+  return base::StrCat({kSupervisedUserWebFilterTypeHistogramBaseName,
+                       is_family_link ? ".FamilyLink" : ".LocallySupervised"});
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:supervised_user_web_filter_type_user_type)
+}
 }  // namespace
 
 // static
@@ -106,7 +126,9 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
 SupervisedUserMetricsService::~SupervisedUserMetricsService() = default;
 
 void SupervisedUserMetricsService::Shutdown() {
-  CheckForNewDay();
+  // Per histograms.xml description, FamilyUser.WebFilterType must not emit on
+  // signout. Shutdown is also called on signout, and the timer most probably
+  // already emitted for the given day.
   timer_.Stop();
 }
 
@@ -116,26 +138,22 @@ void SupervisedUserMetricsService::CheckForNewDay() {
   // The OnNewDay() event can fire sooner or later than 24 hours due to clock or
   // time zone changes.
   if (day_id < current_day_id) {
-    bool should_update_day_id = false;
-    // Since this service's periodical check runs independently from the
-    // SupervisedUserService, do not emit if the filtering expected to be
-    // inactive.
-    if (supervised_user_service_->GetURLFilter()->GetWebFilterType() !=
-        WebFilterType::kDisabled) {
-      ClearMetricsCache();
-      EmitMetrics();
-      should_update_day_id = true;
-    }
+    ClearMetricsCache();
+    TryEmittingMetricsAndRecordCurrentDay();
 
     if (extensions_metrics_delegate_ &&
         extensions_metrics_delegate_->RecordExtensionsMetrics()) {
-      should_update_day_id = true;
-    }
-    if (should_update_day_id) {
-      pref_service_->SetInteger(prefs::kSupervisedUserMetricsDayId,
-                                current_day_id);
+      // Note that TryEmittingMetricsAndRecordCurrentDay above records the day
+      // internally, but the delegate is external and new day must be recorded
+      // explicitly.
+      RecordCurrentDay();
     }
   }
+}
+
+void SupervisedUserMetricsService::RecordCurrentDay() {
+  pref_service_->SetInteger(prefs::kSupervisedUserMetricsDayId,
+                            GetDayId(base::Time::Now()));
 }
 
 void SupervisedUserMetricsService::OnBrowserContentFiltersChanged() {
@@ -157,24 +175,38 @@ void SupervisedUserMetricsService::OnSearchContentFiltersChanged() {
 }
 
 void SupervisedUserMetricsService::OnURLFilterChanged() {
-  EmitMetrics();
+  TryEmittingMetricsAndRecordCurrentDay();
 }
 
-void SupervisedUserMetricsService::EmitMetrics() {
-  if (!last_recorded_web_filter_type_.has_value() ||
-      *last_recorded_web_filter_type_ !=
-          supervised_user_service_->GetURLFilter()->GetWebFilterType()) {
-    WebFilterType web_filter_type =
-        supervised_user_service_->GetURLFilter()->GetWebFilterType();
+bool SupervisedUserMetricsService::TryEmittingMetricsAndRecordCurrentDay() {
+  bool emitted = false;
+  if (IsSubjectToParentalControls(*pref_service_.get()) &&
+      TryEmittingFamilyLinkMetrics()) {
+    emitted = true;
+  }
+  if ((supervised_user_service_->IsSupervisedLocally() ||
+       IsSubjectToParentalControls(*pref_service_.get())) &&
+      TryEmittingSupervisedUserMetrics()) {
+    emitted = true;
+  }
 
-#if BUILDFLAG(IS_ANDROID)
-    // Max 40 chars for crash key (category-name).
-    SCOPED_CRASH_KEY_NUMBER("SUMetrics_EmitMetrics", "web_filter_type",
-                            static_cast<int>(web_filter_type));
-    base::debug::DumpWithoutCrashing();  // http://crbug.com/431949472
-#endif                                   // BUILDFLAG(IS_ANDROID)
-    base::UmaHistogramEnumeration(kWebFilterTypeHistogramName, web_filter_type);
-    last_recorded_web_filter_type_ = web_filter_type;
+  if (emitted) {
+    RecordCurrentDay();
+  }
+
+  return emitted;
+}
+
+bool SupervisedUserMetricsService::TryEmittingFamilyLinkMetrics() {
+  bool emitted = false;
+  WebFilterType web_filter_type =
+      supervised_user_service_->GetURLFilter()->GetWebFilterType();
+  if (!last_recorded_family_link_web_filter_type_.has_value() ||
+      *last_recorded_family_link_web_filter_type_ != web_filter_type) {
+    base::UmaHistogramEnumeration(kFamilyUserWebFilterTypeHistogramName,
+                                  web_filter_type);
+    last_recorded_family_link_web_filter_type_ = web_filter_type;
+    emitted = true;
   }
 
   if (!last_recorded_statistics_.has_value() ||
@@ -192,12 +224,33 @@ void SupervisedUserMetricsService::EmitMetrics() {
     base::UmaHistogramEnumeration(kManagedSiteListHistogramName,
                                   statistics.GetManagedSiteList());
     last_recorded_statistics_ = statistics;
+    emitted = true;
   }
+
+  return emitted;
+}
+
+bool SupervisedUserMetricsService::TryEmittingSupervisedUserMetrics() {
+  WebFilterType current =
+      supervised_user_service_->GetURLFilter()->GetWebFilterType();
+  if (last_recorded_supervised_user_web_filter_type_.has_value() &&
+      *last_recorded_supervised_user_web_filter_type_ == current) {
+    return false;
+  }
+
+  base::UmaHistogramEnumeration(
+      GetWebFilterTypeHistogramName(
+          IsSubjectToParentalControls(*pref_service_.get()),
+          supervised_user_service_->IsSupervisedLocally()),
+      current);
+  last_recorded_supervised_user_web_filter_type_ = current;
+  return true;
 }
 
 void SupervisedUserMetricsService::ClearMetricsCache() {
   last_recorded_statistics_ = std::nullopt;
-  last_recorded_web_filter_type_ = std::nullopt;
+  last_recorded_family_link_web_filter_type_ = std::nullopt;
+  last_recorded_supervised_user_web_filter_type_ = std::nullopt;
 }
 
 }  // namespace supervised_user

@@ -66,8 +66,7 @@ class ChromeSigninClientSignoutTest : public BrowserWithTestWindowTest {
     client_->PreSignOut(
         base::BindOnce(&MockChromeSigninClient::SignOutCallback,
                        base::Unretained(client_.get()), source_metric),
-        source_metric,
-        /*has_sync_account=*/false);
+        source_metric);
   }
 
   signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
@@ -112,8 +111,7 @@ TEST_F(ChromeSigninClientSignoutTest, AllAllowed) {
 
   CreateClient(profile.get());
 
-  EXPECT_TRUE(
-      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  EXPECT_TRUE(client_->IsClearPrimaryAccountAllowed());
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(client_->IsRevokeSyncConsentAllowed());
 #endif
@@ -127,11 +125,9 @@ TEST_F(ChromeSigninClientSignoutTest, ChildProfile) {
 
   CreateClient(profile.get());
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_FALSE(
-      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  EXPECT_FALSE(client_->IsClearPrimaryAccountAllowed());
 #else
-  EXPECT_TRUE(
-      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  EXPECT_TRUE(client_->IsClearPrimaryAccountAllowed());
 #endif
   EXPECT_TRUE(client_->IsRevokeSyncConsentAllowed());
 }
@@ -159,7 +155,7 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::kServerForcedDisable:
     case signin_metrics::ProfileSignout::kAuthenticationFailedWithForceSignin:
     case signin_metrics::ProfileSignout::kSigninNotAllowedOnProfileInit:
-    case signin_metrics::ProfileSignout::kSigninRetriggeredFromWebSignin:
+    case signin_metrics::ProfileSignout::kSigninRetriggered:
     case signin_metrics::ProfileSignout::
         kUserClickedSignoutFromClearBrowsingDataPage:
     case signin_metrics::ProfileSignout::
@@ -181,6 +177,7 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::kUserDisabledAllowChromeSignIn:
     case signin_metrics::ProfileSignout::kSignoutBeforeSupervisedSignin:
     case signin_metrics::ProfileSignout::kSignoutFromWidgets:
+    case signin_metrics::ProfileSignout::kForcedDiceMigration:
       return false;
 
     case signin_metrics::ProfileSignout::kAccountRemovedFromDevice:
@@ -210,8 +207,7 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutAllowed) {
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
   CreateClient(profile.get());
-  ASSERT_TRUE(
-      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  ASSERT_TRUE(client_->IsClearPrimaryAccountAllowed());
   ASSERT_TRUE(client_->IsRevokeSyncConsentAllowed());
 
   // Verify IdentityManager gets callback indicating sign-out is always allowed.
@@ -237,8 +233,7 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutDisallowed) {
 
   client_->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
-  ASSERT_FALSE(
-      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  ASSERT_FALSE(client_->IsClearPrimaryAccountAllowed());
 
   // Verify IdentityManager gets callback indicating sign-out is disallowed iff
   // the source of the sign-out is a user-action.
@@ -262,8 +257,7 @@ TEST_P(ChromeSigninClientSignoutSourceTest, RevokeSyncDisallowed) {
 
   client_->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED);
-  ASSERT_FALSE(
-      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  ASSERT_FALSE(client_->IsClearPrimaryAccountAllowed());
   ASSERT_FALSE(client_->IsRevokeSyncConsentAllowed());
 
   // Verify IdentityManager gets callback indicating sign-out is disallowed iff
@@ -293,7 +287,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kIosAccountRemovedFromDeviceAfterRestore,
     signin_metrics::ProfileSignout::kUserClickedRevokeSyncConsentSettings,
     signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
-    signin_metrics::ProfileSignout::kSigninRetriggeredFromWebSignin,
+    signin_metrics::ProfileSignout::kSigninRetriggered,
     signin_metrics::ProfileSignout::
         kUserClickedSignoutFromUserPolicyNotificationDialog,
     signin_metrics::ProfileSignout::kAccountEmailUpdated,
@@ -318,6 +312,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kSignoutBeforeSupervisedSignin,
     signin_metrics::ProfileSignout::kSignoutFromWidgets,
     signin_metrics::ProfileSignout::kUserDeclinedEnterpriseManagementDisclaimer,
+    signin_metrics::ProfileSignout::kForcedDiceMigration,
 };
 
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout

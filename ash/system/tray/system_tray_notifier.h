@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 
 namespace ash {
 
@@ -85,5 +86,22 @@ class ASH_EXPORT SystemTrayNotifier {
 };
 
 }  // namespace ash
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::SystemTrayNotifier,
+                               ash::SystemTrayObserver> {
+  static void AddObserver(ash::SystemTrayNotifier* source,
+                          ash::SystemTrayObserver* observer) {
+    source->AddSystemTrayObserver(observer);
+  }
+  static void RemoveObserver(ash::SystemTrayNotifier* source,
+                             ash::SystemTrayObserver* observer) {
+    source->RemoveSystemTrayObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // ASH_SYSTEM_TRAY_SYSTEM_TRAY_NOTIFIER_H_

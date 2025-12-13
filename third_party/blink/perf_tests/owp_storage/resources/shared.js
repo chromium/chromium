@@ -48,6 +48,25 @@ function createIncrementalBarrier(callback) {
   }
 }
 
+// These begin a readonly transaction on `db` scoped to `storeName`.
+function getStore(db, storeName) {
+  const transaction = db.transaction(storeName, 'readonly');
+  return transaction.objectStore(storeName);
+}
+function getIndex(db, storeName, indexName) {
+  const store = getStore(db, storeName);
+  return store.index(indexName);
+}
+
+// Promise wrapper for an IDBRequest.
+function wrapRequest(request) {
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () =>
+        reject(`Request failed with error: ${request.error}`);
+  });
+}
+
 /**
  * Retrieves a value from an IndexedDB object store.
  *
@@ -63,18 +82,8 @@ function createIncrementalBarrier(callback) {
  *     rejects with an error message.
  */
 function getIDBValue(transaction, storeName, key) {
-  return new Promise((resolve, reject) => {
-    // Access the object store specified by storeName
-    const objectStore = transaction.objectStore(storeName);
-    const request = objectStore.get(key);
-
-    // Resolve the promise with the result on successful retrieval
-    request.onsuccess = () => resolve(request.result);
-
-    // Reject the promise with an error message if the retrieval fails
-    request.onerror = () => reject(`Failed to get '${key}' from '${
-        storeName}' with error '${request.error}'`);
-  });
+  const store = transaction.objectStore(storeName);
+  return wrapRequest(store.get(key));
 }
 
 /**
@@ -94,17 +103,8 @@ function getIDBValue(transaction, storeName, key) {
  *     or rejects on error.
  */
 function getAllIDBValues(transaction, storeName, range = null, batchSize) {
-  return new Promise((resolve, reject) => {
     const store = transaction.objectStore(storeName);
-    const request = store.getAll(range, batchSize);
-
-    // Triggered when the request completes successfully.
-    request.onsuccess = () => resolve(request.result);
-
-    // Triggered when an error occurs during the request.
-    request.onerror = () => reject(`Failed to retrieve data from '${
-        storeName}' with error '${request.error}'`);
-  });
+    return wrapRequest(store.getAll(range, batchSize));
 }
 
 /**
@@ -122,18 +122,8 @@ function getAllIDBValues(transaction, storeName, range = null, batchSize) {
  *     operation, or rejects with an error message
  */
 function putIDBValue(transaction, storeName, value) {
-  return new Promise((resolve, reject) => {
-    // Access the object store specified by storeName
-    const objectStore = transaction.objectStore(storeName);
-    const request = objectStore.put(value);
-
-    // Resolve the promise with the result on successful insertion or update
-    request.onsuccess = () => resolve(request.result);
-
-    // Reject the promise with an error message if the operation fails
-    request.onerror = () => reject(
-        `Failed to put value in '${storeName}' with error '${request.error}'`);
-  });
+  const store = transaction.objectStore(storeName);
+  return wrapRequest(store.put(value));
 }
 
 /**
@@ -149,13 +139,7 @@ function putIDBValue(transaction, storeName, value) {
  * failure.
  */
 function bulkGetIDBValues(store, keys) {
-  return Promise.all(keys.map(
-      key => new Promise((resolve, reject) => {
-        const req = store.get(key);
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(
-            `Failed to get key '${key}' from store with error '${req.error}'`);
-      })));
+  return Promise.all(keys.map(key => wrapRequest(store.get(key))));
 }
 
 /**
@@ -170,13 +154,7 @@ function bulkGetIDBValues(store, keys) {
  *     failure.
  */
 function bulkPutIDBValues(store, values) {
-  return Promise.all(values.map(
-      value => new Promise((resolve, reject) => {
-        const req = store.put(value);
-        req.onsuccess = resolve;
-        req.onerror = () =>
-            reject(`Failed to put value in store with error '${req.error}'`);
-      })));
+  return Promise.all(values.map(value => wrapRequest(store.put(value))));
 }
 
 /**
@@ -191,14 +169,9 @@ function bulkPutIDBValues(store, values) {
  *     failure.
  */
 function bulkDeleteIDBValues(store, keys) {
-  return Promise.all(keys.map(
-      key => new Promise((resolve, reject) => {
-        const req = store.delete(key);
-        req.onsuccess = resolve;
-        req.onerror = () =>
-            reject(`Failed to delete key '${key}' from store: ${req.error}`);
-      })));
+  return Promise.all(keys.map(key => wrapRequest(store.delete(key))));
 }
+
 function transactionCompletePromise(txn) {
   return new Promise((resolve, reject) => {
     txn.oncomplete = resolve;

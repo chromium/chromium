@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Installer.Postinstall.BiosType" enum="ChromeOSBiosType"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -40,7 +40,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.EfiBootEntryCount" units="entries"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.EfiBootEntryFailedLoad" units="entries"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.EfiManagementEvent"
-    enum="ChromeOSEfiManagementEvent" expires_after="2025-12-07">
+    enum="ChromeOSEfiManagementEvent" expires_after="2026-03-29">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.ESPMountRetries" units="retries"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.ManagedEfiBootEntryCount"
-    units="entries" expires_after="2025-11-16">
+    units="entries" expires_after="2026-05-24">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.NonChromebookBiosSuccess.{BiosType}"
-    enum="BooleanSuccess" expires_after="2025-09-14">
+    enum="BooleanSuccess" expires_after="2026-05-24">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.PowerwashCount" units="powerwashes"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@chromium.org</owner>
   <summary>
@@ -159,7 +159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.PowerwashDays" units="powerwashdays"
-    expires_after="2025-09-14">
+    expires_after="2026-05-31">
   <owner>qianwan@google.com</owner>
   <owner>chromeos-data@google.com</owner>
   <summary>
@@ -176,8 +176,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Recovery.NbrDurationMinutes" units="minutes"
-    expires_after="2025-08-17">
-  <owner>yuanpengni@chromium.org</owner>
+    expires_after="2026-03-11">
+  <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
     The duration in minutes for the network based recovery to complete.
@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Recovery.Reason" enum="ChromeOSRecoveryReason"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -202,22 +202,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Setup.Install.LzmaUnPackStatus_{UnPackConsumer}"
-    enum="UnPackStatus" expires_after="2025-12-07">
-  <owner>zmin@chromium.org</owner>
+    enum="UnPackStatus" expires_after="never">
+<!-- expires-never: used to monitor unpack status of setup installer. -->
+
+  <owner>waffles@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
     Record the status of unpacking the contents of a 7z file. {UnPackConsumer}
   </summary>
   <token key="UnPackConsumer">
-    <variant name="ChromeArchivePatch"
-        summary="compressed patch: chrome_patch.packed.7z holding
-                 chrome_patch.diff (small)."/>
     <variant name="CompressedChromeArchive"
         summary="compressed archive: chrome.packed.7z holding chrome.7z
                  (big)."/>
-    <variant name="SetupExePatch"
-        summary="compressed patch: setup_patch.packed.7z holding
-                 setup_patch.diff (small)."/>
     <variant name="UncompressedChromeArchive"
         summary="uncompressed archive: chrome.7z holding install dir (big)."/>
   </token>
@@ -254,6 +250,65 @@ chromium-metrics-reviews@google.com.
   <summary>
     The final exit-result of the entire run of setup.exe on Windows.
   </summary>
+</histogram>
+
+<histogram name="Setup.Install.SCM.{Operation}.Result" enum="WinGetLastError"
+    expires_after="2026-10-30">
+  <owner>grt@chromium.org</owner>
+  <owner>ganesh@chromium.org</owner>
+  <summary>
+    The Windows error code (or ERROR_SUCCESS) for a call to {Operation} when
+    interacting with the Service Control Manager to install or update a Windows
+    service. Recorded once per operation.
+  </summary>
+  <token key="Operation">
+    <variant name="ChangeServiceConfig"/>
+    <variant name="ChangeServiceConfig2"/>
+    <variant name="CreateService"/>
+    <variant name="DeleteService"/>
+    <variant name="OpenSCManager"/>
+    <variant name="OpenService"/>
+    <variant name="QueryServiceConfig"/>
+    <variant name="QueryServiceConfig2"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Setup.Install.UnbufferedFileWriter.DeterminePhysicalSectorSizeResult"
+    enum="DeterminePhysicalSectorSizeResult" expires_after="2026-09-28">
+  <owner>grt@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The result of an attempt to determine the size of a physical sector of the
+    disk to which a file is to be written. Recorded once per process.
+  </summary>
+</histogram>
+
+<histogram name="Setup.Install.UnbufferedFileWriter.PhysicalSectorSize"
+    units="bytes" expires_after="2026-09-28">
+  <owner>grt@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The number of bytes per physical sector reported for the disk to which a
+    file is to be written. Recorded once per process.
+  </summary>
+</histogram>
+
+<histogram name="Setup.Install.UnbufferedFileWriter.{Operation}.Error"
+    enum="WinGetLastError" expires_after="2026-09-28">
+  <owner>grt@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The Windows error code for a failed {Operation} on an UnbufferedFileWriter.
+    Recorded once per operation that encounters an error.
+  </summary>
+  <token key="Operation">
+    <variant name="Allocate"/>
+    <variant name="ClearDelete"/>
+    <variant name="Create"/>
+    <variant name="SetInfo"/>
+    <variant name="Write"/>
+  </token>
 </histogram>
 
 </histograms>

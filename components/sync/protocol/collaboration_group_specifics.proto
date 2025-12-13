@@ -27,4 +27,11 @@ message CollaborationGroupSpecifics {
 
   // An opaque token, that is used to optimize ReadGroup(s) RPCs.
   optional string consistency_token = 3;
+
+  // A stable identifier that remains constant across sharing and unsharing
+  // events.
+  // Note: Older group will not have this field filled and should use
+  // `collaboration_id` instead while newer groups created with context id will
+  // use this as the `collaboration_id`.
+  optional string context_id = 4;
 }

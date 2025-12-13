@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -56,6 +57,7 @@ class MODULES_EXPORT IDBValue final {
 
   void SetData(Vector<char> data);
   void SetData(SerializedScriptValue::DataBufferPtr data);
+  void SetData(mojo_base::BigBuffer data);
   base::span<const uint8_t> Data() const;
 
   const IDBKey* PrimaryKey() const { return primary_key_.get(); }
@@ -104,12 +106,13 @@ class MODULES_EXPORT IDBValue final {
 
   // Data serialized by SerializedScriptValue is stored:
   // - in `data_from_mojo_` when reading from the backend via mojo
-  // - in `data_` before writing to the backend via mojo
-  Vector<char> data_from_mojo_;
+  // - in `data_` if the data came straight from SerializedScriptValue
+  // - in `massaged_data_` when the SSV data has been compressed and/or wrapped
+  //   and/or unwrapped by IDBValueWrapper (in which case, it replaces existing
+  //   data)
+  mojo_base::BigBuffer data_from_mojo_;
   SerializedScriptValue::DataBufferPtr data_;
-  // The number of times `data_` has been turned into a `SerialiedScriptValue`
-  // and had to be decompressed, tracked for metrics.
-  size_t decompression_count_ = 0;
+  Vector<char> massaged_data_;
 
   Vector<WebBlobInfo> blob_info_;
 

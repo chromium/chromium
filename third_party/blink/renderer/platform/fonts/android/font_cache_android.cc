@@ -67,8 +67,6 @@ static AtomicString DefaultFontFamily(sk_sp<SkFontMgr> font_manager) {
 }
 
 static AtomicString DefaultFontFamily() {
-  if (sk_sp<SkFontMgr> font_manager = FontCache::Get().FontManager())
-    return DefaultFontFamily(font_manager);
   return DefaultFontFamily(skia::DefaultFontMgr());
 }
 
@@ -96,9 +94,7 @@ sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
 
   const char* bcp47 = locale.LocaleForSkFontMgr();
   DCHECK(bcp47);
-  SkFontMgr* font_manager =
-      font_manager_ ? font_manager_.get() : skia::DefaultFontMgr().get();
-  sk_sp<SkTypeface> typeface(font_manager->matchFamilyStyleCharacter(
+  sk_sp<SkTypeface> typeface(skia::DefaultFontMgr()->matchFamilyStyleCharacter(
       locale_family_name, font_description.SkiaFontStyle(), &bcp47,
       /* bcp47Count */ 1,
       // |matchFamilyStyleCharacter| is the only API that accepts |bcp47|, but
@@ -116,7 +112,7 @@ sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
   // with what we get.
   SkString skia_family_name;
   typeface->getFamilyName(&skia_family_name);
-  sk_sp<SkTypeface> fallback(font_manager->matchFamilyStyleCharacter(
+  sk_sp<SkTypeface> fallback(skia::DefaultFontMgr()->matchFamilyStyleCharacter(
       nullptr, font_description.SkiaFontStyle(), &bcp47,
       /* bcp47Count */ 1, uchar::kSpace));
   SkString skia_fallback_name;
@@ -149,16 +145,15 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     fallback_priority_with_emoji_text = FontFallbackPriority::kEmojiText;
   }
 
-  AtomicString family_name = GetFamilyNameForCharacter(
-      fm.get(), c, font_description, generic_family_name,
-      fallback_priority_with_emoji_text);
+  const FontPlatformData* font_platform_data =
+      CreateFontPlatformDataForCharacter(fm.get(), c, font_description,
+                                         generic_family_name,
+                                         fallback_priority_with_emoji_text);
 
-  auto skia_fallback_is_color = [&]() {
-    const FontPlatformData* skia_fallback_result = GetFontPlatformData(
-        font_description, FontFaceCreationParams(family_name));
-    if (skia_fallback_result && skia_fallback_result->Typeface()) {
+  auto is_color = [](const FontPlatformData* fpd) {
+    if (fpd && fpd->Typeface()) {
       return ColorTableLookup::TypefaceHasAnySupportedColorTable(
-          skia_fallback_result->Typeface());
+          fpd->Typeface());
     }
     return false;
   };
@@ -171,15 +166,16 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   // font, can be present in other monochromatic fonts without "Zsym" locale
   // (for instance "NotoSansSymbols-Regular-Subsetted.ttf" is a font without
   // emoji locales). So, if text presentation was requested for emoji character,
-  // but `GetFamilyNameForCharacter` returned colored font, we should try to get
-  // monochromatic font by searching for the font without emoji locales "Zsym"
-  // or "Zsye", see https://unicode.org/reports/tr51/#Emoji_Script.
+  // but `CreateFontPlatformDataForCharacter` returned colored font, we should
+  // try to get monochromatic font by searching for the font without emoji
+  // locales "Zsym" or "Zsye", see
+  // https://unicode.org/reports/tr51/#Emoji_Script.
   if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
       IsTextPresentationEmoji(fallback_priority_with_emoji_text) &&
-      skia_fallback_is_color()) {
-    family_name = GetFamilyNameForCharacter(fm.get(), c, font_description,
-                                            generic_family_name,
-                                            FontFallbackPriority::kText);
+      is_color(font_platform_data)) {
+    font_platform_data = CreateFontPlatformDataForCharacter(
+        fm.get(), c, font_description, generic_family_name,
+        FontFallbackPriority::kText);
   }
 
   // Return the GMS Core emoji font if FontFallbackPriority is kEmojiEmoji or
@@ -195,23 +191,19 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
 
   if (IsEmojiPresentationEmoji(fallback_priority) &&
       base::FeatureList::IsEnabled(features::kGMSCoreEmoji)) {
-    auto skia_fallback_is_noto_color_emoji = [&]() {
-      const FontPlatformData* skia_fallback_result = GetFontPlatformData(
-          font_description, FontFaceCreationParams(family_name));
-
+    auto is_noto_color_emoji = [](const FontPlatformData* fpd) {
       // Determining the PostScript name is required as Skia on Android gives
       // synthetic family names such as "91##fallback" to fallback fonts
       // determined (Compare Skia's SkFontMgr_Android::addFamily). In order to
       // identify if really the Emoji font was returned, compare by PostScript
       // name rather than by family.
-      SkString fallback_postscript_name;
-      if (skia_fallback_result && skia_fallback_result->Typeface()) {
-        skia_fallback_result->Typeface()->getPostScriptName(
-            &fallback_postscript_name);
+      SkString postscript_name;
+      if (fpd && fpd->Typeface()) {
+        fpd->Typeface()->getPostScriptName(&postscript_name);
       }
-      return fallback_postscript_name.equals(kNotoColorEmoji);
+      return postscript_name.equals(kNotoColorEmoji);
     };
-    if (family_name.empty() || skia_fallback_is_noto_color_emoji()) {
+    if (!font_platform_data || is_noto_color_emoji(font_platform_data)) {
       const FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
           font_description,
           FontFaceCreationParams(AtomicString(kNotoColorEmojiCompat)));
@@ -228,11 +220,11 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   // Remaining case, if fallback priority is not emoij or the GMS core emoji
   // font was not found or an OEM emoji font was not to be overridden.
 
-  if (family_name.empty())
+  if (!font_platform_data) {
     return GetLastResortFallbackFont(font_description);
+  }
 
-  return FontDataFromFontPlatformData(GetFontPlatformData(
-      font_description, FontFaceCreationParams(family_name)));
+  return FontDataFromFontPlatformData(font_platform_data);
 }
 
 // static
@@ -278,10 +270,17 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
       return generic_family_name_fallback;
   }
 
-  sk_sp<SkFontMgr> font_manager(skia::DefaultFontMgr());
-  return GetFamilyNameForCharacter(font_manager.get(), exampler_char,
-                                   font_description, nullptr,
-                                   FontFallbackPriority::kText);
+  Bcp47Vector locales =
+      GetBcp47LocaleForRequest(font_description, FontFallbackPriority::kText);
+  sk_sp<SkTypeface> typeface(skia::DefaultFontMgr()->matchFamilyStyleCharacter(
+      nullptr, SkFontStyle(), locales.data(), locales.size(), exampler_char));
+  if (!typeface) {
+    return g_empty_atom;
+  }
+
+  SkString skia_family_name;
+  typeface->getFamilyName(&skia_family_name);
+  return ToAtomicString(skia_family_name);
 }
 
 }  // namespace blink

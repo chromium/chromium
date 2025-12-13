@@ -142,7 +142,7 @@ void ViewportData::UpdateViewportDescription() {
   }
 }
 
-void ViewportData::SetHasComplexSafaAreaConstraint(bool value) {
+void ViewportData::SetHasComplexSafeAreaConstraint(bool value) {
   if (has_complex_safe_area_constraint_ == value || !document_->GetFrame()) {
     return;
   }

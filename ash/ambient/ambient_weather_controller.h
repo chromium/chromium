@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace gfx {
@@ -29,7 +29,7 @@ struct WeatherInfo;
 // weather condition icon image (a sun, a cloud, etc.). Owns the data model that
 // caches the current weather info.
 class ASH_EXPORT AmbientWeatherController
-    : public SimpleGeolocationProvider::Observer,
+    : public SystemLocationProvider::Observer,
       public SessionObserver {
  public:
   // Causes AmbientWeatherController to periodically refresh the weather info
@@ -51,12 +51,12 @@ class ASH_EXPORT AmbientWeatherController
   };
 
   explicit AmbientWeatherController(
-      SimpleGeolocationProvider* const location_permission_provider);
+      SystemLocationProvider* const location_permission_provider);
   AmbientWeatherController(const AmbientWeatherController&) = delete;
   AmbientWeatherController& operator=(const AmbientWeatherController&) = delete;
   ~AmbientWeatherController() override;
 
-  // SimpleGeolocationProvider::Observer:
+  // SystemLocationProvider::Observer:
   void OnGeolocationPermissionChanged(bool enabled) override;
 
   // SessionObserver:
@@ -104,8 +104,7 @@ class ASH_EXPORT AmbientWeatherController
   // determines if fetching weather is allowed.
   void OnPermissionChanged();
 
-  const raw_ptr<SimpleGeolocationProvider> location_permission_provider_ =
-      nullptr;
+  const raw_ptr<SystemLocationProvider> location_permission_provider_ = nullptr;
 
   std::unique_ptr<AmbientWeatherModel> weather_model_;
 

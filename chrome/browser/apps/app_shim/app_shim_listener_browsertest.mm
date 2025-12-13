@@ -15,10 +15,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/app_shim/app_shim_controller.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
@@ -34,6 +34,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "crypto/hash.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -147,10 +148,10 @@ TestShimClient::TestShimClient() {
   base::FilePath user_data_dir;
   CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
 
-  std::string name_fragment =
-      base::StrCat({base::apple::BaseBundleID(), ".",
-                    app_mode::kAppShimBootstrapNameFragment, ".",
-                    base::MD5String(user_data_dir.value())});
+  std::string name_fragment = base::StrCat(
+      {base::apple::BaseBundleID(), ".",
+       app_mode::kAppShimBootstrapNameFragment, ".",
+       base::HexEncode(crypto::hash::Sha256(user_data_dir.value()))});
   mojo::PlatformChannelEndpoint endpoint = ConnectToBrowser(name_fragment);
 
   mojo::ScopedMessagePipeHandle message_pipe;

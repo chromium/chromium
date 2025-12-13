@@ -21,6 +21,8 @@ struct SameSizeAsInlineChildLayoutContext {
   void* pointers[5];
   unsigned number;
   HeapVector<Member<const BlockBreakToken>> tokens_;
+  float floating_number[2];
+  bool flag;
 };
 
 static_assert(
@@ -86,6 +88,21 @@ void InlineChildLayoutContext::ClearParallelFlowBreakTokens() {
 void InlineChildLayoutContext::PropagateParallelFlowBreakToken(
     const BreakToken* token) {
   parallel_flow_break_tokens_.push_back(token);
+}
+
+void InlineChildLayoutContext::EnableMeasuringModeIfNecessary(
+    const ParagraphScale* paragraph_scale) {
+  if (paragraph_scale) {
+    DCHECK(!is_measuring_scale_);
+    DCHECK_GT(paragraph_scale->scale, .0f);
+    minimum_scale_ = *paragraph_scale;
+  } else {
+    is_measuring_scale_ = true;
+  }
+}
+
+ParagraphScale InlineChildLayoutContext::MeasuredScale() const {
+  return minimum_scale_;
 }
 
 }  // namespace blink

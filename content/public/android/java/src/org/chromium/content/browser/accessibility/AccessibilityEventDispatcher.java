@@ -22,7 +22,7 @@ import java.util.Set;
 public class AccessibilityEventDispatcher {
     // Maps an AccessibilityEvent type to a throttle delay in milliseconds. This is populated once
     // in the constructor.
-    private final Map<Integer, Integer> mEventThrottleDelays;
+    private Map<Integer, Integer> mEventThrottleDelays;
 
     // Set of AccessibilityEvent types to throttle wholesale, rather than on a per |virtualViewId|
     // basis. Delays are still set independently in the |mEventThrottleDelays| map. This is
@@ -170,6 +170,10 @@ public class AccessibilityEventDispatcher {
      */
     public void updateRelevantEventTypes(Set<Integer> relevantEventTypes) {
         this.mRelevantEventTypes = relevantEventTypes;
+    }
+
+    public void setEventThrottleDelays(Map<Integer, Integer> eventThrottleDelays) {
+        this.mEventThrottleDelays = eventThrottleDelays;
     }
 
     /**

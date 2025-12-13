@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_WEB_CONTENTS_DELEGATE_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_WEB_CONTENTS_DELEGATE_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 
 namespace android_webview {
@@ -87,7 +88,7 @@ class AwWebContentsDelegate
       content::PreloadingTriggerType trigger_type) override;
   int AllowedPrerenderingCount(content::WebContents& web_contents) override;
   content::NavigationController::UserAgentOverrideOption
-  ShouldOverrideUserAgentForPrerender2() override;
+  ShouldOverrideUserAgentForPreloading(const GURL& url) override;
   bool ShouldAllowPartialParamMismatchOfPrerender2(
       content::NavigationHandle& navigation_handle) override;
 

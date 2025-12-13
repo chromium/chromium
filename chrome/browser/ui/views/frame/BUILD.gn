@@ -2,10 +2,48 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android, "ImmersiveModeController is Desktop only.")
+assert(!is_android)
 
 source_set("immersive_mode_controller") {
   sources = [ "immersive_mode_controller.h" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/base/unowned_user_data",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_immersive_mode_controller.cc",
+    "mock_immersive_mode_controller.h",
+  ]
+  deps = [
+    ":immersive_mode_controller",
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//testing/gmock",
+  ]
+}
+
+source_set("toolbar_button_provider") {
+  sources = [ "toolbar_button_provider.h" ]
+
+  public_deps = [
+    "//chrome/browser/ui/page_action:icon_type",
+    "//ui/actions:actions_headers",
+    "//ui/views",
+  ]
+}
+
+source_set("frame") {
+  sources = [ "tab_strip_region_view.h" ]
+
+  deps = [
+    "//chrome/browser/ui/views",
+    "//components/tab_groups",
+    "//ui/views",
+  ]
 }

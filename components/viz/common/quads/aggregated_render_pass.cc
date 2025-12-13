@@ -4,6 +4,8 @@
 
 #include "components/viz/common/quads/aggregated_render_pass.h"
 
+#include <unordered_map>
+
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -59,9 +61,9 @@ void AggregatedRenderPass::SetAll(
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
     const gfx::Transform& transform_to_root_target,
-    const cc::FilterOperations& filters,
-    const cc::FilterOperations& backdrop_filters,
-    const std::optional<SkPath>& backdrop_filter_bounds,
+    const cc::FilterOperations& pass_filters,
+    const cc::FilterOperations& pass_backdrop_filters,
+    const std::optional<SkPath>& pass_backdrop_filter_bounds,
     gfx::ContentColorUsage color_usage,
     bool has_transparent_background,
     bool cache_render_pass,
@@ -73,9 +75,9 @@ void AggregatedRenderPass::SetAll(
   this->output_rect = output_rect;
   this->damage_rect = damage_rect;
   this->transform_to_root_target = transform_to_root_target;
-  this->filters = filters;
-  this->backdrop_filters = backdrop_filters;
-  this->backdrop_filter_bounds = backdrop_filter_bounds;
+  this->filters = pass_filters;
+  this->backdrop_filters = pass_backdrop_filters;
+  this->backdrop_filter_bounds = pass_backdrop_filter_bounds;
   content_color_usage = color_usage;
   this->has_transparent_background = has_transparent_background;
   this->cache_render_pass = cache_render_pass;
@@ -218,7 +220,9 @@ bool AggregatedRenderPass::HasCapture() const {
 
 void AggregatedRenderPass::AsValueInto(
     base::trace_event::TracedValue* value) const {
-  RenderPassInternal::AsValueInto(value);
+  // TODO(zmo): Improve this mapping for AggregatedFrame.
+  std::unordered_map<ResourceId, size_t> resource_id_to_index_map;
+  RenderPassInternal::AsValueInto(value, resource_id_to_index_map);
 
   value->SetInteger("content_color_usage",
                     base::to_underlying(content_color_usage));

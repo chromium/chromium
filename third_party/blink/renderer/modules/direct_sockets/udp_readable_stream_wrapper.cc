@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
@@ -55,8 +54,8 @@ UDPReadableStreamWrapper::UDPReadableStreamWrapper(
                         ExecutionContext::From(script_state)
                             ->GetTaskRunner(TaskType::kNetworking));
   socket_listener_.set_disconnect_handler(
-      WTF::BindOnce(&UDPReadableStreamWrapper::ErrorStream,
-                    WrapWeakPersistent(this), net::ERR_CONNECTION_ABORTED));
+      BindOnce(&UDPReadableStreamWrapper::ErrorStream, WrapWeakPersistent(this),
+               net::ERR_CONNECTION_ABORTED));
 
   ScriptState::Scope scope(script_state);
 

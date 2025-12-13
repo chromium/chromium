@@ -86,7 +86,7 @@ RenderFrameHost* WebRTCInternalsMessageHandler::GetWebRTCInternalsHost() {
     // Make sure we only ever execute the script in the webrtc-internals page.
     const GURL url(host->GetLastCommittedURL());
     if (!url.SchemeIs(kChromeUIScheme) ||
-        url.host() != kChromeUIWebRTCInternalsHost) {
+        url.GetHost() != kChromeUIWebRTCInternalsHost) {
       // Some other page is currently loaded even though we might be in the
       // process of loading webrtc-internals.  So, the current RFH is not the
       // one we're waiting for.

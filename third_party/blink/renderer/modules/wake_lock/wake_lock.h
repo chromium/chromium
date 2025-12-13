@@ -7,7 +7,6 @@
 
 #include <array>
 
-#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

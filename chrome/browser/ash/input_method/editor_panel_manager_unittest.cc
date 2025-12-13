@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -257,11 +258,10 @@ TEST_F(EditorPanelManagerTest, LogMetricsInBlockedMode) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
       EditorOpportunityMode::kRewrite,
       chromeos::editor_menu::EditorConsentStatus::kApproved,
-      {
-          EditorBlockedReason::kBlockedByApp,
-          EditorBlockedReason::kBlockedByInputMethod,
-          EditorBlockedReason::kBlockedBySetting,
-      });
+      {EditorBlockedReason::kBlockedByApp,
+       EditorBlockedReason::kBlockedByInputMethod,
+       EditorBlockedReason::kBlockedBySetting,
+       EditorBlockedReason::kBlockedByInvalidSelection});
   EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 
@@ -279,7 +279,10 @@ TEST_F(EditorPanelManagerTest, LogMetricsInBlockedMode) {
                                      EditorStates::kBlockedByInputMethod, 1);
   histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Rewrite",
                                      EditorStates::kBlockedBySetting, 1);
-  histogram_tester.ExpectTotalCount("InputMethod.Manta.Orca.States.Rewrite", 5);
+  histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Rewrite",
+                                     EditorStates::kBlockedByInvalidSelection,
+                                     1);
+  histogram_tester.ExpectTotalCount("InputMethod.Manta.Orca.States.Rewrite", 6);
 }
 
 TEST_F(EditorPanelManagerTest, LogMetricWhenPromoCardIsExplicitlyDismissed) {

@@ -29,9 +29,9 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/capture_tracking_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -906,8 +906,9 @@ class InputTestDelegate : public aura::test::TestWindowDelegate {
 
   void RunTest(AshTestBase* test_base) {
     std::unique_ptr<aura::Window> window(
-        test_base->CreateTestWindowInShellWithDelegate(
-            this, 0, gfx::Rect(0, 0, 100, 100)));
+        test_base->CreateTestWindowInShell({.delegate = this,
+                                            .bounds = gfx::Rect(0, 0, 100, 100),
+                                            .window_id = 0}));
     window->Show();
 
     GenerateEvents(window.get());

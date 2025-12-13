@@ -42,6 +42,10 @@ class ChromeAndroidMetricsProvider : public metrics::MetricsProvider {
 
   static void ResetGlobalStateForTesting();
 
+ protected:
+  // Returns the full hardware class of the Android device. Virtual for testing.
+  virtual const std::string& GetHardwareClass() const;
+
  private:
   raw_ptr<PrefService> local_state_;
   // Stores the full hardware class of the Android device.

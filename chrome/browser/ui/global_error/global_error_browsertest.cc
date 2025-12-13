@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/extension_disabled_ui.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/extension_error_ui_desktop.h"
@@ -21,9 +22,7 @@
 #include "chrome/browser/extensions/external_install_error.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
-#include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/recovery/recovery_install_global_error.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
@@ -43,6 +42,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/sandboxed_unpacker.h"
+#include "extensions/browser/test_blocklist.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/feature_switch.h"
@@ -161,7 +161,7 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
     ShowPendingError(browser());
   } else if (name == "ExtensionGlobalError") {
     extensions::TestBlocklist test_blocklist(
-        extensions::Blocklist::Get(profile));
+        extensions::BlocklistFactory::GetForBrowserContext(profile));
     extension_registry->AddBlocklisted(test_extension);
     // Only BLOCKLISTED_MALWARE results in a bubble displaying to the user.
     // Other types are greylisted, not blocklisted.
@@ -213,12 +213,6 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
     // ExternalInstallError::OnDialogReady() adds the error and shows the dialog
     // immediately.
     waiter.Wait();
-  } else if (name == "RecoveryInstallGlobalError") {
-    GlobalErrorWaiter waiter(profile);
-    g_browser_process->local_state()->SetBoolean(
-        prefs::kRecoveryComponentNeedsElevation, true);
-    waiter.Wait();
-    ShowPendingError(browser());
   } else {
     ADD_FAILURE();
   }
@@ -258,11 +252,3 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
       extensions::FeatureSwitch::prompt_for_external_extensions(), true);
   ShowAndVerifyUi();
 }
-
-// RecoveryInstallGlobalError only exists on Windows and Mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
-                       InvokeUi_RecoveryInstallGlobalError) {
-  ShowAndVerifyUi();
-}
-#endif

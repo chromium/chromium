@@ -23,17 +23,22 @@ source_set("payments") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//components/autofill/core/browser",
     "//content/public/browser",
+    "//ui/actions:actions_headers",
     "//ui/base",
     "//ui/gfx/geometry",
   ]
 
+  if (is_linux) {
+    public_deps += [ "//chrome/browser/ui/browser_window" ]
+  }
+
   if (is_android) {
     sources += [
+      "android_bnpl_ui_delegate.h",
       "android_payments_window_manager.h",
-      "autofill_message_controller.h",
-      "autofill_message_model.h",
       "offer_notification_controller_android.h",
     ]
     public_deps += [
@@ -42,6 +47,7 @@ source_set("payments") {
     ]
   } else {
     sources += [
+      "desktop_bnpl_ui_delegate.h",
       "desktop_payments_window_manager.h",
       "webauthn_dialog.h",
       "webauthn_dialog_controller.h",
@@ -108,13 +114,13 @@ source_set("impl") {
     "//components/feature_engagement/public:feature_constants",
     "//components/strings:components_strings_grit",
     "//components/user_prefs",
+    "//components/webauthn/content/browser",
   ]
 
   if (is_android) {
     sources += [
+      "android_bnpl_ui_delegate.cc",
       "android_payments_window_manager.cc",
-      "autofill_message_controller.cc",
-      "autofill_message_model.cc",
       "offer_notification_controller_android.cc",
     ]
     public_deps += [ "//chrome/browser/touch_to_fill/autofill/android:public" ]
@@ -131,6 +137,7 @@ source_set("impl") {
     ]
   } else {
     sources += [
+      "desktop_bnpl_ui_delegate.cc",
       "desktop_payments_window_manager.cc",
       "webauthn_dialog_controller_impl.cc",
       "webauthn_dialog_model.cc",
@@ -145,7 +152,7 @@ source_set("impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/views/page_action:page_action",
+      "//chrome/browser/ui/views/page_action",
       "//chrome/common",
       "//components/autofill/core/common:credit_card_number_validation",
       "//components/commerce/core:feature_list",
@@ -166,7 +173,10 @@ source_set("impl") {
       "save_card_bubble_controller_impl.cc",
       "save_payment_icon_controller.cc",
     ]
-    deps += [ "//chrome/browser/ui/hats" ]
+    deps += [
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/location_bar",
+    ]
   }
 }
 
@@ -198,7 +208,7 @@ if (!is_android) {
 
     sources = [
       "card_unmask_prompt_view_browsertest.cc",
-      "chrome_payments_autofill_client_browsertest.cc",
+      "desktop_bnpl_ui_delegate_browsertest.cc",
     ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -259,10 +269,8 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [
+      "android_bnpl_ui_delegate_unittest.cc",
       "android_payments_window_manager_unittest.cc",
-      "autofill_message_controller_test_api.h",
-      "autofill_message_controller_unittest.cc",
-      "autofill_message_model_unittest.cc",
     ]
     public_deps += [ ":payments" ]
 
@@ -273,7 +281,6 @@ source_set("unit_tests") {
       "//chrome/browser/ui/android/tab_model:test_support",
       "//components/autofill/android:autofill_core_browser_java_enums",
       "//components/autofill/content/browser:test_support",
-      "//components/messages/android:test_support",
       "//components/resources:components_scaled_resources",
       "//components/resources:components_scaled_resources_grit",
       "//ui/android",

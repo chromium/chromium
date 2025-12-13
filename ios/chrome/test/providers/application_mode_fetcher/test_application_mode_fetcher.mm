@@ -5,6 +5,7 @@
 #import "ios/chrome/test/providers/application_mode_fetcher/test_application_mode_fetcher.h"
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/location.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/public/provider/chrome/browser/application_mode_fetcher/application_mode_fetcher_api.h"

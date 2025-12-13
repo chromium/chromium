@@ -98,6 +98,16 @@ TEST(InsetsFTest, WidthHeightAndIsEmpty) {
   EXPECT_FALSE(insets.IsEmpty());
 }
 
+TEST(InsetsFTest, Transpose) {
+  InsetsF insets = InsetsF::TLBR(1.25, 2.5, 3.75, 4.875);
+  insets.Transpose();
+  EXPECT_EQ(insets, InsetsF::TLBR(2.5, 1.25, 4.875, 3.75));
+
+  insets = InsetsF();
+  insets.Transpose();
+  EXPECT_EQ(insets, InsetsF());
+}
+
 TEST(InsetsFTest, Operators) {
   InsetsF insets =
       InsetsF().set_left(2.5f).set_right(4.1f).set_top(1.f).set_bottom(3.3f);

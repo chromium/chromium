@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.download;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.PendingNotificationTask;
 import org.chromium.components.browser_ui.notifications.ThrottlingNotificationScheduler;
 import org.chromium.components.browser_ui.util.DownloadUtils;
@@ -22,8 +26,9 @@ import java.lang.annotation.RetentionPolicy;
  * This class creates the {@link DownloadNotificationService} when needed, and binds
  * to the latter to issue calls to show and update notifications.
  */
+@NullMarked
 public class SystemDownloadNotifier implements DownloadNotifier {
-    private DownloadNotificationService mDownloadNotificationService;
+    private @Nullable DownloadNotificationService mDownloadNotificationService;
 
     /**
      * Notification type for constructing the notification later on. TODO(qinmin): this is very ugly
@@ -188,7 +193,7 @@ public class SystemDownloadNotifier implements DownloadNotifier {
                 getDownloadNotificationService()
                         .notifyDownloadProgress(
                                 info.getContentId(),
-                                info.getFileName(),
+                                assertNonNull(info.getFileName()),
                                 info.getProgress(),
                                 info.getBytesReceived(),
                                 info.getTimeRemainingInMillis(),
@@ -204,7 +209,7 @@ public class SystemDownloadNotifier implements DownloadNotifier {
                 getDownloadNotificationService()
                         .notifyDownloadPaused(
                                 info.getContentId(),
-                                info.getFileName(),
+                                assertNonNull(info.getFileName()),
                                 true,
                                 false,
                                 info.getOtrProfileId(),
@@ -221,8 +226,8 @@ public class SystemDownloadNotifier implements DownloadNotifier {
                         getDownloadNotificationService()
                                 .notifyDownloadSuccessful(
                                         info.getContentId(),
-                                        info.getFilePath(),
-                                        info.getFileName(),
+                                        assertNonNull(info.getFilePath()),
+                                        assertNonNull(info.getFileName()),
                                         notificationInfo.mSystemDownloadId,
                                         info.getOtrProfileId(),
                                         notificationInfo.mIsSupportedMimeType,
@@ -257,7 +262,7 @@ public class SystemDownloadNotifier implements DownloadNotifier {
                 getDownloadNotificationService()
                         .notifyDownloadPaused(
                                 info.getContentId(),
-                                info.getFileName(),
+                                assertNonNull(info.getFileName()),
                                 info.isResumable(),
                                 notificationInfo.mIsAutoResumable,
                                 info.getOtrProfileId(),
@@ -273,7 +278,7 @@ public class SystemDownloadNotifier implements DownloadNotifier {
                 getDownloadNotificationService()
                         .notifyDownloadDangerous(
                                 info.getContentId(),
-                                info.getFileName(),
+                                assertNonNull(info.getFileName()),
                                 info.getOriginalUrl(),
                                 info.getShouldPromoteOrigin(),
                                 info.getOtrProfileId(),

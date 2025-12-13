@@ -13,7 +13,8 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -75,9 +76,9 @@ public class MerchantTrustSignalsCoordinator
     private final MerchantTrustMetrics mMetrics;
     private final MerchantTrustSignalsDataProvider mDataProvider;
     private final MerchantTrustSignalsStorageFactory mStorageFactory;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final NonNullObservableSupplier<Profile> mProfileSupplier;
     private final WindowAndroid mWindowAndroid;
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private @Nullable OmniboxIconController mOmniboxIconController;
 
     /** Creates a new instance. */
@@ -87,8 +88,8 @@ public class MerchantTrustSignalsCoordinator
             BottomSheetController bottomSheetController,
             View layoutView,
             MessageDispatcher messageDispatcher,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
-            ObservableSupplier<Profile> profileSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
+            NonNullObservableSupplier<Profile> profileSupplier,
             MerchantTrustMetrics metrics,
             IntentRequestTracker intentRequestTracker) {
         this(
@@ -103,7 +104,6 @@ public class MerchantTrustSignalsCoordinator
                         context,
                         windowAndroid,
                         bottomSheetController,
-                        tabSupplier,
                         layoutView,
                         metrics,
                         intentRequestTracker,
@@ -116,9 +116,9 @@ public class MerchantTrustSignalsCoordinator
             Context context,
             WindowAndroid windowAndroid,
             MerchantTrustMessageScheduler messageScheduler,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             MerchantTrustSignalsDataProvider dataProvider,
-            ObservableSupplier<Profile> profileSupplier,
+            NonNullObservableSupplier<Profile> profileSupplier,
             MerchantTrustMetrics metrics,
             MerchantTrustBottomSheetCoordinator detailsTabCoordinator,
             MerchantTrustSignalsStorageFactory storageFactory) {

@@ -23,7 +23,16 @@ class XrRenderer {
 
   // Blits the provided texture handle onto the currently bound framebuffer,
   // applying the provided uv_transform.
-  void Draw(const LocalTexture& texture, const float (&uv_transform)[16]);
+  void Draw(const LocalTexture& texture,
+            const float (&uv_transform)[16],
+            float opacity = 1.f);
+
+  // Blits the provided cubemap texture handle onto the currently bound
+  // framebuffer, applying the provided uv_transform.
+  void DrawCubemap(const LocalTexture& texture,
+                   uint32_t target_texture,
+                   const float (&uv_transform)[16],
+                   float opacity = 1.f);
 
  private:
   struct Program {
@@ -31,12 +40,22 @@ class XrRenderer {
     GLuint position_handle_ = 0;
     GLuint texture_handle_ = 0;
     GLuint uv_transform_ = 0;
+    GLuint opacity_ = 0;
+    GLuint column_index_ = 0;
+    GLuint row_index_ = 0;
   };
 
   Program CreateProgram(const std::string& vertex, const std::string& fragment);
+  void EnsureVertexBuffers();
+  void Draw(const Program& program,
+            const LocalTexture& texture,
+            const float (&uv_transform)[16],
+            float opacity,
+            int face_index = -1);
 
   Program program_external_;
   Program program_2d_;
+  Program program_cubemap_;
 
   GLuint vertex_buffer_ = 0;
   GLuint index_buffer_ = 0;

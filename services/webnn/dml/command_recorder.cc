@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/349653202): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/webnn/dml/command_recorder.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -284,7 +280,8 @@ HRESULT CommandRecorder::InitializeOperator(
         static_cast<const DML_BUFFER_ARRAY_BINDING*>(
             input_array_binding.value().Desc);
     for (size_t i = 0; i < dml_buffer_array_binding->BindingCount; ++i) {
-      ID3D12Resource* buffer = dml_buffer_array_binding->Bindings[i].Buffer;
+      ID3D12Resource* buffer =
+          UNSAFE_TODO(dml_buffer_array_binding->Bindings[i]).Buffer;
       // Skip the null buffer for graph input which will be bound during
       // operator execution.
       if (buffer) {

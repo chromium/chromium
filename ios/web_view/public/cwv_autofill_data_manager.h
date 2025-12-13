@@ -6,6 +6,7 @@
 #define IOS_WEB_VIEW_PUBLIC_CWV_AUTOFILL_DATA_MANAGER_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "cwv_export.h"
 
@@ -37,6 +38,9 @@ CWV_EXPORT
 
 // Deletes the profile.
 - (void)deleteProfile:(CWVAutofillProfile*)profile;
+
+// Fetches the image icon for the given credit card.
+- (UIImage*)fetchIconForCreditCard:(CWVCreditCard*)creditCard;
 
 // Returns all saved credit cards for payment autofill in |completionHandler|.
 - (void)fetchCreditCardsWithCompletionHandler:

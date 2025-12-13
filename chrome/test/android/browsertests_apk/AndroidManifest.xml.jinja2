@@ -29,6 +29,11 @@
     <application android:name="org.chromium.android_browsertests_apk.ChromeBrowserTestsApplication"
             android:label="ChromeBrowserTests"
             android:requestLegacyExternalStorage="true">
+
+        <!--
+          The default Activity started by Android browser tests.
+          It's a subclass of ChromeTabbedActivity.
+        -->
         <activity android:name="org.chromium.android_browsertests_apk.ChromeBrowserTestsActivity"
                   android:launchMode="singleTask"
                   android:theme="@style/Theme.Chromium.TabbedMode"
@@ -40,6 +45,45 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+
+        <!--
+          Explicitly declare ChromeTabbedActivity for browser tests
+          that will start it besides the default Activity
+          (ChromeBrowserTestsActivity).
+
+          The taskAffinity attribute is set to an empty string to
+          ensure a ChromeTabbedActivity can be launched into a new Task
+          when its Intent has FLAG_ACTIVITY_NEW_TASK and
+          FLAG_ACTIVITY_MULTIPLE_TASK.
+        -->
+        <activity android:name="org.chromium.chrome.browser.ChromeTabbedActivity"
+                  android:theme="@style/Theme.Chromium.TabbedMode"
+                  android:exported="true"
+                  android:launchMode="singleTask"
+                  android:taskAffinity=""
+                  android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+                  android:hardwareAccelerated="true"
+                  android:process=":test_process">
+
+          <!--
+            Mirrors meta-data in the production manifest containing ChromeTabbedActivity.
+
+            This is needed to enable MultiInstanceManagerApi31 in browser tests.
+            See: https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=187-191;drc=0bcba72c5246a910240b311def40233f7d3f15af
+          -->
+          <meta-data
+                android:name="android.activity.launch_mode"
+                android:value="singleInstancePerTask"/>
+        </activity>
+
+        <activity android:name="org.chromium.chrome.browser.customtabs.CustomTabActivity"
+          android:theme="@style/Theme.Chromium.Activity"
+          android:exported="false"
+          android:windowSoftInputMode="adjustResize"
+                    android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation|density|touchscreen|colorMode"
+          android:hardwareAccelerated="false"
+          android:process=":test_process">
         </activity>
 
         <activity android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
@@ -61,8 +105,6 @@
 
         <activity-alias android:name="org.chromium.chrome.browser.media.AudioLauncherActivity"
                         android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity"
-                        android:theme="@android:style/Theme.NoDisplay"
-                        android:excludeFromRecents="true"
                         android:exported="true"
                         android:enabled="false"><!-- This will be selectively enabled at runtime. -->
           <intent-filter tools:ignore="AppLinkUrlError">
@@ -105,6 +147,14 @@
                  android:permission="android.permission.BIND_JOB_SERVICE"
                  android:exported="false"/>
 
+        <service
+            android:name="org.chromium.chrome.browser.webid.TestIdP"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.w3.FedCM" />
+            </intent-filter>
+        </service>
+
         <!-- The following service entries exist in order to allow us
              to start more than one sandboxed process. -->
 
@@ -138,6 +188,10 @@
             android:name="androidx.startup.InitializationProvider"
             android:exported="false"
             tools:node="remove" />
+
+        <service android:name="org.chromium.build.gtest_apk.ProcessKeepaliveService"
+            android:process=":test_process"
+            android:exported="false" />
     </application>
 
     <instrumentation android:name="org.chromium.android_browsertests_apk.ChromeBrowserTestsInstrumentationTestRunner"

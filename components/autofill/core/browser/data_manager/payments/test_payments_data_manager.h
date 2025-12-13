@@ -16,8 +16,10 @@
 #include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/ui/test_autofill_image_fetcher.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
 
@@ -40,6 +42,7 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   void LoadCreditCards() override;
   void LoadCreditCardCloudTokenData() override;
   void LoadIbans() override;
+  bool SaveCardLocallyIfNew(const CreditCard& imported_credit_card) override;
   void RemoveByGUID(const std::string& guid) override;
   void RecordUseOfCard(const CreditCard& card) override;
   void RecordUseOfIban(Iban& iban) override;
@@ -59,8 +62,14 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;
-  bool IsPaymentCvcStorageEnabled() override;
+  bool IsPaymentCvcStorageEnabled() const override;
   bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
+  bool IsAutofillBnplPrefEnabled() const override;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  bool IsAutofillHasSeenBnplPrefEnabled() const override;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
 
   // Clears |local_credit_cards_| and |server_credit_cards_|.
@@ -86,6 +95,10 @@ class TestPaymentsDataManager : public PaymentsDataManager {
 
   void SetIsPaymentCvcStorageEnabled(bool enabled) {
     payments_cvc_storage_enabled_ = enabled;
+  }
+
+  void SetIsAutofillBnplPrefEnabled(bool enabled) {
+    autofill_bnpl_enabled_ = enabled;
   }
 
   // Adds a card to `server_credit_cards_`. This test class treats masked and
@@ -142,6 +155,9 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   std::optional<bool> payments_wallet_sync_transport_enabled_;
   std::optional<bool> payment_methods_mandatory_reauth_enabled_;
   std::optional<bool> payments_cvc_storage_enabled_;
+  std::optional<bool> autofill_bnpl_enabled_;
+  std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuideDecider>>
+      autofill_optimization_guide_decider_;
   CoreAccountInfo account_info_;
   std::unique_ptr<TestAutofillImageFetcher> owned_image_fetcher_;
 };

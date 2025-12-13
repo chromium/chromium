@@ -88,6 +88,7 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   static scoped_refptr<ContentVerifyJob> CreateAndStartJobFor(
       const ExtensionId& extension_id,
       const base::FilePath& extension_root,
+      const base::Version& extension_version,
       const base::FilePath& relative_path,
       scoped_refptr<ContentVerifier> verifier);
 
@@ -186,9 +187,14 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   // Called after a verification job is created.
   void OnJobCreated(scoped_refptr<ContentVerifyJob> job);
 
-  // If a verification is needed, starts the verification job and returns true.
-  // Otherwise, returns false without starting the job.
-  bool StartJob(const scoped_refptr<ContentVerifyJob>& job);
+  // If a verification is needed, starts the verification job. A verification is
+  // not needed if:
+  // - The extension was unloaded/uninstalled.
+  // - The specific file resource does not require verification (e.g.
+  //   manifest.json, locale files).
+  // - The job is for an older version of an extension that has since been
+  //   updated.
+  void StartJob(const scoped_refptr<ContentVerifyJob>& job);
 
   struct CacheKey;
   class HashHelper;

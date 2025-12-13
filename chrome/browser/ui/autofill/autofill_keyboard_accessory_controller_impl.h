@@ -26,7 +26,6 @@ class WebContents;
 }  // namespace content
 
 class Profile;
-class PasswordAccessLossWarningBridge;
 
 namespace autofill {
 
@@ -63,7 +62,9 @@ class AutofillKeyboardAccessoryControllerImpl
 
   // AutofillSuggestionController:
   void OnSuggestionsChanged() override;
-  void AcceptSuggestion(int index) override;
+  void AcceptSuggestion(int index,
+                        autofill::AutofillMetrics::SuggestionAcceptedMethod
+                            accept_method) override;
   bool RemoveSuggestion(
       int index,
       AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
@@ -71,8 +72,6 @@ class AutofillKeyboardAccessoryControllerImpl
   const std::vector<Suggestion>& GetSuggestions() const override;
   const Suggestion& GetSuggestionAt(int row) const override;
   FillingProduct GetMainFillingProduct() const override;
-  std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
-      const override;
   void Show(UiSessionId ui_session_id,
             std::vector<Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
@@ -84,9 +83,9 @@ class AutofillKeyboardAccessoryControllerImpl
   // AutofillKeyboardAccessoryController:
   std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
       int row) const override;
-  bool GetRemovalConfirmationText(int index,
-                                  std::u16string* title,
-                                  std::u16string* body) override;
+  bool GetRemovalConfirmationText(
+      int index,
+      RemovalConfirmationText* removal_text) override;
 
   base::WeakPtr<AutofillKeyboardAccessoryControllerImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -156,10 +155,6 @@ class AutofillKeyboardAccessoryControllerImpl
   // The first `IsStandaloneSuggestionType()` is used to define what the
   // `FillingProduct` is.
   FillingProduct suggestions_filling_product_ = FillingProduct::kNone;
-
-  // Bridge used to show the data loss warning (expected to be shown after
-  // filling user's credentials).
-  std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryControllerImpl>
       self_deletion_weak_ptr_factory_{this};

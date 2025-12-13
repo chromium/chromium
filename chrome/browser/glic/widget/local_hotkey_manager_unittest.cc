@@ -11,11 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/test_support/mock_glic_window_controller.h"
+#include "chrome/browser/glic/test_support/mock_local_hotkey_panel.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -115,21 +115,20 @@ class FakeLocalHotkeyDelegate : public LocalHotkeyManager::Delegate {
 
 class LocalHotkeyManagerTest : public testing::Test {
  public:
-  LocalHotkeyManagerTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  LocalHotkeyManagerTest() = default;
 
   void SetUp() override {
-    mock_controller_ = std::make_unique<MockGlicWindowController>();
+    mock_panel_ = std::make_unique<MockLocalHotkeyPanel>();
     auto fake_delegate = std::make_unique<FakeLocalHotkeyDelegate>();
     fake_delegate_ = fake_delegate.get();  // Keep a raw pointer for access
 
-    manager_ = std::make_unique<LocalHotkeyManager>(
-        mock_controller_->GetWeakPtr(), std::move(fake_delegate));
+    manager_ = std::make_unique<LocalHotkeyManager>(mock_panel_->GetWeakPtr(),
+                                                    std::move(fake_delegate));
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_;
-  std::unique_ptr<MockGlicWindowController> mock_controller_;
+  std::unique_ptr<MockLocalHotkeyPanel> mock_panel_;
   std::unique_ptr<LocalHotkeyManager> manager_;
   raw_ptr<FakeLocalHotkeyDelegate> fake_delegate_;
 };
@@ -170,10 +169,10 @@ TEST_F(LocalHotkeyManagerTest, AcceleratorPressedCallsDelegate) {
 }
 
 TEST_F(LocalHotkeyManagerTest, CanHandleAcceleratorsDependsOnController) {
-  EXPECT_CALL(*mock_controller_, IsShowing()).WillOnce(testing::Return(false));
+  EXPECT_CALL(*mock_panel_, IsShowing()).WillOnce(testing::Return(false));
   EXPECT_FALSE(manager_->CanHandleAccelerators());
 
-  EXPECT_CALL(*mock_controller_, IsShowing()).WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_panel_, IsShowing()).WillOnce(testing::Return(true));
   EXPECT_TRUE(manager_->CanHandleAccelerators());
 }
 
@@ -189,7 +188,7 @@ TEST_F(LocalHotkeyManagerTest, PrefChangeUpdatesRegistration) {
 
   // Change the pref to a new valid accelerator.
   ui::Accelerator new_focus_acc(ui::VKEY_X, ui::EF_CONTROL_DOWN);
-  local_state_.Get()->SetString(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kGlicFocusToggleHotkey,
       ui::Command::AcceleratorToString(new_focus_acc));
 
@@ -200,7 +199,8 @@ TEST_F(LocalHotkeyManagerTest, PrefChangeUpdatesRegistration) {
   EXPECT_TRUE(fake_delegate_->IsRegistered(new_focus_acc));
 
   // Change the pref to an empty string (clears the shortcut).
-  local_state_.Get()->SetString(prefs::kGlicFocusToggleHotkey, "");
+  TestingBrowserProcess::GetGlobal()->local_state()->SetString(
+      prefs::kGlicFocusToggleHotkey, "");
 
   // Should destroy the custom registration, no new one created.
   // Registration count remains the same as the previous step because one was
@@ -221,7 +221,7 @@ TEST_F(LocalHotkeyManagerTest, GetAcceleratorRespectsPrefs) {
 
   // Set a valid pref.
   ui::Accelerator new_focus_acc(ui::VKEY_X, ui::EF_CONTROL_DOWN);
-  local_state_.Get()->SetString(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kGlicFocusToggleHotkey,
       ui::Command::AcceleratorToString(new_focus_acc));
   EXPECT_EQ(LocalHotkeyManager::GetConfigurableAccelerator(
@@ -229,7 +229,8 @@ TEST_F(LocalHotkeyManagerTest, GetAcceleratorRespectsPrefs) {
             new_focus_acc);
 
   // Set an invalid pref string (e.g., just a modifier).
-  local_state_.Get()->SetString(prefs::kGlicFocusToggleHotkey, "Ctrl");
+  TestingBrowserProcess::GetGlobal()->local_state()->SetString(
+      prefs::kGlicFocusToggleHotkey, "Ctrl");
   EXPECT_TRUE(LocalHotkeyManager::GetConfigurableAccelerator(
                   LocalHotkeyManager::Hotkey::kFocusToggle)
                   .IsEmpty());

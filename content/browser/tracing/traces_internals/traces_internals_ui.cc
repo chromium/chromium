@@ -22,7 +22,7 @@ namespace content {
 TracesInternalsUI::TracesInternalsUI(WebUI* web_ui, const GURL& url)
     : WebUIController(web_ui) {
   WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(), url.host());
+      web_ui->GetWebContents()->GetBrowserContext(), url.GetHost());
 
   source->AddResourcePaths(kTracesInternalsResources);
   source->AddResourcePath("", IDR_TRACES_INTERNALS_TRACES_INTERNALS_HTML);

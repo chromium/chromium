@@ -5,6 +5,7 @@
 #ifndef CHROMECAST_STARBOARD_MEDIA_RENDERER_DEMUXER_STREAM_READER_H_
 #define CHROMECAST_STARBOARD_MEDIA_RENDERER_DEMUXER_STREAM_READER_H_
 
+#include <array>
 #include <optional>
 
 #include "base/containers/flat_map.h"
@@ -13,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/starboard/media/media/drm_util.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "media/base/audio_decoder_config.h"
@@ -22,6 +23,11 @@
 #include "media/base/renderer_client.h"
 
 namespace chromecast {
+
+namespace metrics {
+class CastMetricsHelper;
+}  // namespace metrics
+
 namespace media {
 
 // Receives buffers from one or more DemuxerStreams, calling handle_buffer_cb
@@ -50,13 +56,15 @@ class DemuxerStreamReader {
   using HandleEosCb =
       base::RepeatingCallback<void(int seek_ticket, StarboardMediaType type)>;
 
-  DemuxerStreamReader(::media::DemuxerStream* audio_stream,
-                      ::media::DemuxerStream* video_stream,
-                      std::optional<StarboardAudioSampleInfo> audio_sample_info,
-                      std::optional<StarboardVideoSampleInfo> video_sample_info,
-                      HandleBufferCb handle_buffer_cb,
-                      HandleEosCb handle_eos_cb,
-                      ::media::RendererClient* client);
+  DemuxerStreamReader(
+      ::media::DemuxerStream* audio_stream,
+      ::media::DemuxerStream* video_stream,
+      std::optional<StarboardAudioSampleInfo> audio_sample_info,
+      std::optional<StarboardVideoSampleInfo> video_sample_info,
+      HandleBufferCb handle_buffer_cb,
+      HandleEosCb handle_eos_cb,
+      ::media::RendererClient* client,
+      chromecast::metrics::CastMetricsHelper* cast_metrics_helper);
 
   ~DemuxerStreamReader();
 
@@ -92,19 +100,29 @@ class DemuxerStreamReader {
   // Runs a pending callback now that a DRM key is available.
   void RunPendingDrmKeyCallback(int64_t token);
 
-  // Updates the audio config to match the current config from audio_stream_.
-  void UpdateAudioConfig();
+  // Updates the audio config to match the current config from audio_stream_. If
+  // the change is unsupported (e.g. if the codec changed), returns false;
+  // returns true if the config change is supported.
+  bool UpdateAudioConfig();
 
-  // Updates the video config to match the current config from video_stream_.
-  void UpdateVideoConfig();
+  // Updates the video config to match the current config from video_stream_. If
+  // the change is unsupported (e.g. if the codec changed), returns false;
+  // returns true if the config change is supported.
+  bool UpdateVideoConfig();
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  raw_ptr<chromecast::metrics::CastMetricsHelper> cast_metrics_helper_ =
+      nullptr;
   ConvertAudioFn convert_audio_fn_;
   HandleBufferCb handle_buffer_cb_;
   HandleEosCb handle_eos_cb_;
   raw_ptr<::media::RendererClient> client_;
   raw_ptr<::media::DemuxerStream> audio_stream_ = nullptr;
   raw_ptr<::media::DemuxerStream> video_stream_ = nullptr;
+
+  // Tracks whether there is a pending audio/video read. Indices correspond to
+  // StarboardMediaType.
+  std::array<bool, 2> pending_read_ = {false, false};
 
   // StarboardAudioSampleInfo contains a const void* audio_specific_config. That
   // field can point to the extra data of this config, so we should ensure that

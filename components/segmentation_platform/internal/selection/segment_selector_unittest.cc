@@ -23,7 +23,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 
@@ -582,14 +581,14 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
   EXPECT_CALL(field_trial_register_,
               RegisterSubsegmentFieldTrialIfNeeded(_, _, _))
       .Times(3)
-      .WillRepeatedly(
-          Invoke([&wait_for_subsegment, &actual_calls, &call_count](
-                     std::string_view trial, SegmentId id, int rank) {
-            actual_calls.emplace_back(trial, id, rank);
-            call_count++;
-            if (call_count == 3)
-              wait_for_subsegment.QuitClosure().Run();
-          }));
+      .WillRepeatedly([&wait_for_subsegment, &actual_calls, &call_count](
+                          std::string_view trial, SegmentId id, int rank) {
+        actual_calls.emplace_back(trial, id, rank);
+        call_count++;
+        if (call_count == 3) {
+          wait_for_subsegment.QuitClosure().Run();
+        }
+      });
 
   segment_selector_->set_training_data_collector_for_testing(
       &training_data_collector_);

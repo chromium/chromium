@@ -19,12 +19,12 @@
 namespace syncer {
 
 // Lower bound time between two token validations when listening.
-const int kTokenValidationPeriodMinutesDefault = 60 * 24;
+constexpr int kTokenValidationPeriodMinutesDefault = 60 * 24;
 
-const int kInstanceIDTokenTTLSeconds = 14 * 24 * 60 * 60;  // 2 weeks.
+constexpr int kInstanceIDTokenTTLSeconds = 14 * 24 * 60 * 60;  // 2 weeks.
 
 // Limits the number of last received buffered messages.
-const size_t kMaxBufferedLastFcmMessages = 20;
+constexpr size_t kMaxBufferedLastFcmMessages = 20;
 
 FCMHandler::FCMHandler(gcm::GCMDriver* gcm_driver,
                        instance_id::InstanceIDDriver* instance_id_driver,
@@ -67,14 +67,24 @@ void FCMHandler::StopListening() {
 
 void FCMHandler::StopListeningPermanently() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (instance_id_driver_->ExistsInstanceID(app_id_)) {
     instance_id_driver_->GetInstanceID(app_id_)->DeleteID(
         /*callback=*/base::DoNothing());
+  }
+
+  const bool was_listening = IsListening();
+  const bool had_token = fcm_registration_token_.has_value();
+
+  StopListening();
+
+  if (was_listening && had_token) {
+    // After permanently stopping listening, the token is cleared.
+    // Observers should be notified of this change.
     for (FCMRegistrationTokenObserver& token_observer : token_observers_) {
       token_observer.OnFCMRegistrationTokenChanged();
     }
   }
-  StopListening();
 }
 
 const std::optional<std::string>& FCMHandler::GetFCMRegistrationToken() const {
@@ -175,14 +185,7 @@ void FCMHandler::DidRetrieveToken(base::TimeTicks fetch_time_for_metrics,
   // StartListening()).
   // TODO(crbug.com/40260679): record similar metrics for validation requests.
   if (!is_validation) {
-    base::UmaHistogramEnumeration("Sync.FCMInstanceIdTokenRetrievalStatus",
-                                  result);
-
-    if (result == instance_id::InstanceID::SUCCESS) {
-      base::UmaHistogramMediumTimes(
-          "Sync.FcmRegistrationTokenFetchTime",
-          base::TimeTicks::Now() - fetch_time_for_metrics);
-    }
+    RecordInitialTokenRetrievalMetrics(fetch_time_for_metrics, result);
   }
 
   if (!IsListening()) {
@@ -191,18 +194,30 @@ void FCMHandler::DidRetrieveToken(base::TimeTicks fetch_time_for_metrics,
     return;
   }
 
-  // Notify observers only if the token has changed.
-  if (result == instance_id::InstanceID::SUCCESS &&
-      (fcm_registration_token_ != subscription_token)) {
+  if (result != instance_id::InstanceID::SUCCESS) {
+    DLOG(WARNING) << "Messaging subscription failed: " << result;
+  } else if (fcm_registration_token_ != subscription_token) {
+    // Notify observers only if the token has changed.
     fcm_registration_token_ = subscription_token;
     for (FCMRegistrationTokenObserver& token_observer : token_observers_) {
       token_observer.OnFCMRegistrationTokenChanged();
     }
-  } else if (result != instance_id::InstanceID::SUCCESS) {
-    DLOG(WARNING) << "Messaging subscription failed: " << result;
   }
 
   ScheduleNextTokenValidation();
+}
+
+void FCMHandler::RecordInitialTokenRetrievalMetrics(
+    base::TimeTicks fetch_time_for_metrics,
+    instance_id::InstanceID::Result result) const {
+  base::UmaHistogramEnumeration("Sync.FCMInstanceIdTokenRetrievalStatus",
+                                result);
+
+  if (result == instance_id::InstanceID::SUCCESS) {
+    base::UmaHistogramMediumTimes(
+        "Sync.FcmRegistrationTokenFetchTime",
+        base::TimeTicks::Now() - fetch_time_for_metrics);
+  }
 }
 
 void FCMHandler::ScheduleNextTokenValidation() {

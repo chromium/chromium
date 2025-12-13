@@ -4,6 +4,8 @@
 
 static_library("renderer") {
   sources = [
+    "filter_utils.cc",
+    "filter_utils.h",
     "subresource_filter_agent.cc",
     "subresource_filter_agent.h",
     "unverified_ruleset_dealer.cc",
@@ -20,15 +22,14 @@ static_library("renderer") {
     "//components/url_pattern_index/proto:url_pattern_index",
     "//content/public/renderer",
     "//mojo/public/cpp/bindings",
+    "//third_party/blink/public:blink_headers",
     "//url",
   ]
   deps = [
-    "//components/subresource_filter/content/shared/common",
-    "//components/subresource_filter/content/shared/renderer",
+    "//components/subresource_filter/content/common",
     "//content/public/common",
     "//ipc",
     "//third_party/blink/public:blink",
-    "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common",
   ]
 }

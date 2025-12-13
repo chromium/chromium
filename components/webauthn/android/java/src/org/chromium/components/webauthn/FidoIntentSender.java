@@ -10,6 +10,7 @@ import android.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Abstracts the task of starting an intent and getting the result.
@@ -26,5 +27,5 @@ public interface FidoIntentSender {
      * @return true to indicate that the {@link PendingIntent} was started and false if it could not
      *     be.
      */
-    boolean showIntent(PendingIntent intent, Callback<Pair<Integer, Intent>> callback);
+    boolean showIntent(PendingIntent intent, Callback<Pair<Integer, @Nullable Intent>> callback);
 }

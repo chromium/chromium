@@ -11,13 +11,12 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
-namespace WTF {
+namespace blink::internal {
 
-
-namespace internal {
 // A dummy class used in following macros.
 class __thisIsHereToForceASemicolonAfterThisMacro;
-}  // namespace internal
+
+}  // namespace blink::internal
 
 // Classes that contain references to garbage-collected objects but aren't
 // themselves garbaged allocated, have some extra macros available which
@@ -47,7 +46,7 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
   void* operator new(size_t) = delete;                           \
                                                                  \
  public:                                                         \
-  friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
+  friend class ::blink::internal::__thisIsHereToForceASemicolonAfterThisMacro
 
 #define STATIC_ONLY(Type)                                       \
   Type() = delete;                                              \
@@ -105,19 +104,19 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
   }                                                              \
                                                                  \
   void* operator new(size_t size) {                              \
-    return ::WTF::Partitions::FastMalloc(size, typeName);        \
+    return ::blink::Partitions::FastMalloc(size, typeName);      \
   }                                                              \
                                                                  \
   void operator delete(void* p) {                                \
-    ::WTF::Partitions::FastFree(p);                              \
+    ::blink::Partitions::FastFree(p);                            \
   }                                                              \
                                                                  \
   void* operator new[](size_t size) {                            \
-    return ::WTF::Partitions::FastMalloc(size, typeName);        \
+    return ::blink::Partitions::FastMalloc(size, typeName);      \
   }                                                              \
                                                                  \
   void operator delete[](void* p) {                              \
-    ::WTF::Partitions::FastFree(p);                              \
+    ::blink::Partitions::FastFree(p);                            \
   }                                                              \
   void* operator new(size_t, base::NotNullTag, void* location) { \
     DCHECK(location);                                            \
@@ -125,9 +124,7 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
   }                                                              \
                                                                  \
  private:                                                        \
-  friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
-
-}  // namespace WTF
+  friend class ::blink::internal::__thisIsHereToForceASemicolonAfterThisMacro
 
 // This version of placement new omits a 0 check.
 inline void* operator new(size_t, base::NotNullTag, void* location) {

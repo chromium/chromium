@@ -51,6 +51,7 @@ class CORE_EXPORT InspectorCSSParserObserver final : public CSSParserObserver {
   void StartRuleHeader(StyleRule::RuleType, unsigned) override;
   void EndRuleHeader(unsigned) override;
   void ObserveSelector(unsigned start_offset, unsigned end_offset) override;
+  void ObserveFontFeatureType(StyleRuleFontFeature::FeatureType type) override;
   void StartRuleBody(unsigned) override;
   void EndRuleBody(unsigned) override;
   void ObserveProperty(unsigned start_offset,

@@ -41,6 +41,9 @@ devices, for 32-bit devices with high memory, and for all devices starting in
 Android 11 (API 31). Low memory 32-bit devices running API26-30 still use an
 in-process renderer as before.
 
+Note that in this mode, the renderer process and the host app ("browser process")
+may have different bitness. See [architecture.md](../docs/architecture.md).
+
 The out-of-process renderer is enabled by new Android APIs
 (`android:externalService` and [Content.bindIsolatedService][3]), to create sandboxed processes which run in the
 _embedding app's context_ rather than the WebView provider's context. These

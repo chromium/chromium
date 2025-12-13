@@ -20,13 +20,11 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -38,15 +36,14 @@ import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherAppMenuFacility;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Tests the Tab Switcher app menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
 @Batch(Batch.PER_CLASS)
 public class OverviewAppMenuTest {
     @Rule
@@ -78,38 +75,9 @@ public class OverviewAppMenuTest {
         TabSwitcherAppMenuFacility menu = mTabSwitcher.openAppMenu();
 
         try {
-            menu.verifyModelItems(
-                    List.of(
-                            R.id.new_tab_menu_id,
-                            R.id.new_incognito_tab_menu_id,
-                            R.id.close_all_tabs_menu_id,
-                            R.id.menu_select_tabs,
-                            R.id.quick_delete_menu_id,
-                            R.id.preferences_id));
-
-            menu.verifyPresentItems();
-        } finally {
-            menu.closeProgrammatically();
-        }
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Browser", "Main"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
-    public void testAllMenuItems_tabGroupEntryPointsFeatureEnabled() {
-        TabSwitcherAppMenuFacility menu = mTabSwitcher.openAppMenu();
-
-        try {
-            menu.verifyModelItems(
-                    List.of(
-                            R.id.new_tab_menu_id,
-                            R.id.new_incognito_tab_menu_id,
-                            R.id.new_tab_group_menu_id,
-                            R.id.close_all_tabs_menu_id,
-                            R.id.menu_select_tabs,
-                            R.id.quick_delete_menu_id,
-                            R.id.preferences_id));
+            List<Integer> expectedItems =
+                    buildExpectedMenuItemIds(/* isIncognitoSwitcher= */ false);
+            menu.verifyModelItems(expectedItems);
 
             menu.verifyPresentItems();
         } finally {
@@ -122,22 +90,21 @@ public class OverviewAppMenuTest {
     @Feature({"Browser", "Main"})
     public void testIncognitoAllMenuItems() {
         IncognitoTabSwitcherStation incognitoTabSwitcher =
-                mTabSwitcher.openAppMenu().openNewIncognitoTab().openIncognitoTabSwitcher();
+                mTabSwitcher.openAppMenu().openNewIncognitoTabOrWindow().openIncognitoTabSwitcher();
         TabSwitcherAppMenuFacility menu = incognitoTabSwitcher.openAppMenu();
 
         try {
-            menu.verifyModelItems(
-                    List.of(
-                            R.id.new_tab_menu_id,
-                            R.id.new_incognito_tab_menu_id,
-                            R.id.close_all_incognito_tabs_menu_id,
-                            R.id.menu_select_tabs,
-                            R.id.preferences_id));
+            List<Integer> expectedItems = buildExpectedMenuItemIds(/* isIncognitoSwitcher= */ true);
+            menu.verifyModelItems(expectedItems);
 
             menu.verifyPresentItems();
         } finally {
             menu.closeProgrammatically();
-            incognitoTabSwitcher.selectRegularTabsPane();
+            if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+                incognitoTabSwitcher.selectRegularTabsPane();
+            } else {
+                incognitoTabSwitcher.finishActivity();
+            }
         }
     }
 
@@ -162,5 +129,38 @@ public class OverviewAppMenuTest {
         } finally {
             dialog.clickCancel();
         }
+    }
+
+    private List<Integer> buildExpectedMenuItemIds(boolean isIncognitoSwitcher) {
+        List<Integer> expectedItems = new ArrayList<>();
+
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            if (isIncognitoSwitcher) {
+                expectedItems.add(R.id.new_incognito_tab_menu_id);
+                expectedItems.add(R.id.new_window_menu_id);
+                expectedItems.add(R.id.new_incognito_window_menu_id);
+            } else {
+                expectedItems.add(R.id.new_tab_menu_id);
+                expectedItems.add(R.id.new_window_menu_id);
+                expectedItems.add(R.id.new_incognito_window_menu_id);
+            }
+        } else {
+            expectedItems.add(R.id.new_tab_menu_id);
+            expectedItems.add(R.id.new_incognito_tab_menu_id);
+        }
+
+        expectedItems.add(R.id.new_tab_group_menu_id);
+
+        if (isIncognitoSwitcher) {
+            expectedItems.add(R.id.close_all_incognito_tabs_menu_id);
+        } else {
+            expectedItems.add(R.id.close_all_tabs_menu_id);
+        }
+        expectedItems.add(R.id.menu_select_tabs);
+        if (!isIncognitoSwitcher) {
+            expectedItems.add(R.id.quick_delete_menu_id);
+        }
+        expectedItems.add(R.id.preferences_id);
+        return expectedItems;
     }
 }

@@ -20,8 +20,8 @@
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/push_messaging/push_messaging_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/push_messaging/push_messaging_constants.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
@@ -56,6 +56,8 @@
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
@@ -155,18 +157,23 @@ void PushMessagingNotificationManager::DidCountVisibleNotifications(
 #if BUILDFLAG(IS_ANDROID)
   for (const TabModel* model : TabModelList::models()) {
     Profile* profile = model->GetProfile();
-    WebContents* active_web_contents = model->GetActiveWebContents();
-#else
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    Profile* profile = browser->profile();
-    WebContents* active_web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-#endif
-    if (IsTabVisible(profile, active_web_contents, origin)) {
+    if (IsTabVisible(profile, model->GetActiveWebContents(), origin)) {
       notification_needed = false;
       break;
     }
   }
+#else
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &origin, &notification_needed](BrowserWindowInterface* browser) {
+        Profile* const profile = browser->GetProfile();
+        if (IsTabVisible(profile,
+                         browser->GetTabStripModel()->GetActiveWebContents(),
+                         origin)) {
+          notification_needed = false;
+        }
+        return notification_needed;
+      });
+#endif
 
   // If more than one notification is showing for this Service Worker, close
   // the default notification if it happens to be part of this group.

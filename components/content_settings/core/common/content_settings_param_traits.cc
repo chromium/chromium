@@ -18,10 +18,3 @@ namespace IPC {
 #undef COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_PARAM_TRAITS_H_
 #include "components/content_settings/core/common/content_settings_param_traits.h"
 }  // namespace IPC
-
-// Generate param traits log methods.
-#include "ipc/param_traits_log_macros.h"
-namespace IPC {
-#undef COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_PARAM_TRAITS_H_
-#include "components/content_settings/core/common/content_settings_param_traits.h"
-}  // namespace IPC

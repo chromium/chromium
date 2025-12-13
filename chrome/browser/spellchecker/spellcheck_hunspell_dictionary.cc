@@ -6,14 +6,16 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
@@ -48,8 +50,10 @@ using content::BrowserThread;
 
 namespace {
 
-base::LazyInstance<GURL>::Leaky g_download_url_for_testing =
-    LAZY_INSTANCE_INITIALIZER;
+GURL& GetDownloadUrlForTesting() {
+  static base::NoDestructor<GURL> download_url_for_testing;
+  return *download_url_for_testing;
+}
 
 // Close the file.
 void CloseDictionary(base::File file) {
@@ -60,19 +64,18 @@ void CloseDictionary(base::File file) {
 
 // Saves |data| to file at |path|. Returns true on successful save, otherwise
 // returns false.
-bool SaveDictionaryData(std::unique_ptr<std::string> data,
-                        const base::FilePath& path) {
+bool SaveDictionaryData(std::string data, const base::FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (!base::WriteFile(path, *data)) {
+  if (!base::WriteFile(path, data)) {
     bool success = false;
 #if BUILDFLAG(IS_WIN)
     base::FilePath dict_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &dict_dir);
     base::FilePath fallback_file_path =
         dict_dir.Append(path.BaseName());
-    if (base::WriteFile(fallback_file_path, *data)) {
+    if (base::WriteFile(fallback_file_path, data)) {
       success = true;
     }
 #endif
@@ -219,7 +222,7 @@ bool SpellcheckHunspellDictionary::IsDownloadFailure() {
 }
 
 void SpellcheckHunspellDictionary::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> data) {
+    std::optional<std::string> data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   bool is_success = simple_loader_->NetError() == net::OK;
@@ -256,19 +259,20 @@ void SpellcheckHunspellDictionary::OnSimpleLoaderComplete(
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&SaveDictionaryData, std::move(data),
+      base::BindOnce(&SaveDictionaryData, std::move(data).value(),
                      dictionary_file_.path),
       base::BindOnce(&SpellcheckHunspellDictionary::SaveDictionaryDataComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SpellcheckHunspellDictionary::SetDownloadURLForTesting(const GURL url) {
-  g_download_url_for_testing.Get() = url;
+  GetDownloadUrlForTesting() = url;
 }
 
 GURL SpellcheckHunspellDictionary::GetDictionaryURL() {
-  if (g_download_url_for_testing.Get() != GURL())
-    return g_download_url_for_testing.Get();
+  if (GetDownloadUrlForTesting() != GURL()) {
+    return GetDownloadUrlForTesting();
+  }
 
   std::string bdict_file = dictionary_file_.path.BaseName().MaybeAsASCII();
   DCHECK(!bdict_file.empty());

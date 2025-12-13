@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import android.content.res.ColorStateList;
+import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.ImageView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -36,6 +40,21 @@ class BookmarkBarViewBinder {
             view.setLayoutParams(lp);
         } else if (key == BookmarkBarProperties.VISIBILITY) {
             view.setVisibility(model.get(BookmarkBarProperties.VISIBILITY));
+        } else if (key == BookmarkBarProperties.OVERFLOW_BUTTON_TINT_LIST) {
+            ImageView overflowIcon = view.findViewById(R.id.bookmark_bar_overflow_icon);
+            if (overflowIcon != null) {
+                overflowIcon.setImageTintList(
+                        model.get(BookmarkBarProperties.OVERFLOW_BUTTON_TINT_LIST));
+            }
+        } else if (key == BookmarkBarProperties.DIVIDER_COLOR) {
+            View divider = view.findViewById(R.id.bookmark_bar_divider);
+            divider.setBackgroundColor(model.get(BookmarkBarProperties.DIVIDER_COLOR));
+        } else if (key == BookmarkBarProperties.HAIRLINE_COLOR) {
+            ImageView hairline = view.findViewById(R.id.bookmark_bar_hairline);
+            if (hairline != null) {
+                hairline.setImageTintList(
+                        ColorStateList.valueOf(model.get(BookmarkBarProperties.HAIRLINE_COLOR)));
+            }
         }
     }
 }

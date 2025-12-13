@@ -138,7 +138,7 @@ MATCHER_P(MatchesAudioBufferPCM, buffer, "") {
     return false;
   }
 
-  CHECK_EQ(static_cast<int>(buffer->data_size()) % 4, 0);
+  CHECK_EQ(buffer->data_size() % 4, 0u);
   CHECK_EQ(arg.buffer_size % 4, 0);
 
   const std::vector<float> expected_buffer(

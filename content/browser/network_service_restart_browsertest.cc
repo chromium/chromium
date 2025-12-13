@@ -97,7 +97,7 @@ int LoadBasicRequestOnUIThread(
       network::SimpleURLLoader::Create(std::move(request),
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory, simple_loader_helper.GetCallbackDeprecated());
+      url_loader_factory, simple_loader_helper.GetCallback());
   simple_loader_helper.WaitForCallback();
   return simple_loader->NetError();
 }
@@ -1110,7 +1110,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 
   // Revoke network access for the generated nonce.
   base::UnguessableToken nonce = base::UnguessableToken::Create();
-  partition->RevokeNetworkForNoncesInNetworkContext({nonce}, base::DoNothing());
+  partition->RevokeNetworkForNoncesInNetworkContext({{nonce, {}}},
+                                                    base::DoNothing());
 
   // Make a get request, which should be blocked.
   network::mojom::URLLoaderFactoryParamsPtr params =

@@ -21,6 +21,7 @@ source_set("pdf") {
     "//chrome/browser/ui/user_education",
     "//chrome/common",
     "//components/pdf/browser",
+    "//components/tabs:public",
     "//extensions/browser",
     "//pdf:features",
   ]

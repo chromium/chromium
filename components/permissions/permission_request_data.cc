@@ -22,11 +22,10 @@ PermissionRequestData::PermissionRequestData(
           context->content_settings_type())),
       id(id),
       user_gesture(request_description.user_gesture),
-      embedded_permission_element_initiated(
-          request_description.embedded_permission_element_initiated),
       requesting_origin(canonical_requesting_origin),
       embedding_origin(canonical_embedding_origin),
-      anchor_element_position(request_description.anchor_element_position),
+      embedded_permission_request_descriptor(
+          request_description.embedded_permission_request_descriptor.Clone()),
       requested_audio_capture_device_ids(
           request_description.requested_audio_capture_device_ids),
       requested_video_capture_device_ids(
@@ -45,7 +44,6 @@ PermissionRequestData::PermissionRequestData(
       resolver(std::move(resolver)),
       id(id),
       user_gesture(user_gesture),
-      embedded_permission_element_initiated(false),
       requesting_origin(requesting_origin),
       embedding_origin(embedding_origin) {}
 

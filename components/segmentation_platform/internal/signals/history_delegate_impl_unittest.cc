@@ -19,7 +19,6 @@ using ::testing::Return;
 
 base::CancelableTaskTracker::TaskId RunNotFoundCallback(
     const GURL& url,
-    bool want_visits,
     history::HistoryService::QueryURLCallback callback,
     base::CancelableTaskTracker* tracker) {
   history::QueryURLResult result;
@@ -30,7 +29,6 @@ base::CancelableTaskTracker::TaskId RunNotFoundCallback(
 
 base::CancelableTaskTracker::TaskId RunFoundCallback(
     const GURL& url,
-    bool want_visits,
     history::HistoryService::QueryURLCallback callback,
     base::CancelableTaskTracker* tracker) {
   history::QueryURLResult result;
@@ -43,12 +41,12 @@ base::CancelableTaskTracker::TaskId RunFoundCallback(
 
 class MockHistoryService : public history::HistoryService {
  public:
-  MOCK_METHOD4(QueryURL,
-               base::CancelableTaskTracker::TaskId(
-                   const GURL& url,
-                   bool want_visits,
-                   QueryURLCallback callback,
-                   base::CancelableTaskTracker* tracker));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              QueryURL,
+              (const GURL& url,
+               QueryURLCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
 };
 
 }  // namespace
@@ -80,7 +78,7 @@ class HistoryDelegateImplTest : public testing::Test {
 
 TEST_F(HistoryDelegateImplTest, FindInHistory) {
   const GURL kUrl1("https://www.url1.com");
-  EXPECT_CALL(history_service(), QueryURL(kUrl1, false, _, _))
+  EXPECT_CALL(history_service(), QueryURL(kUrl1, _, _))
       .WillOnce(&RunNotFoundCallback);
   history_delegate().FindUrlInHistory(
       kUrl1, base::BindOnce([](bool found, const std::string& profile_id) {
@@ -88,7 +86,7 @@ TEST_F(HistoryDelegateImplTest, FindInHistory) {
         EXPECT_EQ(profile_id, "");
       }));
 
-  EXPECT_CALL(history_service(), QueryURL(kUrl1, false, _, _))
+  EXPECT_CALL(history_service(), QueryURL(kUrl1, _, _))
       .WillOnce(&RunFoundCallback);
   history_delegate().FindUrlInHistory(
       kUrl1, base::BindOnce([](bool found, const std::string& profile_id) {

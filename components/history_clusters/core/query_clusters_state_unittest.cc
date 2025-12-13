@@ -23,7 +23,6 @@
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 using ::testing::SaveArg;
 
 namespace history_clusters {
@@ -391,6 +390,7 @@ TEST_F(QueryClustersStateTest, GetUngroupedVisits) {
                     MockHistoryService::GetAnnotatedVisitsCallback callback,
                     base::CancelableTaskTracker* tracker) {
         get_annotated_visits_options = options;
+        EXPECT_TRUE(get_annotated_visits_options.include_actor_visits);
         get_ungrouped_visits_loop_1.Quit();
         return base::CancelableTaskTracker::kBadTaskId;
       })
@@ -400,6 +400,7 @@ TEST_F(QueryClustersStateTest, GetUngroupedVisits) {
                     MockHistoryService::GetAnnotatedVisitsCallback callback,
                     base::CancelableTaskTracker* tracker) {
         get_annotated_visits_options = options;
+        EXPECT_TRUE(get_annotated_visits_options.include_actor_visits);
         get_ungrouped_visits_loop_2.Quit();
         return base::CancelableTaskTracker::kBadTaskId;
       });

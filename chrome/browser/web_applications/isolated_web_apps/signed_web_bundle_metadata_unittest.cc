@@ -8,21 +8,23 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/common/url_constants.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/test_support/test_signed_web_bundle_builder.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -43,7 +45,7 @@ using testing::Property;
 constexpr std::string_view kIconPath = "/icon.png";
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
-                                                const base::Version version) {
+                                                const IwaVersion version) {
   auto manifest = blink::mojom::Manifest::New();
   manifest->id = application_url.DeprecatedGetOriginAsURL();
   manifest->scope = application_url.Resolve("/");
@@ -91,10 +93,10 @@ class SignedWebBundleMetadataTest : public WebAppTest {
         url_info.origin().GetURL().Resolve(kIconPath));
     icon_state.bitmaps = {CreateSquareIcon(32, SK_ColorWHITE)};
 
-    GURL url(
-        base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-                      test::GetDefaultEd25519WebBundleId().id(),
-                      "/.well-known/_generated_install_page.html"}));
+    GURL url(base::StrCat({webapps::kIsolatedAppScheme,
+                           url::kStandardSchemeSeparator,
+                           test::GetDefaultEd25519WebBundleId().id(),
+                           "/.well-known/_generated_install_page.html"}));
     auto& page_state = fake_web_contents_manager.GetOrCreatePageState(url);
 
     page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
@@ -103,7 +105,7 @@ class SignedWebBundleMetadataTest : public WebAppTest {
         url_info.origin().GetURL().Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
     page_state.manifest_before_default_processing = CreateDefaultManifest(
-        url_info.origin().GetURL(), base::Version("3.4.5"));
+        url_info.origin().GetURL(), *IwaVersion::Create("3.4.5"));
   }
 
  private:
@@ -131,7 +133,7 @@ TEST_F(SignedWebBundleMetadataTest, Succeeds) {
       ValueIs(AllOf(
           Property(&SignedWebBundleMetadata::app_name, Eq(u"test app name")),
           Property(&SignedWebBundleMetadata::version,
-                   Eq(base::Version("3.4.5"))),
+                   Eq(*IwaVersion::Create("3.4.5"))),
           Property(&SignedWebBundleMetadata::app_id, Eq(url_info.app_id())))));
 }
 

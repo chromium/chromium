@@ -413,6 +413,37 @@ TEST_F(AccessibilityTest, PositionInTextWithWhiteSpace) {
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
 
+// https://crbug.com/425572545
+TEST_F(AccessibilityTest, PositionInTextWithPreserveLeadingWhiteSpace) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        p {
+          white-space: pre-wrap;
+        }
+      </style>
+      <div contenteditable>
+        <p id="paragraph"> Hello World!</p>
+      </di>)HTML");
+  const Node* text = GetElementById("paragraph")->firstChild();
+  ASSERT_NE(nullptr, text);
+  ASSERT_TRUE(text->IsTextNode());
+  const AXObject* ax_static_text =
+      GetAXObjectByElementId("paragraph")->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_static_text);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text->RoleValue());
+
+  const auto ax_position =
+      AXPosition::CreatePositionInTextObject(*ax_static_text, 2);
+  const auto position = ax_position.ToPositionWithAffinity();
+  EXPECT_EQ(text, position.AnchorNode());
+  EXPECT_EQ(2, position.GetPosition().OffsetInContainerNode());
+
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
+  EXPECT_EQ(ax_position, ax_position_from_dom);
+  EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
+}
+
 TEST_F(AccessibilityTest, PositionBeforeTextWithWhiteSpace) {
   SetBodyInnerHTML(R"HTML(<p id="paragraph">     Hello     </p>)HTML");
   const Node* text = GetElementById("paragraph")->firstChild();

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ensure texElementImage2D in texImage2D</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+      .top-left {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 0px;
+        left: 0px;
+        background-color:red;
+      }
+      .bottom-left {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 16px;
+        left: 0px;
+        background-color:blue;
+      }
+      .top-right {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 0px;
+        left: 16px;
+        background-color:green;
+      }
+      .bottom-right {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 16px;
+        left: 16px;
+        background-color:gray;
+      }
+      #container {
+        position:absolute;
+        left:0px;
+        top:0px;
+        width:32px;
+        height:32px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvasHost" width="32" height="32" layoutsubtree>
+      <div id="container">
+        <div class="top-left"></div>
+        <div class="bottom-left"></div>
+        <div class="top-right"></div>
+        <div class="bottom-right"></div>
+      </div>
+    </canvas>
+    <script>
+      function runTest() {
+        async_test(t => {
+          const gl = canvasHost.getContext("webgl2");
+          if (!gl) {
+            assert_unreached("webgl2 context not available");
+            t.done();
+          }
+
+          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+          const tex = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, tex);
+          const level = 0;
+          const internalformat = gl.RGBA;
+          const format = gl.RGBA;
+          const type = gl.UNSIGNED_BYTE;
+          gl.texElementImage2D(gl.TEXTURE_2D, level, internalformat, format, type, container);
+
+          const fbo = gl.createFramebuffer();
+          gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+          gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+
+          let complete = gl.checkFramebufferStatus(gl.FRAMEBUFFER) == gl.FRAMEBUFFER_COMPLETE;
+          assert_true(complete);
+
+          const pixels = new Uint8Array(32 * 32 * 4);
+          gl.readPixels(0, 0, 32, 32, format, type, pixels);
+
+          // Check the bottom row
+          assert_equals(pixels[0], 0, "bottom left of bottom left red");
+          assert_equals(pixels[1], 0, "bottom left of bottom left green");
+          assert_equals(pixels[2], 255, "bottom left of bottom left blue");
+          assert_equals(pixels[3], 255, "bottom left of bottom left alpha");
+
+          let offset = 15 * 4;
+          assert_equals(pixels[offset], 0, "bottom right of bottom left red");
+          assert_equals(pixels[offset+1], 0, "bottom right of bottom left green");
+          assert_equals(pixels[offset+2], 255, "bottom right of bottom left blue");
+          assert_equals(pixels[offset+3], 255, "bottom right of bottom left alpha");
+
+          offset += 4;
+          assert_equals(pixels[offset], 128, "bottom left of bottom right red");
+          assert_equals(pixels[offset+1], 128, "bottom left of bottom right green");
+          assert_equals(pixels[offset+2], 128, "bottom left of bottom right blue");
+          assert_equals(pixels[offset+3], 255, "bottom left of bottom right alpha");
+
+          offset = 31 * 4;
+          assert_equals(pixels[offset], 128, "bottom right of bottom right red");
+          assert_equals(pixels[offset+1], 128, "bottom right of bottom right green");
+          assert_equals(pixels[offset+2], 128, "bottom right of bottom right blue");
+          assert_equals(pixels[offset+3], 255, "bottom right of bottom right alpha");
+
+          // Now just below the middle row
+          offset = 15 * (32 * 4);
+          assert_equals(pixels[0], 0, "top left of bottom left red");
+          assert_equals(pixels[1], 0, "top left of bottom left green");
+          assert_equals(pixels[2], 255, "top left of bottom left blue");
+          assert_equals(pixels[3], 255, "top left of bottom left alpha");
+
+          offset += 15 * 4;
+          assert_equals(pixels[offset], 0, "top right of bottom left red");
+          assert_equals(pixels[offset+1], 0, "top right of bottom left green");
+          assert_equals(pixels[offset+2], 255, "top right of bottom left blue");
+          assert_equals(pixels[offset+3], 255, "top right of bottom left alpha");
+
+          offset += 4;
+          assert_equals(pixels[offset], 128, "top left of bottom right red");
+          assert_equals(pixels[offset+1], 128, "top left of bottom right red");
+          assert_equals(pixels[offset+2], 128, "top left of bottom right red");
+          assert_equals(pixels[offset+3], 255, "top left of bottom right red");
+
+          offset += 14 * 4;
+          assert_equals(pixels[offset], 128, "top right of bottom right red");
+          assert_equals(pixels[offset+1], 128, "top right of bottom right red");
+          assert_equals(pixels[offset+2], 128, "top right of bottom right red");
+          assert_equals(pixels[offset+3], 255, "top right of bottom right red");
+
+          // Just above the middle row
+          offset = 16 * (32 * 4);
+          assert_equals(pixels[offset], 255, "bottom left of top left red");
+          assert_equals(pixels[offset+1], 0, "bottom left of top left green");
+          assert_equals(pixels[offset+2], 0, "bottom left of top left blue");
+          assert_equals(pixels[offset+3], 255), "bottom left of top left alpha";
+
+          offset += 15 * 4;
+          assert_equals(pixels[offset], 255, "bottom right of top left red");
+          assert_equals(pixels[offset+1], 0, "bottom right of top left green");
+          assert_equals(pixels[offset+2], 0, "bottom right of top left blue");
+          assert_equals(pixels[offset+3], 255, "bottom right of top left alpha");
+
+          offset += 4;
+          assert_equals(pixels[offset], 0, "bottom left of top right red");
+          assert_equals(pixels[offset+1], 128, "bottom left of top right green");
+          assert_equals(pixels[offset+2], 0, "bottom left of top right blue");
+          assert_equals(pixels[offset+3], 255, "bottom left of top right alpa");
+
+          offset += 14 * 4;
+          assert_equals(pixels[offset], 0, "bottom right of top right red");
+          assert_equals(pixels[offset+1], 128, "bottom right of top right green");
+          assert_equals(pixels[offset+2], 0, "bottom right of top right blue");
+          assert_equals(pixels[offset+3], 255, "bottom right of top right alpha");
+
+          // Top row
+          offset = 31 * 32 * 4;
+          assert_equals(pixels[offset], 255, "top left of top left red");
+          assert_equals(pixels[offset+1], 0, "top left of top left green");
+          assert_equals(pixels[offset+2], 0, "top left of top left blue");
+          assert_equals(pixels[offset+3], 255), "top left of top left alpha";
+
+          offset += 15 * 4;
+          assert_equals(pixels[offset], 255, "top right of top left red");
+          assert_equals(pixels[offset+1], 0, "top right of top left green");
+          assert_equals(pixels[offset+2], 0, "top right of top left blue");
+          assert_equals(pixels[offset+3], 255, "top right of top left alpha");
+
+          offset += 4;
+          assert_equals(pixels[offset], 0, "top left of top right red");
+          assert_equals(pixels[offset+1], 128, "top left of top right green");
+          assert_equals(pixels[offset+2], 0, "top left of top right blue");
+          assert_equals(pixels[offset+3], 255, "top left of top right alpa");
+
+          offset += 14 * 4;
+          assert_equals(pixels[offset], 0, "top right of top right red");
+          assert_equals(pixels[offset+1], 128, "top right of top right green");
+          assert_equals(pixels[offset+2], 0, "top right of top right blue");
+          assert_equals(pixels[offset+3], 255, "top right of top right alpha");
+
+          t.done();
+        }, "verify the texElementImage2D works as expected");
+      }
+
+      onload = () => runTest();
+    </script>
+  </body>
+</html>

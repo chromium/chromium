@@ -23,7 +23,7 @@ static_library("webui") {
   public_deps = [
     ":mojo_bindings",
     ":url_constants",
-    "//components/optimization_guide/optimization_guide_internals/resources:resources",
+    "//components/optimization_guide/optimization_guide_internals/resources",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

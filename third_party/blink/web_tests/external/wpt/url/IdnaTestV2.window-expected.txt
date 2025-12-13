@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 978 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("a‌b") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("A‌B") C1
@@ -94,19 +94,17 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--unicode-.org") P4
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("陋㛼当𤎫竮䗗")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("14.xn--7hb713l3v90n.-") V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--7hb713lfwbi1311b.-") V7; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍≠ᢙ≯.솣-ᡴႠ") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("‍≠ᢙ≯.솣-ᡴⴀ") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("≠ᢙ≯.솣-ᡴⴀ")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("≠ᢙ≯.솣-ᡴႠ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("≠ᢙ≯.솣-ᡴႠ")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--jbf929a90b0b.xn----p9j493ivi4l") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -222,20 +220,8 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn--yua") C1; V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("𞤥󠅮．ᡄႮ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("𞤥󠅮.ᡄႮ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("𞤃󠅮.ᡄႮ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("𞤃.ᡄႮ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("𞤃󠅮．ᡄႮ")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--de6h.xn--mnd799a") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("𞤥.ᡄႮ")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--0fd40533g.xn--1-tws") V6; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0fd40533g.xn--1-q1g") V6; V7
@@ -348,22 +334,6 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--hdhx157g68o0g.xn--c0e65eu616c34o7a") V6; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("ß｡𐋳Ⴌྸ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("ß。𐋳Ⴌྸ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("SS。𐋳Ⴌྸ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ss。𐋳Ⴌྸ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("SS.𐋳Ⴌྸ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ss.𐋳Ⴌྸ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("SS｡𐋳Ⴌྸ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ss｡𐋳Ⴌྸ")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("ss.xn--lgd10cu829c") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--zca.xn--lgd10cu829c") V7
@@ -447,6 +417,8 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn----9snu5320fi76w.xn--4-f0g649i") C1; V6; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--hdh5636g.xn--ci2d") V6
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⴋ≮𱲆。‍ާ𐋣") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ⴋ≮𱲆。‍ާ𐋣") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -566,12 +538,6 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--87e0ol04cdl39e.xn----ugn5e3763s") C2; V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("Ⴚ𐋸󠄄。𝟝ퟶ်")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ⴚ𐋸󠄄。5ퟶ်")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ⴚ𐋸.5ퟶ်")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--ynd2415j.xn--5-dug9054m") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----c6jx047j.xn--gff52t") V6; V7; V3 (ignored)
@@ -658,10 +624,6 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--gdh2512e.xn--i4c") V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("ꡆ。Ↄྵ놮-") V3 (ignored)
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("ꡆ。Ↄྵ놮-") V3 (ignored)
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--fc9a.xn----qmg787k869k") V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--gdh.xn--4tjx101bsg00ds9pyc") V7
@@ -718,14 +680,18 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("-3.xn--fbf739aq5o") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⅎ្‍｡≠‍‌") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⅎ្‍｡≠‍‌") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⅎ្‍。≠‍‌") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⅎ្‍。≠‍‌") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ⅎ្‍。≠‍‌") C1; C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ⅎ្‍。≠‍‌") C1; C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("Ⅎ្.≠")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ⅎ្.≠")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--u4e823bq1a.xn--0ugb89o") C1; C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ⅎ្‍｡≠‍‌") C1; C2
@@ -840,14 +806,6 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--hdh84488f.xn--1ug8099fbjp4e") C2; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("꧐Ӏ᮪ࣶ．눵")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("꧐Ӏ᮪ࣶ．눵")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("꧐Ӏ᮪ࣶ.눵")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("꧐Ӏ᮪ࣶ.눵")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--d5a07sn4u297k.xn--2e1b") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--3g9a.xn--ud1dz07k") V6; V7
@@ -884,8 +842,6 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0on3543c5981i.xn--1ug") C2; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("。。Ⴃ≯") A4_2 (ignored)
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("。。Ⴃ≯") A4_2 (ignored)
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("。。ⴃ≯") A4_2 (ignored)
@@ -918,29 +874,33 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--t546e.xn--hdh5166o") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("ڹ．ᡳᅟ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("ڹ.ᡳᅟ")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--skb.xn--osd737a") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--mbm8237g.xn--7-7hf1526p") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ß‌꫶ᢥ．⊶ჁႶ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ß‌꫶ᢥ.⊶ჁႶ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ß‌꫶ᢥ.⊶ⴡⴖ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("SS‌꫶ᢥ.⊶ჁႶ") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ss‌꫶ᢥ.⊶ⴡⴖ") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("SS꫶ᢥ.⊶ჁႶ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ss꫶ᢥ.⊶Ⴡⴖ")
-  Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("Ss‌꫶ᢥ.⊶Ⴡⴖ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ss-4ep585bkm5p.xn--ifh802b6a") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--zca682johfi89m.xn--ifh802b6a") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ß‌꫶ᢥ．⊶ⴡⴖ") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("SS‌꫶ᢥ．⊶ჁႶ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ss‌꫶ᢥ．⊶ⴡⴖ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ss‌꫶ᢥ．⊶Ⴡⴖ") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ss-4epx629f.xn--5nd703gyrh") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -970,7 +930,11 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--d0d41273c887z.xn--8-ob5i") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ς‍-.Ⴣ𦟙") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ς‍-.ⴣ𦟙") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Σ‍-.Ⴣ𦟙") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("σ‍-.ⴣ𦟙") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1064,21 +1028,23 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("⾆．ꡈ５≯Ss")
   Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("‌Ⴚ｡ς") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌Ⴚ。ς") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("‌ⴚ。ς") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌Ⴚ。Σ") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("‌ⴚ。σ") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("Ⴚ.Σ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ⴚ.ς")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ⴚ.σ")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--0ug262c.xn--4xa") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug262c.xn--3xa") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("‌ⴚ｡ς") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌Ⴚ｡Σ") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("‌ⴚ｡σ") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1214,13 +1180,15 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----scp6252h.xn--zshy411yzpx2d") V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌Ⴁ畝‍．≮") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌Ⴁ畝‍.≮") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("‌ⴁ畝‍.≮") C1; C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ⴁ畝.≮")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("Ⴁ畝.≮")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ⴁ畝.≮")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--0ugc160hb36e.xn--gdh") C1; C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1266,10 +1234,6 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ugy6glz29a.xn--gdh") V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("🕼．ﾠ") A4_2 (ignored)
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("🕼.ᅠ") A4_2 (ignored)
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--my8h.xn--psd") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--my8h.xn--cl7c") V7
@@ -1280,20 +1244,10 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--sz1a.xn----mrd9984r3dl0i") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("ςჅ。ݚ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("ΣჅ。ݚ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("ΣჅ.ݚ")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--4xa477d.xn--epb") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--3xa677d.xn--epb") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("𐩗.ႩႵ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("𐩗.Ⴉⴕ")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--pt9c.xn--hnd666l") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--pt9c.xn--hndy") V7
@@ -1320,33 +1274,23 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--3j78f.xn--mkb20b") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("xn--20-9802c.xn--0w5a.xn--1-eg4e.") V7; A4_2 (ignored)
-  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("𲤱20.音.ꡦ1.") A4_2 (ignored)
+  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--dth6033bzbvx.xn--tsh9439b") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("Ⴕ。۰≮ß݅")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("Ⴕ。۰≮ß݅")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("ⴕ。۰≮ß݅")
   Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ⴕ。۰≮SS݅")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("Ⴕ。۰≮SS݅")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("ⴕ。۰≮ss݅")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ⴕ。۰≮Ss݅")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("Ⴕ。۰≮Ss݅")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("ⴕ.۰≮ss݅")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("Ⴕ.۰≮SS݅")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ⴕ.۰≮SS݅")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ⴕ.۰≮Ss݅")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("Ⴕ.۰≮Ss݅")
   Failed to construct 'URL': Invalid URL
@@ -1360,7 +1304,11 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--f3g73398c.xn--hdhz171b") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌.ßႩ-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("‌.ßⴉ-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌.SSႩ-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("‌.ssⴉ-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1394,15 +1342,21 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0-z6jy93b.xn--8lh28773l") C1; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("xn--9-i0j5967eg3qz.ss") V7
+[FAIL] ToASCII("𲮚9ꍩ៓.ss")
+  Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("𲮚9ꍩ៓.SS")
+  Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("xn--9-i0j5967eg3qz.xn--ss-l1t") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("xn--9-i0j5967eg3qz.xn--ss-l1t") C2; V7
-  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("xn--9-i0j5967eg3qz.xn--zca770n") C2; V7
+[FAIL] ToASCII("xn--9-i0j5967eg3qz.xn--zca770n") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("9.xn----ogo..xn----xj54d1s69k") V7; V3 (ignored); A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----ogot9g.xn----n89hl0522az9u2a") V7; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⴏ󠅋-．‍Ⴉ") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⴏ󠅋-.‍Ⴉ") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ⴏ󠅋-.‍ⴉ") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1436,6 +1390,8 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("9.xn--dbf91222q") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("。Ⴖͦ.‌") C1; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("。ⴖͦ.‌") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII(".xn--hva754s.xn--0ug") C1; A4_2 (ignored)
@@ -1452,12 +1408,8 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--hva929dl29p.xn--0ug") C1; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("Ⴖͦ.") A4_2 (ignored)
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--hva929d.") V7; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("ࢻ.Ⴃ𞀒")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--hzb.xn--bnd2938u") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII(".xn--2-me5ay1273i") V7; A4_2 (ignored)
@@ -1486,10 +1438,10 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--qutw175s.xn----mimu6tf67j") V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍攌꯭。ᢖ-Ⴘ") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("‍攌꯭。ᢖ-ⴘ") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("攌꯭.ᢖ-Ⴘ")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--1ug592ykp6b.xn----mck373i") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--p9ut19m.xn----k1g451d") V7
@@ -1558,6 +1510,10 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--zca679eh2l.xn--tsh") C2; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("𝟠≮‌｡󠅱឴") C1; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("8≮‌。󠅱឴") C1; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("8≮.") A4_2 (ignored)
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--8-sgn10i.") C1; A4_2 (ignored)
@@ -1623,6 +1579,8 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--lnd.xn--p01x") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--lnd.xn--0ug56448b") C1; V7
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("-‍.Ⴞ𐋷") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("-‍.ⴞ𐋷") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1722,8 +1680,6 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----ef8c.xn--2v9a") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("🂴Ⴋ.≮")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("🂴Ⴋ.≮")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("🂴ⴋ.≮")
@@ -1828,8 +1784,6 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug88o7471d.xn--jof45148n") C1; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("𝅵。9𞀈䬺1.") A4_2 (ignored)
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII(".xn--9-ecp936non25a") V7; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--3f1h.xn--91-030c1650n.") V7; A4_2 (ignored)
@@ -1900,10 +1854,6 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----pck312bx563c.xn--9h2d") C1; V6; V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("឴.쮇-") V3 (ignored); A4_2 (ignored)
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("឴.쮇-") V3 (ignored); A4_2 (ignored)
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--z3e.xn----938f") V6; V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--wz1d.1.xn----rg03o") V6; V7; V3 (ignored)
@@ -1934,16 +1884,6 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--gc5a.xn--ybc83044ppga") V6; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("ჁႱ6̘。ßᬃ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("ჁႱ6̘。SSᬃ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ⴡⴑ6̘。Ssᬃ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("ჁႱ6̘.SSᬃ")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("Ⴡⴑ6̘.Ssᬃ")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--6-8cb306hms1a.xn--ss-2vq") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--6-8cb555h2b.xn--ss-2vq") V7

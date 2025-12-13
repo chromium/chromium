@@ -36,11 +36,12 @@ bool IsHoldRequiredToExit(ExclusiveAccessBubbleType type) {
 
 }  // namespace
 
-std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
-                                         const std::u16string& accelerator,
-                                         const url::Origin& origin,
-                                         bool has_download,
-                                         bool notify_overridden) {
+std::u16string GetInstructionTextForType(
+    ExclusiveAccessBubbleType type,
+    const std::u16string& accelerator,
+    const std::optional<std::u16string>& origin_display_name,
+    bool has_download,
+    bool notify_overridden) {
   if (has_download) {
     if (notify_overridden) {
       return IsHoldRequiredToExit(type)
@@ -58,42 +59,35 @@ std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
                      IDS_FULLSCREEN_PRESS_TO_SEE_DOWNLOADS, accelerator);
   }
 
-  std::optional<std::u16string> origin_string;
-  if (!origin.opaque() &&
-      base::FeatureList::IsEnabled(features::kFullscreenBubbleShowOrigin)) {
-    origin_string = url_formatter::FormatOriginForSecurityDisplay(
-        origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-  }
-
   switch (type) {
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_POINTERLOCK_EXIT_INSTRUCTION:
       // Both tab fullscreen and tab fullscreen + pointer lock have the same
       // message (the user does not care about pointer lock when in fullscreen
       // mode). All ways to trigger fullscreen result in the same message.
-      if (origin_string) {
+      if (origin_display_name) {
         return l10n_util::GetStringFUTF16(
             IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN_WITH_ORIGIN,
-            origin_string.value(), accelerator);
+            origin_display_name.value(), accelerator);
       } else {
         return l10n_util::GetStringFUTF16(
             IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN, accelerator);
       }
 
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION:
-      if (origin_string) {
+      if (origin_display_name) {
         return l10n_util::GetStringFUTF16(
             IDS_FULLSCREEN_HOLD_TO_EXIT_FULLSCREEN_WITH_ORIGIN,
-            origin_string.value(), accelerator);
+            origin_display_name.value(), accelerator);
       } else {
         return l10n_util::GetStringFUTF16(
             IDS_FULLSCREEN_HOLD_TO_EXIT_FULLSCREEN, accelerator);
       }
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION:
-      if (origin_string) {
+      if (origin_display_name) {
         return l10n_util::GetStringFUTF16(
-            IDS_PRESS_TO_EXIT_MOUSELOCK_WITH_ORIGIN, origin_string.value(),
-            accelerator);
+            IDS_PRESS_TO_EXIT_MOUSELOCK_WITH_ORIGIN,
+            origin_display_name.value(), accelerator);
       } else {
         return l10n_util::GetStringFUTF16(IDS_PRESS_TO_EXIT_MOUSELOCK,
                                           accelerator);
@@ -108,6 +102,53 @@ std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
         return l10n_util::GetStringFUTF16(
             IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN, accelerator);
       }
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
+    default:
+      NOTREACHED();
+  }
+}
+
+std::u16string GetInstructionTextForTypeTouchBased(
+    ExclusiveAccessBubbleType type,
+    const std::optional<std::u16string>& origin_display_name,
+    bool has_download,
+    bool notify_overridden) {
+  if (has_download) {
+    if (notify_overridden) {
+      return l10n_util::GetStringUTF16(
+          IDS_FULLSCREEN_TOUCH_BASED_INSTRUCTIONS_TO_SEE_DOWNLOADS_AND_EXIT);
+    }
+    return l10n_util::GetStringUTF16(
+        IDS_FULLSCREEN_TOUCH_BASED_INSTRUCTIONS_TO_SEE_DOWNLOADS);
+  }
+
+  switch (type) {
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION:
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_POINTERLOCK_EXIT_INSTRUCTION:
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION:
+      // Both tab fullscreen and tab fullscreen + pointer lock have the same
+      // message (the user does not care about pointer lock when in fullscreen
+      // mode). All ways to trigger fullscreen result in the same message.
+      if (origin_display_name) {
+        return l10n_util::GetStringFUTF16(
+            IDS_FULLSCREEN_TOUCH_BASED_EXIT_FULLSCREEN_WITH_ORIGIN,
+            origin_display_name.value());
+      } else {
+        return l10n_util::GetStringUTF16(
+            IDS_FULLSCREEN_TOUCH_BASED_EXIT_FULLSCREEN);
+      }
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION:
+      if (origin_display_name) {
+        return l10n_util::GetStringFUTF16(
+            IDS_TOUCH_BASED_EXIT_MOUSELOCK_WITH_ORIGIN,
+            origin_display_name.value());
+      } else {
+        return l10n_util::GetStringUTF16(IDS_TOUCH_BASED_EXIT_MOUSELOCK);
+      }
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION:
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION:
+      return l10n_util::GetStringUTF16(
+          IDS_FULLSCREEN_TOUCH_BASED_EXIT_FULLSCREEN);
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
     default:
       NOTREACHED();

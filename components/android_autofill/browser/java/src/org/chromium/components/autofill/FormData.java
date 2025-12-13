@@ -35,7 +35,7 @@ public class FormData {
     public final String mHost;
     public final List<FormFieldData> mFields;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     static FormData createFormData(
             int sessionId,
@@ -76,6 +76,9 @@ public class FormData {
                 child.setAutofillHints(field.mAutocompleteAttr.split(" +"));
             }
             child.setHint(field.mPlaceholder);
+            if (AndroidAutofillFeatures.ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN.isEnabled()) {
+                child.setWebDomain(field.mOrigin);
+            }
 
             RectF bounds = field.getBoundsInContainerViewCoordinates();
             // Field has no scroll.
@@ -86,17 +89,27 @@ public class FormData {
                     /* scrollY= */ 0,
                     (int) bounds.width(),
                     (int) bounds.height());
-            child.setVisibility(field.getVisible() ? View.VISIBLE : View.INVISIBLE);
+            child.setVisibility(field.getFocusable() ? View.VISIBLE : View.INVISIBLE);
 
             ViewStructure.HtmlInfo.Builder builder =
                     child.newHtmlInfoBuilder("input")
-                            .addAttribute("name", field.mName)
-                            .addAttribute("type", field.mType)
-                            .addAttribute("label", field.mLabel)
-                            .addAttribute("ua-autofill-hints", field.mHeuristicType)
-                            .addAttribute("id", field.mId);
-            builder.addAttribute("crowdsourcing-autofill-hints", field.getServerType());
-            builder.addAttribute("computed-autofill-hints", field.getComputedType());
+                            .addAttribute("name", field.mName == null ? "" : field.mName)
+                            .addAttribute("type", field.mType == null ? "" : field.mType)
+                            .addAttribute("label", field.mLabel == null ? "" : field.mLabel)
+                            .addAttribute(
+                                    "ua-autofill-hints",
+                                    field.mHeuristicType == null ? "" : field.mHeuristicType)
+                            .addAttribute("id", field.mId == null ? "" : field.mId)
+                            .addAttribute(
+                                    "crowdsourcing-autofill-hints",
+                                    field.getServerType() == null ? "" : field.getServerType())
+                            .addAttribute(
+                                    "computed-autofill-hints",
+                                    field.getOverallType() == null ? "" : field.getOverallType());
+            if (AndroidAutofillFeatures.ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION
+                    .isEnabled()) {
+                builder.addAttribute("visibility", field.getVisible() ? "visible" : "invisible");
+            }
             // Compose multiple predictions to a string separated by ','.
             String[] predictions = field.getServerPredictions();
             if (predictions != null && predictions.length > 0) {

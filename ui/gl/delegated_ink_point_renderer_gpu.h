@@ -18,7 +18,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/delegated_ink_point.h"
-#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/gl_export.h"

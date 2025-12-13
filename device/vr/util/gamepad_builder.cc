@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 #include "device/vr/util/gamepad_builder.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 

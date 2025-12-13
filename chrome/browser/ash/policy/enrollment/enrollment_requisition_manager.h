@@ -27,6 +27,7 @@ class EnrollmentRequisitionManager {
   static const char kSharkRequisition[];
   static const char kDemoRequisition[];
   static const char kCuttlefishRequisition[];
+  static const char kSquidRequisition[];
 
   // Initializes requisition settings at OOBE with values from VPD.
   static void Initialize();
@@ -42,6 +43,9 @@ class EnrollmentRequisitionManager {
 
   // If the current device is a Cuttlefish device.
   static bool IsCuttlefishDevice();
+
+  // If the current device is a Squid device.
+  static bool IsSquidDevice();
 
   // Gets/Sets the sub organization.
   static std::string GetSubOrganization();

@@ -20,9 +20,14 @@ public interface HubController {
     /** Returns the view that contains all the Hub UI. */
     HubContainerView getContainerView();
 
+    /**
+     * Returns the view that contains all the Hub UI. This is not guaranteed to be in a valid state
+     * and should only be used when the Hub is being destroyed.
+     */
+    HubContainerView getContainerViewUnchecked();
+
     /** Returns the view that contains the Hub panes. */
-    @Nullable
-    View getPaneHostView();
+    @Nullable View getPaneHostView();
 
     /** Returns the background color of the Hub for the pane. */
     @ColorInt

@@ -23,9 +23,13 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidHDR);
 // availWidth/availHeight/availTop/availLeft.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidUseCorrectDisplayWorkArea);
 
-// TODO(crbug.com/401215712): Clean up the flag after making sure tha the Window
-// Management Web API works well.
-UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidWindowManagementWebApi);
+// Use Android WindowManager's WindowMetrics as the data source for top-level
+// browser window bounds in Blink.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidUseCorrectWindowBounds);
+
+// Enables usage of the display topology API to obtain information about all
+// displays.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidUseDisplayTopology);
 
 // Enables using occlusion information from Android to save CPU and memory.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidWindowOcclusion);
@@ -40,9 +44,8 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDeprecatedExternalPickerFunction);
 // Whether photo picker should be disabled for video capture.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDisablePhotoPickerForVideoCapture);
 
-// Flip the back/forward direction of navigation gestures when the UI language
-// is an RTL language.
-UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kMirrorBackForwardGesturesInRTL);
+// Whether to enable the refactor of the smallestScreenWidthDp override.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kRefactorMinWidthContextOverride);
 
 // Reports bottom overscrolls on the web page.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kReportBottomOverscrolls);
@@ -62,6 +65,16 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
 
 // Enables the new ETC1 encoder (used in tab and back/forward thumbnails).
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kUseNewEtc1Encoder);
+
+// Conducts a check to determine if the View is eligible to a Hit. This is a
+// mitigation of when the prerendered view (hidden) somehow receives the touch
+// event even though it is hidden, due to the ordering of the `children_` in
+// `ViewAndroid`. Refer to crbug.com/442832509 for more details.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kCheckHitEligibility);
+
+// Enables touchpad overscroll for history navigation.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
+    kAndroidTouchpadOverscrollHistoryNavigation);
 
 }  // namespace ui
 

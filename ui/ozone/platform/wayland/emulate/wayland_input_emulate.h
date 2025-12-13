@@ -18,7 +18,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy.h"
 
 struct wl_buffer;

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -16,6 +15,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /** Coordinator for the Safety Hub Magic Stack module. */
 @NullMarked
@@ -39,8 +40,7 @@ class SafetyHubMagicStackCoordinator implements ModuleProvider {
                         tabModelSelector,
                         moduleDelegate,
                         PrefServiceUtil.createFor(profile),
-                        modalDialogManagerSupplier,
-                        SafetyHubHatsHelper.getForProfile(profile));
+                        modalDialogManagerSupplier);
     }
 
     @Override

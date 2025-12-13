@@ -210,9 +210,7 @@ class TestPerfCollector : public PerfCollector {
   using PerfCollector::EventType;
   using PerfCollector::Init;
   using PerfCollector::IsRunning;
-  using PerfCollector::LacrosChannelAndVersion;
   using PerfCollector::max_frequencies_mhz;
-  using PerfCollector::ParseLacrosPath;
   using PerfCollector::ParseOutputProtoIfValid;
   using PerfCollector::ParsePSICPUStatus;
   using PerfCollector::RecordUserLogin;
@@ -1111,74 +1109,6 @@ TEST_F(PerfCollectorTest, JankinessCollectionDurationElapsed) {
   EXPECT_FALSE(perf_collector_->collection_stopped());
 }
 
-TEST_F(PerfCollectorTest, LacrosPathRootfs) {
-  base::HistogramTester histogram_tester;
-  const char rootfs_path[] = "/run/lacros/chrome";
-  metrics::SystemProfileProto_Channel rootfs_lacros_channel;
-  std::string rootfs_lacros_version;
-  EXPECT_FALSE(TestPerfCollector::LacrosChannelAndVersion(
-      rootfs_path, rootfs_lacros_channel, rootfs_lacros_version));
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.CWP.ParseLacrosPath",
-      TestPerfCollector::ParseLacrosPath::kRootfs, 1);
-}
-
-TEST_F(PerfCollectorTest, LacrosChannelAndVersion) {
-  base::HistogramTester histogram_tester;
-
-  const char stable_path[] =
-      "/run/imageloader/lacros-dogfood-stable/95.0.4623.2/chrome";
-  metrics::SystemProfileProto_Channel stable_channel;
-  std::string stable_version;
-  EXPECT_TRUE(TestPerfCollector::LacrosChannelAndVersion(
-      stable_path, stable_channel, stable_version));
-  EXPECT_EQ(stable_channel, metrics::SystemProfileProto_Channel_CHANNEL_STABLE);
-  EXPECT_EQ(stable_version, "95.0.4623.2");
-
-  const char beta_path[] =
-      "/run/imageloader/lacros-dogfood-beta/97.0.4623.2/chrome";
-  metrics::SystemProfileProto_Channel beta_channel;
-  std::string beta_version;
-  EXPECT_TRUE(TestPerfCollector::LacrosChannelAndVersion(
-      beta_path, beta_channel, beta_version));
-  EXPECT_EQ(beta_channel, metrics::SystemProfileProto_Channel_CHANNEL_BETA);
-  EXPECT_EQ(beta_version, "97.0.4623.2");
-
-  const char dev_path[] =
-      "/run/imageloader/lacros-dogfood-dev/99.0.4623.2/chrome";
-  metrics::SystemProfileProto_Channel dev_channel;
-  std::string dev_version;
-  EXPECT_TRUE(TestPerfCollector::LacrosChannelAndVersion(dev_path, dev_channel,
-                                                         dev_version));
-  EXPECT_EQ(dev_channel, metrics::SystemProfileProto_Channel_CHANNEL_DEV);
-  EXPECT_EQ(dev_version, "99.0.4623.2");
-
-  const char canary_path[] =
-      "/run/imageloader/lacros-dogfood-canary/100.0.4623.2/chrome";
-  metrics::SystemProfileProto_Channel canary_channel;
-  std::string canary_version;
-  EXPECT_TRUE(TestPerfCollector::LacrosChannelAndVersion(
-      canary_path, canary_channel, canary_version));
-  EXPECT_EQ(canary_channel, metrics::SystemProfileProto_Channel_CHANNEL_CANARY);
-  EXPECT_EQ(canary_version, "100.0.4623.2");
-
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.CWP.ParseLacrosPath",
-      TestPerfCollector::ParseLacrosPath::kStateful, 4);
-}
-
-TEST_F(PerfCollectorTest, LacrosPathUnrecognized) {
-  base::HistogramTester histogram_tester;
-  const char unrecognized_path[] = "/run/imageloader/lacros/chrome";
-  metrics::SystemProfileProto_Channel unrecognized_channel;
-  std::string unrecognized_version;
-  EXPECT_FALSE(TestPerfCollector::LacrosChannelAndVersion(
-      unrecognized_path, unrecognized_channel, unrecognized_version));
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.CWP.ParseLacrosPath",
-      TestPerfCollector::ParseLacrosPath::kUnrecognized, 1);
-}
-
 TEST_F(PerfCollectorTest, CommandEventType) {
   using EventType = TestPerfCollector::EventType;
   EXPECT_EQ(TestPerfCollector::CommandEventType({"--duration", "0", "--",
@@ -1277,7 +1207,7 @@ class PerfCollectorCollectionParamsTest : public testing::Test {
       const PerfCollectorCollectionParamsTest&) = delete;
 
   void TearDown() override {
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
   }
 
  protected:

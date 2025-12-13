@@ -17,12 +17,12 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsAnimation;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -31,6 +31,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import java.util.List;
 
 /** Collection of methods that differ in the implementation per OS build version. */
+@NullMarked
 abstract class PartialCustomTabVersionCompat {
     protected final Activity mActivity;
     protected final Runnable mPositionUpdater;
@@ -77,7 +78,7 @@ abstract class PartialCustomTabVersionCompat {
     /** Implementation that supports R+ */
     @RequiresApi(Build.VERSION_CODES.R)
     private static class PartialCustomTabVersionCompatR extends PartialCustomTabVersionCompat {
-        private WindowInsetsAnimation.Callback mAnimCallback;
+        private WindowInsetsAnimation.@Nullable Callback mAnimCallback;
 
         private PartialCustomTabVersionCompatR(Activity activity, Runnable positionUpdater) {
             super(activity, positionUpdater);
@@ -147,7 +148,7 @@ abstract class PartialCustomTabVersionCompat {
         }
 
         @Override
-        boolean setImeStateCallback(Callback<Boolean> callback) {
+        boolean setImeStateCallback(@Nullable Callback<Boolean> callback) {
             boolean update = (callback == null) ^ (mAnimCallback == null);
             if (callback == null && mAnimCallback != null) {
                 mAnimCallback = null;
@@ -157,13 +158,13 @@ abstract class PartialCustomTabVersionCompat {
                                 WindowInsetsAnimation.Callback.DISPATCH_MODE_STOP) {
                             @Override
                             public WindowInsets onProgress(
-                                    @NonNull WindowInsets insets,
-                                    @NonNull List<WindowInsetsAnimation> runningAnimations) {
+                                    WindowInsets insets,
+                                    List<WindowInsetsAnimation> runningAnimations) {
                                 return insets;
                             }
 
                             @Override
-                            public void onEnd(@NonNull WindowInsetsAnimation animation) {
+                            public void onEnd(WindowInsetsAnimation animation) {
                                 WindowInsets insets =
                                         mActivity
                                                 .getWindowManager()
@@ -188,7 +189,7 @@ abstract class PartialCustomTabVersionCompat {
 
     /** Implementation that supports version below R */
     private static class PartialCustomTabVersionCompatLegacy extends PartialCustomTabVersionCompat {
-        private View.OnLayoutChangeListener mLayoutListener;
+        private View.@Nullable OnLayoutChangeListener mLayoutListener;
 
         private PartialCustomTabVersionCompatLegacy(Activity activity, Runnable positionUpdater) {
             super(activity, positionUpdater);
@@ -321,7 +322,7 @@ abstract class PartialCustomTabVersionCompat {
         }
 
         @Override
-        boolean setImeStateCallback(Callback<Boolean> callback) {
+        boolean setImeStateCallback(@Nullable Callback<Boolean> callback) {
             View contentFrame = mActivity.findViewById(android.R.id.content);
             if (callback == null && mLayoutListener != null) {
                 contentFrame.removeOnLayoutChangeListener(mLayoutListener);
@@ -340,7 +341,7 @@ abstract class PartialCustomTabVersionCompat {
                             // to use it again.
                             boolean imeVisible =
                                     KeyboardVisibilityDelegate.getInstance()
-                                            .isKeyboardShowing(mActivity, view);
+                                            .isKeyboardShowing(view);
                             callback.onResult(imeVisible);
                         };
                 contentFrame.addOnLayoutChangeListener(mLayoutListener);

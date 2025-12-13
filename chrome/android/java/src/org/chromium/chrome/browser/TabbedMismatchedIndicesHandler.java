@@ -9,6 +9,7 @@ import android.app.Activity;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import java.util.function.LongSupplier;
 
 /** Implementation of MismatchedIndicesHandler used by {@link ChromeTabbedActivity}. */
+@NullMarked
 public class TabbedMismatchedIndicesHandler implements MismatchedIndicesHandler {
     @VisibleForTesting
     public static final String HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA =

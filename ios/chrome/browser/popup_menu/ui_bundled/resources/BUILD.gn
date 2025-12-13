@@ -30,10 +30,6 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/popup_menu_find_in_page.imageset/popup_menu_find_in_page.png",
     "Assets.xcassets/popup_menu_find_in_page.imageset/popup_menu_find_in_page@2x.png",
     "Assets.xcassets/popup_menu_find_in_page.imageset/popup_menu_find_in_page@3x.png",
-    "Assets.xcassets/popup_menu_follow.imageset/Contents.json",
-    "Assets.xcassets/popup_menu_follow.imageset/popup_menu_follow.png",
-    "Assets.xcassets/popup_menu_follow.imageset/popup_menu_follow@2x.png",
-    "Assets.xcassets/popup_menu_follow.imageset/popup_menu_follow@3x.png",
     "Assets.xcassets/popup_menu_help.imageset/Contents.json",
     "Assets.xcassets/popup_menu_help.imageset/popup_menu_help.png",
     "Assets.xcassets/popup_menu_help.imageset/popup_menu_help@2x.png",
@@ -102,9 +98,5 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/popup_menu_translate.imageset/Contents.json",
     "Assets.xcassets/popup_menu_translate.imageset/popup_menu_translate@2x.png",
     "Assets.xcassets/popup_menu_translate.imageset/popup_menu_translate@3x.png",
-    "Assets.xcassets/popup_menu_unfollow.imageset/Contents.json",
-    "Assets.xcassets/popup_menu_unfollow.imageset/popup_menu_unfollow.png",
-    "Assets.xcassets/popup_menu_unfollow.imageset/popup_menu_unfollow@2x.png",
-    "Assets.xcassets/popup_menu_unfollow.imageset/popup_menu_unfollow@3x.png",
   ]
 }

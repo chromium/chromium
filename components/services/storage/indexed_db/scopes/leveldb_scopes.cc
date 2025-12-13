@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -237,7 +238,7 @@ void LevelDBScopes::StartRecoveryAndCleanupTasks() {
             std::move(startup_scopes_to_clean_), level_db_,
             metadata_key_prefix_, max_write_batch_size_bytes_),
         base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
-                       weak_factory_.GetWeakPtr(), base::OnceClosure()));
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -271,9 +272,18 @@ leveldb::Status LevelDBScopes::Commit(std::unique_ptr<LevelDBScope> scope,
         max_write_batch_size_bytes_);
     cleanup_runner_->PostTaskAndReplyWithResult(
         FROM_HERE, base::BindOnce(&CleanupScopeTask::Run, std::move(task)),
-        base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(on_cleanup_complete)));
+        base::BindOnce(
+            [](base::OnceClosure on_cleanup_complete,
+               base::OnceCallback<void(leveldb::Status)> callback,
+               leveldb::Status result) {
+              if (on_cleanup_complete) {
+                std::move(on_cleanup_complete).Run();
+              }
+              std::move(callback).Run(result);
+            },
+            std::move(on_cleanup_complete),
+            base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
+                           weak_factory_.GetWeakPtr())));
   }
   return status;
 }
@@ -300,17 +310,13 @@ void LevelDBScopes::Rollback(int64_t scope_id,
   cleanup_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&CleanupScopeTask::Run, std::move(task)),
       base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
-                     weak_factory_.GetWeakPtr(), base::OnceClosure()));
+                     weak_factory_.GetWeakPtr()));
 }
 
-void LevelDBScopes::OnCleanupTaskResult(base::OnceClosure on_complete,
-                                        leveldb::Status result) {
+void LevelDBScopes::OnCleanupTaskResult(leveldb::Status result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.ok()) [[unlikely]] {
     tear_down_callback_.Run(result);
-  }
-  if (on_complete) {
-    std::move(on_complete).Run();
   }
 }
 

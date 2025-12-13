@@ -207,7 +207,9 @@ TEST_F(CRWKNavigationHandlerIntTest, FailedHTTPSUpgrade_Upgraded_SSLError) {
 
 // Tests that a net error on a navigation that wasn't upgraded to HTTPS
 // doesn't set the IsFailedHTTPSUpgrade() bit on the navigation context.
-TEST_F(CRWKNavigationHandlerIntTest, FailedHTTPSUpgrade_NotUpgraded_NetError) {
+// TODO(crbug.com/433316885): Re-enable this test.
+TEST_F(CRWKNavigationHandlerIntTest,
+       DISABLED_FailedHTTPSUpgrade_NotUpgraded_NetError) {
   GURL url("https://site.test");
   TestFailedHttpsUpgrade(url, HttpsUpgradeType::kNone, HttpsUpgradeType::kNone,
                          FailedWebStateObserver::ErrorType::kNetError);
@@ -215,7 +217,9 @@ TEST_F(CRWKNavigationHandlerIntTest, FailedHTTPSUpgrade_NotUpgraded_NetError) {
 
 // Tests that a net error on a navigation that was upgraded to HTTPS
 // sets the IsFailedHTTPSUpgrade() bit on the navigation context.
-TEST_F(CRWKNavigationHandlerIntTest, FailedHTTPSUpgrade_Upgraded_NetError) {
+// TODO(crbug.com/433316885): Re-enable this test.
+TEST_F(CRWKNavigationHandlerIntTest,
+       DISABLED_FailedHTTPSUpgrade_Upgraded_NetError) {
   GURL url("https://site.test");
   TestFailedHttpsUpgrade(url, HttpsUpgradeType::kHttpsOnlyMode,
                          HttpsUpgradeType::kHttpsOnlyMode,

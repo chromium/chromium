@@ -16,19 +16,20 @@ void WebThemeEngineMac::Paint(cc::PaintCanvas* canvas,
                               WebThemeEngine::State state,
                               const gfx::Rect& rect,
                               const WebThemeEngine::ExtraParams* extra_params,
-                              mojom::ColorScheme color_scheme,
-                              bool in_forced_colors,
+                              bool forced_colors,
+                              mojom::blink::ColorScheme color_scheme,
+                              mojom::blink::PreferredContrast contrast,
                               const ui::ColorProvider* color_provider,
                               const std::optional<SkColor>& accent_color) {
   if (IsScrollbarPart(part)) {
     PaintMacScrollBarParts(canvas, color_provider, part, state, rect,
-                           extra_params, color_scheme);
+                           extra_params, forced_colors, color_scheme);
     return;
   }
 
   WebThemeEngineDefault::Paint(canvas, part, state, rect, extra_params,
-                               color_scheme, in_forced_colors, color_provider,
-                               accent_color);
+                               forced_colors, color_scheme, contrast,
+                               color_provider, accent_color);
 }
 
 bool WebThemeEngineMac::IsScrollbarPart(WebThemeEngine::Part part) {
@@ -51,7 +52,8 @@ void WebThemeEngineMac::PaintMacScrollBarParts(
     WebThemeEngine::State state,
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
-    mojom::ColorScheme color_scheme) {
+    bool forced_colors,
+    mojom::blink::ColorScheme color_scheme) {
   ui::NativeTheme::ScrollbarExtraParams native_scrollbar_extra;
   const WebThemeEngine::ScrollbarExtraParams& scrollbar_extra =
       std::get<WebThemeEngine::ScrollbarExtraParams>(*extra_params);
@@ -77,7 +79,7 @@ void WebThemeEngineMac::PaintMacScrollBarParts(
 
   ui::NativeTheme::GetInstanceForNativeUi()->Paint(
       canvas, color_provider, NativeThemePart(part), NativeThemeState(state),
-      rect, ui::NativeTheme::ExtraParams(native_scrollbar_extra),
+      rect, ui::NativeTheme::ExtraParams(native_scrollbar_extra), forced_colors,
       NativeColorScheme(color_scheme));
 }
 

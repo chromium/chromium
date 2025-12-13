@@ -11,6 +11,7 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -18,6 +19,16 @@
 #include "chromeos/ash/components/boca/spotlight/spotlight_crd_manager.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_notification_handler.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
+
+namespace {
+constexpr char kChromeEnterpriseEmailSuffix[] =
+    "@chrome-enterprise-devices.gserviceaccount.com";
+
+bool IsChromeEnterpriseEmail(const std::string& email) {
+  return base::EndsWith(email, kChromeEnterpriseEmailSuffix,
+                        base::CompareCase::INSENSITIVE_ASCII);
+}
+}  // namespace
 
 namespace ash::boca {
 
@@ -87,6 +98,7 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
         }
         request_in_progress_ = true;
         std::string requester_email = teacher_email_;
+        bool is_student_to_receiver = false;
         // ignore the experiment, the correct experiment is not a part of this
         // chain
         if (ash::features::IsBocaSpotlightRobotRequesterEnabled() &&
@@ -96,10 +108,23 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
                                 .service_account()
                                 .email();
         }
+        // If this is a student -> receiver screen-share, we should inform CRD
+        // so it can stream audio appropriately.
+        std::string requester_user_email = device->second.view_screen_config()
+                                               .view_screen_requester()
+                                               .user()
+                                               .email();
+        if (ash::features::IsBocaRedirectStudentAudioToKioskEnabled() &&
+            requester_user_email.length() > 0 &&
+            // TODO: crbug.com/458711843 - Use a server-specified proto field to
+            // determine if the requesting entity is a kiosk receiver
+            IsChromeEnterpriseEmail(requester_user_email)) {
+          is_student_to_receiver = true;
+        }
         spotlight_crd_manager_->InitiateSpotlightSession(
             base::BindOnce(&SpotlightSessionManager::OnConnectionCodeReceived,
                            weak_ptr_factory_.GetWeakPtr()),
-            requester_email);
+            is_student_to_receiver, requester_email);
         break;
       }
       case ::boca::ViewScreenConfig::INACTIVE:

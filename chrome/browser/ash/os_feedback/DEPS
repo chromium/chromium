@@ -15,13 +15,17 @@ include_rules = [
   "+chrome/browser/signin",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/browser_dialogs.h",
-  "+chrome/browser/ui/browser_finder.h",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/webui/ash",
   "+chrome/browser/ui/webui/ash/os_feedback_dialog",
   "+chrome/common/webui_url_constants.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "chrome_os_feedback_delegate_browsertest\\.cc": [
+    "+chrome/browser/ui/browser_finder.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window.h",
+  ],
+}

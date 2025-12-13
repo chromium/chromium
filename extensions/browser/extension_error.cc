@@ -93,17 +93,20 @@ RuntimeError::RuntimeError(const ExtensionId& extension_id,
                            const GURL& context_url,
                            logging::LogSeverity level,
                            int render_frame_id,
-                           int render_process_id)
-    : ExtensionError(ExtensionError::Type::kRuntimeError,
-                     !extension_id.empty() ? extension_id : GURL(source).host(),
-                     from_incognito,
-                     level,
-                     source,
-                     message),
+                           int render_process_id,
+                           bool is_from_service_worker)
+    : ExtensionError(
+          ExtensionError::Type::kRuntimeError,
+          !extension_id.empty() ? extension_id : GURL(source).GetHost(),
+          from_incognito,
+          level,
+          source,
+          message),
       context_url_(context_url),
       stack_trace_(stack_trace),
       render_frame_id_(render_frame_id),
-      render_process_id_(render_process_id) {
+      render_process_id_(render_process_id),
+      is_from_service_worker_(is_from_service_worker) {
   CleanUpInit();
 }
 
@@ -145,7 +148,7 @@ void RuntimeError::CleanUpInit() {
   // background page in this case.
   GURL source_url = GURL(source_);
   if (context_url_.is_empty() &&
-      source_url.path_piece() ==
+      source_url.path() ==
           std::string("/") + kGeneratedBackgroundPageFilename) {
     context_url_ = source_url;
   }

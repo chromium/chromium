@@ -1,0 +1,8 @@
+Tests that page focus emulation persists between navigations
+hasFocus(before emulation):false
+hasFocus(before navigation from about:blank):true
+hasFocus(after navigation from about:blank):true
+hasFocus(after cross-origin navigation):true
+hasFocus(after same origin navigation):true
+hasFocus(after reload):true
+

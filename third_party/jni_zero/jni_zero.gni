@@ -23,7 +23,8 @@ declare_args() {
 
 declare_args() {
   # Use hashed symbol names to reduce JNI symbol overhead when not multiplexing.
-  use_hashed_jni_names = !enable_jni_multiplexing && !is_java_debug
+  use_hashed_jni_names =
+      (!enable_jni_multiplexing && !is_java_debug) || is_cronet_build
 }
 
 assert(!use_hashed_jni_names || !enable_jni_multiplexing,
@@ -187,6 +188,9 @@ template("generate_jni_registration") {
       rebase_path(depfile, root_build_dir),
       "--java-sources-file",
       rebase_path(_java_sources_list, root_build_dir),
+
+      # TODO(http://crbug.com/434278751): Remove support for legacy natives.
+      "--enable-legacy-natives",
     ]
 
     if (defined(_native_sources_list)) {
@@ -315,11 +319,6 @@ template("generate_jni_impl") {
     _invoke_jni_zero(_jni_zero_action_target_name) {
       _subdir = rebase_path(target_gen_dir, root_gen_dir)
       _jni_output_dir = "$jni_headers_dir/$_subdir/$_final_target_name"
-      if (defined(invoker.jni_generator_include)) {
-        _jni_generator_include = invoker.jni_generator_include
-      } else {
-        _jni_generator_include = "//third_party/jni_zero/jni_zero_internal.h"
-      }
 
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
@@ -345,8 +344,6 @@ template("generate_jni_impl") {
       args += [
         "--output-dir",
         rebase_path(_jni_output_dir, root_build_dir),
-        "--extra-include",
-        rebase_path(_jni_generator_include, _jni_output_dir),
       ]
 
       if (_from_source) {
@@ -357,6 +354,9 @@ template("generate_jni_impl") {
           rebase_path(_srcjar_output, root_build_dir),
           "--placeholder-srcjar-path",
           rebase_path(_placeholder_srcjar_output, root_build_dir),
+
+          # TODO(http://crbug.com/434278751): Remove support for legacy natives.
+          "--enable-legacy-natives",
         ]
         outputs += [
           _srcjar_output,
@@ -379,6 +379,10 @@ template("generate_jni_impl") {
             invoker.enable_definition_macros) {
           args += [ "--enable-definition-macros" ]
         }
+        if (defined(invoker.allow_private_called_by_natives) &&
+            invoker.allow_private_called_by_natives) {
+          args += [ "--allow-private-called-by-natives" ]
+        }
 
         # Cronet needs to rename jni_zero classes
         if (defined(is_cronet_build) && is_cronet_build) {
@@ -391,7 +395,9 @@ template("generate_jni_impl") {
           if (defined(invoker.jar_file)) {
             _jar_file = invoker.jar_file
           } else {
-            _jar_file = android_sdk_jar
+            # Use public SDK to ensure LGPL-licensed code can be built
+            # without the internal SDK.
+            _jar_file = public_android_sdk_jar
           }
           inputs += [
             _jar_file,
@@ -506,6 +512,16 @@ template("generate_jni") {
   generate_jni_impl(target_name) {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    if (!defined(invoker.enable_definition_macros)) {
+      enable_definition_macros =
+          build_with_chromium &&
+          filter_include([ get_label_info(":$target_name", "dir") ],
+                         [ "//third_party/webrtc/*" ]) == []
+    }
+
+    # TODO(http://crbug.com/330720762): Change to False and migrate.
+    allow_private_called_by_natives = true
     metadata = {
       # keep as abspath as this is used by cronet team
       # to convert JNI registration targets from GN to BP (GN2BP).

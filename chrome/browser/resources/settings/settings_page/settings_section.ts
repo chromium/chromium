@@ -7,11 +7,9 @@
  * 'settings-section' shows a paper material themed section with a header
  * which shows its page title.
  *
- * The section can expand vertically to fill its container's padding edge.
- *
  * Example:
  *
- *    <settings-section page-title="[[pageTitle]]" section="privacy">
+ *    <settings-section page-title="[[pageTitle]]">
  *      <!-- Insert your section controls here -->
  *    </settings-section>
  */
@@ -35,29 +33,12 @@ export class SettingsSectionElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * The section name should match a name specified in route.js. The
-       * MainPageBeMixin will expand this section if this section name matches
-       * currentRoute.section.
-       */
-      section: String,
-
-      /**
        * Title for the section header. Initialize so we can use the
        * getTitleHiddenStatus_ method for accessibility.
        */
       pageTitle: {
         type: String,
         value: '',
-      },
-
-      /**
-       * A CSS attribute used for temporarily hiding a SETTINGS-SECTION for the
-       * purposes of searching.
-       */
-      hiddenBySearch: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
       },
 
       /**
@@ -71,9 +52,7 @@ export class SettingsSectionElement extends PolymerElement {
     };
   }
 
-  declare section: string;
   declare pageTitle: string;
-  declare hiddenBySearch: boolean;
   declare showSendFeedbackButton: boolean;
 
   /**

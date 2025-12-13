@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "media/base/capture_version.h"
 #include "media/base/ipc/media_param_traits_macros.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_transformation.h"
@@ -23,6 +24,21 @@ enum class EffectState { kUnknown, kDisabled, kEnabled };
 }  // namespace intermediate
 
 namespace mojo {
+
+template <>
+struct StructTraits<media::mojom::CaptureVersionDataView,
+                    media::CaptureVersion> {
+  static uint32_t source(const media::CaptureVersion& input) {
+    return input.source;
+  }
+
+  static uint32_t sub_capture(const media::CaptureVersion& input) {
+    return input.sub_capture;
+  }
+
+  static bool Read(media::mojom::CaptureVersionDataView data,
+                   media::CaptureVersion* out);
+};
 
 // Creates a has_foo() and a foo() to serialize a foo std::optional<>.
 #define GENERATE_OPT_SERIALIZATION(type, field, default_value)      \
@@ -93,9 +109,9 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.interactive_content;
   }
 
-  static uint32_t sub_capture_target_version(
+  static media::CaptureVersion capture_version(
       const media::VideoFrameMetadata& input) {
-    return input.sub_capture_target_version;
+    return input.capture_version;
   }
 
   GENERATE_OPT_SERIALIZATION(int, capture_counter, 0)

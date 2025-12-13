@@ -198,9 +198,9 @@ TEST_F(PaintWorkletTest, NativeAndCustomProperties) {
       CSSPropertyID::kZoom,
       CSSPropertyID::kTop,
   };
-  Vector<String> custom_invalidation_properties = {
-      "--my-property",
-      "--another-property",
+  Vector<AtomicString> custom_invalidation_properties = {
+      AtomicString("--my-property"),
+      AtomicString("--another-property"),
   };
 
   TestPaintWorklet* paint_worklet_to_test = GetTestPaintWorklet();
@@ -418,13 +418,10 @@ TEST_F(PaintWorkletTest, ConsistentGlobalScopeCrossThread) {
   EXPECT_FALSE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
 
   CSSPaintDefinition* definition = global_scopes[0]->FindDefinition("foo");
-  Vector<String> foo_custom_properties;
-  for (const auto& s : definition->CustomInvalidationProperties()) {
-    foo_custom_properties.push_back(s);
-  }
 
   paint_worklet_to_test->RegisterMainThreadDocumentPaintDefinition(
-      "foo", definition->NativeInvalidationProperties(), foo_custom_properties,
+      "foo", definition->NativeInvalidationProperties(),
+      definition->CustomInvalidationProperties(),
       definition->InputArgumentTypes(),
       definition->GetPaintRenderingContext2DSettings()->alpha());
 
@@ -445,7 +442,7 @@ TEST_F(PaintWorkletTest, ConsistentGlobalScopeCrossThread) {
   definition = global_scopes[0]->FindDefinition("bar");
 
   // Manually change the custom properties
-  Vector<String> bar_custom_properties({"--bar1"});
+  Vector<AtomicString> bar_custom_properties = {AtomicString("--bar1")};
 
   paint_worklet_to_test->RegisterMainThreadDocumentPaintDefinition(
       "bar", definition->NativeInvalidationProperties(), bar_custom_properties,
@@ -465,13 +462,10 @@ TEST_F(PaintWorkletTest, ConsistentGlobalScopeCrossThread) {
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("loo"));
 
   definition = global_scopes[0]->FindDefinition("loo");
-  Vector<String> loo_custom_properties;
-  for (const auto& s : definition->CustomInvalidationProperties()) {
-    loo_custom_properties.push_back(s);
-  }
 
   paint_worklet_to_test->RegisterMainThreadDocumentPaintDefinition(
-      "loo", definition->NativeInvalidationProperties(), loo_custom_properties,
+      "loo", definition->NativeInvalidationProperties(),
+      definition->CustomInvalidationProperties(),
       definition->InputArgumentTypes(),
       definition->GetPaintRenderingContext2DSettings()->alpha());
 
@@ -495,7 +489,7 @@ TEST_F(PaintWorkletTest, ConsistentGlobalScopeCrossThread) {
   definition = global_scopes[0]->FindDefinition("gar");
 
   // Manually change custom properties
-  Vector<String> gar_custom_properties({"--gar1"});
+  Vector<AtomicString> gar_custom_properties = {AtomicString("--gar1")};
 
   paint_worklet_to_test->RegisterMainThreadDocumentPaintDefinition(
       "gar", definition->NativeInvalidationProperties(), gar_custom_properties,
@@ -554,16 +548,13 @@ TEST_F(PaintWorkletTest, GeneratorNotifiedAfterAllRegistrations) {
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
 
   CSSPaintDefinition* definition = global_scopes[0]->FindDefinition("foo");
-  Vector<String> custom_properties;
-  for (const auto& s : definition->CustomInvalidationProperties()) {
-    custom_properties.push_back(s);
-  }
 
   // The cross thread check should cause the generator to fire
   EXPECT_CALL(*observer, PaintImageGeneratorReady).Times(1);
 
   paint_worklet_to_test->RegisterMainThreadDocumentPaintDefinition(
-      "foo", definition->NativeInvalidationProperties(), custom_properties,
+      "foo", definition->NativeInvalidationProperties(),
+      definition->CustomInvalidationProperties(),
       definition->InputArgumentTypes(),
       definition->GetPaintRenderingContext2DSettings()->alpha());
 

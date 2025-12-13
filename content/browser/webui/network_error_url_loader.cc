@@ -18,10 +18,10 @@ void StartNetworkErrorsURLLoader(
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   int net_error = net::ERR_INVALID_URL;
-  if (request.url.host() == kChromeUIDinoHost) {
+  if (request.url.GetHost() == kChromeUIDinoHost) {
     net_error = net::Error::ERR_INTERNET_DISCONNECTED;
   } else {
-    std::string error_code_string = request.url.path().substr(1);
+    std::string error_code_string = request.url.GetPath().substr(1);
 
     int temp_code;
     if (base::StringToInt(error_code_string, &temp_code)) {

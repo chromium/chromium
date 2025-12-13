@@ -13,7 +13,6 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "ui/gfx/buffer_format_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/d3d_shared_fence.h"
@@ -37,10 +36,9 @@ void SharedImageInterface::CreateSharedMemoryRegionFromSIInfo(
       << si_info.meta.format.ToString();
 #endif
 
-  gfx::BufferFormat buffer_format =
-      viz::SinglePlaneSharedImageFormatToBufferFormat(si_info.meta.format);
-  const size_t buffer_size =
-      gfx::BufferSizeForBufferFormat(si_info.meta.size, buffer_format);
+  const size_t buffer_size = viz::SharedMemorySizeForSharedImageFormat(
+                                 si_info.meta.format, si_info.meta.size)
+                                 .value();
   auto shared_memory_region =
       base::UnsafeSharedMemoryRegion::Create(buffer_size);
 
@@ -60,7 +58,9 @@ void SharedImageInterface::CreateSharedMemoryRegionFromSIInfo(
   handle = gfx::GpuMemoryBufferHandle(std::move(shared_memory_region));
   handle.offset = 0;
   handle.stride = static_cast<int32_t>(
-      gfx::RowSizeForBufferFormat(si_info.meta.size.width(), buffer_format, 0));
+      viz::SharedMemoryRowSizeForSharedImageFormat(
+          si_info.meta.format, /*plane=*/0, si_info.meta.size.width())
+          .value());
 }
 
 gpu::SharedImageUsageSet SharedImageInterface::GetCpuSIUsage(
@@ -84,15 +84,6 @@ gpu::SharedImageUsageSet SharedImageInterface::GetCpuSIUsage(
              gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
   }
 }
-
-SharedImageInterface::SwapChainSharedImages::SwapChainSharedImages(
-    scoped_refptr<gpu::ClientSharedImage> front_buffer,
-    scoped_refptr<gpu::ClientSharedImage> back_buffer)
-    : front_buffer(std::move(front_buffer)),
-      back_buffer(std::move(back_buffer)) {}
-SharedImageInterface::SwapChainSharedImages::SwapChainSharedImages(
-    const SwapChainSharedImages& shared_images) = default;
-SharedImageInterface::SwapChainSharedImages::~SwapChainSharedImages() = default;
 
 SharedImageInterface::SharedImageInterface()
     : holder_(base::MakeRefCounted<SharedImageInterfaceHolder>(this)) {}
@@ -172,6 +163,20 @@ void SharedImageInterface::CreateSharedImagePool(
 
 void SharedImageInterface::DestroySharedImagePool(
     const SharedImagePoolId& pool_id) {
+  NOTREACHED();
+}
+
+bool SharedImageInterface::IsLost() const {
+  NOTREACHED();
+}
+
+bool SharedImageInterface::AddGpuChannelLostObserver(
+    GpuChannelLostObserver* observer) {
+  NOTREACHED();
+}
+
+void SharedImageInterface::RemoveGpuChannelLostObserver(
+    GpuChannelLostObserver* observer) {
   NOTREACHED();
 }
 

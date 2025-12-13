@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tab_groups/tab_group_id.h"
 
 class TabOrganization : public TabData::Observer {
@@ -58,8 +57,6 @@ class TabOrganization : public TabData::Observer {
   const std::vector<std::u16string>& names() const { return names_; }
   const CurrentName& current_name() const { return current_name_; }
   UserChoice choice() const { return choice_; }
-  // TODO(b/331852814): Remove along with the multi tab organization flag
-  optimization_guide::proto::UserFeedback feedback() const { return feedback_; }
   std::optional<tab_groups::TabGroupId> group_id() const { return group_id_; }
   ID organization_id() const { return organization_id_; }
   const std::u16string GetDisplayName() const;
@@ -75,10 +72,6 @@ class TabOrganization : public TabData::Observer {
   void AddTabData(std::unique_ptr<TabData> tab_data);
   void RemoveTabData(TabData::TabID id);
   void SetCurrentName(CurrentName new_current_name);
-  // TODO(b/331852814): Remove along with the multi tab organization flag
-  void SetFeedback(optimization_guide::proto::UserFeedback feedback) {
-    feedback_ = feedback;
-  }
   void SetTabGroupId(std::optional<tab_groups::TabGroupId> id) {
     group_id_ = id;
   }
@@ -120,12 +113,6 @@ class TabOrganization : public TabData::Observer {
   // Once the user has interacted this will become either kAccepted or
   // kRejected. Set only via the Accept() and Reject() methods.
   UserChoice choice_ = UserChoice::kNoChoice;
-
-  // A separate feedback mechanism, represents whether the user has provided
-  // feedback via the thumbs UI.
-  // TODO(b/331852814): Remove along with the multi tab organization flag
-  optimization_guide::proto::UserFeedback feedback_ =
-      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
 
   // The id for the existing tab group this organization refers to, if any.
   std::optional<tab_groups::TabGroupId> group_id_ = std::nullopt;

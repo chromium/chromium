@@ -40,8 +40,6 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
   // made. If we check too late, it will appear that some users are missing from
   // the group if they are falling back to another path due to crashes or
   // missing support.
-  bool default_angle_opengl =
-      base::FeatureList::IsEnabled(features::kDefaultANGLEOpenGL);
   bool default_angle_metal =
       base::FeatureList::IsEnabled(features::kDefaultANGLEMetal);
   bool default_angle_vulkan = features::IsDefaultANGLEVulkan();
@@ -67,15 +65,6 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
        gl::GetANGLEImplementation() == ANGLEImplementation::kNull)) {
     AddInitDisplay(init_displays, ANGLE_NULL);
     return;
-  }
-
-  // If no display has been explicitly requested and the DefaultANGLEOpenGL
-  // experiment is enabled, try creating OpenGL displays first.
-  // TODO(oetuaho@nvidia.com): Only enable this path on specific GPUs with a
-  // blocklist entry. http://crbug.com/693090
-  if (supports_angle_opengl && use_angle_default && default_angle_opengl) {
-    AddInitDisplay(init_displays, ANGLE_OPENGL);
-    AddInitDisplay(init_displays, ANGLE_OPENGLES);
   }
 
   if (supports_angle_metal && use_angle_default && default_angle_metal &&

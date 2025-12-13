@@ -248,7 +248,8 @@ TEST_P(AudioInputDeviceTest, ConfirmReadsViaShmemFlag) {
 
   // Set the confirmation flag to 1. The AudioInputDevice should reset this to 0
   // after delivering audio.
-  base::subtle::Release_Store(&(buffer_->params.has_unread_data), 1);
+  std::atomic_ref<uint32_t> has_unread_data(buffer_->params.has_unread_data);
+  has_unread_data.store(1, std::memory_order_release);
   uint32_t buffer_index = 0;
   browser_socket_.Send(base::byte_span_from_ref(buffer_index));
 
@@ -269,7 +270,7 @@ TEST_P(AudioInputDeviceTest, ConfirmReadsViaShmemFlag) {
   while (!got_confirmation_signal &&
          base::TimeTicks::Now() - started_wait < base::Seconds(10)) {
     got_confirmation_signal =
-        base::subtle::NoBarrier_Load(&(buffer_->params.has_unread_data)) == 0;
+        has_unread_data.load(std::memory_order_relaxed) == 0;
   }
   EXPECT_TRUE(got_confirmation_signal);
 

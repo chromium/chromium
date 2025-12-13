@@ -40,12 +40,34 @@
     let messages = await script_messages_for(_ => {
       let script = document.createElement("script");
       window.log_message("SET");
+      Object.getOwnPropertyDescriptor(HTMLElement.prototype, "innerText").set.call(script, LOG_RUN_MESSAGE);
+      window.log_message("APPEND");
+      container.appendChild(script);
+    });
+    assert_array_equals(messages, ["SET", "APPEND", "CREATE_SCRIPT", "HTMLScriptElement text", "RUN_TRUSTED_SCRIPT"]);
+  }, "Verify when the default policy is called for script source via HTMLElement.innerText.");
+
+  promise_test(async t => {
+    let messages = await script_messages_for(_ => {
+      let script = document.createElement("script");
+      window.log_message("SET");
       script.textContent = LOG_RUN_MESSAGE;
       window.log_message("APPEND");
       container.appendChild(script);
     });
     assert_array_equals(messages, ["SET", "CREATE_SCRIPT", "HTMLScriptElement textContent", "APPEND", "RUN_TRUSTED_SCRIPT"]);
   }, "Default policy's calls when setting script source via HTMLScriptElement.textContent.");
+
+  promise_test(async t => {
+    let messages = await script_messages_for(_ => {
+      let script = document.createElement("script");
+      window.log_message("SET");
+      Object.getOwnPropertyDescriptor(Node.prototype, "textContent").set.call(script, LOG_RUN_MESSAGE);
+      window.log_message("APPEND");
+      container.appendChild(script);
+    });
+    assert_array_equals(messages, ["SET", "APPEND", "CREATE_SCRIPT", "HTMLScriptElement text", "RUN_TRUSTED_SCRIPT"]);
+  }, "Verify when the default policy is called for script source set via Node.textContent.");
 
   promise_test(async t => {
     let messages = await script_messages_for(_ => {
@@ -296,7 +318,13 @@
     let messages = await script_messages_for(_ => {
       let script = create_html_script_with_trusted_source_text(";");
       window.log_message("SET");
-      script.moveBefore(document.createTextNode(LOG_RUN_MESSAGE), script.firstChild);
+      // Per https://dom.spec.whatwg.org/#move, step 1, moveBefore requires
+      // the two nodes to have the same shadow-including root.
+      let text = document.createTextNode(LOG_RUN_MESSAGE);
+      let root = document.createElement("div");
+      root.appendChild(text);
+      root.appendChild(script);
+      script.moveBefore(text, script.firstChild);
       window.log_message("APPEND");
       container.appendChild(script);
     });

@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview՝ <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Այս ընդլայնումը պարունակում է «<ph name="KEY_PATH" />» բանալու ֆայլ: Դա հավանաբար ընդունելի չէ:</translation>
 <translation id="5486326529110362464">Մասնավոր բանալու համար անհրաժեշտ է ներածման արժեք:</translation>
+<translation id="5707185214361380026">Չհաջողվեց բեռնել ընդլայնումը հետևյալից`</translation>
 <translation id="5972529113578162692">Սարքի ադմինիստրատորը պահանջում, որ <ph name="EXTENSION_NAME" /> ընդլայնումը տեղադրված լինի: Այն հնարավոր չէ ապատեղադրել:</translation>
 <translation id="6027032947578871493">Անհայտ <ph name="PRODUCT_ID" /> արտադրանք <ph name="VENDOR_NAME" />-ի կողմից (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից</translation>
+<translation id="6220413761270491930">Ընդլայնումը բեռնելիս սխալ առաջացավ</translation>
 <translation id="6322279351188361895">Չհաջողվեց կարդալ մասնավոր բանալին:</translation>
 <translation id="6391538222494443604">Մուտքային գրացուցակը պետք է առկա լինի:</translation>
 <translation id="641087317769093025">Չհաջողվեց դուրս բերել ընդլայնումը</translation>

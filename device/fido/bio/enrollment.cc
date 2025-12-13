@@ -130,10 +130,13 @@ std::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
     const std::optional<cbor::Value>& cbor_response) {
   BioEnrollmentResponse response;
 
-  if (!cbor_response || !cbor_response->is_map()) {
+  if (!cbor_response) {
+    // This is expected for subcommands that don't return a CBOR object.
     return response;
   }
-
+  if (!cbor_response->is_map()) {
+    return std::nullopt;
+  }
   const auto& response_map = cbor_response->GetMap();
 
   // modality

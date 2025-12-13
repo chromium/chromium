@@ -17,7 +17,7 @@ DEFINE_BINARY_PROTO_FUZZER(
     std::cout << fuzzer_input.DebugString() << std::endl;
   }
 
-  WTF::Partitions::Initialize();
+  blink::Partitions::Initialize();
   base::sequence_manager::SequenceManagerFuzzerProcessor::ParseAndRun(
       fuzzer_input);
 }

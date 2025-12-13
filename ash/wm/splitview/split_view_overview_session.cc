@@ -48,7 +48,7 @@ SplitViewOverviewSession::SplitViewOverviewSession(
     WindowSnapActionSource snap_action_source)
     : window_(window), snap_action_source_(snap_action_source) {
   CHECK(window);
-  CHECK(!Shell::Get()->IsInTabletMode());
+  CHECK(!display::Screen::Get()->InTabletMode());
   window_observation_.Observe(window);
   WindowState::Get(window)->AddObserver(this);
 }

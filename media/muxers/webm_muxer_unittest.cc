@@ -250,49 +250,6 @@ TEST_P(WebmMuxerTest, OnEncodedVideoTwoAlphaFrames) {
             accumulated_position_);
 }
 
-TEST_P(WebmMuxerTest, OnEncodedAudioTwoFrames) {
-  if (GetParam().num_video_tracks > 0)
-    return;
-
-  const int sample_rate = 48000;
-  const int frames_per_buffer = 480;
-  media::AudioParameters audio_params(
-      media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      ChannelLayoutConfig::Mono(), sample_rate, frames_per_buffer);
-
-  const auto encoded_data = media::DecoderBuffer::CopyFrom(
-      base::as_byte_span("abcdefghijklmnopqrstuvwxyz"));
-
-  EXPECT_CALL(*this, WriteCallback(_))
-      .Times(AtLeast(1))
-      .WillRepeatedly(
-          WithArgs<0>(Invoke(this, &WebmMuxerTest::SaveEncodedDataLen)));
-  PutAudio(audio_params, std::move(encoded_data), std::nullopt);
-
-  // First time around WriteCallback() is pinged a number of times to write the
-  // Matroska header, but at the end it dumps |encoded_data|.
-  EXPECT_EQ(last_encoded_length_, encoded_data->size());
-  EXPECT_EQ(GetWebmMuxerPosition(), accumulated_position_);
-  EXPECT_GE(GetWebmMuxerPosition(), static_cast<int64_t>(last_encoded_length_));
-  EXPECT_EQ(GetWebmSegmentMode(), mkvmuxer::Segment::kLive);
-
-  const int64_t begin_of_second_block = accumulated_position_;
-  EXPECT_CALL(*this, WriteCallback(_))
-      .Times(AtLeast(1))
-      .WillRepeatedly(
-          WithArgs<0>(Invoke(this, &WebmMuxerTest::SaveEncodedDataLen)));
-  PutAudio(audio_params, std::move(encoded_data), std::nullopt);
-
-  // The second time around the callbacks should include a SimpleBlock header,
-  // namely the track index, a timestamp and a flags byte, for a total of 6B.
-  EXPECT_EQ(last_encoded_length_, encoded_data->size());
-  EXPECT_EQ(GetWebmMuxerPosition(), accumulated_position_);
-  const uint32_t kSimpleBlockSize = 6u;
-  EXPECT_EQ(static_cast<int64_t>(begin_of_second_block + kSimpleBlockSize +
-                                 encoded_data->size()),
-            accumulated_position_);
-}
-
 TEST_P(WebmMuxerTest, ColorSpaceREC709IsPropagatedToTrack) {
   const auto encoded_data =
       media::DecoderBuffer::CopyFrom(base::as_byte_span("abab"));
@@ -606,9 +563,8 @@ TEST_F(WebmMuxerTestUnparametrized, HoldsDataUntilDurationExpiry) {
   AddAudioAtOffsetWithDuration(30, 10);
   AddAudioAtOffsetWithDuration(40, 10);
   Mock::VerifyAndClearExpectations(this);
-  environment_.FastForwardBy(base::Milliseconds(200));
   EXPECT_CALL(*this, OnWrite).Times(AtLeast(1));
-  AddAudioAtOffsetWithDuration(50, 10);
+  AddAudioAtOffsetWithDuration(200, 10);
   Mock::VerifyAndClearExpectations(this);
   ASSERT_TRUE(Parse());
 }
@@ -625,9 +581,8 @@ TEST_F(WebmMuxerTestUnparametrized, DurationExpiryLimitedByMaxFrequency) {
   AddAudioAtOffsetWithDuration(30, 10);
   AddAudioAtOffsetWithDuration(40, 10);
   Mock::VerifyAndClearExpectations(this);
-  environment_.FastForwardBy(base::Milliseconds(100));
   EXPECT_CALL(*this, OnWrite).Times(AtLeast(1));
-  AddAudioAtOffsetWithDuration(50, 10);
+  AddAudioAtOffsetWithDuration(100, 10);
   Mock::VerifyAndClearExpectations(this);
   ASSERT_TRUE(Parse());
 }
@@ -651,6 +606,15 @@ TEST_F(WebmMuxerTestUnparametrized, ForwardsAudioVideoMuxingError) {
   // sample.
   ASSERT_TRUE(AddVideoAtOffset(0, /*is_key_frame=*/true));
   ASSERT_FALSE(AddAudioAtOffsetWithDuration(0, 10));
+}
+
+TEST_F(WebmMuxerTestUnparametrized, OnEncodedAudioTwoFrames) {
+  CreateMuxer(/*has_video=*/false, /*has_audio=*/true);
+  EXPECT_CALL(*this, OnWrite).Times(AtLeast(1));
+  AddAudioAtOffsetWithDuration(0, 10);
+  AddAudioAtOffsetWithDuration(10, 10);
+  ASSERT_TRUE(Parse());
+  EXPECT_THAT(buffer_timestamps_ms_, ElementsAre(Pair(1, ElementsAre(0, 10))));
 }
 
 TEST_F(WebmMuxerTestUnparametrized, Transformations) {

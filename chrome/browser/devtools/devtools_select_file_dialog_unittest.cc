@@ -7,13 +7,14 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
+#include "base/test/test_future.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using ::testing::Return;
 
@@ -31,10 +32,6 @@ class DevToolsSelectFileDialogTest : public content::RenderViewHostTestHarness {
     ui::SelectFileDialog::SetFactory(nullptr);
     content::RenderViewHostTestHarness::TearDown();
   }
-
- private:
-  ScopedTestingLocalState testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 };
 
 TEST_F(DevToolsSelectFileDialogTest, SelectFileCanceledCallback) {
@@ -60,13 +57,14 @@ TEST_F(DevToolsSelectFileDialogTest, SelectFileSelectedCallback) {
   ui::SelectFileDialog::SetFactory(
       std::make_unique<content::FakeSelectFileDialogFactory>(
           std::vector<base::FilePath>{test_path}, &params));
-  base::MockCallback<DevToolsSelectFileDialog::SelectedCallback> cb;
-  EXPECT_CALL(cb, Run(test_path)).Times(1).WillOnce([&] { run_loop.Quit(); });
 
+  base::test::TestFuture<const ui::SelectedFileInfo&> future;
   DevToolsSelectFileDialog::SelectFile(
-      web_contents(), ui::SelectFileDialog::SELECT_SAVEAS_FILE, cb.Get(),
-      base::DoNothing(), base::FilePath());
-  run_loop.Run();
+      web_contents(), ui::SelectFileDialog::SELECT_SAVEAS_FILE,
+      future.GetCallback(), base::DoNothing(), base::FilePath());
+  EXPECT_TRUE(future.Wait());
+  ui::SelectedFileInfo result = future.Get();
+  EXPECT_EQ(result.file_path, test_path);
 
   EXPECT_EQ(params.type, ui::SelectFileDialog::SELECT_SAVEAS_FILE);
   EXPECT_TRUE(params.default_path.empty());
@@ -81,13 +79,14 @@ TEST_F(DevToolsSelectFileDialogTest,
   ui::SelectFileDialog::SetFactory(
       std::make_unique<content::FakeSelectFileDialogFactory>(
           std::vector<base::FilePath>{test_path}, &params));
-  base::MockCallback<DevToolsSelectFileDialog::SelectedCallback> cb;
-  EXPECT_CALL(cb, Run(test_path)).Times(1).WillOnce([&] { run_loop.Quit(); });
 
+  base::test::TestFuture<const ui::SelectedFileInfo&> future;
   DevToolsSelectFileDialog::SelectFile(
-      web_contents(), ui::SelectFileDialog::SELECT_SAVEAS_FILE, cb.Get(),
-      base::DoNothing(), default_path);
-  run_loop.Run();
+      web_contents(), ui::SelectFileDialog::SELECT_SAVEAS_FILE,
+      future.GetCallback(), base::DoNothing(), default_path);
+  EXPECT_TRUE(future.Wait());
+  ui::SelectedFileInfo result = future.Get();
+  EXPECT_EQ(result.file_path, test_path);
 
   EXPECT_EQ(params.type, ui::SelectFileDialog::SELECT_SAVEAS_FILE);
   EXPECT_EQ(params.default_path, default_path);

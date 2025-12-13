@@ -8,6 +8,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 
+@class CRWWebView;
 @class WKWebView;
 
 namespace web {
@@ -21,7 +22,7 @@ class BrowserState;
 // 1) `browser_state` is not null.
 // 2) web::BrowsingDataPartition is synchronized.
 //
-WKWebView* BuildWKWebView(CGRect frame, BrowserState* browser_state);
+CRWWebView* BuildWKWebView(CGRect frame, BrowserState* browser_state);
 
 // Returns a new WKWebView that will not be used to display content.
 // This WKWebView can be used to fetch some data using the same cookie store

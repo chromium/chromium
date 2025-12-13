@@ -28,10 +28,6 @@ struct QuadLengthValue {
            left == other.left;
   }
 
-  bool operator!=(const QuadLengthValue& other) const {
-    return !(*this == other);
-  }
-
   Length top;
   Length right;
   Length bottom;

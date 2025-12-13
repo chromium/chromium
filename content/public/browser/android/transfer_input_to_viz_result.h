@@ -18,7 +18,7 @@ enum class TransferInputToVizResult {
   kNonFingerToolType = 2,
   kVizInitializationNotComplete = 3,
   kSelectionHandlesActive = 4,
-  kCanTriggerBackGesture = 5,
+  // Obsolete: kCanTriggerBackGesture = 5,
   kImeIsActive = 6,
   kRequestedByEmbedder = 7,
   kSystemServerDidNotTransfer = 8,
@@ -28,7 +28,9 @@ enum class TransferInputToVizResult {
   kSequenceTransferredBackFromViz = 12,
   kWebContentsIgnoringInputEvents = 13,
   kRIRDelegateConnectionNotSetup = 14,
-  kMaxValue = kRIRDelegateConnectionNotSetup,
+  kSharedMemoryUnavailable = 15,
+  kPositiveEventAndDownTimeDelta = 16,
+  kMaxValue = kPositiveEventAndDownTimeDelta,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TransferInputToVizResult)
 

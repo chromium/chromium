@@ -14,12 +14,11 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-forward.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -40,6 +39,7 @@ class TextInputClient;
 
 namespace viz {
 class ClientFrameSinkVideoCapturer;
+struct CopyOutputBitmapWithMetadata;
 }  // namespace viz
 
 namespace content {
@@ -100,6 +100,13 @@ class CONTENT_EXPORT RenderWidgetHostView {
     return gfx::ToRoundedPoint(
         TransformPointToRootCoordSpaceF(gfx::PointF(point)));
   }
+
+  // Coordinate points received from root frame need to be transformed
+  // to the renderer frame's coordinate space. For same site renderer frame this
+  // is a no-op; however, coordinate in an out-of-process iframe renderer
+  // process require transformation.
+  virtual gfx::PointF TransformRootPointToViewCoordSpace(
+      const gfx::PointF& point) = 0;
 
   // Retrieves the native view used to contain plugins and identify the
   // renderer in IPC messages.
@@ -229,7 +236,8 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual void CopyFromSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const SkBitmap&)> callback) = 0;
+      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+          callback) = 0;
 
   // Ensures that all surfaces are synchronized for the next call to
   // CopyFromSurface. This is used by web tests.
@@ -281,7 +289,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual void ShowSharePicker(
       const std::string& title,
       const std::string& text,
-      const std::string& url,
+      const GURL& url,
       const std::vector<std::string>& file_paths,
       blink::mojom::ShareService::ShareCallback callback) = 0;
 
@@ -299,8 +307,6 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // coordinates. No-op unless VirtualKeyboardMode is kOverlaysContent.
   virtual void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) = 0;
-
-  virtual void NotifyContextMenuInsetsObservers(const gfx::Rect&) = 0;
 
   virtual void ShowInterestInElement(int) = 0;
 

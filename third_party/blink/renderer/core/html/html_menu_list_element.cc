@@ -11,18 +11,55 @@
 namespace blink {
 
 HTMLMenuListElement::HTMLMenuListElement(Document& document)
-    : HTMLElement(html_names::kMenulistTag, document) {
-  // menulist is always a popover and should have popover data with type auto.
+    : HTMLMenuOwnerElement(html_names::kMenulistTag, document) {
+  // <menulist> is always a popover and should have popover data with type auto.
   DCHECK(RuntimeEnabledFeatures::MenuElementsEnabled());
   EnsurePopoverData().setType(PopoverValueType::kAuto);
 }
 
-bool HTMLMenuListElement::IsValidBuiltinCommand(HTMLElement& invoker,
+bool HTMLMenuListElement::HandleCommandInternal(HTMLElement& invoker,
                                                 CommandEventType command) {
-  return HTMLElement::IsValidBuiltinCommand(invoker, command) ||
-         command == CommandEventType::kToggleMenu ||
-         command == CommandEventType::kShowMenu ||
-         command == CommandEventType::kHideMenu;
+  DCHECK(RuntimeEnabledFeatures::MenuElementsEnabled());
+  if (!IsValidBuiltinCommand(invoker, command)) {
+    return false;
+  }
+  if (HTMLElement::HandleCommandInternal(invoker, command)) {
+    return true;
+  }
+  if (command != CommandEventType::kToggleMenu &&
+      command != CommandEventType::kShowMenu &&
+      command != CommandEventType::kHideMenu) {
+    return false;
+  }
+
+  auto& document = GetDocument();
+  bool can_show =
+      IsPopoverReady(PopoverTriggerAction::kShow,
+                     /*exception_state=*/nullptr,
+                     /*include_event_handler_text=*/true, &document) &&
+      (command == CommandEventType::kToggleMenu ||
+       command == CommandEventType::kShowMenu);
+  bool can_hide =
+      IsPopoverReady(PopoverTriggerAction::kHide,
+                     /*exception_state=*/nullptr,
+                     /*include_event_handler_text=*/true, &document) &&
+      (command == CommandEventType::kToggleMenu ||
+       command == CommandEventType::kHideMenu);
+  // If the triggering invoker is a `<menuitem>` that is also checkable, then
+  // the `return true`'s below will cause the checkable behavior not to fire.
+  if (can_hide) {
+    HidePopoverInternal(
+        &invoker, HidePopoverFocusBehavior::kFocusPreviousElement,
+        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+        /*exception_state=*/nullptr);
+    return true;
+  } else if (can_show) {
+    // TODO(crbug.com/1121840) HandleCommandInternal is called for both
+    // `popovertarget` and `commandfor`.
+    InvokePopover(invoker);
+    return true;
+  }
+  return false;
 }
 
 }  // namespace blink

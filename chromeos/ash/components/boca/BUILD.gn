@@ -12,6 +12,8 @@ static_library("boca") {
     "boca_metrics_manager.h",
     "boca_metrics_util.cc",
     "boca_metrics_util.h",
+    "boca_request.cc",
+    "boca_request.h",
     "boca_role_util.cc",
     "boca_role_util.h",
     "boca_session_manager.cc",
@@ -21,9 +23,17 @@ static_library("boca") {
     "boca_window_observer.h",
     "notifications/boca_notification_handler.cc",
     "notifications/boca_notification_handler.h",
+    "retriable_request_sender.h",
+    "screen_presenter_factory.h",
+    "shared_crd_session_wrapper.h",
+    "student_screen_presenter.h",
+    "teacher_screen_presenter.h",
+    "util.cc",
+    "util.h",
   ]
   deps = [
     # TODO(crbug.com/376673450):Clean up unused and unwanted dependencies.
+    ":invalidation_delegate",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
@@ -36,14 +46,17 @@ static_library("boca") {
     "//chromeos/ash/components/network",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/strings:strings_grit",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/session_manager/core",
     "//components/sessions:session_id",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//google_apis/common",
+    "//services/network/public/mojom",
     "//ui/base",
     "//ui/message_center",
+    "//url",
   ]
 }
 
@@ -56,14 +69,19 @@ static_library("invalidations") {
   ]
   deps = [
     ":boca",
+    ":invalidation_delegate",
     "//base",
-    "//chromeos/ash/components/boca/session_api",
     "//components/account_id",
     "//components/gcm_driver",
     "//components/keyed_service/core",
-    "//google_apis/common:common",
+    "//google_apis/common",
     "//net",
   ]
+}
+
+source_set("invalidation_delegate") {
+  sources = [ "invalidations/invalidation_service_delegate.h" ]
+  deps = [ "//base" ]
 }
 
 static_library("spotlight_notification_constants") {
@@ -98,7 +116,7 @@ static_library("spotlight") {
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/strings:strings_grit",
     "//components/signin/public/identity_manager",
-    "//google_apis/common:common",
+    "//google_apis/common",
     "//net",
     "//ui/message_center",
   ]
@@ -110,6 +128,8 @@ static_library("spotlight_lib") {
     "spotlight/fake_spotlight_oauth_token_fetcher.h",
     "spotlight/remoting_client_io_proxy.cc",
     "spotlight/remoting_client_io_proxy.h",
+    "spotlight/spotlight_audio_stream_consumer.cc",
+    "spotlight/spotlight_audio_stream_consumer.h",
     "spotlight/spotlight_constants.h",
     "spotlight/spotlight_frame_consumer.cc",
     "spotlight/spotlight_frame_consumer.h",
@@ -133,14 +153,19 @@ source_set("unit_tests") {
 
   sources = [
     "boca_metrics_manager_unittest.cc",
+    "boca_request_unittest.cc",
     "boca_role_util_unittest.cc",
     "boca_session_manager_unittest.cc",
     "boca_session_util_unittest.cc",
     "invalidations/fcm_handler_unittest.cc",
     "invalidations/invalidation_service_impl_unittest.cc",
     "notifications/boca_notification_handler_unittest.cc",
+    "retriable_request_sender_unittest.cc",
     "spotlight/register_screen_request_unittest.cc",
+    "spotlight/remoting_client_io_proxy_unittest.cc",
+    "spotlight/spotlight_audio_stream_consumer_unittest.cc",
     "spotlight/spotlight_notification_handler_unittest.cc",
+    "spotlight/spotlight_remoting_client_manager_unittest.cc",
     "spotlight/spotlight_service_unittest.cc",
     "spotlight/spotlight_session_manager_unittest.cc",
     "spotlight/update_view_screen_state_request_unittest.cc",
@@ -149,6 +174,7 @@ source_set("unit_tests") {
 
   deps = [
     ":boca",
+    ":invalidation_delegate",
     ":invalidations",
     ":spotlight",
     ":spotlight_notification_constants",
@@ -169,9 +195,11 @@ source_set("unit_tests") {
     "//chromeos/strings:strings_grit",
     "//components/gcm_driver",
     "//components/gcm_driver:test_support",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/soda",
@@ -182,6 +210,8 @@ source_set("unit_tests") {
     "//google_apis/common",
     "//google_apis/common:test_support",
     "//net",
+    "//remoting/base:authorization",
+    "//remoting/client/common",
     "//services/network:test_support",
     "//services/network/public/cpp/",
     "//testing/gmock",

@@ -84,7 +84,7 @@ bool UpdateStudentActivitiesRequest::GetContentData(
   }
   root.Set(kActivities, std::move(activities));
 
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
   return true;
 }
 

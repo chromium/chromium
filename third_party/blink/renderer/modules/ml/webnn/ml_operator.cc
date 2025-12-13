@@ -8,9 +8,15 @@
 
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_cumulative_sum_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_cell_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
@@ -113,6 +119,8 @@ String MLOperator::OperatorKindToString(
           return "log";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kNeg:
           return "neg";
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kRoundEven:
+          return "roundEven";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kSign:
           return "sign";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kSin:
@@ -123,6 +131,10 @@ String MLOperator::OperatorKindToString(
           return "erf";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kIdentity:
           return "identity";
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kIsNaN:
+          return "isNaN";
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kIsInfinite:
+          return "isInfinite";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot:
           return "logicalNot";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kReciprocal:
@@ -286,7 +298,14 @@ MLOperator::MLOperator(MLGraphBuilder* builder,
                        webnn::mojom::blink::Operation::Tag kind,
                        MLOperatorOptions* options,
                        OperationSubKind sub_kind)
-    : builder_(builder), kind_(kind), options_(options), sub_kind_(sub_kind) {}
+    : builder_(builder), kind_(kind), options_(options), sub_kind_(sub_kind) {
+  HeapVector<Member<MLOperand>> optional_inputs;
+  AddOptionalInputs(optional_inputs);
+
+  for (auto& input : optional_inputs) {
+    input->AddDependentOperator(this);
+  }
+}
 
 MLOperator::~MLOperator() = default;
 
@@ -313,7 +332,174 @@ MLOperatorOptions* MLOperator::Options() {
   return options_.Get();
 }
 
-const HeapVector<Member<MLOperand>>& MLOperator::Inputs() const {
+HeapVector<Member<MLOperand>> MLOperator::Inputs() const {
+  HeapVector<Member<MLOperand>> inputs(inputs_);
+  AddOptionalInputs(inputs);
+  return inputs;
+}
+
+void MLOperator::AddOptionalInputs(
+    HeapVector<Member<MLOperand>>& inputs) const {
+  switch (Kind()) {
+    case webnn::mojom::blink::Operation::Tag::kBatchNormalization: {
+      auto* options = static_cast<MLBatchNormalizationOptions*>(options_.Get());
+      if (options->hasScale()) {
+        inputs.push_back(options->scale());
+      }
+      if (options->hasBias()) {
+        inputs.push_back(options->bias());
+      }
+      break;
+    }
+    case webnn::mojom::blink::Operation::Tag::kConv2d: {
+      switch (SubKind<webnn::mojom::blink::Conv2d::Kind>()) {
+        case webnn::mojom::blink::Conv2d::Kind::kDirect: {
+          auto* options = static_cast<MLConv2dOptions*>(options_.Get());
+          if (options->hasBias()) {
+            inputs.push_back(options->bias());
+          }
+          break;
+        }
+        case webnn::mojom::blink::Conv2d::Kind::kTransposed: {
+          auto* options =
+              static_cast<MLConvTranspose2dOptions*>(options_.Get());
+          if (options->hasBias()) {
+            inputs.push_back(options->bias());
+          }
+          break;
+        }
+      }
+      break;
+    }
+    case webnn::mojom::blink::Operation::Tag::kGemm: {
+      auto* options = static_cast<MLGemmOptions*>(options_.Get());
+      if (options->hasC()) {
+        inputs.push_back(options->c());
+      }
+      break;
+    }
+    case webnn::mojom::blink::Operation::Tag::kGru: {
+      auto* options = static_cast<MLGruOptions*>(options_.Get());
+      if (options->hasBias()) {
+        inputs.push_back(options->bias());
+      }
+      if (options->hasRecurrentBias()) {
+        inputs.push_back(options->recurrentBias());
+      }
+      if (options->hasInitialHiddenState()) {
+        inputs.push_back(options->initialHiddenState());
+      }
+      break;
+    }
+    case webnn::mojom::blink::Operation::Tag::kGruCell: {
+      auto* options = static_cast<MLGruCellOptions*>(options_.Get());
+      if (options->hasBias()) {
+        inputs.push_back(options->bias());
+      }
+      if (options->hasRecurrentBias()) {
+        inputs.push_back(options->recurrentBias());
+      }
+      break;
+    }
+    case webnn::mojom::blink::Operation::Tag::kInstanceNormalization: {
+      auto* options =
+          static_cast<MLInstanceNormalizationOptions*>(options_.Get());
+      if (options->hasScale()) {
+        inputs.push_back(options->scale());
+      }
+      if (options->hasBias()) {
+        inputs.push_back(options->bias());
+      }
+      break;
+    }
+    case webnn::mojom::blink::Operation::Tag::kLayerNormalization: {
+      auto* options = static_cast<MLLayerNormalizationOptions*>(options_.Get());
+      if (options->hasScale()) {
+        inputs.push_back(options->scale());
+      }
+      if (options->hasBias()) {
+        inputs.push_back(options->bias());
+      }
+      break;
+    }
+    case webnn::mojom::blink::Operation::Tag::kLstm: {
+      auto* options = static_cast<MLLstmOptions*>(options_.Get());
+      if (options->hasBias()) {
+        inputs.push_back(options->bias());
+      }
+      if (options->hasRecurrentBias()) {
+        inputs.push_back(options->recurrentBias());
+      }
+      if (options->hasPeepholeWeight()) {
+        inputs.push_back(options->peepholeWeight());
+      }
+      if (options->hasInitialHiddenState()) {
+        inputs.push_back(options->initialHiddenState());
+      }
+      if (options->hasInitialCellState()) {
+        inputs.push_back(options->initialCellState());
+      }
+      break;
+    }
+    case webnn::mojom::blink::Operation::Tag::kLstmCell: {
+      auto* options = static_cast<MLLstmCellOptions*>(options_.Get());
+      if (options->hasBias()) {
+        inputs.push_back(options->bias());
+      }
+      if (options->hasRecurrentBias()) {
+        inputs.push_back(options->recurrentBias());
+      }
+      if (options->hasPeepholeWeight()) {
+        inputs.push_back(options->peepholeWeight());
+      }
+      break;
+    }
+    case webnn::mojom::blink::Operation::Tag::kArgMinMax:
+    case webnn::mojom::blink::Operation::Tag::kClamp:
+    case webnn::mojom::blink::Operation::Tag::kConcat:
+    case webnn::mojom::blink::Operation::Tag::kCumulativeSum:
+    case webnn::mojom::blink::Operation::Tag::kDequantizeLinear:
+    case webnn::mojom::blink::Operation::Tag::kElementWiseBinary:
+    case webnn::mojom::blink::Operation::Tag::kElementWiseUnary:
+    case webnn::mojom::blink::Operation::Tag::kElu:
+    case webnn::mojom::blink::Operation::Tag::kExpand:
+    case webnn::mojom::blink::Operation::Tag::kGather:
+    case webnn::mojom::blink::Operation::Tag::kGatherElements:
+    case webnn::mojom::blink::Operation::Tag::kGatherNd:
+    case webnn::mojom::blink::Operation::Tag::kGelu:
+    case webnn::mojom::blink::Operation::Tag::kHardSigmoid:
+    case webnn::mojom::blink::Operation::Tag::kHardSwish:
+    case webnn::mojom::blink::Operation::Tag::kLeakyRelu:
+    case webnn::mojom::blink::Operation::Tag::kLinear:
+    case webnn::mojom::blink::Operation::Tag::kMatmul:
+    case webnn::mojom::blink::Operation::Tag::kPad:
+    case webnn::mojom::blink::Operation::Tag::kPool2d:
+    case webnn::mojom::blink::Operation::Tag::kPrelu:
+    case webnn::mojom::blink::Operation::Tag::kQuantizeLinear:
+    case webnn::mojom::blink::Operation::Tag::kReduce:
+    case webnn::mojom::blink::Operation::Tag::kResample2d:
+    case webnn::mojom::blink::Operation::Tag::kRelu:
+    case webnn::mojom::blink::Operation::Tag::kReshape:
+    case webnn::mojom::blink::Operation::Tag::kReverse:
+    case webnn::mojom::blink::Operation::Tag::kScatterElements:
+    case webnn::mojom::blink::Operation::Tag::kScatterNd:
+    case webnn::mojom::blink::Operation::Tag::kSigmoid:
+    case webnn::mojom::blink::Operation::Tag::kSlice:
+    case webnn::mojom::blink::Operation::Tag::kSoftmax:
+    case webnn::mojom::blink::Operation::Tag::kSoftplus:
+    case webnn::mojom::blink::Operation::Tag::kSoftsign:
+    case webnn::mojom::blink::Operation::Tag::kSplit:
+    case webnn::mojom::blink::Operation::Tag::kTanh:
+    case webnn::mojom::blink::Operation::Tag::kTile:
+    case webnn::mojom::blink::Operation::Tag::kTranspose:
+    case webnn::mojom::blink::Operation::Tag::kTriangular:
+    case webnn::mojom::blink::Operation::Tag::kWhere: {
+      break;
+    }
+  }
+}
+
+const HeapVector<Member<MLOperand>>& MLOperator::PositionalInputs() const {
   return inputs_;
 }
 
@@ -344,6 +530,19 @@ MLArgMinMaxOperator::MLArgMinMaxOperator(MLGraphBuilder* builder,
       axis_(axis) {}
 
 MLArgMinMaxOperator::~MLArgMinMaxOperator() = default;
+
+MLClampOperator::MLClampOperator(MLGraphBuilder* builder,
+                                 String label,
+                                 webnn::MLNumber min_value,
+                                 webnn::MLNumber max_value)
+    : MLOperator(builder,
+                 webnn::mojom::blink::Operation::Tag::kClamp,
+                 /*options=*/nullptr),
+      label_(std::move(label)),
+      min_value_(std::move(min_value)),
+      max_value_(std::move(max_value)) {}
+
+MLClampOperator::~MLClampOperator() = default;
 
 MLConcatOperator::MLConcatOperator(MLGraphBuilder* builder,
                                    const uint32_t axis,
@@ -425,10 +624,12 @@ MLGruCellOperator::~MLGruCellOperator() = default;
 MLPadOperator::MLPadOperator(MLGraphBuilder* builder,
                              const Vector<uint32_t>& beginning_padding,
                              const Vector<uint32_t>& ending_padding,
+                             webnn::MLNumber value,
                              MLPadOptions* options)
     : MLOperator(builder, webnn::mojom::blink::Operation::Tag::kPad, options),
       beginning_padding_(beginning_padding),
-      ending_padding_(ending_padding) {}
+      ending_padding_(ending_padding),
+      value_(std::move(value)) {}
 
 MLPadOperator::~MLPadOperator() = default;
 

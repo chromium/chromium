@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/types/id_type.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"

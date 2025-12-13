@@ -1,3 +1,4 @@
 include_rules = [
   "+components/signin/internal/identity_manager",
+  "+components/plus_addresses/core/common/features.h"
 ]

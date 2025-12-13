@@ -16,14 +16,11 @@
 
 class GaiaAuthFetcherIOSBridge;
 class GURL;
+class ProfileIOS;
 
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
-
-namespace web {
-class BrowserState;
-}  // namespace web
 
 // Specialization of GaiaAuthFetcher on iOS.
 //
@@ -38,7 +35,7 @@ class GaiaAuthFetcherIOS
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      web::BrowserState* browser_state);
+      ProfileIOS* profile);
 
   GaiaAuthFetcherIOS(const GaiaAuthFetcherIOS&) = delete;
   GaiaAuthFetcherIOS& operator=(const GaiaAuthFetcherIOS&) = delete;
@@ -53,7 +50,7 @@ class GaiaAuthFetcherIOS
   void CreateAndStartGaiaFetcher(
       const std::string& body,
       const std::string& body_content_type,
-      const std::string& headers,
+      const net::HttpRequestHeaders& headers,
       const GURL& gaia_gurl,
       network::mojom::CredentialsMode credentials_mode,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
@@ -63,7 +60,6 @@ class GaiaAuthFetcherIOS
                        net::Error net_error,
                        int response_code) override;
 
-  raw_ptr<web::BrowserState> browser_state_;
   std::unique_ptr<GaiaAuthFetcherIOSBridge> bridge_;
 };
 

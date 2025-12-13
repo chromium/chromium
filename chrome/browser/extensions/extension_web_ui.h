@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_WEB_UI_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_WEB_UI_H_
 
-#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 

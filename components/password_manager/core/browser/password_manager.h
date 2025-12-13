@@ -49,6 +49,7 @@ class PrefRegistrySyncable;
 }
 
 namespace autofill {
+struct AutofillServerPrediction;
 class FormData;
 }  // namespace autofill
 
@@ -89,7 +90,9 @@ enum class LogInWithChangedPasswordOutcome {
   kPrimaryPasswordSucceeded = 1,
   kBackupPasswordFailed = 2,
   kBackupPasswordSucceeded = 3,
-  kMaxValue = kBackupPasswordSucceeded
+  kUnknownPasswordFailed = 4,
+  kUnknownPasswordSucceeded = 5,
+  kMaxValue = kUnknownPasswordSucceeded
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:LogInWithChangedPasswordOutcome)
 
@@ -136,7 +139,7 @@ class PasswordManager : public PasswordManagerInterface {
       PasswordManagerDriver* driver,
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
-                           autofill::AutofillType::ServerPrediction>&
+                           autofill::AutofillServerPrediction>&
           field_predictions) override;
   void ProcessClassificationModelPredictions(
       PasswordManagerDriver* driver,
@@ -341,6 +344,8 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Create PasswordFormManager for |form|, adds the newly created one to
   // |form_managers_| and returns it.
+  // Returns nullptr if the manager should not be created for a form (e.g. when
+  // filling is disabled).
   PasswordFormManager* CreateFormManager(PasswordManagerDriver* driver,
                                          const autofill::FormData& form);
 
@@ -470,7 +475,7 @@ class PasswordManager : public PasswordManagerInterface {
   std::unique_ptr<PasswordFormManager> owned_submitted_form_manager_;
 
   // The embedder-level client. Must outlive this class.
-  const raw_ptr<PasswordManagerClient> client_;
+  const raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
 
   const base::CallbackListSubscription account_store_cb_list_subscription_;
 

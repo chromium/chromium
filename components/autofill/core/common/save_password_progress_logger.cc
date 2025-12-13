@@ -364,10 +364,6 @@ std::string SavePasswordProgressLogger::GetStringFromID(
     case SavePasswordProgressLogger::STRING_GENERATION_DISABLED_SAVING_DISABLED:
       return "Generation disabled: saving disabled";
     case SavePasswordProgressLogger::
-        STRING_GENERATION_DISABLED_CHROME_DOES_NOT_SYNC_PASSWORDS:
-      return "Generation disabled: Chrome no longer syncs passwords and GMS is "
-             "no up to date to do it either";
-    case SavePasswordProgressLogger::
         STRING_GENERATION_DISABLED_NOT_ABLE_TO_SAVE_PASSWORDS:
       return "Generation disabled: not able to save passwords";
     case SavePasswordProgressLogger::STRING_GENERATION_DISABLED_NO_SYNC:
@@ -473,21 +469,141 @@ std::string SavePasswordProgressLogger::GetStringFromID(
     case STRING_RESOURCE_FAILED_LOADING_LOGIN_FAILED:
       return "POST error with 400-403 status is detected, considering "
              "current submission failed";
+    case STRING_PASSWORD_CHANGE_CURRENT_PASSWORD_RENDERER_ID:
+      return "Automated password change: Current password element renderer id";
+    case STRING_PASSWORD_CHANGE_NEW_PASSWORD_RENDERER_ID:
+      return "Automated password change: New password element renderer id";
+    case STRING_PASSWORD_CHANGE_CONFIRMATION_PASSWORD_RENDERER_ID:
+      return "Automated password change: Confirmation password element "
+             "renderer id";
     case STRING_PASSWORD_CHANGE_FORM_FILLING_RESULT:
-      return "Result of password change form filling";
+      return "Automated password change: Result of password change form "
+             "filling";
     case STRING_PASSWORD_CHANGE_SUBMIT_WITH_ENTER_RESULT:
-      return "Result of password change form submission with Enter";
+      return "Automated password change: Result of password change form "
+             "submission with Enter";
     case STRING_PASSWORD_CHANGE_SUBMIT_WITH_MODEL_RESULT:
-      return "Result of password change form submission with model";
+      return "Automated password change: Result of password change form "
+             "submission with model";
     case STRING_PASSWORD_POTENTIALLY_FAILED_LOGIN:
-      return "Potentially failed login attempt detected";
+      return "Automated password change: Potentially failed login attempt "
+             "detected";
     case STRING_PASSWORD_CHANGE_INITIAL_FORM_WAITING_RESULT:
-      return "Is change password form detected after navigation to change-pwd "
+      return "Automated password change: Is change password form detected "
+             "after navigation to change-pwd "
              "URL";
     case STRING_PASSWORD_CHANGE_MODEL_PAGE_PREDICTION_TYPE:
       return "Page type prediction for OPEN_FORM step";
     case STRING_PASSWORD_CHANGE_SUBSEQUENT_FORM_WAITING_RESULT:
       return "Is change password form detected after OPEN_FORM step";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_OTP_DISAPPEARED:
+      return "No one-time-password received on page load";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_START_FLOW:
+      return "Automated password change: flow started";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_CANCEL_FLOW:
+      return "Automated password change: flow cancelled";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_FORM_FOUND:
+      return "Automated password change: form found";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_LOGIN_FORM_FOUND:
+      return "Automated password change: login form found";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_TAB_DETACH:
+      return "Tab with Automated password change: detached";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_FORM_SUBMISSION:
+      return "Automated password change: form submission";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_OTP_DETECTED:
+      return "Automated password change: OTP detected";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_PRIVACY_NOTICE_ACCEPTED:
+      return "Automated password change: privacy notice accepted";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_PASSWORD_CHANGE_DECLINED:
+      return "Automated password change: declined";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_STATE_CHANGED:
+      return "Automated password change: state changed";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_VERIFIED:
+      return "Automated password change: submission verified";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_CROSS_ORIGIN_NAVIGATION:
+      return "Automated password change: cross-origin navigation detected";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_PAGE_CONTENT_RECEIVED:
+      return "Automated password change: page content received";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_BUTTON_CLICK_ACTION_RESULT:
+      return "Automated password change: button click action result";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_DOM_NODE_ID_TO_CLICK:
+      return "Automated password change: DOM node ID to click";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_FORM_NOT_FOUND:
+      return "Automated password change: form not found";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_DETECTED_OR_TIMEOUT:
+      return "Automated password change: submission detected or timeout";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_FILLING_ACTION_RESULT:
+      return "Automated password change: filling action result";
+    case STRING_PASSWORD_CHANGE_OVERRIDDEN_BY_SWITCH:
+      return "Automated password change: Overridden by switch";
+    case STRING_PASSWORD_CHANGE_GENERATION_UNAVAILABLE:
+      return "Automated password change: Generation unavailable";
+    case STRING_PASSWORD_CHANGE_MODEL_EXECUTION_NOT_ALLOWED:
+      return "Automated password change: Model execution not allowed";
+    case STRING_PASSWORD_CHANGE_SAVING_DISABLED:
+      return "Automated password change: Saving disabled";
+    case STRING_PASSWORD_CHANGE_DISABLED_BY_POLICY:
+      return "Automated password change: Disabled by policy";
+    case STRING_PASSWORD_CHANGE_FEATURE_ENABLED:
+      return "Automated password change: Feature enabled";
+    case STRING_PASSWORD_CHANGE_UNSUPPORTED_LANGUAGE:
+      return "Automated password change: Unsupported language";
+    case STRING_PASSWORD_CHANGE_UNSUPPORTED_COUNTRY:
+      return "Automated password change: Unsupported country";
+    case STRING_PASSWORD_CHANGE_URL_AVAILABLE:
+      return "Automated password change: URL available";
+    case STRING_PASSWORD_CHANGE_USER_IS_NOT_ACTIVE:
+      return "Automated password change: User is not active";
+    case STRING_LOGIN_STATE_CHECK_STARTED:
+      return "Login state check: has started";
+    case STRING_LOGIN_STATE_CHECK_REQUEST_SENT:
+      return "Login state check: request sent";
+    case STRING_LOGIN_STATE_CHECK_RESPONSE_RECEIVED:
+      return "Login state check: response received";
+    case STRING_LOGIN_STATE_CHECK_RESULT:
+      return "Login state check: result";
+    case STRING_LOGIN_STATE_CHECK_MAX_ATTEMPTS_REACHED:
+      return "Login state check: max attempts reached";
+    case STRING_LOGIN_STATE_CHECK_NO_CONTENT:
+      return "Login state check: no page content";
+    case STRING_LOGIN_STATE_CHECK_SERVER_ERROR:
+      return "Login state check: model execution server error, code: ";
+    case STRING_LOGIN_STATE_CHECK_FAILURE:
+      return "Login state check: failure";
+    case STRING_ACTOR_LOGIN_FILLING_ATTEMPT_STARTED:
+      return "Actor login: starting filling attempt";
+    case STRING_ACTOR_LOGIN_FILLING_NOT_ALLOWED:
+      return "Actor login: filling not allowed";
+    case STRING_ACTOR_LOGIN_NO_SIGNIN_FORM:
+      return "Actor login: no signin form";
+    case STRING_ACTOR_LOGIN_INVALID_CREDENTIAL:
+      return "Actor login: the provided credential is not saved for this site";
+    case STRING_ACTOR_LOGIN_WAITING_FOR_REAUTH:
+      return "Actor login: waiting for reauth";
+    case STRING_ACTOR_LOGIN_REAUTH_FAILED:
+      return "Actor login: reauthentication failed";
+    case STRING_ACTOR_LOGIN_FRAME_CHANGED:
+      return "Actor login: the frame hosting the form went away";
+    case STRING_ACTOR_LOGIN_FORM_WENT_AWAY:
+      return "Actor login: the form to fill went away";
+    case STRING_ACTOR_LOGIN_NO_USERNAME_FIELD:
+      return "Actor login: no username field";
+    case STRING_ACTOR_LOGIN_NO_PASSWORD_FIELD:
+      return "Actor login: no password field";
+    case STRING_ACTOR_LOGIN_FILLING_FIELD_WITH_ID:
+      return "Actor login: filling field with id";
+    case STRING_ACTOR_LOGIN_USERNAME_FILL_SUCCESS:
+      return "Actor login: username filled";
+    case STRING_ACTOR_LOGIN_PASSWORD_FILL_SUCCESS:
+      return "Actor login: password filled";
+    case STRING_ACTOR_LOGIN_GET_CREDENTIALS_FETCHING_STARTED:
+      return "Actor login: get credentials fetching started";
+    case STRING_ACTOR_LOGIN_GET_CREDENTIALS_SIGNIN_FORM_EXISTS:
+      return "Actor login: get credentials signin form exists";
+    case STRING_ACTOR_LOGIN_GET_CREDENTIALS_NUM_CREDENTIALS:
+      return "Actor login: get credentials number of credentials";
+    case STRING_ACTOR_LOGIN_PRIMARY_MAIN_FRAME_ORIGIN_CHANGED:
+      return "Actor login: primary main frame origin changed";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.

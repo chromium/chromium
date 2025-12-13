@@ -18,6 +18,7 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
 
@@ -84,6 +85,8 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
 
   void RequestTextChecking(
       const std::u16string& text,
+      blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
+          should_force_refresh,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion);
 
   void SetLastResults(const std::u16string last_request,

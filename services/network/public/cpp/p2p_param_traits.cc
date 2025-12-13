@@ -4,7 +4,7 @@
 
 #include "services/network/public/cpp/p2p_param_traits.h"
 
-#include "ipc/ipc_message_utils.h"
+#include "ipc/param_traits_utils.h"
 #include "services/network/public/cpp/net_ipc_param_traits.h"
 
 // Generation of IPC definitions.
@@ -19,13 +19,6 @@ namespace IPC {
 // Generate param traits read methods.
 #undef SERVICES_NETWORK_PUBLIC_CPP_P2P_PARAM_TRAITS_H_
 #include "ipc/param_traits_read_macros.h"
-namespace IPC {
-#include "p2p_param_traits.h"
-}  // namespace IPC
-
-// Generate param traits log methods.
-#undef SERVICES_NETWORK_PUBLIC_CPP_P2P_PARAM_TRAITS_H_
-#include "ipc/param_traits_log_macros.h"
 namespace IPC {
 #include "p2p_param_traits.h"
 }  // namespace IPC

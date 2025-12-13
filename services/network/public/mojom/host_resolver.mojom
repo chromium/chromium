@@ -106,6 +106,9 @@ struct DnsConfigOverrides {
   // Whether automatic upgrade to DNS over HTTPS servers is permitted.
   Tristate allow_dns_over_https_upgrade = Tristate.NO_OVERRIDE;
 
+  // See net::DnsConfig::fallback_doh_nameservers.
+  array<IPEndPoint>? fallback_doh_nameservers;
+
   // Whether to clear data read from the system HOSTS file.
   bool clear_hosts = false;
 };
@@ -140,8 +143,7 @@ interface ResolveHostClient {
   // ERR_NAME_NOT_RESOLVED) is sufficient.
   //
   // If results are not in address form, e.g. for a TXT request,
-  // `resolved_addresses` and `endpoint_results_with_metadata` may be either
-  // empty or null.
+  // `resolved_addresses` and `alternative_endpoints` will be empty.
   //
   // Always called last to signal completion of the ResolveHost() request.
   // Unless the ResolveHostClient is closed, this method will always be called
@@ -150,13 +152,13 @@ interface ResolveHostClient {
   //
   // TODO(ericorth@chromium.org): HostResolverEndpointResult is intended to be
   // a full replacement for AddressList, so it should be modified to include all
-  // results, not just those with metadata, and be renamed accordingly. Maybe
+  // results, not just alternative endpoints, and be renamed accordingly. Maybe
   // just delete the AddressList result entirely while at it to avoid any
   // concerns of passing redundant data.
   OnComplete(int32 result,
              ResolveErrorInfo resolve_error_info,
-             AddressList? resolved_addresses,
-             array<HostResolverEndpointResult>? endpoint_results_with_metadata);
+             AddressList resolved_addresses,
+             array<HostResolverEndpointResult> alternative_endpoints);
 
   // One or more On...Results() methods may be called when non-address results
   // are available and non-empty. Always called before OnComplete().

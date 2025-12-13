@@ -42,9 +42,11 @@ class TRACING_EXPORT EtwConsumer
 
   // Constructs an instance that will consume ETW events on behalf of the client
   // process identified by `client_pid` and emit Perfetto events via
-  // `trace_writer`.
+  // `trace_writer`. If `privacy_filtering_enabled` is true, omits strings from
+  // the trace.
   EtwConsumer(base::ProcessId client_pid,
-              std::unique_ptr<perfetto::TraceWriterBase> trace_writer);
+              std::unique_ptr<perfetto::TraceWriterBase> trace_writer,
+              bool privacy_filtering_enabled);
   EtwConsumer(const EtwConsumer&) = delete;
   EtwConsumer& operator=(const EtwConsumer&) = delete;
   ~EtwConsumer();
@@ -52,6 +54,12 @@ class TRACING_EXPORT EtwConsumer
   // Consumes ETW events; blocking the calling thread. Returns when the ETW
   // trace session is stopped.
   void ConsumeEvents();
+
+  // Calls Flush() on the trace writer to ensure that pending data is committed.
+  // |callback| is an optional callback, when non-null it will request the
+  // service to ACK the flush and will be invoked after the service has
+  // acknowledged it.
+  void Flush(std::function<void()> callback);
 
   // base::win::EtwTraceConsumerBase<>:
   static void ProcessEventRecord(EVENT_RECORD* event_record);
@@ -84,10 +92,20 @@ class TRACING_EXPORT EtwConsumer
                          size_t pointer_size,
                          base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void HandleFileIoEvent(const EVENT_HEADER& header,
+                         const ETW_BUFFER_CONTEXT& buffer_context,
+                         size_t pointer_size,
+                         base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
   void HandleLostEvent(const EVENT_HEADER& header,
                        const ETW_BUFFER_CONTEXT& buffer_context,
                        size_t pointer_size,
                        base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void HandleMemInfoEvent(const EVENT_HEADER& header,
+                          const ETW_BUFFER_CONTEXT& buffer_context,
+                          size_t pointer_size,
+                          base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   void OnProcessStart(const EVENT_HEADER& header,
@@ -114,6 +132,11 @@ class TRACING_EXPORT EtwConsumer
                        const ETW_BUFFER_CONTEXT& buffer_context,
                        base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void OnMemoryCounters(const EVENT_HEADER& header,
+                        const ETW_BUFFER_CONTEXT& buffer_context,
+                        size_t pointer_size,
+                        base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Decodes a CSwitch Event and emits a Perfetto trace event; see
   // https://learn.microsoft.com/en-us/windows/win32/etw/cswitch.
@@ -128,6 +151,54 @@ class TRACING_EXPORT EtwConsumer
   // Returns true on success, or false if `packet_data` is invalid.
   bool DecodeReadyThreadEvent(const EVENT_HEADER& header,
                               const ETW_BUFFER_CONTEXT& buffer_context,
+                              base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `FileIo_Create` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoCreateEvent(const EVENT_HEADER& header,
+                               const ETW_BUFFER_CONTEXT& buffer_context,
+                               size_t pointer_size,
+                               base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `FileIo_DirEnum` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoDirEnumEvent(const EVENT_HEADER& header,
+                                const ETW_BUFFER_CONTEXT& buffer_context,
+                                size_t pointer_size,
+                                base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `FileIo_Info` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoInfoEvent(const EVENT_HEADER& header,
+                             const ETW_BUFFER_CONTEXT& buffer_context,
+                             size_t pointer_size,
+                             base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `FileIo_ReadWrite` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoReadWriteEvent(const EVENT_HEADER& header,
+                                  const ETW_BUFFER_CONTEXT& buffer_context,
+                                  size_t pointer_size,
+                                  base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `FileIo_SimpleOp` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoSimpleOpEvent(const EVENT_HEADER& header,
+                                 const ETW_BUFFER_CONTEXT& buffer_context,
+                                 size_t pointer_size,
+                                 base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `FileIo_OpEnd` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoOpEndEvent(const EVENT_HEADER& header,
+                              const ETW_BUFFER_CONTEXT& buffer_context,
+                              size_t pointer_size,
                               base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -150,6 +221,8 @@ class TRACING_EXPORT EtwConsumer
       GUARDED_BY_CONTEXT(sequence_checker_);
   raw_ptr<perfetto::protos::pbzero::EtwTraceEventBundle> etw_events_
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  // Whether to omit sensitive fields, like strings, from the trace.
+  bool privacy_filtering_enabled_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -135,7 +135,7 @@ class PageContentAnnotationsService
   class PageContentAnnotationsObserver : public base::CheckedObserver {
    public:
     virtual void OnPageContentAnnotated(
-        const GURL& url,
+        const HistoryVisit& visit,
         const PageContentAnnotationsResult& result) = 0;
   };
 
@@ -185,9 +185,7 @@ class PageContentAnnotationsService
                       const history::URLRows& changed_urls) override;
   void OnURLVisitedWithNavigationId(
       history::HistoryService* history_service,
-      const history::URLRow& url_row,
-      const history::VisitRow& visit_row,
-      std::optional<int64_t> local_navigation_id) override;
+      const history::VisitedURLInfo& visited_url_info) override;
 
   // Overrides the PageContentAnnotator for testing. See
   // test_page_content_annotator.h for an implementation designed for testing.
@@ -327,13 +325,13 @@ class PageContentAnnotationsService
   void OnURLQueried(const HistoryVisit& visit,
                     PersistAnnotationsCallback callback,
                     PageContentAnnotationsType annotation_type,
-                    history::QueryURLResult url_result);
+                    history::QueryURLAndVisitsResult url_result);
 
   // Notifies the PageContentAnnotationsResult to the observers for
   // |annotation_type|.
   void NotifyPageContentAnnotatedObservers(
       AnnotationType annotation_type,
-      const GURL& url,
+      const page_content_annotations::HistoryVisit& visit,
       const PageContentAnnotationsResult& page_content_annotations_result);
 
   // Callback invoked when a response for |optimization_type| has been received

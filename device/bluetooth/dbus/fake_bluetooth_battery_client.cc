@@ -58,8 +58,9 @@ void FakeBluetoothBatteryClient::CreateBattery(const dbus::ObjectPath& path,
   properties_map_.insert(std::make_pair(path, std::move(properties)));
   battery_list_.push_back(path);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.BatteryAdded(path);
+  }
 }
 
 void FakeBluetoothBatteryClient::ChangeBatteryPercentage(
@@ -82,8 +83,9 @@ void FakeBluetoothBatteryClient::RemoveBattery(const dbus::ObjectPath& path) {
   properties_map_.erase(path);
   battery_list_.erase(std::ranges::find(battery_list_, path));
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.BatteryRemoved(path);
+  }
 }
 
 void FakeBluetoothBatteryClient::Init(
@@ -101,8 +103,9 @@ void FakeBluetoothBatteryClient::RemoveObserver(Observer* observer) {
 FakeBluetoothBatteryClient::Properties*
 FakeBluetoothBatteryClient::GetProperties(const dbus::ObjectPath& object_path) {
   PropertiesMap::const_iterator iter = properties_map_.find(object_path);
-  if (iter != properties_map_.end())
+  if (iter != properties_map_.end()) {
     return iter->second.get();
+  }
   return nullptr;
 }
 
@@ -111,8 +114,9 @@ void FakeBluetoothBatteryClient::OnPropertyChanged(
     const std::string& property_name) {
   DVLOG(2) << "Fake Bluetooth battery property changed: " << object_path.value()
            << ": " << property_name;
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.BatteryPropertyChanged(object_path, property_name);
+  }
 }
 
 }  // namespace bluez

@@ -26,7 +26,7 @@ class SplitViewMultiDisplayClamshellTest : public AshTestBase {
   ~SplitViewMultiDisplayClamshellTest() override = default;
 
   display::Display GetPrimaryDisplay() {
-    return display::Screen::GetScreen()->GetPrimaryDisplay();
+    return display::Screen::Get()->GetPrimaryDisplay();
   }
 
   display::Display GetSecondaryDisplay() {
@@ -136,7 +136,7 @@ TEST_F(SplitViewMultiDisplayClamshellTest, MoveWindowToDisplayShortcut) {
     wm::ActivateWindow(w1.get());
     PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
     const gfx::Rect work_area1 =
-        display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+        display::Screen::Get()->GetPrimaryDisplay().work_area();
     EXPECT_EQ(gfx::Rect(work_area1.width() / 2, 0, work_area1.width() / 2,
                         work_area1.height()),
               w1->GetBoundsInScreen());

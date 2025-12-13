@@ -4,14 +4,15 @@
 
 #include "ui/gl/gl_switches.h"
 
+#include <array>
+
 #include "base/trace_event/trace_event.h"
-#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_display_manager.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #if BUILDFLAG(ENABLE_VULKAN) && \
@@ -154,6 +155,10 @@ const char kUseAdapterLuid[] = "use-adapter-luid";
 // Allow usage of SwiftShader for WebGL
 const char kEnableUnsafeSwiftShader[] = "enable-unsafe-swiftshader";
 
+// Explicitly disable D3D11 WARP fallback. Some test suites prefer falling back
+// to swiftshader.
+const char kDisableD3D11Warp[] = "disable-d3d11-warp";
+
 // Used for overriding the swap chain format for direct composition SDR video
 // overlays.
 const char kDirectCompositionVideoSwapChainFormat[] =
@@ -173,7 +178,7 @@ const char kTintDcLayer[] = "tint-dc-layer";
 // This is the list of switches passed from this file that are passed from the
 // GpuProcessHost to the GPU Process. Add your switch to this list if you need
 // to read it in the GPU process, else don't add it.
-const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
+const auto kGLSwitchesCopiedFromGpuProcessHostArray = std::to_array({
     kDisableGpuDriverBugWorkarounds,
     kDisableGpuVsync,
     kEnableGPUServiceLogging,
@@ -189,9 +194,12 @@ const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
     kDirectCompositionVideoSwapChainFormat,
     kTintDcLayer,
     kEnableUnsafeSwiftShader,
-};
-const size_t kGLSwitchesCopiedFromGpuProcessHostNumSwitches =
-    std::size(kGLSwitchesCopiedFromGpuProcessHost);
+    kDisableD3D11Warp,
+});
+// An external span to the array above, so that it can be exposed from the
+// header file without specifying the size of the array manually.
+const base::span<const char* const> kGLSwitchesCopiedFromGpuProcessHost =
+    kGLSwitchesCopiedFromGpuProcessHostArray;
 
 #if BUILDFLAG(IS_ANDROID)
 // On some Android emulators with software GL, ANGLE
@@ -213,30 +221,24 @@ namespace features {
 //
 // Please be aware that some of these visualizations result in quickly flashing
 // colors.
-BASE_FEATURE(kDCompDebugVisualization,
-             "DCompDebugVisualization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Use BufferCount of 3 for the direct composition root swap chain.
-BASE_FEATURE(kDCompTripleBufferRootSwapChain,
-             "DCompTripleBufferRootSwapChain",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDCompDebugVisualization, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use BufferCount of 3 for direct composition video swap chains.
 BASE_FEATURE(kDCompTripleBufferVideoSwapChain,
-             "DCompTripleBufferVideoSwapChain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allow overlay swapchain to present on all GPUs even if they only support
 // software overlays. GPU deny lists limit it to NVIDIA only at the moment.
 BASE_FEATURE(kDirectCompositionSoftwareOverlays,
-             "DirectCompositionSoftwareOverlays",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Detect and mark a single full screen video during overlay processing.
+BASE_FEATURE(kEarlyFullScreenVideoOptimization,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Adjust the letterbox video size and position to the center of the screen so
 // that DWM power optimization can be turned on.
 BASE_FEATURE(kDirectCompositionLetterboxVideoOptimization,
-             "DirectCompositionLetterboxVideoOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Remove the topmost desktop plane for Media Foundation full screen
@@ -244,22 +246,19 @@ BASE_FEATURE(kDirectCompositionLetterboxVideoOptimization,
 // optimization for Media Foundation Renderer, which should be enabled by
 // default when crbug.com/406175378 is resolved.
 BASE_FEATURE(kDesktopPlaneRemovalForMFFullScreenLetterbox,
-             "DesktopPlaneRemovalForMFFullScreenLetterbox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Do not consider hardware YUV overlay count when promoting quads to DComp
 // visuals. If there are more videos than hardware overlay planes, there may be
 // a performance hit compared to drawing all the videos into a single swap
 // chain. This feature is intended for testing and debugging.
 BASE_FEATURE(kDirectCompositionUnlimitedOverlays,
-             "DirectCompositionUnlimitedOverlays",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allow dual GPU rendering through EGL where supported, i.e., allow a WebGL
 // or WebGPU context to be on the high performance GPU if preferred and Chrome
 // internal rendering to be on the low power GPU.
 BASE_FEATURE(kEGLDualGPURendering,
-             "EGLDualGPURendering",
 #if BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
@@ -267,49 +266,27 @@ BASE_FEATURE(kEGLDualGPURendering,
 #endif
 
 // Allow overlay swapchain to use Intel video processor for super resolution.
-BASE_FEATURE(kIntelVpSuperResolution,
-             "IntelVpSuperResolution",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Allow overlay swapchain to use NVIDIA video processor for trueHDR.
-BASE_FEATURE(kNvidiaVpTrueHDR,
-             "NvidiaVpTrueHDR",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Default to using ANGLE's OpenGL backend
-BASE_FEATURE(kDefaultANGLEOpenGL,
-             "DefaultANGLEOpenGL",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIntelVpSuperResolution, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Default to using ANGLE's Metal backend.
-BASE_FEATURE(kDefaultANGLEMetal,
-             "DefaultANGLEMetal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDefaultANGLEMetal, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Default to using ANGLE's Vulkan backend.
 BASE_FEATURE(kDefaultANGLEVulkan,
-             "DefaultANGLEVulkan",
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 // Track current program's shaders at glUseProgram() call for crash report
 // purpose. Only effective on Windows because the attached shaders may only
 // be reliably retrieved with ANGLE backend.
-BASE_FEATURE(kTrackCurrentShaders,
-             "TrackCurrentShaders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrackCurrentShaders, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable sharing Vulkan device queue with ANGLE's Vulkan backend.
 BASE_FEATURE(kVulkanFromANGLE,
-             "VulkanFromANGLE",
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+
+// Enable skipping the Vulkan blocklist.
+BASE_FEATURE(kSkipVulkanBlocklist,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDefaultANGLEVulkan() {
   // Force on if DefaultANGLEVulkan feature is enabled from command line.
@@ -326,14 +303,15 @@ bool IsDefaultANGLEVulkan() {
 #if BUILDFLAG(IS_ANDROID)
   // No support for devices before Q -- exit before checking feature flags
   // so that devices are not counted in finch trials.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_Q)
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_Q) {
     return false;
+  }
 
   // For the sake of finch trials, limit to newer devices (Android T+); this
   // condition can be relaxed over time.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_T) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_T) {
     return false;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -354,9 +332,11 @@ bool IsDefaultANGLEVulkan() {
 
   const auto& active_gpu = system_info.gpus[system_info.activeGPUIndex];
 
-  // Vulkan 1.1 is required by ANGLE.
-  if (active_gpu.driverApiVersion < VK_VERSION_1_1)
+  // Vulkan 1.1 is ANGLE's minimum requirement, but drivers older than 1.3 are
+  // rarely reliable enough.
+  if (active_gpu.driverApiVersion < VK_VERSION_1_3) {
     return false;
+  }
 
   // If |dirverId| is 0, the driver lacks VK_KHR_driver_properties.
   // Consider this driver too old to be usable.
@@ -418,6 +398,16 @@ bool IsDefaultANGLEVulkan() {
       active_gpu.detailedDriverVersion.minor == 615) {
     return false;
   }
+
+  // Exclude Qualcomm 512.676 driver on Adreno 720 that is the cause of
+  // undiagnosed rendering issues.
+  // http://crbug.com/440110161
+  if (active_gpu.driverId == VK_DRIVER_ID_QUALCOMM_PROPRIETARY &&
+      active_gpu.deviceName.find("Adreno") != std::string::npos &&
+      active_gpu.deviceName.find("720") != std::string::npos &&
+      active_gpu.detailedDriverVersion.minor == 676) {
+    return false;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX)
@@ -440,9 +430,7 @@ bool IsDefaultANGLEVulkan() {
 }
 
 // Use waitable swap chain on Windows to reduce display latency.
-BASE_FEATURE(kDXGIWaitableSwapChain,
-             "DXGIWaitableSwapChain",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDXGIWaitableSwapChain, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If using waitable swap chain, specify the maximum number of queued frames.
 const base::FeatureParam<int> kDXGIWaitableSwapChainMaxQueuedFrames{
@@ -452,9 +440,7 @@ const base::FeatureParam<int> kDXGIWaitableSwapChainMaxQueuedFrames{
 // on the previously presented frame instead of synchronizing with vblank(s).
 // Frames may be discarded if they are presented more frequently than one per
 // vblank.
-BASE_FEATURE(kDXGISwapChainPresentInterval0,
-             "DXGISwapChainPresentInterval0",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDXGISwapChainPresentInterval0, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool SupportsEGLDualGPURendering() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

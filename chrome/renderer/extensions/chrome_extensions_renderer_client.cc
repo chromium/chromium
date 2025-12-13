@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/renderer/extensions/chrome_resource_request_policy_delegate.h"
 #include "chrome/renderer/extensions/renderer_permissions_policy_delegate.h"
@@ -59,13 +59,11 @@ ChromeExtensionsRendererClient::~ChromeExtensionsRendererClient() {
 
 // static
 void ChromeExtensionsRendererClient::Create() {
-  static base::LazyInstance<ChromeExtensionsRendererClient>::Leaky client =
-      LAZY_INSTANCE_INITIALIZER;
-  client.Pointer();
+  static base::NoDestructor<ChromeExtensionsRendererClient> client;
 }
 
 bool ChromeExtensionsRendererClient::IsIncognitoProcess() const {
-  return ::IsIncognitoProcess();
+  return process_state::IsIncognitoProcess();
 }
 
 int ChromeExtensionsRendererClient::GetLowestIsolatedWorldId() const {
@@ -89,7 +87,7 @@ void ChromeExtensionsRendererClient::RecordMetricsForURLRequest(
   // TODO(crbug.com/41240557): Remove metrics after bug is fixed.
   GURL request_url(target_url);
   if (target_url.ProtocolIs(extensions::kExtensionScheme) &&
-      request_url.host_piece() == extension_misc::kDocsOfflineExtensionId) {
+      request_url.host() == extension_misc::kDocsOfflineExtensionId) {
     if (!ukm_recorder_) {
       mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
       content::RenderThread::Get()->BindHostReceiver(

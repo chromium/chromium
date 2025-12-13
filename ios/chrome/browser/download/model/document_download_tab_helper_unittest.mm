@@ -394,8 +394,11 @@ TEST_F(DocumentDownloadTabHelperTest, StateLogging) {
   histogram_tester.ExpectUniqueSample(
       kIOSDocumentDownloadConflictResolution,
       DocumentDownloadConflictResolution::kNoConflict, 1);
-  histogram_tester.ExpectUniqueSample(kIOSDocumentDownloadStateAtNavigation,
-                                      DocumentDownloadState::kInProgress, 1);
+  histogram_tester.ExpectBucketCount(kIOSDocumentDownloadStateAtNavigation,
+                                     DocumentDownloadState::kInProgress, 1);
+  histogram_tester.ExpectBucketCount(kIOSDocumentDownloadStateAtNavigation,
+                                     DocumentDownloadState::kCancelled, 1);
+  histogram_tester.ExpectTotalCount(kIOSDocumentDownloadStateAtNavigation, 2);
   histogram_tester.ExpectUniqueSample(kIOSDocumentDownloadFinalState,
                                       DocumentDownloadState::kCancelled, 1);
 }

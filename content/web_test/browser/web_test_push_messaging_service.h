@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <set>
 
 #include "content/public/browser/push_messaging_service.h"

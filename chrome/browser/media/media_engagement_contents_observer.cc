@@ -27,6 +27,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -496,24 +497,28 @@ void MediaEngagementContentsObserver::ReadyToCommitNavigation(
 }
 
 content::WebContents* MediaEngagementContentsObserver::GetOpener() const {
+  content::WebContents* result = nullptr;
 #if !BUILDFLAG(IS_ANDROID)
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != service_->profile())
-      continue;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &result](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != service_->profile()) {
+          return true;  // Continue iteration
+        }
 
-    int index =
-        browser->tab_strip_model()->GetIndexOfWebContents(web_contents());
-    if (index == TabStripModel::kNoTab)
-      continue;
+        const TabStripModel* tab_strip_model = browser->GetTabStripModel();
+        int index = tab_strip_model->GetIndexOfWebContents(web_contents());
+        if (index == TabStripModel::kNoTab) {
+          return true;
+        }
 
-    // Whether or not the `opener` is null, this is the right tab strip.
-    const tabs::TabInterface* tab =
-        browser->tab_strip_model()->GetOpenerOfTabAt(index);
-    return tab ? tab->GetContents() : nullptr;
-  }
+        // Whether or not the `opener` is null, this is the right tab strip.
+        const tabs::TabInterface* tab =
+            tab_strip_model->GetOpenerOfTabAt(index);
+        result = tab ? tab->GetContents() : nullptr;
+        return false;  // Stop iteration, we found what we need
+      });
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-  return nullptr;
+  return result;
 }
 
 scoped_refptr<MediaEngagementSession>

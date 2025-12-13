@@ -20,9 +20,12 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/painter.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -107,7 +110,7 @@ void ImageButton::SetImageHorizontalAlignment(HorizontalAlignment h_alignment) {
     return;
   }
   h_alignment_ = h_alignment;
-  OnPropertyChanged(&h_alignment_, kPropertyEffectsPaint);
+  OnPropertyChanged(&h_alignment_, PropertyEffects::kPaint);
 }
 
 void ImageButton::SetImageVerticalAlignment(VerticalAlignment v_alignment) {
@@ -115,7 +118,7 @@ void ImageButton::SetImageVerticalAlignment(VerticalAlignment v_alignment) {
     return;
   }
   v_alignment_ = v_alignment;
-  OnPropertyChanged(&v_alignment_, kPropertyEffectsPaint);
+  OnPropertyChanged(&v_alignment_, PropertyEffects::kPaint);
 }
 
 gfx::Size ImageButton::GetMinimumImageSize() const {
@@ -127,7 +130,8 @@ void ImageButton::SetMinimumImageSize(const gfx::Size& size) {
     return;
   }
   minimum_image_size_ = size;
-  OnPropertyChanged(&minimum_image_size_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&minimum_image_size_,
+                    PropertyEffects::kPreferredSizeChanged);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -339,7 +343,7 @@ void ToggleImageButton::SetToggled(bool toggled) {
   toggled_ = toggled;
 
   UpdateAccessibleCheckedState();
-  OnPropertyChanged(&toggled_, kPropertyEffectsPaint);
+  OnPropertyChanged(&toggled_, PropertyEffects::kPaint);
   UpdateAccessibleRoleIfNeeded();
   UpdateAccessibleName();
   UpdateTooltipText();
@@ -385,7 +389,7 @@ void ToggleImageButton::SetToggledTooltipText(const std::u16string& tooltip) {
   toggled_tooltip_text_ = tooltip;
   UpdateAccessibleName();
   UpdateTooltipText();
-  OnPropertyChanged(&toggled_tooltip_text_, kPropertyEffectsNone);
+  OnPropertyChanged(&toggled_tooltip_text_, PropertyEffects::kNone);
 }
 
 std::u16string ToggleImageButton::GetToggledAccessibleName() const {
@@ -398,7 +402,7 @@ void ToggleImageButton::SetToggledAccessibleName(const std::u16string& name) {
   }
   toggled_accessible_name_ = name;
   UpdateAccessibleName();
-  OnPropertyChanged(&toggled_accessible_name_, kPropertyEffectsNone);
+  OnPropertyChanged(&toggled_accessible_name_, PropertyEffects::kNone);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

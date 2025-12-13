@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 
+#include <algorithm>
 #include <limits>
 
 #include "base/compiler_specific.h"
@@ -33,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/attribute_part.h"
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
@@ -40,6 +42,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_part.h"
+#include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -56,6 +59,9 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/forms/form_associated.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
@@ -77,6 +83,8 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -176,11 +184,10 @@ static String CheckWhitespaceAndConvertToString(const StringView& string,
                                                 RecomputeMode recompute_mode) {
   switch (whitespace_mode) {
     case WhitespaceMode::kNewlineThenWhitespace:
-      DCHECK(WTF::NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
-          string));
-      if (string.length() <
-          WTF::NewlineThenWhitespaceStringsTable::kTableSize) {
-        return WTF::NewlineThenWhitespaceStringsTable::GetStringForLength(
+      DCHECK(
+          NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(string));
+      if (string.length() < NewlineThenWhitespaceStringsTable::kTableSize) {
+        return NewlineThenWhitespaceStringsTable::GetStringForLength(
             string.length());
       }
       [[fallthrough]];
@@ -282,6 +289,18 @@ static inline void ExecuteTakeAllChildrenTask(HTMLConstructionSiteTask& task) {
   task.parent->ParserTakeAllChildrenFrom(*task.OldParent());
 }
 
+static inline void ExecuteRemoveChildrenTask(HTMLConstructionSiteTask& task) {
+  DCHECK_EQ(task.operation, HTMLConstructionSiteTask::kRemoveChildren);
+
+  task.parent->ParserRemoveAllChildren();
+}
+
+static inline void ExecuteReplaceChildTask(HTMLConstructionSiteTask& task) {
+  DCHECK_EQ(task.operation, HTMLConstructionSiteTask::kReplaceChild);
+
+  task.parent->ParserReplaceChild(*task.child, *task.next_child);
+}
+
 void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   DCHECK(task_queue_.empty());
   if (task.operation == HTMLConstructionSiteTask::kInsert) {
@@ -321,14 +340,25 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   // All the cases below this point are only used by the adoption agency.
   DCHECK(!task.dom_parts_needed);
 
-  if (task.operation == HTMLConstructionSiteTask::kInsertAlreadyParsedChild)
+  if (task.operation == HTMLConstructionSiteTask::kInsertAlreadyParsedChild) {
     return ExecuteInsertAlreadyParsedChildTask(task);
+  }
 
-  if (task.operation == HTMLConstructionSiteTask::kReparent)
+  if (task.operation == HTMLConstructionSiteTask::kReparent) {
     return ExecuteReparentTask(task);
+  }
 
-  if (task.operation == HTMLConstructionSiteTask::kTakeAllChildren)
+  if (task.operation == HTMLConstructionSiteTask::kTakeAllChildren) {
     return ExecuteTakeAllChildrenTask(task);
+  }
+
+  if (task.operation == HTMLConstructionSiteTask::kRemoveChildren) {
+    return ExecuteRemoveChildrenTask(task);
+  }
+
+  if (task.operation == HTMLConstructionSiteTask::kReplaceChild) {
+    return ExecuteReplaceChildTask(task);
+  }
 
   NOTREACHED();
 }
@@ -413,6 +443,7 @@ void HTMLConstructionSite::FlushPendingText() {
     task.parent = pending_text_.parent;
     task.next_child = pending_text_.next_child;
     task.child = Text::Create(task.parent->GetDocument(), std::move(substring));
+    PreprocessInsertionTask(task);
     QueueTask(task, false);
     DCHECK_EQ(To<Text>(task.child.Get())->length(),
               break_index - current_position);
@@ -449,6 +480,8 @@ void HTMLConstructionSite::AttachLater(ContainerNode* parent,
     FosterParent(task.child);
     return;
   }
+
+  PreprocessInsertionTask(task);
 
   // Add as a sibling of the parent if we have reached the maximum depth
   // allowed.
@@ -493,12 +526,14 @@ HTMLConstructionSite::HTMLConstructionSite(
     HTMLParserReentryPermit* reentry_permit,
     Document& document,
     ParserContentPolicy parser_content_policy,
-    DocumentFragment* fragment,
-    Element* context_element)
+    ContainerNode* fragment_target,
+    Element* context_element,
+    CustomElementRegistry* registry)
     : reentry_permit_(reentry_permit),
       document_(&document),
-      attachment_root_(fragment ? fragment
-                                : static_cast<ContainerNode*>(&document)),
+      attachment_root_(fragment_target && fragment_target->IsDocumentFragment()
+                           ? fragment_target
+                           : static_cast<ContainerNode*>(&document)),
       pending_dom_parts_(
           RuntimeEnabledFeatures::DOMPartsAPIEnabled()
               ? MakeGarbageCollected<PendingDOMParts>(attachment_root_)
@@ -506,16 +541,17 @@ HTMLConstructionSite::HTMLConstructionSite(
       parser_content_policy_(parser_content_policy),
       is_scripting_content_allowed_(
           ScriptingContentIsAllowed(parser_content_policy)),
-      is_parsing_fragment_(fragment),
+      is_parsing_fragment_(fragment_target),
       redirect_attach_to_foster_parent_(false),
-      in_quirks_mode_(document.InQuirksMode()) {
+      in_quirks_mode_(document.InQuirksMode()),
+      custom_element_registry_(registry) {
   DCHECK(document_->IsHTMLDocument() || document_->IsXHTMLDocument() ||
          is_parsing_fragment_);
 
-  DCHECK_EQ(!fragment, !context_element);
-  if (fragment) {
-    DCHECK_EQ(document_, &fragment->GetDocument());
-    DCHECK_EQ(in_quirks_mode_, fragment->GetDocument().InQuirksMode());
+  DCHECK_EQ(!fragment_target, !context_element);
+  if (fragment_target) {
+    DCHECK_EQ(document_, &fragment_target->GetDocument());
+    DCHECK_EQ(in_quirks_mode_, fragment_target->GetDocument().InQuirksMode());
     if (!context_element->GetDocument().IsTemplateDocument()) {
       form_ = Traversal<HTMLFormElement>::FirstAncestorOrSelf(*context_element);
     }
@@ -542,6 +578,7 @@ void HTMLConstructionSite::Trace(Visitor* visitor) const {
   visitor->Trace(task_queue_);
   visitor->Trace(pending_text_);
   visitor->Trace(pending_dom_parts_);
+  visitor->Trace(custom_element_registry_);
 }
 
 void HTMLConstructionSite::Detach() {
@@ -562,8 +599,9 @@ void HTMLConstructionSite::InsertHTMLHtmlStartTagBeforeHTML(
   DCHECK(document_);
   HTMLHtmlElement* element;
   if (const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr)) {
-    element = To<HTMLHtmlElement>(document_->CreateElement(
-        html_names::kHTMLTag, GetCreateElementFlags(), is_attribute->Value()));
+    element = To<HTMLHtmlElement>(
+        document_->CreateElement(html_names::kHTMLTag, GetCreateElementFlags(),
+                                 is_attribute->Value(), /*registry*/ nullptr));
   } else {
     element = MakeGarbageCollected<HTMLHtmlElement>(*document_);
   }
@@ -887,6 +925,47 @@ void HTMLConstructionSite::InsertHTMLFormElement(AtomicHTMLToken* token,
   open_elements_.Push(HTMLStackItem::Create(form_element, token));
 }
 
+namespace {
+
+enum class ContentMethod {
+  kNone,
+  kReplace,
+  kReplaceChildren,
+  kAppend,
+  kPrepend
+};
+
+ContentMethod GetContentMethod(HTMLTemplateElement* template_element) {
+  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled() ||
+      !template_element->FastHasAttribute(html_names::kContentmethodAttr)) {
+    return ContentMethod::kNone;
+  }
+
+  const AtomicString& method =
+      template_element->FastGetAttribute(html_names::kContentmethodAttr);
+
+  DEFINE_STATIC_LOCAL(AtomicString, kReplace, ("replace"));
+  DEFINE_STATIC_LOCAL(AtomicString, kReplaceChildren, ("replace-children"));
+  DEFINE_STATIC_LOCAL(AtomicString, kAppend, ("append"));
+  DEFINE_STATIC_LOCAL(AtomicString, kPrepend, ("prepend"));
+
+  if (method == kReplace) {
+    return ContentMethod::kReplace;
+  }
+  if (method == kReplaceChildren) {
+    return ContentMethod::kReplaceChildren;
+  }
+  if (method == kAppend) {
+    return ContentMethod::kAppend;
+  }
+  if (method == kPrepend) {
+    return ContentMethod::kPrepend;
+  }
+  return ContentMethod::kNone;
+}
+
+}  // namespace
+
 void HTMLConstructionSite::InsertHTMLTemplateElement(
     AtomicHTMLToken* token,
     String declarative_shadow_root_mode) {
@@ -900,35 +979,6 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   HTMLStackItem* template_stack_item =
       HTMLStackItem::Create(template_element, token);
   bool should_attach_template = true;
-  if (RuntimeEnabledFeatures::DocumentPatchingEnabled()) {
-    if (Attribute* patchfor_attribute =
-            token->GetAttributeItem(html_names::kPatchforAttr)) {
-      TreeScope* scope = &CurrentElement()->GetTreeScope();
-      if (HTMLTemplateElement* template_parent =
-              DynamicTo<HTMLTemplateElement>(CurrentElement())) {
-        if (ShadowRoot* shadow_root =
-                DynamicTo<ShadowRoot>(template_parent->InsertionTarget())) {
-          scope = shadow_root;
-        }
-      }
-
-      if (Element* patch_target =
-              scope->getElementById(patchfor_attribute->Value())) {
-        // For now, a template is either targeting a shadow root or a patch.
-        declarative_shadow_root_mode = String();
-
-        // Like with shadowrootmode, the template is discarded.
-        should_attach_template = false;
-
-        // A patch replaces the existing children of the target.
-        patch_target->RemoveChildren();
-
-        // From now on, parsed children of the template are inserted directly to
-        // the patch target.
-        template_element->SetOverrideInsertionTarget(*patch_target);
-      }
-    }
-  }
 
   if (!declarative_shadow_root_mode.IsNull() &&
       IsA<Element>(open_elements_.TopStackItem()->GetNode())) {
@@ -953,10 +1003,21 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
             : nullptr;
     const auto& reference_target =
         reference_target_attr ? reference_target_attr->Value() : g_null_atom;
+    const auto* adopted_stylesheets_attr =
+        template_stack_item->GetAttributeItem(
+            html_names::kShadowrootadoptedstylesheetsAttr);
+    const auto& adopted_stylesheets = adopted_stylesheets_attr
+                                          ? adopted_stylesheets_attr->Value()
+                                          : g_null_atom;
+    bool waiting_for_scoped_registry =
+        RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+        template_stack_item->GetAttributeItem(
+            html_names::kShadowrootcustomelementregistryAttr);
 
     bool success = host->AttachDeclarativeShadowRoot(
         *template_element, declarative_shadow_root_mode, focus_delegation,
-        slot_assignment_mode, serializable, clonable, reference_target);
+        slot_assignment_mode, serializable, clonable, adopted_stylesheets,
+        reference_target, waiting_for_scoped_registry);
     // If the shadow root attachment fails, e.g. if the host element isn't a
     // valid shadow host, then we leave should_attach_template true, so that
     // a "normal" template element gets attached to the DOM tree.
@@ -969,8 +1030,12 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     }
   }
   if (should_attach_template) {
-    // Attach a normal template element.
-    AttachLater(CurrentNode(), template_element, token->GetDOMPartsNeeded());
+    // Attach a normal template element, as long as it doesn't have
+    // contentmethod.
+    if (GetContentMethod(template_element) == ContentMethod::kNone) {
+      AttachLater(CurrentNode(), template_element, token->GetDOMPartsNeeded());
+    }
+
     DocumentFragment* template_content = template_element->content();
     if (pending_dom_parts_ && template_content &&
         !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
@@ -1026,7 +1091,8 @@ void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
   HTMLScriptElement* element = nullptr;
   if (const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr)) {
     element = To<HTMLScriptElement>(OwnerDocumentForCurrentNode().CreateElement(
-        html_names::kScriptTag, flags, is_attribute->Value()));
+        html_names::kScriptTag, flags, is_attribute->Value(),
+        /*registry*/ nullptr));
   } else {
     element = MakeGarbageCollected<HTMLScriptElement>(
         OwnerDocumentForCurrentNode(), flags);
@@ -1142,21 +1208,31 @@ Document& HTMLConstructionSite::OwnerDocumentForCurrentNode() {
 CustomElementDefinition* HTMLConstructionSite::LookUpCustomElementDefinition(
     Document& document,
     const QualifiedName& tag_name,
-    const AtomicString& is) {
-  // "1. If namespace is not the HTML namespace, return null."
+    const AtomicString& is,
+    CustomElementRegistry* registry) {
+  // "2. If namespace is not the HTML namespace, return null."
   if (tag_name.NamespaceURI() != html_names::xhtmlNamespaceURI)
     return nullptr;
 
-  // "2. If document does not have a browsing context, return null."
-  LocalDOMWindow* window = document.domWindow();
-  if (!window)
-    return nullptr;
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    if (!registry) {
+      return nullptr;
+    }
+  } else {
+    // "1. (pre-scoped registry old spec) If document does not have a browsing
+    // context, return null."
+    LocalDOMWindow* window = document.domWindow();
+    if (!window) {
+      return nullptr;
+    }
 
-  // "3. Let registry be document's browsing context's Window's
-  // CustomElementRegistry object."
-  CustomElementRegistry* registry = window->MaybeCustomElements();
-  if (!registry)
-    return nullptr;
+    // "3. (pre-scoped registry old spec) Let registry be document's browsing
+    // context's Window's CustomElementRegistry object."
+    registry = window->MaybeCustomElements();
+    if (!registry) {
+      return nullptr;
+    }
+  }
 
   const AtomicString& local_name = tag_name.LocalName();
   const AtomicString& name = !is.IsNull() ? is : local_name;
@@ -1171,21 +1247,38 @@ CustomElementDefinition* HTMLConstructionSite::LookUpCustomElementDefinition(
 Element* HTMLConstructionSite::CreateElement(
     AtomicHTMLToken* token,
     const AtomicString& namespace_uri) {
-  // "1. Let document be intended parent's node document."
+  // "3. Let document be intended parent's node document."
   Document& document = OwnerDocumentForCurrentNode();
 
-  // "2. Let local name be the tag name of the token."
+  // "4. Let local name be the tag name of the token."
   QualifiedName tag_name =
       ((token->IsValidHTMLTag() &&
         namespace_uri == html_names::xhtmlNamespaceURI)
            ? static_cast<const QualifiedName&>(
                  html_names::TagToQualifiedName(token->GetHTMLTag()))
            : QualifiedName(g_null_atom, token->GetName(), namespace_uri));
-  // "3. Let is be the value of the "is" attribute in the given token ..." etc.
+  // "5. Let is be the value of the "is" attribute in the given token ..." etc.
   const Attribute* is_attribute = token->GetAttributeItem(html_names::kIsAttr);
   const AtomicString& is = is_attribute ? is_attribute->Value() : g_null_atom;
-  // "4. Let definition be the result of looking up a custom element ..." etc.
-  auto* definition = LookUpCustomElementDefinition(document, tag_name, is);
+  // "6. Let registry be the result of looking up a custom element registry
+  // given intended parent."
+  CustomElementRegistry* registry = custom_element_registry_;
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    // Look up intended parent's custom element registry. Note that if the
+    // intended parent is a template element, which means it will create a
+    // document fragment, the custom element registry should be null.
+    if (open_elements_.StackDepth() > 1) {
+      if (IsA<HTMLTemplateElement>(CurrentNode())) {
+        registry = nullptr;
+      } else {
+        registry = CurrentElement()->customElementRegistry();
+      }
+    }
+  }
+  // 8. Let definition be the result of looking up a custom element definition
+  // given registry, given namespace, local name and is.
+  auto* definition =
+      LookUpCustomElementDefinition(document, tag_name, is, registry);
   // "5. If definition is non-null and the parser was not originally created
   // for the HTML fragment parsing algorithm, then let will execute script
   // be true."
@@ -1239,8 +1332,12 @@ Element* HTMLConstructionSite::CreateElement(
       element = definition->CreateElement(document, tag_name,
                                           GetCreateElementFlags());
     } else {
+      // It is possible that we want to set the uncustomized element to null
+      // registry during fragment parsing. Set wait_for_registry flag to true
+      // to control this behavior of explicitly setting null registry.
       element = CustomElement::CreateUncustomizedOrUndefinedElement(
-          document, tag_name, GetCreateElementFlags(), is);
+          document, tag_name, GetCreateElementFlags(), is, registry,
+          /*wait_for_registry=*/!registry && is_parsing_fragment_);
     }
     // Definition for the created element does not exist here and it cannot be
     // custom, precustomized, or failed.
@@ -1427,6 +1524,119 @@ void HTMLConstructionSite::FinishedTemplateElement(
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   if (!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
     pending_dom_parts_->PopPartRoot();
+  }
+}
+
+void HTMLConstructionSite::PreprocessInsertionTask(
+    HTMLConstructionSiteTask& task) {
+  CHECK(task.operation == HTMLConstructionSiteTask::Operation::kInsert ||
+        task.operation == HTMLConstructionSiteTask::Operation::kInsertText);
+  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled() ||
+      OpenElements()->StackDepth() < 2 || !task.child) {
+    return;
+  }
+  HTMLStackItem* top = open_elements_.TopStackItem();
+  CHECK(top);
+
+  HTMLStackItem* one_below_top = top->NextItemInStack();
+  if (task.parent != top->GetNode() || !one_below_top) {
+    return;
+  }
+
+  // This means that we have a <template contentmethod> grandparent,
+  // and we're inserting directly into the target specified by the current
+  // parent. This is set below.
+  if (ContainerNode* insertion_target =
+          one_below_top->AdjustedInsertionTarget()) {
+    CHECK(one_below_top->MatchesHTMLTag(html_names::HTMLTag::kTemplate));
+    // When prepending, the "next child" for insertions would be the first child
+    // at the time of discovering the current parent (the <... contentname>
+    // element). This is set below (see the kPrepend handling).
+    Node* adjusted_next_child = one_below_top->AdjustedInsertionNextChild();
+    if (adjusted_next_child &&
+        adjusted_next_child->parentNode() != insertion_target) {
+      return;
+    }
+    task.parent = insertion_target;
+
+    if (adjusted_next_child && !task.next_child) {
+      task.next_child = adjusted_next_child;
+    }
+    return;
+  }
+
+  HTMLTemplateElement* top_template =
+      DynamicTo<HTMLTemplateElement>(top->GetElement());
+
+  if (!top_template || top_template->IsShadowRootModeTemplate()) {
+    return;
+  }
+
+  top->SetAdjustedInsertionTarget(nullptr);
+  top->SetAdjustedInsertionNextChild(nullptr);
+
+  const ContentMethod content_method = GetContentMethod(top_template);
+  if (content_method == ContentMethod::kNone) {
+    return;
+  }
+  Element* child_element = DynamicTo<Element>(*task.child);
+  if (!child_element ||
+      !child_element->FastHasAttribute(html_names::kContentnameAttr)) {
+    return;
+  }
+
+  ContainerNode* context_node = one_below_top->GetNode();
+  CHECK(context_node);
+  if (HTMLTemplateElement* context_template =
+          DynamicTo<HTMLTemplateElement>(context_node)) {
+    context_node = context_template->InsertionTarget();
+  } else if (context_node == context_node->GetDocument().FirstBodyElement()) {
+    // Allow patches that are direct descendants of <body> to also modify
+    // <head>.
+    context_node = context_node->GetDocument().documentElement();
+  }
+
+  const AtomicString& content_name =
+      child_element->FastGetAttribute(html_names::kContentnameAttr);
+  const HTMLCollection* candidates = context_node->getElementsByTagNameNS(
+      child_element->TagQName().NamespaceURI(),
+      child_element->TagQName().LocalName());
+
+  auto result = std::find_if(
+      candidates->begin(), candidates->end(), [&](Element* candidate) {
+        return candidate->FastGetAttribute(html_names::kContentnameAttr) ==
+               content_name;
+      });
+
+  if (result.AtEnd()) {
+    return;
+  }
+
+  Element* target = *result;
+
+  if (content_method == ContentMethod::kReplace) {
+    task.parent = target->parentNode();
+    task.next_child = target;
+    task.operation = HTMLConstructionSiteTask::Operation::kReplaceChild;
+    return;
+  }
+
+  top->SetAdjustedInsertionTarget(target);
+  switch (content_method) {
+    case ContentMethod::kAppend:
+      return;
+    case ContentMethod::kPrepend:
+      top->SetAdjustedInsertionNextChild(target->firstChild());
+      return;
+    case ContentMethod::kReplaceChildren: {
+      HTMLConstructionSiteTask remove_task(
+          HTMLConstructionSiteTask::kRemoveChildren);
+      remove_task.parent = target;
+      QueueTask(remove_task, /*flush_pending_text=*/false);
+      return;
+    }
+    default:
+      NOTREACHED();
   }
 }
 

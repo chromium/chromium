@@ -1,5 +1,19 @@
 #![deny(elided_lifetimes_in_paths, mismatched_lifetime_syntaxes)]
 
+use cxx::ExternType;
+use std::marker::PhantomData;
+
+#[repr(C)]
+struct Alias<'a> {
+    ptr: *const std::ffi::c_void,
+    lifetime: PhantomData<&'a str>,
+}
+
+unsafe impl<'a> ExternType for Alias<'a> {
+    type Id = cxx::type_id!("Alias");
+    type Kind = cxx::kind::Trivial;
+}
+
 #[cxx::bridge]
 mod ffi {
     #[derive(PartialEq, PartialOrd, Hash)]
@@ -13,6 +27,7 @@ mod ffi {
 
     unsafe extern "C++" {
         type Cpp<'a>;
+        type Alias<'a> = crate::Alias<'a>;
 
         fn lifetime_named<'a>(s: &'a i32) -> UniquePtr<Cpp<'a>>;
 

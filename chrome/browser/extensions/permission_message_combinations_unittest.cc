@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
 #include "components/version_info/version_info.h"
@@ -721,6 +722,7 @@ TEST_F(PermissionMessageCombinationsUnittest,
       "Exchange data with any device on the local network or internet"));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Check that permission messages are generated correctly for
 // MediaGalleriesPermission (an API permission with custom messages).
 TEST_F(PermissionMessageCombinationsUnittest,
@@ -802,6 +804,7 @@ TEST_F(PermissionMessageCombinationsUnittest,
       "}");
   ASSERT_TRUE(CheckManifestProducesPermissions());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // TODO(sashab): Add tests for SettingsOverrideAPIPermission (an API permission
 // with custom messages).

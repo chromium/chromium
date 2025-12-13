@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <cstring>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -36,7 +32,11 @@
 #include "third_party/blink/renderer/platform/disk_data_allocator_test_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/scheduler/public/rail_mode_observer.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using ThreadPoolExecutionMode =
     base::test::TaskEnvironment::ThreadPoolExecutionMode;
@@ -165,8 +165,6 @@ class ParkableStringTest
         std::make_unique<InMemoryDataAllocator>());
 
     manager.SetRendererBackgrounded(true);
-    // No string yet, should not post a task since there is nothing to do.
-    ASSERT_EQ(0u, task_environment_.GetPendingMainThreadTaskCount());
   }
 
   void TearDown() override {
@@ -561,12 +559,12 @@ TEST_P(ParkableStringTest, BackgroundUnparkFromMemory) {
   EXPECT_TRUE(manager.IsOnParkedMapForTesting(impl));
 
   // Post unparking task to a background thread.
-  base::ThreadPool::PostTask(FROM_HERE, base::BindOnce(
-                                            [](ParkableStringImpl* string) {
-                                              EXPECT_FALSE(IsMainThread());
-                                              string->ToString();
-                                            },
-                                            base::RetainedRef(impl)));
+  blink::worker_pool::PostTask(FROM_HERE, blink::CrossThreadBindOnce(
+                                              [](ParkableStringImpl* string) {
+                                                EXPECT_FALSE(IsMainThread());
+                                                string->ToString();
+                                              },
+                                              blink::RetainedRef(impl)));
 
   // Wait until the background unpark task is completed.
   while (true) {
@@ -601,12 +599,12 @@ TEST_P(ParkableStringTest, BackgroundUnparkFromDisk) {
   EXPECT_TRUE(manager.IsOnDiskMapForTesting(impl));
 
   // Post unparking task to a background thread.
-  base::ThreadPool::PostTask(FROM_HERE, base::BindOnce(
-                                            [](ParkableStringImpl* string) {
-                                              EXPECT_FALSE(IsMainThread());
-                                              string->ToString();
-                                            },
-                                            base::RetainedRef(impl)));
+  blink::worker_pool::PostTask(FROM_HERE, blink::CrossThreadBindOnce(
+                                              [](ParkableStringImpl* string) {
+                                                EXPECT_FALSE(IsMainThread());
+                                                string->ToString();
+                                              },
+                                              blink::RetainedRef(impl)));
 
   // Wait until the background unpark task is completed.
   while (true) {
@@ -638,8 +636,8 @@ TEST_P(ParkableStringTest, BackgroundDestruct) {
   auto parkable =
       std::make_unique<ParkableStringWrapper>(MakeLargeString().ReleaseImpl());
   EXPECT_TRUE(parkable->string.Impl()->HasOneRef());
-  base::ThreadPool::PostTask(
-      FROM_HERE, base::BindOnce(
+  blink::worker_pool::PostTask(
+      FROM_HERE, blink::CrossThreadBindOnce(
                      [](std::unique_ptr<ParkableStringWrapper> parkable) {
                        EXPECT_FALSE(IsMainThread());
                        EXPECT_TRUE(parkable->string.Impl()->HasOneRef());
@@ -836,9 +834,9 @@ TEST_P(ParkableStringTest, ShouldPark) {
 
 TEST_P(ParkableStringTest, AsanPoisoningTest) {
   ParkableString parkable(MakeLargeString().ReleaseImpl());
-  const LChar* data = parkable.ToString().Characters8();
+  const LChar* data = UNSAFE_TODO(parkable.ToString().Characters8());
   EXPECT_TRUE(ParkAndWait(parkable));
-  EXPECT_ASAN_DEATH(EXPECT_NE(0, data[10]), "");
+  UNSAFE_TODO(EXPECT_ASAN_DEATH(EXPECT_NE(0, data[10]), ""));
 }
 
 // Non-regression test for crbug.com/905137.
@@ -1027,7 +1025,7 @@ TEST_P(ParkableStringTest, SynchronousToDisk) {
   parkable.ToString();
 }
 
-TEST_P(ParkableStringTest, OnPurgeMemory) {
+TEST_P(ParkableStringTest, OnMemoryPressure) {
   ParkableString parkable1 = CreateAndParkAll();
   ParkableString parkable2(MakeLargeString('b').ReleaseImpl());
 
@@ -1043,7 +1041,8 @@ TEST_P(ParkableStringTest, OnPurgeMemory) {
   String retained = parkable2.ToString();
   EXPECT_TRUE(parkable2.Impl()->has_compressed_data());
 
-  MemoryPressureListenerRegistry::Instance().OnPurgeMemory();
+  ParkableStringManager::Instance().OnMemoryPressure(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_TRUE(parkable1.Impl()->is_parked());  // Parked synchronously.
   EXPECT_FALSE(parkable2.Impl()->is_parked());
 
@@ -1175,7 +1174,8 @@ TEST_P(ParkableStringTest, CompressionDisabled) {
   WaitForDelayedParking();
   EXPECT_FALSE(parkable.Impl()->may_be_parked());
 
-  MemoryPressureListenerRegistry::Instance().OnPurgeMemory();
+  ParkableStringManager::Instance().OnMemoryPressure(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_FALSE(parkable.Impl()->may_be_parked());
 }
 

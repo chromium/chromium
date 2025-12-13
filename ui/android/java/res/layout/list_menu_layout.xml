@@ -10,9 +10,21 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/list_menu_background"
+    android:clipToOutline="true"
     android:elevation="@dimen/list_menu_elevation">
 
-    <ListView
+    <org.chromium.ui.listmenu.KeyboardAccessibleListView
+        android:id="@+id/menu_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:id="@+id/menu_header_bottom_hairline"
+        android:layout_height="@dimen/divider_height"
+        android:visibility="invisible"
+        android:focusable="false"
+        android:screenReaderFocusable="false"
+        style="@style/HorizontalDivider"/>
+    <org.chromium.ui.listmenu.KeyboardAccessibleListView
         android:id="@+id/menu_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"

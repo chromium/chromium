@@ -178,7 +178,7 @@ void PageAnimator::ServiceScriptedAnimations(
     // 2. Dispatch the pagereveal event
     // 3. Activate the view transition
     auto page_reveal_event_filter =
-        WTF::BindRepeating([](const LocalDOMWindow* window, Event* event) {
+        BindRepeating([](const LocalDOMWindow* window, Event* event) {
           PageRevealEvent* page_reveal = DynamicTo<PageRevealEvent>(event);
           if (!page_reveal) {
             return false;
@@ -190,7 +190,7 @@ void PageAnimator::ServiceScriptedAnimations(
           CHECK(!window->HasBeenRevealed());
 
           if (auto* supplement =
-                  ViewTransitionSupplement::FromIfExists(*window->document())) {
+                  window->document()->GetViewTransitionsIfExists()) {
             DOMViewTransition* view_transition =
                 supplement->ResolveCrossDocumentViewTransition();
             page_reveal->SetViewTransition(view_transition);
@@ -201,8 +201,9 @@ void PageAnimator::ServiceScriptedAnimations(
 
     run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
       LocalDOMWindow* window = active_controllers[i]->GetWindow();
-      bool pagereveal_dispatched = active_controllers[i]->DispatchEvents(
-          WTF::BindRepeating(page_reveal_event_filter, WrapPersistent(window)));
+      bool pagereveal_dispatched =
+          active_controllers[i]->DispatchEvents(blink::BindRepeating(
+              page_reveal_event_filter, WrapPersistent(window)));
 
       if (pagereveal_dispatched) {
         window->SetHasBeenRevealed(true);
@@ -230,7 +231,7 @@ void PageAnimator::ServiceScriptedAnimations(
   auto start_time = base::TimeTicks::Now();
   for (wtf_size_t i = 0; i < controllers.size(); ++i) {
     auto& [controller, can_throttle] = controllers[i];
-    controller->DispatchEvents(WTF::BindRepeating([](Event* event) {
+    controller->DispatchEvents(BindRepeating([](Event* event) {
       return event->type() == event_type_names::kResize;
     }));
     auto end_time = base::TimeTicks::Now();
@@ -253,7 +254,7 @@ void PageAnimator::ServiceScriptedAnimations(
   // for that Document, passing in now as the timestamp.
   run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
     auto scope = SyncScrollAttemptHeuristic::GetScrollHandlerScope();
-    active_controllers[i]->DispatchEvents(WTF::BindRepeating([](Event* event) {
+    active_controllers[i]->DispatchEvents(BindRepeating([](Event* event) {
       return event->type() == event_type_names::kScroll ||
              event->type() == event_type_names::kScrollsnapchange ||
              event->type() == event_type_names::kScrollsnapchanging ||

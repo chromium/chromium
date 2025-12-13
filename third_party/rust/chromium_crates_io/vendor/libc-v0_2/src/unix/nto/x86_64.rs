@@ -23,11 +23,11 @@ s! {
         pub r15: u64,
         pub rip: u64,
         pub cs: u32,
-        rsvd1: u32,
+        rsvd1: Padding<u32>,
         pub rflags: u64,
         pub rsp: u64,
         pub ss: u32,
-        rsvd2: u32,
+        rsvd2: Padding<u32>,
     }
 
     #[repr(align(8))]

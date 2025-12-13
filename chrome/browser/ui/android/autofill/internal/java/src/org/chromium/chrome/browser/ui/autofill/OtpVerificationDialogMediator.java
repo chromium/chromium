@@ -23,8 +23,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Optional;
-
 @NullMarked
 class OtpVerificationDialogMediator
         implements ModalDialogProperties.Controller, OtpVerificationDialogProperties.ViewDelegate {
@@ -52,12 +50,11 @@ class OtpVerificationDialogMediator
         assumeNonNull(mOtpVerificationDialogModel);
         switch (buttonType) {
             case ModalDialogProperties.ButtonType.POSITIVE:
-                Optional<CharSequence> editTextOptional =
-                        mOtpVerificationDialogModel.get(EDIT_TEXT);
+                CharSequence editText = mOtpVerificationDialogModel.get(EDIT_TEXT);
                 // Safety check, this should always be true.
-                if (editTextOptional.isPresent()) {
+                if (editText != null) {
                     showProgressBarOverlay();
-                    mDelegate.onConfirm(editTextOptional.get().toString());
+                    mDelegate.onConfirm(editText.toString());
                 }
                 break;
             case ModalDialogProperties.ButtonType.NEGATIVE:
@@ -73,8 +70,8 @@ class OtpVerificationDialogMediator
         mModalDialogModel.set(
                 ModalDialogProperties.POSITIVE_BUTTON_DISABLED,
                 s.length() != mOtpVerificationDialogModel.get(OTP_LENGTH));
-        mOtpVerificationDialogModel.set(OTP_ERROR_MESSAGE, Optional.empty());
-        mOtpVerificationDialogModel.set(EDIT_TEXT, Optional.of(s));
+        mOtpVerificationDialogModel.set(OTP_ERROR_MESSAGE, null);
+        mOtpVerificationDialogModel.set(EDIT_TEXT, s);
     }
 
     @Override
@@ -102,7 +99,7 @@ class OtpVerificationDialogMediator
     /** Clear the text in the Edit Text field. */
     void clearEditText() {
         assumeNonNull(mOtpVerificationDialogModel);
-        mOtpVerificationDialogModel.set(EDIT_TEXT, Optional.empty());
+        mOtpVerificationDialogModel.set(EDIT_TEXT, null);
     }
 
     /**
@@ -116,7 +113,7 @@ class OtpVerificationDialogMediator
     }
 
     /** Show an error message for the submitted otp. */
-    void showOtpErrorMessage(Optional<String> errorMessage) {
+    void showOtpErrorMessage(@Nullable String errorMessage) {
         assumeNonNull(mOtpVerificationDialogModel);
         mOtpVerificationDialogModel.set(SHOW_PROGRESS_BAR_OVERLAY, false);
         mOtpVerificationDialogModel.set(OTP_ERROR_MESSAGE, errorMessage);

@@ -40,9 +40,8 @@ class MockCompositorFrameSink : public viz::mojom::blink::CompositorFrameSink {
 
   // viz::mojom::blink::CompositorFrameSink implementation
   MOCK_METHOD1(SetNeedsBeginFrame, void(bool));
-  MOCK_METHOD0(SetWantsAnimateOnlyBeginFrames, void(void));
-  MOCK_METHOD0(SetWantsBeginFrameAcks, void(void));
-  MOCK_METHOD0(SetAutoNeedsBeginFrame, void(void));
+  MOCK_METHOD1(SetParams,
+               void(viz::mojom::blink::CompositorFrameSinkParamsPtr));
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId&,
       viz::CompositorFrame frame,
@@ -57,7 +56,7 @@ class MockCompositorFrameSink : public viz::mojom::blink::CompositorFrameSink {
   MOCK_METHOD2(BindLayerContext,
                void(viz::mojom::blink::PendingLayerContextPtr,
                     viz::mojom::blink::LayerContextSettingsPtr));
-  MOCK_METHOD1(SetThreads, void(const WTF::Vector<viz::Thread>&));
+  MOCK_METHOD1(SetThreads, void(const Vector<viz::Thread>&));
 
  private:
   mojo::Receiver<viz::mojom::blink::CompositorFrameSink> receiver_{this};

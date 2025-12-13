@@ -31,7 +31,8 @@ class UpdateHandler {
   // Result of a GetUpdates request for a data type that was nudged (contained
   // at least one invalidation hint for the data type). These values are
   // persisted to logs. Entries should not be renumbered and numeric values
-  // should never be reused. LINT.IfChange(NudgedUpdateResult)
+  // should never be reused.
+  // LINT.IfChange(NudgedUpdateResult)
   enum class NudgedUpdateResult {
     // The data type successfully downloaded at least one entity.
     kSuccess = 0,

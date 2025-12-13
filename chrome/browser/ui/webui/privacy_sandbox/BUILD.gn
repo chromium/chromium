@@ -12,56 +12,19 @@ mojom("mojo_bindings") {
     "//components/content_settings/core/common:content_settings_types",
   ]
 
-  sources = [
-    "base_dialog.mojom",
-    "privacy_sandbox_internals.mojom",
-  ]
+  sources = [ "privacy_sandbox_internals.mojom" ]
   webui_module_path = "/"
 }
 
 if (!is_android) {
-  source_set("privacy_sandbox") {
-    public = [
-      "base_dialog_handler.h",
-      "base_dialog_ui.h",
-    ]
-
-    sources = [
-      "base_dialog_handler.cc",
-      "base_dialog_ui.cc",
-    ]
-
-    public_deps = [ ":mojo_bindings" ]
-
-    deps = [
-      "//base",
-      "//chrome/app:generated_resources",
-      "//chrome/browser/privacy_sandbox/notice:factory",
-      "//chrome/browser/privacy_sandbox/notice:interfaces",
-      "//chrome/browser/privacy_sandbox/notice:notice_mojom",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/resources/privacy_sandbox:resources",
-      "//chrome/browser/ui/views/privacy_sandbox",
-      "//chrome/common",
-      "//components/privacy_sandbox:features",
-      "//content/public/browser",
-      "//ui/base",
-      "//ui/webui",
-    ]
-  }
-
   source_set("unit_tests") {
     testonly = true
-    sources = [
-      "base_dialog_handler_unittest.cc",
-      "privacy_sandbox_internals_handler_unittest.cc",
-    ]
+    sources = [ "privacy_sandbox_internals_handler_unittest.cc" ]
 
     deps = [
       ":mojo_bindings",
-      ":privacy_sandbox",
       "//base/test:test_support",
-      "//chrome/browser/prefs:prefs",
+      "//chrome/browser/prefs",
       "//chrome/browser/privacy_sandbox/notice:test_support",
       "//chrome/test:test_support",
       "//components/prefs",
@@ -81,11 +44,10 @@ if (!is_android) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "base_dialog_browsertest.cc" ]
+    sources = []
 
     deps = [
-      ":privacy_sandbox",
-      "//chrome/browser/ui:ui",
+      "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/privacy_sandbox",
       "//chrome/test:test_support_ui",

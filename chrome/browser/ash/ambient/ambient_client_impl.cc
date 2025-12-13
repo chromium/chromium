@@ -15,33 +15,28 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
-
-constexpr char kPhotosOAuthScope[] = "https://www.googleapis.com/auth/photos";
-constexpr char kBackdropOAuthScope[] =
-    "https://www.googleapis.com/auth/cast.backdrop";
 
 const user_manager::User* GetActiveUser() {
   return user_manager::UserManager::Get()->GetActiveUser();
@@ -162,12 +157,10 @@ void AmbientClientImpl::RequestAccessToken(GetAccessTokenCallback callback) {
 
   CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  const signin::ScopeSet scopes{kPhotosOAuthScope, kBackdropOAuthScope};
   auto fetcher_id = base::UnguessableToken::Create();
   auto access_token_fetcher =
       identity_manager->CreateAccessTokenFetcherForAccount(
-          account_info.account_id,
-          /*oauth_consumer_name=*/"ChromeOS_AmbientMode", scopes,
+          account_info.account_id, signin::OAuthConsumerId::kAmbientMode,
           base::BindOnce(&AmbientClientImpl::OnGetAccessToken,
                          weak_factory_.GetWeakPtr(), std::move(callback),
                          fetcher_id, account_info.gaia),
@@ -225,7 +218,7 @@ bool AmbientClientImpl::ShouldUseProdServer() {
   if (ash::features::IsAmbientModeDevUseProdEnabled())
     return true;
 
-  auto channel = chrome::GetChannel();
+  auto channel = ash::GetChannel();
   return channel == version_info::Channel::STABLE ||
          channel == version_info::Channel::BETA;
 }

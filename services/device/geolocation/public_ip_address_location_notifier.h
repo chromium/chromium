@@ -12,6 +12,7 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/geolocation_provider.h"

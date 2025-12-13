@@ -115,11 +115,6 @@ class StorageAccessGrantPermissionContext
       ContentSetting content_setting,
       bool is_one_time) override;
 
-  // If the request is from a context partitioned as a popin we need to set
-  // the embedding origin to the popin opener's origin.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  GURL GetEffectiveEmbedderOrigin(content::RenderFrameHost* rfh) const override;
-
   // Internal implementation for NotifyPermissionSet.
   void NotifyPermissionSetInternal(
       const permissions::PermissionRequestData& request_data,
@@ -143,6 +138,8 @@ class StorageAccessGrantPermissionContext
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback,
       bool had_top_level_user_interaction);
+
+  void ReportRelatedWebsiteSetsDeprecation(content::RenderFrameHost* rfh);
 
   base::WeakPtrFactory<StorageAccessGrantPermissionContext> weak_factory_{this};
 };

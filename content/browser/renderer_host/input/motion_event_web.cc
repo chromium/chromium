@@ -128,6 +128,11 @@ float MotionEventWeb::GetTouchMinor(size_t pointer_index) const {
                         event_.touches[pointer_index].radius_y);
 }
 
+bool MotionEventWeb::HasNativeTouchMajor(size_t pointer_index) const {
+  DCHECK_LT(pointer_index, GetPointerCount());
+  return true;
+}
+
 float MotionEventWeb::GetOrientation(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
 

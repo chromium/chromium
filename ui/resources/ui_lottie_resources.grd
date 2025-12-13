@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1">
+  <outputs>
+    <output filename="grit/ui_lottie_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="ui_lottie_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <structures>
+      <if expr="use_aura">
+        <structure type="lottie" name="IDR_AURA_CURSOR_PTR_LOTTIE" file="vector/common/pointers/left_ptr.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_ALIAS_LOTTIE" file="vector/common/pointers/alias.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_CELL_LOTTIE" file="vector/common/pointers/cell.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_CROSSHAIR_LOTTIE" file="vector/common/pointers/crosshair.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_GRAB_LOTTIE" file="vector/common/pointers/fleur.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_GRABBING_LOTTIE" file="vector/common/pointers/hand3.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_HAND_LOTTIE" file="vector/common/pointers/hand2.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_HELP_LOTTIE" file="vector/common/pointers/help.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_COPY_LOTTIE" file="vector/common/pointers/copy.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_CONTEXT_MENU_LOTTIE" file="vector/common/pointers/context_menu.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_NO_DROP_LOTTIE" file="vector/common/pointers/nodrop.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_IBEAM_LOTTIE" file="vector/common/pointers/xterm.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_MOVE_LOTTIE" file="vector/common/pointers/move.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_THROBBER_LOTTIE" file="vector/common/pointers/throbber.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_XTERM_HORIZ_LOTTIE" file="vector/common/pointers/xterm_horiz.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_ZOOM_IN_LOTTIE" file="vector/common/pointers/zoom_in.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_ZOOM_OUT_LOTTIE" file="vector/common/pointers/zoom_out.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_TOP_LEFT_CORNER_LOTTIE" file="vector/common/pointers/top_left_corner.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_TOP_LEFT_CORNER_BLOCK_LOTTIE" file="vector/common/pointers/top_left_corner_block.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_TOP_RIGHT_CORNER_BLOCK_LOTTIE" file="vector/common/pointers/top_right_corner_block.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_TOP_RIGHT_CORNER_LOTTIE" file="vector/common/pointers/top_right_corner.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_LOTTIE" file="vector/common/pointers/sb_horizontal_double_arrow.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_BLOCK_LOTTIE" file="vector/common/pointers/sb_horizontal_double_arrow_block.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_LOTTIE" file="vector/common/pointers/sb_vertical_double_arrow.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_BLOCK_LOTTIE" file="vector/common/pointers/sb_vertical_double_arrow_block.json" compress="gzip" />
+      </if>
+    </structures>
+  </release>
+</grit>
+

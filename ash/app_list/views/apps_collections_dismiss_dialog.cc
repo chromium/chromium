@@ -14,7 +14,6 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/string_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -58,6 +57,7 @@ AppsCollectionsDismissDialog::AppsCollectionsDismissDialog(
   SetPaintToLayer();
 
   if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }

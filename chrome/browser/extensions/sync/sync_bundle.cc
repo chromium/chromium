@@ -11,7 +11,10 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/sync/extension_sync_data.h"
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

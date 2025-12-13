@@ -10,12 +10,12 @@ import org.jspecify.annotations.Nullable;
 /**
  * Implemented in Chromium.
  *
- * A simple key-value cache that is persisting all data on disk. Automatically evicts old data.
+ * <p>A simple key-value cache that is persisting all data on disk. Automatically evicts old data.
  */
 @NullMarked
 public interface PersistentKeyValueCache {
     /** Consumes the result of PersistentKeyValueCache.lookup(). */
-    public interface ValueConsumer {
+    interface ValueConsumer {
         /**
          * Called when a lookup is complete.
          *

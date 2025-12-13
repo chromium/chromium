@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/setup/daemon_controller_delegate_win.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -125,7 +121,7 @@ bool WriteConfigFileToTemp(const base::FilePath& filename,
       tempname.value().c_str(), GENERIC_WRITE, 0, &security_attributes,
       CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, nullptr));
 
-  if (!file.IsValid()) {
+  if (!file.is_valid()) {
     PLOG(ERROR) << "Failed to create '" << filename.value() << "'";
     return false;
   }
@@ -245,14 +241,14 @@ ScopedScHandle OpenService(DWORD access) {
   ScopedScHandle scmanager(
       ::OpenSCManagerW(nullptr, SERVICES_ACTIVE_DATABASE,
                        SC_MANAGER_CONNECT | SC_MANAGER_ENUMERATE_SERVICE));
-  if (!scmanager.IsValid()) {
+  if (!scmanager.is_valid()) {
     PLOG(ERROR) << "Failed to connect to the service control manager";
     return ScopedScHandle();
   }
 
   ScopedScHandle service(
       ::OpenServiceW(scmanager.Get(), kWindowsServiceName, access));
-  if (!service.IsValid()) {
+  if (!service.is_valid()) {
     PLOG(ERROR) << "Failed to open to the '" << kWindowsServiceName
                 << "' service";
   }
@@ -271,7 +267,7 @@ bool StartDaemon() {
   DWORD access = SERVICE_CHANGE_CONFIG | SERVICE_QUERY_STATUS | SERVICE_START |
                  SERVICE_STOP;
   ScopedScHandle service = OpenService(access);
-  if (!service.IsValid()) {
+  if (!service.is_valid()) {
     return false;
   }
 
@@ -303,7 +299,7 @@ bool StopDaemon() {
   DWORD access = SERVICE_CHANGE_CONFIG | SERVICE_QUERY_STATUS | SERVICE_START |
                  SERVICE_STOP;
   ScopedScHandle service = OpenService(access);
-  if (!service.IsValid()) {
+  if (!service.is_valid()) {
     return false;
   }
 
@@ -341,7 +337,7 @@ DaemonController::State DaemonControllerDelegateWin::GetState() {
   // TODO(alexeypa): Make the thread alertable, so we can switch to APC
   // notifications rather than polling.
   ScopedScHandle service = OpenService(SERVICE_QUERY_STATUS);
-  if (!service.IsValid()) {
+  if (!service.is_valid()) {
     return DaemonController::STATE_UNKNOWN;
   }
 
@@ -372,8 +368,8 @@ void DaemonControllerDelegateWin::UpdateConfig(
     DaemonController::CompletionCallback done) {
   // Check for bad keys.
   for (size_t i = 0; i < std::size(kReadonlyKeys); ++i) {
-    if (updated_config.Find(kReadonlyKeys[i])) {
-      LOG(ERROR) << "Cannot update config: '" << kReadonlyKeys[i]
+    if (updated_config.Find(UNSAFE_TODO(kReadonlyKeys[i]))) {
+      LOG(ERROR) << "Cannot update config: '" << UNSAFE_TODO(kReadonlyKeys[i])
                  << "' is read only.";
       InvokeCompletionCallback(std::move(done), false);
       return;

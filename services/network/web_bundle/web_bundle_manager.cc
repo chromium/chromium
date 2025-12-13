@@ -8,12 +8,12 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/network_context.h"
-#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "services/network/web_bundle/web_bundle_memory_quota_consumer.h"
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
@@ -60,8 +60,6 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
     const GURL& bundle_url,
     const ResourceRequest::WebBundleTokenParams& web_bundle_token_params,
     int32_t process_id,
-    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-    std::optional<std::string> devtools_request_id,
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* coep_reporter) {
   Key key = GetKey(web_bundle_token_params, process_id);
@@ -84,7 +82,6 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
       bundle_url, web_bundle_token_params, std::move(remote),
       std::make_unique<MemoryQuotaConsumer>(weak_ptr_factory_.GetWeakPtr(),
                                             process_id),
-      std::move(devtools_observer), std::move(devtools_request_id),
       cross_origin_embedder_policy, coep_reporter);
 
   // Process pending subresource loaders if there are.

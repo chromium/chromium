@@ -41,6 +41,7 @@ std::string_view GetPrefName(AutofillProfile::RecordType record_type) {
       return prefs::kAutofillWorkMetadata;
     case AutofillProfile::RecordType::kLocalOrSyncable:
     case AutofillProfile::RecordType::kAccount:
+    case AutofillProfile::RecordType::kAccountNameEmail:
       NOTREACHED();
   }
 }
@@ -56,6 +57,7 @@ std::string_view GetSilentUpdateCountPrefName(
       return prefs::kAutofillSilentUpdatesToWorkAddress;
     case AutofillProfile::RecordType::kLocalOrSyncable:
     case AutofillProfile::RecordType::kAccount:
+    case AutofillProfile::RecordType::kAccountNameEmail:
       NOTREACHED();
   }
 }
@@ -224,6 +226,12 @@ void HomeAndWorkMetadataStore::OnStateChanged(
                               total_silent_updates);
   pref_service_->ClearPref(prefs::kAutofillSilentUpdatesToHomeAddress);
   pref_service_->ClearPref(prefs::kAutofillSilentUpdatesToWorkAddress);
+}
+
+void HomeAndWorkMetadataStore::OnSyncShutdown(syncer::SyncService*) {
+  // Unreachable, since the service owning this instance is Shutdown() before
+  // the SyncService.
+  NOTREACHED();
 }
 
 }  // namespace autofill

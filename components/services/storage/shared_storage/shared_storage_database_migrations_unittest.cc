@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -25,6 +26,7 @@
 #include "sql/test/test_helpers.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -350,10 +352,10 @@ TEST_F(SharedStorageDatabaseMigrationsTest, MigrateVersion4ToCurrent) {
         "SELECT context_origin, key, value FROM values_mapping"));
 
     while (select_values_statement.Step()) {
-      std::u16string key;
-      ASSERT_TRUE(select_values_statement.ColumnBlobAsString16(1, &key));
-      std::u16string value;
-      ASSERT_TRUE(select_values_statement.ColumnBlobAsString16(2, &value));
+      ASSERT_OK_AND_ASSIGN(std::u16string key,
+                           select_values_statement.ColumnBlobAsString16(1));
+      ASSERT_OK_AND_ASSIGN(std::u16string value,
+                           select_values_statement.ColumnBlobAsString16(2));
       int64_t bytes_delta = 2 * (key.size() + value.size());
       std::string origin = select_values_statement.ColumnString(0);
       auto it = num_bytes_map.find(origin);
@@ -576,13 +578,12 @@ TEST_F(SharedStorageDatabaseMigrationsTest, MigrateVersion2ToCurrent) {
       auto origin_it =
           premigration_values.find(select_statement.ColumnString(0));
       ASSERT_TRUE(origin_it != premigration_values.end());
-      std::u16string key;
-      ASSERT_TRUE(select_statement.ColumnBlobAsString16(1, &key));
+      ASSERT_OK_AND_ASSIGN(std::u16string key,
+                           select_statement.ColumnBlobAsString16(1));
       auto key_it = origin_it->second.find(key);
       ASSERT_TRUE(key_it != origin_it->second.end());
-      std::u16string value;
-      ASSERT_TRUE(select_statement.ColumnBlobAsString16(2, &value));
-      EXPECT_EQ(key_it->second.first, value);
+      EXPECT_THAT(select_statement.ColumnBlobAsString16(2),
+                  testing::Optional(key_it->second.first));
       EXPECT_EQ(key_it->second.second, select_statement.ColumnTime(3));
     }
   }

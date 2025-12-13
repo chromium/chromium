@@ -253,16 +253,22 @@ struct v4l2_av1_tile_info FillTileInfo(const libgav1::TileInfo& ti) {
         base::checked_cast<uint32_t>(ti.tile_row_start[i]);
   }
 
+  // Confirmed that |kMaxTileColumns| is enough size for
+  // |width_in_sbs_minus_1| and |kMaxTileRows| is enough size for
+  // |height_in_sbs_minus_1|
+  // https://b.corp.google.com/issues/187828854#comment19
+  static_assert(
+      std::size(decltype(v4l2_ti.width_in_sbs_minus_1){}) ==
+          libgav1::kMaxTileColumns,
+      "Size of |width_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
+      "does not match libgav1 expectation");
+  static_assert(
+      std::size(decltype(v4l2_ti.height_in_sbs_minus_1){}) ==
+          libgav1::kMaxTileRows,
+      "Size of |height_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
+      "does not match libgav1 expectation");
+
   if (!ti.uniform_spacing) {
-    // Confirmed that |kMaxTileColumns| is enough size for
-    // |width_in_sbs_minus_1| and |kMaxTileRows| is enough size for
-    // |height_in_sbs_minus_1|
-    // https://b.corp.google.com/issues/187828854#comment19
-    static_assert(
-        std::size(decltype(v4l2_ti.width_in_sbs_minus_1){}) ==
-            libgav1::kMaxTileColumns,
-        "Size of |width_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
-        "does not match libgav1 expectation");
     for (size_t i = 0; i < libgav1::kMaxTileColumns; i++) {
       if (ti.tile_column_width_in_superblocks[i] >= 1) {
         v4l2_ti.width_in_sbs_minus_1[i] = base::checked_cast<uint32_t>(
@@ -270,16 +276,54 @@ struct v4l2_av1_tile_info FillTileInfo(const libgav1::TileInfo& ti) {
       }
     }
 
-    static_assert(
-        std::size(decltype(v4l2_ti.height_in_sbs_minus_1){}) ==
-            libgav1::kMaxTileRows,
-        "Size of |height_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
-        "does not match libgav1 expectation");
     for (size_t i = 0; i < libgav1::kMaxTileRows; i++) {
       if (ti.tile_row_height_in_superblocks[i] >= 1) {
         v4l2_ti.height_in_sbs_minus_1[i] = base::checked_cast<uint32_t>(
             ti.tile_row_height_in_superblocks[i] - 1);
       }
+    }
+  } else {
+    // libgav1 doesn't provide tile_column_width_in_superblocks and
+    // tile_row_height_in_superblocks values when uniform_spacing is set,
+    // so we have to calculate width and height of superblocks via
+    // other column/row info.
+    const uint32_t cols4x4 =
+        base::checked_cast<uint32_t>(ti.tile_column_start[ti.tile_columns]);
+    const uint32_t sb_cols = base::checked_cast<uint32_t>(ti.sb_columns);
+    const uint32_t sb_cols_64 = (cols4x4 + 15) >> 4;
+    const uint32_t sb_cols_128 = (cols4x4 + 31) >> 5;
+    uint32_t sb_shift = 0;
+    if (sb_cols_64 == sb_cols) {
+      sb_shift = 4;
+    } else {
+      DCHECK_EQ(sb_cols_128, sb_cols);
+      sb_shift = 5;
+    }
+
+    const uint32_t sb_size_mi = 1u << sb_shift;
+
+    for (size_t i = 0; i < static_cast<uint32_t>(ti.tile_columns); ++i) {
+      const uint32_t mi_start =
+          base::checked_cast<uint32_t>(ti.tile_column_start[i]);
+      const uint32_t mi_end =
+          base::checked_cast<uint32_t>(ti.tile_column_start[i + 1]);
+      const uint32_t mi_width = mi_end - mi_start;
+
+      const uint32_t sb_w = (mi_width + sb_size_mi - 1) >> sb_shift;
+      DCHECK_GE(sb_w, 1u);
+      v4l2_ti.width_in_sbs_minus_1[i] = sb_w - 1;
+    }
+
+    for (size_t i = 0; i < static_cast<uint32_t>(ti.tile_rows); ++i) {
+      const uint32_t mi_start =
+          base::checked_cast<uint32_t>(ti.tile_row_start[i]);
+      const uint32_t mi_end =
+          base::checked_cast<uint32_t>(ti.tile_row_start[i + 1]);
+      const uint32_t mi_height = mi_end - mi_start;
+
+      const uint32_t sb_h = (mi_height + sb_size_mi - 1) >> sb_shift;
+      DCHECK_GE(sb_h, 1u);
+      v4l2_ti.height_in_sbs_minus_1[i] = sb_h - 1;
     }
   }
 
@@ -822,7 +866,6 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
   auto dec_surface = v4l2_pic->dec_surface();
   dec_surface->PrepareSetCtrls(&ext_ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
     return DecodeStatus::kFail;
   }

@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -24,7 +24,7 @@ class PrefService;
 namespace ash::system {
 
 class TimeZoneResolverManager : public TimeZoneResolver::Delegate,
-                                public ash::SimpleGeolocationProvider::Observer,
+                                public ash::SystemLocationProvider::Observer,
                                 public session_manager::SessionManagerObserver {
  public:
   class Observer {
@@ -46,7 +46,7 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate,
     METHODS_NUMBER = 4
   };
 
-  TimeZoneResolverManager(SimpleGeolocationProvider* geolocation_provider,
+  TimeZoneResolverManager(SystemLocationProvider* geolocation_provider,
                           session_manager::SessionManager* session_manager);
 
   TimeZoneResolverManager(const TimeZoneResolverManager&) = delete;
@@ -127,9 +127,9 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate,
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  // Points to the `SimpleGeolocationProvider::GetInstance()` throughout the
+  // Points to the `SystemLocationProvider::GetInstance()` throughout the
   // object lifecycle. Overridden in unit tests.
-  raw_ptr<SimpleGeolocationProvider> geolocation_provider_ = nullptr;
+  raw_ptr<SystemLocationProvider> geolocation_provider_ = nullptr;
 
   // This is non-null only after user logs in.
   raw_ptr<PrefService, DanglingUntriaged> primary_user_prefs_ = nullptr;

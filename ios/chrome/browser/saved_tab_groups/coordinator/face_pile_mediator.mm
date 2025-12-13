@@ -27,8 +27,8 @@ using ScopedDataSharingSyncObservation =
 @implementation FacePileMediator {
   // Services required by the mediator.
   raw_ptr<data_sharing::DataSharingService> _dataSharingService;
-  raw_ptr<ShareKitService> _shareKitService;
-  raw_ptr<signin::IdentityManager> _identityManager;
+  raw_ptr<ShareKitService, DanglingUntriaged> _shareKitService;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> _identityManager;
 
   // Settings specific to this mediator instance.
   FacePileConfiguration* _configuration;

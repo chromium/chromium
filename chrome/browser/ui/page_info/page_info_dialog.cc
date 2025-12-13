@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 

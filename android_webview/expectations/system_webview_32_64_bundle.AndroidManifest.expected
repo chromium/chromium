@@ -7,6 +7,7 @@
     android:isolatedSplits="true"
     android:versionCode="OFFSET=1"
     android:versionName="#.#.#.#">
+  <uses-feature android:glEsVersion="0x00030000"/>
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   <uses-feature android:name="android.software.leanback" android:required="false"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -18,7 +19,6 @@
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
   <application
       android:name="org.chromium.android_webview.nonembedded.WebViewApkApplication"
-      android:extractNativeLibs="false"
       android:icon="@$PACKAGE:drawable/icon_webview"
       android:label="Android System WebView"
       android:multiArch="true"
@@ -58,18 +58,15 @@
     <activity-alias  # DIFF-ANCHOR: da85c28e
         android:name="org.chromium.android_webview.SafeModeState"
         android:enabled="false"
-        android:process=":webview_apk"
-        android:targetActivity="org.chromium.android_webview.devui.MainActivity"
-        android:visibleToInstantApps="true">
+        android:targetActivity="org.chromium.android_webview.devui.MainActivity">
     </activity-alias>  # DIFF-ANCHOR: da85c28e
     <activity-alias  # DIFF-ANCHOR: b7cc06e9
         android:name="org.chromium.android_webview.devui.DeveloperModeState"
         android:enabled="false"
-        android:process=":webview_apk"
-        android:targetActivity="org.chromium.android_webview.devui.MainActivity"
-        android:visibleToInstantApps="true">
+        android:targetActivity="org.chromium.android_webview.devui.MainActivity">
     </activity-alias>  # DIFF-ANCHOR: b7cc06e9
     <meta-data android:name="$PACKAGE.WebViewLibrary" android:value="libwebviewchromium.so"/>
+    <meta-data android:name="PIN_SHARED_LIBS_FIRST" android:value="false"/>
     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="0"/>
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
@@ -183,6 +180,9 @@
       <meta-data android:name="STARTUP_FEATURE_CONFIGURE_PARTITIONED_COOKIES" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_DATA_DIRECTORY_SUFFIX" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_DIRECTORY_BASE_PATH" android:value="true"/>
+      <meta-data android:name="STARTUP_FEATURE_SET_PROFILES_TO_LOAD" android:value="true"/>
+      <meta-data android:name="STARTUP_FEATURE_SET_UI_THREAD_STARTUP_MODE" android:value="true"/>
+      <meta-data android:name="STARTUP_FEATURE_SET_UI_THREAD_STARTUP_MODE_V2" android:value="true"/>
     </service>  # DIFF-ANCHOR: c52936d7
     <service  # DIFF-ANCHOR: dc926e35
         android:name="org.chromium.android_webview.services.VariationsSeedServer"
@@ -510,6 +510,7 @@
         android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: e2f3bbbd
     <uses-library android:name="android.ext.adservices" android:required="false"/>
+    <uses-library android:name="android.test.base" android:required="false"/>
     <uses-library android:name="androidx.window.extensions" android:required="false"/>
   </application>
 </manifest>

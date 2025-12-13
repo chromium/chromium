@@ -72,7 +72,7 @@ found in the LICENSE file.
         android:title="@string/account_section_settings_toggle"
         android:persistent="false"/>
 
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="account_section_footer"
         android:summary="@string/account_section_footer"
         android:selectable="false"/>
@@ -83,8 +83,8 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="google_activity_controls"
-        android:title="@string/sign_in_google_activity_controls_title"
-        android:summary="@string/sign_in_google_activity_controls_summary"/>
+        android:title="@string/sign_in_personalize_google_services_title"
+        android:summary="@string/sign_in_personalize_google_services_summary"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="encryption"

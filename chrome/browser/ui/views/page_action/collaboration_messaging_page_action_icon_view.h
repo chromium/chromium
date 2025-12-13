@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_COLLABORATION_MESSAGING_PAGE_ACTION_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_COLLABORATION_MESSAGING_PAGE_ACTION_ICON_VIEW_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -58,7 +59,6 @@ class CollaborationMessagingPageActionIconView : public PageActionIconView {
   raw_ptr<Profile> profile_ = nullptr;
   base::WeakPtr<CollaborationMessagingTabData>
       collaboration_messaging_tab_data_ = nullptr;
-  RecentActivityBubbleCoordinator bubble_coordinator_;
   base::CallbackListSubscription message_changed_callback_;
 };
 

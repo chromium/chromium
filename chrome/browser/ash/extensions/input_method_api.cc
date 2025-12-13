@@ -19,12 +19,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/extensions/dictionary_event_router.h"
 #include "chrome/browser/ash/extensions/ime_menu_event_router.h"
 #include "chrome/browser/ash/extensions/input_method_event_router.h"
 #include "chrome/browser/ash/extensions/language_packs/language_pack_event_router.h"
 #include "chrome/browser/ash/extensions/language_packs/language_packs_extensions_util.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
+#include "chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/profiles/profile.h"
@@ -205,10 +208,11 @@ InputMethodPrivateFetchAllDictionaryWordsFunction::Run() {
                                              static_function_name())));
   }
 
-  const std::set<std::string>& words = dictionary->GetWords();
+  std::set<std::string> words = dictionary->GetWords();
   base::Value::List output;
-  for (const auto& word : words) {
-    output.Append(word);
+  output.reserve(words.size());
+  for (auto it = words.begin(); it != words.end();) {
+    output.Append(std::move(words.extract(it++).value()));
   }
   return RespondNow(WithArguments(std::move(output)));
 }
@@ -295,12 +299,16 @@ InputMethodPrivateOpenOptionsPageFunction::Run() {
   const GURL& options_page_url = ime->options_page_url();
   if (!options_page_url.is_empty()) {
     content::WebContents* web_contents = GetSenderWebContents();
-    if (web_contents) {
-      Browser* browser = chrome::FindBrowserWithTab(web_contents);
+    ash::BrowserDelegate* browser =
+        web_contents ? ash::BrowserController::GetInstance()->GetBrowserForTab(
+                           web_contents)
+                     : nullptr;
+    if (browser) {
       content::OpenURLParams url_params(options_page_url, content::Referrer(),
                                         WindowOpenDisposition::SINGLETON_TAB,
                                         ui::PAGE_TRANSITION_LINK, false);
-      browser->OpenURL(url_params, /*navigation_handle_callback=*/{});
+      browser->GetBrowser().OpenURL(url_params,
+                                    /*navigation_handle_callback=*/{});
     }
   }
   return RespondNow(NoArguments());
@@ -366,11 +374,24 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
           ->GetDict(prefs::kLanguageInputMethodSpecificSettings);
-  const base::Value* engine_result =
-      input_methods.FindByDottedPath(params->engine_id);
+  const base::DictValue* engine_result =
+      input_methods.FindDictByDottedPath(params->engine_id);
   base::Value result;
-  if (engine_result)
-    result = engine_result->Clone();
+
+  if (engine_result) {
+    base::DictValue modified_engine_result = engine_result->Clone();
+
+    // For Japanese IME, internal use only. Hyphen in name would complicate API.
+    modified_engine_result.Remove(
+        ash::input_method::kJpPrefMetadataOptionsSource);
+
+    // For Japanese IME, obsolete no-longer-used, hence excluded in API specs.
+    modified_engine_result.Remove(
+        ash::input_method::kJpPrefAutomaticallySendStatisticsToGoogle);
+
+    result = base::Value(std::move(modified_engine_result));
+  }
+
   return RespondNow(WithArguments(std::move(result)));
 }
 

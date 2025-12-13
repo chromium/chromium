@@ -16,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
@@ -45,6 +44,7 @@
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "crypto/obsolete/md5.h"
 #include "url/gurl.h"
 
 namespace history {
@@ -114,6 +114,10 @@ void LogMostVisitedScores(const MostVisitedURLList& sites) {
 }
 
 }  // namespace
+
+std::string Md5AsHexForTopSites(std::string_view url_spec) {
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(url_spec));
+}
 
 // Stores the most visited sites and the most repeated queries returned from
 // the history service. Used to synchronize parallel requests to the history
@@ -291,8 +295,7 @@ void TopSitesImpl::StartQueryForMostVisited() {
                      base::Unretained(this), request),
       &cancelable_task_tracker_,
       /*recency_factor_name=*/std::nullopt,
-      /*recency_window_days=*/std::nullopt,
-      /*check_visual_deduplication_flag=*/true);
+      /*recency_window_days=*/std::nullopt);
 
   // Request the most repeated queries if the corresponding feature is enabled
   // and the default search provider is available.
@@ -385,7 +388,7 @@ MostVisitedURLList TopSitesImpl::ApplyBlockedUrls(
 std::string TopSitesImpl::GetURLHash(const GURL& url) {
   // We don't use canonical URLs here to be able to block only one of the two
   // 'duplicate' sites, e.g. 'gmail.com' and 'mail.google.com'.
-  return base::MD5String(url.spec());
+  return Md5AsHexForTopSites(url.spec());
 }
 
 void TopSitesImpl::SetTopSites(MostVisitedURLList top_sites,

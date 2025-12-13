@@ -77,7 +77,6 @@ suite('AiPage', function() {
   test('FeatureRowsVisibility', async () => {
     // Case 1, a subset of the controls should be visible.
     loadTimeData.overrideValues({
-      showAutofillAiControl: true,
       showHistorySearchControl: false,
       showCompareControl: true,
       showComposeControl: true,
@@ -87,7 +86,7 @@ suite('AiPage', function() {
     resetRouterForTesting();
     await createPage();
 
-    assertEquals(6, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
+    assertEquals(5, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertFalse(isChildVisible(page, '#historySearchRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -105,10 +104,6 @@ suite('AiPage', function() {
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.TabOrganization', false);
 
-    assertTrue(isChildVisible(page, '#autofillAiRowV2'));
-    await verifyFeatureVisibilityMetrics(
-        'Settings.AiPage.ElementVisibility.AutofillAI', true);
-
     assertFalse(isChildVisible(page, '#passwordChangeRowV2'));
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.PasswordChange', false);
@@ -121,7 +116,6 @@ suite('AiPage', function() {
 
     // Case 2, a different subset of the controls should be visible.
     loadTimeData.overrideValues({
-      showAutofillAiControl: false,
       showHistorySearchControl: true,
       showCompareControl: false,
       showComposeControl: false,
@@ -130,7 +124,7 @@ suite('AiPage', function() {
     });
     resetRouterForTesting();
     await createPage();
-    assertEquals(6, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
+    assertEquals(5, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertTrue(isChildVisible(page, '#historySearchRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -147,10 +141,6 @@ suite('AiPage', function() {
     assertTrue(isChildVisible(page, '#tabOrganizationRowV2'));
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.TabOrganization', true);
-
-    assertFalse(isChildVisible(page, '#autofillAiRowV2'));
-    await verifyFeatureVisibilityMetrics(
-        'Settings.AiPage.ElementVisibility.AutofillAI', false);
 
     assertTrue(isChildVisible(page, '#passwordChangeRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -269,53 +259,6 @@ suite('AiPage', function() {
 
     assertEquals(
         routes.AI_TAB_ORGANIZATION, Router.getInstance().getCurrentRoute());
-  });
-
-  test('autofillAiRow', async () => {
-    entityDataManager.setGetOptInStatusResponse(false);
-    loadTimeData.overrideValues({
-      showAutofillAiControl: true,
-    });
-    resetRouterForTesting();
-
-    await createPage();
-    page.setPrefValue(PrefName.AUTOFILL_AI, false);
-
-    const autofillAiRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>('#autofillAiRowV2');
-    assertTrue(!!autofillAiRow);
-    assertEquals(
-        loadTimeData.getString('autofillAiDescriptionFeatureOff'),
-        autofillAiRow.subLabel);
-    // Note that while the pref change triggers the update, the opt-in status
-    // itself is read using the `entityDataManager.getOptInStatus()` helper
-    // method. This is because this method handles reading the pref for
-    // currently signed in user.
-    entityDataManager.setGetOptInStatusResponse(true);
-    page.setPrefValue(PrefName.AUTOFILL_AI, true);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('autofillAiDescriptionFeatureOn'),
-        autofillAiRow.subLabel);
-  });
-
-  test('autofillAiRowClick', async () => {
-    loadTimeData.overrideValues({
-      showAutofillAiControl: true,
-    });
-    resetRouterForTesting();
-
-    await createPage();
-
-    const autofillAiRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#autofillAiRowV2');
-    assertTrue(!!autofillAiRow);
-    autofillAiRow.click();
-
-    await verifyFeatureInteractionMetrics(
-        AiPageInteractions.AUTOFILL_AI_CLICK,
-        'Settings.AiPage.AutofillAIEntryPointClick');
-    assertEquals(routes.AUTOFILL_AI, Router.getInstance().getCurrentRoute());
   });
 
   test('PasswordChangeRow', async () => {

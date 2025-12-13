@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_SHARING_SHARING_IMPL_H_
 #define CHROME_SERVICES_SHARING_SHARING_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
@@ -19,7 +18,6 @@
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/mdns_responder.mojom-forward.h"
 #include "services/network/public/mojom/p2p.mojom-forward.h"

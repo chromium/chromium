@@ -9,6 +9,7 @@ component("prediction") {
     "empty_predictor.cc",
     "empty_predictor.h",
     "input_filter.h",
+    "input_predictor.cc",
     "input_predictor.h",
     "kalman_filter.cc",
     "kalman_filter.h",
@@ -32,6 +33,6 @@ component("prediction") {
     "//base",
     "//third_party/one_euro_filter",
     "//ui/base:features",
-    "//ui/gfx/geometry:geometry",
+    "//ui/gfx/geometry",
   ]
 }

@@ -246,6 +246,7 @@ def parse_args():
         help='If a specific target is specified, only transitive deps of that '
         'target are included in the graph. By default all known javac jars are '
         'included.')
+    arg_parser.add_argument('--single-jar', help='Analyze only the given .jar')
     arg_parser.add_argument('-d',
                             '--checkout-dir',
                             default=_SRC_PATH,
@@ -301,26 +302,31 @@ def main():
     cr_position_str = git_metadata_utils.get_head_commit_cr_position(src_path)
     cr_position = int(cr_position_str) if cr_position_str else 0
 
-    if args.build_output_dir:
-        constants.SetOutputDirectory(args.build_output_dir)
-    constants.CheckOutputDirectory()
-    args.build_output_dir = pathlib.Path(constants.GetOutDirectory())
-    logging.info(
-        f'Using output dir: {_relsrc(args.build_output_dir, src_path)}')
-    args_gn_path = args.build_output_dir / 'args.gn'
-    logging.info(f'Contents of {_relsrc(args_gn_path, src_path)}:')
-    with open(args_gn_path) as f:
-        print(f.read())
-
-    logging.info('Getting list of dependency jars...')
-    if args.target:
-        gn_desc_output = _run_gn_desc_list_dependencies(
-            args.build_output_dir, args.target, args.gn_path, src_path)
-        target_jars: JarTargetDict = parse_original_targets_and_jars(
-            gn_desc_output, args.build_output_dir, cr_position)
+    if args.single_jar:
+        args.skip_rebuild = True
+        path = pathlib.Path(args.single_jar)
+        target_jars = {'//' + path.name: path}
     else:
-        target_jars: JarTargetDict = run_and_parse_list_java_targets(
-            args.build_output_dir, args.show_ninja, src_path)
+        if args.build_output_dir:
+            constants.SetOutputDirectory(args.build_output_dir)
+        constants.CheckOutputDirectory()
+        args.build_output_dir = pathlib.Path(constants.GetOutDirectory())
+        logging.info(
+            f'Using output dir: {_relsrc(args.build_output_dir, src_path)}')
+        args_gn_path = args.build_output_dir / 'args.gn'
+        logging.info(f'Contents of {_relsrc(args_gn_path, src_path)}:')
+        with open(args_gn_path) as f:
+            print(f.read())
+
+        logging.info('Getting list of dependency jars...')
+        if args.target:
+            gn_desc_output = _run_gn_desc_list_dependencies(
+                args.build_output_dir, args.target, args.gn_path, src_path)
+            target_jars: JarTargetDict = parse_original_targets_and_jars(
+                gn_desc_output, args.build_output_dir, cr_position)
+        else:
+            target_jars: JarTargetDict = run_and_parse_list_java_targets(
+                args.build_output_dir, args.show_ninja, src_path)
 
     if args.skip_rebuild:
         logging.info(f'Skipping rebuilding jars.')

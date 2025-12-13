@@ -16,9 +16,11 @@
 #import "components/metrics/metrics_service.h"
 #import "components/metrics/metrics_state_manager.h"
 #import "components/metrics/metrics_switches.h"
+#import "components/metrics/private_metrics/private_metrics_features.h"
 #import "components/metrics/test/test_enabled_state_provider.h"
 #import "components/metrics/unsent_log_store.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/ukm/ukm_service.h"
 #import "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -61,6 +63,8 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kDynamicProfileCountry};
 };
 
 namespace {
@@ -92,7 +96,7 @@ TEST_F(IOSChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 
   // This is the number of metrics providers that are registered inside
   // IOSChromeMetricsServiceClient::Initialize().
-  expected_providers += 22;
+  expected_providers += 23;
 
   std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
       IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
@@ -121,6 +125,28 @@ TEST_F(IOSChromeMetricsServiceClientTest, TestDwaServiceInitialized) {
       IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
                                             synthetic_trial_registry_.get());
   EXPECT_NE(chrome_metrics_service_client->GetDwaService(), nullptr);
+}
+
+TEST_F(IOSChromeMetricsServiceClientTest, TestPumaServiceNotInitialized) {
+  base::test::ScopedFeatureList local_feature;
+  local_feature.InitAndDisableFeature(
+      metrics::private_metrics::kPrivateMetricsPuma);
+
+  std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                            synthetic_trial_registry_.get());
+  EXPECT_EQ(chrome_metrics_service_client->GetPumaService(), nullptr);
+}
+
+TEST_F(IOSChromeMetricsServiceClientTest, TestPumaServiceInitialized) {
+  base::test::ScopedFeatureList local_feature;
+  local_feature.InitAndEnableFeature(
+      metrics::private_metrics::kPrivateMetricsPuma);
+
+  std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                            synthetic_trial_registry_.get());
+  EXPECT_NE(chrome_metrics_service_client->GetPumaService(), nullptr);
 }
 
 TEST_F(IOSChromeMetricsServiceClientTest,

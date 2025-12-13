@@ -15,7 +15,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -98,8 +97,7 @@ class MockDeviceOAuth2TokenStore : public DeviceOAuth2TokenStore {
 
 class DeviceOAuth2TokenServiceTest : public testing::Test {
  public:
-  DeviceOAuth2TokenServiceTest()
-      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  DeviceOAuth2TokenServiceTest() = default;
 
   // Most tests just want a noop crypto impl with a dummy refresh token value in
   // Local State (if the value is an empty string, it will be ignored).
@@ -206,7 +204,6 @@ class DeviceOAuth2TokenServiceTest : public testing::Test {
   };
 
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_testing_local_state_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<DeviceOAuth2TokenService, TokenServiceDeleter>
       oauth2_service_;

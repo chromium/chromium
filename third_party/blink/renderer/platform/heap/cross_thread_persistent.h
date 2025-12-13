@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_CROSS_THREAD_PERSISTENT_H_
 
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "v8/include/cppgc/cross-thread-persistent.h"
 
 namespace blink {
@@ -57,18 +58,6 @@ CrossThreadWeakPersistent<T> WrapCrossThreadWeakPersistent(
     const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE) {
   return CrossThreadWeakPersistent<T>(value, loc);
 }
-
-template <typename T>
-struct CrossThreadCopier<CrossThreadPersistent<T>>
-    : public CrossThreadCopierPassThrough<CrossThreadPersistent<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename T>
-struct CrossThreadCopier<CrossThreadWeakPersistent<T>>
-    : public CrossThreadCopierPassThrough<CrossThreadWeakPersistent<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
 
 template <typename T>
 struct HashTraits<blink::CrossThreadPersistent<T>>

@@ -15,7 +15,7 @@ namespace gpu {
 namespace webgpu {
 
 // static
-WebGPUDecoder* WebGPUDecoder::Create(
+std::unique_ptr<WebGPUDecoder> WebGPUDecoder::Create(
     DecoderClient* client,
     CommandBufferServiceBase* command_buffer_service,
     SharedImageManager* shared_image_manager,
@@ -42,15 +42,6 @@ WebGPUDecoder::WebGPUDecoder(DecoderClient* client,
     : CommonDecoder(client, command_buffer_service) {}
 
 WebGPUDecoder::~WebGPUDecoder() {}
-
-ContextResult WebGPUDecoder::Initialize(
-    const scoped_refptr<gl::GLSurface>& surface,
-    const scoped_refptr<gl::GLContext>& context,
-    bool offscreen,
-    const gles2::DisallowedFeatures& disallowed_features,
-    const ContextCreationAttribs& attrib_helper) {
-  return ContextResult::kSuccess;
-}
 
 }  // namespace webgpu
 }  // namespace gpu

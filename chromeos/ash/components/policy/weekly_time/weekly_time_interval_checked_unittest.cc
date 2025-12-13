@@ -75,7 +75,8 @@ TEST(WeeklyTimeIntervalCheckedTest, FromDict_MissingStart) {
       "day_of_week": "TUESDAY",
       "milliseconds_since_midnight": 321
     }
-  })");
+  })",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
   auto result = WeeklyTimeIntervalChecked::FromDict(*dict);
   EXPECT_FALSE(result.has_value());
@@ -87,7 +88,8 @@ TEST(WeeklyTimeIntervalCheckedTest, FromDict_MissingEnd) {
       "day_of_week": "MONDAY",
       "milliseconds_since_midnight": 123
     }
-  })");
+  })",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
   auto result = WeeklyTimeIntervalChecked::FromDict(*dict);
   EXPECT_FALSE(result.has_value());
@@ -103,7 +105,8 @@ TEST(WeeklyTimeIntervalCheckedTest, FromDict_InvalidStart) {
       "day_of_week": "TUESDAY",
       "milliseconds_since_midnight": 321
     }
-  })");
+  })",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
   auto result = WeeklyTimeIntervalChecked::FromDict(*dict);
   EXPECT_FALSE(result.has_value());

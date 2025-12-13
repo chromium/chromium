@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
@@ -501,8 +497,8 @@ void ActionMove::CalculateMoveVector(gfx::PointF& touch_press_pos,
                                      const gfx::RectF& content_bounds,
                                      const gfx::Transform* rotation_transform) {
   DCHECK_LT(direction_index, kActionMoveKeysSize);
-  auto new_move = gfx::Vector2dF(kDirection[direction_index][0],
-                                 kDirection[direction_index][1]);
+  auto new_move = gfx::Vector2dF(UNSAFE_TODO(kDirection[direction_index])[0],
+                                 UNSAFE_TODO(kDirection[direction_index])[1]);
   const float display_scale_factor =
       touch_injector_->window()->GetHost()->device_scale_factor();
   const float scale = display_scale_factor * move_distance_;

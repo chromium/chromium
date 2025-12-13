@@ -115,7 +115,14 @@ std::string MakeTestScript(const TestScriptOptions& options = {}) {
 }
 
 // End-to-end test that document rules can cause prefetch on mouse down.
-IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest, MouseDownPrefetch) {
+// TODO(crbug.com/422253225): Flaky on TSan bots.
+#ifdef THREAD_SANITIZER
+#define MAYBE_MouseDownPrefetch DISABLED_MouseDownPrefetch
+#else
+#define MAYBE_MouseDownPrefetch MouseDownPrefetch
+#endif
+IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest,
+                       MAYBE_MouseDownPrefetch) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   ASSERT_TRUE(ExecJs(shell()->web_contents(),
@@ -150,8 +157,14 @@ IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest, MouseDownPrefetch) {
 }
 
 // End-to-end test that document rules can cause prefetch on mouse hover.
+// TODO(crbug.com/462761508): Flaky on TSan bots.
+#ifdef THREAD_SANITIZER
+#define MAYBE_MouseHoverPrefetch DISABLED_MouseHoverPrefetch
+#else
+#define MAYBE_MouseHoverPrefetch MouseHoverPrefetch
+#endif
 IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest,
-                       MouseHoverPrefetch) {
+                       MAYBE_MouseHoverPrefetch) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   ASSERT_TRUE(ExecJs(shell()->web_contents(),
@@ -182,7 +195,14 @@ IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest,
 #if !BUILDFLAG(IS_MAC)
 
 // End-to-end test that document rules can cause prefetch on touch down.
-IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest, TouchDownPrefetch) {
+// TODO(crbug.com/438933681): Flaky on TSan bots, fails consistently locally.
+#ifdef THREAD_SANITIZER
+#define MAYBE_TouchDownPrefetch DISABLED_TouchDownPrefetch
+#else
+#define MAYBE_TouchDownPrefetch TouchDownPrefetch
+#endif
+IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest,
+                       MAYBE_TouchDownPrefetch) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   ASSERT_TRUE(ExecJs(shell()->web_contents(),

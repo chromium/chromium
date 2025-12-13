@@ -46,7 +46,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ash {
 
@@ -112,12 +112,15 @@ void ErrorScreen::DisallowOfflineLogin() {
 }
 
 void ErrorScreen::ShowOfflineLoginOption(bool show) {
+  is_offline_login_link_shown_ = show;
   if (view_) {
     view_->SetOfflineSigninAllowed(show);
   }
 }
 
 void ErrorScreen::OnOfflineLoginClicked() {
+  CHECK(is_offline_login_link_shown_)
+      << "Offline login option selected, while it shall not be displayed.";
   // Reset hide callback as we advance to OfflineLoginScreen. Exit from this
   // screen is handled by WizardController.
   on_hide_callback_ = base::OnceClosure();
@@ -233,9 +236,13 @@ void ErrorScreen::MaybeInitCaptivePortalWindowProxy(
   }
 }
 
-void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
-                                          NetworkError::ErrorReason reason) {
-  LOG(WARNING) << __func__ << " state = " << state << " reason = " << reason;
+void ErrorScreen::ShowNetworkErrorMessage(
+    NetworkStateInformer::State state,
+    NetworkError::ErrorReason reason,
+    bool show_offline_login_option_if_allowed) {
+  LOG(WARNING) << __func__ << " state = " << state << " reason = " << reason
+               << " show_offline_login_option_if_allowed = "
+               << show_offline_login_option_if_allowed;
   const std::string network_path = network_state_informer_->network_path();
   const std::string network_name =
       NetworkStateInformer::GetNetworkName(network_path);
@@ -268,7 +275,8 @@ void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
   AllowGuestSignin(guest_signin_allowed);
   ShowOfflineLoginOption(
       g_offline_login_allowed_ && g_offline_login_per_user_allowed_ &&
-      GetErrorState() != NetworkError::ERROR_STATE_LOADING_TIMEOUT);
+      GetErrorState() != NetworkError::ERROR_STATE_LOADING_TIMEOUT &&
+      show_offline_login_option_if_allowed);
 
   // No need to show the screen again if it is already shown.
   if (is_hidden()) {
@@ -409,8 +417,11 @@ void ErrorScreen::LaunchHelpApp(int help_topic_id) {
       static_cast<HelpAppLauncher::HelpTopic>(help_topic_id));
 }
 
-void ErrorScreen::ConnectToNetworkRequested(const std::string& service_path) {
+ConnectToNetworkRequestVerdict ErrorScreen::ConnectToNetworkRequested(
+    const std::string& service_path) {
   connect_request_callbacks_.Notify();
+
+  return ConnectToNetworkRequestVerdict::kProceed;
 }
 
 void ErrorScreen::StartGuestSessionAfterOwnershipCheck(

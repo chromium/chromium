@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "chromecast/common/timing_tracker.h"
 #include "chromecast/starboard/chromecast/starboard_adapter/public/cast_starboard_api_adapter.h"
 
 namespace chromecast {
@@ -449,6 +450,7 @@ StarboardDrmWrapper::StarboardDrmWrapper()
   starboard_ = owned_starboard_.get();
   CHECK(starboard_->EnsureInitialized()) << "Failed to initialize starboard";
 
+  CHROMECAST_TIMING_TRACKER;
   drm_system_ = starboard_->CreateDrmSystem(
       /*key_system=*/"com.widevine.alpha",
       /*callback_handler=*/&callback_handler_);

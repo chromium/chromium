@@ -102,6 +102,11 @@ std::string_view HttpConnectionInfoToString(
   }
 }
 
+// Returns a more coarse-grained description of the protocol used to fetch the
+// response.
+//
+// This is used for histograms, so the returned value must not change.
+// LINT.IfChange(HttpConnectionInfoCoarseToString)
 std::string_view HttpConnectionInfoCoarseToString(
     HttpConnectionInfoCoarse connection_info_coarse) {
   switch (connection_info_coarse) {
@@ -115,6 +120,7 @@ std::string_view HttpConnectionInfoCoarseToString(
       return "Other";
   }
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/page/histograms.xml:ConnectionProtocolType)
 
 // Returns a more coarse-grained description of the protocol used to fetch the
 // response.

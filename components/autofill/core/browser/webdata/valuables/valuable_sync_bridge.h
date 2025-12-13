@@ -9,13 +9,14 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
@@ -30,9 +31,19 @@ namespace autofill {
 
 class AutofillWebDataService;
 
-class ValuableSyncBridge : public base::SupportsUserData::Data,
+class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
+                           public base::SupportsUserData::Data,
                            public syncer::DataTypeSyncBridge {
  public:
+  // Result of a database operation in the `ValuableSyncBridge`.
+  enum class ValuableDatabaseOperationResult {
+    // The operation was successful and the database was changed.
+    kDataChanged,
+    // The operation was successful, but no changes were necessary.
+    kNoChange,
+    // An error occurred during the operation.
+    kDatabaseError,
+  };
   ValuableSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       AutofillWebDataBackend* backend);
@@ -48,7 +59,7 @@ class ValuableSyncBridge : public base::SupportsUserData::Data,
   static syncer::DataTypeSyncBridge* FromWebDataService(
       AutofillWebDataService* web_data_service);
 
-  // syncer::DataTypeSyncBridge implementation.
+  // syncer::DataTypeSyncBridge:
   bool SupportsIncrementalUpdates() const override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
@@ -71,10 +82,28 @@ class ValuableSyncBridge : public base::SupportsUserData::Data,
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
 
+  // AutofillWebDataServiceObserverOnDBSequence:
+  void EntityInstanceChanged(const EntityInstanceChange& change) override;
+
  private:
   // Synchronously load sync metadata from the `ValuablesTable` and pass it to
   // the processor.
   void LoadMetadata();
+
+  // Handles delete request for a valuable with the corresponding `storage_key`
+  // as id. As during delete request the valuable type is not available, the
+  // function tries to delete the valuable from the corresponding table using
+  // only the `storage_key`.
+  ValuableDatabaseOperationResult HandleDeleteRequest(
+      const std::string& storage_key);
+
+  // Sets `loyalty_cards` in the database.
+  ValuableDatabaseOperationResult SetLoyaltyCards(
+      std::vector<LoyaltyCard> loyalty_cards);
+
+  // Sets `entities` in the database.
+  ValuableDatabaseOperationResult SetEntities(
+      std::vector<EntityInstance> entities);
 
   // Sets the Wallet data from `entity_data` to this client and records metrics
   // about added/deleted data. Returns a ModelError if any errors occured.
@@ -87,12 +116,19 @@ class ValuableSyncBridge : public base::SupportsUserData::Data,
   // Returns the `ValuablesTable` associated with the `web_data_backend_`.
   ValuablesTable* GetValuablesTable();
 
+  // Returns the `EntityTable` associated with the `web_data_backend_`.
+  EntityTable* GetEntityTable();
+
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 
   // Queries all loyalty cards from `GetValuablesTable()`.
   // These cards are converted to their `AutofillLoyaltyCardSpecifics`
   // representation and returned as a `syncer::MutableDataBatch`.
   std::unique_ptr<syncer::MutableDataBatch> GetData();
+
+  base::ScopedObservation<AutofillWebDataBackend,
+                          AutofillWebDataServiceObserverOnDBSequence>
+      scoped_observation_{this};
 
   // The bridge should be used on the same sequence where it has been
   // constructed.

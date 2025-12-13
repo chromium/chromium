@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
@@ -68,7 +69,8 @@ void CheckThrottleWillNotCauseCorsPreflight(
       cors_exempt_header_list);
   for (auto& header : headers.GetHeaderVector()) {
     if (!base::Contains(initial_headers, header.key) &&
-        !network::cors::IsCorsSafelistedHeader(header.key, header.value)) {
+        !network::cors::IsCorsSafelistedHeader(header.key, header.value) &&
+        net::HttpUtil::IsSafeHeader(header.key, header.value)) {
       bool is_cors_exempt = cors_exempt_header_flat_set.count(header.key);
       NOTREACHED()
           << "Throttle added cors unsafe header " << header.key
@@ -258,6 +260,17 @@ ThrottlingURLLoader::PriorityInfo::PriorityInfo(
     : priority(in_priority), intra_priority_value(in_intra_priority_value) {}
 
 // static
+std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoader(
+    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+    network::mojom::URLLoaderClient* client,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    ClientReceiverDelegate* client_receiver_delegate) {
+  return std::unique_ptr<ThrottlingURLLoader>(
+      new ThrottlingURLLoader(std::move(throttles), client, traffic_annotation,
+                              client_receiver_delegate));
+}
+
+// static
 std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
@@ -271,9 +284,9 @@ std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
     ClientReceiverDelegate* client_receiver_delegate,
     const std::vector<int>* initiator_origin_trial_features) {
   DCHECK(url_request);
-  std::unique_ptr<ThrottlingURLLoader> loader(
-      new ThrottlingURLLoader(std::move(throttles), client, traffic_annotation,
-                              client_receiver_delegate));
+  std::unique_ptr<ThrottlingURLLoader> loader =
+      CreateLoader(std::move(throttles), client, traffic_annotation,
+                   client_receiver_delegate);
   loader->Start(std::move(factory), request_id, options, url_request,
                 std::move(task_runner), std::move(cors_exempt_header_list),
                 initiator_origin_trial_features);
@@ -436,7 +449,11 @@ void ThrottlingURLLoader::Start(
 #endif
 
       base::Time start = base::Time::Now();
+      auto weak_ptr = weak_factory_.GetWeakPtr();
       throttle->WillStartRequest(url_request, &throttle_deferred);
+      if (!weak_ptr) {
+        return;
+      }
       RecordExecutionTimeHistogram(GetStageNameForHistogram(DEFERRED_START),
                                    start);
 
@@ -469,10 +486,14 @@ void ThrottlingURLLoader::Start(
   }
 
   if (initiator_origin_trial_features &&
-      base::Contains(
-          *initiator_origin_trial_features,
-          static_cast<int>(
-              mojom::OriginTrialFeature::kDeviceBoundSessionCredentials))) {
+      (base::Contains(
+           *initiator_origin_trial_features,
+           static_cast<int>(
+               mojom::OriginTrialFeature::kDeviceBoundSessionCredentials)) ||
+       base::Contains(
+           *initiator_origin_trial_features,
+           static_cast<int>(
+               mojom::OriginTrialFeature::kDeviceBoundSessionCredentials2)))) {
     url_request->allows_device_bound_session_registration = true;
   }
 
@@ -695,8 +716,8 @@ void ThrottlingURLLoader::OnReceiveResponse(
     }
   }
 
-  forwarding_client_->OnReceiveResponse(
-      std::move(response_head), std::move(body_), std::move(cached_metadata_));
+  ForwardResponseToClient(std::move(response_head), std::move(body_),
+                          std::move(cached_metadata_));
   base::UmaHistogramTimes("Net.URLLoaderThrottle.OnReceiveResponseTime",
                           timer.Elapsed());
 }
@@ -929,9 +950,8 @@ void ThrottlingURLLoader::Resume() {
     }
     case DEFERRED_RESPONSE: {
       client_receiver_.Resume();
-      forwarding_client_->OnReceiveResponse(
-          std::move(response_info_->response_head), std::move(body_),
-          std::move(cached_metadata_));
+      ForwardResponseToClient(std::move(response_info_->response_head),
+                              std::move(body_), std::move(cached_metadata_));
       // Note: |this| may be deleted here.
       break;
     }
@@ -1000,6 +1020,18 @@ void ThrottlingURLLoader::DisconnectClient(std::string_view custom_reason) {
   }
 
   loader_completed_ = true;
+}
+
+void ThrottlingURLLoader::ForwardResponseToClient(
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body,
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
+  // OnReceiveResponse() can be called at most once. This check is added to
+  // debug crbug.com/463388771.
+  CHECK(!has_forwarded_response_);
+  has_forwarded_response_ = true;
+  forwarding_client_->OnReceiveResponse(std::move(head), std::move(body),
+                                        std::move(cached_metadata));
 }
 
 const char* ThrottlingURLLoader::GetStageNameForHistogram(DeferredStage stage) {

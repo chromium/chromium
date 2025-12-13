@@ -11,7 +11,7 @@ source_set("window_name_prompt") {
   deps = [
     "//base",
     "//chrome/app:generated_resources",
-    "//ui/base",
+    "//ui/base/interaction",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
@@ -27,7 +27,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
-    "//ui/base",
     "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
   ]
 }

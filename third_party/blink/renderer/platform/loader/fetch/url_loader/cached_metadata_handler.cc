@@ -109,7 +109,7 @@ void ServiceWorkerCachedMetadataSender::Send(CodeCacheHost* code_cache_host,
 void CachedMetadataSender::SendToCodeCacheHost(
     CodeCacheHost* code_cache_host,
     mojom::blink::CodeCacheType code_cache_type,
-    WTF::String url,
+    String url,
     base::Time response_time,
     const String& cache_storage_name,
     base::span<const uint8_t> data) {

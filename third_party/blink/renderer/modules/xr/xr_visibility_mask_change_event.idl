@@ -1,0 +1,24 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    SecureContext,
+    Exposed=Window,
+    RuntimeEnabled=WebXRVisibilityMask
+] interface XRVisibilityMaskChangeEvent : Event {
+  constructor(DOMString type, XRVisibilityMaskChangeEventInit eventInitDict);
+  [SameObject] readonly attribute XRSession session;
+  readonly attribute XREye eye;
+  readonly attribute unsigned long index;
+  [SameObject] readonly attribute Float32Array vertices;
+  [SameObject] readonly attribute Uint32Array indices;
+};
+
+dictionary XRVisibilityMaskChangeEventInit : EventInit {
+  required XRSession session;
+  required XREye eye;
+  required unsigned long index;
+  required Float32Array vertices;
+  required Uint32Array indices;
+};

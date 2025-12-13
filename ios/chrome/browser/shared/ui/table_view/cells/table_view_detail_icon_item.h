@@ -9,15 +9,14 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
-// Enum defining the different badges that can be shown in
-// `TableViewDetailIconCell`.
+// Enum defining the different badges that can be shown.
 enum class BadgeType {
   kNone,             // No badge.
   kNotificationDot,  // The blue notification dot.
   kNew,              // The "new" ("N") IPH badge.
 };
 
-// TableViewDetailIconItem is a model class that uses TableViewDetailIconCell.
+// TableViewDetailIconItem is a model class for a cell with details and icon.
 @interface TableViewDetailIconItem : TableViewItem
 
 // The leading icon. If empty, no icon will be shown.
@@ -25,9 +24,6 @@ enum class BadgeType {
 
 // The background color of the icon.
 @property(nonatomic, strong) UIColor* iconBackgroundColor;
-
-// The corner radius of the UIImage view.
-@property(nonatomic, assign) CGFloat iconCornerRadius;
 
 // The tint color of the icon.
 @property(nonatomic, strong) UIColor* iconTintColor;
@@ -49,73 +45,16 @@ enum class BadgeType {
 // Default in no badge (BadgeType::kNone).
 @property(nonatomic, assign) BadgeType badgeType;
 
-// Maximum number of lines for the `detailText`. It sets the numberOfLines of
-// the detailText UILabel. Value is ignored if the layout constraint axis is set
-// to horizontal. 1 by default.
+// Maximum number of lines for the `text`. Default is 1.
+@property(nonatomic, assign) NSInteger textNumberOfLines;
+
+// Maximum number of lines for the `detailText`. Value is ignored if the layout
+// constraint axis is set to horizontal. 1 by default.
 @property(nonatomic, assign) NSInteger detailTextNumberOfLines;
 
-// YES if the icon is centered vertically within the cell. NO if the icon is
-// aligned with the top of the cell. YES by default.
-@property(nonatomic, assign) BOOL iconCenteredVertically;
-
-@end
-
-// TableViewDetailIconCell implements an TableViewCell subclass containing an
-// optional leading icon and two text labels: a "main" label and a "detail"
-// label. The layout of the two labels is based on `textLayoutConstraintAxis`
-// defined as either (1) horizontally laid out side-by-side and filling the full
-// width of the cell or (2) vertically laid out and filling the full height of
-// the cell. Labels are truncated as needed to fit in the cell.
-@interface TableViewDetailIconCell : TableViewCell
-
-// UILabel corresponding to `text` from the item.
-@property(nonatomic, readonly, strong) UILabel* textLabel;
-
-// The layout constraint axis of the text labels within the cell. Defaults
-// to a horizontal, edge aligned layout.
-@property(nonatomic, readwrite, assign)
-    UILayoutConstraintAxis textLayoutConstraintAxis;
-
-// Custom label defined via the setter, if any.
-@property(nonatomic, copy) NSString* customAccessibilityLabel;
-
-// Maximum number of lines for the `detailText`. It sets the numberOfLines of
-// the detailText UILabel. Value is ignored if the layout constraint axis is set
-// to horizontal. 1 by default.
-@property(nonatomic, assign) NSInteger detailTextNumberOfLines;
-
-// YES if the icon is centered vertically within the cell. NO if the icon is
-// aligned with the top of the cell. YES by default.
-@property(nonatomic, assign) BOOL iconCenteredVertically;
-
-// Margin on top of `textLabel`. This is 0 by default.
-@property(nonatomic, assign) CGFloat textLabelMarginTop;
-
-// Spacing between the text labels when no notification dot is present.
-@property(nonatomic, assign) CGFloat textLabelSpacing;
-
-// Sets the `image` that should be displayed at the leading edge of the cell
-// with a `tintColor`. If set to nil, the icon will be hidden and the text
-// labels will expand to fill the full width of the cell. The image view will be
-// configured with a `backgroundColor` and a `cornerRadius`.
-- (void)setIconImage:(UIImage*)image
-           tintColor:(UIColor*)tintColor
-     backgroundColor:(UIColor*)backgroundColor
-        cornerRadius:(CGFloat)cornerRadius;
-
-// Sets the detail text. `detailText` can be nil (or empty) to hide the detail
-// text.
-- (void)setDetailText:(NSString*)detailText;
-
-// Sets the badge to display in the cell. Badges are only supported when
-// `textLayoutConstraintAxis` is set to `UILayoutConstraintAxisHorizontal`. If
-// they are activated while the axis is vertical, the app will crash through
-// CHECK. Remove the badge by setting the type to BadgeType::kNone.
-- (void)setBadgeType:(BadgeType)badgeType;
-
-// Updates the width of the icon background to match the width of the image it
-// contains.
-- (void)updateIconBackgroundWidthToFitContent:(BOOL)useCustomWidth;
+// Line break mode for the labels. Defaults to NSLineBreakByTruncatingTail.
+@property(nonatomic, assign) NSLineBreakMode textLineBreakMode;
+@property(nonatomic, assign) NSLineBreakMode detailTextLineBreakMode;
 
 @end
 

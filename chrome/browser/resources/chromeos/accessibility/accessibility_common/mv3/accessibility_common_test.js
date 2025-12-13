@@ -73,11 +73,6 @@ TEST_F('AccessibilityCommonE2ETest', 'ToggleFeatures', function() {
 
 TEST_F('AccessibilityCommonE2ETest', 'FaceGazeEnabled', function() {
   this.newCallback(async () => {
-    // Check that FaceGaze is enabled from the command line.
-    const enabled = await this.getFeature(
-        chrome.accessibilityPrivate.AccessibilityFeature.FACE_GAZE);
-    assertTrue(enabled);
-
     let pref = await this.getPref('settings.a11y.face_gaze.enabled');
     assertEquals('settings.a11y.face_gaze.enabled', pref.key);
     assertFalse(pref.value);

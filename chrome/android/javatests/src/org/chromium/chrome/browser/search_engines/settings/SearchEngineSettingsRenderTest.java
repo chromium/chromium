@@ -53,13 +53,14 @@ import java.util.Map;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class SearchEngineSettingsRenderTest {
+    private static final int RENDER_TEST_REVISION = 2;
     public final @Rule BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     public final @Rule ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_OMNIBOX)
-                    .setRevision(1)
+                    .setRevision(RENDER_TEST_REVISION)
                     .build();
 
     public final @Rule MockitoRule mMocks = MockitoJUnit.rule();

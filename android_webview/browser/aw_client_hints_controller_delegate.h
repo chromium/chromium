@@ -23,8 +23,9 @@ namespace network {
 class NetworkQualityTracker;
 }  // namespace network
 
-namespace url {
 class GURL;
+
+namespace url {
 class Origin;
 }  // namespace url
 

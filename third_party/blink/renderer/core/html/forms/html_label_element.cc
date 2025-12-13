@@ -174,7 +174,7 @@ void HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
     // event, then there's no need for us to do anything.
     if (!element)
       return;
-    Node* target_node = evt.target() ? evt.target()->ToNode() : nullptr;
+    Node* target_node = evt.RawTarget() ? evt.RawTarget()->ToNode() : nullptr;
     if (target_node) {
       if (element->IsShadowIncludingInclusiveAncestorOf(*target_node))
         return;

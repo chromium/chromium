@@ -34,7 +34,6 @@ import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 /** Fetches, and caches credit card art images. */
@@ -66,7 +65,7 @@ public class AutofillImageFetcher {
      * @param imageSizes The list of image sizes that should be fetched for each of the above URLs.
      */
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void prefetchCardArtImages(
             @JniType("base::span<const GURL>") GURL[] urls, @ImageSize int[] imageSizes) {
         Context context = ContextUtils.getApplicationContext();
@@ -105,7 +104,7 @@ public class AutofillImageFetcher {
      * @param urls The URLs to fetch the images.
      */
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void prefetchPixAccountImages(@JniType("base::span<const GURL>") GURL[] urls) {
         for (GURL url : urls) {
             if (url == null || !url.isValid()) {
@@ -179,17 +178,13 @@ public class AutofillImageFetcher {
      *
      * @param url The URL of the image.
      * @param iconSpecs The sizing specifications for the image.
-     * @return Bitmap image for the passed in URL if it exists in cache, an empty object otherwise.
+     * @return Bitmap image for the passed in URL if it exists in cache, null otherwise.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public Optional<Bitmap> getImageIfAvailable(GURL url, IconSpecs iconSpecs) {
+    public @Nullable Bitmap getImageIfAvailable(GURL url, IconSpecs iconSpecs) {
         GURL resolvedUrl = iconSpecs.getResolvedIconUrl(url);
         // If the card art image exists in the cache, return it.
-        if (mImagesCache.containsKey(resolvedUrl.getSpec())) {
-            return Optional.of(mImagesCache.get(resolvedUrl.getSpec()));
-        }
-
-        return Optional.empty();
+        return mImagesCache.get(resolvedUrl.getSpec());
     }
 
     /**

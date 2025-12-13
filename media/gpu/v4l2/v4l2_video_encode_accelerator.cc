@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/span.h"
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
+// TODO(crbug.com/390223051): spanify to fix the errors.
+#pragma allow_unsafe_buffers
 #endif
 
 #include "media/gpu/v4l2/v4l2_video_encode_accelerator.h"
@@ -56,6 +57,7 @@
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/parsers/h264_level_limits.h"
 #include "media/parsers/h264_parser.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #ifndef V4L2_CID_MPEG_VIDEO_H264_HIER_CODING_L0_BR
 #define V4L2_CID_MPEG_VIDEO_H264_HIER_CODING_L0_BR (V4L2_CID_CODEC_BASE + 391)
@@ -121,7 +123,7 @@ std::optional<VideoFrameLayout> AsMultiPlanarLayout(
 }
 
 scoped_refptr<base::SequencedTaskRunner> CreateEncoderTaskRunner() {
-  if (base::FeatureList::IsEnabled(kUSeSequencedTaskRunnerForVEA)) {
+  if (base::FeatureList::IsEnabled(kUseSequencedTaskRunnerForVEA)) {
     return base::ThreadPool::CreateSequencedTaskRunner(
         {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE,
          base::MayBlock()});
@@ -502,7 +504,7 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
   }
 
   VideoFrame::StorageType input_storage_type =
-      native_input_mode_ ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+      native_input_mode_ ? VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
                          : VideoFrame::STORAGE_SHMEM;
   auto input_config = VideoFrameLayoutToPortConfig(
       *ip_input_layout, input_visible_rect, input_storage_type);
@@ -526,7 +528,7 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
   }
   auto output_config =
       VideoFrameLayoutToPortConfig(*output_layout, output_visible_rect,
-                                   VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+                                   VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
   if (!output_config) {
     LOG(ERROR) << "Failed to create ImageProcessor output config";
     return false;
@@ -582,7 +584,7 @@ bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
       image_processor_->output_config();
   for (size_t i = 0; i < count; i++) {
     switch (output_config.storage_type) {
-      case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+      case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
         CHECK(sii_);
         image_processor_output_buffers_[i] = CreateMappableVideoFrame(
             output_config.fourcc.ToVideoPixelFormat(), output_config.size,
@@ -607,7 +609,7 @@ bool V4L2VideoEncodeAccelerator::InitInputMemoryType(const Config& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   if (image_processor_) {
     const auto storage_type = image_processor_->output_config().storage_type;
-    if (storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+    if (storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
       input_memory_type_ = V4L2_MEMORY_DMABUF;
     } else if (VideoFrame::IsStorageTypeMappable(storage_type)) {
       input_memory_type_ = V4L2_MEMORY_USERPTR;
@@ -779,10 +781,9 @@ void V4L2VideoEncodeAccelerator::FrameProcessed(
   DVLOGF(4) << "force_keyframe=" << force_keyframe
             << ", output_buffer_index=" << output_buffer_index;
   DCHECK_GE(output_buffer_index, 0u);
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "media,gpu", "V4L2VEA::ImageProcessor::Process",
-      timestamp.InMicroseconds(), "timestamp", timestamp.InMicroseconds(),
-      "output_size", image_processor_->output_config().size.ToString());
+  TRACE_EVENT_END("media,gpu", perfetto::Track(timestamp.InMicroseconds()),
+                  "timestamp", timestamp.InMicroseconds(), "output_size",
+                  image_processor_->output_config().size.ToString());
 
   encoder_input_queue_.emplace(std::move(frame), force_keyframe,
                                output_buffer_index);
@@ -874,23 +875,23 @@ size_t V4L2VideoEncodeAccelerator::CopyIntoOutputBuffer(
   bool inserted_pps = false;
   while (parser.AdvanceToNextNALU(&nalu) == H264Parser::kOk) {
     // nalu.size is always without the start code, regardless of the NALU type.
-    if (nalu.size + kH264StartCodeSize > remaining_dst_size) {
+    if (nalu.data.size() + kH264StartCodeSize > remaining_dst_size) {
       VLOGF(1) << "Output data did not fit in the BitstreamBuffer";
       break;
     }
 
     switch (nalu.nal_unit_type) {
       case H264NALU::kSPS:
-        cached_sps_.resize(nalu.size);
-        memcpy(cached_sps_.data(), nalu.data, nalu.size);
+        cached_sps_.resize(nalu.data.size());
+        base::as_writable_byte_span(cached_sps_).copy_from(nalu.data);
         cached_h264_header_size_ =
             cached_sps_.size() + cached_pps_.size() + 2 * kH264StartCodeSize;
         inserted_sps = true;
         break;
 
       case H264NALU::kPPS:
-        cached_pps_.resize(nalu.size);
-        memcpy(cached_pps_.data(), nalu.data, nalu.size);
+        cached_pps_.resize(nalu.data.size());
+        base::as_writable_byte_span(cached_pps_).copy_from(nalu.data);
         cached_h264_header_size_ =
             cached_sps_.size() + cached_pps_.size() + 2 * kH264StartCodeSize;
         inserted_pps = true;
@@ -907,8 +908,8 @@ size_t V4L2VideoEncodeAccelerator::CopyIntoOutputBuffer(
           VLOGF(1) << "Cannot inject IDR slice without SPS and PPS";
           break;
         }
-        if (cached_h264_header_size_ + nalu.size + kH264StartCodeSize >
-                remaining_dst_size) {
+        if (cached_h264_header_size_ + nalu.data.size() + kH264StartCodeSize >
+            remaining_dst_size) {
           VLOGF(1) << "Not enough space to inject a stream header before IDR";
           break;
         }
@@ -925,7 +926,7 @@ size_t V4L2VideoEncodeAccelerator::CopyIntoOutputBuffer(
         break;
     }
 
-    CopyNALUPrependingStartCode(nalu.data, nalu.size, &dst_ptr,
+    CopyNALUPrependingStartCode(nalu.data.data(), nalu.data.size(), &dst_ptr,
                                 &remaining_dst_size);
   }
 
@@ -949,7 +950,7 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     // |frame| can be nullptr to indicate a flush.
     const bool is_expected_storage_type =
         native_input_mode_
-            ? frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+            ? frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
             : frame->IsMappable();
     if (!is_expected_storage_type) {
       SetErrorState({EncoderStatus::Codes::kInvalidInputFrame,
@@ -1122,9 +1123,9 @@ void V4L2VideoEncodeAccelerator::InputImageProcessorTask() {
   auto frame = std::move(frame_info.frame);
   const bool force_keyframe = frame_info.force_keyframe;
   auto timestamp = frame->timestamp();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "media,gpu", "V4L2VEA::ImageProcessor::Process",
-      timestamp.InMicroseconds(), "timestamp", timestamp.InMicroseconds());
+  TRACE_EVENT_BEGIN("media,gpu", "V4L2VEA::ImageProcessor::Process",
+                    perfetto::Track(timestamp.InMicroseconds()), "timestamp",
+                    timestamp.InMicroseconds());
   auto output_frame = image_processor_output_buffers_[output_buffer_index];
 
   if (!image_processor_->Process(
@@ -1410,9 +1411,9 @@ void V4L2VideoEncodeAccelerator::Dequeue() {
     const uint64_t timestamp_us =
         ret.second->GetTimeStamp().tv_usec +
         ret.second->GetTimeStamp().tv_sec * base::Time::kMicrosecondsPerSecond;
-    TRACE_EVENT_NESTABLE_ASYNC_END2(
-        "media,gpu", "PlatformEncoding.Encode", timestamp_us, "timestamp",
-        timestamp_us, "size", encoder_input_visible_rect_.size().ToString());
+    TRACE_EVENT_END("media,gpu", /*"PlatformEncoding.Encode"*/
+                    perfetto::Track(timestamp_us), "timestamp", timestamp_us,
+                    "size", encoder_input_visible_rect_.size().ToString());
 
     output_buffer_queue_.push_back(std::move(ret.second));
     buffer_dequeued = true;
@@ -1584,10 +1585,9 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
     input_buf.SetPlaneBytesUsed(i, bytesused);
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media,gpu", "PlatformEncoding.Encode",
-                                    frame->timestamp().InMicroseconds(),
-                                    "timestamp",
-                                    frame->timestamp().InMicroseconds());
+  TRACE_EVENT_BEGIN("media,gpu", "PlatformEncoding.Encode",
+                    perfetto::Track(frame->timestamp().InMicroseconds()),
+                    "timestamp", frame->timestamp().InMicroseconds());
 
   switch (input_buf.Memory()) {
     case V4L2_MEMORY_USERPTR: {

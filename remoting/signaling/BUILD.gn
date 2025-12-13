@@ -4,13 +4,19 @@
 
 static_library("signaling") {
   sources = [
+    "corp_message_channel_strategy.cc",
+    "corp_message_channel_strategy.h",
+    "corp_messaging_client.cc",
+    "corp_messaging_client.h",
+    "corp_signal_strategy.cc",
+    "corp_signal_strategy.h",
     "ftl_client_uuid_device_id_provider.cc",
     "ftl_client_uuid_device_id_provider.h",
     "ftl_device_id_provider.h",
     "ftl_host_device_id_provider.cc",
     "ftl_host_device_id_provider.h",
-    "ftl_message_reception_channel.cc",
-    "ftl_message_reception_channel.h",
+    "ftl_message_channel_strategy.cc",
+    "ftl_message_channel_strategy.h",
     "ftl_messaging_client.cc",
     "ftl_messaging_client.h",
     "ftl_registration_manager.cc",
@@ -23,7 +29,9 @@ static_library("signaling") {
     "ftl_support_host_device_id_provider.h",
     "iq_sender.cc",
     "iq_sender.h",
-    "message_reception_channel.h",
+    "message_channel.cc",
+    "message_channel.h",
+    "message_channel_strategy.h",
     "message_tracker.cc",
     "message_tracker.h",
     "messaging_client.h",
@@ -34,6 +42,7 @@ static_library("signaling") {
     "signaling_address.h",
     "signaling_id_util.cc",
     "signaling_id_util.h",
+    "signaling_message.h",
     "signaling_tracker.h",
     "xmpp_constants.cc",
     "xmpp_constants.h",
@@ -59,8 +68,9 @@ static_library("signaling") {
     "//remoting/base:authorization",
     "//remoting/base:logging",
     "//remoting/base:name_value_map",
+    "//remoting/proto:internal_structs",
     "//remoting/proto/ftl/v1:ftl_messages",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -88,7 +98,10 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "ftl_message_reception_channel_unittest.cc",
+    "corp_message_channel_strategy_unittest.cc",
+    "corp_messaging_client_unittest.cc",
+    "corp_signal_strategy_unittest.cc",
+    "ftl_message_channel_strategy_unittest.cc",
     "ftl_messaging_client_unittest.cc",
     "ftl_registration_manager_unittest.cc",
     "ftl_signal_strategy_unittest.cc",
@@ -101,9 +114,11 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//net:test_support",
-    "//remoting/base:base",
+    "//remoting/base",
+    "//remoting/base:buildflags",
     "//remoting/base:test_support",
-    "//services/network/public/cpp:cpp",
+    "//remoting/proto:internal_structs",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

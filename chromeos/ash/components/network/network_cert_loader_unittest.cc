@@ -9,10 +9,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/files/file_util.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
@@ -127,6 +128,18 @@ size_t CountCertOccurencesInCertificateList(
   for (const auto& network_cert : network_cert_list) {
     if (net::x509_util::IsSameCertificate(network_cert.cert(), cert))
       ++count;
+  }
+  return count;
+}
+
+size_t CountCertOccurencesInCertificateList(
+    const net::X509Certificate* cert,
+    const std::vector<NetworkCertLoader::NetworkCert>& network_cert_list) {
+  size_t count = 0;
+  for (const auto& network_cert : network_cert_list) {
+    if (net::x509_util::IsSameCertificate(network_cert.cert(), cert)) {
+      ++count;
+    }
   }
   return count;
 }
@@ -260,6 +273,19 @@ class NetworkCertLoaderTest : public testing::Test,
         std::move(scoped_public_slot), std::move(scoped_private_slot));
   }
 
+  bool ImportCertDBCert(net::ServerCertificateDatabaseService& server_cert_db,
+                        base::span<const uint8_t> der_cert,
+                        chrome_browser_server_certificate_database::
+                            CertificateTrust::CertificateTrustType trust_type) {
+    base::test::TestFuture<bool> future;
+    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+    cert_infos.push_back(
+        net::MakeCertInfo(base::as_string_view(der_cert), trust_type));
+    server_cert_db.AddOrUpdateUserCertificates(std::move(cert_infos),
+                                               future.GetCallback());
+    return future.Take();
+  }
+
   void ImportCACert(const std::string& cert_file,
                     net::NSSCertDatabase* database,
                     net::ScopedCERTCertificateList* imported_certs) {
@@ -363,46 +389,6 @@ class NetworkCertLoaderTest : public testing::Test,
 };
 
 }  // namespace
-
-TEST_F(NetworkCertLoaderTest, BasicOnlyUserDB) {
-  EXPECT_FALSE(cert_loader_->can_have_client_certificates());
-  EXPECT_FALSE(cert_loader_->initial_load_of_any_database_running());
-  EXPECT_FALSE(cert_loader_->initial_load_finished());
-  EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
-
-  cert_loader_->MarkUserNSSDBWillBeInitialized();
-  EXPECT_TRUE(cert_loader_->can_have_client_certificates());
-  EXPECT_FALSE(cert_loader_->initial_load_of_any_database_running());
-  EXPECT_FALSE(cert_loader_->initial_load_finished());
-  EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
-
-  CreateCertDatabase(&primary_public_slot_db_, &primary_private_slot_db_,
-                     &primary_certdb_);
-  net::ScopedCERTCertificateList certs;
-  ImportCACert("root_ca_cert.pem", primary_certdb_.get(), &certs);
-  task_environment_.RunUntilIdle();
-
-  cert_loader_->SetUserNSSDB(primary_certdb_.get());
-
-  EXPECT_FALSE(cert_loader_->initial_load_finished());
-  EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
-  EXPECT_TRUE(cert_loader_->initial_load_of_any_database_running());
-  EXPECT_TRUE(cert_loader_->authority_certs().empty());
-  EXPECT_TRUE(cert_loader_->client_certs().empty());
-
-  ASSERT_EQ(0U, GetAndResetCertificatesLoadedEventsCount());
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1U, GetAndResetCertificatesLoadedEventsCount());
-
-  EXPECT_TRUE(cert_loader_->initial_load_finished());
-  EXPECT_TRUE(cert_loader_->user_cert_database_load_finished());
-  EXPECT_FALSE(cert_loader_->initial_load_of_any_database_running());
-
-  // Default CA cert roots should get loaded but not be available in
-  // NetworkCertLoader.
-  EXPECT_EQ(1U, cert_loader_->authority_certs().size());
-  EXPECT_TRUE(cert_loader_->client_certs().empty());
-}
 
 TEST_F(NetworkCertLoaderTest, BasicOnlySystemDB) {
   EXPECT_FALSE(cert_loader_->can_have_client_certificates());
@@ -580,67 +566,69 @@ TEST_F(NetworkCertLoaderTest, SystemAndAffiliatedUserDB) {
 }
 
 // Tests that NetworkCertLoader does not list certs twice if they appear on
-// multiple slots.
+// multiple sources.
 TEST_F(NetworkCertLoaderTest, DeduplicatesCerts) {
-  // Use the same slot as public and private slot.
-  crypto::ScopedTestNSSDB* single_slot_db = &primary_public_slot_db_;
-  CreateCertDatabase(single_slot_db /* public_slot_db */,
-                     single_slot_db /* private_slot_db */, &primary_certdb_);
-  net::ScopedCERTCertificateList certs;
-  ImportCACert("root_ca_cert.pem", primary_certdb_.get(), &certs);
-  task_environment_.RunUntilIdle();
+  scoped_refptr<net::X509Certificate> user_cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "root_ca_cert.pem");
+  ASSERT_TRUE(user_cert.get());
 
-  cert_loader_->SetUserNSSDB(primary_certdb_.get());
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1U, GetAndResetCertificatesLoadedEventsCount());
+  scoped_refptr<net::X509Certificate> db_cert = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "intermediate_ca_cert.pem");
+  ASSERT_TRUE(db_cert.get());
+
+  scoped_refptr<net::X509Certificate> policy_cert = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "multi-root-E-by-E.pem");
+  ASSERT_TRUE(policy_cert.get());
+
+  std::unique_ptr<net::ServerCertificateDatabaseService> server_cert_db =
+      CreateServerCertDbService();
+
+  EXPECT_TRUE(
+      ImportCertDBCert(*server_cert_db, user_cert->cert_span(),
+                       chrome_browser_server_certificate_database::
+                           CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED));
+  EXPECT_TRUE(
+      ImportCertDBCert(*server_cert_db, db_cert->cert_span(),
+                       chrome_browser_server_certificate_database::
+                           CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED));
+
+  StartCertLoaderWithPrimaryDB();
+  cert_loader_->MarkUserServerCertDatabaseWillBeInitialized();
+
+  auto update_waiter = CreateUpdateWaiter();
+  cert_loader_->SetUserServerCertDatabaseService(server_cert_db.get());
+  base::ScopedClosureRunner db_cleanup_runner(
+      base::BindOnce(&NetworkCertLoader::SetUserServerCertDatabaseService,
+                     base::Unretained(cert_loader_), nullptr));
+  ASSERT_TRUE(update_waiter->Wait());
+
+  update_waiter = CreateUpdateWaiter();
+  FakePolicyCertificateProvider user_policy_certs_provider;
+  user_policy_certs_provider.SetAuthorityCertificates({user_cert, policy_cert});
+  cert_loader_->SetUserPolicyCertificateProvider(&user_policy_certs_provider);
+  base::ScopedClosureRunner policy_cleanup_runner(
+      base::BindOnce(&NetworkCertLoader::SetUserPolicyCertificateProvider,
+                     base::Unretained(cert_loader_), nullptr));
+  ASSERT_TRUE(update_waiter->Wait());
 
   EXPECT_TRUE(cert_loader_->initial_load_finished());
   EXPECT_TRUE(cert_loader_->user_cert_database_load_finished());
   EXPECT_FALSE(cert_loader_->initial_load_of_any_database_running());
 
-  // Default CA cert roots should get loaded but not be available in
-  // NetworkCertLoader.
-  EXPECT_EQ(1U, cert_loader_->authority_certs().size());
-  EXPECT_TRUE(cert_loader_->client_certs().empty());
-}
-
-TEST_F(NetworkCertLoaderTest, UpdateCertListOnNewCert) {
-  StartCertLoaderWithPrimaryDB();
-
-  net::ScopedCERTCertificateList certs;
-  ImportCACert("root_ca_cert.pem", primary_certdb_.get(), &certs);
-
-  // Certs are loaded asynchronously, so the new cert should not yet be in the
-  // cert list.
-  EXPECT_FALSE(IsCertInCertificateList(certs[0].get(), false /* device_wide */,
-                                       cert_loader_->client_certs()));
-
-  ASSERT_EQ(0U, GetAndResetCertificatesLoadedEventsCount());
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1U, GetAndResetCertificatesLoadedEventsCount());
-
-  // The certificate list should be updated now, as the message loop's been run.
-  EXPECT_TRUE(IsCertInCertificateList(certs[0].get(), false /* device_wide */,
+  // The same cert is provided by both policy and ServerCertDatabase, but
+  // should only appear in the authority_certs() list once.
+  EXPECT_EQ(1U, CountCertOccurencesInCertificateList(
+                    user_cert.get(), cert_loader_->authority_certs()));
+  // Also check the unique certs that were added to the DB and the policy,
+  // which ensures that the test setup is correct and both sources were
+  // actually loaded.
+  EXPECT_TRUE(IsCertInCertificateList(db_cert.get(), false /* device_wide */,
                                       cert_loader_->authority_certs()));
-}
-
-TEST_F(NetworkCertLoaderTest, NoUpdateOnSecondaryDbChanges) {
-  crypto::ScopedTestNSSDB secondary_db;
-  std::unique_ptr<TestNSSCertDatabase> secondary_certdb;
-
-  StartCertLoaderWithPrimaryDB();
-  CreateCertDatabase(&secondary_db /* public_slot_db */,
-                     &secondary_db /* private_slot_db */, &secondary_certdb);
-
-  net::ScopedCERTCertificateList certs;
-  ImportCACert("root_ca_cert.pem", secondary_certdb.get(), &certs);
-
-  task_environment_.RunUntilIdle();
-
-  EXPECT_FALSE(IsCertInCertificateList(certs[0].get(), false /* device_wide */,
-                                       cert_loader_->client_certs()));
-  EXPECT_FALSE(IsCertInCertificateList(certs[0].get(), true /* device_wide */,
-                                       cert_loader_->client_certs()));
+  EXPECT_TRUE(IsCertInCertificateList(policy_cert.get(),
+                                      false /* device_wide */,
+                                      cert_loader_->authority_certs()));
+  EXPECT_EQ(3U, cert_loader_->authority_certs().size());
+  EXPECT_TRUE(cert_loader_->client_certs().empty());
 }
 
 TEST_F(NetworkCertLoaderTest, ClientLoaderUpdateOnNewClientCert) {
@@ -742,29 +730,6 @@ TEST_F(NetworkCertLoaderTest, UpdatedOnCertRemoval) {
 
   ASSERT_FALSE(IsCertInCertificateList(cert.get(), false /* device_wide */,
                                        cert_loader_->client_certs()));
-}
-
-TEST_F(NetworkCertLoaderTest, UpdatedOnCACertTrustChange) {
-  StartCertLoaderWithPrimaryDB();
-
-  net::ScopedCERTCertificateList certs;
-  ImportCACert("root_ca_cert.pem", primary_certdb_.get(), &certs);
-
-  task_environment_.RunUntilIdle();
-  ASSERT_EQ(1U, GetAndResetCertificatesLoadedEventsCount());
-  ASSERT_TRUE(IsCertInCertificateList(certs[0].get(), false /* device_wide */,
-                                      cert_loader_->authority_certs()));
-
-  // The value that should have been set by |ImportCACert|.
-  ASSERT_EQ(net::NSSCertDatabase::TRUST_DEFAULT,
-            primary_certdb_->GetCertTrust(certs[0].get(), net::CA_CERT));
-  ASSERT_TRUE(primary_certdb_->SetCertTrust(certs[0].get(), net::CA_CERT,
-                                            net::NSSCertDatabase::TRUSTED_SSL));
-
-  // Cert trust change should trigger certificate reload in cert_loader_.
-  ASSERT_EQ(0U, GetAndResetCertificatesLoadedEventsCount());
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1U, GetAndResetCertificatesLoadedEventsCount());
 }
 
 TEST_F(NetworkCertLoaderTest, UpdateSinglePolicyCertificateProvider) {
@@ -964,16 +929,10 @@ TEST_F(NetworkCertLoaderTest, BasicWithServerCertDB) {
   std::unique_ptr<net::ServerCertificateDatabaseService> server_cert_db =
       CreateServerCertDbService();
   auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
-  {
-    base::test::TestFuture<bool> future;
-    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
-    cert_infos.push_back(net::MakeCertInfo(
-        root->GetDER(), chrome_browser_server_certificate_database::
-                            CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED));
-    server_cert_db->AddOrUpdateUserCertificates(std::move(cert_infos),
-                                                future.GetCallback());
-    EXPECT_TRUE(future.Take());
-  }
+  EXPECT_TRUE(
+      ImportCertDBCert(*server_cert_db, base::as_byte_span(root->GetDER()),
+                       chrome_browser_server_certificate_database::
+                           CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED));
 
   // Start loading both databases.
   auto update_waiter = CreateUpdateWaiter();
@@ -1026,18 +985,12 @@ TEST_F(NetworkCertLoaderTest, UpdateCertListOnServerCertDBChanges) {
 
   // Test adding a cert to ServerCertificateDatabase.
   auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
-  std::string root_hash;
   {
     auto update_waiter = CreateUpdateWaiter();
-    base::test::TestFuture<bool> future;
-    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
-    cert_infos.push_back(net::MakeCertInfo(
-        root->GetDER(), chrome_browser_server_certificate_database::
-                            CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED));
-    root_hash = cert_infos[0].sha256hash_hex;
-    server_cert_db->AddOrUpdateUserCertificates(std::move(cert_infos),
-                                                future.GetCallback());
-    EXPECT_TRUE(future.Take());
+    EXPECT_TRUE(
+        ImportCertDBCert(*server_cert_db, base::as_byte_span(root->GetDER()),
+                         chrome_browser_server_certificate_database::
+                             CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED));
 
     // Adding the new cert to the DB should have triggered an update of the
     // NetworkCertLoader and the new cert should be available.
@@ -1049,6 +1002,9 @@ TEST_F(NetworkCertLoaderTest, UpdateCertListOnServerCertDBChanges) {
 
   // Test removing a cert from ServerCertificateDatabase.
   {
+    std::string root_hash = net::ServerCertificateDatabase::CertInformation(
+                                base::as_byte_span(root->GetDER()))
+                                .sha256hash_hex;
     auto update_waiter = CreateUpdateWaiter();
     base::test::TestFuture<bool> future;
     server_cert_db->DeleteCertificate(root_hash, future.GetCallback());

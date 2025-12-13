@@ -1,7 +1,7 @@
 Tests frameStartedNavigating events when navigation is initiated by cdp command
 
 Navigation
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -11,7 +11,7 @@ frameStartedNavigating{
     }
     sessionId : <string>
 }
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -23,7 +23,7 @@ frameStartedNavigating{
 }
 
 Fragment navigation
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -35,7 +35,7 @@ frameStartedNavigating{
 }
 
 Reload
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -47,7 +47,7 @@ frameStartedNavigating{
 }
 
 Reload ignoring cache
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -59,7 +59,7 @@ frameStartedNavigating{
 }
 
 History traversal
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -69,7 +69,7 @@ frameStartedNavigating{
     }
     sessionId : <string>
 }
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -79,7 +79,7 @@ frameStartedNavigating{
     }
     sessionId : <string>
 }
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>

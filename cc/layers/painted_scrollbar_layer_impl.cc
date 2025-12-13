@@ -66,7 +66,7 @@ void PaintedScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   scrollbar_layer->SetJumpOnTrackClick(jump_on_track_click_);
   scrollbar_layer->SetSupportsDragSnapBack(supports_drag_snap_back_);
   scrollbar_layer->SetThumbThickness(thumb_thickness_);
-  scrollbar_layer->SetThumbLength(thumb_length_);
+  scrollbar_layer->SetMinimumThumbLength(minimum_thumb_length_);
   scrollbar_layer->SetBackButtonRect(back_button_rect_);
   scrollbar_layer->SetForwardButtonRect(forward_button_rect_);
   scrollbar_layer->SetTrackRect(track_rect_);
@@ -132,8 +132,6 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
       visible_thumb_quad_rect, internal_contents_scale_);
 
   if (thumb_color_.has_value()) {
-    gfx::MaskFilterInfo rounded_corners_mask =
-        draw_properties().mask_filter_info;
     // Web tests draw the thumb as a square to avoid issues that come with the
     // differences in calculation of anti-aliasing and rounding in different
     // platforms.
@@ -400,15 +398,17 @@ int PaintedScrollbarLayerImpl::ThumbThickness() const {
   return thumb_thickness_;
 }
 
-void PaintedScrollbarLayerImpl::SetThumbLength(int thumb_length) {
-  if (thumb_length_ == thumb_length)
+void PaintedScrollbarLayerImpl::SetMinimumThumbLength(
+    int minimum_thumb_length) {
+  if (minimum_thumb_length_ == minimum_thumb_length) {
     return;
-  thumb_length_ = thumb_length;
+  }
+  minimum_thumb_length_ = minimum_thumb_length;
   NoteLayerPropertyChanged();
 }
 
-int PaintedScrollbarLayerImpl::ThumbLength() const {
-  return thumb_length_;
+int PaintedScrollbarLayerImpl::MinimumThumbLength() const {
+  return minimum_thumb_length_;
 }
 
 int PaintedScrollbarLayerImpl::TrackStart() const {

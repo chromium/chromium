@@ -12,10 +12,12 @@
 
 set noparent
 rdevlin.cronin@chromium.org
+andreaorru@chromium.org
 emiliapaz@chromium.org
 finnur@chromium.org
 jamescook@chromium.org
 reillyg@chromium.org
+solomonkinard@chromium.org
 
 # Translation artifacts:
 per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

@@ -963,18 +963,6 @@ void ClipboardNonBacked::WriteData(const ClipboardFormatType& format,
   ClipboardDataBuilder::WriteData(format, data);
 }
 
-void ClipboardNonBacked::WriteClipboardHistory() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
-void ClipboardNonBacked::WriteUploadCloudClipboard() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
-void ClipboardNonBacked::WriteConfidentialDataForPassword() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
 const ClipboardInternal& ClipboardNonBacked::GetInternalClipboard(
     ClipboardBuffer buffer) const {
   return *internal_clipboards_.at(buffer);

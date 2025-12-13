@@ -1,0 +1,47 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("lens") {
+  public = [ "lens_region_search_instructions_view.h" ]
+  friend = [ ":*" ]
+
+  sources = [ "lens_region_search_instructions_view.cc" ]
+
+  public_deps = [
+    "//base",
+    "//ui/base",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui/color:color_headers",
+    "//components/lens:features",
+    "//components/strings:components_strings",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "lens_region_search_controller_unittest.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/lens/region_search",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/test:test_support",
+    "//components/lens",
+    "//components/lens:features",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+  ]
+}

@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
@@ -19,7 +20,7 @@
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionActionPopupContents_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using content::RenderFrameHost;
 using content::WebContents;
@@ -42,6 +43,12 @@ ExtensionActionPopupContents::ExtensionActionPopupContents(
       AttachCurrentThread(), reinterpret_cast<jlong>(this),
       host_->host_contents());
   host_->set_view(this);
+  // Handle the containing view calling window.close();
+  // The base::Unretained() below is safe because this object owns `host_`, so
+  // the callback will never fire if `this` is deleted.
+  host_->SetCloseHandler(
+      base::BindOnce(&ExtensionActionPopupContents::HandleCloseExtensionHost,
+                     base::Unretained(this)));
   WebContentsObserver::Observe(host_->host_contents());
   auto* primary_main_frame = host_->host_contents()->GetPrimaryMainFrame();
   if (primary_main_frame->IsRenderFrameLive()) {
@@ -117,14 +124,25 @@ void ExtensionActionPopupContents::SetUpNewMainFrame(
   render_frame_host->GetView()->EnableAutoResize(kMinSize, kMaxSize);
 }
 
+void ExtensionActionPopupContents::HandleCloseExtensionHost(
+    ExtensionHost* host) {
+  DCHECK_EQ(host, host_.get());
+  Java_ExtensionActionPopupContents_onClose(AttachCurrentThread(),
+                                            java_object_);
+}
+
 // JNI method to create an ExtensionActionPopupContents instance.
 // This is called from the Java side to initiate the display of an extension
 // popup.
 static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
     JNIEnv* env,
-    Profile* profile,
+    jlong browser_window_interface_ptr,
     std::string& action_id,
     int tab_id) {
+  BrowserWindowInterface* browser =
+      reinterpret_cast<BrowserWindowInterface*>(browser_window_interface_ptr);
+  Profile* profile = browser->GetProfile();
+
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   DCHECK(registry);
 
@@ -141,7 +159,7 @@ static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
   GURL popup_url = action->GetPopupUrl(tab_id);
 
   std::unique_ptr<ExtensionViewHost> host =
-      ExtensionViewHostFactory::CreatePopupHost(popup_url, profile);
+      ExtensionViewHostFactory::CreatePopupHost(popup_url, browser);
   DCHECK(host);
 
   // The ExtensionActionPopupContents C++ object's lifetime is managed by its
@@ -157,3 +175,5 @@ static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
 }
 
 }  // namespace extensions
+
+DEFINE_JNI(ExtensionActionPopupContents)

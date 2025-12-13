@@ -275,6 +275,8 @@ FlatOffset<flatbuffers::Vector<uint8_t>> BuildEmbedderConditionsOffset(
     flatbuffers::FlatBufferBuilder* builder,
     const IndexedRule& indexed_rule) {
   if (indexed_rule.tab_ids.empty() && indexed_rule.excluded_tab_ids.empty() &&
+      indexed_rule.top_domains.empty() &&
+      indexed_rule.excluded_top_domains.empty() &&
       indexed_rule.response_headers.empty() &&
       indexed_rule.excluded_response_headers.empty()) {
     return FlatOffset<flatbuffers::Vector<uint8_t>>();
@@ -294,8 +296,15 @@ FlatOffset<flatbuffers::Vector<uint8_t>> BuildEmbedderConditionsOffset(
         BuildHeaderConditionsOffset(&nested_builder,
                                     indexed_rule.excluded_response_headers);
 
+    FlatStringListOffset top_domains_included_offset =
+        BuildVectorOfSharedStrings(&nested_builder, indexed_rule.top_domains);
+    FlatStringListOffset top_domains_excluded_offset =
+        BuildVectorOfSharedStrings(&nested_builder,
+                                   indexed_rule.excluded_top_domains);
+
     auto nested_flatbuffer_root_offset = flat::CreateEmbedderConditions(
         nested_builder, tab_ids_included_offset, tab_ids_excluded_offset,
+        top_domains_included_offset, top_domains_excluded_offset,
         response_headers_offset, excluded_response_headers_offset);
     nested_builder.Finish(nested_flatbuffer_root_offset,
                           kEmbedderConditionsBufferIdentifier);

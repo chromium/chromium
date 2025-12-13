@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <numeric>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -228,7 +229,8 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, MAYBE_WithAudioProcessing) {
                                        std::get<0>(GetParam())};
   std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
       mock_capture_callback_.Get(), LogCallbackForTesting(), settings, params_,
-      GetProcessorOutputParams(params_, settings));
+      GetProcessorOutputParams(params_, settings),
+      /*neural_residual_echo_estimator_model=*/nullptr);
   EXPECT_TRUE(audio_processor->has_webrtc_audio_processing());
   VerifyDefaultComponents(*audio_processor);
 
@@ -241,7 +243,8 @@ TEST_F(AudioProcessorTest, TurnOffDefaultConstraints) {
   DisableDefaultSettings(settings);
   std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
       mock_capture_callback_.Get(), LogCallbackForTesting(), settings, params_,
-      AudioProcessor::GetDefaultOutputFormat(params_, settings));
+      AudioProcessor::GetDefaultOutputFormat(params_, settings),
+      /*neural_residual_echo_estimator_model=*/nullptr);
   EXPECT_FALSE(audio_processor->has_webrtc_audio_processing());
 
   EXPECT_EQ(audio_processor->output_format().sample_rate(),
@@ -271,7 +274,8 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, MAYBE_TestAllSampleRates) {
                                   buffer_size);
     std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
         mock_capture_callback_.Get(), LogCallbackForTesting(), settings, params,
-        GetProcessorOutputParams(params, settings));
+        GetProcessorOutputParams(params, settings),
+        /*neural_residual_echo_estimator_model=*/nullptr);
     EXPECT_TRUE(audio_processor->has_webrtc_audio_processing());
     VerifyDefaultComponents(*audio_processor);
 
@@ -287,7 +291,8 @@ TEST_F(AudioProcessorTest, StartStopAecDump) {
     AudioProcessingSettings settings;
     std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
         mock_capture_callback_.Get(), LogCallbackForTesting(), settings,
-        params_, AudioProcessor::GetDefaultOutputFormat(params_, settings));
+        params_, AudioProcessor::GetDefaultOutputFormat(params_, settings),
+        /*neural_residual_echo_estimator_model=*/nullptr);
 
     // Start and stop recording.
     audio_processor->OnStartDump(base::File(
@@ -320,7 +325,8 @@ TEST_F(AudioProcessorTest, StartAecDumpDuringOngoingAecDump) {
     AudioProcessingSettings settings;
     std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
         mock_capture_callback_.Get(), LogCallbackForTesting(), settings,
-        params_, AudioProcessor::GetDefaultOutputFormat(params_, settings));
+        params_, AudioProcessor::GetDefaultOutputFormat(params_, settings),
+        /*neural_residual_echo_estimator_model=*/nullptr);
 
     // Start a recording.
     audio_processor->OnStartDump(base::File(
@@ -350,9 +356,8 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params_.channels(), params_.frames_per_buffer());
   data_bus->Zero();
-  for (int i = 0; i < data_bus->frames(); ++i) {
-    data_bus->channel(0)[i] = (i % 11) * 0.1f - 0.5f;
-  }
+  std::ranges::generate(data_bus->channel(0),
+                        [i = 0]() mutable { return (i++ % 11) * 0.1f - 0.5f; });
 
   // Test without and with audio processing enabled.
   constexpr bool kUseApmValues[] =
@@ -378,7 +383,8 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
     }
     std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
         mock_capture_callback_.Get(), LogCallbackForTesting(), settings,
-        params_, GetProcessorOutputParams(params_, settings));
+        params_, GetProcessorOutputParams(params_, settings),
+        /*neural_residual_echo_estimator_model=*/nullptr);
     EXPECT_EQ(audio_processor->has_webrtc_audio_processing(), use_apm);
     // There's no sense in continuing if this fails.
     ASSERT_EQ(2, audio_processor->output_format().channels());
@@ -408,14 +414,16 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
             if (!use_apm) {
               EXPECT_FALSE(new_volume.has_value());
             }
-            float left_channel_energy = 0.0f;
-            float right_channel_energy = 0.0f;
-            for (int i = 0; i < processed_audio.frames(); ++i) {
-              left_channel_energy +=
-                  processed_audio.channel(0)[i] * processed_audio.channel(0)[i];
-              right_channel_energy +=
-                  processed_audio.channel(1)[i] * processed_audio.channel(1)[i];
-            }
+
+            auto left_channel = processed_audio.channel(0);
+            auto right_channel = processed_audio.channel(1);
+
+            const float left_channel_energy =
+                std::inner_product(left_channel.begin(), left_channel.end(),
+                                   left_channel.begin(), 0.0f);
+            const float right_channel_energy =
+                std::inner_product(right_channel.begin(), right_channel.end(),
+                                   right_channel.begin(), 0.0f);
             if (use_apm && num_preferred_channels <= 1) {
               // Mono output. Output channels are averaged.
               EXPECT_NE(left_channel_energy, 0);
@@ -491,7 +499,8 @@ TEST_F(AudioProcessorTest, DiscreteChannelLayout) {
                                   48000, 480);
     std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
         mock_capture_callback_.Get(), LogCallbackForTesting(), settings, params,
-        AudioProcessor::GetDefaultOutputFormat(params, settings));
+        AudioProcessor::GetDefaultOutputFormat(params, settings),
+        /*neural_residual_echo_estimator_model=*/nullptr);
     EXPECT_TRUE(audio_processor->has_webrtc_audio_processing());
   }
 }
@@ -586,7 +595,8 @@ TEST(AudioProcessorCallbackTest,
                                 48000 * 4 / 1000);
   std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
       mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
-      AudioProcessor::GetDefaultOutputFormat(params, settings));
+      AudioProcessor::GetDefaultOutputFormat(params, settings),
+      /*neural_residual_echo_estimator_model=*/nullptr);
   ASSERT_TRUE(audio_processor->has_webrtc_audio_processing());
   int output_sample_rate = audio_processor->output_format().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
@@ -636,7 +646,8 @@ TEST(AudioProcessorCallbackTest,
                                 48000 * 35 / 1000);
   std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
       mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
-      AudioProcessor::GetDefaultOutputFormat(params, settings));
+      AudioProcessor::GetDefaultOutputFormat(params, settings),
+      /*neural_residual_echo_estimator_model=*/nullptr);
   ASSERT_TRUE(audio_processor->has_webrtc_audio_processing());
   int output_sample_rate = audio_processor->output_format().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
@@ -676,7 +687,8 @@ TEST(AudioProcessorCallbackTest,
                                 48000 * 4 / 1000);
   std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
       mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
-      AudioProcessor::GetDefaultOutputFormat(params, settings));
+      AudioProcessor::GetDefaultOutputFormat(params, settings),
+      /*neural_residual_echo_estimator_model=*/nullptr);
   ASSERT_FALSE(audio_processor->has_webrtc_audio_processing());
   int output_sample_rate = audio_processor->output_format().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
@@ -713,7 +725,8 @@ TEST(AudioProcessorCallbackTest,
                                 48000 * 35 / 1000);
   std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
       mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
-      AudioProcessor::GetDefaultOutputFormat(params, settings));
+      AudioProcessor::GetDefaultOutputFormat(params, settings),
+      /*neural_residual_echo_estimator_model=*/nullptr);
   ASSERT_FALSE(audio_processor->has_webrtc_audio_processing());
   int output_sample_rate = audio_processor->output_format().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
@@ -750,7 +763,8 @@ TEST(ApmTellsIfPlayoutReferenceIsNeededTest, DoesNotNeedPlayoutReference) {
                                 ChannelLayoutConfig::Stereo(), 48000, 480);
   std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
       mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
-      AudioProcessor::GetDefaultOutputFormat(params, settings));
+      AudioProcessor::GetDefaultOutputFormat(params, settings),
+      /*neural_residual_echo_estimator_model=*/nullptr);
 
   EXPECT_FALSE(audio_processor->needs_playout_reference());
 }
@@ -773,7 +787,8 @@ TEST(ApmTellsIfPlayoutReferenceIsNeededTest, MAYBE_NeedsPlayoutReference) {
                                 ChannelLayoutConfig::Stereo(), 48000, 480);
   std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
       mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
-      AudioProcessor::GetDefaultOutputFormat(params, settings));
+      AudioProcessor::GetDefaultOutputFormat(params, settings),
+      /*neural_residual_echo_estimator_model=*/nullptr);
 
   EXPECT_TRUE(audio_processor->needs_playout_reference());
 }
@@ -801,7 +816,8 @@ class AudioProcessorCallbackLoopbackAecDelayTest : public ::testing::Test {
   std::unique_ptr<AudioProcessor> CreateAudioProcessor() {
     return AudioProcessor::Create(
         mock_capture_callback_.Get(), LogCallbackForTesting(), settings_,
-        params_, AudioProcessor::GetDefaultOutputFormat(params_, settings_));
+        params_, AudioProcessor::GetDefaultOutputFormat(params_, settings_),
+        /*neural_residual_echo_estimator_model=*/nullptr);
   }
 
   void ExpectCallbackWithOffset(base::TimeTicks capture_time,
@@ -839,6 +855,10 @@ TEST_F(AudioProcessorCallbackLoopbackAecDelayTest,
 
 TEST_F(AudioProcessorCallbackLoopbackAecDelayTest,
        LoopbackSettingLeadsToDelayApplied) {
+  if (!IsSystemLoopbackAsAecReferenceEnabled()) {
+    // Loopback AEC is not available.
+    return;
+  }
   RunTestWithSettings(/*use_loopback_aec_reference=*/true,
                       /*expected_offset=*/base::Milliseconds(99));
 }

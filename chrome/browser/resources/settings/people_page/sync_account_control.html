@@ -5,6 +5,54 @@
         --sync-icon-size: 16px;
       }
 
+      :host([promo-type_="sync"]) {
+        h3 {
+          font-size: inherit;
+          margin: 0;
+          font-weight: normal;
+        }
+
+        #banner {
+          background: url(chrome://settings/images/sync_banner.svg) no-repeat;
+          background-size: 100% auto;
+          display: none;
+          padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
+          display: block;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          #banner {
+            background-image:
+                url(chrome://settings/images/sync_banner_dark.svg);
+          }
+        }
+      }
+
+      :host([promo-type_="signin"]) {
+        h3 {
+          margin-top: 4px;
+          margin-bottom: 4px;
+          font-size: 1rem;
+          font-weight: 500;
+          letter-spacing: .25px;
+        }
+
+        #banner {
+          background: url(chrome://settings/images/signin_banner.svg) no-repeat;
+          background-size: 100% auto;
+          display: none;
+          padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
+          display: block;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          #banner {
+            background-image:
+                url(chrome://settings/images/signin_banner_dark.svg);
+          }
+        }
+      }
+
       .account-icon {
         border-radius: 50%;
         flex-shrink: 0;
@@ -86,12 +134,6 @@
         }
       }
 
-      h3 {
-        font-size: inherit;
-        margin: 0;
-        font-weight: normal;
-      }
-
       #sync-icon-container cr-icon {
         fill: white;  /* Same in light and dark modes. */
         height: 12px;
@@ -101,20 +143,6 @@
 
       #signIn {
         min-width: 100px;
-      }
-
-      #banner {
-        background: url(chrome://settings/images/sync_banner.svg) no-repeat;
-        background-size: 100% auto;
-        display: none;
-        padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
-        display: block;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        #banner {
-          background-image: url(chrome://settings/images/sync_banner_dark.svg);
-        }
       }
 
     </style>
@@ -188,14 +216,14 @@
         </div>
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
-                syncStatus.domain, syncStatus.signinPaused)]]"
+                syncStatus.domain)]]"
             on-click="onMenuButtonClick_" id="dropdown-arrow"
             aria-label="$i18n{changeAccount}"
             aria-expanded="false">
         </cr-icon-button>
         <div class="separator"
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
-                syncStatus.domain, syncStatus.signinPaused)]]">
+                syncStatus.domain)]]">
         </div>
         <cr-button id="signout-button" class="cr-button-gap"
             hidden="[[shouldHideSignoutButton_(syncStatus.signedInState)]]"
@@ -203,8 +231,7 @@
           $i18n{signOutOfChrome}
         </cr-button>
         <cr-button id="sync-button" class="action-button cr-button-gap"
-            hidden="[[shouldHideSyncButton_(syncStatus.signedInState,
-                syncStatus.signinPaused)]]"
+            hidden="[[shouldHideSyncButton_(syncStatus.signedInState)]]"
             on-click="onSyncButtonClick_"
             disabled="[[shouldDisableSyncButton_(showSetupButtons_,
                 syncStatus.firstSetupInProgress,
@@ -248,8 +275,7 @@
           </cr-button>
         </div>
         <div id="signin-paused-buttons"
-            hidden="[[!shouldShowSigninPausedButtons_(
-                syncStatus.signinPaused)]]">
+            hidden="[[!shouldShowSigninPausedButtons_]]">
           <cr-button class="cr-button-gap" id="remove-account-button"
               hidden="[[shouldHideRemoveAccountButton_(
                   syncStatus.signedInState)]]"
@@ -265,7 +291,7 @@
       </div>
       <template is="dom-if"
           if="[[shouldAllowAccountSwitch_(syncStatus.signedInState,
-              syncStatus.domain, syncStatus.signinPaused)]]" restamp>
+              syncStatus.domain)]]" restamp>
         <cr-action-menu id="menu" auto-reposition
             role-description="$i18n{menu}" on-close="onDropdownClose_">
           <template is="dom-repeat" items="[[storedAccounts_]]">

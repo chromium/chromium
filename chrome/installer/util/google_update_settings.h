@@ -179,18 +179,9 @@ class GoogleUpdateSettings {
   // true if this operation succeeded.
   static bool ClearReferral();
 
-  // This method changes the Google Update "ap" value to move the installation
-  // on to or off of one of the recovery channels.
-  // - If incremental installer fails we append a magic string ("-full"), if
-  // it is not present already, so that Google Update server next time will send
-  // full installer to update Chrome on the local machine
-  // - If we are currently running full installer, we remove this magic
-  // string (if it is present) regardless of whether installer failed or not.
-  // There is no fall-back for full installer :)
-  // - Unconditionally clear a legacy "-stage:" modifier.
-  static void UpdateInstallStatus(bool system_install,
-                                  installer::ArchiveType archive_type,
-                                  int install_return_code);
+  // This method unconditionally clears legacy "-full" modifiers from the
+  // Google Update "ap" key.
+  static void UpdateInstallStatus();
 
   // Sets the InstallerProgress value in the registry so that Google Update can
   // provide informative user feedback. |path| is the full path to the app's
@@ -200,24 +191,9 @@ class GoogleUpdateSettings {
                           const std::wstring& path,
                           int progress);
 
-  // This method updates the value for Google Update "ap" key for Chrome
-  // based on whether we are doing incremental install (or not) and whether
-  // the install succeeded.
-  // - If install worked, remove the magic string (if present).
-  // - If incremental installer failed, append a magic string (if
-  //   not present already).
-  // - If full installer failed, still remove this magic
-  //   string (if it is present already).
-  // Additionally, any legacy ""-stage:*" values are
-  // unconditionally removed.
-  //
-  // archive_type: tells whether this is incremental install or not.
-  // install_return_code: if 0, means installation was successful.
-  // value: current value of Google Update "ap" key.
+  // This method unconditionally clears legacy "-full" modifiers from |value|.
   // Returns true if |value| is modified.
-  static bool UpdateGoogleUpdateApKey(installer::ArchiveType archive_type,
-                                      int install_return_code,
-                                      installer::AdditionalParameters* value);
+  static bool UpdateGoogleUpdateApKey(installer::AdditionalParameters& value);
 
   // Returns the effective update policy for |app_guid| as dictated by
   // Group Policy settings.  |is_overridden|, if non-nullptr, is populated with

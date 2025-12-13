@@ -23,4 +23,7 @@ bool IsLVFUnifiedExperienceEnabled(const PrefService* prefs);
 // Returns whether the escape hatch to LVF is enabled.
 bool IsLVFEscapeHatchEnabled(const PrefService* prefs);
 
+// Returns whether the custom bottom sheet implementation is enabled.
+bool UseCustomLensOverlayBottomSheet();
+
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OVERLAY_AVAILABILITY_H_

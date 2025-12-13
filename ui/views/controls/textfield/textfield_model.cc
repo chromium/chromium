@@ -71,9 +71,9 @@ class Edit {
     // Insertions must be applied in order of increasing indices since |Redo|
     // applies them in decreasing order.
     auto insertion_texts = old_texts_;
-    std::reverse(insertion_texts.begin(), insertion_texts.end());
+    std::ranges::reverse(insertion_texts);
     auto insertion_text_starts = old_text_starts_;
-    std::reverse(insertion_text_starts.begin(), insertion_text_starts.end());
+    std::ranges::reverse(insertion_text_starts);
     model->ModifyText({{static_cast<uint32_t>(new_text_start_),
                         static_cast<uint32_t>(new_text_end())}},
                       insertion_texts, insertion_text_starts,
@@ -402,7 +402,9 @@ TextfieldModel::Delegate::~Delegate() = default;
 TextfieldModel::TextfieldModel(Delegate* delegate)
     : delegate_(delegate),
       render_text_(gfx::RenderText::CreateRenderText()),
-      current_edit_(edit_history_.end()) {}
+      current_edit_(edit_history_.end()) {
+  CHECK(delegate_) << "Delegate must not be nullptr";
+}
 
 TextfieldModel::~TextfieldModel() {
   ClearEditHistory();
@@ -642,8 +644,8 @@ bool TextfieldModel::Redo() {
 bool TextfieldModel::Cut() {
   if (!HasCompositionText() && HasSelection(true) &&
       !render_text_->obscured()) {
-    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
-        .WriteText(GetSelectedText());
+    delegate_->WriteTextToClipboard(ui::ClipboardBuffer::kCopyPaste,
+                                    GetSelectedText());
     DeleteSelection();
     return true;
   }
@@ -653,8 +655,8 @@ bool TextfieldModel::Cut() {
 bool TextfieldModel::Copy() {
   if (!HasCompositionText() && HasSelection(true) &&
       !render_text_->obscured()) {
-    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
-        .WriteText(GetSelectedText());
+    delegate_->WriteTextToClipboard(ui::ClipboardBuffer::kCopyPaste,
+                                    GetSelectedText());
     return true;
   }
   return false;
@@ -664,6 +666,10 @@ bool TextfieldModel::Paste() {
   std::u16string text;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &text);
+  return Paste(std::move(text));
+}
+
+bool TextfieldModel::Paste(std::u16string text) {
   if (text.empty()) {
     return false;
   }
@@ -680,7 +686,7 @@ bool TextfieldModel::Paste() {
   // space to a regular space), so don't call a more aggressive function like
   // CollapseWhitespace().
   base::TrimWhitespace(text, base::TRIM_ALL, &text);
-  // If the clipboard contains all whitespace then paste a single space.
+  // If the provided text contains all whitespace then paste a single space.
   if (text.empty()) {
     text = u" ";
   }
@@ -831,9 +837,7 @@ size_t TextfieldModel::ConfirmCompositionText() {
       composition_range_.start()));
   render_text_->SetCursorPosition(composition_range_.end());
   ClearComposition();
-  if (delegate_) {
-    delegate_->OnCompositionTextConfirmedOrCleared();
-  }
+  delegate_->OnCompositionTextConfirmedOrCleared();
   return composition_length;
 }
 
@@ -845,9 +849,7 @@ void TextfieldModel::CancelCompositionText() {
       base::StrCat({text().substr(0, range.start()),
                     text().substr(range.start() + range.length())}));
   render_text_->SetCursorPosition(range.start());
-  if (delegate_) {
-    delegate_->OnCompositionTextConfirmedOrCleared();
-  }
+  delegate_->OnCompositionTextConfirmedOrCleared();
 }
 
 void TextfieldModel::ClearComposition() {
@@ -1040,9 +1042,7 @@ void TextfieldModel::ModifyText(
 
 void TextfieldModel::SetRenderTextText(std::u16string text) {
   render_text_->SetText(std::move(text));
-  if (delegate_) {
-    delegate_->OnTextChanged();
-  }
+  delegate_->OnTextChanged();
 }
 
 // static

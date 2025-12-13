@@ -8,10 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"

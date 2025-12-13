@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/gaia_reauth_token_fetcher.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_switches.h"
@@ -103,7 +104,7 @@ void GaiaReauthTokenFetcher::Fetch() {
 }
 
 void GaiaReauthTokenFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {
@@ -113,7 +114,8 @@ void GaiaReauthTokenFetcher::OnSimpleLoaderComplete(
 
   // TODO(b/200782732): Add metrics to record error code.
   if (response_code == net::HTTP_OK) {
-    auto message_value = base::JSONReader::Read(*response_body);
+    auto message_value = base::JSONReader::Read(
+        *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (message_value && message_value->is_dict()) {
       const std::string* token =
           message_value->GetDict().FindString("encodedReauthRequestToken");

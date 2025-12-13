@@ -164,6 +164,10 @@ void HistoryDataTypeController::OnStateChanged(syncer::SyncService* sync) {
   helper_.sync_service()->DataTypePreconditionChanged(type());
 }
 
+void HistoryDataTypeController::OnSyncShutdown(syncer::SyncService* sync) {
+  // Nothing to be done, `this` will be destructed imminently.
+}
+
 void HistoryDataTypeController::AccountTypeDetermined() {
   helper_.sync_service()->DataTypePreconditionChanged(type());
 }

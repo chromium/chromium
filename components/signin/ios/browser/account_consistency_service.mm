@@ -163,7 +163,9 @@ class AccountConsistencyService::AccountConsistencyHandler
   void WebStateDestroyed() override;
 
   // Handles the AddAccount request depending on |has_cookie_changed|.
-  void HandleAddAccountRequest(GURL url, BOOL has_cookie_changed);
+  void HandleAddAccountRequest(GURL url,
+                               const std::string& email,
+                               BOOL has_cookie_changed);
 
   // The consistency web sign-in needs to be shown once the page is loaded.
   // It is required to avoid having the keyboard showing up on top of the web
@@ -277,14 +279,14 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
                                    kGaiaCookieAbsentOnAddSessionNavigation);
         if (account_consistency_service_->RestoreGaiaCookies(base::BindOnce(
                 &AccountConsistencyHandler::HandleAddAccountRequest,
-                weak_ptr_factory_.GetWeakPtr(), continue_url))) {
+                weak_ptr_factory_.GetWeakPtr(), continue_url, params.email))) {
           // Continue URL will be processed in a callback once Gaia cookies
           // have been restored.
           return;
         }
       }
       if (delegate_) {
-        delegate_->OnAddAccount(continue_url);
+        delegate_->OnAddAccount(continue_url, params.email);
       }
       break;
     case signin::GAIA_SERVICE_TYPE_SIGNOUT:
@@ -308,14 +310,16 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
 }
 
 void AccountConsistencyService::AccountConsistencyHandler::
-    HandleAddAccountRequest(GURL url, BOOL has_cookie_changed) {
+    HandleAddAccountRequest(GURL url,
+                            const std::string& email,
+                            BOOL has_cookie_changed) {
   if (!has_cookie_changed) {
     // If the cookies on the device did not need to be updated then the user
     // is not in an inconsistent state (where the identities on the device
     // are different than those on the web). Fallback to asking the user to
     // add an account.
     if (delegate_) {
-      delegate_->OnAddAccount(url);
+      delegate_->OnAddAccount(url, email);
     }
     return;
   }
@@ -342,9 +346,8 @@ void AccountConsistencyService::AccountConsistencyHandler::PageLoaded(
 
   const bool is_gaia = gaia::HasGaiaSchemeHostPort(url);
   if (is_gaia) {
-    base::UmaHistogramEnumeration(
-        "Signin.GaiaPageVisited",
-        DetermineGaiaPageForMetrics(url.path_piece()));
+    base::UmaHistogramEnumeration("Signin.GaiaPageVisited",
+                                  DetermineGaiaPageForMetrics(url.path()));
   }
 
   if (delegate_ && show_consistency_web_signin_ && is_gaia) {

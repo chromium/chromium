@@ -41,8 +41,6 @@ static_assert(browsing_topics::SemanticTree::kNumTopics < 1000,
 
 }  // namespace
 
-const char kBrowsingTopicsRequestHeaderKey[] = "Sec-Browsing-Topics";
-
 std::string DeriveTopicsHeaderValue(
     const std::vector<blink::mojom::EpochTopicPtr>& topics,
     int num_versions_in_epochs) {

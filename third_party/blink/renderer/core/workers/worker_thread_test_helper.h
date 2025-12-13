@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/synchronization/waitable_event.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
@@ -32,17 +34,13 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
-
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
 
 namespace blink {
 
@@ -58,12 +56,12 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
     ReadyToRunWorkerScript();
     GetBrowserInterfaceBroker().SetBinderForTesting(
         ukm::mojom::UkmRecorderFactory::Name_,
-        WTF::BindRepeating(
+        BindRepeating(
             [](ScopedFakeUkmRecorder* interface,
                mojo::ScopedMessagePipeHandle handle) {
               interface->SetHandle(std::move(handle));
             },
-            WTF::Unretained(&scoped_fake_ukm_recorder_)));
+            Unretained(&scoped_fake_ukm_recorder_)));
   }
 
   ~FakeWorkerGlobalScope() override {

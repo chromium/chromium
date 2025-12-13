@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.browserservices.ui.view;
 
 import android.content.res.Resources;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -14,6 +13,8 @@ import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+
+import java.util.function.Supplier;
 
 /**
  * Implements the new "Running in Chrome" Snackbar behavior, taking over from {@link
@@ -61,6 +62,6 @@ public class DisclosureSnackbar extends DisclosureInfobar {
         return Snackbar.make(title, controller, type, code)
                 .setAction(action, null)
                 .setDuration(DURATION_MS)
-                .setSingleLine(false);
+                .setDefaultLines(false);
     }
 }

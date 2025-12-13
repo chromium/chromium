@@ -30,7 +30,6 @@
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -286,6 +285,10 @@ class AppBannerManager : public content::WebContentsObserver,
   // begun.
   virtual void ResetCurrentPageData() = 0;
 
+  // Called when the the installable web app check is done and the status
+  // changed.
+  virtual void InstallableWebAppStatusUpdate() = 0;
+
   // Virtual so the TestAppBannerManagerDesktop can reset its installability
   // state when called.
   virtual void RecheckInstallabilityForLoadedPage();
@@ -394,6 +397,8 @@ class AppBannerManager : public content::WebContentsObserver,
   void SendBannerPromptRequest();
 
   // content::WebContentsObserver overrides.
+  // TODO(https://crbug.com/452053908): Use PageManifestManager with
+  // PrimaryPageChanged instead of this and DidUpdateWebManifestURL.
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void DidUpdateWebManifestURL(content::RenderFrameHost* target_frame,
                                const GURL& manifest_url) override;

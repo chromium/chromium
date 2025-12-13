@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+java_binary("location_rewriter") {
+  main_class = "org.chromium.build.location_rewriter.LocationRewriter"
+  deps = [ ":location_rewriter_java" ]
+  wrapper_script_name = "helper/location_rewriter"
+}
+
+java_library("location_rewriter_java") {
+  visibility = [ ":*" ]
+  jacoco_never_instrument = true
+  enable_errorprone = false
+
+  sources = [
+    "src/org/chromium/build/location_rewriter/LocationClass.java",
+    "src/org/chromium/build/location_rewriter/LocationRewriter.java",
+    "src/org/chromium/build/location_rewriter/LocationRewriterImpl.java",
+    "src/org/chromium/build/location_rewriter/LocationRewriterTargetMethods.java",
+    "src/org/chromium/build/location_rewriter/VisitableMethod.java",
+  ]
+  deps = [
+    "//third_party/android_deps:org_ow2_asm_asm_commons_java",
+    "//third_party/android_deps:org_ow2_asm_asm_java",
+  ]
+}

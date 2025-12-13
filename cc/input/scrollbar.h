@@ -6,6 +6,7 @@
 #define CC_INPUT_SCROLLBAR_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/paint/paint_canvas.h"
 #include "ui/gfx/geometry/point.h"
@@ -54,6 +55,7 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual bool SupportsDragSnapBack() const = 0;
   virtual bool JumpOnTrackClick() const = 0;
   virtual bool IsOpaque() const = 0;
+  virtual int MinimumThumbLength() const = 0;
 
   // The following rects are all relative to the scrollbar's origin.
   // The location of ThumbRect reflects scroll offset, but cc will ignore it

@@ -141,7 +141,7 @@ component("aura") {
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime",
     "//ui/base/metadata",
-    "//ui/base/mojom:mojom",
+    "//ui/base/mojom",
     "//ui/base/mojom:ui_base_types",
     "//ui/compositor",
   ]
@@ -199,6 +199,8 @@ static_library("test_support") {
     "test/test_focus_client.h",
     "test/test_screen.cc",
     "test/test_screen.h",
+    "test/test_window_builder.cc",
+    "test/test_window_builder.h",
     "test/test_window_delegate.cc",
     "test/test_window_delegate.h",
     "test/test_window_parenting_client.cc",
@@ -241,6 +243,7 @@ static_library("test_support") {
     "//ui/events:events_base",
     "//ui/events:test_support",
     "//ui/gfx",
+    "//ui/gfx:animation_scale",
     "//ui/gfx/geometry",
     "//ui/platform_window",
     "//ui/wm",
@@ -335,6 +338,7 @@ test("aura_unittests") {
     "//ui/gl:test_support",
     "//ui/platform_window",
     "//ui/platform_window/stub",
+    "//ui/resources:ui_test_pak",
     "//ui/wm",
   ]
 
@@ -349,5 +353,8 @@ test("aura_unittests") {
     ]
   }
 
-  data_deps = [ "//third_party/angle:includes" ]
+  data_deps = [
+    "//third_party/angle:includes",
+    "//ui/resources:ui_test_pak_data",
+  ]
 }

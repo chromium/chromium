@@ -264,7 +264,9 @@ fn librustc_parenthesize(mut librustc_expr: Box<ast::Expr>) -> Box<ast::Expr> {
                     fields,
                     rest,
                 } = expr.deref_mut();
-                vis.visit_qself(qself);
+                if let Some(qself) = qself {
+                    vis.visit_qself(qself);
+                }
                 vis.visit_path(path);
                 fields.flat_map_in_place(|field| flat_map_field(field, vis));
                 if let StructRest::Base(rest) = rest {
@@ -383,7 +385,9 @@ fn librustc_parenthesize(mut librustc_expr: Box<ast::Expr>) -> Box<ast::Expr> {
 
 fn syn_parenthesize(syn_expr: syn::Expr) -> syn::Expr {
     use syn::fold::{fold_expr, fold_generic_argument, Fold};
-    use syn::{token, BinOp, Expr, ExprParen, GenericArgument, MetaNameValue, Pat, Stmt, Type};
+    use syn::{
+        token, BinOp, Expr, ExprParen, GenericArgument, Lit, MetaNameValue, Pat, Stmt, Type,
+    };
 
     struct FullyParenthesize;
 
@@ -460,6 +464,13 @@ fn syn_parenthesize(syn_expr: syn::Expr) -> syn::Expr {
 
         fn fold_type(&mut self, ty: Type) -> Type {
             ty
+        }
+
+        fn fold_lit(&mut self, lit: Lit) -> Lit {
+            if let Lit::Verbatim(lit) = &lit {
+                panic!("unexpected verbatim literal: {lit}");
+            }
+            lit
         }
     }
 

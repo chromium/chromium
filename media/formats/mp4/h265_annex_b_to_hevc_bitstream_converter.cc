@@ -4,6 +4,7 @@
 
 #include "media/formats/mp4/h265_annex_b_to_hevc_bitstream_converter.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
@@ -56,7 +57,7 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
   //     what configuration (profile and level) is active now.
   // A configure change will only happen on IDR frame. It is expected the
   // encoder output stream repeats VPS/SPS/PPS on IDR frames.
-  parser_.SetStream(input.data(), input.size());
+  parser_.SetStream(input);
   while ((result = parser_.AdvanceToNextNALU(&nalu)) != H265Parser::kEOStream) {
     if (result == H265Parser::kUnsupportedStream)
       return MP4Status::Codes::kUnsupportedStream;
@@ -77,10 +78,8 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
         if (result != H265Parser::kOk)
           return MP4Status::Codes::kInvalidSPS;
 
-        id2sps_.insert_or_assign(
-            sps_id,
-            blob(nalu.data.get(),
-                 (nalu.data + base::checked_cast<size_t>(nalu.size)).get()));
+        id2sps_.insert_or_assign(sps_id,
+                                 blob(nalu.data.begin(), nalu.data.end()));
         sps_to_include.insert(sps_id);
         if (auto* sps = parser_.GetSPS(sps_id)) {
           vps_to_include.insert(sps->sps_video_parameter_set_id);
@@ -98,10 +97,8 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
         if (result != H265Parser::kOk)
           return MP4Status::Codes::kInvalidVPS;
 
-        id2vps_.insert_or_assign(
-            vps_id,
-            blob(nalu.data.get(),
-                 (nalu.data + base::checked_cast<size_t>(nalu.size)).get()));
+        id2vps_.insert_or_assign(vps_id,
+                                 blob(nalu.data.begin(), nalu.data.end()));
         vps_to_include.insert(vps_id);
         config_changed = true;
         break;
@@ -116,10 +113,8 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
         if (result != H265Parser::kOk)
           return MP4Status::Codes::kInvalidPPS;
 
-        id2pps_.insert_or_assign(
-            pps_id,
-            blob(nalu.data.get(),
-                 (nalu.data + base::checked_cast<size_t>(nalu.size)).get()));
+        id2pps_.insert_or_assign(pps_id,
+                                 blob(nalu.data.begin(), nalu.data.end()));
         pps_to_include.insert(pps_id);
         if (auto* pps = parser_.GetPPS(pps_id))
           sps_to_include.insert(pps->pps_seq_parameter_set_id);
@@ -186,11 +181,8 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
       }
         [[fallthrough]];
       default:
-        // TODO(crbug.com/40284755): The `nalu.data` should hold a span instead
-        // of a pointer.
-        slice_units.emplace_back(nalu.data.get(),
-                                 base::checked_cast<size_t>(nalu.size));
-        data_size += config_.lengthSizeMinusOne + 1 + nalu.size;
+        slice_units.emplace_back(nalu.data);
+        data_size += config_.lengthSizeMinusOne + 1 + nalu.data.size();
         break;
     }
   }

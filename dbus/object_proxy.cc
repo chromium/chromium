@@ -211,24 +211,7 @@ void ObjectProxy::CallMethodWithErrorResponse(
   bus_->GetDBusTaskRunner()->PostTask(FROM_HERE, std::move(task));
 }
 
-void ObjectProxy::CallMethodWithErrorCallback(MethodCall* method_call,
-                                              int timeout_ms,
-                                              ResponseCallback callback,
-                                              ErrorCallback error_callback) {
-  auto internal_callback = base::BindOnce(
-      [](ResponseCallback callback, ErrorCallback error_callback,
-         Response* response, ErrorResponse* error_response) {
-        if (response) {
-          std::move(callback).Run(response);
-        } else {
-          std::move(error_callback).Run(error_response);
-        }
-      },
-      std::move(callback), std::move(error_callback));
 
-  CallMethodWithErrorResponse(method_call, timeout_ms,
-                              std::move(internal_callback));
-}
 
 void ObjectProxy::ConnectToSignal(const std::string& interface_name,
                                   const std::string& signal_name,

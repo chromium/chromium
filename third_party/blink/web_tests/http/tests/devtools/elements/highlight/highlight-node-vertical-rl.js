@@ -44,7 +44,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   await dumpHighlight('span');
 
   let textNode = await ElementsTestRunner.findNodePromise(node => node.nodeValue() == 'ABCDEFG');
-  let result = await TestRunner.OverlayAgent.getHighlightObjectForTest(textNode.id);
+  let {highlight: result} = await TestRunner.OverlayAgent.invoke_getHighlightObjectForTest({nodeId: textNode.id});
   TestRunner.addResult('TEXT' + JSON.stringify(result, null, 2));
   TestRunner.completeTest();
 })();

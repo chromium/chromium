@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Process;
@@ -12,9 +14,10 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
@@ -39,9 +42,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** A {@link TabObserver} that also handles custom tabs specific logging and messaging. */
+@NullMarked
 public class CustomTabObserver extends EmptyTabObserver {
-    private final CustomTabsConnection mCustomTabsConnection;
-    private final SessionHolder<?> mSession;
+    private final @Nullable CustomTabsConnection mCustomTabsConnection;
+    private final @Nullable SessionHolder<?> mSession;
 
     private final NavigationInfoCaptureTrigger mNavigationInfoCaptureTrigger =
             new NavigationInfoCaptureTrigger(this::captureNavigationInfo);
@@ -58,7 +62,7 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     // true/false if the mayLaunchUrl API was used and the speculation was used/not used. null if
     // the API was not used.
-    @Nullable private Boolean mUsedHiddenTabSpeculation;
+    private @Nullable Boolean mUsedHiddenTabSpeculation;
 
     // The time of the first navigation commit in the most recent Custom Tab launch.
     private long mFirstCommitRealtimeMillis;
@@ -84,7 +88,7 @@ public class CustomTabObserver extends EmptyTabObserver {
     // Tracks what point in the first navigation after a Custom Tab launch we're in.
     private @State int mCurrentState;
 
-    private PageLoadMetricsObserver mPageLoadMetricsObserver;
+    private @Nullable PageLoadMetricsObserver mPageLoadMetricsObserver;
 
     private class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
         @Override
@@ -106,7 +110,7 @@ public class CustomTabObserver extends EmptyTabObserver {
                 long largestContentfulPaintSize) {
             recordLargestContentfulPaint(
                     webContents, navigationStartMicros / 1000 + largestContentfulPaintMs);
-            PageLoadMetrics.removeObserver(mPageLoadMetricsObserver);
+            PageLoadMetrics.removeObserver(assertNonNull(mPageLoadMetricsObserver));
             mPageLoadMetricsObserver = null;
         }
 
@@ -147,7 +151,7 @@ public class CustomTabObserver extends EmptyTabObserver {
         }
     }
 
-    public CustomTabObserver(boolean openedByChrome, SessionHolder<?> token) {
+    public CustomTabObserver(boolean openedByChrome, @Nullable SessionHolder<?> token) {
         mCustomTabsConnection = openedByChrome ? null : CustomTabsConnection.getInstance();
         mSession = token;
         resetPageLoadTracking();
@@ -165,8 +169,8 @@ public class CustomTabObserver extends EmptyTabObserver {
      * load.
      */
     public void trackNextPageLoadForLaunch(Tab tab, Intent sourceIntent) {
-        mIntentReceivedRealtimeMillis = BrowserIntentUtils.getStartupRealtimeMillis(sourceIntent);
-        mIntentReceivedUptimeMillis = BrowserIntentUtils.getStartupUptimeMillis(sourceIntent);
+        mIntentReceivedRealtimeMillis = BrowserIntentUtils.getLaunchedRealtimeMillis(sourceIntent);
+        mIntentReceivedUptimeMillis = BrowserIntentUtils.getLaunchedUptimeMillis(sourceIntent);
         if (tab.isLoading()) {
             mCurrentState = State.WAITING_LOAD_FINISH;
         } else {
@@ -185,9 +189,9 @@ public class CustomTabObserver extends EmptyTabObserver {
         if (mIntentReceivedRealtimeMillis != 0) return;
         mUsedHiddenTabSpeculation = usedSpeculation;
         mLaunchedForSpeculationRealtimeMillis =
-                BrowserIntentUtils.getStartupRealtimeMillis(sourceIntent);
+                BrowserIntentUtils.getLaunchedRealtimeMillis(sourceIntent);
         mLaunchedForSpeculationUptimeMillis =
-                BrowserIntentUtils.getStartupUptimeMillis(sourceIntent);
+                BrowserIntentUtils.getLaunchedUptimeMillis(sourceIntent);
         trackNextLCP();
         if (usedSpeculation && hasCommitted) {
             recordFirstCommitNavigation(webContents);
@@ -277,7 +281,7 @@ public class CustomTabObserver extends EmptyTabObserver {
         mFirstCommitRealtimeMillis = SystemClock.elapsedRealtime();
         mFirstCommitUptimeMillis = SystemClock.uptimeMillis();
 
-        recordFirstCommitNavigation(tab.getWebContents());
+        recordFirstCommitNavigation(assertNonNull(tab.getWebContents()));
     }
 
     private void recordFirstCommitNavigation(WebContents webContents) {

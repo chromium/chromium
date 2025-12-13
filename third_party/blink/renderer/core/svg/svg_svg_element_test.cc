@@ -37,14 +37,14 @@ TEST_F(SVGSVGElementTest, ViewSpecSetAfterFirstEmbeddeeLayout) {
   Document& document = GetDocument();
   Element* object_element = document.body()->firstElementChild();
   const LayoutBox* layout_box = object_element->GetLayoutBox();
-  EXPECT_EQ(layout_box->Size(), PhysicalSize(200, 100));
+  EXPECT_EQ(layout_box->StitchedSize(), PhysicalSize(200, 100));
 
   object_subresource.Finish();
 
   ASSERT_TRUE(Compositor().NeedsBeginFrame());
   Compositor().BeginFrame();
 
-  EXPECT_EQ(layout_box->Size(), PhysicalSize(100, 100));
+  EXPECT_EQ(layout_box->StitchedSize(), PhysicalSize(100, 100));
 }
 
 }  // namespace blink

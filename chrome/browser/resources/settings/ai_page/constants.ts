@@ -68,4 +68,8 @@ export enum AiPageActions {
       'Settings.AiPage.GlicShortcuts.LocationToggleLearnMoreClicked',
   GLIC_SHORTCUTS_TAB_ACCESS_TOGGLE_LEARN_MORE_CLICKED =
       'Settings.AiPage.GlicShortcuts.TabAccessToggleLearnMoreClicked',
+  GLIC_SHORTCUTS_DEFAULT_TAB_ACCESS_TOGGLE_LEARN_MORE_CLICKED =
+      'Settings.AiPage.GlicShortcuts.DefaultTabAccessToggleLearnMoreClicked',
+  GLIC_SHORTCUTS_WEB_ACTUATION_TOGGLE_LEARN_MORE_CLICKED =
+      'Settings.AiPage.GlicShortcuts.WebActuationToggleLearnMoreClicked',
 }

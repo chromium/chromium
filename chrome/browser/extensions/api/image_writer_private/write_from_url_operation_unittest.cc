@@ -207,8 +207,8 @@ TEST_F(ImageWriterWriteFromUrlOperationTest, DownloadFile) {
 TEST_F(ImageWriterWriteFromUrlOperationTest, VerifyFile) {
   auto buffer = base::HeapArray<uint8_t>::Uninit(kTestFileSize);
   base::ReadFile(test_utils_.GetImagePath(), buffer);
-  std::string expected_hash = base::ToLowerASCII(
-      base::HexEncode(crypto::obsolete::Md5::HashForTesting(buffer.as_span())));
+  std::string expected_hash = base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(buffer.as_span()));
 
   scoped_refptr<WriteFromUrlOperationForTest> operation =
       CreateOperation(GURL(""), expected_hash);

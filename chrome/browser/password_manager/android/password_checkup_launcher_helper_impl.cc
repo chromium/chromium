@@ -12,14 +12,6 @@
 PasswordCheckupLauncherHelperImpl::~PasswordCheckupLauncherHelperImpl() =
     default;
 
-void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnlineWithWindowAndroid(
-    JNIEnv* env,
-    std::string& checkupUrl,
-    const base::android::JavaRef<jobject>& windowAndroid) {
-  Java_PasswordCheckupLauncher_launchCheckupOnlineWithWindowAndroid(
-      env, checkupUrl, windowAndroid);
-}
-
 void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnDevice(
     JNIEnv* env,
     Profile* profile,
@@ -35,14 +27,6 @@ void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnDevice(
       account_email.empty()
           ? nullptr
           : base::android::ConvertUTF8ToJavaString(env, account_email));
-}
-
-void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnlineWithActivity(
-    JNIEnv* env,
-    std::string& checkupUrl,
-    const base::android::JavaRef<jobject>& activity) {
-  Java_PasswordCheckupLauncher_launchCheckupOnlineWithActivity(env, checkupUrl,
-                                                               activity);
 }
 
 void PasswordCheckupLauncherHelperImpl::LaunchSafetyCheck(
@@ -64,3 +48,5 @@ void PasswordCheckupLauncherHelperImpl::LaunchSafetyHub(
   Java_PasswordCheckupLauncher_launchSafetyHub(env,
                                                windowAndroid->GetJavaObject());
 }
+
+DEFINE_JNI(PasswordCheckupLauncher)

@@ -459,6 +459,9 @@ below:
         Please lengthen this text to <ph name="MIN_CHARACTERS">$2<ex>101</ex></ph> characters or more (you are currently using <ph name="CURRENT_LENGTH">$1<ex>100</ex></ph> characters).
       </message>
 
+      <message name="IDS_MEDIA_SESSION_DATA_SOURCE" desc="The name of the media session source if the media is from a data URL.">
+        Data URL
+      </message>
       <message name="IDS_MEDIA_SESSION_FILE_SOURCE" desc="The name of the media session source if the media is a local file.">
         File on your device
       </message>

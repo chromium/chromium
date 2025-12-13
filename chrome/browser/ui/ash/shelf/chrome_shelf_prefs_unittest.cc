@@ -33,7 +33,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
@@ -489,8 +488,6 @@ TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_OtherChromeGemini) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 TEST_F(ChromeShelfPrefsTest, PinMallSystemAppWhenInstalled) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   InstallMallApp();
 
   std::vector<std::string> expected_order = {
@@ -507,8 +504,6 @@ TEST_F(ChromeShelfPrefsTest, PinMallSystemAppWhenInstalled) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallSystemAppOnceOnly) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   InstallMallApp();
 
   EXPECT_THAT(GetPinnedAppIds(), testing::Contains(ash::kMallSystemAppId));
@@ -521,8 +516,6 @@ TEST_F(ChromeShelfPrefsTest, PinMallSystemAppOnceOnly) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeOther) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
       ash::kGmailAppId,
@@ -534,8 +527,6 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeOther) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeGeminiOther) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
       ash::kGeminiAppId,
@@ -548,8 +539,6 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeGeminiOther) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeNotebookLmOther) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
       ash::kNotebookLmAppId,
@@ -562,8 +551,6 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeNotebookLmOther) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeGeminiNotebookLmOther) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
       ash::kGeminiAppId,
@@ -577,8 +564,6 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeGeminiNotebookLmOther) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeNotebookLmGeminiOther) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
       ash::kNotebookLmAppId,
@@ -592,8 +577,6 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeNotebookLmGeminiOther) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_GeminiChromeOther) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   ResetShelfToOrder({
       ash::kGeminiAppId,
       app_constants::kChromeAppId,
@@ -606,8 +589,6 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_GeminiChromeOther) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_GeminiNotebookLmChromeOther) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   ResetShelfToOrder({
       ash::kGeminiAppId,
       ash::kNotebookLmAppId,
@@ -621,8 +602,6 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_GeminiNotebookLmChromeOther) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_Chrome) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
   });
@@ -633,8 +612,6 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_Chrome) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeGemini) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
       ash::kGeminiAppId,
@@ -646,8 +623,6 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeGemini) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeOtherGemini) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
       ash::kGmailAppId,
@@ -660,8 +635,6 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeOtherGemini) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_OtherChromeGemini) {
-  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
-
   ResetShelfToOrder({
       ash::kGmailAppId,
       app_constants::kChromeAppId,

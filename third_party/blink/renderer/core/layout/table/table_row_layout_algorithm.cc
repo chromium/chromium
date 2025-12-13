@@ -265,7 +265,6 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
 
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<TableRowBreakTokenData>(
-            container_builder_.GetBreakTokenData(),
             previous_consumed_row_block_size +
                 container_builder_.FragmentBlockSize()));
   }

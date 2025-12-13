@@ -8,29 +8,28 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/reading_list/ui_bundled/reading_list_table_view_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_options_item.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/inline_promo_item.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/sync_switch_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_line_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_tabs_search_suggested_history_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -43,6 +42,7 @@
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #import "url/gurl.h"
@@ -62,28 +62,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeTextHeader,
   ItemTypeTextFooter,
   ItemTypeTextButton,
-  ItemTypeURLNoMetadata,
+  ItemTypeURL,
   ItemTypeTextAccessoryImage,
   ItemTypeSearchHistorySuggestedItem,
   ItemTypeTextAccessoryNoImage,
   ItemTypeTextEditItem,
   ItemTypeTextMultiLineEditItem,
-  ItemTypeURLWithActivityIndicator,
-  ItemTypeURLWithActivityIndicatorStopped,
-  ItemTypeURLWithTimestamp,
   ItemTypeURLWithSize,
-  ItemTypeURLWithSupplementalText,
   ItemTypeURLWithThirdRowText,
-  ItemTypeURLWithMetadata,
-  ItemTypeURLWithMetadataImage,
-  ItemTypeURLWithBadgeImage,
+  ItemTypeReadingList,
   ItemTypeTextSettingsDetail,
   ItemTypeTableViewWithBlueDot,
   ItemTypeLinkFooter,
   ItemAddressBarOptions,
   ItemTypeDetailText,
   ItemTypeMultiDetailText,
-  ItemTypeAccountSignInItem,
   ItemTypeTableViewInfoButton,
   ItemTypeTableViewInfoButtonWithDetailText,
   ItemTypeTableViewInfoButtonWithImage,
@@ -103,10 +96,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 }  // namespace
 
-@implementation TableCellCatalogViewController
+@implementation TableCellCatalogViewController {
+  raw_ptr<Browser> _browser;
+  raw_ptr<FaviconLoader> _faviconLoader;
+}
 
-- (instancetype)init {
-  return [super initWithStyle:ChromeTableViewStyle()];
+- (instancetype)initWithBrowser:(Browser*)browser {
+  self = [super initWithStyle:ChromeTableViewStyle()];
+  if (self) {
+    _browser = browser;
+    _faviconLoader =
+        IOSChromeFaviconLoaderFactory::GetForProfile(browser->GetProfile());
+  }
+  return self;
 }
 
 - (void)viewDidLoad {
@@ -143,7 +145,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   symbolItem.iconImage = DefaultSymbolWithPointSize(kSettingsFilledSymbol, 18);
   symbolItem.iconBackgroundColor = UIColorFromRGB(0xFBBC04);
   symbolItem.iconTintColor = UIColor.whiteColor;
-  symbolItem.iconCornerRadius = 7;
   [model addItem:symbolItem toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewDetailIconItem* tableViewBlueDotItem =
@@ -156,10 +157,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:tableViewBlueDotItem
       toSectionWithIdentifier:SectionIdentifierText];
 
+  TableViewDetailIconItem* tableViewNewBadgeItem =
+      [[TableViewDetailIconItem alloc]
+          initWithType:ItemTypeTableViewWithBlueDot];
+  tableViewNewBadgeItem.badgeType = BadgeType::kNew;
+  tableViewNewBadgeItem.text = @"I have a new badge!";
+  tableViewNewBadgeItem.iconImage =
+      DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
+  [model addItem:tableViewNewBadgeItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
   TableViewTextItem* textItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeText];
   textItem.text = @"Simple Text Cell";
-  textItem.textAlignment = NSTextAlignmentCenter;
   textItem.textColor = [UIColor colorNamed:kTextPrimaryColor];
   [model addItem:textItem toSectionWithIdentifier:SectionIdentifierText];
 
@@ -171,15 +181,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewImageItem* textImageItem =
       [[TableViewImageItem alloc] initWithType:ItemTypeTextAccessoryImage];
   textImageItem.title = @"Image Item with History Image";
+  textImageItem.detailText = @"and with a very very very long subtitle.";
   textImageItem.image =
       DefaultSymbolWithPointSize(kHistorySymbol, kSymbolActionPointSize);
   [model addItem:textImageItem toSectionWithIdentifier:SectionIdentifierText];
-
-  TableViewTabsSearchSuggestedHistoryItem* searchHistorySuggestedItem =
-      [[TableViewTabsSearchSuggestedHistoryItem alloc]
-          initWithType:ItemTypeSearchHistorySuggestedItem];
-  [model addItem:searchHistorySuggestedItem
-      toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewImageItem* textImageItem2 =
       [[TableViewImageItem alloc] initWithType:ItemTypeTextAccessoryImage];
@@ -209,39 +214,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewTextButtonItem* textActionButtonItem =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
-  textActionButtonItem.text = @"Hello, you should do something. Also as you "
-                              @"can see this text is centered.";
   textActionButtonItem.buttonText = @"Do something";
   [model addItem:textActionButtonItem
       toSectionWithIdentifier:SectionIdentifierText];
 
-  TableViewTextButtonItem* textActionButtonAlignmentItem =
-      [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
-  textActionButtonAlignmentItem.text =
-      @"Hello, you should do something. Also as you can see this text is using "
-      @"NSTextAlignmentNatural";
-  textActionButtonAlignmentItem.textAlignment = NSTextAlignmentNatural;
-  textActionButtonAlignmentItem.buttonText = @"Do something";
-  [model addItem:textActionButtonAlignmentItem
-      toSectionWithIdentifier:SectionIdentifierText];
-
   TableViewTextButtonItem* textActionButtoExpandedItem =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
-  textActionButtoExpandedItem.text = @"Hello, you should do something.";
   textActionButtoExpandedItem.disableButtonIntrinsicWidth = YES;
   textActionButtoExpandedItem.buttonText = @"Expanded Button";
   [model addItem:textActionButtoExpandedItem
       toSectionWithIdentifier:SectionIdentifierText];
 
-  TableViewTextButtonItem* textActionButtonNoTextItem =
-      [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
-  textActionButtonNoTextItem.buttonText = @"Do something, no Top Text";
-  [model addItem:textActionButtonNoTextItem
-      toSectionWithIdentifier:SectionIdentifierText];
-
   TableViewTextButtonItem* textActionButtonColorItem =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
-  textActionButtonColorItem.text = @"Hello, you should do something.";
   textActionButtonColorItem.disableButtonIntrinsicWidth = YES;
   textActionButtonColorItem.buttonBackgroundColor = [UIColor lightGrayColor];
   textActionButtonColorItem.buttonTextColor =
@@ -377,6 +362,48 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   tableViewMultiDetailTextItem = [[TableViewMultiDetailTextItem alloc]
       initWithType:ItemTypeMultiDetailText];
+  tableViewMultiDetailTextItem.text =
+      @"Title label is very very very very very very very long";
+  tableViewMultiDetailTextItem.leadingDetailText = @"Leading Detail Text";
+  tableViewMultiDetailTextItem.trailingDetailText =
+      @"Right label is very very very very very very very long";
+  tableViewMultiDetailTextItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  [model addItem:tableViewMultiDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  tableViewMultiDetailTextItem = [[TableViewMultiDetailTextItem alloc]
+      initWithType:ItemTypeMultiDetailText];
+  tableViewMultiDetailTextItem.text = @"L";
+  tableViewMultiDetailTextItem.leadingDetailText = @"Leading Detail Text";
+  tableViewMultiDetailTextItem.trailingDetailText =
+      @"Right label is very very very very very very very long";
+  tableViewMultiDetailTextItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  [model addItem:tableViewMultiDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  tableViewMultiDetailTextItem = [[TableViewMultiDetailTextItem alloc]
+      initWithType:ItemTypeMultiDetailText];
+  tableViewMultiDetailTextItem.text = @"L";
+  tableViewMultiDetailTextItem.trailingDetailText =
+      @"Right label is very very very very very very very long";
+  [model addItem:tableViewMultiDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  tableViewMultiDetailTextItem = [[TableViewMultiDetailTextItem alloc]
+      initWithType:ItemTypeMultiDetailText];
+  tableViewMultiDetailTextItem.text =
+      @"Title label is very very very very very very very long ";
+  tableViewMultiDetailTextItem.leadingDetailText = @"Leading Detail Text";
+  tableViewMultiDetailTextItem.trailingDetailText = @"R";
+  tableViewMultiDetailTextItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  [model addItem:tableViewMultiDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  tableViewMultiDetailTextItem = [[TableViewMultiDetailTextItem alloc]
+      initWithType:ItemTypeMultiDetailText];
   tableViewMultiDetailTextItem.text = @"Main Text";
   tableViewMultiDetailTextItem.leadingDetailText = @"Leading Detail Text";
   tableViewMultiDetailTextItem.trailingDetailText = @"Trailing Detail Text";
@@ -416,12 +443,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model setHeader:settingsHeader
       forSectionWithIdentifier:SectionIdentifierSettings];
 
-  AccountSignInItem* accountSignInItem =
-      [[AccountSignInItem alloc] initWithType:ItemTypeAccountSignInItem];
-  accountSignInItem.detailText = @"Get cool stuff on all your devices";
-  [model addItem:accountSignInItem
-      toSectionWithIdentifier:SectionIdentifierSettings];
-
   SyncSwitchItem* syncSwitchItem =
       [[SyncSwitchItem alloc] initWithType:ItemTypeSyncSwitch];
   syncSwitchItem.text = @"This is a sync switch item";
@@ -436,6 +457,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
           initWithType:ItemTypeTableViewInfoButton];
   tableViewInfoButtonItem.text = @"Info button item";
   tableViewInfoButtonItem.statusText = @"Status";
+  tableViewInfoButtonItem.target = self;
+  tableViewInfoButtonItem.selector = @selector(didTapManagedUIInfoButton:);
   [model addItem:tableViewInfoButtonItem
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -443,8 +466,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewInfoButtonItem alloc]
           initWithType:ItemTypeTableViewInfoButtonWithDetailText];
   tableViewInfoButtonItemWithDetailText.text = @"Info button item";
-  tableViewInfoButtonItemWithDetailText.detailText = @"Detail text";
+  tableViewInfoButtonItemWithDetailText.detailText =
+      @"Button is not activated by VoiceOver";
   tableViewInfoButtonItemWithDetailText.statusText = @"Status";
+  tableViewInfoButtonItemWithDetailText.target = self;
+  tableViewInfoButtonItemWithDetailText.selector =
+      @selector(didTapManagedUIInfoButton:);
+  tableViewInfoButtonItemWithDetailText.accessibilityActivationPointOnButton =
+      NO;
   [model addItem:tableViewInfoButtonItemWithDetailText
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -455,6 +484,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   tableViewInfoButtonItemWithLeadingImage.statusText = @"Status";
   tableViewInfoButtonItemWithLeadingImage.iconImage =
       DefaultSettingsRootSymbol(kDiscoverSymbol);
+  tableViewInfoButtonItemWithLeadingImage.target = self;
+  tableViewInfoButtonItemWithLeadingImage.selector =
+      @selector(didTapManagedUIInfoButton:);
   [model addItem:tableViewInfoButtonItemWithLeadingImage
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -464,8 +496,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   imageDetailTextItem.text = @"This is an error description about sync";
   imageDetailTextItem.detailText =
       @"This is more detail about the sync error description";
-  imageDetailTextItem.image = [[ChromeIcon infoIcon]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  imageDetailTextItem.image = DefaultSymbolTemplateWithPointSize(
+      kInfoCircleSymbol, kSymbolActionPointSize);
   [model addItem:imageDetailTextItem
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -499,8 +531,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   checkFinishedWithLeadingImage.detailText =
       @"This is very long description of check item. Another line of "
       @"description.";
-  checkFinishedWithLeadingImage.leadingIcon = [[ChromeIcon infoIcon]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  checkFinishedWithLeadingImage.leadingIcon =
+      DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
+                                         kSymbolActionPointSize);
   checkFinishedWithLeadingImage.enabled = YES;
   checkFinishedWithLeadingImage.indicatorHidden = YES;
   checkFinishedWithLeadingImage.trailingImage =
@@ -524,8 +557,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   checkDisabledWithLeadingImage.detailText =
       @"This is very long description of check item. Another line of "
       @"description.";
-  checkDisabledWithLeadingImage.leadingIcon = [[ChromeIcon infoIcon]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  checkDisabledWithLeadingImage.leadingIcon =
+      DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
+                                         kSymbolActionPointSize);
   checkDisabledWithLeadingImage.enabled = NO;
   [model addItem:checkDisabledWithLeadingImage
       toSectionWithIdentifier:SectionIdentifierSettings];
@@ -539,6 +573,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   checkWithInfoButton.enabled = YES;
   checkWithInfoButton.indicatorHidden = YES;
   checkWithInfoButton.infoButtonHidden = NO;
+  checkWithInfoButton.infoButtonTarget = self;
+  checkWithInfoButton.infoButtonSelector = @selector(didTapCheckInfoButton:);
   [model addItem:checkWithInfoButton
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -642,53 +678,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
       toSectionWithIdentifier:SectionIdentifierAccount];
 
   // SectionIdentifierURL.
-  TableViewURLItem* item =
-      [[TableViewURLItem alloc] initWithType:ItemTypeURLNoMetadata];
+  TableViewURLItem* item = [[TableViewURLItem alloc] initWithType:ItemTypeURL];
   item.title = @"Google Design";
   item.URL = [[CrURL alloc] initWithGURL:GURL("https://design.google.com")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
-  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLNoMetadata];
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURL];
   item.URL = [[CrURL alloc] initWithGURL:GURL("https://notitle.google.com")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
-  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithTimestamp];
-  item.title = @"Google";
-  item.URL = [[CrURL alloc] initWithGURL:GURL("https://www.google.com")];
-  item.metadata = @"3:42 PM";
-  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
-
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithSize];
-  item.title = @"World Series 2017: Houston Astros Defeat Someone Else";
+  item.title = @"World Series 2017: Houston Astros Defeat Someone Else and "
+               @"Also Win Because They Won.";
   item.URL = [[CrURL alloc] initWithGURL:GURL("https://m.bbc.com")];
-  item.metadata = @"176 KB";
-  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
-
-  item =
-      [[TableViewURLItem alloc] initWithType:ItemTypeURLWithSupplementalText];
-  item.title = @"Chrome | Google Blog";
-  item.URL =
-      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
-  item.supplementalURLText = @"Read 4 days ago";
-  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
-
-  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithBadgeImage];
-  item.title = @"Photos - Google Photos";
-  item.URL = [[CrURL alloc] initWithGURL:GURL("https://photos.google.com/")];
-  item.badgeImage =
-      DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol, 13);
-  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
-
-  item =
-      [[TableViewURLItem alloc] initWithType:ItemTypeURLWithActivityIndicator];
-  item.title = @"Sent Request to Server";
-  item.URL = [[CrURL alloc] initWithGURL:GURL("https://started.spinner.com/")];
-  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
-
-  item = [[TableViewURLItem alloc]
-      initWithType:ItemTypeURLWithActivityIndicatorStopped];
-  item.title = @"Received Response from Server";
-  item.URL = [[CrURL alloc] initWithGURL:GURL("https://stopped.spinner.com/")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithThirdRowText];
@@ -698,30 +700,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.thirdRowText = @"Unavailable";
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
-  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithThirdRowText];
-  item.title = @"Web Channel with 3rd Row Red Text";
-  item.URL =
-      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
-  item.thirdRowText = @"Unavailable";
-  item.thirdRowTextColor = UIColor.redColor;
-  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+  ReadingListTableViewItem* readingListItem =
+      [[ReadingListTableViewItem alloc] initWithType:ItemTypeReadingList];
+  readingListItem.title = @"Reading List item";
+  readingListItem.entryURL = GURL("https://lemonde.fr/my-article");
+  readingListItem.distillationState = ReadingListUIDistillationStatusSuccess;
+  readingListItem.distillationDateText = @"1min ago";
+  [model addItem:readingListItem toSectionWithIdentifier:SectionIdentifierURL];
 
-  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithMetadata];
-  item.title = @"Web Channel with metadata image and label";
-  item.URL =
-      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
-  item.metadata = @"176 KB";
-  item.metadataImage = CustomSymbolTemplateWithPointSize(kCloudSlashSymbol, 18);
-  item.metadataImageColor = [UIColor colorNamed:kTextSecondaryColor];
-  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
-
-  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithMetadataImage];
-  item.title = @"Web Channel with metadata image";
-  item.URL =
-      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
-  item.metadataImage = CustomSymbolTemplateWithPointSize(kCloudSlashSymbol, 18);
-  item.metadataImageColor = [UIColor colorNamed:kTextSecondaryColor];
-  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+  readingListItem =
+      [[ReadingListTableViewItem alloc] initWithType:ItemTypeReadingList];
+  readingListItem.title = @"Local Reading List item";
+  readingListItem.entryURL = GURL("https://lemonde.fr/my-article");
+  readingListItem.distillationState = ReadingListUIDistillationStatusFailure;
+  readingListItem.showCloudSlashIcon = YES;
+  [model addItem:readingListItem toSectionWithIdentifier:SectionIdentifierURL];
 }
 
 #pragma mark - Actions
@@ -768,43 +761,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
   ItemType itemType = static_cast<ItemType>(
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
-  if (itemType == ItemTypeTableViewInfoButton ||
-      itemType == ItemTypeTableViewInfoButtonWithDetailText ||
-      itemType == ItemTypeTableViewInfoButtonWithImage) {
-    TableViewInfoButtonCell* managedCell =
-        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-    [managedCell.trailingButton addTarget:self
-                                   action:@selector(didTapManagedUIInfoButton:)
-                         forControlEvents:UIControlEventTouchUpInside];
-  } else if (itemType == ItemTypeCheck6) {
-    SettingsCheckCell* checkCell =
-        base::apple::ObjCCastStrict<SettingsCheckCell>(cell);
-    [checkCell.infoButton addTarget:self
-                             action:@selector(didTapCheckInfoButton:)
-                   forControlEvents:UIControlEventTouchUpInside];
-  } else if (itemType == ItemTypeSearchHistorySuggestedItem) {
-    TableViewTabsSearchSuggestedHistoryCell* searchHistoryCell =
-        base::apple::ObjCCastStrict<TableViewTabsSearchSuggestedHistoryCell>(
-            cell);
-    [searchHistoryCell updateHistoryResultsCount:7];
-  } else if (itemType == ItemTypeURLWithActivityIndicator) {
-    TableViewURLCell* URLCell =
-        base::apple::ObjCCastStrict<TableViewURLCell>(cell);
-    [URLCell startAnimatingActivityIndicator];
-  } else if (itemType == ItemTypeURLWithActivityIndicatorStopped) {
-    TableViewURLCell* URLCell =
-        base::apple::ObjCCastStrict<TableViewURLCell>(cell);
-    [URLCell startAnimatingActivityIndicator];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC),
-                   dispatch_get_main_queue(), ^{
-                     [URLCell stopAnimatingActivityIndicator];
-                   });
+  if (itemType == ItemTypeURL) {
+    TableViewURLItem* URLItem = base::apple::ObjCCastStrict<TableViewURLItem>(
+        [self.tableViewModel itemAtIndexPath:indexPath]);
+    if (!URLItem.faviconAttributes) {
+      _faviconLoader->FaviconForPageUrl(
+          URLItem.URL.gurl, 20, 20,
+          /*fallback_to_google_server=*/true,
+          ^(FaviconAttributes* attributes, bool cached) {
+            URLItem.faviconAttributes = attributes;
+            if (!cached && attributes.faviconImage) {
+              [tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
+            }
+          });
+    }
   }
-  return cell;
+  return [super tableView:tableView cellForRowAtIndexPath:indexPath];
 }
 
 @end

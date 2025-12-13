@@ -45,10 +45,10 @@
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/models/image_model.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -419,14 +419,6 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
                                BirchItemType::kFile, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
                                BirchItemType::kCalendar, 1);
-
-  // Two rankings were recorded for the current time slot histogram.
-  histograms.ExpectBucketCount("Ash.Birch.Ranking.1200to1700", 1, 1);
-  histograms.ExpectBucketCount("Ash.Birch.Ranking.1200to1700", 12, 1);
-
-  // The same ranking were recorded for the all-day total histogram.
-  histograms.ExpectBucketCount("Ash.Birch.Ranking.Total", 1, 1);
-  histograms.ExpectBucketCount("Ash.Birch.Ranking.Total", 12, 1);
 }
 
 // Tests that we get expected records when showing/hiding/activating the coral
@@ -478,10 +470,6 @@ TEST_F(BirchBarTest, RecordsHistogramForCoralChips) {
   // Hide the one chip.
   BirchBarController::Get()->OnItemHiddenByUser(in_session_chips[0]->GetItem());
   ASSERT_EQ(in_session_chips.size(), 1u);
-
-  // One cluster hidden was recorded.
-  histograms.ExpectBucketCount("Ash.Birch.Chip.Hidden", BirchItemType::kCoral,
-                               1);
 
   // Clicking on the in-session chip to launch the group.
   LeftClickOn(in_session_chips[0]);
@@ -562,8 +550,8 @@ TEST_F(BirchBarTest, NoCrashOnSettingIconAfterShutdown) {
 
   BirchChipButton* chip = views::AsViewClass<BirchChipButton>(chips[0].get());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create a set icon callback to simulate the case of setting icon after
   // shutting down the chip.
@@ -1619,8 +1607,8 @@ TEST_F(BirchBarAnimationTest, NoCrashOnRemovingChip) {
   // Cache the third chip before removing.
   auto* chip_3 = chips[2].get();
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   RemoveItem(2);
   WaitLayerAnimationEnd(chip_3->layer());
 
@@ -1661,8 +1649,8 @@ TEST_F(BirchBarAnimationTest, RemoveMultipleChips) {
       grid_test_api.GetBirchChips(),
       [&item_6](const auto& chip) { return chip->GetItem() == item_6; }));
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Cache the third chip view before removing.
   auto* chip_4 = grid_test_api.GetBirchChips()[3].get();
@@ -1693,8 +1681,8 @@ TEST_F(BirchBarAnimationTest, NoCrashOnRemovingFirstChipWithPrivacyNudge) {
   EXPECT_TRUE(
       Shell::Get()->anchored_nudge_manager()->IsNudgeShown("BirchPrivacyId"));
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Cache the first chip before removing.
   auto* first_chip = OverviewGridTestApi(Shell::GetPrimaryRootWindow())
@@ -1742,8 +1730,7 @@ class BirchBarLayoutTest
     // Here, we simulate changing the shelf alignment from context menu which
     // will update the user's pref. Otherwise, it will exit the Overview and
     // reset shelf alignment when we rotate the display.
-    const int64_t display_id =
-        display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
     scoped_internal_display_id_ =
         std::make_unique<display::test::ScopedSetInternalDisplayId>(
             Shell::Get()->display_manager(), display_id);

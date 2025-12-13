@@ -112,8 +112,10 @@ void LayoutTableSection::WillBeRemovedFromTree() {
   LayoutBlock::WillBeRemovedFromTree();
 }
 
-void LayoutTableSection::StyleDidChange(StyleDifference diff,
-                                        const ComputedStyle* old_style) {
+void LayoutTableSection::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (LayoutTable* table = Table()) {
     if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
@@ -122,7 +124,7 @@ void LayoutTableSection::StyleDidChange(StyleDifference diff,
       table->GridBordersChanged();
     }
   }
-  LayoutBlock::StyleDidChange(diff, old_style);
+  LayoutBlock::StyleDidChange(diff, old_style, style_change_context);
 }
 
 LayoutBox* LayoutTableSection::CreateAnonymousBoxWithSameTypeAs(

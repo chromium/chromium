@@ -18,7 +18,7 @@ namespace blink {
 namespace {
 
 const blink::ContentDescription* CreateDescription(
-    const blink::String& category,
+    V8ContentCategory::Enum category,
     const blink::String& url) {
   auto* description = blink::MakeGarbageCollected<blink::ContentDescription>();
   description->setId("id");
@@ -66,7 +66,8 @@ bool operator==(const ContentDescription& cd1, const ContentDescription& cd2) {
 
 TEST(ContentDescriptionConversionTest, RoundTrip) {
   test::TaskEnvironment task_environment;
-  auto* description = CreateDescription("homepage", "https://example.com/");
+  auto* description = CreateDescription(V8ContentCategory::Enum::kHomepage,
+                                        "https://example.com/");
   auto mojo_description = mojom::blink::ContentDescription::From(description);
   ASSERT_TRUE(mojo_description);
   auto* round_trip_description =
@@ -76,8 +77,12 @@ TEST(ContentDescriptionConversionTest, RoundTrip) {
 
 TEST(ContentDescriptionConversionTest, EnumRoundTrip) {
   test::TaskEnvironment task_environment;
-  blink::Vector<blink::String> categories = {"homepage", "article", "video",
-                                             "audio"};
+  blink::Vector<V8ContentCategory::Enum> categories = {
+      V8ContentCategory::Enum::kHomepage,
+      V8ContentCategory::Enum::kArticle,
+      V8ContentCategory::Enum::kVideo,
+      V8ContentCategory::Enum::kAudio,
+  };
   for (const auto& category : categories) {
     auto* description = CreateDescription(category, "https://example.com/");
     auto* round_trip_description =

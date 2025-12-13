@@ -5,16 +5,18 @@
 package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -29,8 +31,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -38,11 +41,16 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link OptionalNewTabButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -53,7 +61,6 @@ public final class OptionalNewTabButtonControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Context mContext;
 
-    @Mock private Resources mResources;
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -61,6 +68,10 @@ public final class OptionalNewTabButtonControllerUnitTest {
     @Mock TabCreator mTabCreator;
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Tracker mTracker;
+    @Mock private ButtonDataProvider.ButtonDataObserver mButtonDataObserver;
+
+    private final ObservableSupplierImpl<@StripVisibilityState Integer>
+            mTabStripVisibilitySupplier = new ObservableSupplierImpl<>();
 
     private final Configuration mConfiguration = new Configuration();
     private OptionalNewTabButtonController mOptionalNewTabButtonController;
@@ -75,7 +86,6 @@ public final class OptionalNewTabButtonControllerUnitTest {
         doReturn(mTab).when(mTabSupplier).get();
 
         mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP + WIDTH_DELTA;
-        doReturn(mConfiguration).when(mResources).getConfiguration();
 
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
 
@@ -86,7 +96,8 @@ public final class OptionalNewTabButtonControllerUnitTest {
                         mActivityLifecycleDispatcher,
                         () -> mTabCreatorManager,
                         mTabSupplier,
-                        () -> mTracker);
+                        () -> mTracker,
+                        mTabStripVisibilitySupplier);
 
         TrackerFactory.setTrackerForTests(mTracker);
     }
@@ -131,5 +142,52 @@ public final class OptionalNewTabButtonControllerUnitTest {
 
         verify(mTracker, times(1))
                 .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_NEW_TAB_OPENED);
+    }
+
+    @Test
+    public void testShouldShowButton_nullTab() {
+        assertFalse(mOptionalNewTabButtonController.shouldShowButton(null));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @Features.DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testShouldShowButton_tablet_resizeRefactorDisabled() {
+        mTabStripVisibilitySupplier.set(StripVisibilityState.HIDDEN_BY_FADE);
+        assertFalse(mOptionalNewTabButtonController.shouldShowButton(mTab));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @Features.EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testShouldShowButton_tablet_resizeRefactorEnabled() {
+        // Hide the tab strip.
+        mTabStripVisibilitySupplier.set(StripVisibilityState.HIDDEN_BY_FADE);
+        assertTrue(mOptionalNewTabButtonController.shouldShowButton(mTab));
+
+        // Show the tab strip.
+        mTabStripVisibilitySupplier.set(StripVisibilityState.VISIBLE);
+        assertFalse(mOptionalNewTabButtonController.shouldShowButton(mTab));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @Features.EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testShouldShowButton_onTabStripVisibilityStateChanged() {
+        mOptionalNewTabButtonController.addObserver(mButtonDataObserver);
+
+        // Hide the tab strip.
+        mTabStripVisibilitySupplier.set(StripVisibilityState.HIDDEN_BY_FADE);
+        ButtonData buttonData = mOptionalNewTabButtonController.get(mTab);
+        assertTrue(buttonData.canShow());
+        verify(mButtonDataObserver).buttonDataChanged(eq(true));
+
+        Mockito.clearInvocations(mButtonDataObserver);
+
+        // Show the tab strip.
+        mTabStripVisibilitySupplier.set(StripVisibilityState.VISIBLE);
+        buttonData = mOptionalNewTabButtonController.get(mTab);
+        assertFalse(buttonData.canShow());
+        verify(mButtonDataObserver).buttonDataChanged(eq(true));
     }
 }

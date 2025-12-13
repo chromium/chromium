@@ -29,13 +29,13 @@ class CreditCardAccessManagerBetterAuthLogTest
   bool IsUserOptedIn() { return std::get<1>(GetParam()); }
 
   void SetUp() override {
+    CreditCardAccessManagerTestBase::SetUp();
     ClearCards();
     if (HasServerCard()) {
       CreateServerCard(kTestGUID, kTestNumber);
     } else {
       CreateLocalCard(kTestGUID, kTestNumber);
     }
-    CreditCardAccessManagerTestBase::SetUp();
   }
 
   const std::string kVerifiabilityCheckDurationMetrics =
@@ -160,7 +160,7 @@ class CreditCardAccessManagerBetterAuthOptInLogTest
     credit_card_access_manager().PrepareToFetchCreditCard();
     credit_card_access_manager().FetchCreditCard(
         GetCreditCard(), base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                        accessor_->GetWeakPtr()));
+                                        accessor().GetWeakPtr()));
   }
 
   bool IsVirtualCard() { return std::get<0>(GetParam()); }

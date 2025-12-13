@@ -31,6 +31,8 @@ constexpr CGFloat kCornerRadius = 12.;
 
 @implementation ConsistencySheetNavigationController
 
+#pragma mark - Public
+
 - (CGSize)layoutFittingSizeForWidth:(CGFloat)width {
   UINavigationController* navigationController =
       self.childViewControllers.lastObject;
@@ -58,6 +60,8 @@ constexpr CGFloat kCornerRadius = 12.;
   self.backgroundView.frame = self.view.bounds;
 }
 
+#pragma mark - UIContentContainer
+
 - (void)preferredContentSizeDidChangeForChildContentContainer:
     (id<UIContentContainer>)container {
   [super preferredContentSizeDidChangeForChildContentContainer:container];
@@ -80,7 +84,7 @@ constexpr CGFloat kCornerRadius = 12.;
   self.backgroundView.frame = self.view.bounds;
   self.view.layer.masksToBounds = YES;
   self.view.clipsToBounds = YES;
-  self.view.accessibilityIdentifier = kWebSigninAccessibilityIdentifier;
+  self.view.accessibilityIdentifier = kConsistencySigninAccessibilityIdentifier;
   UIScreenEdgePanGestureRecognizer* edgeSwipeGesture =
       [[UIScreenEdgePanGestureRecognizer alloc]
           initWithTarget:self

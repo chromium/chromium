@@ -7,10 +7,12 @@
 
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
     show-all$="[[shouldShowAll]]">
-  <settings-search-page slot="view" id="parent" prefs="{{prefs}}">
+  <settings-search-page slot="view" id="parent" prefs="{{prefs}}"
+      route-path$="[[routes_.SEARCH.path]]">
   </settings-search-page>
 
   <settings-search-engines-page slot="view" id="searchEngines"
-      data-parent-view-id="parent" prefs="{{prefs}}">
+      data-parent-view-id="parent" prefs="{{prefs}}"
+      route-path$="[[routes_.SEARCH_ENGINES.path]]">
   </settings-search-engines-page>
 </cr-view-manager>

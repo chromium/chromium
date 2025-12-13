@@ -12,13 +12,12 @@ AccessibilityExtensionRecoveryStrategyTest = class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        [
-          'RecoveryStrategy',
-          'AncestryRecoveryStrategy',
-          'TreePathRecoveryStrategy',
-        ],
-        '/common/cursors/recovery_strategy.js');
+
+    const imports = TestImportManager.getImports();
+    globalThis.RecoveryStrategy = imports.RecoveryStrategy;
+    globalThis.AncestryRecoveryStrategy = imports.AncestryRecoveryStrategy;
+    globalThis.TreePathRecoveryStrategy = imports.TreePathRecoveryStrategy;
+
     globalThis.RoleType = chrome.automation.RoleType;
   }
 };

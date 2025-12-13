@@ -21,8 +21,9 @@ template <typename Container>
 cbor::Value::ArrayValue ToArrayValue(const Container& container) {
   cbor::Value::ArrayValue value;
   value.reserve(container.size());
-  for (const auto& item : container)
+  for (const auto& item : container) {
     value.emplace_back(item);
+  }
   return value;
 }
 
@@ -75,8 +76,9 @@ std::vector<uint8_t> AuthenticatorGetInfoResponse::EncodeToCBOR(
   cbor::Value::MapValue device_info_map;
   device_info_map.emplace(0x01, std::move(version_array));
 
-  if (response.extensions)
+  if (response.extensions) {
     device_info_map.emplace(0x02, ToArrayValue(*response.extensions));
+  }
 
   device_info_map.emplace(0x03, response.aaguid);
   device_info_map.emplace(0x04, AsCBOR(response.options));

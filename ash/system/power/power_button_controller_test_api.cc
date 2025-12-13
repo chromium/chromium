@@ -99,11 +99,6 @@ PowerButtonControllerTestApi::GetScreenshotController() {
   return controller_->screenshot_controller_.get();
 }
 
-void PowerButtonControllerTestApi::SetPowerButtonType(
-    PowerButtonController::ButtonType button_type) {
-  controller_->button_type_ = button_type;
-}
-
 void PowerButtonControllerTestApi::SetTickClock(
     const base::TickClock* tick_clock) {
   DCHECK(tick_clock);

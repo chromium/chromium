@@ -8,7 +8,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/browser/fast_checkout/fast_checkout_accessibility_service.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
@@ -74,8 +73,8 @@ class FastCheckoutClientImpl
   // autofill::AutofillManager::Observer:
   void OnAfterLoadedServerPredictions(
       autofill::AutofillManager& manager) override;
-  void OnAfterDidFillAutofillFormData(autofill::AutofillManager& manager,
-                                      autofill::FormGlobalId form_id) override;
+  void OnAfterDidAutofillForm(autofill::AutofillManager& manager,
+                              autofill::FormGlobalId form_id) override;
   void OnAutofillManagerStateChanged(
       autofill::AutofillManager& manager,
       autofill::AutofillManager::LifecycleState old_state,
@@ -134,7 +133,7 @@ class FastCheckoutClientImpl
                            OnAfterLoadedServerPredictions_FillsForms);
   FRIEND_TEST_ALL_PREFIXES(
       DISABLED_FastCheckoutClientImplTest,
-      OnAfterDidFillAutofillFormData_SetsFillingFormsToFilledAndStops);
+      OnAfterDidAutofillForm_SetsFillingFormsToFilledAndStops);
   FRIEND_TEST_ALL_PREFIXES(
       DISABLED_FastCheckoutClientImplTest,
       OnFullCardRequestSucceeded_InvokesCreditCardFormFill);
@@ -195,9 +194,6 @@ class FastCheckoutClientImpl
   // notification.
   void UpdateFillingStates();
 
-  // Makes accessibility announcements for when a form was filled.
-  void A11yAnnounce(autofill::FormSignature form_signature,
-                    bool is_credit_card_form);
   // Returns a pointer to the autofill profile corresponding to
   // `selected_autofill_profile_guid_`. Stops the run if it's a `nullptr`.
   const autofill::AutofillProfile* GetSelectedAutofillProfile();
@@ -253,9 +249,6 @@ class FastCheckoutClientImpl
 
   // Checks whether a run should be permitted or not.
   std::unique_ptr<FastCheckoutTriggerValidator> trigger_validator_;
-
-  // Makes a11y announcements.
-  std::unique_ptr<FastCheckoutAccessibilityService> accessibility_service_;
 
   // True if a run is ongoing; used to avoid multiple runs in parallel.
   bool is_running_ = false;

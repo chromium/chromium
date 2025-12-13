@@ -4,20 +4,19 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {FontMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {getItemsInMenu, stubAnimationFrame} from './common.js';
+import {assertCheckMarksForDropdown, getItemsInMenu, mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('FontMenu', () => {
-  let toolbar: ReadAnythingToolbarElement;
-  let menuButton: CrIconButtonElement|null;
-  let fontSelect: HTMLSelectElement|null;
-  let fontEmitted: boolean;
+  let fontMenu: FontMenuElement;
+  let fontMenuOptions: HTMLButtonElement[];
+  let metrics: TestMetricsBrowserProxy;
 
   setup(() => {
     // Clearing the DOM should always be done first.
@@ -25,18 +24,10 @@ suite('FontMenu', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.supportedFonts = [];
-    fontEmitted = false;
-    document.addEventListener(ToolbarEvent.FONT, () => fontEmitted = true);
+    metrics = mockMetrics();
+    fontMenu = document.createElement('font-menu');
+    document.body.appendChild(fontMenu);
   });
-
-  async function createToolbar(): Promise<void> {
-    toolbar = document.createElement('read-anything-toolbar');
-    document.body.appendChild(toolbar);
-    await microtasksFinished();
-    menuButton = toolbar.shadowRoot.querySelector<CrIconButtonElement>('#font');
-    fontSelect =
-        toolbar.shadowRoot.querySelector<HTMLSelectElement>('#font-select');
-  }
 
   function assertFontsEqual(actual: string, expected: string): void {
     assertEquals(
@@ -44,188 +35,115 @@ suite('FontMenu', () => {
         actual.trim().toLowerCase().replaceAll('"', ''));
   }
 
-  suite('with read aloud', () => {
-    let fontMenuOptions: HTMLButtonElement[];
+  async function updateFonts(supportedFonts: string[]): Promise<void> {
+    chrome.readingMode.supportedFonts = supportedFonts;
+    fontMenu.pageLanguage = 'hi' + supportedFonts.length;
+    await microtasksFinished();
+    fontMenuOptions = getItemsInMenu(fontMenu.$.menu.$.lazyMenu);
+  }
 
-    setup(() => {
-      chrome.readingMode.isReadAloudEnabled = true;
-      return createToolbar();
-    });
+  test('has checkmarks', () => {
+    assertCheckMarksForDropdown(fontMenu);
+  });
 
-    async function updateFonts(supportedFonts: string[]): Promise<void> {
-      chrome.readingMode.supportedFonts = supportedFonts;
-      toolbar.updateFonts();
-      await microtasksFinished();
-      fontMenuOptions = getItemsInMenu(toolbar.$.fontMenu);
-    }
+  test('updates fonts on page language change', async () => {
+    chrome.readingMode.supportedFonts =
+        ['font 1', 'font 2', 'font 3', 'font 4'];
+    fontMenu.pageLanguage = 'hi';
+    await microtasksFinished();
+    assertEquals(4, getItemsInMenu(fontMenu.$.menu.$.lazyMenu).length);
 
-    test('is dropdown menu', async () => {
-      stubAnimationFrame();
+    chrome.readingMode.supportedFonts = ['font 1', 'font 2'];
+    fontMenu.pageLanguage = 'jp';
+    await microtasksFinished();
+    assertEquals(2, getItemsInMenu(fontMenu.$.menu.$.lazyMenu).length);
+  });
 
-      menuButton!.click();
-      await microtasksFinished();
+  test('updates font titles on fonts loaded', async () => {
+    chrome.readingMode.supportedFonts = ['font 1', 'font 2', 'font 3'];
+    fontMenuOptions = getItemsInMenu(fontMenu.$.menu.$.lazyMenu);
+    assertTrue(fontMenuOptions.every(
+        option => option.innerText.includes('(loading)')));
 
-      assertTrue(toolbar.$.fontMenu.get().open);
-    });
+    fontMenu.areFontsLoaded = true;
+    await microtasksFinished();
 
-    test('shows only supported fonts', async () => {
-      await updateFonts(['font 1', 'font 2', 'font 3', 'font 4']);
-      assertEquals(fontMenuOptions.length, 4);
+    assertFalse(
+        fontMenuOptions.some(option => option.innerText.includes('(loading)')));
+  });
 
-      await updateFonts(['font 1']);
-      assertEquals(1, fontMenuOptions.length);
+  test('updates fonts when settings are restored', async () => {
+    chrome.readingMode.supportedFonts = ['font 1', 'font 2', 'font 3'];
+    chrome.readingMode.fontName = 'font 1';
+    fontMenu.areFontsLoaded = true;
+    await microtasksFinished();
+    assertEquals(0, fontMenu.$.menu.currentSelectedIndex);
 
-      await updateFonts([
-        'font 1',
-        'font 2',
-        'font 3',
-        'font 4',
-        'font 5',
-        'font 6',
-        'font 7',
-        'font 8',
-      ]);
-      assertEquals(8, fontMenuOptions.length);
-    });
+    chrome.readingMode.fontName = 'font 2';
+    fontMenu.settingsPrefs = {
+      letterSpacing: 0,
+      lineSpacing: 0,
+      theme: 0,
+      speechRate: 0,
+      font: chrome.readingMode.fontName,
+      highlightGranularity: 0,
+    };
+    await microtasksFinished();
 
-    test('uses the first font if font not available', async () => {
-      // Set the current font to one that will be removed
-      const fonts = ['Andika', 'Poppins', 'STIX Two Text'];
-      chrome.readingMode.fontName = 'EB Garamond';
-      await updateFonts(fonts.concat(chrome.readingMode.fontName));
+    assertEquals(1, fontMenu.$.menu.currentSelectedIndex);
+  });
 
-      // Update the fonts to exclude the previously chosen font
-      await updateFonts(fonts);
+  test('uses the first font if font not available', async () => {
+    // Set the current font to one that will be removed
+    const defaultFont = 'EB Garamond';
+    const fonts = ['Andika', 'Poppins', 'STIX Two Text'];
+    chrome.readingMode.fontName = defaultFont;
+    await updateFonts(fonts.concat(chrome.readingMode.fontName));
 
-      const checkMarks = toolbar.$.fontMenu.get().querySelectorAll<HTMLElement>(
-          '.check-mark-hidden-false');
-      const hiddenCheckMarks =
-          toolbar.$.fontMenu.get().querySelectorAll<HTMLElement>(
-              '.check-mark-hidden-true');
-      assertEquals(1, checkMarks.length);
-      assertEquals(2, hiddenCheckMarks.length);
-      assertEquals(fonts[0], chrome.readingMode.fontName);
-      assertEquals(fonts[0], toolbar.style.fontFamily);
-    });
+    // Update the fonts to exclude the previously chosen font
+    await updateFonts(fonts);
 
-    test('each font option is styled with the font that it is', async () => {
-      await updateFonts(['Serif', 'Andika', 'Poppins', 'STIX Two Text']);
-      toolbar.setFontsLoaded();
-      await microtasksFinished();
-      fontMenuOptions.forEach(option => {
-        assertFontsEqual(option.style.fontFamily, option.innerText);
-      });
-    });
+    const checkMarks =
+        fontMenu.$.menu.$.lazyMenu.get().querySelectorAll<HTMLElement>(
+            '.check-mark-showing-true');
+    const hiddenCheckMarks =
+        fontMenu.$.menu.$.lazyMenu.get().querySelectorAll<HTMLElement>(
+            '.check-mark-showing-false');
+    assertEquals(1, checkMarks.length);
+    assertEquals(2, hiddenCheckMarks.length);
+    assertEquals(0, fontMenu.$.menu.currentSelectedIndex);
+    // Avoid overriding the user default font
+    assertEquals(defaultFont, chrome.readingMode.fontName);
+  });
 
-    test('each font option is loading', async () => {
-      await updateFonts(['Serif', 'Andika', 'Poppins', 'STIX Two Text']);
-      fontMenuOptions.forEach(option => {
-        assertFontsEqual(
-            option.style.fontFamily + '\u00A0(loading)', option.innerText);
-      });
-    });
-
-    suite('on font option clicked', () => {
-      setup(async () => {
-        await updateFonts(['Serif', 'Poppins', 'STIX Two Text']);
-        menuButton!.click();
-      });
-
-      test('propagates font', async () => {
-        for (let i = 0; i < fontMenuOptions.length; i++) {
-          const option = fontMenuOptions[i]!;
-          fontEmitted = false;
-          option.click();
-          await microtasksFinished();
-          const expectedFont = chrome.readingMode.supportedFonts[i]!;
-          assertFontsEqual(chrome.readingMode.fontName, expectedFont);
-          assertTrue(fontEmitted);
-        }
-      });
-
-      test('updates toolbar font', async () => {
-        for (let i = 0; i < fontMenuOptions.length; i++) {
-          const option = fontMenuOptions[i]!;
-          option.click();
-          await microtasksFinished();
-          assertFontsEqual(
-              toolbar.style.fontFamily, chrome.readingMode.supportedFonts[i]!);
-        }
-      });
-
-      test('closes menu', async () => {
-        for (const option of fontMenuOptions) {
-          option.click();
-          await microtasksFinished();
-          assertFalse(toolbar.$.fontMenu.get().open);
-        }
-      });
+  test('each font option is styled with the font that it is', async () => {
+    await updateFonts(['Serif', 'Andika', 'Poppins', 'STIX Two Text']);
+    fontMenu.areFontsLoaded = true;
+    await microtasksFinished();
+    fontMenuOptions.forEach(option => {
+      assertFontsEqual(option.style.fontFamily, option.innerText);
     });
   });
 
-  suite('without read aloud', () => {
-    setup(() => {
-      chrome.readingMode.isReadAloudEnabled = false;
-      return createToolbar();
-    });
+  test('propagates font', async () => {
+    const font1 = 'Times';
+    fontMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.FONT, {detail: {data: font1}}));
+    assertEquals(font1, chrome.readingMode.fontName);
 
-    async function updateFonts(supportedFonts: string[]): Promise<void> {
-      chrome.readingMode.supportedFonts = supportedFonts;
-      toolbar.updateFonts();
-      return microtasksFinished();
-    }
+    const font2 = 'Poppins';
+    fontMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.FONT, {detail: {data: font2}}));
+    assertEquals(font2, chrome.readingMode.fontName);
 
-    test('is select menu', () => {
-      assertTrue(!!fontSelect);
-      assertFalse(!!menuButton);
-    });
+    const font3 = 'STIX Two Text';
+    fontMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.FONT, {detail: {data: font3}}));
+    assertEquals(font3, chrome.readingMode.fontName);
 
-    test('shows only supported fonts', async () => {
-      await updateFonts(['font 1', 'font 2', 'font 3', 'font 4']);
-      assertEquals(
-          chrome.readingMode.supportedFonts.length, fontSelect!.options.length);
-    });
-
-    test('uses the first font if font not available', async () => {
-      // Set the current font to one that will be removed
-      const fonts = ['Andika', 'Poppins', 'STIX Two Text'];
-      chrome.readingMode.fontName = 'EB Garamond';
-      await updateFonts(fonts.concat(chrome.readingMode.fontName));
-
-      // Update the fonts to exclude the previously chosen font
-      await updateFonts(fonts);
-
-      assertEquals(0, fontSelect!.selectedIndex);
-      assertEquals(fonts[0], chrome.readingMode.fontName);
-      assertEquals(fonts[0], toolbar.style.fontFamily);
-    });
-
-    suite('on font option clicked', () => {
-      setup(() => {
-        return updateFonts(['Serif', 'Poppins', 'STIX Two Text']);
-      });
-
-      test('propagates font', async () => {
-        for (let i = 0; i < chrome.readingMode.supportedFonts.length; i++) {
-          const expectedFont = chrome.readingMode.supportedFonts[i]!;
-          fontEmitted = false;
-          fontSelect!.selectedIndex = i;
-          fontSelect!.dispatchEvent(new Event('change'));
-          await microtasksFinished();
-          assertFontsEqual(chrome.readingMode.fontName, expectedFont);
-          assertTrue(fontEmitted);
-        }
-      });
-
-      test('updates toolbar font', async () => {
-        for (let i = 0; i < chrome.readingMode.supportedFonts.length; i++) {
-          const supportedFont = chrome.readingMode.supportedFonts[i]!;
-          fontSelect!.selectedIndex = i;
-          fontSelect!.dispatchEvent(new Event('change'));
-          await microtasksFinished();
-          assertFontsEqual(toolbar.style.fontFamily, supportedFont);
-        }
-      });
-    });
+    assertEquals(
+        ReadAnythingSettingsChange.FONT_CHANGE,
+        await metrics.whenCalled('recordTextSettingsChange'));
+    assertEquals(3, metrics.getCallCount('recordTextSettingsChange'));
   });
 });

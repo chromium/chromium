@@ -46,7 +46,7 @@ ui::DataTransferEndpoint CloneEndpoint(
 
 void SynthesizePaste() {
   auto* host = ash::GetWindowTreeHostForDisplay(
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id());
+      display::Screen::Get()->GetDisplayForNewWindows().id());
   DCHECK(host);
 
   ui::KeyEvent control_press(/*type=*/ui::EventType::kKeyPressed,
@@ -89,7 +89,7 @@ bool HasEndpoint(const std::vector<ui::DataTransferEndpoint>& saved_endpoints,
 }
 
 void OnToastClicked() {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(dlp::kDlpLearnMoreUrl),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -111,7 +111,7 @@ void DlpClipboardNotifier::NotifyBlockedAction(
   DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetURL()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->GetHost());
   if (data_dst.has_value()) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
       ShowToast(kClipboardBlockCrostiniToastId,
@@ -153,7 +153,7 @@ void DlpClipboardNotifier::WarnOnPaste(
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetURL()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->GetHost());
   if (data_dst.has_value()) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
       ShowToast(kClipboardWarnCrostiniToastId,
@@ -214,7 +214,7 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetURL()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->GetHost());
 
   auto proceed_cb =
       base::BindOnce(&DlpClipboardNotifier::BlinkProceedPressed,
@@ -250,8 +250,8 @@ void DlpClipboardNotifier::ProceedPressed(
 
   std::move(reporting_cb).Run();
 
-  if (!display::Screen::GetScreen()) {  // Clipboard related elements do not
-                                        // exist in unittests.
+  if (!display::Screen::Get()) {  // Clipboard related elements do not
+                                  // exist in unittests.
     return;
   }
 

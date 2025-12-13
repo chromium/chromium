@@ -13,6 +13,7 @@
 
 namespace wallet {
 namespace {
+// Gets the Mojo remote for the BoardingPassExtractor service.
 mojo::Remote<mojom::BoardingPassExtractor> GetBoardingPassExtractorRemote(
     content::WebContents* web_contents) {
   DCHECK(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
@@ -22,6 +23,8 @@ mojo::Remote<mojom::BoardingPassExtractor> GetBoardingPassExtractorRemote(
   return remote;
 }
 
+// Gets the list of allowed URLs for boarding pass detection from feature
+// parameters.
 const std::vector<std::string>& GetAllowlist() {
   static base::NoDestructor<std::vector<std::string>> allowed_urls([] {
     std::string param_val = base::GetFieldTrialParamValueByFeature(

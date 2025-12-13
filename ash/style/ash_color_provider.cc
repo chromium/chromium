@@ -45,61 +45,9 @@ AshColorProvider* AshColorProvider::Get() {
   return g_instance;
 }
 
-SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
-  // TODO(crbug.com/1292244): Delete this function after all callers migrate.
+SkColor AshColorProvider::GetColor(ui::ColorId color_id) const {
   auto* color_provider = GetColorProvider();
-  DCHECK(color_provider);
-
-  switch (type) {
-    case ControlsLayerType::kControlBackgroundColorActive:
-      return color_provider->GetColor(kColorAshControlBackgroundColorActive);
-    case ControlsLayerType::kControlBackgroundColorInactive:
-      return color_provider->GetColor(kColorAshControlBackgroundColorInactive);
-    case ControlsLayerType::kFocusRingColor:
-      return color_provider->GetColor(ui::kColorAshFocusRing);
-  }
-}
-
-SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
-  auto* color_provider = GetColorProvider();
-  switch (type) {
-    case ContentLayerType::kSeparatorColor:
-      return color_provider->GetColor(kColorAshSeparatorColor);
-    case ContentLayerType::kIconColorSecondary:
-      return color_provider->GetColor(kColorAshIconColorSecondary);
-    case ContentLayerType::kIconColorSecondaryBackground:
-      return color_provider->GetColor(kColorAshIconColorSecondaryBackground);
-    case ContentLayerType::kSwitchKnobColorInactive:
-      return color_provider->GetColor(kColorAshSwitchKnobColorInactive);
-    case ContentLayerType::kSwitchTrackColorInactive:
-      return color_provider->GetColor(kColorAshSwitchTrackColorInactive);
-    case ContentLayerType::kButtonLabelColorBlue:
-      return color_provider->GetColor(kColorAshButtonLabelColorBlue);
-    case ContentLayerType::kTextColorURL:
-      return color_provider->GetColor(kColorAshTextColorURL);
-    case ContentLayerType::kSwitchKnobColorActive:
-      return color_provider->GetColor(kColorAshSwitchKnobColorActive);
-    case ContentLayerType::kSwitchTrackColorActive:
-      return color_provider->GetColor(kColorAshSwitchTrackColorActive);
-    case ContentLayerType::kButtonIconColorPrimary:
-      return color_provider->GetColor(kColorAshButtonIconColorPrimary);
-    case ContentLayerType::kButtonIconColor:
-      return color_provider->GetColor(kColorAshButtonIconColor);
-    case ContentLayerType::kButtonLabelColor:
-      return color_provider->GetColor(kColorAshButtonLabelColor);
-    case ContentLayerType::kTextColorPrimary:
-      return color_provider->GetColor(kColorAshTextColorPrimary);
-    case ContentLayerType::kTextColorSecondary:
-      return color_provider->GetColor(kColorAshTextColorSecondary);
-    case ContentLayerType::kIconColorPrimary:
-      return color_provider->GetColor(kColorAshIconColorPrimary);
-    case ContentLayerType::kIconColorAlert:
-      return color_provider->GetColor(kColorAshIconColorAlert);
-    case ContentLayerType::kIconColorWarning:
-      return color_provider->GetColor(kColorAshIconColorWarning);
-    case ContentLayerType::kIconColorProminent:
-      return color_provider->GetColor(kColorAshIconColorProminent);
-  }
+  return color_provider->GetColor(color_id);
 }
 
 std::pair<SkColor, float> AshColorProvider::GetInkDropBaseColorAndOpacity(

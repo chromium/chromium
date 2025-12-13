@@ -176,11 +176,6 @@ GURL StripAuthAndParams(const GURL& gurl) {
   return gurl.ReplaceComponents(rep);
 }
 
-bool IsAutofillManuallyTriggered(
-    AutofillSuggestionTriggerSource trigger_source) {
-  return IsPasswordsAutofillManuallyTriggered(trigger_source).value();
-}
-
 IsPasswordRequestManuallyTriggered IsPasswordsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
   return IsPasswordRequestManuallyTriggered(
@@ -202,6 +197,13 @@ std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list) {
   std::vector<std::u16string> titles = base::ToVector(
       titles_list, [](const auto& list_item) { return list_item.first; });
   return base::JoinString(titles, u",");
+}
+
+bool IsFormPerfectlyFilled(const FormData& form) {
+  return std::none_of(form.fields().begin(), form.fields().end(),
+                      [](const FormFieldData& field) {
+                        return field.is_user_edited() && !field.is_autofilled();
+                      });
 }
 
 }  // namespace autofill

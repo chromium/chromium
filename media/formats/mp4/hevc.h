@@ -40,7 +40,7 @@ struct MEDIA_EXPORT HEVCDecoderConfigurationRecord : Box {
   //       context and therefore the box header is not expected to be present
   //       in |data|.
   // Returns true if |data| was successfully parsed.
-  bool Parse(const uint8_t* data, int data_size);
+  bool Parse(base::span<const uint8_t> data);
   bool Serialize(std::vector<uint8_t>& output) const;
 
   uint8_t configurationVersion;
@@ -106,8 +106,7 @@ class MEDIA_EXPORT HEVC {
   // |subsamples| contains the information about what parts of the buffer are
   // encrypted and which parts are clear.
   static BitstreamConverter::AnalysisResult AnalyzeAnnexB(
-      const uint8_t* buffer,
-      size_t size,
+      base::span<const uint8_t> buffer,
       const std::vector<SubsampleEntry>& subsamples);
 };
 
@@ -125,7 +124,7 @@ class HEVCBitstreamConverter : public BitstreamConverter {
  private:
   ~HEVCBitstreamConverter() override;
   AnalysisResult Analyze(
-      std::vector<uint8_t>* frame_buf,
+      base::span<const uint8_t> frame_buf,
       std::vector<SubsampleEntry>* subsamples) const override;
   std::unique_ptr<HEVCDecoderConfigurationRecord> hevc_config_;
 };

@@ -38,14 +38,13 @@ SigninMetricsServiceFactory::~SigninMetricsServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 SigninMetricsServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<SigninMetricsService>(
       *IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
       GetApplicationContext()->GetActivePrimaryAccountsMetricsRecorder());
 }
 
-void SigninMetricsServiceFactory::RegisterBrowserStatePrefs(
+void SigninMetricsServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   SigninMetricsService::RegisterProfilePrefs(registry);
 }

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -24,18 +23,37 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/secure_payment_confirmation_controller.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/error_strings.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
+#include "components/webdata/common/web_data_results.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/payments/payment_handler_host.mojom.h"
 
 namespace payments {
+
+SecurePaymentConfirmationTest::SecurePaymentConfirmationTest() {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{::features::kSecurePaymentConfirmation,
+                            ::features::kSecurePaymentConfirmationDebug},
+      // TODO(crbug.com/40868539): Refactor code to allow mocking out the
+      // credential store APIs.
+      /*disabled_features=*/{
+          features::kSecurePaymentConfirmationUseCredentialStoreAPIs,
+          blink::features::kSecurePaymentConfirmationUxRefresh});
+}
+
+SecurePaymentConfirmationTest::~SecurePaymentConfirmationTest() = default;
 
 void SecurePaymentConfirmationTest::SetUpCommandLine(
     base::CommandLine* command_line) {
@@ -53,6 +71,11 @@ void SecurePaymentConfirmationTest::OnErrorDisplayed() {
   PaymentRequestPlatformBrowserTestBase::OnErrorDisplayed();
   if (close_dialog_on_error_)
     ASSERT_TRUE(test_controller()->CloseDialog());
+  // Dialog can be "confirmed" in the no matching credentials case. This just
+  // means clicking the "OK" button on the dialog.
+  if (accept_dialog_on_error_) {
+    ASSERT_TRUE(test_controller()->ConfirmPayment());
+  }
 }
 
 void SecurePaymentConfirmationTest::OnWebDataServiceRequestDone(
@@ -109,13 +132,15 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, Show_TransactionUX) {
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
   ExecuteScriptAsync(GetActiveWebContents(),
@@ -159,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, Show_NoAuthenticator) {
 // Tests that calling show() with no matching credentials will trigger the No
 // Matching Credentials UX.
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
-                       Show_NoMatchingCredential) {
+                       Show_NoMatchingCredential_Close) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
@@ -173,6 +198,26 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
+// TODO(crbug.com/439569016): Implement no matching credential accept test for
+// Android.
+#if !BUILDFLAG(IS_ANDROID)
+// Accepting the No Matching Credentials dialog is equivalent to closing it.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
+                       Show_NoMatchingCredential_Accept) {
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+
+  accept_dialog_on_error_ = true;
+  EXPECT_EQ(GetWebAuthnErrorMessage(),
+            content::EvalJs(GetActiveWebContents(),
+                            "getSecurePaymentConfirmationStatus()"));
+
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
+                         Event2::kUserAborted, Event2::kNoMatchingCredentials,
+                         Event2::kRequestMethodSecurePaymentConfirmation});
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Tests that a credential with the correct credential ID but wrong RP ID will
 // not match.
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
@@ -182,14 +227,16 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "relying-party.example",
                   std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   // getSecurePaymentConfirmationStatus creates a SPC credential with RP ID
   // a.com, which doesn't match the stored credential's relying-party.example,
@@ -220,14 +267,16 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, IconDownloadFailure) {
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "relying-party.example",
                   std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   // canMakePayment does not check for a valid icon, so should return true.
   EXPECT_EQ("true",
@@ -301,6 +350,40 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
                         "securePaymentConfirmationHasEnrolledInstrument()"));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
+                       Metrics_NoMatchingCredential_Close) {
+  base::HistogramTester histogram_tester;
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+
+  close_dialog_on_error_ = true;
+  EXPECT_EQ(GetWebAuthnErrorMessage(),
+            content::EvalJs(GetActiveWebContents(),
+                            "getSecurePaymentConfirmationStatus()"));
+
+  histogram_tester.ExpectUniqueSample("SecurePaymentRequest.Fallback.Outcome",
+                                      SecurePaymentRequestOutcome::kAnotherWay,
+                                      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
+                       Metrics_NoMatchingCredential_Accept) {
+  base::HistogramTester histogram_tester;
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+
+  accept_dialog_on_error_ = true;
+  EXPECT_EQ(GetWebAuthnErrorMessage(),
+            content::EvalJs(GetActiveWebContents(),
+                            "getSecurePaymentConfirmationStatus()"));
+
+  histogram_tester.ExpectUniqueSample("SecurePaymentRequest.Fallback.Outcome",
+                                      SecurePaymentRequestOutcome::kAnotherWay,
+                                      /*expected_bucket_count=*/1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 class SecurePaymentConfirmationDisableDebugTest
     : public SecurePaymentConfirmationTest {
  public:
@@ -351,13 +434,15 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   // The first call to show() without a user gesture succeeds.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
@@ -391,13 +476,15 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   // The first call to show() without a user gesture succeeds.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
@@ -431,13 +518,15 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationUxRefreshTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
   ExecuteScriptAsync(GetActiveWebContents(),
@@ -507,14 +596,16 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationUxRefreshTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "relying-party.example",
                   std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   // getSecurePaymentConfirmationStatus creates a SPC credential with RP ID
   // a.com, which doesn't match the stored credential's relying-party.example,

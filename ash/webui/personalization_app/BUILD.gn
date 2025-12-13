@@ -27,14 +27,14 @@ static_library("personalization_app") {
   deps = [
     "search:mojo_bindings",
     "//ash",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/common:sea_pen",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
-    "//ash/webui/personalization_app/resources:resources",
+    "//ash/webui/personalization_app/resources",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//chromeos/ash/components/local_search_service",
@@ -96,8 +96,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/local_search_service/public/mojom",
     "//chromeos/strings:strings_grit",
     "//components/prefs:test_support",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
     "//testing/gtest",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }

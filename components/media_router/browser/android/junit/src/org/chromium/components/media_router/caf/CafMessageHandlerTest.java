@@ -982,7 +982,7 @@ public class CafMessageHandlerTest {
                 .when(mMessageHandler)
                 .sendEnclosedMessageToClient(anyString(), anyString(), anyString(), anyInt());
         mMessageHandler.broadcastClientMessage("anytype", "anymessage");
-        for (String clientId : mRouteProvider.getClientIdToRecords().keySet()) {
+        for (String clientId : mClientRecordMap.keySet()) {
             verify(mMessageHandler)
                     .sendEnclosedMessageToClient(
                             eq(clientId),
@@ -1194,7 +1194,7 @@ public class CafMessageHandlerTest {
     private JSONObject buildAppMessage(String clientId, String namespace, Object actualMessage)
             throws JSONException {
         JSONObject innerMessage = new JSONObject();
-        innerMessage.put("sessionId", mSessionController.getSessionId());
+        innerMessage.put("sessionId", SESSION_ID);
         innerMessage.put("namespaceName", namespace);
         innerMessage.put("message", actualMessage);
 

@@ -40,14 +40,14 @@ class DirectoryKey;
 
 // Class to facilitate a player creating and communicating with an instance of
 // PaintPreviewCompositor.
-class PlayerCompositorDelegate {
+class PlayerCompositorDelegate : public base::MemoryPressureListener {
  public:
   enum PressureLevelCount : size_t {
-    kLevels = base::MemoryPressureListener::kMaxValue + 1,
+    kLevels = base::MemoryPressureLevel::kMaxValue + 1,
   };
 
   PlayerCompositorDelegate();
-  virtual ~PlayerCompositorDelegate();
+  ~PlayerCompositorDelegate() override;
 
   PlayerCompositorDelegate(const PlayerCompositorDelegate&) = delete;
   PlayerCompositorDelegate& operator=(const PlayerCompositorDelegate&) = delete;
@@ -107,8 +107,8 @@ class PlayerCompositorDelegate {
 
   // Called when under memory pressure. The default implementation kills the
   // compositor service and client under critical pressure.
-  virtual void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   gfx::Point GetRootFrameOffsets() const { return root_frame_offsets_; }
 
@@ -183,7 +183,8 @@ class PlayerCompositorDelegate {
   raw_ptr<PaintPreviewBaseService> paint_preview_service_{nullptr};
   DirectoryKey key_;
   bool compress_on_close_{true};
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
       paint_preview_compositor_service_;

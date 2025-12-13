@@ -26,6 +26,7 @@ include_rules = [
   "+components/bookmarks/common/android/java/src/org/chromium/components/bookmarks",
   "+components/browser_ui/accessibility/android",
   "+components/browser_ui/device_lock/android",
+  "+components/browser_ui/http_auth/android",
   "+components/browser_ui/notifications/android",
   "+components/browser_ui/settings/android",
   "+components/browser_ui/sms/android",
@@ -79,6 +80,12 @@ specific_include_rules = {
   ],
   "WebappNavigationTest\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
+  ],
+  "PageContentProtoViewStructureBuilderTest\.java":[
+    "+components/android_autofill/browser/test_support/java/src/org/chromium/components/autofill/TestViewStructure.java",
+  ],
+  "TabImplTest\.java":[
+    "+components/android_autofill/browser/test_support/java/src/org/chromium/components/autofill/TestViewStructure.java",
   ],
   "WebApkIntegrationTest\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",

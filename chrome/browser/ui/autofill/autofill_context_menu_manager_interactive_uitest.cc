@@ -181,10 +181,10 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                        FeedbackDialogArgsAutofillMetadata) {
-  std::string expected_metadata;
-  base::JSONWriter::Write(
-      data_logs::FetchAutofillFeedbackData(GetAutofillManager()),
-      &expected_metadata);
+  std::string expected_metadata =
+      base::WriteJson(
+          data_logs::FetchAutofillFeedbackData(GetAutofillManager()))
+          .value_or("");
 
   // Test that none feedback dialog exists.
   ASSERT_EQ(nullptr, FeedbackDialog::GetInstanceForTest());
@@ -199,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
   // Extract autofill metadata from dialog arguments and check for correctness.
   std::string dialog_args_str = feedback_dialog->GetDialogArgs();
-  std::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
+  std::optional<base::Value> value = base::JSONReader::Read(
+      dialog_args_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value() && value->is_dict());
   const std::string* autofill_metadata =
       value->GetDict().FindString("autofillMetadata");
@@ -220,15 +221,15 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   ASSERT_TRUE(GetAutofillManager()->FindCachedFormById(form.global_id()));
 
   // Set up expected trigger form and field signatures.
-  std::string expected_metadata;
   base::Value::Dict extra_logs;
   auto form_structure = std::make_unique<FormStructure>(form);
   extra_logs.Set("triggerFormSignature", form_structure->FormSignatureAsStr());
   extra_logs.Set("triggerFieldSignature",
                  form_structure->field(0)->FieldSignatureAsStr());
-  base::JSONWriter::Write(data_logs::FetchAutofillFeedbackData(
-                              GetAutofillManager(), std::move(extra_logs)),
-                          &expected_metadata);
+  std::string expected_metadata =
+      base::WriteJson(data_logs::FetchAutofillFeedbackData(
+                          GetAutofillManager(), std::move(extra_logs)))
+          .value_or("");
 
   // Set up context menu params with the correct trigger form and field.
   autofill_context_menu_manager_->set_params_for_testing(
@@ -244,7 +245,8 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
   // Extract autofill metadata from dialog arguments and check for correctness.
   std::string dialog_args_str = feedback_dialog->GetDialogArgs();
-  std::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
+  std::optional<base::Value> value = base::JSONReader::Read(
+      dialog_args_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value() && value->is_dict());
   const std::string* autofill_metadata =
       value->GetDict().FindString("autofillMetadata");

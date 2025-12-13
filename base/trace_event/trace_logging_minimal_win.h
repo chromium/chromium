@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_TRACE_EVENT_TRACE_LOGGING_MINIMAL_WIN_H_
 #define BASE_TRACE_EVENT_TRACE_LOGGING_MINIMAL_WIN_H_
 
@@ -35,6 +30,8 @@
 
 #include <concepts>
 #include <cstdint>
+
+#include "base/compiler_specific.h"
 // TODO(joel@microsoft.com) Update headers and use defined constants instead
 // of magic numbers after crbug.com/1089996 is resolved.
 
@@ -279,7 +276,8 @@ class BASE_EXPORT TlmProvider {
   static char EventDescriptorFill(EVENT_DATA_DESCRIPTOR* descriptors,
                                   uint8_t* pdescriptors_index,
                                   const FieldTy& event_field) noexcept {
-    event_field.FillEventDescriptor(&descriptors[*pdescriptors_index]);
+    event_field.FillEventDescriptor(
+        &UNSAFE_TODO(descriptors[*pdescriptors_index]));
     *pdescriptors_index += FieldTy::data_desc_count_;
     return 0;
   }

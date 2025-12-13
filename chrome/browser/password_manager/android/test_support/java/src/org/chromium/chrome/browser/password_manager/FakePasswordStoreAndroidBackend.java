@@ -24,7 +24,6 @@ import org.chromium.components.sync.protocol.PasswordSpecificsData;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,11 +38,11 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
     public static final Account sLocalDefaultAccount = new Account("Test user", "Local");
 
     public FakePasswordStoreAndroidBackend() {
-        mSavedPasswords.put(sLocalDefaultAccount, new LinkedList<>());
+        mSavedPasswords.put(sLocalDefaultAccount, new ArrayList<>());
     }
 
     public void setSyncingAccount(Account syncingAccount) {
-        mSavedPasswords.put(syncingAccount, new LinkedList<>());
+        mSavedPasswords.put(syncingAccount, new ArrayList<>());
     }
 
     @Override

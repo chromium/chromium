@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/tab_strip_api_resources_map.h"
 #include "chrome/grit/tab_strip_resources.h"
 #include "chrome/grit/tab_strip_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
@@ -34,11 +35,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 TabStripUI::TabStripUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /* enable_chrome_send */ true),
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send*/ false),
       webui_load_timer_(web_ui->GetWebContents(),
                         "WebUITabStrip.LoadDocumentTime",
                         "WebUITabStrip.LoadCompletedTime") {
@@ -54,6 +54,7 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
     webui::SetupWebUIDataSource(
         html_source, kTabStripResources,
         IDR_TAB_STRIP_PLAYGROUND_TAB_STRIP_PLAYGROUND_HTML);
+    html_source->AddResourcePaths(kTabStripApiResources);
   } else {
     webui::SetupWebUIDataSource(html_source, kTabStripResources,
                                 IDR_TAB_STRIP_TAB_STRIP_HTML);
@@ -103,16 +104,10 @@ void TabStripUI::BindInterface(
 }
 
 void TabStripUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
-
-void TabStripUI::BindInterface(
     mojo::PendingReceiver<tabs_api::mojom::TabStripService> receiver) {
-  if (auto* tab_strip_service =
-          browser_->browser_window_features()->tab_strip_service()) {
-    tab_strip_service->Accept(std::move(receiver));
+  if (auto* tab_strip_service_feature =
+          browser_->browser_window_features()->tab_strip_service_feature()) {
+    tab_strip_service_feature->Accept(std::move(receiver));
   }
 }
 

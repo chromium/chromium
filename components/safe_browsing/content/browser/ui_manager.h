@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
@@ -118,14 +118,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
     // Returns true if metrics reporting is enabled.
     virtual bool IsMetricsAndCrashReportingEnabled() = 0;
-
-    // Returns true if sending of hit reports is enabled, in which case
-    // SafeBrowsingUIManager will send hit reports when it deems the context
-    // appropriate to do so (see ShouldSendHitReport()). If this method returns
-    // false, SafeBrowsingUIManager will never send hit reports.
-    // TODO(crbug.com/40780174): Eliminate this method if/once hit report
-    // sending is enabled in WebLayer.
-    virtual bool IsSendingOfHitReportsEnabled() = 0;
   };
 
   SafeBrowsingUIManager(

@@ -17,6 +17,7 @@
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/test/test_hook.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -92,8 +93,12 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   std::vector<XrViewConfigurationType> SupportedViewConfigs() const;
   XrResult GetSecondaryConfigStates(
       uint32_t count,
-      XrSecondaryViewConfigurationStateMSFT* states) const;
+      XrSecondaryViewConfigurationStateMSFT* raw_states) const;
   XrViewConfigurationType PrimaryViewConfig() const;
+  XrResult GetVisibilityMask(XrViewConfigurationType view_configuration_type,
+                             uint32_t view_index,
+                             XrVisibilityMaskTypeKHR visibility_mask_type,
+                             XrVisibilityMaskKHR* visibility_mask);
 
   XrResult BeginSession(
       const std::vector<XrViewConfigurationType>& view_configs);
@@ -160,23 +165,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   XrResult ValidateViewConfigType(XrViewConfigurationType view_config) const;
 
   // Properties of the mock OpenXR runtime that do not change are created
-  static constexpr const char* const kExtensions[] = {
-      XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME,
-      XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
-      XR_MSFT_HAND_INTERACTION_EXTENSION_NAME,
-      XR_EXT_HAND_INTERACTION_EXTENSION_NAME,
-      XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME,
-      XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
-      XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
-      XR_EXT_HAND_TRACKING_EXTENSION_NAME,
-#if BUILDFLAG(IS_WIN)
-      XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
-      XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,
-#elif BUILDFLAG(IS_ANDROID)
-      XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME,
-      XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME,
-#endif
-  };
+  static const std::vector<const char*>& GetSupportedExtensions();
 
   static constexpr uint32_t kPrimaryViewDimension = 128;
   static constexpr uint32_t kSecondaryViewDimension = 64;
@@ -198,7 +187,6 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       XR_TYPE_SYSTEM_PROPERTIES, nullptr,           0, 0xBADFACE, "Test System",
       {2048, 2048, 1},           {XR_TRUE, XR_TRUE}};
 
-  static constexpr uint32_t kNumExtensionsSupported = std::size(kExtensions);
 
   static constexpr XrSpaceLocationFlags kValidTrackedPoseFlags =
       XR_SPACE_LOCATION_ORIENTATION_VALID_BIT |
@@ -234,10 +222,6 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   void UpdateInteractionProfile(
       device::mojom::OpenXrInteractionProfileType type);
   bool IsSessionRunning() const;
-  XrResult ValidateXrCompositionLayerProjectionView(
-      const XrCompositionLayerProjectionView& projection_view,
-      uint32_t view_count,
-      uint32_t index);
   bool GetCanCreateSession();
   std::optional<gfx::Transform> GetTransformForSpace(XrSpace space);
 
@@ -248,7 +232,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   // to validate that they were queried before being used.
   XrSystemId system_id_;
   XrSession session_;
-  XrSwapchain swapchain_;
+  absl::flat_hash_set<XrSwapchain> swapchains_;
   XrHandTrackerEXT left_hand_;
   XrHandTrackerEXT right_hand_;
 
@@ -307,7 +291,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   std::unordered_map<XrViewConfigurationType, device::OpenXrViewConfiguration>
       secondary_configs_supported_;
 
-  std::array<device::ControllerFrameData, device::kMaxTrackedDevices> data_arr_;
+  std::array<device::ControllerFrameData, device::kMaxControllers> controllers_;
 
   std::queue<XrEventDataBuffer> event_queue_;
 

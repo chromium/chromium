@@ -8,7 +8,6 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
@@ -16,7 +15,7 @@
 #include "chrome/browser/ui/ash/login/oobe_dialog_size_utils.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "components/version_info/channel.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -40,12 +39,11 @@ CoreOobe::CoreOobe(const std::string& display_type,
   version_info_updater_.StartUpdate(false);
 #endif
 
-  OnTabletModeChanged(display::Screen::GetScreen()->InTabletMode());
-  UpdateClientAreaSize(
-      display::Screen::GetScreen()->GetPrimaryDisplay().size());
+  OnTabletModeChanged(display::Screen::Get()->InTabletMode());
+  UpdateClientAreaSize(display::Screen::Get()->GetPrimaryDisplay().size());
 
   // Don't show version label on the stable and beta channels by default.
-  version_info::Channel channel = chrome::GetChannel();
+  version_info::Channel channel = ash::GetChannel();
   if (channel != version_info::Channel::STABLE &&
       channel != version_info::Channel::BETA) {
     if (view_) {
@@ -84,7 +82,7 @@ void CoreOobe::ShowScreenWithData(const OobeScreenId& screen,
       return;
     case CoreOobeView::UiState::kPriorityScreensLoaded:
       // Priority screens can be shown at this point. All others are deferred.
-      if (!is_priority_screen || !features::IsOobeLazyLoadingEnabled()) {
+      if (!is_priority_screen) {
         pending_calls_.show_screen_with_data =
             base::BindOnce(&CoreOobe::ShowScreenWithData,
                            base::Unretained(this), screen, std::move(data));
@@ -140,7 +138,7 @@ void CoreOobe::UpdateClientAreaSize(const gfx::Size& size) {
   view_->SetShelfHeight(ShelfConfig::Get()->shelf_size());
 
   const gfx::Size display_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().size();
+      display::Screen::Get()->GetPrimaryDisplay().size();
   const bool is_horizontal = display_size.width() > display_size.height();
   view_->SetOrientation(is_horizontal);
 
@@ -227,9 +225,7 @@ void CoreOobe::UpdateUiInitState(CoreOobeView::UiState state) {
     case CoreOobeView::UiState::kPriorityScreensLoaded:
       CHECK(ui_init_state_ == CoreOobeView::UiState::kCoreHandlerInitialized);
       ui_init_state_ = CoreOobeView::UiState::kPriorityScreensLoaded;
-      if (features::IsOobeLazyLoadingEnabled()) {
-        MaybeShowPriorityScreen();
-      }
+      MaybeShowPriorityScreen();
       break;
     case CoreOobeView::UiState::kFullyInitialized:
       // OOBE is fully loaded.
@@ -270,7 +266,6 @@ void CoreOobe::ExecutePendingCalls() {
 }
 
 void CoreOobe::MaybeShowPriorityScreen() {
-  CHECK(features::IsOobeLazyLoadingEnabled());
   CHECK(ui_init_state_ == CoreOobeView::UiState::kPriorityScreensLoaded);
   // Run any pending show screen call. If the screen is not supported for
   // prioritization, ShowScreenWithData will defer it and it will be shown

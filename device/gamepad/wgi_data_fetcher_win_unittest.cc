@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/wgi_data_fetcher_win.h"
 
 #include <Windows.Gaming.Input.h>
 #include <XInput.h>
 #include <winerror.h>
 
+#include <cstdint>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -288,8 +286,8 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
   // the buffer is not in a consistent state, so we also require that the value
   // is even before continuing.
   void WaitForData(const GamepadHardwareBuffer* buffer) {
-    const base::subtle::Atomic32 initial_version = buffer->seqlock.ReadBegin();
-    base::subtle::Atomic32 current_version;
+    const int32_t initial_version = buffer->seqlock.ReadBegin();
+    int32_t current_version;
     do {
       base::PlatformThread::Sleep(base::Milliseconds(10));
       current_version = buffer->seqlock.ReadBegin();
@@ -306,11 +304,11 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
 
   void ReadGamepadHardwareBuffer(const GamepadHardwareBuffer* buffer,
                                  Gamepads* output) {
-    memset(output, 0, sizeof(Gamepads));
-    base::subtle::Atomic32 version;
+    UNSAFE_TODO(memset(output, 0, sizeof(Gamepads)));
+    int32_t version;
     do {
       version = buffer->seqlock.ReadBegin();
-      memcpy(output, &buffer->data, sizeof(Gamepads));
+      UNSAFE_TODO(memcpy(output, &buffer->data, sizeof(Gamepads)));
     } while (buffer->seqlock.ReadRetry(version));
   }
 
@@ -1089,7 +1087,13 @@ TEST_P(WgiDataFetcherWinGamepadIdTest, GamepadIds) {
   size_t id_string_index = 0;
   for (auto it = gamepads.begin(); it != gamepads.end(); ++it) {
     PadState* pad = fetcher().GetPadState(it->first);
-    std::u16string display_id(pad->data.id);
+    std::u16string display_id;
+    for (char16_t ch : pad->data.id) {
+      if (ch == 0) {
+        break;
+      }
+      display_id += ch;
+    }
     EXPECT_EQ(display_id, expected_gamepad_id_strings[id_string_index++]);
   }
 }

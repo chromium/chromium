@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -36,6 +37,10 @@ DeviceLocalAccountPolicyBroker* GetBroker(content::BrowserContext* context) {
 
   if (ash::ProfileHelper::IsSigninProfile(profile))
     return nullptr;
+
+  if (ash::ProfileHelper::IsLockScreenProfile(profile)) {
+    return nullptr;
+  }
 
   if (!user_manager::UserManager::IsInitialized()) {
     // Bail out in unit tests that don't have a UserManager.
@@ -63,6 +68,7 @@ DeviceLocalAccountPolicyBroker* GetBroker(content::BrowserContext* context) {
 std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryServiceForProfile(
     content::BrowserContext* context,
     const Schema& chrome_schema,
+    const Schema& extension_install_policy_schema,
     CombinedSchemaRegistry* global_registry) {
   DCHECK(!context->IsOffTheRecord());
 
@@ -96,18 +102,35 @@ std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryServiceForProfile(
     if (cloud_manager)
       cloud_manager->SetSigninProfileSchemaRegistry(registry.get());
   }
+
+  if (ash::ProfileHelper::IsLockScreenProfile(profile) &&
+      chromeos::features::IsLockScreenBadgeAuthEnabled()) {
+    // Pass the SchemaRegistry of the lock profile to the device policy
+    // managers, for being used for fetching the component policies.
+    BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
+
+    policy::DeviceCloudPolicyManagerAsh* cloud_manager =
+        connector->GetDeviceCloudPolicyManager();
+    if (cloud_manager) {
+      cloud_manager->SetLockProfileSchemaRegistry(registry.get());
+    }
+  }
 #endif
 
   return BuildSchemaRegistryService(std::move(registry), chrome_schema,
+                                    extension_install_policy_schema,
                                     global_registry);
 }
 
 std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryService(
     std::unique_ptr<SchemaRegistry> registry,
     const Schema& chrome_schema,
+    const Schema& extension_install_policy_schema,
     CombinedSchemaRegistry* global_registry) {
   return std::make_unique<SchemaRegistryService>(
-      std::move(registry), chrome_schema, global_registry);
+      std::move(registry), chrome_schema, extension_install_policy_schema,
+      global_registry);
 }
 
 }  // namespace policy

@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/branches.star", "branches")
-load("//lib/builders.star", "builders", "cpu")
-load("//lib/consoles.star", "consoles")
-load("//lib/try.star", "try_")
-load("//project.star", "ACTIVE_MILESTONES", "settings")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builders.star", "builders", "cpu")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//try.star", "try_")
 load("./fallback-cq.star", "fallback_cq")
+load("//project.star", "ACTIVE_MILESTONES", "settings")
 
 try_.defaults.set(
     bucket = "try",
@@ -231,7 +231,9 @@ exec("./try/tryserver.chromium.fuzz.star")
 exec("./try/tryserver.chromium.infra.star")
 exec("./try/tryserver.chromium.linux.star")
 exec("./try/tryserver.chromium.mac.star")
+exec("./try/tryserver.chromium.prompt_eval.star")
 exec("./try/tryserver.chromium.rust.star")
 exec("./try/tryserver.chromium.tricium.star")
 exec("./try/tryserver.chromium.updater.star")
 exec("./try/tryserver.chromium.win.star")
+exec("./try/tryserver.crossbench.star")

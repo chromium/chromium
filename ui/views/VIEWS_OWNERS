@@ -10,16 +10,12 @@ chromium-ui-views-reviews@google.com
 # preferentially suggest the review alias above.
 dayeung@chromium.org    #{LAST_RESORT_SUGGESTION}
 dfried@chromium.org     #{LAST_RESORT_SUGGESTION}
-dpranke@google.com      #{LAST_RESORT_SUGGESTION}
 ellyjones@chromium.org  #{LAST_RESORT_SUGGESTION}
 kerenzhu@chromium.org   #{LAST_RESORT_SUGGESTION}
 kylixrd@chromium.org    #{LAST_RESORT_SUGGESTION}
 msw@chromium.org        #{LAST_RESORT_SUGGESTION}
 robliao@chromium.org    #{LAST_RESORT_SUGGESTION}
 tluk@chromium.org       #{LAST_RESORT_SUGGESTION}
-
-# For accessibility-related changes.
-dpranke@google.com      #{LAST_RESORT_SUGGESTION}
 
 # Prefer ellyjones@, kerenzhu@, or lgrey@ for mac specific changes.
 per-file *_mac.*=lgrey@chromium.org

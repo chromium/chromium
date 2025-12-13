@@ -15,6 +15,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -23,7 +24,6 @@
 #include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
-#include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_info_cache.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/compare/cluster_manager.h"
@@ -41,7 +41,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/unified_consent/consent_throttle.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
@@ -116,12 +115,13 @@ namespace metrics {
 class ScheduledMetricsManager;
 }  // namespace metrics
 
+class AccountChecker;
 class BookmarkUpdateManager;
 class DiscountInfosStorage;
 class ProductSpecificationsServerProxy;
 class ProductSpecificationsService;
-class ShoppingPowerBookmarkDataProvider;
 class ShoppingBookmarkModelObserver;
+class ShoppingPowerBookmarkDataProvider;
 class SubscriptionsManager;
 class SubscriptionsObserver;
 class WebWrapper;

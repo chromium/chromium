@@ -78,6 +78,12 @@ component("google_benchmark") {
     # google_benchmark expects a BENCHMARK_VERSION definition
     "BENCHMARK_VERSION=\"1.9.0\"",
   ]
+
+  if (is_linux) {
+    # Include hardware performance counter support.
+    defines += [ "HAVE_LIBPFM=1" ]
+    deps = [ "//third_party/libpfm4" ]
+  }
 }
 
 component("benchmark_main") {

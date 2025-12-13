@@ -79,8 +79,7 @@ gfx::RectF ClampBoundingBox(const gfx::RectF& bounds,
 
 float EffectiveSlopDistance(const MotionEvent& event,
                             const GestureProvider::Config& config) {
-  return (base::FeatureList::IsEnabled(features::kStylusSpecificTapSlop) &&
-          event.GetToolType() == MotionEvent::ToolType::STYLUS)
+  return event.GetToolType() == MotionEvent::ToolType::STYLUS
              ? config.gesture_detector_config.stylus_slop
              : config.gesture_detector_config.touch_slop;
 }
@@ -295,6 +294,10 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     SendImpl(CreateGesture(CreateTouchGestureDetails(EventType::kGestureEnd),
                            generic_cancel_event),
              /*should_update=*/false);
+  }
+
+  void OnUnconfirmedTapConvertedToTap() {
+    gesture_detector_.OnUnconfirmedTapConvertedToTap();
   }
 
   // ScaleGestureListener implementation.
@@ -720,6 +723,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
 
   bool IsPinchInProgress() const { return pinch_event_sent_; }
 
+  GestureDetector* GetGestureDetectorForTesting() { return &gesture_detector_; }
+
  private:
   bool OnSingleTapImpl(const MotionEvent& e, int tap_count) {
     // Long taps in the edges of the screen have their events delayed by
@@ -930,6 +935,18 @@ void GestureProvider::SendSynthesizedEndEvents() {
   gesture_listener_->SendSynthesizedEndEvents();
 }
 
+void GestureProvider::OnUnconfirmedTapConvertedToTap() {
+  gesture_listener_->OnUnconfirmedTapConvertedToTap();
+}
+
+GestureDetector* GestureProvider::GetGestureDetectorForTesting() {
+  if (!gesture_listener_) {
+    return nullptr;
+  }
+  return static_cast<GestureListenerImpl*>(gesture_listener_.get())
+      ->GetGestureDetectorForTesting();  // IN-TEST
+}
+
 bool GestureProvider::CanHandle(const MotionEvent& event) const {
   // Aura requires one cancel event per touch point, whereas Android requires
   // one cancel event per touch sequence. Thus we need to allow extra cancel
@@ -940,6 +957,7 @@ bool GestureProvider::CanHandle(const MotionEvent& event) const {
 }
 
 void GestureProvider::OnTouchEventHandlingBegin(const MotionEvent& event) {
+  last_event_without_history_ = event.Clone(/*with_history=*/false);
   switch (event.GetAction()) {
     case MotionEvent::Action::DOWN:
       current_down_event_ = event.Clone();

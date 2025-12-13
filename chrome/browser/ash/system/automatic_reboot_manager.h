@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -26,6 +27,7 @@
 #include "ui/base/user_activity/user_activity_observer.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace base {
 class TickClock;
@@ -79,7 +81,9 @@ class AutomaticRebootManager : public chromeos::PowerManagerClient::Observer,
                                public ui::UserActivityObserver,
                                public session_manager::SessionManagerObserver {
  public:
-  AutomaticRebootManager(const base::Clock* clock,
+  // `local_state` must be non-null, and must outlive `this`.
+  AutomaticRebootManager(PrefService* local_state,
+                         const base::Clock* clock,
                          const base::TickClock* tick_clock);
 
   AutomaticRebootManager(const AutomaticRebootManager&) = delete;
@@ -148,6 +152,7 @@ class AutomaticRebootManager : public chromeos::PowerManagerClient::Observer,
   const raw_ptr<const base::Clock> clock_;
   const raw_ptr<const base::TickClock> tick_clock_;
 
+  const raw_ref<PrefService> local_state_;
   PrefChangeRegistrar local_state_registrar_;
 
   base::CallbackListSubscription on_app_terminating_subscription_;

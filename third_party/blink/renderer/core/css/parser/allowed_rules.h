@@ -50,9 +50,6 @@ class AllowedRules {
   bool operator==(const AllowedRules& other) const {
     return bits_ == other.bits_;
   }
-  bool operator!=(const AllowedRules& other) const {
-    return bits_ != other.bits_;
-  }
 
   void Remove(CSSAtRuleID id) { bits_ &= ~(uint64_t{1} << AtRuleBit(id)); }
   bool Has(CSSAtRuleID id) const { return (bits_ >> AtRuleBit(id)) & 1; }

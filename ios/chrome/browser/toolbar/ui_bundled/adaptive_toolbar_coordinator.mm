@@ -5,8 +5,12 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
+#import "components/saved_tab_groups/public/versioning_message_controller.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -14,6 +18,8 @@
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -30,12 +36,17 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_view_controller_delegate.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button_actions_handler.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button_visibility_configuration.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
+#import "ui/base/l10n/l10n_util.h"
+
+using tab_groups::TabGroupSyncServiceFactory;
+using tab_groups::VersioningMessageController;
 
 @interface AdaptiveToolbarCoordinator () <AdaptiveToolbarViewControllerDelegate>
 
@@ -92,11 +103,16 @@
   self.mediator.actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:browser
              scenario:kMenuScenarioHistogramToolbarMenu];
+  self.mediator.commandDispatcher = browser->GetCommandDispatcher();
 
   _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       FullscreenController::FromBrowser(browser), self.viewController);
 
   self.viewController.menuProvider = self.mediator;
+
+  if ([self hasTabGridButton]) {
+    [self displayAppUpdatedIPHIfNeeded];
+  }
 }
 
 - (void)stop {
@@ -132,6 +148,10 @@
   [self.viewController showPrerenderingAnimation];
 }
 
+- (void)setLocationBarHeight:(CGFloat)height {
+  [self.viewController setLocationBarHeight:height];
+}
+
 #pragma mark - AdaptiveToolbarViewControllerDelegate
 
 - (void)exitFullscreen:(FullscreenExitReason)FullscreenExitReason {
@@ -147,6 +167,12 @@
         .SetHasExitedManually(true)
         .Record(ukm::UkmRecorder::Get());
   }
+}
+
+- (BOOL)isReaderModeActive {
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  return IsReaderModeActiveInWebState(webState);
 }
 
 #pragma mark - NewTabPageControllerDelegate
@@ -215,6 +241,91 @@
       [[ToolbarButtonVisibilityConfiguration alloc] initWithType:type];
 
   return buttonFactory;
+}
+
+- (BOOL)hasTabGridButton {
+  // Implemented in primary and secondary toolbars directly.
+  return NO;
+}
+
+- (BOOL)shouldPointArrowDownForTabGridIPH {
+  return YES;
+}
+
+#pragma mark - Private
+
+// Returns the versioning message controller, if any.
+- (VersioningMessageController*)versioningMessageController {
+  CHECK(self.browser);
+  auto* tabGroupSyncService =
+      TabGroupSyncServiceFactory::GetForProfile(self.browser->GetProfile());
+  if (!tabGroupSyncService) {
+    return nullptr;
+  }
+  return tabGroupSyncService->GetVersioningMessageController();
+}
+
+// Called to check whether to show the app-updated IPH and show it if needed.
+- (void)displayAppUpdatedIPHIfNeeded {
+  CHECK([self hasTabGridButton]);
+
+  auto* versioningMessageController = [self versioningMessageController];
+  if (!versioningMessageController) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  versioningMessageController->ShouldShowMessageUiAsync(
+      VersioningMessageController::MessageType::VERSION_UPDATED_MESSAGE,
+      base::BindOnce(
+          [](AdaptiveToolbarCoordinator* coordinator, bool shouldShow) {
+            if (shouldShow) {
+              [coordinator displayAppUpdatedIPH];
+            }
+          },
+          weakSelf));
+}
+
+// Called when the app-updated IPH should actually be shown.
+- (void)displayAppUpdatedIPH {
+  CHECK([self hasTabGridButton]);
+
+  BOOL shouldPointArrowDown = [self shouldPointArrowDownForTabGridIPH];
+
+  // Present the IPH.
+  NSString* IPHTitle = l10n_util::GetNSString(
+      IDS_COLLABORATION_SHARED_TAB_GROUPS_AVAILABLE_AGAIN_IPH_MESSAGE);
+  BubbleViewControllerPresenter* presenter =
+      [[BubbleViewControllerPresenter alloc]
+               initWithText:IPHTitle
+                      title:nil
+             arrowDirection:shouldPointArrowDown ? BubbleArrowDirectionDown
+                                                 : BubbleArrowDirectionUp
+                  alignment:BubbleAlignmentBottomOrTrailing
+                 bubbleType:BubbleViewTypeDefault
+            pageControlPage:BubblePageControlPageNone
+          dismissalCallback:nil];
+  presenter.voiceOverAnnouncement = IPHTitle;
+
+  UIView* button = [self.viewController tabGridButton];
+  CGRect frameInWindow = [button convertRect:button.bounds toView:nil];
+  CGPoint anchorPoint =
+      CGPointMake(CGRectGetMidX(frameInWindow),
+                  shouldPointArrowDown ? CGRectGetMinY(frameInWindow)
+                                       : CGRectGetMaxY(frameInWindow));
+  if (![presenter canPresentInView:self.baseViewController.view
+                       anchorPoint:anchorPoint]) {
+    return;
+  }
+
+  [presenter presentInViewController:self.baseViewController
+                         anchorPoint:anchorPoint];
+
+  // Notify that the message has been displayed.
+  auto* versioningMessageController = [self versioningMessageController];
+  CHECK(versioningMessageController);
+  versioningMessageController->OnMessageUiShown(
+      VersioningMessageController::MessageType::VERSION_UPDATED_MESSAGE);
 }
 
 @end

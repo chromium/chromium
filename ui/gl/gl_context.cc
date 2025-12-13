@@ -18,7 +18,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
@@ -53,7 +52,7 @@ constinit thread_local GLContext* current_real_context = nullptr;
 }  // namespace
 
 // static
-base::subtle::Atomic32 GLContext::total_gl_contexts_ = 0;
+std::atomic<int32_t> GLContext::total_gl_contexts_ = 0;
 // static
 bool GLContext::switchable_gpus_supported_ = false;
 
@@ -83,29 +82,24 @@ GLContext::GLContext(GLShareGroup* share_group) : share_group_(share_group) {
   if (!share_group_.get())
     share_group_ = new gl::GLShareGroup();
   share_group_->AddContext(this);
-  base::subtle::NoBarrier_AtomicIncrement(&total_gl_contexts_, 1);
+  total_gl_contexts_.fetch_add(1, std::memory_order_relaxed);
 }
 
 GLContext::~GLContext() {
-  DCHECK(has_called_on_destory_);
-
-#if BUILDFLAG(IS_APPLE)
-  DCHECK(!HasBackpressureFences());
-#endif
+  DCHECK(has_called_on_destroy_);
   share_group_->RemoveContext(this);
   if (GetCurrent() == this) {
     SetCurrent(nullptr);
     SetThreadLocalCurrentGL(nullptr);
   }
-  base::subtle::Atomic32 after_value =
-      base::subtle::NoBarrier_AtomicIncrement(&total_gl_contexts_, -1);
+  int32_t after_value =
+      total_gl_contexts_.fetch_add(-1, std::memory_order_relaxed);
   DCHECK(after_value >= 0);
 }
 
 // static
 int32_t GLContext::TotalGLContexts() {
-  return static_cast<int32_t>(
-      base::subtle::NoBarrier_Load(&total_gl_contexts_));
+  return total_gl_contexts_.load(std::memory_order_relaxed);
 }
 
 // static
@@ -274,95 +268,6 @@ GLContextEGL* GLContext::AsGLContextEGL() {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_APPLE)
-constexpr uint64_t kInvalidFenceId = 0;
-
-void GLContext::AddMetalSharedEventsForBackpressure(
-    std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>> events) {
-  for (auto& e : events) {
-    next_backpressure_events_.push_back(std::move(e));
-  }
-}
-
-uint64_t GLContext::BackpressureFenceCreate() {
-  TRACE_EVENT0("gpu", "GLContext::BackpressureFenceCreate");
-
-  std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>>
-      backpressure_events = std::move(next_backpressure_events_);
-
-  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
-    // Don't use a GLFence here since we already have Metal shared events
-    // corresponding to each GL access and we can avoid any fence overhead.
-    backpressure_fences_[++next_backpressure_fence_] = {
-        nullptr, std::move(backpressure_events)};
-    return next_backpressure_fence_;
-  } else if (gl::GLFence::IsSupported()) {
-    // This flush will trigger a crash if FlushForDriverCrashWorkaround is not
-    // called sufficiently frequently.
-    glFlush();
-    backpressure_fences_[++next_backpressure_fence_] = {
-        GLFence::Create(), std::move(backpressure_events)};
-    return next_backpressure_fence_;
-  } else {
-    glFinish();
-    return kInvalidFenceId;
-  }
-}
-
-void GLContext::BackpressureFenceWait(uint64_t fence_id) {
-  TRACE_EVENT0("gpu", "GLContext::BackpressureFenceWait");
-  if (fence_id == kInvalidFenceId) {
-    return;
-  }
-
-  // If a fence is not found, then it has already been waited on.
-  auto it = backpressure_fences_.find(fence_id);
-  if (it == backpressure_fences_.end()) {
-    return;
-  }
-  auto [fence, events] = std::move(it->second);
-  backpressure_fences_.erase(it);
-
-  // Poll for all Metal shared events to be signaled with a 1ms delay.
-  bool events_complete = false;
-  while (!events_complete) {
-    events_complete = true;
-    {
-      TRACE_EVENT0("gpu", "BackpressureMetalSharedEvent::HasCompleted");
-      for (const auto& e : events) {
-        if (!e->HasCompleted()) {
-          events_complete = false;
-          break;
-        }
-      }
-    }
-    if (!events_complete) {
-      base::PlatformThread::Sleep(base::Milliseconds(1));
-    }
-  }
-
-  if (fence) {
-    fence->ClientWait();
-    fence.reset();
-  }
-
-  // Waiting on |fence_id| has implicitly waited on all previous fences, so
-  // remove them.
-  while (!backpressure_fences_.empty() &&
-         backpressure_fences_.begin()->first < fence_id) {
-    backpressure_fences_.erase(backpressure_fences_.begin());
-  }
-}
-
-bool GLContext::HasBackpressureFences() const {
-  return !backpressure_fences_.empty();
-}
-
-void GLContext::DestroyBackpressureFences() {
-  backpressure_fences_.clear();
-}
-#endif
-
 #if BUILDFLAG(IS_MAC)
 void GLContext::FlushForDriverCrashWorkaround() {
   // If running on Apple silicon, regardless of the architecture, disable this
@@ -418,8 +323,8 @@ GLContext* GLContext::GetRealCurrent() {
 }
 
 void GLContext::OnContextWillDestroy() {
-  DCHECK(!has_called_on_destory_);
-  has_called_on_destory_ = true;
+  DCHECK(!has_called_on_destroy_);
+  has_called_on_destroy_ = true;
 
   observer_list_.Notify(&GLContextObserver::OnGLContextWillDestroy, this);
 }

@@ -280,7 +280,7 @@ Object: {
 			columnNumber: number
 			frame: string
 			functionName: string
-			isolate: number
+			isolate: string
 			lineNumber: number
 			sampleTraceId: number
 			scriptId: string

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -14,6 +15,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -47,7 +49,6 @@ constexpr char kPlatform[] = "CHROME_OS";
 #else
 constexpr char kPlatform[] = "UNSPECIFIED_PLATFORM";
 #endif
-// TODO(crbug.com/40749413): Add language code to request.
 constexpr char kRequestBody[] = R"({
   "client_info": {
     "platform_type": "%s",
@@ -322,13 +323,12 @@ void DriveService::GetDriveFilesInternal() {
   }
 
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "ntp_drive_module", identity_manager_,
-      signin::ScopeSet({GaiaConstants::kDriveReadOnlyOAuth2Scope}),
+      signin::OAuthConsumerId::kNtpDriveService, identity_manager_,
       base::BindOnce(&DriveService::OnTokenReceived,
                      weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
       base::FeatureList::IsEnabled(
-          ntp_features::kNtpDriveModuleNoSyncRequirement)
+          ntp_features::kNtpDriveModuleHistorySyncRequirement)
           ? signin::ConsentLevel::kSignin
           : signin::ConsentLevel::kSync);
 }
@@ -411,7 +411,7 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
 }
 
 void DriveService::OnJsonReceived(const std::string& token,
-                                  std::unique_ptr<std::string> response_body) {
+                                  std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const int net_error = url_loader_->NetError();

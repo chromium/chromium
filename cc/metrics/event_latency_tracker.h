@@ -12,6 +12,10 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 
+namespace viz {
+struct BeginFrameArgs;
+}
+
 namespace cc {
 
 // Used by `CompositorFrameReporter` to report event latency information back to
@@ -46,7 +50,8 @@ class CC_EXPORT EventLatencyTracker {
   EventLatencyTracker& operator=(const EventLatencyTracker&) = delete;
 
   // Called every time a frame has latency metrics to report for events.
-  virtual void ReportEventLatency(std::vector<LatencyData> latencies) = 0;
+  virtual void ReportEventLatency(const viz::BeginFrameArgs& args,
+                                  std::vector<LatencyData> latencies) = 0;
 };
 
 }  // namespace cc

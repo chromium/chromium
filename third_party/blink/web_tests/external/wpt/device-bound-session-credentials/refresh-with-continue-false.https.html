@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>DBSC session ended with continue:false</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="helper.js" type="module"></script>
@@ -15,7 +14,7 @@
     addCookieAndSessionCleanup(t);
 
     // Configure server to end the session upon refresh.
-    configureServer({ shouldRefreshEndSession: true });
+    await configureServer({ shouldRefreshEndSession: true });
 
     // Prompt starting a session, and wait until registration completes.
     const loginResponse = await fetch('login.py');
@@ -30,7 +29,7 @@
     expireCookie(expectedCookieAndAttributes);
     assert_false(documentHasCookie(expectedCookieAndValue));
     const authResponseAfterExpiry = await fetch('verify_authenticated.py');
-    assert_equals(authResponseAfterExpiry.status, 401);
+    assert_equals(authResponseAfterExpiry.status, 403);
     assert_false(documentHasCookie(expectedCookieAndValue));
   }, "A session ended with continue:false does not refresh cookies");
 </script>

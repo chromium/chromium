@@ -19,13 +19,7 @@ COMPONENT_EXPORT(MEDIA_WEBRTC)
 BASE_DECLARE_FEATURE(kWebRtcAllowWgcScreenCapturer);
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
-BASE_DECLARE_FEATURE(kWebRtcAllowWgcWindowCapturer);
-
-COMPONENT_EXPORT(MEDIA_WEBRTC)
 BASE_DECLARE_FEATURE(kWebRtcAllowWgcScreenZeroHz);
-
-COMPONENT_EXPORT(MEDIA_WEBRTC)
-BASE_DECLARE_FEATURE(kWebRtcAllowWgcWindowZeroHz);
 
 #if BUILDFLAG(IS_WIN)
 COMPONENT_EXPORT(MEDIA_WEBRTC)
@@ -58,10 +52,10 @@ BASE_DECLARE_FEATURE(kWebRtcH265L1T3);
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 BASE_DECLARE_FEATURE(kWebRtcAV1HWEncode);
 
-#if BUILDFLAG(IS_ANDROID)
+// Returns whether the OpenH264 encoder is available in WebRTC based on
+// build flags and OpenH264SoftwareEncoder feature flag status.
 COMPONENT_EXPORT(MEDIA_WEBRTC)
-BASE_DECLARE_FEATURE(kWebRtcApm48kHzSampleRateOnAndroidKillSwitch);
-#endif
+bool IsOpenH264SoftwareEncoderEnabledForWebRTC();
 
 }  // namespace features
 

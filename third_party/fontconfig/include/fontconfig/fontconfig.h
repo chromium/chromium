@@ -54,8 +54,8 @@ typedef int            FcBool;
  */
 
 #define FC_MAJOR                2
-#define FC_MINOR                16
-#define FC_REVISION             2
+#define FC_MINOR                17
+#define FC_REVISION             1
 
 #define FC_VERSION              ((FC_MAJOR * 10000) + (FC_MINOR * 100) + (FC_REVISION))
 
@@ -69,7 +69,7 @@ typedef int            FcBool;
  * it means multiple copies of the font information.
  */
 
-#define FC_CACHE_VERSION_NUMBER 9
+#define FC_CACHE_VERSION_NUMBER 11
 #define _FC_STRINGIFY_(s)       #s
 #define _FC_STRINGIFY(s)        _FC_STRINGIFY_ (s)
 #define FC_CACHE_VERSION        _FC_STRINGIFY (FC_CACHE_VERSION_NUMBER)
@@ -133,6 +133,7 @@ typedef int            FcBool;
 #define FC_DESKTOP_NAME         "desktop"        /* String */
 #define FC_NAMED_INSTANCE       "namedinstance"  /* Bool - true if font is named instance */
 #define FC_FONT_WRAPPER         "fontwrapper"    /* String */
+#define FC_GENERIC_FAMILY       "genericfamily"  /* Integer */
 
 #define FC_CACHE_SUFFIX         ".cache-" FC_CACHE_VERSION
 #define FC_DIR_CACHE_FILE       "fonts.cache-" FC_CACHE_VERSION
@@ -178,10 +179,14 @@ typedef int            FcBool;
 #define FC_WIDTH_EXTRAEXPANDED  150
 #define FC_WIDTH_ULTRAEXPANDED  200
 
-#define FC_PROPORTIONAL         0
-#define FC_DUAL                 90
-#define FC_MONO                 100
-#define FC_CHARCELL             110
+#define FC_SPACING_PROPORTIONAL 0
+#define FC_SPACING_DUAL         90
+#define FC_SPACING_MONO         100
+#define FC_SPACING_CHARCELL     110
+#define FC_PROPORTIONAL         FC_SPACING_PROPORTIONAL
+#define FC_DUAL                 FC_SPACING_DUAL
+#define FC_MONO                 FC_SPACING_MONO
+#define FC_CHARCELL             FC_SPACING_CHARCELL
 
 /* sub-pixel order */
 #define FC_RGBA_UNKNOWN         0
@@ -203,6 +208,22 @@ typedef int            FcBool;
 #define FC_LCD_LIGHT            2
 #define FC_LCD_LEGACY           3
 
+/* Generic family */
+#define FC_FAMILY_UNKNOWN       0
+#define FC_FAMILY_SERIF         1
+#define FC_FAMILY_SANS          2
+#define FC_FAMILY_MONO          3
+#define FC_FAMILY_CURSIVE       4
+#define FC_FAMILY_FANTASY       5
+#define FC_FAMILY_SYSTEM_UI     6
+#define FC_FAMILY_UI_SERIF      7
+#define FC_FAMILY_UI_SANS       8
+#define FC_FAMILY_UI_MONO       9
+#define FC_FAMILY_UI_ROUNDED    10
+#define FC_FAMILY_EMOJI         11
+#define FC_FAMILY_MATH          12
+#define FC_FAMILY_FANGSONG      13
+
 typedef enum _FcType {
     FcTypeUnknown = -1,
     FcTypeVoid,
@@ -216,6 +237,8 @@ typedef enum _FcType {
     FcTypeLangSet,
     FcTypeRange
 } FcType;
+
+typedef int FcObject;
 
 typedef struct _FcMatrix {
     double xx, xy, yx, yy;
@@ -291,9 +314,11 @@ typedef struct _FcFontSet {
 } FcFontSet;
 
 typedef struct _FcObjectSet {
-    int          nobject;
+    int          nobject; /* deprecated */
     int          sobject;
-    const char **objects;
+    const char **objects; /* deprecated */
+    int          nobjIds;
+    FcObject    *objIds;
 } FcObjectSet;
 
 typedef enum _FcMatchKind {
@@ -659,13 +684,6 @@ FcDirCacheLoadFile (const FcChar8 *cache_file, struct stat *file_stat);
 FcPublic void
 FcDirCacheUnload (FcCache *cache);
 
-/* fcfreetype.c */
-FcPublic FcPattern *
-FcFreeTypeQuery (const FcChar8 *file, unsigned int id, FcBlanks *blanks, int *count);
-
-FcPublic unsigned int
-FcFreeTypeQueryAll (const FcChar8 *file, unsigned int id, FcBlanks *blanks, int *count, FcFontSet *set);
-
 /* fcfs.c */
 
 FcPublic FcFontSet *
@@ -887,6 +905,9 @@ FcNameGetConstantFor (const FcChar8 *string, const char *object);
 
 FcPublic FcBool
 FcNameConstant (const FcChar8 *string, int *result);
+
+FcPublic const FcChar8 *
+FcNameGetConstantNameFrom (const char *object, int value);
 
 FcPublic FcPattern *
 FcNameParse (const FcChar8 *name);
@@ -1176,6 +1197,13 @@ FcPublic FcBool
 FcConfigParseAndLoadFromMemory (FcConfig      *config,
                                 const FcChar8 *buffer,
                                 FcBool         complain);
+
+/* fcconffile.c */
+FcPublic FcChar8 *
+FcConfigFileGenerate (FcConfig      *config,
+                      FcPattern     *pat,
+                      const FcChar8 *font_path);
+
 
 _FCFUNCPROTOEND
 

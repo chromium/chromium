@@ -52,10 +52,13 @@ class TouchToFillPaymentMethodControllerBridge
     }
 
     @Override
-    public void onDismissed(boolean dismissedByUser) {
+    public void onDismissed(boolean dismissedByUser, boolean shouldReshow) {
         if (mNativeTouchToFillPaymentMethodViewController != 0) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
-                    .onDismissed(mNativeTouchToFillPaymentMethodViewController, dismissedByUser);
+                    .onDismissed(
+                            mNativeTouchToFillPaymentMethodViewController,
+                            dismissedByUser,
+                            shouldReshow);
         }
     }
 
@@ -120,16 +123,44 @@ class TouchToFillPaymentMethodControllerBridge
     }
 
     @Override
+    public void bnplSuggestionSelected(@Nullable Long extractedAmount) {
+        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+            TouchToFillPaymentMethodControllerBridgeJni.get()
+                    .bnplSuggestionSelected(
+                            mNativeTouchToFillPaymentMethodViewController, extractedAmount);
+        }
+    }
+
+    @Override
     public void openPassesManagementUi() {
         if (mContext.get() != null) {
             AutofillFallbackSurfaceLauncher.openGoogleWalletPassesPage(mContext.get());
         }
     }
 
+    @Override
+    public void onBnplIssuerSuggestionSelected(String issuerId) {
+        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+            TouchToFillPaymentMethodControllerBridgeJni.get()
+                    .onBnplIssuerSuggestionSelected(
+                            mNativeTouchToFillPaymentMethodViewController, issuerId);
+        }
+    }
+
+    @Override
+    public void onBnplTosAccepted() {
+        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+            TouchToFillPaymentMethodControllerBridgeJni.get()
+                    .onBnplTosAccepted(mNativeTouchToFillPaymentMethodViewController);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onDismissed(
-                long nativeTouchToFillPaymentMethodViewController, boolean dismissedByUser);
+                long nativeTouchToFillPaymentMethodViewController,
+                boolean dismissedByUser,
+                boolean shouldReshow);
 
         void scanCreditCard(long nativeTouchToFillPaymentMethodViewController);
 
@@ -137,11 +168,16 @@ class TouchToFillPaymentMethodControllerBridge
 
         void creditCardSuggestionSelected(
                 long nativeTouchToFillPaymentMethodViewController,
-                String uniqueId,
+                @JniType("std::string") String uniqueId,
                 boolean isVirtual);
 
+        void bnplSuggestionSelected(
+                long nativeTouchToFillPaymentMethodViewController,
+                @JniType("std::optional<int64_t>") @Nullable Long extractedAmount);
+
         void localIbanSuggestionSelected(
-                long nativeTouchToFillPaymentMethodViewController, String guid);
+                long nativeTouchToFillPaymentMethodViewController,
+                @JniType("std::string") String guid);
 
         void serverIbanSuggestionSelected(
                 long nativeTouchToFillPaymentMethodViewController, long instrumentId);
@@ -149,5 +185,11 @@ class TouchToFillPaymentMethodControllerBridge
         void loyaltyCardSuggestionSelected(
                 long nativeTouchToFillPaymentMethodViewController,
                 @JniType("LoyaltyCard") LoyaltyCard loyaltyCardNumber);
+
+        void onBnplIssuerSuggestionSelected(
+                long nativeTouchToFillPaymentMethodViewController,
+                @JniType("std::string") String issuerId);
+
+        void onBnplTosAccepted(long nativeTouchToFillPaymentMethodViewController);
     }
 }

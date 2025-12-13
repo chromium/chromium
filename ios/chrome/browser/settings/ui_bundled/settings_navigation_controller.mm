@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/ios/ios_util.h"
@@ -25,9 +23,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/default_browser/default_browser_settings_table_view_controller.h"
@@ -60,7 +55,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
@@ -91,7 +85,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 @interface SettingsNavigationController () <
     AutofillProfileEditCoordinatorDelegate,
     BWGSettingsCoordinatorDelegate,
-    ClearBrowsingDataCoordinatorDelegate,
     ContentSettingsCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
     ManageAccountsCoordinatorDelegate,
@@ -134,11 +127,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 // BWG settings coordinator.
 @property(nonatomic, strong) BWGSettingsCoordinator* BWGSettingsCoordinator;
-
-// TODO(crbug.com/335387869): Delete this coordinator when Quick Delete is fully
-// launched. The coordinator for the clear browsing data screen.
-@property(nonatomic, strong)
-    ClearBrowsingDataCoordinator* clearBrowsingDataCoordinator;
 
 // Safety Check coordinator.
 @property(nonatomic, strong) SafetyCheckCoordinator* safetyCheckCoordinator;
@@ -399,6 +387,22 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 + (instancetype)
+    credentialImportControllerForBrowser:(Browser*)browser
+                                delegate:
+                                    (id<SettingsNavigationControllerDelegate>)
+                                        delegate
+                                    UUID:(NSUUID*)UUID {
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+  [navigationController showPasswordManagerForCredentialImport:UUID];
+
+  return navigationController;
+}
+
++ (instancetype)
     userFeedbackControllerForBrowser:(Browser*)browser
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate
@@ -479,10 +483,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                              browser:browser
                             delegate:delegate];
 
-  // Make sure the cancel button is always present, as the Autofill screen
-  // isn't just shown from Settings.
-  [controller navigationItem].leftBarButtonItem =
-      [navigationController cancelButton];
   return navigationController;
 }
 
@@ -500,10 +500,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                              browser:browser
                             delegate:delegate];
 
-  // Make sure the cancel button is always present, as the Autofill screen
-  // isn't just shown from Settings.
-  [controller navigationItem].leftBarButtonItem =
-      [navigationController cancelButton];
   return navigationController;
 }
 
@@ -566,27 +562,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 + (instancetype)
-    clearBrowsingDataControllerForBrowser:(Browser*)browser
-                                 delegate:
-                                     (id<SettingsNavigationControllerDelegate>)
-                                         delegate {
-  CHECK(!IsIosQuickDeleteEnabled());
-  SettingsNavigationController* navigationController =
-      [[SettingsNavigationController alloc]
-          initWithRootViewController:nil
-                             browser:browser
-                            delegate:delegate];
-  navigationController.clearBrowsingDataCoordinator =
-      [[ClearBrowsingDataCoordinator alloc]
-          initWithBaseNavigationController:navigationController
-                                   browser:browser];
-  navigationController.clearBrowsingDataCoordinator.delegate =
-      navigationController;
-  [navigationController.clearBrowsingDataCoordinator start];
-  return navigationController;
-}
-
-+ (instancetype)
     inactiveTabsControllerForBrowser:(Browser*)browser
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate {
@@ -644,7 +619,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                       (id<SettingsNavigationControllerDelegate>)
                                           delegate {
   CHECK(browser);
-  CHECK(!browser->GetProfile()->IsOffTheRecord());
+  CHECK_EQ(browser->type(), Browser::Type::kRegular);
+  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M146);
   self = [super initWithRootViewController:rootViewController];
   if (self) {
     _browser = browser;
@@ -672,7 +648,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   self.toolbar.translucent = NO;
   self.navigationBar.barTintColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
@@ -730,13 +705,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopGoogleServicesSettingsCoordinator];
   [self stopPasswordsCoordinator];
   [self stopSafetyCheckCoordinator];
-  [self stopClearBrowsingDataCoordinator];
   [self stopPrivacySafeBrowsingCoordinator];
   [self stopPrivacySettingsCoordinator];
   [self stopInactiveTabSettingsCoordinator];
   [self stopPasswordDetailsCoordinator];
   [self stopAutofillProfileEditCoordinator];
   [self stopNotificationsCoordinator];
+  [self stopBWGSettingsCoordinator];
 
   // Reset the delegate to prevent any queued transitions from attempting to
   // close the settings.
@@ -772,6 +747,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)showBWGSettingsPage {
   CHECK(IsPageActionMenuEnabled());
+  [self stopBWGSettingsCoordinator];
   self.BWGSettingsCoordinator = [[BWGSettingsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser];
@@ -930,9 +906,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
                               inEditMode:(BOOL)editMode {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.passwordDetailsCoordinator);
+  // Not an invariant due to possible race conditions. DCHECKing for debugging
+  // purposes. See crbug.com/40067451.
+  DCHECK(!self.passwordDetailsCoordinator);
   self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser
@@ -950,13 +926,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.savedPasswordsCoordinator stop];
   self.savedPasswordsCoordinator.delegate = nil;
   self.savedPasswordsCoordinator = nil;
-}
-
-// Stops the underlying clear browsing data coordinator if it exists.
-- (void)stopClearBrowsingDataCoordinator {
-  [self.clearBrowsingDataCoordinator stop];
-  self.clearBrowsingDataCoordinator.delegate = nil;
-  self.clearBrowsingDataCoordinator = nil;
 }
 
 // Stops the underlying inactive tabs settings coordinator if it exists.
@@ -1066,14 +1035,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     (AutofillProfileEditCoordinator*)coordinator {
   DCHECK_EQ(self.autofillProfileEditCoordinator, coordinator);
   [self stopAutofillProfileEditCoordinator];
-}
-
-#pragma mark - ClearBrowsingDataCoordinatorDelegate
-
-- (void)clearBrowsingDataCoordinatorViewControllerWasRemoved:
-    (ClearBrowsingDataCoordinator*)coordinator {
-  DCHECK_EQ(self.clearBrowsingDataCoordinator, coordinator);
-  [self stopClearBrowsingDataCoordinator];
 }
 
 #pragma mark - SafetyCheckCoordinatorDelegate
@@ -1250,6 +1211,19 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self showSavedPasswords];
 }
 
+- (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID {
+  self.savedPasswordsCoordinator = [[PasswordsCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  self.savedPasswordsCoordinator.delegate = self;
+
+  // `UUID` needs to be set before calling `start`, as the latter will invoke
+  // user verification and the presence of `UUID` will be a signal to start the
+  // credential import on successful user verification.
+  self.savedPasswordsCoordinator.credentialImportUUID = UUID;
+  [self.savedPasswordsCoordinator start];
+}
+
 - (void)showAddressDetails:(const autofill::AutofillProfile)address
                 inEditMode:(BOOL)editMode
      offerMigrateToAccount:(BOOL)offerMigrateToAccount {
@@ -1312,17 +1286,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   ConfigureHandlers(controller, _browser->GetCommandDispatcher());
   controller.source = source;
   [self pushViewController:controller animated:YES];
-}
-
-- (void)showClearBrowsingDataSettings {
-  CHECK(!IsIosQuickDeleteEnabled());
-  [self stopClearBrowsingDataCoordinator];
-
-  self.clearBrowsingDataCoordinator = [[ClearBrowsingDataCoordinator alloc]
-      initWithBaseNavigationController:self
-                               browser:self.browser];
-  self.clearBrowsingDataCoordinator.delegate = self;
-  [self.clearBrowsingDataCoordinator start];
 }
 
 // Shows the Safety Check page and starts the Safety Check for `referrer`.
@@ -1394,7 +1357,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     (ManageAccountsCoordinator*)coordinator {
   CHECK_EQ(coordinator, self.manageAccountsCoordinator,
            base::NotFatalUntil::M144);
+  // If this navigation controller was opened directly with the account manager,
+  // the navigation controller should be closed.
+  BOOL stopNavigationController = [self viewControllers].count == 1;
   [self stopManageAccountsCoordinator];
+  if (stopNavigationController) {
+    [self.settingsNavigationDelegate closeSettings];
+  }
 }
 
 #pragma mark - BWGSettingsCoordinatorDelegate

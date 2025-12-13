@@ -10,6 +10,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"

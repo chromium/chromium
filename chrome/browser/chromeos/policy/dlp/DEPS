@@ -27,11 +27,11 @@ include_rules = [
   "+chrome/browser/printing",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_commands.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_list_observer.h",
   "+chrome/browser/ui/browser_navigator.h",
-  "+chrome/browser/ui/browser_navigator_params.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/tabs/tab_activity_simulator.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
@@ -41,3 +41,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "dlp_content_tab_helper_browsertest\\.cc": [
+    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h",
+  ]
+}

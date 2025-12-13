@@ -29,6 +29,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -38,8 +39,8 @@ import java.util.List;
  * Dialog that appears when a tab group is clicked on in the Tab Switcher or when the tab group
  * snackbar is expanded.
  *
- * @param <HostStationT> the station where the Tab Group Dialog is opened from. Should be
- *     TabSwitcherStation or PageStation.
+ * @param <HostStationT> the station where the Tab Group Dialog is opened from. Should be {@link
+ *     TabSwitcherStation} or {@link CtaPageStation}.
  */
 public class TabGroupDialogFacility<
                 HostStationT extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity>>
@@ -102,10 +103,17 @@ public class TabGroupDialogFacility<
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_JOIN_ONLY)) {
             // TODO(ckitagawa): Add handling for an already shared group.
-            if (isAllowedToShare()) {
-                shareButtonElement =
-                        declareView(toolbarElement.descendant(withId(R.id.share_button)));
-            }
+
+            // Make this a delayed element check to ensure the tab model is available on check.
+            declareElementFactory(
+                    mHostStation.tabModelElement,
+                    delayedElements -> {
+                        if (isAllowedToShare()) {
+                            shareButtonElement =
+                                    delayedElements.declareView(
+                                            toolbarElement.descendant(withId(R.id.share_button)));
+                        }
+                    });
 
             // Data sharing layout causes the menu button to be hidden due to the rounded corner.
             listMenuButtonElement =

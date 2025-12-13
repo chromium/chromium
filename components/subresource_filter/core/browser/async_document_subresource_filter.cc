@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/constants.h"

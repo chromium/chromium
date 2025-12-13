@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest,
 
   GURL iwa_url =
       browser->tab_strip_model()->GetActiveWebContents()->GetLastCommittedURL();
-  ASSERT_TRUE(iwa_url.SchemeIs(chrome::kIsolatedAppScheme));
+  ASSERT_TRUE(iwa_url.SchemeIs(webapps::kIsolatedAppScheme));
 
   GURL empty_title_url =
       url::Origin::Create(iwa_url).GetURL().Resolve("/empty_title.html");

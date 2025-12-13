@@ -66,8 +66,8 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
   void Bind(mojo::PendingReceiver<::blink::mojom::blink::CredentialManager>
                 receiver) {
     receiver_.Bind(std::move(receiver));
-    receiver_.set_disconnect_handler(WTF::BindOnce(
-        &MockCredentialManager::Disconnected, WTF::Unretained(this)));
+    receiver_.set_disconnect_handler(
+        BindOnce(&MockCredentialManager::Disconnected, Unretained(this)));
   }
 
   void Disconnected() { disconnected_ = true; }
@@ -97,7 +97,7 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
   void PreventSilentAccess(PreventSilentAccessCallback callback) override {}
   void Get(blink::mojom::blink::CredentialMediationRequirement mediation,
            bool include_passwords,
-           const WTF::Vector<::blink::KURL>& federations,
+           const Vector<::blink::KURL>& federations,
            GetCallback callback) override {
     get_callback_ = std::move(callback);
     loop_.Quit();
@@ -149,9 +149,8 @@ class MockAuthenticatorInterface : public mojom::blink::Authenticator {
   void MakeCredential(
       blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr options,
       MakeCredentialCallback callback) override {}
-  void GetCredential(
-      blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr options,
-      GetCredentialCallback callback) override {
+  void GetCredential(blink::mojom::blink::GetCredentialOptionsPtr options,
+                     GetCredentialCallback callback) override {
     get_callback_ = std::move(callback);
     loop_->Quit();
   }
@@ -184,8 +183,8 @@ class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest {
   void Bind(mojo::PendingReceiver<::blink::mojom::blink::FederatedAuthRequest>
                 receiver) {
     receiver_.Bind(std::move(receiver));
-    receiver_.set_disconnect_handler(WTF::BindOnce(
-        &MockFederatedAuthRequest::Disconnected, WTF::Unretained(this)));
+    receiver_.set_disconnect_handler(
+        BindOnce(&MockFederatedAuthRequest::Disconnected, Unretained(this)));
   }
 
   void Disconnected() { disconnected_ = true; }
@@ -205,12 +204,13 @@ class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest {
 
     std::move(request_token_callback_)
         .Run(mojom::RequestTokenStatus::kSuccess, KURL("https://idp.example"),
-             "token", /*error=*/nullptr, /*is_auto_selected=*/false);
+             base::Value("token"), /*error=*/nullptr,
+             /*is_auto_selected=*/false);
   }
 
  protected:
   void RequestToken(
-      WTF::Vector<blink::mojom::blink::IdentityProviderGetParametersPtr>
+      Vector<blink::mojom::blink::IdentityProviderGetParametersPtr>
           idp_get_params_ptrs,
       mojom::CredentialMediationRequirement requirement,
       RequestTokenCallback callback) override {
@@ -222,8 +222,8 @@ class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest {
   void RequestUserInfo(mojom::blink::IdentityProviderConfigPtr provider,
                        RequestUserInfoCallback callback) override {}
   void CancelTokenRequest() override {}
-  void ResolveTokenRequest(const WTF::String& account_id,
-                           const WTF::String& token,
+  void ResolveTokenRequest(const String& account_id,
+                           base::Value token,
                            ResolveTokenRequestCallback callback) override {}
   void SetIdpSigninStatus(
       const ::scoped_refptr<const ::blink::SecurityOrigin>& origin,
@@ -259,7 +259,7 @@ class CredentialManagerTestingContext {
     if (mock_credential_manager) {
       DomWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
           ::blink::mojom::blink::CredentialManager::Name_,
-          WTF::BindRepeating(
+          BindRepeating(
               [](MockCredentialManager* mock_credential_manager,
                  mojo::ScopedMessagePipeHandle handle) {
                 mock_credential_manager->Bind(
@@ -267,24 +267,24 @@ class CredentialManagerTestingContext {
                         ::blink::mojom::blink::CredentialManager>(
                         std::move(handle)));
               },
-              WTF::Unretained(mock_credential_manager)));
+              Unretained(mock_credential_manager)));
     }
     if (mock_authenticator) {
       DomWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
           ::blink::mojom::blink::Authenticator::Name_,
-          WTF::BindRepeating(
+          BindRepeating(
               [](MockAuthenticatorInterface* mock_authenticator,
                  mojo::ScopedMessagePipeHandle handle) {
                 mock_authenticator->Bind(
                     mojo::PendingReceiver<::blink::mojom::blink::Authenticator>(
                         std::move(handle)));
               },
-              WTF::Unretained(mock_authenticator)));
+              Unretained(mock_authenticator)));
     }
     if (mock_federated_auth_request) {
       DomWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
           ::blink::mojom::blink::FederatedAuthRequest::Name_,
-          WTF::BindRepeating(
+          BindRepeating(
               [](MockFederatedAuthRequest* mock_federated_auth_request,
                  mojo::ScopedMessagePipeHandle handle) {
                 mock_federated_auth_request->Bind(
@@ -292,7 +292,7 @@ class CredentialManagerTestingContext {
                         ::blink::mojom::blink::FederatedAuthRequest>(
                         std::move(handle)));
               },
-              WTF::Unretained(mock_federated_auth_request)));
+              Unretained(mock_federated_auth_request)));
     }
   }
 
@@ -494,7 +494,8 @@ TEST(AuthenticationCredentialsContainerTest, PublicKeyConditionalMediationUkm) {
   context.DomWindow().document()->View()->ResetUkmAggregatorForTesting();
 
   auto* request_options = CredentialRequestOptions::Create();
-  request_options->setMediation("conditional");
+  request_options->setMediation(
+      V8CredentialMediationRequirement::Enum::kConditional);
   auto* public_key_request_options =
       PublicKeyCredentialRequestOptions::Create();
   public_key_request_options->setTimeout(10000);
@@ -560,7 +561,7 @@ TEST_F(AuthenticationCredentialsContainerActiveModeMultiIdpTest,
   idp2->setClientId("clientId");
 
   identity->setProviders({idp1, idp2});
-  identity->setMode("active");
+  identity->setMode(V8IdentityCredentialRequestOptionsMode::Enum::kActive);
   options->setIdentity(identity);
 
   auto promise = AuthenticationCredentialsContainer::credentials(

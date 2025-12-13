@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/features.gni")
 import("//content/public/common/features.gni")
 import("//pdf/features.gni")
 import("//services/screen_ai/buildflags/features.gni")
@@ -21,10 +20,26 @@ if (is_ios) {
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
-    "ENABLE_INK=$enable_ink",
     "ENABLE_PDF_INK2=$enable_pdf_ink2",
     "ENABLE_PDF_SAVE_TO_DRIVE=$enable_pdf_save_to_drive",
     "ENABLE_PDF=$enable_pdf",
+  ]
+}
+
+source_set("pdf_accessibility_constants") {
+  public = [ "pdf_accessibility_constants.h" ]
+}
+
+source_set("pdf_accessibility_constants_helper") {
+  sources = [
+    "pdf_accessibility_constants_helper.cc",
+    "pdf_accessibility_constants_helper.h",
+  ]
+
+  public_deps = [
+    ":pdf_accessibility_constants",
+    "//base",
+    "//ui/accessibility:ax_enums_mojo",
   ]
 }
 
@@ -75,6 +90,11 @@ if (enable_pdf) {
     ]
   }
 
+  source_set("pdf_skia_font_manager") {
+    sources = [ "pdf_skia_font_manager.cc" ]
+    deps = [ "//skia" ]
+  }
+
   source_set("structs") {
     configs += [ ":strict" ]
 
@@ -114,15 +134,21 @@ if (enable_pdf) {
       "paint_ready_rect.h",
       "parsed_params.cc",
       "parsed_params.h",
+      "pdf_annotation_agent.cc",
+      "pdf_annotation_agent.h",
       "pdf_caret.cc",
       "pdf_caret.h",
       "pdf_caret_client.h",
       "pdf_init.cc",
       "pdf_init.h",
+      "pdf_rect.cc",
+      "pdf_rect.h",
       "pdf_transform.cc",
       "pdf_transform.h",
       "pdf_utils/dates.cc",
       "pdf_utils/dates.h",
+      "pdf_utils/text_util.cc",
+      "pdf_utils/text_util.h",
       "pdfium/pdfium_api_string_buffer_adapter.cc",
       "pdfium/pdfium_api_string_buffer_adapter.h",
       "pdfium/pdfium_api_wrappers.cc",
@@ -185,6 +211,7 @@ if (enable_pdf) {
       ":buildflags",
       ":content_restriction",
       ":features",
+      ":pdf_accessibility_constants_helper",
       ":structs",
       "//base",
       "//base:i18n",
@@ -258,6 +285,8 @@ if (enable_pdf) {
         "pdf_ink_undo_redo_model.h",
         "pdfium/pdfium_ink_reader.cc",
         "pdfium/pdfium_ink_reader.h",
+        "pdfium/pdfium_ink_transform.cc",
+        "pdfium/pdfium_ink_transform.h",
         "pdfium/pdfium_ink_writer.cc",
         "pdfium/pdfium_ink_writer.h",
       ]
@@ -342,10 +371,14 @@ if (enable_pdf) {
 
     configs += [ ":strict" ]
 
-    public_deps = [ ":structs" ]
+    public_deps = [
+      ":pdf_accessibility_constants",
+      ":structs",
+      "//base",
+    ]
 
     deps = [
-      "//base",
+      ":pdf_accessibility_constants_helper",
       "//services/screen_ai/buildflags",
       "//skia",
       "//ui/gfx/geometry",
@@ -361,13 +394,18 @@ if (enable_pdf) {
     ]
 
     sources = [
-      "pdf_annotation_agent.cc",
-      "pdf_annotation_agent.h",
       "pdf_view_web_plugin.cc",
       "post_message_receiver.cc",
       "post_message_receiver.h",
       "v8_value_converter.h",
     ]
+
+    if (enable_pdf_save_to_drive) {
+      sources += [
+        "save_data_buffer_handler_for_drive.cc",
+        "save_data_buffer_handler_for_drive.h",
+      ]
+    }
 
     friend = [ ":pdf_unittests" ]
 
@@ -377,7 +415,7 @@ if (enable_pdf) {
 
     public_deps = [
       "//pdf/mojom",
-      "//ui/base:base",
+      "//ui/base",
     ]
 
     deps = [
@@ -414,6 +452,10 @@ if (enable_pdf) {
     sources = [
       "test/fake_annotation_agent_host.cc",
       "test/fake_annotation_agent_host.h",
+      "test/input_event_util.cc",
+      "test/input_event_util.h",
+      "test/mock_pdf_caret_client.cc",
+      "test/mock_pdf_caret_client.h",
       "test/mock_web_associated_url_loader.cc",
       "test/mock_web_associated_url_loader.h",
       "test/mouse_event_builder.cc",
@@ -429,6 +471,7 @@ if (enable_pdf) {
     ]
 
     deps = [
+      ":accessibility",
       ":buildflags",
       ":internal",
       "//base",
@@ -441,7 +484,7 @@ if (enable_pdf) {
       "//testing/gtest",
       "//third_party/blink/public:blink",
       "//ui/gfx/range",
-      "//ui/latency:latency",
+      "//ui/latency",
     ]
   }
 
@@ -458,6 +501,7 @@ if (enable_pdf) {
       "parsed_params_unittest.cc",
       "pdf_annotation_agent_unittest.cc",
       "pdf_caret_unittest.cc",
+      "pdf_rect_unittest.cc",
       "pdf_transform_unittest.cc",
       "pdf_utils/dates_unittest.cc",
       "pdf_view_web_plugin_unittest.cc",
@@ -497,6 +541,7 @@ if (enable_pdf) {
       ":features",
       ":internal",
       ":pdf",
+      ":pdf_accessibility_constants_helper",
       ":pdf_test_utils",
       ":pdf_view_web_plugin",
       ":structs",
@@ -522,7 +567,7 @@ if (enable_pdf) {
       "//tools/v8_context_snapshot:buildflags",
       "//ui/base",
       "//ui/base/cursor",
-      "//ui/events/blink:blink",
+      "//ui/events/blink",
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",
       "//ui/gfx/range",
@@ -538,11 +583,13 @@ if (enable_pdf) {
       sources += [
         "draw_utils/page_boundary_intersect_unittest.cc",
         "pdf_ink_brush_unittest.cc",
+        "pdf_ink_conversions_unittest.cc",
         "pdf_ink_cursor_unittest.cc",
         "pdf_ink_module_unittest.cc",
         "pdf_ink_transform_unittest.cc",
         "pdf_ink_undo_redo_model_unittest.cc",
         "pdfium/pdfium_ink_reader_unittest.cc",
+        "pdfium/pdfium_ink_transform_unittest.cc",
         "pdfium/pdfium_ink_writer_unittest.cc",
         "test/pdf_ink_test_helpers.cc",
         "test/pdf_ink_test_helpers.h",

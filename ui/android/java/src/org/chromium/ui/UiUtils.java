@@ -49,8 +49,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -346,11 +346,12 @@ public class UiUtils {
     /**
      * Gets a drawable from the resources and applies the specified tint to it. Uses Support Library
      * for vector drawables and tinting on older Android versions.
+     *
      * @param drawableId The resource id for the drawable.
      * @param colorStateList The color state list to apply to the drawable.
      */
     public static Drawable getTintedDrawable(
-            Context context, @DrawableRes int drawableId, ColorStateList list) {
+            Context context, @DrawableRes int drawableId, @Nullable ColorStateList list) {
         Drawable drawable = AppCompatResources.getDrawable(context, drawableId);
         assert drawable != null;
         drawable = DrawableCompat.wrap(drawable).mutate();
@@ -395,7 +396,7 @@ public class UiUtils {
         }
         // The status bar should always be black in automotive devices to match the black back
         // button toolbar.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             window.setStatusBarColor(Color.BLACK);
         } else {
             window.setStatusBarColor(statusBarColor);
@@ -421,7 +422,7 @@ public class UiUtils {
         int systemUiVisibility = rootView.getSystemUiVisibility();
         // The status bar should always be black in automotive devices to match the black back
         // button toolbar, so we should not use dark icons.
-        if (lightStatusBar && !BuildInfo.getInstance().isAutomotive) {
+        if (lightStatusBar && !DeviceInfo.isAutomotive()) {
             systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         } else {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;

@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">類型</translation>
 <translation id="1254593899333212300">直接連線到網際網路</translation>
 <translation id="1272293450992660632">PIN 碼值不相符。</translation>
+<translation id="1279040297980392566">正在等待掃描完成，請稍後再試</translation>
 <translation id="1280820357415527819">正在搜尋行動網路</translation>
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1297922636971898492">Google 雲端硬碟目前無法提供服務。一旦 Google 雲端硬碟恢復正常運作，上傳作業將會自動重新啟動。</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">已選取 1 個檔案</translation>
 <translation id="3817579325494460411">未提供</translation>
 <translation id="3819448694985509187">PIN 碼不正確，你只剩 1 次重試機會。</translation>
-<translation id="3822559385185038546">這是由管理員強制啟用的 Proxy</translation>
 <translation id="3830674330436234648">無法播放</translation>
 <translation id="383652340667548381">塞爾維亞文</translation>
 <translation id="3839045880592694915">電信業者不接受你的數據機連線，詳情請洽詢電信業者。</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5602622065581044566">保加利亞文搭配拼音鍵盤</translation>
 <translation id="5605830556594064952">Dvorak 美式配置</translation>
+<translation id="560739212255190568">管理員除了強制執行下列 Proxy 政策，還設定了 Proxy 覆寫規則</translation>
 <translation id="5618330573454123917">這個檔案是專為使用 Macintosh 軟體的電腦所設計，與搭載 Chrome OS 的裝置不相容。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome OS 中開啟檔案。</translation>
 <translation id="5625294776298156701">泰米爾文搭配 Tamil99 鍵盤</translation>
 <translation id="5633226425545095130">這個項目移動至「<ph name="DESTINATION_NAME" />」共用資料夾後，就會與所有看得到該資料夾的使用者共用。</translation>
@@ -787,7 +788,7 @@
 <translation id="7075931588889865715">泰文搭配 TIS 820-2531 鍵盤</translation>
 <translation id="708278670402572152">中斷連線即可啟用掃描功能</translation>
 <translation id="7086590977277044826">泰米爾文搭配 InScript 鍵盤</translation>
-<translation id="7088615885725309056">較舊記錄</translation>
+<translation id="7088615885725309056">較舊</translation>
 <translation id="7103992300314999525">馬其頓文</translation>
 <translation id="7104338189998813914">存取 OneDrive 帳戶時發生問題</translation>
 <translation id="7106346894903675391">購買更多儲存空間...</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="8545476925160229291">英文 (美國)</translation>
 <translation id="854655314928502177">網路 Proxy 自動探索網址：</translation>
+<translation id="8547747809824590510">管理員已設定 Proxy 覆寫規則</translation>
 <translation id="8549186985808798022">義大利文</translation>
 <translation id="8551494947769799688">拉脫維亞文</translation>
 <translation id="8560515948038859357">粵語</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">名稱為「<ph name="FILE_NAME" />」的檔案已經存在，請選擇其他名稱。</translation>
 <translation id="9046895021617826162">連線失敗</translation>
 <translation id="9065512565307033593">如未完成驗證，你將無法存取網路。</translation>
+<translation id="9079844694307518094">管理員已強制執行下列 Proxy 政策</translation>
 <translation id="908378762078012445">俄文搭配拼音 (AATSEEL) 鍵盤</translation>
 <translation id="9086302186042011942">正在同步處理</translation>
 <translation id="9099674669267916096">頁數</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">已成功啟動安裝程序。</translation>
 <translation id="9219103736887031265">圖片</translation>
 <translation id="9219908252191632183">月球表面</translation>
+<translation id="931652069802536959">網路已根據政策封鎖</translation>
 <translation id="938470336146445890">請安裝使用者憑證。</translation>
 <translation id="939736085109172342">新增資料夾</translation>
 <translation id="943972244133411984">修改者</translation>

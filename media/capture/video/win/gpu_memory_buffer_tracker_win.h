@@ -64,7 +64,6 @@ class CAPTURE_EXPORT GpuMemoryBufferTrackerWin final
 
   gfx::DXGIHandle dxgi_handle_;
   gfx::Size dimensions_;
-  gfx::GpuMemoryBufferId handle_id_;
   int stride_;
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d_device_;

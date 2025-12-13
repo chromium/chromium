@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
@@ -52,8 +51,6 @@ public class WebApkInstallBroadcastReceiverTest {
 
     private Context mContext;
     private ShadowNotificationManager mShadowNotificationManager;
-
-    @Mock private Context mContextMock;
 
     private WebApkInstallBroadcastReceiver mReceiver;
 

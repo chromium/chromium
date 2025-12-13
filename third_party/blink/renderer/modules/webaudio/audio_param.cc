@@ -139,10 +139,6 @@ float AudioParam::maxValue() const {
   return Handler().MaxValue();
 }
 
-void AudioParam::SetParamType(AudioParamHandler::AudioParamType param_type) {
-  Handler().SetParamType(param_type);
-}
-
 void AudioParam::SetCustomParamName(const String name) {
   Handler().SetCustomParamName(name);
 }
@@ -164,7 +160,7 @@ void AudioParam::setAutomationRate(const V8AutomationRate& rate,
         DOMExceptionCode::kInvalidStateError,
         StrCat({Handler().GetParamName(),
                 ".automationRate is fixed and cannot be changed to \"",
-                rate.AsString(), "\""}));
+                rate.AsStringView(), "\""}));
     return;
   }
 

@@ -9,11 +9,13 @@ import android.graphics.Rect;
 import android.view.View;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
+
+import java.util.function.Supplier;
 
 /** A factory for creating an {@link AppMenuCoordinator}. */
 @NullMarked
@@ -35,6 +37,8 @@ public class AppMenuCoordinatorFactory {
      * @param appRect Supplier of the app area in Window that the menu should fit in.
      * @param windowAndroid The window that will be used to fetch KeyboardVisibilityDelegate
      * @param browserControlsStateProvider a provider that can provide the state of the toolbar
+     * @param submenuHeaderFactory The {@link SubmenuHeaderFactory} to use for the {@link
+     *     HierarchicalMenuController}.
      */
     public static AppMenuCoordinator createAppMenuCoordinator(
             Context context,
@@ -45,7 +49,8 @@ public class AppMenuCoordinatorFactory {
             View hardwareButtonAnchorView,
             Supplier<Rect> appRect,
             WindowAndroid windowAndroid,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            SubmenuHeaderFactory submenuHeaderFactory) {
         return new AppMenuCoordinatorImpl(
                 context,
                 activityLifecycleDispatcher,
@@ -55,7 +60,8 @@ public class AppMenuCoordinatorFactory {
                 hardwareButtonAnchorView,
                 appRect,
                 windowAndroid,
-                browserControlsStateProvider);
+                browserControlsStateProvider,
+                submenuHeaderFactory);
     }
 
     /**

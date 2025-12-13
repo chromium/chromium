@@ -25,14 +25,17 @@
 #include "components/dbus/menu/menu.h"
 #include "components/dbus/properties/dbus_properties.h"
 #include "components/dbus/properties/success_barrier_callback.h"
-#include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/call_method.h"
+#include "components/dbus/utils/bind_weak_ptr_for_export_method.h"
+#include "components/dbus/utils/export_method.h"
+#include "components/dbus/utils/signature.h"
+#include "components/dbus/utils/variant.h"
 #include "content/public/browser/browser_thread.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
-#include "dbus/object_proxy.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -134,7 +137,11 @@ std::string PropertyIdFromId(int service_id) {
   return "chrome_status_icon_" + base::NumberToString(service_id);
 }
 
-auto MakeDbusImage(const gfx::ImageSkia& image) {
+using DbusImage = std::tuple</*width=*/int32_t,
+                             /*height=*/int32_t,
+                             /*pixels=*/std::vector<uint8_t>>;
+
+std::vector<DbusImage> MakeDbusImage(const gfx::ImageSkia& image) {
   const SkBitmap* bitmap = image.bitmap();
   int width = bitmap->width();
   int height = bitmap->height();
@@ -150,17 +157,18 @@ auto MakeDbusImage(const gfx::ImageSkia& image) {
       color_data.push_back(SkColorGetB(color));
     }
   }
-  return MakeDbusArray(MakeDbusStruct(
-      DbusInt32(width), DbusInt32(height),
-      DbusByteArray(
-          base::MakeRefCounted<base::RefCountedBytes>(std::move(color_data)))));
+  std::vector<DbusImage> images;
+  images.emplace_back(width, height, std::move(color_data));
+  return images;
 }
 
-auto MakeDbusToolTip(const std::string& text) {
-  return MakeDbusStruct(
-      DbusString(""),
-      DbusArray<DbusStruct<DbusInt32, DbusInt32, DbusByteArray>>(),
-      DbusString(text), DbusString(""));
+using DbusToolTip = std::tuple</*icon=*/std::string,
+                               /*image=*/std::vector<DbusImage>,
+                               /*title=*/std::string,
+                               /*subtitle=*/std::string>;
+
+DbusToolTip MakeDbusToolTip(const std::string& text) {
+  return {"", {}, text, ""};
 }
 
 bool ShouldWriteIconToFile() {
@@ -265,7 +273,7 @@ void StatusIconLinuxDbus::SetToolTip(const std::u16string& tool_tip) {
 
   UpdateMenuImpl(delegate_->GetMenuModel(), true);
 
-  properties_->SetProperty(
+  properties_->SetProperty<"(sa(iiay)ss)">(
       kInterfaceStatusNotifierItem, kPropertyToolTip,
       MakeDbusToolTip(base::UTF16ToUTF8(delegate_->GetToolTip())));
   dbus::Signal signal(kInterfaceStatusNotifierItem, kSignalNewToolTip);
@@ -301,20 +309,17 @@ void StatusIconLinuxDbus::CheckStatusNotifierWatcherHasOwner() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dbus::ObjectProxy* bus_proxy =
       bus_->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
-  dbus::MethodCall method_call(DBUS_INTERFACE_DBUS, kMethodNameHasOwner);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendString(kServiceStatusNotifierWatcher);
-  bus_proxy->CallMethod(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+  dbus_utils::CallMethod<"s", "b">(
+      bus_proxy, DBUS_INTERFACE_DBUS, kMethodNameHasOwner,
       base::BindOnce(&StatusIconLinuxDbus::OnNameHasOwnerResponse,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr()),
+      kServiceStatusNotifierWatcher);
 }
 
-void StatusIconLinuxDbus::OnNameHasOwnerResponse(dbus::Response* response) {
+void StatusIconLinuxDbus::OnNameHasOwnerResponse(
+    dbus_utils::CallMethodResultSig<"b"> response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  dbus::MessageReader reader(response);
-  bool owned = false;
-  if (!response || !reader.PopBool(&owned) || !owned) {
+  if (!response.has_value() || !std::get<0>(*response)) {
     delegate_->OnImplInitializationFailed();
     return;
   }
@@ -322,59 +327,63 @@ void StatusIconLinuxDbus::OnNameHasOwnerResponse(dbus::Response* response) {
   watcher_ = bus_->GetObjectProxy(kServiceStatusNotifierWatcher,
                                   dbus::ObjectPath(kPathStatusNotifierWatcher));
 
-  dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES, kMethodGet);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendString(kInterfaceStatusNotifierWatcher);
-  writer.AppendString(kPropertyIsStatusNotifierHostRegistered);
-  watcher_->CallMethod(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+  dbus_utils::CallMethod<"ss", "v">(
+      watcher_, DBUS_INTERFACE_PROPERTIES, kMethodGet,
       base::BindOnce(&StatusIconLinuxDbus::OnHostRegisteredResponse,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr()),
+      kInterfaceStatusNotifierWatcher, kPropertyIsStatusNotifierHostRegistered);
 }
 
-void StatusIconLinuxDbus::OnHostRegisteredResponse(dbus::Response* response) {
+void StatusIconLinuxDbus::OnHostRegisteredResponse(
+    dbus_utils::CallMethodResultSig<"v"> response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!response) {
+  if (!response.has_value()) {
     delegate_->OnImplInitializationFailed();
     return;
   }
 
-  dbus::MessageReader reader(response);
-  bool registered = false;
-  if (!reader.PopVariantOfBool(&registered) || !registered) {
+  auto registered = std::move(std::get<0>(*response)).Take<bool>();
+  if (!registered.value_or(false)) {
     delegate_->OnImplInitializationFailed();
     return;
   }
 
   service_id_ = NextServiceId();
 
-  static constexpr struct {
-    const char* name;
-    void (StatusIconLinuxDbus::*callback)(dbus::MethodCall*,
-                                          dbus::ExportedObject::ResponseSender);
-  } methods[4] = {
-      {kMethodActivate, &StatusIconLinuxDbus::OnActivate},
-      {kMethodContextMenu, &StatusIconLinuxDbus::OnContextMenu},
-      {kMethodScroll, &StatusIconLinuxDbus::OnScroll},
-      {kMethodSecondaryActivate, &StatusIconLinuxDbus::OnSecondaryActivate},
-  };
-
-  // The barrier requires std::size(methods) + 2 calls.  std::size(methods)
-  // for each method exported, 1 for |properties_| initialization, and 1 for
-  // |menu_| initialization.
-  barrier_ =
-      SuccessBarrierCallback(std::size(methods) + 2,
-                             base::BindOnce(&StatusIconLinuxDbus::OnInitialized,
-                                            weak_factory_.GetWeakPtr()));
+  // The barrier requires 4 calls (1 for each method exported) + 1 call for
+  // `properties_` initialization + 1 call for `menu_` initialization = 6 calls
+  // total.
+  barrier_ = SuccessBarrierCallback(
+      6, base::BindOnce(&StatusIconLinuxDbus::OnInitialized,
+                        weak_factory_.GetWeakPtr()));
 
   item_ = bus_->GetExportedObject(dbus::ObjectPath(kPathStatusNotifierItem));
-  for (const auto& method : methods) {
-    item_->ExportMethod(
-        kInterfaceStatusNotifierItem, method.name,
-        base::BindRepeating(method.callback, weak_factory_.GetWeakPtr()),
-        base::BindOnce(&StatusIconLinuxDbus::OnExported,
-                       weak_factory_.GetWeakPtr()));
-  }
+
+  dbus_utils::ExportMethod<"ii", "">(
+      item_, kInterfaceStatusNotifierItem, kMethodActivate,
+      dbus_utils::BindWeakPtrForExportMethod(&StatusIconLinuxDbus::OnActivate,
+                                             weak_factory_.GetWeakPtr()),
+      base::BindOnce(&StatusIconLinuxDbus::OnExported,
+                     weak_factory_.GetWeakPtr()));
+  dbus_utils::ExportMethod<"ii", "">(
+      item_, kInterfaceStatusNotifierItem, kMethodContextMenu,
+      dbus_utils::BindWeakPtrForExportMethod(&StatusIconLinuxDbus::OnContextMenu,
+                                             weak_factory_.GetWeakPtr()),
+      base::BindOnce(&StatusIconLinuxDbus::OnExported,
+                     weak_factory_.GetWeakPtr()));
+  dbus_utils::ExportMethod<"is", "">(
+      item_, kInterfaceStatusNotifierItem, kMethodScroll,
+      dbus_utils::BindWeakPtrForExportMethod(&StatusIconLinuxDbus::OnScroll,
+                                             weak_factory_.GetWeakPtr()),
+      base::BindOnce(&StatusIconLinuxDbus::OnExported,
+                     weak_factory_.GetWeakPtr()));
+  dbus_utils::ExportMethod<"ii", "">(
+      item_, kInterfaceStatusNotifierItem, kMethodSecondaryActivate,
+      dbus_utils::BindWeakPtrForExportMethod(
+          &StatusIconLinuxDbus::OnSecondaryActivate,
+          weak_factory_.GetWeakPtr()),
+      base::BindOnce(&StatusIconLinuxDbus::OnExported,
+                     weak_factory_.GetWeakPtr()));
 
   menu_ = std::make_unique<DbusMenu>(
       bus_->GetExportedObject(dbus::ObjectPath(kPathDbusMenu)), barrier_);
@@ -382,26 +391,34 @@ void StatusIconLinuxDbus::OnHostRegisteredResponse(dbus::Response* response) {
 
   properties_ = std::make_unique<DbusProperties>(item_, barrier_);
   properties_->RegisterInterface(kInterfaceStatusNotifierItem);
-  auto set_property = [&](const std::string& property_name, auto&& value) {
-    properties_->SetProperty(kInterfaceStatusNotifierItem, property_name,
-                             std::forward<decltype(value)>(value), false);
-  };
-  set_property(kPropertyItemIsMenu, DbusBoolean(false));
-  set_property(kPropertyWindowId, DbusInt32(0));
-  set_property(kPropertyMenu, DbusObjectPath(dbus::ObjectPath(kPathDbusMenu)));
-  set_property(kPropertyAttentionIconName, DbusString(""));
-  set_property(kPropertyAttentionMovieName, DbusString(""));
-  set_property(kPropertyCategory, DbusString(kPropertyValueCategory));
-  set_property(kPropertyId, DbusString(PropertyIdFromId(service_id_)));
-  set_property(kPropertyOverlayIconName, DbusString(""));
-  set_property(kPropertyStatus, DbusString(kPropertyValueStatus));
-  set_property(kPropertyTitle, DbusString(""));
-  set_property(kPropertyAttentionIconPixmap,
-               DbusArray<DbusStruct<DbusInt32, DbusInt32, DbusByteArray>>());
-  set_property(kPropertyOverlayIconPixmap,
-               DbusArray<DbusStruct<DbusInt32, DbusInt32, DbusByteArray>>());
-  set_property(kPropertyToolTip,
-               MakeDbusToolTip(base::UTF16ToUTF8(delegate_->GetToolTip())));
+
+  properties_->SetProperty<"b">(kInterfaceStatusNotifierItem,
+                                kPropertyItemIsMenu, false, false);
+  properties_->SetProperty<"i">(kInterfaceStatusNotifierItem, kPropertyWindowId,
+                                0, false);
+  properties_->SetProperty<"o">(kInterfaceStatusNotifierItem, kPropertyMenu,
+                                dbus::ObjectPath(kPathDbusMenu), false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem,
+                                kPropertyAttentionIconName, "", false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem,
+                                kPropertyAttentionMovieName, "", false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem, kPropertyCategory,
+                                kPropertyValueCategory, false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem, kPropertyId,
+                                PropertyIdFromId(service_id_), false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem,
+                                kPropertyOverlayIconName, "", false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem, kPropertyStatus,
+                                kPropertyValueStatus, false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem, kPropertyTitle,
+                                "", false);
+  properties_->SetProperty<"a(iiay)">(kInterfaceStatusNotifierItem,
+                                      kPropertyAttentionIconPixmap, {}, false);
+  properties_->SetProperty<"a(iiay)">(kInterfaceStatusNotifierItem,
+                                      kPropertyOverlayIconPixmap, {}, false);
+  properties_->SetProperty<"(sa(iiay)ss)">(
+      kInterfaceStatusNotifierItem, kPropertyToolTip,
+      MakeDbusToolTip(base::UTF16ToUTF8(delegate_->GetToolTip())), false);
   if (delegate_->GetIcon() && !delegate_->GetIcon()->is_empty()) {
     SetIcon(*delegate_->GetIcon());
   } else if (!delegate_->GetImage().isNull()) {
@@ -430,18 +447,18 @@ void StatusIconLinuxDbus::OnInitialized(bool success) {
 }
 
 void StatusIconLinuxDbus::RegisterStatusNotifierItem() {
-  dbus::MethodCall method_call(kInterfaceStatusNotifierWatcher,
-                               kMethodRegisterStatusNotifierItem);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendString(bus_->GetConnectionName());
-  watcher_->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                       base::BindOnce(&StatusIconLinuxDbus::OnRegistered,
-                                      weak_factory_.GetWeakPtr()));
+  dbus_utils::CallMethod<"s", "">(
+      watcher_, kInterfaceStatusNotifierWatcher,
+      kMethodRegisterStatusNotifierItem,
+      base::BindOnce(&StatusIconLinuxDbus::OnRegistered,
+                     weak_factory_.GetWeakPtr()),
+      bus_->GetConnectionName());
 }
 
-void StatusIconLinuxDbus::OnRegistered(dbus::Response* response) {
+void StatusIconLinuxDbus::OnRegistered(
+    dbus_utils::CallMethodResultSig<""> response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!response) {
+  if (!response.has_value()) {
     delegate_->OnImplInitializationFailed();
   }
 }
@@ -455,26 +472,16 @@ void StatusIconLinuxDbus::OnNameOwnerChangedReceived(
   }
 }
 
-void StatusIconLinuxDbus::OnActivate(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender sender) {
+dbus_utils::ExportMethodResult<> StatusIconLinuxDbus::OnActivate(int32_t x,
+                                                                 int32_t y) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   delegate_->OnClick();
-  std::move(sender).Run(dbus::Response::FromMethodCall(method_call));
+  return std::make_tuple();
 }
 
-void StatusIconLinuxDbus::OnContextMenu(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender sender) {
+dbus_utils::ExportMethodResult<> StatusIconLinuxDbus::OnContextMenu(int32_t x,
+                                                                    int32_t y) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  dbus::MessageReader reader(method_call);
-  int32_t x;
-  int32_t y;
-  if (!reader.PopInt32(&x) || !reader.PopInt32(&y)) {
-    std::move(sender).Run(nullptr);
-    return;
-  }
-
   if (!menu_runner_) {
     menu_runner_ = std::make_unique<views::MenuRunner>(
         concat_menu_.get(), views::MenuRunner::HAS_MNEMONICS |
@@ -484,26 +491,26 @@ void StatusIconLinuxDbus::OnContextMenu(
   menu_runner_->RunMenuAt(
       nullptr, nullptr, gfx::Rect(gfx::Point(x, y), gfx::Size()),
       views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kMouse);
-  std::move(sender).Run(dbus::Response::FromMethodCall(method_call));
+  return std::make_tuple();
 }
 
-void StatusIconLinuxDbus::OnScroll(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender sender) {
+dbus_utils::ExportMethodResult<> StatusIconLinuxDbus::OnScroll(
+    int32_t delta,
+    std::string orientation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Ignore scroll events.
-  std::move(sender).Run(dbus::Response::FromMethodCall(method_call));
+  return std::make_tuple();
 }
 
-void StatusIconLinuxDbus::OnSecondaryActivate(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender sender) {
+dbus_utils::ExportMethodResult<> StatusIconLinuxDbus::OnSecondaryActivate(
+    int32_t x,
+    int32_t y) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // gnome-shell-extension-appindicator requires a double-click to activate
   // which is non-obvious, so allow middle-click to activate which is slightly
   // more obvious.
   delegate_->OnClick();
-  std::move(sender).Run(dbus::Response::FromMethodCall(method_call));
+  return std::make_tuple();
 }
 
 void StatusIconLinuxDbus::UpdateMenuImpl(ui::MenuModel* model,
@@ -549,8 +556,9 @@ void StatusIconLinuxDbus::SetImageImpl(const gfx::ImageSkia& image,
                        /*is_vector_icon=*/false),
         base::BindOnce(&StatusIconLinuxDbus::OnIconFileWritten, this));
   } else {
-    properties_->SetProperty(kInterfaceStatusNotifierItem, kPropertyIconPixmap,
-                             MakeDbusImage(image), send_signals, false);
+    properties_->SetProperty<"a(iiay)">(kInterfaceStatusNotifierItem,
+                                        kPropertyIconPixmap,
+                                        MakeDbusImage(image), send_signals);
     if (send_signals) {
       dbus::Signal signal(kInterfaceStatusNotifierItem, kSignalNewIcon);
       item_->SendSignal(&signal);
@@ -566,11 +574,12 @@ void StatusIconLinuxDbus::OnIconFileWritten(const base::FilePath& icon_file) {
     return;
   }
 
-  properties_->SetProperty(kInterfaceStatusNotifierItem, kPropertyIconThemePath,
-                           DbusString(icon_file_.DirName().value()), false);
-  properties_->SetProperty(
-      kInterfaceStatusNotifierItem, kPropertyIconName,
-      DbusString(icon_file_.BaseName().RemoveExtension().value()), false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem,
+                                kPropertyIconThemePath,
+                                icon_file_.DirName().value(), false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem, kPropertyIconName,
+                                icon_file_.BaseName().RemoveExtension().value(),
+                                false);
 
   dbus::Signal new_icon_theme_path_signal(kInterfaceStatusNotifierItem,
                                           kSignalNewIconThemePath);

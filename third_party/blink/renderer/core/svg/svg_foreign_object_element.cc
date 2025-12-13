@@ -103,12 +103,6 @@ LayoutObject* SVGForeignObjectElement::CreateLayoutObject(
   return MakeGarbageCollected<LayoutSVGForeignObject>(this);
 }
 
-bool SVGForeignObjectElement::SelfHasRelativeLengths() const {
-  return x_->CurrentValue()->IsRelative() || y_->CurrentValue()->IsRelative() ||
-         width_->CurrentValue()->IsRelative() ||
-         height_->CurrentValue()->IsRelative();
-}
-
 SVGAnimatedPropertyBase* SVGForeignObjectElement::PropertyFromAttribute(
     const QualifiedName& attribute_name) const {
   if (attribute_name == svg_names::kXAttr) {

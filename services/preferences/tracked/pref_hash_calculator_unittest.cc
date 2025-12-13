@@ -13,9 +13,14 @@
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/enterprise_util.h"
+#endif
 
 namespace {
 class PrefHashCalculatorEncryptedTest : public testing::Test {
@@ -89,6 +94,29 @@ TEST(PrefHashCalculatorTest, TestCurrentAlgorithm) {
       calc1.Calculate("pref_path", static_cast<const base::Value*>(nullptr))
           .empty());
 }
+
+#if BUILDFLAG(IS_WIN)
+class PrefHashCalculatorEnterpriseTest : public testing::Test {
+ protected:
+  PrefHashCalculatorEnterpriseTest() : calculator_("seed", "deviceid") {}
+
+  PrefHashCalculator calculator_;
+  std::optional<base::AutoReset<bool>> is_enterprise_device_for_testing_;
+};
+
+TEST_F(PrefHashCalculatorEnterpriseTest, EnterpriseDevice) {
+  base::Value string_value_1("string value 1");
+  base::Value string_value_2("string value 2");
+
+  is_enterprise_device_for_testing_ =
+      base::SetIsEnterpriseDeviceForTesting(true);
+  ASSERT_EQ(PrefHashCalculator::VALID,
+            calculator_.Validate(
+                "pref_path", &string_value_1,
+                calculator_.Calculate("pref_path", &string_value_2)));
+  is_enterprise_device_for_testing_.reset();
+}
+#endif
 
 // Tests the output against a known value to catch unexpected algorithm changes.
 // The test hashes below must NEVER be updated, the serialization algorithm used
@@ -289,4 +317,30 @@ TEST_F(PrefHashCalculatorEncryptedTest, ValidateEncryptedHash) {
   EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
             calculator_.ValidateEncrypted(path, null_value_ptr,
                                           valid_hash_base64, &test_encryptor_));
+}
+
+TEST_F(PrefHashCalculatorEncryptedTest, EncryptedHashValuesAreStable) {
+  base::Value::Dict dict;
+  dict.Set("key", "value");
+  std::optional<std::string> encrypted_hash =
+      calculator_.CalculateEncryptedHash("p.dict", &dict, &test_encryptor_);
+
+  // The hash was encrypted with test_encryptor_, then base64-encoded. Since
+  // TestEncryptor uses a random key, and Encryptors always use a random nonce,
+  // the actual ciphertext isn't stable between runs. We decode the base64 here
+  // then decrypt the hash to get the raw hash value, and compare it against a
+  // known hash.
+  std::optional<std::string> decrypted_hash =
+      test_encryptor_.DecryptData(*base::Base64Decode(*encrypted_hash));
+  ASSERT_TRUE(decrypted_hash.has_value());
+
+  // Despite using a std::string to represent it, the decrypted hash is actually
+  // a byte string, so we compare it against raw bytes below.
+  constexpr auto kExpectedHash = std::to_array<uint8_t>({
+      0xd9, 0x01, 0x6e, 0x93, 0x04, 0x0a, 0xfc, 0xcb, 0x86, 0x87, 0x90,
+      0x31, 0x93, 0xc5, 0x67, 0xdc, 0xdf, 0xad, 0x49, 0x36, 0x14, 0xee,
+      0xad, 0xd0, 0x48, 0x34, 0x81, 0x52, 0x8c, 0xfc, 0x1b, 0x0e,
+  });
+
+  EXPECT_EQ(base::as_byte_span(*decrypted_hash), kExpectedHash);
 }

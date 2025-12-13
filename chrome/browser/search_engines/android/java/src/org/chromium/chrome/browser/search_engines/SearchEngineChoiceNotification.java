@@ -99,7 +99,7 @@ public final class SearchEngineChoiceNotification {
                 .setAction(context.getString(R.string.settings), null)
                 .setDuration(
                         (int) TimeUnit.SECONDS.toMillis(NOTIFICATION_SNACKBAR_DURATION_SECONDS))
-                .setSingleLine(false)
+                .setDefaultLines(false)
                 .setTheme(Snackbar.Theme.GOOGLE);
     }
 

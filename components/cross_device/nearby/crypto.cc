@@ -7,11 +7,17 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/hash/md5.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_view_util.h"
 #include "crypto/hash.h"
+#include "crypto/obsolete/md5.h"
+
 namespace nearby {
+
+std::array<uint8_t, crypto::obsolete::Md5::kSize> Md5ForNearby(
+    std::string_view input) {
+  return crypto::obsolete::Md5::Hash(input);
+}
 
 void Crypto::Init() {}
 
@@ -19,9 +25,9 @@ ByteArray Crypto::Md5(std::string_view input) {
   if (input.empty())
     return ByteArray();
 
-  base::MD5Digest digest;
-  base::MD5Sum(base::as_byte_span(input), &digest);
-  return ByteArray(std::string(std::begin(digest.a), std::end(digest.a)));
+  auto digest = Md5ForNearby(input);
+  auto digest_span = base::as_chars(base::span(digest));
+  return ByteArray(digest_span.data(), digest_span.size());
 }
 
 ByteArray Crypto::Sha256(std::string_view input) {

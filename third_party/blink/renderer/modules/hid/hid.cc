@@ -207,8 +207,8 @@ ScriptPromise<IDLSequence<HIDDevice>> HID::getDevices(
   get_devices_promises_.insert(resolver);
 
   EnsureServiceConnection();
-  service_->GetDevices(WTF::BindOnce(
-      &HID::FinishGetDevices, WrapPersistent(this), WrapPersistent(resolver)));
+  service_->GetDevices(BindOnce(&HID::FinishGetDevices, WrapPersistent(this),
+                                WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -278,8 +278,8 @@ ScriptPromise<IDLSequence<HIDDevice>> HID::requestDevice(
   EnsureServiceConnection();
   service_->RequestDevice(
       std::move(mojo_filters), std::move(mojo_exclusion_filters),
-      WTF::BindOnce(&HID::FinishRequestDevice, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      BindOnce(&HID::FinishRequestDevice, WrapPersistent(this),
+               WrapPersistent(resolver)));
   return promise;
 }
 
@@ -350,7 +350,7 @@ void HID::EnsureServiceConnection() {
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(task_runner));
   service_.set_disconnect_handler(
-      WTF::BindOnce(&HID::CloseServiceConnection, WrapWeakPersistent(this)));
+      BindOnce(&HID::CloseServiceConnection, WrapWeakPersistent(this)));
   DCHECK(!receiver_.is_bound());
   service_->RegisterClient(receiver_.BindNewEndpointAndPassRemote(task_runner));
 }

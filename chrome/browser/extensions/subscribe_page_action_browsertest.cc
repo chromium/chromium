@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSMultiRelLink) {
 
   // Navigate to the feed page.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPageMultiRel);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), feed_url));
   // We should now have one page action ready to go in the LocationBar.
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 }

@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
@@ -26,6 +25,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /** Implementation of the {@link TabUngrouper} interface. */
 @NullMarked

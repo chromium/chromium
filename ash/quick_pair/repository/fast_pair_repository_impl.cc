@@ -27,7 +27,6 @@
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/account_key_filter.h"
 #include "components/cross_device/logging/logging.h"
-#include "crypto/sha2.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -865,11 +864,6 @@ void FastPairRepositoryImpl::FetchDeviceImages(scoped_refptr<Device> device) {
   // Save a record of the mac address -> model ID for this device so that we can
   // display images for device objects that lack a model ID, such as
   // device::BluetoothDevice.
-  // TODO(b/235117226): The mac address to model ID mapping will always fail
-  // when this function is called the first time during device discovery; this
-  // is because the classic address is not known yet. We should split the mac
-  // address to model ID mapping into it's own function (or PersistDeviceImages)
-  // to reflect this.
   if (!device_address_map_->SaveModelIdForDevice(device)) {
     CD_LOG(WARNING, Feature::FP) << __func__
                                  << ": Unable to save mac address -> model ID"
@@ -947,7 +941,6 @@ bool FastPairRepositoryImpl::EvictDeviceImages(const std::string& mac_address) {
       << __func__
       << ": Evicting mac address to model ID record for: " << mac_address;
 
-  // TODO(235117226): Remove the records associated with the BLE address.
   std::optional<const std::string> hex_model_id =
       device_address_map_->GetModelIdForMacAddress(mac_address);
   if (!hex_model_id) {

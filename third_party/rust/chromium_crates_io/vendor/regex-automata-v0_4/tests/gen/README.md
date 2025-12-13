@@ -58,7 +58,7 @@ to test that serialization works for all of them.
 
 Arguably we should increase test coverage here, but this is a start. Note
 that in particular, this does not need to test that serialization and
-deserialization correctly roundtrips on its own. Indeed, the normal regex test
+deserialization correctly round-trips on its own. Indeed, the normal regex test
 suite has a test that does a serialization round trip for every test supported
 by DFAs. So that has very good coverage. What we're interested in testing here
 is our compatibility promise: do DFAs generated with an older revision of the

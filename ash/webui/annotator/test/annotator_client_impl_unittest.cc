@@ -65,9 +65,9 @@ TEST_F(AnnotatorClientImplTest, SetTool) {
   AnnotatorTool expected_tool;
   expected_tool.size = 5;
   EXPECT_CALL(annotator(), SetTool)
-      .WillOnce(testing::Invoke([&](annotator::mojom::AnnotatorToolPtr tool) {
+      .WillOnce([&](annotator::mojom::AnnotatorToolPtr tool) {
         EXPECT_EQ(tool->size, expected_tool.size);
-      }));
+      });
 
   annotator_client().SetTool(expected_tool);
   annotator().FlushReceiverForTesting();

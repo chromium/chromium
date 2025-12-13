@@ -8,9 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
@@ -20,10 +22,8 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
-#include "media/gpu/windows/d3d12_helpers.h"
+#include "media/gpu/windows/d3d12_fence.h"
 #include "media/gpu/windows/d3d_com_defs.h"
-#include "third_party/angle/include/EGL/egl.h"
-#include "third_party/angle/include/EGL/eglext.h"
 
 namespace media {
 
@@ -82,7 +82,10 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   D3D11Status::Or<ID3D11VideoDecoderOutputView*> AcquireOutputView() const;
 
   // Get the D3D12Resource by device->OpenSharedHandle or return the opened one.
-  D3D11Status::Or<ComD3D12Resource> ToD3D12Resource(ID3D12Device* device);
+  D3D11Status::Or<ID3D12Resource*> ToD3D12Resource(ID3D12Device* device);
+
+  void SetFenceAndValue(scoped_refptr<D3D12Fence> fence, uint64_t value);
+  D3D11Status WaitForDecodeCompleteGPU(ID3D11DeviceContext* context);
 
   const gfx::Size& size() const { return size_; }
   size_t picture_index() const { return picture_index_; }
@@ -130,6 +133,7 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   // The cached pointer of D3D12 version of texture, if ToD3D12Resource() has
   // been called.
   ComD3D12Resource d3d12_resource_;
+  std::pair<scoped_refptr<D3D12Fence>, uint64_t> fence_and_value_;
 };
 
 }  // namespace media

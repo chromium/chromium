@@ -17,12 +17,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
-#include "chrome/browser/predictors/preconnect_manager.h"
 #include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/predictors/prefetch_manager.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/preconnect_manager.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -56,7 +56,7 @@ class PrewarmHttpDiskCacheManager;
 //
 // All methods must be called from the UI thread.
 class LoadingPredictor : public KeyedService,
-                         public PreconnectManager::Delegate,
+                         public content::PreconnectManager::Delegate,
                          public PrefetchManager::Delegate {
  public:
   LoadingPredictor(const LoadingPredictorConfig& config, Profile* profile);
@@ -87,7 +87,7 @@ class LoadingPredictor : public KeyedService,
   // Don't use, internal only.
   ResourcePrefetchPredictor* resource_prefetch_predictor();
   LoadingDataCollector* loading_data_collector();
-  PreconnectManager* preconnect_manager();
+  content::PreconnectManager* preconnect_manager();
   PrefetchManager* prefetch_manager();
 
   // KeyedService:
@@ -109,10 +109,12 @@ class LoadingPredictor : public KeyedService,
     return weak_factory_.GetWeakPtr();
   }
 
-  // PreconnectManager::Delegate:
+  // content::PreconnectManager::Delegate:
   void PreconnectInitiated(const GURL& url,
                            const GURL& preconnect_url) override;
-  void PreconnectFinished(std::unique_ptr<PreconnectStats> stats) override;
+  void PreconnectFinished(
+      std::unique_ptr<content::PreconnectStats> stats) override;
+  bool IsPreconnectEnabled() override;
 
   // PrefetchManager::Delegate:
   void PrefetchInitiated(const GURL& url, const GURL& prefetch_url) override;
@@ -191,7 +193,7 @@ class LoadingPredictor : public KeyedService,
 
   // For testing.
   void set_mock_preconnect_manager(
-      std::unique_ptr<PreconnectManager> preconnect_manager) {
+      std::unique_ptr<content::PreconnectManager> preconnect_manager) {
     preconnect_manager_ = std::move(preconnect_manager);
   }
 
@@ -209,7 +211,7 @@ class LoadingPredictor : public KeyedService,
   std::unique_ptr<ResourcePrefetchPredictor> resource_prefetch_predictor_;
   std::unique_ptr<LoadingStatsCollector> stats_collector_;
   std::unique_ptr<LoadingDataCollector> loading_data_collector_;
-  std::unique_ptr<PreconnectManager> preconnect_manager_;
+  std::unique_ptr<content::PreconnectManager> preconnect_manager_;
   std::unique_ptr<PrefetchManager> prefetch_manager_;
   std::unique_ptr<PrewarmHttpDiskCacheManager> prewarm_http_disk_cache_manager_;
   std::map<GURL, base::TimeTicks> active_hints_;

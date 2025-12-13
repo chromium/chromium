@@ -2,20 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
-
-#include <mach/mach.h>
-#include <sys/param.h>
 
 #include <mach-o/dyld_images.h>
 #include <mach-o/loader.h>
 #include <mach/mach.h>
+#include <sys/param.h>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
@@ -79,16 +73,17 @@ bool GetDyldRegions(std::vector<VMRegion>* regions) {
 
   bool emitted_linkedit_from_dyld_shared_cache = false;
   for (size_t i = 0; i < all_image_infos->infoArrayCount; i++) {
-    const char* image_name = all_image_infos->infoArray[i].imageFilePath;
+    const char* image_name =
+        UNSAFE_TODO(all_image_infos->infoArray[i]).imageFilePath;
 
     // The public definition for dyld_all_image_infos/dyld_image_info is wrong
     // for 64-bit platforms. We explicitly cast to struct mach_header_64 even
     // though the public definition claims that this is a struct mach_header.
     const struct mach_header_64* const header =
         reinterpret_cast<const struct mach_header_64* const>(
-            all_image_infos->infoArray[i].imageLoadAddress);
+            UNSAFE_TODO(all_image_infos->infoArray[i]).imageLoadAddress);
 
-    uint64_t next_command = reinterpret_cast<uint64_t>(header + 1);
+    uint64_t next_command = reinterpret_cast<uint64_t>(UNSAFE_TODO(header + 1));
     uint64_t command_end = next_command + header->sizeofcmds;
     uint64_t slide = 0;
 
@@ -107,16 +102,17 @@ bool GetDyldRegions(std::vector<VMRegion>* regions) {
           return false;
         const segment_command_64* seg =
             reinterpret_cast<const segment_command_64*>(load_cmd);
-        if (strcmp(seg->segname, SEG_PAGEZERO) == 0)
+        if (UNSAFE_TODO(strcmp(seg->segname, SEG_PAGEZERO)) == 0) {
           continue;
-        if (strcmp(seg->segname, SEG_TEXT) == 0) {
+        }
+        if (UNSAFE_TODO(strcmp(seg->segname, SEG_TEXT)) == 0) {
           slide = reinterpret_cast<uint64_t>(header) - seg->vmaddr;
         }
 
         // Avoid emitting LINKEDIT regions in the dyld shared cache, since they
         // all overlap.
         if (IsAddressInSharedRegion(seg->vmaddr) &&
-            strcmp(seg->segname, SEG_LINKEDIT) == 0) {
+            UNSAFE_TODO(strcmp(seg->segname, SEG_LINKEDIT)) == 0) {
           if (emitted_linkedit_from_dyld_shared_cache) {
             continue;
           } else {

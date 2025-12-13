@@ -213,10 +213,10 @@ ProxyServer ProxySchemeHostAndPortToProxyServer(
   url::Component password_component;
   url::Component hostname_component;
   url::Component port_component;
-  url::ParseAuthority(host_and_port.data(),
-                      url::Component(0, host_and_port.size()),
-                      &username_component, &password_component,
-                      &hostname_component, &port_component);
+  url::ParseAuthority(host_and_port, url::Component(0, host_and_port.size()),
+                      url::ParserMode::kSpecialURL, &username_component,
+                      &password_component, &hostname_component,
+                      &port_component);
   if (username_component.is_valid() || password_component.is_valid() ||
       hostname_component.is_empty()) {
     return ProxyServer();

@@ -11,7 +11,7 @@ test("ui_unittests") {
   deps = [
     "//base/test:test_support",
     "//testing/gtest",
-    "//ui/base",
+    "//ui/base:test_support",
     "//ui/color:unit_tests",
     "//ui/menus:unit_tests",
   ]

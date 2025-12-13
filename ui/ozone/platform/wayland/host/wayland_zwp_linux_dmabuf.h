@@ -70,6 +70,18 @@ class WaylandZwpLinuxDmabuf
   bool CanCreateBufferImmed() const;
 
  private:
+  struct FormatModifierPair {
+    uint32_t format;
+    uint64_t modifier;
+  };
+
+  struct Tranche {
+    Tranche();
+    ~Tranche();
+    dev_t target_device;
+    std::vector<uint16_t> formats;
+  };
+
   // Receives supported |fourcc_format| from either ::Modifers or ::Format call
   // (depending on the protocol version), and stores it as gfx::BufferFormat to
   // the |supported_buffer_formats_| container. Modifiers can also be passed to
@@ -136,6 +148,12 @@ class WaylandZwpLinuxDmabuf
   base::flat_map<wl::Object<zwp_linux_buffer_params_v1>,
                  wl::OnRequestBufferCallback>
       pending_params_;
+
+  std::vector<FormatModifierPair> format_table_;
+
+  dev_t main_dev_;
+
+  Tranche pending_tranche_;
 };
 
 }  // namespace ui

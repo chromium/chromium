@@ -39,11 +39,7 @@ MDnsAPI::MDnsAPI(content::BrowserContext* context)
   event_router->RegisterObserver(this, mdns::OnServiceList::kEventName);
 }
 
-MDnsAPI::~MDnsAPI() {
-  if (dns_sd_registry_) {
-    dns_sd_registry_->RemoveObserver(this);
-  }
-}
+MDnsAPI::~MDnsAPI() = default;
 
 // static
 MDnsAPI* MDnsAPI::Get(content::BrowserContext* context) {
@@ -56,6 +52,12 @@ static base::LazyInstance<BrowserContextKeyedAPIFactory<MDnsAPI>>::
 // static
 BrowserContextKeyedAPIFactory<MDnsAPI>* MDnsAPI::GetFactoryInstance() {
   return g_mdns_api_factory.Pointer();
+}
+
+void MDnsAPI::Shutdown() {
+  if (dns_sd_registry_) {
+    dns_sd_registry_->RemoveObserver(this);
+  }
 }
 
 void MDnsAPI::SetDnsSdRegistryForTesting(DnsSdRegistry* dns_sd_registry) {

@@ -3,12 +3,13 @@
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-#
-# Various functions to help build / test ffmpeg.
+"""Various functions to help build / test ffmpeg."""
 
 import glob
 import os
+import re
 import shutil
+import sys
 from robo_lib import shell
 
 
@@ -94,13 +95,15 @@ def CopyConfigPythonTranslation(robo_configuration):
                 if not os.path.exists(os.path.join(gen_dir, "config.h")):
                     continue  # Don't waste time on non-existent configs.
                     # if there is no config.h, skip.
-                for file in (("config.h", ), ("config_components.h", ),
-                             ("config.asm", ), ("libavutil", "avconfig.h"),
-                             ("libavutil", "ffversion.h"), ("libavcodec",
-                                                            "bsf_list.c"),
-                             ("libavcodec", "codec_list.c"), ("libavcodec",
-                                                              "parser_list.c"),
-                             ("libavformat", "demuxer_list.c"),
+                for file in (("config.h", ), ("config_components.asm", ),
+                             ("config_components.h", ), ("config.asm", ),
+                             ("libavutil", "avconfig.h"), ("libavutil",
+                                                           "ffversion.h"),
+                             ("libavcodec", "bsf_list.c"), ("libavcodec",
+                                                            "codec_list.c"),
+                             ("libavcodec",
+                              "parser_list.c"), ("libavformat",
+                                                 "demuxer_list.c"),
                              ("libavformat",
                               "muxer_list.c"), ("libavformat",
                                                 "protocol_list.c")):
@@ -118,8 +121,8 @@ def CopyConfigPythonTranslation(robo_configuration):
                     ios_dir = robo_configuration.exported_configs_directory(
                         arch, 'ios', target)
                     if robo_configuration.Call(["mkdir", "-p", ios_dir]):
-                      raise Exception(
-                          f"Could not make iOS config directory {ios_dir}")
+                        raise Exception(
+                            f"Could not make iOS config directory {ios_dir}")
                     # `cp -r` is a little odd.  If the target directory does
                     # not exist, then `cp a b` will copy the contents of `a`
                     # into a newly created `b` such that `ls a` and `ls b`
@@ -129,8 +132,10 @@ def CopyConfigPythonTranslation(robo_configuration):
                     # inside `b`.  `-T` fixes this.
                     if robo_configuration.Call(
                         ["cp", "-rT", copy_from, ios_dir]):
-                      raise Exception(
-                          f"Could not copy iOS configs from {copy_from} to {ios_dir}")
+                        raise Exception(
+                            f"Failed cp of iOS configs {copy_from} to {ios_dir}"
+                        )
+
 
 def BuildAndImportAllFFmpegConfigs(robo_configuration):
     """Build ffmpeg for all platforms that we can, and build the gn files.
@@ -201,7 +206,8 @@ def BuildAndRunChromeTargetASAN(robo_configuration, target, platform,
   """
     shell.log("Building and running %s" % target)
     BuildChromeTargetASAN(robo_configuration, target, platform, architecture)
-    # TODO: we should be smarter about running things on android, for example.
+    # TODO(crbug.com/450394703): we should be smarter about running things on
+    # android, for example.
     shell.log("Running %s" % target)
     robo_configuration.chdir_to_chrome_src()
     if robo_configuration.Call(

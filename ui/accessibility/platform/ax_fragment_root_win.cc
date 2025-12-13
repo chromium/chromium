@@ -5,7 +5,6 @@
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 
 #include <limits>
-#include <unordered_map>
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +16,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/win/scoped_safearray.h"
-#include "ui/accessibility/accessibility_features.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
@@ -308,8 +307,8 @@ class AXFragmentRootMapWin {
   }
 
  private:
-  std::unordered_map<gfx::AcceleratedWidget,
-                     raw_ptr<AXFragmentRootWin, CtnExperimental>>
+  absl::flat_hash_map<gfx::AcceleratedWidget,
+                      raw_ptr<AXFragmentRootWin, CtnExperimental>>
       map_;
 };
 
@@ -338,9 +337,11 @@ AXFragmentRootWin* AXFragmentRootWin::GetFragmentRootParentOf(
 }
 
 gfx::NativeViewAccessible AXFragmentRootWin::GetNativeViewAccessible() {
-  // The fragment root is the entry point from the operating system for UI
-  // Automation. Signal when we're asked for a platform object on it.
-  AXPlatform::GetInstance().OnPropertiesUsedInBrowserUI();
+  if (!AXPlatformNodeWin::AreAXModeChangesPaused()) {
+    // The fragment root is the entry point from the operating system for UI
+    // Automation. Signal when we're asked for a platform object on it.
+    AXPlatform::GetInstance().OnPropertiesUsedInBrowserUI();
+  }
   return static_cast<AXFragmentRootPlatformNodeWin*>(platform_node_.get());
 }
 
@@ -467,6 +468,10 @@ bool AXFragmentRootWin::HasEventListenerForEvent(EVENTID event_id) {
 
 bool AXFragmentRootWin::HasEventListenerForProperty(PROPERTYID property_id) {
   return base::Contains(property_listener_count_, property_id);
+}
+
+IRawElementProviderSimple* AXFragmentRootWin::GetProvider() {
+  return static_cast<AXFragmentRootPlatformNodeWin*>(platform_node_.get());
 }
 
 size_t AXFragmentRootWin::GetIndexInParentOfChild() const {

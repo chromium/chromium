@@ -16,6 +16,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
+#include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/receiver.h"

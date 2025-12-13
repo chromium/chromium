@@ -18,9 +18,11 @@ import android.os.Looper;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
@@ -38,6 +40,7 @@ import java.util.List;
 /** Tests that ChannelsUpdater correctly initializes channels on the notification manager. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChannelsUpdaterTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private BaseNotificationManagerProxy mNotificationManagerProxy;
     private SharedPreferencesManager mSharedPreferences;
     private ChannelsInitializer mChannelsInitializer;
@@ -45,8 +48,6 @@ public class ChannelsUpdaterTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         Context context = RuntimeEnvironment.getApplication();
         mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create();
 
@@ -107,7 +108,8 @@ public class ChannelsUpdaterTest {
                         ChromeChannelDefinitions.ChannelId.BROWSER,
                         ChromeChannelDefinitions.ChannelId.DOWNLOADS,
                         ChromeChannelDefinitions.ChannelId.INCOGNITO,
-                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK));
+                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK,
+                        ChromeChannelDefinitions.ChannelId.TIPS));
         assertThat(
                 mSharedPreferences.readInt(ChromePreferenceKeys.NOTIFICATIONS_CHANNELS_VERSION, -1),
                 is(21));
@@ -142,7 +144,8 @@ public class ChannelsUpdaterTest {
                         ChromeChannelDefinitions.ChannelId.BROWSER,
                         ChromeChannelDefinitions.ChannelId.DOWNLOADS,
                         ChromeChannelDefinitions.ChannelId.INCOGNITO,
-                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK));
+                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK,
+                        ChromeChannelDefinitions.ChannelId.TIPS));
     }
 
     private static List<String> getChannelIds(List<NotificationChannel> channels) {

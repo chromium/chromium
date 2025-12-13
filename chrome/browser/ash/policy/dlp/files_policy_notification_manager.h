@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
@@ -19,10 +20,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace content {
@@ -48,7 +48,7 @@ enum NotificationButton {
 // policies.
 class FilesPolicyNotificationManager
     : public KeyedService,
-      public BrowserListObserver,
+      public ash::BrowserController::Observer,
       public file_manager::io_task::IOTaskController::Observer {
  public:
   explicit FilesPolicyNotificationManager(content::BrowserContext* context);
@@ -318,10 +318,10 @@ class FilesPolicyNotificationManager
   // the queue of pending dialogs in order to show the dialog over it.
   void LaunchFilesApp(std::unique_ptr<DialogInfo> dialog_info);
 
-  // BrowserListObserver overrides:
+  // ash::BrowserController::Observer overrides:
   // Called when opening a new Files App window to use as the modal parent for a
   // FilesPolicyDialog.
-  void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserCreated(ash::BrowserDelegate* browser) override;
 
   // file_manager::io_task::IOTaskController::Observer overrides:
   void OnIOTaskStatus(

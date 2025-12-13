@@ -29,7 +29,8 @@ typedef NS_ENUM(unsigned int, CATransactionPhase) {
 namespace ui {
 
 namespace {
-NSString* kRunLoopMode = @"Chrome CATransactionCoordinator commit handler";
+NSString* const kRunLoopMode =
+    @"Chrome CATransactionCoordinator commit handler";
 constexpr auto kPostCommitTimeout = base::Milliseconds(50);
 }  // namespace
 

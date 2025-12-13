@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/gtest_prod_util.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -168,20 +168,10 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   size_t GetObserverCountForTest() const;
 
-  struct TrackEventSession {
-    uint32_t internal_instance_index;
-    perfetto::DataSourceConfig config;
-    perfetto::BackendType backend_type = perfetto::kUnspecifiedBackend;
-  };
-  std::vector<TrackEventSession> GetTrackEventSessions() const;
-
-  void InitializePerfettoIfNeeded();
-  bool IsPerfettoInitializedByTraceLog() const;
   void SetEnabledImpl(const TraceConfig& trace_config,
                       const perfetto::TraceConfig& perfetto_config);
 
   // perfetto::TrackEventSessionObserver implementation.
-  void OnSetup(const perfetto::DataSourceBase::SetupArgs&) override;
   void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
   void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
 
@@ -225,8 +215,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
   perfetto::TraceConfig perfetto_config_;
-  std::vector<TrackEventSession> track_event_sessions_
-      GUARDED_BY(track_event_lock_);
   int active_track_event_sessions_ = 0;
   mutable Lock track_event_lock_;
 #if BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)

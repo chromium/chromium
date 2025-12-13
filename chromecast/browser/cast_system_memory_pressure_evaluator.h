@@ -46,8 +46,7 @@ class CastSystemMemoryPressureEvaluator
 
  private:
   void PollPressureLevel();
-  void UpdateMemoryPressureLevel(
-      base::MemoryPressureListener::MemoryPressureLevel new_level);
+  void UpdateMemoryPressureLevel(base::MemoryPressureLevel new_level);
   void AdjustMemoryFractions(bool relax);
 
   // Fractions in effect.

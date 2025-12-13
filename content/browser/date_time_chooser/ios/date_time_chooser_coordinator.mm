@@ -6,7 +6,7 @@
 
 #import "content/browser/date_time_chooser/ios/date_time_chooser_mediator.h"
 #import "content/browser/date_time_chooser/ios/date_time_chooser_view_controller.h"
-#import "ui/gfx/native_widget_types.h"
+#import "ui/gfx/native_ui_types.h"
 
 @interface DateTimeChooserCoordinator ()
 // The controller that has UI components.

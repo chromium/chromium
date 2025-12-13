@@ -51,14 +51,14 @@ class MojoGURLStructTraitsTest : public ::testing::Test {
     // correctly serialized and deserialized, not just the spec.
     EXPECT_EQ(input.possibly_invalid_spec(), output.possibly_invalid_spec());
     EXPECT_EQ(input.is_valid(), output.is_valid());
-    EXPECT_EQ(input.scheme(), output.scheme());
-    EXPECT_EQ(input.username(), output.username());
-    EXPECT_EQ(input.password(), output.password());
-    EXPECT_EQ(input.host(), output.host());
-    EXPECT_EQ(input.port(), output.port());
-    EXPECT_EQ(input.path(), output.path());
-    EXPECT_EQ(input.query(), output.query());
-    EXPECT_EQ(input.ref(), output.ref());
+    EXPECT_EQ(input.GetScheme(), output.GetScheme());
+    EXPECT_EQ(input.GetUsername(), output.GetUsername());
+    EXPECT_EQ(input.GetPassword(), output.GetPassword());
+    EXPECT_EQ(input.GetHost(), output.GetHost());
+    EXPECT_EQ(input.GetPort(), output.GetPort());
+    EXPECT_EQ(input.GetPath(), output.GetPath());
+    EXPECT_EQ(input.GetQuery(), output.GetQuery());
+    EXPECT_EQ(input.GetRef(), output.GetRef());
   }
 
   Origin BounceOrigin(const Origin& input) {
@@ -102,8 +102,8 @@ TEST_F(MojoGURLStructTraitsTest, WindowsDriveInPathReplacement) {
   {
     // #1: Try creating a file URL with a non-empty hostname.
     GURL url_without_windows_drive_letter("file://hostname/");
-    EXPECT_EQ("/", url_without_windows_drive_letter.path());
-    EXPECT_EQ("hostname", url_without_windows_drive_letter.host());
+    EXPECT_EQ("/", url_without_windows_drive_letter.GetPath());
+    EXPECT_EQ("hostname", url_without_windows_drive_letter.GetHost());
     ExpectSerializationRoundtrips(url_without_windows_drive_letter);
   }
 
@@ -119,8 +119,8 @@ TEST_F(MojoGURLStructTraitsTest, WindowsDriveInPathReplacement) {
     GURL url_made_with_replace_components =
         GURL("file://hostname/").ReplaceComponents(repl);
 
-    EXPECT_EQ(kNewPath, url_made_with_replace_components.path());
-    EXPECT_EQ("hostname", url_made_with_replace_components.host());
+    EXPECT_EQ(kNewPath, url_made_with_replace_components.GetPath());
+    EXPECT_EQ("hostname", url_made_with_replace_components.GetHost());
     EXPECT_EQ("file://hostname/C:/dir/file.txt",
               url_made_with_replace_components.spec());
     // This is the MAIN VERIFICATION in this test. This used to fail on Windows,
@@ -132,8 +132,8 @@ TEST_F(MojoGURLStructTraitsTest, WindowsDriveInPathReplacement) {
     // #3: Try to create a URL with a Windows drive letter and a non-empty
     // hostname directly.
     GURL url_created_directly("file://hostname/C:/dir/file.txt");
-    EXPECT_EQ("/C:/dir/file.txt", url_created_directly.path());
-    EXPECT_EQ("hostname", url_created_directly.host());
+    EXPECT_EQ("/C:/dir/file.txt", url_created_directly.GetPath());
+    EXPECT_EQ("hostname", url_created_directly.GetHost());
     EXPECT_EQ("file://hostname/C:/dir/file.txt", url_created_directly.spec());
     ExpectSerializationRoundtrips(url_created_directly);
 
@@ -152,8 +152,8 @@ TEST_F(MojoGURLStructTraitsTest, WindowsDriveInPathReplacement) {
     // #4: Try to create a URL with a Windows drive letter and "localhost" as
     // hostname directly.
     GURL url_created_directly("file://localhost/C:/dir/file.txt");
-    EXPECT_EQ("/C:/dir/file.txt", url_created_directly.path());
-    EXPECT_EQ("", url_created_directly.host());
+    EXPECT_EQ("/C:/dir/file.txt", url_created_directly.GetPath());
+    EXPECT_EQ("", url_created_directly.GetHost());
     EXPECT_EQ("file:///C:/dir/file.txt", url_created_directly.spec());
     ExpectSerializationRoundtrips(url_created_directly);
 

@@ -145,7 +145,6 @@ void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
     // have if we're in a detached context. See observable-constructor.window.js
     // for tests.
     if (!script_state->ContextIsValid()) {
-      CHECK(!GetExecutionContext());
       return;
     }
     ScriptState::Scope scope(script_state);
@@ -252,7 +251,7 @@ void Subscriber::CloseSubscription(ScriptState* script_state,
   // cannot be modified anymore. If any of these callbacks below invoke
   // `addTeardown()` with a *new* callback, it will be invoked synchronously
   // instead of added to this vector.
-  for (Member<V8VoidFunction> teardown : base::Reversed(teardown_callbacks_)) {
+  for (Member<V8VoidFunction>& teardown : base::Reversed(teardown_callbacks_)) {
     teardown->InvokeAndReportException(nullptr);
   }
   teardown_callbacks_.clear();

@@ -97,8 +97,8 @@ BarcodeDetector::BarcodeDetector(ExecutionContext* context,
   BarcodeDetectorStatics::From(context)->CreateBarcodeDetection(
       service_.BindNewPipeAndPassReceiver(task_runner),
       std::move(barcode_detector_options));
-  service_.set_disconnect_handler(WTF::BindOnce(
-      &BarcodeDetector::OnConnectionError, WrapWeakPersistent(this)));
+  service_.set_disconnect_handler(
+      BindOnce(&BarcodeDetector::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 // static
@@ -169,10 +169,9 @@ ScriptPromise<IDLSequence<DetectedBarcode>> BarcodeDetector::detect(
     return promise;
   }
   detect_requests_.insert(resolver);
-  service_->Detect(
-      std::move(*bitmap),
-      WTF::BindOnce(&BarcodeDetector::OnDetectBarcodes, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+  service_->Detect(std::move(*bitmap),
+                   BindOnce(&BarcodeDetector::OnDetectBarcodes,
+                            WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 

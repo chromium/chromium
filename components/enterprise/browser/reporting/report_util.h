@@ -11,6 +11,10 @@
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "components/device_signals/core/common/win/win_types.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace enterprise_reporting {
 
 // Returns the obfusted `file_path` string with SHA256 algorithm.

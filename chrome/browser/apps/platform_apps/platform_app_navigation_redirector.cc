@@ -19,6 +19,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 using content::BrowserThread;
 using content::WebContents;

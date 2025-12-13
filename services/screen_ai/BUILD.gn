@@ -37,10 +37,10 @@ source_set("screen_ai") {
     "//services/screen_ai/proto",
     "//services/screen_ai/public/cpp:metrics",
     "//services/screen_ai/public/cpp:utilities",
+    "//services/screen_ai/public/mojom",
     "//services/screen_ai/public/mojom:factory",
-    "//services/screen_ai/public/mojom:mojom",
     "//skia",
-    "//ui/accessibility:accessibility",
+    "//ui/accessibility",
   ]
 
   if (is_linux) {

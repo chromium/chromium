@@ -36,8 +36,7 @@ void RunLongCallbackAndroid(const JavaRef<jobject>& callback, int64_t arg) {
 }
 
 void RunTimeCallbackAndroid(const JavaRef<jobject>& callback, base::Time time) {
-  Java_Helper_onTimeResultFromNative(AttachCurrentThread(), callback,
-                                     time.InMillisecondsSinceUnixEpoch());
+  RunLongCallbackAndroid(callback, time.InMillisecondsSinceUnixEpoch());
 }
 
 void RunStringCallbackAndroid(const JavaRef<jobject>& callback,
@@ -51,14 +50,10 @@ void RunOptionalStringCallbackAndroid(
     const JavaRef<jobject>& callback,
     base::optional_ref<const std::string> optional_string_arg) {
   JNIEnv* env = AttachCurrentThread();
-  if (optional_string_arg.has_value()) {
-    Java_Helper_onOptionalStringResultFromNative(
-        env, callback, true,
-        ConvertUTF8ToJavaString(env, optional_string_arg.value()));
-  } else {
-    Java_Helper_onOptionalStringResultFromNative(
-        env, callback, false, ConvertUTF8ToJavaString(env, std::string()));
-  }
+  RunObjectCallbackAndroid(
+      callback, optional_string_arg
+                    ? ConvertUTF8ToJavaString(env, optional_string_arg.value())
+                    : nullptr);
 }
 
 void RunByteArrayCallbackAndroid(const JavaRef<jobject>& callback,
@@ -74,3 +69,5 @@ void RunRunnableAndroid(const JavaRef<jobject>& runnable) {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(Callback)

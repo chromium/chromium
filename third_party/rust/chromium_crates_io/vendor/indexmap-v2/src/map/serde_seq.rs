@@ -9,7 +9,7 @@
 //!
 //! ```
 //! # use indexmap::IndexMap;
-//! # use serde_derive::{Deserialize, Serialize};
+//! # use serde::{Deserialize, Serialize};
 //! #[derive(Deserialize, Serialize)]
 //! struct Data {
 //!     #[serde(with = "indexmap::map::serde_seq")]
@@ -18,8 +18,8 @@
 //! }
 //! ```
 
-use serde::de::{Deserialize, Deserializer, SeqAccess, Visitor};
-use serde::ser::{Serialize, Serializer};
+use serde_core::de::{Deserialize, Deserializer, SeqAccess, Visitor};
+use serde_core::ser::{Serialize, Serializer};
 
 use core::fmt::{self, Formatter};
 use core::hash::{BuildHasher, Hash};
@@ -66,7 +66,7 @@ where
 ///
 /// ```
 /// # use indexmap::IndexMap;
-/// # use serde_derive::Serialize;
+/// # use serde::Serialize;
 /// #[derive(Serialize)]
 /// struct Data {
 ///     #[serde(serialize_with = "indexmap::map::serde_seq::serialize")]
@@ -119,7 +119,7 @@ where
 ///
 /// ```
 /// # use indexmap::IndexMap;
-/// # use serde_derive::Deserialize;
+/// # use serde::Deserialize;
 /// #[derive(Deserialize)]
 /// struct Data {
 ///     #[serde(deserialize_with = "indexmap::map::serde_seq::deserialize")]

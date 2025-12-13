@@ -14,12 +14,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
@@ -42,6 +42,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -69,7 +70,8 @@ class ScreenLockerUnitTest : public testing::Test {
   ~ScreenLockerUnitTest() override = default;
 
   void SetUp() override {
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     BiodClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();

@@ -34,14 +34,17 @@ WorkerContentSettingsClient::WorkerContentSettingsClient(
 
   content_settings::ContentSettingsAgentImpl* agent =
       content_settings::ContentSettingsAgentImpl::Get(render_frame);
-  allow_running_insecure_content_ = agent->allow_running_insecure_content();
-  RendererContentSettingRules* rules = agent->GetRendererContentSettingRules();
-  if (rules) {
-    // Note: Makes a copy of the rules instead of directly using a pointer as
-    // there is no guarantee that the RenderFrame will exist throughout this
-    // object's lifetime.
-    content_setting_rules_ =
-        std::make_unique<RendererContentSettingRules>(*rules);
+  if (agent) {
+    allow_running_insecure_content_ = agent->allow_running_insecure_content();
+    RendererContentSettingRules* rules =
+        agent->GetRendererContentSettingRules();
+    if (rules) {
+      // Note: Makes a copy of the rules instead of directly using a pointer as
+      // there is no guarantee that the RenderFrame will exist throughout this
+      // object's lifetime.
+      content_setting_rules_ =
+          std::make_unique<RendererContentSettingRules>(*rules);
+    }
   }
 }
 

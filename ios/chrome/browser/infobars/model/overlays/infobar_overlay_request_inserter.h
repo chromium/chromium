@@ -9,11 +9,12 @@
 #include <memory>
 
 #import "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
-#include "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_factory.h"
-#include "ios/chrome/browser/infobars/model/overlays/infobar_overlay_type.h"
-#include "ios/web/public/web_state_user_data.h"
+#import "base/observer_list.h"
+#import "base/observer_list_types.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_factory.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_type.h"
+#import "ios/web/public/web_state_user_data.h"
 
 class InfoBarIOS;
 class InfobarModalCompletionNotifier;
@@ -38,7 +39,7 @@ struct InsertParams {
   explicit InsertParams(InfoBarIOS* infobar);
   InsertParams() = delete;
 
-  raw_ptr<InfoBarIOS> infobar;
+  raw_ptr<InfoBarIOS, DanglingUntriaged> infobar;
   InfobarOverlayType overlay_type = InfobarOverlayType::kBanner;
   size_t insertion_index = 0;
   InfobarOverlayInsertionSource source =
@@ -54,6 +55,10 @@ class InfobarOverlayRequestInserter
 
   // Creates an OverlayRequest with `params` configurations.
   void InsertOverlayRequest(const InsertParams& params);
+
+  // Suppresses the next infobar insertion of `type`. This can be used to
+  // perform an operation silently that would otherwise notify the user.
+  void SuppressNextInfobarOfType(InfobarType type);
 
   // Notifies observers of Infobar request insertions
   class Observer : public base::CheckedObserver {
@@ -84,6 +89,8 @@ class InfobarOverlayRequestInserter
   InfobarOverlayRequestInserter(web::WebState* web_state,
                                 InfobarOverlayRequestFactory factory);
 
+  // If populated, the next infobar of this type will be suppressed.
+  std::optional<InfobarType> suppressed_infobar_type_;
   // The WebState whose queues are being inserted into.
   raw_ptr<web::WebState> web_state_ = nullptr;
   // The infobar modal completion notifier.

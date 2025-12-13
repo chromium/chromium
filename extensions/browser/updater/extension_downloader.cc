@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -93,9 +95,6 @@ const char kDefaultInstallSource[] = "";
 const char kReinstallInstallSource[] = "reinstall";
 
 const char kGoogleDotCom[] = "google.com";
-const char kTokenServiceConsumerId[] = "extension_downloader";
-const char kWebstoreOAuth2Scope[] =
-    "https://www.googleapis.com/auth/chromewebstore.readonly";
 
 ExtensionDownloader::TestObserver* g_test_observer = nullptr;
 ExtensionDownloaderTestDelegate* g_test_delegate = nullptr;
@@ -139,7 +138,7 @@ bool ShouldRetryRequest(const network::SimpleURLLoader* loader) {
 // maximum.
 bool IncrementAuthUserIndex(GURL* url) {
   int user_index = 0;
-  std::string old_query = url->query();
+  std::string old_query = url->GetQuery();
   std::vector<std::string> new_query_parts;
   url::Component query(0, old_query.length());
   url::Component key, value;
@@ -253,12 +252,6 @@ ExtensionDownloader::FetchDataGroupKey::FetchDataGroupKey(
       is_force_installed(is_force_installed) {}
 
 ExtensionDownloader::FetchDataGroupKey::~FetchDataGroupKey() = default;
-
-bool ExtensionDownloader::FetchDataGroupKey::operator<(
-    const FetchDataGroupKey& other) const {
-  return std::tie(request_id, update_url, is_force_installed) <
-         std::tie(other.request_id, other.update_url, other.is_force_installed);
-}
 
 ExtensionDownloader::ExtensionDownloader(
     ExtensionDownloaderDelegate* delegate,
@@ -711,7 +704,7 @@ void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
 
 void ExtensionDownloader::OnManifestLoadComplete(
     std::unique_ptr<network::SimpleURLLoader> loader,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const GURL url = loader->GetFinalURL();
   DCHECK(loader);
 
@@ -1194,17 +1187,15 @@ void ExtensionDownloader::CreateExtensionLoader() {
       // ExtensionLoader will be started once the token fetch is complete,
       // in either OnTokenFetchSuccess or OnTokenFetchFailure.
       DCHECK(identity_manager_);
-      signin::ScopeSet webstore_scopes;
-      webstore_scopes.insert(kWebstoreOAuth2Scope);
       // It is safe to use Unretained(this) here given that the callback
       // will not be invoked if this object is deleted.
       access_token_fetcher_ =
           std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-              kTokenServiceConsumerId, identity_manager_, webstore_scopes,
+              signin::OAuthConsumerId::kExtensionDownloader, identity_manager_,
               base::BindOnce(&ExtensionDownloader::OnAccessTokenFetchComplete,
                              base::Unretained(this)),
               signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-              signin::ConsentLevel::kSync);
+              signin::ConsentLevel::kSignin);
       return;
     }
     extension_loader_resource_request_->headers.SetHeader(
@@ -1441,12 +1432,13 @@ bool ExtensionDownloader::IterateFetchCredentialsAfterFailure(
       if (response_code == net::HTTP_UNAUTHORIZED &&
           fetch->oauth2_attempt_count <= kMaxOAuth2Attempts) {
         DCHECK(identity_manager_);
-        signin::ScopeSet webstore_scopes;
-        webstore_scopes.insert(kWebstoreOAuth2Scope);
-        identity_manager_->RemoveAccessTokenFromCache(
-            identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync),
-            webstore_scopes, access_token_);
-        access_token_.clear();
+        if (!access_token_.empty()) {
+          identity_manager_->RemoveAccessTokenFromCache(
+              identity_manager_->GetPrimaryAccountId(
+                  signin::ConsentLevel::kSignin),
+              signin::OAuthConsumerId::kExtensionDownloader, access_token_);
+          access_token_.clear();
+        }
         return true;
       }
       // Either there is no Gaia identity available, the active identity

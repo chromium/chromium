@@ -21,6 +21,7 @@ class BinaryUploadService;
 
 namespace enterprise_connectors {
 
+class BinaryUploadRequest;
 class ContentAnalysisInfo;
 
 // Handles the management of a `PagePrintAnalysisRequest` and reporting for a
@@ -67,9 +68,8 @@ class PagePrintRequestHandler : public RequestHandlerBase {
                           CompletionCallback callback);
 
   // Called after obtaining a response from `BinaryUploadService`.
-  void OnContentAnalysisResponse(
-      safe_browsing::BinaryUploadService::Result result,
-      ContentAnalysisResponse response);
+  void OnContentAnalysisResponse(ScanRequestUploadResult result,
+                                 ContentAnalysisResponse response);
 
  private:
   // RequestHandlerBase:
@@ -78,7 +78,7 @@ class PagePrintRequestHandler : public RequestHandlerBase {
   // Called in the edge case where a printed page is too large and should be
   // exempt from scanning.
   void FinishLargeDataRequestEarly(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
+      std::unique_ptr<BinaryUploadRequest> request);
 
   // The printed page to be scanned. This will be moved for scanning, so don't
   // assume this is populated for code that runs afterwards (response handling,

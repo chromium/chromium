@@ -5,7 +5,7 @@
 import type {MetricsReporter} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 
 export class MockedMetricsReporter implements MetricsReporter {
-  mark(_name: string): void {}
+  mark(_name: string, _time?: bigint): void {}
 
   measure(_startMark: string, _endMark?: string): Promise<bigint> {
     return Promise.resolve(0n);

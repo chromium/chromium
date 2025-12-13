@@ -16,7 +16,7 @@
 namespace performance_manager {
 
 class TabPageDecorator::Data
-    : public ExternalNodeAttachedDataImpl<TabPageDecorator::Data> {
+    : public NodeAttachedDataImpl<TabPageDecorator::Data> {
  public:
   explicit Data(const PageNodeImpl* page_node)
       : tab_handle_(base::WrapUnique(new TabHandle(page_node))) {}

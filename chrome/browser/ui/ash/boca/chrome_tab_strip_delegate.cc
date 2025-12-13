@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/ash/boca/chrome_tab_strip_delegate.h"
 
 #include "ash/public/cpp/tab_strip_delegate.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/favicon_status.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -25,18 +25,18 @@ std::vector<ash::TabInfo> ChromeTabStripDelegate::GetTabsListForWindow(
   }
 
   // If the given `window` contains a browser frame
-  auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(window);
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForWindow(window);
 
   // Not fetching incognito window.
-  if (!browser_view || browser_view->GetIncognito()) {
+  if (!browser || browser->IsOffTheRecord()) {
     return {};
   }
 
   std::vector<ash::TabInfo> tabs;
-  auto* tab_strip_model = browser_view->browser()->tab_strip_model();
-  for (int i = 0; i < tab_strip_model->count(); i++) {
+  for (size_t i = 0; i < browser->GetWebContentsCount(); i++) {
     ash::TabInfo tab;
-    auto* web_contents = tab_strip_model->GetWebContentsAt(i);
+    auto* web_contents = browser->GetWebContentsAt(i);
     tab.last_access_timetick = web_contents->GetLastActiveTimeTicks();
     // Not reading from web_contents->GetFaviconURLs() which is not reliable and
     // could be empty depends on the timing of the retrieval.

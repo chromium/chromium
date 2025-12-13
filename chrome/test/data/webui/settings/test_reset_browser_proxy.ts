@@ -7,6 +7,8 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestResetBrowserProxy extends TestBrowserProxy implements
     ResetBrowserProxy {
+  private tamperedPreferencePaths_: string[] = [];
+
   constructor() {
     super([
       'performResetProfileSettings',
@@ -15,7 +17,17 @@ export class TestResetBrowserProxy extends TestBrowserProxy implements
       'onShowResetProfileDialog',
       'showReportedSettings',
       'getTriggeredResetToolName',
+      'getTamperedPreferencePaths',
     ]);
+  }
+
+  getTamperedPreferencePaths() {
+    this.methodCalled('getTamperedPreferencePaths');
+    return Promise.resolve(this.tamperedPreferencePaths_);
+  }
+
+  setTamperedPreferencePaths(paths: string[]) {
+    this.tamperedPreferencePaths_ = paths;
   }
 
   performResetProfileSettings(_sendSettings: boolean, requestOrigin: string) {

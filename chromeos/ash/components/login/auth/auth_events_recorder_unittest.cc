@@ -13,6 +13,8 @@
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -88,7 +90,8 @@ class AuthEventsRecorderTest : public ::testing::Test {
  public:
   AuthEventsRecorderTest() {
     crash_reporter::InitializeCrashKeysForTesting();
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
     recorder_ = AuthEventsRecorder::CreateForTesting();
   }
 

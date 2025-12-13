@@ -17,6 +17,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.tab.Tab;
@@ -57,7 +58,7 @@ public class AutomaticEmbargoTest {
             final String updaterPrefix,
             final boolean withGesture)
             throws Exception {
-        Tab tab = mPermissionRule.getActivity().getActivityTab();
+        Tab tab = mPermissionRule.getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(updaterPrefix, mPermissionRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
@@ -110,6 +111,7 @@ public class AutomaticEmbargoTest {
     @Test
     @LargeTest
     @Feature({"Notifications"})
+    @DisableFeatures("PermissionsAndroidClapperLoud")
     public void testNotificationsEmbargo() throws Exception {
         runTest(
                 NOTIFICATIONS_TEST_FILE,

@@ -68,6 +68,8 @@ class CommandBase {
   void SetScheduledLocation(base::PassKey<WebAppCommandManager>,
                             const base::Location& location);
 
+  void SetScheduledAt(base::PassKey<WebAppCommandManager>);
+
   // Sets the command manager, allowing `CompleteAndSelfDestruct` to
   // work correctly.
   void SetCommandManager(base::PassKey<WebAppCommandManager>,

@@ -4,12 +4,15 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.app.Dialog;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -50,6 +53,8 @@ public class FullscreenAlertDialogTest {
         var fragment = new TestDialogFragment();
         fragment.show(sActivity.getSupportFragmentManager(), "");
 
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(fragment.mDialog.isShowing(), Matchers.is(true)));
     }
@@ -66,6 +71,8 @@ public class FullscreenAlertDialogTest {
                     dialog.show();
                 });
 
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
         CriteriaHelper.pollUiThread(
                 () ->
                         Criteria.checkThat(
@@ -78,7 +85,7 @@ public class FullscreenAlertDialogTest {
 
         @Override
         public @NonNull Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-            assert getActivity() != null;
+            assertThat(getActivity()).isNotNull();
             FrameLayout dialogContent = new FrameLayout(getActivity());
             mDialog =
                     new FullscreenAlertDialog.Builder(

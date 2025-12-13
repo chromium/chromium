@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_win.h"
@@ -28,15 +28,15 @@ void LayeredWindowUpdaterImpl::OnAllocatedSharedMemory(
     base::UnsafeSharedMemoryRegion region) {
   canvas_.reset();
 
-  if (!region.IsValid())
+  if (!region.IsValid()) {
     return;
+  }
 
   // Make sure |pixel_size| is sane.
-  size_t expected_bytes;
-  bool size_result = ResourceSizes::MaybeSizeInBytes(
-      pixel_size, SinglePlaneFormat::kRGBA_8888, &expected_bytes);
-  if (!size_result)
+  if (!SharedMemorySizeForSharedImageFormat(SinglePlaneFormat::kRGBA_8888,
+                                            pixel_size)) {
     return;
+  }
 
   // The SkCanvas maps shared memory on creation and unmaps on destruction.
   canvas_ = skia::CreatePlatformCanvasWithSharedSection(

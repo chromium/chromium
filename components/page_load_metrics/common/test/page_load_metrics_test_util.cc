@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 
+#include "base/byte_count.h"
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
 
 using page_load_metrics::OptionalMin;
@@ -47,9 +48,10 @@ void PopulateRequiredTimingFields(
     inout_timing->response_start = inout_timing->parse_timing->parse_start;
   }
   if (inout_timing->parse_timing->parse_start) {
-    if (!inout_timing->parse_timing->parse_blocked_on_script_load_duration)
+    if (!inout_timing->parse_timing->parse_blocked_on_script_load_duration) {
       inout_timing->parse_timing->parse_blocked_on_script_load_duration =
           base::TimeDelta();
+    }
     if (!inout_timing->parse_timing
              ->parse_blocked_on_script_execution_duration) {
       inout_timing->parse_timing->parse_blocked_on_script_execution_duration =
@@ -79,9 +81,9 @@ void PopulateExperimentalLCP(page_load_metrics::mojom::PaintTimingPtr& timing) {
 
 page_load_metrics::mojom::ResourceDataUpdatePtr CreateResource(
     bool was_cached,
-    int64_t delta_bytes,
-    int64_t encoded_body_length,
-    int64_t decoded_body_length,
+    base::ByteCount delta_bytes,
+    base::ByteCount encoded_body_length,
+    base::ByteCount decoded_body_length,
     bool is_complete) {
   auto resource_data_update =
       page_load_metrics::mojom::ResourceDataUpdate::New();
@@ -97,23 +99,25 @@ page_load_metrics::mojom::ResourceDataUpdatePtr CreateResource(
 }
 
 std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>
-GetSampleResourceDataUpdateForTesting(int64_t resource_size) {
+GetSampleResourceDataUpdateForTesting(base::ByteCount resource_size) {
   // Prepare 3 resources of varying configurations.
   std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
   // Cached resource.
-  resources.push_back(CreateResource(true /* was_cached */, 0 /* delta_bytes */,
-                                     resource_size /* encoded_body_length */,
-                                     resource_size /* decoded_body_length */,
-                                     true /* is_complete */));
+  resources.push_back(CreateResource(/*was_cached=*/true,
+                                     /*delta_bytes=*/base::ByteCount(0),
+                                     /*encoded_body_length=*/resource_size,
+                                     /*decoded_body_length=*/resource_size,
+                                     /*is_complete=*/true));
   // Uncached resource.
   resources.push_back(CreateResource(
-      false /* was_cached */, resource_size /* delta_bytes */,
-      resource_size /* encoded_body_length */,
-      resource_size /* decoded_body_length */, true /* is_complete */));
+      /*was_cached=*/false, /*delta_bytes=*/resource_size,
+      /*encoded_body_length=*/resource_size,
+      /*decoded_body_length=*/resource_size, /*is_complete=*/true));
   // Uncached, unfinished, resource.
-  resources.push_back(
-      CreateResource(false /* was_cached */, resource_size /* delta_bytes */,
-                     0 /* encoded_body_length */, 0 /* decoded_body_length */,
-                     false /* is_complete */));
+  resources.push_back(CreateResource(
+      /*was_cached=*/false, /*delta_bytes=*/resource_size,
+      /*encoded_body_length=*/base::ByteCount(0),
+      /*decoded_body_length=*/base::ByteCount(0),
+      /*is_complete=*/false));
   return resources;
 }

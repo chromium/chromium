@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
@@ -53,7 +52,7 @@ std::u16string GetDestinationURL(DlpFileDestination destination) {
   DCHECK(destination.url()->is_valid());
   GURL gurl = *destination.url();
   if (gurl.has_host()) {
-    return base::UTF8ToUTF16(gurl.host());
+    return base::UTF8ToUTF16(gurl.GetHost());
   }
   return base::UTF8ToUTF16(gurl.spec());
 }
@@ -321,9 +320,7 @@ void FilesPolicyWarnDialog::MaybeAddJustificationPanel() {
   justification_field_label->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosLabel1));
-  justification_field_label->SetEnabledColor(
-      ash::ColorProvider::Get()->GetContentLayerColor(
-          ash::ColorProvider::ContentLayerType::kTextColorPrimary));
+  justification_field_label->SetEnabledColor(cros_tokens::kTextColorPrimary);
 
   // Setting a themed rounded background does not work for text areas. As a
   // workaround we set it for an external container and set the text area

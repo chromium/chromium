@@ -87,7 +87,7 @@ struct CORE_EXPORT LogicalOffset {
            block_offset <= other.block_offset;
   }
 
-  WTF::String ToString() const;
+  String ToString() const;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const LogicalOffset&);

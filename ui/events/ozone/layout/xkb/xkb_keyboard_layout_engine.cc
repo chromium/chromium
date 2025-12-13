@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 
 #include <stddef.h>
@@ -16,9 +11,9 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -918,7 +913,7 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
                                                         level, &keysyms);
         for (int i = 0; i < num_syms; ++i)
           keysym_map.emplace_back(
-              XkbKeysymMapEntry{keysyms[i], keycode, layout});
+              XkbKeysymMapEntry{UNSAFE_TODO(keysyms[i]), keycode, layout});
       }
     }
   }
@@ -1011,8 +1006,9 @@ DomCode XkbKeyboardLayoutEngine::GetDomCodeByKeysym(
       int num_syms =
           xkb_state_key_get_syms(xkb_state.get(), xkb_keycode, &out_keysyms);
       for (int i = 0; i < num_syms; ++i) {
-        if (out_keysyms[i] == keysym)
+        if (UNSAFE_TODO(out_keysyms[i]) == keysym) {
           return KeycodeConverter::NativeKeycodeToDomCode(xkb_keycode);
+        }
       }
     }
   }
@@ -1078,25 +1074,30 @@ KeyboardCode XkbKeyboardLayoutEngine::DifficultKeyboardCode(
     char16_t shift_character = kNonCharacter;
     char16_t altgr_character = kNonCharacter;
     for (size_t i = 0; i < multi->subtable_size; ++i) {
-      if (multi->subtable[i].dom_code != dom_code)
+      if (UNSAFE_TODO(multi->subtable[i]).dom_code != dom_code) {
         continue;
-      if (multi->subtable[i].test_shift) {
+      }
+      if (UNSAFE_TODO(multi->subtable[i]).test_shift) {
         if (shift_character == kNonCharacter) {
           shift_character = XkbSubCharacter(xkb_keycode, xkb_flags, character,
                                             shift_mod_mask_);
         }
-        if (shift_character != multi->subtable[i].shift_character)
+        if (shift_character !=
+            UNSAFE_TODO(multi->subtable[i]).shift_character) {
           continue;
+        }
       }
-      if (multi->subtable[i].test_altgr) {
+      if (UNSAFE_TODO(multi->subtable[i]).test_altgr) {
         if (altgr_character == kNonCharacter) {
           altgr_character = XkbSubCharacter(xkb_keycode, xkb_flags, character,
                                             altgr_mod_mask_);
         }
-        if (altgr_character != multi->subtable[i].altgr_character)
+        if (altgr_character !=
+            UNSAFE_TODO(multi->subtable[i]).altgr_character) {
           continue;
+        }
       }
-      return multi->subtable[i].key_code;
+      return UNSAFE_TODO(multi->subtable[i]).key_code;
     }
   }
 

@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"

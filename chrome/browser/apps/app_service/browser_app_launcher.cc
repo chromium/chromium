@@ -140,14 +140,6 @@ BrowserAppLauncher::BrowserAppLauncher(Profile* profile) : profile_(profile) {}
 
 BrowserAppLauncher::~BrowserAppLauncher() = default;
 
-#if !BUILDFLAG(IS_CHROMEOS)
-void BrowserAppLauncher::LaunchAppWithParams(
-    AppLaunchParams params,
-    base::OnceCallback<void(content::WebContents*)> callback) {
-  LaunchAppWithParamsImpl(std::move(params), profile_, std::move(callback));
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 content::WebContents* BrowserAppLauncher::LaunchAppWithParamsForTesting(
     AppLaunchParams params) {
   // For some ChromeOS tests (and specifically ones that use SpeechMonitor),
@@ -169,20 +161,5 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParamsForTesting(
   launch_waiter.Run();
   return web_contents_holder;
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void BrowserAppLauncher::LaunchPlayStoreWithExtensions() {
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
-          arc::kPlayStoreAppId);
-  DCHECK(extension);
-  DCHECK(extensions::util::IsAppLaunchable(arc::kPlayStoreAppId, profile_));
-  LaunchAppWithParamsImpl(
-      CreateAppLaunchParamsUserContainer(
-          profile_, extension, WindowOpenDisposition::NEW_WINDOW,
-          apps::LaunchSource::kFromChromeInternal),
-      profile_, base::DoNothing());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

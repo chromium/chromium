@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/codec/video_encoder_verbatim.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "remoting/base/util.h"
 #include "remoting/proto/video.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -32,6 +29,7 @@ VideoEncoderVerbatim::~VideoEncoderVerbatim() = default;
 std::unique_ptr<VideoPacket> VideoEncoderVerbatim::Encode(
     const webrtc::DesktopFrame& frame) {
   DCHECK(frame.data());
+  CHECK_EQ(frame.pixel_format(), webrtc::FOURCC_ARGB);
 
   // If nothing has changed in the frame then return NULL to indicate that
   // we don't need to actually send anything (e.g. nothing to top-off).
@@ -60,12 +58,13 @@ std::unique_ptr<VideoPacket> VideoEncoderVerbatim::Encode(
        !iter.IsAtEnd(); iter.Advance()) {
     const webrtc::DesktopRect& rect = iter.rect();
     const int row_size = webrtc::DesktopFrame::kBytesPerPixel * rect.width();
-    const uint8_t* in = frame.data() + rect.top() * in_stride +
-                        rect.left() * webrtc::DesktopFrame::kBytesPerPixel;
+    const uint8_t* in =
+        UNSAFE_TODO(frame.data() + rect.top() * in_stride +
+                    rect.left() * webrtc::DesktopFrame::kBytesPerPixel);
     for (int y = rect.top(); y < rect.top() + rect.height(); ++y) {
-      memcpy(out, in, row_size);
-      out += row_size;
-      in += in_stride;
+      UNSAFE_TODO(memcpy(out, in, row_size));
+      UNSAFE_TODO(out += row_size);
+      UNSAFE_TODO(in += in_stride);
     }
   }
 

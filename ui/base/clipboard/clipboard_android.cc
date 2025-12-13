@@ -96,10 +96,11 @@ std::vector<uint8_t> GetPngData(
 
 // Add a format:jstr pair to map, if jstr is null or is empty, then remove that
 // entry.
-void JNI_Clipboard_AddMapEntry(JNIEnv* env,
-                               std::map<ClipboardFormatType, std::string>* map,
-                               const ClipboardFormatType& format,
-                               const ScopedJavaLocalRef<jstring>& jstr) {
+static void JNI_Clipboard_AddMapEntry(
+    JNIEnv* env,
+    std::map<ClipboardFormatType, std::string>* map,
+    const ClipboardFormatType& format,
+    const ScopedJavaLocalRef<jstring>& jstr) {
   if (jstr.is_null()) {
     map->erase(format);
     return;
@@ -465,7 +466,7 @@ Clipboard* Clipboard::Create() {
 }
 
 // Static method for testing.
-void JNI_Clipboard_CleanupForTesting(JNIEnv* env) {
+static void JNI_Clipboard_CleanupForTesting(JNIEnv* env) {
   Clipboard::DestroyClipboardForCurrentThread();
 }
 
@@ -485,7 +486,7 @@ void ClipboardAndroid::OnPrimaryClipTimestampInvalidated(
     // sequence number, last modified time and notify the ClipboardMonitor if
     // monitoring external clipboard changes.
     GetClipboardMap().OnPrimaryClipTimestampInvalidated(timestamp);
-    if (base::FeatureList::IsEnabled(features::kClipboardChangeEvent)) {
+    if (base::FeatureList::IsEnabled(features::kPlatformClipboardMonitor)) {
       ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
     }
   }
@@ -814,17 +815,11 @@ void ClipboardAndroid::WriteData(const ClipboardFormatType& format,
       std::string(reinterpret_cast<const char*>(data.data()), data.size()));
 }
 
-void ClipboardAndroid::WriteClipboardHistory() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
-void ClipboardAndroid::WriteUploadCloudClipboard() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
 void ClipboardAndroid::WriteConfidentialDataForPassword() {
   // Set the password data that is marked as IS_SENSITIVE.
   GetClipboardMap().MarkPasswordData();
 }
 
 }  // namespace ui
+
+DEFINE_JNI(Clipboard)

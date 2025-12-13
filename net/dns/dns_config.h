@@ -11,6 +11,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_hosts.h"
@@ -103,6 +104,12 @@ struct NET_EXPORT DnsConfig {
   // to use DoH server(s) operated by the same provider(s) when the user is
   // in AUTOMATIC mode and has not pre-specified DoH servers.
   bool allow_dns_over_https_upgrade = false;
+
+  // If this is non-empty, this may be used by Secure DNS in automatic mode
+  // instead of falling back to insecure DNS. If these are successfully upgraded
+  // to DoH they are used in the order defined by
+  // `net::ResolveContext::GetDohIterator`.
+  std::vector<IPEndPoint> fallback_doh_nameservers;
 };
 
 }  // namespace net

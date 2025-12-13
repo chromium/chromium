@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -131,7 +132,7 @@ class FaviconCacheTest : public testing::Test {
         .Times(calls);
   }
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   favicon_base::FaviconImageCallback favicon_service_a_site_response_;
   favicon_base::FaviconImageCallback favicon_service_b_site_response_;
@@ -326,8 +327,10 @@ TEST_F(FaviconCacheTest, ExpireNullFaviconsByHistory) {
   std::move(favicon_service_a_site_response_)
       .Run(favicon_base::FaviconImageResult());
 
-  cache_.OnURLVisited(nullptr /* history_service */, history::URLRow(kUrlA),
-                      history::VisitRow());
+  cache_.OnURLVisited(
+      nullptr /* history_service */,
+      history::VisitedURLInfo(history::URLRow(kUrlA), history::VisitRow(),
+                              history::VisitResponseCodeCategory::kNot404));
 
   // Now the empty favicon should have been expired and we expect our second
   // call to the mock underlying FaviconService.
@@ -364,4 +367,23 @@ TEST_F(FaviconCacheTest, ObserveFaviconsChanged) {
   // Our call to |ExpectFaviconServiceForPageUrlCalls(expected A calls, expected
   // B calls)| above should verify that we re-request the icon for kUrlA only
   // (because the null result has been invalidated by OnFaviconsChanged).
+}
+
+TEST_F(FaviconCacheTest, DoNotExpireNullFaviconsFor404) {
+  ExpectFaviconServiceForPageUrlCalls(1, 0);
+
+  EXPECT_TRUE(
+      cache_.GetFaviconForPageUrl(kUrlA, base::BindOnce(&Fail)).IsEmpty());
+  std::move(favicon_service_a_site_response_)
+      .Run(favicon_base::FaviconImageResult());
+
+  cache_.OnURLVisited(
+      nullptr /* history_service */,
+      history::VisitedURLInfo(history::URLRow(kUrlA), history::VisitRow(),
+                              history::VisitResponseCodeCategory::k404));
+
+  // The empty favicon should not have been expired. We do not expect another
+  // call to the mock underlying FaviconService.
+  EXPECT_TRUE(
+      cache_.GetFaviconForPageUrl(kUrlA, base::BindOnce(&Fail)).IsEmpty());
 }

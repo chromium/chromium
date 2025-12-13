@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -165,7 +164,6 @@ public class AmbientBadgeManagerTest {
     }
 
     private MockAppDetailsDelegate mDetailsDelegate;
-    @Mock private PackageManager mPackageManager;
     private EmbeddedTestServer mTestServer;
     private UiDevice mUiDevice;
 
@@ -210,7 +208,7 @@ public class AmbientBadgeManagerTest {
     }
 
     private void assertAppBannerPipelineStatus(int expectedValue) {
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mTabbedActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
@@ -222,7 +220,7 @@ public class AmbientBadgeManagerTest {
 
     private void navigateToUrlAndWaitForBannerManager(
             ChromeActivityTestRule<? extends ChromeActivity> rule, String url) throws Exception {
-        Tab tab = rule.getActivity().getActivityTab();
+        Tab tab = rule.getActivityTab();
         new TabLoadObserver(tab).fullyLoadUrl(url);
         waitForBannerManager(tab);
     }
@@ -232,8 +230,7 @@ public class AmbientBadgeManagerTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     AppBannerManager manager =
-                            getAppBannerManager(
-                                    rule.getActivity().getActivityTab().getWebContents());
+                            getAppBannerManager(rule.getActivityTab().getWebContents());
                     Criteria.checkThat(mDetailsDelegate.mNumRetrieved, Matchers.is(numExpected));
                     Criteria.checkThat(manager.isRunningForTesting(), Matchers.is(false));
                 });
@@ -354,7 +351,7 @@ public class AmbientBadgeManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (accept) {
-                        model.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+                        var unused = model.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
                     } else {
                         dispatcher.dismissMessage(model, DismissReason.GESTURE);
                     }
@@ -378,7 +375,7 @@ public class AmbientBadgeManagerTest {
 
         // The appinstalled event should fire (and cause the title to change).
         new TabTitleObserver(
-                        mTabbedActivityTestRule.getActivity().getActivityTab(),
+                        mTabbedActivityTestRule.getActivityTab(),
                         "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
 
@@ -406,7 +403,7 @@ public class AmbientBadgeManagerTest {
 
         // The appinstalled event should fire (and cause the title to change).
         new TabTitleObserver(
-                        mCustomTabActivityTestRule.getActivity().getActivityTab(),
+                        mCustomTabActivityTestRule.getActivityTab(),
                         "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
 
@@ -455,7 +452,7 @@ public class AmbientBadgeManagerTest {
 
         // Visit a site that is a PWA. The ambient badge should show.
         String webBannerUrl = WebappTestPage.getTestUrl(mTestServer);
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mTabbedActivityTestRule.getActivityTab();
         new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
         waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule.getActivityTestRule());
 
@@ -578,7 +575,7 @@ public class AmbientBadgeManagerTest {
 
         assertAppBannerPipelineStatus(AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
 
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mTabbedActivityTestRule.getActivityTab();
 
         // Blocked by segmentation result.
         waitForBadgeStatus(tab, AmbientBadgeState.SEGMENTATION_BLOCK);

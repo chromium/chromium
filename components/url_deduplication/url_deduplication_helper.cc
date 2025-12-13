@@ -50,7 +50,7 @@ std::string URLDeduplicationHelper::ComputeURLDeduplicationKey(
 
   // Strip various common prefixes in order to group the resulting hostnames
   // together and avoid duplicates.
-  std::string host = stripped_destination_url.host();
+  std::string host = stripped_destination_url.GetHost();
   for (std::string_view prefix : strategy_.excluded_prefixes) {
     if (host.size() > prefix.size() &&
         base::StartsWith(host, prefix, base::CompareCase::INSENSITIVE_ASCII)) {

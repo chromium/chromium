@@ -80,8 +80,7 @@ base::FilePath LegacyImagePath(NSString* snapshot_id,
 }
 
 // Creates a directory that images are stored.
-void CreateStorageDirectory(const base::FilePath& directory,
-                            const base::FilePath& legacy_directory) {
+void CreateStorageDirectory(const base::FilePath& directory) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
@@ -91,28 +90,7 @@ void CreateStorageDirectory(const base::FilePath& directory,
     DLOG(ERROR) << "Error creating snapshot storage: "
                 << directory.AsUTF8Unsafe() << ": "
                 << base::File::ErrorToString(error);
-    return;
   }
-
-  if (!base::DirectoryExists(legacy_directory)) {
-    return;
-  }
-
-  // If `legacy_directory` exists and is a directory, move its content to
-  // `directory` and then delete the directory. As this function is
-  // used to move snapshot file which are not stored recursively, limit
-  // the enumeration to files and do not perform a recursive enumeration.
-  base::FileEnumerator iter(legacy_directory, /*recursive=*/false,
-                            base::FileEnumerator::FILES);
-
-  for (base::FilePath item = iter.Next(); !item.empty(); item = iter.Next()) {
-    base::FilePath to_path = directory;
-    legacy_directory.AppendRelativePath(item, &to_path);
-    base::Move(item, to_path);
-  }
-
-  // Delete the `legacy_directory` once the existing files have been moved.
-  base::DeletePathRecursively(legacy_directory);
 }
 
 // Helper function to read an image from disk.
@@ -121,11 +99,6 @@ UIImage* ReadImageForSnapshotIDFromDisk(SnapshotID snapshot_id,
                                         const base::FilePath& directory) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-
-  // TODO(crbug.com/41056111): consider changing back to
-  // -imageWithContentsOfFile instead of -imageWithData if both rdar://15747161
-  // and the bug incorrectly reporting the image as damaged
-  // https://stackoverflow.com/q/5081297/5353 are fixed.
   base::FilePath file_path =
       ImagePath(snapshot_id, IMAGE_TYPE_COLOR, image_scale, directory);
   NSString* path = base::apple::FilePathToNSString(file_path);
@@ -253,39 +226,6 @@ void PurgeImagesOlderThan(
   }
 }
 
-// Helper function to rename images from `old_ids` to `new_ids`.
-void RenameSnapshots(const base::FilePath& directory,
-                     NSArray<NSString*>* old_ids,
-                     const std::vector<SnapshotID>& new_ids,
-                     ImageScale snapshot_scale) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  DCHECK(base::DirectoryExists(directory));
-  DCHECK_EQ(old_ids.count, new_ids.size());
-
-  const NSUInteger count = old_ids.count;
-  for (NSUInteger index = 0; index < count; ++index) {
-    for (const ImageType image_type : kImageTypes) {
-      const base::FilePath old_image_path = LegacyImagePath(
-          old_ids[index], image_type, snapshot_scale, directory);
-      const base::FilePath new_image_path =
-          ImagePath(new_ids[index], image_type, snapshot_scale, directory);
-
-      // Only migrate snapshots that are needed.
-      if (!base::PathExists(old_image_path) ||
-          base::PathExists(new_image_path)) {
-        continue;
-      }
-
-      if (!base::Move(old_image_path, new_image_path)) {
-        DLOG(ERROR) << "Error migrating file: " << old_image_path.AsUTF8Unsafe()
-                    << " to: " << new_image_path.AsUTF8Unsafe();
-      }
-    }
-  }
-}
-
 // Helper function to copy an image from `old_image_path` to `new_image_path`.
 void CopyImageFile(const base::FilePath& old_image_path,
                    const base::FilePath& new_image_path) {
@@ -300,30 +240,6 @@ void CopyImageFile(const base::FilePath& old_image_path,
   if (!base::CopyFile(old_image_path, new_image_path)) {
     DLOG(ERROR) << "Error copying file: " << old_image_path.AsUTF8Unsafe()
                 << " to: " << new_image_path.AsUTF8Unsafe();
-  }
-}
-
-// Frees up disk by deleting all grey snapshots if they exist in `directory`
-// because grey snapshots are not stored anymore when
-// `kGreySnapshotOptimization` feature is enabled.
-// TODO(crbug.com/40279302): This function should be removed in a few milestones
-// after `kGreySnapshotOptimization` feature is enabled by default.
-void DeleteAllGreyImages(const base::FilePath& directory) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  if (!base::DirectoryExists(directory)) {
-    return;
-  }
-
-  base::FileEnumerator iter(directory, /*recursive=*/false,
-                            base::FileEnumerator::FILES);
-
-  for (base::FilePath item = iter.Next(); !item.empty(); item = iter.Next()) {
-    if (item.BaseName().value().find(
-            SuffixForImageType(IMAGE_TYPE_GREYSCALE)) != std::string::npos) {
-      base::DeleteFile(item);
-    }
   }
 }
 
@@ -346,8 +262,7 @@ void DeleteAllGreyImages(const base::FilePath& directory) {
   SEQUENCE_CHECKER(_sequenceChecker);
 }
 
-- (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
-                         legacyPath:(const base::FilePath&)legacyPath {
+- (instancetype)initWithStoragePath:(const base::FilePath&)storagePath {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if ((self = [super init])) {
     _storageDirectory = storagePath;
@@ -357,12 +272,7 @@ void DeleteAllGreyImages(const base::FilePath& directory) {
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 
     _taskRunner->PostTask(
-        FROM_HERE,
-        base::BindOnce(CreateStorageDirectory, _storageDirectory, legacyPath));
-
-    // TODO(crbug.com/40279302): Delete this logic after a few milestones.
-    _taskRunner->PostTask(
-        FROM_HERE, base::BindOnce(DeleteAllGreyImages, _storageDirectory));
+        FROM_HERE, base::BindOnce(CreateStorageDirectory, _storageDirectory));
   }
   return self;
 }
@@ -422,18 +332,6 @@ void DeleteAllGreyImages(const base::FilePath& directory) {
   _taskRunner->PostTask(
       FROM_HERE, base::BindOnce(&PurgeImagesOlderThan, _storageDirectory, date,
                                 liveSnapshotIDs, _snapshotsScale));
-}
-
-- (void)renameSnapshotsWithIDs:(NSArray<NSString*>*)oldIDs
-                         toIDs:(const std::vector<SnapshotID>&)newIDs {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  DCHECK_EQ(oldIDs.count, newIDs.size());
-  if (!_taskRunner) {
-    return;
-  }
-  _taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(&RenameSnapshots, _storageDirectory, oldIDs,
-                                newIDs, _snapshotsScale));
 }
 
 - (void)copyImage:(const base::FilePath&)oldPath

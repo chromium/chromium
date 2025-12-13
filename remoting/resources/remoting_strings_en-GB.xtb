@@ -140,7 +140,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="7144878232160441200">Retry</translation>
 <translation id="7298392173540380852">Copyright 2025 The Chromium Authors. All rights reserved.</translation>
 <translation id="7312846573060934304">Host is offline.</translation>
-<translation id="7319983568955948908">Stop Sharing</translation>
+<translation id="7319983568955948908">Stop sharing</translation>
 <translation id="7359298090707901886">The chosen browser cannot be used to open URLs on the local machine.</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">Access denied for client: <ph name="CLIENT_USERNAME" />.</translation>

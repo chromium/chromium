@@ -29,7 +29,7 @@ public interface Highlighter {
         Mode.TEXT_HIGHLIGHTING_MODE_OFF
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface Mode {
+    @interface Mode {
         // Highlight word only.
         int TEXT_HIGHLIGHTING_MODE_WORD = 0;
         // Highlight word over paragraph.
@@ -41,7 +41,7 @@ public interface Highlighter {
     }
 
     /** Highlighting configuration. */
-    public static class Config {
+    class Config {
         private @Mode int mMode = Mode.TEXT_HIGHLIGHTING_MODE_WORD;
         // Hex values in format: RRGGBBAA
         private static final String HIGHLIGHT_FOREGROUND_COLOR_HEX = "#000000FF";
@@ -49,7 +49,7 @@ public interface Highlighter {
 
         public Config(Context context) {
             // Color format: AARRGGBB
-            @ColorInt int color = SemanticColorUtils.getDefaultTextColorLink(context);
+            @ColorInt int color = SemanticColorUtils.getColorPrimary(context);
             // when converting to RRGGBBAA hex also add 25% opacity per UI specs.
             mHighlightBackgroundColorHex = String.format("#%06X", (0x00FFFFFF & color)) + "40";
         }

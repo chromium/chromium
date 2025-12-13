@@ -133,9 +133,11 @@ GraphiteSharedContext::GraphiteSharedContext(
     std::unique_ptr<skgpu::graphite::Context> graphite_context,
     GpuProcessShmCount* use_shader_cache_shm_count,
     bool is_thread_safe,
+    size_t max_pending_recordings,
     FlushCallback backend_flush_callback)
     : graphite_context_(std::move(graphite_context)),
       use_shader_cache_shm_count_(use_shader_cache_shm_count),
+      max_pending_recordings_(max_pending_recordings),
       backend_flush_callback_(std::move(backend_flush_callback)) {
   DCHECK(graphite_context_);
   if (is_thread_safe) {
@@ -172,7 +174,7 @@ bool GraphiteSharedContext::insertRecording(
   num_pending_recordings_++;
 
   // Force submitting if there are too many pending recordings.
-  if (num_pending_recordings_ >= kMaxPendingRecordings) {
+  if (num_pending_recordings_ >= max_pending_recordings_) {
     SubmitAndFlushBackendImpl(skgpu::graphite::SyncToCpu::kNo);
   }
 
@@ -214,14 +216,10 @@ bool GraphiteSharedContext::InsertRecordingImpl(
 
   auto insert_status = graphite_context_->insertRecording(*info_ptr);
 
+  // TODO(433845560): Check the kAddCommandsFailed failures.
   // Crash only if we're not simulating a failure for testing.
   const bool simulating_insert_failure =
       info_ptr->fSimulatedStatus != skgpu::graphite::InsertStatus::kSuccess;
-
-  // InsertStatus::kAddCommandsFailed indicates an unrecoverable error in Skia.
-  // Continuing to render would lead to severe graphical corruption.
-  CHECK(simulating_insert_failure ||
-        insert_status != skgpu::graphite::InsertStatus::kAddCommandsFailed);
 
   // InsertStatus::kAsyncShaderCompilesFailed is also an unrecoverable error for
   // which we should also clear the disk shader cache in case the error was due

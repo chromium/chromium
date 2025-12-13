@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_IO_DATA_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_IO_DATA_H_
 
-#include <string>
+#include <string_view>
 
 class GURL;
 
@@ -22,7 +22,7 @@ class ProfileIOData {
 
   // Returns true if |scheme| is handled in Chrome, or by default handlers in
   // net::URLRequest.
-  static bool IsHandledProtocol(const std::string& scheme);
+  static bool IsHandledProtocol(std::string_view scheme);
 
   // Returns true if |url| is handled in Chrome, or by default handlers in
   // net::URLRequest.

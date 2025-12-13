@@ -34,6 +34,8 @@ class SecurityStateTabHelper
 
   // See security_state::GetSecurityLevel.
   security_state::SecurityLevel GetSecurityLevel();
+
+  virtual security_state::MaliciousContentStatus GetMaliciousContentStatus();
   virtual std::unique_ptr<security_state::VisibleSecurityState>
   GetVisibleSecurityState();
 

@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
-#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -55,6 +54,9 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
+
+class MemoryManagedPaintCanvas;
+
 namespace {
 
 using ::blink_testing::ParseFilter;
@@ -91,7 +93,7 @@ class TestRenderingContext2D final
   int Width() const override { return 300; }
   int Height() const override { return 300; }
 
-  bool CanCreateCanvas2dResourceProvider() override { return false; }
+  bool CanCreateResourceProvider() override { return false; }
 
   RespectImageOrientationEnum RespectImageOrientation() const override {
     return kRespectImageOrientation;
@@ -99,7 +101,7 @@ class TestRenderingContext2D final
 
   Color GetCurrentColor() const override { return Color::kBlack; }
 
-  cc::PaintCanvas* GetOrCreatePaintCanvas() override {
+  MemoryManagedPaintCanvas* GetOrCreatePaintCanvas() override {
     // Context child classes uses `GetOrCreatePaintCanvas` to check for context
     // loss.
     if (isContextLost()) [[unlikely]] {
@@ -109,7 +111,7 @@ class TestRenderingContext2D final
     return &recorder_.getRecordingCanvas();
   }
   using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
-  const cc::PaintCanvas* GetPaintCanvas() const override {
+  const MemoryManagedPaintCanvas* GetPaintCanvas() const override {
     return &recorder_.getRecordingCanvas();
   }
   void WillDraw(const SkIRect& dirty_rect,
@@ -169,19 +171,17 @@ class TestRenderingContext2D final
     return true;
   }
 
-  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
+  CanvasResourceProvider* GetResourceProvider() const override {
     return nullptr;
   }
 
-  CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override {
+  CanvasResourceProvider* GetOrCreateResourceProvider() override {
     return nullptr;
   }
 
   // Implementing pure virtual functions from CanvasRenderingContext.
-  scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override {
-    return nullptr;
-  }
-  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
+  scoped_refptr<StaticBitmapImage> GetImage() override { return nullptr; }
+  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProvider(
       std::unique_ptr<CanvasResourceProvider>) override {
     return nullptr;
   }

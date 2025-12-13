@@ -14,17 +14,17 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="fledge_learn_more_bullet_1"
-        android:summary="@string/settings_fledge_page_learn_more_bullet_1"
+        android:summary="@string/settings_site_suggested_ads_page_learn_more_bullet_1_v2"
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="fledge_learn_more_bullet_2"
-        android:summary="@string/settings_fledge_page_learn_more_bullet_2"
+        android:summary="@string/settings_site_suggested_ads_page_learn_more_bullet_2_v2"
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="fledge_learn_more_bullet_3"
-        android:summary="@string/settings_fledge_page_learn_more_bullet_3"
+        android:summary="@string/settings_site_suggested_ads_page_learn_more_bullet_3_v2_clank"
         app:allowDividerBelow="false" />
 
 </PreferenceScreen>

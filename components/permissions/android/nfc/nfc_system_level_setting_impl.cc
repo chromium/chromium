@@ -5,6 +5,7 @@
 #include "components/permissions/android/nfc/nfc_system_level_setting_impl.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_callback.h"
 #include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -30,25 +31,12 @@ void NfcSystemLevelSettingImpl::PromptToEnableNfcSystemLevelSetting(
     content::WebContents* web_contents,
     base::OnceClosure prompt_completed_callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  // Transfers the ownership of the callback to the Java callback. The Java
-  // callback is guaranteed to be called unless the user never replies to the
-  // dialog, and the callback pointer will be destroyed in
-  // NfcSystemLevelPrompt.onDismiss.
-  auto* callback_ptr =
-      new base::OnceClosure(std::move(prompt_completed_callback));
+  // Convert the C++ callback to a JNI callback using ToJniCallback.
   Java_NfcSystemLevelSetting_promptToEnableNfcSystemLevelSetting(
       env, web_contents->GetJavaWebContents(),
-      reinterpret_cast<jlong>(callback_ptr));
+      base::android::ToJniCallback(env, std::move(prompt_completed_callback)));
 }
 
 }  // namespace permissions
 
-static void JNI_NfcSystemLevelSetting_OnNfcSystemLevelPromptCompleted(
-    JNIEnv* env,
-    jlong callback_ptr) {
-  auto* callback = reinterpret_cast<base::OnceClosure*>(callback_ptr);
-  std::move(*callback).Run();
-  // Destroy the callback whose ownership was transferred in
-  // PromptToEnableNfcSystemLevelSetting.
-  delete callback;
-}
+DEFINE_JNI(NfcSystemLevelSetting)

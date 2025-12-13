@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_ANDROID_PAYMENTS_WINDOW_MANAGER_TEST_API_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_ANDROID_PAYMENTS_WINDOW_MANAGER_TEST_API_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/check_deref.h"
 #include "chrome/browser/ui/autofill/payments/android_payments_window_manager.h"
 
 namespace autofill::payments {
+
+class PaymentsWindowBridge;
 
 class AndroidPaymentsWindowManagerTestApi {
  public:
@@ -33,6 +36,16 @@ class AndroidPaymentsWindowManagerTestApi {
   const std::optional<PaymentsWindowManager::BnplContext>& GetBnplContext() {
     CHECK(window_manager_->flow_state_);
     return window_manager_->flow_state_->bnpl_context;
+  }
+
+  void SetPaymentsWindowBridge(
+      std::unique_ptr<PaymentsWindowBridge> payments_window_bridge) {
+    window_manager_->payments_window_bridge_ =
+        std::move(payments_window_bridge);
+  }
+
+  PaymentsWindowBridge& GetPaymentsWindowBridge() {
+    return *window_manager_->payments_window_bridge_;
   }
 
  private:

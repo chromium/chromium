@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "services/on_device_model/ml/gpu_blocklist.h"
 
 namespace ml {
 namespace {
@@ -71,24 +72,40 @@ uint64_t GetHighRamThresholdMb() {
 
 DISABLE_CFI_DLSYM
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-on_device_model::mojom::DevicePerformanceInfoPtr GetDevicePerformanceInfo(
-    const ChromeML& chrome_ml) {
-  auto result = on_device_model::mojom::DevicePerformanceInfo::New();
+std::pair<on_device_model::mojom::DevicePerformanceInfoPtr,
+          on_device_model::mojom::DeviceInfoPtr>
+GetDeviceAndPerformanceInfo(const ChromeML& chrome_ml) {
+  auto perf_info = on_device_model::mojom::DevicePerformanceInfo::New();
+  auto device_info = on_device_model::mojom::DeviceInfo::New();
+
+  ml::DeviceInfo query_device_info =
+      ml::QueryDeviceInfo(chrome_ml.api(), /*log_histogram=*/true);
+  if (query_device_info.gpu_blocked_reason != GpuBlockedReason::kNotBlocked) {
+    perf_info->performance_class =
+        on_device_model::mojom::PerformanceClass::kGpuBlocked;
+    perf_info->vram_mb = 0ul;
+    return std::make_pair(std::move(perf_info), std::move(device_info));
+  }
+
+  device_info->vendor_id = query_device_info.vendor_id;
+  device_info->device_id = query_device_info.device_id;
+  device_info->driver_version = query_device_info.driver_version;
+  device_info->supports_fp16 = query_device_info.supports_fp16;
 
   ChromeMLPerformanceInfo info;
   bool success = chrome_ml.api().GetEstimatedPerformance(&info);
   base::UmaHistogramBoolean("OnDeviceModel.BenchmarkSuccess", success);
   if (!success) {
-    result->performance_class =
+    perf_info->performance_class =
         on_device_model::mojom::PerformanceClass::kError;
-    result->vram_mb = 0ul;
-    return result;
+    perf_info->vram_mb = 0ul;
+    return std::make_pair(std::move(perf_info), std::move(device_info));
   }
   const float input_speed = info.input_speed;
   const float output_speed = info.output_speed;
   const bool is_integrated_gpu = info.is_integrated_gpu;
 
-  int system_ram = base::SysInfo::AmountOfPhysicalMemoryMB();
+  int system_ram = base::SysInfo::AmountOfPhysicalMemory().InMiB();
   base::UmaHistogramMemoryLargeMB(
       base::StrCat({"OnDeviceModel.SystemRAM.",
                     is_integrated_gpu ? "Integrated" : "Discrete"}),
@@ -119,45 +136,41 @@ on_device_model::mojom::DevicePerformanceInfoPtr GetDevicePerformanceInfo(
         std::max(static_cast<uint64_t>(system_ram / 2), device_heap_mb);
   }
 
-  result->vram_mb = device_heap_mb;
+  perf_info->vram_mb = device_heap_mb;
 
-  // Devices with low RAM are considered very low perf.
   if (device_heap_mb < GetLowRamThresholdMb()) {
     LogVeryLowReason(VeryLowPerformanceReason::kLowRAM);
-    result->performance_class =
+    perf_info->performance_class =
         on_device_model::mojom::PerformanceClass::kVeryLow;
-    return result;
+    return std::make_pair(std::move(perf_info), std::move(device_info));
   }
 
-  // Devices that output less than 6 tk/s are considered very low perf.
   if (output_speed < kLowOutputThreshold.Get()) {
     LogVeryLowReason(VeryLowPerformanceReason::kSlowOutput);
-    result->performance_class =
+    perf_info->performance_class =
         on_device_model::mojom::PerformanceClass::kVeryLow;
-    return result;
+    return std::make_pair(std::move(perf_info), std::move(device_info));
   }
-  // VeryLow:  [0, 50)
-  // Low:      [50, 100)
-  // Medium:   [100, 250)
-  // High:     [250, 750)
-  // VeryHigh: [750, inf)
+
   if (input_speed < kLowThreshold.Get()) {
     LogVeryLowReason(VeryLowPerformanceReason::kSlowInput);
-    result->performance_class =
+    perf_info->performance_class =
         on_device_model::mojom::PerformanceClass::kVeryLow;
   } else if (input_speed < kMediumThreshold.Get()) {
-    result->performance_class = on_device_model::mojom::PerformanceClass::kLow;
+    perf_info->performance_class =
+        on_device_model::mojom::PerformanceClass::kLow;
   } else if (input_speed < kHighThreshold.Get() ||
              device_heap_mb < GetHighRamThresholdMb()) {
-    result->performance_class =
+    perf_info->performance_class =
         on_device_model::mojom::PerformanceClass::kMedium;
   } else if (input_speed < kVeryHighThreshold.Get()) {
-    result->performance_class = on_device_model::mojom::PerformanceClass::kHigh;
+    perf_info->performance_class =
+        on_device_model::mojom::PerformanceClass::kHigh;
   } else {
-    result->performance_class =
+    perf_info->performance_class =
         on_device_model::mojom::PerformanceClass::kVeryHigh;
   }
-  return result;
+  return std::make_pair(std::move(perf_info), std::move(device_info));
 }
 
 }  // namespace ml

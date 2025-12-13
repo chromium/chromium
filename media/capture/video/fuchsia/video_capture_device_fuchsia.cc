@@ -17,7 +17,6 @@
 #include "media/base/video_types.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/video_common.h"
-#include "ui/gfx/buffer_format_util.h"
 
 namespace media {
 
@@ -171,8 +170,7 @@ void VideoCaptureDeviceFuchsia::AllocateAndStart(
   // that we are interested in buffer collection negotiation. The collection
   // token will be returned back from WatchBufferCollection(). After that it
   // will be initialized in InitializeBufferCollection().
-  stream_->SetBufferCollection(fuchsia::sysmem::BufferCollectionTokenHandle(
-      sysmem_allocator_.CreateNewToken().Unbind().TakeChannel()));
+  stream_->SetBufferCollection2(sysmem_allocator_.CreateNewToken());
   WatchBufferCollection();
 }
 
@@ -247,12 +245,10 @@ void VideoCaptureDeviceFuchsia::OnWatchOrientationResult(
 void VideoCaptureDeviceFuchsia::WatchBufferCollection() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  stream_->WatchBufferCollection(
-      [this](fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
+  stream_->WatchBufferCollection2(
+      [this](fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>
                  token_handle) {
-        InitializeBufferCollection(
-            fuchsia::sysmem2::BufferCollectionTokenHandle(
-                token_handle.TakeChannel()));
+        InitializeBufferCollection(std::move(token_handle));
         WatchBufferCollection();
       });
 }
@@ -425,7 +421,7 @@ void VideoCaptureDeviceFuchsia::ProcessNewFrame(
       buffer.handle_provider->GetHandleForInProcessAccess();
 
   // Calculate offsets and strides for the output buffer.
-  uint8_t* dst_y = output_handle->data();
+  uint8_t* dst_y = output_handle->data().data();
   int dst_stride_y = output_size.width();
   size_t dst_y_plane_size = output_size.width() * output_size.height();
   uint8_t* dst_u = dst_y + dst_y_plane_size;
@@ -435,7 +431,8 @@ void VideoCaptureDeviceFuchsia::ProcessNewFrame(
 
   // Check that the output fits in the buffer.
   const uint8_t* dst_end = dst_v + dst_y_plane_size / 4;
-  CHECK_LE(dst_end, output_handle->data() + output_handle->mapped_size());
+  CHECK_LE(dst_end,
+           output_handle->data().data() + output_handle->mapped_size());
 
   // Vertical flip is indicated to ConvertToI420() by negating src_height.
   int flipped_src_height = static_cast<int>(src_coded_height);

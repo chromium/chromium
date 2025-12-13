@@ -21,32 +21,40 @@ class BrowserContext;
 class ProcessLock;
 class RenderProcessHost;
 
-// Stores information about recently destroyed RenderProcessHosts in order to
-// determine how often a process is created for a site that a just-destroyed
-// host could have hosted. Emits the "SiteIsolation.ReusePendingOrCommittedSite.
-// TimeSinceReusableProcessDestroyed" metric, which tracks this.
-//
-// Experimentally used to delay subframe-process shutdown. This aims to reduce
-// process churn by keeping subframe processes alive for a few seconds. See
-// GetSubframeProcessShutdownDelay() for details.
+// Stores information about recently destroyed RenderProcessHosts to gather
+// metrics on process reuse potential. It maintains separate tracking for
+// short-term subframe reuse and long-term main frame reuse.
 class CONTENT_EXPORT RecentlyDestroyedHosts
     : public base::SupportsUserData::Data {
  public:
-  // Storage time for information about recently destroyed processes. Intended
-  // to be long enough to capture a large portion of the process-reuse
+  // Describes the context for which a metric is being recorded.
+  enum class Context {
+    kMainFrame,
+    kSubframe,
+  };
+
+  // Storage time for tracking recently destroyed processes for subframe reuse.
+  // Intended to be long enough to capture a large portion of the process-reuse
   // opportunity.
-  static constexpr base::TimeDelta kRecentlyDestroyedStorageTimeout =
-      base::Seconds(15);
+  static constexpr base::TimeDelta kSubframeStorageTimeout = base::Seconds(60);
+
+  // Long-duration storage time for the sites of recently destroyed processes,
+  // specifically for the main frame reuse metric.
+  // Intended to be long enough to capture session-level reuse patterns (e.g., a
+  // user navigating away from and back to a site within a couple of hours).
+  static constexpr base::TimeDelta kMainFrameStorageTimeout = base::Hours(2);
 
   ~RecentlyDestroyedHosts() override;
   RecentlyDestroyedHosts(const RecentlyDestroyedHosts& other) = delete;
   RecentlyDestroyedHosts& operator=(const RecentlyDestroyedHosts& other) =
       delete;
 
-  // If a host matching |process_lock| was recently destroyed, records the
-  // interval between its destruction and |reusable_host_lookup_time|. If not,
-  // records a sentinel value.
+  // Looks for a recently destroyed host matching |process_lock| and records
+  // metrics based on the |context|. For both main frames and subframes, this
+  // records two histograms: a boolean for whether a potential reuse candidate
+  // was found, and a timing histogram for the delay if one was found.
   static void RecordMetricIfReusableHostRecentlyDestroyed(
+      Context context,
       const base::TimeTicks& reusable_host_lookup_time,
       const ProcessLock& process_lock,
       BrowserContext* browser_context);
@@ -77,9 +85,13 @@ class CONTENT_EXPORT RecentlyDestroyedHosts
   // creates an instance in |browser_context| and returns it if none exists.
   static RecentlyDestroyedHosts* GetInstance(BrowserContext* browser_context);
 
-  // Removes all entries older than |kRecentlyDestroyedStorageTimeout| from
-  // |recently_destroyed_hosts_|.
-  void RemoveExpiredEntries();
+  // Removes all entries older than |kSubframeStorageTimeout| from
+  // |recently_destroyed_hosts_for_subframe_reuse_|.
+  void RemoveExpiredHostsForSubframeReuse();
+
+  // Removes all entries older than |kMainFrameStorageTimeout| from
+  // |recently_destroyed_hosts_for_main_frame_reuse_|.
+  void RemoveExpiredHostsForMainFrameReuse();
 
   void AddReuseInterval(const base::TimeDelta& interval);
 
@@ -87,9 +99,16 @@ class CONTENT_EXPORT RecentlyDestroyedHosts
   // creation of a renderer process for the same site. Sorted by interval, from
   // shortest to longest. Only a limited number are stored.
   base::flat_set<ReuseInterval> reuse_intervals_;
+
   // Map of ProcessLock to destruction time, for RenderProcessHosts destroyed
-  // in the last |kRecentlyDestroyedStorageTimeout| seconds.
-  std::map<ProcessLock, base::TimeTicks> recently_destroyed_hosts_;
+  // in the last |kSubframeStorageTimeout| seconds.
+  std::map<ProcessLock, base::TimeTicks>
+      recently_destroyed_hosts_for_subframe_reuse_;
+
+  // Map of ProcessLock to destruction time for main frame reuse tracking.
+  // Entries are kept for a long duration defined by |kMainFrameStorageTimeout|.
+  std::map<ProcessLock, base::TimeTicks>
+      recently_destroyed_hosts_for_main_frame_reuse_;
 };
 
 }  // namespace content

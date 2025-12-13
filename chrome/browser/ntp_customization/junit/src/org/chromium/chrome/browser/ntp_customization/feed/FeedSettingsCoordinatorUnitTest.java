@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_LIST_ITEMS_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_SWITCH_CHECKED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LEARN_MORE_BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.SET_FEED_SWITCH_CONTENT_DESCRIPTION;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -143,5 +144,12 @@ public class FeedSettingsCoordinatorUnitTest {
         ImageView learnMoreButton = feedBottomSheet.findViewById(R.id.learn_more_button);
         learnMoreButton.performClick();
         verify(onClickListener).onClick(eq(learnMoreButton));
+
+        // Verifies the feed switch's content description will get updated timely.
+        final String contentDescription = "test content description";
+        mPropertyModel.set(SET_FEED_SWITCH_CONTENT_DESCRIPTION, contentDescription);
+        Assert.assertEquals(
+                feedSwitch.getText() + ", " + contentDescription,
+                feedSwitch.getTextContentDescription());
     }
 }

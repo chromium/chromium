@@ -1,0 +1,19 @@
+Verifies issue creation for a `Signature-Input` whose derived components' parameters are incorrect.
+Issue reported: {
+    issue : {
+        code : SRIMessageSignatureIssue
+        details : {
+            sriMessageSignatureIssueDetails : {
+                error : SignatureInputHeaderInvalidDerivedComponentParameter
+                integrityAssertions : [
+                ]
+                request : {
+                    requestId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/sri-message-signature-test.php?signature=signature%3D%3AgHim9e5Pk2H7c9BStOmxSmkyc8%2BioZgoxynu3d4INAT4dwfj5LhvaV9DFnEQ9p7C0hzW4o4Qpkm5aApd6WLLCw%3D%3D%3A&input=signature%3D%28%22unencoded-digest%22%3Bsf+%22%40path%22%29%3Btag%3D%22ed25519-integrity%22
+                }
+                signatureBase :
+            }
+        }
+    }
+}
+

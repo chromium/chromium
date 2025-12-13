@@ -9,6 +9,7 @@
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/wm_helper.h"
+#include "components/viz/common/resources/shared_image_format.h"
 
 namespace ash {
 namespace {
@@ -79,8 +80,8 @@ TEST_F(ArcInputMethodSurfaceManagerTest, Observer) {
   auto surface = std::make_unique<exo::Surface>();
   auto input_method_surface = std::make_unique<exo::InputMethodSurface>(
       &manager, surface.get(), /*default_scale_cancellation=*/false);
-  auto buffer = exo::test::ExoTestHelper::CreateBuffer(gfx::Size(500, 500),
-                                                       gfx::BufferFormat::R_8);
+  auto buffer = exo::test::ExoTestHelper::CreateBuffer(
+      gfx::Size(500, 500), viz::SinglePlaneFormat::kR_8);
   surface->Attach(buffer.get());
   surface->Commit();
 

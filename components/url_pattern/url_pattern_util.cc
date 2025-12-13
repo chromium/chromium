@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/url_pattern/url_pattern_util.h"
 
 #include <ranges>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -22,23 +18,32 @@ namespace {
 
 std::string StdStringFromCanonOutput(const url::CanonOutput& output,
                                      const url::Component& component) {
-  return std::string(output.data() + component.begin, component.len);
+  return std::string(UNSAFE_TODO(output.data() + component.begin),
+                     component.len);
 }
 
-bool ContainsForbiddenHostnameCodePoint(std::string_view input) {
+}  // namespace
+
+bool ContainsForbiddenHostnameCodePoint(std::string_view input,
+                                        const bool allow_ipv6_delimiters) {
   // The full list of forbidden code points is defined at:
   //
   //  https://url.spec.whatwg.org/#forbidden-host-code-point
   //
   // We only check the code points the chromium URL parser incorrectly permits.
   // See: crbug.com/1065667#c18
-  return std::ranges::any_of(input, [](char c) {
-    return c == ' ' || c == '#' || c == ':' || c == '<' || c == '>' ||
-           c == '@' || c == '[' || c == ']' || c == '|';
-  });
+  if (!allow_ipv6_delimiters) {
+    return std::ranges::any_of(input, [](char c) {
+      return c == ' ' || c == '#' || c == ':' || c == '<' || c == '>' ||
+             c == '@' || c == '[' || c == ']' || c == '|';
+    });
+  } else {
+    return std::ranges::any_of(input, [](char c) {
+      return c == ' ' || c == '#' || c == '<' || c == '>' || c == '@' ||
+             c == '|';
+    });
+  }
 }
-
-}  // namespace
 
 base::expected<std::string, absl::Status> ProtocolEncodeCallback(
     std::string_view input) {
@@ -149,7 +154,7 @@ base::expected<std::string, absl::Status> HostnameEncodeCallback(
   url::Component component;
 
   bool result = url::CanonicalizeHost(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
+      input, url::Component(0, base::checked_cast<int>(input.size())),
       &canon_output, &component);
 
   if (!result) {
@@ -169,9 +174,8 @@ base::expected<std::string, absl::Status> PortEncodeCallback(
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
 
-  bool result = url::CanonicalizePort(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
-      url::PORT_UNSPECIFIED, &canon_output, &component);
+  bool result = url::CanonicalizePort(input, url::PORT_UNSPECIFIED,
+                                      &canon_output, &component);
 
   if (!result) {
     return base::unexpected(absl::InvalidArgumentError(
@@ -208,7 +212,7 @@ base::expected<std::string, absl::Status> PathURLPathnameEncodeCallback(
 
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
-  url::CanonicalizePathURLPath(input, &canon_output, &component);
+  url::CanonicalizePathUrlPath(input, &canon_output, &component);
 
   return StdStringFromCanonOutput(canon_output, component);
 }

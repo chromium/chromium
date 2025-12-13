@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
@@ -42,18 +43,21 @@
 namespace {
 
 // Check that there are two browsers. Find the one that is not |browser|.
-Browser* FindOneOtherBrowser(Browser* browser) {
+BrowserWindowInterface* FindOneOtherBrowser(Browser* browser) {
   // There should only be one other browser.
   EXPECT_EQ(2u, chrome::GetBrowserCount(browser->profile()));
 
   // Find the new browser.
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser) {
-      return b;
-    }
-  }
+  BrowserWindowInterface* result = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [browser, &result](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface != browser) {
+          result = browser_window_interface;
+        }
+        return !result;
+      });
 
-  return nullptr;
+  return result;
 }
 
 class MockTriggeredProfileResetter : public TriggeredProfileResetter {
@@ -152,13 +156,13 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
 
   // This should have created a new browser window.  |browser()| is still
   // around at this point, even though we've closed its window.
-  Browser* new_browser = FindOneOtherBrowser(browser());
+  BrowserWindowInterface* const new_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(new_browser);
 
   std::vector<GURL> expected_urls(urls);
   expected_urls.insert(expected_urls.begin(), GetTriggeredResetSettingsURL());
 
-  TabStripModel* tab_strip = new_browser->tab_strip_model();
+  TabStripModel* const tab_strip = new_browser->GetTabStripModel();
   ASSERT_EQ(static_cast<int>(expected_urls.size()), tab_strip->count());
   for (size_t i = 0; i < expected_urls.size(); i++) {
     EXPECT_EQ(expected_urls[i],
@@ -196,11 +200,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetFirstRunTest,
                 /*restore_tabbed_browser=*/true);
 
   // This should have created a new browser window.
-  Browser* new_browser = FindOneOtherBrowser(browser());
+  BrowserWindowInterface* const new_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(new_browser);
 
   // Verify that only the first-run tabs are shown.
-  TabStripModel* tab_strip = new_browser->tab_strip_model();
+  TabStripModel* const tab_strip = new_browser->GetTabStripModel();
   ASSERT_EQ(2, tab_strip->count());
 
   EXPECT_EQ("title1.html",
@@ -235,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
 
   // This should have created a new browser window.  |browser()| is still
   // around at this point, even though we've closed its window.
-  Browser* new_browser = FindOneOtherBrowser(browser());
+  BrowserWindowInterface* const new_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(new_browser);
 
   // Now create a second browser instance pointing to a different profile.

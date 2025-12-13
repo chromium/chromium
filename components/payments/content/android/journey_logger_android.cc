@@ -15,7 +15,7 @@ namespace payments {
 namespace {
 
 using ::base::android::ConvertJavaStringToUTF8;
-using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
 using base::android::JavaRef;
 
 }  // namespace
@@ -83,7 +83,7 @@ void JourneyLoggerAndroid::SetRequestedInformation(JNIEnv* env,
 
 void JourneyLoggerAndroid::SetRequestedPaymentMethods(
     JNIEnv* env,
-    const base::android::JavaParamRef<jintArray>& jmethods) {
+    const base::android::JavaRef<jintArray>& jmethods) {
   std::vector<int> int_methods;
   base::android::JavaIntArrayToIntVector(env, jmethods, &int_methods);
   std::vector<JourneyLogger::PaymentMethodCategory> method_categories;
@@ -124,7 +124,7 @@ void JourneyLoggerAndroid::SetPaymentAppUkmSourceId(JNIEnv* env,
 
 static jlong JNI_JourneyLogger_InitJourneyLoggerAndroid(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);  // Verified in Java before invoking this function.
@@ -133,3 +133,5 @@ static jlong JNI_JourneyLogger_InitJourneyLoggerAndroid(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(JourneyLogger)

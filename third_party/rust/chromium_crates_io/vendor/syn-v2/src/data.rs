@@ -376,7 +376,7 @@ mod printing {
     use crate::data::{Field, FieldsNamed, FieldsUnnamed, Variant};
     use crate::print::TokensOrDefault;
     use proc_macro2::TokenStream;
-    use quote::{ToTokens, TokenStreamExt};
+    use quote::{ToTokens, TokenStreamExt as _};
 
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for Variant {

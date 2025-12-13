@@ -9,8 +9,7 @@
 #include <set>
 
 #include "base/component_export.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 
@@ -38,8 +37,9 @@ class COMPONENT_EXPORT(COLOR) ColorMixer {
   // to the ColorProvider, which would need to query different mixers in order.
   // |input_mixer_getter| can be .Run() to obtain the appropriate mixer to
   // query for transform inputs.
-  explicit ColorMixer(MixerGetter previous_mixer_getter = base::NullCallback(),
-                      MixerGetter input_mixer_getter = base::NullCallback());
+  ColorMixer();
+  explicit ColorMixer(MixerGetter previous_mixer_getter);
+  ColorMixer(MixerGetter previous_mixer_getter, MixerGetter input_mixer_getter);
   // ColorMixer is movable since it holds both sets and recipes, each of which
   // might be expensive to copy.
   ColorMixer(ColorMixer&&) noexcept;

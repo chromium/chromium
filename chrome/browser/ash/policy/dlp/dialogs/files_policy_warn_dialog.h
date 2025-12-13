@@ -15,7 +15,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 

@@ -17,8 +17,6 @@ void ClientDataDelegateDesktop::FillRegisterBrowserRequest(
     base::OnceClosure callback) const {
   request->set_os_platform(GetOSPlatform());
   request->set_os_version(GetOSVersion());
-  request->set_machine_name(GetMachineName());
-
   request->set_allocated_browser_device_identifier(
       GetBrowserDeviceIdentifier().release());
 

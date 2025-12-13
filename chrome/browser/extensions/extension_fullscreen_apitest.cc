@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
       ->EnterFullscreen(
           url::Origin(),
           EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
-          display::kInvalidDisplayId);
+          FullscreenTabParams());
   ASSERT_TRUE(browser()->window()->IsFullscreen());
   ASSERT_TRUE(RunExtensionTest("window_update/focus")) << message_;
   ASSERT_TRUE(browser()->window()->IsFullscreen());
@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
       ->EnterFullscreen(
           url::Origin(),
           EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
-          display::kInvalidDisplayId);
+          FullscreenTabParams());
   ASSERT_TRUE(RunExtensionTest("window_update/sizing")) << message_;
   ASSERT_FALSE(browser()->window()->IsFullscreen());
 }

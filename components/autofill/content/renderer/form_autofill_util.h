@@ -64,18 +64,6 @@ namespace form_util {
 // heuristics for a given form element.
 using ButtonTitlesCache = base::flat_map<FormRendererId, ButtonTitleList>;
 
-// A bit field mask to extract data from WebFormControlElement.
-// Copied to components/autofill/ios/browser/resources/autofill_controller.js.
-enum class ExtractOption {
-  kBounds,    // Extract bounds from WebFormControlElement, could
-              // trigger layout if needed.
-  kDatalist,  // Extract datalist from WebFormControlElement, the total
-              // number of options is up to kMaxListSize and each option
-              // has as far as kMaxDataLength.
-  kMinValue = kBounds,
-  kMaxValue = kDatalist,
-};
-
 // Extract FormData from `form_element` or the unowned form if
 // `form_element.IsNull()`.
 //
@@ -90,8 +78,7 @@ std::optional<FormData> ExtractFormData(
     const blink::WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
-    ButtonTitlesCache* button_titles_cache,
-    DenseSet<ExtractOption> extract_options = {});
+    ButtonTitlesCache* button_titles_cache);
 
 // Helper function to assist in getting the canonical form of the action and
 // origin. The action will properly take into account <BASE>, and both will
@@ -155,7 +142,6 @@ FindFormAndFieldForFormControlElement(
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
     form_util::ButtonTitlesCache* button_titles_cache,
-    DenseSet<ExtractOption> extract_options,
     const SynchronousFormCache& form_cache);
 
 // Creates a FormData containing a single field out of a contenteditable
@@ -356,7 +342,6 @@ void WebFormControlElementToFormFieldForTesting(
     const blink::WebFormElement& form_element,
     const blink::WebFormControlElement& element,
     const FieldDataManager* field_data_manager,
-    DenseSet<ExtractOption> extract_options,
     FormFieldData* field);
 
 }  // namespace form_util

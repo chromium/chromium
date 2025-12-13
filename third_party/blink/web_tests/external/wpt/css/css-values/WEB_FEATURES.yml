@@ -2,6 +2,9 @@ features:
 - name: abs-sign
   files:
   - signs-abs-*
+- name: attr
+  files:
+  - attr-*
 - name: cap
   files:
   - cap-*
@@ -18,6 +21,9 @@ features:
 - name: ric
   files:
   - ric-*
+- name: if
+  files:
+  - if-*
 - name: lh
   files:
   - lh-*
@@ -30,6 +36,9 @@ features:
 - name: rch
   files:
   - rch-*
+- name: ex
+  files:
+  - ex-*
 - name: rex
   files:
   - rex-*
@@ -41,6 +50,10 @@ features:
   files:
   - acos-asin-atan-atan2-*
   - sin-cos-tan-*
+- name: calc
+  files:
+  - calc-*
+  - "!calc-infinity-*"
 - name: calc-constants
   files:
   - calc-infinity-*
@@ -53,3 +66,20 @@ features:
   - viewport-units-parsing.html
   - viewport-units-writing-mode-font-size.html
   - viewport-units-writing-mode.html
+- name: min-max-clamp
+  files:
+  - min-*
+  - minmax-*
+  - max-*
+  - attr-in-max.html
+  - calc-in-max.html
+  - clamp-*
+- name: viewport-units
+  files:
+  - vh-*
+  - viewport-units-*
+  # Tests for: vi, svi, lvi, dvi, vb, svb, lvb, dvb
+  - "!viewport-units-writing-mode-*"
+- name: border-radius
+  files:
+  - getComputedStyle-border-radius-*

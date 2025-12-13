@@ -1,0 +1,12 @@
+include_rules = ["+device/fido/public"]
+
+specific_include_rules = {
+  ".*_android\.(cc|h)" : [
+    "+components/enterprise/client_certificates/android/"
+    "browser_binding_jni",
+    "+crypto",
+    "+net",
+    "+third_party/jni_zero",
+    "+third_party/boringssl/src/include",
+  ]
+}

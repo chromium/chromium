@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Module Script Task Separation Test</title>
+    <meta charset="utf-8">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script>
+        window.taskState = {
+            promise: false,
+            raf: false,
+            timeout: false
+        };
+
+    </script>
+
+    <!-- Module scripts (type="module" automatically defers) -->
+    <script type="module">
+        // Schedule tasks that should interleave when feature is enabled
+        Promise.resolve().then(() => {
+            window.taskState.promise = true;
+        });
+
+        requestAnimationFrame(() => {
+            window.taskState.raf = true;
+        });
+
+        setTimeout(() => {
+            window.taskState.timeout = true;
+        }, 0);
+
+        // Busy wait for 500ms to create opportunity for task interleaving
+        const deadline = performance.now() + 500;
+        while (performance.now() < deadline) {}
+    </script>
+
+    <script type="module">
+        // This test validates task interleaving behavior between module scripts.
+        // Note: RAF behavior depends on whether SeparateDeferModuleScriptTasks is enabled.
+        // When enabled: RAF can execute between modules (window.taskState.raf = true)
+        // When disabled: RAF executes after all modules (window.taskState.raf = false)
+
+        test(() => {
+            // Promise microtasks always run between modules due to microtask checkpoints
+            assert_true(window.taskState.promise, "Promise microtask should have executed between modules");
+
+            // When feature is enabled: RAF can execute between modules due to task separation
+            assert_true(window.taskState.raf, "RAF should have executed between modules when feature is enabled");
+
+            // setTimeout has lower priority than kInternalContinueScriptLoading
+            // and should not execute between modules regardless of feature state
+            assert_false(window.taskState.timeout, "setTimeout should NOT have executed between modules due to lower priority");
+        }, "Module script microtask and task priority test");
+    </script>
+
+</body>
+</html>

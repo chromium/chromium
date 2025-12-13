@@ -69,11 +69,11 @@ class DnsProbeRunner : public network::ResolveHostClientBase {
   }
 
   // network::ResolveHostClientBase impl:
-  void OnComplete(int32_t result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override;
+  void OnComplete(
+      int32_t result,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override;
 
   net::DnsConfigOverrides GetConfigOverridesForTesting() {
     return dns_config_overrides_;

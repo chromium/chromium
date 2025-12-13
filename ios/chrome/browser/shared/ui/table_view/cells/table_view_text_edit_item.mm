@@ -129,12 +129,15 @@ const CGFloat kSymbolSize = 15;
   cell.textField.returnKeyType = self.returnKeyType;
   cell.textField.keyboardType = self.keyboardType;
   cell.textField.autocapitalizationType = self.autoCapitalizationType;
+  cell.textField.delegate = self.textFieldDelegate;
 
   [cell setIdentifyingIcon:self.identifyingIcon];
   cell.identifyingIconButton.enabled = self.identifyingIconEnabled;
   if ([self.identifyingIconAccessibilityLabel length]) {
     cell.identifyingIconButton.accessibilityLabel =
         self.identifyingIconAccessibilityLabel;
+  } else if (!self.identifyingIconEnabled) {
+    cell.identifyingIconButton.isAccessibilityElement = NO;
   }
 
   if ([self.cellAccessibilityLabel length]) {
@@ -172,6 +175,10 @@ const CGFloat kSymbolSize = 15;
 }
 
 - (void)updateTextFieldValue:(NSString*)textFieldValue {
+  if ((_textFieldValue == nil && textFieldValue == nil) ||
+      [_textFieldValue isEqualToString:textFieldValue]) {
+    return;
+  }
   _textFieldValue = textFieldValue;
   [self.delegate tableViewItemDidChange:self];
 }
@@ -308,16 +315,14 @@ const CGFloat kSymbolSize = 15;
               UIContentSizeCategoryIsAccessibilityCategory(
                   self.traitCollection.preferredContentSizeCategory)];
 
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitPreferredContentSizeCategory.class ]);
-      __weak __typeof(self) weakSelf = self;
-      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                       UITraitCollection* previousCollection) {
-        [weakSelf updateUIOnTraitChange:previousCollection];
-      };
-      [self registerForTraitChanges:traits withHandler:handler];
-    }
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateUIOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
   }
   return self;
 }
@@ -378,16 +383,6 @@ const CGFloat kSymbolSize = 15;
   }
 }
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  [self updateUIOnTraitChange:previousTraitCollection];
-}
-#endif
-
 #pragma mark - UITableViewCell
 
 - (void)prepareForReuse {
@@ -410,6 +405,7 @@ const CGFloat kSymbolSize = 15;
               forControlEvents:UIControlEventAllEvents];
   [self setIdentifyingIcon:nil];
   self.identifyingIconButton.enabled = NO;
+  self.identifyingIconButton.isAccessibilityElement = YES;
   [self.identifyingIconButton removeTarget:nil
                                     action:nil
                           forControlEvents:UIControlEventAllEvents];

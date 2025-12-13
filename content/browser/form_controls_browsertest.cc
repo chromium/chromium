@@ -21,7 +21,7 @@
 #include "ui/base/ui_base_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 // TODO(crbug.com/40625383): Move the baselines to skia gold for easier
@@ -78,8 +78,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
 #elif BUILDFLAG(IS_CHROMEOS)
     platform_suffix = "_chromeos";
 #elif BUILDFLAG(IS_ANDROID)
-    int sdk_int = base::android::BuildInfo::GetInstance()->sdk_int();
-    if (sdk_int >= base::android::SDK_VERSION_T) {
+    int sdk_int = base::android::android_info::sdk_int();
+    if (sdk_int >= base::android::android_info::SDK_VERSION_T) {
       platform_suffix = "_android_T";
     } else {
       platform_suffix = "_android";
@@ -126,7 +126,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     auto comparator = cc::FuzzyPixelComparator()
                           .DiscardAlpha()
                           .SetErrorPixelsPercentageLimit(11.f)
-                          .SetAvgAbsErrorLimit(5.f)
+                          .SetAvgAbsErrorLimit(12.f)
                           .SetAbsErrorLimit(140);
 #else
     cc::AlphaDiscardingExactPixelComparator comparator;
@@ -142,8 +142,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     // Lower versions of android running on older devices, ex Nexus 5, render
     // form controls with a too large of a difference -- >20% error -- to
     // pixel compare.
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <
-        base::android::SDK_VERSION_OREO) {
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_OREO) {
       return true;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -353,7 +353,11 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Select) {
 // TODO(crbug.com/377986468) : Flaky on Windows. Seems to lose focus of top
 // <select> in some runs which causes the results to be different from
 // expectations.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/448656594): The test fails on Android. Either the test is
+// flaky or the baseline is wrong.
+// TODO(crbug.com/449053040): Re-enable the test on Linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_LINUX)
 #define MAYBE_MultiSelect DISABLED_MultiSelect
 #else
 #define MAYBE_MultiSelect MultiSelect

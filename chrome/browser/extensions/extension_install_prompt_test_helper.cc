@@ -9,7 +9,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 ExtensionInstallPromptTestHelper::ExtensionInstallPromptTestHelper() = default;
 ExtensionInstallPromptTestHelper::ExtensionInstallPromptTestHelper(

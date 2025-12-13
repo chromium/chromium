@@ -108,8 +108,4 @@ bool ChromeSafeBrowsingUIManagerDelegate::IsMetricsAndCrashReportingEnabled() {
   return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
 }
 
-bool ChromeSafeBrowsingUIManagerDelegate::IsSendingOfHitReportsEnabled() {
-  return true;
-}
-
 }  // namespace safe_browsing

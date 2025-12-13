@@ -40,11 +40,15 @@ class WallpaperWindowStateManagerTest : public AshTestBase {
 TEST_F(WallpaperWindowStateManagerTest, HideAndRestoreWindows) {
   SimulateUserLogin({kTestAccount});
   std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindowInShellWithId(0));
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(2));
-  std::unique_ptr<aura::Window> window3(CreateTestWindowInShellWithId(3));
-  std::unique_ptr<aura::Window> window4(CreateTestWindowInShellWithId(4));
+      CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 1}));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 2}));
+  std::unique_ptr<aura::Window> window3(
+      CreateTestWindowInShell({.window_id = 3}));
+  std::unique_ptr<aura::Window> window4(
+      CreateTestWindowInShell({.window_id = 4}));
 
   WindowState* wallpaper_picker_window_state =
       WindowState::Get(wallpaper_picker_window.get());
@@ -103,8 +107,9 @@ TEST_F(WallpaperWindowStateManagerTest, HideAndRestoreWindows) {
 TEST_F(WallpaperWindowStateManagerTest, HideAndManualUnminimizeWindows) {
   SimulateUserLogin({kTestAccount});
   std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindowInShellWithId(0));
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
+      CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 1}));
 
   WindowState* wallpaper_picker_window_state =
       WindowState::Get(wallpaper_picker_window.get());
@@ -148,9 +153,11 @@ TEST_F(WallpaperWindowStateManagerTest, HideAndManualUnminimizeWindows) {
 TEST_F(WallpaperWindowStateManagerTest, IgnoreInvisibleWindows) {
   SimulateUserLogin({kTestAccount});
   std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindowInShellWithId(0));
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(2));
+      CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 1}));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 2}));
 
   WindowState* wallpaper_picker_window_state =
       WindowState::Get(wallpaper_picker_window.get());

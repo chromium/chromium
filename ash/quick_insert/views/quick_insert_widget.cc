@@ -34,7 +34,7 @@ QuickInsertLayoutType GetLayoutType(const gfx::Rect& anchor_bounds,
                                     QuickInsertPositionType position_type) {
   return position_type == QuickInsertPositionType::kCentered ||
                  anchor_bounds.bottom() + kQuickInsertViewMaxHeight <=
-                     display::Screen::GetScreen()
+                     display::Screen::Get()
                          ->GetDisplayMatching(anchor_bounds)
                          .work_area()
                          .bottom()
@@ -56,7 +56,7 @@ views::Widget::InitParams CreateInitParams(
       views::Widget::InitParams::TYPE_BUBBLE);
   params.parent = Shell::GetContainer(
       Shell::GetRootWindowForDisplayId(
-          display::Screen::GetScreen()->GetDisplayMatching(anchor_bounds).id()),
+          display::Screen::Get()->GetDisplayMatching(anchor_bounds).id()),
       kShellWindowId_FloatContainer);
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;

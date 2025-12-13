@@ -17,6 +17,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.io.FileNotFoundException;
@@ -36,7 +37,7 @@ public class ChromeFileProviderTest {
         try {
             provider.openFile(uri, "r");
         } catch (FileNotFoundException e) {
-            assert false : "Failed to open file.";
+            throw new AssertionError("Failed to open file.");
         }
         return file;
     }
@@ -65,6 +66,7 @@ public class ChromeFileProviderTest {
                     }
                     ChromeFileProvider.notifyFileReady(uri, null);
                 });
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         ParcelFileDescriptor file = openFileFromProvider(uri);
         // File should be null because the notify passes a null file uri.
         Assert.assertNull(file);
@@ -86,6 +88,7 @@ public class ChromeFileProviderTest {
                     }
                     ChromeFileProvider.notifyFileReady(uri2, fileUri2);
                 });
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // This should not be blocked even without a notify since file was changed.
         Uri file1 = ChromeFileProvider.getFileUriWhenReady(uri1);

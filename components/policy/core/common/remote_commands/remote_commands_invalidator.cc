@@ -6,20 +6,21 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/time/clock.h"
 #include "build/build_config.h"
 #include "components/invalidation/invalidation_listener.h"
-#include "components/invalidation/public/invalidation.h"
-#include "components/invalidation/public/invalidation_service.h"
-#include "components/invalidation/public/invalidation_util.h"
-#include "components/invalidation/public/invalidator_state.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/policy_invalidation_util.h"
 #include "components/policy/core/common/policy_logger.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
+#include "components/policy/core/common/remote_commands/remote_commands_service.h"
 
 namespace policy {
 
@@ -42,143 +43,60 @@ constexpr char kUserRemoteCommandsInvalidatorTypeName[] =
     "PROFILE_REMOTE_COMMAND";
 #endif
 
-template <typename T, typename U>
-auto PointerVariantToRawPointer(const std::variant<T*, U*>& v) {
-  return std::visit(
-      [](auto&& arg) -> std::variant<raw_ptr<T>, raw_ptr<U>> { return arg; },
-      v);
+const char* GetInvalidationMetricName(PolicyInvalidationScope scope) {
+  switch (scope) {
+    case PolicyInvalidationScope::kUser:
+      return kMetricUserRemoteCommandInvalidations;
+    case PolicyInvalidationScope::kDevice:
+      return kMetricDeviceRemoteCommandInvalidations;
+    case PolicyInvalidationScope::kCBCM:
+      return kMetricCBCMRemoteCommandInvalidations;
+    case PolicyInvalidationScope::kDeviceLocalAccount:
+      NOTREACHED() << "Unexpected instance of remote commands invalidator with "
+                      "device local account scope.";
+  }
 }
 
 }  // namespace
 
 RemoteCommandsInvalidator::RemoteCommandsInvalidator(
-    std::string owner_name,
+    invalidation::InvalidationListener* invalidation_listener,
+    CloudPolicyCore* core,
+    const base::Clock* clock,
     PolicyInvalidationScope scope)
-    : owner_name_(std::move(owner_name)), scope_(scope) {}
+    : scope_(scope),
+      invalidation_listener_(invalidation_listener),
+      core_(core),
+      clock_(clock) {
+  CHECK(invalidation_listener_);
+  CHECK(core_);
+  CHECK(clock_);
+
+  core_observation_.Observe(core_);
+  if (core_->remote_commands_service()) {
+    OnRemoteCommandsServiceStarted(core_);
+  }
+}
 
 RemoteCommandsInvalidator::~RemoteCommandsInvalidator() {
-  CHECK_EQ(SHUT_DOWN, state_);
+  // Explicitly reset observation of `InvalidationListener` as it needs
+  // `GetType()` to remove observer and `GetType()` requires access to our
+  // state.
+  invalidation_listener_observation_.Reset();
 }
 
-void RemoteCommandsInvalidator::Initialize(
-    std::variant<invalidation::InvalidationService*,
-                 invalidation::InvalidationListener*>
-        invalidation_service_or_listener) {
-  CHECK_EQ(SHUT_DOWN, state_);
-  CHECK(thread_checker_.CalledOnValidThread());
-  CHECK(!std::holds_alternative<invalidation::InvalidationService*>(
-            invalidation_service_or_listener) ||
-        std::get<invalidation::InvalidationService*>(
-            invalidation_service_or_listener))
-      << "InvalidationService is used but is null";
-  CHECK(!std::holds_alternative<invalidation::InvalidationListener*>(
-            invalidation_service_or_listener) ||
-        std::get<invalidation::InvalidationListener*>(
-            invalidation_service_or_listener))
-      << "InvalidationListener is used but is null";
-  invalidation_service_or_listener_ =
-      PointerVariantToRawPointer(invalidation_service_or_listener);
+void RemoteCommandsInvalidator::OnCoreConnected(CloudPolicyCore* core) {}
 
-  state_ = STOPPED;
+void RemoteCommandsInvalidator::OnRefreshSchedulerStarted(
+    CloudPolicyCore* core) {}
 
-  // TODO(crbug.com/40283068): Reset `invalidation_service_` to avoid dangling
-  // pointer.
-  OnInitialize();
+void RemoteCommandsInvalidator::OnCoreDisconnecting(CloudPolicyCore* core) {
+  invalidation_listener_observation_.Reset();
 }
 
-void RemoteCommandsInvalidator::Shutdown() {
-  CHECK_NE(SHUT_DOWN, state_);
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  Stop();
-
-  std::visit([](auto& v) { v = nullptr; }, invalidation_service_or_listener_);
-
-  state_ = SHUT_DOWN;
-  OnShutdown();
-}
-
-void RemoteCommandsInvalidator::Start() {
-  CHECK_EQ(STOPPED, state_);
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  state_ = STARTED;
-
-  std::visit(absl::Overload{
-                 [](invalidation::InvalidationService* service) {
-                   // Do nothing.
-                 },
-                 [this](invalidation::InvalidationListener* listener) {
-                   invalidation_listener_observation_.Observe(listener);
-                 },
-             },
-             invalidation_service_or_listener_);
-
-  OnStart();
-}
-
-void RemoteCommandsInvalidator::Stop() {
-  CHECK_NE(SHUT_DOWN, state_);
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  if (state_ == STARTED) {
-    invalidation_service_observation_.Reset();
-    invalidation_listener_observation_.Reset();
-    // Drop the reference to `invalidation_service_or_listener_` as it
-    // may be destroyed sooner than `DeviceLocalAccountPolicyService`.
-
-    state_ = STOPPED;
-
-    OnStop();
-  }
-}
-
-void RemoteCommandsInvalidator::OnInvalidatorStateChange(
-    invalidation::InvalidatorState state) {
-  CHECK_EQ(STARTED, state_);
-  DCHECK(thread_checker_.CalledOnValidThread());
-}
-
-void RemoteCommandsInvalidator::OnIncomingInvalidation(
-    const invalidation::Invalidation& invalidation) {
-  CHECK_EQ(STARTED, state_);
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  VLOG_POLICY(2, REMOTE_COMMANDS) << "Received remote command invalidation";
-
-  if (!AreInvalidationsEnabled()) {
-    LOG_POLICY(WARNING, REMOTE_COMMANDS) << "Unexpected invalidation received.";
-  }
-
-  CHECK(invalidation.topic() == topic_);
-
-  DoRemoteCommandsFetch(invalidation);
-}
-
-std::string RemoteCommandsInvalidator::GetOwnerName() const {
-  return owner_name_;
-}
-
-bool RemoteCommandsInvalidator::IsPublicTopic(
-    const invalidation::Topic& topic) const {
-  return IsPublicInvalidationTopic(topic);
-}
-
-void RemoteCommandsInvalidator::OnSuccessfullySubscribed(
-    const invalidation::Topic& invalidation) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  CHECK(invalidation == topic_);
-
-  // The service needs to be started to fetch commands.
-  if (state_ != STARTED) {
-    return;
-  }
-
-  VLOG_POLICY(2, REMOTE_COMMANDS)
-      << "Fetching remote commands after subscribing to invalidations.";
-
-  DoInitialRemoteCommandsFetch();
+void RemoteCommandsInvalidator::OnRemoteCommandsServiceStarted(
+    CloudPolicyCore* core) {
+  invalidation_listener_observation_.Observe(invalidation_listener_);
 }
 
 void RemoteCommandsInvalidator::OnExpectationChanged(
@@ -216,57 +134,9 @@ std::string RemoteCommandsInvalidator::GetType() const {
   }
 }
 
-void RemoteCommandsInvalidator::ReloadPolicyData(
-    const enterprise_management::PolicyData* policy) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  if (state_ != STARTED) {
-    return;
-  }
-
-  std::visit(absl::Overload{
-                 [this, policy](invalidation::InvalidationService* service) {
-                   ReloadPolicyDataWithInvalidationService(policy);
-                 },
-                 [](invalidation::InvalidationListener* listener) {
-                   // Do nothing.
-                 },
-             },
-             invalidation_service_or_listener_);
-}
-
-void RemoteCommandsInvalidator::ReloadPolicyDataWithInvalidationService(
-    const enterprise_management::PolicyData* policy) {
-  // Create the Topic based on the policy data.
-  // If the policy does not specify the Topic, then unsubscribe and
-  // unregister.
-  invalidation::Topic topic;
-  if (!policy || !GetRemoteCommandTopicFromPolicy(*policy, &topic)) {
-    UnsubscribeFromTopicsWithInvalidationService();
-    invalidation_service_observation_.Reset();
-    return;
-  }
-
-  // If the policy topic in the policy data is different from the
-  // currently registered topic, update the object registration.
-  if (!IsRegistered() || topic != topic_) {
-    RegisterWithInvalidationService(topic);
-  }
-}
-
 bool RemoteCommandsInvalidator::IsRegistered() const {
-  return std::visit(
-      absl::Overload{
-          [this](invalidation::InvalidationService* service) {
-            return service &&
-                   invalidation_service_observation_.IsObservingSource(service);
-          },
-          [this](invalidation::InvalidationListener* listener) {
-            return listener &&
-                   invalidation_listener_observation_.IsObservingSource(
-                       listener);
-          }},
-      invalidation_service_or_listener_);
+  return invalidation_listener_observation_.IsObservingSource(
+      invalidation_listener_);
 }
 
 bool RemoteCommandsInvalidator::AreInvalidationsEnabled() const {
@@ -274,69 +144,40 @@ bool RemoteCommandsInvalidator::AreInvalidationsEnabled() const {
     return false;
   }
 
-  return std::visit(
-      absl::Overload{[](invalidation::InvalidationService* service) {
-                       return service->GetInvalidatorState() ==
-                              invalidation::InvalidatorState::kEnabled;
-                     },
-                     [this](invalidation::InvalidationListener* listener) {
-                       return are_invalidations_expected_ ==
-                              invalidation::InvalidationsExpected::kYes;
-                     }},
-      invalidation_service_or_listener_);
+  return are_invalidations_expected_ ==
+         invalidation::InvalidationsExpected::kYes;
 }
 
-void RemoteCommandsInvalidator::RegisterWithInvalidationService(
-    const invalidation::Topic& topic) {
-  CHECK(std::holds_alternative<raw_ptr<invalidation::InvalidationService>>(
-      invalidation_service_or_listener_));
-  auto invalidation_service =
-      std::get<raw_ptr<invalidation::InvalidationService>>(
-          invalidation_service_or_listener_);
+void RemoteCommandsInvalidator::DoRemoteCommandsFetch(
+    const invalidation::DirectInvalidation& invalidation) {
+  CHECK(core_->remote_commands_service());
 
-  // Register this handler with the invalidation service if needed.
-  if (!IsRegistered()) {
-    OnInvalidatorStateChange(invalidation_service->GetInvalidatorState());
-    invalidation_service_observation_.Observe(invalidation_service);
-  }
+  RecordInvalidationMetric(invalidation);
 
-  topic_ = topic;
-
-  // Update subscription with the invalidation service.
-  const bool success =
-      invalidation_service->UpdateInterestedTopics(this, /*topics=*/{topic});
-  LOG_IF(ERROR, !success) << "Could not subscribe to topic: " << topic;
+  core_->remote_commands_service()->FetchRemoteCommands(
+      RemoteCommandsFetchReason::kInvalidation);
 }
 
-void RemoteCommandsInvalidator::UnsubscribeFromTopicsWithInvalidationService() {
-  CHECK(std::holds_alternative<raw_ptr<invalidation::InvalidationService>>(
-      invalidation_service_or_listener_));
-  auto invalidation_service =
-      std::get<raw_ptr<invalidation::InvalidationService>>(
-          invalidation_service_or_listener_);
+void RemoteCommandsInvalidator::DoInitialRemoteCommandsFetch() {
+  CHECK(core_->remote_commands_service());
 
-  base::ScopedObservation<invalidation::InvalidationService,
-                          invalidation::InvalidationHandler>
-      temporary_registration(this);
-
-  // Invalidator cannot unset its topics without being registered. Let's quickly
-  // register and unregister to do just that.
-  if (!IsRegistered()) {
-    temporary_registration.Observe(invalidation_service);
-  }
-
-  CHECK(invalidation_service->UpdateInterestedTopics(this,
-                                                     invalidation::TopicSet()));
+  core_->remote_commands_service()->FetchRemoteCommands(
+      RemoteCommandsFetchReason::kStartup);
 }
 
-invalidation::InvalidationService*
-RemoteCommandsInvalidator::invalidation_service() {
-  if (std::holds_alternative<raw_ptr<invalidation::InvalidationService>>(
-          invalidation_service_or_listener_)) {
-    return std::get<raw_ptr<invalidation::InvalidationService>>(
-        invalidation_service_or_listener_);
-  }
-  return nullptr;
+void RemoteCommandsInvalidator::RecordInvalidationMetric(
+    const invalidation::DirectInvalidation& invalidation) const {
+  const auto last_fetch_time = base::Time::FromMillisecondsSinceUnixEpoch(
+      core_->store()->policy()->timestamp());
+  const auto current_time = clock_->Now();
+  const bool is_expired =
+      IsInvalidationExpired(invalidation, last_fetch_time, current_time);
+  const bool is_missing_payload = invalidation.payload().empty();
+
+  base::UmaHistogramEnumeration(
+      GetInvalidationMetricName(scope_),
+      GetInvalidationMetric(is_missing_payload, is_expired),
+      POLICY_INVALIDATION_TYPE_SIZE);
 }
 
 }  // namespace policy

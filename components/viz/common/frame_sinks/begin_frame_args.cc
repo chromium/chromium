@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/traced_value.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -210,6 +211,14 @@ BeginFrameAck::BeginFrameAck(uint64_t source_id,
 BeginFrameAck BeginFrameAck::CreateManualAckWithDamage() {
   return BeginFrameAck(BeginFrameArgs::kManualSourceId,
                        BeginFrameArgs::kStartingFrameNumber, true);
+}
+
+void BeginFrameAck::AsValueInto(base::trace_event::TracedValue* dict) const {
+  dict->SetInteger("source_id", static_cast<int>(frame_id.source_id));
+  dict->SetInteger("sequence_number",
+                   static_cast<int>(frame_id.sequence_number));
+  dict->SetBoolean("has_damage", has_damage);
+  dict->SetInteger("trace_id", static_cast<int>(trace_id));
 }
 
 }  // namespace viz

@@ -4,9 +4,11 @@ specific_include_rules = {
     "+components/collaboration/public/features.h",
     "+components/data_sharing/public/features.h",
     "+components/data_sharing/public/switches.h",
+    "+components/desktop_to_mobile_promos",
     "+components/page_content_annotations/core",
-    "+components/page_image_service/features.h",
+    "+components/sharing_message/features.h",
     "+ios/chrome/browser",
+    "+ios/components/enterprise/data_controls/features.h",
   ],
   "^ios_chrome_field_trials.mm": [
     "+ios/chrome/browser/variations/model",

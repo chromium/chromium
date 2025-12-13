@@ -12,8 +12,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
@@ -29,10 +27,6 @@ namespace auto_screen_brightness {
 namespace {
 
 constexpr double kTol = 1e-10;
-
-constexpr double kMaxBrightnessAdjustment = 100;
-constexpr double kMinBrightnessAdjustment = 1;
-constexpr size_t kNumBrightnessAdjustmentBuckets = 10;
 
 const char* BrightnessChangeCauseToString(
     Adapter::BrightnessChangeCause cause) {
@@ -56,47 +50,20 @@ const char* BrightnessChangeCauseToString(
   return "Unknown";
 }
 
-// Multiplies input |x| by a factor of 100 and round to the nearest int.
-int ScaleAndConvertToInt(double x) {
-  return static_cast<int>(x * 100 + 0.5);
-}
-
-// Returns the bucket number from |value| following the exponential bucketing
-// scheme. Each bucket is inclusive from the left and exclusive from the right.
-int ExponentialBucketing(double value) {
-  static const double kExponentialBrightnessAdjustmentStepSize =
-      std::log(kMaxBrightnessAdjustment / kMinBrightnessAdjustment) /
-      (kNumBrightnessAdjustmentBuckets - 1);
-  DCHECK_LE(kMinBrightnessAdjustment, value);
-  DCHECK_LE(value, kMaxBrightnessAdjustment);
-  return static_cast<int>(std::log(value / kMinBrightnessAdjustment) /
-                          kExponentialBrightnessAdjustmentStepSize);
-}
-
 }  // namespace
 
 Adapter::Params::Params() = default;
-
-Adapter::AdapterDecision::AdapterDecision() = default;
-
-Adapter::AdapterDecision::AdapterDecision(const AdapterDecision& decision) =
-    default;
-
-Adapter::AdapterDecision& Adapter::AdapterDecision::operator=(
-    const AdapterDecision& decision) = default;
 
 Adapter::Adapter(Profile* profile,
                  AlsReader* als_reader,
                  BrightnessMonitor* brightness_monitor,
                  Modeller* modeller,
-                 ModelConfigLoader* model_config_loader,
-                 MetricsReporter* metrics_reporter)
+                 ModelConfigLoader* model_config_loader)
     : Adapter(profile,
               als_reader,
               brightness_monitor,
               modeller,
               model_config_loader,
-              metrics_reporter,
               base::DefaultTickClock::GetInstance()) {}
 
 Adapter::~Adapter() = default;
@@ -188,14 +155,9 @@ void Adapter::OnUserBrightnessChanged(double old_brightness_percent,
   if (adapter_status_ == Status::kSuccess) {
     if (!decision_at_first_recent_user_brightness_request) {
       // This should not happen frequently.
-      UMA_HISTOGRAM_BOOLEAN(
-          "AutoScreenBrightness.MissingPriorUserBrightnessRequest", true);
       return;
     }
     DCHECK(first_recent_user_brightness_request_time);
-    LogAdapterDecision(*first_recent_user_brightness_request_time,
-                       *decision_at_first_recent_user_brightness_request,
-                       old_brightness_percent, new_brightness_percent);
 
     const std::optional<AlsAvgStdDev> log_als_avg_stddev =
         decision_at_first_recent_user_brightness_request->log_als_avg_stddev;
@@ -208,11 +170,6 @@ void Adapter::OnUserBrightnessChanged(double old_brightness_percent,
         log_als_avg_stddev ? std::optional<double>(log_als_avg_stddev->avg)
                            : std::nullopt);
   }
-
-  if (!metrics_reporter_)
-    return;
-
-  metrics_reporter_->OnUserBrightnessChangeRequested();
 }
 
 void Adapter::OnUserBrightnessChangeRequested() {
@@ -355,11 +312,10 @@ std::unique_ptr<Adapter> Adapter::CreateForTesting(
     BrightnessMonitor* brightness_monitor,
     Modeller* modeller,
     ModelConfigLoader* model_config_loader,
-    MetricsReporter* metrics_reporter,
     const base::TickClock* tick_clock) {
   return base::WrapUnique(new Adapter(profile, als_reader, brightness_monitor,
                                       modeller, model_config_loader,
-                                      metrics_reporter, tick_clock));
+                                      tick_clock));
 }
 
 Adapter::Adapter(Profile* profile,
@@ -367,10 +323,8 @@ Adapter::Adapter(Profile* profile,
                  BrightnessMonitor* brightness_monitor,
                  Modeller* modeller,
                  ModelConfigLoader* model_config_loader,
-                 MetricsReporter* metrics_reporter,
                  const base::TickClock* tick_clock)
     : profile_(profile),
-      metrics_reporter_(metrics_reporter),
       tick_clock_(tick_clock) {
   DCHECK(profile);
   DCHECK(als_reader);
@@ -423,14 +377,10 @@ void Adapter::InitParams(const ModelConfig& model_config) {
       static_cast<int>(params_.user_adjustment_effect));
   if (user_adjustment_effect_as_int < 0 || user_adjustment_effect_as_int > 2) {
     enabled_by_model_configs_ = false;
-    LogParameterError(ParameterError::kAdapterError);
     return;
   }
   params_.user_adjustment_effect =
       static_cast<UserAdjustmentEffect>(user_adjustment_effect_as_int);
-
-  UMA_HISTOGRAM_ENUMERATION("AutoScreenBrightness.UserAdjustmentEffect",
-                            params_.user_adjustment_effect);
 }
 
 void Adapter::UpdateStatus() {
@@ -444,7 +394,6 @@ void Adapter::UpdateStatus() {
       *als_init_status_ == AlsReader::AlsInitStatus::kSuccess;
   if (!als_success) {
     adapter_status_ = Status::kDisabled;
-    SetMetricsReporterDeviceClass();
     return;
   }
 
@@ -453,7 +402,6 @@ void Adapter::UpdateStatus() {
 
   if (!*brightness_monitor_success_) {
     adapter_status_ = Status::kDisabled;
-    SetMetricsReporterDeviceClass();
     return;
   }
 
@@ -462,7 +410,6 @@ void Adapter::UpdateStatus() {
 
   if (!model_.global_curve) {
     adapter_status_ = Status::kDisabled;
-    SetMetricsReporterDeviceClass();
     return;
   }
 
@@ -471,7 +418,6 @@ void Adapter::UpdateStatus() {
 
   if (!*power_manager_service_available_) {
     adapter_status_ = Status::kDisabled;
-    SetMetricsReporterDeviceClass();
     return;
   }
 
@@ -480,55 +426,10 @@ void Adapter::UpdateStatus() {
 
   if (!enabled_by_model_configs_.value()) {
     adapter_status_ = Status::kDisabled;
-    SetMetricsReporterDeviceClass();
     return;
   }
 
   adapter_status_ = Status::kSuccess;
-  SetMetricsReporterDeviceClass();
-}
-
-void Adapter::SetMetricsReporterDeviceClass() {
-  if (!metrics_reporter_)
-    return;
-
-  DCHECK_NE(adapter_status_, Status::kInitializing);
-  DCHECK(als_init_status_);
-
-  switch (*als_init_status_) {
-    case AlsReader::AlsInitStatus::kSuccess:
-      if (params_.metrics_key == "eve") {
-        metrics_reporter_->SetDeviceClass(MetricsReporter::DeviceClass::kEve);
-        return;
-      }
-      if (params_.metrics_key == "atlas") {
-        metrics_reporter_->SetDeviceClass(MetricsReporter::DeviceClass::kAtlas);
-        return;
-      }
-      if (params_.metrics_key == "nocturne") {
-        metrics_reporter_->SetDeviceClass(
-            MetricsReporter::DeviceClass::kNocturne);
-        return;
-      }
-      if (params_.metrics_key == "kohaku") {
-        metrics_reporter_->SetDeviceClass(
-            MetricsReporter::DeviceClass::kKohaku);
-        return;
-      }
-      metrics_reporter_->SetDeviceClass(
-          MetricsReporter::DeviceClass::kSupportedAls);
-      return;
-    case AlsReader::AlsInitStatus::kDisabled:
-    case AlsReader::AlsInitStatus::kMissingPath:
-      metrics_reporter_->SetDeviceClass(MetricsReporter::DeviceClass::kNoAls);
-      return;
-    case AlsReader::AlsInitStatus::kIncorrectConfig:
-      metrics_reporter_->SetDeviceClass(
-          MetricsReporter::DeviceClass::kUnsupportedAls);
-      return;
-    case AlsReader::AlsInitStatus::kInProgress:
-      NOTREACHED() << "ALS should have been initialized with a valid value.";
-  }
 }
 
 Adapter::AdapterDecision Adapter::CanAdjustBrightness(base::TimeTicks now) {
@@ -667,22 +568,10 @@ void Adapter::AdjustBrightness(BrightnessChangeCause cause,
   chromeos::PowerManagerClient::Get()->SetScreenBrightness(request);
 
   const base::TimeTicks brightness_change_time = tick_clock_->NowTicks();
-  if (!latest_model_brightness_change_time_.is_null()) {
-    UMA_HISTOGRAM_LONG_TIMES(
-        "AutoScreenBrightness.BrightnessChange.ElapsedTime",
-        brightness_change_time - latest_model_brightness_change_time_);
-  }
   latest_model_brightness_change_time_ = brightness_change_time;
   if (current_brightness_) {
     model_brightness_change_ = brightness - *current_brightness_;
   }
-
-  UMA_HISTOGRAM_ENUMERATION("AutoScreenBrightness.BrightnessChange.Cause",
-                            cause);
-
-  UMA_HISTOGRAM_COUNTS_1000(
-      "AutoScreenBrightness.BrightnessChange.ModelIteration",
-      model_.iteration_count);
 
   WriteLogMessages(log_als_avg, brightness, cause);
   model_brightness_change_counter_++;
@@ -707,9 +596,6 @@ void Adapter::OnBrightnessChanged(base::TimeTicks now,
 
   current_brightness_ = new_brightness_percent;
   latest_brightness_change_time_ = now;
-
-  UMA_HISTOGRAM_BOOLEAN("AutoScreenBrightness.MissingAlsWhenBrightnessChanged",
-                        !new_log_als);
 
   if (!new_log_als)
     return;
@@ -744,103 +630,6 @@ void Adapter::WriteLogMessages(double new_log_als,
           << " cause=" << BrightnessChangeCauseToString(cause)
           << " log_als=" << old_log_als
           << base::StringPrintf("%.4f", new_log_als);
-}
-
-void Adapter::LogAdapterDecision(
-    base::TimeTicks first_recent_user_brightness_request_time,
-    const AdapterDecision& decision,
-    double old_brightness_percent,
-    double new_brightness_percent) const {
-  const bool was_previous_change_by_model =
-      !latest_model_brightness_change_time_.is_null() &&
-      latest_brightness_change_time_ == latest_model_brightness_change_time_;
-
-  const bool is_decision_brightness_change =
-      decision.brightness_change_cause.has_value();
-  DCHECK_NE(is_decision_brightness_change,
-            decision.no_brightness_change_cause.has_value());
-
-  const std::string histogram_prefix =
-      std::string("AutoScreenBrightness.AdapterDecisionAtUserChange.") +
-      (is_decision_brightness_change ? "" : "No") + "BrightnessChange.";
-
-  // What we log depends on whether the decision is to change or not to change.
-  if (is_decision_brightness_change) {
-    base::UmaHistogramEnumeration(histogram_prefix + "Cause",
-                                  *decision.brightness_change_cause);
-  } else {
-    const NoBrightnessChangeCause no_brightness_change_cause =
-        *decision.no_brightness_change_cause;
-    base::UmaHistogramEnumeration(histogram_prefix + "Cause",
-                                  no_brightness_change_cause);
-
-    // If previous change was triggered by the model, we log additional metrics.
-    if (was_previous_change_by_model) {
-      UMA_HISTOGRAM_LONG_TIMES(
-          "AutoScreenBrightness.ElapsedTimeBetweenModelAndUserAdjustments",
-          first_recent_user_brightness_request_time -
-              latest_model_brightness_change_time_);
-
-      // If we have a recorded model change, compare it with user change and
-      // log.
-      if (model_brightness_change_ &&
-          (no_brightness_change_cause ==
-               NoBrightnessChangeCause::kMinimalAlsChange ||
-           no_brightness_change_cause ==
-               NoBrightnessChangeCause::kWaitingForAvgHorizon)) {
-        const double user_brightness_adj =
-            new_brightness_percent - old_brightness_percent;
-        // Whether they are both +ve or negative.
-        const bool user_model_same_direction =
-            *model_brightness_change_ * user_brightness_adj >= 0;
-
-        const int user_brightness_adj_bucket =
-            ExponentialBucketing(std::max(1.0, std::abs(user_brightness_adj)));
-
-        const int model_brightness_adj_bucket = ExponentialBucketing(
-            std::max(1.0, std::abs(*model_brightness_change_)));
-
-        const int logged_value =
-            user_brightness_adj_bucket * kNumBrightnessAdjustmentBuckets +
-            model_brightness_adj_bucket;
-
-        const std::string prefix = "AutoScreenBrightness.";
-        base::UmaHistogramExactLinear(
-            prefix + (user_model_same_direction ? "Same" : "Opposite") +
-                ".UserModelBrightnessAdjustments",
-            logged_value, 100 /* value_max */);
-      }
-    }
-  }
-
-  // Log ALS delta and std-dev if they exist.
-  if (decision.log_als_avg_stddev) {
-    const int logged_stddev =
-        ScaleAndConvertToInt(decision.log_als_avg_stddev->stddev);
-    if (average_log_ambient_lux_) {
-      const double log_als_diff =
-          decision.log_als_avg_stddev->avg - *average_log_ambient_lux_;
-      if (std::abs(log_als_diff) < kTol)
-        return;
-
-      const std::string dir = log_als_diff > 0 ? "Brighten" : "Darken";
-
-      const int logged_value = ScaleAndConvertToInt(std::abs(log_als_diff));
-      base::UmaHistogramCounts1000(histogram_prefix + dir + ".AlsDelta",
-                                   logged_value);
-      base::UmaHistogramCounts1000(histogram_prefix + dir + ".AlsStd",
-                                   logged_stddev);
-      return;
-    }
-
-    base::UmaHistogramCounts1000(histogram_prefix + "Unknown.AlsStd",
-                                 logged_stddev);
-  }
-
-  // Log model iteration count.
-  base::UmaHistogramCounts1000(
-      histogram_prefix + "ModelIteration",
-      model_iteration_count_at_user_brightness_change_);
 }
 
 }  // namespace auto_screen_brightness

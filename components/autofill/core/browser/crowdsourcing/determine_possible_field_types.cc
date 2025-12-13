@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -22,6 +23,8 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
@@ -30,12 +33,16 @@
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
 
 namespace autofill {
+
+using one_time_tokens::OneTimeToken;
 
 namespace {
 
@@ -135,47 +142,39 @@ FindDatesAndSetFormatStrings(
   std::vector<std::pair<data_util::Date, PossibleTypes*>> dates;
 
   // Match formats against individual fields.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAiVoteForFormatStringsFromSingleFields)) {
-    for (auto [field, pt] : base::zip(fields, possible_types)) {
-      if (!may_be_interesting(field) || !may_be_complete_date(field)) {
-        continue;
-      }
-      for (auto& [date, format] :
-           GetMatchingCompleteDateAndFormats(field->value())) {
-        pt.formats.emplace(FormatString_Type_DATE, std::move(format));
-        dates.emplace_back(date, &pt);
-      }
+  for (auto [field, pt] : base::zip(fields, possible_types)) {
+    if (!may_be_interesting(field) || !may_be_complete_date(field)) {
+      continue;
+    }
+    for (auto& [date, format] :
+         GetMatchingCompleteDateAndFormats(field->value())) {
+      pt.formats.emplace(FormatString_Type_DATE, std::move(format));
+      dates.emplace_back(date, &pt);
     }
   }
 
   // Match formats against groups of three consecutive fields.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAiVoteForFormatStringsFromMultipleFields)) {
-    for (size_t i = 0; i + 2 < fields.size(); ++i) {
-      const base::span<const std::unique_ptr<AutofillField>, 3> group =
-          fields.subspan(i).first<3>();
-      if (!std::ranges::all_of(group, may_be_interesting) ||
-          !may_be_split_date(group)) {
-        continue;
-      }
-      static constexpr std::u16string_view kSeparator = u"-";
-      static_assert(
-          std::ranges::all_of(kSeparator, data_util::IsDateSeparatorChar));
-      const std::u16string maybe_full_date = base::JoinString(
-          {group[0]->value(), group[1]->value(), group[2]->value()},
-          kSeparator);
-      for (auto& [full_date, full_format] :
-           GetMatchingCompleteDateAndFormats(maybe_full_date)) {
-        std::vector<std::u16string> partial_formats =
-            base::SplitString(full_format, kSeparator, base::KEEP_WHITESPACE,
-                              base::SPLIT_WANT_ALL);
-        if (partial_formats.size() == 3) {
-          for (size_t j = 0; j < 3; ++j) {
-            possible_types[i + j].formats.emplace(
-                FormatString_Type_DATE, std::move(partial_formats[j]));
-            dates.emplace_back(full_date, &possible_types[i + j]);
-          }
+  for (size_t i = 0; i + 2 < fields.size(); ++i) {
+    const base::span<const std::unique_ptr<AutofillField>, 3> group =
+        fields.subspan(i).first<3>();
+    if (!std::ranges::all_of(group, may_be_interesting) ||
+        !may_be_split_date(group)) {
+      continue;
+    }
+    static constexpr std::u16string_view kSeparator = u"-";
+    static_assert(
+        std::ranges::all_of(kSeparator, data_util::IsDateSeparatorChar));
+    const std::u16string maybe_full_date = base::JoinString(
+        {group[0]->value(), group[1]->value(), group[2]->value()}, kSeparator);
+    for (auto& [full_date, full_format] :
+         GetMatchingCompleteDateAndFormats(maybe_full_date)) {
+      std::vector<std::u16string> partial_formats = base::SplitString(
+          full_format, kSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      if (partial_formats.size() == 3) {
+        for (size_t j = 0; j < 3; ++j) {
+          possible_types[i + j].formats.emplace(FormatString_Type_DATE,
+                                                std::move(partial_formats[j]));
+          dates.emplace_back(full_date, &possible_types[i + j]);
         }
       }
     }
@@ -248,28 +247,17 @@ void FindAndSetPossibleCvcFieldTypes(
 
 // Returns the FieldTypes for which the given EntityInstance defines a non-empty
 // value.
-//
-// If kAutofillAiNoTagTypes is disabled:
-// This may not just include Autofill AI types like PASSPORT_NUMBER but
-// also tag types like PASSPORT_NAME_TAG together with the refined type like
-// NAME_FIRST.
-// TODO(crbug.com/422563282): Remove comment when cleaning up
-// kAutofillAiNoTagTypes.
 FieldTypeSet GetAvailableAutofillAiFieldTypes(
     base::span<const EntityInstance> entities,
     const std::string& app_locale) {
   CHECK(base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema));
-  AutofillProfileComparator comparator(app_locale);
   FieldTypeSet types;
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
       for (FieldType field_type : attribute.type().field_subtypes()) {
-        bool is_empty = comparator.HasOnlySkippableCharacters(attribute.GetInfo(
-            field_type, comparator.app_locale(), std::nullopt));
+        bool is_empty = normalization::HasOnlySkippableCharacters(
+            attribute.GetInfo(field_type, app_locale, std::nullopt));
         if (!is_empty) {
-          if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-            types.insert(attribute.type().field_type());
-          }
           types.insert(field_type);
         }
       }
@@ -281,45 +269,39 @@ FieldTypeSet GetAvailableAutofillAiFieldTypes(
 // Scans the given `entities` for values that match `value_u16`. It adds the
 // matching `FieldType` to `PossibleTypes::types` and, if applicable, a format
 // string to `PossibleTypes::format`.
-//
-// If kAutofillAiNoTagTypes is disabled:
-// This may not just include Autofill AI types like PASSPORT_NUMBER but
-// also tag types like PASSPORT_NAME_TAG together with the refined type like
-// NAME_FIRST.
-// TODO(crbug.com/422563282): Remove comment when cleaning up
-// kAutofillAiNoTagTypes.
 void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
                                 std::u16string_view value_u16,
                                 const std::string& app_locale,
                                 PossibleTypes& pt) {
   CHECK(base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema));
 
-  AutofillProfileComparator comparator(app_locale);
-  if (comparator.HasOnlySkippableCharacters(value_u16)) {
+  if (normalization::HasOnlySkippableCharacters(value_u16)) {
     return;
   }
 
   const std::u16string& value_in_field =
-      AutofillProfileComparator::NormalizeForComparison(value_u16);
+      normalization::NormalizeForComparison(value_u16);
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
       for (const FieldType field_type : attribute.type().field_subtypes()) {
-        const std::u16string& value_on_file = attribute.GetInfo(
-            field_type, comparator.app_locale(), std::nullopt);
+        const std::u16string& value_on_file =
+            normalization::NormalizeForComparison(
+                attribute.GetInfo(field_type, app_locale, std::nullopt));
 
         // Test if `value_in_field` and `value_on_file` match.
-        bool full_match = comparator.Compare(
-            value_in_field, value_on_file,
-            AutofillProfileComparator::WhitespaceSpec::kDiscard);
+        bool full_match =
+            AutofillProfileComparator::Compare(value_in_field, value_on_file);
         if (full_match) {
-          if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-            pt.types.insert(attribute.type().field_type());
-          }
           pt.types.insert(field_type);
           if (IsAffixFormatStringEnabledForType(field_type) &&
               base::FeatureList::IsEnabled(
                   features::kAutofillAiVoteForFormatStringsForAffixes)) {
             pt.formats.emplace(FormatString_Type_AFFIX, u"0");
+          }
+          if (field_type == FLIGHT_RESERVATION_FLIGHT_NUMBER &&
+              base::FeatureList::IsEnabled(
+                  features::kAutofillAiVoteForFormatStringsForFlightNumbers)) {
+            pt.formats.emplace(FormatString_Type_FLIGHT_NUMBER, u"F");
           }
         }
 
@@ -343,6 +325,20 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
                 FormatString_Type_AFFIX,
                 base::NumberToString16(
                     -1 * static_cast<int>(value_in_field.size())));
+          }
+        }
+
+        if (field_type == FLIGHT_RESERVATION_FLIGHT_NUMBER &&
+            base::FeatureList::IsEnabled(
+                features::kAutofillAiVoteForFormatStringsForFlightNumbers)) {
+          if (value_in_field.size() == 2 &&
+              value_on_file.starts_with(value_in_field)) {
+            pt.types.insert(field_type);
+            pt.formats.emplace(FormatString_Type_FLIGHT_NUMBER, u"A");
+          } else if (value_on_file.size() > 3 &&
+                     value_on_file.substr(2) == value_in_field) {
+            pt.types.insert(field_type);
+            pt.formats.emplace(FormatString_Type_FLIGHT_NUMBER, u"N");
           }
         }
       }
@@ -404,8 +400,10 @@ PossibleTypes GetPossibleTypes(
     card.GetMatchingTypes(value_u16, app_locale, &pt.types);
   }
 
+  // Do not issue loyalty card votes on values matching the email format.
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableLoyaltyCardsFilling)) {
+          features::kAutofillEnableLoyaltyCardsFilling) &&
+      !IsValidEmailAddress(value_u16)) {
     const std::string value_u8 = base::UTF16ToUTF8(value_u16);
     for (const LoyaltyCard& card : loyalty_cards) {
       if (value_u8 == card.loyalty_card_number()) {
@@ -419,6 +417,29 @@ PossibleTypes GetPossibleTypes(
   }
 
   return pt;
+}
+
+void FindAndSetPossibleOtpFieldTypes(
+    base::span<const std::unique_ptr<AutofillField>> fields,
+    base::span<const OneTimeToken> recent_otps,
+    base::span<PossibleTypes> possible_types) {
+  if (recent_otps.empty()) {
+    return;
+  }
+
+  for (auto [field, pt] : base::zip(fields, possible_types)) {
+    std::u16string field_value = field->value();
+    base::TrimWhitespace(field_value, base::TRIM_ALL, &field_value);
+    const std::string field_value_u8 = base::UTF16ToUTF8(field_value);
+
+    // Check if the field value matches any of the recent OTPs.
+    for (const OneTimeToken& otp : recent_otps) {
+      if (field_value_u8 == otp.value()) {
+        pt.types.insert(ONE_TIME_CODE);
+        return;
+      }
+    }
+  }
 }
 
 }  // namespace
@@ -442,8 +463,9 @@ std::set<FieldGlobalId> PreProcessStateMatchingTypes(
       continue;
     }
 
-    const std::u16string& country_code =
-        profile->GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale);
+    const std::u16string& country_code = profile->GetInfo(
+        AutofillType(ADDRESS_HOME_COUNTRY, /*is_country_code=*/true),
+        app_locale);
 
     for (auto& field : fields) {
       if (fields_that_match_state.contains(field->global_id())) {
@@ -472,6 +494,7 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
     base::span<const LoyaltyCard> loyalty_cards,
     const std::set<FieldGlobalId>& fields_that_match_state,
     std::u16string_view last_unlocked_credit_card_cvc,
+    base::span<const OneTimeToken> recent_otps,
     const std::string& app_locale,
     base::span<const std::unique_ptr<AutofillField>> fields) {
   std::vector<PossibleTypes> possible_types;
@@ -492,6 +515,12 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
   FindAndSetPossibleCvcFieldTypes(last_unlocked_credit_card_cvc, fields,
                                   possible_types);
 
+  if (!recent_otps.empty() &&
+      base::FeatureList::IsEnabled(features::kAutofillSmsOtpCrowdsourcing)) {
+    // OTPs are not stored, run special logic to detect OTP values.
+    FindAndSetPossibleOtpFieldTypes(fields, recent_otps, possible_types);
+  }
+
   for (auto [field, pt] : base::zip(fields, possible_types)) {
     if (pt.types.empty()) {
       pt.types = {UNKNOWN_TYPE};
@@ -507,6 +536,7 @@ FieldTypeSet DetermineAvailableFieldTypes(
     base::span<const EntityInstance> entities,
     base::span<const LoyaltyCard> loyalty_cards,
     std::u16string_view last_unlocked_credit_card_cvc,
+    base::span<const OneTimeToken> recent_otps,
     const std::string& app_locale) {
   FieldTypeSet types;
   for (const AutofillProfile& profile : profiles) {
@@ -530,6 +560,11 @@ FieldTypeSet DetermineAvailableFieldTypes(
           features::kAutofillEnableLoyaltyCardsFilling) &&
       !loyalty_cards.empty()) {
     types.insert(LOYALTY_MEMBERSHIP_ID);
+  }
+
+  if (!recent_otps.empty() &&
+      base::FeatureList::IsEnabled(features::kAutofillSmsOtpCrowdsourcing)) {
+    types.insert(ONE_TIME_CODE);
   }
   return types;
 }

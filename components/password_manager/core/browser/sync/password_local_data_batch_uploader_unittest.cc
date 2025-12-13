@@ -97,10 +97,8 @@ std::vector<PasswordForm> CreatePasswordFormsInStore(int count,
 class PasswordLocalDataBatchUploaderTest : public ::testing::Test {
  public:
   PasswordLocalDataBatchUploaderTest() {
-    profile_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
-    account_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
   }
 
   ~PasswordLocalDataBatchUploaderTest() override {

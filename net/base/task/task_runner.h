@@ -5,6 +5,8 @@
 #ifndef NET_BASE_TASK_TASK_RUNNER_H_
 #define NET_BASE_TASK_TASK_RUNNER_H_
 
+#include <array>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/net_export.h"
@@ -33,9 +35,10 @@ struct NET_EXPORT TaskRunnerGlobals {
   TaskRunnerGlobals();
   ~TaskRunnerGlobals();
 
-  // Task runner specifically for `net::RequestPriority::HIGHEST` tasks.
+  // Task runners for each `net::RequestPriority` level.
   // This is set by the embedder (e.g., NetworkServiceTaskScheduler).
-  scoped_refptr<base::SingleThreadTaskRunner> high_priority_task_runner;
+  std::array<scoped_refptr<base::SingleThreadTaskRunner>, NUM_PRIORITIES>
+      task_runners;
 };
 
 NET_EXPORT TaskRunnerGlobals& GetTaskRunnerGlobals();

@@ -10,7 +10,6 @@
 #include <cstdint>
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
@@ -82,7 +81,7 @@ class TestOutput : public GlobalObject {
 
   TestOutputMetrics metrics_;
 
-  raw_ptr<TestZXdgOutput, DanglingUntriaged> xdg_output_ = nullptr;
+  raw_ptr<TestZXdgOutput> xdg_output_ = nullptr;
 };
 
 }  // namespace wl

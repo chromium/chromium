@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

@@ -5,6 +5,7 @@
 #include "partition_alloc/spinning_mutex.h"
 
 #include <atomic>
+#include <optional>
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
@@ -42,6 +43,69 @@
 #endif
 
 namespace partition_alloc::internal {
+namespace {
+
+// Pointer to the `LockMetricsRecorder` that all spinning mutexes record into.
+std::atomic<LockMetricsRecorderInterface*> g_lock_metrics_recorder{nullptr};
+
+LockMetricsRecorderInterface* GetLockMetricsRecorder() {
+  return g_lock_metrics_recorder.load(std::memory_order_acquire);
+}
+
+// Timer that records into a lock metrics object. Copy of
+// `::base::LockMetricsRecorder::ScopedLockAcquisitionTimer` for partition alloc
+// with minor modifications.
+class ScopedLockAcquisitionTimer {
+ public:
+  ScopedLockAcquisitionTimer() : lock_metrics_(GetLockMetricsRecorder()) {
+    if (!lock_metrics_ || !lock_metrics_->ShouldRecordLockAcquisitionTime())
+        [[likely]] {
+      return;
+    }
+
+    start_time_.emplace(base::TimeTicks::Now());
+  }
+
+  ~ScopedLockAcquisitionTimer() {
+    if (!start_time_.has_value()) [[likely]] {
+      return;
+    }
+
+    lock_metrics_->RecordLockAcquisitionTime(base::TimeTicks::Now() -
+                                             *start_time_);
+  }
+
+ private:
+  std::optional<base::TimeTicks> start_time_;
+
+  // It is safe to hold onto the pointer to the lock metrics recorder since
+  // this is not expected to be modified once set except for in tests.
+  LockMetricsRecorderInterface* lock_metrics_;
+};
+
+}  // namespace
+
+// static
+std::atomic<int> SpinningMutex::s_spin_count{SpinningMutex::kSpinCount};
+
+// static
+void SpinningMutex::SetSpinCount(int spin_count) {
+  s_spin_count.store(spin_count, std::memory_order_relaxed);
+}
+
+// static
+void SpinningMutex::SetLockMetricsRecorder(
+    LockMetricsRecorderInterface* recorder) {
+  auto* old_recorder =
+      g_lock_metrics_recorder.exchange(recorder, std::memory_order_release);
+  PA_CHECK(old_recorder == nullptr);
+}
+
+// static
+void SpinningMutex::SetLockMetricsRecorderForTesting(
+    LockMetricsRecorderInterface* recorder) {
+  g_lock_metrics_recorder.store(recorder, std::memory_order_release);
+}
 
 void SpinningMutex::Reinit() {
 #if !PA_BUILDFLAG(IS_APPLE)
@@ -55,6 +119,8 @@ void SpinningMutex::Reinit() {
 void SpinningMutex::AcquireSpinThenBlock() {
   int tries = 0;
   int backoff = 1;
+  const int spin_count = s_spin_count.load(std::memory_order_relaxed);
+
   do {
     if (Try()) [[likely]] {
       return;
@@ -79,8 +145,9 @@ void SpinningMutex::AcquireSpinThenBlock() {
     }
     constexpr int kMaxBackoff = 16;
     backoff = std::min(kMaxBackoff, backoff << 1);
-  } while (tries < kSpinCount);
+  } while (tries < spin_count);
 
+  ScopedLockAcquisitionTimer timer;
   LockSlow();
 }
 

@@ -43,7 +43,6 @@ namespace blink {
 // Controls if TextEncode will throw an exception when failed to allocate
 // buffer.
 BASE_FEATURE(kThrowExceptionWhenTextEncodeOOM,
-             "ThrowExceptionWhenTextEncodeOOM",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 TextEncoder* TextEncoder::Create(ExecutionContext* context,

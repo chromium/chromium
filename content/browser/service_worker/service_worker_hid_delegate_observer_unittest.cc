@@ -629,9 +629,10 @@ TEST_F(ServiceWorkerHidDelegateObserverTest,
   EXPECT_FALSE(hid_delegate().observer_list().empty());
 
   TestFuture<blink::ServiceWorkerStatusCode> unregister_future;
-  context()->UnregisterServiceWorker(registration->scope(), registration->key(),
-                                     /*is_immediate=*/true,
-                                     unregister_future.GetCallback());
+  context()->UnregisterServiceWorker(
+      registration->scope(), registration->key(),
+      /*is_immediate=*/true, ServiceWorkerRegistration::DeleteInitiator::kTest,
+      unregister_future.GetCallback());
   EXPECT_EQ(unregister_future.Get<0>(), blink::ServiceWorkerStatusCode::kOk);
   // Wait until all of the
   // ServiceWorkerDeviceDelegateObserver::OnRegistrationDeleted are called.

@@ -352,7 +352,6 @@ suite('FlagsAppTest', function() {
     assertEquals(searchTextArea, getDeepActiveElement());
   });
 
-
   // Test the case where the user searches, then changes a feature's value, then
   // clears search.
   test('Search_Change_ClearSearch', async function() {
@@ -381,5 +380,36 @@ suite('FlagsAppTest', function() {
     clearSearch.click();
     await microtasksFinished();
     assertRestartNeeded(true);
+  });
+
+  ['input', 'textarea'].forEach(type => {
+    test(`KeyboardShortcutsNotTriggeredIn_${type}`, function() {
+      const mockInput = document.createElement(type);
+      document.body.appendChild(mockInput);
+      mockInput.focus();
+      assertEquals(mockInput, getDeepActiveElement());
+
+      // '/' should not focus the search box when in input/textarea.
+      window.dispatchEvent(new KeyboardEvent('keyup', {key: '/'}));
+      assertEquals(mockInput, getDeepActiveElement());
+
+      // 'Escape' always blurs the search box, mockInput remains focused.
+      window.dispatchEvent(new KeyboardEvent('keyup', {key: 'Escape'}));
+      assertEquals(mockInput, getDeepActiveElement());
+    });
+  });
+
+  test('KeyboardShortcutsTriggeredOutsideInputElements', function() {
+    // Verify focus is not on the search box.
+    searchTextArea.blur();
+    assertEquals(document.body, getDeepActiveElement());
+
+    // Other keys should not trigger shortcuts.
+    window.dispatchEvent(new KeyboardEvent('keyup', {key: 'a'}));
+    assertEquals(document.body, getDeepActiveElement());
+
+    // '/' should focus the search box when not in input/textarea.
+    window.dispatchEvent(new KeyboardEvent('keyup', {key: '/'}));
+    assertEquals(searchTextArea, getDeepActiveElement());
   });
 });

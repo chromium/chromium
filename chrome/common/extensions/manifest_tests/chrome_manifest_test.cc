@@ -8,6 +8,9 @@
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/version_info/version_info.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

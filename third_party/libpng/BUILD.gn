@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/libpng/visibility.gni")
+
 import("//build/config/arm.gni")
 import("//build/config/loongarch64.gni")
 import("//build/config/mips.gni")
@@ -126,6 +128,14 @@ if (is_win) {
   group("libpng") {
     public_deps = [ ":libpng_sources" ]
   }
+}
+
+group("libpng_for_testonly") {
+  testonly = true
+  public_deps = [ ":libpng" ]
+
+  visibility = []
+  visibility = libpng_testonly_visibility
 }
 
 if (build_with_chromium) {

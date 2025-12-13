@@ -11,7 +11,7 @@ load("@builtin//struct.star", "module")
 
 def __platform_properties(ctx):
     # You can use ctx to access file by ctx.fs etc.
-    # See https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/build/siso/docs/starlark_config.md#initialization
+    # See https://chromium.googlesource.com/build/+/refs/heads/main/siso/docs/starlark_config.md#initialization
     return {
         "default": {
             "OSFamily": "Linux",

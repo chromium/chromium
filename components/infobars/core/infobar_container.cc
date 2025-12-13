@@ -21,22 +21,15 @@ namespace infobars {
 InfoBarContainer::Delegate::~Delegate() = default;
 
 InfoBarContainer::InfoBarContainer(Delegate* delegate)
-    : delegate_(delegate),
-      infobar_manager_(nullptr),
-      ignore_infobar_state_changed_(false) {}
+    : delegate_(delegate), ignore_infobar_state_changed_(false) {}
 
 InfoBarContainer::~InfoBarContainer() {
   // RemoveAllInfoBarsForDestruction() should have already cleared our infobars.
   DCHECK(infobars_.empty());
-  if (infobar_manager_) {
-    infobar_manager_->RemoveObserver(this);
-  }
 }
 
 void InfoBarContainer::ChangeInfoBarManager(InfoBarManager* infobar_manager) {
-  if (infobar_manager_) {
-    infobar_manager_->RemoveObserver(this);
-  }
+  scoped_observation_.Reset();
 
   bool state_changed = false;
   {
@@ -54,12 +47,11 @@ void InfoBarContainer::ChangeInfoBarManager(InfoBarManager* infobar_manager) {
       state_changed = true;
     }
 
-    infobar_manager_ = infobar_manager;
-    if (infobar_manager_) {
-      infobar_manager_->AddObserver(this);
+    if (infobar_manager) {
+      scoped_observation_.Observe(infobar_manager);
 
-      for (size_t i = 0; i < infobar_manager_->infobars().size(); ++i) {
-        AddInfoBar(infobar_manager_->infobars()[i], i, false);
+      for (size_t i = 0; i < manager()->infobars().size(); ++i) {
+        AddInfoBar(manager()->infobars()[i], i, false);
         state_changed = true;
       }
     }
@@ -90,7 +82,8 @@ void InfoBarContainer::RemoveInfoBar(InfoBar* infobar) {
 }
 
 bool InfoBarContainer::ShouldHideInFullscreen() const {
-  return infobar_manager_->ShouldHideInFullscreen();
+  CHECK(scoped_observation_.IsObserving());
+  return manager()->ShouldHideInFullscreen();
 }
 
 void InfoBarContainer::RemoveAllInfoBarsForDestruction() {
@@ -108,8 +101,8 @@ void InfoBarContainer::OnInfoBarAdded(InfoBar* infobar) {
 }
 
 void InfoBarContainer::OnInfoBarRemoved(InfoBar* infobar, bool animate) {
-  DCHECK(infobar_manager_);
-  infobar->Hide(infobar_manager_->animations_enabled() && animate);
+  CHECK(scoped_observation_.IsObserving());
+  infobar->Hide(manager()->animations_enabled() && animate);
 }
 
 void InfoBarContainer::OnInfoBarReplaced(InfoBar* old_infobar,
@@ -122,10 +115,10 @@ void InfoBarContainer::OnInfoBarReplaced(InfoBar* old_infobar,
   AddInfoBar(new_infobar, position, false);
 }
 
-void InfoBarContainer::OnManagerShuttingDown(InfoBarManager* manager) {
-  DCHECK_EQ(infobar_manager_, manager);
-  infobar_manager_->RemoveObserver(this);
-  infobar_manager_ = nullptr;
+void InfoBarContainer::OnManagerWillBeDestroyed(
+    InfoBarManager* infobar_manager) {
+  CHECK_EQ(manager(), infobar_manager);
+  scoped_observation_.Reset();
 }
 
 void InfoBarContainer::AddInfoBar(InfoBar* infobar,
@@ -136,12 +129,13 @@ void InfoBarContainer::AddInfoBar(InfoBar* infobar,
   infobars_.insert(infobars_.begin() + position, infobar);
   PlatformSpecificAddInfoBar(infobar, position);
   infobar->set_container(this);
-  DCHECK(infobar_manager_);
-  infobar->Show(infobar_manager_->animations_enabled() && animate);
+  CHECK(manager());
+  infobar->Show(manager()->animations_enabled() && animate);
 
   // Record the infobar being displayed.
   DCHECK_NE(InfoBarDelegate::INVALID, infobar->GetIdentifier());
   base::UmaHistogramSparse("InfoBar.Shown", infobar->GetIdentifier());
+  base::UmaHistogramExactLinear("InfoBar.CountAtShow", infobars_.size(), 10);
 }
 
 }  // namespace infobars

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "services/audio/input_glitch_counter.h"
+
+#include <cinttypes>
 #include <cstddef>
 #include <utility>
 
@@ -56,8 +58,12 @@ InputGlitchCounter::~InputGlitchCounter() {
                                     : AudioGlitchResult::kGlitches);
 
   std::string log_string = base::StringPrintf(
-      "AISW: number of detected audio glitches: %" PRIuS " out of %" PRIuS,
-      global_sample_.dropped_data_count_, write_count_);
+      "AISW::%s => (number of detected audio glitches: %" PRIu64
+      " out of %" PRIu64
+      ") "
+      " [this=0x%" PRIXPTR "]",
+      __func__, global_sample_.dropped_data_count_, write_count_,
+      reinterpret_cast<uintptr_t>(this));
   log_callback_.Run(log_string);
 
   if (write_count_ < kSampleInterval) {

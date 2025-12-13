@@ -482,7 +482,7 @@ String InvalidationSet::ToString() const {
     for (const auto& str : range) {
       names.push_back(str);
     }
-    std::sort(names.begin(), names.end(), WTF::CodeUnitCompareLessThan);
+    std::sort(names.begin(), names.end(), CodeUnitCompareLessThan);
 
     for (const auto& name : names) {
       if (!builder.empty()) {

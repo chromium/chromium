@@ -675,20 +675,12 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
     url = KURL(redirect_info.new_url);
   }
 
-  KURL commit_url = url;
-  if (base::FeatureList::IsEnabled(
-          blink::features::kUseCommitUrlInsteadOfRedirectUrl)) {
-    // In the long run we want to use `common_params->url` as the actual URL to
-    // commit instead of the URL from the redirect chain and sanitize all the
-    // redirect chain URLs. For now, let's ensure that the expectation of those
-    // two being equal holds in reality so the switch can be safely made.
-    // TODO(https://crbug.com/422803238): Make this the default behavior and
-    // remove the feature flag.
-    commit_url = KURL(common_params->url);
-    CHECK_EQ(url, commit_url);
-  }
+  // `common_params->url` is the actual URL to commit for the navigation as
+  // determined by the navigation code. Do not use the last URL in the
+  // redirect chain, even if it happens to be the same, in case of divergence
+  // of behavior in the future.
   navigation_params->response =
-      WebURLResponse::Create(commit_url, *response_head,
+      WebURLResponse::Create(KURL(common_params->url), *response_head,
                              response_head->ssl_info.has_value(), request_id);
   if (url.ProtocolIsData())
     navigation_params->response.SetHttpStatusCode(200);

@@ -18,9 +18,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_options.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/protocol/network.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/direct_sockets/multicast_controller.h"
 #include "third_party/blink/renderer/modules/direct_sockets/socket.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
@@ -29,6 +31,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -37,6 +40,70 @@ namespace {
 
 constexpr char kUDPNetworkFailuresHistogramName[] =
     "DirectSockets.UDPNetworkFailures";
+
+// Return whether multicast options validated successfully.
+bool ValidateMulticastOptions(ExecutionContext* execution_context,
+                              const UDPSocketOptions* options,
+                              ExceptionState& exception_state) {
+  bool hasMulticastOptions = options->hasMulticastAllowAddressSharing() ||
+                             options->hasMulticastLoopback() ||
+                             options->hasMulticastTimeToLive();
+
+  if (!hasMulticastOptions) {
+    return true;
+  }
+
+  if (!RuntimeEnabledFeatures::MulticastInDirectSocketsEnabled()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Cannot use Multicast options if feature "
+        "MulticastInDirectSocketsEnabled is not enabled. Go to chrome://flags "
+        "to enable it.");
+    return false;
+  }
+
+  if (execution_context->IsWindow() ||
+      execution_context->IsDedicatedWorkerGlobalScope()) {
+    if (!execution_context->IsFeatureEnabled(
+            network::mojom::blink::PermissionsPolicyFeature::
+                kMulticastInDirectSockets)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "Cannot use Multicast options if permission policy "
+          "'direct-sockets-multicast' is absent.");
+      return false;
+    }
+  } else if (!execution_context->IsServiceWorkerGlobalScope() &&
+             !execution_context->IsSharedWorkerGlobalScope()) {
+    // TODO(crbug.com/393539884): Add permission policy check for service and
+    // shared worker.
+    return false;
+  }
+
+  return true;
+}
+
+bool IsMulticastAllowed(ExecutionContext* execution_context) {
+  if (!RuntimeEnabledFeatures::MulticastInDirectSocketsEnabled()) {
+    return false;
+  }
+
+  if (execution_context->IsWindow() ||
+      execution_context->IsDedicatedWorkerGlobalScope()) {
+    if (!execution_context->IsFeatureEnabled(
+            network::mojom::blink::PermissionsPolicyFeature::
+                kMulticastInDirectSockets)) {
+      return false;
+    }
+  } else if (!execution_context->IsServiceWorkerGlobalScope() &&
+             !execution_context->IsSharedWorkerGlobalScope()) {
+    // TODO(crbug.com/393539884): Add permission policy check for service and
+    // shared worker.
+    return false;
+  }
+
+  return true;
+}
 
 bool CheckSendReceiveBufferSize(const UDPSocketOptions* options,
                                 ExceptionState& exception_state) {
@@ -92,7 +159,8 @@ InferUDPSocketMode(const UDPSocketOptions* options,
 
 mojom::blink::DirectConnectedUDPSocketOptionsPtr
 CreateConnectedUDPSocketOptions(const UDPSocketOptions* options,
-                                ExceptionState& exception_state) {
+                                ExceptionState& exception_state,
+                                ExecutionContext* execution_context) {
   DCHECK(options->hasRemoteAddress() && options->hasRemotePort());
 
   if (options->hasIpv6Only()) {
@@ -102,6 +170,9 @@ CreateConnectedUDPSocketOptions(const UDPSocketOptions* options,
   }
 
   if (!CheckSendReceiveBufferSize(options, exception_state)) {
+    return {};
+  }
+  if (!ValidateMulticastOptions(execution_context, options, exception_state)) {
     return {};
   }
 
@@ -126,13 +197,20 @@ CreateConnectedUDPSocketOptions(const UDPSocketOptions* options,
   if (options->hasSendBufferSize()) {
     socket_options->send_buffer_size = options->sendBufferSize();
   }
+  if (options->hasMulticastTimeToLive()) {
+    socket_options->multicast_time_to_live = options->multicastTimeToLive();
+  }
+  if (options->hasMulticastLoopback()) {
+    socket_options->multicast_loopback = options->multicastLoopback();
+  }
 
   return socket_options;
 }
 
 mojom::blink::DirectBoundUDPSocketOptionsPtr CreateBoundUDPSocketOptions(
     const UDPSocketOptions* options,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state,
+    ExecutionContext* execution_context) {
   DCHECK(options->hasLocalAddress());
   auto socket_options = mojom::blink::DirectBoundUDPSocketOptions::New();
 
@@ -169,6 +247,10 @@ mojom::blink::DirectBoundUDPSocketOptionsPtr CreateBoundUDPSocketOptions(
     socket_options->ipv6_only = options->ipv6Only();
   }
 
+  if (!ValidateMulticastOptions(execution_context, options, exception_state)) {
+    return {};
+  }
+
   socket_options->local_addr =
       net::IPEndPoint(std::move(*local_ip),
                       options->hasLocalPort() ? options->localPort() : 0U);
@@ -178,6 +260,17 @@ mojom::blink::DirectBoundUDPSocketOptionsPtr CreateBoundUDPSocketOptions(
   }
   if (options->hasSendBufferSize()) {
     socket_options->send_buffer_size = options->sendBufferSize();
+  }
+
+  if (options->hasMulticastAllowAddressSharing()) {
+    socket_options->multicast_allow_address_sharing =
+        options->multicastAllowAddressSharing();
+  }
+  if (options->hasMulticastTimeToLive()) {
+    socket_options->multicast_time_to_live = options->multicastTimeToLive();
+  }
+  if (options->hasMulticastLoopback()) {
+    socket_options->multicast_loopback = options->multicastLoopback();
   }
 
   return socket_options;
@@ -209,6 +302,17 @@ std::unique_ptr<protocol::Network::DirectUDPSocketOptions> MapProbeUDPOptions(
   }
   if (options->hasReceiveBufferSize()) {
     probe_options_builder.setReceiveBufferSize(options->receiveBufferSize());
+  }
+  if (options->hasMulticastLoopback()) {
+    probe_options_builder.setMulticastLoopback(options->multicastLoopback());
+  }
+  if (options->hasMulticastTimeToLive()) {
+    probe_options_builder.setMulticastTimeToLive(
+        options->multicastTimeToLive());
+  }
+  if (options->hasMulticastAllowAddressSharing()) {
+    probe_options_builder.setMulticastAllowAddressSharing(
+        options->multicastAllowAddressSharing());
   }
 
   return probe_options_builder.build();
@@ -296,29 +400,29 @@ bool UDPSocket::Open(const UDPSocketOptions* options,
 
   switch (*mode) {
     case network::mojom::blink::RestrictedUDPSocketMode::CONNECTED: {
-      auto connected_options =
-          CreateConnectedUDPSocketOptions(options, exception_state);
+      auto connected_options = CreateConnectedUDPSocketOptions(
+          options, exception_state, GetExecutionContext());
       if (exception_state.HadException()) {
         return false;
       }
       GetServiceRemote()->OpenConnectedUDPSocket(
           std::move(connected_options), GetUDPSocketReceiver(),
           std::move(socket_listener_remote),
-          WTF::BindOnce(&UDPSocket::OnConnectedUDPSocketOpened,
-                        WrapPersistent(this), std::move(socket_listener)));
+          BindOnce(&UDPSocket::OnConnectedUDPSocketOpened, WrapPersistent(this),
+                   std::move(socket_listener)));
       break;
     }
     case network::mojom::blink::RestrictedUDPSocketMode::BOUND: {
-      auto bound_options =
-          CreateBoundUDPSocketOptions(options, exception_state);
+      auto bound_options = CreateBoundUDPSocketOptions(options, exception_state,
+                                                       GetExecutionContext());
       if (exception_state.HadException()) {
         return false;
       }
       GetServiceRemote()->OpenBoundUDPSocket(
           std::move(bound_options), GetUDPSocketReceiver(),
           std::move(socket_listener_remote),
-          WTF::BindOnce(&UDPSocket::OnBoundUDPSocketOpened,
-                        WrapPersistent(this), std::move(socket_listener)));
+          BindOnce(&UDPSocket::OnBoundUDPSocketOpened, WrapPersistent(this),
+                   std::move(socket_listener)));
 
       break;
     }
@@ -341,11 +445,11 @@ void UDPSocket::FinishOpen(
   if (result == net::OK) {
     readable_stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
         GetScriptState(),
-        WTF::BindOnce(&UDPSocket::OnStreamClosed, WrapWeakPersistent(this)),
+        BindOnce(&UDPSocket::OnStreamClosed, WrapWeakPersistent(this)),
         udp_socket_, std::move(socket_listener), inspector_id_);
     writable_stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
         GetScriptState(),
-        WTF::BindOnce(&UDPSocket::OnStreamClosed, WrapWeakPersistent(this)),
+        BindOnce(&UDPSocket::OnStreamClosed, WrapWeakPersistent(this)),
         udp_socket_, mode, inspector_id_);
 
     auto* open_info = UDPSocketOpenInfo::Create();
@@ -367,6 +471,13 @@ void UDPSocket::FinishOpen(
     auto local_address = String{local_addr->ToStringWithoutPort()};
     open_info->setLocalAddress(local_address);
     open_info->setLocalPort(local_addr->port());
+
+    if (mode == network::mojom::RestrictedUDPSocketMode::BOUND &&
+        IsMulticastAllowed(GetExecutionContext())) {
+      multicast_controller_ = MakeGarbageCollected<MulticastController>(
+          GetExecutionContext(), udp_socket_.Get(), inspector_id_);
+      open_info->setMulticastController(multicast_controller_.Get());
+    }
 
     opened_->Resolve(open_info);
 
@@ -422,7 +533,7 @@ UDPSocket::GetUDPSocketReceiver() {
   auto pending_receiver = udp_socket_->get().BindNewPipeAndPassReceiver(
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
   udp_socket_->get().set_disconnect_handler(
-      WTF::BindOnce(&UDPSocket::CloseOnError, WrapWeakPersistent(this)));
+      BindOnce(&UDPSocket::CloseOnError, WrapWeakPersistent(this)));
   return pending_receiver;
 }
 
@@ -430,7 +541,8 @@ bool UDPSocket::HasPendingActivity() const {
   if (GetState() != State::kOpen) {
     return false;
   }
-  return writable_stream_wrapper_->HasPendingWrite();
+  return writable_stream_wrapper_->HasPendingWrite() ||
+         (multicast_controller_ && multicast_controller_->HasPendingActivity());
 }
 
 void UDPSocket::ContextDestroyed() {
@@ -446,10 +558,16 @@ void UDPSocket::SetState(State state) {
       break;
     case Socket::State::kClosed:
       probe::DirectUDPSocketClosed(GetExecutionContext(), inspector_id_);
+      if (auto* multicast_controller = multicast_controller_.Get()) {
+        multicast_controller->OnCloseOrAbort();
+      }
       break;
     case Socket::State::kAborted:
       probe::DirectUDPSocketAborted(GetExecutionContext(), inspector_id_,
                                     abort_net_error_);
+      if (auto* multicast_controller = multicast_controller_.Get()) {
+        multicast_controller->OnCloseOrAbort();
+      }
       break;
   }
 }
@@ -460,6 +578,7 @@ void UDPSocket::Trace(Visitor* visitor) const {
   visitor->Trace(readable_stream_wrapper_);
   visitor->Trace(writable_stream_wrapper_);
   visitor->Trace(stream_error_);
+  visitor->Trace(multicast_controller_);
 
   ScriptWrappable::Trace(visitor);
   Socket::Trace(visitor);

@@ -8,11 +8,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace safe_browsing {
@@ -42,8 +42,7 @@ void SafeBrowsingPrimaryAccountTokenFetcher::Start(
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   token_fetchers_[request_id] =
       identity_manager_->CreateAccessTokenFetcherForAccount(
-          account_id, "safe_browsing_service",
-          {GaiaConstants::kChromeSafeBrowsingOAuth2Scope},
+          account_id, signin::OAuthConsumerId::kSafeBrowsing,
           base::BindOnce(
               &SafeBrowsingPrimaryAccountTokenFetcher::OnTokenFetched,
               weak_ptr_factory_.GetWeakPtr(), request_id),
@@ -55,8 +54,7 @@ void SafeBrowsingPrimaryAccountTokenFetcher::OnInvalidAccessToken(
   CoreAccountId account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   identity_manager_->RemoveAccessTokenFromCache(
-      account_id, {GaiaConstants::kChromeSafeBrowsingOAuth2Scope},
-      invalid_access_token);
+      account_id, signin::OAuthConsumerId::kSafeBrowsing, invalid_access_token);
 }
 
 void SafeBrowsingPrimaryAccountTokenFetcher::OnTokenFetched(

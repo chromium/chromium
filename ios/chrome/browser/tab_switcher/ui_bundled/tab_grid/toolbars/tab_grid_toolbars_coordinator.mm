@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
@@ -38,7 +39,7 @@
 
 - (void)start {
   Browser* browser = self.browser;
-  CHECK(!browser->GetProfile()->IsOffTheRecord());
+  CHECK_EQ(browser->type(), Browser::Type::kRegular);
 
   _mediator =
       [[TabGridToolbarsMediator alloc] initWithModeHolder:self.modeHolder];

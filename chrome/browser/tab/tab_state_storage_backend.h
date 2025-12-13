@@ -5,19 +5,21 @@
 #ifndef CHROME_BROWSER_TAB_TAB_STATE_STORAGE_BACKEND_H_
 #define CHROME_BROWSER_TAB_TAB_STATE_STORAGE_BACKEND_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/tab/protocol/tab_state.pb.h"
-#include "components/sqlite_proto/key_value_table.h"
-#include "components/sqlite_proto/proto_table_manager.h"
-#include "sql/database.h"
-#include "sql/meta_table.h"
+#include "base/task/task_traits.h"
+#include "base/task/updateable_sequenced_task_runner.h"
+#include "chrome/browser/tab/tab_state_storage_database.h"
+#include "chrome/browser/tab/tab_state_storage_updater.h"
 
 namespace tabs {
 
-// TODO(https://crbug.com/427254826): Split this class into pieces, each working
-// on a dedicated thread.
+// Backend for TabStateStorage, responsible for coordinating with the storage
+// layer.
 class TabStateStorageBackend {
  public:
   explicit TabStateStorageBackend(const base::FilePath& profile_path);
@@ -27,26 +29,43 @@ class TabStateStorageBackend {
 
   void Initialize();
 
-  void SaveTabState(int id,
-                    int parent,
-                    std::string position,
-                    tabs_pb::TabState tab_state);
+  // Boosts the priority of the database operations to USER_BLOCKING until all
+  // current pending operations are complete. This should be used when it is
+  // critical to save user data.
+  void BoostPriority();
 
-  void LoadAllTabStates(
-      base::OnceCallback<void(std::vector<tabs_pb::TabState>)> callback);
+  void WaitForAllPendingOperations(base::OnceClosure on_idle);
+
+  // Performs an atomic database update.
+  void Update(std::unique_ptr<TabStateStorageUpdater> updater);
+
+  using OnStorageLoadedData =
+      base::OnceCallback<void(std::unique_ptr<StorageLoadedData>)>;
+  void LoadAllNodes(const std::string& window_tag,
+                    bool is_off_the_record,
+                    std::unique_ptr<StorageLoadedData::Builder> builder,
+                    OnStorageLoadedData on_storage_loaded_data);
+
+  void ClearAllNodes();
+
+  void ClearWindow(const std::string& window_tag);
 
  private:
   void OnDBReady(bool success);
   void OnWrite(bool success);
-  std::vector<tabs_pb::TabState> ReadAllTabs();
-  void OnAllTabsRead(
-      base::OnceCallback<void(std::vector<tabs_pb::TabState>)> callback,
-      std::vector<tabs_pb::TabState> result);
 
-  base::FilePath profile_path_;
-  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
-  std::unique_ptr<sql::Database> db_;
-  std::unique_ptr<sql::MetaTable> meta_table_;
+  void IncrementBoostCounter();
+  void DecrementBoostCounter();
+  void OnLoadDone(OnStorageLoadedData on_storage_loaded_data,
+                  std::unique_ptr<StorageLoadedData> storage_loaded_data);
+
+  const base::FilePath profile_path_;
+  scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
+  int boosted_priority_count_{0};
+
+  // Use unique_ptr to allow for delayed destruction, as we want all pending
+  // tasks to complete before destroying the object.
+  std::unique_ptr<TabStateStorageDatabase> database_;
 
   base::WeakPtrFactory<TabStateStorageBackend> weak_ptr_factory_{this};
 };

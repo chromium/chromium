@@ -7,10 +7,9 @@ package org.chromium.chrome.browser.tasks.tab_management.archived_tabs_auto_dele
 import android.content.Context;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -28,7 +27,7 @@ public class ArchivedTabsAutoDeletePromoManager implements Destroyable {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final TabArchiveSettings mTabArchiveSettings;
-    private final ObservableSupplier<Integer> mArchivedTabCountSupplier;
+    private final NonNullObservableSupplier<Integer> mArchivedTabCountSupplier;
     private final TabModel mTabModel;
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
@@ -53,7 +52,7 @@ public class ArchivedTabsAutoDeletePromoManager implements Destroyable {
             Context context,
             BottomSheetController bottomSheetController,
             TabArchiveSettings tabArchiveSettings,
-            ObservableSupplier<Integer> archivedTabCountSupplier,
+            NonNullObservableSupplier<Integer> archivedTabCountSupplier,
             TabModel tabModel) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
@@ -113,9 +112,7 @@ public class ArchivedTabsAutoDeletePromoManager implements Destroyable {
      * 6. There is at least one tab in the archive.
      */
     private boolean checkConditions() {
-        return ChromeFeatureList.sAndroidTabDeclutterAutoDelete.isEnabled()
-                && ChromeFeatureList.sAndroidTabDeclutterAutoDeleteKillSwitch.isEnabled()
-                && !mTabArchiveSettings.getAutoDeleteDecisionMade()
+        return !mTabArchiveSettings.getAutoDeleteDecisionMade()
                 && mTabArchiveSettings.getArchiveEnabled()
                 && !mTabArchiveSettings.isAutoDeleteEnabled()
                 && mArchivedTabCountSupplier.get() >= 1;

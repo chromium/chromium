@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/generated_cookie_prefs.h"
+#include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
 #include "chrome/browser/content_settings/generated_permission_prompting_behavior_pref.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
@@ -113,6 +114,9 @@ void GeneratedPrefs::CreatePrefs() {
   prefs_[content_settings::kGeneratedGeolocationPref] = std::make_unique<
       content_settings::GeneratedPermissionPromptingBehaviorPref>(
       profile_, ContentSettingsType::GEOLOCATION);
+  prefs_[content_settings::kGeneratedJavascriptOptimizerPref] =
+      std::make_unique<content_settings::GeneratedJavascriptOptimizerPref>(
+          profile_);
   prefs_[kGeneratedHttpsFirstModePref] =
       std::make_unique<GeneratedHttpsFirstModePref>(profile_);
 }

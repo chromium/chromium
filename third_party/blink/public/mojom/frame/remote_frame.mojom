@@ -244,21 +244,30 @@ interface RemoteFrameHost {
 
   // Sent to the browser to post a message to the frame's active renderer, which
   // will receive the re-routed message from the browser process via the method
-  // PostMessageEvent(), from the blink.mojom.LocalFrame interface.
+  // PostMessageEvent(), from the blink.mojom.LocalFrame interface:
+  //
   // |source_frame_token| is the frame token of the LocalFrame in the renderer
-  // process originating the request, which will be translated by the browser
-  // process to the frame token of the equivalent RemoteFrame in the target
-  // renderer process.
-  // |source_origin| is the origin of the source frame when the message was
-  // sent, and |target_origin| specifies what the origin of the target frame
-  // must be for the message to be dispatched. |source_origin| has an Origin
-  // type since it will be validated by the browser process, even when opaque
-  // with a precursor, while |target_origin| is a string since the web page
-  // specifies it, and might use an asterisk as a wildcard. |message| is the
-  // encoded data, plus any extra properties such as transferred ports or blobs.
+  // process from which the message originated, which will be translated by the
+  // browser process into the frame token of the equivalent RemoteFrame in the
+  // target renderer process.
+  //
+  // |source_origin| is the origin of the source from which the message was
+  // sent. Unlike `blink.mojom.LocalFrame.postMessageEvent`, this value will
+  // always be set; the exceptions which can deliver messages without source
+  // origins to not apply to this method, which only handles messages posted
+  // from a LocalFrame with a clearly specified origin.
+  //
+  // |target_origin| specifies the origin of the message's intended target. If
+  // the intended origin does not match the destination frame's origin, the
+  // message will be discarded. If |target_origin| is null, then the caller
+  // has specified a wildcard, allowing the message to be delivered regardless
+  // of the destination frame's origin.
+  //
+  // |message| is the encoded data, and any extra properties such as
+  // transferred ports or blobs.
   RouteMessageEvent(blink.mojom.LocalFrameToken? source_frame_token,
                     url.mojom.Origin source_origin,
-                    mojo_base.mojom.String16 target_origin,
+                    url.mojom.Origin? target_origin,
                     blink.mojom.TransferableMessage message);
 
   // Ask the frame host to print a cross-process subframe.

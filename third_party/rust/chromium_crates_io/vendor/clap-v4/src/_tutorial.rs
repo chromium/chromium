@@ -161,7 +161,7 @@
 //! ### Enumerated values
 //!
 //! If you have arguments of specific values you want to test for, you can use the
-//! [`PossibleValuesParser`][crate::builder::PossibleValuesParser] or [`Arg::value_parser(["val1",
+//! [`PossibleValuesParser`] or [`Arg::value_parser(["val1",
 //! ...])`][crate::Arg::value_parser] for short.
 //!
 //! This allows you to specify the valid values for that argument. If the user does not use one of

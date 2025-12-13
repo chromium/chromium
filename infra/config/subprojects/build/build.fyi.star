@@ -3,26 +3,31 @@
 # found in the LICENSE file.
 """Definitions of builders in chromium.build.fyi builder group."""
 
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "os", "siso")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
-load("//lib/html.star", "linkify_builder")
-load("//lib/targets.star", "targets")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builders.star", "cpu", "os")
+load("@chromium-luci//ci.star", "ci")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//html.star", "linkify_builder")
+load("@chromium-luci//targets.star", "targets")
+load("//lib/ci_constants.star", "ci_constants")
+load("//lib/siso.star", "siso")
 
 ci.defaults.set(
     bucket = "build",
-    executable = ci.DEFAULT_EXECUTABLE,
+    executable = ci_constants.DEFAULT_EXECUTABLE,
     triggered_by = ["chrome-build-gitiles-trigger"],
     builder_group = "chromium.build.fyi",
-    pool = ci.DEFAULT_POOL,
+    pool = ci_constants.DEFAULT_POOL,
     builderless = True,
     build_numbers = True,
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 10 * time.hour,
-    priority = ci.DEFAULT_FYI_PRIORITY,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
+    priority = ci_constants.DEFAULT_FYI_PRIORITY,
+    service_account = ci_constants.DEFAULT_SERVICE_ACCOUNT,
+    shadow_service_account = ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     shadow_siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
@@ -63,7 +68,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-fyi-archive",
     ),
     gn_args = "ci/Mac Builder",
     targets = targets.bundle(
@@ -96,7 +100,7 @@ ci.thin_tester(
 This builder is intended to shadow {}.<br/>\
 But, the tests are built by {}.\
 """.format(
-        linkify_builder("ci", "mac14-tests"),
+        linkify_builder("ci", "Mac13 Tests"),
         linkify_builder("build", "Mac Builder Siso FYI"),
     ),
     parent = "build/Mac Builder Siso FYI",
@@ -114,7 +118,6 @@ But, the tests are built by {}.\
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-fyi-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -122,7 +125,7 @@ But, the tests are built by {}.\
             "chromium_mac_rel_isolated_scripts_once",
         ],
         mixins = [
-            "mac_default_x64",
+            "mac_13_x64",
             "isolate_profile_data",
         ],
         per_test_modifications = {
@@ -166,6 +169,9 @@ But, the tests are built by {}.\
                 swarming = targets.swarming(
                     shards = 4,
                 ),
+            ),
+            "telemetry_perf_unittests": targets.mixin(
+                ci_only = True,
             ),
             "unit_tests": targets.mixin(
                 swarming = targets.swarming(

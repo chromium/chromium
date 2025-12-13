@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
@@ -34,7 +35,9 @@ class ResourceBundleSourceMap : public SourceMap {
                                   const std::string& name) const override;
   bool Contains(const std::string& name) const override;
 
-  void RegisterSource(const char* const name, int resource_id);
+  // `name` must outlive `this`. Preferably, the name string has static storage
+  // duration.
+  void RegisterSource(std::string_view name, int resource_id);
 
  private:
   struct ResourceInfo {
@@ -53,7 +56,7 @@ class ResourceBundleSourceMap : public SourceMap {
   raw_ptr<const ui::ResourceBundle, DanglingUntriaged> resource_bundle_;
 
   mutable base::Lock lock_;
-  std::map<std::string, ResourceInfo> resource_map_ GUARDED_BY(lock_);
+  std::map<std::string_view, ResourceInfo> resource_map_ GUARDED_BY(lock_);
 };
 
 }  // namespace extensions

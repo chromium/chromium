@@ -1,7 +1,6 @@
 include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSnackbarController.java",
   "+chrome/browser/android/lifecycle",
   "+chrome/browser/ui/android/appmenu/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuDelegate.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ssl/ChromeSecurityStateModelDelegate.java",
@@ -19,6 +18,7 @@ include_rules = [
   "+chrome/browser/ui/messages/android/java",
   "+chrome/browser/xsurface/android",
   "+components/android_autofill/browser/java/src/org/chromium/components/autofill",
+  "+components/android_autofill/browser/test_support/java/src/org/chromium/components/autofill/TestViewStructure.java",
   "+components/autofill/android/java/src/org/chromium/components/autofill",
   "+components/background_task_scheduler/android",
   "+components/bookmarks/common/android",
@@ -26,6 +26,7 @@ include_rules = [
   "+components/browser_ui/settings/android",
   "+components/browser_ui/test/android",
   "+components/browser_ui/widget/android",
+  "+components/permissions/android/java",
   "+components/collaboration/public/android/java",
   "+components/commerce/core",
   "+components/content_relationship_verification/android/java/src/org/chromium/components/content_relationship_verification",
@@ -36,6 +37,7 @@ include_rules = [
   "+components/image_fetcher",
   "+components/offline_items_collection/core/android/java/src",
   "+components/omnibox/browser/android/java/src/org/chromium/components/omnibox",
+  "+components/payments/content/android/java/src/org/chromium/components/payments",
   "+components/payments/content/android/ui/java/src/org/chromium/components/payments/ui",
   "+components/regional_capabilities/android",
   "+components/saved_tab_groups/android/java/src/org/chromium/components/tab_group_sync",
@@ -52,6 +54,7 @@ include_rules = [
   "+content/public/android/java/src/org/chromium/content_public",
   "+content/public/android/java/src/org/chromium/content/browser/RenderCoordinatesImpl.java",
   "+content/public/android/java/src/org/chromium/content/browser/webcontents/WebContentsImpl.java",
+  "+content/public/android/java/src/org/chromium/content/browser/GestureListenerManagerImpl.java",
 
   "+google_apis/gaia/android/java",
 ]

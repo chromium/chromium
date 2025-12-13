@@ -46,6 +46,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Factor-setup-success"/>
   <variant name="Family-link-notice"/>
   <variant name="Fingerprint-setup"/>
+  <variant name="Fjord-station-setup"/>
   <variant name="Fjord-touch-controller"/>
   <variant name="Gaia-info"/>
   <variant name="Gaia-password-changed"
@@ -140,6 +141,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Factor-setup-success"/>
   <variant name="Family-link-notice"/>
   <variant name="Fingerprint-setup"/>
+  <variant name="Fjord-station-setup"/>
   <variant name="Fjord-touch-controller"/>
   <variant name="Gaia-info"/>
   <variant name="Gaia-password-changed"
@@ -419,6 +421,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Recovery-check.Proceed"/>
   <variant name="Reset.Cancel"/>
   <variant name="Saml-confirm-password.Cancel"/>
+  <variant name="Saml-confirm-password.Success"/>
   <variant name="Saml-confirm-password.TooManyAttempts"/>
   <variant name="Signin-fatal-error.Next"/>
   <variant name="Smart-privacy-protection.ContinueWithFeatureOff"/>
@@ -510,7 +513,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.CategoriesSelectionScreen.SelectedUseCaseIDs"
-    units="useCaseID" expires_after="2026-04-01">
+    units="useCaseID" expires_after="2026-05-31">
   <owner>bohdanty@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -585,7 +588,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ChromeVersionBeforeUpdate" units="custom"
-    expires_after="2026-04-01">
+    expires_after="2026-05-31">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -756,7 +759,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OOBE.GaiaLoginTime" units="ms" expires_after="2026-04-01">
+<histogram name="OOBE.GaiaLoginTime" units="ms" expires_after="2026-05-31">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -803,7 +806,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.GaiaScreen.SuccessLoginRequests" enum="GaiaLoginVariant"
-    expires_after="2026-04-01">
+    expires_after="2026-05-31">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -954,7 +957,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.MetricsClientIdReset" enum="Boolean"
-    expires_after="2026-04-01">
+    expires_after="2026-05-31">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1038,7 +1041,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OOBE.OobeFlowDuration" units="ms" expires_after="2026-04-01">
+<histogram name="OOBE.OobeFlowDuration" units="ms" expires_after="2026-05-31">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1066,8 +1069,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.OobeNotCompletedErrorTrigger"
+    enum="OobeNotCompletedErrorTrigger" expires_after="2026-10-22">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records the specific trigger cause when the &quot;OOBE Not Completed&quot;
+    error screen is displayed. This is emitted before showing the error screen.
+    The enum values capture the different locations in the code where the check
+    for OOBE completion was performed and determined to have failed, leading to
+    this error.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.OobeStartToOnboardingStartTime" units="ms"
-    expires_after="2026-04-01">
+    expires_after="2026-05-31">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1137,7 +1153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.PersonalizedAppsScreen.SelectedAppIDs" units="appID"
-    expires_after="2026-04-01">
+    expires_after="2026-05-31">
   <owner>bohdanty@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1208,7 +1224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.ResponseCode"
-    enum="HttpResponseCode" expires_after="2026-04-01">
+    enum="HttpResponseCode" expires_after="2026-05-31">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -1304,7 +1320,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OOBE.StepCompletionTimeByExitReason.{OOBEScreenName_ExitReason}"
-    units="ms" expires_after="2026-04-01">
+    units="ms" expires_after="2026-05-31">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>Time spent on specific OOBE screen grouped by exit reason.</summary>
@@ -1312,7 +1328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.StepShownStatus.Multidevice-setup-screen.Skipped"
-    enum="OobeMultideviceScreenSkippedReason" expires_after="2026-04-01">
+    enum="OobeMultideviceScreenSkippedReason" expires_after="2026-05-31">
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1338,7 +1354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.StepShownStatus2.{CommonScreenName}.{OnboardingType}"
-    enum="BooleanShown" expires_after="2026-04-01">
+    enum="BooleanShown" expires_after="2026-05-31">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1354,7 +1370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.StepShownStatus2.{OOBEOnlyScreenName}"
-    enum="BooleanShown" expires_after="2026-04-01">
+    enum="BooleanShown" expires_after="2026-05-31">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>

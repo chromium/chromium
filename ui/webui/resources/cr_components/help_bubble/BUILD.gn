@@ -17,6 +17,7 @@ mojom("mojo_bindings") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
+    "//ui/webui/resources/js/tracked_element:mojo_bindings",
   ]
 
   webui_module_path = "chrome://resources/cr_components/help_bubble/"
@@ -36,6 +37,9 @@ build_webui("build") {
     "new_badge.html.ts",
     "new_badge.ts",
   ]
+
+  # TODO(thestig): Move this into //pdf.
+  ts_files += [ "pdf_help_bubble_proxy.ts" ]
 
   css_files = [
     "help_bubble.css",

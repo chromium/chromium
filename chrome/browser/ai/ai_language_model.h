@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AI_AI_LANGUAGE_MODEL_H_
 #define CHROME_BROWSER_AI_AI_LANGUAGE_MODEL_H_
 
+#include <cstdint>
 #include <deque>
 #include <optional>
 
@@ -18,9 +19,9 @@
 #include "chrome/browser/ai/ai_utils.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -96,10 +97,20 @@ class AILanguageModel : public AIContextBoundObject,
     uint32_t max_tokens() const { return max_tokens_; }
     uint32_t current_tokens() const { return current_tokens_; }
     uint32_t available_tokens() const { return max_tokens_ - current_tokens_; }
+    uint32_t initial_tokens() const { return initial_tokens_; }
+    void set_initial_tokens(uint32_t initial_tokens) {
+      initial_tokens_ = initial_tokens;
+    }
 
    private:
+    // TODO(crbug.com/463746724): Explore if this field can be removed.
+    // Max tokens for evictable context (max number of tokens supported by the
+    // model - initial_tokens_).
     uint32_t max_tokens_;
+    // Size of the evictable context, excluding initial_tokens_.
     uint32_t current_tokens_ = 0;
+    // Tokens used by the non-evictable initial prompts.
+    uint32_t initial_tokens_ = 0;
     std::deque<ContextItem> context_items_;
   };
 
@@ -117,7 +128,7 @@ class AILanguageModel : public AIContextBoundObject,
   static PromptApiMetadata ParseMetadata(
       const optimization_guide::proto::Any& any);
 
-  // Returns a set of (base) language codes that are supported and enabled.
+  // Returns a set of BCP 47 base language codes that are supported and enabled.
   static base::flat_set<std::string_view> GetSupportedLanguageBaseCodes();
 
   // Format the initial prompts, gets the token count, updates the session,

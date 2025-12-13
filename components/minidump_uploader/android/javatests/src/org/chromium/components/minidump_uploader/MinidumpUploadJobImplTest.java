@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.task.test.PausedExecutorTestRule;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.minidump_uploader.CrashTestRule.MockCrashReportingPermissionManager;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
@@ -32,7 +32,6 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class MinidumpUploadJobImplTest {
     @Rule public CrashTestRule mCrashTestRule = new CrashTestRule();
-    @Rule public PausedExecutorTestRule mExecutorRule = new PausedExecutorTestRule();
 
     private static final String BOUNDARY = "TESTBOUNDARY";
 
@@ -219,7 +218,7 @@ public class MinidumpUploadJobImplTest {
         ArrayList<Boolean> results = new ArrayList<>();
         minidumpUploadJob.uploadAllMinidumps(results::add);
         // Wait until our job finished.
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         Assert.assertTrue(minidumpUploadJob.mWasRun);
         Assert.assertEquals(shouldCancel ? true : null, minidumpUploadJob.mCancelReturnValue);
         Assert.assertEquals(shouldCancel ? List.of() : List.of(!successfulUpload), results);
@@ -243,7 +242,7 @@ public class MinidumpUploadJobImplTest {
             MinidumpUploadJob minidumpUploadJob, boolean expectReschedule) {
         ArrayList<Boolean> wasRescheduled = new ArrayList<>();
         minidumpUploadJob.uploadAllMinidumps(wasRescheduled::add);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         assertEquals(List.of(expectReschedule), wasRescheduled);
     }
 

@@ -20,6 +20,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
+#include "components/data_sharing/public/personal_collaboration_data/personal_collaboration_data_service.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
@@ -28,6 +29,7 @@
 #include "components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_bridge_mediator.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_coordinator.h"
+#include "components/saved_tab_groups/internal/tab_group_sync_personal_collaboration_data_handler.h"
 #include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_metrics_logger.h"
@@ -65,6 +67,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       signin::IdentityManager* identity_manager,
+      data_sharing::personal_collaboration_data::
+          PersonalCollaborationDataService* personal_collaboration_data_service,
       std::unique_ptr<CollaborationFinder> collaboration_finder,
       data_sharing::Logger* logger);
   ~TabGroupSyncServiceImpl() override;
@@ -86,11 +90,20 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                            std::optional<bool> is_pinned,
                            std::optional<int> new_index) override;
 
+  void UpdateBookmarkNodeId(
+      const base::Uuid& sync_id,
+      std::optional<base::Uuid> bookmark_node_id) override;
+
   void AddTab(const LocalTabGroupID& group_id,
               const LocalTabID& tab_id,
               const std::u16string& title,
               const GURL& url,
               std::optional<size_t> position) override;
+
+  void AddUrl(const base::Uuid& group_id,
+              const std::u16string& title,
+              const GURL& url) override;
+
   void NavigateTab(const LocalTabGroupID& group_id,
                    const LocalTabID& tab_id,
                    const GURL& url,
@@ -118,6 +131,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void MakeTabGroupSharedForTesting(
       const LocalTabGroupID& local_group_id,
       const syncer::CollaborationId& collaboration_id) override;
+  void MakeTabGroupUnsharedForTesting(
+      const LocalTabGroupID& local_group_id) override;
 
   void AboutToUnShareTabGroup(const LocalTabGroupID& local_group_id,
                               base::OnceClosure on_complete_callback) override;
@@ -135,7 +150,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       const EitherGroupID& either_id) const override;
   std::vector<LocalTabGroupID> GetDeletedGroupIds() const override;
   std::optional<std::u16string> GetTitleForPreviouslyExistingSharedTabGroup(
-      const CollaborationId& collaboration_id) const override;
+      const syncer::CollaborationId& collaboration_id) const override;
 
   std::optional<LocalTabGroupID> OpenTabGroup(
       const base::Uuid& sync_group_id,
@@ -340,6 +355,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       OpeningSource opening_source,
       ClosingSource closing_source);
 
+  // Helper method for implementation shared by AddUrl and AddTab.
+  void AddTabInternal(SavedTabGroupTab tab, const SavedTabGroup* group);
+
   // Helper method called by NavigateTab() when UrlRestriction is retrieved.
   void NavigateTabInternal(
       const LocalTabGroupID& group_id,
@@ -405,6 +423,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // The pref service for storing migration status.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
+  // Handles personal collaboration data updates.
+  std::unique_ptr<TabGroupSyncPersonalCollaborationDataHandler>
+      personal_collaboration_data_handler_;
+
   // Whether the initialization has been completed, i.e. all the groups and the
   // ID mappings have been loaded into memory.
   bool is_initialized_ = false;
@@ -443,7 +465,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // Temporary in-memory mapping from collaboration ID to title for tab groups
   // that we/ have previously known about. This is to facilitate displaying of
   // tab group titles in the UI when a user is removed from a tab group.
-  std::unordered_map<CollaborationId, std::u16string>
+  std::unordered_map<syncer::CollaborationId, std::u16string>
       titles_for_previously_existing_shared_tab_groups_;
 
   // Keeps track of API calls received before the service is initialized.

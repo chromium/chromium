@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -71,8 +72,20 @@ void LogStoredProfileMetrics(
   count_and_log(AutofillProfileRecordTypeCategory::kAccountNonChrome);
   count_and_log(AutofillProfileRecordTypeCategory::kAccountHome);
   count_and_log(AutofillProfileRecordTypeCategory::kAccountWork);
+  count_and_log(AutofillProfileRecordTypeCategory::kAccountNameEmail);
+
+  // Update the metrics when adding a new address type.
+  static_assert(AutofillProfile::RecordType::kMaxValue ==
+                AutofillProfile::RecordType::kAccountNameEmail);
+
   base::UmaHistogramCounts1M("Autofill.StoredProfileCount.Total",
                              profiles.size());
+
+  base::UmaHistogramCounts1M(
+      "Autofill.StoredProfileCount.TotalPostalAddressProfiles",
+      std::ranges::count_if(profiles, [](const AutofillProfile* p) {
+        return autofill_metrics::IsPostalAddress(*p);
+      }));
 }
 
 void LogLocalProfileSupersetMetrics(

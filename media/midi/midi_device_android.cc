@@ -36,14 +36,14 @@ MidiDeviceAndroid::MidiDeviceAndroid(JNIEnv* env,
       Java_MidiDeviceAndroid_getInputPorts(env, raw_device);
   for (auto j_port : raw_input_ports.ReadElements<jobject>()) {
     input_ports_.push_back(
-        std::make_unique<MidiInputPortAndroid>(env, j_port.obj(), delegate));
+        std::make_unique<MidiInputPortAndroid>(env, j_port, delegate));
   }
 
   ScopedJavaLocalRef<jobjectArray> raw_output_ports =
       Java_MidiDeviceAndroid_getOutputPorts(env, raw_device);
   for (auto j_port : raw_output_ports.ReadElements<jobject>()) {
     output_ports_.push_back(
-        std::make_unique<MidiOutputPortAndroid>(env, j_port.obj()));
+        std::make_unique<MidiOutputPortAndroid>(env, j_port));
   }
 }
 
@@ -68,3 +68,5 @@ std::string MidiDeviceAndroid::GetDeviceVersion() {
 }
 
 }  // namespace midi
+
+DEFINE_JNI(MidiDeviceAndroid)

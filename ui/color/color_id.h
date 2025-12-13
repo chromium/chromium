@@ -546,8 +546,6 @@
   E_CPONLY(kColorWebNativeControlAccentHovered) \
   E_CPONLY(kColorWebNativeControlAccentPressed) \
   E_CPONLY(kColorWebNativeControlAutoCompleteBackground) \
-  E_CPONLY(kColorWebNativeControlBackground) \
-  E_CPONLY(kColorWebNativeControlBackgroundDisabled) \
   E_CPONLY(kColorWebNativeControlBorder) \
   E_CPONLY(kColorWebNativeControlBorderDisabled) \
   E_CPONLY(kColorWebNativeControlBorderHovered) \
@@ -560,24 +558,30 @@
   E_CPONLY(kColorWebNativeControlButtonFillDisabled) \
   E_CPONLY(kColorWebNativeControlButtonFillHovered) \
   E_CPONLY(kColorWebNativeControlButtonFillPressed) \
+  E_CPONLY(kColorWebNativeControlCheckboxBackground) \
+  E_CPONLY(kColorWebNativeControlCheckboxBackgroundDisabled) \
   E_CPONLY(kColorWebNativeControlFill) \
   E_CPONLY(kColorWebNativeControlFillDisabled) \
   E_CPONLY(kColorWebNativeControlFillHovered) \
   E_CPONLY(kColorWebNativeControlFillPressed) \
   E_CPONLY(kColorWebNativeControlLightenLayer) \
   E_CPONLY(kColorWebNativeControlProgressValue) \
+  E_CPONLY(kColorWebNativeControlScrollbarArrowBackgroundDisabled) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowBackgroundHovered) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowBackgroundPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowForeground) \
+  E_CPONLY(kColorWebNativeControlScrollbarArrowForegroundDisabled) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowForegroundPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarCorner) \
   E_CPONLY(kColorWebNativeControlScrollbarThumb) \
   E_CPONLY(kColorWebNativeControlScrollbarThumbHovered) \
-  E_CPONLY(kColorWebNativeControlScrollbarThumbInactive) \
   E_CPONLY(kColorWebNativeControlScrollbarThumbOverlayMinimalMode) \
   E_CPONLY(kColorWebNativeControlScrollbarThumbPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarTrack) \
   E_CPONLY(kColorWebNativeControlSlider) \
+  E_CPONLY(kColorWebNativeControlSliderBorder) \
+  E_CPONLY(kColorWebNativeControlSliderBorderHovered) \
+  E_CPONLY(kColorWebNativeControlSliderBorderPressed) \
   E_CPONLY(kColorWebNativeControlSliderDisabled) \
   E_CPONLY(kColorWebNativeControlSliderHovered) \
   E_CPONLY(kColorWebNativeControlSliderPressed) \
@@ -662,35 +666,17 @@
   E_CPONLY(kColorNativeToolbarBackground)
 #elif BUILDFLAG(IS_WIN)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
-  E_CPONLY(kColorNative3dDkShadow) \
-  E_CPONLY(kColorNative3dLight) \
-  E_CPONLY(kColorNativeActiveBorder) \
-  E_CPONLY(kColorNativeActiveCaption) \
-  E_CPONLY(kColorNativeAppWorkspace) \
-  E_CPONLY(kColorNativeBackground) \
   E_CPONLY(kColorNativeBtnFace) \
   E_CPONLY(kColorNativeBtnHighlight) \
   E_CPONLY(kColorNativeBtnShadow) \
   E_CPONLY(kColorNativeBtnText) \
-  E_CPONLY(kColorNativeCaptionText) \
-  E_CPONLY(kColorNativeGradientActiveCaption) \
-  E_CPONLY(kColorNativeGradientInactiveCaption) \
   E_CPONLY(kColorNativeGrayText) \
   E_CPONLY(kColorNativeHighlight) \
   E_CPONLY(kColorNativeHighlightText) \
   E_CPONLY(kColorNativeHotlight) \
-  E_CPONLY(kColorNativeInactiveBorder) \
-  E_CPONLY(kColorNativeInactiveCaption) \
-  E_CPONLY(kColorNativeInactiveCaptionText) \
-  E_CPONLY(kColorNativeInfoBk) \
-  E_CPONLY(kColorNativeInfoText) \
-  E_CPONLY(kColorNativeMenu) \
-  E_CPONLY(kColorNativeMenuBar) \
   E_CPONLY(kColorNativeMenuHilight) \
-  E_CPONLY(kColorNativeMenuText) \
   E_CPONLY(kColorNativeScrollbar) \
   E_CPONLY(kColorNativeWindow) \
-  E_CPONLY(kColorNativeWindowFrame) \
   E_CPONLY(kColorNativeWindowText)
 #else
 #define PLATFORM_SPECIFIC_COLOR_IDS

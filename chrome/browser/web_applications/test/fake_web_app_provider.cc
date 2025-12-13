@@ -16,10 +16,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/chrome_iwa_client.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -247,6 +245,12 @@ void FakeWebAppProvider::SetWebContentsManager(
   web_contents_manager_ = std::move(web_contents_manager);
 }
 
+void FakeWebAppProvider::SetExtensionsManager(
+    std::unique_ptr<ExtensionsManager> extensions_manager) {
+  CheckNotStartedAndDisconnect();
+  extensions_manager_ = std::move(extensions_manager);
+}
+
 WebAppRegistrarMutable& FakeWebAppProvider::GetRegistrarMutable() const {
   DCHECK(registrar_);
   return *static_cast<WebAppRegistrarMutable*>(registrar_.get());
@@ -309,9 +313,6 @@ void FakeWebAppProvider::CreateFakeSubsystems() {
   SetFileUtils(base::MakeRefCounted<TestFileUtils>());
 
   SetWebAppUiManager(std::make_unique<FakeWebAppUiManager>());
-
-  IwaIdentityValidator::CreateSingleton();
-  ChromeIwaClient::CreateSingleton();
 
   // Do not create real subsystems here. That will be done already by
   // WebAppProvider::CreateSubsystems in the WebAppProvider constructor.

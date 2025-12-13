@@ -5,7 +5,7 @@ desc: |-
 
         Leaving the policy unset means <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME">DefaultPluginsSetting</ph> applies for all sites, if it's set. If not, the user's personal setting applies.
 
-        For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. However, starting in M85, patterns with '*' and '[*.]' wildcards in the host are no longer supported for this policy.
+        For detailed information on valid url patterns, please see https://chromeenterprise.google/policies/url-patterns. However, starting in M85, patterns with '*' and '[*.]' wildcards in the host are no longer supported for this policy.
 example_value:
 - https://www.example.com
 - http://example.edu:8080

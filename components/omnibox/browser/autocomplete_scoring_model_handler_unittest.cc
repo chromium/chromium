@@ -60,6 +60,7 @@ class TestAutocompleteScoringModelExecutor
       std::optional<base::TimeDelta>,
       optimization_guide::proto::OptimizationTarget,
       scoped_refptr<base::SequencedTaskRunner>,
+      scoped_refptr<base::SequencedTaskRunner>,
       scoped_refptr<base::SequencedTaskRunner>) override {}
 
   void UpdateModelFile(base::optional_ref<const base::FilePath>) override {}

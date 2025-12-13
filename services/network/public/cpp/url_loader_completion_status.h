@@ -57,9 +57,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
   // cache.
   bool exists_in_cache = false;
 
-  // A copy of the data requested exists in the in-memory cache.
-  bool exists_in_memory_cache = false;
-
   // Time the request completed.
   base::TimeTicks completion_time;
 
@@ -74,13 +71,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
 
   // Optional CORS error details.
   std::optional<CorsErrorStatus> cors_error_status;
-
-  // Information about any preflight request sent for Private Network Access
-  // as part of this load, that was not previously reported in
-  // `URLResponseHead`.
-  mojom::PrivateNetworkAccessPreflightResult
-      private_network_access_preflight_result =
-          mojom::PrivateNetworkAccessPreflightResult::kNone;
 
   // Optional Trust Tokens (https://github.com/wicg/trust-token-api) error
   // details.

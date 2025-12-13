@@ -168,17 +168,15 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
         kVerticalMarginUsernameMailDp));
     AddChildViewRaw(container);
     username_label_ =
-        container->AddChildView(login_views_utils::CreateThemedBubbleLabel(
-            display_username, nullptr,
-            static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
+        container->AddChildView(login_views_utils::CreateBubbleLabel(
+            display_username, nullptr, cros_tokens::kCrosSysOnSurface,
             gfx::FontList({login_views_utils::kGoogleSansFont},
                           gfx::Font::FontStyle::NORMAL, kFontSizeUsername,
                           gfx::Font::Weight::MEDIUM),
             kLineHeightUsername));
-    email_label_ =
-        container->AddChildView(login_views_utils::CreateThemedBubbleLabel(
-            email, nullptr,
-            static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)));
+    email_label_ = container->AddChildView(login_views_utils::CreateBubbleLabel(
+        email, nullptr,
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)));
   }
 
   // Add a warning text if the user is managed.
@@ -187,7 +185,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
         IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_USER_WARNING,
         base::UTF8ToUTF16(user.user_account_manager.value()));
     management_disclosure_label_ =
-        AddChildView(login_views_utils::CreateThemedBubbleLabel(
+        AddChildView(login_views_utils::CreateBubbleLabel(
             managed_text, this, kColorAshTextColorPrimary));
   }
 
@@ -217,12 +215,12 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     remove_user_confirm_data_->SetVisible(false);
 
     remove_user_confirm_data_->AddChildView(
-        login_views_utils::CreateThemedBubbleLabel(part1, this,
-                                                   kColorAshTextColorPrimary));
+        login_views_utils::CreateBubbleLabel(part1, this,
+                                             kColorAshTextColorPrimary));
 
     remove_user_confirm_data_->AddChildView(
-        login_views_utils::CreateThemedBubbleLabel(part2, this,
-                                                   kColorAshTextColorPrimary));
+        login_views_utils::CreateBubbleLabel(part2, this,
+                                             kColorAshTextColorPrimary));
 
     remove_user_button_ = new RemoveUserButton(
         base::BindRepeating(&LoginRemoveAccountDialog::RemoveUserButtonPressed,

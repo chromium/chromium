@@ -21,8 +21,6 @@
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/history/ui_bundled/base_history_view_controller+subclassing.h"
-#import "ios/chrome/browser/history/ui_bundled/history_entries_status_item.h"
-#import "ios/chrome/browser/history/ui_bundled/history_entries_status_item_delegate.h"
 #import "ios/chrome/browser/history/ui_bundled/history_entry_inserter.h"
 #import "ios/chrome/browser/history/ui_bundled/history_entry_item.h"
 #import "ios/chrome/browser/history/ui_bundled/history_menu_provider.h"
@@ -34,7 +32,6 @@
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -104,7 +101,6 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 }  // namespace
 
 @interface BaseHistoryViewController () <
-    HistoryEntriesStatusItemDelegate,
     HistoryEntryInserterDelegate,
     TableViewLinkHeaderFooterItemDelegate> {
   // Closure to request next page of history.
@@ -293,6 +289,7 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   std::u16string queryString =
       fetchAllHistory ? std::u16string() : base::SysNSStringToUTF16(query);
   history::QueryOptions options;
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy =
       fetchAllHistory ? history::QueryOptions::REMOVE_DUPLICATES_PER_DAY
                       : history::QueryOptions::REMOVE_ALL_DUPLICATES;
@@ -371,14 +368,6 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   // history via delete browsing data.
   self.filterQueryResult = YES;
   [self showHistoryMatchingQuery:_currentQuery];
-}
-
-#pragma mark - HistoryEntriesStatusItemDelegate
-
-- (void)historyEntriesStatusItem:(HistoryEntriesStatusItem*)item
-               didRequestOpenURL:(const GURL&)URL {
-  // TODO(crbug.com/41366648): Migrate. This will navigate to the status message
-  // "Show Full History" URL.
 }
 
 #pragma mark - HistoryEntryInserterDelegate
@@ -544,6 +533,12 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
     contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
                                         point:(CGPoint)point {
+  // TODO(crbug.com/428177163): Remove this workaround when the underlying iOS
+  // issue handling context menu presentation during an active drag/drop session
+  // is resolved.
+  if (tableView.hasActiveDrag || tableView.hasActiveDrop) {
+    return nil;
+  }
   if (![self.tableViewModel hasItemAtIndexPath:indexPath]) {
     // It's possible that indexPath is invalid due to crossing action (like
     // query refresh or animations).
@@ -584,27 +579,27 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cellToReturn = [super tableView:tableView
-                             cellForRowAtIndexPath:indexPath];
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  cellToReturn.userInteractionEnabled = !(item.type == kItemTypeEntriesStatus);
   if (item.type == kItemTypeHistoryEntry) {
     HistoryEntryItem* URLItem =
         base::apple::ObjCCastStrict<HistoryEntryItem>(item);
-    TableViewURLCell* URLCell =
-        base::apple::ObjCCastStrict<TableViewURLCell>(cellToReturn);
-    CrURL* crurl = [[CrURL alloc] initWithGURL:URLItem.URL];
-    [self.imageDataSource
-        faviconForPageURL:crurl
-               completion:^(FaviconAttributes* attributes) {
-                 // Only set favicon if the cell hasn't been reused.
-                 if ([URLCell.cellUniqueIdentifier
-                         isEqualToString:URLItem.uniqueIdentifier]) {
-                   DCHECK(attributes);
-                   [URLCell.faviconView configureWithAttributes:attributes];
-                 }
-               }];
+    if (!URLItem.faviconAttributes) {
+      CrURL* crurl = [[CrURL alloc] initWithGURL:URLItem.URL];
+      [self.imageDataSource
+          faviconForPageURL:crurl
+                 completion:^(FaviconAttributes* attributes, bool cached) {
+                   URLItem.faviconAttributes = attributes;
+                   if (!cached && attributes.faviconImage) {
+                     [tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
+                   }
+                 }];
+    }
   }
+
+  UITableViewCell* cellToReturn = [super tableView:tableView
+                             cellForRowAtIndexPath:indexPath];
+  cellToReturn.userInteractionEnabled = !(item.type == kItemTypeEntriesStatus);
+
   return cellToReturn;
 }
 
@@ -698,10 +693,7 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
     return;  // UI has been updated in the meaning time.
   }
 
-  // TODO(crbug.com/371568658): Remove NotFatalUntil when we're sure this
-  // check doesn't fail.
-  CHECK_EQ(_indicatorState, IndicatorState::FETCHING_RESULTS,
-           base::NotFatalUntil::M139);
+  CHECK_EQ(_indicatorState, IndicatorState::FETCHING_RESULTS);
   _indicatorState = IndicatorState::SHOWING_LOADING_INDICATOR;
   [self startLoadingIndicatorWithLoadingMessage:l10n_util::GetNSString(
                                                     IDS_HISTORY_NO_RESULTS)];
@@ -718,10 +710,7 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 // removes the loading indicator and updates the UI with the results. If the
 // query hasn't returned, then no-op.
 - (void)maybeRemoveLoadingIndicator {
-  // TODO(crbug.com/371568658): Remove NotFatalUntil when we're sure this
-  // check doesn't fail.
-  CHECK_EQ(_indicatorState, IndicatorState::SHOWING_LOADING_INDICATOR,
-           base::NotFatalUntil::M139);
+  CHECK_EQ(_indicatorState, IndicatorState::SHOWING_LOADING_INDICATOR);
   _indicatorState = IndicatorState::WAITING_FOR_RESULTS;
 
   // If results have returned, then the UI is updated right away.
@@ -743,11 +732,8 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
     return;
   }
 
-  // TODO(crbug.com/371568658): Remove NotFatalUntil when we're sure this
-  // check doesn't fail.
   CHECK(_indicatorState == IndicatorState::WAITING_FOR_RESULTS ||
-            _indicatorState == IndicatorState::FETCHING_RESULTS,
-        base::NotFatalUntil::M139);
+        _indicatorState == IndicatorState::FETCHING_RESULTS);
   _indicatorState = IndicatorState::IDLE;
 
   // Cancel all pending callbacks related to loading indicator.

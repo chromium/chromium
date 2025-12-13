@@ -97,11 +97,11 @@ bool CheckTraceVisitor::IsTraceCallName(const std::string& name) {
 
 CXXRecordDecl* CheckTraceVisitor::GetDependentTemplatedDecl(
     DependentScopeDeclRefExpr* expr) {
-  NestedNameSpecifier* qual = expr->getQualifier();
+  NestedNameSpecifier qual = expr->getQualifier();
   if (!qual)
     return 0;
 
-  const Type* type = qual->getAsType();
+  const Type* type = qual.getAsType();
   if (!type)
     return 0;
 
@@ -142,8 +142,8 @@ void CheckTraceVisitor::CheckDependentScopeDeclRefExpr(
   std::string fn_name = expr->getDeclName().getAsString();
 
   // Check for T::Trace(visitor).
-  if (NestedNameSpecifier* qual = expr->getQualifier()) {
-    if (const Type* type = qual->getAsType()) {
+  if (NestedNameSpecifier qual = expr->getQualifier()) {
+    if (const Type* type = qual.getAsType()) {
       if (const TemplateTypeParmType* tmpl_parm_type =
               type->getAs<TemplateTypeParmType>()) {
         const unsigned param_index = tmpl_parm_type->getIndex();
@@ -198,7 +198,7 @@ bool CheckTraceVisitor::CheckTraceBaseCall(CallExpr* call) {
     if (!trace_decl || !Config::IsTraceMethod(trace_decl))
       return false;
 
-    const Type* type = callee->getQualifier()->getAsType();
+    const Type* type = callee->getQualifier().getAsType();
     if (!type)
       return false;
 
@@ -418,10 +418,10 @@ bool CheckTraceVisitor::CheckImplicitCastExpr(CallExpr* call,
   DeclRefExpr* sub_expr = dyn_cast<DeclRefExpr>(expr->getSubExpr());
   if (!sub_expr)
     return false;
-  NestedNameSpecifier* qualifier = sub_expr->getQualifier();
+  NestedNameSpecifier qualifier = sub_expr->getQualifier();
   if (!qualifier)
     return false;
-  CXXRecordDecl* class_decl = qualifier->getAsRecordDecl();
+  CXXRecordDecl* class_decl = qualifier.getAsRecordDecl();
   if (!class_decl)
     return false;
   NamedDecl* found_decl = sub_expr->getFoundDecl();

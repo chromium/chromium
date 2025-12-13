@@ -329,9 +329,8 @@ void DesktopWindowTreeHostPlatform::OnWidgetInitDone() {
       GetWindowMaskForClipping().isEmpty());
 }
 
-void DesktopWindowTreeHostPlatform::OnWidgetThemeChanged(
-    ui::ColorProviderKey::ColorMode color_mode,
-    std::optional<SkColor> background_color) {}
+void DesktopWindowTreeHostPlatform::SetBackgroundColor(
+    SkColor background_color) {}
 
 void DesktopWindowTreeHostPlatform::OnActiveWindowChanged(bool active) {
 #if BUILDFLAG(IS_OZONE)
@@ -560,7 +559,7 @@ gfx::Rect DesktopWindowTreeHostPlatform::GetWindowBoundsInScreen() const {
 }
 
 gfx::Rect DesktopWindowTreeHostPlatform::GetClientAreaBoundsInScreen() const {
-  // Attempts to calculate the rect by asking the NonClientFrameView what it
+  // Attempts to calculate the rect by asking the FrameView what it
   // thought its GetBoundsForClientView() were broke combobox drop down
   // placement.
   return GetWindowBoundsInScreen();
@@ -737,8 +736,7 @@ void DesktopWindowTreeHostPlatform::SetVisibilityChangedAnimationsEnabled(
   }
 }
 
-std::unique_ptr<NonClientFrameView>
-DesktopWindowTreeHostPlatform::CreateNonClientFrameView() {
+std::unique_ptr<FrameView> DesktopWindowTreeHostPlatform::CreateFrameView() {
   return ShouldUseNativeFrame() ? std::make_unique<NativeFrameView>(GetWidget())
                                 : nullptr;
 }
@@ -893,7 +891,7 @@ gfx::Transform DesktopWindowTreeHostPlatform::GetRootTransform() const {
     root_window = window_parent_->window();
   }
 
-  auto* const screen = display::Screen::GetScreen();
+  auto* const screen = display::Screen::Get();
   const float scale = root_window
                           ? screen
                                 ->GetPreferredScaleFactorForWindow(
@@ -921,6 +919,24 @@ gfx::Rect DesktopWindowTreeHostPlatform::CalculateRootWindowBounds() const {
 
 gfx::Rect DesktopWindowTreeHostPlatform::GetBoundsInDIP() const {
   return platform_window()->GetBoundsInDIP();
+}
+
+void DesktopWindowTreeHostPlatform::OnVideoCaptureLockCreated() {
+  WindowTreeHostPlatform::OnVideoCaptureLockCreated();
+  has_video_capture_ = true;
+
+  if (GetWidget() && GetWidget()->IsMinimized()) {
+    SetVisible(true);
+  }
+}
+
+void DesktopWindowTreeHostPlatform::OnVideoCaptureLockDestroyed() {
+  WindowTreeHostPlatform::OnVideoCaptureLockDestroyed();
+  has_video_capture_ = false;
+
+  if (GetWidget() && GetWidget()->IsMinimized()) {
+    SetVisible(false);
+  }
 }
 
 void DesktopWindowTreeHostPlatform::OnCompositorVisibilityChanging(
@@ -977,7 +993,7 @@ void DesktopWindowTreeHostPlatform::OnWindowStateChanged(
   if (!aura::NativeWindowOcclusionTracker::
           IsNativeWindowOcclusionTrackingAlwaysEnabled(this) &&
       is_minimized != was_minimized) {
-    if (is_minimized) {
+    if (!has_video_capture_ && is_minimized) {
       SetVisible(false);
     } else {
       SetVisible(true);
@@ -1050,7 +1066,7 @@ SkPath DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShapeInPixels() {
   SkPath window_mask = GetWindowMask(GetWidget());
   // Convert SkPath in DIPs to pixels.
   if (!window_mask.isEmpty()) {
-    window_mask.transform(
+    window_mask = window_mask.makeTransform(
         gfx::TransformToFlattenedSkMatrix(GetRootTransform()));
   }
   return window_mask;
@@ -1165,7 +1181,7 @@ display::Display DesktopWindowTreeHostPlatform::GetDisplayNearestRootWindow()
   DCHECK(window());
   DCHECK(window()->IsRootWindow());
   // TODO(sky): GetDisplayNearestWindow() should take a const aura::Window*.
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(
+  return display::Screen::Get()->GetDisplayNearestWindow(
       const_cast<aura::Window*>(window()));
 }
 

@@ -434,7 +434,7 @@ bool CanUserUninstallWebApp(const webapps::AppId& app_id,
 webapps::AppId GetAppIdFromAppSettingsUrl(const GURL& url) {
   // App Settings page is served under chrome://app-settings/<app-id>.
   // url.path() returns "/<app-id>" with a leading slash.
-  std::string path = url.path();
+  std::string path = url.GetPath();
   if (path.size() <= 1) {
     return webapps::AppId();
   }

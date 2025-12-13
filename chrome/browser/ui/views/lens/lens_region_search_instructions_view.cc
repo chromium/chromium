@@ -7,8 +7,6 @@
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -39,11 +37,15 @@ constexpr int kCornerRadius = 18;
 LensRegionSearchInstructionsView::LensRegionSearchInstructionsView(
     views::View* anchor_view,
     base::OnceClosure close_callback,
-    base::OnceClosure escape_callback)
+    base::OnceClosure escape_callback,
+    const LayoutParams& layout_params,
+    int text_message_id)
     : views::BubbleDialogDelegateView(
           anchor_view,
           views::BubbleBorder::Arrow::BOTTOM_CENTER,
-          views::BubbleBorder::Shadow::STANDARD_SHADOW) {
+          views::BubbleBorder::Shadow::STANDARD_SHADOW),
+      layout_params_(layout_params),
+      text_message_id_(text_message_id) {
   // The cancel close_callback is called when VKEY_ESCAPE is hit.
   SetCancelCallback(std::move(escape_callback));
 
@@ -60,30 +62,20 @@ void LensRegionSearchInstructionsView::Init() {
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCollapseMargins(true);
 
-  ChromeLayoutProvider* const layout_provider = ChromeLayoutProvider::Get();
-  int left_margin = layout_provider->GetDistanceMetric(
-      views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL);
   set_margins(gfx::Insets::TLBR(
-      layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_LABEL_BUTTON)
-          .top(),
-      left_margin,
-      layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_LABEL_BUTTON)
-          .bottom(),
-      layout_provider->GetDistanceMetric(
-          views::DistanceMetric::DISTANCE_CLOSE_BUTTON_MARGIN) +
-          kCloseButtonExtraMargin));
+      layout_params_.label_button_insets.top(), layout_params_.left_margin,
+      layout_params_.label_button_insets.bottom(),
+      layout_params_.close_button_margin + kCloseButtonExtraMargin));
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_close_on_deactivate(false);
   set_corner_radius(kCornerRadius);
   SetBackgroundColor(kColorFeatureLensPromoBubbleBackground);
 
   // Add the leading drag selection icon.
-  auto selection_icon_view =
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          views::kDragGeneralSelectionIcon,
-          kColorFeatureLensPromoBubbleForeground,
-          layout_provider->GetDistanceMetric(
-              views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE)));
+  auto selection_icon_view = std::make_unique<views::ImageView>(
+      ui::ImageModel::FromVectorIcon(views::kDragGeneralSelectionIcon,
+                                     kColorFeatureLensPromoBubbleForeground,
+                                     layout_params_.vector_icon_size));
   AddChildView(std::move(selection_icon_view));
 
   gfx::Font default_font;
@@ -92,7 +84,7 @@ void LensRegionSearchInstructionsView::Init() {
   // the font list.
   int font_size_delta = kTextFontSize - default_font.GetFontSize();
   auto label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_LENS_REGION_SEARCH_BUBBLE_TEXT));
+      l10n_util::GetStringUTF16(text_message_id_));
   label->SetFontList(gfx::FontList().Derive(font_size_delta, gfx::Font::NORMAL,
                                             gfx::Font::Weight::MEDIUM));
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
@@ -102,13 +94,8 @@ void LensRegionSearchInstructionsView::Init() {
   label->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(
-          0,
-          layout_provider->GetDistanceMetric(
-              views::DistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL),
-          0,
-          layout_provider->GetDistanceMetric(
-              views::DistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL) -
-              kCloseButtonExtraMargin));
+          0, layout_params_.label_horizontal_distance, 0,
+          layout_params_.label_horizontal_distance - kCloseButtonExtraMargin));
   label_ = AddChildView(std::move(label));
 
   close_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
@@ -140,8 +127,7 @@ gfx::Rect LensRegionSearchInstructionsView::GetBubbleBounds() {
   // Since we should be centered and positioned on top of the web view, adjust
   // the bubble position to contain a top margin to the top container view.
   bubble_rect.set_y(bubble_rect.y() + bubble_rect.height() +
-                    ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
+                    layout_params_.vertical_distance);
   return bubble_rect;
 }
 

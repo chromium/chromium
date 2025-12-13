@@ -3,17 +3,20 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/strings/strcat.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/search/instant_test_base.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -23,31 +26,41 @@
 #include "url/gurl.h"
 
 class ThirdPartyNTPBrowserTest : public InProcessBrowserTest,
-                                 public InstantTestBase {
+                                 public InstantTestBase,
+                                 public ::testing::WithParamInterface<bool> {
  public:
-  ThirdPartyNTPBrowserTest() = default;
+  ThirdPartyNTPBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kInstantUsesSpareRenderer, InstantUsesSpareRenderer());
+  }
 
   ThirdPartyNTPBrowserTest(const ThirdPartyNTPBrowserTest&) = delete;
   ThirdPartyNTPBrowserTest& operator=(const ThirdPartyNTPBrowserTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
+  bool InstantUsesSpareRenderer() const { return GetParam(); }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+    https_test_server().SetCertHostnames({"example.com", "ntp.example.com"});
     ASSERT_TRUE(https_test_server().Start());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(InstantUsesSpareRenderer,
+                         ThirdPartyNTPBrowserTest,
+                         testing::Bool());
 
 // Verifies that a third party NTP can successfully embed the most visited
 // iframe.
-IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
+IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
   GURL base_url =
-      https_test_server().GetURL("ntp.com", "/instant_extended.html");
-  GURL ntp_url =
-      https_test_server().GetURL("ntp.com", "/instant_extended_ntp.html");
+      https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
+  GURL ntp_url = https_test_server().GetURL("ntp.example.com",
+                                            "/instant_extended_ntp.html");
   SetupInstant(browser()->profile(), base_url, ntp_url);
 
   // Navigate to the NTP URL and verify that the resulting process is marked as
@@ -78,6 +91,65 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
             content::EvalJs(subframe, "window.origin"));
 }
 
+// Verifies that a non-instant page cannot embed an iframe with the
+// chrome-search scheme.
+IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
+                       NonInstantProcessCannotEmbedChromeSearch) {
+  GURL non_instant_url = https_test_server().GetURL("example.com", "/");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_instant_url));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Add a chrome-search://most-visited/title.html?rid=1&fs=0 subframe and
+  // verify that the resource is not allowed to load.
+  const char kChromeSearchIframeUrl[] =
+      "chrome-search://most-visited/title.html?rid=1&fs=0";
+  content::WebContentsConsoleObserver console_observer(contents);
+  console_observer.SetPattern(
+      std::string("Not allowed to load local resource: ") +
+      kChromeSearchIframeUrl);
+  std::string script =
+      base::StrCat({"const frame = document.createElement('iframe');"
+                    "frame.src = '",
+                    kChromeSearchIframeUrl,
+                    "';"
+                    "document.body.appendChild(frame);"});
+  ASSERT_TRUE(content::ExecJs(contents, script));
+  ASSERT_TRUE(console_observer.Wait());
+
+  // Verify that the subframe does not load the chrome-search url.
+  content::RenderFrameHost* subframe = ChildFrameAt(contents, 0);
+  ASSERT_TRUE(subframe);
+  EXPECT_EQ(GURL(), subframe->GetLastCommittedURL());
+}
+
+// Verifies that a non-instant page cannot navigate to a chrome-search scheme
+// via renderer-initiated navigation.
+IN_PROC_BROWSER_TEST_P(
+    ThirdPartyNTPBrowserTest,
+    NonInstantProcessBlocksRendererInitiatedChromeSearchNavigation) {
+  GURL non_instant_url = https_test_server().GetURL("example.com", "/");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_instant_url));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Start a renderer initiated navigation to the chrome-search://
+  // url and verify that the resource is not allowed to load.
+  const char kChromeSearchIframeUrl[] =
+      "chrome-search://most-visited/title.html?rid=1&fs=0";
+  content::WebContentsConsoleObserver console_observer(contents);
+  console_observer.SetPattern(
+      std::string("Not allowed to load local resource: ") +
+      kChromeSearchIframeUrl);
+  std::string script =
+      base::StrCat({"window.location= '", kChromeSearchIframeUrl, "';"});
+  ASSERT_TRUE(content::ExecJs(contents, script));
+  ASSERT_TRUE(console_observer.Wait());
+  // Verify that the main frame does not navigate to the chrome-search url.
+  EXPECT_EQ(non_instant_url,
+            contents->GetPrimaryMainFrame()->GetLastCommittedURL());
+}
+
 // Verifies that Chrome won't spawn a separate renderer process for
 // every single NTP tab.  This behavior goes all the way back to
 // the initial commit [1] which achieved that behavior by forcing
@@ -86,11 +158,11 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
 //
 // [1]
 // https://chromium.googlesource.com/chromium/src/+/09911bf300f1a419907a9412154760efd0b7abc3/chrome/browser/browsing_instance.cc#55
-IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, ProcessPerSite) {
+IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, ProcessPerSite) {
   GURL base_url =
-      https_test_server().GetURL("ntp.com", "/instant_extended.html");
-  GURL ntp_url =
-      https_test_server().GetURL("ntp.com", "/instant_extended_ntp.html");
+      https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
+  GURL ntp_url = https_test_server().GetURL("ntp.example.com",
+                                            "/instant_extended_ntp.html");
   SetupInstant(browser()->profile(), base_url, ntp_url);
 
   // Open NTP in |tab1|.
@@ -127,12 +199,12 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, ProcessPerSite) {
 }
 
 // Verify that a third-party NTP commits in a remote NTP SiteInstance.
-IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, VerifySiteInstance) {
+IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, VerifySiteInstance) {
   // Setup and navigate to third-party NTP.
   GURL base_url =
-      https_test_server().GetURL("ntp.com", "/instant_extended.html");
-  GURL ntp_url =
-      https_test_server().GetURL("ntp.com", "/instant_extended_ntp.html");
+      https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
+  GURL ntp_url = https_test_server().GetURL("ntp.example.com",
+                                            "/instant_extended_ntp.html");
   SetupInstant(browser()->profile(), base_url, ntp_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
   content::WebContents* web_contents =
@@ -146,4 +218,44 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, VerifySiteInstance) {
   EXPECT_EQ(
       GURL("chrome-search://remote-ntp/"),
       web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
+}
+
+// Verify that a third-party NTP can use the spare renderer when we enable
+// the feature kInstantUsesSpareRenderer.
+IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, VerifyCanUseSpareProcess) {
+  // Navigate to a non 3rd party ntp url.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server().GetURL("/title1.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderProcessHost* old_process =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
+
+  // Navigate to a third-party NTP while a spare process is present.
+  content::SpareRenderProcessHostManager::Get().WarmupSpare(
+      browser()->profile());
+  content::RenderProcessHost* spare_process =
+      content::SpareRenderProcessHostManager::Get().GetSpares().front();
+  ASSERT_TRUE(spare_process);
+
+  // Setup and navigate to a third-party NTP.
+  GURL base_url =
+      https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
+  GURL ntp_url = https_test_server().GetURL("ntp.example.com",
+                                            "/instant_extended_ntp.html");
+  SetupInstant(browser()->profile(), base_url, ntp_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
+
+  content::RenderProcessHost* new_process =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
+  // Verify that the resulting process is marked as an Instant process.
+  InstantService* instant_service =
+      InstantServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_TRUE(
+      instant_service->IsInstantProcess(new_process->GetDeprecatedID()));
+
+  ASSERT_NE(new_process, old_process);
+  // Verify that if kInstantUsesSpareRenderer flag is enabled,
+  // third-party NTP used the spare process.
+  EXPECT_EQ(InstantUsesSpareRenderer(), new_process == spare_process);
 }

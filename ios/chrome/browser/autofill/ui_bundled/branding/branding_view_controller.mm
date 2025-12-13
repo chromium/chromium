@@ -10,7 +10,6 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller_delegate.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -56,12 +55,12 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
   button.isAccessibilityElement = NO;  // Prevents VoiceOver users from tap.
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* logo = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
 #else
   UIImage* logo = CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   [button setImage:logo forState:UIControlStateNormal];
   [button setImage:logo forState:UIControlStateHighlighted];

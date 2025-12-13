@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/installer/util/install_service_work_item.h"
 
 #include <shlobj.h>
@@ -15,8 +10,11 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/install_static/install_util.h"
@@ -24,6 +22,7 @@
 #include "chrome/installer/util/install_service_work_item_impl.h"
 #include "chrome/installer/util/registry_util.h"
 #include "chrome/installer/util/work_item.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace installer {
@@ -210,7 +209,8 @@ TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
   constexpr wchar_t kZeroMultiSz[] = L"";
   std::vector<wchar_t> vec =
       InstallServiceWorkItemImpl::MultiSzToVector(kZeroMultiSz);
-  EXPECT_TRUE(!memcmp(vec.data(), &kZeroMultiSz, sizeof(kZeroMultiSz)));
+  EXPECT_TRUE(
+      !UNSAFE_TODO(memcmp(vec.data(), &kZeroMultiSz, sizeof(kZeroMultiSz))));
   EXPECT_EQ(vec.size(), std::size(kZeroMultiSz));
 
   vec = InstallServiceWorkItemImpl::MultiSzToVector(nullptr);
@@ -218,12 +218,13 @@ TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
 
   constexpr wchar_t kRpcMultiSz[] = L"RPCSS\0";
   vec = InstallServiceWorkItemImpl::MultiSzToVector(kRpcMultiSz);
-  EXPECT_TRUE(!memcmp(vec.data(), &kRpcMultiSz, sizeof(kRpcMultiSz)));
+  EXPECT_TRUE(
+      !UNSAFE_TODO(memcmp(vec.data(), &kRpcMultiSz, sizeof(kRpcMultiSz))));
   EXPECT_EQ(vec.size(), std::size(kRpcMultiSz));
 
   constexpr wchar_t kMultiSz[] = L"RPCSS\0LSASS\0";
   vec = InstallServiceWorkItemImpl::MultiSzToVector(kMultiSz);
-  EXPECT_TRUE(!memcmp(vec.data(), &kMultiSz, sizeof(kMultiSz)));
+  EXPECT_TRUE(!UNSAFE_TODO(memcmp(vec.data(), &kMultiSz, sizeof(kMultiSz))));
   EXPECT_EQ(vec.size(), std::size(kMultiSz));
 }
 
@@ -232,6 +233,7 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
     // Calling ::OpenSCManager requires an admin user.
     GTEST_SKIP() << "This test must be run by an admin user";
   }
+  base::HistogramTester histogram_tester;
   base::CommandLine com_service_cmd_line_args(base::CommandLine::NO_PROGRAM);
   com_service_cmd_line_args.AppendArgNative(kComServiceCmdLineArgs);
 
@@ -254,6 +256,9 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
   EXPECT_TRUE(IsServiceGone(item.get()));
   ExpectServiceCOMRegistrationAbsent();
   EXPECT_FALSE(InstallServiceWorkItem::IsComServiceInstalled(kClsid));
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Setup.Install.SCM."),
+              testing::Not(testing::IsEmpty()));
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {

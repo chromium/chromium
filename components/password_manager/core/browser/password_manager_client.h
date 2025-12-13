@@ -22,8 +22,8 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_cross_domain_confirmation_popup_controller.h"
-#include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
@@ -105,6 +105,7 @@ class FieldInfoManager;
 class FirstCctPageLoadPasswordsUkmRecorder;
 #endif  // BUILDFLAG(IS_ANDROID)
 class HttpAuthManager;
+enum class LeakDetectionInitiator;
 class OtpManager;
 class PasswordChangeServiceInterface;
 class PasswordFeatureManager;
@@ -115,7 +116,6 @@ class PasswordManagerMetricsRecorder;
 class PasswordRequirementsService;
 class PasswordReuseManager;
 class PasswordStoreInterface;
-class SmsOtpBackend;
 class WebAuthnCredentialsDelegate;
 struct PasswordForm;
 
@@ -151,6 +151,10 @@ class PasswordManagerClient {
   // TODO(crbug.com/40685327): This method's name is misleading as it also
   // determines whether saving prompts should be shown.
   virtual bool IsFillingEnabled(const GURL& url) const;
+
+  // Checks if the field was last filled with an OTP.
+  virtual bool IsFieldFilledWithOtp(autofill::FormGlobalId form_id,
+                                    autofill::FieldGlobalId field_id);
 
   // Checks if the auto sign-in functionality is enabled.
   virtual bool IsAutoSignInEnabled() const;
@@ -216,9 +220,7 @@ class PasswordManagerClient {
       password_manager::PasswordStoreBackendErrorType error_type);
 
   // Instructs the client to show a keyboard replacing surface UI (e.g.
-  // TouchToFill). `shown_cb` will be invoked with whether the view was shown.
-  // TODO(crbug.com/341322405): Make this synchronous again once the account
-  // storage notice is gone.
+  // TouchToFill).
   virtual void ShowKeyboardReplacingSurface(
       PasswordManagerDriver* driver,
       const autofill::PasswordSuggestionRequest& request);
@@ -510,10 +512,6 @@ class PasswordManagerClient {
   virtual void NavigateToManagePasswordsPage(ManagePasswordsReferrer referrer) {
   }
 
-  // If PasswordChangeService exists, notifies it of presence of OTP field on
-  // the page.
-  virtual void InformPasswordChangeServiceOfOtpPresent() {}
-
 #if BUILDFLAG(IS_ANDROID)
   virtual void NavigateToManagePasskeysPage(ManagePasswordsReferrer referrer) {}
 #endif
@@ -535,8 +533,6 @@ class PasswordManagerClient {
   // Marks all credentials that have been loaded for this page and have been
   // received via the password sharing feature as notified.
   virtual void MarkSharedCredentialsAsNotified(const GURL& url);
-
-  virtual SmsOtpBackend* GetSmsOtpBackend() const;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns the Chrome channel for the installation.
@@ -572,6 +568,12 @@ class PasswordManagerClient {
 #endif  // !BUILDFLAG(IS_IOS)
 
   virtual password_manager::LeakDetectionInitiator GetLeakDetectionInitiator();
+
+  virtual UndoPasswordChangeController* GetUndoPasswordChangeController();
+
+#if !BUILDFLAG(IS_ANDROID)
+  virtual bool IsActorTaskActive();
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace password_manager

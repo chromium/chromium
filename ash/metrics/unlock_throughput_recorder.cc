@@ -21,8 +21,8 @@ namespace ash {
 namespace {
 
 std::string GetDeviceModeSuffix() {
-  return display::Screen::GetScreen()->InTabletMode() ? "TabletMode"
-                                                      : "ClamshellMode";
+  return display::Screen::Get()->InTabletMode() ? "TabletMode"
+                                                : "ClamshellMode";
 }
 
 void ReportUnlock(const cc::FrameSequenceMetrics::CustomReportData& data,

@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/wayland/host/wayland_screen.h"
+
 #include <wayland-server-protocol.h>
 #include <wayland-server.h>
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -16,11 +19,10 @@
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -516,7 +518,7 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
       gfx::Point(window_bounds.width() + 1, window_bounds.height() + 1));
   EXPECT_EQ(widget_at_screen_point, gfx::kNullAcceleratedWidget);
 
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
   auto menu_window_bounds =
       gfx::Rect(window_->GetBoundsInDIP().width() - 10,
                 window_->GetBoundsInDIP().height() - 10, 100, 100);
@@ -768,7 +770,7 @@ TEST_P(WaylandScreenTest, GetDisplayForAcceleratedWidget) {
 }
 
 TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
   std::unique_ptr<WaylandWindow> second_window =
       CreateWaylandWindowWithProperties(gfx::Rect(0, 0, 1920, 1080),
                                         PlatformWindowType::kWindow,

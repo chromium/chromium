@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -102,8 +103,6 @@ class ASH_EXPORT CounterExpandButton : public views::Button {
   virtual std::u16string GetCollapsedStateTooltipText() const;
 
  private:
-  void UpdateBackgroundColor();
-
   // Owned by views hierarchy.
   raw_ptr<views::Label> label_;
   raw_ptr<views::ImageView> image_;

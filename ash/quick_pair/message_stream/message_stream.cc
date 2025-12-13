@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/quick_pair/message_stream/message_stream.h"
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"
@@ -88,7 +85,7 @@ void MessageStream::ReceiveDataSuccess(int buffer_size,
 
   std::vector<uint8_t> message_bytes(buffer_size);
   for (int i = 0; i < buffer_size; i++) {
-    char* c = io_buffer->data() + i;
+    char* c = UNSAFE_TODO(io_buffer->data() + i);
     message_bytes[i] = static_cast<uint8_t>(*c);
   }
 

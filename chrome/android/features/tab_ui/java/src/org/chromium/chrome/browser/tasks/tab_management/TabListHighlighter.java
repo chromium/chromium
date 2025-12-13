@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_HIGHLIGHTED;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.HIGHLIGHT_STATE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabCardHighlightState;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -29,7 +30,7 @@ public class TabListHighlighter {
 
     /**
      * Highlights all tabs in the model list whose IDs are present in the given set. This method
-     * sets their {@link TabProperties#IS_HIGHLIGHTED} property to true.
+     * sets their {@link TabProperties#HIGHLIGHT_STATE} property to true.
      *
      * <p>Does nothing if the tab is already highlighted. Highlighting a set of tabs does not remove
      * the highlights from previously highlighted tabs.
@@ -39,10 +40,10 @@ public class TabListHighlighter {
     public void highlightTabs(Set<@TabId Integer> tabIds) {
         for (ListItem listItem : mModelList) {
             PropertyModel model = listItem.model;
-            if (model.containsKey(TAB_ID) && model.containsKey(IS_HIGHLIGHTED)) {
+            if (model.containsKey(TAB_ID) && model.containsKey(HIGHLIGHT_STATE)) {
                 @TabId int tabId = model.get(TAB_ID);
                 if (tabIds.contains(tabId)) {
-                    model.set(IS_HIGHLIGHTED, true);
+                    model.set(HIGHLIGHT_STATE, TabCardHighlightState.TO_BE_HIGHLIGHTED);
                 }
             }
         }
@@ -50,18 +51,20 @@ public class TabListHighlighter {
 
     /**
      * Removes the highlights for all tabs in the model list. This method sets their {@link
-     * TabProperties#IS_HIGHLIGHTED} property to false.
+     * TabProperties#HIGHLIGHT_STATE} property to false.
      */
     public void unhighlightTabs() {
         for (ListItem listItem : mModelList) {
             PropertyModel model = listItem.model;
             if (isHighLighted(model)) {
-                model.set(IS_HIGHLIGHTED, false);
+                model.set(HIGHLIGHT_STATE, TabCardHighlightState.NOT_HIGHLIGHTED);
             }
         }
     }
 
     private boolean isHighLighted(PropertyModel model) {
-        return model.containsKey(TAB_ID) && model.containsKeyEqualTo(IS_HIGHLIGHTED, true);
+        return model.containsKey(TAB_ID)
+                && model.containsKey(HIGHLIGHT_STATE)
+                && model.get(HIGHLIGHT_STATE) != TabCardHighlightState.NOT_HIGHLIGHTED;
     }
 }

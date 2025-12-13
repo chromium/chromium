@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
@@ -17,9 +18,11 @@ PinnedTabService::PinnedTabService(Profile* profile) : profile_(profile) {
       base::BindRepeating(&PinnedTabService::OnClosingAllBrowsersChanged,
                           base::Unretained(this)));
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    OnBrowserAdded(browser);
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        OnBrowserAdded(browser->GetBrowserForMigrationOnly());
+        return true;
+      });
 
   BrowserList::AddObserver(this);
 }
@@ -58,31 +61,12 @@ void PinnedTabService::OnBrowserAdded(Browser* browser) {
   browser->tab_strip_model()->AddObserver(this);
 }
 
-void PinnedTabService::OnBrowserClosing(Browser* browser) {
-  if (browser->profile() != profile_ || !browser->is_type_normal()) {
-    return;
-  }
-
-  if (TabStripModelObserver::CountObservedModels(this) == 1) {
-    WritePinnedTabsIfNecessary();
-  }
-}
-
 void PinnedTabService::OnBrowserRemoved(Browser* browser) {
   if (browser->profile() != profile_ || !browser->is_type_normal()) {
     return;
   }
 
   browser->tab_strip_model()->RemoveObserver(this);
-
-  // This happens when user closes each tabs manually via the close button on
-  // them. In this case OnBrowserClosing() above is not called. This causes
-  // pinned tabs to repopen on the next startup. So we should call
-  // WritePinnedTab() to clear the data.
-  // http://crbug.com/71939
-  if (!TabStripModelObserver::IsObservingAny(this)) {
-    WritePinnedTabsIfNecessary();
-  }
 }
 
 void PinnedTabService::OnTabStripModelChanged(
@@ -91,6 +75,12 @@ void PinnedTabService::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kInserted) {
     need_to_write_pinned_tabs_ = true;
+  }
+}
+
+void PinnedTabService::WillCloseAllTabs(TabStripModel* tab_strip_model) {
+  if (TabStripModelObserver::CountObservedModels(this) == 1) {
+    WritePinnedTabsIfNecessary();
   }
 }
 

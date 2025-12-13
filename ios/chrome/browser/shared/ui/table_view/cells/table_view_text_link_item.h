@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 class GURL;
@@ -39,8 +39,8 @@ class GURL;
 
 @end
 
-// TableViewCell that displays a text label that might contain a link.
-@interface TableViewTextLinkCell : TableViewCell
+// LegacyTableViewCell that displays a text label that might contain a link.
+@interface TableViewTextLinkCell : LegacyTableViewCell
 // The text to display.
 @property(nonatomic, readonly, strong) UITextView* textView;
 // The image to be displayed below the `textView`. Could be nil if no

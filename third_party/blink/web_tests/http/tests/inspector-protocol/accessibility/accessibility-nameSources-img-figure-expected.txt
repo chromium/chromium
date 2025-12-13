@@ -23,7 +23,7 @@ Tests name sources in images and figures.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>
@@ -289,7 +289,7 @@ Tests name sources in images and figures.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>

@@ -87,9 +87,6 @@ class CORE_EXPORT LineBreaker {
     DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
     line_clamp_ellipsis_width_ = width;
     UpdateAvailableWidth();
-    if (current_style_ && !disallow_auto_wrap_ && auto_wrap_ != !!width) {
-      SetCurrentStyleForce(*current_style_);
-    }
   }
 
   // Computing |LineBreakerMode::kMinContent| with |MaxSizeCache| caches
@@ -213,7 +210,6 @@ class CORE_EXPORT LineBreaker {
 
   void HandleTrailingSpaces(const InlineItem&, LineInfo*);
   void HandleTrailingSpaces(const InlineItem&, const ShapeResult*, LineInfo*);
-  void RemoveLineClampTrailingSpace(LineInfo*);
   void RemoveTrailingCollapsibleSpace(LineInfo*);
   void SplitTrailingBidiPreservedSpace(LineInfo*);
   LayoutUnit TrailingCollapsibleSpaceWidth(LineInfo*);
@@ -229,7 +225,8 @@ class CORE_EXPORT LineBreaker {
                            const BlockBreakToken*,
                            LineInfo*);
   void ComputeMinMaxContentSizeForBlockChild(const InlineItem&,
-                                             InlineItemResult*);
+                                             InlineItemResult*,
+                                             const LineBreaker* root_breaker);
   // Returns false if we can't handle the current InlineItem as a ruby.
   // NOINLINE prevents a compiler for Android 64bit from inlining
   // HandleRuby() twice.
@@ -269,14 +266,6 @@ class CORE_EXPORT LineBreaker {
   bool MayBeAtomicInline(wtf_size_t offset) const;
   const InlineItem* TryGetAtomicInlineItemAfter(const InlineItem& item) const;
   unsigned IgnorableBidiControlLength(const InlineItem& item) const;
-
-  bool ShouldWrapLine(const ComputedStyle& style) const {
-    return line_clamp_ellipsis_width_ || style.ShouldWrapLine();
-  }
-  bool ShouldBreakOnlyAfterWhiteSpace(const ComputedStyle& style) const {
-    return (style.ShouldPreserveWhiteSpaces() && ShouldWrapLine(style)) ||
-           style.GetLineBreak() == LineBreak::kAfterWhiteSpace;
-  }
 
   bool ShouldPushFloatAfterLine(UnpositionedFloat*, LineInfo*);
   void HandleFloat(const InlineItem&,
@@ -451,7 +440,7 @@ class CORE_EXPORT LineBreaker {
 
   LazyLineBreakIterator break_iterator_;
   HarfBuzzShaper shaper_;
-  ShapeResultSpacing<String> spacing_;
+  ShapeResultSpacing spacing_;
   const Hyphenation* hyphenation_ = nullptr;
 
   std::optional<wtf_size_t> hyphen_index_;
@@ -464,7 +453,7 @@ class CORE_EXPORT LineBreaker {
 
    public:
     InlineItemResults* item_results = nullptr;
-    wtf_size_t item_result_index = WTF::kNotFound;
+    wtf_size_t item_result_index = kNotFound;
     const ShapeResultView* collapsed_shape_result = nullptr;
     // Ancestors of `item_result`. ancestor_ruby_columns[0] is the parent of
     // `item_result`, and ancestor_ruby_columns[n+1] is the parent of

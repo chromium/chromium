@@ -7,6 +7,8 @@
 
 #include <assert.h>
 
+#include <string>
+
 namespace third_party_dlls {
 
 const wchar_t kStatusCodesRegValue[] = L"StatusCodes";

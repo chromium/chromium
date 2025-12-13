@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/frame_buffer_pool.h"
 
+#include <algorithm>
+
+#include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,7 +22,7 @@ TEST(FrameBufferPool, BasicFunctionality) {
   auto buf1 = pool->GetFrameBuffer(kBufferSize, &priv1);
   ASSERT_FALSE(buf1.empty());
   ASSERT_TRUE(priv1);
-  memset(buf1.data(), 0, kBufferSize);
+  std::ranges::fill(buf1, 0);
 
   void* priv2 = nullptr;
   auto buf2 = pool->GetFrameBuffer(kBufferSize, &priv2);
@@ -31,13 +30,13 @@ TEST(FrameBufferPool, BasicFunctionality) {
   ASSERT_FALSE(buf2.empty());
   EXPECT_NE(priv1, priv2);
   EXPECT_NE(buf1.data(), buf2.data());
-  memset(buf2.data(), 0, kBufferSize);
+  std::ranges::fill(buf2, 0);
 
   auto alpha = pool->AllocateAlphaPlaneForFrameBuffer(kBufferSize, priv1);
   ASSERT_FALSE(alpha.empty());
   EXPECT_NE(alpha.data(), buf1.data());
   EXPECT_NE(alpha.data(), buf2.data());
-  memset(alpha.data(), 0, kBufferSize);
+  std::ranges::fill(alpha, 0);
 
   EXPECT_EQ(2u, pool->get_pool_size_for_testing());
 
@@ -52,8 +51,8 @@ TEST(FrameBufferPool, BasicFunctionality) {
   pool->Shutdown();
   EXPECT_EQ(1u, pool->get_pool_size_for_testing());
 
-  memset(buf1.data(), 0, kBufferSize);
-  memset(alpha.data(), 0, kBufferSize);
+  std::ranges::fill(buf1, 0);
+  std::ranges::fill(alpha, 0);
 
   // This will release all memory since we're in the shutdown state.
   std::move(frame_release_cb).Run();

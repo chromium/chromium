@@ -8,12 +8,10 @@
 #include <optional>
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/restricted_udp_socket.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
+#include "third_party/blink/renderer/modules/direct_sockets/multicast_controller.h"
 #include "third_party/blink/renderer/modules/direct_sockets/socket.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket_mojo_remote.h"
@@ -135,6 +133,8 @@ class MODULES_EXPORT UDPSocket final : public ScriptWrappable,
 
   // Unique id for devtools inspector_network_agent.
   uint64_t inspector_id_ = CreateUniqueIdentifier();
+
+  Member<MulticastController> multicast_controller_;
 };
 
 }  // namespace blink

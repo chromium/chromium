@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
@@ -38,7 +39,7 @@ void FakeAutocompleteControllerObserver::OnAutocompleteStopTimerTriggered(
 FakeAutocompleteController::FakeAutocompleteController(
     raw_ptr<base::test::SingleThreadTaskEnvironment> task_environment)
     : AutocompleteController(std::make_unique<FakeAutocompleteProviderClient>(),
-                             0),
+                             AutocompleteControllerConfig{}),
       task_environment_(task_environment) {
   omnibox::RegisterProfilePrefs(static_cast<PrefRegistrySimple*>(
       static_cast<FakeAutocompleteProviderClient*>(

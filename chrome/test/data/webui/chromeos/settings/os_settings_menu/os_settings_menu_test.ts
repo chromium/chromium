@@ -11,7 +11,7 @@ import 'chrome://os-settings/os_settings.js';
 import type {Account} from 'chrome://os-settings/lazy_load.js';
 import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import type {MultiDevicePageContentData, OsSettingsMenuElement, OsSettingsMenuItemElement} from 'chrome://os-settings/os_settings.js';
-import {createPageAvailabilityForTesting, createRouterForTesting, DevicePageBrowserProxyImpl, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, MultiDeviceBrowserProxyImpl, MultiDeviceSettingsMode, Router, routesMojom, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, createRouterForTesting, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, MultiDeviceBrowserProxyImpl, MultiDeviceSettingsMode, Router, routesMojom, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
@@ -27,7 +27,6 @@ import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_confi
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestDevicePageBrowserProxy} from '../device_page/test_device_page_browser_proxy.js';
 import {createFakePageContentData, TestMultideviceBrowserProxy} from '../multidevice_page/test_multidevice_browser_proxy.js';
 import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
 import {clearBody} from '../utils.js';
@@ -65,10 +64,6 @@ suite('<os-settings-menu>', () => {
     // should not exist in guest mode.
     testRouter = createRouterForTesting();
     Router.resetInstanceForTesting(testRouter);
-  }
-
-  function enableInputDeviceSettingsSplit(enabled: boolean): void {
-    loadTimeData.overrideValues({enableInputDeviceSettingsSplit: enabled});
   }
 
   setup(() => {
@@ -465,8 +460,6 @@ suite('<os-settings-menu>', () => {
     }
 
     setup(() => {
-      enableInputDeviceSettingsSplit(/*enabled=*/ true);
-
       provider = new FakeInputDeviceSettingsProvider();
       provider.setFakeKeyboards([]);
       provider.setFakeMice([]);
@@ -631,129 +624,6 @@ suite('<os-settings-menu>', () => {
       const deviceMenuItem = getDeviceMenuItem();
       assertEquals('Touchpad, print, display', deviceMenuItem.sublabel);
     });
-  });
-
-  suite('Device menu item settings split disabled', () => {
-    let devicePageBrowserProxy: TestDevicePageBrowserProxy;
-
-    function getDeviceMenuItem(): OsSettingsMenuItemElement {
-      const deviceMenuItem =
-          queryMenuItemByPath(`/${routesMojom.DEVICE_SECTION_PATH}`);
-      assertTrue(!!deviceMenuItem);
-      return deviceMenuItem;
-    }
-
-    setup(() => {
-      enableInputDeviceSettingsSplit(/*enabled=*/ false);
-
-      devicePageBrowserProxy = new TestDevicePageBrowserProxy();
-      DevicePageBrowserProxyImpl.setInstanceForTesting(devicePageBrowserProxy);
-
-      // Start with all devices disconnected.
-      devicePageBrowserProxy.hasMouse = false;
-      devicePageBrowserProxy.hasTouchpad = false;
-      devicePageBrowserProxy.hasPointingStick = false;
-      flush();
-    });
-
-    test('Description includes "keyboard" always', async () => {
-      await createMenu();
-
-      // Label should always include keyboard.
-      const deviceMenuItem = getDeviceMenuItem();
-      assertStringContains(deviceMenuItem.sublabel.toLowerCase(), 'keyboard');
-    });
-
-    test('Description includes "mouse" when connected', async () => {
-      await createMenu();
-
-      // No mouse connected.
-      const deviceMenuItem = getDeviceMenuItem();
-      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
-
-      // Connect a mouse.
-      devicePageBrowserProxy.hasMouse = true;
-      flush();
-      assertStringContains(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
-
-      // Disconnect the mouse.
-      devicePageBrowserProxy.hasMouse = false;
-      flush();
-      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
-    });
-
-    test(
-        'Description includes "mouse" when pointing stick is connected',
-        async () => {
-          await createMenu();
-
-          // No pointing stick connected.
-          const deviceMenuItem = getDeviceMenuItem();
-          assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
-
-          // Connect a pointing stick.
-          devicePageBrowserProxy.hasPointingStick = true;
-          flush();
-          assertStringContains(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
-
-          // Disconnect the pointing stick.
-          devicePageBrowserProxy.hasPointingStick = false;
-          flush();
-          assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
-        });
-
-    test('Description includes "touchpad" when connected', async () => {
-      await createMenu();
-
-      // No touchpad connected.
-      const deviceMenuItem = getDeviceMenuItem();
-      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'touchpad');
-
-      // Connect a touchpad.
-      devicePageBrowserProxy.hasTouchpad = true;
-      flush();
-      assertStringContains(deviceMenuItem.sublabel.toLowerCase(), 'touchpad');
-
-      // Disconnect the touchpad.
-      devicePageBrowserProxy.hasTouchpad = false;
-      flush();
-      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'touchpad');
-    });
-
-    test('Description prioritizes "mouse" over "touchpad"', async () => {
-      await createMenu();
-
-      // No mouse or touchpad connected.
-      const deviceMenuItem = getDeviceMenuItem();
-      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
-      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'touchpad');
-
-      // Connect a touchpad.
-      devicePageBrowserProxy.hasTouchpad = true;
-      flush();
-      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
-      assertStringContains(deviceMenuItem.sublabel.toLowerCase(), 'touchpad');
-
-      // Connect a mouse.
-      devicePageBrowserProxy.hasMouse = true;
-      flush();
-      assertStringContains(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
-      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'touchpad');
-    });
-
-    test(
-        'Description shows at most 3 words when devices are connected',
-        async () => {
-          // 4 devices connected.
-          devicePageBrowserProxy.hasMouse = true;
-          devicePageBrowserProxy.hasPointingStick = true;
-          devicePageBrowserProxy.hasTouchpad = true;
-          flush();
-
-          await createMenu();
-          const deviceMenuItem = getDeviceMenuItem();
-          assertEquals('Keyboard, mouse, print', deviceMenuItem.sublabel);
-        });
   });
 
   suite('Internet menu item', () => {

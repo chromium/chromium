@@ -470,7 +470,7 @@ suite('PrinterStatusTest', function() {
     // then verify the status text and icon update accordingly.
     destinationSelect.state = State.ERROR;
     destinationSelect.error = Error.INVALID_PRINTER;
-    assertEquals('Not connected to printer', statusText.textContent!.trim());
+    assertEquals('Not connected to printer', statusText.textContent.trim());
     assertEquals(PRINTER_ICON_RED, dropdown.destinationIcon);
   });
 });

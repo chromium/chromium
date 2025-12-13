@@ -1,0 +1,105 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("ui") {
+  sources = [
+    "constants.h",
+    "expandable_label_view.h",
+    "expandable_label_view.mm",
+    "search_engine_choice_consumer.h",
+    "search_engine_choice_mutator.h",
+    "search_engine_choice_view_controller.h",
+    "search_engine_choice_view_controller.mm",
+    "search_engine_current_default_pill_view.h",
+    "search_engine_current_default_pill_view.mm",
+    "snippet_search_engine_button.h",
+    "snippet_search_engine_button.mm",
+    "snippet_search_engine_element.h",
+    "snippet_search_engine_element.mm",
+    "snippet_search_engine_text_view.h",
+    "snippet_search_engine_text_view.mm",
+  ]
+  deps = [
+    ":constants",
+    ":ui_util",
+    "//base",
+    "//components/regional_capabilities",
+    "//components/search_engines",
+    "//components/strings",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/regional_capabilities/model",
+    "//ios/chrome/browser/search_engine_choice/model",
+    "//ios/chrome/browser/search_engine_choice/search_engine_choice_learn_more/coordinator",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/image",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/button_stack:utils",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/common/ui/promo_style:utils",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:image_util",
+    "//ios/components/ui_util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "search_engine_choice_constants.h",
+    "search_engine_choice_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("ui_util") {
+  sources = [
+    "search_engine_choice_ui_util.h",
+    "search_engine_choice_ui_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/regional_capabilities",
+    "//components/search_engines",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ui/base",
+    "//ui/resources",
+  ]
+
+  if (enable_builtin_search_provider_assets) {
+    deps += [
+      "//third_party/search_engines_data:search_engines_scaled_resources_grit",
+    ]
+  }
+
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "snippet_search_engine_button_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+  ]
+}

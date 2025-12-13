@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Преглед на апликација: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Оваа наставка ја вклучува датотеката со клуч „<ph name="KEY_PATH" />“. Веројатно не сакате да го направите ова.</translation>
 <translation id="5486326529110362464">Мора да постои влезна вредност за приватен клуч.</translation>
+<translation id="5707185214361380026">Не може да се вчита наставка од:</translation>
 <translation id="5972529113578162692">Администраторот на оваа машина бара да има инсталирано <ph name="EXTENSION_NAME" />. Не може да се деинсталира.</translation>
 <translation id="6027032947578871493">Непознат производ <ph name="PRODUCT_ID" /> од <ph name="VENDOR_NAME" /> (сериски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> од продавачот <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Грешка при вчитување наставка</translation>
 <translation id="6322279351188361895">Не успеа да прочита приватен клуч.</translation>
 <translation id="6391538222494443604">Мора да постои влезен директориум.</translation>
 <translation id="641087317769093025">Не може да се отпакува наставката</translation>

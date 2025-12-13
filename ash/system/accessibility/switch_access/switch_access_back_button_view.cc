@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 

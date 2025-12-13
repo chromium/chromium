@@ -22,6 +22,8 @@ source_set("model") {
     "account_profile_mapper.mm",
     "account_reconcilor_factory.cc",
     "account_reconcilor_factory.h",
+    "avatar_provider.h",
+    "avatar_provider.mm",
     "chrome_account_manager_service.h",
     "chrome_account_manager_service.mm",
     "chrome_account_manager_service_factory.h",
@@ -65,6 +67,7 @@ source_set("model") {
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
     "//components/metrics",
+    "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
     "//components/pref_registry",
     "//components/prefs",
@@ -77,8 +80,8 @@ source_set("model") {
     "//google_apis",
     "//ios/chrome/app:change_profile_commands",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
-    "//ios/chrome/browser/authentication/ui_bundled/account_menu:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/bookmarks/model:model_utils",
     "//ios/chrome/browser/content_settings/model",
@@ -138,6 +141,7 @@ source_set("authentication_service") {
     ":system_identity_util",
     "//base",
     "//components/browser_sync",
+    "//components/policy/core/common",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/ios/browser:features",
@@ -346,6 +350,7 @@ source_set("fake_system_identity") {
   deps = [
     ":system_identity",
     "//base",
+    "//google_apis",
   ]
 }
 
@@ -362,6 +367,7 @@ source_set("test_account_info") {
     "//base",
     "//components/signin/internal/identity_manager:capabilities",
     "//components/signin/public/identity_manager:tribool",
+    "//google_apis",
   ]
 }
 
@@ -375,6 +381,7 @@ source_set("trusted_vault") {
   deps = [
     "//base",
     "//components/trusted_vault",
+    "//google_apis",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
   frameworks = [
@@ -405,6 +412,8 @@ source_set("test_constants") {
   sources = [
     "test_constants.h",
     "test_constants.mm",
+    "test_constants_utils.h",
+    "test_constants_utils.mm",
   ]
   frameworks = [ "Foundation.framework" ]
 }
@@ -452,13 +461,13 @@ source_set("unit_tests") {
     "authentication_service_unittest.mm",
     "chrome_account_manager_service_unittest.mm",
     "device_accounts_provider_impl_unittest.mm",
-    "gaia_auth_fetcher_ios_ns_url_session_bridge_unittests.mm",
+    "gaia_auth_fetcher_ios_ns_url_session_bridge_unittest.mm",
     "gaia_auth_fetcher_ios_unittest.mm",
     "pattern_account_restriction_unittest.mm",
     "resized_avatar_cache_unittest.mm",
     "signin_profile_info_updater_unittest.mm",
     "signin_util_unittest.mm",
-    "system_account_updater_unittests.mm",
+    "system_account_updater_unittest.mm",
     "system_identity_manager_unittest.mm",
   ]
   deps = [
@@ -485,9 +494,9 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//components/test/ios",
     "//google_apis",
     "//ios/chrome/app:change_profile_commands",
-    "//ios/chrome/browser/authentication/ui_bundled/account_menu:constants",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/policy/model:policy_util",
@@ -526,7 +535,7 @@ source_set("eg2_tests") {
   deps = [
     ":fake_system_identity",
     "//base",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",

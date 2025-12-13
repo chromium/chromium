@@ -17,7 +17,7 @@ base::WeakPtr<BinaryUploadService> TestBinaryUploadService::AsWeakPtr() {
 }
 
 void TestBinaryUploadService::MaybeUploadForDeepScanning(
-    std::unique_ptr<Request> request) {
+    std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   last_request_ = request->content_analysis_request();
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -27,7 +27,7 @@ void TestBinaryUploadService::MaybeUploadForDeepScanning(
 }
 
 void TestBinaryUploadService::SetResponse(
-    Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   saved_result_ = result;
   saved_response_ = response;

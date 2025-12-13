@@ -3,8 +3,10 @@ Short Name: Vulkan
 URL: https://github.com/KhronosGroup/Vulkan-Headers
 Version: N/A
 Revision: DEPS
+Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
+CPEPrefix: cpe:/a:khronos:vulkan
 License: Apache-2.0
 License File: LICENSE.txt
 

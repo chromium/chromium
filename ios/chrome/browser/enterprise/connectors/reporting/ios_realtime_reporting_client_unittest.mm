@@ -35,17 +35,9 @@ inline constexpr char kUploadFailure[] =
 
 class IOSRealtimeReportingClientTest
     : public PlatformTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
-  IOSRealtimeReportingClientTest() {
-    if (local_ip_addresses_enabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          safe_browsing::kLocalIpAddressInEvents);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          safe_browsing::kLocalIpAddressInEvents);
-    }
-  }
+  IOSRealtimeReportingClientTest() {}
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -60,10 +52,7 @@ class IOSRealtimeReportingClientTest
 
  protected:
   // Indicates if the event reported is browser or profile based.
-  bool is_profile_reporting() { return std::get<0>(GetParam()); }
-
-  // Indicates if local IP addresses in events is enabled.
-  bool local_ip_addresses_enabled() { return std::get<1>(GetParam()); }
+  bool is_profile_reporting() { return GetParam(); }
 
   // Set up the cloudPolicyClient based on if the it's profile based or browser
   // based.
@@ -97,12 +86,11 @@ TEST_P(IOSRealtimeReportingClientTest, TestDeprecatedUmaEventUploadSucceeds) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
-      .WillOnce(testing::Invoke(
-          [&](bool include_device_info, base::Value::Dict&& report,
-              policy::CloudPolicyClient::ResultCallback callback) {
-            upload_callback_ = std::move(callback);
-            run_loop.Quit();
-          }));
+      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        upload_callback_ = std::move(callback);
+        run_loop.Quit();
+      });
   reporting_client_->ReportRealtimeEvent(kKeyLoginEvent, std::move(settings),
                                          std::move(event));
   run_loop.Run();
@@ -136,13 +124,13 @@ TEST_P(IOSRealtimeReportingClientTest, TestUmaEventUploadSucceeds) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](bool include_device_info,
               ::chrome::cros::reporting::proto::UploadEventsRequest&& request,
               policy::CloudPolicyClient::ResultCallback callback) {
             upload_callback_ = std::move(callback);
             run_loop.Quit();
-          }));
+          });
   reporting_client_->ReportEvent(std::move(login_event), std::move(settings));
   run_loop.Run();
 
@@ -165,12 +153,11 @@ TEST_P(IOSRealtimeReportingClientTest, TestDeprecatedUmaEventUploadFails) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
-      .WillOnce(testing::Invoke(
-          [&](bool include_device_info, base::Value::Dict&& report,
-              policy::CloudPolicyClient::ResultCallback callback) {
-            upload_callback_ = std::move(callback);
-            run_loop.Quit();
-          }));
+      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        upload_callback_ = std::move(callback);
+        run_loop.Quit();
+      });
   reporting_client_->ReportRealtimeEvent(kKeyLoginEvent, std::move(settings),
                                          std::move(event));
   run_loop.Run();
@@ -203,13 +190,13 @@ TEST_P(IOSRealtimeReportingClientTest, TestUmaEventUploadFails) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](bool include_device_info,
               ::chrome::cros::reporting::proto::UploadEventsRequest&& request,
               policy::CloudPolicyClient::ResultCallback callback) {
             upload_callback_ = std::move(callback);
             run_loop.Quit();
-          }));
+          });
   reporting_client_->ReportEvent(std::move(login_event), std::move(settings));
   run_loop.Run();
 
@@ -225,8 +212,7 @@ TEST_P(IOSRealtimeReportingClientTest, TestUmaEventUploadFails) {
 INSTANTIATE_TEST_SUITE_P(
     /* No InstantiationName */,
     IOSRealtimeReportingClientTest,
-    testing::Combine(/* is_profile_reporting */ testing::Bool(),
-                     /* local_ip_addresses_enabled */ testing::Bool()));
+    /* is_profile_reporting */ testing::Bool());
 
 // Tests that all events names are included.
 TEST_F(IOSRealtimeReportingClientTest,

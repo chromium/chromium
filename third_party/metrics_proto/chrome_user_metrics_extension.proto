@@ -73,6 +73,11 @@ message ChromeUserMetricsExtension {
   // The client keeps track of the session id and sends it with each event.
   // The session id is simply an integer that is incremented each time the user
   // relaunches Chrome.
+  // WARNING: This field is not kept track of correctly in all contexts. For
+  // example, it's set incorrectly for "independent logs" (a.k.a., logs from the
+  // previous session). Prefer to use system_profile.session_hash, which is
+  // populated correctly in all cases. (The only setting in which session_id
+  // is acceptable is for analyzing user actions.)
   optional int32 session_id = 2;
 
   // The id associated with a user entity that generated these events. These

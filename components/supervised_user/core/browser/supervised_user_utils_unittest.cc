@@ -63,7 +63,7 @@ TEST_F(SupervisedUserUtilsTest,
   GURL full_url("http://www.example.com");
 
   // Add an conflicting entry in the blocklist.
-  supervised_user_test_environment().SetManualFilterForHost(full_url.host(),
+  supervised_user_test_environment().SetManualFilterForHost(full_url.GetHost(),
                                                             false);
 
   UrlFormatter url_formatter(*supervised_user_test_environment().url_filter(),

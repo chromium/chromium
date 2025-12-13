@@ -651,8 +651,9 @@ TEST(Expected, ValueOr) {
     expected<int, int> ex;
     EXPECT_EQ(ex.value_or(123), 0);
 
-    expected<int, int> unex = unexpected(0);
+    expected<int, int> unex = unexpected(1);
     EXPECT_EQ(unex.value_or(123), 123);
+    EXPECT_EQ(unex.value_or({}), 0);
   }
 
   {
@@ -666,8 +667,9 @@ TEST(Expected, ValueOr) {
 
 TEST(Expected, ErrorOr) {
   {
-    expected<int, int> ex;
+    expected<int, int> ex(1);
     EXPECT_EQ(ex.error_or(123), 123);
+    EXPECT_EQ(ex.error_or({}), 0);
 
     expected<int, int> unex = unexpected(0);
     EXPECT_EQ(unex.error_or(123), 0);

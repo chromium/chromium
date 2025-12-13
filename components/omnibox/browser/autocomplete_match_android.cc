@@ -99,8 +99,16 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
   int icon_type = omnibox::SuggestTemplateInfo::IconType::
       SuggestTemplateInfo_IconType_ICON_TYPE_UNSPECIFIED;
 
+  ScopedJavaLocalRef<jbyteArray> j_suggest_template;
+
   if (suggest_template.has_value()) {
     icon_type = suggest_template.value().type_icon();
+
+    std::string str_suggest_template;
+    if (suggest_template->SerializeToString(&str_suggest_template)) {
+      j_suggest_template =
+          base::android::ToJavaByteArray(env, str_suggest_template);
+    }
   }
 
   java_match_ = std::make_unique<ScopedJavaGlobalRef<jobject>>(
@@ -124,7 +132,8 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           ConvertUTF16ToJavaString(env, inline_autocompletion),
           ConvertUTF16ToJavaString(env, additional_text),
           tab_groups::UuidToJavaString(
-              env, matching_tab_group_uuid.value_or(base::Uuid()))));
+              env, matching_tab_group_uuid.value_or(base::Uuid())),
+          j_suggest_template));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);
 }
@@ -149,7 +158,7 @@ void AutocompleteMatch::DestroyJavaObject() {
 
 void AutocompleteMatch::UpdateWithClipboardContent(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   DCHECK(provider) << "No provider available";
   DCHECK(provider->type() == AutocompleteProvider::TYPE_CLIPBOARD)
       << "Invalid provider type: " << provider->type();
@@ -168,26 +177,6 @@ void AutocompleteMatch::OnClipboardSuggestionContentUpdated(
   JNIEnv* env = base::android::AttachCurrentThread();
   UpdateClipboardContent(env);
   RunRunnableAndroid(j_callback);
-}
-
-void AutocompleteMatch::UpdateMatchingJavaTab(
-    const JavaObjectWeakGlobalRef& tab) {
-  matching_java_tab_ = tab;
-
-  // Default state is: we don't have a matching tab. If that default state has
-  // changed, reflect it in the UI.
-  // TODO(crbug.com/40204147): when Tab.java is relocated to Components, pass
-  // the Tab object directly to Java. This is not possible right now due to
-  // //components being explicitly denied to depend on //chrome targets.
-  if (!java_match_ || !has_tab_match.value_or(false))
-    return;
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AutocompleteMatch_updateMatchingTab(env, *java_match_, true);
-}
-
-JavaObjectWeakGlobalRef AutocompleteMatch::GetMatchingJavaTab() const {
-  return matching_java_tab_;
 }
 
 void AutocompleteMatch::UpdateClipboardContent(JNIEnv* env) {
@@ -214,12 +203,22 @@ void AutocompleteMatch::UpdateClipboardContent(JNIEnv* env) {
       ToJavaByteArray(env, clipboard_image_data));
 }
 
-void AutocompleteMatch::UpdateJavaDestinationUrl() {
+void AutocompleteMatch::UpdateJavaNavigationDetails() {
   if (java_match_) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AutocompleteMatch_setDestinationUrl(
+
+    std::vector<std::string> header_keys;
+    std::vector<std::string> header_vals;
+    for (const auto& [key, val] : extra_headers) {
+      header_keys.emplace_back(key);
+      header_vals.emplace_back(val);
+    }
+
+    Java_AutocompleteMatch_updateNavigationDetails(
         env, *java_match_,
-        url::GURLAndroid::FromNativeGURL(env, destination_url));
+        url::GURLAndroid::FromNativeGURL(env, destination_url),
+        ToJavaArrayOfStrings(env, header_keys),
+        ToJavaArrayOfStrings(env, header_vals));
   }
 }
 
@@ -255,3 +254,5 @@ void AutocompleteMatch::UpdateJavaDescription() {
         ToJavaIntArray(env, description_class_styles));
   }
 }
+
+DEFINE_JNI(AutocompleteMatch)

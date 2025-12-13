@@ -7,6 +7,7 @@
 
 #include <variant>
 
+#include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 

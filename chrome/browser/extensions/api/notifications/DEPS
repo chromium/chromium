@@ -5,6 +5,6 @@ specific_include_rules = {
     "+chrome/browser/apps/app_service/app_launch_params.h",
     "+chrome/browser/apps/app_service/app_service_proxy.h",
     "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
-    "+chrome/browser/apps/app_service/browser_app_launcher.h",
+    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h",
   ],
 }

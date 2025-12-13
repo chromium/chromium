@@ -24,7 +24,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/common_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/bulleted_label_list/bulleted_label_list_view.h"
@@ -89,8 +88,6 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   auto* top_spacer = AddChildView(std::make_unique<views::View>());
   auto* container = AddChildView(std::make_unique<views::FlexLayoutView>());
   container->SetOrientation(views::LayoutOrientation::kVertical);
-  constexpr int kMinContentWidth = 240;
-  container->SetMinimumCrossAxisSize(kMinContentWidth);
   auto* bottom_spacer = AddChildView(std::make_unique<views::View>());
 
   // Center content horizontally; divide vertical padding into 1/3 above, 2/3
@@ -125,6 +122,14 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   // Message and optional bulleted list.
   message_ = container->AddChildView(
       CreateFormattedLabel(l10n_util::GetStringUTF16(GetInfoMessage())));
+  // Make the message label flexibly sizable. This allows it to shrink and
+  // grow as the SadTabView is resized.
+  message_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred, true)
+          .WithWeight(1));
+
   std::vector<int> bullet_string_ids = GetSubMessages();
   if (!bullet_string_ids.empty()) {
     std::vector<std::u16string> texts;
@@ -166,7 +171,7 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   action_button_ =
       actions_container->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(&SadTabView::PerformAction,
-                              base::Unretained(this), Action::BUTTON),
+                              base::Unretained(this), Action::kButton),
           l10n_util::GetStringUTF16(GetButtonTitle())));
   action_button_->SetStyle(ui::ButtonStyle::kProminent);
   action_button_->SetProperty(
@@ -255,7 +260,7 @@ void SadTabView::AttachToWebView() {
   std::vector<ContentsWebView*> visible_contents_views =
       browser_view->GetAllVisibleContentsWebViews();
   for (ContentsWebView* contents_view : visible_contents_views) {
-    if (contents_view->GetWebContents() == web_contents()) {
+    if (contents_view->web_contents() == web_contents()) {
       owner_ = contents_view;
       owner_->SetCrashedOverlayView(this);
       break;
@@ -275,13 +280,23 @@ void SadTabView::EnableHelpLink(views::FlexLayoutView* actions_container) {
       actions_container->AddChildView(std::make_unique<views::Link>(
           l10n_util::GetStringUTF16(GetHelpLinkTitle())));
   help_link->SetCallback(base::BindRepeating(
-      &SadTab::PerformAction, base::Unretained(this), Action::HELP_LINK));
+      &SadTab::PerformAction, base::Unretained(this), Action::kHelpLink));
+  // Set the elide behavior to tail to ensure the text is truncated with an
+  // ellipsis if it overflows.
+  help_link->SetElideBehavior(gfx::ELIDE_TAIL);
   help_link->SetProperty(views::kTableVertAlignKey,
                          views::LayoutAlignment::kCenter);
+  help_link->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred));
 }
 
 void SadTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  // Specify the maximum message and title width explicitly.
+  // Constrain title width manually since it doesn't have FlexSpecification.
+  // Note: message_ label uses FlexSpecification with adjust_height_for_width,
+  // so FlexLayout automatically handles its responsive wrapping without manual
+  // intervention.
   constexpr int kMaxContentWidth = 600;
   const int max_width =
       std::min(width() - ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -289,12 +304,12 @@ void SadTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
                              2,
                kMaxContentWidth);
 
-  message_->SizeToFit(max_width);
   title_->SizeToFit(max_width);
 }
 
-SadTab* SadTab::Create(content::WebContents* web_contents, SadTabKind kind) {
-  return new SadTabView(web_contents, kind);
+std::unique_ptr<SadTab> SadTab::Create(content::WebContents* web_contents,
+                                       SadTabKind kind) {
+  return std::make_unique<SadTabView>(web_contents, kind);
 }
 
 BEGIN_METADATA(SadTabView)

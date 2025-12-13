@@ -22,11 +22,11 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/ble_adapter_manager.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
@@ -352,6 +352,9 @@ void FidoRequestHandlerBase::InitDiscoveries(
 }
 
 FidoRequestHandlerBase::~FidoRequestHandlerBase() {
+  if (observer_) {
+    observer_->StopObserving(this);
+  }
   CancelActiveAuthenticators();
 }
 
@@ -423,13 +426,18 @@ base::WeakPtr<FidoRequestHandlerBase> FidoRequestHandlerBase::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void FidoRequestHandlerBase::set_observer(
+void FidoRequestHandlerBase::SetObserver(
     FidoRequestHandlerBase::Observer* observer) {
   DCHECK(!observer_) << "Only one observer is supported.";
   observer_ = observer;
 
   FIDO_LOG(DEBUG) << "FidoRequestHandler observer set";
   MaybeSignalTransportsEnumerated();
+}
+
+void FidoRequestHandlerBase::RemoveObserver(
+    FidoRequestHandlerBase::Observer* observer) {
+  observer_ = nullptr;
 }
 
 void FidoRequestHandlerBase::Start() {

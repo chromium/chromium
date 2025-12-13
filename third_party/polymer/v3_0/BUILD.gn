@@ -128,7 +128,6 @@ ts_library("library") {
     "//chrome/browser/resources/inline_login:build_ts",
     "//chrome/browser/resources/lens/overlay:build_ts",
     "//chrome/browser/resources/lens/shared:build_ts",
-    "//chrome/browser/resources/new_tab_page:build_ts",
     "//chrome/browser/resources/password_manager:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
     "//chrome/browser/resources/privacy_sandbox:build_ts",
@@ -145,7 +144,6 @@ ts_library("library") {
     "//chrome/test/data/webui/cr_elements:build_ts",
     "//chrome/test/data/webui/history:build_ts",
     "//chrome/test/data/webui/inline_login:build_ts",
-    "//chrome/test/data/webui/new_tab_page:build_ts",
     "//chrome/test/data/webui/password_manager:build_ts",
     "//chrome/test/data/webui/print_preview:build_ts",
     "//chrome/test/data/webui/privacy_sandbox:build_ts",
@@ -154,7 +152,6 @@ ts_library("library") {
     "//chrome/test/data/webui/support_tool:build_ts",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
-    "//ui/webui/resources/cr_components/searchbox:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
   ]
 

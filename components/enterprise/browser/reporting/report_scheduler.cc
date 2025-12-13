@@ -14,8 +14,11 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_generation_config.h"
+#include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -29,7 +32,7 @@ namespace enterprise_reporting {
 
 namespace {
 
-const int kMaximumRetry = 10;  // Retry 10 times takes about 15 to 19 hours.
+const int kMaximumRetry = 6;  // Retry 6 times takes about 4 hours.
 
 bool IsBrowserVersionUploaded(ReportTrigger trigger) {
   switch (trigger) {
@@ -48,6 +51,28 @@ bool IsBrowserVersionUploaded(ReportTrigger trigger) {
 
 ReportScheduler::Delegate::Delegate() = default;
 ReportScheduler::Delegate::~Delegate() = default;
+
+void ReportScheduler::Delegate::OnInitializationCompleted() {
+  if (user_security_signals_service_) {
+    user_security_signals_service_->Start();
+  }
+}
+
+bool ReportScheduler::Delegate::AreSecurityReportsEnabled() {
+  return user_security_signals_service_ &&
+         user_security_signals_service_->IsSecuritySignalsReportingEnabled();
+}
+
+bool ReportScheduler::Delegate::UseCookiesInUploads() {
+  return user_security_signals_service_ &&
+         user_security_signals_service_->ShouldUseCookies();
+}
+
+void ReportScheduler::Delegate::OnSecuritySignalsUploaded() {
+  if (user_security_signals_service_) {
+    user_security_signals_service_->OnReportUploaded();
+  }
+}
 
 ReportScheduler::CreateParams::CreateParams() = default;
 ReportScheduler::CreateParams::CreateParams(
@@ -80,10 +105,23 @@ ReportScheduler::ReportScheduler(CreateParams params)
     full_report_type_ = ReportType::kProfileReport;
   }
 
+  require_policy_fetch_with_profile_id_ =
+      params.require_policy_fetch_with_profile_id;
+  PrefService* prefs = delegate_->GetPrefService();
+  if (require_policy_fetch_with_profile_id_ &&
+      prefs->GetBoolean(reporting_pref_name_)) {
+    // Pref should be registered in this PrefService.
+    CHECK(delegate_->GetPrefService()->FindPreference(
+        kPoliciesEverFetchedWithProfileId));
+    base::UmaHistogramBoolean(
+        "Enterprise.PoliciesEverFetchedWithProfileId",
+        prefs->GetBoolean(kPoliciesEverFetchedWithProfileId));
+  }
+
   delegate_->SetReportTriggerCallback(
       base::BindRepeating(&ReportScheduler::GenerateAndUploadReport,
                           weak_ptr_factory_.GetWeakPtr()));
-  RegisterPrefObserver();
+  RegisterPrefObservers();
 
   delegate_->OnInitializationCompleted();
 }
@@ -91,7 +129,12 @@ ReportScheduler::ReportScheduler(CreateParams params)
 ReportScheduler::~ReportScheduler() = default;
 
 bool ReportScheduler::IsReportingEnabled() const {
-  return delegate_->GetPrefService()->GetBoolean(reporting_pref_name_);
+  PrefService* prefs = delegate_->GetPrefService();
+  if (require_policy_fetch_with_profile_id_) {
+    return prefs->GetBoolean(reporting_pref_name_) &&
+           prefs->GetBoolean(kPoliciesEverFetchedWithProfileId);
+  }
+  return prefs->GetBoolean(reporting_pref_name_);
 }
 
 bool ReportScheduler::AreSecurityReportsEnabled() const {
@@ -148,12 +191,17 @@ void ReportScheduler::UploadFullReport(base::OnceClosure on_report_uploaded) {
   GenerateAndUploadReport(trigger);
 }
 
-void ReportScheduler::RegisterPrefObserver() {
-  pref_change_registrar_.Init(delegate_->GetPrefService());
-  pref_change_registrar_.Add(
-      reporting_pref_name_,
-      base::BindRepeating(&ReportScheduler::OnReportEnabledPrefChanged,
-                          base::Unretained(this)));
+void ReportScheduler::RegisterPrefObservers() {
+  auto callback = base::BindRepeating(
+      &ReportScheduler::OnReportEnabledPrefChanged, base::Unretained(this));
+
+  PrefService* prefs = delegate_->GetPrefService();
+  pref_change_registrar_.Init(prefs);
+  pref_change_registrar_.Add(reporting_pref_name_, callback);
+  if (require_policy_fetch_with_profile_id_ &&
+      !prefs->GetBoolean(kPoliciesEverFetchedWithProfileId)) {
+    pref_change_registrar_.Add(kPoliciesEverFetchedWithProfileId, callback);
+  }
 
   // Trigger first pref check during launch process.
   OnDMTokenUpdated();
@@ -197,11 +245,13 @@ void ReportScheduler::OnReportEnabledPrefChanged() {
 
 void ReportScheduler::Stop() {
   request_timer_.Stop();
-  if (report_generator_)
+  if (report_generator_) {
     delegate_->StopWatchingUpdates();
+  }
   report_uploader_.reset();
-  if (pref_change_registrar_.IsObserved(kCloudReportingUploadFrequency))
+  if (pref_change_registrar_.IsObserved(kCloudReportingUploadFrequency)) {
     pref_change_registrar_.Remove(kCloudReportingUploadFrequency);
+  }
 }
 
 void ReportScheduler::RestartReportTimer() {
@@ -210,8 +260,9 @@ void ReportScheduler::RestartReportTimer() {
 }
 
 bool ReportScheduler::SetupBrowserPolicyClientRegistration() {
-  if (cloud_policy_client_->is_registered())
+  if (cloud_policy_client_->is_registered()) {
     return true;
+  }
 
   auto dm_token = GetDMToken();
   std::string client_id;
@@ -375,8 +426,9 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
               ReportTrigger::kTriggerManual) {
         const base::Time now = base::Time::Now();
         delegate_->GetPrefService()->SetTime(kLastUploadTimestamp, now);
-        if (IsReportingEnabled())
+        if (IsReportingEnabled()) {
           Start(now);
+        }
       }
       break;
     case ReportUploader::kPersistentError:
@@ -429,8 +481,9 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
 void ReportScheduler::RunPendingTriggers() {
   DCHECK_EQ(active_report_generation_config_.report_trigger,
             ReportTrigger::kTriggerNone);
-  if (!pending_triggers_)
+  if (!pending_triggers_) {
     return;
+  }
 
   // Timer-triggered reports are a superset of those triggered by an update or a
   // new version, so favor them and consider that they serve all purposes.

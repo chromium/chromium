@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread.h"
 #include "content/common/content_export.h"
 
@@ -50,7 +51,8 @@ class CONTENT_EXPORT ChildProcess {
   explicit ChildProcess(
       base::ThreadType io_thread_type = base::ThreadType::kDefault,
       std::unique_ptr<base::ThreadPoolInstance::InitParams>
-          thread_pool_init_params = nullptr);
+          thread_pool_init_params = nullptr,
+      bool is_renderer = false);
 
   // This constructor can be used to create a ChildProcess within the browser
   // process which shares the IO thread. `io_thread_runner` passes an existing
@@ -108,6 +110,8 @@ class CONTENT_EXPORT ChildProcess {
   // on the main thread.
   static ChildProcess* current();
 
+  bool ShouldBoostIOThreadPriority();
+
  private:
   const base::AutoReset<ChildProcess*> resetter_;
 
@@ -132,6 +136,10 @@ class CONTENT_EXPORT ChildProcess {
 
   // Whether this ChildProcess initialized ThreadPoolInstance.
   bool initialized_thread_pool_ = false;
+
+  bool is_renderer_ = false;
+  std::unique_ptr<base::TaskMonitoringScopedBoostPriority>
+      scenario_priority_boost_ = nullptr;
 };
 
 }  // namespace content

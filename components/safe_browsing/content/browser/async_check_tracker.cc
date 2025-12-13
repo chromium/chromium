@@ -4,7 +4,6 @@
 
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
@@ -228,7 +227,7 @@ void AsyncCheckTracker::MaybeDisplayBlockingPage(
   }
   auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
   resource.rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
-      primary_main_frame->GetGlobalId().child_id,
+      primary_main_frame->GetGlobalId().child_id.value(),
       primary_main_frame->GetFrameToken().value());
   // The callback has already been run when BaseUIManager attempts to
   // trigger post commit error page, so there is no need to run again.

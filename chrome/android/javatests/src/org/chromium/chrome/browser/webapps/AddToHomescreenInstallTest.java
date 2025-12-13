@@ -104,7 +104,7 @@ public class AddToHomescreenInstallTest {
                             getPropertyModelForTesting().get(AddToHomescreenProperties.TYPE));
 
                     // Submit the dialog.
-                    new Handler().post(() -> mDelegate.onAddToHomescreen(mTitle, AppType.WEBAPK));
+                    new Handler().post(() -> mDelegate.onAddToHomescreen(mTitle));
                 }
             };
         }
@@ -119,7 +119,7 @@ public class AddToHomescreenInstallTest {
         mServer = mActivityTestRule.getTestServer();
         mPage = mActivityTestRule.startOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
-        mTab = mActivity.getActivityTab();
+        mTab = mActivityTestRule.getActivityTab();
         mInstallHistogramsWatcher =
                 HistogramWatcher.newSingleRecordWatcher("Webapp.Install.InstallEvent", 0);
     }

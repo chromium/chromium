@@ -14,7 +14,10 @@
   session.evaluate(
       `window.open('https://devtools.test:8443/', '_blank', 'attributionsrc').name`);
 
-  const issue = await dp.Audits.onceIssueAdded();
+  let issue;
+  do {
+    issue = await dp.Audits.onceIssueAdded();
+  } while (issue.params.issue.code !== 'AttributionReportingIssue');
 
   testRunner.log(issue.params.issue, 'Issue reported: ');
   testRunner.completeTest();

@@ -15,9 +15,9 @@ source_set("tree_builder") {
 
   deps = [
     "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/tabs/tab_strip_api:mojom",
-    "//chrome/browser/ui/tabs/tab_strip_api/converters:converters",
-    "//chrome/browser/ui/tabs/tab_strip_api/types:types",
+    "//chrome/browser/ui/tabs/tab_strip_api/converters",
+    "//components/browser_apis/tab_strip:mojom",
+    "//components/browser_apis/tab_strip/types",
   ]
 }
 
@@ -31,7 +31,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/test:test_support",
     "//content/test:test_support",

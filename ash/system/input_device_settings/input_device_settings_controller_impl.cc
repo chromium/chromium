@@ -45,7 +45,6 @@
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -69,6 +68,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom.h"
 #include "ui/events/ash/top_row_action_keys.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -825,8 +825,10 @@ void InputDeviceSettingsControllerImpl::
             GetBluetoothDevice(bluetooth_adapter_.get(), keyboard->device_key);
         device != nullptr) {
       auto updated_battery_info = GetBatteryInfo(*device);
-      if (keyboard->battery_info.is_null() ||
-          BatteryInfoChanged(*keyboard->battery_info, *updated_battery_info)) {
+      if (!updated_battery_info.is_null() &&
+          (keyboard->battery_info.is_null() ||
+           BatteryInfoChanged(*keyboard->battery_info,
+                              *updated_battery_info))) {
         keyboard->battery_info = std::move(updated_battery_info);
         DispatchKeyboardBatteryInfoChanged(id);
       }
@@ -838,8 +840,10 @@ void InputDeviceSettingsControllerImpl::
             GetBluetoothDevice(bluetooth_adapter_.get(), touchpad->device_key);
         device != nullptr) {
       auto updated_battery_info = GetBatteryInfo(*device);
-      if (touchpad->battery_info.is_null() ||
-          BatteryInfoChanged(*touchpad->battery_info, *updated_battery_info)) {
+      if (!updated_battery_info.is_null() &&
+          (touchpad->battery_info.is_null() ||
+           BatteryInfoChanged(*touchpad->battery_info,
+                              *updated_battery_info))) {
         touchpad->battery_info = std::move(updated_battery_info);
         DispatchTouchpadBatteryInfoChanged(id);
       }
@@ -851,8 +855,9 @@ void InputDeviceSettingsControllerImpl::
             GetBluetoothDevice(bluetooth_adapter_.get(), mouse->device_key);
         device != nullptr) {
       auto updated_battery_info = GetBatteryInfo(*device);
-      if (mouse->battery_info.is_null() ||
-          BatteryInfoChanged(*mouse->battery_info, *updated_battery_info)) {
+      if (!updated_battery_info.is_null() &&
+          (mouse->battery_info.is_null() ||
+           BatteryInfoChanged(*mouse->battery_info, *updated_battery_info))) {
         mouse->battery_info = std::move(updated_battery_info);
         DispatchMouseBatteryInfoChanged(id);
       }
@@ -864,9 +869,10 @@ void InputDeviceSettingsControllerImpl::
                                           graphics_tablet->device_key);
         device != nullptr) {
       auto updated_battery_info = GetBatteryInfo(*device);
-      if (graphics_tablet->battery_info.is_null() ||
-          BatteryInfoChanged(*graphics_tablet->battery_info,
-                             *updated_battery_info)) {
+      if (!updated_battery_info.is_null() &&
+          (graphics_tablet->battery_info.is_null() ||
+           BatteryInfoChanged(*graphics_tablet->battery_info,
+                              *updated_battery_info))) {
         graphics_tablet->battery_info = std::move(updated_battery_info);
         DispatchGraphicsTabletBatteryInfoChanged(id);
       }
@@ -2161,6 +2167,8 @@ void InputDeviceSettingsControllerImpl::RestoreDefaultKeyboardRemappings(
   mojom::KeyboardSettingsPtr new_settings = keyboard.settings->Clone();
   new_settings->modifier_remappings = {};
   new_settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
+  new_settings->f11 = ui::mojom::ExtendedFkeysModifier::kDisabled;
+  new_settings->f12 = ui::mojom::ExtendedFkeysModifier::kDisabled;
   if (keyboard.meta_key == ui::mojom::MetaKey::kCommand) {
     new_settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
         ui::mojom::ModifierKey::kMeta;

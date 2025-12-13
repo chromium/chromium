@@ -66,6 +66,11 @@ bool IsAcceptableFilename(std::string_view filename) {
          filename != "." && filename != "..";
 }
 
+// Logs `error` to histogram `name`.
+void UmaHistogramFileError(std::string_view name, base::File::Error error) {
+  base::UmaHistogramExactLinear(name, -error, -FILE_ERROR_MAX);
+}
+
 // Creates the directory `path` and all non-existent parent directories if
 // possible. Reports the results to histograms using `histogram_suffix`.
 bool CreateDirectoryIfNotExists(const base::FilePath& path,
@@ -91,10 +96,10 @@ bool CreateDirectoryIfNotExists(const base::FilePath& path,
 
     base::File::Error error;
     if (!base::CreateDirectoryAndGetError(path, &error)) {
-      base::UmaHistogramExactLinear(
+      UmaHistogramFileError(
           base::StrCat({"HttpCache.NoVarySearch.DirectoryCreateError.",
                         histogram_suffix}),
-          -error, -FILE_ERROR_MAX);
+          error);
       return CreateDirectoryResult::kCreateFailed;
     }
 
@@ -119,9 +124,8 @@ bool DeleteLoggingErrors(
     return true;
   }
 
-  base::UmaHistogramExactLinear(base::StrCat(histogram_name_parts),
-                                -base::File::GetLastFileError(),
-                                -FILE_ERROR_MAX);
+  UmaHistogramFileError(base::StrCat(histogram_name_parts),
+                        base::File::GetLastFileError());
 
   return false;
 }
@@ -167,10 +171,10 @@ void RenameOrDeleteIfExists(const base::FilePath& old_path,
       // just give up. This rename functionality is purely best-effort and it's
       // not critical if it fails, as the NoVarySearchCache will just be
       // recreated.
-      base::UmaHistogramExactLinear(
+      UmaHistogramFileError(
           base::StrCat(
               {"HttpCache.NoVarySearch.InitRenameError.", histogram_suffix}),
-          -error, -FILE_ERROR_MAX);
+          error);
       return RenameResult::kRenameFailed;
     }
 
@@ -181,20 +185,6 @@ void RenameOrDeleteIfExists(const base::FilePath& old_path,
       base::StrCat(
           {"HttpCache.NoVarySearch.RenameOrDeleteResult.", histogram_suffix}),
       result);
-}
-
-constexpr std::string_view kSnapshotFilename =
-    NoVarySearchCacheStorage::kSnapshotFilename;
-
-void MoveOldFilesIfNeeded(const base::FilePath& parent_path,
-                          const base::FilePath& path) {
-  static constexpr std::string_view kJournalFilename =
-      NoVarySearchCacheStorage::kJournalFilename;
-
-  RenameOrDeleteIfExists(parent_path.AppendASCII(kSnapshotFilename),
-                         path.AppendASCII(kSnapshotFilename), "Snapshot");
-  RenameOrDeleteIfExists(parent_path.AppendASCII(kJournalFilename),
-                         path.AppendASCII(kJournalFilename), "Journal");
 }
 
 void DeleteIfExists(const base::FilePath& path,
@@ -209,12 +199,48 @@ void DeleteIfExists(const base::FilePath& path,
       path, {"HttpCache.NoVarySearch.DeleteIfExistsError.", histogram_suffix});
 }
 
-void DeleteTempFilesIfNeeded(const base::FilePath& parent_path,
-                             const base::FilePath& path) {
+constexpr std::string_view kSnapshotFilename =
+    NoVarySearchCacheStorage::kSnapshotFilename;
+
+void DeleteTempFileIfNeeded(const base::FilePath& path,
+                            std::string_view histogram_suffix) {
   const std::string snapshot_tempfile =
       base::StrCat({kSnapshotFilename, "-new"});
-  DeleteIfExists(parent_path.AppendASCII(snapshot_tempfile), "Parent");
-  DeleteIfExists(path.AppendASCII(snapshot_tempfile), "NoVarySearch");
+  DeleteIfExists(path.AppendASCII(snapshot_tempfile), histogram_suffix);
+}
+
+void MoveOldFilesIfNeededBetween(const base::FilePath& old_path,
+                                 const base::FilePath& new_path,
+                                 std::string_view old_path_histogram_suffix) {
+  static constexpr std::string_view kJournalFilename =
+      NoVarySearchCacheStorage::kJournalFilename;
+
+  RenameOrDeleteIfExists(
+      old_path.AppendASCII(kSnapshotFilename),
+      new_path.AppendASCII(kSnapshotFilename),
+      base::StrCat({old_path_histogram_suffix, ".Snapshot"}));
+  RenameOrDeleteIfExists(old_path.AppendASCII(kJournalFilename),
+                         new_path.AppendASCII(kJournalFilename),
+                         base::StrCat({old_path_histogram_suffix, ".Journal"}));
+  DeleteTempFileIfNeeded(old_path, old_path_histogram_suffix);
+}
+
+void MoveOldFilesIfNeeded(const base::FilePath& legacy_path,
+                          const base::FilePath& legacy_subdirectory,
+                          const base::FilePath& path) {
+  if (base::DirectoryExists(legacy_subdirectory)) {
+    // We should do a two-step move to ensure nothing is left behind.
+    MoveOldFilesIfNeededBetween(legacy_path, legacy_subdirectory, "Parent");
+    MoveOldFilesIfNeededBetween(legacy_subdirectory, path, "NoVarySearch");
+    if (!base::DeleteFile(legacy_subdirectory)) {
+      UmaHistogramFileError(
+          "HttpCache.NoVarySearch.LegacySubdirectoryDeleteError",
+          base::File::GetLastFileError());
+    }
+  } else {
+    // A one-step move is sufficient.
+    MoveOldFilesIfNeededBetween(legacy_path, path, "Parent");
+  }
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -271,8 +297,9 @@ class RealFileOperations : public FileOperations {
  public:
   using enum base::File::Flags;
 
-  explicit RealFileOperations(const base::FilePath& path)
-      : parent_path_(path), path_(path.AppendASCII(kNoVarySearchDirName)) {
+  explicit RealFileOperations(const base::FilePath& dedicated_path,
+                              const base::FilePath& legacy_path)
+      : legacy_path_(legacy_path), path_(dedicated_path) {
     // It's normal to construct this on a different thread than it will be used.
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
@@ -283,20 +310,23 @@ class RealFileOperations : public FileOperations {
 
   bool Init() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!CreateDirectoryIfNotExists(parent_path_,
-                                    /*histogram_suffix=*/"Parent") ||
-        !CreateDirectoryIfNotExists(path_,
-                                    /*histogram_suffix=*/"NoVarySearch")) {
+    const base::FilePath legacy_subdirectory =
+        legacy_path_.AppendASCII(kLegacyNoVarySearchDirName);
+
+    if (!CreateDirectoryIfNotExists(path_,
+                                    /*histogram_suffix=*/"Dedicated")) {
       return false;
     }
 
-    // TODO(https://crbug.com/421927600): Remove this in December 2025 provided
-    // the kSourceDidNotExist bucket of the
-    // HttpCache.NoVarySearch.RenameOrDeleteResult.Snapshot histogram has
-    // reached 100%.
-    MoveOldFilesIfNeeded(parent_path_, path_);
+    if (base::DirectoryExists(legacy_path_)) {
+      // TODO(https://crbug.com/421927600): Remove this in December 2025
+      // provided the kSourceDidNotExist bucket of the
+      // HttpCache.NoVarySearch.RenameOrDeleteResult.Snapshot histogram has
+      // reached 100%.
+      MoveOldFilesIfNeeded(legacy_path_, legacy_subdirectory, path_);
+    }
 
-    DeleteTempFilesIfNeeded(parent_path_, path_);
+    DeleteTempFileIfNeeded(path_, "Dedicated");
 
     return true;
   }
@@ -393,8 +423,8 @@ class RealFileOperations : public FileOperations {
     base::File::Error replace_error = FILE_OK;
 
     if (!replace_file_func(temp_path, path, &replace_error)) {
-      base::UmaHistogramExactLinear("HttpCache.NoVarySearch.ReplaceFileError",
-                                    -replace_error, -FILE_ERROR_MAX);
+      UmaHistogramFileError("HttpCache.NoVarySearch.ReplaceFileError",
+                            replace_error);
       return base::unexpected(replace_error);
     }
 
@@ -433,7 +463,11 @@ class RealFileOperations : public FileOperations {
     return path_.AppendASCII(filename);
   }
 
-  const base::FilePath parent_path_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // TODO(https://crbug.com/433551601): Remove `legacy_path_` once the
+  // SourceDidNotExist bucket of all the
+  // HttpCache.NoVarySearch.RenameOrDeleteResult.{NoVarySearch,Parent}.{Journal,Snapshot}
+  // histograms has reached 100.00%.
+  const base::FilePath legacy_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   const base::FilePath path_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -459,8 +493,9 @@ NoVarySearchCacheStorageFileOperations::
     ~NoVarySearchCacheStorageFileOperations() = default;
 
 std::unique_ptr<FileOperations> FileOperations::Create(
-    const base::FilePath& path) {
-  return std::make_unique<RealFileOperations>(path);
+    const base::FilePath& dedicated_path,
+    const base::FilePath& legacy_path) {
+  return std::make_unique<RealFileOperations>(dedicated_path, legacy_path);
 }
 
 }  // namespace net

@@ -13,30 +13,29 @@
 
 namespace zucchini {
 
-template <class T>
-void TestEncodeDecodeVarUInt(const std::vector<T>& data) {
+constexpr int RADIUS = 4;
+
+template <class T, class EncodeFunc, class DecodeFunc>
+void TestEncodeDecodeImpl(const std::vector<T>& centers,
+                          EncodeFunc encode_func,
+                          DecodeFunc decode_func) {
   std::vector<uint8_t> buffer;
 
   std::vector<T> values;
-  for (T basis : data) {
-    // For variety, test the neighborhood values for each case in |data|. Some
-    // test cases may result in overflow when computing |value|, but we don't
-    // care about that.
-    for (int delta = -4; delta <= 4; ++delta) {
-      T value = delta + basis;
-      EncodeVarUInt<T>(value, std::back_inserter(buffer));
-      values.push_back(value);
-
-      value = delta - basis;
-      EncodeVarUInt<T>(value, std::back_inserter(buffer));
+  for (T center : centers) {
+    // Test the neighborhood values |centers|.
+    T start = center - RADIUS;
+    for (int inc = 0; inc <= (RADIUS * 2); ++inc) {
+      T value = start + inc;
+      encode_func(value, std::back_inserter(buffer));
       values.push_back(value);
     }
   }
 
   auto it = buffer.begin();
   for (T expected : values) {
-    T value = T(-1);
-    auto res = DecodeVarUInt(it, buffer.end(), &value);
+    T value = T(-1);  // Fill with 1-bits to ensure proper overwrite.
+    auto res = decode_func(it, buffer.end(), &value);
     EXPECT_NE(0, res);
     EXPECT_EQ(expected, value);
     it += res;
@@ -44,69 +43,72 @@ void TestEncodeDecodeVarUInt(const std::vector<T>& data) {
   EXPECT_EQ(it, buffer.end());
 
   T value = T(-1);
-  auto res = DecodeVarUInt(it, buffer.end(), &value);
+  auto res = decode_func(it, buffer.end(), &value);
   EXPECT_EQ(0, res);
   EXPECT_EQ(T(-1), value);
 }
 
 template <class T>
-void TestEncodeDecodeVarInt(const std::vector<T>& data) {
-  std::vector<uint8_t> buffer;
-
-  std::vector<T> values;
-  for (T basis : data) {
-    // For variety, test the neighborhood values for each case in |data|. Some
-    // test cases may result in overflow when computing |value|, but we don't
-    // care about that.
-    for (int delta = -4; delta <= 4; ++delta) {
-      T value = delta + basis;
-      EncodeVarInt(value, std::back_inserter(buffer));
-      values.push_back(value);
-
-      value = delta - basis;
-      EncodeVarInt(value, std::back_inserter(buffer));
-      values.push_back(value);
-    }
-  }
-
-  auto it = buffer.begin();
-  for (T expected : values) {
-    T value = T(-1);
-    auto res = DecodeVarInt(it, buffer.end(), &value);
-    EXPECT_NE(0, res);
-    EXPECT_EQ(expected, value);
-    it += res;
-  }
-  EXPECT_EQ(it, buffer.end());
-
-  T value = T(-1);
-  auto res = DecodeVarInt(it, buffer.end(), &value);
-  EXPECT_EQ(0, res);
-  EXPECT_EQ(T(-1), value);
+void TestEncodeDecodeVarUInt(const std::vector<T>& centers) {
+  TestEncodeDecodeImpl<T>(
+      centers, [](T value, auto dst) { return EncodeVarUInt<T>(value, dst); },
+      [](auto first, auto last, T* value) {
+        return DecodeVarUInt<T>(first, last, value);
+      });
 }
 
+template <class T>
+void TestEncodeDecodeVarInt(const std::vector<T>& centers) {
+  TestEncodeDecodeImpl<T>(
+      centers, [](T value, auto dst) { return EncodeVarInt<T>(value, dst); },
+      [](auto first, auto last, T* value) {
+        return DecodeVarInt<T>(first, last, value);
+      });
+}
+
+template <class T>
+void PushPowersOf2AndNegations(int lo_bit,
+                               int hi_bit,
+                               T subtract_from,
+                               std::vector<T>* out) {
+  for (int bit = lo_bit; bit <= hi_bit; ++bit) {
+    T v = static_cast<T>(1) << bit;
+    DCHECK_GT(v, static_cast<T>(RADIUS));
+    out->push_back(v);
+    out->push_back(subtract_from - v);
+  }
+}
+
+// "Center" values of EncodeDecode*() tests are chosen to avoid underflow /
+// overflow when shifted by [-RADIUS, RADIUS].
 TEST(PatchUtilsTest, EncodeDecodeVarUInt32) {
-  TestEncodeDecodeVarUInt<uint32_t>({0, 64, 128, 8192, 16384, 1 << 20, 1 << 21,
-                                     1 << 22, 1 << 27, 1 << 28, 0x7FFFFFFFU,
-                                     UINT32_MAX - 4});
+  std::vector<uint32_t> centers = {RADIUS, UINT32_MAX - RADIUS};
+  PushPowersOf2AndNegations<uint32_t>(3, 30, UINT32_MAX, &centers);
+  centers.push_back(UINT32_MAX >> 1);
+  TestEncodeDecodeVarUInt<uint32_t>(centers);
 }
 
 TEST(PatchUtilsTest, EncodeDecodeVarInt32) {
-  TestEncodeDecodeVarInt<int32_t>({0, 64, 128, 8192, 16384, 1 << 20, 1 << 21,
-                                   1 << 22, 1 << 27, 1 << 28, -1, INT32_MIN + 5,
-                                   INT32_MAX - 4});
+  std::vector<int32_t> centers = {RADIUS, -1 - RADIUS};
+  PushPowersOf2AndNegations<int32_t>(3, 30, 0, &centers);
+  centers.push_back(INT32_MIN + RADIUS);
+  centers.push_back(INT32_MAX - RADIUS);
+  TestEncodeDecodeVarInt<int32_t>(centers);
 }
 
 TEST(PatchUtilsTest, EncodeDecodeVarUInt64) {
-  TestEncodeDecodeVarUInt<uint64_t>({0, 64, 128, 8192, 16384, 1 << 20, 1 << 21,
-                                     1 << 22, 1ULL << 55, 1ULL << 56,
-                                     0x7FFFFFFFFFFFFFFFULL, (UINT64_MAX - 4)});
+  std::vector<uint64_t> centers = {RADIUS, UINT64_MAX - RADIUS};
+  PushPowersOf2AndNegations<uint64_t>(3, 62, UINT64_MAX, &centers);
+  centers.push_back(UINT64_MAX >> 1);
+  TestEncodeDecodeVarUInt<uint64_t>(centers);
 }
 
 TEST(PatchUtilsTest, EncodeDecodeVarInt64) {
-  TestEncodeDecodeVarInt<int64_t>({0, 64, 128, 8192, 16384, 1 << 20, 1 << 21,
-                                   1 << 22, 1LL << 55, 1LL << 56, -1,
-                                   (INT64_MIN + 5), (INT64_MAX - 4)});
+  std::vector<int64_t> centers = {RADIUS, -1LL - RADIUS};
+  PushPowersOf2AndNegations<int64_t>(3, 62, 0LL, &centers);
+  centers.push_back(INT64_MIN + RADIUS);
+  centers.push_back(INT64_MAX - RADIUS);
+  TestEncodeDecodeVarInt<int64_t>(centers);
 }
 
 TEST(PatchUtilsTest, DecodeVarUInt32Malformed) {

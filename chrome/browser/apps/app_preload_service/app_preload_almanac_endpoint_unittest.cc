@@ -8,7 +8,6 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -55,8 +54,8 @@ class AppPreloadAlmanacEndpointTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 };
 

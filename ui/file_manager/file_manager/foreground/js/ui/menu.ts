@@ -313,9 +313,9 @@ export class Menu extends HTMLElement {
           }
         }
         return true;
+      default:
+        return false;
     }
-
-    return false;
   }
 
   hide() {

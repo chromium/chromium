@@ -60,9 +60,9 @@ class KeywordProvider : public AutocompleteProvider {
   KeywordProvider(const KeywordProvider&) = delete;
   KeywordProvider& operator=(const KeywordProvider&) = delete;
 
-  // If `text` corresponds to an enabled, substituting keyword, returns that
-  // keyword; returns the empty string otherwise.
-  std::u16string GetKeywordForText(
+  // If `text` corresponds to an eligible (e.g. enabled, substituting, etc)
+  // `TemplateURL`, returns that `TemplateURL`; returns nullptr otherwise.
+  const TemplateURL* GetTemplateUrlForText(
       const std::u16string& text,
       TemplateURLService* template_url_service) const;
 

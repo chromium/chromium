@@ -106,6 +106,11 @@ class VIZ_SERVICE_EXPORT OutputSurface {
 #if BUILDFLAG(IS_WIN)
     // Whether this OutputSurface supports direct composition layers.
     DCSupportLevel dc_support_level = DCSupportLevel::kNone;
+    // Whether to 1) clear all drawn areas outside the viewport with a
+    // transparent background color when drawing a frame and 2) swap them. This
+    // is necessary if the surface clip rect can get out of sync with the
+    // viewport size (e.g., due to a race condition).
+    bool clear_drawn_areas_outside_viewport = false;
 #endif
     // Whether this OutputSurface should skip DrawAndSwap(). This is true for
     // the unified display on Chrome OS. All drawing is handled by the physical
@@ -306,6 +311,9 @@ class VIZ_SERVICE_EXPORT OutputSurface {
 // Helper to check that DComp textures are supported before checking for
 // `features::IsDelegatedCompositingEnabled()`.
 bool IsDelegatedCompositingSupportedAndEnabled(
+    OutputSurface::DCSupportLevel support_level);
+
+bool IsBufferQueueSupportedAndEnabled(
     OutputSurface::DCSupportLevel support_level);
 #endif
 

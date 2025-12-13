@@ -16,11 +16,11 @@ namespace media {
 
 VideoToolboxVP9Accelerator::VideoToolboxVP9Accelerator(
     std::unique_ptr<MediaLog> media_log,
-    std::optional<gfx::HDRMetadata> hdr_metadata,
+    const gfx::HDRMetadata& hdr_metadata,
     DecodeCB decode_cb,
     OutputCB output_cb)
     : media_log_(std::move(media_log)),
-      hdr_metadata_(std::move(hdr_metadata)),
+      hdr_metadata_(hdr_metadata),
       decode_cb_(std::move(decode_cb)),
       output_cb_(std::move(output_cb)) {
   DVLOG(1) << __func__;
@@ -153,8 +153,8 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
       break;
   }
 
-  std::optional<gfx::HDRMetadata> hdr_metadata = pic->hdr_metadata();
-  if (!hdr_metadata) {
+  gfx::HDRMetadata hdr_metadata = pic->hdr_metadata();
+  if (hdr_metadata.IsEmpty()) {
     hdr_metadata = hdr_metadata_;
   }
 

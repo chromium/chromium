@@ -35,7 +35,6 @@ class ASH_EXPORT KioskAppInstructionBubble
 
  private:
   // views::View:
-  void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 

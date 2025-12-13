@@ -23,28 +23,6 @@
 
 namespace viz {
 
-namespace {
-
-// matches usage from
-// `SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia()`
-constexpr gpu::SharedImageUsageSet kDefaultSharedImageUsage =
-    gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-    gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
-
-// Translate `CopyOutputResult::Format to `SharedImageFormat`
-SharedImageFormat GetSharedImageFormatFor(CopyOutputResult::Format format) {
-  switch (format) {
-    case CopyOutputResult::Format::RGBA:
-      return SinglePlaneFormat::kRGBA_8888;
-    case CopyOutputResult::Format::I420_PLANES:
-      return MultiPlaneFormat::kI420;
-    case CopyOutputResult::Format::NV12:
-      return MultiPlaneFormat::kNV12;
-  }
-}
-
-}  // namespace
-
 CopyOutputResult::CopyOutputResult(Format format,
                                    Destination destination,
                                    const gfx::Rect& rect,
@@ -53,8 +31,8 @@ CopyOutputResult::CopyOutputResult(Format format,
       destination_(destination),
       rect_(rect),
       needs_lock_for_bitmap_(needs_lock_for_bitmap) {
-  DCHECK(format_ == Format::RGBA || format_ == Format::I420_PLANES ||
-         format == Format::NV12);
+  DCHECK(format_ == Format::RGBA || format_ == Format::RGBAF16 ||
+         format_ == Format::I420_PLANES || format == Format::NV12);
   DCHECK(destination_ == Destination::kSystemMemory ||
          destination_ == Destination::kSharedImage);
 }
@@ -81,8 +59,7 @@ CopyOutputResult::ScopedSkBitmap CopyOutputResult::ScopedAccessSkBitmap()
   return ScopedSkBitmap(this);
 }
 
-CopyOutputResult::ReleaseCallbacks
-CopyOutputResult::TakeSharedImageOwnership() {
+ReleaseCallback CopyOutputResult::TakeSharedImageOwnership() {
   return {};
 }
 
@@ -236,7 +213,7 @@ CopyOutputSharedImageResult::CopyOutputSharedImageResult(
     const gpu::Mailbox& mailbox,
     const gfx::ColorSpace& color_space,
     std::string_view debug_label,
-    ReleaseCallbacks release_callbacks)
+    ReleaseCallback release_callback)
     : CopyOutputSharedImageResult(
           format,
           rect,
@@ -245,16 +222,16 @@ CopyOutputSharedImageResult::CopyOutputSharedImageResult(
               gpu::SharedImageInfo{GetSharedImageFormatFor(format), rect.size(),
                                    color_space, kDefaultSharedImageUsage,
                                    debug_label})),
-          std::move(release_callbacks)) {}
+          std::move(release_callback)) {}
 
 CopyOutputSharedImageResult::CopyOutputSharedImageResult(
     Format format,
     const gfx::Rect& rect,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
-    ReleaseCallbacks release_callbacks)
+    ReleaseCallback release_callback)
     : CopyOutputResult(format, Destination::kSharedImage, rect, false),
       shared_image_(std::move(shared_image)),
-      release_callbacks_(std::move(release_callbacks)) {
+      release_callback_(std::move(release_callback)) {
   // check non-null `shared_image_`
   DCHECK(shared_image_);
   // If we're constructing empty result, all mailbox_holders must be zero.
@@ -262,17 +239,14 @@ CopyOutputSharedImageResult::CopyOutputSharedImageResult(
   DCHECK_EQ(rect.IsEmpty(), shared_image_->mailbox().IsZero());
   // If we're constructing empty result, the callbacks must be empty.
   // From definition of implication: p => q  <=>  !p || q.
-  DCHECK(!rect.IsEmpty() || release_callbacks_.empty());
+  DCHECK(!rect.IsEmpty() || release_callback_.is_null());
   // Color space must be valid for non-empty results.
   DCHECK(rect.IsEmpty() || shared_image_->color_space().IsValid());
 }
 
 CopyOutputSharedImageResult::~CopyOutputSharedImageResult() {
-  for (auto& release_callback : release_callbacks_) {
-    // No need to check if release_callback is valid, when texture ownership
-    // is taken away from us, we zero out release_callbacks_ and the loop would
-    // not be entered.
-    std::move(release_callback).Run(gpu::SyncToken(), false);
+  if (release_callback_) {
+    std::move(release_callback_).Run(gpu::SyncToken(), false);
   }
 }
 
@@ -281,12 +255,8 @@ CopyOutputSharedImageResult::GetSharedImage() {
   return shared_image_;
 }
 
-CopyOutputResult::ReleaseCallbacks
-CopyOutputSharedImageResult::TakeSharedImageOwnership() {
-  CopyOutputResult::ReleaseCallbacks result = std::move(release_callbacks_);
-  release_callbacks_.clear();
-
-  return result;
+ReleaseCallback CopyOutputSharedImageResult::TakeSharedImageOwnership() {
+  return std::move(release_callback_);
 }
 
 CopyOutputResult::ScopedSkBitmap::ScopedSkBitmap() = default;
@@ -349,6 +319,25 @@ SkBitmap CopyOutputResult::ScopedSkBitmap::GetOutScopedBitmap() const {
     bitmap.readPixels(bitmap_copy.pixmap(), 0, 0);
   }
   return bitmap_copy;
+}
+
+CopyOutputBitmapWithMetadata
+CopyOutputResult::ScopedSkBitmap::GetOutScopedBitmapAndMetadata() const {
+  return CopyOutputBitmapWithMetadata{.bitmap = GetOutScopedBitmap()};
+}
+
+VIZ_COMMON_EXPORT SharedImageFormat
+GetSharedImageFormatFor(CopyOutputResult::Format format) {
+  switch (format) {
+    case CopyOutputResult::Format::RGBA:
+      return SinglePlaneFormat::kRGBA_8888;
+    case CopyOutputResult::Format::RGBAF16:
+      return SinglePlaneFormat::kRGBA_F16;
+    case CopyOutputResult::Format::I420_PLANES:
+      return MultiPlaneFormat::kI420;
+    case CopyOutputResult::Format::NV12:
+      return MultiPlaneFormat::kNV12;
+  }
 }
 
 }  // namespace viz

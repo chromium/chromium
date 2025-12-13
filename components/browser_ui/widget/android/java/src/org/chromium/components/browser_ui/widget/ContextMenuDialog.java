@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 import android.view.View.OnLayoutChangeListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
@@ -30,9 +31,12 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.animation.EmptyAnimationListener;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
 import org.chromium.ui.widget.RectProvider;
 
 /**
@@ -49,8 +53,8 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private final Activity mActivity;
     private final View mContentView;
     private final boolean mIsPopup;
+    private final boolean mIsFlyout;
     private final boolean mShouldRemoveScrim;
-    private final boolean mShouldSysUiMatchActivity;
 
     private float mContextMenuSourceXPx;
     private float mContextMenuSourceYPx;
@@ -66,6 +70,8 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
 
     private final @Nullable Integer mPopupMargin;
     private final @Nullable Integer mDesiredPopupContentWidth;
+
+    private final @Nullable Runnable mOnDismissCallback;
 
     /**
      * View that is showing behind the context menu. If menu is shown as a popup without scrim, this
@@ -86,10 +92,9 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      * @param layout The context menu layout that will house the menu.
      * @param contentView The context menu view to display on the dialog.
      * @param isPopup Whether the context menu is being shown in a {@link AnchoredPopupWindow}.
+     * @param isFlyout Whether the popup is a flyout.
      * @param shouldRemoveScrim Whether the context menu should removes the scrim behind the dialog
      *     visually.
-     * @param shouldSysUiMatchActivity Whether the status bar and navigation bar for the dialog
-     *     window should be styled to match the {@code ownerActivity}.
      * @param popupMargin The margin for the context menu.
      * @param desiredPopupContentWidth The desired width for the content of the context menu.
      * @param touchEventDelegateView View View that is showing behind the context menu. If menu is
@@ -108,13 +113,14 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             View layout,
             View contentView,
             boolean isPopup,
+            boolean isFlyout,
             boolean shouldRemoveScrim,
-            boolean shouldSysUiMatchActivity,
             @Nullable Integer popupMargin,
             @Nullable Integer desiredPopupContentWidth,
             @Nullable View touchEventDelegateView,
             Rect rect,
-            boolean shouldPadForWindowInsets) {
+            boolean shouldPadForWindowInsets,
+            @Nullable Runnable onDismissCallback) {
         super(ownerActivity, theme, shouldPadForWindowInsets);
         mActivity = ownerActivity;
         mTopMarginPx = topMarginPx;
@@ -122,12 +128,13 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mContentView = contentView;
         mLayout = layout;
         mIsPopup = isPopup;
+        mIsFlyout = isFlyout;
         mShouldRemoveScrim = shouldRemoveScrim;
-        mShouldSysUiMatchActivity = shouldSysUiMatchActivity;
         mPopupMargin = popupMargin;
         mDesiredPopupContentWidth = desiredPopupContentWidth;
         mTouchEventDelegateView = touchEventDelegateView;
         mRect = rect;
+        mOnDismissCallback = onDismissCallback;
     }
 
     @Override
@@ -139,25 +146,26 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         if (mShouldRemoveScrim) {
             dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-        }
-        if (mShouldRemoveScrim || mShouldSysUiMatchActivity) {
-            Window activityWindow = mActivity.getWindow();
-            dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            // Set the navigation bar when API level >= 27 to match android:navigationBarColor
-            // reference in styles.xml.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                dialogWindow.setNavigationBarColor(activityWindow.getNavigationBarColor());
-                UiUtils.setNavigationBarIconColor(
-                        dialogWindow.getDecorView(),
-                        mActivity.getResources().getBoolean(R.bool.window_light_navigation_bar));
+            if (mIsFlyout) {
+                dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
-            // Apply the status bar color in case the website had override them.
-            int statusBarColor = activityWindow.getStatusBarColor();
-            UiUtils.setStatusBarColor(dialogWindow, statusBarColor);
-            UiUtils.setStatusBarIconColor(
-                    dialogWindow.getDecorView().getRootView(),
-                    !ColorUtils.shouldUseLightForegroundOnBackground(statusBarColor));
         }
+        Window activityWindow = mActivity.getWindow();
+        dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        // Set the navigation bar when API level >= 27 to match android:navigationBarColor
+        // reference in styles.xml.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            dialogWindow.setNavigationBarColor(activityWindow.getNavigationBarColor());
+            UiUtils.setNavigationBarIconColor(
+                    dialogWindow.getDecorView(),
+                    mActivity.getResources().getBoolean(R.bool.window_light_navigation_bar));
+        }
+        // Apply the status bar color in case the website had override them.
+        int statusBarColor = activityWindow.getStatusBarColor();
+        UiUtils.setStatusBarColor(dialogWindow, statusBarColor);
+        UiUtils.setStatusBarIconColor(
+                dialogWindow.getDecorView().getRootView(),
+                !ColorUtils.shouldUseLightForegroundOnBackground(statusBarColor));
 
         // Both bottom margin and top margin must be set together to ensure default
         // values are not relied upon for custom behavior.
@@ -204,31 +212,50 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                                 dismiss();
                                 return;
                             }
-                            mPopupWindow =
-                                    new AnchoredPopupWindow(
-                                            mActivity,
-                                            mLayout,
-                                            new ColorDrawable(Color.TRANSPARENT),
-                                            mContentView,
-                                            new RectProvider(mRect));
+
+                            AnchoredPopupWindow.Builder builder =
+                                    new AnchoredPopupWindow.Builder(
+                                                    mActivity,
+                                                    mLayout,
+                                                    new ColorDrawable(Color.TRANSPARENT),
+                                                    () -> mContentView,
+                                                    new RectProvider(mRect))
+                                            .setSmartAnchorWithMaxWidth(true)
+                                            .setVerticalOverlapAnchor(true)
+                                            .setOutsideTouchable(false)
+                                            .setAnimateFromAnchor(true)
+                                            // Set popup focusable so the screen reader can announce
+                                            // the popup properly, and key press events are handled
+                                            // correctly for context menu keyboard navigation.
+                                            .setFocusable(true)
+                                            // Set touch modal false (outside touches will be sent
+                                            // to other windows behind it) so that touches from
+                                            // drag-drop will dismiss the context menu.
+                                            .setTouchModal(false)
+                                            // If the popup is dismissed, dismiss this dialog as
+                                            // well. This is required when the popup is dismissed
+                                            // through backpress / hardware accessories where the
+                                            // #dismiss is not triggered by #onTouchEvent.
+                                            .addOnDismissListener(
+                                                    () -> {
+                                                        if (mOnDismissCallback != null) {
+                                                            mOnDismissCallback.run();
+                                                        }
+                                                        ContextMenuDialog.this.dismiss();
+                                                    });
+
                             if (mPopupMargin != null) {
-                                mPopupWindow.setMargin(mPopupMargin);
+                                builder.setMargin(mPopupMargin);
                             }
                             if (mDesiredPopupContentWidth != null) {
-                                mPopupWindow.setDesiredContentWidth(mDesiredPopupContentWidth);
+                                builder.setDesiredContentWidth(mDesiredPopupContentWidth);
                             }
-                            mPopupWindow.setSmartAnchorWithMaxWidth(true);
-                            mPopupWindow.setVerticalOverlapAnchor(true);
-                            mPopupWindow.setOutsideTouchable(false);
-                            mPopupWindow.setAnimateFromAnchor(true);
-                            // Set popup focusable so the screen reader can announce the popup
-                            // properly. It is also required so that the key press events are
-                            // handdled correctly for context menu keyboard navigation.
-                            mPopupWindow.setFocusable(true);
-                            // If the popup is dismissed, dismiss this dialog as well. This is
-                            // required when the popup is dismissed through backpress / hardware
-                            // accessiries where the #dismiss is not triggered by #onTouchEvent.
-                            mPopupWindow.addOnDismissListener(ContextMenuDialog.this::dismiss);
+                            if (mIsFlyout) {
+                                builder.setSpecCalculator(new FlyoutPopupSpecCalculator());
+                                builder.setAnimationStyle(R.style.PopupWindowAnimFade);
+                            }
+
+                            mPopupWindow = builder.build();
                             mPopupWindow.show();
                         } else {
                             // Otherwise, the menu will already be in the hierarchy, and we need to
@@ -255,8 +282,21 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     }
 
     /**
-     * Start the entering animation for context menu dialog. Only used when dialog is presenting
-     * as a full screen dialog.
+     * Gets the {@link Rect} of this dialog, relative to the application window.
+     *
+     * @return {@link Rect} of this popup.
+     */
+    public Rect getDialogRect() {
+        if (mContentView == null) {
+            return new Rect();
+        }
+
+        return ListMenuUtils.getViewRectRelativeToItsRootView(mContentView);
+    }
+
+    /**
+     * Start the entering animation for context menu dialog. Only used when dialog is presenting as
+     * a full screen dialog.
      */
     private void startEnterAnimation() {
         Rect windowRect = new Rect();
@@ -377,5 +417,14 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     @Nullable
     OnDragListener getOnDragListenerForTesting() {
         return mDragEventDispatchHelper;
+    }
+
+    /**
+     * Set the focus state for this dialog's content view.
+     *
+     * @param hasFocus Whether this dialog's content should have focus.
+     */
+    public void setWindowFocusForFlyoutMenus(boolean hasFocus) {
+        HierarchicalMenuController.setWindowFocusForFlyoutMenus((ViewGroup) mContentView, hasFocus);
     }
 }

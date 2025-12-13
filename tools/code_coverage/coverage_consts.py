@@ -244,7 +244,7 @@ FUZZERS_WITH_CORPORA = [
     'net_mime_sniffer_fuzzer',
     'net_ntlm_ntlm_client_fuzzer',
     'net_parse_cookie_line_fuzzer',
-    'net_parse_proxy_bypass_rules_fuzzer',
+    'net_parse_proxy_host_matching_rules_fuzzer',
     'net_parse_proxy_list_pac_fuzzer',
     'net_parse_proxy_rules_fuzzer',
     'net_parse_url_hostname_to_address_fuzzer',

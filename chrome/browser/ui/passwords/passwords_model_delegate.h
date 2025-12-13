@@ -62,10 +62,6 @@ class PasswordsModelDelegate {
   // SAVE_CONFIRMATION_STATE, the returned credential in AUTO_SIGNIN_STATE.
   virtual const password_manager::PasswordForm& GetPendingPassword() const = 0;
 
-  // Returns unsynced credentials being deleted upon signout.
-  virtual const std::vector<password_manager::PasswordForm>&
-  GetUnsyncedCredentials() const = 0;
-
   // Returns the source of the credential to be saved.
   virtual password_manager::metrics_util::CredentialSourceType
   GetCredentialSource() const = 0;
@@ -135,17 +131,6 @@ class PasswordsModelDelegate {
   // handled accordingly if user had edited them.
   virtual void SavePassword(const std::u16string& username,
                             const std::u16string& password) = 0;
-
-  // Called when the user chooses to save locally some of the unsynced
-  // credentials that were deleted from the account store on signout.
-  virtual void SaveUnsyncedCredentialsInProfileStore(
-      const std::vector<password_manager::PasswordForm>&
-          selected_credentials) = 0;
-
-  // Called when the user chooses not to save locally the unsynced credentials
-  // deleted from the account store on signout (the ones returned by
-  // GetUnsyncedCredentials()).
-  virtual void DiscardUnsyncedCredentials() = 0;
 
   // Called from the dialog controller when a user confirms moving the recently
   // used or selected credential to their account store.
@@ -224,6 +209,12 @@ class PasswordsModelDelegate {
 
   // Opens the password change settings page as a separate tab.
   virtual void NavigateToPasswordChangeSettings() = 0;
+
+  // Called when the mouse enters the bubble view.
+  virtual void OnMouseEntered() = 0;
+
+  // Called when the mouse exits the bubble view.
+  virtual void OnMouseExited() = 0;
 
  protected:
   virtual ~PasswordsModelDelegate() = default;

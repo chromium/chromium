@@ -26,7 +26,13 @@ _proto_files = [
   "perf_data.proto",
   "perf_stat.proto",
   "printer_event.proto",
+  "private_metrics/domain_keyed_metrics.proto",
+  "private_metrics/metric.proto",
   "private_metrics/private_metrics.proto",
+  "private_metrics/private_user_metrics.proto",
+  "private_metrics/system_profiles/coarse_system_profile.proto",
+  "private_metrics/system_profiles/rc_coarse_system_profile.proto",
+  "private_metrics/system_profiles/search_system_profile.proto",
   "reporting_info.proto",
   "sampled_profile.proto",
   "structured_data.proto",
@@ -45,7 +51,6 @@ _proto_files = [
 proto_library("metrics_proto") {
   sources = _proto_files
   proto_in_dir = "."
-  generate_py_runtime = true
 }
 
 if (is_android) {

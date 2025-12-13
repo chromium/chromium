@@ -58,7 +58,8 @@ void EXTDisjointTimerQueryWebGL2::Trace(Visitor* visitor) const {
 }
 
 EXTDisjointTimerQueryWebGL2::EXTDisjointTimerQueryWebGL2(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_EXT_disjoint_timer_query_webgl2");

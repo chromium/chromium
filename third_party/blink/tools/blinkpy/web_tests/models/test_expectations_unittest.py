@@ -891,42 +891,6 @@ class MiscTests(Base):
         self.assert_exp_list('failures/expected/text.html',
                              {ResultType.Failure, ResultType.Skip})
 
-    def test_bot_test_expectations(self):
-        """Test that expectations are merged rather than overridden when using flaky option 'unexpected'."""
-        test_name1 = 'failures/expected/text.html'
-        test_name2 = 'passes/text.html'
-
-        expectations_dict = OrderedDict()
-        expectations_dict['expectations'] = (
-            '# results: [ Failure Crash ]\n%s [ Failure ]\n%s [ Crash ]\n' %
-            (test_name1, test_name2))
-        self._port.expectations_dict = lambda: expectations_dict
-
-        expectations = TestExpectations(self._port)
-        self.assertEqual(
-            expectations.get_expectations(test_name1).results,
-            set([ResultType.Failure]))
-        self.assertEqual(
-            expectations.get_expectations(test_name2).results,
-            set([ResultType.Crash]))
-
-        def bot_expectations():
-            return {
-                test_name1: [ResultType.Pass, ResultType.Timeout],
-                test_name2: [ResultType.Crash]
-            }
-
-        self._port.bot_expectations = bot_expectations
-        self._port._options.ignore_flaky_tests = 'unexpected'
-
-        expectations = TestExpectations(self._port)
-        self.assertEqual(
-            expectations.get_expectations(test_name1).results,
-            set([ResultType.Pass, ResultType.Failure, ResultType.Timeout]))
-        self.assertEqual(
-            expectations.get_expectations(test_name2).results,
-            set([ResultType.Crash]))
-
 
 class RemoveExpectationsTest(Base):
     def test_remove_expectation(self):

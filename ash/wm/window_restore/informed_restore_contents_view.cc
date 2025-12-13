@@ -45,6 +45,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/core/window_animations.h"
@@ -127,7 +128,7 @@ std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
   contents_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
 
   aura::Window* root = Shell::GetRootWindowForDisplayId(
-      display::Screen::GetScreen()->GetDisplayMatching(contents_bounds).id());
+      display::Screen::Get()->GetDisplayMatching(contents_bounds).id());
 
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -149,13 +150,11 @@ std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
 
   // Add blur to help with contrast between the background and the text. Uses
   // the same settings as the Quick Settings menu, i.e., `TrayBubbleView`.
-  if (features::IsBackgroundBlurEnabled()) {
-    layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kContentsRounding));
-    layer->SetIsFastRoundedCorner(true);
-    if (chromeos::features::IsSystemBlurEnabled()) {
-      layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-      layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-    }
+  layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kContentsRounding));
+  layer->SetIsFastRoundedCorner(true);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 
   return widget;
@@ -195,7 +194,7 @@ void InformedRestoreContentsView::UpdatePrimaryContainerPreferredWidth(
     aura::Window* root_window,
     std::optional<bool> is_landscape) {
   const bool landscape_mode =
-      is_landscape.value_or(display::Screen::GetScreen()
+      is_landscape.value_or(display::Screen::Get()
                                 ->GetDisplayNearestWindow(root_window)
                                 .is_landscape());
   const int preferred_width =
@@ -324,9 +323,8 @@ InformedRestoreContentsView::CreateButtonContainerBuilder() {
 
 void InformedRestoreContentsView::CreateChildViews() {
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  const bool landscape_mode = display::Screen::GetScreen()
-                                  ->GetDisplayNearestWindow(root)
-                                  .is_landscape();
+  const bool landscape_mode =
+      display::Screen::Get()->GetDisplayNearestWindow(root).is_landscape();
 
   SetOrientation(landscape_mode ? views::BoxLayout::Orientation::kHorizontal
                                 : views::BoxLayout::Orientation::kVertical);

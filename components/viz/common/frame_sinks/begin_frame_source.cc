@@ -59,18 +59,14 @@ bool CheckBeginFrameContinuity(BeginFrameObserver* observer,
                                const BeginFrameArgs& args) {
   const BeginFrameArgs& last_args = observer->LastUsedBeginFrameArgs();
   if (!last_args.IsValid() || (args.frame_time > last_args.frame_time)) {
-    DCHECK(!last_args.frame_id.IsNextInSequenceTo(args.frame_id))
+    DCHECK(args.frame_id.source_id == BeginFrameArgs::kManualSourceId ||
+           !last_args.frame_id.IsNextInSequenceTo(args.frame_id))
         << "current " << args.ToString() << ", last " << last_args.ToString();
     return true;
   }
   return false;
 }
 }  // namespace
-
-// BeginFrameObserver -----------------------------------------------------
-bool BeginFrameObserver::IsRoot() const {
-  return false;
-}
 
 // BeginFrameObserverBase -------------------------------------------------
 BeginFrameObserverBase::BeginFrameObserverBase() = default;
@@ -88,7 +84,8 @@ bool BeginFrameObserverBase::WantsAnimateOnlyBeginFrames() const {
 void BeginFrameObserverBase::OnBeginFrame(const BeginFrameArgs& args) {
   DCHECK(args.IsValid());
   DCHECK_GE(args.frame_time, last_begin_frame_args_.frame_time);
-  DCHECK(!last_begin_frame_args_.frame_id.IsNextInSequenceTo(args.frame_id))
+  DCHECK((args.frame_id.source_id == BeginFrameArgs::kManualSourceId) ||
+         !last_begin_frame_args_.frame_id.IsNextInSequenceTo(args.frame_id))
       << "current " << args.ToString() << ", last "
       << last_begin_frame_args_.ToString();
   bool used = OnBeginFrameDerivedImpl(args);
@@ -174,6 +171,10 @@ void BeginFrameSource::SetIsGpuBusy(bool busy) {
   }
 }
 
+void BeginFrameSource::SetSchedulerClient(SchedulerClient* scheduler_client) {
+  scheduler_client_ = scheduler_client;
+}
+
 bool BeginFrameSource::RequestCallbackOnGpuAvailable() {
   if (!is_gpu_busy_) {
     DCHECK_EQ(gpu_busy_response_state_, GpuBusyThrottlingState::kIdle);
@@ -222,6 +223,13 @@ void BeginFrameSource::RecordBeginFrameSourceAccuracy(base::TimeDelta delta) {
   total_delta_ = base::TimeDelta();
 }
 #endif
+
+void BeginFrameSource::IssueBeginFrameToSchedulerClient(
+    const BeginFrameArgs& args) {
+  if (scheduler_client_) {
+    scheduler_client_->OnBeginFrameForScheduling(args);
+  }
+}
 
 // StubBeginFrameSource ---------------------------------------------------
 StubBeginFrameSource::StubBeginFrameSource()
@@ -314,6 +322,7 @@ void BackToBackBeginFrameSource::OnTimerTick() {
   DCHECK(!pending_observers.empty());
   for (BeginFrameObserver* obs : pending_observers)
     FilterAndIssueBeginFrame(obs, args);
+  IssueBeginFrameToSchedulerClient(args);
 }
 
 // DelayBasedBeginFrameSource ---------------------------------------------
@@ -438,6 +447,7 @@ void DelayBasedBeginFrameSource::OnTimerTick() {
   for (BeginFrameObserver* obs : observers) {
     IssueBeginFrameToObserver(obs, last_begin_frame_args_);
   }
+  IssueBeginFrameToSchedulerClient(last_begin_frame_args_);
   last_vsync_interval_ = time_source_->Interval();
 }
 
@@ -455,13 +465,9 @@ void DelayBasedBeginFrameSource::IssueBeginFrameToObserver(
   //
   // Both cases can cause the double tick check below to fail and an unexpected
   // frame drop. To avoid this, we use the cached |last_vsync_interval_| here.
-  auto interval_for_margin =
-      base::FeatureList::IsEnabled(features::kLastVSyncArgsKillswitch)
-          ? args.interval
-          : last_vsync_interval_;
   const base::TimeDelta double_tick_margin =
       max_vrr_interval_.has_value() ? base::TimeDelta()
-                                    : interval_for_margin / kDoubleTickDivisor;
+                                    : last_vsync_interval_ / kDoubleTickDivisor;
   if (!last_args.IsValid() ||
       (args.frame_time > last_args.frame_time + double_tick_margin)) {
     if (args.type == BeginFrameArgs::MISSED) {
@@ -582,24 +588,12 @@ void ExternalBeginFrameSource::OnBeginFrame(const BeginFrameArgs& args) {
   base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers(
       observers_);
 
-  // Process non-root observers.
-  // TODO(ericrk): Remove root/non-root handling once a better workaround
-  // exists. https://crbug.com/947717
   for (BeginFrameObserver* obs : observers) {
-    if (obs->IsRoot())
-      continue;
     if (!CheckBeginFrameContinuity(obs, args))
       continue;
     FilterAndIssueBeginFrame(obs, args);
   }
-  // Process root observers.
-  for (BeginFrameObserver* obs : observers) {
-    if (!obs->IsRoot())
-      continue;
-    if (!CheckBeginFrameContinuity(obs, args))
-      continue;
-    FilterAndIssueBeginFrame(obs, args);
-  }
+  IssueBeginFrameToSchedulerClient(args);
 }
 
 BeginFrameArgs ExternalBeginFrameSource::GetMissedBeginFrameArgs(

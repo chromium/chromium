@@ -52,8 +52,7 @@ void RendererFreezer::SuspendDone() {
       &RendererFreezer::OnThawRenderersComplete, weak_factory_.GetWeakPtr()));
 }
 
-void RendererFreezer::OnRenderProcessHostCreated(
-    content::RenderProcessHost* rph) {
+void RendererFreezer::OnRenderProcessLaunched(content::RenderProcessHost* rph) {
   if (!can_freeze_renderers_) {
     return;
   }

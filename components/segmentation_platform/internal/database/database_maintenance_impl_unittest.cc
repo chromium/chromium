@@ -185,13 +185,9 @@ class DatabaseMaintenanceImplTest : public testing::Test {
 
     // The Failed signal failed to clean up, so we should not be updating it,
     // but the rest should be updated.
-    cleanup_items.erase(
-        std::remove_if(cleanup_items.begin(), cleanup_items.end(),
-                       [](CleanupItem item) {
-                         return item.name_hash ==
-                                base::HashMetricName("Failed");
-                       }),
-        cleanup_items.end());
+    std::erase_if(cleanup_items, [](CleanupItem item) {
+      return item.name_hash == base::HashMetricName("Failed");
+    });
     EXPECT_CALL(*signal_storage_config_,
                 UpdateSignalsForCleanup(cleanup_items));
 

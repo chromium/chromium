@@ -117,7 +117,7 @@ void TreeViewExample::CreateExampleView(View* container) {
 
   auto full_flex = FlexSpecification(MinimumFlexSizeRule::kScaleToZero,
                                      MaximumFlexSizeRule::kUnbounded)
-                       .WithWeight(1);
+                       .WithWeight(4);
 
   tree_view_ = tree_view.get();
   container
@@ -126,6 +126,10 @@ void TreeViewExample::CreateExampleView(View* container) {
 
   // Add control buttons horizontally.
   auto* button_panel = container->AddChildView(std::make_unique<View>());
+  button_panel->SetProperty(views::kFlexBehaviorKey,
+                            FlexSpecification(MinimumFlexSizeRule::kScaleToZero,
+                                              MaximumFlexSizeRule::kUnbounded)
+                                .WithWeight(1));
   button_panel->SetLayoutManager(std::make_unique<FlexLayout>())
       ->SetOrientation(LayoutOrientation::kHorizontal);
 

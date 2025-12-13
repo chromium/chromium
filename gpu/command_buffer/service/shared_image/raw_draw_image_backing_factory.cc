@@ -12,13 +12,10 @@ namespace gpu {
 // NOTE: These are the *exact* set of usages that the client must list in order
 // for the RawDraw backing to be applied. The client must explicitly opt into
 // using RawDraw, and that only in the expected context of rasterizing content
-// via OOP-raster into PaintOps to play back during compositing.
-// NOTE: `SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY` is not listed as RawDraw
-// works only with OOP-raster (since it must store PaintOps for playback during
-// compositing).
-constexpr SharedImageUsageSet kRequiredUsage =
-    SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_RAW_DRAW;
+// into PaintOps to play back during compositing.
+constexpr SharedImageUsageSet kRequiredUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                               SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                               SHARED_IMAGE_USAGE_RAW_DRAW;
 
 RawDrawImageBackingFactory::RawDrawImageBackingFactory()
     : SharedImageBackingFactory(kRequiredUsage) {}

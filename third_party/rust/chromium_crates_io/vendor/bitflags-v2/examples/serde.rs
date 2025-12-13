@@ -4,11 +4,14 @@
 
 #[cfg(feature = "serde")]
 fn main() {
-    use serde_derive::*;
+    use serde_lib::*;
 
     bitflags::bitflags! {
         #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
         #[serde(transparent)]
+        // NOTE: We alias the `serde` crate as `serde_lib` in this repository,
+        // but you don't need to do this
+        #[serde(crate = "serde_lib")]
         pub struct Flags: u32 {
             const A = 1;
             const B = 2;

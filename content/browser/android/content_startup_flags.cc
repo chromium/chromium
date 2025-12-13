@@ -4,14 +4,19 @@
 
 #include "content/browser/android/content_startup_flags.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "cc/base/switches.h"
 #include "components/input/switches.h"
+#include "content/common/features.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/common/content_switches.h"
+#include "device/vr/buildflags/buildflags.h"
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
+#endif
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/ui_base_switches.h"
@@ -38,8 +43,8 @@ void SetContentCommandLineFlags(bool single_process) {
   parsed_command_line->AppendSwitch(switches::kEnableViewport);
   parsed_command_line->AppendSwitch(input::switches::kValidateInputEventStream);
 
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_MARSHMALLOW) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_MARSHMALLOW) {
     parsed_command_line->AppendSwitch(switches::kEnableLongpressDragSelection);
     parsed_command_line->AppendSwitchASCII(
         blink::switches::kTouchTextSelectionStrategy,
@@ -55,6 +60,13 @@ void SetContentCommandLineFlags(bool single_process) {
 
   // Disable anti-aliasing.
   parsed_command_line->AppendSwitch(switches::kDisableCompositedAntialiasing);
+
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
+  if (device::features::IsXrDevice()) {
+    parsed_command_line->AppendSwitchASCII(switches::kEnableFeatures,
+                                           "XrDevice");
+  }
+#endif
 }
 
 }  // namespace content

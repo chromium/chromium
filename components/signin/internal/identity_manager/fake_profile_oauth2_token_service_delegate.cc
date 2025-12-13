@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -75,6 +76,24 @@ FakeProfileOAuth2TokenServiceDelegate::GetWrappedBindingKey(
                                            : std::vector<uint8_t>();
 }
 
+bool FakeProfileOAuth2TokenServiceDelegate::AllBoundTokensShareSameBindingKey()
+    const {
+  const std::vector<uint8_t>* first_non_empty_key = nullptr;
+  for (const auto& account_id_and_key : wrapped_binding_keys_) {
+    if (account_id_and_key.second.empty()) {
+      continue;
+    }
+    if (!first_non_empty_key) {
+      first_non_empty_key = &account_id_and_key.second;
+      continue;
+    }
+    if (account_id_and_key.second != *first_non_empty_key) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void FakeProfileOAuth2TokenServiceDelegate::
     GenerateRefreshTokenBindingKeyAssertionForMultilogin(
         const CoreAccountId& account_id,
@@ -83,6 +102,9 @@ void FakeProfileOAuth2TokenServiceDelegate::
         TokenBindingHelper::GenerateAssertionCallback callback) {
   std::move(callback).Run(base::StrCat({challenge, ".signed"}));
 }
+
+void FakeProfileOAuth2TokenServiceDelegate::AddBindingKeyToService(
+    base::span<const uint8_t> wrapped_binding_key) {}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 std::string FakeProfileOAuth2TokenServiceDelegate::GetRefreshToken(

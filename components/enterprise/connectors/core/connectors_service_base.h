@@ -35,6 +35,12 @@ class ConnectorsServiceBase {
     kMaxValue = kNoDmToken,
   };
 
+  explicit ConnectorsServiceBase(
+      std::unique_ptr<ConnectorsManagerBase> manager);
+  ConnectorsServiceBase(ConnectorsServiceBase&&);
+  ConnectorsServiceBase& operator=(ConnectorsServiceBase&&);
+  virtual ~ConnectorsServiceBase();
+
   // DM token accessor function for real-time URL checks. Returns a profile or
   // browser DM token depending on the policy scope. If there is no token to
   // use, returns the reason why.
@@ -50,13 +56,37 @@ class ConnectorsServiceBase {
   std::optional<policy::PolicyScope> GetRealtimeUrlCheckScope() const;
 
   // Returns whether the Connectors are enabled.
-  virtual bool IsConnectorEnabled(AnalysisConnector connector) const = 0;
+  virtual bool IsConnectorEnabled(AnalysisConnector connector) const;
+
+  // Returns true if the admin has opted into custom message, learn more URL or
+  // letting the user provide bypass justifications in an input dialog.
+  bool HasExtraUiToDisplay(AnalysisConnector connector, const std::string& tag);
+
+  bool DelayUntilVerdict(AnalysisConnector connector);
+
+  // Returns true if the admin enabled Bypass Justification.
+  bool GetBypassJustificationRequired(AnalysisConnector connector,
+                                      const std::string& tag);
 
   std::vector<std::string> GetReportingServiceProviderNames();
+
+  std::vector<const AnalysisConfig*> GetAnalysisServiceConfigs(
+      AnalysisConnector connector);
+
+  std::vector<std::string> GetAnalysisServiceProviderNames(
+      AnalysisConnector connector);
 
   virtual std::optional<ReportingSettings> GetReportingSettings();
 
   virtual std::optional<std::string> GetBrowserDmToken() const = 0;
+
+  // Gets custom message if set by the admin.
+  std::optional<std::u16string> GetCustomMessage(AnalysisConnector connector,
+                                                 const std::string& tag);
+
+  // Gets custom learn more URL if provided by the admin.
+  std::optional<GURL> GetLearnMoreUrl(AnalysisConnector connector,
+                                      const std::string& tag);
 
   // Obtain a ClientMetadata instance corresponding to the current
   // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-
@@ -64,9 +94,15 @@ class ConnectorsServiceBase {
   virtual std::unique_ptr<ClientMetadata> BuildClientMetadata(
       bool is_cloud) = 0;
 
+  // Observe if reporting policies have changed to include telemetry event.
+  void ObserveTelemetryReporting(base::RepeatingCallback<void()> callback);
+
 #if !BUILDFLAG(IS_CHROMEOS)
   std::optional<std::string> GetProfileDmToken() const;
 #endif
+
+  // Testing functions.
+  ConnectorsManagerBase* ConnectorsManagerBaseForTesting();
 
  protected:
   struct DmToken {
@@ -98,11 +134,6 @@ class ConnectorsServiceBase {
   virtual PrefService* GetPrefs() = 0;
   virtual const PrefService* GetPrefs() const = 0;
 
-  // Returns the `ConnectorsManagerBase` that should be used by this class to
-  // return reporting connector related settings. Should never return nullptr.
-  virtual ConnectorsManagerBase* GetConnectorsManagerBase() = 0;
-  virtual const ConnectorsManagerBase* GetConnectorsManagerBase() const = 0;
-
   // Returns a `policy::CloudPolicyManager` corresponding to a managed user, if
   // one exists.
   virtual policy::CloudPolicyManager* GetManagedUserCloudPolicyManager()
@@ -112,6 +143,8 @@ class ConnectorsServiceBase {
                                ClientMetadata::Browser* browser_proto);
   void PopulateDeviceMetadata(const std::string& client_id,
                               ClientMetadata::Device* device_proto);
+
+  std::unique_ptr<ConnectorsManagerBase> connectors_manager_base_;
 };
 
 }  // namespace enterprise_connectors

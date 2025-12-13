@@ -5,8 +5,7 @@
 package org.chromium.chrome.browser.logo;
 
 import android.graphics.Bitmap;
-
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
+import android.graphics.drawable.Drawable;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
@@ -41,12 +40,18 @@ interface LogoProperties {
     //  these if possible.
     WritableObjectPropertyKey<LogoBridge.Logo> LOGO = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Bitmap> DEFAULT_GOOGLE_LOGO = new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<Drawable> DEFAULT_GOOGLE_LOGO_DRAWABLE =
+            new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Boolean> SHOW_LOADING_VIEW =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
-    WritableObjectPropertyKey<BaseGifImage> ANIMATED_LOGO = new WritableObjectPropertyKey<>();
+    // TODO(crbug.com/434200490): Replace Object reference with AnimatedImageDrawable when the
+    // refactoring is fully rolled out.
+    WritableObjectPropertyKey<Object> ANIMATED_LOGO = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Callback<Logo>> LOGO_AVAILABLE_CALLBACK =
             new WritableObjectPropertyKey<>();
     WritableIntPropertyKey DOODLE_SIZE = new WritableIntPropertyKey();
+    WritableObjectPropertyKey<Boolean> SHOW_DEFAULT_GOOGLE_LOGO =
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -60,9 +65,11 @@ interface LogoProperties {
                 SHOW_SEARCH_PROVIDER_INITIAL_VIEW,
                 LOGO,
                 DEFAULT_GOOGLE_LOGO,
+                DEFAULT_GOOGLE_LOGO_DRAWABLE,
                 SHOW_LOADING_VIEW,
                 ANIMATED_LOGO,
                 LOGO_AVAILABLE_CALLBACK,
-                DOODLE_SIZE
+                DOODLE_SIZE,
+                SHOW_DEFAULT_GOOGLE_LOGO
             };
 }

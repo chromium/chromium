@@ -107,8 +107,9 @@ component("network") {
     "fake_network_state_handler.h",
     "fast_transition_observer.cc",
     "fast_transition_observer.h",
-    "geolocation_handler.cc",
     "geolocation_handler.h",
+    "geolocation_handler_impl.cc",
+    "geolocation_handler_impl.h",
     "hermes_metrics_util.cc",
     "hermes_metrics_util.h",
     "hidden_network_handler.cc",
@@ -308,6 +309,8 @@ source_set("test_support") {
     "system_token_cert_db_storage_test_util.h",
     "test_cellular_esim_profile_handler.cc",
     "test_cellular_esim_profile_handler.h",
+    "test_support/technology_enablement_waiter.cc",
+    "test_support/technology_enablement_waiter.h",
   ]
 }
 
@@ -377,7 +380,7 @@ source_set("unit_tests") {
     "ephemeral_network_configuration_handler_unittest.cc",
     "ephemeral_network_policies_enablement_handler_unittest.cc",
     "fast_transition_observer_unittest.cc",
-    "geolocation_handler_unittest.cc",
+    "geolocation_handler_impl_unittest.cc",
     "hidden_network_handler_unittest.cc",
     "hotspot_allowed_flag_handler_unittest.cc",
     "hotspot_capabilities_provider_unittest.cc",

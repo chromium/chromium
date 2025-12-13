@@ -81,7 +81,7 @@ class BackgroundSyncControllerImplTest : public testing::Test {
   }
 
   void ResetFieldTrialList() {
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
     base::FieldTrialList::CreateFieldTrial(
         BackgroundSyncControllerImpl::kFieldTrialName, kFieldTrialGroup);
   }

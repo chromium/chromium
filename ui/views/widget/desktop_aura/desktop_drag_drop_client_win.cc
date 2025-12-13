@@ -8,8 +8,10 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
+#include "base/scoped_observation.h"
 #include "base/threading/hang_watcher.h"
 #include "ui/aura/env.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drag_source_win.h"
 #include "ui/base/dragdrop/drop_target_event.h"
@@ -22,6 +24,31 @@
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 
 namespace views {
+
+namespace {
+
+class SourceWindowObserver : public aura::WindowObserver {
+ public:
+  explicit SourceWindowObserver(aura::Window* window)
+      : scoped_observation_(this) {
+    scoped_observation_.Observe(window);
+  }
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override {
+    source_window_alive_ = false;
+    scoped_observation_.Reset();
+  }
+
+  bool source_window_alive() { return source_window_alive_; }
+
+ private:
+  bool source_window_alive_ = true;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      scoped_observation_;
+};
+
+}  // namespace
 
 DesktopDragDropClientWin::DesktopDragDropClientWin(
     aura::Window* root_window,
@@ -48,7 +75,7 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
   gfx::Point touch_screen_point;
   if (source == ui::mojom::DragEventSource::kTouch) {
     source_window->GetHost()->ConvertDIPToPixels(&touch_screen_point);
-    display::Screen* screen = display::Screen::GetScreen();
+    display::Screen* screen = display::Screen::Get();
     CHECK(screen);
     aura::Window* window =
         screen->GetWindowAtScreenPoint(screen->GetCursorScreenPoint());
@@ -65,6 +92,9 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
     }
     desktop_host_->StartTouchDrag(touch_screen_point);
   }
+  // Observe the source window to avoid accessing it if the window is
+  // destroyed while the drag is ongoing.
+  SourceWindowObserver source_window_observer(source_window);
   base::WeakPtr<DesktopDragDropClientWin> alive(weak_factory_.GetWeakPtr());
 
   drag_drop_in_progress_ = true;
@@ -87,9 +117,11 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
       ui::DragDropTypes::DragOperationToDropEffect(allowed_operations),
       &effect);
   if (source == ui::mojom::DragEventSource::kTouch) {
-    // Kill the gesture that initiated the drag to avoid issues with lingering
-    // touch events.
-    source_window->CleanupGestureState();
+    if (source_window_observer.source_window_alive()) {
+      // Kill the gesture that initiated the drag to avoid issues with lingering
+      // touch events.
+      source_window->CleanupGestureState();
+    }
     if (alive) {
       desktop_host_->FinishTouchDrag(touch_screen_point);
     }

@@ -37,9 +37,11 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.search_engines.SearchEngineChoiceService.RefreshReason;
+import org.chromium.components.search_engines.SearchEngineCountryDelegate.DefaultBrowserPromoSuppressionDelayType;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
 
 import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class SearchEngineChoiceServiceUnitTest {
@@ -87,6 +89,7 @@ public class SearchEngineChoiceServiceUnitTest {
 
         var supplier = service.getIsDeviceChoiceRequiredSupplier();
         ShadowLooper.runUiThreadTasks();
+        ShadowLooper.idleMainLooper(3000, TimeUnit.MILLISECONDS);
         assertTrue(supplier.get());
 
         // The calls below should be fine to run without triggering anything.
@@ -173,7 +176,53 @@ public class SearchEngineChoiceServiceUnitTest {
     }
 
     @Test
-    public void testIsDefaultBrowserPromoSuppressed() {
+    public void testIsDefaultBrowserPromoSuppressed_suppressIfChoiceSet_maxDelay() {
+        doReturn(DefaultBrowserPromoSuppressionDelayType.MAX)
+                .when(mDelegate)
+                .getDefaultBrowserPromoSuppressionDelayType();
+
+        {
+            // Default browser selection did not happen => promo should not be suppressed.
+            var service = new SearchEngineChoiceService(mDelegate);
+            doReturn(null).when(mDelegate).getDeviceBrowserSelectedTimestamp();
+            assertFalse(service.isDefaultBrowserPromoSuppressed());
+        }
+
+        {
+            // Default browser selection happened a long time ago => promo should be suppressed.
+            var service = new SearchEngineChoiceService(mDelegate);
+            doReturn(Instant.MIN).when(mDelegate).getDeviceBrowserSelectedTimestamp();
+            assertTrue(service.isDefaultBrowserPromoSuppressed());
+        }
+
+        {
+            // Selection date + suppression period overflow => promo should be suppressed.
+            // Would indicate a configuration issue.
+            var service = new SearchEngineChoiceService(mDelegate);
+            doReturn(Instant.MAX).when(mDelegate).getDeviceBrowserSelectedTimestamp();
+            assertTrue(service.isDefaultBrowserPromoSuppressed());
+        }
+
+        {
+            // Default browser selection happened too recently (simulated by being a date in the
+            // future) => promo should be suppressed if the feature is enabled.
+            Instant futureInstant =
+                    Instant.now()
+                            .plusMillis(
+                                    SearchEnginesFeatureUtils
+                                            .CHOICE_DIALOG_DEFAULT_BROWSER_PROMO_SUPPRESSED_MILLIS);
+            var service = new SearchEngineChoiceService(mDelegate);
+            doReturn(futureInstant).when(mDelegate).getDeviceBrowserSelectedTimestamp();
+            assertTrue(service.isDefaultBrowserPromoSuppressed());
+        }
+    }
+
+    @Test
+    public void testIsDefaultBrowserPromoSuppressed_suppressIfChoiceSet_standardDelay() {
+        doReturn(DefaultBrowserPromoSuppressionDelayType.STANDARD)
+                .when(mDelegate)
+                .getDefaultBrowserPromoSuppressionDelayType();
+
         {
             // Default browser selection did not happen => promo should not be suppressed.
             var service = new SearchEngineChoiceService(mDelegate);
@@ -189,11 +238,11 @@ public class SearchEngineChoiceServiceUnitTest {
         }
 
         {
-            // Selection date + suppression period overflow => promo should not be suppressed.
+            // Selection date + suppression period overflow => promo should be suppressed.
             // Would indicate a configuration issue.
             var service = new SearchEngineChoiceService(mDelegate);
             doReturn(Instant.MAX).when(mDelegate).getDeviceBrowserSelectedTimestamp();
-            assertFalse(service.isDefaultBrowserPromoSuppressed());
+            assertTrue(service.isDefaultBrowserPromoSuppressed());
         }
 
         {
@@ -216,6 +265,9 @@ public class SearchEngineChoiceServiceUnitTest {
         doReturn(deviceCountryPromise).when(mDelegate).getDeviceCountry();
         doReturn(false).when(mDelegate).isDeviceChoiceDialogEligible();
         doReturn(Instant.now()).when(mDelegate).getDeviceBrowserSelectedTimestamp();
+        doReturn(DefaultBrowserPromoSuppressionDelayType.MAX)
+                .when(mDelegate)
+                .getDefaultBrowserPromoSuppressionDelayType();
 
         var service = new SearchEngineChoiceService(mDelegate);
 

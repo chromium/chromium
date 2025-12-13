@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/video_util.h"
 
 #include <array>
@@ -14,7 +9,10 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -51,24 +49,27 @@ void FillRegionOutsideVisibleRect(uint8_t* data,
                                   const gfx::Size& visible_size) {
   if (visible_size.IsEmpty()) {
     if (!coded_size.IsEmpty())
-      memset(data, 0, coded_size.height() * stride);
+      UNSAFE_TODO(memset(data, 0, coded_size.height() * stride));
     return;
   }
 
   const int coded_width = coded_size.width();
   if (visible_size.width() < coded_width) {
     const int pad_length = coded_width - visible_size.width();
-    uint8_t* dst = data + visible_size.width();
-    for (int i = 0; i < visible_size.height(); ++i, dst += stride)
-      memset(dst, *(dst - 1), pad_length);
+    uint8_t* dst = UNSAFE_TODO(data + visible_size.width());
+    for (int i = 0; i < visible_size.height();
+         ++i, UNSAFE_TODO(dst += stride)) {
+      UNSAFE_TODO(memset(dst, *(dst - 1), pad_length));
+    }
   }
 
   if (visible_size.height() < coded_size.height()) {
-    uint8_t* dst = data + visible_size.height() * stride;
-    uint8_t* src = dst - stride;
+    uint8_t* dst = UNSAFE_TODO(data + visible_size.height() * stride);
+    uint8_t* src = UNSAFE_TODO(dst - stride);
     for (int i = visible_size.height(); i < coded_size.height();
-         ++i, dst += stride)
-      memcpy(dst, src, coded_width);
+         ++i, UNSAFE_TODO(dst += stride)) {
+      UNSAFE_TODO(memcpy(dst, src, coded_width));
+    }
   }
 }
 
@@ -103,45 +104,50 @@ VideoPixelFormat ReadbackFormat(const VideoFrame& frame) {
 }
 
 void LetterboxPlane(const gfx::Rect& view_area_in_bytes,
-                    uint8_t* ptr,
+                    base::span<uint8_t> plane_data,
                     int rows,
                     int row_bytes,
                     int stride,
                     int bytes_per_element,
                     uint8_t fill_byte) {
   if (view_area_in_bytes.IsEmpty()) {
-    libyuv::SetPlane(ptr, stride, row_bytes, rows, fill_byte);
+    libyuv::SetPlane(plane_data.data(), stride, row_bytes, rows, fill_byte);
     return;
   }
 
   if (view_area_in_bytes.y() > 0) {
-    libyuv::SetPlane(ptr, stride, row_bytes, view_area_in_bytes.y(), fill_byte);
-    ptr += stride * view_area_in_bytes.y();
+    libyuv::SetPlane(plane_data.data(), stride, row_bytes,
+                     view_area_in_bytes.y(), fill_byte);
+    plane_data = plane_data.subspan(
+        static_cast<size_t>(stride * view_area_in_bytes.y()));
   }
 
   if (view_area_in_bytes.width() < row_bytes) {
     if (view_area_in_bytes.x() > 0) {
-      libyuv::SetPlane(ptr, stride, view_area_in_bytes.x(),
+      libyuv::SetPlane(plane_data.data(), stride, view_area_in_bytes.x(),
                        view_area_in_bytes.height(), fill_byte);
     }
     if (view_area_in_bytes.right() < row_bytes) {
-      libyuv::SetPlane(ptr + view_area_in_bytes.right(), stride,
-                       row_bytes - view_area_in_bytes.right(),
-                       view_area_in_bytes.height(), fill_byte);
+      libyuv::SetPlane(
+          plane_data.subspan(static_cast<size_t>(view_area_in_bytes.right()))
+              .data(),
+          stride, row_bytes - view_area_in_bytes.right(),
+          view_area_in_bytes.height(), fill_byte);
     }
   }
 
-  ptr += stride * view_area_in_bytes.height();
+  plane_data = plane_data.subspan(
+      static_cast<size_t>(stride * view_area_in_bytes.height()));
 
   if (view_area_in_bytes.bottom() < rows) {
-    libyuv::SetPlane(ptr, stride, row_bytes, rows - view_area_in_bytes.bottom(),
-                     fill_byte);
+    libyuv::SetPlane(plane_data.data(), stride, row_bytes,
+                     rows - view_area_in_bytes.bottom(), fill_byte);
   }
 }
 
 void LetterboxPlane(VideoFrame* frame,
                     int plane,
-                    uint8_t* ptr,
+                    base::span<uint8_t> plane_data,
                     const gfx::Rect& view_area_in_pixels,
                     uint8_t fill_byte) {
   const int rows = frame->rows(plane);
@@ -161,32 +167,33 @@ void LetterboxPlane(VideoFrame* frame,
   CHECK_LE(view_area_in_bytes.right(), row_bytes);
   CHECK_LE(view_area_in_bytes.bottom(), rows);
 
-  LetterboxPlane(view_area_in_bytes, ptr, rows, row_bytes, stride,
+  LetterboxPlane(view_area_in_bytes, plane_data, rows, row_bytes, stride,
                  bytes_per_element, fill_byte);
 }
 
-// Helper for `LetterboxVideoFrame()`, assumes that if |frame| is GMB-backed,
-// the GpuMemoryBuffer is already mapped (via a call to `Map()`).
+// Helper for `LetterboxVideoFrame()`, assumes that if |frame| is
+// MappableSI-backed, the frame's shared image is already mapped (via a call to
+// `Map()`).
 void LetterboxPlane(VideoFrame* frame,
-                    VideoFrame::ScopedMapping* scoped_mapping,
+                    gpu::ClientSharedImage::ScopedMapping* scoped_mapping,
                     int plane,
                     const gfx::Rect& view_area_in_pixels,
                     uint8_t fill_byte) {
-  uint8_t* ptr = nullptr;
+  base::span<uint8_t> plane_data;
   if (frame->IsMappable()) {
-    ptr = frame->writable_data(plane);
+    plane_data = frame->writable_span(plane);
   } else if (scoped_mapping) {
-    ptr = scoped_mapping->Memory(plane);
+    plane_data = scoped_mapping->GetMemoryForPlane(plane);
   }
-  CHECK(ptr);
+  CHECK(!plane_data.empty());
 
-  LetterboxPlane(frame, plane, ptr, view_area_in_pixels, fill_byte);
+  LetterboxPlane(frame, plane, plane_data, view_area_in_pixels, fill_byte);
 }
 
 void ProcessAsyncMappingResult(
     scoped_refptr<VideoFrame> video_frame,
     base::OnceCallback<void(scoped_refptr<VideoFrame>)> result_cb,
-    std::unique_ptr<VideoFrame::ScopedMapping> scoped_mapping) {
+    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping) {
   CHECK(video_frame);
   if (!scoped_mapping) {
     std::move(result_cb).Run(nullptr);
@@ -196,7 +203,7 @@ void ProcessAsyncMappingResult(
   const size_t num_planes = VideoFrame::NumPlanes(video_frame->format());
   std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> planes = {};
   for (size_t i = 0; i < num_planes; i++) {
-    planes[i] = scoped_mapping->GetMemoryAsSpan(i);
+    planes[i] = scoped_mapping->GetMemoryForPlane(i);
   }
 
   auto mapped_frame = VideoFrame::WrapExternalYuvDataWithLayout(
@@ -216,10 +223,11 @@ void ProcessAsyncMappingResult(
   // is unmapped on destruction.
   mapped_frame->AddDestructionObserver(base::BindOnce(
       [](scoped_refptr<VideoFrame> frame,
-         std::unique_ptr<VideoFrame::ScopedMapping> scoped_mapping) {
+         std::unique_ptr<gpu::ClientSharedImage::ScopedMapping>
+             scoped_mapping) {
         CHECK(scoped_mapping);
         // The VideoFrame::ScopedMapping must be destroyed before the
-        // FrameResource that produced it in order to avoid dangling pointers.
+        // VideoFrame that produced it in order to avoid dangling pointers.
         scoped_mapping.reset();
       },
       std::move(video_frame), std::move(scoped_mapping)));
@@ -251,10 +259,9 @@ void FillYUVA(VideoFrame* frame, uint8_t y, uint8_t u, uint8_t v, uint8_t a) {
 }
 
 void LetterboxVideoFrame(VideoFrame* frame, const gfx::Rect& view_area) {
-  std::unique_ptr<VideoFrame::ScopedMapping> scoped_mapping;
-  if (!frame->IsMappable() &&
-      frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    scoped_mapping = frame->MapGMBOrSharedImage();
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping;
+  if (frame->HasMappableSharedImage()) {
+    scoped_mapping = frame->shared_image()->Map();
     CHECK(scoped_mapping);
   }
 
@@ -351,21 +358,21 @@ void RotatePlaneByPixels(const uint8_t* src,
       if (flip_vert) {
         // Rotation 180.
         dest_row_step = -width;
-        dest += height * width - 1;
+        UNSAFE_TODO(dest += height * width - 1);
       } else {
-        dest += width - 1;
+        UNSAFE_TODO(dest += width - 1);
       }
     } else {
       if (flip_vert) {
         // Fast copy by rows.
-        dest += width * (height - 1);
+        UNSAFE_TODO(dest += width * (height - 1));
         for (int row = 0; row < height; ++row) {
-          memcpy(dest, src, width);
-          src += width;
-          dest -= width;
+          UNSAFE_TODO(memcpy(dest, src, width));
+          UNSAFE_TODO(src += width);
+          UNSAFE_TODO(dest -= width);
         }
       } else {
-        memcpy(dest, src, width * height);
+        UNSAFE_TODO(memcpy(dest, src, width * height));
       }
       return;
     }
@@ -373,11 +380,11 @@ void RotatePlaneByPixels(const uint8_t* src,
     int offset;
     if (width > height) {
       offset = (width - height) / 2;
-      src += offset;
+      UNSAFE_TODO(src += offset);
       num_rows = num_cols = height;
     } else {
       offset = (height - width) / 2;
-      src += width * offset;
+      UNSAFE_TODO(src += width * offset);
       num_rows = num_cols = width;
     }
 
@@ -385,18 +392,18 @@ void RotatePlaneByPixels(const uint8_t* src,
     dest_row_step = (flip_horiz ? 1 : -1);
     if (flip_horiz) {
       if (flip_vert) {
-        dest += (width > height ? width * (height - 1) + offset :
-                                  width * (height - offset - 1));
+        UNSAFE_TODO(dest += (width > height ? width * (height - 1) + offset
+                                            : width * (height - offset - 1)));
       } else {
-        dest += (width > height ? offset : width * offset);
+        UNSAFE_TODO(dest += (width > height ? offset : width * offset));
       }
     } else {
       if (flip_vert) {
-        dest += (width > height ?  width * height - offset - 1 :
-                                   width * (height - offset) - 1);
+        UNSAFE_TODO(dest += (width > height ? width * height - offset - 1
+                                            : width * (height - offset) - 1));
       } else {
-        dest += (width > height ? width - offset - 1 :
-                                  width * (offset + 1) - 1);
+        UNSAFE_TODO(dest += (width > height ? width - offset - 1
+                                            : width * (offset + 1) - 1));
       }
     }
   } else {
@@ -408,11 +415,11 @@ void RotatePlaneByPixels(const uint8_t* src,
     const uint8_t* src_ptr = src;
     uint8_t* dest_ptr = dest;
     for (int col = 0; col < num_cols; ++col) {
-      *dest_ptr = *src_ptr++;
-      dest_ptr += dest_col_step;
+      *dest_ptr = *UNSAFE_TODO(src_ptr++);
+      UNSAFE_TODO(dest_ptr += dest_col_step);
     }
-    src += src_stride;
-    dest += dest_row_step;
+    UNSAFE_TODO(src += src_stride);
+    UNSAFE_TODO(dest += dest_row_step);
   }
 }
 
@@ -560,9 +567,9 @@ gfx::Size PadToMatchAspectRatio(const gfx::Size& size,
 scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
     scoped_refptr<VideoFrame> video_frame) {
   CHECK(video_frame);
-  CHECK(video_frame->HasMappableGpuBuffer());
+  CHECK(video_frame->HasMappableSharedImage());
 
-  auto scoped_mapping = video_frame->MapGMBOrSharedImage();
+  auto scoped_mapping = video_frame->shared_image()->Map();
   if (!scoped_mapping) {
     return nullptr;
   }
@@ -570,7 +577,7 @@ scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
   const size_t num_planes = VideoFrame::NumPlanes(video_frame->format());
   std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> planes = {};
   for (size_t i = 0; i < num_planes; i++)
-    planes[i] = scoped_mapping->GetMemoryAsSpan(i);
+    planes[i] = scoped_mapping->GetMemoryForPlane(i);
 
   auto mapped_frame = VideoFrame::WrapExternalYuvDataWithLayout(
       video_frame->layout(), video_frame->visible_rect(),
@@ -588,10 +595,11 @@ scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
   // is unmapped on destruction.
   mapped_frame->AddDestructionObserver(base::BindOnce(
       [](scoped_refptr<VideoFrame> frame,
-         std::unique_ptr<VideoFrame::ScopedMapping> scoped_mapping) {
+         std::unique_ptr<gpu::ClientSharedImage::ScopedMapping>
+             scoped_mapping) {
         CHECK(scoped_mapping);
-        // The VideoFrame::ScopedMapping must be destroyed before the
-        // FrameResource that produced it in order to avoid dangling pointers.
+        // The ScopedMapping must be destroyed before the VideoFrame that
+        // produced it in order to avoid dangling pointers.
         scoped_mapping.reset();
       },
       std::move(video_frame), std::move(scoped_mapping)));
@@ -602,9 +610,9 @@ void ConvertToMemoryMappedFrameAsync(
     scoped_refptr<VideoFrame> video_frame,
     base::OnceCallback<void(scoped_refptr<VideoFrame>)> result_cb) {
   CHECK(video_frame);
-  CHECK(video_frame->HasMappableGpuBuffer());
+  CHECK(video_frame->HasMappableSharedImage());
 
-  video_frame->MapGMBOrSharedImageAsync(base::BindOnce(
+  video_frame->shared_image()->MapAsync(base::BindOnce(
       &ProcessAsyncMappingResult, video_frame, std::move(result_cb)));
 }
 
@@ -787,6 +795,8 @@ MEDIA_EXPORT SkColorType SkColorTypeForPlane(VideoPixelFormat format,
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_ARGB:
       return kBGRA_8888_SkColorType;
+    case PIXEL_FORMAT_RGBAF16:
+      return kRGBA_F16_SkColorType;
     default:
       NOTREACHED();
   }
@@ -799,8 +809,9 @@ VideoPixelFormatFromSkColorType(SkColorType sk_color_type, bool is_opaque) {
       return is_opaque ? PIXEL_FORMAT_XBGR : PIXEL_FORMAT_ABGR;
     case kBGRA_8888_SkColorType:
       return is_opaque ? PIXEL_FORMAT_XRGB : PIXEL_FORMAT_ARGB;
+    case kRGBA_F16_SkColorType:
+      return PIXEL_FORMAT_RGBAF16;
     default:
-      // TODO(crbug.com/40686604): Add F16 support.
       return PIXEL_FORMAT_UNKNOWN;
   }
 }
@@ -837,7 +848,10 @@ scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
       *layout, visible_rect, natural_size,
       // TODO(crbug.com/40162403): We should be able to wrap readonly memory in
       // a VideoFrame instead of using writable_addr() here.
-      reinterpret_cast<uint8_t*>(pm.writable_addr()), pm.computeByteSize(),
+      // SAFETY: We take the pointer and size from SkPixmap, we rely on Skia
+      // to give us a valid memory region.
+      UNSAFE_BUFFERS(base::span(reinterpret_cast<uint8_t*>(pm.writable_addr()),
+                                pm.computeByteSize())),
       timestamp);
   if (!frame)
     return nullptr;

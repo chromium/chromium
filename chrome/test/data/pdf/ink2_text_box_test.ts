@@ -179,8 +179,10 @@ chrome.test.runTests([
     chrome.test.assertEq(
         'normal', textboxStyles.getPropertyValue('font-style'));
     chrome.test.assertEq('left', textboxStyles.getPropertyValue('text-align'));
+    const textDecorationLine =
+        textboxStyles.getPropertyValue('text-decoration-line');
     chrome.test.assertTrue(
-        textboxStyles.getPropertyValue('text-decoration').includes('none'));
+        textDecorationLine === 'none' || textDecorationLine === 'initial');
     const color = hexToColor(TEXT_COLORS[0]!.color);
     const colorStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
     chrome.test.assertEq(colorStyle, textboxStyles.getPropertyValue('color'));

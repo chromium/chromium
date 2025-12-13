@@ -39,6 +39,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwWebContentsDelegate_jni.h"
@@ -46,7 +47,7 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using blink::mojom::FileChooserFileInfo;
 using blink::mojom::FileChooserFileInfoPtr;
@@ -377,7 +378,7 @@ int AwWebContentsDelegate::AllowedPrerenderingCount(
 }
 
 content::NavigationController::UserAgentOverrideOption
-AwWebContentsDelegate::ShouldOverrideUserAgentForPrerender2() {
+AwWebContentsDelegate::ShouldOverrideUserAgentForPreloading(const GURL& url) {
   // For WebView, always use the user agent override, which is set every time
   // the user agent in AwSettings is modified.
   return content::NavigationController::UA_OVERRIDE_TRUE;
@@ -421,8 +422,8 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
     jint process_id,
     jint render_id,
     jint mode_flags,
-    const JavaParamRef<jobjectArray>& file_paths,
-    const JavaParamRef<jobjectArray>& display_names) {
+    const JavaRef<jobjectArray>& file_paths,
+    const JavaRef<jobjectArray>& display_names) {
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(process_id, render_id);
   auto* web_contents = WebContents::FromRenderFrameHost(rfh);
@@ -484,3 +485,5 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwWebContentsDelegate)

@@ -21,7 +21,6 @@ component("codec") {
 
   deps = [
     "//skia",
-    "//third_party/zlib",
     "//ui/gfx:gfx_skia",
     "//ui/gfx/geometry",
   ]

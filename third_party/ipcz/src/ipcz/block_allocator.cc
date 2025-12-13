@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
-#include "ipcz/block_allocator.h"
-
 #include <array>
 #include <atomic>
 #include <cstddef>
@@ -17,9 +10,11 @@
 #include <limits>
 #include <thread>
 
+#include "ipcz/block_allocator.h"
 #include "ipcz/ipcz.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "util/safe_math.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 
@@ -86,9 +81,9 @@ void BlockAllocator::InitializeRegion() const {
   // By zeroing the entire region, every block effectively points to its
   // immediate successor as the next free block. See comments on the `next`
   // field if BlockHeader.
-  memset(region_.data(), 0, region_.size());
+  IPCZ_UNSAFE_TODO(memset(region_.data(), 0, region_.size()));
 
-  // Ensure that the last block points back to the unallocable first block,
+  // Ensure that the last block points back to the unallocatable first block,
   // indicating the end of the free-list.
   free_block_at(last_block_index()).SetNextFreeBlock(kFrontBlockIndex);
 }

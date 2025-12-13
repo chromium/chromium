@@ -26,9 +26,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
-class TwoClientSendTabToSelfSyncTest : public SyncTest {
+class TwoClientSendTabToSelfSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientSendTabToSelfSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientSendTabToSelfSyncTest() : SyncTest(TWO_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
 
   TwoClientSendTabToSelfSyncTest(const TwoClientSendTabToSelfSyncTest&) =
       delete;
@@ -36,9 +43,21 @@ class TwoClientSendTabToSelfSyncTest : public SyncTest {
       const TwoClientSendTabToSelfSyncTest&) = delete;
 
   ~TwoClientSendTabToSelfSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientSendTabToSelfSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
                        AddedUrlFoundWhenBothClientsAlreadySyncing) {
   const GURL kUrl("https://www.example.com");
   const base::Time kHistoryEntryTime = base::Time::Now();
@@ -69,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
       send_tab_to_self_helper::SendTabToSelfUrlChecker(service1, kUrl).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
                        ModelsMatchAfterAddWhenBothClientsAlreadySyncing) {
   const GURL kGurl0("https://www.example0.com");
   const std::string kTitle0("example0");
@@ -103,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest, IsActive) {
+IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest, IsActive) {
   ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfActiveChecker(
@@ -111,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest, IsActive) {
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
                        SendTabToSelfReceivingEnabled) {
   ASSERT_TRUE(SetupSync());
 
@@ -136,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   EXPECT_TRUE(device_infos[1]->send_tab_to_self_receiving_enabled());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
                        SendTabToSelfTargetDeviceInfoList) {
   ASSERT_TRUE(SetupSync());
 
@@ -197,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
                   ->HasValidTargetDevice());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
                        MarkOpenedWhenBothClientsAlreadySyncing) {
   const GURL kUrl("https://www.example.com");
   const base::Time kHistoryEntryTime = base::Time::Now();
@@ -238,34 +257,39 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
           .Wait());
 }
 
-class TwoClientSendTabToSelfWithTransportModeSyncTest
-    : public TwoClientSendTabToSelfSyncTest {
- public:
-  TwoClientSendTabToSelfWithTransportModeSyncTest() = default;
-  ~TwoClientSendTabToSelfWithTransportModeSyncTest() override = default;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    TwoClientSendTabToSelfSyncTest::SetUpInProcessBrowserTestFixture();
-    test_signin_client_subscription_ =
-        secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
-  }
-
- private:
-  base::CallbackListSubscription test_signin_client_subscription_;
-};
-
-// Non-primary accounts don't exist on ChromeOS.
+// Transport mode isn't really supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfWithTransportModeSyncTest,
+class TwoClientSendTabToSelfTransportModeSyncTest : public SyncTest {
+ public:
+  TwoClientSendTabToSelfTransportModeSyncTest() : SyncTest(TWO_CLIENT) {}
+
+  TwoClientSendTabToSelfTransportModeSyncTest(
+      const TwoClientSendTabToSelfTransportModeSyncTest&) = delete;
+  TwoClientSendTabToSelfTransportModeSyncTest& operator=(
+      const TwoClientSendTabToSelfTransportModeSyncTest&) = delete;
+
+  ~TwoClientSendTabToSelfTransportModeSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    // This test specifically covers the interplay between a Sync-the-feature
+    // client and a transport-mode client, so this method is not used (and
+    // there's no need to parameterize).
+    NOTREACHED();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfTransportModeSyncTest,
                        SignedInClientCanReceive) {
   ASSERT_TRUE(SetupClients());
 
-  // Set up one client syncing and the other signed-in but not syncing.
+  // Set up one client with Sync-the-feature and the other in transport mode.
   ASSERT_TRUE(GetClient(0)->SetupSync());
-  secondary_account_helper::SignInUnconsentedAccount(
-      GetProfile(1), &test_url_loader_factory_, "user@g.com");
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+
+  ASSERT_TRUE(GetClient(1)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(1)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(1)->IsSyncFeatureActive());
 
   DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
       ->GetDeviceInfoTracker()

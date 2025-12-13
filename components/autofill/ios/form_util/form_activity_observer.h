@@ -40,10 +40,12 @@ class FormActivityObserver {
   // |has_user_gesture| is true if the user interacted with the page.
   // |form_data| contains information on the form that has been submitted.
   // |sender_frame| is the WebFrame that sent the form submission message.
+  // |perfect_filling| is whether the form was filled without any change.
   virtual void DocumentSubmitted(web::WebState* web_state,
                                  web::WebFrame* sender_frame,
                                  const FormData& form_data,
-                                 bool has_user_gesture) {}
+                                 bool has_user_gesture,
+                                 bool perfect_filling) {}
 
   // Called when the form is removed in the main frame or in the same-origin
   // iframe. |params.input_missing| is indicating if there is any

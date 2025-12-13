@@ -16,7 +16,6 @@
 #include "base/thread_annotations.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "url/gurl.h"
 
 namespace content {

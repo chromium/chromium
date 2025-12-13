@@ -1,0 +1,15 @@
+{
+  "metadata" : {
+    "browser_name" : "Safari",
+    "browser_version" : "18.4",
+    "data_type" : "history",
+    "export_time_usec" : 1747418368726439,
+    "schema_version" : 1
+  },
+  {
+    This isn't valid json
+    but it does have a lot of colons:
+    and 'quotation marks'
+    to confuse a parser
+  }
+!!!

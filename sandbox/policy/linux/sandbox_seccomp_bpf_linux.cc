@@ -54,14 +54,10 @@
 #include "sandbox/policy/linux/bpf_utility_policy_linux.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/assistant/buildflags.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/linux/bpf_ime_policy_linux.h"
 #include "sandbox/policy/linux/bpf_nearby_policy_linux.h"
 #include "sandbox/policy/linux/bpf_tts_policy_linux.h"
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#include "sandbox/policy/linux/bpf_libassistant_policy_linux.h"
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -72,9 +68,9 @@
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "sandbox/policy/linux/bpf_on_device_translation_policy_linux.h"
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 using sandbox::bpf_dsl::Allow;
 using sandbox::bpf_dsl::ResultExpr;
@@ -123,27 +119,28 @@ inline bool IsArchitectureArm() {
 }
 
 std::unique_ptr<BPFBasePolicy> GetGpuProcessSandbox(
-    const SandboxSeccompBPF::Options& options) {
+    const SandboxSeccompBPF::Options& options,
+    MremapPolicy mremap_policy) {
   if (IsChromeOS() || UseChromecastSandboxAllowlist()) {
     if (IsArchitectureArm()) {
       return std::make_unique<CrosArmGpuProcessPolicy>(
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kGpuSandboxAllowSysVShm));
+          mremap_policy, base::CommandLine::ForCurrentProcess()->HasSwitch(
+                             switches::kGpuSandboxAllowSysVShm));
     }
     if (options.use_amd_specific_policies) {
-      return std::make_unique<CrosAmdGpuProcessPolicy>();
+      return std::make_unique<CrosAmdGpuProcessPolicy>(mremap_policy);
     }
     if (options.use_intel_specific_policies) {
-      return std::make_unique<CrosIntelGpuProcessPolicy>();
+      return std::make_unique<CrosIntelGpuProcessPolicy>(mremap_policy);
     }
     if (options.use_nvidia_specific_policies) {
-      return std::make_unique<CrosNvidiaGpuProcessPolicy>();
+      return std::make_unique<CrosNvidiaGpuProcessPolicy>(mremap_policy);
     }
     if (options.use_virtio_specific_policies) {
-      return std::make_unique<CrosVirtIoGpuProcessPolicy>();
+      return std::make_unique<CrosVirtIoGpuProcessPolicy>(mremap_policy);
     }
   }
-  return std::make_unique<GpuProcessPolicy>();
+  return std::make_unique<GpuProcessPolicy>(mremap_policy);
 }
 #endif  // !defined(IN_NACL_HELPER)
 
@@ -186,11 +183,11 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
     const SandboxSeccompBPF::Options& options) {
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kGpu:
-      return GetGpuProcessSandbox(options);
+      return GetGpuProcessSandbox(options, MremapPolicy::kBlock);
     case sandbox::mojom::Sandbox::kRenderer:
       return std::make_unique<RendererProcessPolicy>();
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
-      return GetGpuProcessSandbox(options);
+      return GetGpuProcessSandbox(options, MremapPolicy::kAllow);
     case sandbox::mojom::Sandbox::kUtility:
       return std::make_unique<UtilityProcessPolicy>();
     case sandbox::mojom::Sandbox::kCdm:
@@ -209,13 +206,13 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<ServiceProcessPolicy>();
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       return std::make_unique<SpeechRecognitionProcessPolicy>();
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kOnDeviceTranslation:
       return std::make_unique<OnDeviceTranslationProcessPolicy>();
-#endif  // BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kScreenAI:
       return std::make_unique<ScreenAIProcessPolicy>();
+    case sandbox::mojom::Sandbox::kShapeDetection:
+      return std::make_unique<UtilityProcessPolicy>();
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
       return std::make_unique<HardwareVideoDecodingProcessPolicy>(
@@ -227,13 +224,9 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       // TODO(b/255554267): we're using the GPU process sandbox policy for now
       // as a transition step. However, we should create a policy that's tighter
       // just for hardware video encoding.
-      return GetGpuProcessSandbox(options);
+      return GetGpuProcessSandbox(options, MremapPolicy::kBlock);
 #endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_LINUX)
-    case sandbox::mojom::Sandbox::kVideoEffects:
-      return std::make_unique<ServiceProcessPolicy>();
-#endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kIme:
       return std::make_unique<ImeProcessPolicy>();
@@ -241,12 +234,6 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<TtsProcessPolicy>();
     case sandbox::mojom::Sandbox::kNearby:
       return std::make_unique<NearbyProcessPolicy>();
-    case sandbox::mojom::Sandbox::kShapeDetection:
-      return std::make_unique<UtilityProcessPolicy>();
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-    case sandbox::mojom::Sandbox::kLibassistant:
-      return std::make_unique<LibassistantProcessPolicy>();
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kZygoteIntermediateSandbox:
     case sandbox::mojom::Sandbox::kNoSandbox:
@@ -302,18 +289,12 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case sandbox::mojom::Sandbox::kIme:
     case sandbox::mojom::Sandbox::kTts:
     case sandbox::mojom::Sandbox::kNearby:
-    case sandbox::mojom::Sandbox::kShapeDetection:
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-    case sandbox::mojom::Sandbox::kLibassistant:
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    case sandbox::mojom::Sandbox::kShapeDetection:
     case sandbox::mojom::Sandbox::kScreenAI:
-#endif
-#if BUILDFLAG(IS_LINUX)
-    case sandbox::mojom::Sandbox::kVideoEffects:
     case sandbox::mojom::Sandbox::kOnDeviceTranslation:
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kService:
     case sandbox::mojom::Sandbox::kServiceWithJit:

@@ -293,9 +293,10 @@ Response ServiceWorkerHandler::DeliverPushMessage(
   std::optional<std::string> payload;
   if (data.size() > 0)
     payload = data;
-  browser_context_->DeliverPushMessage(GURL(origin), id,
-                                       /* message_id= */ std::string(),
-                                       std::move(payload), base::DoNothing());
+  browser_context_->DeliverPushMessage(
+      GURL(origin), id,
+      /* message_id= */ std::string(), std::move(payload),
+      /* record_network_requests=  */ false, base::DoNothing());
 
   return Response::Success();
 }

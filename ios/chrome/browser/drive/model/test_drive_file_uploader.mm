@@ -6,6 +6,7 @@
 
 #import "base/command_line.h"
 #import "base/task/single_thread_task_runner.h"
+#import "base/time/time.h"
 
 namespace {
 
@@ -61,6 +62,14 @@ DriveFolderResult TestDriveFileUploader::GetFolderCreationResult() const {
                            .error = nil};
 }
 
+DriveFolderResult TestDriveFileUploader::GetClientFolderResult() const {
+  if (client_folder_result_) {
+    return *client_folder_result_;
+  }
+  return DriveFolderResult{
+      .folder_identifier = @"test_client_folder_identifier", .error = nil};
+}
+
 std::vector<DriveFileUploadProgress>
 TestDriveFileUploader::GetFileUploadProgressElements() const {
   if (!file_upload_progress_elements_.empty()) {
@@ -114,6 +123,11 @@ void TestDriveFileUploader::SetFolderCreationResult(
   folder_creation_result_ = result;
 }
 
+void TestDriveFileUploader::SetClientFolderResult(
+    const DriveFolderResult& result) {
+  client_folder_result_ = result;
+}
+
 void TestDriveFileUploader::SetFileUploadProgressElements(
     std::vector<DriveFileUploadProgress> progress_elements) {
   file_upload_progress_elements_ = std::move(progress_elements);
@@ -139,6 +153,11 @@ void TestDriveFileUploader::SetCreateFolderQuitClosure(
   create_folder_quit_closure_ = std::move(quit_closure);
 }
 
+void TestDriveFileUploader::SetFetchClientFolderQuitClosure(
+    base::RepeatingClosure quit_closure) {
+  fetch_client_folder_quit_closure_ = std::move(quit_closure);
+}
+
 void TestDriveFileUploader::SetUploadFileProgressQuitClosure(
     base::RepeatingClosure quit_closure) {
   upload_file_progress_quit_closure_ = std::move(quit_closure);
@@ -160,6 +179,10 @@ NSString* TestDriveFileUploader::GetSearchedFolderName() const {
 
 NSString* TestDriveFileUploader::GetCreatedFolderName() const {
   return created_folder_name_;
+}
+
+NSString* TestDriveFileUploader::GetFetchedClientFolderName() const {
+  return fetched_client_folder_name_;
 }
 
 NSURL* TestDriveFileUploader::GetUploadedFileUrl() const {
@@ -220,6 +243,22 @@ void TestDriveFileUploader::CreateSaveToDriveFolder(
       base::BindOnce(&TestDriveFileUploader::ReportFolderCreationResult,
                      callbacks_weak_ptr_factory_.GetWeakPtr(),
                      std::move(completion_callback), GetFolderCreationResult())
+          .Then(quit_closure),
+      kTestDriveFileUploaderTimeConstant);
+}
+
+void TestDriveFileUploader::FetchSaveToDriveClientFolder(
+    NSString* folder_name,
+    DriveFolderCompletionCallback completion_callback) {
+  fetched_client_folder_name_ = folder_name;
+  auto quit_closure = base::BindRepeating(
+      &TestDriveFileUploader::RunFetchClientFolderQuitClosure,
+      callbacks_weak_ptr_factory_.GetWeakPtr());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TestDriveFileUploader::ReportClientFolderResult,
+                     callbacks_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(completion_callback), GetClientFolderResult())
           .Then(quit_closure),
       kTestDriveFileUploaderTimeConstant);
 }
@@ -294,6 +333,12 @@ void TestDriveFileUploader::ReportFolderCreationResult(
   std::move(completion_callback).Run(folder_creation_result);
 }
 
+void TestDriveFileUploader::ReportClientFolderResult(
+    DriveFolderCompletionCallback completion_callback,
+    DriveFolderResult client_folder_result) {
+  std::move(completion_callback).Run(client_folder_result);
+}
+
 void TestDriveFileUploader::ReportFileUploadProgress(
     DriveFileUploadProgressCallback progress_callback,
     DriveFileUploadProgress file_upload_progress) {
@@ -319,6 +364,10 @@ void TestDriveFileUploader::RunSearchFolderQuitClosure() {
 
 void TestDriveFileUploader::RunCreateFolderQuitClosure() {
   create_folder_quit_closure_.Run();
+}
+
+void TestDriveFileUploader::RunFetchClientFolderQuitClosure() {
+  fetch_client_folder_quit_closure_.Run();
 }
 
 void TestDriveFileUploader::RunUploadFileProgressQuitClosure() {

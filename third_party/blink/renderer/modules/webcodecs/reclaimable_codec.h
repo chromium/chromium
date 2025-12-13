@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"

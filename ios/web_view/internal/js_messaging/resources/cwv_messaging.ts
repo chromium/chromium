@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 function messageHost(messageName: string, payload: Object): void {
@@ -10,4 +10,6 @@ function messageHost(messageName: string, payload: Object): void {
   sendWebKitMessage('CWVWebViewMessage', message);
 }
 
-gCrWebLegacy.cwvMessaging = {messageHost};
+const cwvMessagingApi = new CrWebApi();
+cwvMessagingApi.addFunction('messageHost', messageHost);
+gCrWeb.registerApi('cwvMessaging', cwvMessagingApi);

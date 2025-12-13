@@ -6,10 +6,11 @@
 
 #include <string_view>
 
+#include "base/strings/strcat.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,10 +20,10 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -52,7 +53,7 @@ const web_package::SignedWebBundleId kTestIsolatedWebAppId =
     web_app::test::GetDefaultEd25519WebBundleId();
 
 const std::string kTestIsolatedWebAppUrl =
-    base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+    base::StrCat({webapps::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                   kTestIsolatedWebAppId.id()});
 }  // namespace
 

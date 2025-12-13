@@ -29,6 +29,7 @@
 #include "components/media_message_center/mock_media_notification_item.h"
 #include "components/media_message_center/notification_theme.h"
 #include "components/media_router/common/media_route.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/media_session/public/cpp/media_session_service.h"
@@ -195,7 +196,8 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
   // To break the circular dependency, set up SessionManager in this class
   // member so AshTestHelper will use this instance, and destruction order will
   // follow the production behavior.
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 
   std::unique_ptr<ChromeLayoutProvider> layout_provider_;
   std::unique_ptr<MockMediaNotificationProviderObserver> observer_;

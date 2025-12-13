@@ -11,10 +11,10 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -487,6 +487,26 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     histogram_name.append(
         (navigation_prefetch_ ? "NavigationPrefetch" : "SuggestionPrefetch"));
     base::UmaHistogramBoolean(histogram_name, can_be_served);
+  }
+
+  if (can_be_served) {
+    std::optional<std::string> nvs_header =
+        head->headers ? head->headers->GetNormalizedHeader("No-Vary-Search")
+                      : std::nullopt;
+    base::UmaHistogramBoolean(
+        base::StrCat({"Omnibox.SearchPrefetch.HasNoVarySearchHeader2",
+                      is_in_fallback_ ? ".Fallback" : ".Initial",
+                      navigation_prefetch_ ? ".NavigationPrefetch"
+                                           : ".SuggestionPrefetch"}),
+        nvs_header.has_value());
+    if (nvs_header.has_value()) {
+      base::UmaHistogramSparse(
+          base::StrCat({"Omnibox.SearchPrefetch.NoVarySearchHeaderLength",
+                        is_in_fallback_ ? ".Fallback" : ".Initial",
+                        navigation_prefetch_ ? ".NavigationPrefetch"
+                                             : ".SuggestionPrefetch"}),
+          nvs_header->length());
+    }
   }
 
   // Cached metadata is not supported for navigation loader.

@@ -14,7 +14,6 @@
 namespace login_detection {
 
 BASE_FEATURE(kLoginDetection,
-             "LoginDetection",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -30,11 +29,11 @@ std::string GetSiteNameForURL(const GURL& url) {
   DCHECK(url.SchemeIsHTTPOrHTTPS());
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  std::string scheme = url.scheme();
+  std::string scheme = url.GetScheme();
   // Use the default port for the scheme to ignore any non-standard ports for
   // the scheme from the final string being returned. So,
   // https://www.foo.com:1000/page.html would return just https://foo.com
-  return url::SchemeHostPort(scheme, domain.empty() ? url.host() : domain,
+  return url::SchemeHostPort(scheme, domain.empty() ? url.GetHost() : domain,
                              url::DefaultPortForScheme(scheme))
       .Serialize();
 }

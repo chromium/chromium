@@ -18,6 +18,7 @@
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/metrics_switches.h"
+#include "components/metrics/private_metrics/puma_service.h"
 #include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 #include "components/ukm/ukm_service.h"
@@ -59,12 +60,6 @@ ukm::UkmService* MetricsServicesManager::GetUkmService() {
   return GetMetricsServiceClient()->GetUkmService();
 }
 
-IdentifiabilityStudyState*
-MetricsServicesManager::GetIdentifiabilityStudyState() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return GetMetricsServiceClient()->GetIdentifiabilityStudyState();
-}
-
 metrics::structured::StructuredMetricsService*
 MetricsServicesManager::GetStructuredMetricsService() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -74,6 +69,12 @@ MetricsServicesManager::GetStructuredMetricsService() {
 metrics::dwa::DwaService* MetricsServicesManager::GetDwaService() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return GetMetricsServiceClient()->GetDwaService();
+}
+
+metrics::private_metrics::PumaService*
+MetricsServicesManager::GetPumaService() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return GetMetricsServiceClient()->GetPumaService();
 }
 
 variations::VariationsService* MetricsServicesManager::GetVariationsService() {
@@ -240,6 +241,7 @@ void MetricsServicesManager::UpdateRunningServices() {
   UpdateUkmService();
   UpdateStructuredMetricsService();
   UpdateDwaService();
+  UpdatePumaService();
 }
 
 void MetricsServicesManager::UpdateUkmService() {
@@ -315,6 +317,20 @@ void MetricsServicesManager::UpdateDwaService() {
     if (is_incognito) {
       metrics::dwa::DwaRecorder::Get()->Purge();
     }
+  }
+}
+
+void MetricsServicesManager::UpdatePumaService() {
+  metrics::private_metrics::PumaService* puma_service = GetPumaService();
+  if (!puma_service) {
+    return;
+  }
+
+  // PUMA is currently affected by the UMA setting.
+  if (may_record_ && may_upload_ && consent_given_) {
+    puma_service->EnableReporting();
+  } else {
+    puma_service->DisableReporting();
   }
 }
 

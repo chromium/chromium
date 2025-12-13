@@ -67,15 +67,13 @@ TEST_F(WebExtractorImplTest, TestExtraction) {
   std::unique_ptr<commerce::WebContentsWrapper> web_wrapper =
       std::make_unique<commerce::WebContentsWrapper>(wc.get(), 0u);
   EXPECT_CALL(*extractor, ExtractMetaInfo(testing::_))
-      .WillOnce(testing::Invoke(
-          [](MockCommerceWebExtractor::ExtractMetaInfoCallback callback) {
-            std::move(callback).Run(base::Value("123"));
-          }));
+      .WillOnce([](MockCommerceWebExtractor::ExtractMetaInfoCallback callback) {
+        std::move(callback).Run(base::Value("123"));
+      });
   base::MockCallback<base::OnceCallback<void(const base::Value)>> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [](base::Value value) { ASSERT_EQ(value.GetString(), "123"); }));
+      .WillOnce([](base::Value value) { ASSERT_EQ(value.GetString(), "123"); });
 
   web_extractor->ExtractMetaInfo(web_wrapper.get(), callback.Get());
   base::RunLoop().RunUntilIdle();

@@ -47,7 +47,7 @@ void FakeRecoveryServiceMixin::SetErrorResponse(
 std::unique_ptr<HttpResponse> FakeRecoveryServiceMixin::HandleRequest(
     const HttpRequest& request) {
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
-  const std::string request_path = request_url.path();
+  const std::string request_path = request_url.GetPath();
   std::unique_ptr<BasicHttpResponse> http_response =
       std::make_unique<BasicHttpResponse>();
 
@@ -59,7 +59,7 @@ std::unique_ptr<HttpResponse> FakeRecoveryServiceMixin::HandleRequest(
     return std::move(http_response);
   }
 
-  if (request_path == GetRecoveryServiceReauthTokenURL().path()) {
+  if (request_path == GetRecoveryServiceReauthTokenURL().GetPath()) {
     http_response->set_code(net::HTTP_OK);
     http_response->set_content_type("application/json");
     http_response->set_content(
@@ -67,7 +67,7 @@ std::unique_ptr<HttpResponse> FakeRecoveryServiceMixin::HandleRequest(
           "encodedReauthRequestToken": "fake-reauth-request-token"
         })");
     return std::move(http_response);
-  } else if (request_path == GetRecoveryServiceEpochURL().path()) {
+  } else if (request_path == GetRecoveryServiceEpochURL().GetPath()) {
     http_response->set_code(net::HTTP_OK);
     http_response->set_content_type("application/json");
     http_response->set_content(
@@ -76,7 +76,7 @@ std::unique_ptr<HttpResponse> FakeRecoveryServiceMixin::HandleRequest(
           "epochMetaData": "fake-epoch-metadata",
         })");
     return std::move(http_response);
-  } else if (request_path == GetRecoveryServiceMediateURL().path()) {
+  } else if (request_path == GetRecoveryServiceMediateURL().GetPath()) {
     http_response->set_code(net::HTTP_OK);
     http_response->set_content_type("application/json");
     http_response->set_content(

@@ -62,6 +62,7 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
   Study base_study;
   base_study.set_randomization_seed(500);
   base_study.set_consistency(Study::PERMANENT);
+  base_study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
   auto* filter = base_study.mutable_filter();
   filter->add_channel(Study::CANARY);
   filter->add_channel(Study::BETA);

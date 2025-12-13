@@ -358,7 +358,7 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
 
   if (url.SchemeIsFile()) {
     return base::StrCat({url::kFileScheme16, url::kStandardSchemeSeparator16,
-                         base::UTF8ToUTF16(url.path())});
+                         base::UTF8ToUTF16(url.GetPath())});
   }
 
   if (url.SchemeIsFileSystem()) {
@@ -366,15 +366,15 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
     if (inner_url->SchemeIsFile()) {
       return base::StrCat({url::kFileSystemScheme16, colon,
                            FormatUrlForSecurityDisplay(*inner_url),
-                           base::UTF8ToUTF16(url.path())});
+                           base::UTF8ToUTF16(url.GetPath())});
     }
     return base::StrCat({url::kFileSystemScheme16, colon,
                          FormatUrlForSecurityDisplay(*inner_url)});
   }
 
   const GURL origin = url.DeprecatedGetOriginAsURL();
-  std::string_view scheme = origin.scheme_piece();
-  std::string_view host = origin.host_piece();
+  std::string_view scheme = origin.scheme();
+  std::string_view host = origin.host();
 
   std::u16string result;
   if (ShouldShowScheme(scheme, scheme_display)) {
@@ -386,7 +386,7 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
   const int port = origin.IntPort();
   const int default_port = url::DefaultPortForScheme(scheme);
   if (port != url::PORT_UNSPECIFIED && port != default_port) {
-    result += base::StrCat({colon, base::UTF8ToUTF16(origin.port_piece())});
+    result += base::StrCat({colon, base::UTF8ToUTF16(origin.port())});
   }
 
   return result;
@@ -452,7 +452,7 @@ void SplitHost(const GURL& url,
   // GURL stores IDN hostnames in punycode.  Convert back to Unicode for
   // display to the user.  (IDNToUnicode() will only perform this conversion
   // if it's safe to display this host/domain in Unicode.)
-  *url_host = url_formatter::IDNToUnicode(url.host());
+  *url_host = url_formatter::IDNToUnicode(url.GetHost());
 
   // Get domain and registry information from the URL.
   std::string domain_puny =
@@ -462,9 +462,9 @@ void SplitHost(const GURL& url,
                                     : url_formatter::IDNToUnicode(domain_puny);
 
   // Add port if required.
-  if (!url.port().empty()) {
-    *url_host += base::UTF8ToUTF16(":" + url.port());
-    *url_domain += base::UTF8ToUTF16(":" + url.port());
+  if (!url.GetPort().empty()) {
+    *url_host += base::UTF8ToUTF16(":" + url.GetPort());
+    *url_domain += base::UTF8ToUTF16(":" + url.GetPort());
   }
 
   // Get sub domain if requested.

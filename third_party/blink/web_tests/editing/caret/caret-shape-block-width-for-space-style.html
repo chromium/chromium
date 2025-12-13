@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>caret-shape block width respects space stylings</title>
+  <link rel="help" href="https://drafts.csswg.org/css-ui/#caret-shape">
+  <meta name="assert" content="Test checks that caret-shape block width respects space stylings">
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+  <script src="../../resources/ahem.js"></script>
+  <style>
+    .container>div {
+      font-family: Ahem;
+      width: 3em;
+      font-size: 10px;
+      caret-shape: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div contenteditable class="container" lang="ja">
+    <!-- normal space. -->
+    <div id="em" contenteditable>X&#x0020;X</div>
+    <!-- EN QUAD. -->
+    <div id="enquad" contenteditable>X&#x2000;X</div>
+    <!-- EM QUAD. -->
+    <div id="emquad" contenteditable>X&#x2001;X</div>
+    <!-- EN SPACE. -->
+    <div id="enspace" contenteditable>X&#x2002;X</div>
+    <!-- EM SPACE. -->
+    <div id="emspace" contenteditable>X&#x2003;X</div>
+    <!-- thin space -->
+    <div id="thin" contenteditable>X&#x2009;X</div>
+    <!-- hair space -->
+    <div id="hair" contenteditable>X&#x200a;X</div>
+    <!-- zero width space -->
+    <div id="zero" contenteditable>X&ZeroWidthSpace;X</div>
+    <!-- zero width space in the following segment-->
+    <div id="zeroNext" contenteditable>X<span>&ZeroWidthSpace;X></span></div>
+  </div>
+</body>
+<script>
+
+  function getCaretRectWidth(node) {
+    if (window.internals) {
+      getSelection().collapse(node, 1);
+      return internals.absoluteCaretBounds().width;
+    }
+  }
+
+  test(function () {
+    const em = document.getElementById("em").firstChild;
+    const emWidth = getCaretRectWidth(em);
+
+    // 1 en (= 1/2 em)
+    const enq = document.getElementById("enquad").firstChild;
+    const enqWidth = getCaretRectWidth(enq);
+    assert_approx_equals(emWidth / 2, enqWidth, 1);
+
+    // 1 em
+    const emq = document.getElementById("emquad").firstChild;
+    const emqWidth = getCaretRectWidth(emq);
+    assert_approx_equals(emWidth, emqWidth, 1);
+
+    // 1 en (= 1/2 em)
+    const ens = document.getElementById("enspace").firstChild;
+    const ensWidth = getCaretRectWidth(ens);
+    assert_approx_equals(emWidth / 2, ensWidth, 1);
+
+    // 1 em
+    const ems = document.getElementById("emspace").firstChild;
+    const emsWidth = getCaretRectWidth(ems);
+    assert_approx_equals(emWidth, emsWidth, 1);
+
+    // thin 1/5em - 1/6em
+    const thin = document.getElementById("thin").firstChild;
+    const thinWidth = getCaretRectWidth(thin);
+    assert_approx_equals(emWidth / 5, thinWidth, 1);
+
+    // hair - narrower than thin space
+    const hair = document.getElementById("hair").firstChild;
+    const hairWidth = getCaretRectWidth(hair);
+    assert_approx_equals(emWidth / 6, hairWidth, 1);
+
+    // zero - fall back to 1ch width.
+    const zero = document.getElementById("zero").firstChild;
+    const zeroWidth = getCaretRectWidth(zero);
+    assert_equals(10, zeroWidth);
+    
+    // The following segment starts with a zero space character.
+    const zeroNext = document.getElementById("zeroNext").firstChild;
+    const nextWidth = getCaretRectWidth(zeroNext);
+    assert_equals(10, zeroWidth);
+  }, "caret-shape block width respects the space stylings");
+</script>
+</body>
+
+</html>

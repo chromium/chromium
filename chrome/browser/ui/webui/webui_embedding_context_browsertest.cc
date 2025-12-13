@@ -42,10 +42,9 @@ IN_PROC_BROWSER_TEST_F(
   // Move the tab into a new browser window.
   EXPECT_CALL(tab_changed_callback, Run).Times(0);
   EXPECT_CALL(browser_changed_callback, Run).Times(1);
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::MoveTabsToNewWindow(browser(), {1});
-  Browser* new_browser = new_browser_observer.Wait();
+  Browser* new_browser = browser_created_observer.Wait();
   ASSERT_TRUE(new_browser);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, new_browser->tab_strip_model()->count());

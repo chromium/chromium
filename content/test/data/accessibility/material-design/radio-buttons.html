@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:selectOption1()
+@EXECUTE-AND-WAIT-FOR:selectOption3()
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web Radio Buttons</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-radio"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const radios = [
+                { name: "group1", value: "option1", text: "Option 1" },
+                { name: "group1", value: "option2", text: "Option 2 (selected)", checked: true },
+                { name: "group1", value: "option3", text: "Option 3" },
+                { name: "group2", value: "disabled1", text: "Disabled option", disabled: true },
+                { name: "group2", value: "disabled2", text: "Disabled selected", disabled: true, checked: true },
+                { name: "group3", value: "required1", text: "Required option", required: true }
+            ];
+            radios.forEach(radioInfo => {
+                const radio = document.createElement("md-radio");
+                radio.name = radioInfo.name;
+                radio.value = radioInfo.value;
+                radio.textContent = radioInfo.text;
+                if (radioInfo.checked) {
+                    radio.checked = true;
+                }
+                if (radioInfo.disabled) {
+                    radio.disabled = true;
+                }
+                if (radioInfo.required) {
+                    radio.required = true;
+                }
+                statusDiv.appendChild(radio);
+            });
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+    <script>
+        async function selectOption1() {
+            const radio1 = document.querySelectorAll("md-radio")[0];
+            if (radio1) {
+                radio1.checked = true;
+                const statusDiv = document.getElementById("status");
+                const statusText = document.createElement("div");
+                statusText.textContent = "Selected: Option 1";
+                statusDiv.appendChild(statusText);
+                return "Selected: Option 1";
+            }
+            return "Failed to get Option 1";
+        }
+
+        async function selectOption3() {
+            const radio3 = document.querySelectorAll("md-radio")[2];
+            if (radio3) {
+                radio3.checked = true;
+                const statusDiv = document.getElementById("status");
+                const statusText = document.createElement("div");
+                statusText.textContent = "Selected: Option 3";
+                statusDiv.appendChild(statusText);
+                return "Selected: Option 3";
+            }
+            return "Failed to get Option 3";
+        }
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+</html>

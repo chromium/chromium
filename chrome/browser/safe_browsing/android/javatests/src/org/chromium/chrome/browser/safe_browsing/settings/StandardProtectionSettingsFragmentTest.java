@@ -15,6 +15,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -59,8 +60,12 @@ public class StandardProtectionSettingsFragmentTest {
                 fragment.findPreference(StandardProtectionSettingsFragment.PREF_EXTENDED_REPORTING);
         mStandardProtectionSubtitle =
                 fragment.findPreference(StandardProtectionSettingsFragment.PREF_SUBTITLE);
-        Assert.assertNotNull(
-                "Extended reporting preference should not be null.", mExtendedReportingPreference);
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.SAFE_BROWSING_EXTENDED_REPORTING_REMOVE_PREF_DEPENDENCY)) {
+            Assert.assertNotNull(
+                    "Extended reporting preference should not be null when feature is DISABLED.",
+                    mExtendedReportingPreference);
+        }
     }
 
     private void setSafeBrowsingState(@SafeBrowsingState int state) {
@@ -118,6 +123,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
+    @DisableFeatures({ChromeFeatureList.SAFE_BROWSING_EXTENDED_REPORTING_REMOVE_PREF_DEPENDENCY})
     public void testPreferenceDisabledInEnhancedProtectionMode() {
         mBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
@@ -137,6 +143,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
+    @DisableFeatures({ChromeFeatureList.SAFE_BROWSING_EXTENDED_REPORTING_REMOVE_PREF_DEPENDENCY})
     public void testPreferenceDisabledInNoProtectionMode() {
         mBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         setSafeBrowsingState(SafeBrowsingState.NO_SAFE_BROWSING);
@@ -188,7 +195,8 @@ public class StandardProtectionSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    public void testSafeBrowsingSettingsStandardProtection() {
+    @DisableFeatures({ChromeFeatureList.SAFE_BROWSING_EXTENDED_REPORTING_REMOVE_PREF_DEPENDENCY})
+    public void testSafeBrowsingSettingsStandardProtection_Disabled() {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         startSettings();
 
@@ -207,8 +215,36 @@ public class StandardProtectionSettingsFragmentTest {
 
                     Assert.assertEquals(
                             standardProtectionSubtitle, mStandardProtectionSubtitle.getTitle());
+                    // Assert the Extended Reporting preference is present.
+                    Assert.assertNotNull(mExtendedReportingPreference);
                     Assert.assertEquals(
                             extended_reporting_title, mExtendedReportingPreference.getTitle());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
+    @EnableFeatures({ChromeFeatureList.SAFE_BROWSING_EXTENDED_REPORTING_REMOVE_PREF_DEPENDENCY})
+    public void testSafeBrowsingSettingsStandardProtection_Enabled() {
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+        startSettings();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    StandardProtectionSettingsFragment fragment = mTestRule.getFragment();
+
+                    String standardProtectionSubtitle =
+                            fragment.getContext()
+                                    .getString(R.string.safe_browsing_standard_protection_subtitle);
+
+                    Assert.assertEquals(
+                            standardProtectionSubtitle, mStandardProtectionSubtitle.getTitle());
+
+                    // Assert the Extended Reporting preference is NOT present.
+                    Assert.assertNull(
+                            "Extended Reporting preference should be null when feature is ENABLED.",
+                            mExtendedReportingPreference);
                 });
     }
 

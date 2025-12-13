@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -351,10 +350,7 @@ class NET_EXPORT SpdySession
   ~SpdySession() override;
 
   const HostPortPair& host_port_pair() const {
-    return spdy_session_key_.host_port_proxy_pair().first;
-  }
-  const HostPortProxyPair& host_port_proxy_pair() const {
-    return spdy_session_key_.host_port_proxy_pair();
+    return spdy_session_key_.host_port_pair();
   }
   const SpdySessionKey& spdy_session_key() const { return spdy_session_key_; }
 

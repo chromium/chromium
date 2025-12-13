@@ -28,7 +28,10 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
  public:
   struct JniAudioDevice {
    public:
-    JniAudioDevice(int id, std::optional<std::string> name, int type);
+    JniAudioDevice(int id,
+                   std::optional<std::string> name,
+                   int type,
+                   std::vector<int> sample_rates);
 
     JniAudioDevice(const JniAudioDevice&);
     JniAudioDevice& operator=(const JniAudioDevice&);
@@ -40,11 +43,22 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
     int id;
     std::optional<std::string> name;
     int type;
+
+    // Empty if arbitrary sample rates are supported.
+    std::vector<int> sample_rates;
   };
 
   class JniDelegate {
    public:
     virtual ~JniDelegate() = default;
+
+    // Initializes the device listener, which listens for changes to the list of
+    // audio devices exposed by the OS.
+    virtual void InitDeviceListener() = 0;
+
+    // Initializes the SCO state listener, which listens for changes to the SCO
+    // state reported by the OS.
+    virtual void InitScoStateListener() = 0;
 
     // Returns metadata about the available audio devices as reported by the
     // Android framework, filtered to input devices if `inputs` is true, and to
@@ -58,7 +72,7 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
     virtual std::optional<std::vector<JniAudioDevice>>
     GetCommunicationDevices() = 0;
 
-    virtual int GetMinInputFrameSize(int sample_rate, int channels) = 0;
+    virtual int GetMinInputFramesPerBuffer(int sample_rate, int channels) = 0;
 
     virtual bool AcousticEchoCancelerIsAvailable() = 0;
 
@@ -68,9 +82,6 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
 
     virtual bool SetCommunicationDevice(std::string_view device_id) = 0;
 
-    // Gets whether Bluetooth SCO is currently enabled.
-    virtual bool IsBluetoothScoOn() = 0;
-
     // Requests for Bluetooth SCO to be enabled or disabled. This request may
     // fail.
     virtual void MaybeSetBluetoothScoState(bool state) = 0;
@@ -79,9 +90,9 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
 
     virtual bool IsAudioLowLatencySupported() = 0;
 
-    virtual int GetAudioLowLatencyOutputFrameSize() = 0;
+    virtual int GetAudioLowLatencyOutputFramesPerBuffer() = 0;
 
-    virtual int GetMinOutputFrameSize(int sample_rate, int channels) = 0;
+    virtual int GetMinOutputFramesPerBuffer(int sample_rate, int channels) = 0;
 
     // Returns a bitmask of audio encoding formats supported by all connected
     // HDMI output devices.
@@ -141,8 +152,11 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       const std::string& device_id,
       const LogCallback& log_callback) override;
 
-  void SetMute(JNIEnv* env,
-               jboolean muted);
+  void SetMute(JNIEnv* env, jboolean muted);
+
+  // Called by the Java `AudioManagerAndroid` when the Bluetooth SCO state
+  // changes. Note that this is called on the main thread.
+  void OnScoStateChanged(JNIEnv* env, jboolean state);
 
   // Sets a volume that applies to all this manager's output audio streams.
   // This overrides other SetVolume calls (e.g. through AudioHostMsg_SetVolume).
@@ -163,13 +177,11 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
 
   // Called by an `AAudioInputStream` when it is started, i.e. it begins
   // providing audio data.
-  void REQUIRES_ANDROID_API(AAUDIO_MIN_API)
-      OnStartAAudioInputStream(AAudioInputStream* stream);
+  void OnStartAAudioInputStream(AAudioInputStream* stream);
 
   // Called by an `AAudioInputStream` when it is stopped, i.e. it stops
   // providing audio data.
-  void REQUIRES_ANDROID_API(AAUDIO_MIN_API)
-      OnStopAAudioInputStream(AAudioInputStream* stream);
+  void OnStopAAudioInputStream(AAudioInputStream* stream);
 
   void SetJniDelegateForTesting(std::unique_ptr<JniDelegate> jni_delegate);
 
@@ -184,10 +196,8 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       base::flat_map<android::AudioDeviceId, android::AudioDevice>;
   using OutputStreams =
       base::flat_set<raw_ptr<MuteableAudioOutputStream, CtnExperimental>>;
-  REQUIRES_ANDROID_API(AAUDIO_MIN_API)
-  typedef base::flat_set<raw_ptr<AAudioBluetoothOutputStream, CtnExperimental>>
-      BluetoothOutputStreams;  // `REQUIRES_ANDROID_API` appears to be
-                               // incompatible with using-declarations.
+  using BluetoothOutputStreams =
+      base::flat_set<raw_ptr<AAudioBluetoothOutputStream, CtnExperimental>>;
   using InputStreams =
       base::flat_set<raw_ptr<AudioInputStream, CtnExperimental>>;
 
@@ -203,33 +213,47 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
                       AudioDeviceDirection direction);
   void GetCommunicationDeviceNames(AudioDeviceNames* device_names);
 
+  void UpdateDeviceCache(AudioDeviceDirection direction);
+
   // Retrieve a mapping from device IDs to devices for the specified `direction`
   // which exclusively contains information about devices present during the
   // most recent call to `GetDeviceNames()` for the respective direction.
   const DeviceCache& GetDeviceCache(AudioDeviceDirection direction) const;
 
-  // Utility for `Make(...)Stream` methods which retrieves an appropriate
-  // `android::AudioDevice` based on the provided device ID string. Returns
-  // `std::nullopt` if the device ID is valid but its corresponding device is
-  // not available, which usually indicates that the device was disconnected.
+  // Retrieves an appropriate `android::AudioDevice` based on the provided
+  // device ID string. Returns `std::nullopt` if the device ID is valid but its
+  // corresponding device is not available, which usually indicates that the
+  // device was disconnected.
   std::optional<android::AudioDevice> GetDeviceForAAudioStream(
       std::string_view id_string,
       AudioDeviceDirection direction);
 
-  int GetOptimalOutputFrameSize(int sample_rate, int channels);
+  // Selects a sample rate to be used by audio streams which use the given
+  // `device`. The optional `preferred_sample_rate` parameter can be provided to
+  // specify a preferred value, which may be taken into account when determining
+  // the result.
+  int SelectSampleRate(const android::AudioDevice& device,
+                       std::optional<int> preferred_sample_rate);
+
+  int GetOptimalOutputFramesPerBuffer(int sample_rate, int channels);
   ChannelLayoutConfig GetLayoutWithMaxChannels();
 
   void DoSetMuteOnAudioThread(bool muted);
   void DoSetVolumeOnAudioThread(double volume);
+  void OnScoStateChangedOnAudioThread(bool state);
 
   std::unique_ptr<JniDelegate> jni_delegate_;
+
+  // The current system-wide SCO state. If the actual initial SCO state is
+  // `true`, an SCO state change callback will immediately update the value, so
+  // it can initially be assumed to be `false` here.
+  bool is_bluetooth_sco_enabled_ = false;
 
   // Most recently fetched device data. See `GetDeviceCache` for more details.
   DeviceCache input_device_cache_;
   DeviceCache output_device_cache_;
 
   OutputStreams output_streams_;
-  REQUIRES_ANDROID_API(AAUDIO_MIN_API)
   BluetoothOutputStreams bluetooth_output_streams_;
 
   InputStreams input_streams_requiring_sco_;

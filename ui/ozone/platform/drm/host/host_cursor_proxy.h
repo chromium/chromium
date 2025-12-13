@@ -8,9 +8,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/drm/host/drm_cursor.h"
 #include "ui/ozone/platform/drm/mojom/device_cursor.mojom.h"
+
+class SkBitmap;
 
 namespace ui {
 

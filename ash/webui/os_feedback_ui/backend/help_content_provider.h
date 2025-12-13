@@ -5,14 +5,15 @@
 #ifndef ASH_WEBUI_OS_FEEDBACK_UI_BACKEND_HELP_CONTENT_PROVIDER_H_
 #define ASH_WEBUI_OS_FEEDBACK_UI_BACKEND_HELP_CONTENT_PROVIDER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace content {
@@ -97,17 +98,10 @@ class HelpContentProvider : os_feedback_ui::mojom::HelpContentProvider {
       const uint32_t max_results,
       GetHelpContentsCallback callback,
       std::unique_ptr<network::SimpleURLLoader> url_loader,
-      std::unique_ptr<std::string> response_body);
-  // Called when the data decoder service provides parsed JSON data for a
-  // server response.
-  void OnResponseJsonParsed(const uint32_t max_results,
-                            GetHelpContentsCallback callback,
-                            data_decoder::DataDecoder::ValueOrError result);
+      std::optional<std::string> response_body);
 
   std::string app_locale_;
   bool is_child_account_;
-  // Decoder for data decoding service.
-  data_decoder::DataDecoder data_decoder_;
   // URLLoaderFactory used for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   mojo::Receiver<os_feedback_ui::mojom::HelpContentProvider> receiver_{this};

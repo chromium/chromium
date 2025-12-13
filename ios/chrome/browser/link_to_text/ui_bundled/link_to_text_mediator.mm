@@ -30,37 +30,26 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
     ProceduralBlockWithItemArray);
 }  // namespace
 
-@implementation LinkToTextMediator {
-  // The Browser's WebStateList.
-  base::WeakPtr<WebStateList> _webStateList;
-}
+@implementation LinkToTextMediator
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
-  if ((self = [super init])) {
-    DCHECK(webStateList);
-    _webStateList = webStateList->AsWeakPtr();
-  }
-  return self;
-}
-
-- (void)dealloc {
-  if (_webStateList) {
-    _webStateList = nullptr;
-  }
-}
-
-- (BOOL)shouldOfferLinkToText {
+- (BOOL)shouldOfferLinkToTextInWebState:(web::WebState*)webState {
   DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
-  LinkToTextTabHelper* tabHelper = [self linkToTextTabHelper];
+  if (!webState) {
+    return NO;
+  }
+  LinkToTextTabHelper* tabHelper = LinkToTextTabHelper::FromWebState(webState);
   if (!tabHelper) {
     return NO;
   }
   return tabHelper->ShouldOffer();
 }
 
-- (void)handleLinkToTextSelection {
+- (void)handleLinkToTextSelectionInWebState:(web::WebState*)webState {
   DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
-  LinkToTextTabHelper* tabHelper = [self linkToTextTabHelper];
+  if (!webState) {
+    return;
+  }
+  LinkToTextTabHelper* tabHelper = LinkToTextTabHelper::FromWebState(webState);
   if (!tabHelper) {
     return;
   }
@@ -74,12 +63,16 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   DCHECK(response);
   if (response.error.has_value()) {
     LinkGenerationError error = response.error.value();
-    shared_highlighting::LogLinkGeneratedErrorUkmEvent(response.sourceID,
-                                                       error);
+    if (response.sourceID != ukm::kInvalidSourceId) {
+      shared_highlighting::LogLinkGeneratedErrorUkmEvent(response.sourceID,
+                                                         error);
+    }
     shared_highlighting::LogGenerateErrorLatency(response.latency);
     [self linkGenerationFailedWithError:error];
   } else {
-    shared_highlighting::LogLinkGeneratedSuccessUkmEvent(response.sourceID);
+    if (response.sourceID != ukm::kInvalidSourceId) {
+      shared_highlighting::LogLinkGeneratedSuccessUkmEvent(response.sourceID);
+    }
     shared_highlighting::LogGenerateSuccessLatency(response.latency);
     [self shareLinkToText:response.payload];
   }
@@ -135,19 +128,14 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
                  actions:@[ cancelAction, translateAction ]];
 }
 
-- (LinkToTextTabHelper*)linkToTextTabHelper {
-  web::WebState* webState =
-      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
-  if (!webState) {
-    return nullptr;
+- (void)addItemWithCompletion:(ProceduralBlockWithItemArray)completion
+                  forWebState:(base::WeakPtr<web::WebState>)weakWebState {
+  if (!weakWebState) {
+    completion(@[]);
+    return;
   }
-  LinkToTextTabHelper* helper = LinkToTextTabHelper::FromWebState(webState);
-  DCHECK(helper);
-  return helper;
-}
-
-- (void)addItemWithCompletion:(ProceduralBlockWithItemArray)completion {
-  if (![self shouldOfferLinkToText]) {
+  web::WebState* webState = weakWebState.get();
+  if (![self shouldOfferLinkToTextInWebState:webState]) {
     completion(@[]);
     return;
   }
@@ -155,14 +143,15 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   __weak __typeof(self) weakSelf = self;
   NSString* title = l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT);
   NSString* linkToTextId = @"chromecommand.linktotext";
-  UIAction* action =
-      [UIAction actionWithTitle:title
-                          image:DefaultSymbolWithPointSize(
-                                    kHighlighterSymbol, kSymbolActionPointSize)
-                     identifier:linkToTextId
-                        handler:^(UIAction* a) {
-                          [weakSelf handleLinkToTextSelection];
-                        }];
+  UIAction* action = [UIAction
+      actionWithTitle:title
+                image:DefaultSymbolWithPointSize(kHighlighterSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:linkToTextId
+              handler:^(UIAction* a) {
+                [weakSelf
+                    handleLinkToTextSelectionInWebState:weakWebState.get()];
+              }];
   completion(@[ action ]);
 }
 
@@ -170,13 +159,13 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
 - (void)buildEditMenuWithBuilder:(id<UIMenuBuilder>)builder
                       inWebState:(web::WebState*)webState {
-  // TODO(crbug.com/427168159): use webState.
   NSString* linkToTextId = @"chromecommand.menu.linktotext";
 
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
   __weak __typeof(self) weakSelf = self;
   ProceduralBlockWithBlockWithItemArray provider =
       ^(ProceduralBlockWithItemArray completion) {
-        [weakSelf addItemWithCompletion:completion];
+        [weakSelf addItemWithCompletion:completion forWebState:weakWebState];
       };
   // Use a deferred element so that the item is displayed depending on the text
   // selection and updated on selection change.

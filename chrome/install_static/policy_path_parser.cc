@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/install_static/policy_path_parser.h"
 
 #include <assert.h>
@@ -16,6 +11,9 @@
 #include <wtsapi32.h>
 
 #include <memory>
+
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 
 namespace {
 
@@ -54,9 +52,10 @@ struct ScopedFunctionHelper {
     if (library_) {
       // Strip off any leading :: that may have come from stringifying the
       // function's name.
-      if (function_name[0] == ':' && function_name[1] == ':' &&
-          function_name[2] && function_name[2] != ':') {
-        function_name += 2;
+      if (function_name[0] == ':' && UNSAFE_TODO(function_name[1]) == ':' &&
+          UNSAFE_TODO(function_name[2]) &&
+          UNSAFE_TODO(function_name[2]) != ':') {
+        UNSAFE_TODO(function_name += 2);
       }
       function_ = reinterpret_cast<FunctionType*>(
           GetProcAddress(library_, function_name));
@@ -65,8 +64,9 @@ struct ScopedFunctionHelper {
   }
 
   ~ScopedFunctionHelper() {
-    if (library_)
+    if (library_) {
       FreeLibrary(library_);
+    }
   }
 
   template <class... Args>
@@ -93,8 +93,9 @@ namespace install_static {
 // should only be used after DllMain() has run.
 std::wstring ExpandPathVariables(const std::wstring& untranslated_string) {
   std::wstring result(untranslated_string);
-  if (result.length() == 0)
+  if (result.length() == 0) {
     return result;
+  }
   // Sanitize quotes in case of any around the whole string.
   if (result.length() > 1 &&
       ((result.front() == L'"' && result.back() == L'"') ||
@@ -107,12 +108,12 @@ std::wstring ExpandPathVariables(const std::wstring& untranslated_string) {
       SCOPED_LOAD_FUNCTION(L"shell32.dll", ::SHGetSpecialFolderPathW);
   // First translate all path variables we recognize.
   for (size_t i = 0; i < _countof(kWinFolderMapping); ++i) {
-    size_t position = result.find(kWinFolderMapping[i].name);
+    size_t position = result.find(UNSAFE_TODO(kWinFolderMapping[i]).name);
     if (position != std::wstring::npos) {
-      size_t variable_length = wcslen(kWinFolderMapping[i].name);
+      size_t variable_length = wcslen(UNSAFE_TODO(kWinFolderMapping[i]).name);
       WCHAR path[MAX_PATH];
-      if (!sh_get_special_folder_path(nullptr, path, kWinFolderMapping[i].id,
-                                      false)) {
+      if (!sh_get_special_folder_path(
+              nullptr, path, UNSAFE_TODO(kWinFolderMapping[i]).id, false)) {
         path[0] = 0;
       }
       std::wstring path_string(path);
@@ -135,9 +136,9 @@ std::wstring ExpandPathVariables(const std::wstring& untranslated_string) {
     DWORD return_length = 0;
     get_user_name(nullptr, &return_length);
     if (return_length != 0) {
-      std::unique_ptr<WCHAR[]> username(new WCHAR[return_length]);
-      get_user_name(username.get(), &return_length);
-      std::wstring username_string(username.get());
+      auto username = base::HeapArray<WCHAR>::Uninit(return_length);
+      get_user_name(username.data(), &return_length);
+      std::wstring username_string(username.data());
       result.replace(position, wcslen(kUserNamePolicyVarName), username_string);
     }
   }
@@ -147,10 +148,10 @@ std::wstring ExpandPathVariables(const std::wstring& untranslated_string) {
     ::GetComputerNameEx(ComputerNamePhysicalDnsHostname, nullptr,
                         &return_length);
     if (return_length != 0) {
-      std::unique_ptr<WCHAR[]> machinename(new WCHAR[return_length]);
-      ::GetComputerNameEx(ComputerNamePhysicalDnsHostname, machinename.get(),
+      auto machinename = base::HeapArray<WCHAR>::Uninit(return_length);
+      ::GetComputerNameEx(ComputerNamePhysicalDnsHostname, machinename.data(),
                           &return_length);
-      std::wstring machinename_string(machinename.get());
+      std::wstring machinename_string(machinename.data());
       result.replace(position, wcslen(kMachineNamePolicyVarName),
                      machinename_string);
     }

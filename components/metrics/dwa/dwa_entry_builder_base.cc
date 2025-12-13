@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/metrics/metrics_hashes.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/dwa/mojom/dwa_interface.mojom.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"

@@ -7,6 +7,7 @@ module media.mojom;
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "media/mojo/mojom/interface_factory.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
+import "services/viz/public/mojom/gpu.mojom";
 
 // A VideoDecoderFactoryProcess is intended to be hosted in a utility process.
 // The client is expected to be the browser process. The intended usage is as
@@ -26,5 +27,6 @@ interface VideoDecoderFactoryProcess {
   // restrict the supported video decode configurations.
   InitializeVideoDecoderFactory(
       gpu.mojom.GpuFeatureInfo gpu_feature_info,
-      pending_receiver<InterfaceFactory> receiver);
+      pending_receiver<InterfaceFactory> receiver,
+      pending_remote<viz.mojom.Gpu>? gpu_remote);
 };

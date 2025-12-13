@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_FILE_SELECT_HELPER_H_
 #define CHROME_BROWSER_FILE_SELECT_HELPER_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"

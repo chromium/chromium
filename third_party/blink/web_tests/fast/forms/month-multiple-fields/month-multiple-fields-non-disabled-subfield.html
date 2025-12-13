@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>Sub-fields in input[type=month] should not be disabled</title>
+<link rel='help' href='https://issues.chromium.org/issues/442293382'>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src="../resources/common.js"></script>
+<script>
+function createMonthInput(min, max, value) {
+  return createInput('month', min, max, '', value);
+}
+
+test(() => {
+  assert_false(isYearFieldDisabled(createMonthInput('', '', '')));
+  assert_false(isYearFieldDisabled(createMonthInput('2012-12', '', '')));
+  assert_false(isYearFieldDisabled(createMonthInput('', '2012-12', '')));
+  assert_false(isYearFieldDisabled(createMonthInput('', '', '2012-12')));
+  assert_false(isYearFieldDisabled(createMonthInput('2012-01', '2012-12', '')));
+  assert_false(isYearFieldDisabled(createMonthInput('2012-01', '2013-12', '')));
+  assert_false(isYearFieldDisabled(createMonthInput('2012-01', '2012-12', '2012-05')));
+  assert_false(isYearFieldDisabled(createMonthInput('2012-01', '2012-12', '2013-01')));
+}, 'The year field should be non-disabled');
+
+
+test(() => {
+  assert_false(isMonthFieldDisabled(createMonthInput('', '', '')));
+  assert_false(isMonthFieldDisabled(createMonthInput('2012-12', '', '')));
+  assert_false(isMonthFieldDisabled(createMonthInput('', '2012-12', '')));
+  assert_false(isMonthFieldDisabled(createMonthInput('', '', '2012-12')));
+  assert_false(isMonthFieldDisabled(createMonthInput('2012-12', '2012-12', '')));
+  assert_false(isMonthFieldDisabled(createMonthInput('2012-11', '2013-12', '')));
+  assert_false(isMonthFieldDisabled(createMonthInput('2012-12', '2013-12', '')));
+  assert_false(isMonthFieldDisabled(createMonthInput('2012-12', '2012-12', '2012-12')));
+  assert_false(isMonthFieldDisabled(createMonthInput('2012-12', '2012-12', '2012-11')));
+}, 'The month field should be non-disabled');
+</script>

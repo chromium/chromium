@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -17,8 +18,6 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/config/gpu_feature_info.h"
-
-class GrDirectContext;
 
 namespace gpu {
 class GLInProcessContext;
@@ -30,17 +29,12 @@ class GrShaderCache;
 }
 }  // namespace gpu
 
-namespace skia_bindings {
-class GrContextForGLES2Interface;
-}
-
 namespace viz {
 class GpuServiceImpl;
 
 enum TestContextType {
-  kGLES2,            // Provides GLES2Interface.
-  kSoftwareRaster,   // Provides RasterInterface for software raster.
-  kGpuRaster         // Provides RasterInterface for GPU raster.
+  kGLES2,  // Provides GLES2Interface.
+  kRaster  // Provides RasterInterface.
 };
 
 class TestInProcessContextProvider
@@ -61,7 +55,6 @@ class TestInProcessContextProvider
   gpu::gles2::GLES2Interface* ContextGL() override;
   gpu::raster::RasterInterface* RasterInterface() override;
   gpu::ContextSupport* ContextSupport() override;
-  class GrDirectContext* GrContext() override;
   gpu::SharedImageInterface* SharedImageInterface() override;
   ContextCacheController* CacheController() override;
   base::Lock* GetLock() override;
@@ -69,7 +62,6 @@ class TestInProcessContextProvider
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override;
   void AddObserver(ContextLostObserver* obs) override;
   void RemoveObserver(ContextLostObserver* obs) override;
-  unsigned int GetGrGLTextureFormat(SharedImageFormat format) const override;
   GpuServiceImpl* GpuService();
 
   // Calls OnContextLost() on all observers. This doesn't modify the context.
@@ -96,7 +88,6 @@ class TestInProcessContextProvider
 
   // Used for GLES2 contexts only.
   std::unique_ptr<gpu::GLInProcessContext> gles2_context_;
-  std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
 
   // Used for raster contexts only.
   std::unique_ptr<gpu::RasterInProcessContext> raster_context_;

@@ -1,0 +1,76 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+source_set("action_chips") {
+  sources = [
+    "action_chips_generator.cc",
+    "action_chips_generator.h",
+    "action_chips_handler.cc",
+    "action_chips_handler.h",
+    "remote_suggestions_service_simple.cc",
+    "remote_suggestions_service_simple.h",
+    "tab_id_generator.cc",
+    "tab_id_generator.h",
+  ]
+  public_deps = [ ":mojo_bindings" ]
+  deps = [
+    "//base",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/webui:webui_util",
+    "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/core",
+    "//components/sessions",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//url",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "action_chips.mojom" ]
+  webui_module_path = "/"
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "action_chips_generator_unittest.cc",
+    "action_chips_handler_unittest.cc",
+    "action_chips_mojo_test_utils.cc",
+    "action_chips_mojo_test_utils.h",
+    "fake_tab_id_generator.cc",
+    "fake_tab_id_generator.h",
+    "remote_suggestions_service_simple_unittest.cc",
+  ]
+  deps = [
+    ":action_chips",
+    "//base/test:test_support",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/sessions",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/test:test_support",
+    "//components/tabs:test_support",
+    "//components/variations",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

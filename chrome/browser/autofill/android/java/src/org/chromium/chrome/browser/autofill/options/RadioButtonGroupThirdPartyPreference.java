@@ -11,13 +11,13 @@ import android.widget.RadioGroup;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
@@ -26,7 +26,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /** A radio button group toggling the opt-in status for Third Party support. */
 @NullMarked
-public final class RadioButtonGroupThirdPartyPreference extends Preference {
+public final class RadioButtonGroupThirdPartyPreference
+        extends ContainedRadioButtonGroupPreference {
     /** Enums that represent the status of radio buttons inside this Preference. */
     @IntDef({ThirdPartyOption.DEFAULT, ThirdPartyOption.USE_OTHER_PROVIDER})
     @Retention(RetentionPolicy.SOURCE)

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//tools/json_schema_compiler/json_features.gni")
 
@@ -15,7 +14,6 @@ source_set("extensions") {
     "api/omnibox/omnibox_handler.h",
     "api/storage/storage_schema_manifest_handler.h",
     "chrome_extensions_client.h",
-    "chrome_manifest_url_handlers.h",
     "extension_constants.h",
     "extension_metrics.h",
     "manifest_handlers/app_launch_info.h",
@@ -40,7 +38,6 @@ source_set("extensions") {
     "chrome_extensions_client.cc",
     "chrome_manifest_handlers.cc",
     "chrome_manifest_handlers.h",
-    "chrome_manifest_url_handlers.cc",
     "extension_constants.cc",
     "extension_metrics.cc",
     "manifest_handlers/app_launch_info.cc",
@@ -102,16 +99,17 @@ source_set("extensions") {
     public += [
       "api/file_browser_handlers/file_browser_handler.h",
       "api/side_panel/side_panel_info.h",
-      "api/speech/tts_engine_manifest_handler.h",
-      "api/url_handlers/url_handlers_parser.h",
     ]
 
     sources += [
       "api/file_browser_handlers/file_browser_handler.cc",
       "api/side_panel/side_panel_info.cc",
-      "api/speech/tts_engine_manifest_handler.cc",
-      "api/url_handlers/url_handlers_parser.cc",
     ]
+  }
+
+  if (enable_platform_apps) {
+    public += [ "api/url_handlers/url_handlers_parser.h" ]
+    sources += [ "api/url_handlers/url_handlers_parser.cc" ]
   }
 
   if (is_chromeos) {

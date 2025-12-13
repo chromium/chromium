@@ -6,10 +6,8 @@
 #define CHROME_BROWSER_PRELOADING_NEW_TAB_PAGE_PRELOAD_NEW_TAB_PAGE_PRELOAD_PIPELINE_MANAGER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -19,9 +17,7 @@ class WebContents;
 // Roles:
 //
 // - Manages preload pipelines per WebContents.
-class NewTabPagePreloadPipelineManager
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<NewTabPagePreloadPipelineManager> {
+class NewTabPagePreloadPipelineManager : public content::WebContentsObserver {
  public:
   explicit NewTabPagePreloadPipelineManager(content::WebContents* contents);
   ~NewTabPagePreloadPipelineManager() override;
@@ -43,23 +39,19 @@ class NewTabPagePreloadPipelineManager
   static NewTabPagePreloadPipelineManager* GetOrCreateForWebContents(
       content::WebContents* web_contents);
 
-  base::WeakPtr<NewTabPagePreloadPipelineManager> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
+  void StartPrefetch(const GURL& url);
 
-  // Returns true if prerender is started successfully or is present, false
-  // otherwise.
-  bool StartPrerender(const GURL& url, content::PreloadingPredictor predictor);
+  void StartPrerender(const GURL& url, content::PreloadingPredictor predictor);
 
   void ResetPrerender();
 
  private:
-  friend content::WebContentsUserData<NewTabPagePreloadPipelineManager>;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  // Resets the pipeline to allow another preloading attempt if a given url is
+  // different from the started one. Pipeline creation will follow the check if
+  // a pipeline hasn't existed.
+  void EnsurePipelineForUrl(const GURL& url);
 
   std::unique_ptr<NewTabPagePreloadPipeline> pipeline_;
-
-  base::WeakPtrFactory<NewTabPagePreloadPipelineManager> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PRELOADING_NEW_TAB_PAGE_PRELOAD_NEW_TAB_PAGE_PRELOAD_PIPELINE_MANAGER_H_

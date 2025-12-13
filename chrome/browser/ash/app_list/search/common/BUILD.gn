@@ -10,7 +10,6 @@ static_library("common") {
   sources = [
     "file_util.cc",
     "file_util.h",
-    "icon_constants.cc",
     "icon_constants.h",
     "keyword_util.cc",
     "keyword_util.h",
@@ -25,7 +24,6 @@ static_library("common") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/ranking",
@@ -33,6 +31,7 @@ static_library("common") {
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/string_matching",
     "//ui/base",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/gfx",
     "//url",
   ]

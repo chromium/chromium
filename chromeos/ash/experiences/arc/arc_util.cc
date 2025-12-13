@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/experiences/arc/arc_util.h"
 
 #include <algorithm>
@@ -18,6 +13,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -32,6 +28,7 @@
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_platform_support.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
 #include "chromeos/version/version_loader.h"
@@ -167,6 +164,26 @@ void OnStaleArcVmUpstartJobsStopped(
 bool IsArcAvailable() {
   const auto* command_line = base::CommandLine::ForCurrentProcess();
 
+  // If a device requires downloading the ARCVM image from a DLC (only on Reven
+  // board), but the download is not allowed due to unmet requirements (such as
+  // hardware or device management policies), then ARC is not considered
+  // available.
+  if (IsArcVmDlcRequired()) {
+    if (!arc::ArcPlatformSupport::Get()->IsDlcEnabled()) {
+      VLOG(1)
+          << "The ARCVM preload device policy is not enabled on the device, so "
+             "installing the ARCVM image from DLC is not supported.";
+      return false;
+    }
+
+    if (!IsArcVmDlcHardwareRequirementSatisfied()) {
+      VLOG(1)
+          << "The device does not meet the minimum hardware requirements to "
+             "install the ARCVM image from DLC.";
+      return false;
+    }
+  }
+
   if (command_line->HasSwitch(ash::switches::kArcAvailability)) {
     const std::string value =
         command_line->GetSwitchValueASCII(ash::switches::kArcAvailability);
@@ -191,9 +208,16 @@ bool IsArcVmEnabled() {
       ash::switches::kEnableArcVm);
 }
 
-bool IsArcVmDlcEnabled() {
+// TODO(crbug.com/450134000): Rename --arcvm-dlc-enabled flag to
+// --arcvm-dlc-required.
+bool IsArcVmDlcRequired() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kEnableArcVmDlc);
+}
+
+bool IsArcVmDlcHardwareRequirementSatisfied() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kArcVmDlcHardwareRequirementSatisfied);
 }
 
 int GetArcAndroidSdkVersionAsInt() {
@@ -367,8 +391,8 @@ std::optional<int> GetWindowTaskId(const aura::Window* window) {
 
 std::optional<int> GetTaskIdFromWindowAppId(const std::string& window_app_id) {
   int task_id;
-  if (std::sscanf(window_app_id.c_str(), "org.chromium.arc.%d", &task_id) !=
-      1) {
+  if (UNSAFE_TODO(std::sscanf(window_app_id.c_str(), "org.chromium.arc.%d",
+                              &task_id)) != 1) {
     return std::nullopt;
   }
   return task_id;
@@ -388,8 +412,9 @@ std::optional<int> GetWindowSessionId(const aura::Window* window) {
 std::optional<int> GetSessionIdFromWindowAppId(
     const std::string& window_app_id) {
   int session_id;
-  if (std::sscanf(window_app_id.c_str(), "org.chromium.arc.session.%d",
-                  &session_id) != 1) {
+  if (UNSAFE_TODO(std::sscanf(window_app_id.c_str(),
+                              "org.chromium.arc.session.%d", &session_id)) !=
+      1) {
     return std::nullopt;
   }
   return session_id;
@@ -578,9 +603,8 @@ bool ShouldUseArcKeyMint() {
   // TODO(b/308630124): Change to ">= kArcVersionT", when ready to enable
   // KeyMint on ARC V+.
   return version == kArcVersionT && version < kMaxArcVersion &&
-         (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-              ash::switches::kArcBlockKeyMint) ||
-          base::FeatureList::IsEnabled(kSwitchToKeyMintOnTOverride));
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             ash::switches::kArcBlockKeyMint);
 }
 
 bool ShouldUseArcAttestation() {
@@ -744,8 +768,8 @@ bool ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
   const auto& history =
       prefs->GetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory);
   const size_t window_size = std::min<size_t>(history.size(), max_window_size);
-  base::span<const base::Value> history_window(history.end() - window_size,
-                                               history.end());
+  base::span<const base::Value> UNSAFE_TODO(
+      history_window(history.end() - window_size, history.end()));
   return std::ranges::count(history_window, base::Value(true)) < threshold;
 }
 

@@ -16,6 +16,7 @@ source_set("image_fetch") {
     ":image_fetch_js",
     "//base",
     "//components/image_fetcher/core",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/web/common",
     "//ios/web/public/js_messaging",
     "//url",

@@ -123,8 +123,7 @@ public class UrlSchemeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            ChromeTabUtils.getTitleOnUiThread(
-                                    mActivityTestRule.getActivity().getActivityTab()),
+                            ChromeTabUtils.getTitleOnUiThread(mActivityTestRule.getActivityTab()),
                             Matchers.is("iframe loaded"));
                 });
         // Make sure that content provider was asked to provide the content.
@@ -135,8 +134,7 @@ public class UrlSchemeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            ChromeTabUtils.getTitleOnUiThread(
-                                    mActivityTestRule.getActivity().getActivityTab()),
+                            ChromeTabUtils.getTitleOnUiThread(mActivityTestRule.getActivityTab()),
                             Matchers.is("fail"));
                 });
     }
@@ -159,15 +157,14 @@ public class UrlSchemeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            ChromeTabUtils.getTitleOnUiThread(
-                                    mActivityTestRule.getActivity().getActivityTab()),
+                            ChromeTabUtils.getTitleOnUiThread(mActivityTestRule.getActivityTab()),
                             Matchers.not("running"));
                 });
 
         // Make sure that content provider was asked to provide the content.
         ensureResourceRequestCountInContentProviderNotLessThan(resource, 1);
 
-        return ChromeTabUtils.getTitleOnUiThread(mActivityTestRule.getActivity().getActivityTab());
+        return ChromeTabUtils.getTitleOnUiThread(mActivityTestRule.getActivityTab());
     }
 
     @Test
@@ -214,8 +211,7 @@ public class UrlSchemeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            ChromeTabUtils.getTitleOnUiThread(
-                                    mActivityTestRule.getActivity().getActivityTab()),
+                            ChromeTabUtils.getTitleOnUiThread(mActivityTestRule.getActivityTab()),
                             Matchers.not("running"));
                 });
 
@@ -223,9 +219,7 @@ public class UrlSchemeTest {
         ensureResourceRequestCountInContentProviderNotLessThan(resource, 1);
 
         Assert.assertEquals(
-                "exception",
-                ChromeTabUtils.getTitleOnUiThread(
-                        mActivityTestRule.getActivity().getActivityTab()));
+                "exception", ChromeTabUtils.getTitleOnUiThread(mActivityTestRule.getActivityTab()));
     }
 
     /** Test that a content URL is *ALLOWED* to access an image provided by a content URL. */
@@ -263,8 +257,7 @@ public class UrlSchemeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            ChromeTabUtils.getTitleOnUiThread(
-                                    mActivityTestRule.getActivity().getActivityTab()),
+                            ChromeTabUtils.getTitleOnUiThread(mActivityTestRule.getActivityTab()),
                             Matchers.is(expectedTitle));
                 });
         ensureResourceRequestCountInContentProviderNotLessThan(resource, expectedLoadCount);
@@ -310,9 +303,7 @@ public class UrlSchemeTest {
             TestFileUtil.createNewHtmlFile(file, "File", null);
             mActivityTestRule.loadUrl("file://" + file.getAbsolutePath());
             Assert.assertEquals(
-                    "File",
-                    ChromeTabUtils.getTitleOnUiThread(
-                            mActivityTestRule.getActivity().getActivityTab()));
+                    "File", ChromeTabUtils.getTitleOnUiThread(mActivityTestRule.getActivityTab()));
         } finally {
             TestFileUtil.deleteFile(file);
         }

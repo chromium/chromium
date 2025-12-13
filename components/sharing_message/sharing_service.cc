@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -346,7 +347,7 @@ void SharingService::SendNotificationForSendTabToSelfPush(
       base::UTF8ToUTF16(entry.GetDeviceName()));
   std::string body = l10n_util::GetStringFUTF8(
       IDS_SEND_TAB_PUSH_NOTIFICATION_BODY, base::UTF8ToUTF16(entry.GetTitle()),
-      base::UTF8ToUTF16(entry.GetURL().host()));
+      base::UTF8ToUTF16(entry.GetURL().GetHost()));
 
   push_notification_entry->set_title(title);
   push_notification_entry->set_text(body);

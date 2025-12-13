@@ -143,7 +143,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
  protected:
   TestTabGroupMediator* mediator_;
   id<TabGroupConsumer> tab_group_consumer_;
-  raw_ptr<const TabGroup> tab_group_;
+  raw_ptr<const TabGroup, DanglingUntriaged> tab_group_;
   std::unique_ptr<WebStateListBuilderFromDescription> builder_;
   std::unique_ptr<ShareKitService> share_kit_service_;
   std::unique_ptr<collaboration::MockCollaborationService>

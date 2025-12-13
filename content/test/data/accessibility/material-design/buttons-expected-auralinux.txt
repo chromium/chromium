@@ -1,0 +1,70 @@
+[document web] name='Material Web Buttons'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++[push button] name='Filled Button'
+++++[section]
+++++++[section]
+++++++[section]
+++++++[push button] name='Outlined Button'
+++++[section]
+++++++[section]
+++++++[push button] name='Text Button'
+++++[section]
+++++[push button] name='Disabled Button'
+=== Start Continuation ===
+[document web] name='Material Web Buttons'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++[push button] name='Filled Button'
+++++[section]
+++++++[section]
+++++++[section]
+++++++[push button] name='Outlined Button'
+++++[section]
+++++++[section]
+++++++[push button] name='Text Button'
+++++[section]
+++++[push button] name='Disabled Button'
+++++[section]
+++++++[static] name='Filled Button Clicked'
+=== Start Continuation ===
+[document web] name='Material Web Buttons'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++[push button] name='Filled Button'
+++++[section]
+++++[section]
+++++[push button] name='Outlined Button'
+++++[section]
+++++++[section]
+++++++[push button] name='Text Button'
+++++[section]
+++++[push button] name='Disabled Button'
+++++[section]
+++++++[static] name='Filled Button Clicked'
+++++[section]
+++++++[static] name='Outlined Button Disabled'
+=== Start Continuation ===
+[document web] name='Material Web Buttons'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++[push button] name='Filled Button'
+++++[section]
+++++++[section]
+++++++[section]
+++++++[push button] name='Outlined Button'
+++++[section]
+++++++[section]
+++++++[push button] name='Text Button'
+++++[section]
+++++[push button] name='Disabled Button'
+++++[section]
+++++++[static] name='Filled Button Clicked'
+++++[section]
+++++++[static] name='Outlined Button Disabled'
+++++[section]
+++++++[static] name='Outlined Button Enabled'

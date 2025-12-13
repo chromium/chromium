@@ -31,6 +31,7 @@
       <include name="IDR_UASTYLE_TRANSITION_SCOPED_CSS" file="../renderer/core/css/transition_scoped.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_TRANSITION_ANIMATIONS_CSS" file="../renderer/core/css/transition_animations.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_TRANSITION_ANIMATIONS_SCOPED_CSS" file="../renderer/core/css/transition_animations_scoped.css" type="BINDATA" compress="brotli"/>
+      <include name="IDR_UASTYLE_OVERSCROLL_CSS" file="../renderer/core/css/overscroll.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_DOCUMENTXMLTREEVIEWER_CSS" file="../renderer/core/xml/DocumentXMLTreeViewer.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_DOCUMENTXMLTREEVIEWER_JS" file="../renderer/core/xml/DocumentXMLTreeViewer.js" type="BINDATA" compress="brotli"/>
       <include name="IDR_VALIDATION_BUBBLE_ICON" file="../renderer/core/html/forms/resources/input_alert.svg" type="BINDATA" compress="brotli"/>
@@ -57,6 +58,7 @@
       <include name="IDR_AUDIO_SPATIALIZATION_COMPOSITE" file="../renderer/platform/audio/resources/Composite.flac" type="BINDATA"/>
       <include name="IDR_UASTYLE_JSON_DOCUMENT_CSS" file="../renderer/core/css/json-document.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_PERMISSION_ICON_CAMERA_SVG" file="../renderer/core/html/resources/images/permission_icon_camera.svg" type="BINDATA" compress="brotli"/>
+      <include name="IDR_PERMISSION_ICON_INSTALL_SVG" file="../renderer/core/html/resources/images/permission_icon_install.svg" type="BINDATA" compress="brotli"/>
       <include name="IDR_PERMISSION_ICON_MICROPHONE_SVG" file="../renderer/core/html/resources/images/permission_icon_microphone.svg" type="BINDATA" compress="brotli"/>
       <include name="IDR_PERMISSION_ICON_LOCATION_SVG" file="../renderer/core/html/resources/images/permission_icon_location.svg" type="BINDATA" compress="brotli"/>
       <include name="IDR_PERMISSION_ICON_LOCATION_PRECISE_SVG" file="../renderer/core/html/resources/images/permission_icon_location_precise.svg" type="BINDATA" compress="brotli"/>

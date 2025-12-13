@@ -13,10 +13,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_weak_ref.h"
-#endif
-
 // Abstraction of a mechanism that associates GURL objects with open tabs.
 class TabMatcher {
  public:
@@ -27,8 +23,7 @@ class TabMatcher {
     bool has_matching_tab{};
 
 #if BUILDFLAG(IS_ANDROID)
-    // Weak pointer to an Android Tab for the supplied GURL.
-    JavaObjectWeakGlobalRef android_tab{};
+    int android_tab_id{};
 #endif
   };
 

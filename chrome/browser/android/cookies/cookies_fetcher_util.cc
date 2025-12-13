@@ -22,7 +22,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/android/cookies/jni_headers/CookiesFetcher_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -68,43 +68,45 @@ void OnCookiesFetchFinished(
 
 }  // namespace
 
-std::string JNI_CookiesFetcher_GetCookieFileDirectory(JNIEnv* env,
-                                                      Profile* profile) {
+static std::string JNI_CookiesFetcher_GetCookieFileDirectory(JNIEnv* env,
+                                                             Profile* profile) {
   return profile->GetPath().Append(chrome::kOTRTempStateDirname).value();
 }
 
 // Fetches cookies for the off-the-record session (i.e. incognito mode). It is a
 // no-op for the standard session. Typically associated with the #onPause of
 // Android's activity lifecycle.
-void JNI_CookiesFetcher_PersistCookies(
+static void JNI_CookiesFetcher_PersistCookies(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_cookies_fetcher) {
+    const JavaRef<jobject>& j_cookies_fetcher) {
   cookie_fetcher_restore_util::GetCookieServiceClient(profile)->GetAllCookies(
       base::BindOnce(&OnCookiesFetchFinished,
                      ScopedJavaGlobalRef<jobject>(j_cookies_fetcher)));
 }
 
-void JNI_CookiesFetcher_RestoreCookies(JNIEnv* env,
-                                       Profile* profile,
-                                       std::string& name,
-                                       std::string& value,
-                                       std::string& domain,
-                                       std::string& path,
-                                       jlong creation,
-                                       jlong expiration,
-                                       jlong last_access,
-                                       jlong last_update,
-                                       jboolean secure,
-                                       jboolean httponly,
-                                       jint same_site,
-                                       jint priority,
-                                       std::string& partition_key,
-                                       jint source_scheme,
-                                       jint source_port,
-                                       jint source_type) {
+static void JNI_CookiesFetcher_RestoreCookies(JNIEnv* env,
+                                              Profile* profile,
+                                              std::string& name,
+                                              std::string& value,
+                                              std::string& domain,
+                                              std::string& path,
+                                              jlong creation,
+                                              jlong expiration,
+                                              jlong last_access,
+                                              jlong last_update,
+                                              jboolean secure,
+                                              jboolean httponly,
+                                              jint same_site,
+                                              jint priority,
+                                              std::string& partition_key,
+                                              jint source_scheme,
+                                              jint source_port,
+                                              jint source_type) {
   cookie_fetcher_restore_util::CookiesFetcherRestoreCookiesImpl(
       env, profile, name, value, domain, path, creation, expiration,
       last_access, last_update, secure, httponly, same_site, priority,
       partition_key, source_scheme, source_port, source_type);
 }
+
+DEFINE_JNI(CookiesFetcher)

@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
+#include "content/public/common/buildflags.h"
 
 namespace content {
 
@@ -44,6 +45,8 @@ class WebContentsViewChildFrame : public WebContentsView,
   void FocusThroughTabTraversal(bool reverse) override;
   DropData* GetDropData() const override;
   gfx::Rect GetViewBounds() const override;
+  void Resize(const gfx::Rect& new_bounds) override;
+  gfx::Size GetSize() const override;
   void CreateView(gfx::NativeView context) override;
   RenderWidgetHostViewBase* CreateViewForWidget(
       RenderWidgetHost* render_widget_host) override;

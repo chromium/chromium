@@ -11,8 +11,8 @@ source_set("two_screens_signin") {
     "//base",
     "//components/signin/public/identity_manager",
     "//components/sync/base:features",
-    "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator",
-    "//ios/chrome/browser/authentication/ui_bundled/history_sync",
+    "//ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator",
+    "//ios/chrome/browser/authentication/history_sync/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_screen_provider",
@@ -37,12 +37,13 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/sync:test_support",
     "//components/sync/base:features",
+    "//components/test/ios",
     "//ios/chrome/app/profile",
+    "//ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator",
+    "//ios/chrome/browser/authentication/fullscreen_signin_screen/ui",
+    "//ios/chrome/browser/authentication/history_sync/coordinator",
+    "//ios/chrome/browser/authentication/history_sync/ui",
     "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
-    "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator",
-    "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui",
-    "//ios/chrome/browser/authentication/ui_bundled/history_sync",
-    "//ios/chrome/browser/authentication/ui_bundled/history_sync:ui",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_in_progress",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -66,7 +67,7 @@ source_set("unit_tests") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "upgrade_signin_promo_egtest.mm" ]
+  sources = [ "fullscreen_signin_promo_egtest.mm" ]
   deps = [
     "//base",
     "//base/test:test_support",
@@ -74,7 +75,7 @@ source_set("eg2_tests") {
     "//components/signin/internal/identity_manager",
     "//components/signin/ios/browser:features",
     "//components/sync/base:features",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/views:views_constants",
     "//ios/chrome/browser/flags:system_flags",

@@ -97,7 +97,8 @@ void TrayContainer::OnPaint(gfx::Canvas* canvas) {
   // We only add highlight border to the system tray when the shlef background
   // is transparent: 1)the shelf is in tablet mode but not in app mode OR 2)the
   // shelf is in the non-logged in page.
-  if ((!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app()) &&
+  if ((!display::Screen::Get()->InTabletMode() ||
+       ShelfConfig::Get()->is_in_app()) &&
       !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     return;
   }

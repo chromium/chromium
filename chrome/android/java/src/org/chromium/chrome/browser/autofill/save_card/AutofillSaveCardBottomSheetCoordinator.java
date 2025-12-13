@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
@@ -24,6 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * <p>This component shows a bottom sheet to let the user choose to save a payment card (either
  * locally or uploaded).
  */
+@NullMarked
 public class AutofillSaveCardBottomSheetCoordinator {
     /** Native callbacks from the save card bottom sheet. */
     public interface NativeDelegate {

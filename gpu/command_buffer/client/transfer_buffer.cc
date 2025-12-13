@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // A class to Manage a growing transfer buffer.
 
 #include "gpu/command_buffer/client/transfer_buffer.h"
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <climits>
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 
@@ -226,32 +223,29 @@ void TransferBuffer::ShrinkOrExpandRingBufferIfNecessary(
   }
 }
 
-void* TransferBuffer::AllocUpTo(
-    unsigned int size, unsigned int* size_allocated) {
-  DCHECK(size_allocated);
-
+base::span<uint8_t> TransferBuffer::AllocUpTo(unsigned int size) {
   ShrinkOrExpandRingBufferIfNecessary(size);
 
   if (!HaveBuffer()) {
-    return nullptr;
+    return {};
   }
 
-  unsigned int max_size = ring_buffer_->GetLargestFreeOrPendingSize();
-  *size_allocated = std::min(max_size, size);
-  bytes_since_last_shrink_ += *size_allocated;
-  return ring_buffer_->Alloc(*size_allocated);
+  uint32_t max_size = ring_buffer_->GetLargestFreeOrPendingSize();
+  uint32_t size_allocated = std::min(max_size, size);
+  bytes_since_last_shrink_ += size_allocated;
+  return ring_buffer_->Alloc(size_allocated);
 }
 
-void* TransferBuffer::Alloc(unsigned int size) {
+base::span<uint8_t> TransferBuffer::Alloc(unsigned int size) {
   ShrinkOrExpandRingBufferIfNecessary(size);
 
   if (!HaveBuffer()) {
-    return nullptr;
+    return {};
   }
 
   unsigned int max_size = ring_buffer_->GetLargestFreeOrPendingSize();
   if (size > max_size) {
-    return nullptr;
+    return {};
   }
   bytes_since_last_shrink_ += size;
   return ring_buffer_->Alloc(size);
@@ -293,26 +287,22 @@ unsigned int TransferBuffer::GetCurrentMaxAllocationWithoutRealloc() const {
 ScopedTransferBufferPtr::ScopedTransferBufferPtr(
     ScopedTransferBufferPtr&& other)
     : buffer_(other.buffer_),
-      size_(other.size_),
       helper_(other.helper_),
       transfer_buffer_(other.transfer_buffer_) {
-  other.buffer_ = nullptr;
-  other.size_ = 0u;
+  other.buffer_ = {};
 }
 
 void ScopedTransferBufferPtr::Release() {
-  if (buffer_) {
-    transfer_buffer_->FreePendingToken(buffer_, helper_->InsertToken());
-    buffer_ = nullptr;
-    size_ = 0;
+  if (valid()) {
+    transfer_buffer_->FreePendingToken(buffer_.data(), helper_->InsertToken());
+    buffer_ = {};
   }
 }
 
 void ScopedTransferBufferPtr::Discard() {
-  if (buffer_) {
-    transfer_buffer_->DiscardBlock(buffer_);
-    buffer_ = nullptr;
-    size_ = 0;
+  if (valid()) {
+    transfer_buffer_->DiscardBlock(buffer_.data());
+    buffer_ = {};
   }
 }
 
@@ -323,21 +313,23 @@ void ScopedTransferBufferPtr::Reset(unsigned int new_size) {
   // will be valid. That has the side effect that we'll insert a token on free.
   // We could add code skip the token for a zero size buffer but it doesn't seem
   // worth the complication.
-  buffer_ = transfer_buffer_->AllocUpTo(new_size, &size_);
+  buffer_ = transfer_buffer_->AllocUpTo(new_size);
 }
 
 void ScopedTransferBufferPtr::Shrink(unsigned int new_size) {
-  if (!transfer_buffer_->HaveBuffer() || new_size >= size_)
+  if (!transfer_buffer_->HaveBuffer() || new_size >= buffer_.size()) {
     return;
+  }
   transfer_buffer_->ShrinkLastBlock(new_size);
-  size_ = new_size;
+  buffer_ = buffer_.first(new_size);
 }
 
 bool ScopedTransferBufferPtr::BelongsToBuffer(uint8_t* memory) const {
-  if (!buffer_)
+  if (buffer_.empty()) {
     return false;
-  uint8_t* start = static_cast<uint8_t*>(buffer_.get());
-  uint8_t* end = start + size_;
+  }
+  const uint8_t* start = &buffer_.front();
+  const uint8_t* end = &buffer_.back();
   return memory >= start && memory <= end;
 }
 

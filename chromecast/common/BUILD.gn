@@ -39,7 +39,7 @@ cast_source_set("activity_url_filter") {
     "//base",
     "//components/url_matcher",
     "//services/network/public/cpp:cpp_base",
-    "//third_party/blink/public/common:common",
+    "//third_party/blink/public/common",
     "//third_party/blink/public/common:headers",
     "//url",
   ]
@@ -111,7 +111,7 @@ cast_source_set("common") {
     "//media:media_buildflags",
     "//third_party/widevine/cdm:buildflags",
     "//ui/base",
-    "//url:url",
+    "//url",
   ]
 
   if (!is_fuchsia) {
@@ -119,7 +119,7 @@ cast_source_set("common") {
   }
 
   if (is_android || is_fuchsia) {
-    deps += [ "//components/cdm/common:common" ]
+    deps += [ "//components/cdm/common" ]
   }
 
   if (enable_library_cdms) {
@@ -127,4 +127,12 @@ cast_source_set("common") {
   }
 
   defines = [ "DEVICE_USER_AGENT_SUFFIX=\"${device_user_agent_suffix}\"" ]
+}
+
+cast_source_set("timing_tracker") {
+  sources = [
+    "timing_tracker.cc",
+    "timing_tracker.h",
+  ]
+  deps = [ "//base" ]
 }

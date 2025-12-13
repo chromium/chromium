@@ -165,6 +165,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMenuBrowserTest, InvokeUi_main_pending_update) {
     ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
     proto::PendingUpdateInfo update_info;
     update_info.set_name("Updated app name");
+    update_info.set_was_ignored(false);
     update->UpdateApp(app_id())->SetPendingUpdateInfo(std::move(update_info));
   }
 

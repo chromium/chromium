@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "sql/statement.h"
 
@@ -104,13 +105,7 @@ std::optional<std::vector<uint8_t>> CdmStorageDatabase::ReadFile(
     return std::vector<uint8_t>();
   }
 
-  std::vector<uint8_t> data;
-  if (!statement.ColumnBlobAsVector(0, &data)) {
-    DVLOG(1) << "Error reading Cdm storage data.";
-    return std::nullopt;
-  }
-
-  return data;
+  return statement.ColumnBlobAsVector(0);
 }
 
 bool CdmStorageDatabase::WriteFile(const blink::StorageKey& storage_key,

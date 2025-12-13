@@ -8,6 +8,7 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
@@ -33,8 +34,21 @@ public interface AnimationHost {
     /**
      * Starts a given list of animations.
      *
-     * @param animationList The {@link Animator} list to start.
+     * @param animationList The {@link Animator} list to start. Nullable to allow for listeners to
+     *     correctly resolve, even when no animation will actually run.
      * @param listener The {@link AnimatorListener} for the given animations.
      */
-    void startAnimations(List<Animator> animationList, AnimatorListener listener);
+    void startAnimations(
+            @Nullable List<Animator> animationList, @Nullable AnimatorListener listener);
+
+    /**
+     * Queues a given list of animations. Started and finished if {@link #finishAnimations} is
+     * called. Otherwise, started when the next tab strip update occurs.
+     *
+     * @param animationList The {@link Animator} list to start. Nullable to allow for listeners to
+     *     correctly resolve, even when no animation will actually run.
+     * @param listener The {@link AnimatorListener} for the given animations.
+     */
+    void queueAnimations(
+            @Nullable List<Animator> animationList, @Nullable AnimatorListener listener);
 }

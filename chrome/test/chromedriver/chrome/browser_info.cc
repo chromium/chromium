@@ -47,7 +47,8 @@ Status BrowserInfo::ParseBrowserInfo(const std::string& data) {
 
 Status BrowserInfo::ParseBrowserInfo(const std::string& data,
                                      BrowserInfo* browser_info) {
-  std::optional<base::Value> value = base::JSONReader::Read(data);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return Status(kUnknownError, "version info not in JSON");
   }

@@ -44,9 +44,9 @@ import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.List;
 
 /** This class handles animating the opening of new tabs. */
 @NullMarked
@@ -175,7 +175,7 @@ public class SimpleAnimationLayout extends Layout {
         sourceLayoutTab.setBorderAlpha(0.0f);
 
         mLayoutTabs = new LayoutTab[] {sourceLayoutTab};
-        updateCacheVisibleIds(new LinkedList<>(Arrays.asList(sourceTabId)));
+        updateCacheVisibleIds(Collections.singletonList(sourceTabId));
     }
 
     @Override
@@ -192,8 +192,8 @@ public class SimpleAnimationLayout extends Layout {
         if (mTabModelSelector != null) {
             Tab tab = mTabModelSelector.getModel(newIsIncognito).getTabById(id);
             if (tab != null
-                    && tab.getLaunchType()
-                            == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP) {
+                    && (tab.getLaunchType() == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP
+                            || tab.getLaunchType() == TabLaunchType.FROM_TIPS_NOTIFICATIONS)) {
                 // Tab selection will no-op for Tab.INVALID_TAB_ID. This operation should not change
                 // the current tab. If for some reason this is the last tab it will be automatically
                 // selected.
@@ -228,7 +228,7 @@ public class SimpleAnimationLayout extends Layout {
         } else {
             mLayoutTabs = new LayoutTab[] {mLayoutTabs[0], newLayoutTab};
         }
-        updateCacheVisibleIds(new LinkedList<>(Arrays.asList(id, sourceId)));
+        updateCacheVisibleIds(List.of(id, sourceId));
 
         newLayoutTab.setBorderAlpha(0.0f);
 
@@ -299,7 +299,7 @@ public class SimpleAnimationLayout extends Layout {
         assert mLayoutTabs != null && mLayoutTabs.length == 1;
         LayoutTab sourceLayoutTab = mLayoutTabs[0];
         mLayoutTabs = new LayoutTab[] {sourceLayoutTab, newLayoutTab};
-        updateCacheVisibleIds(new LinkedList<>(Arrays.asList(id, sourceId)));
+        updateCacheVisibleIds(List.of(id, sourceId));
 
         forceAnimationToFinish();
 

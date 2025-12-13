@@ -246,11 +246,10 @@ TEST_P(FileDescriptorWatcherTest, WatchReadableOneByte) {
   // call to ReadableCallback() which will read 1 byte from the pipe.
   WriteByte();
   RunLoop run_loop;
-  EXPECT_CALL(mock_, ReadableCallback())
-      .WillOnce(testing::Invoke([this, &run_loop] {
-        ReadByte();
-        run_loop.Quit();
-      }));
+  EXPECT_CALL(mock_, ReadableCallback()).WillOnce([this, &run_loop] {
+    ReadByte();
+    run_loop.Quit();
+  });
   run_loop.Run();
   testing::Mock::VerifyAndClear(&mock_);
 
@@ -267,11 +266,11 @@ TEST_P(FileDescriptorWatcherTest, WatchReadableTwoBytes) {
   WriteByte();
   RunLoop run_loop;
   EXPECT_CALL(mock_, ReadableCallback())
-      .WillOnce(testing::Invoke([this] { ReadByte(); }))
-      .WillOnce(testing::Invoke([this, &run_loop] {
+      .WillOnce([this] { ReadByte(); })
+      .WillOnce([this, &run_loop] {
         ReadByte();
         run_loop.Quit();
-      }));
+      });
   run_loop.Run();
   testing::Mock::VerifyAndClear(&mock_);
 
@@ -288,14 +287,14 @@ TEST_P(FileDescriptorWatcherTest, WatchReadableByteWrittenFromCallback) {
   WriteByte();
   RunLoop run_loop;
   EXPECT_CALL(mock_, ReadableCallback())
-      .WillOnce(testing::Invoke([this] {
+      .WillOnce([this] {
         ReadByte();
         WriteByte();
-      }))
-      .WillOnce(testing::Invoke([this, &run_loop] {
+      })
+      .WillOnce([this, &run_loop] {
         ReadByte();
         run_loop.Quit();
-      }));
+      });
   run_loop.Run();
   testing::Mock::VerifyAndClear(&mock_);
 
@@ -310,11 +309,10 @@ TEST_P(FileDescriptorWatcherTest, DeleteControllerFromCallback) {
   // |controller| is deleted.
   WriteByte();
   RunLoop run_loop;
-  EXPECT_CALL(mock_, ReadableCallback())
-      .WillOnce(testing::Invoke([&run_loop, &controller] {
-        controller = nullptr;
-        run_loop.Quit();
-      }));
+  EXPECT_CALL(mock_, ReadableCallback()).WillOnce([&run_loop, &controller] {
+    controller = nullptr;
+    run_loop.Quit();
+  });
   run_loop.Run();
   testing::Mock::VerifyAndClear(&mock_);
 
@@ -380,19 +378,18 @@ TEST_P(FileDescriptorWatcherTest,
   WriteByte2();
 
   RunLoop run_loop;
-  EXPECT_CALL(mock_, ReadableCallback())
-      .WillOnce(testing::Invoke([this, &controller] {
-        ReadByte();
-        CloseWriteFd2();
-        controller.reset();
-      }));
+  EXPECT_CALL(mock_, ReadableCallback()).WillOnce([this, &controller] {
+    ReadByte();
+    CloseWriteFd2();
+    controller.reset();
+  });
   EXPECT_CALL(mock_, ReadableCallback2())
-      .WillOnce(testing::Invoke([this] { ReadByte2(); }))
-      .WillOnce(testing::Invoke([this, &controller2, &run_loop] {
+      .WillOnce([this] { ReadByte2(); })
+      .WillOnce([this, &controller2, &run_loop] {
         ReadByte2();
         controller2.reset();
         run_loop.Quit();
-      }));
+      });
   run_loop.Run();
   testing::Mock::VerifyAndClear(&mock_);
 

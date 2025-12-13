@@ -17,8 +17,8 @@
 
 namespace offline_pages {
 namespace {
+
 using testing::_;
-using testing::Invoke;
 
 const char kImageData[] = "abc123";
 
@@ -40,15 +40,14 @@ TEST_F(VisualsDecoderImplTest, Success) {
       gfx::test::CreateImage(kImageWidth, kImageHeight);
   EXPECT_CALL(*image_decoder, DecodeImage(kImageData, _, _, _))
       .WillOnce(testing::WithArg<3>(
-          Invoke([&](image_fetcher::ImageDecodedCallback callback) {
+          [&](image_fetcher::ImageDecodedCallback callback) {
             std::move(callback).Run(kDecodedImage);
-          })));
+          }));
   base::MockCallback<VisualsDecoder::DecodeComplete> complete_callback;
-  EXPECT_CALL(complete_callback, Run(_))
-      .WillOnce(Invoke([&](const gfx::Image& image) {
-        EXPECT_EQ(kImageHeight, image.Width());
-        EXPECT_EQ(kImageHeight, image.Height());
-      }));
+  EXPECT_CALL(complete_callback, Run(_)).WillOnce([&](const gfx::Image& image) {
+    EXPECT_EQ(kImageHeight, image.Width());
+    EXPECT_EQ(kImageHeight, image.Height());
+  });
   visuals_decoder->DecodeAndCropImage(kImageData, complete_callback.Get());
 }
 
@@ -56,13 +55,13 @@ TEST_F(VisualsDecoderImplTest, DecodeFail) {
   const gfx::Image kDecodedImage = gfx::Image();
   EXPECT_CALL(*image_decoder, DecodeImage(kImageData, _, _, _))
       .WillOnce(testing::WithArg<3>(
-          Invoke([&](image_fetcher::ImageDecodedCallback callback) {
+          [&](image_fetcher::ImageDecodedCallback callback) {
             std::move(callback).Run(kDecodedImage);
-          })));
+          }));
   base::MockCallback<VisualsDecoder::DecodeComplete> complete_callback;
-  EXPECT_CALL(complete_callback, Run(_))
-      .WillOnce(Invoke(
-          [](const gfx::Image& image) { EXPECT_TRUE(image.IsEmpty()); }));
+  EXPECT_CALL(complete_callback, Run(_)).WillOnce([](const gfx::Image& image) {
+    EXPECT_TRUE(image.IsEmpty());
+  });
   visuals_decoder->DecodeAndCropImage(kImageData, complete_callback.Get());
 }
 

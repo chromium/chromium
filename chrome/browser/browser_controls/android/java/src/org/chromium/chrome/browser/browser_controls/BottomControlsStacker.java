@@ -145,8 +145,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
     private int mTotalHeight = INVALID_HEIGHT;
     private int mTotalMinHeight = INVALID_HEIGHT;
-    private int mTotalHeightFromSetter = INVALID_HEIGHT;
-    private int mTotalMinHeightFromSetter = INVALID_HEIGHT;
 
     private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
 
@@ -252,12 +250,10 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      * @param animate Whether animate the browser controls size change.
      */
     public void requestLayerUpdate(boolean animate) {
-        assert isEnabled();
-
         updateLayerVisibilitiesAndSizes();
         updateBrowserControlsHeight(animate);
         updateBackgroundColorFromLayers();
-        if (mBrowserControlsSizer.offsetOverridden() && isDispatchingYOffset()) {
+        if (mBrowserControlsSizer.offsetOverridden()) {
             repositionLayers(
                     mBrowserControlsSizer.getBottomControlOffset(),
                     mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
@@ -281,37 +277,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      */
     public BrowserControlsStateProvider getBrowserControls() {
         return mBrowserControlsSizer;
-    }
-
-    /**
-     * Note: New callers should just use #requestLayerUpdate directly.
-     *
-     * <p>Request update the bottom controls height. Internally, the call is routed to the inner
-     * {@link BrowserControlsSizer}.
-     *
-     * @param height The new height for the bottom browser controls
-     * @param minHeight The new min height for the bottom browser controls.
-     * @param animate Whether the height change required to be animated.
-     * @see BrowserControlsSizer#setBottomControlsHeight(int, int)
-     * @see BrowserControlsSizer#setAnimateBrowserControlsHeightChanges(boolean)
-     */
-    public void setBottomControlsHeight(int height, int minHeight, boolean animate) {
-        mTotalHeightFromSetter = height;
-        mTotalMinHeightFromSetter = minHeight;
-
-        if (!isEnabled()) {
-            mBrowserControlsSizer.setBottomControlsHeight(height, minHeight);
-        } else {
-            requestLayerUpdate(animate);
-            // Verify the height and min height match the layer setup.
-            logIfHeightMismatch(
-                    /* expected= */ "HeightFromSetter",
-                    mTotalHeightFromSetter,
-                    mTotalMinHeightFromSetter,
-                    /* actual= */ "LayerHeightCalc",
-                    mTotalHeight,
-                    mTotalMinHeight);
-        }
     }
 
     /**
@@ -370,42 +335,20 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     @Override
     public void onBottomControlsHeightChanged(
             int bottomControlsHeight, int bottomControlsMinHeight) {
-        // Use warning instead of assert, as there are still use cases that's referenced
-        // from custom tabs.
-        logIfHeightMismatch(
-                /* expected= */ "HeightFromSetter",
-                mTotalHeightFromSetter,
-                mTotalMinHeightFromSetter,
-                /* actual= */ "onBottomControlsHeightChanged",
-                bottomControlsHeight,
-                bottomControlsMinHeight);
-
-        // Verification when we are using layers.
-        if (isEnabled()) {
-            logIfHeightMismatch(
-                    /* expected= */ "LayerHeightCalc",
-                    mTotalHeight,
-                    mTotalMinHeight,
-                    /* actual= */ "onBottomControlsHeightChanged",
-                    bottomControlsHeight,
-                    bottomControlsMinHeight);
-
-            // If animations are enabled, calls to #onControlsOffsetChanged will reposition the
-            // layers. If animations aren't enabled, no such calls will occur, and #repositionLayers
-            // should be triggered here.
-            if (isDispatchingYOffset()
-                    && !mBrowserControlsSizer.shouldAnimateBrowserControlsHeightChanges()) {
-                repositionLayers(
-                        mBrowserControlsSizer.getBottomControlOffset(),
-                        mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
-                        false,
-                        isVisibilityForced());
-            }
+        // If animations are enabled, calls to #onControlsOffsetChanged will reposition the
+        // layers. If animations aren't enabled, no such calls will occur, and #repositionLayers
+        // should be triggered here.
+        if (!mBrowserControlsSizer.shouldAnimateBrowserControlsHeightChanges()) {
+            repositionLayers(
+                    mBrowserControlsSizer.getBottomControlOffset(),
+                    mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
+                    false,
+                    isVisibilityForced());
         }
     }
 
     @Override
-    public void onControlsConstraintsChanged(
+    public void onOffsetTagsInfoChanged(
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo,
             @BrowserControlsState int constraints,
@@ -417,12 +360,17 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             for (int layerType : STACK_ORDER) {
                 BottomControlsLayer layer = mLayers.get(layerType);
                 if (layer == null) continue;
-                additionalHeight += layer.updateOffsetTag(offsetTagsInfo);
+
+                if (isLayerNonScrollable(layer.getType())) {
+                    layer.clearOffsetTag();
+                } else {
+                    additionalHeight += layer.updateOffsetTag(offsetTagsInfo);
+                }
             }
 
             int totalHeight = mTotalHeight;
             if (totalHeight == INVALID_HEIGHT) {
-                // TODO(crbug.com/395937483): Investigate if this causes any other bugs.
+                // TODO(crbug.com/463962392): Investigate if this causes any other bugs.
                 Log.w(TAG, "Using mTotalHeight before initialization");
 
                 totalHeight = 0;
@@ -432,7 +380,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             offsetTagsInfo.mBottomControlsConstraints =
                     new OffsetTagConstraints(0, 0, 0, totalHeight + additionalHeight);
 
-            if (shouldUpdateOffsets && isDispatchingYOffset()) {
+            if (shouldUpdateOffsets) {
                 repositionLayers(
                         mBrowserControlsSizer.getBottomControlOffset(),
                         mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
@@ -452,7 +400,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             boolean bottomControlsMinHeightChanged,
             boolean requestNewFrame,
             boolean isVisibilityForced) {
-        if (mLayers.size() == 0 || !isDispatchingYOffset()) return;
+        if (mLayers.size() == 0) return;
         repositionLayers(
                 bottomOffset,
                 bottomControlsMinHeightOffset,
@@ -544,18 +492,20 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
                     minHeightBottomOffset = Math.min(minHeightBottomOffset, mTotalHeight);
                 }
+
+
+                logIfHeightMismatch(
+                        "Heights before #repositionLayers",
+                        mTotalHeight,
+                        mTotalMinHeight,
+                        "First pass in #repositionLayers",
+                        height,
+                        totalMinHeight);
             }
 
             yOffsetOfLayers.put(type, layerYOffset);
         }
 
-        logIfHeightMismatch(
-                "Heights before #repositionLayers",
-                mTotalHeight,
-                mTotalMinHeight,
-                "First pass in #repositionLayers",
-                height,
-                totalMinHeight);
 
         // 2. If animated, compare and fix the yOffset with the previous mLayerOffsets if reposition
         // is caused by an animated browser controls height adjustment. This needs to run in a
@@ -759,18 +709,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         return (scrollOffBehavior == LayerScrollBehavior.ALWAYS_SCROLL_OFF)
                 || (totalMinHeight == 0
                         && scrollOffBehavior == LayerScrollBehavior.DEFAULT_SCROLL_OFF);
-    }
-
-    /** Returns whether bottom controls stacker is calculating height. */
-    public static boolean isEnabled() {
-        return ChromeFeatureList.sBottomBrowserControlsRefactor.isEnabled();
-    }
-
-    /** Whether Bottom Controls Stacker is dispatching yOffset. */
-    public static boolean isDispatchingYOffset() {
-        // This method is used as a kill switch to fallback to the previous behavior.
-        return isEnabled()
-                && !ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching.getValue();
     }
 
     /**

@@ -232,6 +232,8 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
 
   const ProposedLayout& target_layout() const { return target_layout_; }
 
+  void disable_widget_check_for_testing() { check_widget_ = false; }
+
  protected:
   // LayoutManagerBase:
   ProposedLayout CalculateProposedLayout(
@@ -396,6 +398,10 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   // True when there's a pending PostTask() to RunQueuedActions(). Used to avoid
   // scheduling redundant tasks.
   bool run_queued_actions_is_pending_ = false;
+
+  // Whether or not the host's widget should be checked for invalid state. Can
+  // be disabled for tests that do not use a widget.
+  bool check_widget_ = true;
 
   base::WeakPtrFactory<AnimatingLayoutManager> weak_ptr_factory_{this};
 };

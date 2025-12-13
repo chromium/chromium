@@ -46,31 +46,36 @@ class RenderWidgetHostViewAndroid;
 class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
  public:
   ImeAdapterAndroid(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj,
+                    const base::android::JavaRef<jobject>& obj,
                     WebContents* web_contents);
   ~ImeAdapterAndroid() override;
 
   // Called from java -> native
-  bool SendKeyEvent(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& original_key_event,
-      int type,
-      int modifiers,
-      jlong time_ms,
-      int key_code,
-      int scan_code,
-      bool is_system_key,
-      int unicode_text);
+  bool SendKeyEvent(JNIEnv* env,
+                    const base::android::JavaRef<jobject>& original_key_event,
+                    int type,
+                    int modifiers,
+                    jlong time_ms,
+                    int key_code,
+                    int scan_code,
+                    bool is_system_key,
+                    int unicode_text);
   void SetComposingText(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj,
-                        const base::android::JavaParamRef<jobject>& text,
-                        const base::android::JavaParamRef<jstring>& text_str,
+                        const base::android::JavaRef<jobject>& obj,
+                        const base::android::JavaRef<jobject>& text,
+                        const base::android::JavaRef<jstring>& text_str,
                         int relative_cursor_pos);
   void CommitText(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& obj,
-                  const base::android::JavaParamRef<jobject>& text,
-                  const base::android::JavaParamRef<jstring>& text_str,
+                  const base::android::JavaRef<jobject>& obj,
+                  const base::android::JavaRef<jobject>& text,
+                  const base::android::JavaRef<jstring>& text_str,
                   int relative_cursor_pos);
+  void ReplaceText(JNIEnv* env,
+                   const base::android::JavaRef<jobject>& obj,
+                   int start,
+                   int end,
+                   const base::android::JavaRef<jstring>& text,
+                   int relative_cursor_pos);
   void FinishComposingText(JNIEnv* env);
   void SetEditableSelectionOffsets(JNIEnv*, int start, int end);
   void SetComposingRegion(JNIEnv*, int start, int end);
@@ -78,10 +83,9 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
   void DeleteSurroundingTextInCodePoints(JNIEnv*, int before, int after);
   void RequestCursorUpdate(JNIEnv*, bool immediateRequest, bool monitorRequest);
   bool RequestTextInputStateUpdate(JNIEnv*);
-  void HandleStylusWritingGestureAction(
-      JNIEnv*,
-      const jint,
-      const base::android::JavaParamRef<jobject>&);
+  void HandleStylusWritingGestureAction(JNIEnv*,
+                                        const jint,
+                                        const base::android::JavaRef<jobject>&);
 
   void OnStylusWritingGestureActionCompleted(
       int,
@@ -110,6 +114,10 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
       const gfx::Rect& focused_edit_bounds,
       const gfx::Rect& caret_bounds);
 
+  bool InsertMediaFromURL(JNIEnv* env,
+
+                          const base::android::JavaRef<jstring>& url);
+
   base::android::ScopedJavaLocalRef<jobject> java_ime_adapter_for_testing(
       JNIEnv* env) {
     return java_ime_adapter_.get(env);
@@ -120,14 +128,19 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
 
   void AdvanceFocusForIME(JNIEnv*, jint);
 
+  base::android::ScopedJavaLocalRef<jobjectArray> GetSupportedMimeTypes(
+      JNIEnv*);
+
+  void PerformSpellCheck(JNIEnv* env);
+
  private:
   RenderWidgetHostImpl* GetFocusedWidget();
   RenderFrameHost* GetFocusedFrame();
   blink::mojom::FrameWidgetInputHandler* GetFocusedFrameWidgetInputHandler();
   std::vector<ui::ImeTextSpan> GetImeTextSpansFromJava(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& text,
+      const base::android::JavaRef<jobject>& obj,
+      const base::android::JavaRef<jobject>& text,
       const std::u16string& text16);
 
   gfx::SizeF old_viewport_size_;

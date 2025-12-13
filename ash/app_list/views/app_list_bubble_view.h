@@ -28,7 +28,6 @@ namespace ash {
 class AppListA11yAnnouncer;
 class AppListBubbleAppsPage;
 class AppListBubbleAppsCollectionsPage;
-class AppListBubbleAssistantPage;
 class AppListBubbleSearchPage;
 class AppListFolderItem;
 class AppListFolderView;
@@ -75,12 +74,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // Shows a sub-page.
   void ShowPage(AppListBubblePage page);
 
-  // Returns true if the assistant page is showing.
-  bool IsShowingEmbeddedAssistantUI() const;
-
-  // Shows the assistant page.
-  void ShowEmbeddedAssistantUI();
-
   // Returns the required height for this view in DIPs to show all apps in the
   // apps grid. Used for computing the bubble height on large screens.
   int GetHeightToFitAllApps() const;
@@ -109,7 +102,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // SearchBoxViewDelegate:
   void QueryChanged(const std::u16string& trimmed_query,
                     bool initiated_by_user) override;
-  void AssistantButtonPressed() override;
   void CloseButtonPressed() override;
   void ActiveChanged(SearchBoxViewBase* sender) override {}
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override;
@@ -122,24 +114,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void ShowApps(AppListItemView* folder_item_view, bool select_folder) override;
   void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
   void ReparentDragEnded() override;
-
-  // Initialize Assistant UIs for bubble view. Assistant UIs
-  // (AppListAssistantMainStage, SuggestionContainerView) expect that their
-  // OnUiVisibilityChanged methods get called via value update in
-  // AssistantUiModel.
-  //
-  // But it does not happen for bubble view as AppListBubblePresenter have an
-  // async call for OnZeroStateSearchDone. AppListBubbleView is instantiated
-  // after the async call and those UIs will miss the event.
-  //
-  // This is a helper method to manually trigger the UI initialization.
-  //
-  // This method is designed to be explicitly called from AppListBubblePresenter
-  // (i.e. instead of doing this in the constructor of AppListBubbleView) to
-  // make the intention clear.
-  //
-  // TODO(b/239754561): Clean up: refactor Assistant UI initialization
-  void InitializeUIForBubbleView();
 
   AppListBubblePage current_page_for_test() { return current_page_; }
   views::ViewShadow* view_shadow_for_test() { return view_shadow_.get(); }
@@ -203,7 +177,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   raw_ptr<views::View> separator_ = nullptr;
   raw_ptr<AppListBubbleAppsPage> apps_page_ = nullptr;
   raw_ptr<AppListBubbleSearchPage> search_page_ = nullptr;
-  raw_ptr<AppListBubbleAssistantPage> assistant_page_ = nullptr;
   raw_ptr<AppListBubbleAppsCollectionsPage> apps_collections_page_ = nullptr;
 
   // Lives in this class because it can overlap the search box.

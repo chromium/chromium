@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] mouse boundary events when the <area> is resized
+  assert_equals: expected "[mouseover@area#area1-1, mouseenter@div#container, mouseenter@map#map1, mouseenter@area#area1-1, mousemove@area#area1-1, mouseout@area#area1-1, mouseleave@area#area1-1, mouseleave@map#map1, mouseover@img#img1, mouseenter@img#img1, mouseout@img#img1, mouseleave@img#img1, mouseleave@div#container]" but got "[mouseover@area#area1-1, mouseenter@div#container, mouseenter@map#map1, mouseenter@area#area1-1, mousemove@area#area1-1, mouseout@area#area1-1, mouseleave@area#area1-1, mouseleave@map#map1, mouseleave@div#container]"
+[FAIL] mouse boundary events when usemap is modified
+  assert_equals: expected "[mouseover@area#area1-1, mouseenter@div#container, mouseenter@map#map1, mouseenter@area#area1-1, mousemove@area#area1-1, mouseout@area#area1-1, mouseleave@area#area1-1, mouseleave@map#map1, mouseover@area#area2-1, mouseenter@map#map2, mouseenter@area#area2-1, mouseout@area#area2-1, mouseleave@area#area2-1, mouseleave@map#map2, mouseleave@div#container]" but got "[mouseover@area#area1-1, mouseenter@div#container, mouseenter@map#map1, mouseenter@area#area1-1, mousemove@area#area1-1, mouseout@area#area1-1, mouseleave@area#area1-1, mouseleave@map#map1, mouseleave@div#container]"
+[FAIL] mouse boundary events when new <area> is available
+  assert_equals: expected "[mouseover@area#area1-1, mouseenter@div#container, mouseenter@map#map1, mouseenter@area#area1-1, mousemove@area#area1-1, mouseout@area#area1-1, mouseleave@area#area1-1, mouseover@area#area1-2, mouseenter@area#area1-2, mouseout@area#area1-2, mouseleave@area#area1-2, mouseleave@map#map1, mouseleave@div#container]" but got "[mouseover@area#area1-1, mouseenter@div#container, mouseenter@map#map1, mouseenter@area#area1-1, mousemove@area#area1-1, mouseout@area#area1-1, mouseleave@area#area1-1, mouseleave@map#map1, mouseleave@div#container]"
+Harness: the test ran to completion.
+

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/rust_target.gni")
+import("//build/rust/gni_impl/rust_target.gni")
 
 # Defines a Rust executable.
 #
@@ -11,7 +11,7 @@ import("//build/rust/rust_target.gni")
 #
 #   edition (optional)
 #     Edition of the Rust language to be used.
-#     Options are "2015", "2018" and "2021". Defaults to "2021".
+#     Options are "2015", "2018", "2021", and "2024". Defaults to "2024".
 #
 #   test_deps (optional)
 #     List of GN targets on which this crate's tests depend, in addition

@@ -9,16 +9,18 @@
 
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::autofill_metrics {
 
 using BnplFlowResult = payments::PaymentsWindowManager::BnplFlowResult;
 
-// The reason why a BNPL suggestion was not shown on the page.
+// The reason why a BNPL suggestion was unavailable on the page.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class BnplSuggestionNotShownReason {
+// LINT.IfChange(BnplSuggestionUnavailableReason)
+enum class BnplSuggestionUnavailableReason {
   // The checkout amount could not be extracted from the page. This value is
   // necessary to determine BNPL eligibility for the purchase.
   kAmountExtractionFailure = 0,
@@ -27,8 +29,14 @@ enum class BnplSuggestionNotShownReason {
   // available BNPL issuers.
   kCheckoutAmountNotSupported = 1,
 
-  kMaxValue = kCheckoutAmountNotSupported,
+  // Amount extraction timed out while running on the page and the checkout
+  // amount was not retrieved. This value is necessary to determine BNPL
+  // eligibility for the purchase.
+  kAmountExtractionTimeout = 2,
+
+  kMaxValue = kAmountExtractionTimeout,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplSuggestionUnavailableReason)
 
 // Enum to track the result of a corresponding BnplTosDialog that was shown.
 //
@@ -44,6 +52,7 @@ enum class BnplTosDialogResult {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplTosDialogResult)
 
 // The dialog close reason of select BNPL issuer dialog.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -130,8 +139,8 @@ void LogSelectBnplIssuerDialogResult(SelectBnplIssuerDialogResult result);
 // Logs the selection of BNPL issuer from the select BNPL issuer dialog.
 void LogBnplIssuerSelection(autofill::BnplIssuer::IssuerId issuer_id);
 
-// Logs that the BNPL suggestion was not shown and the reason why.
-void LogBnplSuggestionNotShownReason(BnplSuggestionNotShownReason reason);
+// Logs that the BNPL suggestion was unavailable and the reason why.
+void LogBnplSuggestionUnavailableReason(BnplSuggestionUnavailableReason reason);
 
 // Logs that the BNPL popup window was shown.
 void LogBnplPopupWindowShown(autofill::BnplIssuer::IssuerId issuer_id);
@@ -150,6 +159,14 @@ void LogBnplPopupWindowLatency(base::TimeDelta duration,
 // Logs BNPL form events. Please refer to `BnplFormEvent` for the possible
 // enumerations that can be logged.
 void LogBnplFormEvent(BnplFormEvent event);
+
+// Logs that the BNPL suggestion was added to the payments autofill dropdown and
+// shown to the user. Logs to both UMA and UKM.
+void LogBnplSuggestionShown(ukm::SourceId ukm_source_id);
+
+// Logs that a BNPL suggestion was accepted on the current page. Logs to both
+// UMA and UKM.
+void LogBnplSuggestionAccepted(ukm::SourceId ukm_source_id);
 
 // Logs that a form was filled with the BNPL issuer VCN.
 void LogFormFilledWithBnplVcn(autofill::BnplIssuer::IssuerId issuer_id);

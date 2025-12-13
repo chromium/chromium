@@ -471,8 +471,8 @@
   <message name="IDS_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE" desc="Contens of the dialog shown to the user in ChromeOS OOBE before forced auto-update is attempted if the ChromeOS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges. The dialog title states that the Chromebook needs an update.">
     If you download the update over your mobile network, it could result in overage charges.
   </message>
-  <message name="IDS_FJORD_WELCOME_MESSAGE" desc="Welcome message shown when user is setting up their device">
-    Your hardware is ready to set up
+  <message name="IDS_FJORD_WELCOME_MESSAGE" desc="Welcome message shown when user is setting up their device. Google Beam is the name of a product.">
+    Your Google Beam hardware is ready to set up
   </message>
   <message name="IDS_REMORA_CONFIRM_MESSAGE" desc="Remora confirm message on the first OOBE screen">
     Your Google Meet hardware is ready to set up
@@ -1271,6 +1271,14 @@
     Shut down
   </message>
 
+  <!-- Strings for the Fjord variant of OOBE -->
+  <message name="IDS_FJORD_STATION_SETUP_NEXT_BUTTON_TEXT" desc="Button shown to the user to go to the next step.">
+    Next
+  </message>
+  <message name="IDS_FJORD_STATION_SETUP_DONE_BUTTON_TEXT" desc="Button shown to the user to indicate they have finished the setup flow.">
+    Done
+  </message>
+
   <!-- Strings for parental handoff login screen -->
   <message name="IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_TITLE" desc="Title of screen which tells user that the parent can handoff the device to supervised user.">
     Now it's <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>'s turn
@@ -1873,6 +1881,13 @@
   <message name="IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN" desc="Message to show when the authentication could not be completed because the user's auth token retrieved.">
     Sign-in failed because your access token could not be retrieved. Please check your network connection and try again.
   </message>
+  <message name="IDS_LOGIN_FATAL_ERROR_AUTO_ENROLLMENT_SKIPPED" desc="Message to show when the auto enrollment check is skipped.">
+    Sign-in failed due to a device configuration check issue. Please powerwash your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and try again.
+  </message>
+  <message name="IDS_LOGIN_FATAL_ERROR_RESTART_AND_POWERWASH_BUTTON" desc="Button to trigger a reboot and a powerwash.">
+    Restart and Powerwash
+  </message>
+
   <message name="IDS_LOGIN_SAML_INTERSTITIAL_MESSAGE" desc="Message to show on the SAML interstitial page to tell the user to continue signing in using their enterprise account. MANAGER can be a domain or an email address.">
     This device is managed by <ph name="MANAGER">$1<ex>acmecorp.com</ex></ph> and requires you to sign in every time.
   </message>
@@ -4214,164 +4229,6 @@
   <message name="IDS_WAIT_FOR_CONTAINER_READY_INTRO_MESSAGE" desc="Introduction message for the wait for container ready OOBE screen">
     Ask it questions. Tell it to do things. It's your personal Google, always ready to help.
   </message>
-  <message name="IDS_ASSISTANT_LOGO" desc="Logo label for the Assistasnt.">
-    Google assistant logo
-  </message>
-  <message name="IDS_ASSISTANT_OOBE_USER_IMAGE" desc="Image label for the user image.">
-    User image
-  </message>
-  <message name="IDS_ASSISTANT_QUICK_ANSWERS_SETTING_TITLE" desc="Title for a toggle that allows showing related info when user right clicks or long press on content.">
-    Quick Answers
-  </message>
-  <message name="IDS_ASSISTANT_QUICK_ANSWERS_SETTING_DESC" desc="Description for a toggle that allows showing related info when user right clicks or long press on content.">
-    Show related info when you right click or long press on content
-  </message>
-  <message name="IDS_ASSISTANT_SCREEN_CONTEXT_TITLE" desc="Title for assistant screen context optin. This is also used as the title for a toggle that lets the assistant use whats on the screen in Assistant settings page.">
-    Screen context
-  </message>
-  <message name="IDS_ASSISTANT_SCREEN_CONTEXT_DESC" desc="Description for assistant screen context optin.">
-    This allows Google Assistant to provide tailored responses when you ask questions.
-  </message>
-  <message name="IDS_ASSISTANT_SCREEN_CONTEXT_DESC_CHILD" desc="Description for assistant screen context optin, when a child account is in use.">
-    This allows Google Assistant to provide tailored responses when <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> asks questions.
-  </message>
-  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_TITLE" desc="Title for assistant related info screen.">
-    Allow your Assistant to use info on your screen to help
-  </message>
-  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_TITLE_CHILD" desc="Title for assistant related info screen, when a child account is in use.">
-    Allow Google Assistant to use info on <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s screen to help
-  </message>
-  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_MESSAGE" desc="Message for assistant related info screen.">
-    You can change this any time in Settings &gt; Google Assistant &gt; Screen context.
-  </message>
-  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_TITLE" desc="Title for assistant related info screen for returned users.">
-    Google Assistant works here too
-  </message>
-  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE" desc="Message for assistant related info screen for returned users.">
-    Looks like you’ve already set up Google Assistant on another device. Get even more out of your Assistant by turning on Screen context on this device.
-  </message>
-  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE_CHILD" desc="Message for assistant related info screen for returned users, when a child account is in use.">
-    Looks like <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> has already set up Google Assistant on another device. <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> can get even more out of Assistant by turning on Screen context on this device.
-  </message>
-  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE" desc="Message to illustrate the use cases for assistant related info.">
-    You could ask “Hey Google, what song is this?”
-  </message>
-  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD" desc="Message to illustrate the use cases for assistant related info, when a child account is in use.">
-    Try “Hey Google, what song is this?”
-  </message>
-  <message name="IDS_ASSISTANT_CONTINUE_BUTTON" desc="Continue button for asssitant optin flow.">
-    Continue
-  </message>
-  <message name="IDS_ASSISTANT_DONE_BUTTON" desc="Done button for asssitant optin flow.">
-    Done
-  </message>
-  <message name="IDS_ASSISTANT_ACTIVITY_CONTROL_POPUP_LINK" desc="Link text for activity control details popup.">
-    Learn more
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_TITLE" desc="Title for assistant voice match screen.">
-    Access your Assistant with “Hey Google”
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_TITLE_CHILD" desc="Title for assistant voice match screen, when a child account is in use.">
-    Let <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> access Google Assistant with “Hey Google”
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_MESSAGE" desc="Message for Assistant voice match screen.">
-    If you agree, Google Assistant will wait in standby mode to detect “Hey Google” and can recognize it is you speaking with Voice Match.
-    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    Voice Match allows your Assistant to identify you and tell you apart from others. The Assistant takes clips of your voice to form a unique voice model, which is only stored on your device. Your voice model may be sent temporarily to Google to better identify your voice.
-    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    If you decide later that Voice Match isn’t for you, simply remove it in Assistant settings. To view or delete the audio clips you record during Voice Match setup, go to <ph name="VOICE_MATCH_SETTINGS_URL">g.co/assistant/match</ph>.
-    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    <ph name="FOOTER_MESSAGE">$1<ex>Note: A similar voice or recording might be able to access your personal results or your Assistant.</ex></ph>
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_NOTICE_MESSAGE" desc="Notice message for Assistant voice match screen.">
-    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results or your Assistant.
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_NO_DSP_NOTICE_MESSAGE" desc="Notice message without DSP support for Assistant voice match screen.">
-    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results or your Assistant. To save battery, you can select in your Assistant settings to have “Hey Google” on only when this device is connected to a power source.
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_MESSAGE_CHILD" desc="Message for Assistant voice match screen, when a child account is in use.">
-    If you agree, Google Assistant will wait in standby mode to detect “Hey Google” and can recognize it is <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> speaking with Voice Match.
-    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s voice on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> and tell them apart from others.
-    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    The Assistant takes clips of your child’s voice to form a unique voice model, which is only stored on their device(s). Your child’s voice model may be sent temporarily to Google to better identify their voice.
-    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    If you decide later that Voice Match isn’t right for your child, simply remove it in their Assistant Settings. To view or delete the audio clips your child records during Voice Match setup, go to <ph name="VOICE_MATCH_SETTINGS_URL">g.co/assistant/match</ph> from your child’s account.
-    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    <ph name="FOOTER_MESSAGE">$3<ex>Note: A similar voice or recording might be able to access your personal results or your Assistant.</ex></ph>
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_NOTICE_MESSAGE_CHILD" desc="Footer message for Assistant voice match screen, when a child account is in use.">
-    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s personal results.
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_NO_DSP_NOTICE_MESSAGE_CHILD" desc="Footer message without DSP support for Assistant voice match screen, when a child account is in use.">
-    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s personal results. To save battery, you can select in <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s Assistant settings to have “Hey Google” on only when this device is connected to a power source.
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_RECORDING" desc="Title for recording in assistant voice match screen. This is also used as the sub label for the Assistant voice settings.">
-    Teach your Assistant to recognize your voice
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_RECORDING_CHILD" desc="Title for recording in assistant voice match screen, when a child account is in use.">
-    Teach Google Assistant to recognize <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s voice
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_COMPLETED" desc="Title for completed assistant voice match screen.">
-    Ok Google is all set
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_FOOTER" desc="Footer message for Assistant voice match screen.">
-    Your Assistant uses these recordings and your spoken requests to create and update your voice model, which is only stored on devices where you've turned on Voice Match. View or retrain voice activity in Assistant Settings.
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_FOOTER_CHILD" desc="Footer message for Assistant voice match screen, when a child account is in use.">
-    Ask <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> to come to the computer. Your child will be reading a few phrases on this screen to create their voice model.
-    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    If <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> needs help with reading, have your child repeat after you. Whisper away from the mic so that the Assistant learns your child’s voice instead of yours.
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_INSTRUCTION0" desc="Instruction message for assistant voice match recording.">
-    Say "Ok Google"
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_INSTRUCTION1" desc="Instruction message for assistant voice match recording.">
-    Say "Ok Google" again
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_INSTRUCTION2" desc="Instruction message for assistant voice match recording.">
-    Now say "Hey Google"
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_INSTRUCTION3" desc="Instruction message for assistant voice match recording.">
-    Say "Hey Google" again
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_COMPLETE" desc="Complete message for assistant voice match recording.">
-    Complete
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_UPLOADING" desc="Uploading message for assistant voice match recording.">
-    Uploading...
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_ACCESSIBILITY_MESSAGE" desc="Instruction message for ChromeVox users while voice match recording.">
-    Please consider using headphones while training your voice
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_TITLE" desc="Title for assistant voice match already setup.">
-    Voice Match is ready
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_MESSAGE" desc="Message for assistant voice match already setup.">
-    It looks like you've already set up Voice Match with your Assistant on another device. These previous recordings were used to make a voice model on this device.
-  </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_MESSAGE_CHILD" desc="Message for assistant voice match already setup, when a child account is in use.">
-    It looks like <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> already set up Voice Match with Assistant on another device. These previous recordings were used to make a voice model on this device.
-  </message>
-  <message name="IDS_ASSISTANT_NO_THANKS_BUTTON" desc="No thanks button for asssitant optin flow.">
-    No thanks
-  </message>
-  <message name="IDS_ASSISTANT_LATER_BUTTON" desc="Do it later button for asssitant optin flow.">
-    Do it later
-  </message>
-  <message name="IDS_ASSISTANT_AGREE_BUTTON" desc="Agree button for asssitant optin flow.">
-    I agree
-  </message>
-  <message name="IDS_ASSISTANT_SAVE_BUTTON" desc="Save button for asssitant optin flow.">
-    Save
-  </message>
-  <message name="IDS_ASSISTANT_WAIT_MESSAGE" desc="Wait message for asssitant optin flow.">
-    Please wait...
-  </message>
-  <message name="IDS_ASSISTANT_OOBE_POPUP_OVERLAY_LOADING" desc="Loading message shown while the content of popup overlay is being downloaded.">
-    Loading...
-  </message>
-
   <message name="IDS_CONSOLIDATED_CONSENT_HEADER" desc="Title of the consolidated consent screen.">
     Review these terms and control your data
   </message>
@@ -5105,27 +4962,6 @@
   <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_UPGRADE_BUTTON" desc="Button to begin upgrading the crostini container after warning that the OS version in their crostini container is unsupported">
     Upgrade
   </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_LABEL" desc="Label for dialog warning user of unavailable Linux container until software configurations are applied.">
-    Configuring Linux
-  </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_SUBTEXT" desc="Description for dialog warning user of unavailable Linux container until software configurations are applied.">
-    Linux is currently being configured. Configuration will take a few minutes.
-  </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_LABEL" desc="Label for Crostini software config dialog when there is an error in Ansible playbook application or installation.">
-    Error configuring Linux
-  </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_SUBTEXT" desc="Text shown for Crostini software config dialog when there is an error in Ansible playbook application or installation.">
-    There was an error while configuring Linux.
-  </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_OFFLINE_LABEL" desc="Label for dialog warning user of missing internet connection required for container configuration.">
-    <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is offline
-  </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_OFFLINE_SUBTEXT" desc="Text shown for Crostini software config dialog when there is an error in Ansible playbook application or installation due to missing internet connection.">
-    Could not configure Linux. Connect to the internet and try again.
-  </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_RETRY_BUTTON" desc="Retry button of the Crostini software config dialog that starts the configuration steps again.">
-    Retry
-  </message>
   <message name="IDS_CROSTINI_SHUT_DOWN_LINUX_MENU_ITEM" desc="Text shown in the context menu for the Linux terminal app, allowing users to shut down the Linux virtual machine.">
     Shut down Linux
   </message>
@@ -5279,6 +5115,9 @@
   </message>
   <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_IN_PROGRESS" desc="Message displayed in the notification when import (restore) of the Linux container fails due to another being in progress.">
     Linux restore currently in progress
+  </message>
+  <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_BAD_IMAGE" desc="Message displayed in the notification when import (restore) of the Linux guest fails due to a bad image.">
+    Issue with provided restore file - likely incorrect type for existing Linux guest. Check /var/log/messages for more info.
   </message>
   <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_ARCHITECTURE" desc="Message displayed in the notification when import (restore) of the Linux container fails due to architecture mismatch.">
     Cannot import container architecture type <ph name="ARCHITECTURE_CONTAINER">$1<ex>arm64</ex></ph> with this device which is <ph name="ARCHITECTURE_DEVICE">$2<ex>x86_64</ex></ph>. You can try restoring this container into a different device, or you can access the files inside this container image by opening in Files app.
@@ -6410,15 +6249,6 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_BOREALIS_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Borealis feedback dialog.">
     Share your feedback or describe your issue. If possible, include steps to reproduce your issue.
   </message>
-  <message name="IDS_BOREALIS_MOTD_DISMISS_TEXT" desc="Text on dismiss button in Borealis MOTD. Clicking on it will dismiss the dialog.">
-    Dismiss
-  </message>
-  <message name="IDS_BOREALIS_MOTD_PLACEHOLDER_TEXT" desc="Placeholder text for Borealis MOTD. Shown if the message of the day is unable to be retrieved from the Static Content Service.">
-    Unable to retrieve Steam for Chromebook news.
-  </message>
-  <message name="IDS_BOREALIS_MOTD_TITLE_TEXT" desc="Title text for Borealis MOTD. Shown at the top of the dialog.">
-    Steam for Chromebook News
-  </message>
 
   <!-- TPM firmware auto-update notifications -->
   <message name="IDS_TPM_AUTO_UPDATE_PLANNED_NOTIFICATION_TITLE" desc="Title for the notification informing the user that local data will be deleted.">
@@ -6660,9 +6490,6 @@ You can manage this account’s settings by installing the Family Link app on yo
   </message>
   <message name="IDS_SUGGESTION_ENTER_KEY" desc="This string is the enter key annotation to educate users how to accept a personal information suggestion.">
     Enter
-  </message>
-   <message name="IDS_SUGGESTION_EMOJI_SUGGESTED" desc="String announced by screenreader when emoji suggestion pops up.">
-    Emoji suggested. Press up or down to navigate and enter to insert.
   </message>
   <message name="IDS_SUGGESTION_EMOJI_CHOSEN" desc="String announced by screenreader when users selected an emoji in the pop-up.">
     <ph name="EMOJI_NAME">$1<ex>Party popper</ex></ph>. <ph name="EMOJI_INDEX">$2<ex>5</ex></ph> of <ph name="EMOJI_COUNT">$3<ex>5</ex></ph>.

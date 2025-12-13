@@ -21,7 +21,10 @@ def test_null(session):
     (True, "boolean"),
     (42, "number"),
     ("foo", "string"),
-], ids=["boolean", "number", "string"])
+    ("foo\"bar", 'string'),
+    ('"); alert(1); //', "string"),
+    ({"foo-bar":"bar-foo"}, "object")
+], ids=["boolean", "number", "string", "string_quote", "string_injection", "special_key_object"])
 def test_primitives(session, value, expected_type):
     result = execute_async_script(session, """
         arguments[1]([typeof arguments[0], arguments[0]])
@@ -86,11 +89,11 @@ def test_no_such_element_from_other_frame(session, get_test_page, closed):
     session.url = get_test_page(as_frame=True)
 
     frame = session.find.css("iframe", all=False)
-    session.switch_frame(frame)
+    session.switch_to_frame(frame)
 
     element = session.find.css("div", all=False)
 
-    session.switch_frame("parent")
+    session.switch_to_parent_frame()
 
     if closed:
         session.execute_script("arguments[0].remove();", args=[frame])
@@ -135,12 +138,12 @@ def test_no_such_shadow_root_from_other_frame(session, get_test_page, closed):
     session.url = get_test_page(as_frame=True)
 
     frame = session.find.css("iframe", all=False)
-    session.switch_frame(frame)
+    session.switch_to_frame(frame)
 
     element = session.find.css("custom-element", all=False)
     shadow_root = element.shadow_root
 
-    session.switch_frame("parent")
+    session.switch_to_parent_frame()
 
     if closed:
         session.execute_script("arguments[0].remove();", args=[frame])
@@ -159,9 +162,9 @@ def test_stale_element_reference(session, stale_element, as_frame):
     assert_error(result, "stale element reference")
 
 
-@pytest.mark.parametrize("type", [WebFrame, WebWindow], ids=["frame", "window"])
+@pytest.mark.parametrize("type", [WebFrame, WebWindow, WebElement, ShadowRoot], ids=["frame", "window", "element", "shadow_root"])
 @pytest.mark.parametrize("value", [None, False, 42, [], {}])
-def test_invalid_argument_for_window_with_invalid_type(session, type, value):
+def test_invalid_argument_for_reference_with_invalid_type(session, type, value):
     reference = type(session, value)
 
     result = execute_async_script(session, "arguments[1](true)", args=(reference,))
@@ -178,11 +181,24 @@ def test_no_such_window_for_window_with_invalid_value(session, get_test_page):
     assert isinstance(frame, WebFrame)
 
     window_reference = WebWindow(session, frame.id)
+
+    result = execute_async_script(session, "arguments[1](true)", args=(window_reference,))
+    assert_error(result, "no such window")
+
+
+def test_no_such_frame_for_frame_with_invalid_value(session, get_test_page):
+    session.url = get_test_page()
+
+    result = execute_async_script(session, "arguments[0]([window, window.frames[0]]);")
+    [window, frame] = assert_success(result)
+
+    assert isinstance(window, WebWindow)
+    assert isinstance(frame, WebFrame)
+
     frame_reference = WebFrame(session, window.id)
 
-    for reference in [window_reference, frame_reference]:
-        result = execute_async_script(session, "arguments[1](true)", args=(reference,))
-        assert_error(result, "no such window")
+    result = execute_async_script(session, "arguments[1](true)", args=(frame_reference,))
+    assert_error(result, "no such frame")
 
 
 @pytest.mark.parametrize("expression, expected_type", [
@@ -203,3 +219,32 @@ def test_element_reference(session, get_test_page, expression, expected_type):
         resolve(arguments[0] == {expression})
         """, [reference])
     assert_success(result, True)
+
+
+@pytest.mark.parametrize("expression, expected_type", [
+    ("window.frames[0]", WebFrame),
+    ("document.querySelector('div')", WebElement),
+    ("document.querySelector('custom-element').shadowRoot", ShadowRoot),
+    ("window", WebWindow)
+], ids=["frame", "node", "shadow-root", "window"])
+def test_object_with_identifier_not_first_key(session, get_test_page, expression, expected_type):
+    session.url = get_test_page(as_frame=False)
+
+    result = execute_async_script(session, f"arguments[0]({expression})")
+    reference = assert_success(result)
+    value = {
+        "foo": "bar",
+        expected_type.identifier: reference.id,
+        "baz": 1314
+    }
+
+    result = execute_async_script(
+        session,
+        """
+        let resolve = arguments[1];
+        resolve(arguments[0]);
+        """,
+        args=[value]
+    )
+    reference = assert_success(result)
+    assert isinstance(reference, expected_type)

@@ -10,33 +10,13 @@
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_util.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_saver_internal.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/gfx/range/range.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-namespace {
-// Converts |autofill::LegalMessageLines| into |NSArray<NSAttributedString*>*|.
-NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
-    const autofill::LegalMessageLines& legalMessageLines) {
-  NSMutableArray<NSAttributedString*>* legalMessages = [NSMutableArray array];
-  for (const autofill::LegalMessageLine& legalMessageLine : legalMessageLines) {
-    NSString* text = base::SysUTF16ToNSString(legalMessageLine.text());
-    NSMutableAttributedString* legalMessage =
-        [[NSMutableAttributedString alloc] initWithString:text];
-    for (const autofill::LegalMessageLine::Link& link :
-         legalMessageLine.links()) {
-      NSURL* url = net::NSURLWithGURL(link.url);
-      NSRange range = link.range.ToNSRange();
-      [legalMessage addAttribute:NSLinkAttributeName value:url range:range];
-    }
-    [legalMessages addObject:[legalMessage copy]];
-  }
-  return [legalMessages copy];
-}
-}  // namespace
 
 @implementation CWVCreditCardSaver {
   autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions
@@ -101,15 +81,14 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
 
   _saveCompletionHandler = completionHandler;
   DCHECK(_saveCardCallback);
+  autofill::payments::PaymentsAutofillClient::UserProvidedCardDetails details;
+  details.cardholder_name = base::SysNSStringToUTF16(cardHolderFullName);
+  details.expiration_date_month = base::SysNSStringToUTF16(expirationMonth);
+  details.expiration_date_year = base::SysNSStringToUTF16(expirationYear);
   std::move(_saveCardCallback)
       .Run(autofill::payments::PaymentsAutofillClient::
                SaveCardOfferUserDecision::kAccepted,
-           {
-               .cardholder_name = base::SysNSStringToUTF16(cardHolderFullName),
-               .expiration_date_month =
-                   base::SysNSStringToUTF16(expirationMonth),
-               .expiration_date_year = base::SysNSStringToUTF16(expirationYear),
-           });
+           details);
   _decisionMade = YES;
 }
 

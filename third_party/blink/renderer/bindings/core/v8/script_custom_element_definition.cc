@@ -69,10 +69,11 @@ void ScriptCustomElementDefinition::Trace(Visitor* visitor) const {
 
 HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
     Document& document,
-    const QualifiedName& tag_name) {
+    const QualifiedName& tag_name,
+    CustomElementRegistry* registry) {
   DCHECK(CustomElement::ShouldCreateCustomElement(tag_name)) << tag_name;
   if (!script_state_->ContextIsValid())
-    return CustomElement::CreateFailedElement(document, tag_name);
+    return CustomElement::CreateFailedElement(document, tag_name, registry);
   ScriptState::Scope scope(script_state_);
   v8::Isolate* isolate = script_state_->GetIsolate();
   v8::TryCatch try_catch(isolate);
@@ -83,31 +84,38 @@ HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
   // TODO(dominicc): Implement step 5 which constructs customized
   // built-in elements.
 
+  // 5.1.3 Run these steps while catching any exceptions
   Element* element = nullptr;
   {
+    // 5.1.3.1 Set result to the result of constructing with no arguments
     element = CallConstructor();
     if (try_catch.HasCaught()) {
-      // 6.1."If any of these subsubsteps threw an exception".1
-      // Report the exception.
+      // If any of these subsubsteps threw an exception
+      // 1 Report the exception.
       V8ScriptRunner::ReportException(isolate, try_catch.Exception());
-      // ... .2 Return HTMLUnknownElement.
-      return CustomElement::CreateFailedElement(document, tag_name);
+      // 2 Return HTMLUnknownElement.
+      return CustomElement::CreateFailedElement(document, tag_name, registry);
     }
   }
 
-  // 6.1.3. through 6.1.9.
+  // 5.1.3.3 through 5.1.3.8
   CheckConstructorResult(element, document, tag_name,
                          PassThroughException(isolate));
   if (try_catch.HasCaught()) {
-    // 6.1."If any of these subsubsteps threw an exception".1
-    // Report the exception.
+    // If any of these subsubsteps threw an exception
+    // 1 Report the exception.
     V8ScriptRunner::ReportException(isolate, try_catch.Exception());
-    // ... .2 Return HTMLUnknownElement.
-    return CustomElement::CreateFailedElement(document, tag_name);
+    // 2 Return HTMLUnknownElement.
+    return CustomElement::CreateFailedElement(document, tag_name, registry);
   }
-  // 6.1.10. Set result’s namespace prefix to prefix.
+  // 5.1.3.9 Set result’s namespace prefix to prefix.
   if (element->prefix() != tag_name.Prefix())
     element->SetTagNameForCreateElementNS(tag_name);
+  // 5.1.3.11 Set result's element registry to registry.
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      registry != nullptr) {
+    element->SetCustomElementRegistry(registry);
+  }
   DCHECK_EQ(element->GetCustomElementState(), CustomElementState::kCustom);
   return To<HTMLElement>(element);
 }

@@ -32,12 +32,6 @@ struct RendererSettings {
 
   OcclusionCullerSettings occlusion_culler_settings;
 
-  [EnableIf=is_android]
-  gfx.mojom.Size initial_screen_size;
-
-  [EnableIf=is_android]
-  gfx.mojom.ColorSpace color_space;
-
   [EnableIf=use_ozone]
   array<OverlayStrategy> overlay_strategies;
 

@@ -1,4 +1,5 @@
 ameurhosni@google.com
+ananyaseelam@google.com
 ender@google.com
 jdonnelly@chromium.org
 jennserrano@google.com
@@ -9,6 +10,7 @@ niharm@google.com
 mfacey@chromium.org
 mpearson@chromium.org
 orinj@chromium.org
+pauladedeji@google.com
 pnoland@chromium.org
 
 per-file *.mojom=set noparent

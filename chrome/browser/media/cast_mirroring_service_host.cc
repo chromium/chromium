@@ -90,17 +90,11 @@ CreateVideoCaptureHostOnIO(
     blink::mojom::MediaStreamType type,
     mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  scoped_refptr<base::SingleThreadTaskRunner> device_task_runner =
-      base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   return mojo::MakeSelfOwnedReceiver(
       std::make_unique<SingleClientVideoCaptureHost>(
           device_id, type,
           base::BindRepeating(&content::VideoCaptureDeviceLauncher::
-                                  CreateInProcessVideoCaptureDeviceLauncher,
-                              std::move(device_task_runner))),
+                                  CreateDeviceLauncherFromMediaStreamManager)),
       std::move(receiver));
 }
 
@@ -166,7 +160,7 @@ bool IsAccessCodeCastTabSwitchingUIEnabled(
 // Returns the size of the primary display in pixels, or std::nullopt if it
 // cannot be determined.
 std::optional<gfx::Size> GetScreenResolution() {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (!screen) {
     DVLOG(1) << "Cannot get the Screen object.";
     return std::nullopt;
@@ -302,7 +296,8 @@ gfx::Size CastMirroringServiceHost::GetClampedResolution(
 
 void CastMirroringServiceHost::BindGpu(
     mojo::PendingReceiver<viz::mojom::Gpu> receiver) {
-  gpu_client_ = content::CreateGpuClient(std::move(receiver));
+  gpu_client_ = content::CreateGpuClient(
+      std::move(receiver), /*enable_extra_handles_validation=*/false);
 }
 
 void CastMirroringServiceHost::GetVideoCaptureHost(
@@ -471,7 +466,7 @@ void CastMirroringServiceHost::CreateAudioStreamForDesktop(
       mojo::PendingRemote<AudioInputStreamClient>(
           std::move(pipe_to_mirroring_service.handle0), 0),
       mojo::NullRemote(), mojo::NullRemote(), loopback_id, params,
-      total_segments, false, nullptr,
+      base::UnguessableToken::Create(), total_segments, false, nullptr,
       base::BindOnce(
           [](mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,
              mojo::PendingRemote<AudioInputStream> stream,

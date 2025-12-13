@@ -4,14 +4,15 @@
 
 #import "ios/chrome/browser/ai_prototyping/model/ai_prototyping_service_impl.h"
 
+#import "base/strings/strcat.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-
+#import "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/optimization_guide/proto/features/tab_organization.pb.h"
 #import "components/optimization_guide/proto/string_value.pb.h"  // nogncheck
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ai {
 
@@ -37,22 +38,16 @@ void AIPrototypingServiceImpl::ExecuteServerQuery(
   optimization_guide::proto::BlingPrototypingRequest proto_request =
       request.As<optimization_guide::proto::BlingPrototypingRequest>().value();
 
-  optimization_guide::OptimizationGuideModelExecutionResultCallback
-      result_callback = base::BindOnce(
-          [](ExecuteServerQueryCallback query_callback,
-             AIPrototypingServiceImpl* service,
-             optimization_guide::OptimizationGuideModelExecutionResult result,
-             std::unique_ptr<optimization_guide::ModelQualityLogEntry> entry) {
-            std::string response =
-                service->OnServerModelExecuteResponse(std::move(result));
-            std::move(query_callback).Run(response);
-          },
-          std::move(callback), base::Unretained(this));
+  optimization_guide::ModelExecutionCallbackWithLogging<
+      optimization_guide::proto::BlingPrototypingLoggingData>
+      wrapper_callback = base::BindOnce(
+          &AIPrototypingServiceImpl::OnExecuteModelWithLoggingCallback,
+          base::Unretained(this), std::move(callback));
 
-  service_->ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey::kBlingPrototyping,
+  optimization_guide::ExecuteModelWithLogging(
+      service_, optimization_guide::ModelBasedCapabilityKey::kBlingPrototyping,
       proto_request,
-      /*execution_timeout*/ std::nullopt, std::move(result_callback));
+      /*execution_timeout*/ std::nullopt, std::move(wrapper_callback));
 }
 
 void AIPrototypingServiceImpl::ExecuteOnDeviceQuery(
@@ -84,7 +79,19 @@ void AIPrototypingServiceImpl::ExecuteOnDeviceQuery(
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 }
 
-std::string AIPrototypingServiceImpl::OnServerModelExecuteResponse(
+void AIPrototypingServiceImpl::OnExecuteModelWithLoggingCallback(
+    ExecuteServerQueryCallback query_callback,
+    optimization_guide::OptimizationGuideModelExecutionResult execution_result,
+    std::unique_ptr<optimization_guide::proto::BlingPrototypingLoggingData>
+        logging_data) {
+  std::string response =
+      ProcessServerModelExecuteResponse(std::move(execution_result));
+  ::mojo_base::ProtoWrapper wrapped_logging_data =
+      mojo_base::ProtoWrapper(*logging_data);
+  std::move(query_callback).Run(response, std::move(wrapped_logging_data));
+}
+
+std::string AIPrototypingServiceImpl::ProcessServerModelExecuteResponse(
     optimization_guide::OptimizationGuideModelExecutionResult result) {
   std::string response = "";
 

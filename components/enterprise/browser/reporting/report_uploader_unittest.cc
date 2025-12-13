@@ -332,17 +332,17 @@ TEST_F(ReportUploaderTest, MultipleReports) {
   VerifyRequestDelay(0);
   RunNextTask();
 
-  // The first retry is delayed between 54 to 60 seconds.
-  VerifyRequestDelay(60);
+  // The first retry is delayed between 108 to 120 seconds.
+  VerifyRequestDelay(120);
   RunNextTask();
 
-  // The second retry is delayed between 108 to 120 seconds.
-  VerifyRequestDelay(120);
+  // The second retry is delayed between 216 to 240 seconds.
+  VerifyRequestDelay(240);
   RunNextTask();
 
   // Request is succeeded, send the next request And its first retry is delayed
-  // between 108 to 120 seconds because there were 2 failures.
-  VerifyRequestDelay(120);
+  // between 216 to 240 seconds because there were 2 failures.
+  VerifyRequestDelay(240);
   RunNextTask();
 
   // And we failed again, reach maximum retries count.

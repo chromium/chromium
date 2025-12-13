@@ -74,13 +74,14 @@ bool OperationRequestManager::IsInteractingWithUser() const {
   for (extensions::WindowController* window :
        *extensions::WindowControllerList::GetInstance()) {
     const BrowserDelegate* const browser =
-        BrowserController::GetInstance()->GetDelegate(window->GetBrowser());
+        BrowserController::GetInstance()->GetDelegate(
+            window->GetBrowserWindowInterface());
     if (!browser)
       continue;
     for (unsigned int i = 0, n = browser->GetWebContentsCount(); i < n; ++i) {
       const GURL& url = browser->GetWebContentsAt(i)->GetURL();
       if (url.SchemeIs(extensions::kExtensionScheme) &&
-          url.host_piece() == provider_id_) {
+          url.host() == provider_id_) {
         return true;
       }
     }

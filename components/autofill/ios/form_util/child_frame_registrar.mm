@@ -64,10 +64,12 @@ void ChildFrameRegistrar::RegisterMapping(RemoteFrameToken remote,
 
   lookup_map_[remote] = local;
 
-  // Check if we're waiting for this token and run the pending callback, if any.
-  auto pending = pending_callbacks_.extract(remote);
-  if (pending) {
-    std::move(pending.mapped()).Run(local);
+  // Check if we're waiting for this token and run the pending callbacks, if
+  // any.
+  if (auto pendings = pending_callbacks_.extract(remote)) {
+    for (auto& pending : pendings.mapped()) {
+      std::move(pending).Run(local);
+    }
   }
 }
 
@@ -108,7 +110,7 @@ void ChildFrameRegistrar::DeclareNewRemoteToken(
   }
 
   // Otherwise, store the relationship for later.
-  pending_callbacks_[remote] = std::move(callback);
+  pending_callbacks_[remote].push_back(std::move(callback));
 }
 
 ChildFrameRegistrar* ChildFrameRegistrar::GetOrCreateForWebState(

@@ -52,7 +52,7 @@ class PaymentRequestWebContentsManager
 
   // The current transaction automation mode for Secure Payment Confirmation, to
   // be used for any future PaymentRequests.
-  SPCTransactionMode transaction_mode_ = SPCTransactionMode::NONE;
+  SPCTransactionMode transaction_mode_ = SPCTransactionMode::kNone;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

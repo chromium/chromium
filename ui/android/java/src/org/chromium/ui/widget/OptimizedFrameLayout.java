@@ -23,6 +23,9 @@ import java.util.List;
  */
 @NullMarked
 public class OptimizedFrameLayout extends FrameLayout {
+
+    private int mMaxHeight = Integer.MAX_VALUE;
+
     private static class MeasurementState {
         final View mView;
         final int mWidthMeasureSpec;
@@ -41,9 +44,24 @@ public class OptimizedFrameLayout extends FrameLayout {
         super(context, attrs);
     }
 
+    /**
+     * Sets the max height for the layout. The view may be smaller than this and may still wrap to
+     * accommodate the height of its children, but only to the specified height.
+     */
+    public void setMaxHeight(int maxHeight) {
+        if (maxHeight == mMaxHeight) return;
+        mMaxHeight = maxHeight;
+        requestLayout();
+    }
+
     @SuppressLint("DrawAllocation")
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (MeasureSpec.getSize(heightMeasureSpec) > mMaxHeight) {
+            final int mode = MeasureSpec.getMode(heightMeasureSpec);
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, mode);
+        }
+
         int count = getChildCount();
 
         final boolean measureMatchParentChildren =

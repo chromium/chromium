@@ -86,8 +86,7 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     paint_image_.gainmap_info_ = gainmap_info;
     return std::move(*this);
   }
-  PaintImageBuilder&& set_hdr_metadata(
-      std::optional<gfx::HDRMetadata> hdr_metadata) {
+  PaintImageBuilder&& set_hdr_metadata(gfx::HDRMetadata hdr_metadata) {
     paint_image_.hdr_metadata_ = hdr_metadata;
     return std::move(*this);
   }

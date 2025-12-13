@@ -15,35 +15,47 @@ namespace content {
 // soft process limit has been reached. When the limit has been reached, an
 // existing suitable (e.g., same-site if Site Isolation is enabled)
 // RenderProcessHost will be chosen randomly to be reused when possible.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ProcessReusePolicy)
 enum class ProcessReusePolicy {
+  // In this mode, SiteInstances don't proactively reuse processes. An
+  // existing process with an unmatched service worker for the site is reused
+  // only for navigations, not for service workers. When the process limit has
+  // been reached, a randomly chosen RenderProcessHost is reused as in the
+  // other policies.
+  kDefault = 0,
+
   // In this mode, all instances of the site will be hosted in the same
   // RenderProcessHost.
-  PROCESS_PER_SITE,
+  kProcessPerSite = 1,
 
   // In this mode, the subframe's site will be rendered in a RenderProcessHost
   // that is already in use for the site, either for a pending navigation or a
   // committed navigation. If multiple such processes exist, ones that have
   // foreground frames are given priority, and otherwise one is selected
   // randomly.
-  REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME,
+  kReusePendingOrCommittedSiteSubframe = 2,
 
-  // Similar to REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME, but only applied to
+  // Similar to kReusePendingOrCommittedSiteSubframe, but only applied to
   // workers. Reuse decisions may vary from those for
-  // REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME.
-  REUSE_PENDING_OR_COMMITTED_SITE_WORKER,
+  // kReusePendingOrCommittedSiteSubframe.
+  kReusePendingOrCommittedSiteWorker = 3,
 
-  // When used, this is similar to REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME, but
+  // When used, this is similar to kReusePendingOrCommittedSiteSubframe, but
   // for main frames, and limiting the number of main frames a RenderProcessHost
   // can host to a certain threshold.
-  REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD,
+  kReusePendingOrCommittedSiteWithMainFrameThreshold = 4,
 
-  // In this mode, SiteInstances don't proactively reuse processes. An
-  // existing process with an unmatched service worker for the site is reused
-  // only for navigations, not for service workers. When the process limit has
-  // been reached, a randomly chosen RenderProcessHost is reused as in the
-  // other policies.
-  DEFAULT,
+  // When used, this main frame's site will be rendered in a RenderProcessHost
+  // that is already in use for the site and hosting prerendered frames only.
+  kReusePrerenderingProcessForMainFrame = 5,
+
+  kMaxValue = kReusePrerenderingProcessForMainFrame,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:ProcessReusePolicy)
 
 }  // namespace content
 

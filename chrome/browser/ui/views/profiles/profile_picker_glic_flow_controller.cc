@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -52,17 +53,28 @@ void ProfilePickerGlicFlowController::Init() {
 
 void ProfilePickerGlicFlowController::PickProfile(
     const base::FilePath& profile_path,
-    ProfilePicker::ProfilePickingArgs args) {
+    ProfilePicker::ProfilePickingArgs args,
+    base::OnceCallback<void(bool)> pick_profile_complete_callback) {
   g_browser_process->profile_manager()->LoadProfileByPath(
       profile_path, /*incognito=*/false,
       base::BindOnce(&ProfilePickerGlicFlowController::OnPickedProfileLoaded,
-                     base::Unretained(this)));
+                     base::Unretained(this),
+                     std::move(pick_profile_complete_callback)));
 }
 
-void ProfilePickerGlicFlowController::OnPickedProfileLoaded(Profile* profile) {
+void ProfilePickerGlicFlowController::OnPickedProfileLoaded(
+    base::OnceCallback<void(bool)> pick_profile_complete_callback,
+    Profile* profile) {
   if (!profile) {
+    if (pick_profile_complete_callback) {
+      std::move(pick_profile_complete_callback).Run(false);
+    }
     Clear();
     return;
+  }
+
+  if (pick_profile_complete_callback) {
+    std::move(pick_profile_complete_callback).Run(true);
   }
 
   loaded_profile_ = profile;
@@ -82,7 +94,7 @@ void ProfilePickerGlicFlowController::Clear() {
   ExitFlow();
 }
 
-void ProfilePickerGlicFlowController::CancelPostSignInFlow() {
+void ProfilePickerGlicFlowController::CancelSigninFlow() {
   NOTREACHED() << "The glic flow controller is not expected to support this "
                   "part of the flow as it does not support signing in.";
 }

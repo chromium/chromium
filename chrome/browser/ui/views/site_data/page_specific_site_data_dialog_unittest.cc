@@ -17,6 +17,7 @@
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,7 +50,7 @@ void ValidateAllowedUnpartitionedSites(
   EXPECT_TRUE(
       std::ranges::equal(sites, expected_sites_in_order,
                          [](const auto& site, const auto& expected_site) {
-                           return site.origin.host() == expected_site.host();
+                           return site.origin.host() == expected_site.GetHost();
                          }));
 }
 
@@ -146,7 +147,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, QuotaStorageAccessedFirstParty) {
   ASSERT_EQ(sites.size(), 1u);
 
   auto first_site = sites[0];
-  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
+  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).GetHost());
   EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
   // False due to first-party storage being accessed.
   EXPECT_EQ(first_site.is_fully_partitioned, false);
@@ -178,7 +179,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   ASSERT_EQ(sites.size(), 1u);
 
   auto first_site = sites[0];
-  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
+  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).GetHost());
   EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
   // False due to first-party storage being accessed.
   EXPECT_EQ(first_site.is_fully_partitioned, false);
@@ -212,7 +213,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   ASSERT_EQ(sites.size(), 1u);
 
   auto first_site = sites[0];
-  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
+  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).GetHost());
   EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
   // False due to first-party storage being accessed.
   EXPECT_EQ(first_site.is_fully_partitioned, false);
@@ -233,7 +234,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, QuotaStorageAccessedThirdParty) {
   ASSERT_EQ(sites.size(), 1u);
 
   auto first_site = sites[0];
-  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
+  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).GetHost());
   EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
   // True due to only third-party storage being accessed.
   EXPECT_EQ(first_site.is_fully_partitioned, true);
@@ -265,7 +266,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   ASSERT_EQ(sites.size(), 1u);
 
   auto first_site = sites[0];
-  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
+  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).GetHost());
   EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
   // False due to cookies being accessed without forced partitioning.
   EXPECT_EQ(first_site.is_fully_partitioned, false);
@@ -299,7 +300,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   ASSERT_EQ(sites.size(), 1u);
 
   auto first_site = sites[0];
-  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
+  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).GetHost());
   EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
   // TODO(crbug.com/40231917): Fix this test to return true once cookie
   // partition logic is tested.
@@ -325,7 +326,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, QuotaStorageAccessedMixedParty) {
   ASSERT_EQ(sites.size(), 1u);
 
   auto first_site = sites[0];
-  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
+  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).GetHost());
   EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
   // False due to first-party storage being accessed.
   EXPECT_EQ(first_site.is_fully_partitioned, false);
@@ -371,7 +372,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   ASSERT_EQ(sites.size(), 1u);
 
   auto first_site = sites[0];
-  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
+  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).GetHost());
   EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
   // False due to first-party storage being accessed.
   EXPECT_EQ(first_site.is_fully_partitioned, false);
@@ -421,7 +422,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   ASSERT_EQ(sites.size(), 1u);
 
   auto first_site = sites[0];
-  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
+  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).GetHost());
   EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
   // False due to first-party storage being accessed.
   EXPECT_EQ(first_site.is_fully_partitioned, false);
@@ -441,7 +442,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, TrustTokenAccessed) {
   auto sites = delegate->GetAllSites();
   ASSERT_EQ(sites.size(), 1u);
   auto first_site = sites[0];
-  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
+  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).GetHost());
   EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
   EXPECT_EQ(first_site.is_fully_partitioned, false);
 }

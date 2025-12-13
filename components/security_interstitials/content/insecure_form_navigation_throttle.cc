@@ -23,17 +23,6 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
-namespace {
-
-void LogMixedFormInterstitialMetrics(
-    security_interstitials::InsecureFormNavigationThrottle::
-        InterstitialTriggeredState state) {
-  base::UmaHistogramEnumeration("Security.MixedForm.InterstitialTriggerState",
-                                state);
-}
-
-}  // namespace
-
 namespace security_interstitials {
 
 InsecureFormNavigationThrottle::InsecureFormNavigationThrottle(
@@ -131,8 +120,6 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
     return content::NavigationThrottle::PROCEED;
   }
 
-  InterstitialTriggeredState log_state =
-      InterstitialTriggeredState::kMixedFormDirect;
   bool should_proceed = false;
 
   if (is_redirect) {
@@ -143,19 +130,14 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
          handle->GetResponseHeaders()->response_code() ==
              net::HTTP_PERMANENT_REDIRECT) &&
         handle->IsPost()) {
-      log_state = InterstitialTriggeredState::kMixedFormRedirectWithFormData;
     } else {
-      log_state = InterstitialTriggeredState::kMixedFormRedirectNoFormData;
       should_proceed = true;
     }
   }
 
   if (should_proceed) {
-    LogMixedFormInterstitialMetrics(log_state);
     return content::NavigationThrottle::PROCEED;
   }
-
-  LogMixedFormInterstitialMetrics(log_state);
 
   std::unique_ptr<InsecureFormBlockingPage> blocking_page =
       blocking_page_factory_->CreateInsecureFormBlockingPage(contents,

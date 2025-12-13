@@ -20,8 +20,9 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/content_extraction/content/browser/inner_text.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -39,6 +40,10 @@ class WebContents;
 namespace content_extraction {
 struct InnerTextResult;
 }  // namespace content_extraction
+
+namespace optimization_guide {
+struct OptimizationGuideModelExecutionResult;
+}  // namespace optimization_guide
 
 namespace ui {
 struct AXTreeUpdate;
@@ -88,7 +93,7 @@ class ComposeSession
         const compose::ComposeSessionEvents& events) = 0;
   };
   ComposeSession(content::WebContents* web_contents,
-                 optimization_guide::OptimizationGuideModelExecutor* executor,
+                 optimization_guide::RemoteModelExecutor* executor,
                  optimization_guide::ModelQualityLogsUploaderService*
                      model_quality_uploader,
                  base::Token session_id,
@@ -155,6 +160,10 @@ class ComposeSession
   // Opens the Compose Learn More page in a new tab when the "Learn more" link
   // is clicked in the FRE or Compose dialog.
   void OpenComposeLearnMorePage() override;
+
+  // Opens the Chrome Generative AI features and policies page in a new tab when
+  // the "Learn more" link is clicked in the FRE or Compose dialog.
+  void OpenEnterpriseComposeLearnMorePage() override;
 
   // Opens the Compose feedback survey page in a new tab. This implementation is
   // designed for Dogfood only.
@@ -243,15 +252,14 @@ class ComposeSession
       int request_id,
       compose::ComposeRequestReason request_reason,
       bool was_input_edited,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::proto::ComposeLoggingData>
           logging_data);
-  void ModelExecutionProgress(optimization_guide::StreamingResponse result);
   void ModelExecutionComplete(
       base::TimeDelta request_delta,
       compose::ComposeRequestReason request_reason,
       bool was_input_edited,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   void AddNewResponseToHistory(std::unique_ptr<ComposeState> new_state);
   void EraseForwardStatesInHistory();
@@ -309,7 +317,7 @@ class ComposeSession
   base::optional_ref<ComposeState> LastResponseState();
 
   // Outlives `this`.
-  raw_ptr<optimization_guide::OptimizationGuideModelExecutor> executor_;
+  raw_ptr<optimization_guide::RemoteModelExecutor> executor_;
 
   // Outlives `this`.
   raw_ptr<optimization_guide::ModelQualityLogsUploaderService>
@@ -383,9 +391,8 @@ class ComposeSession
   // A callback to Autofill that triggers filling the field.
   ComposeCallback callback_;
 
-  // A session which allows for building context and streaming output.
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session_;
+  optimization_guide::MultimodalMessage request_context_;
+
   // This is incremented every request to avoid handling responses from previous
   // requests.
   int request_id_ = 0;

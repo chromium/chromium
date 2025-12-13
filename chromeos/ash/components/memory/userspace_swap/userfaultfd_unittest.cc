@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/memory/userspace_swap/userfaultfd.h"
 
 #include <fcntl.h>
@@ -17,6 +12,7 @@
 
 #include <atomic>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -42,7 +38,6 @@ using testing::_;
 using testing::ByRef;
 using testing::Eq;
 using testing::Exactly;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
@@ -236,12 +231,12 @@ TEST_F(UserfaultFDTest, SimpleZeroPageReadFault) {
       Pagefault(static_cast<uintptr_t>(mem),
                 UserfaultFDHandler::PagefaultFlags::kReadFault,
                 /* we didn't register for tids */ base::kInvalidThreadId))
-      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
-                                  UserfaultFDHandler::PagefaultFlags,
-                                  base::PlatformThreadId) {
+      .WillOnce([uffd_ptr](uintptr_t fault_address,
+                           UserfaultFDHandler::PagefaultFlags,
+                           base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -281,15 +276,14 @@ TEST_F(UserfaultFDTest, SimpleZeroPageReadFaultRetry) {
       Pagefault(static_cast<uintptr_t>(mem),
                 UserfaultFDHandler::PagefaultFlags::kReadFault,
                 /* we didn't register for tids */ base::kInvalidThreadId))
-      .WillOnce(
-          Invoke([](uintptr_t fault_address, UserfaultFDHandler::PagefaultFlags,
-                    base::PlatformThreadId) { return false; }))
-      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
-                                  UserfaultFDHandler::PagefaultFlags,
-                                  base::PlatformThreadId) {
+      .WillOnce([](uintptr_t fault_address, UserfaultFDHandler::PagefaultFlags,
+                   base::PlatformThreadId) { return false; })
+      .WillOnce([uffd_ptr](uintptr_t fault_address,
+                           UserfaultFDHandler::PagefaultFlags,
+                           base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -334,12 +328,12 @@ TEST_F(UserfaultFDTest, SimpleZeroPageReadFaultWithTid) {
               Pagefault(static_cast<uintptr_t>(mem),
                         UserfaultFDHandler::PagefaultFlags::kReadFault,
                         Eq(ByRef(expected_tid))))
-      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
-                                  UserfaultFDHandler::PagefaultFlags,
-                                  base::PlatformThreadId) {
+      .WillOnce([uffd_ptr](uintptr_t fault_address,
+                           UserfaultFDHandler::PagefaultFlags,
+                           base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -381,12 +375,12 @@ TEST_F(UserfaultFDTest, SimpleZeroPageWriteFault) {
               Pagefault(static_cast<uintptr_t>(mem),
                         UserfaultFDHandler::PagefaultFlags::kWriteFault,
                         /* we didn't register tid */ base::kInvalidThreadId))
-      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
-                                  UserfaultFDHandler::PagefaultFlags,
-                                  base::PlatformThreadId) {
+      .WillOnce([uffd_ptr](uintptr_t fault_address,
+                           UserfaultFDHandler::PagefaultFlags,
+                           base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -402,7 +396,7 @@ TEST_F(UserfaultFDTest, SimpleZeroPageWriteFault) {
 
     // And the remainder of the page will have been zero filled as part of the
     // write fault, the second int in the page will be 0.
-    EXPECT_EQ(static_cast<int*>(mem)[1], 0);
+    UNSAFE_TODO(EXPECT_EQ(static_cast<int*>(mem)[1], 0));
 
     run_loop.Quit();
   });
@@ -436,12 +430,12 @@ TEST_F(UserfaultFDTest, SimpleReadFaultResolveWithCopyPage) {
               Pagefault(static_cast<uintptr_t>(mem),
                         UserfaultFDHandler::PagefaultFlags::kReadFault,
                         /* we didn't register tid */ base::kInvalidThreadId))
-      .WillOnce(Invoke([uffd_ptr, &buf](uintptr_t fault_address, uintptr_t,
-                                        base::PlatformThreadId) {
+      .WillOnce([uffd_ptr, &buf](uintptr_t fault_address, uintptr_t,
+                                 base::PlatformThreadId) {
         HandleWithCopyRange(uffd_ptr, fault_address,
                             reinterpret_cast<uintptr_t>(buf.data()), kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -452,7 +446,7 @@ TEST_F(UserfaultFDTest, SimpleReadFaultResolveWithCopyPage) {
     EXPECT_EQ(*static_cast<char*>(mem), 'a');
 
     // And confirm the whole page looks as we expect, all 'a's.
-    EXPECT_EQ(memcmp(mem, buf.data(), kPageSize), 0);
+    UNSAFE_TODO(EXPECT_EQ(memcmp(mem, buf.data(), kPageSize), 0));
 
     run_loop.Quit();
   });
@@ -489,13 +483,13 @@ TEST_F(UserfaultFDTest, ReadFaultResolveWithCopyPageForMultiplePages) {
               Pagefault(static_cast<uintptr_t>(mem),
                         UserfaultFDHandler::PagefaultFlags::kReadFault,
                         /* we didn't register tid */ base::kInvalidThreadId))
-      .WillOnce(Invoke([&](uintptr_t fault_address, uintptr_t,
-                           base::PlatformThreadId) {
+      .WillOnce([&](uintptr_t fault_address, uintptr_t,
+                    base::PlatformThreadId) {
         HandleWithCopyRange(uffd_ptr, fault_address,
                             reinterpret_cast<uintptr_t>(buf.data()),
                             kRegionSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -505,12 +499,14 @@ TEST_F(UserfaultFDTest, ReadFaultResolveWithCopyPageForMultiplePages) {
     // be called once and the WillOnce will make sure of it. The fault handler
     // will have installed the pages for the entire region.
     for (size_t pg_num = 0; pg_num < kNumPages; ++pg_num) {
-      EXPECT_EQ(*(static_cast<char*>(mem) + (pg_num * kPageSize)), 'a');
+      UNSAFE_TODO(
+          EXPECT_EQ(*(static_cast<char*>(mem) + (pg_num * kPageSize)), 'a'));
 
       // And confirm the whole page looks as we expect, all as.
-      EXPECT_EQ(memcmp(static_cast<char*>(mem) + (pg_num * kPageSize),
-                       buf.data(), kPageSize),
-                0);
+      UNSAFE_TODO(
+          EXPECT_EQ(memcmp(static_cast<char*>(mem) + (pg_num * kPageSize),
+                           buf.data(), kPageSize),
+                    0));
     }
 
     run_loop.Quit();
@@ -546,9 +542,9 @@ TEST_F(UserfaultFDTest,
               Pagefault(_, UserfaultFDHandler::PagefaultFlags::kReadFault,
                         /* we didn't register tid */ base::kInvalidThreadId))
       .Times(Exactly(kNumPages))  // We should be called once for each page.
-      .WillRepeatedly(Invoke([&](uintptr_t fault_address,
-                                 UserfaultFDHandler::PagefaultFlags,
-                                 base::PlatformThreadId) {
+      .WillRepeatedly([&](uintptr_t fault_address,
+                          UserfaultFDHandler::PagefaultFlags,
+                          base::PlatformThreadId) {
         int page_number =
             (GetPageBase(fault_address) - static_cast<uintptr_t>(mem)) /
             kPageSize;
@@ -560,7 +556,7 @@ TEST_F(UserfaultFDTest,
                             reinterpret_cast<uintptr_t>(pg_fill_buf.data()),
                             kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -574,9 +570,9 @@ TEST_F(UserfaultFDTest,
       // read the character that the fault handler wrote through that entire
       // page.
       off_t random_offset = base::RandInt(0, kPageSize - 1);
-      EXPECT_EQ(
+      UNSAFE_TODO(EXPECT_EQ(
           *(static_cast<char*>(mem) + (pg_num * kPageSize + random_offset)),
-          'a' + static_cast<char>(pg_num));
+          'a' + static_cast<char>(pg_num)));
     }
 
     run_loop.Quit();
@@ -618,9 +614,9 @@ TEST_F(UserfaultFDTest, ReadFaultRegisteredOnPartialRange) {
           Exactly(kNumPagesRegistered))  // We should be called once for each
                                          // page we registered the other pages
                                          // will be zero filled by the kernel.
-      .WillRepeatedly(Invoke([&](uintptr_t fault_address,
-                                 UserfaultFDHandler::PagefaultFlags,
-                                 base::PlatformThreadId) {
+      .WillRepeatedly([&](uintptr_t fault_address,
+                          UserfaultFDHandler::PagefaultFlags,
+                          base::PlatformThreadId) {
         int page_number =
             (GetPageBase(fault_address) - static_cast<uintptr_t>(mem)) /
             kPageSize;
@@ -632,7 +628,7 @@ TEST_F(UserfaultFDTest, ReadFaultRegisteredOnPartialRange) {
                             reinterpret_cast<uintptr_t>(pg_fill_buf.data()),
                             kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -646,15 +642,16 @@ TEST_F(UserfaultFDTest, ReadFaultRegisteredOnPartialRange) {
       // read the character that the fault handler wrote through that entire
       // page.
       off_t random_offset = base::RandInt(0, kPageSize - 1);
-      EXPECT_EQ(
+      UNSAFE_TODO(EXPECT_EQ(
           *(static_cast<char*>(mem) + (pg_num * kPageSize + random_offset)),
-          'a' + static_cast<char>(pg_num));
+          'a' + static_cast<char>(pg_num)));
     }
 
     // And as we cause faults in the remaining pages they should be zero filled
     // by the kernel because we didn't register with them.
     for (size_t pg_num = kNumPagesRegistered; pg_num < kNumPages; ++pg_num) {
-      EXPECT_EQ(*(static_cast<uint8_t*>(mem) + (pg_num * kPageSize)), 0);
+      UNSAFE_TODO(
+          EXPECT_EQ(*(static_cast<uint8_t*>(mem) + (pg_num * kPageSize)), 0));
     }
 
     run_loop.Quit();
@@ -701,9 +698,9 @@ TEST_F(UserfaultFDTest, WriteFaultRegisteredOnPartialRange) {
           Exactly(kNumPagesRegistered))  // We should be called once for each
                                          // page we registered the other pages
                                          // will be zero filled by the kernel.
-      .WillRepeatedly(Invoke([&](uintptr_t fault_address,
-                                 UserfaultFDHandler::PagefaultFlags,
-                                 base::PlatformThreadId) {
+      .WillRepeatedly([&](uintptr_t fault_address,
+                          UserfaultFDHandler::PagefaultFlags,
+                          base::PlatformThreadId) {
         int page_number =
             (GetPageBase(fault_address) - static_cast<uintptr_t>(mem)) /
             kPageSize;
@@ -715,7 +712,7 @@ TEST_F(UserfaultFDTest, WriteFaultRegisteredOnPartialRange) {
                             reinterpret_cast<uintptr_t>(pg_fill_buf.data()),
                             kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -728,11 +725,12 @@ TEST_F(UserfaultFDTest, WriteFaultRegisteredOnPartialRange) {
     // that character if it was in the region we registered.
     for (size_t pg_num = 0; pg_num < kNumPages; ++pg_num) {
       // This store causes a write fault to the first byte of this page.
-      *(static_cast<char*>(mem) + pg_num * kPageSize) = 'X';
+      *(UNSAFE_TODO(static_cast<char*>(mem) + pg_num * kPageSize)) = 'X';
 
       // after the store which caused the fault we expect that byte to be an
       // 'X'.
-      EXPECT_EQ(*(static_cast<char*>(mem) + pg_num * kPageSize), 'X');
+      UNSAFE_TODO(
+          EXPECT_EQ(*(static_cast<char*>(mem) + pg_num * kPageSize), 'X'));
 
       // Check the rest of the page contains the character we were expecting.
       // If it was in the range registered it'll be the special character
@@ -741,13 +739,15 @@ TEST_F(UserfaultFDTest, WriteFaultRegisteredOnPartialRange) {
         // Our fault handler ran, so everything after the first byte will be
         // the character we filled.
         for (size_t i = 1; i < kPageSize; ++i) {
-          EXPECT_EQ(*(static_cast<char*>(mem) + pg_num * kPageSize + i),
-                    'a' + static_cast<char>(pg_num));
+          UNSAFE_TODO(
+              EXPECT_EQ(*(static_cast<char*>(mem) + pg_num * kPageSize + i),
+                        'a' + static_cast<char>(pg_num)));
         }
       } else {
         // The kernel filled it so everything after that first byte will be 0.
         for (size_t i = 1; i < kPageSize; ++i) {
-          EXPECT_EQ(*(static_cast<char*>(mem) + pg_num * kPageSize + i), 0);
+          UNSAFE_TODO(EXPECT_EQ(
+              *(static_cast<char*>(mem) + pg_num * kPageSize + i), 0));
         }
       }
     }
@@ -771,7 +771,7 @@ TEST_F(UserfaultFDTest, SinglePageRemove) {
   const uintptr_t mapping_end = static_cast<uintptr_t>(mem) + kPageSize;
 
   // Populate the page before hand.
-  memset(mem, 'X', kPageSize);
+  UNSAFE_TODO(memset(mem, 'X', kPageSize));
 
   ASSERT_TRUE(uffd_->RegisterRange(UserfaultFD::RegisterMode::kRegisterMissing,
                                    mem, kPageSize));
@@ -813,7 +813,7 @@ TEST_F(UserfaultFDTest, MultiPageRemove) {
   ASSERT_TRUE(mem.is_valid());
 
   // Populate the pages before hand.
-  memset(mem, 'X', total_size);
+  UNSAFE_TODO(memset(mem, 'X', total_size));
 
   ASSERT_TRUE(uffd_->RegisterRange(UserfaultFD::RegisterMode::kRegisterMissing,
                                    mem, registered_size));
@@ -894,7 +894,7 @@ TEST_F(UserfaultFDTest, MultiPageUnmap) {
   ASSERT_TRUE(mem.is_valid());
 
   // Populate the pages before hand.
-  memset(mem, 'X', total_size);
+  UNSAFE_TODO(memset(mem, 'X', total_size));
 
   ASSERT_TRUE(uffd_->RegisterRange(UserfaultFD::RegisterMode::kRegisterMissing,
                                    mem, registered_size));
@@ -924,9 +924,9 @@ TEST_F(UserfaultFDTest, MultiPageUnmap) {
 
     // Finally we can unmap the remaining portion and it should not generate
     // another unmapped event.
-    ASSERT_NE(munmap(static_cast<char*>(addr) + registered_size,
-                     total_size - registered_size),
-              -1);
+    UNSAFE_TODO(ASSERT_NE(munmap(static_cast<char*>(addr) + registered_size,
+                                 total_size - registered_size),
+                          -1));
 
     run_loop.Quit();
   });
@@ -979,7 +979,7 @@ TEST_F(UserfaultFDTest, MultiPagePartialUnmap) {
     // and the final page wasn't registered so we shouldn't get any events about
     // it.
     for (size_t i = 0; i < kNumPages; ++i) {
-      char* page_start = static_cast<char*>(addr) + i * kPageSize;
+      char* page_start = UNSAFE_TODO(static_cast<char*>(addr) + i * kPageSize);
       ASSERT_NE(munmap(page_start, kPageSize), -1);
     }
 
@@ -1066,12 +1066,12 @@ TEST_F(UserfaultFDTest, RemapAndFaultAtNewAddress) {
       Pagefault(Eq(ByRef(remapped_start)),
                 UserfaultFDHandler::PagefaultFlags::kReadFault,
                 /* we didn't register for tids */ base::kInvalidThreadId))
-      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
-                                  UserfaultFDHandler::PagefaultFlags,
-                                  base::PlatformThreadId) {
+      .WillOnce([uffd_ptr](uintptr_t fault_address,
+                           UserfaultFDHandler::PagefaultFlags,
+                           base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
         return true;
-      }));
+      });
 
   // And because the userfaultfd is attached to the VMA when it's remapped and
   // grown we also have a userfaultfd registered on the new second page.
@@ -1080,12 +1080,12 @@ TEST_F(UserfaultFDTest, RemapAndFaultAtNewAddress) {
       Pagefault(Eq(ByRef(second_page_start)),
                 UserfaultFDHandler::PagefaultFlags::kReadFault,
                 /* we didn't register for tids */ base::kInvalidThreadId))
-      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
-                                  UserfaultFDHandler::PagefaultFlags,
-                                  base::PlatformThreadId) {
+      .WillOnce([uffd_ptr](uintptr_t fault_address,
+                           UserfaultFDHandler::PagefaultFlags,
+                           base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -1105,7 +1105,7 @@ TEST_F(UserfaultFDTest, RemapAndFaultAtNewAddress) {
 
     // Because we grew the mapping as part of mremap we should also be able to
     // trigger a fault at the next page.
-    EXPECT_EQ(*(static_cast<char*>(mem) + kPageSize), 0);
+    UNSAFE_TODO(EXPECT_EQ(*(static_cast<char*>(mem) + kPageSize), 0));
 
     run_loop.Quit();
   });

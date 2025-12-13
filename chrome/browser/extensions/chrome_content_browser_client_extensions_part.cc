@@ -29,7 +29,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/url_constants.h"
 #include "components/dom_distiller/core/url_constants.h"
-#include "components/download/public/common/quarantine_connection.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -56,6 +55,7 @@
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/sockets/sockets_manifest_data.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
@@ -75,11 +75,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
-#include "chrome/browser/extensions/extension_webkit_preferences.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
+#include "extensions/browser/extension_webkit_preferences.h"
 #endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -90,12 +86,16 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
+#include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/user_manager/user_manager_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using blink::web_pref::WebPreferences;
 using content::BrowserContext;
@@ -121,13 +121,14 @@ const Extension* GetEnabledExtensionFromSiteURL(BrowserContext* context,
   if (!registry)
     return nullptr;
 
-  return registry->enabled_extensions().GetByID(site_url.host());
+  return registry->enabled_extensions().GetByID(site_url.GetHost());
 }
 
 bool HasEffectiveUrl(content::BrowserContext* browser_context,
                      const GURL& url) {
   return ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
-             Profile::FromBrowserContext(browser_context), url) != url;
+             Profile::FromBrowserContext(browser_context), url)
+      .has_value();
 }
 
 bool AllowServiceWorker(const GURL& scope,
@@ -219,7 +220,7 @@ ChromeContentBrowserClientExtensionsPart::
     ~ChromeContentBrowserClientExtensionsPart() = default;
 
 // static
-GURL ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
+std::optional<GURL> ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
     Profile* profile,
     const GURL& url) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
@@ -256,7 +257,7 @@ GURL ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
   }
 
   // Don't translate to effective URLs in all other cases.
-  return url;
+  return std::nullopt;
 }
 
 // static
@@ -374,7 +375,7 @@ bool ChromeContentBrowserClientExtensionsPart::
   }
 
   // Determine whether the URL is manifest-sandboxed.
-  return SandboxedPageInfo::IsSandboxedPage(extension, url.path());
+  return SandboxedPageInfo::IsSandboxedPage(extension, url.GetPath());
 }
 
 // static
@@ -415,7 +416,7 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
   // separately) to verify that the ProcessLock matches the extension's origin.
   // TODO(https://crbug.com/346264217): Also ensure the process is sandboxed, if
   // that does not cause problems for pushState cases.
-  if (SandboxedPageInfo::IsSandboxedPage(extension, url.path())) {
+  if (SandboxedPageInfo::IsSandboxedPage(extension, url.GetPath())) {
     return true;
   }
 
@@ -649,7 +650,13 @@ bool ChromeContentBrowserClientExtensionsPart::
   // of e.g. throwing errors in response to installation events (where the
   // worker is registered, but then immediately unregistered).
   if (!registered_version.IsValid()) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // Make an exception for kiosk mode, since kiosk sessions use temporary
+    // profiles, which are discarded when a session ends.
+    return !user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp();
+#else
     return true;
+#endif
   }
 
   // Don't allow the unregistration of a valid, enabled service worker-based
@@ -838,7 +845,7 @@ bool ChromeContentBrowserClientExtensionsPart::
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   const Extension* extension = registry->enabled_extensions().GetByID(
-      main_frame_site.GetSiteURL().host());
+      main_frame_site.GetSiteURL().GetHost());
   extension_webkit_preferences::SetPreferences(extension, web_prefs);
 #endif
   return true;
@@ -878,7 +885,7 @@ void ChromeContentBrowserClientExtensionsPart::
 
 void ChromeContentBrowserClientExtensionsPart::GetURLRequestAutoMountHandlers(
     std::vector<storage::URLRequestAutoMountHandler>* handlers) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
   handlers->push_back(base::BindRepeating(
       MediaFileSystemBackend::AttemptAutoMountForURLRequest));
 #endif
@@ -887,13 +894,14 @@ void ChromeContentBrowserClientExtensionsPart::GetURLRequestAutoMountHandlers(
 void ChromeContentBrowserClientExtensionsPart::GetAdditionalFileSystemBackends(
     content::BrowserContext* browser_context,
     const base::FilePath& storage_partition_path,
-    download::QuarantineConnectionCallback quarantine_connection_callback,
     std::vector<std::unique_ptr<storage::FileSystemBackend>>*
         additional_backends) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  additional_backends->push_back(std::make_unique<MediaFileSystemBackend>(
-      storage_partition_path, std::move(quarantine_connection_callback)));
+#if BUILDFLAG(IS_CHROMEOS)
+  additional_backends->push_back(
+      std::make_unique<MediaFileSystemBackend>(storage_partition_path));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   additional_backends->push_back(
       std::make_unique<sync_file_system::SyncFileSystemBackend>(
           Profile::FromBrowserContext(browser_context)));

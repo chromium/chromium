@@ -72,7 +72,6 @@ class BrowsingDataFilterBuilder;
 class BrowsingTopicsSiteDataManager;
 class CdmStorageDataModel;
 class ContentIndexContext;
-class CookieDeprecationLabelManager;
 class DedicatedWorkerService;
 class DevToolsBackgroundServicesContext;
 class DOMStorageContext;
@@ -171,7 +170,6 @@ class CONTENT_EXPORT StoragePartition {
   virtual BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() = 0;
   virtual AttributionDataModel* GetAttributionDataModel() = 0;
   virtual PrivateAggregationDataModel* GetPrivateAggregationDataModel() = 0;
-  virtual CookieDeprecationLabelManager* GetCookieDeprecationLabelManager() = 0;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   virtual CdmStorageDataModel* GetCdmStorageDataModel() = 0;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -371,9 +369,6 @@ class CONTENT_EXPORT StoragePartition {
 
   // Wait until all deletions tasks are finished. For test use only.
   virtual void WaitForDeletionTasksForTesting() = 0;
-
-  // Wait until code cache's shutdown is complete. For test use only.
-  virtual void WaitForCodeCacheShutdownForTesting() = 0;
 
   virtual void SetNetworkContextForTesting(
       mojo::PendingRemote<network::mojom::NetworkContext>

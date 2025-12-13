@@ -4,13 +4,9 @@
 
 #include "chrome/browser/android/webapk/webapk_features.h"
 
-BASE_FEATURE(kWebApkShellUpdate,
-             "WebApkShellUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebApkShellUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kWebApkTargetShellVersion{
     &kWebApkShellUpdate, "version", REQUEST_UPDATE_FOR_SHELL_APK_VERSION_VALUE};
 
-BASE_FEATURE(kWebApkMinShellVersion,
-             "WebApkMinShellVersion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebApkMinShellVersion, base::FEATURE_ENABLED_BY_DEFAULT);

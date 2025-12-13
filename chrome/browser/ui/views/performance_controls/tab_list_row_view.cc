@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/performance_controls/tab_list_model.h"
@@ -149,7 +148,7 @@ TabListRowView::TabListRowView(
   views::InkDrop::Install(this, std::move(ink_drop_host_unique));
   views::InstallRectHighlightPathGenerator(this);
   ink_drop_host->SetMode(views::InkDropHost::InkDropMode::ON);
-  ink_drop_host->SetBaseColorId(ui::kColorSysStateHoverOnSubtle);
+  ink_drop_host->SetBaseColor(ui::kColorSysStateHoverOnSubtle);
   ink_drop_host->SetHighlightOpacity(1.0f);
   ink_drop_host->GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
   ink_drop_host->GetInkDrop()->SetShowHighlightOnFocus(true);
@@ -159,8 +158,7 @@ TabListRowView::TabListRowView(
 
   tabs::TabInterface* const tab_interface =
       tabs::TabInterface::GetFromContents(web_contents);
-  TabUIHelper* const tab_ui_helper =
-      tab_interface->GetTabFeatures()->tab_ui_helper();
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface);
   CHECK(tab_ui_helper);
 
   // The container adds all contents of the row as child views to ensure that we

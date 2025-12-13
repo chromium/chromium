@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace {
 enum DataSaverOverride {
@@ -100,32 +101,32 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       document_cookie_disabled_(&agent_state_, /*default_value=*/false),
       touch_event_emulation_enabled_(&agent_state_, /*default_value=*/false),
       max_touch_points_(&agent_state_, /*default_value=*/1),
-      emulated_media_(&agent_state_, /*default_value=*/WTF::String()),
-      emulated_media_features_(&agent_state_, /*default_value=*/WTF::String()),
+      emulated_media_(&agent_state_, /*default_value=*/String()),
+      emulated_media_features_(&agent_state_, /*default_value=*/String()),
       emulated_vision_deficiency_(&agent_state_,
-                                  /*default_value=*/WTF::String()),
+                                  /*default_value=*/String()),
       os_text_scale_emulation_enabled_(&agent_state_, /*default_value=*/false),
       emulated_os_text_scale_(&agent_state_, /*default_value=*/1),
       navigator_platform_override_(&agent_state_,
-                                   /*default_value=*/WTF::String()),
+                                   /*default_value=*/String()),
       hardware_concurrency_override_(&agent_state_, /*default_value=*/0),
       data_saver_override_(&agent_state_,
                            /*default_value=*/DataSaverOverride::Unset),
-      user_agent_override_(&agent_state_, /*default_value=*/WTF::String()),
+      user_agent_override_(&agent_state_, /*default_value=*/String()),
       serialized_ua_metadata_override_(
           &agent_state_,
           /*default_value=*/std::vector<uint8_t>()),
       accept_language_override_(&agent_state_,
-                                /*default_value=*/WTF::String()),
-      locale_override_(&agent_state_, /*default_value=*/WTF::String()),
+                                /*default_value=*/String()),
+      locale_override_(&agent_state_, /*default_value=*/String()),
       virtual_time_budget_(&agent_state_, /*default_value*/ 0.0),
       initial_virtual_time_(&agent_state_, /*default_value=*/0.0),
-      virtual_time_policy_(&agent_state_, /*default_value=*/WTF::String()),
+      virtual_time_policy_(&agent_state_, /*default_value=*/String()),
       virtual_time_task_starvation_count_(&agent_state_, /*default_value=*/0),
       emulate_focus_(&agent_state_, /*default_value=*/false),
       emulate_auto_dark_mode_(&agent_state_, /*default_value=*/false),
       auto_dark_mode_override_(&agent_state_, /*default_value=*/false),
-      timezone_id_override_(&agent_state_, /*default_value=*/WTF::String()),
+      timezone_id_override_(&agent_state_, /*default_value=*/String()),
       disabled_image_types_(&agent_state_, /*default_value=*/false),
       cpu_throttling_rate_(&agent_state_, /*default_value=*/1),
       automation_override_(&agent_state_, /*default_value=*/false),
@@ -170,8 +171,10 @@ void InspectorEmulationAgent::Restore() {
     GetWebViewImpl()->GetDevToolsEmulator()->SetScrollbarsHidden(true);
   if (document_cookie_disabled_.Get())
     GetWebViewImpl()->GetDevToolsEmulator()->SetDocumentCookieDisabled(true);
-  setTouchEmulationEnabled(touch_event_emulation_enabled_.Get(),
-                           max_touch_points_.Get());
+  if (touch_event_emulation_enabled_.Get()) {
+    setTouchEmulationEnabled(touch_event_emulation_enabled_.Get(),
+                             max_touch_points_.Get());
+  }
   auto features =
       std::make_unique<protocol::Array<protocol::Emulation::MediaFeature>>();
   for (auto const& name : emulated_media_features_.Keys()) {
@@ -191,7 +194,10 @@ void InspectorEmulationAgent::Restore() {
       default_background_color_override_rgba_.Get());
   if (status_or_rgba.ok())
     setDefaultBackgroundColorOverride(std::move(status_or_rgba).value());
-  setFocusEmulationEnabled(emulate_focus_.Get());
+  if (emulate_focus_.Get()) {
+    setFocusEmulationEnabled(true);
+  }
+
   if (emulate_auto_dark_mode_.Get())
     setAutoDarkModeOverride(auto_dark_mode_override_.Get());
   if (!timezone_id_override_.Get().IsNull())
@@ -246,7 +252,9 @@ protocol::Response InspectorEmulationAgent::disable() {
   setScriptExecutionDisabled(false);
   setScrollbarsHidden(false);
   setDocumentCookieDisabled(false);
-  setTouchEmulationEnabled(false, std::nullopt);
+  if (touch_event_emulation_enabled_.Get()) {
+    setTouchEmulationEnabled(false, std::nullopt);
+  }
   setAutomationOverride(false);
   // Clear emulated media features. Note that the current approach
   // doesn't work well in cases where two clients have the same set of
@@ -260,7 +268,9 @@ protocol::Response InspectorEmulationAgent::disable() {
     setEmulatedVisionDeficiency(String("none"));
   setEmulatedOSTextScale(std::nullopt);
   setCPUThrottlingRate(1);
-  setFocusEmulationEnabled(false);
+  if (emulate_focus_.Get()) {
+    setFocusEmulationEnabled(false);
+  }
   if (emulate_auto_dark_mode_.Get()) {
     setAutoDarkModeOverride(std::nullopt);
   }
@@ -362,7 +372,7 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
   GetWebViewImpl()->GetPage()->GetSettings().SetMediaTypeOverride(media_value);
 
   auto const old_emulated_media_features_keys =
-      WTF::ToVector(emulated_media_features_.Keys());
+      ToVector(emulated_media_features_.Keys());
   emulated_media_features_.Clear();
 
   if (features) {
@@ -409,7 +419,7 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
           initial_system_forced_colors_state_);
     }
 
-    for (const WTF::String& feature : emulated_media_features_.Keys()) {
+    for (const String& feature : emulated_media_features_.Keys()) {
       auto const& value = emulated_media_features_.Get(feature);
       GetWebViewImpl()->GetPage()->SetMediaFeatureOverride(
           AtomicString(feature), value);
@@ -424,7 +434,7 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
     }
   }
 
-  for (const WTF::String& feature : old_emulated_media_features_keys) {
+  for (const String& feature : old_emulated_media_features_keys) {
     auto const& value = emulated_media_features_.Get(feature);
     if (!value) {
       GetWebViewImpl()->GetPage()->SetMediaFeatureOverride(
@@ -501,14 +511,8 @@ protocol::Response InspectorEmulationAgent::setFocusEmulationEnabled(
   protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
-  if (enabled == emulate_focus_.Get()) {
-    return response;
-  }
   emulate_focus_.Set(enabled);
-  // During shutdown, the page and/or main frame might already be detached.
-  // We must guard against accessing a null document.
-  const Page* page = GetWebViewImpl()->GetPage();
-  if (page->MainFrame() && To<LocalFrame>(page->MainFrame())->GetDocument()) {
+  if (const Page* page = GetWebViewImpl()->GetPage()) {
     page->GetFocusController().SetFocusEmulationEnabled(enabled);
   }
   return response;
@@ -575,15 +579,15 @@ protocol::Response InspectorEmulationAgent::setVirtualTimePolicy(
       virtual_time_controller_.EnableVirtualTime(initial_time);
   virtual_time_controller_.SetVirtualTimePolicy(scheduler_policy);
   if (virtual_time_budget_ms.value_or(0) > 0) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("renderer.scheduler", "VirtualTimeBudget",
-                                      TRACE_ID_LOCAL(this), "budget",
-                                      virtual_time_budget_ms.value());
+    TRACE_EVENT_BEGIN("renderer.scheduler", "VirtualTimeBudget",
+                      perfetto::Track::FromPointer(this), "budget",
+                      virtual_time_budget_ms.value());
     const base::TimeDelta budget_amount =
         base::Milliseconds(virtual_time_budget_ms.value());
     virtual_time_controller_.GrantVirtualTimeBudget(
         budget_amount,
-        WTF::BindOnce(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
-                      WrapWeakPersistent(this)));
+        BindOnce(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
+                 WrapWeakPersistent(this)));
     for (DocumentLoader* loader : pending_document_loaders_)
       loader->SetDefersLoading(LoaderFreezeMode::kNone);
     pending_document_loaders_.clear();
@@ -659,8 +663,7 @@ protocol::Response InspectorEmulationAgent::setNavigatorOverrides(
 }
 
 void InspectorEmulationAgent::VirtualTimeBudgetExpired() {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("renderer.scheduler", "VirtualTimeBudget",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("renderer.scheduler", perfetto::Track::FromPointer(this));
   // Disregard the event if the agent is disabled. Another agent may take care
   // of pausing the time in case of an in-process frame swap.
   if (!enabled_) {
@@ -890,14 +893,9 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
 
 protocol::Response InspectorEmulationAgent::setLocaleOverride(
     std::optional<String> maybe_locale) {
-  // Only allow resetting overrides set by the same agent.
-  if (locale_override_.Get().empty() &&
-      LocaleController::instance().has_locale_override()) {
-    return protocol::Response::ServerError(
-        "Another locale override is already in effect");
-  }
   String locale = maybe_locale.value_or(String());
-  String error = LocaleController::instance().SetLocaleOverride(locale);
+  String error = LocaleController::instance().SetLocaleOverride(
+      locale, locale_override_.Get().empty());
   if (!error.empty())
     return protocol::Response::ServerError(error.Utf8());
   locale_override_.Set(locale);
@@ -906,21 +904,25 @@ protocol::Response InspectorEmulationAgent::setLocaleOverride(
 
 protocol::Response InspectorEmulationAgent::setTimezoneOverride(
     const String& timezone_id) {
-  if (timezone_id == TimeZoneController::TimeZoneIdOverride()) {
-    // Do nothing.
-  } else if (timezone_id.empty()) {
+  if (timezone_id.empty()) {
     timezone_override_.reset();
   } else {
     if (timezone_override_) {
       timezone_override_->change(timezone_id);
     } else {
-      timezone_override_ = TimeZoneController::SetTimeZoneOverride(timezone_id);
-    }
-    if (!timezone_override_) {
-      return TimeZoneController::HasTimeZoneOverride()
-                 ? protocol::Response::ServerError(
-                       "Timezone override is already in effect")
-                 : protocol::Response::InvalidParams("Invalid timezone id");
+      auto result = TimeZoneController::SetTimeZoneOverride(timezone_id);
+      switch (result.status) {
+        case TimeZoneController::TimeZoneOverrideStatus::kSuccess:
+          if (result.handle) {
+            timezone_override_ = std::move(result.handle);
+          }
+          break;
+        case TimeZoneController::TimeZoneOverrideStatus::kAlreadyInEffect:
+          return protocol::Response::ServerError(
+              "Timezone override is already in effect");
+        case TimeZoneController::TimeZoneOverrideStatus::kInvalidTimezone:
+          return protocol::Response::InvalidParams("Invalid timezone id");
+      }
     }
   }
 

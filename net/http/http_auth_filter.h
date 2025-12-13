@@ -9,7 +9,7 @@
 
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 
 namespace url {
 class SchemeHostPort;
@@ -32,7 +32,7 @@ class NET_EXPORT_PRIVATE HttpAuthFilter {
 // Allowlist HTTP authentication filter.
 // Explicit allowlists of domains are set via SetAllowlist().
 //
-// Uses the ProxyBypassRules class to do allowlisting for servers.
+// Uses the ProxyHostMatchingRules class to do allowlisting for servers.
 // All proxies are allowed.
 class NET_EXPORT HttpAuthFilterAllowlist : public HttpAuthFilter {
  public:
@@ -46,7 +46,7 @@ class NET_EXPORT HttpAuthFilterAllowlist : public HttpAuthFilter {
   // Adds an individual URL `filter` to the list, of the specified `target`.
   bool AddFilter(const std::string& filter, HttpAuth::Target target);
 
-  const ProxyBypassRules& rules() const { return rules_; }
+  const ProxyHostMatchingRules& rules() const { return rules_; }
 
   // HttpAuthFilter methods:
   bool IsValid(const url::SchemeHostPort& scheme_host_port,
@@ -54,12 +54,10 @@ class NET_EXPORT HttpAuthFilterAllowlist : public HttpAuthFilter {
 
  private:
   // Installs the allowlist.
-  // `server_allowlist` is parsed by ProxyBypassRules.
+  // `server_allowlist` is parsed by ProxyHostMatchingRules.
   void SetAllowlist(const std::string& server_allowlist);
 
-  // We are using ProxyBypassRules because they have the functionality that we
-  // want, but we are not using it for proxy bypass.
-  ProxyBypassRules rules_;
+  ProxyHostMatchingRules rules_;
 };
 
 }   // namespace net

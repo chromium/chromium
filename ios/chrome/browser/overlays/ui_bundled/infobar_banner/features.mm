@@ -6,9 +6,7 @@
 
 #import "ios/chrome/browser/infobars/ui_bundled/infobar_constants.h"
 
-BASE_FEATURE(kPasswordInfobarDisplayLength,
-             "PasswordInfobarDisplayLength",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPasswordInfobarDisplayLength, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The default value is the same as the
 // kInfobarBannerDefaultPresentationDuration constant.
@@ -17,7 +15,6 @@ constexpr base::FeatureParam<int> kPasswordInfobarDisplayLengthParam{
     /*name=*/"duration-seconds", /*default_value=*/12};
 
 BASE_FEATURE(kCreditCardInfobarDisplayLength,
-             "CreditCardInfobarDisplayLength",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The default value is the same as the
@@ -26,9 +23,7 @@ constexpr base::FeatureParam<int> kCreditCardInfobarDisplayLengthParam{
     &kCreditCardInfobarDisplayLength,
     /*name=*/"duration-seconds", /*default_value=*/12};
 
-BASE_FEATURE(kAddressInfobarDisplayLength,
-             "AddressInfobarDisplayLength",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAddressInfobarDisplayLength, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The default value is the same as the
 // kInfobarBannerDefaultPresentationDuration constant.

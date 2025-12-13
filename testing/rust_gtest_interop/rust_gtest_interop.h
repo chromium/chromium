@@ -6,7 +6,10 @@
 #define TESTING_RUST_GTEST_INTEROP_RUST_GTEST_INTEROP_H_
 
 #include <stdint.h>
+
 #include <type_traits>
+
+#include "base/compiler_specific.h"
 
 namespace testing {
 class Test;
@@ -38,6 +41,8 @@ class RustTest : public Subclass {
                   "RustTest's Subclass parameter must be a testing::Test or a "
                   "subclass of it");
   }
+  // TODO(crbug.com/458351803): Figure out why the sanitizer complains here
+  NO_SANITIZE("cfi-icall")
   void TestBody() override { test_fn_(this); }
 
  private:

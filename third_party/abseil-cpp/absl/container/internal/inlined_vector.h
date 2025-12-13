@@ -27,7 +27,6 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
-#include "absl/base/internal/identity.h"
 #include "absl/base/macros.h"
 #include "absl/container/internal/compressed_tuple.h"
 #include "absl/memory/memory.h"
@@ -127,7 +126,7 @@ struct MallocAdapter {
 };
 
 template <typename A, typename ValueAdapter>
-void ConstructElements(absl::internal::type_identity_t<A>& allocator,
+void ConstructElements(absl::type_identity_t<A>& allocator,
                        Pointer<A> construct_first, ValueAdapter& values,
                        SizeType<A> construct_size) {
   for (SizeType<A> i = 0; i < construct_size; ++i) {
@@ -796,16 +795,9 @@ auto Storage<T, N, A>::Insert(ConstIterator<A> pos, ValueAdapter values,
                                    move_construction_values,
                                    move_construction.size());
 
-    for (Pointer<A>
-             destination = move_assignment.data() + move_assignment.size(),
-             last_destination = move_assignment.data(),
-             source = move_assignment_values + move_assignment.size();
-         ;) {
-      --destination;
-      --source;
-      if (destination < last_destination) break;
-      *destination = std::move(*source);
-    }
+    std::move_backward(move_assignment_values,
+                       move_assignment_values + move_assignment.size(),
+                       move_assignment.data() + move_assignment.size());
 
     AssignElements<A>(insert_assignment.data(), values,
                       insert_assignment.size());

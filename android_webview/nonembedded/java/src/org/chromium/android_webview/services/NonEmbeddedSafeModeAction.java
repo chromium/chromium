@@ -16,33 +16,33 @@ public interface NonEmbeddedSafeModeAction extends SafeModeAction {
      * @return {@code true} if the action succeeded, {@code false} otherwise.
      */
     @Override
-    public default boolean execute() {
+    default boolean execute() {
         return true;
     }
 
     /**
-     * Performs any setup/cleanup work required by the SafeModeAction on activation.
-     * Not to be confused with the {@link #execute} method, which performs the primary work
-     * of each safemode action.
-     * <p>
-     * The return status is used for logging purposes only.
+     * Performs any setup/cleanup work required by the SafeModeAction on activation. Not to be
+     * confused with the {@link #execute} method, which performs the primary work of each safemode
+     * action.
+     *
+     * <p>The return status is used for logging purposes only.
      *
      * @return {@code true} if the action succeeded, {@code false} otherwise.
      */
-    public default boolean onActivate() {
+    default boolean onActivate() {
         return true;
     }
 
     /**
-     * Performs any setup/cleanup work required by the SafeModeAction on deactivation.
-     * Not to be confused with the {@link #execute} method, which performs the primary work
-     * of each safemode action.
-     * <p>
-     * The return status is used for logging purposes only.
+     * Performs any setup/cleanup work required by the SafeModeAction on deactivation. Not to be
+     * confused with the {@link #execute} method, which performs the primary work of each safemode
+     * action.
+     *
+     * <p>The return status is used for logging purposes only.
      *
      * @return {@code true} if the action succeeded, {@code false} otherwise.
      */
-    public default boolean onDeactivate() {
+    default boolean onDeactivate() {
         return true;
     }
 }

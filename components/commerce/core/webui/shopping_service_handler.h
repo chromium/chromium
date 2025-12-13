@@ -21,7 +21,6 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class PrefService;

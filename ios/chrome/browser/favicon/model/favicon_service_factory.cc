@@ -12,8 +12,7 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildFaviconService(web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildFaviconService(ProfileIOS* profile) {
   return std::make_unique<favicon::FaviconServiceImpl>(
       std::make_unique<FaviconClientImpl>(),
       ios::HistoryServiceFactory::GetForProfile(
@@ -31,7 +30,9 @@ favicon::FaviconService* FaviconServiceFactory::GetForProfile(
   if (!profile->IsOffTheRecord()) {
     return GetInstance()->GetServiceForProfileAs<favicon::FaviconService>(
         profile, /*create=*/true);
-  } else if (access_type == ServiceAccessType::EXPLICIT_ACCESS) {
+  }
+
+  if (access_type == ServiceAccessType::EXPLICIT_ACCESS) {
     return GetInstance()->GetServiceForProfileAs<favicon::FaviconService>(
         profile->GetOriginalProfile(),
         /*create=*/true);
@@ -48,9 +49,9 @@ FaviconServiceFactory* FaviconServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+FaviconServiceFactory::TestingFactory
 FaviconServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildFaviconService);
+  return base::BindOnce(&BuildFaviconService);
 }
 
 FaviconServiceFactory::FaviconServiceFactory()
@@ -62,8 +63,8 @@ FaviconServiceFactory::FaviconServiceFactory()
 FaviconServiceFactory::~FaviconServiceFactory() = default;
 
 std::unique_ptr<KeyedService> FaviconServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildFaviconService(context);
+    ProfileIOS* profile) const {
+  return BuildFaviconService(profile);
 }
 
 }  // namespace ios

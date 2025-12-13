@@ -13,7 +13,6 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
-#include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
 namespace optimization_guide {
 
@@ -26,10 +25,6 @@ GetGenAILocalFoundationalModelEnterprisePolicySettings(
 // Returns the model execution config read from the `config_path`.
 std::unique_ptr<proto::OnDeviceModelExecutionConfig>
 ReadOnDeviceModelExecutionConfig(const base::FilePath& config_path);
-
-// Returns whether the `feature` was recently used.
-bool WasOnDeviceEligibleFeatureRecentlyUsed(ModelBasedCapabilityKey feature,
-                                            const PrefService& local_state);
 
 }  // namespace optimization_guide
 

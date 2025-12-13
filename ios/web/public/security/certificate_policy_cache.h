@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/ref_counted.h"
 #include "ios/web/public/security/cert_policy.h"
 #include "net/cert/x509_certificate.h"
 

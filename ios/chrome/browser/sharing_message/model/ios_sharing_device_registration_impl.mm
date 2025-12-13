@@ -27,7 +27,6 @@
 #import "components/sharing_message/sharing_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_device_info/device_info.h"
-#import "crypto/ec_private_key.h"
 
 using instance_id::InstanceID;
 using sync_pb::SharingSpecificFields;
@@ -129,8 +128,6 @@ void IOSSharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved(
     return;
   }
 
-  base::UmaHistogramBoolean("Sharing.LocalSharingTargetInfoSupportsSync",
-                            !!sharing_target_info);
   std::set<SharingSpecificFields::EnabledFeatures> enabled_features =
       GetEnabledFeatures();
   syncer::DeviceInfo::SharingInfo sharing_info(

@@ -15,6 +15,9 @@
 
 using blink::WebDocument;
 using blink::WebElement;
+using blink::WebFrame;
+using blink::WebLocalFrame;
+using blink::WebNode;
 using blink::WebString;
 
 namespace autofill {
@@ -29,9 +32,9 @@ WebElement GetElementById(const WebDocument& doc,
   return e;
 }
 
-blink::WebElement GetElementById(const blink::WebNode& node,
-                                 std::string_view id,
-                                 AllowNull allow_null) {
+WebElement GetElementById(const WebNode& node,
+                          std::string_view id,
+                          AllowNull allow_null) {
   WebElement e =
       node.QuerySelector(WebString::FromASCII(base::StrCat({"#", id})));
   CHECK(allow_null || e);
@@ -43,18 +46,32 @@ content::RenderFrame* GetIframeById(const WebDocument& doc,
                                     AllowNull allow_null) {
   WebElement iframe = GetElementById(doc, id, allow_null);
   CHECK(allow_null || iframe.HasHTMLTagName("iframe"));
-  return iframe ? content::RenderFrame::FromWebFrame(
-                      blink::WebFrame::FromFrameOwnerElement(iframe)
-                          ->ToWebLocalFrame())
-                : nullptr;
+  return iframe
+             ? content::RenderFrame::FromWebFrame(
+                   WebFrame::FromFrameOwnerElement(iframe)->ToWebLocalFrame())
+             : nullptr;
 }
 
-FrameToken GetFrameToken(const blink::WebDocument& doc,
+WebDocument GetIframeDocumentById(const WebDocument& doc,
+                                  std::string_view id,
+                                  AllowNull allow_null) {
+  content::RenderFrame* render_frame = GetIframeById(doc, id, allow_null);
+  CHECK(allow_null || render_frame);
+  WebLocalFrame* web_local_frame =
+      render_frame ? render_frame->GetWebFrame() : nullptr;
+  CHECK(allow_null || web_local_frame);
+  WebDocument child_document =
+      web_local_frame ? web_local_frame->GetDocument() : WebDocument();
+  CHECK(allow_null || child_document);
+  return child_document;
+}
+
+FrameToken GetFrameToken(const WebDocument& doc,
                          std::string_view id,
                          AllowNull allow_null) {
   WebElement iframe = GetElementById(doc, id, allow_null);
   CHECK(allow_null || iframe.HasHTMLTagName("iframe"));
-  blink::WebFrame* frame = blink::WebFrame::FromFrameOwnerElement(iframe);
+  WebFrame* frame = WebFrame::FromFrameOwnerElement(iframe);
   if (frame && frame->IsWebLocalFrame()) {
     return LocalFrameToken(
         frame->ToWebLocalFrame()->GetLocalFrameToken().value());

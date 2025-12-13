@@ -71,7 +71,7 @@ class DecorationTitle {
 
  private:
   bool needs_refresh_ = true;
-  bool should_hide_title_text_;
+  bool should_hide_title_text_ = false;
 };
 
 }  // namespace android

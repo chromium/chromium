@@ -6,9 +6,7 @@
 
 namespace leveldb_proto {
 
-BASE_FEATURE(kProtoDBSharedMigration,
-             "ProtoDBSharedMigration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kProtoDBSharedMigration, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether database writes are asynchronous. This reduces disk
 // contention and improves overall browser speed. The last asynchronous writes
@@ -19,8 +17,6 @@ BASE_FEATURE(kProtoDBSharedMigration,
 // Database corruption is not a concern due to leveldb's journaling system. More
 // details at
 // https://github.com/google/leveldb/blob/main/doc/index.md#synchronous-writes.
-BASE_FEATURE(kLevelDBProtoAsyncWrite,
-             "LevelDBProtoAsyncWrite",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLevelDBProtoAsyncWrite, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace leveldb_proto

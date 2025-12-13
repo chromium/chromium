@@ -8,6 +8,8 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/containers/lru_cache.h"
+#include "base/no_destructor.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -20,6 +22,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -74,7 +77,8 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     net::CookieSettingOverrides cookie_setting_overrides,
     std::string_view debug_tag,
     bool require_cross_site_request_for_cookies,
-    bool is_for_service_worker) {
+    bool is_for_service_worker,
+    const std::optional<base::UnguessableToken>& network_restrictions_id) {
   DCHECK(process);
 
   network::mojom::URLLoaderFactoryParamsPtr params =
@@ -86,6 +90,8 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
   params->is_trusted = is_trusted;
   if (top_frame_token)
     params->top_frame_id = top_frame_token.value().value();
+
+  params->network_restrictions_id = network_restrictions_id;
   params->isolation_info = isolation_info;
 
   params->disable_web_security =
@@ -131,7 +137,18 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
   params->require_cross_site_request_for_cookies =
       require_cross_site_request_for_cookies;
 
+  if (URLLoaderFactoryParamsHelper::IsMainFrameOriginRecentlyAccessed(
+          isolation_info)) {
+    params->is_main_frame_origin_recently_accessed = true;
+  }
+
   return params;
+}
+
+base::LRUCacheSet<url::Origin>& GetRecentlyAccessedOriginSet() {
+  static base::NoDestructor<base::LRUCacheSet<url::Origin>> origin_set(
+      net::features::kRecentlyAccessedOriginCacheSize.Get());
+  return *origin_set;
 }
 
 }  // namespace
@@ -153,6 +170,7 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
     network::mojom::TrustTokenOperationPolicyVerdict
         trust_token_redemption_policy,
     net::CookieSettingOverrides cookie_setting_overrides,
+    const std::optional<base::UnguessableToken>& network_restrictions_id,
     std::string_view debug_tag) {
   return CreateParams(
       process,
@@ -173,7 +191,7 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
       frame->CreateDeviceBoundSessionObserver(), trust_token_issuance_policy,
       trust_token_redemption_policy, cookie_setting_overrides, debug_tag,
       /*require_cross_site_request_for_cookies=*/false,
-      /*is_for_service_worker=*/false);
+      /*is_for_service_worker=*/false, network_restrictions_id);
 }
 
 // static
@@ -210,7 +228,8 @@ URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
       trust_token_redemption_policy, cookie_setting_overrides,
       "ParamHelper::CreateForIsolatedWorld",
       /*require_cross_site_request_for_cookies=*/false,
-      /*is_for_service_worker=*/false);
+      /*is_for_service_worker=*/false,
+      /*TODO(crbug.com/447954811): network_restrictions_id*/ std::nullopt);
 }
 
 network::mojom::URLLoaderFactoryParamsPtr
@@ -245,7 +264,8 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
       cookie_setting_overrides, "ParamHelper::CreateForPrefetch",
       /*require_cross_site_request_for_cookies=*/false,
-      /*is_for_service_worker=*/false);
+      /*is_for_service_worker=*/false,
+      /*TODO(crbug.com/447954811): network_restrictions_id*/ std::nullopt);
 }
 
 // static
@@ -295,7 +315,8 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       network::mojom::TrustTokenOperationPolicyVerdict::kPotentiallyPermit,
       network::mojom::TrustTokenOperationPolicyVerdict::kPotentiallyPermit,
       net::CookieSettingOverrides(), debug_tag,
-      require_cross_site_request_for_cookies, is_for_service_worker);
+      require_cross_site_request_for_cookies, is_for_service_worker,
+      /*TODO(crbug.com/447954811): network_restrictions_id*/ std::nullopt);
 }
 
 // static
@@ -359,7 +380,34 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
       net::CookieSettingOverrides(), "ParamHelper::CreateForEarlyHintsPreload",
       /*require_cross_site_request_for_cookies=*/false,
-      /*is_for_service_worker=*/false);
+      /*is_for_service_worker=*/false,
+      /*TODO(crbug.com/447954811): network_restrictions_id*/ std::nullopt);
+}
+
+// static
+void URLLoaderFactoryParamsHelper::OnMainFrameNavigation(url::Origin origin) {
+  if (base::FeatureList::IsEnabled(
+          net::features::kUpdateIsMainFrameOriginRecentlyAccessed)) {
+    GetRecentlyAccessedOriginSet().Put(std::move(origin));
+  }
+}
+
+// static
+bool URLLoaderFactoryParamsHelper::IsMainFrameOriginRecentlyAccessed(
+    const net::IsolationInfo& isolation_info) {
+  if (!base::FeatureList::IsEnabled(
+          net::features::kUpdateIsMainFrameOriginRecentlyAccessed)) {
+    return false;
+  }
+
+  const std::optional<url::Origin> top_frame_origin =
+      isolation_info.top_frame_origin();
+  if (!top_frame_origin) {
+    return false;
+  }
+
+  auto& origin_set = GetRecentlyAccessedOriginSet();
+  return origin_set.Peek(top_frame_origin.value()) != origin_set.end();
 }
 
 }  // namespace content

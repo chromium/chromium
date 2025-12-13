@@ -17,7 +17,8 @@ CaptionStyle::~CaptionStyle() = default;
 // static
 std::optional<CaptionStyle> CaptionStyle::FromSpec(const std::string& spec) {
   CaptionStyle style;
-  std::optional<base::Value> dict = base::JSONReader::Read(spec);
+  std::optional<base::Value> dict =
+      base::JSONReader::Read(spec, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict.has_value()) {
     return std::nullopt;
   }

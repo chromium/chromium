@@ -12,15 +12,19 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
@@ -31,12 +35,12 @@
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
@@ -48,63 +52,36 @@ using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
 void LogSessionCreation(OptimizationGuideLogger* logger,
-                        ModelBasedCapabilityKey feature) {
+                        mojom::OnDeviceFeature feature) {
   if (logger && logger->ShouldEnableDebugLogs()) {
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
-        << "Starting on-device session for "
-        << std::string(GetStringNameForModelExecutionFeature(feature));
+        << "Starting on-device session for " << base::ToString(feature);
   }
-}
-
-SamplingParams ResolveSamplingParams(
-    const std::optional<SessionConfigParams>& config_params,
-    const std::optional<OnDeviceOptions>& on_device_opts) {
-  if (config_params && config_params->sampling_params) {
-    return config_params->sampling_params.value();
-  }
-  if (on_device_opts) {
-    auto feature_params = on_device_opts->adapter->GetSamplingParamsConfig();
-    return SamplingParams{.top_k = feature_params.default_top_k,
-                          .temperature = feature_params.default_temperature};
-  }
-  return SamplingParams{
-      .top_k = static_cast<uint32_t>(features::GetOnDeviceModelDefaultTopK()),
-      .temperature =
-          static_cast<float>(features::GetOnDeviceModelDefaultTemperature()),
-  };
 }
 
 }  // namespace
 
-SessionImpl::SessionImpl(
-    ModelBasedCapabilityKey feature,
-    std::optional<OnDeviceOptions> on_device_opts,
-    ExecuteRemoteFn execute_remote_fn,
-    const std::optional<SessionConfigParams>& config_params)
+SessionImpl::SessionImpl(mojom::OnDeviceFeature feature,
+                         OnDeviceOptions on_device_opts)
     : feature_(feature),
-      execute_remote_fn_(std::move(execute_remote_fn)),
-      sampling_params_(ResolveSamplingParams(config_params, on_device_opts)),
-      capabilities_(config_params ? config_params->capabilities
-                                  : on_device_model::Capabilities()) {
-  if (on_device_opts && on_device_opts->ShouldUse()) {
-    LogSessionCreation(on_device_opts->logger.get(), feature_);
-    // TODO(crbug.com/403383823): Consider removing `sampling_params_` from
-    // `SessionImpl` in favor of querying them from `on_device_context_`.
-    on_device_opts->sampling_params = sampling_params_;
+      // TODO(crbug.com/403383823): Get these from on_device_context_.
+      sampling_params_(*on_device_opts.session_params.sampling_params),
+      capabilities_(on_device_opts.session_params.capabilities) {
+  if (on_device_opts.ShouldUse()) {
+    TRACE_EVENT("optimization_guide", "SessionImpl::Warmup", "target",
+                base::ToString(feature_));
+    LogSessionCreation(on_device_opts.logger.get(), feature_);
     on_device_context_ =
-        std::make_unique<OnDeviceContext>(*std::move(on_device_opts), feature_);
+        std::make_unique<OnDeviceContext>(std::move(on_device_opts), feature_);
     // Prewarm the initial session to make sure the service is started.
     on_device_context_->GetOrCreateSession();
   }
 }
 
-SessionImpl::SessionImpl(ModelBasedCapabilityKey feature,
-                         ExecuteRemoteFn execute_remote_fn,
+SessionImpl::SessionImpl(mojom::OnDeviceFeature feature,
                          const SamplingParams& sampling_params)
-    : feature_(feature),
-      execute_remote_fn_(std::move(execute_remote_fn)),
-      sampling_params_(sampling_params) {}
+    : feature_(feature), sampling_params_(sampling_params) {}
 
 SessionImpl::~SessionImpl() {}
 
@@ -122,7 +99,7 @@ void SessionImpl::SetInput(MultimodalMessage request,
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.OnDeviceAddContextResult.",
-           GetStringNameForModelExecutionFeature(feature_)}),
+           GetVariantName(feature_)}),
       result);
 }
 
@@ -136,11 +113,7 @@ SessionImpl::AddContextResult SessionImpl::AddContextImpl(
     SetInputCallback callback) {
   if (callback) {
     callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-        std::move(callback),
-        base::unexpected(
-            OptimizationGuideModelExecutionError::FromModelExecutionError(
-                OptimizationGuideModelExecutionError::ModelExecutionError::
-                    kCancelled)));
+        std::move(callback), base::unexpected(OnDeviceError::kCancelled));
   }
   context_ = std::move(request);
   context_start_time_ = base::TimeTicks::Now();
@@ -202,7 +175,7 @@ void SessionImpl::ExecuteModelWithResponseConstraint(
     base::UmaHistogramLongTimes(
         base::StrCat(
             {"OptimizationGuide.ModelExecution.ContextStartToExecutionTime.",
-             GetStringNameForModelExecutionFeature(feature_)}),
+             GetVariantName(feature_)}),
         context_start_to_execution);
     // Only interested in logging the first request after adding context.
     context_start_time_ = base::TimeTicks();
@@ -212,11 +185,9 @@ void SessionImpl::ExecuteModelWithResponseConstraint(
 
   if (!ShouldUseOnDeviceModel()) {
     DestroyOnDeviceState();
-    execute_remote_fn_.Run(
-        feature_, merged_request.BuildProtoMessage(), std::nullopt,
-        /*log_ai_data_request=*/nullptr,
-        base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
-                       std::move(callback)));
+    std::move(callback).Run(OptimizationGuideModelStreamingExecutionResult(
+        base::unexpected(OnDeviceError::kGenericFailure),
+        /*provided_by_on_device=*/true));
     return;
   }
 
@@ -227,9 +198,8 @@ void SessionImpl::ExecuteModelWithResponseConstraint(
 
   // Set new pending response.
   on_device_execution_.emplace(
-      feature_, on_device_context_->opts(), execute_remote_fn_,
-      std::move(merged_request), std::move(constraint), std::move(logger),
-      std::move(callback),
+      feature_, on_device_context_->opts(), std::move(merged_request),
+      std::move(constraint), std::move(logger), std::move(callback),
       base::BindOnce(&SessionImpl::OnDeviceExecutionTerminated,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -294,9 +264,8 @@ on_device_model::Capabilities SessionImpl::GetCapabilities() const {
   return capabilities_;
 }
 
-std::unique_ptr<OptimizationGuideModelExecutor::Session> SessionImpl::Clone() {
-  auto session = std::make_unique<SessionImpl>(feature_, execute_remote_fn_,
-                                               sampling_params_);
+std::unique_ptr<OnDeviceSession> SessionImpl::Clone() {
+  auto session = std::make_unique<SessionImpl>(feature_, sampling_params_);
   session->context_ = context_.Clone();
   session->context_start_time_ = context_start_time_;
   if (on_device_context_ && on_device_context_->CanUse()) {

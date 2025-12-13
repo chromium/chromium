@@ -8,8 +8,10 @@
 #include <tuple>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -51,11 +53,10 @@ bool WebContentsShuttingDown(content::WebContents* web_contents) {
 WebAppIconDownloader::WebAppIconDownloader() = default;
 WebAppIconDownloader::~WebAppIconDownloader() = default;
 
-void WebAppIconDownloader::Start(
-    content::WebContents* web_contents,
-    const IconUrlSizeSet& extra_icon_urls_with_sizes,
-    WebAppIconDownloaderCallback callback,
-    IconDownloaderOptions options) {
+void WebAppIconDownloader::Start(content::WebContents* web_contents,
+                                 const IconUrlSizeSet& extra_icon_urls,
+                                 WebAppIconDownloaderCallback callback,
+                                 IconDownloaderOptions options) {
   // Cannot call start more than once.
   CHECK_EQ(pending_requests(), 0ul);
   CHECK(web_contents);
@@ -92,8 +93,8 @@ void WebAppIconDownloader::Start(
   const auto& favicon_urls = GetFaviconURLsFromWebContents();
 
   if (options_.download_page_favicons && !favicon_urls.empty()) {
-    std::vector<IconUrlWithSize> combined_icon_infos(
-        extra_icon_urls_with_sizes.begin(), extra_icon_urls_with_sizes.end());
+    std::vector<IconUrlWithSize> combined_icon_infos(extra_icon_urls.begin(),
+                                                     extra_icon_urls.end());
     combined_icon_infos.reserve(combined_icon_infos.size() +
                                 favicon_urls.size());
     for (const auto& favicon_url : favicon_urls) {
@@ -104,7 +105,7 @@ void WebAppIconDownloader::Start(
     }
     FetchIcons(IconUrlSizeSet(combined_icon_infos));
   } else {
-    FetchIcons(extra_icon_urls_with_sizes);
+    FetchIcons(extra_icon_urls);
   }
 }
 
@@ -179,7 +180,8 @@ void WebAppIconDownloader::DidDownloadFavicon(
     return;
   }
 
-  const IconUrlWithSize icon_urls_with_sizes = in_progress_requests_.at(id);
+  const IconUrlWithSize icon_urls_with_sizes =
+      CHECK_DEREF(base::FindOrNull(in_progress_requests_, id));
   size_t num_deleted = in_progress_requests_.erase(id);
   CHECK_EQ(num_deleted, 1ul);
 

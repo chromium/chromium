@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/auth_factor_config/password_factor_editor.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -13,12 +14,18 @@
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/auth_parts.h"
+#include "chromeos/ash/components/osauth/public/auth_policy_connector.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
+#include "chromeos/ash/components/policy/local_auth_factors/local_auth_factors_complexity.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
-#include "components/user_manager/user_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace ash::auth {
 
@@ -26,10 +33,45 @@ namespace {
 
 const std::size_t kLocalPasswordMinimumLength = 8;
 
+mojom::PasswordComplexity LocalAuthFactorsComplexityToMojom(
+    LocalAuthFactorsComplexity complexity) {
+  switch (complexity) {
+    case LocalAuthFactorsComplexity::kNone:
+      return mojom::PasswordComplexity::kErrNone;
+    case LocalAuthFactorsComplexity::kLow:
+      return mojom::PasswordComplexity::kErrLow;
+    case LocalAuthFactorsComplexity::kMedium:
+      return mojom::PasswordComplexity::kErrMedium;
+    case LocalAuthFactorsComplexity::kHigh:
+      return mojom::PasswordComplexity::kErrHigh;
+  }
+}
+
 // The synchronous implementation of `CheckLocalPasswordComplexity`. The
 // provided `password` string must be valid UTF-8.
 mojom::PasswordComplexity CheckLocalPasswordComplexityImpl(
     const std::string& password) {
+  AccountId account_id = EmptyAccountId();
+  if (const auto* primary_session =
+          session_manager::SessionManager::Get()->GetPrimarySession()) {
+    account_id = primary_session->account_id();
+  }
+
+  // `account_id` can be empty here if we're early in the login flow, but that
+  // is fine because in that case we use `EarlyLoginAuthPolicyConnector` which
+  // doesn't use the `account_id`.
+  std::optional<LocalAuthFactorsComplexity> policy =
+      AuthParts::Get()->GetAuthPolicyConnector()->GetLocalAuthFactorsComplexity(
+          account_id);
+
+  if (policy.has_value()) {
+    // LocalAuthFactorsComplexity policy is set, perform the new check.
+    bool ok = policy::local_auth_factors::CheckPasswordComplexity(
+        password, policy.value());
+    return ok ? mojom::PasswordComplexity::kOk
+              : LocalAuthFactorsComplexityToMojom(policy.value());
+  }
+
   // We're counting unicode points here because we already have a function for
   // that, but graphemes might be closer to the user's understanding of what
   // the length of a string is.
@@ -64,6 +106,14 @@ void PasswordFactorEditor::UpdateOrSetLocalPassword(
     return;
   }
 
+  // Mojo strings are valid UTF-8, so the `CheckLocalPasswordComplexityImpl`
+  // call is OK.
+  if (CheckLocalPasswordComplexityImpl(new_password) !=
+      mojom::PasswordComplexity::kOk) {
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    return;
+  }
+
   ash::AuthSessionStorage::Get()->BorrowAsync(
       FROM_HERE, auth_token,
       base::BindOnce(&PasswordFactorEditor::UpdateOrSetPasswordWithContext,
@@ -81,14 +131,6 @@ void PasswordFactorEditor::UpdateOrSetPasswordWithContext(
   if (!context) {
     LOG(ERROR) << "Invalid auth token";
     std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-    return;
-  }
-
-  // Mojo strings are valid UTF-8, so the `CheckLocalPasswordComplexityImpl`
-  // call is OK.
-  if (CheckLocalPasswordComplexityImpl(new_password) !=
-      mojom::PasswordComplexity::kOk) {
-    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
     return;
   }
 
@@ -114,6 +156,9 @@ void PasswordFactorEditor::UpdateOrSetOnlinePassword(
     std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
     return;
   }
+
+  // No complexity check for online passwords, it is controlled
+  // on the server side by identity provider.
 
   ash::AuthSessionStorage::Get()->BorrowAsync(
       FROM_HERE, auth_token,

@@ -10,10 +10,6 @@
 
     html {
       /* Buttons */
-        /*
-          TODO(https://crbug.com/1320715) Revise the color
-          --oobe-button-border-color: white;
-        */
       --oobe-button-radius: 16px;
 
       --oobe-back-button-padding-inline-end: 16px;

@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "content/browser/download/drag_download_file.h"
 #include "content/browser/download/drag_download_util.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
@@ -97,7 +98,7 @@
   }
 
   // URL (and title).
-  if (_dropData.url.is_valid()) {
+  if (!_dropData.url_infos.empty()) {
     [writableTypes addObject:NSPasteboardTypeURL];
     [writableTypes addObject:ui::kUTTypeUrlName];
   }
@@ -209,13 +210,14 @@
 
   // URL.
   if ([type isEqualToString:NSPasteboardTypeURL]) {
-    DCHECK(_dropData.url.is_valid());
-    NSURL* url = net::NSURLWithGURL(_dropData.url);
+    DCHECK(!_dropData.url_infos.empty());
+    NSURL* url = net::NSURLWithGURL(_dropData.url_infos.front().url);
     // If NSURL creation failed, check for a badly-escaped JavaScript URL.
     // Strip out any existing escapes and then re-escape uniformly.
-    if (!url && _dropData.url.SchemeIs(url::kJavaScriptScheme)) {
-      std::string unescapedUrlString =
-          base::UnescapeBinaryURLComponent(_dropData.url.spec());
+    if (!url &&
+        _dropData.url_infos.front().url.SchemeIs(url::kJavaScriptScheme)) {
+      std::string unescapedUrlString = base::UnescapeBinaryURLComponent(
+          _dropData.url_infos.front().url.spec());
       std::string escapedUrlString =
           base::EscapeUrlEncodedData(unescapedUrlString, false);
       url = [NSURL URLWithString:base::SysUTF8ToNSString(escapedUrlString)];
@@ -225,7 +227,8 @@
 
   // URL title.
   if ([type isEqualToString:ui::kUTTypeUrlName]) {
-    return base::SysUTF16ToNSString(_dropData.url_title);
+    DCHECK(!_dropData.url_infos.empty());
+    return base::SysUTF16ToNSString(_dropData.url_infos.front().title);
   }
 
   // File contents.
@@ -299,6 +302,17 @@
 
   // Oops! Unknown drag pasteboard type.
   NOTREACHED();
+}
+
+- (NSPasteboardWritingOptions)writingOptionsForType:(NSString*)type
+                                         pasteboard:(NSPasteboard*)pasteboard {
+  // It is critical to return 0 here if we're in an app shim process. Otherwise
+  // for drags that end in the host chrome browser process, we might end up
+  // deadlocked with the app shim waiting for a sync IPC reply from chrome,
+  // while chrome is blocked trying to get the promised drag data.
+  return remote_cocoa::ApplicationBridge::IsOutOfProcessAppShim()
+             ? 0
+             : NSPasteboardWritingPromised;
 }
 
 @end  // @implementation WebDragSource

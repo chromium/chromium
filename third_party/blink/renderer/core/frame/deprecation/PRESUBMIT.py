@@ -16,7 +16,8 @@ import sys
 # are not dispatched within the renderer. If this list starts to grow we should
 # add more formal support.
 EXEMPTED_FROM_RENDERER_GENERATION = {
-    "PrivacySandboxExtensionsAPI": True,
+    "ExampleBrowserProcessDeprecation": True,
+    "RelatedWebsiteSets": True,
 }
 
 # pyright: reportMissingImports=false

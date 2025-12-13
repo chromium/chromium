@@ -135,29 +135,68 @@
       <Item Name="Payload">(void*)((char*)header_ + header_size_)</Item>
     </Expand>
   </Type>
+  <Type Name="base::FilePath">
+    <DisplayString>{path_}</DisplayString>
+  </Type>
   <!-- Handles most classes inside base/time/time.h -->
   <Type Name="base::time_internal::TimeBase&lt;*&gt;">
-    <DisplayString>{us_.value_} us</DisplayString>
+    <Intrinsic Name="microseconds" Expression="us_.value_" />
+    <!-- These static constexpr values are not consistently embedded in
+        the PDB. To ensure it works in all build configs, define them directly
+        here. If/when https://github.com/llvm/llvm-project/issues/46924 gets
+        resolved, we can likely remove these in favor of referencing the
+        symbol. -->
+    <Intrinsic Name="kHoursPerDay" Expression="24" />
+    <Intrinsic Name="kMinutesPerHour" Expression="60" />
+    <Intrinsic Name="kSecondsPerMinute" Expression="60" />
+    <Intrinsic Name="kMillisecondsPerSecond" Expression="1000" />
+    <Intrinsic Name="kMicrosecondsPerMillisecond" Expression="1000" />
+    <Intrinsic Name="kMicrosecondsPerSecond" Expression="kMicrosecondsPerMillisecond() * kMillisecondsPerSecond()" />
+    <Intrinsic Name="kMicrosecondsPerMinute" Expression="kMicrosecondsPerSecond() * kSecondsPerMinute()" />
+    <Intrinsic Name="kMicrosecondsPerHour" Expression="(int64_t)kMicrosecondsPerMinute() * kMinutesPerHour()" />
+    <Intrinsic Name="kMicrosecondsPerDay" Expression="(int64_t)kMicrosecondsPerHour() * kHoursPerDay()" />
+    <Intrinsic Name="microseconds_float" Expression="microseconds() * 1.0" />
+    <DisplayString Condition="microseconds() % kMicrosecondsPerDay() == 0">{microseconds() / kMicrosecondsPerDay()}d</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerHour() == 0">{microseconds() / kMicrosecondsPerHour()}h</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerMinute() == 0">{microseconds() / kMicrosecondsPerMinute()}m</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerSecond() == 0">{microseconds() / kMicrosecondsPerSecond()}s</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerMillisecond() == 0">{microseconds() / kMicrosecondsPerMillisecond()}ms</DisplayString>
+    <DisplayString>{microseconds()}us</DisplayString>
+    <Expand>
+      <Item Name="[in days]">microseconds_float() / kMicrosecondsPerDay()</Item>
+      <Item Name="[in hours]">microseconds_float() / kMicrosecondsPerHour()</Item>
+      <Item Name="[in minutes]">microseconds_float() / kMicrosecondsPerMinute()</Item>
+      <Item Name="[in seconds]">microseconds_float() / kMicrosecondsPerSecond()</Item>
+      <Item Name="[in milliseconds]">microseconds_float() / kMicrosecondsPerMillisecond()</Item>
+      <Item Name="[in microseconds]">microseconds()</Item>
+    </Expand>
   </Type>
   <Type Name="base::TimeDelta">
-    <DisplayString>{delta_.value_} us</DisplayString>
+    <Intrinsic Name="microseconds" Expression="delta_.value_" />
+    <!-- The below should be identical to the Type definition for base::time_internal::TimeBase<*>. -->
+    <Intrinsic Name="kHoursPerDay" Expression="24" />
+    <Intrinsic Name="kMinutesPerHour" Expression="60" />
+    <Intrinsic Name="kSecondsPerMinute" Expression="60" />
+    <Intrinsic Name="kMillisecondsPerSecond" Expression="1000" />
+    <Intrinsic Name="kMicrosecondsPerMillisecond" Expression="1000" />
+    <Intrinsic Name="kMicrosecondsPerSecond" Expression="kMicrosecondsPerMillisecond() * kMillisecondsPerSecond()" />
+    <Intrinsic Name="kMicrosecondsPerMinute" Expression="kMicrosecondsPerSecond() * kSecondsPerMinute()" />
+    <Intrinsic Name="kMicrosecondsPerHour" Expression="(int64_t)kMicrosecondsPerMinute() * kMinutesPerHour()" />
+    <Intrinsic Name="kMicrosecondsPerDay" Expression="(int64_t)kMicrosecondsPerHour() * kHoursPerDay()" />
+    <Intrinsic Name="microseconds_float" Expression="microseconds() * 1.0" />
+    <DisplayString Condition="microseconds() % kMicrosecondsPerDay() == 0">{microseconds() / kMicrosecondsPerDay()}d</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerHour() == 0">{microseconds() / kMicrosecondsPerHour()}h</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerMinute() == 0">{microseconds() / kMicrosecondsPerMinute()}m</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerSecond() == 0">{microseconds() / kMicrosecondsPerSecond()}s</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerMillisecond() == 0">{microseconds() / kMicrosecondsPerMillisecond()}ms</DisplayString>
+    <DisplayString>{microseconds()}us</DisplayString>
     <Expand>
-      <Synthetic Name="Days">
-        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerDay)}</DisplayString>
-      </Synthetic>
-      <Synthetic Name="Hours">
-        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerHour)}</DisplayString>
-      </Synthetic>
-      <Synthetic Name="Minutes">
-        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerMinute)}</DisplayString>
-      </Synthetic>
-      <Synthetic Name="Seconds">
-        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerSecond)}</DisplayString>
-      </Synthetic>
-      <Synthetic Name="Milliseconds">
-        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerMillisecond)}</DisplayString>
-      </Synthetic>
-      <Item Name="Microseconds">delta_.value_</Item>
+      <Item Name="[in days]">microseconds_float() / kMicrosecondsPerDay()</Item>
+      <Item Name="[in hours]">microseconds_float() / kMicrosecondsPerHour()</Item>
+      <Item Name="[in minutes]">microseconds_float() / kMicrosecondsPerMinute()</Item>
+      <Item Name="[in seconds]">microseconds_float() / kMicrosecondsPerSecond()</Item>
+      <Item Name="[in milliseconds]">microseconds_float() / kMicrosecondsPerMillisecond()</Item>
+      <Item Name="[in microseconds]">microseconds()</Item>
     </Expand>
   </Type>
   <Type Name="GURL">
@@ -169,6 +208,30 @@
     <DisplayString>{*($T1*)space_.data_}</DisplayString>
     <Expand>
       <ExpandedItem>*($T1*)space_.data_</ExpandedItem>
+    </Expand>
+  </Type>
+  <!-- This type handles the case where there is one additional "is null" value. -->
+  <Type Name="base::IdType&lt;*,*,*,*,*&gt;">
+    <Intrinsic Name="is_null" Expression="value_ == $T3 || value_ == $T5" />
+    <DisplayString Condition="!is_null()">{value_}</DisplayString>
+    <DisplayString>null</DisplayString>
+    <Expand>
+      <Item Name="[value]">value_</Item>
+      <Item Name="[is_null]">is_null()</Item>
+    </Expand>
+  </Type>
+  <!-- This type handles the other cases, with a limitation warning displayed to the user if we see a 6th template value. -->
+  <Type Name="base::IdType&lt;*&gt;">
+    <Intrinsic Name="is_null" Expression="value_ == $T3" />
+    <DisplayString Condition="!is_null()">{value_}</DisplayString>
+    <DisplayString>null</DisplayString>
+    <Expand>
+      <Item Name="[value]">value_</Item>
+      <Item Name="[is_null]">is_null()</Item>
+      <!-- We can't handle arbitrary kExtraInvalidValues, so this may be null even if this indicates otherwise.
+           If this is a common scenario, add a more specific Type with the matching number of parameters
+           like we do for five template parameters above. -->
+      <Item Name="more values that may be null (see chrome.natvis)" Optional="true" ExcludeView="simple">$T6</Item>
     </Expand>
   </Type>
   <Type Name="base::internal::flat_tree&lt;*&gt;">
@@ -201,6 +264,17 @@
       <ExpandedItem>storage_</ExpandedItem>
     </Expand>
   </Type>
+  <Type Name="base::LazyInstance&lt;*,*&gt;">
+    <Intrinsic Name="atomic_value" Expression="*(unsigned long long*)&amp;private_instance_" />
+    <Intrinsic Name="is_created" Expression="atomic_value() != 0" />
+    <Intrinsic Name="instance_ptr" Expression="(($T1*)private_buf_)" />
+    <DisplayString Condition="!is_created()">{{ not created }}</DisplayString>
+    <DisplayString Condition="is_created()">{{ created: {*instance_ptr()} }}</DisplayString>
+    <Expand>
+      <Item Name="[IsCreated]" ExcludeView="simple">is_created()</Item>
+      <Item Name="[instance]" Condition="is_created()">*instance_ptr()</Item>
+    </Expand>
+  </Type>
   <Type Name="base::ListValue" >
     <DisplayString>{storage_}</DisplayString>
     <Expand>
@@ -218,6 +292,21 @@
         <Size>size()</Size>
         <ValuePointer>data_</ValuePointer>
       </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="base::WeakPtr&lt;*&gt;">
+    <Intrinsic Name="ref_is_valid" Expression="ref_.flag_.ptr_ &amp;&amp; (uint8_t*)&amp;(ref_.flag_.ptr_-&gt;invalidated_.flag_)" />
+    <Intrinsic Name="was_invalidated" Expression="ptr_ &amp;&amp; !ref_is_valid()" />
+    <Intrinsic Name="value" Expression="*($T1**)&amp;ptr_" />
+    <SmartPointer Usage="Minimal">value()</SmartPointer>
+    <DisplayString Condition="was_invalidated()">invalidated</DisplayString>
+    <DisplayString Condition="value() == 0">empty</DisplayString>
+    <DisplayString Condition="value() != 0">WeakPtr {value()}</DisplayString>
+    <Expand>
+      <Item Condition="ref_is_valid() &amp;&amp; value() != 0" Name="[ptr]">value()</Item>
+      <Item Condition="!ref_is_valid() &amp;&amp; value() != 0" Name="[invalidated ptr]">value()</Item>
+      <Item Name="[ref_is_valid]" ExcludeView="simple">ref_is_valid()</Item>
+      <Item Name="[was_invalidated]" Condition="!ref_is_valid()" ExcludeView="simple">was_invalidated()</Item>
     </Expand>
   </Type>
 </AutoVisualizer>

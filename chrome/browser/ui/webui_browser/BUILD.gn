@@ -1,0 +1,154 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+source_set("headers") {
+  sources = [ "webui_browser.h" ]
+}
+
+source_set("webui_browser") {
+  sources = [
+    "browser_elements_webui_browser.h",
+    "find_bar_owner_webui_browser.h",
+    "webui_browser_exclusive_access_context.h",
+    "webui_browser_side_panel_ui.h",
+    "webui_browser_ui.h",
+    "webui_browser_window.h",
+    "webui_location_bar.h",
+  ]
+  public_deps = [
+    ":browser_mojo_bindings",
+    ":headers",
+    "//base",
+    "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/location_bar",
+    "//chrome/browser/ui/views/interaction",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/webui/cr_components/searchbox",
+    "//chrome/browser/ui/webui/metrics_reporter",
+    "//components/guest_contents/common:mojom",
+    "//content/public/browser",
+    "//ui/color",
+    "//ui/color:color_provider_key",
+    "//ui/views",
+    "//ui/webui",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "bookmark_bar_page_handler.cc",
+    "bookmark_bar_page_handler.h",
+    "browser_elements_webui_browser.cc",
+    "find_bar_owner_webui_browser.cc",
+    "webui_browser.cc",
+    "webui_browser_client_view.cc",
+    "webui_browser_client_view.h",
+    "webui_browser_exclusive_access_context.cc",
+    "webui_browser_extensions_container.cc",
+    "webui_browser_extensions_container.h",
+    "webui_browser_modal_dialog_host.cc",
+    "webui_browser_modal_dialog_host.h",
+    "webui_browser_page_handler.cc",
+    "webui_browser_page_handler.h",
+    "webui_browser_side_panel_ui.cc",
+    "webui_browser_ui.cc",
+    "webui_browser_web_contents_delegate.cc",
+    "webui_browser_web_contents_delegate.h",
+    "webui_browser_window.cc",
+    "webui_location_bar.cc",
+  ]
+
+  if (is_mac) {
+    sources += [ "webui_browser_window_mac.mm" ]
+  }
+
+  deps = [
+    ":browser_mojo_bindings",
+    ":webui_browser",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/app_mode",
+    "//chrome/browser/devtools",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles",
+    "//chrome/browser/resources/webui_browser:resources",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/find_bar",
+    "//chrome/browser/ui/location_bar",
+    "//chrome/browser/ui/tabs/tab_strip_api",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views/page_info",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/ui/webui/searchbox",
+    "//chrome/browser/ui/webui/util",
+    "//chrome/common:chrome_features",
+    "//components/browser_apis/tab_strip/resources",
+    "//components/guest_contents/browser",
+    "//components/input",
+    "//components/omnibox/browser:vector_icons",
+    "//components/sharing_message",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/content_accelerators",
+    "//ui/views",
+    "//ui/views/controls/webview",
+    "//ui/webui/tracked_element",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ui/ash/system_web_apps" ]
+  }
+
+  if (is_mac) {
+    deps += [
+      "//chrome/browser/apps/app_shim",
+      "//components/remote_cocoa/app_shim",
+      "//ui/base/accelerators/global_accelerator_listener",
+    ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+mojom("browser_mojo_bindings") {
+  sources = [
+    "bookmark_bar.mojom",
+    "browser.mojom",
+    "extensions_bar.mojom",
+  ]
+  public_deps = [
+    "//components/browser_apis/tab_strip:mojom",
+    "//mojo/public/mojom/base",
+    "//ui/base/mojom:ui_base_types",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  webui_module_path = "/"
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "webui_browser_browsertest.cc" ]
+
+  deps = [
+    ":impl",
+    ":webui_browser",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+}

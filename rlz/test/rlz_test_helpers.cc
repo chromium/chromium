@@ -4,11 +4,6 @@
 //
 // Main entry point for all unit tests.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "rlz_test_helpers.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "rlz/lib/rlz_lib.h"
@@ -65,7 +61,7 @@ void ReadRegistryTree(const base::win::RegKey& src, RegistryKeyData* data) {
       const uint8_t* value_bytes = reinterpret_cast<const uint8_t*>(i.Value());
       value.name.assign(i.Name());
       value.type = i.Type();
-      value.data.assign(value_bytes, value_bytes + i.ValueSize());
+      value.data.assign(value_bytes, UNSAFE_TODO(value_bytes + i.ValueSize()));
     }
   }
 

@@ -6,8 +6,8 @@
 #define COMPONENTS_REPORTING_RESOURCES_RESOURCE_MANAGED_BUFFER_H_
 
 #include <cstdint>
-#include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
@@ -32,13 +32,20 @@ class ResourceManagedBuffer {
 
   void Clear();
 
-  char* at(size_t pos);
-  size_t size() const;
-  bool empty() const;
+  bool empty() const { return buffer_.empty(); }
+
+  base::span<uint8_t> span() { return buffer_.as_span(); }
+
+  base::span<uint8_t> subspan(size_t offset) { return buffer_.subspan(offset); }
+
+  base::span<uint8_t> subspan(size_t offset, size_t size) {
+    return buffer_.subspan(offset, size);
+  }
+
+  size_t size() const { return buffer_.size(); }
 
  private:
-  std::unique_ptr<char[]> buffer_;
-  size_t size_ = 0;
+  base::HeapArray<uint8_t> buffer_;
 
   const scoped_refptr<ResourceManager> memory_resource_;
 };

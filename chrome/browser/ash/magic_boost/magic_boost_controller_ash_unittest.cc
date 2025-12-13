@@ -79,7 +79,7 @@ TEST_F(MagicBoostControllerAshTest, DisclaimerWidget) {
   histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
 
   controller.ShowDisclaimerUi(
-      /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
       /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 
@@ -103,8 +103,7 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerAcceptButtonPressed) {
   histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
   histogram_tester->ExpectTotalCount(kHistogramName + "HmrOnly", 0);
 
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   controller.ShowDisclaimerUi(
       /*display_id=*/display_id,
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
@@ -140,8 +139,7 @@ TEST_F(MagicBoostControllerAshTest,
   histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
   histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
 
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   controller.ShowDisclaimerUi(
       display_id,
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
@@ -176,8 +174,7 @@ TEST_F(MagicBoostControllerAshTest,
   mock_magic_boost_state_->set_editor_panel_manager_for_test(
       &mock_editor_panel_manager_);
 
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   controller.ShowDisclaimerUi(
       display_id,
       crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel,
@@ -207,7 +204,7 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerDeclineButtonPressed) {
   histogram_tester->ExpectTotalCount(kHistogramName + "HmrOnly", 0);
 
   controller.ShowDisclaimerUi(
-      /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
       /*opt_in_features=*/OptInFeatures::kHmrOnly);
 
@@ -242,7 +239,7 @@ TEST_F(MagicBoostControllerAshTest,
   histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
 
   controller.ShowDisclaimerUi(
-      /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
       /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 
@@ -272,7 +269,7 @@ TEST_F(MagicBoostControllerAshTest,
 
 TEST_F(MagicBoostControllerAshTest, ClickingOnLinkClosesWidget) {
   controller.ShowDisclaimerUi(
-      /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
       /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 

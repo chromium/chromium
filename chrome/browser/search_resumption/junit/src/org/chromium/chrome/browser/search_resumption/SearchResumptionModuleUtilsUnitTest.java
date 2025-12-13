@@ -14,11 +14,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
@@ -48,6 +50,7 @@ import java.util.Set;
 @SuppressWarnings("DoNotMock") // Mocks GURL
 @Features.EnableFeatures(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)
 public class SearchResumptionModuleUtilsUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SyncService mSyncServiceMock;
@@ -60,8 +63,6 @@ public class SearchResumptionModuleUtilsUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
@@ -185,6 +186,7 @@ public class SearchResumptionModuleUtilsUnitTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMayGetCachedResults() {
         doReturn(false).when(mTab).canGoForward();
         Assert.assertNull(SearchResumptionModuleUtils.mayGetCachedResults(mTab, mTabToTrack));

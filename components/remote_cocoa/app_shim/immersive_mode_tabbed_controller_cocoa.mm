@@ -7,11 +7,40 @@
 #include "base/apple/foundation_util.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #import "components/remote_cocoa/app_shim/NSToolbar+Private.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #include "components/remote_cocoa/app_shim/features.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
+#include "components/remote_cocoa/app_shim/override_ns_next_step_frame_hit_test.h"
+
+@interface TabTitlebarView : NSView
+@end
+
+@implementation TabTitlebarView
+- (NSView*)tabContentView {
+  CHECK(self.subviews.count > 0);
+  return base::apple::ObjCCastStrict<BridgedContentView>(self.subviews[0]);
+}
+
+- (void)viewDidMoveToWindow {
+  // During transition from regular to fullscreen, the TabTitlebarView is first
+  // added to the main browser's NSWindow, then moved to
+  // NSToolbarFullscreenWindow. Only NSToolbarFullscreenWindow needs hit test
+  // overriding.
+  if (remote_cocoa::IsNSToolbarFullScreenWindow(self.window)) {
+    remote_cocoa::SetNSNextStepFrameHitTestTargetView(self.window,
+                                                      self.tabContentView);
+  }
+}
+
+- (void)viewWillMoveToWindow:(NSWindow*)newWindow {
+  // Removing from NSToolbarFullscreenWindow, hence reset hit test overriding.
+  if (!newWindow && remote_cocoa::IsNSToolbarFullScreenWindow(self.window)) {
+    remote_cocoa::SetNSNextStepFrameHitTestTargetView(self.window, nil);
+  }
+}
+@end
 
 namespace {
 void SetAlwaysShowTrafficLights(NSWindow* browser_window, bool always_show) {
@@ -27,6 +56,10 @@ ImmersiveModeTabbedControllerCocoa::ImmersiveModeTabbedControllerCocoa(
     NativeWidgetMacOverlayNSWindow* overlay_window,
     NativeWidgetMacOverlayNSWindow* tab_window)
     : ImmersiveModeControllerCocoa(browser_window, overlay_window) {
+  // MacOS 26 has event routing issues with right-mouse events and needs to be
+  // worked around by swizzling internal AppKit methods.
+  OverrideNSNextStepFrameHitTest();
+
   tab_window_ = tab_window;
 #ifndef NDEBUG
   tab_window_.title = @"tab overlay";
@@ -36,7 +69,7 @@ ImmersiveModeTabbedControllerCocoa::ImmersiveModeTabbedControllerCocoa(
 
   tab_titlebar_view_controller_ =
       [[NSTitlebarAccessoryViewController alloc] init];
-  tab_titlebar_view_controller_.view = [[NSView alloc] init];
+  tab_titlebar_view_controller_.view = [[TabTitlebarView alloc] init];
 
   // The view is pinned to the opposite side of the traffic lights. A view long
   // enough is able to paint underneath the traffic lights. This also works with
@@ -55,6 +88,7 @@ ImmersiveModeTabbedControllerCocoa::~ImmersiveModeTabbedControllerCocoa() {
   SetAlwaysShowTrafficLights(browser_window(), false);
   StopObservingChildWindows(tab_window_);
   browser_window().toolbar = nil;
+  browser_window().toolbarStyle = NSWindowToolbarStyleAutomatic;
   BridgedContentView* tab_content_view = tab_content_view_;
   [tab_content_view removeFromSuperview];
   tab_window_.contentView = tab_content_view;
@@ -109,6 +143,12 @@ void ImmersiveModeTabbedControllerCocoa::Init() {
 
   // The presence of a visible NSToolbar causes the titlebar to be revealed.
   browser_window().toolbar = [[NSToolbar alloc] init];
+  // Since macOS 26, a titlebar accessory of type NSLayoutAttributeTrailing can
+  // only customize its height when using UnifiedCompat toolbar style.
+  // This style is available since macOS 11.0. It is a no-op for Chrome on
+  // pre-macOS 26. However, if Chrome starts using NSToolbarItem in the future,
+  // their height will be affected by this style.
+  browser_window().toolbarStyle = NSWindowToolbarStyleUnifiedCompact;
 
   // `UpdateToolbarVisibility()` will make the toolbar visible as necessary.
   UpdateToolbarVisibility(last_used_style());
@@ -175,7 +215,7 @@ void ImmersiveModeTabbedControllerCocoa::RemoveController() {
 void ImmersiveModeTabbedControllerCocoa::OnTopViewBoundsChanged(
     const gfx::Rect& bounds) {
   ImmersiveModeControllerCocoa::OnTopViewBoundsChanged(bounds);
-  NSRect frame = NSRectFromCGRect(bounds.ToCGRect());
+  NSRect frame = bounds.ToCGRect();
   [tab_titlebar_view_controller_.view
       setFrameSize:NSMakeSize(
                        frame.size.width,

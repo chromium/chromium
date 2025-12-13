@@ -29,4 +29,13 @@ public class GEN_JNI {
   public static Object org_jni_1zero_SampleProxyEdgeCases_arrayTypes2(Object a, Object b) {
     return J.N.OOO(1, a, b);
   }
+  public static void org_jni_1zero_SampleProxyEdgeCases_fooForTest() {
+    throw new RuntimeException("Native method not present");
+  }
+  public static void org_jni_1zero_SampleProxyEdgeCases_fooForTesting() {
+    throw new RuntimeException("Native method not present");
+  }
+  public static void org_jni_1zero_SampleProxyEdgeCases_fooForTests() {
+    throw new RuntimeException("Native method not present");
+  }
 }

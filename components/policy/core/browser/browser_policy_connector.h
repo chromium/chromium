@@ -11,7 +11,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/policy_export.h"
 

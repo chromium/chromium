@@ -22,11 +22,14 @@
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -53,6 +56,10 @@ WebContents* WebContentsDelegate::AddNewContents(
     bool user_gesture,
     bool* was_blocked) {
   return nullptr;
+}
+
+bool WebContentsDelegate::IsContentsActive(WebContents* contents) {
+  return true;
 }
 
 bool WebContentsDelegate::CanOverscrollContent() {
@@ -106,12 +113,6 @@ void WebContentsDelegate::CanDownload(const GURL& url,
 
 bool WebContentsDelegate::HandleContextMenu(RenderFrameHost& render_frame_host,
                                             const ContextMenuParams& params) {
-  return false;
-}
-
-bool WebContentsDelegate::PreHandleMouseEvent(
-    WebContents* source,
-    const blink::WebMouseEvent& event) {
   return false;
 }
 
@@ -178,14 +179,16 @@ void WebContentsDelegate::CreateSmsPrompt(
     base::OnceCallback<void()> on_confirm,
     base::OnceCallback<void()> on_cancel) {}
 
+bool WebContentsDelegate::GetCanResize() {
+  return false;
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool WebContentsDelegate::CanUseWindowingControls(
     RenderFrameHost* requesting_frame) {
   return false;
 }
-
-bool WebContentsDelegate::GetCanResize() {
-  return false;
-}
+#endif
 
 ui::mojom::WindowShowState WebContentsDelegate::GetWindowShowState() const {
   return ui::mojom::WindowShowState::kDefault;
@@ -417,7 +420,7 @@ int WebContentsDelegate::AllowedPrerenderingCount(WebContents& web_contents) {
 }
 
 NavigationController::UserAgentOverrideOption
-WebContentsDelegate::ShouldOverrideUserAgentForPrerender2() {
+WebContentsDelegate::ShouldOverrideUserAgentForPreloading(const GURL& url) {
   return NavigationController::UA_OVERRIDE_INHERIT;
 }
 
@@ -451,12 +454,24 @@ bool WebContentsDelegate::MaybeCopyContentAreaAsBitmap(
   return false;
 }
 
+void WebContentsDelegate::GetAIPageContent(
+    WebContents* web_contents,
+    bool include_actionable_elements,
+    base::OnceCallback<void(const std::string&)> callback) {
+  std::move(callback).Run(std::string());
+}
+
 bool WebContentsDelegate::IsWaitingForPointerLockPrompt(
     WebContents* web_contents) {
   return false;
 }
 
 #if BUILDFLAG(IS_ANDROID)
+
+bool WebContentsDelegate::MaybeCopyContentAreaAsHardwareBuffer(
+    HardwareBufferResultCallback callback) {
+  return false;
+}
 SkBitmap WebContentsDelegate::MaybeCopyContentAreaAsBitmapSync() {
   return SkBitmap();
 }
@@ -475,6 +490,11 @@ WebContentsDelegate::GetBackForwardTransitionFallbackUXConfig() {
 std::vector<blink::mojom::RelatedApplicationPtr>
 WebContentsDelegate::GetSavedRelatedApplications(WebContents* web_contents) {
   return {};
+}
+
+WebContents* WebContentsDelegate::GetResponsibleWebContents(
+    WebContents* web_contents) {
+  return nullptr;
 }
 
 }  // namespace content

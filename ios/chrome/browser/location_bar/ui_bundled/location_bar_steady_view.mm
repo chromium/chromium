@@ -10,8 +10,10 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -234,7 +236,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   // container view.
   _badgesContainerView = [[LocationBarBadgesContainerView alloc] init];
   _badgesContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-
   [_locationButton addSubview:_badgesContainerView];
 }
 
@@ -359,17 +360,15 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 }
 
 - (void)setUpTraitChangeHandler {
-  if (@available(iOS 17, *)) {
-    __weak __typeof(self) weakSelf = self;
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    UITraitChangeHandler traitChangeHandler =
-        ^(id<UITraitEnvironment> traitEnvironment,
-          UITraitCollection* previousCollection) {
-          [weakSelf updateFontOnTraitChange:previousCollection];
-        };
-    [self registerForTraitChanges:traits withHandler:traitChangeHandler];
-  }
+  __weak __typeof(self) weakSelf = self;
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  UITraitChangeHandler traitChangeHandler =
+      ^(id<UITraitEnvironment> traitEnvironment,
+        UITraitCollection* previousCollection) {
+        [weakSelf updateFontOnTraitChange:previousCollection];
+      };
+  [self registerForTraitChanges:traits withHandler:traitChangeHandler];
 }
 
 - (void)setUpAccessibility {
@@ -490,11 +489,21 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   [self updateAccessibility];
 }
 
-- (void)setPlaceholderView:(UIView*)placeholderView {
+- (void)setPlaceholderView:(UIView*)placeholderView
+                      type:(LocationBarPlaceholderType)placeholderType {
   if (_badgesContainerView.placeholderView != placeholderView) {
+    _badgesContainerView.placeholderType = placeholderType;
     _badgesContainerView.placeholderView = placeholderView;
   }
   [self updateAccessibility];
+}
+
+- (void)setPageActionMenuHandler:
+    (id<PageActionMenuCommands>)pageActionMenuHandler {
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    _pageActionMenuHandler = pageActionMenuHandler;
+    _badgesContainerView.pageActionMenuHandler = pageActionMenuHandler;
+  }
 }
 
 - (void)setFullScreenCollapsedMode:(BOOL)isFullScreenCollapsed {
@@ -593,19 +602,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   return true;
 }
 
-#pragma mark - UIView
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateFontOnTraitChange:previousTraitCollection];
-}
-#endif
-
 #pragma mark - UIAccessibilityContainer
 
 - (NSArray*)accessibilityElements {
@@ -667,6 +663,12 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   self.trailingButtonTrailingAnchorConstraint.constant =
       self.trailingButtonTrailingSpacing;
   [self layoutIfNeeded];
+}
+
+// Propagates the incognito state to the badges container view.
+- (void)setIncognito:(BOOL)incognito {
+  _incognito = incognito;
+  self.badgesContainerView.incognito = incognito;
 }
 
 @end

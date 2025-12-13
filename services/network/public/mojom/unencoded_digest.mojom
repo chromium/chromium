@@ -1,0 +1,25 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/integrity_metadata.mojom";
+
+enum UnencodedDigestIssue {
+   kMalformedDictionary,
+   kUnknownAlgorithm,
+   kIncorrectDigestType,
+   kIncorrectDigestLength,
+};
+
+// `Unencoded-Digest` header contents.
+//
+// https://www.ietf.org/archive/id/draft-ietf-httpbis-unencoded-digest-00.html
+struct UnencodedDigests {
+  // We store `Unencoded-Digest` assertions as an array of `IntegrityMetadata`
+  // structs for consistency with Subresource Integrity and Content Security
+  // Policy.
+  array<IntegrityMetadata> digests;
+  array<UnencodedDigestIssue> issues;
+};

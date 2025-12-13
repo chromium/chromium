@@ -64,8 +64,8 @@ class TestInterfaceFactory : public media::mojom::InterfaceFactory {
 
     // Each AudioEncoder instance will try to open a connection to this
     // factory, so we must clean up after each one is destroyed.
-    receiver_.set_disconnect_handler(WTF::BindOnce(
-        &TestInterfaceFactory::OnConnectionError, base::Unretained(this)));
+    receiver_.set_disconnect_handler(BindOnce(
+        &TestInterfaceFactory::OnConnectionError, blink::Unretained(this)));
   }
 
   void OnConnectionError() { receiver_.reset(); }
@@ -124,10 +124,7 @@ class TestInterfaceFactory : public media::mojom::InterfaceFactory {
       mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<media::mojom::Renderer> receiver,
       mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
-          renderer_extension_receiver,
-      mojo::PendingRemote<
-          ::media::mojom::MediaFoundationRendererClientExtension>
-          client_extension_remote) override {}
+          renderer_extension_receiver) override {}
 #endif  // BUILDFLAG(IS_WIN)
  private:
 #if BUILDFLAG(IS_WIN)
@@ -158,8 +155,8 @@ DEFINE_TEXT_PROTO_FUZZER(
         ->GetBrowserInterfaceBroker()
         ->SetBinderForTesting(
             media::mojom::InterfaceFactory::Name_,
-            WTF::BindRepeating(&TestInterfaceFactory::BindRequest,
-                               base::Owned(std::move(interface_factory))));
+            BindRepeating(&TestInterfaceFactory::BindRequest,
+                          base::Owned(std::move(interface_factory))));
   }();
   CHECK(kSetTestBinder) << "Failed to register media interface binder.";
 #endif

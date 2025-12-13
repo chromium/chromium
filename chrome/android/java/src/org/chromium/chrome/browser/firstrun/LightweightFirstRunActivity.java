@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.method.LinkMovementMethod;
@@ -53,7 +55,9 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
     private boolean mNativeInitialized;
     private boolean mTriggerAcceptAfterNativeInit;
 
+    @SuppressWarnings("HidingField")
     private @Nullable Handler mHandler;
+
     private @Nullable Runnable mExitFreRunnable;
 
     public static final String EXTRA_ASSOCIATED_APP_NAME =
@@ -80,7 +84,8 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
 
         FirstRunFlowSequencer firstRunFlowSequencer =
                 new FirstRunFlowSequencer(
-                        getProfileProviderSupplier(), getChildAccountStatusSupplier()) {
+                        getProfileProviderSupplier(),
+                        assertNonNull(getChildAccountStatusSupplier())) {
                     @Override
                     public void onFlowIsKnown(boolean isChild) {
                         initializeViews(isChild);

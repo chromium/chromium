@@ -124,6 +124,12 @@
 // content.
 - (void)focusOmniboxAndType:(NSString*)text;
 
+// Simulates the physical keyboard event.
+- (void)pressEnter;
+
+// Replaces the content of the omnibox with the given text.
+- (void)replaceTextInOmnibox:(NSString*)text;
+
 // Focuses the omnibox by tapping and replaces its content with `text`.
 // The '\n' symbol can be passed in order to commit the string.
 // If `text` is empty or nil, the omnibox is just focused.
@@ -169,10 +175,6 @@
 // Tries to dismiss any presented native context menu.
 // Returns `YES` if a context menu was dismissed, otherwise returns `NO`.
 - (BOOL)dismissContextMenuIfPresent;
-
-// Cleans up the view hierarchy after showing the system alert on certain OS
-// versions.
-- (void)cleanupAfterShowingAlert;
 
 // Type `text` in Omnibox and optionally press Enter if `shouldPressEnter` is
 // YES.

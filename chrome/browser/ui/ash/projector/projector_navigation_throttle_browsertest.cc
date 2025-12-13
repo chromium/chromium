@@ -23,6 +23,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -48,6 +49,12 @@ namespace {
 constexpr char kFilePath[] = "xyz";
 
 constexpr char kStartTime[] = "21 Jan 2022 10:00:00 GMT";
+
+enum class ProjectorAppNavigationType {
+  kFromOmnibox,
+  kTargetSelfLink,
+  kTargetBlankLink,
+};
 
 }  // namespace
 
@@ -98,8 +105,8 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
 
 using LinkCapturingFeatureVersion = apps::test::LinkCapturingFeatureVersion;
 
-using ProjectorAppNavigationParams =
-    std::tuple<LinkCapturingFeatureVersion, bool, std::string>;
+using ProjectorAppNavigationParams = std::
+    tuple<LinkCapturingFeatureVersion, ProjectorAppNavigationType, std::string>;
 
 class ProjectorNavigationCapturingParameterizedTest
     : public ProjectorNavigationThrottleTest,
@@ -113,7 +120,14 @@ class ProjectorNavigationCapturingParameterizedTest
   LinkCapturingFeatureVersion feature_version() const {
     return std::get<LinkCapturingFeatureVersion>(GetParam());
   }
-  bool navigate_from_link() const { return std::get<bool>(GetParam()); }
+  bool navigate_from_link() const {
+    return std::get<ProjectorAppNavigationType>(GetParam()) !=
+           ProjectorAppNavigationType::kFromOmnibox;
+  }
+  bool navigate_target_blank() const {
+    return std::get<ProjectorAppNavigationType>(GetParam()) ==
+           ProjectorAppNavigationType::kTargetBlankLink;
+  }
   std::string url_params() const { return std::get<std::string>(GetParam()); }
 
  private:
@@ -139,35 +153,39 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationCapturingParameterizedTest,
   GURL gurl(url);
 
   // Prior to navigation, there is only one browser available.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
 
   // We have to listen for both the browser being removed AND the new browser
   // being added.
-  ui_test_utils::BrowserChangeObserver removed_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
-  ui_test_utils::BrowserChangeObserver added_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer;
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   if (navigate_from_link()) {
-    // Simulate the user clicking a link.
-    NavigateParams params(browser(), gurl,
-                          ui::PageTransition::PAGE_TRANSITION_LINK);
-    Navigate(&params);
+    if (navigate_target_blank()) {
+      EXPECT_TRUE(content::ExecJs(
+          browser()->tab_strip_model()->GetActiveWebContents(),
+          content::JsReplace("window.open($1, '_blank', 'noopener');",
+                             gurl.spec())));
+    } else {
+      NavigateParams params(browser(), gurl,
+                            ui::PageTransition::PAGE_TRANSITION_LINK);
+      Navigate(&params);
+    }
   } else {
     // Simulate the user typing the url into the omnibox.
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), gurl, WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
+    browser_destroyed_observer.Wait();
   }
 
-  removed_observer.Wait();
-  added_observer.Wait();
+  BrowserWindowInterface* const swa_browser = browser_created_observer.Wait();
 
   // During the navigation, we closed the previous browser to prevent dangling
   // about:blank pages and opened a new app browser for the Projector SWA.
   // There is still only one browser available.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  // Select the first available browser, which should be the SWA.
-  SelectFirstBrowser();
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), navigate_target_blank() ? 2u : 1u);
+  // Set the default browser to the swa browser.
+  SetBrowser(swa_browser);
   Browser* app_browser =
       FindSystemWebAppBrowser(profile(), SystemWebAppType::PROJECTOR);
   // Projector SWA is now open.
@@ -204,7 +222,10 @@ INSTANTIATE_TEST_SUITE_P(
         /*link_capturing_feature_version=*/::testing::Values(
             LinkCapturingFeatureVersion::kV1DefaultOff,
             LinkCapturingFeatureVersion::kV2DefaultOff),
-        /*navigate_from_link=*/testing::Bool(),
+        /*navigate_from_link=*/
+        testing::Values(ProjectorAppNavigationType::kFromOmnibox,
+                        ProjectorAppNavigationType::kTargetSelfLink,
+                        ProjectorAppNavigationType::kTargetBlankLink),
         /*url_params=*/
         ::testing::Values("resourceKey=abc", "resourceKey=abc&xyz=123", "")),
     [](const testing::TestParamInfo<ProjectorAppNavigationParams>& info) {
@@ -212,8 +233,17 @@ INSTANTIATE_TEST_SUITE_P(
       test_name.append(apps::test::ToString(
           std::get<LinkCapturingFeatureVersion>(info.param)));
       test_name.append("_");
-      test_name.append(std::get<bool>(info.param) ? "navigate_from_link"
-                                                  : "navigate_from_omnibox");
+      switch (std::get<ProjectorAppNavigationType>(info.param)) {
+        case ProjectorAppNavigationType::kFromOmnibox:
+          test_name.append("navigate_from_omnibox");
+          break;
+        case ProjectorAppNavigationType::kTargetSelfLink:
+          test_name.append("navigate_from_link");
+          break;
+        case ProjectorAppNavigationType::kTargetBlankLink:
+          test_name.append("navigate_from_target_blank_link");
+          break;
+      }
       test_name.append("_");
 
       // The query params have "=" in them which is not considered a valid param
@@ -248,7 +278,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
                        NoBlankTab) {
   SetUpMockClock(GetParam() == LinkCapturingFeatureVersion::kV2DefaultOff);
   // Prior to navigation, there is only one browser available.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
 
   // Suppose the user clicks a link like https://screencast.apps.chrome in
   // gchat. The redirect URL actually looks like the below.
@@ -259,10 +289,8 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
           "screencast.apps.chrome&sa=D&source=hangouts&ust=1642759200000000")));
 
   // We wait for both the old browser to close and the new app browser to open.
-  ui_test_utils::BrowserChangeObserver removed_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
-  ui_test_utils::BrowserChangeObserver added_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer;
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   // The Google servers would redirect to the URL in the ?q= query parameter.
   // Simulate this behavior in this test without actually pinging the Google
   // servers to prevent flakiness.
@@ -270,15 +298,15 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
       browser(), GURL(kChromeUIUntrustedProjectorPwaUrl),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
-  removed_observer.Wait();
-  added_observer.Wait();
+  browser_destroyed_observer.Wait();
+  BrowserWindowInterface* const swa_browser = browser_created_observer.Wait();
 
   // During the navigation, we closed the previous browser to prevent dangling
   // blank redirect pages and opened a new app browser for the Projector SWA.
   // There is still only one browser available.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  // Select the first available browser, which should be the SWA.
-  SelectFirstBrowser();
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  // Set the default browser to the swa browser.
+  SetBrowser(swa_browser);
   Browser* app_browser =
       FindSystemWebAppBrowser(profile(), SystemWebAppType::PROJECTOR);
 

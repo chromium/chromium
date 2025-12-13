@@ -11,6 +11,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
@@ -45,13 +46,11 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
  public:
   // The |login_db| must not have been Init()-ed yet. It will be initialized in
   // a deferred manner on the background sequence.
-  PasswordStoreBuiltInBackend(
-      std::unique_ptr<LoginDatabase> login_db,
-      syncer::WipeModelUponSyncDisabledBehavior
-          wipe_model_upon_sync_disabled_behavior,
-      PrefService* prefs,
-      os_crypt_async::OSCryptAsync* os_crypt_async = nullptr,
-      UnsyncedCredentialsDeletionNotifier notifier = {});
+  PasswordStoreBuiltInBackend(std::unique_ptr<LoginDatabase> login_db,
+                              syncer::WipeModelUponSyncDisabledBehavior
+                                  wipe_model_upon_sync_disabled_behavior,
+                              PrefService* prefs,
+                              os_crypt_async::OSCryptAsync* os_crypt_async);
 
   ~PasswordStoreBuiltInBackend() override;
 
@@ -120,24 +119,21 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       LoginsOrErrorReply callback,
       LoginsResultOrError forms_or_error);
 
-  void OnEncryptorReceived(
-      RemoteChangesReceived remote_form_changes_received,
-      base::RepeatingClosure sync_enabled_or_disabled_cb,
-      base::OnceCallback<void(bool)> completion,
-      std::unique_ptr<os_crypt_async::Encryptor> encryptor);
+  void OnEncryptorReceived(RemoteChangesReceived remote_form_changes_received,
+                           base::RepeatingClosure sync_enabled_or_disabled_cb,
+                           base::OnceCallback<void(bool)> completion,
+                           os_crypt_async::Encryptor encryptor);
 
   void WritePasswordRemovalReasonPrefs(IsAccountStore is_account_store);
 
   void OnInitComplete(base::OnceCallback<void(bool)> completion, bool result);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Sets the pref responsible for maintaining groups population in
   // the kClearUndecryptablePasswords experiment.
   // Records the passwords removal reason prefs.
   // TODO(b/40286735): Remove after this feature is launched.
   void SetClearingUndecryptablePasswordsIsEnabledPref(
       IsAccountStore is_account_store);
-#endif
 
   // Ensures that all methods are called on the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);

@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_COMPONENT_UPDATER_WEB_VIEW_COMPONENT_UPDATER_CONFIGURATOR_H_
 #define IOS_WEB_VIEW_INTERNAL_COMPONENT_UPDATER_WEB_VIEW_COMPONENT_UPDATER_CONFIGURATOR_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/update_client/configurator.h"
 
 namespace base {

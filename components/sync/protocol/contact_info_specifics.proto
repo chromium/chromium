@@ -14,6 +14,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// LINT.IfChange(ContactInfoSpecifics)
 message ContactInfoSpecifics {
   // Used to distinguish whether the address is the dedicated Home or Work
   // address of the user's account.
@@ -85,12 +86,11 @@ message ContactInfoSpecifics {
   // The number of time this profile has been used.
   optional int64 use_count = 3;
 
-  // The last times this profile was used. use_date.. is the last use date of
-  // the profile, use_date2.. the second last use date, etc. If a profile hasn't
-  // been used at least that many times, the field is unset.
+  // The last time this profile was used. Since profile creation counts as a
+  // use, this should always have a value.
   optional int64 use_date_unix_epoch_seconds = 4;
-  optional int64 use_date2_unix_epoch_seconds = 54;
-  optional int64 use_date3_unix_epoch_seconds = 55;
+  reserved 54, 55;
+  reserved "use_date2_unix_epoch_seconds", "use_date3_unix_epoch_seconds";
 
   // The last time the profile was modified.
   optional int64 date_modified_unix_epoch_seconds = 37;
@@ -235,6 +235,11 @@ message ContactInfoSpecifics {
   // some address forms require the combination of both in a single field as
   // opposed to each one separately.
   optional StringToken address_thoroughfare_number_and_apt = 53;
+  // Prefix of the zip code, e.g., "12345" in "12345-6789".
+  optional StringToken address_zip_prefix = 63;
+  // Part of the zip code, excluding prefix and separator.
+  // For example, "6789" in "12345-6789".
+  optional StringToken address_zip_suffix = 64;
 
   // Phone.
   optional StringToken phone_home_whole_number = 33;
@@ -251,3 +256,4 @@ message ContactInfoSpecifics {
   reserved 6;
   reserved "name_honorific";
 }
+// LINT.ThenChange(//components/autofill/core/browser/webdata/addresses/contact_info_sync_util.cc:TrimContactInfoSpecificsData)

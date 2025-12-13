@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 /** Class for a CompositorButton that uses tint instead of multiple drawable resources. */
 @NullMarked
 public class TintedCompositorButton extends CompositorButton {
+    @SuppressWarnings("HidingField")
     private final Context mContext;
 
     private @ColorInt int mBackgroundDefaultTint;

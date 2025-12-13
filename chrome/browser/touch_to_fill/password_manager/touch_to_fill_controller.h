@@ -16,7 +16,7 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view_factory.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace password_manager {
 class KeyboardReplacingSurfaceVisibilityController;
@@ -52,11 +52,10 @@ class TouchToFillController {
   TouchToFillController& operator=(const TouchToFillController&) = delete;
   virtual ~TouchToFillController();
 
-  // Sets the credentials and passkeys that will be shown in the sheet. Also
-  // sets the `frame_driver` for which TTF is expected to be shown.
+  // Sets the credentials that will be shown in the sheet. Also sets the
+  // `frame_driver` for which TTF is expected to be shown.
   virtual void InitData(
-      base::span<const password_manager::UiCredential> credentials,
-      std::vector<password_manager::PasskeyCredential> passkey_credentials,
+      std::vector<TouchToFillView::Credential> credentials,
       base::WeakPtr<password_manager::ContentPasswordManagerDriver>
           frame_driver);
 
@@ -134,9 +133,7 @@ class TouchToFillController {
 
   // Helper method to select the display target.
   DisplayTarget GetResponsibleDisplayTarget(
-      base::span<const password_manager::UiCredential> credentials,
-      base::span<password_manager::PasskeyCredential> passkey_credentials)
-      const;
+      base::span<const TouchToFillView::Credential> credentials) const;
 
   // Delegate for interacting with the client that owns this controller.
   // It is provided when Show() is called, and reset when the view is
@@ -162,8 +159,7 @@ class TouchToFillController {
   std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
       grouped_credential_sheet_controller_;
 
-  std::vector<password_manager::UiCredential> credentials_;
-  std::vector<password_manager::PasskeyCredential> passkey_credentials_;
+  std::vector<TouchToFillView::Credential> credentials_;
   base::WeakPtr<password_manager::ContentPasswordManagerDriver> frame_driver_;
 
   base::WeakPtrFactory<TouchToFillController> weak_ptr_factory_{this};

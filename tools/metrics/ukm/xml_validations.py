@@ -21,6 +21,17 @@ INVALID_LOCAL_METRIC_FIELD_ERROR = (
   'metrics/ukm_api.md#aggregation-by-metrics-in-the-same-event for '
   'instructions on how to configure them.')
 
+INVALID_AGGREGATION_STATISTIC_ERROR = (
+    'Invalid statistics field specification in ukm.xml, in metric '
+    '%(event)s:%(metric)s. To have a metric aggregated, aggregation, history '
+    'and statistics tags need to be added along with the type of statistic. '
+    'See https://chromium.googlesource.com/chromium/src.git/+/main/services/'
+    'metrics/ukm_api.md#controlling-the-aggregation-of-metrics.')
+
+VALID_STATISTICS = {
+    "enumeration": [""],
+    "quantiles": ["std-percentiles"],
+}
 
 def _isMetricValidAsIndexField(metric_node):
   """Checks if a given metric node can be used as a field in an index tag.
@@ -169,3 +180,41 @@ class UkmXmlValidation(object):
 
     is_success = not errors
     return (is_success, errors)
+
+  def _getStatisticsError(self, metric_node, event_node):
+    """Checks if statistics are nonempty and of valid type."""
+    for stats_node in metric_node.getElementsByTagName('statistics'):
+      # A node is considered empty if it has no child nodes
+      # of the ELEMENT type. Filtering out <statistics/>.
+      child_elements = [
+          c for c in stats_node.childNodes if c.nodeType == c.ELEMENT_NODE
+      ]
+
+      # Checking if tag is nonempty.
+      if not child_elements:
+        return INVALID_AGGREGATION_STATISTIC_ERROR % (
+            {
+                'event': event_node.getAttribute('name'),
+                'metric': metric_node.getAttribute('name')
+            })
+      # Checking if tag is of a valid type.
+      stat = child_elements[0]
+      if (stat.tagName not in VALID_STATISTICS.keys()
+          or stat.getAttribute("type") not in VALID_STATISTICS[stat.tagName]):
+        return INVALID_AGGREGATION_STATISTIC_ERROR % (
+            {
+                'event': event_node.getAttribute('name'),
+                'metric': metric_node.getAttribute('name')
+            })
+
+  def checkStatisticsNonEmptyValid(self):
+    """Validates configuration of aggregated metrics."""
+    errors = []
+    for event_node in self.config.getElementsByTagName('event'):
+      for metric_node in event_node.getElementsByTagName('metric'):
+        if metric_node.getElementsByTagName('aggregation'):
+          validation_error = self._getStatisticsError(metric_node, event_node)
+          if validation_error:
+            errors.append(validation_error)
+
+    return (len(errors) == 0, errors)

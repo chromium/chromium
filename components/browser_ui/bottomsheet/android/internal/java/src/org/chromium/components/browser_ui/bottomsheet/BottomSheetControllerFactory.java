@@ -9,13 +9,14 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.function.Supplier;
 
 /** A factory for producing a {@link BottomSheetController}. */
 @NullMarked

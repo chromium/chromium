@@ -56,6 +56,10 @@ public final class EventConstants {
     /** The `Translate` app menu button was clicked. */
     public static final String TRANSLATE_MENU_BUTTON_CLICKED = "translate_menu_button_clicked";
 
+    /** The keyboard accessory was used to fill account name and email data into a form. */
+    public static final String KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_AUTOFILLED =
+            "account_name_email_create_suggestion_feature_used";
+
     /** The keyboard accessory was used to fill address data into a form. */
     public static final String KEYBOARD_ACCESSORY_ADDRESS_AUTOFILLED =
             "keyboard_accessory_address_suggestion_accepted";
@@ -238,6 +242,9 @@ public final class EventConstants {
             "adaptive_toolbar_page_summary_web_used";
     public static final String ADAPTIVE_TOOLBAR_PAGE_SUMMARY_PDF_USED =
             "adaptive_toolbar_page_summary_pdf_used";
+
+    /** Appearance in Settings was opened by the user. */
+    public static final String SETTINGS_APPEARANCE_OPENED = "settings_appearance_opened";
 
     /** Do not instantiate. */
     private EventConstants() {}

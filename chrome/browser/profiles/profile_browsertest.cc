@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -135,7 +137,7 @@ class SimpleURLLoaderHelper {
   SimpleURLLoaderHelper(const SimpleURLLoaderHelper&) = delete;
   SimpleURLLoaderHelper& operator=(const SimpleURLLoaderHelper&) = delete;
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body) {
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body) {
     EXPECT_EQ(expected_error_code_, loader_->NetError());
     is_complete_ = true;
     run_loop_.Quit();
@@ -400,7 +402,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateNewProfileAsynchronous) {
 
 // TODO(crbug.com/40812649): Flaky on ChromeOS-Ash.
 // TODO(crbug.com/40771709): Flaky on Mac.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/456184496): Flaky on Linux MSan.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
 #define MAYBE_CreateOldProfileAsynchronous DISABLED_CreateOldProfileAsynchronous
 #else
 #define MAYBE_CreateOldProfileAsynchronous CreateOldProfileAsynchronous
@@ -478,7 +482,8 @@ std::string GetExitTypePreferenceFromDisk(Profile* profile) {
   if (!base::ReadFileToString(prefs_path, &prefs))
     return std::string();
 
-  std::optional<base::Value> value = base::JSONReader::Read(prefs);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(prefs, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value)
     return std::string();
 
@@ -854,8 +859,10 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyOnOTRProfileAmongMany) {
 class ProfileBrowserTestWithDestroyProfile : public ProfileBrowserTest {
  public:
   ProfileBrowserTestWithDestroyProfile() {
+    // Pin the browser process to ensure it remains alive after all Browsers are
+    // destroyed for testing.
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
-        KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+        KeepAliveOrigin::PROFILE_MANAGER, KeepAliveRestartOption::DISABLED);
 
     scoped_feature_list_.InitAndEnableFeature(
         features::kDestroyProfileOnBrowserClose);
@@ -986,10 +993,6 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
 
   EXPECT_EQ(profile_metrics::BrowserProfileType::kGuest,
             profile_metrics::GetBrowserProfileType(guest_browser->profile()));
-
-  // Verify that both a parent and a child profile creation are recorded
-  EXPECT_THAT(tester.GetAllSamples("Profile.Guest.TypeCreated"),
-              ::testing::ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
 #endif
 }
 

@@ -51,6 +51,14 @@ declare_args() {
   ios_mobileprovision_files = []
 }
 
+# Generates ios_mobileprovision_files_filelist that will contain one file
+# name per line. This is used to reduce the length of the commande line
+# to codesign.py script. There is a different file per toolchain.
+ios_mobileprovision_files_filelist = "$root_out_dir/mobileprovisions.filelist"
+write_file(ios_mobileprovision_files_filelist,
+           rebase_path(ios_mobileprovision_files, root_build_dir),
+           "list lines")
+
 # As entitlements are tied to a specific bundle identifier, all the
 # test applications share the same identifier. This simplifies adding
 # new test application (since there is no need to investigate which

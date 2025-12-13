@@ -367,8 +367,7 @@ std::string UnmaskCardRequest::GetRequestContent() {
     }
   }
 
-  std::string json_request;
-  base::JSONWriter::Write(request_dict, &json_request);
+  std::string json_request = base::WriteJson(request_dict).value_or("");
   std::string request_content;
   if (is_cvc_auth) {
     request_content = base::StringPrintf(

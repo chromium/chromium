@@ -24,8 +24,8 @@ source_set("first_party_sets") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profiles",
     "//components/keyed_service/content",
     "//components/policy:generated",
     "//components/policy:policy_code_generate",
@@ -33,8 +33,8 @@ source_set("first_party_sets") {
     "//components/policy/core/browser",
     "//components/policy/proto",
     "//components/pref_registry",
-    "//components/prefs:prefs",
-    "//components/privacy_sandbox:privacy_sandbox",
+    "//components/prefs",
+    "//components/privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/strings:components_strings_grit",
   ]

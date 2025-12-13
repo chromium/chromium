@@ -7,7 +7,9 @@
 #import "base/check.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/password_generation_util.h"
 #import "components/password_manager/core/browser/features/password_features.h"
@@ -33,6 +35,8 @@
 
 namespace {
 constexpr CGFloat preferredCornerRadius = 20;
+constexpr char kUmaActionPrefix[] =
+    "IOS.PasswordManager.PasswordGenerationSheet";
 }  // namespace
 
 @interface PasswordSuggestionCoordinator () <
@@ -105,6 +109,7 @@ constexpr CGFloat preferredCornerRadius = 20;
   // the keyboard. This issue does not happen on mobile devices.
   // For more information, please see: https://www.crbug.com/1307759.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [self recordAction:"CloseKeyboard"];
     [self closeKeyboard];
   }
 
@@ -130,6 +135,8 @@ constexpr CGFloat preferredCornerRadius = 20;
   if (!self.viewController.presentingViewController) {
     [self.delegate closePasswordSuggestion];
   }
+
+  [self recordAction:"Present"];
 }
 
 - (void)stop {
@@ -142,13 +149,12 @@ constexpr CGFloat preferredCornerRadius = 20;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertSecondaryAction {
-  [self handleDecision:NO];
-  [self incrementDismissCount];
-  [self refocusIfNeeded];
-  [self.delegate closePasswordSuggestion];
+  [self recordAction:"DismissWithButton"];
+  [self dismissWithRefocus:YES];
 }
 
 - (void)confirmationAlertPrimaryAction {
+  [self recordAction:"Accept"];
   [self handleDecision:YES];
   [self.delegate closePasswordSuggestion];
 }
@@ -157,19 +163,37 @@ constexpr CGFloat preferredCornerRadius = 20;
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self handleDecision:NO];
-  [self incrementDismissCount];
-  [self refocusIfNeeded];
-  [self.delegate closePasswordSuggestion];
+  [self recordAction:"DismissWithSwipe"];
+  [self dismissWithRefocus:YES];
 }
 
 #pragma mark - Notification callback
 
 - (void)applicationDidEnterBackground:(NSNotification*)notification {
-  [self confirmationAlertSecondaryAction];
+  [self recordAction:"DismissWithBackground"];
+  [self dismissWithRefocus:NO];
 }
 
 #pragma mark - Private methods
+
+- (void)dismissWithRefocus:(BOOL)refocus {
+  [self handleDecision:NO];
+  [self incrementDismissCount];
+  if (refocus) {
+    [self refocusIfNeeded];
+  }
+  [self.delegate closePasswordSuggestion];
+}
+
+- (void)recordAction:(std::string_view)name {
+  std::string_view sheetTypeFragment = _proactive ? ".Proactive." : ".";
+  base::RecordAction(base::UserMetricsAction(base::StrCat({
+                                                              kUmaActionPrefix,
+                                                              sheetTypeFragment,
+                                                              name,
+                                                          })
+                                                 .c_str()));
+}
 
 // Returns the user email.
 - (NSString*)userEmail {
@@ -192,37 +216,11 @@ constexpr CGFloat preferredCornerRadius = 20;
 
 // Closes the keyboard.
 - (void)closeKeyboard {
-  NSString* activeWebStateIdentifier = self.browser->GetWebStateList()
-                                           ->GetActiveWebState()
-                                           ->GetStableIdentifier();
-  [self onCloseKeyboardWithIdentifier:activeWebStateIdentifier];
-}
-
-- (web::WebState*)activeWebState {
-  if (!self.browser) {
-    return nullptr;
-  }
-  web::WebState* activeWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-  if (!activeWebState) {
-    return nullptr;
-  }
-  return activeWebState;
-}
-
-// Helper method which closes the keyboard.
-- (void)onCloseKeyboardWithIdentifier:(NSString*)identifier {
   web::WebState* webState = [self activeWebState];
   if (!webState) {
     return;
   }
-  // Note that it may have changed between the moment the
-  // block was created and its invocation. So check whether
-  // the WebState identifier is the same.
-  NSString* webStateIdentifier = webState->GetStableIdentifier();
-  if (![webStateIdentifier isEqualToString:identifier]) {
-    return;
-  }
+
   password_manager::PasswordManagerJavaScriptFeature* feature =
       password_manager::PasswordManagerJavaScriptFeature::GetInstance();
   web::WebFrame* mainFrame =
@@ -237,6 +235,18 @@ constexpr CGFloat preferredCornerRadius = 20;
   NSString* mainFrameID = base::SysUTF8ToNSString(mainFrame->GetFrameId());
   [handler setLastFocusFormActivityWebFrameID:mainFrameID];
   [handler closeKeyboardWithoutButtonPress];
+}
+
+- (web::WebState*)activeWebState {
+  if (!self.browser) {
+    return nullptr;
+  }
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!activeWebState) {
+    return nullptr;
+  }
+  return activeWebState;
 }
 
 // Increments the password generation bottom sheet dismiss count
@@ -353,7 +363,7 @@ constexpr CGFloat preferredCornerRadius = 20;
 }
 
 // Refocuses the field that was blurred to show the payments suggestion
-// bottom sheet, if deemded needed.
+// bottom sheet, if deemed needed.
 - (void)refocusIfNeeded {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::
@@ -369,6 +379,7 @@ constexpr CGFloat preferredCornerRadius = 20;
   if (AutofillBottomSheetTabHelper* tabHelper =
           AutofillBottomSheetTabHelper::FromWebState(webState);
       tabHelper && _frame) {
+    [self recordAction:"Refocus"];
     tabHelper->RefocusElementIfNeeded(_frame->GetFrameId());
   }
 }

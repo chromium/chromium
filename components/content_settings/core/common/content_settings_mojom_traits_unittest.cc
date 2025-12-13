@@ -55,7 +55,6 @@ TEST(ContentSettingsTraitsTest, Roundtrips_ContentSetting) {
            CONTENT_SETTING_BLOCK,
            CONTENT_SETTING_ASK,
            CONTENT_SETTING_SESSION_ONLY,
-           CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
        }) {
     ContentSetting round_tripped;
 

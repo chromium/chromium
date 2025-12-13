@@ -8,39 +8,36 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/safe_ref.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor/action_result.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/tabs/public/tab_interface.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 // Conversion function for turning optimization_guide::proto::* types into
 // ToolRequests usable by the actor framework.
 // TODO(bokan): Rename to actor_proto_conversion.h|cc
 
+namespace content {
+class BrowserContext;
+}
+
 namespace optimization_guide::proto {
 class Action;
 class Actions;
-class BrowserAction;
 }  // namespace optimization_guide::proto
 
-namespace tabs {
-class TabInterface;
-}
+namespace page_content_annotations {
+struct FetchPageContextResult;
+}  // namespace page_content_annotations
 
 namespace actor {
+class ActorTask;
 class ToolRequest;
-
-// Build a ToolRequest from the provided optimization_guide Action proto. If the
-// action proto doesn't provide a tab_id, and the fallback_tab parameter is
-// provided (non-null), the fallback_tab will be used as the acting tab.
-// However, this parameter will eventually be phased out and clients will be
-// expected to always provide a tab id on each Action. Returns nullptr if the
-// action is invalid.
-// TODO(https://crbug.com/411462297): The client should eventually always
-// provide a tab id for actions where one is needed. Remove this parameter when
-// that's done.
-std::unique_ptr<ToolRequest> CreateToolRequest(
-    const optimization_guide::proto::Action& action,
-    tabs::TabInterface* deprecated_fallback_tab);
 
 // Input type used for ActorKeyedService acting APIs, created from
 // BuildToolRequest functions below. Aliased for convenience.
@@ -59,28 +56,54 @@ BuildToolRequestResult BuildToolRequest(
     const optimization_guide::proto::Actions& actions);
 
 // Builds the ActionsResult proto from the output of a call to the
-// ActorKeyedService::PerformActions API.
-optimization_guide::proto::ActionsResult BuildActionsResult(
+// ActorKeyedService::PerformActions API and fetches new observations for
+// tabs relevant to the actions.
+void BuildActionsResultWithObservations(
+    content::BrowserContext& browser_context,
+    base::TimeTicks start_time,
+    mojom::ActionResultCode result_code,
+    std::optional<size_t> index_of_failed_action,
+    std::vector<actor::ActionResultWithLatencyInfo> action_results,
+    const ActorTask& task,
+    bool skip_async_observation_information,
+    base::OnceCallback<
+        void(std::unique_ptr<optimization_guide::proto::ActionsResult>,
+             std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>)>
+        callback);
+
+optimization_guide::proto::ActionsResult BuildErrorActionsResult(
     mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action);
 
-// Builds a vector of ToolRequests usable for ActorKeyedService::ActInFocusedTab
-// out of the given proto::BrowserAction proto.
-// TODO(https://crbug.com/411462297): Remove this once the BrowserAction path is
-// removed.
-BuildToolRequestResult BuildToolRequest(
-    const optimization_guide::proto::BrowserAction& actions,
-    tabs::TabInterface* deprecated_fallback_tab);
+// Converts a FetchPageContext result to a TabObservation proto. Note that this
+// does not fill in the (tab) `id` field on the proto, the caller is responsible
+// for that.
+void FillInTabObservation(
+    const page_content_annotations::FetchPageContextResult& page_context_result,
+    optimization_guide::proto::TabObservation& tab_observation);
 
-// Builds the BrowserActionResult proto from the output of a call to the
-// ActorKeyedService::ActInFocusedTab API.
-// TODO(https://crbug.com/411462297): Remove this once the BrowserAction path is
-// removed.
-optimization_guide::proto::BrowserActionResult BuildBrowserActionResult(
-    mojom::ActionResultCode result_code,
-    int32_t tab_id);
+// Copies script tool results in `action_results` to the input proto.
+template <typename T>
+void CopyScriptToolResults(
+    T& proto,
+    const std::vector<ActionResultWithLatencyInfo>& action_results) {
+  for (size_t i = 0; i < action_results.size(); ++i) {
+    if (action_results[i].result->script_tool_response) {
+      auto* script_tool_result = proto.add_script_tool_results();
+      script_tool_result->set_index_of_script_tool_action(i);
+      script_tool_result->set_result(
+          *action_results[i].result->script_tool_response);
+    }
+  }
+}
 
-std::string ToBase64(const optimization_guide::proto::BrowserAction& actions);
+// Creates a FetchPageProgressListener that logs events to the journal.
+std::unique_ptr<page_content_annotations::FetchPageProgressListener>
+CreateActorJournalFetchPageProgressListener(
+    base::SafeRef<AggregatedJournal> journal,
+    const GURL& url,
+    TaskId task_id);
+
 std::string ToBase64(const optimization_guide::proto::Actions& actions);
 
 }  // namespace actor

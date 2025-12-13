@@ -3,26 +3,31 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.chromiumos builder group."""
 
-load("//lib/branches.star", "branches")
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "siso")
-load("//lib/try.star", "try_")
-load("//lib/consoles.star", "consoles")
-load("//lib/gn_args.star", "gn_args")
-load("//lib/html.star", "linkify_builder")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builders.star", "os")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//html.star", "linkify_builder")
+load("@chromium-luci//try.star", "try_")
+load("//lib/siso.star", "siso")
+load("//lib/try_constants.star", "try_constants")
 load("//project.star", "settings")
 
 try_.defaults.set(
-    executable = try_.DEFAULT_EXECUTABLE,
+    executable = try_constants.DEFAULT_EXECUTABLE,
     builder_group = "tryserver.chromium.chromiumos",
-    pool = try_.DEFAULT_POOL,
+    pool = try_constants.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
     compilator_cores = 16,
-    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     orchestrator_cores = 2,
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
     siso_remote_linking = True,
@@ -149,7 +154,7 @@ try_.orchestrator_builder(
     ),
 )
 
-CHROMEOS_SHARED_CACHE = "shared_chromeos_amd64_generic_rel_cache"
+CHROMEOS_SHARED_CACHE = "shared_chromeos_amd64_generic_rel_cache_{}".format(settings.project.replace("-", "_"))
 
 try_.compilator_builder(
     name = "chromeos-amd64-generic-rel-gtest-compilator",
@@ -183,22 +188,41 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+# Test builder for structured-test-ids experiment.
+try_.builder(
+    name = "chromeos-structured-test-ids-amd64-generic-rel-gtest-and-tast-fyi",
+    description_html = "This is an Ash chrome builder which runs gtest" +
+                       " and Tast tests with an experiment for " +
+                       " structured-test-ids enabled.",
+    mirrors = [
+        "ci/chromeos-structured-test-ids-amd64-generic-rel-fyi",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-structured-test-ids-amd64-generic-rel-fyi",
+            "dcheck_always_on",
+        ],
+    ),
+    caches = [
+        swarming.cache(
+            name = CHROMEOS_SHARED_CACHE,
+            path = "builder",
+            wait_for_warm_cache = 4 * time.minute,
+        ),
+    ],
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
+    main_list_view = "try",
+)
+
 try_.builder(
     name = "chromeos-arm-generic-dbg",
     mirrors = [
         "ci/chromeos-arm-generic-dbg",
     ],
     gn_args = "ci/chromeos-arm-generic-dbg",
-)
-
-# crbug.com/40207910
-try_.builder(
-    name = "linux-chromeos-dbg-oslogin",
-    mirrors = [
-        "ci/linux-chromeos-dbg-oslogin",
-    ],
-    gn_args = "ci/linux-chromeos-dbg-oslogin",
-    contact_team_email = "chrome-dev-infra-team@google.com",
 )
 
 try_.builder(
@@ -252,7 +276,7 @@ try_.builder(
             "skip_generate_fuzzer_owners",
         ],
     ),
-    contact_team_email = "chrome-deet-core@google.com",
+    contact_team_email = "chrome-fuzzing-core@google.com",
 )
 
 try_.builder(

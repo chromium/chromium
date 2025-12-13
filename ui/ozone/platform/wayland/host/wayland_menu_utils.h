@@ -22,7 +22,7 @@ class WaylandMenuUtils : public PlatformMenuUtils {
   int GetCurrentKeyModifiers() const override;
 
  private:
-  const raw_ptr<WaylandConnection, LeakedDanglingUntriaged> connection_;
+  const raw_ptr<WaylandConnection> connection_;
 };
 
 }  // namespace ui

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<title>Script Tools: provideContext error conditions</title>
+<link rel="author" href="mailto:brwalder@microsoft.com">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+promise_test(async () => {
+  const modelContext = navigator.modelContext;
+
+  // Missing required tools parameter
+  assert_throws_js(
+    TypeError,
+    () => {
+      modelContext.provideContext({});
+    },
+    "provideContext should throw when tools parameter is missing"
+  );
+}, "provideContext throws on missing tools parameter");
+
+promise_test(async () => {
+  const modelContext = navigator.modelContext;
+
+  // Invalid tools parameter type
+  assert_throws_js(
+    TypeError,
+    () => {
+      modelContext.provideContext({
+        tools: "not an array"
+      });
+    },
+    "provideContext should throw when tools is not an array"
+  );
+}, "provideContext throws when tools is not an array");
+
+promise_test(async () => {
+  const modelContext = navigator.modelContext;
+
+  // Tool missing required execute function
+  assert_throws_js(
+    TypeError,
+    () => {
+      modelContext.provideContext({
+        tools: [
+          {
+            name: "incomplete_tool",
+            description: "Missing execute function"
+          }
+        ]
+      });
+    },
+    "provideContext should throw when tool is missing execute function"
+  );
+}, "provideContext throws when tool missing required execute function");
+
+promise_test(async () => {
+  const modelContext = navigator.modelContext;
+
+  // Tool missing required name
+  assert_throws_js(
+    TypeError,
+    () => {
+      modelContext.provideContext({
+        tools: [
+          {
+            execute: async () => "test",
+            description: "Missing name"
+          }
+        ]
+      });
+    },
+    "provideContext should throw when tool is missing name"
+  );
+}, "provideContext throws when tool missing required name");
+
+promise_test(async () => {
+  const modelContext = navigator.modelContext;
+
+  // Tool missing required description
+  assert_throws_js(
+    TypeError,
+    () => {
+      modelContext.provideContext({
+        tools: [
+          {
+            execute: async () => "test",
+            name: "incomplete_tool"
+          }
+        ]
+      });
+    },
+    "provideContext should throw when tool is missing description"
+  );
+}, "provideContext throws when tool missing required description");
+
+promise_test(async () => {
+  const modelContext = navigator.modelContext;
+
+  // Test empty tool name
+  assert_throws_dom(
+    'InvalidStateError',
+    () => {
+      modelContext.provideContext({
+        tools: [
+          {
+            execute: async () => "test",
+            name: "",
+            description: "Empty name tool"
+          }
+        ]
+      });
+    },
+    "provideContext should throw on empty tool name"
+  );
+}, "provideContext throws on empty tool name");
+
+promise_test(async () => {
+  const modelContext = navigator.modelContext;
+
+  // Test empty tool description
+  assert_throws_dom(
+    'InvalidStateError',
+    () => {
+      modelContext.provideContext({
+        tools: [
+          {
+            execute: async () => "test",
+            name: "empty_desc_tool",
+            description: ""
+          }
+        ]
+      });
+    },
+    "provideContext should throw on empty tool description"
+  );
+}, "provideContext throws on empty tool description");
+
+promise_test(async () => {
+  async function validTool() {
+    return "valid";
+  }
+
+  const modelContext = navigator.modelContext;
+
+  // Register a tool to ensure state is preserved on failure
+  modelContext.registerTool({
+    execute: validTool,
+    name: "existing_tool",
+    description: "Existing tool"
+  });
+
+  // Attempt to register invalid tool should preserve existing state
+  assert_throws_js(
+    TypeError,
+    () => {
+      modelContext.provideContext({
+        tools: [
+          {
+            execute: validTool,
+            name: "valid_tool",
+            description: "Valid tool"
+          },
+          {
+            // Missing execute function - should cause failure
+            name: "invalid_tool",
+            description: "Invalid tool"
+          }
+        ]
+      });
+    },
+    "provideContext should throw on invalid tool"
+  );
+
+  // Existing tool should still be there
+  modelContext.unregisterTool("existing_tool");
+
+  // The valid tool from the failed provideContext should NOT be registered
+  assert_throws_dom(
+    'InvalidStateError',
+    () => {
+      modelContext.unregisterTool("valid_tool");
+    },
+    "valid tool should not be registered after failed provideContext"
+  );
+}, "provideContext preserves existing state when throwing on invalid parameters");
+</script>

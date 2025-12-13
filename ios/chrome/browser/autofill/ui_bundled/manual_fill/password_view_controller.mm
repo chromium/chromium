@@ -12,29 +12,24 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
-#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_text_cell.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
-#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
-#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -135,10 +130,6 @@ enum ManualFallbackItemType : NSInteger {
     TableViewLinkHeaderFooterView* linkHeader =
         base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
     linkHeader.delegate = self;
-
-    // When the Keyboard Accessory Upgrade feature is disabled, indents are
-    // needed for the header to be aligned with the other table view items.
-    [linkHeader setForceIndents:!IsKeyboardAccessoryUpgradeEnabled()];
   }
 
   return view;
@@ -164,25 +155,13 @@ enum ManualFallbackItemType : NSInteger {
   // If no items were posted and there is no search bar, present the empty item
   // and return.
   if (!credentials.count && !self.searchController) {
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      TableViewTextHeaderFooterItem* textHeaderFooterItem =
-          [[TableViewTextHeaderFooterItem alloc]
-              initWithType:manual_fill::ManualFallbackItemType::
-                               kNoCredentialsMessage];
-      textHeaderFooterItem.text =
-          l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE);
-      self.noRegularDataItemsToShowHeaderItem = textHeaderFooterItem;
-    } else {
-      ManualFillTextItem* emptyCredentialItem = [[ManualFillTextItem alloc]
-          initWithType:manual_fill::ManualFallbackItemType::
-                           kNoCredentialsMessage];
-      emptyCredentialItem.text =
-          l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE);
-      emptyCredentialItem.textColor = [UIColor colorNamed:kDisabledTintColor];
-      emptyCredentialItem.showSeparator = YES;
-      [self presentDataItems:@[ emptyCredentialItem ]];
-      return;
-    }
+    TableViewTextHeaderFooterItem* textHeaderFooterItem =
+        [[TableViewTextHeaderFooterItem alloc]
+            initWithType:manual_fill::ManualFallbackItemType::
+                             kNoCredentialsMessage];
+    textHeaderFooterItem.text =
+        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE);
+    self.noRegularDataItemsToShowHeaderItem = textHeaderFooterItem;
   }
 
   if (!self.searchController &&
@@ -265,18 +244,14 @@ enum ManualFallbackItemType : NSInteger {
   ManualFillPlusAddressCell* plusAddressCell =
       base::apple::ObjCCastStrict<ManualFillPlusAddressCell>(cell);
 
-  NSString* itemIdentifier = plusAddressItem.uniqueIdentifier;
-  CrURL* crurl = [[CrURL alloc] initWithGURL:plusAddressItem.faviconURL];
-  [self.imageDataSource
-      faviconForPageURL:crurl
-             completion:^(FaviconAttributes* attributes) {
-               // Only set favicon if the cell hasn't been reused.
-               if ([plusAddressCell.uniqueIdentifier
-                       isEqualToString:itemIdentifier]) {
-                 CHECK(attributes);
-                 [plusAddressCell configureWithFaviconAttributes:attributes];
-               }
-             }];
+  [self
+      loadFaviconForCellIdentifier:plusAddressCell.uniqueIdentifier
+                    itemIdentifier:plusAddressItem.uniqueIdentifier
+                        faviconURL:plusAddressItem.faviconURL
+                        completion:^(FaviconAttributes* faviconAttributes) {
+                          [plusAddressCell
+                              configureWithFaviconAttributes:faviconAttributes];
+                        }];
 }
 
 // Sets the icon for the given credential `cell` at `indexPath`.
@@ -288,9 +263,6 @@ enum ManualFallbackItemType : NSInteger {
 
   ManualFillCredentialItem* passwordItem =
       base::apple::ObjCCastStrict<ManualFillCredentialItem>(item);
-  if (passwordItem.isConnectedToPreviousItem) {
-    return;
-  }
 
   ManualFillPasswordCell* passwordCell =
       base::apple::ObjCCastStrict<ManualFillPasswordCell>(cell);
@@ -298,25 +270,14 @@ enum ManualFallbackItemType : NSInteger {
   if ([passwordCell isBackupCredential]) {
     [passwordCell configureWithSymbol:GetBackupPasswordSuggestionIcon()];
   } else {
-    [self loadFaviconForCredentialCell:passwordCell item:passwordItem];
+    [self loadFaviconForCellIdentifier:passwordCell.uniqueIdentifier
+                        itemIdentifier:passwordItem.uniqueIdentifier
+                            faviconURL:passwordItem.faviconURL
+                            completion:^(FaviconAttributes* faviconAttributes) {
+                              [passwordCell configureWithFaviconAttributes:
+                                                faviconAttributes];
+                            }];
   }
-}
-
-// Retrieves the favicon from the FaviconLoader and sets it as the password cell
-// image.
-- (void)loadFaviconForCredentialCell:(ManualFillPasswordCell*)cell
-                                item:(ManualFillCredentialItem*)item {
-  NSString* itemIdentifier = item.uniqueIdentifier;
-  CrURL* crurl = [[CrURL alloc] initWithGURL:item.faviconURL];
-  [self.imageDataSource
-      faviconForPageURL:crurl
-             completion:^(FaviconAttributes* attributes) {
-               // Only set the favicon if the cell hasn't been reused.
-               if ([cell.uniqueIdentifier isEqualToString:itemIdentifier]) {
-                 CHECK(attributes);
-                 [cell configureWithFaviconAttributes:attributes];
-               }
-             }];
 }
 
 - (void)handleDoneButton {

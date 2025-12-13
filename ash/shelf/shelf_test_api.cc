@@ -24,7 +24,7 @@ ash::Shelf* GetShelf() {
 
 ash::ShelfWidget* GetShelfWidget() {
   return ash::Shell::GetRootWindowControllerWithDisplayId(
-             display::Screen::GetScreen()->GetPrimaryDisplay().id())
+             display::Screen::Get()->GetPrimaryDisplay().id())
       ->shelf()
       ->shelf_widget();
 }
@@ -102,9 +102,8 @@ HotseatInfo ShelfTestApi::GetHotseatInfo() {
   info.hotseat_state = hotseat_widget->state();
 
   // Hotseat swipe can happen from the bottom center of the display.
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          hotseat_widget->GetNativeWindow()->GetRootWindow());
+  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+      hotseat_widget->GetNativeWindow()->GetRootWindow());
   info.swipe_up.swipe_start_location = gfx::Point(
       display.bounds().CenterPoint().x(), display.bounds().bottom() - 1);
 

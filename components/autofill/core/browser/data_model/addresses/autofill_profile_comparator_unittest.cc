@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -41,14 +42,10 @@ class AutofillProfileComparatorTest : public testing::Test {
    public:
     typedef autofill::AutofillProfileComparator Super;
     using Super::CompareTokens;
-    using Super::GetNamePartVariants;
     using Super::HaveMergeableAddresses;
-    using Super::HaveMergeableAlternativeNames;
     using Super::HaveMergeableCompanyNames;
     using Super::HaveMergeableEmailAddresses;
-    using Super::HaveMergeableNames;
     using Super::HaveMergeablePhoneNumbers;
-    using Super::IsNameVariantOf;
     using Super::Super;
     using Super::UniqueTokens;
 
@@ -62,81 +59,6 @@ class AutofillProfileComparatorTest : public testing::Test {
   AutofillProfileComparatorTest(const AutofillProfileComparatorTest&) = delete;
   AutofillProfileComparatorTest& operator=(
       const AutofillProfileComparatorTest&) = delete;
-
-  NameInfo CreateNameInfo(const char16_t* first,
-                          const char16_t* middle,
-                          const char16_t* last,
-                          const char16_t* full,
-                          const char16_t* alternative_given = u"",
-                          const char16_t* alternative_family = u"",
-                          const char16_t* alternative_full = u"") {
-    NameInfo name;
-    name.SetRawInfoWithVerificationStatus(NAME_FIRST, first,
-                                          VerificationStatus::kObserved);
-    name.SetRawInfoWithVerificationStatus(NAME_MIDDLE, middle,
-                                          VerificationStatus::kObserved);
-    name.SetRawInfoWithVerificationStatus(NAME_LAST, last,
-                                          VerificationStatus::kObserved);
-    name.SetRawInfoWithVerificationStatus(NAME_FULL, full,
-                                          VerificationStatus::kObserved);
-    name.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME,
-                                          alternative_given,
-                                          VerificationStatus::kObserved);
-    name.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME,
-                                          alternative_family,
-                                          VerificationStatus::kObserved);
-    name.SetRawInfoWithVerificationStatus(
-        ALTERNATIVE_FULL_NAME, alternative_full, VerificationStatus::kObserved);
-    return name;
-  }
-
-  AutofillProfile CreateProfileWithName(
-      const char* first,
-      const char* middle,
-      const char* last,
-      bool finalize = true,
-      const AddressCountryCode& country_code = kLegacyHierarchyCountryCode) {
-    AutofillProfile profile(country_code);
-    test::SetProfileInfo(&profile, first, middle, last, "", "", "", "", "", "",
-                         "", "", "");
-    if (finalize) {
-      profile.FinalizeAfterImport();
-    }
-    return profile;
-  }
-
-  AutofillProfile CreateProfileWithName(
-      const NameInfo& name,
-      bool finalize = true,
-      const AddressCountryCode& country_code = kLegacyHierarchyCountryCode) {
-    AutofillProfile profile(country_code);
-    profile.SetRawInfoWithVerificationStatus(
-        NAME_FULL, name.GetRawInfo(NAME_FULL),
-        name.GetVerificationStatus(NAME_FULL));
-    profile.SetRawInfoWithVerificationStatus(
-        NAME_FIRST, name.GetRawInfo(NAME_FIRST),
-        name.GetVerificationStatus(NAME_MIDDLE));
-    profile.SetRawInfoWithVerificationStatus(
-        NAME_MIDDLE, name.GetRawInfo(NAME_MIDDLE),
-        name.GetVerificationStatus(NAME_MIDDLE));
-    profile.SetRawInfoWithVerificationStatus(
-        NAME_LAST, name.GetRawInfo(NAME_LAST),
-        name.GetVerificationStatus(NAME_LAST));
-    profile.SetRawInfoWithVerificationStatus(
-        ALTERNATIVE_FULL_NAME, name.GetRawInfo(ALTERNATIVE_FULL_NAME),
-        name.GetVerificationStatus(ALTERNATIVE_FULL_NAME));
-    profile.SetRawInfoWithVerificationStatus(
-        ALTERNATIVE_GIVEN_NAME, name.GetRawInfo(ALTERNATIVE_GIVEN_NAME),
-        name.GetVerificationStatus(ALTERNATIVE_GIVEN_NAME));
-    profile.SetRawInfoWithVerificationStatus(
-        ALTERNATIVE_FAMILY_NAME, name.GetRawInfo(ALTERNATIVE_FAMILY_NAME),
-        name.GetVerificationStatus(ALTERNATIVE_FAMILY_NAME));
-    if (finalize) {
-      profile.FinalizeAfterImport();
-    }
-
-    return profile;
-  }
 
   AutofillProfile CreateProfileWithEmail(const char* email) {
     AutofillProfile profile(kLegacyHierarchyCountryCode);
@@ -181,41 +103,6 @@ class AutofillProfileComparatorTest : public testing::Test {
     }
     new_profile.FinalizeAfterImport();
     return new_profile;
-  }
-
-  void MergeNamesAndExpect(const AutofillProfile& a,
-                           const AutofillProfile& b,
-                           const NameInfo& expected) {
-    NameInfo actual;
-    ASSERT_TRUE(comparator_.MergeNames(a, b, actual));
-
-    // Is the "processed" data correct?
-    EXPECT_EQ(expected.GetInfo(NAME_FULL, kLocale),
-              actual.GetInfo(NAME_FULL, kLocale));
-    EXPECT_EQ(expected.GetInfo(NAME_FIRST, kLocale),
-              actual.GetInfo(NAME_FIRST, kLocale));
-    EXPECT_EQ(expected.GetInfo(NAME_MIDDLE, kLocale),
-              actual.GetInfo(NAME_MIDDLE, kLocale));
-    EXPECT_EQ(expected.GetInfo(NAME_LAST, kLocale),
-              actual.GetInfo(NAME_LAST, kLocale));
-    EXPECT_EQ(expected.GetInfo(ALTERNATIVE_FULL_NAME, kLocale),
-              actual.GetInfo(ALTERNATIVE_FULL_NAME, kLocale));
-    EXPECT_EQ(expected.GetInfo(ALTERNATIVE_GIVEN_NAME, kLocale),
-              actual.GetInfo(ALTERNATIVE_GIVEN_NAME, kLocale));
-    EXPECT_EQ(expected.GetInfo(ALTERNATIVE_FAMILY_NAME, kLocale),
-              actual.GetInfo(ALTERNATIVE_FAMILY_NAME, kLocale));
-
-    // Is the raw data correct?
-    EXPECT_EQ(expected.GetRawInfo(NAME_FULL), actual.GetRawInfo(NAME_FULL));
-    EXPECT_EQ(expected.GetRawInfo(NAME_FIRST), actual.GetRawInfo(NAME_FIRST));
-    EXPECT_EQ(expected.GetRawInfo(NAME_MIDDLE), actual.GetRawInfo(NAME_MIDDLE));
-    EXPECT_EQ(expected.GetRawInfo(NAME_LAST), actual.GetRawInfo(NAME_LAST));
-    EXPECT_EQ(expected.GetRawInfo(ALTERNATIVE_FULL_NAME),
-              actual.GetRawInfo(ALTERNATIVE_FULL_NAME));
-    EXPECT_EQ(expected.GetRawInfo(ALTERNATIVE_GIVEN_NAME),
-              actual.GetRawInfo(ALTERNATIVE_GIVEN_NAME));
-    EXPECT_EQ(expected.GetRawInfo(ALTERNATIVE_FAMILY_NAME),
-              actual.GetRawInfo(ALTERNATIVE_FAMILY_NAME));
   }
 
   void MergeEmailAddressesAndExpect(const AutofillProfile& a,
@@ -341,384 +228,72 @@ TEST_F(AutofillProfileComparatorTest, CompareTokens) {
 
 TEST_F(AutofillProfileComparatorTest, Compare) {
   // Checks the empty case.
-  EXPECT_TRUE(
-      comparator_.Compare(std::u16string(), std::u16string(),
-                          AutofillProfileComparator::WhitespaceSpec::kRetain));
-  EXPECT_TRUE(
-      comparator_.Compare(std::u16string(), std::u16string(),
-                          AutofillProfileComparator::WhitespaceSpec::kDiscard));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      std::u16string(), std::u16string(),
+      normalization::WhitespaceSpec::kRetain));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      std::u16string(), std::u16string(),
+      normalization::WhitespaceSpec::kDiscard));
 
   // Checks that leading punctuation and white space are ignored.
-  EXPECT_TRUE(comparator_.Compare(
-      u".,  -().", u"", AutofillProfileComparator::WhitespaceSpec::kRetain));
-  EXPECT_TRUE(comparator_.Compare(
-      u".,  -().", u"", AutofillProfileComparator::WhitespaceSpec::kDiscard));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u".,  -().", u"", normalization::WhitespaceSpec::kRetain));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u".,  -().", u"", normalization::WhitespaceSpec::kDiscard));
 
   // Checks that trailing punctuation and white space are ignored.
-  EXPECT_TRUE(comparator_.Compare(
-      u"a ., ", u"a", AutofillProfileComparator::WhitespaceSpec::kRetain));
-  EXPECT_TRUE(comparator_.Compare(
-      u"a ., ", u"a", AutofillProfileComparator::WhitespaceSpec::kDiscard));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"a ., ", u"a", normalization::WhitespaceSpec::kRetain));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"a ., ", u"a", normalization::WhitespaceSpec::kDiscard));
 
   // Checks that embedded punctuation and white space is collapsed to a single
   // white space with WhitespaceSpec::kRetain and is ignored with
   // WhitespaceSpec::kDiscard.
-  EXPECT_TRUE(comparator_.Compare(
-      u"a() -  a", u"a a", AutofillProfileComparator::WhitespaceSpec::kRetain));
-  EXPECT_TRUE(comparator_.Compare(
-      u"a() -  a", u"aa", AutofillProfileComparator::WhitespaceSpec::kDiscard));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"a() -  a", u"a a", normalization::WhitespaceSpec::kRetain));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"a() -  a", u"aa", normalization::WhitespaceSpec::kDiscard));
 
   // Checks that characters such as 'œ' respect the status quo established by
   // NormalizeForComparison.
-  EXPECT_TRUE(comparator_.Compare(u"œil", u"oeil"));
-  EXPECT_TRUE(
-      comparator_.Compare(u"Straße", u"Strasse",
-                          AutofillProfileComparator::WhitespaceSpec::kDiscard));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(u"œil", u"oeil"));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"Straße", u"Strasse", normalization::WhitespaceSpec::kDiscard));
 
   // Checks that a substring of the string is not considered equal.
-  EXPECT_FALSE(comparator_.Compare(u"A", u"Anna"));
+  EXPECT_FALSE(AutofillProfileComparator::Compare(u"A", u"Anna"));
 
-  EXPECT_FALSE(comparator_.Compare(u"Anna", u"A"));
+  EXPECT_FALSE(AutofillProfileComparator::Compare(u"Anna", u"A"));
 
   // Checks that Compare behaves like NormalizeForComparison. Also, checks that
   // diacritics are removed.
-  EXPECT_TRUE(
-      comparator_.Compare(u"Timothé", u"timothe",
-                          AutofillProfileComparator::WhitespaceSpec::kRetain));
-  EXPECT_TRUE(
-      comparator_.Compare(u" sven-åke ", u"sven ake",
-                          AutofillProfileComparator::WhitespaceSpec::kRetain));
-  EXPECT_TRUE(comparator_.Compare(
-      u"Ç 㸐", u"c 㸐", AutofillProfileComparator::WhitespaceSpec::kRetain));
-  EXPECT_TRUE(
-      comparator_.Compare(u"902103214", u"90210-3214",
-                          AutofillProfileComparator::WhitespaceSpec::kDiscard));
-  EXPECT_TRUE(comparator_.Compare(
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"Timothé", u"timothe", normalization::WhitespaceSpec::kRetain));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u" sven-åke ", u"sven ake", normalization::WhitespaceSpec::kRetain));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"Ç 㸐", u"c 㸐", normalization::WhitespaceSpec::kRetain));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"902103214", u"90210-3214", normalization::WhitespaceSpec::kDiscard));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
       u"Timothé-Noël Étienne Périer", u"timothe noel etienne perier",
-      AutofillProfileComparator::WhitespaceSpec::kRetain));
-  EXPECT_TRUE(comparator_.Compare(
+      normalization::WhitespaceSpec::kRetain));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
       u"1600 Amphitheatre, Pkwy.", u"1600 amphitheatre pkwy",
-      AutofillProfileComparator::WhitespaceSpec::kRetain));
-  EXPECT_TRUE(
-      comparator_.Compare(u"Mid\x2013Island\x2003 Plaza", u"mid island plaza",
-                          AutofillProfileComparator::WhitespaceSpec::kRetain));
-  EXPECT_TRUE(comparator_.Compare(
+      normalization::WhitespaceSpec::kRetain));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"Mid\x2013Island\x2003 Plaza", u"mid island plaza",
+      normalization::WhitespaceSpec::kRetain));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
       u"1600 amphitheatre pkwy \n App. 2", u"1600 amphitheatre pkwy app 2",
-      AutofillProfileComparator::WhitespaceSpec::kRetain));
-  EXPECT_TRUE(
-      comparator_.Compare(u"まéÖä정", u"まeoa정",
-                          AutofillProfileComparator::WhitespaceSpec::kRetain));
-  EXPECT_TRUE(
-      comparator_.Compare(u"유재석", u"유 재석",
-                          AutofillProfileComparator::WhitespaceSpec::kDiscard));
-  EXPECT_TRUE(
-      comparator_.Compare(u"ビルゲイツ", u"ヒル・ケイツ",
-                          AutofillProfileComparator::WhitespaceSpec::kDiscard));
-}
-
-TEST_F(AutofillProfileComparatorTest, NormalizeForComparison) {
-  EXPECT_EQ(u"timothe",
-            AutofillProfileComparator::NormalizeForComparison(u"Timothé"));
-  EXPECT_EQ(u"sven ake",
-            AutofillProfileComparator::NormalizeForComparison(u" sven-åke "));
-  EXPECT_EQ(u"c 㸐",
-            AutofillProfileComparator::NormalizeForComparison(u"Ç 㸐"));
-  EXPECT_EQ(
-      u"902103214",
-      AutofillProfileComparator::NormalizeForComparison(
-          u"90210-3214", AutofillProfileComparator::WhitespaceSpec::kDiscard));
-  EXPECT_EQ(u"timothe noel etienne perier",
-            AutofillProfileComparator::NormalizeForComparison(
-                u"Timothé-Noël Étienne Périer"));
-  EXPECT_EQ(u"strasse",
-            AutofillProfileComparator::NormalizeForComparison(u"Straße"));
-  // NOP.
-  EXPECT_EQ(std::u16string(), AutofillProfileComparator::NormalizeForComparison(
-                                  std::u16string()));
-
-  // Simple punctuation removed.
-  EXPECT_EQ(u"1600 amphitheatre pkwy",
-            AutofillProfileComparator::NormalizeForComparison(
-                u"1600 Amphitheatre, Pkwy."));
-
-  // Unicode punctuation (hyphen and space), multiple spaces collapsed.
-  EXPECT_EQ(u"mid island plaza",
-            AutofillProfileComparator::NormalizeForComparison(
-                u"Mid\x2013Island\x2003 Plaza"));
-
-  // Newline character removed.
-  EXPECT_EQ(u"1600 amphitheatre pkwy app 2",
-            AutofillProfileComparator::NormalizeForComparison(
-                u"1600 amphitheatre pkwy \n App. 2"));
-
-  // Diacritics removed.
-  EXPECT_EQ(u"まeoa정",
-            AutofillProfileComparator::NormalizeForComparison(u"まéÖä정"));
-
-  // Spaces removed.
-  EXPECT_EQ(
-      u"유재석",
-      AutofillProfileComparator::NormalizeForComparison(
-          u"유 재석", AutofillProfileComparator::WhitespaceSpec::kDiscard));
-
-  // Punctuation removed, Japanese kana normalized.
-  EXPECT_EQ(u"ヒルケイツ",
-            AutofillProfileComparator::NormalizeForComparison(
-                u"ビル・ゲイツ",
-                AutofillProfileComparator::WhitespaceSpec::kDiscard));
-}
-
-TEST_F(AutofillProfileComparatorTest,
-       NormalizeForComparisonWithGermanTransliteration) {
-  base::test::ScopedFeatureList features{
-      features::kAutofillEnableGermanTransliteration};
-  EXPECT_EQ(
-      u"haensel str",
-      AutofillProfileComparator::NormalizeForComparison(
-          u"Hänsel Str.", AutofillProfileComparator::WhitespaceSpec::kRetain,
-          AddressCountryCode("DE")));
-  EXPECT_EQ(
-      u"hansel str",
-      AutofillProfileComparator::NormalizeForComparison(
-          u"Hänsel Str.", AutofillProfileComparator::WhitespaceSpec::kRetain,
-          AddressCountryCode("US")));
-}
-
-TEST_F(AutofillProfileComparatorTest, GetNamePartVariants) {
-  std::set<std::u16string> expected_variants = {
-      u"timothe noel", u"timothe n", u"timothe", u"t noel", u"t n", u"t",
-      u"noel",         u"n",         u"",        u"tn",
-  };
-
-  EXPECT_EQ(expected_variants,
-            comparator_.GetNamePartVariants(u"timothe noel"));
-}
-
-TEST_F(AutofillProfileComparatorTest, IsNameVariantOf) {
-  const std::u16string kNormalizedFullName = u"timothe noel etienne perier";
-
-  EXPECT_TRUE(
-      comparator_.IsNameVariantOf(kNormalizedFullName, kNormalizedFullName));
-  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName,
-                                          u"t noel etienne perier"));
-  EXPECT_TRUE(
-      comparator_.IsNameVariantOf(kNormalizedFullName, u"timothe perier"));
-  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName, u"t perier"));
-  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName, u"noel perier"));
-  EXPECT_TRUE(
-      comparator_.IsNameVariantOf(kNormalizedFullName, u"t n etienne perier"));
-  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName, u"tn perier"));
-  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName, u"te perier"));
-
-  EXPECT_FALSE(
-      comparator_.IsNameVariantOf(kNormalizedFullName, u"etienne noel perier"));
-}
-
-TEST_F(AutofillProfileComparatorTest, HaveMergeableNames) {
-  AutofillProfile empty = CreateProfileWithName("", "", "");
-
-  AutofillProfile p1 = CreateProfileWithName("sven-åke", "", "larsson");
-  AutofillProfile p2 = CreateProfileWithName("Åke", "", "Larsson");
-  AutofillProfile p3 = CreateProfileWithName("A", "", "Larsson");
-  AutofillProfile p4 = CreateProfileWithName("sven", "ake", "Larsson");
-
-  AutofillProfile initials = CreateProfileWithName("SA", "", "Larsson");
-
-  AutofillProfile different = CreateProfileWithName("Joe", "", "Larsson");
-
-  // |p1|, |p2|, |p3|, |p4| and |empty| should all be the mergeable with
-  // one another. The order of the comparands should not matter.
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p1, empty));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p1, p1));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p1, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p1, p3));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p1, p4));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p2, empty));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p2, p1));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p2, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p2, p3));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p2, p4));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p3, empty));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p3, p1));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p3, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p3, p3));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p3, p4));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p4, empty));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p4, p1));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p4, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p4, p3));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p4, p4));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(empty, empty));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(empty, p1));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(empty, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(empty, p3));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(empty, p4));
-
-  // |initials| is mergeable with |p1| and |p4| but not |p2| or |p3|.
-  EXPECT_TRUE(comparator_.HaveMergeableNames(initials, empty));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(initials, p1));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(initials, p4));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(empty, initials));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p1, initials));
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p4, initials));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(initials, p2));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(initials, p3));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(p2, initials));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(p3, initials));
-
-  // None of the non-empty profiles should match |different|. The order of the
-  // comparands should not matter.
-  EXPECT_FALSE(comparator_.HaveMergeableNames(p1, different));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(p2, different));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(p3, different));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(p4, different));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(initials, different));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(different, p1));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(different, p2));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(different, p3));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(different, p4));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(different, initials));
-}
-
-TEST_F(AutofillProfileComparatorTest,
-       HaveMergeableNamesWithGermanTransliteration) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableGermanTransliteration};
-
-  AutofillProfile p1_de = CreateProfileWithName(
-      CreateNameInfo(u"Hänsel", u"", u"Köhn", u"", u"", u""), true,
-      AddressCountryCode("DE"));
-  AutofillProfile p2_de = CreateProfileWithName("Haensel", "", "Koehn", true,
-                                                AddressCountryCode("AT"));
-  AutofillProfile p1_us = CreateProfileWithName(
-      CreateNameInfo(u"Hänsel", u"", u"Köhn", u"", u"", u""), true,
-      AddressCountryCode("US"));
-  AutofillProfile p2_us = CreateProfileWithName("Haensel", "", "Koehn", true,
-                                                AddressCountryCode("US"));
-
-  EXPECT_TRUE(comparator_.HaveMergeableNames(p1_de, p2_de));
-  EXPECT_FALSE(comparator_.HaveMergeableNames(p1_us, p2_us));
-}
-
-TEST_F(AutofillProfileComparatorTest, HaveMergeableAlternativeNames) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillSupportPhoneticNameForJP};
-
-  AutofillProfile empty = CreateProfileWithName("", "", "");
-
-  // Latin characters only.
-  AutofillProfile p1 = CreateProfileWithName(CreateNameInfo(
-      u"John", u"", u"Smith", u"John Smith", u"Pjohn", u"Psmith", u""));
-  AutofillProfile p1_mergeable = CreateProfileWithName(CreateNameInfo(
-      u"John", u"", u"Smith", u"John Smith", u"", u"", u"Pjohn Psmith"));
-
-  // Phonetic name using Hiragana.
-  AutofillProfile p2 = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと", u""));
-  // The same phonetic name, but saved as alternative_full_name with separator.
-  AutofillProfile p3 = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"やまもと・あおい"));
-  // The same phonetic name, but saved as alternative_full_name with white space
-  // separator.
-  AutofillProfile p4 = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"やまもと あおい"));
-
-  // Semantically the same profiles as `p2`, `p3`, `p4`, but using Katakana for
-  // alternative name.
-  AutofillProfile p2_katakana = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"アオイ", u"ヤマモト", u""));
-  AutofillProfile p3_katakana = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"ヤマモト・アオイ"));
-  AutofillProfile p4_katakana = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"ヤマモト アオイ"));
-
-  // Semantically the different profiles than `p2`, `p3`, `p4`, using Katakana
-  // for alternative name.
-  AutofillProfile p5_katakana = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"レイ", u"サクラ", u""));
-  AutofillProfile p6_katakana = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"サクラ・レイ"));
-  AutofillProfile p7_katakana = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"サクラ レイ"));
-
-  // Base cases for latin characters.
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p1, empty));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p1, p1));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(empty, p1));
-
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p1, p1_mergeable));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p1_mergeable, p1));
-
-  // CJK characters with empty profile.
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, empty));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3, empty));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2_katakana, empty));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3_katakana, empty));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(empty, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(empty, p3));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(empty, p2_katakana));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(empty, p3_katakana));
-
-  // Mergeable profiles using Hiragana.
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3, p3));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p4, p4));
-
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p3));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p4));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p4, p2));
-
-  // Mergeable profiles using Katakana.
-  EXPECT_TRUE(
-      comparator_.HaveMergeableAlternativeNames(p2_katakana, p2_katakana));
-  EXPECT_TRUE(
-      comparator_.HaveMergeableAlternativeNames(p2_katakana, p3_katakana));
-  EXPECT_TRUE(
-      comparator_.HaveMergeableAlternativeNames(p4_katakana, p4_katakana));
-
-  EXPECT_TRUE(
-      comparator_.HaveMergeableAlternativeNames(p2_katakana, p3_katakana));
-  EXPECT_TRUE(
-      comparator_.HaveMergeableAlternativeNames(p3_katakana, p2_katakana));
-  EXPECT_TRUE(
-      comparator_.HaveMergeableAlternativeNames(p2_katakana, p4_katakana));
-  EXPECT_TRUE(
-      comparator_.HaveMergeableAlternativeNames(p4_katakana, p2_katakana));
-
-  // Mergeable profiles where one is using Katakana and the other Hiragana.
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p3_katakana));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3_katakana, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2_katakana, p3));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3, p2_katakana));
-
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p4_katakana));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p4_katakana, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2_katakana, p4));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p4, p2_katakana));
-
-  // Semantically the same profiles one using Katakana the other Hiragana.
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p2_katakana));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2_katakana, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3_katakana, p3));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3, p3_katakana));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p4_katakana, p4));
-  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p4, p4_katakana));
-
-  // Non mergeable profiles where one is using Katakana and the other Hiragana.
-  EXPECT_FALSE(comparator_.HaveMergeableAlternativeNames(p2, p6_katakana));
-  EXPECT_FALSE(comparator_.HaveMergeableAlternativeNames(p6_katakana, p2));
-  EXPECT_FALSE(comparator_.HaveMergeableAlternativeNames(p2, p7_katakana));
-  EXPECT_FALSE(comparator_.HaveMergeableAlternativeNames(p7_katakana, p2));
-  EXPECT_FALSE(comparator_.HaveMergeableAlternativeNames(p7_katakana, p4));
-  EXPECT_FALSE(comparator_.HaveMergeableAlternativeNames(p4, p7_katakana));
-
-  // Non mergeable profiles where both are using Katakana.
-  EXPECT_FALSE(
-      comparator_.HaveMergeableAlternativeNames(p2_katakana, p5_katakana));
-  EXPECT_FALSE(
-      comparator_.HaveMergeableAlternativeNames(p5_katakana, p2_katakana));
+      normalization::WhitespaceSpec::kRetain));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"まéÖä정", u"まeoa정", normalization::WhitespaceSpec::kRetain));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"유재석", u"유 재석", normalization::WhitespaceSpec::kDiscard));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"ビルゲイツ", u"ヒル・ケイツ", normalization::WhitespaceSpec::kDiscard));
 }
 
 TEST_F(AutofillProfileComparatorTest, HaveMergeableEmailAddresses) {
@@ -806,6 +381,8 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAddresses) {
   AutofillProfile differentSortingCode =
       CopyAndModify(p1, {{ADDRESS_HOME_SORTING_CODE, u"98000 Monaco"}});
 
+  AutofillProfile name_email_profile{AccountInfo{}};
+
   // A profile with no country uses the legacy address and can be merged with
   // other profiles using the same hierarchy.
   EXPECT_TRUE(comparator_.HaveMergeableAddresses(p1, empty));
@@ -829,6 +406,9 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAddresses) {
   EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentAddress));
   EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentLocality));
   EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentSortingCode));
+
+  EXPECT_TRUE(comparator_.HaveMergeableAddresses(name_email_profile, p1));
+  EXPECT_TRUE(comparator_.HaveMergeableAddresses(p1, name_email_profile));
 }
 
 TEST_F(AutofillProfileComparatorTest, AreMergeable) {
@@ -868,284 +448,6 @@ TEST_F(AutofillProfileComparatorTest, AreMergeable) {
   EXPECT_FALSE(comparator_.AreMergeable(p, not_mergeable_by_company_name));
   EXPECT_FALSE(comparator_.AreMergeable(p, not_mergeable_by_address));
   EXPECT_FALSE(comparator_.AreMergeable(p, not_mergeable_by_phone_number));
-}
-
-TEST_F(AutofillProfileComparatorTest, MergeNames_WithPermutation) {
-  // The first name has an observed structure.
-  NameInfo name1;
-  name1.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Thomas",
-                                         VerificationStatus::kObserved);
-  name1.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"A.",
-                                         VerificationStatus::kObserved);
-  name1.SetRawInfoWithVerificationStatus(NAME_LAST, u"Anderson",
-                                         VerificationStatus::kObserved);
-  AutofillProfile profile1 = CreateProfileWithName(name1);
-  profile1.FinalizeAfterImport();
-
-  EXPECT_EQ(profile1.GetRawInfo(NAME_FULL), u"Thomas A. Anderson");
-  EXPECT_EQ(profile1.GetVerificationStatus(NAME_FULL),
-            VerificationStatus::kFormatted);
-
-  // The second name has an observed full name that uses a custom formatting.
-  NameInfo name2;
-  name2.SetRawInfoWithVerificationStatus(NAME_FULL, u"Anderson, Thomas A.",
-                                         VerificationStatus::kObserved);
-  AutofillProfile profile2 = CreateProfileWithName(name2);
-  profile2.FinalizeAfterImport();
-
-  NameInfo merged_name;
-  comparator_.MergeNames(profile1, profile2, merged_name);
-
-  // The merged name should maintain the structure but use the observation of
-  // the custom-formatted full name.
-  EXPECT_EQ(merged_name.GetRawInfo(NAME_FULL), u"Anderson, Thomas A.");
-  EXPECT_EQ(merged_name.GetVerificationStatus(NAME_FULL),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(merged_name.GetRawInfo(NAME_FIRST), u"Thomas");
-  EXPECT_EQ(merged_name.GetVerificationStatus(NAME_FIRST),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(merged_name.GetRawInfo(NAME_MIDDLE), u"A.");
-  EXPECT_EQ(merged_name.GetVerificationStatus(NAME_MIDDLE),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(merged_name.GetRawInfo(NAME_LAST), u"Anderson");
-  EXPECT_EQ(merged_name.GetVerificationStatus(NAME_LAST),
-            VerificationStatus::kObserved);
-}
-
-TEST_F(AutofillProfileComparatorTest, MergeNames) {
-  NameInfo name1;
-  name1.SetRawInfo(NAME_FULL, u"John Quincy Public");
-  name1.SetRawInfo(NAME_FIRST, u"John");
-  name1.SetRawInfo(NAME_MIDDLE, u"Quincy");
-  name1.SetRawInfo(NAME_LAST, u"Public");
-  name1.FinalizeAfterImport();
-
-  NameInfo name2;
-  name2.SetRawInfo(NAME_FULL, u"John Q. Public");
-  name2.SetRawInfo(NAME_FIRST, u"John");
-  name2.SetRawInfo(NAME_MIDDLE, u"Q.");
-  name2.SetRawInfo(NAME_LAST, u"Public");
-  name2.FinalizeAfterImport();
-
-  NameInfo name3;
-  name3.SetRawInfo(NAME_FULL, u"J Public");
-  name3.SetRawInfo(NAME_FIRST, u"J");
-  name3.SetRawInfo(NAME_MIDDLE, u"");
-  name3.SetRawInfo(NAME_LAST, u"Public");
-  name3.FinalizeAfterImport();
-
-  NameInfo name4;
-  name4.SetRawInfo(NAME_FULL, u"John Quincy Public");
-  name4.FinalizeAfterImport();
-
-  NameInfo name5;
-  name5.SetRawInfo(NAME_FIRST, u"John");
-  name5.SetRawInfo(NAME_LAST, u"Public");
-  name5.FinalizeAfterImport();
-
-  NameInfo synthesized;
-  synthesized.SetRawInfo(NAME_FULL, u"John Public");
-  synthesized.SetRawInfo(NAME_FIRST, u"John");
-  synthesized.SetRawInfo(NAME_MIDDLE, u"");
-  synthesized.SetRawInfo(NAME_LAST, u"Public");
-  synthesized.FinalizeAfterImport();
-
-  AutofillProfile p1 = CreateProfileWithName(name1);
-  AutofillProfile p2 = CreateProfileWithName(name2);
-  AutofillProfile p3 = CreateProfileWithName(name3);
-  AutofillProfile p4 = CreateProfileWithName(name4);
-  AutofillProfile p5 = CreateProfileWithName(name5);
-
-  MergeNamesAndExpect(p1, p1, name1);
-  MergeNamesAndExpect(p1, p2, name1);
-  MergeNamesAndExpect(p1, p3, name1);
-  MergeNamesAndExpect(p1, p4, name1);
-  MergeNamesAndExpect(p1, p5, name1);
-
-  MergeNamesAndExpect(p2, p1, name1);
-  MergeNamesAndExpect(p2, p2, name2);
-  MergeNamesAndExpect(p2, p3, name2);
-  MergeNamesAndExpect(p2, p4, name1);
-  MergeNamesAndExpect(p2, p5, name2);
-
-  MergeNamesAndExpect(p3, p1, name1);
-  MergeNamesAndExpect(p3, p2, name2);
-  MergeNamesAndExpect(p3, p3, name3);
-  MergeNamesAndExpect(p3, p4, name1);
-  MergeNamesAndExpect(p3, p5, synthesized);
-
-  // P4 can be teased apart and reconstituted as name1.
-  MergeNamesAndExpect(p4, p1, name1);
-  MergeNamesAndExpect(p4, p2, name1);
-  MergeNamesAndExpect(p4, p3, name1);
-  MergeNamesAndExpect(p4, p4, name1);
-  MergeNamesAndExpect(p4, p5, name1);
-
-  // P5 expands the first name if it's not complete.
-  MergeNamesAndExpect(p5, p1, name1);
-  MergeNamesAndExpect(p5, p2, name2);
-  MergeNamesAndExpect(p5, p3, synthesized);
-  MergeNamesAndExpect(p5, p4, name1);
-  MergeNamesAndExpect(p5, p5, synthesized);  // We flesh out missing data.
-}
-
-// Regression test for crbug.com/324006880
-TEST_F(AutofillProfileComparatorTest, MergeNamesWithWhitespaceDifferences) {
-  AutofillProfile old_profile(
-      i18n_model_definition::kLegacyHierarchyCountryCode);
-  old_profile.SetRawInfo(NAME_FULL, u"Rafael de Paula");
-  old_profile.FinalizeAfterImport();
-
-  AutofillProfile new_profile(
-      i18n_model_definition::kLegacyHierarchyCountryCode);
-  new_profile.SetRawInfo(NAME_FULL, u"Rafael dePaula");
-  new_profile.FinalizeAfterImport();
-
-  MergeNamesAndExpect(
-      new_profile, old_profile,
-      CreateNameInfo(u"Rafael", u"", u"de Paula", u"Rafael de Paula"));
-}
-
-TEST_F(AutofillProfileComparatorTest, MergeCJKNames) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillSupportPhoneticNameForJP};
-
-  // Korean names that are all mergeable, but constructed differently.
-  NameInfo name1 = CreateNameInfo(u"호", u"", u"이영", u"이영 호");
-  NameInfo name2 = CreateNameInfo(u"이영호", u"", u"", u"이영호");
-  NameInfo name3 = CreateNameInfo(u"영호", u"", u"이", u"이영호");
-  NameInfo name4 = CreateNameInfo(u"영호", u"", u"이", u"");
-  NameInfo name5 = CreateNameInfo(u"영호", u"", u"이", u"이 영호");
-
-  // Mergeable foreign name in Japanese with a 'KATAKANA MIDDLE DOT'.
-  NameInfo name6 = CreateNameInfo(u"", u"", u"", u"ゲイツ・ビル");
-  NameInfo name7 = CreateNameInfo(u"ビル", u"", u"ゲイツ", u"");
-
-  // Mergeable foreign name in Japanese with a 'KATAKANA MIDDLE DOT' and
-  // phonetic name being present.
-  NameInfo name8 =
-      CreateNameInfo(u"", u"", u"", u"山本・葵", u"", u"", u"やまもと・あおい");
-  NameInfo name9 =
-      CreateNameInfo(u"葵", u"", u"山本", u"", u"あおい", u"やまもと", u"");
-
-  // Mergeable foreign name in Japanese with a `　` and
-  // phonetic name being present.
-  NameInfo name10 =
-      CreateNameInfo(u"", u"", u"", u"山本・葵", u"", u"", u"すずき　はるか");
-  NameInfo name11 =
-      CreateNameInfo(u"葵", u"", u"山本", u"", u"はるか", u"すずき", u"");
-
-  // Set the use dates for the profiles, because `MergeNames()` tries to use
-  // the most recent profile if there is a conflict. The ordering is
-  // p1 > p2 > p3 > p4 > p5, with p1 being the most recent.
-  AutofillProfile p1 = CreateProfileWithName(name1);
-  p1.usage_history().set_use_date(AutofillClock::Now());
-  AutofillProfile p2 = CreateProfileWithName(name2);
-  p2.usage_history().set_use_date(AutofillClock::Now() - base::Hours(1));
-  AutofillProfile p3 = CreateProfileWithName(name3);
-  p3.usage_history().set_use_date(AutofillClock::Now() - base::Hours(2));
-  AutofillProfile p4 = CreateProfileWithName(name4);
-  p4.usage_history().set_use_date(AutofillClock::Now() - base::Hours(3));
-  AutofillProfile p5 = CreateProfileWithName(name5);
-  p5.usage_history().set_use_date(AutofillClock::Now() - base::Hours(4));
-
-  AutofillProfile p6 = CreateProfileWithName(name6);
-  AutofillProfile p7 = CreateProfileWithName(name7);
-  AutofillProfile p8 = CreateProfileWithName(name8);
-  AutofillProfile p9 = CreateProfileWithName(name9);
-  AutofillProfile p10 = CreateProfileWithName(name10);
-  AutofillProfile p11 = CreateProfileWithName(name11);
-
-  // Because |p1| is the most recent, it always wins over others.
-  MergeNamesAndExpect(p1, p2, CreateNameInfo(u"호", u"", u"이영", u"이영 호"));
-  MergeNamesAndExpect(p1, p3, CreateNameInfo(u"호", u"", u"이영", u"이영 호"));
-  MergeNamesAndExpect(p1, p4, CreateNameInfo(u"호", u"", u"이영", u"이영 호"));
-  MergeNamesAndExpect(p1, p5, CreateNameInfo(u"호", u"", u"이영", u"이영 호"));
-
-  // |p3| is more recent than |p4| and |p5|.
-  MergeNamesAndExpect(p3, p4, CreateNameInfo(u"영호", u"", u"이", u"이영호"));
-  MergeNamesAndExpect(p3, p5, CreateNameInfo(u"영호", u"", u"이", u"이영호"));
-
-  // |p4| is more recent than |p5|. However, it does not have an explicit
-  // full name, so use the one from |p5|.
-  MergeNamesAndExpect(p4, p5, CreateNameInfo(u"영호", u"", u"이", u"이 영호"));
-
-  // There is no conflict between |p6| and |p7|, so use the parts from both.
-  MergeNamesAndExpect(p6, p7,
-                      CreateNameInfo(u"ビル", u"", u"ゲイツ", u"ゲイツ・ビル"));
-  // Japanese alternative names are mergeable.
-  MergeNamesAndExpect(
-      p8, p9,
-      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
-                     u"やまもと・あおい"));
-  MergeNamesAndExpect(p10, p11,
-                      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵",
-                                     u"はるか", u"すずき", u"すずき　はるか"));
-}
-
-TEST_F(AutofillProfileComparatorTest,
-       MergeCJKNamesWhereAlternativeNameNormalizationIsNeeded) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillSupportPhoneticNameForJP};
-
-  // Phonetic name using Hiragana.
-  AutofillProfile p1 = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと", u""));
-  // The same phonetic name, but saved as alternative_full_name with separator.
-  AutofillProfile p2 = CreateProfileWithName(
-      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
-                     u"やまもと・あおい"));
-  // The same phonetic name, but saved as alternative_full_name with white space
-  // separator.
-  AutofillProfile p3 = CreateProfileWithName(
-      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
-                     u"やまもと あおい"));
-
-  // Semantically the same profiles as `p2`, `p3`, `p4`, but using Katakana for
-  // alternative name.
-  AutofillProfile p1_katakana = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"アオイ", u"ヤマモト", u""));
-  AutofillProfile p2_katakana = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"ヤマモト・アオイ"));
-  AutofillProfile p3_katakana = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"ヤマモト アオイ"));
-
-  MergeNamesAndExpect(
-      p2, p1_katakana,
-      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
-                     u"やまもと・あおい"));
-  MergeNamesAndExpect(
-      p3, p1_katakana,
-      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
-                     u"やまもと あおい"));
-  MergeNamesAndExpect(
-      p2, p2_katakana,
-      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
-                     u"やまもと・あおい"));
-  MergeNamesAndExpect(
-      p3, p2_katakana,
-      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
-                     u"やまもと あおい"));
-  MergeNamesAndExpect(
-      p2, p3_katakana,
-      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
-                     u"やまもと・あおい"));
-  MergeNamesAndExpect(
-      p3, p3_katakana,
-      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
-                     u"やまもと あおい"));
-
-  // As long as the values in profile are semantically correct, it doesn't
-  // matter what it the result of merging since db will do the transliteration
-  // on save.
-  MergeNamesAndExpect(
-      p1, p1_katakana,
-      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"アオイ", u"ヤマモト",
-                     u"ヤマモト アオイ"));
-  MergeNamesAndExpect(
-      p1_katakana, p1,
-      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
-                     u"やまもと あおい"));
 }
 
 TEST_F(AutofillProfileComparatorTest, MergeEmailAddresses) {
@@ -1393,6 +695,21 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesWithGermanTransliteration) {
 
   MergeAddressesAndExpect(p1, p2, p2.GetAddress());
   MergeAddressesAndExpect(p2, p1, p2.GetAddress());
+}
+
+TEST_F(AutofillProfileComparatorTest, MergeAddressesOneIsAccountNameEmail) {
+  const AutofillProfile address_profile = CreateProfileWithAddress(
+      "Hänsel-Str 33", "", "München", "", "80636", "DE");
+
+  AccountInfo info;
+  info.full_name = "test name";
+  info.email = "testaccount@domain.net";
+  const AutofillProfile account_name_email_profile{info};
+
+  MergeAddressesAndExpect(address_profile, account_name_email_profile,
+                          address_profile.GetAddress());
+  MergeAddressesAndExpect(account_name_email_profile, address_profile,
+                          address_profile.GetAddress());
 }
 
 TEST_F(AutofillProfileComparatorTest,

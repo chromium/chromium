@@ -115,6 +115,12 @@ if (crashpad_is_apple && !crashpad_is_tvos) {
       args += [
         "--include",
         rebase_path("../compat/ios", root_build_dir),
+
+        # Needed for mach_exception_raise_*_protected
+        "--define",
+        "MACH_EXC_SERVER_TASKIDTOKEN",
+        "--define",
+        "MACH_EXC_SERVER_TASKIDTOKEN_STATE",
       ]
     }
     if (current_cpu == "x86") {
@@ -939,8 +945,8 @@ source_set("util_test") {
     "../client",
     "../compat",
     "../test",
+    "../third_party/googletest",
     "../third_party/googletest:googlemock",
-    "../third_party/googletest:googletest",
     "../third_party/zlib",
   ]
 

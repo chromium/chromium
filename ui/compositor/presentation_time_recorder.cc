@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace ui {
 
@@ -260,8 +261,9 @@ class PresentationTimeHistogramRecorder
         presentation_time_histogram_name_(
             emit_trace_event ? presentation_time_histogram_name : nullptr) {
     if (presentation_time_histogram_name_) {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", presentation_time_histogram_name_,
-                                        this);
+      TRACE_EVENT_BEGIN(
+          "ui", perfetto::StaticString(presentation_time_histogram_name_),
+          perfetto::Track::FromPointer(this));
     }
   }
 
@@ -273,8 +275,8 @@ class PresentationTimeHistogramRecorder
   // PresentationTimeRecorderInternal:
   void ReportTime(base::TimeDelta delta) override {
     if (presentation_time_histogram_name_) {
-      TRACE_EVENT_NESTABLE_ASYNC_END0("ui", presentation_time_histogram_name_,
-                                      this);
+      TRACE_EVENT_END("ui", /*presentation_time_histogram_name_*/
+                      perfetto::Track::FromPointer(this));
     }
     presentation_time_histogram_->AddTimeMillisecondsGranularity(delta);
   }

@@ -38,7 +38,8 @@ class CONTENT_EXPORT StartupTaskRunner {
   // not null it will be called, once all the startup tasks have run, with the
   // result of running tasks and the duration spent blocking the UI thread.
   StartupTaskRunner(
-      base::OnceCallback<void(int, base::TimeDelta)> startup_complete_callback,
+      base::OnceCallback<void(int, base::TimeDelta, base::TimeDelta)>
+          startup_complete_callback,
       scoped_refptr<base::SingleThreadTaskRunner> proxy);
 
   StartupTaskRunner(const StartupTaskRunner&) = delete;
@@ -53,7 +54,9 @@ class CONTENT_EXPORT StartupTaskRunner {
   void StartRunningTasksAsync();
 
   // Run all tasks, or all remaining tasks, synchronously
-  void RunAllTasksNow();
+  // `was_posted` means the caller had posted this task to the task_runner
+  // instead of executing it inline.
+  void RunAllTasksNow(bool was_posted);
 
  private:
   friend class base::RefCounted<StartupTaskRunner>;
@@ -61,12 +64,15 @@ class CONTENT_EXPORT StartupTaskRunner {
   std::list<StartupTask> task_list_;
   void WrappedTask();
 
-  base::OnceCallback<void(int, base::TimeDelta)> startup_complete_callback_;
+  base::OnceCallback<void(int, base::TimeDelta, base::TimeDelta)>
+      startup_complete_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> proxy_;
-  // Longest time spent blocking the thread when running the tasks. This is
-  // either the max duration of each individual task when running async or the
-  // time it took to run all tasks synchronously.
-  base::TimeDelta longest_blocking_duration_;
+  // The longest of the wall-clock durations of each individual task that was
+  // posted to the task_runner.
+  base::TimeDelta longest_duration_of_posted_startup_tasks_;
+  // The total wall-clock duration of all the tasks that were run as posted
+  // tasks.
+  base::TimeDelta total_duration_of_posted_startup_tasks_;
 };
 
 }  // namespace content

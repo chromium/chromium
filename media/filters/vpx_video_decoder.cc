@@ -21,6 +21,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/agtm.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
@@ -29,7 +30,6 @@
 #include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_decoder.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_frame_buffer.h"
-
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 
@@ -332,6 +332,22 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
     return true;
   }
 
+  static constexpr size_t kItut35HeaderSize = 7;
+  if (buffer->side_data() &&
+      buffer->side_data()->itu_t35_data.size() >= kItut35HeaderSize) {
+    auto side_data = buffer->side_data()->itu_t35_data.as_span();
+    static constexpr uint8_t kItut35CountryCodeExtensionMarker = 0xFF;
+    if (side_data.data()[0] == kItut35CountryCodeExtensionMarker) {
+      side_data = side_data.subspan(1u);
+    }
+    auto [country_code, payload] = side_data.split_at<1u>();
+    if (auto agtm = GetSerializedAgtmItutT35(country_code.data()[0], payload)) {
+      gfx::HDRMetadata hdr_metadata = config_.hdr_metadata();
+      hdr_metadata.setSerializedAgtm(agtm);
+      config_.set_hdr_metadata(hdr_metadata);
+    }
+  }
+
   const vpx_image_t* vpx_image_alpha = nullptr;
   const auto alpha_decode_status =
       DecodeAlphaPlane(vpx_image, &vpx_image_alpha, buffer);
@@ -421,18 +437,11 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
     const DecoderBuffer* buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!vpx_codec_alpha_ || !buffer->side_data() ||
-      buffer->side_data()->alpha_data.size() < 8) {
+      buffer->side_data()->alpha_data.empty()) {
     return kAlphaPlaneProcessed;
   }
 
-  // First 8 bytes of side data is |side_data_id| in big endian.
-  auto [alpha_data_id, alpha_data] =
-      buffer->side_data()->alpha_data.as_span().split_at<8u>();
-  const uint64_t side_data_id = base::U64FromBigEndian(alpha_data_id);
-  if (side_data_id != 1) {
-    return kAlphaPlaneProcessed;
-  }
-
+  auto& alpha_data = buffer->side_data()->alpha_data;
   // Try and decode buffer->raw_side_data() minus the first 8 bytes as a full
   // frame.
   {
@@ -446,7 +455,7 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
         error_status_ = DecoderStatus::Codes::kOutOfMemory;
       }
       DLOG(ERROR) << "vpx_codec_decode() failed for the alpha: "
-                  << vpx_codec_error(vpx_codec_.get());
+                  << vpx_codec_error(vpx_codec_alpha_.get());
       return kAlphaPlaneError;
     }
   }
@@ -620,8 +629,8 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
     libyuv::CopyPlane(planes[plane], strides[plane],
                       (*video_frame)->GetWritableVisibleData(plane),
                       (*video_frame)->stride(plane),
-                      (*video_frame)->row_bytes(plane),
-                      (*video_frame)->rows(plane));
+                      (*video_frame)->GetVisibleRowBytes(plane),
+                      (*video_frame)->GetVisibleRows(plane));
   }
 
   return true;

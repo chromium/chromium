@@ -41,7 +41,7 @@ void XRPlaneManager::ProcessPlaneInformation(
            << ", all planes size="
            << detected_planes_data->all_planes_ids.size();
 
-  HeapHashMap<uint64_t, Member<XRPlane>> updated_planes;
+  HeapHashMap<device::PlaneId, Member<XRPlane>> updated_planes;
 
   // First, process all planes that had their information updated (new planes
   // are also processed here).

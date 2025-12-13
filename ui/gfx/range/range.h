@@ -12,6 +12,7 @@
 #include <iosfwd>
 #include <limits>
 #include <string>
+#include <vector>
 
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -143,6 +144,12 @@ class GFX_RANGE_EXPORT Range {
   // GTK+ has no concept of a range.
 
   std::string ToString() const;
+
+  // In many cases we use gfx::Range to represent a contiguous range of int
+  // indices. However, the underlying type stored in a range is uint32_t, which
+  // may exceed the size of int. This function CHECKs that the range does not
+  // exceed int limits before doing the conversion.
+  std::vector<int> ToIntVector() const;
 
  private:
   // Note: we use uint32_t instead of size_t because this struct is sent over

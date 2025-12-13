@@ -15,9 +15,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -74,7 +75,7 @@ public class LogcatCrashExtractor {
         // fills up.
         Process p = Runtime.getRuntime().exec("logcat -d");
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        LinkedList<String> rawLogcat = new LinkedList<>();
+        Deque<String> rawLogcat = new ArrayDeque<>();
         Integer exitValue = null;
         try {
             while (exitValue == null) {
@@ -102,7 +103,7 @@ public class LogcatCrashExtractor {
             throw new IOException(msg);
         }
 
-        return trimLogcat(rawLogcat, LOGCAT_SIZE);
+        return trimLogcat(new ArrayList<>(rawLogcat), LOGCAT_SIZE);
     }
 
     /**

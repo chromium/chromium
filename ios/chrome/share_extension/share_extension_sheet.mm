@@ -9,7 +9,9 @@
 #import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "build/branding_buildflags.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -25,17 +27,17 @@ enum SharedItemType {
   kText,
 };
 
-CGFloat const kInnerViewWidthPadding = 32;
-CGFloat const kMainViewHeightPadding = 34;
+CGFloat const kMainViewPadding = 32.0;
 CGFloat const kMainViewCornerRadius = 12;
-CGFloat const kSnapshotViewSize = 72;
-CGFloat const kURLStackSpacing = 2;
+CGFloat const kSnapshotViewSize = 150;
+CGFloat const kURLStackSpacing = 8;
+CGFloat const kDefaultSnapshotViewSize = 60;
+CGFloat const kLinkIconSize = 26.0;
+CGFloat const kQuoteIconSize = 26.0;
+CGFloat const kTextStackSpacing = 30.0;
 
 // The horizontal spacing between image preview and the URL stack.
-CGFloat const kInnerViewSpacing = 16;
-
-CGFloat const kDismissButtonSize = 28;
-CGFloat const kSharedImageHeight = 181;
+CGFloat const kInnerViewSpacing = 30;
 
 // Custom radius for the half sheet presentation.
 CGFloat const kHalfSheetCornerRadius = 20;
@@ -46,14 +48,16 @@ constexpr CGFloat kLogoTitleFontMultiplier = 1.25;
 // The spacing between the sheet's title and icon.
 CGFloat const kTitleViewSpacing = 3.0;
 
-// Custom detent identifier for when the bottom sheet is minimized.
-NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
-
-// Constants for the MIM configuration.
-CGFloat const kMIMStackSpacing = 8.0;
+// Constants for the content configuration.
+CGFloat const kContentStackSpacing = 16.0;
 CGFloat const kAccountRowHeight = 57.0;
-CGFloat const kMIMViewCornerRadius = 10;
+CGFloat const kContentCornerRadius = 25.0;
+CGFloat const kAccountCellCornerRadius = 10.0;
 CGFloat const kAvatarImageDimension = 30.0;
+CGFloat const kUpdatedMainViewCornerRadius = 32.0;
+
+// The reuse identifier for the account cell.
+NSString* const kAccountCellIdentifier = @"kAccountCellIdentifier";
 
 }  // namespace
 
@@ -68,8 +72,8 @@ CGFloat const kAvatarImageDimension = 30.0;
   NSString* _appName;
   SharedItemType _sharedItemType;
   NSArray<AccountInfo*>* _accounts;
-  UISheetPresentationControllerDetent* _customDetent;
   UITableView* _accountTableView;
+  NSLayoutConstraint* _tableViewHeightConstraint;
 }
 
 - (instancetype)init {
@@ -82,34 +86,19 @@ CGFloat const kAvatarImageDimension = 30.0;
 }
 
 - (void)viewDidLoad {
-  self.actionHandler = self;
-  self.primaryActionString = _primaryString;
-  self.secondaryActionString = _secondaryString;
+  self.actionDelegate = self;
+  self.configuration.primaryActionString = _primaryString;
+  self.configuration.secondaryActionString = _secondaryString;
 
-  self.scrollEnabled = NO;
-  self.showDismissBarButton = YES;
-  self.alwaysShowImage = YES;
-  self.topAlignedLayout = YES;
-  self.scrollEnabled = YES;
-
-  self.customScrollViewBottomInsets = 0;
-  self.customGradientViewHeight = 0;
-
-  self.titleView = [self configureSheetTitleView];
-
-  self.dismissBarButtonSystemItem = UIBarButtonSystemItemClose;
-  self.customDismissBarButtonImage = [self configureDismissButtonIcon];
-
-  if (app_group::MultiProfileShareExtensionEnabled()) {
-    self.mainBackgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-    self.underTitleView = [self createUnderTitleViewWithMIM];
-  } else {
-    self.underTitleView = [self configureMainView];
-  }
-
+  self.navigationItem.titleView = [self configureSheetTitleView];
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                           target:self
+                           action:@selector(dismissSheet)];
   [super viewDidLoad];
+
+  [self setupContent];
   [self setUpBottomSheetPresentationController];
-  [self setUpBottomSheetDetents];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -124,8 +113,14 @@ CGFloat const kAvatarImageDimension = 30.0;
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 
-  if (app_group::MultiProfileShareExtensionEnabled() &&
-      ![self isScrolledToBottom]) {
+  if (_tableViewHeightConstraint) {
+    CGFloat newHeight = _accountTableView.contentSize.height;
+    if (_tableViewHeightConstraint.constant != newHeight) {
+      _tableViewHeightConstraint.constant = newHeight;
+    }
+  }
+
+  if (![self isScrolledToBottom]) {
     [self scrollToBottom];
   }
 }
@@ -148,7 +143,7 @@ CGFloat const kAvatarImageDimension = 30.0;
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell =
-      [tableView dequeueReusableCellWithIdentifier:@"Account"];
+      [tableView dequeueReusableCellWithIdentifier:kAccountCellIdentifier];
   return [self configureAccountCell:cell];
 }
 
@@ -159,7 +154,7 @@ CGFloat const kAvatarImageDimension = 30.0;
   AccountPickerTable* accountPickerView =
       [[AccountPickerTable alloc] initWithAccounts:_accounts
                                    selectedAccount:self.selectedAccountInfo];
-  accountPickerView.customDetent = _customDetent;
+  accountPickerView.customDetent = [self preferredHeightDetent];
   accountPickerView.delegate = self;
   UINavigationController* presentingNavController =
       [[UINavigationController alloc]
@@ -184,12 +179,8 @@ CGFloat const kAvatarImageDimension = 30.0;
   _sharedURL = sharedURL;
   _sharedItemType = kURL;
   _primaryString =
-      [NSString stringWithFormat:
-                    @"%@ %@",
-                    NSLocalizedString(
-                        @"IDS_IOS_OPEN_IN_BUTTON_SHARE_EXTENSION",
-                        @"The label of theopen in button in share extension."),
-                    _appName];
+      NSLocalizedString(@"IDS_IOS_OPEN_IN_APP_SHARE_EXTENSION",
+                        @"The label of theopen in button in share extension.");
   _secondaryString = NSLocalizedString(
       @"IDS_IOS_MORE_OPTIONS_BUTTON_SHARE_EXTENSION",
       @"The label of the more options button in share extension.");
@@ -201,7 +192,7 @@ CGFloat const kAvatarImageDimension = 30.0;
 }
 
 - (void)setSharedURLPreview:(UIImage*)sharedURLPreview {
-  CHECK(!_sharedImage && !_sharedText);
+  CHECK(!_sharedText);
   _sharedURLPreview = sharedURLPreview;
 }
 
@@ -209,13 +200,9 @@ CGFloat const kAvatarImageDimension = 30.0;
   CHECK(!_sharedURL && !_sharedTitle && !_sharedText);
   _sharedImage = sharedImage;
   _sharedItemType = kImage;
-  _primaryString = [NSString
-      stringWithFormat:
-          @"%@ %@",
-          NSLocalizedString(
-              @"IDS_IOS_SEARCH_IN_BUTTON_SHARE_EXTENSION",
-              @"The label of the search in button in share extension."),
-          _appName];
+  _primaryString = NSLocalizedString(
+      @"IDS_IOS_SEARCH_IN_APP_BUTTON_SHARE_EXTENSION",
+      @"The label of the search in button in share extension.");
   _secondaryString = NSLocalizedString(
       @"IDS_IOS_SEARCH_IN_INCOGNITO_BUTTON_SHARE_EXTENSION",
       @"The label of the search in incognito button in share extension.");
@@ -225,26 +212,18 @@ CGFloat const kAvatarImageDimension = 30.0;
   CHECK(!_sharedURL && !_sharedTitle && !_sharedImage);
   _sharedText = sharedText;
   _sharedItemType = kText;
-  _primaryString = [NSString
-      stringWithFormat:
-          @"%@ %@",
-          NSLocalizedString(
-              @"IDS_IOS_SEARCH_IN_BUTTON_SHARE_EXTENSION",
-              @"The label of the search in button in share extension."),
-          _appName];
+  _primaryString = NSLocalizedString(
+      @"IDS_IOS_SEARCH_IN_APP_BUTTON_SHARE_EXTENSION",
+      @"The label of the search in button in share extension.");
   _secondaryString = NSLocalizedString(
       @"IDS_IOS_SEARCH_IN_INCOGNITO_BUTTON_SHARE_EXTENSION",
       @"The label of the search in incognito button in share extension.");
 }
 
-#pragma mark - ConfirmationAlertActionHandler
+#pragma mark - ButtonStackActionDelegate
 
-- (void)confirmationAlertDismissAction {
-  [self.delegate didTapCloseShareExtensionSheet:self];
-}
-
-- (void)confirmationAlertPrimaryAction {
-  NSString* gaiaID = self.selectedAccountInfo.gaiaID;
+- (void)didTapPrimaryActionButton {
+  NSString* gaiaID = self.selectedAccountInfo.gaiaIDString;
   switch (_sharedItemType) {
     case kURL:
       [self.delegate didTapOpenInChromeShareExtensionSheet:self gaiaID:gaiaID];
@@ -257,8 +236,8 @@ CGFloat const kAvatarImageDimension = 30.0;
   }
 }
 
-- (void)confirmationAlertSecondaryAction {
-  NSString* gaiaID = self.selectedAccountInfo.gaiaID;
+- (void)didTapSecondaryActionButton {
+  NSString* gaiaID = self.selectedAccountInfo.gaiaIDString;
   switch (_sharedItemType) {
     case kURL:
       [self.delegate didTapMoreOptionsShareExtensionSheet:self gaiaID:gaiaID];
@@ -271,7 +250,33 @@ CGFloat const kAvatarImageDimension = 30.0;
   }
 }
 
+- (void)didTapTertiaryActionButton {
+  // Not used.
+}
+
 #pragma mark - Private
+
+// Sets up the content view.
+- (void)setupContent {
+  UIView* content;
+  self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  content = [self createMainContentStackView];
+
+  // Wrap the content in a container to prevent it from stretching to fill the
+  // entire scrollable area.
+  UIView* container = [[UIView alloc] init];
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+  [container addSubview:content];
+  [NSLayoutConstraint activateConstraints:@[
+    [content.topAnchor constraintEqualToAnchor:container.topAnchor],
+    [content.leadingAnchor constraintEqualToAnchor:container.leadingAnchor],
+    [content.trailingAnchor constraintEqualToAnchor:container.trailingAnchor],
+    [content.bottomAnchor
+        constraintLessThanOrEqualToAnchor:container.bottomAnchor],
+  ]];
+  [self.contentView addSubview:container];
+  AddSameConstraints(container, self.contentView);
+}
 
 // Configures the account cell with the appropriate configuration based on
 // `selectedAccountInfo`.
@@ -279,17 +284,27 @@ CGFloat const kAvatarImageDimension = 30.0;
   CHECK(self.selectedAccountInfo);
 
   UIListContentConfiguration* content = cell.defaultContentConfiguration;
-  if ([self.selectedAccountInfo.gaiaID isEqual:@"Default"]) {
-    // TODO(crbug.com/425571657): Add strings translation.
-    content.text = @"Signed out";
+  if ([self.selectedAccountInfo.gaiaIDString isEqual:app_group::kNoAccount]) {
+    content.text = NSLocalizedString(
+        @"IDS_IOS_SIGNED_OUT_USER_TITLE_SHARE_EXTENSION",
+        @"The title of the item representing a signed out user.");
     content.image = [[UIImage systemImageNamed:@"person.crop.circle"]
         imageWithTintColor:[UIColor colorNamed:kGrey400Color]
              renderingMode:UIImageRenderingModeAlwaysOriginal];
 
   } else {
     content.text = self.selectedAccountInfo.fullName;
+    content.textProperties.numberOfLines = 1;
+    content.textProperties.lineBreakMode = NSLineBreakByTruncatingTail;
+
     content.secondaryText = self.selectedAccountInfo.email;
+    content.secondaryTextProperties.numberOfLines = 1;
+    content.secondaryTextProperties.lineBreakMode = NSLineBreakByTruncatingTail;
+
+    content.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(8, 0, 8, 0);
+
     content.image = self.selectedAccountInfo.avatar;
+
     UIListContentImageProperties* imageProperties = content.imageProperties;
     imageProperties.cornerRadius = kAvatarImageDimension / 2.0;
     imageProperties.maximumSize =
@@ -311,23 +326,8 @@ CGFloat const kAvatarImageDimension = 30.0;
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 }
 
-// Configures the bottom sheet's detents.
-- (void)setUpBottomSheetDetents {
-  UISheetPresentationController* presentationController =
-      self.sheetPresentationController;
-  CGFloat bottomSheetHeight = [self preferredHeightForContent];
-  auto resolver = ^CGFloat(
-      id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return bottomSheetHeight;
-  };
-  _customDetent = [UISheetPresentationControllerDetent
-      customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                        resolver:resolver];
-  presentationController.detents = @[ _customDetent ];
-  presentationController.selectedDetentIdentifier =
-      kCustomMinimizedDetentIdentifier;
-}
-
+// Configures and returns the title view for the sheet, including the logo and
+// title.
 - (UIView*)configureSheetTitleView {
   BrandedNavigationItemTitleView* titleView =
       [[BrandedNavigationItemTitleView alloc]
@@ -365,101 +365,101 @@ CGFloat const kAvatarImageDimension = 30.0;
   return titleView;
 }
 
-- (UIView*)configureMainView {
+// Creates and returns the main view with the inner view content.
+- (UIView*)createMainViewWithInnerView {
   UIView* mainView = [[UIView alloc] init];
   UIView* innerView;
-  if (_sharedURL) {
-    innerView = [self configureSharedURLView];
-  } else if (_sharedImage) {
-    innerView = [self configureSharedImageView];
-  } else if (_sharedText) {
-    innerView = [self configureSharedTextView];
+  switch (_sharedItemType) {
+    case kURL:
+      innerView = [self configureSharedURLView];
+      break;
+    case kImage:
+      innerView = [self configureSharedImageView];
+      break;
+    case kText:
+      innerView = [self configureSharedTextView];
+      break;
   }
-
   CHECK(innerView);
-  [mainView addSubview:innerView];
-
-  mainView.backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
-  mainView.layer.cornerRadius = kMainViewCornerRadius;
-
   innerView.translatesAutoresizingMaskIntoConstraints = NO;
-  mainView.translatesAutoresizingMaskIntoConstraints = NO;
-
+  [mainView addSubview:innerView];
   [NSLayoutConstraint activateConstraints:@[
-    [innerView.widthAnchor constraintEqualToAnchor:mainView.widthAnchor
-                                          constant:-kInnerViewWidthPadding],
-    [mainView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:innerView.heightAnchor
-                                    constant:kMainViewHeightPadding],
+    [innerView.topAnchor constraintEqualToAnchor:mainView.topAnchor
+                                        constant:kMainViewPadding],
+    [innerView.bottomAnchor constraintEqualToAnchor:mainView.bottomAnchor
+                                           constant:-kMainViewPadding],
+    [innerView.leadingAnchor constraintEqualToAnchor:mainView.leadingAnchor
+                                            constant:kMainViewPadding],
+    [innerView.trailingAnchor constraintEqualToAnchor:mainView.trailingAnchor
+                                             constant:-kMainViewPadding],
   ]];
-
-  AddSameCenterConstraints(mainView, innerView);
-
   return mainView;
 }
 
-- (UIStackView*)createUnderTitleViewWithMIM {
-  UIView* mainView = [self configureMainView];
-  mainView.backgroundColor =
-      [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
-  mainView.layer.cornerRadius = kMIMViewCornerRadius;
+// Creates and returns the main content stack view.
+- (UIStackView*)createMainContentStackView {
+  UIView* mainView = [self createMainViewWithInnerView];
+  mainView.backgroundColor = [UIColor colorNamed:kGrey200Color];
+  mainView.layer.cornerRadius = kContentCornerRadius;
+  if (@available(iOS 26, *)) {
+    mainView.layer.cornerRadius = kUpdatedMainViewCornerRadius;
+  }
 
   _accountTableView = [self createSelectedAccountTableView];
-  UIStackView* underTitleView = [[UIStackView alloc]
+  UIStackView* mainContentStackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ mainView, _accountTableView ]];
-  underTitleView.axis = UILayoutConstraintAxisVertical;
-  underTitleView.spacing = kMIMStackSpacing;
+  mainContentStackView.axis = UILayoutConstraintAxisVertical;
+  mainContentStackView.spacing = kContentStackSpacing;
+  mainContentStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  return underTitleView;
+  [NSLayoutConstraint activateConstraints:@[
+    [mainView.leadingAnchor
+        constraintEqualToAnchor:mainContentStackView.leadingAnchor],
+    [mainView.trailingAnchor
+        constraintEqualToAnchor:mainContentStackView.trailingAnchor],
+
+  ]];
+
+  return mainContentStackView;
 }
 
 - (UITableView*)createSelectedAccountTableView {
   UITableView* containerTable = [[UITableView alloc] initWithFrame:CGRectZero];
-  containerTable.rowHeight = kAccountRowHeight;
+  containerTable.estimatedRowHeight = kAccountRowHeight;
+  containerTable.rowHeight = UITableViewAutomaticDimension;
   containerTable.separatorStyle = UITableViewCellSeparatorStyleNone;
-  containerTable.layer.cornerRadius = kMIMViewCornerRadius;
+  containerTable.layer.cornerRadius = kAccountCellCornerRadius;
+  if (@available(iOS 26, *)) {
+    containerTable.layer.cornerRadius = kUpdatedMainViewCornerRadius;
+  }
   containerTable.scrollEnabled = NO;
   [containerTable registerClass:[UITableViewCell class]
-         forCellReuseIdentifier:@"Account"];
+         forCellReuseIdentifier:kAccountCellIdentifier];
   containerTable.dataSource = self;
   containerTable.delegate = self;
-  [containerTable.heightAnchor constraintEqualToConstant:kAccountRowHeight]
-      .active = YES;
+  _tableViewHeightConstraint =
+      [containerTable.heightAnchor constraintEqualToConstant:kAccountRowHeight];
+  _tableViewHeightConstraint.active = YES;
   return containerTable;
 }
 
 - (UIStackView*)configureSharedURLView {
   UIImageView* snapshotView = [self configureSnapshotView];
   UIStackView* URLStackView = [self configureURLView];
-  URLStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  UIView* URLView = [[UIView alloc] init];
-
-  [URLView addSubview:URLStackView];
 
   UIStackView* containerStack;
   if (snapshotView) {
     containerStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ snapshotView, URLView ]];
+        initWithArrangedSubviews:@[ snapshotView, URLStackView ]];
   } else {
     containerStack =
-        [[UIStackView alloc] initWithArrangedSubviews:@[ URLView ]];
+        [[UIStackView alloc] initWithArrangedSubviews:@[ URLStackView ]];
   }
 
-  containerStack.axis = UILayoutConstraintAxisHorizontal;
+  containerStack.axis = UILayoutConstraintAxisVertical;
   containerStack.translatesAutoresizingMaskIntoConstraints = NO;
   containerStack.spacing = kInnerViewSpacing;
   containerStack.alignment = UIStackViewAlignmentCenter;
-  URLView.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [URLView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:snapshotView.heightAnchor],
-    [URLView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:URLStackView.heightAnchor],
-    [URLStackView.widthAnchor constraintEqualToAnchor:URLView.widthAnchor],
-    [containerStack.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:URLView.heightAnchor],
-  ]];
-  AddSameCenterConstraints(URLView, URLStackView);
 
   return containerStack;
 }
@@ -468,52 +468,104 @@ CGFloat const kAvatarImageDimension = 30.0;
   UIImageView* sharedImageView =
       [[UIImageView alloc] initWithImage:_sharedImage];
   sharedImageView.backgroundColor = [UIColor clearColor];
-
+  sharedImageView.contentMode = UIViewContentModeScaleAspectFit;
   sharedImageView.layer.cornerRadius = kMainViewCornerRadius;
-  sharedImageView.contentMode = UIViewContentModeScaleAspectFill;
-  sharedImageView.layer.masksToBounds = YES;
+  sharedImageView.clipsToBounds = YES;
   sharedImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  [sharedImageView.heightAnchor constraintEqualToConstant:kSharedImageHeight]
-      .active = YES;
-  return sharedImageView;
+
+  // The container view will act as a bounding box for the image view.
+  UIView* imageContainerView = [[UIView alloc] init];
+  imageContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [imageContainerView addSubview:sharedImageView];
+
+  // The image view MUST maintain the image's aspect ratio for the corner radius
+  // to look correct.
+  if (_sharedImage.size.height > 0) {
+    CGFloat aspectRatio = _sharedImage.size.width / _sharedImage.size.height;
+    [sharedImageView.widthAnchor
+        constraintEqualToAnchor:sharedImageView.heightAnchor
+                     multiplier:aspectRatio]
+        .active = YES;
+  }
+
+  AddSameConstraints(imageContainerView, sharedImageView);
+
+  return imageContainerView;
 }
 
 - (UIView*)configureSharedTextView {
+  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kQuoteIconSize
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
+  UIImageView* quoteImageView = [[UIImageView alloc]
+      initWithImage:[UIImage systemImageNamed:@"quote.opening"
+                            withConfiguration:configuration]];
+  quoteImageView.contentMode = UIViewContentModeCenter;
+
+  UIView* imageContainer = [[UIView alloc] init];
+  imageContainer.backgroundColor = [UIColor whiteColor];
+  imageContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [imageContainer addSubview:quoteImageView];
+  quoteImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  imageContainer.layer.cornerRadius = kMainViewCornerRadius;
+  imageContainer.clipsToBounds = YES;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [imageContainer.widthAnchor
+        constraintEqualToConstant:kDefaultSnapshotViewSize],
+    [imageContainer.heightAnchor
+        constraintEqualToConstant:kDefaultSnapshotViewSize],
+    [quoteImageView.centerXAnchor
+        constraintEqualToAnchor:imageContainer.centerXAnchor],
+    [quoteImageView.centerYAnchor
+        constraintEqualToAnchor:imageContainer.centerYAnchor],
+  ]];
+
   UILabel* sharedTextLabel = [[UILabel alloc] init];
   sharedTextLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
   sharedTextLabel.adjustsFontForContentSizeCategory = YES;
   sharedTextLabel.numberOfLines = 0;
   if (!self.displayMaxLimit) {
     sharedTextLabel.text = self.sharedText;
-    return sharedTextLabel;
+  } else {
+    NSMutableAttributedString* sharedTextAttributedString =
+        [[NSMutableAttributedString alloc] initWithString:self.sharedText];
+
+    NSMutableAttributedString* attributedSpace =
+        [[NSMutableAttributedString alloc] initWithString:@" "];
+    NSMutableAttributedString* maxLimitString =
+        [[NSMutableAttributedString alloc]
+            initWithString:NSLocalizedString(
+                               @"IDS_IOS_SEARCH_MAX_LIMIT",
+                               @"The text at the end of the shared text.")
+                attributes:@{
+                  NSForegroundColorAttributeName :
+                      [UIColor colorNamed:kTextTertiaryColor],
+                  NSFontAttributeName : [UIFont
+                      preferredFontForTextStyle:UIFontTextStyleFootnote],
+                }];
+
+    [sharedTextAttributedString appendAttributedString:attributedSpace];
+    [sharedTextAttributedString appendAttributedString:maxLimitString];
+    sharedTextLabel.attributedText = sharedTextAttributedString;
+    sharedTextLabel.textAlignment = NSTextAlignmentCenter;
   }
 
-  NSMutableAttributedString* sharedTextAttributedString =
-      [[NSMutableAttributedString alloc] initWithString:self.sharedText];
+  UIStackView* stackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ imageContainer, sharedTextLabel ]];
+  stackView.axis = UILayoutConstraintAxisVertical;
+  stackView.spacing = kTextStackSpacing;
+  stackView.alignment = UIStackViewAlignmentCenter;
+  stackView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NSMutableAttributedString* attributedSpace =
-      [[NSMutableAttributedString alloc] initWithString:@" "];
-  NSMutableAttributedString* maxLimitString = [[NSMutableAttributedString alloc]
-      initWithString:NSLocalizedString(
-                         @"IDS_IOS_SEARCH_MAX_LIMIT",
-                         @"The text at the end of the shared text.")
-          attributes:@{
-            NSForegroundColorAttributeName :
-                [UIColor colorNamed:kTextTertiaryColor],
-            NSFontAttributeName :
-                [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
-          }];
-
-  [sharedTextAttributedString appendAttributedString:attributedSpace];
-  [sharedTextAttributedString appendAttributedString:maxLimitString];
-  sharedTextLabel.attributedText = sharedTextAttributedString;
-  return sharedTextLabel;
+  return stackView;
 }
 
 - (UIImageView*)configureSnapshotView {
   if (!_sharedURLPreview) {
-    return nil;
+    return [self configureDefaultSnapshotView];
   }
 
   UIImageView* snapshotView =
@@ -539,46 +591,63 @@ CGFloat const kAvatarImageDimension = 30.0;
 
   titleLabel.text = _sharedTitle;
   UIFontDescriptor* fontDescriptor = [UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline];
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleHeadline];
   titleLabel.font = [UIFont systemFontOfSize:fontDescriptor.pointSize
                                       weight:UIFontWeightSemibold];
   titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  titleLabel.textAlignment = NSTextAlignmentCenter;
   titleLabel.numberOfLines = 2;
 
   URLLabel.text = [_sharedURL absoluteString];
-  URLLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  UIFontDescriptor* URLfontDescriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleCallout];
+  URLLabel.font = [UIFont systemFontOfSize:URLfontDescriptor.pointSize
+                                    weight:UIFontWeightRegular];
   URLLabel.textColor = [UIColor colorNamed:kTextTertiaryColor];
   URLLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  URLLabel.textAlignment = NSTextAlignmentCenter;
   URLLabel.numberOfLines = 2;
 
   UIStackView* URLStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[ titleLabel, URLLabel ]];
 
   URLStackView.axis = UILayoutConstraintAxisVertical;
-  URLStackView.alignment = UIStackViewAlignmentLeading;
+  URLStackView.alignment = UIStackViewAlignmentCenter;
+  URLStackView.distribution = UIStackViewDistributionEqualCentering;
   URLStackView.spacing = kURLStackSpacing;
   URLStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   return URLStackView;
 }
 
-- (UIImage*)configureDismissButtonIcon {
-  UIImageSymbolConfiguration* colorConfig =
-      [UIImageSymbolConfiguration configurationWithPaletteColors:@[
-        [UIColor colorNamed:kTextTertiaryColor],
-        [UIColor colorNamed:kGrey200Color]
-      ]];
+- (UIImageView*)configureDefaultSnapshotView {
+  CHECK(!_sharedURLPreview);
+  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kLinkIconSize
+                          weight:UIImageSymbolWeightMedium
+                           scale:UIImageSymbolScaleMedium];
+  _sharedURLPreview = [UIImage systemImageNamed:@"link"
+                              withConfiguration:configuration];
+  UIImageView* snapshotView =
+      [[UIImageView alloc] initWithImage:_sharedURLPreview];
+  snapshotView.backgroundColor = [UIColor whiteColor];
+  snapshotView.layer.cornerRadius = kMainViewCornerRadius;
 
-  UIImageSymbolConfiguration* dismissButtonConfiguration =
-      [UIImageSymbolConfiguration
-          configurationWithPointSize:kDismissButtonSize
-                              weight:UIImageSymbolWeightMedium
-                               scale:UIImageSymbolScaleMedium];
-  dismissButtonConfiguration = [dismissButtonConfiguration
-      configurationByApplyingConfiguration:colorConfig];
+  snapshotView.contentMode = UIViewContentModeCenter;
+  snapshotView.layer.masksToBounds = YES;
+  snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [snapshotView.widthAnchor
+        constraintEqualToConstant:kDefaultSnapshotViewSize],
+    [snapshotView.heightAnchor
+        constraintEqualToConstant:kDefaultSnapshotViewSize],
+  ]];
+  return snapshotView;
+}
 
-  return [UIImage systemImageNamed:@"xmark.circle.fill"
-                 withConfiguration:dismissButtonConfiguration];
+// Called when the sheet wants to be dismissed.
+- (void)dismissSheet {
+  [self.delegate didTapCloseShareExtensionSheet:self];
 }
 
 @end

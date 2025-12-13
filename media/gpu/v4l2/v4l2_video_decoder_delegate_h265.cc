@@ -13,6 +13,7 @@
 #include <linux/videodev2.h>
 
 #include <algorithm>
+#include <tuple>
 #include <type_traits>
 
 #include "base/logging.h"
@@ -292,16 +293,20 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
     // uniform spacing. But since we don't support Cedrus's slice-based
     // decoding, lets follow the spec for now.
     if (!pps->uniform_spacing_flag) {
-      static_assert(std::size(v4l2_pps.column_width_minus1) >=
-                        std::extent<decltype(pps->column_width_minus1)>(),
-                    "column_width_minus1 arrays must be same size");
+      static_assert(
+          std::size(v4l2_pps.column_width_minus1) >=
+              std::tuple_size_v<
+                  std::remove_reference_t<decltype(pps->column_width_minus1)>>,
+          "column_width_minus1 arrays must be same size");
       for (int i = 0; i <= pps->num_tile_columns_minus1; ++i) {
         v4l2_pps.column_width_minus1[i] = pps->column_width_minus1[i];
       }
 
-      static_assert(std::size(v4l2_pps.row_height_minus1) >=
-                        std::extent<decltype(pps->row_height_minus1)>(),
-                    "row_height_minus1 arrays must be same size");
+      static_assert(
+          std::size(v4l2_pps.row_height_minus1) >=
+              std::tuple_size_v<
+                  std::remove_reference_t<decltype(pps->row_height_minus1)>>,
+          "row_height_minus1 arrays must be same size");
       for (int i = 0; i <= pps->num_tile_rows_minus1; ++i) {
         v4l2_pps.row_height_minus1[i] = pps->row_height_minus1[i];
       }
@@ -442,7 +447,7 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
     }
 
     memcpy(v4l2_scaling_matrix.scaling_list_dc_coef_16x16,
-           scaling_list.scaling_list_dc_coef_16x16,
+           scaling_list.scaling_list_dc_coef_16x16.data(),
            sizeof(v4l2_scaling_matrix.scaling_list_dc_coef_16x16));
     v4l2_scaling_matrix.scaling_list_dc_coef_32x32[0] =
         scaling_list.scaling_list_dc_coef_32x32[0];
@@ -501,7 +506,6 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
   ext_ctrls.controls = ctrls.data();
   dec_surface->PrepareSetCtrls(&ext_ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
     return Status::kFail;
   }

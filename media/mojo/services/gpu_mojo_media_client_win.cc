@@ -27,6 +27,7 @@
 #include "media/filters/win/media_foundation_audio_decoder.h"
 #include "media/gpu/ipc/service/media_gpu_channel_manager.h"
 #include "media/gpu/windows/d3d11_video_decoder.h"
+#include "media/gpu/windows/d3d12_helpers.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
 
 namespace media {

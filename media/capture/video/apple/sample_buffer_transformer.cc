@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -82,8 +83,10 @@ I420Planes GetI420PlanesFromContiguousBuffer(uint8_t* data_base_address,
   i420_planes.width = width;
   i420_planes.height = height;
   i420_planes.y_plane_data = data_base_address;
-  i420_planes.u_plane_data = i420_planes.y_plane_data + y_plane_size.GetArea();
-  i420_planes.v_plane_data = i420_planes.u_plane_data + u_plane_size.GetArea();
+  i420_planes.u_plane_data =
+      UNSAFE_TODO(i420_planes.y_plane_data + y_plane_size.GetArea());
+  i420_planes.v_plane_data =
+      UNSAFE_TODO(i420_planes.u_plane_data + u_plane_size.GetArea());
   i420_planes.y_plane_stride = y_plane_size.width();
   i420_planes.u_plane_stride = u_plane_size.width();
   i420_planes.v_plane_stride = v_plane_size.width();
@@ -169,7 +172,8 @@ NV12Planes GetNV12PlanesFromContiguousBuffer(uint8_t* data_base_address,
   nv12_planes.width = width;
   nv12_planes.height = height;
   nv12_planes.y_plane_data = data_base_address;
-  nv12_planes.uv_plane_data = nv12_planes.y_plane_data + y_plane_size.GetArea();
+  nv12_planes.uv_plane_data =
+      UNSAFE_TODO(nv12_planes.y_plane_data + y_plane_size.GetArea());
   nv12_planes.y_plane_stride = y_plane_size.width();
   nv12_planes.uv_plane_stride = uv_plane_size.width();
   return nv12_planes;

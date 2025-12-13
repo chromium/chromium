@@ -23,7 +23,9 @@
 
 @implementation SearchWhatYouSeePromoCoordinator {
   SearchWhatYouSeePromoViewController* _viewController;
+  UINavigationController* _navigationController;
   SearchWhatYouSeePromoInstructionsViewController* _instructionsViewController;
+  UINavigationController* _instructionsNavigationController;
 }
 
 #pragma mark - ChromeCoordinator
@@ -32,24 +34,31 @@
   _viewController = [[SearchWhatYouSeePromoViewController alloc] init];
   _viewController.actionHandler = self;
 
-  UINavigationController* navigationController = [[UINavigationController alloc]
+  _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
-  navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-  [self.baseViewController presentViewController:navigationController
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _viewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                           target:self
+                           action:@selector(dismiss)];
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
-  navigationController.presentationController.delegate = self;
+  _navigationController.presentationController.delegate = self;
 }
 
 - (void)stop {
   _instructionsViewController.actionHandler = nil;
   _viewController.actionHandler = nil;
 
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
 
   _instructionsViewController = nil;
+  _instructionsNavigationController = nil;
   _viewController = nil;
+  _navigationController = nil;
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -60,7 +69,8 @@
 
 - (void)confirmationAlertSecondaryAction {
   if (_viewController.presentedViewController &&
-      _viewController.presentedViewController == _instructionsViewController) {
+      _viewController.presentedViewController ==
+          _instructionsNavigationController) {
     [self openURLInNewTab:GURL(kLearnMoreLensURL)];
 
     return;
@@ -69,24 +79,17 @@
   _instructionsViewController =
       [[SearchWhatYouSeePromoInstructionsViewController alloc] init];
   _instructionsViewController.actionHandler = self;
-  _instructionsViewController.presentationController.delegate = self;
-  [_viewController presentViewController:_instructionsViewController
+  _instructionsNavigationController = [[UINavigationController alloc]
+      initWithRootViewController:_instructionsViewController];
+  _instructionsNavigationController.presentationController.delegate = self;
+  _instructionsViewController.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                               target:self
+                               action:@selector(dismissInstructions)];
+  [_viewController presentViewController:_instructionsNavigationController
                                 animated:YES
                               completion:nil];
-}
-
-- (void)confirmationAlertDismissAction {
-  if (_viewController.presentedViewController &&
-      _viewController.presentedViewController == _instructionsViewController) {
-    _instructionsViewController.actionHandler = nil;
-    _instructionsViewController = nil;
-
-    [_viewController dismissViewControllerAnimated:YES completion:nil];
-
-    return;
-  }
-
-  [self dismiss];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -95,9 +98,10 @@
     (UIPresentationController*)presentationController {
   if (presentationController.presentedViewController &&
       presentationController.presentedViewController ==
-          _instructionsViewController) {
+          _instructionsNavigationController) {
     _instructionsViewController.actionHandler = nil;
     _instructionsViewController = nil;
+    _instructionsNavigationController = nil;
 
     return;
   }
@@ -106,6 +110,13 @@
 }
 
 #pragma mark - Private methods
+
+// Dismisses the instructions.
+- (void)dismissInstructions {
+  [_instructionsNavigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+}
 
 // Sends a command that will stop this coordinator and dismiss the promo.
 - (void)dismiss {

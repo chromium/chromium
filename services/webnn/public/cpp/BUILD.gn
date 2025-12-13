@@ -10,6 +10,8 @@ component("cpp") {
     "data_type_limits.h",
     "graph_validation_utils.cc",
     "graph_validation_utils.h",
+    "ml_number.cc",
+    "ml_number.h",
     "ml_tensor_usage.h",
     "operand_descriptor.cc",
     "operand_descriptor.h",
@@ -23,6 +25,13 @@ component("cpp") {
     "webnn_types.h",
   ]
 
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//mojo/public/cpp/bindings",
+    "//third_party/fp16",
+  ]
+
   if (is_mac) {
     sources += [
       "coreml_initializer.cc",
@@ -30,10 +39,16 @@ component("cpp") {
     ]
   }
 
-  deps = [
-    "//base",
-    "//mojo/public/cpp/bindings",
-  ]
+  if (is_win) {
+    sources += [
+      "execution_providers_info.h",
+      "platform_functions_win.cc",
+      "platform_functions_win.h",
+      "win_app_runtime_package_info.h",
+    ]
+
+    deps += [ "//third_party/windows_app_sdk_headers" ]
+  }
 
   defines = [ "IS_WEBNN_PUBLIC_CPP_IMPL" ]
 }
@@ -41,11 +56,15 @@ component("cpp") {
 source_set("tests") {
   testonly = true
 
-  sources = [ "webnn_trace_unittest.cc" ]
+  sources = [
+    "ml_number_unittest.cc",
+    "webnn_trace_unittest.cc",
+  ]
 
   deps = [
     ":cpp",
     "//base/test:test_support",
     "//testing/gtest",
+    "//third_party/fp16",
   ]
 }

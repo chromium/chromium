@@ -3,7 +3,8 @@ Short Name: highway
 URL: https://github.com/google/highway
 Version: N/A
 Date: 2024-10-15
-Revision: 00fe003dac355b979f36157f9407c7c46448958e
+Revision: 84379d1c73de9681b54fbe1c035a23c7bd5d272d
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 Security Critical: yes

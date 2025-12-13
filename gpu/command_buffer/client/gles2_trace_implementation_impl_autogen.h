@@ -2275,27 +2275,6 @@ GLint GLES2TraceImplementation::GetFragDataIndexEXT(GLuint program,
   return gl_->GetFragDataIndexEXT(program, name);
 }
 
-void GLES2TraceImplementation::InitializeDiscardableTextureCHROMIUM(
-    GLuint texture_id) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "GLES2Trace::InitializeDiscardableTextureCHROMIUM");
-  gl_->InitializeDiscardableTextureCHROMIUM(texture_id);
-}
-
-void GLES2TraceImplementation::UnlockDiscardableTextureCHROMIUM(
-    GLuint texture_id) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "GLES2Trace::UnlockDiscardableTextureCHROMIUM");
-  gl_->UnlockDiscardableTextureCHROMIUM(texture_id);
-}
-
-bool GLES2TraceImplementation::LockDiscardableTextureCHROMIUM(
-    GLuint texture_id) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "GLES2Trace::LockDiscardableTextureCHROMIUM");
-  return gl_->LockDiscardableTextureCHROMIUM(texture_id);
-}
-
 void GLES2TraceImplementation::WindowRectanglesEXT(GLenum mode,
                                                    GLsizei count,
                                                    const GLint* box) {

@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
@@ -235,6 +236,13 @@ class HintsManager : public OptimizationHintsComponentObserver,
   void AddHintForTesting(const GURL& url,
                          proto::OptimizationType optimization_type,
                          const std::optional<OptimizationMetadata>& metadata);
+
+  // Add hints to the cache for the provided optimization types. For testing
+  // only.
+  void AddHintWithMultipleOptimizationsForTesting(
+      const GURL& url,
+      const std::vector<optimization_guide::proto::OptimizationType>&
+          optimization_types);
 
   // Add hints to be returned for on-demand hints requests.
   void AddOnDemandHintForTesting(
@@ -571,7 +579,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   raw_ptr<TopHostProvider> top_host_provider_ = nullptr;
 
   // The tab URL provider that can be queried. Not owned.
-  raw_ptr<TabUrlProvider> tab_url_provider_ = nullptr;
+  raw_ptr<TabUrlProvider, DanglingUntriaged> tab_url_provider_ = nullptr;
 
   // The timer used to schedule fetching hints from the remote Optimization
   // Guide Service.

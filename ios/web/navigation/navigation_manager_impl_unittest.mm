@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/web/navigation/navigation_manager_impl.h"
 
 #import <array>
 #import <string>
+#import <string_view>
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
@@ -27,7 +23,6 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/reload_type.h"
-#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/navigation.pb.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
@@ -58,12 +53,12 @@ namespace {
 
 // URL scheme that will be rewritten by UrlRewriter installed in
 // NavigationManagerTest fixture. Scheme will be changed to kTestWebUIScheme.
-const char kSchemeToRewrite[] = "navigationmanagerschemetorewrite";
+constexpr std::string_view kSchemeToRewrite =
+    "navigationmanagerschemetorewrite";
 
 // URLs used for session restoration tests.
-const char kTestURL1[] = "about://new-tab";
-const char kTestURL2[] = "about://version";
-const char* const kTestURLs[] = {kTestURL1, kTestURL2};
+constexpr auto kTestURLs =
+    std::to_array<std::string_view>({"about://new-tab", "about://version"});
 
 // Replaces `kSchemeToRewrite` scheme with `kTestWebUIScheme`.
 bool UrlRewriter(GURL* url, BrowserState* browser_state) {
@@ -102,21 +97,23 @@ class MockNavigationManagerDelegate : public NavigationManagerDelegate {
     mock_web_view_ = nil;
   }
 
-  MOCK_METHOD0(ClearDialogs, void());
-  MOCK_METHOD0(RecordPageStateInNavigationItem, void());
-  MOCK_METHOD1(LoadCurrentItem, void(NavigationInitiationType type));
-  MOCK_METHOD0(LoadIfNecessary, void());
-  MOCK_METHOD0(Reload, void());
-  MOCK_METHOD1(OnNavigationItemsPruned, void(size_t));
-  MOCK_METHOD1(OnNavigationItemCommitted, void(NavigationItem* item));
-  MOCK_METHOD1(SetWebStateUserAgent, void(UserAgentType user_agent_type));
-  MOCK_METHOD4(GoToBackForwardListItem,
-               void(WKBackForwardListItem*,
-                    NavigationItem*,
-                    NavigationInitiationType,
-                    bool));
-  MOCK_METHOD0(GetPendingItem, NavigationItemImpl*());
-  MOCK_CONST_METHOD0(GetCurrentURL, GURL());
+  MOCK_METHOD(void, ClearDialogs, ());
+  MOCK_METHOD(void, RecordPageStateInNavigationItem, ());
+  MOCK_METHOD(void, LoadCurrentItem, (NavigationInitiationType type));
+  MOCK_METHOD(void, LoadIfNecessary, ());
+  MOCK_METHOD(void, Reload, ());
+  MOCK_METHOD(void, OnNavigationItemsPruned, (size_t));
+  MOCK_METHOD(void, OnNavigationItemCommitted, (NavigationItem * item));
+  MOCK_METHOD(void, SetWebStateUserAgent, (UserAgentType user_agent_type));
+  MOCK_METHOD(void,
+              GoToBackForwardListItem,
+              (WKBackForwardListItem*,
+               NavigationItem*,
+               NavigationInitiationType,
+               bool));
+  MOCK_METHOD(NavigationItemImpl*, GetPendingItem, ());
+  MOCK_METHOD(GURL, GetCurrentURL, (), (const));
+  MOCK_METHOD(void, UpdateSSLStatusForCurrentNavigationItem, ());
 
  private:
   WebState* GetWebState() override { return web_state_; }
@@ -1450,7 +1447,7 @@ TEST_F(NavigationManagerTest, ApplyTransientRewriters) {
       web::HttpsUpgradeType::kNone);
 
   NavigationItem* pending_item = navigation_manager()->GetPendingItem();
-  EXPECT_EQ(kRewrittenQueryParam, pending_item->GetURL().query());
+  EXPECT_EQ(kRewrittenQueryParam, pending_item->GetURL().GetQuery());
 
   // Now that the transient rewriters are consumed, the next URL should not be
   // changed.
@@ -2000,6 +1997,81 @@ TEST_F(NavigationManagerTest, GetCurrentItemImpl) {
   EXPECT_EQ(pending_item, navigation_manager()->GetCurrentItemImpl());
 }
 
+// Tests that the SSLStatus is updated when creating a new NavigationItem
+// lazily when getting it by index and the item is the current one.
+TEST_F(
+    NavigationManagerTest,
+    GetNavigationItemImplAtIndex_UpdateSSLStatusForLazilyCreatedItem_Enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kUpdateSSLStatusOnNavigationItemLazyCreation);
+  // Add a committed item to the back-forward list. This does not
+  [mock_wk_list_ setCurrentURL:@"http://www.url.com/0"];
+  ON_CALL(navigation_manager_delegate(), GetCurrentURL())
+      .WillByDefault(testing::Return(GURL("http://www.url.com/0")));
+
+  // Expect the delegate method to be called the first time
+  // GetNavigationItemImplAtIndex is called, which triggers the lazy creation.
+  EXPECT_CALL(navigation_manager_delegate(),
+              UpdateSSLStatusForCurrentNavigationItem())
+      .Times(1);
+
+  NavigationItem* item = navigation_manager()->GetNavigationItemImplAtIndex(0);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(GURL("http://www.url.com/0"), item->GetURL());
+
+  // Verify the mock call and reset expectations.
+  testing::Mock::VerifyAndClearExpectations(&navigation_manager_delegate());
+
+  EXPECT_CALL(navigation_manager_delegate(),
+              UpdateSSLStatusForCurrentNavigationItem())
+      .Times(0);
+
+  item = navigation_manager()->GetNavigationItemImplAtIndex(0);
+  ASSERT_TRUE(item);
+}
+
+// Tests that the SSLStatus is not updated when creating a new NavigationItem
+// lazily for a non-current item.
+TEST_F(NavigationManagerTest,
+       GetNavigationItemImplAtIndex_NoUpdateSSLStatusForNonCurrentItem) {
+  // Add two committed items to the back-forward list.
+  [mock_wk_list_ setCurrentURL:@"http://www.url.com/1"
+                  backListURLs:@[ @"http://www.url.com/0" ]
+               forwardListURLs:nil];
+
+  EXPECT_CALL(navigation_manager_delegate(),
+              UpdateSSLStatusForCurrentNavigationItem())
+      .Times(0);
+
+  NavigationItem* item = navigation_manager()->GetNavigationItemImplAtIndex(0);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(GURL("http://www.url.com/0"), item->GetURL());
+}
+
+// Tests that when the dedicated kill switch is activated, the SSLStatus is not
+// updated when creating a new NavigationItem lazily when getting it by index.
+TEST_F(
+    NavigationManagerTest,
+    GetNavigationItemImplAtIndex_UpdateSSLStatusForLazilyCreatedItem_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kUpdateSSLStatusOnNavigationItemLazyCreation);
+  // Add a committed item to the back-forward list. This does not
+  // associate a NavigationItemImpl with the WKBackForwardListItem yet.
+  [mock_wk_list_ setCurrentURL:@"http://www.url.com/0"];
+
+  // Expect the delegate method NOT to be called the first time
+  // GetNavigationItemImplAtIndex is called, which triggers the lazy creation.
+  EXPECT_CALL(navigation_manager_delegate(),
+              UpdateSSLStatusForCurrentNavigationItem())
+      .Times(0);
+
+  NavigationItem* item = navigation_manager()->GetNavigationItemImplAtIndex(0);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(GURL("http://www.url.com/0"), item->GetURL());
+}
+
 TEST_F(NavigationManagerTest, UpdateCurrentItemForReplaceState) {
   navigation_manager()->AddPendingItem(
       GURL("http://www.url.com/0"),
@@ -2255,7 +2327,8 @@ TEST_F(NavigationManagerTest, TransientURLRewritersOnlyUsedForPendingItem) {
       NavigationInitiationType::BROWSER_INITIATED,
       /*is_post_navigation=*/false, /*is_error_navigation=*/false,
       web::HttpsUpgradeType::kNone);
-  EXPECT_EQ(kRewrittenQueryParam, manager_->GetPendingItem()->GetURL().query());
+  EXPECT_EQ(kRewrittenQueryParam,
+            manager_->GetPendingItem()->GetURL().GetQuery());
 }
 
 // Tests DiscardNonCommittedItems discards pending items.
@@ -2456,7 +2529,7 @@ TEST_F(NavigationManagerTest, CanGoToOffset) {
 
   // Simulate a history navigation pending item.
   [mock_wk_list_ moveCurrentToIndex:1];
-  OCMExpect([mock_web_view_ URL])
+  OCMStub([mock_web_view_ URL])
       .andReturn([[NSURL alloc] initWithString:@"http://www.url.com/1"]);
   manager_->AddPendingItem(
       GURL("http://www.url.com/1"), Referrer(), ui::PAGE_TRANSITION_LINK,
@@ -2863,7 +2936,7 @@ TEST_F(NavigationManagerSerialisationTest, ExtraLongURLLastCommittedItem) {
 TEST_F(NavigationManagerSerialisationTest, RestoreFromProto) {
   proto::NavigationStorage storage;
   storage.set_last_committed_item_index(0);
-  for (const char* url : kTestURLs) {
+  for (std::string_view url : kTestURLs) {
     storage.add_items()->set_url(url);
   }
   storage.set_last_committed_item_index(storage.items_size() - 1);
@@ -2881,14 +2954,14 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto) {
 
   navigation_manager.RestoreFromProto(storage);
 
-  const int urls_count = static_cast<int>(std::size(kTestURLs));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
-    return navigation_manager.GetItemCount() == urls_count;
+    return navigation_manager.GetItemCount() == kTestURLs.size();
   }));
 
-  EXPECT_EQ(navigation_manager.GetLastCommittedItemIndex(), urls_count - 1);
+  EXPECT_EQ(navigation_manager.GetLastCommittedItemIndex(),
+            static_cast<int>(kTestURLs.size()) - 1);
 
-  for (int index = 0; index < urls_count; ++index) {
+  for (size_t index = 0; index < kTestURLs.size(); ++index) {
     EXPECT_EQ(navigation_manager.GetItemAtIndex(index)->GetURL(),
               GURL(kTestURLs[index]));
   }
@@ -2923,7 +2996,7 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_Empty) {
 TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_LastItemIndex) {
   proto::NavigationStorage storage;
   storage.set_last_committed_item_index(0);
-  for (const char* url : kTestURLs) {
+  for (std::string_view url : kTestURLs) {
     storage.add_items()->set_url(url);
   }
   storage.set_last_committed_item_index(0);
@@ -2941,99 +3014,38 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_LastItemIndex) {
 
   navigation_manager.RestoreFromProto(storage);
 
-  const int urls_count = static_cast<int>(std::size(kTestURLs));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
-    return navigation_manager.GetItemCount() == urls_count;
+    return navigation_manager.GetItemCount() == kTestURLs.size();
   }));
   EXPECT_EQ(navigation_manager.GetLastCommittedItemIndex(), 0);
 
-  for (int index = 0; index < urls_count; ++index) {
+  for (size_t index = 0; index < kTestURLs.size(); ++index) {
     EXPECT_EQ(navigation_manager.GetItemAtIndex(index)->GetURL(),
               GURL(kTestURLs[index]));
-  }
-}
-
-// Tests that restoring a session works correctly even if the index of the
-// last committed item is invalid (a bug in M117 caused the application to
-// write sessions with an index past the end of items).
-TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_IndexOutOfBound) {
-  // The code to fix the out-of-bound index is in the code that deserialize
-  // the CRWSessionStorage, so we have to serialize/deserialize the object.
-  CRWSessionStorage* session_storage = nil;
-  {
-    proto::WebStateStorage storage;
-    proto::NavigationStorage* navigation_storage = storage.mutable_navigation();
-    for (const char* url : kTestURLs) {
-      navigation_storage->add_items()->set_url(url);
-    }
-    // Set an out-of-bound value for last committed item index.
-    navigation_storage->set_last_committed_item_index(std::size(kTestURLs));
-    session_storage =
-        [[CRWSessionStorage alloc] initWithProto:storage
-                                uniqueIdentifier:web::WebStateID::NewUnique()
-                                stableIdentifier:[[NSUUID UUID] UUIDString]];
-  }
-
-  NSError* error = nil;
-  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:session_storage
-                                       requiringSecureCoding:NO
-                                                       error:&error];
-  ASSERT_FALSE(error);
-
-  NSKeyedUnarchiver* unarchiver =
-      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
-  unarchiver.requiresSecureCoding = NO;
-  ASSERT_FALSE(error);
-
-  session_storage = base::apple::ObjCCast<CRWSessionStorage>(
-      [unarchiver decodeObjectForKey:@"root"]);
-  ASSERT_TRUE(session_storage);
-
-  proto::WebStateStorage storage;
-  [session_storage serializeToProto:storage];
-
-  // Create a WebState with a real navigation proxy as this is required to
-  // perform a session restore and access the view to force instantiation
-  // of the WKWebView.
-  std::unique_ptr<web::WebStateImpl> web_state =
-      std::make_unique<web::WebStateImpl>(
-          web::WebState::CreateParams(browser_state()));
-  std::ignore = web_state->GetView();
-
-  NavigationManagerImpl& navigation_manager =
-      web_state->GetNavigationManagerImpl();
-
-  navigation_manager.RestoreFromProto(storage.navigation());
-
-  const int urls_count = static_cast<int>(std::size(kTestURLs));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
-    return navigation_manager.GetItemCount() == urls_count;
-  }));
-  EXPECT_EQ(navigation_manager.GetLastCommittedItemIndex(), urls_count - 1);
-
-  for (int index = 0; index < urls_count; ++index) {
-    NavigationItem* item = navigation_manager.GetItemAtIndex(index);
-    EXPECT_EQ(item->GetURL(), GURL(kTestURLs[index]));
   }
 }
 
 // Tests that restoring a session with a specific virtual url which is different
 // with url works correctly.
 TEST_F(NavigationManagerSerialisationTest, RestoreVirtualURLFromProto) {
+  struct UrlAndVirtualUrl {
+    std::string_view url;
+    std::string_view virtual_url;
+  };
+
   // Tests both HTTP url and non HTTP url.
-  const std::vector<std::pair<std::string, std::string>> urls_and_virtual_urls =
-      {
-          {"http://url.test", "http://virtual.test"},
-          {"file:///path/to/file.pdf", "http://virtual.test"},
-      };
+  static constexpr auto kUrlsAndVirtualURls = std::to_array<UrlAndVirtualUrl>({
+      {"http://url.test", "http://virtual.test"},
+      {"file:///path/to/file.pdf", "http://virtual.test"},
+  });
 
   proto::NavigationStorage storage;
   storage.set_last_committed_item_index(0);
 
-  for (const auto& [url, virtual_url] : urls_and_virtual_urls) {
+  for (const auto& url_and_virtual_url : kUrlsAndVirtualURls) {
     proto::NavigationItemStorage* item = storage.add_items();
-    item->set_url(url);
-    item->set_virtual_url(virtual_url);
+    item->set_url(url_and_virtual_url.url);
+    item->set_virtual_url(url_and_virtual_url.virtual_url);
   }
 
   // Create a WebState with a real navigation proxy as this is required to
@@ -3049,17 +3061,16 @@ TEST_F(NavigationManagerSerialisationTest, RestoreVirtualURLFromProto) {
 
   navigation_manager.RestoreFromProto(storage);
 
-  const int urls_count = static_cast<int>(urls_and_virtual_urls.size());
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
-    return navigation_manager.GetItemCount() == urls_count;
+    return navigation_manager.GetItemCount() == kUrlsAndVirtualURls.size();
   }));
 
   EXPECT_EQ(0, navigation_manager.GetLastCommittedItemIndex());
 
-  for (int index = 0; index < urls_count; ++index) {
+  for (size_t index = 0; index < kUrlsAndVirtualURls.size(); ++index) {
     NavigationItem* item = navigation_manager.GetItemAtIndex(index);
-    GURL url = GURL(urls_and_virtual_urls[index].first);
-    GURL virtual_url = GURL(urls_and_virtual_urls[index].second);
+    GURL url = GURL(kUrlsAndVirtualURls[index].url);
+    GURL virtual_url = GURL(kUrlsAndVirtualURls[index].virtual_url);
 
     EXPECT_EQ(item->GetURL(), url);
     EXPECT_EQ(item->GetVirtualURL(), virtual_url);

@@ -229,8 +229,7 @@ bool IsOobeDrivePinningAvailable() {
 // DrivePinningScreen to the screen_manager when initializing the
 // wizardController.
 bool IsOobeDrivePinningScreenEnabled() {
-  return base::FeatureList::IsEnabled(ash::features::kOobeDrivePinning) &&
-         ash::features::IsOobeChoobeEnabled();
+  return ash::features::IsOobeChoobeEnabled();
 }
 
 bool IsDriveFsMirrorSyncAvailable(const Profile* const profile) {

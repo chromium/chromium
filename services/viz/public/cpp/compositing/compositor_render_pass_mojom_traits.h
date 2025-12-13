@@ -15,7 +15,6 @@
 #include "services/viz/public/cpp/compositing/copy_output_request_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_render_pass.mojom-shared.h"
-#include "ui/gfx/ipc/color/gfx_param_traits.h"
 #include "ui/gfx/mojom/rrect_f_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
 

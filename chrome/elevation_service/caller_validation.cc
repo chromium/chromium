@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -68,7 +69,8 @@ base::FilePath MaybeTrimProcessPath(const base::FilePath& full_path) {
                        base::EqualsCaseInsensitiveASCII(*it, "Application"))) {
       continue;
     }
-    if (token == 2 && it->starts_with(L"scoped_dir")) {
+    if (token == 2 &&
+        it->starts_with(base::ScopedTempDir::GetDefaultTempDirPrefix())) {
       token--;
       continue;
     }

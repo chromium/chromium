@@ -16,7 +16,7 @@ for dir in $dirs; do
     if [ "$content" ]; then
       echo "Writing $gn_file"
       echo "$content" > "$gn_file"
-      gn_files="$gn_files $gn_file"
+      gn_files="$gn_files $(realpath $gn_file)"
     elif [ -f "$gn_file" ]; then
       echo "Removing $gn_file"
       rm "$gn_file"

@@ -5,10 +5,13 @@
 #ifndef CHROME_COMMON_EXTENSIONS_MANIFEST_HANDLERS_THEME_HANDLER_H_
 #define CHROME_COMMON_EXTENSIONS_MANIFEST_HANDLERS_THEME_HANDLER_H_
 
-#include <memory>
+#include <string>
+#include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/values.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_resource.h"
 #include "extensions/common/manifest_handler.h"
 
 namespace extensions {
@@ -19,7 +22,14 @@ struct ThemeInfo : public Extension::ManifestData {
   ThemeInfo();
   ~ThemeInfo() override;
 
-  static const base::Value::Dict* GetImages(const Extension* extension);
+  struct ThemeResource {
+    ExtensionResource resource;
+    std::string scale;
+  };
+
+  using ThemeImages = base::flat_map<std::string, std::vector<ThemeResource>>;
+
+  static const ThemeImages* GetImages(const Extension* extension);
   static const base::Value::Dict* GetColors(const Extension* extension);
   static const base::Value::Dict* GetTints(const Extension* extension);
   static const base::Value::Dict* GetDisplayProperties(
@@ -27,8 +37,8 @@ struct ThemeInfo : public Extension::ManifestData {
   static const base::Value::Dict* GetTabGroupColorPalette(
       const Extension* extension);
 
-  // A map of resource id's to relative file paths.
-  base::Value::Dict theme_images_;
+  // A map of resource ids to ExtensionResource entries.
+  ThemeImages theme_images_;
 
   // A map of color names to colors.
   base::Value::Dict theme_colors_;
@@ -39,7 +49,7 @@ struct ThemeInfo : public Extension::ManifestData {
   // A map of display properties.
   base::Value::Dict theme_display_properties_;
 
-  // Maps a palette color key to a hue value (range: -1 to 359).
+  // Maps a palette color key to a hue value (range: -1 to 360).
   // Example:
   // {
   //   "grey_override": 230,

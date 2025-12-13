@@ -146,9 +146,18 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
       std::optional<ProcessedValue> duration_sec =
           inputs[i]->GetMetadataArgument(time_since_active_input);
 
-      if (!tab_opened_by_user || tab_opened_by_user->float_val == 0) {
-        // Do not group tabs not opened by user.
+      if (!tab_parent_id || !tab_id) {
         continue;
+      }
+      // A root tab can have invalid parent or itself as parent.
+      bool is_root_tab = tab_parent_id->float_val == -1 ||
+                         tab_parent_id->float_val == tab_id->float_val;
+
+      if (!tab_opened_by_user || tab_opened_by_user->float_val == 0) {
+        // Child tabs that were opened automatically, should not be grouped.
+        if (!is_root_tab) {
+          continue;
+        }
       }
       if (tab_group_sync_id && !tab_group_sync_id->str_val.empty()) {
         // Not group tabs already grouped.
@@ -159,11 +168,9 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
         // Not group tabs that are not recent.
         continue;
       }
-      if (tab_parent_id && tab_id) {
-        tab_id_to_parent_id_map[tab_id->float_val] = tab_parent_id->float_val;
-        tab_id_to_tab_index_map[tab_id->float_val] = i;
-        continue;
-      }
+
+      tab_id_to_parent_id_map[tab_id->float_val] = tab_parent_id->float_val;
+      tab_id_to_tab_index_map[tab_id->float_val] = i;
     }
     // Cluster tabs based on parent tab relationship by finding disjoint sets in
     // the tab-parent DAG.
@@ -189,7 +196,9 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
       tab_id_to_parent_id_map.swap(new_tab_id_to_parent_id_map);
     }
     for (const auto& pair : tab_id_to_tab_index_map) {
-      result[pair.second] = tab_id_to_parent_id_map[pair.first];
+      // Add a high number to indicate that it is not tab ID, also to ensure
+      // suggestion is valid when root tab id is 0. 0 is not valid cluster.
+      result[pair.second] = tab_id_to_parent_id_map[pair.first] + 10000;
     }
     return result;
   }

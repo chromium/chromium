@@ -26,7 +26,7 @@ OpenXrAnchorManagerAndroid::OpenXrAnchorManagerAndroid(
 
 OpenXrAnchorManagerAndroid::~OpenXrAnchorManagerAndroid() = default;
 
-XrSpace OpenXrAnchorManagerAndroid::CreateAnchor(
+XrSpace OpenXrAnchorManagerAndroid::CreateAnchorInternal(
     XrPosef pose,
     XrSpace space,
     XrTime predicted_display_time) {
@@ -54,20 +54,12 @@ OpenXrAnchorManagerAndroid::GetAnchorFromMojom(
     XrSpace anchor_space,
     XrTime predicted_display_time) const {
   XrSpaceLocation anchor_from_mojo = {XR_TYPE_SPACE_LOCATION};
-  XrAnchorStateANDROID anchor_state{XR_TYPE_ANCHOR_STATE_ANDROID};
-  anchor_from_mojo.next = &anchor_state;
   XrResult result = xrLocateSpace(anchor_space, mojo_space_,
                                   predicted_display_time, &anchor_from_mojo);
   if (XR_FAILED(result)) {
     DVLOG(3) << __func__ << " xrLocateSpace returned: " << result;
     return base::unexpected(
         OpenXrAnchorManager::AnchorTrackingErrorType::kTemporary);
-  }
-
-  if (anchor_state.trackingState == XR_TRACKING_STATE_STOPPED_ANDROID) {
-    DVLOG(3) << __func__ << " Anchor is no longer tracked";
-    return base::unexpected(
-        OpenXrAnchorManager::AnchorTrackingErrorType::kPermanent);
   }
 
   if (!IsPoseValid(anchor_from_mojo.locationFlags)) {
@@ -77,43 +69,6 @@ OpenXrAnchorManagerAndroid::GetAnchorFromMojom(
   }
 
   return XrPoseToDevicePose(anchor_from_mojo.pose);
-}
-
-OpenXrAnchorManagerAndroidFactory::OpenXrAnchorManagerAndroidFactory() =
-    default;
-OpenXrAnchorManagerAndroidFactory::~OpenXrAnchorManagerAndroidFactory() =
-    default;
-
-const base::flat_set<std::string_view>&
-OpenXrAnchorManagerAndroidFactory::GetRequestedExtensions() const {
-  static base::NoDestructor<base::flat_set<std::string_view>> kExtensions(
-      {XR_ANDROID_TRACKABLES_EXTENSION_NAME});
-  return *kExtensions;
-}
-
-std::set<device::mojom::XRSessionFeature>
-OpenXrAnchorManagerAndroidFactory::GetSupportedFeatures(
-    const OpenXrExtensionEnumeration* extension_enum) const {
-  if (!IsEnabled(extension_enum)) {
-    return {};
-  }
-
-  return {device::mojom::XRSessionFeature::ANCHORS};
-}
-
-std::unique_ptr<OpenXrAnchorManager>
-OpenXrAnchorManagerAndroidFactory::CreateAnchorManager(
-    const OpenXrExtensionHelper& extension_helper,
-    XrSession session,
-    XrSpace mojo_space) const {
-  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
-  DVLOG(2) << __func__ << " is_supported=" << is_supported;
-  if (is_supported) {
-    return std::make_unique<OpenXrAnchorManagerAndroid>(extension_helper,
-                                                        session, mojo_space);
-  }
-
-  return nullptr;
 }
 
 }  // namespace device

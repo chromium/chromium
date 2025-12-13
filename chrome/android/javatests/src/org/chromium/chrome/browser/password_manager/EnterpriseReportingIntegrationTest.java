@@ -24,7 +24,8 @@ import org.chromium.base.AndroidInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.policy.CloudManagementSharedPreferences;
@@ -36,6 +37,8 @@ import org.chromium.components.enterprise.connectors.EnterpriseReportingEventTyp
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.net.test.util.WebServer;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -44,8 +47,11 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "enable-chrome-browser-cloud-management",
+    "policy=" + EnterpriseReportingIntegrationTest.REPORTING_POLICY_STRING,
 })
-@EnableFeatures("EnterpriseSecurityEventReportingOnAndroid")
+// TODO(crbug.com/441339044): Re-enable the integration test for proto-based reporting.
+@DisableFeatures("UploadRealtimeReportingEventsUsingProto")
+@DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/463649037
 @Batch(Batch.PER_CLASS)
 public class EnterpriseReportingIntegrationTest {
     @Rule
@@ -60,14 +66,17 @@ public class EnterpriseReportingIntegrationTest {
     private static final String PASSWORD_NODE_ID = "password_field";
     private static final String USERNAME_TEXT = "username@domain.com";
     private static final String PASSWORD_TEXT = "password";
-    private static final String NEW_PASSWORD_TEXT = "new password";
     private static final String SUBMIT_BUTTON_ID = "input_submit_button";
 
     private static final String FAKE_GOOGLE_API_KEY = "fake-google-api-key";
     private static final String FAKE_DM_TOKEN = "fake-dm-token";
 
     private static final String REPORTING_ENDPOINT = "/?key=" + FAKE_GOOGLE_API_KEY;
-    private static final String REPORTING_POLICY_NAME = "OnSecurityEventEnterpriseConnector";
+    public static final String REPORTING_POLICY_STRING =
+            "{\"OnSecurityEventEnterpriseConnector\":[{\"enabled_event_names\":[\"loginEvent\"],"
+                + "\"enabled_opt_in_events\":[{\"name\":\"loginEvent\",\"url_patterns\":[\"*\"]}],"
+                + "\"service_provider\":\"google\"}]}";
+
     private static final String REPORTING_SUCCESS_HISTOGRAM =
             "Enterprise.ReportingEventUploadSuccess";
     private static final String REPORTING_FAILURE_HISTOGRAM =
@@ -102,14 +111,6 @@ public class EnterpriseReportingIntegrationTest {
         return new JSONObject().put("api_keys", apiKeys);
     }
 
-    private JSONObject buildSecurityEventReportingPolicy(String eventName) throws JSONException {
-        var eventDetails = new JSONObject().put("name", eventName).append("url_patterns", "*");
-        return new JSONObject()
-                .append("enabled_event_names", eventName)
-                .append("enabled_opt_in_events", eventDetails)
-                .put("service_provider", "google");
-    }
-
     /** Build a histogram watcher that expects one successfully uploaded report and no failures. */
     private HistogramWatcher buildReportUploadWatcher(@EnterpriseReportingEventType int eventType) {
         return HistogramWatcher.newBuilder()
@@ -120,7 +121,7 @@ public class EnterpriseReportingIntegrationTest {
 
     /** Parse the last security event report received, if any. */
     private JSONObject parseLastReport() throws JSONException {
-        TestWebServer.HTTPRequest request = mReportingServer.getLastRequest(REPORTING_ENDPOINT);
+        WebServer.HTTPRequest request = mReportingServer.getLastRequest(REPORTING_ENDPOINT);
         if (request == null) {
             return null;
         }
@@ -133,14 +134,11 @@ public class EnterpriseReportingIntegrationTest {
     public void testLoginEventReported() throws JSONException, TimeoutException {
         assumeTrue("Can set policy from command line", AndroidInfo.isDebugAndroid());
 
-        var policyMap = new JSONObject();
-        policyMap.append(REPORTING_POLICY_NAME, buildSecurityEventReportingPolicy("loginEvent"));
-        CommandLine.getInstance().appendSwitchWithValue("policy", policyMap.toString());
         HistogramWatcher watcher =
                 buildReportUploadWatcher(EnterpriseReportingEventType.LOGIN_EVENT);
 
         WebPageStation page = mActivityTestRule.startOnTestServerUrl(PASSWORD_FORM_URL);
-        WebContents webContents = page.webContentsElement.get();
+        WebContents webContents = page.webContentsElement.value();
         DOMUtils.enterInputIntoTextField(webContents, USERNAME_FIELD_ID, USERNAME_TEXT);
         DOMUtils.enterInputIntoTextField(webContents, PASSWORD_NODE_ID, PASSWORD_TEXT);
         DOMUtils.clickNodeWithJavaScript(webContents, SUBMIT_BUTTON_ID);

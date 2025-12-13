@@ -26,7 +26,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -48,6 +48,8 @@
 
 namespace {
 
+static bool g_message_box_is_showing_sync = false;
+
 #if BUILDFLAG(IS_WIN)
 UINT GetMessageBoxFlagsFromType(chrome::MessageBoxType type) {
   UINT flags = MB_SETFOREGROUND;
@@ -68,7 +70,6 @@ chrome::MessageBoxResult ShowSync(gfx::NativeWindow parent,
                                   std::u16string_view yes_text,
                                   std::u16string_view no_text,
                                   std::u16string_view checkbox_text) {
-  static bool g_message_box_is_showing_sync = false;
   // To avoid showing another MessageBoxDialog when one is already pending.
   // Otherwise, this might lead to a stack overflow due to infinite runloops.
   if (g_message_box_is_showing_sync) {
@@ -121,7 +122,7 @@ bool CanUseViewsMessageBox() {
   }
 
   // aura::WindowTreeHost observes display::Screen for device scale change.
-  if (!display::Screen::GetScreen()) {
+  if (!display::Screen::Get()) {
     return false;
   }
 
@@ -202,6 +203,8 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
 
   MessageBoxDialog* dialog = new MessageBoxDialog(
       title, message, type, yes_text, no_text, checkbox_text);
+  // Auto‑dismiss only for synchronous boxes.
+  dialog->set_close_on_deactivate(g_message_box_is_showing_sync);
 
   // System modals have no parent and are only supported on ChromeOS Ash.
   const bool is_modal = parent || BUILDFLAG(IS_CHROMEOS);
@@ -252,7 +255,7 @@ void MessageBoxDialog::OnWidgetActivationChanged(views::Widget* widget,
   }
 #endif
 
-  if (!active) {
+  if (!active && close_on_deactivate_) {
     GetWidget()->Close();
   }
 }

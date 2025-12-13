@@ -48,6 +48,8 @@ void RecordBrowserBoundKeyCreation(
 void RecordBrowserBoundKeyRetrieval(
     SecurePaymentConfirmationBrowserBoundKeyDeviceResult result);
 
+void RecordBrowserBoundKeyMetadataUpdated(bool success);
+
 // TODO(crbug.com/40171413): Move other SPC metrics into this common file.
 
 }  // namespace payments

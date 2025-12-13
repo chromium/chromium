@@ -180,7 +180,7 @@ gfx::Point Env::GetLastPointerPoint(ui::mojom::DragEventSource event_source,
       return *fallback;
   }
 
-  return display::Screen::GetScreen()->GetCursorScreenPoint();
+  return display::Screen::Get()->GetCursorScreenPoint();
 }
 
 WindowOcclusionTracker* Env::GetWindowOcclusionTracker() {

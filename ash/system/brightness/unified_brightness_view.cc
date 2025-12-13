@@ -91,7 +91,7 @@ UnifiedBrightnessView::UnifiedBrightnessView(
     // and the brightness slider popup is shown, do not allow the more_button to
     // open quick settings.
     auto* window = Shell::Get()->screen_pinning_controller()->pinned_window();
-    if (window && WindowState::Get(window)->IsTrustedPinned()) {
+    if (window && WindowState::Get(window)->IsLockedFullscreen()) {
       more_button_->SetEnabled(false);
     }
 

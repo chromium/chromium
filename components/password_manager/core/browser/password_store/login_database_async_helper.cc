@@ -8,20 +8,15 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/os_crypt/sync/os_crypt.h"
-#include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_controller_delegate.h"
-
-#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-#include "components/password_manager/core/browser/features/password_features.h"
-#endif
 
 namespace password_manager {
 
@@ -33,14 +28,12 @@ constexpr base::TimeDelta kSyncTaskTimeout = base::Seconds(30);
 
 LoginDatabaseAsyncHelper::LoginDatabaseAsyncHelper(
     std::unique_ptr<LoginDatabase> login_db,
-    UnsyncedCredentialsDeletionNotifier notifier,
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior)
     : login_db_(std::move(login_db)),
       wipe_model_upon_sync_disabled_behavior_(
           wipe_model_upon_sync_disabled_behavior),
-      deletion_notifier_(std::move(notifier)),
       main_task_runner_(std::move(main_task_runner)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(login_db_);
@@ -54,15 +47,12 @@ LoginDatabaseAsyncHelper::~LoginDatabaseAsyncHelper() {
 void LoginDatabaseAsyncHelper::CreateSyncBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   // Sync bridge must be constructed immediately to accommodate
   // GetSyncControllerDelegate() call.
-  password_sync_bridge_ =
-          std::make_unique<PasswordSyncBridge>(
-              std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-                  syncer::PASSWORDS, base::DoNothing()),
-              wipe_model_upon_sync_disabled_behavior_);
-#endif  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+  password_sync_bridge_ = std::make_unique<PasswordSyncBridge>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+          syncer::PASSWORDS, base::DoNothing()),
+      wipe_model_upon_sync_disabled_behavior_);
 }
 
 bool LoginDatabaseAsyncHelper::Initialize(
@@ -71,11 +61,13 @@ bool LoginDatabaseAsyncHelper::Initialize(
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::RepeatingCallback<void(password_manager::IsAccountStore)>
         on_undecryptable_passwords_removed,
-    std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
+    os_crypt_async::Encryptor encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   remote_forms_changes_received_callback_ =
       std::move(remote_form_changes_received);
+
+  is_encryption_available_ = encryptor.IsEncryptionAvailable();
 
   bool success = true;
   if (!login_db_->Init(std::move(on_undecryptable_passwords_removed),
@@ -109,7 +101,7 @@ bool LoginDatabaseAsyncHelper::Initialize(
 // unlock the Keychain.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Check that the backend works.
-  if (success && !OSCrypt::IsEncryptionAvailable()) {
+  if (success && !is_encryption_available_) {
     success = false;
     LOG(ERROR) << "Encryption is not available.";
   }
@@ -156,7 +148,7 @@ LoginsResultOrError LoginDatabaseAsyncHelper::FillMatchingLogins(
         !login_db_->GetLogins(form, include_psl, &matched_forms)) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       return PasswordStoreBackendError(
-          OSCrypt::IsEncryptionAvailable()
+          is_encryption_available_
               ? PasswordStoreBackendErrorType::kUncategorized
               : PasswordStoreBackendErrorType::kKeychainError);
 #else
@@ -386,16 +378,6 @@ void LoginDatabaseAsyncHelper::NotifyDeletionsHaveSynced(bool success) {
   }
   deletions_have_synced_timeout_.Cancel();
   deletions_have_synced_callbacks_.clear();
-}
-
-void LoginDatabaseAsyncHelper::NotifyUnsyncedCredentialsWillBeDeleted(
-    std::vector<PasswordForm> unsynced_credentials) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsAccountStore());
-  // |deletion_notifier_| only gets set for desktop.
-  if (deletion_notifier_) {
-    deletion_notifier_.Run(std::move(unsynced_credentials));
-  }
 }
 
 bool LoginDatabaseAsyncHelper::BeginTransaction() {

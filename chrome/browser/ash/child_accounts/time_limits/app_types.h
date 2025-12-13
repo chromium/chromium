@@ -65,12 +65,8 @@ enum class AppNotification {
 };
 
 enum class ChromeAppActivityState {
-  // The browser is active and hosts urls in its active tab which are not
-  // allowlisted.
+  // The browser is active.
   kActive,
-
-  // Same as |kActive| except the urls the browser hosts are allowlisted.
-  kActiveAllowlisted,
 
   // The browser window is not active.
   kInactive,

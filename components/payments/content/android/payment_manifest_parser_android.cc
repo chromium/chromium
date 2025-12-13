@@ -29,7 +29,7 @@ namespace {
 
 class ParseCallback {
  public:
-  explicit ParseCallback(const base::android::JavaParamRef<jobject>& jcallback)
+  explicit ParseCallback(const base::android::JavaRef<jobject>& jcallback)
       : jcallback_(jcallback) {}
 
   ParseCallback(const ParseCallback&) = delete;
@@ -133,9 +133,9 @@ PaymentManifestParserAndroid::~PaymentManifestParserAndroid() = default;
 
 void PaymentManifestParserAndroid::ParsePaymentMethodManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jmanifest_url,
-    const base::android::JavaParamRef<jstring>& jcontent,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jobject>& jmanifest_url,
+    const base::android::JavaRef<jstring>& jcontent,
+    const base::android::JavaRef<jobject>& jcallback) {
   parser_.ParsePaymentMethodManifest(
       url::GURLAndroid::ToNativeGURL(env, jmanifest_url),
       base::android::ConvertJavaStringToUTF8(env, jcontent),
@@ -145,8 +145,8 @@ void PaymentManifestParserAndroid::ParsePaymentMethodManifest(
 
 void PaymentManifestParserAndroid::ParseWebAppManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jcontent,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jstring>& jcontent,
+    const base::android::JavaRef<jobject>& jcallback) {
   parser_.ParseWebAppManifest(
       base::android::ConvertJavaStringToUTF8(env, jcontent),
       base::BindOnce(&ParseCallback::OnWebAppManifestParsed,
@@ -159,9 +159,9 @@ void PaymentManifestParserAndroid::DestroyPaymentManifestParserAndroid(
 }
 
 // Caller owns the result.
-jlong JNI_PaymentManifestParser_CreatePaymentManifestParserAndroid(
+static jlong JNI_PaymentManifestParser_CreatePaymentManifestParserAndroid(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   auto log = web_contents
@@ -172,3 +172,5 @@ jlong JNI_PaymentManifestParser_CreatePaymentManifestParserAndroid(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(PaymentManifestParser)

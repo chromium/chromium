@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 #include <string_view>
 
@@ -32,27 +27,29 @@ inline bool IsRemovableURLWhitespace(int ch) {
 // It sucks that we have to do this, since this takes about 13% of the total URL
 // canonicalization time.
 template <typename CHAR>
-const CHAR* DoRemoveURLWhitespace(const CHAR* input,
-                                  int input_len,
-                                  CanonOutputT<CHAR>* buffer,
-                                  int* output_len,
-                                  bool* potentially_dangling_markup) {
+std::basic_string_view<CHAR> DoRemoveUrlWhitespace(
+    std::basic_string_view<CHAR> input,
+    CanonOutputT<CHAR>* buffer,
+    bool* potentially_dangling_markup) {
   // Fast verification that there's nothing that needs removal. This is the 99%
   // case, so we want it to be fast and don't care about impacting the speed
   // when we do find whitespace.
   bool found_whitespace = false;
-  if (sizeof(*input) == 1 && input_len >= kMinimumLengthForSIMD) {
+  if (sizeof(CHAR) == 1 && input.length() >= kMinimumLengthForSIMD) {
     // For large strings, memchr is much faster than any scalar code we can
     // write, even if we need to run it three times. (If this turns out to still
     // be a bottleneck, we could write our own vector code, but given that
     // memchr is so fast, it's unlikely to be relevant.)
-    found_whitespace = memchr(input, '\n', input_len) != nullptr ||
-                       memchr(input, '\r', input_len) != nullptr ||
-                       memchr(input, '\t', input_len) != nullptr;
+    const CHAR* data = input.data();
+    size_t input_len = input.length();
+    found_whitespace = UNSAFE_TODO(memchr(data, '\n', input_len)) != nullptr ||
+                       UNSAFE_TODO(memchr(data, '\r', input_len)) != nullptr ||
+                       UNSAFE_TODO(memchr(data, '\t', input_len)) != nullptr;
   } else {
-    for (int i = 0; i < input_len; i++) {
-      if (!IsRemovableURLWhitespace(input[i]))
+    for (const CHAR ch : input) {
+      if (!IsRemovableURLWhitespace(ch)) {
         continue;
+      }
       found_whitespace = true;
       break;
     }
@@ -61,7 +58,6 @@ const CHAR* DoRemoveURLWhitespace(const CHAR* input,
   if (!found_whitespace) {
     // Didn't find any whitespace, we don't need to do anything. We can just
     // return the input as the output.
-    *output_len = input_len;
     return input;
   }
 
@@ -70,22 +66,21 @@ const CHAR* DoRemoveURLWhitespace(const CHAR* input,
   // TODO(mkwst): Ideally, this would use something like `base::StartsWith`, but
   // that turns out to be difficult to do correctly given this function's
   // character type templating.
-  if (input_len > 5 && input[0] == 'd' && input[1] == 'a' && input[2] == 't' &&
-      input[3] == 'a' && input[4] == ':') {
-    *output_len = input_len;
+  if (input.length() > 5 && input[0] == 'd' && input[1] == 'a' &&
+      input[2] == 't' && input[3] == 'a' && input[4] == ':') {
     return input;
   }
 
   // Remove the whitespace into the new buffer and return it.
-  for (int i = 0; i < input_len; i++) {
-    if (!IsRemovableURLWhitespace(input[i])) {
-      if (potentially_dangling_markup && input[i] == 0x3C)
+  for (const CHAR ch : input) {
+    if (!IsRemovableURLWhitespace(ch)) {
+      if (potentially_dangling_markup && ch == 0x3C) {
         *potentially_dangling_markup = true;
-      buffer->push_back(input[i]);
+      }
+      buffer->push_back(ch);
     }
   }
-  *output_len = buffer->length();
-  return buffer->data();
+  return buffer->view();
 }
 
 // Contains the canonical version of each possible input letter in the scheme
@@ -166,8 +161,7 @@ bool DoScheme(std::optional<std::basic_string_view<CHAR>> input,
 
       // This will escape the output and also handle encoding issues.
       // Ignore the return value since we already failed.
-      AppendUTF8EscapedChar(input_value.data(), &i, input_value.length(),
-                            output);
+      AppendUtf8EscapedChar(input_value, &i, output);
     }
   }
 
@@ -226,12 +220,15 @@ inline void WritePortInt(char* output, int output_len, int port) {
 
 // This function will prepend the colon if there will be a port.
 template <typename CHAR, typename UCHAR>
-bool DoPort(const CHAR* spec,
-            const Component& port,
+bool DoPort(std::optional<std::basic_string_view<CHAR>> port_view,
             int default_port_for_scheme,
             CanonOutput* output,
             Component* out_port) {
-  int port_num = ParsePort(spec, port);
+  if (!port_view) {
+    *out_port = Component();
+    return true;  // Leave port empty.
+  }
+  int port_num = ParsePort(*port_view, Component(*port_view));
   if (port_num == PORT_UNSPECIFIED || port_num == default_port_for_scheme) {
     *out_port = Component();
     return true;  // Leave port empty.
@@ -242,8 +239,7 @@ bool DoPort(const CHAR* spec,
     // what the error was, and mark the URL as invalid by returning false.
     output->push_back(':');
     out_port->begin = output->length();
-    AppendInvalidNarrowString(spec, static_cast<size_t>(port.begin),
-                              static_cast<size_t>(port.end()), output);
+    AppendInvalidNarrowString(*port_view, output);
     out_port->len = output->length() - out_port->begin;
     return false;
   }
@@ -325,8 +321,7 @@ void DoCanonicalizeRef(std::optional<std::basic_string_view<CHAR>> input,
       else
         output->push_back(static_cast<char>(input_value[i]));
     } else {
-      AppendUTF8EscapedChar(input_value.data(), &i, input_value.length(),
-                            output);
+      AppendUtf8EscapedChar(input_value, &i, output);
     }
   }
   out_ref->len = output->length() - out_ref->begin;
@@ -334,22 +329,16 @@ void DoCanonicalizeRef(std::optional<std::basic_string_view<CHAR>> input,
 
 }  // namespace
 
-const char* RemoveURLWhitespace(const char* input,
-                                int input_len,
-                                CanonOutputT<char>* buffer,
-                                int* output_len,
-                                bool* potentially_dangling_markup) {
-  return DoRemoveURLWhitespace(input, input_len, buffer, output_len,
-                               potentially_dangling_markup);
+std::string_view RemoveUrlWhitespace(std::string_view input,
+                                     CanonOutputT<char>* buffer,
+                                     bool* potentially_dangling_markup) {
+  return DoRemoveUrlWhitespace(input, buffer, potentially_dangling_markup);
 }
 
-const char16_t* RemoveURLWhitespace(const char16_t* input,
-                                    int input_len,
-                                    CanonOutputT<char16_t>* buffer,
-                                    int* output_len,
-                                    bool* potentially_dangling_markup) {
-  return DoRemoveURLWhitespace(input, input_len, buffer, output_len,
-                               potentially_dangling_markup);
+std::u16string_view RemoveUrlWhitespace(std::u16string_view input,
+                                        CanonOutputT<char16_t>* buffer,
+                                        bool* potentially_dangling_markup) {
+  return DoRemoveUrlWhitespace(input, buffer, potentially_dangling_markup);
 }
 
 char CanonicalSchemeChar(char16_t ch) {
@@ -388,21 +377,19 @@ bool CanonicalizeUserInfo(std::optional<std::u16string_view> username,
                                         out_username, out_password);
 }
 
-bool CanonicalizePort(const char* spec,
-                      const Component& port,
+bool CanonicalizePort(std::optional<std::string_view> port_view,
                       int default_port_for_scheme,
                       CanonOutput* output,
                       Component* out_port) {
-  return DoPort<char, unsigned char>(spec, port, default_port_for_scheme,
-                                     output, out_port);
+  return DoPort<char, unsigned char>(port_view, default_port_for_scheme, output,
+                                     out_port);
 }
 
-bool CanonicalizePort(const char16_t* spec,
-                      const Component& port,
+bool CanonicalizePort(std::optional<std::u16string_view> port_view,
                       int default_port_for_scheme,
                       CanonOutput* output,
                       Component* out_port) {
-  return DoPort<char16_t, char16_t>(spec, port, default_port_for_scheme, output,
+  return DoPort<char16_t, char16_t>(port_view, default_port_for_scheme, output,
                                     out_port);
 }
 

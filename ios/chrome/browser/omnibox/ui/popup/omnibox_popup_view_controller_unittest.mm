@@ -59,7 +59,8 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     mutator_ = [OCMockObject mockForProtocol:@protocol(OmniboxPopupMutator)];
-    popup_view_controller_ = [[OmniboxPopupViewController alloc] init];
+    popup_view_controller_ = [[OmniboxPopupViewController alloc]
+        initWithPresentationContext:OmniboxPresentationContext::kLocationBar];
     popup_view_controller_.mutator = mutator_;
     // Force view initialisation since this view controller is never added into
     // the hierarchy in this unit test.

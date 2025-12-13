@@ -17,7 +17,7 @@ import {AxAnnotationsBrowserProxyImpl, ScreenAiInstallStatus} from '/shared/sett
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -84,13 +84,15 @@ export class SettingsAxAnnotationsSectionElement extends
             this.i18n('mainNodeAnnotationsDownloadingLabel');
       case ScreenAiInstallStatus.DOWNLOAD_FAILED:
         return this.i18n('mainNodeAnnotationsDownloadErrorLabel');
+      // Show the default subtitle if downloading is done.
+      // fallthrough
       case ScreenAiInstallStatus.DOWNLOADED:
-        // Show the default subtitle if downloading is done.
-        // fallthrough
       case ScreenAiInstallStatus.NOT_DOWNLOADED:
         // No subtitle update, so show a generic subtitle describing main node
         // annotations.
         return this.i18n('mainNodeAnnotationsSubtitle');
+      default:
+        assertNotReached();
     }
   }
 }

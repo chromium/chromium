@@ -13,11 +13,11 @@ static_library("print_management") {
   public_deps = [ ":url_constants" ]
 
   deps = [
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:trusted_types_util",
-    "//ash/webui/print_management/backend:backend",
-    "//ash/webui/print_management/resources:resources",
+    "//ash/webui/print_management/backend",
+    "//ash/webui/print_management/resources",
     "//ash/webui/web_applications",
     "//chromeos/components/print_management/mojom",
     "//chromeos/strings/",

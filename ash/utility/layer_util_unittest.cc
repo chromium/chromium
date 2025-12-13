@@ -12,10 +12,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_compositor_host.h"
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace {
@@ -65,8 +65,8 @@ class LayerUtilTest : public testing::Test {
 }  // namespace
 
 TEST_F(LayerUtilTest, CopyContentToExistingLayer) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   ui::Layer layer1;
   layer1.SetBounds(gfx::Rect(100, 100));

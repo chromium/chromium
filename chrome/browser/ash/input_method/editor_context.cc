@@ -56,8 +56,9 @@ void EditorContext::OnTabletModeUpdated(bool is_enabled) {
   observer_->OnContextUpdated();
 }
 
-void EditorContext::OnTextSelectionLengthChanged(size_t text_length) {
-  selected_text_length_ = text_length;
+void EditorContext::OnTextSelectionChanged(
+    const EditorTextSelection& text_selection) {
+  text_selection_ = text_selection;
   observer_->OnContextUpdated();
 }
 
@@ -88,7 +89,11 @@ GURL EditorContext::active_url() {
 }
 
 size_t EditorContext::selected_text_length() {
-  return selected_text_length_;
+  return text_selection_.non_whitespace_selected_text_length;
+}
+
+bool EditorContext::is_selection_valid() {
+  return text_selection_.is_valid_selection;
 }
 
 }  // namespace ash::input_method

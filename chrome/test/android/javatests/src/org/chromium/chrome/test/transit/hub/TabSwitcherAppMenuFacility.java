@@ -5,14 +5,13 @@
 package org.chromium.chrome.test.transit.hub;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
 import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -34,8 +33,10 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
     public static final int SELECT_TABS_ID = R.id.menu_select_tabs;
 
     private final boolean mIsIncognito;
-    private Item mNewTab;
-    private Item mNewIncognitoTab;
+    private @Nullable Item mNewTab;
+    private @Nullable Item mNewIncognitoTab;
+    private @Nullable Item mNewWindow;
+    private @Nullable Item mNewIncognitoWindow;
     private @Nullable Item mNewTabGroup;
     private Item mCloseAllTabs;
     private Item mCloseIncognitoTabs;
@@ -51,13 +52,20 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
     protected void declareItems(ItemsBuilder items) {
         boolean isTablet = mHostStation.getActivity().isTablet();
 
-        mNewTab = declareMenuItem(items, NEW_TAB_ID);
-        mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
-        if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
-            mNewTabGroup = declareMenuItem(items, NEW_TAB_GROUP_ID);
-        }
         if (!mIsIncognito) {
             // Regular Hub Tab Switcher
+            mNewTab = declareMenuItem(items, NEW_TAB_ID);
+            if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+                mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
+            }
+
+            if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+                mNewWindow = declareMenuItem(items, NEW_WINDOW_ID);
+                mNewIncognitoWindow = declareMenuItem(items, NEW_INCOGNITO_WINDOW_ID);
+            }
+
+            mNewTabGroup = declareMenuItem(items, NEW_TAB_GROUP_ID);
+
             int tabCount =
                     ThreadUtils.runOnUiThreadBlocking(() -> mHostStation.getTabModel().getCount());
             if (tabCount > 0) {
@@ -77,6 +85,17 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
             mQuickDelete = declareMenuItem(items, DELETE_BROWSING_DATA_ID);
         } else {
             // Incognito Hub Tab Switcher
+            if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+                mNewTab = declareMenuItem(items, NEW_TAB_ID);
+            }
+            mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
+
+            if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+                mNewWindow = declareMenuItem(items, NEW_WINDOW_ID);
+                mNewIncognitoWindow = declareMenuItem(items, NEW_INCOGNITO_WINDOW_ID);
+            }
+
+            mNewTabGroup = declareMenuItem(items, NEW_TAB_GROUP_ID);
 
             // If there are no incognito tabs, the incognito tab switcher pane disappears so
             // "Close Incognito Tabs" and "Select tabs" are always present and
@@ -92,14 +111,22 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
         return mNewTab.scrollToAndSelectTo().arriveAt(createNewTabPageStation());
     }
 
-    /** Select "New Incognito tab" from the app menu. */
-    public IncognitoNewTabPageStation openNewIncognitoTab() {
-        return mNewIncognitoTab.scrollToAndSelectTo().arriveAt(createIncognitoNewTabPageStation());
+    /** Select "New Incognito tab" or "New Incognito Window" from the app menu. */
+    public IncognitoNewTabPageStation openNewIncognitoTabOrWindow() {
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            return mNewIncognitoWindow
+                    .scrollToAndSelectTo()
+                    .inNewTask()
+                    .arriveAt(createNewIncognitoWindowStation());
+        } else {
+            return mNewIncognitoTab
+                    .scrollToAndSelectTo()
+                    .arriveAt(createNewIncognitoTabPageStation());
+        }
     }
 
     /** Select "New tab group" from the app menu. */
     public NewTabGroupDialogFacility<HostStationT> openNewTabGroup() {
-        assertTrue(ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled());
         assertNotNull(mNewTabGroup);
         return Journeys.beginNewTabGroupUiFlow(mNewTabGroup.scrollToAndSelectTo());
     }

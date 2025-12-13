@@ -15,12 +15,10 @@ class BodyTextDecoder {
  public:
   virtual ~BodyTextDecoder() = default;
 
-  virtual WTF::String Decode(base::span<const char> data,
-                             WTF::String* auto_detected_charset) = 0;
-  WTF::String Decode(base::span<const char> data) {
-    return Decode(data, nullptr);
-  }
-  virtual WTF::String Flush() = 0;
+  virtual String Decode(base::span<const char> data,
+                        String* auto_detected_charset) = 0;
+  String Decode(base::span<const char> data) { return Decode(data, nullptr); }
+  virtual String Flush() = 0;
   virtual WebEncodingData GetEncodingData() const = 0;
 };
 

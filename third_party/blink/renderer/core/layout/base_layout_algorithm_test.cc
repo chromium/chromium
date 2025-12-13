@@ -67,7 +67,7 @@ const PhysicalBoxFragment* BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
 const PhysicalBoxFragment* BaseLayoutAlgorithmTest::GetBoxFragmentByElementId(
     const char* id) {
   LayoutObject* layout_object = GetLayoutObjectByElementId(id);
-  CHECK(layout_object && layout_object->IsLayoutNGObject());
+  CHECK(layout_object);
   const PhysicalBoxFragment* fragment =
       To<LayoutBlockFlow>(layout_object)->GetPhysicalFragment(0);
   CHECK(fragment);
@@ -79,18 +79,30 @@ const PhysicalBoxFragment* BaseLayoutAlgorithmTest::CurrentFragmentFor(
   return block_flow->GetPhysicalFragment(0);
 }
 
-void BaseLayoutAlgorithmTest::VerifyGapIntersections(
-    const Vector<GapIntersectionList>& expected_intersections,
-    const Vector<GapIntersectionList>& intersections) {
-  EXPECT_EQ(intersections.size(), expected_intersections.size());
-  for (size_t i = 0; i < intersections.size(); ++i) {
-    const auto& expected = expected_intersections[i];
-    const auto& actual = intersections[i];
-    EXPECT_EQ(actual.size(), expected.size());
-    for (size_t j = 0; j < actual.size(); ++j) {
-      EXPECT_EQ(actual[j].inline_offset, expected[j].inline_offset);
-      EXPECT_EQ(actual[j].block_offset, expected[j].block_offset);
-    }
+void BaseLayoutAlgorithmTest::VerifyMainGaps(
+    const Vector<MainGap>& expected_gaps,
+    const Vector<MainGap>& gaps) {
+  ASSERT_EQ(gaps.size(), expected_gaps.size()) << "Main gap count mismatch";
+  for (wtf_size_t i = 0; i < gaps.size(); ++i) {
+    const auto& expected = expected_gaps[i];
+    const auto& actual = gaps[i];
+    EXPECT_EQ(actual.GetGapOffset(), expected.GetGapOffset())
+        << "Main gap at index: " << i << " mismatch";
+  }
+}
+
+void BaseLayoutAlgorithmTest::VerifyCrossGaps(
+    const Vector<CrossGap>& expected_gaps,
+    const Vector<CrossGap>& gaps) {
+  ASSERT_EQ(gaps.size(), expected_gaps.size()) << "Cross gap count mismatch";
+  for (wtf_size_t i = 0; i < gaps.size(); ++i) {
+    const auto& expected = expected_gaps[i];
+    const auto& actual = gaps[i];
+    EXPECT_EQ(actual.GetGapOffset(), expected.GetGapOffset())
+        << "Cross gap at index: " << i << " mismatch";
+    EXPECT_EQ(actual.GetEdgeIntersectionState(),
+              expected.GetEdgeIntersectionState())
+        << "Cross gap at index: " << i << " edge state mismatch";
   }
 }
 

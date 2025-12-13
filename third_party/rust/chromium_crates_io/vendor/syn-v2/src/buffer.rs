@@ -5,6 +5,7 @@
 // Syn, and caution should be used when editing it. The public-facing interface
 // is 100% safe but the implementation is fragile internally.
 
+use crate::ext::TokenStreamExt as _;
 use crate::Lifetime;
 use proc_macro2::extra::DelimSpan;
 use proc_macro2::{Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
@@ -285,13 +286,13 @@ impl<'a> Cursor<'a> {
     /// Copies all remaining tokens visible from this cursor into a
     /// `TokenStream`.
     pub fn token_stream(self) -> TokenStream {
-        let mut tts = Vec::new();
+        let mut tokens = TokenStream::new();
         let mut cursor = self;
         while let Some((tt, rest)) = cursor.token_tree() {
-            tts.push(tt);
+            tokens.append(tt);
             cursor = rest;
         }
-        tts.into_iter().collect()
+        tokens
     }
 
     /// If the cursor is pointing at a `TokenTree`, returns it along with a

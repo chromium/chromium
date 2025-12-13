@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -67,7 +68,7 @@ std::unique_ptr<network::SimpleURLLoader> GetAlmanacUrlLoader(
 base::expected<std::string, QueryError> ValidateDownloadedString(
     std::unique_ptr<network::SimpleURLLoader> loader,
     std::optional<std::string> error_histogram_name,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = 0;
   if (loader->ResponseInfo() && loader->ResponseInfo()->headers) {
     response_code = loader->ResponseInfo()->headers->response_code();

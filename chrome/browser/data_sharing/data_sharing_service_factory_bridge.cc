@@ -23,3 +23,5 @@ DataSharingServiceFactoryBridge::CreateJavaSDKDelegate(Profile* profile) {
 }
 
 }  // namespace data_sharing
+
+DEFINE_JNI(DataSharingServiceFactoryBridge)

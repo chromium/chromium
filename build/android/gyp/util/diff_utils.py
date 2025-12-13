@@ -134,7 +134,8 @@ END_DIFF
 ############ END ############
 
 If you are running this locally, you can `export REBASELINE_PROGUARD=1` to
-automatically apply this patch.
+automatically apply this patch, but you must use `--offline` as an arg to
+autoninja.
 """.format(custom_msg, diff_text)
 
     sys.stderr.write(fail_msg)

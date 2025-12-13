@@ -63,8 +63,8 @@ inline constexpr char kPayloadPath[] = "payload";
 
 std::optional<base::Value::Dict> ParseCampaignsFile(
     const std::string& campaigns_data) {
-  std::optional<base::Value::Dict> value =
-      base::JSONReader::ReadDict(campaigns_data);
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      campaigns_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     CAMPAIGNS_LOG(ERROR) << "Failed to parse campaigns file.";
     CAMPAIGNS_LOG(VLOG) << "Malformed campaigns file: " << campaigns_data;

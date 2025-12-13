@@ -283,8 +283,9 @@ void BluetoothClassicMedium::DeviceRemoved(
   }
 
   const std::string& address = device->address;
-  if (!base::Contains(discovered_bluetooth_devices_map_, address))
+  if (!base::Contains(discovered_bluetooth_devices_map_, address)) {
     return;
+  }
 
   discovery_callback_->device_lost_cb(
       discovered_bluetooth_devices_map_.at(address));

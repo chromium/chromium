@@ -7,8 +7,8 @@
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_cursor.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
@@ -82,10 +82,9 @@ class ShapeResultTest : public FontTestBase {
   }
 
   const Font* GetFont(FontType type) const {
-    return UNSAFE_TODO(fonts_holder->fonts[static_cast<size_t>(type)]);
+    return fonts_holder->fonts.at(static_cast<size_t>(type));
   }
 
-  FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
   Persistent<FontsHolder> fonts_holder;
 };
@@ -98,7 +97,7 @@ void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
       {20, 30, CreateShapeResult(TextDirection::kLtr)},
       {30, 38, CreateShapeResult(TextDirection::kLtr)},
   }};
-  result->CopyRanges(&ranges[0], num_ranges);
+  result->CopyRanges(ranges.data(), num_ranges);
 
   std::array<Vector<ShapeResultTestGlyphInfo>, num_ranges> glyphs;
   for (unsigned i = 0; i < num_ranges; i++)
@@ -135,7 +134,7 @@ void ShapeResultTest::TestCopyRangesArabic(const ShapeResult* result) const {
       {7, 10, CreateShapeResult(TextDirection::kRtl)},
       {10, 15, CreateShapeResult(TextDirection::kRtl)},
   }};
-  result->CopyRanges(&ranges[0], num_ranges);
+  result->CopyRanges(ranges.data(), num_ranges);
 
   std::array<Vector<ShapeResultTestGlyphInfo>, num_ranges> glyphs;
   for (unsigned i = 0; i < num_ranges; i++)
@@ -213,7 +212,7 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
       {20, 23, CreateShapeResult(TextDirection::kLtr)},
       {25, 31, CreateShapeResult(TextDirection::kLtr)},
   });
-  result->CopyRanges(&ranges[0], 3);
+  result->CopyRanges(ranges.data(), 3);
   std::array<Vector<ShapeResultTestGlyphInfo>, 3> glyphs;
   ComputeGlyphResults(*ranges[0].target, &glyphs[0]);
   ComputeGlyphResults(*ranges[1].target, &glyphs[1]);
@@ -460,10 +459,10 @@ TEST_F(ShapeResultTest, LetterSpacingNotAppliedForCursiveScripts) {
   auto* result = shaper.Shape(GetFont(kArabicFont), TextDirection::kRtl);
 
   // Letter spacing should not be applied.
-  ShapeResultSpacing<String> spacing(string);
+  ShapeResultSpacing spacing(string);
   FontDescription font_description;
   font_description.SetLetterSpacing(Length::Fixed(5));
-  font_description.SetWordSpacing(20);
+  font_description.SetWordSpacing(Length::Fixed(20));
   spacing.SetSpacing(font_description);
   result->ApplySpacing(spacing);
   EXPECT_FALSE(spacing.IsLetterSpacingAppliedForTesting());
@@ -851,6 +850,79 @@ TEST_P(CaretOffsetForHitTestTest, CaretOffsetForHitTest) {
               result->CaretOffsetForHitTest(test_data.positions[i], text_view))
         << "index " << i;
   }
+}
+
+class ShapeResultCursorTest : public ShapeResultTest {};
+
+TEST_F(ShapeResultCursorTest, Ltr) {
+  String string("0123456789");
+  HarfBuzzShaper shaper(string);
+  ShapeResult* result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
+  ShapeResultCursor cursor(result);
+  EXPECT_EQ(cursor.CharacterIndex(), 0u);
+  EXPECT_EQ(cursor.GlyphData().glyph, 20u);
+
+  cursor.MoveToCharacter(4);
+  EXPECT_EQ(cursor.glyph_index_, 4u);
+  EXPECT_EQ(cursor.CharacterIndex(), 4u);
+  EXPECT_EQ(cursor.GlyphData().glyph, 24u);
+
+  const TextRunLayoutUnit advance = cursor.ClusterAdvance();
+  EXPECT_EQ(advance, cursor.GlyphData().advance);
+  const TextRunLayoutUnit space(10);
+  cursor.AddSpaceToRight(space);
+  EXPECT_EQ(advance + space, cursor.GlyphData().advance);
+  EXPECT_FALSE(cursor.run_->glyph_data_.HasNonZeroOffsets());
+
+  cursor.AddSpaceToLeft(-space);
+  EXPECT_EQ(advance, cursor.GlyphData().advance);
+  EXPECT_EQ(cursor.run_->glyph_data_.Offsets()[cursor.glyph_index_],
+            GlyphOffset(-space, 0));
+}
+
+TEST_F(ShapeResultCursorTest, Rtl) {
+  // نص اختبار العربية
+  String string(
+      u"\u0646\u0635\u0627\u062E\u062A\u0628\u0627\u0631\u0627\u0644\u0639"
+      u"\u0631\u0628\u064A\u0629");
+  HarfBuzzShaper shaper(string);
+  ShapeResult* result = shaper.Shape(GetFont(kArabicFont), TextDirection::kRtl);
+  ShapeResultCursor cursor(result);
+  EXPECT_EQ(cursor.CharacterIndex(), 0u);
+  EXPECT_EQ(cursor.GlyphData().glyph, 497u);
+
+  cursor.MoveToCharacter(4);
+  EXPECT_EQ(cursor.glyph_index_, 10u);
+  EXPECT_EQ(cursor.CharacterIndex(), 4u);
+  EXPECT_EQ(cursor.GlyphData().glyph, 440u);
+
+  const TextRunLayoutUnit advance = cursor.ClusterAdvance();
+  EXPECT_EQ(advance, cursor.GlyphData().advance);
+  const TextRunLayoutUnit space(10);
+  cursor.AddSpaceToRight(space);
+  EXPECT_EQ(advance + space, cursor.GlyphData().advance);
+  EXPECT_FALSE(cursor.run_->glyph_data_.HasNonZeroOffsets());
+
+  cursor.AddSpaceToLeft(-space);
+  EXPECT_EQ(advance, cursor.GlyphData().advance);
+  EXPECT_EQ(cursor.run_->glyph_data_.Offsets()[cursor.glyph_index_],
+            GlyphOffset(-space, 0));
+}
+
+TEST_F(ShapeResultCursorTest, StartIndex) {
+  String string("0123456789");
+  HarfBuzzShaper shaper(string);
+  ShapeResult* result =
+      shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr, 2, 10);
+  EXPECT_EQ(result->StartIndex(), 2u);
+  ShapeResultCursor cursor(result);
+  EXPECT_EQ(cursor.CharacterIndex(), 2u);
+  EXPECT_EQ(cursor.GlyphData().glyph, 22u);
+
+  cursor.MoveToCharacter(4);
+  EXPECT_EQ(cursor.glyph_index_, 2u);
+  EXPECT_EQ(cursor.CharacterIndex(), 4u);
+  EXPECT_EQ(cursor.GlyphData().glyph, 24u);
 }
 
 }  // namespace blink

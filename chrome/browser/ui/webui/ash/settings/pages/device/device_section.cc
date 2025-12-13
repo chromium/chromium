@@ -43,6 +43,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/touch_device_manager.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/keyboard_layout_util.h"
@@ -501,11 +502,8 @@ bool IsTouchCalibrationAvailable() {
 
 bool IsTouchscreenRemappingExperienceAvailable() {
   return features::IsTouchscreenMappingExperienceEnabled() &&
+         Shell::Get()->display_manager()->GetNumExternalDisplays() >= 2 &&
          display::HasExternalTouchscreenDevice();
-}
-
-bool IsListAllDisplayModesEnabled() {
-  return display::features::IsListAllDisplayModesEnabled();
 }
 
 bool IsExcludeDisplayInMirrorModeEnabled() {
@@ -931,8 +929,6 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isDemoSession",
                           ash::demo_mode::IsDeviceInDemoMode());
 
-  html_source->AddBoolean("enableInputDeviceSettingsSplit", true);
-
   html_source->AddBoolean("enablePeripheralCustomization",
                           ash::features::IsPeripheralCustomizationEnabled());
 
@@ -1306,7 +1302,7 @@ void DeviceSection::OnGetDisplayLayoutInfo(
   }
 
   // Refresh Rate dropdown.
-  if (has_external_display && IsListAllDisplayModesEnabled()) {
+  if (has_external_display) {
     updater.AddSearchTags(GetDisplayExternalWithRefreshSearchConcepts());
   } else {
     updater.RemoveSearchTags(GetDisplayExternalWithRefreshSearchConcepts());
@@ -1389,7 +1385,6 @@ void DeviceSection::AddDevicePointersStrings(
       {"pointerSlow", IDS_SETTINGS_POINTER_SPEED_SLOW_LABEL},
       {"pointerFast", IDS_SETTINGS_POINTER_SPEED_FAST_LABEL},
       {"mouseScrollSpeed", IDS_SETTINGS_MOUSE_SCROLL_SPEED_LABEL},
-      {"mouseSpeed", IDS_SETTINGS_MOUSE_SPEED_LABEL},
       {"cursorSpeed", IDS_SETTINGS_CURSOR_SPEED_LABEL},
       {"pointingStickSpeed", IDS_SETTINGS_POINTING_STICK_SPEED_LABEL},
       {"mouseSwapButtonsLabel", IDS_SETTINGS_MOUSE_SWAP_BUTTONS_LABEL},
@@ -1403,7 +1398,6 @@ void DeviceSection::AddDevicePointersStrings(
       {"mouseReverseScrollLabel", IDS_OS_SETTINGS_MOUSE_REVERSE_SCROLL_LABEL},
       {"mouseReverseScrollDescription",
        IDS_OS_SETTINGS_MOUSE_REVERSE_SCROLL_DESCRIPTION},
-      {"mouseAccelerationLabel", IDS_OS_SETTINGS_MOUSE_ACCELERATION_LABEL},
       {"mouseAccelerationDescription",
        IDS_OS_SETTINGS_MOUSE_ACCELERATION_DESCRIPTION},
       {"cursorAccelerationLabel", IDS_SETTINGS_CURSOR_ACCELERATION_LABEL},
@@ -1460,8 +1454,6 @@ void DeviceSection::AddDevicePointersStrings(
       GetHelpUrlWithBoard(chrome::kControlledScrollingHelpURL));
   html_source->AddString("hapticFeedbackLearnMoreLink",
                          GetHelpUrlWithBoard(chrome::kHapticFeedbackHelpURL));
-
-  html_source->AddBoolean("allowScrollSettings", true);
 }
 
 void DeviceSection::AddDeviceGraphicsTabletStrings(
@@ -1655,9 +1647,6 @@ void DeviceSection::AddDeviceDisplayStrings(
 
   html_source->AddBoolean("unifiedDesktopAvailable",
                           IsUnifiedDesktopAvailable());
-
-  html_source->AddBoolean("listAllDisplayModes",
-                          IsListAllDisplayModesEnabled());
 
   html_source->AddBoolean("deviceSupportsAmbientColor",
                           DoesDeviceSupportAmbientColor());

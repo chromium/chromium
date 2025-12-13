@@ -22,7 +22,6 @@ ci/android-code-coverage-native
 ci/android-device-flasher
 ci/android-fieldtrial-rel
 ci/android-perfetto-rel
-ci/android-pie-x86-fyi-rel
 ci/android-rust-arm32-rel
 ci/android-rust-arm64-dbg
 ci/android-rust-arm64-rel
@@ -74,7 +73,6 @@ ci/mac-perfetto-rel
 ci/mac-rust-x64-dbg
 ci/mac-ubsan-fyi-rel
 ci/metadata-exporter
-ci/rts-model-packager
 ci/rts-suite-analysis
 ci/win-annotator-rel
 ci/win-fieldtrial-rel
@@ -100,7 +98,6 @@ infra/autosharder
 reviver/android-coverage-launcher
 reviver/android-device-launcher
 reviver/android-launcher
-reviver/android-x64-launcher
 reviver/coverage-runner
 reviver/fuchsia-coordinator
 reviver/linux-launcher
@@ -143,8 +140,6 @@ try/chromeos-arm-generic-rel
 try/chromeos-arm64-generic-rel
 try/chromeos-js-code-coverage
 try/chromeos-js-coverage-rel
-try/chromium_presubmit
-try/fuchsia-angle-try
 try/fuchsia-arm64-cast-receiver-rel
 try/fuchsia-binary-size
 try/fuchsia-clang-tidy-rel
@@ -172,7 +167,6 @@ try/ios26-beta-simulator
 try/ios26-sdk-simulator
 try/leak_detection_linux
 try/linux-afl-asan-rel
-try/linux-angle-chromium-try
 try/linux-annotator-rel
 try/linux-asan-dbg
 try/linux-asan-media-rel
@@ -202,7 +196,6 @@ try/linux-gcc-rel
 try/linux-headless-shell-rel
 try/linux-js-code-coverage
 try/linux-js-coverage-rel
-try/linux-layout-tests-edit-ng
 try/linux-libfuzzer-asan-rel
 try/linux-msan-chained-origins-rel
 try/linux-msan-no-origins-rel
@@ -239,7 +232,6 @@ try/linux_chromium_tsan_rel_ng
 try/linux_chromium_tsan_rel_ng-compilator
 try/linux_upload_clang
 try/linux_upload_rust
-try/mac-angle-chromium-try
 try/mac-arm64-clobber-rel
 try/mac-arm64-on-arm64-rel
 try/mac-asan-media-rel
@@ -279,8 +271,6 @@ try/targets-config-verifier
 try/tricium-clang-tidy
 try/tricium-metrics-analysis
 try/tricium-oilpan-analysis
-try/win-angle-chromium-x64-try
-try/win-angle-chromium-x86-try
 try/win-annotator-rel
 try/win-asan
 try/win-asan-media-rel

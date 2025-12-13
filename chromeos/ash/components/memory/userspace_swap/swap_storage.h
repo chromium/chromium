@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/ash/components/memory/userspace_swap/region.h"
 

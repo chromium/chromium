@@ -52,21 +52,21 @@ ContactInfoPreconditionChecker::ContactInfoPreconditionChecker(
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     base::RepeatingClosure on_precondition_changed)
-    : sync_service_(CHECK_DEREF(sync_service)),
-      identity_manager_(CHECK_DEREF(identity_manager)),
+    : identity_manager_(CHECK_DEREF(identity_manager)),
       on_precondition_changed_(std::move(on_precondition_changed)) {
-  sync_service_observation_.Observe(&sync_service_.get());
+  CHECK(sync_service);
+  sync_service_observation_.Observe(sync_service);
   // When support for Dasher users is not enabled, the managed-status of the
   // account needs to be determined.
   // Note that the controller is instantiated even when there's no signed-in
   // account.
-  CoreAccountInfo account = sync_service_->GetAccountInfo();
+  CoreAccountInfo account = GetSyncService()->GetAccountInfo();
   if (!account.IsEmpty() &&
       !base::FeatureList::IsEnabled(
           syncer::kSyncEnableContactInfoDataTypeForDasherUsers)) {
     managed_status_finder_ =
         std::make_unique<signin::AccountManagedStatusFinder>(
-            &identity_manager_.get(), sync_service_->GetAccountInfo(),
+            &identity_manager_.get(), GetSyncService()->GetAccountInfo(),
             base::BindOnce(
                 &ContactInfoPreconditionChecker::AccountTypeDetermined,
                 base::Unretained(this)));
@@ -76,8 +76,14 @@ ContactInfoPreconditionChecker::ContactInfoPreconditionChecker(
 ContactInfoPreconditionChecker::~ContactInfoPreconditionChecker() = default;
 
 PreconditionState ContactInfoPreconditionChecker::GetPreconditionState() const {
+  const syncer::SyncService* sync_service = GetSyncService();
+  // Can happen if this gets called after `OnSyncShutdown()` - in that case,
+  // "stop and keep data" is a safe default.
+  if (!sync_service) {
+    return PreconditionState::kMustStopAndKeepData;
+  }
   // Exclude explicit passphrase users.
-  if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase() &&
+  if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase() &&
       !base::FeatureList::IsEnabled(
           syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers)) {
     return PreconditionState::kMustStopAndClearData;
@@ -88,13 +94,14 @@ PreconditionState ContactInfoPreconditionChecker::GetPreconditionState() const {
 }
 
 void ContactInfoPreconditionChecker::OnStateChanged(syncer::SyncService* sync) {
+  CHECK_EQ(sync, GetSyncService());
   // Recreate the status finder when the account has changed.
   if (!managed_status_finder_ ||
       managed_status_finder_->GetAccountInfo().account_id !=
-          sync_service_->GetAccountInfo().account_id) {
+          GetSyncService()->GetAccountInfo().account_id) {
     managed_status_finder_ =
         std::make_unique<signin::AccountManagedStatusFinder>(
-            &identity_manager_.get(), sync_service_->GetAccountInfo(),
+            &identity_manager_.get(), GetSyncService()->GetAccountInfo(),
             base::BindOnce(
                 &ContactInfoPreconditionChecker::AccountTypeDetermined,
                 base::Unretained(this)));
@@ -102,8 +109,17 @@ void ContactInfoPreconditionChecker::OnStateChanged(syncer::SyncService* sync) {
   on_precondition_changed_.Run();
 }
 
+void ContactInfoPreconditionChecker::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_service_observation_.Reset();
+}
+
 void ContactInfoPreconditionChecker::AccountTypeDetermined() {
   on_precondition_changed_.Run();
+}
+
+const syncer::SyncService* ContactInfoPreconditionChecker::GetSyncService()
+    const {
+  return sync_service_observation_.GetSource();
 }
 
 }  // namespace autofill

@@ -131,8 +131,8 @@ struct WebBluetoothLeScanFilter {
 
 // A Bluetooth company identifier is a unique number assigned by the Bluetooth
 // SIG to member companies. This struct is currently required in
-// WebBluetoothLeScanFilter because WTF::HashMap doesn't allow integer keys of 0
-// and -1, 0xffff being -1 in a uint16t. See crbug.com/1204960
+// WebBluetoothLeScanFilter because blink::HashMap doesn't allow integer keys of
+// 0 and -1, 0xffff being -1 in a uint16t. See crbug.com/1204960
 struct WebBluetoothCompany {
   uint16 id;
 };

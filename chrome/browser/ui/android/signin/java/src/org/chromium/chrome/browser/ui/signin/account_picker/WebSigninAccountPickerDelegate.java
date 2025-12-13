@@ -4,26 +4,21 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 
 /** Implementation of {@link AccountPickerDelegate} for the web-signin flow. */
 @NullMarked
@@ -31,26 +26,21 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
     private final Tab mCurrentTab;
     private final Profile mProfile;
     private final WebSigninBridge.Factory mWebSigninBridgeFactory;
-    private final String mContinueUrl;
-    private final SigninManager mSigninManager;
-    private final IdentityManager mIdentityManager;
+    private final GURL mContinueUrl;
     private @Nullable WebSigninBridge mWebSigninBridge;
 
     /**
      * @param currentTab The current tab where the account picker bottom sheet is displayed.
      * @param webSigninBridgeFactory A {@link WebSigninBridge.Factory} to create {@link
-     *         WebSigninBridge} instances.
+     *     WebSigninBridge} instances.
      * @param continueUrl The URL that the user would be redirected to after sign-in succeeds.
      */
     public WebSigninAccountPickerDelegate(
-            Tab currentTab, WebSigninBridge.Factory webSigninBridgeFactory, String continueUrl) {
+            Tab currentTab, WebSigninBridge.Factory webSigninBridgeFactory, GURL continueUrl) {
         mCurrentTab = currentTab;
         mProfile = currentTab.getProfile();
         mWebSigninBridgeFactory = webSigninBridgeFactory;
         mContinueUrl = continueUrl;
-        mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
-        mIdentityManager =
-                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
     }
 
     /** Implements {@link AccountPickerDelegate}. */
@@ -76,59 +66,31 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
 
     /** Implements {@link AccountPickerDelegate}. */
     @Override
-    public void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator) {
-        if (mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            // Destroy WebSigninBridge in case it is still alive to avoid interference with the new
-            // sign-in.
-            destroyWebSigninBridge();
-            mSigninManager.signOut(SignoutReason.SIGNIN_RETRIGGERED_FROM_WEB_SIGNIN);
-        }
-        mSigninManager.signin(
-                accountInfo,
-                SigninAccessPoint.WEB_SIGNIN,
-                new SigninManager.SignInCallback() {
-                    @Override
-                    public void onSignInComplete() {
-                        // Create WebSigninBridge and wait for redirect to the continue url.
-                        mWebSigninBridge =
-                                mWebSigninBridgeFactory.create(
-                                        mProfile,
-                                        accountInfo,
-                                        createWebSigninBridgeCallback(
-                                                mCurrentTab, mContinueUrl, mediator));
-                    }
-
-                    @Override
-                    public void onSignInAborted() {
-                        mediator.switchToTryAgainView();
-                    }
-                });
+    public void onSignoutBeforeSignin() {
+        // Destroy WebSigninBridge in case it is still alive to avoid interference with the new
+        // sign-in.
+        destroyWebSigninBridge();
     }
 
     /** Implements {@link AccountPickerDelegate}. */
     @Override
-    public void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback) {
-        mSigninManager.isAccountManaged(accountInfo, callback);
-    }
-
-    /** Implements {@link AccountPickerDelegate}. */
-    @Override
-    public void setUserAcceptedAccountManagement(boolean confirmed) {
-        mSigninManager.setUserAcceptedAccountManagement(confirmed);
-    }
-
-    /** Implements {@link AccountPickerDelegate}. */
-    @Override
-    public String extractDomainName(String accountEmail) {
-        return mSigninManager.extractDomainName(accountEmail);
+    public void onSignInComplete(
+            CoreAccountInfo accountInfo, AccountPickerDelegate.SigninStateController controller) {
+        // Create WebSigninBridge and wait for redirect to the continue url.
+        mWebSigninBridge =
+                mWebSigninBridgeFactory.createWithCoreAccountId(
+                        mProfile,
+                        accountInfo.getId(),
+                        createWebSigninBridgeCallback(mCurrentTab, mContinueUrl, controller));
     }
 
     private Callback<@WebSigninTrackerResult Integer> createWebSigninBridgeCallback(
-            Tab tab, String continueUrl, AccountPickerBottomSheetMediator mediator) {
+            Tab tab, GURL continueUrl, AccountPickerDelegate.SigninStateController controller) {
         return (result) -> {
             ThreadUtils.assertOnUiThread();
             switch (result) {
                 case WebSigninTrackerResult.SUCCESS:
+                    controller.onSigninComplete();
                     if (!tab.isDestroyed()) {
                         // This code path may be called asynchronously, so check that the tab is
                         // still alive.
@@ -139,13 +101,13 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
                     SigninMetricsUtils.logAccountConsistencyPromoAction(
                             AccountConsistencyPromoAction.AUTH_ERROR_SHOWN,
                             SigninAccessPoint.WEB_SIGNIN);
-                    mediator.switchToAuthErrorView();
+                    controller.showAuthError();
                     break;
                 case WebSigninTrackerResult.OTHER_ERROR:
                     SigninMetricsUtils.logAccountConsistencyPromoAction(
                             AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN,
                             SigninAccessPoint.WEB_SIGNIN);
-                    mediator.switchToTryAgainView();
+                    controller.showGenericError();
                     break;
             }
             destroyWebSigninBridge();
@@ -157,5 +119,10 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
             mWebSigninBridge.destroy();
             mWebSigninBridge = null;
         }
+    }
+
+    @Override
+    public @FlowVariant String getSigninFlowVariant() {
+        return FlowVariant.WEB;
     }
 }

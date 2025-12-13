@@ -28,7 +28,7 @@ enum ClipboardHistoryControllerShowSource {
   [Default] kUnknown,
   // Deprecated: Shown by a toast.
   [MinVersion=1] kToast,
-  // Shown by long-pressing Ctrl+V.
+  // Deprecated: Shown by long-pressing Ctrl+V.
   [MinVersion=2] kControlVLongpress,
   // Shown from the submenu embedded in a render view's context memu.
   [MinVersion=3] kRenderViewContextSubmenu,

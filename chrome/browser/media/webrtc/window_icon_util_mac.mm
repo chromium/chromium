@@ -8,8 +8,18 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/feature_list.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+
+// TODO(crbug.com/465028835): Remove these includes and the fallback code once
+// kUseGfxImageForMacWindowIcons is stable and the feature flag is removed
 #include "third_party/libyuv/include/libyuv/convert_argb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+BASE_FEATURE(kUseGfxImageForMacWindowIcons,
+             "UseGfxImageForMacWindowIcons",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   DCHECK(id.type == content::DesktopMediaID::TYPE_WINDOW);
@@ -35,6 +45,20 @@ gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   NSImage* icon_image =
       [[NSRunningApplication runningApplicationWithProcessIdentifier:pid] icon];
 
+  // TODO(crbug.com/465028835): Remove this feature check and the fallback
+  // path once kUseGfxImageForMacWindowIcons is stable and the flag is removed
+  if (base::FeatureList::IsEnabled(kUseGfxImageForMacWindowIcons)) {
+    // The app may have terminated, resulting in a nil icon.
+    if (!icon_image) {
+      return gfx::ImageSkia();
+    }
+
+    return gfx::Image(icon_image).AsImageSkia();
+  }
+
+  // TODO(crbug.com/465028835): Remove the code below this line once
+  // kUseGfxImageForMacWindowIcons is stable and the flag is removed.
+
   // Icon's NSImage defaults to the smallest which can be only 32x32.
   NSRect proposed_rect = NSMakeRect(0, 0, 128, 128);
   CGImageRef cg_icon_image =
@@ -52,9 +76,10 @@ gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   }
 
   // Ensure BGR like.
-  int byte_order = CGImageGetBitmapInfo(cg_icon_image) & kCGBitmapByteOrderMask;
-  if (byte_order != kCGBitmapByteOrderDefault &&
-      byte_order != kCGBitmapByteOrder32Big) {
+  CGBitmapInfo byte_order =
+      CGImageGetBitmapInfo(cg_icon_image) & kCGBitmapByteOrderInfoMask;
+  if (byte_order != kCGImageByteOrderDefault &&
+      byte_order != kCGImageByteOrder32Big) {
     return gfx::ImageSkia();
   }
 

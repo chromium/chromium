@@ -7,19 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "extensions/renderer/safe_builtins.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-extension.h"
 
 namespace extensions {
-
-namespace {
-
-base::LazyInstance<TestV8ExtensionConfiguration>::Leaky
-    g_v8_extension_configuration = LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
 
 TestV8ExtensionConfiguration::TestV8ExtensionConfiguration()
     : v8_extension_configuration_(
@@ -29,11 +22,12 @@ TestV8ExtensionConfiguration::TestV8ExtensionConfiguration()
   v8::RegisterExtension(std::move(safe_builtins));
 }
 
-TestV8ExtensionConfiguration::~TestV8ExtensionConfiguration() {}
+TestV8ExtensionConfiguration::~TestV8ExtensionConfiguration() = default;
 
 // static
 v8::ExtensionConfiguration* TestV8ExtensionConfiguration::GetConfiguration() {
-  return g_v8_extension_configuration.Get().v8_extension_configuration_.get();
+  static base::NoDestructor<TestV8ExtensionConfiguration> config;
+  return config->v8_extension_configuration_.get();
 }
 
 }  // namespace extensions

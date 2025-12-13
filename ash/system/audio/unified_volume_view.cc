@@ -24,6 +24,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 
@@ -52,11 +53,11 @@ UnifiedVolumeView::UnifiedVolumeView(
       device_id_(CrasAudioHandler::Get()->GetPrimaryActiveOutputNode()) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
-  // In the case that there is a trusted pinned window (fullscreen lock mode)
+  // In the case that there is a locked fullscreen window
   // and the volume slider popup is shown, do not allow the more_button_ to
   // open quick settings.
   auto* window = Shell::Get()->screen_pinning_controller()->pinned_window();
-  if (window && WindowState::Get(window)->IsTrustedPinned()) {
+  if (window && WindowState::Get(window)->IsLockedFullscreen()) {
     more_button_->SetEnabled(false);
   }
 
@@ -64,7 +65,6 @@ UnifiedVolumeView::UnifiedVolumeView(
   more_button_->SetProperty(views::kElementIdentifierKey,
                             kQuickSettingsAudioDetailedViewButtonElementId);
 
-  // TODO(b/257151067): Update the a11y name id.
   // Adds the live caption button before `more_button_`.
   Shell::Get()->accessibility_controller()->AddObserver(this);
   const bool enabled =
@@ -170,7 +170,6 @@ void UnifiedVolumeView::Update(bool by_user) {
   switch (slider_style) {
     case Style::kDefault:
     case Style::kDefaultMuted: {
-      // TODO(b/257151067): Adds tooltip.
       slider_button()->SetVectorIcon(is_muted ? kUnifiedMenuVolumeMuteIcon
                                               : GetVolumeIconForLevel(level));
       slider_button()->SetIconColor(

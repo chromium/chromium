@@ -11,6 +11,7 @@
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_hand_joint.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_layer_layout.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -25,13 +26,12 @@ namespace blink {
 class DOMPointReadOnly;
 class ExecutionContext;
 class WebGLRenderingContextBase;
+class V8XREye;
 
 NotShared<DOMFloat32Array> transformationMatrixToDOMFloat32Array(
     const gfx::Transform&);
 
 gfx::Transform DOMFloat32ArrayToTransform(NotShared<DOMFloat32Array>);
-
-gfx::Transform WTFFloatVectorToTransform(const Vector<float>&);
 
 DOMPointReadOnly* makeNormalizedQuaternion(double x,
                                            double y,
@@ -65,10 +65,25 @@ std::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
 
 // Inverse of |StringToXRSessionFeature()|, used for logging to console and for
 // |XRSession::enabledFeatures|.
-String XRSessionFeatureToString(device::mojom::XRSessionFeature feature);
+StringView XRSessionFeatureToString(device::mojom::XRSessionFeature feature);
 
 bool IsFeatureEnabledForContext(device::mojom::XRSessionFeature feature,
                                 const ExecutionContext* context);
+
+V8XREye GetV8Eye(const device::mojom::blink::XREye& eye);
+
+// Convert layer layout.
+device::mojom::blink::XRLayerLayout V8ToMojomLayerLayout(
+    V8XRLayerLayout::Enum layout);
+
+// Helper method to get the number of views per texture.
+uint16_t GetVerticalViewCount(V8XRLayerLayout);
+uint16_t GetHorizontalViewCount(V8XRLayerLayout);
+
+// Helper method to treat values that are smaller than epsilon
+// as float zero.
+float ExcludeNegativeAndNoise(float value);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_UTILS_H_

@@ -48,7 +48,7 @@ class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
 
   void ApplyOriginTrialOverride(
     const blink::mojom::blink::OriginTrialFeature& origin_trial_feature,
-    const WTF::Vector<WTF::String>& tokens);
+    const Vector<String>& tokens);
 
   {% for feature in overridable_features %}
   bool Is{{feature.name}}ForceDisabled() const;
@@ -60,13 +60,13 @@ class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
   void Set{{feature.name}}ForceEnabled();
 
   {% if feature in origin_trial_controlled_features %}
-  bool Set{{ feature.name }}Enabled(const WTF::Vector<WTF::String>& tokens);
+  bool Set{{ feature.name }}Enabled(const Vector<String>& tokens);
   {% endif %}
   {% endfor %}
 
   void EnablePersistentTrial(
-      const WTF::String& raw_token,
-      const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>&
+      const String& raw_token,
+      const Vector<scoped_refptr<const blink::SecurityOrigin>>&
           script_origins);
 
   const base::flat_map<mojom::RuntimeFeature, bool>&

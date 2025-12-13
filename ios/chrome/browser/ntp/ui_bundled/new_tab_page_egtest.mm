@@ -5,12 +5,13 @@
 #import "base/strings/strcat.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_command_line.h"
+#import "components/omnibox/browser/aim_eligibility_service_features.h"
 #import "components/policy/core/common/policy_test_utils.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
@@ -139,7 +140,6 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
   if ([self isRunningTest:@selector(DISABLED_testErrorBadge)]) {
     config.features_enabled.push_back(
         switches::kEnableErrorBadgeOnIdentityDisc);
-    config.features_disabled.push_back(kIdentityDiscAccountMenu);
   }
 
   if ([self isRunningTest:@selector(testNewTabShowsMIAEntryPointInline)]) {
@@ -147,6 +147,7 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
         {kNTPMIAEntrypoint,
          {{{kNTPMIAEntrypointParam,
             kNTPMIAEntrypointParamOmniboxContainedInline}}}});
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   }
 
   if ([self isRunningTest:@selector(testNewTabShowsMIAEntryPointInOmnibox)]) {
@@ -154,6 +155,7 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
         {kNTPMIAEntrypoint,
          {{{kNTPMIAEntrypointParam,
             kNTPMIAEntrypointParamOmniboxContainedSingleButton}}}});
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   }
   if ([self isRunningTest:@selector
             (testNewTabShowsMIAEntryPointInEnlargedFakebox)]) {
@@ -161,6 +163,7 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
         {kNTPMIAEntrypoint,
          {{{kNTPMIAEntrypointParam,
             kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}}}});
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   }
   if ([self
           isRunningTest:@selector(testIncognitoButtonNotShownInQuickActions)]) {
@@ -168,6 +171,7 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
         {kNTPMIAEntrypoint,
          {{{kNTPMIAEntrypointParam,
             kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito}}}});
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   }
 
   return config;
@@ -462,14 +466,6 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
   // Open tab via the UI.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_longPress()];
-
-  if (@available(iOS 26, *)) {
-    // TODO(crbug.com/428928323): Investigate why the keyboard appears. Remove
-    // this workaround when it's not needed anymore.
-    // On iOS 26, the keyboard appears when the button is long pressed and it
-    // hides the elements behind. Close the keyboard by typing a return key.
-    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\\n" flags:0];
-  }
 
   id<GREYMatcher> menuNewTabButtonMatcher;
   menuNewTabButtonMatcher =

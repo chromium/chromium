@@ -10,7 +10,6 @@
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
-#include "base/android/build_info.h"
 #include "base/android/java_exception_reporter.h"
 #include "base/android/jni_android.h"
 #include "base/base_paths_android.h"
@@ -65,6 +64,14 @@ class AwCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override {
     return base::PathService::Get(android_webview::DIR_CRASH_DUMPS, crash_dir);
+  }
+
+  bool GetCrashMetricsLocation(base::FilePath* metrics_dir) override {
+    // WebView doesn't currently create/upload metrics from Crashpad. Returning
+    // false is already the default behavior, but we override it here to be
+    // explicit.
+    // TODO(crbug.com/440359722): decide if we want these metrics or not.
+    return false;
   }
 
   void GetSanitizationInformation(const char* const** crash_key_allowlist,
@@ -139,3 +146,5 @@ bool CrashReporterEnabled() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwCrashReporterClient)

@@ -60,9 +60,11 @@ class IntegrityPolicyTest : public testing::Test {
 };
 
 TEST_F(IntegrityPolicyTest, AllowRequestTest) {
+  Vector<uint8_t> decoded;
+  ASSERT_TRUE(Base64Decode("foobar", decoded));
   IntegrityMetadataSet kNonEmptyIntegrityMetadata;
-  IntegrityMetadata m(network::mojom::blink::IntegrityAlgorithm::kSha256, {});
-  ASSERT_TRUE(Base64Decode("foobar", m.value));
+  IntegrityMetadata m(network::mojom::blink::IntegrityAlgorithm::kSha256,
+                      decoded);
   kNonEmptyIntegrityMetadata.Insert(std::move(m));
 
   struct TestCase {

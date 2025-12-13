@@ -97,9 +97,6 @@ class FakeWebAppUiManager : public WebAppUiManager {
                     Profile& profile,
                     LaunchWebAppDebugValueCallback callback,
                     WithAppResources& lock) override;
-  void WaitForFirstRunService(
-      Profile& profile,
-      FirstRunServiceCompletedCallback callback) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void MigrateLauncherState(const webapps::AppId& from_app_id,
                             const webapps::AppId& to_app_id,
@@ -126,6 +123,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
       std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
       const GURL& install_url,
       const std::optional<GURL>& manifest_id,
+      const GURL& last_committed_url,
       InstallCallback callback) override;
 
   void TriggerLaunchDialogForBackgroundInstall(

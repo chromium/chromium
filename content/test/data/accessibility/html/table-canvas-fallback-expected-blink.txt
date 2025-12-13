@@ -5,7 +5,7 @@ rootWebArea
 ++++++++staticText name='<newline>  '
 ++++++++table
 ++++++++++staticText name='<newline>    '
-++++++++++rowGroup ignored
+++++++++++rowGroup
 ++++++++++++row
 ++++++++++++++staticText name='<newline>      '
 ++++++++++++++cell name='Rabbits'

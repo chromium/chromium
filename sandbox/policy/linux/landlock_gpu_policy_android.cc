@@ -7,12 +7,14 @@
 #include <string>
 #include <vector>
 
+#include "base/android/android_info.h"
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "build/build_config.h"
 #include "sandbox/linux/services/thread_helpers.h"
+#include "sandbox/policy/linux/landlock_util.h"
 #include "sandbox/policy/switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -29,7 +31,7 @@ bool AddRulesToPolicy(int ruleset_fd,
   for (const auto& path : paths) {
     base::ScopedFD parent_fd(open(path.c_str(), O_PATH | O_CLOEXEC));
     if (!parent_fd.is_valid()) {
-      PLOG(ERROR) << "open failed for " << path;
+      PLOG(ERROR) << "Could not add rule for path, because open failed for " << path;
       continue;
     }
     struct landlock_path_beneath_attr path_beneath = {
@@ -49,6 +51,16 @@ bool AddRulesToPolicy(int ruleset_fd,
 
 bool ApplyLandlock(sandbox::mojom::Sandbox sandbox_type) {
 #if BUILDFLAG(IS_ANDROID)
+  // Don't try to use Landlock if blocked by Seccomp.
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SdkVersion::SDK_VERSION_BAKLAVA) {
+    LOG(ERROR)
+        << "Landlock not allowed by Android Seccomp policy, skipping Landlock";
+    return false;
+  }
+  // Report Landlock status via UMA.
+  sandbox::policy::ReportLandlockStatus();
+
   if (sandbox_type != sandbox::mojom::Sandbox::kGpu) {
     LOG(ERROR) << "Sandbox type not GPU, skipping Landlock";
     return false;
@@ -88,7 +100,13 @@ bool ApplyLandlock(sandbox::mojom::Sandbox sandbox_type) {
       "/data/app",
       // Allow read-only access to /proc/self. This is needed for the process
       // to introspect its own state.
-      "/proc/self", "/sys"};
+      "/proc/self",
+      // Allow access to /proc/sys/kernel/random, which ashmem may use to
+      // obtain entropy for ASLR.
+      "/proc/sys/kernel/random", "/sys",
+      // TODO(crbug.com/462103953): tighten these broad rules once the Corsola
+      // issue is resolved and we've confirmed the precise paths needed.
+      "/system/vendor/lib64", "/vendor/lib64"};
   uint64_t ro_access =
       LANDLOCK_ACCESS_FS_READ_FILE | LANDLOCK_ACCESS_FS_READ_DIR;
   if (!AddRulesToPolicy(ruleset_fd.get(), allowed_ro_paths, ro_access)) {

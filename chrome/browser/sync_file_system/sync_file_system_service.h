@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_FILE_SYSTEM_SYNC_FILE_SYSTEM_SERVICE_H_
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_SYNC_FILE_SYSTEM_SERVICE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -126,6 +125,7 @@ class SyncFileSystemService final
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // Check the profile's sync preference settings and call
   // remote_file_service_->SetSyncEnabled() to update the status.

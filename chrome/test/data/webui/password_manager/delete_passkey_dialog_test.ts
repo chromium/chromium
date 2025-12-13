@@ -41,7 +41,7 @@ suite('DeletePasskeyDialogTest', function() {
     const link =
         dialog.shadowRoot!.querySelector<HTMLAnchorElement>('#link a')!;
     assertTrue(!!link);
-    assertEquals(link.textContent!.trim(), 'test.com');
+    assertEquals(link.textContent.trim(), 'test.com');
     assertEquals(link.href.trim(), passkey.affiliatedDomains[0]!.url);
   });
 

@@ -208,7 +208,7 @@ public class ScrollCaptureCallbackDelegate {
         onReady.run();
     }
 
-    void setCurrentTab(Tab tab) {
+    void setCurrentTab(@Nullable Tab tab) {
         mCurrentTab = tab;
     }
 

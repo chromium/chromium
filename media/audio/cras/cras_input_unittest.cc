@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_message_loop.h"
@@ -56,18 +57,20 @@ class MockAudioManagerCrasInput : public AudioManagerCrasBase {
 
   MOCK_METHOD1(DeregisterSystemAecDumpSource, void(AecdumpRecordingSource*));
 
-  bool HasAudioOutputDevices() { return true; }
-  bool HasAudioInputDevices() { return true; }
+  bool HasAudioOutputDevices() override { return true; }
+  bool HasAudioInputDevices() override { return true; }
   AudioParameters GetPreferredOutputStreamParameters(
       const std::string& output_device_id,
-      const AudioParameters& input_params) {
+      const AudioParameters& input_params) override {
     return AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                            ChannelLayoutConfig::Stereo(), 44100, 1000);
   }
   bool IsDefault(const std::string& device_id, bool is_input) override {
     return true;
   }
-  enum CRAS_CLIENT_TYPE GetClientType() { return CRAS_CLIENT_TYPE_UNKNOWN; }
+  enum CRAS_CLIENT_TYPE GetClientType() override {
+    return CRAS_CLIENT_TYPE_UNKNOWN;
+  }
 
   // We need to override this function in order to skip checking the number
   // of active output streams. It is because the number of active streams
@@ -206,16 +209,18 @@ TEST_F(CrasInputStreamTest, CaptureFrames) {
                                 44100, 48000, 96000, 192000};
 
   for (unsigned int i = 0; i < ARRAY_SIZE(rates); i++) {
-    SCOPED_TRACE(testing::Message() << "Mono " << rates[i] << "Hz");
+    SCOPED_TRACE(testing::Message()
+                 << "Mono " << UNSAFE_TODO(rates[i]) << "Hz");
     AudioParameters params_mono(kTestFormat, ChannelLayoutConfig::Mono(),
-                                rates[i], kTestFramesPerPacket);
+                                UNSAFE_TODO(rates[i]), kTestFramesPerPacket);
     CaptureSomeFrames(params_mono, kTestCaptureDurationMs);
   }
 
   for (unsigned int i = 0; i < ARRAY_SIZE(rates); i++) {
-    SCOPED_TRACE(testing::Message() << "Stereo " << rates[i] << "Hz");
+    SCOPED_TRACE(testing::Message()
+                 << "Stereo " << UNSAFE_TODO(rates[i]) << "Hz");
     AudioParameters params_stereo(kTestFormat, ChannelLayoutConfig::Stereo(),
-                                  rates[i], kTestFramesPerPacket);
+                                  UNSAFE_TODO(rates[i]), kTestFramesPerPacket);
     CaptureSomeFrames(params_stereo, kTestCaptureDurationMs);
   }
 }

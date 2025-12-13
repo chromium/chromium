@@ -60,7 +60,7 @@ class SearchEngineTabHelperTest : public PlatformTest {
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         base::BindLambdaForTesting(
-            [this](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+            [this](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               std::unique_ptr<TemplateURLService> model =
                   search_engines_test_environment_.ReleaseTemplateURLService();
               return model;
@@ -89,10 +89,10 @@ class SearchEngineTabHelperTest : public PlatformTest {
   web::WebState* web_state() { return web_state_.get(); }
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
-  web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
+  web::ScopedTestingWebClient web_client_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;

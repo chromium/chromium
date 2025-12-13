@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -29,8 +28,6 @@ enum class NonStandardGroupId;
 }  // namespace webrtc
 
 namespace blink {
-
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(WebRtcUnshipDeprecatedStats);
 
 // A thin wrapper around a webrtc::RTCStatsReport.
 // TODO(https://crbug.com/1443999): Delete this class, it does not provide any

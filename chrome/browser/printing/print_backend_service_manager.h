@@ -29,7 +29,7 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #endif
 
 #if !BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -471,9 +471,9 @@ class PrintBackendServiceManager {
       mojo::Remote<printing::mojom::PrintBackendService>& service,
       bool sandboxed,
       const RemoteId& remote_id,
-      const base::TimeDelta& timeout);
+      base::TimeDelta timeout);
   void UpdateServiceIdleTimeoutByRemoteId(const RemoteId& remote_id,
-                                          const base::TimeDelta& timeout);
+                                          base::TimeDelta timeout);
 
   // Callback when predetermined idle timeout occurs indicating no in-flight
   // messages for a short period of time.  `sandboxed` is used to distinguish

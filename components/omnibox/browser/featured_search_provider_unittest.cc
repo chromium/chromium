@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -16,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -91,8 +93,18 @@ class FeaturedSearchProviderTest : public testing::Test {
   ~FeaturedSearchProviderTest() override = default;
 
   void SetUp() override {
+    toolbelt_scoped_config_.Get().enabled = true;
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
-    provider_ = new FeaturedSearchProvider(client_.get());
+
+    MockAimEligibilityService* mock_aim_eligibility_service =
+        static_cast<MockAimEligibilityService*>(
+            client_->GetAimEligibilityService());
+    EXPECT_CALL(*mock_aim_eligibility_service, IsAimEligible())
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
+        .WillRepeatedly(testing::Return(true));
+    provider_ =
+        new FeaturedSearchProvider(client_.get(), /*show_iph_matches=*/true);
     omnibox::RegisterProfilePrefs(
         static_cast<sync_preferences::TestingPrefServiceSyncable*>(
             client_->GetPrefs())
@@ -110,11 +122,15 @@ class FeaturedSearchProviderTest : public testing::Test {
       input.set_allow_exact_keyword_match(false);
       provider_->Start(input, false);
       EXPECT_TRUE(provider_->done());
-      matches = provider_->matches();
-      ASSERT_EQ(cases[i].output.size(), matches.size());
-      for (size_t j = 0; j < cases[i].output.size(); ++j) {
-        EXPECT_EQ(matches[j].destination_url, GURL(cases[i].output[j]));
-      }
+
+      std::vector<GURL> actual_urls;
+      std::ranges::transform(
+          provider_->matches(), std::back_inserter(actual_urls),
+          [](const auto& match) { return match.destination_url; });
+      std::vector<GURL> expected_urls;
+      std::ranges::transform(cases[i].output, std::back_inserter(expected_urls),
+                             [](const std::string& url) { return GURL(url); });
+      EXPECT_THAT(actual_urls, testing::ElementsAreArray(expected_urls));
     }
   }
 
@@ -179,6 +195,10 @@ class FeaturedSearchProviderTest : public testing::Test {
         std::make_unique<TemplateURL>(template_url_data));
   }
 
+  base::test::TaskEnvironment task_environment_;
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::Toolbelt>
+      toolbelt_scoped_config_;
   std::unique_ptr<MockAutocompleteProviderClient> client_;
   scoped_refptr<FeaturedSearchProvider> provider_;
 };
@@ -218,7 +238,8 @@ TEST_F(FeaturedSearchProviderTest, DoesNotSupportMatchesOnFocus) {
 
 TEST_F(FeaturedSearchProviderTest, StarterPack) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(omnibox::kStarterPackExpansion);
+  features.InitWithFeatures({omnibox::kAiModeStartPack},
+                            {omnibox::kStarterPackExpansion});
 
   AddStarterPackEntriesToTemplateUrlService();
 
@@ -258,7 +279,8 @@ TEST_F(FeaturedSearchProviderTest, StarterPack) {
 
 TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(omnibox::kStarterPackExpansion);
+  features.InitWithFeatures(
+      {omnibox::kStarterPackExpansion, omnibox::kAiModeStartPack}, {});
 
   AddStarterPackEntriesToTemplateUrlService();
   std::vector<TestData> typing_scheme_cases = {
@@ -298,7 +320,8 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
 
 TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({omnibox::kStarterPackExpansion}, {});
+  features.InitWithFeatures(
+      {omnibox::kStarterPackExpansion, omnibox::kAiModeStartPack}, {});
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::ContextualSearch>
       scoped_config;
@@ -332,7 +355,8 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
 
 TEST_F(FeaturedSearchProviderTest, FeaturedEnterpriseSearch) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({omnibox::kStarterPackExpansion}, {});
+  features.InitWithFeatures(
+      {omnibox::kStarterPackExpansion, omnibox::kAiModeStartPack}, {});
 
   AddStarterPackEntriesToTemplateUrlService();
 
@@ -385,8 +409,9 @@ TEST_F(FeaturedSearchProviderTest, FeaturedEnterpriseSearch) {
 
 TEST_F(FeaturedSearchProviderTest, ZeroSuggestStarterPackIPHSuggestion) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{omnibox::kStarterPackExpansion, {}}, {omnibox::kStarterPackIPH, {}}},
+  features.InitWithFeatures(
+      {omnibox::kStarterPackExpansion, omnibox::kStarterPackIPH,
+       omnibox::kAiModeStartPack},
       {});
 
   // "Focus" omnibox with zero input to put us in Zero suggest mode.
@@ -457,8 +482,9 @@ TEST_F(FeaturedSearchProviderTest,
 TEST_F(FeaturedSearchProviderTest,
        ZeroSuggestFeaturedEnterpriseSiteSearchIPHSuggestion) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({omnibox::kStarterPackExpansion},
-                            {omnibox::kStarterPackIPH});
+  features.InitWithFeatures(
+      {omnibox::kStarterPackExpansion, omnibox::kAiModeStartPack},
+      {omnibox::kStarterPackIPH});
 
   AddStarterPackEntriesToTemplateUrlService();
 
@@ -633,8 +659,9 @@ TEST_F(FeaturedSearchProviderTest,
 TEST_F(FeaturedSearchProviderTest,
        ZeroSuggestEnterpriseSearchAggregatorIPHSuggestion) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({omnibox::kStarterPackExpansion},
-                            {omnibox::kStarterPackIPH});
+  features.InitWithFeatures(
+      {omnibox::kStarterPackExpansion, omnibox::kAiModeStartPack},
+      {omnibox::kStarterPackIPH});
 
   AddStarterPackEntriesToTemplateUrlService();
 
@@ -670,6 +697,7 @@ TEST_F(FeaturedSearchProviderTest,
         kHistoryUrl, kTabsUrl}}};
   RunTest(typing_scheme_cases);
 }
+
 TEST_F(FeaturedSearchProviderTest,
        ZeroSuggestEnterpriseSearchAggregatorIPHSuggestion_DeleteMatch) {
   history_embeddings::ScopedFeatureParametersForTesting feature_parameters(
@@ -966,7 +994,8 @@ TEST_F(FeaturedSearchProviderTest, IphShownLimit) {
 
   // Start a new session, should see an IPH 3 more times. But not the same IPH
   // as before, since it already consumed its limit.
-  provider_ = new FeaturedSearchProvider(client_.get());
+  provider_ =
+      new FeaturedSearchProvider(client_.get(), /*show_iph_matches=*/true);
   {
     SCOPED_TRACE("");
     test(input, {IphType::kHistoryScopePromo});
@@ -1004,8 +1033,9 @@ TEST_F(FeaturedSearchProviderTest, OffTheRecord_HistoryEmbeddings) {
 
 TEST_F(FeaturedSearchProviderTest, OffTheRecord_FeaturedEnterpriseSearch) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({omnibox::kStarterPackExpansion},
-                            {omnibox::kStarterPackIPH});
+  features.InitWithFeatures(
+      {omnibox::kStarterPackExpansion, omnibox::kAiModeStartPack},
+      {omnibox::kStarterPackIPH});
   AddStarterPackEntriesToTemplateUrlService();
   AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(1), FeaturedUrlN(1),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);

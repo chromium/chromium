@@ -35,7 +35,7 @@ enum XRHandJoint {
 [
     SecureContext,
     Exposed=Window,
-    RuntimeEnabled=WebXRHandInput
+    RuntimeEnabled=WebXR
 ] interface XRHand {
     iterable<XRHandJoint, XRJointSpace>;
 

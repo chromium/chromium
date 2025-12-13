@@ -12,7 +12,7 @@
 @protocol ApplicationCommands;
 @protocol BrowserCoordinatorCommands;
 @protocol LensCommands;
-@class OmniboxTextFieldIOS;
+@protocol OmniboxTextInput;
 @protocol QRScannerCommands;
 @class OmniboxAssistiveKeyboardMediator;
 
@@ -21,6 +21,9 @@
 /// Did tap the debugger button in the omnibox assistive keyboard. Only
 /// available when `experimental_flags::IsOmniboxDebuggingEnabled()`.
 - (void)omniboxAssistiveKeyboardDidTapDebuggerButton;
+
+/// Presents the in product help for the lens button in the keyboard accessory.
+- (void)presentLensKeyboardInProductHelper;
 
 @end
 
@@ -33,7 +36,7 @@
     browserCoordinatorCommandsHandler;
 @property(nonatomic, weak) id<LensCommands> lensCommandsHandler;
 @property(nonatomic, weak) id<QRScannerCommands> qrScannerCommandsHandler;
-@property(nonatomic, weak) OmniboxTextFieldIOS* omniboxTextField;
+@property(nonatomic, weak) id<OmniboxTextInput> omniboxTextInput;
 
 @property(nonatomic, weak) id<OmniboxAssistiveKeyboardMediatorDelegate>
     delegate;

@@ -49,7 +49,6 @@
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
-#include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -57,6 +56,7 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -98,13 +98,6 @@ void RecordKioskLaunchUMA(bool is_auto_launch) {
 
   UMA_HISTOGRAM_ENUMERATION("Kiosk.LaunchType", launch_type,
                             KIOSK_LAUNCH_TYPE_COUNT);
-
-  if (is_enterprise_managed) {
-    enterprise_user_session_metrics::RecordSignInEvent(
-        is_auto_launch
-            ? enterprise_user_session_metrics::SignInEventType::AUTOMATIC_KIOSK
-            : enterprise_user_session_metrics::SignInEventType::MANUAL_KIOSK);
-  }
 }
 
 void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
@@ -330,11 +323,13 @@ class KioskLaunchController::ScopedAcceleratorDisabler {
 };
 
 KioskLaunchController::KioskLaunchController(
+    PrefService* local_state,
     LoginDisplayHost* host,
     AppLaunchedCallback app_launched_callback,
     AppLaunchSplashScreen* splash_screen,
     LaunchCompleteCallback done_callback)
     : KioskLaunchController(
+          local_state,
           host,
           splash_screen,
           /*profile_loader=*/base::BindOnce(&LoadProfile),
@@ -347,6 +342,7 @@ KioskLaunchController::KioskLaunchController(
           std::make_unique<DefaultAcceleratorController>()) {}
 
 KioskLaunchController::KioskLaunchController(
+    PrefService* local_state,
     LoginDisplayHost* host,
     AppLaunchSplashScreen* splash_screen,
     LoadProfileCallback profile_loader,
@@ -357,7 +353,8 @@ KioskLaunchController::KioskLaunchController(
     KioskAppLauncherFactory app_launcher_factory,
     std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor,
     std::unique_ptr<AcceleratorController> accelerator_controller)
-    : host_(host),
+    : local_state_(CHECK_DEREF(local_state)),
+      host_(host),
       splash_screen_(splash_screen),
       app_launcher_factory_(std::move(app_launcher_factory)),
       network_ui_controller_(std::make_unique<NetworkUiController>(
@@ -407,24 +404,26 @@ void KioskLaunchController::Start(KioskApp kiosk_app, bool auto_launch) {
 
   profile_loader_handle_ =
       std::move(profile_loader_)
-          .Run(kiosk_app_id().account_id, kiosk_app_id().type,
-               /*on_done=*/
-               base::BindOnce(
-                   [](KioskLaunchController* self, LoadProfileResult result) {
-                     CHECK(!self->profile_) << "Kiosk profile loaded twice";
-                     self->profile_loader_handle_.reset();
+          .Run(
+              /*local_state=*/&local_state_.get(), kiosk_app_id().account_id,
+              kiosk_app_id().type,
+              /*on_done=*/
+              base::BindOnce(
+                  [](KioskLaunchController* self, LoadProfileResult result) {
+                    CHECK(!self->profile_) << "Kiosk profile loaded twice";
+                    self->profile_loader_handle_.reset();
 
-                     if (!result.has_value()) {
-                       self->HandleProfileLoadError(std::move(result.error()));
-                       return;
-                     }
+                    if (!result.has_value()) {
+                      self->HandleProfileLoadError(std::move(result.error()));
+                      return;
+                    }
 
-                     SYSLOG(INFO) << "Profile loaded... Starting app launch.";
-                     self->profile_ = result.value();
-                     self->StartAppLaunch(*self->profile_);
-                   },
-                   // Safe because `this` owns `profile_loader_handle_`.
-                   base::Unretained(this)));
+                    SYSLOG(INFO) << "Profile loaded... Starting app launch.";
+                    self->profile_ = result.value();
+                    self->StartAppLaunch(*self->profile_);
+                  },
+                  // Safe because `this` owns `profile_loader_handle_`.
+                  base::Unretained(this)));
 }
 
 void KioskLaunchController::AddKioskProfileLoadFailedObserver(
@@ -517,6 +516,13 @@ void KioskLaunchController::CleanUp() {
   cleaned_up_ = true;
 
   splash_wait_timer_.Stop();
+
+  // Close all windows opened on the splash screen before entering the kiosk
+  // session.
+  auto web_dialog_instances = SystemWebDialogDelegate::GetAllInstances();
+  for (auto instance : web_dialog_instances) {
+    instance->Close();
+  }
 
   splash_screen_ = nullptr;
 
@@ -615,7 +621,7 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
               : AppLaunchSplashScreenView::AppLaunchState::
                     kIsolatedAppNotAllowed);
       splash_screen_->HideThrobber();
-      KioskAppLaunchError::Save(error);
+      KioskAppLaunchError::Save(local_state_.get(), error);
       return;
     case Error::kHasPendingLaunch:
     case Error::kUnableToMount:
@@ -637,8 +643,20 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
         return;
       }
 
-      // Save the error to prevent re-launch and show the error-toast.
-      KioskAppLaunchError::Save(error);
+      // Save the error to prevent re-launch and show the error-toast, but do
+      // not overwrite if an error was already saved. This can happen in cases
+      // like `kChromeAppDeprecated` followed by `kUserCancel`, where this
+      // method shows a deprecation message in the splash screen, and the user
+      // then cancels launch.
+      if (KioskAppLaunchError::Get(local_state_.get()) ==
+          KioskAppLaunchError::Error::kNone) {
+        KioskAppLaunchError::Save(local_state_.get(), error);
+      }
+      // Save `kUserCancel` separately so it can be used to prevent auto-launch
+      // when Chrome restarts.
+      if (error == Error::kUserCancel) {
+        KioskAppLaunchError::SaveUserCancelledLaunch(local_state_.get());
+      }
       std::move(attempt_logout_).Run();
       break;
   }

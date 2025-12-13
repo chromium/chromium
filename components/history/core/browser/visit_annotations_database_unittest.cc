@@ -54,7 +54,7 @@ class VisitAnnotationsDatabaseTest : public testing::Test,
                            bool add_context_annotation = true) {
     VisitRow visit_row;
     visit_row.visit_time = visit_time;
-    auto visit_id = AddVisit(&visit_row, VisitSource::SOURCE_BROWSED);
+    auto visit_id = AddVisit(&visit_row);
     if (add_context_annotation)
       AddContextAnnotationsForVisit(visit_id, {});
     return visit_id;
@@ -723,22 +723,6 @@ TEST_F(VisitAnnotationsDatabaseTest, DeserializeDataFromCrossDeviceSync) {
   EXPECT_EQ(deserialized_categories, expected_deserialized_categories);
   EXPECT_EQ(deserialized_related_searches,
             expected_deserialized_related_searches);
-}
-
-TEST_F(VisitAnnotationsDatabaseTest, AddClusters_UpdateVisitsInteractionState) {
-  const std::vector<VisitID>& kSampleVisitIds = {3, 2, 5};
-  auto clusters = CreateClusters({kSampleVisitIds});
-  AddClusters(clusters);
-
-  EXPECT_EQ(GetClusterVisit(kSampleVisitIds.front()).interaction_state,
-            ClusterVisit::InteractionState::kDefault);
-
-  UpdateVisitsInteractionState(kSampleVisitIds,
-                               ClusterVisit::InteractionState::kDone);
-  for (auto visit_id : kSampleVisitIds) {
-    EXPECT_EQ(GetClusterVisit(visit_id).interaction_state,
-              ClusterVisit::InteractionState::kDone);
-  }
 }
 
 }  // namespace history

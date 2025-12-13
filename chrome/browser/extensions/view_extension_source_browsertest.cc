@@ -44,10 +44,9 @@ IN_PROC_BROWSER_TEST_F(ViewExtensionSourceTest, ViewSourceTabRestore) {
   // Go to the Chrome bookmarks URL.  It should redirect to the bookmark
   // manager Chrome extension.
   GURL bookmarks_url(chrome::kChromeUIBookmarksURL);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bookmarks_url));
+  content::WebContents* bookmarks_tab = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(bookmarks_tab, bookmarks_url));
   EXPECT_TRUE(chrome::CanViewSource(browser()));
-  content::WebContents* bookmarks_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
   GURL bookmarks_extension_url =
       bookmarks_tab->GetPrimaryMainFrame()->GetLastCommittedURL();
   EXPECT_TRUE(bookmarks_extension_url.SchemeIs(extensions::kExtensionScheme));
@@ -56,8 +55,7 @@ IN_PROC_BROWSER_TEST_F(ViewExtensionSourceTest, ViewSourceTabRestore) {
   GURL view_source_url(content::kViewSourceScheme + std::string(":") +
                        bookmarks_extension_url.spec());
   ASSERT_TRUE(AddTabAtIndex(1, view_source_url, ui::PAGE_TRANSITION_TYPED));
-  content::WebContents* view_source_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* view_source_tab = GetActiveWebContents();
   EXPECT_EQ(view_source_url, view_source_tab->GetVisibleURL());
   EXPECT_EQ(bookmarks_extension_url,
             view_source_tab->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -72,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(ViewExtensionSourceTest, ViewSourceTabRestore) {
   ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
   chrome::RestoreTab(browser());
   wait_for_new_tab.Wait();
-  view_source_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  view_source_tab = GetActiveWebContents();
   EXPECT_TRUE(WaitForLoadStop(view_source_tab));
 
   // Verify the browser-side URLs.  Note that without view-source, the

@@ -286,7 +286,7 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
 // the background before they have been parsed by the HTML parser. Use
 // InlineScriptStreamer::From() to create a ScriptStreamer from this class.
 class CORE_EXPORT BackgroundInlineScriptStreamer final
-    : public WTF::ThreadSafeRefCounted<BackgroundInlineScriptStreamer> {
+    : public ThreadSafeRefCounted<BackgroundInlineScriptStreamer> {
  public:
   BackgroundInlineScriptStreamer(
       v8::Isolate* isolate,
@@ -303,7 +303,7 @@ class CORE_EXPORT BackgroundInlineScriptStreamer final
   v8::ScriptCompiler::StreamedSource* Source(v8::ScriptType expected_type);
 
  private:
-  friend class WTF::ThreadSafeRefCounted<BackgroundInlineScriptStreamer>;
+  friend class ThreadSafeRefCounted<BackgroundInlineScriptStreamer>;
   ~BackgroundInlineScriptStreamer() = default;
 
   std::unique_ptr<v8::ScriptCompiler::StreamedSource> source_;

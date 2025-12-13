@@ -106,12 +106,6 @@ bool EphemeralRangeTemplate<Strategy>::operator==(
 }
 
 template <typename Strategy>
-bool EphemeralRangeTemplate<Strategy>::operator!=(
-    const EphemeralRangeTemplate<Strategy>& other) const {
-  return !operator==(other);
-}
-
-template <typename Strategy>
 Document& EphemeralRangeTemplate<Strategy>::GetDocument() const {
   DCHECK(IsNotNull());
   return *start_position_.GetDocument();

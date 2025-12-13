@@ -25,57 +25,84 @@ found in the LICENSE file.
         android:importantForAccessibility="no" />
 
     <LinearLayout
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/instance_switcher_dialog_list_item_height"
+        android:orientation="horizontal"
+        android:weightSum="8"
         android:layout_toEndOf="@id/favicon"
-        android:layout_toStartOf="@id/last_accessed"
-        android:layout_centerVertical="true"
-        android:orientation="vertical"
-        android:layout_marginEnd="8dp" >
+        android:layout_toStartOf="@+id/buttons_container"
+        android:layout_centerVertical="true">
 
-        <org.chromium.ui.widget.TextViewWithLeading
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/text"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary.InstanceSwitcherItem"
-            android:layout_gravity="center_vertical"
-            app:leading="@dimen/text_size_large_leading" />
+            android:layout_weight="5"
+            android:layout_gravity="center_vertical">
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary.InstanceSwitcherItem"
+                app:leading="@dimen/text_size_large_leading"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/desc"
+                app:layout_constraintVertical_chainStyle="packed" />
+            <TextView
+                android:id="@+id/desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.TextLarge.Secondary.InstanceSwitcherItem"
+                app:leading="@dimen/text_size_medium_leading"
+                app:layout_constraintTop_toBottomOf="@+id/title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
         <TextView
-            android:id="@+id/desc"
-            android:layout_width="wrap_content"
+            android:id="@+id/last_accessed"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:layout_weight="3"
+            android:ellipsize="end"
+            android:layout_marginEnd="16dp"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.TextLarge.Secondary.InstanceSwitcherItem"
             android:layout_gravity="center_vertical"
+            android:gravity="end"
             app:leading="@dimen/text_size_medium_leading" />
     </LinearLayout>
 
-   <TextView
-        android:id="@+id/last_accessed"
+    <FrameLayout
+        android:id="@+id/buttons_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.TextLarge.Secondary.InstanceSwitcherItem"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@id/close_button"
-        android:layout_marginEnd="16dp"
-        android:gravity="end"
-        app:leading="@dimen/text_size_medium_leading" />
-
-    <ImageView
-        android:id="@+id/close_button"
-        android:src="@drawable/material_ic_close_24dp"
-        android:contentDescription="@string/close"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
         android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_marginHorizontal="16dp"
-        android:scaleType="fitCenter"
-        app:tint="@color/instance_switcher_item_foreground_color_list"/>
+        android:layout_centerVertical="true">
+
+        <ImageButton
+            android:id="@+id/close_button"
+            android:background="@drawable/default_icon_background"
+            android:visibility="gone"
+            android:src="@drawable/material_ic_close_24dp"
+            android:contentDescription="@string/close"
+            android:layout_width="@dimen/min_touch_target_size"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:layout_marginEnd="4dp"
+            android:scaleType="center"
+            app:tint="@color/instance_switcher_item_foreground_color_list"/>
+
+        <org.chromium.ui.listmenu.ListMenuButton
+            android:id="@+id/more"
+            android:src="@drawable/ic_more_vert_24dp"
+            android:layout_width="@dimen/min_touch_target_size"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/default_icon_background"
+            android:visibility="visible"
+            app:tint="@color/instance_switcher_item_foreground_color_list" />
+    </FrameLayout>
 </RelativeLayout>

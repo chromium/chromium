@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">appelsiner</translation>
 <translation id="1275718070701477396">Valgt</translation>
 <translation id="1290331692326790741">Svakt signal</translation>
+<translation id="1292474106138697109">Kursverktøyvisning</translation>
 <translation id="1300115153046603471">APN-et er type standard og <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Konverter</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
 <translation id="4300272766492248925">Åpne appen</translation>
 <translation id="430786093962686457">chiffon</translation>
+<translation id="4309762678330556039">Opprett transkripsjoner automatisk, og søk i lyd. Du kan gjøre opptak selv når du ikke er koblet til internett.</translation>
 <translation id="4310735698903592804">Nylige bakgrunner basert på AI-løsninger fra Google</translation>
 <translation id="4320904097188876154">neonrosa</translation>
 <translation id="432961742358282111">Høyreklikk eller trykk og hold for å få definisjoner, oversettelser eller enhetskonverteringer. Bruk venstre- eller høyrepilen for å administrere denne funksjonen.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" />-tasten er testet</translation>
 <translation id="5606865426897221650">Fane</translation>
+<translation id="5612205513582918357">Kursverktøy deler skjermen din med <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Du er blitt logget av</translation>
 <translation id="5620281292257375798">Bare internt</translation>
 <translation id="5628106863521633649">Tilgjengelige språk</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Skyflyt</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Ingen skannere er tilgjengelige</translation>
-<translation id="6231648282154119906">Mistenkelige filer skannes automatisk av Google Safe Browsing som en del av den økte beskyttelsen du har valgt</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6234024205316847054">Vis omriss</translation>
 <translation id="6243280677745499710">Nåværende bakgrunn</translation>

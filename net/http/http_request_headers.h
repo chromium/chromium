@@ -68,42 +68,42 @@ class NET_EXPORT HttpRequestHeaders {
     const HttpRequestHeaders::HeaderVector::const_iterator end_;
   };
 
-  static const char kConnectMethod[];
-  static const char kDeleteMethod[];
-  static const char kGetMethod[];
-  static const char kHeadMethod[];
-  static const char kOptionsMethod[];
-  static const char kPatchMethod[];
-  static const char kPostMethod[];
-  static const char kPutMethod[];
-  static const char kTraceMethod[];
-  static const char kTrackMethod[];
+  static constexpr char kConnectMethod[] = "CONNECT";
+  static constexpr char kDeleteMethod[] = "DELETE";
+  static constexpr char kGetMethod[] = "GET";
+  static constexpr char kHeadMethod[] = "HEAD";
+  static constexpr char kOptionsMethod[] = "OPTIONS";
+  static constexpr char kPatchMethod[] = "PATCH";
+  static constexpr char kPostMethod[] = "POST";
+  static constexpr char kPutMethod[] = "PUT";
+  static constexpr char kTraceMethod[] = "TRACE";
+  static constexpr char kTrackMethod[] = "TRACK";
 
-  static const char kAccept[];
-  static const char kAcceptCharset[];
-  static const char kAcceptEncoding[];
-  static const char kAcceptLanguage[];
-  static const char kAuthorization[];
-  static const char kCacheControl[];
-  static const char kConnection[];
-  static const char kContentType[];
-  static const char kCookie[];
-  static const char kContentLength[];
-  static const char kHost[];
-  static const char kIfMatch[];
-  static const char kIfModifiedSince[];
-  static const char kIfNoneMatch[];
-  static const char kIfRange[];
-  static const char kIfUnmodifiedSince[];
-  static const char kOrigin[];
-  static const char kPragma[];
-  static const char kPriority[];
-  static const char kProxyAuthorization[];
-  static const char kProxyConnection[];
-  static const char kRange[];
-  static const char kReferer[];
-  static const char kTransferEncoding[];
-  static const char kUserAgent[];
+  static constexpr char kAccept[] = "Accept";
+  static constexpr char kAcceptCharset[] = "Accept-Charset";
+  static constexpr char kAcceptEncoding[] = "Accept-Encoding";
+  static constexpr char kAcceptLanguage[] = "Accept-Language";
+  static constexpr char kAuthorization[] = "Authorization";
+  static constexpr char kCacheControl[] = "Cache-Control";
+  static constexpr char kConnection[] = "Connection";
+  static constexpr char kContentLength[] = "Content-Length";
+  static constexpr char kContentType[] = "Content-Type";
+  static constexpr char kCookie[] = "Cookie";
+  static constexpr char kHost[] = "Host";
+  static constexpr char kIfMatch[] = "If-Match";
+  static constexpr char kIfModifiedSince[] = "If-Modified-Since";
+  static constexpr char kIfNoneMatch[] = "If-None-Match";
+  static constexpr char kIfRange[] = "If-Range";
+  static constexpr char kIfUnmodifiedSince[] = "If-Unmodified-Since";
+  static constexpr char kOrigin[] = "Origin";
+  static constexpr char kPragma[] = "Pragma";
+  static constexpr char kPriority[] = "Priority";
+  static constexpr char kProxyAuthorization[] = "Proxy-Authorization";
+  static constexpr char kProxyConnection[] = "Proxy-Connection";
+  static constexpr char kRange[] = "Range";
+  static constexpr char kReferer[] = "Referer";
+  static constexpr char kTransferEncoding[] = "Transfer-Encoding";
+  static constexpr char kUserAgent[] = "User-Agent";
 
   HttpRequestHeaders();
   HttpRequestHeaders(const HttpRequestHeaders& other);
@@ -119,8 +119,9 @@ class NET_EXPORT HttpRequestHeaders {
     return FindHeader(key) != headers_.end();
   }
 
-  // Gets the first header that matches |key|, if one exists. If none exist,
+  // Gets the first header that matches `key`, if one exists. If none exist,
   // returns std::nullopt.
+  std::optional<std::string_view> GetHeaderView(std::string_view key) const;
   std::optional<std::string> GetHeader(std::string_view key) const;
 
   // Clears all the headers.

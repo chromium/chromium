@@ -36,8 +36,6 @@ namespace content {
 
 namespace {
 
-using ::testing::Invoke;
-
 class SequenceManagerThreadDelegate : public base::Thread::Delegate {
  public:
   SequenceManagerThreadDelegate() {
@@ -320,9 +318,7 @@ TEST_F(BrowserThreadWithCustomSchedulerTest, PostBestEffortTask) {
 
   BrowserTaskExecutor::OnStartupComplete();
   base::RunLoop run_loop;
-  EXPECT_CALL(best_effort_task, Run).WillOnce(Invoke([&]() {
-    run_loop.Quit();
-  }));
+  EXPECT_CALL(best_effort_task, Run).WillOnce([&]() { run_loop.Quit(); });
   run_loop.Run();
 }
 

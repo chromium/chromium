@@ -9,6 +9,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/safe_ref.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -30,7 +31,8 @@ class NavigationEntryScreenshotCacheEvictor;
 // share the same manager. The manager should only be accessed by the
 // `NavigationEntryScreenshotCache` and tests.
 class CONTENT_EXPORT NavigationEntryScreenshotManager
-    : public display::DisplayObserver {
+    : public display::DisplayObserver,
+      public base::MemoryPressureListener {
  public:
   NavigationEntryScreenshotManager();
   NavigationEntryScreenshotManager(const NavigationEntryScreenshotManager&) =
@@ -97,7 +99,7 @@ class CONTENT_EXPORT NavigationEntryScreenshotManager
   // Used by `listener_`. When the system memory is under critical pressure, all
   // screenshots under this `Profile` are purged.
   void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level) override;
   FRIEND_TEST_ALL_PREFIXES(NavigationEntryScreenshotCacheTest,
                            OnMemoryPressureCritical);
 
@@ -116,7 +118,7 @@ class CONTENT_EXPORT NavigationEntryScreenshotManager
   // The `listener_` monitors the system memory pressure, and calls
   // `NavigationEntryScreenshotManager::OnMemoryPressure` when the system
   // memory pressure level changes.
-  std::unique_ptr<base::MemoryPressureListener> listener_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration> listener_;
 
   // The most recently used cache is stored at the front of the
   // `base::LRUCacheSet`. A limited interface to the tab's cache is used so that

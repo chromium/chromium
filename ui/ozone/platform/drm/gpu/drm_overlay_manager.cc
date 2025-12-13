@@ -11,8 +11,9 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_candidates.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
@@ -167,7 +168,7 @@ void DrmOverlayManager::CheckOverlaySupport(
     // that a system doesn't support overlays for certain buffer formats. Thus,
     // doing IPC below to do validation is just waste of resources given |this|
     // is aware of that limitation.
-    can_handle &= IsBufferFormatSupported(candidate.format, widget);
+    can_handle &= IsFormatSupported(candidate.format, widget);
 
     // If we can't handle the candidate in an overlay replace it with default
     // value. The quad might have a non-integer display rect which hits a
@@ -299,11 +300,11 @@ void DrmOverlayManager::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
   }
 }
 
-void DrmOverlayManager::SetSupportedBufferFormats(
+void DrmOverlayManager::SetSupportedSharedImageFormats(
     gfx::AcceleratedWidget widget,
-    base::flat_set<gfx::BufferFormat> supported_buffer_formats) {
-  per_widget_overlay_supported_buffer_formats_.insert_or_assign(
-      widget, std::move(supported_buffer_formats));
+    base::flat_set<viz::SharedImageFormat> supported_formats) {
+  per_widget_overlay_supported_formats_.insert_or_assign(
+      widget, std::move(supported_formats));
 }
 
 void DrmOverlayManager::OnPromotedOverlayTypes(
@@ -363,21 +364,20 @@ bool DrmOverlayManager::CanHandleCandidate(
   return true;
 }
 
-bool DrmOverlayManager::IsBufferFormatSupported(
-    gfx::BufferFormat required_overlay_buffer_format,
+bool DrmOverlayManager::IsFormatSupported(
+    viz::SharedImageFormat required_overlay_format,
     gfx::AcceleratedWidget widget) const {
   auto supported_formats_it =
-      per_widget_overlay_supported_buffer_formats_.find(widget);
-  if (supported_formats_it ==
-      per_widget_overlay_supported_buffer_formats_.end()) {
+      per_widget_overlay_supported_formats_.find(widget);
+  if (supported_formats_it == per_widget_overlay_supported_formats_.end()) {
     // Supported formats are unknown.
     return false;
   }
 
   auto format_it = std::ranges::find_if(
       supported_formats_it->second,
-      [required_overlay_buffer_format](const auto& supported_format) {
-        return required_overlay_buffer_format == supported_format;
+      [required_overlay_format](const auto& supported_format) {
+        return required_overlay_format == supported_format;
       });
   return format_it != supported_formats_it->second.end();
 }

@@ -1,9 +1,6 @@
 include_rules = [
   "+components/browsing_data/content",
   "+components/browsing_data/core",
-  "+components/fingerprinting_protection_filter/browser",
-  "+components/fingerprinting_protection_filter/common",
-  "+components/ip_protection/common",
   "+components/page_load_metrics/browser",
   "+components/security_state/core",
   "+components/services/storage/public/cpp",
@@ -27,6 +24,7 @@ include_rules = [
 
 specific_include_rules = {
   "page_specific_content_settings.cc": [
+    "+net/device_bound_sessions/session_access.h",
     "+services/network/public/mojom/shared_dictionary_access_observer.mojom.h",
   ],
   "page_specific_content_settings_unittest.cc": [

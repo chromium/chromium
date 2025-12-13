@@ -42,7 +42,7 @@
 
 @end
 
-@interface AutofillProfileCell : TableViewCell
+@interface AutofillProfileCell : LegacyTableViewCell
 
 // The cell imageView.
 @property(nonatomic, readonly, strong) UIImageView* imageView;

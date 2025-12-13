@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/metrics/histogram_base.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -25,9 +26,9 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -189,7 +190,8 @@ class IntentPickerBubbleViewBrowserTestChromeOSBase
 
     auto app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
     app->name = app_name;
-    app->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(url));
+    app->intent_filters.emplace();
+    app->intent_filters->push_back(apps_util::MakeIntentFilterForUrlScope(url));
     std::vector<apps::AppPtr> apps;
     apps.push_back(std::move(app));
     app_service_proxy_->OnApps(std::move(apps), apps::AppType::kArc,
@@ -305,7 +307,7 @@ class IntentPickerBubbleViewBrowserTestChromeOSBase
   void CheckStayInChrome() {
     ASSERT_TRUE(intent_picker_bubble());
     intent_picker_bubble()->CancelDialog();
-    EXPECT_EQ(BrowserList::GetInstance()->GetLastActive(), browser());
+    EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(), browser());
     EXPECT_EQ(launched_arc_apps().size(), 0U);
   }
 
@@ -318,7 +320,8 @@ class IntentPickerBubbleViewBrowserTestChromeOSBase
 
   bool VerifyPWALaunched(const std::string& app_id) {
     WaitForAppService();
-    Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+    BrowserWindowInterface* const app_browser =
+        GetLastActiveBrowserWindowInterfaceWithAnyProfile();
     return web_app::AppBrowserController::IsForWebApp(app_browser, app_id);
   }
 
@@ -796,7 +799,8 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTestChromeOSParameterized,
   remember_selection_checkbox()->SetChecked(true);
   ASSERT_TRUE(intent_picker_bubble());
   intent_picker_bubble()->AcceptDialog();
-  WaitForAppService();
+
+  apps_util::PreferredAppUpdateWaiter(profile(), app_id).Wait();
 
   // Navigate to the same site again, and verify the app is automatically
   // launched.

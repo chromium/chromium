@@ -11,9 +11,6 @@ import android.media.MediaCodecInfo.CodecProfileLevel;
 import android.media.MediaCodecList;
 import android.media.MediaCrypto;
 import android.media.MediaFormat;
-import android.os.Build;
-
-import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -24,8 +21,6 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -40,7 +35,6 @@ class MediaCodecUtil {
     public static class CodecCreationInfo {
         public @Nullable MediaCodec mediaCodec;
         public boolean supportsAdaptivePlayback;
-        public @BitrateAdjuster.Type int bitrateAdjuster = BitrateAdjuster.Type.NO_ADJUSTMENT;
     }
 
     public static final class MimeTypes {
@@ -56,11 +50,10 @@ class MediaCodecUtil {
     }
 
     /**
-     * Class to abstract platform version API differences for interacting with
-     * the MediaCodecList.
+     * Class to abstract platform version API differences for interacting with the MediaCodecList.
      */
     private static class MediaCodecListHelper implements Iterable<MediaCodecInfo> {
-        public MediaCodecListHelper() {
+        MediaCodecListHelper() {
             try {
                 mCodecList = new MediaCodecList(MediaCodecList.ALL_CODECS).getCodecInfos();
             } catch (Throwable e) {
@@ -119,9 +112,7 @@ class MediaCodecUtil {
 
     /** Return true if and only if info is a software codec. */
     public static boolean isSoftwareCodec(MediaCodecInfo info) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (!info.isHardwareAccelerated() || info.isSoftwareOnly()) return true;
-        }
+        if (!info.isHardwareAccelerated() || info.isSoftwareOnly()) return true;
 
         String name = info.getName().toLowerCase(Locale.ROOT);
 
@@ -178,31 +169,6 @@ class MediaCodecUtil {
                 requireSoftwareCodec,
                 requireHardwareCodec);
         return "";
-    }
-
-    /**
-     * Get a list of encoder supported color formats for specified MIME type.
-     *
-     * @param mime MIME type of the media format.
-     * @return a list of encoder supported color formats.
-     */
-    @CalledByNative
-    private static int @Nullable [] getEncoderColorFormatsForMime(String mime) {
-        MediaCodecListHelper codecListHelper = new MediaCodecListHelper();
-        for (MediaCodecInfo info : codecListHelper) {
-            if (!info.isEncoder()) continue;
-
-            for (String supportedType : info.getSupportedTypes()) {
-                if (supportedType.equalsIgnoreCase(mime)) {
-                    try {
-                        return info.getCapabilitiesForType(supportedType).colorFormats;
-                    } catch (IllegalArgumentException e) {
-                        // Type is not supported.
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     /**
@@ -436,199 +402,6 @@ class MediaCodecUtil {
             Log.e(TAG, "Cannot retrieve codec information", e);
         }
         return false;
-    }
-
-    // List of supported HW encoders.
-    @IntDef({
-        HWEncoder.QCOM_VP8,
-        HWEncoder.QCOM_H264,
-        HWEncoder.EXYNOS_VP8,
-        HWEncoder.EXYNOS_VP9,
-        HWEncoder.EXYNOS_H264,
-        HWEncoder.MEDIATEK_H264,
-        HWEncoder.HISI_H264,
-        HWEncoder.SPREADTRUM_H264
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface HWEncoder {
-        int QCOM_VP8 = 0;
-        int QCOM_H264 = 1;
-        int EXYNOS_VP8 = 2;
-        int EXYNOS_VP9 = 3;
-        int EXYNOS_H264 = 4;
-        int MEDIATEK_H264 = 5;
-        int HISI_H264 = 6;
-        int SPREADTRUM_H264 = 7;
-        int NUM_ENTRIES = 8;
-    }
-
-    private static String getMimeForHWEncoder(@HWEncoder int encoder) {
-        switch (encoder) {
-            case HWEncoder.QCOM_VP8:
-            case HWEncoder.EXYNOS_VP8:
-                return MimeTypes.VIDEO_VP8;
-            case HWEncoder.EXYNOS_VP9:
-                return MimeTypes.VIDEO_VP9;
-            case HWEncoder.QCOM_H264:
-            case HWEncoder.EXYNOS_H264:
-            case HWEncoder.MEDIATEK_H264:
-            case HWEncoder.HISI_H264:
-            case HWEncoder.SPREADTRUM_H264:
-                return MimeTypes.VIDEO_H264;
-        }
-        return "";
-    }
-
-    private static String getPrefixForHWEncoder(@HWEncoder int encoder) {
-        // NOTE: Prefixes must be lower case since the comparison is done in lower case.
-        switch (encoder) {
-            case HWEncoder.QCOM_VP8:
-            case HWEncoder.QCOM_H264:
-                return "qcom";
-            case HWEncoder.EXYNOS_VP8:
-            case HWEncoder.EXYNOS_VP9:
-            case HWEncoder.EXYNOS_H264:
-                return "exynos";
-            case HWEncoder.MEDIATEK_H264:
-                return "mtk";
-            case HWEncoder.HISI_H264:
-                return "hisi";
-            case HWEncoder.SPREADTRUM_H264:
-                return "sprd";
-        }
-        return "";
-    }
-
-    private static int getMinSDKForHWEncoder(@HWEncoder int encoder) {
-        switch (encoder) {
-            case HWEncoder.QCOM_VP8:
-            case HWEncoder.QCOM_H264:
-            case HWEncoder.EXYNOS_H264:
-            case HWEncoder.HISI_H264:
-            case HWEncoder.EXYNOS_VP8:
-            case HWEncoder.EXYNOS_VP9:
-                return Build.VERSION_CODES.N;
-            case HWEncoder.MEDIATEK_H264:
-                return Build.VERSION_CODES.O_MR1;
-            case HWEncoder.SPREADTRUM_H264:
-                return Build.VERSION_CODES.R;
-        }
-        return -1;
-    }
-
-    private static @BitrateAdjuster.Type int getBitrateAdjusterTypeForHWEncoder(
-            @HWEncoder int decoder) {
-        switch (decoder) {
-            case HWEncoder.QCOM_VP8:
-            case HWEncoder.QCOM_H264:
-            case HWEncoder.EXYNOS_VP8:
-                return BitrateAdjuster.Type.NO_ADJUSTMENT;
-            case HWEncoder.EXYNOS_H264:
-            case HWEncoder.MEDIATEK_H264:
-            case HWEncoder.HISI_H264:
-            case HWEncoder.SPREADTRUM_H264:
-                return BitrateAdjuster.Type.FRAMERATE_ADJUSTMENT;
-        }
-        throw new IllegalArgumentException("Invalid HWEncoder decoder parameter.");
-    }
-
-    /**
-     * Creates MediaCodec encoder.
-     * @param mime MIME type of the media.
-     * @return CodecCreationInfo object
-     */
-    static CodecCreationInfo createEncoder(String mime) {
-        // Always return a valid CodecCreationInfo, its |mediaCodec| field will be null
-        // if we cannot create the codec.
-        CodecCreationInfo result = new CodecCreationInfo();
-
-        @HWEncoder
-        @Nullable
-        Integer encoderProperties = findHWEncoder(mime);
-        if (encoderProperties == null) return result;
-
-        try {
-            result.mediaCodec = MediaCodec.createEncoderByType(mime);
-            result.supportsAdaptivePlayback = false;
-            result.bitrateAdjuster = getBitrateAdjusterTypeForHWEncoder(encoderProperties);
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to create MediaCodec: %s", mime, e);
-        }
-        return result;
-    }
-
-    /**
-     * This is a way to handle misbehaving devices.
-     * @param mime MIME type as passed to mediaCodec.createEncoderByType(mime).
-     * @return true if this codec is supported for encoder on this device.
-     */
-    @CalledByNative
-    static boolean isEncoderSupportedByDevice(String mime) {
-        return findHWEncoder(mime) != null;
-    }
-
-    /**
-     * Provides a way to avoid calling MediaCodec.setOutputSurface() on unsupported devices.
-     * @return true if setOutputSurface() is expected to work.
-     */
-    @CalledByNative
-    static boolean isSetOutputSurfaceSupported() {
-        // All Huawei devices based on this processor will immediately hang during
-        // MediaCodec.setOutputSurface().  http://crbug.com/683401
-        // Huawei P9 lite will, eventually, get the decoder into a bad state if SetSurface is called
-        // enough times (https://crbug.com/792261).
-        return !Build.HARDWARE.equalsIgnoreCase("hi6210sft")
-                && !Build.HARDWARE.equalsIgnoreCase("hi6250");
-    }
-
-    /**
-     * Find HW encoder with given MIME type.
-     * @param mime MIME type of the media.
-     * @return HWEncoder or null if not found.
-     */
-    private static @Nullable @HWEncoder Integer findHWEncoder(String mime) {
-        MediaCodecListHelper codecListHelper = new MediaCodecListHelper();
-        for (MediaCodecInfo info : codecListHelper) {
-            if (!info.isEncoder() || isSoftwareCodec(info)) continue;
-
-            String encoderName = null;
-            for (String mimeType : info.getSupportedTypes()) {
-                if (mimeType.equalsIgnoreCase(mime)) {
-                    encoderName = info.getName().toLowerCase(Locale.getDefault());
-                    break;
-                }
-            }
-
-            if (encoderName == null) {
-                continue; // No HW support in this codec; try the next one.
-            }
-
-            // Check if this is supported HW encoder.
-            for (@HWEncoder int codecProperties = 0;
-                    codecProperties < HWEncoder.NUM_ENTRIES;
-                    codecProperties++) {
-                if (!mime.equalsIgnoreCase(getMimeForHWEncoder(codecProperties))) continue;
-
-                String prefix = getPrefixForHWEncoder(codecProperties);
-                if (encoderName.startsWith("omx." + prefix + ".")
-                        || encoderName.startsWith("c2." + prefix + ".")) {
-                    if (Build.VERSION.SDK_INT < getMinSDKForHWEncoder(codecProperties)) {
-                        Log.w(
-                                TAG,
-                                "Codec "
-                                        + encoderName
-                                        + " is disabled due to SDK version "
-                                        + Build.VERSION.SDK_INT);
-                        continue;
-                    }
-                    Log.d(TAG, "Found target encoder for mime " + mime + " : " + encoderName);
-                    return codecProperties;
-                }
-            }
-        }
-
-        Log.w(TAG, "HW encoder for " + mime + " is not available on this device.");
-        return null;
     }
 
     @NativeMethods

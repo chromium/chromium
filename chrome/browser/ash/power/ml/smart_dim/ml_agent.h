@@ -9,6 +9,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/no_destructor.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/ash/power/ml/smart_dim/builtin_worker.h"
 #include "chrome/browser/ash/power/ml/smart_dim/download_worker.h"
 #include "chrome/browser/ash/power/ml/smart_dim/smart_dim_worker.h"

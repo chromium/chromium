@@ -10,6 +10,7 @@ component("win") {
     "//skia",
     "//ui/base",
     "//ui/base/cursor",
+    "//ui/base/ime",
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/geometry",

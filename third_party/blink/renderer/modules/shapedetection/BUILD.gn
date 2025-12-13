@@ -12,7 +12,6 @@ blink_modules_sources("shapedetection") {
     "barcode_detector_statics.h",
     "face_detector.cc",
     "face_detector.h",
-    "shape_detection_type_converter.h",
     "text_detector.cc",
     "text_detector.h",
   ]

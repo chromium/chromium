@@ -198,9 +198,6 @@ class CONTENT_EXPORT RenderWidgetHost {
   // true if visual properties have changed since last call.
   virtual bool SynchronizeVisualProperties() = 0;
 
-  // Access to the implementation's IPC::Listener::OnMessageReceived. Intended
-  // only for test code.
-
   // Add/remove a callback that can handle key presses without requiring focus.
   using KeyPressEventCallback =
       base::RepeatingCallback<bool(const input::NativeWebKeyboardEvent&)>;

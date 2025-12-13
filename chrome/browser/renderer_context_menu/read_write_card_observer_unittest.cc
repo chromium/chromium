@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/ash/read_write_cards/read_write_card_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"

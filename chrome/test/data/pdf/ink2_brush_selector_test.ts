@@ -4,7 +4,6 @@
 
 import {AnnotationBrushType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {InkBrushSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {setupMockMetricsPrivate} from './test_util.js';
@@ -29,7 +28,7 @@ function createSelector(): InkBrushSelectorElement {
 function assertBrushIcons(
     selector: InkBrushSelectorElement, selectedBrushType: AnnotationBrushType) {
   const eraserIcon = selector.$.eraser.icon;
-  assert(eraserIcon);
+  chrome.test.assertTrue(!!eraserIcon);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.ERASER ?
           'pdf-ink:ink-eraser-fill' :
@@ -37,7 +36,7 @@ function assertBrushIcons(
       eraserIcon);
 
   const highlighterIcon = selector.$.highlighter.icon;
-  assert(highlighterIcon);
+  chrome.test.assertTrue(!!highlighterIcon);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.HIGHLIGHTER ?
           'pdf-ink:ink-highlighter-fill' :
@@ -45,7 +44,7 @@ function assertBrushIcons(
       highlighterIcon);
 
   const penIcon = selector.$.pen.icon;
-  assert(penIcon);
+  chrome.test.assertTrue(!!penIcon);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.PEN ? 'pdf-ink:ink-pen-fill' :
                                                       'pdf-ink:ink-pen',

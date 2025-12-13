@@ -96,7 +96,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common:features",
     "//components/sync_preferences:test_support",
-    "//crypto:crypto",
+    "//crypto",
     "//services/preferences/public/cpp/tracked:test_support",
     "//testing/gtest",
   ]

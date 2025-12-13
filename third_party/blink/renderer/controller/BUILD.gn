@@ -59,6 +59,8 @@ component("controller") {
     "javascript_call_stack_collector.h",
     "javascript_call_stack_generator.cc",
     "javascript_call_stack_generator.h",
+    "memory_coordinator/v8_heap_memory_signal_generator.cc",
+    "memory_coordinator/v8_heap_memory_signal_generator.h",
     "memory_saver_controller.cc",
     "memory_saver_controller.h",
     "memory_usage_monitor.cc",
@@ -142,15 +144,6 @@ group("blink_unittests_data") {
   ]
 }
 
-# Old name of blink_unittests.
-# TODO(tkent): Remove this after removing external dependency.
-group("webkit_unit_tests") {
-  visibility = []  # Allow re-assignment of list.
-  visibility = [ "*" ]
-  testonly = true
-  deps = [ ":blink_unittests" ]
-}
-
 test("blink_unittests") {
   deps = [ ":blink_unittests_sources" ]
 
@@ -197,7 +190,18 @@ test("blink_unittests") {
     ]
   }
 
-  fuzztests = [ "BlinkAttributeFuzzTestFixture.NoElementAttributeCrashes" ]
+  fuzztests = [
+    "BlinkAttributeFuzzTestFixture.NoElementAttributeCrashes",
+    "AccessibilityDomScenarioRunner.HtmlAndAria",
+    "AccessibilityDomScenarioRunner.CanvasFallbackContent",
+    "AccessibilityDomScenarioRunner.SvgAndAria",
+    "AccessibilityDomScenarioRunner.MathMLAndAria",
+    "AccessibilityDomScenarioRunner.ProblematicMarkup",
+    "AccessibilityDomScenarioRunner.ValidTableAndAria",
+    "HTMLDomScenarioRunner.HTML",
+    "HTMLDomScenarioRunner.MathMLInHTML",
+    "HTMLDomScenarioRunner.SVGInHTML",
+  ]
 }
 
 test("blink_perf_tests") {
@@ -219,7 +223,7 @@ source_set("blink_perf_tests_sources") {
     "//base",
     "//base/test:test_support",
     "//content/test:test_support",
-    "//third_party/blink/renderer/core:core",
+    "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/core:perf_tests",
   ]
 
@@ -240,10 +244,10 @@ source_set("blink_bindings_test_sources") {
     "//third_party/blink/public:test_headers",
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/core:unit_test_support",
-    "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/modules:modules_testing",
     "//third_party/blink/renderer/modules/mediastream:test_support",
-    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:test_support",
   ]
   configs += [
@@ -300,7 +304,7 @@ source_set("blink_unittests_sources") {
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/core:unit_test_support",
     "//third_party/blink/renderer/core:unit_tests",
-    "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/modules:unit_tests",
     "//third_party/blink/renderer/modules/exported:test_support",
     "//third_party/blink/renderer/platform",

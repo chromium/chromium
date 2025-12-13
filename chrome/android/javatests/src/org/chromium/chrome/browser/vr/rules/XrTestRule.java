@@ -15,5 +15,6 @@ public interface XrTestRule {
      * @return The XrActivityRestriction.SupportedActivity that this rule is restricted to running
      *     in.
      */
-    public @SupportedActivity int getRestriction();
+    @SupportedActivity
+    int getRestriction();
 }

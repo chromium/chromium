@@ -8,21 +8,14 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "JavaScriptOptimizerBlockedForSites": [
-            "[*.]google.com"
-          ]
-        },
-        "prefs": {
-          "profile.managed_javascript_optimizer_blocked_for_sites": {
-            "value": [
-              "[*.]google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_javascript_optimizer_blocked_for_sites",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "[*.]google.com"
+        ]
+      ]
+    }
   }
 ]

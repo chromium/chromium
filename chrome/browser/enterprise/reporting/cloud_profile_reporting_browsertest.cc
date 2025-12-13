@@ -28,7 +28,12 @@ namespace enterprise_reporting {
 
 namespace em = enterprise_management;
 
-class CloudProfileReportingServiceTest : public PlatformBrowserTest {
+class CloudProfileReportingServiceTest
+    : public PlatformBrowserTest,
+      public testing::WithParamInterface<
+          // Two boolean variables represents whether profile reporting and
+          // signals reporting is enabled
+          testing::tuple<bool, bool>> {
  public:
   CloudProfileReportingServiceTest() = default;
   ~CloudProfileReportingServiceTest() override = default;
@@ -36,8 +41,9 @@ class CloudProfileReportingServiceTest : public PlatformBrowserTest {
   void SetUpOnMainThread() override {
     Profile* profile = chrome_test_utils::GetProfile(this);
     EnableProfileManagement(profile);
-    profile->GetPrefs()->SetBoolean(kCloudProfileReportingEnabled, true);
-    SetReportingPolicy(profile, /*enabled=*/true);
+    SetReportingPolicy(profile, profile_reporting_enabled());
+    profile->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting,
+                                    signals_reporting_enabled());
   }
 
   void EnableProfileManagement(Profile* profile) {
@@ -58,44 +64,12 @@ class CloudProfileReportingServiceTest : public PlatformBrowserTest {
   void SetReportingPolicy(Profile* profile, bool enabled) {
     profile->GetPrefs()->SetBoolean(kCloudProfileReportingEnabled, enabled);
   }
-};
-
-IN_PROC_BROWSER_TEST_F(CloudProfileReportingServiceTest, LaunchTest) {
-  base::RunLoop().RunUntilIdle();
-  ReportScheduler* report_scheduler =
-      CloudProfileReportingServiceFactory::GetForProfile(
-          chrome_test_utils::GetProfile(this))
-          ->report_scheduler();
-  ASSERT_TRUE(report_scheduler);
-  EXPECT_TRUE(report_scheduler->IsNextReportScheduledForTesting() ||
-              report_scheduler->GetActiveTriggerForTesting() ==
-                  ReportTrigger::kTriggerTimer);
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-class CloudProfileReportingServiceTestDesktop
-    : public CloudProfileReportingServiceTest,
-      public testing::WithParamInterface<
-          // Two boolean variables represents whether profile reporting and
-          // signals reporting is enabled
-          testing::tuple<bool, bool>> {
- public:
-  CloudProfileReportingServiceTestDesktop() = default;
-  ~CloudProfileReportingServiceTestDesktop() override = default;
-
-  void SetUpOnMainThread() override {
-    Profile* profile = chrome_test_utils::GetProfile(this);
-    EnableProfileManagement(profile);
-    SetReportingPolicy(profile, profile_reporting_enabled());
-    profile->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting,
-                                    signals_reporting_enabled());
-  }
 
   bool profile_reporting_enabled() { return testing::get<0>(GetParam()); }
   bool signals_reporting_enabled() { return testing::get<1>(GetParam()); }
 };
 
-IN_PROC_BROWSER_TEST_P(CloudProfileReportingServiceTestDesktop,
+IN_PROC_BROWSER_TEST_P(CloudProfileReportingServiceTest,
                        VerifyReportingConfig) {
   base::RunLoop().RunUntilIdle();
   ReportScheduler* report_scheduler =
@@ -125,11 +99,9 @@ IN_PROC_BROWSER_TEST_P(CloudProfileReportingServiceTestDesktop,
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         CloudProfileReportingServiceTestDesktop,
+                         CloudProfileReportingServiceTest,
                          testing::Combine(
                              /*profile_reporting_enabled=*/testing::Bool(),
                              /*signals_reporting_enabled=*/testing::Bool()));
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise_reporting

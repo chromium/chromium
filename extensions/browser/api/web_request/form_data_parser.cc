@@ -6,20 +6,24 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string_view>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/to_vector.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/re2/src/re2/re2.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using re2::RE2;
 
@@ -37,11 +41,11 @@ const char kCRLF[] = "\r\n";
 const char kContentTypeOctetString[] =
     "Content-Type: application/octet-stream\r\n";
 
-// A wrapper struct for static RE2 objects to be held as LazyInstance.
+// A wrapper struct for static RE2 objects to be held as a singleton.
 struct Patterns {
   Patterns();
-  // Patterns is only instantiated as a leaky LazyInstance, so the destructor
-  // is never called.
+  // Patterns is only instantiated as a NoDestructor static local instance, so
+  // the destructor is never called.
   ~Patterns() = delete;
   const RE2 transfer_padding_pattern;
   const RE2 closing_pattern;
@@ -69,7 +73,10 @@ Patterns::Patterns()
       url_encoded_pattern(std::string("(") + kCharacterPattern + "*)=(" +
                           kCharacterPattern + "*)") {}
 
-base::LazyInstance<Patterns>::Leaky g_patterns = LAZY_INSTANCE_INITIALIZER;
+const Patterns* GetPatterns() {
+  static base::NoDestructor<Patterns> instance;
+  return instance.get();
+}
 
 bool ConsumePrefix(std::string_view* str, std::string_view prefix) {
   if (!str->starts_with(prefix)) {
@@ -100,10 +107,8 @@ class FormDataParserUrlEncoded : public FormDataParser {
  private:
   // Returns the pattern to match a single name-value pair. This could be even
   // static, but then we would have to spend more code on initializing the
-  // cached pointer to g_patterns.Get().
-  const RE2& pattern() const {
-    return patterns_->url_encoded_pattern;
-  }
+  // cached pointer to `GetPatterns()`.
+  const RE2& pattern() const { return patterns_->url_encoded_pattern; }
 
   // Auxiliary constant for using RE2. Number of arguments for parsing
   // name-value pairs (one for name, one for value).
@@ -120,7 +125,7 @@ class FormDataParserUrlEncoded : public FormDataParser {
   const RE2::Arg arg_value_;
   std::array<const RE2::Arg*, args_size_> args_;
 
-  // Caching the pointer to g_patterns.Get().
+  // Caching the pointer to `GetPatterns()`.
   raw_ptr<const Patterns> patterns_;
 };
 
@@ -240,7 +245,7 @@ class FormDataParserMultipart : public FormDataParser {
   bool FinishReadingPart(std::string_view* data);
 
   // These methods could be even static, but then we would have to spend more
-  // code on initializing the cached pointer to g_patterns.Get().
+  // code on initializing the cached pointer to `GetPatterns()`.
   const RE2& transfer_padding_pattern() const {
     return patterns_->transfer_padding_pattern;
   }
@@ -279,7 +284,7 @@ class FormDataParserMultipart : public FormDataParser {
   // sequentially.
   std::string_view source_;
 
-  // Caching the pointer to g_patterns.Get().
+  // Caching the pointer to `GetPatterns()`.
   raw_ptr<const Patterns> patterns_;
 };
 
@@ -339,7 +344,7 @@ std::unique_ptr<FormDataParser> FormDataParser::CreateFromContentTypeHeader(
 
   switch (choice) {
     case URL_ENCODED:
-      return std::unique_ptr<FormDataParser>(new FormDataParserUrlEncoded());
+      return std::make_unique<FormDataParserUrlEncoded>();
     case MULTIPART:
       return std::unique_ptr<FormDataParser>(
           new FormDataParserMultipart(boundary));
@@ -356,7 +361,7 @@ FormDataParserUrlEncoded::FormDataParserUrlEncoded()
       source_malformed_(false),
       arg_name_(&name_),
       arg_value_(&value_),
-      patterns_(g_patterns.Pointer()) {
+      patterns_(GetPatterns()) {
   args_[0] = &arg_name_;
   args_[1] = &arg_value_;
 }
@@ -419,7 +424,7 @@ FormDataParserMultipart::FormDataParserMultipart(
     const std::string& boundary_separator)
     : dash_boundary_separator_("--" + boundary_separator),
       state_(STATE_INIT),
-      patterns_(g_patterns.Pointer()) {}
+      patterns_(GetPatterns()) {}
 
 FormDataParserMultipart::~FormDataParserMultipart() = default;
 

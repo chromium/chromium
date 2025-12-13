@@ -22,6 +22,9 @@ namespace content {
 // to disk.
 class CONTENT_EXPORT PersistentRepeatingTimer {
  public:
+  // An interface for storing and retrieving the last-fired time of the timer.
+  // The client of `PersistentRepeatingTimer` is responsible for providing an
+  // implementation of this interface.
   class CONTENT_EXPORT Storage {
    public:
     using TimeCallback = base::OnceCallback<void(std::optional<base::Time>)>;

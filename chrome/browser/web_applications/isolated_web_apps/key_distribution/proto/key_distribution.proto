@@ -1,0 +1,68 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package web_app;
+
+// This message is the main payload of the IWA Key Distribution Component.
+message IwaKeyDistribution {
+  // Data about key rotations.
+  IwaKeyRotations key_rotation_data = 1;
+
+  // Data about special app permissions. These permissions provide certain
+  // trusted and allowlisted apps additional and more powerful permissions.
+  IwaSpecialAppPermissions special_app_permissions_data = 2;
+
+  // Data about allowlisted/blocklisted apps.
+  IwaAccessControl iwa_access_control = 3;
+}
+
+message IwaKeyRotations {
+  message KeyRotationInfo {
+    // base64-encoded public key that this IWA’s bundle must be signed with.
+    // Leaving this field empty disables the IWA.
+    string expected_key = 1;
+  }
+
+  // A list of key rotations mapping web bundle IDs to expected keys.
+  map<string, KeyRotationInfo> key_rotations = 1;
+}
+
+message IwaSpecialAppPermissions {
+  message SpecialAppPermissions {
+    message MultiScreenCapturePermissions {
+      // The permission to allow remove "Your screen is captured" notification
+      // for multi-screen capture.
+      bool skip_capture_started_notification = 2;
+    }
+    MultiScreenCapturePermissions multi_screen_capture = 1;
+  }
+
+  // A list of special app permissions mapping web bundle IDs to additional
+  // capabilities.
+  map<string, SpecialAppPermissions> special_app_permissions = 1;
+}
+
+message IwaAccessControl {
+  // Types introduced for the future extensibility.
+  message ManagedAllowlistItemData {}
+  message BlocklistItemData {}
+  message UserInstallAllowlistItemData {
+    // This information is needed to present the enterprise
+    // name in the install wizard.
+    string enterprise_name = 1;
+  }
+
+  // Keys represent web bundle ids of allowed apps.
+  // Only allowed apps can be installed and updated.
+  map<string, ManagedAllowlistItemData> managed_allowlist = 1;
+
+  // Keys represent web bundle ids of blocked apps.
+  map<string, BlocklistItemData> blocklist = 2;
+
+  // Keys represent web bundle ids of apps allowed for manual installation.
+  // Only allowed apps can be installed and updated.
+  map<string, UserInstallAllowlistItemData> user_install_allowlist = 3;
+}

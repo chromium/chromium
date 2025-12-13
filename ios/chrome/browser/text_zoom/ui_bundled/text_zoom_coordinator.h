@@ -20,9 +20,6 @@
 // Presenter used by this coordinator to present itself.
 @property(nonatomic, strong) ToolbarAccessoryPresenter* presenter;
 
-// Delegate to inform when this coordinator's UI is dismissed.
-@property(nonatomic, weak) id<ToolbarAccessoryCoordinatorDelegate> delegate;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_TEXT_ZOOM_UI_BUNDLED_TEXT_ZOOM_COORDINATOR_H_

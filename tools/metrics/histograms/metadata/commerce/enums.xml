@@ -181,19 +181,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Price"/>
 </enum>
 
-<enum name="ShoppingDiscountsFetchResult">
-  <int value="0" label="We got info back from OptGuide"/>
-  <int value="1"
-      label="We found valid info in local db. This is only recorded when we
-             don't get info back from OptGuide."/>
-  <int value="2"
-      label="We found invalid info in local db. This is only recorded when we
-             don't get info back from OptGuide."/>
-  <int value="3"
-      label="We don't get info back from OptGuide and don't find any info in
-             local db."/>
-</enum>
-
 <enum name="ShoppingFeatureIneligibilityReason">
   <summary>
     The different reasons a user might be ineligible for a shopping feature.

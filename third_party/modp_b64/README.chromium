@@ -3,6 +3,7 @@ Short Name: stringencoders
 URL: https://github.com/client9/stringencoders
 Version: 2.0.0
 Revision: 26701a1c1fcb98ae43eefcaee23abc58459a6e59
+Update Mechanism: Static.HardFork (https://crbug.com/422922180)
 License: BSD-3-Clause
 License File: LICENSE
 Security Critical: yes

@@ -91,12 +91,6 @@ source_set("ipc_common_sources") {
     "gpu_disk_cache_type.cc",
     "gpu_disk_cache_type.h",
     "gpu_memory_buffer_handle_info.h",
-    "gpu_memory_buffer_impl.cc",
-    "gpu_memory_buffer_impl.h",
-    "gpu_memory_buffer_impl_shared_memory.cc",
-    "gpu_memory_buffer_impl_shared_memory.h",
-    "gpu_memory_buffer_support.cc",
-    "gpu_memory_buffer_support.h",
     "gpu_param_traits.cc",
     "gpu_param_traits.h",
     "gpu_param_traits_macros.h",
@@ -108,24 +102,14 @@ source_set("ipc_common_sources") {
     sources += [
       "dxgi_helpers.cc",
       "dxgi_helpers.h",
-      "gpu_memory_buffer_impl_dxgi.cc",
-      "gpu_memory_buffer_impl_dxgi.h",
     ]
     libs = [
       "d3d11.lib",
       "dxguid.lib",
     ]
   }
-  if (use_ozone) {
-    sources += [
-      "gpu_memory_buffer_impl_native_pixmap.cc",
-      "gpu_memory_buffer_impl_native_pixmap.h",
-      "legacy_gpu_memory_buffer_for_video.cc",
-      "legacy_gpu_memory_buffer_for_video.h",
-    ]
-  }
   if (is_android) {
-    visibility += [ "//media/gpu:gpu" ]
+    visibility += [ "//media/gpu" ]
   }
 
   configs += [
@@ -148,7 +132,7 @@ source_set("ipc_common_sources") {
 
   deps = [
     "//base",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/config",
     "//third_party/libyuv",
@@ -162,17 +146,6 @@ source_set("ipc_common_sources") {
     "//ui/gfx/ipc/skia",
     "//ui/gl",
   ]
-
-  if (is_apple) {
-    sources += [
-      "gpu_memory_buffer_impl_io_surface.cc",
-      "gpu_memory_buffer_impl_io_surface.h",
-    ]
-    frameworks = [
-      "IOSurface.framework",
-      "CoreFoundation.framework",
-    ]
-  }
 
   if (is_ios && target_platform == "iphoneos") {
     sources += [
@@ -226,7 +199,7 @@ mojom("gpu_channel_mojom") {
     ":shared_image_pool_client_interface",
     ":surface_handle",
     "//mojo/public/mojom/base",
-    "//services/viz/public/mojom:shared_image_format",
+    "//services/viz/public/mojom/compositing:shared_image_format",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
@@ -240,16 +213,11 @@ mojom("gpu_channel_mojom") {
     {
       types = [
         {
-          mojom = "gpu.mojom.ContextCreationAttribs"
-          cpp = "::gpu::ContextCreationAttribs"
-        },
-        {
           mojom = "gpu.mojom.ContextType"
           cpp = "::gpu::ContextType"
         },
       ]
       traits_headers = [ "context_creation_attribs_mojom_traits.h" ]
-      traits_sources = [ "context_creation_attribs_mojom_traits.cc" ]
       traits_public_deps = [ "//gpu/command_buffer/common" ]
     },
     {
@@ -362,7 +330,7 @@ mojom("interfaces") {
     ":shared_image_pool_client_interface",
     ":surface_handle",
     "//mojo/public/mojom/base",
-    "//services/viz/public/mojom:shared_image_format",
+    "//services/viz/public/mojom/compositing:shared_image_format",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
@@ -670,7 +638,8 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "shared_image_metadata_mojom_traits.h" ]
-      traits_public_deps = [ "//services/viz/public/mojom:shared_image_format" ]
+      traits_public_deps =
+          [ "//services/viz/public/mojom/compositing:shared_image_format" ]
     },
     {
       types = [
@@ -844,7 +813,7 @@ source_set("mojom_traits") {
     ":memory_stats_sources",
     ":surface_handle_type",
     "//gpu/command_buffer/common",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
   ]
 
   if (enable_vulkan) {

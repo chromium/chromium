@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/kcer/helpers/key_helper.h"
 
 #include <pk11pub.h>
@@ -14,7 +9,9 @@
 
 #include <vector>
 
-#include "base/hash/sha1.h"
+#include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
+#include "crypto/obsolete/sha1.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/x509_util_nss.h"
 #include "third_party/boringssl/src/include/openssl/asn1.h"
@@ -25,6 +22,10 @@
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace kcer::internal {
+// Returns the SHA-1 hash of `data`.
+std::vector<uint8_t> Sha1ForPkcs11Id(base::span<const uint8_t> data) {
+  return base::ToVector(crypto::obsolete::Sha1::Hash(data));
+}
 
 crypto::ScopedSECItem MakeIdFromPubKeyNss(
     const std::vector<uint8_t>& public_key_bytes) {
@@ -38,16 +39,15 @@ std::vector<uint8_t> SECItemToBytes(const crypto::ScopedSECItem& id) {
   if (!id || id->len == 0) {
     return {};
   }
-  return std::vector<uint8_t>(id->data, id->data + id->len);
+  return std::vector<uint8_t>(id->data, UNSAFE_TODO(id->data + id->len));
 }
 
 std::vector<uint8_t> MakePkcs11IdForEcKey(base::span<const uint8_t> key_data) {
-  if (key_data.size() <= base::kSHA1Length) {
+  if (key_data.size() <= crypto::obsolete::kSha1Size) {
     return std::vector<uint8_t>(key_data.begin(), key_data.end());
   }
 
-  base::SHA1Digest hash = base::SHA1Hash(key_data);
-  return std::vector<uint8_t>(hash.begin(), hash.end());
+  return Sha1ForPkcs11Id(key_data);
 }
 
 std::vector<uint8_t> GetEcPublicKeyBytes(const EC_KEY* ec_key) {
@@ -133,7 +133,8 @@ std::vector<uint8_t> GetEcParamsDer(const EC_KEY* ec_key) {
     return {};
   }
   bssl::UniquePtr<uint8_t> der_deleter(ec_params_der);
-  return std::vector<uint8_t>(ec_params_der, ec_params_der + ec_params_der_len);
+  return std::vector<uint8_t>(ec_params_der,
+                              UNSAFE_TODO(ec_params_der + ec_params_der_len));
 }
 
 bool IsKeyEcType(const bssl::UniquePtr<EVP_PKEY>& key) {

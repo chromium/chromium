@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/assistant/ui/base/stack_layout.h"
+#include "ash/curtain/stack_layout.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/oobe_dialog_util.h"

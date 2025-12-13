@@ -46,8 +46,8 @@ class PredictionModelFetcherTest : public testing::Test {
 
   ~PredictionModelFetcherTest() override = default;
 
-  void OnModelsFetched(std::optional<std::unique_ptr<proto::GetModelsResponse>>
-                           get_models_response) {
+  void OnModelsFetched(
+      std::unique_ptr<proto::GetModelsResponse> get_models_response) {
     if (get_models_response) {
       models_fetched_ = true;
     }
@@ -95,7 +95,7 @@ class PredictionModelFetcherTest : public testing::Test {
 
   bool models_fetched_ = false;
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   std::unique_ptr<PredictionModelFetcherImpl> prediction_model_fetcher_;

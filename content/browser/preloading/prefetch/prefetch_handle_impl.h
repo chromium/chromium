@@ -8,12 +8,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
-#include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/public/browser/prefetch_handle.h"
-#include "content/public/browser/preloading.h"
 
 namespace content {
 
+class PrefetchService;
 enum class PrefetchStatus;
 
 // Currently, it must be visible from `PrefetchResponseReader` for `friend`.

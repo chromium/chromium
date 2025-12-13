@@ -10,7 +10,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace javascript_dialogs {
 
@@ -39,7 +39,7 @@ class AppModalDialogViewAndroid : public AppModalDialogView {
   // Called when java confirms or cancels the dialog.
   void DidAcceptAppModalDialog(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& prompt_text,
+      const base::android::JavaRef<jstring>& prompt_text,
       bool suppress_js_dialogs);
   void DidCancelAppModalDialog(JNIEnv* env,
                                bool suppress_js_dialogs);

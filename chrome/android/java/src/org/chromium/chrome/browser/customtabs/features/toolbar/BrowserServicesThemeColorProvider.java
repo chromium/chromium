@@ -25,13 +25,13 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -247,7 +247,7 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
     }
 
     private @ColorInt int getDefaultChromeColor() {
-        return SurfaceColorUpdateUtils.getDefaultThemeColor(
+        return ChromeColors.getDefaultThemeColor(
                 mContext, mIntentDataProvider.getCustomTabMode() == INCOGNITO);
     }
 

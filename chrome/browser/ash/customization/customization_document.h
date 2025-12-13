@@ -233,7 +233,7 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   // Overriden from CustomizationDocument:
   bool LoadManifestFromString(const std::string& manifest) override;
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // Initiate file fetching. Wait for online status.
   void StartFileFetch();

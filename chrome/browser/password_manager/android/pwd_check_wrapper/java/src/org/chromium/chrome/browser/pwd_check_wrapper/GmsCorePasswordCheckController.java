@@ -4,17 +4,12 @@
 
 package org.chromium.chrome.browser.pwd_check_wrapper;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID;
-import static org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
 
 import java.lang.ref.WeakReference;
@@ -28,7 +23,6 @@ import java.util.concurrent.CompletableFuture;
 class GmsCorePasswordCheckController
         implements PasswordCheckController, PasswordStoreBridge.PasswordStoreObserver {
     private final @Nullable SyncService mSyncService;
-    private final PrefService mPrefService;
     private final PasswordStoreBridge mPasswordStoreBridge;
     private final PasswordManagerHelper mPasswordManagerHelper;
     private final CompletableFuture<Integer> mPasswordsCountAccountStorage;
@@ -36,11 +30,9 @@ class GmsCorePasswordCheckController
 
     GmsCorePasswordCheckController(
             @Nullable SyncService syncService,
-            PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper) {
         mSyncService = syncService;
-        mPrefService = prefService;
         mPasswordStoreBridge = passwordStoreBridge;
         mPasswordManagerHelper = passwordManagerHelper;
         mPasswordsCountAccountStorage = new CompletableFuture<>();
@@ -144,18 +136,10 @@ class GmsCorePasswordCheckController
         // If using split stores and UPM for local passwords is enabled, the local passwords are
         // stored in the profile store.
         // After login db deprecation all users have split stores.
-        if (ChromeFeatureList.isEnabled(LOGIN_DB_DEPRECATION_ANDROID)
-                || usesSplitStoresAndUPMForLocal(mPrefService)) {
-            mPasswordsCountAccountStorage.complete(
-                    mPasswordStoreBridge.getPasswordStoreCredentialsCountForAccountStore());
-            mPasswordsCountLocalStorage.complete(
-                    mPasswordStoreBridge.getPasswordStoreCredentialsCountForProfileStore());
-            return;
-        }
-        // If using split stores is disabled, all passwords reside in the profile store.
         mPasswordsCountAccountStorage.complete(
+                mPasswordStoreBridge.getPasswordStoreCredentialsCountForAccountStore());
+        mPasswordsCountLocalStorage.complete(
                 mPasswordStoreBridge.getPasswordStoreCredentialsCountForProfileStore());
-        mPasswordsCountLocalStorage.complete(0);
     }
 
     /** Not relevant for this controller. */

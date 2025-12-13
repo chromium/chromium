@@ -133,14 +133,6 @@ class AccessibilityCommonFaceGazeTest : public AccessibilityCommonTest {
       delete;
   AccessibilityCommonFaceGazeTest& operator=(
       const AccessibilityCommonFaceGazeTest&) = delete;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(features::kAccessibilityFaceGaze);
-    AccessibilityCommonTest::SetUpCommandLine(command_line);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(AllChannels,

@@ -25,6 +25,7 @@ source_set("ui") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
@@ -38,6 +39,8 @@ source_set("unit_tests") {
   deps = [
     ":ui",
     "//ios/chrome/app/strings",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/button_stack:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//testing/gtest",

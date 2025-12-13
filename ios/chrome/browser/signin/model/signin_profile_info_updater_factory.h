@@ -23,9 +23,9 @@ class SigninProfileInfoUpdaterFactory : public ProfileKeyedServiceFactoryIOS {
   SigninProfileInfoUpdaterFactory();
   ~SigninProfileInfoUpdaterFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* state) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_PROFILE_INFO_UPDATER_FACTORY_H_

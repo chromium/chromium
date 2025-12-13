@@ -67,11 +67,12 @@ GoogleServiceAuthError GetGoogleServiceAuthErrorFromAuthenticationErrorCategory(
 // Converts a DeviceAccountsProvider::AccountInfo to an AccountInfo.
 AccountInfo AccountInfoFromDeviceAccount(
     const DeviceAccountsProvider::AccountInfo& account) {
-  AccountInfo account_info;
-  account_info.email = account.GetEmail();
-  account_info.gaia = account.GetGaiaId();
-  account_info.hosted_domain = account.GetHostedDomain();
-  return account_info;
+  AccountInfo::Builder builder(account.GetGaiaId(), account.GetEmail());
+  if (std::string hosted_domain = account.GetHostedDomain();
+      !hosted_domain.empty()) {
+    builder.SetHostedDomain(hosted_domain);
+  }
+  return builder.Build();
 }
 
 GoogleServiceAuthError GoogleServiceAuthErrorFromDeviceAccount(
@@ -384,14 +385,15 @@ ProfileOAuth2TokenServiceIOSDelegate::GetAccountsOnDevice() const {
   // separate AccountTrackerService instance.
   std::vector<AccountInfo> account_infos;
   for (const auto& account : provider_->GetAccountsOnDevice()) {
-    AccountInfo account_info;
-    account_info.account_id = CoreAccountId::FromGaiaId(account.GetGaiaId());
-    account_info.gaia = account.GetGaiaId();
-    account_info.email = account.GetEmail();
-    account_info.hosted_domain = account.GetHostedDomain();
+    AccountInfo::Builder builder(account.GetGaiaId(), account.GetEmail());
+    builder.SetAccountId(CoreAccountId::FromGaiaId(account.GetGaiaId()));
+    if (std::string hosted_domain = account.GetHostedDomain();
+        !hosted_domain.empty()) {
+      builder.SetHostedDomain(hosted_domain);
+    }
     // TODO(crbug.com/368409110): Find a way to determine the full AccountInfo
     // for these accounts, not only the "core" fields.
-    account_infos.push_back(std::move(account_info));
+    account_infos.push_back(builder.Build());
   }
   return account_infos;
 }

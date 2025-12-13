@@ -6,12 +6,10 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
@@ -27,9 +25,7 @@
 class AppServicePromiseAppShelfContextMenuBrowserTest
     : public InProcessBrowserTest {
  public:
-  AppServicePromiseAppShelfContextMenuBrowserTest() {
-    scoped_feature_list_.InitWithFeatures({ash::features::kPromiseIcons}, {});
-  }
+  AppServicePromiseAppShelfContextMenuBrowserTest() = default;
   ~AppServicePromiseAppShelfContextMenuBrowserTest() override = default;
 
   void AddTestPromiseApp(const apps::PackageId& package_id) {
@@ -40,9 +36,6 @@ class AppServicePromiseAppShelfContextMenuBrowserTest
         ->PromiseAppRegistryCache()
         ->OnPromiseApp(std::move(promise_app));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppShelfContextMenuBrowserTest,

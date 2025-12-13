@@ -2,22 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef URL_URL_CANON_H_
 #define URL_URL_CANON_H_
 
 #include <stdlib.h>
 #include <string.h>
 
+#include <array>
 #include <optional>
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/export_template.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/stack_allocated.h"
@@ -65,11 +63,11 @@ class CanonOutputT {
 
   // Accessor for returning a character at a given position. The input offset
   // must be in the valid range.
-  inline T at(size_t offset) const { return buffer_[offset]; }
+  inline T at(size_t offset) const { return UNSAFE_TODO(buffer_[offset]); }
 
   // Sets the character at the given position. The given position MUST be less
   // than the length().
-  inline void set(size_t offset, T ch) { buffer_[offset] = ch; }
+  inline void set(size_t offset, T ch) { UNSAFE_TODO(buffer_[offset]) = ch; }
 
   // Returns the number of characters currently in the buffer.
   inline size_t length() const { return cur_len_; }
@@ -106,7 +104,7 @@ class CanonOutputT {
     // In VC2005, putting this common case first speeds up execution
     // dramatically because this branch is predicted as taken.
     if (cur_len_ < buffer_len_) {
-      buffer_[cur_len_] = ch;
+      UNSAFE_TODO(buffer_[cur_len_]) = ch;
       cur_len_++;
       return;
     }
@@ -117,7 +115,7 @@ class CanonOutputT {
       return;
 
     // Actually do the insertion.
-    buffer_[cur_len_] = ch;
+    UNSAFE_TODO(buffer_[cur_len_]) = ch;
     cur_len_++;
   }
 
@@ -127,7 +125,7 @@ class CanonOutputT {
       if (!Grow(str_len - (buffer_len_ - cur_len_)))
         return;
     }
-    memcpy(buffer_ + cur_len_, str, str_len * sizeof(T));
+    UNSAFE_TODO(memcpy(buffer_ + cur_len_, str, str_len * sizeof(T)));
     cur_len_ += str_len;
   }
 
@@ -190,8 +188,9 @@ class RawCanonOutputT : public CanonOutputT<T> {
 
   void Resize(size_t sz) override {
     T* new_buf = new T[sz];
-    memcpy(new_buf, this->buffer_,
-           sizeof(T) * (this->cur_len_ < sz ? this->cur_len_ : sz));
+    UNSAFE_TODO(
+        memcpy(new_buf, this->buffer_,
+               sizeof(T) * (this->cur_len_ < sz ? this->cur_len_ : sz)));
     if (this->buffer_ != fixed_buffer_)
       delete[] this->buffer_;
     this->buffer_ = new_buf;
@@ -276,35 +275,31 @@ enum SchemeType {
 
 // Searches for whitespace that should be removed from the middle of URLs, and
 // removes it. Removed whitespace are tabs and newlines, but NOT spaces. Spaces
-// are preserved, which is what most browsers do. A pointer to the output will
-// be returned, and the length of that output will be in |output_len|.
+// are preserved, which is what most browsers do. A string_view pointing to the
+// output will be returned.
 //
 // This should be called before parsing if whitespace removal is desired (which
 // it normally is when you are canonicalizing).
 //
 // If no whitespace is removed, this function will not use the buffer and will
-// return a pointer to the input, to avoid the extra copy. If modification is
-// required, the given |buffer| will be used and the returned pointer will
+// return the input string_view, to avoid the extra copy. If modification is
+// required, the given |buffer| will be used and the returned string_view will
 // point to the beginning of the buffer.
 //
 // Therefore, callers should not use the buffer, since it may actually be empty,
-// use the computed pointer and |*output_len| instead.
+// use the returned string_view instead.
 //
 // If |input| contained both removable whitespace and a raw `<` character,
 // |potentially_dangling_markup| will be set to `true`. Otherwise, it will be
 // left untouched.
 COMPONENT_EXPORT(URL)
-const char* RemoveURLWhitespace(const char* input,
-                                int input_len,
-                                CanonOutputT<char>* buffer,
-                                int* output_len,
-                                bool* potentially_dangling_markup);
+std::string_view RemoveUrlWhitespace(std::string_view input,
+                                     CanonOutputT<char>* buffer,
+                                     bool* potentially_dangling_markup);
 COMPONENT_EXPORT(URL)
-const char16_t* RemoveURLWhitespace(const char16_t* input,
-                                    int input_len,
-                                    CanonOutputT<char16_t>* buffer,
-                                    int* output_len,
-                                    bool* potentially_dangling_markup);
+std::u16string_view RemoveUrlWhitespace(std::u16string_view input,
+                                        CanonOutputT<char16_t>* buffer,
+                                        bool* potentially_dangling_markup);
 
 // IDN ------------------------------------------------------------------------
 
@@ -412,12 +407,18 @@ struct CanonHostInfo {
   // |address| contains the parsed IP Address (if any) in its first
   // AddressLength() bytes, in network order. If IsIPAddress() is false
   // AddressLength() will return zero and the content of |address| is undefined.
-  unsigned char address[16];
+  std::array<uint8_t, 16> address;
 
   // Convenience function to calculate the length of an IP address corresponding
   // to the current IP version in |family|, if any. For use with |address|.
   int AddressLength() const {
     return family == IPV4 ? 4 : (family == IPV6 ? 16 : 0);
+  }
+
+  // Returns a span pointing a valid range of `address`. The size of the
+  // resultant span is 4, 16, or 0.
+  base::span<const uint8_t> AddressSpan() const LIFETIME_BOUND {
+    return base::span(address).first(static_cast<size_t>(AddressLength()));
   }
 };
 
@@ -426,12 +427,12 @@ struct CanonHostInfo {
 //
 // TODO(crbug.com/40063064): Check the callers of these functions.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeHost(const char* spec,
+bool CanonicalizeHost(std::string_view spec,
                       const Component& host,
                       CanonOutput* output,
                       Component* out_host);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeHost(const char16_t* spec,
+bool CanonicalizeHost(std::u16string_view spec,
                       const Component& host,
                       CanonOutput* output,
                       Component* out_host);
@@ -441,12 +442,12 @@ bool CanonicalizeHost(const char16_t* spec,
 // The 8-bit version requires UTF-8 encoding. Use this version when you only
 // need to know whether canonicalization succeeded.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeSpecialHost(const char* spec,
+bool CanonicalizeSpecialHost(std::string_view spec,
                              const Component& host,
                              CanonOutput& output,
                              Component& out_host);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeSpecialHost(const char16_t* spec,
+bool CanonicalizeSpecialHost(std::u16string_view spec,
                              const Component& host,
                              CanonOutput& output,
                              Component& out_host);
@@ -456,12 +457,12 @@ bool CanonicalizeSpecialHost(const char16_t* spec,
 // The 8-bit version requires UTF-8 encoding. Use this version when you only
 // need to know whether canonicalization succeeded.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeFileHost(const char* spec,
+bool CanonicalizeFileHost(std::string_view spec,
                           const Component& host,
                           CanonOutput& output,
                           Component& out_host);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeFileHost(const char16_t* spec,
+bool CanonicalizeFileHost(std::u16string_view spec,
                           const Component& host,
                           CanonOutput& output,
                           Component& out_host);
@@ -476,7 +477,12 @@ void CanonicalizeHostVerbose(const char* spec,
                              CanonOutput* output,
                              CanonHostInfo* host_info);
 COMPONENT_EXPORT(URL)
-void CanonicalizeHostVerbose(const char16_t* spec,
+void CanonicalizeHostVerbose(std::string_view spec,
+                             const Component& host,
+                             CanonOutput* output,
+                             CanonHostInfo* host_info);
+COMPONENT_EXPORT(URL)
+void CanonicalizeHostVerbose(std::u16string_view spec,
                              const Component& host,
                              CanonOutput* output,
                              CanonHostInfo* host_info);
@@ -486,12 +492,12 @@ void CanonicalizeHostVerbose(const char16_t* spec,
 // address. A successful return is indicated by host_info->family != BROKEN. See
 // the definition of CanonHostInfo above for details.
 COMPONENT_EXPORT(URL)
-void CanonicalizeSpecialHostVerbose(const char* spec,
+void CanonicalizeSpecialHostVerbose(std::string_view spec,
                                     const Component& host,
                                     CanonOutput& output,
                                     CanonHostInfo& host_info);
 COMPONENT_EXPORT(URL)
-void CanonicalizeSpecialHostVerbose(const char16_t* spec,
+void CanonicalizeSpecialHostVerbose(std::u16string_view spec,
                                     const Component& host,
                                     CanonOutput& output,
                                     CanonHostInfo& host_info);
@@ -501,12 +507,12 @@ void CanonicalizeSpecialHostVerbose(const char16_t* spec,
 // address. A successful return is indicated by host_info->family != BROKEN. See
 // the definition of CanonHostInfo above for details.
 COMPONENT_EXPORT(URL)
-void CanonicalizeFileHostVerbose(const char* spec,
+void CanonicalizeFileHostVerbose(std::string_view spec,
                                  const Component& host,
                                  CanonOutput& output,
                                  CanonHostInfo& host_info);
 COMPONENT_EXPORT(URL)
-void CanonicalizeFileHostVerbose(const char16_t* spec,
+void CanonicalizeFileHostVerbose(std::u16string_view spec,
                                  const Component& host,
                                  CanonOutput& output,
                                  CanonHostInfo& host_info);
@@ -532,22 +538,19 @@ void CanonicalizeFileHostVerbose(const char16_t* spec,
 // host as valid (because it's designed to be used for substrings) while the
 // full version above will mark empty hosts as broken.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeHostSubstring(const char* spec,
-                               const Component& host,
-                               CanonOutput* output);
+bool CanonicalizeHostSubstring(std::string_view host_view, CanonOutput* output);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeHostSubstring(const char16_t* spec,
-                               const Component& host,
+bool CanonicalizeHostSubstring(std::u16string_view host_view,
                                CanonOutput* output);
 
 // Host in non-special URLs.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeNonSpecialHost(const char* spec,
+bool CanonicalizeNonSpecialHost(std::string_view spec,
                                 const Component& host,
                                 CanonOutput& output,
                                 Component& out_host);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeNonSpecialHost(const char16_t* spec,
+bool CanonicalizeNonSpecialHost(std::u16string_view spec,
                                 const Component& host,
                                 CanonOutput& output,
                                 Component& out_host);
@@ -555,12 +558,12 @@ bool CanonicalizeNonSpecialHost(const char16_t* spec,
 // Extended version of CanonicalizeNonSpecialHost, which returns additional
 // information. See CanonicalizeSpecialHost for details.
 COMPONENT_EXPORT(URL)
-void CanonicalizeNonSpecialHostVerbose(const char* spec,
+void CanonicalizeNonSpecialHostVerbose(std::string_view spec,
                                        const Component& host,
                                        CanonOutput& output,
                                        CanonHostInfo& host_info);
 COMPONENT_EXPORT(URL)
-void CanonicalizeNonSpecialHostVerbose(const char16_t* spec,
+void CanonicalizeNonSpecialHostVerbose(std::u16string_view spec,
                                        const Component& host,
                                        CanonOutput& output,
                                        CanonHostInfo& host_info);
@@ -576,26 +579,22 @@ void CanonicalizeNonSpecialHostVerbose(const char16_t* spec,
 // the input is unescaped and name-prepped, etc. It should not normally be
 // necessary or wise to call this directly.
 COMPONENT_EXPORT(URL)
-void CanonicalizeIPAddress(const char* spec,
-                           const Component& host,
+void CanonicalizeIPAddress(std::string_view host_view,
                            CanonOutput* output,
                            CanonHostInfo* host_info);
 COMPONENT_EXPORT(URL)
-void CanonicalizeIPAddress(const char16_t* spec,
-                           const Component& host,
+void CanonicalizeIPAddress(std::u16string_view host_view,
                            CanonOutput* output,
                            CanonHostInfo* host_info);
 
 // Similar to CanonicalizeIPAddress, but supports only IPv6 address.
 COMPONENT_EXPORT(URL)
-void CanonicalizeIPv6Address(const char* spec,
-                             const Component& host,
+void CanonicalizeIPv6Address(std::string_view host_view,
                              CanonOutput& output,
                              CanonHostInfo& host_info);
 
 COMPONENT_EXPORT(URL)
-void CanonicalizeIPv6Address(const char16_t* spec,
-                             const Component& host,
+void CanonicalizeIPv6Address(std::string_view host_view,
                              CanonOutput& output,
                              CanonHostInfo& host_info);
 
@@ -605,14 +604,12 @@ void CanonicalizeIPv6Address(const char16_t* spec,
 //
 // The 8-bit version requires UTF-8 encoding.
 COMPONENT_EXPORT(URL)
-bool CanonicalizePort(const char* spec,
-                      const Component& port,
+bool CanonicalizePort(std::optional<std::string_view> port_view,
                       int default_port_for_scheme,
                       CanonOutput* output,
                       Component* out_port);
 COMPONENT_EXPORT(URL)
-bool CanonicalizePort(const char16_t* spec,
-                      const Component& port,
+bool CanonicalizePort(std::optional<std::u16string_view> port_view,
                       int default_port_for_scheme,
                       CanonOutput* output,
                       Component* out_port);
@@ -680,13 +677,11 @@ bool CanonicalizePartialPath(std::optional<std::u16string_view> path,
 //
 // The 8-bit version requires UTF-8 encoding.
 COMPONENT_EXPORT(URL)
-bool FileCanonicalizePath(const char* spec,
-                          const Component& path,
+bool FileCanonicalizePath(std::optional<std::string_view> path,
                           CanonOutput* output,
                           Component* out_path);
 COMPONENT_EXPORT(URL)
-bool FileCanonicalizePath(const char16_t* spec,
-                          const Component& path,
+bool FileCanonicalizePath(std::optional<std::u16string_view> path,
                           CanonOutput* output,
                           Component* out_path);
 
@@ -740,14 +735,14 @@ void CanonicalizeRef(std::optional<std::u16string_view> spec,
 
 // Use for standard URLs with authorities and paths.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeStandardURL(const char* spec,
+bool CanonicalizeStandardUrl(std::string_view spec,
                              const Parsed& parsed,
                              SchemeType scheme_type,
                              CharsetConverter* query_converter,
                              CanonOutput* output,
                              Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeStandardURL(const char16_t* spec,
+bool CanonicalizeStandardUrl(std::u16string_view spec,
                              const Parsed& parsed,
                              SchemeType scheme_type,
                              CharsetConverter* query_converter,
@@ -756,15 +751,13 @@ bool CanonicalizeStandardURL(const char16_t* spec,
 
 // Use for non-special URLs.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeNonSpecialURL(const char* spec,
-                               int spec_len,
+bool CanonicalizeNonSpecialUrl(std::string_view spec,
                                const Parsed& parsed,
                                CharsetConverter* query_converter,
                                CanonOutput& output,
                                Parsed& new_parsed);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeNonSpecialURL(const char16_t* spec,
-                               int spec_len,
+bool CanonicalizeNonSpecialUrl(std::u16string_view spec,
                                const Parsed& parsed,
                                CharsetConverter* query_converter,
                                CanonOutput& output,
@@ -772,15 +765,13 @@ bool CanonicalizeNonSpecialURL(const char16_t* spec,
 
 // Use for file URLs.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeFileURL(const char* spec,
-                         int spec_len,
+bool CanonicalizeFileUrl(std::string_view spec,
                          const Parsed& parsed,
                          CharsetConverter* query_converter,
                          CanonOutput* output,
                          Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeFileURL(const char16_t* spec,
-                         int spec_len,
+bool CanonicalizeFileUrl(std::u16string_view spec,
                          const Parsed& parsed,
                          CharsetConverter* query_converter,
                          CanonOutput* output,
@@ -788,13 +779,13 @@ bool CanonicalizeFileURL(const char16_t* spec,
 
 // Use for filesystem URLs.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeFileSystemURL(const char* spec,
+bool CanonicalizeFileSystemUrl(std::string_view spec,
                                const Parsed& parsed,
                                CharsetConverter* query_converter,
                                CanonOutput* output,
                                Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeFileSystemURL(const char16_t* spec,
+bool CanonicalizeFileSystemUrl(std::u16string_view spec,
                                const Parsed& parsed,
                                CharsetConverter* query_converter,
                                CanonOutput* output,
@@ -803,14 +794,12 @@ bool CanonicalizeFileSystemURL(const char16_t* spec,
 // Use for path URLs such as javascript. This does not modify the path in any
 // way, for example, by escaping it.
 COMPONENT_EXPORT(URL)
-bool CanonicalizePathURL(const char* spec,
-                         int spec_len,
+bool CanonicalizePathUrl(std::string_view spec,
                          const Parsed& parsed,
                          CanonOutput* output,
                          Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool CanonicalizePathURL(const char16_t* spec,
-                         int spec_len,
+bool CanonicalizePathUrl(std::u16string_view spec,
                          const Parsed& parsed,
                          CanonOutput* output,
                          Parsed* new_parsed);
@@ -818,11 +807,11 @@ bool CanonicalizePathURL(const char16_t* spec,
 // Use to canonicalize just the path component of a "path" URL; e.g. the
 // path of a javascript URL.
 COMPONENT_EXPORT(URL)
-void CanonicalizePathURLPath(std::optional<std::string_view> source,
+void CanonicalizePathUrlPath(std::optional<std::string_view> source,
                              CanonOutput* output,
                              Component* new_component);
 COMPONENT_EXPORT(URL)
-void CanonicalizePathURLPath(std::optional<std::u16string_view> source,
+void CanonicalizePathUrlPath(std::optional<std::u16string_view> source,
                              CanonOutput* output,
                              Component* new_component);
 
@@ -832,14 +821,12 @@ void CanonicalizePathURLPath(std::optional<std::u16string_view> source,
 // really intended for an external mail program, and the encoding of a page,
 // etc. which would influence a query encoding normally are irrelevant.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeMailtoURL(const char* spec,
-                           int spec_len,
+bool CanonicalizeMailtoUrl(std::string_view spec,
                            const Parsed& parsed,
                            CanonOutput* output,
                            Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeMailtoURL(const char16_t* spec,
-                           int spec_len,
+bool CanonicalizeMailtoUrl(std::u16string_view spec,
                            const Parsed& parsed,
                            CanonOutput* output,
                            Parsed* new_parsed);
@@ -865,21 +852,13 @@ struct URLComponentSource {
 
  public:
   // Constructor normally used by callers wishing to replace components. This
-  // will make them all NULL, which is no replacement. The caller would then
-  // override the components they want to replace.
-  URLComponentSource()
-      : scheme(nullptr),
-        username(nullptr),
-        password(nullptr),
-        host(nullptr),
-        port(nullptr),
-        path(nullptr),
-        query(nullptr),
-        ref(nullptr) {}
+  // will make them all null string_view, which is no replacement. The caller
+  // would then override the components they want to replace.
+  URLComponentSource() = default;
 
   // Constructor normally used internally to initialize all the components to
   // point to the same spec.
-  explicit URLComponentSource(const CHAR* default_value)
+  explicit URLComponentSource(std::basic_string_view<CHAR> default_value)
       : scheme(default_value),
         username(default_value),
         password(default_value),
@@ -889,14 +868,21 @@ struct URLComponentSource {
         query(default_value),
         ref(default_value) {}
 
-  const CHAR* scheme;
-  const CHAR* username;
-  const CHAR* password;
-  const CHAR* host;
-  const CHAR* port;
-  const CHAR* path;
-  const CHAR* query;
-  const CHAR* ref;
+  // The following data members distinguish between std::basic_string_view()
+  // and std::basic_string_view(""). The former's data() returns nullptr.
+  //
+  // This behavior is confusing, but Replacements::SetFooStr() has
+  // distinguished these two for a long time, and it is costly to eliminate
+  // the distinction.
+
+  std::basic_string_view<CHAR> scheme;
+  std::basic_string_view<CHAR> username;
+  std::basic_string_view<CHAR> password;
+  std::basic_string_view<CHAR> host;
+  std::basic_string_view<CHAR> port;
+  std::basic_string_view<CHAR> path;
+  std::basic_string_view<CHAR> query;
+  std::basic_string_view<CHAR> ref;
 };
 
 // This structure encapsulates information on modifying a URL. Each component
@@ -907,97 +893,187 @@ struct URLComponentSource {
 //
 // The string passed to Set* functions DOES NOT GET COPIED AND MUST BE KEPT
 // IN SCOPE BY THE CALLER for as long as this object exists!
+// In order to make it harder to misuse the API the setters do not accept rvalue
+// references to std::strings and std::u16strings.
+// Note: Extra const CHAR* overloads are necessary to break ambiguities that
+// would otherwise exist for string literals.
 //
 // Prefer the 8-bit replacement version if possible since it is more efficient.
 template <typename CHAR>
 class Replacements {
+  using StringViewT = std::basic_string_view<CHAR>;
+  using StringT = std::basic_string<CHAR>;
+
  public:
-  Replacements() {}
+  // Creates an empty `Replacements` instance, which indicates that no
+  // components will be replaced.
+  Replacements() = default;
+
+  // Creates a `Replacements` instance from a single spec and its parsed
+  // components. This is used to indicate that all components of a URL should
+  // be replaced.
+  Replacements(StringViewT spec, const Parsed& parsed)
+      : sources_(spec), components_(parsed) {}
 
   // Scheme
-  void SetScheme(const CHAR* s, const Component& comp) {
+  void SetScheme(StringViewT s, const Component& comp) {
     sources_.scheme = s;
     components_.scheme = comp;
   }
+  void SetSchemeStr(StringViewT str) { SetScheme(str, Component(str)); }
+  void SetSchemeStr(const CHAR* str) { SetSchemeStr(StringViewT(str)); }
+  void SetSchemeStr(const StringT&&) = delete;
   // Note: we don't have a ClearScheme since this doesn't make any sense.
-  bool IsSchemeOverridden() const { return sources_.scheme != NULL; }
+
+  // Indicates the scheme part won't be replaced.
+  void SetSchemeUnchanged() {
+    sources_.scheme = StringViewT();
+    components_.scheme = Component();
+  }
+  // Return the scheme part of the source string if the scheme component is
+  // valid.
+  std::optional<StringViewT> MaybeScheme() const {
+    return components_.scheme.MaybeAsViewOn(sources_.scheme);
+  }
+  bool IsSchemeOverridden() const { return sources_.scheme.data(); }
 
   // Username
-  void SetUsername(const CHAR* s, const Component& comp) {
+  void SetUsername(StringViewT s, const Component& comp) {
     sources_.username = s;
     components_.username = comp;
   }
+  void SetUsernameStr(StringViewT str) { SetUsername(str, Component(str)); }
+  void SetUsernameStr(const CHAR* str) { SetUsernameStr(StringViewT(str)); }
+  void SetUsernameStr(const StringT&&) = delete;
   void ClearUsername() {
     sources_.username = Placeholder();
     components_.username = Component();
   }
-  bool IsUsernameOverridden() const { return sources_.username != NULL; }
+  // Return the username part of the source string if the username component is
+  // valid.
+  std::optional<StringViewT> MaybeUsername() const {
+    return components_.username.MaybeAsViewOn(sources_.username);
+  }
+  bool IsUsernameOverridden() const { return sources_.username.data(); }
 
   // Password
-  void SetPassword(const CHAR* s, const Component& comp) {
+  void SetPassword(StringViewT s, const Component& comp) {
     sources_.password = s;
     components_.password = comp;
   }
+  void SetPasswordStr(StringViewT str) { SetPassword(str, Component(str)); }
+  void SetPasswordStr(const CHAR* str) { SetPasswordStr(StringViewT(str)); }
+  void SetPasswordStr(const StringT&&) = delete;
   void ClearPassword() {
     sources_.password = Placeholder();
     components_.password = Component();
   }
-  bool IsPasswordOverridden() const { return sources_.password != NULL; }
+  // Return the password part of the source string if the password component is
+  // valid.
+  std::optional<StringViewT> MaybePassword() const {
+    return components_.password.MaybeAsViewOn(sources_.password);
+  }
+  bool IsPasswordOverridden() const { return sources_.password.data(); }
 
   // Host
-  void SetHost(const CHAR* s, const Component& comp) {
+  void SetHost(StringViewT s, const Component& comp) {
     sources_.host = s;
     components_.host = comp;
   }
+  void SetHostStr(StringViewT str) { SetHost(str, Component(str)); }
+  void SetHostStr(const CHAR* str) { SetHostStr(StringViewT(str)); }
+  void SetHostStr(const StringT&&) = delete;
   void ClearHost() {
     sources_.host = Placeholder();
     components_.host = Component();
   }
-  bool IsHostOverridden() const { return sources_.host != NULL; }
+  // Return the host part of the source string if the host component is
+  // valid.
+  std::optional<StringViewT> MaybeHost() const {
+    return components_.host.MaybeAsViewOn(sources_.host);
+  }
+  // Return the string starting at the beginning of the source string and ending
+  // at the end of the host part.  The beginning of the source string is
+  // different from the beginning of the host part if components().host.begin()
+  // is not 0.
+  StringViewT SpecUntilHostOrEmpty() const {
+    return sources_.host.substr(
+        0, components_.host.is_valid() ? components_.host.end() : 0);
+  }
+  bool IsHostOverridden() const { return sources_.host.data(); }
 
   // Port
-  void SetPort(const CHAR* s, const Component& comp) {
+  void SetPort(StringViewT s, const Component& comp) {
     sources_.port = s;
     components_.port = comp;
   }
+  void SetPortStr(StringViewT str) { SetPort(str, Component(str)); }
+  void SetPortStr(const CHAR* str) { SetPortStr(StringViewT(str)); }
+  void SetPortStr(const StringT&&) = delete;
   void ClearPort() {
     sources_.port = Placeholder();
     components_.port = Component();
   }
-  bool IsPortOverridden() const { return sources_.port != NULL; }
+  // Return the port part of the source string if the port component is valid.
+  std::optional<StringViewT> MaybePort() const {
+    return components_.port.MaybeAsViewOn(sources_.port);
+  }
+  bool IsPortOverridden() const { return sources_.port.data(); }
 
   // Path
-  void SetPath(const CHAR* s, const Component& comp) {
+  void SetPath(StringViewT s, const Component& comp) {
     sources_.path = s;
     components_.path = comp;
   }
+  void SetPathStr(StringViewT str) { SetPath(str, Component(str)); }
+  void SetPathStr(const CHAR* str) { SetPathStr(StringViewT(str)); }
+  void SetPathStr(const StringT&&) = delete;
   void ClearPath() {
     sources_.path = Placeholder();
     components_.path = Component();
   }
-  bool IsPathOverridden() const { return sources_.path != NULL; }
+  // Return the path part of the source string if the path component is alid.
+  std::optional<StringViewT> MaybePath() const {
+    return components_.path.MaybeAsViewOn(sources_.path);
+  }
+  bool IsPathOverridden() const { return sources_.path.data(); }
 
   // Query
-  void SetQuery(const CHAR* s, const Component& comp) {
+  void SetQuery(StringViewT s, const Component& comp) {
     sources_.query = s;
     components_.query = comp;
   }
+  void SetQueryStr(StringViewT str) { SetQuery(str, Component(str)); }
+  void SetQueryStr(const CHAR* str) { SetQueryStr(StringViewT(str)); }
+  void SetQueryStr(const StringT&&) = delete;
   void ClearQuery() {
     sources_.query = Placeholder();
     components_.query = Component();
   }
-  bool IsQueryOverridden() const { return sources_.query != NULL; }
+  // Return the query part of the source string if the query component is
+  // valid.
+  std::optional<StringViewT> MaybeQuery() const {
+    return components_.query.MaybeAsViewOn(sources_.query);
+  }
+  bool IsQueryOverridden() const { return sources_.query.data(); }
 
   // Ref
-  void SetRef(const CHAR* s, const Component& comp) {
+  void SetRef(StringViewT s, const Component& comp) {
     sources_.ref = s;
     components_.ref = comp;
   }
+  void SetRefStr(StringViewT str) { SetRef(str, Component(str)); }
+  void SetRefStr(const CHAR* str) { SetRefStr(StringViewT(str)); }
+  void SetRefStr(const StringT&&) = delete;
   void ClearRef() {
     sources_.ref = Placeholder();
     components_.ref = Component();
   }
-  bool IsRefOverridden() const { return sources_.ref != NULL; }
+  // Return the ref part of the source string if the ref component is valid.
+  std::optional<StringViewT> MaybeRef() const {
+    return components_.ref.MaybeAsViewOn(sources_.ref);
+  }
+  bool IsRefOverridden() const { return sources_.ref.data(); }
 
   // Getters for the internal data. See the variables below for how the
   // information is encoded.
@@ -1005,30 +1081,34 @@ class Replacements {
   const Parsed& components() const { return components_; }
 
  private:
-  // Returns a pointer to a static empty string that is used as a placeholder
-  // to indicate a component should be deleted (see below).
-  const CHAR* Placeholder() {
+  friend void SetupOverrideComponents(const Replacements<char>& repl,
+                                      Replacements<char>& overridden);
+  friend bool SetupUtf16OverrideComponents(const Replacements<char16_t>& repl,
+                                           CanonOutput& utf8_buffer,
+                                           Replacements<char>& overridden);
+
+  // Returns a string_view on a static empty string that is used as a
+  // placeholder to indicate a component should be deleted (see below).
+  StringViewT Placeholder() {
     static const CHAR empty_cstr = 0;
-    return &empty_cstr;
+    // NOLINTNEXTLINE(bugprone-string-constructor)
+    return StringViewT(&empty_cstr, 0);
   }
 
   // We support three states:
   //
   // Action                 | Source                Component
   // -----------------------+--------------------------------------------------
-  // Don't change component | NULL                  (unused)
+  // Don't change component | null string_view      (unused)
   // Replace component      | (replacement string)  (replacement component)
-  // Delete component       | (non-NULL)            (invalid component: (0,-1))
-  //
-  // We use a pointer to the empty string for the source when the component
-  // should be deleted.
+  // Delete component       | empty string_view     (invalid component: (0,-1))
   URLComponentSource<CHAR> sources_;
   Parsed components_;
 };
 
 // The base must be an 8-bit canonical URL.
 COMPONENT_EXPORT(URL)
-bool ReplaceStandardURL(const char* base,
+bool ReplaceStandardUrl(std::string_view base,
                         const Parsed& base_parsed,
                         const Replacements<char>& replacements,
                         SchemeType scheme_type,
@@ -1036,7 +1116,7 @@ bool ReplaceStandardURL(const char* base,
                         CanonOutput* output,
                         Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool ReplaceStandardURL(const char* base,
+bool ReplaceStandardUrl(std::string_view base,
                         const Parsed& base_parsed,
                         const Replacements<char16_t>& replacements,
                         SchemeType scheme_type,
@@ -1046,14 +1126,14 @@ bool ReplaceStandardURL(const char* base,
 
 // For non-special URLs.
 COMPONENT_EXPORT(URL)
-bool ReplaceNonSpecialURL(const char* base,
+bool ReplaceNonSpecialUrl(std::string_view base,
                           const Parsed& base_parsed,
                           const Replacements<char>& replacements,
                           CharsetConverter* query_converter,
                           CanonOutput& output,
                           Parsed& new_parsed);
 COMPONENT_EXPORT(URL)
-bool ReplaceNonSpecialURL(const char* base,
+bool ReplaceNonSpecialUrl(std::string_view base,
                           const Parsed& base_parsed,
                           const Replacements<char16_t>& replacements,
                           CharsetConverter* query_converter,
@@ -1063,14 +1143,14 @@ bool ReplaceNonSpecialURL(const char* base,
 // Filesystem URLs can only have the path, query, or ref replaced.
 // All other components will be ignored.
 COMPONENT_EXPORT(URL)
-bool ReplaceFileSystemURL(const char* base,
+bool ReplaceFileSystemUrl(std::string_view base,
                           const Parsed& base_parsed,
                           const Replacements<char>& replacements,
                           CharsetConverter* query_converter,
                           CanonOutput* output,
                           Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool ReplaceFileSystemURL(const char* base,
+bool ReplaceFileSystemUrl(std::string_view base,
                           const Parsed& base_parsed,
                           const Replacements<char16_t>& replacements,
                           CharsetConverter* query_converter,
@@ -1080,14 +1160,14 @@ bool ReplaceFileSystemURL(const char* base,
 // Replacing some parts of a file URL is not permitted. Everything except
 // the host, path, query, and ref will be ignored.
 COMPONENT_EXPORT(URL)
-bool ReplaceFileURL(const char* base,
+bool ReplaceFileUrl(std::string_view base,
                     const Parsed& base_parsed,
                     const Replacements<char>& replacements,
                     CharsetConverter* query_converter,
                     CanonOutput* output,
                     Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool ReplaceFileURL(const char* base,
+bool ReplaceFileUrl(std::string_view base,
                     const Parsed& base_parsed,
                     const Replacements<char16_t>& replacements,
                     CharsetConverter* query_converter,
@@ -1097,13 +1177,13 @@ bool ReplaceFileURL(const char* base,
 // Path URLs can only have the scheme and path replaced. All other components
 // will be ignored.
 COMPONENT_EXPORT(URL)
-bool ReplacePathURL(const char* base,
+bool ReplacePathUrl(std::string_view base,
                     const Parsed& base_parsed,
                     const Replacements<char>& replacements,
                     CanonOutput* output,
                     Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool ReplacePathURL(const char* base,
+bool ReplacePathUrl(std::string_view base,
                     const Parsed& base_parsed,
                     const Replacements<char16_t>& replacements,
                     CanonOutput* output,
@@ -1112,13 +1192,13 @@ bool ReplacePathURL(const char* base,
 // Mailto URLs can only have the scheme, path, and query replaced.
 // All other components will be ignored.
 COMPONENT_EXPORT(URL)
-bool ReplaceMailtoURL(const char* base,
+bool ReplaceMailtoUrl(std::string_view base,
                       const Parsed& base_parsed,
                       const Replacements<char>& replacements,
                       CanonOutput* output,
                       Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool ReplaceMailtoURL(const char* base,
+bool ReplaceMailtoUrl(std::string_view base,
                       const Parsed& base_parsed,
                       const Replacements<char16_t>& replacements,
                       CanonOutput* output,
@@ -1130,7 +1210,7 @@ bool ReplaceMailtoURL(const char* base,
 // relative or absolute URL and places the result into |*is_relative|. If it is
 // relative, the relevant portion of the URL will be placed into
 // |*relative_component| (there may have been trimmed whitespace, for example).
-// This value is passed to ResolveRelativeURL. If the input is not relative,
+// This value is passed to ResolveRelativeUrl. If the input is not relative,
 // this value is UNDEFINED (it may be changed by the function).
 //
 // Returns true on success (we successfully determined the URL is relative or
@@ -1138,25 +1218,23 @@ bool ReplaceMailtoURL(const char* base,
 //
 // The base URL should always be canonical, therefore is ASCII.
 COMPONENT_EXPORT(URL)
-bool IsRelativeURL(const char* base,
+bool IsRelativeUrl(std::string_view base,
                    const Parsed& base_parsed,
-                   const char* fragment,
-                   int fragment_len,
+                   std::string_view fragment,
                    bool is_base_hierarchical,
                    bool* is_relative,
                    Component* relative_component);
 COMPONENT_EXPORT(URL)
-bool IsRelativeURL(const char* base,
+bool IsRelativeUrl(std::string_view base,
                    const Parsed& base_parsed,
-                   const char16_t* fragment,
-                   int fragment_len,
+                   std::u16string_view fragment,
                    bool is_base_hierarchical,
                    bool* is_relative,
                    Component* relative_component);
 
 // Given a canonical parsed source URL, a URL fragment known to be relative,
 // and the identified relevant portion of the relative URL (computed by
-// IsRelativeURL), this produces a new parsed canonical URL in |output| and
+// IsRelativeUrl), this produces a new parsed canonical URL in |output| and
 // |out_parsed|.
 //
 // It also requires a flag indicating whether the base URL is a file: URL
@@ -1173,19 +1251,19 @@ bool IsRelativeURL(const char* base,
 // reasonable" that will be consistent and valid, just probably not what
 // was intended by the web page author or caller.
 COMPONENT_EXPORT(URL)
-bool ResolveRelativeURL(const char* base_url,
+bool ResolveRelativeUrl(std::string_view base_url,
                         const Parsed& base_parsed,
                         bool base_is_file,
-                        const char* relative_url,
+                        std::string_view relative_url,
                         const Component& relative_component,
                         CharsetConverter* query_converter,
                         CanonOutput* output,
                         Parsed* out_parsed);
 COMPONENT_EXPORT(URL)
-bool ResolveRelativeURL(const char* base_url,
+bool ResolveRelativeUrl(std::string_view base_url,
                         const Parsed& base_parsed,
                         bool base_is_file,
-                        const char16_t* relative_url,
+                        std::u16string_view relative_url,
                         const Component& relative_component,
                         CharsetConverter* query_converter,
                         CanonOutput* output,

@@ -13,15 +13,13 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -93,6 +91,8 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
                                const std::vector<uint64_t>& modifiers,
                                uint32_t format,
                                uint32_t planes_count,
+                               const gfx::ColorSpace& color_space,
+                               const gfx::HDRMetadata& hdr_metadata,
                                uint32_t buffer_id) override;
   // Called by the GPU and asks to import a wl_buffer based on a shared memory
   // file descriptor using wl_shm protocol. Check comments in the

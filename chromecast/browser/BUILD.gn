@@ -264,6 +264,7 @@ cast_source_set("browser") {
     "//components/metrics:ui",
     "//components/network_hints/browser",
     "//components/network_session_configurator/common",
+    "//components/os_crypt/async/browser",
     "//components/policy/core/browser",
     "//components/prefs",
     "//components/proxy_config",
@@ -348,7 +349,7 @@ cast_source_set("browser") {
 
     deps += [
       "//ui/aura",
-      "//ui/views:views",
+      "//ui/views",
     ]
 
     if (!is_fuchsia) {
@@ -539,7 +540,7 @@ cast_source_set("browsertests") {
     "//chromecast/base",
     "//chromecast/base:chromecast_switches",
     "//chromecast/base/metrics",
-    "//chromecast/graphics:graphics",
+    "//chromecast/graphics",
     "//chromecast/mojo",
     "//components/keyed_service/content",
     "//components/prefs",
@@ -596,7 +597,7 @@ cast_source_set("unittests") {
     "//third_party/blink/public/common",
     "//ui/base",
     "//ui/base:test_support",
-    "//ui/events/devices:devices",
+    "//ui/events/devices",
     "//ui/gl:test_support",
   ]
 

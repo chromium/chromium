@@ -87,13 +87,14 @@ std::unique_ptr<GCMDriver> CreateGCMDriverDesktop(
     const std::string& product_category_for_subtypes,
     const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
-    const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner) {
+    const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
   return std::unique_ptr<GCMDriver>(new GCMDriverDesktop(
       std::move(gcm_client_factory),
       GetChromeBuildInfo(channel, product_category_for_subtypes), prefs,
       store_path, get_socket_factory_callback, std::move(url_loader_factory),
       network_connection_tracker, ui_task_runner, io_task_runner,
-      blocking_task_runner));
+      blocking_task_runner, os_crypt_async));
 }
 
 }  // namespace gcm

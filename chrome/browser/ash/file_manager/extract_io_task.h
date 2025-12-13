@@ -86,7 +86,7 @@ class ExtractIOTask : public IOTask {
 
   void GetExtractedSize(base::FilePath source_file);
 
-  void GotFreeDiskSpace(int64_t free_space);
+  void GotFreeDiskSpace(std::optional<int64_t> free_space);
 
   void CheckSizeThenExtract();
 

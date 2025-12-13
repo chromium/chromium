@@ -8,6 +8,8 @@
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
@@ -232,7 +234,15 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportLaunchedApp) {
   const auto app_id = InstallStandaloneWebApp(GURL(kWebAppUrl));
   ::chromeos::MissiveClientTestObserver missive_observer(
       base::BindRepeating(&IsMetricEventOfType, MetricEventType::APP_LAUNCHED));
-  ::web_app::LaunchWebAppBrowser(profile(), app_id);
+
+  base::RunLoop run_loop;
+  apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
+      apps::AppLaunchParams(
+          app_id, apps::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromTest),
+      base::IgnoreArgs<apps::LaunchResult&&>(run_loop.QuitClosure()));
+  run_loop.Run();
+
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
   AssertRecordData(priority, record);
   MetricData metric_data;

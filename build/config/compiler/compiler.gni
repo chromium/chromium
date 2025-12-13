@@ -33,7 +33,7 @@ declare_args() {
   use_lld = is_clang && current_os != "zos"
 
   # If false, build using C++20; otherwise, build using C++23.
-  use_cxx23 = false
+  use_cxx23 = true
 
   # If true, optimize for size.
   # Default to favoring speed over size for platforms not listed below.
@@ -47,6 +47,9 @@ declare_args() {
   # builds on Linux that could use a different version of the compiler.
   # With GCC, warnings in no-Chromium code are always not treated as errors.
   treat_warnings_as_errors = true
+
+  # Ignore unknown warning flags when using an older Clang version.
+  disable_unknown_warning_option = false
 
   # How clang should report warnings, either false to report in the usual
   # manner, or true to add source range information to the diagnostics in
@@ -83,13 +86,9 @@ declare_args() {
   # Use it by default on official-optimized android and Chrome OS builds, but
   # not ARC or linux-chromeos since it's been seen to not play nicely with
   # Chrome's clang. crbug.com/1033839
-  # Disabled in iOS cronet builds since build step cronet_static_complete
-  # wants to build a .a file consumable by external clients, and they won't
-  # have the same LLVM revisions as us, making bitcode useless to them.
   use_thin_lto =
       is_cfi || (is_clang && is_official_build && chrome_pgo_phase != 1 &&
-                 (is_linux || is_win || is_mac ||
-                  (is_ios && use_lld && !is_cronet_build) ||
+                 (is_linux || is_win || is_mac || (is_ios && use_lld) ||
                   (is_android && target_os != "chromeos") ||
                   (is_chromeos && is_chromeos_device)))
 
@@ -119,8 +118,7 @@ declare_args() {
   exclude_unwind_tables = is_official_build && !is_android
 
   # Where to redirect clang crash diagnoses
-  clang_diagnostic_dir =
-      rebase_path("//tools/clang/crashreports", root_build_dir)
+  clang_diagnostic_dir = rebase_path("//out/clang-crashreports", root_build_dir)
 
   # Mark binaries as compatible with Shadow Stack of Control-flow Enforcement
   # Technology (CET). If Windows version and hardware supports the feature and
@@ -132,8 +130,7 @@ declare_args() {
   # Set to true to enable using the ML inliner in LLVM. This currently only
   # enables the ML inliner when targeting Android.
   # Currently the ML inliner is only supported on linux hosts
-  use_ml_inliner = host_os == "linux" && is_android &&
-                   !llvm_android_mainline  # https://crbug.com/1468680
+  use_ml_inliner = host_os == "linux" && is_android
 
   # Whether we should consider the profile we're using to be accurate. Accurate
   # profiles have the benefit of (potentially substantial) binary size
@@ -148,9 +145,10 @@ declare_args() {
                              use_custom_libcxx && !is_component_build
 
   # Enable C++14 sized global deallocation functions.
-  # Disabled by default because of binary size increase.
+  # Enable only on ASan or platforms without strict binary size requirements
+  # because of binary size increase.
   # TODO(crbug.com/345541122): investigate the fuchsia binary size increase.
-  use_sized_deallocation = is_clang && is_asan
+  use_sized_deallocation = is_clang && (is_asan || !optimize_for_size)
 }
 
 # To try out this combination, delete this assert.
@@ -163,8 +161,12 @@ assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
 assert(!enable_profiling || !is_component_build,
        "Cannot profile component builds (crbug.com/1199271).")
 
-assert(!is_win || is_asan == use_sized_deallocation,
-       "ASan and sized deallocation must be enabled together on Windows.")
+# The Abseil .def lists for Windows component builds are created expecting sized
+# deallocation. Disabling it leads to symbol mismatches and build failures.
+# This assertion is restricted to Clang builds. ANGLE MSVC builds, where
+# is_clang is false, do not use Abseil that requires this assertion.
+assert(!is_clang || !is_win || !is_component_build || use_sized_deallocation,
+       "Sized deallocation must be enabled in component builds on Windows.")
 assert(is_clang || !use_sized_deallocation,
        "Sized deallocation is supported on clang.")
 
@@ -173,13 +175,25 @@ if (use_thin_lto && is_debug) {
         " (is_debug=true) build.")
 }
 
+compiler_logs = []
+
+if (use_thin_lto) {
+  compiler_logs += [ "use_thin_lto=true" ]
+} else {
+  compiler_logs += [ "use_thin_lto=false" ]
+}
+
 # Determine whether to enable or disable frame pointers, based on the platform
 # and build arguments.
-if (is_chromeos) {
+if (is_chromeos || (enable_cast_receiver && is_linux)) {
   # ChromeOS generally prefers frame pointers, to support CWP.
   # However, Clang does not currently generate usable frame pointers in ARM
   # 32-bit builds (https://bugs.llvm.org/show_bug.cgi?id=18505) so disable them
   # there to avoid the unnecessary overhead.
+  #
+  # Linux cast builds run on embedded devices and are often constrained
+  # by binary size; disabling frame ptrs for ARM32 builds can save
+  # several MB.
   enable_frame_pointers = current_cpu != "arm"
 } else if (is_apple || is_linux) {
   enable_frame_pointers = true
@@ -267,9 +281,9 @@ if (strip_absolute_paths_from_debug_symbols_default) {
 clang_need_input_root_absolute_path = !strip_absolute_paths_from_debug_symbols
 
 if (clang_need_input_root_absolute_path) {
-  compiler_logs = [ "clang_need_input_root_absolute_path=true" ]
+  compiler_logs += [ "clang_need_input_root_absolute_path=true" ]
 } else {
-  compiler_logs = [ "clang_need_input_root_absolute_path=false" ]
+  compiler_logs += [ "clang_need_input_root_absolute_path=false" ]
 }
 
 # TODO: https://issues.chromium.org/40120210 - remove this
@@ -313,11 +327,10 @@ if (symbol_level == -1) {
     # Sanitizers also require symbols for filename suppressions to work.
     symbol_level = 1
   } else if ((!is_linux && !is_chromeos && !is_fuchsia &&
-              current_os != "aix") || is_debug || is_castos ||
-             is_cast_android) {
+              current_os != "aix") || is_debug) {
     # Linux builds slower by having symbols as part of the target binary,
     # whereas Mac and Windows have them separate, so in Release Linux, default
-    # them off, but keep them on for Chromecast builds.
+    # them off.
     symbol_level = 2
   } else {
     symbol_level = 0

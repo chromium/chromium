@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -183,6 +182,9 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
                                        const std::string& extra_headers,
                                        bool started_from_context_menu);
 
+  virtual ui::IsNewFeatureAtValue GetIsNewFeatureAtValue(
+      const std::string& feature_name) const;
+
   // Populates OpenURLParams for opening the specified URL string in a new tab
   // with the extra headers.
   content::OpenURLParams GetOpenURLParamsWithExtraHeaders(
@@ -224,6 +226,14 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
 
  private:
   bool AppendCustomItems();
+
+  void AddCustomItemsToMenu(
+      const std::vector<blink::mojom::CustomContextMenuItemPtr>& items,
+      size_t depth,
+      size_t* total_items,
+      std::vector<std::unique_ptr<ui::SimpleMenuModel>>* submenus,
+      ui::SimpleMenuModel::Delegate* delegate,
+      ui::SimpleMenuModel* menu_model);
 
   std::unique_ptr<ToolkitDelegate> toolkit_delegate_;
 

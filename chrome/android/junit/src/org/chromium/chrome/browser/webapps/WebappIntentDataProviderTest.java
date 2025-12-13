@@ -18,7 +18,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
@@ -92,7 +91,6 @@ public class WebappIntentDataProviderTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testMinUiModePreSdk35_ResolveToStandalone() {
         var intentDataProvider =
                 buildWebAppIntentDataProvider(mIntent, buildWebAppExtras(DisplayMode.MINIMAL_UI));
@@ -105,7 +103,6 @@ public class WebappIntentDataProviderTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testMinUiModeEnabled_ResolveToMinUI() {
         var intentDataProvider =
                 buildWebAppIntentDataProvider(mIntent, buildWebAppExtras(DisplayMode.MINIMAL_UI));
@@ -118,7 +115,6 @@ public class WebappIntentDataProviderTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testBrowserModeWithMinUiEnabled_ResolveToMinUi() {
         var intentDataProvider =
                 buildWebAppIntentDataProvider(mIntent, buildWebAppExtras(DisplayMode.BROWSER));
@@ -126,19 +122,6 @@ public class WebappIntentDataProviderTest {
         assertEquals(
                 "Should resolve to minimal ui",
                 DisplayMode.MINIMAL_UI,
-                intentDataProvider.getResolvedDisplayMode());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    @DisableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
-    public void testBrowserModeWithMinUiDisabled_ResolveToStandalone() {
-        var intentDataProvider =
-                buildWebAppIntentDataProvider(mIntent, buildWebAppExtras(DisplayMode.BROWSER));
-
-        assertEquals(
-                "Should resolve to standalone",
-                DisplayMode.STANDALONE,
                 intentDataProvider.getResolvedDisplayMode());
     }
 

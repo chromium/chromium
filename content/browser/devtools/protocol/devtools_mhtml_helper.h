@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_MHTML_HELPER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_MHTML_HELPER_H_
 
+#include "base/memory/ref_counted.h"
 #include "content/browser/devtools/protocol/page_handler.h"
 #include "storage/browser/blob/shareable_file_reference.h"
 

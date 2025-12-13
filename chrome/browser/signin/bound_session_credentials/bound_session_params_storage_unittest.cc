@@ -63,7 +63,7 @@ void PopulateSameSiteParams(
     same_site_params.set_site(site_url.spec());
     same_site_params.set_session_id(
         base::StrCat({"session_", base::NumberToString(i)}));
-    UpdateAllCookieCredentialsDomains(same_site_params, site_url.host());
+    UpdateAllCookieCredentialsDomains(same_site_params, site_url.GetHost());
     params.push_back(std::move(same_site_params));
   }
 }
@@ -78,7 +78,7 @@ void PopulateSameSessionIdParams(
     GURL site(base::StrCat(
         {"https://domain", base::NumberToString(i), ".google.com/"}));
     same_session_id_params.set_site(site.spec());
-    UpdateAllCookieCredentialsDomains(same_session_id_params, site.host());
+    UpdateAllCookieCredentialsDomains(same_session_id_params, site.GetHost());
     params.push_back(std::move(same_session_id_params));
   }
 }
@@ -125,15 +125,6 @@ TEST_P(BoundSessionParamsStorageTest, InitiallyEmpty) {
 TEST_P(BoundSessionParamsStorageTest, SaveAndRead) {
   bound_session_credentials::BoundSessionParams params =
       CreateValidBoundSessionParams();
-  ASSERT_TRUE(storage().SaveParams(params));
-  EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::Pointwise(base::test::EqualsProto(), {params}));
-}
-
-TEST_P(BoundSessionParamsStorageTest, SaveAndReadWithWsbeta) {
-  bound_session_credentials::BoundSessionParams params =
-      CreateValidBoundSessionParams();
-  params.set_is_wsbeta(true);
   ASSERT_TRUE(storage().SaveParams(params));
   EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
               testing::Pointwise(base::test::EqualsProto(), {params}));

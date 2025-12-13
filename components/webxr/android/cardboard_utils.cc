@@ -12,23 +12,25 @@
 
 namespace webxr {
 
-void JNI_CardboardUtils_NativeUseCardboardV1DeviceParamsForTesting(
+static void JNI_CardboardUtils_NativeUseCardboardV1DeviceParamsForTesting(
     JNIEnv* env) {
   DVLOG(1) << __func__;
   device::CardboardDeviceParams::set_use_cardboard_v1_device_params_for_testing(
       true);
 }
 
-void JNI_CardboardUtils_NativeUseCardboardMockForTesting(JNIEnv* env) {
+static void JNI_CardboardUtils_NativeUseCardboardMockForTesting(JNIEnv* env) {
   DVLOG(1) << __func__;
   CardboardDeviceProvider::set_use_cardboard_mock_for_testing(true);
 }
 
-jboolean JNI_CardboardUtils_NativeCheckQrCodeScannerWasLaunchedForTesting(
-    JNIEnv* env) {
+static jboolean
+JNI_CardboardUtils_NativeCheckQrCodeScannerWasLaunchedForTesting(JNIEnv* env) {
   DVLOG(1) << __func__;
   return device::MockCardboardSdk::
       check_qr_code_scanner_was_launched_for_testing();
 }
 
 }  // namespace webxr
+
+DEFINE_JNI(CardboardUtils)

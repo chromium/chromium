@@ -30,8 +30,8 @@ public class ThreadedInputConnectionProxyView extends View {
     private final View mContainerView;
     private final AtomicBoolean mFocused = new AtomicBoolean();
     private final AtomicBoolean mWindowFocused = new AtomicBoolean();
-    private final AtomicReference<IBinder> mWindowToken = new AtomicReference<>();
-    private final AtomicReference<View> mRootView = new AtomicReference<>();
+    private final AtomicReference<@Nullable IBinder> mWindowToken = new AtomicReference<>();
+    private final AtomicReference<@Nullable View> mRootView = new AtomicReference<>();
     private final ThreadedInputConnectionFactory mFactory;
 
     ThreadedInputConnectionProxyView(

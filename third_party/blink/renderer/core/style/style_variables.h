@@ -399,9 +399,6 @@ class CORE_EXPORT StyleVariables {
   }
 
   bool operator==(const StyleVariables& other) const;
-  bool operator!=(const StyleVariables& other) const {
-    return !(*this == other);
-  }
 
   std::optional<CSSVariableData*> GetData(const AtomicString& name) const {
     return data_root_->Get(name);
@@ -414,6 +411,8 @@ class CORE_EXPORT StyleVariables {
 
   bool IsEmpty() const;
   void CollectNames(HashSet<AtomicString>&) const;
+
+  unsigned GetHash() const { return HashInts(data_hash_, values_hash_); }
 
  private:
   // mutable so that operator== can deduplicate them.

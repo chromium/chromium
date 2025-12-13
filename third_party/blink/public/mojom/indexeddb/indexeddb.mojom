@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -147,11 +148,15 @@ enum IDBTaskType {
   Preemptive,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IDBTransactionMode)
 enum IDBTransactionMode {
-  ReadOnly,
-  ReadWrite,
-  VersionChange,
+  ReadOnly = 0,
+  ReadWrite = 1,
+  VersionChange = 2,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/storage/enums.xml:IDBTransactionMode)
 
 // These values need to match core/dom/exception_code.h
 enum IDBException {
@@ -162,7 +167,7 @@ enum IDBException {
   kVersionError = 33,
   kAbortError = 20,
   kIgnorableAbortError = 11,
-  kQuotaError = 37,
+  kQuotaError = 22,
   kTimeoutError = 23,
 };
 
@@ -189,6 +194,8 @@ struct IDBDatabaseMetadata {
   int64 max_object_store_id;
   map<int64, IDBObjectStoreMetadata> object_stores;
   bool was_cold_open;
+  // True if the backing store uses SQLite. If false, it uses LevelDB.
+  bool is_sqlite;
 };
 
 struct IDBNameAndVersion {
@@ -219,7 +226,7 @@ union IDBExternalObject {
 };
 
 struct IDBValue {
-  array<uint8> bits;
+  mojo_base.mojom.BigBuffer bits;
   array<IDBExternalObject> external_objects;
 };
 
@@ -397,7 +404,7 @@ interface IDBDatabase {
          int64 index_id,
          IDBKeyRange key_range,
          IDBGetAllResultType result_type,
-         int64 max_count,
+         uint32 max_count,
          IDBCursorDirection direction)
     => (pending_associated_receiver<IDBDatabaseGetAllResultSink> receiver);
   OpenCursor(int64 transaction_id,

@@ -63,6 +63,7 @@ void SpotlightCrdManagerImpl::OnSessionEnded() {
 
 void SpotlightCrdManagerImpl::InitiateSpotlightSession(
     ConnectionCodeCallback callback,
+    bool is_student_to_receiver,
     const std::string& requester_email) {
   if (!ash::features::IsBocaSpotlightEnabled()) {
     return;
@@ -77,6 +78,12 @@ void SpotlightCrdManagerImpl::InitiateSpotlightSession(
   parameters.allow_clipboard_sync = false;
   parameters.request_origin =
       policy::SharedCrdSession::RequestOrigin::kClassManagement;
+  // The default behavior for student->teacher Spotlight sessions is that audio
+  // plays on the host only.
+  parameters.audio_playback =
+      is_student_to_receiver
+          ? policy::SharedCrdSession::AudioPlayback::kRemoteOnly
+          : policy::SharedCrdSession::AudioPlayback::kLocalOnly;
 
   crd_session_->StartCrdHost(
       parameters, std::move(callback), base::BindOnce(&LogCrdError),

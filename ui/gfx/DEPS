@@ -1,5 +1,7 @@
 include_rules = [
   "+base",
+  "+components/viz/common/resources/shared_image_format.h",
+  "+components/viz/common/resources/shared_image_format_utils.h",
   "+cc/base",
   "+cc/paint",
   "+device/vr/buildflags/buildflags.h",

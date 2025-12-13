@@ -373,7 +373,7 @@ void AndroidBatteryMetrics::OnInputScenarioChanged(ScenarioScope scope,
 
 void AndroidBatteryMetrics::OnThermalStateChange(DeviceThermalState new_state) {
   TRACE_EVENT_INSTANT(
-      "power", "OnThermalStateChange", perfetto::Track::Global(0),
+      "base.power", "OnThermalStateChange", perfetto::Track::Global(0),
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         event->set_chrome_application_state_info()->set_application_state(

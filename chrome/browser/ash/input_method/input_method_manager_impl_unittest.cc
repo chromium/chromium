@@ -25,10 +25,12 @@
 #include "chrome/browser/ash/input_method/mock_input_method_engine.h"
 #include "chrome/browser/ash/input_method/test_ime_controller.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/input_method/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
@@ -177,6 +179,10 @@ class InputMethodManagerImplTest : public BrowserWithTestWindowTest {
     keyboard_ = fake_keyboard.get();
 
     manager_ = new InputMethodManagerImpl(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
         std::make_unique<FakeInputMethodDelegate>(), std::move(mock_delegate),
         false, std::move(fake_keyboard));
     manager_->GetInputMethodUtil()->UpdateHardwareLayoutCache();
@@ -1537,7 +1543,7 @@ class InputMethodManagerImplKioskTest : public InputMethodManagerImplTest {
   }
 
   void LogIn(std::string_view email, const GaiaId& gaia_id) override {
-    chromeos::SetUpFakeKioskSession(email);
+    chromeos::SetUpFakeChromeAppKioskSession(email);
   }
 };
 

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -33,7 +32,6 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom-forward.h"
 #include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom-forward.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -62,7 +60,6 @@ enum class Error;
 
 namespace extensions {
 
-class AssistantInteractionHelper;
 class WindowStateChangeObserver;
 class WindowBoundsChangeObserver;
 class EventGenerator;
@@ -705,96 +702,6 @@ class AutotestPrivateLoadSmartDimComponentFunction : public ExtensionFunction {
 
   base::RetainingOneShotTimer timer_;
   int timer_triggered_count_ = 0;
-};
-
-// Enable/disable the Google Assistant feature. This toggles the Assistant user
-// pref which will indirectly bring up or shut down the Assistant service.
-class AutotestPrivateSetAssistantEnabledFunction
-    : public ExtensionFunction,
-      public ash::AssistantStateObserver {
- public:
-  AutotestPrivateSetAssistantEnabledFunction();
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.setAssistantEnabled",
-                             AUTOTESTPRIVATE_SETASSISTANTENABLED)
-
- private:
-  ~AutotestPrivateSetAssistantEnabledFunction() override;
-  ResponseAction Run() override;
-
-  // ash::AssistantStateObserver overrides:
-  void OnAssistantStatusChanged(
-      ash::assistant::AssistantStatus status) override;
-
-  // Called when the Assistant service does not respond in a timely fashion. We
-  // will respond with an error.
-  void Timeout();
-
-  std::optional<bool> enabled_;
-  base::OneShotTimer timeout_timer_;
-};
-
-// Bring up the Assistant service, and wait until the ready signal is received.
-class AutotestPrivateEnableAssistantAndWaitForReadyFunction
-    : public ExtensionFunction {
- public:
-  AutotestPrivateEnableAssistantAndWaitForReadyFunction();
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.enableAssistantAndWaitForReady",
-                             AUTOTESTPRIVATE_ENABLEASSISTANTANDWAITFORREADY)
-
- private:
-  ~AutotestPrivateEnableAssistantAndWaitForReadyFunction() override;
-  ResponseAction Run() override;
-
-  void OnInitializedInternal();
-};
-
-// Send text query to Assistant and return response.
-class AutotestPrivateSendAssistantTextQueryFunction : public ExtensionFunction {
- public:
-  AutotestPrivateSendAssistantTextQueryFunction();
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.sendAssistantTextQuery",
-                             AUTOTESTPRIVATE_SENDASSISTANTTEXTQUERY)
-
- private:
-  ~AutotestPrivateSendAssistantTextQueryFunction() override;
-  ResponseAction Run() override;
-
-  // Called when the interaction finished with non-empty response.
-  void OnInteractionFinishedCallback(const std::optional<std::string>& error);
-
-  // Called when Assistant service fails to respond in a certain amount of
-  // time. We will respond with an error.
-  void Timeout();
-
-  // Convert session_manager::SessionState to string for error logging.
-  std::string ToString(session_manager::SessionState session_state);
-
-  std::unique_ptr<AssistantInteractionHelper> interaction_helper_;
-  base::OneShotTimer timeout_timer_;
-};
-
-// Wait for the next text/voice query interaction completed and respond with
-// the query status if any valid response was caught before time out.
-class AutotestPrivateWaitForAssistantQueryStatusFunction
-    : public ExtensionFunction {
- public:
-  AutotestPrivateWaitForAssistantQueryStatusFunction();
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.waitForAssistantQueryStatus",
-                             AUTOTESTPRIVATE_WAITFORASSISTANTQUERYSTATUS)
-
- private:
-  ~AutotestPrivateWaitForAssistantQueryStatusFunction() override;
-  ResponseAction Run() override;
-
-  // Called when the current interaction finished with non-empty response.
-  void OnInteractionFinishedCallback(const std::optional<std::string>& error);
-
-  // Called when Assistant service fails to respond in a certain amount of
-  // time. We will respond with an error.
-  void Timeout();
-
-  std::unique_ptr<AssistantInteractionHelper> interaction_helper_;
-  base::OneShotTimer timeout_timer_;
 };
 
 class AutotestPrivateIsArcPackageListInitialRefreshedFunction

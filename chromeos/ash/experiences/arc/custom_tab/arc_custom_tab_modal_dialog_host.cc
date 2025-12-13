@@ -43,7 +43,8 @@ void ArcCustomTabModalDialogHost::PrimaryMainFrameWasResized(
 }
 
 web_modal::WebContentsModalDialogHost*
-ArcCustomTabModalDialogHost::GetWebContentsModalDialogHost() {
+ArcCustomTabModalDialogHost::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return this;
 }
 

@@ -21,7 +21,7 @@
 static std::vector<std::string>
 JNI_ChromeSiteSettingsDelegate_GetOriginsWithFileSystemAccessGrants(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& j_profile) {
+    const jni_zero::JavaRef<jobject>& j_profile) {
   Profile* profile = Profile::FromJavaObject(j_profile);
   std::vector<std::string> result;
   auto* context =
@@ -38,7 +38,7 @@ JNI_ChromeSiteSettingsDelegate_GetOriginsWithFileSystemAccessGrants(
 static jni_zero::ScopedJavaLocalRef<jobjectArray>
 JNI_ChromeSiteSettingsDelegate_GetFileSystemAccessGrants(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& j_profile,
+    const jni_zero::JavaRef<jobject>& j_profile,
     std::string& origin) {
   Profile* profile = Profile::FromJavaObject(j_profile);
   std::vector<std::string> paths;
@@ -77,7 +77,7 @@ JNI_ChromeSiteSettingsDelegate_GetFileSystemAccessGrants(
 
 static void JNI_ChromeSiteSettingsDelegate_RevokeFileSystemAccessGrant(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& j_profile,
+    const jni_zero::JavaRef<jobject>& j_profile,
     std::string& origin,
     std::string& file) {
   Profile* profile = Profile::FromJavaObject(j_profile);
@@ -88,3 +88,5 @@ static void JNI_ChromeSiteSettingsDelegate_RevokeFileSystemAccessGrant(
                          base::FilePath(file));
   }
 }
+
+DEFINE_JNI(ChromeSiteSettingsDelegate)

@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -53,6 +54,7 @@ namespace gpu {
 class ArcSharedImageInterface;
 class ClientSharedImageInterface;
 struct ExportedSharedImage;
+class GpuChannelLostObserver;
 struct SharedImageCapabilities;
 class SharedImageInterfaceHolder;
 class SharedImageInterfaceInProcessBase;
@@ -264,38 +266,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
   virtual scoped_refptr<ClientSharedImage> ImportSharedImage(
       ExportedSharedImage exported_shared_image) = 0;
 
-  struct GPU_COMMAND_BUFFER_CLIENT_EXPORT SwapChainSharedImages {
-    SwapChainSharedImages(scoped_refptr<gpu::ClientSharedImage> front_buffer,
-                          scoped_refptr<gpu::ClientSharedImage> back_buffer);
-    SwapChainSharedImages(const SwapChainSharedImages& shared_images);
-    ~SwapChainSharedImages();
-
-    scoped_refptr<gpu::ClientSharedImage> front_buffer;
-    scoped_refptr<gpu::ClientSharedImage> back_buffer;
-  };
-
-  // Creates a swap chain.
-  // Returns shared images for front and back buffers of a DXGI Swap Chain that
-  // can be imported into GL command buffer using shared image functions (e.g.
-  // GLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM).
-  virtual SwapChainSharedImages CreateSwapChain(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage,
-      std::string_view debug_label) = 0;
-
-  // Swaps front and back buffer of a swap chain. Back buffer mailbox still
-  // refers to the back buffer of the swap chain after calling PresentSwapChain.
-  // The mailbox argument should be back buffer mailbox. Sync token is required
-  // for synchronization between shared image stream and command buffer stream,
-  // to ensure that all the rendering commands to a frame are executed before
-  // presenting the swap chain.
-  virtual void PresentSwapChain(const SyncToken& sync_token,
-                                const Mailbox& mailbox) = 0;
-
 #if BUILDFLAG(IS_FUCHSIA)
   // Registers a sysmem buffer collection. `service_handle` contains a handle
   // for the eventpair that controls the lifetime of the collection. The
@@ -336,6 +306,49 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
   // Verifies the SyncToken.
   virtual void VerifySyncToken(gpu::SyncToken& sync_token) = 0;
 
+  // Check if a token is able to be verified by this client
+  virtual bool CanVerifySyncToken(const gpu::SyncToken& sync_token) = 0;
+
+  // Runs a synchronous round trip mojo IPC to ensure everything up this point
+  // is visible to the service
+  virtual void VerifyFlush() = 0;
+
+  // Verifies a range of SyncTokens. Will trigger a synchronous round trip IPC
+  // if there is anything to sync.
+  //
+  // The `proj` parameter allows using this function with ranges containing
+  // elements other than gpu::SyncToken references. For example to handle a
+  // vector of unique_ptrs, use:
+  // `[](const auto& p) { return *p.get(); }`
+  template <std::ranges::input_range Range, typename Proj = std::identity>
+    requires std::convertible_to<
+        std::invoke_result_t<Proj&, std::ranges::range_reference_t<Range>>,
+        gpu::SyncToken&>
+  void VerifySyncTokens(Range&& sync_token_range, Proj proj = {}) {
+    bool flush_required = false;
+    for (auto const& element : sync_token_range) {
+      gpu::SyncToken& sync_token = proj(element);
+      if (sync_token.verified_flush()) {
+        continue;
+      }
+
+      if (!sync_token.HasData()) {
+        sync_token.SetVerifyFlush();
+        continue;
+      }
+
+      if (CanVerifySyncToken(sync_token)) {
+        flush_required = true;
+
+        sync_token.SetVerifyFlush();
+      }
+    }
+
+    if (flush_required) {
+      VerifyFlush();
+    }
+  }
+
   // Wait on this SyncToken to be released before executing new commands on
   // this interface on the service side. This is an async wait for all the
   // previous commands which will be sent to server on the next flush().
@@ -353,6 +366,16 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
       SharedImageUsageSet usage,
       uint32_t texture_target,
       std::string_view debug_label);
+
+  // Returns true if the backing context has been lost.
+  virtual bool IsLost() const;
+
+  // Adds an observer that will be notified when the backing GPU channel is
+  // lost. Returns true if the observer was added successfully.
+  virtual bool AddGpuChannelLostObserver(GpuChannelLostObserver* observer);
+
+  // Removes a GPU channel lost observer.
+  virtual void RemoveGpuChannelLostObserver(GpuChannelLostObserver* observer);
 
   virtual const SharedImageCapabilities& GetCapabilities() = 0;
 

@@ -167,7 +167,7 @@ class HintsFetcherTest : public testing::Test,
     base::RunLoop().RunUntilIdle();
   }
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   bool hints_fetched_ = false;
   base::test::ScopedFeatureList scoped_list_;
@@ -211,8 +211,6 @@ TEST_P(HintsFetcherTest, FetchOptimizationGuideServiceHints) {
   EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
   EXPECT_TRUE(hints_fetched());
 
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency", 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency."
       "BatchUpdateActiveTabs",
@@ -353,7 +351,9 @@ TEST_P(HintsFetcherTest, FetchReturned404) {
 
   // Make sure histograms are recorded correctly on bad response.
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency."
+      "BatchUpdateActiveTabs",
+      0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
       "BatchUpdateActiveTabs",
@@ -371,7 +371,9 @@ TEST_P(HintsFetcherTest, FetchReturnBadResponse) {
 
   // Make sure histograms are recorded correctly on bad response.
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency."
+      "BatchUpdateActiveTabs",
+      0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
       "BatchUpdateActiveTabs",
@@ -685,7 +687,8 @@ TEST_P(HintsFetcherTest, MaxUrlsForOptimizationGuideServiceHintsFetch) {
   EXPECT_TRUE(hints_fetched());
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount",
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "BatchUpdateActiveTabs",
       max_urls_in_fetch_request, 1);
 
   proto::GetHintsRequest last_request;
@@ -713,8 +716,6 @@ TEST_P(HintsFetcherTest, OnlyURLsToFetch) {
   EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
   EXPECT_TRUE(hints_fetched());
 
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency", 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency."
       "BatchUpdateActiveTabs",

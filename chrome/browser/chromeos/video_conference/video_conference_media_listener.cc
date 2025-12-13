@@ -37,13 +37,13 @@ VideoConferenceMediaListener::~VideoConferenceMediaListener() = default;
 
 void VideoConferenceMediaListener::SetSystemMediaDeviceStatus(
     crosapi::mojom::VideoConferenceMediaDevice device,
-    bool disabled) {
+    bool enabled) {
   switch (device) {
     case crosapi::mojom::VideoConferenceMediaDevice::kCamera:
-      camera_system_disabled_ = disabled;
+      camera_system_enabled_ = enabled;
       break;
     case crosapi::mojom::VideoConferenceMediaDevice::kMicrophone:
-      microphone_system_disabled_ = disabled;
+      microphone_system_enabled_ = enabled;
       break;
     case crosapi::mojom::VideoConferenceMediaDevice::kUnusedDefault:
       return;
@@ -75,7 +75,7 @@ void VideoConferenceMediaListener::OnIsCapturingVideoChanged(
 
     // This will be an AnchoredNudge, which is only visible if the tray is
     // visible; so we have to call this after media_usage_update_callback_.
-    if (camera_system_disabled_ && !prev_is_capturing_video &&
+    if (!camera_system_enabled_ && !prev_is_capturing_video &&
         is_capturing_video) {
       device_used_while_disabled_callback_.Run(
           crosapi::mojom::VideoConferenceMediaDevice::kCamera,
@@ -110,7 +110,7 @@ void VideoConferenceMediaListener::OnIsCapturingAudioChanged(
 
     // This will be an AnchoredNudge, which is only visible if the tray is
     // visible; so we have to call this after media_usage_update_callback_.
-    if (microphone_system_disabled_ && !prev_is_capturing_audio &&
+    if (!microphone_system_enabled_ && !prev_is_capturing_audio &&
         is_capturing_audio) {
       device_used_while_disabled_callback_.Run(
           crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
@@ -185,7 +185,7 @@ VideoConferenceWebApp* VideoConferenceMediaListener::GetOrCreateVcWebApp(
       return nullptr;
     }
 
-    if (ShouldSkipId(contents->GetURL().host())) {
+    if (ShouldSkipId(contents->GetURL().GetHost())) {
       return nullptr;
     }
 

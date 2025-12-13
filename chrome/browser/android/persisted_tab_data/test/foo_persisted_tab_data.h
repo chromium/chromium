@@ -16,6 +16,16 @@ class FooPersistedTabDataAndroid : public PersistedTabDataAndroid {
   ~FooPersistedTabDataAndroid() override;
 
   static void From(TabAndroid* tab_android, FromCallback from_callback);
+
+  // TODO (crbug.com/468347707) : Required for TabAndroidUserData, this provides
+  // a unique key for the PersistedTabDataAndroid subclass. Without this
+  // explicit definition, PersistedTabDataAndroid::UserDataKey() would be used,
+  // which would lead to key collisions for all subclasses.
+  static const void* UserDataKey() {
+    static const int id_marker = 2;
+    return &id_marker;
+  }
+
   void SetValue(int32_t foo_value);
   int32_t value() { return foo_value_; }
   static void ExistsForTesting(TabAndroid* tab_android,

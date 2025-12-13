@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "extensions/browser/embedder_user_script_loader.h"
 
 #include <set>
@@ -165,13 +160,13 @@ void EmbedderUserScriptLoader::CreateEmbedderURLFetchers(
 void EmbedderUserScriptLoader::OnSingleEmbedderURLFetchComplete(
     extensions::UserScript::Content* content,
     bool success,
-    std::unique_ptr<std::string> data) {
+    std::string data) {
   if (success) {
     // Remove BOM from |data|.
-    if (base::StartsWith(*data, base::kUtf8ByteOrderMark)) {
-      data->erase(0, strlen(base::kUtf8ByteOrderMark));
+    if (base::StartsWith(data, base::kUtf8ByteOrderMark)) {
+      data.erase(0, strlen(base::kUtf8ByteOrderMark));
     }
-    content->set_content(std::move(*data));
+    content->set_content(std::move(data));
   }
 
   ++complete_fetchers_;

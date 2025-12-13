@@ -56,7 +56,7 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendMetadata(
 }
 
 void DelegatedInkPointPixelTestHelper::CreateAndSendMetadataFromLastPoint() {
-  DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+  DCHECK_EQ(ink_points_.size(), 1u);
   CreateAndSendMetadataFromLastPoint(ink_points_.begin()->first);
 }
 
@@ -88,7 +88,7 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendPoint(
 
 void DelegatedInkPointPixelTestHelper::CreateAndSendPointFromLastPoint(
     const gfx::PointF& point) {
-  DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+  DCHECK_EQ(ink_points_.size(), 1u);
   CreateAndSendPointFromLastPoint(ink_points_.begin()->first, point);
 }
 
@@ -96,7 +96,7 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendPointFromLastPoint(
     int32_t pointer_id,
     const gfx::PointF& point) {
   DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
-  EXPECT_GT(static_cast<int>(ink_points_[pointer_id].size()), 0);
+  EXPECT_GT(ink_points_[pointer_id].size(), 0u);
   CreateAndSendPoint(
       point,
       ink_points_[pointer_id].back().timestamp() + base::Microseconds(10),
@@ -104,14 +104,14 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendPointFromLastPoint(
 }
 
 gfx::Rect DelegatedInkPointPixelTestHelper::GetDelegatedInkDamageRect() {
-  DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+  DCHECK_EQ(ink_points_.size(), 1u);
   return GetDelegatedInkDamageRect(ink_points_.begin()->first);
 }
 
 gfx::Rect DelegatedInkPointPixelTestHelper::GetDelegatedInkDamageRect(
     int32_t pointer_id) {
   DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
-  EXPECT_GT(static_cast<int>(ink_points_[pointer_id].size()), 0);
+  EXPECT_GT(ink_points_[pointer_id].size(), 0u);
   gfx::RectF ink_damage_rect_f =
       gfx::RectF(ink_points_[pointer_id][0].point(), gfx::SizeF(1, 1));
   for (uint64_t i = 1; i < ink_points_[pointer_id].size(); ++i) {

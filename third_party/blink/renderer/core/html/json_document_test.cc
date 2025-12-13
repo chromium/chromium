@@ -32,31 +32,41 @@ class JSONDocumentTest : public SimTest {
 };
 
 TEST_F(JSONDocumentTest, JSONDoc) {
-  LoadResource(
+  static const char kJSON[] =
       "{\"menu\":{\"id\":\"file\",\"value\":\"File\",\"popup\":{\"menuitem\":[{"
       "\"value\":\"New\",\"click\":\"CreateNewDoc\"}]},\"itemCount\":3,"
-      "\"isShown\":true}}");
-  EXPECT_EQ(
-      GetDocument()
-          .documentElement()
-          ->QuerySelector(html_names::kBodyTag.LocalName())
-          ->firstChild()
-          ->textContent(),
-      "{\"menu\":{\"id\":\"file\",\"value\":\"File\",\"popup\":{\"menuitem\":[{"
-      "\"value\":\"New\",\"click\":\"CreateNewDoc\"}]},\"itemCount\":3,"
-      "\"isShown\":true}}");
-  ClickPrettyPrintCheckbox();
-
-  EXPECT_EQ(
-      GetDocument()
-          .documentElement()
-          ->QuerySelector(html_names::kBodyTag.LocalName())
-          ->firstChild()
-          ->textContent(),
+      "\"isShown\":      true}}";
+  static const char kFormatted[] =
       "{\n  \"menu\": {\n    \"id\": \"file\",\n    \"value\": \"File\",\n    "
       "\"popup\": {\n      \"menuitem\": [\n        {\n          \"value\": "
       "\"New\",\n          \"click\": \"CreateNewDoc\"\n        }\n      ]\n   "
-      " },\n    \"itemCount\": 3,\n    \"isShown\": true\n  }\n}\n");
+      " },\n    \"itemCount\": 3,\n    \"isShown\": true\n  }\n}\n";
+
+  LoadResource(kJSON);
+  EXPECT_EQ(GetDocument()
+                .documentElement()
+                ->QuerySelector(html_names::kBodyTag.LocalName())
+                ->firstChild()
+                ->textContent(),
+            kJSON);
+
+  // Format the resource.
+  ClickPrettyPrintCheckbox();
+  EXPECT_EQ(GetDocument()
+                .documentElement()
+                ->QuerySelector(html_names::kBodyTag.LocalName())
+                ->firstChild()
+                ->textContent(),
+            kFormatted);
+
+  // Uncheck the checkbox, which should restore the original formatting.
+  ClickPrettyPrintCheckbox();
+  EXPECT_EQ(GetDocument()
+                .documentElement()
+                ->QuerySelector(html_names::kBodyTag.LocalName())
+                ->firstChild()
+                ->textContent(),
+            kJSON);
 }
 
 TEST_F(JSONDocumentTest, InvalidJSON) {

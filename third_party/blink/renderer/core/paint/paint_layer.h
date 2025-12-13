@@ -418,6 +418,10 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     DCHECK(!needs_descendant_dependent_flags_update_);
     return has_non_contained_absolute_position_descendant_;
   }
+  bool HasDescendantWithTransformAnim() const {
+    DCHECK(!needs_descendant_dependent_flags_update_);
+    return has_descendant_with_transform_anim_;
+  }
   bool HasSelfPaintingLayerDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
     return has_self_painting_layer_descendant_;
@@ -610,7 +614,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       double* z_offset_for_descendants,
       double* z_offset,
       HitTestingTransformState* local_transform_state,
-      bool depth_sort_descendants);
+      bool depth_sort_descendants,
+      bool transition_pseudo_pass = false);
 
   HitTestingTransformState CreateLocalTransformState(
       const PaintLayer& transform_container,
@@ -624,15 +629,20 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                                 const PhysicalOffset& fragment_offset,
                                 const HitTestLocation&,
                                 HitTestPhase phase) const;
-  bool HitTestFragmentsWithPhase(const PaintLayerFragments&,
+  bool HitTestFragmentsWithPhase(const PaintLayer& transform_container,
+                                 const PaintLayerFragment* container_fragment,
+                                 const PaintLayerFragments&,
                                  HitTestResult&,
                                  const HitTestLocation&,
                                  HitTestPhase,
                                  bool& inside_clip_rect) const;
-  bool HitTestForegroundForFragments(const PaintLayerFragments&,
-                                     HitTestResult&,
-                                     const HitTestLocation&,
-                                     bool& inside_clip_rect) const;
+  bool HitTestForegroundForFragments(
+      const PaintLayer& transform_container,
+      const PaintLayerFragment* container_fragment,
+      const PaintLayerFragments&,
+      HitTestResult&,
+      const HitTestLocation&,
+      bool& inside_clip_rect) const;
   PaintLayer* HitTestTransformedLayerInFragments(
       const PaintLayer& transform_container,
       const PaintLayerFragment* container_fragment,
@@ -644,6 +654,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       ShouldRespectOverflowClipType);
   bool HitTestClippedOutByClipPath(const PaintLayer& root_layer,
                                    const HitTestLocation&) const;
+  bool HitTestClippedOutByBorderRadius(
+      const PaintLayer& transform_container,
+      const PaintLayerFragment* container_fragment,
+      const HitTestLocation&,
+      const ClipRect&) const;
 
   bool ShouldBeSelfPaintingLayer() const;
 
@@ -739,6 +754,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned has_fixed_position_descendant_ : 1;
   unsigned has_non_contained_absolute_position_descendant_ : 1;
   unsigned has_stacked_descendant_in_current_stacking_context_ : 1;
+  unsigned has_descendant_with_transform_anim_ : 1;
 
   // These are set to true when filter style or filter resource changes,
   // indicating that we need to update the filter (or backdrop_filter) field of

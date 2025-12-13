@@ -24,7 +24,7 @@
 template <typename>
 class scoped_refptr;
 
-namespace WTF {
+namespace blink {
 
 template <typename T>
 inline T* GetPtr(T* p) {
@@ -41,6 +41,6 @@ inline T* GetPtr(const scoped_refptr<T>& p) {
   return p.get();
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_GET_PTR_H_

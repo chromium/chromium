@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
@@ -80,11 +81,7 @@ auto EqualsFieldInfo(size_t index) {
 
 // Creates a matcher that compares a `FormDataAndroid::form()` to `expected`.
 auto EqualsFormData(const FormData& expected) {
-  return ResultOf(
-      [expected](const FormDataAndroid& actual) {
-        return FormData::DeepEqual(expected, actual.form());
-      },
-      true);
+  return Property(&FormDataAndroid::form, expected);
 }
 
 auto EqualsFormDataWithFields(const FormData& form, auto fields_matcher) {
@@ -227,7 +224,7 @@ class MockAndroidAutofillProviderBridge : public AndroidAutofillProviderBridge {
               (override));
   MOCK_METHOD(void, OnTextFieldDidScroll, (const FieldInfo&), (override));
   MOCK_METHOD(void, OnFormSubmitted, (mojom::SubmissionSource), (override));
-  MOCK_METHOD(void, OnDidFillAutofillFormData, (), (override));
+  MOCK_METHOD(void, OnDidAutofillForm, (), (override));
   MOCK_METHOD(void, CancelSession, (), (override));
   MOCK_METHOD(void, Reset, (), (override));
 };
@@ -281,8 +278,10 @@ class AndroidAutofillProviderTestBase
     return *autofill_client_injector_[web_contents()];
   }
 
-  AutofillDriver& autofill_driver(content::RenderFrameHost* rfh = nullptr) {
-    return android_autofill_manager(rfh).driver();
+  ContentAutofillDriver& autofill_driver(
+      content::RenderFrameHost* rfh = nullptr) {
+    return static_cast<ContentAutofillDriver&>(
+        android_autofill_manager(rfh).driver());
   }
 
   TestAndroidAutofillManager& android_autofill_manager(
@@ -327,6 +326,11 @@ class AndroidAutofillProviderTest : public AndroidAutofillProviderTestBase {
     NavigateAndCommit(GURL("about:blank"));
     FocusWebContentsOnMainFrame();
   }
+
+  void Reset(ContentAutofillDriver& driver) {
+    test_api(autofill_client().GetAutofillDriverFactory())
+        .Reset(autofill_driver());
+  }
 };
 
 // Tests that AndroidAutofillManager keeps track of the predictions it is
@@ -341,8 +345,7 @@ TEST_F(AndroidAutofillProviderTest, HasServerPrediction) {
       android_autofill_manager().has_server_prediction(form.global_id()));
 
   // Resetting removes prediction state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  Reset(autofill_driver());
   EXPECT_FALSE(
       android_autofill_manager().has_server_prediction(form.global_id()));
 }
@@ -702,8 +705,8 @@ TEST_F(AndroidAutofillProviderTest, FormSubmissionHappensDirectly) {
 // overwrite all type predictions of the respective `FormDataAndroidField`s.
 TEST_F(AndroidAutofillProviderTest,
        UsePasswordManagerOverridesInPrefillRequest) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -729,8 +732,8 @@ TEST_F(AndroidAutofillProviderTest,
 // signatures (and predictions) match.
 TEST_F(AndroidAutofillProviderTest,
        SessionIdIsReusedForCachedFormsAsLongAsPredictionsAgree) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -789,8 +792,7 @@ TEST_F(AndroidAutofillProviderTest, CancelSessionOnNavigation) {
       form, form.fields().front());
 
   EXPECT_CALL(provider_bridge(), CancelSession());
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  Reset(autofill_driver());
 }
 
 class AndroidAutofillProviderWithCredManTest
@@ -862,8 +864,6 @@ class AndroidAutofillProviderWithCredManTest
 
  private:
   FormData test_webauthn_form_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillVirtualViewStructureAndroid};
 };
 
 TEST_F(AndroidAutofillProviderWithCredManTest, CallsCredManOnlyOnce) {
@@ -939,35 +939,25 @@ TEST_F(AndroidAutofillProviderWithCredManTest,
 }
 
 TEST_F(AndroidAutofillProviderWithCredManTest,
-       LogConditionalPasskeysFlowPasskeysAvailableMetricWithoutPasskeys) {
-  base::HistogramTester histogram_tester;
+       LogConditionalPasskeysFlowPasskeysAvailableOnLongPress) {
   ON_CALL(cred_man_delegate(), HasPasskeys())
       .WillByDefault(
           Return(webauthn::WebAuthnCredManDelegate::State::kNoPasskeys));
 
-  // Focus the form field.
-  base::RepeatingCallback<void(bool)> completed_callback;
-  EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback)
-      .WillOnce(SaveArg<0>(&completed_callback));
+  // Focus the form field which has no immediate passkey effect.
   FocusFormField(webauthn_email_field());
+  EXPECT_FALSE(keyboard_suppressor().is_suppressing());
 
-  // Keyboard is suppressed while CredMan is showing.
-  EXPECT_TRUE(keyboard_suppressor().is_suppressing());
-  Mock::VerifyAndClearExpectations(&cred_man_delegate());
-
-  // Hide CredMan.
-  completed_callback.Run(/*success=*/true);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ConditionalPasskeysFlow.PasskeysState",
-      webauthn::WebAuthnCredManDelegate::State::kNoPasskeys, 1);
+  // Simulate the long-press suggestion was accepted.
+  EXPECT_CALL(cred_man_delegate(),
+              TriggerCredManUi(Eq(
+                  webauthn::WebAuthnCredManDelegate::RequestPasswords(false))));
+  test_api(autofill_provider()).OnTriggerPasskeyRequest();
 }
 
 TEST_F(AndroidAutofillProviderWithCredManTest,
        LogConditionalPasskeysFlowPasskeysUnavailableWithoutPasskeys) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillVirtualViewStructureAndroidPasskeyLongPress};
   ON_CALL(cred_man_delegate(), HasPasskeys())
       .WillByDefault(
           Return(webauthn::WebAuthnCredManDelegate::State::kNoPasskeys));
@@ -1035,8 +1025,8 @@ using AndroidAutofillProviderPrefillRequestTest = AndroidAutofillProviderTest;
 // Tests that we can send another prefill request after navigation.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        MultiplePrefillRequestsOnNavigation) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1051,8 +1041,7 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
       form.global_id());
   android_autofill_manager().SimulateOnAskForValuesToFill(
       form, form.fields().front());
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  Reset(autofill_driver());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       form.global_id());
@@ -1062,8 +1051,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // was not enough time to send a prefill request.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        OnAskForValuesToFillRecordsPrefillRequestStateUmaMetric) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1083,8 +1072,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        NoPrefillRequestOnVersionsPriorToU) {
   // This test only makes sense on Android versions smaller than U.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1102,8 +1091,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // Tests that a prefill request is sent if all requirements for it are
 // satisfied.
 TEST_F(AndroidAutofillProviderPrefillRequestTest, SendPrefillRequest) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1122,8 +1111,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest, SendPrefillRequest) {
 // session.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        NoPrefillRequestIfOngoingSession) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1153,8 +1142,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // Tests that no prefill request is sent if there has already been another
 // prefill request.
 TEST_F(AndroidAutofillProviderPrefillRequestTest, NoSecondPrefillRequest) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1171,7 +1160,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest, NoSecondPrefillRequest) {
   ASSERT_TRUE(
       android_autofill_manager().FindCachedFormById(login_form2.global_id()));
   // The helper method should generate different ids every time it is called.
-  ASSERT_FALSE(FormData::DeepEqual(login_form1, login_form2));
+  ASSERT_FALSE(
+      FormData::IdenticalAndEquivalentDomElements(login_form1, login_form2));
 
   EXPECT_CALL(provider_bridge(),
               SendPrefillRequest(EqualsFormData(login_form1)));
@@ -1194,8 +1184,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest, NoSecondPrefillRequest) {
 // the Autofill session for that form.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        SessionIdIsReusedForCachedForms) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1225,8 +1215,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // starting a session on a form with the same id, but changed field content.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        SessionIdIsNotReusedForCachedFormsIfContentHasChanged) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1269,8 +1259,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // before returning to the (formerly) cached form, a new session is started.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        SessionIdIsNotReusedMultipleAutofillSessions) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1331,8 +1321,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // Tests that metrics are emitted when the bottom sheet is shown.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        PrefillRequestStateEmittedOnShowingBottomSheet) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1360,8 +1350,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // and no view structure was provided to the Android framework.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        PrefillRequestStateEmittedOnNotShowingBottomSheetWithoutViewStructure) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1386,8 +1376,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // and a view structure was provided to the Android framework.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        PrefillRequestStateEmittedOnNotShowingBottomSheetWithViewStructure) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 

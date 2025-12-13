@@ -65,6 +65,7 @@ public class AndroidPaymentApp extends PaymentApp
     private @Nullable PaymentDetailsUpdateConnection mPaymentDetailsUpdateConnection;
     private final @Nullable String mApplicationIdentifierToHide;
     private boolean mBypassIsReadyToPayServiceInTest;
+    private boolean mIsReadyToPayResponseInTest = true;
     private boolean mIsPreferred;
     private boolean mHasEnrolledInstrumentResult;
 
@@ -236,7 +237,7 @@ public class AndroidPaymentApp extends PaymentApp
                         /* clearIdFields= */ false,
                         mRemoveDeprecatedFields);
         if (mBypassIsReadyToPayServiceInTest) {
-            respondToIsReadyToPayQuery(true);
+            respondToIsReadyToPayQuery(mIsReadyToPayResponseInTest);
             return;
         }
         mIsReadyToPayServiceHelper =
@@ -250,6 +251,11 @@ public class AndroidPaymentApp extends PaymentApp
     @VisibleForTesting
     public void bypassIsReadyToPayServiceInTest() {
         mBypassIsReadyToPayServiceInTest = true;
+    }
+
+    @VisibleForTesting
+    public void setIsReadyToPayResponseInTest(boolean isReadyToPay) {
+        mIsReadyToPayResponseInTest = isReadyToPay;
     }
 
     private void respondToIsReadyToPayQuery(boolean isReadyToPay) {
@@ -445,7 +451,7 @@ public class AndroidPaymentApp extends PaymentApp
 
     // WindowAndroid.IntentCallback:
     @Override
-    public void onIntentCompleted(int resultCode, Intent data) {
+    public void onIntentCompleted(int resultCode, @Nullable Intent data) {
         assert mInstrumentDetailsCallback != null;
         ThreadUtils.assertOnUiThread();
         if (mPaymentDetailsUpdateConnection != null) {

@@ -150,6 +150,10 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
 
   int GetTransactionsCount() const { return all_writers_.size(); }
 
+  // Returns the current priority of the request. It is always the maximum of
+  // all the writer transactions.
+  RequestPriority priority() const { return priority_; }
+
  private:
   friend class WritersTest;
 

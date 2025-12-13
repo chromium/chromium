@@ -60,8 +60,9 @@ struct BindLambdaForTestingHelper<Lambda, R(Args...)> {
   static auto BindLambdaForTesting(Lambda&& lambda) {
     if constexpr (kHasConstCallOperator<decltype(&F::operator()), R, F,
                                         Args...>) {
-      // If WTF::BindRepeating is available, and a callback argument is in WTF,
-      // then this call is ambiguous without the full namespace path.
+      // If blink::BindRepeating is available, and a callback argument is in
+      // the blink namespace, then this call is ambiguous without the full
+      // namespace path.
       return ::base::BindRepeating(&Run, std::forward<Lambda>(lambda));
     } else if constexpr (IsNonConstRvalueRef<>::value) {
       // Since a mutable lambda potentially can invalidate its state after being

@@ -129,8 +129,9 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
   }
 
   virtual void MaybeCreatePickerViews() {
-    CreatePickerViews(/*request_audio=*/true, /*exclude_system_audio=*/false,
-                      /*exclude_window_audio=*/true);
+    CreatePickerViews(/*request_audio=*/true,
+                      /*screen_exclude_system_audio=*/false,
+                      blink::mojom::WindowAudioPreference::kExclude);
   }
 
   void TearDown() override {
@@ -143,8 +144,8 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
 
   void CreatePickerViews(
       bool request_audio,
-      bool exclude_system_audio,
-      bool exclude_window_audio,
+      bool screen_exclude_system_audio,
+      blink::mojom::WindowAudioPreference window_audio_preference,
       blink::mojom::PreferredDisplaySurface preferred_display_surface =
           blink::mojom::PreferredDisplaySurface::NO_PREFERENCE) {
     widget_destroyed_waiter_.reset();
@@ -163,10 +164,8 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
     picker_params.app_name = kAppName;
     picker_params.target_name = kAppName;
     picker_params.request_audio = request_audio;
-    picker_params.exclude_system_audio = exclude_system_audio;
-    picker_params.window_audio_preference =
-        exclude_window_audio ? blink::mojom::WindowAudioPreference::kExclude
-                             : blink::mojom::WindowAudioPreference::kSystem;
+    picker_params.exclude_system_audio = screen_exclude_system_audio;
+    picker_params.window_audio_preference = window_audio_preference;
     picker_params.preferred_display_surface = preferred_display_surface;
 
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists;
@@ -596,34 +595,197 @@ TEST_P(DesktopMediaPickerViewsPerTypeTest, ClearSelection) {
   EXPECT_FALSE(test_api_.GetSelectedSourceId().has_value());
 }
 
+#if BUILDFLAG(IS_WIN)
+// When doing windows captures, Chromium is not allowed to share its own audio
+// via application audio capture. This test suite asserts that the media picker
+// UI is changed as expected when a Chromium window is selected - i.e., the
+// audio-checkbox is disabled and unchecked.
+class DesktopMediaPickerViewsApplicationAudioSharingControlTest
+    : public DesktopMediaPickerViewsTestBase {
+ public:
+  DesktopMediaPickerViewsApplicationAudioSharingControlTest()
+      : DesktopMediaPickerViewsTestBase(GetSourceTypes(/*new_order=*/true)) {}
+  ~DesktopMediaPickerViewsApplicationAudioSharingControlTest() override =
+      default;
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureWin);
+    DesktopMediaPickerViewsTestBase::SetUp();
+
+    test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
+    media_lists_[DesktopMediaList::Type::kWindow]->AddChromiumWindowSource(10);
+    media_lists_[DesktopMediaList::Type::kWindow]->AddChromiumWindowSource(20);
+    media_lists_[DesktopMediaList::Type::kWindow]->AddSource(30);
+    media_lists_[DesktopMediaList::Type::kWindow]->AddSource(40);
+  }
+
+  void MaybeCreatePickerViews() override {
+    CreatePickerViews(/*request_audio=*/true,
+                      /*screen_exclude_system_audio=*/false,
+                      blink::mojom::WindowAudioPreference::kWindow);
+  }
+
+  void CheckDefaultState() {
+    // By default, nothing should be selected.
+    EXPECT_FALSE(test_api_.GetSelectedSourceId().has_value());
+
+    EXPECT_TRUE(test_api_.HasAudioShareControl());
+    EXPECT_TRUE(test_api_.IsAudioSharingControlEnabled());
+    EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DesktopMediaPickerViewsApplicationAudioSharingControlTest,
+       DefaultState) {
+  CheckDefaultState();
+}
+
+TEST_F(DesktopMediaPickerViewsApplicationAudioSharingControlTest,
+       ChromiumWindow) {
+  CheckDefaultState();
+
+  // Select first Chromium window.
+  test_api_.FocusSourceAtIndex(0);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
+  EXPECT_TRUE(test_api_.HasAudioShareControl());
+  EXPECT_FALSE(test_api_.IsAudioSharingControlEnabled());
+  EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
+
+  // Select second Chromium window.
+  test_api_.FocusSourceAtIndex(1);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(20, test_api_.GetSelectedSourceId().value());
+  EXPECT_TRUE(test_api_.HasAudioShareControl());
+  EXPECT_FALSE(test_api_.IsAudioSharingControlEnabled());
+  EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
+}
+
+TEST_F(DesktopMediaPickerViewsApplicationAudioSharingControlTest,
+       NonChromiumWindow) {
+  CheckDefaultState();
+
+  // Select first non-Chromium window.
+  test_api_.FocusSourceAtIndex(2);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(30, test_api_.GetSelectedSourceId().value());
+  EXPECT_TRUE(test_api_.HasAudioShareControl());
+  EXPECT_TRUE(test_api_.IsAudioSharingControlEnabled());
+  EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
+
+  // Select second non-Chromium window.
+  test_api_.FocusSourceAtIndex(3);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(40, test_api_.GetSelectedSourceId().value());
+  EXPECT_TRUE(test_api_.HasAudioShareControl());
+  EXPECT_TRUE(test_api_.IsAudioSharingControlEnabled());
+  EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
+}
+
+TEST_F(DesktopMediaPickerViewsApplicationAudioSharingControlTest,
+       NonChromiumWindowStateIsPersisted) {
+  CheckDefaultState();
+
+  // Select first non-Chromium window.
+  test_api_.FocusSourceAtIndex(2);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(30, test_api_.GetSelectedSourceId().value());
+  EXPECT_TRUE(test_api_.HasAudioShareControl());
+  EXPECT_TRUE(test_api_.IsAudioSharingControlEnabled());
+  EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
+
+  // Select first Chromium window.
+  test_api_.FocusSourceAtIndex(0);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
+  EXPECT_TRUE(test_api_.HasAudioShareControl());
+  EXPECT_FALSE(test_api_.IsAudioSharingControlEnabled());
+  EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
+
+  // Re-select second non-Chromium window and verify that audio sharing state is
+  // persisted.
+  test_api_.FocusSourceAtIndex(3);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(40, test_api_.GetSelectedSourceId().value());
+  EXPECT_TRUE(test_api_.HasAudioShareControl());
+  EXPECT_TRUE(test_api_.IsAudioSharingControlEnabled());
+  EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
+
+  // Uncheck audio sharing.
+  test_api_.SetAudioSharingApprovedByUser(false);
+  EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
+
+  // Select first Chromium window again.
+  test_api_.FocusSourceAtIndex(0);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
+  EXPECT_TRUE(test_api_.HasAudioShareControl());
+  EXPECT_FALSE(test_api_.IsAudioSharingControlEnabled());
+  EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
+
+  // Re-select first non-Chromium window and verify that audio sharing state is
+  // persisted.
+  test_api_.FocusSourceAtIndex(2);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(30, test_api_.GetSelectedSourceId().value());
+  EXPECT_TRUE(test_api_.HasAudioShareControl());
+  EXPECT_TRUE(test_api_.IsAudioSharingControlEnabled());
+  EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
+}
+
+#endif  // BUILDFLAG(IS_WIN)
+
 class DesktopMediaPickerViewsPerTypeAndAudioTest
     : public DesktopMediaPickerViewsTestBase,
-      public testing::WithParamInterface<
-          std::tuple<DesktopMediaList::Type, bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<
+          DesktopMediaList::Type,
+          /*RequireAudio=*/bool,
+          /*SystemAudio=*/bool,
+          /*WindowAudioPreference=*/blink::mojom::WindowAudioPreference>> {
  public:
   DesktopMediaPickerViewsPerTypeAndAudioTest()
       : DesktopMediaPickerViewsTestBase(GetSourceTypes(/*new_order=*/true)) {}
   ~DesktopMediaPickerViewsPerTypeAndAudioTest() override = default;
 
+  void SetUp() override {
+#if BUILDFLAG(IS_WIN)
+    feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureWin);
+#elif BUILDFLAG(IS_MAC)
+    feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureMac);
+#endif  // BUILDFLAG(IS_WIN)
+    DesktopMediaPickerViewsTestBase::SetUp();
+  }
+
   void MaybeCreatePickerViews() override {
-    CreatePickerViews(RequireAudio(), SystemAudio(), WindowAudio());
+    CreatePickerViews(RequireAudio(), SystemAudio(), WindowAudioPreference());
   }
 
   DesktopMediaList::Type Type() const { return std::get<0>(GetParam()); }
   bool RequireAudio() const { return std::get<1>(GetParam()); }
   bool SystemAudio() const { return std::get<2>(GetParam()); }
-  bool WindowAudio() const { return std::get<3>(GetParam()); }
+  blink::mojom::WindowAudioPreference WindowAudioPreference() const {
+    return std::get<3>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     DesktopMediaPickerViewsPerTypeAndAudioTest,
-    testing::Combine(testing::Values(DesktopMediaList::Type::kWebContents,
-                                     DesktopMediaList::Type::kWindow,
-                                     DesktopMediaList::Type::kScreen),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool()));
+    testing::Combine(
+        testing::Values(DesktopMediaList::Type::kWebContents,
+                        DesktopMediaList::Type::kWindow,
+                        DesktopMediaList::Type::kScreen),
+        testing::Bool(),
+        testing::Bool(),
+        testing::Values(blink::mojom::WindowAudioPreference::kExclude,
+                        blink::mojom::WindowAudioPreference::kSystem,
+                        blink::mojom::WindowAudioPreference::kWindow)));
 
 TEST_P(DesktopMediaPickerViewsPerTypeAndAudioTest, AcceptSpecific) {
   DesktopMediaID fake_id(AsDesktopMediaIdType(Type()), 333);
@@ -632,6 +794,15 @@ TEST_P(DesktopMediaPickerViewsPerTypeAndAudioTest, AcceptSpecific) {
   if (RequireAudio() &&
       AsDesktopMediaIdType(Type()) == DesktopMediaID::TYPE_WEB_CONTENTS) {
     fake_id.audio_share = true;
+  } else if (AsDesktopMediaIdType(Type()) == DesktopMediaID::TYPE_WINDOW) {
+    // For Window captures, the `window_audio_type` will be set based on
+    // platform support.
+    fake_id.window_audio_type = test_api_.GetWindowAudioType();
+
+    // Audio is enabled by default for window application audio capture.
+    fake_id.audio_share =
+        RequireAudio() && test_api_.GetWindowAudioType() ==
+                              DesktopMediaID::AudioType::kApplication;
   }
   media_lists_[Type()]->AddSourceByFullMediaID(fake_id);
 
@@ -667,7 +838,7 @@ class DesktopMediaPickerViewsSystemAudioTest
 TEST_F(DesktopMediaPickerViewsSystemAudioTest,
        SystemAudioCheckboxVisibleIfExcludeSystemAudioNotSpecified) {
   CreatePickerViews(/*request_audio=*/true, /*exclude_system_audio=*/false,
-                    /*exclude_window_audio=*/false);
+                    blink::mojom::WindowAudioPreference::kSystem);
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
 
@@ -687,7 +858,7 @@ TEST_F(DesktopMediaPickerViewsSystemAudioTest,
 TEST_F(DesktopMediaPickerViewsSystemAudioTest,
        SystemAudioCheckboxInvisibleIfExcludeSystemAudioSpecified) {
   CreatePickerViews(/*request_audio=*/true, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
 
@@ -715,7 +886,7 @@ TEST_F(DesktopMediaPickerViewsSystemAudioTest,
 TEST_F(DesktopMediaPickerViewsSystemAudioTest,
        IfAudioNotRequestedThenExcludeSystemAudioHasNoEffect) {
   CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
 
@@ -735,7 +906,7 @@ TEST_F(DesktopMediaPickerViewsSystemAudioTest,
 TEST_F(DesktopMediaPickerViewsSystemAudioTest,
        CorrectHintsIfSystemAudioIsExcluded) {
   CreatePickerViews(/*request_audio=*/true, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/false);
+                    blink::mojom::WindowAudioPreference::kSystem);
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
 
@@ -753,7 +924,7 @@ TEST_F(DesktopMediaPickerViewsSystemAudioTest,
 TEST_F(DesktopMediaPickerViewsSystemAudioTest,
        CorrectHintsIfWindowAudioIsExcluded) {
   CreatePickerViews(/*request_audio=*/true, /*exclude_system_audio=*/false,
-                    /*exclude_window_audio=*/true);
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
 
@@ -767,6 +938,186 @@ TEST_F(DesktopMediaPickerViewsSystemAudioTest,
                     ? IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB_OR_SCREEN
                     : IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB));
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Verifies the conditions that make the media picker audio checkbox enabled for
+// each type of pane (Tab, Window, Screen) when application audio capture is
+// available/unavailable. Also checks that the checkbox string is correct for
+// each type of pane. Application audio capture is currently only supported on
+// Windows and macOS.
+class DesktopMediaPickerViewsApplicationAudioTest
+    : public DesktopMediaPickerViewsTestBase,
+      public testing::WithParamInterface<
+          std::tuple<blink::mojom::WindowAudioPreference,
+                     /*is_application_audio_capture_supported=*/bool,
+                     /*request_audio=*/bool,
+                     /*screen_exclude_system_audio=*/bool>> {
+ public:
+  DesktopMediaPickerViewsApplicationAudioTest()
+      : DesktopMediaPickerViewsTestBase(GetSourceTypes(/*new_order=*/false)) {}
+  ~DesktopMediaPickerViewsApplicationAudioTest() override = default;
+
+  void SetUp() override {
+    if (ShouldEnableApplicationAudioCapture()) {
+#if BUILDFLAG(IS_WIN)
+      feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureWin);
+#elif BUILDFLAG(IS_MAC)
+      feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureMac);
+#endif
+    } else {
+#if BUILDFLAG(IS_WIN)
+      feature_list_.InitAndDisableFeature(
+          features::kApplicationAudioCaptureWin);
+#elif BUILDFLAG(IS_MAC)
+      feature_list_.InitAndDisableFeature(
+          features::kApplicationAudioCaptureMac);
+#endif
+    }
+    DesktopMediaPickerViewsTestBase::SetUp();
+  }
+
+  void MaybeCreatePickerViews() override {
+    // CreatePickerViews() called  directly from tests.
+  }
+
+  blink::mojom::WindowAudioPreference WindowAudioPreference() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool ShouldEnableApplicationAudioCapture() const {
+    return std::get<1>(GetParam());
+  }
+
+  bool RequestAudio() const { return std::get<2>(GetParam()); }
+
+  // Returns true if the `systemAudio` parameter passed to getisplayMedia was
+  // set to "exclude".
+  bool ScreenExcludeSystemAudio() const { return std::get<3>(GetParam()); }
+
+  // Returns true if the screen tab should offer audio sharing.
+  bool ShouldOfferScreenAudio() const {
+#if BUILDFLAG(IS_MAC)
+    // If system audio capture is not supported screen audio is never offered.
+    if (!media::IsMacCatapSystemLoopbackCaptureSupported()) {
+      return false;
+    }
+#endif  // BUILDFLAG(IS_MAC)
+    return RequestAudio() && !ScreenExcludeSystemAudio();
+  }
+
+  // Returns true if the window tab should offer audio sharing.
+  bool ShouldOfferWindowAudio() const {
+#if BUILDFLAG(IS_MAC)
+    // If system audio capture is not supported window audio is never offered.
+    if (!media::IsMacCatapSystemLoopbackCaptureSupported()) {
+      return false;
+    }
+#endif  // BUILDFLAG(IS_MAC)
+    return RequestAudio() &&
+           WindowAudioPreference() !=
+               blink::mojom::WindowAudioPreference::kExclude &&
+           (((media::IsApplicationAudioCaptureSupported() &&
+              WindowAudioPreference() ==
+                  blink::mojom::WindowAudioPreference::kWindow)) ||
+            (WindowAudioPreference() ==
+             blink::mojom::WindowAudioPreference::kSystem));
+  }
+
+  // Returns the expected label for the screen pane's audio toggle of the
+  // getDisplayMedia picker UI.
+  std::u16string GetExpectedScreenAudioLabel() const {
+    if (!RequestAudio()) {
+      return std::u16string();
+    }
+
+    if (ShouldOfferScreenAudio()) {
+      return l10n_util::GetStringUTF16(
+          IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO);
+    }
+
+    if (ShouldOfferWindowAudio()) {
+      return l10n_util::GetStringUTF16(
+          IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB_OR_WINDOW);
+    }
+
+    return l10n_util::GetStringUTF16(
+        IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB);
+  }
+
+  // Returns the expected label for the window pane's audio toggle of the
+  // getDisplayMedia picker UI.
+  std::u16string GetExpectedWindowAudioLabel() const {
+    if (!RequestAudio()) {
+      return std::u16string();
+    }
+
+    if (ShouldOfferWindowAudio()) {
+      if (WindowAudioPreference() ==
+              blink::mojom::WindowAudioPreference::kWindow &&
+          media::IsApplicationAudioCaptureSupported()) {
+        return l10n_util::GetStringUTF16(
+            IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_APPLICATION_AUDIO);
+      }
+
+      return l10n_util::GetStringUTF16(
+          IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO);
+    }
+
+    if (ShouldOfferScreenAudio()) {
+      return l10n_util::GetStringUTF16(
+          IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB_OR_SCREEN);
+    }
+
+    return l10n_util::GetStringUTF16(
+        IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DesktopMediaPickerViewsApplicationAudioTest,
+    testing::Combine(
+        testing::Values(blink::mojom::WindowAudioPreference::kExclude,
+                        blink::mojom::WindowAudioPreference::kSystem,
+                        blink::mojom::WindowAudioPreference::kWindow),
+        testing::Bool(),
+        testing::Bool(),
+        testing::Bool()));
+
+TEST_P(DesktopMediaPickerViewsApplicationAudioTest, AudioCheckbox) {
+  CreatePickerViews(RequestAudio(), ScreenExcludeSystemAudio(),
+                    WindowAudioPreference());
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  EXPECT_EQ(test_api_.HasAudioShareControl(), ShouldOfferScreenAudio());
+  EXPECT_EQ(test_api_.IsScreenAudioOffered(), ShouldOfferScreenAudio());
+  if (ShouldOfferScreenAudio()) {
+    EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
+  }
+  EXPECT_EQ(test_api_.GetAudioLabelText(), GetExpectedScreenAudioLabel());
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
+  EXPECT_EQ(test_api_.HasAudioShareControl(), ShouldOfferWindowAudio());
+  EXPECT_EQ(test_api_.IsWindowAudioOffered(), ShouldOfferWindowAudio());
+  // By default, the audio sharing toggle is checked for application audio,
+  // and unchecked for system audio.
+  if (ShouldOfferWindowAudio()) {
+    if (test_api_.GetWindowAudioType() ==
+        DesktopMediaID::AudioType::kApplication) {
+      EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
+    } else {
+      EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
+    }
+  }
+  EXPECT_EQ(test_api_.GetAudioLabelText(), GetExpectedWindowAudioLabel());
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
+  EXPECT_EQ(test_api_.HasAudioShareControl(), RequestAudio());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // Creates a single pane DesktopMediaPickerImpl that only has a tab list.
 class DesktopMediaPickerViewsSingleTabPaneTest
@@ -918,8 +1269,10 @@ class DesktopMediaPickerPreferredDisplaySurfaceTest
       : DesktopMediaPickerViewsTestBase(GetSourceTypes(NewOrder())) {}
 
   void MaybeCreatePickerViews() override {
-    CreatePickerViews(/*request_audio=*/true, /*exclude_system_audio=*/false,
-                      /*exclude_window_audio=*/true, PreferredDisplaySurface());
+    CreatePickerViews(/*request_audio=*/true,
+                      /*screen_exclude_system_audio=*/false,
+                      blink::mojom::WindowAudioPreference::kExclude,
+                      PreferredDisplaySurface());
   }
 
   bool NewOrder() const { return std::get<0>(GetParam()); }
@@ -1026,8 +1379,9 @@ TEST_F(DelegatedSourceListTest, EnsureFocus) {
   SetSourceTypes(
       {DesktopMediaList::Type::kWebContents},
       {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+  CreatePickerViews(/*request_audio=*/false,
+                    /*screen_exclude_system_audio=*/true,
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
   EXPECT_FALSE(media_lists_[DesktopMediaList::Type::kScreen]->is_focused());
@@ -1050,8 +1404,9 @@ TEST_F(DelegatedSourceListTest, TestSelection) {
   SetSourceTypes(
       {DesktopMediaList::Type::kWebContents},
       {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+  CreatePickerViews(/*request_audio=*/false,
+                    /*screen_exclude_system_audio=*/true,
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   // Add the one entry that is expected for a delegated source list and switch
   // to it. Note that since this is a delegated source, we must select its pane
@@ -1074,8 +1429,9 @@ TEST_F(DelegatedSourceListTest, TestSelection) {
   SetSourceTypes(
       {DesktopMediaList::Type::kWebContents},
       {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+  CreatePickerViews(/*request_audio=*/false,
+                    /*screen_exclude_system_audio=*/true,
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   // Add the one entry that is expected for a delegated source list and switch
   // to it. Note that since this is a delegated source, we must select its pane
@@ -1101,8 +1457,9 @@ TEST_F(DelegatedSourceListTest, TestSelection) {
 // delegated source list is dismissed that it finishes without a selection.
 TEST_F(DelegatedSourceListTest, SinglePaneReject) {
   SetSourceTypes({}, {DesktopMediaList::Type::kScreen});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+  CreatePickerViews(/*request_audio=*/false,
+                    /*screen_exclude_system_audio=*/true,
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   media_lists_[DesktopMediaList::Type::kScreen]
       ->OnDelegatedSourceListDismissed();
@@ -1120,8 +1477,9 @@ TEST_F(DelegatedSourceListTest, NoFallbackPaneReject) {
   // isn't one of them.
   SetSourceTypes(
       {}, {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+  CreatePickerViews(/*request_audio=*/false,
+                    /*screen_exclude_system_audio=*/true,
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   media_lists_[DesktopMediaList::Type::kScreen]
       ->OnDelegatedSourceListDismissed();
@@ -1139,8 +1497,9 @@ TEST_F(DelegatedSourceListTest, ClosePickerOnSourceListDismissed) {
   // one other type.
   SetSourceTypes({DesktopMediaList::Type::kWebContents},
                  {DesktopMediaList::Type::kScreen});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+  CreatePickerViews(/*request_audio=*/false,
+                    /*screen_exclude_system_audio=*/true,
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   // Switch to the screen pane and simulate the user dismissing the native
   // picker.
@@ -1162,8 +1521,9 @@ TEST_F(DelegatedSourceListTest, ReselectButtonAbsent) {
   SetSourceTypes(
       {DesktopMediaList::Type::kWebContents},
       {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+  CreatePickerViews(/*request_audio=*/false,
+                    /*screen_exclude_system_audio=*/true,
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   // Ensure that we don't have a reselect button for the non-delegated type.
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
@@ -1187,8 +1547,9 @@ TEST_F(DelegatedSourceListTest, SwitchToWebContents) {
   // one other type.
   SetSourceTypes({DesktopMediaList::Type::kWebContents},
                  {DesktopMediaList::Type::kScreen});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+  CreatePickerViews(/*request_audio=*/false,
+                    /*screen_exclude_system_audio=*/true,
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   // Switch to the screen pane, dismiss it, then validate that we're back on
   // the WebContents pane.
@@ -1207,8 +1568,9 @@ TEST_F(DelegatedSourceListTest, EnsureNoWebContentsSelected) {
   // Ensure that we have the (Fallback) WebContents type and a different type
   SetSourceTypes({DesktopMediaList::Type::kWebContents},
                  {DesktopMediaList::Type::kScreen});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+  CreatePickerViews(/*request_audio=*/false,
+                    /*screen_exclude_system_audio=*/true,
+                    blink::mojom::WindowAudioPreference::kExclude);
   const auto web_contents_source_type =
       AsDesktopMediaIdType(DesktopMediaList::Type::kWebContents);
 
@@ -1242,8 +1604,9 @@ TEST_F(DelegatedSourceListTest, ReselectButtonEnabled) {
   SetSourceTypes(
       {DesktopMediaList::Type::kWebContents},
       {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+  CreatePickerViews(/*request_audio=*/false,
+                    /*screen_exclude_system_audio=*/true,
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   // Ensure that we don't have a reselect button for the non-delegated type.
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
@@ -1274,8 +1637,9 @@ TEST_F(DelegatedSourceListTest, ReselectButtonEnabledState) {
   SetSourceTypes(
       {DesktopMediaList::Type::kWebContents},
       {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+  CreatePickerViews(/*request_audio=*/false,
+                    /*screen_exclude_system_audio=*/true,
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   // Ensure that we do have a reselect button for the screen delegated type, and
   // that it is not enabled by default.
@@ -1313,8 +1677,9 @@ TEST_F(DelegatedSourceListTest, ReselectTriggersShowDelegatedSourceList) {
   SetSourceTypes(
       {DesktopMediaList::Type::kWebContents},
       {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true,
-                    /*exclude_window_audio=*/true);
+  CreatePickerViews(/*request_audio=*/false,
+                    /*screen_exclude_system_audio=*/true,
+                    blink::mojom::WindowAudioPreference::kExclude);
 
   // ClearSourceListSelection should not have been called on either list yet.
   EXPECT_EQ(0, media_lists_[DesktopMediaList::Type::kScreen]
@@ -1342,3 +1707,162 @@ TEST_F(DelegatedSourceListTest, ReselectTriggersShowDelegatedSourceList) {
 
 #endif  // BUILDFLAG(IS_MAC)
 }  // namespace views
+
+#if BUILDFLAG(IS_MAC)
+
+// A fake implementation of AudioCapturePermissionChecker for testing.
+class FakeAudioCapturePermissionChecker : public AudioCapturePermissionChecker {
+ public:
+  FakeAudioCapturePermissionChecker() = default;
+  ~FakeAudioCapturePermissionChecker() override = default;
+
+  // AudioCapturePermissionChecker implementation.
+  State GetState() const override { return state_; }
+  void RunCheck() override { run_check_called_ = true; }
+
+  void SetState(State state) { state_ = state; }
+  bool run_check_called() const { return run_check_called_; }
+  void ResetRunCheckCalled() { run_check_called_ = false; }
+
+ private:
+  State state_ = State::kUnknown;
+  bool run_check_called_ = false;
+};
+
+class DesktopMediaPickerAudioPermissionTest
+    : public views::DesktopMediaPickerViewsTestBase {
+ public:
+  DesktopMediaPickerAudioPermissionTest()
+      : DesktopMediaPickerViewsTestBase({DesktopMediaList::Type::kScreen}) {}
+  ~DesktopMediaPickerAudioPermissionTest() override = default;
+
+  void SetUp() override {
+    DesktopMediaPickerViewsTestBase::SetUp();
+    if (!media::IsMacCatapSystemLoopbackCaptureSupported()) {
+      GTEST_SKIP() << "AudioCapturePermissionChecker only created if Catap "
+                      "loopback capture is supported.";
+    }
+
+    test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+    test_api_.SetAudioSharingApprovedByUser(
+        true);  // Default to approved for these tests.
+
+    auto fake_audio_permission_checker =
+        std::make_unique<FakeAudioCapturePermissionChecker>();
+    fake_audio_permission_checker_ = fake_audio_permission_checker.get();
+    GetPickerDialogView()->SetAudioCapturePermissionCheckerForTest(
+        std::move(fake_audio_permission_checker));
+
+    pane_ = test_api_.GetActivePane();
+    ASSERT_TRUE(pane_);
+  }
+
+  void TearDown() override {
+    fake_audio_permission_checker_ = nullptr;
+    pane_ = nullptr;
+    DesktopMediaPickerViewsTestBase::TearDown();
+  }
+
+  void AudioSharingApprovedByUserUpdate() {
+    GetPickerDialogView()->OnAudioSharingApprovedByUserUpdate();
+  }
+
+  void TriggerOnAudioPermissionUpdate() {
+    GetPickerDialogView()->OnAudioPermissionUpdate();
+  }
+
+ protected:
+  raw_ptr<DesktopMediaPaneView> pane_ = nullptr;
+  raw_ptr<FakeAudioCapturePermissionChecker> fake_audio_permission_checker_ =
+      nullptr;
+};
+
+TEST_F(DesktopMediaPickerAudioPermissionTest,
+       OnTriggerUnknownPermissionAndAudioApproved) {
+  fake_audio_permission_checker_->SetState(
+      AudioCapturePermissionChecker::State::kUnknown);
+  pane_->SetAudioSharingApprovedByUser(true);  // Ensure audio is approved
+
+  // Call the method under test.
+  AudioSharingApprovedByUserUpdate();
+
+  EXPECT_TRUE(fake_audio_permission_checker_->run_check_called());
+  EXPECT_FALSE(pane_->IsAudioWarningVisible());
+}
+
+TEST_F(DesktopMediaPickerAudioPermissionTest,
+       OnTriggerDeniedPermissionAndAudioApproved) {
+  fake_audio_permission_checker_->SetState(
+      AudioCapturePermissionChecker::State::kDenied);
+  pane_->SetAudioSharingApprovedByUser(true);  // Ensure audio is approved
+
+  // Call the method under test.
+  AudioSharingApprovedByUserUpdate();
+
+  EXPECT_FALSE(fake_audio_permission_checker_->run_check_called());
+  EXPECT_TRUE(pane_->IsAudioWarningVisible());
+}
+
+TEST_F(DesktopMediaPickerAudioPermissionTest,
+       OnTriggerGrantedPermissionAndAudioApproved) {
+  fake_audio_permission_checker_->SetState(
+      AudioCapturePermissionChecker::State::kGranted);
+  pane_->SetAudioSharingApprovedByUser(true);
+
+  // Call the method under test.
+  AudioSharingApprovedByUserUpdate();
+
+  EXPECT_FALSE(fake_audio_permission_checker_->run_check_called());
+  EXPECT_FALSE(pane_->IsAudioWarningVisible());
+}
+
+TEST_F(DesktopMediaPickerAudioPermissionTest,
+       OnTriggerDeniedPermissionAndAudioNotApproved) {
+  fake_audio_permission_checker_->SetState(
+      AudioCapturePermissionChecker::State::kDenied);
+  pane_->SetAudioSharingApprovedByUser(false);
+
+  // Call the method under test.
+  AudioSharingApprovedByUserUpdate();
+
+  EXPECT_FALSE(fake_audio_permission_checker_->run_check_called());
+  EXPECT_FALSE(pane_->IsAudioWarningVisible());
+}
+
+TEST_F(DesktopMediaPickerAudioPermissionTest,
+       OnUpdateGrantedPermissionAndAudioApproved) {
+  fake_audio_permission_checker_->SetState(
+      AudioCapturePermissionChecker::State::kGranted);
+  pane_->SetAudioSharingApprovedByUser(true);
+
+  // Call the method under test.
+  TriggerOnAudioPermissionUpdate();
+
+  EXPECT_FALSE(pane_->IsAudioWarningVisible());
+}
+
+TEST_F(DesktopMediaPickerAudioPermissionTest,
+       OnUpdateDeniedPermissionAndAudioApproved) {
+  fake_audio_permission_checker_->SetState(
+      AudioCapturePermissionChecker::State::kDenied);
+  pane_->SetAudioSharingApprovedByUser(true);
+
+  // Call the method under test.
+  TriggerOnAudioPermissionUpdate();
+
+  EXPECT_TRUE(pane_->IsAudioWarningVisible());
+}
+
+TEST_F(DesktopMediaPickerAudioPermissionTest,
+       OnUpdateDeniedPermissionAndAudioNotApproved) {
+  fake_audio_permission_checker_->SetState(
+      AudioCapturePermissionChecker::State::kDenied);
+  pane_->SetAudioSharingApprovedByUser(false);
+
+  // Call the method under test.
+  TriggerOnAudioPermissionUpdate();
+
+  EXPECT_FALSE(pane_->IsAudioWarningVisible());
+}
+
+#endif  // BUILDFLAG(IS_MAC)

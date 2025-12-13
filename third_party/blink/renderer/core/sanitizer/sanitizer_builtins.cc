@@ -10,16 +10,9 @@
 
 namespace blink {
 
-Sanitizer* BuildEmptyConfig() {
-  Sanitizer* empty_config = MakeGarbageCollected<Sanitizer>();
-  empty_config->setComments(true);
-  empty_config->setDataAttributes(true);
-  return empty_config;
-}
-
 const Sanitizer* SanitizerBuiltins::GetDefaultUnsafe() {
   DEFINE_STATIC_LOCAL(Persistent<Sanitizer>, default_unsafe_,
-                      (BuildEmptyConfig()));
+                      (Sanitizer::CreateEmpty()));
   return default_unsafe_.Get();
 }
 

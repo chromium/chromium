@@ -1,0 +1,71 @@
+<!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@AURALINUX-DENY:PARENT-CHANGED*
+@UIA-WIN-DENY:*StructureChanged*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Material Web Icon Button Events</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-icon-button",
+            "md-icon"
+        ];
+
+        setupEventTestRunner();
+        window.waitForStable = waitForStable;
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const toggleButton = document.createElement("md-icon-button");
+            toggleButton.id = "test-icon-button";
+            toggleButton.toggle = true;
+            toggleButton.setAttribute("aria-label", "Toggle favorite");
+
+            const icon = document.createElement("md-icon");
+            icon.textContent = "favorite";
+            toggleButton.appendChild(icon);
+
+            statusDiv.appendChild(toggleButton);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    window.go_passes = [
+      async () => {
+            const toggleButton = document.getElementById("test-icon-button");
+            if (toggleButton) {
+                toggleButton.selected = true;
+                await waitForStable(toggleButton);
+            }
+        },
+        async () => {
+            const toggleButton = document.getElementById("test-icon-button");
+            if (toggleButton) {
+                toggleButton.selected = false;
+                await waitForStable(toggleButton);
+            }
+        },
+        async () => {
+            const toggleButton = document.getElementById("test-icon-button");
+            if (toggleButton) {
+                toggleButton.selected = true;
+                await waitForStable(toggleButton);
+            }
+        }
+    ];
+</script>
+</html>

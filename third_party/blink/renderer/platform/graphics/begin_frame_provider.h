@@ -10,8 +10,6 @@
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -48,14 +46,14 @@ class PLATFORM_EXPORT BeginFrameProvider
 
   // viz::mojom::blink::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
-      WTF::Vector<viz::ReturnedResource> resources) final {
+      Vector<viz::ReturnedResource> resources) final {
     NOTIMPLEMENTED();
   }
   void OnBeginFrame(const viz::BeginFrameArgs&,
-                    const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&,
-                    WTF::Vector<viz::ReturnedResource> resources) final;
+                    const HashMap<uint32_t, viz::FrameTimingDetails>&,
+                    Vector<viz::ReturnedResource> resources) final;
   void OnBeginFramePausedChanged(bool paused) final {}
-  void ReclaimResources(WTF::Vector<viz::ReturnedResource> resources) final {
+  void ReclaimResources(Vector<viz::ReturnedResource> resources) final {
     NOTIMPLEMENTED();
   }
   void OnCompositorFrameTransitionDirectiveProcessed(

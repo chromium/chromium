@@ -87,7 +87,7 @@ void DidNavigateOrOpenWindow(
 ServiceWorkerWindowClient::ResolveWindowClientCallback
 ServiceWorkerWindowClient::CreateResolveWindowClientCallback(
     ScriptPromiseResolver<IDLNullable<ServiceWorkerWindowClient>>* resolver) {
-  return WTF::BindOnce(&DidNavigateOrOpenWindow, WrapPersistent(resolver));
+  return BindOnce(&DidNavigateOrOpenWindow, WrapPersistent(resolver));
 }
 
 ServiceWorkerWindowClient::ServiceWorkerWindowClient(
@@ -126,7 +126,7 @@ ScriptPromise<ServiceWorkerWindowClient> ServiceWorkerWindowClient::focus(
   global_scope->ConsumeWindowInteraction();
 
   global_scope->GetServiceWorkerHost()->FocusClient(
-      Uuid(), WTF::BindOnce(&DidFocus, WrapPersistent(resolver)));
+      Uuid(), BindOnce(&DidFocus, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -143,13 +143,14 @@ ServiceWorkerWindowClient::navigate(ScriptState* script_state,
   KURL parsed_url = KURL(global_scope->location()->Url(), url);
   if (!parsed_url.IsValid() || parsed_url.ProtocolIsAbout()) {
     resolver->Reject(V8ThrowException::CreateTypeError(
-        script_state->GetIsolate(), "'" + url + "' is not a valid URL."));
+        script_state->GetIsolate(),
+        StrCat({"'", url, "' is not a valid URL."})));
     return promise;
   }
   if (!global_scope->GetSecurityOrigin()->CanDisplay(parsed_url)) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(),
-        "'" + parsed_url.ElidedString() + "' cannot navigate."));
+        StrCat({"'", parsed_url.ElidedString(), "' cannot navigate."})));
     return promise;
   }
 

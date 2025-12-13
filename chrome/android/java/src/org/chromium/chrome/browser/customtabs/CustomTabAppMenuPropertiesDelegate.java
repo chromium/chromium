@@ -17,7 +17,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -39,8 +40,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -49,8 +48,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** App menu properties delegate for {@link CustomTabActivity}. */
+@NullMarked
 public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
     private static final String CUSTOM_MENU_ITEM_ID_KEY = "CustomMenuItemId";
     private static final String SHOW_OPEN_IN_BROWSER_MENU_TOP_PARAM =
@@ -61,7 +62,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             "remove_desktop_site_menu_item";
     private final Verifier mVerifier;
     private final @CustomTabsUiType int mUiType;
-    private final boolean mShowShare;
+    private boolean mShowShare;
     private final boolean mShowStar;
     private final boolean mShowDownload;
     private final boolean mIsOpenedByChrome;
@@ -140,6 +141,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         boolean requestDesktopSiteVisible = true;
         boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCct();
         boolean readerModePrefsVisible = false;
+        boolean translateVisible = true;
+        // When the icon row is visible, site info is a button in that row.
+        // This is a separate menu item row for the site info shown within the icon row.
+        boolean siteSettingsItemVisible = false;
+        boolean zoomVisible = false;
 
         if (ChromeFeatureList.sCctAdaptiveButton.isEnabled()) {
             if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -161,7 +167,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             findInPageVisible = false;
             bookmarkItemVisible = false; // Set to skip initialization.
             downloadItemVisible = false; // Set to skip initialization.
-            openInChromeItemVisible = false;
             requestDesktopSiteVisible = false;
             addToHomeScreenVisible = false;
             tryAddingReadAloud = false;
@@ -170,7 +175,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             iconRowVisible = false;
             bookmarkItemVisible = false; // Set to skip initialization.
             downloadItemVisible = false; // Set to skip initialization.
-            openInChromeItemVisible = false;
             requestDesktopSiteVisible = false;
             addToHomeScreenVisible = false;
             tryAddingReadAloud = false;
@@ -182,25 +186,39 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
             downloadItemVisible = false;
             bookmarkItemVisible = false;
+        } else if (mUiType == CustomTabsUiType.TRUSTED_WEB_ACTIVITY) {
+            // The CCT menu button was removed for TWAs. This would only affect the
+            // app header's menu button.
+            addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
+            downloadItemVisible = false;
+            bookmarkItemVisible = false;
+            if (ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled()) {
+                requestDesktopSiteVisible = false;
+
+                translateVisible = false;
+                // Remove icons.
+                iconRowVisible = false;
+                // Site settings menu item row.
+                siteSettingsItemVisible = true;
+                zoomVisible = true;
+                findInPageVisible = true;
+                mShowShare = true;
+            }
         } else if (mUiType == CustomTabsUiType.OFFLINE_PAGE) {
-            openInChromeItemVisible = false;
             bookmarkItemVisible = true;
             downloadItemVisible = false;
             addToHomeScreenVisible = false;
             requestDesktopSiteVisible = true;
             tryAddingReadAloud = false;
         } else if (mUiType == CustomTabsUiType.AUTH_TAB) {
-            openInChromeItemVisible = false;
             bookmarkItemVisible = false;
             downloadItemVisible = false;
             addToHomeScreenVisible = false;
             tryAddingReadAloud = false;
         } else if (mUiType == CustomTabsUiType.NETWORK_BOUND_TAB) {
-            openInChromeItemVisible = false;
             addToHomeScreenVisible = false;
             requestDesktopSiteVisible = true;
         } else if (mUiType == CustomTabsUiType.POPUP) {
-            openInChromeItemVisible = false;
             bookmarkItemVisible = false;
             downloadItemVisible = false;
             addToHomeScreenVisible = false;
@@ -209,7 +227,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         }
 
         if (!FirstRunStatus.getFirstRunFlowComplete()) {
-            openInChromeItemVisible = false;
             bookmarkItemVisible = false;
             downloadItemVisible = false;
             addToHomeScreenVisible = false;
@@ -218,10 +235,12 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         if (mIsIncognitoBranded) {
             addToHomeScreenVisible = false;
             downloadItemVisible = false;
-            openInChromeItemVisible = false;
             tryAddingReadAloud = false;
         }
 
+        if (CustomTabIntentDataProvider.isOpenInBrowserDisallowed(mUiType, mIsIncognitoBranded)) {
+            openInChromeItemVisible = false;
+        }
         boolean isNativePage =
                 url.getScheme().equals(UrlConstants.CHROME_SCHEME)
                         || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)
@@ -230,11 +249,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
         // TODO(crbug.com/384992232): Hide open in Chrome for blob and data url until such view
         //  intent can be handled.
-        if ((ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)
-                        || ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT))
-                && (url.getScheme().equals(UrlConstants.BLOB_SCHEME)
-                        || url.getScheme().equals(UrlConstants.DATA_SCHEME))) {
+        if (url.getScheme().equals(UrlConstants.BLOB_SCHEME)
+                || url.getScheme().equals(UrlConstants.DATA_SCHEME)) {
             openInChromeItemVisible = false;
         }
         addToHomeScreenVisible &=
@@ -296,6 +312,15 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                             buildModelForDivider(R.id.divider_line_id)));
         }
 
+        // --- App info row ---
+        if (siteSettingsItemVisible) {
+            modelList.add(
+                    new MVCListAdapter.ListItem(
+                            AppMenuHandler.AppMenuItemType.STANDARD,
+                            buildModelForStandardMenuItem(
+                                    R.id.info_menu_id, R.string.menu_app_info, 0)));
+        }
+
         // --- Open in browser ---
         boolean showOpenInBrowserAtTop =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -311,6 +336,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             // Set visibility of Read Aloud menu item. The entrypoint will be visible iff the tab
             // can be synthesized.
             observeAndMaybeAddReadAloud(modelList, currentTab);
+        }
+
+        // --- Reader Mode ---
+        if (shouldShowReaderModeItem()) {
+            modelList.add(buildReaderModeItem(currentTab));
         }
 
         // --- Share ---
@@ -374,7 +404,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         }
 
         // --- Translate ---
-        if (shouldShowTranslateMenuItem(currentTab)) {
+        if (translateVisible && shouldShowTranslateMenuItem(currentTab)) {
             modelList.add(buildTranslateMenuItem(currentTab, false));
         }
 
@@ -386,6 +416,15 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         // --- Open in Browser ---
         if (openInChromeItemVisible && !showOpenInBrowserAtTop) {
             addOpenInChrome(modelList, /* showIcon= */ false);
+        }
+
+        // --- Zoom ---
+        if (zoomVisible) {
+            modelList.add(
+                    new MVCListAdapter.ListItem(
+                            AppMenuHandler.AppMenuItemType.STANDARD,
+                            buildModelForStandardMenuItem(
+                                    R.id.page_zoom_id, R.string.page_zoom_menu_title, 0)));
         }
         return modelList;
     }
@@ -408,6 +447,18 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         modelList.add(new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model));
     }
 
+    private boolean shouldShowReaderModeItem() {
+        if (!ChromeFeatureList.sCctAdaptiveButton.isEnabled()
+                || !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
+                        ReaderModeManager.CPA_FALLBACK_MENU_PARAM,
+                        false)) {
+            return false;
+        }
+        var cpaController = mContextualPageActionControllerSupplier.get();
+        return cpaController != null && cpaController.hasReaderMode();
+    }
+
     /**
      * @return The index that the given menu item should appear in the result of {@link
      *     BrowserServicesIntentDataProvider#getMenuTitles()}. Returns -1 if item not found.
@@ -421,7 +472,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     }
 
     @Override
-    public Bundle getBundleForMenuItem(int itemId) {
+    public @Nullable Bundle getBundleForMenuItem(int itemId) {
         if (!mItemIdToIndexMap.containsKey(itemId)) {
             return null;
         }
@@ -445,8 +496,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         if (footerTextView != null) {
             Resources res = footer.getResources();
             String appName = res.getString(R.string.app_name);
-            String footerText =
-                    res.getString(R.string.twa_running_in_chrome_template, appName);
+            String footerText = res.getString(R.string.twa_running_in_chrome_template, appName);
             footerTextView.setText(footerText);
         }
 

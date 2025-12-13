@@ -290,9 +290,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_TRUE(boca_app_browser->window()->IsVisible());
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
-  auto* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(boca_app_browser);
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(ImmersiveModeController::From(boca_app_browser)->IsEnabled());
   EXPECT_EQ(boca_app_browser->tab_strip_model()->active_index(), 0);
 
   // Verify that tab switch commands are disabled.
@@ -343,9 +341,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
-  auto* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(boca_app_browser);
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(ImmersiveModeController::From(boca_app_browser)->IsEnabled());
 
   // Verify that camera and microphone access are disabled.
   ASSERT_TRUE(
@@ -358,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
-  EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_TRUE(ImmersiveModeController::From(boca_app_browser)->IsEnabled());
 
   // Verify that tab switch commands are enabled.
   chrome::BrowserCommandController* const command_controller =
@@ -583,6 +579,23 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_DEVICES));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_INSPECT));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_TOGGLE));
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       GetWindowPinState) {
+  // Launch Boca app for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+
+  // Pin the Boca app and verify result.
+  system_web_app_manager.SetPinStateForSystemWebAppWindow(
+      /*pinned=*/true, boca_app_browser->session_id());
+  EXPECT_TRUE(
+      system_web_app_manager.IsWindowPinned(boca_app_browser->session_id()));
 }
 
 }  // namespace

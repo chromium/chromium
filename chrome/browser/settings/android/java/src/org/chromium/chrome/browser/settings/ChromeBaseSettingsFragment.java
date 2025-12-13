@@ -8,10 +8,14 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 
 /**
@@ -24,9 +28,12 @@ import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompat
         implements EmbeddableSettingsPage,
                 ProfileDependentSetting,
-                SettingsCustomTabLauncher.SettingsCustomTabLauncherClient {
+                SettingsCustomTabLauncher.SettingsCustomTabLauncherClient,
+                CustomDividerFragment,
+                PreferenceUpdateObserver.Provider {
     private Profile mProfile;
     private SettingsCustomTabLauncher mCustomTabLauncher;
+    private @Nullable PreferenceUpdateObserver mPreferenceUpdateObserver;
 
     /**
      * @return The profile associated with the current Settings screen.
@@ -48,6 +55,23 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
         mCustomTabLauncher = customTabLauncher;
     }
 
+    @Override
+    public void setPreferenceUpdateObserver(PreferenceUpdateObserver observer) {
+        mPreferenceUpdateObserver = observer;
+    }
+
+    @Override
+    public void removePreferenceUpdateObserver() {
+        mPreferenceUpdateObserver = null;
+    }
+
+    // CustomDividerFragment implementation.
+    /** Returns whether the divider should be shown. */
+    @Override
+    public boolean hasDivider() {
+        return !ChromeFeatureList.sAndroidSettingsContainment.isEnabled();
+    }
+
     /**
      * @return The launcher for help and feedback actions.
      */
@@ -60,5 +84,12 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
      */
     public SettingsCustomTabLauncher getCustomTabLauncher() {
         return mCustomTabLauncher;
+    }
+
+    /** Notifies the observer that the preferences have been updated. */
+    protected void notifyPreferencesUpdated() {
+        if (mPreferenceUpdateObserver != null) {
+            mPreferenceUpdateObserver.onPreferencesUpdated(this);
+        }
     }
 }

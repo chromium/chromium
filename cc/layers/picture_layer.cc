@@ -66,6 +66,7 @@ void PictureLayer::PushDirtyPropertiesTo(
 
     layer_impl->UpdateRasterSource(CreateRasterSource(),
                                    &last_updated_invalidation_.Write(*this));
+    layer_impl->set_should_batch_updated_tiles();
   }
 
   DCHECK(last_updated_invalidation_.Read(*this).IsEmpty());

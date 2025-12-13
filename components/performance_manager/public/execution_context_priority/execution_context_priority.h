@@ -12,6 +12,10 @@
 // Specialization of a voting system used to get votes related to the
 // TaskPriority of ExecutionContexts.
 
+namespace content {
+class WebContents;
+}
+
 namespace performance_manager {
 
 namespace execution_context {
@@ -60,6 +64,10 @@ using VoteObserver = voting::VoteObserver<Vote>;
 using VotingChannel = voting::VotingChannel<Vote>;
 using VotingChannelFactory = voting::VotingChannelFactory<Vote>;
 using OptionalVotingChannel = voting::OptionalVotingChannel<Vote>;
+
+// Sets whether the given `contents` is closing.
+// Must be called from the PM sequence.
+void SetPageIsClosing(content::WebContents* contents, bool is_closing);
 
 }  // namespace execution_context_priority
 }  // namespace performance_manager

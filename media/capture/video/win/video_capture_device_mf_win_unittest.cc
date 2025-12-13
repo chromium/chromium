@@ -36,7 +36,6 @@
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::AtLeast;
@@ -1216,11 +1215,10 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
                              EXPECT_TRUE(device_->Init());
                            }));
     task_environment_.RunUntilIdle();
-    EXPECT_CALL(*(engine_.Get()), DoGetSource())
-        .WillRepeatedly(Invoke([this]() {
-          this->capture_source_->AddRef();
-          return this->capture_source_.get();
-        }));
+    EXPECT_CALL(*(engine_.Get()), DoGetSource()).WillRepeatedly([this]() {
+      this->capture_source_->AddRef();
+      return this->capture_source_.get();
+    });
   }
 
   bool ShouldSkipTest() {
@@ -1233,21 +1231,21 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
 
   void PrepareMFDeviceWithOneVideoStream(GUID mf_video_subtype) {
     EXPECT_CALL(*capture_source_, DoGetDeviceStreamCount(_))
-        .WillRepeatedly(Invoke([](DWORD* stream_count) {
+        .WillRepeatedly([](DWORD* stream_count) {
           *stream_count = 1;
           return S_OK;
-        }));
+        });
     EXPECT_CALL(*capture_source_, DoGetDeviceStreamCategory(0, _))
-        .WillRepeatedly(Invoke([](DWORD stream_index,
-                                  MF_CAPTURE_ENGINE_STREAM_CATEGORY* category) {
+        .WillRepeatedly([](DWORD stream_index,
+                           MF_CAPTURE_ENGINE_STREAM_CATEGORY* category) {
           *category = MF_CAPTURE_ENGINE_STREAM_CATEGORY_VIDEO_PREVIEW;
           return S_OK;
-        }));
+        });
 
     EXPECT_CALL(*capture_source_, DoGetAvailableDeviceMediaType(0, _, _))
-        .WillRepeatedly(Invoke([mf_video_subtype](DWORD stream_index,
-                                                  DWORD media_type_index,
-                                                  IMFMediaType** media_type) {
+        .WillRepeatedly([mf_video_subtype](DWORD stream_index,
+                                           DWORD media_type_index,
+                                           IMFMediaType** media_type) {
           if (media_type_index != 0)
             return MF_E_NO_MORE_TYPES;
 
@@ -1256,44 +1254,44 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
               kArbitraryValidVideoHeight, 30);
           *media_type = AddReference(stub_media_type.get());
           return S_OK;
-        }));
+        });
 
     EXPECT_CALL(*(engine_.Get()),
                 DoGetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW, _))
-        .WillRepeatedly(Invoke([this](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
-                                      IMFCaptureSink** sink) {
+        .WillRepeatedly([this](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
+                               IMFCaptureSink** sink) {
           *sink = AddReference(this->capture_preview_sink_.get());
           return S_OK;
-        }));
+        });
 
     EXPECT_CALL(*capture_source_, DoGetCurrentDeviceMediaType(_, _))
-        .WillRepeatedly(Invoke(
+        .WillRepeatedly(
             [mf_video_subtype](DWORD stream_index, IMFMediaType** media_type) {
               auto stub_media_type = base::MakeRefCounted<StubMFMediaType>(
                   MFMediaType_Video, mf_video_subtype, 0,
                   kArbitraryValidVideoWidth, kArbitraryValidVideoHeight, 30);
               *media_type = AddReference(stub_media_type.get());
               return S_OK;
-            }));
+            });
   }
 
   void PrepareMFDeviceWithVideoStreams(std::vector<GUID> mf_video_subtypes) {
     EXPECT_CALL(*capture_source_, DoGetDeviceStreamCount(_))
-        .WillRepeatedly(Invoke([](DWORD* stream_count) {
+        .WillRepeatedly([](DWORD* stream_count) {
           *stream_count = 1;
           return S_OK;
-        }));
+        });
     EXPECT_CALL(*capture_source_, DoGetDeviceStreamCategory(0, _))
-        .WillRepeatedly(Invoke([](DWORD stream_index,
-                                  MF_CAPTURE_ENGINE_STREAM_CATEGORY* category) {
+        .WillRepeatedly([](DWORD stream_index,
+                           MF_CAPTURE_ENGINE_STREAM_CATEGORY* category) {
           *category = MF_CAPTURE_ENGINE_STREAM_CATEGORY_VIDEO_PREVIEW;
           return S_OK;
-        }));
+        });
 
     EXPECT_CALL(*capture_source_, DoGetAvailableDeviceMediaType(0, _, _))
-        .WillRepeatedly(Invoke([mf_video_subtypes](DWORD stream_index,
-                                                   DWORD media_type_index,
-                                                   IMFMediaType** media_type) {
+        .WillRepeatedly([mf_video_subtypes](DWORD stream_index,
+                                            DWORD media_type_index,
+                                            IMFMediaType** media_type) {
           if (media_type_index >= mf_video_subtypes.size())
             return MF_E_NO_MORE_TYPES;
 
@@ -1303,38 +1301,38 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
               kArbitraryValidVideoHeight, 30);
           *media_type = AddReference(stub_media_type.get());
           return S_OK;
-        }));
+        });
 
     EXPECT_CALL(*(engine_.Get()),
                 DoGetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW, _))
-        .WillRepeatedly(Invoke([this](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
-                                      IMFCaptureSink** sink) {
+        .WillRepeatedly([this](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
+                               IMFCaptureSink** sink) {
           *sink = this->capture_preview_sink_.get();
           this->capture_preview_sink_->AddRef();
           return S_OK;
-        }));
+        });
 
     EXPECT_CALL(*capture_source_, DoGetCurrentDeviceMediaType(_, _))
-        .WillRepeatedly(Invoke(
+        .WillRepeatedly(
             [mf_video_subtypes](DWORD stream_index, IMFMediaType** media_type) {
               auto stub_media_type = base::MakeRefCounted<StubMFMediaType>(
                   MFMediaType_Video, mf_video_subtypes[0], 0,
                   kArbitraryValidVideoWidth, kArbitraryValidVideoHeight, 30);
               *media_type = AddReference(stub_media_type.get());
               return S_OK;
-            }));
+            });
   }
 
   void PrepareMFDeviceWithOneVideoStreamAndOnePhotoStream(
       GUID mf_video_subtype) {
     EXPECT_CALL(*capture_source_, DoGetDeviceStreamCount(_))
-        .WillRepeatedly(Invoke([](DWORD* stream_count) {
+        .WillRepeatedly([](DWORD* stream_count) {
           *stream_count = 2;
           return S_OK;
-        }));
+        });
     EXPECT_CALL(*capture_source_, DoGetDeviceStreamCategory(_, _))
-        .WillRepeatedly(Invoke([](DWORD stream_index,
-                                  MF_CAPTURE_ENGINE_STREAM_CATEGORY* category) {
+        .WillRepeatedly([](DWORD stream_index,
+                           MF_CAPTURE_ENGINE_STREAM_CATEGORY* category) {
           if (stream_index == 0) {
             *category = MF_CAPTURE_ENGINE_STREAM_CATEGORY_VIDEO_PREVIEW;
             return S_OK;
@@ -1343,7 +1341,7 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
             return S_OK;
           }
           return E_FAIL;
-        }));
+        });
 
     auto get_device_media_type = [mf_video_subtype](DWORD stream_index,
                                                     IMFMediaType** media_type) {
@@ -1364,17 +1362,18 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
     };
 
     EXPECT_CALL(*capture_source_, DoGetAvailableDeviceMediaType(_, _, _))
-        .WillRepeatedly(Invoke(
-            [get_device_media_type](DWORD stream_index, DWORD media_type_index,
-                                    IMFMediaType** media_type) {
-              if (media_type_index != 0)
-                return MF_E_NO_MORE_TYPES;
-              return get_device_media_type(stream_index, media_type);
-            }));
+        .WillRepeatedly([get_device_media_type](DWORD stream_index,
+                                                DWORD media_type_index,
+                                                IMFMediaType** media_type) {
+          if (media_type_index != 0) {
+            return MF_E_NO_MORE_TYPES;
+          }
+          return get_device_media_type(stream_index, media_type);
+        });
 
     EXPECT_CALL(*(engine_.Get()), DoGetSink(_, _))
-        .WillRepeatedly(Invoke([this](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
-                                      IMFCaptureSink** sink) {
+        .WillRepeatedly([this](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
+                               IMFCaptureSink** sink) {
           if (sink_type == MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW) {
             *sink = AddReference(this->capture_preview_sink_.get());
             return S_OK;
@@ -1385,28 +1384,28 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
             return S_OK;
           }
           return E_FAIL;
-        }));
+        });
 
     EXPECT_CALL(*capture_source_, DoGetCurrentDeviceMediaType(_, _))
-        .WillRepeatedly(Invoke(get_device_media_type));
+        .WillRepeatedly(get_device_media_type);
   }
 
   void PrepareMFDepthDeviceWithCombinedFormatsAndStreams(
       DepthDeviceParams params) {
     EXPECT_CALL(*capture_source_, DoGetDeviceStreamCount(_))
-        .WillRepeatedly(Invoke([params](DWORD* stream_count) {
+        .WillRepeatedly([params](DWORD* stream_count) {
           *stream_count = params.additional_i420_video_stream ? 2 : 1;
           return S_OK;
-        }));
+        });
     EXPECT_CALL(*capture_source_, DoGetDeviceStreamCategory(_, _))
-        .WillRepeatedly(Invoke([](DWORD stream_index,
-                                  MF_CAPTURE_ENGINE_STREAM_CATEGORY* category) {
+        .WillRepeatedly([](DWORD stream_index,
+                           MF_CAPTURE_ENGINE_STREAM_CATEGORY* category) {
           if (stream_index <= 1) {
             *category = MF_CAPTURE_ENGINE_STREAM_CATEGORY_VIDEO_PREVIEW;
             return S_OK;
           }
           return E_FAIL;
-        }));
+        });
 
     auto get_device_media_type = [params](DWORD stream_index,
                                           IMFMediaType** media_type) {
@@ -1427,9 +1426,9 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
     };
 
     EXPECT_CALL(*capture_source_, DoGetAvailableDeviceMediaType(_, _, _))
-        .WillRepeatedly(Invoke([params, get_device_media_type](
-                                   DWORD stream_index, DWORD media_type_index,
-                                   IMFMediaType** media_type) {
+        .WillRepeatedly([params, get_device_media_type](
+                            DWORD stream_index, DWORD media_type_index,
+                            IMFMediaType** media_type) {
           if (stream_index == 0 &&
               params.additional_i420_formats_in_depth_stream &&
               media_type_index == 1) {
@@ -1442,18 +1441,18 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
           if (media_type_index != 0)
             return MF_E_NO_MORE_TYPES;
           return get_device_media_type(stream_index, media_type);
-        }));
+        });
 
     EXPECT_CALL(*(engine_.Get()),
                 DoGetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW, _))
-        .WillRepeatedly(Invoke([this](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
-                                      IMFCaptureSink** sink) {
+        .WillRepeatedly([this](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
+                               IMFCaptureSink** sink) {
           *sink = AddReference(this->capture_preview_sink_.get());
           return S_OK;
-        }));
+        });
 
     EXPECT_CALL(*capture_source_, DoGetCurrentDeviceMediaType(_, _))
-        .WillRepeatedly(Invoke(get_device_media_type));
+        .WillRepeatedly(get_device_media_type);
   }
 
   VideoCaptureDeviceDescriptor descriptor_;
@@ -1724,24 +1723,24 @@ TEST_F(VideoCaptureDeviceMFWinTest, AllocateAndStartWithFlakyInvalidRequest) {
   EXPECT_CALL(*capture_source_, DoGetDeviceStreamCount(_))
       .Times(AtLeast(2))
       .WillOnce(Return(MF_E_INVALIDREQUEST))
-      .WillRepeatedly(Invoke([](DWORD* stream_count) {
+      .WillRepeatedly([](DWORD* stream_count) {
         *stream_count = 1;
         return S_OK;
-      }));
+      });
   EXPECT_CALL(*capture_source_, DoGetDeviceStreamCategory(0, _))
       .Times(AtLeast(2))
       .WillOnce(Return(MF_E_INVALIDREQUEST))
-      .WillRepeatedly(Invoke(
+      .WillRepeatedly(
           [](DWORD stream_index, MF_CAPTURE_ENGINE_STREAM_CATEGORY* category) {
             *category = MF_CAPTURE_ENGINE_STREAM_CATEGORY_VIDEO_PREVIEW;
             return S_OK;
-          }));
+          });
 
   EXPECT_CALL(*capture_source_, DoGetAvailableDeviceMediaType(0, _, _))
       .Times(AtLeast(2))
       .WillOnce(Return(MF_E_INVALIDREQUEST))
-      .WillRepeatedly(Invoke([](DWORD stream_index, DWORD media_type_index,
-                                IMFMediaType** media_type) {
+      .WillRepeatedly([](DWORD stream_index, DWORD media_type_index,
+                         IMFMediaType** media_type) {
         if (media_type_index != 0)
           return MF_E_NO_MORE_TYPES;
 
@@ -1750,17 +1749,17 @@ TEST_F(VideoCaptureDeviceMFWinTest, AllocateAndStartWithFlakyInvalidRequest) {
             kArbitraryValidVideoHeight, 30);
         *media_type = AddReference(stub_media_type.get());
         return S_OK;
-      }));
+      });
 
   auto mock_sink = base::MakeRefCounted<MockCapturePreviewSink>();
   EXPECT_CALL(*(engine_.Get()),
               DoGetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW, _))
-      .WillRepeatedly(Invoke([&mock_sink](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
-                                          IMFCaptureSink** sink) {
+      .WillRepeatedly([&mock_sink](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
+                                   IMFCaptureSink** sink) {
         *sink = mock_sink.get();
         (*sink)->AddRef();
         return S_OK;
-      }));
+      });
 
   EXPECT_CALL(*(engine_.Get()), OnStartPreview());
   EXPECT_CALL(*client_, OnStarted());
@@ -2014,35 +2013,32 @@ TEST_F(VideoCaptureDeviceMFWinTest, GetPhotoStateViaPhotoStream) {
   EXPECT_EQ(state->red_eye_reduction, mojom::RedEyeReduction::NEVER);
   EXPECT_EQ(state->fill_light_mode.size(), 0u);
 
-  ASSERT_TRUE(state->supported_background_blur_modes);
-  EXPECT_EQ(state->supported_background_blur_modes->size(), 2u);
-  EXPECT_EQ(std::ranges::count(*state->supported_background_blur_modes,
+  EXPECT_EQ(state->supported_background_blur_modes.size(), 2u);
+  EXPECT_EQ(std::ranges::count(state->supported_background_blur_modes,
                                mojom::BackgroundBlurMode::OFF),
             1);
-  EXPECT_EQ(std::ranges::count(*state->supported_background_blur_modes,
+  EXPECT_EQ(std::ranges::count(state->supported_background_blur_modes,
                                mojom::BackgroundBlurMode::BLUR),
             1);
   EXPECT_EQ(state->background_blur_mode, mojom::BackgroundBlurMode::OFF);
 
-  ASSERT_TRUE(state->supported_eye_gaze_correction_modes);
-  EXPECT_EQ(state->supported_eye_gaze_correction_modes->size(), 3u);
-  EXPECT_EQ(std::ranges::count(*state->supported_eye_gaze_correction_modes,
+  EXPECT_EQ(state->supported_eye_gaze_correction_modes.size(), 3u);
+  EXPECT_EQ(std::ranges::count(state->supported_eye_gaze_correction_modes,
                                mojom::EyeGazeCorrectionMode::OFF),
             1);
-  EXPECT_EQ(std::ranges::count(*state->supported_eye_gaze_correction_modes,
+  EXPECT_EQ(std::ranges::count(state->supported_eye_gaze_correction_modes,
                                mojom::EyeGazeCorrectionMode::ON),
             1);
-  EXPECT_EQ(std::ranges::count(*state->supported_eye_gaze_correction_modes,
+  EXPECT_EQ(std::ranges::count(state->supported_eye_gaze_correction_modes,
                                mojom::EyeGazeCorrectionMode::STARE),
             1);
   EXPECT_EQ(state->current_eye_gaze_correction_mode,
             mojom::EyeGazeCorrectionMode::OFF);
 
-  ASSERT_TRUE(state->supported_face_framing_modes);
-  EXPECT_EQ(2u, state->supported_face_framing_modes->size());
-  EXPECT_EQ(1, std::ranges::count(*state->supported_face_framing_modes,
+  EXPECT_EQ(2u, state->supported_face_framing_modes.size());
+  EXPECT_EQ(1, std::ranges::count(state->supported_face_framing_modes,
                                   mojom::MeteringMode::CONTINUOUS));
-  EXPECT_EQ(1, std::ranges::count(*state->supported_face_framing_modes,
+  EXPECT_EQ(1, std::ranges::count(state->supported_face_framing_modes,
                                   mojom::MeteringMode::NONE));
   EXPECT_EQ(mojom::MeteringMode::NONE, state->current_face_framing_mode);
 }
@@ -2142,23 +2138,22 @@ TEST_P(DepthCameraDeviceMFWinTest, AllocateAndStartDepthCamera) {
   EXPECT_CALL(*client_, OnStarted());
 
   EXPECT_CALL(*(capture_source_.get()), DoSetCurrentDeviceMediaType(0, _))
-      .WillOnce(Invoke([params](DWORD stream_index, IMFMediaType* media_type) {
+      .WillOnce([params](DWORD stream_index, IMFMediaType* media_type) {
         GUID source_video_media_subtype;
         media_type->GetGUID(MF_MT_SUBTYPE, &source_video_media_subtype);
         EXPECT_EQ(source_video_media_subtype,
                   params.depth_video_stream_subtype);
         return S_OK;
-      }));
+      });
 
   EXPECT_CALL(*(capture_preview_sink_.get()), DoAddStream(0, _, _, _))
-      .WillOnce(Invoke([params](DWORD stream_index, IMFMediaType* media_type,
-                                IMFAttributes* attributes,
-                                DWORD* sink_stream_index) {
+      .WillOnce([params](DWORD stream_index, IMFMediaType* media_type,
+                         IMFAttributes* attributes, DWORD* sink_stream_index) {
         GUID sink_video_media_subtype;
         media_type->GetGUID(MF_MT_SUBTYPE, &sink_video_media_subtype);
         EXPECT_EQ(sink_video_media_subtype, params.depth_video_stream_subtype);
         return S_OK;
-      }));
+      });
 
   VideoCaptureFormat format(gfx::Size(640, 480), 30, media::PIXEL_FORMAT_Y16);
   VideoCaptureParams video_capture_params;
@@ -2210,24 +2205,23 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, EnsureNV12SinkSubtype) {
   EXPECT_CALL(*client_, OnStarted());
 
   EXPECT_CALL(*(capture_source_.get()), DoSetCurrentDeviceMediaType(0, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [expected_subtype](DWORD stream_index, IMFMediaType* media_type) {
             GUID source_video_media_subtype;
             media_type->GetGUID(MF_MT_SUBTYPE, &source_video_media_subtype);
             EXPECT_EQ(source_video_media_subtype, expected_subtype);
             return S_OK;
-          }));
+          });
 
   EXPECT_CALL(*(capture_preview_sink_.get()), DoAddStream(0, _, _, _))
-      .WillOnce(Invoke([expected_subtype](DWORD stream_index,
-                                          IMFMediaType* media_type,
-                                          IMFAttributes* attributes,
-                                          DWORD* sink_stream_index) {
+      .WillOnce([expected_subtype](DWORD stream_index, IMFMediaType* media_type,
+                                   IMFAttributes* attributes,
+                                   DWORD* sink_stream_index) {
         GUID sink_video_media_subtype;
         media_type->GetGUID(MF_MT_SUBTYPE, &sink_video_media_subtype);
         EXPECT_EQ(sink_video_media_subtype, expected_subtype);
         return S_OK;
-      }));
+      });
 
   VideoCaptureFormat format(gfx::Size(640, 480), 30, media::PIXEL_FORMAT_NV12);
   VideoCaptureParams video_capture_params;
@@ -2254,7 +2248,7 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
 
   // Verify that an output capture buffer is reserved from the client
   EXPECT_CALL(*client_, ReserveOutputBuffer)
-      .WillOnce(Invoke(
+      .WillOnce(
           [expected_size](
               const gfx::Size& size, VideoPixelFormat format, int feedback_id,
               VideoCaptureDevice::Client::Buffer* capture_buffer,
@@ -2265,7 +2259,7 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
             capture_buffer->handle_provider =
                 std::make_unique<MockCaptureHandleProvider>();
             return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
-          }));
+          });
 
   Microsoft::WRL::ComPtr<MockD3D11Device> mock_device =
       MakeComPtrFromRefCounted<MockD3D11Device>();
@@ -2296,11 +2290,11 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
       mock_target_texture.CopyTo(IID_PPV_ARGS(&mock_target_texture_2d))));
   // Mock OpenSharedResource call on mock D3D device to return target texture
   EXPECT_CALL(*mock_device.Get(), DoOpenSharedResource1)
-      .WillOnce(Invoke([&mock_target_texture_2d](HANDLE resource,
-                                                 REFIID returned_interface,
-                                                 void** resource_out) {
+      .WillOnce([&mock_target_texture_2d](HANDLE resource,
+                                          REFIID returned_interface,
+                                          void** resource_out) {
         return mock_target_texture_2d.CopyTo(returned_interface, resource_out);
-      }));
+      });
   // Expect call to copy source texture to target on immediate context
   ID3D11Resource* expected_source =
       static_cast<ID3D11Resource*>(mock_source_texture_2d.Get());
@@ -2313,11 +2307,11 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
   // Expect the client to receive a buffer containing a GMB containing the
   // expected fake DXGI handle
   EXPECT_CALL(*client_, OnIncomingCapturedBufferExt)
-      .WillOnce(Invoke([](VideoCaptureDevice::Client::Buffer buffer,
-                          const VideoCaptureFormat&, const gfx::ColorSpace&,
-                          base::TimeTicks, base::TimeDelta,
-                          std::optional<base::TimeTicks>, gfx::Rect,
-                          const std::optional<VideoFrameMetadata>& metadata) {
+      .WillOnce([](VideoCaptureDevice::Client::Buffer buffer,
+                   const VideoCaptureFormat&, const gfx::ColorSpace&,
+                   base::TimeTicks, base::TimeDelta,
+                   std::optional<base::TimeTicks>, gfx::Rect,
+                   const std::optional<VideoFrameMetadata>& metadata) {
         gfx::GpuMemoryBufferHandle gmb_handle =
             buffer.handle_provider->GetGpuMemoryBufferHandle();
         EXPECT_EQ(gmb_handle.type,
@@ -2325,7 +2319,7 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
         EXPECT_TRUE(metadata.has_value());
         EXPECT_TRUE(metadata->background_blur.has_value());
         EXPECT_FALSE(metadata->background_blur->enabled);
-      }));
+      });
 
   // Init capture
   VideoCaptureFormat format(expected_size, 30, media::PIXEL_FORMAT_NV12);

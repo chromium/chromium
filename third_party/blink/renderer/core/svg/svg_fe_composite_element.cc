@@ -20,12 +20,15 @@
 
 #include "third_party/blink/renderer/core/svg/svg_fe_composite_element.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_number.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -118,6 +121,7 @@ void SVGFECompositeElement::SvgAttributeChanged(
 
 FilterEffect* SVGFECompositeElement::Build(SVGFilterBuilder* filter_builder,
                                            Filter* filter) {
+  UseCounter::Count(GetDocument(), WebFeature::kSVGFECompositeElement);
   FilterEffect* input1 = filter_builder->GetEffectById(
       AtomicString(in1_->CurrentValue()->Value()));
   FilterEffect* input2 = filter_builder->GetEffectById(

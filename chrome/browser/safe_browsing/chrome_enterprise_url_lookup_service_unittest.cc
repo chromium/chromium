@@ -27,7 +27,6 @@
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/test_safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -266,11 +265,6 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
                                          expected_response_str);
   }
 
-  void EnableLocalIpAddressInEvents() {
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kLocalIpAddressInEvents);
-  }
-
   // Must be the first member to be initialized first and destroyed last.
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -289,7 +283,6 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
   raw_ptr<TestingProfile> test_profile_;
   syncer::TestSyncService test_sync_service_;
   std::unique_ptr<MockReferrerChainProvider> referrer_chain_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
@@ -319,7 +312,6 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        TestStartLookup_RequestWithDmTokenAndAccessToken) {
   base::HistogramTester histogram_tester;
-  EnableLocalIpAddressInEvents();
   GURL url("http://example.test/");
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
@@ -566,6 +558,16 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest, CanCheckUrl_IPAddresses) {
   EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://192.168.1.1")));
   EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://172.16.2.2")));
   EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://127.0.0.1")));
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       CheckShouldOverrideKnownSafeUrlDecision) {
+  EXPECT_TRUE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
+      GURL("chrome://flags/")));
+  EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
+      GURL("chrome://newtab/")));
+  EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
+      GURL("http://example.com/")));
 }
 
 }  // namespace safe_browsing

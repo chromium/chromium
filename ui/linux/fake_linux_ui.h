@@ -20,13 +20,12 @@ class FakeLinuxUi : public LinuxUiAndTheme {
   // ui::LinuxUi:
   bool Initialize() override;
   void InitializeFontSettings() override;
-  base::TimeDelta GetCursorBlinkInterval() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
 #if BUILDFLAG(ENABLE_PRINTING)
-  printing::PrintDialogLinuxInterface* CreatePrintDialog(
+  std::unique_ptr<printing::PrintDialogLinuxInterface> CreatePrintDialog(
       printing::PrintingContextLinux* context) override;
   gfx::Size GetPdfPaperSize(printing::PrintingContextLinux* context) override;
 #endif
@@ -45,6 +44,8 @@ class FakeLinuxUi : public LinuxUiAndTheme {
       ui::WindowButtonOrderObserver* observer) override;
   void RemoveWindowButtonOrderObserver(
       ui::WindowButtonOrderObserver* observer) override;
+  bool PrimaryPasteEnabled() const override;
+  int GetWindowDragThresholdPx() const override;
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
   std::vector<std::string> GetCmdLineFlagsForCopy() const override;

@@ -42,7 +42,6 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/url_identity.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -58,6 +57,7 @@
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
@@ -226,6 +226,24 @@ std::u16string GetUrlForDisplay(Profile* profile, const GURL& url) {
   return identity.name;
 }
 
+// Permissions eligible for auto-revocation by Safety Hub need to track
+// `last_visited` timestamp for the site. Automation uses it to decide if the
+// site is considered "unused". Unused site permissions are then auto-revoked.
+content_settings::ContentSettingConstraints CreateConstraintsForAutoRevocation(
+    ContentSettingsType content_type,
+    ContentSetting setting) {
+  content_settings::ContentSettingConstraints constraints;
+
+  if (base::FeatureList::IsEnabled(
+          permissions::features::
+              kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
+      content_settings::CanBeAutoRevokedAsUnusedPermission(
+          content_type, content_settings::ContentSettingToValue(setting))) {
+    constraints.set_track_last_visit_for_autoexpiration(true);
+  }
+  return constraints;
+}
+
 }  // namespace
 
 // static
@@ -299,6 +317,10 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_TITLE},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_TITLE},
       {ContentSettingsType::SENSORS, IDS_BLOCKED_SENSORS_TITLE},
+#if BUILDFLAG(IS_WIN)
+      {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+       IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_TITLE},
+#endif
   };
   // Fields as for kBlockedTitleIDs, above.
   static const ContentSettingsTypeIdEntry kAccessedTitleIDs[] = {
@@ -307,6 +329,10 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_TITLE},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_TITLE},
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_TITLE},
+#if BUILDFLAG(IS_WIN)
+      {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+       IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_TITLE},
+#endif
   };
 
   int title_id = [&]() {
@@ -343,6 +369,10 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
        base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
            ? IDS_BLOCKED_SENSORS_MESSAGE
            : IDS_BLOCKED_MOTION_SENSORS_MESSAGE},
+#if BUILDFLAG(IS_WIN)
+      {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+       IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE},
+#endif
   };
   // Fields as for kBlockedMessageIDs, above.
   const ContentSettingsTypeIdEntry kAccessedMessageIDs[] = {
@@ -355,6 +385,10 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
        base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
            ? IDS_ALLOWED_SENSORS_MESSAGE
            : IDS_ALLOWED_MOTION_SENSORS_MESSAGE},
+#if BUILDFLAG(IS_WIN)
+      {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+       IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE},
+#endif
   };
 
   int message_id = [&]() {
@@ -505,12 +539,12 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
   if (previous_handler_.IsEmpty()) {
     set_title(l10n_util::GetStringFUTF16(
         IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM,
-        base::UTF8ToUTF16(pending_handler_.url().host()), protocol));
+        base::UTF8ToUTF16(pending_handler_.url().GetHost()), protocol));
   } else {
     set_title(l10n_util::GetStringFUTF16(
         IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_REPLACE,
-        base::UTF8ToUTF16(pending_handler_.url().host()), protocol,
-        base::UTF8ToUTF16(previous_handler_.url().host())));
+        base::UTF8ToUTF16(pending_handler_.url().GetHost()), protocol,
+        base::UTF8ToUTF16(previous_handler_.url().GetHost())));
   }
 
   std::u16string radio_allow_label =
@@ -659,6 +693,10 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_BLOCKED_CLIPBOARD_UNBLOCK},
       {ContentSettingsType::SENSORS, IDS_BLOCKED_SENSORS_UNBLOCK},
+#if BUILDFLAG(IS_WIN)
+      {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+       IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_UNBLOCK},
+#endif
   };
   // Fields as for kBlockedAllowIDs, above.
   static const ContentSettingsTypeIdEntry kAllowedAllowIDs[] = {
@@ -668,6 +706,10 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_ALLOWED_CLIPBOARD_NO_ACTION},
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_NO_ACTION},
+#if BUILDFLAG(IS_WIN)
+      {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+       IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_NO_ACTION},
+#endif
   };
 
   std::u16string radio_allow_label;
@@ -694,6 +736,10 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_BLOCKED_CLIPBOARD_NO_ACTION},
       {ContentSettingsType::SENSORS, IDS_BLOCKED_SENSORS_NO_ACTION},
+#if BUILDFLAG(IS_WIN)
+      {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+       IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_NO_ACTION},
+#endif
   };
   static const ContentSettingsTypeIdEntry kAllowedBlockIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK},
@@ -701,6 +747,10 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_BLOCK},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_ALLOWED_CLIPBOARD_BLOCK},
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_BLOCK},
+#if BUILDFLAG(IS_WIN)
+      {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+       IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_BLOCK},
+#endif
   };
 
   std::u16string radio_block_label;
@@ -737,9 +787,10 @@ void ContentSettingSingleRadioGroup::SetNarrowestContentSetting(
   }
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
-  map->SetNarrowestContentSetting(bubble_content().radio_group.url,
-                                  bubble_content().radio_group.url,
-                                  content_type(), setting);
+  map->SetNarrowestContentSetting(
+      bubble_content().radio_group.url, bubble_content().radio_group.url,
+      content_type(), setting,
+      CreateConstraintsForAutoRevocation(content_type(), setting));
 }
 
 // ContentSettingStorageAccessBubbleModel --------------------------------------
@@ -1239,7 +1290,9 @@ void ContentSettingMediaStreamBubbleModel::UpdateSettings(
             permissions::PermissionSourceUI::PAGE_ACTION);
     map->SetContentSettingDefaultScope(
         page_content_settings->media_stream_access_origin(), GURL(),
-        ContentSettingsType::MEDIASTREAM_MIC, setting);
+        ContentSettingsType::MEDIASTREAM_MIC, setting,
+        CreateConstraintsForAutoRevocation(ContentSettingsType::MEDIASTREAM_MIC,
+                                           setting));
   }
   if (CameraAccessed()) {
     permissions::PermissionUmaUtil::ScopedRevocationReporter
@@ -1249,7 +1302,9 @@ void ContentSettingMediaStreamBubbleModel::UpdateSettings(
             permissions::PermissionSourceUI::PAGE_ACTION);
     map->SetContentSettingDefaultScope(
         page_content_settings->media_stream_access_origin(), GURL(),
-        ContentSettingsType::MEDIASTREAM_CAMERA, setting);
+        ContentSettingsType::MEDIASTREAM_CAMERA, setting,
+        CreateConstraintsForAutoRevocation(
+            ContentSettingsType::MEDIASTREAM_CAMERA, setting));
   }
 }
 
@@ -1541,7 +1596,9 @@ void ContentSettingDownloadsBubbleModel::CommitChanges() {
     auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
     map->SetNarrowestContentSetting(
         bubble_content().radio_group.url, bubble_content().radio_group.url,
-        ContentSettingsType::AUTOMATIC_DOWNLOADS, setting);
+        ContentSettingsType::AUTOMATIC_DOWNLOADS, setting,
+        CreateConstraintsForAutoRevocation(
+            ContentSettingsType::AUTOMATIC_DOWNLOADS, setting));
   }
 }
 
@@ -1920,6 +1977,9 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
     case ContentSettingsType::MIDI_SYSEX:
     case ContentSettingsType::SENSORS:
+#if BUILDFLAG(IS_WIN)
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
+#endif
       return std::make_unique<ContentSettingSingleRadioGroup>(
           delegate, web_contents, content_type);
     case ContentSettingsType::STORAGE_ACCESS:

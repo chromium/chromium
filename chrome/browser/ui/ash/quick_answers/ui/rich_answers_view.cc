@@ -41,6 +41,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "url/gurl.h"
@@ -313,7 +314,7 @@ void RichAnswersView::OnGoogleSearchLinkClicked() {
 }
 
 void RichAnswersView::UpdateBounds() {
-  auto display_bounds = display::Screen::GetScreen()
+  auto display_bounds = display::Screen::Get()
                             ->GetDisplayMatching(anchor_view_bounds_)
                             .work_area();
   int preferred_height = GetPreferredSize().height();

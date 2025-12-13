@@ -16,4 +16,24 @@ enum ServiceWorkerFetchHandlerBypassOption {
   kRaceNetworkRequest,
   kRaceNetworkRequestHoldback,
   kAutoPreload,
+  // This is set in `ServiceWorkerMainResourceLoader` when
+  // `ServiceWorkerSyntheticResponse` is involved.
+  // `ServiceWorkerSyntheticResponse` is effective only for the main resource.
+  // Subresources shouldn't be intercepted by service worker.
+  //
+  // TODO(crbug.com/447039330): This is used for the ablation study. Consider
+  // removing this after the study, because `ServiceWorkerSyntheticResponse`
+  // should not bypass subresource fetch handlers if any router rules or fetch
+  // handlers are registered by service worker.
+  kSyntheticResponse,
+  // Similar to `kSyntheticResponse`, but this is used when
+  // `ServiceWorkerSyntheticResponse` is enabled as a dry-run mode. Under the
+  // dry-run mode, service worker intercepts main resource requests, but same as
+  // `kSyntheticResponse` it shouldn't intercept subresources.
+  //
+  // TODO(crbug.com/447039330): This is used for the ablation study. Consider
+  // removing this after the study, because `ServiceWorkerSyntheticResponse`
+  // should not bypass subresource fetch handlers if any router rules or fetch
+  // handlers are registered by service worker.
+  kSyntheticResponseDryRunMode,
 };

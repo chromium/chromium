@@ -33,7 +33,7 @@ public interface SigninManager {
     /** What type of data to delete when data deletion is requested. */
     @IntDef({DataWipeOption.WIPE_SYNC_DATA, DataWipeOption.WIPE_ALL_PROFILE_DATA})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface DataWipeOption {
+    @interface DataWipeOption {
         /* Delete all syncable data from the profile (history, passwords, form data, as well as */
         /* cache and cookies. */
         int WIPE_SYNC_DATA = 0;
@@ -158,17 +158,17 @@ public interface SigninManager {
     void runAfterOperationInProgress(Runnable runnable);
 
     /**
-     * Revokes sync consent (which disables the sync feature). This method should only be called
-     * for child accounts.
+     * Revokes sync consent (which disables the sync feature). This method should only be called for
+     * child accounts.
      *
-     * @param signoutSource describes the event driving disabling sync (e.g.
-     *         {@link SignoutReason.USER_CLICKED_TURN_OFF_SYNC_SETTINGS}).
+     * @param signoutSource describes the event driving disabling sync (e.g. {@link
+     *     SignoutReason.USER_CLICKED_TURN_OFF_SYNC_SETTINGS}).
      * @param signOutCallback Callback to notify about progress.
      * @param forceWipeUserData Whether user selected to wipe all device data.
      */
     void revokeSyncConsent(
             @SignoutReason int signoutSource,
-            SignOutCallback signOutCallback,
+            @Nullable SignOutCallback signOutCallback,
             boolean forceWipeUserData);
 
     /**
@@ -200,20 +200,6 @@ public interface SigninManager {
      * Returns the management domain if the signed in account is managed, otherwise returns null.
      */
     @Nullable String getManagementDomain();
-
-    /**
-     * Verifies if the account is managed. Callback may be called either synchronously or
-     * asynchronously depending on the availability of the result. Implementations may cache the
-     * result to make later invocations for the same account faster. TODO(crbug.com/40646656) Update
-     * API to use CoreAccountInfo instead of email
-     *
-     * @param email An email of the account.
-     * @param callback The callback that will receive true if the account is managed, false
-     *     otherwise.
-     * @deprecated Use the {@link CoreAccountInfo} version below.
-     */
-    @Deprecated
-    void isAccountManaged(String email, Callback<Boolean> callback);
 
     /**
      * Verifies if the account is managed. Callback may be called either synchronously or

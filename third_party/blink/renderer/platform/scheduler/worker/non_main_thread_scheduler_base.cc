@@ -49,7 +49,7 @@ void NonMainThreadSchedulerBase::AttachToCurrentThread() {
   helper_.AttachToCurrentThread();
 }
 
-WTF::Vector<base::OnceClosure>&
+Vector<base::OnceClosure>&
 NonMainThreadSchedulerBase::GetOnTaskCompletionCallbacks() {
   return on_task_completion_callbacks_;
 }

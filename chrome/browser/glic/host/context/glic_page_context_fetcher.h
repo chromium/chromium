@@ -7,18 +7,21 @@
 
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
-
 namespace glic {
 
 // `tab` must be non-null.
 void FetchPageContext(
     tabs::TabInterface* tab,
     const mojom::GetTabContextOptions& options,
-    base::OnceCallback<void(glic::mojom::GetContextResultPtr)> callback);
+    base::OnceCallback<void(
+        base::expected<glic::mojom::GetContextResultPtr,
+                       page_content_annotations::FetchPageContextErrorDetails>)>
+        callback);
 
 }  // namespace glic
 

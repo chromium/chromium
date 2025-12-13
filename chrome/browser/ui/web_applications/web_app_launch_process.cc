@@ -7,7 +7,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/values_equivalent.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/share_target_utils.h"
@@ -272,21 +272,21 @@ LaunchHandler::ClientMode WebAppLaunchProcess::GetLaunchClientMode() const {
   return launch_handler.parsed_client_mode();
 }
 
-std::tuple<Browser*, bool /*is_new_browser*/>
+std::tuple<BrowserWindowInterface*, bool /*is_new_browser*/>
 WebAppLaunchProcess::EnsureBrowser() {
-  Browser* browser = MaybeFindBrowserForLaunch();
+  BrowserWindowInterface* browser = MaybeFindBrowserForLaunch();
   bool is_new_browser = false;
   if (browser) {
-    browser->window()->Activate();
+    browser->GetWindow()->Activate();
   } else {
     browser = CreateBrowserForLaunch();
     is_new_browser = true;
   }
-  browser->window()->Show();
+  browser->GetWindow()->Show();
   return {browser, is_new_browser};
 }
 
-Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
+BrowserWindowInterface* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
   if (params_->container == apps::LaunchContainer::kLaunchContainerTab) {
     // In general, when opening a web application in a tab, we want to open the
     // application in a tab in the most recently used browser window.
@@ -298,12 +298,11 @@ Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
     int64_t display_id = display::kInvalidDisplayId;
 #if BUILDFLAG(IS_CHROMEOS)
     if (params_->disposition != WindowOpenDisposition::CURRENT_TAB) {
-      display_id = display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+      display_id = display::Screen::Get()->GetDisplayForNewWindows().id();
     }
 #endif
     return chrome::FindTabbedBrowser(
-        &profile_.get(), /*match_original_profiles=*/false, display_id,
-        /*ignore_closing_browsers=*/true);
+        &profile_.get(), /*match_original_profiles=*/false, display_id);
   }
 
   if (params_->disposition == WindowOpenDisposition::NEW_WINDOW) {
@@ -341,7 +340,7 @@ Browser* WebAppLaunchProcess::CreateBrowserForLaunch() {
 }
 
 WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     bool is_new_browser,
     const GURL& launch_url,
     const apps::ShareTarget* share_target) {
@@ -352,16 +351,17 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
     // TODO(crbug.com/40768956): Expose share target in the LaunchParams and
     // don't navigate if navigate_existing_client: never is in effect.
     NavigateParams nav_params = NavigateParamsForShareTarget(
-        browser, *share_target, *params_->intent, params_->launch_files);
+        browser->GetBrowserForMigrationOnly(), *share_target, *params_->intent,
+        params_->launch_files);
     nav_params.disposition = navigation_disposition;
     return {.web_contents = NavigateWebAppUsingParams(nav_params),
             .did_navigate = true};
   }
 
-  TabStripModel* const tab_strip = browser->tab_strip_model();
+  TabStripModel* const tab_strip = browser->GetFeatures().tab_strip_model();
   if (tab_strip->empty() ||
       navigation_disposition != WindowOpenDisposition::CURRENT_TAB) {
-    NavigateParams nav_params(browser, launch_url,
+    NavigateParams nav_params(browser->GetBrowserForMigrationOnly(), launch_url,
                               ui::PAGE_TRANSITION_AUTO_BOOKMARK);
     nav_params.disposition = navigation_disposition;
     return {.web_contents = NavigateWebAppUsingParams(nav_params),

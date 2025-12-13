@@ -67,6 +67,26 @@ Object: {
 	tid: number
 	ts: number
 }
+Got a TimeStamp event for worker thread:
+Object: {
+	args: {
+		data: {
+			message: string
+			name: string
+			sampleTraceId: number
+			start: number
+			track: string
+			worker: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
 Got a TimeStamp event with numeric start and end:
 Object: {
 	args: {

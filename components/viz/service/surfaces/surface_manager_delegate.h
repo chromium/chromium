@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "components/viz/service/frame_sinks/frame_sink_observer.h"
 #include "components/viz/service/viz_service_export.h"
 
 namespace viz {
@@ -22,6 +23,13 @@ class VIZ_SERVICE_EXPORT SurfaceManagerDelegate {
   // Indicates that the set of frame sinks being aggregated for display has
   // changed since the previous aggregation.
   virtual void AggregatedFrameSinksChanged() = 0;
+
+  virtual void AddObserver(FrameSinkObserver* obs) = 0;
+  virtual void RemoveObserver(FrameSinkObserver* obs) = 0;
+
+  // Checks whether FrameSinkManager has view `transition_token`.
+  virtual bool HasViewTransitionToken(
+      const blink::ViewTransitionToken& transition_token) = 0;
 };
 
 }  // namespace viz

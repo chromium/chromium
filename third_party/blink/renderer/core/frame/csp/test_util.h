@@ -62,7 +62,8 @@ class TestCSPDelegate final : public GarbageCollected<TestCSPDelegate>,
   void ReportBlockedScriptExecutionToInspector(
       const String& directive_text) override {}
   void DidAddContentSecurityPolicies(
-      WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>) override {}
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>) override {}
+  bool ScriptSrcExtendedHashesEnabled() override { return false; }
 
   void Trace(Visitor*) const override {}
 

@@ -9,6 +9,9 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
+#include "base/gtest_prod_util.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -38,17 +41,14 @@ class MEDIA_EXPORT H265ToAnnexBBitstreamConverter {
   // Parameters
   //   configuration_record
   //     Pointer to buffer containing HEVCDecoderConfigurationRecord.
-  //   configuration_record_size
-  //     Size of the buffer in bytes.
   //   hevc_config
   //     Pointer to place the parsed HEVCDecoderConfigurationRecord data into.
   //
   // Returns
-  //   Returns true if |configuration_record| was successfully parsed. False
+  //   Returns true if `configuration_record` was successfully parsed. False
   //   is returned if a parsing error occurred.
-  //   |hevc_config| only contains valid data when true is returned.
-  bool ParseConfiguration(const uint8_t* configuration_record,
-                          int configuration_record_size,
+  //   `hevc_config` only contains valid data when true is returned.
+  bool ParseConfiguration(base::span<const uint8_t> configuration_record,
                           mp4::HEVCDecoderConfigurationRecord* hevc_config);
 
   // Returns the buffer size needed to store the parameter sets in |hevc_config|
@@ -62,8 +62,6 @@ class MEDIA_EXPORT H265ToAnnexBBitstreamConverter {
   // Parameters
   //   input
   //     Pointer to buffer containing NAL units in MP4 format.
-  //   input_size
-  //     Size of the buffer in bytes.
   //   hevc_config
   //     The HEVCDecoderConfigurationRecord that contains the parameter sets
   //     that will be inserted into the output. nullptr if no parameter sets
@@ -72,36 +70,10 @@ class MEDIA_EXPORT H265ToAnnexBBitstreamConverter {
   // Returns
   //   Required buffer size for the output NAL unit buffer when converted
   //   to bytestream format, or 0 if could not determine the size of
-  //   the output buffer from the data in |input| and |hevc_config|.
+  //   the output buffer from the data in `input` and `hevc_config`.
   uint32_t CalculateNeededOutputBufferSize(
-      const uint8_t* input,
-      uint32_t input_size,
+      base::span<const uint8_t> input,
       const mp4::HEVCDecoderConfigurationRecord* hevc_config) const;
-
-  // ConvertHEVCDecoderConfigToByteStream converts the
-  // HEVCDecoderConfigurationRecord from the MP4 headers to bytestream format.
-  // Client is responsible for making sure the output buffer is large enough
-  // to hold the output data. Client can precalculate the needed output buffer
-  // size by using GetConfigSize().
-  //
-  // Parameters
-  //   hevc_config
-  //     The HEVCDecoderConfigurationRecord that contains the parameter sets
-  //     that will be written to |output|.
-  //   output
-  //     Pointer to buffer where the output should be written to.
-  //   output_size (i/o)
-  //     Pointer to the size of the output buffer. Will contain the number of
-  //     bytes written to output after successful call.
-  //
-  // Returns
-  //    true  if successful conversion|
-  //    false if conversion not successful (|output_size| will hold the amount
-  //          of converted data)
-  bool ConvertHEVCDecoderConfigToByteStream(
-      const mp4::HEVCDecoderConfigurationRecord& hevc_config,
-      uint8_t* output,
-      uint32_t* output_size);
 
   // ConvertNalUnitStreamToByteStream converts the NAL unit from MP4 format
   // to bytestream format. Client is responsible for making sure the output
@@ -111,8 +83,6 @@ class MEDIA_EXPORT H265ToAnnexBBitstreamConverter {
   // Parameters
   //   input
   //     Pointer to buffer containing NAL units in MP4 format.
-  //   input_size
-  //     Size of the buffer in bytes.
   //   hevc_config
   //     The HEVCDecoderConfigurationRecord that contains the parameter sets to
   //     insert into the output. NULL if no parameter sets need to be inserted.
@@ -123,27 +93,47 @@ class MEDIA_EXPORT H265ToAnnexBBitstreamConverter {
   //     bytes written to output after successful call.
   //
   // Returns
-  //    true  if successful conversion
-  //    false if conversion not successful (output_size will hold the amount
-  //          of converted data)
+  //    Whether the conversion is successful.
   bool ConvertNalUnitStreamToByteStream(
-      const uint8_t* input,
-      uint32_t input_size,
+      base::span<const uint8_t> input,
       const mp4::HEVCDecoderConfigurationRecord* hevc_config,
-      uint8_t* output,
-      uint32_t* output_size);
+      base::SpanWriter<uint8_t>& writer);
 
  private:
-  // Writes Annex B start code and |param_set| to |*out|.
-  //  |*out| - Is the memory location to write the parameter set.
-  //  |*out_size| - Number of bytes available for the parameter set.
+  FRIEND_TEST_ALL_PREFIXES(H265ToAnnexBBitstreamConverterTest, Success);
+  FRIEND_TEST_ALL_PREFIXES(H265ToAnnexBBitstreamConverterTest,
+                           FailureNalUnitBreakage);
+  FRIEND_TEST_ALL_PREFIXES(H265ToAnnexBBitstreamConverterTest,
+                           FailureTooSmallOutputBuffer);
+  FRIEND_TEST_ALL_PREFIXES(H265ToAnnexBBitstreamConverterTest, CorruptedPacket);
+
+  // ConvertHEVCDecoderConfigToByteStream converts the
+  // HEVCDecoderConfigurationRecord from the MP4 headers to bytestream format.
+  // Client is responsible for making sure the output buffer is large enough
+  // to hold the output data. Client can precalculate the needed output buffer
+  // size by using GetConfigSize().
+  //
+  // Parameters
+  //   hevc_config
+  //     The HEVCDecoderConfigurationRecord that contains the parameter sets
+  //     that will be written to `output`.
+  //   output
+  //     Pointer to buffer where the output should be written to.
+  //
+  // Returns
+  //    Whether the conversion is successful.
+  bool ConvertHEVCDecoderConfigToByteStream(
+      const mp4::HEVCDecoderConfigurationRecord& hevc_config,
+      base::SpanWriter<uint8_t>& writer);
+
+  // Use `writer` to write the Annex B start code and `param_set` to the buffer.
+  //  `writer` - Is the writer of the buffer.
   // Returns true if the start code and param set were successfully
-  // written. On a successful write, |*out| is updated to point to the first
-  // byte after the data that was written. |*out_size| is updated to reflect
-  // the new number of bytes left in |*out|.
+  // written. On a successful write, `writer` will update the write position
+  // of the buffer and the number of bytes written and the number of bytes
+  // remaining.
   bool WriteParamSet(const std::vector<uint8_t>& param_set,
-                     uint8_t** out,
-                     uint32_t* out_size) const;
+                     base::SpanWriter<uint8_t>& writer) const;
 
   // Flag for indicating whether global parameter sets have been processed.
   bool configuration_processed_ = false;

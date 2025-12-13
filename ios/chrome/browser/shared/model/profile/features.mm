@@ -47,16 +47,6 @@ bool DetermineHasMultipleProfiles() {
 }  // namespace
 
 bool AreSeparateProfilesForManagedAccountsEnabled() {
-  // The APIs to support multiple profiles are only available in iOS 17+, so
-  // consider this feature as disabled in earlier versions.
-  if (!@available(iOS 17, *)) {
-    return false;
-  }
-  // If the killswitch has been triggered, it's off.
-  if (base::FeatureList::IsEnabled(
-          kSeparateProfilesForManagedAccountsKillSwitch)) {
-    return false;
-  }
   // Standard case: Check the regular feature flag.
   if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
     return true;
@@ -68,23 +58,9 @@ bool AreSeparateProfilesForManagedAccountsEnabled() {
   return has_multiple_profiles;
 }
 
-bool IsIdentityDiscAccountMenuEnabled() {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    return true;
-  }
-  return base::FeatureList::IsEnabled(kIdentityDiscAccountMenu);
-}
-
 bool IsMultiProfilePushNotificationHandlingEnabled() {
   return AreSeparateProfilesForManagedAccountsEnabled() &&
          base::FeatureList::IsEnabled(kIOSPushNotificationMultiProfile);
 }
 
-BASE_FEATURE(kShareExtensionForMultiprofile,
-             "ShareExtensionForMultiprofile",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsShareExtensionForMultiprofileEnabled() {
-  return base::FeatureList::IsEnabled(kShareExtensionForMultiprofile) &&
-         AreSeparateProfilesForManagedAccountsEnabled();
-}
+BASE_FEATURE(kDestroyOTRProfileEarly, base::FEATURE_DISABLED_BY_DEFAULT);

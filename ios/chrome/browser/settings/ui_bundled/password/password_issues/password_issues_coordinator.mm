@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_issues/password_issues_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_issues/password_issues_presenter.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_issues/password_issues_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -56,10 +56,11 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 
 }  // namespace
 
-@interface PasswordIssuesCoordinator () <PasswordDetailsCoordinatorDelegate,
-                                         PasswordIssuesCoordinatorDelegate,
-                                         PasswordIssuesPresenter,
-                                         ReauthenticationCoordinatorDelegate>
+@interface PasswordIssuesCoordinator () <
+    PasswordDetailsCoordinatorDelegate,
+    PasswordIssuesCoordinatorDelegate,
+    PasswordIssuesPresenter,
+    LocalReauthenticationCoordinatorDelegate>
 
 @end
 
@@ -95,7 +96,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   // passed. Used for requiring authentication when opening Password Issues
   // from outside the Password Manager and when the app is
   // backgrounded/foregrounded with Password Issues opened.
-  ReauthenticationCoordinator* _reauthCoordinator;
+  LocalReauthenticationCoordinator* _reauthCoordinator;
 
   // For recording visits after successful authentication.
   IOSPasswordManagerVisitsRecorder* _visitsRecorder;
@@ -192,7 +193,9 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 }
 
 - (void)presentPasswordIssueDetails:(PasswordIssue*)password {
-  DCHECK(!_passwordDetails);
+  if (_passwordDetails) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
@@ -262,15 +265,15 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   [_delegate dismissPasswordManagerAfterFailedReauthentication];
 }
 
-#pragma mark - ReauthenticationCoordinatorDelegate
+#pragma mark - LocalReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   [_visitsRecorder maybeRecordVisitMetric];
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   CHECK_EQ(_reauthCoordinator, coordinator);
 
   [_delegate dismissPasswordManagerAfterFailedReauthentication];
@@ -327,7 +330,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
     base::debug::DumpWithoutCrashing();
   }
 
-  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser
                 reauthenticationModule:_reauthModule

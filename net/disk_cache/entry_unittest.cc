@@ -2786,6 +2786,151 @@ TEST_F(DiskCacheEntryTest, SimpleCacheGiantEntry) {
   CacheGiantEntry();
 }
 
+#if !BUILDFLAG(IS_WIN)
+// This test is too slow on Windows which ends up with Timeout.
+// Writing to a large offset can be slow on some filesystems if they don't
+// efficiently support sparse files.
+TEST_F(DiskCacheEntryTest, SimpleCacheLargeOffsetIO) {
+  SetBackendToTest(BackendToTest::kSimple);
+  SetMaxSize(100LL * 1024 * 1024 * 1024);
+  InitCache();
+
+  std::string key("the first key");
+  disk_cache::Entry* entry;
+  ASSERT_THAT(CreateEntry(key, &entry), IsOk());
+
+  // Write 4 MB so that we cover multiple entries.
+  static constexpr int kSize = 4 * 1024 * 1024;
+
+  auto buf_1 = CacheTestCreateAndFillBuffer(kSize, false);
+  auto buf_2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
+
+  // Write data from 4GB - 2MB to 4GB + 2MB.
+  constexpr int64_t kOffset = 4LL * 1024 * 1024 * 1024 - 2 * 1024 * 1024;
+
+  net::TestCompletionCallback cb;
+
+  int ret = entry->WriteData(0, 0, buf_1.get(), kSize, cb.callback(), false);
+  EXPECT_EQ(kSize, cb.GetResult(ret));
+
+  ret = entry->ReadData(0, 0, buf_2.get(), kSize, cb.callback());
+
+  ASSERT_EQ(kSize, cb.GetResult(ret));
+  EXPECT_EQ(buf_1->first(kSize), buf_2->span());
+
+  entry->Close();
+  ASSERT_THAT(OpenEntry(key, &entry), IsOk());
+
+  ret = entry->WriteData(1, kOffset, buf_1.get(), kSize, cb.callback(), false);
+  EXPECT_EQ(kSize, cb.GetResult(ret));
+  EXPECT_EQ(kOffset + kSize, entry->GetDataSize(1));
+
+  entry->Close();
+  ASSERT_THAT(OpenEntry(key, &entry), IsOk());
+
+  buf_2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
+  ret = entry->ReadData(0, 0, buf_2.get(), kSize, cb.callback());
+
+  ASSERT_EQ(kSize, cb.GetResult(ret));
+  EXPECT_EQ(buf_1->first(kSize), buf_2->span());
+
+  buf_2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
+  ret = entry->ReadData(1, kOffset, buf_2.get(), kSize, cb.callback());
+
+  ASSERT_EQ(kSize, cb.GetResult(ret));
+  EXPECT_EQ(buf_1->first(kSize), buf_2->span());
+
+  entry->Close();
+}
+#endif  // !BUILDFLAG(IS_WIN)
+
+TEST_F(DiskCacheEntryTest, SimpleCacheInvalidLargeOffsetWriteToStream0) {
+  SetBackendToTest(BackendToTest::kSimple);
+  SetMaxSize(100LL * 1024 * 1024 * 1024);
+  InitCache();
+
+  std::string key("the first key");
+  disk_cache::Entry* entry;
+  ASSERT_THAT(CreateEntry(key, &entry), IsOk());
+
+  // Write 4 MB so that we cover multiple entries.
+  static constexpr int kSize = 4 * 1024 * 1024;
+
+  auto buf_1 = CacheTestCreateAndFillBuffer(kSize, false);
+
+  // Write data from 4GB - 2MB to 4GB + 2MB.
+  constexpr int64_t kOffset = 4LL * 1024 * 1024 * 1024 - 2 * 1024 * 1024;
+
+  // Stream 0 data size limitation is int32_t max. If we pass something which
+  // exceeds the limitation, it should fail.
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT,
+            entry->WriteData(0, kOffset, buf_1.get(), kSize,
+                             net::CompletionOnceCallback(), false));
+  entry->Close();
+}
+
+TEST_P(DiskCacheGenericEntryTest, InvalidLargeOffsetWrite) {
+  // SimpleCache supports large offset.
+  if (backend_to_test() == BackendToTest::kSimple) {
+    return;
+  }
+
+  InitCache();
+  std::string key("the first key");
+  disk_cache::Entry* entry;
+  ASSERT_THAT(CreateEntry(key, &entry), IsOk());
+
+  // Write 4 MB.
+  static constexpr size_t kSize = 4 * 1024 * 1024;
+  auto buf_1 = CacheTestCreateAndFillBuffer(kSize, false);
+
+  // Try to write data from 4GB - 2MB to 4GB + 2MB.
+  constexpr int64_t offset =
+      static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1;
+
+  for (int i = 0; i < SupportedStreamCount(); ++i) {
+    EXPECT_EQ(net::ERR_INVALID_ARGUMENT,
+              entry->WriteData(i, offset, buf_1.get(), kSize,
+                               net::CompletionOnceCallback(), false));
+  }
+
+  entry->Close();
+}
+
+TEST_P(DiskCacheGenericEntryTest, InvalidLargeOffsetRead) {
+  // SimpleCache supports large offset.
+  if (backend_to_test() == BackendToTest::kSimple) {
+    return;
+  }
+
+  InitCache();
+  std::string key("the first key");
+  disk_cache::Entry* entry;
+  ASSERT_THAT(CreateEntry(key, &entry), IsOk());
+
+  // Write 4 MB.
+  static constexpr size_t kSize = 4 * 1024 * 1024;
+  auto buf_1 = CacheTestCreateAndFillBuffer(kSize, false);
+  auto buf_2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
+
+  net::TestCompletionCallback cb;
+
+  int ret = entry->WriteData(0, 0, buf_1.get(), kSize, cb.callback(), false);
+  EXPECT_EQ(kSize, cb.GetResult(ret));
+
+  // Try to read data from 4GB - 2MB to 4GB + 2MB.
+  constexpr int64_t offset =
+      static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1;
+
+  for (int i = 0; i < SupportedStreamCount(); ++i) {
+    EXPECT_EQ(net::ERR_INVALID_ARGUMENT,
+              entry->ReadData(i, offset, buf_2.get(), kSize,
+                              net::CompletionOnceCallback()));
+  }
+
+  entry->Close();
+}
+
 TEST_F(DiskCacheEntryTest, SimpleCacheReadWriteDestroyBuffer) {
   // Proving that the test works well with optimistic operations enabled is
   // subtle, instead run only in APP_CACHE mode to disable optimistic
@@ -3758,15 +3903,11 @@ void DiskCacheEntryTest::EvictOldEntries() {
   EXPECT_EQ(kWriteSize,
             WriteData(entry, 1, 0, buffer.get(), kWriteSize, false));
   entry->Close();
-  AddDelay();
 
   std::string key2("the key prefix");
   for (int i = 0; i < kNumExtraEntries; i++) {
-    if (i == kNumExtraEntries - 2) {
-      // Create a distinct timestamp for the last two entries. These entries
-      // will be checked for outliving the eviction.
-      AddDelay();
-    }
+    // Create a distinct timestamp for the each entries.
+    AddDelay();
     ASSERT_THAT(CreateEntry(key2 + base::NumberToString(i), &entry), IsOk());
     ScopedEntryPtr entry_closer(entry);
     EXPECT_EQ(kWriteSize,
@@ -4215,7 +4356,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheStream1SizeChanges) {
                          base::File::FLAG_READ | base::File::FLAG_OPEN);
   ASSERT_TRUE(entry_file0.IsValid());
 
-  auto data_size = std::to_array<int32_t>({kSize, stream1_size, 0});
+  auto data_size = std::to_array<int64_t>({kSize, stream1_size, 0});
   int sparse_data_size = 0;
   disk_cache::SimpleEntryStat entry_stat(base::Time::Now(), data_size,
                                          sparse_data_size);

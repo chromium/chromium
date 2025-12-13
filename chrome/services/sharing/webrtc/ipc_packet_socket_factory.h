@@ -5,9 +5,12 @@
 #ifndef CHROME_SERVICES_SHARING_WEBRTC_IPC_PACKET_SOCKET_FACTORY_H_
 #define CHROME_SERVICES_SHARING_WEBRTC_IPC_PACKET_SOCKET_FACTORY_H_
 
+#include <memory>
+
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/p2p.mojom.h"
+#include "third_party/webrtc/api/environment/environment.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
 
 namespace sharing {
@@ -29,16 +32,19 @@ class IpcPacketSocketFactory : public webrtc::PacketSocketFactory {
   IpcPacketSocketFactory& operator=(const IpcPacketSocketFactory&) = delete;
   ~IpcPacketSocketFactory() override;
 
-  webrtc::AsyncPacketSocket* CreateUdpSocket(
+  std::unique_ptr<webrtc::AsyncPacketSocket> CreateUdpSocket(
+      const webrtc::Environment& env,
       const webrtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port) override;
-  webrtc::AsyncListenSocket* CreateServerTcpSocket(
+  std::unique_ptr<webrtc::AsyncListenSocket> CreateServerTcpSocket(
+      const webrtc::Environment& env,
       const webrtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port,
       int opts) override;
-  webrtc::AsyncPacketSocket* CreateClientTcpSocket(
+  std::unique_ptr<webrtc::AsyncPacketSocket> CreateClientTcpSocket(
+      const webrtc::Environment& env,
       const webrtc::SocketAddress& local_address,
       const webrtc::SocketAddress& remote_address,
       const webrtc::PacketSocketTcpOptions& opts) override;

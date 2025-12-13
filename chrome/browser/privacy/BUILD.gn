@@ -59,7 +59,7 @@ if (is_android) {
       "//chrome/android/junit:*",
       "//chrome/browser/feed/android:*",
       "//chrome/browser/ui/android/hats:*",
-      "//chrome/browser/ui/android/hats/*:*",
+      "//chrome/browser/ui/android/hats/*",
       "//chrome/browser/ui/android/omnibox:*",
       "//chrome/browser/ui/android/signin:*",
       "//chrome/browser/xsurface_provider:*",

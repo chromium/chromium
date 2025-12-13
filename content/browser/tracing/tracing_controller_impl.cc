@@ -21,7 +21,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_view_util.h"
@@ -36,7 +38,6 @@
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
-#include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/variations/active_field_trials.h"
 #include "content/browser/gpu/compositor_util.h"
@@ -55,7 +56,6 @@
 #include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_metadata_source.h"
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
@@ -88,12 +88,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include <sys/time.h>
-#include "base/debug/elf_reader.h"
 #include "content/browser/android/tracing_controller_android.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/java_heap_profiler_android.h"
-
-// Symbol with virtual address of the start of ELF header of the current binary.
-extern char __ehdr_start;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
@@ -105,62 +101,6 @@ inline constexpr char kUserAgentKey[] = "user-agent";
 inline constexpr char kRevisionMetadataKey[] = "revision";
 
 TracingControllerImpl* g_tracing_controller = nullptr;
-
-std::string GetNetworkTypeString() {
-  switch (net::NetworkChangeNotifier::GetConnectionType()) {
-    case net::NetworkChangeNotifier::CONNECTION_ETHERNET:
-      return "Ethernet";
-    case net::NetworkChangeNotifier::CONNECTION_WIFI:
-      return "WiFi";
-    case net::NetworkChangeNotifier::CONNECTION_2G:
-      return "2G";
-    case net::NetworkChangeNotifier::CONNECTION_3G:
-      return "3G";
-    case net::NetworkChangeNotifier::CONNECTION_4G:
-      return "4G";
-    case net::NetworkChangeNotifier::CONNECTION_5G:
-      return "5G";
-    case net::NetworkChangeNotifier::CONNECTION_NONE:
-      return "None";
-    case net::NetworkChangeNotifier::CONNECTION_BLUETOOTH:
-      return "Bluetooth";
-    case net::NetworkChangeNotifier::CONNECTION_UNKNOWN:
-    default:
-      break;
-  }
-  return "Unknown";
-}
-
-#if BUILDFLAG(IS_ANDROID)
-int64_t ConvertTimespecToMicros(const struct timespec& ts) {
-  // On 32-bit systems, the calculation cannot overflow int64_t.
-  // 2**32 * 1000000 + 2**64 / 1000 < 2**63
-  if (sizeof(ts.tv_sec) <= 4 && sizeof(ts.tv_nsec) <= 8) {
-    int64_t result = ts.tv_sec;
-    result *= base::Time::kMicrosecondsPerSecond;
-    result += (ts.tv_nsec / base::Time::kNanosecondsPerMicrosecond);
-    return result;
-  }
-  base::CheckedNumeric<int64_t> result(ts.tv_sec);
-  result *= base::Time::kMicrosecondsPerSecond;
-  result += (ts.tv_nsec / base::Time::kNanosecondsPerMicrosecond);
-  return result.ValueOrDie();
-}
-
-// This returns the offset between the monotonic clock and the realtime clock.
-// We could read btime from /proc/status files; however, btime can be off by
-// around 1s, which is too much. The following method should give us a better
-// approximation of the offset.
-std::string GetClockOffsetSinceEpoch() {
-  struct timespec realtime_before, monotonic, realtime_after;
-  clock_gettime(CLOCK_REALTIME, &realtime_before);
-  clock_gettime(CLOCK_MONOTONIC, &monotonic);
-  clock_gettime(CLOCK_REALTIME, &realtime_after);
-  return base::NumberToString(ConvertTimespecToMicros(realtime_before) / 2 +
-                              ConvertTimespecToMicros(realtime_after) / 2 -
-                              ConvertTimespecToMicros(monotonic));
-}
-#endif
 
 void AddCategoriesToSet(
     const perfetto::internal::TrackEventCategoryRegistry& registry,
@@ -219,34 +159,6 @@ void TracingControllerImpl::InitializeDataSources() {
 #elif defined(CAST_TRACING_AGENT)
   RegisterCastTracingDataSource();
 #endif
-
-  // For adding general CPU, network, OS, and other system information to the
-  // metadata.
-  auto* metadata_source = tracing::TraceEventMetadataSource::GetInstance();
-  metadata_source->AddGeneratorFunction(base::BindRepeating(
-      &TracingControllerImpl::GenerateMetadataDict, base::Unretained(this)));
-  metadata_source->AddGeneratorFunction(base::BindRepeating(
-      &TracingControllerImpl::GenerateMetadataPacketFieldTrials,
-      base::Unretained(this)));
-  metadata_source->AddGeneratorFunction(
-      base::BindRepeating(&TracingControllerImpl::GenerateMetadataPacket));
-}
-
-void TracingControllerImpl::GenerateMetadataPacketFieldTrials(
-    perfetto::protos::pbzero::ChromeMetadataPacket* metadata_proto,
-    bool privacy_filtering_enabled) {
-  // Do not include low anonymity field trials, to prevent them from being
-  // included in chrometto reports.
-  std::vector<variations::ActiveGroupId> active_group_ids;
-  variations::GetFieldTrialActiveGroupIds(std::string_view(),
-                                          &active_group_ids);
-
-  for (const auto& active_group_id : active_group_ids) {
-    perfetto::protos::pbzero::ChromeMetadataPacket::FinchHash* finch_hash =
-        metadata_proto->add_field_trial_hashes();
-    finch_hash->set_name(active_group_id.name);
-    finch_hash->set_group(active_group_id.group);
-  }
 }
 
 void TracingControllerImpl::ConnectToServiceIfNeeded() {
@@ -280,148 +192,13 @@ void TracingControllerImpl::GenerateMetadataPacket(
   auto* extension_descriptor = handle->BeginNestedMessage<protozero::Message>(
       perfetto::protos::pbzero::TracePacket::kExtensionDescriptorFieldNumber);
   scoped_refptr<base::RefCountedMemory> descriptor_bytes(
-      GetContentClient()->GetDataResourceBytes(chrome_track_event_descriptor));
+      GetContentClient()->GetDataResourceBytes(
+          chrome_track_event_extension_descriptor));
   if (!descriptor_bytes)
     return;
   extension_descriptor->AppendBytes(
       perfetto::protos::pbzero::ExtensionDescriptor::kExtensionSetFieldNumber,
       descriptor_bytes->data(), descriptor_bytes->size());
-}
-
-// Can be called on any thread.
-std::optional<base::Value::Dict> TracingControllerImpl::GenerateMetadataDict() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  auto metadata_dict =
-      base::Value::Dict()
-          .Set("network-type", GetNetworkTypeString())
-          .Set("product-version", GetContentClient()->browser()->GetProduct())
-          .Set("v8-version", V8_VERSION_STRING)
-          .Set("user-agent", GetContentClient()->browser()->GetUserAgent())
-          .Set("revision", version_info::GetLastChange());
-
-#if BUILDFLAG(IS_ANDROID)
-  // The library name is used for symbolizing heap profiles. This cannot be
-  // obtained from process maps since library can be mapped from apk directly.
-  // This is not added as part of memory-infra os dumps since it is special case
-  // only for chrome library.
-  std::optional<std::string_view> soname =
-      base::debug::ReadElfLibraryName(&__ehdr_start);
-  if (soname)
-    metadata_dict.Set("chrome-library-name", *soname);
-  metadata_dict.Set("clock-offset-since-epoch", GetClockOffsetSinceEpoch());
-#endif  // BUILDFLAG(IS_ANDROID)
-  metadata_dict.Set("chrome-bitness", static_cast<int>(8 * sizeof(uintptr_t)));
-
-#if DCHECK_IS_ON()
-  metadata_dict.Set("chrome-dcheck-on", 1);
-#endif
-
-  // OS
-#if BUILDFLAG(IS_CHROMEOS)
-  metadata_dict.Set("os-name", "CrOS");
-  if (are_statistics_loaded_)
-    metadata_dict.Set("hardware-class", hardware_class_);
-#else
-  metadata_dict.Set("os-name", base::SysInfo::OperatingSystemName());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  metadata_dict.Set("os-version", base::SysInfo::OperatingSystemVersion());
-#if BUILDFLAG(IS_WIN)
-  if (base::win::OSInfo::GetArchitecture() ==
-      base::win::OSInfo::X64_ARCHITECTURE) {
-    if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()) {
-      metadata_dict.Set("os-wow64", "enabled");
-    } else {
-      metadata_dict.Set("os-wow64", "disabled");
-    }
-  }
-
-  metadata_dict.Set("module-apphelp", (::GetModuleHandle(L"apphelp.dll"))
-                                          ? "Loaded"
-                                          : "NotLoaded");
-
-  metadata_dict.Set("os-session",
-                    base::win::IsCurrentSessionRemote() ? "remote" : "local");
-#endif
-
-  metadata_dict.Set("os-arch", base::SysInfo::OperatingSystemArchitecture());
-
-  // CPU
-  base::CPU cpu;
-  metadata_dict.Set("cpu-family", cpu.family());
-  metadata_dict.Set("cpu-model", cpu.model());
-  metadata_dict.Set("cpu-stepping", cpu.stepping());
-  metadata_dict.Set("num-cpus", base::SysInfo::NumberOfProcessors());
-  metadata_dict.Set("physical-memory",
-                    base::SysInfo::AmountOfPhysicalMemoryMB());
-
-  metadata_dict.Set("cpu-brand", cpu.cpu_brand());
-
-#if BUILDFLAG(IS_WIN)
-  base::GenerateCpuInfoForTracingMetadata(&metadata_dict);
-#endif
-
-  // GPU
-  const gpu::GPUInfo gpu_info =
-      content::GpuDataManagerImpl::GetInstance()->GetGPUInfo();
-  const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
-
-#if !BUILDFLAG(IS_ANDROID)
-  metadata_dict.Set("gpu-venid", static_cast<int>(active_gpu.vendor_id));
-  metadata_dict.Set("gpu-devid", static_cast<int>(active_gpu.device_id));
-#endif
-
-  metadata_dict.Set("gpu-driver", active_gpu.driver_version);
-  metadata_dict.Set("gpu-psver", gpu_info.pixel_shader_version);
-  metadata_dict.Set("gpu-vsver", gpu_info.vertex_shader_version);
-
-#if BUILDFLAG(IS_MAC)
-  metadata_dict.Set("gpu-glver", gpu_info.gl_version);
-#elif BUILDFLAG(IS_POSIX)
-  metadata_dict.Set("gpu-gl-vendor", gpu_info.gl_vendor);
-  metadata_dict.Set("gpu-gl-renderer", gpu_info.gl_renderer);
-#endif
-  metadata_dict.Set("gpu-features", GetFeatureStatus());
-
-  metadata_dict.Set("clock-domain",
-                    tracing::GetClockString(base::TimeTicks::GetClock()));
-  metadata_dict.Set("highres-ticks", base::TimeTicks::IsHighResolution());
-
-  base::CommandLine::StringType command_line =
-      base::CommandLine::ForCurrentProcess()->GetCommandLineString();
-#if BUILDFLAG(IS_WIN)
-  metadata_dict.Set("command_line", base::WideToUTF16(command_line));
-#else
-  metadata_dict.Set("command_line", command_line);
-#endif
-
-  metadata_dict.Set(
-      "net-constants",
-      net::GetNetConstants(net::NetConstantsRequestMode::kTracing));
-
-  metadata_dict.Set(
-      "trace-capture-datetime",
-      base::UnlocalizedTimeFormatWithPattern(TRACE_TIME_NOW(), "y-M-d H:m:s",
-                                             icu::TimeZone::getGMT()));
-
-  // TODO(crbug.com/40527661): The central controller doesn't know about
-  // metadata filters, so we temporarily filter here as the controller is
-  // what assembles the full trace data.
-  base::trace_event::MetadataFilterPredicate metadata_filter;
-  if (trace_config_ && trace_config_->IsArgumentFilterEnabled()) {
-    metadata_filter = base::trace_event::TraceLog::GetInstance()
-                          ->GetMetadataFilterPredicate();
-  }
-
-  if (!metadata_filter.is_null()) {
-    for (auto it : metadata_dict) {
-      if (!metadata_filter.Run(it.first)) {
-        it.second = base::Value("__stripped__");
-      }
-    }
-  }
-
-  return metadata_dict;
 }
 
 TracingControllerImpl* TracingControllerImpl::GetInstance() {

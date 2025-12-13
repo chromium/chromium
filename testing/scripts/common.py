@@ -8,7 +8,6 @@ import contextlib
 import json
 import os
 import logging
-import platform
 import subprocess
 import sys
 import tempfile
@@ -61,8 +60,10 @@ CORRECT_ACL_VARIANTS = [
 
 
 def set_lpac_acls(acl_dir, is_test_script=False):
-  """Sets LPAC ACLs on a directory. Windows 10 only."""
-  if platform.release() != '10':
+  """Sets LPAC ACLs on a directory.
+  Needed on versions greater than Windows 10 19H2.
+  """
+  if sys.getwindowsversion().build < 19041:
     return
   try:
     existing_acls = subprocess.check_output(['icacls', acl_dir],

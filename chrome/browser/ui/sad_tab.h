@@ -20,12 +20,13 @@ class WebContents;
 class SadTab {
  public:
   enum class Action {
-    BUTTON,
-    HELP_LINK,
+    kButton,
+    kHelpLink,
   };
 
   // Factory function to create the platform specific implementations.
-  static SadTab* Create(content::WebContents* web_contents, SadTabKind kind);
+  static std::unique_ptr<SadTab> Create(content::WebContents* web_contents,
+                                        SadTabKind kind);
 
   // Returns true if the sad tab should be shown.
   static bool ShouldShow(base::TerminationStatus status);

@@ -1,0 +1,6 @@
+Tests that sharedStorageWritable attribute is deprecated.
+
+fetch
+<img>
+<iframe>
+

@@ -4,22 +4,21 @@
 
 #include <string_view>
 
-#include "base/files/file_util.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/features.h"
@@ -66,7 +65,8 @@ class SubAppsPermissionsPolicyBrowserTest
     EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
               provider().registrar_unsafe().GetInstallState(parent_app_id_));
 
-    EXPECT_TRUE(provider().registrar_unsafe().IsIsolated(parent_app_id_));
+    EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+        parent_app_id_, WebAppFilter::IsIsolatedApp()));
 
     ASSERT_THAT(web_app, Pointee(test::Property(
                              "untranslated_name", &WebApp::untranslated_name,

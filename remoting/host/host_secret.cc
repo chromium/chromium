@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <string_view>
 
 #include "remoting/host/host_secret.h"
 
@@ -24,7 +21,7 @@ namespace {
 // should be enough for short-term passwords, given that we rate-limit guesses
 // in the cloud and expire access codes after a small number of attempts.
 const int kHostSecretLength = 5;
-const char kHostSecretAlphabet[] = "0123456789";
+const std::string_view kHostSecretAlphabet = "0123456789";
 
 // Generates cryptographically strong random number in the range [0, max).
 int CryptoRandomInt(int max) {
@@ -37,7 +34,7 @@ int CryptoRandomInt(int max) {
 
 std::string GenerateSupportHostSecret() {
   std::string result;
-  int alphabet_size = strlen(kHostSecretAlphabet);
+  int alphabet_size = strlen(kHostSecretAlphabet.data());
   result.resize(kHostSecretLength);
   for (int i = 0; i < kHostSecretLength; ++i) {
     result[i] = kHostSecretAlphabet[CryptoRandomInt(alphabet_size)];

@@ -23,9 +23,9 @@ import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.BytesFlag;
-import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.FloatFlag;
 import org.chromium.net.CronetTestRule.IgnoreFor;
@@ -125,7 +125,10 @@ public class CronetTestRuleTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            implementations = {
+                CronetImplementation.FALLBACK,
+                CronetImplementation.AOSP_PLATFORM,
+            },
             reason = "Testing the rule")
     public void testRunOnlyNativeMustRun() {
         assertThat(mTestRule.testingJavaImpl()).isFalse();
@@ -142,7 +145,7 @@ public class CronetTestRuleTest {
     @IgnoreFor(
             implementations = {
                 CronetImplementation.STATICALLY_LINKED,
-                CronetImplementation.AOSP_PLATFORM
+                CronetImplementation.AOSP_PLATFORM,
             },
             reason = "Testing the rule")
     public void testRunOnlyJavaMustRun() {
@@ -158,7 +161,7 @@ public class CronetTestRuleTest {
     @IgnoreFor(
             implementations = {
                 CronetImplementation.STATICALLY_LINKED,
-                CronetImplementation.FALLBACK
+                CronetImplementation.FALLBACK,
             },
             reason = "Testing the rule")
     @RequiresMinAndroidApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)

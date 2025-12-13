@@ -77,7 +77,7 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleAllSettings) {
        "recorder",      "gmail",        "google_docs",      "google_slides",
        "google_sheets", "google_drive", "google_keep",      "google_calendar",
        "google_chat",   "youtube",      "google_maps",      "calculator",
-       "text_editor"});
+       "text_editor",   "vids"});
 
   VerifyPrefList(
       {SystemFeature::kCamera,          SystemFeature::kOsSettings,
@@ -92,7 +92,7 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleAllSettings) {
        SystemFeature::kGoogleKeep,      SystemFeature::kGoogleCalendar,
        SystemFeature::kGoogleChat,      SystemFeature::kYoutube,
        SystemFeature::kGoogleMaps,      SystemFeature::kCalculator,
-       SystemFeature::kTextEditor});
+       SystemFeature::kTextEditor,      SystemFeature::kVids});
 
   std::vector<base::Bucket> expected_histogram{
       base::Bucket(static_cast<int>(SystemFeature::kCamera), 1),
@@ -119,7 +119,8 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleAllSettings) {
       base::Bucket(static_cast<int>(SystemFeature::kYoutube), 1),
       base::Bucket(static_cast<int>(SystemFeature::kGoogleMaps), 1),
       base::Bucket(static_cast<int>(SystemFeature::kCalculator), 1),
-      base::Bucket(static_cast<int>(SystemFeature::kTextEditor), 1)};
+      base::Bucket(static_cast<int>(SystemFeature::kTextEditor), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kVids), 1)};
 
   EXPECT_EQ(
       histogram_tester_.GetAllSamples(kSystemFeaturesDisableListHistogram),

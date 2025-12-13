@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"

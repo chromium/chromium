@@ -1,0 +1,9 @@
+# libinput should only be used in testing code. This visibility list helps
+# enforce that.
+visibility = [
+  "//third_party/libinput/*",
+
+  # Both of these are also test-only
+  "//third_party/libgudev/*",
+  "//third_party/mutter/*",
+]

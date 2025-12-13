@@ -219,7 +219,7 @@ bool MediaVideoEncoderWrapper::EncodeVideoFrame(
   // TODO(crbug.com/282984511): consider adding optimization to store frames
   // that are queued for encoding and sending them once updating options is
   // complete.
-  if (is_updating_options_) {
+  if (num_pending_updates_ > 0) {
     return false;
   }
 
@@ -422,8 +422,7 @@ base::TimeDelta MediaVideoEncoderWrapper::GetFrameDuration(
 // ChangeOptions(). This results in this annoying set of nested callbacks.
 void MediaVideoEncoderWrapper::UpdateEncoderOptions() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  CHECK(!is_updating_options_);
-  is_updating_options_ = true;
+  num_pending_updates_++;
 
   // Once the Flush() call is complete, we can safely call ChangeOptions() on
   // the encoder.
@@ -475,11 +474,7 @@ void MediaVideoEncoderWrapper::OnFrameEncodeDone(base::TimeTicks reference_time,
 
 void MediaVideoEncoderWrapper::OnOptionsUpdated(EncoderStatus status) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  // Now that we are done updating options we can begin encoding frames
-  // again.
-  is_updating_options_ = false;
-
-  // Call the more generic encode status method as well.
+  --num_pending_updates_;
   OnEncoderStatus(status);
 }
 

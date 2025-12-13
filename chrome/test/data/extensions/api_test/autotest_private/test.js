@@ -324,46 +324,6 @@ var defaultTests = [
       chrome.test.succeed();
     });
   },
-  // The state dumped in Assistant API error message is AssistantAllowedState
-  // defined in ash/public/cpp/assistant/assistant_state_base.h
-  // 3 is DISALLOWED_BY_NONPRIMARY_USER from IsAssistantAllowedForProfile when
-  // running under test without setting up a primary account.
-  function setAssistantEnabled() {
-    chrome.autotestPrivate.setAssistantEnabled(true, 1000 /* timeout_ms */,
-        chrome.test.callbackFail(
-            'Assistant not allowed - state: 3'));
-  },
-  function sendAssistantTextQuery() {
-    chrome.autotestPrivate.sendAssistantTextQuery(
-        'what time is it?' /* query */,
-        1000 /* timeout_ms */,
-        chrome.test.callbackFail(
-            'Assistant not allowed - state: 3'));
-  },
-  function waitForAssistantQueryStatus() {
-    chrome.autotestPrivate.waitForAssistantQueryStatus(10 /* timeout_s */,
-        chrome.test.callbackFail(
-            'Assistant not allowed - state: 3'));
-  },
-  // This test verifies the error message when trying to set Assistant-related
-  // preferences without enabling Assistant service first.
-  function setAllowedPref() {
-    chrome.autotestPrivate.setAllowedPref(
-        'settings.voice_interaction.hotword.enabled' /* pref_name */,
-        true /* value */,
-        chrome.test.callbackFail(
-            'Unable to set the pref because Assistant has not been enabled.'));
-    chrome.autotestPrivate.setAllowedPref(
-        'settings.voice_interaction.context.enabled' /* pref_name */,
-        true /* value */,
-        chrome.test.callbackFail(
-            'Unable to set the pref because Assistant has not been enabled.'));
-    // Note that onboarding pref is a counter that can be set without
-    // enabling Assistant at the same time.
-    chrome.autotestPrivate.setAllowedPref(
-        'ash.assistant.num_sessions_where_onboarding_shown' /* pref_name */,
-        3 /* value */, chrome.test.callbackPass());
-  },
   // This test verifies that getArcState returns provisioned False in case ARC
   // is not provisioned by default.
   function arcNotProvisioned() {
@@ -743,7 +703,7 @@ var defaultTests = [
         }
         browserFrameIndex = i;
         // Sanity check
-        chrome.test.assertEq('BrowserFrame', window.name);
+        chrome.test.assertEq('BrowserWidget', window.name);
         chrome.test.assertTrue(window.title.includes('New Tab') > 0);
         chrome.test.assertEq('Browser', window.windowType);
         chrome.test.assertEq(window.stateType, 'Normal');

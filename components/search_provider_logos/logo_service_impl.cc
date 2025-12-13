@@ -28,6 +28,7 @@
 #include "components/search_provider_logos/logo_cache.h"
 #include "components/search_provider_logos/logo_observer.h"
 #include "components/search_provider_logos/switches.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -205,7 +206,7 @@ void LogoServiceImpl::Shutdown() {
   // The IdentityManager may be destroyed at any point after Shutdown,
   // so make sure we drop any references to it.
   identity_manager_->RemoveObserver(this);
-  ReturnToIdle(kDownloadOutcomeNotTracked);
+  ReturnToIdle(std::nullopt);
 }
 
 void LogoServiceImpl::GetLogo(search_provider_logos::LogoObserver* observer) {
@@ -354,7 +355,7 @@ void LogoServiceImpl::SetServerAPI(
   if (logo_url == logo_url_)
     return;
 
-  ReturnToIdle(kDownloadOutcomeNotTracked);
+  ReturnToIdle(std::nullopt);
 
   logo_url_ = logo_url;
   parse_logo_response_func_ = parse_logo_response_func;
@@ -363,15 +364,14 @@ void LogoServiceImpl::SetServerAPI(
 
 void LogoServiceImpl::ClearCachedLogo() {
   // First cancel any fetch that might be ongoing.
-  ReturnToIdle(kDownloadOutcomeNotTracked);
+  ReturnToIdle(std::nullopt);
   // Then clear any cached logo.
   SetCachedLogo(nullptr);
 }
 
-void LogoServiceImpl::ReturnToIdle(int outcome) {
-  if (outcome != kDownloadOutcomeNotTracked) {
-    UMA_HISTOGRAM_ENUMERATION("NewTabPage.LogoDownloadOutcome",
-                              static_cast<LogoDownloadOutcome>(outcome),
+void LogoServiceImpl::ReturnToIdle(std::optional<LogoDownloadOutcome> outcome) {
+  if (outcome.has_value()) {
+    UMA_HISTOGRAM_ENUMERATION("NewTabPage.LogoDownloadOutcome", outcome.value(),
                               DOWNLOAD_OUTCOME_COUNT);
   }
 

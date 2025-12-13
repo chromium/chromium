@@ -54,6 +54,8 @@
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/mathml/mathml_element.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -263,6 +265,25 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
     // FIXME: What is ancestor?
     for (ContainerNode* ancestor = Strategy::Parent(*last_closed); ancestor;
          ancestor = Strategy::Parent(*ancestor)) {
+      // Skip wrapping with <mtr> (MathML table row) during ancestor wrapping
+      // when it was already serialized during the traversal phase,
+      // so wrapping them again as ancestors creates duplicate wrapping <mtr>
+      // that was not originally present.
+      // This is specific to MathML - HTML tables use a different pattern
+      // where HighestAncestorToWrapMarkup returns the table itself as the
+      // special ancestor, avoiding this issue.
+      // This may also be needed for <mlabeledtr> and <matrixrow> but these
+      // elements are currently not supported - absent in mathml_names.h
+      auto* mathml_element = DynamicTo<MathMLElement>(ancestor);
+      if (mathml_element &&
+          RuntimeEnabledFeatures::MathMLSkipMtrTagInAncestorWrappingEnabled() &&
+          mathml_element->HasTagName(mathml_names::kMtrTag)) {
+        if (ancestor == highest_node_to_be_serialized_) {
+          break;
+        }
+        continue;
+      }
+
       if (ancestor == fully_selected_root &&
           !markup_accumulator.ShouldConvertBlocksToInlines()) {
         EditingStyle* fully_selected_root_style =
@@ -417,8 +438,7 @@ Node* StyledMarkupTraverser<Strategy>::Traverse(Node* start_node,
       next = Strategy::Next(*n);
       if (IsEnclosingBlock(n) && CanHaveChildrenForEditing(n) &&
           next == past_end && !ContainsOnlyBRElement(To<Element>(*n)) &&
-          !(RuntimeEnabledFeatures::AllowCopyingEmptyLastTableCellEnabled() &&
-            IsTablePartElement(n))) {
+          !IsTablePartElement(n)) {
         // Don't write out empty block containers that aren't fully selected
         // unless the block container only contains br element or is a part of
         // table.

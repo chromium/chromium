@@ -23,7 +23,8 @@ import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -165,8 +166,7 @@ public class DataSharingTabGroupUtils {
             tabGroupIds.add(localTabGroupId.tabGroupId);
         }
         HashMap<Token, Tab> parentTabMap = new HashMap<>();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAtChecked(i);
+        for (Tab tab : tabModel) {
             @Nullable Token tabGroupId = tab.getTabGroupId();
 
             // The parent tab should be the last tab in the tab group. Tab groups are contiguous.
@@ -182,11 +182,13 @@ public class DataSharingTabGroupUtils {
         TabCreator tabCreator = tabModel.getTabCreator();
         List<Tab> newTabs = new ArrayList<>();
         for (Tab parentTab : parentTabMap.values()) {
+            UrlConstantResolver urlConstantResolver =
+                    UrlConstantResolverFactory.getForProfile(tabModel.getProfile());
             // The tab will automatically be placed immediately after the parent and this launch
             // type ensures the tab is added to the tab group.
             Tab newTab =
                     tabCreator.createNewTab(
-                            new LoadUrlParams(UrlConstants.NTP_URL),
+                            new LoadUrlParams(urlConstantResolver.getNtpUrl()),
                             TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP,
                             parentTab);
             newTabs.add(newTab);
@@ -242,8 +244,7 @@ public class DataSharingTabGroupUtils {
 
     private static @TabPresence int getTabPresence(TabModel tabModel, int tabId) {
         TabList tabList = tabModel.getComprehensiveModel();
-        for (int i = 0; i < tabList.getCount(); i++) {
-            Tab tab = tabList.getTabAt(i);
+        for (Tab tab : tabList) {
             assumeNonNull(tab);
             if (tab.getId() == tabId) {
                 return tab.isClosing() ? TabPresence.IN_WINDOW_CLOSING : TabPresence.IN_WINDOW;

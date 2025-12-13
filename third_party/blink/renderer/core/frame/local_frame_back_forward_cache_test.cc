@@ -34,7 +34,7 @@ class TestLocalFrameBackForwardCacheClient
       blink::AssociatedInterfaceProvider* provider) {
     provider->OverrideBinderForTesting(
         mojom::blink::BackForwardCacheControllerHost::Name_,
-        WTF::BindRepeating(
+        BindRepeating(
             [](TestLocalFrameBackForwardCacheClient* parent,
                mojo::ScopedInterfaceEndpointHandle handle) {
               parent->receiver_.Bind(
@@ -117,7 +117,7 @@ TEST_F(LocalFrameBackForwardCacheTest, EvictionOnV8ExecutionAtMicrotask) {
   //   2) C++ closure
   // The case 1) should never happen when the frame is in bfcache. On the other
   // hand, the case 2) can happen. See https://crbug.com/994169
-  frame->DomWindow()->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+  frame->DomWindow()->GetAgent()->event_loop()->EnqueueMicrotask(BindOnce(
       [](LocalFrame* frame) {
         ClassicScript::CreateUnspecifiedScript("console.log('hi');")
             ->RunScript(frame->DomWindow());

@@ -54,7 +54,6 @@ crbug.com/1266821 media/controls/paint-controls-webkit-appearance-none.html [ Fa
 crbug.com/1266821 media/track/track-cue-rendering-horizontal.html [ Failure ]
 crbug.com/1266821 media/video-no-audio.html [ Failure ]
 crbug.com/1266821 media/video-poster-scale.html [ Failure ]
-crbug.com/1266821 transforms/3d/point-mapping/3d-point-mapping-origins.html [ Failure ]
 crbug.com/1266821 transforms/shadows.html [ Failure ]
 crbug.com/1266821 transforms/svg-vs-css.xhtml [ Failure ]
 crbug.com/1266821 transforms/transformed-caret.html [ Failure ]

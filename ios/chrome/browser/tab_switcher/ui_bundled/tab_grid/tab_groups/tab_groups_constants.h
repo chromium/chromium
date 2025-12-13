@@ -24,6 +24,8 @@ extern NSString* const kTabGroupFacePileButtonIdentifier;
 
 // Color for the button background.
 UIColor* TabGroupViewButtonBackgroundColor();
+// Height of the buttons.
+extern const CGFloat kTabGroupButtonHeight;
 
 // Accessibility identifiers for the Recent Activity view.
 extern NSString* const kTabGroupRecentActivityIdentifier;

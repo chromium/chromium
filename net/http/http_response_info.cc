@@ -93,7 +93,7 @@ enum {
   RESPONSE_INFO_HAS_CONNECTION_INFO = 1 << 18,
 
   // This bit is set if the request has http authentication.
-  RESPONSE_INFO_USE_HTTP_AUTHENTICATION = 1 << 19,
+  RESPONSE_INFO_USE_SERVER_HTTP_AUTHENTICATION = 1 << 19,
 
   // This bit is set if ssl_info has SCTs.
   RESPONSE_INFO_HAS_SIGNED_CERTIFICATE_TIMESTAMPS = 1 << 20,
@@ -138,8 +138,8 @@ enum {
 // These values can be bit-wise combined to form the extra flags field of the
 // serialized HttpResponseInfo.
 enum {
-  // This bit is set if the request usd a shared dictionary for decoding its
-  // body.
+  // This bit was set if the request used a shared dictionary for decoding its
+  // body but is no longer persisted.
   RESPONSE_EXTRA_INFO_DID_USE_SHARED_DICTIONARY = 1,
 
   // This bit is set if the response has valid `proxy_chain`.
@@ -318,7 +318,8 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
 
   *response_truncated = (flags & RESPONSE_INFO_TRUNCATED) != 0;
 
-  did_use_http_auth = (flags & RESPONSE_INFO_USE_HTTP_AUTHENTICATION) != 0;
+  did_use_server_http_auth =
+      (flags & RESPONSE_INFO_USE_SERVER_HTTP_AUTHENTICATION) != 0;
 
   unused_since_prefetch = (flags & RESPONSE_INFO_UNUSED_SINCE_PREFETCH) != 0;
 
@@ -365,13 +366,18 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
     browser_run_id = std::make_optional(id);
   }
 
-  did_use_shared_dictionary =
-      (extra_flags & RESPONSE_EXTRA_INFO_DID_USE_SHARED_DICTIONARY) != 0;
+  // Do NOT restore the did_use_shared_dictionary flag since
+  // dictionary-compressed responses are decoded before being stored in cache.
+  // It is no longer persisted but old cache entries may have it set.
+  did_use_shared_dictionary = false;
 
   if (extra_flags & RESPONSE_EXTRA_INFO_HAS_PROXY_CHAIN) {
-    if (!proxy_chain.InitFromPickle(&iter)) {
+    std::optional<ProxyChain> unpickled_proxy_chain =
+        ProxyChain::InitFromPickle(iter);
+    if (!unpickled_proxy_chain) {
       return false;
     }
+    proxy_chain = std::move(*unpickled_proxy_chain);
   }
 
   return true;
@@ -413,8 +419,8 @@ std::unique_ptr<base::Pickle> HttpResponseInfo::MakePickle(
   if (connection_info != HttpConnectionInfo::kUNKNOWN) {
     flags |= RESPONSE_INFO_HAS_CONNECTION_INFO;
   }
-  if (did_use_http_auth)
-    flags |= RESPONSE_INFO_USE_HTTP_AUTHENTICATION;
+  if (did_use_server_http_auth)
+    flags |= RESPONSE_INFO_USE_SERVER_HTTP_AUTHENTICATION;
   if (unused_since_prefetch)
     flags |= RESPONSE_INFO_UNUSED_SINCE_PREFETCH;
   if (restricted_prefetch)
@@ -430,10 +436,6 @@ std::unique_ptr<base::Pickle> HttpResponseInfo::MakePickle(
     flags |= RESPONSE_INFO_ENCRYPTED_CLIENT_HELLO;
   if (browser_run_id.has_value())
     flags |= RESPONSE_INFO_BROWSER_RUN_ID;
-
-  if (did_use_shared_dictionary) {
-    extra_flags |= RESPONSE_EXTRA_INFO_DID_USE_SHARED_DICTIONARY;
-  }
 
   if (proxy_chain.IsValid()) {
     extra_flags |= RESPONSE_EXTRA_INFO_HAS_PROXY_CHAIN;

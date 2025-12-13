@@ -25,8 +25,9 @@ void SetSegmentDivPosition(blink::HTMLDivElement* segment,
                            int width,
                            float zoom_factor) {
   int segment_width =
-      ClampTo<int>(floor((position.width * width) / zoom_factor));
-  int segment_left = ClampTo<int>(floor((position.left * width) / zoom_factor));
+      blink::ClampTo<int>(floor((position.width * width) / zoom_factor));
+  int segment_left =
+      blink::ClampTo<int>(floor((position.left * width) / zoom_factor));
   int current_width = 0;
   int current_left = 0;
 

@@ -77,4 +77,5 @@ blink_core_tests_script = [
   "module_record_resolver_impl_test.cc",
   "module_script_test.cc",
   "script_runner_test.cc",
+  "pending_script_test.cc",
 ]

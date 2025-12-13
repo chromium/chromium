@@ -17,6 +17,7 @@
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
+#include "content/public/browser/network_service_instance.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
@@ -646,6 +647,39 @@ void DevToolsSession::RemoveObserver(ChildObserver* obs) {
 void DevToolsSession::PrepareForReload(std::string script_to_evaluate_on_load) {
   script_to_evaluate_on_load_ = std::move(script_to_evaluate_on_load);
   io_session_->UnpauseAndTerminate();
+}
+
+void DevToolsSession::EnableDurableMessageCollector(
+    const base::UnguessableToken& devtools_token,
+    network::mojom::NetworkDurableMessageConfigPtr config,
+    base::OnceClosure callback) {
+  CHECK(!root_session_);
+  if (!durable_message_collector_.is_bound()) {
+    content::GetNetworkService()->AddDurableMessageCollector(
+        durable_message_collector_.BindNewPipeAndPassReceiver());
+  }
+  durable_message_collector_->Configure(std::move(config), base::DoNothing());
+  durable_message_collector_->EnableForProfile(devtools_token,
+                                               std::move(callback));
+}
+
+void DevToolsSession::DisableDurableMessageCollectorForProfile(
+    const base::UnguessableToken& devtools_token,
+    base::OnceClosure callback) {
+  CHECK(!root_session_);
+  if (!durable_message_collector_.is_bound()) {
+    std::move(callback).Run();
+    return;
+  }
+  durable_message_collector_->DisableForProfile(devtools_token,
+                                                std::move(callback));
+}
+
+network::mojom::DurableMessageCollector*
+DevToolsSession::MaybeGetDurableMessageCollector() {
+  return durable_message_collector_.is_bound()
+             ? durable_message_collector_.get()
+             : nullptr;
 }
 
 }  // namespace content

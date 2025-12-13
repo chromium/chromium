@@ -79,17 +79,6 @@ action("workaround_list") {
   }
 }
 
-source_set("webgpu_blocklist_impl") {
-  sources = [
-    "webgpu_blocklist_impl.cc",
-    "webgpu_blocklist_impl.h",
-  ]
-
-  deps = [ "//base" ]
-
-  public_deps = [ "//third_party/dawn/include/dawn:cpp_headers" ]
-}
-
 component("config") {
   sources = [
     "device_perf_info.cc",
@@ -131,8 +120,8 @@ component("config") {
     "gpu_util.h",
     "skia_limits.cc",
     "skia_limits.h",
-    "webgpu_blocklist.cc",
-    "webgpu_blocklist.h",
+    "webgpu_blocklist_impl.cc",
+    "webgpu_blocklist_impl.h",
   ]
 
   if (is_fuchsia) {
@@ -145,7 +134,10 @@ component("config") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//components/crash/core/common:crash_key" ]
+  public_deps = [
+    "//components/crash/core/common:crash_key",
+    "//third_party/dawn/include/dawn:cpp_headers",
+  ]
 
   if (enable_vulkan) {
     public_deps += [ "//gpu/vulkan" ]
@@ -156,7 +148,7 @@ component("config") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
-    "//components/miracle_parameter/common",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common:gpu_preferences_interface",
     "//gpu/vulkan:buildflags",
@@ -183,10 +175,6 @@ component("config") {
       "//third_party/dawn/src/dawn:proc",
       "//third_party/dawn/src/dawn/native",
     ]
-  }
-
-  if (use_dawn) {
-    deps += [ ":webgpu_blocklist_impl" ]
   }
 
   # GpuPreferences is using its own mojo bindings which creates a

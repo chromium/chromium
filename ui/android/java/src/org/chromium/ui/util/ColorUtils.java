@@ -13,7 +13,9 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Helper functions for working with colors. */
 @NullMarked
@@ -30,13 +32,23 @@ public class ColorUtils {
     /** Percentage to darken a color by when setting the status bar color. */
     private static final float DARKEN_COLOR_FRACTION = 0.6f;
 
+    private static @Nullable Boolean sInNightModeForTesting;
+
     /**
      * @param context <b>Activity</b> context.
      * @return Whether the activity is currently in night mode.
      */
     public static boolean inNightMode(Context context) {
+        if (sInNightModeForTesting != null) {
+            return sInNightModeForTesting;
+        }
         int uiMode = context.getResources().getConfiguration().uiMode;
         return (uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    public static void setInNightModeForTesting(@Nullable Boolean inNightMode) {
+        sInNightModeForTesting = inNightMode;
+        ResettersForTesting.register(() -> sInNightModeForTesting = null);
     }
 
     /** Computes the lightness value in HSL standard for the given color. */

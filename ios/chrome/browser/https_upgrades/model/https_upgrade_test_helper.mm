@@ -55,7 +55,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
 
   const GURL request_url = request.GetURL();
   const std::string destValue =
-      base::UnescapeBinaryURLComponent(request_url.query_piece());
+      base::UnescapeBinaryURLComponent(request_url.query());
   // If the URL is in the form http://example.com/?redirect=url,
   // redirect the response to `url`.
   if (base::StartsWith(destValue, "redirect=")) {

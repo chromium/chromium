@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 
+#include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -138,6 +139,62 @@ TEST_F(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
   EXPECT_EQ(start_count, LayoutCount());
 }
 
+TEST_F(SpellCheckerTest,
+       MarkerContainsHideSuggestionWindowAttributeFalseByDefault) {
+  SetBodyContent(
+      "<div contenteditable>"
+      "spllchck"
+      "</div>");
+  Element* div = QuerySelector("div");
+  Node* text = div->firstChild();
+  EphemeralRange range_to_check =
+      EphemeralRange(Position(text, 0), Position(text, 8));
+
+  SpellCheckRequest* request = SpellCheckRequest::Create(
+      range_to_check, /*num_request=*/0, /*should_force_refresh=*/false);
+
+  TextCheckingResult result;
+  result.decoration = TextDecorationType::kTextDecorationTypeSpelling;
+  result.location = 0;
+  result.length = 8;
+  result.replacements = Vector<String>({"spellcheck", "spillchuck"});
+
+  GetDocument().GetFrame()->GetSpellChecker().MarkAndReplaceFor(
+      request, Vector<TextCheckingResult>({result}));
+
+  ASSERT_EQ(1u, GetDocument().Markers().Markers().size());
+  EXPECT_FALSE(To<SpellCheckMarker>(GetDocument().Markers().Markers()[0].Get())
+                   ->ShouldHideSuggestionMenu());
+}
+
+TEST_F(SpellCheckerTest, MarkerContainsHideSuggestionWindowAttribute) {
+  SetBodyContent(
+      "<div contenteditable>"
+      "spllchck"
+      "</div>");
+  Element* div = QuerySelector("div");
+  Node* text = div->firstChild();
+  EphemeralRange range_to_check =
+      EphemeralRange(Position(text, 0), Position(text, 8));
+
+  SpellCheckRequest* request = SpellCheckRequest::Create(
+      range_to_check, /*num_request=*/0, /*should_force_refresh=*/false);
+
+  TextCheckingResult result;
+  result.decoration = TextDecorationType::kTextDecorationTypeSpelling;
+  result.location = 0;
+  result.length = 8;
+  result.replacements = Vector<String>({"spellcheck", "spillchuck"});
+  result.should_hide_suggestion_menu = true;
+
+  GetDocument().GetFrame()->GetSpellChecker().MarkAndReplaceFor(
+      request, Vector<TextCheckingResult>({result}));
+
+  ASSERT_EQ(1u, GetDocument().Markers().Markers().size());
+  EXPECT_TRUE(To<SpellCheckMarker>(GetDocument().Markers().Markers()[0].Get())
+                  ->ShouldHideSuggestionMenu());
+}
+
 TEST_F(SpellCheckerTest, MarkAndReplaceForHandlesMultipleReplacements) {
   SetBodyContent(
       "<div contenteditable>"
@@ -148,7 +205,8 @@ TEST_F(SpellCheckerTest, MarkAndReplaceForHandlesMultipleReplacements) {
   EphemeralRange range_to_check =
       EphemeralRange(Position(text, 0), Position(text, 8));
 
-  SpellCheckRequest* request = SpellCheckRequest::Create(range_to_check, 0);
+  SpellCheckRequest* request = SpellCheckRequest::Create(
+      range_to_check, /*num_request=*/0, /*should_force_refresh=*/false);
 
   TextCheckingResult result;
   result.decoration = TextDecorationType::kTextDecorationTypeSpelling;

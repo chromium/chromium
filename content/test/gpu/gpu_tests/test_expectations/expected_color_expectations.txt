@@ -8,12 +8,12 @@
 #         mac highsierra mojave catalina bigsur monterey ventura sonoma sequoia
 #         win win8 win10 win11 ]
 # Devices
-# tags: [ android-pixel-2 android-pixel-4 android-pixel-6
+# tags: [ android-pixel-2 android-pixel-4 android-pixel-6 android-pixel-10
 #             android-shield-android-tv android-sm-a137f android-sm-a236b
 #             android-sm-s911u1
 #         android-brya android-corsola
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
-#             chromeos-board-octopus chromeos-board-volteer
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -28,7 +28,8 @@
 #         web-engine-shell
 #         cros-chrome ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
+# tags: [ amd amd-0x150e amd-0x1900 amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821
+#             amd-0x7340 amd-0x7480
 #         apple apple-apple-m1 apple-apple-m2 apple-apple-m3
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -36,6 +37,7 @@
 #         arm
 #         google google-0xffff google-0xc0de
 #         imagination
+#         imagination-technologies
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0x3e92
 #             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
@@ -62,6 +64,7 @@
 # tags: [ mesa_lt_19.1
 #         mesa_ge_21.0
 #         mesa_ge_23.2
+#         mesa_ge_24.2
 #         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601
 #         nvidia_ge_535.183.01 nvidia_lt_535.183.01 ]
 # ASan
@@ -107,20 +110,35 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVi
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
+# Too slow on low performant smart display and won't work with default 10s timeout.
+# https://crsrc.org/c/third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/devtools_client_backend.py;drc=99f2d536fbf0a4b520f6e45de76d5295ea1c8cba;l=195
+crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-astro ] ExpectedColor_maps [ Skip ]
+
+###############################
+# Permanent Slow Expectations #
+###############################
+
+# Slow on DCHECK builds being used on fuchsia builders.
+crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-sherlock ] ExpectedColor_maps [ Slow ]
+crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-nelson ] ExpectedColor_maps [ Slow ]
+
 ###################
 # Failures/Flakes #
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-
-
 # Flakes on Intel Mac with a larger shifted image
-crbug.com/425653491 [ amd-0x7340 angle-metal debug graphite-enabled no-asan no-clang-coverage sonoma ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
-crbug.com/425653491 [ angle-metal asan graphite-enabled intel-0x3e9b no-clang-coverage release sonoma ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/425653491 [ angle-metal graphite-enabled intel-0x3e9b no-asan no-clang-coverage release sequoia ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
 # Flakes on Android DEMUXER_ERROR_COULD_NOT_OPEN
 crbug.com/426594100 [ android android-pixel-2 graphite-disabled ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+crbug.com/426594100 [ android android-pixel-6 graphite-disabled ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+
+crbug.com/446124895 [ android android-pixel-10 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
+
+crbug.com/458633863 [ win qualcomm-0x36334330 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
+
+crbug.com/467247264 [ win11 nvidia-0x2184 ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

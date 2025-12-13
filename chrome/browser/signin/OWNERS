@@ -1,6 +1,8 @@
-file://components/signin/OWNERS
+# Preferred owners for Android-related changes.
+file://components/signin/ANDROID_OWNERS
 
-per-file chrome_proximity_auth_*=xiyuan@chromium.org
-per-file easy_unlock_*=xiyuan@chromium.org
-per-file signin_profile_attributes_updater*=msalama@chromium.org
-per-file signin_promo_*=amelies@google.com
+# Preferred owners for desktop-related changes.
+file://components/signin/DESKTOP_OWNERS
+
+# Cross-platform owners. Prefer platform specific owners when relevant.
+file://components/signin/OWNERS

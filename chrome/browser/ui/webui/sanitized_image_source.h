@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_SANITIZED_IMAGE_SOURCE_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -128,7 +130,7 @@ class SanitizedImageSource : public content::URLDataSource {
   void OnImageLoaded(std::unique_ptr<network::SimpleURLLoader> loader,
                      RequestAttributes request_attributes,
                      content::URLDataSource::GotDataCallback callback,
-                     std::unique_ptr<std::string> body);
+                     std::optional<std::string> body);
   void OnAnimationDecoded(
       RequestAttributes request_attributes,
       content::URLDataSource::GotDataCallback callback,

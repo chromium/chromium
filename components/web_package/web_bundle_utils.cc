@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"

@@ -5,7 +5,9 @@
 )]
 
 #[macro_use]
-mod macros;
+mod snapshot;
+
+mod debug;
 
 use syn::{Expr, Item};
 

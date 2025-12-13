@@ -1,0 +1,85 @@
+<!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
+@AURALINUX-ALLOW:enabled
+@AURALINUX-ALLOW:sensitive
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@AURALINUX-DENY:PARENT-CHANGED*
+@UIA-WIN-DENY:*StructureChanged*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@WIN-DENY:EVENT_OBJECT_SHOW*
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Material Web List Events</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-list",
+            "md-list-item"
+        ];
+
+        setupEventTestRunner();
+        window.waitForStable = waitForStable;
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+
+            const list = document.createElement("md-list");
+            list.id = "test-list";
+
+            const item1 = document.createElement("md-list-item");
+            item1.id = "test-item-1";
+            item1.headline = "First Item";
+            item1.setAttribute("aria-label", "First Item");
+            item1.tabIndex = 0;
+
+            const item2 = document.createElement("md-list-item");
+            item2.id = "test-item-2";
+            item2.headline = "Second Item (Disabled)";
+            item2.setAttribute("aria-label", "Second Item");
+            item2.disabled = true;
+            item2.tabIndex = 0;
+
+            const item3 = document.createElement("md-list-item");
+            item3.id = "test-item-3";
+            item3.headline = "Third Item";
+            item3.setAttribute("aria-label", "Third Item");
+            item3.tabIndex = 0;
+
+            list.appendChild(item1);
+            list.appendChild(item2);
+            list.appendChild(item3);
+            statusDiv.appendChild(list);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    window.go_passes = [
+        async () => {
+            const item = document.getElementById("test-item-1");
+            if (item) {
+                item.dispatchEvent(new Event("request-activation", { bubbles: true }));
+                await waitForStable(item);
+            }
+        },
+
+        async () => {
+            const item = document.getElementById("test-item-3");
+            if (item) {
+                item.dispatchEvent(new Event("request-activation", { bubbles: true }));
+                await waitForStable(item);
+            }
+        }
+    ];
+</script>
+</html>

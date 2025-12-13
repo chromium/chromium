@@ -14,12 +14,13 @@ source_set("app_service") {
     "web_apps.h",
   ]
 
-  # TODO(crbug.com/40251079): Remove circular dependencies.
-  allow_circular_includes_from = [ "//chrome/browser/apps/app_service" ]
+  allow_circular_includes_from = []
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/badging",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/notifications",
   ]
 
   deps = [

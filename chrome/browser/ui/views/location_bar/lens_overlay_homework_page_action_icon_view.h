@@ -36,7 +36,6 @@ class LensOverlayHomeworkPageActionIconView : public PageActionIconView {
 
  private:
   bool ShouldShow();
-  void ShowCallToAction();
 
   const raw_ptr<BrowserWindowInterface> browser_;
 

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media/router/discovery/test_support/win/fake_mib_table.h"
+
+#include "base/compiler_specific.h"
 
 namespace media_router {
 
@@ -25,7 +22,7 @@ FakeMibTable::FakeMibTable(
   MIB_IF_TABLE2* mib_table = Get();
   mib_table->NumEntries = source_network_interfaces.size();
   for (size_t i = 0; i < source_network_interfaces.size(); ++i) {
-    mib_table->Table[i] = source_network_interfaces[i];
+    UNSAFE_TODO(mib_table->Table[i]) = source_network_interfaces[i];
   }
 }
 

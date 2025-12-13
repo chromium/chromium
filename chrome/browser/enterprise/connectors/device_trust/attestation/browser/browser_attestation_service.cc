@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/task_traits.h"
@@ -21,7 +22,9 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "crypto/aes_cbc.h"
+#include "crypto/keypair.h"
 #include "crypto/random.h"
+#include "crypto/sign.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
@@ -36,10 +39,17 @@ const size_t kChallengeResponseNonceBytesSize = 32;
 bool ChallengeComesFromVerifiedAccess(
     const SignedData& signed_challenge_data,
     const std::string& va_public_key_modulus_hex) {
-  // Verify challenge signature.
-  return CryptoUtility::VerifySignatureUsingHexKey(
-      va_public_key_modulus_hex, signed_challenge_data.data(),
-      signed_challenge_data.signature());
+  // 65537, as an OpenSSL bignum.
+  constexpr auto kWellKnownExponent =
+      std::to_array<uint8_t>({0x01, 0x00, 0x01});
+  std::vector<uint8_t> n_bytes;
+  CHECK(base::HexStringToBytes(va_public_key_modulus_hex, &n_bytes));
+  const auto key = crypto::keypair::PublicKey::FromRsaPublicKeyComponents(
+      n_bytes, kWellKnownExponent);
+  return crypto::sign::Verify(
+      crypto::sign::RSA_PKCS1_SHA256, *key,
+      base::as_byte_span(signed_challenge_data.data()),
+      base::as_byte_span(signed_challenge_data.signature()));
 }
 
 VAType GetVAType() {

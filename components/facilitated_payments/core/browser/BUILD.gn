@@ -23,8 +23,6 @@ static_library("browser") {
     "network_api/facilitated_payments_network_interface.h",
     "network_api/get_details_for_pix_account_linking_request.cc",
     "network_api/get_details_for_pix_account_linking_request.h",
-    "network_api/multiple_request_facilitated_payments_network_interface.cc",
-    "network_api/multiple_request_facilitated_payments_network_interface.h",
     "payment_link_manager.cc",
     "payment_link_manager.h",
     "pix_account_linking_manager.cc",
@@ -39,6 +37,7 @@ static_library("browser") {
     "//components/autofill/core/browser",
     "//components/facilitated_payments/core/features",
     "//components/facilitated_payments/core/metrics",
+    "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
     "//components/facilitated_payments/core/utils",
     "//components/facilitated_payments/core/validation",
     "//components/optimization_guide/core",
@@ -58,7 +57,6 @@ source_set("unit_tests") {
     "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
     "network_api/facilitated_payments_network_interface_unittest.cc",
     "network_api/get_details_for_pix_account_linking_request_unittest.cc",
-    "network_api/multiple_request_facilitated_payments_network_interface_unittest.cc",
     "payment_link_manager_unittest.cc",
     "pix_account_linking_manager_unittest.cc",
     "pix_manager_unittest.cc",
@@ -102,6 +100,6 @@ static_library("test_support") {
   deps = [
     ":browser",
     "//components/facilitated_payments/core/utils",
-    "//testing/gmock:gmock",
+    "//testing/gmock",
   ]
 }

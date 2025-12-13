@@ -82,6 +82,9 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // |callback| may be called after the WebContents has been destroyed.
   // This must be invoked on the UI thread, |callback| will be invoked on the UI
   // thread.
+  // TODO(https://crbug.com/452053908): Replace usage with PageManifestManager
+  // with PrimaryPageChanged, and eventually remove this GetManifest and
+  // WebContentsObserver::DidUpdateWebManifestURL.
   virtual void GetManifest(GetManifestCallback callback) = 0;
 
   // Returns true iff this Page is primary for the associated `WebContents`

@@ -18,6 +18,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
         "name": "browser_tests",
         "retry_only_failed_tests": true,
         "swarming": {
@@ -27,7 +29,7 @@
           "expiration": 18000,
           "hard_timeout": 14400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 46
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -42,6 +44,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//content/test:content_browsertests",
+        "module_scheme": "gtest",
         "name": "content_browsertests",
         "retry_only_failed_tests": true,
         "swarming": {
@@ -51,7 +55,7 @@
           "expiration": 18000,
           "hard_timeout": 14400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 8
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -67,6 +71,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:interactive_ui_tests",
+        "module_scheme": "gtest",
         "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
@@ -75,7 +81,7 @@
           "expiration": 18000,
           "hard_timeout": 14400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "shards": 12
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"

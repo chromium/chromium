@@ -37,6 +37,10 @@ source_set("content_world_header") {
   sources = [ "content_world.h" ]
 }
 
+compile_ts("gcrweb_error") {
+  sources = [ "resources/gcrweb_error.ts" ]
+}
+
 compile_ts("util_scripts") {
   sources = [ "resources/utils.ts" ]
 }
@@ -55,6 +59,7 @@ compile_ts("gcrweb") {
 
   deps = [
     ":error_reporting",
+    ":gcrweb_error",
     ":util_scripts",
   ]
 }

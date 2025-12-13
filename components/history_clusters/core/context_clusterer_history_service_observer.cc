@@ -9,6 +9,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
@@ -153,15 +154,19 @@ ContextClustererHistoryServiceObserver::
 
 void ContextClustererHistoryServiceObserver::OnURLVisited(
     history::HistoryService* history_service,
-    const history::URLRow& url_row,
-    const history::VisitRow& new_visit) {
+    const history::VisitedURLInfo& visited_url_info) {
   TRACE_EVENT0("browser",
                "ContextClusteringHistoryServiceObserver::OnURLVisited");
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
 
   ScopedVisitProcessingTimer url_visited_processing_timer(
       VisitProcessingStage::kUrlVisited);
 
   // Update the normalized URL if it's a search URL.
+  const history::URLRow& url_row = visited_url_info.url_row;
   std::string normalized_url = url_row.url().possibly_invalid_spec();
   std::u16string search_terms;
   bool is_search_normalized_url = false;
@@ -175,6 +180,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
     }
   }
 
+  const history::VisitRow& new_visit = visited_url_info.visit_row;
   history::ClusterVisit cluster_visit =
       CreateClusterVisit(normalized_url, is_search_normalized_url, new_visit);
 
@@ -477,7 +483,7 @@ ContextClustererHistoryServiceObserver::CreateClusterVisit(
 
 float ContextClustererHistoryServiceObserver::GetEngagementScore(
     const GURL& normalized_url) {
-  std::string visit_host = normalized_url.host();
+  std::string visit_host = normalized_url.GetHost();
   auto it = engagement_score_cache_.Peek(visit_host);
   if (it != engagement_score_cache_.end() &&
       it->second.expiry_time > clock_->Now()) {

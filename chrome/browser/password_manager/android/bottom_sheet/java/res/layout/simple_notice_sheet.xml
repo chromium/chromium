@@ -12,7 +12,6 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:orientation="vertical">
-    <!-- TODO(crbug.com/360328000): Migrate the sheet dimensions from migration warning to the simple notice sheet. -->
 
     <ImageView
         android:id="@+id/drag_handlebar"
@@ -20,7 +19,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginHorizontal="@dimen/pwd_migration_warning_margin"
+        android:layout_marginHorizontal="24dp"
         android:layout_marginVertical="6dp"
         android:layout_gravity="center_horizontal"
         android:importantForAccessibility="no"
@@ -37,7 +36,7 @@ found in the LICENSE file.
             android:id="@+id/sheet_item_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/pwd_migration_warning_margin"
+            android:layout_marginHorizontal="24dp"
             android:layout_marginBottom="24dp"
             android:clipToPadding="false"
             android:divider="@null"
@@ -45,8 +44,8 @@ found in the LICENSE file.
 
             <ImageView
                 android:id="@+id/sheet_header_image"
-                android:layout_width="@dimen/pwd_migration_warning_icon_size"
-                android:layout_height="@dimen/pwd_migration_warning_icon_size"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginVertical="16dp"
                 android:importantForAccessibility="no"/>
@@ -66,7 +65,7 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:textAlignment="center"
-                android:layout_marginBottom="@dimen/pwd_migration_warning_margin"
+                android:layout_marginBottom="24dp"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 
             <org.chromium.ui.widget.ButtonCompat
@@ -75,7 +74,7 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:minHeight="@dimen/pwd_migration_warning_button_height"
+                android:minHeight="48dp"
                 android:ellipsize="end"
                 android:singleLine="true"
                 style="@style/FilledButton"/>

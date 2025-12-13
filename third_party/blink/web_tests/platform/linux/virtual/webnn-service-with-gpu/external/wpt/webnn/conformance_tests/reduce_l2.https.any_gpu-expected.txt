@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+[FAIL] [required] reduceL2 float16 1D constant tensor all positive default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 8128
+[FAIL] [required] reduceL2 float16 1D tensor all positive default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 8128
+[FAIL] [required] reduceL2 float16 1D tensor all negative default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 292.5 by ULP distance: expected a number less than or equal to 50 but got 8046
+[FAIL] [required] reduceL2 float16 1D tensor all positive integers default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 274.5 by ULP distance: expected a number less than or equal to 50 but got 8118
+[FAIL] [required] reduceL2 float16 1D tensor all negative integers default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 300.5 by ULP distance: expected a number less than or equal to 50 but got 8014
+[FAIL] [required] reduceL2 float16 2D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 8128
+[FAIL] [required] reduceL2 float16 3D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 8128
+[FAIL] [required] reduceL2 float16 4D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 8128
+[FAIL] [required] reduceL2 float16 5D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 8128
+[FAIL] [required] reduceL2 float16 3D tensor options.keepDimensions=false
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 8128
+[FAIL] [required] reduceL2 float16 3D tensor options.keepDimensions=true
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 8128
+[FAIL] [required] reduceL2 float16 4D tensor options.keepDimensions=false
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 8128
+[FAIL] [required] reduceL2 float16 4D tensor options.keepDimensions=true
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual Infinity should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 8128
+Harness: the test ran to completion.
+

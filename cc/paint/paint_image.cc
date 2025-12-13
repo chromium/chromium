@@ -226,8 +226,6 @@ void PaintImage::CreateSkImage() {
         std::make_unique<SkiaPaintImageGenerator>(paint_image_generator_,
                                                   kDefaultFrameIndex,
                                                   kDefaultGeneratorClientId));
-  } else if (texture_backing_) {
-    cached_sk_image_ = texture_backing_->GetAcceleratedSkImage();
   }
 }
 
@@ -240,8 +238,12 @@ SkISize PaintImage::GetSupportedDecodeSize(const SkISize& requested_size,
       }
       return SkISize::Make(width(), height());
     case AuxImage::kGainmap:
-      return gainmap_paint_image_generator_->GetSupportedDecodeSize(
-          requested_size);
+      if (gainmap_paint_image_generator_) {
+        return gainmap_paint_image_generator_->GetSupportedDecodeSize(
+            requested_size);
+      }
+      // Note that this is different from the default image behavior.
+      return SkISize(0, 0);
   }
 }
 
@@ -338,11 +340,6 @@ bool PaintImage::IsTextureBacked() const {
   return false;
 }
 
-void PaintImage::FlushPendingSkiaOps() {
-  if (texture_backing_)
-    texture_backing_->FlushPendingSkiaOps();
-}
-
 gfx::Size PaintImage::GetSize(AuxImage aux_image) const {
   return gfx::SkISizeToSize(GetSkISize(aux_image));
 }
@@ -354,7 +351,7 @@ gfx::ContentColorUsage PaintImage::GetContentColorUsage() const {
   }
 
   // Gainmap images are always HDR.
-  if (HasGainmap()) {
+  if (HasGainmapInfo()) {
     return gfx::ContentColorUsage::kHDR;
   }
 
@@ -461,7 +458,7 @@ std::string PaintImage::ToString() const {
       << " completion_state_: " << static_cast<int>(completion_state_)
       << " is_multipart_: " << is_multipart_
       << " may_be_lcp_candidate_: " << may_be_lcp_candidate_
-      << " has gainmap: " << HasGainmap() << " is YUV: "
+      << " has gainmap: " << HasGainmapInfo() << " is YUV: "
       << IsYuv(SkYUVAPixmapInfo::SupportedDataTypes::All(), AuxImage::kDefault);
   return str.str();
 }

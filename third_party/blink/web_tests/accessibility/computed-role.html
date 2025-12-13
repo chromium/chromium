@@ -124,8 +124,13 @@
       <div role="menuitem">This is a menuitem</div>
 
       <menu type="popup" data-role="list">
-        <!-- <menuitem> has been deprecated since HTML 5.2, and doea not map to ARIA menuitem -->
-        <menuitem command="doSomething" data-role="generic">This is a menuitem</menuitem>
+        <!-- <menuitem> has been deprecated since HTML 5.2, and does not map to ARIA menuitem -->
+        <!-- NOTE: The open-ui menu elements proposal [1] is re-introducing the `<menuitem>` element
+             to the web platform, rendering the above comment false.
+             TODO(https://crbug.com/406566432): Remove the deprecation comment above when the menu
+             elements proposal proceeds.
+             [1] https://open-ui.org/components/menu.explainer/ -->
+        <menuitem command="doSomething" data-role="menuitem">This is a menuitem</menuitem>
       </menu>
 
       <div role="menuitemcheckbox">This is a menuitemcheckbox</div>

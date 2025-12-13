@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+class GaiaId;
+
 @class AccountPickerSelectionScreenTableViewController;
 
 // Delegate protocol for AccountPickerSelectionScreenTableViewController.
@@ -16,7 +18,7 @@
 // Invoked when the user selects an identity.
 - (void)accountPickerListTableViewController:
             (AccountPickerSelectionScreenTableViewController*)viewController
-                 didSelectIdentityWithGaiaID:(NSString*)gaiaID;
+                 didSelectIdentityWithGaiaID:(const GaiaId&)gaiaID;
 
 // Invoked when the user taps on "Add account".
 - (void)accountPickerListTableViewControllerDidTapOnAddAccount:

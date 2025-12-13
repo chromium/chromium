@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_SHAPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_SHAPER_H_
 
-#include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_options.h"
@@ -52,19 +51,8 @@ struct BufferSlice;
 class PLATFORM_EXPORT HarfBuzzShaper final {
   DISALLOW_NEW();
 
-  using EmojiMetricsCallback =
-      base::RepeatingCallback<void(unsigned, unsigned)>;
-
  public:
-  // The optional emoji_metrics_callback argument is a mock metrics reporting
-  // function used during tests. Otherwise successful and unsuccessful emoji
-  // clusters are reported per Document / WorkerGlobalContext to
-  // FontMatchingMetrics.
-  explicit HarfBuzzShaper(
-      String text,
-      EmojiMetricsCallback emoji_metrics_callback = EmojiMetricsCallback())
-      : text_(std::move(text)),
-        emoji_metrics_reporter_for_testing_(emoji_metrics_callback) {}
+  explicit HarfBuzzShaper(String text) : text_(std::move(text)) {}
 
   // Shape a range, defined by the start and end parameters, of the string
   // supplied to the constructor.
@@ -177,7 +165,6 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   void CheckTextEnd(unsigned start, unsigned end) const;
 
   const String text_;
-  EmojiMetricsCallback emoji_metrics_reporter_for_testing_;
 };
 
 }  // namespace blink

@@ -92,6 +92,10 @@ void CursorLoader::SetColor(SkColor color) {
   }
 
   color_ = color;
+
+  // Reset cursor lottie animation cache when new color needs to be applied.
+  wm::ClearCursorAnimationCache();
+
   UnloadCursors();
 }
 
@@ -138,7 +142,7 @@ std::optional<ui::CursorData> CursorLoader::GetCursorData(
   // TODO(crbug.com/40175364): use the actual `rotation_` if that makes
   // sense for the current use cases of `GetCursorData` (e.g. Chrome Remote
   // Desktop, WebRTC and VideoRecordingWatcher).
-  return wm::GetCursorData(type, size_, resource_scale_,
+  return wm::GetCursorData(type, resource_scale_,
                            size_ == ui::CursorSize::kLarge
                                ? std::make_optional(large_cursor_size_in_px)
                                : std::nullopt,
@@ -210,7 +214,7 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
 scoped_refptr<ui::PlatformCursor> CursorLoader::LoadCursorFromAsset(
     CursorType type) {
   std::optional<ui::CursorData> cursor_data = wm::GetCursorData(
-      type, size_, resource_scale_,
+      type, resource_scale_,
       size_ == ui::CursorSize::kLarge ? std::make_optional(ConvertDipToPixel(
                                             large_cursor_size_in_dip_, scale_))
                                       : std::nullopt,

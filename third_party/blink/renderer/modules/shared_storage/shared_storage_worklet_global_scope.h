@@ -13,8 +13,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -105,7 +103,8 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
                       mojom::blink::SharedStorageWorkletServiceClient> client,
                   mojom::blink::SharedStorageWorkletPermissionsPolicyStatePtr
                       permissions_policy_state,
-                  const String& embedder_context) override;
+                  const String& embedder_context,
+                  InitializeCallback callback) override;
   void AddModule(mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
                      pending_url_loader_factory,
                  const KURL& script_source_url,

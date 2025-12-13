@@ -17,7 +17,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 /**
  * An activity to measure the startup time of WebView in various scenarios.
@@ -55,7 +55,7 @@ public class StartupTimeActivity extends Activity {
 
     private static final String TARGET_KEY = "target";
 
-    private final LinkedList<Long> mEventQueue = new LinkedList<>();
+    private final ArrayList<Long> mEventQueue = new ArrayList<>();
 
     private boolean mFinished;
     // Keep track of the time that the last task was run.
@@ -66,13 +66,21 @@ public class StartupTimeActivity extends Activity {
 
     private Handler mHandler;
 
-    @IntDef({Target.DO_NOTHING, Target.CREATE, Target.ADD_VIEW, Target.LOAD, Target.WORKAROUND})
+    @IntDef({
+        Target.DO_NOTHING,
+        Target.CREATE,
+        Target.ADD_VIEW,
+        Target.LOAD,
+        Target.WORKAROUND,
+        Target.GET_DEFAULT_USER_AGENT
+    })
     @interface Target {
         int DO_NOTHING = 0;
         int CREATE = 1;
         int ADD_VIEW = 2;
         int LOAD = 3;
         int WORKAROUND = 4;
+        int GET_DEFAULT_USER_AGENT = 5;
     }
 
     private final Runnable mUiBlockingTaskTracker =
@@ -183,6 +191,11 @@ public class StartupTimeActivity extends Activity {
                                                 });
                                     });
                     t.start();
+                    break;
+                }
+            case Target.GET_DEFAULT_USER_AGENT:
+                {
+                    WebSettings.getDefaultUserAgent(this);
                     break;
                 }
         }

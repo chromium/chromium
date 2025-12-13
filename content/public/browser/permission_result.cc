@@ -24,11 +24,13 @@ PermissionResult::PermissionResult(const PermissionResult& other) {
   retrieved_permission_setting = other.retrieved_permission_setting;
 }
 
-PermissionResult& PermissionResult::operator=(PermissionResult& other) =
+PermissionResult& PermissionResult::operator=(const PermissionResult& other) =
     default;
 PermissionResult::PermissionResult(PermissionResult&&) = default;
 PermissionResult& PermissionResult::operator=(PermissionResult&&) = default;
 
 PermissionResult::~PermissionResult() = default;
+
+bool PermissionResult::operator==(const PermissionResult& rhs) const = default;
 
 }  // namespace content

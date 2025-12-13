@@ -4,7 +4,7 @@ This is a testharness.js-based test.
 [FAIL] execCommand("insertHTML", false, "plaintext") when "<b>{}</b>"
   assert_equals: expected "<b>plaintext</b>" but got "<b></b>"
 [FAIL] execCommand("insertHTML", false, "plaintext") when "<b>{}<br></b>"
-  assert_in_array: value "plaintext<b></b>" not in array ["<b>plaintext</b>", "<b>plaintext<br></b>"]
+  assert_in_array: value "plaintext<b><br></b>" not in array ["<b>plaintext</b>", "<b>plaintext<br></b>"]
 [FAIL] execCommand("insertHTML", false, "plaintext") when "<b>A[]B</b>"
   assert_equals: expected "<b>AplaintextB</b>" but got "<b>A</b>plaintext<b>B</b>"
 [FAIL] execCommand("insertHTML", false, "plaintext") when "<span>A[]B</span>"

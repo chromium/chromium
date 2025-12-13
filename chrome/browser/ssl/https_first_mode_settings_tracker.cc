@@ -32,6 +32,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -151,37 +152,12 @@ GURL GetHttpUrlFromHttps(const GURL& https_url) {
     // TODO(crbug.com/40904694): Remove this exception.
     if (https_url != GURL(security_interstitials::HttpsOnlyModeBlockingPage::
                               kLearnMoreLink)) {
-      DCHECK(!https_url.port().empty());
+      DCHECK(!https_url.GetPort().empty());
       upgrade_url.SetPortStr(port_str);
     }
   }
 
   return https_url.ReplaceComponents(upgrade_url);
-}
-
-// Returns the HTTPS URL from `http_url` using the test port numbers, if any.
-// TODO(crbug.com/40904694): Refactor and merge with UpgradeUrlToHttps().
-GURL GetHttpsUrlFromHttp(const GURL& http_url) {
-  DCHECK(!http_url.SchemeIsCryptographic());
-
-  // Replace scheme with HTTPS.
-  GURL::Replacements upgrade_url;
-  upgrade_url.SetSchemeStr(url::kHttpsScheme);
-
-  // For tests that use the EmbeddedTestServer, the server's port needs to be
-  // specified as it can't use the default ports.
-  int https_port_for_testing =
-      HttpsUpgradesInterceptor::GetHttpsPortForTesting();
-  // `port_str` must be in scope for the call to ReplaceComponents() below.
-  const std::string port_str = base::NumberToString(https_port_for_testing);
-  if (https_port_for_testing) {
-    // Only reached in testing, where the original URL will always have a
-    // non-default port.
-    DCHECK(!http_url.port().empty());
-    upgrade_url.SetPortStr(port_str);
-  }
-
-  return http_url.ReplaceComponents(upgrade_url);
 }
 
 std::unique_ptr<KeyedService> BuildService(content::BrowserContext* context) {
@@ -473,6 +449,10 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
     }
     return;
   }
+  // Consider amending the SiteEngagementService API to take a callback so we
+  // can exactly retrieve all the origins with score >= kHttpsAddThreshold.
+  DCHECK_GE(kHttpsAddThreshold.Get(),
+            site_engagement::SiteEngagementScore::GetHighEngagementBoundary());
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_BLOCKING,
@@ -482,7 +462,8 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
           clock_->Now(),
           base::WrapRefCounted(
               HostContentSettingsMapFactory::GetForProfile(profile_)),
-          site_engagement::SiteEngagementService::URLSets::HTTP),
+          site_engagement::SiteEngagementService::URLSets::HTTP,
+          blink::mojom::EngagementLevel::HIGH),
       base::BindOnce(&HttpsFirstModeService::ProcessEngagedSitesList,
                      weak_factory_.GetWeakPtr(), std::move(done_callback)));
 }
@@ -503,72 +484,60 @@ void HttpsFirstModeService::ProcessEngagedSitesList(
   auto* engagement_service =
       site_engagement::SiteEngagementService::Get(profile_);
 
-  // Get all hostnames that have HTTPS enforced on them at some point. Some
-  // hostnames may no longer have a site engagement score thus be missing from
-  // `details`. We still want to process those hostnames because we want to
-  // unenforce HTTPS on these hostnames if the conditions no longer hold.
-  std::set<GURL> origins =
-      state->GetHttpsEnforcedHosts(profile_->GetDefaultStoragePartition());
+  // If a non-unique hostname is in the enforcement list, it must have been
+  // added by a previous version of Chrome, so remove it. Otherwise, ignore
+  // non-unique hostnames.
+  //
+  // Complete Enforcement logic:
+  // - Enforce on non-enforced (unique) hosts whose https score >=
+  //   kHttpsAddThreshold and http score <= kHttpAddThreshold and have empty /
+  //   default ports. We do this via tracking https origins in `details` which
+  //   tracks highly engaged sites.
+  // - Stop enforcing on enforced hosts whose https score <=
+  //   kHttpsRemoveThreshold OR http score >= kHttpRemoveThreshold OR have non
+  //   unique host names. We do this via the existing enforced sites in
+  //   `GetHttpsEnforcedHosts`.
+
+  content::StoragePartition* partition = profile_->GetDefaultStoragePartition();
+  std::set<GURL> enabled_origins = state->GetHttpsEnforcedHosts(partition);
+
+  // Enable highly engaged https origins.
   for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
-    origins.insert(detail.origin);
+    const GURL& origin = detail.origin;
+    DCHECK(origin.SchemeIsHTTPOrHTTPS());
+    DCHECK_GE(
+        detail.total_score,
+        site_engagement::SiteEngagementScore::GetHighEngagementBoundary());
+    if (origin.SchemeIsCryptographic() && origin.port().empty() &&
+        detail.total_score >= kHttpsAddThreshold.Get() &&
+        engagement_service->GetScore(GetHttpUrlFromHttps(origin)) <=
+            kHttpAddThreshold.Get() &&
+        !base::Contains(enabled_origins, origin) &&
+        !net::IsHostnameNonUnique(origin.host())) {
+      state->SetHttpsEnforcementForHost(origin.GetHost(), /*enforced=*/true,
+                                        partition);
+    }
   }
 
-  for (const GURL& origin : origins) {
-    if (origin.SchemeIsHTTPOrHTTPS() && origin.port().empty()) {
-      MaybeEnableHttpsFirstModeForUrl(origin, engagement_service, state);
+  // Disable low engaged origins that are already enabled.
+  for (const GURL& origin : enabled_origins) {
+    DCHECK(state->IsHttpsEnforcedForUrl(origin, partition));
+    DCHECK(origin.SchemeIsCryptographic());
+    DCHECK(origin.SchemeIsHTTPOrHTTPS());
+    DCHECK(origin.port().empty());
+    DCHECK(state->IsHttpsEnforcedForUrl(origin, partition));
+    if (engagement_service->GetScore(origin) <= kHttpsRemoveThreshold.Get() ||
+        engagement_service->GetScore(GetHttpUrlFromHttps(origin)) >=
+            kHttpRemoveThreshold.Get() ||
+        net::IsHostnameNonUnique(origin.host())) {
+      state->SetHttpsEnforcementForHost(origin.GetHost(), /*enforced=*/false,
+                                        partition);
     }
   }
 
   if (!done_callback.is_null()) {
     std::move(done_callback).Run();
   }
-}
-
-void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(
-    const GURL& url,
-    site_engagement::SiteEngagementService* engagement_service,
-    StatefulSSLHostStateDelegate* state) {
-  DCHECK(IsBalancedModeAvailable());
-
-  DCHECK(url.port().empty()) << "Url should have a default port";
-  bool enforced =
-      state->IsHttpsEnforcedForUrl(url, profile_->GetDefaultStoragePartition());
-  GURL https_url = url.SchemeIsCryptographic() ? url : GetHttpsUrlFromHttp(url);
-  GURL http_url = !url.SchemeIsCryptographic() ? url : GetHttpUrlFromHttps(url);
-
-  // If a non-unique hostname is in the enforcement list, it must have been
-  // added by a previous version of Chrome, so remove it. Otherwise, ignore
-  // non-unique hostnames.
-  if (net::IsHostnameNonUnique(url.host())) {
-    if (enforced) {
-      state->SetHttpsEnforcementForHost(url.host(),
-                                        /*enforced=*/false,
-                                        profile_->GetDefaultStoragePartition());
-    }
-    return;
-  }
-
-  double https_score = engagement_service->GetScore(https_url);
-  double http_score = engagement_service->GetScore(http_url);
-  bool should_enable = https_score >= kHttpsAddThreshold.Get() &&
-                       http_score <= kHttpAddThreshold.Get();
-
-  if (!enforced && should_enable) {
-    state->SetHttpsEnforcementForHost(url.host(),
-                                      /*enforced=*/true,
-                                      profile_->GetDefaultStoragePartition());
-    return;
-  }
-
-  bool should_disable = https_score <= kHttpsRemoveThreshold.Get() ||
-                        http_score >= kHttpRemoveThreshold.Get();
-  if (enforced && should_disable) {
-    state->SetHttpsEnforcementForHost(url.host(),
-                                      /*enforced=*/false,
-                                      profile_->GetDefaultStoragePartition());
-    return;
-  }
-  // Don't change the state otherwise.
 }
 
 HttpsFirstModeSetting HttpsFirstModeService::GetCurrentSetting() const {

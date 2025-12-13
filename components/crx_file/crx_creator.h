@@ -33,9 +33,9 @@ CreatorResult CreateCrxWithVerifiedContentsInHeader(
     const crypto::keypair::PrivateKey& signing_key,
     const std::string& verified_contents);
 
-// Create a CRX3 file at |output_path|, using the contents of the ZIP archive
-// located at |zip_path| and signing with (and deriving the CRX ID from)
-// |signing_key|.
+// Create a CRX3 file at `output_path`, using the contents of the ZIP archive
+// located at `zip_path` and signing with (and deriving the CRX ID from)
+// `signing_key`.
 CreatorResult Create(const base::FilePath& output_path,
                      const base::FilePath& zip_path,
                      const crypto::keypair::PrivateKey& signing_key);

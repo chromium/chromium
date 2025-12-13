@@ -5,6 +5,7 @@
 module viz.mojom;
 
 import "gpu/ipc/common/surface_handle.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/viz/privileged/mojom/compositing/display_private.mojom";
@@ -75,6 +76,7 @@ struct RootCompositorFrameSinkParams {
 // Thus, a client will typically simply request a CompositorFrameSink from the
 // frame sink manager host which will forward the request to the frame sink
 // manager.
+[DirectReceiver]
 interface FrameSinkManager {
   // Starts the scope of temporary references tied to this |frame_sink_id|.
   // Temporary references tied to this |frame_sink_id| will be dropped on
@@ -88,7 +90,7 @@ interface FrameSinkManager {
   // sequences or dangling temporary references assigned to it. If there is a
   // CompositorFrameSink for |frame_sink_id| then it will be destroyed and the
   // message pipe to the client will be closed.
-  InvalidateFrameSinkId(FrameSinkId frame_sink_id);
+  InvalidateFrameSinkId(FrameSinkId frame_sink_id) => ();
 
   // |debug_label| is used when printing out the surface hierarchy so we know
   // which clients are contributing which surfaces.
@@ -154,7 +156,8 @@ interface FrameSinkManager {
   AddVideoDetectorObserver(pending_remote<VideoDetectorObserver> observer);
 
   // Creates a FrameSinkVideoCapturer instance.
-  CreateVideoCapturer(pending_receiver<FrameSinkVideoCapturer> receiver);
+  CreateVideoCapturer(pending_receiver<FrameSinkVideoCapturer> receiver,
+                      uint32 capture_version_source);
 
   // Marks the given SurfaceIds for destruction. The client must supply a sorted
   // `surface_ids`.
@@ -275,6 +278,15 @@ interface FrameSinkManagerClient {
   OnScreenshotCaptured(
       blink.mojom.SameDocNavigationScreenshotDestinationToken destination_token,
       CopyOutputResult copy_output_result);
+
+  // Called by Viz when the connection is established and the shared memory for
+  // touch state is available.
+  OnVizTouchStateAvailable(mojo_base.mojom.ReadOnlySharedMemoryRegion region);
+
+  // Called by Viz when a view transition requests to allow the browser to
+  // shutdown the old renderer process.
+  OnViewTransitionResourcesCaptured(
+      blink.mojom.ViewTransitionToken transition_token);
 };
 
 // Implemented by the GPU process (VizCompositorThread) and called from the
@@ -282,6 +294,7 @@ interface FrameSinkManagerClient {
 // RenderInputRouterDelegate[Client] interface to use the same mojo pipe to
 // send/receive information for input handling between the CrBrowserMain and the
 // VizCompositorThread.
+[DirectReceiver]
 interface RendererInputRouterDelegateRegistry {
   // Setup the connection between the Browser (at RenderWidgetHost level) and
   // the VizCompositor thread (at InputManager level) in both directions to

@@ -14,11 +14,6 @@ class WebState;
 
 namespace autofill {
 
-// Helper functions for WithFakedFromWebState().
-AutofillClientIOS* FakeFromWebState(web::WebState* web_state);
-void AddToFakeWebStateRegistry(AutofillClientIOS* client);
-void RemoveFromFakeWebStateRegistry(AutofillClientIOS* client);
-
 // Mixin that registers `T` with a test-only registry so that
 // AutofillClientIOS::FromWebState() finds `T`.
 template <typename T>
@@ -27,19 +22,16 @@ class WithFakedFromWebState : public T {
  public:
   template <typename... Args>
   explicit WithFakedFromWebState(Args&&... args)
-      : T(&FakeFromWebState, std::forward<Args>(args)...) {
-    AddToFakeWebStateRegistry(this);
-  }
+      : T(std::forward<Args>(args)...) {}
 
   ~WithFakedFromWebState() override {
-    if (AutofillClientIOS::web_state()) {
+    if (T::web_state()) {
       // The AutofillClientIOS contract requires a call of
       // AutofillDriverIOSFactory::WebStateDestroyed() before any members of the
       // client are destroyed.
       static_cast<web::WebStateObserver&>(T::GetAutofillDriverFactory())
-          .WebStateDestroyed(AutofillClientIOS::web_state());
+          .WebStateDestroyed(T::web_state());
     }
-    RemoveFromFakeWebStateRegistry(this);
   }
 };
 

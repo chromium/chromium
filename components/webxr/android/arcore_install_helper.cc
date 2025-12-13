@@ -172,3 +172,5 @@ void ArCoreInstallHelper::RunInstallFinishedCallback(bool succeeded) {
 }
 
 }  // namespace webxr
+
+DEFINE_JNI(ArCoreInstallUtils)

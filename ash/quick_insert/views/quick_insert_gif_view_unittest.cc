@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/image_util.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -18,6 +17,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -106,7 +106,7 @@ TEST_F(QuickInsertGifViewTest, ShowsPreviewImageWhenFramesNotFetched) {
 TEST_F(QuickInsertGifViewTest, ShowsGifFrameAfterFramesAreFetched) {
   GifAssetFetcher asset_fetcher;
   auto widget =
-      TestWidgetBuilder()
+      views::test::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .SetBounds({10, 10, 100, 100})
           .BuildClientOwnsWidget();
@@ -128,7 +128,7 @@ TEST_F(QuickInsertGifViewTest, ShowsGifFrameAfterFramesAreFetched) {
 TEST_F(QuickInsertGifViewTest, ShowsGifFrameIfPreviewAndFramesBothFetched) {
   GifAssetFetcher asset_fetcher;
   auto widget =
-      TestWidgetBuilder()
+      views::test::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .SetBounds({0, 0, 100, 100})
           .BuildClientOwnsWidget();
@@ -152,7 +152,7 @@ TEST_F(QuickInsertGifViewTest, ShowsGifFrameIfPreviewAndFramesBothFetched) {
 TEST_F(QuickInsertGifViewTest, FrameDurations) {
   GifAssetFetcher asset_fetcher;
   auto widget =
-      TestWidgetBuilder()
+      views::test::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .SetBounds({0, 0, 100, 100})
           .BuildClientOwnsWidget();
@@ -181,7 +181,7 @@ TEST_F(QuickInsertGifViewTest, FrameDurations) {
 TEST_F(QuickInsertGifViewTest, AdjustsShortFrameDurations) {
   GifAssetFetcher asset_fetcher;
   auto widget =
-      TestWidgetBuilder()
+      views::test::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .SetBounds({0, 0, 100, 100})
           .BuildClientOwnsWidget();
@@ -262,7 +262,7 @@ TEST_F(QuickInsertGifViewTest,
 TEST_F(QuickInsertGifViewTest, DoesNotShowGifFrameIfNotVisible) {
   GifAssetFetcher asset_fetcher;
   auto widget =
-      TestWidgetBuilder()
+      views::test::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .SetBounds({0, 0, 100, 100})
           .BuildClientOwnsWidget();

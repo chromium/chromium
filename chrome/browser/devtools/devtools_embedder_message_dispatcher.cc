@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_settings.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/visual_logging.h"
@@ -16,6 +17,20 @@
 namespace {
 
 using DispatchCallback = DevToolsEmbedderMessageDispatcher::DispatchCallback;
+
+bool GetValue(const base::Value& value,
+              DevToolsDispatchHttpRequestParams* params) {
+  if (!value.is_dict()) {
+    return false;
+  }
+  auto parsed_params =
+      DevToolsDispatchHttpRequestParams::FromDict(value.GetDict());
+  if (!parsed_params) {
+    return false;
+  }
+  *params = std::move(*parsed_params);
+  return true;
+}
 
 bool GetValue(const base::Value& value, std::string* result) {
   if (result && value.is_string()) {
@@ -468,6 +483,8 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
                      &Delegate::RecordPerformanceHistogramMedium, delegate);
   d->RegisterHandler("recordUserMetricsAction",
                      &Delegate::RecordUserMetricsAction, delegate);
+  d->RegisterHandler("recordNewBadgeUsage", &Delegate::RecordNewBadgeUsage,
+                     delegate);
   d->RegisterHandler("recordImpression", &Delegate::RecordImpression, delegate);
   d->RegisterHandler("recordResize", &Delegate::RecordResize, delegate);
   d->RegisterHandler("recordClick", &Delegate::RecordClick, delegate);
@@ -514,5 +531,7 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
                                  &Delegate::AidaCodeComplete, delegate);
   d->RegisterHandlerWithCallback("registerAidaClientEvent",
                                  &Delegate::RegisterAidaClientEvent, delegate);
+  d->RegisterHandlerWithCallback("dispatchHttpRequest",
+                                 &Delegate::DispatchHttpRequest, delegate);
   return d;
 }

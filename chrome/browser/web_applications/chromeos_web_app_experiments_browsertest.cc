@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -19,7 +20,8 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -28,12 +30,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/theme_change_waiter.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/input/input_event.mojom-shared.h"
@@ -48,6 +52,71 @@ constexpr char kMicrosoft365ManifestUrlsFinchParam[] = "m365-manifest-urls";
 }
 
 namespace web_app {
+
+// A TestNavigationObserver that also waits for the browser window containing
+// the navigation to become active.
+class ActiveBrowserWindowNavigationObserver
+    : public content::TestNavigationObserver {
+ public:
+  explicit ActiveBrowserWindowNavigationObserver(const GURL& target_url)
+      : content::TestNavigationObserver(target_url) {
+    WatchExistingWebContents();
+    StartWatchingNewWebContents();
+  }
+
+  BrowserWindowInterface* WaitForActiveWindow() {
+    Wait();
+    EXPECT_TRUE(navigated_contents_);
+    return active_browser_future_.Get();
+  }
+
+ protected:
+  BrowserWindowInterface* FindBrowserForNavigation() {
+    EXPECT_TRUE(navigated_contents_);
+
+    BrowserWindowInterface* browser_for_navigation = nullptr;
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&](BrowserWindowInterface* browser) {
+          if (browser->GetTabStripModel()->GetActiveWebContents() ==
+              navigated_contents_) {
+            browser_for_navigation = browser;
+            return false;  // stop iterating
+          }
+          return true;  // continue iterating
+        });
+
+    return browser_for_navigation;
+  }
+
+  // TestNavigationObserver:
+  void NavigationOfInterestDidFinish(
+      content::NavigationHandle* navigation_handle) override {
+    ASSERT_FALSE(navigated_contents_);
+    navigated_contents_ = navigation_handle->GetWebContents();
+
+    BrowserWindowInterface* browser = FindBrowserForNavigation();
+    ASSERT_TRUE(browser);
+
+    browser_did_become_active_subscription_ =
+        browser->RegisterDidBecomeActive(base::BindRepeating(
+            &ActiveBrowserWindowNavigationObserver::OnBrowserDidBecomeActive,
+            base::Unretained(this)));
+
+    if (browser->IsActive()) {
+      active_browser_future_.SetValue(browser);
+    }
+  }
+
+  void OnBrowserDidBecomeActive(BrowserWindowInterface* browser) {
+    ASSERT_TRUE(navigated_contents_);
+    active_browser_future_.SetValue(browser);
+  }
+
+ private:
+  raw_ptr<content::WebContents> navigated_contents_ = nullptr;
+  base::test::TestFuture<BrowserWindowInterface*> active_browser_future_;
+  base::CallbackListSubscription browser_did_become_active_subscription_;
+};
 
 class ChromeOsWebAppExperimentsBrowserTest
     : public WebAppNavigationBrowserTest,
@@ -83,6 +152,8 @@ class ChromeOsWebAppExperimentsBrowserTest
         browser(), embedded_test_server()->GetURL(
                        "/web_apps/get_manifest.html?theme_color.json"));
     apps::AppReadinessWaiter(profile(), app_id_).Await();
+
+    apps_util::PreferredAppUpdateWaiter(profile(), app_id_).Wait();
   }
   void TearDownOnMainThread() override {
     WebAppNavigationBrowserTest::TearDownOnMainThread();
@@ -115,10 +186,11 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
                    extended_scope_page_, LinkTarget::SELF, "");
 
   // The navigation should get link captured into the web app.
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
   EXPECT_EQ(
-      app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      app_browser->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       extended_scope_page_);
 }
 
@@ -137,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
     meta.content = 'lime';
     document.head.append(meta);
   )";
-  ASSERT_TRUE(EvalJs(web_contents, script).error.empty());
+  ASSERT_TRUE(EvalJs(web_contents, script).is_ok());
   waiter.Wait();
 
   EXPECT_EQ(app_browser->app_controller()->GetThemeColor(),
@@ -184,6 +256,11 @@ class ChromeOsWebAppExperimentsNavigationBrowserTest
         )",
         on_click_code.c_str());
     ASSERT_TRUE(content::ExecJs(web_contents, script));
+
+    // Input events to a page may not work right after a page load. See
+    // browser_test_utils.h for details.
+    SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+
     content::SimulateMouseClick(web_contents,
                                 blink::WebInputEvent::Modifiers::kNoModifiers,
                                 blink::WebMouseEvent::Button::kLeft);
@@ -230,14 +307,14 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
       )",
       extended_scope_page_.spec().c_str());
 
-  auto observer = GetTestNavigationObserver(extended_scope_page_);
+  ActiveBrowserWindowNavigationObserver observer(extended_scope_page_);
   AddAndClickLinkWithCode(app_web_contents, on_click_code);
-  observer->Wait();
+  BrowserWindowInterface* const active_browser = observer.WaitForActiveWindow();
 
-  // The web app handles the navigation.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  // The web app handles the navigation without opening a new window.
+  EXPECT_EQ(active_browser, app_browser);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
@@ -267,14 +344,15 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
       )",
       extended_scope_page_.spec().c_str());
 
-  auto observer = GetTestNavigationObserver(extended_scope_page_);
+  ActiveBrowserWindowNavigationObserver observer(extended_scope_page_);
   AddAndClickLinkWithCode(app_web_contents, on_click_code);
-  observer->Wait();
+  BrowserWindowInterface* const active_browser = observer.WaitForActiveWindow();
 
   // The web app handles the navigation by opening a new app window.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  ASSERT_TRUE(active_browser);
+  EXPECT_NE(active_browser, app_browser);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
@@ -294,14 +372,15 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
       )",
       extended_scope_page_.spec().c_str());
 
-  auto observer = GetTestNavigationObserver(extended_scope_page_);
+  ActiveBrowserWindowNavigationObserver observer(extended_scope_page_);
   AddAndClickLinkWithCode(app_web_contents, on_click_code);
-  observer->Wait();
+  BrowserWindowInterface* const active_browser = observer.WaitForActiveWindow();
 
   // The web app handles the navigation by opening a new app window.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  ASSERT_TRUE(active_browser);
+  EXPECT_NE(active_browser, app_browser);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
@@ -322,14 +401,15 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
       )",
       extended_scope_page_.spec().c_str());
 
-  auto observer = GetTestNavigationObserver(extended_scope_page_);
+  ActiveBrowserWindowNavigationObserver observer(extended_scope_page_);
   AddAndClickLinkWithCode(app_web_contents, on_click_code);
-  observer->Wait();
+  BrowserWindowInterface* const active_browser = observer.WaitForActiveWindow();
 
   // The web app handles the navigation by opening a new app window.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  ASSERT_TRUE(active_browser);
+  EXPECT_NE(active_browser, app_browser);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
@@ -346,15 +426,18 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
   content::WebContents* page_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  auto observer = GetTestNavigationObserver(extended_scope_page_);
+  ActiveBrowserWindowNavigationObserver observer(extended_scope_page_);
   AddAndClickLinkWithCode(page_web_contents,
                           GetFormBasedRedirectorCode(extended_scope_page_));
-  observer->Wait();
+  BrowserWindowInterface* const active_browser = observer.WaitForActiveWindow();
 
-  // The web app handles the navigation by opening a new app window.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  // The web app handles the navigation. It may navigate to the app window or
+  // open a new one.
+  // TODO(crbug.com/449979128): On the MSAN bots active_browser == browser(),
+  // but on most bots active_browser != browser(). Find out why.
+  ASSERT_TRUE(active_browser);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
@@ -373,15 +456,16 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
   content::WebContents* page_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  auto observer = GetTestNavigationObserver(extended_scope_page_);
+  ActiveBrowserWindowNavigationObserver observer(extended_scope_page_);
   AddAndClickLinkWithCode(page_web_contents,
                           GetFormBasedRedirectorCode(extended_scope_page_));
-  observer->Wait();
+  BrowserWindowInterface* const active_browser = observer.WaitForActiveWindow();
 
   // The app window was not launched for the navigation.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  ASSERT_TRUE(active_browser);
+  EXPECT_EQ(active_browser, browser());
   EXPECT_FALSE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
@@ -397,15 +481,16 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
       app_browser->tab_strip_model()->GetActiveWebContents();
 
   const GURL target_url = https_server().GetURL("/empty.html");
-  auto observer = GetTestNavigationObserver(target_url);
+  ActiveBrowserWindowNavigationObserver observer(target_url);
   ClickLink(app_web_contents, target_url, LinkTarget::BLANK,
             /*rel=*/"noreferrer noopener");
-  observer->Wait();
+  BrowserWindowInterface* const active_browser = observer.WaitForActiveWindow();
 
   // A browser tab is opened for the target URL.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  ASSERT_TRUE(active_browser);
+  EXPECT_NE(active_browser, app_browser);
   EXPECT_FALSE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             target_url);

@@ -33,27 +33,6 @@
 
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
-struct SkISize;
-class SkRefCnt;
-template <typename T>
-class sk_sp;
-
-namespace blink {
-
-template <typename T>
-struct CrossThreadCopier<sk_sp<T>>
-    : public CrossThreadCopierPassThrough<sk_sp<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-  static_assert(std::is_base_of<SkRefCnt, T>::value,
-                "sk_sp<T> can be passed across threads only if T is SkRefCnt.");
-};
-
-template <>
-struct CrossThreadCopier<SkISize>
-    : public CrossThreadCopierPassThrough<SkISize> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-}  // namespace blink
+// TODO(crbug.com/460743390): Delete this file after CrossThreadCopier removal.
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_SKIA_H_

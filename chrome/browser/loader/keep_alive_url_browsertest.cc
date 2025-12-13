@@ -14,7 +14,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/loader/keep_alive_request_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/page_load_metrics/browser/features.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
   // Close the browser.
   CloseBrowserSynchronously(browser());
   ASSERT_TRUE(browser_shutdown::IsTryingToQuit());
-  ASSERT_TRUE(BrowserList::GetInstance()->empty());
+  ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   ASSERT_EQ(browser_shutdown::GetShutdownType(),
             browser_shutdown::ShutdownType::kWindowClose);
   // The keepalive request may be sent before or after shutting down, but only
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
   request_handler->Done();
 
   // The response should be processed by browser before shutting down.
-  // TODO(crbug.com/40236167): Deflake WaitForTotalOnReceiveResponseProcessed
+  // TODO(crbug.com/464173571): Deflake WaitForTotalOnReceiveResponseProcessed
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

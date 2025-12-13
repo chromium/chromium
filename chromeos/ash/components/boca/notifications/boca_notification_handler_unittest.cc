@@ -185,5 +185,30 @@ TEST_F(BocaNotificationHandlerTest,
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       handler_.kSessionNotificationId));
 }
+
+TEST_F(BocaNotificationHandlerTest, HandleShareStartShouldCreateNotification) {
+  handler_.HandleScreenShareStartedNotification(&test_message_center_,
+                                                "receiver1");
+  auto* notification = test_message_center_.FindVisibleNotificationById(
+      handler_.kScreenShareNotificationId);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(u"Class Tools is sharing your screen to receiver1",
+            notification->message());
+}
+
+TEST_F(BocaNotificationHandlerTest,
+       HandleShareStartShouldCreateNotificationWithEmptyName) {
+  handler_.HandleScreenShareStartedNotification(&test_message_center_, "");
+  auto* notification = test_message_center_.FindVisibleNotificationById(
+      handler_.kScreenShareNotificationId);
+  EXPECT_FALSE(notification);
+}
+
+TEST_F(BocaNotificationHandlerTest, HandleShareEndedShouldRemoveNotification) {
+  handler_.HandleScreenShareEndedNotification(&test_message_center_);
+  auto* notification = test_message_center_.FindVisibleNotificationById(
+      handler_.kScreenShareNotificationId);
+  EXPECT_FALSE(notification);
+}
 }  // namespace
 }  // namespace ash::boca

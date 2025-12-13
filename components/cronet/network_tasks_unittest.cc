@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cronet/cronet_context.h"
-
 #include <latch>
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
+#include "components/cronet/cronet_context.h"
 #include "components/cronet/cronet_global_state.h"
 #include "components/cronet/url_request_context_config.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/mock_network_change_notifier.h"
+#include "net/base/proxy_delegate.h"
 #include "net/base/request_priority.h"
 #include "net/cert/cert_verifier.h"
+#include "net/http/http_request_headers.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace cronet {
 
@@ -61,15 +61,16 @@ class NoOpCronetContextCallback : public CronetContext::Callback {
 
   ~NoOpCronetContextCallback() override = default;
 
-  bool OnBeforeTunnelRequest(int chain_id,
-                             net::HttpRequestHeaders* extra_headers) override {
-    return true;
+  void OnBeforeTunnelRequest(
+      int chain_id,
+      net::ProxyDelegate::OnBeforeTunnelRequestCallback callback) override {
+    NOTREACHED();
   }
 
-  bool OnTunnelHeadersReceived(
-      int chain_id,
-      const net::HttpResponseHeaders& response_headers) override {
-    return true;
+  void OnTunnelHeadersReceived(int chain_id,
+                               const net::HttpResponseHeaders& response_headers,
+                               net::CompletionOnceCallback callback) override {
+    NOTREACHED();
   }
 };
 

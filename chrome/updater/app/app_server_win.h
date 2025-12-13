@@ -7,8 +7,9 @@
 
 #include <windows.h>
 
-#include "base/check.h"
-#include "base/functional/callback_forward.h"
+#include <memory>
+
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/app/app_server.h"
@@ -16,6 +17,9 @@
 #include "chrome/updater/update_service_internal.h"
 
 namespace updater {
+
+class UpdateServiceInternalStub;
+class UpdateServiceStub;
 
 // Returns S_OK if user install, or if the COM caller is admin. Error otherwise.
 HRESULT IsCOMCallerAllowed();
@@ -32,8 +36,19 @@ class AppServerWin : public AppServer {
   using AppServer::config;
   using AppServer::prefs;
 
-  // Posts the `task` to the sequence bound to this instance.
+  // Posts the `task` to the sequence bound to this instance. Calls
+  // `TaskStarted` before posting the task, and calls `TaskCompleted` after the
+  // task is complete, to ensure that `task` completes before the `AppServer`
+  // instance is stopped (this task counting only works for synchronous tasks).
   static void PostRpcTask(base::OnceClosure task);
+
+  // Posts `task` to the provided `task_runner`. Calls `TaskStarted` before
+  // posting the task, and calls `TaskCompleted` after `task` completes and
+  // calls the provided `OnceClosure`, to ensure that `task` completes before
+  // the `AppServer` instance is stopped.
+  static void PostOnTaskRunner(
+      scoped_refptr<base::TaskRunner> task_runner,
+      base::OnceCallback<void(base::OnceClosure)> task);
 
   scoped_refptr<UpdateService> update_service() { return update_service_; }
 
@@ -44,6 +59,10 @@ class AppServerWin : public AppServer {
   // Handles COM factory unregistration then triggers program shutdown. This
   // function runs on a COM RPC thread when the WRL module is destroyed.
   void Stop();
+
+  // Handles COM object registration, message loop, and unregistration. Returns
+  // when all COM objects are released.
+  HRESULT RunCOMServer(base::OnceClosure on_service_stopping);
 
  private:
   ~AppServerWin() override;
@@ -69,12 +88,6 @@ class AppServerWin : public AppServer {
   HRESULT RegisterInternalClassObjects();
   void UnregisterClassObjects();
 
-  // Waits until the last COM object is released.
-  void WaitForExitSignal();
-
-  // Called when the last object is released.
-  void SignalExit();
-
   // Creates an out-of-process WRL Module.
   void CreateWRLModule();
 
@@ -82,6 +95,9 @@ class AppServerWin : public AppServer {
   void Start(base::OnceCallback<HRESULT()> register_callback);
 
   void PostRpcTaskOnMainSequence(base::OnceClosure task);
+  void PostRpcTaskOnTaskRunner(
+      scoped_refptr<base::TaskRunner> task_runner,
+      base::OnceCallback<void(base::OnceClosure)> task);
 
   // Task runner bound to the main sequence.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_ =
@@ -91,6 +107,10 @@ class AppServerWin : public AppServer {
   // |update_client| component.
   scoped_refptr<UpdateService> update_service_;
   scoped_refptr<UpdateServiceInternal> update_service_internal_;
+  std::unique_ptr<UpdateServiceInternalStub> active_duty_internal_stub_;
+  std::unique_ptr<UpdateServiceStub> active_duty_stub_;
+
+  base::OnceClosure on_service_stopping_;
 };
 
 // Returns the singleton AppServerWin instance.

@@ -14,7 +14,6 @@
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace network {
 class PendingSharedURLLoaderFactory;
@@ -26,6 +25,7 @@ class Origin;
 
 namespace content {
 
+class RenderFrameHost;
 class SpeechRecognitionManager;
 struct SpeechRecognitionSessionConfig;
 struct SpeechRecognitionAudioForwarderConfig;
@@ -45,7 +45,7 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
   ~SpeechRecognitionDispatcherHost() override;
   static void Create(
       int render_process_id,
-      int render_frame_id,
+      RenderFrameHost* host,
       mojo::PendingReceiver<media::mojom::SpeechRecognizer> receiver);
   base::WeakPtr<SpeechRecognitionDispatcherHost> AsWeakPtr();
 
@@ -67,8 +67,9 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
       const url::Origin& origin,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_shared_url_loader_factory,
-      const std::string& accept_language,
-      bool can_render_frame_use_on_device);
+      const std::string& language,
+      bool can_render_frame_use_on_device,
+      bool on_device_available);
 
   int CreateSession(
       const SpeechRecognitionSessionConfig& config,

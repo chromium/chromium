@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
+namespace {
 
 TEST(MachineIdProviderWinTest, GetId) {
   EXPECT_TRUE(MachineIdProvider().HasId());
@@ -18,4 +19,5 @@ TEST(MachineIdProviderWinTest, GetId) {
   EXPECT_EQ(id1, id2);
 }
 
+}  // namespace
 }  // namespace metrics

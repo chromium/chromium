@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.privacy_guide;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment.FragmentType;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -16,15 +15,12 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
-
-import java.util.Set;
 
 /**
  * A utility class for Privacy Guide that fetches the current state of {@link
@@ -34,19 +30,6 @@ import java.util.Set;
 class PrivacyGuideUtils {
     static boolean isMsbbEnabled(Profile profile) {
         return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile);
-    }
-
-    static boolean isHistorySyncEnabled(Profile profile) {
-        Set<Integer> syncTypes =
-                assumeNonNull(SyncServiceFactory.getForProfile(profile)).getSelectedTypes();
-
-        // The toggle represents both History and Tabs.
-        // History and Tabs should usually have the same value, but in some
-        // cases they may not, e.g. if one of them is disabled by policy. In that
-        // case, show the toggle as on if at least one of them is enabled. The
-        // toggle should reflect the value of the non-disabled type.
-        return syncTypes.contains(UserSelectableType.HISTORY)
-                || syncTypes.contains(UserSelectableType.TABS);
     }
 
     static boolean isUserSignedIn(Profile profile) {
@@ -68,32 +51,18 @@ class PrivacyGuideUtils {
         return UserPrefs.get(profile).getInteger(PrefNames.COOKIE_CONTROLS_MODE);
     }
 
-    static boolean trackingProtectionUiEnabled(Profile profile) {
-        return UserPrefs.get(profile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
-    }
-
     static boolean canUpdateHistorySyncValue(Profile profile) {
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        if (syncService == null) {
+        if (SyncServiceFactory.getForProfile(profile) == null) {
             return false;
         }
 
         if (!isUserSignedIn(profile)) {
             return false;
         }
-        if (syncService.isSyncDisabledByEnterprisePolicy()) {
-            return false;
-        }
-        if (syncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)
-                && syncService.isTypeManagedByPolicy(UserSelectableType.TABS)) {
-            return false;
-        }
-        if (syncService.isTypeManagedByCustodian(UserSelectableType.HISTORY)
-                && syncService.isTypeManagedByCustodian(UserSelectableType.TABS)) {
-            return false;
-        }
-        return true;
+
+        HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
+        return !historySyncHelper.isHistorySyncDisabledByPolicy()
+                && !historySyncHelper.isHistorySyncDisabledByCustodian();
     }
 
     static int getFragmentFocusViewId(@FragmentType int fragmentType) {

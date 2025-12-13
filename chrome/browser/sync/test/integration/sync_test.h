@@ -25,6 +25,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/fake_server.h"
 #include "net/base/net_errors.h"
@@ -38,7 +39,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
 #else
-#include "chrome/browser/extensions/install_verifier.h"
+#include "extensions/browser/install_verifier.h"
 #endif
 
 // The E2E tests are designed to run against real backend servers. To identify
@@ -74,6 +75,10 @@ class ScopedTempDir;
 namespace fake_server {
 class FakeServer;
 }  // namespace fake_server
+
+namespace gaia {
+class FakeOAuth2TokenResponse;
+}  // namespace gaia
 
 namespace syncer {
 class SyncServiceImpl;
@@ -111,8 +116,8 @@ class SyncTest : public PlatformBrowserTest,
                              // in-process (bypassing HTTP calls).
   };
 
-  // Modes when setting up sync.
-  enum SetupSyncMode {
+  // Waiting condition when setting up sync.
+  enum SyncWaitCondition {
     // Do not wait for clients to be ready to sync.
     NO_WAITING,
 
@@ -124,6 +129,12 @@ class SyncTest : public PlatformBrowserTest,
     // Wait for all the changes to be committed including asynchronous changes
     // (e.g. DeviceInfo fields).
     WAIT_FOR_COMMITS_TO_COMPLETE,
+  };
+
+  // Modes when setting up sync.
+  enum class SetupSyncMode {
+    kSyncTransportOnly,
+    kSyncTheFeature,
   };
 
   // A SyncTest must be associated with a particular test type.
@@ -152,6 +163,12 @@ class SyncTest : public PlatformBrowserTest,
   // Returns a list of all profiles including the verifier if available. Callee
   // owns the objects and manages its lifetime.
   std::vector<raw_ptr<Profile, VectorExperimental>> GetAllProfiles();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Enable using primary user profile for the sync test.
+  // When this is set, the number of profiles must be one.
+  void SetUsePrimaryUserProfile(bool value);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
   // Returns a pointer to a particular browser. Callee owns the object
@@ -186,6 +203,11 @@ class SyncTest : public PlatformBrowserTest,
   // the SyncServiceImpl at the given |index|.
   syncer::UserSelectableTypeSet GetRegisteredSelectableTypes(int index);
 
+  // Returns the SetupSyncMode to be used for setting up sync.
+  // Subclasses should override this method to specify the desired mode, often
+  // in conjunction with test parameterization.
+  virtual SetupSyncMode GetSetupSyncMode() const;
+
   // Returns a pointer to the sync profile that is used to verify changes to
   // individual sync profiles. Callee owns the object and manages its lifetime.
   Profile* verifier();
@@ -202,14 +224,20 @@ class SyncTest : public PlatformBrowserTest,
   [[nodiscard]] virtual bool SetupClients();
 
   // Initializes sync clients and waits for different stages to complete
-  // depending on |setup_mode|.
+  // depending on `wait_condition`.
   [[nodiscard]] bool SetupSync(
-      SetupSyncMode setup_mode = WAIT_FOR_COMMITS_TO_COMPLETE);
+      SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE);
   [[nodiscard]] bool SetupSync(
       SyncTestAccount account,
-      SetupSyncMode setup_mode = WAIT_FOR_COMMITS_TO_COMPLETE);
+      SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE);
+  // Should only be used if SetupSync() doesn't work, i.e. `setup_mode` needs to
+  // be changed during the test.
+  [[nodiscard]] bool SetupSyncWithMode(
+      SetupSyncMode setup_mode,
+      SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE,
+      SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
-  // This is similar to click the reset button on chrome.google.com/sync.
+  // This is similar to click the reset button on chrome.google.com/data.
   // Only takes effect when running with external servers.
   // Please call this before setting anything.
   [[nodiscard]] bool ResetSyncForPrimaryAccount();
@@ -223,14 +251,18 @@ class SyncTest : public PlatformBrowserTest,
   virtual bool TestUsesSelfNotifications();
 
   // Blocks until all sync clients have completed their mutual sync cycles.
-  // Returns true if a quiescent state was successfully reached.
+  // Returns true if a quiescent state was successfully reached. Not supported
+  // for E2E tests.
+  //
+  // WARNING: Prefer using other test-specific methods to wait for a specific
+  // state because current checker is too generic and can lead to test flakiness
+  // in some cases. This method can be used in cases where "no changes" are
+  // expected to be applied to the server or to the client.
   [[nodiscard]] bool AwaitQuiescence();
 
   // Sets the mock gaia response for when an OAuth2 token is requested.
   // Each call to this method will overwrite responses that were previously set.
-  void SetOAuth2TokenResponse(const std::string& response_data,
-                              net::HttpStatusCode response_code,
-                              net::Error net_error);
+  void SetOAuth2TokenResponse(const gaia::FakeOAuth2TokenResponse& response);
 
   // Triggers a migration for one or more datatypes, and waits
   // for the server to complete it.  This operation is available
@@ -320,6 +352,7 @@ class SyncTest : public PlatformBrowserTest,
 
   // Internal routine for setting up sync.
   [[nodiscard]] bool SetupSyncInternal(SetupSyncMode setup_mode,
+                                       SyncWaitCondition wait_condition,
                                        SyncTestAccount account);
 
   // Used to determine whether ARC_PACKAGE data type needs to be enabled. This
@@ -406,6 +439,8 @@ class SyncTest : public PlatformBrowserTest,
   // A factory-like callback to create a model updater for testing, which will
   // take the place of the real updater in AppListSyncableService for testing.
   std::unique_ptr<base::ScopedClosureRunner> model_updater_factory_scope_;
+
+  bool use_primary_user_profile_ = false;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -420,6 +455,25 @@ class SyncTest : public PlatformBrowserTest,
       profile_manager_observation_{this};
   base::WeakPtrFactory<SyncTest> weak_ptr_factory_{this};
 };
+
+inline auto GetSyncTestModes() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return testing::Values(SyncTest::SetupSyncMode::kSyncTheFeature);
+#elif BUILDFLAG(IS_LINUX) && !defined(ADDRESS_SANITIZER) && \
+    !defined(THREAD_SANITIZER) && !defined(MEMORY_SANITIZER)
+  return testing::Values(SyncTest::SetupSyncMode::kSyncTransportOnly,
+                         SyncTest::SetupSyncMode::kSyncTheFeature);
+// On non-Linux, and on expensive (ASan etc) bots, run only the single most
+// important configuration, for capacity reasons.
+#else
+  return testing::Values(SyncTest::SetupSyncMode::kSyncTransportOnly);
+#endif
+}
+
+// Enables user-readable output from gtest (instead of binary streams).
+std::ostream& operator<<(std::ostream& stream,
+                         SyncTest::SetupSyncMode sync_test_mode);
+std::string SetupSyncModeAsString(SyncTest::SetupSyncMode sync_test_mode);
 
 syncer::DataTypeSet AllowedTypesInStandaloneTransportMode();
 

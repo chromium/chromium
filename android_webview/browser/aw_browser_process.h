@@ -16,7 +16,6 @@
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui_manager.h"
 #include "android_webview/common/aw_features.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -109,6 +108,7 @@ class AwBrowserProcess {
 
   static void TriggerMinidumpUploading();
   static ApkType GetApkType();
+  static bool IsAppVisibleToUser();
 
   EnterpriseAuthenticationAppLinkManager*
   GetEnterpriseAuthenticationAppLinkManager();
@@ -116,6 +116,9 @@ class AwBrowserProcess {
   embedder_support::OriginTrialsSettingsStorage*
   GetOriginTrialsSettingsStorage();
   AwContentBrowserClient* GetBrowserClient();
+
+  // Returns true if we manually initialized Perfetto early during startup.
+  static bool DidEarlyPerfettoInitialization();
 
  private:
   void CreateSafeBrowsingUIManager();

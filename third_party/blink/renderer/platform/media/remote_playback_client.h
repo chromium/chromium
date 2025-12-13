@@ -37,7 +37,7 @@ class RemotePlaybackClient {
 
   // Gets the presentation ID associated with the client. The presentation ID
   // may be null, empty or stale.
-  virtual WTF::String GetPresentationId() = 0;
+  virtual String GetPresentationId() = 0;
 };
 
 }  // namespace blink

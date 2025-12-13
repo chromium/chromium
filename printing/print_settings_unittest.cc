@@ -4,6 +4,7 @@
 
 #include "printing/print_settings.h"
 
+#include "base/notreached.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

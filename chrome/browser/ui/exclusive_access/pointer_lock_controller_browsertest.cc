@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -17,7 +17,7 @@ using PointerLockControllerTest = ExclusiveAccessTest;
 IN_PROC_BROWSER_TEST_F(PointerLockControllerTest, PointerLockOnFileURL) {
   static const base::FilePath::CharType* kEmptyFile =
       FILE_PATH_LITERAL("empty.html");
-  GURL file_url(ui_test_utils::GetTestUrl(
+  GURL file_url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kEmptyFile)));
   ASSERT_TRUE(AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED));

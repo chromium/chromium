@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/views/passwords/password_add_username_view.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "chrome/browser/ui/views/passwords/password_change/successful_password_change_view.h"
-#include "chrome/browser/ui/views/passwords/password_save_unsynced_credentials_locally_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/views/passwords/post_save_compromised_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/shared_passwords_notification_view.h"
@@ -68,11 +67,10 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   ToolbarButtonProvider* button_provider =
       browser_view->toolbar_button_provider();
-  views::View* anchor_view =
-      button_provider->GetAnchorView(kActionShowPasswordsBubbleOrPage);
+  views::BubbleAnchor anchor =
+      button_provider->GetBubbleAnchor(kActionShowPasswordsBubbleOrPage);
 
-  PasswordBubbleViewBase* bubble =
-      CreateBubble(web_contents, anchor_view, reason);
+  PasswordBubbleViewBase* bubble = CreateBubble(web_contents, anchor, reason);
   DCHECK(bubble);
   DCHECK_EQ(bubble, g_manage_passwords_bubble_);
   // TODO(crbug.com/40218026): In non-DCHECK mode we could fall through here and
@@ -82,10 +80,12 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
     return;
   }
 
+  // Handle view-based anchors for icon highlighting.
   // If the anchor_view is a button, it will automatically be used as the
   // highlighted button by BubbleDialogDelegate. If not, we set the page action
   // icon as the highlighted button here.
-  if (!views::Button::AsButton(anchor_view)) {
+  auto* anchor_view = std::get_if<views::View*>(&anchor);
+  if (anchor_view && !views::Button::AsButton(*anchor_view)) {
     g_manage_passwords_bubble_->SetHighlightedButton(
         button_provider->GetPageActionView(kActionShowPasswordsBubbleOrPage));
   }
@@ -114,7 +114,7 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
 // static
 PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
     content::WebContents* web_contents,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     DisplayReason reason) {
   PasswordBubbleViewBase* view = nullptr;
   base::WeakPtr<PasswordsModelDelegate> delegate =
@@ -131,10 +131,6 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
                  password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
              model_state == password_manager::ui::PENDING_PASSWORD_STATE) {
     view = new PasswordSaveUpdateView(web_contents, anchor_view, reason);
-  } else if (model_state == password_manager::ui::
-                                WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE) {
-    view = new PasswordSaveUnsyncedCredentialsLocallyView(web_contents,
-                                                          anchor_view);
   } else if (model_state ==
                  password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE ||
              model_state == password_manager::ui::
@@ -191,7 +187,7 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
   } else if (model_state == password_manager::ui::PASSWORD_CHANGE_STATE) {
     view = new SuccessfulPasswordChangeView(web_contents, anchor_view);
   } else {
-    NOTREACHED();
+    NOTREACHED() << model_state;
   }
 
   g_manage_passwords_bubble_ = view;
@@ -232,7 +228,7 @@ const content::WebContents* PasswordBubbleViewBase::GetWebContents() const {
 
 PasswordBubbleViewBase::PasswordBubbleViewBase(
     content::WebContents* web_contents,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     bool easily_dismissable)
     : LocationBarBubbleDelegateView(anchor_view,
                                     web_contents,
@@ -302,6 +298,14 @@ void PasswordBubbleViewBase::Init() {
   DCHECK(controller);
   SetTitle(controller->GetTitle());
   SetShowTitle(!controller->GetTitle().empty());
+}
+
+void PasswordBubbleViewBase::OnMouseEntered(const ui::MouseEvent& event) {
+  GetController()->OnMouseEntered();
+}
+
+void PasswordBubbleViewBase::OnMouseExited(const ui::MouseEvent& event) {
+  GetController()->OnMouseExited();
 }
 
 BEGIN_METADATA(PasswordBubbleViewBase)

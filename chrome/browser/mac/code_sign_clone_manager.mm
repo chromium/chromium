@@ -510,12 +510,9 @@ void RecordCloneExists(MacCloneExists exists) {
 
 namespace code_sign_clone_manager {
 
-BASE_FEATURE(kMacAppCodeSignClone,
-             "MacAppCodeSignClone",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMacAppCodeSignClone, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMacAppCodeSignCloneRenameAsBundle,
-             "MacAppCodeSignCloneRenameAsBundle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 CodeSignCloneManager::CodeSignCloneManager(

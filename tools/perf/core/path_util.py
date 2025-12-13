@@ -78,6 +78,10 @@ def GetVariationsDir():
   return os.path.join(GetChromiumSrcDir(), 'tools', 'variations')
 
 
+def GetDashboardDir():
+  return os.path.join(GetChromiumSrcDir(), 'third_party', 'catapult',
+                      'dashboard')
+
 def AddAndroidDeviceInteractionToPath():
   device_interaction_path = GetAndroidDeviceInteractionToPath()
   if device_interaction_path not in sys.path:
@@ -112,6 +116,12 @@ def AddAndroidPylibToPath():
   android_pylib_path = GetAndroidPylibDir()
   if android_pylib_path not in sys.path:
     sys.path.insert(1, android_pylib_path)
+
+
+def AddDashboardToPath():
+  dashboard_path = GetDashboardDir()
+  if dashboard_path not in sys.path:
+    sys.path.insert(1, dashboard_path)
 
 def GetExpectationsPath():
   return os.path.join(GetPerfDir(), 'expectations.config')

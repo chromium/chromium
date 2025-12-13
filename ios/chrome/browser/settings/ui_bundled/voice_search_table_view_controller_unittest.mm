@@ -13,7 +13,6 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/voice/model/speech_input_locale_config_impl.h"
@@ -47,13 +46,6 @@ class VoiceSearchTableViewControllerTest
     registry->RegisterBooleanPref(prefs::kVoiceSearchTTS, false);
     registry->RegisterStringPref(prefs::kVoiceSearchLocale, "en-US");
     return std::unique_ptr<PrefService>(prefs);
-  }
-
-  TableViewSwitchCell* GetSwitchCell() {
-    return base::apple::ObjCCastStrict<TableViewSwitchCell>(
-        [controller().tableView
-            cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0
-                                                      inSection:0]]);
   }
 
   base::test::TaskEnvironment task_environment_;

@@ -13,18 +13,19 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/proportional_image_view.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_observer.h"
@@ -91,16 +92,11 @@ class NotificationTestDelegate : public NotificationDelegate {
 
 }  // namespace
 
-class NotificationViewTest : public views::ViewObserver,
-                             public views::ViewsTestBase,
+class NotificationViewTest : public views::ViewsTestBase,
+                             public views::ViewObserver,
                              public message_center::MessageCenterObserver,
                              public views::InkDropObserver {
  public:
-  NotificationViewTest() = default;
-  NotificationViewTest(const NotificationViewTest&) = delete;
-  NotificationViewTest& operator=(const NotificationViewTest&) = delete;
-  ~NotificationViewTest() override = default;
-
   // views::ViewsTestBase:
   void SetUp() override {
     views::ViewsTestBase::SetUp();
@@ -123,6 +119,32 @@ class NotificationViewTest : public views::ViewObserver,
     views::ViewsTestBase::TearDown();
   }
 
+  // views::ViewObserver:
+  void OnViewPreferredSizeChanged(views::View* observed_view) override {
+    EXPECT_EQ(observed_view, notification_view());
+    notification_view_->GetWidget()->SetSize(
+        notification_view()->GetPreferredSize({}));
+  }
+
+  void OnNotificationRemoved(const std::string& notification_id,
+                             bool by_user) override {
+    if (delete_on_notification_removed_) {
+      views::InkDrop::Get(notification_view_)
+          ->SetMode(views::InkDropHost::InkDropMode::OFF);
+      notification_view_.ExtractAsDangling()->GetWidget()->CloseNow();
+      return;
+    }
+  }
+
+  // views::InkDropObserver:
+  void InkDropAnimationStarted() override {}
+
+  void InkDropRippleAnimationEnded(
+      views::InkDropState ink_drop_state) override {
+    ink_drop_stopped_ = true;
+  }
+
+ protected:
   std::unique_ptr<Notification> CreateSimpleNotification() const {
     RichNotificationData data;
     data.settings_button_handler = SettingsButtonHandler::INLINE;
@@ -220,7 +242,6 @@ class NotificationViewTest : public views::ViewObserver,
     notification_view_->ToggleInlineSettings(ui::test::TestEvent());
   }
 
- protected:
   NotificationView* notification_view() { return notification_view_; }
   NotificationHeaderView* header_row() {
     return notification_view_->header_row();
@@ -251,31 +272,7 @@ class NotificationViewTest : public views::ViewObserver,
   scoped_refptr<NotificationTestDelegate> delegate_;
 
  private:
-  // views::ViewObserver:
-  void OnViewPreferredSizeChanged(views::View* observed_view) override {
-    EXPECT_EQ(observed_view, notification_view());
-    notification_view_->GetWidget()->SetSize(
-        notification_view()->GetPreferredSize({}));
-  }
-
-  void OnNotificationRemoved(const std::string& notification_id,
-                             bool by_user) override {
-    if (delete_on_notification_removed_) {
-      views::InkDrop::Get(notification_view_)
-          ->SetMode(views::InkDropHost::InkDropMode::OFF);
-      notification_view_.ExtractAsDangling()->GetWidget()->CloseNow();
-      return;
-    }
-  }
-
-  // views::InkDropObserver:
-  void InkDropAnimationStarted() override {}
-
-  void InkDropRippleAnimationEnded(
-      views::InkDropState ink_drop_state) override {
-    ink_drop_stopped_ = true;
-  }
-
+  ui::MockOsSettingsProvider os_settings_provider_;  // Ensures light mode.
   raw_ptr<NotificationView> notification_view_ = nullptr;
   bool delete_on_notification_removed_ = false;
   bool ink_drop_stopped_ = false;
@@ -458,10 +455,6 @@ TEST_F(NotificationViewTest, InlineSettingsBlockAll) {
 TEST_F(NotificationViewTest, DISABLED_TestAccentColor) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_buttons(CreateButtons(2));
-
-  // The code below is not prepared to deal with dark mode.
-  notification_view()->GetWidget()->GetNativeTheme()->set_use_dark_colors(
-      false);
   UpdateNotificationViews(*notification);
 
   notification_view()->GetWidget()->Show();
@@ -684,8 +677,8 @@ TEST_F(NotificationViewTest, UpdateType) {
 
 TEST_F(NotificationViewTest, InlineSettingsInkDropAnimation) {
   // TODO(crbug.com/40203399): This test is currently broken.
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_type(NOTIFICATION_TYPE_SIMPLE);
   UpdateNotificationViews(*notification);

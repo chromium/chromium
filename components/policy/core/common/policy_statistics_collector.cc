@@ -117,7 +117,8 @@ void PolicyStatisticsCollector::Initialize() {
 
 // static
 void PolicyStatisticsCollector::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterInt64Pref(policy_prefs::kLastPolicyStatisticsUpdate, 0);
+  registry->RegisterTimePref(policy_prefs::kLastPolicyStatisticsUpdate,
+                             base::Time());
 }
 
 void PolicyStatisticsCollector::RecordPolicyUse(int id, Condition condition) {

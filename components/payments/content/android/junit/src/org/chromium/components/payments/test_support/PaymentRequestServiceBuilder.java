@@ -121,7 +121,7 @@ public class PaymentRequestServiceBuilder implements Delegate {
     }
 
     @Override
-    public String getInvalidSslCertificateErrorMessage() {
+    public @Nullable String getInvalidSslCertificateErrorMessage() {
         return mInvalidSslCertificateErrorMessage;
     }
 
@@ -289,6 +289,11 @@ public class PaymentRequestServiceBuilder implements Delegate {
 
     public PaymentRequestServiceBuilder setPaymentRequestSpec(PaymentRequestSpec spec) {
         mSpec = spec;
+        return this;
+    }
+
+    public PaymentRequestServiceBuilder setPrefsCanMakePayment(boolean canMakePayment) {
+        mPrefsCanMakePayment = canMakePayment;
         return this;
     }
 

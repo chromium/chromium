@@ -18,7 +18,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace arc {
 
@@ -119,6 +118,8 @@ class ArcBridgeHostImpl
   void OnKeyMintInstanceReady(
       mojo::PendingRemote<mojom::keymint::KeyMintInstance> keymint_remote)
       override;
+  void OnKioskInstanceReady(
+      mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) override;
   void OnMediaSessionInstanceReady(
       mojo::PendingRemote<mojom::MediaSessionInstance> media_session_remote)
       override;

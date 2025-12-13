@@ -53,11 +53,12 @@ source_set("x11") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/vulkan:buildflags",
     "//net",
     "//skia",
     "//third_party/angle:includes",
-    "//ui/base:base",
+    "//ui/base",
     "//ui/base:buildflags",
     "//ui/base:data_exchange",
     "//ui/base:hit_test",
@@ -83,7 +84,7 @@ source_set("x11") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gfx/linux:gbm",
-    "//ui/gfx/linux:gpu_memory_buffer_support_x11",
+    "//ui/gfx/linux:gbm_support_x11",
     "//ui/gfx/x",
     "//ui/gl",
     "//ui/ozone:ozone_base",
@@ -192,7 +193,7 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//ui/aura:aura",
+    "//ui/aura",
     "//ui/base/x",
     "//ui/base/x:test_support",
   ]

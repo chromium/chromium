@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -17,6 +18,7 @@
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace {
 
@@ -153,4 +155,21 @@ std::ostream& operator<<(std::ostream& os, const GeolocationSetting& it) {
   return os << "GeolocationSetting{approximate: "
             << base::to_underlying(it.approximate)
             << ", precise: " << base::to_underlying(it.precise) << "}";
+}
+
+std::ostream& operator<<(std::ostream& os, const PermissionSetting& it) {
+  std::visit(absl::Overload{
+                 [&](const ContentSetting& setting) { os << setting; },
+                 [&](const GeolocationSetting& setting) { os << setting; },
+             },
+             it);
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const std::optional<PermissionSetting>& it) {
+  if (!it) {
+    return os << "<empty setting>";
+  }
+  return os << *it;
 }

@@ -239,8 +239,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionCleanupHandlerTest,
       extension_observers;
   for (const auto& extension : all_installed_extensions) {
     // Don't observe exempt and user installed extensions.
-    if (base::Contains(kExemptExtensions, extension->id()))
+    if (base::Contains(kExemptExtensions, extension->id())) {
       continue;
+    }
     if (extension->id() == kExemptExtensionId ||
         extension->id() == kUserExtensionId)
       continue;

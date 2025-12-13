@@ -34,7 +34,12 @@ public final class ChromiumExecutorServiceFactory {
 
     /** Creates a {@link ScheduledExecutorService}. */
     public static ListeningScheduledExecutorService create(@TaskTraits int taskTraits) {
-        return MoreExecutors.listeningDecorator(new ScheduledExecutorServiceImpl(taskTraits));
+        TaskRunner taskRunner = PostTask.getTaskRunner(taskTraits);
+        return create(taskRunner);
+    }
+
+    public static ListeningScheduledExecutorService create(TaskRunner taskRunner) {
+        return MoreExecutors.listeningDecorator(new ScheduledExecutorServiceImpl(taskRunner));
     }
 
     private static long getCurrentTimeNanos() {
@@ -131,10 +136,10 @@ public final class ChromiumExecutorServiceFactory {
     }
 
     private static final class ScheduledExecutorServiceImpl implements ScheduledExecutorService {
-        @TaskTraits private final int mTaskTraits;
+        private final TaskRunner mTaskRunner;
 
-        public ScheduledExecutorServiceImpl(@TaskTraits int taskTraits) {
-            this.mTaskTraits = taskTraits;
+        public ScheduledExecutorServiceImpl(TaskRunner taskRunner) {
+            mTaskRunner = taskRunner;
         }
 
         @Override
@@ -259,12 +264,12 @@ public final class ChromiumExecutorServiceFactory {
 
         @Override
         public void execute(Runnable runnable) {
-            PostTask.postDelayedTask(mTaskTraits, runnable, 0);
+            mTaskRunner.postDelayedTask(runnable, 0);
         }
 
         @NullUnmarked // https://github.com/uber/NullAway/issues/1075
         private <T extends @Nullable Object> void postTask(ScheduledFutureTask<T> task) {
-            PostTask.postDelayedTask(mTaskTraits, () -> runTask(task), task.getDelay(MILLISECONDS));
+            mTaskRunner.postDelayedTask(() -> runTask(task), task.getDelay(MILLISECONDS));
         }
 
         private <T extends @Nullable Object> void runTask(ScheduledFutureTask<T> task) {

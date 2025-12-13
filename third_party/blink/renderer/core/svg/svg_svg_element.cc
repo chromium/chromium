@@ -77,32 +77,7 @@
 namespace blink {
 
 SVGSVGElement::SVGSVGElement(Document& doc)
-    : SVGGraphicsElement(svg_names::kSVGTag, doc),
-      SVGFitToViewBox(this),
-      x_(MakeGarbageCollected<SVGAnimatedLength>(
-          this,
-          svg_names::kXAttr,
-          SVGLengthMode::kWidth,
-          SVGLength::Initial::kUnitlessZero,
-          CSSPropertyID::kX)),
-      y_(MakeGarbageCollected<SVGAnimatedLength>(
-          this,
-          svg_names::kYAttr,
-          SVGLengthMode::kHeight,
-          SVGLength::Initial::kUnitlessZero,
-          CSSPropertyID::kY)),
-      width_(MakeGarbageCollected<SVGAnimatedLength>(
-          this,
-          svg_names::kWidthAttr,
-          SVGLengthMode::kWidth,
-          SVGLength::Initial::kPercent100,
-          CSSPropertyID::kWidth)),
-      height_(MakeGarbageCollected<SVGAnimatedLength>(
-          this,
-          svg_names::kHeightAttr,
-          SVGLengthMode::kHeight,
-          SVGLength::Initial::kPercent100,
-          CSSPropertyID::kHeight)),
+    : SVGViewportContainerElement(svg_names::kSVGTag, doc),
       time_container_(MakeGarbageCollected<SMILTimeContainer>(*this)),
       translation_(MakeGarbageCollected<SVGPoint>()),
       current_scale_(1) {
@@ -252,13 +227,13 @@ void SVGSVGElement::ParseAttribute(const AttributeModificationParams& params) {
 
 bool SVGSVGElement::IsPresentationAttribute(const QualifiedName& name) const {
   if (!RuntimeEnabledFeatures::
-          WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()) {
+          CollectWidthAndHeightAsStylesForNestedSvgEnabled()) {
     if ((name == svg_names::kWidthAttr || name == svg_names::kHeightAttr) &&
         !IsOutermostSVGSVGElement()) {
       return false;
     }
   }
-  return SVGGraphicsElement::IsPresentationAttribute(name);
+  return SVGViewportContainerElement::IsPresentationAttribute(name);
 }
 
 void SVGSVGElement::CollectStyleForPresentationAttribute(
@@ -266,7 +241,7 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     HeapVector<CSSPropertyValue, 8>& style) {
   if (!RuntimeEnabledFeatures::
-          WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()) {
+          CollectWidthAndHeightAsStylesForNestedSvgEnabled()) {
     // We shouldn't collect style for 'width' and 'height' on inner <svg>, so
     // bail here in that case to avoid having the generic logic in SVGElement
     // picking it up.
@@ -276,62 +251,22 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
     }
   }
 
-  SVGGraphicsElement::CollectStyleForPresentationAttribute(name, value, style);
+  SVGViewportContainerElement::CollectStyleForPresentationAttribute(name, value,
+                                                                    style);
 }
 
 void SVGSVGElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
-  const QualifiedName& attr_name = params.name;
-  bool update_relative_lengths_or_view_box = false;
-  bool width_or_height_changed =
-      attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
-  if (width_or_height_changed || attr_name == svg_names::kXAttr ||
-      attr_name == svg_names::kYAttr) {
-    update_relative_lengths_or_view_box = true;
-
-    // At the SVG/HTML boundary (aka LayoutSVGRoot), the width and
-    // height attributes can affect the replaced size so we need
-    // to mark it for updating.
-    if (width_or_height_changed) {
-      LayoutObject* layout_object = GetLayoutObject();
-      // If the element is not attached, we cannot be sure if it is (going to
-      // be) an outermost root, so always mark presentation attributes dirty in
-      // that case.
-      if (!layout_object || layout_object->IsSVGRoot()) {
-        UpdatePresentationAttributeStyle(params.property);
-        if (layout_object)
-          To<LayoutSVGRoot>(layout_object)->IntrinsicSizingInfoChanged();
-      } else if (
-          RuntimeEnabledFeatures::
-              WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()) {
-        UpdatePresentationAttributeStyle(params.property);
-      }
-    } else {
-      UpdatePresentationAttributeStyle(params.property);
-    }
-  }
-
-  if (SVGFitToViewBox::IsKnownAttribute(attr_name)) {
-    update_relative_lengths_or_view_box = true;
-    if (LayoutObject* object = GetLayoutObject()) {
-      object->SetNeedsTransformUpdate();
-      if (attr_name == svg_names::kViewBoxAttr && object->IsSVGRoot())
-        To<LayoutSVGRoot>(object)->IntrinsicSizingInfoChanged();
-    }
-  }
-
-  if (update_relative_lengths_or_view_box ||
-      SVGZoomAndPan::IsKnownAttribute(attr_name)) {
-    if (auto* layout_object = GetLayoutObject())
+  if (SVGZoomAndPan::IsKnownAttribute(params.name)) {
+    if (auto* layout_object = GetLayoutObject()) {
       MarkForLayoutAndParentResourceInvalidation(*layout_object);
-    return;
+    }
   }
-
-  SVGGraphicsElement::SvgAttributeChanged(params);
+  SVGViewportContainerElement::SvgAttributeChanged(params);
 }
 
 void SVGSVGElement::DidMoveToNewDocument(Document& old_document) {
-  SVGGraphicsElement::DidMoveToNewDocument(old_document);
+  SVGViewportContainerElement::DidMoveToNewDocument(old_document);
   if (TimeContainer()->IsStarted()) {
     TimeContainer()->ResetDocumentTime();
   }
@@ -631,7 +566,7 @@ bool SVGSVGElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
 }
 
 void SVGSVGElement::AttachLayoutTree(AttachContext& context) {
-  SVGGraphicsElement::AttachLayoutTree(context);
+  SVGViewportContainerElement::AttachLayoutTree(context);
 
   if (GetLayoutObject() && GetLayoutObject()->IsSVGRoot()) {
     To<LayoutSVGRoot>(GetLayoutObject())->IntrinsicSizingInfoChanged();
@@ -662,7 +597,7 @@ Node::InsertionNotificationRequest SVGSVGElement::InsertedInto(
         !TimeContainer()->IsStarted())
       TimeContainer()->Start();
   }
-  return SVGGraphicsElement::InsertedInto(root_parent);
+  return SVGViewportContainerElement::InsertedInto(root_parent);
 }
 
 void SVGSVGElement::RemovedFrom(ContainerNode& root_parent) {
@@ -671,7 +606,7 @@ void SVGSVGElement::RemovedFrom(ContainerNode& root_parent) {
     svg_extensions.RemoveTimeContainer(this);
   }
 
-  SVGGraphicsElement::RemovedFrom(root_parent);
+  SVGViewportContainerElement::RemovedFrom(root_parent);
 }
 
 void SVGSVGElement::pauseAnimations() {
@@ -697,17 +632,6 @@ void SVGSVGElement::setCurrentTime(float seconds) {
   time_container_->SetElapsed(SMILTime::FromSecondsD(std::max(seconds, 0.0f)));
 }
 
-bool SVGSVGElement::SelfHasRelativeLengths() const {
-  return x_->CurrentValue()->IsRelative() || y_->CurrentValue()->IsRelative() ||
-         width_->CurrentValue()->IsRelative() ||
-         height_->CurrentValue()->IsRelative();
-}
-
-bool SVGSVGElement::HasEmptyViewBox() const {
-  const SVGRect& view_box = CurrentViewBox();
-  return HasValidViewBox(view_box) && view_box.Rect().IsEmpty();
-}
-
 bool SVGSVGElement::ShouldSynthesizeViewBox() const {
   if (!IsDocumentElement())
     return false;
@@ -719,15 +643,14 @@ const SVGRect& SVGSVGElement::CurrentViewBox() const {
   if (view_spec_ && view_spec_->ViewBox()) {
     return *view_spec_->ViewBox();
   }
-  return *viewBox()->CurrentValue();
+  return SVGViewportContainerElement::CurrentViewBox();
 }
 
 gfx::RectF SVGSVGElement::CurrentViewBoxRect() const {
-  gfx::RectF use_view_box = CurrentViewBox().Rect();
-  if (!use_view_box.IsEmpty())
+  gfx::RectF use_view_box = SVGViewportContainerElement::CurrentViewBoxRect();
+  if (!use_view_box.IsEmpty() || !ShouldSynthesizeViewBox()) {
     return use_view_box;
-  if (!ShouldSynthesizeViewBox())
-    return gfx::RectF();
+  }
 
   // If no viewBox is specified but non-relative width/height values, then we
   // should always synthesize a viewBox if we're embedded through a SVGImage.
@@ -751,7 +674,7 @@ const SVGPreserveAspectRatio* SVGSVGElement::CurrentPreserveAspectRatio()
         SVGPreserveAspectRatio::kSvgPreserveaspectratioNone);
     return synthesized_par;
   }
-  return preserveAspectRatio()->CurrentValue();
+  return SVGViewportContainerElement::CurrentPreserveAspectRatio();
 }
 
 std::optional<float> SVGSVGElement::IntrinsicWidth() const {
@@ -778,13 +701,15 @@ std::optional<float> SVGSVGElement::IntrinsicHeight() const {
 
 AffineTransform SVGSVGElement::ViewBoxToViewTransform(
     const gfx::SizeF& viewport_size) const {
-  AffineTransform ctm = SVGFitToViewBox::ViewBoxToViewTransform(
-      CurrentViewBoxRect(), CurrentPreserveAspectRatio(), viewport_size);
-  if (!view_spec_ || !view_spec_->Transform())
+  AffineTransform ctm =
+      SVGViewportContainerElement::ViewBoxToViewTransform(viewport_size);
+  if (!view_spec_ || !view_spec_->Transform()) {
     return ctm;
+  }
   const SVGTransformList* transform_list = view_spec_->Transform();
-  if (!transform_list->IsEmpty())
+  if (!transform_list->IsEmpty()) {
     ctm *= transform_list->Concatenate();
+  }
   return ctm;
 }
 
@@ -831,7 +756,7 @@ const SVGViewSpec* SVGSVGElement::ParseViewSpec(
 }
 
 void SVGSVGElement::FinishParsingChildren() {
-  SVGGraphicsElement::FinishParsingChildren();
+  SVGViewportContainerElement::FinishParsingChildren();
 
   // The outermost SVGSVGElement SVGLoad event is fired through
   // LocalDOMWindow::dispatchWindowLoadEvent.
@@ -845,52 +770,10 @@ void SVGSVGElement::FinishParsingChildren() {
 }
 
 void SVGSVGElement::Trace(Visitor* visitor) const {
-  visitor->Trace(x_);
-  visitor->Trace(y_);
-  visitor->Trace(width_);
-  visitor->Trace(height_);
   visitor->Trace(translation_);
   visitor->Trace(time_container_);
   visitor->Trace(view_spec_);
-  SVGGraphicsElement::Trace(visitor);
-  SVGFitToViewBox::Trace(visitor);
-}
-
-SVGAnimatedPropertyBase* SVGSVGElement::PropertyFromAttribute(
-    const QualifiedName& attribute_name) const {
-  if (attribute_name == svg_names::kXAttr) {
-    return x_.Get();
-  } else if (attribute_name == svg_names::kYAttr) {
-    return y_.Get();
-  } else if (attribute_name == svg_names::kWidthAttr) {
-    return width_.Get();
-  } else if (attribute_name == svg_names::kHeightAttr) {
-    return height_.Get();
-  } else {
-    SVGAnimatedPropertyBase* ret =
-        SVGFitToViewBox::PropertyFromAttribute(attribute_name);
-    if (ret) {
-      return ret;
-    } else {
-      return SVGGraphicsElement::PropertyFromAttribute(attribute_name);
-    }
-  }
-}
-
-void SVGSVGElement::SynchronizeAllSVGAttributes() const {
-  SVGAnimatedPropertyBase* attrs[]{x_.Get(), y_.Get(), width_.Get(),
-                                   height_.Get()};
-  SynchronizeListOfSVGAttributes(attrs);
-  SVGFitToViewBox::SynchronizeAllSVGAttributes();
-  SVGGraphicsElement::SynchronizeAllSVGAttributes();
-}
-
-void SVGSVGElement::CollectExtraStyleForPresentationAttribute(
-    HeapVector<CSSPropertyValue, 8>& style) {
-  auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
-      {x_.Get(), y_.Get(), width_.Get(), height_.Get()});
-  AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);
-  SVGGraphicsElement::CollectExtraStyleForPresentationAttribute(style);
+  SVGViewportContainerElement::Trace(visitor);
 }
 
 }  // namespace blink

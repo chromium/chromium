@@ -212,7 +212,7 @@ class ExpireHistoryBackend {
   //
   // The visits in the given vector should have already been deleted from the
   // database, and the list of affected URLs already be filled into
-  // `depenencies->affected_urls`.
+  // `dependencies->affected_urls`.
   //
   // Starred URLs will not be deleted. The information in the dependencies that
   // DeleteOneURL fills in will be updated, and this function will also delete

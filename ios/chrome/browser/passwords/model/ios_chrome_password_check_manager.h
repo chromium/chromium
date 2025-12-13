@@ -160,7 +160,7 @@ class IOSChromePasswordCheckManager final
   std::optional<base::Time> last_completed_weak_or_reuse_check_;
 
   // Pref service.
-  const raw_ptr<PrefService> user_prefs_;
+  const raw_ptr<PrefService, DanglingUntriaged> user_prefs_;
 
   // This indicate what was the reason to start the password check.
   password_manager::LeakDetectionInitiator password_check_initiator_ =

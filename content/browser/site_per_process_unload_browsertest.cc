@@ -821,18 +821,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   EXPECT_FALSE(delete_a0.deleted());
   EXPECT_FALSE(delete_a1.deleted());
-  EXPECT_TRUE(delete_a2.deleted());
+  EXPECT_TRUE(delete_a2.WaitUntilDeleted());
   EXPECT_FALSE(delete_a3.deleted());
-  EXPECT_TRUE(delete_a4.deleted());
+  EXPECT_TRUE(delete_a4.WaitUntilDeleted());
   EXPECT_FALSE(delete_a5.deleted());
   EXPECT_FALSE(delete_a6.deleted());
-  EXPECT_TRUE(delete_a7.deleted());
-  EXPECT_TRUE(delete_a8.deleted());
-  EXPECT_TRUE(delete_a9.deleted());
-  EXPECT_TRUE(delete_a10.deleted());
-  EXPECT_TRUE(delete_a11.deleted());
+  EXPECT_TRUE(delete_a7.WaitUntilDeleted());
+  EXPECT_TRUE(delete_a8.WaitUntilDeleted());
+  EXPECT_TRUE(delete_a9.WaitUntilDeleted());
+  EXPECT_TRUE(delete_a10.WaitUntilDeleted());
+  EXPECT_TRUE(delete_a11.WaitUntilDeleted());
   EXPECT_FALSE(delete_a12.deleted());
-  EXPECT_TRUE(delete_a13.deleted());
+  EXPECT_TRUE(delete_a13.WaitUntilDeleted());
   EXPECT_FALSE(delete_a14.deleted());
 }
 

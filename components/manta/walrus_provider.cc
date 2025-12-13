@@ -9,7 +9,7 @@
 
 #include "components/manta/features.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
@@ -19,7 +19,6 @@ namespace manta {
 
 namespace {
 
-constexpr char kOauthConsumerName[] = "manta_walrus";
 constexpr base::TimeDelta kTimeout = base::Seconds(30);
 // The maximum number of pixels after resizing an image.
 constexpr int32_t kMaxPixelsAfterResizing = 512 * 512;
@@ -118,7 +117,7 @@ std::optional<SkBitmap> DeserializeImage(const std::vector<uint8_t>& bytes) {
   if (SkJpegDecoder::IsJpeg(bytes.data(), bytes.size())) {
     return gfx::JPEGCodec::Decode(bytes);
   }
-  if (SkPngDecoder::IsPng(bytes.data(), bytes.size())) {
+  if (SkPngRustDecoder::IsPng(bytes.data(), bytes.size())) {
     return gfx::PNGCodec::Decode(bytes);
   }
   return std::nullopt;
@@ -214,7 +213,7 @@ void WalrusProvider::Filter(const std::optional<std::string>& text_prompt,
 
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsWalrusUseProdServerEnabled())},
-      kOauthConsumerName, kTrafficAnnotation, request, MantaMetricType::kWalrus,
+      kTrafficAnnotation, request, MantaMetricType::kWalrus,
       base::BindOnce(&OnServerResponseOrErrorReceived,
                      std::move(done_callback)),
       kTimeout);

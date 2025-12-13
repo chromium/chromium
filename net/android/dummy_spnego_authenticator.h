@@ -104,7 +104,7 @@ class DummySpnegoAuthenticator {
     // failures through the googletest C++ API.
     void CheckGetTokenArguments(
         JNIEnv* env,
-        const base::android::JavaParamRef<jstring>& incoming_token);
+        const base::android::JavaRef<jstring>& incoming_token);
   };
 
   DummySpnegoAuthenticator();

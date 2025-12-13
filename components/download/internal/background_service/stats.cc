@@ -6,7 +6,6 @@
 
 #include <map>
 
-#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/download/internal/background_service/startup_status.h"

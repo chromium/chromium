@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
-
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
+#include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -184,8 +184,8 @@ TEST_P(PushPullFIFOSmokeTest, SmokeTests) {
   LOG(INFO) << "PushPullFIFOSmokeTest - Started";
 
   // We have to wait both of events to be signaled.
-  base::WaitableEvent::WaitMany(done_events.data(), done_events.size());
-  base::WaitableEvent::WaitMany(done_events.data(), done_events.size());
+  base::WaitableEvent::WaitMany(done_events);
+  base::WaitableEvent::WaitMany(done_events);
 }
 
 FIFOSmokeTestParam smoke_test_params[] = {

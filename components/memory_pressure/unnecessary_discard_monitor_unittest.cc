@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/byte_count.h"
 #include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -41,15 +42,15 @@ TEST_F(UnnecessaryDiscardMonitorTest, TestReclaimTargetAgeIsReported) {
   task_environment_.FastForwardBy(target_age);
 
   // Start processing a reclaim target that was calculated some time ago.
-  monitor_.OnReclaimTargetBegin({100, reclaim_target_origin});
+  monitor_.OnReclaimTargetBegin({base::KiB(100), reclaim_target_origin});
 
   histogram_tester_.ExpectTimeBucketCount("Discarding.ReclaimTargetAge",
                                           target_age, 1);
 }
 
 TEST_F(UnnecessaryDiscardMonitorTest, TestNoUnnecessaryDiscardsIsReported) {
-  monitor_.OnReclaimTargetBegin({100, base::TimeTicks::Now()});
-  monitor_.OnDiscard(100, base::TimeTicks::Now());
+  monitor_.OnReclaimTargetBegin({base::KiB(100), base::TimeTicks::Now()});
+  monitor_.OnDiscard(base::KiB(100), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   histogram_tester_.ExpectUniqueSample("Discarding.DiscardsDrivenByStaleSignal",
@@ -58,20 +59,20 @@ TEST_F(UnnecessaryDiscardMonitorTest, TestNoUnnecessaryDiscardsIsReported) {
 
 TEST_F(UnnecessaryDiscardMonitorTest, TestSingleUnnecessaryDiscardIsReported) {
   // Start processing a reclaim target that was calculated now.
-  monitor_.OnReclaimTargetBegin({100, base::TimeTicks::Now()});
+  monitor_.OnReclaimTargetBegin({base::KiB(100), base::TimeTicks::Now()});
 
   // Store the time for the next reclaim event.
   base::TimeTicks next_reclaim_event_time =
       base::TimeTicks::Now() + base::Milliseconds(1000);
 
   task_environment_.FastForwardBy(base::Milliseconds(1001));
-  monitor_.OnDiscard(100, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(100), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  monitor_.OnReclaimTargetBegin({100, next_reclaim_event_time});
+  monitor_.OnReclaimTargetBegin({base::KiB(100), next_reclaim_event_time});
   task_environment_.FastForwardBy(base::Milliseconds(10));
-  monitor_.OnDiscard(100, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(100), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   // The first reclaim event should have no unnecessary discards, but the second
@@ -85,7 +86,7 @@ TEST_F(UnnecessaryDiscardMonitorTest, TestSingleUnnecessaryDiscardIsReported) {
 TEST_F(UnnecessaryDiscardMonitorTest,
        TestMultipleUnnecessaryDiscardsAreReported) {
   // Start processing a reclaim target that was calculated now.
-  monitor_.OnReclaimTargetBegin({100, base::TimeTicks::Now()});
+  monitor_.OnReclaimTargetBegin({base::KiB(100), base::TimeTicks::Now()});
 
   // Store the time for the next reclaim event.
   base::TimeTicks next_reclaim_event_time =
@@ -93,17 +94,17 @@ TEST_F(UnnecessaryDiscardMonitorTest,
 
   // Discard a tab from this reclaim event.
   task_environment_.FastForwardBy(base::Milliseconds(1001));
-  monitor_.OnDiscard(100, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(100), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   // Start processing a reclaim target that was created before the first tab was
   // discarded. Since this reclaim target is the same as the previous reclaim
   // target, all kills from this reclaim target should be unnecessary.
-  monitor_.OnReclaimTargetBegin({100, next_reclaim_event_time});
+  monitor_.OnReclaimTargetBegin({base::KiB(100), next_reclaim_event_time});
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  monitor_.OnDiscard(500, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(500), base::TimeTicks::Now());
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  monitor_.OnDiscard(500, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(500), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   // The first reclaim event should have no unnecessary discards, but the second
@@ -117,7 +118,7 @@ TEST_F(UnnecessaryDiscardMonitorTest,
 TEST_F(UnnecessaryDiscardMonitorTest,
        TestIncreasingReclaimTargetIsNotReportedAsUnnecessary) {
   // Start processing a reclaim target that was calculated now.
-  monitor_.OnReclaimTargetBegin({100, base::TimeTicks::Now()});
+  monitor_.OnReclaimTargetBegin({base::KiB(100), base::TimeTicks::Now()});
 
   // Store the time for the next reclaim event.
   base::TimeTicks next_reclaim_event_time =
@@ -126,11 +127,11 @@ TEST_F(UnnecessaryDiscardMonitorTest,
   // Discard a tab from this reclaim event before the next reclaim event's
   // origin.
   task_environment_.FastForwardBy(base::Milliseconds(500));
-  monitor_.OnDiscard(80, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(80), base::TimeTicks::Now());
   // Discard another tab from this reclaim event after the next reclaim event's
   // origin.
   task_environment_.FastForwardBy(base::Milliseconds(501));
-  monitor_.OnDiscard(30, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(30), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   // In total, the first reclaim event discarded 110 when the target was 100. 30
@@ -138,9 +139,9 @@ TEST_F(UnnecessaryDiscardMonitorTest,
   // that there will be no unnecessary discards if the next reclaim event only
   // discards once.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  monitor_.OnReclaimTargetBegin({110, next_reclaim_event_time});
+  monitor_.OnReclaimTargetBegin({base::KiB(110), next_reclaim_event_time});
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  monitor_.OnDiscard(120, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(120), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   histogram_tester_.ExpectBucketCount("Discarding.DiscardsDrivenByStaleSignal",
@@ -150,7 +151,7 @@ TEST_F(UnnecessaryDiscardMonitorTest,
 TEST_F(UnnecessaryDiscardMonitorTest,
        TestIncreasingReclaimTargetWithUnnecessaryDiscard) {
   // Start processing a reclaim target that was calculated now.
-  monitor_.OnReclaimTargetBegin({100, base::TimeTicks::Now()});
+  monitor_.OnReclaimTargetBegin({base::KiB(100), base::TimeTicks::Now()});
 
   // Store the time for the next reclaim event.
   base::TimeTicks next_reclaim_event_time =
@@ -159,11 +160,11 @@ TEST_F(UnnecessaryDiscardMonitorTest,
   // Discard a tab from this reclaim event before the next reclaim event's
   // origin.
   task_environment_.FastForwardBy(base::Milliseconds(500));
-  monitor_.OnDiscard(80, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(80), base::TimeTicks::Now());
   // Discard another tab from this reclaim event after the next reclaim event's
   // origin.
   task_environment_.FastForwardBy(base::Milliseconds(501));
-  monitor_.OnDiscard(30, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(30), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   // In total, the first reclaim event discarded 110 when the target was 100. 30
@@ -171,11 +172,11 @@ TEST_F(UnnecessaryDiscardMonitorTest,
   // that one discard of size 80 is necessary, but an additional discard of size
   // 40 is unnecessary.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  monitor_.OnReclaimTargetBegin({110, next_reclaim_event_time});
+  monitor_.OnReclaimTargetBegin({base::KiB(110), next_reclaim_event_time});
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  monitor_.OnDiscard(80, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(80), base::TimeTicks::Now());
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  monitor_.OnDiscard(40, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(40), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   histogram_tester_.ExpectBucketCount("Discarding.DiscardsDrivenByStaleSignal",
@@ -187,15 +188,15 @@ TEST_F(UnnecessaryDiscardMonitorTest,
 TEST_F(UnnecessaryDiscardMonitorTest,
        TestEveryReclaimEventReportsZeroUnnecessaryKills) {
   // The normal sequence that should have no unnecessary kills.
-  monitor_.OnReclaimTargetBegin({100, base::TimeTicks::Now()});
+  monitor_.OnReclaimTargetBegin({base::KiB(100), base::TimeTicks::Now()});
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  monitor_.OnDiscard(150, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(150), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  monitor_.OnReclaimTargetBegin({100, base::TimeTicks::Now()});
+  monitor_.OnReclaimTargetBegin({base::KiB(100), base::TimeTicks::Now()});
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  monitor_.OnDiscard(150, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(150), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   // Check that both reclaim events had no unnecessary discards
@@ -204,23 +205,23 @@ TEST_F(UnnecessaryDiscardMonitorTest,
 }
 
 TEST_F(UnnecessaryDiscardMonitorTest, TestTwoPreceedingReclaimTargets) {
-  monitor_.OnReclaimTargetBegin({100, base::TimeTicks::Now()});
+  monitor_.OnReclaimTargetBegin({base::KiB(100), base::TimeTicks::Now()});
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  monitor_.OnDiscard(150, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(150), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  monitor_.OnReclaimTargetBegin({100, base::TimeTicks::Now()});
+  monitor_.OnReclaimTargetBegin({base::KiB(100), base::TimeTicks::Now()});
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  monitor_.OnDiscard(150, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(150), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   // Process a reclaim target that was created before the most recent discard.
   monitor_.OnReclaimTargetBegin(
-      {100, base::TimeTicks::Now() - base::Milliseconds(500)});
+      {base::KiB(100), base::TimeTicks::Now() - base::Milliseconds(500)});
   // This discard is unnecessary since the previous target was the same and
   // already discarded.
-  monitor_.OnDiscard(200, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(200), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
   histogram_tester_.ExpectBucketCount("Discarding.DiscardsDrivenByStaleSignal",
@@ -230,7 +231,7 @@ TEST_F(UnnecessaryDiscardMonitorTest, TestTwoPreceedingReclaimTargets) {
 }
 
 TEST_F(UnnecessaryDiscardMonitorTest, TestCorrectReclaimTargetToZero) {
-  monitor_.OnReclaimTargetBegin({100, base::TimeTicks::Now()});
+  monitor_.OnReclaimTargetBegin({base::KiB(100), base::TimeTicks::Now()});
 
   task_environment_.FastForwardBy(base::Milliseconds(1000));
 
@@ -238,18 +239,18 @@ TEST_F(UnnecessaryDiscardMonitorTest, TestCorrectReclaimTargetToZero) {
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  monitor_.OnDiscard(150, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(150), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
-  ReclaimTarget next_target{100, next_reclaim_target_time};
+  ReclaimTarget next_target{base::KiB(100), next_reclaim_target_time};
 
   ReclaimTarget corrected_target = monitor_.CorrectReclaimTarget(next_target);
 
-  ASSERT_EQ(corrected_target.target_kb, 0u);
+  ASSERT_TRUE(corrected_target.target.is_zero());
 }
 
 TEST_F(UnnecessaryDiscardMonitorTest, TestCorrectReclaimTargetToNonZero) {
-  monitor_.OnReclaimTargetBegin({50, base::TimeTicks::Now()});
+  monitor_.OnReclaimTargetBegin({base::KiB(50), base::TimeTicks::Now()});
 
   task_environment_.FastForwardBy(base::Milliseconds(1000));
 
@@ -257,14 +258,14 @@ TEST_F(UnnecessaryDiscardMonitorTest, TestCorrectReclaimTargetToNonZero) {
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  monitor_.OnDiscard(50, base::TimeTicks::Now());
+  monitor_.OnDiscard(base::KiB(50), base::TimeTicks::Now());
   monitor_.OnReclaimTargetEnd();
 
-  ReclaimTarget next_target{100, next_reclaim_target_time};
+  ReclaimTarget next_target{base::KiB(100), next_reclaim_target_time};
 
   ReclaimTarget corrected_target = monitor_.CorrectReclaimTarget(next_target);
 
-  ASSERT_EQ(corrected_target.target_kb, 50u);
+  ASSERT_EQ(corrected_target.target, base::KiB(50));
 }
 
 }  // namespace memory_pressure

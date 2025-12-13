@@ -288,9 +288,7 @@ void PaintOpWriter::WriteSizeAt(void* memory, size_t size) {
 
 void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
   auto id = path.getGenerationID();
-  if (!options_.for_identifiability_study) {
-    Write(id);
-  }
+  Write(id);
 
   DCHECK(use_paint_cache == UsePaintCache::kEnabled ||
          !options_.paint_cache->Get(PaintCacheDataType::kPath, id));
@@ -338,6 +336,7 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
     // NOTE: size_t is written as two 32-bit zeros (see WriteSize()).
     WriteSimpleMultiple(
         flags.color_, flags.width_, flags.miter_limit_, flags.bitfields_uint_,
+        flags.targeted_hdr_headroom_,
         // flags.path_effect_.
         base::checked_cast<uint8_t>(PathEffect::Type::kNull),
         // flags.color_filter_.
@@ -355,6 +354,7 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
   Write(flags.width_);
   Write(flags.miter_limit_);
   WriteSimple(flags.bitfields_uint_);
+  WriteSimple(flags.targeted_hdr_headroom_);
 
   Write(flags.path_effect_.get());
   Write(flags.color_filter_.get());
@@ -772,9 +772,7 @@ void PaintOpWriter::Write(const PaintShader* shader,
   if (shader->record_) {
     Write(true);
     DCHECK_NE(shader->id_, PaintShader::kInvalidRecordShaderId);
-    if (!options_.for_identifiability_study) {
-      Write(shader->id_);
-    }
+    Write(shader->id_);
     const gfx::Rect playback_rect(
         gfx::ToEnclosingRect(gfx::SkRectToRectF(shader->tile())));
 

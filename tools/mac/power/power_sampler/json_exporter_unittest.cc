@@ -57,7 +57,8 @@ TEST_F(JsonExporterTest, JSONFile) {
       "satelite_speed": "m/s",
       "satelite_height": "km"
     }
-    )json"),
+    )json",
+                                   base::JSON_PARSE_CHROMIUM_EXTENSIONS),
             exporter->GetColumnLabelsForTesting());
 
   exporter->OnSample(base::TimeTicks() + base::Milliseconds(1),
@@ -74,7 +75,8 @@ TEST_F(JsonExporterTest, JSONFile) {
       "sample_time": 2000.0,
       "satelite_speed": 1.5
     } ]
-    )json"),
+    )json",
+                                   base::JSON_PARSE_CHROMIUM_EXTENSIONS),
             exporter->GetDataRowsForTesting());
 
   exporter->OnEndSession();
@@ -97,8 +99,10 @@ TEST_F(JsonExporterTest, JSONFile) {
         "satelite_speed": 1.5
       } ]
     }
-    )json"),
-            base::JSONReader::Read(json_string));
+    )json",
+                                   base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+            base::JSONReader::Read(json_string,
+                                   base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 }
 
 }  // namespace power_sampler

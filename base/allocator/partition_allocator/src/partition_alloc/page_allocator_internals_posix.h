@@ -19,6 +19,7 @@
 #include "partition_alloc/oom.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/page_allocator_constants.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
@@ -221,7 +222,7 @@ void DecommitSystemPagesInternal(
     size_t size = std::min(length, 2 * SystemPageSize());
     void* ptr = reinterpret_cast<void*>(address);
     PA_CHECK(mprotect(ptr, size, PROT_WRITE) == 0);
-    memset(ptr, 0xcc, size);
+    PA_UNSAFE_TODO(memset(ptr, 0xcc, size));
   }
 #endif
 

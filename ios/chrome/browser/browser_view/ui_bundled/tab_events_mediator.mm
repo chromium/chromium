@@ -9,19 +9,18 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/ui_bundled/switch_to_tab_animation_view.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/side_swipe_toolbar_snapshot_providing.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_type.h"
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer_bridge.h"
-#import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -49,8 +48,8 @@
 
   raw_ptr<WebStateList> _webStateList;
   __weak NewTabPageCoordinator* _ntpCoordinator;
-  raw_ptr<feature_engagement::Tracker> _tracker;
-  raw_ptr<UrlLoadingNotifierBrowserAgent> _loadingNotifier;
+  raw_ptr<feature_engagement::Tracker, DanglingUntriaged> _tracker;
+  raw_ptr<UrlLoadingNotifierBrowserAgent, DanglingUntriaged> _loadingNotifier;
 
   // YES if browsing in incognito.
   BOOL _incognito;
@@ -112,9 +111,7 @@
   // Thus, Webview will also become first responder in [BrowserViewController
   // viewDidAppear:].
   if (!GetFirstResponder() && currentWebState) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(webState);
-    if (NTPHelper && NTPHelper->IsActive()) {
+    if (IsVisibleURLNewTabPage(webState)) {
       // TODO(crbug.com/40233361): Stop lazy loading in NTPCoordinator and
       // remove this dependency.
       UIViewController* viewController = _ntpCoordinator.viewController;
@@ -150,8 +147,6 @@
       const WebStateListChangeDetach& detachChange =
           change.As<WebStateListChangeDetach>();
       if (detachChange.is_closing()) {
-        NewTabPageTabHelper* NTPTabHelper = NewTabPageTabHelper::FromWebState(
-            detachChange.detached_web_state());
         if (status.active_web_state_change()) {
           // Closing one or multiple WebStates may cause the active WebState to
           // change. Need to update NTP and record metrics before stopping NTP.
@@ -160,7 +155,7 @@
                              isInserted:NO];
           isActivationHandled = YES;
         }
-        if (NTPTabHelper && NTPTabHelper->IsActive()) {
+        if (IsVisibleURLNewTabPage(detachChange.detached_web_state())) {
           [self stopNTPIfNeeded];
         }
       }
@@ -172,9 +167,7 @@
     case WebStateListChange::Type::kReplace: {
       const WebStateListChangeReplace& replaceChange =
           change.As<WebStateListChangeReplace>();
-      NewTabPageTabHelper* NTPTabHelper =
-          NewTabPageTabHelper::FromWebState(replaceChange.replaced_web_state());
-      if (NTPTabHelper && NTPTabHelper->IsActive()) {
+      if (IsVisibleURLNewTabPage(replaceChange.replaced_web_state())) {
         [self stopNTPIfNeeded];
       }
 
@@ -227,9 +220,7 @@
                      isInserted:(bool)isInserted {
   // If the user is leaving an NTP web state, trigger a visibility change.
   if (oldActiveWebState && _ntpCoordinator.started) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(oldActiveWebState);
-    if (NTPHelper->IsActive()) {
+    if (IsVisibleURLNewTabPage(oldActiveWebState)) {
       [_ntpCoordinator didNavigateAwayFromNTP];
     }
   }
@@ -246,9 +237,7 @@
     [self startNTPIfNeededForActiveWebState:newActiveWebState];
 
     // If the user is entering an NTP web state, trigger a visibility change.
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(newActiveWebState);
-    if (NTPHelper->IsActive()) {
+    if (IsVisibleURLNewTabPage(newActiveWebState)) {
       [_ntpCoordinator didNavigateToNTPInWebState:newActiveWebState];
     }
 
@@ -267,17 +256,14 @@
 }
 
 - (void)startNTPIfNeededForActiveWebState:(web::WebState*)webState {
-  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  if (NTPHelper && NTPHelper->IsActive() && !_ntpCoordinator.started) {
+  if (IsVisibleURLNewTabPage(webState) && !_ntpCoordinator.started) {
     [_ntpCoordinator start];
   }
 }
 
 - (void)stopNTPIfNeeded {
   for (int i = 0; i < _webStateList->count(); i++) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(_webStateList->GetWebStateAt(i));
-    if (NTPHelper && NTPHelper->IsActive()) {
+    if (IsVisibleURLNewTabPage(_webStateList->GetWebStateAt(i))) {
       return;
     }
   }
@@ -327,38 +313,25 @@
                                               transitionType);
   }
 }
+
 - (void)willSwitchToTabWithURL:(const GURL&)URL
               newWebStateIndex:(NSInteger)newWebStateIndex {
-  base::WeakPtr<web::WebState> weakWebStateBeingActivated =
-      _webStateList->GetWebStateAt(newWebStateIndex)->GetWeakPtr();
-  web::WebState* webStateBeingActivated = weakWebStateBeingActivated.get();
-  if (!webStateBeingActivated) {
-    return;
-  }
-  SnapshotTabHelper* snapshotTabHelper =
-      SnapshotTabHelper::FromWebState(webStateBeingActivated);
-  BOOL willAddPlaceholder =
-      PagePlaceholderTabHelper::FromWebState(webStateBeingActivated)
-          ->will_add_placeholder_for_next_navigation();
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(webStateBeingActivated);
+  web::WebState* webState = _webStateList->GetWebStateAt(newWebStateIndex);
   UIImage* topToolbarImage = [self.toolbarSnapshotProvider
-      toolbarSideSwipeSnapshotForWebState:webStateBeingActivated
+      toolbarSideSwipeSnapshotForWebState:webState
                           withToolbarType:ToolbarType::kPrimary];
   UIImage* bottomToolbarImage = [self.toolbarSnapshotProvider
-      toolbarSideSwipeSnapshotForWebState:webStateBeingActivated
+      toolbarSideSwipeSnapshotForWebState:webState
                           withToolbarType:ToolbarType::kSecondary];
   SwitchToTabAnimationPosition position =
       newWebStateIndex > _webStateList->active_index()
           ? SwitchToTabAnimationPositionAfter
           : SwitchToTabAnimationPositionBefore;
 
-  [self.consumer switchToTabAnimationPosition:position
-                            snapshotTabHelper:snapshotTabHelper
-                           willAddPlaceholder:willAddPlaceholder
-                          newTabPageTabHelper:NTPHelper
-                              topToolbarImage:topToolbarImage
-                           bottomToolbarImage:bottomToolbarImage];
+  [self.consumer switchToTabWithWebState:webState
+                       animationPosition:position
+                         topToolbarImage:topToolbarImage
+                      bottomToolbarImage:bottomToolbarImage];
 }
 
 #pragma mark - NewTabPageTabHelperDelegate
@@ -371,7 +344,7 @@
     return;
   }
   // Handle NTP visibility changes within a web state.
-  if (NTPHelper->IsActive()) {
+  if (IsVisibleURLNewTabPage(webState)) {
     if (!_ntpCoordinator.started) {
       [_ntpCoordinator start];
     }

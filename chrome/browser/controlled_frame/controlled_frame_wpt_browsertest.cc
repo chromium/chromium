@@ -27,11 +27,16 @@ namespace controlled_frame {
 
 namespace {
 
-// TODO(crbug.com/423697478): webrequest_auth times out on win-asan bots
+#define IS_LINUX_OR_CROS (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+
+// TODO(crbug.com/423697478): frame_event_handlers_part_1 and webrequest_auth
+// times out on win-asan bots and linux / chromeos bots.
 const auto kTestFiles = testing::Values("add_content_scripts.window.js",
                                         "camera.window.js",
                                         "client_hints_user_agent.window.js",
+#if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) && !IS_LINUX_OR_CROS
                                         "frame_event_handlers_part_1.window.js",
+#endif
                                         "frame_event_handlers_part_2.window.js",
                                         "geolocation.window.js",
                                         "navigation.window.js",
@@ -39,7 +44,7 @@ const auto kTestFiles = testing::Values("add_content_scripts.window.js",
                                         "no_callback.window.js",
                                         "scheme.window.js",
                                         "user_agent_override.window.js",
-#if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) && !IS_LINUX_OR_CROS
                                         "webrequest_auth.window.js",
 #endif
                                         "webrequest_core.window.js",

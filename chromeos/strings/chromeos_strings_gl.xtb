@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">laranxas</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
 <translation id="1290331692326790741">Sinal feble</translation>
+<translation id="1292474106138697109">Monitor de Ferramentas de clase</translation>
 <translation id="1300115153046603471">O APN é de tipo predeterminado e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Converter</translation>
@@ -277,7 +278,7 @@
 <translation id="2045814230297767491">cubertos</translation>
 <translation id="2047316797244836561">Para ver o protector de pantalla, conéctate a unha rede e volve cargar a páxina.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
-<translation id="2068472557797646626">Renderización en 3D de esferas e formas esféricas cromadas nun fondo con elementos arquitectónicos cromados. A composición é un concepto minimalista moderno para publicidade, construción de marca ou presentación con espazo para texto. Un grande arco en fronte dun fondo abstracto de estilo minimalista. Iluminación de estudo. Primeiro plano.</translation>
+<translation id="2068472557797646626">Renderización en 3D de esferas e formas esféricas cromadas nun fondo con elementos arquitectónicos cromados. A composición é un concepto minimalista moderno para publicidade, construción de marca ou presentación con espazo para texto. Un grande arco en fronte dun fondo abstracto de estilo minimalista. Iluminación de estudio. Primeiro plano.</translation>
 <translation id="2073232437457681324">amplo océano</translation>
 <translation id="2080070583977670716">Máis opcións de configuración</translation>
 <translation id="2082932131694554252">Tecla do teclado asignada</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imaxes</translation>
 <translation id="4300272766492248925">Abrir aplicación</translation>
 <translation id="430786093962686457">gasa</translation>
+<translation id="4309762678330556039">Busca audio e crea transcripcións automaticamente. Poderás crear gravacións mesmo cando non teñas conexión a Internet.</translation>
 <translation id="4310735698903592804">Fondos de pantalla recentes con tecnoloxía da IA de Google</translation>
 <translation id="4320904097188876154">rosa fluorescente</translation>
 <translation id="432961742358282111">Fai clic co botón dereito ou mantén premido o texto para facer conversións entre unidades ou obter definicións e traducións. Usa as teclas Frecha esquerda ou Frecha dereita para xestionar esta función.</translation>
@@ -859,7 +861,7 @@
 <translation id="4778082030331381943">ametista</translation>
 <translation id="4782311465517282004">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto/s</translation>
-<translation id="4793710386569335688">Para obter máis axuda, vai ao <ph name="BEGIN_LINK" />Centro de Axuda<ph name="END_LINK" />.</translation>
+<translation id="4793710386569335688">Para obter máis axuda, vai ao <ph name="BEGIN_LINK" />Centro de axuda<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">A execución de probas de CPU pódelle afectar ao rendemento do sistema</translation>
 <translation id="4798078634453489142">Quita un APN para engadir un novo</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5600027863942488546">Tecla <ph name="KEY_NAME" /> probada</translation>
 <translation id="5606865426897221650">Tabulador</translation>
+<translation id="5612205513582918357">Ferramentas de clase está compartindo a túa pantalla con <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Pechouse a sesión</translation>
 <translation id="5620281292257375798">Só para uso interno</translation>
 <translation id="5628106863521633649">Idiomas dispoñibles</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Fluxo das nubes</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Non hai ningún escáner dispoñible</translation>
-<translation id="6231648282154119906">Navegación segura de Google analizará os ficheiros sospeitosos automaticamente como parte da protección mellorada que escolliches</translation>
 <translation id="6232017090690406397">Batería</translation>
 <translation id="6234024205316847054">Mostrar esquema</translation>
 <translation id="6243280677745499710">Establecido actualmente</translation>
@@ -1322,7 +1324,7 @@
 <translation id="6846843854964504403">Restablecemento de seguranza</translation>
 <translation id="6853312040151791195">Taxa de descarga</translation>
 <translation id="6862228900689076919">A persoa administradora xestiona esta función</translation>
-<translation id="6862416241246624313">Comentarios enviados</translation>
+<translation id="6862416241246624313">Enviouse o comentario</translation>
 <translation id="6866732840889595464">margarida</translation>
 <translation id="6871256179359663621">lila</translation>
 <translation id="6887967050249348172">Desactiváronse as extensións para evitar cambios na configuración. Activa só extensións nas que confíes.</translation>

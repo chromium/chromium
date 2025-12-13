@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cast_starboard_api_adapter_impl.h"
+#include "chromecast/starboard/chromecast/starboard_adapter/src/cast_starboard_api_adapter_impl.h"
 
 #include "base/at_exit.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
+#include "chromecast/common/timing_tracker.h"
 
 // TODO(b/333961720): remove all the macros in this file and split the impl into
 // two different classes: one for SB 15+, one for older versions of starboard.
@@ -22,12 +24,17 @@ namespace chromecast {
 namespace {
 
 CastStarboardApiAdapterImpl* g_instance = nullptr;
-base::Lock g_instance_mutex;
+
+// Returns a lock for accessing g_instance.
+base::Lock& GetGInstanceLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
 
 }  // namespace
 
 CastStarboardApiAdapter* CastStarboardApiAdapter::GetInstance() {
-  base::AutoLock lock(g_instance_mutex);
+  base::AutoLock lock(GetGInstanceLock());
   if (!g_instance) {
     // The instance is assigned by the class's constructor.
     new CastStarboardApiAdapterImpl();
@@ -104,6 +111,7 @@ void CastStarboardApiAdapterImpl::EnsureInitialized() {
 
   if (need_to_start_starboard) {
     LOG(INFO) << "Starting starboard";
+    CHROMECAST_TIMING_TRACKER;
 #if SB_API_VERSION >= 15
     sb_main_ = std::make_unique<std::thread>(
         &SbRunStarboardMain, /*argc=*/0, /*argv=*/nullptr,
@@ -123,6 +131,7 @@ void CastStarboardApiAdapterImpl::EnsureInitialized() {
 }
 
 void CastStarboardApiAdapterImpl::Release() {
+  CHROMECAST_TIMING_TRACKER;
   LOG(INFO) << "CastStarboardApiAdapterImpl::Release";
   bool need_to_stop_starboard = false;
   {
@@ -159,7 +168,7 @@ void CastStarboardApiAdapterImpl::Release() {
            "released.";
   }
 
-  base::AutoLock lock(g_instance_mutex);
+  base::AutoLock lock(GetGInstanceLock());
   LOG(INFO) << "Destroying CastStarboardApiAdapterImpl instance.";
   delete g_instance;
   g_instance = nullptr;
@@ -167,6 +176,7 @@ void CastStarboardApiAdapterImpl::Release() {
 
 void CastStarboardApiAdapterImpl::Subscribe(void* context,
                                             CastStarboardApiAdapterImplCB cb) {
+  CHROMECAST_TIMING_TRACKER;
   LOG(INFO) << "CastStarboardApiAdapterImpl::Subscribe, context=" << context;
   EnsureInitialized();
 
@@ -175,6 +185,7 @@ void CastStarboardApiAdapterImpl::Subscribe(void* context,
 }
 
 void CastStarboardApiAdapterImpl::Unsubscribe(void* context) {
+  CHROMECAST_TIMING_TRACKER;
   LOG(INFO) << "CastStarboardApiAdapterImpl::Unsubscribe, context=" << context;
 
   bool do_release = false;

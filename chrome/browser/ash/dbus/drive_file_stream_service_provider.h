@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/files/scoped_file.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"

@@ -33,6 +33,7 @@ source_set("app_shim") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/badging",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
@@ -40,7 +41,8 @@ source_set("app_shim") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/web_applications",
-    "//chrome/browser/web_applications:web_applications",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/extensions",
     "//chrome/common",
     "//chrome/common:app_mode_app_support",
     "//chrome/common:constants",
@@ -53,7 +55,7 @@ source_set("app_shim") {
     "//components/webapps/common",
     "//content/public/browser",
     "//content/public/common",
-    "//services/preferences/public/cpp:cpp",
-    "//ui/views:views",
+    "//services/preferences/public/cpp",
+    "//ui/views",
   ]
 }

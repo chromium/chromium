@@ -4,6 +4,8 @@
 
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #include "partition_alloc/address_pool_manager.h"
@@ -52,7 +54,8 @@ void WriteProtectThreadIsolatedVariable(ThreadIsolationOption thread_isolation,
                                         T& var,
                                         size_t offset = 0,
                                         bool read_only = false) {
-  WriteProtectThreadIsolatedMemory(thread_isolation, (char*)&var + offset,
+  WriteProtectThreadIsolatedMemory(thread_isolation,
+                                   PA_UNSAFE_TODO((char*)&var + offset),
                                    sizeof(T) - offset, read_only);
 }
 

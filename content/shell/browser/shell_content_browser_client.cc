@@ -19,7 +19,6 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -38,8 +37,6 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/metrics_service.h"
-#include "components/metrics/metrics_state_manager.h"
-#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/network_hints/browser/simple_network_hints_handler_impl.h"
 #include "components/performance_manager/embedder/binders.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
@@ -47,14 +44,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/variations/platform_field_trials.h"
-#include "components/variations/pref_names.h"
-#include "components/variations/service/safe_seed_manager.h"
-#include "components/variations/service/variations_field_trial_creator.h"
 #include "components/variations/service/variations_service.h"
-#include "components/variations/service/variations_service_client.h"
-#include "components/variations/variations_safe_seed_store_local_state.h"
-#include "components/variations/variations_switches.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -66,10 +56,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/setup_field_trials.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_browser_main_parts.h"
@@ -106,7 +96,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
 #include "base/android/path_utils.h"
-#include "components/variations/android/variations_seed_bridge.h"
 #include "content/shell/android/shell_descriptors.h"
 #endif
 
@@ -200,40 +189,6 @@ class ShellControllerImpl : public mojom::ShellController {
   void ShutDown() override { Shell::Shutdown(); }
 };
 
-// TODO(crbug.com/40772375): Consider not needing VariationsServiceClient just
-// to use VariationsFieldTrialCreator.
-class ShellVariationsServiceClient
-    : public variations::VariationsServiceClient {
- public:
-  ShellVariationsServiceClient() = default;
-  ~ShellVariationsServiceClient() override = default;
-
-  // variations::VariationsServiceClient:
-  base::Version GetVersionForSimulation() override { return base::Version(); }
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
-      override {
-    return nullptr;
-  }
-  network_time::NetworkTimeTracker* GetNetworkTimeTracker() override {
-    return nullptr;
-  }
-  version_info::Channel GetChannel() override {
-    return version_info::Channel::UNKNOWN;
-  }
-  bool OverridesRestrictParameter(std::string* parameter) override {
-    return false;
-  }
-  base::FilePath GetVariationsSeedFileDir() override {
-    base::FilePath seed_file_dir;
-    base::PathService::Get(SHELL_DIR_USER_DATA, &seed_file_dir);
-    return seed_file_dir;
-  }
-  bool IsEnterprise() override { return false; }
-  // Profiles aren't supported, so nothing to do here.
-  void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
-      PrefService* local_state) override {}
-};
-
 void BindNetworkHintsHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<network_hints::mojom::NetworkHintsHandler> receiver) {
@@ -309,7 +264,6 @@ SharedState& GetSharedState() {
 
 std::unique_ptr<PrefService> CreateLocalState() {
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
-
   metrics::MetricsService::RegisterPrefs(pref_registry.get());
   variations::VariationsService::RegisterPrefs(pref_registry.get());
 
@@ -356,10 +310,6 @@ blink::UserAgentMetadata GetShellUserAgentMetadata() {
 
   return metadata;
 }
-
-// static
-bool ShellContentBrowserClient::allow_any_cors_exempt_header_for_browser_ =
-    false;
 
 ShellContentBrowserClient* ShellContentBrowserClient::Get() {
   auto& instances = GetShellContentBrowserClientInstancesImpl();
@@ -433,7 +383,7 @@ bool ShellContentBrowserClient::IsHandledURL(const GURL& url) {
       url::kFileScheme,
   });
 
-  return kProtocolList.contains(url.scheme_piece());
+  return kProtocolList.contains(url.scheme());
 }
 
 bool ShellContentBrowserClient::AreIsolatedWebAppsEnabled(
@@ -566,18 +516,6 @@ bool ShellContentBrowserClient::IsFencedStorageReadAllowed(
   return true;
 }
 
-bool ShellContentBrowserClient::IsCookieDeprecationLabelAllowed(
-    content::BrowserContext* browser_context) {
-  return true;
-}
-
-bool ShellContentBrowserClient::IsCookieDeprecationLabelAllowedForContext(
-    content::BrowserContext* browser_context,
-    const url::Origin& top_frame_origin,
-    const url::Origin& context_origin) {
-  return true;
-}
-
 GeneratedCodeCacheSettings
 ShellContentBrowserClient::GetGeneratedCodeCacheSettings(
     content::BrowserContext* context) {
@@ -625,10 +563,6 @@ void ShellContentBrowserClient::OverrideWebPreferences(
   } else {
     prefs->in_forced_colors = false;
     prefs->preferred_contrast = blink::mojom::PreferredContrast::kNoPreference;
-  }
-
-  if (override_web_preferences_callback_) {
-    override_web_preferences_callback_.Run(prefs);
   }
 }
 
@@ -814,7 +748,8 @@ void ShellContentBrowserClient::OnNetworkServiceCreated(
         base::FeatureList::IsEnabled(net::features::kHappyEyeballsV3),
         /*secure_dns_mode=*/net::SecureDnsMode::kAutomatic,
         net::DnsOverHttpsConfig(),
-        /*additional_dns_types_enabled=*/true);
+        /*additional_dns_types_enabled=*/true,
+        /*fallback_doh_nameservers=*/{});
   }
 #endif
 }
@@ -879,8 +814,6 @@ void ShellContentBrowserClient::ConfigureNetworkContextParamsForShell(
     network::mojom::NetworkContextParams* context_params,
     cert_verifier::mojom::CertVerifierCreationParams*
         cert_verifier_creation_params) {
-  context_params->allow_any_cors_exempt_header_for_browser =
-      allow_any_cors_exempt_header_for_browser_;
   context_params->user_agent = GetUserAgent();
   context_params->accept_language = GetAcceptLangs(context);
   context_params->enable_zstd = true;
@@ -919,92 +852,7 @@ void ShellContentBrowserClient::OnWebContentsCreated(
 
 void ShellContentBrowserClient::CreateFeatureListAndFieldTrials() {
   GetSharedState().local_state = CreateLocalState();
-  SetUpFieldTrials();
-  // Schedule a Local State write since the above function resulted in some
-  // prefs being updated.
-  GetSharedState().local_state->CommitPendingWrite();
-}
-
-void ShellContentBrowserClient::SetUpFieldTrials() {
-  metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/false,
-                                                           /*enabled=*/false);
-  base::FilePath user_data_dir;
-  base::PathService::Get(SHELL_DIR_USER_DATA, &user_data_dir);
-  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
-      metrics::MetricsStateManager::Create(
-          GetSharedState().local_state.get(), &enabled_state_provider,
-          std::wstring(), user_data_dir, metrics::StartupVisibility::kUnknown,
-          {
-              .force_benchmarking_mode =
-                  base::CommandLine::ForCurrentProcess()->HasSwitch(
-                      switches::kEnableGpuBenchmarking),
-          });
-  metrics_state_manager->InstantiateFieldTrialList();
-
-  std::vector<std::string> variation_ids;
-  auto feature_list = std::make_unique<base::FeatureList>();
-
-  std::unique_ptr<variations::SeedResponse> initial_seed;
-#if BUILDFLAG(IS_ANDROID)
-  if (!GetSharedState().local_state->HasPrefPath(
-          variations::prefs::kVariationsSeedSignature)) {
-    DVLOG(1) << "Importing first run seed from Java preferences.";
-    initial_seed = variations::android::GetVariationsFirstRunSeed();
-  }
-#endif
-
-  ShellVariationsServiceClient variations_service_client;
-  variations::VariationsFieldTrialCreator field_trial_creator(
-      &variations_service_client,
-      std::make_unique<variations::VariationsSeedStore>(
-          GetSharedState().local_state.get(), std::move(initial_seed),
-          /*signature_verification_enabled=*/true,
-          std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
-              GetSharedState().local_state.get(),
-              variations_service_client.GetVariationsSeedFileDir(),
-              variations_service_client.GetChannelForVariations(),
-              /*entropy_providers=*/nullptr),
-          variations_service_client.GetChannelForVariations(),
-          variations_service_client.GetVariationsSeedFileDir()),
-      variations::UIStringOverrider());
-
-  variations::SafeSeedManager safe_seed_manager(
-      GetSharedState().local_state.get());
-
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-
-  // Overrides for content/common and lower layers' switches.
-  std::vector<base::FeatureList::FeatureOverrideInfo> feature_overrides =
-      content::GetSwitchDependentFeatureOverrides(command_line);
-
-  // Overrides for content/shell switches.
-
-  // Overrides for --run-web-tests.
-  if (switches::IsRunWebTestsSwitchPresent()) {
-    // Disable artificial timeouts for PNA-only preflights in warning-only mode
-    // for web tests. We do not exercise this behavior with web tests as it is
-    // intended to be a temporary rollout stage, and the short timeout causes
-    // flakiness when the test server takes just a tad too long to respond.
-    feature_overrides.emplace_back(
-        std::cref(
-            network::features::kPrivateNetworkAccessPreflightShortTimeout),
-        base::FeatureList::OVERRIDE_DISABLE_FEATURE);
-  }
-
-  // Since this is a test-only code path, some arguments to SetUpFieldTrials are
-  // null.
-  // TODO(crbug.com/40790318): Consider passing a low entropy source.
-  variations::PlatformFieldTrials platform_field_trials;
-  field_trial_creator.SetUpFieldTrials(
-      variation_ids,
-      command_line.GetSwitchValueASCII(
-          variations::switches::kForceVariationIds),
-      feature_overrides, std::move(feature_list), metrics_state_manager.get(),
-      &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/false,
-      *metrics_state_manager->CreateEntropyProviders(
-          /*enable_limited_entropy_mode=*/false));
+  SetupFieldTrials();
 }
 
 std::optional<network::ParsedPermissionsPolicy>

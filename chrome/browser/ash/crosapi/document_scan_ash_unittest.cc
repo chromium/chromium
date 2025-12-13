@@ -67,21 +67,6 @@ class DocumentScanAshTest : public testing::Test {
 
   DocumentScanAsh& document_scan_ash() { return document_scan_ash_; }
 
-  std::vector<std::string> GetScannerNames() {
-    base::test::TestFuture<const std::vector<std::string>&> future;
-    document_scan_ash().GetScannerNames(future.GetCallback());
-    return future.Take();
-  }
-
-  mojom::GetScannerListResponsePtr GetScannerList(
-      const std::string& client_id,
-      mojom::ScannerEnumFilterPtr filter) {
-    base::test::TestFuture<mojom::GetScannerListResponsePtr> future;
-    document_scan_ash().GetScannerList(client_id, std::move(filter),
-                                       future.GetCallback());
-    return future.Take();
-  }
-
   mojom::OpenScannerResponsePtr OpenScanner(const std::string& client_id,
                                             const std::string& scanner_id) {
     base::test::TestFuture<mojom::OpenScannerResponsePtr> future;
@@ -146,36 +131,6 @@ class DocumentScanAshTest : public testing::Test {
 
   DocumentScanAsh document_scan_ash_;
 };
-
-TEST_F(DocumentScanAshTest, GetScannerList_BadResponse) {
-  GetLorgnetteScannerManager()->SetGetScannerInfoListResponse(std::nullopt);
-  auto request = mojom::ScannerEnumFilter::New();
-  request->local = true;
-  request->secure = true;
-  const mojom::GetScannerListResponsePtr response =
-      GetScannerList("client-id", std::move(request));
-
-  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
-  EXPECT_EQ(response->scanners.size(), 0U);
-}
-
-TEST_F(DocumentScanAshTest, GetScannerList_GoodResponse) {
-  lorgnette::ListScannersResponse fake_response;
-  fake_response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
-  lorgnette::ScannerInfo* scanner = fake_response.add_scanners();
-  scanner->set_name("test:scanner");
-  GetLorgnetteScannerManager()->SetGetScannerInfoListResponse(
-      std::move(fake_response));
-  auto request = mojom::ScannerEnumFilter::New();
-  request->local = true;
-  request->secure = true;
-  const mojom::GetScannerListResponsePtr response =
-      GetScannerList("client-id", std::move(request));
-
-  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
-  ASSERT_EQ(response->scanners.size(), 1U);
-  EXPECT_EQ(response->scanners[0]->id, "test:scanner");
-}
 
 TEST_F(DocumentScanAshTest, OpenScanner_BadResponse) {
   GetLorgnetteScannerManager()->SetOpenScannerResponse(std::nullopt);

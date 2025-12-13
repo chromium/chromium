@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_AUTH_ARC_BACKGROUND_AUTH_CODE_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -63,7 +64,7 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
                                   signin::AccessTokenInfo token_info);
 
   void OnSimpleLoaderComplete(signin::AccessTokenInfo token_info,
-                              std::unique_ptr<std::string> response_body);
+                              std::optional<std::string> response_body);
 
   void ReportResult(const std::string& auth_code,
                     OptInSilentAuthCode uma_status);

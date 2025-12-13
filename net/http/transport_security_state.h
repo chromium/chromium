@@ -13,8 +13,8 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -202,25 +202,23 @@ class NET_EXPORT TransportSecurityState {
   class NET_EXPORT PinSet {
    public:
     PinSet(std::string name,
-           std::vector<std::vector<uint8_t>> static_spki_hashes,
-           std::vector<std::vector<uint8_t>> bad_static_spki_hashes);
+           std::vector<SHA256HashValue> static_spki_hashes,
+           std::vector<SHA256HashValue> bad_static_spki_hashes);
     PinSet(const PinSet& other);
     ~PinSet();
 
     const std::string& name() const { return name_; }
-    const std::vector<std::vector<uint8_t>>& static_spki_hashes() const {
+    const std::vector<SHA256HashValue>& static_spki_hashes() const {
       return static_spki_hashes_;
     }
-    const std::vector<std::vector<uint8_t>>& bad_static_spki_hashes() const {
+    const std::vector<SHA256HashValue>& bad_static_spki_hashes() const {
       return bad_static_spki_hashes_;
     }
 
    private:
     std::string name_;
-    // TODO(crbug.com/41286522): Change these to use SHA256HashValue to
-    // simpilify/remove the AddHash helper.
-    std::vector<std::vector<uint8_t>> static_spki_hashes_;
-    std::vector<std::vector<uint8_t>> bad_static_spki_hashes_;
+    std::vector<SHA256HashValue> static_spki_hashes_;
+    std::vector<SHA256HashValue> bad_static_spki_hashes_;
   };
 
   struct NET_EXPORT PinSetInfo {

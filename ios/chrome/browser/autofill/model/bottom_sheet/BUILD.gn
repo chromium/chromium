@@ -24,7 +24,6 @@ source_set("bottom_sheet") {
     "//components/autofill/ios/browser",
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
-    "//components/autofill/ios/form_util:autofill_renderer_id_feature",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios",
@@ -34,7 +33,6 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/js_messaging",
@@ -78,6 +76,8 @@ optimize_ts("bottom_sheet_ts") {
 
   sources = [ "bottom_sheet.ts" ]
   deps = [
+    "//components/autofill/ios/form_util:autofill_renderer_id_js",
+    "//components/autofill/ios/form_util:fill_js_dependencies",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]

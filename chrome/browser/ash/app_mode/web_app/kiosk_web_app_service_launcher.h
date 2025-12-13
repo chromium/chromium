@@ -26,14 +26,6 @@ class KioskWebAppData;
 // destroyed upon successful app launch.
 class KioskWebAppServiceLauncher : public KioskWebAppLauncherBase {
  public:
-  // Histogram to log the installed web app is a placeholder.
-  static constexpr char kWebAppIsPlaceholderUMA[] =
-      "Kiosk.AppService.WebApp.IsPlaceholder";
-
-  // Histogram to log the web app install result code.
-  static constexpr char kWebAppInstallResultUMA[] =
-      "Kiosk.AppService.WebApp.InstallResult";
-
   KioskWebAppServiceLauncher(
       Profile* profile,
       const AccountId& account_id,

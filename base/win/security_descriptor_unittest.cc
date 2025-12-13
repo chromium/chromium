@@ -320,8 +320,7 @@ TEST(SecurityDescriptorTest, Clone) {
 TEST(SecurityDescriptorTest, ToAbsolute) {
   auto sd = SecurityDescriptor::FromPointer(ConvertSddlToSd(kFullSd).get());
   ASSERT_TRUE(sd);
-  SECURITY_DESCRIPTOR sd_abs;
-  sd->ToAbsolute(sd_abs);
+  SECURITY_DESCRIPTOR sd_abs = sd->ToAbsolute();
   EXPECT_EQ(sd_abs.Revision, SECURITY_DESCRIPTOR_REVISION);
   EXPECT_EQ(sd_abs.Control, SE_DACL_PRESENT | SE_DACL_PROTECTED |
                                 SE_SACL_PRESENT | SE_SACL_PROTECTED);

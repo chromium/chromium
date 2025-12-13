@@ -44,7 +44,8 @@ void ScreenRotationAnimationTest::SetUp() {
 }
 
 TEST_F(ScreenRotationAnimationTest, LayerTransformGetsSetToTargetWhenAborted) {
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(9));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 9}));
   ui::Layer* layer = window->layer();
 
   std::unique_ptr<ScreenRotationAnimation> screen_rotation =

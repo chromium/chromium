@@ -181,7 +181,7 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
       : WithTaskEnvironment(time_source),
         old_max_group_sockets_(ClientSocketPoolManager::max_sockets_per_group(
             HttpNetworkSession::NORMAL_SOCKET_POOL)),
-        old_max_pool_sockets_(ClientSocketPoolManager::max_sockets_per_pool(
+        old_socket_soft_cap_(ClientSocketPoolManager::socket_soft_cap_per_pool(
             HttpNetworkSession::NORMAL_SOCKET_POOL)),
         test_url_(kDefaultUrl),
         test_server_(test_url_),
@@ -198,9 +198,9 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
   ~SpdySessionTest() override {
     // Important to restore the per-pool limit first, since the pool limit must
     // always be greater than group limit, and the tests reduce both limits.
-    ClientSocketPoolManager::set_max_sockets_per_pool(
-        HttpNetworkSession::NORMAL_SOCKET_POOL, old_max_pool_sockets_);
-    ClientSocketPoolManager::set_max_sockets_per_group(
+    ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
+        HttpNetworkSession::NORMAL_SOCKET_POOL, old_socket_soft_cap_);
+    ClientSocketPoolManager::set_max_sockets_per_group_for_test(
         HttpNetworkSession::NORMAL_SOCKET_POOL, old_max_group_sockets_);
   }
 
@@ -362,7 +362,7 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
   // Original socket limits.  Some tests set these.  Safest to always restore
   // them once each test has been run.
   int old_max_group_sockets_;
-  int old_max_pool_sockets_;
+  int old_socket_soft_cap_;
 
   SpdyTestUtil spdy_util_;
   SpdySessionDependencies session_deps_;
@@ -1079,7 +1079,8 @@ TEST_F(SpdySessionTest, NetworkChangeWithActiveStreams) {
 
   EXPECT_TRUE(HasSpdySession(spdy_session_pool_, key_));
 
-  spdy_session_pool_->OnIPAddressChanged();
+  spdy_session_pool_->OnIPAddressChanged(
+      NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
 
   // The SpdySessionPool behavior differs based on how the OSs reacts to
   // network changes; see comment in SpdySessionPool::OnIPAddressChanged().
@@ -3305,9 +3306,9 @@ TEST_F(SpdySessionTest, ProtocolNegotiation) {
 // Tests the case of a non-SPDY request closing an idle SPDY session when no
 // pointers to the idle session are currently held.
 TEST_F(SpdySessionTest, CloseOneIdleConnection) {
-  ClientSocketPoolManager::set_max_sockets_per_group(
+  ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool(
+  ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   MockRead reads[] = {
@@ -3358,9 +3359,9 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
 // pointers to the idle session are currently held, in the case the SPDY session
 // has an alias.
 TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
-  ClientSocketPoolManager::set_max_sockets_per_group(
+  ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool(
+  ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   MockRead reads[] = {
@@ -3396,18 +3397,18 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
       ::net::CreateSpdySession(http_session_.get(), key1, NetLogWithSource());
   EXPECT_FALSE(pool->IsStalled());
   EXPECT_TRUE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key1, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key1, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   EXPECT_FALSE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   EXPECT_FALSE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/false, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/false, /*is_websocket=*/false));
 
   // Set up an alias for the idle SPDY session, increasing its ref count to 2.
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> request;
   bool is_blocking_request_for_session = false;
   SpdySessionRequestDelegate request_delegate;
   EXPECT_FALSE(spdy_session_pool_->RequestSession(
-      key2, /* enable_ip_based_pooling = */ true,
+      key2, /* enable_ip_based_pooling_for_h2 = */ true,
       /* is_websocket = */ false, NetLogWithSource(),
       /* on_blocking_request_destroyed_callback = */ base::RepeatingClosure(),
       &request_delegate, &request, &is_blocking_request_for_session));
@@ -3424,17 +3425,17 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   // Get a session for |key2|, which should return the session created earlier.
   base::WeakPtr<SpdySession> session2 =
       spdy_session_pool_->FindAvailableSession(
-          key2, /* enable_ip_based_pooling = */ true,
+          key2, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ false, NetLogWithSource());
   EXPECT_TRUE(session2);
   ASSERT_EQ(session1.get(), session2.get());
   EXPECT_FALSE(pool->IsStalled());
   EXPECT_TRUE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key1, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key1, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   EXPECT_TRUE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   EXPECT_FALSE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/false, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/false, /*is_websocket=*/false));
 
   // Trying to create a new connection should cause the pool to be stalled, and
   // post a task asynchronously to try and close the session.
@@ -3462,19 +3463,19 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   EXPECT_FALSE(session1);
   EXPECT_FALSE(session2);
   EXPECT_FALSE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key1, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key1, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   EXPECT_FALSE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   EXPECT_FALSE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/false, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/false, /*is_websocket=*/false));
 }
 
 // Tests that when a SPDY session becomes idle, it closes itself if there is
 // a lower layer pool stalled on the per-pool socket limit.
 TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
-  ClientSocketPoolManager::set_max_sockets_per_group(
+  ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool(
+  ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   MockRead reads[] = {
@@ -5701,7 +5702,7 @@ TEST_F(AltSvcFrameTest, ProcessAltSvcFrame) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   AlternativeServiceInfoVector altsvc_info_vector =
       spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
@@ -5738,7 +5739,7 @@ TEST_F(AltSvcFrameTest, IgnoreQuicAltSvcWithUnsupportedVersion) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   AlternativeServiceInfoVector altsvc_info_vector =
       spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
@@ -5766,7 +5767,7 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameForOriginNotCoveredByCert) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -5793,7 +5794,7 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameWithEmptyOriginOnStreamZero) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -5816,7 +5817,7 @@ TEST_F(AltSvcFrameTest,
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -5863,7 +5864,7 @@ TEST_F(AltSvcFrameTest, ProcessAltSvcFrameOnActiveStream) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -5944,7 +5945,7 @@ TEST_F(AltSvcFrameTest,
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -6014,7 +6015,7 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnStreamWithInsecureOrigin) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -6039,7 +6040,7 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnNonExistentStream) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -6053,7 +6054,7 @@ TEST_F(AltSvcFrameTest, InvalidOrigin) {
   const std::string origin("https:?");
   const GURL origin_gurl(origin);
   EXPECT_FALSE(origin_gurl.is_valid());
-  EXPECT_TRUE(origin_gurl.host().empty());
+  EXPECT_TRUE(origin_gurl.GetHost().empty());
   EXPECT_TRUE(origin_gurl.SchemeIs(url::kHttpsScheme));
 
   spdy::SpdyAltSvcIR altsvc_ir(/* stream_id = */ 0);
@@ -6067,7 +6068,7 @@ TEST_F(AltSvcFrameTest, InvalidOrigin) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   AlternativeServiceInfoVector altsvc_info_vector =
       spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(

@@ -7,11 +7,8 @@
 #include <memory>
 #include <optional>
 
-#include "base/barrier_callback.h"
-#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_callbacks.h"
 #include "base/memory/raw_ptr.h"
@@ -50,27 +47,23 @@ void GetIsolatedWebAppBrowsingDataCommand::StartWithLock(
     std::unique_ptr<AllAppsLock> lock) {
   lock_ = std::move(lock);
 
-  const auto isolated_web_apps = GetInstalledIwas(lock_->registrar());
-  if (!isolated_web_apps.empty()) {
-    auto result_callback =
-        base::BarrierCallback<std::optional<ComputedAppSizeWithOrigin>>(
-            isolated_web_apps.size(),
-            base::BindOnce(
-                &GetIsolatedWebAppBrowsingDataCommand::CompleteCommand,
-                weak_factory_.GetWeakPtr()));
-    for (const auto& [bundle_id, isolated_web_app] : isolated_web_apps) {
-      get_isolated_web_app_size_jobs_.push_back(
-          std::make_unique<GetIsolatedWebAppSizeJob>(
-              &profile_.get(), isolated_web_app.get().app_id(),
-              GetMutableDebugValue(), result_callback));
-    }
+  auto concurrent =
+      base::ConcurrentCallbacks<std::optional<ComputedAppSizeWithOrigin>>();
+  for (const auto& iwa :
+       lock_->registrar().GetApps(WebAppFilter::IsIsolatedApp())) {
+    get_isolated_web_app_size_jobs_.push_back(
+        std::make_unique<GetIsolatedWebAppSizeJob>(
+            &profile_.get(), iwa.app_id(), GetMutableDebugValue(),
+            concurrent.CreateCallback()));
+  }
 
-    for (auto& get_isolated_web_app_size_job :
-         get_isolated_web_app_size_jobs_) {
-      get_isolated_web_app_size_job->Start(lock_.get());
-    }
-  } else {
-    CompleteCommand(/*app_size_results=*/{});
+  std::move(concurrent)
+      .Done(
+          base::BindOnce(&GetIsolatedWebAppBrowsingDataCommand::CompleteCommand,
+                         weak_factory_.GetWeakPtr()));
+
+  for (auto& get_isolated_web_app_size_job : get_isolated_web_app_size_jobs_) {
+    get_isolated_web_app_size_job->Start(lock_.get());
   }
 }
 

@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Žáner</translation>
 <translation id="1254593899333212300">Priame pripojenie k Internetu</translation>
 <translation id="1272293450992660632">Kódy PIN sa nezhodujú.</translation>
+<translation id="1279040297980392566">Čaká sa na dokončenie kontroly, skúste to neskôr</translation>
 <translation id="1280820357415527819">Hľadajú sa mobilné siete</translation>
 <translation id="1293556467332435079">Súbory</translation>
 <translation id="1297922636971898492">Služba Disk Google práve teraz nie je k dispozícii. Nahrávanie sa automaticky spustí znova, keď bude služba Disk Google opäť dostupná.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 vybratý súbor</translation>
 <translation id="3817579325494460411">Neznáma</translation>
 <translation id="3819448694985509187">Nesprávny kód PIN. Zostáva vám jeden pokus.</translation>
-<translation id="3822559385185038546">Tento proxy server je vynútený správcom</translation>
 <translation id="3830674330436234648">Prehrávanie nie je k dispozícii</translation>
 <translation id="383652340667548381">Srbčina</translation>
 <translation id="3839045880592694915">Váš operátor nepovoľuje pripojenie daného modemu. Ďalšie podrobnosti vám poskytne operátor.</translation>
@@ -596,6 +596,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="5602622065581044566">Bulharská fonetická klávesnica</translation>
 <translation id="5605830556594064952">Americká klávesnica s rozložením klávesov Dvorak</translation>
+<translation id="560739212255190568">Váš správca presadzuje nasledujúci proxy server a okrem toho nastavil pravidlá prepísania proxy servera</translation>
 <translation id="5618330573454123917">Tento súbor je určený pre počítač so softvérom Macintosh. Nie je kompatibilný s vaším zariadením so systémom Chrome OS. Prečítajte si viac o <ph name="BEGIN_LINK_HELP" />otváraní súborov v systéme Chrome OS<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">Tamilská klávesnica s rozložením Tamil99</translation>
 <translation id="5633226425545095130">Ak presuniete túto položku, budete ju zdieľať so všetkými používateľmi, ktorí vidia zdieľaný priečinok <ph name="DESTINATION_NAME" />.</translation>
@@ -787,7 +788,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7075931588889865715">Thajská klávesnica s rozložením TIS 820-2531</translation>
 <translation id="708278670402572152">Ak chcete aktivovať vyhľadávanie, odpojte sa</translation>
 <translation id="7086590977277044826">Tamilská klávesnica s rozložením InScript</translation>
-<translation id="7088615885725309056">Staršie</translation>
+<translation id="7088615885725309056">Staršia</translation>
 <translation id="7103992300314999525">Macedónska klávesnica</translation>
 <translation id="7104338189998813914">Vyskytol sa problém s prístupom k vášmu účtu OneDrive</translation>
 <translation id="7106346894903675391">Kúpiť väčší ukladací priestor...</translation>
@@ -995,6 +996,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="8545476925160229291">Anglická (US) klávesnica</translation>
 <translation id="854655314928502177">Webová adresa automatického zisťovania webového proxy servera:</translation>
+<translation id="8547747809824590510">Váš správca nastavil pravidlá prepísania proxy servera</translation>
 <translation id="8549186985808798022">Talianska klávesnica</translation>
 <translation id="8551494947769799688">Lotyština</translation>
 <translation id="8560515948038859357">Kantonská klávesnica</translation>
@@ -1055,6 +1057,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="9038620279323455325">Súbor s názvom <ph name="FILE_NAME" /> už existuje. Vyberte iný názov.</translation>
 <translation id="9046895021617826162">Zlyhanie pripojenia</translation>
 <translation id="9065512565307033593">Ak sa vám nepodarí overiť, váš prístup k sieti bude zakázaný.</translation>
+<translation id="9079844694307518094">Váš správca presadzuje nasledujúci proxy server</translation>
 <translation id="908378762078012445">Ruská fonetická klávesnica (AATSEEL)</translation>
 <translation id="9086302186042011942">Prebieha synchronizácia</translation>
 <translation id="9099674669267916096">Počet strán</translation>
@@ -1078,6 +1081,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="9213073329713032541">Inštalácia bola úspešne spustená.</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="9219908252191632183">Mesačná krajina</translation>
+<translation id="931652069802536959">Sieť blokujú pravidlá</translation>
 <translation id="938470336146445890">Nainštalujte si používateľský certifikát.</translation>
 <translation id="939736085109172342">Nový priečinok</translation>
 <translation id="943972244133411984">Upravil(a):</translation>

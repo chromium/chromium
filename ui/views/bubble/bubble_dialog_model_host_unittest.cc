@@ -184,12 +184,13 @@ TEST_F(BubbleDialogModelHostTest, OverrideNoneDefaultButton) {
 }
 
 TEST_F(BubbleDialogModelHostTest, OverrideDefaultButtonDeathTest) {
-  EXPECT_CHECK_DEATH(std::make_unique<BubbleDialogModelHost>(
-      ui::DialogModel::Builder()
-          .AddCancelButton(base::DoNothing())
-          .OverrideDefaultButton(ui::mojom::DialogButton::kOk)
-          .Build(),
-      /*anchor_view=*/nullptr, BubbleBorder::Arrow::TOP_RIGHT))
+  EXPECT_CHECK_DEATH(
+      std::ignore = std::make_unique<BubbleDialogModelHost>(
+          ui::DialogModel::Builder()
+              .AddCancelButton(base::DoNothing())
+              .OverrideDefaultButton(ui::mojom::DialogButton::kOk)
+              .Build(),
+          /*anchor_view=*/nullptr, BubbleBorder::Arrow::TOP_RIGHT))
       << "Cannot override the default button with a button which does not "
          "exist.";
 }

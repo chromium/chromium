@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -17,6 +18,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
 #include "mojo/core/embedder/embedder.h"
+#include "mojo/core/ipcz_api.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -37,6 +39,44 @@ void RunOn(base::Thread& thread, Fn closure) {
                                    wait.Signal();
                                  }));
   wait.Wait();
+}
+
+// Stubs for creating a dummy handle using ipcz.Box().
+
+IpczResult DummyBoxSerializer(uintptr_t object,
+                              uint32_t flags,
+                              const void* options,
+                              volatile void* data,
+                              size_t* num_bytes,
+                              IpczHandle* handles,
+                              size_t* num_handles) {
+  *num_bytes = 0;
+  *num_handles = 0;
+  return IPCZ_RESULT_OK;
+}
+
+void DummyBoxDestructor(uintptr_t object, uint32_t flags, const void* options) {
+}
+
+// Setting ThreadLocalNode's portal handle to a null ScopedHandle causes
+// AdoptPipe() to crash. Just closing it causes AdoptPipe() to appear to
+// succeed, but not actually transfer the pipe to the local node. So we need
+// to pass a valid non-portal handle, which will cause ipcz.Put() to fail with
+// IPCZ_RESULT_INVALID_ARGUMENT.
+ScopedHandle CreateDummyHandle(IpczHandle node) {
+  const IpczBoxContents dummy_contents{
+      .size = sizeof(IpczBoxContents),
+      .type = IPCZ_BOX_TYPE_APPLICATION_OBJECT,
+      .object = {.application_object = 0},
+      .serializer = &DummyBoxSerializer,
+      .destructor = &DummyBoxDestructor,
+  };
+  IpczHandle dummy_handle;
+  const IpczResult box_result = core::GetIpczAPI().Box(
+      node, &dummy_contents, IPCZ_NO_FLAGS, nullptr, &dummy_handle);
+  EXPECT_EQ(box_result, IPCZ_RESULT_OK);
+  EXPECT_NE(dummy_handle, IPCZ_INVALID_HANDLE);
+  return ScopedHandle{Handle{dummy_handle}};
 }
 
 }  // namespace
@@ -93,6 +133,14 @@ class ServiceImpl : public mojom::Service {
 
   DirectReceiver<mojom::Service>& receiver() { return receiver_; }
 
+  // Simulates a failure in the underlying transport of the ThreadLocalNode,
+  // which should cause DirectReceiver::Bind() to fall back to behaving like a
+  // normal receiver.
+  void SimulateFailure() {
+    receiver_.node_for_testing().ReplacePortalForTesting(
+        CreateDummyHandle(receiver_.node_for_testing().node()));
+  }
+
   // Binds our DirectReceiver to `receiver` and then uses a test-only API to
   // pause it internally, preventing Mojo bindings from processing incoming
   // messages. This is needed so we can use some ipcz test facilities to wait
@@ -135,22 +183,40 @@ class ServiceImpl : public mojom::Service {
 
 class ServiceRunner {
  public:
-  explicit ServiceRunner(DirectReceiverTest& test) : test_(test) {}
+  // Creates a service runner that uses `shared_thread` to run a ServiceImpl.
+  // If `shared_thread` is null, spawns a new background thread to use.
+  explicit ServiceRunner(DirectReceiverTest& test,
+                         base::Thread* shared_thread = nullptr)
+      : test_(test), impl_thread_(shared_thread) {
+    if (!impl_thread_) {
+      owned_thread_ = std::make_unique<base::Thread>("Impl Thread");
+      impl_thread_ = owned_thread_.get();
+      impl_thread_->StartWithOptions(
+          base::Thread::Options{base::MessagePumpType::IO, 0});
+    }
+  }
 
   ~ServiceRunner() { service_.SynchronouslyResetForTest(); }
 
-  // Spawns a background thread and runs a new ServiceImpl on it, where it binds
-  // to `receiver` via a DirectReceiver. This call only returns once the
-  // ServiceImpl is running, fully bound, and has a direct link to its child's
-  // portal; thus ensuring that in a well-behaved system, all child IPC to the
-  // service goes directly to the service thread without an intermediate IO
-  // thread hop. `ping_event` is signaled when the service receives its first
-  // Ping() call.
+  base::Thread* impl_thread() const { return impl_thread_; }
+
+  // Runs a new ServiceImpl on the service thread, where it binds to `receiver`
+  // via a DirectReceiver. This call only returns once the ServiceImpl is
+  // running, fully bound, and has a direct link to its child's portal; thus
+  // ensuring that in a well-behaved system, all child IPC to the service goes
+  // directly to the service thread without an intermediate IO thread hop.
+  // However if `simulate_failure` is true, this is NOT a well-behaved system,
+  // so child IPC should be received on the service thread WITH an intermediate
+  // thread hop (as opposed to some other failure mode). `ping_event` is
+  // signaled when the service receives its first Ping() call.
   void Start(PendingReceiver<mojom::Service> receiver,
-             base::WaitableEvent& ping_event) {
-    impl_thread_.StartWithOptions(
-        base::Thread::Options{base::MessagePumpType::IO, 0});
-    service_.emplace(impl_thread_.task_runner(), impl_thread_.task_runner());
+             base::WaitableEvent& ping_event,
+             bool simulate_failure = false) {
+    service_.emplace(impl_thread_->task_runner(), impl_thread_->task_runner());
+
+    if (simulate_failure) {
+      service_.AsyncCall(&ServiceImpl::SimulateFailure);
+    }
 
     // First the service bound on its own thread.
     base::WaitableEvent bound_event;
@@ -179,7 +245,12 @@ class ServiceRunner {
 
  private:
   const raw_ref<DirectReceiverTest> test_;
-  base::Thread impl_thread_{"Impl Thread"};
+  // Optional service thread owned by this ServiceRunner. Must come before
+  // `impl_thread_` so it's destroyed after it, to avoid a dangling raw_ptr.
+  std::unique_ptr<base::Thread> owned_thread_;
+  // The service thread that will be used (either `owned_thread_` or a shared
+  // service thread owned by some other ServiceRunner).
+  raw_ptr<base::Thread> impl_thread_;
   base::SequenceBound<ServiceImpl> service_;
 };
 
@@ -300,6 +371,93 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(NoIOThreadHopInNonBroker_Child,
   WriteMessage(test_pipe->value(), "done");
 }
 
+TEST_F(DirectReceiverTest, FallbackToIOThreadHopOnFailure) {
+  // Create two services using the same service thread. One will have a direct
+  // connection, so it can get messages from the child when the IO thread is
+  // paused. The other simulates a failure in ThreadLocalNode::AdoptPipe, which
+  // should cause it to fall back to an IO thread hop.
+  ServiceRunner direct_runner{*this};
+  ServiceRunner fallback_runner{*this, direct_runner.impl_thread()};
+  RunTestClient("FallbackToIOThreadHopOnFailure_Child", [&](MojoHandle child) {
+    PendingRemote<mojom::Service> direct_remote;
+    PendingReceiver<mojom::Service> direct_receiver =
+        direct_remote.InitWithNewPipeAndPassReceiver();
+
+    PendingRemote<mojom::Service> fallback_remote;
+    PendingReceiver<mojom::Service> fallback_receiver =
+        fallback_remote.InitWithNewPipeAndPassReceiver();
+
+    // Pass the child its pipes.
+    MojoHandle remote_pipes[] = {direct_remote.PassPipe().release().value(),
+                                 fallback_remote.PassPipe().release().value()};
+    WriteMessageWithHandles(child, "", remote_pipes, 2);
+
+    // Start the services. This blocks until they have direct links to the child
+    // portal (i.e. no proxies).
+    base::WaitableEvent direct_ping_event;
+    direct_runner.Start(std::move(direct_receiver), direct_ping_event);
+    base::WaitableEvent fallback_ping_event;
+    fallback_runner.Start(std::move(fallback_receiver), fallback_ping_event,
+                          /*simulate_failure=*/true);
+
+    // Pause the IO thread and tell the child to ping the services.
+    {
+      ScopedPauseIOThread pause_io;
+      WriteMessage(child, "ok go");
+
+      // Now wait for receipt of the direct Ping(), which comes in directly on
+      // the service thread, before unblocking IO.
+      direct_ping_event.Wait();
+
+      // Since the child sends the fallback Ping() before the direct Ping(), if
+      // it came directly on the service thread it would be received first.
+      // Since it's NOT received yet, it must not have come directly. (Note that
+      // if `direct_runner` and `fallback_runner` used different service
+      // threads, the order that the two WaitableEvent's are signaled would be
+      // ambiguous.)
+      EXPECT_FALSE(fallback_ping_event.IsSignaled());
+    }
+
+    // Now that the IO thread is unblocked the fallback Ping() should arrive.
+    fallback_ping_event.Wait();
+
+    // Wait for the child to finish.
+    EXPECT_EQ("done", ReadMessage(child));
+  });
+}
+
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(FallbackToIOThreadHopOnFailure_Child,
+                                  DirectReceiverTest,
+                                  test_pipe_handle) {
+  const ScopedMessagePipeHandle test_pipe{MessagePipeHandle{test_pipe_handle}};
+
+  // Before binding to a Remote, wait for the pipe's portal to have a direct
+  // link to the service.
+  MojoHandle handles[2];
+  ReadMessageWithHandles(test_pipe->value(), handles, 2);
+  WaitForDirectRemoteLink(handles[0]);
+  WaitForDirectRemoteLink(handles[1]);
+
+  Remote<mojom::Service> direct_service{PendingRemote<mojom::Service>{
+      MakeScopedHandle(MessagePipeHandle{handles[0]}), 0}};
+  Remote<mojom::Service> fallback_service{PendingRemote<mojom::Service>{
+      MakeScopedHandle(MessagePipeHandle{handles[1]}), 0}};
+
+  // Wait for the test to be ready for our Ping(), ensuring that its IO thread
+  // is paused first.
+  EXPECT_EQ("ok go", ReadMessage(test_pipe->value()));
+
+  base::RunLoop loop;
+  auto quit_closure = base::BarrierClosure(2, loop.QuitClosure());
+  // Send the fallback Ping() first (see comment in the ScopedPauseIOThread
+  // block above).
+  fallback_service->Ping(quit_closure);
+  direct_service->Ping(quit_closure);
+  loop.Run();
+
+  WriteMessage(test_pipe->value(), "done");
+}
+
 TEST_F(DirectReceiverTest, ThreadLocalInstanceShared) {
   // Creates two DirectReceivers on the same thread and validates that they
   // share the same underlying ipcz node.
@@ -320,18 +478,18 @@ TEST_F(DirectReceiverTest, ThreadLocalInstanceShared) {
 
     impl2 = std::make_unique<ServiceImpl>(io_thread.task_runner());
     impl2->receiver().Bind(std::move(receiver2));
-  });
 
-  // Both receivers should be using the same node to receive I/O.
-  EXPECT_EQ(impl1->receiver().node_for_testing().node(),
-            impl2->receiver().node_for_testing().node());
+    // Both receivers should be using the same node to receive I/O.
+    EXPECT_EQ(impl1->receiver().node_for_testing().node(),
+              impl2->receiver().node_for_testing().node());
+  });
 
   // For good measure, verify that the receivers actually work too.
   base::RunLoop loop1;
   remote1->Ping(loop1.QuitClosure());
   loop1.Run();
   base::RunLoop loop2;
-  remote1->Ping(loop2.QuitClosure());
+  remote2->Ping(loop2.QuitClosure());
   loop2.Run();
 
   RunOn(io_thread, [&] {
@@ -362,25 +520,27 @@ TEST_F(DirectReceiverTest, UniqueNodePerThread) {
   Remote<mojom::Service> remote2;
   auto receiver1 = remote1.BindNewPipeAndPassReceiver();
   auto receiver2 = remote2.BindNewPipeAndPassReceiver();
+  IpczHandle node1, node2;
   RunOn(io_thread1, [&] {
     impl1 = std::make_unique<ServiceImpl>(io_thread1.task_runner());
     impl1->receiver().Bind(std::move(receiver1));
+    node1 = impl1->receiver().node_for_testing().node();
   });
   RunOn(io_thread2, [&] {
     impl2 = std::make_unique<ServiceImpl>(io_thread2.task_runner());
     impl2->receiver().Bind(std::move(receiver2));
+    node2 = impl2->receiver().node_for_testing().node();
   });
 
   // Both receivers should be using different nodes to receive I/O.
-  EXPECT_NE(impl1->receiver().node_for_testing().node(),
-            impl2->receiver().node_for_testing().node());
+  EXPECT_NE(node1, node2);
 
   // For good measure, verify that the receivers actually work too.
   base::RunLoop loop1;
   remote1->Ping(loop1.QuitClosure());
   loop1.Run();
   base::RunLoop loop2;
-  remote1->Ping(loop2.QuitClosure());
+  remote2->Ping(loop2.QuitClosure());
   loop2.Run();
 
   RunOn(io_thread1, [&] {

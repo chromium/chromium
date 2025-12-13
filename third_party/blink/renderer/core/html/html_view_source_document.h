@@ -59,21 +59,26 @@ class CORE_EXPORT HTMLViewSourceDocument final : public HTMLDocument {
   void ProcessCommentToken(const String& source, HTMLToken&);
   void ProcessCharacterToken(const String& source, HTMLToken&);
 
+  struct Link {
+    bool is_anchor;
+    const AtomicString& url;
+  };
+
   void CreateContainingTable();
   Element* AddSpanWithClassName(const AtomicString&);
-  void AddLine(const AtomicString& class_name);
+  void AddLine();
   void FinishLine();
-  void AddText(const String& text, const AtomicString& class_name);
+  void AddText(const String& text,
+               const AtomicString& class_name,
+               const Link* link = nullptr);
   int AddRange(const String& source,
                int start,
                int end,
                const AtomicString& class_name,
-               bool is_link = false,
-               bool is_anchor = false,
-               const AtomicString& link = g_null_atom);
+               const Link* link = nullptr);
   int AddSrcset(const String& source, int start, int end);
 
-  Element* AddLink(const AtomicString& url, bool is_anchor);
+  Element* AddLink(const Link& link);
   Element* AddBase(const AtomicString& href);
 
   String type_;
@@ -81,6 +86,7 @@ class CORE_EXPORT HTMLViewSourceDocument final : public HTMLDocument {
   Member<HTMLTableSectionElement> tbody_;
   Member<HTMLTableCellElement> td_;
   int line_number_;
+  bool processing_tag_token_ = false;
 
   const AtomicString class_doctype_{"html-doctype"};
   const AtomicString class_end_of_file_{"html-end-of-file"};

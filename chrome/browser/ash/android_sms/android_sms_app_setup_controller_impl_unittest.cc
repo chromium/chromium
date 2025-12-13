@@ -197,7 +197,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     fake_cookie_manager_->InvokePendingSetCanonicalCookieCallback(
         "default_to_persist" /* expected_cookie_name */,
         "true" /* expected_cookie_value */,
-        GURL("https://" + app_url.host()) /* expected_source_url */,
+        GURL("https://" + app_url.GetHost()) /* expected_source_url */,
         false /* expected_modify_http_only */,
         net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
         true /* success */);
@@ -257,7 +257,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     fake_cookie_manager_->InvokePendingSetCanonicalCookieCallback(
         "default_to_persist" /* expected_cookie_name */,
         "true" /* expected_cookie_value */,
-        GURL("https://" + app_url.host()) /* expected_source_url */,
+        GURL("https://" + app_url.GetHost()) /* expected_source_url */,
         false /* expected_modify_http_only */,
         net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
         true /* success */);
@@ -331,7 +331,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
       fake_cookie_manager_->InvokePendingSetCanonicalCookieCallback(
           "cros_migrated_to" /* expected_cookie_name */,
           migrated_to_app_url.GetContent() /* expected_cookie_value */,
-          GURL("https://" + app_url.host()) /* expected_source_url */,
+          GURL("https://" + app_url.GetHost()) /* expected_source_url */,
           false /* expected_modify_http_only */,
           net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
           true /* success */);

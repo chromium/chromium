@@ -36,7 +36,7 @@ class CONTENT_EXPORT FlingSchedulerAndroid
       base::WeakPtr<input::FlingController> fling_controller) override;
   void DidStopFlingingOnBrowser(
       base::WeakPtr<input::FlingController> fling_controller) override;
-  bool NeedsBeginFrameForFlingProgress() override;
+  bool ProgressFlingOnFlingStart() override;
   bool ShouldUseMobileFlingCurve() override;
   gfx::Vector2dF GetPixelsPerInch(
       const gfx::PointF& position_in_screen) override;

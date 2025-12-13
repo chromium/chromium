@@ -16,7 +16,6 @@ namespace {
 // actually crashing). This is used for verifying safety measures that help
 // catch features that cause real crashes.
 BASE_FEATURE(kVariationsFakeCrashAfterStartup,
-             "VariationsFakeCrashAfterStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 

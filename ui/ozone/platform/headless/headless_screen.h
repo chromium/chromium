@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
 #include "ui/display/display_list.h"
+#include "ui/display/headless/headless_screen_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/public/platform_screen.h"
 
@@ -17,7 +18,8 @@ namespace ui {
 
 class HeadlessWindowManager;
 
-class HeadlessScreen : public PlatformScreen {
+class HeadlessScreen : public PlatformScreen,
+                       public display::HeadlessScreenManager::Delegate {
  public:
   HeadlessScreen();
 
@@ -25,6 +27,10 @@ class HeadlessScreen : public PlatformScreen {
   HeadlessScreen& operator=(const HeadlessScreen&) = delete;
 
   ~HeadlessScreen() override;
+
+  // Overridden from display::HeadlessScreenManager::Delegate:
+  int64_t AddDisplay(const display::Display& display) override;
+  void RemoveDisplay(int64_t display_id) override;
 
   // Overridden from ui::PlatformScreen:
   const std::vector<display::Display>& GetAllDisplays() const override;
@@ -38,8 +44,11 @@ class HeadlessScreen : public PlatformScreen {
       const gfx::Point& point) const override;
   display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const override;
+  bool IsScreenSaverActive() const override;
+  base::TimeDelta CalculateIdleTime() const override;
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
+  bool IsHeadless() const override;
 
  private:
   void CreateDisplayList();

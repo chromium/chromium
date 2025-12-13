@@ -81,7 +81,7 @@ NoCopyUrl::NoCopyUrl(const GURL& original) : original_(original) {
                                        std::string_view());
   }
 
-  host_and_port_ = base::StrCat({original.host(), port_suffix});
+  host_and_port_ = base::StrCat({original.GetHost(), port_suffix});
 }
 
 Rule::Rule(std::string_view original_rule)

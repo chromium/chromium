@@ -13,9 +13,9 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,7 +50,7 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
   // management state.
   static std::unique_ptr<ManagementContextMixin> Create(
       InProcessBrowserTestMixinHost* host,
-      InProcessBrowserTest* test_base,
+      PlatformBrowserTest* test_base,
       ManagementContext management_context);
 
   // Start managing the current cloud user.
@@ -78,7 +78,7 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
 
  protected:
   ManagementContextMixin(InProcessBrowserTestMixinHost* host,
-                         InProcessBrowserTest* test_base,
+                         PlatformBrowserTest* test_base,
                          ManagementContext management_context);
 
   // Returns a PolicyData object with some base value which can be used by
@@ -91,9 +91,9 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
   // conflict.
   void MergeNewChromePolicies(policy::PolicyMap& new_policy_map);
 
-  Browser* browser() { return test_base_->browser(); }
+  Profile* profile() { return test_base_->GetProfile(); }
 
-  const raw_ptr<InProcessBrowserTest> test_base_;
+  const raw_ptr<PlatformBrowserTest> test_base_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider>
       user_policy_provider_;
   ManagementContext management_context_;

@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 
@@ -30,4 +32,16 @@ public interface EmbeddableSettingsPage extends SettingsFragment {
      * <p>The activity will observe changes to this value and update the UI as necessary.
      */
     ObservableSupplier<String> getPageTitle();
+
+    /**
+     * Returns the "key" tag of the main_preference, or null.
+     *
+     * <p>If non null, the corresponding item in the main_preference is highlighted when this
+     * fragment is opened and at the bottom of the back stack.
+     */
+    // TODO(crbug.com/454312815): The value returned from here should be taken from xml file
+    // to keep the consistency with the main_preferences.xml.
+    default @Nullable String getMainMenuKey() {
+        return null;
+    }
 }

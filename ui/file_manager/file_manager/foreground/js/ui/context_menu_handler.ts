@@ -53,8 +53,9 @@ class ContextMenuHandler extends FilesEventTarget<ContextMenuHandlerEventMap> {
       case 'Escape':
       case 'Tab':
         return true;
+      default:
+        return false;
     }
-    return false;
   }
 
   private getMenuPosition_(
@@ -186,6 +187,8 @@ class ContextMenuHandler extends FilesEventTarget<ContextMenuHandlerEventMap> {
         break;
       case 'keyup':
         this.keyIsDown_ = false;
+        break;
+      default:
         break;
     }
 

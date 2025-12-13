@@ -13,6 +13,7 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_paths.h"
@@ -22,6 +23,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extension_l10n_util::GzippedMessagesPermission;
 
@@ -45,11 +48,11 @@ TEST(ExtensionL10nUtil, ValidateLocalesWithBadLocale) {
   ASSERT_TRUE(base::WriteFile(messages_file, data));
 
   auto manifest = base::Value::Dict().Set(keys::kDefaultLocale, "en");
-  std::string error;
+  std::u16string error;
   EXPECT_FALSE(extension_l10n_util::ValidateExtensionLocales(temp.GetPath(),
                                                              manifest, &error));
   EXPECT_THAT(
-      error,
+      base::UTF16ToUTF8(error),
       testing::HasSubstr(base::UTF16ToUTF8(messages_file.LossyDisplayName())));
 }
 
@@ -96,23 +99,25 @@ TEST(ExtensionL10nUtil, ValidateLocalesWithErroneousLocalizations) {
   ASSERT_TRUE(base::WriteFile(fr_messages_file, fr_data));
 
   const auto manifest = base::Value::Dict().Set(keys::kDefaultLocale, "en");
-  std::string error;
+  std::u16string error;
   EXPECT_FALSE(extension_l10n_util::ValidateExtensionLocales(temp.GetPath(),
                                                              manifest, &error));
-  EXPECT_FALSE(base::Contains(
-      error, base::UTF16ToUTF8(sr_messages_file.LossyDisplayName())));
-  EXPECT_THAT(error, testing::HasSubstr(ErrorUtils::FormatErrorMessage(
-                         errors::kLocalesInvalidLocale,
-                         base::UTF16ToUTF8(de_messages_file.LossyDisplayName()),
-                         "Variable $VAR$ used but not defined.")));
-  EXPECT_THAT(error, testing::HasSubstr(ErrorUtils::FormatErrorMessage(
-                         errors::kLocalesInvalidLocale,
-                         base::UTF16ToUTF8(es_messages_file.LossyDisplayName()),
-                         "expected value at line 1 column 24")));
-  EXPECT_THAT(error, testing::HasSubstr(ErrorUtils::FormatErrorMessage(
-                         errors::kLocalesInvalidLocale,
-                         base::UTF16ToUTF8(fr_messages_file.LossyDisplayName()),
-                         "There is no \"message\" element for key name.")));
+  EXPECT_FALSE(base::Contains(error, sr_messages_file.LossyDisplayName()));
+  EXPECT_THAT(base::UTF16ToUTF8(error),
+              testing::HasSubstr(ErrorUtils::FormatErrorMessage(
+                  errors::kLocalesInvalidLocale,
+                  base::UTF16ToUTF8(de_messages_file.LossyDisplayName()),
+                  "Variable $VAR$ used but not defined.")));
+  EXPECT_THAT(base::UTF16ToUTF8(error),
+              testing::HasSubstr(ErrorUtils::FormatErrorMessage(
+                  errors::kLocalesInvalidLocale,
+                  base::UTF16ToUTF8(es_messages_file.LossyDisplayName()),
+                  "expected value at line 1 column 24")));
+  EXPECT_THAT(base::UTF16ToUTF8(error),
+              testing::HasSubstr(ErrorUtils::FormatErrorMessage(
+                  errors::kLocalesInvalidLocale,
+                  base::UTF16ToUTF8(fr_messages_file.LossyDisplayName()),
+                  "There is no \"message\" element for key name.")));
 }
 
 TEST(ExtensionL10nUtil, GetValidLocalesEmptyLocaleFolder) {

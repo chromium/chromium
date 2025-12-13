@@ -270,6 +270,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 - (void)disconnect {
   _passwordCheckObserver.reset();
   _manager = nullptr;
+  _prefService = nullptr;
 }
 
 - (void)removeCredential:(CredentialDetails*)credentialDetails {
@@ -573,7 +574,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
     credentialDetails.shouldOfferToMoveToAccount =
         self.context == DetailsContext::kPasswordSettings &&
         password_manager::features_util::IsAccountStorageEnabled(
-            _prefService, _syncService) &&
+            _syncService) &&
         ShouldShowLocalOnlyIcon(credential, _syncService);
     [passwords addObject:credentialDetails];
   }
@@ -632,8 +633,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  return password_manager::features_util::IsAccountStorageEnabled(_prefService,
-                                                                  _syncService);
+  return password_manager::features_util::IsAccountStorageEnabled(_syncService);
 }
 
 @end

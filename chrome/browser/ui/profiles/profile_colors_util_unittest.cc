@@ -22,6 +22,7 @@
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace {
@@ -187,7 +188,13 @@ TEST_F(ProfileColorsUtilTest, IsLightForAutoselection) {
 class ProfileColorsUtilTestDarkModeParam
     : public ProfileColorsUtilTest,
       public testing::WithParamInterface<bool> {
- public:
+ protected:
+  ProfileColorsUtilTestDarkModeParam() {
+    os_settings_provider_.SetPreferredColorScheme(
+        GetParam() ? ui::NativeTheme::PreferredColorScheme::kDark
+                   : ui::NativeTheme::PreferredColorScheme::kLight);
+  }
+
   void ExpectAllSaturatedColorsMatchingColorSchemeAvailable() {
     std::set<int> available_colors = GetAvailableColorsIds();
     for (size_t i = 0; i < kColorsCount; ++i) {
@@ -200,13 +207,15 @@ class ProfileColorsUtilTestDarkModeParam
       }
     }
   }
+
+ private:
+  ui::MockOsSettingsProvider os_settings_provider_;
 };
 
 // Test that all colors matching the native light-or-dark color scheme are
 // available with no other profiles.
 TEST_P(ProfileColorsUtilTestDarkModeParam,
        GenerateNewProfileColorWithNoColoredProfile) {
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(GetParam());
   ExpectAllSaturatedColorsMatchingColorSchemeAvailable();
 
   // Add some profiles with the default theme.

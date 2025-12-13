@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
@@ -145,12 +146,11 @@ void PaintFocusBar(gfx::Canvas* canvas,
                    const gfx::Point& content_origin,
                    int height,
                    SkColor color) {
-  SkPath path;
   gfx::Rect focus_bar_bounds(content_origin.x() - kFocusBarThickness,
                              content_origin.y(), kFocusBarThickness * 2,
                              height);
-  path.addRRect(SkRRect::MakeRectXY(RectToSkRect(focus_bar_bounds),
-                                    kFocusBarThickness, kFocusBarThickness));
+  const SkPath path = SkPath::RRect(RectToSkRect(focus_bar_bounds),
+                                    kFocusBarThickness, kFocusBarThickness);
   canvas->ClipPath(path, true);
 
   cc::PaintFlags flags;

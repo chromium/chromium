@@ -146,18 +146,18 @@ Http2PriorityDependencies::OnStreamUpdate(spdy::SpdyStreamId id,
     if (ChildOfStream(id, &old_child)) {
       int weight = spdy::Spdy3PriorityToHttp2Weight(old_child->second);
       if (old_has_parent) {
-        result.push_back({old_child->first, old_parent->first, weight, true});
+        result.emplace_back(old_child->first, old_parent->first, weight, true);
       } else {
-        result.push_back({old_child->first, 0, weight, true});
+        result.emplace_back(old_child->first, 0, weight, true);
       }
     }
 
     int weight = spdy::Spdy3PriorityToHttp2Weight(new_priority);
     // |id| moves to be dependent on |new_parent|.
     if (new_has_parent) {
-      result.push_back({id, new_parent->first, weight, true});
+      result.emplace_back(id, new_parent->first, weight, true);
     } else {
-      result.push_back({id, 0, weight, true});
+      result.emplace_back(id, 0, weight, true);
     }
   }
 

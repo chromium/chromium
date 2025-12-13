@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 
 import java.util.ArrayList;
@@ -27,7 +26,6 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
      */
     public ComposedBrowserControlsVisibilityDelegate(
             BrowserControlsVisibilityDelegate... delegates) {
-        super(BrowserControlsState.BOTH);
         mDelegates = new ArrayList<>(Arrays.asList(delegates));
         mConstraintsUpdatedCallback = (constraints) -> super.set(calculateVisibilityConstraints());
         // We start initially with no observers and we don't actively update the set() value here.
@@ -48,7 +46,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public @Nullable @BrowserControlsState Integer addObserver(
+    public @BrowserControlsState Integer addObserver(
             Callback<@BrowserControlsState Integer> obs, @NotifyBehavior int behavior) {
         if (!hasObservers()) {
             for (BrowserControlsVisibilityDelegate delegate : mDelegates) {
@@ -74,7 +72,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public @Nullable @BrowserControlsState Integer get() {
+    public @BrowserControlsState Integer get() {
         // When there are no observers, we don't actively update the set() value and calculate a
         // fresh value on demand.
         if (!hasObservers()) {
@@ -84,7 +82,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public void set(@BrowserControlsState Integer value) {
+    public void set(@BrowserControlsState int value) {
         // Allow set(...) to be called only via super.set().
         assert false : "Calling set on the composed delegate is not allowed.";
         super.set(value);

@@ -6,6 +6,8 @@
 
 #include <string_view>
 
+#include "base/functional/callback.h"
+
 namespace blink {
 
 ThreadSafeBrowserInterfaceBrokerProxy::ThreadSafeBrowserInterfaceBrokerProxy() =

@@ -100,6 +100,13 @@ public class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
     }
 
     @Override
+    public void logShareSheet(String sessionId, boolean isShareCompleted) {
+        if (mInternalDelegate != null) {
+            mInternalDelegate.logShareSheet(sessionId, isShareCompleted);
+        }
+    }
+
+    @Override
     @CalledByNative
     public void handleShareURLIntercepted(GURL url) {
         Context context = ContextUtils.getApplicationContext();

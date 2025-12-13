@@ -20,11 +20,13 @@
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_animation_utils.h"
 #include "ash/system/mahi/resources/grit/mahi_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -37,6 +39,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_types.h"
@@ -115,14 +118,18 @@ SearchResultsPanel::SearchResultsPanel() {
                           .WithAlignment(views::LayoutAlignment::kEnd)))
           .Build());
 
-  SetBackground(views::CreateRoundedRectBackground(
-      cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
+  SetBackground(views::CreateSolidBackground(
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque));
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kPanelCornerRadius});
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
   ShowLoadingAnimation();
 
@@ -326,7 +333,7 @@ void SearchResultsPanel::RefreshPanelBounds() {
 
   // Adjust the preferred size and bounds based on the current display.
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
   const gfx::Rect work_area_in_screen(display.work_area());
   if (!work_area_in_screen.Contains(widget_bounds_in_screen)) {

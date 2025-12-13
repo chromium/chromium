@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/loader/keep_alive_request_browsertest_util.h"

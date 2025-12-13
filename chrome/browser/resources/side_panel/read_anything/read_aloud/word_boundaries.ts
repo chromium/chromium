@@ -44,19 +44,17 @@ export class WordBoundaries {
     return this.state.mode === WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED;
   }
 
-  resetToDefaultState(possibleWordBoundarySupportChange: boolean = false) {
-    // If a boundary has been detected, the mode should be reset to
-    // NO_BOUNDARIES instead of BOUNDARIES_NOT_SUPPORTED because we know
-    // word boundaries are supported- we just need to clear the current
-    // boundary state. This allows us to highlight the next word at the
-    // start of a sentence when playback state changes. However, if there's
-    // been a change that potentially impacts if word boundaries are
-    // supported (such as changing the voice), we should reset to
-    // BOUNDARIES_NOT_SUPPORTED because we don't know yet if word boundaries
-    // are supported for this voice.
+  /**
+   * Resets the state to a default configuration.
+   *
+   * If a word boundary was previously detected, the mode is set to
+   * NO_BOUNDARIES. This is because we know boundaries are supported and are
+   * simply clearing the current state. Otherwise, the mode is set to
+   * BOUNDARIES_NOT_SUPPORTED.
+   */
+  resetToDefaultState() {
     const defaultMode =
-        ((this.state.mode === WordBoundaryMode.BOUNDARY_DETECTED) &&
-         !possibleWordBoundarySupportChange) ?
+        (this.state.mode === WordBoundaryMode.BOUNDARY_DETECTED) ?
         WordBoundaryMode.NO_BOUNDARIES :
         WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED;
     this.state = {
@@ -67,7 +65,15 @@ export class WordBoundaries {
     };
   }
 
-  // Returns the index of the word boundary at which we had previoudly paused.
+  /**
+   * Explicitly sets the mode to indicate that word boundaries are not or might
+   * not be supported.
+   */
+  setNotSupported(): void {
+    this.state.mode = WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED;
+  }
+
+  // Returns the index of the word boundary at which we had previously paused.
   getResumeBoundary(): number {
     const substringIndex =
         this.state.previouslySpokenIndex + this.state.speechUtteranceStartIndex;

@@ -13,7 +13,6 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -84,7 +83,6 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -95,6 +93,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/ink_drop.h"
@@ -124,7 +123,7 @@ gfx::ImageSkia CreateImageSkiaIcon(SkColor color) {
 }
 
 int64_t GetPrimaryDisplayId() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  return display::Screen::Get()->GetPrimaryDisplay().id();
 }
 
 void ExpectFocused(views::View* view) {
@@ -1487,8 +1486,8 @@ TEST_P(LtrRtlShelfViewTest, ActivateAppButtonDuringDropAnimation) {
 
   // Enable animations, as the test verifies behavior while a drop animation is
   // in progress.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // The test makes some assumptions that the shelf is bottom aligned.
   ASSERT_EQ(shelf_view_->shelf()->alignment(), ShelfAlignment::kBottom);
@@ -2506,8 +2505,7 @@ void ExpectWithinOnePixel(int a, int b) {
 }
 
 TEST_P(LtrRtlShelfViewTest, IconCenteringTest) {
-  const display::Display display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   const int screen_width = display.bounds().width();
   const int screen_center = screen_width / 2;
 
@@ -2738,8 +2736,8 @@ TEST_F(ShelfViewTest, TapOnItemDuringFadeOut) {
 
   // Enable animations, as the test verifies behavior while a fade out animation
   // is in progress.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Simulate test app getting uninstalled.
   model_->RemoveItemAt(model_->ItemIndexByID(test_item_id));
@@ -2764,8 +2762,8 @@ TEST_F(ShelfViewTest, SwipeOnItemDuringFadeOut) {
 
   // Enable animations, as the test verifies behavior while a fade out animation
   // is in progress.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Simulate test app getting uninstalled.
   model_->RemoveItemAt(model_->ItemIndexByID(test_item_id));
@@ -4175,17 +4173,7 @@ TEST_F(ShelfViewDeskButtonTest, VisibilityMetrics) {
   histogram_tester.ExpectTotalCount(kDeskButtonHiddenHistogramName, 1);
 }
 
-class ShelfViewPromiseAppTest : public ShelfViewTest {
- public:
-  ShelfViewPromiseAppTest() = default;
-  ShelfViewPromiseAppTest(const ShelfViewPromiseAppTest&) = delete;
-  ShelfViewPromiseAppTest& operator=(const ShelfViewPromiseAppTest&) = delete;
-  ~ShelfViewPromiseAppTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kPromiseIcons};
-};
+using ShelfViewPromiseAppTest = ShelfViewTest;
 
 TEST_F(ShelfViewPromiseAppTest, UpdateProgressOnPromiseIcon) {
   // Add platform app button.
@@ -4398,8 +4386,8 @@ TEST_F(ShelfViewPromiseAppTest, PromiseIconLayers) {
   EXPECT_EQ(button->app_status(), AppStatus::kInstallSuccess);
   EXPECT_TRUE(button->layer());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Simulate pushing the installed app.
   model_->RemoveItemAt(index);

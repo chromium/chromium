@@ -93,4 +93,22 @@ OSStatus CatapApiImpl::AudioHardwareDestroyProcessTap(AudioObjectID in_tap) {
   return ::AudioHardwareDestroyProcessTap(in_tap);
 }
 
+OSStatus CatapApiImpl::AudioObjectAddPropertyListenerBlock(
+    AudioObjectID in_object_id,
+    const AudioObjectPropertyAddress* in_address,
+    dispatch_queue_t in_dispatch_queue,
+    AudioObjectPropertyListenerBlock in_listener) {
+  return ::AudioObjectAddPropertyListenerBlock(in_object_id, in_address,
+                                               in_dispatch_queue, in_listener);
+}
+
+OSStatus CatapApiImpl::AudioObjectRemovePropertyListenerBlock(
+    AudioObjectID in_object_id,
+    const AudioObjectPropertyAddress* in_address,
+    dispatch_queue_t in_dispatch_queue,
+    AudioObjectPropertyListenerBlock in_listener) {
+  return ::AudioObjectRemovePropertyListenerBlock(
+      in_object_id, in_address, in_dispatch_queue, in_listener);
+}
+
 }  // namespace media

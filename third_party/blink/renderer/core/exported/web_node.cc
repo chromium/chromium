@@ -32,6 +32,7 @@
 
 #include <ostream>
 
+#include "base/functional/callback_helpers.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -64,6 +66,40 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
+
+namespace {
+
+const AtomicString& GetEventTypeName(WebNode::EventType event_type) {
+  switch (event_type) {
+    case WebNode::EventType::kAutofill:
+      return event_type_names::kAutofill;
+    case WebNode::EventType::kSelectionchange:
+      return event_type_names::kSelectionchange;
+    case WebNode::EventType::kBeforeinput:
+      return event_type_names::kBeforeinput;
+    case WebNode::EventType::kInput:
+      return event_type_names::kInput;
+    case WebNode::EventType::kCompositionstart:
+      return event_type_names::kCompositionstart;
+    case WebNode::EventType::kCompositionupdate:
+      return event_type_names::kCompositionupdate;
+    case WebNode::EventType::kCompositionend:
+      return event_type_names::kCompositionend;
+    case WebNode::EventType::kDrop:
+      return event_type_names::kDrop;
+    case WebNode::EventType::kPaste:
+      return event_type_names::kPaste;
+    case WebNode::EventType::kKeydown:
+      return event_type_names::kKeydown;
+    case WebNode::EventType::kKeyup:
+      return event_type_names::kKeyup;
+    case WebNode::EventType::kKeypress:
+      return event_type_names::kKeypress;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 WebNode::WebNode() = default;
 
@@ -94,6 +130,14 @@ bool WebNode::Equals(const WebNode& n) const {
 
 bool WebNode::LessThan(const WebNode& n) const {
   return private_.Get() < n.private_.Get();
+}
+
+bool WebNode::Contains(const WebNode* n) const {
+  return private_->contains(n->private_.Get());
+}
+
+bool WebNode::ContainsViaFlatTree(const WebNode* n) const {
+  return private_->ContainsViaFlatTree(*n->private_.Get());
 }
 
 WebNode WebNode::ParentNode() const {
@@ -201,9 +245,9 @@ void WebNode::SimulateClick() {
   private_->GetExecutionContext()
       ->GetTaskRunner(TaskType::kUserInteraction)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&Node::DispatchSimulatedClick,
-                               WrapWeakPersistent(private_.Get()), nullptr,
-                               SimulatedClickCreationScope::kFromUserAgent));
+                 BindOnce(&Node::DispatchSimulatedClick,
+                          WrapWeakPersistent(private_.Get()), nullptr,
+                          SimulatedClickCreationScope::kFromUserAgent));
 }
 
 WebElementCollection WebNode::GetElementsByHTMLTagName(
@@ -267,6 +311,13 @@ bool WebNode::Focused() const {
   return private_->IsFocused();
 }
 
+void WebNode::RevealAutoExpandableAncestors() const {
+  auto result = DisplayLockUtilities::RevealAutoExpandableAncestors(*private_);
+  if (result.revealed_details || result.revealed_hidden_until_found) {
+    private_->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kInput);
+  }
+}
+
 cc::ElementId WebNode::ScrollingElementIdForTesting() const {
   return private_->GetLayoutBox()->GetScrollableArea()->GetScrollElementId();
 }
@@ -299,25 +350,31 @@ WebNode WebNode::FromDomNodeId(int dom_node_id) {
 
 base::ScopedClosureRunner WebNode::AddEventListener(
     EventType event_type,
-    base::RepeatingCallback<void(WebDOMEvent)> handler) {
+    base::RepeatingCallback<void(WebDOMEvent)> handler,
+    bool use_capture) {
   class EventListener : public NativeEventListener {
    public:
     EventListener(Node* node,
-                  base::RepeatingCallback<void(WebDOMEvent)> handler)
-        : node_(node), handler_(std::move(handler)) {}
+                  EventType event_type,
+                  base::RepeatingCallback<void(WebDOMEvent)> handler,
+                  bool use_capture)
+        : node_(node),
+          event_type_(event_type),
+          handler_(std::move(handler)),
+          use_capture_(use_capture) {}
 
     void Invoke(ExecutionContext*, Event* event) override {
       handler_.Run(WebDOMEvent(event));
     }
 
     void AddListener() {
-      node_->addEventListener(event_type_name(), this,
-                              /*use_capture=*/false);
+      node_->addEventListener(GetEventTypeName(event_type_), this,
+                              /*use_capture=*/use_capture_);
     }
 
     void RemoveListener() {
-      node_->removeEventListener(event_type_name(), this,
-                                 /*use_capture=*/false);
+      node_->removeEventListener(GetEventTypeName(event_type_), this,
+                                 /*use_capture=*/use_capture_);
     }
 
     void Trace(Visitor* visitor) const override {
@@ -326,24 +383,23 @@ base::ScopedClosureRunner WebNode::AddEventListener(
     }
 
    private:
-    const AtomicString& event_type_name() {
-      switch (event_type_) {
-        case EventType::kSelectionchange:
-          return event_type_names::kSelectionchange;
-      }
-      NOTREACHED();
-    }
-
     Member<Node> node_;
     EventType event_type_;
     base::RepeatingCallback<void(WebDOMEvent)> handler_;
+    bool use_capture_ = false;
   };
 
   WebPrivatePtrForGC<EventListener> listener =
-      MakeGarbageCollected<EventListener>(Unwrap<Node>(), std::move(handler));
+      MakeGarbageCollected<EventListener>(Unwrap<Node>(), event_type,
+                                          std::move(handler),
+                                          /*use_capture=*/use_capture);
   listener->AddListener();
-  return base::ScopedClosureRunner(WTF::BindOnce(
+  return base::ScopedClosureRunner(BindOnce(
       &EventListener::RemoveListener, WrapWeakPersistent(listener.Get())));
+}
+
+bool WebNode::HasEventListeners(EventType event_type) const {
+  return private_->HasEventListeners(GetEventTypeName(event_type));
 }
 
 std::ostream& operator<<(std::ostream& ostream, const WebNode& node) {

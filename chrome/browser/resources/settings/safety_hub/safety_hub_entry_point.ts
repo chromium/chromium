@@ -6,6 +6,7 @@
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import '../settings_page/settings_section.js';
 import './safety_hub_module.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -13,8 +14,10 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {routes} from '../route.js';
 import {Router, RouteObserverMixin} from '../router.js';
+import type {Route} from '../router.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, SafetyHubEntryPoint} from '../metrics_browser_proxy.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {EntryPointInfo, SafetyHubBrowserProxy} from './safety_hub_browser_proxy.js';
 import {SafetyHubBrowserProxyImpl} from './safety_hub_browser_proxy.js';
@@ -30,7 +33,7 @@ export interface SettingsSafetyHubEntryPointElement {
 }
 
 const SettingsSafetyHubEntryPointElementBase =
-    RouteObserverMixin(I18nMixin(PolymerElement));
+    SettingsViewMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
 
 export class SettingsSafetyHubEntryPointElement extends
     SettingsSafetyHubEntryPointElementBase {
@@ -88,7 +91,9 @@ export class SettingsSafetyHubEntryPointElement extends
     super.connectedCallback();
   }
 
-  override currentRouteChanged() {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     if (Router.getInstance().getCurrentRoute() !== routes.PRIVACY) {
       return;
     }
@@ -120,6 +125,13 @@ export class SettingsSafetyHubEntryPointElement extends
           SafetyHubEntryPoint.PRIVACY_SAFE);
     }
     Router.getInstance().navigateTo(routes.SAFETY_HUB);
+  }
+
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    return new Map([
+      [routes.SAFETY_HUB.path, '#button'],
+    ]);
   }
 }
 

@@ -69,6 +69,7 @@ group("api_implementations") {
       "//extensions/browser/api/mime_handler_private",
       "//extensions/browser/api/networking_private",
       "//extensions/browser/api/printer_provider",
+      "//extensions/browser/api/protocol_handlers",
       "//extensions/browser/api/serial",
       "//extensions/browser/api/socket",
       "//extensions/browser/api/sockets_tcp",
@@ -115,7 +116,7 @@ source_set("api_keyed_service_factories") {
     "//build:chromeos_buildflags",
     "//extensions/browser/api",
     "//extensions/browser/api:api_implementations",
-    "//extensions/buildflags:buildflags",
+    "//extensions/buildflags",
   ]
 }
 

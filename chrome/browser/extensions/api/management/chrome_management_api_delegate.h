@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_MANAGEMENT_CHROME_MANAGEMENT_API_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_MANAGEMENT_CHROME_MANAGEMENT_API_DELEGATE_H_
 
-#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "extensions/browser/api/management/management_api_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

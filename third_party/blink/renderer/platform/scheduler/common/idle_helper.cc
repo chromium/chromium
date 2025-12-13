@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/blink_scheduler_single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 namespace scheduler {
@@ -398,14 +399,14 @@ void IdleHelper::TraceEventIdlePeriodStateChange(IdlePeriodState new_state,
     running_idle_task_for_tracing_ = false;
     if (!idle_period_deadline_.is_null() && now > idle_period_deadline_) {
       if (last_sub_trace_event_name_) {
-        TRACE_EVENT_NESTABLE_ASYNC_END0("renderer.scheduler",
-                                        last_sub_trace_event_name_,
-                                        TRACE_ID_LOCAL(this));
+        TRACE_EVENT_END("renderer.scheduler",
+                        perfetto::Track(reinterpret_cast<uint64_t>(this)));
       }
       last_sub_trace_event_name_ = "DeadlineOverrun";
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "renderer.scheduler", last_sub_trace_event_name_,
-          TRACE_ID_LOCAL(this),
+      TRACE_EVENT_BEGIN(
+          "renderer.scheduler",
+          perfetto::StaticString(last_sub_trace_event_name_),
+          perfetto::Track(reinterpret_cast<uint64_t>(this)),
           std::max(idle_period_deadline_, last_idle_task_trace_time_));
     }
   }
@@ -413,9 +414,11 @@ void IdleHelper::TraceEventIdlePeriodStateChange(IdlePeriodState new_state,
   if (new_state != IdlePeriodState::kNotInIdlePeriod) {
     if (!idle_period_trace_event_started_) {
       idle_period_trace_event_started_ = true;
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-          "renderer.scheduler", idle_period_tracing_name_, TRACE_ID_LOCAL(this),
-          "idle_period_length_ms", (new_deadline - now).InMillisecondsF());
+      TRACE_EVENT_BEGIN("renderer.scheduler",
+                        perfetto::StaticString(idle_period_tracing_name_),
+                        perfetto::Track(reinterpret_cast<uint64_t>(this)),
+                        "idle_period_length_ms",
+                        (new_deadline - now).InMillisecondsF());
     }
 
     const char* new_sub_trace_event_name = nullptr;
@@ -443,23 +446,22 @@ void IdleHelper::TraceEventIdlePeriodStateChange(IdlePeriodState new_state,
 
     if (new_sub_trace_event_name) {
       if (last_sub_trace_event_name_) {
-        TRACE_EVENT_NESTABLE_ASYNC_END0("renderer.scheduler",
-                                        last_sub_trace_event_name_,
-                                        TRACE_ID_LOCAL(this));
+        TRACE_EVENT_END("renderer.scheduler",
+                        perfetto::Track(reinterpret_cast<uint64_t>(this)));
       }
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-          "renderer.scheduler", new_sub_trace_event_name, TRACE_ID_LOCAL(this));
+      TRACE_EVENT_BEGIN("renderer.scheduler",
+                        perfetto::StaticString(new_sub_trace_event_name),
+                        perfetto::Track(reinterpret_cast<uint64_t>(this)));
       last_sub_trace_event_name_ = new_sub_trace_event_name;
     }
   } else if (idle_period_trace_event_started_) {
     if (last_sub_trace_event_name_) {
-      TRACE_EVENT_NESTABLE_ASYNC_END0("renderer.scheduler",
-                                      last_sub_trace_event_name_,
-                                      TRACE_ID_LOCAL(this));
+      TRACE_EVENT_END("renderer.scheduler",
+                      perfetto::Track(reinterpret_cast<uint64_t>(this)));
       last_sub_trace_event_name_ = nullptr;
     }
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "renderer.scheduler", idle_period_tracing_name_, TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("renderer.scheduler",
+                    perfetto::Track(reinterpret_cast<uint64_t>(this)));
     idle_period_trace_event_started_ = false;
   }
 }

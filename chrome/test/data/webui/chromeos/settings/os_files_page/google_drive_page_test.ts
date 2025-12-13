@@ -86,7 +86,7 @@ suite('<settings-google-drive-subpage>', function() {
   const getClearOfflineStorageTooltipText = (): string =>
       page.shadowRoot!
           .querySelector<PaperTooltipElement>(
-              '#cleanUpStorageTooltip')!.textContent!.trim();
+              '#cleanUpStorageTooltip')!.textContent.trim();
 
   setup(async () => {
     testBrowserProxy = new GoogleDriveTestBrowserProxy();
@@ -143,14 +143,14 @@ suite('<settings-google-drive-subpage>', function() {
       // account".
       page.setPrefValue('gdata.disabled', true);
       flush();
-      assertEquals('Connect', connectDisconnectButton!.textContent!.trim());
+      assertEquals('Connect', connectDisconnectButton!.textContent.trim());
 
       // Update the preference and ensure the text has the value "Remove Drive
       // access".
       page.setPrefValue('gdata.disabled', false);
       flush();
       assertEquals(
-          'Remove Drive access', connectDisconnectButton!.textContent!.trim());
+          'Remove Drive access', connectDisconnectButton!.textContent.trim());
     });
 
     test('confirming drive disconnect updates pref', async () => {

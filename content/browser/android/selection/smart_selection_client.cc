@@ -16,7 +16,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
@@ -39,10 +39,10 @@ class UserData : public base::SupportsUserData::Data {
 };
 }
 
-jlong JNI_SmartSelectionClient_Init(
+static jlong JNI_SmartSelectionClient_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents)
       << "A SmartSelectionClient should be created with a valid WebContents.";
@@ -108,3 +108,5 @@ void SmartSelectionClient::OnSurroundingTextReceived(int callback_data,
 }
 
 }  // namespace content
+
+DEFINE_JNI(SmartSelectionClient)

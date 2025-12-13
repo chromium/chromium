@@ -29,3 +29,5 @@ TrainingLabels TrainingLabelsAndroid::ToNativeTrainingLabels(
 }
 
 }  // namespace segmentation_platform
+
+DEFINE_JNI(TrainingLabels)

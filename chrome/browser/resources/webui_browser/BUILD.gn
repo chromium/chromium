@@ -1,0 +1,90 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android)
+
+build_webui("build") {
+  grd_prefix = "webui_browser"
+
+  static_files = [ "webui_browser.html" ]
+
+  ts_files = [
+    "app.html.ts",
+    "app.ts",
+    "bookmark_bar.html.ts",
+    "bookmark_bar.ts",
+    "bookmark_element.html.ts",
+    "bookmark_element.ts",
+    "extensions_bar.ts",
+    "extension_element.ts",
+    "extension_element.html.ts",
+    "bookmark_bar_browser_proxy.ts",
+    "browser_proxy.ts",
+    "content_region.ts",
+    "icons.html.ts",
+    "side_panel.html.ts",
+    "side_panel.ts",
+    "tab_element.ts",
+    "tab_element.html.ts",
+    "tab_strip.ts",
+    "tab_strip.html.ts",
+    "tab_strip_controller.ts",
+    "webui_browser.ts",
+    "webview.ts",
+  ]
+
+  css_files = [
+    "app.css",
+    "bookmark_element.css",
+    "content_region.css",
+    "extensions_bar.css",
+    "extension_element.css",
+    "side_panel.css",
+    "tab_element.css",
+    "tab_strip.css",
+    "webview.css",
+  ]
+
+  mojo_files = [
+    # TODO(crbug.com/439641430): fix mojo ts bindings to account for cross
+    # reference import issue.
+    "$root_gen_dir/components/browser_apis/tab_strip/node_id_converter.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_types.mojom-converters.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_types.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui_browser/bookmark_bar.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui_browser/browser.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui_browser/extensions_bar.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/tabs/tabs.mojom-webui.ts",
+    "$root_gen_dir/components/tab_groups/public/mojom/tab_group_types.mojom-webui.ts",
+  ]
+
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/tabs:mojo_bindings_ts__generator",
+    "//chrome/browser/ui/webui_browser:browser_mojo_bindings_ts__generator",
+    "//components/browser_apis/tab_strip:mojom_ts__copy_converters",
+    "//components/browser_apis/tab_strip:mojom_ts__generator",
+    "//components/tab_groups/public/mojom:mojo_bindings_ts__generator",
+  ]
+
+  webui_context_type = "trusted"
+
+  ts_definitions = [ "chrome_browser.d.ts" ]
+
+  ts_deps = [
+    "//components/browser_apis/tab_strip/resources:build_ts",
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/cr_components/searchbox:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  ts_path_mappings =
+      [ "/tab_strip_api/*|" + rebase_path(
+            "$root_gen_dir/components/browser_apis/tab_strip/resources/tsc/*",
+            target_gen_dir) ]
+}

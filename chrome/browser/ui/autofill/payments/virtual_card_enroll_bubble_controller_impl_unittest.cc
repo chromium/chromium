@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -14,6 +15,7 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -138,15 +140,23 @@ class TestVirtualCardEnrollBubbleControllerImpl
 };
 
 class VirtualCardEnrollBubbleControllerImplBubbleViewTest
-    : public BrowserWithTestWindowTest {
+    : public base::test::WithFeatureOverride,
+      public BrowserWithTestWindowTest {
  public:
-  VirtualCardEnrollBubbleControllerImplBubbleViewTest() = default;
+  VirtualCardEnrollBubbleControllerImplBubbleViewTest()
+      : base::test::WithFeatureOverride(
+            features::kAutofillShowBubblesBasedOnPriorities) {}
   VirtualCardEnrollBubbleControllerImplBubbleViewTest(
       VirtualCardEnrollBubbleControllerImplBubbleViewTest&) = delete;
   VirtualCardEnrollBubbleControllerImplBubbleViewTest& operator=(
       VirtualCardEnrollBubbleControllerImplBubbleViewTest&) = delete;
 
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (GetParam()) {
+      GTEST_SKIP() << "Bubble Manager is not used on Android";
+    }
+#endif
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("about:blank"));
     content::WebContents* web_contents =
@@ -157,7 +167,7 @@ class VirtualCardEnrollBubbleControllerImplBubbleViewTest
   }
 
   void ShowBubble() {
-    controller()->ShowBubble(
+    controller()->SetupAndShowBubble(
         virtual_card_enrollment_fields(),
         /*accept_virtual_card_callback=*/base::DoNothing(),
         /*decline_virtual_card_callback=*/base::DoNothing());
@@ -183,7 +193,7 @@ class VirtualCardEnrollBubbleControllerImplBubbleViewTest
 
 // Ensures that bubble acceptance and loading shown metrics are recorded after
 // bubble is shown and accepted .
-TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest, ShowBubble) {
+TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest, ShowBubble) {
   base::HistogramTester histogram_tester;
   ShowBubble();
   EXPECT_NE(GetBubbleViews(), nullptr);
@@ -206,7 +216,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest, ShowBubble) {
 
 // Ensures that bubble acceptance, loading shown, and loading result metrics are
 // recorded when the bubble gets closed from the loading state.
-TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
+TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
        ShowBubbleInLoadingState) {
   base::HistogramTester histogram_tester;
   ShowBubble();
@@ -231,8 +241,9 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+
 // Tests virtual card enrollment flow with loading and confirmation.
-TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
+TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
        ShowBubbleInLoadingAndConfirmationState) {
   base::HistogramTester histogram_tester;
   ShowBubble();
@@ -278,7 +289,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
 
 // Test that on getting client-side timeout, virtual card bubble is closed in
 // loading state and confirmation dialog is not shown.
-TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
+TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
        CloseBubbleInLoadingState_NoConfirmationBubble_ClientSideTimeout) {
   ShowBubble();
   EXPECT_NE(GetBubbleViews(), nullptr);
@@ -292,7 +303,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
 
 // Tests that the correct confirmation result metric is logged when the
 // confirmation bubble is closed after the card is not enrolled.
-TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
+TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
        Metric_CloseConfirmationBubble_CardNotEnrolled) {
   base::HistogramTester histogram_tester;
 
@@ -307,6 +318,10 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
       VirtualCardEnrollmentBubbleResult::VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED,
       1);
 }
+
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    VirtualCardEnrollBubbleControllerImplBubbleViewTest);
 }  // namespace
 }  // namespace autofill

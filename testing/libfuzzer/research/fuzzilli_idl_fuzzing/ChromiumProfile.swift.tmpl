@@ -195,16 +195,17 @@ fileprivate let WasmFastCallFuzzer = WasmProgramTemplate("WasmFastCallFuzzer") {
     let m = b.buildWasmModule { m in
         let allWasmTypes: WeightedList<ILType> = WeightedList([(.wasmi32, 1), (.wasmi64, 1), (.wasmf32, 1), (.wasmf64, 1), (.wasmExternRef, 1), (.wasmFuncRef, 1)])
         let wasmSignature = ProgramBuilder.convertJsSignatureToWasmSignature(wrappedSig, availableTypes: allWasmTypes)
-        m.addWasmFunction(with: wasmSignature) {fbuilder, _  in
+        m.addWasmFunction(with: wasmSignature) {fbuilder, _, _  in
             let args = b.randomWasmArguments(forWasmSignature: wasmSignature)
             if let args {
                 let maybeRet = fbuilder.wasmJsCall(function: wrapped, withArgs: args, withWasmSignature: wasmSignature)
                 if let ret = maybeRet {
-                  fbuilder.wasmReturn(ret)
+                  return [ret]
                 }
             } else {
                 logger.error("Arguments should have been generated")
             }
+            return wasmSignature.outputTypes.map(fbuilder.findOrGenerateWasmVar)
         }
     }
 

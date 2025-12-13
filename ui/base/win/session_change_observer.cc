@@ -7,8 +7,10 @@
 #include <wtsapi32.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -18,7 +20,6 @@
 #include "base/observer_list.h"
 #include "base/task/thread_pool.h"
 #include "ui/gfx/win/singleton_hwnd.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace ui {
 
@@ -29,8 +30,8 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
   }
 
   WtsRegistrationNotificationManager() {
-    DCHECK(!singleton_hwnd_observer_);
-    singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
+    DCHECK(!hwnd_subscription_);
+    hwnd_subscription_ = gfx::SingletonHwnd::GetInstance()->RegisterCallback(
         base::BindRepeating(&WtsRegistrationNotificationManager::OnWndProc,
                             base::Unretained(this)));
 
@@ -48,10 +49,10 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
   WtsRegistrationNotificationManager& operator=(
       const WtsRegistrationNotificationManager&) = delete;
 
-  ~WtsRegistrationNotificationManager() { RemoveSingletonHwndObserver(); }
+  ~WtsRegistrationNotificationManager() { ResetHwndSubscription(); }
 
   void AddObserver(SessionChangeObserver* observer) {
-    DCHECK(singleton_hwnd_observer_);
+    DCHECK(hwnd_subscription_);
     observer_list_.AddObserver(observer);
   }
 
@@ -83,18 +84,19 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
         }
         break;
       case WM_DESTROY:
-        RemoveSingletonHwndObserver();
+        ResetHwndSubscription();
         break;
     }
   }
 
-  void RemoveSingletonHwndObserver() {
-    if (!singleton_hwnd_observer_)
+  void ResetHwndSubscription() {
+    if (!hwnd_subscription_) {
       return;
+    }
 
-    singleton_hwnd_observer_.reset(nullptr);
+    hwnd_subscription_.reset();
     // There is no race condition between this code and the worker thread.
-    // RemoveSingletonHwndObserver is only called from two places:
+    // ResetHwndSubscription is only called from two places:
     //   1) Destruction due to Singleton Destruction.
     //   2) WM_DESTROY fired by SingletonHwnd.
     // Under both cases we are in shutdown, which means no other worker threads
@@ -104,7 +106,7 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
   }
 
   base::ObserverList<SessionChangeObserver, true>::Unchecked observer_list_;
-  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+  std::optional<base::CallbackListSubscription> hwnd_subscription_;
 };
 
 SessionChangeObserver::SessionChangeObserver(const WtsCallback& callback)

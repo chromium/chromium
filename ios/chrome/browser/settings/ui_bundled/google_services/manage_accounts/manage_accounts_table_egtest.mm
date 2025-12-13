@@ -4,10 +4,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
+#import "ios/chrome/browser/signin/model/test_constants_utils.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -44,34 +46,12 @@ using chrome_test_util::SettingsSignInRowMatcher;
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  config.features_enabled.push_back(kIdentityDiscAccountMenu);
-
   if ([self isRunningTest:@selector
             (testReloadOnRemoveSecondaryAccountInOtherProfile)]) {
     config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
   }
 
   return config;
-}
-
-- (void)openAccountsListFromSettings {
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
-
-  // Tap "Manage accounts on this device" to get to the accounts view.
-  // First scroll down so that the button is visible.
-  id<GREYMatcher> scrollViewMatcher =
-      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  // Now tab the "Manage accounts on this device" button.
-  id<GREYMatcher> manageAccountsButtonMatcher =
-      grey_allOf(grey_text(l10n_util::GetNSString(
-                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM)),
-                 grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:manageAccountsButtonMatcher]
-      performAction:grey_tap()];
 }
 
 // Tests that the Accounts list screen is correctly popped if the signed in
@@ -81,7 +61,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Sign In identity, then open the Sync Settings.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [self openAccountsListFromSettings];
+  [SigninEarlGreyUI openAccountsListFromSettings];
 
   // Forget fakeIdentity, screens should be popped back to the Main Settings.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -105,7 +85,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Sign In fakeIdentity, then open the Account Settings.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
-  [self openAccountsListFromSettings];
+  [SigninEarlGreyUI openAccountsListFromSettings];
 
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity2];
 
@@ -133,7 +113,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Sign In fakeIdentity1, then open the Account Settings.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
-  [self openAccountsListFromSettings];
+  [SigninEarlGreyUI openAccountsListFromSettings];
 
   // Ensure both identities show up.
   [[EarlGrey
@@ -187,7 +167,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Sign In `fakeIdentity1`, then open the Account Settings.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
-  [self openAccountsListFromSettings];
+  [SigninEarlGreyUI openAccountsListFromSettings];
 
   // Tap on Remove fakeIdentity1 button.
   [[EarlGrey
@@ -216,7 +196,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
 // identity. And finally the remove identity confirmation dialog is opened a
 // third time to remove a second identity.
 // The goal of this test is to confirm the dialog can be opened several times.
-- (void)testRemoveAccountSeveralTime {
+// TODO(crbug.com/460742009): Test is flaky.
+- (void)FLAKY_testRemoveAccountSeveralTime {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   FakeSystemIdentity* fakeIdentity3 = [FakeSystemIdentity fakeIdentity3];
@@ -225,7 +206,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Sign In `fakeIdentity1`, then open the Account Settings.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
-  [self openAccountsListFromSettings];
+  [SigninEarlGreyUI openAccountsListFromSettings];
 
   // Open the remove identity confirmation dialog for the first time.
   // Tap on Remove fakeIdentity1 button.
@@ -282,24 +263,25 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Sign In identity, then open the Sync Settings.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [self openAccountsListFromSettings];
+  [SigninEarlGreyUI openAccountsListFromSettings];
 
-  // Tap on "Add Account".
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kSettingsAccountsTableViewAddAccountCellId)]
-      performAction:grey_tap()];
+  for (NSString* cancelButtonId in
+           signin::FakeSystemIdentityManagerStaySignedOutButtons()) {
+    // Tap on "Add Account".
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(kSettingsAccountsTableViewAddAccountCellId)]
+        performAction:grey_tap()];
+    // Checks the Fake authentication view is shown
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kFakeAuthActivityViewIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    // Close the SSO view controller.
+    id<GREYMatcher> matcher = grey_allOf(grey_accessibilityID(cancelButtonId),
+                                         grey_sufficientlyVisible(), nil);
+    [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+  }
 
-  // Checks the Fake authentication view is shown
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthActivityViewIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Close the SSO view controller.
-  id<GREYMatcher> matcher =
-      grey_allOf(grey_accessibilityID(kFakeAuthCancelButtonIdentifier),
-                 grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 }
 

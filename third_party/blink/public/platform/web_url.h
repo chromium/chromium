@@ -98,8 +98,8 @@ class BLINK_PLATFORM_EXPORT WebURL {
 inline WebURL ToWebURL(const KURL& url) {
   return WebURL(url);
 }
-// To convert a std::vector<WebURL> to WTF::Vector<KURL>, use
-//   WTF::Vector<KURL>(std_vector_web_url).
+// To convert a std::vector<WebURL> to Vector<KURL>, use
+//   Vector<KURL>(std_vector_web_url).
 #else
 inline WebURL ToWebURL(const GURL& url) {
   return WebURL(url);
@@ -111,10 +111,6 @@ inline GURL ToGURL(const WebURL& url) {
 
 inline bool operator==(const WebURL& a, const WebURL& b) {
   return a.GetString().Equals(b.GetString());
-}
-
-inline bool operator!=(const WebURL& a, const WebURL& b) {
-  return !(a == b);
 }
 
 }  // namespace blink

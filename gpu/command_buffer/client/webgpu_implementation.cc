@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 
 #include <dawn/wire/client/webgpu.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/run_loop.h"
@@ -154,27 +150,12 @@ void WebGPUImplementation::SetAggressivelyFreeResources(
     bool aggressively_free_resources) {
   NOTIMPLEMENTED();
 }
-uint64_t WebGPUImplementation::ShareGroupTracingGUID() const {
-  NOTIMPLEMENTED();
-  return 0;
-}
 void WebGPUImplementation::SetErrorMessageCallback(
     base::RepeatingCallback<void(const char*, int32_t)> callback) {
   NOTIMPLEMENTED();
 }
-bool WebGPUImplementation::ThreadSafeShallowLockDiscardableTexture(
-    uint32_t texture_id) {
-  NOTREACHED();
-}
-void WebGPUImplementation::CompleteLockDiscardableTexureOnContextThread(
-    uint32_t texture_id) {
-  NOTREACHED();
-}
-bool WebGPUImplementation::ThreadsafeDiscardableTextureIsDeletedForTracing(
-    uint32_t texture_id) {
-  NOTREACHED();
-}
-void* WebGPUImplementation::MapTransferCacheEntry(uint32_t serialized_size) {
+base::span<uint8_t> WebGPUImplementation::MapTransferCacheEntry(
+    uint32_t serialized_size) {
   NOTREACHED();
 }
 void WebGPUImplementation::UnmapAndCreateTransferCacheEntry(uint32_t type,
@@ -194,16 +175,6 @@ void WebGPUImplementation::DeleteTransferCacheEntry(uint32_t type,
   NOTREACHED();
 }
 unsigned int WebGPUImplementation::GetTransferBufferFreeSize() const {
-  NOTREACHED();
-}
-bool WebGPUImplementation::IsJpegDecodeAccelerationSupported() const {
-  NOTREACHED();
-}
-bool WebGPUImplementation::IsWebPDecodeAccelerationSupported() const {
-  NOTREACHED();
-}
-bool WebGPUImplementation::CanDecodeWithHardwareAcceleration(
-    const cc::ImageHeaderMetadata* image_metadata) const {
   NOTREACHED();
 }
 
@@ -238,10 +209,6 @@ void WebGPUImplementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
 }
 void WebGPUImplementation::ShallowFlushCHROMIUM() {
   FlushCommands();
-}
-
-bool WebGPUImplementation::HasGrContextSupport() const {
-  return true;
 }
 
 // ImplementationBase implementation.
@@ -459,14 +426,15 @@ void WebGPUImplementation::AssociateMailbox(
 
   uint32_t num_entries = ComputeNumEntries(immediate_data.size());
 
-  memcpy(immediate_data.data(), mailbox.name, sizeof(mailbox.name));
-  memcpy(immediate_data.data() + sizeof(mailbox.name), view_formats,
-         sizeof(WGPUTextureFormat) * view_format_count);
+  UNSAFE_TODO(
+      memcpy(immediate_data.data(), mailbox.name, sizeof(mailbox.name)));
+  UNSAFE_TODO(memcpy(immediate_data.data() + sizeof(mailbox.name), view_formats,
+                     sizeof(WGPUTextureFormat) * view_format_count));
 
   helper_->AssociateMailboxImmediate(
       device_id, device_generation, texture_id, texture_generation, usage,
       internal_usage, flags, view_format_count, num_entries,
-      reinterpret_cast<GLuint*>(immediate_data.data()));
+      UNSAFE_TODO(reinterpret_cast<GLuint*>(immediate_data.data())));
 #endif
 }
 

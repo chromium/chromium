@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -24,6 +24,14 @@ namespace on_device_translation {
 // in the passed language pack and the input text. See comments in
 // mock_translate_kit_lib.cc for more details.
 base::FilePath GetMockLibraryPath();
+
+// Returns the path to a mock library that can be used for testing.
+// The library is a valid library, but it will not do anything useful.
+// This is similar to GetMockLibraryPath(), except SplitSentences is not defined
+// in this library. Loading it and calling SplitSentences will cause the
+// original text to be returned. Based on the shared library
+// mock_translate_kit_without_split_sentences_lib.
+base::FilePath GetMockLibraryWithoutSplitSentencesPath();
 
 // Returns the path to a mock library that can be used for testing.
 // This library does not contain any of the methods in the TranslateKit API.

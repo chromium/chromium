@@ -63,6 +63,10 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kDeclarativeNetRequestWithHostAccess,
      "declarativeNetRequestWithHostAccess"},
     {APIPermissionID::kDeclarativeWebRequest, "declarativeWebRequest"},
+    {APIPermissionID::kDevtools, "devtools",
+     APIPermissionInfo::kFlagImpliesFullURLAccess |
+         APIPermissionInfo::kFlagCannotBeOptional |
+         APIPermissionInfo::kFlagInternal},
     {APIPermissionID::kDiagnostics, "diagnostics",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kDns, "dns"},

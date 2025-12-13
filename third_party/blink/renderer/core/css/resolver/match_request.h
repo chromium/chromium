@@ -216,11 +216,6 @@ class CORE_EXPORT MatchRequest {
       return bitmap_ == other.bitmap_;
     }
 
-    bool operator!=(const RuleSetIterator& other) const {
-      DCHECK_EQ(&rule_set_group_, &other.rule_set_group_);
-      return bitmap_ != other.bitmap_;
-    }
-
    private:
     const RuleSetGroup& rule_set_group_;
     RuleSetGroup::RuleSetBitmap bitmap_;

@@ -66,7 +66,6 @@ class KioskArcvmAppData : public KioskAppDataBase {
  private:
   void OnIconLoadDone(std::optional<gfx::ImageSkia> icon);
 
-  const raw_ptr<PrefService> local_state_;
   const std::string package_name_;
   const std::string activity_;
   const std::string intent_;

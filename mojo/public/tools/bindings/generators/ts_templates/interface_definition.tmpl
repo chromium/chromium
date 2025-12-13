@@ -12,11 +12,14 @@
 {%-   endif %}
 {%- endmacro %}
 
-export class {{interface.name}}PendingReceiver implements
-    mojo.internal.interfaceSupport.PendingReceiver {
+export type {{interface.name}}PendingReceiverEndpoint =
+  mojo.internal.interfaceSupport.Endpoint<{{interface.name}}PendingReceiver>;
 
-  handle: mojo.internal.interfaceSupport.Endpoint;
-  constructor(handle: MojoHandle|mojo.internal.interfaceSupport.Endpoint) {
+export class {{interface.name}}PendingReceiver implements
+    mojo.internal.interfaceSupport.PendingReceiver<{{interface.name}}> {
+
+  handle: mojo.internal.interfaceSupport.Endpoint<{{interface.name}}PendingReceiver>;
+  constructor(handle: MojoHandle|{{interface.name}}PendingReceiverEndpoint) {
     this.handle = mojo.internal.interfaceSupport.getEndpointForReceiver(handle);
   }
 
@@ -43,7 +46,7 @@ export class {{interface.name}}Remote implements {{interface.name}}Interface {
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
   constructor(
-      handle?: MojoHandle|mojo.internal.interfaceSupport.Endpoint) {
+      handle?: MojoHandle|{{interface.name}}PendingReceiverEndpoint) {
     this.proxy =
         new mojo.internal.interfaceSupport.InterfaceRemoteBase(
           {{interface.name}}PendingReceiver, handle);
@@ -89,9 +92,11 @@ export class {{interface.name}}Remote implements {{interface.name}}Interface {
  * interface.
  */
 export class {{interface.name}}Receiver {
-  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<{{interface.name}}Remote>;
+  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
+    {{interface.name}}Remote, {{interface.name}}PendingReceiver>;
 
-  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<{{interface.name}}Remote>;
+  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<
+    {{interface.name}}Remote, {{interface.name}}PendingReceiver>;
 
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
@@ -153,8 +158,10 @@ export class {{interface.name}} {
  * receiver can have any number of listeners added to it.
  */
 export class {{interface.name}}CallbackRouter {
-  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<{{interface.name}}Remote>;
-  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<{{interface.name}}Remote>;
+  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
+    {{interface.name}}Remote, {{interface.name}}PendingReceiver>;
+  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<
+    {{interface.name}}Remote, {{interface.name}}PendingReceiver>;
   router_: mojo.internal.interfaceSupport.CallbackRouter;
 {%  for method in interface.methods %}
 {%-   set interface_message_id =

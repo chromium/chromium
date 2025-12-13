@@ -34,6 +34,7 @@ if (target_os == "win" && host_os != "win") {
 # If the current toolchain is the test host toolchain, build the tool.
 if (current_toolchain == imagediff_toolchain) {
   executable("imagediff") {
+    testonly = true
     output_name = "image_diff"  # Different than dir name for historical
                                 # reasons.
     sources = [
@@ -47,7 +48,7 @@ if (current_toolchain == imagediff_toolchain) {
     deps = [
       "//base",
       "//build/win:default_exe_manifest",
-      "//third_party/libpng",
+      "//third_party/libpng:libpng_for_testonly",
       "//third_party/zlib",
     ]
   }
@@ -60,6 +61,7 @@ if (current_toolchain == imagediff_toolchain) {
 } else if (current_toolchain == default_toolchain &&
            default_toolchain != imagediff_toolchain) {
   binary_symlink("imagediff") {
+    testonly = true
     binary_label = ":$target_name($imagediff_toolchain)"
     binary_output_name = "image_diff"
 

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>DBSC early challenge set</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="helper.js" type="module"></script>
@@ -16,7 +15,7 @@
     addCookieAndSessionCleanup(t);
 
     // Configure server for sending back a challenge early on refresh.
-    configureServer({ earlyChallengeForNextRegisteredSession: earlyChallengeString });
+    await configureServer({ earlyChallengeForNextRegisteredSession: earlyChallengeString });
 
     // Prompt starting a session, and wait until registration completes.
     const loginResponse = await fetch('login.py');
@@ -48,7 +47,7 @@
 
     // Configure server for sending back a challenge early. Also configure the session's cookie
     // for test clarity (not strictly needed).
-    configureServer({
+    await configureServer({
       earlyChallengeForNextRegisteredSession: earlyChallenge1,
       cookieDetailsForNextRegisteredSessions: [[{ nameAndValue: expectedCookieAndValue1 }]]
     });
@@ -60,7 +59,7 @@
 
     // Configure server for sending back a challenge early, and configure the second session's
     // cookie.
-    configureServer({
+    await configureServer({
       earlyChallengeForNextRegisteredSession: earlyChallenge2,
       cookieDetailsForNextRegisteredSessions: [[{ nameAndValue: expectedCookieAndValue2 }]]
     });

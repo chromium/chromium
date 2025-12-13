@@ -9,7 +9,11 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_features.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_cursor.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
@@ -29,7 +33,8 @@ HashSet<uint32_t> ExclusiveFeatures() {
 }
 
 bool IsExclusiveFeature(uint32_t tag) {
-  DEFINE_STATIC_LOCAL(HashSet<uint32_t>, tags, (ExclusiveFeatures()));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<uint32_t>, tags,
+                                  (ExclusiveFeatures()));
   return tags.Contains(tag);
 }
 
@@ -144,6 +149,7 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
     case CharType::kMiddle:
     case CharType::kOpenNarrow:
     case CharType::kCloseNarrow:
+    case CharType::kInvalid:
       return type;
     case CharType::kDot:
       return font_data.type_for_dot;
@@ -161,12 +167,6 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
   NOTREACHED();
 }
 
-bool HanKerning::MayApply(StringView text) {
-  return !text.Is8Bit() && !text.IsAllSpecialCharacters<[](UChar ch) {
-    return !Character::MaybeHanKerningOpenOrCloseFast(ch);
-  }>();
-}
-
 inline bool HanKerning::ShouldKern(CharType type, CharType last_type) {
   return type == CharType::kOpen &&
          (last_type == CharType::kOpen || last_type == CharType::kMiddle ||
@@ -179,35 +179,94 @@ inline bool HanKerning::ShouldKernLast(CharType type, CharType last_type) {
           type == CharType::kCloseNarrow);
 }
 
+HanKerning::CharType HanKerning::GetCharTypeWithCache(const String& text,
+                                                      wtf_size_t index,
+                                                      const FontData& font_data,
+                                                      Priority priority) {
+  DCHECK(RuntimeEnabledFeatures::TextSpacingTrimFallbackEnabled());
+  DCHECK(!char_types_.empty());
+  const CharType cached_type = char_types_[index];
+  if (priority == Priority::kCache && cached_type != CharType::kInvalid) {
+    return cached_type;
+  }
+  const CharType type = GetCharType(text[index], font_data);
+  if (type == cached_type) {
+    return type;
+  }
+
+  char_types_[index] = type;
+
+  // The `CharType` becomes different due to font changes. If it causes
+  // different kerning for the next or previous characters, keep their indexes.
+  if (cached_type != CharType::kInvalid &&
+      RuntimeEnabledFeatures::TextSpacingTrimFallback2Enabled()) {
+    if (index > segment_start_) {
+      const CharType prev_type = char_types_[index - 1];
+      if (prev_type != CharType::kInvalid && ShouldKernLast(type, prev_type) &&
+          !ShouldKernLast(cached_type, prev_type)) {
+        changed_indexes_.push_back(index - 1);
+      }
+    }
+    if (index + 1 < segment_end_) {
+      const CharType next_type = char_types_[index + 1];
+      if (next_type != CharType::kInvalid && ShouldKern(next_type, type) &&
+          !ShouldKern(next_type, cached_type)) {
+        changed_indexes_.push_back(index + 1);
+      }
+    }
+  }
+  return type;
+}
+
+inline HanKerning::CharType HanKerning::GetCharType(const String& text,
+                                                    wtf_size_t index,
+                                                    const FontData& font_data,
+                                                    Priority priority) {
+  return char_types_.empty()
+             ? GetCharType(text[index], font_data)
+             : GetCharTypeWithCache(text, index, font_data, priority);
+}
+
 // Compute kerning and apply features.
 // See Fullwidth Punctuation Collapsing:
 // https://drafts.csswg.org/css-text-4/#fullwidth-collapsing
-void HanKerning::Compute(const String& text,
-                         wtf_size_t start,
-                         wtf_size_t end,
-                         const SimpleFontData& font,
-                         const FontDescription& font_description,
-                         Options options,
-                         FontFeatureRanges* features) {
+bool HanKerning::AppendFontFeatures(const String& text,
+                                    wtf_size_t start,
+                                    wtf_size_t end,
+                                    const SimpleFontData& font,
+                                    const LayoutLocale& locale,
+                                    Options options,
+                                    FontFeatureRanges& features) {
+#if EXPENSIVE_DCHECKS_ARE_ON()
   DCHECK_GT(end, start);
-  if (!MayApply(StringView(text, start, end - start))) {
-    return;
+  DCHECK_GE(start, segment_start_);
+  DCHECK_LE(end, segment_end_);
+  // Caller should check `MayApply`.
+  DCHECK(MayApply(
+      StringView(text, segment_start_, segment_end_ - segment_start_)));
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+
+  if (start != segment_start_ || end != segment_end_) {
+    if (!MayApply(StringView(text, start, end - start))) {
+      return false;
+    }
   }
-  const LayoutLocale& locale = font_description.LocaleOrDefault();
   const FontData& font_data =
       font.HanKerningData(locale, options.is_horizontal);
   if (!font_data.has_alternate_spacing) {
-    return;
+    return false;
   }
-  if (font_description.GetTextSpacingTrim() == TextSpacingTrim::kSpaceAll)
-      [[unlikely]] {
-    return;
-  }
-  for (const FontFeatureRange& feature : *features) {
-    if (feature.value && IsExclusiveFeature(feature.tag)) {
-      return;
+  for (const FontFeatureRange& feature : features) {
+    if (feature.value && IsExclusiveFeature(feature.tag)) [[unlikely]] {
+      return false;
     }
   }
+
+  last_start_ = start;
+  last_end_ = end;
+  is_start_prev_used_ = false;
+  is_end_next_used_ = false;
+  last_font_data_ = &font_data;
 
   // Compute for the first character.
   Vector<wtf_size_t, 32> indices;
@@ -215,20 +274,23 @@ void HanKerning::Compute(const String& text,
   if (options.apply_start) [[unlikely]] {
     indices.push_back(start);
     unsafe_to_break_before_.push_back(start);
-    last_type = GetCharType(text[start], font_data);
+    last_type = GetCharType(text, start, font_data);
   } else if (start && !options.is_line_start) {
-    last_type = GetCharType(text[start - 1], font_data);
-    const CharType type = GetCharType(text[start], font_data);
+    is_start_prev_used_ = true;
+    last_type = GetCharType(text, start - 1, font_data, Priority::kCache);
+    const CharType type = GetCharType(text, start, font_data);
     if (ShouldKern(type, last_type)) {
       indices.push_back(start);
       unsafe_to_break_before_.push_back(start);
     }
     last_type = type;
   } else {
-    last_type = GetCharType(text[start], font_data);
+    last_type = GetCharType(text, start, font_data);
   }
 
-  if (font_data.has_contextual_spacing) {
+  if (font_data.has_contextual_spacing &&
+      (char_types_.empty() ||
+       RuntimeEnabledFeatures::TextSpacingTrimFallbackChwsEnabled())) {
     // The `chws` feature can handle characters in a run.
     // Compute the end edge if there are following runs.
     if (options.apply_end) [[unlikely]] {
@@ -237,6 +299,7 @@ void HanKerning::Compute(const String& text,
       if (end - 1 > start) {
         last_type = GetCharType(text[end - 1], font_data);
       }
+      is_end_next_used_ = true;
       const CharType type = GetCharType(text[end], font_data);
       if (ShouldKernLast(type, last_type)) {
         indices.push_back(end - 1);
@@ -246,8 +309,7 @@ void HanKerning::Compute(const String& text,
     // Compute for characters in the middle.
     CharType type;
     for (wtf_size_t i = start + 1; i < end; ++i, last_type = type) {
-      const UChar ch = text[i];
-      type = GetCharType(ch, font_data);
+      type = GetCharType(text, i, font_data);
       if (ShouldKernLast(type, last_type)) {
         DCHECK_GT(i, 0u);
         indices.push_back(i - 1);
@@ -262,7 +324,8 @@ void HanKerning::Compute(const String& text,
     if (options.apply_end) [[unlikely]] {
       indices.push_back(end - 1);
     } else if (end < text.length()) {
-      type = GetCharType(text[end], font_data);
+      is_end_next_used_ = true;
+      type = GetCharType(text, end, font_data, Priority::kCache);
       if (ShouldKernLast(type, last_type)) {
         indices.push_back(end - 1);
       }
@@ -271,15 +334,79 @@ void HanKerning::Compute(const String& text,
 
   // Append to `features`.
   if (indices.empty()) {
-    return;
+    return true;
   }
+#if EXPENSIVE_DCHECKS_ARE_ON()
   DCHECK(std::is_sorted(indices.begin(), indices.end(), std::less_equal<>()));
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
   const hb_tag_t tag = options.is_horizontal ? HB_TAG('h', 'a', 'l', 't')
                                              : HB_TAG('v', 'h', 'a', 'l');
-  features->reserve(features->size() + indices.size());
+  features.reserve(features.size() + indices.size());
   for (const wtf_size_t i : indices) {
-    features->push_back(FontFeatureRange{{tag, 1}, i, i + 1});
+    features.push_back(FontFeatureRange{{tag, 1}, i, i + 1});
   }
+  return true;
+}
+
+void HanKerning::PrepareFallback(const String& text) {
+  DCHECK(RuntimeEnabledFeatures::TextSpacingTrimFallbackEnabled());
+  if (char_types_.empty()) {
+    char_types_.Grow(text.length());
+    char_types_.Fill(CharType::kInvalid);
+  } else {
+    DCHECK_EQ(text.length(), char_types_.size());
+  }
+
+  wtf_size_t start = last_start_;
+  if (is_start_prev_used_ && char_types_[start - 1] == CharType::kInvalid) {
+    --start;
+  }
+  wtf_size_t end = last_end_;
+  if (is_end_next_used_ && char_types_[end] == CharType::kInvalid) {
+    ++end;
+  }
+  for (wtf_size_t i = start; i < end; ++i) {
+    char_types_[i] = GetCharType(text[i], *last_font_data_);
+  }
+}
+
+// Apply kerning to indexes where actual `CharType`s are different from
+// predicted `CharType`s. Features can't be applied because shaping is already
+// done. Adjust letter spacing instead.
+void HanKerning::ApplyKerning(ShapeResult& result) {
+  DCHECK(!changed_indexes_.empty());
+  DCHECK(RuntimeEnabledFeatures::TextSpacingTrimFallback2Enabled());
+
+  ShapeResultCursor cursor(&result);
+  const float font_size = cursor.FontData().PlatformData().size();
+  const auto advance_min = TextRunLayoutUnit::FromFloatFloor(font_size * .9);
+  std::sort(changed_indexes_.begin(), changed_indexes_.end());
+  wtf_size_t last_index = kNotFound;
+  for (wtf_size_t i : changed_indexes_) {
+    if (i == last_index) [[unlikely]] {
+      continue;
+    }
+    last_index = i;
+
+    cursor.MoveToCharacter(i);
+    const TextRunLayoutUnit advance = cursor.ClusterAdvance();
+    if (advance < advance_min) {
+      continue;
+    }
+
+    cursor.SetUnsafeToBreakBefore();
+    switch (char_types_[i]) {
+      case CharType::kOpen:
+        cursor.AddSpaceToLeft(advance / -2);
+        break;
+      case CharType::kClose:
+        cursor.AddSpaceToRight(advance / -2);
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+  changed_indexes_.Shrink(0);
 }
 
 HanKerning::FontData::FontData(const SimpleFontData& font,
@@ -293,6 +420,17 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   if (!has_alternate_spacing) {
     return;
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (RuntimeEnabledFeatures::TextSpacingTrimYuGothicUIEnabled()) {
+    // Exclude "Yu Gothic UI" until the fonts are fixed. crbug.com/331123676
+    const String postscript_name = font.PlatformData().GetPostScriptName();
+    if (postscript_name.StartsWith("YuGothicUI")) [[unlikely]] {
+      has_alternate_spacing = false;
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   // Check if the font has `chws` (or `vchw` in vertical.)
   const hb_tag_t chws_tag =

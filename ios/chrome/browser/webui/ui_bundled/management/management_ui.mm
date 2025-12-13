@@ -8,6 +8,7 @@
 
 #import "base/strings/strcat.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/grit/management_resources.h"
 #import "components/grit/management_resources_map.h"
@@ -83,6 +84,19 @@ std::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
   return std::nullopt;
 }
 
+// Whether the Browser Reporting section should be displayed. This section is
+// visible if reporting is enabled at the browser level.
+bool IsBrowserReportingEnabled(PrefService* local_state) {
+  return local_state->GetBoolean(enterprise_reporting::kCloudReportingEnabled);
+}
+
+// Whether the Profile Reporting section should be displayed. This section is
+// visible if reporting is enabled at the profile level.
+bool IsProfileReportingEnabled(PrefService* profile_prefs) {
+  return profile_prefs->GetBoolean(
+      enterprise_reporting::kCloudProfileReportingEnabled);
+}
+
 // Whether the "Page is visited" event subsection under Chrome Enteprise
 // Connectors should be displayed. This subsection is visible if Enterprise Url
 // filtering is enabled.
@@ -96,10 +110,6 @@ bool IsPageVisitEventEnabled(ConnectorsService* connectors_service) {
 // Connectors should be displayed. This subsection is visible if Enterprise
 // Event Reporting is enabled.
 bool IsSecurityEventEnabled(ConnectorsService* connectors_service) {
-  if (!base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
-    return false;
-  }
   return !connectors_service->GetReportingServiceProviderNames().empty();
 }
 
@@ -173,8 +183,53 @@ web::WebUIIOSDataSource* CreateManagementUIHTMLSource(web::WebUIIOS* web_ui) {
   source->AddLocalizedString("learnMore",
                              IDS_IOS_MANAGEMENT_UI_LEARN_MORE_LINK);
 
-  // Connectors Section
+  // Reporting Section
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui)->GetOriginalProfile();
+  source->AddLocalizedString("browserReporting",
+                             IDS_MANAGEMENT_BROWSER_REPORTING);
+
+  // Browser reporting
+  source->AddBoolean(
+      "browserReportingEnabled",
+      IsBrowserReportingEnabled(GetApplicationContext()->GetLocalState()));
+  source->AddLocalizedString("browserReportingExplanation",
+                             IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION);
+  source->AddLocalizedString("browserReportingOverview",
+                             IDS_MANAGEMENT_BROWSER_REPORTING_OVERVIEW);
+  source->AddLocalizedString(
+      "browserReportingDeviceInformation",
+      IDS_MANAGEMENT_BROWSER_REPORTING_DEVICE_INFORMATION);
+  source->AddLocalizedString(
+      "browserReportingDeviceInformationContinued",
+      IDS_MANAGEMENT_BROWSER_REPORTING_DEVICE_INFORMATION_CONTINUED);
+  source->AddLocalizedString(
+      "browserReportingBrowserAndProfiles",
+      IDS_MANAGEMENT_BROWSER_REPORTING_BROWSER_AND_PROFILES);
+  source->AddLocalizedString(
+      "browserReportingBrowserAndProfilesContinued",
+      IDS_MANAGEMENT_BROWSER_REPORTING_BROWSER_AND_PROFILES_CONTINUED);
+  source->AddLocalizedString("browserReportingPolicy",
+                             IDS_MANAGEMENT_BROWSER_REPORTING_POLICY);
+  source->AddLocalizedString("browserReportingLearnMore",
+                             IDS_MANAGEMENT_BROWSER_REPORTING_LEARN_MORE);
+
+  // Profile reporting
+  source->AddBoolean("profileReportingEnabled",
+                     IsProfileReportingEnabled(profile->GetPrefs()));
+  source->AddLocalizedString("profileReportingExplanation",
+                             IDS_MANAGEMENT_PROFILE_REPORTING_EXPLANATION);
+  source->AddLocalizedString("profileReportingOverview",
+                             IDS_MANAGEMENT_PROFILE_REPORTING_OVERVIEW);
+  source->AddLocalizedString("profileReportingUsername",
+                             IDS_MANAGEMENT_PROFILE_REPORTING_USERNAME);
+  source->AddLocalizedString("profileReportingBrowser",
+                             IDS_MANAGEMENT_PROFILE_REPORTING_BROWSER);
+  source->AddLocalizedString("profileReportingPolicy",
+                             IDS_MANAGEMENT_PROFILE_REPORTING_POLICY);
+  source->AddLocalizedString("profileReportingLearnMore",
+                             IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE);
+
+  // Connectors Section
   auto* connectors_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile);
   CHECK(connectors_service);

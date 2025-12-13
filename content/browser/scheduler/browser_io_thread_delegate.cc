@@ -40,6 +40,10 @@ void BrowserIOThreadDelegate::Init() {
   task_queues_ =
       std::make_unique<BrowserTaskQueues>(BrowserThread::IO, sequence_manager_);
   default_task_runner_ = task_queues_->GetHandle()->GetDefaultTaskRunner();
+  scenario_priority_boost_ =
+      std::make_unique<base::TaskMonitoringScopedBoostPriority>(
+          base::ThreadType::kInteractive,
+          base::BindRepeating(&internal::ShouldBoostThreadsPriority));
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

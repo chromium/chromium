@@ -6,7 +6,7 @@
 
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -39,17 +39,10 @@ const CGFloat kBoxesStackViewCornerRadius = 16.0;
 const CGFloat kInnerStackViewSpacing = 6.0;
 const CGFloat kInnerStackViewPadding = 12.0;
 
-// Action identifier on a tap on links in the footnote.
-NSString* const kFirstFootnoteLinkAction = @"firstFootnoteLinkAction";
-NSString* const kSecondFootnoteLinkAction = @"secondFootnoteLinkAction";
-NSString* const kFootnoteLinkActionManagedAccount =
-    @"footnoteLinkActionManagedAccount";
-NSString* const kSecondBoxLinkActionManagedAccount =
-    @"secondBoxLinkActionManagedAccount";
-NSString* const kSecondBoxLink1ActionNonManagedAccount =
-    @"secondBoxLink1ActionNonManagedAccount";
-NSString* const kSecondBoxLink2ActionNonManagedAccount =
-    @"secondBoxLink2ActionNonManagedAccount";
+// Spacing for primary and secondary buttons.
+const CGFloat kSpacingPrimarySecondaryButtonsIOS26 = 4.0;
+const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
+
 
 }  // namespace
 
@@ -57,18 +50,8 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 @end
 
 @implementation BWGConsentViewController {
-  // The root vertical stack view that arranges the UI sections of the
-  // screen. It holds the `_contentScrollView` and the
-  // fixed action buttons at the bottom. This view itself does not scroll.
+  // Main stack view. This view itself does not scroll.
   UIStackView* _mainStackView;
-  // A scroll view that contains the `_contentStackView`. This allows the main
-  // content (info boxes, footnote) to scroll vertically if it
-  // doesn't fit on the screen.
-  UIScrollView* _contentScrollView;
-  // The vertical stack view placed inside the `_contentScrollView`. It arranges
-  // the actual informational UI elements, such as the info boxes and the
-  // footnote, which are intended to be scrolled together.
-  UIStackView* _contentStackView;
   // Whether the account is managed.
   BOOL _isAccountManaged;
 }
@@ -83,59 +66,29 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
 #pragma mark - UIViewController
 
-// TODO(crbug.com/414777915): Implement a basic UI.
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   self.navigationItem.hidesBackButton = YES;
-  [self setupStackViews];
 }
 
-#pragma mark - Public
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+  if (!_mainStackView) {
+    [self configureMainStackView];
+  }
+}
+
+#pragma mark - BWGFREViewControllerProtocol
 
 - (CGFloat)contentHeight {
+  [self.view layoutIfNeeded];
   return
       [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-          .height +
-      [_contentStackView
-          systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
           .height;
 }
 
 #pragma mark - Private
-
-// Configures all the stacks.
-- (void)setupStackViews {
-  [self configureMainStackView];
-  [self configureContentViews];
-  [_mainStackView addArrangedSubview:_contentScrollView];
-  [self configureButtons];
-}
-
-// Configures the scrollable content area, including the scroll view and its
-// content stack view.
-- (void)configureContentViews {
-  _contentScrollView = [[UIScrollView alloc] init];
-  _contentScrollView.translatesAutoresizingMaskIntoConstraints = NO;
-  _contentScrollView.showsVerticalScrollIndicator = NO;
-
-  _contentStackView = [[UIStackView alloc] init];
-  _contentStackView.axis = UILayoutConstraintAxisVertical;
-  _contentStackView.spacing = kMainStackSpacing;
-  _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  [_contentScrollView addSubview:_contentStackView];
-
-  AddSameConstraints(_contentStackView, _contentScrollView);
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_contentStackView.widthAnchor
-        constraintEqualToAnchor:_contentScrollView.widthAnchor]
-  ]];
-
-  [_contentStackView addArrangedSubview:[self createBoxesStackView]];
-  [_contentStackView addArrangedSubview:[self createFootnoteView]];
-}
 
 // Creates an attributed string with links for a given text.
 - (NSAttributedString*)createAttributedString:(NSString*)text
@@ -196,11 +149,12 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
     NSRange linkRange = [fullText rangeOfString:linkText];
 
-    return [self createAttributedString:fullText
-                        withLinkActions:@[ kFootnoteLinkActionManagedAccount ]
-                               inRanges:@[ [NSValue valueWithRange:linkRange] ]
-                         textAttributes:textAttributes
-                              fontStyle:fontStyle];
+    return
+        [self createAttributedString:fullText
+                     withLinkActions:@[ kBwgFootnoteLinkActionManagedAccount ]
+                            inRanges:@[ [NSValue valueWithRange:linkRange] ]
+                      textAttributes:textAttributes
+                           fontStyle:fontStyle];
   }
 
   NSString* link1NSString =
@@ -222,7 +176,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   NSRange link2Range = [fullText rangeOfString:link2NSString];
 
   NSArray<NSString*>* linkActions =
-      @[ kFirstFootnoteLinkAction, kSecondFootnoteLinkAction ];
+      @[ kBwgFirstFootnoteLinkAction, kBwgSecondFootnoteLinkAction ];
   NSArray<NSValue*>* linkRanges = @[
     [NSValue valueWithRange:link1Range], [NSValue valueWithRange:link2Range]
   ];
@@ -257,11 +211,12 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
     NSRange linkRange = [fullText rangeOfString:linkText];
 
-    return [self createAttributedString:fullText
-                        withLinkActions:@[ kSecondBoxLinkActionManagedAccount ]
-                               inRanges:@[ [NSValue valueWithRange:linkRange] ]
-                         textAttributes:textAttributes
-                              fontStyle:fontStyle];
+    return
+        [self createAttributedString:fullText
+                     withLinkActions:@[ kBwgSecondBoxLinkActionManagedAccount ]
+                            inRanges:@[ [NSValue valueWithRange:linkRange] ]
+                      textAttributes:textAttributes
+                           fontStyle:fontStyle];
   }
 
   NSString* link1NSString = l10n_util::GetNSString(
@@ -284,8 +239,8 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   NSRange link2Range = [fullText rangeOfString:link2NSString];
 
   NSArray<NSString*>* linkActions = @[
-    kSecondBoxLink1ActionNonManagedAccount,
-    kSecondBoxLink2ActionNonManagedAccount
+    kBwgSecondBoxLink1ActionNonManagedAccount,
+    kBwgSecondBoxLink2ActionNonManagedAccount
   ];
   NSArray<NSValue*>* linkRanges = @[
     [NSValue valueWithRange:link1Range], [NSValue valueWithRange:link2Range]
@@ -298,7 +253,8 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
                             fontStyle:fontStyle];
 }
 
-// Configures the main stack view.
+// Configures the main stack view and contains all the content including the
+// buttons.
 - (void)configureMainStackView {
   _mainStackView = [[UIStackView alloc] init];
   _mainStackView.axis = UILayoutConstraintAxisVertical;
@@ -308,16 +264,25 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
   [self.view addSubview:_mainStackView];
   AddSameConstraintsWithInsets(
-      _mainStackView, self.view.safeAreaLayoutGuide,
+      _mainStackView, self.view,
       NSDirectionalEdgeInsetsMake(0, kMainStackHorizontalInset, 0,
                                   kMainStackHorizontalInset));
+  [_mainStackView addArrangedSubview:[self createBoxesStackView]];
+  [_mainStackView addArrangedSubview:[self createFootnoteView]];
+  [self configureButtons];
 }
 
 // Configures primary and secondary buttons.
 - (void)configureButtons {
   UIView* primaryButtonView = [self createPrimaryButton];
   [_mainStackView addArrangedSubview:primaryButtonView];
-  [_mainStackView setCustomSpacing:0.0 afterView:primaryButtonView];
+  if (@available(iOS 26, *)) {
+    [_mainStackView setCustomSpacing:kSpacingPrimarySecondaryButtonsIOS26
+                           afterView:primaryButtonView];
+  } else {
+    [_mainStackView setCustomSpacing:kSpacingPrimarySecondaryButtonsIOS18
+                           afterView:primaryButtonView];
+  }
   [_mainStackView addArrangedSubview:[self createSecondaryButton]];
 }
 
@@ -340,7 +305,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
   UIImageView* firstIconImageView = [[UIImageView alloc]
       initWithImage:CustomSymbolWithConfiguration(kPhoneSparkleSymbol, config)];
-  firstIconImageView.contentMode = UIViewContentModeScaleAspectFit;
+  firstIconImageView.contentMode = UIViewContentModeScaleAspectFill;
 
   UIView* firstBox = [self
       createHorizontalBoxWithIcon:firstIconImageView
@@ -356,14 +321,10 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
                         : IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_TITLE);
 
   UIImageView* secondIconImageView =
-      _isAccountManaged
-          ? [[UIImageView alloc] initWithImage:DefaultSymbolWithConfiguration(
-                                                   kBuilding2Symbol, config)]
-          : [[UIImageView alloc]
-                initWithImage:DefaultSymbolWithConfiguration(
-                                  kCounterClockWiseSymbol, config)];
+      [[UIImageView alloc] initWithImage:DefaultSymbolWithConfiguration(
+                                             [self secondSymbolName], config)];
 
-  secondIconImageView.contentMode = UIViewContentModeScaleAspectFit;
+  secondIconImageView.contentMode = UIViewContentModeScaleAspectFill;
 
   NSAttributedString* secondBodyAttributed =
       [self createSecondBoxBodyAttributedText];
@@ -411,6 +372,17 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   return horizontalStackView;
 }
 
+// Gets the second SF Symbol name.
+- (NSString*)secondSymbolName {
+  if (_isAccountManaged) {
+    return kBuilding2Symbol;
+  }
+  if (@available(iOS 18, *)) {
+    return kCounterClockWiseSymbol;
+  }
+  return kHistorySymbol;
+}
+
 // Creates the first box view containing the text and the title.
 - (UIView*)createFirstBoxWithTitle:(NSString*)titleText
                           bodyText:(NSString*)bodyText {
@@ -419,21 +391,23 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
   UIStackView* innerStackView = [[UIStackView alloc] init];
   innerStackView.axis = UILayoutConstraintAxisVertical;
-  innerStackView.alignment = UIStackViewAlignmentLeading;
+  innerStackView.alignment = UIStackViewAlignmentFill;
   innerStackView.spacing = kInnerStackViewSpacing;
 
   innerStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [boxView addSubview:innerStackView];
 
-  CGFloat innerPadding = kInnerStackViewPadding;
   AddSameConstraintsWithInsets(
       innerStackView, boxView,
-      NSDirectionalEdgeInsetsMake(innerPadding, 0, innerPadding, innerPadding));
+      NSDirectionalEdgeInsetsMake(kInnerStackViewPadding, 0,
+                                  kInnerStackViewPadding,
+                                  kInnerStackViewPadding));
 
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.text = titleText;
   titleLabel.font =
       PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightSemibold);
+  titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
 
   titleLabel.numberOfLines = 0;
   [innerStackView addArrangedSubview:titleLabel];
@@ -456,21 +430,23 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
   UIStackView* innerStackView = [[UIStackView alloc] init];
   innerStackView.axis = UILayoutConstraintAxisVertical;
-  innerStackView.alignment = UIStackViewAlignmentLeading;
+  innerStackView.alignment = UIStackViewAlignmentFill;
   innerStackView.spacing = kInnerStackViewSpacing;
 
   innerStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [boxView addSubview:innerStackView];
 
-  CGFloat innerPadding = kInnerStackViewPadding;
   AddSameConstraintsWithInsets(
       innerStackView, boxView,
-      NSDirectionalEdgeInsetsMake(innerPadding, 0, innerPadding, innerPadding));
+      NSDirectionalEdgeInsetsMake(kInnerStackViewPadding, 0,
+                                  kInnerStackViewPadding,
+                                  kInnerStackViewPadding));
 
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.text = titleText;
   titleLabel.font =
       PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightSemibold);
+  titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
 
   titleLabel.numberOfLines = 0;
   [innerStackView addArrangedSubview:titleLabel];
@@ -479,6 +455,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   bodyTextView.backgroundColor = [UIColor clearColor];
   bodyTextView.scrollEnabled = NO;
   bodyTextView.editable = NO;
+  bodyTextView.textDragInteraction.enabled = NO;
   bodyTextView.delegate = self;
   bodyTextView.textContainerInset = UIEdgeInsetsZero;
   bodyTextView.textContainer.lineFragmentPadding = 0;
@@ -496,37 +473,47 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   footNoteTextView.backgroundColor = [UIColor clearColor];
   footNoteTextView.scrollEnabled = NO;
   footNoteTextView.editable = NO;
+  footNoteTextView.textDragInteraction.enabled = NO;
   footNoteTextView.delegate = self;
-
   footNoteTextView.textContainerInset = UIEdgeInsetsZero;
   footNoteTextView.linkTextAttributes =
       @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color]};
   footNoteTextView.attributedText = [self createFootnoteAttributedText];
+  footNoteTextView.accessibilityIdentifier =
+      kBwgFootNoteTextViewAccessibilityIdentifier;
 
   return footNoteTextView;
 }
 
 // Creates the primary button.
 - (UIButton*)createPrimaryButton {
-  UIButton* primaryButton = [BWGUIUtils
-      createPrimaryButtonWithTitle:l10n_util::GetNSString(
-                                       IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON)];
+  ChromeButton* primaryButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+  primaryButton.title =
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
   [primaryButton addTarget:self
                     action:@selector(didTapPrimaryButton:)
           forControlEvents:UIControlEventTouchUpInside];
-  primaryButton.accessibilityLabel = @"Consent Primary Action";
+  primaryButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
+  primaryButton.accessibilityIdentifier =
+      kBwgPrimaryButtonAccessibilityIdentifier;
   return primaryButton;
 }
 
 // Creates the secondary button.
 - (UIButton*)createSecondaryButton {
-  UIButton* secondaryButton = [BWGUIUtils
-      createSecondaryButtonWithTitle:l10n_util::GetNSString(
-                                         IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON)];
+  ChromeButton* secondaryButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStyleSecondary];
+  secondaryButton.title =
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON);
   [secondaryButton addTarget:self
                       action:@selector(didTapSecondaryButton:)
             forControlEvents:UIControlEventTouchUpInside];
-  // TODO(crbug.com/420643840): Add a11y labels.
+  secondaryButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON);
+  secondaryButton.accessibilityIdentifier =
+      kBwgSecondaryButtonAccessibilityIdentifier;
   return secondaryButton;
 }
 
@@ -549,30 +536,33 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
     primaryActionForTextItem:(UITextItem*)textItem
                defaultAction:(UIAction*)defaultAction {
   if (!textItem.link) {
-    return defaultAction;
+    return nil;
   }
-  if ([textItem.link.absoluteString isEqualToString:kFirstFootnoteLinkAction]) {
+
+  RecordFREConsentAction(IOSGeminiFREAction::kLinkClick);
+  if ([textItem.link.absoluteString
+          isEqualToString:kBwgFirstFootnoteLinkAction]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator openNewTabWithURL:GURL(kFirstFootnoteLinkURL)];
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kSecondFootnoteLinkAction]) {
+          isEqualToString:kBwgSecondFootnoteLinkAction]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator openNewTabWithURL:GURL(kSecondFootnoteLinkURL)];
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kFootnoteLinkActionManagedAccount]) {
+          isEqualToString:kBwgFootnoteLinkActionManagedAccount]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator openNewTabWithURL:GURL(kFootnoteLinkURLManagedAccount)];
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kSecondBoxLinkActionManagedAccount]) {
+          isEqualToString:kBwgSecondBoxLinkActionManagedAccount]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator
@@ -580,7 +570,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kSecondBoxLink1ActionNonManagedAccount]) {
+          isEqualToString:kBwgSecondBoxLink1ActionNonManagedAccount]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator
@@ -588,7 +578,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kSecondBoxLink2ActionNonManagedAccount]) {
+          isEqualToString:kBwgSecondBoxLink2ActionNonManagedAccount]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator
@@ -596,6 +586,17 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
     }];
   }
   return defaultAction;
+}
+
+// If the text item is a link, return nil to prevent the long-press context menu
+// from appearing.
+- (UIMenu*)textView:(UITextView*)textView
+    menuConfigurationForTextItem:(UITextItem*)textItem
+                     defaultMenu:(UIMenu*)defaultMenu {
+  if (textItem.link) {
+    return nil;
+  }
+  return defaultMenu;
 }
 
 @end

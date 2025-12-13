@@ -98,12 +98,16 @@ TEST(MESSAGE_TEST_NAME, TestRegressionInlinedStringAuxIdxMismatchOnFastParser) {
   auto* table = GetTableIfAvailable<Proto>(nullptr);
   // Only test when TDP is on, and we have these fields inlined.
   if (table != nullptr &&
-      table->fast_entry(1)->target() == internal::TcParser::FastSiS1) {
+      table->fast_entry(1)->target() == internal::TcParser::FastBiS1) {
     // optional string str1 = 1;
     // The aux_idx points to the inlined_string_idx and not the actual aux_idx.
     EXPECT_EQ(table->fast_entry(1)->bits.aux_idx(), 1);
     // optional InlinedStringIdxRegressionProto sub = 2;
-    EXPECT_EQ(table->fast_entry(2)->bits.aux_idx(), 1);
+    if ((table->field_entries()[1].type_card &
+         internal::field_layout::kSplitMask) == 0) {
+      EXPECT_NE(table->fast_entry(2)->bits.aux_idx(),
+                internal::kInlinedStringAuxIdx);
+    }
     // optional string str2 = 3;
     // The aux_idx points to the inlined_string_idx and not the actual aux_idx.
     EXPECT_EQ(table->fast_entry(3)->bits.aux_idx(), 2);

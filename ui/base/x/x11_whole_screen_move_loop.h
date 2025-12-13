@@ -18,7 +18,7 @@
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/connection.h"
 
 namespace x11 {

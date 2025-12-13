@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -32,23 +32,21 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
-#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -82,7 +80,6 @@
 
 using ::testing::_;
 using ::testing::AtLeast;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 
@@ -258,35 +255,7 @@ MockSyncStarterInlineSigninHelper::MockSyncStarterInlineSigninHelper(
 
 }  // namespace
 
-class InlineLoginUIBrowserTest : public InProcessBrowserTest {
- public:
-  InlineLoginUIBrowserTest() = default;
-  void EnableSigninAllowed(bool enable);
-  void AddEmailToOneClickRejectedList(const std::string& email);
-  void AllowSigninCookies(bool enable);
-  void SetAllowedUsernamePattern(const std::string& pattern);
-
- protected:
-  content::WebContents* web_contents() { return nullptr; }
-};
-
-void InlineLoginUIBrowserTest::EnableSigninAllowed(bool enable) {
-  PrefService* pref_service = browser()->profile()->GetPrefs();
-  pref_service->SetBoolean(prefs::kSigninAllowed, enable);
-}
-
-void InlineLoginUIBrowserTest::AllowSigninCookies(bool enable) {
-  content_settings::CookieSettings* cookie_settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
-  cookie_settings->SetDefaultCookieSetting(enable ? CONTENT_SETTING_ALLOW
-                                                  : CONTENT_SETTING_BLOCK);
-}
-
-void InlineLoginUIBrowserTest::SetAllowedUsernamePattern(
-    const std::string& pattern) {
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kGoogleServicesUsernamePattern, pattern);
-}
+class InlineLoginUIBrowserTest : public InProcessBrowserTest {};
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // crbug.com/422868
@@ -318,10 +287,10 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, MAYBE_DifferentStorageId) {
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, OneProcessLimit) {
-  GURL test_url_1 = ui_test_utils::GetTestUrl(
+  GURL test_url_1 = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title1.html")));
-  GURL test_url_2 = ui_test_utils::GetTestUrl(
+  GURL test_url_2 = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory)
           .Append(FILE_PATH_LITERAL("frame_tree")),
       base::FilePath(FILE_PATH_LITERAL("simple.htm")));
@@ -339,58 +308,6 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, OneProcessLimit) {
 
   ASSERT_EQ(info1.pid, info2.pid);
   ASSERT_NE(info1.pid, info3.pid);
-}
-
-IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoProfile) {
-  SigninUIError error =
-      CanOfferSignin(nullptr, GaiaId("12345"), "user@gmail.com");
-  EXPECT_FALSE(error.IsOk());
-  EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
-}
-
-IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOffer) {
-  EXPECT_TRUE(
-      CanOfferSignin(browser()->profile(), GaiaId("12345"), "user@gmail.com")
-          .IsOk());
-}
-
-IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferProfileConnected) {
-  auto* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
-  signin::MakePrimaryAccountAvailable(identity_manager, "foo@gmail.com",
-                                      signin::ConsentLevel::kSync);
-  EnableSigninAllowed(true);
-
-  EXPECT_TRUE(
-      CanOfferSignin(browser()->profile(), GaiaId("12345"), "foo@gmail.com")
-          .IsOk());
-  EXPECT_TRUE(
-      CanOfferSignin(browser()->profile(), GaiaId("12345"), "foo").IsOk());
-  SigninUIError error =
-      CanOfferSignin(browser()->profile(), GaiaId("12345"), "user@gmail.com");
-  EXPECT_FALSE(error.IsOk());
-  EXPECT_EQ(error, SigninUIError::WrongReauthAccount("user@gmail.com",
-                                                     "foo@gmail.com"));
-}
-
-IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferUsernameNotAllowed) {
-  SetAllowedUsernamePattern("*.google.com");
-
-  SigninUIError error =
-      CanOfferSignin(browser()->profile(), GaiaId("12345"), "foo@gmail.com");
-  EXPECT_FALSE(error.IsOk());
-  EXPECT_EQ(error, SigninUIError::UsernameNotAllowedByPatternFromPrefs(
-                       "foo@gmail.com"));
-}
-
-IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoSigninCookies) {
-  AllowSigninCookies(false);
-  EnableSigninAllowed(true);
-
-  SigninUIError error =
-      CanOfferSignin(browser()->profile(), GaiaId("12345"), "user@gmail.com");
-  EXPECT_FALSE(error.IsOk());
-  EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
 }
 
 class InlineLoginHelperBrowserTest : public DialogBrowserTest {
@@ -443,7 +360,7 @@ class InlineLoginHelperBrowserTest : public DialogBrowserTest {
     oauth2_token_exchange_success_ =
         std::make_unique<net::test_server::ControllableHttpResponse>(
             embedded_test_server(),
-            GaiaUrls::GetInstance()->oauth2_token_url().path(),
+            GaiaUrls::GetInstance()->oauth2_token_url().GetPath(),
             /*relative_url_is_prefix=*/true);
 
     embedded_test_server()->StartAcceptingConnections();
@@ -573,9 +490,9 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   ASSERT_NE(entry, nullptr);
   entry->LockForceSigninProfile(true);
 
-  ASSERT_EQ(0ul, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0ul, chrome::GetTotalBrowserCount());
   SimulateOnClientOAuthSuccess(helper, "refresh_token");
-  ASSERT_EQ(0ul, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0ul, chrome::GetTotalBrowserCount());
   // if |force_sign_in_with_user_manager| is false, the profile should be
   // unlocked early and InlineLoginHelper won't try to do it again
   ASSERT_TRUE(entry->IsSigninRequired());
@@ -707,9 +624,9 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   ASSERT_NE(entry, nullptr);
   entry->LockForceSigninProfile(true);
 
-  ASSERT_EQ(0ul, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0ul, chrome::GetTotalBrowserCount());
   SimulateOnClientOAuthSuccess(helper, "refresh_token");
-  ASSERT_EQ(1ul, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1ul, chrome::GetTotalBrowserCount());
   ASSERT_FALSE(entry->IsSigninRequired());
 }
 
@@ -755,12 +672,13 @@ class InlineLoginUISafeIframeBrowserTest : public InProcessBrowserTest {
     factory_registration_ =
         std::make_unique<content::ScopedWebUIControllerFactoryRegistration>(
             test_factory_.get(), ChromeWebUIControllerFactory::GetInstance());
-    test_factory_->AddFactoryOverride(content::GetWebUIURL("foo/").host(),
+    test_factory_->AddFactoryOverride(content::GetWebUIURL("foo/").GetHost(),
                                       &foo_provider_);
   }
 
   void TearDownOnMainThread() override {
-    test_factory_->RemoveFactoryOverride(content::GetWebUIURL("foo/").host());
+    test_factory_->RemoveFactoryOverride(
+        content::GetWebUIURL("foo/").GetHost());
     // |factory_registration_| must be reset before |test_factory_| to remove
     // any pointers to |test_factory_| from the factory registry before its
     // destruction.
@@ -860,7 +778,7 @@ class HtmlRequestTracker {
 
  private:
   static GURL StripParams(const GURL& url) {
-    return url.GetWithEmptyPath().Resolve(url.path());
+    return url.GetWithEmptyPath().Resolve(url.GetPath());
   }
 
   // Given a URL, gives the parameters of each request made to it.

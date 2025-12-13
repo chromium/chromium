@@ -241,7 +241,7 @@ LoginEventRecorder::Stats LoginEventRecorder::Stats::DeserializeFromString(
     return Stats();
 
   std::optional<base::Value::Dict> maybe_value =
-      base::JSONReader::ReadDict(source);
+      base::JSONReader::ReadDict(source, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!maybe_value) {
     LOG(ERROR) << "LoginEventRecorder::Stats::DeserializeFromString(): not a "
                   "dictionary: '"

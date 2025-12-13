@@ -43,7 +43,7 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
   void IterateOverIdentities(IdentityIteratorCallback callback) final;
   void ForgetIdentity(id<SystemIdentity> identity,
                       ForgetIdentityCallback callback) final;
-  bool IdentityRemovedByUser(NSString* gaia_id) final;
+  bool IdentityRemovedByUser(const GaiaId& gaia_id) final;
   void GetAccessToken(id<SystemIdentity> identity,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) final;
@@ -63,6 +63,7 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
                              NSArray<id<SystemIdentity>>* active_identities,
                              id<RefreshAccessTokenError> error,
                              HandleMDMCallback callback) final;
+  bool IsScopeLimitedError(id<RefreshAccessTokenError> error) final;
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final;
   void FetchTokenAuthURL(id<SystemIdentity> identity,
                          NSURL* target_url,
@@ -133,7 +134,8 @@ void ChromiumSystemIdentityManager::ForgetIdentity(
   NOTREACHED();
 }
 
-bool ChromiumSystemIdentityManager::IdentityRemovedByUser(NSString* gaia_id) {
+bool ChromiumSystemIdentityManager::IdentityRemovedByUser(
+    const GaiaId& gaia_id) {
   NOTREACHED();
 }
 
@@ -185,6 +187,11 @@ bool ChromiumSystemIdentityManager::HandleMDMNotification(
     NSArray<id<SystemIdentity>>* active_identities,
     id<RefreshAccessTokenError> error,
     HandleMDMCallback callback) {
+  NOTREACHED();
+}
+
+bool ChromiumSystemIdentityManager::IsScopeLimitedError(
+    id<RefreshAccessTokenError> error) {
   NOTREACHED();
 }
 

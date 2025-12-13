@@ -33,8 +33,6 @@ using blink::WebString;
 
 namespace autofill {
 
-using form_util::ExtractOption;
-
 namespace {
 
 const char kPasswordSiteUrlRegex[] =

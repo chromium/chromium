@@ -28,7 +28,7 @@ export enum JapaneseSpaceInputStyle {
   HALFWIDTH = 'Halfwidth',
 }
 
-export enum JapaneseSectionShortcut {
+export enum JapaneseSelectionShortcut {
   NO_SHORTCUT = 'NoShortcut',
   DIGITS_123456789 = 'Digits123456789',
   ASDFGHJKL = 'ASDFGHJKL',
@@ -47,4 +47,3 @@ export enum JapaneseShiftKeyModeStyle {
   KATAKANA = 'Katakana',
 }
 // LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h:JpOptionValues)
-

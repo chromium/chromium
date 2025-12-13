@@ -8,7 +8,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "ui/events/android/motion_event_android_java.h"
-#include "ui/events/android/motion_event_android_native.h"
+#include "ui/events/android/motion_event_android_source_java.h"
+#include "ui/events/android/motion_event_android_source_native.h"
 
 namespace ui {
 
@@ -33,12 +34,14 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidFactory::CreateFromJava(
     jboolean for_touch_handle,
     const MotionEventAndroid::Pointer* const pointer0,
     const MotionEventAndroid::Pointer* const pointer1) {
-  return base::WrapUnique<MotionEventAndroid>(new MotionEventAndroidJava(
+  return CreateFromJava(
       env, event, pix_to_dip, ticks_x, ticks_y, tick_multiplier,
-      oldest_event_time, android_action, pointer_count, history_size,
-      action_index, android_action_button, android_gesture_classification,
-      android_button_state, raw_offset_x_pixels, raw_offset_y_pixels,
-      for_touch_handle, pointer0, pointer1));
+      oldest_event_time, /*latest_event_time=*/oldest_event_time,
+      /*down_time_ms=*/base::TimeTicks(), android_action, pointer_count,
+      history_size, action_index, android_action_button,
+      android_gesture_classification, android_button_state, raw_offset_x_pixels,
+      raw_offset_y_pixels, for_touch_handle, pointer0, pointer1,
+      /*is_latest_event_time_resampled=*/false);
 }
 
 // static
@@ -65,13 +68,16 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidFactory::CreateFromJava(
     const MotionEventAndroid::Pointer* const pointer0,
     const MotionEventAndroid::Pointer* const pointer1,
     bool is_latest_event_time_resampled) {
+  auto source = MotionEventAndroidSourceJava::Create(
+      event, is_latest_event_time_resampled);
+  int meta_state = source->GetMetaState();
   return base::WrapUnique<MotionEventAndroid>(new MotionEventAndroidJava(
-      env, event, pix_to_dip, ticks_x, ticks_y, tick_multiplier,
-      oldest_event_time, latest_event_time, down_time_ms, android_action,
-      pointer_count, history_size, action_index, android_action_button,
-      android_gesture_classification, android_button_state, raw_offset_x_pixels,
-      raw_offset_y_pixels, for_touch_handle, pointer0, pointer1,
-      is_latest_event_time_resampled));
+      pix_to_dip, ticks_x, ticks_y, tick_multiplier, oldest_event_time,
+      latest_event_time, down_time_ms, android_action, pointer_count,
+      history_size, action_index, android_action_button,
+      android_gesture_classification, android_button_state, meta_state,
+      raw_offset_x_pixels, raw_offset_y_pixels, for_touch_handle, pointer0,
+      pointer1, std::move(source)));
 }
 
 // static
@@ -119,7 +125,7 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidFactory::CreateFromNative(
           /*touch_major_pixels=*/AMotionEvent_getTouchMajor(event, 0),
           /*touch_minor_pixels=*/AMotionEvent_getTouchMinor(event, 0),
           /*pressure=*/AMotionEvent_getPressure(event, 0),
-          /*orienation_rad=*/AMotionEvent_getOrientation(event, 0),
+          /*orientation_rad=*/AMotionEvent_getOrientation(event, 0),
           /*tilt_rad=*/
           AMotionEvent_getAxisValue(event, AMOTION_EVENT_AXIS_TILT, 0),
           /*tool_type=*/AMotionEvent_getToolType(event, 0));
@@ -151,8 +157,11 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidFactory::CreateFromNative(
     gesture_classification = AMotionEvent_getClassification(event);
   }
 
-  return base::WrapUnique<MotionEventAndroid>(new MotionEventAndroidNative(
-      std::move(input_event), pix_to_dip,
+  auto source = std::make_unique<MotionEventAndroidSourceNative>(
+      std::move(input_event), y_offset_pix);
+
+  return base::WrapUnique<MotionEventAndroid>(new MotionEventAndroid(
+      pix_to_dip,
       /*ticks_x=*/0.f,
       /*ticks_y=*/0.f,
       /*tick_multiplier=*/0.f, event_times->oldest, event_times->latest,
@@ -162,7 +171,7 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidFactory::CreateFromNative(
       AMotionEvent_getButtonState(event), AMotionEvent_getMetaState(event),
       raw_offset_x_pixels, raw_offset_y_pixels,
       /*for_touch_handle=*/false, pointer0.get(), pointer1.get(),
-      y_offset_pix));
+      std::move(source)));
 }
 
 }  // namespace ui

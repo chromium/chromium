@@ -21,11 +21,6 @@ namespace blink {
 
 namespace {
 
-// Note: LayoutFlowThread, used for multicol, can't provide offset mapping.
-bool CanUseOffsetMapping(const LayoutObject& object) {
-  return object.IsLayoutBlockFlow() && !object.IsLayoutFlowThread();
-}
-
 Position CreatePositionForOffsetMapping(const Node& node, unsigned dom_offset) {
   if (auto* text_node = DynamicTo<Text>(node)) {
     // 'text-transform' may make the rendered text length longer than the
@@ -68,11 +63,7 @@ std::pair<const Node&, unsigned> ToNodeOffsetPair(const Position& position) {
 }  // namespace
 
 LayoutBlockFlow* NGInlineFormattingContextOf(const Position& position) {
-  LayoutBlockFlow* block_flow =
-      OffsetMapping::GetInlineFormattingContextOf(position);
-  if (!block_flow || !block_flow->IsLayoutNGObject())
-    return nullptr;
-  return block_flow;
+  return OffsetMapping::GetInlineFormattingContextOf(position);
 }
 
 // static
@@ -255,10 +246,9 @@ LayoutBlockFlow* OffsetMapping::GetInlineFormattingContextOf(
     const LayoutObject& object) {
   for (LayoutObject* runner = object.Parent(); runner;
        runner = runner->Parent()) {
-    if (!CanUseOffsetMapping(*runner)) {
-      continue;
+    if (auto* block_flow = DynamicTo<LayoutBlockFlow>(runner)) {
+      return block_flow;
     }
-    return To<LayoutBlockFlow>(runner);
   }
   return nullptr;
 }

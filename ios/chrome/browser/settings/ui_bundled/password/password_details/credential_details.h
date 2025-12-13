@@ -88,6 +88,11 @@ enum class DetailsContext {
 // The DetailsContext for the credential details.
 @property(nonatomic, assign) DetailsContext context;
 
+// Whether credential was marked for deletion, e.g. by a website. It should be
+// marked as soon to be deleted in management surfaces with time defined based
+// on `hiddenTime`. This only applies to passkeys.
+@property(nonatomic, assign) BOOL hidden;
+
 - (instancetype)initWithCredential:
     (const password_manager::CredentialUIEntry&)credential
     NS_DESIGNATED_INITIALIZER;

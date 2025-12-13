@@ -69,13 +69,6 @@ const char SupervisedUserExtensionsMetricsRecorder::kDisabledActionName[] =
 const char
     SupervisedUserExtensionsMetricsRecorder::kFailedToEnableActionName[] =
         "SupervisedUsers_Extensions_FailedToEnable";
-// Extension approval entry points.
-const char SupervisedUserExtensionsMetricsRecorder::
-    kExtensionParentApprovalEntryPointHistogramName[] =
-        "SupervisedUsers.ExtensionParentApprovalEntryPoint";
-const char SupervisedUserExtensionsMetricsRecorder::
-    kImplicitParentApprovalGrantEntryPointHistogramName[] =
-        "SupervisedUsers.ImplicitParentApprovalGrantEntryPoint";
 
 SupervisedUserExtensionsMetricsRecorder::
     SupervisedUserExtensionsMetricsRecorder() = default;
@@ -171,24 +164,6 @@ void SupervisedUserExtensionsMetricsRecorder::
       // Nothing to do here.
       break;
   }
-}
-
-// static
-void SupervisedUserExtensionsMetricsRecorder::
-    RecordExtensionParentApprovalDialogEntryPointUmaMetrics(
-        SupervisedUserExtensionParentApprovalEntryPoint
-            extension_approval_entry_point) {
-  base::UmaHistogramEnumeration(kExtensionParentApprovalEntryPointHistogramName,
-                                extension_approval_entry_point);
-}
-
-// static
-void SupervisedUserExtensionsMetricsRecorder::
-    RecordImplicitParentApprovalGrantEntryPointEntryPointUmaMetrics(
-        ImplicitExtensionApprovalEntryPoint extension_approval_entry_point) {
-  base::UmaHistogramEnumeration(
-      kImplicitParentApprovalGrantEntryPointHistogramName,
-      extension_approval_entry_point);
 }
 
 // static

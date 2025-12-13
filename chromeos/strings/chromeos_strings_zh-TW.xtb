@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">柳橙</translation>
 <translation id="1275718070701477396">已選取</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
+<translation id="1292474106138697109">課程工具組顯示畫面</translation>
 <translation id="1300115153046603471">APN 類型為預設和「<ph name="ATTACH" />」。</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">轉換</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
 <translation id="4300272766492248925">開啟應用程式</translation>
 <translation id="430786093962686457">雪紡紗</translation>
+<translation id="4309762678330556039">自動建立轉錄稿及搜尋音訊。即使未連上網際網路，也能製作錄音檔。</translation>
 <translation id="4310735698903592804">最近使用 Google AI 技術生成的桌布</translation>
 <translation id="4320904097188876154">螢光粉紅</translation>
 <translation id="432961742358282111">按一下滑鼠右鍵或按住畫面，即可取得定義、翻譯或單位轉換結果。使用向左鍵或向右鍵即可管理這項功能。</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5600027863942488546">已測試 <ph name="KEY_NAME" /> 鍵</translation>
 <translation id="5606865426897221650">Tab 鍵</translation>
+<translation id="5612205513582918357">課程工具組正與「<ph name="RECEIVER_NAME" />」分享你的螢幕畫面</translation>
 <translation id="5613201299517339763">你已登出</translation>
 <translation id="5620281292257375798">僅供內部使用</translation>
 <translation id="5628106863521633649">可用的語言</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">雲朵動態</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">沒有可用的掃描器</translation>
-<translation id="6231648282154119906">由於你選擇強化防護，因此 Google 安全瀏覽會自動掃描可疑檔案。</translation>
 <translation id="6232017090690406397">電池</translation>
 <translation id="6234024205316847054">顯示大綱</translation>
 <translation id="6243280677745499710">目前設定的桌布</translation>
@@ -1283,7 +1285,7 @@
 <translation id="6657240842932274095">要允許系統服務使用你的位置資訊嗎？</translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="66621959568103627">珊瑚粉</translation>
-<translation id="6669485505082792176">目前無法生成這類圖片，請嘗試修改描述。請注意，你無法建立含有人物、有害或情色露骨內容的圖像。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="6669485505082792176">目前無法生成這類圖片，請嘗試修改描述。請注意，你無法建立含有人物、有害或露骨內容的圖像。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">調高鍵盤亮度</translation>
 <translation id="6692996468359469499">取得選取項目的相關資訊</translation>
 <translation id="6694534975463174713">鎖定</translation>
@@ -1408,7 +1410,7 @@
 <translation id="7177485034254901881">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理。系統管理員可從遠端設定這部裝置。</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7180865173735832675">自訂</translation>
-<translation id="7182063559013288142">即時無線基地台</translation>
+<translation id="7182063559013288142">即時熱點</translation>
 <translation id="7184043045742675738">按一下任何按鍵可自訂按鈕，使用滑鼠或方向鍵可調整位置。</translation>
 <translation id="7187669805838282391">星期三</translation>
 <translation id="7205318498545665455">選擇麥克風</translation>
@@ -1866,7 +1868,7 @@
 <translation id="921080052717160800">圖片已設為相機背景</translation>
 <translation id="9211490828691860325">所有桌面</translation>
 <translation id="9218016617214286986">顯示已知 APN</translation>
-<translation id="932327136139879170">首頁</translation>
+<translation id="932327136139879170">住家</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="950520315903467048">缺少「<ph name="DIRECTION" />」的按鍵。<ph name="ASSIGN_INSTRUCTION" /></translation>

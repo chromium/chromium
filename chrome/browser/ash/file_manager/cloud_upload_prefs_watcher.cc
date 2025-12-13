@@ -170,7 +170,7 @@ CloudUploadPrefsWatcherFactory::~CloudUploadPrefsWatcherFactory() = default;
 std::unique_ptr<KeyedService>
 CloudUploadPrefsWatcherFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
+  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return nullptr;
   }
   auto* profile = Profile::FromBrowserContext(context);

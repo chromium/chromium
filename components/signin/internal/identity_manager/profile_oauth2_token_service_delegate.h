@@ -11,10 +11,11 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -119,6 +120,13 @@ class ProfileOAuth2TokenServiceDelegate {
   virtual std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const = 0;
 
+  // Returns whether all bound refresh tokens share the same binding key.
+  //
+  // Unbound tokens are ignored in this check. Returns `true` if there are zero
+  // or one bound tokens, or if all bound tokens use the same key. Returns
+  // `false` only if there are multiple bound tokens with different keys.
+  virtual bool AllBoundTokensShareSameBindingKey() const = 0;
+
   // Asynchronously generates a binding key assertion for a refresh token
   // associated with `account_id` to be sent to the Gaia Multilogin endpoint.
   // The result is returned through `callback`.
@@ -129,6 +137,13 @@ class ProfileOAuth2TokenServiceDelegate {
       std::string_view challenge,
       std::string_view ephemeral_public_key,
       TokenBindingHelper::GenerateAssertionCallback callback) = 0;
+
+  // Adds a `wrapped_binding_key` that was copied from another token service.
+  // This ensures that this key is properly tracked in the token service this
+  // delegate belongs to.
+  virtual void AddBindingKeyToService(
+      base::span<const uint8_t> wrapped_binding_key) = 0;
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Returns a list of accounts for which a refresh token is maintained by

@@ -79,8 +79,7 @@ std::string SelectChallengeOptionRequest::GetRequestContent() {
     request_dict.Set("context_token", request_details_.context_token);
   }
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
+  std::string request_content = base::WriteJson(request_dict).value_or("");
   DVLOG(3) << "selectchallengeoption request body: " << request_content;
   return request_content;
 }

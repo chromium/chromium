@@ -35,20 +35,23 @@ SVGRect* SVGRect::Clone() const {
 }
 
 template <typename CharType>
-SVGParsingError SVGRect::Parse(const CharType*& ptr, const CharType* end) {
-  const CharType* start = ptr;
+SVGParsingError SVGRect::Parse(base::span<const CharType> span) {
+  const size_t start_size = span.size();
   float x = 0;
   float y = 0;
   float width = 0;
   float height = 0;
-  if (!ParseNumber(ptr, end, x) || !ParseNumber(ptr, end, y) ||
-      !ParseNumber(ptr, end, width) ||
-      !ParseNumber(ptr, end, height, kDisallowWhitespace))
-    return SVGParsingError(SVGParseStatus::kExpectedNumber, ptr - start);
+  if (!ParseNumber(span, x) || !ParseNumber(span, y) ||
+      !ParseNumber(span, width) ||
+      !ParseNumber(span, height, kDisallowWhitespace)) {
+    return SVGParsingError(SVGParseStatus::kExpectedNumber,
+                           start_size - span.size());
+  }
 
-  if (SkipOptionalSVGSpaces(ptr, end)) {
+  if (SkipOptionalSVGSpaces(span)) {
     // Nothing should come after the last, fourth number.
-    return SVGParsingError(SVGParseStatus::kTrailingGarbage, ptr - start);
+    return SVGParsingError(SVGParseStatus::kTrailingGarbage,
+                           start_size - span.size());
   }
 
   Set(x, y, width, height);
@@ -68,10 +71,7 @@ SVGParsingError SVGRect::SetValueAsString(const String& string) {
   if (string.empty())
     return SVGParsingError(SVGParseStatus::kExpectedNumber, 0);
 
-  return VisitCharacters(string, [&](auto chars) {
-    const auto* start = chars.data();
-    return Parse(start, start + chars.size());
-  });
+  return VisitCharacters(string, [&](auto chars) { return Parse(chars); });
 }
 
 String SVGRect::ValueAsString() const {

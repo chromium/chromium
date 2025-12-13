@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -45,12 +46,28 @@ class FakeRecoveryKeyStore {
   // Return the set of uploaded vaults.
   virtual base::span<const trusted_vault_pb::Vault> vaults() const = 0;
 
+  // Override the URL for the specified files.
+  virtual void set_cert_xml_url(std::string url) = 0;
+  virtual void set_sig_xml_url(std::string url) = 0;
+
   // Cause the specified file to return an HTTP error.
   virtual void break_cert_xml_file() = 0;
   virtual void break_sig_xml_file() = 0;
 
+  // These methods update recovery key store serial number, then regenerate keys
+  // and the cert files.
+  virtual void DowngradeCohort() = 0;
+  virtual void UpgradeCohort() = 0;
+  virtual int recovery_key_store_serial_number() = 0;
+
   // Returns the cohort private scalar as 32 bytes in big-endian order.
-  virtual std::array<uint8_t, 32> endpoint_private_key_bytes() const = 0;
+  // `public_key_bytes` must correspond to an endpoint key that was current at
+  // some point during the lifetime of the fake recovery key store.
+  virtual std::array<uint8_t, 32> EndpointPrivateKeyFor(
+      base::span<const uint8_t> public_key_bytes) const = 0;
+
+  // Returns the current cohort public key bytes.
+  virtual std::vector<uint8_t> CurrentEndpointPublicKeyBytes() const = 0;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_FAKE_RECOVERY_KEY_STORE_H_

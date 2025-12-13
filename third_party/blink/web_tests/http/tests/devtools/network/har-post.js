@@ -11,7 +11,7 @@ import * as Common from 'devtools/core/common/common.js';
   TestRunner.addResult('Verifies that HAR exports have correct POST data');
   await TestRunner.showPanel('network');
 
-  await TestRunner.NetworkAgent.setCacheDisabled(true);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true});
 
   async function doPost(data) {
     await new Promise(
@@ -37,8 +37,8 @@ import * as Common from 'devtools/core/common/common.js';
     const stream = new TestRunner.StringOutputStream(resolve);
     const progress = new Common.Progress.Progress();
     const networkRequests = NetworkTestRunner.networkRequests();
-    await NetworkTestRunner.writeHARLog(stream, networkRequests, {sanitize: false}, progress);
-    progress.done();
+    await NetworkTestRunner.writeHARLog(
+        stream, networkRequests, {sanitize: false}, progress);
     stream.close();
   });
 

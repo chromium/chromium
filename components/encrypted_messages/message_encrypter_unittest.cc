@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/encrypted_messages/message_encrypter.h"
 
+#include <ranges>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -170,11 +167,14 @@ static const char kHkdfLabel[] = "certificate report";
 // original.
 TEST(MessageEncrypterTest, EncryptedMessageCanBeDecrypted) {
   uint8_t server_private_key[32];
-  uint8_t server_public_key[32];
+  std::ranges::fill(server_private_key, 1);
+
   uint8_t client_private_key[32];
-  memset(server_private_key, 1, sizeof(server_private_key));
-  memset(client_private_key, 2, sizeof(client_private_key));
+  std::ranges::fill(client_private_key, 2);
+
+  uint8_t server_public_key[32];
   X25519_public_from_private(server_public_key, server_private_key);
+
   encrypted_messages::EncryptedMessage message;
   std::string test_message = "test message";
   ASSERT_TRUE(encrypted_messages::EncryptSerializedMessage(
@@ -190,8 +190,9 @@ TEST(MessageEncrypterTest, DecrypterWorksWithProperKey) {
   // in order to catch changes in report encryption that could cause the
   // server to no longer be able to decrypt reports that it receives from
   // Chrome.
-  uint8_t server_private_key_[32];
-  memset(server_private_key_, 1, sizeof(server_private_key_));
+  uint8_t server_private_key[32];
+  std::ranges::fill(server_private_key, 1);
+
   encrypted_messages::EncryptedMessage encrypted_message;
   std::string decrypted_serialized_report;
   ASSERT_TRUE(encrypted_message.ParseFromString(
@@ -201,14 +202,15 @@ TEST(MessageEncrypterTest, DecrypterWorksWithProperKey) {
   // matching error in the server for the case of certificate reporting,
   // the strlen + 1 can be removed once that error is fixed.
   ASSERT_TRUE(encrypted_messages::DecryptMessageForTesting(
-      server_private_key_, std::string_view(kHkdfLabel, strlen(kHkdfLabel) + 1),
+      server_private_key, std::string_view(kHkdfLabel, strlen(kHkdfLabel) + 1),
       encrypted_message, &decrypted_serialized_report));
 }
 
 TEST(MessageEncrypterTest, DecrypterFailsWithWrongKey) {
-  uint8_t server_private_key_[32];
   // Set the private key to an invalid one.
-  memset(server_private_key_, 0, sizeof(server_private_key_));
+  uint8_t server_private_key[32];
+  std::ranges::fill(server_private_key, 0);
+
   encrypted_messages::EncryptedMessage encrypted_message;
   std::string decrypted_serialized_message;
   ASSERT_TRUE(encrypted_message.ParseFromString(
@@ -217,7 +219,7 @@ TEST(MessageEncrypterTest, DecrypterFailsWithWrongKey) {
   // Check decryption fails when using an invalid key.
   // See comment above about the strlen + 1.
   ASSERT_FALSE(encrypted_messages::DecryptMessageForTesting(
-      server_private_key_, std::string_view(kHkdfLabel, strlen(kHkdfLabel) + 1),
+      server_private_key, std::string_view(kHkdfLabel, strlen(kHkdfLabel) + 1),
       encrypted_message, &decrypted_serialized_message));
 }
 

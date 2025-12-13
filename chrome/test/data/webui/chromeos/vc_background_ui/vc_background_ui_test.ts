@@ -38,7 +38,7 @@ suite('VcBackgroundUITest', () => {
   function getVcBackgroundBreadcrumbsText(): string[] {
     const breadcrumbElements =
         getVcBackgroundBreadcrumbs().shadowRoot!.querySelectorAll('cr-button');
-    return Array.from(breadcrumbElements).map(el => el.textContent!);
+    return Array.from(breadcrumbElements).map(el => el.textContent);
   }
 
   function getSeaPenRouter(): SeaPenRouterElement {

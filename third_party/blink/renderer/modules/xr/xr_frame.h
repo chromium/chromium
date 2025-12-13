@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "device/vr/public/mojom/plane_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -128,7 +129,7 @@ class XRFrame final : public ScriptWrappable {
       ScriptState* script_state,
       const gfx::Transform& native_origin_from_anchor,
       XRSpace* space,
-      std::optional<uint64_t> maybe_plane_id,
+      std::optional<device::PlaneId> maybe_plane_id,
       ExceptionState& exception_state);
   // Helper for checking if space and frame have the same session.
   // Sets kInvalidStateError exception state if sessions are different.

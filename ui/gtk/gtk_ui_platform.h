@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "ui/events/event.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gtk/gtk_compat.h"
 
 using GtkWindow = struct _GtkWindow;
@@ -33,11 +33,11 @@ class GtkUiPlatform {
   // Creates/Gets a GdkWindow out of a Aura window id. Caller owns the returned
   // object. This function is meant to be used in GtkIM-based IME implementation
   // and is supported only in X11 backend (both Aura and Ozone).
-  virtual GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) = 0;
+  virtual GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) const = 0;
 
   // Gtk dialog windows must be set transient for the browser window. This
   // function abstracts away such functionality.
-  virtual bool SetGtkWidgetTransientFor(GtkWidget* widget,
+  virtual void SetGtkWidgetTransientFor(GtkWidget* widget,
                                         gfx::AcceleratedWidget parent) = 0;
   virtual void ClearTransientFor(gfx::AcceleratedWidget parent) = 0;
 

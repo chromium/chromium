@@ -17,6 +17,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 
@@ -58,6 +59,7 @@ class AutofillTestRule extends ChromeBrowserTestRule
                 AutofillProfilesFragment.setObserverForTest(AutofillTestRule.this);
                 AutofillLocalCardEditor.setObserverForTest(AutofillTestRule.this);
                 AutofillLocalIbanEditor.setObserverForTest(AutofillTestRule.this);
+                AutofillOptionsFragment.setObserverForTest(AutofillTestRule.this);
                 FinancialAccountsManagementFragment.setObserverForTest(AutofillTestRule.this);
                 NonCardPaymentMethodsManagementFragment.setObserverForTest(AutofillTestRule.this);
                 statement.evaluate();

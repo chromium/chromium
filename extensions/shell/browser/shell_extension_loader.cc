@@ -38,7 +38,7 @@ scoped_refptr<const Extension> LoadUnpacked(
   }
 
   int load_flags = Extension::FOLLOW_SYMLINKS_ANYWHERE;
-  std::string load_error;
+  std::u16string load_error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
       extension_dir, mojom::ManifestLocation::kCommandLine, load_flags,
       &load_error);

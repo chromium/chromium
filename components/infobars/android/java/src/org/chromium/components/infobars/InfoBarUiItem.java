@@ -25,7 +25,7 @@ public interface InfoBarUiItem {
         InfoBarPriority.BACKGROUND
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface InfoBarPriority {
+    @interface InfoBarPriority {
         int CRITICAL = 0;
         int USER_TRIGGERED = 1;
         int PAGE_TRIGGERED = 2;

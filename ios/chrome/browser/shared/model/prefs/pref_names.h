@@ -109,15 +109,6 @@ inline constexpr char kDownloadAutoDeletionIPHShown[] =
 inline constexpr char kDownloadAutoDeletionScheduledFiles[] =
     "ios.auto_deletion.scheduled_files";
 
-// Number of times the First Follow UI has been shown.
-inline constexpr char kFirstFollowUIShownCount[] =
-    "follow.first_follow_ui_modal_count";
-
-// Number of times the First Follow UI has been shown with Follow UI Update
-// enabled.
-inline constexpr char kFirstFollowUpdateUIShownCount[] =
-    "follow.first_follow_update_ui_modal_count";
-
 // A dictionary mapping push notification enabled features to their permission
 // to send notifications to the user. This is stored in Profile prefs.
 inline constexpr char kFeaturePushNotificationPermissions[] =
@@ -316,15 +307,15 @@ inline constexpr char
 inline constexpr char kIosMiniMapShowNativeMap[] =
     "ios.mini_map.show_native_map";
 
-// The number of consecutive times the user dismissed the password bottom sheet.
-// This gets reset to 0 whenever the user selects a password from the bottom
-// sheet or from the keyboard accessory.
+// The number of consecutive times the user dismissed the credential bottom
+// sheet. This gets reset to 0 whenever the user selects a password from the
+// bottom sheet or from the keyboard accessory.
 inline constexpr char kIosPasswordBottomSheetDismissCount[] =
     "ios.password_bottom_sheet_dismiss_count";
 
-// The number of consecutive times the user dismissed the password bottom sheet.
-// This gets reset to 0 whenever the user selects the generated password from
-// the bottom sheet or from the keyboard accessory.
+// The number of consecutive times the user dismissed the password generation
+// bottom sheet. This gets reset to 0 whenever the user selects the generated
+// password from the bottom sheet or from the keyboard accessory.
 inline constexpr char kIosPasswordGenerationBottomSheetDismissCount[] =
     "ios.password_generation_bottom_sheet_dismiss_count";
 
@@ -411,6 +402,10 @@ inline constexpr char kIosSavedThemeSpecificsIos[] =
 inline constexpr char kIosUserUploadedBackground[] =
     "ios.user_uploaded_background";
 
+// List pref storing recently used NTP backgrounds.
+inline constexpr char kIosRecentlyUsedBackgrounds[] =
+    "ios.recently_used_backgrounds";
+
 // String preference containing the default account to use for saving images to
 // Google Photos.
 inline constexpr char kIosSaveToPhotosDefaultGaiaId[] =
@@ -487,9 +482,10 @@ inline constexpr char kNTPContentSuggestionsEnabled[] =
 inline constexpr char kNTPContentSuggestionsForSupervisedUserEnabled[] =
     "ios.ntp.supervised.content_suggestions_enabled";
 
-// Preference that represents the sorting order of the Following feed content.
-inline constexpr char kNTPFollowingFeedSortType[] =
-    "ios.ntp.following_feed.sort_type";
+// Preference that holds a boolean indicating whether users can customize their
+// NTP backgrounds, as determined by enterprise policy.
+inline constexpr char kNTPCustomBackgroundEnabledByPolicy[] =
+    "ios.ntp.custom_background_enabled_by_policy";
 
 // Preference that determines if the user changed the Following feed sort type.
 inline constexpr char kDefaultFollowingFeedSortTypeChanged[] =
@@ -507,7 +503,7 @@ inline constexpr char kOverflowMenuDestinationUsageHistory[] =
 // Boolean preference that tracks whether the destination usage history feature
 // is enabled on the overflow menu.
 extern inline constexpr char kOverflowMenuDestinationUsageHistoryEnabled[] =
-    "overflow_menu.destination_usage_history.enabled";
+    "overflow_menu.destination_usage_history_enabled";
 
 // List preference which tracks new destinations added to the overflow menu
 // carousel.
@@ -599,6 +595,11 @@ inline constexpr char kSigninHasAcceptedManagementDialog[] =
 inline constexpr char kSigninWebSignDismissalCount[] =
     "ios.signin.web_signin_dismissal_count";
 
+// Integer preference that stores the number of times the Synced Set Up flow has
+// been shown to the user.
+inline constexpr char kSyncedSetUpImpressionCount[] =
+    "ios.synced_set_up.impression_count";
+
 // Dictionary which stores the zoom levels the user has changed. The zoom levels
 // are unique for a given (iOS Dynamic Type, website domain) pair. Thus, the
 // dictionary keys are the iOS Dynamic Type level, mapping to sub-dictionarys
@@ -655,6 +656,11 @@ inline constexpr char kAutofillBrandingIconAnimationRemainingCount[] =
 inline constexpr char kAutofillBrandingIconDisplayCount[] =
     "ios.autofill.branding.display_count";
 
+// A boolean used for the automatically open tab groups from other devices
+// setting.
+inline constexpr char kAutomaticallyOpenTabGroupsEnabled[] =
+    "ios.settings.automatically_open_tab_groups_enabled";
+
 // A boolean used to determine if the Price Tracking UI has been shown.
 inline constexpr char kPriceNotificationsHasBeenShown[] =
     "ios.price_notifications.has_been_shown";
@@ -703,14 +709,10 @@ inline constexpr char kHomeCustomizationMagicStackEnabled[] =
     "ios.home_customization.magic_stack.enabled";
 
 // Prefs indicating whether Magic Stack cards are enabled.
-inline constexpr char kHomeCustomizationMagicStackSetUpListEnabled[] =
-    "ios.home_customization.magic_stack.set_up_list.enabled";
 inline constexpr char kHomeCustomizationMagicStackSafetyCheckEnabled[] =
     "ios.home_customization.magic_stack.safety_check.enabled";
 inline constexpr char kHomeCustomizationMagicStackTabResumptionEnabled[] =
     "ios.home_customization.magic_stack.tab_resumption.enabled";
-inline constexpr char kHomeCustomizationMagicStackParcelTrackingEnabled[] =
-    "ios.home_customization.magic_stack.parcel_tracking.enabled";
 inline constexpr char kHomeCustomizationMagicStackTipsEnabled[] =
     "ios.home_customization.magic_stack.tips.enabled";
 inline constexpr char
@@ -789,8 +791,24 @@ inline constexpr char kIOSBWGPreciseLocationSetting[] =
 inline constexpr char kIOSBWGPageContentSetting[] =
     "ios.bwg.page.content.setting";
 
-// A boolean specifying whether the BWG Promo was shown manually.
-inline constexpr char kIOSBWGManualPromo[] = "ios.bwg.manual_promo";
+// An integer specifying how many times the BWG Promo was shown.
+inline constexpr char kIOSBWGPromoImpressionCount[] =
+    "ios.bwg.promo_impressions";
+
+// Timestamp tracking the last interaction with the Gemini floaty.
+inline constexpr char kLastGeminiInteractionTimestamp[] =
+    "ios.gemini.last_interaction_timestamp";
+
+// The URL where the user last had a Gemini interaction.
+inline constexpr char kLastGeminiInteractionURL[] =
+    "ios.gemini.last_interaction_url";
+
+// Timestamp tracking the last time the Gemini contextual chip was displayed.
+inline constexpr char kLastGeminiContextualChipDisplayedTimestamp[] =
+    "ios.gemini.last_contextual_chip_displayed";
+
+// A string specifying the active conversation ID.
+inline constexpr char kGeminiConversationId[] = "ios.gemini.conversation_id";
 
 // A time object storing the first browser startup with a managed primary
 // identity in the personal profile after multi-profile becomes supported. Used
@@ -807,9 +825,59 @@ inline constexpr char kNextSSORecallTime[] = "ios.next_sso_recall_time";
 // 0 means Gemini is enabled (default), and 1 means it's disabled.
 inline constexpr char kGeminiEnabledByPolicy[] = "ios.gemini_enabled_by_policy";
 
+// A boolean specifying whether the user has ever been eligible for AI Hub.
+inline constexpr char kAIHubEligibilityTriggered[] =
+    "ios.ai_hub_eligibility_triggered";
+
 // A boolean specifying if the multi-profile force-migration is done.
 inline constexpr char kMultiProfileForcedMigrationDone[] =
     "ios.multi_profile_forced_migration_done";
+
+// A bool checking that multi-profile support for widgets is available.
+inline constexpr char kWidgetsForMultiProfile[] =
+    "ios.multi_profile_for_widgets";
+
+// An integer pref to store the placement ID of the acceptance data if the
+// install was attributable to the external promo.
+inline constexpr char kIOSGMOSKOLastAttributionPlacementID[] =
+    "ios.gmosko_last_attribution_placement_id";
+
+// A time pref to store the date after which the placement ID can be logged.
+inline constexpr char kIOSGMOSKOPlacementIDNextLogDate[] =
+    "ios.gmosko_placement_id_next_log_date";
+
+// An integer storing whether the install attribution was attributable within
+// the short window or the long window.
+inline constexpr char kIOSGMOSKOLastAttributionWindowType[] =
+    "ios.gmosko_last_attribution_window_type";
+
+// An integer pref to store the placement ID of the acceptance data if the
+// install was attributable to the external promo from the App Preview.
+inline constexpr char kIOSAppPreviewLastAttributionPlacementID[] =
+    "ios.app_preview_last_attribution_placement_id";
+
+// A time pref to store the date after which the placement ID can be logged for
+// the App Preview.
+inline constexpr char kIOSAppPreviewPlacementIDNextLogDate[] =
+    "ios.app_preview_placement_id_next_log_date";
+
+// An integer storing whether the install attribution was attributable within
+// the short window or the long window for the App Preview.
+inline constexpr char kIOSAppPreviewLastAttributionWindowType[] =
+    "ios.app_preview_last_attribution_window_type";
+
+// A profile pref for storing a list of timestamps of days the user was active.
+inline constexpr char kCrossPlatformPromosActiveDays[] =
+    "cross_platform_promos.active_days";
+
+// A profile pref for storing the 16th most recent day the user was active.
+// This is calculating by starting at the current day, and iterating back
+// through the days that the user was active, and counting until the 16th
+// active day is reached. This can be used to determine if the user has been
+// active at least 16 out of the last 28 days, by checking if this is more
+// recent than 28 days ago.
+inline constexpr char kCrossPlatformPromosIOS16thActiveDay[] =
+    "cross_platform_promos.ios_16th_active_day";
 
 }  // namespace prefs
 

@@ -6,9 +6,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 
 namespace paint_preview {
 
@@ -54,14 +56,14 @@ bool FileWStream::write(const void* buffer, size_t size) {
     has_write_failed_ = true;
     return false;
   }
-  int bytes = UNSAFE_TODO(
-      file_.WriteAtCurrentPos(reinterpret_cast<const char*>(buffer), size));
-  if (bytes < 0) {
+  std::optional<size_t> bytes_written = file_.WriteAtCurrentPos(
+      UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(buffer), size)));
+  if (!bytes_written) {
     has_write_failed_ = true;
     return false;
   }
-  bytes_written_ += bytes;
-  if (static_cast<size_t>(bytes) != size) {
+  bytes_written_ += *bytes_written;
+  if (*bytes_written != size) {
     has_write_failed_ = true;
     return false;
   }
@@ -101,15 +103,18 @@ size_t FileRStream::read(void* buffer, size_t size) {
     if (origin < 0)
       return 0;
     num_bytes = file_.Seek(base::File::FROM_CURRENT, size);
-    if (num_bytes < 0)
+    if (num_bytes < 0 || num_bytes < origin) {
       return 0;
+    }
     num_bytes = num_bytes - origin;
   } else {
-    num_bytes = UNSAFE_TODO(
-        file_.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), size));
+    const std::optional<size_t> bytes_read = file_.ReadAtCurrentPos(
+        UNSAFE_TODO(base::span(reinterpret_cast<uint8_t*>(buffer), size)));
+    if (!bytes_read) {
+      return 0;
+    }
+    num_bytes = *bytes_read;
   }
-  if (num_bytes < 0)
-    return 0;
   bytes_read_ += num_bytes;
   return num_bytes;
 }

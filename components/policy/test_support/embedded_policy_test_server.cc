@@ -152,8 +152,8 @@ EmbeddedPolicyTestServer::EmbeddedPolicyTestServer()
 
 EmbeddedPolicyTestServer::~EmbeddedPolicyTestServer() = default;
 
-bool EmbeddedPolicyTestServer::Start() {
-  return http_server_.Start();
+bool EmbeddedPolicyTestServer::Start(int port, std::string_view address) {
+  return http_server_.Start(port, address);
 }
 
 GURL EmbeddedPolicyTestServer::GetServiceURL() const {
@@ -201,7 +201,7 @@ std::unique_ptr<HttpResponse> EmbeddedPolicyTestServer::HandleRequest(
   GURL url = request.GetURL();
   LOG(INFO) << "Request URL: " << url;
 
-  if (url.path() == kExternalPolicyDataPath) {
+  if (url.GetPath() == kExternalPolicyDataPath) {
     return HandleExternalPolicyDataRequest(url);
   }
 
@@ -231,7 +231,7 @@ std::unique_ptr<HttpResponse> EmbeddedPolicyTestServer::HandleRequest(
 
 std::unique_ptr<HttpResponse>
 EmbeddedPolicyTestServer::HandleExternalPolicyDataRequest(const GURL& url) {
-  DCHECK_EQ(url.path(), kExternalPolicyDataPath);
+  DCHECK_EQ(url.GetPath(), kExternalPolicyDataPath);
   std::string policy_type = KeyValueFromUrl(url, kExternalPolicyTypeParam);
   std::string entity_id = KeyValueFromUrl(url, kExternalEntityIdParam);
   std::string policy_payload =

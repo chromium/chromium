@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "base/process/memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
@@ -66,7 +67,7 @@ int ServiceProgramMain(ServiceDelegate& delegate) {
   base::FeatureList::SetInstance(std::make_unique<base::FeatureList>());
 
   // Run the COM service.
-  Service service(delegate);
+  auto service = base::MakeRefCounted<Service>(delegate);
 
-  return service.InitWithCommandLine(cmd_line) ? service.Start() : -1;
+  return service->InitWithCommandLine(cmd_line) ? service->Start() : -1;
 }

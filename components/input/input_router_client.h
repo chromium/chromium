@@ -108,6 +108,8 @@ class COMPONENT_EXPORT(INPUT) InputRouterClient {
   virtual StylusInterface* GetStylusInterface() = 0;
   virtual void OnStartStylusWriting() = 0;
 
+  virtual void OnUnconfirmedTapConvertedToTap() = 0;
+
   virtual DispatchToRendererCallback GetDispatchToRendererCallback() = 0;
 };
 

@@ -83,6 +83,10 @@ class XRSpace : public EventTarget {
   // source spaces and XRReference space of type "viewer".
   virtual bool IsStationary() const = 0;
 
+  // Returns true if the space is associated with an input source, and false
+  // otherwise.
+  virtual bool IsInputSpace() const = 0;
+
   // Indicates whether or not the position portion of the native origin of this
   // space is emulated.
   virtual bool EmulatedPosition() const;
@@ -103,6 +107,8 @@ class XRSpace : public EventTarget {
 
   virtual device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
       const = 0;
+
+  virtual bool IsReferenceSpace() const { return false; }
 
   void Trace(Visitor* visitor) const override;
 

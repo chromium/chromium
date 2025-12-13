@@ -77,7 +77,8 @@ class CharacterPropertyValues {
   constexpr static UChar32 kMaxCodepoint = 0x10FFFF;
   constexpr static UChar32 kSize = kMaxCodepoint + 1;
 
-  CharacterPropertyValues() : values_(new CharacterProperty[kSize]) {
+  CharacterPropertyValues()
+      : values_(base::HeapArray<CharacterProperty>::WithSize(kSize)) {
     Initialize();
   }
 
@@ -85,21 +86,23 @@ class CharacterPropertyValues {
 
  private:
   void Initialize() {
-    UNSAFE_TODO(memset(values_.get(), 0, sizeof(CharacterProperty) * kSize));
-
     SetIsCJKIdeographOrSymbolForEmoji();
 
-#define SET(name)                                     \
-  SetForRanges(name##Ranges, std::size(name##Ranges), \
-               CharacterProperty::name);              \
-  SetForValues(name##Array, std::size(name##Array), CharacterProperty::name);
+#define SET(name, field_name)                                        \
+  const auto field_name##_setter = [](CharacterProperty& property) { \
+    property.field_name = true;                                      \
+  };                                                                 \
+  SetForRanges(name##Ranges, field_name##_setter);                   \
+  SetForValues(name##Array, field_name##_setter);
 
-    SET(kIsCJKIdeographOrSymbol);
-    SET(kIsPotentialCustomElementNameChar);
-    SET(kIsBidiControl);
+    SET(kIsCJKIdeographOrSymbol, is_cjk_ideograph_or_symbol);
+    SET(kIsPotentialCustomElementNameChar,
+        is_potential_custom_element_name_char);
+    SET(kIsBidiControl, is_bidi_control);
 #undef SET
-    SetForRanges(kIsHangulRanges, std::size(kIsHangulRanges),
-                 CharacterProperty::kIsHangul);
+    SetForRanges(kIsHangulRanges, [](CharacterProperty& property) {
+      property.is_hangul = true;
+    });
     SetHanKerning();
     SetEastAsianSpacing();
   }
@@ -108,7 +111,9 @@ class CharacterPropertyValues {
   // symbol characters.
   void SetIsCJKIdeographOrSymbolForEmoji() {
     SetForUnicodePattern("[:Emoji_Presentation:]",
-                         CharacterProperty::kIsCJKIdeographOrSymbol);
+                         [](CharacterProperty& property) {
+                           property.is_cjk_ideograph_or_symbol = true;
+                         });
   }
 
   void SetHanKerning() {
@@ -191,9 +196,7 @@ class CharacterPropertyValues {
     // 1.6 Include the following code point: U+3013 GETA MARK
     ideographs.add(0x3013);
     ideographs.removeAll(unassigned);
-    SetForUnicodeSet(ideographs,
-                     ToCharacterProperty(EastAsianSpacingType::kWide),
-                     CharacterProperty::kEastAsianSpacingShiftedMask);
+    SetForUnicodeSet(ideographs, EastAsianSpacingType::kWide);
 
     // 2. Set for the Conditional property
     //
@@ -218,9 +221,7 @@ class CharacterPropertyValues {
     conditional.remove(0x2026);  // HORIZONTAL ELLIPSIS
 
     conditional.removeAll(unassigned);
-    SetForUnicodeSet(conditional,
-                     ToCharacterProperty(EastAsianSpacingType::kConditional),
-                     CharacterProperty::kEastAsianSpacingShiftedMask);
+    SetForUnicodeSet(conditional, EastAsianSpacingType::kConditional);
 
     // 3. Set for the Narrow property
     // 3.1 Include if the General_Category property is “Letter (L)”, “Mark (M)”,
@@ -237,96 +238,75 @@ class CharacterPropertyValues {
     // The intersection set of kWide and kConditional is not empty, so remove
     // the chars which have been assigned the kWide property from narrow.
     narrow.removeAll(ideographs);
-    SetForUnicodeSet(narrow,
-                     ToCharacterProperty(EastAsianSpacingType::kNarrow),
-                     CharacterProperty::kEastAsianSpacingShiftedMask);
+    SetForUnicodeSet(narrow, EastAsianSpacingType::kNarrow);
 
     // The remaining assigned codes are kOther.
     // The flag is initialized by 0, no need to set them.
     static_assert(static_cast<int>(EastAsianSpacingType::kOther) == 0);
   }
 
-  static CharacterProperty ToCharacterProperty(HanKerningCharType value) {
-    CHECK_EQ((static_cast<unsigned>(value) &
-              ~static_cast<unsigned>(CharacterProperty::kHanKerningMask)),
-             0u);
-    return static_cast<CharacterProperty>(
-        static_cast<unsigned>(value)
-        << static_cast<unsigned>(CharacterProperty::kHanKerningShift));
-  }
-  static CharacterProperty ToCharacterProperty(EastAsianSpacingType value) {
-    return static_cast<CharacterProperty>(
-        static_cast<unsigned>(value)
-        << static_cast<unsigned>(CharacterProperty::kEastAsianSpacingShift));
+  void SetForUnicodeSet(const icu::UnicodeSet& unicode_set,
+                        EastAsianSpacingType value) {
+    SetForUnicodeSet(unicode_set, [value](CharacterProperty& property) {
+      property.east_asian_spacing = value;
+    });
   }
 
-  void SetForUnicodeSet(const icu::UnicodeSet& unicode_set,
-                        CharacterProperty value,
-                        CharacterProperty mask) {
+  template <typename Setter>
+  void SetForUnicodeSet(const icu::UnicodeSet& unicode_set, Setter set_value) {
     const int32_t range_count = unicode_set.getRangeCount();
     for (int32_t i = 0; i < range_count; ++i) {
       const UChar32 end = unicode_set.getRangeEnd(i);
       CHECK_LE(end, kMaxCodepoint);
       for (UChar32 ch = unicode_set.getRangeStart(i); ch <= end; ++ch) {
-        CHECK_EQ(static_cast<unsigned>(values_[ch] & mask), 0u) << ch;
-        values_[ch] |= value;
+        set_value(values_[ch]);
       }
     }
   }
 
   void SetForUnicodePattern(const char* pattern, HanKerningCharType type) {
-    SetForUnicodePattern(pattern, ToCharacterProperty(type),
-                         CharacterProperty::kHanKerningShiftedMask);
+    SetForUnicodePattern(pattern, [type](CharacterProperty& property) {
+      property.han_kerning = type;
+    });
   }
 
   // For `patterns`, see:
   // https://unicode-org.github.io/icu/userguide/strings/unicodeset.html#unicodeset-patterns
-  void SetForUnicodePattern(const char* pattern, CharacterProperty value) {
-    SetForUnicodePattern(pattern, value, value);
-  }
-
-  void SetForUnicodePattern(const char* pattern,
-                            CharacterProperty value,
-                            CharacterProperty mask) {
+  template <typename Setter>
+  void SetForUnicodePattern(const char* pattern, Setter set_value) {
     UErrorCode error = U_ZERO_ERROR;
     icu::UnicodeSet set(icu::UnicodeString(pattern), error);
     CHECK_EQ(error, U_ZERO_ERROR);
-    SetForUnicodeSet(set, value, mask);
+    SetForUnicodeSet(set, set_value);
   }
 
-  void SetForRanges(const UChar32* ranges,
-                    size_t length,
-                    CharacterProperty value) {
+  template <typename Setter>
+  void SetForRanges(base::span<const UChar32> ranges, Setter set_value) {
+    size_t length = ranges.size();
     CHECK_EQ(length % 2, 0u);
-    const UChar32* end = UNSAFE_TODO(ranges + length);
-    for (; ranges != end; UNSAFE_TODO(ranges += 2)) {
-      CHECK_LE(ranges[0], UNSAFE_TODO(ranges[1]));
-      CHECK_LE(UNSAFE_TODO(ranges[1]), kMaxCodepoint);
-      for (UChar32 c = ranges[0]; c <= UNSAFE_TODO(ranges[1]); c++) {
-        values_[c] |= value;
+    for (size_t i = 0; i < length; i += 2) {
+      CHECK_LE(ranges[i], ranges[i + 1]);
+      CHECK_LE(ranges[i + 1], kMaxCodepoint);
+      for (UChar32 c = ranges[i]; c <= ranges[i + 1]; ++c) {
+        set_value(values_[c]);
       }
     }
   }
 
-  void SetForValues(const UChar32* begin,
-                    size_t length,
-                    CharacterProperty value) {
-    const UChar32* end = UNSAFE_TODO(begin + length);
-    for (; begin != end; UNSAFE_TODO(begin++)) {
-      CHECK_LE(*begin, kMaxCodepoint);
-      values_[*begin] |= value;
+  template <typename Setter>
+  void SetForValues(base::span<const UChar32> code_points, Setter set_value) {
+    for (UChar32 code_point : code_points) {
+      CHECK_LE(code_point, kMaxCodepoint);
+      set_value(values_[code_point]);
     }
   }
 
   void Set(UChar32 ch, HanKerningCharType type) {
-    const CharacterProperty value = ToCharacterProperty(type);
-    CHECK_EQ(static_cast<unsigned>(values_[ch] &
-                                   CharacterProperty::kHanKerningShiftedMask),
-             0u);
-    values_[ch] |= value;
+    CHECK_EQ(values_[ch].han_kerning, HanKerningCharType::kOther);
+    values_[ch].han_kerning = type;
   }
 
-  std::unique_ptr<CharacterProperty[]> values_;
+  base::HeapArray<CharacterProperty> values_;
 };
 
 static void GenerateUTrieSerialized(FILE* fp,
@@ -366,9 +346,9 @@ static void GenerateCharacterPropertyData(FILE* fp) {
     if (c < CharacterPropertyValues::kSize && values[c] == value) {
       continue;
     }
-    if (static_cast<uint32_t>(value)) {
-      umutablecptrie_setRange(trie.get(), start, c - 1,
-                              static_cast<uint32_t>(value), &error);
+    if (const CharacterPropertyType value_as_unsigned = value.AsUnsigned()) {
+      umutablecptrie_setRange(trie.get(), start, c - 1, value_as_unsigned,
+                              &error);
       assert(error == U_ZERO_ERROR);
     }
     if (c >= CharacterPropertyValues::kSize) {
@@ -379,6 +359,7 @@ static void GenerateCharacterPropertyData(FILE* fp) {
   }
 
   // Convert to immutable UCPTrie in order to be able to serialize.
+  static_assert(sizeof(CharacterProperty) == 2);
   std::unique_ptr<UCPTrie, decltype(&ucptrie_close)> immutable_trie(
       umutablecptrie_buildImmutable(trie.get(), UCPTrieType::UCPTRIE_TYPE_FAST,
                                     UCPTrieValueWidth::UCPTRIE_VALUE_BITS_16,

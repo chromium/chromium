@@ -22,6 +22,7 @@
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/public/cpp/features.h"
 
 namespace device {
 
@@ -97,24 +98,28 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
   std::string application_name =
       base::StrCat({version_info::GetProductName(), " ",
                     version_info::GetMajorVersionNumber()});
-  size_t dest_size =
-      std::size(instance_create_info.applicationInfo.applicationName);
-  size_t src_size = UNSAFE_TODO(
-      base::strlcpy(instance_create_info.applicationInfo.applicationName,
-                    application_name.c_str(), dest_size));
-  DCHECK_LT(src_size, dest_size);
+  base::span<char> dest_application_name(
+      instance_create_info.applicationInfo.applicationName);
+
+  // The application name is really for our own use, in the (unlikely) event
+  // that our application name is longer than the runtime allows, it'll just be
+  // truncated, but should still have the required trailing nul terminator, so
+  // no need to check the copied length here.
+  base::strlcpy(dest_application_name, application_name);
 
   base::Version version = version_info::GetVersion();
-  DCHECK_EQ(version.components().size(), 4uLL);
+  CHECK_EQ(version.components().size(), 4uLL);
   uint32_t build = version.components()[2];
 
   // application version will be the build number of each vendor
   instance_create_info.applicationInfo.applicationVersion = build;
 
-  dest_size = std::size(instance_create_info.applicationInfo.engineName);
-  src_size = UNSAFE_TODO(base::strlcpy(
-      instance_create_info.applicationInfo.engineName, "Chromium", dest_size));
-  DCHECK_LT(src_size, dest_size);
+  base::span<char> dest_engine_name(
+      instance_create_info.applicationInfo.engineName);
+
+  // Same as above, not checking the copied length here as this is mainly for
+  // our own usage. However, it seems unlikely this will ever be truncated.
+  base::strlcpy(dest_engine_name, "Chromium");
 
   // engine version should be the build number of chromium
   instance_create_info.applicationInfo.engineVersion = build;
@@ -159,6 +164,9 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
     }
   }
 
+  EnableExtensionIfSupported(XR_EXT_FUTURE_EXTENSION_NAME);
+  EnableExtensionIfSupported(OpenXrVisibilityMaskHandler::GetExtension());
+
   for (const auto& extension : handled_extensions) {
     EnableExtensionIfSupported(extension.c_str());
   }
@@ -183,6 +191,13 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
   // try to enable across the board.
   for (const auto* extension : GetOptionalExtensions()) {
     EnableExtensionIfSupported(extension);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kWebXRLayers)) {
+    for (const auto* extension :
+         OpenXrExtensionHelper::GetRequiredExtensionsForLayers()) {
+      EnableExtensionIfSupported(extension);
+    }
   }
 
   instance_create_info.enabledExtensionCount =
@@ -220,8 +235,8 @@ void OpenXrPlatformHelper::UpdateExtensionFactorySupport() {
   OpenXrApiWrapper::GetSystem(xr_instance_, &system);
 
   for (auto* extension_factory : GetExtensionHandlerFactories()) {
-    extension_factory->ProcessSystemProperties(extension_enumeration,
-                                               xr_instance_, system);
+    extension_factory->CheckAndUpdateEnabledState(extension_enumeration,
+                                                  xr_instance_, system);
   }
 }
 

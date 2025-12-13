@@ -35,6 +35,7 @@ class CONTENT_EXPORT AudioInputStreamBroker final
       int render_frame_id,
       const std::string& device_id,
       const media::AudioParameters& params,
+      const base::UnguessableToken& group_id,
       uint32_t shared_memory_count,
       bool enable_agc,
       media::mojom::AudioProcessingConfigPtr processing_config,
@@ -65,6 +66,7 @@ class CONTENT_EXPORT AudioInputStreamBroker final
 
   const std::string device_id_;
   media::AudioParameters params_;
+  const base::UnguessableToken group_id_;
   const uint32_t shared_memory_count_;
   const bool enable_agc_;
 

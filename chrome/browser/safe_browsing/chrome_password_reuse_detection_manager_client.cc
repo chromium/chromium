@@ -25,9 +25,11 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -235,8 +237,8 @@ bool ChromePasswordReuseDetectionManagerClient::IsHistorySyncAccountEmail(
   // Password reuse detection is tied to history sync.
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(original_profile);
-  if (!sync_service || !sync_service->GetPreferredDataTypes().Has(
-                           syncer::HISTORY_DELETE_DIRECTIVES)) {
+  if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kHistory)) {
     return false;
   }
   return password_manager::sync_util::IsSyncAccountEmail(
@@ -305,7 +307,7 @@ void ChromePasswordReuseDetectionManagerClient::CheckProtectedPasswordEntry(
 
   // Extract the host part of an extension domain, which will be the extension
   // ID.
-  std::string host = domain_gurl.host();
+  std::string host = domain_gurl.GetHost();
   auto password_reuse_signal =
       std::make_unique<safe_browsing::PasswordReuseSignal>(host,
                                                            password_reuse_info);

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_item.h"
 
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_cell.h"
 
@@ -22,7 +23,6 @@ constexpr CGFloat kDisabledAlpha = 0.5;
     self.cellClass = [IdentityButtonCell class];
     _identityEmail = @"";
     _identityName = @"";
-    _identityGaiaID = @"";
     _arrowDirection = IdentityButtonControlArrowDown;
     _identityViewStyle = IdentityViewStyleDefault;
     _enabled = YES;

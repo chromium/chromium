@@ -29,7 +29,7 @@
 @end
 
 @implementation PasswordInfobarModalOverlayMediator {
-  raw_ptr<IOSChromeSavePasswordInfoBarDelegate> delegate_;
+  raw_ptr<IOSChromeSavePasswordInfoBarDelegate, DanglingUntriaged> delegate_;
   InfobarType infobarType_;
 }
 
@@ -55,7 +55,7 @@
       self.config->delegate());
   infobarType_ = self.config->infobar_type();
 
-  [_consumer setUsername:delegate_->GetUserNameText()];
+  [_consumer setOriginalUsername:delegate_->GetUserNameText()];
   NSString* password = delegate_->GetPasswordText();
   [_consumer setMaskedPassword:[@"" stringByPaddingToLength:password.length
                                                  withString:@"•"

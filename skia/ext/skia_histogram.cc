@@ -5,7 +5,8 @@
 #include "skia/ext/skia_histogram.h"
 
 #include <type_traits>
-#include "base/metrics/histogram_macros_internal.h"
+
+#include "base/metrics/histogram_macros.h"
 
 namespace skia {
 

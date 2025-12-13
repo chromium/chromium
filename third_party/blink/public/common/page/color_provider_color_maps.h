@@ -34,11 +34,14 @@ struct BLINK_COMMON_EXPORT ColorProviderColorMaps {
            forced_colors_map.empty();
   }
 
-  bool operator==(const ColorProviderColorMaps& other) const {
-    return light_colors_map == other.light_colors_map &&
-           dark_colors_map == other.dark_colors_map &&
-           forced_colors_map == other.forced_colors_map;
+  void swap(ColorProviderColorMaps& other) {
+    light_colors_map.swap(other.light_colors_map);
+    dark_colors_map.swap(other.dark_colors_map);
+    forced_colors_map.swap(other.forced_colors_map);
   }
+
+  friend bool operator==(const ColorProviderColorMaps&,
+                         const ColorProviderColorMaps&) = default;
 };
 
 }  // namespace blink

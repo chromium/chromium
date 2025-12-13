@@ -89,3 +89,7 @@ FromJavaBrowserControlsOffsetTagModifications(
 }
 
 }  // namespace cc::android
+
+DEFINE_JNI(BrowserControlsOffsetTagModifications)
+DEFINE_JNI(BrowserControlsOffsetTags)
+DEFINE_JNI(OffsetTag)

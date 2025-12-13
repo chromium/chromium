@@ -190,12 +190,11 @@ class SyncService : public KeyedService {
 
   // Error states that prevent Sync from working well or working at all, usually
   // displayed to the user.
-  // TODO(crbug.com/40890809): Add new cases that are missing, ideally unify
-  // with other enums like AvatarSyncErrorType.
   //
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
   // LINT.IfChange(UserActionableError)
   enum class UserActionableError {
     // No errors. This value does not exist in the histograms enum.
@@ -222,7 +221,27 @@ class SyncService : public KeyedService {
     // Same as above, but for the case where data loss may affect all
     // encryptable datatypes.
     kTrustedVaultRecoverabilityDegradedForEverything = 6,
-    kMaxValue = kTrustedVaultRecoverabilityDegradedForEverything,
+#if !BUILDFLAG(IS_IOS)
+    // Sync settings dialog not confirmed yet.
+    kNeedsSettingsConfirmation = 7,
+    // Sync has encountered an unrecoverable error. It won't attempt to start
+    // again until either the browser is restarted, or the user fully signs out
+    // and back in again. This error is only shown for syncing users, and will
+    // be removed with "Sync The Feature" deprecation.
+    kUnrecoverableError = 8,
+#endif  // !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_ANDROID)
+    // Indicates that the Google Play services need to be upgraded.
+    kNeedsUPMBackendUpgrade = 9,
+#endif  // BUILDFLAG(IS_ANDROID)
+
+    // Indicates that the version of the client/browser is too old and needs to
+    // be upgraded to a more recent version.
+    kNeedsClientUpgrade = 10,
+    // The number of bookmarks has exceeded the limit.
+    kBookmarksLimitExceeded = 11,
+    kMaxValue = kBookmarksLimitExceeded,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:UserActionableError)
 
@@ -330,12 +349,6 @@ class SyncService : public KeyedService {
   // after startup / profile load, as it caches the last known value.
   virtual bool HasCachedPersistentAuthErrorForMetrics() const = 0;
 
-  // Returns true if the Chrome client is too old and needs to be updated for
-  // Sync to work.
-  // TODO(crbug.com/40890809): Remove this API and use GetUserActionableError()
-  // instead.
-  virtual bool RequiresClientUpgrade() const = 0;
-
   //////////////////////////////////////////////////////////////////////////////
   // DERIVED STATE ACCESS
   //////////////////////////////////////////////////////////////////////////////
@@ -430,9 +443,7 @@ class SyncService : public KeyedService {
   // synced with the server.
   // Note: This only queries the datatypes in `requested_types`.
   // Note: This includes deletions as well.
-  // Note: This must only be called in transport-only mode.
-  // TODO(crbug.com/401470426): Rename this to better reflect that it's only
-  // called in transport-only mode.
+  // Note: This returns an empty result unless invoked in transport-only mode.
   virtual void GetTypesWithUnsyncedData(
       DataTypeSet requested_types,
       base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback)
@@ -468,6 +479,12 @@ class SyncService : public KeyedService {
   virtual void TriggerLocalDataMigrationForItems(
       std::map<DataType, std::vector<LocalDataItemModel::DataId>> items) = 0;
 
+  // Acknowledges the `kBookmarksLimitExceeded` user-actionable error. Once
+  // acknowledged, `GetUserActionableError()` will no longer report this error
+  // until the next browser restart. This is used to hide the error UI
+  // after the user has interacted with it.
+  virtual void AcknowledgeBookmarksLimitExceededError() = 0;
+
   // Requests sync service to first enable account storage for the `data_type`
   // and then asynchronously move the specified local data `items` to account.
   // This means that a user selection is mutated - if they had opted out of
@@ -495,9 +512,26 @@ class SyncService : public KeyedService {
   // TODO(crbug.com/40901006): Remove this API.
   virtual void OnDataTypeRequestsSyncStartup(DataType type) = 0;
 
+  // The reason why TriggerRefresh() was called.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(TriggerRefreshSource)
+  enum class TriggerRefreshSource {
+    kUnknown = 0,
+    kBrowserTabsModelProvider = 1,
+    kAndroidSyncServiceBridge = 2,
+    kSyncInvalidationsService = 3,
+    kLocalSync = 4,
+    kSyncInternals = 5,
+    kForeignSessionHelper = 6,
+    kMaxValue = kForeignSessionHelper,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TriggerRefreshSource)
+
   // Triggers a GetUpdates call for the specified `types`, pulling any new data
-  // from the sync server. Used by tests and debug UI (sync-internals).
-  virtual void TriggerRefresh(const DataTypeSet& types) = 0;
+  // from the sync server.
+  virtual void TriggerRefresh(TriggerRefreshSource source,
+                              const DataTypeSet& types) = 0;
 
   // Informs the data type manager that the preconditions for a controller have
   // changed. If preconditions are NOT met, the datatype will be stopped

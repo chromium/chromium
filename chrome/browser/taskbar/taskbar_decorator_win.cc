@@ -38,8 +38,8 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkStream.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/win/icon_util.h"
 #include "ui/views/win/hwnd_util.h"
 
 namespace taskbar {

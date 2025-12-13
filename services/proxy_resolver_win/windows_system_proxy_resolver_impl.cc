@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/proxy_resolver_win/windows_system_proxy_resolver_impl.h"
 
 #include <cwchar>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -59,8 +55,9 @@ bool GetProxyChainFromWinHttpResultEntry(
       break;
   }
 
-  if (scheme == net::ProxyServer::Scheme::SCHEME_INVALID)
+  if (scheme == net::ProxyServer::Scheme::SCHEME_INVALID) {
     return false;
+  }
 
   // Chrome expects a specific port from WinHttp. The WinHttp documentation on
   // MSDN makes it unclear whether or not a specific port is guaranteed.
@@ -89,10 +86,11 @@ bool GetProxyChainFromWinHttpResultEntry(
 
   // At this point the string in `host_wide` is ASCII.
   std::string host;
-  if (!base::WideToUTF8(host_wide.data(), host_wide.length(), &host))
+  if (!base::WideToUTF8(host_wide.data(), host_wide.length(), &host)) {
     return false;
+  }
 
-  net::HostPortPair host_and_port(host, result_entry.ProxyPort);
+  net::HostPortPair host_and_port(std::move(host), result_entry.ProxyPort);
   *out_proxy_chain = net::ProxyChain(scheme, host_and_port);
   return true;
 }
@@ -313,8 +311,8 @@ void WindowsSystemProxyResolverImpl::Request::GetProxyResultForCallback() {
   net::ProxyList proxy_list;
   for (DWORD i = 0u; i < proxy_result.cEntries; ++i) {
     net::ProxyChain proxy_chain;
-    if (GetProxyChainFromWinHttpResultEntry(proxy_result.pEntries[i],
-                                            &proxy_chain)) {
+    if (GetProxyChainFromWinHttpResultEntry(
+            UNSAFE_TODO(proxy_result.pEntries[i]), &proxy_chain)) {
       proxy_list.AddProxyChain(proxy_chain);
     }
   }
@@ -335,10 +333,17 @@ void WindowsSystemProxyResolverImpl::Request::ReportResult(
     net::WinHttpStatus winhttp_status,
     int windows_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!callback_)
+  if (!callback_) {
     return;
+  }
 
-  std::move(callback_).Run(proxy_list, winhttp_status, windows_error);
+  auto status = proxy_resolver::mojom::SystemProxyResolutionStatus::New();
+  status->is_success =
+      winhttp_status == net::WinHttpStatus::kOk && windows_error == 0;
+  status->os_error = windows_error;
+  status->win_http_status = winhttp_status;
+
+  std::move(callback_).Run(proxy_list, std::move(status));
   callback_.Reset();
 
   // Even though there are no more mojo calls to make, it is not safe to delete
@@ -350,7 +355,7 @@ void WindowsSystemProxyResolverImpl::Request::ReportResult(
 }
 
 WindowsSystemProxyResolverImpl::WindowsSystemProxyResolverImpl(
-    mojo::PendingReceiver<mojom::WindowsSystemProxyResolver> receiver)
+    mojo::PendingReceiver<proxy_resolver::mojom::SystemProxyResolver> receiver)
     : receiver_(this, std::move(receiver)) {}
 WindowsSystemProxyResolverImpl::~WindowsSystemProxyResolverImpl() {
   // The WindowsSystemProxyResolverImpl must outlive every Request it owns.
@@ -371,8 +376,9 @@ void WindowsSystemProxyResolverImpl::GetProxyForUrl(
 
   // If the request fails to start, it will internally report that to
   // `callback`. After that, it's safe to delete this `request`.
-  if (request->Start(url))
+  if (request->Start(url)) {
     requests_.insert(std::move(request));
+  }
 }
 
 net::WinHttpStatus WindowsSystemProxyResolverImpl::EnsureInitialized() {

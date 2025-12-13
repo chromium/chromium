@@ -18,6 +18,7 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {isWindows} from '//resources/js/platform.js';
+import {debounceEnd} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {InsetsF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
@@ -46,14 +47,6 @@ export type HelpBubbleDismissedEvent = CustomEvent<{
 export type HelpBubbleTimedOutEvent = CustomEvent<{
   nativeId: string,
 }>;
-
-export function debounceEnd(fn: Function, time: number = 50): () => void {
-  let timerId: number|undefined;
-  return () => {
-    clearTimeout(timerId);
-    timerId = setTimeout(fn, time);
-  };
-}
 
 export interface HelpBubbleElement {
   $: {
@@ -90,7 +83,7 @@ export class HelpBubbleElement extends CrLitElement {
         reflect: true,
       },
       position: {
-        type: HelpBubbleArrowPosition,
+        type: Number,
         reflect: true,
       },
       bodyIconName: {type: String},

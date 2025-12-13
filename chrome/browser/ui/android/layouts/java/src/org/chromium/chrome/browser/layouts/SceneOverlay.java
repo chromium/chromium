@@ -24,12 +24,11 @@ public interface SceneOverlay extends BackPressHandler {
      * @param viewport The viewport of the window.
      * @param visibleViewport The viewport accounting for browser controls.
      * @param resourceManager A resource manager.
-     * @param yOffset Current browser controls offset in dp.
      * @return A {@link SceneOverlayLayer} that represents an scene overlay. Or {@code null} if this
      *     {@link SceneOverlay} doesn't have a tree.
      */
     @Nullable SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset);
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager);
 
     /** Notify the {@link SceneOverlayLayer} that it should be removed from its parent. */
     void removeFromParent();
@@ -43,45 +42,62 @@ public interface SceneOverlay extends BackPressHandler {
     boolean isSceneOverlayTreeShowing();
 
     /**
-     * @return The {@link EventFilter} that processes events for this {@link SceneOverlay}.
+     * Returns the {@link EventFilter} that processes events for this {@link SceneOverlay} or {@code
+     * null} if there is none.
      */
-    @Nullable EventFilter getEventFilter();
+    default @Nullable EventFilter getEventFilter() {
+        return null;
+    }
 
     /**
      * Called when the viewport size of the screen changes.
-     * @param width                  The new width of the viewport available in dp.
-     * @param height                 The new height of the viewport available in dp.
+     *
+     * @param width The new width of the viewport available in dp.
+     * @param height The new height of the viewport available in dp.
      * @param visibleViewportOffsetY The visible viewport Y offset in dp.
-     * @param orientation            The new orientation.
+     * @param orientation The new orientation.
      */
     void onSizeChanged(float width, float height, float visibleViewportOffsetY, int orientation);
 
     /**
+     * Adds the {@link SceneOverlay SceneOverlay's} {@link VirtualView VirtualView(s)} to the
+     * provided list of {@code views}.
+     *
      * @param views A list of virtual views representing compositor rendered views.
      */
-    void getVirtualViews(List<VirtualView> views);
+    default void getVirtualViews(List<VirtualView> views) {
+        // No-op by default.
+    }
 
     /**
-     * @return True if the overlay requires the Android browser controls view to be hidden.
+     * Returns {@code true} if the overlay requires the Android browser controls view to be hidden.
      */
-    boolean shouldHideAndroidBrowserControls();
+    default boolean shouldHideAndroidBrowserControls() {
+        return false;
+    }
 
     /**
      * Helper-specific updates. Cascades the values updated by the animations and flings.
+     *
      * @param time The current time of the app in ms.
-     * @param dt   The delta time between update frames in ms.
-     * @return     Whether the updating is done.
+     * @param dt The delta time between update frames in ms.
+     * @return Whether the updating is done.
      */
-    boolean updateOverlay(long time, long dt);
+    default boolean updateOverlay(long time, long dt) {
+        return false;
+    }
 
     /**
      * Notification that the system back button was pressed.
+     *
      * @return True if system back button press was consumed by this overlay.
      */
-    boolean onBackPressed();
+    default boolean onBackPressed() {
+        return false;
+    }
 
-    /**
-     * @return True if this overlay handles tab creation.
-     */
-    boolean handlesTabCreating();
+    /** Returns {@code true} if this overlay handles tab creation. */
+    default boolean handlesTabCreating() {
+        return false;
+    }
 }

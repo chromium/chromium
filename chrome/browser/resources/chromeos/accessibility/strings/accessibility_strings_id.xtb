@@ -234,7 +234,7 @@
 <translation id="2450814015951372393">Kotak centang</translation>
 <translation id="2450992626945324272">pindah ke kalimat berikutnya</translation>
 <translation id="2461822463642141190">Arus</translation>
-<translation id="2462626033734746142">Grup tombol radio</translation>
+<translation id="2462626033734746142">Grup tombol pilihan</translation>
 <translation id="2467741090055146971">batalkan pilihan</translation>
 <translation id="2471138580042810658">Judul 6</translation>
 <translation id="2490721194269245365">Rosy Brown</translation>
@@ -322,7 +322,7 @@
 <translation id="3009352964623081324">Search + O, lalu S. Gunakan untuk menginstal, mengelola, dan menyesuaikan suara.</translation>
 <translation id="3014130421870723208">@ed 8titik</translation>
 <translation id="3018210433491759145">ChromeVox sedang dimuat</translation>
-<translation id="3030432017085518523">Tombol radio item menu</translation>
+<translation id="3030432017085518523">Tombol pilihan item menu</translation>
 <translation id="3040901448410802366">Indikator kemajuan</translation>
 <translation id="3046838483509668188">Opsi ChromeVox</translation>
 <translation id="3060756054951570867">menu <ph name="TITLE" /> dibuka</translation>
@@ -398,7 +398,7 @@
 <translation id="3366946046494222386">Tutorial <ph name="TOPIC" />, <ph name="LESSONS" /> Pelajaran</translation>
 <translation id="338583716107319301">Pemisah</translation>
 <translation id="3389259863310851658">Bidang formulir sebelumnya</translation>
-<translation id="3390740059150071453">Melihat ke kiri</translation>
+<translation id="3390740059150071453">Melirik ke kiri</translation>
 <translation id="3393605254399152980">Tarik satu jari untuk mendengarkan item yang Anda sentuh</translation>
 <translation id="3406283310380167331">Menampilkan daftar formulir</translation>
 <translation id="3407726812456125464">Dengarkan teks yang dipilih</translation>
@@ -636,7 +636,7 @@
 <translation id="4986606102545753256"><ph name="NAME" />, jendela</translation>
 <translation id="4993152509206108683">Tingkat kecepatan <ph name="PERCENT" /> persen</translation>
 <translation id="4994420463726586413">Ucapkan status baterai saat ini</translation>
-<translation id="4997282455736854877"><ph name="NAME" />, tombol radio dipilih</translation>
+<translation id="4997282455736854877"><ph name="NAME" />, tombol pilihan dipilih</translation>
 <translation id="500303467799629809">.input {$$COUNT :number} .match $$COUNT 1{{question mark}} *{{{$$COUNT} question marks}}</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, tombol pilihan item menu dipilih</translation>
 <translation id="5014131807708055994">Tidak dapat <ph name="COMMAND" />, <ph name="REASON" /></translation>
@@ -707,7 +707,7 @@
 <translation id="549602578321198708">Kata</translation>
 <translation id="5513242761114685513">Menu konteks</translation>
 <translation id="551361796444814639">Medium Blue</translation>
-<translation id="552195134157544755">Tombol radio</translation>
+<translation id="552195134157544755">Tombol pilihan</translation>
 <translation id="5522423213731659107">Orientasi cepat selesai</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Gainsboro</translation>
@@ -720,7 +720,7 @@
 <translation id="5582839680698949063">Menu utama</translation>
 <translation id="5585044216466955529">Mengedit teks, entri email</translation>
 <translation id="5597170376237141345">Kotak centang berikutnya</translation>
-<translation id="5598905979683743333"><ph name="NAME" />, tombol radio tidak dipilih</translation>
+<translation id="5598905979683743333"><ph name="NAME" />, tombol pilihan tidak dipilih</translation>
 <translation id="5601172225407283979">Melakukan tindakan default</translation>
 <translation id="5608798115546226984">Pelengkapan otomatis sebaris</translation>
 <translation id="5616029807486814372">Pelajaran berikutnya</translation>
@@ -791,7 +791,7 @@
 <translation id="5968607524793740041">Tampilkan menu konteks</translation>
 <translation id="5981446804259161541">Light Cyan</translation>
 <translation id="5983179082906765664">Meningkatkan granularitas navigasi</translation>
-<translation id="5988563937187882754">Melihat ke kanan</translation>
+<translation id="5988563937187882754">Melirik ke kanan</translation>
 <translation id="5992285135956208197">Dokumen grafis</translation>
 <translation id="5999630716831179808">Suara</translation>
 <translation id="6006050241733874051">Formulir</translation>
@@ -902,7 +902,7 @@
 <translation id="6910211073230771657">Dihapus</translation>
 <translation id="6910969481785184048">Aktif, Nonaktif, dan Berhenti</translation>
 <translation id="6919104639734799681">Menampilkan daftar tabel</translation>
-<translation id="692135145298539227">hapus, delete</translation>
+<translation id="692135145298539227">hapus</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6949846980769640811">Medium Aqua Marine</translation>
 <translation id="6951482098621102657">Tidak ada judul level 5 berikutnya</translation>
@@ -957,7 +957,7 @@
 <translation id="7241683698754534149">Membuka deskripsi panjang di tab baru</translation>
 <translation id="7244947685630430863">Tidak ada grafik sebelumnya</translation>
 <translation id="7248671827512403053">Aplikasi</translation>
-<translation id="725969808843520477">Tombol radio berikutnya</translation>
+<translation id="725969808843520477">Tombol pilihan berikutnya</translation>
 <translation id="7261612856573623172">Suara Text-to-Speech sistem</translation>
 <translation id="7269119382257320590">Tanpa tanda baca</translation>
 <translation id="7271278495464744706">Aktifkan deskripsi panjang</translation>
@@ -1021,7 +1021,7 @@
 <translation id="7676847077928500578">Reset setelan text to speech</translation>
 <translation id="7684431668231950609">Mengedit teks, entri URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
-<translation id="7693840228159394336">Tombol radio sebelumnya</translation>
+<translation id="7693840228159394336">Tombol pilihan sebelumnya</translation>
 <translation id="7696631298608145306">pindah ke kata berikutnya</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
 <translation id="7701196182766842984">autolst</translation>

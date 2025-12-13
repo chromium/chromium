@@ -59,7 +59,9 @@ class MetricsLogsEventManager {
     kIndependent = 9,
     // The log was created due to a manual upload from the client.
     kOutOfBand = 10,
-    kMaxValue = kOutOfBand,
+    // The log was created due to a flush from the client.
+    kFlush = 11,
+    kMaxValue = kFlush,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/uma/enums.xml:MetricsLogCreateReason)
 

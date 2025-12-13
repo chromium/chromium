@@ -161,13 +161,13 @@ class CORE_EXPORT ResponsivenessMetrics
   void RecordUserInteractionUKM(
       LocalDOMWindow* window,
       UserInteractionType interaction_type,
-      const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps,
+      const Vector<ResponsivenessMetrics::EventTimestamps>& timestamps,
       uint32_t interaction_offset);
 
   void RecordTapOrClickUKM(LocalDOMWindow*, PointerEntryAndInfo&);
 
   void RecordKeyboardUKM(LocalDOMWindow* window,
-                         const WTF::Vector<EventTimestamps>& event_timestamps,
+                         const Vector<EventTimestamps>& event_timestamps,
                          uint32_t interaction_offset);
 
   // Updates the interactionId counter which is used by Event Timing.

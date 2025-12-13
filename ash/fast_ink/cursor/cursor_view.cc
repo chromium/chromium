@@ -9,10 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
 
 namespace ash {
@@ -122,10 +124,18 @@ void CursorView::Draw() {
     }
   }
 
-  // TODO(b/360768376): Disable overlay until we know why
-  // fast ink cursor glitches.
+  // Update content and damage rectangles for surface. When cursor is moving,
+  // enable `auto_refresh` to send frames asynchronously to minimize latency.
+  // TODO(crbug.com/371546474): Font buffer rendering causes artifacts due to an
+  // issue in i915 driver. Re-enable the front buffer rendering once the issue
+  // is fixed.
+#if defined(ARCH_CPU_X86_FAMILY)
+  const bool is_cursor_moving = false;
+#else
+  const bool is_cursor_moving = stationary_timer_->IsRunning();
+#endif
   UpdateSurface(cursor_rect_, damage_rect_,
-                /*auto_refresh=*/false);
+                /*auto_refresh=*/is_cursor_moving);
 }
 
 void CursorView::OnStationary() {

@@ -5,10 +5,12 @@
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 
 #include "components/commerce/core/shopping_service.h"
+#include "components/history/core/browser/features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_response_headers.h"
 
 namespace commerce {
 
@@ -32,6 +34,21 @@ void CommerceTabHelper::DidFinishNavigation(
   if (!shopping_service_ || !navigation_handle->IsInPrimaryMainFrame() ||
       previous_main_frame_url_ == navigation_handle->GetURL()) {
     return;
+  }
+
+  // Some navigations we're called for will be 404s. When the feature
+  // `history::kVisitedLinksOn404` is enabled, some of those 404 navigations
+  // will be eligible for history (that is,
+  // `NavigationHandle::ShouldUpdateHistory()` will be true). We don't want to
+  // notify on 404s even if they're eligible for history, so exclude them here.
+  if (base::FeatureList::IsEnabled(history::kVisitedLinksOn404)) {
+    const int http_response_code =
+        navigation_handle->GetResponseHeaders()
+            ? navigation_handle->GetResponseHeaders()->response_code()
+            : 0;
+    if (http_response_code == 404) {
+      return;
+    }
   }
 
   // Notify the service that we're no longer interested in a particular URL.

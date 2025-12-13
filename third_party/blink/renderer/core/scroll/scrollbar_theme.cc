@@ -28,6 +28,7 @@
 #include <optional>
 
 #include "build/build_config.h"
+#include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -98,8 +99,9 @@ void ScrollbarTheme::PaintScrollCorner(
     const ScrollableArea& scrollable_area,
     const DisplayItemClient& display_item_client,
     const gfx::Rect& corner_rect) {
-  if (corner_rect.IsEmpty())
+  if (corner_rect.IsEmpty()) {
     return;
+  }
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, display_item_client,
                                                   DisplayItem::kScrollCorner))
@@ -126,8 +128,9 @@ void ScrollbarTheme::PaintScrollCorner(
   mojom::blink::ColorScheme color_scheme = scrollbar->UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::kPartScrollbarCorner,
-      WebThemeEngine::kStateNormal, corner_rect, &extra_params, color_scheme,
-      scrollbar->InForcedColorsMode(),
+      WebThemeEngine::kStateNormal, corner_rect, &extra_params,
+      scrollbar->InForcedColorsMode(), color_scheme,
+      scrollbar->GetPreferredContrast(),
       scrollbar->GetColorProvider(color_scheme));
 #endif
 }
@@ -205,19 +208,9 @@ int ScrollbarTheme::ThumbLength(const Scrollbar& scrollbar) const {
   if (!scrollbar.Enabled())
     return 0;
 
-  float overhang = fabsf(scrollbar.ElasticOverscroll());
-  float proportion = 0.0f;
-  float total_size = scrollbar.TotalSize();
-  if (total_size > 0.0f) {
-    proportion = (scrollbar.VisibleSize() - overhang) / total_size;
-  }
-  int track_len = TrackLength(scrollbar);
-  int length = round(proportion * track_len);
-  length = std::max(length, MinimumThumbLength(scrollbar));
-  if (length > track_len)
-    length = track_len;  // Once the thumb is below the track length,
-                         // it fills the track.
-  return length;
+  return cc::ScrollUtils::CalculateScrollbarThumbLength(
+      scrollbar.TotalSize(), scrollbar.VisibleSize(), TrackLength(scrollbar),
+      MinimumThumbLength(scrollbar));
 }
 
 int ScrollbarTheme::TrackPosition(const Scrollbar& scrollbar) const {

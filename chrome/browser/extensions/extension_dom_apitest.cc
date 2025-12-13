@@ -25,8 +25,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
       "dom/closed_shadow_root_from_content_script")));
 
   ResultCatcher catcher;
-  ASSERT_TRUE(NavigateToURL(url));
-  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_TRUE(catcher.GetNextResult());
 }
 

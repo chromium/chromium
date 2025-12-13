@@ -134,6 +134,10 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(
       content::RenderProcessHost* process_host) override;
+  void OnRenderProcessLaunched(
+      content::RenderProcessHost* process_host) override;
+
+  void SendUpdateIfNeeded(content::RenderProcessHost* process_host);
 
   // Returns whether or not it is possible that calls to AddScripts(),
   // RemoveScripts(), and/or ClearScripts() have caused any real change in the

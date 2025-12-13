@@ -30,7 +30,8 @@ ChromeContentBrowserClientIsolatedWebAppsPart::
 bool ChromeContentBrowserClientIsolatedWebAppsPart::AreIsolatedWebAppsEnabled(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!web_app::AreWebAppsEnabled(profile)) {
+  if (!web_app::AreWebAppsEnabled(profile) || profile->IsGuestSession() ||
+      profile->IsOffTheRecord()) {
     return false;
   }
 

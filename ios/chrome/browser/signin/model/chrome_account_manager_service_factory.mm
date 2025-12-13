@@ -30,8 +30,7 @@ ChromeAccountManagerServiceFactory::~ChromeAccountManagerServiceFactory() =
 
 std::unique_ptr<KeyedService>
 ChromeAccountManagerServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<ChromeAccountManagerService>(
       GetApplicationContext()->GetLocalState(), profile->GetProfileName());
 }

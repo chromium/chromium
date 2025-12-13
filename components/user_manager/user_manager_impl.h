@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_USER_MANAGER_USER_MANAGER_IMPL_H_
 #define COMPONENTS_USER_MANAGER_USER_MANAGER_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <set>

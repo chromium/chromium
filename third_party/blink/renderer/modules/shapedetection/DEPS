@@ -11,5 +11,4 @@ include_rules = [
     "+third_party/skia/include/core/SkImage.h",
     "+third_party/skia/include/core/SkImageInfo.h",
     "+ui/gfx/geometry",
-    "+mojo/public/cpp/bindings/type_converter.h",
 ]

@@ -87,8 +87,8 @@ found in the LICENSE file.
     <color name="hairline_stroke_color_light">@color/baseline_neutral_variant_60</color>
     <color name="hairline_stroke_color_dark">@color/baseline_neutral_variant_50</color>
     <!-- Same as ?attr/colorSurfaceVariant. -->
-    <color name="divider_line_bg_color_dark">@color/baseline_neutral_variant_90</color>
-    <color name="divider_line_bg_color_light">@color/baseline_neutral_variant_30</color>
+    <color name="divider_color_dark">@color/baseline_neutral_variant_90</color>
+    <color name="divider_color_light">@color/baseline_neutral_variant_30</color>
     <color name="default_bg_color_blue_dark">@color/baseline_primary_40</color>
     <color name="default_bg_color_blue_light">@color/baseline_primary_80</color>
     <color name="default_scrim_color">@color/black_alpha_65</color>
@@ -135,7 +135,7 @@ found in the LICENSE file.
     <color name="ntp_incognito_icon_color" tools:ignore="UnusedResources">@color/baseline_neutral_95</color>
     <color name="tab_strip_favicon_bg_incognito">@color/gm3_baseline_surface_container_highest_dark</color>
     <color name="tab_strip_bg_incognito">@color/gm3_baseline_surface_container_high_dark</color>
-    <color name="tab_strip_tablet_bg_incognito">@color/gm3_baseline_surface_container_dark</color>
+    <color name="tab_strip_tablet_bg_incognito">@color/gm3_baseline_surface_container_highest_dark</color>
     <color name="tab_strip_tablet_divider_bg_incognito">@color/baseline_neutral_variant_30</color>
     <color name="tab_strip_tablet_bg_unfocused_incognito">@color/gm3_baseline_surface_container_low_dark</color>
     <color name="omnibox_suggestion_bg_hover_incognito">@color/gm3_baseline_surface_container_low_dark</color>

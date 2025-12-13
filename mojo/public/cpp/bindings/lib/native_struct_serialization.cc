@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "mojo/public/cpp/bindings/lib/native_struct_serialization.h"
 
+#include "base/compiler_specific.h"
 #include "ipc/ipc_message_attachment.h"
 #include "ipc/ipc_message_attachment_set.h"
-#include "ipc/native_handle_type_converters.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
+#include "mojo/public/cpp/bindings/lib/native_handle_type_converters.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
 
@@ -69,8 +65,8 @@ void UnmappedNativeStructSerializerImpl::SerializeMessageContents(
   // Allocate a uint8 array, initialize its header, and copy the Pickle in.
   MessageFragment<Array_Data<uint8_t>> data_fragment(fragment.message());
   data_fragment.AllocateArrayData(ipc_message->payload_size());
-  memcpy(data_fragment->storage(), ipc_message->payload(),
-         ipc_message->payload_size());
+  UNSAFE_TODO(memcpy(data_fragment->storage(), ipc_message->payload(),
+                     ipc_message->payload_size()));
   fragment->data.Set(data_fragment.data());
 
   if (ipc_message->attachment_set()->empty()) {

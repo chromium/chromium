@@ -103,6 +103,16 @@ class MojoBindingsCheckTest(MojomParserTestCase):
         [SendValidation=test.mojom.FeatureName]
         MethodWithSendValidation(Thingy thing);
       };
+
+      [DirectReceiver]
+      interface FooWithDirectReceiver {
+        Method();
+      };
+
+      [VendorSpecified="foo=bar"]
+      interface InterfaceWithVendorSpecifiedStringAttribute {
+        Method();
+      };
     """)
 
   def testWrongModuleStable(self):

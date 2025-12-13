@@ -26,7 +26,6 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
@@ -38,7 +37,6 @@
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -65,7 +63,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -73,12 +70,12 @@
 #include "components/session_manager/session_manager_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -90,7 +87,7 @@ namespace {
 
 void PressHomeButton() {
   Shell::Get()->app_list_controller()->ToggleAppList(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      display::Screen::Get()->GetPrimaryDisplay().id(),
       AppListShowSource::kShelfButton, base::TimeTicks());
 }
 
@@ -123,7 +120,7 @@ PagedAppsGridView* GetAppsGridView() {
 
 void ShowAppListNow(AppListViewState state) {
   Shell::Get()->app_list_controller()->fullscreen_presenter()->Show(
-      state, display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      state, display::Screen::Get()->GetPrimaryDisplay().id(),
       base::TimeTicks::Now(), /*show_source*/ std::nullopt);
 }
 
@@ -478,8 +475,8 @@ TEST_F(AppListControllerImplTest, MAYBE_CloseNotificationWithAppListShown) {
 TEST_F(AppListControllerImplTest,
        TransientBlurIsNotTriggeredWhenShowingLauncher) {
   // Enable animation.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Enable virtual keyboard.
   KeyboardController* const keyboard_controller =
@@ -787,7 +784,7 @@ TEST_F(AppListControllerImplTestWithNotificationBadging,
 TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {
   // Turn on the tablet mode.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
 
   Shelf* const shelf = GetPrimaryShelf();
 

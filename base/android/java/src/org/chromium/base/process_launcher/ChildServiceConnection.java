@@ -32,4 +32,6 @@ import org.chromium.build.annotations.Nullable;
     boolean updateGroupImportance(int group, int importanceInGroup);
 
     void retire();
+
+    void rebindService(int bindFlags);
 }

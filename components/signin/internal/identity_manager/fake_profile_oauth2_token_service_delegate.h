@@ -9,8 +9,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -63,11 +64,14 @@ class FakeProfileOAuth2TokenServiceDelegate
   bool IsRefreshTokenBound(const CoreAccountId& account_id) const override;
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const override;
+  bool AllBoundTokensShareSameBindingKey() const override;
   void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
       const CoreAccountId& account_id,
       std::string_view challenge,
       std::string_view ephemeral_public_key,
       TokenBindingHelper::GenerateAssertionCallback callback) override;
+  void AddBindingKeyToService(
+      base::span<const uint8_t> wrapped_binding_key) override;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   std::vector<CoreAccountId> GetAccounts() const override;

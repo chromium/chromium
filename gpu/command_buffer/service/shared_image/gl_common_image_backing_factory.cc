@@ -25,9 +25,7 @@ namespace gpu {
 
 namespace {
 // Kill switch for allowing using core ES3 format types for half float format.
-BASE_FEATURE(kAllowEs3F16CoreTypeForGlSi,
-             "AllowEs3F16CoreTypeForGlSi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowEs3F16CoreTypeForGlSi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::optional<viz::SharedImageFormat> GetFallbackFormatIfNotSupported(
     viz::SharedImageFormat plane_format,
@@ -104,6 +102,8 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
       workarounds_(workarounds),
       gl_format_caps_(GLFormatCaps(feature_info)),
       use_webgpu_adapter_(gpu_preferences.use_webgpu_adapter),
+      enable_webgpu_on_vk_via_gl_interop_(
+          gpu_preferences.enable_webgpu_on_vk_via_gl_interop),
       progress_reporter_(progress_reporter) {
   gl::GLApi* api = gl::g_current_gl_context;
   api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_texture_size_);

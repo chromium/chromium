@@ -6,9 +6,13 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -632,6 +636,81 @@ TEST_F(RenderBlockingResourceManagerTest, ParserBlockingScriptBeforeFont) {
   font_resource.Complete();
 }
 
+TEST_F(RenderBlockingResourceManagerTest, PausedPageBlocksFontLoading) {
+  SimRequest main_resource("https://example.com", "text/html");
+  SimSubresourceRequest font_resource("https://example.com/font.woff2",
+                                      "font/woff2");
+  LoadURL("https://example.com");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      @font-face {
+        font-family: custom-font;
+        src: url(https://example.com/font.woff2) format("woff2");
+      }
+      #target {
+        font-size: 10px;
+        position:relative;
+      }
+      @media print {
+        #target {
+            font: 25px/1 custom-font, monospace;
+        }
+      }
+    </style>
+    <span id=target style="">0123456789</span>
+  )HTML");
+
+  auto expected_web_font_width = 250;
+
+  Compositor().BeginFrame();
+  auto original_width = GetTarget()->OffsetWidth();
+  EXPECT_GT(expected_web_font_width, original_width);
+  EXPECT_FALSE(GetTargetFont().ShouldSkipDrawing());
+
+  {
+    // The "custom-font" has not loaded yet.
+    // Print and apply "font: 25px/1 custom-font, monospace" to #target.
+    GetDocument().GetFrame()->StartPrinting(
+        WebPrintParams(gfx::SizeF(300, 400)));
+
+    Compositor().BeginFrame();
+    auto fallback_font_width = GetTarget()->OffsetWidth();
+    // The font size is changed from 10px to 25px.
+    EXPECT_GT(fallback_font_width, original_width);
+    // The web font has not applied yet.
+    EXPECT_GT(expected_web_font_width, fallback_font_width);
+    // The font won't load until the page is resumed, it should render with the
+    // fallback font to avoid invisible text.
+    EXPECT_FALSE(GetTargetFont().ShouldSkipDrawing());
+    GetDocument().GetFrame()->EndPrinting();
+  }
+
+  Compositor().BeginFrame();
+  // The font size is changed back to 10px.
+  EXPECT_EQ(original_width, GetTarget()->OffsetWidth());
+  EXPECT_FALSE(GetTargetFont().ShouldSkipDrawing());
+
+  // Simulate the font resource being fully loaded after the page resumes.
+  font_resource.Complete(ReadAhemWoff2());
+  Compositor().BeginFrame();
+  EXPECT_EQ(original_width, GetTarget()->OffsetWidth());
+  EXPECT_FALSE(GetTargetFont().ShouldSkipDrawing());
+
+  {
+    // The "custom-font" has loaded now.
+    // Print and apply again "font: 25px/1 custom-font, monospace" to #target.
+    GetDocument().GetFrame()->StartPrinting(
+        WebPrintParams(gfx::SizeF(300, 400)));
+
+    Compositor().BeginFrame();
+    // Now that the web font has loaded, it should be used.
+    EXPECT_EQ(expected_web_font_width, GetTarget()->OffsetWidth());
+    EXPECT_FALSE(GetTargetFont().ShouldSkipDrawing());
+    GetDocument().GetFrame()->EndPrinting();
+  }
+}
+
 class RenderBlockingFontTest : public RenderBlockingResourceManagerTest {
  public:
   void SetUp() override {
@@ -861,6 +940,79 @@ TEST_F(RenderBlockingFontTest, FontPreloadExceedingBothLimits) {
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
 
   font_resource.Complete(ReadAhemWoff2());
+}
+
+TEST_F(RenderBlockingResourceManagerTest,
+       FontReadyPromiseResolvesWhileRenderThrottled) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest iframe_resource("https://cross-origin.com/", "text/html");
+  SimSubresourceRequest font_resource("https://cross-origin.com/font.woff2",
+                                      "font/woff2");
+
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <iframe sandbox="allow-scripts" src="https://cross-origin.com/"></iframe>
+    <div style='height: 200vh'></div>
+  )HTML");
+
+  iframe_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      @font-face {
+        font-family: custom-font;
+        src: url(font.woff2) format("woff2");
+      }
+      div {
+        font-family: custom-font;
+      }
+    </style>
+    <div>text</div>
+    <script>
+      var promise_resolved = false;
+      document.fonts.ready.then(() => {
+        promise_resolved = true;
+      });
+    </script>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  auto* iframe_element = To<HTMLIFrameElement>(
+      GetDocument().QuerySelector(AtomicString("iframe")));
+  LocalFrame* iframe_frame = To<LocalFrame>(iframe_element->ContentFrame());
+  LocalFrameView* iframe_view = iframe_frame->View();
+
+  // Scroll the iframe out of view; iframe rendering should become throttled.
+  GetDocument().domWindow()->scrollByForTesting(
+      0, GetDocument().View()->Size().height());
+  GetDocument().View()->ScheduleAnimation();
+  Compositor().BeginFrame();
+  ASSERT_TRUE(iframe_view->CanThrottleRendering());
+
+  // Complete load of the font resource; this will schedule
+  // FireDoneEventIfPossible via PostTask.
+  font_resource.Complete(ReadAhemWoff2());
+
+  // Dirty layout; this is equivalent to JS:
+  //   div.style.height = "2rem"; getComputedStyle(div).color;
+  Element* iframe_div =
+      iframe_frame->GetDocument()->QuerySelector(AtomicString("div"));
+  iframe_div->SetInlineStyleProperty(CSSPropertyID::kHeight, "2rem");
+  MakeGarbageCollected<CSSComputedStyleDeclaration>(iframe_div)
+      ->GetPropertyCSSValue(CSSPropertyID::kColor);
+
+  // Iframe is throttled, layout should remain dirty after BeginFrame().
+  Compositor().BeginFrame();
+  ASSERT_TRUE(iframe_view->NeedsLayout());
+
+  // Even with dirty layout, we should still resolve `document.fonts.ready`.
+  test::RunPendingTasks();
+  v8::HandleScope scope(iframe_frame->DomWindow()->GetIsolate());
+  EXPECT_TRUE(WebLocalFrameImpl::FromFrame(iframe_frame)
+                  ->ExecuteScriptAndReturnValue(
+                      WebScriptSource(WebString::FromASCII("promise_resolved")))
+                  ->IsTrue());
 }
 
 }  // namespace blink

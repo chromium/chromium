@@ -18,11 +18,14 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
+#include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -79,7 +82,11 @@ void FormFetcherImpl::AddConsumer(FormFetcher::Consumer* consumer) {
   DCHECK(consumer);
   consumers_.AddObserver(consumer);
   if (state_ == State::NOT_WAITING) {
-    consumer->OnFetchCompleted();
+    // Notify the consumer immediately, but do it async so that it's in line
+    // with the regular form fetcher behavior.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&FormFetcherImpl::NotifyConsumer,
+                                  weak_ptr_factory_.GetWeakPtr(), consumer));
   }
 }
 
@@ -288,6 +295,14 @@ FormFetcherImpl::GetProfileStoreBackendError() const {
 std::optional<PasswordStoreBackendError>
 FormFetcherImpl::GetAccountStoreBackendError() const {
   return account_store_backend_error_;
+}
+
+void FormFetcherImpl::NotifyConsumer(FormFetcher::Consumer* consumer) {
+  // If a fetch has started in the meantime, the `consumer` will be notified
+  // when it finishes.
+  if (state_ == State::NOT_WAITING && consumers_.HasObserver(consumer)) {
+    consumer->OnFetchCompleted();
+  }
 }
 
 void FormFetcherImpl::FindMatchesAndNotifyConsumers(

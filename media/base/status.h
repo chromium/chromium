@@ -12,8 +12,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "media/base/media_export.h"
 #include "media/base/media_serializers_base.h"
@@ -70,12 +72,16 @@ namespace internal {
 struct MEDIA_EXPORT StatusData {
   StatusData();
   StatusData(const StatusData&);
-  StatusData(StatusGroupType group, StatusCodeType code, std::string message);
+  StatusData(StatusGroupType group,
+             StatusCodeType code,
+             std::string_view message);
   ~StatusData();
   StatusData& operator=(const StatusData&);
 
   std::unique_ptr<StatusData> copy() const;
   void AddLocation(const base::Location&);
+
+  void RenderToLogWriter(logging::LogSeverity s = logging::LOGGING_ERROR) const;
 
   // Enum group ID.
   std::string group;
@@ -113,14 +119,13 @@ struct StatusTraitsHelper {
     }
   }
 
-  static constexpr std::string GetMessage(std::string_view message,
-                                          T::Codes code) {
-    if (!message.empty()) {
-      return std::string(message);
-    } else if constexpr (requires { &T::ReadableCodeName; }) {
-      return T::ReadableCodeName(code);
+  static std::string RenderGroupAndCode(T::Codes code) {
+    if constexpr (requires { &T::ReadableCodeName; }) {
+      return base::StrCat({T::Group(), "::", T::ReadableCodeName(code)});
     } else {
-      return "";
+      return base::StrCat(
+          {T::Group(),
+           "::", base::NumberToString(static_cast<StatusCodeType>(code))});
     }
   }
 };
@@ -158,13 +163,12 @@ class MEDIA_EXPORT TypedStatus {
 
   // Convenience aliases to allow, e.g., MyStatusType::Codes::kGreatDisturbance.
   using Codes = typename T::Codes;
-  using Callback = base::OnceCallback<void(TypedStatus<T>)>;
 
   // See media/base/status.md for the ways that an instantiation of TypedStatus
   // can be constructed, since there are a few.
 
   // Default constructor to please the Mojo Gods.
-  TypedStatus() : data_(nullptr) {}
+  TypedStatus() = default;
 
   // Copy constructor (also as a sacrifice to Lord Mojo)
   TypedStatus(const TypedStatus<T>& copy) { *this = copy; }
@@ -177,10 +181,6 @@ class MEDIA_EXPORT TypedStatus {
   // Used to implicitly create a TypedStatus from a TypedStatus::Codes value.
   TypedStatus(Codes code, const base::Location& location = FROM_HERE)
       : TypedStatus(code, "", location) {}
-
-  TypedStatus(std::tuple<Codes, std::string_view> pack,
-              const base::Location& location = FROM_HERE)
-      : TypedStatus(std::get<0>(pack), std::get<1>(pack), location) {}
 
   // Used to allow returning {TypedStatus::Codes::kValue, CastFrom} implicitly
   // iff TypedStatus::T::OnCreateFrom is implemented.
@@ -199,10 +199,10 @@ class MEDIA_EXPORT TypedStatus {
   template <typename D>
     requires(TypedStatusConstructableFrom<TypedStatus<T>, D>)
   TypedStatus(Codes code,
-              std::string_view message,
+              std::string message,
               const D& data,
               const base::Location& location = FROM_HERE)
-      : TypedStatus(code, message, location) {
+      : TypedStatus(code, std::move(message), location) {
     DCHECK(data_);
     T::OnCreateFrom(this, data);
   }
@@ -221,10 +221,10 @@ class MEDIA_EXPORT TypedStatus {
   // Used to allow returning {TypedStatus::Codes::kValue, "message", cause}
   template <TypedStatusImplTraits O>
   TypedStatus(Codes code,
-              std::string_view message,
+              std::string message,
               TypedStatus<O>&& cause,
               const base::Location& location = FROM_HERE)
-      : TypedStatus(code, message, location) {
+      : TypedStatus(code, std::move(message), location) {
     DCHECK(data_);
     AddCause(std::move(cause));
   }
@@ -237,7 +237,7 @@ class MEDIA_EXPORT TypedStatus {
   // Also used to allow returning {TypedStatus::Codes::kValue, "message"}
   // implicitly as a typed status.
   TypedStatus(Codes code,
-              std::string_view message,
+              std::string message,
               const base::Location& location = FROM_HERE) {
     // Note that |message| would be dropped when code is the default value,
     // so DCHECK that it is not set.
@@ -246,8 +246,8 @@ class MEDIA_EXPORT TypedStatus {
       return;
     }
     data_ = std::make_unique<internal::StatusData>(
-        T::Group(), static_cast<StatusCodeType>(code),
-        internal::StatusTraitsHelper<Traits>::GetMessage(message, code));
+        internal::StatusTraitsHelper<Traits>::RenderGroupAndCode(code),
+        static_cast<StatusCodeType>(code), std::move(message));
     data_->AddLocation(location);
   }
 
@@ -268,11 +268,7 @@ class MEDIA_EXPORT TypedStatus {
     return static_cast<Codes>(data_->code);
   }
 
-  const std::string group() const {
-    return data_ ? data_->group : std::string(T::Group());
-  }
-
-  const std::string& message() const {
+  std::string_view message() const {
     DCHECK(data_);
     return data_->message;
   }
@@ -320,6 +316,15 @@ class MEDIA_EXPORT TypedStatus {
   void AddCause(TypedStatus<AnyTraitsType>&& cause) & {
     DCHECK(data_ && cause.data_);
     data_->cause = std::move(cause.data_);
+  }
+
+  // Destroy this status and log it
+  void Log() && { LogInternal(); }
+
+  void DebugLog(int verbosity) const {
+    if (VLOG_IS_ON(verbosity)) {
+      LogInternal();
+    }
   }
 
   inline bool operator==(Codes code) const { return code == this->code(); }
@@ -420,11 +425,16 @@ class MEDIA_EXPORT TypedStatus {
       return value;
     }
 
-    // Return constref of the value, if we have one.
-    // Callers should ensure that this |has_value()|.
-    const O& operator->() const {
-      CHECK(value_);
+    const O& operator->() const
+      requires requires(O o) { o.operator->(); }
+    {
       return std::get<0>(*value_);
+    }
+
+    const O* operator->() const
+      requires(!requires(O o) { o.operator->(); })
+    {
+      return &std::get<0>(*value_);
     }
 
     const O& operator*() const {
@@ -464,20 +474,6 @@ class MEDIA_EXPORT TypedStatus {
     std::optional<std::tuple<O>> value_;
   };
 
-  static Callback BindOkContinuation(Callback err,
-                                     base::OnceCallback<void(Callback)> ok) {
-    return base::BindOnce(
-        [](Callback err, base::OnceCallback<void(Callback)> ok,
-           TypedStatus<T> status) {
-          if (status.is_ok()) {
-            std::move(ok).Run(std::move(err));
-          } else {
-            std::move(err).Run(std::move(status));
-          }
-        },
-        std::move(err), std::move(ok));
-  }
-
  private:
   std::unique_ptr<internal::StatusData> data_;
 
@@ -493,6 +489,19 @@ class MEDIA_EXPORT TypedStatus {
   // Allow AddCause.
   template <TypedStatusImplTraits O>
   friend class TypedStatus;
+
+  void LogInternal() const {
+    if (data_) {
+      data_->RenderToLogWriter();
+    } else {
+      auto ok_code = internal::StatusTraitsHelper<Traits>::OkEnumValue();
+      // Only status's created from a traits with an OK enum value should ever
+      // have a null `data_` object.
+      CHECK(ok_code.has_value());
+      LOG(ERROR) << internal::StatusTraitsHelper<Traits>::RenderGroupAndCode(
+          *ok_code);
+    }
+  }
 };
 
 template <typename T>

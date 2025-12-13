@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/metrics/android_metrics_service_client.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "base/metrics/user_metrics.h"
 #include "base/test/task_environment.h"
@@ -18,8 +17,7 @@
 
 namespace android_webview {
 
-using InstallerPackageType =
-    metrics::AndroidMetricsServiceClient::InstallerPackageType;
+using InstallerPackageType = AwMetricsServiceClient::InstallerPackageType;
 
 namespace {
 class AwMetricsServiceClientSampleRateTestDelegate
@@ -35,16 +33,16 @@ class AwMetricsServiceTestClientForSampling : public AwMetricsServiceClient {
   explicit AwMetricsServiceTestClientForSampling(
       std::unique_ptr<Delegate> delegate)
       : AwMetricsServiceClient(std::move(delegate)) {}
-  using AwMetricsServiceClient::IsInSample;
-  using AwMetricsServiceClient::RegisterPrefs;
-  void SetSampleRatePerMille(int sample_rate_per_mille) {
-    _sample_rate_per_mille = sample_rate_per_mille;
+  void SetUnfilteredSampleRatePerMille(int unfiltered_sample_rate_per_mille) {
+    _unfiltered_sample_rate_per_mille = unfiltered_sample_rate_per_mille;
   }
 
-  int GetSampleRatePerMille() const override { return _sample_rate_per_mille; }
+  int GetUnfilteredSampleRatePerMille() const override {
+    return _unfiltered_sample_rate_per_mille;
+  }
 
  private:
-  int _sample_rate_per_mille;
+  int _unfiltered_sample_rate_per_mille = 0;
 };
 
 class AwMetricsServiceClientSampleRateTest : public testing::Test {
@@ -73,12 +71,12 @@ TEST_F(AwMetricsServiceClientSampleRateTest, TestShouldSampleByClientUUID) {
   struct {
     const char* client_uuid;
     int sampling_rate_per_mille;
-    bool expected_in_sample;
+    bool expected_filtering;
   } test_cases[] = {
-      {"a7a68d68-8ba3-486d-832b-a0cded65fea2", 990 /*CANARY*/, false},
-      {"fa5f5bd4-aae7-4d94-ab84-69c8ca40f400", 990 /*CANARY*/, true},
-      {"fa5f5bd4-aae7-4d94-ab84-69c8ca40f400", 20 /*STABLE*/, false},
-      {"747dbd7a-7b48-4496-8043-88edf84e0ab3", 20 /*STABLE*/, true}};
+      {"a7a68d68-8ba3-486d-832b-a0cded65fea2", 990 /*CANARY*/, true},
+      {"fa5f5bd4-aae7-4d94-ab84-69c8ca40f400", 990 /*CANARY*/, false},
+      {"fa5f5bd4-aae7-4d94-ab84-69c8ca40f400", 20 /*STABLE*/, true},
+      {"747dbd7a-7b48-4496-8043-88edf84e0ab3", 20 /*STABLE*/, false}};
 
   for (const auto& test : test_cases) {
     auto prefs = std::make_unique<TestingPrefServiceSimple>();
@@ -89,9 +87,10 @@ TEST_F(AwMetricsServiceClientSampleRateTest, TestShouldSampleByClientUUID) {
         std::make_unique<AwMetricsServiceClientSampleRateTestDelegate>());
     client->SetHaveMetricsConsent(/*user_consent=*/true, /*app_consent=*/true);
     client->Initialize(prefs.get());
-    client->SetSampleRatePerMille(test.sampling_rate_per_mille);
+    client->SetUpMetricsDir();
+    client->SetUnfilteredSampleRatePerMille(test.sampling_rate_per_mille);
 
-    EXPECT_EQ(client->IsInSample(), test.expected_in_sample);
+    EXPECT_EQ(client->ShouldApplyMetricsFiltering(), test.expected_filtering);
   }
 }
 

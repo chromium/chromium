@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -212,6 +213,7 @@ public class FeedV2NewTabPageTest {
         mMostVisitedSites = new FakeMostVisitedSites();
         mMostVisitedSites.setTileSuggestions(mSiteSuggestions);
         mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
+        GestureNavigationUtils.setMinRequiredPhysicalRamMbForTesting(0);
     }
 
     @After
@@ -223,7 +225,7 @@ public class FeedV2NewTabPageTest {
 
     private void openNewTabPage() {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        mTab = mActivityTestRule.getActivity().getActivityTab();
+        mTab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(mTab);
 
         Assert.assertTrue(mTab.getNativePage() instanceof NewTabPage);
@@ -259,7 +261,6 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     @CommandLineFlags.Add({
-        "enable-features=BackForwardTransitions",
         "force-prefers-no-reduced-motion",
         // Resampling can make scroll offsets non-deterministic so turn it off.
         "disable-features=ResamplingScrollEvents",
@@ -290,12 +291,12 @@ public class FeedV2NewTabPageTest {
 
         WebContentsUtils.waitForCopyableViewInWebContents(webContents);
 
-        float width_px =
+        float widthPx =
                 webContents.getWidth() * Coordinates.createFor(webContents).getDeviceScaleFactor();
 
         // Drag far enough to cause the back gesture to invoke.
         float fromEdgeStart = 5.0f;
-        float dragDistance = width_px - 10.0f;
+        float dragDistance = widthPx - 10.0f;
 
         // from left edge EDGE_LEFT
         float fromX = fromEdgeStart;
@@ -519,16 +520,14 @@ public class FeedV2NewTabPageTest {
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         assertEquals(
-                cta.getResources()
-                        .getDimensionPixelSize(org.chromium.chrome.R.dimen.ntp_search_box_height),
-                cta.findViewById(org.chromium.chrome.R.id.search_box).getLayoutParams().height);
+                cta.getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height),
+                cta.findViewById(R.id.search_box).getLayoutParams().height);
 
         // Drag the Feed header title to scroll the toolbar to the top.
         int toY =
                 -getFakeboxTop(mNtp)
                         + cta.getResources()
-                                .getDimensionPixelSize(
-                                        org.chromium.chrome.R.dimen.modern_toolbar_background_size);
+                                .getDimensionPixelSize(R.dimen.modern_toolbar_background_size);
         TestTouchUtils.dragCompleteView(
                 InstrumentationRegistry.getInstrumentation(),
                 cta.findViewById(R.id.header_title),
@@ -543,8 +542,7 @@ public class FeedV2NewTabPageTest {
             // There might be a rounding issue for some devices.
             assertEquals(
                     toolbar.getLocationBarBackgroundHeightForTesting(),
-                    cta.getResources()
-                            .getDimension(org.chromium.chrome.R.dimen.ntp_search_box_height),
+                    cta.getResources().getDimension(R.dimen.ntp_search_box_height),
                     0.5);
         }
     }
@@ -567,6 +565,7 @@ public class FeedV2NewTabPageTest {
 
     /**
      * Toggles the header and checks whether the header has the right status.
+     *
      * @param expanded Whether the header should be expanded.
      */
     private void toggleHeader(boolean expanded) {

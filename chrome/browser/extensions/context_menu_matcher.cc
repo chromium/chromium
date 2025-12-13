@@ -16,9 +16,12 @@
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

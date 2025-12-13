@@ -42,10 +42,10 @@ public class AwContentsLifecycleNotifier {
     }
 
     /** Observer interface to be implemented by deriving webview lifecycle observers. */
-    public static interface Observer {
-        public void onFirstWebViewCreated();
+    public interface Observer {
+        void onFirstWebViewCreated();
 
-        public void onLastWebViewDestroyed();
+        void onLastWebViewDestroyed();
     }
 
     private boolean mHasWebViewInstances;

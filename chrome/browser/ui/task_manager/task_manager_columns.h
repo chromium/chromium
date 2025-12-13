@@ -297,8 +297,8 @@ inline constexpr std::array kColumns = {
 inline constexpr size_t kColumnsSize = std::size(kColumns);
 
 // Session Restore Keys.
-extern const char kSortColumnIdKey[];
-extern const char kSortIsAscendingKey[];
+inline constexpr char kSortColumnIdKey[] = "sort_column_id";
+inline constexpr char kSortIsAscendingKey[] = "sort_is_ascending";
 
 // Returns the |column_id| as a string value to be used as keys in the user
 // preferences.

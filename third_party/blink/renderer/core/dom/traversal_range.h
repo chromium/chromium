@@ -25,6 +25,23 @@ class TraversalRange {
   const StartNodeType* start_;
 };
 
+template <class Iterator, class TinyBloomFilter>
+class TraversalRangeWithFilter {
+  STACK_ALLOCATED();
+
+ public:
+  using StartNodeType = typename Iterator::StartNodeType;
+  explicit TraversalRangeWithFilter(const StartNodeType* start,
+                                    TinyBloomFilter filter)
+      : start_(start), filter_(filter) {}
+  Iterator begin() { return Iterator(start_, filter_); }
+  Iterator end() { return Iterator::End(); }
+
+ private:
+  const StartNodeType* start_;
+  TinyBloomFilter filter_;
+};
+
 template <class Traversal>
 class TraversalIteratorBase {
   STACK_ALLOCATED();
@@ -84,6 +101,34 @@ class TraversalDescendantIterator : public TraversalIteratorBase<Traversal> {
   const StartNodeType* root_ = nullptr;
 };
 
+template <class Traversal, class TinyBloomFilter>
+class TraversalDescendantWithFilterIterator
+    : public TraversalIteratorBase<Traversal> {
+  STACK_ALLOCATED();
+
+ public:
+  using StartNodeType = Node;
+  using TraversalIteratorBase<Traversal>::current_;
+
+  explicit TraversalDescendantWithFilterIterator(const StartNodeType* start,
+                                                 TinyBloomFilter filter)
+      : TraversalIteratorBase<Traversal>(
+            start ? Traversal::FirstWithin(*start, filter) : nullptr),
+        root_(start),
+        filter_(filter) {}
+
+  void operator++() { current_ = Traversal::Next(*current_, root_, filter_); }
+  static TraversalDescendantWithFilterIterator End() {
+    return TraversalDescendantWithFilterIterator();
+  }
+
+ private:
+  TraversalDescendantWithFilterIterator()
+      : TraversalIteratorBase<Traversal>(nullptr) {}
+  const StartNodeType* root_ = nullptr;
+  const TinyBloomFilter filter_ = 0;
+};
+
 template <class Traversal>
 class TraversalInclusiveDescendantIterator
     : public TraversalIteratorBase<Traversal> {
@@ -136,6 +181,11 @@ using TraversalSiblingRange =
 
 template <class T>
 using TraversalDescendantRange = TraversalRange<TraversalDescendantIterator<T>>;
+
+template <class T, class TinyBloomFilter>
+using TraversalDescendantRangeWithFilter = TraversalRangeWithFilter<
+    TraversalDescendantWithFilterIterator<T, TinyBloomFilter>,
+    TinyBloomFilter>;
 
 template <class T>
 using TraversalInclusiveDescendantRange =

@@ -43,8 +43,9 @@ if (enable_java_templates) {
       if (defined(invoker.input_jars_paths)) {
         input_jars_paths = invoker.input_jars_paths
       } else {
-        input_jars_paths =
-            [ "${android_sdk}/optional/${invoker.library_name}.jar" ]
+        input_jars_paths = [
+          "${android_sdk_platform_root}/optional/${invoker.library_name}.jar",
+        ]
       }
 
       # Adds the <uses-library> tag to the manifest.
@@ -64,7 +65,7 @@ if (enable_java_templates) {
   }
   android_sdk_optional_library("android_xr_extensions_java") {
     runtime_library_name = "com.android.extensions.xr"
-    input_jars_paths = [ "xr_extensions/com.android.extensions.xr.jar" ]
+    input_jars_paths = [ "//third_party/android_deps/autorolled/cipd/libs/com_android_extensions_xr_extensions_xr/extensions-xr.jar" ]
     required = false
   }
   if (!limit_android_deps) {
@@ -81,6 +82,8 @@ if (enable_java_templates) {
 
 if (android_ndk_api_level >= 29) {
   config("libbinder_include") {
-    include_dirs = [ "$android_sdk/optional/libbinder_ndk_cpp/" ]
+    # Use public SDK to ensure LGPL-licensed code can be built without the
+    # internal SDK.
+    include_dirs = [ "$public_android_sdk_platform_root/optional/libbinder_ndk_cpp/" ]
   }
 }

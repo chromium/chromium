@@ -96,12 +96,11 @@ TEST(ScannerActionToCommandTest, NewEvent) {
 
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
-  EXPECT_THAT(
-      command,
-      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
-          Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
-          Property("query_piece", &GURL::query_piece, "action=TEMPLATE")))));
+  EXPECT_THAT(command,
+              VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+                  Property("host", &GURL::host, kGoogleCalendarHost),
+                  Property("path", &GURL::path, kGoogleCalendarRenderPath),
+                  Property("query", &GURL::query, "action=TEMPLATE")))));
 }
 
 TEST(ScannerActionToCommandTest, NewEventWithTitle) {
@@ -111,13 +110,12 @@ TEST(ScannerActionToCommandTest, NewEventWithTitle) {
 
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
-  EXPECT_THAT(
-      command,
-      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
-          Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
-          Property("query_piece", &GURL::query_piece,
-                   "action=TEMPLATE&text=Test+title%3F")))));
+  EXPECT_THAT(command,
+              VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+                  Property("host", &GURL::host, kGoogleCalendarHost),
+                  Property("path", &GURL::path, kGoogleCalendarRenderPath),
+                  Property("query", &GURL::query,
+                           "action=TEMPLATE&text=Test+title%3F")))));
 }
 
 TEST(ScannerActionToCommandTest, NewEventWithDescription) {
@@ -127,13 +125,12 @@ TEST(ScannerActionToCommandTest, NewEventWithDescription) {
 
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
-  EXPECT_THAT(
-      command,
-      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
-          Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
-          Property("query_piece", &GURL::query_piece,
-                   "action=TEMPLATE&details=Test+desc%3F")))));
+  EXPECT_THAT(command,
+              VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+                  Property("host", &GURL::host, kGoogleCalendarHost),
+                  Property("path", &GURL::path, kGoogleCalendarRenderPath),
+                  Property("query", &GURL::query,
+                           "action=TEMPLATE&details=Test+desc%3F")))));
 }
 
 TEST(ScannerActionToCommandTest, NewEventWithDates) {
@@ -146,10 +143,10 @@ TEST(ScannerActionToCommandTest, NewEventWithDates) {
   EXPECT_THAT(
       command,
       VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
-          Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
+          Property("host", &GURL::host, kGoogleCalendarHost),
+          Property("path", &GURL::path, kGoogleCalendarRenderPath),
           Property(
-              "query_piece", &GURL::query_piece,
+              "query", &GURL::query,
               "action=TEMPLATE&dates=20241014T160000%2F20241014T161500")))));
 }
 
@@ -160,13 +157,12 @@ TEST(ScannerActionToCommandTest, NewEventWithLocation) {
 
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
-  EXPECT_THAT(
-      command,
-      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
-          Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
-          Property("query_piece", &GURL::query_piece,
-                   "action=TEMPLATE&location=401+-+Unauthorized")))));
+  EXPECT_THAT(command,
+              VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+                  Property("host", &GURL::host, kGoogleCalendarHost),
+                  Property("path", &GURL::path, kGoogleCalendarRenderPath),
+                  Property("query", &GURL::query,
+                           "action=TEMPLATE&location=401+-+Unauthorized")))));
 }
 
 TEST(ScannerActionToCommandTest, NewEventWithMultipleFields) {
@@ -179,17 +175,16 @@ TEST(ScannerActionToCommandTest, NewEventWithMultipleFields) {
 
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
-  EXPECT_THAT(
-      command,
-      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
-          Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
-          Property("query_piece", &GURL::query_piece,
-                   "action=TEMPLATE"
-                   "&text=%F0%9F%8C%8F"
-                   "&details=formerly+%22Geo+Sync%22"
-                   "&dates=20241014T160000%2F20241014T161500"
-                   "&location=Wonderland")))));
+  EXPECT_THAT(command,
+              VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+                  Property("host", &GURL::host, kGoogleCalendarHost),
+                  Property("path", &GURL::path, kGoogleCalendarRenderPath),
+                  Property("query", &GURL::query,
+                           "action=TEMPLATE"
+                           "&text=%F0%9F%8C%8F"
+                           "&details=formerly+%22Geo+Sync%22"
+                           "&dates=20241014T160000%2F20241014T161500"
+                           "&location=Wonderland")))));
 }
 
 TEST(ScannerActionToCommandTest, NewContact) {

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom_rust.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -43,15 +44,6 @@ declare_args() {
   # Enables generating javascript fuzzing-related code and the bindings for the
   # MojoLPM fuzzer targets. Off by default.
   enable_mojom_fuzzer = false
-
-  # Output Rust mojom bindings when `generate_rust` is `true` for a target. The
-  # option has no effect if this flag is disabled.
-  #
-  # This is currently behind a build flag since it's not being actively worked
-  # on, but to maintain some coverage of the code on the Rust FYI bots. When we
-  # want to actively develop support for Mojo use with Rust again, we should do
-  # it without any build flags.
-  enable_rust_mojom_bindings = false
 
   # Enables Closure compilation of generated JS lite bindings. In environments
   # where compilation is supported, any mojom target "foo" will also have a
@@ -107,6 +99,7 @@ mojom_generator_sources =
       "$mojom_generator_root/checks/__init__.py",
       "$mojom_generator_root/checks/mojom_attributes_check.py",
       "$mojom_generator_root/checks/mojom_definitions_check.py",
+      "$mojom_generator_root/checks/mojom_interface_direct_receiver_check.py",
       "$mojom_generator_root/checks/mojom_interface_feature_check.py",
       "$mojom_generator_root/checks/mojom_restrictions_check.py",
       "$mojom_generator_root/generators/__init__.py",
@@ -122,11 +115,6 @@ mojom_generator_sources =
       "//build/gn_helpers.py",
       "//build/zip_helpers.py",
     ]
-
-if (enable_rust_mojom_bindings) {
-  mojom_generator_sources +=
-      [ "$mojom_generator_root/generators/mojom_rust_generator.py" ]
-}
 
 if (enable_scrambled_message_ids) {
   declare_args() {
@@ -274,6 +262,10 @@ if (enable_scrambled_message_ids) {
 #       |cpp_only| is set to true, it overrides this to prevent generation of
 #       Java bindings.
 #
+#   generate_rust (optional, under development)
+#       If set to true, Rust bindings are generated, unless |cpp_only| is also
+#       set to true. Still being worked on, and not ready for production use.
+#
 #   enable_js_fuzzing (optional)
 #       Enables generation of javascript fuzzing sources for the target if the
 #       global build arg |enable_mojom_fuzzer| is also set to |true|.
@@ -368,9 +360,6 @@ if (enable_scrambled_message_ids) {
 #       at which point they will be made available to all WebUI pages at the
 #       given URL.
 #
-#   generate_rust (optional, experimental)
-#       Generate experimental Rust bindings. Do not use outside of tests or
-#       prototype code.
 #
 # The following parameters are used to support the component build. They are
 # needed so that bindings which are linked with a component can use the same
@@ -1623,156 +1612,12 @@ template("mojom") {
     }
 
     generate_rust = false
-    if (enable_rust_mojom_bindings && defined(invoker.generate_rust)) {
+    if (!cpp_only && defined(invoker.generate_rust)) {
       generate_rust = invoker.generate_rust
-    } else {
-      not_needed(invoker, [ "generate_rust" ])
     }
 
     if (generate_rust) {
-      rust_generator_target_name = "${output_target_name}_rust__generator"
-
-      # Depends on all the mojom dependencies' metadata targets. A generated_file rule will use this
-      # for GN metadata collection.
-      group("${output_target_name}_rust_deps_meta") {
-        deps = []
-        foreach(d, all_deps) {
-          full_name = get_label_info(d, "label_no_toolchain")
-          deps += [ "${full_name}_rust_meta" ]
-        }
-      }
-
-      if (sources_list != []) {
-        sources_for_rust_metadata = []
-        foreach(s, sources_list) {
-          sources_for_rust_metadata += [ rebase_path(s, "//") ]
-        }
-
-        # Contains metadata for this target's mojom dependencies.
-        group("${output_target_name}_rust_meta") {
-          deps = [ ":${output_target_name}_rust_deps_meta" ]
-          metadata = {
-            mojom_rust_target_map = [
-              {
-                target_name = get_label_info(":${output_target_name}_rust",
-                                             "label_no_toolchain")
-                mojom_sources = sources_for_rust_metadata
-              },
-            ]
-          }
-        }
-
-        # Outputs dependency info needed for Rust bindings generation.
-        generated_file("${output_target_name}_rust_dep_info") {
-          outputs =
-              [ "$target_gen_dir/${output_target_name}_rust_dep_info.json" ]
-          deps = [ ":${output_target_name}_rust_deps_meta" ]
-          data_keys = [ "mojom_rust_target_map" ]
-
-          output_conversion = "json"
-
-          visibility = [ ":$rust_generator_target_name" ]
-        }
-
-        action(rust_generator_target_name) {
-          script = mojom_generator_script
-          inputs = mojom_generator_sources + jinja2_sources +
-                   get_target_outputs(":${output_target_name}_rust_dep_info")
-          sources = sources_list
-
-          deps = [
-            ":$parser_target_name",
-            ":${output_target_name}_rust_dep_info",
-            "//mojo/public/tools/bindings:precompile_templates",
-          ]
-          if (defined(invoker.parser_deps)) {
-            deps += invoker.parser_deps
-          }
-
-          args = common_generator_args
-          filelist = []
-          outputs = []
-          foreach(source, sources_list) {
-            filelist += [ rebase_path("$source", root_build_dir) ]
-          }
-          foreach(base_path, output_file_base_paths) {
-            outputs += [ "$root_gen_dir/${base_path}${variant_suffix}.rs" ]
-          }
-
-          response_file_contents = filelist
-          dep_info_file =
-              get_target_outputs(":${output_target_name}_rust_dep_info")
-          dep_info_file = rebase_path(dep_info_file[0], root_build_dir)
-
-          args += [
-            "--filelist={{response_file_name}}",
-            "-g",
-            "rust",
-            "--rust_dep_info=$dep_info_file",
-          ]
-        }
-
-        rust_crate_root_target_name = "${output_target_name}_rust__crate_root"
-        rust_crate_root_path = "$target_gen_dir/$output_target_name"
-        rust_crate_root_librs = "$rust_crate_root_path/lib.rs"
-
-        generated_file(rust_crate_root_target_name) {
-          outputs = [ rust_crate_root_librs ]
-          contents = [
-            "// @generated by mojo/public/tools/bindings/mojom.gni for $output_target_name.",
-            "",
-            "chromium::import! {",
-            "    \"//mojo/public/rust:mojo_system\" as mojo;",
-            "    \"//mojo/public/rust:mojo_bindings\" as bindings;",
-            "}",
-            "",
-          ]
-
-          foreach(mojom_base, output_file_base_paths) {
-            rs_rel_path =
-                rebase_path(mojom_base, rust_crate_root_path, root_gen_dir)
-            rs_rel_path += "${variant_suffix}.rs"
-            rs_mod_name = get_path_info(mojom_base, "name")
-            contents += [
-              "#[path = \"$rs_rel_path\"]",
-              "pub mod $rs_mod_name;",
-            ]
-          }
-
-          visibility = [ ":${output_target_name}_rust" ]
-        }
-
-        rust_static_library("${output_target_name}_rust") {
-          crate_root = rust_crate_root_librs
-          sources = [ rust_crate_root_librs ] +
-                    get_target_outputs(":$rust_generator_target_name")
-          deps = [
-            ":$rust_crate_root_target_name",
-            ":$rust_generator_target_name",
-            "//mojo/public/rust:mojo_bindings",
-            "//mojo/public/rust:mojo_system",
-            "//third_party/rust/bytemuck/v1:lib",
-            "//third_party/rust/static_assertions/v1:lib",
-          ]
-
-          public_deps = []
-          foreach(d, all_deps) {
-            full_name = get_label_info(d, "label_no_toolchain")
-            public_deps += [ "${full_name}_rust" ]
-          }
-        }
-      } else {
-        group("${output_target_name}_rust_meta") {
-          deps = [ ":${output_target_name}_rust_deps_meta" ]
-        }
-
-        group("${output_target_name}_rust") {
-          public_deps = []
-          foreach(d, all_deps) {
-            full_name = get_label_info(d, "label_no_toolchain")
-            public_deps += [ "${full_name}_rust" ]
-          }
-        }
+      mojom_rust("${output_target_name}_rust") {
       }
     }
 

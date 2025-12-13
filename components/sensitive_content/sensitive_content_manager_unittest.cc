@@ -96,6 +96,10 @@ class SensitiveContentManagerTest : public content::RenderViewHostTestHarness {
     content::RenderViewHostTestHarness::TearDown();
   }
 
+  autofill::ContentAutofillClient* autofill_client() {
+    return autofill_client_injector_[web_contents()];
+  }
+
   autofill::ContentAutofillDriver* autofill_driver() {
     return autofill_driver_injector_[web_contents()];
   }
@@ -219,8 +223,9 @@ TEST_F(SensitiveContentManagerTest, AutofillManagerStateChanged) {
     EXPECT_CALL(check, Call("frame became active"));
   }
 
-  test_api(*autofill_driver())
-      .SetLifecycleStateAndNotifyObservers(LifecycleState::kActive);
+  test_api(autofill_client()->GetAutofillDriverFactory())
+      .SetLifecycleStateAndNotifyObservers(*autofill_driver(),
+                                           LifecycleState::kActive);
 
   TestAutofillManagerWaiter waiter(autofill_manager(),
                                    {AutofillManagerEvent::kFormsSeen});
@@ -228,10 +233,12 @@ TEST_F(SensitiveContentManagerTest, AutofillManagerStateChanged) {
                                  /*removed_forms=*/{});
   ASSERT_TRUE(waiter.Wait());
 
-  test_api(*autofill_driver())
-      .SetLifecycleStateAndNotifyObservers(LifecycleState::kInactive);
-  test_api(*autofill_driver())
-      .SetLifecycleStateAndNotifyObservers(LifecycleState::kActive);
+  test_api(autofill_client()->GetAutofillDriverFactory())
+      .SetLifecycleStateAndNotifyObservers(*autofill_driver(),
+                                           LifecycleState::kInactive);
+  test_api(autofill_client()->GetAutofillDriverFactory())
+      .SetLifecycleStateAndNotifyObservers(*autofill_driver(),
+                                           LifecycleState::kActive);
   check.Call("no sensitive content present so far");
   histogram_tester.ExpectTotalCount(histogram_sensitivity_changed, 0);
 
@@ -242,16 +249,18 @@ TEST_F(SensitiveContentManagerTest, AutofillManagerStateChanged) {
   histogram_tester.ExpectUniqueSample(histogram_sensitivity_changed,
                                       /*content_is_sensitive=*/true, 1);
 
-  test_api(*autofill_driver())
-      .SetLifecycleStateAndNotifyObservers(LifecycleState::kInactive);
+  test_api(autofill_client()->GetAutofillDriverFactory())
+      .SetLifecycleStateAndNotifyObservers(*autofill_driver(),
+                                           LifecycleState::kInactive);
   check.Call("frame became inactive");
   histogram_tester.ExpectBucketCount(histogram_sensitivity_changed,
                                      /*content_is_sensitive=*/true, 1);
   histogram_tester.ExpectBucketCount(histogram_sensitivity_changed,
                                      /*content_is_sensitive=*/false, 1);
 
-  test_api(*autofill_driver())
-      .SetLifecycleStateAndNotifyObservers(LifecycleState::kActive);
+  test_api(autofill_client()->GetAutofillDriverFactory())
+      .SetLifecycleStateAndNotifyObservers(*autofill_driver(),
+                                           LifecycleState::kActive);
   check.Call("frame became active");
   histogram_tester.ExpectBucketCount(histogram_sensitivity_changed,
                                      /*content_is_sensitive=*/true, 2);

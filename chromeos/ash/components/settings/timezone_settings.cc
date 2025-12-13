@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/settings/timezone_settings.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -375,9 +371,9 @@ TimezoneSettingsBaseImpl::GetTimezoneList() const {
 }
 
 TimezoneSettingsBaseImpl::TimezoneSettingsBaseImpl() {
-  for (size_t i = 0; i < std::size(kTimeZones); ++i) {
+  for (const char* timezone : kTimeZones) {
     timezones_.push_back(base::WrapUnique(icu::TimeZone::createTimeZone(
-        icu::UnicodeString(kTimeZones[i], -1, US_INV))));
+        icu::UnicodeString(timezone, -1, US_INV))));
   }
 }
 

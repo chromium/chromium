@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">jeruk</translation>
 <translation id="1275718070701477396">Dipilih</translation>
 <translation id="1290331692326790741">Sinyal lemah</translation>
+<translation id="1292474106138697109">Tampilan Alat Kelas</translation>
 <translation id="1300115153046603471">APN adalah jenis default dan <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Konversi</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Gambar</translation>
 <translation id="4300272766492248925">Buka aplikasi</translation>
 <translation id="430786093962686457">sifon</translation>
+<translation id="4309762678330556039">Otomatis membuat transkripsi dan menelusuri audio. Anda dapat membuat rekaman bahkan saat Anda tidak terhubung ke internet.</translation>
 <translation id="4310735698903592804">Wallpaper terbaru yang didukung teknologi AI Google</translation>
 <translation id="4320904097188876154">merah muda neon</translation>
 <translation id="432961742358282111">Klik kanan atau tekan lama untuk mendapatkan definisi, terjemahan, atau konversi unit. Gunakan tombol Panah kiri atau kanan untuk mengelola fitur ini.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="5600027863942488546">Tombol <ph name="KEY_NAME" /> diuji</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Alat Kelas membagikan layar Anda ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Anda telah logout</translation>
 <translation id="5620281292257375798">Khusus internal</translation>
 <translation id="5628106863521633649">Bahasa yang tersedia</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Aliran Awan</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Tidak ada pemindai yang tersedia</translation>
-<translation id="6231648282154119906">File mencurigakan akan otomatis dipindai oleh Google Safe Browsing sebagai bagian dari perlindungan yang ditingkatkan yang Anda pilih</translation>
 <translation id="6232017090690406397">Baterai</translation>
 <translation id="6234024205316847054">Tampilkan kerangka</translation>
 <translation id="6243280677745499710">Yang disetel saat ini</translation>

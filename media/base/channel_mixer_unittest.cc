@@ -150,7 +150,7 @@ TEST_P(ChannelMixerTest, Mixing) {
     // output channel should be 0
     for (int ch = 0; ch < output_bus->channels(); ++ch) {
       expected_value = (ch < input_channels) ? channel_values[ch] : 0;
-      auto channel = output_bus->channel_span(ch);
+      auto channel = output_bus->channel(ch);
       for (auto frame : channel) {
         ASSERT_FLOAT_EQ(expected_value, frame);
       }

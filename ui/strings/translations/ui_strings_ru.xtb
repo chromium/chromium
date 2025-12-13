@@ -82,7 +82,7 @@
 <translation id="3157931365184549694">Восстановить</translation>
 <translation id="3183922693828471536">Прокрутить до этого места</translation>
 <translation id="3234408098842461169">Стрелка вниз</translation>
-<translation id="3240426699337459095">Ссылка скопирована.</translation>
+<translation id="3240426699337459095">Ссылка скопирована</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 день}one{# день}few{# дня}many{# дней}other{# дня}}</translation>
 <translation id="3295886253693811851">Позвонить:</translation>
 <translation id="3306688585798492231">Встроенный дисплей</translation>
@@ -245,7 +245,7 @@
 <translation id="9170848237812810038">&amp;Отменить</translation>
 <translation id="9195990613383871904">Завтра</translation>
 <translation id="928628199082367701">Super</translation>
-<translation id="932327136139879170">Главная страница</translation>
+<translation id="932327136139879170">Дом</translation>
 <translation id="944069440740578670">Непрочитанные уведомления</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 секунду назад}one{# секунду назад}few{# секунды назад}many{# секунд назад}other{# секунды назад}}</translation>
 </translationbundle>

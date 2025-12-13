@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
@@ -19,6 +20,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/browser/test_metrics_web_contents_observer_embedder.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -33,11 +35,11 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "url/url_constants.h"
 
 using content::NavigationSimulator;
@@ -68,7 +70,7 @@ blink::mojom::ResourceLoadInfoPtr CreateResourceLoadInfo(
   resource_load_info->original_url = url;
   resource_load_info->request_destination = request_destination;
   resource_load_info->was_cached = false;
-  resource_load_info->raw_body_bytes = 0;
+  resource_load_info->raw_body_bytes = base::ByteCount(0);
   resource_load_info->net_error = net::OK;
   resource_load_info->network_info = blink::mojom::CommonNetworkInfo::New();
   resource_load_info->network_info->remote_endpoint = net::IPEndPoint();
@@ -129,10 +131,7 @@ class MetricsWebContentsObserverTest
         std::vector<mojom::ResourceDataUpdatePtr>(),
         mojom::FrameRenderDataUpdatePtr(std::in_place), timing.Clone(),
         mojom::InputTimingPtr(std::in_place), std::nullopt,
-        mojom::SoftNavigationMetrics::New(
-            blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-            blink::kNavigationIdDefaultValue,
-            mojom::LargestContentfulPaintTiming::New()));
+        CreateSoftNavigationMetrics());
   }
 
   void SimulateTimingUpdate(const mojom::PageLoadTiming& timing,
@@ -158,10 +157,7 @@ class MetricsWebContentsObserverTest
         mojom::FrameRenderDataUpdatePtr(std::in_place),
         mojom::CpuTimingPtr(std::in_place),
         mojom::InputTimingPtr(std::in_place), std::nullopt,
-        mojom::SoftNavigationMetrics::New(
-            blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-            blink::kNavigationIdDefaultValue,
-            mojom::LargestContentfulPaintTiming::New()));
+        CreateSoftNavigationMetrics());
   }
 
   void SimulateCustomUserTimingUpdate(
@@ -1314,11 +1310,6 @@ class MetricsWebContentsObserverNonPrimaryPageTest
       return CONTINUE_OBSERVING;
     }
 
-    void OnV8MemoryChanged(
-        const std::vector<MemoryUpdate>& memory_updates) override {
-      owner_->OnV8MemoryChanged(committed_url_, memory_updates);
-    }
-
    private:
     raw_ptr<MetricsWebContentsObserverNonPrimaryPageTest> owner_;
     GURL committed_url_;
@@ -1345,51 +1336,6 @@ class MetricsWebContentsObserverNonPrimaryPageTest
       override {
     return std::make_unique<Embedder>(this);
   }
-
-  void OnV8MemoryChanged(const GURL& url,
-                         const std::vector<MemoryUpdate>& memory_updates) {
-    std::vector<MemoryUpdate>& updates_for_url = observed_memory_updates_[url];
-    updates_for_url.insert(updates_for_url.end(), memory_updates.begin(),
-                           memory_updates.end());
-  }
-
- protected:
-  std::map<GURL, std::vector<MemoryUpdate>> observed_memory_updates_;
 };
-
-TEST_F(MetricsWebContentsObserverNonPrimaryPageTest, MemoryUpdates) {
-  // Go to the URL1.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl));
-  ASSERT_EQ(main_rfh()->GetLastCommittedURL().spec(), GURL(kDefaultTestUrl));
-  content::GlobalRenderFrameHostId rfh1_id = main_rfh()->GetGlobalId();
-
-  ASSERT_EQ(0, CountCompleteTimingReported());
-  EXPECT_EQ(0, CountOnBackForwardCacheEntered());
-  EXPECT_EQ(1, tracker_committed_count());
-
-  // Go to the URL2.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl2));
-  ASSERT_EQ(main_rfh()->GetLastCommittedURL().spec(), GURL(kDefaultTestUrl2));
-  content::GlobalRenderFrameHostId rfh2_id = main_rfh()->GetGlobalId();
-
-  ASSERT_EQ(1, CountCompleteTimingReported());
-  EXPECT_EQ(1, CountOnBackForwardCacheEntered());
-  EXPECT_EQ(2, tracker_committed_count());
-
-  std::vector<MemoryUpdate> memory_updates = {{rfh1_id, 100}, {rfh2_id, 200}};
-  observer()->OnV8MemoryChanged(memory_updates);
-
-  // Verify that memory updates are observed both in primary URL2 and
-  // non-primary URL1.
-  ASSERT_EQ(2u, observed_memory_updates_.size());
-  ASSERT_EQ(1u, observed_memory_updates_[GURL(kDefaultTestUrl)].size());
-  EXPECT_EQ(100,
-            observed_memory_updates_[GURL(kDefaultTestUrl)][0].delta_bytes);
-  ASSERT_EQ(1u, observed_memory_updates_[GURL(kDefaultTestUrl2)].size());
-  EXPECT_EQ(200,
-            observed_memory_updates_[GURL(kDefaultTestUrl2)][0].delta_bytes);
-}
 
 }  // namespace page_load_metrics

@@ -19,7 +19,6 @@
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/video_capture/public/cpp/receiver_mojo_to_media_adapter.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "media/capture/video/chromeos/scoped_video_capture_jpeg_decoder.h"
@@ -96,26 +95,19 @@ void DeviceMediaToMojoAdapter::Start(
                "DeviceMediaToMojoAdapter::Start");
   StartInternal(std::move(requested_settings),
                 std::move(video_frame_handler_pending_remote),
-                /*frame_handler=*/nullptr, /*start_in_process=*/false,
-                media::VideoEffectsContext(
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-                    /*video_effects_processor=*/{},
-#endif
-                    /*readonly_manager_remote=*/{}));
+                /*frame_handler=*/nullptr, /*start_in_process=*/false);
 }
 
 void DeviceMediaToMojoAdapter::StartInProcess(
     const media::VideoCaptureParams& requested_settings,
-    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-    media::VideoEffectsContext context) {
+    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler) {
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "DeviceMediaToMojoAdapter::StartInProcess");
 
   StartInternal(std::move(requested_settings),
                 /*handler_pending_remote=*/std::nullopt,
-                std::move(frame_handler), /*start_in_process=*/true,
-                std::move(context));
+                std::move(frame_handler), /*start_in_process=*/true);
 }
 
 void DeviceMediaToMojoAdapter::StartInternal(
@@ -123,8 +115,7 @@ void DeviceMediaToMojoAdapter::StartInternal(
     std::optional<mojo::PendingRemote<mojom::VideoFrameHandler>>
         handler_pending_remote,
     const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-    bool start_in_process,
-    media::VideoEffectsContext context) {
+    bool start_in_process) {
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "DeviceMediaToMojoAdapter::StartInternal");
@@ -191,7 +182,7 @@ void DeviceMediaToMojoAdapter::StartInternal(
               &media::VideoFrameReceiver::OnLog, video_frame_receiver))));
 #else   // BUILDFLAG(IS_CHROMEOS)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
-      std::move(media_receiver), buffer_pool, std::move(context));
+      std::move(media_receiver), buffer_pool);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   device_->AllocateAndStart(requested_settings, std::move(device_client));

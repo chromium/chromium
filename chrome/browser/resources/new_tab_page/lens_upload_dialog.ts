@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './lens_form.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -77,6 +80,7 @@ export enum LensUploadDialogAction {
   DIALOG_OPENED = 3,
   DIALOG_CLOSED = 4,
   ERROR_SHOWN = 5,
+  MAX_VALUE = ERROR_SHOWN,
 }
 
 /**
@@ -94,18 +98,19 @@ export enum LensUploadDialogError {
   INVALID_SCHEME = 5,
   INVALID_URL = 6,
   NETWORK_ERROR = 7,
+  MAX_VALUE = NETWORK_ERROR,
 }
 
 export function recordLensUploadDialogAction(action: LensUploadDialogAction) {
   recordEnumeration(
       'NewTabPage.Lens.UploadDialog.DialogAction', action,
-      Object.keys(LensUploadDialogAction).length);
+      LensUploadDialogAction.MAX_VALUE + 1);
 }
 
 export function recordLensUploadDialogError(action: LensUploadDialogError) {
   recordEnumeration(
       'NewTabPage.Lens.UploadDialog.DialogError', action,
-      Object.keys(LensUploadDialogError).length);
+      LensUploadDialogError.MAX_VALUE + 1);
 }
 
 const LensUploadDialogElementBase = I18nMixinLit(CrLitElement);
@@ -126,7 +131,7 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
 
   static override get properties() {
     return {
-      dialogState_: {type: DialogState},
+      dialogState_: {type: Number},
       lensErrorMessage_: {type: Number},
       isHidden_: {type: Boolean},
       isNormalOrError_: {type: Boolean},
@@ -342,6 +347,8 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
       case LensSubmitType.URL:
         recordLensUploadDialogAction(LensUploadDialogAction.URL_SUBMITTED);
         break;
+      default:
+        assertNotReachedCase(event.detail);
     }
   }
 

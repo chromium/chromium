@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] fetchLater() throws TypeError on non-trustworthy http URL.
+  assert_throws_js: function "() => fetchLater('http://example.com')" threw object "SecurityError: Failed to execute 'fetchLater' on 'Window': fetchLater was passed an insecure URL." ("SecurityError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+Harness: the test ran to completion.
+

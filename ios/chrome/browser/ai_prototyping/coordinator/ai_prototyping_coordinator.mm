@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/coordinator/ai_prototyping_mediator.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_view_controller.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
@@ -27,7 +28,9 @@
 - (void)start {
   _viewController = [[AIPrototypingViewController alloc] init];
   _mediator = [[AIPrototypingMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()];
+               initWithWebStateList:self.browser->GetWebStateList()
+      persistTabContextBrowserAgent:PersistTabContextBrowserAgent::FromBrowser(
+                                        self.browser)];
 
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;

@@ -369,7 +369,7 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
             GURL(),  // url_before_redirects is ignored for frame-ancestors
             navigation_handle()->WasServerRedirect(), empty_source_location,
             network::CSPContext::CheckCSPDisposition::CHECK_ALL_CSP,
-            navigation_handle()->IsFormSubmission());
+            /*is_opaque_fenced_frame=*/false);
     if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
       GetContentClient()->browser()->LogWebFeatureForCurrentPage(
           parent,

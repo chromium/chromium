@@ -10,7 +10,7 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 // static
@@ -18,3 +18,5 @@ static std::string JNI_RenameUtils_GetFileExtension(JNIEnv* env,
                                                     std::string& fileName) {
   return base::FilePath(fileName).Extension();
 }
+
+DEFINE_JNI(RenameUtils)

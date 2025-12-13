@@ -432,13 +432,17 @@ public class LibraryLoader {
         mLibraryProcessType = type;
     }
 
+    public @LibraryProcessType int getLibraryProcessType() {
+        return mLibraryProcessType;
+    }
+
     /**
-     * Set native library preloader. If set and the Chromium linker is not used, the
-     * {@link NativeLibraryPreloader#loadLibrary(String)} ()} will be invoked before calling
+     * Set native library preloader. If set and the Chromium linker is not used, the {@link
+     * NativeLibraryPreloader#loadLibrary(String)} ()} will be invoked before calling
      * System.loadLibrary().
      *
-     * @param loader the NativeLibraryPreloader, it shall only be set once and before the
-     *               native library is loaded.
+     * @param loader the NativeLibraryPreloader, it shall only be set once and before the native
+     *     library is loaded.
      */
     public void setNativeLibraryPreloader(NativeLibraryPreloader loader) {
         synchronized (mLock) {
@@ -666,13 +670,17 @@ public class LibraryLoader {
     @GuardedBy("mLock")
     @VisibleForTesting
     protected void loadMainDexAlreadyLocked(ApplicationInfo appInfo, boolean inZygote) {
-        if (mLoadState >= LoadState.MAIN_DEX_LOADED) {
-            if (sEnableStateForTesting && mLoadStateForTesting == LoadState.NOT_LOADED) {
-                mLoadStateForTesting = LoadState.MAIN_DEX_LOADED;
-            }
-            return;
-        }
         try (TraceEvent te = TraceEvent.scoped("LibraryLoader.loadMainDexAlreadyLocked")) {
+            if (mLoadState >= LoadState.MAIN_DEX_LOADED) {
+                if (sEnableStateForTesting && mLoadStateForTesting == LoadState.NOT_LOADED) {
+                    if (sOverrideNativeLibraryCannotBeLoadedForTesting) {
+                        throw new UnsatisfiedLinkError();
+                    }
+                    mLoadStateForTesting = LoadState.MAIN_DEX_LOADED;
+                }
+                return;
+            }
+
             assert !mInitialized;
             assert mLibraryProcessType != LibraryProcessType.PROCESS_UNINITIALIZED || inZygote;
 

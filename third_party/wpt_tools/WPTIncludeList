@@ -3,6 +3,7 @@
 ./LICENSE.md
 ./docs/commands.json
 ./resources/testdriver-actions.js
+./resources/testdriver-actions.js.headers
 ./resources/testdriver-vendor.js
 ./resources/testdriver-vendor.js.headers
 ./resources/testdriver.js

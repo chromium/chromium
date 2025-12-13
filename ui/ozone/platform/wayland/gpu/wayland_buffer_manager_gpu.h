@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -21,7 +22,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/frame_data.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/gl_display.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.h"
@@ -103,6 +104,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                                const std::vector<uint64_t>& modifiers,
                                uint32_t current_format,
                                uint32_t planes_count,
+                               const gfx::ColorSpace& color_space,
+                               const gfx::HDRMetadata& hdr_metadata,
                                uint32_t buffer_id);
 
   // Asks Wayland to create a shared memory based wl_buffer.
@@ -168,9 +171,11 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   void AddBindingWaylandBufferManagerGpu(
       mojo::PendingReceiver<ozone::mojom::WaylandBufferManagerGpu> receiver);
 
-  // Returns supported modifiers for the supplied |buffer_format|.
-  const std::vector<uint64_t> GetModifiersForBufferFormat(
-      gfx::BufferFormat buffer_format) const;
+  // Returns supported modifiers for the supplied |format|.
+  const std::vector<uint64_t> GetModifiersForFormat(
+      viz::SharedImageFormat format) const;
+  // Returns whether implicit modifier is allowed.
+  bool AllowsImplicitModifierForFormat(viz::SharedImageFormat format) const;
 
   // Allocates a unique buffer ID.
   uint32_t AllocateBufferID();
@@ -228,6 +233,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                                    const std::vector<uint64_t>& modifiers,
                                    uint32_t current_format,
                                    uint32_t planes_count,
+                                   const gfx::ColorSpace& color_space,
+                                   const gfx::HDRMetadata& hdr_metadata,
                                    uint32_t buffer_id);
   void CreateShmBasedBufferTask(base::ScopedFD shm_fd,
                                 size_t length,
@@ -296,6 +303,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Supported buffer formats and modifiers sent by the Wayland compositor to
   // the client. Corresponds to the map stored in WaylandZwpLinuxDmabuf and
   // passed from it during initialization of this gpu host.
+  // If `DRM_FORMAT_MOD_INVALID` is in the modifiers list, it means implicit
+  // modifier is also supported as fallback if creation with explicit modifier
+  // fails, the effective modifier will be derived from dmabuf.
   base::flat_map<gfx::BufferFormat, std::vector<uint64_t>>
       supported_buffer_formats_with_modifiers_;
 

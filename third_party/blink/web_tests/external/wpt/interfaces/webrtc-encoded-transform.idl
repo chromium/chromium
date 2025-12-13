@@ -14,25 +14,46 @@ partial interface RTCRtpReceiver {
     attribute RTCRtpTransform? transform;
 };
 
-enum SFrameTransformRole {
-    "encrypt",
-    "decrypt"
+// List of supported cipher suites, as defined in [[RFC9605]] section 4.5.
+enum SFrameCipherSuite {
+     "AES_128_CTR_HMAC_SHA256_80",
+     "AES_128_CTR_HMAC_SHA256_64",
+     "AES_128_CTR_HMAC_SHA256_32",
+     "AES_128_GCM_SHA256_128",
+     "AES_256_GCM_SHA512_128"
 };
 
 dictionary SFrameTransformOptions {
-    SFrameTransformRole role = "encrypt";
+    required SFrameCipherSuite cipherSuite;
 };
 
 typedef [EnforceRange] unsigned long long SmallCryptoKeyID;
 typedef (SmallCryptoKeyID or bigint) CryptoKeyID;
 
-[Exposed=(Window,DedicatedWorker)]
-interface SFrameTransform : EventTarget {
-    constructor(optional SFrameTransformOptions options = {});
+interface mixin SFrameKeyManagement {
     Promise<undefined> setEncryptionKey(CryptoKey key, optional CryptoKeyID keyID);
     attribute EventHandler onerror;
 };
-SFrameTransform includes GenericTransformStream;
+
+[Exposed=Window]
+interface SFrameTransform : EventTarget {
+    constructor(optional SFrameTransformOptions options = {});
+};
+SFrameTransform includes SFrameKeyManagement;
+
+[Exposed=(Window,DedicatedWorker)]
+interface SFrameEncrypterStream : EventTarget {
+    constructor(optional SFrameTransformOptions options = {});
+};
+SFrameEncrypterStream includes GenericTransformStream;
+SFrameEncrypterStream includes SFrameKeyManagement;
+
+[Exposed=(Window,DedicatedWorker)]
+interface SFrameDecrypterStream : EventTarget {
+    constructor(optional SFrameTransformOptions options = {});
+};
+SFrameDecrypterStream includes GenericTransformStream;
+SFrameDecrypterStream includes SFrameKeyManagement;
 
 enum SFrameTransformErrorEventType {
     "authentication",
@@ -66,14 +87,6 @@ dictionary RTCEncodedFrameMetadata {
     DOMString mimeType;
 };
 
-// New enum for video frame types. Will eventually re-use the equivalent defined
-// by WebCodecs.
-enum RTCEncodedVideoFrameType {
-    "empty",
-    "key",
-    "delta",
-};
-
 dictionary RTCEncodedVideoFrameMetadata : RTCEncodedFrameMetadata {
     unsigned long long frameId;
     sequence<unsigned long long> dependencies;
@@ -88,12 +101,11 @@ dictionary RTCEncodedVideoFrameOptions {
     RTCEncodedVideoFrameMetadata metadata;
 };
 
-// New interfaces to define encoded video and audio frames. Will eventually
-// re-use or extend the equivalent defined in WebCodecs.
+// New interfaces to define RTC specific encoded video and audio frames used by RTCRtpScriptTransform.
 [Exposed=(Window,DedicatedWorker), Serializable]
 interface RTCEncodedVideoFrame {
     constructor(RTCEncodedVideoFrame originalFrame, optional RTCEncodedVideoFrameOptions options = {});
-    readonly attribute RTCEncodedVideoFrameType type;
+    readonly attribute EncodedVideoChunkType type;
     attribute ArrayBuffer data;
     RTCEncodedVideoFrameMetadata getMetadata();
 };
@@ -127,7 +139,7 @@ partial interface DedicatedWorkerGlobalScope {
 interface RTCRtpScriptTransformer : EventTarget {
     // Attributes and methods related to the transformer source
     readonly attribute ReadableStream readable;
-    Promise<unsigned long long> generateKeyFrame(optional DOMString rid);
+    Promise<undefined> generateKeyFrame(optional DOMString rid);
     Promise<undefined> sendKeyFrameRequest();
     // Attributes and methods related to the transformer sink
     readonly attribute WritableStream writable;
@@ -145,8 +157,4 @@ interface RTCRtpScriptTransform {
 interface KeyFrameRequestEvent : Event {
   constructor(DOMString type, optional DOMString rid);
   readonly attribute DOMString? rid;
-};
-
-partial interface RTCRtpSender {
-    Promise<undefined> generateKeyFrame(optional sequence <DOMString> rids);
 };

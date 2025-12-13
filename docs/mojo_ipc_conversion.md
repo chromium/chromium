@@ -390,7 +390,7 @@ namespace mojom {
 namespace blink {
 
 class Example {
-  virtual void SendArray(const WTF::String& param1, const WTF::Vector<int32_t>& param2) = 0;
+  virtual void SendArray(const ::blink::String& param1, const ::blink::Vector<int32_t>& param2) = 0;
 }
 
 } // namespace blink
@@ -409,8 +409,8 @@ documentation.
 ### Binding callbacks
 
 Mojo methods that return a value take an instance of `base::OnceCallback`.
-Use `WTF::BindOnce()` and an appropriate wrapper function depending on the type of
-object and the callback.
+Use `blink::BindOnce()` and an appropriate wrapper function depending on the
+type of object and the callback.
 
 For garbage-collected (Oilpan) classes owning the `mojo::Remote`, it is recommended
 to use `WrapWeakPersistent(this)` for connection error handlers since they
@@ -422,11 +422,11 @@ the response is received, use `WrapWeakPersistent(this)` for binding the respons
 
 ``` cpp
 // src/third_party/blink/renderer/modules/device_orientation/device_sensor_entry.cc
-sensor_.set_connection_error_handler(WTF::BindOnce(
+sensor_.set_connection_error_handler(blink::BindOnce(
     &DeviceSensorEntry::HandleSensorError, WrapWeakPersistent(this)));
 sensor_->ConfigureReadingChangeNotifications(/*enabled=*/false);
 sensor_->AddConfiguration(
-    std::move(config), WTF::BindOnce(&DeviceSensorEntry::OnSensorAddConfiguration,
+    std::move(config), blink::BindOnce(&DeviceSensorEntry::OnSensorAddConfiguration,
                                  WrapWeakPersistent(this)));
 ```
 
@@ -436,17 +436,17 @@ use `WrapPersistent(this)` to keep the object alive:
 ``` cpp
 // src/third_party/blink/renderer/modules/nfc/nfc.cc
 ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
-... 
-nfc_->CancelAllWatches(WTF::BindOnce(&NFC::OnRequestCompleted,
+...
+nfc_->CancelAllWatches(blink::BindOnce(&NFC::OnRequestCompleted,
                                  WrapPersistent(this),
                                  WrapPersistent(resolver)));
 ```
 
-Non-garbage-collected objects can use `WTF::Unretained(this)` for both response
-and error handler callbacks when the `mojo::Remote` is owned by the object bound
-to the callback or the object is guaranteed to outlive the Mojo connection for
-another reason. Otherwise a weak pointer should be used. However, it is not a
-common pattern since using Oilpan is recommended for all Blink code.
+Non-garbage-collected objects can use `blink::Unretained(this)` for both
+response and error handler callbacks when the `mojo::Remote` is owned by the
+object bound to the callback or the object is guaranteed to outlive the Mojo
+connection for another reason. Otherwise a weak pointer should be used. However,
+it is not a common pattern since using Oilpan is recommended for all Blink code.
 
 ### Implementing Mojo interfaces in Blink
 

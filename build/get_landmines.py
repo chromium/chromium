@@ -83,6 +83,8 @@ def print_landmines():
   if host_os() == 'mac':
     print('Clobber to clear old nocompile targets. See crbug.com/1497005.')
   print('Clobber to flush old TFLite files. See crbug.com/365705857')
+  if host_os() == 'android':
+    print('Clobber to clear stale JNI headers. See crbug.com/448419364.')
 
 
 def main():

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/test/test_gles2_interface.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -48,51 +44,52 @@ TestGLES2Interface::~TestGLES2Interface() = default;
 
 void TestGLES2Interface::GenTextures(GLsizei n, GLuint* textures) {
   for (int i = 0; i < n; ++i) {
-    textures[i] = NextTextureId();
-    textures_.insert(textures[i]);
+    UNSAFE_TODO(textures[i]) = NextTextureId();
+    textures_.insert(UNSAFE_TODO(textures[i]));
   }
 }
 
 void TestGLES2Interface::GenBuffers(GLsizei n, GLuint* buffers) {
   for (int i = 0; i < n; ++i)
-    buffers[i] = NextBufferId();
+    UNSAFE_TODO(buffers[i]) = NextBufferId();
 }
 
 void TestGLES2Interface::GenFramebuffers(GLsizei n, GLuint* framebuffers) {
   for (int i = 0; i < n; ++i)
-    framebuffers[i] = NextFramebufferId();
+    UNSAFE_TODO(framebuffers[i]) = NextFramebufferId();
 }
 
 void TestGLES2Interface::GenRenderbuffers(GLsizei n, GLuint* renderbuffers) {
   for (int i = 0; i < n; ++i)
-    renderbuffers[i] = NextRenderbufferId();
+    UNSAFE_TODO(renderbuffers[i]) = NextRenderbufferId();
 }
 
 void TestGLES2Interface::GenQueriesEXT(GLsizei n, GLuint* queries) {
   for (GLsizei i = 0; i < n; ++i) {
-    queries[i] = 1u;
+    UNSAFE_TODO(queries[i]) = 1u;
   }
 }
 
 void TestGLES2Interface::DeleteTextures(GLsizei n, const GLuint* textures) {
   for (int i = 0; i < n; ++i) {
-    RetireTextureId(textures[i]);
-    textures_.erase(textures[i]);
+    RetireTextureId(UNSAFE_TODO(textures[i]));
+    textures_.erase(UNSAFE_TODO(textures[i]));
   }
 }
 
 void TestGLES2Interface::DeleteBuffers(GLsizei n, const GLuint* buffers) {
   for (int i = 0; i < n; ++i)
-    RetireBufferId(buffers[i]);
+    RetireBufferId(UNSAFE_TODO(buffers[i]));
 }
 
 void TestGLES2Interface::DeleteFramebuffers(GLsizei n,
                                             const GLuint* framebuffers) {
   for (int i = 0; i < n; ++i) {
-    if (framebuffers[i]) {
-      RetireFramebufferId(framebuffers[i]);
-      if (framebuffers[i] == current_framebuffer_)
+    if (UNSAFE_TODO(framebuffers[i])) {
+      RetireFramebufferId(UNSAFE_TODO(framebuffers[i]));
+      if (UNSAFE_TODO(framebuffers[i]) == current_framebuffer_) {
         current_framebuffer_ = 0;
+      }
     }
   }
 }
@@ -155,32 +152,32 @@ void TestGLES2Interface::GetShaderPrecisionFormat(GLenum shadertype,
   switch (precisiontype) {
     case GL_LOW_INT:
       range[0] = 8;
-      range[1] = 8;
+      UNSAFE_TODO(range[1]) = 8;
       *precision = 0;
       break;
     case GL_MEDIUM_INT:
       range[0] = 10;
-      range[1] = 10;
+      UNSAFE_TODO(range[1]) = 10;
       *precision = 0;
       break;
     case GL_HIGH_INT:
       range[0] = 16;
-      range[1] = 16;
+      UNSAFE_TODO(range[1]) = 16;
       *precision = 0;
       break;
     case GL_LOW_FLOAT:
       range[0] = 8;
-      range[1] = 8;
+      UNSAFE_TODO(range[1]) = 8;
       *precision = 8;
       break;
     case GL_MEDIUM_FLOAT:
       range[0] = 14;
-      range[1] = 14;
+      UNSAFE_TODO(range[1]) = 14;
       *precision = 10;
       break;
     case GL_HIGH_FLOAT:
       range[0] = 62;
-      range[1] = 62;
+      UNSAFE_TODO(range[1]) = 62;
       *precision = 16;
       break;
     default:
@@ -312,9 +309,9 @@ void TestGLES2Interface::BufferData(GLenum target,
 
   buffer->pixels = base::HeapArray<uint8_t>::Uninit(size);
   if (data != nullptr) {
-    buffer->pixels.as_span().copy_from(
+    buffer->pixels.as_span().copy_from(UNSAFE_TODO(
         base::span<const uint8_t>(reinterpret_cast<const uint8_t*>(data),
-                                  base::checked_cast<size_t>(size)));
+                                  base::checked_cast<size_t>(size))));
   }
 }
 
@@ -327,7 +324,7 @@ void TestGLES2Interface::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
                                  gpu::CommandBufferId(),
                                  next_insert_fence_sync_++);
   sync_token_data.SetVerifyFlush();
-  memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
+  UNSAFE_TODO(memcpy(sync_token, &sync_token_data, sizeof(sync_token_data)));
 }
 
 void TestGLES2Interface::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {
@@ -338,23 +335,25 @@ void TestGLES2Interface::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {
   gpu::SyncToken sync_token_data(gpu::CommandBufferNamespace::GPU_IO,
                                  gpu::CommandBufferId(),
                                  next_insert_fence_sync_++);
-  memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
+  UNSAFE_TODO(memcpy(sync_token, &sync_token_data, sizeof(sync_token_data)));
 }
 
 void TestGLES2Interface::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
                                                   GLsizei count) {
   for (GLsizei i = 0; i < count; ++i) {
     gpu::SyncToken sync_token_data;
-    memcpy(sync_token_data.GetData(), sync_tokens[i], sizeof(sync_token_data));
+    UNSAFE_TODO(memcpy(sync_token_data.GetData(), sync_tokens[i],
+                       sizeof(sync_token_data)));
     sync_token_data.SetVerifyFlush();
-    memcpy(sync_tokens[i], &sync_token_data, sizeof(sync_token_data));
+    UNSAFE_TODO(
+        memcpy(sync_tokens[i], &sync_token_data, sizeof(sync_token_data)));
   }
 }
 
 void TestGLES2Interface::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
   gpu::SyncToken sync_token_data;
   if (sync_token)
-    memcpy(&sync_token_data, sync_token, sizeof(sync_token_data));
+    UNSAFE_TODO(memcpy(&sync_token_data, sync_token, sizeof(sync_token_data)));
 
   if (sync_token_data.release_count() >
       last_waited_sync_token_.release_count()) {
@@ -423,7 +422,7 @@ void TestGLES2Interface::ReadPixels(GLint x,
   gpu::gles2::GLES2Util::ComputeImageDataSizes(
       width, height, /*depth=*/1, format, type, /*alignment=*/4, &pixels_size,
       /*opt_unpadded_row_size=*/nullptr, /*opt_padded_row_size=*/nullptr);
-  memset(pixels, 0, pixels_size);
+  UNSAFE_TODO(memset(pixels, 0, pixels_size));
 }
 
 void TestGLES2Interface::set_support_texture_half_float_linear(bool support) {
@@ -432,10 +431,6 @@ void TestGLES2Interface::set_support_texture_half_float_linear(bool support) {
 
 void TestGLES2Interface::set_support_texture_norm16(bool support) {
   test_capabilities_.texture_norm16 = support;
-}
-
-void TestGLES2Interface::set_gpu_rasterization(bool gpu_rasterization) {
-  test_capabilities_.gpu_rasterization = gpu_rasterization;
 }
 
 void TestGLES2Interface::set_max_texture_size(int size) {

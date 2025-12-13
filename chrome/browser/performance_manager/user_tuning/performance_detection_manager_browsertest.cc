@@ -183,6 +183,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionDemoModeTest,
   // The waiter's run loop should stop after it is notified by the performance
   // detection manager with the updated actionable tab list.
   waiter->Wait();
+  manager()->RemoveActionableTabsObserver(waiter.get());
 }
 
 }  // namespace performance_manager::user_tuning

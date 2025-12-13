@@ -9,6 +9,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class EXTFloatBlend final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -16,7 +18,7 @@ class EXTFloatBlend final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit EXTFloatBlend(WebGLRenderingContextBase*);
+  EXTFloatBlend(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

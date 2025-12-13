@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/subsequence_recorder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 
 using testing::ElementsAre;
 
@@ -1904,13 +1906,14 @@ void DrawPath(GraphicsContext& context,
     return;
 
   DrawingRecorder recorder(context, client, type, gfx::Rect(0, 0, 100, 100));
-  SkPath path;
-  path.moveTo(0, 0);
-  path.lineTo(0, 100);
-  path.lineTo(50, 50);
-  path.lineTo(100, 100);
-  path.lineTo(100, 0);
-  path.close();
+  const SkPath path = SkPathBuilder()
+                          .moveTo(0, 0)
+                          .lineTo(0, 100)
+                          .lineTo(50, 50)
+                          .lineTo(100, 100)
+                          .lineTo(100, 0)
+                          .close()
+                          .detach();
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   for (unsigned i = 0; i < count; i++)

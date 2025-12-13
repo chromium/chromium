@@ -21,10 +21,8 @@ source_set("cookies") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
     "//chrome/browser/safe_browsing",
-    "//chrome/browser/ui",
     "//components/safe_browsing/core/common:features",
     "//extensions/browser",
-    "//skia",
   ]
 }
 
@@ -39,11 +37,10 @@ source_set("helpers") {
   deps = [
     "//base",
     "//chrome/browser/extensions",
-    "//chrome/browser/ui",
+    "//chrome/browser/profiles",
     "//chrome/common/extensions/api",
     "//extensions/common",
     "//net",
-    "//skia",
     "//url",
   ]
 }

@@ -44,7 +44,6 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
 
   int slow_down_raster_scale_factor = 0;
   bool rasterize_only_visible_content = false;
-  bool highlight_non_lcd_text_layers = false;
 
   // This is part of the feature to show performance metrics on HUD. This
   // particular flag is set only in Blink.

@@ -11,6 +11,7 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +25,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -32,8 +34,9 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
@@ -83,7 +86,7 @@ public class WebsitePreferenceBridgeTest {
                             ProfileManager.getLastUsedRegularProfile();
                     GURL url = new GURL("https://example.com");
                     assertEquals(
-                            ContentSettingValues.ALLOW,
+                            ContentSetting.ALLOW,
                             WebsitePreferenceBridge.getContentSetting(
                                     browserContext, ContentSettingsType.JAVASCRIPT, url, url));
                     WebsitePreferenceBridge.setContentSettingDefaultScope(
@@ -91,9 +94,9 @@ public class WebsitePreferenceBridgeTest {
                             ContentSettingsType.JAVASCRIPT,
                             url,
                             url,
-                            ContentSettingValues.BLOCK);
+                            ContentSetting.BLOCK);
                     assertEquals(
-                            ContentSettingValues.BLOCK,
+                            ContentSetting.BLOCK,
                             WebsitePreferenceBridge.getContentSetting(
                                     browserContext, ContentSettingsType.JAVASCRIPT, url, url));
                 });
@@ -111,7 +114,7 @@ public class WebsitePreferenceBridgeTest {
                     String primary = "https://primary.com";
                     String secondary = isEmbargoed ? SITE_WILDCARD : "https://secondary.com";
                     assertEquals(
-                            ContentSettingValues.ASK,
+                            ContentSetting.ASK,
                             WebsitePreferenceBridge.getContentSetting(
                                     browserContext,
                                     ContentSettingsType.STORAGE_ACCESS,
@@ -122,14 +125,86 @@ public class WebsitePreferenceBridgeTest {
                             ContentSettingsType.STORAGE_ACCESS,
                             primary,
                             secondary,
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                     assertEquals(
-                            ContentSettingValues.ALLOW,
+                            ContentSetting.ALLOW,
                             WebsitePreferenceBridge.getContentSetting(
                                     browserContext,
                                     ContentSettingsType.STORAGE_ACCESS,
                                     new GURL(primary),
                                     new GURL(secondary)));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({
+        PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT,
+        PermissionsAndroidFeatureList.PERMISSION_HEURISTIC_AUTO_GRANT
+    })
+    @Features.DisableFeatures({PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION})
+    public void testHeuristicDataCleared() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowserContextHandle browserContext =
+                            ProfileManager.getLastUsedRegularProfile();
+                    GURL url = new GURL("https://example.com");
+                    int type = ContentSettingsType.GEOLOCATION;
+
+                    // Set content setting to ALLOW and record some heuristic data.
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            browserContext, type, url, url, ContentSetting.ALLOW);
+                    WebsitePreferenceBridge.recordHeuristicActionForTesting(
+                            browserContext, url.getSpec(), type, 1);
+                    Assert.assertTrue(
+                            "Heuristic data should exist.",
+                            WebsitePreferenceBridge.hasHeuristicDataForTesting(
+                                    browserContext, url.getSpec(), type));
+
+                    // Change content setting to BLOCK.
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            browserContext, type, url, url, ContentSetting.BLOCK);
+                    Assert.assertFalse(
+                            "Heuristic data should be cleared when setting is changed to BLOCK.",
+                            WebsitePreferenceBridge.hasHeuristicDataForTesting(
+                                    browserContext, url.getSpec(), type));
+
+                    // Set content setting to ALLOW and record some heuristic data again.
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            browserContext, type, url, url, ContentSetting.ALLOW);
+                    WebsitePreferenceBridge.recordHeuristicActionForTesting(
+                            browserContext, url.getSpec(), type, 1);
+                    Assert.assertTrue(
+                            "Heuristic data should exist.",
+                            WebsitePreferenceBridge.hasHeuristicDataForTesting(
+                                    browserContext, url.getSpec(), type));
+
+                    // Change content setting to ASK.
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            browserContext, type, url, url, ContentSetting.ASK);
+                    Assert.assertFalse(
+                            "Heuristic data should be cleared when setting is changed to ASK.",
+                            WebsitePreferenceBridge.hasHeuristicDataForTesting(
+                                    browserContext, url.getSpec(), type));
+
+                    // Set content setting to ALLOW and record some heuristic data again.
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            browserContext, type, url, url, ContentSetting.ALLOW);
+                    WebsitePreferenceBridge.recordHeuristicActionForTesting(
+                            browserContext, url.getSpec(), type, 1);
+                    Assert.assertTrue(
+                            "Heuristic data should exist.",
+                            WebsitePreferenceBridge.hasHeuristicDataForTesting(
+                                    browserContext, url.getSpec(), type));
+
+                    // Set content setting to ALLOW again, should not clear data.
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            browserContext, type, url, url, ContentSetting.ALLOW);
+                    Assert.assertTrue(
+                            "Heuristic data should not be cleared when setting is set to ALLOW"
+                                    + " again.",
+                            WebsitePreferenceBridge.hasHeuristicDataForTesting(
+                                    browserContext, url.getSpec(), type));
                 });
     }
 }

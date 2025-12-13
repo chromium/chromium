@@ -6,7 +6,6 @@
 
 #import "components/omnibox/browser/provider_state_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/web/public/browser_state.h"
 
 namespace ios {
 
@@ -30,7 +29,7 @@ ProviderStateServiceFactory::~ProviderStateServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 ProviderStateServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<ProviderStateService>();
 }
 

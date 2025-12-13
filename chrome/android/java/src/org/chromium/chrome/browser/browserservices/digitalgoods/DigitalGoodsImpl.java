@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.browserservices.digitalgoods;
 
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.DigitalGoods;
 import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
@@ -18,14 +18,14 @@ import org.chromium.url.GURL;
  * An implementation of the {@link DigitalGoods} mojo interface that communicates with Trusted Web
  * Activity clients to call Billing APIs.
  */
+@NullMarked
 public class DigitalGoodsImpl implements DigitalGoods {
     private final Delegate mDelegate;
 
     /** A Delegate that provides the current URL. */
     public interface Delegate {
         /** @return The current URL or null when the frame is being destroyed. */
-        @Nullable
-        GURL getUrl();
+        @Nullable GURL getUrl();
     }
 
     /** Constructs the object with a given adapter and delegate. */

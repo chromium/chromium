@@ -42,7 +42,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
@@ -53,6 +52,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
@@ -331,33 +331,6 @@ TEST_F(DocumentTest, PrintRelayout) {
   EXPECT_EQ(GetDocument().documentElement()->OffsetWidth(), 400);
   GetDocument().GetFrame()->EndPrinting();
   EXPECT_EQ(GetDocument().documentElement()->OffsetWidth(), 800);
-}
-
-// This tests whether we properly set the bits for indicating if a media feature
-// has been evaluated.
-TEST_F(DocumentTest, MediaFeatureEvaluated) {
-  GetDocument().SetMediaFeatureEvaluated(
-      static_cast<int>(IdentifiableSurface::MediaFeatureName::kForcedColors));
-  for (int i = 0; i < 64; i++) {
-    if (i == static_cast<int>(
-                 IdentifiableSurface::MediaFeatureName::kForcedColors)) {
-      EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(i));
-    } else {
-      EXPECT_FALSE(GetDocument().WasMediaFeatureEvaluated(i));
-    }
-  }
-  GetDocument().SetMediaFeatureEvaluated(
-      static_cast<int>(IdentifiableSurface::MediaFeatureName::kAnyHover));
-  for (int i = 0; i < 64; i++) {
-    if ((i == static_cast<int>(
-                  IdentifiableSurface::MediaFeatureName::kForcedColors)) ||
-        (i ==
-         static_cast<int>(IdentifiableSurface::MediaFeatureName::kAnyHover))) {
-      EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(i));
-    } else {
-      EXPECT_FALSE(GetDocument().WasMediaFeatureEvaluated(i));
-    }
-  }
 }
 
 // This test checks that Documunt::linkManifest() returns a value conform to the
@@ -1046,8 +1019,7 @@ TEST_F(DocumentTest, HasPrivateTokenSuccess) {
   Document& document = scope.GetDocument();
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
       network::mojom::blink::TrustTokenQueryAnswerer::Name_,
-      WTF::BindRepeating(&MockTrustTokenQueryAnswerer::Bind,
-                         WTF::Unretained(&answerer)));
+      BindRepeating(&MockTrustTokenQueryAnswerer::Bind, Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState exception_state(script_state->GetIsolate());
@@ -1072,8 +1044,7 @@ TEST_F(DocumentTest, HasPrivateTokenSuccessWithFalseValue) {
   Document& document = scope.GetDocument();
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
       network::mojom::blink::TrustTokenQueryAnswerer::Name_,
-      WTF::BindRepeating(&MockTrustTokenQueryAnswerer::Bind,
-                         WTF::Unretained(&answerer)));
+      BindRepeating(&MockTrustTokenQueryAnswerer::Bind, Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState exception_state(script_state->GetIsolate());
@@ -1098,8 +1069,7 @@ TEST_F(DocumentTest, HasPrivateTokenOperationError) {
   Document& document = scope.GetDocument();
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
       network::mojom::blink::TrustTokenQueryAnswerer::Name_,
-      WTF::BindRepeating(&MockTrustTokenQueryAnswerer::Bind,
-                         WTF::Unretained(&answerer)));
+      BindRepeating(&MockTrustTokenQueryAnswerer::Bind, Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState exception_state(script_state->GetIsolate());
@@ -1126,8 +1096,7 @@ TEST_F(DocumentTest, HasPrivateTokenInvalidArgument) {
   Document& document = scope.GetDocument();
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
       network::mojom::blink::TrustTokenQueryAnswerer::Name_,
-      WTF::BindRepeating(&MockTrustTokenQueryAnswerer::Bind,
-                         WTF::Unretained(&answerer)));
+      BindRepeating(&MockTrustTokenQueryAnswerer::Bind, Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState exception_state(script_state->GetIsolate());
@@ -1154,8 +1123,7 @@ TEST_F(DocumentTest, HasPrivateTokenResourceExhausted) {
   Document& document = scope.GetDocument();
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
       network::mojom::blink::TrustTokenQueryAnswerer::Name_,
-      WTF::BindRepeating(&MockTrustTokenQueryAnswerer::Bind,
-                         WTF::Unretained(&answerer)));
+      BindRepeating(&MockTrustTokenQueryAnswerer::Bind, Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState exception_state(script_state->GetIsolate());
@@ -1181,8 +1149,7 @@ TEST_F(DocumentTest, HasRedemptionRecordSuccess) {
   Document& document = scope.GetDocument();
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
       network::mojom::blink::TrustTokenQueryAnswerer::Name_,
-      WTF::BindRepeating(&MockTrustTokenQueryAnswerer::Bind,
-                         WTF::Unretained(&answerer)));
+      BindRepeating(&MockTrustTokenQueryAnswerer::Bind, Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState exception_state(script_state->GetIsolate());
@@ -1207,8 +1174,7 @@ TEST_F(DocumentTest, HasRedemptionRecordSuccessWithFalseValue) {
   Document& document = scope.GetDocument();
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
       network::mojom::blink::TrustTokenQueryAnswerer::Name_,
-      WTF::BindRepeating(&MockTrustTokenQueryAnswerer::Bind,
-                         WTF::Unretained(&answerer)));
+      BindRepeating(&MockTrustTokenQueryAnswerer::Bind, Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState exception_state(script_state->GetIsolate());
@@ -1233,8 +1199,7 @@ TEST_F(DocumentTest, HasRedemptionRecordOperationError) {
   Document& document = scope.GetDocument();
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
       network::mojom::blink::TrustTokenQueryAnswerer::Name_,
-      WTF::BindRepeating(&MockTrustTokenQueryAnswerer::Bind,
-                         WTF::Unretained(&answerer)));
+      BindRepeating(&MockTrustTokenQueryAnswerer::Bind, Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState exception_state(script_state->GetIsolate());
@@ -1261,8 +1226,7 @@ TEST_F(DocumentTest, HasRedemptionRecordInvalidArgument) {
   Document& document = scope.GetDocument();
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
       network::mojom::blink::TrustTokenQueryAnswerer::Name_,
-      WTF::BindRepeating(&MockTrustTokenQueryAnswerer::Bind,
-                         WTF::Unretained(&answerer)));
+      BindRepeating(&MockTrustTokenQueryAnswerer::Bind, Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState exception_state(script_state->GetIsolate());
@@ -2307,6 +2271,9 @@ TEST_F(DocumentTest, PaymentLinkNotHandled_PaymentRel) {
 
   // Check that the payment link was not handled.
   EXPECT_EQ(test_payment_link_handler.get_payment_link_handled_counter(), 0);
+
+  GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      payments::facilitated::mojom::blink::PaymentLinkHandler::Name_, {});
 }
 
 TEST_F(DocumentTest, PaymentLinkHandling_SinglePaymentLink) {
@@ -2335,6 +2302,9 @@ TEST_F(DocumentTest, PaymentLinkHandling_SinglePaymentLink) {
   EXPECT_EQ(test_payment_link_handler.get_payment_link_handled_counter(), 1);
   EXPECT_EQ(test_payment_link_handler.get_handled_url(),
             KURL("upi://payment_link_1"));
+
+  GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      payments::facilitated::mojom::blink::PaymentLinkHandler::Name_, {});
 }
 
 TEST_F(DocumentTest, PaymentLinkHandling_MultiplePaymentLink) {
@@ -2365,6 +2335,9 @@ TEST_F(DocumentTest, PaymentLinkHandling_MultiplePaymentLink) {
   EXPECT_EQ(test_payment_link_handler.get_payment_link_handled_counter(), 1);
   EXPECT_EQ(test_payment_link_handler.get_handled_url(),
             KURL("upi://payment_link_1"));
+
+  GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      payments::facilitated::mojom::blink::PaymentLinkHandler::Name_, {});
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -81,7 +81,7 @@ source_set("android") {
       "//components/messages/android",
       "//components/resources:android_resources",
       "//components/strings",
-      "//components/webxr:webxr",
+      "//components/webxr",
       "//content/public/browser",
       "//device/vr/android:vr_android",
       "//ui/android",
@@ -100,7 +100,7 @@ source_set("android") {
       deps += [
         "//components/webxr:test_support",
         "//device/vr",
-        "//third_party/openxr:openxr",
+        "//third_party/openxr",
       ]
 
       public_configs = [ "//third_party/openxr:config" ]
@@ -130,6 +130,10 @@ android_library("xr_java") {
 
   public_deps = []
 
+  if (enable_openxr) {
+    public_deps += [ "//third_party/openxr:openxr_manifest_java" ]
+  }
+
   # Contains the interfaces that are present if any runtimes are enabled.
   # These are essentially the implementations of the above, interfaces those
   # classes need to talk to, or other common classes that more than one runtime
@@ -145,7 +149,6 @@ android_library("xr_java") {
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrHostActivity.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrImmersiveOverlay.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrSessionCoordinator.java",
-      "//components/webxr/android/java/src/org/chromium/components/webxr/XrSessionTypeSupplier.java",
     ]
 
     deps += [

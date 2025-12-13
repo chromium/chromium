@@ -4,7 +4,7 @@
 
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
 
-#include <queue>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -109,8 +109,7 @@ void SubscriptionsServerProxy::Create(
   subscriptions_json.Set(kSubscriptionsKey, std::move(subscriptions_list));
   base::Value::Dict request_json;
   request_json.Set(kCreateRequestParamsKey, std::move(subscriptions_json));
-  std::string post_data;
-  base::JSONWriter::Write(request_json, &post_data);
+  std::string post_data = base::WriteJson(request_json).value_or("");
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -183,8 +182,7 @@ void SubscriptionsServerProxy::Delete(
   deletions_json.Set(kEventTimestampsKey, std::move(deletions_list));
   base::Value::Dict request_json;
   request_json.Set(kDeleteRequestParamsKey, std::move(deletions_json));
-  std::string post_data;
-  base::JSONWriter::Write(request_json, &post_data);
+  std::string post_data = base::WriteJson(request_json).value_or("");
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -298,11 +296,9 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
   request_params.SetUrl(url)
       .SetContentType(kContentType)
       .SetAuthType(endpoint_fetcher::OAUTH)
-      .SetOauthScopes(
-          std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope})
+      .SetOAuthConsumerId(signin::OAuthConsumerId::kChromeMemex)
       .SetConsentLevel(consent_level_)
       .SetTimeout(base::Milliseconds(kTimeoutMs.Get()))
-      .SetOauthConsumerName(kOAuthName)
       .SetPostData(post_data);
   MaybeUseAlternateShoppingServer(request_params);
   return std::make_unique<EndpointFetcher>(
@@ -320,21 +316,16 @@ void SubscriptionsServerProxy::HandleManageSubscriptionsResponses(
         std::make_unique<std::vector<CommerceSubscription>>());
     return;
   }
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      responses->response,
-      base::BindOnce(&SubscriptionsServerProxy::OnManageSubscriptionsJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
 
-void SubscriptionsServerProxy::OnManageSubscriptionsJsonParsed(
-    ManageSubscriptionsFetcherCallback callback,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (result.has_value() && result->is_dict()) {
-    if (auto* status_value = result->GetDict().FindDict(kStatusKey)) {
+  std::optional<base::Value::Dict> result =
+      base::JSONReader::ReadDict(responses->response, base::JSON_PARSE_RFC);
+
+  if (result.has_value()) {
+    if (auto* status_value = result->FindDict(kStatusKey)) {
       if (auto status_code = status_value->FindInt(kStatusCodeKey)) {
         if (*status_code == kBackendCanonicalCodeSuccess) {
           std::move(callback).Run(SubscriptionsRequestStatus::kSuccess,
-                                  GetSubscriptionsFromParsedJson(result));
+                                  GetSubscriptionsFromParsedJson(*result));
         } else {
           std::move(callback).Run(
               SubscriptionsRequestStatus::kServerInternalError,
@@ -362,16 +353,20 @@ void SubscriptionsServerProxy::HandleGetSubscriptionsResponses(
         std::make_unique<std::vector<CommerceSubscription>>());
     return;
   }
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      responses->response,
-      base::BindOnce(&SubscriptionsServerProxy::OnGetSubscriptionsJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
 
-void SubscriptionsServerProxy::OnGetSubscriptionsJsonParsed(
-    GetSubscriptionsFetcherCallback callback,
-    data_decoder::DataDecoder::ValueOrError result) {
-  auto subscriptions = GetSubscriptionsFromParsedJson(result);
+  std::optional<base::Value::Dict> result =
+      base::JSONReader::ReadDict(responses->response, base::JSON_PARSE_RFC);
+  if (!result.has_value()) {
+    DVLOG(1) << "Got an invalid reply from the server";
+    // TODO(crbug.com/443044614): This matches the original behavior but seems
+    // wrong: if the response doesn't parse, this should probably be an error.
+    std::move(callback).Run(
+        SubscriptionsRequestStatus::kSuccess,
+        std::make_unique<std::vector<CommerceSubscription>>());
+    return;
+  }
+
+  auto subscriptions = GetSubscriptionsFromParsedJson(*result);
   if (subscriptions->size() == 0) {
     VLOG(1) << "User has no subscriptions";
   }
@@ -381,14 +376,12 @@ void SubscriptionsServerProxy::OnGetSubscriptionsJsonParsed(
 
 std::unique_ptr<std::vector<CommerceSubscription>>
 SubscriptionsServerProxy::GetSubscriptionsFromParsedJson(
-    const data_decoder::DataDecoder::ValueOrError& result) {
+    const base::Value::Dict& result) {
   auto subscriptions = std::make_unique<std::vector<CommerceSubscription>>();
-  if (result.has_value() && result->is_dict()) {
-    if (auto* subscriptions_json =
-            result->GetDict().FindList(kSubscriptionsKey)) {
-      for (const auto& subscription_json : *subscriptions_json) {
-        if (auto subscription = Deserialize(subscription_json))
-          subscriptions->push_back(*subscription);
+  if (auto* subscriptions_json = result.FindList(kSubscriptionsKey)) {
+    for (const auto& subscription_json : *subscriptions_json) {
+      if (auto subscription = Deserialize(subscription_json)) {
+        subscriptions->push_back(*subscription);
       }
     }
   }
@@ -427,15 +420,14 @@ base::Value::Dict SubscriptionsServerProxy::Serialize(
 
 std::optional<CommerceSubscription> SubscriptionsServerProxy::Deserialize(
     const base::Value& value) {
-  if (value.is_dict()) {
-    const base::Value::Dict& value_dict = value.GetDict();
-    auto* type = value_dict.FindString(kSubscriptionTypeKey);
-    auto* id_type = value_dict.FindString(kSubscriptionIdTypeKey);
-    auto* id = value_dict.FindString(kSubscriptionIdKey);
+  if (const base::Value::Dict* value_dict = value.GetIfDict()) {
+    auto* type = value_dict->FindString(kSubscriptionTypeKey);
+    auto* id_type = value_dict->FindString(kSubscriptionIdTypeKey);
+    auto* id = value_dict->FindString(kSubscriptionIdKey);
     auto* management_type =
-        value_dict.FindString(kSubscriptionManagementTypeKey);
+        value_dict->FindString(kSubscriptionManagementTypeKey);
     auto timestamp =
-        base::ValueToInt64(value_dict.Find(kSubscriptionTimestampKey));
+        base::ValueToInt64(value_dict->Find(kSubscriptionTimestampKey));
     if (type && id_type && id && management_type && timestamp) {
       return std::make_optional<CommerceSubscription>(
           StringToSubscriptionType(*type), StringToSubscriptionIdType(*id_type),

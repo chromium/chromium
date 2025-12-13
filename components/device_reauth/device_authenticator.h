@@ -46,7 +46,6 @@ class DeviceAuthParams {
 #if BUILDFLAG(IS_ANDROID)
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.device_reauth
 enum class BiometricStatus {
-  kRequired,
   kBiometricsAvailable,
   kOnlyLskfAvailable,
   kUnavailable,

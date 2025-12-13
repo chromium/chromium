@@ -45,6 +45,12 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="NonBrowserProcessAndThreadType">
+  <variant name="GpuProcess.CompositorThread"
+      summary="the Compositor Thread of the GPU process"/>
+  <variant name="GpuProcess.IOThread"
+      summary="the IO-Thread of the GPU process"/>
+  <variant name="GpuProcess.MainThread"
+      summary="the Main Thread of the GPU process"/>
   <variant name="RendererProcess.CompositorThread"
       summary="the Compositor Thread of a Renderer process"/>
   <variant name="RendererProcess.IOThread"
@@ -59,6 +65,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ProcessType">
   <variant name="BrowserProcess"/>
+  <variant name="GpuProcess"/>
   <variant name="RendererProcess"/>
   <variant name="UtilityProcess"/>
 </variants>
@@ -153,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HangWatcher.{ProcessType}.UncoveredStartupTime" units="ms"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

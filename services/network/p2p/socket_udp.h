@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/backoff_entry.h"
 #include "net/base/ip_endpoint.h"
 #include "net/socket/diff_serv_code_point.h"
 #include "net/socket/udp_server_socket.h"
@@ -124,7 +125,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
               int64_t send_time_ms,
               int result);
 
-  int SetSocketDiffServCodePointInternal(net::DiffServCodePoint dscp);
+  void MaybeUpdateTos(net::DiffServCodePoint dscp, net::EcnCodePoint ecn);
   net::NetLog* net_log() const { return net_log_with_source_.net_log(); }
 
   // Called at the end of sends to send out SendComplete to the |client_|.
@@ -147,7 +148,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
 
   base::circular_deque<P2PPendingPacket> send_queue_;
   bool send_pending_ = false;
-  net::DiffServCodePoint last_dscp_ = net::DSCP_CS0;
+  net::DiffServCodePoint last_dscp_ = net::DSCP_DEFAULT;
+  net::EcnCodePoint last_ecn_ = net::ECN_DEFAULT;
+  net::BackoffEntry set_tos_backoff_;
 
   // Set of peer for which we have received STUN binding request or
   // response or relay allocation request or response.

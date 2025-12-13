@@ -13,7 +13,7 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/gbm_buffer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
@@ -22,6 +22,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_thread_proxy.h"
 #include "ui/ozone/platform/drm/gpu/drm_window_proxy.h"
 #include "ui/ozone/platform/drm/test/integration_test_helpers.h"
+#include "ui/ozone/public/native_pixmap_usage.h"
 
 class VKMSTest : public testing::Test {
  public:
@@ -128,13 +129,17 @@ TEST_F(VKMSTest, SinglePlanePageFlip) {
   FlipExpectingRecreateBuffers(window_proxy);
 
   // Note that as of 2022/04, the only vkms-supported buffers are RGB. Note that
-  // the BufferFormat order is flipped from DRM. See here for our conversions:
+  // the SharedImageFormat order is flipped from DRM. See here for our
+  // conversions:
   // ui/gfx/linux/drm_util_linux.cc
   std::unique_ptr<ui::GbmBuffer> buffer;
   scoped_refptr<ui::DrmFramebuffer> framebuffer;
+  ui::NativePixmapUsageSet scanout_cpu_usage = {
+      ui::NativePixmapUsage::kScanout, ui::NativePixmapUsage::kTexturing,
+      ui::NativePixmapUsage::kCpuRead};
   drm_thread_proxy_->CreateBuffer(
       kWidget, kWindowRect.size(), kWindowRect.size(),
-      gfx::BufferFormat::BGRX_8888, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+      viz::SinglePlaneFormat::kBGRX_8888, scanout_cpu_usage,
       /*flags=*/0, &buffer, &framebuffer);
 
   auto planes = std::vector<ui::DrmOverlayPlane>();

@@ -50,7 +50,7 @@ class PictureInPictureTuckerTest : public views::ViewsTestBase {
 
 TEST_F(PictureInPictureTuckerTest, TucksTowardCloserEdge) {
   const gfx::Rect work_area =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(widget()->GetNativeWindow())
           .work_area();
 

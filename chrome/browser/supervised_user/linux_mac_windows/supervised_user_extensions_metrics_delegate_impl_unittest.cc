@@ -46,7 +46,7 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
     supervised_user_metrics_service_ =
         std::make_unique<supervised_user::SupervisedUserMetricsService>(
             profile()->GetPrefs(),
-            *SupervisedUserServiceFactory::GetForProfile(profile_.get()),
+            *SupervisedUserServiceFactory::GetForProfile(profile()),
             std::make_unique<SupervisedUserExtensionsMetricsDelegateImpl>(
                 extensions::ExtensionRegistry::Get(profile()), profile()),
             /*metrics_service_accessor_delegate=*/nullptr);

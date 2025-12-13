@@ -12,8 +12,9 @@ namespace web_app {
 
 class WebAppLockManager;
 
-// This lock essentially doesn't lock anything in the system. However, if a
-// `AllAppsLock` is used, then that will block the acquisition of this lock.
+// This lock doesn't lock any resources in the system. It can be used as a
+// placeholder when a command needs to acquire a lock but doesn't know which
+// resources it will need yet. The lock can be upgraded later.
 //
 // Locks can be acquired by using the `WebAppLockManager`.
 class NoopLockDescription : public LockDescription {
@@ -38,7 +39,7 @@ class NoopLock : public Lock {
   using LockDescription = NoopLockDescription;
 
   NoopLock();
-  ~NoopLock();
+  ~NoopLock() override;
 
   base::WeakPtr<NoopLock> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 

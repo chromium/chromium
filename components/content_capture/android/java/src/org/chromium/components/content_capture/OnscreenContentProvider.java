@@ -4,6 +4,8 @@
 
 package org.chromium.components.content_capture;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Build;
 import android.view.View;
@@ -19,6 +21,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.content_capture.ContentCaptureMetadataProto.ContentCaptureMetadata;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 
@@ -35,6 +38,8 @@ public class OnscreenContentProvider {
     private long mNativeOnscreenContentProviderAndroid;
 
     private final ArrayList<ContentCaptureConsumer> mContentCaptureConsumers = new ArrayList<>();
+
+    private ContentCaptureMetadata.Builder mMetadataBuilder = ContentCaptureMetadata.newBuilder();
 
     private WeakReference<WebContents> mWebContents;
 
@@ -191,6 +196,51 @@ public class OnscreenContentProvider {
         if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
             Log.i(TAG, "Updated Favicon: %s", mainFrame.getFavicon());
         }
+    }
+
+    @CalledByNative
+    private void didUpdateSensitivityScore(String url, float sensitivityScore) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return;
+        }
+
+        mMetadataBuilder.setSensitivityScore(sensitivityScore);
+
+        ContentCaptureMetadata metadata = mMetadataBuilder.build();
+        assumeNonNull(PlatformContentCaptureController.getInstance()).shareData(url, metadata);
+
+        if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            Log.i(TAG, "Updated sensitivity score: %f", sensitivityScore);
+        }
+    }
+
+    @CalledByNative
+    private void didUpdateLanguageDetails(
+            String url, String detectedLanguage, float languageConfidence) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return;
+        }
+
+        mMetadataBuilder.setDetectedLanguage(detectedLanguage);
+        mMetadataBuilder.setLanguageConfidence(languageConfidence);
+        ContentCaptureMetadata metadata = mMetadataBuilder.build();
+
+        assumeNonNull(PlatformContentCaptureController.getInstance()).shareData(url, metadata);
+
+        if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            Log.i(
+                    TAG,
+                    "Updated language: %s, confidence: %f",
+                    detectedLanguage,
+                    languageConfidence);
+        }
+    }
+
+    @CalledByNative
+    private void clearContentCaptureMetadata() {
+        // Reset the builder to discard data from the previous URL
+        // when DidFinishNavigation fires in C++.
+        mMetadataBuilder = ContentCaptureMetadata.newBuilder();
     }
 
     @CalledByNative

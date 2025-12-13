@@ -19,24 +19,12 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {BrowserProxy, DataCollectorItem, IssueDetails, PiiDataItem, SupportTokenGenerationResult} from 'chrome://support-tool/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://support-tool/browser_proxy.js';
-import type {ScreenshotElement} from 'chrome://support-tool/screenshot.js';
 import type {DataExportResult, SupportToolElement} from 'chrome://support-tool/support_tool.js';
 import {SupportToolPageIndex} from 'chrome://support-tool/support_tool.js';
 import type {UrlGeneratorElement} from 'chrome://support-tool/url_generator.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {track} from 'chrome://webui-test/mouse_mock_interactions.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-
-const SCREENSHOT_BASE64: string =
-    'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwME' +
-    'AwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT' +
-    '/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB' +
-    'QUFBQUFBQUFBQUFBQUFBT/wAARCABkAGQDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAA' +
-    'AAAAAj/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAcJ/8QA' +
-    'FBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AnQBDGqYAAAAAAAAAAAAAAAAAAAA' +
-    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
-    'AAAAD/2Q==';
 
 const EMAIL_ADDRESSES: string[] =
     ['testemail1@test.com', 'testemail2@test.com'];
@@ -101,7 +89,6 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
-      'takeScreenshot',
       'getEmailAddresses',
       'getDataCollectors',
       'startDataCollection',
@@ -112,10 +99,6 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
       'generateCustomizedUrl',
       'generateSupportToken',
     ]);
-  }
-
-  takeScreenshot() {
-    this.methodCalled('takeScreenshot');
   }
 
   getEmailAddresses() {
@@ -137,11 +120,9 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
   }
 
   startDataCollection(
-      issueDetails: IssueDetails, selectedDataCollectors: DataCollectorItem[],
-      screenshot: string) {
+      issueDetails: IssueDetails, selectedDataCollectors: DataCollectorItem[]) {
     this.methodCalled(
-        'startDataCollection', issueDetails, selectedDataCollectors,
-        screenshot);
+        'startDataCollection', issueDetails, selectedDataCollectors);
     // Return result with success for testing.
     const result = {success: true, errorMessage: ''};
     return Promise.resolve(result);
@@ -295,74 +276,6 @@ suite('SupportToolTest', function() {
     for (let i = 0; i < ironListItems.length; i++) {
       assertFalse(ironListItems[i].isIncluded);
     }
-  });
-
-  test('take and remove screenshot', async () => {
-    // Go to the data collector selection page.
-    supportTool.shadowRoot!.getElementById('continueButton')!.click();
-    assertEquals(
-        supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
-        SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
-    // Take screenshot.
-    const screenshot = supportTool.$.dataCollectors.shadowRoot!
-                           .querySelector<ScreenshotElement>('#screenshot')!;
-    const takeScreenshotButton =
-        screenshot.shadowRoot!.getElementById('takeScreenshot')!;
-    const removeButton =
-        screenshot.shadowRoot!.getElementById('removeScreenshot')!;
-    const hideInfoButton = screenshot.shadowRoot!.getElementById('hideInfo')!;
-    takeScreenshotButton.click();
-    await browserProxy.whenCalled('takeScreenshot');
-    webUIListenerCallback('screenshot-received', SCREENSHOT_BASE64);
-    assertFalse(removeButton.hidden);
-    assertFalse(hideInfoButton.hidden);
-    assertTrue(takeScreenshotButton.hidden);
-    assertNotEquals('', screenshot.getEditedScreenshotBase64());
-    // Remove screenshot.
-    screenshot.shadowRoot!.getElementById('removeScreenshot')!.click();
-    assertTrue(removeButton.hidden);
-    assertTrue(hideInfoButton.hidden);
-    assertFalse(takeScreenshotButton.hidden);
-    assertEquals('', screenshot.getEditedScreenshotBase64());
-  });
-
-  test('take and edit screenshot', async () => {
-    // Go to the data collector selection page.
-    supportTool.shadowRoot!.getElementById('continueButton')!.click();
-    assertEquals(
-        supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
-        SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
-    // Take a screenshot.
-    const screenshot = supportTool.$.dataCollectors.shadowRoot!
-                           .querySelector<ScreenshotElement>('#screenshot')!;
-    const takeScreenshotButton =
-        screenshot.shadowRoot!.getElementById('takeScreenshot')!;
-    const removeButton =
-        screenshot.shadowRoot!.getElementById('removeScreenshot')!;
-    const hideInfoButton = screenshot.shadowRoot!.getElementById('hideInfo')!;
-    takeScreenshotButton.click();
-    await browserProxy.whenCalled('takeScreenshot');
-    webUIListenerCallback('screenshot-received', SCREENSHOT_BASE64);
-    assertFalse(
-        screenshot.shadowRoot!.getElementById('screenshotPreview')!.hidden);
-    assertFalse(removeButton.hidden);
-    assertFalse(hideInfoButton.hidden);
-    assertTrue(takeScreenshotButton.hidden);
-    assertNotEquals('', screenshot.getEditedScreenshotBase64());
-    const originalScreenshot = screenshot.getOriginalScreenshotBase64();
-
-    // Edit the screenshot.
-    hideInfoButton.click();
-    await waitAfterNextRender(screenshot);
-    const canvas = screenshot.shadowRoot!.querySelector<HTMLCanvasElement>(
-        '#screenshotCanvas')!;
-    const confirmButton = screenshot.shadowRoot!.getElementById('confirmEdit')!;
-
-    // After clicking the confirm button, the image is changed.
-    track(canvas, canvas.width / 4, canvas.height / 4, 1);
-    confirmButton.click();
-    await waitAfterNextRender(screenshot);
-    assertNotEquals(originalScreenshot, screenshot.getEditedScreenshotBase64());
   });
 
   test('spinner page', () => {

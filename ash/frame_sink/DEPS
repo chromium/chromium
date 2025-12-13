@@ -1,4 +1,5 @@
 include_rules = [
+  "+gpu/command_buffer/client/test_shared_image_interface.h",
   "+gpu/ipc/client/client_shared_image_interface.h",
   "+cc/trees/layer_tree_frame_sink.h",
   "+cc/trees/layer_tree_frame_sink_client.h",

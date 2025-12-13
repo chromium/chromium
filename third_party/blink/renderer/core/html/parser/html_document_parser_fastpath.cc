@@ -115,7 +115,8 @@ HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(base::span<const T> span,
                                                     VectorT interesting1,
                                                     VectorT interesting2,
                                                     VectorT interesting3,
-                                                    VectorT interesting4) {
+                                                    VectorT interesting4,
+                                                    bool& is_8bit) {
   namespace hw = hwy::HWY_NAMESPACE;
   const size_t end = span.size();
   DCHECK_GE(end - pos, kVectorizationThreshold);
@@ -167,7 +168,8 @@ HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(base::span<const T> span,
                                                     VectorT interesting1,
                                                     VectorT interesting2,
                                                     VectorT interesting3,
-                                                    VectorT interesting4) {
+                                                    VectorT interesting4,
+                                                    bool& is_8bit) {
   namespace hw = hwy::HWY_NAMESPACE;
   const size_t end = span.size();
   DCHECK_GE(end - pos, kVectorizationThreshold);
@@ -178,6 +180,8 @@ HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(base::span<const T> span,
   static_assert(stride > 0, "stride must be greater than 0");
   DCHECK_LE(stride, span.size());
 
+  auto upper_accum = hw::Zero(tag);
+
   // The main scanning loop.
   while (pos + (stride - 1) < end) {
     VectorT dummy_upper;
@@ -187,6 +191,7 @@ HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(base::span<const T> span,
         tag,
         reinterpret_cast<const uint8_t*>(UNSAFE_BUFFERS(span.data() + pos)),
         input, dummy_upper);
+    upper_accum = hw::Or(upper_accum, dummy_upper);
     if (const auto result = TryMatch(tag, input, interesting1, interesting2,
                                      interesting3, interesting4);
         result.Matched()) {
@@ -194,6 +199,9 @@ HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(base::span<const T> span,
       // Check if the upper byte is zero.
       // SAFETY: safe when pos + index < span.size().
       if (UNSAFE_BUFFERS(span.data()[pos + index]) >> 8 == 0) {
+        if (!hw::AllTrue(tag, hw::Eq(upper_accum, hw::Zero(tag)))) {
+          is_8bit = false;
+        }
         pos += index;
         return result.found_character;
       }
@@ -215,6 +223,7 @@ HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(base::span<const T> span,
                          reinterpret_cast<const uint8_t*>(
                              UNSAFE_BUFFERS(span.data() + end - stride)),
                          input, dummy_upper);
+    upper_accum = hw::Or(upper_accum, dummy_upper);
     for (auto result = TryMatch(tag, input, interesting1, interesting2,
                                 interesting3, interesting4);
          result.Matched();
@@ -224,6 +233,9 @@ HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(base::span<const T> span,
       // Check if the upper byte is zero.
       // SAFETY: safe when end - stride + index < end.
       if (UNSAFE_BUFFERS(span.data()[end - stride + index]) >> 8 == 0) {
+        if (!hw::AllTrue(tag, hw::Eq(upper_accum, hw::Zero(tag)))) {
+          is_8bit = false;
+        }
         pos = end - stride + index;
         return result.found_character;
       }
@@ -233,6 +245,9 @@ HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(base::span<const T> span,
       input = hw::InsertLane(input, index, kNeverMatchedChar);
     }
     pos = end;
+  }
+  if (!hw::AllTrue(tag, hw::Eq(upper_accum, hw::Zero(tag)))) {
+    is_8bit = false;
   }
   return kNeverMatchedChar;
 }
@@ -303,11 +318,10 @@ struct ScanTextResult {
   String TryCanonicalizeString() const {
     DCHECK(!text.empty());
     if (is_newline_then_whitespace_string &&
-        text.size() < WTF::NewlineThenWhitespaceStringsTable::kTableSize) {
-      DCHECK(WTF::NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
+        text.size() < NewlineThenWhitespaceStringsTable::kTableSize) {
+      DCHECK(NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
           String(text)));
-      return WTF::NewlineThenWhitespaceStringsTable::GetStringForLength(
-          text.size());
+      return NewlineThenWhitespaceStringsTable::GetStringForLength(text.size());
     }
     return TextToString();
   }
@@ -315,6 +329,7 @@ struct ScanTextResult {
   base::span<const Char> text;
   UCharLiteralBufferType* escaped_text = nullptr;
   bool is_newline_then_whitespace_string = false;
+  bool is_8bit = true;
 };
 
 template <>
@@ -324,6 +339,14 @@ String ScanTextResult<LChar>::TextToString() const {
 
 template <>
 String ScanTextResult<UChar>::TextToString() const {
+  if (is_8bit) {
+    base::span<LChar> data;
+    auto impl = StringImpl::CreateUninitialized(text.size(), data);
+    for (size_t i = 0; i < text.size(); ++i) {
+      data[i] = static_cast<LChar>(text[i]);
+    }
+    return String(std::move(impl));
+  }
   return String(StringImpl::Create8BitIfPossible(text));
 }
 
@@ -723,11 +746,13 @@ class HTMLFastPathParser {
     const auto interesting2 = hw::Set(tag, '\r');
     const auto interesting3 = hw::Set(tag, '\0');
     const auto interesting4 = hw::Set(tag, '&');
+    bool is_8bit = true;
     switch (SimdAdvanceAndLookup(source_, pos_, interesting1, interesting2,
-                                 interesting3, interesting4)) {
+                                 interesting3, interesting4, is_8bit)) {
       case kNeverMatchedChar:
         DCHECK_EQ(pos_, end_);
-        return {source_.subspan(initial_start, pos_ - initial_start), nullptr};
+        return {source_.subspan(initial_start, pos_ - initial_start), nullptr,
+                /*is_newline_then_whitespace_string=*/false, is_8bit};
       case '\0':
         // SAFETY: safe when pos_ != end_.
         DCHECK_EQ(UNSAFE_BUFFERS(source_.data()[pos_]), '\0');
@@ -736,7 +761,8 @@ class HTMLFastPathParser {
       case '<':
         // SAFETY: safe when pos_ != end_.
         DCHECK_EQ(UNSAFE_BUFFERS(source_.data()[pos_]), '<');
-        return {source_.subspan(initial_start, pos_ - initial_start), nullptr};
+        return {source_.subspan(initial_start, pos_ - initial_start), nullptr,
+                /*is_newline_then_whitespace_string=*/false, is_8bit};
       case '&':
       case '\r':
         // SAFETY: safe when pos_ != end_.
@@ -782,6 +808,7 @@ class HTMLFastPathParser {
     }
 #endif  // VECTORIZE_SCANNING
 
+    bool is_8bit = true;
     while (pos_ != end_) {
       // SAFETY: safe when pos_ != end_.
       Char cur = UNSAFE_BUFFERS(source_.data()[pos_]);
@@ -797,10 +824,14 @@ class HTMLFastPathParser {
         return Fail(HtmlFastPathResult::kFailedContainsNull,
                     ScanTextResult<Char>{Span{}, nullptr});
       }
+      if (sizeof(Char) == 2 && cur > 0xFF) {
+        is_8bit = false;
+      }
       ++pos_;
     }
 
-    return {source_.subspan(start, pos_ - start), nullptr};
+    return {source_.subspan(start, pos_ - start), nullptr,
+            /*is_newline_then_whitespace_string=*/false, is_8bit};
   }
 
   // Slow-path of `ScanText()`, which supports escape sequences by copying to a
@@ -936,8 +967,9 @@ class HTMLFastPathParser {
     const auto interesting2 = hw::Set(tag, '\r');
     const auto interesting3 = hw::Set(tag, '\0');
     const auto interesting4 = hw::Set(tag, '&');
+    bool dummy_is_8bit = true;
     return SimdAdvanceAndLookup(source_, pos_, interesting1, interesting2,
-                                interesting3, interesting4);
+                                interesting3, interesting4, dummy_is_8bit);
   }
 
   ALWAYS_INLINE uint8_t
@@ -949,8 +981,9 @@ class HTMLFastPathParser {
     const auto interesting2 = hw::Set(tag, '\r');
     const auto interesting3 = hw::Set(tag, '\0');
     const auto interesting4 = hw::Set(tag, '&');
+    bool dummy_is_8bit = true;
     return SimdAdvanceAndLookup(source_, pos_, interesting1, interesting2,
-                                interesting3, interesting4);
+                                interesting3, interesting4, dummy_is_8bit);
   }
 
   ALWAYS_INLINE std::pair<Span, USpan> ScanAttrValueVectorized(
@@ -1055,12 +1088,14 @@ class HTMLFastPathParser {
     return {result, USpan{}};
   }
 
-  // Slow path for scanning an attribute value. Used for special cases such
-  // as '&' and '\r'.
+  // Slow path for scanning an attribute value. Only used if the attribute value
+  // contains '&' or '\r'.
   USpan ScanEscapedAttrValue() {
     SkipWhitespace();
     uchar_buffer_.clear();
     if (Char quote_char = GetNext(); quote_char == '"' || quote_char == '\'') {
+      // Move pos_ past the quote character.
+      ++pos_;
       while (pos_ != end_ && GetNext() != quote_char) {
         if (failed_) {
           return USpan{};

@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.incognito.IncognitoSnapshotController;
+
+import java.util.function.Supplier;
 
 /**
  * This is the controller that prevents incognito tabs from being visible in Android Recents for

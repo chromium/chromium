@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
+
 import {str, strf} from '../../../../common/js/translations.js';
 import {isNullOrUndefined} from '../../../../common/js/util.js';
 import {VolumeType} from '../../../../common/js/volume_manager_types.js';
@@ -73,6 +75,9 @@ export class FilesMigratingToCloudBanner extends WarningBanner {
         return;
       case chrome.fileManagerPrivate.MigrationDestination.NOT_SPECIFIED:
         console.warn(`Cloud provider must be specified.`);
+        return;
+      default:
+        assertNotReachedCase(context.migrationDestination);
     }
   }
 

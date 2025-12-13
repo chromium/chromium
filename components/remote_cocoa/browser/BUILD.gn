@@ -23,8 +23,8 @@ component("browser") {
   deps = [
     "//base",
     "//components/remote_cocoa/common:mojo",
-    "//components/viz/common:common",
-    "//mojo/public/cpp/bindings:bindings",
+    "//components/viz/common",
+    "//mojo/public/cpp/bindings",
     "//ui/gfx",
   ]
   frameworks = [ "Cocoa.framework" ]

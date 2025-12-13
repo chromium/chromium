@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/feedback/system_logs",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/common/logging_chrome.h",
   "+chrome/grit",

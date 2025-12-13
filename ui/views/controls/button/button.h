@@ -13,9 +13,11 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -26,7 +28,6 @@
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/button/button_controller_delegate.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
@@ -48,6 +49,9 @@ class ButtonController;
 // be part of the focus chain.
 class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   METADATA_HEADER(Button, View)
+
+  // TODO(crbug.com/451373711): Remove this macro once the bug gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
   // Button states for various button sub-types.
@@ -410,8 +414,9 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   std::unique_ptr<ButtonController> button_controller_;
 
   base::CallbackListSubscription enabled_changed_subscription_{
-      AddEnabledChangedCallback(base::BindRepeating(&Button::OnEnabledChanged,
-                                                    base::Unretained(this)))};
+      AddEnabledInViewsSubtreeChangedCallback(
+          base::BindRepeating(&Button::OnEnabledChanged,
+                              base::Unretained(this)))};
 
   size_t anchor_count_ = 0;
 

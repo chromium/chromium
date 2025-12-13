@@ -32,6 +32,7 @@
 
 #include <tuple>
 
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -75,7 +76,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -423,7 +423,7 @@ void LocalWindowProxy::SetSecurityToken(const SecurityOrigin* origin) {
       context->UseDefaultSecurityToken();
       return;
     }
-    token = frame_security_token + token;
+    token = StrCat({frame_security_token, token});
   }
 
   // NOTE: V8 does identity comparison in fast path, must use a symbol
@@ -605,6 +605,13 @@ void LocalWindowProxy::UpdateSecurityOrigin(const SecurityOrigin* origin) {
 void LocalWindowProxy::SetAbortScriptExecution(
     v8::Context::AbortScriptExecutionCallback callback) {
   InitializeIfNeeded();
+  // Aborting script execution may cause some undesired side effects, so
+  // leave some breadcrumbs in case things go wrong.
+  // See https://crbug.com/427166012 for additional context.
+  static auto* const abort_script_execution = AllocateCrashKeyString(
+      "abort_script_execution", base::debug::CrashKeySize::Size32);
+  SetCrashKeyString(abort_script_execution, callback ? "true" : "false");
+
   script_state_->GetContext()->SetAbortScriptExecution(callback);
 }
 

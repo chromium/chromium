@@ -7,19 +7,17 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/common/buildflags.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -28,7 +26,10 @@
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/declarative_content/content_rules_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
+#include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/manifest.h"
@@ -42,6 +43,8 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::WebContents;
 
@@ -226,13 +229,7 @@ void TabHelper::WebContentsDestroyed() {
 }
 
 WindowController* TabHelper::GetExtensionWindowController() const {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/393179880): Support this method.
   return ExtensionTabUtil::GetWindowControllerOfTab(web_contents());
-#else
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-#endif
 }
 
 WebContents* TabHelper::GetAssociatedWebContents() const {

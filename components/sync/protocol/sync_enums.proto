@@ -200,7 +200,6 @@ message SyncEnums {
   // keep the values in sync with GetUpdatesSource as much as possible.  Please
   // don't add any values < 12 unless there's a good reason for it.
   //
-  // Introduced in M28.
   // LINT.IfChange(SyncGetUpdatesOrigin)
   enum GetUpdatesOrigin {
     UNKNOWN_ORIGIN = 0;  // The source was not set by the caller.

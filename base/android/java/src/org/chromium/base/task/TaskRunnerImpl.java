@@ -6,8 +6,6 @@ package org.chromium.base.task;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.util.Pair;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -78,10 +76,10 @@ public class TaskRunnerImpl implements TaskRunner {
     private boolean mDidOneTimeInitialization;
 
     @GuardedBy("mPreNativeTaskLock")
-    private @Nullable Queue<Runnable> mPreNativeTasks;
+    private @Nullable Queue<PreNativeTask> mPreNativeTasks;
 
     @GuardedBy("mPreNativeTaskLock")
-    private @Nullable List<Pair<Runnable, Long>> mPreNativeDelayedTasks;
+    private @Nullable List<PreNativeTask> mPreNativeDelayedTasks;
 
     int clearTaskQueueForTesting() {
         int taskCount = 0;
@@ -94,6 +92,32 @@ public class TaskRunnerImpl implements TaskRunner {
             }
         }
         return taskCount;
+    }
+
+    private static class PreNativeTask implements Runnable {
+        private final Runnable mRunnable;
+        private final long mDelay;
+        private final @Nullable Location mLocation;
+
+        PreNativeTask(Runnable runnable, long delay, @Nullable Location location) {
+            mRunnable = runnable;
+            mDelay = delay;
+            mLocation = location;
+        }
+
+        @Override
+        public void run() {
+            try (TraceEvent e =
+                    TraceEvent.scoped(
+                            "PreNativeTask.run",
+                            (mLocation != null) ? mLocation.toString() : null)) {
+                mRunnable.run();
+            }
+        }
+
+        void queueToNative(long nativeTaskRunnerAndroid) {
+            queueDelayedTaskToNative(nativeTaskRunnerAndroid, mRunnable, mDelay, mLocation);
+        }
     }
 
     private static class TaskRunnerCleaner extends WeakReference<TaskRunnerImpl> {
@@ -162,36 +186,36 @@ public class TaskRunnerImpl implements TaskRunner {
     }
 
     @Override
-    public final void execute(Runnable task) {
-        postDelayedTask(task, 0);
+    public final void execute(Runnable task, @Nullable Location location) {
+        postDelayedTask(task, 0, location);
     }
 
     @Override
-    public final void postDelayedTask(Runnable task, long delay) {
+    public final void postDelayedTask(Runnable task, long delay, @Nullable Location location) {
         if (PostTask.ENABLE_TASK_ORIGINS) {
             task = PostTask.populateTaskOrigin(new TaskOriginException(), task);
         }
         // Lock-free path when native is initialized.
         if (mNativeTaskRunnerAndroid != 0) {
-            queueDelayedTaskToNative(mNativeTaskRunnerAndroid, task, delay);
+            queueDelayedTaskToNative(mNativeTaskRunnerAndroid, task, delay, location);
             return;
         }
         synchronized (mPreNativeTaskLock) {
             oneTimeInitialization();
             if (mNativeTaskRunnerAndroid != 0) {
-                queueDelayedTaskToNative(mNativeTaskRunnerAndroid, task, delay);
+                queueDelayedTaskToNative(mNativeTaskRunnerAndroid, task, delay, location);
                 return;
             }
             // We don't expect a whole lot of these, if that changes consider pooling them.
             // If a task is scheduled for immediate execution, we post it on the
             // pre-native task runner. Tasks scheduled to run with a delay will
             // wait until the native task runner is initialised.
+            PreNativeTask preNativeTask = new PreNativeTask(task, delay, location);
             if (delay == 0) {
-                assumeNonNull(mPreNativeTasks).add(task);
+                assumeNonNull(mPreNativeTasks).add(preNativeTask);
                 schedulePreNativeTask();
             } else if (!schedulePreNativeDelayedTask(task, delay)) {
-                Pair<Runnable, Long> preNativeDelayedTask = new Pair<>(task, delay);
-                assumeNonNull(mPreNativeDelayedTasks).add(preNativeDelayedTask);
+                assumeNonNull(mPreNativeDelayedTasks).add(preNativeTask);
             }
         }
     }
@@ -220,9 +244,17 @@ public class TaskRunnerImpl implements TaskRunner {
      * Overridden in subclasses that support Delayed tasks pre-native.
      *
      * @return true if the task has been scheduled and does not need to be forwarded to the native
-     *         task runner.
+     *     task runner.
      */
     protected boolean schedulePreNativeDelayedTask(Runnable task, long delay) {
+        // In Robolectric tests, execute delayed tasks immediately.
+        PostTask.DelayedExecutorForTesting delayedExecutor =
+                PostTask.getPrenativeThreadPoolDelayedExecutor();
+        if (delayedExecutor != null) {
+            delayedExecutor.scheduleDelayedTask(task, delay);
+            return true;
+        }
+
         return false;
     }
 
@@ -255,14 +287,14 @@ public class TaskRunnerImpl implements TaskRunner {
         long nativeTaskRunnerAndroid = TaskRunnerImplJni.get().init(mTaskRunnerType, mTaskTraits);
         synchronized (mPreNativeTaskLock) {
             if (mPreNativeTasks != null) {
-                for (Runnable task : mPreNativeTasks) {
-                    queueDelayedTaskToNative(nativeTaskRunnerAndroid, task, 0);
+                for (PreNativeTask task : mPreNativeTasks) {
+                    task.queueToNative(nativeTaskRunnerAndroid);
                 }
                 mPreNativeTasks = null;
             }
             if (mPreNativeDelayedTasks != null) {
-                for (Pair<Runnable, Long> task : mPreNativeDelayedTasks) {
-                    queueDelayedTaskToNative(nativeTaskRunnerAndroid, task.first, task.second);
+                for (PreNativeTask task : mPreNativeDelayedTasks) {
+                    task.queueToNative(nativeTaskRunnerAndroid);
                 }
                 mPreNativeDelayedTasks = null;
             }
@@ -283,10 +315,21 @@ public class TaskRunnerImpl implements TaskRunner {
     }
 
     private static void queueDelayedTaskToNative(
-            long nativeTaskRunnerAndroid, Runnable task, long delay) {
+            long nativeTaskRunnerAndroid, Runnable task, long delay, @Nullable Location location) {
         // If there's no delay, then try to store it in the table. Otherwise use the map.
         int taskIndex = queueTask(task, /* useTable= */ delay == 0);
-        TaskRunnerImplJni.get().postDelayedTask(nativeTaskRunnerAndroid, delay, taskIndex);
+        if (location != null) {
+            TaskRunnerImplJni.get()
+                    .postDelayedTaskWithLocation(
+                            nativeTaskRunnerAndroid,
+                            delay,
+                            taskIndex,
+                            location.fileName,
+                            location.functionName,
+                            location.lineNumber);
+        } else {
+            TaskRunnerImplJni.get().postDelayedTask(nativeTaskRunnerAndroid, delay, taskIndex);
+        }
     }
 
     @CalledByNative
@@ -335,5 +378,13 @@ public class TaskRunnerImpl implements TaskRunner {
         void destroy(long nativeTaskRunnerAndroid);
 
         void postDelayedTask(long nativeTaskRunnerAndroid, long delay, int taskIndex);
+
+        void postDelayedTaskWithLocation(
+                long nativeTaskRunnerAndroid,
+                long delay,
+                int taskIndex,
+                String fileName,
+                String functionName,
+                int lineNumber);
     }
 }

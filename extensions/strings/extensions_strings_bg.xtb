@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Изглед за приложението: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Разширението включва файла с ключ „<ph name="KEY_PATH" />“. Вероятно не искате да направите това.</translation>
 <translation id="5486326529110362464">Въведената стойност за личен ключ трябва да съществува.</translation>
+<translation id="5707185214361380026">Неуспешно зареждане на разширение от:</translation>
 <translation id="5972529113578162692">Администраторът на тази машина изисква разширението <ph name="EXTENSION_NAME" /> да е инсталирано. То не може да бъде деинсталирано.</translation>
 <translation id="6027032947578871493">Неизвестен продукт <ph name="PRODUCT_ID" /> от <ph name="VENDOR_NAME" /> (сериен номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> от доставчик <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Грешка при зареждането на разширението</translation>
 <translation id="6322279351188361895">Прочитът на личния ключ не бе успешен.</translation>
 <translation id="6391538222494443604">Трябва да съществува директория за въвеждане.</translation>
 <translation id="641087317769093025">Разширението не можа да се разархивира</translation>

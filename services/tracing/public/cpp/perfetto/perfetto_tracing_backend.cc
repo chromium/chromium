@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
@@ -583,7 +584,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (tokenizer_) {
       // Protobuf-format data.
-      auto packets = tokenizer_->Parse(data.data(), data.size());
+      auto packets = tokenizer_->Parse(data);
       if (!packets.empty())
         consumer_->OnTraceData(std::move(packets), /*has_more=*/true);
     } else {

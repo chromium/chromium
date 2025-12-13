@@ -20,6 +20,7 @@
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_bus.h"
 #include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +34,6 @@
 
 using testing::_;
 using testing::AnyNumber;
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 using testing::StrictMock;
@@ -139,9 +139,9 @@ class CastAudioManagerTest : public testing::Test {
     EXPECT_CALL(*mock_cma_backend_, Initialize()).WillOnce(Return(true));
 
     EXPECT_CALL(*mock_backend_factory_, CreateBackend(_))
-        .WillOnce(Invoke([this](const MediaPipelineDeviceParams&) {
+        .WillOnce([this](const MediaPipelineDeviceParams&) {
           return std::move(mock_cma_backend_);
-        }));
+        });
 #endif  // !BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(mock_backend_factory_.get(),
               audio_manager_->helper_.GetCmaBackendFactory());
@@ -189,7 +189,7 @@ TEST_F(CastAudioManagerTest, CanMakeStream) {
     EXPECT_CALL(*mock_cma_backend_, Start(_)).WillOnce(Return(true));
   }
   EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
   stream->Start(&mock_source_callback_);
   RunThreadsUntilIdle();
@@ -213,7 +213,7 @@ TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   // Only run the rest of the test if the device supports AC3.
   if (stream->Open()) {
     EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
-        .WillRepeatedly(Invoke(OnMoreData));
+        .WillRepeatedly(OnMoreData);
     EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
     stream->Start(&mock_source_callback_);
     RunThreadsUntilIdle();
@@ -236,7 +236,7 @@ TEST_F(CastAudioManagerTest, CanMakeDTSStream) {
   // Only run the rest of the test if the device supports DTS.
   if (stream->Open()) {
     EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
-        .WillRepeatedly(Invoke(OnMoreData));
+        .WillRepeatedly(OnMoreData);
     EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
     stream->Start(&mock_source_callback_);
     RunThreadsUntilIdle();
@@ -261,7 +261,7 @@ TEST_F(CastAudioManagerTest, DISABLED_CanMakeStreamProxy) {
     EXPECT_CALL(*mock_cma_backend_, Start(_)).WillOnce(Return(true));
   }
   EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
   stream->Start(&mock_source_callback_);
   RunThreadsUntilIdle();
@@ -286,7 +286,7 @@ TEST_F(CastAudioManagerTest, CanMakeMixerStream) {
     EXPECT_CALL(*mock_cma_backend_, Start(_)).WillOnce(Return(true));
   }
   EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
 
   stream->Start(&mock_source_callback_);
@@ -309,7 +309,7 @@ TEST_F(CastAudioManagerTest, CanMakeCommunicationsStream) {
   EXPECT_TRUE(stream->Open());
 
   EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
   task_environment_.RunUntilIdle();
 

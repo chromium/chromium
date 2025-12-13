@@ -33,7 +33,7 @@ message EnhancedCalendarLoggingData {
 }
 
 // The request to execute an Enhanced Calendar query.
-// Next ID: 7
+// Next ID: 8
 message EnhancedCalendarRequest {
   // The web page context used for generating the event. Context is expected to
   // contain calendar event dates or related information to populate the
@@ -54,6 +54,11 @@ message EnhancedCalendarRequest {
   // before and ends after), used to help locate the specific instance of the
   // selected text on a given webpage.
   string surrounding_text = 6 [features = { field_presence: IMPLICIT }];
+
+  // The user's locale. Format is a BCP 47 language code, e.g. "en-US". This
+  // will be used to help infer the format of the dates and times in the page
+  // context. If none is provided or if it is invalid, "en-US" will be used.
+  string user_locale = 7 [features = { field_presence: IMPLICIT }];
 
   reserved 1, 2;
 }

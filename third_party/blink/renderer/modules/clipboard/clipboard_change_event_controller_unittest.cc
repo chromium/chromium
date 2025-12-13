@@ -13,6 +13,9 @@ class ClipboardChangeEventTest : public ClipboardTestBase {};
 
 TEST_F(ClipboardChangeEventTest, ClipboardChangeEventFiresWhenFocused) {
   ExecutionContext* executionContext = GetFrame().DomWindow();
+  // Set the yet-unset optional in SystemClipboard as we will be triggering
+  // events artificially.
+  GetFrame().GetSystemClipboard()->OnClipboardDataChanged({"text/plain"}, 1);
 
   // Clipboardchange event requires a secure origin and page in focus to work.
   SetSecureOrigin(executionContext);
@@ -44,6 +47,9 @@ TEST_F(ClipboardChangeEventTest, ClipboardChangeEventFiresWhenFocused) {
 
 TEST_F(ClipboardChangeEventTest, ClipboardChangeEventNotFiredWhenNotFocused) {
   ExecutionContext* executionContext = GetFrame().DomWindow();
+  // Set the yet-unset optional in SystemClipboard as we will be triggering
+  // events artificially.
+  GetFrame().GetSystemClipboard()->OnClipboardDataChanged({"text/plain"}, 1);
 
   SetSecureOrigin(executionContext);
   SetPageFocus(false);

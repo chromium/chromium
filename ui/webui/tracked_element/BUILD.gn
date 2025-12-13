@@ -1,0 +1,41 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tracked_element") {
+  sources = [
+    "tracked_element_handler.cc",
+    "tracked_element_handler.h",
+    "tracked_element_web_ui.cc",
+    "tracked_element_web_ui.h",
+  ]
+
+  public_deps = [
+    "//content/public/browser",
+    "//ui/base/interaction",
+    "//ui/webui/resources/js/tracked_element:mojo_bindings",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/gfx/geometry",
+  ]
+}
+
+# These tests are included in unit_tests (//chrome/test:unit_tests) so that they
+# can depend on //content. They should not be included in ui_unittests.
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tracked_element_handler_unittest.cc" ]
+  deps = [
+    ":tracked_element",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base:test_support",
+    "//ui/views:test_support",
+    "//ui/views/controls/webview",
+  ]
+}

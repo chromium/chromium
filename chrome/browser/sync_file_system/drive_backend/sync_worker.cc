@@ -49,8 +49,7 @@ void InvokeIdleCallback(base::RepeatingClosure idle_callback,
 
 SyncWorker::SyncWorker(
     const base::FilePath& base_dir,
-    const base::WeakPtr<extensions::ExtensionRegistrar> extension_registrar,
-    const base::WeakPtr<extensions::ExtensionRegistry>& extension_registry,
+    const base::WeakPtr<content::BrowserContext>& browser_context,
     leveldb::Env* env_override)
     : base_dir_(base_dir),
       env_override_(env_override),
@@ -59,8 +58,7 @@ SyncWorker::SyncWorker(
       should_check_remote_change_(true),
       listing_remote_changes_(false),
       sync_enabled_(false),
-      extension_registrar_(extension_registrar),
-      extension_registry_(extension_registry) {
+      browser_context_(browser_context) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(base_dir_.IsAbsolute());
 }
@@ -91,7 +89,7 @@ void SyncWorker::RegisterOrigin(const GURL& origin,
     PostInitializeTask();
 
   std::unique_ptr<RegisterAppTask> task(
-      new RegisterAppTask(context_.get(), origin.host()));
+      new RegisterAppTask(context_.get(), origin.GetHost()));
   if (task->CanFinishImmediately()) {
     std::move(callback).Run(SYNC_STATUS_OK);
     return;
@@ -108,7 +106,7 @@ void SyncWorker::EnableOrigin(const GURL& origin, SyncStatusCallback callback) {
   task_manager_->ScheduleTask(
       FROM_HERE,
       base::BindOnce(&SyncWorker::DoEnableApp, weak_ptr_factory_.GetWeakPtr(),
-                     origin.host()),
+                     origin.GetHost()),
       SyncTaskManager::PRIORITY_HIGH, std::move(callback));
 }
 
@@ -119,7 +117,7 @@ void SyncWorker::DisableOrigin(const GURL& origin,
   task_manager_->ScheduleTask(
       FROM_HERE,
       base::BindOnce(&SyncWorker::DoDisableApp, weak_ptr_factory_.GetWeakPtr(),
-                     origin.host()),
+                     origin.GetHost()),
       SyncTaskManager::PRIORITY_HIGH, std::move(callback));
 }
 
@@ -128,10 +126,11 @@ void SyncWorker::UninstallOrigin(const GURL& origin,
                                  SyncStatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  task_manager_->ScheduleSyncTask(
-      FROM_HERE,
-      std::make_unique<UninstallAppTask>(context_.get(), origin.host(), flag),
-      SyncTaskManager::PRIORITY_HIGH, std::move(callback));
+  task_manager_->ScheduleSyncTask(FROM_HERE,
+                                  std::make_unique<UninstallAppTask>(
+                                      context_.get(), origin.GetHost(), flag),
+                                  SyncTaskManager::PRIORITY_HIGH,
+                                  std::move(callback));
 }
 
 void SyncWorker::ProcessRemoteChange(SyncFileCallback callback) {
@@ -363,24 +362,28 @@ void SyncWorker::UpdateRegisteredApps() {
   context_->GetUITaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &SyncWorker::QueryAppStatusOnUIThread, extension_registrar_,
-          extension_registry_, base::Owned(app_ids.release()), app_status,
+          &SyncWorker::QueryAppStatusOnUIThread, browser_context_,
+          base::Owned(app_ids.release()), app_status,
           RelayCallbackToTaskRunner(context_->GetWorkerTaskRunner(), FROM_HERE,
                                     std::move(callback))));
 }
 
-// TODO(crbug.com/402790810): Plumb in a WeakPtr<BrowserContext> and if it is
-// valid use it to look up ExtensionRegistrar and ExtensionRegistry.
 void SyncWorker::QueryAppStatusOnUIThread(
-    const base::WeakPtr<extensions::ExtensionRegistrar>& extension_registrar,
-    const base::WeakPtr<extensions::ExtensionRegistry>& extension_registry,
+    const base::WeakPtr<content::BrowserContext>& browser_context,
     const std::vector<std::string>* app_ids,
     AppStatusMap* status,
     base::OnceClosure callback) {
-  if (!extension_registrar.get() || !extension_registry.get()) {
+  if (!browser_context.get()) {
     std::move(callback).Run();
     return;
   }
+
+  // Both ExtensionRegistry and ExtensionRegistrar have lifetimes scoped to
+  // the `browser_context`.
+  auto* extension_registry =
+      extensions::ExtensionRegistry::Get(browser_context.get());
+  auto* extension_registrar =
+      extensions::ExtensionRegistrar::Get(browser_context.get());
 
   for (auto itr = app_ids->begin(); itr != app_ids->end(); ++itr) {
     const std::string& app_id = *itr;

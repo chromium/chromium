@@ -34,11 +34,10 @@ import androidx.core.content.res.ResourcesCompat;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.TerminationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -48,8 +47,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
-import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
-import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -64,10 +61,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.net.NetId;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -94,16 +88,6 @@ import java.util.Set;
 @NullMarked
 public class WarmupManager {
     private static final String TAG = "WarmupManager";
-
-    /**
-     * Observes spare WebContents deaths. In case of death, records stats, and cleanup the objects.
-     */
-    private class RenderProcessGoneObserver extends WebContentsObserver {
-        @Override
-        public void primaryMainFrameRenderProcessGone(@TerminationStatus int terminationStatus) {
-            destroySpareWebContentsInternal();
-        }
-    }
 
     /** Records stats, observes crashes, and cleans up spareTab object. */
     private class HiddenTabObserver extends EmptyTabObserver {
@@ -167,9 +151,6 @@ public class WarmupManager {
 
     private int mToolbarContainerId;
     private @Nullable ViewGroup mMainView;
-    @VisibleForTesting /*package*/ @Nullable WebContents mSpareWebContents;
-    private @Nullable RenderProcessGoneObserver mObserver;
-    private boolean mIsCctPrewarmTabEnabled;
 
     // Stores a prebuilt tab. To load a URL, this can be used if available instead of creating one
     // from scratch.
@@ -436,7 +417,7 @@ public class WarmupManager {
     @VisibleForTesting
     static Context applyContextOverrides(Context baseContext) {
         // Scale up the UI for the base Context on automotive
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             Configuration config = new Configuration();
             DisplayUtil.scaleUpConfigurationForAutomotive(baseContext, config);
             return baseContext.createConfigurationContext(config);
@@ -491,7 +472,8 @@ public class WarmupManager {
             ControlContainer controlContainer = mainView.findViewById(R.id.control_container);
 
             if (toolbarId != ActivityUtils.NO_RESOURCE_ID && controlContainer != null) {
-                controlContainer.initWithToolbar(toolbarId);
+                controlContainer.initWithToolbar(
+                        toolbarId, R.dimen.custom_tabs_control_container_height);
             }
             return mainView;
         } catch (InflateException e) {
@@ -667,31 +649,18 @@ public class WarmupManager {
      * @param url The url to be prefetched for future navigations.
      * @param usePrefetchProxy The flag whether the private prefetch proxy is used in requested
      *     prefetch.
-     * @param verifiedSourceOrigin The origin that prefetch is requested from. Currently, this is
-     *     always null.
+     * @param verifiedSourceOrigin The origin that prefetch is requested from.
      */
     public void startPrefetchFromCct(
             String url, boolean usePrefetchProxy, @Nullable String verifiedSourceOrigin) {
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.startPrefetchFromCct")) {
             ThreadUtils.assertOnUiThread();
-            if (!ChromeFeatureList.sPrefetchBrowserInitiatedTriggers.isEnabled()
-                    || !ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
-                Log.w(
-                        TAG,
-                        "Prefetch failed because PrefetchBrowserInitiatedTriggers and/or"
-                                + " CCTNavigationalPrefetch is not enabled.");
+            if (!ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
+                Log.w(TAG, "CCTNavigationalPrefetch is not enabled.");
                 return;
             }
 
-            WebContents webContents = null;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB)
-                    && mSpareTab != null) {
-                webContents = mSpareTab.getWebContents();
-            } else {
-                webContents = mSpareWebContents;
-            }
-
-            if (webContents == null) {
+            if (mSpareTab == null || mSpareTab.getWebContents() == null) {
                 Log.e(
                         TAG,
                         "Prefetch failed because spare WebContents is null. warmup() is required"
@@ -704,100 +673,9 @@ public class WarmupManager {
                 origin = Origin.create(new GURL(verifiedSourceOrigin));
             }
             WarmupManagerJni.get()
-                    .startPrefetchFromCct(webContents, gurl, usePrefetchProxy, origin);
+                    .startPrefetchFromCct(
+                            mSpareTab.getWebContents(), gurl, usePrefetchProxy, origin);
         }
-    }
-
-    /**
-     * Creates and initializes a spare WebContents, to be used in a subsequent navigation.
-     *
-     * <p>This creates a renderer that is suitable for any navigation. It can be picked up by any
-     * tab. Can be called multiple times, and must be called from the UI thread.
-     */
-    public void createSpareWebContents(Profile profile) {
-        try (TraceEvent e = TraceEvent.scoped("WarmupManager.createSpareWebContents")) {
-            ThreadUtils.assertOnUiThread();
-            if (!LibraryLoader.getInstance().isInitialized() || mSpareWebContents != null) return;
-
-            mSpareWebContents =
-                    WebContentsFactory.createWebContentsWithWarmRenderer(
-                            profile,
-                            /* initiallyHidden= */ true,
-                            AutofillClientProviderUtils.isAutofillEnabledForCct(profile),
-                            /* targetNetwork= */ NetId.INVALID);
-            mObserver = new RenderProcessGoneObserver();
-            mObserver.observe(mSpareWebContents);
-        }
-    }
-
-    /** Destroys the spare WebContents if there is one. */
-    public void destroySpareWebContents() {
-        try (TraceEvent e = TraceEvent.scoped("WarmupManager.destroySpareWebContents")) {
-            ThreadUtils.assertOnUiThread();
-            if (mSpareWebContents == null) return;
-            destroySpareWebContentsInternal();
-        }
-    }
-
-    /**
-     * Returns a spare WebContents or null, depending on the availability of one.
-     *
-     * @param targetsNetwork whether the activity/tab associated with this WebContents targets a
-     *     network (supported only by multi-network CCT, see @{link
-     *     BrowserServicesIntentDataProvider#getTargetNetwork).
-     * @return a WebContents, or null.
-     */
-    public @Nullable WebContents takeSpareWebContents(
-            boolean incognito, boolean initiallyHidden, boolean targetsNetwork) {
-        try (TraceEvent e = TraceEvent.scoped("WarmupManager.takeSpareWebContents")) {
-            ThreadUtils.assertOnUiThread();
-            if (incognito) return null;
-            // Spare WebContents are not supported for multi-network CCT. In this case it's better
-            // to always create WebContents from scratch, otherwise we might break the "WebContents
-            // associated with a CCT tab targeting a network will always have
-            // WebContents::GetTargetNetwork == that target network" invariant (see
-            // WebContentsImpl::CreateWithOpener for more info).
-            if (targetsNetwork) return null;
-            WebContents result = mSpareWebContents;
-            if (result == null) return null;
-            mSpareWebContents = null;
-            if (mObserver != null) {
-                mObserver.observe(null);
-            }
-            mObserver = null;
-            if (!initiallyHidden) result.updateWebContentsVisibility(Visibility.VISIBLE);
-            return result;
-        }
-    }
-
-    /**
-     * @return Whether a spare renderer is available.
-     */
-    public boolean hasSpareWebContents() {
-        return mSpareWebContents != null;
-    }
-
-    private void destroySpareWebContentsInternal() {
-        if (mObserver != null) {
-            mObserver.observe(null);
-        }
-        if (mSpareWebContents != null) {
-            mSpareWebContents.destroy();
-        }
-        mSpareWebContents = null;
-        mObserver = null;
-    }
-
-    // We do some cleanup on Activity teardown, so to avoid activating the experiment for all users
-    // regardless of whether they actually interact with the feature, cache the flag here.
-    // This only works if no non-test code calls
-    // ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB) directly.
-    public boolean isCctPrewarmTabFeatureEnabled(boolean activateExperiment) {
-        if (activateExperiment) {
-            mIsCctPrewarmTabEnabled =
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB);
-        }
-        return mIsCctPrewarmTabEnabled;
     }
 
     @NativeMethods

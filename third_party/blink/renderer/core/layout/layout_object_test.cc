@@ -128,17 +128,18 @@ TEST_F(LayoutObjectTest, OwnerNodeId) {
   DisplayItemClient* page_number =
       static_cast<LayoutObject*>(footer)->NextSibling();
 
-  EXPECT_EQ(3, root->OwnerNodeId(true));
-  EXPECT_EQ(3, root->OwnerNodeId(false));
+  const DOMNodeId root_node_id = DOMNodeIds::IdForNode(GetElementById("root"));
+  EXPECT_EQ(root_node_id, root->OwnerNodeId(true));
+  EXPECT_EQ(root_node_id, root->OwnerNodeId(false));
 
   EXPECT_EQ(SkPDF::NodeID::PaginationHeaderArtifact, header->OwnerNodeId(true));
-  EXPECT_EQ(4, header->OwnerNodeId(false));
+  EXPECT_EQ(root_node_id + 1, header->OwnerNodeId(false));
 
   EXPECT_EQ(SkPDF::NodeID::PaginationFooterArtifact, footer->OwnerNodeId(true));
-  EXPECT_EQ(5, footer->OwnerNodeId(false));
+  EXPECT_EQ(root_node_id + 2, footer->OwnerNodeId(false));
 
   EXPECT_EQ(SkPDF::NodeID::PaginationArtifact, page_number->OwnerNodeId(true));
-  EXPECT_EQ(6, page_number->OwnerNodeId(false));
+  EXPECT_EQ(root_node_id + 3, page_number->OwnerNodeId(false));
 }
 
 TEST_F(LayoutObjectTest, LayoutDecoratedNameCalledWithPositionedObject) {
@@ -1522,7 +1523,8 @@ TEST_F(LayoutObjectTest, LocalToAncestoRectViewIgnoreAncestorScroll) {
 
   LayoutObject* target = GetLayoutObjectByElementId("target");
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect rect(0, 0, 100, 100);
@@ -1582,7 +1584,8 @@ TEST_F(LayoutObjectTest,
   LayoutBoxModelObject* intermediate =
       To<LayoutBoxModelObject>(GetLayoutObjectByElementId("intermediate"));
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   intermediate->GetScrollableArea()->ScrollBy(ScrollOffset(0, 100),
                                               mojom::blink::ScrollType::kUser);
   UpdateAllLifecyclePhasesForTest();
@@ -1828,7 +1831,8 @@ TEST_F(LayoutObjectTest, ScrollOffsetMapping) {
   ASSERT_TRUE(scroller);
   scroller->scrollToForTesting(100, 200);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(10, 20), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(10, 20), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
   LayoutObject* inner = GetLayoutObjectByElementId("inner");
   ASSERT_TRUE(inner);

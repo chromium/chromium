@@ -7,9 +7,12 @@
 #include "base/notimplemented.h"
 #include "base/values.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "url/gurl.h"
@@ -24,7 +27,6 @@ namespace {
 constexpr char kNoActiveTab[] = "No active tab";
 constexpr char kInvalidArguments[] = "Invalid arguments";
 constexpr char kTabsNotImplemented[] = "chrome.tabs not implemented";
-constexpr char kWindowsNotImplemented[] = "chrome.windows not implemented";
 
 content::WebContents* GetActiveWebContents() {
   for (TabModel* tab_model : TabModelList::models()) {
@@ -51,88 +53,7 @@ api::tabs::Tab CreateTabObjectHelper(content::WebContents* contents,
                                            extension);
 }
 
-// Windows ---------------------------------------------------------------------
-
-ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
-  std::optional<windows::Create::Params> params =
-      windows::Create::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kWindowsNotImplemented));
-}
-
-ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
-  std::optional<windows::Update::Params> params =
-      windows::Update::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kWindowsNotImplemented));
-}
-
 // Tabs ------------------------------------------------------------------------
-
-ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
-  std::optional<tabs::Query::Params> params =
-      tabs::Query::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  NOTIMPLEMENTED() << "Using stub implementation";
-
-  // If a URL pattern is specified, return tabs that match it.
-  if (params->query_info.url) {
-    return GetTabsMatchingUrl(*params);
-  }
-
-  // Otherwise, return the active tab.
-  return GetActiveTab(*params);
-}
-
-ExtensionFunction::ResponseAction TabsQueryFunction::GetTabsMatchingUrl(
-    const api::tabs::Query::Params& params) {
-  // See TabsQueryFunction in tabs_api_non_android.cc for details.
-  std::vector<std::string> url_pattern_strings;
-  if (params.query_info.url->as_string) {
-    url_pattern_strings.push_back(*params.query_info.url->as_string);
-  } else if (params.query_info.url->as_strings) {
-    url_pattern_strings = *params.query_info.url->as_strings;
-  }
-  // It is OK to use URLPattern::SCHEME_ALL here because this function does
-  // not grant access to the content of the tabs, only to seeing their URLs
-  // and meta data.
-  URLPatternSet url_patterns;
-  std::string error;
-  if (!url_patterns.Populate(url_pattern_strings, URLPattern::SCHEME_ALL, true,
-                             &error)) {
-    return RespondNow(Error(std::move(error)));
-  }
-
-  // Return all tabs that match the URL pattern.
-  base::Value::List result;
-  for (TabModel* tab_model : TabModelList::models()) {
-    for (int i = 0; i < tab_model->GetTabCount(); ++i) {
-      auto* web_contents = tab_model->GetWebContentsAt(i);
-      if (!web_contents) {
-        continue;
-      }
-      if (url_patterns.MatchesURL(web_contents->GetVisibleURL())) {
-        api::tabs::Tab tab_object = CreateTabObjectHelper(
-            web_contents, extension(), source_context_type());
-        result.Append(tab_object.ToValue());
-      }
-    }
-  }
-  return RespondNow(WithArguments(std::move(result)));
-}
-
-ExtensionFunction::ResponseAction TabsQueryFunction::GetActiveTab(
-    const api::tabs::Query::Params& params) {
-  base::Value::List result;
-  auto* web_contents = GetActiveWebContents();
-  if (!web_contents) {
-    return RespondNow(Error(kNoActiveTab));
-  }
-  api::tabs::Tab tab_object =
-      CreateTabObjectHelper(web_contents, extension(), source_context_type());
-  result.Append(tab_object.ToValue());
-  return RespondNow(WithArguments(std::move(result)));
-}
 
 ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   std::optional<tabs::Create::Params> params =
@@ -161,8 +82,13 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
 
   // Kick off navigation. See `TabsUpdateFunction::UpdateURL` for how this is
   // done on Win/Mac/Linux.
-  content::NavigationController::LoadURLParams load_params(
-      GURL(*params->create_properties.url));
+  base::expected<GURL, std::string> url =
+      ExtensionTabUtil::PrepareURLForNavigation(*params->create_properties.url,
+                                                extension(), browser_context());
+  if (!url.has_value()) {
+    return RespondNow(Error(std::move(url.error())));
+  }
+  content::NavigationController::LoadURLParams load_params(*url);
   load_params.is_renderer_initiated = true;
   load_params.initiator_origin = extension()->origin();
   load_params.source_site_instance = content::SiteInstance::CreateForURL(
@@ -185,17 +111,6 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
                                    : NoArguments());
 }
 
-ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
-  std::optional<tabs::Duplicate::Params> params =
-      tabs::Duplicate::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
-ExtensionFunction::ResponseAction TabsGetCurrentFunction::Run() {
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   std::optional<tabs::Highlight::Params> params =
       tabs::Highlight::Params::Create(args());
@@ -205,34 +120,102 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
 
 TabsUpdateFunction::TabsUpdateFunction() = default;
 
+// The first half of this function is identical to tabs_api_non_android.cc.
+// The rest is simplified so that it can be supported on Android.
 ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   std::optional<tabs::Update::Params> params =
       tabs::Update::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
 
-ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
-  std::optional<tabs::Move::Params> params = tabs::Move::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
+  // Compute the tab ID if it was not provided. This is identical to
+  // tabs_api_non_android.cc.
+  int tab_id = -1;
+  content::WebContents* contents = nullptr;
+  if (!params->tab_id) {
+    WindowController* window_controller =
+        ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
+    if (!window_controller) {
+      return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
+    }
+    if (!ExtensionTabUtil::IsTabStripEditable()) {
+      return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+    }
+    contents = window_controller->GetActiveTab();
+    if (!contents) {
+      return RespondNow(Error(tabs_constants::kNoSelectedTabError));
+    }
+    tab_id = ExtensionTabUtil::GetTabId(contents);
+  } else {
+    tab_id = *params->tab_id;
+  }
 
-ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
-  std::optional<tabs::Reload::Params> params =
-      tabs::Reload::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
+  // Find the window, tab index, and web contents. This is identical to
+  // tabs_api_non_android.cc.
+  int tab_index = -1;
+  WindowController* window = nullptr;
+  std::string error;
+  if (!tabs_internal::GetTabById(tab_id, browser_context(),
+                                 include_incognito_information(), &window,
+                                 &contents, &tab_index, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
 
-TabsRemoveFunction::TabsRemoveFunction() = default;
-TabsRemoveFunction::~TabsRemoveFunction() = default;
+  if (DevToolsWindow::IsDevToolsWindow(contents)) {
+    return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
+  }
 
-ExtensionFunction::ResponseAction TabsRemoveFunction::Run() {
-  std::optional<tabs::Remove::Params> params =
-      tabs::Remove::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
+  // tabs_internal::GetTabById may return a null window for prerender tabs.
+  // This is identical to tabs_api_non_android.cc.
+  if (!window || !window->SupportsTabs()) {
+    return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
+  }
+
+  // Cache the web contents.
+  content::WebContents* original_contents = contents;
+
+  // Because this is a stub, the only parameter we update is the URL (and hence
+  // navigate to a new page). This is the most common usage in tests. For other
+  // properties, return an error.
+  if (params->update_properties.selected) {
+    return RespondNow(Error("Updating selected property not supported."));
+  }
+  if (params->update_properties.active) {
+    return RespondNow(Error("Updating active property not supported."));
+  }
+  if (params->update_properties.highlighted) {
+    return RespondNow(Error("Updating highlighted property not supported."));
+  }
+  if (params->update_properties.opener_tab_id) {
+    return RespondNow(Error("Updating opener_tab_id property not supported."));
+  }
+  if (params->update_properties.auto_discardable) {
+    return RespondNow(
+        Error("Updating auto_discardable property not supported."));
+  }
+  if (params->update_properties.muted) {
+    return RespondNow(Error("Updating muted property not supported."));
+  }
+  if (params->update_properties.pinned) {
+    return RespondNow(Error("Updating pinned property not supported."));
+  }
+
+  // Navigate the tab to a new location if the url is different.
+  if (params->update_properties.url) {
+    std::string updated_url = *params->update_properties.url;
+
+    // Get last committed or pending URL.
+    std::string current_url = contents->GetVisibleURL().is_valid()
+                                  ? contents->GetVisibleURL().spec()
+                                  : std::string();
+
+    // See tabs_api.cc for the implementation of UpdateURL().
+    if (!UpdateURL(original_contents, updated_url, tab_id, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+  }
+
+  // See tabs_api.cc for the implementation of GetResult().
+  return RespondNow(GetResult(original_contents));
 }
 
 ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
@@ -249,117 +232,12 @@ ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
   return RespondNow(Error(kTabsNotImplemented));
 }
 
-TabsCaptureVisibleTabFunction::TabsCaptureVisibleTabFunction() = default;
-
-ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(has_args());
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
-ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
-  std::optional<tabs::DetectLanguage::Params> params =
-      tabs::DetectLanguage::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
-ExecuteCodeInTabFunction::ExecuteCodeInTabFunction() = default;
-ExecuteCodeInTabFunction::~ExecuteCodeInTabFunction() = default;
-
-ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
-  NOTIMPLEMENTED();
-  return set_init_result(VALIDATION_FAILURE);
-}
-
-bool ExecuteCodeInTabFunction::ShouldInsertCSS() const {
-  return false;
-}
-
-bool ExecuteCodeInTabFunction::ShouldRemoveCSS() const {
-  return false;
-}
-
-bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-ScriptExecutor* ExecuteCodeInTabFunction::GetScriptExecutor(
-    std::string* error) {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
-bool ExecuteCodeInTabFunction::IsWebView() const {
-  return false;
-}
-
-int ExecuteCodeInTabFunction::GetRootFrameId() const {
-  NOTIMPLEMENTED();
-  return ExtensionApiFrameIdMap::kTopFrameId;
-}
-
-const GURL& ExecuteCodeInTabFunction::GetWebViewSrc() const {
-  NOTIMPLEMENTED();
-  return GURL::EmptyGURL();
-}
-
-bool TabsInsertCSSFunction::ShouldInsertCSS() const {
-  return true;
-}
-
-bool TabsRemoveCSSFunction::ShouldRemoveCSS() const {
-  return true;
-}
-
-ExtensionFunction::ResponseAction TabsSetZoomFunction::Run() {
-  std::optional<tabs::SetZoom::Params> params =
-      tabs::SetZoom::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
-ExtensionFunction::ResponseAction TabsGetZoomFunction::Run() {
-  std::optional<tabs::GetZoom::Params> params =
-      tabs::GetZoom::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
-ExtensionFunction::ResponseAction TabsSetZoomSettingsFunction::Run() {
-  std::optional<tabs::SetZoomSettings::Params> params =
-      tabs::SetZoomSettings::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
-ExtensionFunction::ResponseAction TabsGetZoomSettingsFunction::Run() {
-  std::optional<tabs::GetZoomSettings::Params> params =
-      tabs::GetZoomSettings::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 TabsDiscardFunction::TabsDiscardFunction() = default;
 TabsDiscardFunction::~TabsDiscardFunction() = default;
 
 ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
   std::optional<tabs::Discard::Params> params =
       tabs::Discard::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
-ExtensionFunction::ResponseAction TabsGoForwardFunction::Run() {
-  std::optional<tabs::GoForward::Params> params =
-      tabs::GoForward::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
-ExtensionFunction::ResponseAction TabsGoBackFunction::Run() {
-  std::optional<tabs::GoBack::Params> params =
-      tabs::GoBack::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   return RespondNow(Error(kTabsNotImplemented));
 }

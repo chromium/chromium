@@ -10,7 +10,7 @@
 #include <string>
 
 #include "ash/public/cpp/login_screen_model.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "third_party/skia/include/core/SkColor.h"

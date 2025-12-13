@@ -20,6 +20,10 @@
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
+#if BUILDFLAG(IS_LINUX)
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace device {
 
 namespace {
@@ -75,6 +79,13 @@ void DeviceServiceTestBase::SetUp() {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
       service_remote_.BindNewPipeAndPassReceiver());
+}
+
+void DeviceServiceTestBase::TearDown() {
+#if BUILDFLAG(IS_LINUX)
+  task_environment_.RunUntilIdle();
+  dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 void DeviceServiceTestBase::DestroyDeviceService() {

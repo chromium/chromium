@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -42,12 +41,24 @@ mojom::TextSafetyModelParamsPtr LoadTextSafetyParams(
                    base::File::FLAG_OPEN | base::File::FLAG_READ);
   }
   if (params.ts_paths) {
-    result->ts_assets = mojom::TextSafetyModelAssets::New();
-    result->ts_assets->data = base::File(
-        params.ts_paths->data, base::File::FLAG_OPEN | base::File::FLAG_READ);
-    result->ts_assets->sp_model =
-        base::File(params.ts_paths->sp_model,
-                   base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (params.ts_paths->sp_model.empty()) {
+      auto bs_assets = mojom::BertSafetyModelAssets::New();
+      bs_assets->model = base::File(
+          params.ts_paths->data, base::File::FLAG_OPEN | base::File::FLAG_READ);
+      auto bs_assets_union =
+          mojom::SafetyModelAssets::NewBsAssets(std::move(bs_assets));
+      result->safety_assets = std::move(bs_assets_union);
+    } else {
+      auto ts_assets = mojom::TextSafetyModelAssets::New();
+      ts_assets->data = base::File(
+          params.ts_paths->data, base::File::FLAG_OPEN | base::File::FLAG_READ);
+      ts_assets->sp_model =
+          base::File(params.ts_paths->sp_model,
+                     base::File::FLAG_OPEN | base::File::FLAG_READ);
+      auto ts_assets_union =
+          mojom::SafetyModelAssets::NewTsAssets(std::move(ts_assets));
+      result->safety_assets = std::move(ts_assets_union);
+    }
   }
   return result;
 }

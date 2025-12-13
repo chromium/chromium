@@ -61,7 +61,8 @@ class NodeDataDescriberUtilTest : public GraphTestHarness {
                   std::string_view json,
                   bool expect_empty_dict) {
     SCOPED_TRACE(::testing::Message() << msg << " " << json);
-    std::optional<base::Value> parsed_json = base::JSONReader::Read(json);
+    std::optional<base::Value> parsed_json =
+        base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(parsed_json.has_value());
     ASSERT_TRUE(parsed_json.value().is_dict());
     EXPECT_EQ(parsed_json.value().GetDict().empty(), expect_empty_dict);

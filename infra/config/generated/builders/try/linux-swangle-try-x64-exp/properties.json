@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-swangle-archive",
               "builder_group": "chromium.swangle",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -41,7 +40,8 @@
         }
       ],
       "retry_failed_shards": false,
-      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-swangle-try-x64-exp/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/linux-swangle-try-x64-exp/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

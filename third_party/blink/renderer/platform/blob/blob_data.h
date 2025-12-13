@@ -41,7 +41,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/gtest_prod_util.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -54,6 +53,10 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
+
+namespace base {
+class Time;
+}
 
 namespace blink {
 namespace mojom {
@@ -78,6 +81,7 @@ class PLATFORM_EXPORT RawData : public ThreadSafeRefCounted<RawData> {
     return base::AdoptRef(new RawData());
   }
 
+  base::span<const char> span() const { return data_; }
   const char* data() const { return data_.data(); }
   size_t size() const { return data_.size(); }
 

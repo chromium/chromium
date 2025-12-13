@@ -9,6 +9,7 @@
 
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -67,7 +68,9 @@ void UkmManager::RecordCompositorLatencyUKM(
     const CompositorFrameReporter::ProcessedBlinkBreakdown&
         processed_blink_breakdown,
     const CompositorFrameReporter::ProcessedVizBreakdown&
-        processed_viz_breakdown) const {
+        processed_viz_breakdown,
+    const CompositorFrameReporter::ProcessedTreesInVizBreakdown&
+        processed_trees_in_viz_breakdown) const {
   using StageType = CompositorFrameReporter::StageType;
 
   ukm::builders::Graphics_Smoothness_Latency builder(source_id_);
@@ -89,8 +92,12 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_STAGE(Commit);
       CASE_FOR_STAGE(EndCommitToActivation);
       CASE_FOR_STAGE(Activation);
+      // normal branch
       CASE_FOR_STAGE(EndActivateToSubmitCompositorFrame);
       CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame);
+      // trees-in-viz branch
+      CASE_FOR_STAGE(EndActivateToSubmitUpdateDisplayTree);
+      CASE_FOR_STAGE(SubmitUpdateDisplayTreeToPresentationCompositorFrame);
       CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
       case StageType::kStageTypeCount:
@@ -124,27 +131,88 @@ void UkmManager::RecordCompositorLatencyUKM(
     }
   }
 
-  // Record Viz breakdowns.
-  for (auto it = processed_viz_breakdown.CreateIterator(false); it.IsValid();
-       it.Advance()) {
-    switch (it.GetBreakdown()) {
+  bool trees_in_viz_mode = base::FeatureList::IsEnabled(features::kTreesInViz);
+
+  if (!trees_in_viz_mode) {
+    // Record Viz breakdowns.
+    for (auto it = processed_viz_breakdown.CreateIterator(false); it.IsValid();
+         it.Advance()) {
+      switch (it.GetBreakdown()) {
 #define CASE_FOR_VIZ_BREAKDOWN(name)                                      \
   case CompositorFrameReporter::VizBreakdown::k##name:                    \
     builder.SetSubmitCompositorFrameToPresentationCompositorFrame_##name( \
         it.GetDuration().InMicroseconds());                               \
     break;
-      CASE_FOR_VIZ_BREAKDOWN(SubmitToReceiveCompositorFrame);
-      CASE_FOR_VIZ_BREAKDOWN(ReceivedCompositorFrameToStartDraw);
-      CASE_FOR_VIZ_BREAKDOWN(StartDrawToSwapStart);
-      CASE_FOR_VIZ_BREAKDOWN(SwapStartToSwapEnd);
-      CASE_FOR_VIZ_BREAKDOWN(SwapEndToPresentationCompositorFrame);
-      CASE_FOR_VIZ_BREAKDOWN(SwapStartToBufferAvailable);
-      CASE_FOR_VIZ_BREAKDOWN(BufferAvailableToBufferReady);
-      CASE_FOR_VIZ_BREAKDOWN(BufferReadyToLatch);
-      CASE_FOR_VIZ_BREAKDOWN(LatchToSwapEnd);
+        CASE_FOR_VIZ_BREAKDOWN(SubmitToReceiveCompositorFrame);
+        CASE_FOR_VIZ_BREAKDOWN(ReceivedCompositorFrameToStartDraw);
+        CASE_FOR_VIZ_BREAKDOWN(StartDrawToSwapStart);
+        CASE_FOR_VIZ_BREAKDOWN(SwapStartToSwapEnd);
+        CASE_FOR_VIZ_BREAKDOWN(SwapEndToPresentationCompositorFrame);
+        CASE_FOR_VIZ_BREAKDOWN(SwapStartToBufferAvailable);
+        CASE_FOR_VIZ_BREAKDOWN(BufferAvailableToBufferReady);
+        CASE_FOR_VIZ_BREAKDOWN(BufferReadyToLatch);
+        CASE_FOR_VIZ_BREAKDOWN(LatchToSwapEnd);
 #undef CASE_FOR_VIZ_BREAKDOWN
-      case CompositorFrameReporter::VizBreakdown::kBreakdownCount:
-        NOTREACHED();
+        case CompositorFrameReporter::VizBreakdown::kBreakdownCount:
+          NOTREACHED();
+      }
+    }
+  } else {
+    // Record TreesInViz breakdowns
+    for (auto it = processed_trees_in_viz_breakdown.CreateIterator();
+         it.IsValid(); it.Advance()) {
+      switch (it.GetBreakdown()) {
+#define CASE_FOR_TREES_IN_VIZ_CC_BREAKDOWN(name)              \
+  case CompositorFrameReporter::TreesInVizBreakdown::k##name: \
+    builder.SetEndActivateToSubmitUpdateDisplayTree_##name(   \
+        it.GetDuration().InMicroseconds());                   \
+    break;
+        CASE_FOR_TREES_IN_VIZ_CC_BREAKDOWN(EndActivateToDrawLayers);
+        CASE_FOR_TREES_IN_VIZ_CC_BREAKDOWN(DrawLayersToSubmitUpdateDisplayTree);
+#undef CASE_FOR_TREES_IN_VIZ_CC_BREAKDOWN
+#define CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(name)                           \
+  case CompositorFrameReporter::TreesInVizBreakdown::k##name:               \
+    builder.SetSubmitUpdateDisplayTreeToPresentationCompositorFrame_##name( \
+        it.GetDuration().InMicroseconds());                                 \
+    break;
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(
+            SendUpdateDisplayTreeToReceiveUpdateDisplayTree);
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(
+            ReceiveUpdateDisplayTreeToStartPrepareToDraw);
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(
+            StartPrepareToDrawToStartDrawLayers);
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(
+            StartDrawLayersToSubmitCompositorFrame);
+#undef CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN
+        case CompositorFrameReporter::TreesInVizBreakdown::
+            kTreesInVizBreakdownCount:
+          NOTREACHED();
+      }
+    }
+    // Record Viz breakdowns under
+    // `SubmitUpdateDisplayTreeToPresentationCompositorFrame`
+    for (auto it = processed_viz_breakdown.CreateIterator(false); it.IsValid();
+         it.Advance()) {
+      switch (it.GetBreakdown()) {
+#define CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(name)                           \
+  case CompositorFrameReporter::VizBreakdown::k##name:                      \
+    builder.SetSubmitUpdateDisplayTreeToPresentationCompositorFrame_##name( \
+        it.GetDuration().InMicroseconds());                                 \
+    break;
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(SubmitToReceiveCompositorFrame);
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(ReceivedCompositorFrameToStartDraw);
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(StartDrawToSwapStart);
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(SwapStartToSwapEnd);
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(
+            SwapEndToPresentationCompositorFrame);
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(SwapStartToBufferAvailable);
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(BufferAvailableToBufferReady);
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(BufferReadyToLatch);
+        CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(LatchToSwapEnd);
+#undef CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN
+        case CompositorFrameReporter::VizBreakdown::kBreakdownCount:
+          NOTREACHED();
+      }
     }
   }
 
@@ -335,6 +403,9 @@ void UkmManager::RecordEventLatencyUKM(
           CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame,
                          SubmitCompositorFrame);
 #undef CASE_FOR_STAGE
+          case StageType::kEndActivateToSubmitUpdateDisplayTree:
+          case StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+            break;
           case StageType::kTotalLatency:
           case StageType::kStageTypeCount:
             NOTREACHED();
@@ -356,6 +427,9 @@ void UkmManager::RecordEventLatencyUKM(
           CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame,
                          SubmitCompositorFrame);
 #undef CASE_FOR_STAGE
+          case StageType::kEndActivateToSubmitUpdateDisplayTree:
+          case StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+            break;
           case StageType::kTotalLatency:
           case StageType::kStageTypeCount:
             NOTREACHED();
@@ -412,6 +486,9 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame);
         CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
+        case StageType::kEndActivateToSubmitUpdateDisplayTree:
+        case StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+          break;
         case StageType::kStageTypeCount:
           NOTREACHED();
       }
@@ -466,6 +543,8 @@ void UkmManager::RecordEventLatencyUKM(
           NOTREACHED();
       }
     }
+
+    // TODO(crbug.com/443785891): Record TreesInViz breakdowns.
 
     builder.Record(recorder_.get());
   }

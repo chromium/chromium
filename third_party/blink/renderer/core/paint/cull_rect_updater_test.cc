@@ -377,18 +377,21 @@ TEST_F(CullRectUpdaterTest, TallScrolledLayerCullRect) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, 4600), GetCullRect("target").Rect());
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 4000), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 4000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(0, 0, 800, 8600), GetCullRect("target").Rect());
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 4500), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 4500), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
   // Used the previous cull rect because the scroll amount is small.
   EXPECT_EQ(gfx::Rect(0, 0, 800, 8600), GetCullRect("target").Rect());
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 4600), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 4600), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
   // Used new cull rect.
   EXPECT_EQ(gfx::Rect(0, 600, 800, 8600), GetCullRect("target").Rect());

@@ -339,11 +339,13 @@ void FakeShillManagerClient::RequestScan(const std::string& type,
   // Trigger |callback| immediately to indicate that the scan started.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(callback));
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&FakeShillManagerClient::ScanCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), device_path),
-      interactive_delay_);
+  if (auto_complete_scan_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&FakeShillManagerClient::TriggerScanCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), device_path),
+        interactive_delay_);
+  }
 }
 
 void FakeShillManagerClient::EnableTechnology(const std::string& type,
@@ -782,6 +784,10 @@ void FakeShillManagerClient::DestroyP2PGroup(
 
 int FakeShillManagerClient::GetRecentlyDestroyedP2PGroupId() {
   return recent_destroyed_group_id;
+}
+
+void FakeShillManagerClient::SetAutoCompleteScan(bool auto_complete_scan) {
+  auto_complete_scan_ = auto_complete_scan;
 }
 
 void FakeShillManagerClient::DisconnectFromP2PGroup(
@@ -1670,8 +1676,9 @@ void FakeShillManagerClient::SetWifiServicesVisibleByDefault(
   wifi_services_visible_by_default_ = wifi_services_visible_by_default;
 }
 
-void FakeShillManagerClient::ScanCompleted(const std::string& device_path) {
-  VLOG(1) << "ScanCompleted: " << device_path;
+void FakeShillManagerClient::TriggerScanCompleted(
+    const std::string& device_path) {
+  VLOG(1) << "TriggerScanCompleted: " << device_path;
   if (!device_path.empty()) {
     ShillDeviceClient::Get()->GetTestInterface()->SetDeviceProperty(
         device_path, shill::kScanningProperty, base::Value(false),

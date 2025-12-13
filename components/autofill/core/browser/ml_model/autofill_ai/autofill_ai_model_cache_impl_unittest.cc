@@ -11,9 +11,11 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/proto/autofill_ai_model_cache.pb.h"
+#include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -226,12 +228,12 @@ TEST_F(AutofillAiModelCacheImplTest, GetFieldPredictions) {
   EXPECT_THAT(
       cache().GetFieldPredictions(form_signature),
       UnorderedElementsAre(
-          Pair(identifier1, FieldPrediction{.field_type = PASSPORT_NUMBER}),
-          Pair(identifier2,
-               FieldPrediction{.field_type = PASSPORT_ISSUING_COUNTRY}),
+          Pair(identifier1, FieldPrediction(PASSPORT_NUMBER)),
+          Pair(identifier2, FieldPrediction(PASSPORT_ISSUING_COUNTRY)),
           Pair(identifier3,
-               FieldPrediction{.field_type = PASSPORT_EXPIRATION_DATE,
-                               .format_string = u"DD.MM.YYYY"})));
+               FieldPrediction(PASSPORT_EXPIRATION_DATE,
+                               AutofillFormatString(u"DD.MM.YYYY",
+                                                    FormatString_Type_DATE)))));
 }
 
 // Tests that the cache handles invalid field types gracefully.
@@ -254,8 +256,7 @@ TEST_F(AutofillAiModelCacheImplTest, GetFieldPredictionsInvalidType) {
   cache().Update(form_signature, model_response, {identifier});
 
   EXPECT_THAT(cache().GetFieldPredictions(form_signature),
-              UnorderedElementsAre(Pair(
-                  identifier, FieldPrediction{.field_type = NO_SERVER_DATA})));
+              UnorderedElementsAre(Pair(identifier, FieldPrediction())));
 }
 
 // Tests that the cache returns an empty map if there is no cache entry for

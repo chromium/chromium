@@ -29,8 +29,8 @@ Element* ScrollTargetElement(Element* scroll_marker) {
 
 mojom::blink::ScrollAlignment GetAlignmentForScrollTarget(
     ScrollOrientation axis,
-    const LayoutBox* target_box) {
-  cc::ScrollSnapAlign snap = target_box->Style()->GetScrollSnapAlign();
+    const LayoutObject* target_object) {
+  cc::ScrollSnapAlign snap = target_object->Style()->GetScrollSnapAlign();
 
   cc::SnapAlignment x_snap_align =
       snap.alignment_inline == cc::SnapAlignment::kNone
@@ -47,7 +47,7 @@ mojom::blink::ScrollAlignment GetAlignmentForScrollTarget(
       scroll_into_view_util::SnapAlignmentToV8ScrollLogicalPosition(
           y_snap_align);
   return scroll_into_view_util::ResolveToPhysicalAlignment(
-      x_position, y_position, axis, *target_box->Style());
+      x_position, y_position, axis, *target_object->Style());
 }
 
 }  // namespace
@@ -58,8 +58,8 @@ std::optional<double> ScrollMarkerChooser::GetScrollTargetPosition(
   if (!target) {
     return std::nullopt;
   }
-  const LayoutBox* target_box = target->GetLayoutBox();
-  if (!target_box) {
+  const LayoutObject* target_object = target->GetLayoutObject();
+  if (!target_object) {
     return std::nullopt;
   }
   // TODO(sakhapov): Typically, we use the bounding box of the target box as the
@@ -72,11 +72,11 @@ std::optional<double> ScrollMarkerChooser::GetScrollTargetPosition(
   const LayoutObject* bounding_box_object =
       scroll_marker->IsScrollMarkerPseudoElement()
           ? scroll_marker->GetLayoutObject()
-          : target_box;
+          : target_object;
   CHECK(bounding_box_object);
   PhysicalBoxStrut scroll_margin =
-      target_box->Style() ? target_box->Style()->ScrollMarginStrut()
-                          : PhysicalBoxStrut();
+      target_object->Style() ? target_object->Style()->ScrollMarginStrut()
+                             : PhysicalBoxStrut();
   // Ignore sticky position offsets for the purposes of scrolling elements
   // into view. See https://www.w3.org/TR/css-position-3/#stickypos-scroll for
   // details
@@ -89,9 +89,9 @@ std::optional<double> ScrollMarkerChooser::GetScrollTargetPosition(
   rect_to_scroll.Expand(scroll_margin);
 
   mojom::blink::ScrollAlignment align_y =
-      GetAlignmentForScrollTarget(kVerticalScroll, target_box);
+      GetAlignmentForScrollTarget(kVerticalScroll, target_object);
   mojom::blink::ScrollAlignment align_x =
-      GetAlignmentForScrollTarget(kHorizontalScroll, target_box);
+      GetAlignmentForScrollTarget(kHorizontalScroll, target_object);
   ScrollOffset target_scroll_offset =
       scroll_into_view_util::GetScrollOffsetToExpose(
           *scrollable_area_, rect_to_scroll, scroll_margin, align_x, align_y);
@@ -181,6 +181,8 @@ HeapVector<Member<Element>> ScrollMarkerChooser::ChooseInternal() {
   HeapHashMap<Member<Element>, double> target_positions;
   HeapVector<Member<Element>> candidates =
       ComputeTargetPositions(target_positions);
+
+  DCHECK_EQ(target_positions.size(), candidates.size());
 
   // Sort the candidates because we don't have a guarantee about the order in
   // which we'll encounter them. If, for example, they are all at positions
@@ -303,20 +305,16 @@ void ScrollMarkerGroupData::RemoveFromFocusGroup(Element& scroll_marker) {
 }
 
 void ScrollMarkerGroupData::ClearFocusGroup() {
-  if (selected_marker_.Get() &&
-      selected_marker_->HasTagName(html_names::kATag)) {
-    SetSelected(nullptr);
-  }
-  pending_selected_marker_.Clear();
+  MaybeSetPendingSelectedMarker(nullptr, /*apply_snap_alignment=*/true);
   focus_group_.clear();
 }
 
-bool ScrollMarkerGroupData::SetSelected(Element* scroll_marker,
-                                        bool apply_snap_alignment) {
-  if (selected_marker_ == scroll_marker) {
-    return false;
+void ScrollMarkerGroupData::ApplyPendingScrollMarker() {
+  if (invalidation_state_ == InvalidationState::kClean) {
+    return;
   }
-  pending_selected_marker_.Clear();
+  invalidation_state_ = InvalidationState::kClean;
+  // Notify the currently selected marker before updating it.
   if (auto* scroll_marker_pseudo =
           DynamicTo<ScrollMarkerPseudoElement>(selected_marker_.Get())) {
     scroll_marker_pseudo->SetSelected(false);
@@ -325,28 +323,59 @@ bool ScrollMarkerGroupData::SetSelected(Element* scroll_marker,
     // new active marker.
     if (scroll_marker_pseudo->IsFocused()) {
       scroll_marker_pseudo->GetDocument().SetFocusedElement(
-          scroll_marker, FocusParams(SelectionBehaviorOnFocus::kNone,
-                                     mojom::blink::FocusType::kNone,
-                                     /*capabilities=*/nullptr));
+          pending_selected_marker_, FocusParams(SelectionBehaviorOnFocus::kNone,
+                                                mojom::blink::FocusType::kNone,
+                                                /*capabilities=*/nullptr));
     }
+  }
+  if (auto* anchor_scroll_marker =
+          DynamicTo<HTMLAnchorElement>(selected_marker_.Get())) {
+    anchor_scroll_marker->PseudoStateChanged(
+        CSSSelector::PseudoType::kPseudoTargetCurrent);
+  }
+  selected_marker_ = pending_selected_marker_;
+
+  // Notify the newly selected marker.
+  if (auto* scroll_marker_pseudo =
+          DynamicTo<ScrollMarkerPseudoElement>(selected_marker_.Get())) {
+    scroll_marker_pseudo->SetSelected(true, apply_snap_alignment_);
   }
   if (auto* anchor_scroll_marker =
           DynamicTo<HTMLAnchorElement>(selected_marker_.Get())) {
     anchor_scroll_marker->PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
   }
-  selected_marker_ = scroll_marker;
-  if (!scroll_marker) {
-    return true;
+  // Notify all scroll markers in the group that their
+  // :target-before and :target-after pseudo-elements have changed.
+  if (RuntimeEnabledFeatures::CSSScrollMarkerTargetBeforeAfterEnabled()) {
+    for (Element* scroll_marker : focus_group_) {
+      scroll_marker->PseudoStateChanged(CSSSelector::kPseudoTargetBefore);
+      scroll_marker->PseudoStateChanged(CSSSelector::kPseudoTargetAfter);
+    }
   }
-  if (auto* scroll_marker_pseudo =
-          DynamicTo<ScrollMarkerPseudoElement>(scroll_marker)) {
-    scroll_marker_pseudo->SetSelected(true, apply_snap_alignment);
+  apply_snap_alignment_ = false;
+  pending_selected_marker_.Clear();
+}
+
+void ScrollMarkerGroupData::MaybeSetPendingSelectedMarker(
+    Element* scroll_marker,
+    bool apply_snap_alignment) {
+  // Don't invalidate currently selected marker if it is pinned.
+  // However, if the pending selection is null, but we are pinned,
+  // we should update make pending scroll marker the selected one,
+  // as it means that we just received a targeted scroll, that got
+  // us pinned and is setting the pending scroll marker.
+  if (!selected_marker_is_pinned_) {
+    SetPendingSelectedMarker(scroll_marker, apply_snap_alignment);
   }
-  if (auto* anchor_scroll_marker =
-          DynamicTo<HTMLAnchorElement>(scroll_marker)) {
-    anchor_scroll_marker->PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
-  }
-  return true;
+}
+
+void ScrollMarkerGroupData::SetPendingSelectedMarker(
+    Element* scroll_marker,
+    bool apply_snap_alignment) {
+  invalidation_state_ = std::max(invalidation_state_,
+                                 InvalidationState::kNeedsActiveMarkerUpdate);
+  pending_selected_marker_ = scroll_marker;
+  apply_snap_alignment_ = apply_snap_alignment;
 }
 
 Element* ScrollMarkerGroupData::Selected() const {
@@ -514,13 +543,7 @@ void ScrollMarkerGroupData::UpdateSelectedScrollMarker() {
   if (selected_marker_is_pinned_) {
     return;
   }
-
-  if (Element* selected = ChooseMarkerRecursively()) {
-    // We avoid calling ScrollMarkerPseudoElement::SetSelected here so as not to
-    // cause style to be dirty right after layout, which might violate lifecycle
-    // expectations.
-    pending_selected_marker_ = selected;
-  }
+  invalidation_state_ = InvalidationState::kNeedsFullUpdate;
 }
 
 void ScrollMarkerGroupData::UpdateScrollableAreaSubscriptions(
@@ -558,19 +581,20 @@ Element* ScrollMarkerGroupData::FindPreviousScrollMarker(
   return nullptr;
 }
 
-bool ScrollMarkerGroupData::UpdateSnapshotInternal() {
-  if (pending_selected_marker_) {
-    return SetSelected(pending_selected_marker_);
+bool ScrollMarkerGroupData::UpdateSnapshot() {
+  if (invalidation_state_ == InvalidationState::kNeedsFullUpdate) {
+    if (Element* selected = ChooseMarkerRecursively()) {
+      // We avoid calling ScrollMarkerPseudoElement::SetSelected here so as not
+      // to cause style to be dirty right after layout, which might violate
+      // lifecycle expectations.
+      MaybeSetPendingSelectedMarker(selected, /*apply_snap_alignment=*/true);
+    }
+  }
+  if (invalidation_state_ >= InvalidationState::kNeedsActiveMarkerUpdate) {
+    ApplyPendingScrollMarker();
+    return true;
   }
   return false;
-}
-
-void ScrollMarkerGroupData::UpdateSnapshot() {
-  UpdateSnapshotInternal();
-}
-
-bool ScrollMarkerGroupData::ValidateSnapshot() {
-  return !UpdateSnapshotInternal();
 }
 
 bool ScrollMarkerGroupData::ShouldScheduleNextService() {
@@ -581,7 +605,7 @@ void ScrollMarkerGroupData::Trace(Visitor* v) const {
   v->Trace(selected_marker_);
   v->Trace(pending_selected_marker_);
   v->Trace(focus_group_);
-  ScrollSnapshotClient::Trace(v);
+  PostLayoutSnapshotClient::Trace(v);
   ElementRareDataField::Trace(v);
 }
 

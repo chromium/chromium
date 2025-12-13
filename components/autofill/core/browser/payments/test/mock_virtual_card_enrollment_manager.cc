@@ -4,11 +4,14 @@
 
 #include "components/autofill/core/browser/payments/test/mock_virtual_card_enrollment_manager.h"
 
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+
 namespace autofill {
 
 MockVirtualCardEnrollmentManager::MockVirtualCardEnrollmentManager(
     PaymentsDataManager* payments_data_manager,
-    payments::TestPaymentsNetworkInterface* payments_network_interface,
+    payments::MultipleRequestPaymentsNetworkInterface*
+        payments_network_interface,
     TestAutofillClient* autofill_client)
     : TestVirtualCardEnrollmentManager(payments_data_manager,
                                        payments_network_interface,

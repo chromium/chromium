@@ -56,18 +56,15 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
 
   // Apply the specified transform to the indcated image.
   static scoped_refptr<StaticBitmapImage> Apply(
-      FlushReason,
       scoped_refptr<StaticBitmapImage> image,
       const Params& params);
 
   // Create a copy of the input image, with a newly created backing.
   static scoped_refptr<StaticBitmapImage> Clone(
-      FlushReason,
       scoped_refptr<StaticBitmapImage> image);
 
   // Convert `image` to the specified color space.
   static scoped_refptr<StaticBitmapImage> ConvertToColorSpace(
-      FlushReason,
       scoped_refptr<StaticBitmapImage> image,
       sk_sp<SkColorSpace> color_space);
 
@@ -82,7 +79,6 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
   // Apply the specified transform by using a blit. The blit may be done on the
   // GPU or may be done in software. The result is always premultiplied.
   static scoped_refptr<StaticBitmapImage> ApplyWithBlit(
-      FlushReason,
       scoped_refptr<StaticBitmapImage> image,
       const Params& params);
 };

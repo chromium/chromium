@@ -6,9 +6,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/download/download_ui_enterprise_util.h"
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/offline_items_collection/core/fail_state.h"
 #include "components/vector_icons/vector_icons.h"
@@ -176,6 +177,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInterrupted(
       warning_summary_ = l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_TOO_BIG);
       return;
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
       if (enterprise_connectors::ShouldPromptReviewForDownload(
@@ -516,6 +518,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       return;
   }

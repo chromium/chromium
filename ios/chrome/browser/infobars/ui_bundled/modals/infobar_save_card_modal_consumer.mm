@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_consumer.h"
 
+NSString* const kCardCvcPrefKey = @"cardCvc";
 NSString* const kCardholderNamePrefKey = @"cardholderName";
 NSString* const kCardIssuerIconNamePrefKey = @"cardIssuerIconName";
 NSString* const kCardNetworkPrefKey = @"cardNetwork";

@@ -240,7 +240,7 @@ AuthenticationExtensionsClientInputsFromJSON(
 
 }  // namespace
 
-WTF::String WebAuthnBase64UrlEncode(DOMArrayPiece buffer) {
+String WebAuthnBase64UrlEncode(DOMArrayPiece buffer) {
   // Base64URLEncode always pads, so we strip trailing '='.
   String encoded = Base64URLEncode(buffer.ByteSpan());
   unsigned padding_start = encoded.length();

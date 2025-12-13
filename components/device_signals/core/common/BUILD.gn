@@ -10,12 +10,14 @@ static_library("common") {
     "cached_signal.h",
     "common_types.h",
     "platform_utils.h",
+    "platform_wrapper.h",
     "signals_constants.h",
   ]
 
   sources = [
     "common_types.cc",
     "platform_utils.cc",
+    "platform_wrapper.cc",
     "signals_constants.cc",
   ]
 
@@ -34,15 +36,16 @@ static_library("common") {
     ]
   }
 
-  if (is_mac || is_linux) {
+  if (is_mac || is_linux || is_chromeos) {
     sources += [ "posix/platform_utils_posix.cc" ]
   }
 
   if (is_mac) {
     sources += [ "mac/platform_utils_mac.mm" ]
+    deps += [ ":features" ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     if (use_glib) {
       deps += [ "//ui/base/glib" ]
     }
@@ -54,6 +57,10 @@ static_library("common") {
   if (use_gio) {
     configs += [ "//build/linux:gio_config" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("features") {
@@ -62,4 +69,38 @@ source_set("features") {
   sources = [ "signals_features.cc" ]
 
   public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = []
+  deps = []
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "platform_utils_unittest.cc" ]
+
+    deps += [
+      ":common",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public = [ "scoped_platform_wrapper.h" ]
+
+  sources = [ "scoped_platform_wrapper.cc" ]
+
+  public_deps = [
+    ":common",
+    "//base",
+    "//testing/gmock",
+  ]
 }

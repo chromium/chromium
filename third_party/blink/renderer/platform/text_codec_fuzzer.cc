@@ -67,7 +67,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       codec->Decode(byte_span, flush_behavior, stop_on_error, saw_error);
 
   // Treat as blink 8-bit string (latin1).
-  if (size % sizeof(LChar) == 0) {
+  if (size % sizeof(blink::LChar) == 0) {
     std::unique_ptr<blink::TextCodec> lchar_codec = NewTextCodec(encoding);
     lchar_codec->Encode(byte_span, unencodable_handling);
   }

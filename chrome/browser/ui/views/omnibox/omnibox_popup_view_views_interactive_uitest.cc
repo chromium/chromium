@@ -4,11 +4,12 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views_test.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/widget/widget_utils.h"
 
 // Check that the location bar background (and the background of the textfield
@@ -18,9 +19,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
                        PopupMatchesLocationBarBackground) {
   // In dark mode the omnibox focused and unfocused colors are the same, which
   // makes this test fail; see comments below.
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->GetNativeTheme()
-      ->set_use_dark_colors(false);
+  ui::MockOsSettingsProvider os_settings_provider;  // Forces light mode.
 
   // Start with the Omnibox unfocused.
   omnibox_view()->GetFocusManager()->ClearFocus();
@@ -57,19 +56,17 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
                        ClosePopupOnInactiveAreaClick) {
-  if (!base::FeatureList::IsEnabled(
-          features::kCloseOmniboxPopupOnInactiveAreaClick)) {
-    return;
-  }
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ui::test::EventGenerator event_generator(
       views::GetRootWindow(browser_view->GetWidget()),
       browser_view->GetNativeWindow());
   CreatePopupForTestQuery();
-  event_generator.MoveMouseTo(
-      browser_view->tabstrip()->tab_at(0)->GetBoundsInScreen().CenterPoint());
+  event_generator.MoveMouseTo(browser_view->tab_strip_view()
+                                  ->GetTabAnchorViewAt(0)
+                                  ->GetBoundsInScreen()
+                                  .CenterPoint());
   event_generator.ClickLeftButton();
   EXPECT_TRUE(omnibox_view()->HasFocus());
   EXPECT_FALSE(omnibox_view()->GetText().empty());
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
 }

@@ -8,7 +8,9 @@
 
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
@@ -26,8 +28,7 @@ bool ChromeGWSPageLoadMetricsObserver::IsFromNewTabPage(
   auto origin = start_instance->GetSiteURL();
 
   GURL ntp_url(chrome::kChromeUINewTabPageURL);
-  return ntp_url.scheme_piece() == origin.scheme_piece() &&
-         ntp_url.host_piece() == origin.host_piece();
+  return ntp_url.scheme() == origin.scheme() && ntp_url.host() == origin.host();
 }
 
 bool ChromeGWSPageLoadMetricsObserver::IsBrowserStartupComplete() {
@@ -40,4 +41,22 @@ bool ChromeGWSPageLoadMetricsObserver::IsIncognitoProfile() const {
     return profile->IsIncognitoProfile();
   }
   return false;
+}
+
+bool ChromeGWSPageLoadMetricsObserver::IsSignedIn(
+    content::BrowserContext* browser_context) const {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  return identity_manager &&
+         !identity_manager->GetAccountsWithRefreshTokens().empty();
+}
+
+content::BrowserContext*
+ChromeGWSPageLoadMetricsObserver::GetOriginalBrowserContext() {
+  if (Profile* profile = Profile::FromBrowserContext(
+          GetDelegate().GetWebContents()->GetBrowserContext())) {
+    return profile->GetOriginalProfile();
+  }
+  return nullptr;
 }

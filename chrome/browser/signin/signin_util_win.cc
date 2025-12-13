@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
@@ -29,17 +30,21 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/about_signin_internals.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace signin_util {
@@ -48,6 +53,13 @@ namespace {
 
 constexpr signin_metrics::AccessPoint kCredentialsProviderAccessPointWin =
     signin_metrics::AccessPoint::kMachineLogon;
+
+signin::ConsentLevel GetConsentLevel() {
+  return base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos)
+             ? signin::ConsentLevel::kSignin
+             : signin::ConsentLevel::kSync;
+}
 
 std::unique_ptr<TurnSyncOnHelper::Delegate>*
 GetTurnSyncOnHelperDelegateForTestingStorage() {
@@ -72,6 +84,32 @@ std::string DecryptRefreshToken(const std::string& cipher_text) {
                             output.cbData);
   ::LocalFree(output.pbData);
   return refresh_token;
+}
+
+// Shows the history sync promo. Called after a browser window is available.
+void ShowHistorySyncPromo(const CoreAccountId& account_id,
+                          Profile* profile,
+                          Browser* browser) {
+  if (!browser) {
+    // Chrome failed to open a browser.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+  CHECK_EQ(browser->profile(), profile);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  HistorySyncOptinService* history_sync_optin_service =
+      HistorySyncOptinServiceFactory::GetForProfile(profile);
+  CHECK(history_sync_optin_service);
+
+  AccountInfo extended_account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+
+  history_sync_optin_service->StartHistorySyncOptinFlow(
+      extended_account_info,
+      std::make_unique<HistorySyncOptinServiceDefaultDelegate>(),
+      kCredentialsProviderAccessPointWin);
 }
 
 // Finish the process of import credentials.  This is either called directly
@@ -104,17 +142,29 @@ void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
   }
 }
 
+// Helper to run |callback| either immediately if a browser exists for
+// |profile|, or schedules it to run once a browser is added.
+void RunOnBrowserReady(Profile* profile,
+                       base::OnceCallback<void(Browser*)> callback) {
+  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  if (browser) {
+    std::move(callback).Run(browser);
+  } else {
+    // If no active browser exists yet, this profile is in the process of
+    // being created. Wait for the browser to be created.
+    // BrowserAddedForProfileObserver deletes itself when done.
+    new profiles::BrowserAddedForProfileObserver(profile, std::move(callback));
+  }
+}
+
 // Start the process of importing credentials from the credential provider given
-// that all the required information is available.  The process depends on
-// having a browser window for the profile.  If a browser window exists the
-// profile be signed in and sync will be starting up.  If not, the profile will
-// be still be signed in but sync will be started once the browser window is
-// ready.
+// that all the required information is available. Signs in the profile, unless
+// it is performing a reauth.
 void ImportCredentialsFromProvider(Profile* profile,
                                    const std::wstring& gaia_id,
                                    const std::wstring& email,
                                    const std::string& refresh_token,
-                                   bool turn_on_sync) {
+                                   bool is_reauth) {
   // For debugging purposes, record that the credentials for this profile
   // came from a credential provider.
   AboutSigninInternals* signin_internals =
@@ -132,21 +182,29 @@ void ImportCredentialsFromProvider(Profile* profile,
           signin_metrics::SourceForRefreshTokenOperation::
               kMachineLogon_CredentialProvider);
 
-  if (turn_on_sync) {
+  if (!is_reauth) {
     identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
         account_id, signin::ConsentLevel::kSignin,
         kCredentialsProviderAccessPointWin);
 
-    Browser* browser = chrome::FindLastActiveWithProfile(profile);
-    if (browser) {
-      FinishImportCredentialsFromProvider(account_id, profile, browser);
-    } else {
-      // If no active browser exists yet, this profile is in the process of
-      // being created.  Wait for the browser to be created before finishing the
-      // sign in.  This object deletes itself when done.
-      new profiles::BrowserAddedForProfileObserver(
-          profile, base::BindOnce(&FinishImportCredentialsFromProvider,
-                                  account_id, profile));
+    const bool kReplaceSyncPromos = base::FeatureList::IsEnabled(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+    const bool kUnoPhase2FollowUp =
+        base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp);
+
+    if (kReplaceSyncPromos && kUnoPhase2FollowUp) {
+      // UNO Phase 2 Follow Up enabled: Show the new History Sync promo.
+      RunOnBrowserReady(
+          profile, base::BindOnce(&ShowHistorySyncPromo, account_id, profile));
+    } else if (kReplaceSyncPromos && !kUnoPhase2FollowUp) {
+      // UNO enabled, but the Phase 2 Follow Up is not: Do nothing.
+      // No promo is shown in this configuration.
+    } else {  // !kReplaceSyncPromos
+      // Legacy behavior: Finish importing credentials, showing the old sync
+      // promo.
+      RunOnBrowserReady(profile,
+                        base::BindOnce(&FinishImportCredentialsFromProvider,
+                                       account_id, profile));
     }
   }
 
@@ -190,12 +248,12 @@ void ExtractCredentialProviderUser(std::wstring* cred_provider_gaia_id,
 }
 
 // Attempt to sign in with a credentials from a system installed credential
-// provider if available.  If |auth_gaia_id| is not empty then the system
+// provider if available.  If `auth_gaia_id` is not empty then the system
 // credential must be for the same account.  Starts the process to turn on DICE
-// only if |turn_on_sync| is true.
+// only if `is_reauth` is false.
 bool TrySigninWithCredentialProvider(Profile* profile,
                                      const GaiaId& auth_gaia_id,
-                                     bool turn_on_sync) {
+                                     bool is_reauth) {
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER, credential_provider::kRegHkcuAccountsPath,
                KEY_READ) != ERROR_SUCCESS) {
@@ -246,7 +304,7 @@ bool TrySigninWithCredentialProvider(Profile* profile,
     if (!refresh_token.empty()) {
       reauth_attempted = true;
       ImportCredentialsFromProvider(profile, gaia_id, email, refresh_token,
-                                    turn_on_sync);
+                                    is_reauth);
     }
   }
 
@@ -305,7 +363,8 @@ void SigninWithCredentialProviderIfPossible(Profile* profile) {
   // Chrome doesn't allow signing into current profile if the same user is
   // signed in another profile.
   if (!CanOfferSignin(profile, GaiaId(base::WideToUTF8(cred_provider_gaia_id)),
-                      base::WideToUTF8(cred_provider_email))
+                      base::WideToUTF8(cred_provider_email),
+                      /*allow_account_from_other_profile=*/false)
            .IsOk() ||
       IsGCPWUsedInOtherProfile(profile)) {
     return;
@@ -313,13 +372,12 @@ void SigninWithCredentialProviderIfPossible(Profile* profile) {
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   GaiaId gaia_id;
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    gaia_id =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-            .gaia;
+  if (identity_manager->HasPrimaryAccount(GetConsentLevel())) {
+    gaia_id = identity_manager->GetPrimaryAccountInfo(GetConsentLevel()).gaia;
   }
 
-  TrySigninWithCredentialProvider(profile, gaia_id, gaia_id.empty());
+  TrySigninWithCredentialProvider(profile, gaia_id,
+                                  /*is_reauth=*/!gaia_id.empty());
 }
 
 bool ReauthWithCredentialProviderIfPossible(Profile* profile) {
@@ -331,16 +389,15 @@ bool ReauthWithCredentialProviderIfPossible(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (!(profile->GetPrefs()->GetBoolean(
             prefs::kSignedInWithCredentialProvider) &&
-        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+        identity_manager->HasPrimaryAccount(GetConsentLevel()) &&
         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-            identity_manager->GetPrimaryAccountId(
-                signin::ConsentLevel::kSync)))) {
+            identity_manager->GetPrimaryAccountId(GetConsentLevel())))) {
     return false;
   }
 
   const GaiaId gaia_id =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync).gaia;
-  return TrySigninWithCredentialProvider(profile, gaia_id, false);
+      identity_manager->GetPrimaryAccountInfo(GetConsentLevel()).gaia;
+  return TrySigninWithCredentialProvider(profile, gaia_id, /*is_reauth=*/true);
 }
 
 }  // namespace signin_util

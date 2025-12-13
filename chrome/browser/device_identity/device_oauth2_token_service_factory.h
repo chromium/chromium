@@ -13,6 +13,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 class DeviceOAuth2TokenService;
 
 class DeviceOAuth2TokenServiceFactory {
@@ -30,7 +34,8 @@ class DeviceOAuth2TokenServiceFactory {
   // available (local state, url loader and CrosSettings).
   static void Initialize(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService* local_state);
+      PrefService* local_state,
+      os_crypt_async::OSCryptAsync* os_crypt_async);
 
   // Called by `ChromeBrowserMainPartsAsh` in order to shutdown the
   // DeviceOAuth2TokenService instance and cancel all in-flight requests before

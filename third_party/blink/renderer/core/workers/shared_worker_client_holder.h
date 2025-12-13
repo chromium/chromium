@@ -34,7 +34,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_client.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_connector.mojom-blink.h"
@@ -81,7 +80,6 @@ class CORE_EXPORT SharedWorkerClientHolder final
                mojo::PendingRemote<mojom::blink::BlobURLToken>,
                mojom::blink::WorkerOptionsPtr options,
                mojom::blink::SharedWorkerSameSiteCookies same_site_cookies,
-               ukm::SourceId client_ukm_source_id,
                const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
                    connector_override,
                bool extended_lifetime);

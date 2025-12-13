@@ -68,6 +68,16 @@ WmShadowControllerDelegate::WmShadowControllerDelegate() = default;
 
 WmShadowControllerDelegate::~WmShadowControllerDelegate() = default;
 
+bool WmShadowControllerDelegate::ShouldObserveWindow(
+    const aura::Window* window) {
+  // On ChromeOS, Containers (which has no delegate with unknown type) and
+  // embedded windows do not need Shadow.  Other windows will be checked when a
+  // window is added to tree, or its property changes.
+  return ((window->delegate() ||
+           window->GetType() != aura::client::WINDOW_TYPE_UNKNOWN) &&
+          window->GetType() != aura::client::WINDOW_TYPE_CONTROL);
+}
+
 bool WmShadowControllerDelegate::ShouldShowShadowForWindow(
     const aura::Window* window) {
   // Hide the shadow if it is one of the splitscreen snapped windows.

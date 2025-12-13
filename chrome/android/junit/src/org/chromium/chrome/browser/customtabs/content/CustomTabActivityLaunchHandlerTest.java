@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
@@ -47,12 +46,7 @@ import java.util.Objects;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({
-    ChromeFeatureList.CCT_EARLY_NAV,
-    ChromeFeatureList.CCT_PREWARM_TAB,
-    ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER,
-    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT_NAME
-})
+@Features.EnableFeatures({ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER})
 public class CustomTabActivityLaunchHandlerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -83,6 +77,7 @@ public class CustomTabActivityLaunchHandlerTest {
         clearInvocations(env.tabFromFactory);
         when(env.intentDataProvider.getActivityType())
                 .thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(env.intentDataProvider.getClientPackageName()).thenReturn("test.package.name");
     }
 
     private void doTestLaunchHandler(
@@ -105,6 +100,7 @@ public class CustomTabActivityLaunchHandlerTest {
         CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
         when(dataProvider.getSession()).thenReturn(env.session);
         when(dataProvider.getUrlToLoad()).thenReturn(OTHER_URL);
+        when(dataProvider.getClientPackageName()).thenReturn("test.package.name");
         return dataProvider;
     }
 

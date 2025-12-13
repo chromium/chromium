@@ -9,6 +9,8 @@ assert(enable_glic)
 source_set("test_support") {
   testonly = true
   sources = [
+    "glic_api_test.cc",
+    "glic_api_test.h",
     "glic_test_environment.cc",
     "glic_test_environment.h",
     "glic_test_util.cc",
@@ -19,14 +21,19 @@ source_set("test_support") {
     "interactive_test_util.h",
     "mock_glic_window_controller.cc",
     "mock_glic_window_controller.h",
+    "mock_local_hotkey_panel.cc",
+    "mock_local_hotkey_panel.h",
     "non_interactive_glic_test.cc",
     "non_interactive_glic_test.h",
   ]
   deps = [
+    "//chrome/browser/actor",
+    "//chrome/browser/actor/ui",
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic/fre",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tabs:glic",
     "//components/signin/public/identity_manager:test_support",
     "//ui/events:test_support",
   ]

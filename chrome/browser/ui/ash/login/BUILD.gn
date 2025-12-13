@@ -58,7 +58,6 @@ static_library("login") {
     "//chrome/browser/ash/login/oobe_quick_start",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/tpm",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/ash/keyboard",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus/session_manager",
@@ -100,6 +99,7 @@ static_library("login") {
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode/arcvm_app",
+    "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/optin",
@@ -107,6 +107,7 @@ static_library("login") {
     "//chrome/browser/ash/base",
     "//chrome/browser/ash/boot_times_recorder",
     "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/ash/certificate_provider",
     "//chrome/browser/ash/child_accounts/parent_access_code",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login",
@@ -141,7 +142,6 @@ static_library("login") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/osauth/public",
-    "//chromeos/ash/components/settings",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/timezone",
     "//components/captive_portal/core",
@@ -218,7 +218,9 @@ static_library("test_support") {
   deps = [
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/login",
+    "//chrome/test:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
   ]
 }
 

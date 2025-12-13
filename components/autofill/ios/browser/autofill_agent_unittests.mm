@@ -192,7 +192,7 @@ class AutofillAgentTests : public web::WebTest {
   // frames.
   std::unique_ptr<autofill::TestAutofillClientIOS> client_;
   web::FakeWebState fake_web_state_;
-  raw_ptr<web::FakeWebFrame> fake_main_frame_ = nullptr;
+  raw_ptr<web::FakeWebFrame, DanglingUntriaged> fake_main_frame_ = nullptr;
   raw_ptr<web::FakeWebFramesManager> fake_web_frames_manager_ = nullptr;
   AutofillAgent* autofill_agent_;
   autofill::MockPasswordAutofillAgentDelegate delegate_mock_;
@@ -589,15 +589,10 @@ TEST_F(AutofillAgentTests, showAutofillPopup_PlusAddresses) {
   __block BOOL completion_handler_called = NO;
   testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
 
-  const std::string createSuggestionText = "create";
   const std::string fillExistingSuggestionText = "existing";
-  std::vector<autofill::Suggestion> autofillSuggestions = {
-      autofill::Suggestion(createSuggestionText, "",
-                           autofill::Suggestion::Icon::kNoIcon,
-                           autofill::SuggestionType::kCreateNewPlusAddress),
-      autofill::Suggestion(fillExistingSuggestionText, "",
-                           autofill::Suggestion::Icon::kNoIcon,
-                           autofill::SuggestionType::kFillExistingPlusAddress)};
+  std::vector<autofill::Suggestion> autofillSuggestions = {autofill::Suggestion(
+      fillExistingSuggestionText, "", autofill::Suggestion::Icon::kNoIcon,
+      autofill::SuggestionType::kFillExistingPlusAddress)};
 
   // Completion handler to retrieve suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
@@ -622,15 +617,11 @@ TEST_F(AutofillAgentTests, showAutofillPopup_PlusAddresses) {
 
   // The plus address suggestions should be handled by the conversion to
   // `FormSuggestion` objects.
-  EXPECT_EQ(2U, completion_handler_suggestions.count);
-  EXPECT_EQ(SuggestionType::kCreateNewPlusAddress,
-            completion_handler_suggestions[0].type);
-  EXPECT_NSEQ(base::SysUTF8ToNSString(createSuggestionText),
-              completion_handler_suggestions[0].value);
+  EXPECT_EQ(1U, completion_handler_suggestions.count);
   EXPECT_EQ(autofill::SuggestionType::kFillExistingPlusAddress,
-            completion_handler_suggestions[1].type);
+            completion_handler_suggestions[0].type);
   EXPECT_NSEQ(base::SysUTF8ToNSString(fillExistingSuggestionText),
-              completion_handler_suggestions[1].value);
+              completion_handler_suggestions[0].value);
 }
 
 // Tests that for credit cards, a custom icon is preferred over the default

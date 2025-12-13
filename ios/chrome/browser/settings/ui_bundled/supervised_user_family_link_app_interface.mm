@@ -147,6 +147,7 @@ class TestFamilyLinkSettingsStateHelper {
 + (void)triggerSyncServiceRefresh {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   SyncServiceFactory::GetForProfile(profile)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown,
       syncer::DataTypeSet::All());
 }
 

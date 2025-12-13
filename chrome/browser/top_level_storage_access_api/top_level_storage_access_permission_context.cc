@@ -24,6 +24,7 @@
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/schemeful_site.h"
@@ -40,6 +41,10 @@ namespace {
 void RecordOutcomeSample(TopLevelStorageAccessRequestOutcome outcome) {
   base::UmaHistogramEnumeration("API.TopLevelStorageAccess.RequestOutcome",
                                 outcome);
+}
+
+bool IsNonAllowSetting(const ContentSettingPatternSource& setting) {
+  return setting.GetContentSetting() != CONTENT_SETTING_ALLOW;
 }
 
 }  // namespace
@@ -73,7 +78,9 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
                              "primary top-level browsing contexts.");
     RecordOutcomeSample(
         TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
-    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -87,7 +94,9 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     }
     RecordOutcomeSample(
         TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
-    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -207,8 +216,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
 
   RecordOutcomeSample(outcome);
 
-  UpdateTabContext(request_data.id, request_data.requesting_origin,
-                   decision == PermissionDecision::kAllow);
+  UpdateTabContext(request_data, decision == PermissionDecision::kAllow);
 
   if (!persist) {
     auto status = blink::mojom::PermissionStatus::ASK;
@@ -218,7 +226,8 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
                    ? blink::mojom::PermissionStatus::GRANTED
                    : blink::mojom::PermissionStatus::DENIED;
     }
-    std::move(callback).Run(status);
+    std::move(callback).Run(content::PermissionResult(
+        status, content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -253,6 +262,10 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
   ContentSettingsForOneType storage_access_grants =
       settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
+  // The network service only cares about "granted" settings, so we don't bother
+  // to send any others.
+  std::erase_if(top_level_grants, IsNonAllowSetting);
+  std::erase_if(storage_access_grants, IsNonAllowSetting);
 
   // TODO(crbug.com/40638427): Ensure that this update of settings doesn't
   // cause a double update with
@@ -267,7 +280,9 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
                              ->GetCookieManagerForBrowserProcess();
   auto barrier = base::BarrierClosure(
       2, base::BindOnce(std::move(callback),
-                        blink::mojom::PermissionStatus::GRANTED));
+                        content::PermissionResult(
+                            blink::mojom::PermissionStatus::GRANTED,
+                            content::PermissionStatusSource::UNSPECIFIED)));
   cookie_manager->SetContentSettings(ContentSettingsType::STORAGE_ACCESS,
                                      storage_access_grants, barrier);
   cookie_manager->SetContentSettings(

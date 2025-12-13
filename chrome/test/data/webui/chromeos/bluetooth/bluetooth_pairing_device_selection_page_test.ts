@@ -88,7 +88,7 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
 
     assertEquals(
         deviceSelectionPage.i18n('bluetoothNoAvailableDevices'),
-        getDeviceListTitle()!.textContent!.trim());
+        getDeviceListTitle()!.textContent.trim());
 
     const deviceId = '12//345&6789';
     const device = createDefaultBluetoothDevice(
@@ -110,7 +110,7 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     assertEquals(deviceList!.items!.length, 1);
     assertEquals(
         deviceSelectionPage.i18n('bluetoothAvailableDevices'),
-        getDeviceListTitle()!.textContent!.trim());
+        getDeviceListTitle()!.textContent.trim());
 
     let nodeList = getDeviceListItems();
     assertTrue(!!nodeList.length);
@@ -144,7 +144,7 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     assertFalse(!!getDeviceList());
     assertEquals(
         deviceSelectionPage.i18n('bluetoothAvailableDevices'),
-        getDeviceListTitle()!.textContent!.trim());
+        getDeviceListTitle()!.textContent.trim());
 
     // since device is turned off device pairing fails and devicePendingPairing
     // becomes null.
@@ -154,7 +154,7 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     assertFalse(!!getDeviceList());
     assertEquals(
         deviceSelectionPage.i18n('bluetoothNoAvailableDevices'),
-        getDeviceListTitle()!.textContent!.trim());
+        getDeviceListTitle()!.textContent.trim());
 
     // Disable Bluetooth.
     deviceSelectionPage.isBluetoothEnabled = false;
@@ -166,7 +166,7 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     assertFalse(!!getDeviceList());
     assertEquals(
         deviceSelectionPage.i18n('bluetoothDisabled'),
-        getDeviceListTitle()!.textContent!.trim());
+        getDeviceListTitle()!.textContent.trim());
   });
 
   test('Last selected item is focused', async function() {

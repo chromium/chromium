@@ -7,7 +7,6 @@
 #include <optional>
 #include <string_view>
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ref.h"

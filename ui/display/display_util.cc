@@ -4,6 +4,7 @@
 
 #include "ui/display/display_util.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -48,7 +49,7 @@ void DisplayUtil::DisplayToScreenInfo(ScreenInfo* screen_info,
 
   // TODO(crbug.com/1194700 and crbug.com/1182855): Use cross-process screen
   // info caches, not local-process info, for child frames and Mac's shim.
-  auto* screen = Screen::GetScreen();
+  auto* screen = Screen::Get();
   // Some tests are run with no Screen initialized.
   screen_info->is_extended = screen && screen->GetNumDisplays() > 1;
   screen_info->is_primary =
@@ -67,7 +68,7 @@ void DisplayUtil::GetDefaultScreenInfo(ScreenInfo* screen_info) {
 void DisplayUtil::GetNativeViewScreenInfo(ScreenInfo* screen_info,
                                           gfx::NativeView native_view) {
   // Some tests are run with no Screen initialized.
-  Screen* screen = Screen::GetScreen();
+  Screen* screen = Screen::Get();
   if (!screen) {
     *screen_info = ScreenInfo();
     return;
@@ -139,7 +140,7 @@ mojom::ScreenOrientation DisplayUtil::GetOrientationTypeForDesktop(
 uint32_t DisplayUtil::GetAudioFormats() {
   // Audio passthrough is only supported with a single display. If multiple
   // displays are attached, audio passthrough will not be enabled.
-  Screen* screen = Screen::GetScreen();
+  Screen* screen = Screen::Get();
   if (screen) {
     auto display = screen->GetAllDisplays();
     if (display.size() == 1) {

@@ -240,6 +240,12 @@
       <message name="IDS_READALOUD_PLAY" desc="Accessibility string for the 'Listen to this page' play button.">
         Play
       </message>
+      <message name="IDS_READALOUD_PREVIOUS" desc="Accessibility string for the button that moves to previous article.">
+        Move to previous
+      </message>
+      <message name="IDS_READALOUD_NEXT" desc="Accessibility string for the button that moves to next article.">
+        Move to next
+      </message>
       <message name="IDS_READALOUD_PAUSE" desc="Accessibility string for the 'Listen to this page' pause button.">
         Pause
       </message>

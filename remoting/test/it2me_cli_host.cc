@@ -87,7 +87,8 @@ void It2MeCliHost::Start() {
 }
 
 void It2MeCliHost::PostMessageFromNativeHost(const std::string& message) {
-  auto message_dict = base::JSONReader::ReadDict(message);
+  auto message_dict =
+      base::JSONReader::ReadDict(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!message_dict) {
     OnProtocolBroken("Message is not a dictionary");
     return;
@@ -143,12 +144,11 @@ void It2MeCliHost::CloseChannel(const std::string& error_message) {
 
 void It2MeCliHost::SendMessageToHost(const std::string& type,
                                      base::Value::Dict params) {
-  std::string message_json;
   params.Set(kMessageType, type);
-  base::JSONWriter::Write(params, &message_json);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&It2MeCliHost::DoSendMessage,
-                                weak_factory_.GetWeakPtr(), message_json));
+      FROM_HERE,
+      base::BindOnce(&It2MeCliHost::DoSendMessage, weak_factory_.GetWeakPtr(),
+                     base::WriteJson(params).value_or("")));
 }
 
 void It2MeCliHost::DoSendMessage(const std::string& json) {

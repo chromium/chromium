@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_mediator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/i18n/message_formatter.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -22,12 +23,14 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_exporter.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
+#import "ios/chrome/common/credential_provider/passkey_model_observer_bridge.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -56,6 +59,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 }  // namespace
 
 @interface PasswordSettingsMediator () <IdentityManagerObserverBridgeDelegate,
+                                        PasskeyModelObserverDelegate,
                                         PasswordAutoFillStatusObserver,
                                         PasswordExporterDelegate,
                                         PrefObserverDelegate,
@@ -71,6 +75,12 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
   // Service which gives us a view on users' saved passwords.
   raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
+
+  // Provides access to passkeys stored in user's account.
+  raw_ptr<webauthn::PasskeyModel> _passkeyModel;
+
+  // Observer for the PasskeyModel.
+  std::unique_ptr<PasskeyModelObserverBridge> _passkeyObserverBridge;
 
   // Allows reading and writing user preferences.
   raw_ptr<PrefService> _prefService;
@@ -115,6 +125,9 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   // Whether or not there are any passwords saved.
   BOOL _hasSavedPasswords;
 
+  // Whether or not there are any passkeys saved.
+  BOOL _hasSavedPasskeys;
+
   // Whether or not the password exporter is ready to be activated.
   BOOL _exporterIsReady;
 }
@@ -123,6 +136,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
        initWithReauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
               savedPasswordsPresenter:
                   (password_manager::SavedPasswordsPresenter*)passwordPresenter
+                         passkeyModel:(webauthn::PasskeyModel*)passkeyModel
     bulkMovePasswordsToAccountHandler:
         (id<BulkMoveLocalPasswordsToAccountHandler>)
             bulkMovePasswordsToAccountHandler
@@ -143,6 +157,12 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
         std::make_unique<SavedPasswordsPresenterObserverBridge>(
             self, _savedPasswordsPresenter);
     _savedPasswordsPresenter->Init();
+
+    _passkeyModel = passkeyModel;
+    CHECK(_passkeyModel);
+    _passkeyObserverBridge =
+        std::make_unique<PasskeyModelObserverBridge>(self, _passkeyModel.get());
+
     _bulkMovePasswordsToAccountHandler = bulkMovePasswordsToAccountHandler;
     _exportHandler = exportHandler;
     _prefService = prefService;
@@ -172,11 +192,16 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
 - (void)setConsumer:(id<PasswordSettingsConsumer>)consumer {
   _consumer = consumer;
+  if (!_consumer) {
+    return;
+  }
+
   // Now that the consumer is set, ensure that the consumer starts out with the
   // correct initial value for `canExportPasswords` or else the export button
   // will not behave correctly on load.
   _exporterIsReady = _passwordExporter.exportState == ExportState::IDLE;
   [self savedPasswordsDidChange];
+  [self passkeysDidChange];
 
   [self.consumer setSavingPasswordsEnabled:_prefService->GetBoolean(
                                                kCredentialsEnableService)
@@ -226,7 +251,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   _savedPasswordsPresenter->DeleteAllData(base::DoNothing());
 }
 
-- (void)userDidStartExportFlow {
+- (void)userDidStartExportFlow:(UIWindow*)window {
   std::vector<CredentialUIEntry> passwords =
       _savedPasswordsPresenter->GetSavedPasswords();
   [_passwordExporter startExportFlow:passwords];
@@ -245,12 +270,17 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   DCHECK(_passwordsPresenterObserver);
   _savedPasswordsPresenter->RemoveObserver(_passwordsPresenterObserver.get());
   _passwordsPresenterObserver.reset();
+  _passkeyObserverBridge.reset();
+  _passkeyModel = nullptr;
   [[PasswordAutoFillStatusManager sharedManager] removeObserver:self];
   _prefObserverBridge.reset();
   _prefChangeRegistrar.reset();
-
   _identityManagerObserver.reset();
   _syncObserver.reset();
+  _savedPasswordsPresenter = nullptr;
+  _prefService = nullptr;
+  _syncService = nullptr;
+  _trustedVaultClientBackend = nullptr;
 }
 
 - (CredentialCounts)passwordAndPasskeyCounts {
@@ -417,6 +447,22 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   // TODO(crbug.com/430876032): Update GPM Pin section properly.
 }
 
+#pragma mark - PasskeyModelObserverDelegate
+
+- (void)passkeyModelDidChange {
+  [self passkeysDidChange];
+}
+
+- (void)passkeyModelIsReady:(webauthn::PasskeyModel*)passkeyModel {
+  [self passkeysDidChange];
+}
+
+- (void)passKeyModelShuttingDown:(webauthn::PasskeyModel*)passkeyModel {
+  _passkeyObserverBridge.reset();
+  _passkeyModel = nullptr;
+  [self passkeysDidChange];
+}
+
 #pragma mark - Private
 
 // Returns the on-device encryption state according to the sync service.
@@ -445,14 +491,15 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
 // Pushes the current state of the exporter to the consumer.
 - (void)pushExportStateToConsumer {
-  [self.consumer setCanExportPasswords:_hasSavedPasswords && _exporterIsReady];
+  BOOL hasExportableData =
+      _hasSavedPasswords || (_hasSavedPasskeys && CredentialExchangeEnabled());
+  [self.consumer setCanExportCredentials:hasExportableData && _exporterIsReady];
 }
 
 // Computes the amount of local passwords and passes that on to the consumer.
 - (void)updateShowBulkMovePasswordsToAccount {
   [self.consumer setCanBulkMove:password_manager::features_util::
-                                    IsAccountStorageEnabled(_prefService,
-                                                            _syncService)
+                                    IsAccountStorageEnabled(_syncService)
             localPasswordsCount:[self computeLocalPasswordsCount]];
 }
 
@@ -526,6 +573,16 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
       base::BindOnce(^(const std::vector<std::vector<uint8_t>>& keys) {
         [weakConsumer setCanChangeGPMPin:!keys.empty()];
       }));
+}
+
+// Called when the PasskeyModel changes or becomes ready.
+- (void)passkeysDidChange {
+  _hasSavedPasskeys =
+      !_passkeyModel
+           ->GetPasskeys(webauthn::PasskeyModel::AnyRp{},
+                         webauthn::PasskeyModel::ShadowedCredentials::kExclude)
+           .empty();
+  [self pushExportStateToConsumer];
 }
 
 @end

@@ -85,7 +85,8 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
 
         List<MessageState> messageQueue = mMessageQueues.get(scopeKey);
         if (messageQueue == null) {
-            mMessageQueues.put(scopeKey, messageQueue = new ArrayList<>());
+            messageQueue = new ArrayList<>();
+            mMessageQueues.put(scopeKey, messageQueue);
             mScopeChangeController.firstMessageEnqueued(scopeKey);
         }
 

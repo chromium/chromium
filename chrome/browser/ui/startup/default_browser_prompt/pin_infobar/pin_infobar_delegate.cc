@@ -6,19 +6,37 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
-#include "chrome/browser/win/taskbar_manager.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/installer/util/install_util.h"
-#include "chrome/installer/util/shell_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/win/taskbar_manager.h"
+#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/shell_util.h"
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace default_browser {
+
+namespace {
+
+void RecordUserInteractionHistogram(PinInfoBarUserInteraction interaction) {
+  base::UmaHistogramEnumeration("DefaultBrowser.PinInfoBar.UserInteraction",
+                                interaction);
+}
+
+}  // namespace
 
 // static
 infobars::InfoBar* PinInfoBarDelegate::Create(
@@ -26,6 +44,12 @@ infobars::InfoBar* PinInfoBarDelegate::Create(
   CHECK(infobar_manager);
   return infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(std::make_unique<PinInfoBarDelegate>()));
+}
+
+PinInfoBarDelegate::~PinInfoBarDelegate() {
+  if (!action_taken_) {
+    RecordUserInteractionHistogram(PinInfoBarUserInteraction::kIgnored);
+  }
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier PinInfoBarDelegate::GetIdentifier()
@@ -39,11 +63,19 @@ const gfx::VectorIcon& PinInfoBarDelegate::GetVectorIcon() const {
 }
 
 std::u16string PinInfoBarDelegate::GetMessageText() const {
+#if BUILDFLAG(IS_WIN)
   return l10n_util::GetStringUTF16(IDS_PIN_INFOBAR_TEXT);
+#elif BUILDFLAG(IS_MAC)
+  return l10n_util::GetStringUTF16(IDS_PIN_INFOBAR_DOCK_TEXT);
+#endif
 }
 
 std::u16string PinInfoBarDelegate::GetButtonLabel(InfoBarButton button) const {
+#if BUILDFLAG(IS_WIN)
   return l10n_util::GetStringUTF16(IDS_PIN_INFOBAR_BUTTON);
+#elif BUILDFLAG(IS_MAC)
+  return l10n_util::GetStringUTF16(IDS_PIN_INFOBAR_DOCK_BUTTON);
+#endif
 }
 
 int PinInfoBarDelegate::GetButtons() const {
@@ -51,15 +83,26 @@ int PinInfoBarDelegate::GetButtons() const {
 }
 
 bool PinInfoBarDelegate::Accept() {
+  action_taken_ = true;
+  RecordUserInteractionHistogram(PinInfoBarUserInteraction::kAccepted);
+
   // Pin Chrome to taskbar.
-  // TODO(crbug.com/420960161): record a metric for the taskbar pin result.
+#if BUILDFLAG(IS_WIN)
   browser_util::PinAppToTaskbar(
       ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+      browser_util::PinAppToTaskbarChannel::kPinToTaskbarInfoBar,
       base::DoNothing());
+#elif BUILDFLAG(IS_MAC)
+  PinChromeToDock();
+#endif
 
-  // TODO(crbug.com/420960161): record a metric for whether the user accepted,
-  // dismissed, or ignored the infobar.
   return ConfirmInfoBarDelegate::Accept();
+}
+
+void PinInfoBarDelegate::InfoBarDismissed() {
+  action_taken_ = true;
+  RecordUserInteractionHistogram(PinInfoBarUserInteraction::kDismissed);
+  ConfirmInfoBarDelegate::InfoBarDismissed();
 }
 
 }  // namespace default_browser

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours;
 
 import android.content.Context;
 
@@ -88,9 +87,7 @@ public class AuxiliarySearchMultiDataControllerImpl extends AuxiliarySearchContr
 
         mAuxiliarySearchTopSiteProviderBridge = auxiliarySearchTopSiteProviderBridge;
         mExpectDonating = true;
-        mHistoryTtlMillis =
-                TimeUnit.HOURS.toMillis(
-                        sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours.getValue());
+        mHistoryTtlMillis = TimeUnit.HOURS.toMillis(AuxiliarySearchDonor.HISTORY_CONTENT_TTL_HOURS);
         mActivityLifecycleDispatcherSet = new HashSet<>();
     }
 

@@ -70,12 +70,11 @@ ClipboardReadWritePermissionContext::GetContentSettingStatusInternal(
 }
 
 void ClipboardReadWritePermissionContext::UpdateTabContext(
-    const PermissionRequestID& id,
-    const GURL& requesting_frame,
+    const PermissionRequestData& request_data,
     bool allowed) {
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          id.global_render_frame_host_id());
+          request_data.id.global_render_frame_host_id());
   if (!content_settings)
     return;
 

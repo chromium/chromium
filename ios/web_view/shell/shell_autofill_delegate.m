@@ -16,9 +16,26 @@
 // Risk data loader.
 @property(nonatomic, strong) ShellRiskDataLoader* riskDataLoader;
 
+// Autofill progress dialog
+@property(nonatomic, weak) UIAlertController* autofillProgressDialog;
+
 // Returns an action for a suggestion.
 - (UIAlertAction*)actionForSuggestion:(CWVAutofillSuggestion*)suggestion
                               atIndex:(NSInteger)index;
+
+// A structure to hold the title and message strings used to present an
+// autofill-related progress dialog (e.g., for card verification).
+// This struct is used as the return type for methods that dynamically determine
+// the appropriate user-facing text for various progress states.
+typedef struct {
+  NSString* title;
+  NSString* message;
+} AutofillDialogText;
+
+// Returns an array contaning the appropriate title and message for the given
+// `CWVAutofillProgressDialogType`
+- (AutofillDialogText)titleAndMessageForAutofillProgressDialogWithType:
+    (CWVAutofillProgressDialogType)type;
 
 @end
 
@@ -119,7 +136,8 @@
 - (void)autofillController:(CWVAutofillController*)autofillController
      didSubmitFormWithName:(NSString*)formName
                    frameID:(NSString*)frameID
-             userInitiated:(BOOL)userInitiated {
+             userInitiated:(BOOL)userInitiated
+            perfectFilling:(BOOL)perfectFilling {
   // Not implemented.
 }
 
@@ -367,6 +385,57 @@
   NSLog(@"User logged in with an existing password");
 }
 
+- (void)autofillController:(CWVAutofillController*)autofillController
+    showProgressDialogOfType:(CWVAutofillProgressDialogType)type
+                cancelAction:(ProceduralBlock)cancelAction {
+  AutofillDialogText dialogText =
+      [self titleAndMessageForAutofillProgressDialogWithType:type];
+
+  UIAlertController* alertController =
+      [UIAlertController alertControllerWithTitle:dialogText.title
+                                          message:dialogText.message
+                                   preferredStyle:UIAlertControllerStyleAlert];
+
+  UIAlertAction* cancelActionUI =
+      [UIAlertAction actionWithTitle:@"Cancel"
+                               style:UIAlertActionStyleCancel
+                             handler:^(UIAlertAction* action) {
+                               if (cancelAction) {
+                                 cancelAction();
+                               }
+                             }];
+  [alertController addAction:cancelActionUI];
+
+  self.autofillProgressDialog = alertController;
+
+  [[self anyKeyWindow].rootViewController presentViewController:alertController
+                                                       animated:YES
+                                                     completion:nil];
+}
+
+- (void)autofillController:(CWVAutofillController*)autofillController
+    closeProgressDialogWithConfirmation:(BOOL)showConfirmation
+                             completion:(ProceduralBlock)completion {
+  if (!self.autofillProgressDialog) {
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  if (showConfirmation) {
+    // handle showing confirmation before dismissing.
+  }
+
+  [self.autofillProgressDialog dismissViewControllerAnimated:YES
+                                                  completion:^{
+                                                    if (completion) {
+                                                      completion();
+                                                    }
+                                                  }];
+  self.autofillProgressDialog = nil;
+}
+
 #pragma mark - Private Methods
 
 - (UIAlertAction*)actionForSuggestion:(CWVAutofillSuggestion*)suggestion
@@ -388,6 +457,39 @@
                                       completionHandler:nil];
                                   [[self anyKeyWindow] endEditing:YES];
                                 }];
+}
+
+- (AutofillDialogText)titleAndMessageForAutofillProgressDialogWithType:
+    (CWVAutofillProgressDialogType)type {
+  AutofillDialogText dialogText;
+
+  switch (type) {
+    case CWVAutofillProgressDialogTypeVirtualCardUnmask:
+    case CWVAutofillProgressDialogTypeServerCardUnmask:
+      dialogText.title = @"Verifying card...";
+
+      dialogText.message =
+          (type == CWVAutofillProgressDialogTypeVirtualCardUnmask)
+              ? @"Checking your card details."
+              : @"Verifying your card details";
+      break;
+    case CWVAutofillProgressDialogTypeCardInfoRetrievalEnrolledUnmask:
+      dialogText.title = @"Retrieving Card Info...";
+      break;
+    case CWVAutofillProgressDialogTypeIbanUnmask:
+    case CWVAutofillProgressDialogType3DSFetchVCN:
+    case CWVAutofillProgressDialogTypeBNPLFetchVCN:
+    case CWVAutofillProgressDialogTypeBNPLAmountExtraction:
+    case CWVAutofillProgressDialogTypeUnspecified:
+      dialogText.title = @"Processing...";
+      dialogText.message = @"Please wait.";
+      break;
+    default:
+      NSAssert(NO, @"Unhandled CWVAutofillProgressDialogType: %ld", (long)type);
+      break;
+  }
+
+  return dialogText;
 }
 
 #pragma mark - Private

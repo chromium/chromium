@@ -216,15 +216,6 @@ bool PrefetchURLLoaderServiceContext::IsValidCrossOriginPrefetch(
     return false;
   }
 
-  // If the PrefetchPrivacyChanges feature is enabled, the request's redirect
-  // mode must be |kError|.
-  if (base::FeatureList::IsEnabled(blink::features::kPrefetchPrivacyChanges) &&
-      resource_request.redirect_mode != network::mojom::RedirectMode::kError) {
-    loader_factory_receivers_->ReportBadMessage(
-        "Prefetch/IsValidCrossOrigin: wrong redirect mode");
-    return false;
-  }
-
   // This prefetch request must not be able to reuse restricted prefetches from
   // the prefetch cache. This is because it is possible that another origin
   // prefetched the same resource, which should only be reused for top-level

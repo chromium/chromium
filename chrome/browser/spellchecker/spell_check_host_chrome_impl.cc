@@ -186,27 +186,21 @@ void SpellCheckHostChromeImpl::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (base::FeatureList::IsEnabled(
-          spellcheck::kWinDelaySpellcheckServiceInit)) {
-    // Initialize the spellcheck service if needed. Initialization must
-    // happen on UI thread.
-    SpellcheckService* spellcheck = GetSpellcheckService();
+  // Initialize the spellcheck service if needed. Initialization must
+  // happen on UI thread.
+  SpellcheckService* spellcheck = GetSpellcheckService();
 
-    if (!spellcheck) {  // Teardown.
-      std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
-                              /*enable=*/false);
-      return;
-    }
-
-    dictionaries_loaded_callback_ = std::move(callback);
-
-    spellcheck->InitializeDictionaries(
-        base::BindOnce(&SpellCheckHostChromeImpl::OnDictionariesInitialized,
-                       weak_factory_.GetWeakPtr()));
+  if (!spellcheck) {  // Teardown.
+    std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
+                            /*enable=*/false);
     return;
   }
 
-  NOTREACHED();
+  dictionaries_loaded_callback_ = std::move(callback);
+
+  spellcheck->InitializeDictionaries(
+      base::BindOnce(&SpellCheckHostChromeImpl::OnDictionariesInitialized,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SpellCheckHostChromeImpl::OnDictionariesInitialized() {
@@ -232,10 +226,10 @@ void SpellCheckHostChromeImpl::OnDictionariesInitialized() {
           hunspell_dictionary->GetLanguage()));
     }
 
-    SpellcheckCustomDictionary* custom_dictionary =
-        spellcheck->GetCustomDictionary();
-    custom_words.assign(custom_dictionary->GetWords().begin(),
-                        custom_dictionary->GetWords().end());
+    std::set<std::string> custom_words_set =
+        spellcheck->GetCustomDictionary()->GetWords();
+    custom_words.assign(std::make_move_iterator(custom_words_set.begin()),
+                        std::make_move_iterator(custom_words_set.end()));
   }
 
   std::move(dictionaries_loaded_callback_)

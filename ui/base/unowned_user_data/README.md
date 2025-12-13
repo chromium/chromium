@@ -36,7 +36,7 @@ using the `From()` method:
 
 ## Making Your Feature Work with Unowned User Data
 
-Making your feature compatible with Unowned User DAta takes ~7 lines of code:
+Making your feature compatible with Unowned User Data takes ~7 lines of code:
  1. Include `DECLARE_USER_DATA(MyTabFeature)` at the top of your class
    declaration and `DEFINE_USER_DATA(MyTabFeature)` in your .cc file.
  1. Add and initialize a `ScopedUnownedUserData<MyFeature>` as a private data
@@ -46,7 +46,7 @@ Making your feature compatible with Unowned User DAta takes ~7 lines of code:
 You can initialize the `ScopedUnownedUserData` as follows:
 ```cpp
   MyTabFeature(TabInterface* tab, ...)
-    : scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), this),
+    : scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this),
       ...
 ```
 

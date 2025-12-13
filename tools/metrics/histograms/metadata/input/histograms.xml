@@ -23,9 +23,10 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Input.Digitizer.MaxTouchPoints.{PointerDigitizerType}"
-    units="maximum allowed touch points" expires_after="2025-03-01">
+    units="maximum allowed touch points" expires_after="2027-01-01">
   <owner>kouhei@chromium.org</owner>
-  <owner>Adam.Ettenberger@microsoft.com</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Record the maximum number of active touch points allowed for each pointer
@@ -35,6 +36,8 @@ chromium-metrics-reviews@google.com.
     initializing the singleton `TouchUiController` during startup, and once for
     each pointer digitizer that's connected afterwards in response to OS
     specific events.
+
+    NOTE: this metric was expired from 2025-03-01 to 2025-11-24.
   </summary>
   <token key="PointerDigitizerType">
     <variant name="DirectPen" summary="pen digitizer integrated into display"/>
@@ -46,9 +49,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Input.Digitizer.MaxTouchPointsSupportedBySystemAtStartup"
-    units="maximum supported contacts" expires_after="2025-03-01">
+    units="maximum supported contacts" expires_after="2027-01-01">
   <owner>kouhei@chromium.org</owner>
-  <owner>Adam.Ettenberger@microsoft.com</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Record the maximum number of simultaneous contacts supported by the pointer
@@ -60,13 +64,16 @@ chromium-metrics-reviews@google.com.
     Currently this metric is only available on Windows. This is logged only once
     per browser session, when initializing the singleton `TouchUiController` at
     startup.
+
+    NOTE: this metric was expired from 2025-03-01 to 2025-11-24.
   </summary>
 </histogram>
 
 <histogram name="Input.Digitizer.{Interaction}" enum="PointerDigitizerType"
-    expires_after="2025-03-01">
+    expires_after="2027-01-01">
   <owner>kouhei@chromium.org</owner>
-  <owner>Adam.Ettenberger@microsoft.com</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Record each pointer digitizer found at startup, and each pointer digitizer
@@ -81,6 +88,8 @@ chromium-metrics-reviews@google.com.
 
     OnStartup : Logged only once per browser session for each pointer digitizer
     discovered when initializing the singleton `TouchUiController` at startup.
+
+    NOTE: this metric was expired from 2025-03-01 to 2025-11-24.
   </summary>
   <token key="Interaction">
     <variant name="OnConnected" summary="connected following startup"/>
@@ -113,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Input.ToolType.Android" units="tool type"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>alexmitra@chromium.org</owner>
   <owner>flackr@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
@@ -151,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Actions.VK"
-    enum="IMEAutocorrectActions" expires_after="2025-11-01">
+    enum="IMEAutocorrectActions" expires_after="2026-09-01">
   <owner>jopalmer@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -163,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Count"
-    enum="IMETextInputClient" expires_after="2025-11-01">
+    enum="IMETextInputClient" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -174,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Delay" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>jopalmer@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -184,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Actions.PK"
-    enum="IMEAutocorrectActions" expires_after="2026-01-04">
+    enum="IMEAutocorrectActions" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -196,7 +205,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Actions.PK.EnabledByDefault"
-    enum="IMEAutocorrectActions" expires_after="2025-11-01">
+    enum="IMEAutocorrectActions" expires_after="2026-09-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -208,7 +217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Actions.VK"
-    enum="IMEAutocorrectActions" expires_after="2025-11-01">
+    enum="IMEAutocorrectActions" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -220,7 +229,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Distance.OriginalLengthVsLevenshteinDistance.{Keyboard}{Interaction}"
-    units="Distance" expires_after="2025-11-01">
+    units="Distance" expires_after="2026-09-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -244,7 +253,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Distance.SuggestedLength.{Keyboard}{Interaction}"
-    units="chars" expires_after="2025-11-01">
+    units="chars" expires_after="2026-09-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -262,7 +271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Internal.PkState"
-    enum="IMEAutocorrectInternalStates" expires_after="2025-11-01">
+    enum="IMEAutocorrectInternalStates" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -281,7 +290,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Internal.PkState.EnabledByDefault"
-    enum="IMEAutocorrectInternalStates" expires_after="2025-11-01">
+    enum="IMEAutocorrectInternalStates" expires_after="2026-09-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -299,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Internal.VkState"
-    enum="IMEAutocorrectInternalStates" expires_after="2025-11-01">
+    enum="IMEAutocorrectInternalStates" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -317,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Latency.Accept" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -329,7 +338,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Latency.Accept.EnabledByDefault"
-    units="ms" expires_after="2025-11-01">
+    units="ms" expires_after="2026-09-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -340,7 +349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Latency.ExitField"
-    units="ms" expires_after="2025-11-01">
+    units="ms" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -352,7 +361,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Latency.ExitField.EnabledByDefault"
-    units="ms" expires_after="2025-11-01">
+    units="ms" expires_after="2026-09-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -363,7 +372,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Latency.PkPending"
-    units="ms" expires_after="2025-11-01">
+    units="ms" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -376,7 +385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Latency.Reject" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -388,7 +397,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Latency.Reject.EnabledByDefault"
-    units="ms" expires_after="2025-11-01">
+    units="ms" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -400,7 +409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Latency.VkPending"
-    units="ms" expires_after="2025-11-01">
+    units="ms" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -414,7 +423,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.PkUserPreference.{Language}"
-    enum="IMEAutocorrectPreference" expires_after="2025-11-01">
+    enum="IMEAutocorrectPreference" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -432,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Quality.PkAccepted"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2025-11-01">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -447,7 +456,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Quality.PkAccepted.EnabledByDefault"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2025-11-01">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -461,7 +470,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Quality.PkRejected"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2025-11-01">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -476,7 +485,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Quality.PkRejected.EnabledByDefault"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2025-11-01">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -490,7 +499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Quality.VkAccepted"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2025-11-01">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -504,7 +513,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Quality.VkRejected"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2025-11-01">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2026-09-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -518,7 +527,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Rejection.{Keyboard}"
-    enum="IMEAutocorrectRejectionBreakdown" expires_after="2025-11-01">
+    enum="IMEAutocorrectRejectionBreakdown" expires_after="2026-09-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -533,7 +542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.SuggestionProvider.Pk"
-    enum="IMEAutocorrectSuggestionProvider" expires_after="2025-11-01">
+    enum="IMEAutocorrectSuggestionProvider" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -545,7 +554,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.UndoWindow.LearnMoreButtonShown"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -557,7 +566,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.UserPrefChange.{Language}.{Type}"
-    enum="IMEAutocorrectPrefStateTransition" expires_after="2025-11-01">
+    enum="IMEAutocorrectPrefStateTransition" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -598,7 +607,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.CandidateGenerationTime.MultiWord"
-    units="ms" expires_after="2025-11-01">
+    units="ms" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -609,7 +618,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Coverage" enum="IMEAssistiveAction"
-    expires_after="2026-01-04">
+    expires_after="2026-09-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -618,33 +627,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.Disabled" enum="IMEAssistiveAction"
-    expires_after="2026-01-04">
-  <owner>jiwan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The number of times each assistive action could be triggered according to
-    the surrounding text but was not triggered because the user turned off the
-    feature. Recorded when the surrounding text could trigger assistive actions
-    but the corresponding feature was disabled.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.Assistive.Disabled.Emoji"
-    enum="IMEAssistiveDisabledReason" expires_after="2025-11-01">
-  <owner>curtismcmullan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Warning: this histogram was expired from 2023-08 to 2023-11; data may be
-    missing. The reason for emoji suggestions not being shown to users. Recorded
-    when the surrounding text could trigger emoji suggestions but the feature
-    was disabled. Only the first applicable reason in IMEAssistiveDisabledReason
-    enum is recorded per occurrence.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.Disabled.MultiWord"
-    enum="IMEAssistiveDisabledReason" expires_after="2025-11-01">
+    enum="IMEAssistiveDisabledReason" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -667,20 +651,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.EmojiSuggestAddition.AcceptanceIndex"
-    units="times" expires_after="2025-11-01">
-  <owner>curtismcmullan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Warning: this histogram was expired from 2022-05 to 2023-11; data may be
-    missing. The number of times an emoji suggest addition is accepted at a
-    given index. Recorded when an user accepts an emoji suggestion appeared
-    after typing an emoji-triggered word.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.Grammar.Actions"
-    enum="IMEGrammarActions" expires_after="2025-11-01">
+    enum="IMEGrammarActions" expires_after="2026-09-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -690,7 +662,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Grammar.Count" enum="IMETextInputClient"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -701,7 +673,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Match" enum="IMEAssistiveAction"
-    expires_after="2026-01-04">
+    expires_after="2026-09-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -714,7 +686,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.CandidatesGenerated"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2025-11-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -740,7 +712,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.EmptyCandidate"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2025-11-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -753,7 +725,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.ImplicitAcceptance"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2026-01-04">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -765,7 +737,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.ImplicitRejection"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2025-11-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -776,7 +748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.InputState"
-    enum="IMEAssistiveTextInputState" expires_after="2026-01-04">
+    enum="IMEAssistiveTextInputState" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -788,7 +760,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.PrecedingTextLength"
-    units="chars" expires_after="2025-11-01">
+    units="chars" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -799,7 +771,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.RequestCandidates"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2025-11-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -810,7 +782,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.SuggestionLength"
-    units="chars" expires_after="2025-11-01">
+    units="chars" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -821,7 +793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.SuggestionOpportunity"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2025-11-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -834,7 +806,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.SuggestionState.{Type}"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2026-01-04">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -850,21 +822,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="InputMethod.Assistive.NotAllowed" enum="IMEAssistiveAction"
-    expires_after="2025-11-01">
-  <owner>jiwan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The number of times each assistive action could be triggered but is blocked
-    because the text is not in the allowed websites or apps. Recorded when the
-    assistive action is blocked because the text is not in the allowed websites
-    or apps. Expired in May 2023, and revived in June (M116). Data may be
-    incomplete for M113 to M115, inclusively.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.Success" enum="IMEAssistiveAction"
-    expires_after="2026-01-04">
+    expires_after="2026-09-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -874,7 +833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.TimeToAccept.MultiWord" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -885,7 +844,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.TimeToDismiss.MultiWord" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -895,20 +854,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.UserPref.Emoji" enum="BooleanEnabled"
-    expires_after="2025-11-01">
-  <owner>curtismcmullan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Warning: this histogram was expired from 2023-02 to 2023-11; data may be
-    missing. The user's preference for emoji suggestions. Recorded when
-    AssistiveSuggester is initialised. &quot;Enabled&quot; is logged as the
-    default value if the user didn't explicitly set it.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.UserPref.MultiWord"
-    enum="BooleanEnabled" expires_after="2025-11-01">
+    enum="BooleanEnabled" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -921,7 +868,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.UserPref.PhysicalKeyboardDiacriticsOnLongpress"
-    enum="BooleanEnabled" expires_after="2025-11-01">
+    enum="BooleanEnabled" expires_after="2026-09-01">
   <owner>jhtin@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -949,7 +896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.CharactersPerSession{InputModality}"
-    units="characters" expires_after="2025-11-01">
+    units="characters" expires_after="2026-09-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -968,7 +915,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Commit.Index{IMEMajorNames}" units="units"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -996,7 +943,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Commit.Type2" enum="IMECommitType2"
-    expires_after="2026-01-04">
+    expires_after="2026-09-01">
   <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1006,7 +953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.CommitLength" units="characters"
-    expires_after="2026-01-04">
+    expires_after="2026-09-01">
   <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1027,7 +974,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.AlternateMultiToSingle" units="index"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1040,7 +987,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.AlternateSelected" units="index"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1052,7 +999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.AlternateSingleToMulti" units="index"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1095,7 +1042,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.LanguageModelLoadTime" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1106,7 +1053,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.LanguagePackState"
-    enum="LanguagePackState" expires_after="2025-11-01">
+    enum="LanguagePackState" expires_after="2026-09-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1117,7 +1064,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.ID2" enum="InputMethodID2"
-    expires_after="2026-01-04">
+    expires_after="2026-09-01">
   <owner>tranbaoduy@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1131,7 +1078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.ImeMenu.EmojiHandwritingVoiceButton"
-    enum="ImeMenuButtonType" expires_after="2025-11-01">
+    enum="ImeMenuButtonType" expires_after="2026-09-01">
   <owner>dvallet@chromium.org</owner>
   <owner>azurewei@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
@@ -1144,7 +1091,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.ImeSwitch" enum="IMESwitchType"
-    expires_after="2026-01-04">
+    expires_after="2026-09-01">
   <owner>dvallet@chromium.org</owner>
   <owner>timloh@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1152,14 +1099,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.KeyEventLatency" units="ms"
-    expires_after="2025-11-30">
+    expires_after="2026-06-07">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>Time taken by the engine to handle a key event.</summary>
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.CharactersInserted.{Mode}"
-    units="characters" expires_after="2025-11-01">
+    units="characters" expires_after="2026-09-01">
   <owner>hdchuong@google.com</owner>
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1201,7 +1148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.CharactersSelectedForInsert.{Mode}"
-    units="characters" expires_after="2025-11-01">
+    units="characters" expires_after="2026-09-01">
   <owner>hdchuong@google.com</owner>
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1243,7 +1190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.FreeFormCharactersForInsert.{Mode}"
-    units="characters" expires_after="2025-11-01">
+    units="characters" expires_after="2026-09-01">
   <owner>hdchuong@google.com</owner>
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1260,7 +1207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.IndexOfInsertedResponse.{Mode}"
-    units="units" expires_after="2025-11-01">
+    units="units" expires_after="2026-09-01">
   <owner>hdchuong@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1295,7 +1242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.LengthOfLongestResponse.{Mode}"
-    units="characters" expires_after="2025-11-01">
+    units="characters" expires_after="2026-09-01">
   <owner>hdchuong@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1337,7 +1284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.NumResponses.{Mode}" units="units"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>hdchuong@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1378,7 +1325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.States.{Mode}" enum="IMEEditorStates"
-    expires_after="2026-01-04">
+    expires_after="2026-09-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1427,7 +1374,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.{Language}.CharactersInserted.{Mode}"
-    units="characters" expires_after="2025-11-01">
+    units="characters" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1453,7 +1400,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Manta.Orca.{Language}.CharactersSelectedForInsert.{Mode}"
-    units="characters" expires_after="2025-11-01">
+    units="characters" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1479,7 +1426,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Manta.Orca.{Language}.LengthOfLongestResponse.{Mode}"
-    units="characters" expires_after="2025-11-01">
+    units="characters" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1505,7 +1452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.{Language}.NumResponses.{Mode}"
-    units="units" expires_after="2025-11-01">
+    units="units" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1530,7 +1477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.{Language}.States.{Mode}"
-    enum="IMEEditorStates" expires_after="2026-01-04">
+    enum="IMEEditorStates" expires_after="2026-09-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1580,7 +1527,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.PhysicalKeyboard.Japanese.OnFocusMigratedToSystemPk"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1591,7 +1538,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.PhysicalKeyboard.Japanese.Settings.AutoSwitchToHalfwidth"
-    enum="Boolean" expires_after="2026-01-11">
+    enum="Boolean" expires_after="2026-05-17">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1602,7 +1549,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.PhysicalKeyboard.Japanese.Settings.DisablePersonalizedSuggestions"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1612,7 +1559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.Japanese.Settings.InputMode"
-    enum="JpSettingsInputMode" expires_after="2025-11-01">
+    enum="JpSettingsInputMode" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1622,7 +1569,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.Japanese.Settings.KeymapStyle"
-    enum="JpSettingsKeymapStyle" expires_after="2025-11-01">
+    enum="JpSettingsKeymapStyle" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1633,7 +1580,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.PhysicalKeyboard.Japanese.Settings.NumberOfSuggestions"
-    units="suggestions" expires_after="2025-11-01">
+    units="suggestions" expires_after="2026-09-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1645,7 +1592,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.PhysicalKeyboard.Japanese.Settings.PunctuationStyle"
-    enum="JpSettingsPunctuationStyle" expires_after="2025-11-01">
+    enum="JpSettingsPunctuationStyle" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1656,7 +1603,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.PhysicalKeyboard.Japanese.Settings.SelectionShortcut"
-    enum="JpSettingsSelectionShortcut" expires_after="2025-11-01">
+    enum="JpSettingsSelectionShortcut" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1667,7 +1614,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.PhysicalKeyboard.Japanese.Settings.ShiftKeyModeStyle"
-    enum="JpSettingsShiftKeyModeStyle" expires_after="2025-11-01">
+    enum="JpSettingsShiftKeyModeStyle" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1678,7 +1625,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.PhysicalKeyboard.Japanese.Settings.SpaceInputStyle"
-    enum="JpSettingsSpaceInputStyle" expires_after="2025-11-01">
+    enum="JpSettingsSpaceInputStyle" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1688,7 +1635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.Japanese.Settings.SymbolStyle"
-    enum="JpSettingsSymbolStyle" expires_after="2025-11-01">
+    enum="JpSettingsSymbolStyle" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1699,7 +1646,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.PhysicalKeyboard.Japanese.Settings.UseInputHistory"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1710,7 +1657,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.PhysicalKeyboard.Japanese.Settings.UseSystemDictionary"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1720,7 +1667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.Japanese.StartupAction"
-    enum="JapaneseStartupAction" expires_after="2025-11-01">
+    enum="JapaneseStartupAction" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1731,7 +1678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.KeyboardShortcut"
-    enum="PhysicalKeyboardShortcut" expires_after="2026-01-04">
+    enum="PhysicalKeyboardShortcut" expires_after="2026-09-01">
   <owner>wbjacksonjr@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1741,7 +1688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.Korean.Action"
-    enum="KoreanAction" expires_after="2025-11-01">
+    enum="KoreanAction" expires_after="2026-09-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1762,7 +1709,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InputMethod.PhysicalKeyboard.LongpressDiacritics.AcceptedChar"
     enum="IMEPKLongpressDiacriticUnicodeCharacterCode"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1772,7 +1719,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.LongpressDiacritics.Action"
-    enum="IMEPKLongpressDiacriticAction" expires_after="2025-11-01">
+    enum="IMEPKLongpressDiacriticAction" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1784,7 +1731,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.FlexibleTyping"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1794,7 +1741,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.ModernToneMark"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1804,7 +1751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.ShowUnderline"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1814,7 +1761,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.UODoubleHorn"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1824,7 +1771,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.WForUHorn"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1834,7 +1781,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseVNI.FlexibleTyping"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1844,7 +1791,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseVNI.ModernToneMark"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1854,7 +1801,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseVNI.ShowUnderline"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1864,7 +1811,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseVNI.UODoubleHorn"
-    enum="Boolean" expires_after="2025-11-01">
+    enum="Boolean" expires_after="2026-09-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1884,7 +1831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PkCommit.Type" enum="IMECommitType2"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1911,7 +1858,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.Gesture"
-    enum="StylusHandwritingGesture" expires_after="2025-10-12">
+    enum="StylusHandwritingGesture" expires_after="2026-07-29">
   <owner>peconn@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1922,7 +1869,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.GestureResult"
-    enum="StylusHandwritingGestureResult" expires_after="2025-08-24">
+    enum="StylusHandwritingGestureResult" expires_after="2026-07-29">
   <owner>alexmitra@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1931,7 +1878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.GestureTime2" units="ms"
-    expires_after="2025-08-24">
+    expires_after="2026-07-29">
   <owner>alexmitra@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1942,7 +1889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.Triggered"
-    enum="StylusHandwritingApi" expires_after="2025-12-14">
+    enum="StylusHandwritingApi" expires_after="2026-07-29">
   <owner>peconn@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1954,7 +1901,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.SystemEmojiPicker.Delay" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1964,7 +1911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.SystemEmojiPicker.InsertionLatency" units="ms"
-    expires_after="2026-01-04">
+    expires_after="2026-09-01">
   <owner>greywang@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1976,7 +1923,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.SystemEmojiPicker.LoadTime" units="ms"
-    expires_after="2026-01-04">
+    expires_after="2026-09-01">
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1987,7 +1934,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.SystemEmojiPicker.SearchLength" units="characters"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1997,14 +1944,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.SystemEmojiPicker.TriggerType"
-    enum="VirtualKeyboardEmojiTriggerType" expires_after="2026-01-04">
+    enum="VirtualKeyboardEmojiTriggerType" expires_after="2026-09-01">
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>How emojis were inserted.</summary>
 </histogram>
 
 <histogram name="InputMethod.TouchSelection.DragType"
-    enum="TouchSelectionDragType" expires_after="2025-11-16">
+    enum="TouchSelectionDragType" expires_after="2026-01-18">
   <owner>michellegc@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2014,7 +1961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.TouchSelection.MenuAction"
-    enum="TouchSelectionMenuAction" expires_after="2025-11-16">
+    enum="TouchSelectionMenuAction" expires_after="2026-01-18">
   <owner>michellegc@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2024,7 +1971,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.BackspaceCount" units="units"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2046,7 +1993,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.CharactersPerMinute{InputModality}"
-    units="charactersPerMinute" expires_after="2025-11-01">
+    units="charactersPerMinute" expires_after="2026-09-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2066,7 +2013,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.CharactersPerSession{InputModality}"
-    units="characters" expires_after="2025-11-01">
+    units="characters" expires_after="2026-09-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2085,7 +2032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.ContainerBehavior"
-    enum="VirtualKeyboardContainerType" expires_after="2025-11-01">
+    enum="VirtualKeyboardContainerType" expires_after="2026-09-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2112,7 +2059,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.Emoji.TriggerType"
-    enum="VirtualKeyboardEmojiTriggerType" expires_after="2025-11-01">
+    enum="VirtualKeyboardEmojiTriggerType" expires_after="2026-09-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>How emojis were inserted.</summary>
@@ -2137,7 +2084,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.Handwriting.DWServiceCallbackFailed"
-    enum="Boolean" expires_after="2025-11-21">
+    enum="Boolean" expires_after="2026-11-21">
   <owner>alexmitra@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -2150,7 +2097,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.Handwriting.KeyboardContainerOnCommit"
-    enum="VirtualKeyboardContainerType" expires_after="2025-11-01">
+    enum="VirtualKeyboardContainerType" expires_after="2026-09-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2161,7 +2108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.Handwriting.KeyboardWidthOnCommit"
-    units="px" expires_after="2025-11-01">
+    units="px" expires_after="2026-09-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2172,7 +2119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.InitLatency.KeyboardShownLongTail"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-09-01">
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2183,7 +2130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.InitLatency{IMEVKLatency}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-09-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2269,7 +2216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.ResizableWindowWidth" units="px"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2281,7 +2228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.SessionDuration" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-09-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2304,6 +2251,26 @@ chromium-metrics-reviews@google.com.
     missing. The count of user actions to switch keyboard mode (floating,
     docked). Recorded when the user clicks in the docked/floating keyboard menu
     option.
+  </summary>
+</histogram>
+
+<histogram name="Stylus.Handwriting.RequestHandwritingForPointer"
+    enum="Hresult" expires_after="2026-09-06">
+  <owner>flackr@chromium.org</owner>
+  <owner>arakeri@microsoft.com</owner>
+  <summary>
+    Records the HRESULT returned by RequestHandwritingForPointer. This is only
+    applicable to users on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Stylus.Handwriting.TSFFocus" enum="Boolean"
+    expires_after="2026-09-06">
+  <owner>flackr@chromium.org</owner>
+  <owner>arakeri@microsoft.com</owner>
+  <summary>
+    Records whether the TSF focus was successfully set. This is only applicable
+    to users on Windows.
   </summary>
 </histogram>
 

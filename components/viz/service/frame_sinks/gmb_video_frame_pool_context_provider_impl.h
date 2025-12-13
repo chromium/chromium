@@ -11,10 +11,6 @@
 #include "components/viz/service/viz_service_export.h"
 #include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
 
-namespace gpu {
-class GpuMemoryBufferFactory;
-}  // namespace gpu
-
 namespace viz {
 
 class GpuServiceImpl;
@@ -22,9 +18,7 @@ class GpuServiceImpl;
 class VIZ_SERVICE_EXPORT GmbVideoFramePoolContextProviderImpl
     : public GmbVideoFramePoolContextProvider {
  public:
-  explicit GmbVideoFramePoolContextProviderImpl(
-      GpuServiceImpl* gpu_service,
-      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
+  explicit GmbVideoFramePoolContextProviderImpl(GpuServiceImpl* gpu_service);
 
   GmbVideoFramePoolContextProviderImpl(
       const GmbVideoFramePoolContextProviderImpl& other) = delete;
@@ -38,7 +32,6 @@ class VIZ_SERVICE_EXPORT GmbVideoFramePoolContextProviderImpl
 
  private:
   const raw_ptr<GpuServiceImpl> gpu_service_;
-  const raw_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 };
 
 }  // namespace viz

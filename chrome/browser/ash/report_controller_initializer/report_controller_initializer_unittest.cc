@@ -7,7 +7,6 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,9 +53,6 @@ class ReportControllerInitializerValidateSegment
   }
 
  private:
-  ScopedTestingLocalState testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
-
   // Needed for `browser_policy_connector_ash()`.
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
 

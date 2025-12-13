@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -90,6 +89,8 @@ class LiveCaptionControllerTest : public testing::Test {
         static_cast<user_prefs::PrefRegistrySyncable*>(
             testing_pref_service_.registry()));
     RegisterStylePrefs(&testing_pref_service_);
+    speech::SodaInstaller::RegisterLocalStatePrefs(
+        testing_pref_service_.registry());
 
     // Set up soda Installer
     soda_installer_.NeverDownloadSodaForTesting();
@@ -173,11 +174,11 @@ TEST_F(LiveCaptionControllerTest,
 
   auto mock_delegate = std::make_unique<MockCaptionControllerDelgate>();
   auto* mock_delegate_ptr = mock_delegate.get();
+  EXPECT_CALL(*mock_delegate_ptr, CreateCaptionBubbleController).Times(1);
   LiveCaptionController controller_under_test = LiveCaptionController(
       &testing_pref_service_, &testing_pref_service_, speech::kUsEnglishLocale,
       /*browser_context=*/nullptr, std::move(mock_delegate));
 
-  EXPECT_CALL(*mock_delegate_ptr, CreateCaptionBubbleController).Times(1);
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
       speech::GetLanguageCode(speech::kUsEnglishLocale));
   NotifySodaBinaryInstalled();

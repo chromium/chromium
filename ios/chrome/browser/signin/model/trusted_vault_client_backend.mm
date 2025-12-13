@@ -25,13 +25,14 @@ void TrustedVaultClientBackend::RemoveObserver(
 }
 
 void TrustedVaultClientBackend::NotifyKeysChanged(
-    trusted_vault::SecurityDomainId security_domain_id) {
+    trusted_vault::SecurityDomainId security_domain_id,
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   auto it = observer_lists_per_security_domain_id_.find(security_domain_id);
   if (it == observer_lists_per_security_domain_id_.end()) {
     return;
   }
   for (Observer& observer : it->second) {
-    observer.OnTrustedVaultKeysChanged();
+    observer.OnTrustedVaultKeysChanged(trigger);
   }
 }
 

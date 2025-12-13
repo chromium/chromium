@@ -23,7 +23,7 @@
 #import "testing/platform_test.h"
 
 namespace {
-NSString* kPageHTML =
+NSString* const kPageHTML =
     @"<html>"
      "  <body>"
      "    This text contains a <span id='selectid'>selection</span>."
@@ -38,7 +38,7 @@ NSString* kPageHTML =
      "  </body>"
      "</html>";
 
-NSString* kPage2HTML =
+NSString* const kPage2HTML =
     @"<html>"
      "  <body>"
      "    This text contains a <span id='selectid'>selection2</span>."
@@ -103,10 +103,6 @@ class WebSelectionTabHelperTest : public PlatformTest {
 
 // Tests that no selection is returned if nothing is selected.
 TEST_F(WebSelectionTabHelperTest, GetNoSelection) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // The tab helper is only created on iOS16+.
-    return;
-  }
   __block WebSelectionResponse* response = nil;
   WebSelectionTabHelper::FromWebState(web_state())
       ->GetSelectedText(base::BindOnce(^(WebSelectionResponse* block_response) {
@@ -144,10 +140,6 @@ TEST_F(WebSelectionTabHelperTest, GetNoSelection) {
 
 // Tests that selection in main frame is returned correctly.
 TEST_F(WebSelectionTabHelperTest, GetSelectionMainFrame) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // The tab helper is only created on iOS16+.
-    return;
-  }
   web::test::ExecuteJavaScript(@"window.getSelection().selectAllChildren("
                                 "document.getElementById('selectid'));",
                                web_state());
@@ -170,10 +162,6 @@ TEST_F(WebSelectionTabHelperTest, GetSelectionMainFrame) {
 
 // Tests that selection in iframe is returned correctly.
 TEST_F(WebSelectionTabHelperTest, GetSelectionIFrame) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // The tab helper is only created on iOS16+.
-    return;
-  }
   web::test::ExecuteJavaScript(
       @"subWindow = document.getElementById('frame').contentWindow;"
        "subWindow.document.getSelection().selectAllChildren("
@@ -200,10 +188,6 @@ TEST_F(WebSelectionTabHelperTest, GetSelectionIFrame) {
 // Also tests that getting twice the selection on the same webState does not
 // trigger additional JS calls.
 TEST_F(WebSelectionTabHelperTest, GetMultipleWebStateSelections) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // The tab helper is only created on iOS16+.
-    return;
-  }
   web::WebState::CreateParams params(profile_.get());
   auto web_state2 = web::WebState::Create(params);
   WebSelectionTabHelper::CreateForWebState(web_state2.get());

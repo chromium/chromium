@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/zucchini/buffer_source.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "components/zucchini/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -228,7 +224,7 @@ TEST_F(BufferSourceTest, GetArrayIntegral) {
   const UnalignedUint32T* ptr = source_.GetArray<UnalignedUint32T>(2);
   EXPECT_NE(nullptr, ptr);
   EXPECT_EQ(uint32_t(0x76543210), ptr[0].value);
-  EXPECT_EQ(uint32_t(0xFEDCBA98), ptr[1].value);
+  UNSAFE_TODO(EXPECT_EQ(uint32_t(0xFEDCBA98), ptr[1].value));
   EXPECT_EQ(size_t(2), source_.Remaining());
 }
 
@@ -239,7 +235,7 @@ TEST_F(BufferSourceTest, GetArrayIntegralMisaligned) {
   const UnalignedUint32T* ptr = source_.GetArray<UnalignedUint32T>(2);
   EXPECT_NE(nullptr, ptr);
   EXPECT_EQ(uint32_t(0x98765432), ptr[0].value);
-  EXPECT_EQ(uint32_t(0x10FEDCBA), ptr[1].value);
+  UNSAFE_TODO(EXPECT_EQ(uint32_t(0x10FEDCBA), ptr[1].value));
   EXPECT_EQ(size_t(1), source_.Remaining());
 }
 

@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
@@ -104,7 +105,7 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
 
   // HostResolver::ServiceEndpointRequest methods:
   int Start(Delegate* delegate) override;
-  const std::vector<ServiceEndpoint>& GetEndpointResults() override;
+  base::span<const ServiceEndpoint> GetEndpointResults() override;
   const std::set<std::string>& GetDnsAliasResults() override;
   bool EndpointsCryptoReady() override;
   ResolveErrorInfo GetResolveErrorInfo() override;
@@ -322,16 +323,18 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
   // HttpStreamPool::Job::Delegate implementations:
   void OnStreamReady(HttpStreamPool::Job* job,
                      std::unique_ptr<HttpStream> stream,
-                     NextProto negotiated_protocol) override;
+                     NextProto negotiated_protocol,
+                     std::optional<SessionSource> session_source) override;
   RequestPriority priority() const override;
   HttpStreamPool::RespectLimits respect_limits() const override;
   const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs()
       const override;
-  bool enable_ip_based_pooling() const override;
+  bool enable_ip_based_pooling_for_h2() const override;
   bool enable_alternative_services() const override;
   NextProtoSet allowed_alpns() const override;
   const ProxyInfo& proxy_info() const override;
   const NetLogWithSource& net_log() const override;
+  const perfetto::Flow& flow() const override;
   void OnStreamFailed(HttpStreamPool::Job* job,
                       int status,
                       const NetErrorDetails& net_error_details,
@@ -358,6 +361,7 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
   std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   ProxyInfo proxy_info_ = ProxyInfo::Direct();
   NetLogWithSource net_log_;
+  perfetto::Flow flow_;
 
   std::unique_ptr<HttpStreamPool::Job> job_;
 

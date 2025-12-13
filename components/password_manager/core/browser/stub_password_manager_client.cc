@@ -20,6 +20,21 @@ StubPasswordManagerClient::StubPasswordManagerClient()
 
 StubPasswordManagerClient::~StubPasswordManagerClient() = default;
 
+bool StubPasswordManagerClient::IsSavingAndFillingEnabled(
+    const GURL& url) const {
+  return true;
+}
+
+bool StubPasswordManagerClient::IsFillingEnabled(const GURL& url) const {
+  return true;
+}
+
+bool StubPasswordManagerClient::IsFieldFilledWithOtp(
+    autofill::FormGlobalId form_id,
+    autofill::FieldGlobalId field_id) {
+  return false;
+}
+
 bool StubPasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool update_password) {
@@ -45,6 +60,11 @@ bool StubPasswordManagerClient::PromptUserToChooseCredentials(
     std::vector<std::unique_ptr<PasswordForm>> local_forms,
     const url::Origin& origin,
     CredentialsCallback callback) {
+  return false;
+}
+
+bool StubPasswordManagerClient::IsReauthBeforeFillingRequired(
+    device_reauth::DeviceAuthenticator* authenticator) {
   return false;
 }
 
@@ -227,5 +247,10 @@ StubPasswordManagerClient::ShowCrossDomainConfirmationPopup(
   return nullptr;
 }
 #endif  // !BUILDFLAG(IS_IOS)
+
+password_manager::UndoPasswordChangeController*
+StubPasswordManagerClient::GetUndoPasswordChangeController() {
+  return &undo_password_change_controller_;
+}
 
 }  // namespace password_manager

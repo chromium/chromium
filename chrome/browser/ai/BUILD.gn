@@ -13,7 +13,6 @@ source_set("ai") {
   sources = [
     "ai_context_bound_object.h",
     "ai_context_bound_object_set.h",
-    "ai_create_on_device_session_task.h",
     "ai_data_keyed_service.h",
     "ai_data_keyed_service_factory.h",
     "ai_language_model.h",
@@ -23,8 +22,6 @@ source_set("ai") {
     "ai_rewriter.h",
     "ai_summarizer.h",
     "ai_writer.h",
-    "built_in_ai_logger.cc",
-    "built_in_ai_logger.h",
     "features.cc",
     "features.h",
   ]
@@ -40,16 +37,16 @@ source_set("ai") {
     "//chrome/browser/ai:ai_utils",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
-    "//components/component_updater:component_updater",
+    "//components/component_updater",
     "//components/optimization_guide/core",
-    "//components/update_client:update_client",
+    "//components/update_client",
     "//content/public/browser",
   ]
   if (enable_glic) {
-    public_deps += [ "//chrome/browser/glic:glic" ]
+    public_deps += [ "//chrome/browser/glic" ]
   }
   if (!is_android) {
-    public_deps += [ "//chrome/browser/actor:actor" ]
+    public_deps += [ "//chrome/browser/actor" ]
   }
 }
 
@@ -66,7 +63,6 @@ source_set("impl") {
   sources = [
     "ai_context_bound_object.cc",
     "ai_context_bound_object_set.cc",
-    "ai_create_on_device_session_task.cc",
     "ai_data_keyed_service.cc",
     "ai_data_keyed_service_factory.cc",
     "ai_language_model.cc",
@@ -86,7 +82,7 @@ source_set("impl") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui:ui",
+    "//chrome/browser/ui",
     "//components/content_extraction/content/browser",
   ]
   deps = [
@@ -97,13 +93,13 @@ source_set("impl") {
     "//components/history_embeddings",
     "//components/language/core/common",
     "//components/optimization_guide/content/browser",
-    "//components/site_engagement/content:content",
+    "//components/site_engagement/content",
     "//pdf:buildflags",
     "//skia",
   ]
   if (!is_android) {
     deps += [
-      "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_group",
       "//chrome/browser/ui/tabs:tab_strip",
     ]
@@ -118,8 +114,12 @@ source_set("impl") {
 
 source_set("ai_model_download_progress_manager") {
   sources = [
+    "ai_crx_component.cc",
+    "ai_crx_component.h",
     "ai_model_download_progress_manager.cc",
     "ai_model_download_progress_manager.h",
+    "ai_never_load_component.cc",
+    "ai_never_load_component.h",
   ]
   public_deps = [
     "//base",
@@ -144,8 +144,8 @@ source_set("test_support") {
     "//chrome/test:test_support",
     "//components/component_updater:test_support",
     "//components/optimization_guide/core:test_support",
-    "//testing/gmock:gmock",
-    "//testing/gtest:gtest",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
   deps = [ ":ai" ]
 }
@@ -153,6 +153,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ai_crx_component_unittest.cc",
     "ai_language_model_unittest.cc",
     "ai_manager_unittest.cc",
     "ai_model_download_progress_manager_unittest.cc",

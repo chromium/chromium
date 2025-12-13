@@ -11,16 +11,21 @@
 #include "base/compiler_specific.h"
 
 // All data needed by TemplateURLRef::ReplaceSearchTerms which typically may
-// only be accessed on the UI thread.
+// only be accessed on the UI thread. This class provides a way to get at data
+// that is needed to expand the search terms in a TemplateURL. For example, it
+// provides the Google base URL, the application locale, and other data that
+// is needed to construct a valid search URL. The methods are virtual so that
+// they can be overridden in different contexts (e.g., on different platforms).
 class SearchTermsData {
  public:
   // Enumeration of the known search or suggest request sources. These values
   // are not persisted or used in histograms; thus can be freely changed.
   enum class RequestSource {
-    SEARCHBOX,      // Omnibox or the NTP realbox. The default.
-    CROS_APP_LIST,  // Chrome OS app list searchbox.
-    NTP_MODULE,     // NTP modules.
-    LENS_OVERLAY,   // Lens Overlay searchboxes.
+    SEARCHBOX,       // Omnibox or the NTP realbox. The default.
+    CROS_APP_LIST,   // Chrome OS app list searchbox.
+    NTP_MODULE,      // NTP modules.
+    LENS_OVERLAY,    // Lens Overlay searchboxes.
+    NTP_COMPOSEBOX,  // NTP or Lens Side Panel composebox.
   };
 
   // Utility function that takes a snapshot of a different SearchTermsData

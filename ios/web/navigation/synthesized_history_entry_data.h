@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -37,11 +38,11 @@ class SynthesizedHistoryEntryData {
 
  private:
   // Adds data, all using little-endian.
-  void PushBack(const uint8_t* data, size_t size);
   void PushBackGURL(const GURL& url);
-  template <typename Type>
-  void PushBack(Type value) {
-    PushBack(reinterpret_cast<uint8_t*>(&value), sizeof(value));
+  void PushBackBytes(base::span<const uint8_t> bytes);
+  template <typename T>
+  void PushBackValue(T&& value) {
+    PushBackBytes(base::byte_span_from_ref(std::forward<T>(value)));
   }
 
   std::vector<uint8_t> buffer_;

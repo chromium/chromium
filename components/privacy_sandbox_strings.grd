@@ -297,13 +297,25 @@
       <message name="IDS_PRIVATE_STATE_TOKENS_DESCRIPTION_LABEL" desc="Label that provides the user more details about what they can see on this page i.e. the tokens that have been issued and by whom and if and when they were redeemed." translateable="false">
         See who has issued private state tokens on your device and how they are used.
       </message>
-      <!-- ACT Snackbar -->
-      <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_TITLE" desc="Title of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
-        App not working?
+      <!-- Mode B Rollback -->
+      <message name="IDS_MODE_B_ROLLBACK_GOT_IT" desc="Label for a button on the 3PCD rollback notice that acknowledges and closes the notice." formatter_data="android_java">
+        Got it
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_ACTION" desc="Action of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
-        Change protections
+      <message name="IDS_MODE_B_ROLLBACK_SETTINGS" desc="Label for a button on the 3PCD rollback notice that opens the third-party cookie settings page.">
+        Settings
       </message>
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_MODE_B_ROLLBACK_DESCRIPTION" desc="Description text on the 3PCD rollback notice. Explains to the user that their settings state has been updated to allow third-party cookies and that this can be changed in settings." formatter_data="android_java">
+            Your current Chrome settings have been updated to allow websites to access third-party cookies. You can change this setting any time.
+          </message>
+        </then>
+        <else>
+          <message name="IDS_MODE_B_ROLLBACK_DESCRIPTION" desc="Description text on the 3PCD rollback notice. Explains to the user that their settings state has been updated to allow third-party cookies and that this can be changed in settings." formatter_data="android_java">
+            Your current Chromium settings have been updated to allow websites to access third-party cookies. You can change this setting any time.
+          </message>
+        </else>
+      </if>
       <!-- User Bypass -->
       <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are allowed.">
         Allowed
@@ -316,118 +328,6 @@
       </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are limited.">
         Third-party cookies limited
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_RESUME_PROTECTIONS_LABEL" desc="" formatter_data="android_java" translateable="false">
-        Resume tracking protections
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL" desc="" formatter_data="android_java" translateable="false">
-        Pause tracking protections
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_RELOADING_SITE_LABEL" desc="" translateable="false">
-        Reloading site
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
-        Try pausing tracking protections on this site, which can help site features work as expected.
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION" desc="" translateable="false">
-        Protections are paused until all Incognito windows are closed.
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION_ANDROID" formatter_data="android_java" desc="" translateable="false">
-        Protections are paused until all Incognito windows are closed. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_TITLE" desc="" formatter_data="android_java" translateable="false">
-        Tracking protections are paused on this site
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_PAUSED_LABEL" desc="" translateable="false">
-        Tracking protections paused
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_RESUMED_LABEL" desc="" translateable="false">
-        Tracking protections resumed
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL" desc="" translateable="false">
-        Tracking protections enabled
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER" desc="" translateable="false">
-        Tell us why you paused tracking protections on this site
-      </message>
-      <!-- Page Info -->
-      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER" desc="" formatter_data="android_java" translateable="false">
-        Privacy and site data
-      </message>
-      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_TOOLTIP" desc="" translateable="false">
-        Options for privacy and site data
-      </message>
-      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION" desc="" translateable="false">
-        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-      </message>
-      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <if expr="_google_chrome">
-        <then>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-          </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_DESCRIPTION" desc="" translateable="false">
-            Help us improve Chrome by telling us why you paused tracking protections
-          </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site.
-          </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site.
-          </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but you made an exception for this site.
-          </message>
-        </then>
-        <else>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-          </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_DESCRIPTION" desc="" translateable="false">
-            Help us improve Chromium by telling us why you paused tracking protections
-          </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site.
-          </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site.
-          </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but you made an exception for this site.
-          </message>
-        </else>
-      </if>
-      <message name="IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTION_SETTINGS_BUTTON_TITLE" desc="" translateable="false">
-        Settings
-      </message>
-      <message name="IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTION_SETTINGS_BUTTON_SUBTITLE" desc="" translateable="false">
-        Manage Incognito tracking protections
       </message>
       <!-- Privacy UX WebUI -->
       <!-- Privacy Sandbox Ads Notice -->
@@ -462,117 +362,7 @@
       <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3_V2" desc="This string appears when the user expands on the “More about ad topics” label. “Auto-deletes” is short for “automatically deletes”. “A topic” refers to one of the ad topics generated by Chrome. “Block topics” means a user can stop Chrome from sharing an ad topic with sites. " formatter_data="android_java">
         <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How can you manage this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. You can also block topics you don't want Chrome to share with sites and turn ad topics off at any time in Chrome settings.
       </message>
-      <!--Ad Topics EEA Consent Privacy Policy text V3  -->
-      <message name="IDS_PRIVACY_SANDBOX_M1_PRIVACY_POLICY_TEXT_V3" desc="" translateable="false" formatter_data="android_java">
-        Google requires companies to state publicly that they won’t use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also store shared data for longer than Chrome and combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more in our Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_MORE_V3" desc="" translateable="false" formatter_data="android_java">
-        More
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_GOT_IT_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
-        Got it
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_SETTINGS_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
-        Settings
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_DIALOG_LAST_TEXT_V3" desc="" translateable="false" formatter_data="android_java">
-        You can make changes in ad privacy settings
-      </message>
-      <!--Ad Topics EEA Consent V3  -->
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_TITLE_V3" desc="" translateable="false" formatter_data="android_java">
-        Allow sites to share limited information with one another when personalizing content and ads?
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_V3" desc="" translateable="false" formatter_data="android_java">
-        Websites and their advertising partners can use ad topics to personalize content and ads for you. Unlike other personalization methods, such as third-party cookies, ad topics help to limit what sites can learn about you while you browse.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_CARD_1_V3" desc="" translateable="false" formatter_data="android_java">
-        When on, ad topics notes topics you might be interested in based on your recent browsing history
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_CARD_2_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome uses privacy measures like encryption, noise, and aggregation to help limit the information shared with sites that use your ad topics
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_CARD_3_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome auto-deletes topics that are older than 4 weeks
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_CARD_4_V3" desc="" translateable="false" formatter_data="android_java">
-        You can see your ad topics and block the ones you don’t want shared with sites at any time in Chrome settings
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_ADS_TOPIC_DESCRIPTION_V3" desc="" translateable="false" formatter_data="android_java">
-        Whether an ad or content you see is personalized can depend on many things, including ad topics, your cookie settings, and if the site you’re viewing customizes your experience.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_ADS_TOPIC_DROPDOWN_V3" desc="" translateable="false" formatter_data="android_java">
-        More about ad topics
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_SCROLL_TO_CHOOSE_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
-        Scroll to choose
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DROPDOWN_TITLE_1_V3" desc="" translateable="false" formatter_data="android_java">
-        What data is used?
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DROPDOWN_DESCRIPTION_1_V3" desc="" translateable="false" formatter_data="android_java">
-        Your ad topics are based on your recent browsing history, a list of sites you’ve visited using Chrome on this device.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DROPDOWN_TITLE_2_V3" desc="" translateable="false" formatter_data="android_java">
-        How do sites use this data?
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DROPDOWN_DESCRIPTION_2_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome notes topics of interest as you browse. Topic labels are predefined and include things like, Arts &amp; Entertainment, Shopping, and Sports. Later, a site you visit can ask Chrome for a few of your topics to personalize the ads you see.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DROPDOWN_TITLE_3_V3" desc="" translateable="false" formatter_data="android_java">
-        How can you manage this data?
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DROPDOWN_DESCRIPTION_3_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. You can also block topics you don’t want Chrome to share with sites and turn ad topics off at any time in Chrome settings.
-      </message>
-      <!--Ad Topics EEA Notice V3  -->
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_TITLE_V3" desc="" translateable="false" formatter_data="android_java">
-        More ways to personalize your experience while limiting what sites can learn about you
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_SECTION_1_HEADING_V3" desc="" translateable="false" formatter_data="android_java">
-        Site-suggested ads
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_SECTION_1_CONTENT_V3" desc="" translateable="false" formatter_data="android_java">
-        Site-suggested ads help limit what websites and their advertising partners can learn about you when they show you personalized content and ads.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_CARD_1_V3" desc="" translateable="false" formatter_data="android_java">
-        Based on your activity, such as the sites you visit and what you view or click, other sites can suggest related ads as you continue browsing
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_CARD_2_V3" desc="" translateable="false" formatter_data="android_java">
-        You can see a list of these sites and block the ones you don’t want in settings
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_DROPDOWN_V3" desc="" translateable="false" formatter_data="android_java">
-        More about site-suggested ads
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_EEA_NOTICE_DROPDOWN_TITLE_1_V3" desc="" translateable="false" formatter_data="android_java">
-        How do sites use this data?
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_EEA_NOTICE_DROPDOWN_DESCRIPTION_1_V3" desc="" translateable="false" formatter_data="android_java">
-        Sites and their advertising partners can use your activity to personalize ads on other sites.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_EEA_NOTICE_DROPDOWN_CARD_CONTENT_V3" desc="" translateable="false" formatter_data="android_java">
-        For example, if you visit a site to find recipes for dinner, the site might decide that you’re interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_EEA_NOTICE_DROPDOWN_TITLE_2_V3" desc="" translateable="false" formatter_data="android_java">
-        How can you manage this data?
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_EEA_NOTICE_DROPDOWN_DESCRIPTION_2_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome auto-deletes sites that are older than 90 days. A site you visit again might reappear on the list. You can also block a site from suggesting ads for you and turn site-suggested ads off at any time in Chrome settings.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_SECTION_2_HEADING_V3" desc="" translateable="false" formatter_data="android_java">
-        Ad measurement
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_SECTION_2_CONTENT_1_V3" desc="" translateable="false" formatter_data="android_java">
-        With ad measurement, sites you visit can share information with other sites that helps them measure the performance of their ads.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_SECTION_2_CONTENT_2_V3" desc="" translateable="false" formatter_data="android_java">
-        Your Android device may include a similar setting. If ad measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across web sites you visit and apps you use.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_CARD_3_V3" desc="" translateable="false" formatter_data="android_java">
-        Limited types of data are shared between sites, such as whether you made a purchase after visiting a site
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_CARD_4_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome uses privacy measures to limit the information sites can share with one another
-      </message>
+
       <!--Ad Topics EEA Notice - Ads API UX Enhancements -->
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_DESCRIPTION_1_V2" desc="This string explains the function of “ad privacy features”. “Ad” is short for “advertisement”." formatter_data="android_java">
         Ad privacy features help limit what websites and their advertising partners can learn about you when they show you personalized ads.
@@ -632,99 +422,7 @@
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LAST_TEXT" desc="This string notifies users that they can make changes to their ad topics in the “ad privacy” section of settings." formatter_data="android_java">
         You can make changes in ad privacy settings
       </message>
-      <!--Ad Topics ROW Notice v3 - Ads API UX Enhancements -->
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_TITLE_V3" desc="" translateable="false" formatter_data="android_java">
-        Personalize your experience while limiting what websites can learn about you
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DESCRIPTION_V3" desc="" translateable="false" formatter_data="android_java">
-        Websites and their advertising partners can use your browsing history and activity on the sites you visit to personalize content and ads. Those sites can then share limited information with other sites to help them measure the performance of their ads.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_CARD_1_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome uses privacy measures like encryption, noise, and aggregation to help limit the information shared with sites that use your topics and activity
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_CARD_2_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome regularly auto-deletes topics and sites that suggest ads for you
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_CARD_3_V3" desc="" translateable="false" formatter_data="android_java">
-        You can block specific topics and sites you don’t like at any time in Chrome settings
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_ADS_TOPIC_DESCRIPTION_V3" desc="" translateable="false" formatter_data="android_java">
-        Whether an ad or content you see is personalized can depend on many things, including these settings, your cookie settings, and if the site you’re viewing customizes your experience.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_TITLE_V3" desc="" translateable="false" formatter_data="android_java">
-        More about how Chrome personalizes content and ads
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_SETTINGS_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
-        Settings
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_GOT_IT_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
-        Got it
-      </message>
-      <!--Ad Topics ROW Notice v3 Dropdown Content - Ads API UX Enhancements -->
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_TITLE_1_V3" desc="" translateable="false" formatter_data="android_java">
-        Ad topics
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_DESCRIPTION_1_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome notes topics of interest as you browse to help sites and their advertising partners personalize content and ads. Compared to third-party cookies, a commonly used advertising technology, limited information is shared with sites while you browse.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_CARD_DESCRIPTION_1_V3" desc="" translateable="false" formatter_data="android_java">
-        Topic labels are predefined and include things like, Arts &amp; Entertainment, Shopping, and Sports. Later, a site you visit can ask Chrome for a few of your topics to personalize the ads you see.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_CARD_DESCRIPTION_2_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome auto-deletes topics that are older than 4 weeks
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_TITLE_2_V3" desc="" translateable="false" formatter_data="android_java">
-        Site-suggested ads
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_DESCRIPTION_2_V3" desc="" translateable="false" formatter_data="android_java">
-        Site-suggested ads helps to limit what sites and their advertising partners can learn about you when they show you personalized content and ads. Based on your activity, such as the sites you visit and what you view or click, other sites can suggest related ads as you continue browsing.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_CARD_DESCRIPTION_3_V3" desc="" translateable="false" formatter_data="android_java">
-        For example, if you visit a site to find recipes for dinner, the site might decide that you’re interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_CARD_DESCRIPTION_4_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome auto-deletes sites that are older than 90 days
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_TITLE_3_V3" desc="" translateable="false" formatter_data="android_java">
-        Ad measurement
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_DESCRIPTION_3_PART_1_V3" desc="" translateable="false" formatter_data="android_java">
-        With ad measurement, sites you visit can share information with other sites that helps them measure the performance of their ads.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_DESCRIPTION_3_PART_2_V3" desc="" translateable="false" formatter_data="android_java">
-        Your Android settings may also have ad measurement. If this setting is turned on in Chrome and in Android, then the performance of an ad could be measured across both the websites you visit and the apps you use.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_CARD_DESCRIPTION_5_V3" desc="" translateable="false" formatter_data="android_java">
-        Limited types of data are shared between sites to measure the performance of an ad, such as whether you made a purchase after visiting a site
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_CARD_DESCRIPTION_6_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome uses privacy measures to limit the information sites can share with one another
-      </message>
-      <!--Ad Topics ROW Restricted v3 - Ads API UX Enhancements -->
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_TITLE_V3" desc="" translateable="false" formatter_data="android_java">
-        Chrome is helping websites to measure the performance of their ads
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_SUBTITLE_1_V3" desc="" translateable="false" formatter_data="android_java">
-        When ad measurement is on
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1_V3" desc="" translateable="false" formatter_data="android_java">
-        Websites can only share limited information, like when you see an ad on Chrome, with other websites
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_SUBTITLE_2_V3" desc="" translateable="false" formatter_data="android_java">
-        Things to consider
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_2_V3" desc="" translateable="false" formatter_data="android_java">
-        Your Android phone or tablet may also have this setting
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_3_V3" desc="" translateable="false" formatter_data="android_java">
-        This means that ad measurement could be turned on in both Chrome and Android
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_4_V3" desc="" translateable="false" formatter_data="android_java">
-        If turned on in both places, then the performance of an ad could be measured across both the websites you visit and the apps you use
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_PRIVACY_POLICY_TEXT_V3" desc="" translateable="false" formatter_data="android_java">
-       <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more in our Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
+
       <!--Site suggested ads settings page - Ads API UX Enhancement-->
       <if expr="_google_chrome">
         <then>
@@ -994,177 +692,6 @@
       </message>
       <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_ANDROID" desc="This text is for the body of the “Third-party cookies are blocked” section. It specifies the scope of blocking third-party cookies and informs the user of possible functional impacts, a means of addressing it, and a link to learn how to do so." formatter_data="android_java">
         When you're in Incognito mode, sites can't use third-party cookies. If a site that relies on these cookies isn't working, you can <ph name="BEGIN_LINK">&lt;link&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-
-      <!-- RWS - PageInfo -->
-      <message name="IDS_PAGE_INFO_RWS_V2_BUTTON_TITLE" desc="Title for a button that goes to the related sites settings page where users can manage and delete their related sites data" formatter_data="android_java">
-        Manage related sites data
-      </message>
-      <message name="IDS_PAGE_INFO_RWS_V2_BUTTON_SUBTITLE" desc="Describes how related website sets are relevant to the current website the user is on and which website owns the set that the current website is a member of">
-        This site belongs to a group of sites, defined by <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>, that can share your activity across the group to help sites work as expected.
-      </message>
-      <message name="IDS_PAGE_INFO_RWS_V2_BUTTON_SUBTITLE_ANDROID" desc="Describes how related website sets are relevant to the current website the user is on and which website owns the set that the current website is a member of" formatter_data="android_java">
-        This site belongs to a group of sites, defined by <ph name="SET_OWNER">%1$s<ex>gannett.com</ex></ph>, that can share your activity across the group to help sites work as expected.
-      </message>
-      <message name="IDS_PAGE_INFO_RWS_V2_BUTTON_TOOLTIP" desc="Tooltip for the related website sets settings button. The button will open the settings page in a new tab.">
-        Manage related sites data in a new tab
-      </message>
-
-      <!-- RWS - All Sites -->
-      <message name="IDS_ALL_SITES_RWS_LABEL" desc="A specific indication that this website has a list of related websites associated with it." formatter_data="android_java">
-        Has related sites
-      </message>
-      <message name="IDS_ALL_SITES_SHOW_RWS_BUTTON" desc="Title for a button that allows the user to go to the related website sets settings page to view all of the related sites associated with this website.">
-        Show related sites
-      </message>
-      <message name="IDS_ALL_SITES_RWS_FILTER_VIEW_TITLE" desc="Header for the related website sets settings page view. Includes the URL for the website that owns the related website set.">
-        Related sites defined by <ph name="RWS_OWNER">$1<ex>google.com</ex></ph>
-      </message>
-      <message name="IDS_ALL_SITES_RWS_FILTER_VIEW_DESCRIPTION" desc="Description explaining what related website sets are and how they relate to third-party cookies. Includes a Learn More link that takes the user to a Help Center article about managing settings for third-party cookies and related website sets.">
-        Related sites can share third-party cookies with each other to help sites work as expected, such as keeping you signed in or remembering your site settings. Sites are responsible for explaining why they need access to this data. Learn more about <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>related sites and third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>
-      </message>
-      <message name="IDS_ALL_SITES_RWS_FILTER_VIEW_STORAGE_DESCRIPTION" desc="Describes how much storage is being used by all sites in the displayed list of related websites.">
-        Total storage used by sites in the list: <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph>
-      </message>
-      <message name="IDS_ALL_SITES_RWS_DELETE_DATA_BUTTON_LABEL" desc="Label of a button to delete all site data for sites in a related website set.">
-        Delete data
-      </message>
-      <message name="IDS_ALL_SITES_RWS_DELETE_DATA_DIALOG_TITLE" desc="Title of the dialog that warns about deleting all site data for sites in a related website set.">
-        Delete data?
-      </message>
-
-      <!-- RWS - Site Settings -->
-      <message name="IDS_SITE_SETTINGS_RWS_DESCRIPTION_ANDROID" desc="Description explaining what related website sets are and how they relate to third-party cookies. Includes a Learn More link that takes the user to a Help Center article about managing settings for third-party cookies and related website sets." formatter_data="android_java">
-        Related sites can share third-party cookies with each other to help sites work as expected, such as keeping you signed in or remembering your site settings. Sites are responsible for explaining why they need access to this data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_SITE_SETTINGS_RWS_DELETE_BUTTON_LABEL" desc="Title for a button that allows the user to delete all stored data for sites in the related website set associated with this website." formatter_data="android_java">
-        Delete all data
-      </message>
-      <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_CONFIRMATION_ANDROID" desc="Text for the dialog that warns about deleting storage used by a site and its related sites." formatter_data="android_java">
-        This action will delete all data and cookies stored by <ph name="SITE_NAME">%1$s<ex>www.example.com</ex></ph> and related sites
-      </message>
-      <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_SIGN_OUT" desc="Text for the dialog that warns about potentially being signed out of sites in the related website set." formatter_data="android_java">
-        You'll be signed out of these sites
-      </message>
-      <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_DIALOG_TITLE" desc="Title for the dialog that prompts the user to confirm if they would like to delete all data for sites in the related website set." formatter_data="android_java">
-        Delete all data?
-      </message>
-
-      <!-- ACT - Incognito Tracking Protections Settings Page -->
-      <!-- TODO(crbug.com/408036586): Mark translateable after content is finalized -->
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_TITLE" desc="" translateable="false" formatter_data="android_java">
-        Incognito tracking protections
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_ENTRYPOINT_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
-        Manage information sites can use to learn about you in Incognito
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_HEADER" desc="" formatter_data="android_java" translateable="false">
-        Tracking protections
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP" desc="" translateable="false">
-        Sites you visit may embed content from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>Incognito tracking protections<ph name="END_LINK">&lt;/a&gt;</ph>
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-        Sites you visit may embed content from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="BEGIN_LINK">&lt;link&gt;</ph>Incognito tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_LABEL" desc="" formatter_data="android_java" translateable="false">
-        Block third-party cookies
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_TOGGLE_LABEL" desc="" formatter_data="android_java" translateable="false">
-        Protect your IP address
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_TOGGLE_SUBLABEL" desc="" formatter_data="android_java" translateable="false">
-        Limit access to your IP address
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_TOGGLE_SUBLABEL_ON" desc="" formatter_data="android_java" translateable="false">
-        Limit access to your IP address. This setting is on.
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_TOGGLE_SUBLABEL_OFF" desc="" formatter_data="android_java" translateable="false">
-        Limit access to your IP address. This setting is off.
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_ONE" desc="" formatter_data="android_java" translateable="false">
-        Applies to embedded sites, not the site you're directly visiting
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_THREE" desc="" formatter_data="android_java" translateable="false">
-        Google's privacy servers can see your IP address but not your browsing destination when protecting your IP address
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_TOGGLE_LABEL" desc="" formatter_data="android_java" translateable="false">
-        Block tracking scripts
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_TOGGLE_SUBLABEL" desc="" formatter_data="android_java" translateable="false">
-        Limit access to device and browser data
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_TOGGLE_SUBLABEL_ON" desc="" formatter_data="android_java" translateable="false">
-        Limit access to device and browser data. This setting is on.
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_TOGGLE_SUBLABEL_OFF" desc="" formatter_data="android_java" translateable="false">
-        Limit access to device and browser data. This setting is off.
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_THINGS_TO_CONSIDER" desc="" formatter_data="android_java" translateable="false">
-        Applies to embedded sites, not the site you're directly visiting
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_WHEN_ON" desc="" formatter_data="android_java" translateable="false">
-        When on
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_THINGS_TO_CONSIDER" desc="" formatter_data="android_java" translateable="false">
-        Things to consider
-      </message>
-      <if expr="_google_chrome">
-        <then>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
-            When you browse in Incognito, Chrome won't save your browsing history, cookies and site data, and the information you enter in forms. Incognito also provides features that can limit the information available to embedded sites.
-          </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_SUBLABEL" desc="" formatter_data="android_java" translateable="false">
-            Chrome blocks sites from using third-party cookies in Incognito
-          </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_WHEN_ON" desc="" formatter_data="android_java" translateable="false">
-            Chrome will try to protect your IP address from embedded sites that may be trying to learn about you
-          </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO" desc="" formatter_data="android_java" translateable="false">
-            Only available when Incognito is opened from a signed-in Chrome tab
-          </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="" formatter_data="android_java" translateable="false">
-            Chrome will try to limit device and browser data, like installed fonts or your time zone, from embedded sites that may be trying to learn about you
-          </message>
-          <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_DESCRIPTION" desc="" translateable="false">
-            Opens in a regular Chrome window
-          </message>
-        </then>
-        <else>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
-            When you browse in Incognito, Chromium won't save your browsing history, cookies and site data, and the information you enter in forms. Incognito also provides features that can limit the information available to embedded sites.
-          </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_SUBLABEL" desc="" formatter_data="android_java" translateable="false">
-            Chromium blocks sites from using third-party cookies in Incognito
-          </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_WHEN_ON" desc="" formatter_data="android_java" translateable="false">
-            Chromium will try to protect your IP address from embedded sites that may be trying to learn about you
-          </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO" desc="" formatter_data="android_java" translateable="false">
-            Only available when Incognito is opened from a signed-in Chromium tab
-          </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="" formatter_data="android_java" translateable="false">
-            Chromium will try to limit device and browser data, like installed fonts or your time zone, from embedded sites that may be trying to learn about you
-          </message>
-          <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_DESCRIPTION" desc="" translateable="false">
-            Opens in a regular Chromium window
-          </message>
-        </else>
-      </if>
-
-      <!-- ACT - Incognito Tracking Protections Incognito NTP -->
-      <!-- TODO(crbug.com/408036586): Mark translateable after content is finalized -->
-      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_HEADER" desc="" formatter_data="android_java" translateable="false" >
-        Tracking protections in Incognito
-      </message>
-      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false" >
-        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. You can manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP" desc="" translateable="false">
-        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. You can manage Incognito tracking protections in <ph name="START_LINK">&lt;a href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>.
-      </message>
-      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_LABEL" desc="" translateable="false">
-        Settings for Incognito tracking protections
       </message>
     </messages>
   </release>

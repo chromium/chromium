@@ -166,16 +166,16 @@ enum Setting {
   // kDarkModeThemed respectively.
   // Do not reuse.
 
-  // Search and Assistant section.
+  // Search section.
   kPreferredSearchEngine = 600,
-  kAssistantOnOff = 601,
-  kAssistantRelatedInfo = 602,
+  // 601 was used for kAssistantOnOff. Do not reuse.
+  // 602 was used for kAssistantRelatedInfo. Do not reuse.
   // Note: Value 603 was for deprecated kAssistantQuickAnswers.
   // Do not reuse.
-  kAssistantOkGoogle = 604,
-  kAssistantNotifications = 605,
-  kAssistantVoiceInput = 606,
-  kTrainAssistantVoiceModel = 607,
+  // 604 was used for kAssistantOkGoogle. Do not reuse.
+  // 605 was used for kAssistantNotifications. Do not reuse.
+  // 606 was used for kAssistantVoiceInput. Do not reuse.
+  // 607 was used for kTrainAssistantVoiceModel. Do not reuse.
   kQuickAnswersOnOff = 608,
   kQuickAnswersDefinition = 609,
   kQuickAnswersTranslation = 610,
@@ -204,7 +204,7 @@ enum Setting {
   kUninstallCrostini = 801,
   kBackupLinuxAppsAndFiles = 802,
   kRestoreLinuxAppsAndFiles = 803,
-  kCrostiniAdbDebugging = 804,
+  // Note: Value 804 was for deprecated kCrostiniAdbDebugging. Do not reuse.
   kCrostiniDiskResize = 805,
   kCrostiniMicAccess = 806,
   kCrostiniContainerUpgrade = 807,
@@ -250,7 +250,8 @@ enum Setting {
   kShowInputOptionsInShelf = 1201,
   // Note: Value 1202 was deprecated for kShowPersonalInformationSuggestions.
   // Do not reuse.
-  kShowEmojiSuggestions = 1203,
+  // Note: Value 1203 was deprecated for kShowEmojiSuggestions.
+  // Do not reuse.
   kChangeDeviceLanguage = 1204,
   kOfferTranslation = 1205,
   kAddInputMethod = 1206,

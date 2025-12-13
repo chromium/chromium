@@ -74,26 +74,26 @@ void PermissionSettingsRegistry::Init() {
   // If a permission is DELETED, please update
   // PrefProvider::DiscardOrMigrateObsoletePreferences() and
   // DefaultProvider::DiscardOrMigrateObsoletePreferences() accordingly.
-    Register(ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
-             "geolocation-with-options",
-             GeolocationSetting(PermissionOption::kAsk, PermissionOption::kAsk),
-             WebsiteSettingsInfo::UNSYNCABLE,
-             /*allowlisted_primary_schemes=*/{},
-             WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-             WebsiteSettingsRegistry::PLATFORM_ANDROID |
-                 WebsiteSettingsRegistry::DESKTOP,
-             PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY,
-             std::make_unique<GeolocationSettingDelegate>());
+  Register(ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+           "geolocation-with-options",
+           GeolocationSetting(PermissionOption::kAsk, PermissionOption::kAsk),
+           WebsiteSettingsInfo::UNSYNCABLE,
+           /*allowlisted_primary_schemes=*/{},
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           WebsiteSettingsRegistry::PLATFORM_ANDROID |
+               WebsiteSettingsRegistry::DESKTOP,
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY,
+           std::make_unique<GeolocationSettingDelegate>());
 }
 
-void PermissionSettingsRegistry::Register(
+const PermissionSettingsInfo* PermissionSettingsRegistry::Register(
     ContentSettingsType type,
     const std::string& name,
     PermissionSetting initial_default_value,
     WebsiteSettingsInfo::SyncStatus sync_status,
     const std::vector<std::string>& allowlisted_primary_schemes,
     WebsiteSettingsInfo::ScopingType scoping_type,
-    Platforms platforms,
+    WebsiteSettingsRegistry::Platforms platforms,
     PermissionSettingsInfo::OriginRestriction origin_restriction,
     std::unique_ptr<PermissionSettingsInfo::Delegate> delegate) {
   // Ensure that nothing has been registered yet for the given type.
@@ -110,13 +110,16 @@ void PermissionSettingsRegistry::Register(
   // WebsiteSettingsInfo::Register() will return nullptr if content setting type
   // is not used on the current platform and doesn't need to be registered.
   if (!website_settings_info) {
-    return;
+    return nullptr;
   }
 
   DCHECK(!base::Contains(permission_settings_info_, type));
-  permission_settings_info_[type] = std::make_unique<PermissionSettingsInfo>(
-      website_settings_info, allowlisted_primary_schemes, origin_restriction,
-      std::move(delegate));
+  auto& info = permission_settings_info_[type] =
+      std::make_unique<PermissionSettingsInfo>(
+          website_settings_info, allowlisted_primary_schemes,
+          origin_restriction, std::move(delegate));
+
+  return info.get();
 }
 
 }  // namespace content_settings

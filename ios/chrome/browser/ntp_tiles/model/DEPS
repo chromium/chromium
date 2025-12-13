@@ -13,6 +13,7 @@ specific_include_rules = {
     "+ios/web/public/test/http_server",
   ],
   "ios_most_visited_sites_factory\.cc": [
+    "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
     "+services/data_decoder/public/cpp/data_decoder.h",
   ],
 }

@@ -22,9 +22,6 @@ template("system_webview_bundle") {
     # TODO(crbug.com/41486995): Set this back to true once split translations
     # are working again.
     enable_language_splits = false
-    if (_is_trichrome) {
-      min_sdk_version = 29
-    }
     system_image_locale_allowlist = platform_pak_locales
     if (android_64bit_target_cpu) {
       _include_32_bit_webview = !defined(invoker.include_32_bit_webview) ||
@@ -36,10 +33,6 @@ template("system_webview_bundle") {
       if (!defined(android_app_secondary_abi)) {
         assert(!is_multi_abi, "target should not be enabled: $target_name")
       }
-    }
-
-    if (!defined(proguard_android_sdk_dep)) {
-      proguard_android_sdk_dep = webview_framework_dep
     }
 
     if (enable_silent_java_assert_reporting) {

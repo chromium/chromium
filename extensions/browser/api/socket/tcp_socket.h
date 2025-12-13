@@ -15,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/api/socket/socket.h"
 #include "extensions/common/api/socket.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"

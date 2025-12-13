@@ -11,10 +11,23 @@
 
 namespace features {
 
+#if BUILDFLAG(IS_WIN)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kApplicationAudioCaptureWin);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAAudioDriver);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAAudioInput);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAAudioPerStreamDeviceSelection);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAlwaysUseAudioManagerOutputFramesPerBuffer);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAndroidAudioDeviceListener);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioStereoInputStreamParameters);
+#endif
+
+#if BUILDFLAG(IS_MAC)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacAVFoundationPlayback);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapRestartOnDeviceChange);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kApplicationAudioCaptureMac);
 #endif
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebAudioRemoveAudioDestinationResampler);
@@ -23,14 +36,8 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebAudioRemoveAudioDestinationResampler);
 
 namespace media {
 
-#if BUILDFLAG(IS_MAC)
-MEDIA_EXPORT bool IsMacCatapSystemLoopbackCaptureSupported();
-MEDIA_EXPORT bool IsMacSckSystemLoopbackCaptureSupported();
-#endif
-
-// Returns true if system audio loopback capture is implemented for the current
-// OS.
-MEDIA_EXPORT bool IsSystemLoopbackCaptureSupported();
+// Returns true if application audio capture is implemented for the current OS.
+MEDIA_EXPORT bool IsApplicationAudioCaptureSupported();
 
 }  // namespace media
 

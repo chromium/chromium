@@ -1,24 +1,14 @@
 <cr-dialog show-on-attach id="dialog" close-text="$i18n{close}">
-  <div slot="title">$i18n{removeAddressConfirmationTitle}</div>
-  <div slot="body" id="body">
-    <span hidden="[[isAccountAddress_]]">
-      <span id="syncAddressDescription" hidden="[[!isProfileSyncEnabled_]]">
-        $i18n{removeSyncAddressConfirmationDescription}
-      </span>
-      <span id="localAddressDescription" hidden="[[isProfileSyncEnabled_]]">
-        $i18n{removeLocalAddressConfirmationDescription}
-      </span>
-    </span>
-    <span id="accountAddressDescription" hidden="[[!isAccountAddress_]]">
-      [[i18n('deleteAccountAddressRecordTypeNotice', accountInfo.email)]]
-    </span>
+  <div slot="title" id="title">[[confirmationTitle_]]</div>
+  <div slot="body" id="description"
+      inner-h-t-m-l="[[confirmationDescription_]]">
   </div>
   <div slot="button-container">
     <cr-button class="cancel-button" on-click="onCancelClick" id="cancel">
       $i18n{cancel}
     </cr-button>
     <cr-button class="action-button" on-click="onRemoveClick" id="remove">
-      $i18n{removeAddress}
+      [[removeButtonLabel_]]
     </cr-button>
   </div>
 </cr-dialog>

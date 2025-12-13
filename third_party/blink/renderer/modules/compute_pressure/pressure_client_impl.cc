@@ -94,7 +94,7 @@ PressureClientImpl::BindNewEndpointAndPassRemote(
       associated_receiver_.BindNewEndpointAndPassRemote(task_runner);
 
   associated_receiver_.set_disconnect_handler(
-      WTF::BindOnce(&PressureClientImpl::Reset, WrapWeakPersistent(this)));
+      BindOnce(&PressureClientImpl::Reset, WrapWeakPersistent(this)));
 
   return associated_pending_remote;
 }

@@ -9,7 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 
 class ShortcutsBackend;
@@ -53,8 +54,7 @@ struct TestShortcutData {
 // Fills test data into the shortcuts backend.
 void PopulateShortcutsBackendWithTestData(
     scoped_refptr<ShortcutsBackend> backend,
-    TestShortcutData* db,
-    size_t db_size);
+    base::span<TestShortcutData> db);
 
 // Runs an autocomplete query on |text| with the provided
 // |prevent_inline_autocomplete| setting and checks to see that the returned

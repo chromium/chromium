@@ -108,14 +108,6 @@ class SyncUserSettingsMock : public SyncUserSettings {
               (const override));
   MOCK_METHOD(void, SetEncryptionPassphrase, (const std::string&), (override));
   MOCK_METHOD(bool, SetDecryptionPassphrase, (const std::string&), (override));
-  MOCK_METHOD(void,
-              SetExplicitPassphraseDecryptionNigoriKey,
-              (std::unique_ptr<Nigori>),
-              (override));
-  MOCK_METHOD(std::unique_ptr<Nigori>,
-              GetExplicitPassphraseDecryptionNigoriKey,
-              (),
-              (const override));
 };
 
 }  // namespace syncer

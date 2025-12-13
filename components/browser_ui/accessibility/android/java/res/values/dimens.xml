@@ -7,6 +7,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="page_zoom_preview_image_size">24dp</dimen>
 
+    <!-- Page zoom bar dimensions -->
     <dimen name="page_zoom_view_margins">20dp</dimen>
     <dimen name="page_zoom_view_level_margin">8dp</dimen>
     <dimen name="page_zoom_view_level_padding">12dp</dimen>
@@ -17,4 +18,25 @@ found in the LICENSE file.
     <dimen name="page_zoom_view_max_width">400dp</dimen>
     <dimen name="page_zoom_view_tablet_mode_min_width">420dp</dimen>
     <dimen name="page_zoom_site_settings_delete_button_padding">16dp</dimen>
+    <dimen name="page_zoom_slider_track_height">10dp</dimen>
+
+    <!-- Page zoom Indicator dimensions -->
+    <dimen name="page_zoom_indicator_popup_width">279dp</dimen>
+    <dimen name="page_zoom_indicator_popup_height">56dp</dimen>
+    <dimen name="page_zoom_indicator_popup_padding_start">16dp</dimen>
+    <dimen name="page_zoom_indicator_popup_padding_end">8dp</dimen>
+    <dimen name="page_zoom_indicator_popup_dropdown_offset">40dp</dimen>
+    <dimen name="zoom_percentage_width">80dp</dimen>
+    <dimen name="zoom_buttons_margin_outwards">8dp</dimen>
+    <dimen name="zoom_buttons_margin_inwards">12dp</dimen>
+    <dimen name="reset_button_width">87dp</dimen>
+    <dimen name="reset_button_padding">4dp</dimen>
+
+    <!-- Page zoom item dimensions -->
+    <dimen name="symbol_padding">2dp</dimen>
+    <dimen name="zoom_percentage_menu_item_margin">10dp</dimen>
+    <dimen name="zoom_percentage_menu_item_width">44dp</dimen>
+    <dimen name="zoom_menu_item_divider_width">1dp</dimen>
+    <dimen name="zoom_menu_item_divider_margin">10dp</dimen>
+    <dimen name="zoom_menu_item_divider_height">24dp</dimen>
 </resources>

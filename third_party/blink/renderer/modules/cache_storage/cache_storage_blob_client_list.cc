@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"

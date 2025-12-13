@@ -11,14 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_controller.h"
-
-namespace base {
-class ElapsedTimer;
-}  // namespace base
 
 namespace syncer {
 
@@ -130,7 +127,7 @@ class ModelLoadManager {
 
   // Timer to measure time by which all types have finished loading (or timed
   // out).
-  std::unique_ptr<base::ElapsedTimer> load_models_elapsed_timer_;
+  std::optional<base::ElapsedTimer> load_models_elapsed_timer_;
 
   bool delegate_waiting_for_ready_for_configure_ = false;
 

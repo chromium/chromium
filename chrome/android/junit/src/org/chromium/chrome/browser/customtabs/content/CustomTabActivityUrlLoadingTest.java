@@ -29,8 +29,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -39,7 +37,6 @@ import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.prefs.PrefService;
@@ -53,24 +50,9 @@ import org.chromium.url.Origin;
  * properly loaded in Custom Tabs in different conditions.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {CustomTabActivityUrlLoadingTest.ShadowOrigin.class})
-@Features.EnableFeatures({
-    ChromeFeatureList.CCT_EARLY_NAV,
-    ChromeFeatureList.CCT_PREWARM_TAB,
-    ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER,
-    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT_NAME
-})
+@Features.EnableFeatures({ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER})
+@Config(manifest = Config.NONE)
 public class CustomTabActivityUrlLoadingTest {
-    @Implements(Origin.class)
-    public static class ShadowOrigin {
-        @Implementation
-        public static Origin createOpaqueOrigin() {
-            return null;
-        }
-    }
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -86,6 +68,7 @@ public class CustomTabActivityUrlLoadingTest {
 
     @Before
     public void setUp() {
+        Origin.setOpaqueOriginFactoryForTesting(() -> null);
         UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         doReturn(mock(PrefService.class)).when(mMockUserPrefsJni).get(any());

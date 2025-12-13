@@ -44,8 +44,8 @@ suite('SettingsSelectTest', function() {
     assertEquals(0, select.selectedIndex);
     assertEquals(2, select.options.length);
     assertEquals(
-        customLocalizedMediaName, select.options[0]!.textContent!.trim());
-    assertEquals(customMediaName, select.options[1]!.textContent!.trim());
+        customLocalizedMediaName, select.options[0]!.textContent.trim());
+    assertEquals(customMediaName, select.options[1]!.textContent.trim());
   });
 
   test('set setting', async () => {
@@ -71,8 +71,8 @@ suite('SettingsSelectTest', function() {
     assertEquals(2, select.options.length);
     assertEquals(1, select.selectedIndex);
     assertFalse(settingsSelect.getSetting('dpi').setFromUi);
-    assertEquals('lime', select.options[0]!.textContent!.trim());
-    assertEquals('orange', select.options[1]!.textContent!.trim());
+    assertEquals('lime', select.options[0]!.textContent.trim());
+    assertEquals('orange', select.options[1]!.textContent.trim());
     assertEquals(option0, select.options[0]!.value);
     assertEquals(option1, select.options[1]!.value);
 

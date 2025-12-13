@@ -44,7 +44,6 @@ TEST_F(ArcAppUtilsTest, IsArcItemDoesNotCrashWithInvalidCrxFileIds) {
 
 TEST_F(ArcAppUtilsTest, GetAndroidId) {
   content::BrowserTaskEnvironment task_environment;
-  TestingProfile testing_profile;
 
   // ARC++ is not running.
   bool ok = true;
@@ -54,7 +53,10 @@ TEST_F(ArcAppUtilsTest, GetAndroidId) {
   EXPECT_EQ(0, android_id);
 
   ArcAppTest arc_app_test_;
-  arc_app_test_.SetUp(&testing_profile);
+  arc_app_test_.PreProfileSetUp();
+
+  auto testing_profile = std::make_unique<TestingProfile>();
+  arc_app_test_.PostProfileSetUp(testing_profile.get());
 
   constexpr int64_t kAndroidIdForTest = 1000;
   arc_app_test_.app_instance()->set_android_id(kAndroidIdForTest);
@@ -62,5 +64,7 @@ TEST_F(ArcAppUtilsTest, GetAndroidId) {
   EXPECT_TRUE(ok);
   EXPECT_EQ(kAndroidIdForTest, android_id);
 
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
+  testing_profile.reset();
+  arc_app_test_.PostProfileTearDown();
 }

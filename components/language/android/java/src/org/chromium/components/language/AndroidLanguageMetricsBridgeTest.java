@@ -17,7 +17,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 
 import java.util.Map;
 
@@ -43,11 +44,12 @@ public class AndroidLanguageMetricsBridgeTest {
                     -1895779836);
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
     }
 
     /** Test that the correct language hashes are reported for the override language */

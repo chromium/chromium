@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_VIDEO_TRACK_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_VIDEO_TRACK_SOURCE_H_
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
@@ -126,10 +125,6 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
                           scoped_refptr<media::VideoFrame> mapped_frame);
 
   void TryProcessPendingFrames();
-
-  // This checks if the colorspace information should be passed to webrtc. Avoid
-  // sending unknown or unnecessary color space.
-  bool ShouldSetColorSpace(const gfx::ColorSpace& color_space);
 
   // |thread_checker_| is bound to the libjingle worker thread.
   THREAD_CHECKER(thread_checker_);

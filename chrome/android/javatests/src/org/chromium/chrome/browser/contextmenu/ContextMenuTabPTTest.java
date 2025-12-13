@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUiFacility;
 import org.chromium.chrome.test.transit.testhtmls.TopBottomLinksPageStation;
@@ -58,7 +58,7 @@ public class ContextMenuTabPTTest {
     @Test
     @MediumTest
     public void openNewTabFromContextMenu() {
-        PageStation blankPage = mCtaTestRule.startOnBlankPage();
+        CtaPageStation blankPage = mCtaTestRule.startOnBlankPage();
 
         var topBottomLinkPageAndTop =
                 TopBottomLinksPageStation.loadPage(mCtaTestRule.getActivityTestRule(), blankPage);
@@ -73,7 +73,7 @@ public class ContextMenuTabPTTest {
     @Test
     @MediumTest
     public void openNewTabInGroupFromContextMenu() {
-        PageStation blankPage = mCtaTestRule.startOnBlankPage();
+        CtaPageStation blankPage = mCtaTestRule.startOnBlankPage();
 
         var topBottomLinkPageAndTop =
                 TopBottomLinksPageStation.loadPage(mCtaTestRule.getActivityTestRule(), blankPage);

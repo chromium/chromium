@@ -47,11 +47,50 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kSuccess"/>
 </enum>
 
+<!-- LINT.IfChange(MemoryDumpProviderStatus) -->
+
+<enum name="MemoryDumpProviderStatus">
+  <int value="0" label="Waiting: Queued"/>
+  <int value="1" label="Waiting: Posted to another sequence"/>
+  <int value="2" label="Skipped: PostTask failed"/>
+  <int value="3" label="Skipped: Not allowed in background mode"/>
+  <int value="4" label="Skipped: Disabled"/>
+  <int value="5" label="Done: Success"/>
+  <int value="6" label="Done: Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//base/trace_event/measured_memory_dump_provider_info.h:MemoryDumpProviderStatus) -->
+
 <enum name="MemoryPressureLevel">
   <int value="0" label="No memory pressure"/>
   <int value="1" label="Moderate memory pressure"/>
   <int value="2" label="Critical memory pressure"/>
 </enum>
+
+<!-- LINT.IfChange(RequestOutcome) -->
+
+<enum name="RequestOutcome">
+  <int value="0" label="Success"/>
+  <int value="1"
+      label="Periodic dump request was made with the same level of details as
+             an already queued request"/>
+  <int value="2" label="OSMetrics::FillOSMemoryDump failed"/>
+  <int value="3" label="OSMetrics::FillProcessMemoryMaps failed"/>
+  <int value="4" label="Dump was requested for a null pid"/>
+  <int value="5" label="Dump was requested for a process that was not found"/>
+  <int value="6"
+      label="A request was made via RequestGlobalMemoryDumpAndAppendToTrace
+             while tracing is disabled or not setup yet"/>
+  <int value="7"
+      label="A process that was part of the request unregistered while the
+             dump was being collected"/>
+  <int value="8"
+      label="A request could not be fulfilled within the allowed time"/>
+  <int value="9"
+      label="base::trace_event::MemoryDumpManager::CreateProcessDump failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom:RequestOutcome) -->
 
 <enum name="SelfCompactionCancellationReason">
   <int value="0" label="Frozen by App Freezer"/>

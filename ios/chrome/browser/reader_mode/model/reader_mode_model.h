@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_MODEL_H_
 #define IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_MODEL_H_
 
+#import "base/sequence_checker.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
 
@@ -22,6 +23,9 @@ class ReaderModeModel : public ContextualPanelModel, public KeyedService {
   void FetchConfigurationForWebState(
       web::WebState* web_state,
       FetchConfigurationForWebStateCallback callback) override;
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_MODEL_H_

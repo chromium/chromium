@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>caret-shape underscore width falls back to 1ch when impractical to determine</title>
+  <link rel="help" href="https://drafts.csswg.org/css-ui/#caret-shape">
+  <meta name="assert" content="Test checks that caret width for underscore shape should fall back to 1ch when it's impractical to determine.">
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+  <script src="../../resources/ahem.js"></script>
+<style>
+    div {
+    font-family: Ahem;
+    font-size: 10px;
+    caret-shape: underscore;
+    }
+  </style>
+</head>
+
+<body>
+<div id="test" contenteditable >XX<svg height="50" width="50">
+<circle r="25" cx="25" cy="25" fill="green" /></svg></div>
+</body>
+<script>
+   test(function () {
+    const test = document.getElementById("test").firstChild;
+    if (window.internals) {
+      getSelection().collapse(test, 2);
+      const caret_width = internals.absoluteCaretBounds().width;
+      assert_approx_equals(10, caret_width, 1);
+     }
+    }, "The width of the underscore caret should be 1ch if this information is impractical to determine.");
+</script>
+

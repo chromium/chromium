@@ -14,11 +14,12 @@
 #include "base/functional/callback.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_id.mojom.h"
-#include "ui/color/color_mixer.h"
+#include "ui/color/color_id.mojom-forward.h"
 #include "ui/color/color_provider_manager.h"
 
 namespace ui {
+
+class ColorMixer;
 
 using RendererColorMap = base::flat_map<color::mojom::RendererColorId, SkColor>;
 
@@ -32,22 +33,6 @@ class COMPONENT_EXPORT(COLOR) ColorProviderUtilsCallbacks {
 // logging. Do not retain the results for longer than the scope in which these
 // functions are called.
 
-// Converts the ColorMode.
-std::string_view COMPONENT_EXPORT(COLOR)
-    ColorModeName(ColorProviderKey::ColorMode color_mode);
-
-// Converts the ContrastMode.
-std::string_view COMPONENT_EXPORT(COLOR)
-    ContrastModeName(ColorProviderKey::ContrastMode contrast_mode);
-
-// Converts the ForcedColors.
-std::string_view COMPONENT_EXPORT(COLOR)
-    ForcedColorsName(ColorProviderKey::ForcedColors forced_colors);
-
-// Converts SystemTheme.
-std::string_view COMPONENT_EXPORT(COLOR)
-    SystemThemeName(ui::SystemTheme system_theme);
-
 // Converts ColorId.
 std::string COMPONENT_EXPORT(COLOR) ColorIdName(ColorId color_id);
 
@@ -59,7 +44,7 @@ std::string COMPONENT_EXPORT(COLOR) SkColorName(SkColor color);
 // Converts Color Provider Color Id in string format from kColorXXX to
 // "--color-X-X-X" for CSS
 std::string COMPONENT_EXPORT(COLOR)
-    ConvertColorProviderColorIdToCSSColorId(std::string color_id_name);
+    ConvertColorProviderColorIdToCSSColorId(std::string_view color_id_name);
 
 // Converts SkColor in ARGB format to CSS color in RGBA color. Returns the color
 // in a Hex string representation.
@@ -77,11 +62,6 @@ RendererColorMap COMPONENT_EXPORT(COLOR)
 std::unique_ptr<ColorProvider> COMPONENT_EXPORT(COLOR)
     CreateColorProviderFromRendererColorMap(
         const RendererColorMap& renderer_color_map);
-
-// Adds colors for emulating Windows 10 default high contrast color themes
-// to `mixer`. Used to support the devtools forced colors emulation feature.
-void COMPONENT_EXPORT(COLOR)
-    AddEmulatedForcedColorsToMixer(ColorMixer& mixer, bool dark_mode);
 
 // Creates a color provider emulating Windows 10 default high contrast color
 // themes.
@@ -115,6 +95,13 @@ void COMPONENT_EXPORT(COLOR)
 // NativeThemeBase::ControlColorId when in forced colors mode.
 void COMPONENT_EXPORT(COLOR)
     CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer);
+
+// Completes default color definitions for the RendererColorIds that are web
+// native.
+void COMPONENT_EXPORT(COLOR)
+    CompleteDefaultWebNativeRendererColorIdsDefinition(ui::ColorMixer& mixer,
+                                                       bool dark_mode,
+                                                       bool high_contrast);
 
 // Completes default color definitions for the RendererColorIds that are non
 // web native.

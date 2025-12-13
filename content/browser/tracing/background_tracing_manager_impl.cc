@@ -24,6 +24,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/tracing/trace_time.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -1027,7 +1028,7 @@ bool BackgroundTracingManagerImpl::DoEmitNamedTrigger(
   }
   for (BackgroundTracingRule& obs : it->second) {
     if (obs.OnRuleTriggered(value, flow_id)) {
-      TRACE_EVENT_INSTANT("toplevel,latency", "NamedTrigger",
+      TRACE_EVENT_INSTANT("tracing.background", "NamedTrigger",
                           perfetto::Flow::Global(flow_id));
       return true;
     }

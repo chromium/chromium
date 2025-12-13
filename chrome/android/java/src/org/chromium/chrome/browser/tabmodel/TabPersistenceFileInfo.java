@@ -8,18 +8,18 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /** Contains representations of stored Tab data, sufficient to identify said Tab data in storage. */
 @NullMarked
 public class TabPersistenceFileInfo {
     // List of identifiers for TabState files.
-    private final List<TabStateFileInfo> mTabStateFileInfos = new LinkedList<>();
+    private final List<TabStateFileInfo> mTabStateFileInfos = new ArrayList<>();
 
     // List of metadata files.
-    private final List<String> mMetadataFiles = new LinkedList<>();
+    private final List<String> mMetadataFiles = new ArrayList<>();
 
     public void addTabStateFileInfo(int tabId, boolean isEncrypted) {
         mTabStateFileInfos.add(new TabStateFileInfo(tabId, isEncrypted));
@@ -42,7 +42,7 @@ public class TabPersistenceFileInfo {
         public final int tabId;
         public final boolean isEncrypted;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        @VisibleForTesting
         public TabStateFileInfo(int tabId, boolean isEncrypted) {
             this.tabId = tabId;
             this.isEncrypted = isEncrypted;

@@ -144,7 +144,7 @@ CreateOAuth2TokenServiceDelegate(
                                  account_manager_facade, is_regular_profile);
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Fall back to |MutableProfileOAuth2TokenServiceDelegate| on all platforms
-  // other than Android, iOS, and Chrome OS (Ash and Lacros).
+  // other than Android, iOS, and Chrome OS (Ash).
   return CreateMutableProfileOAuthDelegate(
       account_tracker_service, account_consistency,
       delete_signin_cookies_on_exit, token_web_data, signin_client,

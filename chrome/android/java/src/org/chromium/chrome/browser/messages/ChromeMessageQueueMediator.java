@@ -6,12 +6,13 @@ package org.chromium.chrome.browser.messages;
 
 import android.os.Handler;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -35,10 +36,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
 /**
- * A glue class in chrome side to suspend and resume the queue. This is able
- * to observe the full screen mode and control the visibility of browser control in order to
- * suspend and resume the queue.
+ * A glue class in chrome side to suspend and resume the queue. This is able to observe the full
+ * screen mode and control the visibility of browser control in order to suspend and resume the
+ * queue.
  */
+@NullMarked
 public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocusChangeListener {
     private static final long QUEUE_RESUMPTION_ON_URL_UNFOCUS_WAIT_DURATION_MS = 1000;
 
@@ -47,9 +49,9 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     private BrowserControlsManager mBrowserControlsManager;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private final BrowserControlsObserver mBrowserControlsObserver;
-    @Nullable private LayoutStateProvider mLayoutStateProvider;
-    @Nullable private ActivityTabProvider mActivityTabProvider;
-    @Nullable private ModalDialogManager mModalDialogManager;
+    private @Nullable LayoutStateProvider mLayoutStateProvider;
+    private @Nullable ActivityTabProvider mActivityTabProvider;
+    private @Nullable ModalDialogManager mModalDialogManager;
     private BottomSheetController mBottomSheetController;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final CallbackController mCallbackController = new CallbackController();
@@ -180,7 +182,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                     private int mToken = TokenHolder.INVALID_TOKEN;
 
                     @Override
-                    protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
                         if (mToken == TokenHolder.INVALID_TOKEN && tab == null) {
                             mToken = suspendQueue();
                         } else if (mToken != TokenHolder.INVALID_TOKEN && tab != null) {
@@ -191,6 +193,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                 };
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mIsDestroyed = true;
         mActivityLifecycleDispatcher.unregister(mPauseResumeWithNativeObserver);
@@ -320,12 +323,12 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     /**
      * @param layoutStateProvider The provider able to add observer to observe overview mode.
      */
-    private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+    private void setLayoutStateProvider(@Nullable LayoutStateProvider layoutStateProvider) {
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         }
         mLayoutStateProvider = layoutStateProvider;
-        if (layoutStateProvider == null) return;
+        if (mLayoutStateProvider == null) return;
         // TODO(crbug.com/40761037): The crash is possible when #setLayoutStateProvider() is called
         // after #destroy() was called. This sequence of calls is unexpected. Below check throws an
         // exception to help identify the caller.
@@ -335,12 +338,12 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
-    private void setModalDialogManager(ModalDialogManager modalDialogManager) {
+    private void setModalDialogManager(@Nullable ModalDialogManager modalDialogManager) {
         if (mModalDialogManager != null) {
             mModalDialogManager.removeObserver(mModalDialogManagerObserver);
         }
         mModalDialogManager = modalDialogManager;
-        if (modalDialogManager == null) return;
+        if (mModalDialogManager == null) return;
         mModalDialogManager.addObserver(mModalDialogManagerObserver);
     }
 
@@ -362,7 +365,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     }
 
     class BrowserControlsObserver implements BrowserControlsStateProvider.Observer {
-        private Runnable mRunOnControlsFullyVisible;
+        private @Nullable Runnable mRunOnControlsFullyVisible;
 
         @Override
         public void onControlsOffsetChanged(
@@ -382,11 +385,11 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
             }
         }
 
-        void setOneTimeRunnableOnControlsFullyVisible(Runnable runnable) {
+        void setOneTimeRunnableOnControlsFullyVisible(@Nullable Runnable runnable) {
             mRunOnControlsFullyVisible = runnable;
         }
 
-        Runnable getRunnableForTesting() {
+        @Nullable Runnable getRunnableForTesting() {
             return mRunOnControlsFullyVisible;
         }
 

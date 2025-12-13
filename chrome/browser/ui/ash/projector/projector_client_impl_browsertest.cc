@@ -15,7 +15,6 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -44,6 +43,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -182,10 +182,9 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
   auto* profile = browser()->profile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   client()->OpenProjectorApp();
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   // Verify that Projector App is opened.
   Browser* app_browser =
@@ -208,10 +207,9 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   // Launch the app for the first time.
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   client()->OpenProjectorApp();
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   // Verify that Projector App is opened.
   Browser* app_browser1 =
@@ -246,10 +244,9 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
   auto* profile = browser()->profile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   client()->OpenProjectorApp();
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   // Verify that Projector App is opened.
   Browser* app_browser =
@@ -270,10 +267,9 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, CloseProjectorApp) {
   auto* profile = browser()->profile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   client()->OpenProjectorApp();
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   // Verify that Projector App is opened.
   Browser* app_browser =
@@ -381,11 +377,10 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
   auto* profile = browser()->profile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   client()->OpenProjectorApp();
   if (!is_child()) {
-    browser_opened.Wait();
+    browser_created_observer.Wait();
   }
 
   // Verify that Projector App is opened.
@@ -415,10 +410,9 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   auto* profile = browser()->profile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   client()->OpenProjectorApp();
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   // Verify the user can open the Projector App when the policy is enabled.
   Browser* app_browser =

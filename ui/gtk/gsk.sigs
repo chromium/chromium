@@ -18,3 +18,4 @@ float gsk_opacity_node_get_opacity(const GskRenderNode* node);
 GskRenderNode* gsk_mask_node_get_mask(const GskRenderNode* node);
 GdkTexture* gsk_texture_scale_node_get_texture(const GskRenderNode* node);
 GskRenderNode* gsk_subsurface_node_get_child(const GskRenderNode* node);
+void gsk_render_node_draw(GskRenderNode* node, cairo_t* cr);

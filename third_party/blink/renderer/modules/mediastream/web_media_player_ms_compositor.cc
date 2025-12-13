@@ -10,12 +10,14 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -42,12 +44,6 @@
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
-
-template <typename T>
-struct CrossThreadCopier<std::optional<T>>
-    : public CrossThreadCopierPassThrough<std::optional<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
 
 namespace {
 
@@ -473,7 +469,16 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     // same as |current_frame_|. Function SetCurrentFrame() handles whether
     // to increase |dropped_frame_count_| for that frame, so here we should
     // increase |dropped_frame_count_| by the count of all other frames.
-    dropped_frame_count_ += rendering_frame_buffer_->frames_queued() - 1;
+    //
+    // Use std::max to prevent |dropped_frame_count_| from integer underflow
+    // when frames_queued() is 0.
+    if (base::FeatureList::IsEnabled(
+            media::kMediaStreamAccurateDroppedFrameCount)) {
+      dropped_frame_count_ +=
+          std::max<size_t>(rendering_frame_buffer_->frames_queued(), 1u) - 1;
+    } else {
+      dropped_frame_count_ += rendering_frame_buffer_->frames_queued() - 1;
+    }
     rendering_frame_buffer_->Reset();
     pending_frames_info_.clear();
     RenderWithoutAlgorithm(frame, is_copy);
@@ -492,11 +497,12 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
   // maximum_composition_delay_in_frames field is set in the video frame
   // metadata. See  VideoReceiveStream2::UpdatePlayoutDelays() for how this
   // value is computed.
-  if ((rendering_frame_buffer_->renderer_algorithm() !=
-       VideoRendererAlgorithmWrapper::kLowLatency) &&
-      (pending_frames_info_.size() !=
-       rendering_frame_buffer_->frames_queued())) {
-    pending_frames_info_.pop_back();
+  if (rendering_frame_buffer_->renderer_algorithm() !=
+      VideoRendererAlgorithmWrapper::kLowLatency) {
+    while (pending_frames_info_.size() >
+           rendering_frame_buffer_->frames_queued()) {
+      pending_frames_info_.pop_back();
+    }
     DCHECK_EQ(pending_frames_info_.size(),
               rendering_frame_buffer_->frames_queued());
   }
@@ -618,7 +624,7 @@ void WebMediaPlayerMSCompositor::OnContextLost() {
   // has no concept of resetting current_frame_, so a black frame is set.
   base::AutoLock auto_lock(current_frame_lock_);
   if (!current_frame_ || (!current_frame_->HasSharedImage() &&
-                          !current_frame_->HasMappableGpuBuffer())) {
+                          !current_frame_->HasMappableSharedImage())) {
     return;
   }
   scoped_refptr<media::VideoFrame> black_frame =
@@ -679,9 +685,7 @@ bool WebMediaPlayerMSCompositor::MapTimestampsToRenderTimeTicks(
     // No exact reference time was found, so calculate an estimated one using
     // the nearest known timestamp.
     if (min_delta.is_positive()) {
-      reference_time =
-          reference_time + (min_delta / (timestamp + min_delta)) *
-                               (reference_time - base::TimeTicks());
+      reference_time += min_delta;
     }
 
     wall_clock_times->push_back(reference_time);
@@ -774,8 +778,18 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
                        TRACE_EVENT_SCOPE_THREAD, "Timestamp",
                        frame->timestamp().InMicroseconds());
 
-  if (!current_frame_rendered_)
-    ++dropped_frame_count_;
+  if (base::FeatureList::IsEnabled(
+          media::kMediaStreamAccurateDroppedFrameCount)) {
+    // Check if there was a previous frame that wasn't rendered
+    if (current_frame_ && !current_frame_rendered_) {
+      ++dropped_frame_count_;
+    }
+  } else {
+    if (!current_frame_rendered_) {
+      ++dropped_frame_count_;
+    }
+  }
+
   current_frame_rendered_ = false;
 
   // Compare current frame with |frame|. Initialize values as if there is no
@@ -955,9 +969,9 @@ void WebMediaPlayerMSCompositor::SetAlgorithmEnabledForTesting(
 
   if (!rendering_frame_buffer_) {
     rendering_frame_buffer_ = std::make_unique<VideoRendererAlgorithmWrapper>(
-        WTF::BindRepeating(
+        blink::BindRepeating(
             &WebMediaPlayerMSCompositor::MapTimestampsToRenderTimeTicks,
-            WTF::Unretained(this)),
+            Unretained(this)),
         &media_log_);
   }
 }

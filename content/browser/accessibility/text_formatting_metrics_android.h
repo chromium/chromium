@@ -9,7 +9,9 @@
 #include <string_view>
 
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace content {
 
@@ -23,6 +25,12 @@ inline constexpr std::string_view kTextFormattingTotalDurationMetric =
 inline constexpr std::string_view
     kTextFormattingTotalDurationNoStyleDataMetric =
         "Accessibility.Android.TextFormatting.Performance.TotalDuration."
+        "NoStyleData";
+inline constexpr std::string_view kTextFormattingCheckAXFocusDurationMetric =
+    "Accessibility.Android.TextFormatting.Performance.CheckAXFocusDuration";
+inline constexpr std::string_view
+    kTextFormattingCheckAXFocusDurationNoStyleDataMetric =
+        "Accessibility.Android.TextFormatting.Performance.CheckAXFocusDuration."
         "NoStyleData";
 inline constexpr std::string_view kTextFormattingGetTextContentDurationMetric =
     "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration";
@@ -116,19 +124,34 @@ inline constexpr std::string_view
 
 enum class TextFormattingMetric {
   kTotalDuration,
+  kCheckAXFocusDuration,
   kGetTextContentDuration,
   kToJavaDataDuration,
   kSetAniTextDuration,
 };
 
-CONTENT_EXPORT void RecordTextFormattingTextLengthHistogram(
-    int length,
-    std::optional<bool> has_style_data = std::nullopt);
+class CONTENT_EXPORT TextFormattingMetricsRecorder {
+ public:
+  TextFormattingMetricsRecorder();
+  ~TextFormattingMetricsRecorder();
 
-CONTENT_EXPORT void RecordTextFormattingDurationHistogram(
-    TextFormattingMetric metric,
-    base::TimeDelta duration,
-    std::optional<bool> has_style_data = std::nullopt);
+  TextFormattingMetricsRecorder(const TextFormattingMetricsRecorder&) = delete;
+  TextFormattingMetricsRecorder& operator=(
+      const TextFormattingMetricsRecorder&) = delete;
+
+  void StartTimer(TextFormattingMetric metric);
+  void StopTimer(TextFormattingMetric metric);
+
+  void EmitHistograms(int text_length, bool has_style_data) const;
+
+  base::TimeDelta GetTotalDuration() const;
+
+ private:
+  absl::flat_hash_map<
+      TextFormattingMetric,
+      std::pair<base::ElapsedTimer, std::optional<base::TimeDelta>>>
+      timers_;
+};
 
 CONTENT_EXPORT void RecordTextFormattingRangeCountsForTextLengthHistogram(
     std::u16string_view text,

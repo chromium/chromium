@@ -11,6 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -51,9 +53,8 @@ TEST_F(ChromeTabStripDelegateTest, NullWindowShouldReturnEmptyData) {
 TEST_F(ChromeTabStripDelegateTest, EmptyWindowShouldReturnEmptyData) {
   base::test::TestFuture<std::vector<ash::TabInfo>> future;
   auto tab_list = delegate()->GetTabsListForWindow(
-      /*window=*/BrowserList::GetInstance()
-          ->get(0)
-          ->window()
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+          ->GetWindow()
           ->GetNativeWindow());
   EXPECT_EQ(0u, tab_list.size());
 }

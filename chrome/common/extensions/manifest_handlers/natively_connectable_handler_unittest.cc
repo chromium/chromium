@@ -5,9 +5,12 @@
 #include "chrome/common/extensions/manifest_handlers/natively_connectable_handler.h"
 
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permission_message_test_util.h"
 #include "ui/base/l10n/l10n_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 using NativelyConnectableManifestTest = ChromeManifestTest;

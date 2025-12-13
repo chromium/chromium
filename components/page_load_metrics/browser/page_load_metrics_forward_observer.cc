@@ -253,6 +253,12 @@ void PageLoadMetricsForwardObserver::OnFirstImagePaintInPage(
 void PageLoadMetricsForwardObserver::OnFirstContentfulPaintInPage(
     const mojom::PageLoadTiming& timing) {}
 
+void PageLoadMetricsForwardObserver::OnMonotonicFirstPaintInPage(
+    const mojom::PageLoadTiming& timing) {}
+
+void PageLoadMetricsForwardObserver::OnMonotonicFirstContentfulPaintInPage(
+    const mojom::PageLoadTiming& timing) {}
+
 void PageLoadMetricsForwardObserver::
     OnFirstPaintAfterBackForwardCacheRestoreInPage(
         const mojom::BackForwardCacheTiming& timing,
@@ -356,12 +362,12 @@ void PageLoadMetricsForwardObserver::OnMainFrameViewportRectChanged(
   parent_observer_->OnMainFrameViewportRectChanged(main_frame_viewport_rect);
 }
 
-void PageLoadMetricsForwardObserver::OnMainFrameImageAdRectsChanged(
-    const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) {
+void PageLoadMetricsForwardObserver::OnMainFrameAdRectsChanged(
+    const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) {
   if (!parent_observer_) {
     return;
   }
-  parent_observer_->OnMainFrameImageAdRectsChanged(main_frame_image_ad_rects);
+  parent_observer_->OnMainFrameAdRectsChanged(main_frame_ad_rects);
 }
 
 // Don't need to forward FlushMetricsOnAppEnterBackground and OnComplete as they
@@ -472,13 +478,6 @@ void PageLoadMetricsForwardObserver::DidActivatePrerenderedPage(
 
 void PageLoadMetricsForwardObserver::DidActivatePreviewedPage(
     base::TimeTicks activation_time) {}
-
-void PageLoadMetricsForwardObserver::OnV8MemoryChanged(
-    const std::vector<MemoryUpdate>& memory_updates) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnV8MemoryChanged(memory_updates);
-}
 
 void PageLoadMetricsForwardObserver::OnSharedStorageWorkletHostCreated() {
   if (!parent_observer_)

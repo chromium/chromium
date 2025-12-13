@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/input/synthetic_gesture_target.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace content {
 
@@ -236,9 +237,9 @@ void SyntheticGestureController::StartGesture() {
 
   {
     DCHECK(!pending_gesture_queue_.IsEmpty());
-    TRACE_EVENT_ASYNC_BEGIN0("input,benchmark",
-                             "SyntheticGestureController::running",
-                             pending_gesture_queue_.FrontGesture());
+    TRACE_EVENT_BEGIN(
+        "input,benchmark", "SyntheticGestureController::running",
+        perfetto::Track::FromPointer(pending_gesture_queue_.FrontGesture()));
     StartOrUpdateTimer();
   }
 }
@@ -247,9 +248,7 @@ void SyntheticGestureController::StopGesture(const SyntheticGesture& gesture,
                                              SyntheticGesture::Result result,
                                              bool complete_immediately) {
   DCHECK_NE(result, SyntheticGesture::GESTURE_RUNNING);
-  TRACE_EVENT_ASYNC_END0("input,benchmark",
-                         "SyntheticGestureController::running",
-                         &gesture);
+  TRACE_EVENT_END("input,benchmark", perfetto::Track::FromPointer(&gesture));
 
   dispatch_timer_.Stop();
 

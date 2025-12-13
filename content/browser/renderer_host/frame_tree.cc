@@ -840,11 +840,12 @@ double FrameTree::GetLoadProgress() {
   return root_.current_frame_host()->GetPage().load_progress();
 }
 
-bool FrameTree::IsLoadingIncludingInnerFrameTrees() const {
-  return GetLoadingState() != LoadingState::NONE;
+bool FrameTree::IsLoadingIncludingInnerFrameTrees(
+    bool exclude_ad_subframes) const {
+  return GetLoadingState(exclude_ad_subframes) != LoadingState::NONE;
 }
 
-LoadingState FrameTree::GetLoadingState() const {
+LoadingState FrameTree::GetLoadingState(bool exclude_ad_subframes) const {
   // The overall loading state for the FrameTree matches the root node's loading
   // state if the root is loading.
   if (root_.GetLoadingState() != LoadingState::NONE) {
@@ -857,6 +858,11 @@ LoadingState FrameTree::GetLoadingState() const {
   for (const FrameTreeNode* node_to_check :
        const_cast<FrameTree*>(this)->CollectNodesForIsLoading()) {
     if (node_to_check->IsLoading()) {
+      if (exclude_ad_subframes &&
+          node_to_check->current_frame_host()->IsAdFrame()) {
+        continue;
+      }
+
       return LoadingState::LOADING_WITHOUT_UI;
     }
   }
@@ -909,8 +915,15 @@ void FrameTree::RegisterExistingOriginAsHavingDefaultIsolation(
   // BrowsingInstance of a bfcache RFH while it's in the cache.
   for (auto* frame_tree_node : SubtreeNodes(root())) {
     auto* frame_host = frame_tree_node->current_frame_host();
-    if (previously_visited_origin == frame_host->GetLastCommittedOrigin())
+    // Sandboxed frame origins are treated as equivalent to their non-sandboxed
+    // precursors in the per-BrowsingInstance Origin-Agent-Cluster state, so it
+    // is important to compare and register precursors as well. See
+    // https://crbug.com/446157743.
+    if (previously_visited_origin.GetTupleOrPrecursorTupleIfOpaque() ==
+        frame_host->GetLastCommittedOrigin()
+            .GetTupleOrPrecursorTupleIfOpaque()) {
       matching_site_instances.insert(frame_host->GetSiteInstance());
+    }
 
     if (frame_host->HasCommittingNavigationRequestForOrigin(
             previously_visited_origin, navigation_request_to_exclude)) {
@@ -1100,8 +1113,8 @@ void FrameTree::FocusOuterFrameTrees() {
   }
 }
 
-void FrameTree::Discard() {
-  const auto attempt_discard = [this]() {
+void FrameTree::Discard(base::OnceClosure on_discarded_cb) {
+  const auto attempt_discard = [this](base::OnceClosure on_discarded_cb) {
     // A speculative pending-commit rfh should not be cancelled or deleted. In
     // this case ignore the discard request and allow the navigation to complete
     // as normal.
@@ -1112,13 +1125,14 @@ void FrameTree::Discard() {
     }
 
     root()->set_was_discarded();
-    root()->current_frame_host()->DiscardFrame();
+    root()->current_frame_host()->DiscardFrame(std::move(on_discarded_cb));
     NavigationControllerImpl& navigation_controller = controller();
     navigation_controller.SetNeedsReload();
     navigation_controller.GetBackForwardCache().Flush();
     return true;
   };
-  base::UmaHistogramBoolean("Discarding.DiscardFrameTree", attempt_discard());
+  base::UmaHistogramBoolean("Discarding.DiscardFrameTree",
+                            attempt_discard(std::move(on_discarded_cb)));
 }
 
 }  // namespace content

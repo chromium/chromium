@@ -46,8 +46,9 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
             int identifier,
             SnackbarManager.SnackbarController controller,
             Object actionData) {
-        if (mSnackbarManagerSupplier.hasValue()) {
-            showSnackbar(mSnackbarManagerSupplier.get(), text, identifier, controller, actionData);
+        var snackbarManager = mSnackbarManagerSupplier.get();
+        if (snackbarManager != null) {
+            showSnackbar(snackbarManager, text, identifier, controller, actionData);
         }
     }
 
@@ -74,13 +75,18 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
             Object actionData) {
         var snackbar = Snackbar.make(text, controller, Snackbar.TYPE_ACTION, identifier);
         snackbar.setAction(getString(R.string.undo), actionData);
-        snackbar.setSingleLine(false);
+        snackbar.setDefaultLines(false);
 
         snackbarManager.showSnackbar(snackbar);
     }
 
     protected void startSettings(Class<? extends Fragment> fragment) {
-        SettingsNavigationFactory.createSettingsNavigation().startSettings(getContext(), fragment);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(
+                        getContext(),
+                        fragment,
+                        /* fragmentArgs= */ null,
+                        /* addToBackStack= */ true);
     }
 
     protected void launchSiteSettingsActivity(@SiteSettingsCategory.Type int category) {

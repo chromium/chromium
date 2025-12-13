@@ -1,38 +1,35 @@
 <style>
-  :host {
-    &:not([expanded]) {
-      & #json-content {
-        border-top: none;
-        height: 0;
-        overflow: hidden;
-      }
-
-      & #open-icon {
-        display: block;
-      }
-
-      & #close-icon {
-        display: none;
-      }
+  :host([expanded]) {
+    #json-content {
+      max-height: 50vh;
+      overflow: auto;
+      border-top: 1px solid lightgray;
+      padding: 2px;
+      height: auto;
     }
 
-    &[expanded] {
-      & #json-content {
-        max-height: 50vh;
-        overflow: auto;
-        border-top: 1px solid lightgray;
-        padding: 2px;
-        height: auto;
-      }
-
-      & #close-icon {
-        display: block;
-      }
-
-      & #open-icon {
-        display: none;
-      }
+    #close-icon {
+      display: block;
     }
+
+    #open-icon {
+      display: none;
+    }
+  }
+
+  #json-content {
+    border-top: none;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s;
+  }
+
+  #close-icon {
+    display: none;
+  }
+
+  #open-icon {
+    display: block;
   }
 
   .container {
@@ -42,7 +39,7 @@
   }
 
   .toggle-icon {
-    fill: lightgray;
+    fill: var(--icon-fill-default);
     transition: fill 0.3s;
   }
 
@@ -55,27 +52,32 @@
     padding: 2px;
     transition: background-color 0.3s;
 
-    &:hover {
-      background-color: rgb(242, 242, 242);
+    &:hover:not(:has(text-copy-button:hover)) {
+      background-color: var(--interactive-bg-hover);
 
       & .toggle-icon {
-        fill: gray;
+        fill: var(--icon-fill-hover);
       }
     }
 
-    &:active {
-      background-color: rgb(234, 234, 234);
+    &:active:not(:has(text-copy-button:active)) {
+      background-color: var(--interactive-bg-active);
 
       & .toggle-icon {
-        fill: black;
+        fill: var(--icon-fill-active);
       }
     }
+  }
+
+  #title {
+    flex-grow: 1;
   }
 </style>
 
 <div class="container">
   <div id="json-header">
     <span id="title"></span>
+    <text-copy-button id="copy-button"></text-copy-button>
     <div class="toggle-icon">
       <!-- When collapsed-->
       <span id="open-icon">

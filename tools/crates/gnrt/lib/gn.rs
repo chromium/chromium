@@ -75,6 +75,7 @@ pub struct RuleDetail {
     pub cargo_pkg_authors: Option<String>,
     pub cargo_pkg_name: String,
     pub cargo_pkg_description: Option<String>,
+    pub cargo_pkg_repository: Option<String>,
     pub deps: Vec<DepGroup>,
     pub build_deps: Vec<DepGroup>,
     pub aliased_deps: Vec<(String, PackageId)>,
@@ -192,6 +193,7 @@ pub fn build_rule_from_dep(
         cargo_pkg_authors,
         cargo_pkg_name: dep.package_name.to_string(),
         cargo_pkg_description: dep.description.as_ref().map(|s| s.trim_end().to_string()),
+        cargo_pkg_repository: dep.repository.as_ref().map(|s| s.trim_end().to_string()),
 
         cond,
         extra_kv,

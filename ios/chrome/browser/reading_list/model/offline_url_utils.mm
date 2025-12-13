@@ -66,7 +66,7 @@ GURL ReloadURLForOfflineURL(const GURL& offline_url) {
 }
 
 bool IsOfflineURL(const GURL& url) {
-  return url.SchemeIs(kChromeUIScheme) && url.host() == kChromeUIOfflineHost;
+  return url.SchemeIs(kChromeUIScheme) && url.GetHost() == kChromeUIOfflineHost;
 }
 
 bool IsOfflineEntryURL(const GURL& url) {

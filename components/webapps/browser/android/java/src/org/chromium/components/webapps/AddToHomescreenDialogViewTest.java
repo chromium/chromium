@@ -80,7 +80,7 @@ public class AddToHomescreenDialogViewTest {
                         mModalDialogManager,
                         new AddToHomescreenViewDelegate() {
                             @Override
-                            public void onAddToHomescreen(String title, @AppType int type) {
+                            public void onAddToHomescreen(String title) {
                                 mAddCallback.notifyCalled();
                             }
 
@@ -269,6 +269,8 @@ public class AddToHomescreenDialogViewTest {
         PropertyModel shownDialogModel = mModalDialogManager.getShownDialogModel();
 
         for (int i = 0; i <= AppType.MAX_VALUE; i++) {
+            if (!isDialogSupportedForAppType(i)) continue;
+
             mAddToHomescreenDialogView.setType(i);
 
             mAddToHomescreenDialogView.setTitle("");
@@ -294,6 +296,8 @@ public class AddToHomescreenDialogViewTest {
         mAddToHomescreenDialogView.setTitle(TEST_TITLE);
 
         for (int i = 0; i <= AppType.MAX_VALUE; i++) {
+            if (!isDialogSupportedForAppType(i)) continue;
+
             mAddToHomescreenDialogView.setType(i);
             TextView titleText = mAddToHomescreenDialogView.getAppNameView();
             // Only run when title is editable.
@@ -413,5 +417,10 @@ public class AddToHomescreenDialogViewTest {
         return ((TextView) mAddToHomescreenDialogView.getParentViewForTest().findViewById(viewId))
                 .getText()
                 .toString();
+    }
+
+    private boolean isDialogSupportedForAppType(@AppType int appType) {
+        // AddToHomescreenDialog is not supposed to be shown for auto-minted TWAs.
+        return appType != AppType.TWA;
     }
 }

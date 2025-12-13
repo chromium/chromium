@@ -19,13 +19,28 @@ generate_jni("content_shell_jni_headers") {
   ]
 }
 
-shared_library_with_jni("libcontent_shell_content_view") {
-  testonly = true
+template("content_shell_library") {
+  shared_library_with_jni(target_name) {
+    testonly = true
+    deps = invoker.deps + [
+             "//content/shell:content_shell_app",
+             "//content/shell:content_shell_lib",
+           ]
+    if (enable_javaless_renderers) {
+      deps += [ "//content/app:javaless_renderer" ]
+    }
+
+    sources = [ "shell_library_loader.cc" ]
+    configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+    configs += [ "//build/config/android:hide_all_but_jni" ]
+    forward_variables_from(invoker, [ "java_targets" ])
+  }
+}
+
+content_shell_library("libcontent_shell_content_view") {
   deps = [
     ":content_shell_jni_headers",
     "//components/crash/content/browser",
-    "//content/shell:content_shell_app",
-    "//content/shell:content_shell_lib",
     "//content/shell:pak",
     "//media",
     "//skia",
@@ -39,25 +54,15 @@ shared_library_with_jni("libcontent_shell_content_view") {
       "//media/midi",
     ]
   }
-  sources = [ "shell_library_loader.cc" ]
-  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-  configs += [ "//build/config/android:hide_all_but_jni" ]
   java_targets = [ ":content_shell_apk" ]
 }
 
-shared_library_with_jni("libcontent_native_test") {
-  testonly = true
+content_shell_library("libcontent_native_test") {
   deps = [
     "//base",
     "//base:base_javatests_lib",
     "//content/public/test/android:content_native_test_support",
-    "//content/shell:content_shell_app",
-    "//content/shell:content_shell_lib",
   ]
-
-  sources = [ "shell_test_library_loader.cc" ]
-  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-  configs += [ "//build/config/android:hide_all_but_jni" ]
   java_targets = [ ":content_shell_test_apk__test_apk" ]
 }
 
@@ -111,6 +116,12 @@ jinja_template("content_shell_manifest") {
   input = "shell_apk/AndroidManifest.xml.jinja2"
   output = content_shell_manifest
   variables = [ "manifest_package=org.chromium.content_shell_apk" ]
+  if (enable_javaless_renderers) {
+    variables += [
+      "javaless_renderers=true",
+      "library_name=content_shell_content_view",
+    ]
+  }
 }
 
 jinja_template("content_shell_test_manifest") {
@@ -119,6 +130,12 @@ jinja_template("content_shell_test_manifest") {
   includes = [ "shell_apk/AndroidManifest.xml.jinja2" ]
   output = content_shell_test_manifest
   variables = [ "manifest_package=org.chromium.content_shell_apk.tests" ]
+  if (enable_javaless_renderers) {
+    variables += [
+      "javaless_renderers=true",
+      "library_name=content_native_test",
+    ]
+  }
 }
 
 android_resources("content_shell_apk_resources") {
@@ -143,6 +160,7 @@ android_library("content_shell_apk_java") {
     "//base:base_java",
     "//base:process_launcher_java",
     "//build/android:build_java",
+    "//components/cached_flags:java",
     "//components/embedder_support/android:view_java",
     "//content/public/android:content_java",
     "//media/capture/video/android:capture_java",
@@ -153,7 +171,6 @@ android_library("content_shell_apk_java") {
   ]
 
   sources = [
-    "shell_apk/src/org/chromium/content_shell_apk/ChildProcessLauncherTestHelperService.java",
     "shell_apk/src/org/chromium/content_shell_apk/ChildProcessLauncherTestUtils.java",
     "shell_apk/src/org/chromium/content_shell_apk/ContentShellActivity.java",
     "shell_apk/src/org/chromium/content_shell_apk/ContentShellApplication.java",
@@ -253,7 +270,7 @@ android_library("content_shell_test_java") {
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]

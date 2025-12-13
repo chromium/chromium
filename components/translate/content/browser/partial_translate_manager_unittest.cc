@@ -6,8 +6,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "components/contextual_search/core/browser/contextual_search_delegate.h"
-#include "components/contextual_search/core/browser/resolved_search_term.h"
+#include "components/touch_to_search/core/browser/contextual_search_delegate.h"
+#include "components/touch_to_search/core/browser/resolved_search_term.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

@@ -158,7 +158,7 @@ suite('NetworkSimLockDialogsTest', () => {
     assertEquals(
         simLockDialog.i18n('networkSimErrorInvalidPinPlural', 3),
         strictQuery('.dialogSubtext', unlockPinDialog, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     // Set SIM to PIN locked state with single retry left.
     simLockDialog.deviceState = {
@@ -172,7 +172,7 @@ suite('NetworkSimLockDialogsTest', () => {
     assertEquals(
         simLockDialog.i18n('networkSimErrorInvalidPin', 1),
         strictQuery('.dialogSubtext', unlockPinDialog, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
   });
 
   test('Show PUK dialog when lockType changes from PIN to PUK', async () => {

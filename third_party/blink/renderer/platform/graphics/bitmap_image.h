@@ -29,7 +29,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_BITMAP_IMAGE_H_
 
 #include <memory>
-#include "base/memory/weak_ptr.h"
+
 #include "base/notreached.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
@@ -38,9 +38,8 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "ui/gfx/geometry/size.h"
-
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -126,7 +125,6 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
     kCertain     // The repetition count is known to be correct.
   };
 
-  BitmapImage(const SkBitmap&, ImageObserver* = nullptr);
   BitmapImage(ImageObserver* = nullptr, bool is_multi_part = false);
 
   void Draw(cc::PaintCanvas*,

@@ -52,13 +52,13 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/test_support_jni_headers/FakeServerHelper_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace {
 
 void DeserializeEntity(
     JNIEnv* env,
-    const base::android::JavaParamRef<jbyteArray>& serialized_entity,
+    const base::android::JavaRef<jbyteArray>& serialized_entity,
     sync_pb::SyncEntity* entity) {
   std::string string;
   base::android::JavaByteArrayToString(env, serialized_entity, &string);
@@ -69,7 +69,7 @@ void DeserializeEntity(
 
 void DeserializeEntitySpecifics(
     JNIEnv* env,
-    const JavaParamRef<jbyteArray>& serialized_entity_specifics,
+    const JavaRef<jbyteArray>& serialized_entity_specifics,
     sync_pb::EntitySpecifics* entity_specifics) {
   std::string specifics_string;
   base::android::JavaByteArrayToString(env, serialized_entity_specifics,
@@ -187,7 +187,7 @@ static jboolean JNI_FakeServerHelper_VerifyEntityCountByTypeAndName(
 static jboolean JNI_FakeServerHelper_VerifySessions(
     JNIEnv* env,
     jlong fake_server,
-    const JavaParamRef<jobjectArray>& url_array) {
+    const JavaRef<jobjectArray>& url_array) {
   std::multiset<std::string> tab_urls;
   for (auto j_string : url_array.ReadElements<jstring>()) {
     tab_urls.insert(base::android::ConvertJavaStringToUTF8(env, j_string));
@@ -232,7 +232,7 @@ static void JNI_FakeServerHelper_InjectUniqueClientEntity(
     jlong fake_server,
     std::string& non_unique_name,
     std::string& client_tag,
-    const JavaParamRef<jbyteArray>& serialized_entity_specifics) {
+    const JavaRef<jbyteArray>& serialized_entity_specifics) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
 
@@ -250,7 +250,7 @@ static void JNI_FakeServerHelper_InjectUniqueClientEntity(
 static void JNI_FakeServerHelper_SetWalletData(
     JNIEnv* env,
     jlong fake_server,
-    const JavaParamRef<jbyteArray>& serialized_entity) {
+    const JavaRef<jbyteArray>& serialized_entity) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
 
@@ -264,7 +264,7 @@ static void JNI_FakeServerHelper_ModifyEntitySpecifics(
     JNIEnv* env,
     jlong fake_server,
     std::string& id,
-    const JavaParamRef<jbyteArray>& serialized_entity_specifics) {
+    const JavaRef<jbyteArray>& serialized_entity_specifics) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
 
@@ -321,7 +321,7 @@ static void JNI_FakeServerHelper_InjectBookmarkEntity(
     JNIEnv* env,
     jlong fake_server,
     std::string& title,
-    const JavaParamRef<jobject>& url,
+    const JavaRef<jobject>& url,
     std::string& parent_id,
     std::string& parent_guid) {
   fake_server::FakeServer* fake_server_ptr =
@@ -354,7 +354,7 @@ static void JNI_FakeServerHelper_ModifyBookmarkEntity(
     std::string& entity_id,
     std::string& guid,
     std::string& title,
-    const JavaParamRef<jobject>& url,
+    const JavaRef<jobject>& url,
     std::string& parent_id,
     std::string& parent_guid) {
   fake_server::FakeServer* fake_server_ptr =
@@ -422,7 +422,7 @@ static void JNI_FakeServerHelper_SetCustomPassphraseNigori(
 static void JNI_FakeServerHelper_SetTrustedVaultNigori(
     JNIEnv* env,
     jlong fake_server,
-    const JavaParamRef<jbyteArray>& trusted_vault_key) {
+    const JavaRef<jbyteArray>& trusted_vault_key) {
   std::vector<uint8_t> native_trusted_vault_key;
   base::android::JavaByteArrayToByteVector(env, trusted_vault_key,
                                            &native_trusted_vault_key);
@@ -489,7 +489,7 @@ static void JNI_FakeServerHelper_AddCollaborationGroupToFakeServer(
 static void JNI_FakeServerHelper_AddSavedTabGroupToFakeServer(
     JNIEnv* env,
     jlong fake_server,
-    const JavaParamRef<jstring>& sync_group_id,
+    const JavaRef<jstring>& sync_group_id,
     std::string& group_title,
     int number_of_tabs) {
   base::Uuid group_guid = base::Uuid::ParseLowercase(
@@ -516,3 +516,5 @@ static void JNI_FakeServerHelper_DeleteAllEntitiesForDataType(JNIEnv* env,
   fake_server_ptr->DeleteAllEntitiesForDataType(
       static_cast<syncer::DataType>(data_type));
 }
+
+DEFINE_JNI(FakeServerHelper)

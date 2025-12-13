@@ -8,13 +8,8 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 
 import org.junit.Assert;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,20 +20,6 @@ import java.util.List;
  * and provides utility methods for tests.
  */
 public class RecognitionTestHelper {
-    @Implements(UserPrefs.class)
-    public static class ShadowUserPrefs {
-        private static PrefService sPrefs;
-
-        static void setPrefService(PrefService prefs) {
-            sPrefs = prefs;
-        }
-
-        @Implementation
-        public static PrefService get(BrowserContextHandle h) {
-            return sPrefs;
-        }
-    }
-
     /**
      * Creates a test bundle.
      *

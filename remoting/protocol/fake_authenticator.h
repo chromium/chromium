@@ -149,6 +149,8 @@ class FakeHostAuthenticatorFactory : public AuthenticatorFactory {
       const std::string& local_jid,
       const std::string& remote_jid) override;
 
+  std::unique_ptr<AuthenticatorFactory> Clone() const override;
+
  private:
   const int messages_till_started_;
   const FakeAuthenticator::Config config_;

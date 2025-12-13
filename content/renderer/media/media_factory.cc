@@ -39,7 +39,6 @@
 #include "content/renderer/media/renderer_web_media_player_delegate.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/demuxer.h"
@@ -182,8 +181,7 @@ void PostContextProviderToCallback(
             auto context_provider = rti->GetVideoFrameCompositorContextProvider(
                 std::move(unwanted_context_provider));
             bool is_gpu_composition_disabled = rti->IsGpuCompositingDisabled();
-            scoped_refptr<gpu::ClientSharedImageInterface>
-                shared_image_interface;
+            scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
 
             if (is_gpu_composition_disabled) {
               shared_image_interface =
@@ -419,19 +417,10 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
       webkit_preferences.embedded_media_experience_enabled;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // When memory pressure based garbage collection is enabled for MSE, the
-  // |enable_instant_source_buffer_gc| flag controls whether the GC is done
-  // immediately on memory pressure notification or during the next SourceBuffer
-  // append (slower, but is MSE-spec compliant).
-  bool enable_instant_source_buffer_gc =
-      base::GetFieldTrialParamByFeatureAsBool(
-          media::kMemoryPressureBasedSourceBufferGC,
-          "enable_instant_source_buffer_gc", false);
-
   media::MediaPlayerLoggingID player_id = media::GetNextMediaPlayerLoggingID();
   std::vector<std::unique_ptr<BatchingMediaLog::EventHandler>> handlers;
-  handlers.push_back(
-      std::make_unique<InspectorMediaEventHandler>(inspector_context));
+  handlers.push_back(std::make_unique<InspectorMediaEventHandler>(
+      inspector_context, client->GetElementId()));
   handlers.push_back(std::make_unique<RenderMediaEventHandler>(player_id));
 
   // This must be created for every new WebMediaPlayer. We use the inspector
@@ -504,8 +493,7 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
       render_thread->compositor_task_runner(),
       blink::Platform::Current()->VideoFrameCompositorTaskRunner(), initial_cdm,
       request_routing_token_cb_, media_observer,
-      enable_instant_source_buffer_gc, embedded_media_experience_enabled,
-      std::move(metrics_provider),
+      embedded_media_experience_enabled, std::move(metrics_provider),
       base::BindOnce(&blink::WebSurfaceLayerBridge::Create,
                      parent_frame_sink_id),
       RenderThreadImpl::current()->SharedMainThreadContextProvider(),
@@ -672,15 +660,11 @@ MediaFactory::CreateRendererFactorySelector(
     GetInterfaceBroker().GetInterface(
         media_foundation_renderer_notifier.BindNewPipeAndPassReceiver());
 
-    media::ObserveOverlayStateCB observe_overlay_state_cb = base::BindRepeating(
-        &OverlayStateObserverImpl::Create,
-        base::RetainedRef(render_thread->GetOverlayStateServiceProvider()));
-
     factory_selector->AddFactory(
         RendererType::kMediaFoundation,
         std::make_unique<media::MediaFoundationRendererClientFactory>(
             media_log, std::move(dcomp_texture_creation_cb),
-            std::move(observe_overlay_state_cb), CreateMojoRendererFactory(),
+            CreateMojoRendererFactory(),
             std::move(media_foundation_renderer_notifier)));
 
     if (use_mf_for_clear && !is_base_renderer_factory_set) {
@@ -756,8 +740,8 @@ MediaFactory::CreateWebMediaPlayerForMediaStream(
 
   media::MediaPlayerLoggingID player_id = media::GetNextMediaPlayerLoggingID();
   std::vector<std::unique_ptr<BatchingMediaLog::EventHandler>> handlers;
-  handlers.push_back(
-      std::make_unique<InspectorMediaEventHandler>(inspector_context));
+  handlers.push_back(std::make_unique<InspectorMediaEventHandler>(
+      inspector_context, client->GetElementId()));
   handlers.push_back(std::make_unique<RenderMediaEventHandler>(player_id));
 
   // This must be created for every new WebMediaPlayer, each instance generates

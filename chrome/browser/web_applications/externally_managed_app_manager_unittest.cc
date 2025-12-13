@@ -81,11 +81,10 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
  protected:
   void SetUp() override {
     WebAppTest::SetUp();
-    provider_ = web_app::FakeWebAppProvider::Get(profile());
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  void ForceSystemShutdown() { provider_->Shutdown(); }
+  void ForceSystemShutdown() { fake_provider().Shutdown(); }
 
   void Sync(const std::vector<GURL>& urls, bool include_duplicates = false) {
     ResetCounts();
@@ -99,7 +98,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
     }
 
     base::RunLoop run_loop;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
         std::move(install_options_list),
         ExternalInstallSource::kInternalDefault,
         base::BindLambdaForTesting(
@@ -138,15 +137,13 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
     uninstall_count_ = 0;
   }
 
-  WebAppProvider& provider() { return *provider_; }
-
-  WebAppRegistrar& app_registrar() { return provider().registrar_unsafe(); }
+  WebAppRegistrar& app_registrar() {
+    return fake_provider().registrar_unsafe();
+  }
 
  private:
   int install_count_ = 0;
   int uninstall_count_ = 0;
-
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
 };
 
 // Test that destroying ExternallyManagedAppManager during a synchronize call
@@ -161,7 +158,7 @@ TEST_F(ExternallyManagedAppManagerTest, DestroyDuringInstallInSynchronize) {
                                     mojom::UserDisplayMode::kStandalone,
                                     ExternalInstallSource::kInternalDefault);
 
-  provider().externally_managed_app_manager().SynchronizeInstalledApps(
+  fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(install_options_list), ExternalInstallSource::kInternalDefault,
       // ExternallyManagedAppManager gives no guarantees about whether its
       // pending callbacks will be run or not when it gets destroyed.
@@ -181,7 +178,7 @@ TEST_F(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
                                       mojom::UserDisplayMode::kStandalone,
                                       ExternalInstallSource::kInternalDefault);
     base::RunLoop run_loop;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
         std::move(install_options_list),
         ExternalInstallSource::kInternalDefault,
         base::BindLambdaForTesting(
@@ -192,7 +189,7 @@ TEST_F(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
     run_loop.Run();
   }
 
-  provider().externally_managed_app_manager().SynchronizeInstalledApps(
+  fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
       std::vector<ExternalInstallOptions>(),
       ExternalInstallSource::kInternalDefault,
       // ExternallyManagedAppManager gives no guarantees about whether its
@@ -210,7 +207,8 @@ TEST_F(ExternallyManagedAppManagerTest, SynchronizeInstalledApps) {
   GURL e("https://e.example.com/");
 
   FakeWebContentsManager& web_contents_manager =
-      static_cast<FakeWebContentsManager&>(provider().web_contents_manager());
+      static_cast<FakeWebContentsManager&>(
+          fake_provider().web_contents_manager());
   web_contents_manager.CreateBasicInstallPageState(a, a, a);
   web_contents_manager.CreateBasicInstallPageState(b, b, b);
   web_contents_manager.CreateBasicInstallPageState(c, c, c);
@@ -320,17 +318,17 @@ class ExternallyAppManagerTest : public WebAppTest {
     return options;
   }
 
-  WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
-
-  WebAppRegistrar& app_registrar() { return provider().registrar_unsafe(); }
+  WebAppRegistrar& app_registrar() {
+    return fake_provider().registrar_unsafe();
+  }
 
   ExternallyManagedAppManager& external_manager() {
-    return provider().externally_managed_app_manager();
+    return fake_provider().externally_managed_app_manager();
   }
 
   FakeWebContentsManager& web_contents_manager() {
     return static_cast<FakeWebContentsManager&>(
-        provider().web_contents_manager());
+        fake_provider().web_contents_manager());
   }
 };
 
@@ -705,7 +703,7 @@ TEST_F(ExternallyAppManagerTest, MAYBE_PlaceholderAppWindowsClosed) {
           ExternallyManagedAppManager::InstallResult(
               webapps::InstallResultCode::kSuccessNewInstall, app_id))));
 
-  const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
+  const WebApp* app = fake_provider().registrar_unsafe().GetAppById(app_id);
 
   ASSERT_TRUE(app);
   EXPECT_THAT(app->management_to_external_config_map(),
@@ -784,7 +782,7 @@ TEST_F(ExternallyAppManagerTest, RemovingInstallUrlsFromSource) {
   // Synchronize with 2 install URLs.
   {
     SynchronizeFuture result;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
         CreateExternalInstallOptionsFromTemplate(
             {kInstallUrl1, kInstallUrl2},
             ExternalInstallSource::kExternalPolicy),
@@ -822,7 +820,7 @@ TEST_F(ExternallyAppManagerTest, RemovingInstallUrlsFromSource) {
   // Synchronize with 1 install URL.
   {
     SynchronizeFuture result;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
         CreateExternalInstallOptionsFromTemplate(
             {kInstallUrl1}, ExternalInstallSource::kExternalPolicy),
         ExternalInstallSource::kExternalPolicy, result.GetCallback());
@@ -856,7 +854,7 @@ TEST_F(ExternallyAppManagerTest, RemovingInstallUrlsFromSource) {
   // Synchronize with 0 install URLs.
   {
     SynchronizeFuture result;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
         CreateExternalInstallOptionsFromTemplate(
             {}, ExternalInstallSource::kExternalPolicy),
         ExternalInstallSource::kExternalPolicy, result.GetCallback());
@@ -933,7 +931,7 @@ TEST_F(ExternallyAppManagerTest, InstallUrlChanges) {
                     kInstallUrl, webapps::UninstallResultCode::kAppRemoved)));
   }
 
-  const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
+  const WebApp* app = fake_provider().registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(app);
   EXPECT_THAT(app->management_to_external_config_map(),
               ElementsAre(std::make_pair(WebAppManagement::kPolicy,
@@ -975,11 +973,13 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
     // Install policy app
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(kInstallUrl);
+    install_page_state.manifest_before_default_processing->name =
+        u"Test policy app";
     install_page_state.manifest_before_default_processing->short_name =
         u"Test policy app";
 
     SynchronizeFuture result;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
         CreateExternalInstallOptionsFromTemplate(
             {kInstallUrl}, ExternalInstallSource::kExternalPolicy),
         ExternalInstallSource::kExternalPolicy, result.GetCallback());
@@ -1025,7 +1025,7 @@ TEST_F(ExternallyAppManagerTest, NoNetworkWithPlaceholder) {
           ExternallyManagedAppManager::InstallResult(
               webapps::InstallResultCode::kSuccessNewInstall, app_id))));
 
-  const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
+  const WebApp* app = fake_provider().registrar_unsafe().GetAppById(app_id);
 
   ASSERT_TRUE(app);
   EXPECT_THAT(app->management_to_external_config_map(),
@@ -1072,7 +1072,7 @@ TEST_F(ExternallyAppManagerTest, RedirectInstallUrlPlaceholder) {
           ExternallyManagedAppManager::InstallResult(
               webapps::InstallResultCode::kSuccessNewInstall, app_id))));
 
-  const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
+  const WebApp* app = fake_provider().registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(app);
   EXPECT_THAT(app->management_to_external_config_map(),
               ElementsAre(std::make_pair(WebAppManagement::kPolicy,
@@ -1098,7 +1098,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromSynchronize) {
   page_state.redirection_url = kRedirectToUrl;
   {
     SynchronizeFuture result;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
         CreateExternalInstallOptionsFromTemplate(
             {kInstallUrl}, ExternalInstallSource::kExternalPolicy,
             template_options),
@@ -1109,7 +1109,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromSynchronize) {
   webapps::AppId placeholder_app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, kInstallUrl);
 
-  auto app_ids = provider().registrar_unsafe().GetAppIds();
+  auto app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(placeholder_app_id));
 
   // Replace the redirect with an app that resolves.
@@ -1119,7 +1119,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromSynchronize) {
   // The placeholder app should be uninstalled & the real one installed.
   {
     SynchronizeFuture result;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
         CreateExternalInstallOptionsFromTemplate(
             {kInstallUrl}, ExternalInstallSource::kExternalPolicy,
             template_options),
@@ -1127,7 +1127,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromSynchronize) {
     ASSERT_TRUE(result.Wait());
   }
 
-  app_ids = provider().registrar_unsafe().GetAppIds();
+  app_ids = fake_provider().registrar_unsafe().GetAppIds();
 
   EXPECT_THAT(app_ids, ElementsAre(app_id));
 }
@@ -1148,7 +1148,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromInstallNow) {
   page_state.redirection_url = kRedirectToUrl;
   {
     SynchronizeFuture result;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
         CreateExternalInstallOptionsFromTemplate(
             {kInstallUrl}, ExternalInstallSource::kExternalPolicy,
             template_options),
@@ -1159,7 +1159,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromInstallNow) {
   webapps::AppId placeholder_app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, kInstallUrl);
 
-  auto app_ids = provider().registrar_unsafe().GetAppIds();
+  auto app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(placeholder_app_id));
 
   // Replace the redirect with an app that resolves.
@@ -1171,11 +1171,11 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromInstallNow) {
   options.placeholder_resolution_behavior =
       PlaceholderResolutionBehavior::kClose;
   InstallNowFuture install_future;
-  provider().externally_managed_app_manager().InstallNow(
+  fake_provider().externally_managed_app_manager().InstallNow(
       std::move(options), install_future.GetCallback());
   ASSERT_TRUE(install_future.Wait());
 
-  app_ids = provider().registrar_unsafe().GetAppIds();
+  app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(app_id));
 }
 
@@ -1199,12 +1199,12 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlSameSourceInstallNow) {
     base::test::TestFuture<const GURL&,
                            ExternallyManagedAppManager::InstallResult>
         install_future;
-    provider().externally_managed_app_manager().InstallNow(
+    fake_provider().externally_managed_app_manager().InstallNow(
         std::move(options), install_future.GetCallback());
     ASSERT_TRUE(install_future.Wait());
   }
 
-  auto app_ids = provider().registrar_unsafe().GetAppIds();
+  auto app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(app_id1));
 
   webapps::AppId app_id2 = web_contents_manager().CreateBasicInstallPageState(
@@ -1214,14 +1214,14 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlSameSourceInstallNow) {
     ExternalInstallOptions options = template_options;
     options.install_url = kInstallUrl;
     InstallNowFuture install_future;
-    provider().externally_managed_app_manager().InstallNow(
+    fake_provider().externally_managed_app_manager().InstallNow(
         std::move(options), install_future.GetCallback());
     ASSERT_TRUE(install_future.Wait());
   }
 
   // TODO(crbug.com/40264854): This keeps the original app, but perhaps
   // should install app_id2.
-  app_ids = provider().registrar_unsafe().GetAppIds();
+  app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(app_id1));
 }
 
@@ -1245,12 +1245,12 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesInstallNow) {
     base::test::TestFuture<const GURL&,
                            ExternallyManagedAppManager::InstallResult>
         install_future;
-    provider().externally_managed_app_manager().InstallNow(
+    fake_provider().externally_managed_app_manager().InstallNow(
         std::move(options), install_future.GetCallback());
     ASSERT_TRUE(install_future.Wait());
   }
 
-  auto app_ids = provider().registrar_unsafe().GetAppIds();
+  auto app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(app_id1));
 
   webapps::AppId app_id2 = web_contents_manager().CreateBasicInstallPageState(
@@ -1261,14 +1261,14 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesInstallNow) {
     options.install_url = kInstallUrl;
     options.install_source = ExternalInstallSource::kInternalDefault;
     InstallNowFuture install_future;
-    provider().externally_managed_app_manager().InstallNow(
+    fake_provider().externally_managed_app_manager().InstallNow(
         std::move(options), install_future.GetCallback());
     ASSERT_TRUE(install_future.Wait());
   }
 
   // TODO(crbug.com/40264854): Currently, this keeps the original app,
   // but we should eventually resolve all apps to app_id2.
-  app_ids = provider().registrar_unsafe().GetAppIds();
+  app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(app_id1));
 }
 
@@ -1288,7 +1288,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesSynchronize) {
 
   {
     SynchronizeFuture result;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
         CreateExternalInstallOptionsFromTemplate(
             {kInstallUrl}, ExternalInstallSource::kExternalPolicy,
             template_options),
@@ -1296,7 +1296,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesSynchronize) {
     ASSERT_TRUE(result.Wait());
   }
 
-  auto app_ids = provider().registrar_unsafe().GetAppIds();
+  auto app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(app_id1));
 
   webapps::AppId app_id2 = web_contents_manager().CreateBasicInstallPageState(
@@ -1304,7 +1304,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesSynchronize) {
 
   {
     SynchronizeFuture result;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
         CreateExternalInstallOptionsFromTemplate(
             {kInstallUrl}, ExternalInstallSource::kInternalDefault,
             template_options),
@@ -1314,7 +1314,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesSynchronize) {
 
   // TODO(crbug.com/40264854): Currently this resolves to app_id1, but
   // should probably eventually resolve to app_id2.
-  app_ids = provider().registrar_unsafe().GetAppIds();
+  app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, UnorderedElementsAre(app_id1));
 }
 
@@ -1345,7 +1345,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFixedBySecondInstallUrlInstallNow) {
     ExternalInstallOptions options = template_options;
     options.install_url = kInstallUrl1;
     InstallNowFuture install_future;
-    provider().externally_managed_app_manager().InstallNow(
+    fake_provider().externally_managed_app_manager().InstallNow(
         std::move(options), install_future.GetCallback());
     ASSERT_TRUE(install_future.Wait());
     EXPECT_THAT(
@@ -1362,7 +1362,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFixedBySecondInstallUrlInstallNow) {
     base::test::TestFuture<const GURL&,
                            ExternallyManagedAppManager::InstallResult>
         install_future;
-    provider().externally_managed_app_manager().InstallNow(
+    fake_provider().externally_managed_app_manager().InstallNow(
         std::move(options), install_future.GetCallback());
     ASSERT_TRUE(install_future.Wait());
     EXPECT_THAT(
@@ -1380,7 +1380,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFixedBySecondInstallUrlInstallNow) {
   // sources, which will (correctly?) evaluate the manifest served by the
   // install url of the first install, which could be a different app identity.
   const WebApp* app =
-      provider().registrar_unsafe().GetAppById(app_at_install_url);
+      fake_provider().registrar_unsafe().GetAppById(app_at_install_url);
   ASSERT_TRUE(app);
   EXPECT_THAT(app->management_to_external_config_map(),
               ElementsAre(std::make_pair(
@@ -1416,7 +1416,7 @@ TEST_F(ExternallyAppManagerTest,
           kInstallUrl2, kManifestUrl, /*start_url=*/kInstallUrl1);
 
   SynchronizeFuture result;
-  provider().externally_managed_app_manager().SynchronizeInstalledApps(
+  fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
       CreateExternalInstallOptionsFromTemplate(
           {kInstallUrl1, kInstallUrl2}, ExternalInstallSource::kExternalPolicy,
           template_options),
@@ -1442,7 +1442,7 @@ TEST_F(ExternallyAppManagerTest,
   // when the second install succeeds, it overrides the `is_placeholder` to
   // `false`, and thus the first install is considered fully installed now too.
   const WebApp* app =
-      provider().registrar_unsafe().GetAppById(app_at_install_url);
+      fake_provider().registrar_unsafe().GetAppById(app_at_install_url);
   ASSERT_TRUE(app);
   EXPECT_THAT(app->management_to_external_config_map(),
               ElementsAre(std::make_pair(
@@ -1494,7 +1494,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFullInstallConflictCanUpdate) {
     base::test::TestFuture<const GURL&,
                            ExternallyManagedAppManager::InstallResult>
         install_future;
-    provider().externally_managed_app_manager().InstallNow(
+    fake_provider().externally_managed_app_manager().InstallNow(
         std::move(options), install_future.GetCallback());
     ASSERT_TRUE(install_future.Wait());
     EXPECT_THAT(
@@ -1512,7 +1512,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFullInstallConflictCanUpdate) {
     base::test::TestFuture<const GURL&,
                            ExternallyManagedAppManager::InstallResult>
         install_future;
-    provider().externally_managed_app_manager().InstallNow(
+    fake_provider().externally_managed_app_manager().InstallNow(
         std::move(options), install_future.GetCallback());
     ASSERT_TRUE(install_future.Wait());
     EXPECT_THAT(
@@ -1524,7 +1524,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFullInstallConflictCanUpdate) {
   }
 
   const WebApp* app =
-      provider().registrar_unsafe().GetAppById(app_at_install_url);
+      fake_provider().registrar_unsafe().GetAppById(app_at_install_url);
   ASSERT_TRUE(app);
   EXPECT_THAT(
       app->management_to_external_config_map(),
@@ -1549,7 +1549,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFullInstallConflictCanUpdate) {
     base::test::TestFuture<const GURL&,
                            ExternallyManagedAppManager::InstallResult>
         install_future;
-    provider().externally_managed_app_manager().InstallNow(
+    fake_provider().externally_managed_app_manager().InstallNow(
         std::move(options), install_future.GetCallback());
     ASSERT_TRUE(install_future.Wait());
 
@@ -1563,7 +1563,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFullInstallConflictCanUpdate) {
 
   // This is the current behavior, but it could change if we decide that
   // 'placeholder' is a per-app state instead of a per-app-and-source state.
-  auto app_ids = provider().registrar_unsafe().GetAppIds();
+  auto app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids,
               UnorderedElementsAre(app_at_install_url, app_at_start_url));
 }

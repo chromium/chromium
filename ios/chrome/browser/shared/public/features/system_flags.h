@@ -28,9 +28,6 @@ bool AlwaysDisplayFirstRun();
 // the FRE using tests_hook::DisableDefaultFirstRun
 bool NeverDisplayFirstRun();
 
-// Whether the Upgrade Promo UI will always be displayed.
-bool AlwaysDisplayUpgradePromo();
-
 // Returns the host name for an alternative Origin Server host for use by
 // `BrandCode` startup ping. Returns empty string if there is no alternative
 // host specified.
@@ -43,11 +40,6 @@ NSString* GetAlternateDiscoverFeedServerURL();
 // should be reset to zero on feed start.
 // TODO(crbug.com/40173621): Remove after launch.
 bool ShouldResetNoticeCardOnFeedStart();
-
-// Returns true if the count of showing the First Follow modal should be reset
-// to zero.
-// TODO(crbug.com/40220465): Remove after launch.
-bool ShouldResetFirstFollowCount();
 
 // Returns true if the top of feed signin promo should be shown regardless of
 // dismissal conditions. The promo will still only show for signed out users.
@@ -64,21 +56,6 @@ bool ShouldForceContentNotificationsPromo();
 // Returns true if Tile Ablation should be forced regardless of the value of
 // `isTileAblationExperimentComplete`.
 bool ShouldIgnoreTileAblationConditions();
-
-// Should be called after the count has been reset so that the resetting flag
-// can be turned off.
-// TODO(crbug.com/40220465): Remove after launch.
-void DidResetFirstFollowCount();
-
-// Returns true if the First Follow modal should always be shown when the user
-// follows a channel.
-// TODO(crbug.com/40220465): Remove after launch.
-bool ShouldAlwaysShowFirstFollow();
-
-// Returns true if the Follow IPH should always be shown when the user
-// browsing a eligible website in non-incognito mode.
-// TODO(crbug.com/40230248): Remove after launch.
-bool ShouldAlwaysShowFollowIPH();
 
 // Whether memory debugging tools are enabled.
 bool IsMemoryDebuggingEnabled();
@@ -192,6 +169,20 @@ bool EnableAIPrototypingMenu();
 // Gets GWS URL base used to generate Lens result panel URLs. Returns nil if
 // there is no alternative URL specified.
 NSString* GetLensResultPanelGwsURL();
+
+// Returns true if Composebox AIM eligibility should be disabled.
+bool ShouldForceDisableComposeboxAIM();
+
+// Returns true if Composebox Create Images eligibility should be disabled.
+bool ShouldForceDisableComposeboxCreateImages();
+
+// Returns true if Composebox Pdf Upload eligibility should be disabled.
+bool ShouldForceDisableComposeboxPdfUpload();
+
+// Returns true if the Catalog items should be shown in Settings. Always true
+// in debug builds.
+bool ShouldShowCatalogItems();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

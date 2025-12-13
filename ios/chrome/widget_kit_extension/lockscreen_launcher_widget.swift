@@ -18,10 +18,7 @@ import WidgetKit
           widgetURL: URL
 
         var supportedFamilies: [WidgetFamily] {
-          if #available(iOS 16, *) {
-            return [.accessoryCircular]
-          }
-          return []
+          return [.accessoryCircular]
         }
       }
 
@@ -65,12 +62,7 @@ import WidgetKit
 
     @MainActor
     func lockScreenWidgetBackground() -> some View {
-      if #available(iOS 16.0, *) {
-        return AccessoryWidgetBackground()
-      } else {
-        // Widget only supports iOS16+
-        return EmptyView()
-      }
+      return AccessoryWidgetBackground()
     }
 
     struct LockscreenLauncherWidgetEntryView: View {
@@ -87,7 +79,9 @@ import WidgetKit
         .widgetURL(configuration.widgetURL)
         .accessibilityElement()
         .accessibilityLabel(configuration.accessibilityLabel)
-        .crContainerBackground(lockScreenWidgetBackground())
+        .containerBackground(for: .widget) {
+          lockScreenWidgetBackground()
+        }
       }
     }
 
@@ -105,7 +99,7 @@ import WidgetKit
       .description(Text(configuration.description))
       .supportedFamilies(configuration.supportedFamilies)
       .crDisfavoredLocations()
-      .crContainerBackgroundRemovable(false)
+      .containerBackgroundRemovable(false)
     }
 
     struct LockscreenLauncherSearchWidget: Widget {

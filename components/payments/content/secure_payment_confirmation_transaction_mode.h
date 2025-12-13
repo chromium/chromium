@@ -13,11 +13,11 @@ namespace payments {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SPCTransactionMode
 enum class SPCTransactionMode {
-  NONE,
-  AUTOACCEPT,
-  AUTOAUTHANOTHERWAY,
-  AUTOREJECT,
-  AUTOOPTOUT,
+  kNone,
+  kAutoAccept,
+  kAutoAuthAnotherWay,
+  kAutoReject,
+  kAutoOptOut,
 };
 
 }  // namespace payments

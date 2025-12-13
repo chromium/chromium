@@ -121,7 +121,8 @@ void SharedHighlightingDataDrivenTest::GenerateResults(const std::string& input,
   std::string selected_text;
   std::string* highlight_text;
 
-  std::optional<base::Value> parsed_input = base::JSONReader::Read(input);
+  std::optional<base::Value> parsed_input =
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_input.has_value() && parsed_input->is_dict());
 
   base::Value::Dict& input_dict = parsed_input->GetDict();

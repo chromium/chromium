@@ -9,6 +9,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.support_lib_boundary.ProcessGlobalConfigConstants;
 
@@ -23,15 +24,15 @@ import java.util.concurrent.atomic.AtomicReference;
  * Class that contains the process global configuration information if it was set by the embedding
  * app using androidx.webkit.ProcessGlobalConfig.
  *
- * It is extracted once when WebView first loads and is used for global process configurations (
+ * <p>It is extracted once when WebView first loads and is used for global process configurations (
  * hence the name).
  */
 @Lifetime.Singleton
 public final class AndroidXProcessGlobalConfig {
-    private String mDataDirectorySuffix;
     private String mDataDirectoryBasePath;
     private String mCacheDirectoryBasePath;
     private Boolean mPartitionedCookiesEnabled;
+    private int mUiThreadStartupMode = ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_DEFAULT;
     private static AndroidXProcessGlobalConfig sGlobalConfig;
 
     private AndroidXProcessGlobalConfig(@NonNull Map<String, Object> configMap) {
@@ -39,22 +40,12 @@ public final class AndroidXProcessGlobalConfig {
             Object configValue = entry.getValue();
             switch (entry.getKey()) {
                 case ProcessGlobalConfigConstants.DATA_DIRECTORY_SUFFIX:
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        throw new RuntimeException(
-                                "AndroidXProcessGlobalConfig map should not have value set for "
-                                        + "key: "
-                                        + entry.getKey()
-                                        + " in SDK version >= "
-                                        + Build.VERSION_CODES.P);
-                    }
-                    if (!(configValue instanceof String)) {
-                        throw new RuntimeException(
-                                "AndroidXProcessGlobalConfig map does not have "
-                                        + "right type of value for key: "
-                                        + entry.getKey());
-                    }
-                    mDataDirectorySuffix = (String) configValue;
-                    break;
+                    throw new RuntimeException(
+                            "AndroidXProcessGlobalConfig map should not have value set for "
+                                    + "key: "
+                                    + entry.getKey()
+                                    + " in SDK version >= "
+                                    + Build.VERSION_CODES.P);
                 case ProcessGlobalConfigConstants.DATA_DIRECTORY_BASE_PATH:
                     if (!(configValue instanceof String)) {
                         throw new RuntimeException(
@@ -83,6 +74,16 @@ public final class AndroidXProcessGlobalConfig {
 
                     mPartitionedCookiesEnabled = (Boolean) configValue;
                     break;
+                case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE:
+                    if (!(configValue instanceof Integer)) {
+                        throw new RuntimeException(
+                                "AndroidXProcessGlobalConfig map does not have "
+                                        + "right type of value for key: "
+                                        + entry.getKey());
+                    }
+
+                    mUiThreadStartupMode = (int) configValue;
+                    break;
                 default:
                     throw new RuntimeException(
                             "AndroidXProcessGlobalConfig map contains unknown key: "
@@ -94,27 +95,30 @@ public final class AndroidXProcessGlobalConfig {
     /**
      * Extracts the process global config that was set by the app in
      * androidx.webkit.ProcessGlobalConfig.
-     * <p>
-     * This method should only be called once.
+     *
+     * <p>This method should only be called once.
      */
     public static void extractConfigFromApp(ClassLoader cl) {
-        assert sGlobalConfig == null;
-        HashMap<String, Object> configMap = null;
-        try {
-            Class<?> holder = Class.forName("androidx.webkit.ProcessGlobalConfig", true, cl);
-            Field sProcessGlobalConfig = holder.getDeclaredField("sProcessGlobalConfig");
-            sProcessGlobalConfig.setAccessible(true);
-            AtomicReference<HashMap<String, Object>> configRef =
-                    (AtomicReference<HashMap<String, Object>>) sProcessGlobalConfig.get(null);
-            configMap = configRef.get();
-        } catch (Exception e) {
-            // The class probably doesn't exist - the app may not be using the AndroidX library,
-            // or not a recent enough version.
-        }
-        if (configMap == null) {
-            sGlobalConfig = new AndroidXProcessGlobalConfig(Collections.emptyMap());
-        } else {
-            sGlobalConfig = new AndroidXProcessGlobalConfig(configMap);
+        try (DualTraceEvent ignored =
+                DualTraceEvent.scoped("AndroidXProcessGlobalConfig.extractConfigFromApp")) {
+            assert sGlobalConfig == null;
+            HashMap<String, Object> configMap = null;
+            try {
+                Class<?> holder = Class.forName("androidx.webkit.ProcessGlobalConfig", true, cl);
+                Field sProcessGlobalConfig = holder.getDeclaredField("sProcessGlobalConfig");
+                sProcessGlobalConfig.setAccessible(true);
+                AtomicReference<HashMap<String, Object>> configRef =
+                        (AtomicReference<HashMap<String, Object>>) sProcessGlobalConfig.get(null);
+                configMap = configRef.get();
+            } catch (Exception e) {
+                // The class probably doesn't exist - the app may not be using the AndroidX library,
+                // or not a recent enough version.
+            }
+            if (configMap == null) {
+                sGlobalConfig = new AndroidXProcessGlobalConfig(Collections.emptyMap());
+            } else {
+                sGlobalConfig = new AndroidXProcessGlobalConfig(configMap);
+            }
         }
     }
 
@@ -129,10 +133,6 @@ public final class AndroidXProcessGlobalConfig {
         return sGlobalConfig;
     }
 
-    public @Nullable String getDataDirectorySuffixOrNull() {
-        return mDataDirectorySuffix;
-    }
-
     public @Nullable String getDataDirectoryBasePathOrNull() {
         return mDataDirectoryBasePath;
     }
@@ -143,5 +143,9 @@ public final class AndroidXProcessGlobalConfig {
 
     public Boolean getPartitionedCookiesEnabled() {
         return mPartitionedCookiesEnabled;
+    }
+
+    public int getUiThreadStartupMode() {
+        return mUiThreadStartupMode;
     }
 }

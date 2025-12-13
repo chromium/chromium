@@ -24,7 +24,7 @@
 #include "components/subresource_filter/content/browser/navigation_console_logger.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
-#include "components/subresource_filter/content/shared/browser/utils.h"
+#include "components/subresource_filter/content/browser/utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -65,6 +65,20 @@ std::optional<RedirectPosition> GetEnforcementRedirectPosition(
     }
   }
   return std::nullopt;
+}
+
+mojom::SubresourceFilterDisabledReason ToDisabledReason(
+    ActivationDecision decision) {
+  switch (decision) {
+    case ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET:
+      return mojom::SubresourceFilterDisabledReason::kNoMatchingConfiguration;
+    case ActivationDecision::ACTIVATION_DISABLED:
+      return mojom::SubresourceFilterDisabledReason::kDisabledByConfiguration;
+    case ActivationDecision::URL_ALLOWLISTED:
+      return mojom::SubresourceFilterDisabledReason::kUrlAllowlisted;
+    default:
+      return mojom::SubresourceFilterDisabledReason::kUnknown;
+  }
 }
 
 }  // namespace
@@ -181,6 +195,8 @@ void SafeBrowsingPageActivationThrottle::NotifyResult() {
   // Compute the activation level.
   mojom::ActivationLevel activation_level =
       selection.config.activation_options.activation_level;
+  mojom::SubresourceFilterDisabledReason disabled_reason =
+      mojom::SubresourceFilterDisabledReason::kUnknown;
 
   if (selection.warning &&
       activation_level == mojom::ActivationLevel::kEnabled) {
@@ -188,6 +204,7 @@ void SafeBrowsingPageActivationThrottle::NotifyResult() {
         navigation_handle(), blink::mojom::ConsoleMessageLevel::kWarning,
         kActivationWarningConsoleMessage);
     activation_level = mojom::ActivationLevel::kDisabled;
+    disabled_reason = mojom::SubresourceFilterDisabledReason::kWarningMode;
   }
 
   auto* devtools_interaction_tracker =
@@ -209,11 +226,23 @@ void SafeBrowsingPageActivationThrottle::NotifyResult() {
   LogMetricsOnChecksComplete(selection.matched_list, activation_decision,
                              activation_level);
 
+  // Finalize the `disabled_reason` based on the final outcome of
+  // `activation_level` and `activation_decision`. This ensures the
+  // `disabled_reason` is consistent with the state of `activation_level`
+  // and the reason is properly set.
+  if (activation_level == mojom::ActivationLevel::kDisabled) {
+    if (disabled_reason == mojom::SubresourceFilterDisabledReason::kUnknown) {
+      disabled_reason = ToDisabledReason(activation_decision);
+    }
+  } else {
+    disabled_reason = mojom::SubresourceFilterDisabledReason::kUnknown;
+  }
+
   SubresourceFilterObserverManager::FromWebContents(
       navigation_handle()->GetWebContents())
-      ->NotifyPageActivationComputed(
-          navigation_handle(),
-          selection.config.GetActivationState(activation_level));
+      ->NotifyPageActivationComputed(navigation_handle(),
+                                     selection.config.GetActivationState(
+                                         activation_level, disabled_reason));
 }
 
 void SafeBrowsingPageActivationThrottle::LogMetricsOnChecksComplete(

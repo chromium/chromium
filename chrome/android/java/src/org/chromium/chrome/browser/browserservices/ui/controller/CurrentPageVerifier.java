@@ -111,7 +111,7 @@ public class CurrentPageVerifier implements NativeInitObserver {
 
     @Override
     public void onFinishNativeInitialization() {
-        verify(mIntentDataProvider.getUrlToLoad());
+        verify(assumeNonNull(mIntentDataProvider.getUrlToLoad()));
     }
 
     /** Perform verification for the given page. */

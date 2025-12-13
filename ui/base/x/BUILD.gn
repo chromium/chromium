@@ -82,7 +82,7 @@ component("x") {
     "//ui/events/devices/x11",
     "//ui/events/keycodes:x11",
     "//ui/events/platform/x11",
-    "//ui/events/x:x",
+    "//ui/events/x",
     "//ui/gfx",
     "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry",

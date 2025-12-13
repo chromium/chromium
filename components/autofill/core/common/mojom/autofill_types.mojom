@@ -4,9 +4,9 @@
 
 module autofill.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/text_direction.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -62,11 +62,11 @@ enum HtmlFieldType {
   kAddressLine1 = 8,
   kAddressLine2 = 9,
   kAddressLine3 = 10,
-  kAddressLevel1 = 11,   // For U.S. addresses, corresponds to the state.
-  kAddressLevel2 = 12,   // For U.S. addresses, corresponds to the city.
-  kAddressLevel3 = 13,   // An area that is more specific than LEVEL2.
-  kCountryCode = 14,     // The ISO 3166-1-alpha-2 country code.
-  kCountryName = 15,     // The localized country name.
+  kAddressLevel1 = 11,  // For U.S. addresses, corresponds to the state.
+  kAddressLevel2 = 12,  // For U.S. addresses, corresponds to the city.
+  kAddressLevel3 = 13,  // An area that is more specific than LEVEL2.
+  kCountryCode = 14,  // The ISO 3166-1-alpha-2 country code.
+  kCountryName = 15,  // The localized country name.
   kPostalCode = 16,
   // kFullAddress = 17 is deprecated.
 
@@ -192,11 +192,11 @@ enum ButtonTitleType {
   NONE = 0,
   BUTTON_ELEMENT_SUBMIT_TYPE = 1,  // <button type='submit'>
   BUTTON_ELEMENT_BUTTON_TYPE = 2,  // <button type='button'>
-  INPUT_ELEMENT_SUBMIT_TYPE = 3,   // <input type='submit'>
-  INPUT_ELEMENT_BUTTON_TYPE = 4,   // <input type='button'>
-  HYPERLINK = 5,                   // e.g. <a class='button'>
-  DIV = 6,                         // e.g. <div id='submit'>
-  SPAN = 7                         // e.g. <span name='btn'>
+  INPUT_ELEMENT_SUBMIT_TYPE = 3,  // <input type='submit'>
+  INPUT_ELEMENT_BUTTON_TYPE = 4,  // <input type='button'>
+  HYPERLINK = 5,  // e.g. <a class='button'>
+  DIV = 6,  // e.g. <div id='submit'>
+  SPAN = 7,  // e.g. <span name='btn'>
 };
 
 // Describes various criteria (e.g. there are empty fields in the form) that
@@ -272,6 +272,11 @@ struct FieldRendererId {
   uint64 id;
 };
 
+// autofill::FillId (components/autofill/core/common/unique_ids.h)
+struct FillId {
+  mojo_base.mojom.UnguessableToken id;
+};
+
 // autofill::SelectOption (components/autofill/core/common/form_field_data.h)
 struct SelectOption {
   mojo_base.mojom.String16 value;
@@ -306,26 +311,30 @@ struct FormFieldData {
 
   // From which source the label is inferred.
   enum LabelSource {
-    kUnknown,           // No label.
-    kLabelTag,          // <label> sibling/ancestor.
-    kPTag,              // <p> sibling.
-    kDivTable,          // <div> ancestor.
-    kTdTag,             // <td> sibling.
-    kDdTag,             // <dd> sibling.
-    kLiTag,             // <li> ancestor.
-    kPlaceHolder,       // placeholder attribute.
-    kAriaLabel,         // aria-label attribute.
-    kCombined,          // Text node sibling (includes <b>, etc).
-    kValue,             // value attribute.
-    kForId,             // <label> for-attribute that links to an control
+    kUnknown,  // No label.
+    kLabelTag,  // <label> sibling/ancestor.
+    kPTag,  // <p> sibling.
+    kDivTable,  // <div> ancestor.
+    kTdTag,  // <td> sibling.
+    kDdTag,  // <dd> sibling.
+    kLiTag,  // <li> ancestor.
+    kPlaceHolder,  // placeholder attribute.
+    kAriaLabel,  // aria-label attribute.
+    kCombined,  // Text node sibling (includes <b>, etc).
+    kValue,  // value attribute.
+    kForId,  // <label> for-attribute that links to an control
                         // via it's id attribute.
-    kForName,           // <label> for-attribute that links to an control
+
+    kForName,  // <label> for-attribute that links to an control
                         // viait's name attribute.
-    kForShadowHostId,   // <label> for-attribute that links to an control
+
+    kForShadowHostId,  // <label> for-attribute that links to an control
                         // (inside a shadow DOM) via it's id attribute.
-    kForShadowHostName, // <label> for-attribute that links to an control
+
+    kForShadowHostName,  // <label> for-attribute that links to an control
                         // (inside a shadow DOM) via it's name attribute.
-    kOverlayingLabel,   // Succeeding DOM node overlaying the input.
+
+    kOverlayingLabel,  // Succeeding DOM node overlaying the input.
   };
 
   mojo_base.mojom.String16 label;
@@ -342,6 +351,7 @@ struct FormFieldData {
   mojo_base.mojom.String16 css_classes;
   mojo_base.mojom.String16 aria_label;
   mojo_base.mojom.String16 aria_description;
+  mojo_base.mojom.String16 nonce;
   FieldRendererId renderer_id;
   FormRendererId host_form_id;
   uint32 properties_mask;
@@ -411,11 +421,12 @@ struct FormFieldDataPredictions {
   string host_form_signature;
   string signature;
   string heuristic_type;
+  // The type predicted by the Password Manager's ML model.
+  string pwm_ml_type;
   // Empty if server predictions have not arrived, yet.
   string? server_type;
   string html_type;
   string overall_type;
-  string autofill_ai_type;
   string attribute_types;
   string format_string;
   string parseable_name;
@@ -433,7 +444,21 @@ struct FormFieldDataPredictions {
 struct FormDataPredictions {
   FormData data;
   string signature;
+
+  // Signature used for server-side overrides of predictions on forms where the
+  // regular signature is unstable (e.g. due to random form or field names).
+  // It is based on the form's scheme, host, and field control types. To avoid
+  // collisions on small forms (2 fields or less), it also incorporates the
+  // URL path, reference, or query.
   string alternative_signature;
+
+  // A stable signature used for collecting and serving crowdsourced
+  // predictions. It is calculated similarly to `alternative_signature` (using
+  // scheme, host, and field types) but is more stable for small forms (2 fields
+  // or less) because it strictly excludes the URL path, reference, and query
+  // components.
+  string structural_form_signature;
+
   array<FormFieldDataPredictions> fields;
 };
 
@@ -464,8 +489,8 @@ struct PasswordFormFillData {
 // autofill::PasswordFormGenerationData
 // (components/autofill/core/common/password_form_generation_data.h)
 struct PasswordFormGenerationData {
-   FieldRendererId new_password_renderer_id;
-   FieldRendererId confirmation_password_renderer_id;
+  FieldRendererId new_password_renderer_id;
+  FieldRendererId confirmation_password_renderer_id;
 };
 
 // autofill::password_generation::PasswordGenerationUIData
@@ -527,7 +552,7 @@ enum AutofillSuggestionAvailability {
 // Represents whether an autofill action, which is an operation that changes a
 // form, will persist (kFill) or will be cleared later (kPreview).
 enum ActionPersistence {
-  kFill,     // The action is filled.
+  kFill,  // The action is filled.
   kPreview,  // The action is previewed and will be cleared afterwards.
 };
 
@@ -539,9 +564,9 @@ enum FormActionType {
 
 // The possible actions that Autofill can perform on fields.
 enum FieldActionType {
-  kReplaceAll,        // Replace the field's current value.
+  kReplaceAll,  // Replace the field's current value.
   kReplaceSelection,  // Replace only the currently selected text.
-  kSelectAll,         // Selects all the text within this field.
+  kSelectAll,  // Selects all the text within this field.
 };
 
 // Describes which action triggered Autofill suggestions. This has implications
@@ -605,7 +630,7 @@ enum AutofillSuggestionTriggerSource {
   // example, this can be profile edit or delete dialog. This trigger source
   // is used only if the suggestions were triggered manually via the Chrome
   // context menu.
-  kShowPromptAfterDialogClosedNonManualFallback = 14,
+  // kShowPromptAfterDialogClosedNonManualFallback = 14 is deprecated.
   // The compose saved state notification is triggered when the compose dialog
   // loses focus and is closed.
   kComposeDialogLostFocus = 15,
@@ -615,8 +640,7 @@ enum AutofillSuggestionTriggerSource {
   // Password manager renderer received password suggestions from the browser
   // after the field was focused (likely due to autofocus on the page load).
   kPasswordManagerProcessedFocusedField = 17,
-  // Autofill AI was invoked.
-  kAutofillAi = 18,
+  // kAutofillAi = 18 is deprecated
   // An update to the suggestions is triggered, e.g. because a user decided
   // to refresh a plus address suggestion or because a network request for a
   // plus address suggestion terminated and its result needs to be shown.
@@ -625,5 +649,5 @@ enum AutofillSuggestionTriggerSource {
   kPlusAddressUpdatedInBrowserProcess = 19,
   // Suggestion triggered when Password Manager detects a potentially failed
   // login attempt that used a credential with a recovery password.
-  kProactivePasswordRecovery = 20
+  kProactivePasswordRecovery = 20,
 };

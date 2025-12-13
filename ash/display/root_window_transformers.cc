@@ -223,9 +223,9 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     }
 
     gfx::Rect mirror_display_rect =
-        gfx::Rect(mirror_display_info.bounds_in_native().size());
+        gfx::Rect(mirror_display_info.GetSizeInPixelWithPanelOrientation());
 
-    // When logical rotation is 90 or 270 degree, transpose is needed to apply
+    // When the root rotation is 90 or 270 degree, transpose is needed to apply
     // reverse rotation to `root_bounds_` and `mirror_display_rect` to exclude
     // the rotation. This is because the rotation happens at viz output and
     // `transform_` needs to be calculated without the rotation.
@@ -234,9 +234,14 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     if (active_root_rotation == display::Display::ROTATE_90 ||
         active_root_rotation == display::Display::ROTATE_270) {
       root_bounds_.Transpose();
+      mirror_display_rect.Transpose();
     }
-    if (active_mirror_rotation == display::Display::ROTATE_90 ||
-        active_mirror_rotation == display::Display::ROTATE_270) {
+
+    // In tablet mode, we want to keep the active rotation of the mirroring
+    // display.
+    if (display::Screen::Get()->InTabletMode() &&
+        (active_mirror_rotation == display::Display::ROTATE_90 ||
+         active_mirror_rotation == display::Display::ROTATE_270)) {
       mirror_display_rect.Transpose();
     }
 
@@ -319,7 +324,7 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
     // Calculate the unified height scale value, and apply the same scale on the
     // row physical height to get the row logical height.
     display::Display unified_display =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
+        display::Screen::Get()->GetPrimaryDisplay();
     const int unified_physical_height =
         unified_display.GetSizeInPixel().height();
     const int unified_logical_height = screen_bounds.height();

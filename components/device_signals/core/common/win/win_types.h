@@ -24,11 +24,6 @@ struct AvProduct {
   std::string display_name{};
   AvProductState state = AvProductState::kOff;
 
-  // Although not present on the documentation, IWscProduct exposes a
-  // `get_ProductGuid` function to retrieve an GUID representing an Antivirus
-  // software.
-  std::string product_id{};
-
   bool operator==(const AvProduct& other) const;
 
   base::Value ToValue() const;

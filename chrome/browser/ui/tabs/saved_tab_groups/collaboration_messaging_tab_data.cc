@@ -10,16 +10,20 @@
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/widget.h"
@@ -48,9 +52,18 @@ GetCollaborationAvatarFallbackParametersFromWidget(
 }
 }  // namespace
 
-CollaborationMessagingTabData::CollaborationMessagingTabData(Profile* profile)
-    : profile_(profile) {}
+DEFINE_USER_DATA(CollaborationMessagingTabData);
+
+CollaborationMessagingTabData::CollaborationMessagingTabData(
+    tabs::TabInterface* tab)
+    : profile_(tab->GetBrowserWindowInterface()->GetProfile()),
+      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {}
 CollaborationMessagingTabData::~CollaborationMessagingTabData() = default;
+
+CollaborationMessagingTabData* CollaborationMessagingTabData::From(
+    tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
 
 void CollaborationMessagingTabData::SetMessage(PersistentMessage message) {
   using collaboration::messaging::CollaborationEvent;

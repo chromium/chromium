@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/cpu.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -122,12 +121,12 @@ class VideoDecoderTest : public ::testing::Test {
 
 // Set the frame rate for the decoder. This is required for the
 // VideoDecoderPipeline to work.
-#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+#if BUILDFLAG(USE_V4L2_CODEC)
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
     command_line.AppendSwitchASCII(
         switches::kHardwareVideoDecodeFrameRate,
         base::NumberToString(g_env->Video()->FrameRate()));
-#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
 
     config.implementation = g_env->GetDecoderImplementation();
     config.linear_output = g_env->ShouldOutputLinearBuffers();

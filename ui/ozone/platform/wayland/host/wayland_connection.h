@@ -53,13 +53,13 @@ class WaylandCursorBufferListener;
 class WaylandCursorPosition;
 class WaylandCursorShape;
 class WaylandDataDeviceManager;
+class WaylandWpColorManager;
 class WaylandDataDragController;
 class WaylandEventSource;
 class WaylandOutputManager;
 class WaylandSeat;
 class WaylandTabletManager;
 class WaylandWindowDragController;
-class WaylandZcrColorManager;
 class WaylandZwpPointerConstraints;
 class WaylandZwpPointerGestures;
 class WaylandZwpRelativePointerManager;
@@ -149,6 +149,8 @@ class WaylandConnection {
                        const gfx::Point& hotspot_in_dips,
                        int buffer_scale);
 
+  void ResetCursor();
+
   WaylandEventSource* event_source() const { return event_source_.get(); }
 
   WaylandSeat* seat() const { return seat_.get(); }
@@ -170,8 +172,8 @@ class WaylandConnection {
     return buffer_manager_host_.get();
   }
 
-  WaylandZcrColorManager* zcr_color_manager() const {
-    return zcr_color_manager_.get();
+  WaylandWpColorManager* wp_color_manager() const {
+    return wp_color_manager_.get();
   }
 
   WaylandCursorShape* wayland_cursor_shape() const {
@@ -318,6 +320,7 @@ class WaylandConnection {
   friend class OverlayPrioritizer;
   friend class SinglePixelBuffer;
   friend class ToplevelIconManager;
+  friend class WaylandCursorFactory;
   friend class WaylandDataDeviceManager;
   friend class WaylandOutput;
   friend class WaylandSeat;
@@ -325,8 +328,8 @@ class WaylandConnection {
   friend class WaylandZwpPointerConstraints;
   friend class WaylandZwpPointerGestures;
   friend class WaylandZwpRelativePointerManager;
-  friend class WaylandZcrColorManager;
   friend class WaylandCursorShape;
+  friend class WaylandWpColorManager;
   friend class XdgActivation;
   friend class XdgForeignWrapper;
   friend class XdgSessionManager;
@@ -442,7 +445,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandOutputManager> output_manager_;
   std::unique_ptr<WaylandTabletManager> tablet_manager_;
   std::unique_ptr<WaylandCursorPosition> cursor_position_;
-  std::unique_ptr<WaylandZcrColorManager> zcr_color_manager_;
+  std::unique_ptr<WaylandWpColorManager> wp_color_manager_;
   std::unique_ptr<WaylandCursorShape> cursor_shape_;
   std::unique_ptr<WaylandZwpPointerConstraints> zwp_pointer_constraints_;
   std::unique_ptr<WaylandZwpRelativePointerManager>

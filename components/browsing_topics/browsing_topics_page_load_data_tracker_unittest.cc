@@ -129,6 +129,7 @@ class BrowsingTopicsPageLoadDataTrackerTest
         /*referrer=*/GURL(),
         /*redirects=*/{}, ui::PageTransition::PAGE_TRANSITION_TYPED,
         history::VisitSource::SOURCE_BROWSED,
+        history::VisitResponseCodeCategory::kNot404,
         /*did_replace_entry=*/false);
   }
 
@@ -189,7 +190,8 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest,
   BrowsingTopicsPageLoadDataTracker::CreateForPage(
       web_contents()->GetPrimaryMainFrame()->GetPage(),
       /*redirect_hosts_with_topics_invoked=*/
-      std::set<HashedHost>{HashMainFrameHostForStorage(url.host())}, source_id);
+      std::set<HashedHost>{HashMainFrameHostForStorage(url.GetHost())},
+      source_id);
 
   auto* tracker = GetBrowsingTopicsPageLoadDataTracker();
 

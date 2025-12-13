@@ -16,8 +16,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
-import org.chromium.android_webview.common.AwFeatureMap;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
@@ -55,29 +53,6 @@ public abstract class ShouldInterceptRequestMediator {
         int COUNT = 5;
     }
 
-    // If the embedder hasn't overridden WebViewClient#shouldInterceptRequest (or
-    // ServiceWorkerClient#shouldInterceptRequest), we don't need to call it (and pay for the thread
-    // hops).
-    private volatile boolean mCanSkipSyncShouldInterceptRequest = true;
-
-    // The default video poster functionality is implemented on top of shouldInterceptRequest. Even
-    // if the developer hasn't overridden shouldInterceptRequest, we shouldn't skip it for the
-    // default video poster URL.
-    @Nullable private volatile String mNoSkipUrl;
-
-    @AnyThread
-    public boolean canSkipShouldInterceptRequest(String url) {
-        // A user is only put into an experiment group when the feature is checked. By having the
-        // feature check be the last clause in the conditional our experiment will only involve
-        // users for whom we actually skip shouldInterceptRequest, and so we can see the benefits
-        // of this optimization without it being diluted by all the users for whom
-        // shouldInterceptRequest will need to be called anyway.
-        return mCanSkipSyncShouldInterceptRequest
-                && !url.equals(mNoSkipUrl)
-                && AwFeatureMap.isEnabled(
-                        AwFeatures.WEBVIEW_SHORT_CIRCUIT_SHOULD_INTERCEPT_REQUEST);
-    }
-
     @AnyThread
     public void onWebViewClientUpdated(@Nullable WebViewClient client) {
         try {
@@ -86,13 +61,8 @@ public abstract class ShouldInterceptRequestMediator {
                     overrides
                             ? ShouldInterceptRequestOverridden.AW_CONTENTS_OVERRIDDEN
                             : ShouldInterceptRequestOverridden.AW_CONTENTS_NOT_OVERRIDDEN);
-            mCanSkipSyncShouldInterceptRequest = !overrides;
         } catch (NoSuchMethodException e) {
-            // If something goes wrong, default to `false` because the consequences of wrongly being
-            // false is suboptimal performance, whereas the consequences of wrongly being true is
-            // correctness issues (shouldInterceptRequest not being called when it should be).
             recordOverridden(ShouldInterceptRequestOverridden.AW_CONTENTS_ERROR);
-            mCanSkipSyncShouldInterceptRequest = false;
         }
     }
 
@@ -109,17 +79,10 @@ public abstract class ShouldInterceptRequestMediator {
         //
         // Seeing as the only method on ServiceWorkerClient is shouldInterceptRequest, we're going
         // to assume that anyone providing a ServiceWorkerClient has overridden it.
-
-        mCanSkipSyncShouldInterceptRequest = (client == null);
         recordOverridden(
-                mCanSkipSyncShouldInterceptRequest
+                (client == null)
                         ? ShouldInterceptRequestOverridden.SERVICE_WORKER_NULL
                         : ShouldInterceptRequestOverridden.SERVICE_WORKER_NON_NULL);
-    }
-
-    @AnyThread
-    public void setNoSkipUrl(@Nullable String url) {
-        mNoSkipUrl = url;
     }
 
     /**

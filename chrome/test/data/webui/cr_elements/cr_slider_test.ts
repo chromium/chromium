@@ -267,7 +267,7 @@ suite('cr-slider', function() {
     assertEquals('4', crSlider.getAttribute('aria-valuetext'));
     assertEquals('4', crSlider.getAttribute('aria-valuenow'));
     assertEquals(
-        '', crSlider.shadowRoot.querySelector('#label')!.textContent!.trim());
+        '', crSlider.shadowRoot.querySelector('#label')!.textContent.trim());
     assertEquals(2, crSlider.value);
     pressArrowRight();
     assertEquals(3, crSlider.value);
@@ -275,7 +275,7 @@ suite('cr-slider', function() {
     assertEquals('8', crSlider.getAttribute('aria-valuetext'));
     assertEquals('8', crSlider.getAttribute('aria-valuenow'));
     assertEquals(
-        '', crSlider.shadowRoot.querySelector('#label')!.textContent!.trim());
+        '', crSlider.shadowRoot.querySelector('#label')!.textContent.trim());
 
     crSlider.value = 2;
     crSlider.ticks = [
@@ -301,7 +301,7 @@ suite('cr-slider', function() {
     assertEquals('Third', crSlider.getAttribute('aria-valuetext'));
     assertEquals(
         'Third',
-        crSlider.shadowRoot.querySelector('#label')!.textContent!.trim());
+        crSlider.shadowRoot.querySelector('#label')!.textContent.trim());
     assertEquals('3', crSlider.getAttribute('aria-valuenow'));
     pressArrowLeft();
     await microtasksFinished();
@@ -309,7 +309,7 @@ suite('cr-slider', function() {
     assertEquals('20', crSlider.getAttribute('aria-valuenow'));
     assertEquals(
         'Second',
-        crSlider.shadowRoot.querySelector('#label')!.textContent!.trim());
+        crSlider.shadowRoot.querySelector('#label')!.textContent.trim());
   });
 
   test('disabled whenever public |disabled| is true', async () => {

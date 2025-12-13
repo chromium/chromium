@@ -185,6 +185,8 @@ void WorkerFetchContext::PrepareRequest(
     ResourceLoaderOptions& options,
     WebScopedVirtualTimePauser& virtual_time_pauser,
     ResourceType resource_type) {
+  GetExecutionContext()->MaybeRecordNetworkRequestUrlForPushEvents(
+      request.Url());
   request.SetUkmSourceId(GetExecutionContext()->UkmSourceID());
 
   String user_agent = global_scope_->UserAgent();
@@ -213,6 +215,8 @@ void WorkerFetchContext::PrepareRequest(
 
   request.SetAllowsDeviceBoundSessionRegistration(
       RuntimeEnabledFeatures::DeviceBoundSessionCredentialsEnabled(
+          GetExecutionContext()) ||
+      RuntimeEnabledFeatures::DeviceBoundSessionCredentials2Enabled(
           GetExecutionContext()));
 }
 

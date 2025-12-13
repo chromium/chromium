@@ -7,8 +7,9 @@
 #import "components/data_sharing/public/group_data.h"
 #import "components/data_sharing/test_support/test_utils.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_app_interface.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
@@ -37,9 +38,13 @@ namespace {
 
 NSString* const kGroupTitle = @"shared group";
 
-// Adds a shared tab group and sets the user as `owner` or not of the group.
-void AddSharedGroup(BOOL owner) {
-  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:owner];
+// Adds a shared tab group with a test URL and sets the user as `owner` or not
+// of the group.
+void AddSharedGroup(BOOL owner,
+                    net::test_server::EmbeddedTestServer* test_server) {
+  NSString* url = base::SysUTF8ToNSString(
+      GetQueryTitleURL(test_server, kGroupTitle).spec());
+  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:owner url:url];
   // Sleep for 3 seconds to make sure that the shared group data are correctly
   // fetched.
   // This sleep is longer than other `AddSharedGroup:` sleeps because, unlike
@@ -69,6 +74,7 @@ void AddSharedGroup(BOOL owner) {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
+  config.features_disabled.push_back(kIOSAutoOpenRemoteTabGroupsSettings);
   // Add the flag to use FakeTabGroupSyncService.
   config.additional_args.push_back(
       "--" + std::string(test_switches::kEnableFakeTabGroupSyncService));
@@ -97,12 +103,16 @@ void AddSharedGroup(BOOL owner) {
 }
 
 // Tests that deleting a shared tab group from groups panel works.
-- (void)testSharedTabGroupsPanelDeleteSharedGroup {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
-  AddSharedGroup(/*owner=*/YES);
+// TODO:(crbug.com/450935810): The test is flaky on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSharedTabGroupsPanelDeleteSharedGroup \
+  FLAKY_testSharedTabGroupsPanelDeleteSharedGroup
+#else
+#define MAYBE_testSharedTabGroupsPanelDeleteSharedGroup \
+  testSharedTabGroupsPanelDeleteSharedGroup
+#endif
+- (void)MAYBE_testSharedTabGroupsPanelDeleteSharedGroup {
+  AddSharedGroup(/*owner=*/YES, self.testServer);
 
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
@@ -140,19 +150,14 @@ void AddSharedGroup(BOOL owner) {
 
 // Tests that leaving a shared tab group from the tab groups panel works.
 - (void)testSharedTabGroupsPanelLeaveSharedGroup {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
-  AddSharedGroup(/*owner=*/NO);
+  AddSharedGroup(/*owner=*/NO, self.testServer);
 
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
 
   // Check that the group with `kGroupTitle` exists.
-  [[EarlGrey selectElementWithMatcher:TabGroupsPanelCellWithName(
-                                          kGroupTitle, 1, /*shared=*/true)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForMatcher:TabGroupsPanelCellWithName(kGroupTitle, 1,
+                                                            /*shared=*/true)];
 
   // Long press the group.
   [[EarlGrey selectElementWithMatcher:TabGroupsPanelCellWithName(
@@ -182,12 +187,9 @@ void AddSharedGroup(BOOL owner) {
 
 // Checks that being removed from a shared group makes a notification appear at
 // the top of the Tab Groups panel.
-- (void)testNotificationOnSharedGroupRemoved {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
-  AddSharedGroup(/*owner=*/NO);
+// TODO(crbug.com/451982715): Test is flaky.
+- (void)FLAKY_testNotificationOnSharedGroupRemoved {
+  AddSharedGroup(/*owner=*/NO, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]

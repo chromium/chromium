@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_format.h"

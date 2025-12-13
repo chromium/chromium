@@ -6,10 +6,13 @@ module extensions.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // The serialization format of the message.
+// NOTE: To obtain this for message sending purposes use
+// `messaging_util::GetSerializationFormat()`.
 enum SerializationFormat {
   kStructuredCloned,
   kJson
@@ -81,9 +84,17 @@ struct ExternalConnectionInfo {
   int32 guest_render_frame_routing_id;
 };
 
+// The data payload of a message.
+union MessageData {
+  string json;
+  mojo_base.mojom.BigBuffer structured_cloned;
+};
+
 // A message that is serialized across the channel.
 struct Message {
-  string data;
+  MessageData data;
+  // TODO(crbug.com/40321352): Remove this field once structured cloning is
+  // fully implemented and we can rely on the union tag.
   SerializationFormat format;
   bool user_gesture;
   bool from_privileged_context;

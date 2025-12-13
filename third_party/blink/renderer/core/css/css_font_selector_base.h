@@ -15,7 +15,6 @@ namespace blink {
 
 class FontDescription;
 class FontFamily;
-class FontMatchingMetrics;
 
 // `CSSFontSelectorBase` is the base class of CSS related font selectors:
 //  * `CSSFontSelector` for `StyleEngine`
@@ -33,20 +32,7 @@ class CORE_EXPORT CSSFontSelectorBase : public FontSelector {
                     const AtomicString& family_name,
                     const FontDataForRangeSet&) override;
 
-  void ReportSuccessfulFontFamilyMatch(
-      const AtomicString& font_family_name) override;
-
-  void ReportFailedFontFamilyMatch(
-      const AtomicString& font_family_name) override;
-
-  void ReportSuccessfulLocalFontMatch(const AtomicString& font_name) override;
-
-  void ReportFailedLocalFontMatch(const AtomicString& font_name) override;
-
   void ReportNotDefGlyph() const override;
-
-  void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
-                                       unsigned num_broken_clusters) override;
 
   void Trace(Visitor*) const override;
 
@@ -56,8 +42,6 @@ class CORE_EXPORT CSSFontSelectorBase : public FontSelector {
   // is dead.
   virtual bool IsAlive() const { return true; }
 
-  // Might return null.
-  virtual FontMatchingMetrics* GetFontMatchingMetrics() const = 0;
   virtual UseCounter* GetUseCounter() const = 0;
 
   AtomicString FamilyNameFromSettings(const FontDescription&,

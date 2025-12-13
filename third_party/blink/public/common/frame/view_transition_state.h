@@ -66,6 +66,9 @@ struct BLINK_COMMON_EXPORT ViewTransitionState {
            viz::ViewTransitionElementResourceId::kInvalidLocalId;
   }
   bool HasSubframeSnapshot() const { return subframe_snapshot_id.IsValid(); }
+  bool IsDelayLayerTreeViewDeletionEnabled() const {
+    return delay_layer_tree_view_deletion_;
+  }
 
  private:
   // IMPORTANT:
@@ -87,6 +90,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionState {
       viz::ViewTransitionElementResourceId::kInvalidLocalId;
   viz::ViewTransitionElementResourceId subframe_snapshot_id;
   base::flat_map<std::string, std::string> id_to_auto_name_map;
+  bool delay_layer_tree_view_deletion_ = false;
 };
 
 }  // namespace blink

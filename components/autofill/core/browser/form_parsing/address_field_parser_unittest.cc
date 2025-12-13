@@ -19,18 +19,21 @@ namespace autofill {
 class AddressFieldParserTest : public FormFieldParserTestBase,
                                public ::testing::Test {
  public:
-  AddressFieldParserTest() = default;
+  AddressFieldParserTest() {
+    default_features.InitWithFeatures({features::kAutofillUseINAddressModel,
+                                       features::kAutofillSupportSplitZipCode},
+                                      {});
+  }
   AddressFieldParserTest(const AddressFieldParserTest&) = delete;
   AddressFieldParserTest& operator=(const AddressFieldParserTest&) = delete;
 
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                         AutofillScanner* scanner) override {
+                                         AutofillScanner& scanner) override {
     return AddressFieldParser::Parse(context, scanner);
   }
 
-  base::test::ScopedFeatureList default_features{
-      features::kAutofillUseINAddressModel};
+  base::test::ScopedFeatureList default_features;
 };
 
 TEST_F(AddressFieldParserTest, Empty) {
@@ -267,6 +270,20 @@ TEST_F(AddressFieldParserTest, ParseCity) {
   ClassifyAndVerify();
 }
 
+TEST_F(AddressFieldParserTest, ParseCity_IgnoreNonCityWordsEndingInCity) {
+  AddTextFormFieldData("opacity", "Opacity", UNKNOWN_TYPE);
+  AddTextFormFieldData("ethnicity", "Ethnicity", UNKNOWN_TYPE);
+  AddTextFormFieldData("capacity", "Capacity", UNKNOWN_TYPE);
+  AddTextFormFieldData("incapacity", "Incapacity", UNKNOWN_TYPE);
+  AddTextFormFieldData("electricity", "Electricity", UNKNOWN_TYPE);
+  AddTextFormFieldData("velocity", "Velocity", UNKNOWN_TYPE);
+  AddTextFormFieldData("publicity", "Publicity", UNKNOWN_TYPE);
+  AddTextFormFieldData("simplicity", "Simplicity", UNKNOWN_TYPE);
+  AddTextFormFieldData("caloricity", "Caloricity", UNKNOWN_TYPE);
+  AddTextFormFieldData("homecity", "Homecity", ADDRESS_HOME_CITY);
+  ClassifyAndVerifyWithMultipleParses();
+}
+
 TEST_F(AddressFieldParserTest, ParseState) {
   AddTextFormFieldData("state", "State", ADDRESS_HOME_STATE);
   ClassifyAndVerify();
@@ -291,8 +308,37 @@ TEST_F(AddressFieldParserTest, ParseStateAndZipOneLabel) {
   ClassifyAndVerify();
 }
 
+TEST_F(AddressFieldParserTest, ParseZipAndCityOneLabel) {
+  AddTextFormFieldData("zip", "zip, city", ADDRESS_HOME_ZIP);
+  AddTextFormFieldData("city", "zip, city", ADDRESS_HOME_CITY);
+  ClassifyAndVerify();
+}
+
 TEST_F(AddressFieldParserTest, ParseCountry) {
   AddTextFormFieldData("country", "Country", ADDRESS_HOME_COUNTRY);
+  ClassifyAndVerify();
+}
+
+TEST_F(AddressFieldParserTest, ParseZipAndZipSuffix1) {
+  AddTextFormFieldData("zip", "Zip", ADDRESS_HOME_ZIP);
+  AddTextFormFieldData("zip2", "Zip", ADDRESS_HOME_ZIP_SUFFIX);
+  ClassifyAndVerify();
+}
+
+TEST_F(AddressFieldParserTest, ParseZipAndZipSuffix2) {
+  AddTextFormFieldData("zip", "Zip", ADDRESS_HOME_ZIP);
+  AddTextFormFieldData("zipPlus", "Zip", ADDRESS_HOME_ZIP_SUFFIX);
+  ClassifyAndVerify();
+}
+
+TEST_F(AddressFieldParserTest, ParseZipAndZipSuffix3) {
+  AddTextFormFieldData("zip", "Zip extended", ADDRESS_HOME_ZIP);
+  AddTextFormFieldData("zip2", "Zip extended", ADDRESS_HOME_ZIP_SUFFIX);
+  ClassifyAndVerify();
+}
+
+TEST_F(AddressFieldParserTest, ParseLonelyZipSuffix) {
+  AddTextFormFieldData("zip2", "Zip", ADDRESS_HOME_ZIP);
   ClassifyAndVerify();
 }
 

@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
-#include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
@@ -59,11 +58,13 @@
 #include "third_party/blink/renderer/core/animation/interpolation_types_map.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_base.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
+#include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -82,12 +83,15 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/named_animation_trigger_map.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/animation_event.h"
 #include "third_party/blink/renderer/core/events/transition_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -107,7 +111,7 @@ namespace {
 class CSSAnimationProxy : public AnimationProxy {
  public:
   CSSAnimationProxy(AnimationTimeline* timeline,
-                    bool has_trigger_names,
+                    bool has_trigger_attachments,
                     CSSAnimation* animation,
                     bool is_paused,
                     const std::optional<TimelineOffset>& range_start,
@@ -131,11 +135,11 @@ class CSSAnimationProxy : public AnimationProxy {
   }
 
  private:
-  static bool IdleTriggerAllowsVisualEffect(bool has_trigger_names,
+  static bool IdleTriggerAllowsVisualEffect(bool has_trigger_attachments,
                                             const Timing& timing);
   std::optional<AnimationTimeDelta> CalculateInheritedTime(
       AnimationTimeline* timeline,
-      bool has_trigger_names,
+      bool has_trigger_attachments,
       CSSAnimation* animation,
       const std::optional<TimelineOffset>& range_start,
       const std::optional<TimelineOffset>& range_end,
@@ -151,7 +155,7 @@ class CSSAnimationProxy : public AnimationProxy {
 
 CSSAnimationProxy::CSSAnimationProxy(
     AnimationTimeline* timeline,
-    bool has_trigger_names,
+    bool has_trigger_attachments,
     CSSAnimation* animation,
     bool is_paused,
     const std::optional<TimelineOffset>& range_start,
@@ -178,7 +182,7 @@ CSSAnimationProxy::CSSAnimationProxy(
                      adjusted_range_start, adjusted_range_end, timing)
                : AnimationTimeDelta();
   inherited_time_ =
-      CalculateInheritedTime(timeline, has_trigger_names, animation,
+      CalculateInheritedTime(timeline, has_trigger_attachments, animation,
                              adjusted_range_start, adjusted_range_end, timing);
 
   timeline_duration_ = timeline ? timeline->GetDuration() : std::nullopt;
@@ -193,7 +197,7 @@ CSSAnimationProxy::CSSAnimationProxy(
 
 std::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
     AnimationTimeline* timeline,
-    bool has_trigger_names,
+    bool has_trigger_attachments,
     CSSAnimation* animation,
     const std::optional<TimelineOffset>& range_start,
     const std::optional<TimelineOffset>& range_end,
@@ -222,9 +226,14 @@ std::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
     previous_timeline = animation->TimelineInternal();
   }
 
-  if (has_trigger_names &&
-      (!IdleTriggerAllowsVisualEffect(has_trigger_names, timing))) {
-    return std::nullopt;
+  if (has_trigger_attachments && !animation) {
+    // This is only to make sure the InertEffect doesn't cause a glitch in the
+    // rendering for a newly created triggered animation. The preceding if
+    // statement takes care of an existing idle animation. Triggering should not
+    // affect an existing non-idle animation.
+    if (!IdleTriggerAllowsVisualEffect(has_trigger_attachments, timing)) {
+      return std::nullopt;
+    }
   }
 
   bool range_changed =
@@ -316,9 +325,10 @@ std::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
 }
 
 // static
-bool CSSAnimationProxy::IdleTriggerAllowsVisualEffect(bool has_trigger_names,
-                                                      const Timing& timing) {
-  if (!has_trigger_names) {
+bool CSSAnimationProxy::IdleTriggerAllowsVisualEffect(
+    bool has_trigger_attachments,
+    const Timing& timing) {
+  if (!has_trigger_attachments) {
     return true;
   }
 
@@ -792,7 +802,6 @@ class SpecifiedTimelines {
     void operator++() { index_ = timelines_.SkipPastNullptr(index_ + 1); }
 
     bool operator==(const Iterator& o) const { return index_ == o.index_; }
-    bool operator!=(const Iterator& o) const { return index_ != o.index_; }
 
    private:
     wtf_size_t index_;
@@ -1176,6 +1185,78 @@ CSSDeferredTimelineMap CSSAnimations::CalculateChangedDeferredTimelines(
   return changed_timelines;
 }
 
+// static
+void CSSAnimations::UpdateNamedTriggers(
+    const ComputedStyleBuilder& style_builder,
+    const CSSAnimationUpdate& update,
+    Element& element) {
+  NamedAnimationTriggerMap* existing_trigger_map = element.NamedTriggers();
+  NamedAnimationTriggerMap new_trigger_map;
+
+  bool is_update_needed = false;
+
+  if (const CSSAnimationData* data = style_builder.Animations()) {
+    const HeapVector<Member<const ScopedCSSName>>& trigger_names =
+        data->TimelineTriggerNameList();
+
+    for (wtf_size_t i = 0; i < trigger_names.size(); i++) {
+      Member<const ScopedCSSName> name = trigger_names[i];
+      if (!name) {
+        continue;
+      }
+
+      TimelineTrigger* existing_trigger =
+          DynamicTo<TimelineTrigger>(element.NamedTrigger(name));
+      TimelineTrigger* new_trigger = CSSAnimations::ComputeTimelineTrigger(
+          data, i, update, style_builder.EffectiveZoom(), &element,
+          existing_trigger);
+
+      new_trigger_map.Set(name, new_trigger);
+
+      if (new_trigger == existing_trigger) {
+        continue;
+      }
+
+      if (existing_trigger) {
+        // If the previous trigger is now obsolete, disassociate it from its
+        // animations.
+        existing_trigger->RemoveAnimations();
+      }
+
+      // Make sure that the new trigger is propagated throughout the tree.
+      is_update_needed = true;
+    }
+  }
+
+  if (existing_trigger_map) {
+    for (const auto& entry : *existing_trigger_map) {
+      AnimationTrigger* trigger = entry.value;
+      const ScopedCSSName* name = entry.key;
+      if (new_trigger_map.Contains(name)) {
+        continue;
+      }
+
+      // NOTE: This is only okay as long as script has no way to
+      // access CSS triggers. If it becomes possible to reference a CSS
+      // trigger via script, we'll need a way to distinguish between
+      // animations that were attached to a trigger via CSS and animations
+      // that were attached to the trigger via script. We only want to remove
+      // the former here.
+      trigger->RemoveAnimations();
+
+      // Make sure the rest of the DOM knows this name is now obsolete.
+      is_update_needed = true;
+    }
+  }
+
+  if (is_update_needed) {
+    element.SetNamedTriggers(std::move(new_trigger_map));
+    if (LayoutBox* box = element.GetLayoutBox()) {
+      box->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
+    }
+  }
+}
+
 template <>
 const CSSScrollTimelineMap*
 CSSAnimations::GetExistingTimelines<CSSScrollTimelineMap>(
@@ -1491,9 +1572,9 @@ AnimationTimeline* CSSAnimations::ComputeTimeline(
                                        existing_timeline);
 }
 
-bool AnimationTriggerBoundariesMatch(
-    const AnimationTrigger::RangeBoundary* existing_boundary,
-    const AnimationTrigger::RangeBoundary* new_boundary) {
+bool TimelineTriggerBoundariesMatch(
+    const TimelineTrigger::RangeBoundary* existing_boundary,
+    const TimelineTrigger::RangeBoundary* new_boundary) {
   if (existing_boundary->IsString()) {
     return new_boundary->IsString() &&
            new_boundary->GetAsString() == existing_boundary->GetAsString();
@@ -1522,87 +1603,76 @@ bool AnimationTriggerBoundariesMatch(
   return !existing_range_offset->offset() && !new_range_offset->offset();
 }
 
-// TODO(crbug.com/429392773): CSSAnimation Triggers are no longer computed
-// during CSSAnimations::CalculateAnimationUpdate. Instead, because triggers
-// need to be visible to the entire document, they will be computed and
-// propagated up the fragment tree, similar to anchor-name. As such, these
-// methods aren't used at the moment. Uncomment them when they are actually
-// used.
+bool TimelineTriggerRangeBoundariesUnchanged(
+    TimelineTrigger* const trigger,
+    TimelineTrigger::RangeBoundary* new_range_start,
+    const TimelineTrigger::RangeBoundary* new_range_end,
+    const TimelineTrigger::RangeBoundary* new_exit_range_start,
+    const TimelineTrigger::RangeBoundary* new_exit_range_end) {
+  DCHECK(trigger);
+  return TimelineTriggerBoundariesMatch(trigger->rangeStart(nullptr),
+                                        new_range_start) &&
+         TimelineTriggerBoundariesMatch(trigger->rangeEnd(nullptr),
+                                        new_range_end) &&
+         TimelineTriggerBoundariesMatch(trigger->exitRangeStart(nullptr),
+                                        new_exit_range_start) &&
+         TimelineTriggerBoundariesMatch(trigger->exitRangeEnd(nullptr),
+                                        new_exit_range_end);
+}
 
-// bool AnimationTriggerRangeBoundariesUnchanged(
-//     AnimationTrigger* trigger,
-//     const AnimationTrigger::RangeBoundary* new_range_start,
-//     const AnimationTrigger::RangeBoundary* new_range_end,
-//     const AnimationTrigger::RangeBoundary* new_exit_range_start,
-//     const AnimationTrigger::RangeBoundary* new_exit_range_end) {
-//   DCHECK(trigger);
-//   return AnimationTriggerBoundariesMatch(trigger->rangeStart(nullptr),
-//                                          new_range_start) &&
-//          AnimationTriggerBoundariesMatch(trigger->rangeEnd(nullptr),
-//                                          new_range_end) &&
-//          AnimationTriggerBoundariesMatch(trigger->exitRangeStart(nullptr),
-//                                          new_exit_range_start) &&
-//          AnimationTriggerBoundariesMatch(trigger->exitRangeEnd(nullptr),
-//                                          new_exit_range_end);
-// }
+TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
+    const CSSAnimationData* data,
+    wtf_size_t animation_index,
+    const CSSAnimationUpdate& update,
+    float zoom,
+    Element* element,
+    TimelineTrigger* existing_trigger) {
+  AnimationTimeline* existing_timeline =
+      (existing_trigger ? existing_trigger->GetTimelineInternal() : nullptr);
+  AnimationTimeline* new_timeline =
+      animation_index < data->TimelineTriggerSourceList().size()
+          ? ComputeTimeline(element,
+                            data->GetTimelineTriggerSource(animation_index),
+                            update, existing_timeline)
+          : nullptr;
+  if (!new_timeline) {
+    new_timeline = &element->GetDocument().Timeline();
+  }
 
-// AnimationTrigger* CSSAnimations::ComputeTimelineTrigger(
-//     Element* element,
-//     const CSSAnimationData* data,
-//     wtf_size_t animation_index,
-//     const CSSAnimationUpdate& update,
-//     AnimationTrigger* existing_trigger,
-//     float zoom) {
-//   const StyleTimeline& style_trigger_timeline =
-//       data->GetTimelineTriggerTimeline(animation_index);
-//   AnimationTimeline* existing_timeline =
-//       (existing_trigger ? existing_trigger->GetTimelineInternal() : nullptr);
-//   AnimationTimeline* new_timeline = ComputeTimeline(
-//       element, style_trigger_timeline, update, existing_timeline);
-//   if (!new_timeline) {
-//     new_timeline = &element->GetDocument().Timeline();
-//   }
-//   EAnimationTriggerBehavior behavior = CSSAnimationData::GetRepeated(
-//       data->TimelineTriggerBehaviorList(), animation_index);
-//   V8AnimationTriggerBehavior new_behavior =
-//       AnimationTrigger::ToV8TriggerBehavior(behavior);
+  const std::optional<TimelineOffset>& new_start_offset =
+      CSSAnimationData::GetRepeated(data->TimelineTriggerRangeStartList(),
+                                    animation_index);
+  const std::optional<TimelineOffset>& new_end_offset =
+      CSSAnimationData::GetRepeated(data->TimelineTriggerRangeEndList(),
+                                    animation_index);
+  const TimelineOffsetOrAuto& new_exit_start_offset =
+      CSSAnimationData::GetRepeated(data->TimelineTriggerExitRangeStartList(),
+                                    animation_index);
+  const TimelineOffsetOrAuto& new_exit_end_offset =
+      CSSAnimationData::GetRepeated(data->TimelineTriggerExitRangeEndList(),
+                                    animation_index);
 
-//   const std::optional<TimelineOffset>& new_start_offset =
-//       CSSAnimationData::GetRepeated(data->TimelineTriggerRangeStartList(),
-//                                     animation_index);
-//   const std::optional<TimelineOffset>& new_end_offset =
-//       CSSAnimationData::GetRepeated(data->TimelineTriggerRangeEndList(),
-//                                     animation_index);
-//   const TimelineOffsetOrAuto& new_exit_start_offset =
-//       CSSAnimationData::GetRepeated(data->TimelineTriggerExitRangeStartList(),
-//                                     animation_index);
-//   const TimelineOffsetOrAuto& new_exit_end_offset =
-//       CSSAnimationData::GetRepeated(data->TimelineTriggerExitRangeEndList(),
-//                                     animation_index);
+  Animation::RangeBoundary* new_range_start =
+      Animation::ToRangeBoundary(new_start_offset, zoom);
+  Animation::RangeBoundary* new_range_end =
+      Animation::ToRangeBoundary(new_end_offset, zoom);
+  Animation::RangeBoundary* new_exit_range_start =
+      Animation::ToRangeBoundary(new_exit_start_offset, zoom);
+  Animation::RangeBoundary* new_exit_range_end =
+      Animation::ToRangeBoundary(new_exit_end_offset, zoom);
 
-//   Animation::RangeBoundary* new_range_start =
-//       Animation::ToRangeBoundary(new_start_offset, zoom);
-//   Animation::RangeBoundary* new_range_end =
-//       Animation::ToRangeBoundary(new_end_offset, zoom);
-//   Animation::RangeBoundary* new_exit_range_start =
-//       Animation::ToRangeBoundary(new_exit_start_offset, zoom);
-//   Animation::RangeBoundary* new_exit_range_end =
-//       Animation::ToRangeBoundary(new_exit_end_offset, zoom);
+  bool need_new_trigger = !existing_trigger ||
+                          existing_timeline != new_timeline ||
+                          !TimelineTriggerRangeBoundariesUnchanged(
+                              existing_trigger, new_range_start, new_range_end,
+                              new_exit_range_start, new_exit_range_end);
 
-//   bool need_new_trigger = !existing_trigger ||
-//                           existing_timeline != new_timeline ||
-//                           existing_trigger->behavior() != new_behavior ||
-//                           !AnimationTriggerRangeBoundariesUnchanged(
-//                               existing_trigger, new_range_start,
-//                               new_range_end, new_exit_range_start,
-//                               new_exit_range_end);
-
-//   return need_new_trigger
-//              ? MakeGarbageCollected<AnimationTrigger>(
-//                    new_timeline, new_behavior, new_range_start,
-//                    new_range_end, new_exit_range_start, new_exit_range_end)
-//              : existing_trigger;
-// }
+  return need_new_trigger
+             ? MakeGarbageCollected<TimelineTrigger>(
+                   new_timeline, new_range_start, new_range_end,
+                   new_exit_range_start, new_exit_range_end, element)
+             : existing_trigger;
+}
 
 CSSAnimations::CSSAnimations() = default;
 
@@ -1917,24 +1987,23 @@ void CSSAnimations::CalculateAnimationUpdate(
             ((range_end != existing_animation->RangeEnd()) &&
              !animation->GetIgnoreCSSRangeEnd());
 
-        const std::optional<Vector<AtomicString>>& existing_trigger_names =
-            animation->GetTriggerNames();
-        std::optional<Vector<AtomicString>> trigger_names;
+        const Member<const StyleTriggerAttachmentVector>
+            existing_trigger_attachments = animation->GetTriggerAttachments();
+        Member<const StyleTriggerAttachmentVector> trigger_attachments;
         if (RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
-          trigger_names = CSSAnimationData::GetRepeated(
-              animation_data->TriggerNamesList(), i);
+          trigger_attachments = animation_data->GetTriggerAttachments(i);
         }
-        DCHECK(!trigger_names.has_value() || !trigger_names->empty());
+        DCHECK(!trigger_attachments || !trigger_attachments->empty());
         if (keyframes_rule != existing_animation->style_rule ||
             keyframes_rule->Version() !=
                 existing_animation->style_rule_version ||
             existing_animation->specified_timing != specified_timing ||
             is_paused != was_paused || logical_property_mapping_change ||
             timeline != existing_animation->Timeline() || range_changed ||
-            trigger_names != existing_trigger_names) {
+            trigger_attachments != existing_trigger_attachments) {
           DCHECK(!is_animation_style_change);
 
-          CSSAnimationProxy animation_proxy(timeline, trigger_names.has_value(),
+          CSSAnimationProxy animation_proxy(timeline, trigger_attachments,
                                             animation, !will_be_playing,
                                             range_start, range_end, timing);
           update.UpdateAnimation(
@@ -1947,7 +2016,7 @@ void CSSAnimations::CalculateAnimationUpdate(
                   timing, animation_proxy),
               specified_timing, keyframes_rule, timeline,
               animation_data->PlayStateList(), range_start, range_end,
-              trigger_names);
+              trigger_attachments);
           if (toggle_pause_state)
             update.ToggleAnimationIndexPaused(existing_animation_index);
         }
@@ -1956,13 +2025,12 @@ void CSSAnimations::CalculateAnimationUpdate(
         AnimationTimeline* timeline =
             ComputeTimeline(&animating_element, style_timeline, update,
                             /* existing_timeline */ nullptr);
-        const std::optional<Vector<AtomicString>> trigger_names =
+        const Member<const StyleTriggerAttachmentVector> trigger_attachments =
             RuntimeEnabledFeatures::AnimationTriggerEnabled()
-                ? CSSAnimationData::GetRepeated(
-                      animation_data->TriggerNamesList(), i)
-                : std::nullopt;
-        DCHECK(!trigger_names.has_value() || !trigger_names->empty());
-        CSSAnimationProxy animation_proxy(timeline, trigger_names.has_value(),
+                ? animation_data->GetTriggerAttachments(i)
+                : nullptr;
+        DCHECK(!trigger_attachments || !trigger_attachments->empty());
+        CSSAnimationProxy animation_proxy(timeline, trigger_attachments,
                                           /* animation */ nullptr, is_paused,
                                           range_start, range_end, timing);
         update.StartAnimation(
@@ -1975,7 +2043,7 @@ void CSSAnimations::CalculateAnimationUpdate(
                 timing, animation_proxy),
             specified_timing, keyframes_rule, timeline,
             animation_data->PlayStateList(), range_start, range_end,
-            trigger_names);
+            trigger_attachments);
       }
     }
   }
@@ -2247,7 +2315,20 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
       css_animation.ResetIgnoreCSSTimeline();
     }
     css_animation.SetRange(entry.range_start, entry.range_end);
-    css_animation.SetTriggerNames(entry.trigger_names);
+
+    css_animation.RemoveStaleNamedTriggerAttachments(entry.trigger_attachments);
+    css_animation.SetTriggerAttachments(entry.trigger_attachments);
+    if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
+      if (entry.trigger_attachments) {
+        element->GetDocument()
+            .GetDocumentAnimations()
+            .AddPendingTriggerAttachmentUpdate(&css_animation);
+      } else {
+        element->GetDocument()
+            .GetDocumentAnimations()
+            .RemovePendingTriggerAttachmentUpdate(&css_animation);
+      }
+    }
     css_animation.SetTriggerActionPlayState(
         entry.play_state_list[entry.index % entry.play_state_list.size()]);
     running_animations_[entry.index]->Update(entry);
@@ -2283,13 +2364,24 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     animation->SetTriggerActionPlayState(
         entry.play_state_list[entry.name_index % entry.play_state_list.size()]);
 
-    if (!entry.trigger_names.has_value()) {
+    if (entry.trigger_attachments) {
+      // Pause the trigger in anticipation of later finding the attached
+      // trigger. This allows the animation to show up in getAnimations.
+      animation->pause();
+      animation->SetPausedForTrigger(true);
+      if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
+        element->GetDocument()
+            .GetDocumentAnimations()
+            .AddPendingTriggerAttachmentUpdate(animation);
+      }
+    } else {
       animation->play();
     }
+
     if (inert_animation->Paused()) {
       animation->pause();
     }
-    animation->SetTriggerNames(entry.trigger_names);
+    animation->SetTriggerAttachments(entry.trigger_attachments);
     animation->ResetIgnoreCSSPlayState();
     animation->SetRange(entry.range_start, entry.range_end);
     animation->ResetIgnoreCSSRangeStart();
@@ -2464,19 +2556,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
           active_transition_iter->value;
       if (ComputedValuesEqual(property, after_change_style,
                               *running_transition->to)) {
-        if (!state.transition_data) {
-          if (!running_transition->animation->FinishedInternal()) {
-            UseCounter::Count(
-                state.animating_element.GetDocument(),
-                WebFeature::kCSSTransitionCancelledByRemovingStyle);
-          }
-          if (RuntimeEnabledFeatures::
-                  CSSTransitionNoneRunningTransitionsFixEnabled()) {
-            return;
-          }
-        } else {
-          return;
-        }
+        return;
       }
       state.update.CancelTransition(property);
       DCHECK(!state.animating_element.GetElementAnimations() ||
@@ -2769,9 +2849,15 @@ void CSSAnimations::CalculateTransitionUpdate(
   const ComputedStyle* scope_old_style =
       PostStyleUpdateScope::GetOldStyle(animating_element);
 
-  bool force_starting_style = false;
-  probe::ForceStartingStyle(&animating_element, &force_starting_style);
   bool is_starting_style = old_style && old_style->IsStartingStyle();
+
+  bool force_starting_style = false;
+  Element* originating_element =
+      animating_element.IsPseudoElement()
+          ? &To<PseudoElement>(animating_element).UltimateOriginatingElement()
+          : &animating_element;
+  probe::ForceStartingStyle(originating_element, &force_starting_style);
+
   DCHECK(old_style == scope_old_style ||
          !scope_old_style && is_starting_style || force_starting_style)
       << "The old_style passed in should be the style for the element at the "
@@ -2851,8 +2937,7 @@ const ComputedStyle& CSSAnimations::CalculateBeforeChangeStyle(
   bool is_starting_style = state.old_style.IsStartingStyle();
   if (state.before_change_style) {
     if (!is_starting_style ||
-        state.before_change_style_is_accurate_for_starting_style ||
-        !RuntimeEnabledFeatures::CascadedAfterChangeStyleEnabled()) {
+        state.before_change_style_is_accurate_for_starting_style) {
       // The cached before_change_style is valid.
       return *state.before_change_style;
     }
@@ -2868,8 +2953,7 @@ const ComputedStyle& CSSAnimations::CalculateBeforeChangeStyle(
   // to the base computed style.
   const ComputedStyle* base_style =
       state.old_style.GetBaseComputedStyleOrThis();
-  if (is_starting_style &&
-      RuntimeEnabledFeatures::CascadedAfterChangeStyleEnabled()) {
+  if (is_starting_style) {
     // before-change style for @starting-style inherits from the after-change
     // style of the parent.
     if (const ComputedStyle* after_change_style =
@@ -3001,7 +3085,7 @@ const ComputedStyle& CSSAnimations::EnsureAfterChangeStyle(
       layout_parent_style = parent_style;
     }
     if (after_change_style.IsContainerForSizeContainerQueries()) {
-      context.container = ancestor;
+      context.size_container = ancestor;
     }
   }
   context = style_recalc_context;
@@ -3074,8 +3158,7 @@ const ComputedStyle* CSSAnimations::EnsureAfterChangeStyleIfNecessary(
 const ComputedStyle& CSSAnimations::CalculateAfterChangeStyle(
     TransitionUpdateState& state,
     const PropertyHandle& transitioning_property) {
-  if (!RuntimeEnabledFeatures::CascadedAfterChangeStyleEnabled() ||
-      !state.style_recalc_context.has_animating_ancestor) {
+  if (!state.style_recalc_context.has_animating_ancestor) {
     return state.base_style;
   }
   if (!state.after_change_style) {
@@ -3513,12 +3596,11 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kTextOrientation:
     case CSSPropertyID::kTimelineScope:
     case CSSPropertyID::kTimelineTriggerName:
-    case CSSPropertyID::kTimelineTriggerBehavior:
     case CSSPropertyID::kTimelineTriggerRangeStart:
     case CSSPropertyID::kTimelineTriggerRangeEnd:
     case CSSPropertyID::kTimelineTriggerExitRangeStart:
     case CSSPropertyID::kTimelineTriggerExitRangeEnd:
-    case CSSPropertyID::kTimelineTriggerTimeline:
+    case CSSPropertyID::kTimelineTriggerSource:
     case CSSPropertyID::kTransition:
     case CSSPropertyID::kTransitionBehavior:
     case CSSPropertyID::kTransitionDelay:
@@ -3601,6 +3683,11 @@ void CSSAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(pending_update_);
   visitor->Trace(running_animations_);
   visitor->Trace(previous_active_interpolations_for_animations_);
+}
+
+void CSSAnimations::RunningAnimation::Trace(Visitor* visitor) const {
+  visitor->Trace(animation);
+  visitor->Trace(style_rule);
 }
 
 }  // namespace blink

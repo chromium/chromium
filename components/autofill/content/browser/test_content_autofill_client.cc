@@ -12,6 +12,14 @@
 
 namespace autofill {
 
+TestContentAutofillClient::TestContentAutofillClient(
+    content::WebContents* web_contents)
+    : TestAutofillClientTemplate<
+          ContentAutofillClient>::TestAutofillClientTemplate(web_contents),
+      otp_field_detector_(this) {}
+
+TestContentAutofillClient::~TestContentAutofillClient() = default;
+
 std::unique_ptr<AutofillManager> TestContentAutofillClient::CreateManager(
     base::PassKey<ContentAutofillDriver> pass_key,
     ContentAutofillDriver& driver) {
@@ -21,6 +29,10 @@ std::unique_ptr<AutofillManager> TestContentAutofillClient::CreateManager(
 credential_management::ContentCredentialManager*
 TestContentAutofillClient::GetContentCredentialManager() {
   return nullptr;
+}
+
+OtpFieldDetector* TestContentAutofillClient::GetOtpFieldDetector() {
+  return &otp_field_detector_;
 }
 
 }  // namespace autofill

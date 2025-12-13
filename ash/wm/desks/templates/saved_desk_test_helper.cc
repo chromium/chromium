@@ -7,6 +7,7 @@
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "components/desks_storage/core/admin_template_service.h"
 #include "components/desks_storage/core/desk_test_util.h"

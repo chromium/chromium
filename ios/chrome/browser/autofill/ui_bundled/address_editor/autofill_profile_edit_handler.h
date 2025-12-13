@@ -24,8 +24,7 @@
 
 // Called for setting `cell` properties at `indexPath`.
 - (UITableViewCell*)cell:(UITableViewCell*)cell
-       forRowAtIndexPath:(NSIndexPath*)indexPath
-        withTextDelegate:(id<UITextFieldDelegate>)delegate;
+       forRowAtIndexPath:(NSIndexPath*)indexPath;
 
 // Called for setting footer properties in `section`.
 - (void)configureView:(UIView*)view forFooterInSection:(NSInteger)section;

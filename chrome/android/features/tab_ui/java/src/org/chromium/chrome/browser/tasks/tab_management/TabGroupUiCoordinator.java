@@ -21,10 +21,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -60,6 +62,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A coordinator for TabGroupUi component. Manages the communication with {@link TabListCoordinator}
@@ -70,8 +73,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     static final String COMPONENT_NAME = "TabStrip";
 
     /** Set by {@code mMediator}, but owned by the coordinator so access is safe pre-native. */
-    private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private final Activity mActivity;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -162,7 +165,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
                         .getCurrentTabGroupModelFilterSupplier();
-        ObservableSupplierImpl<@Nullable View> childViewSupplier = new ObservableSupplierImpl<>();
+        ObservableSupplierImpl<View> childViewSupplier = new ObservableSupplierImpl<>();
         mSingleChildViewManager = new SingleChildViewManager(dialogContainer, childViewSupplier);
         mTabGridDialogCoordinator =
                 new TabGridDialogCoordinator(
@@ -223,14 +226,16 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             /* attachToParent= */ true,
                             COMPONENT_NAME,
                             tabStripTokenSupplier::set,
-                            /* hasEmptyView= */ false,
+                            /* emptyViewParent= */ null,
                             /* emptyImageResId= */ Resources.ID_NULL,
                             /* emptyHeadingStringResId= */ Resources.ID_NULL,
                             /* emptySubheadingStringResId= */ Resources.ID_NULL,
                             /* onTabGroupCreation= */ null,
                             /* allowDragAndDrop= */ false,
                             /* tabSwitcherDragHandler= */ null,
-                            /* undoBarExplicitTrigger= */ null);
+                            /* undoBarExplicitTrigger= */ null,
+                            null,
+                            0);
             mTabStripCoordinator.initWithNative(
                     assumeNonNull(mTabModelSelector.getModel(false).getProfile()));
 
@@ -366,7 +371,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressChangedSupplier;
     }
 

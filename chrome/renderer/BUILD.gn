@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/buildflags_paint_preview.gni")
-import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 import("//chrome/common/request_header_integrity/buildflags.gni")
 import("//components/offline_pages/buildflags/features.gni")
@@ -56,6 +55,12 @@ static_library("process_state") {
   sources = [
     "process_state.cc",
     "process_state.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/common",
   ]
 }
 
@@ -121,9 +126,8 @@ static_library("renderer") {
   defines = []
 
   public_deps = [
-    "//components/contextual_search:buildflags",
-    "//components/fingerprinting_protection_filter/renderer",
     "//components/signin/public/base:signin_buildflags",
+    "//components/touch_to_search:buildflags",
   ]
 
   deps = [
@@ -152,7 +156,6 @@ static_library("renderer") {
     "//components/dom_distiller/content/renderer",
     "//components/feed:feature_list",
     "//components/feed/content/renderer:feed_renderer",
-    "//components/fingerprinting_protection_filter/browser",
     "//components/google/core/common",
     "//components/guest_view/buildflags",
     "//components/heap_profiling/in_process",
@@ -184,7 +187,7 @@ static_library("renderer") {
     "//components/safe_browsing/content/renderer:throttles",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:interfaces",
-    "//components/search:search",
+    "//components/search",
     "//components/security_interstitials/content/renderer",
     "//components/security_interstitials/core:",
     "//components/security_interstitials/core/common/mojom:",
@@ -196,6 +199,8 @@ static_library("renderer") {
     "//components/translate/core/common",
     "//components/translate/core/language_detection",
     "//components/visitedlink/renderer",
+    "//components/wallet/content/renderer",
+    "//components/wallet/core/common:features",
     "//components/web_cache/renderer",
     "//components/webapps/renderer",
     "//content/public/child",
@@ -226,10 +231,13 @@ static_library("renderer") {
     "//third_party/libwebp",
     "//third_party/re2",
     "//third_party/widevine/cdm:buildflags",
-    "//ui/gfx/geometry:geometry",
-    "//ui/surface",
+    "//ui/gfx/geometry",
     "//v8",
   ]
+
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
 
   data_deps = [ "//tools/v8_context_snapshot" ]
 
@@ -291,7 +299,7 @@ static_library("renderer") {
   }
 
   if (enable_spellcheck) {
-    deps += [ "//components/spellcheck/renderer:renderer" ]
+    deps += [ "//components/spellcheck/renderer" ]
   }
 
   if (enable_printing) {
@@ -357,12 +365,13 @@ static_library("renderer") {
     deps += [
       "//chrome/common/read_anything:mojo_bindings",
       "//chrome/renderer/actor",
+      "//chrome/renderer/webui_browser",
       "//components/crx_file",
       "//components/trusted_vault",
       "//services/screen_ai/buildflags",
       "//services/screen_ai/public/mojom",
       "//services/strings",
-      "//third_party/re2:re2",
+      "//third_party/re2",
     ]
 
     if (build_with_tflite_lib) {

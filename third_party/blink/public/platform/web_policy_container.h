@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/integrity_policy.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -21,6 +22,7 @@ namespace blink {
 // TODO(antoniosartori): Remove this when CommitNavigation IPC will be handled
 // directly in blink.
 struct WebPolicyContainerPolicies {
+  network::ConnectionAllowlists connection_allowlists;
   network::mojom::CrossOriginEmbedderPolicyValue cross_origin_embedder_policy =
       network::mojom::CrossOriginEmbedderPolicyValue::kNone;
   network::IntegrityPolicy integrity_policy;

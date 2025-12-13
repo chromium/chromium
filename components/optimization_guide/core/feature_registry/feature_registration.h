@@ -26,9 +26,15 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kProductSpecificationsEnterprisePolicyAllowed[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kAutofillPredictionImprovementsEnterprisePolicyAllowed[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kBlingPrototypingEnterprisePolicyAllowed[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kContextualTasksContextEnterprisePolicyAllowed[];
 }  // namespace prefs
 
 namespace features {
+BASE_DECLARE_FEATURE(kActorLoginMqlsLogging);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kComposeMqlsLogging);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -43,6 +49,10 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kFormsClassificationsMqlsLogging);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kPasswordChangeSubmissionMqlsLogging);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kBlingPrototypingMqlsLogging);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kContextualTasksContextMqlsLogging);
 }  // namespace features
 
 void RegisterGenAiFeatures(PrefRegistrySimple* registry);

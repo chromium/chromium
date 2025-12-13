@@ -7,10 +7,11 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -52,16 +53,16 @@ class IdleBubbleDialogDelegate : public views::BubbleDialogModelHost {
 
 }  // namespace
 
-void ShowIdleBubble(Browser* browser,
+void ShowIdleBubble(BrowserWindowInterface* bwi,
                     base::TimeDelta idle_threshold,
                     IdleDialog::ActionSet actions,
                     base::OnceClosure on_close) {
-  if (!browser || !browser->tab_strip_model()->GetActiveWebContents() ||
-      GetIdleBubble(browser)) {
+  if (!bwi || !bwi->GetTabStripModel()->GetActiveWebContents() ||
+      GetIdleBubble(bwi)) {
     return;
   }
 
-  views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
+  views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(bwi)
                                  ->toolbar_button_provider()
                                  ->GetAppMenuButton();
 
@@ -92,9 +93,7 @@ void ShowIdleBubble(Browser* browser,
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->ShowInactive();
 }
 
-views::BubbleFrameView* GetIdleBubble(Browser* browser) {
-  ui::ElementContext context = browser->window()->GetElementContext();
-  return views::ElementTrackerViews::GetInstance()
-      ->GetFirstMatchingViewAs<views::BubbleFrameView>(kIdleBubbleElementId,
-                                                       context);
+views::BubbleFrameView* GetIdleBubble(BrowserWindowInterface* bwi) {
+  return BrowserElementsViews::From(bwi)->GetViewAs<views::BubbleFrameView>(
+      kIdleBubbleElementId);
 }

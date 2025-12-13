@@ -32,7 +32,7 @@ AshWebView::InitParams GetInitParams() {
 
 // Modifies `new_tab_params` to open in a new tab.
 void OpenURLFromTabInternal(NavigateParams& new_tab_params) {
-  new_tab_params.window_action = NavigateParams::SHOW_WINDOW;
+  new_tab_params.window_action = NavigateParams::WindowAction::kShowWindow;
   Navigate(&new_tab_params);
 }
 
@@ -53,8 +53,8 @@ content::WebContents* SearchResultsView::OpenURLFromTab(
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   // Open the URL specified by `params` in a new tab.
-  NavigateParams new_tab_params(static_cast<Browser*>(nullptr), params.url,
-                                params.transition);
+  NavigateParams new_tab_params(static_cast<BrowserWindowInterface*>(nullptr),
+                                params.url, params.transition);
   switch (params.disposition) {
     case WindowOpenDisposition::UNKNOWN:
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:

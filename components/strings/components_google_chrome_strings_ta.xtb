@@ -30,15 +30,15 @@
           <ph name="ADVANCED_TITLE" />
           என்பதற்குச் சென்று, "<ph name="NO_PREFETCH_DESCRIPTION" />" என்பதைத் தேர்வுநீக்கம் செய்யவும்.
           இது சிக்கலைத் தீர்க்கவில்லை எனில், மேம்பட்ட செயல்பாட்டிற்கு இந்த விருப்பத்தை மீண்டும் தேர்ந்தெடுக்கும்படி பரிந்துரைக்கிறோம்.</translation>
-<translation id="6855094794438142393">Chrome மெனு &gt;
+<translation id="6581867098636731226">Chrome மெனு &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          LAN அமைப்புகள்
-          என்பதற்குச் சென்று, "உங்கள் LAN க்குப் பிராக்சி சர்வரை பயன்படுத்தவும்" என்பதைத் தேர்வுநீக்கவும்.</translation>
+          நெட்வொர்க் &amp; இணையம் &gt; ப்ராக்ஸி
+          என்பதற்குச் சென்று "தானாகவே அமைப்புகளைக் கண்டறி" என்பதைத் தேர்வு நீக்கவும்.</translation>
 <translation id="7230956101631259640">பாதுகாப்பான Chrome பக்கத்தைப் பார்க்கிறீர்கள்</translation>
 <translation id="8232971017369963250"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ஓப்பன் சோர்ஸ் திட்டப்பணி மூலம் Chrome உருவாக்கப்பட்டுள்ளது.</translation>
 <translation id="8279509328145658601">பிற <ph name="BEGIN_LINK_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_OSS" /> மூலமாகவும் Chrome உருவாக்கப்பட்டுள்ளது.</translation>

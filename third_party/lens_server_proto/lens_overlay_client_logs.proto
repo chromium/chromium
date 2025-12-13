@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto2';
+syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 
@@ -13,7 +13,7 @@ import "lens_overlay_phase_latencies_metadata.proto";
 message LensOverlayClientLogs {
   // The phase latency metadata for any image preprocessing required for the
   // request.
-  optional LensOverlayPhaseLatenciesMetadata phase_latencies_metadata = 1;
+  LensOverlayPhaseLatenciesMetadata phase_latencies_metadata = 1;
 
   enum LensOverlayEntryPoint {
     UNKNOWN_ENTRY_POINT = 0;
@@ -26,16 +26,18 @@ message LensOverlayClientLogs {
     OMNIBOX_PAGE_ACTION = 7;
     OMNIBOX_CONTEXTUAL_SUGGESTION = 8;
     HOMEWORK_ACTION_CHIP = 9;
+    TEXT_CONTEXT_MENU = 10;
+    VIDEO_CONTEXT_MENU = 11;
   }
 
   // The Lens Overlay entry point used to access lens.
-  optional LensOverlayEntryPoint lens_overlay_entry_point = 2;
+  LensOverlayEntryPoint lens_overlay_entry_point = 2;
 
   // A unique identifier for associating events logged by lens asynchronously.
-  optional uint64 paella_id = 3;
+  uint64 paella_id = 3;
 
   // Whether the user has disabled metrics collection.
-  optional bool metrics_collection_disabled = 5;
+  bool metrics_collection_disabled = 5;
 
   reserved 4;
 }

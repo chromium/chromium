@@ -7,9 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_bounds_cache.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/common/url_constants.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
@@ -22,18 +20,23 @@
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/geometry/size.h"
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "components/webapps/isolated_web_apps/scheme.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
 // TODO(crbug.com/421608904): include auto_picture_in_picture_tab_helper for
-// Android.
+// Android when supporting document PiP.
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/views/view.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -113,7 +116,6 @@ class PictureInPictureWindowManager::VideoWebContentsObserver final
   raw_ptr<PictureInPictureWindowManager> owner_ = nullptr;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
 // This web contents observer is used only for document PiP.
 class PictureInPictureWindowManager::DocumentWebContentsObserver final
     : public content::WebContentsObserver {
@@ -130,7 +132,6 @@ class PictureInPictureWindowManager::DocumentWebContentsObserver final
   // Owns |this|.
   raw_ptr<PictureInPictureWindowManager> owner_ = nullptr;
 };
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 PictureInPictureWindowManager* PictureInPictureWindowManager::GetInstance() {
   return base::Singleton<PictureInPictureWindowManager>::get();
@@ -160,7 +161,6 @@ void PictureInPictureWindowManager::EnterPictureInPictureWithController(
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void PictureInPictureWindowManager::EnterDocumentPictureInPicture(
     content::WebContents* parent_web_contents,
     content::WebContents* child_web_contents) {
@@ -186,7 +186,6 @@ void PictureInPictureWindowManager::EnterDocumentPictureInPicture(
 
   NotifyObserversOnEnterPictureInPicture();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 content::PictureInPictureResult
 PictureInPictureWindowManager::EnterVideoPictureInPicture(
@@ -410,14 +409,16 @@ PictureInPictureWindowManager::GetPictureInPictureWindowBounds() const {
 
 gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
     const blink::mojom::PictureInPictureWindowOptions& pip_options,
-    const display::Display& display,
     const gfx::Size& minimum_outer_window_size,
     const gfx::Size& excluded_margin) {
+  CHECK(opener_display_);
+  auto opener_display = opener_display_.value();
+
   // TODO(crbug.com/40841415): This copies a bunch of logic from
   // VideoOverlayWindowViews. That class and this one should be refactored so
   // VideoOverlayWindowViews uses PictureInPictureWindowManager to calculate
   // window sizing.
-  gfx::Rect work_area = display.work_area();
+  gfx::Rect work_area = opener_display.work_area();
   gfx::Rect window_bounds;
 
   // If the outer bounds for this request are cached, then ignore everything
@@ -433,7 +434,7 @@ gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
     }
     auto cached_window_bounds =
         PictureInPictureBoundsCache::GetBoundsForNewWindow(
-            web_contents, display, requested_content_bounds);
+            web_contents, opener_display, requested_content_bounds);
     // Ignore the result if we're asked to do so.  Note that we still have to
     // ask the cache, so that it's set up to accept position updates later for
     // this request.
@@ -450,7 +451,7 @@ gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
         base::saturated_cast<int>(pip_options.width),
         base::saturated_cast<int>(pip_options.height));
     gfx::Size window_size =
-        AdjustRequestedSizeIfNecessary(requested_window_size, display);
+        AdjustRequestedSizeIfNecessary(requested_window_size, opener_display);
 
 #if !BUILDFLAG(IS_ANDROID)
     if (is_calculating_initial_document_pip_size_) {
@@ -465,18 +466,18 @@ gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
     // inner area.
     window_size += excluded_margin;
 
-    window_size.SetToMin(GetMaximumWindowSize(display));
+    window_size.SetToMin(GetMaximumWindowSize(opener_display));
     window_size.SetToMax(minimum_outer_window_size);
     window_bounds = gfx::Rect(window_size);
   } else {
     // Otherwise, fall back to the aspect ratio.
     gfx::Size window_size(work_area.width() / 5, work_area.height() / 5);
-    window_size.SetToMin(GetMaximumWindowSize(display));
+    window_size.SetToMin(GetMaximumWindowSize(opener_display));
     window_size.SetToMax(minimum_outer_window_size);
     window_bounds = gfx::Rect(window_size);
     gfx::SizeRectToAspectRatioWithExcludedMargin(
         gfx::ResizeEdge::kTopLeft, kInitialAspectRatio,
-        GetMinimumInnerWindowSize(), GetMaximumWindowSize(display),
+        GetMinimumInnerWindowSize(), GetMaximumWindowSize(opener_display),
         excluded_margin, window_bounds);
   }
 
@@ -509,8 +510,11 @@ gfx::Rect
 PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
     const blink::mojom::PictureInPictureWindowOptions& pip_options,
     const display::Display& display) {
+  opener_display_ = display;
+
 #if !BUILDFLAG(IS_ANDROID)
-  RecordDocumentPictureInPictureRequestedSizeMetrics(pip_options, display);
+  RecordDocumentPictureInPictureRequestedSizeMetrics(pip_options,
+                                                     opener_display_.value());
   base::AutoReset<bool> auto_reset(&is_calculating_initial_document_pip_size_,
                                    true);
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -519,20 +523,27 @@ PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
   // bounds are incorrect if `pip_options` includes a requested inner size that
   // we'd like to honor.  It's okay, because we'll recompute it later once we
   // know the excluded margin.
-  return CalculateOuterWindowBounds(pip_options, display,
-                                    GetMinimumInnerWindowSize(), gfx::Size());
+  return CalculateOuterWindowBounds(pip_options, GetMinimumInnerWindowSize(),
+                                    gfx::Size());
 }
 
 void PictureInPictureWindowManager::UpdateCachedBounds(
-    const gfx::Rect& most_recent_bounds) {
+    const gfx::Rect& most_recent_bounds,
+    const display::Display& pip_display) {
   // Typically, we have a window controller at this point, but often during
   // tests we don't.  Don't worry about the cache if it's missing.
   if (!pip_window_controller_) {
     return;
   }
+
   auto* const web_contents = pip_window_controller_->GetWebContents();
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents,
-                                                  most_recent_bounds);
+  if (!web_contents) {
+    return;
+  }
+
+  CHECK(opener_display_);
+  PictureInPictureBoundsCache::UpdateCachedBounds(
+      web_contents, most_recent_bounds, opener_display_.value(), pip_display);
 }
 
 void PictureInPictureWindowManager::ClearCachedBounds() {
@@ -559,16 +570,18 @@ void PictureInPictureWindowManager::SetWindowParams(NavigateParams& params) {
 #if !BUILDFLAG(IS_ANDROID)
   // Always show document picture-in-picture in a new window. When this is
   // not opened via the AutoPictureInPictureTabHelper, focus the window.
-  params.window_action = ShouldFocusPictureInPictureWindow(params)
-                             ? NavigateParams::SHOW_WINDOW
-                             : NavigateParams::SHOW_WINDOW_INACTIVE;
+  params.window_action =
+      ShouldFocusPictureInPictureWindow(params)
+          ? NavigateParams::WindowAction::kShowWindow
+          : NavigateParams::WindowAction::kShowWindowInactive;
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // static
 bool PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
     const GURL& url) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   // Only allow document PiP to be opened if the URL is of a type that we know
   // how to display in the title bar.  Otherwise, the title bar might be
   // misleading in certain scenarios.  See https://crbug.com/1460025 .
@@ -580,10 +593,11 @@ bool PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
 
   return url.SchemeIs(url::kHttpsScheme) || url.SchemeIsFile() ||
          net::IsLocalhost(url) || url.SchemeIs(content::kChromeUIScheme) ||
-         url.SchemeIs(chrome::kIsolatedAppScheme);
+         url.SchemeIs(webapps::kIsolatedAppScheme);
 #else
   return false;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 }
 
 void PictureInPictureWindowManager::CreateWindowInternal(
@@ -612,11 +626,15 @@ void PictureInPictureWindowManager::CreateWindowInternal(
 }
 
 void PictureInPictureWindowManager::CloseWindowInternal() {
-  CHECK(pip_window_controller_);
-
   video_web_contents_observer_.reset();
-  pip_window_controller_->Close(false /* should_pause_video */);
-  pip_window_controller_ = nullptr;
+
+  // Close and reset the picture-in-picture window controller, if it exists.
+  if (pip_window_controller_) {
+    pip_window_controller_->Close(false /* should_pause_video */);
+    pip_window_controller_ = nullptr;
+  }
+
+  opener_display_.reset();
 
 #if !BUILDFLAG(IS_ANDROID)
   MaybeRecordPictureInPictureChanged(false);
@@ -631,7 +649,6 @@ bool PictureInPictureWindowManager::IsPictureInPictureDisabled() const {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
   // Document PiP window controller also observes the parent and child web
   // contents, so we only need to forget the controller here when user closes
@@ -641,19 +658,13 @@ void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
     pip_window_controller_ = nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<AutoPipSettingOverlayView>
 PictureInPictureWindowManager::GetOverlayView(
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow) {
   // This should probably CHECK, but tests often can't set the controller.
   if (!pip_window_controller_) {
-    return nullptr;
-  }
-
-  // This is redundant with the check for `auto_pip_tab_helper`, below.
-  // However, for safety, early-out here when the flag is off.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kMediaSessionEnterPictureInPicture)) {
     return nullptr;
   }
 

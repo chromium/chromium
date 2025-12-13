@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/trace_event/memory_allocator_dump.h"
 
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -146,7 +142,7 @@ uint64_t MemoryAllocatorDump::GetSizeInternal() const {
   }
   for (const auto& entry : entries_) {
     if (entry.entry_type == Entry::kUint64 && entry.units == kUnitsBytes &&
-        strcmp(entry.name.c_str(), kNameSize) == 0) {
+        UNSAFE_TODO(strcmp(entry.name.c_str(), kNameSize)) == 0) {
       cached_size_ = entry.value_uint64;
       return entry.value_uint64;
     }

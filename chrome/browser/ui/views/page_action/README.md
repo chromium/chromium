@@ -49,8 +49,8 @@ and
 ### Register the Page Action
 
 Include the Action in the set of Page Actions
-[here](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/page_action/action_ids.h). This makes the
-framework aware of your ActionItem.
+[here](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/page_action/action_ids.h).
+This makes the framework aware of your ActionItem.
 
 **Note:** The order of this array defines the order that page actions will
 appear in the UI.
@@ -66,6 +66,11 @@ These include:
     [PageActionIconType](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/page_action/page_action_icon_type.h)
     for metrics collection.
 *   An optional Element Identifier to target the page action icon in UI tests.
+
+NOTE: During the migration from the legacy framework to the current one, any new
+page actions will need to update
+[IsPageActionMigrated](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/page_action/page_action_icon_type.cc;l=71)
+to return `true` for their new `PageActionIconType`.
 
 ### Control the page action
 

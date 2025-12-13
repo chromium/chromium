@@ -123,9 +123,39 @@ CSSAnimation::PlayStateTransitionScope::~PlayStateTransitionScope() {
     animation_.ignore_css_play_state_ = true;
 }
 
+void CSSAnimation::SetNamedTriggerAttachment(Member<const ScopedCSSName> name,
+                                             AnimationTrigger* trigger) {
+  named_trigger_attachments_.Set(name, trigger);
+}
+
+void CSSAnimation::RemoveStaleNamedTriggerAttachments(
+    const Member<const StyleTriggerAttachmentVector>& attachment_declarations) {
+  HeapHashMap<Member<const ScopedCSSName>, Member<AnimationTrigger>>
+      named_trigger_attachments_copy = named_trigger_attachments_;
+
+  for (const auto& [name, trigger] : named_trigger_attachments_copy) {
+    if (attachment_declarations) {
+      bool name_present = std::any_of(
+          attachment_declarations->begin(), attachment_declarations->end(),
+          [&](Member<StyleTriggerAttachment> attachment) {
+            return attachment->TriggerName()->GetName() == name->GetName();
+          });
+
+      if (name_present) {
+        continue;
+      }
+    }
+
+    trigger->removeAnimation(this);
+    named_trigger_attachments_.erase(name);
+  }
+}
+
 void CSSAnimation::Trace(blink::Visitor* visitor) const {
   Animation::Trace(visitor);
   visitor->Trace(owning_element_);
+  visitor->Trace(trigger_attachments_);
+  visitor->Trace(named_trigger_attachments_);
 }
 
 }  // namespace blink

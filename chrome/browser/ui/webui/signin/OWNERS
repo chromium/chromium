@@ -1,4 +1,4 @@
-file://components/signin/OWNERS
+file://components/signin/DESKTOP_OWNERS
 
 # For profile picker and first run changes
 dgn@chromium.org

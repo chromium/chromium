@@ -252,6 +252,9 @@ need to be translated for each locale.-->
         <message name="IDS_AX_ROLE_BUTTON" desc="Accessibility role description for a button">
           button
         </message>
+        <message name="IDS_AX_ROLE_CAPTION" desc="Accessibility role description for a section whose content represents a caption for a table, image, etc.">
+          caption
+        </message>
         <message name="IDS_AX_ROLE_CODE" desc="Accessibility role description for a section whose content represents a fragment of computer code">
           code
         </message>
@@ -722,9 +725,6 @@ need to be translated for each locale.-->
           <message name="IDS_AX_COMBOBOX_EXPANDED" desc="Accessibility utterance for when a combobox element is expanded, but due to authoring errors we cannot say any more information than that.">
             expanded.
           </message>
-          <message name="IDS_AX_DIALOG_MODAL_OPENED" desc="Accessibility utterance for when a dialog / modal has been opened.">
-            dialog opened.
-          </message>
           <message name="IDS_AX_INDETERMINATE_VALUE" desc="Accessibility utterance for when a progress bar/indicator has no value and is being used as an indeterminate progress bar.">
             indeterminate
           </message>
@@ -824,10 +824,6 @@ need to be translated for each locale.-->
         media control
       </message>
 
-      <message name="IDS_AX_MEDIA_AUDIO_ELEMENT" desc="Accessibility label of audio">
-        audio
-      </message>
-
       <message name="IDS_AX_MEDIA_VIDEO_ELEMENT" desc="Accessibility label of video">
         video
       </message>
@@ -918,10 +914,6 @@ need to be translated for each locale.-->
 
       <message name="IDS_AX_MEDIA_OVERFLOW_BUTTON" desc="Accessibility label for media controls overflow button.">
         show more media controls
-      </message>
-
-      <message name="IDS_AX_MEDIA_AUDIO_ELEMENT_HELP" desc="Accessibility label for help of audio controls">
-        audio
       </message>
 
       <message name="IDS_AX_MEDIA_VIDEO_ELEMENT_HELP" desc="Accessibility label for help of video">

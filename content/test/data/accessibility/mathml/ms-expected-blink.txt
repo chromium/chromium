@@ -1,0 +1,7 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++mathMLMath
+++++++++mathMLStringLiteral
+++++++++++staticText name='"hello world"'
+++++++++++++inlineTextBox name='"hello world"'

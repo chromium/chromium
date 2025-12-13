@@ -1,4 +1,3 @@
-
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,52 +5,55 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_OPENED_TABS_COUNTER_SERVICE_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_OPENED_TABS_COUNTER_SERVICE_H_
 
-#include <optional>
+#include <map>
+#include <memory>
+#include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ref.h"
-#include "base/scoped_multi_source_observation.h"
-#include "base/scoped_observation.h"
+#include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/web_contents_observer.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace web_app {
 
 // Isolated Web Apps (IWAs) are granted the "Pop-ups and Redirects"
-// content setting permission by default upon installation. As a result,
-// these apps can open multiple new windows/tabs etc. programmatically
-// (i.e., without a user gesture).
+// permission by default upon installation. As a result,
+// these apps can open multiple new windows/tabs programmatically.
 // To mitigate potential abuse of this permission and to not confuse the user,
-// this service tracks the number of active `WebContents` (tabs or windows)
-// opened by each IWA. When an IWA has opened more than one window, this service
-// displays a notification. The notification informs the user that the app has
-// opened multiple new windows/tabs and provides a button that directs them to
-// the app's content settings page, giving them the option to revoke the pop-up
-// permission.
+// this service tracks `WebContents` (tabs or windows) opened by each
+// non-policy-installed IWA to detect a burst of activity.
 //
 // The service works by:
-// 1. Observing all browsers associated with a specific profile.
-// 2. Attaching a `TabStripModelObserver` to each browser's tab strip.
-// 3. When a new tab is inserted, it checks if the tab's opener is a
-//    non-policy-installed IWA.
-// 4. If it is, the service increments a counter for that IWA and stores a
-//    mapping from the new `WebContents` to the IWA's `AppId`.
-// 5. When the count of opened windows for a specific IWA exceeds 1, a
-//    notification is created and displayed.
-// 6. As tabs are closed, the count is decremented. The notification is updated
-//    if the count changes or removed if the count drops below 2.
-class IsolatedWebAppsOpenedTabsCounterService : public KeyedService,
-                                                public BrowserListObserver,
-                                                public TabStripModelObserver {
+// 1. Being notified via the `OnWebContentsCreated` method when an IWA creates a
+//    new `WebContents`. It records the creation timestamp for that tab.
+// 2. Attaching an observer to the new `WebContents` to monitor its lifecycle.
+// 3. Each time a new tab is opened, it checks how many tabs were opened by the
+//    same app within a short time window (5 seconds). If the count
+//    reaches a certain threshold (currently equal to 3), a notification is
+//    displayed.
+// 4. The notification informs the user and provides actions to either close all
+//    tabs opened by the app or manage its "Pop-ups and Redirects" permission.
+// 5. When a tracked `WebContents` is destroyed, its timestamp is removed. The
+//    notification remains visible
+class IsolatedWebAppsOpenedTabsCounterService : public KeyedService {
  public:
-  using CloseWebContentsCallback =
-      base::RepeatingCallback<void(const webapps::AppId&)>;
   using NotificationAcknowledgedCallback =
       base::RepeatingCallback<void(const webapps::AppId&)>;
-  using CloseNotificationCallback = base::RepeatingClosure;
+  using CloseNotificationCallback =
+      base::RepeatingCallback<void(const webapps::AppId&)>;
 
   explicit IsolatedWebAppsOpenedTabsCounterService(Profile* profile);
   ~IsolatedWebAppsOpenedTabsCounterService() override;
@@ -59,52 +61,44 @@ class IsolatedWebAppsOpenedTabsCounterService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
+  // Called by the `web_app::NavigationCapturingProcess` when a new WebContents
+  // is created by an IWA.
+  void OnWebContentsCreated(const webapps::AppId& opener_app_id);
+
   void OnNotificationAcknowledged(const webapps::AppId& app_id);
   void CloseNotification(const webapps::AppId& app_id);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(
-      IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
-      ClickCloseWindowsButtonClosesChildWindowsAndNotification);
+  void RetrieveNotificationStates();
+  void OnAllAppsLockAcquiredForStateRetrieval(web_app::AllAppsLock& lock,
+                                              base::Value::Dict& debug_value);
 
-  struct NotificationState {
-    bool is_active = false;
-  };
+  void RegisterFirstTimeActiveAppNotification(const webapps::AppId& app_id);
+  void CreateAndDisplayNotification(const webapps::AppId& app_id);
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
-  void HandleOpenerCountIfTracked(content::WebContents* contents);
-  void HandleTabClosure(content::WebContents* contents);
-  std::optional<webapps::AppId> MaybeGetOpenerIsolatedWebAppId(
-      content::WebContents* contents);
-
-  void IncrementTabCountForApp(const webapps::AppId& app_id);
-  void DecrementTabCountForApp(const webapps::AppId& app_id);
-
-  void UpdateOrRemoveNotificationForOpener(const webapps::AppId& app_id);
-  void CreateAndDisplayNotification(const webapps::AppId& app_id,
-                                    int current_window_count);
-  void CloseAllWebContentsOpenedByApp(const webapps::AppId& app_id);
+  void PersistNotificationState(
+      const webapps::AppId& app_id,
+      const web_app::IsolationData::OpenedTabsCounterNotificationState&
+          current_notification_state);
 
   Profile* profile() { return &profile_.get(); }
+  WebAppProvider* provider() const { return provider_; }
 
   const raw_ref<Profile> profile_;
-  base::flat_map<webapps::AppId, int> app_tab_counts_;
-  base::flat_map<content::WebContents*, webapps::AppId> opened_by_app_map_;
-  std::map<webapps::AppId, NotificationState> notification_states_;
+  const raw_ptr<WebAppProvider> provider_;
 
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  // In-memory cache of notification states, loaded on startup.
+  std::map<webapps::AppId,
+           web_app::IsolationData::OpenedTabsCounterNotificationState>
+      notification_states_cache_;
+
+  // Set of AppIds for which a notification is currently active.
+  base::flat_set<webapps::AppId> apps_with_active_notifications_;
+
   base::WeakPtrFactory<IsolatedWebAppsOpenedTabsCounterService>
       weak_ptr_factory_{this};
 };
+
+}  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_OPENED_TABS_COUNTER_SERVICE_H_

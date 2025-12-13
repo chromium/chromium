@@ -153,11 +153,6 @@ TestStoragePartition::GetPrivateAggregationDataModel() {
   return nullptr;
 }
 
-CookieDeprecationLabelManager*
-TestStoragePartition::GetCookieDeprecationLabelManager() {
-  return nullptr;
-}
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 CdmStorageDataModel* TestStoragePartition::GetCdmStorageDataModel() {
   return nullptr;
@@ -266,8 +261,6 @@ void TestStoragePartition::FlushNetworkInterfaceForTesting() {}
 void TestStoragePartition::FlushCertVerifierInterfaceForTesting() {}
 
 void TestStoragePartition::WaitForDeletionTasksForTesting() {}
-
-void TestStoragePartition::WaitForCodeCacheShutdownForTesting() {}
 
 void TestStoragePartition::SetNetworkContextForTesting(
     mojo::PendingRemote<network::mojom::NetworkContext>

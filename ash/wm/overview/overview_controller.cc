@@ -35,6 +35,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/window_util.h"
@@ -79,7 +80,7 @@ OverviewEnterExitType MaybeOverrideEnterExitType(
   }
 
   // Use normal type if home launcher is not available.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return original_type;
   }
 
@@ -120,14 +121,8 @@ OverviewController::ScopedOcclusionPauser::ScopedOcclusionPauser(
 }
 
 OverviewController::OverviewController()
-    : occlusion_pause_duration_for_start_(kOcclusionPauseDurationForStart),
-      occlusion_pause_duration_for_end_(kOcclusionPauseDurationForEnd),
+    : occlusion_pause_duration_for_end_(kOcclusionPauseDurationForEnd),
       delayed_animation_task_delay_(kTransition),
-      // TODO(crbug.com/40208263): Lacros windows now have a snapshot, but their
-      // behavior may be a bit worse than ash windows. Keep this snapshot code
-      // until we confirm it is fine to show lacros snapshotted windows all the
-      // time.
-      windows_have_snapshot_(true),
       overview_window_occlusion_calculator_(this) {
   Shell::Get()->activation_client()->AddObserver(this);
   CHECK_EQ(g_instance, nullptr);
@@ -206,7 +201,8 @@ bool OverviewController::CanEnterOverview() const {
   // is running in kiosk app session.
   Shell* shell = Shell::Get();
   if (Shell::IsSystemModalWindowOpen() ||
-      shell->screen_pinning_controller()->IsPinned()) {
+      shell->screen_pinning_controller()->IsPinned() ||
+      chromeos::IsKioskSession()) {
     return false;
   }
 
@@ -495,10 +491,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // If we don't need to force windows to be visible to get showable content
     // (i.e. they have a snapshot), suspend occlusion tracker until the enter
     // animation is complete.
-    if (windows_have_snapshot_) {
-      enter_pauser_ =
-          PauseOcclusionTracker(occlusion_pause_duration_for_start_);
-    }
+    enter_pauser_ = PauseOcclusionTracker(kOcclusionPauseDurationForStart);
 
     overview_session_ = std::make_unique<OverviewSession>(this);
     // We may want to slide in the overview grid in some cases, even if not

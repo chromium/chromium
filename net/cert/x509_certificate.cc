@@ -14,6 +14,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -125,6 +126,17 @@ bssl::UniquePtr<CRYPTO_BUFFER> CreateCertBufferFromBytesWithSanityCheck(
     return nullptr;
   }
   return x509_util::CreateCryptoBuffer(data);
+}
+
+std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> CertBuffersFromCertAndIntermediates(
+    bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer,
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates) {
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> result;
+  result.push_back(std::move(cert_buffer));
+  for (auto& intermediate : intermediates) {
+    result.push_back(std::move(intermediate));
+  }
+  return result;
 }
 
 }  // namespace
@@ -302,7 +314,7 @@ scoped_refptr<X509Certificate> X509Certificate::CloneWithDifferentIntermediates(
   // CRYPTO_BUFFERs, which is generally sufficient, but in some edge cases
   // buffers have equal contents but with different addresses. This is
   // acceptable as this is just an optimization.
-  if (intermediates == intermediate_ca_certs_) {
+  if (intermediates == intermediate_buffers()) {
     return this;
   }
 
@@ -311,16 +323,13 @@ scoped_refptr<X509Certificate> X509Certificate::CloneWithDifferentIntermediates(
 }
 
 void X509Certificate::Persist(base::Pickle* pickle) const {
-  DCHECK(cert_buffer_);
   // This would be an absolutely insane number of intermediates.
-  if (intermediate_ca_certs_.size() > static_cast<size_t>(INT_MAX) - 1) {
+  if (cert_buffers_.size() > static_cast<size_t>(INT_MAX)) {
     NOTREACHED();
   }
-  pickle->WriteInt(static_cast<int>(intermediate_ca_certs_.size() + 1));
-  pickle->WriteString(x509_util::CryptoBufferAsStringPiece(cert_buffer_.get()));
-  for (const auto& intermediate : intermediate_ca_certs_) {
-    pickle->WriteString(
-        x509_util::CryptoBufferAsStringPiece(intermediate.get()));
+  pickle->WriteInt(static_cast<int>(cert_buffers_.size()));
+  for (const auto& cert : cert_buffers_) {
+    pickle->WriteString(x509_util::CryptoBufferAsStringPiece(cert.get()));
   }
 }
 
@@ -367,11 +376,11 @@ bool X509Certificate::GetSubjectAltName(
 
   if (dns_names) {
     for (const auto& dns_name : subject_alt_names->dns_names)
-      dns_names->push_back(std::string(dns_name));
+      dns_names->emplace_back(dns_name);
   }
   if (ip_addrs) {
     for (const auto& addr : subject_alt_names->ip_addresses) {
-      ip_addrs->push_back(std::string(addr.AsStringView()));
+      ip_addrs->emplace_back(base::as_string_view(addr));
     }
   }
 
@@ -384,18 +393,16 @@ bool X509Certificate::HasExpired() const {
 }
 
 bool X509Certificate::EqualsExcludingChain(const X509Certificate* other) const {
-  return x509_util::CryptoBufferEqual(cert_buffer_.get(),
-                                      other->cert_buffer_.get());
+  return x509_util::CryptoBufferEqual(cert_buffer(), other->cert_buffer());
 }
 
 bool X509Certificate::EqualsIncludingChain(const X509Certificate* other) const {
-  if (intermediate_ca_certs_.size() != other->intermediate_ca_certs_.size() ||
-      !EqualsExcludingChain(other)) {
+  if (cert_buffers_.size() != other->cert_buffers_.size()) {
     return false;
   }
-  for (size_t i = 0; i < intermediate_ca_certs_.size(); ++i) {
-    if (!x509_util::CryptoBufferEqual(intermediate_ca_certs_[i].get(),
-                                      other->intermediate_ca_certs_[i].get())) {
+  for (size_t i = 0; i < cert_buffers_.size(); ++i) {
+    if (!x509_util::CryptoBufferEqual(cert_buffers_[i].get(),
+                                      other->cert_buffers_[i].get())) {
       return false;
     }
   }
@@ -417,14 +424,10 @@ bool X509Certificate::IsIssuedByEncoded(
   }
 
   std::string normalized_cert_issuer;
-  if (!GetNormalizedCertIssuer(cert_buffer_.get(), &normalized_cert_issuer))
-    return false;
-  if (base::Contains(normalized_issuers, normalized_cert_issuer))
-    return true;
-
-  for (const auto& intermediate : intermediate_ca_certs_) {
-    if (!GetNormalizedCertIssuer(intermediate.get(), &normalized_cert_issuer))
+  for (const auto& cert : cert_buffers_) {
+    if (!GetNormalizedCertIssuer(cert.get(), &normalized_cert_issuer)) {
       return false;
+    }
     if (base::Contains(normalized_issuers, normalized_cert_issuer))
       return true;
   }
@@ -460,10 +463,8 @@ bool X509Certificate::VerifyHostname(
 
   // Fully handle all cases where |hostname| contains an IP address.
   if (host_info.IsIPAddress()) {
-    std::string_view ip_addr_string(
-        reinterpret_cast<const char*>(host_info.address),
-        host_info.AddressLength());
-    return base::Contains(cert_san_ip_addrs, ip_addr_string);
+    return base::Contains(cert_san_ip_addrs,
+                          base::as_string_view(host_info.AddressSpan()));
   }
 
   // The host portion of a URL may support a variety of name resolution formats
@@ -588,13 +589,11 @@ bool X509Certificate::GetPEMEncoded(const CRYPTO_BUFFER* cert_buffer,
 bool X509Certificate::GetPEMEncodedChain(
     std::vector<std::string>* pem_encoded) const {
   std::vector<std::string> encoded_chain;
-  std::string pem_data;
-  if (!GetPEMEncoded(cert_buffer(), &pem_data))
-    return false;
-  encoded_chain.push_back(pem_data);
-  for (const auto& intermediate_ca_cert : intermediate_ca_certs_) {
-    if (!GetPEMEncoded(intermediate_ca_cert.get(), &pem_data))
+  for (const auto& cert : cert_buffers_) {
+    std::string pem_data;
+    if (!GetPEMEncoded(cert.get(), &pem_data)) {
       return false;
+    }
     encoded_chain.push_back(pem_data);
   }
   pem_encoded->swap(encoded_chain);
@@ -631,6 +630,15 @@ void X509Certificate::GetPublicKeyInfo(const CRYPTO_BUFFER* cert_buffer,
   *size_bits = base::saturated_cast<size_t>(EVP_PKEY_bits(pkey.get()));
 }
 
+std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> X509Certificate::CopyCertBuffers()
+    const {
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> result;
+  for (const auto& buffer : cert_buffers_) {
+    result.push_back(bssl::UpRef(buffer));
+  }
+  return result;
+}
+
 // static
 std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>
 X509Certificate::CreateCertBuffersFromBytes(base::span<const uint8_t> data,
@@ -665,8 +673,7 @@ SHA256HashValue X509Certificate::CalculateFingerprint256(
 
 SHA256HashValue X509Certificate::CalculateChainFingerprint256() const {
   crypto::hash::Hasher hasher(crypto::hash::kSha256);
-  hasher.Update(x509_util::CryptoBufferAsSpan(cert_buffer_.get()));
-  for (const auto& cert : intermediate_ca_certs_) {
+  for (const auto& cert : cert_buffers_) {
     hasher.Update(x509_util::CryptoBufferAsSpan(cert.get()));
   }
 
@@ -692,21 +699,27 @@ X509Certificate::X509Certificate(
     ParsedFields parsed,
     bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer,
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates)
-    : parsed_(std::move(parsed)),
-      cert_buffer_(std::move(cert_buffer)),
-      intermediate_ca_certs_(std::move(intermediates)) {}
+    :  // CertBuffersFromCertAndIntermediates will always return a vector with
+       // at least one element.
+      cert_buffers_(
+          CertBuffersFromCertAndIntermediates(std::move(cert_buffer),
+                                              std::move(intermediates))),
+      parsed_(std::move(parsed)) {}
 
 X509Certificate::X509Certificate(
     const X509Certificate& other,
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates)
-    : parsed_(other.parsed_),
-      cert_buffer_(bssl::UpRef(other.cert_buffer_)),
-      intermediate_ca_certs_(std::move(intermediates)) {}
+    :  // CertBuffersFromCertAndIntermediates will always return a vector with
+       // at least one element.
+      cert_buffers_(
+          CertBuffersFromCertAndIntermediates(bssl::UpRef(other.cert_buffer()),
+                                              std::move(intermediates))),
+      parsed_(other.parsed_) {}
 
 X509Certificate::~X509Certificate() = default;
 
 base::span<const uint8_t> X509Certificate::cert_span() const {
-  return x509_util::CryptoBufferAsSpan(cert_buffer_.get());
+  return x509_util::CryptoBufferAsSpan(cert_buffers_.front().get());
 }
 
 X509Certificate::ParsedFields::ParsedFields() = default;
@@ -749,7 +762,10 @@ bool X509Certificate::ParsedFields::Initialize(
       !GeneralizedTimeToTime(tbs.validity_not_after, &valid_expiry_)) {
     return false;
   }
-  serial_number_ = tbs.serial_number.AsString();
+  // `tbs.serial_number` just references data inside `cert_buffer`, so it's
+  // okay to save it into a span even though `tbs` gets destroyed at the end of
+  // this method.
+  serial_number_ = tbs.serial_number;
   return true;
 }
 

@@ -25,10 +25,8 @@
 #include "content/public/child/child_thread.h"
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
@@ -152,7 +150,7 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 #if BUILDFLAG(IS_ANDROID)
   // Received memory pressure signal sent by the browser process.
   virtual void OnMemoryPressureFromBrowserReceived(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+      base::MemoryPressureLevel level);
 #endif
 
  private:
@@ -162,7 +160,7 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 
   // IPC message handlers.
 
-  void EnsureConnected();
+  void EnsureConnected(int connection_timeout);
 
 #if BUILDFLAG(IS_WIN)
   const mojo::Remote<mojom::FontCacheWin>& GetFontCacheWin();

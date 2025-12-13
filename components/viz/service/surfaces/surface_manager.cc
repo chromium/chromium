@@ -14,6 +14,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/queue.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -115,7 +116,7 @@ void SurfaceManager::SetTickClockForTesting(const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
 }
 
-Surface* SurfaceManager::CreateSurface(
+base::expected<Surface*, std::string> SurfaceManager::CreateSurface(
     base::WeakPtr<SurfaceClient> surface_client,
     const SurfaceInfo& surface_info,
     const SurfaceId& pending_copy_surface_id) {
@@ -125,15 +126,17 @@ Surface* SurfaceManager::CreateSurface(
 
   // We should not be asked to create a surface that already exists.
   auto it = surface_map_.find(surface_info.id());
-  if (it != surface_map_.end())
-    return nullptr;
+  if (it != surface_map_.end()) {
+    return base::unexpected("surface already exists");
+  }
 
   SurfaceAllocationGroup* allocation_group =
       GetOrCreateAllocationGroupForSurfaceId(surface_info.id());
   // GetOrCreateAllocationGroupForSurfaceId can fail if two FrameSinkIds use the
   // same embed token.
-  if (!allocation_group)
-    return nullptr;
+  if (!allocation_group) {
+    return base::unexpected("Cannot reuse embed token across frame sinks");
+  }
 
   std::unique_ptr<Surface> surface = std::make_unique<Surface>(
       surface_info, this, allocation_group, surface_client,
@@ -149,7 +152,7 @@ Surface* SurfaceManager::CreateSurface(
   // is received, is added to prevent this from happening.
   AddTemporaryReference(surface_info.id());
 
-  return surface_map_[surface_info.id()].get();
+  return base::ok(surface_map_[surface_info.id()].get());
 }
 
 void SurfaceManager::MarkSurfaceForDestruction(const SurfaceId& surface_id) {
@@ -726,6 +729,26 @@ bool SurfaceManager::HasBlockedEmbedder(
 void SurfaceManager::AggregatedFrameSinksChanged() {
   if (delegate_)
     delegate_->AggregatedFrameSinksChanged();
+}
+
+void SurfaceManager::AddFrameSinkObserver(FrameSinkObserver* obs) {
+  if (delegate_) {
+    return delegate_->AddObserver(obs);
+  }
+}
+
+void SurfaceManager::RemoveFrameSinkObserver(FrameSinkObserver* obs) {
+  if (delegate_) {
+    return delegate_->RemoveObserver(obs);
+  }
+}
+
+bool SurfaceManager::FrameSinkManagerHasViewTransitionToken(
+    const blink::ViewTransitionToken& transition_token) {
+  if (delegate_) {
+    return delegate_->HasViewTransitionToken(transition_token);
+  }
+  return false;
 }
 
 void SurfaceManager::CommitFramesInRangeRecursively(

@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/check_op.h"
 #include "base/numerics/safe_math.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace cc {
 namespace {
